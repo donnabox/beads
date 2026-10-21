@@ -1,0 +1,50 @@
+{
+  "packages/server/src/development-runtime.ts": {
+    "554": "    void task.then(",
+    "587": "  let preparedFacts:",
+    "716": "      preparedFacts = Object.freeze({",
+    "723": "    published = true;",
+    "747": "  let completion: Promise<void> | undefined;",
+    "750": "  let ownerCompletion: Promise<void> | undefined;",
+    "788": "    listenUrl: preparedFacts!.listenUrl,",
+    "789": "    history: preparedFacts!.history,",
+    "791": "    ownerFacts: preparedFacts!.ownerFacts,"
+  },
+  "packages/server/src/transaction-runtime.ts": {
+    "303": "    void task.then(",
+    "421": "  let preparedFacts:",
+    "468": "      preparedFacts = Object.freeze({",
+    "479": "    published = true;",
+    "501": "  let completion: Promise<void> | undefined;",
+    "511": "      ? preparedFacts!.targets",
+    "555": "    history: preparedFacts!.history,",
+    "557": "    ownerFacts: preparedFacts!.ownerFacts,"
+  },
+  "packages/server/src/reference-deployment-runtime.ts": {
+    "23": "    typeof runtime.scope !== \"string\" ||",
+    "27": "    const primary = new Error(\"prepared lifecycle unavailable\");"
+  },
+  "packages/server/src/reference-deployment-runtime.test.ts": {
+    "531": "    expect(listenArgs[0]!.slice(0, 2)).toEqual([handle.listener.port, handle.listener.host]);",
+    "543": "  expect(listenArgs[0]!.slice(0, 2)).toEqual([h.listener.port, h.listener.host]);"
+  },
+  "apps/bdptest/src/reference-deployment-lifecycle-installed.test.ts": {
+    "131": "function unsafeLifecycleWire(",
+    "295": "        unsafeLifecycleWire(f.records, f.controls, f.secrets)",
+    "646": "  async function invalidPostReadyControl(session: Session) {",
+    "1048": "    invalidPostReadyControl,",
+    "1424": "  \"I21 ordinary TX refusal, invalid configuration guard and post-ready invalid control\",",
+    "1441": "          unsafeLifecycleWire(",
+    "1447": "        expect(unsafeLifecycleWire([{ wireBase64: leak }], [], f.secrets)).toBe(true);",
+    "1449": "          unsafeLifecycleWire([], [{ beforeShutdown: { refusalWireBase64: leak } }], f.secrets),",
+    "1452": "        await f.invalidPostReadyControl(session);"
+  },
+  "scripts/smoke-executables.mjs": {
+    "625": "      \"@bdp/server/dist/development-authority.js\","
+  },
+  "docs/design/startup-configuration.md": {
+    "740": "callbacks, 126 finite HTTP requests plus two CONNECT peers, with 33 ordinary",
+    "742": "children (37 total). I21 retains both its original public refusal and invalid",
+    "748": "implicit. Their optional entry overrides (workspace `dist` by default) are"
+  }
+}

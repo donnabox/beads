@@ -1,0 +1,66 @@
+{
+  "all29CurrentCopiesExact": true,
+  "forwardDerivationByteExact": true,
+  "genuineFullPairs": [
+    "runner",
+    "prompt",
+    "supervision-control"
+  ],
+  "inverseByteAndASTExact": true,
+  "oldChecksPreserved": [
+    "HEAD/tree/soleparent",
+    "exact29status and full22trackedpatch",
+    "context/artifact/prompt/runner/binding invariance",
+    "sourceBindingFinalized gate",
+    "no nine outputs",
+    "configureddefault argv and structural stream classification",
+    "no approval inferred from complete result"
+  ],
+  "sevenAddedHunksReconstructedExactly": true,
+  "sixSubstitutions": [
+    {
+      "after": "/Users/dbox/repos/wt/vickie/vickie-ordinary-startup-combined-minimum",
+      "before": "/Users/dbox/repos/wt/vickie/vickie-schema-minimum",
+      "occurrences": 1
+    },
+    {
+      "after": "write-trusted-startup-combined-code-review-1",
+      "before": "write-profile-G09-code-review-1",
+      "occurrences": 1
+    },
+    {
+      "after": "a56254d682cf4623cab22a552e3d2f695f691795",
+      "before": "cce884ccea1db97cbc6fd7bff876d4d6091f9081",
+      "occurrences": 1
+    },
+    {
+      "after": "set(b[\"trackedOwnedFiles\"]), \"Owned dirty scope changed\"",
+      "before": "set(b[\"ownedFiles\"]), \"Owned dirty scope changed\"",
+      "occurrences": 1
+    },
+    {
+      "after": "set(b[\"trackedFiles\"]), \"Tracked scope changed\"",
+      "before": "set(b[\"files\"]), \"Tracked scope changed\"",
+      "occurrences": 1
+    },
+    {
+      "after": "Exact frozen 29-path dirty status required",
+      "before": "Exact frozen ten-file dirty status required",
+      "occurrences": 1
+    }
+  ],
+  "snapHashesAll686BeforeAndAfter": true,
+  "sourceMetadataAttribution": "Independent live hashes; HEAD/status/parents/tracked/untracked provenance from root frozen actual records. Future runner executes exact Git checks before/after; this auditor invoked no Git.",
+  "threeAddedGuards": [
+    "    assert set(git(\"ls-files\",\"--others\",\"--exclude-standard\").decode().splitlines())==set(b[\"newFiles\"]), \"New untracked scope changed\"",
+    "    assert not (set(b[\"trackedFiles\"]) & set(b[\"newFiles\"])) and (set(b[\"trackedFiles\"]) | set(b[\"newFiles\"]))==set(b[\"files\"]), \"Complete source union changed\"",
+    "    assert set(b[\"trackedOwnedFiles\"])<=set(b[\"trackedFiles\"]) and (set(b[\"trackedOwnedFiles\"]) | set(b[\"newFiles\"]))==set(b[\"ownedFiles\"]), \"Complete owned scope changed\""
+  ],
+  "trackedRootRecordsVerified": {
+    "disjointCompleteSource": 686,
+    "new": 7,
+    "ownedUnion": 29,
+    "tracked": 679,
+    "trackedOwned": 22
+  }
+}

@@ -1,0 +1,52 @@
+{
+  "kind": "supporting-D1-read-only-consistency-audit",
+  "time": "2026-10-17T17:42:37.122292+00:00",
+  "worktree": "/Users/dbox/repos/wt/vickie/vickie-scope-event-sse-opaque-minimum",
+  "baseHead": "bbfa5b2cac0e381b497384e3a8e29cd937ea2738",
+  "baseTree": "da812ea5a1da8f8fb5be9fd2856d312c316236a3",
+  "inspectedFiles": {
+    "docs/specs/bdp.md": "67772742d7d08f48c12196e9789f1859ad2d0e19f133ea65e197b049361f84f8",
+    "packages/server/src/transaction-http.ts": "6ba85bc270f0fd5f81c22b563ad776bb1ee939445b81f1647c9d6baec2a4fc33",
+    "packages/server/src/transaction-service.ts": "dd300ad4921360c3781cfbf4ade55627f7d45f8a4cf2f8bcab495ae69f3870c1",
+    "packages/server/src/transaction-store.ts": "0ed1a8a059c02ad265ef7814c9dc5cefeec18d82d1ee81b2adc31198747b0e15",
+    "packages/server/src/transaction-read.ts": "dd1ce54966c092ace3164c54a2911f0231b48276f10d024453e33ab4541c659c",
+    "packages/server/src/transaction-consistency.ts": "ad51311d6098db32fd47849e0b78d3118162cdf1e80ee9ef4d46324bfa9f436f",
+    "packages/server/src/transaction-discovery.ts": "bb8055e2089f640a5d2071e389ac2011d08c038427265b50ab3d03c02047cfef",
+    "packages/server/src/transaction-runtime.ts": "48cb5411407c456d7b3f301a4b67970061be9f51c94201de832ba5deff6ea2d4",
+    "packages/server/src/transaction-sse.ts": "1a414cb252b1eb2b5c3695d16aecb59382cbd417876837351e1d80b91b45784c",
+    "packages/server/src/transaction-events.ts": "6c5ab4482f0b00110a71a96b16d44ca5fe713cb5f397ff78778cc6646f632a3a",
+    "packages/server/src/transaction-changefeed.ts": "1e678ecb1b2c3e59023dbb6a2e6516763907babd79f7926ca572a4764e40fc1e",
+    "packages/server/src/transaction-consistency.test.ts": "904d1f74ff06237da41c45f3dc1d4727a1387dc760950860ef548db51e7f02c4",
+    "packages/server/src/transaction-event-sse.test.ts": "0bd45d46a5401c23e98d110c5f2dc0a6159965e8df09dc2c19105c7b282c8f0f",
+    "packages/server/src/transaction-events.test.ts": "708fafc31d031abdff6434110d36d4bfd1126d38cbb977d81af1da1703121673",
+    "packages/server/src/transaction-changefeed.test.ts": "29f99ffba99c96c2d770ede016fe64af762eea9a3eb9ddaf9de6165bffe5e1bf",
+    "packages/server/src/transaction-sse.test.ts": "7c8f45a2456c33a90b61b43388cf33d67784c47d0f63b95505f204b4ea1cd9b0",
+    "packages/server/src/transaction-snapshot.test.ts": "4ab1bb6fa6a6a9e3104b3a9cd11fb045af6002459578275528e31c0d2d6e3122",
+    "packages/server/src/transaction-snapshot-http.test.ts": "61023b5f24396fe484c7820c706b560cb87abd7a3e16670f5a0944fbefd44d8a",
+    "packages/server/src/transaction-http.test.ts": "05f9be15d1ef262cf87dc3a07229290499dd0acd553a03a8d2f9febc1d15920a",
+    "apps/bdptest/src/transactional-event-sse-installed.test.ts": "0d2c2ddf069a57e9a4533894da03589beb1645d7608537dac45c2995ee7c0a23",
+    "apps/bdptest/src/transactional-sse-installed.test.ts": "0af05a745d5c3ee74fb84adff995c39c6bf1c1ed1891a30dd5e0902f8d859d19",
+    "apps/bdptest/src/transactional-discovery-installed.test.ts": "7cf8822108489f3fb2f9c5ca1d97c6d7b832acca95a2f7d891c3413404d90c49"
+  },
+  "productionMatchesOriginalReviewedDraft": [
+    "packages/server/src/transaction-http.ts",
+    "packages/server/src/transaction-service.ts",
+    "packages/server/src/transaction-store.ts",
+    "packages/server/src/transaction-read.ts",
+    "packages/server/src/transaction-consistency.ts",
+    "packages/server/src/transaction-discovery.ts",
+    "packages/server/src/transaction-runtime.ts",
+    "packages/server/src/transaction-sse.ts",
+    "packages/server/src/transaction-events.ts",
+    "packages/server/src/transaction-changefeed.ts"
+  ],
+  "originalAuthorBinding": {
+    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/scope-event-sse-opaque-minimum-author/source-binding.json",
+    "sha256": "c5b377389c581a5344a191d6b71cdad6b61e59cf819c004b1aec863bb0a57b5f"
+  },
+  "scope": "Current inspected-file pins only, not all679 freeze. Root owns formatting-successor runtime gates. No execution or source edits.",
+  "context": {
+    "context/live-ledger.md": "a92db4e3d4a006e6461be45f1f01bb99dc2a33e33174ab3a1ede0a9c97664430",
+    "context/design.md": "cb5ca79a1503394b27bb9538a9e91c154c2db1ecb25d78d5e7eb4e6df03f432b"
+  }
+}

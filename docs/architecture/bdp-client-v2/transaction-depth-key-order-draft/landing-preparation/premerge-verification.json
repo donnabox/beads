@@ -1,0 +1,30 @@
+{
+  "testedMerge": "5dd229cb1beda15d0611fcc3c656161c365bbffb",
+  "parents": [
+    "0d63cf59d447eca2e7ff8b2e0e6a5f31513b9a3a",
+    "1b491d8b888627fcaa5f18908d4308b343397ca3"
+  ],
+  "at": "2026-10-15T16:44:35.417514+00:00",
+  "mode": "premerge",
+  "head": "1b491d8b888627fcaa5f18908d4308b343397ca3",
+  "tree": "10810a8016a451e241ea974487681dcddd63c2e4",
+  "base": "0d63cf59d447eca2e7ff8b2e0e6a5f31513b9a3a",
+  "run": 38768400100,
+  "job": 116537531157,
+  "ciLogSha256": "2a0bb89796111f456d5bcbd36cc3f6a81c31d7f803de721226e8c7995b7cfe35",
+  "pinsSha256": "45723787033c3131ae8344d08398458bc05969dfbb577ff89472e32a9934cea8",
+  "verifiedPaths": 8,
+  "requiredSteps": [
+    "Run pnpm install --frozen-lockfile",
+    "Run pnpm format:check",
+    "Run pnpm lint",
+    "Run pnpm check:boundaries",
+    "Run pnpm typecheck",
+    "Run pnpm build",
+    "Run pnpm test",
+    "Run pnpm e2e:ready:preflight",
+    "Run pnpm smoke",
+    "Read-cohort evidence gate"
+  ],
+  "profileQualification": false
+}

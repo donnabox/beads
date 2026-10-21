@@ -1,0 +1,53 @@
+{
+  "pr": 130,
+  "run": 38755921518,
+  "job": 116494181912,
+  "base": "77f4b89c117e46f0e73476f69b4c8b377306452b",
+  "head": "1f9cb46c42fa69a09ac847f57e47bc96390aea6f",
+  "tree": "80a6fe0605698e18f9504432407e7943e1f665b4",
+  "synthetic": "0659712eb7449645c4a018fcfc436ec30e66d7ec",
+  "rootAccepted": true,
+  "ordinaryChain": [
+    "77f4b89c117e46f0e73476f69b4c8b377306452b",
+    "1f9cb46c42fa69a09ac847f57e47bc96390aea6f"
+  ],
+  "files": {
+    "packages/server/src/transaction-changefeed.ts": "fb5bc6f035db8faa351d019e7d2ae53dbb7785214f2168d931fa74e77ed14bf8",
+    "packages/server/src/transaction-store.ts": "c0d1ebcdef1b354aa0806b8106ac0a3b0b24e6c94f50ec49b550decdf36ccf89",
+    "packages/server/src/transaction-http.ts": "b51d02801e5924190aba77c377e538db0b8619149d6184e19cb56d440f40c2cf",
+    "packages/server/src/transaction-changefeed.test.ts": "eb29103cf4f9c79a06eb49261d01da274de229dbc9f0ba169418048bf79adb28",
+    "apps/bdptest/src/transactional-changefeed-refusal-context-installed.test.ts": "c8ec6da3cab3850d69b2b8b8b650b17f159fa9179930eeecd3a287716aa946af",
+    "docs/design/transaction-implementation-progress.md": "a1cc5b84d79485855dfbf1793628af4dcdba1147bd7938721a9af5317f57b569"
+  },
+  "evidence": {
+    "finalSourceBinding": {
+      "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-changefeed-parameter-context-draft/final-source.json",
+      "sha256": "a23661de87ca60b57917371b7d7e6b08a16992c6da71766a313dc53d69d62995"
+    },
+    "native": {
+      "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-changefeed-parameter-context-draft/root-native-code-review.md",
+      "sha256": "7184936efc82f646a1670121135a85294fe0661780975c003404d5d760b0bb62"
+    },
+    "claudeExit": {
+      "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-changefeed-parameter-context-draft/claude-code-supplement/exit.json",
+      "sha256": "4ce71d124d14852c7a4be6539fce51806bfb914a370a11b50c471004fe57f5e3"
+    },
+    "claudeStdout": {
+      "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-changefeed-parameter-context-draft/claude-code-supplement/stdout.txt",
+      "sha256": "fd8a88b32778bf269e0701e5f09467e19b236db995e6be1968e525a3955bf31d"
+    },
+    "rootCouncil": {
+      "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-changefeed-parameter-context-draft/root-final-council.json",
+      "sha256": "5cb581cf4ba7a3cf48b6c325dc7a852c5f15d60087eb8b9f2cdb73a17df7cbd5"
+    },
+    "installedAcceptance": {
+      "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-changefeed-parameter-context-draft/root-installed-acceptance.json",
+      "sha256": "79528c16e0c092ea342c7fdfbc7116375165ffaee5302db32b6eaf9cf21737db"
+    },
+    "rootLandingAcceptance": {
+      "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-changefeed-parameter-context-draft/landing/root-landing-acceptance.json",
+      "sha256": "b9ea630a90f0a07d3428a05d9b3aec4081437f050af5609d1752927f67e28a5c"
+    }
+  },
+  "ciLogSha256": "e3c4607e9d7eed25050975c38c3d6402096291afde547c2d169e9dbf56fbc0c3"
+}

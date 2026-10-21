@@ -1,0 +1,3 @@
+# H4 synthetic harness preparation — CLOSED
+
+Minimal H3-N1 raw-retention correction in availability_owner.py only; all other Python helpers are byte-exact H3 and both Perl programs differ only in mandatory namespace literals. All48IDs/60commands/20D03/helper4/product/source/clocks/caps/scopes remain. No availability/control/product/helper evaluation occurred. Full H3/native/earlier history stays INPLACE under exact full census/pins; bounded active context only, no recursive1994 copy. Read report.md/raw-retention-contract.json/availability-plan.md and genuine deltas. OTHER-native/root exact authority and durable availability-only release are still required; all gates false, no attempts, no automatic suite/product.

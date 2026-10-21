@@ -1,0 +1,104 @@
+--- original/ledger.json
++++ review-repair/ledger-v2.json
+@@ -1,10 +1,11 @@
+ {
+-  "status": "PROPOSED; no authoring/execution release",
++  "status": "PROPOSED V2; root authoring/execution release absent",
+   "basis": {
+-    "head": "df80f8cb86b7763bc7bb005492e43d8840527045",
+-    "tree": "25e9d4aa926ea728f5e356365cb1ffadba269221",
+-    "sequenceSuccessorBinding": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/sequence-depth-retained-member-draft/lint-repair/source-binding.json",
+-    "combinedWriteBranch": "actual reviewed minimum+sequence successor not yet supplied; ordinary branch integration, no latest-main dependency"
++    "reviewHead": "11742645bc591b3e5affa9fcc2f36c551c6fa803",
++    "reviewTree": "66b0cc09393fdbddf32d7ee19a2d74b961c7fdbb",
++    "currentWorkflowOnlyHead": "77b4cf980ec91f66c52a554c3dd8c9de5aee859f",
++    "tree": "6a8af0f4b40216ce9c0b3f26957d293caf6f6627",
++    "sourceEquality": "All40 prior review pins identical; sole intervening path .github/workflows/ci.yml; isolated author checkout required, no main prerequisite"
+   },
+   "ownedPaths": [
+     "packages/server/src/transaction-set.ts",
+@@ -251,25 +252,23 @@
+       "status": 200,
+       "accept": "application/json",
+       "credential": "actual fresh operator token; never retained",
+-      "contentType": null
++      "contentType": null,
++      "runtimeTargetBinding": "request2 actual validated receipt.id, canonical Scope receipts/UUID, no credentials/query/fragment/encoded separator; exact target bound in final runtime dispatch inventory/report"
+     }
+   ],
+   "newInstalledBodyBytesTotal": 169821,
+   "sourceSelections": {
+     "preparation": 3,
+     "sequence": 13,
+-    "HTTP": 4,
+-    "submission": 3,
++    "HTTP": 6,
++    "submission": 7,
+     "resourceEvaluator": 1,
+-    "Snapshot": 11,
+-    "total": 35,
+-    "http": 34,
+-    "ordinaryDirectories": 30,
+-    "successfulOwnerOpens": 43,
+-    "listeners": 4,
+-    "productChildren": 0,
+-    "externalSQLiteInventoryHandles": 11,
+-    "qualification": "proposed frozen callback mapping and lifecycle accounting; implementation must remeasure exact expanded names/fixtures before release, no silent expansion"
++    "Snapshot": 12,
++    "total": 42,
++    "http": 47,
++    "expandedInventory": "selection-v2.json",
++    "lifecycleInventory": null,
++    "qualification": "Actual code-derived lifetime inventory required before execution; original precise totals withdrawn."
+   },
+   "installed": {
+     "callbacks": 3,
+@@ -293,15 +292,23 @@
+     "directories": 1,
+     "listeners": 0,
+     "children": 0,
+-    "expected": "named fresh-depth:snapshot-capture failure with captured RangeError before reopen, after genuine committed deep owned Link; no generic timeout/setup failure accepted"
++    "expected": "named fresh-depth:snapshot-capture failure with captured RangeError before reopen, after genuine committed deep owned Link; no generic timeout/setup failure accepted",
++    "freshBuildRequired": true,
++    "inputAndEmittedHashInventoryRequired": true,
++    "config": "copied unchanged vitest.config.ts",
++    "setup": "copied packages/server/test-support/read-conformance-mock.ts",
++    "protocolResolution": "Copied source through existing aliases; explicit emitted server owner; disclose mixed graph, reject code escape",
++    "graphMechanism": "reviewed sequence-minimum-combined-validation/control.py with cache-inventory-repair; actual generated manifests required",
++    "causeRule": "named capture RangeError directly or verified fenced cause, genuine committed deep Link prerequisite"
+   },
+   "total": {
+-    "caseExecutions": 39,
+-    "httpExpectedAndMaximum": 68,
++    "caseExecutions": 46,
++    "http": 81,
++    "httpExpected": 81,
++    "httpMaximum": 81,
+     "productChildren": 3,
+-    "successfulOwnerOpens": 47,
+-    "ordinaryDirectories": 34,
+-    "listeners": 7
++    "sourceAndControlLifecycle": null,
++    "qualification": "Source47+installed34+control0;42source+3installed+1control. Freeze actual opens/dirs/listeners/offline handles from authored code before release."
+   },
+   "bounds": {
+     "installedWorkSeconds": 45,
+@@ -324,5 +331,17 @@
+     "actual combined write branch source reanchor",
+     "exact authored source/expanded selector/lifecycle measurement",
+     "code council and root finite execution gate"
+-  ]
++  ],
++  "maintenanceWitness": {
++    "callback": "executes deep values through set and dependent sequence with durable receipt recovery",
++    "beforeExpiry": "available genuine deep receipt, explicit maintain, existing reopen/startup sweep, full receipt/page/Resource readback",
++    "afterExpiry": "controlled clock then maintain, completed compaction/retained key and failed retention",
++    "extraCallbacks": 0,
++    "extraHTTP": 0,
++    "extraReopens": 0
++  },
++  "deepOracle": "All new12000-depth source/installed values: independent raw expected literal + iterative full comparison + shallow envelopes; no recursive matchers/builders/client successor-read probe.",
++  "singletonDecode": "Retain unconditional object(decodeJsonDocument(text)) for every singleton.",
++  "identityMeasurement": "Actual per-member/deferred/resolved identity UTF8bytes+sum during authoring; roughly6x nesting expansion, no added limit.",
++  "qualifiedInstalledBinding": "Gate requires external installed override+clean source/fresh archive/eight-dependency/payload proof. Existing development fallback cannot qualify."
+ }

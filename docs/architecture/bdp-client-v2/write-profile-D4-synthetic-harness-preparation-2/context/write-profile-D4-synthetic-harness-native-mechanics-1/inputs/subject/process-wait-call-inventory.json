@@ -1,0 +1,20 @@
+{
+  "state": "AST data inspection; no process/helper execution",
+  "priorInventory": "predecessor3/process-wait-call-inventory.json",
+  "sevenHelpersByteExact": [
+    "run.py",
+    "worker.py",
+    "gate.py",
+    "scanner.py",
+    "packages.py",
+    "schema-audit.mjs",
+    "guarded-action-session-20261018-021624-549f.py"
+  ],
+  "auditAfterRemovingTwoNewNeedASTEqualsPrior": true,
+  "processQueryWaitSignalOwnershipDeadlineRetryChanges": false,
+  "noAdditionalQueriesWritesSignalsRetries": true,
+  "addedCallsOnly": [
+    "need(received implies settled)",
+    "need(pending category and writeState null)"
+  ]
+}

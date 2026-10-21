@@ -1,0 +1,101 @@
+{
+  "build": {
+    "exit": 0,
+    "seconds": 0.9512872500345111,
+    "started": "2026-10-14T17:56:06Z",
+    "ended": "2026-10-14T17:56:07Z",
+    "command": [
+      "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+      "/Users/dbox/.cache/node/corepack/v1/pnpm/11.20.0/bin/pnpm.cjs",
+      "build"
+    ],
+    "cwd": "/Users/dbox/repos/wt/vickie/vickie-comparison-timeout-context",
+    "pid": 82288
+  },
+  "pack-protocol": {
+    "exit": 0,
+    "seconds": 0.19105350016616285,
+    "started": "2026-10-14T17:56:07Z",
+    "ended": "2026-10-14T17:56:07Z",
+    "command": [
+      "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+      "/Users/dbox/.cache/node/corepack/v1/pnpm/11.20.0/bin/pnpm.cjs",
+      "pack",
+      "--out",
+      "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-comparison-timeout-context/packed/packs/protocol.tgz"
+    ],
+    "cwd": "/Users/dbox/repos/wt/vickie/vickie-comparison-timeout-context/packages/protocol",
+    "pid": 82357
+  },
+  "pack-server": {
+    "exit": 0,
+    "seconds": 0.24666387494653463,
+    "started": "2026-10-14T17:56:07Z",
+    "ended": "2026-10-14T17:56:07Z",
+    "command": [
+      "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+      "/Users/dbox/.cache/node/corepack/v1/pnpm/11.20.0/bin/pnpm.cjs",
+      "pack",
+      "--out",
+      "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-comparison-timeout-context/packed/packs/server.tgz"
+    ],
+    "cwd": "/Users/dbox/repos/wt/vickie/vickie-comparison-timeout-context/packages/server",
+    "pid": 82363
+  },
+  "install": {
+    "exit": 0,
+    "seconds": 0.5126261659897864,
+    "started": "2026-10-14T17:56:07Z",
+    "ended": "2026-10-14T17:56:08Z",
+    "command": [
+      "npm",
+      "install",
+      "--offline",
+      "--ignore-scripts",
+      "--no-audit",
+      "--no-fund"
+    ],
+    "cwd": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-comparison-timeout-context/packed/install",
+    "pid": 82365
+  },
+  "direct": {
+    "exit": 0,
+    "seconds": 1.0496882498264313,
+    "started": "2026-10-14T17:56:08Z",
+    "ended": "2026-10-14T17:56:09Z",
+    "command": [
+      "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+      "/Users/dbox/.cache/node/corepack/v1/pnpm/11.20.0/bin/pnpm.cjs",
+      "exec",
+      "vitest",
+      "run",
+      "apps/bdptest/src/transactional-direct-refusal-installed.test.ts",
+      "--maxWorkers=1",
+      "--reporter=verbose",
+      "--reporter=json",
+      "--outputFile.json=/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-comparison-timeout-context/packed/direct.json"
+    ],
+    "cwd": "/Users/dbox/repos/wt/vickie/vickie-comparison-timeout-context",
+    "pid": 82381
+  },
+  "sequence": {
+    "exit": 0,
+    "seconds": 0.9549725831020623,
+    "started": "2026-10-14T17:56:09Z",
+    "ended": "2026-10-14T17:56:10Z",
+    "command": [
+      "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+      "/Users/dbox/.cache/node/corepack/v1/pnpm/11.20.0/bin/pnpm.cjs",
+      "exec",
+      "vitest",
+      "run",
+      "apps/bdptest/src/transactional-sequence-refusal-installed.test.ts",
+      "--maxWorkers=1",
+      "--reporter=verbose",
+      "--reporter=json",
+      "--outputFile.json=/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-comparison-timeout-context/packed/sequence.json"
+    ],
+    "cwd": "/Users/dbox/repos/wt/vickie/vickie-comparison-timeout-context",
+    "pid": 82419
+  }
+}

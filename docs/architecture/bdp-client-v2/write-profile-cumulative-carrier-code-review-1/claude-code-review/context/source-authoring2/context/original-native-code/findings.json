@@ -1,0 +1,56 @@
+{
+  "accepted": false,
+  "findings": [
+    {
+      "endLine": 560,
+      "evidence": "rows.forEach at516 builds every projection by hashing full wrapper bytes and canonicalJson(result) at559\u2013560, then repeats both at585\u2013586. TX has256 selected rows (plus RU baseline135); each wrapper may be4MiB. The same immutable result is canonically serialized257 times per TX assembly. TX invokes assembly for pending, cleanup and final state; RU ledger invokes it repeatedly.",
+      "file": "packages/conformance/test-support/profile-evidence.ts",
+      "id": "N1",
+      "impact": "Deterministically multiplies full-report traversal/allocation by the metadata-row count inside unchanged data5s and actual callback/63000ms positive bounds. This review does not claim an observed timeout or benchmark result.",
+      "line": 559,
+      "priority": 2,
+      "requiredCorrection": "Immediately after bounded parse/validation, cache the exact raw wrapper SHA and canonical result SHA once for this owner and reuse them for each projection/report summary. Preserve every digest value and distinction, all existing limits/workloads/APIs and deadlines; no broader caching framework or deadline change.",
+      "severity": "Medium",
+      "title": "Compute whole-report identities once per owner, outside the row loop"
+    },
+    {
+      "endLine": 433,
+      "evidence": "After parsing the protected wrapper, the assembler reads result, sourceCommit and optional configuration only. The raw RU baselineReceipt/sessions and TX baseline/sessions are never matched to supplied ready[];484\u2013513 validates a separately supplied nonempty list instead. A wrapper with a changed/missing sessions or baseline field can pass with the old supplied ready[] and correspondingly updated expected raw SHA. Unit observation()189\u2013239 uses only {sourceCommit,configuration,result}, so it does not exercise the existing actual wrapper metadata.",
+      "file": "packages/conformance/test-support/profile-evidence.ts",
+      "id": "N2",
+      "impact": "Offline assemble/verify can retain a wrapper whose actual session/configuration metadata contradicts the supplied trusted run context. A matching raw hash is byte identity, not the required cross-binding check. The inline TX handoff424\u2013429 protects that actual TX path; it does not implement this independent pure/RU wrapper validation.",
+      "line": 430,
+      "priority": 2,
+      "requiredCorrection": "Validate the actual known RU and TX wrapper baseline/session fields against the trusted supplied summaries/configuration/runtime/source and their original order/full relevant metadata, with exact present/missing handling. Keep JSON representation facts explicit and no raw/canonical digest normalization. Make unit wrapper fixtures representative with honest source-data metadata; preserve genuine already-aborted result bodies and all48 IDs. No invented installed sessions or additional product calls.",
+      "severity": "Medium",
+      "title": "Bind wrapper baseline/session metadata to the supplied observation context"
+    },
+    {
+      "endLine": 429,
+      "evidence": "ownData(observed)405\u2013415 is shallow. equal(o.ownerId,owner.id), equal(o.sourceCommit,...) and equal(digest(bytes),o.expectedReportSha256) pass unchecked supplied values to canonicalJson. canonicalJson uses Object.entries for objects; a wrong-type object in one of these string slots can contain an enumerable getter and be invoked before refusal. ready.map(record)484 is also shallow: r.served nested getters can reach equal487. Existing R12/R13 cover top-level artifact getters/Proxy only.",
+      "file": "packages/conformance/test-support/profile-evidence.ts",
+      "id": "N3",
+      "impact": "The new pure API can evaluate caller behavior despite its explicit intrinsic own-data/getter/Proxy refusal boundary. Exceptions eventually become a fixed error, but side effects have already occurred. No probe was executed; this is the direct static call path.",
+      "line": 416,
+      "priority": 2,
+      "requiredCorrection": "Type-check primitive observation identity/hash slots before comparison and intrinsically capture/validate nested ready/session data before canonical traversal. Reject nested getters, proxies and functions without invoking them. Add finite subcontrols to existing R12/R13 or appropriate existing cases; retain48 IDs/default5s, exactly3 exports and the current4file footprint.",
+      "severity": "Medium",
+      "title": "Refuse observation behavior before canonical comparisons"
+    },
+    {
+      "endLine": 555,
+      "evidence": "Carrier sets stopped on any category:not-run at544 and then requires every later row to be not-run; it forbids all not-run exchanges at552\u2013555. Real runner prerequisiteResultBeforeRun2986\u20133022 emits an individual harness-error/not-run with prerequisiteFailure.phase:initial; mustStopMatrixAfter448\u2013468 returns false for ordinary not-run. prerequisiteFailureResult3027\u20133055 emits not-run with retained recheck exchanges and phase:recheck (may continue if no stop category). Current RU baseline has7 actual prerequisite actions, so this is reachable in the frozen owner set.",
+      "file": "packages/conformance/test-support/profile-evidence.ts",
+      "id": "N4",
+      "impact": "Genuine failed/partial RU reports are refused or lose the ability to retain an actual prerequisite recheck transcript. A dependent skip does not imply that every following independent/diagnostic row was stopped.",
+      "line": 544,
+      "priority": 2,
+      "requiredCorrection": "Use the real runner prerequisite/stop distinctions: validate known prerequisite ID/phase/category against the fixed manifest/catalog, allow legitimate retained recheck exchanges with no authored execution credit, and do not infer global stop from every not-run row. Preserve actual true-abort stopped suffix, exact full IDs/order/index and null credit. Add finite source-data subcontrols within existing L08/R22 (no new runner/product execution or callback).",
+      "severity": "Medium",
+      "title": "Distinguish a dependent prerequisite not-run row from a stopped matrix suffix"
+    }
+  ],
+  "revisionsRequired": true,
+  "runtimeClaims": "UNRESOLVED; no compiler/test/build/install/runtime/actual CODE review run",
+  "scope": "FULL bounded four-file source/native review, no implementation or runtime execution"
+}

@@ -1,0 +1,607 @@
+{
+  "head": "9bf601bfb570adae97ce8cdc99caf2cc7a2b34c1",
+  "tree": "592c5e6e5c0c790b6e2690495b94ac48705b9069",
+  "files": {
+    "scripts/transaction-installed-observation.mjs": {
+      "sha256": "6f772f3776d3c3effa788676d853cc2932a6ee59ad63ac3338ad1b487408914b",
+      "bytes": 3264,
+      "suppliedRanges": [
+        [
+          1,
+          97
+        ]
+      ],
+      "transformation": "Leading indentation removed; source tokens and line numbers preserved",
+      "renderedSha256": "6f5c6ddbf4a94de75c6ac36a470e9a167a5e4b514bbf6cceb07adfb5dad774c1"
+    },
+    "packages/server/src/transaction-installed-configuration.ts": {
+      "sha256": "e15cb54266848fdd4aa08b19b37f1b2eb080f4599d9414fad8d85b6f33f35d99",
+      "bytes": 2942,
+      "suppliedRanges": [
+        [
+          1,
+          67
+        ]
+      ],
+      "transformation": "Leading indentation removed; source tokens and line numbers preserved",
+      "renderedSha256": "1c6c1a0a1eaaee454ac5919a5cfebbd07bb13589f97e28bbe72fd978ff391cdb"
+    },
+    "packages/server/src/transaction-installed.ts": {
+      "sha256": "afddc6b0304fee4762c79e40ac6610a281ca8791928d8f779a900a7f6eac881a",
+      "bytes": 1112,
+      "suppliedRanges": [
+        [
+          1,
+          22
+        ]
+      ],
+      "transformation": "Leading indentation removed; source tokens and line numbers preserved",
+      "renderedSha256": "e325feb827d99f4f23e791d41922eb3ec7bc327488122214e927f700937afb0d"
+    },
+    "packages/server/src/transaction-installed-process.ts": {
+      "sha256": "6bd16f940f1f751189fc76419e3a18ca26cd5f54da3cfa3946b30c3956a2f8b7",
+      "bytes": 2630,
+      "suppliedRanges": [
+        [
+          1,
+          77
+        ]
+      ],
+      "transformation": "Leading indentation removed; source tokens and line numbers preserved",
+      "renderedSha256": "1a9bb92506112b402575bdebcbd6a64b64695da0bd6dc148cc6cc591a334425a"
+    },
+    "apps/bdptest/test-support/transactional-execution-binding.ts": {
+      "sha256": "cde506c72a8710eafe58522900f6db70ed3701cf333560252dc8e7c5e706cf89",
+      "bytes": 7378,
+      "suppliedRanges": [
+        [
+          1,
+          91
+        ]
+      ],
+      "transformation": "Leading indentation removed; source tokens and line numbers preserved",
+      "renderedSha256": "b85d95a59b919d367798baff5e2d90665d2fa8d334800eae8cb09f740d8e77ba"
+    },
+    "packages/server/src/transaction-runtime.ts": {
+      "sha256": "77954f0a85029d76443feac54cd53cda4339ffc126660ace5a9f5af92466c573",
+      "bytes": 16173,
+      "suppliedRanges": [
+        [
+          86,
+          142
+        ],
+        [
+          358,
+          389
+        ]
+      ],
+      "transformation": "Leading indentation removed; source tokens and line numbers preserved",
+      "renderedSha256": "448bf578dbf70e93916bd490c422c297d6f1d3a5f9aef52279c1cd96871207ed"
+    },
+    "packages/server/src/transaction-runtime-configuration.ts": {
+      "sha256": "e594e930f845255cafc7e2f5b5b28149b7e95fe8a09052b187a492c96328f7ca",
+      "bytes": 16165,
+      "suppliedRanges": [
+        [
+          370,
+          404
+        ]
+      ],
+      "transformation": "Leading indentation removed; source tokens and line numbers preserved",
+      "renderedSha256": "65564f0d0819de694ead6e4bba95c9a5fa89fb66d167e14b5882dcd4ce214198"
+    },
+    "packages/server/src/transaction-http.ts": {
+      "sha256": "b51d02801e5924190aba77c377e538db0b8619149d6184e19cb56d440f40c2cf",
+      "bytes": 27155,
+      "suppliedRanges": [
+        [
+          97,
+          118
+        ],
+        [
+          176,
+          190
+        ],
+        [
+          330,
+          348
+        ],
+        [
+          389,
+          389
+        ],
+        [
+          480,
+          503
+        ],
+        [
+          519,
+          565
+        ],
+        [
+          613,
+          634
+        ]
+      ],
+      "transformation": "Leading indentation removed; source tokens and line numbers preserved",
+      "renderedSha256": "11f18aff6b31e9a6839594a9bb14654df53829413098d7b255501f912cad9630"
+    },
+    "packages/server/src/read-http.ts": {
+      "sha256": "31934105eff6fff8ded8ce2ca9e3c19028991ca7c3d5f51b848004177e8c9268",
+      "bytes": 8997,
+      "suppliedRanges": [
+        [
+          1,
+          47
+        ]
+      ],
+      "transformation": "Leading indentation removed; source tokens and line numbers preserved",
+      "renderedSha256": "bd6a59111815af82dc8e358c21f43856a6cb347f3a676c46f722b2baf62fc0e8"
+    },
+    "packages/server/src/read-http-routing.ts": {
+      "sha256": "d9344b87838f8c71381ccf9efe28b4f023df45503570beb8fb4293d553caca42",
+      "bytes": 2967,
+      "suppliedRanges": [
+        [
+          1,
+          54
+        ]
+      ],
+      "transformation": "Leading indentation removed; source tokens and line numbers preserved",
+      "renderedSha256": "b5977a168300dff2b9da51578cf11dd28e64838b1bdfe9cb5a19b0db40fbee5b"
+    },
+    "packages/server/src/transaction-store.ts": {
+      "sha256": "fcd6882b29e538db45867c894c06dfbaa6ca588db0c2e403ef1b7abb14f6c706",
+      "bytes": 87238,
+      "suppliedRanges": [
+        [
+          201,
+          231
+        ],
+        [
+          348,
+          401
+        ],
+        [
+          590,
+          598
+        ],
+        [
+          651,
+          664
+        ],
+        [
+          820,
+          837
+        ],
+        [
+          1054,
+          1063
+        ],
+        [
+          1100,
+          1132
+        ],
+        [
+          1140,
+          1152
+        ],
+        [
+          1208,
+          1320
+        ],
+        [
+          1575,
+          1631
+        ]
+      ],
+      "transformation": "Leading indentation removed; source tokens and line numbers preserved",
+      "renderedSha256": "cceaeabd97607994ddab68b440aa34a68193c2f7770b47d808a6fcb21ecc998f"
+    },
+    "packages/server/src/transaction-batch.ts": {
+      "sha256": "70d941d416979edd54e250d51318cfb7e5d4ddb315ea6131de7ca5f56e98a014",
+      "bytes": 46249,
+      "suppliedRanges": [
+        [
+          63,
+          74
+        ],
+        [
+          378,
+          382
+        ],
+        [
+          680,
+          710
+        ],
+        [
+          740,
+          767
+        ],
+        [
+          790,
+          810
+        ],
+        [
+          1040,
+          1073
+        ]
+      ],
+      "transformation": "Leading indentation removed; source tokens and line numbers preserved",
+      "renderedSha256": "43f311f3c82f2fa89b8954ee4e62008dc4e3ba9a4187b1b0f201693e9eb9f247"
+    },
+    "packages/server/src/resource-evaluator.ts": {
+      "sha256": "89606787e455f4ed555b807d91c5331a376431807a9a581de1f94e538fcab4ff",
+      "bytes": 46773,
+      "suppliedRanges": [
+        [
+          135,
+          160
+        ],
+        [
+          867,
+          905
+        ],
+        [
+          1005,
+          1032
+        ],
+        [
+          1085,
+          1098
+        ],
+        [
+          1135,
+          1165
+        ]
+      ],
+      "transformation": "Leading indentation removed; source tokens and line numbers preserved",
+      "renderedSha256": "7690a95424cc539355aa2ecb096575f8a5d7758a4e5a129a2ec879cd16377b1c"
+    },
+    "packages/server/src/transaction-events.ts": {
+      "sha256": "c6052433662fcb2d0a202ad4e408a24d4c43f980313fa89659501b4475790db5",
+      "bytes": 11755,
+      "suppliedRanges": [
+        [
+          1,
+          30
+        ],
+        [
+          75,
+          101
+        ]
+      ],
+      "transformation": "Leading indentation removed; source tokens and line numbers preserved",
+      "renderedSha256": "edd78f8df486a7412e4785a5e8c29ced9df6f39ff26b7223247e6109f622e636"
+    },
+    "packages/server/src/authority-read.ts": {
+      "sha256": "fd6554c4ee0d08b997fb3622c2f21697f02d58b838f4ae0de10aca4707f67734",
+      "bytes": 44340,
+      "suppliedRanges": [
+        [
+          878,
+          898
+        ]
+      ],
+      "transformation": "Leading indentation removed; source tokens and line numbers preserved",
+      "renderedSha256": "4dddc714033eb95b593df6fb51abff070a47537adc6a77df2af492581672e8d6"
+    },
+    "packages/server/src/read-request.ts": {
+      "sha256": "57675afc647df3e8ad1f26a40aef72584aa388ade6af4a465e3ffef16670f6a2",
+      "bytes": 36371,
+      "suppliedRanges": [
+        [
+          142,
+          157
+        ],
+        [
+          258,
+          262
+        ],
+        [
+          376,
+          382
+        ]
+      ],
+      "transformation": "Leading indentation removed; source tokens and line numbers preserved",
+      "renderedSha256": "b2c42ce91a7c8a1867341fe48d41c601ae53bdb5c11d40c2cececa1ac702a8a7"
+    },
+    "docs/specs/bdp.md": {
+      "sha256": "f036103ffdf5f89fa3a2033570e1e987c4cd203cd80b1c633cb44615123f892e",
+      "bytes": 394427,
+      "suppliedRanges": [
+        [
+          2150,
+          2164
+        ],
+        [
+          4173,
+          4185
+        ],
+        [
+          5263,
+          5290
+        ],
+        [
+          5350,
+          5360
+        ]
+      ],
+      "transformation": "Leading indentation removed; source tokens and line numbers preserved",
+      "renderedSha256": "10faac4c108768f768fc1aa939d8ca096b1687eeb9fc42c8ea1a1731c6a51d02"
+    },
+    "tsconfig.json": {
+      "sha256": "1e4a2b08cfff43cafe0999eb97a9f8de961926c9a289d0221b96ce7f53719e1a",
+      "bytes": 435,
+      "suppliedRanges": [
+        [
+          1,
+          16
+        ]
+      ],
+      "transformation": "Leading indentation removed; source tokens and line numbers preserved",
+      "renderedSha256": "09a1f87b66e1859e82443590a9266883544a04520842f3a04e2509fcdb9a5672"
+    },
+    "vitest.config.ts": {
+      "sha256": "a84575ea9ef0b6e75b6484024a627fa89422aea2fdbeb26127e09714dba0641f",
+      "bytes": 3207,
+      "suppliedRanges": [
+        [
+          9,
+          20
+        ],
+        [
+          40,
+          56
+        ],
+        [
+          61,
+          72
+        ]
+      ],
+      "transformation": "Leading indentation removed; source tokens and line numbers preserved",
+      "renderedSha256": "e24337d3ae49be3f2bfd257117fe72a9cde50975d567d3d534e7a649b7cd78d9"
+    },
+    "packages/server/test-support/read-conformance-mock.ts": {
+      "sha256": "dbfb86ac2325c684567ffce40f17105c6b12a63edfa54cc08f0601df8dc613f8",
+      "bytes": 1409,
+      "suppliedRanges": [
+        [
+          1,
+          37
+        ]
+      ],
+      "transformation": "Leading indentation removed; source tokens and line numbers preserved",
+      "renderedSha256": "a7ad4824a9ecf2934f08d0cd3324085027660b40af45bf782f7359b3486e1b3a"
+    },
+    "schemas/bdp-v0.schema.json": {
+      "sha256": "0baa5d5ef67144f8e6513b4cde31168effc8df6d52ef3141b0f144b87f8dc227",
+      "bytes": 133208,
+      "suppliedDefinitions": [
+        "absoluteHttpUrl",
+        "absoluteUri",
+        "aliasResultMembers",
+        "allocatedIdentity",
+        "beadCollection",
+        "beadRecord",
+        "contextMessage",
+        "contextString",
+        "contextTime",
+        "createdData",
+        "currentBeadCollection",
+        "currentBeadRecord",
+        "currentLinkCollection",
+        "currentLinkRecord",
+        "dateTime",
+        "deletedData",
+        "deletedIdentity",
+        "event",
+        "eventPage",
+        "eventType",
+        "historyMissing",
+        "historyMissingItem",
+        "idempotencyKey",
+        "jsonPointer",
+        "linkCollection",
+        "linkDeltaData",
+        "linkRecord",
+        "localName",
+        "metadata",
+        "mutationOutcome",
+        "mutationReceipt",
+        "ownedLinkChange",
+        "ownedLinkDelta",
+        "pinnedReference",
+        "properties",
+        "propertyChange",
+        "readProblem",
+        "readProblemCode",
+        "readUpdateProblem",
+        "readUpdateProblemCode",
+        "receiptCore",
+        "receiptDetail",
+        "receiptEntryOutcome",
+        "receiptProblem",
+        "receiptProblemCode",
+        "receiptResult",
+        "receiptStatus",
+        "reference",
+        "resourceIdentity",
+        "resourceKind",
+        "retryDisposition",
+        "revision",
+        "revisionActor",
+        "revisionProvenance",
+        "typedLinkReference",
+        "updatedData",
+        "validationDiagnostic",
+        "validationDiagnostics",
+        "wireToken"
+      ],
+      "completeDefinitionClosure": true,
+      "renderedSha256": "d26cca66e246c86ba5499859d00f46920176dd6e5ad28879858fbaec25e4ae38",
+      "renderedBytes": 32373,
+      "omitted": "Unrelated root definitions only; all internal $defs refs of these four schemas recursively included."
+    }
+  },
+  "meaningfulParentPins": {
+    "docs/specs/bdp.md": {
+      "sha256": "f036103ffdf5f89fa3a2033570e1e987c4cd203cd80b1c633cb44615123f892e",
+      "bytes": 394427
+    },
+    "docs/design/transaction-implementation-progress.md": {
+      "sha256": "21069d8d8eb5d5048a1dbcb38871ea0f8e72b463e9456633b12b4860e024a728",
+      "bytes": 131052
+    },
+    "packages/conformance/catalog/transactional-v1.json": {
+      "sha256": "c9125f914129c71f01cefc5c54b32db80637d37b57e321571c96e81936c31eb4",
+      "bytes": 94826
+    },
+    "packages/conformance/test-support/transactional/manifest-v1.json": {
+      "sha256": "a11a79f6d0f9ffa5933a680a3e4fed87987789c3deca50a38cda8563132d242e",
+      "bytes": 790009
+    },
+    "packages/conformance/test-support/transactional/coverage-v1.json": {
+      "sha256": "346e1edaa22af789f89017fdc2fef6bb01b7564ed72a65344e9fe5635887c74f",
+      "bytes": 117702
+    },
+    "packages/conformance/test-support/transactional/fixture-v1.json": {
+      "sha256": "3a7899ced771d4880066d98b0000c53f801ece53458502cc4f3bc641146c9a85",
+      "bytes": 716
+    },
+    "schemas/bdp-v0.schema.json": {
+      "sha256": "0baa5d5ef67144f8e6513b4cde31168effc8df6d52ef3141b0f144b87f8dc227",
+      "bytes": 133208
+    },
+    "packages/protocol/schemas/bdp-v0.schema.json": {
+      "sha256": "0baa5d5ef67144f8e6513b4cde31168effc8df6d52ef3141b0f144b87f8dc227",
+      "bytes": 133208
+    },
+    "packages/protocol/src/read-update-values.ts": {
+      "sha256": "d1fdbc660d5e2c009275c152bdcebda46031700920aa03bfea89f39564c89de2",
+      "bytes": 19883
+    },
+    "packages/server/src/resource-evaluator.ts": {
+      "sha256": "89606787e455f4ed555b807d91c5331a376431807a9a581de1f94e538fcab4ff",
+      "bytes": 46773
+    },
+    "packages/server/src/transaction-batch.ts": {
+      "sha256": "70d941d416979edd54e250d51318cfb7e5d4ddb315ea6131de7ca5f56e98a014",
+      "bytes": 46249
+    },
+    "packages/server/src/transaction-store.ts": {
+      "sha256": "fcd6882b29e538db45867c894c06dfbaa6ca588db0c2e403ef1b7abb14f6c706",
+      "bytes": 87238
+    },
+    "packages/server/src/transaction-store.test.ts": {
+      "sha256": "7cd155ddd959ec31a207adbe6f8eb0a26f0af968a144abb58915720436bf0774",
+      "bytes": 138540
+    },
+    "packages/server/src/transaction-http.ts": {
+      "sha256": "b51d02801e5924190aba77c377e538db0b8619149d6184e19cb56d440f40c2cf",
+      "bytes": 27155
+    },
+    "packages/server/src/transaction-submission.ts": {
+      "sha256": "4336e45d7b4f90eec685b70c7ba059219954bb20271aa2c942ee9e140f0743af",
+      "bytes": 7431
+    },
+    "packages/server/src/transaction-service.ts": {
+      "sha256": "53f655faf494209996aac2e0f93a4c2c785e471f66aac6af9ea41f92c9cfbe00",
+      "bytes": 25130
+    },
+    "packages/server/src/transaction-events.ts": {
+      "sha256": "c6052433662fcb2d0a202ad4e408a24d4c43f980313fa89659501b4475790db5",
+      "bytes": 11755
+    },
+    "packages/server/src/transaction-read.ts": {
+      "sha256": "c3b486baf6b9e48d4a716d36b4162c2ba1f0c7672a6f48988192e2591eda7910",
+      "bytes": 12615
+    },
+    "packages/server/src/authority-read.ts": {
+      "sha256": "fd6554c4ee0d08b997fb3622c2f21697f02d58b838f4ae0de10aca4707f67734",
+      "bytes": 44340
+    },
+    "packages/server/src/read-pagination.ts": {
+      "sha256": "ee2462c355aec5b5c4f5fbd7b323ca6d814591c0a46c809ebb4636596e4f52f8",
+      "bytes": 31971
+    },
+    "packages/server/src/transaction-runtime.ts": {
+      "sha256": "77954f0a85029d76443feac54cd53cda4339ffc126660ace5a9f5af92466c573",
+      "bytes": 16173
+    },
+    "packages/server/src/transaction-runtime-configuration.ts": {
+      "sha256": "e594e930f845255cafc7e2f5b5b28149b7e95fe8a09052b187a492c96328f7ca",
+      "bytes": 16165
+    },
+    "packages/server/src/transaction-installed-configuration.ts": {
+      "sha256": "e15cb54266848fdd4aa08b19b37f1b2eb080f4599d9414fad8d85b6f33f35d99",
+      "bytes": 2942
+    },
+    "packages/server/src/transaction-installed-process.ts": {
+      "sha256": "6bd16f940f1f751189fc76419e3a18ca26cd5f54da3cfa3946b30c3956a2f8b7",
+      "bytes": 2630
+    },
+    "packages/server/src/installed-payload.ts": {
+      "sha256": "d1095a8fa641c77ddef32b1d432273572f46b14499c526dbb0a85cfde82113f9",
+      "bytes": 3594
+    },
+    "scripts/transaction-installed-observation.mjs": {
+      "sha256": "6f772f3776d3c3effa788676d853cc2932a6ee59ad63ac3338ad1b487408914b",
+      "bytes": 3264
+    },
+    "apps/bdptest/test-support/transactional-execution-binding.ts": {
+      "sha256": "cde506c72a8710eafe58522900f6db70ed3701cf333560252dc8e7c5e706cf89",
+      "bytes": 7378
+    },
+    "apps/bdptest/src/read-update-guarded-overlap-installed.test.ts": {
+      "sha256": "767ed468ac29347100203dbb9ff5f435ca2dfaebcad98c61158e5ed59d63a1ed",
+      "bytes": 26201
+    },
+    "apps/bdptest/src/transactional-principal-key-installed.test.ts": {
+      "sha256": "0f941001445e001f96f8c432a7099a5eb29dc4b68bc4458d6d1dfae472a3ce20",
+      "bytes": 30958
+    },
+    "pnpm-lock.yaml": {
+      "sha256": "4150d8821c96dbc2cfec0b2762ff76b58318079f65fa4f5c8858ef2dd61f8d6d",
+      "bytes": 38851
+    },
+    "vitest.config.ts": {
+      "sha256": "a84575ea9ef0b6e75b6484024a627fa89422aea2fdbeb26127e09714dba0641f",
+      "bytes": 3207
+    },
+    "packages/server/test-support/read-conformance-mock.ts": {
+      "sha256": "dbfb86ac2325c684567ffce40f17105c6b12a63edfa54cc08f0601df8dc613f8",
+      "bytes": 1409
+    },
+    "package.json": {
+      "sha256": "f081baa3202b4815663d360d3ad1608206efe1b023086a4c8feff4d7fb97d8d0",
+      "bytes": 1337
+    },
+    "biome.json": {
+      "sha256": "62beced4e0227b97fe9ade1a1a573bf53a2f8916af8da7ce70f94315fece39dc",
+      "bytes": 398
+    },
+    "packages/server/src/read-http.ts": {
+      "sha256": "31934105eff6fff8ded8ce2ca9e3c19028991ca7c3d5f51b848004177e8c9268",
+      "bytes": 8997
+    },
+    "packages/server/src/read-http-routing.ts": {
+      "sha256": "d9344b87838f8c71381ccf9efe28b4f023df45503570beb8fb4293d553caca42",
+      "bytes": 2967
+    },
+    "packages/conformance/test-support/profile-contract-plan.ts": {
+      "sha256": "18c953443e6695cfa48f89677231fecffc349df02bd080f107a5c739db10b728",
+      "bytes": 15083
+    },
+    "packages/server/src/read-request.ts": {
+      "sha256": "57675afc647df3e8ad1f26a40aef72584aa388ade6af4a465e3ffef16670f6a2",
+      "bytes": 36371
+    }
+  },
+  "meaningfulParentPinCount": 38,
+  "scope": "Relevant excerpts and recursive schema closure, not exhaustive implementation/build/package closure. Unchanged modules outside these relevant branches, dependency implementations, prior full suites and future runtime outcomes are omitted.",
+  "reviewHead": "9e5f040edab88be364f683098ead72f595f0ab55",
+  "reviewTree": "81c6786a3075f1869f54460880cac1234c27fb77",
+  "contextCommittedBase": "9bf601bfb570adae97ce8cdc99caf2cc7a2b34c1",
+  "omitted": "Unrelated snapshot/changefeed branches, prior store-test examples, package/formatter config text, other runtime branches and third-party implementations. Their meaningful hashes remain bound where applicable. Full59-definition recursive schema closure is supplied. No omitted context is assumed to prove future installed behavior."
+}

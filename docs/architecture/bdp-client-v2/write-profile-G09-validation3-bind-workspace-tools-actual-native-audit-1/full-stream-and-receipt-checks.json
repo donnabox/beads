@@ -1,0 +1,138 @@
+{
+  "actualFiles": 13,
+  "actualMirrorsExact": true,
+  "allInnerReceiptHashesExact": true,
+  "evidenceIndex": {
+    "bytes": 1184,
+    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation3-bind-workspace-tools-root-tool-evidence-1/index.json",
+    "sha256": "18ddaa14524ed65edda028a7223c4cb8b4eb70000fae7975a2e503f615f1449d"
+  },
+  "innerExit": {
+    "accepted": true,
+    "elapsedSeconds": 9.146728250198066,
+    "errors": [],
+    "exit": 0,
+    "forcedCleanup": false,
+    "logSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "remainingProcesses": [],
+    "runtimeDirectoriesStillPresent": [],
+    "sampledPids": [
+      76429,
+      76431,
+      76445,
+      76461,
+      76478,
+      76496,
+      76514,
+      76548,
+      76564,
+      76584,
+      76602,
+      76617,
+      76633,
+      76646,
+      76659,
+      76672,
+      76699,
+      76712,
+      76729,
+      76741,
+      76756,
+      76773,
+      76788,
+      76806,
+      76822,
+      76841,
+      76859,
+      76877,
+      76892,
+      76911,
+      76927,
+      76944,
+      76978,
+      76994,
+      77010,
+      77045,
+      77064,
+      77082,
+      77099,
+      77131,
+      77148,
+      77165,
+      77169,
+      77170
+    ],
+    "sourceIdentity": "f6baa7922feea80b9ae9641abc08ed79c339ff719769cc95162fe87ddc70bc65",
+    "sourceUnchanged": true,
+    "temporaryDirectory": "/private/tmp/vickie-tx-discovery-validation-bind-workspace-tools-p7ovk4lu"
+  },
+  "sampleRows": 101,
+  "started": {
+    "argv": [
+      "/opt/homebrew/opt/python@3.14/bin/python3.14",
+      "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation-preparation-3/audit.py",
+      "tools"
+    ],
+    "automaticRetries": 0,
+    "cwd": "/Users/dbox/repos/wt/vickie/vickie-schema-minimum",
+    "head": "cce884ccea1db97cbc6fd7bff876d4d6091f9081",
+    "npmCache": "/private/tmp/vickie-tx-discovery-validation-bind-workspace-tools-p7ovk4lu/npm-cache",
+    "outerSeconds": 120,
+    "overrides": {},
+    "rootGateSha256": "9088a3b9616271f3b5db19568b5b4fab2a49fceb3770359a60698582c5f00681",
+    "sourceIdentity": "f6baa7922feea80b9ae9641abc08ed79c339ff719769cc95162fe87ddc70bc65",
+    "temporaryDirectory": "/private/tmp/vickie-tx-discovery-validation-bind-workspace-tools-p7ovk4lu",
+    "tree": "6757829bd5b700faf28df39071190a272add90c9"
+  },
+  "stdoutEqualsEntireInnerExitJSON": true,
+  "streams": [
+    {
+      "actualFileIdentityMatches": true,
+      "mode": "0600",
+      "pin": {
+        "bytes": 785,
+        "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation3-root-first4-dispatch-1/bind-workspace-tools/bind-workspace-tools.stdout",
+        "sha256": "c0f406cde67ef121ac42ceca9d76c2ba8ef8d17ce63ef458932904ec2234e970"
+      },
+      "receivedSavedHashedFstatEqual": true,
+      "sourceReceiptEOFAndClose": true,
+      "uid": 501
+    },
+    {
+      "actualFileIdentityMatches": true,
+      "mode": "0600",
+      "pin": {
+        "bytes": 0,
+        "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation3-root-first4-dispatch-1/bind-workspace-tools/bind-workspace-tools.stderr",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "receivedSavedHashedFstatEqual": true,
+      "sourceReceiptEOFAndClose": true,
+      "uid": 501
+    },
+    {
+      "actualFileIdentityMatches": true,
+      "mode": "0600",
+      "pin": {
+        "bytes": 205655,
+        "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation3-root-first4-dispatch-1/bind-workspace-tools/postterminal-census.stdout",
+        "sha256": "078a3f169a3c46c13a342b756bf2e5a0407278515a77e821bd853fdecdaa488d"
+      },
+      "receivedSavedHashedFstatEqual": true,
+      "sourceReceiptEOFAndClose": true,
+      "uid": 501
+    },
+    {
+      "actualFileIdentityMatches": true,
+      "mode": "0600",
+      "pin": {
+        "bytes": 0,
+        "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation3-root-first4-dispatch-1/bind-workspace-tools/postterminal-census.stderr",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "receivedSavedHashedFstatEqual": true,
+      "sourceReceiptEOFAndClose": true,
+      "uid": 501
+    }
+  ]
+}

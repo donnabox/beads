@@ -1,0 +1,265 @@
+{
+  "at": "2026-10-15T06:50:06.200624+00:00",
+  "accepted": true,
+  "sourceBindingSha256": "ecc0ceea2ca3eed4f8acf2638dacc315b0c63235f7c266b2689f71dcc0962d47",
+  "guardsUnchanged": {
+    "manifestDisk": 742879,
+    "manifestNormal": 754685,
+    "manifestNodes": 19639,
+    "coverageBytes": 109115,
+    "derivativeNormal": 760803,
+    "derivativeNodes": 19795
+  },
+  "canonicalActual": {
+    "disk": 738624,
+    "normal": 750430,
+    "nodes": 19570,
+    "coverage": 108139
+  },
+  "derivatives": [
+    {
+      "name": "effects-zero-results.json",
+      "normalBytes": 750430,
+      "nodes": 19570,
+      "sha256": "6d81908ecc55eb7a92c49060c5a8ca5e07315d6ce31c457b20a0258868d1379e"
+    },
+    {
+      "name": "duplicate-receipt-binding.json",
+      "normalBytes": 750625,
+      "nodes": 19575,
+      "sha256": "e036b2fa85d93a443a3cb39f8dfac23cb2a30762b729d3ac3bca892363e571fd"
+    },
+    {
+      "name": "set-order.json",
+      "normalBytes": 750430,
+      "nodes": 19570,
+      "sha256": "76e6a1d17fea6a2d92b3beeed5060bbac80a2cedbed2d8b2e1eb674a0f59c5c7"
+    },
+    {
+      "name": "conflict-event.json",
+      "normalBytes": 750430,
+      "nodes": 19570,
+      "sha256": "84721eab910a237c5d2f01a0d6a786374e1d60ffc9bd3e662cec8661a04ab68e"
+    },
+    {
+      "name": "cross-wired-receipt.json",
+      "normalBytes": 749708,
+      "nodes": 19549,
+      "sha256": "287621e12d697f668ba48965b4f9944aa5915ba0b7a58ff0dcb5f28319989d64"
+    },
+    {
+      "name": "ordinary-capture.json",
+      "normalBytes": 750631,
+      "nodes": 19575,
+      "sha256": "bc67542e29d9389e3821e7f44c16be18ea6a295dcb9f4e52ebb2a687bad2c52a"
+    },
+    {
+      "name": "cross-sequence-fresh-key.json",
+      "normalBytes": 751784,
+      "nodes": 19606,
+      "sha256": "64c814c1f0188af65b503d0072976ba72fab1e1d63016cd0138afc1b19bdcd6e"
+    },
+    {
+      "name": "pagination-page-parent.json",
+      "normalBytes": 750462,
+      "nodes": 19570,
+      "sha256": "0204b55dd6e12f97adc5216bbe5da6eb2047c6f6988c4255fa1a025276af30be"
+    },
+    {
+      "name": "pagination-root-next.json",
+      "normalBytes": 750419,
+      "nodes": 19570,
+      "sha256": "1b3265da08d1469453721f621265569fc3c8b045eea95a9f5735952101d365c5"
+    },
+    {
+      "name": "pagination-historical-title.json",
+      "normalBytes": 750428,
+      "nodes": 19570,
+      "sha256": "45d144063a2a25d18e3039c1af899d9f5a357809069eca8da83103c1cd30f3be"
+    },
+    {
+      "name": "receipt-body-assertion.json",
+      "normalBytes": 749747,
+      "nodes": 19549,
+      "sha256": "6ab15cb8d3d259669e2e7631ab0df89e242499319aed7bef84649694967debe3"
+    },
+    {
+      "name": "receipt-credential.json",
+      "normalBytes": 750469,
+      "nodes": 19571,
+      "sha256": "c3da287fbfe50d97ea26e32ee0ec72b97ad737a46ac6a52ebfd9b0179207cb4a"
+    },
+    {
+      "name": "deletion-incoming-order.json",
+      "normalBytes": 756548,
+      "nodes": 19726,
+      "sha256": "3f1ceaa0c9ae24b6f152b406418f06f4b0c5eaf2a46fd0286d9f06db36c574ae"
+    },
+    {
+      "name": "effects-event-order.json",
+      "normalBytes": 750430,
+      "nodes": 19570,
+      "sha256": "8d1d5fca3bd9e6c50f1a9ed0c8c4b47438952818ac92dd8231bab625e3a4a47c"
+    },
+    {
+      "name": "conflict-reopened-status.json",
+      "normalBytes": 750430,
+      "nodes": 19570,
+      "sha256": "11e3f9f84843f3f99294e39f709b2d007ae25dbf8ef3cc50e030faa747d9898c"
+    },
+    {
+      "name": "effects-rollback-metadata.json",
+      "normalBytes": 750443,
+      "nodes": 19570,
+      "sha256": "5c3379d60218251a5ed7703fc46e08feffca983821dd7791674e3e3de33ac579"
+    },
+    {
+      "name": "set-index.json",
+      "normalBytes": 750430,
+      "nodes": 19570,
+      "sha256": "73f1428bc753a4d47b248196501ffebf143bddb376176b4eee4589b3cc3d75af"
+    },
+    {
+      "name": "noop-bead-property.json",
+      "normalBytes": 750438,
+      "nodes": 19570,
+      "sha256": "149a59538afb4a3c1efd04681ae34ed07737513d43ea255ca277d403050eb0d7"
+    },
+    {
+      "name": "conflict-code.json",
+      "normalBytes": 750427,
+      "nodes": 19570,
+      "sha256": "fbdc92ffad03fcf6c678e72eb5016d18269eb84e92c4d7e0f03529e76b1330c0"
+    },
+    {
+      "name": "set-poststate.json",
+      "normalBytes": 750437,
+      "nodes": 19570,
+      "sha256": "324bbb2e328844419cda95eef41430a1d6a0d1629149b11211e881596b3c71e4"
+    },
+    {
+      "name": "conflict-current-record.json",
+      "normalBytes": 750430,
+      "nodes": 19570,
+      "sha256": "dc1242a79ad597e9064b34f870fccb745b35bd3c2a5238c6f55116aba69e447b"
+    },
+    {
+      "name": "effects-no-effect.json",
+      "normalBytes": 750429,
+      "nodes": 19570,
+      "sha256": "29726cc604d409d3949ec3272dad3101257a9b119601418406fc32ee63750c0f"
+    },
+    {
+      "name": "deletion-outgoing-order.json",
+      "normalBytes": 756548,
+      "nodes": 19726,
+      "sha256": "d750ae41c11a81726ba53831e27f655fe04877399814ff5cb4a8b98a849d8308"
+    },
+    {
+      "name": "forbidden-receipt-use.json",
+      "normalBytes": 751140,
+      "nodes": 19590,
+      "sha256": "3d5de8c2b52103492c87ec935453ac0a58144805d3d845cc5c5f6a7cbea77794"
+    },
+    {
+      "name": "pagination-terminal-next.json",
+      "normalBytes": 750484,
+      "nodes": 19570,
+      "sha256": "6d5c410b02e2b22a8079918a078fb3d866597a5d12f86c885917ce61eeadd10a"
+    },
+    {
+      "name": "deletion-committed-prefix-state.json",
+      "normalBytes": 753534,
+      "nodes": 19647,
+      "sha256": "d696209feb46c0f1841f3638162f61581b2de7b7af331c609f87f9d55dff4dc8"
+    },
+    {
+      "name": "cross-batch-semantic-conflict.json",
+      "normalBytes": 751771,
+      "nodes": 19607,
+      "sha256": "3be5ad2d33d4b50412f1343d36e4b4bd4acde71e60d9bb577b2f05a1e00a1d53"
+    },
+    {
+      "name": "pagination-page-member.json",
+      "normalBytes": 750430,
+      "nodes": 19570,
+      "sha256": "917c44255be1e3beb74acee3943d7e1748165518a03268bf5b931c396cc0e984"
+    },
+    {
+      "name": "receipt-binding.json",
+      "normalBytes": 750423,
+      "nodes": 19570,
+      "sha256": "56dfb4ffc523342be5b3ead74e41341ac36e4455dbc9fa906a7b4a3abf6b147a"
+    },
+    {
+      "name": "minimum-batch-body-conflict.json",
+      "normalBytes": 750437,
+      "nodes": 19570,
+      "sha256": "76228beffb8ad856916d0fee52dc06b66b20944399d1ff8568fe5731f0e27dc9"
+    },
+    {
+      "name": "effects-changed-poststate.json",
+      "normalBytes": 750437,
+      "nodes": 19570,
+      "sha256": "35dcc29165fc19793621a685b3ef2465c7c1521faa6ad9db6dfe6ccaee1ba7d5"
+    },
+    {
+      "name": "set-matched.json",
+      "normalBytes": 750430,
+      "nodes": 19570,
+      "sha256": "38c7033478eb99d4dedbd6cd97be8b07e64d1407cc44570652118595bbd55719"
+    },
+    {
+      "name": "noop-link-metadata.json",
+      "normalBytes": 750451,
+      "nodes": 19570,
+      "sha256": "68f1e44b664781dcbfcebb26c522a11dd62bfa87db8adb9431704da2650eeb1a"
+    },
+    {
+      "name": "effects-zero-events.json",
+      "normalBytes": 750576,
+      "nodes": 19574,
+      "sha256": "22d3098eb600d8050c42b00eae3afd0ef46c4ec2ecb0c6463370b8d6e45102a0"
+    },
+    {
+      "name": "conflict-retained-body.json",
+      "normalBytes": 750417,
+      "nodes": 19570,
+      "sha256": "b6f672558e4d6d331240271ef039f42893f31f71c5916ad3aff838137462042c"
+    },
+    {
+      "name": "minimum-readonly-credential.json",
+      "normalBytes": 750428,
+      "nodes": 19570,
+      "sha256": "a7f9be255ce7b551d5b97622e7edb2c1e942e77c3beb9bf02d630aa85e6a5e78"
+    },
+    {
+      "name": "effects-receipt-order.json",
+      "normalBytes": 750430,
+      "nodes": 19570,
+      "sha256": "a0536c0d8ed9049375c81e409ffda25eb777dd5ecb8e70d638c58cf62cdcc449"
+    },
+    {
+      "name": "noop-group-inventory-and-head.json",
+      "normalBytes": 750493,
+      "nodes": 19572,
+      "sha256": "a90fdd035d1737bbd7101667042424509d52903476b04efd81230edd078c1384"
+    },
+    {
+      "name": "pagination-inline-boundary.json",
+      "normalBytes": 750430,
+      "nodes": 19570,
+      "sha256": "56aa6e2501277e1aad77df48c12f38a78830242ba220f872f07eaf06d52da5fa"
+    },
+    {
+      "name": "receipt-method.json",
+      "normalBytes": 750431,
+      "nodes": 19570,
+      "sha256": "b9e1a040d1ee23032fb222f9b1e94510b47dbbb6e240870732df85abadbbd224"
+    }
+  ],
+  "maxDerivativeBytes": 756548,
+  "maxDerivativeNodes": 19726,
+  "limits": "No runtime/wire/time/CI changes. New arithmetic proposals in author measurement are not applied; approved guards remain.",
+  "executed": "Read-only JSON/hash/count measurements only; no tests or service."
+}

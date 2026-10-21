@@ -1,0 +1,72 @@
+Reviewed the plan against `39c160d` / tree `75e8fb9` (both confirmed via `git cat-file -p HEAD`). Read-only; no files written, no tests/builds run.
+
+## Anchor verification
+
+All cited anchors resolve to the claimed constructs. Spec: `bdp.md:5766–5774` (heading 5766, "Transactional Scope-bounded responses carry:" 5768, field block 5770–5774); `4490–4530` admission order steps 1–6 with "Every refusal above creates no receipt and binds no key" at 4525; `3930–3936`; `5233–5244`. Source: `transaction-service.ts:499–517` passes `observed=true` and returns non-receipt results unchanged; `transaction-store.ts:1384–1396`, `1065–1079`, `1392`; `transaction-submission.ts:120–130`; `transaction-http.ts:346–364`. Tests: `transaction-store.test.ts:3031` is exactly the `DatabaseSync.prototype.prepare` + `isTransaction` spy pattern (and the file's last test); `transaction-submission.test.ts:154`/`169` are the conflict-before-negotiation and fresh-capacity cases; `transaction-http.test.ts:248` is the wire-level 409/413/406 precedence test.
+
+Installed step 7 feasibility checks out: `prepareTransaction`/`prepareTransactionSetCore` apply no operation-count cap (the 32 cap is on `prepareTransactionSequence`, `transaction-batch.ts:238`, and witness envelopes at `:346`), `requestBodyBytes` is 64 KiB, and `transaction-installed.ts:8` calls `startTransactionRuntime(captured)` with no seams, so `maximumOperations` is the 32 default. A 33-operation batch reaches `admitKey` and returns `operation-limit`.
+
+---
+
+## Required
+
+**1. The 413 `limit-exceeded` shares one `problem()` sink with five excluded dispositions.**
+*Location:* `transaction-http.ts:359–362`; `transaction-submission.ts:69, 84, 88, 91, 93, 122–137`. Plan line 27.
+*Impact:* The seam has only two exits for every `refused` result: the 409 special case at 350–358 and the single fallback `problem({...readProblem(result.code), ...})` at 359–362. `request-too-large` (413, returned at `transaction-submission.ts:69` before the store is ever entered), `malformed-request` (400), `unauthenticated` (401), `forbidden` (403) and `temporarily-unavailable` (503) all leave through that same call. Applying `context(...)` there, or making context a required member of the shared `refused` variant, either attaches context to the dispositions the plan explicitly defers (auth nondisclosure, comparison 503) or makes `request-too-large` unsatisfiable. Note both 413s carry status 413, so status is not a usable discriminator.
+*Concrete fix:* Require the fallback to branch on `result.code === "limit-exceeded"` (equivalently `result.limit === "transaction.operations"`), never on status. Keep the context member optional on the shared `refused` variant and enforce presence with a code-specific throw mirroring the existing `existing receipt lost same-entry context` guard at `transaction-submission.ts:139–142`, rather than by a required type member.
+
+**2. The focused-test gate under-covers the unobserved-shape regression surface.**
+*Location:* Plan line 81 vs. `store.admit` assertions.
+*Impact:* Exact `toEqual({kind:"conflict"|"operation-limit"|"not-acceptable"})` assertions on the unobserved `store.admit` path: `transaction-store.test.ts` 18, `transaction-submission.test.ts` 8, `transaction-dependencies.test.ts` 3, `transaction-sequence-alias.test.ts` 3, `transaction-set.test.ts` 2, `transaction-owned.test.ts` 1. The plan correctly requires preserving unobserved shapes (lines 25, 26, 47), but the gate names only "focused owner/submission/HTTP tests" — missing 9 assertions across 4 files that are the actual tripwire for a context leak into `store.admit`.
+*Concrete fix:* Name `transaction-dependencies.test.ts`, `transaction-sequence-alias.test.ts`, `transaction-set.test.ts` and `transaction-owned.test.ts` in the gate, or require the whole `packages/server` suite. Add a §Sensitivity control: removing the `observed` gate on the capture must fail those named exact-equality assertions.
+
+**3. The existing-receipt 406 branch has no `observed` discriminator today.**
+*Location:* `transaction-store.ts:1391–1393`. Plan line 25.
+*Impact:* `if (result.kind === "existing") { if (!receiving.acceptsJson) return { kind: "not-acceptable" }; if (observed) return {...observeReceipt(...)} }` — the 406 early return precedes the `observed` check and is reached identically by unobserved `admit` callers. An implementer following line 25's "Handle the existing-receipt406 branch too" literally adds context unconditionally and breaks `transaction-submission.test.ts:162` and the files in finding 2.
+*Concrete fix:* State that both 406 exits — `store.ts:1392` and the fresh `admitKey` result at `:1084` flowing through `:1395` — must be gated on `admit`'s `observed` parameter, and that this gate is precisely why the unobserved shapes survive.
+
+**4. The three-file ownership boundary holds only if the new context members are optional.**
+*Location:* `transaction-store.ts:121–138`; `transaction-comparison.ts:10–12, 16–23`; `transaction-service.ts:47–49`. Plan line 29.
+*Impact:* `TransactionAdmission` already carries `context?: TransactionReadContext` on the `existing` variant only (`store.ts:126`). Both `DirectComparison` (`comparison.ts:10–12`) and the structural `admit` parameter type (`comparison.ts:17–22`) reference `TransactionReceivingAdmission`, and `TransactionServiceSubmissionResult` is derived from `TransactionSubmissionResult`. Adding *optional* members to the conflict/operation-limit/not-acceptable variants leaves comparison and service untouched, as the plan claims. Introducing a separate observed-admission type instead forces edits to `comparison.ts:10–23`, which the plan's own rule (line 29) would then treat as a stop-and-report ownership expansion.
+*Concrete fix:* Make the optional-member constraint normative in points 4–5 and name those two type sites, so the implementer does not reach for a new observed admission type and then re-open the ownership question.
+
+**5. The `isTransaction` control is sound only at the owner level, and will misfire if lifted.**
+*Location:* `transaction-store.ts:407–411, 1713`; `transaction-comparison.ts:45`; `transaction-store.test.ts:3036–3044`. Plan lines 47, 50.
+*Impact:* `metadata()` issues the same SQL for position and epoch, and the existing spy keys on that string. Inside `admitObserved` only position is read (epoch and view are open-time constants used at `store.ts:588–589`), so the control is valid there. But `comparisonEpoch` (`store.ts:1713`) reads `metadata("epoch")` inside `enter` and *outside* `atomic`, and the comparison loop calls it before every attempt. Reusing the same spy in the submission- or HTTP-level tests the plan proposes would fail on `isTransaction === false` for the epoch read — a false negative, not a defect.
+*Concrete fix:* Scope the `isTransaction` assertion to the owner-level `admitObserved` tests explicitly. If a submission-level variant is wanted, filter the spy by bound parameter (`name === "position"`) rather than by SQL text.
+
+---
+
+## Optional
+
+**6. "Exact law" omits the two citations that actually carry the bodyless-406 leg.**
+*Location:* Plan lines 13–16; `bdp.md:1947–1951`, `~1985–1989`, `~5805–5807`, `6919`.
+*Impact:* The plan rests 406 on 5768 alone, while `bdp.md:4526` says "Apart from the HTTP-native bodyless `406`, these are direct problems" — the obvious objection, unanswered. The answer is already in the spec and uncited: `1949` constrains only the 406's "BDP problem code, family, or retry member"; the conditional-reads rule pairs "MUST be bodyless and MUST NOT carry a BDP Problem body" with "Applicable cache fields remain required"; and Transactional conditional reads states "Required current Scope context remains required on 304 and 412 responses" — a bodyless, problem-less response that still must carry current Scope context. Separately, catalog row `transactional.changefeed.consistency-fields` (`6919`) states "Scope-bounded responses carry epoch, view, and position" in catalog language, though filed under the changefeed group.
+*Concrete fix:* Add those citations plus one sentence that bodylessness suppresses the Problem body, not the required context tuple. State whether 6919 is read as general or changefeed-scoped; the "no catalog changes" claim depends on the latter.
+
+**7. Existing installed Transactional 409 coverage is unacknowledged.**
+*Location:* `apps/bdptest/src/transactional-alias-installed.test.ts:166–193, 372–379`. Plan lines 52–56.
+*Impact:* That cohort already drives a real installed 409 `idempotency-conflict` over raw HTTP through an `exchange(relative, input, key, status, schemaName)` helper that already takes the expected status and the `transactionalProblem` schema name — the shape the plan proposes to build fresh. Root is being asked to fund a new 14-request child without being told comparable installed machinery exists. (I confirmed the 406/409/413 coverage in `development-server.test.ts:845–912` and `development-discovery.test.ts:306–332` is Read+Update — `startDevelopmentReferenceServer` → `development.ts` → `development-runtime.ts`, which imports none of transaction-store/submission/http — so it is correctly out of scope, and `bdp.md:3563` forbids context there. The plan never states this, and it is a reasonable blast-radius question for root.)
+*Concrete fix:* Add one line naming `transactional-alias-installed.test.ts:372–379` as existing installed 409 coverage, confirming it is left unchanged and why it cannot carry the pos-N ≠ `effectPosition` discriminator or the non-binding proof. Add one line confirming the Read+Update server does not traverse this seam.
+
+**8. Four line anchors are off by one to two lines.**
+*Location/fix:* line 22 `transaction-submission.ts:101–118` → `102–118` (101 is the `if (!prepared) throw`); line 23 `transaction-comparison.ts:47–54` → `49–53` (47–48 is a comment); line 24 `:1081–1086` → `1082–1084` (1081 is a comment, 1085–1086 begins receipt construction); line 25 `transaction-store.ts:583–594` → `583–592` (593–594 is the next function's doc comment).
+
+**9. "cache/Vary" preservation is not a property of the named seam.**
+*Location:* Plan line 27; `transaction-http.ts:589–590`, `79–88`, `114–118`.
+*Impact:* `vary: Accept` is set for every POST at `:590`, and `cache-control: private, no-store` comes from `empty()`/`jsonResponse` — both outside 346–364. `context()` sets only the three fields and cannot disturb either. Listing them as seam obligations is imprecise and could send an implementer looking for code that is not there.
+*Concrete fix:* Drop them, or note they are applied at `:590` and by `empty()`/`jsonResponse` and are therefore unaffected.
+
+**10. "After the final refusal kind is selected" is unenforceable by the proposed controls.**
+*Location:* Plan lines 25, 50.
+*Impact:* For a refusal nothing inside the atomic advances position, so capture-before-`admitKey` and capture-after are observationally identical; none of the three sensitivity controls separates them. The real reason to capture after selection is to avoid a position read on the `owned` and unobserved paths.
+*Concrete fix:* Restate as "only on the selected observed refusal kinds, so `owned` and unobserved admissions issue no extra position read" — checkable by the existing prepare-counting spy at `transaction-store.test.ts:3036–3044`.
+
+**11. Recurring suite cost of the new installed file is unbudgeted.**
+*Location:* `vitest.config.ts` `include: ["apps/**/*.test.ts"]`; `transactional-set-installed.test.ts:22–25`. Plan line 75.
+*Impact:* The proposed file is auto-collected with no registry edit, which supports the plan's "no conformance manifest or coverage changes" claim — but it also means its child launch and 90s/120s timeouts run on every subsequent `pnpm test`, and it hard-requires `packages/server/dist/transaction-installed-process.js` (default path or `BDP_TRANSACTIONAL_INSTALLED_ENTRY`). The budget section frames cost per cohort/observation only.
+*Concrete fix:* Add one line stating the recurring whole-suite cost and the dist-entry build precondition.
+
+---
+
+Not examined, per your scoping: minimum tuple/precedence decisions, auth nondisclosure, comparison 503, and any `transaction-http.ts`/`transaction-http.test.ts` conflict authoring against the frozen SSE/PR116 work.

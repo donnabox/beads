@@ -1,0 +1,24 @@
+{
+  "ReadEvidence": "Raw0 existing bound Read only; raw2 explicit no-claim failclosed. Neither qualifies Write/RU/TX.",
+  "afterLocalRootAcceptance": [
+    {
+      "argv": [
+        "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+        "/Users/dbox/.cache/node/corepack/v1/pnpm/11.20.0/bin/pnpm.cjs",
+        "run",
+        "test"
+      ],
+      "status": "UNRESOLVED separate reviewed root supervision/collection/caps before execution; not silently given120s all-suite cap"
+    },
+    {
+      "exactCI": "UNRESOLVED future committed exact tested bytes; root publication authorized separately; all required CI steps must actually complete"
+    }
+  ],
+  "localRequired": [
+    "required-check-boundaries",
+    "required-e2e-ready-preflight",
+    "required-smoke",
+    "required-evidence-verify"
+  ],
+  "stockSmokeConsumer": "Separate stock smoke consumer does not substitute for these three callbacks external consumer proof"
+}

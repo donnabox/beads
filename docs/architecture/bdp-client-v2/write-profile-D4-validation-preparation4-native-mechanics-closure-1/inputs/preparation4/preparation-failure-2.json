@@ -1,0 +1,9 @@
+{
+  "stage": "resumed static AST call comparison",
+  "exception": "AssertionError before receiver diagnostics",
+  "erratumToFailure1": "Actual first assertion was run.py call list equality; authorized deadline expression adds two pure min calls, while process/signal/clock/query calls stay unchanged. Failure1 initially attributed receiver comparison too narrowly; its bytes preserved. gate.py receiver differs intentionally as well.",
+  "correction": "Inspect exact call multisets and protected call sequence; allow only two new pure min plus one audit need predicate and the single intentional gate receiver expression",
+  "sourceChangedByCorrection": false,
+  "helpersEvaluated": false,
+  "indicesOrGateWritten": false
+}

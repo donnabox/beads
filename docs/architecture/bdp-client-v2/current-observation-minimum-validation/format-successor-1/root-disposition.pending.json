@@ -1,0 +1,13 @@
+{
+  "accepted": false,
+  "sourceBindingSha256": "97f121161739d912d91c4150a2a59fce73fa7304e5883b9ab8cca5e94644a615",
+  "dependencyInstallAuthorized": false,
+  "bootstrapReuseAccepted": false,
+  "bootstrapReuseBinding": {
+    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/current-observation-minimum-validation/format-successor-1/bootstrap-reuse-binding.json",
+    "sha256": "4309172a57abb291cc2b5a65e5e124431998916e99d3341f55932292855f0eb6"
+  },
+  "staticValidationAuthorized": false,
+  "runtimeValidationAuthorized": false,
+  "reason": "Native format closure and completed CODE/F1/F2 dispositions are pinned; root must accept this exact source transition, actual tools and bootstrap-only reuse, then release fresh stages. No original typecheck or failed format is a successor pass."
+}

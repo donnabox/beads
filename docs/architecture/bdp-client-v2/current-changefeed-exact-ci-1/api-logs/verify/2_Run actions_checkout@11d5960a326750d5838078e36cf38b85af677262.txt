@@ -1,0 +1,426 @@
+﻿2026-10-18T05:11:29.2838044Z ##[group]Run actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+2026-10-18T05:11:29.2839783Z with:
+2026-10-18T05:11:29.2840702Z   fetch-depth: 0
+2026-10-18T05:11:29.2841630Z   repository: gastownhall/bdp
+2026-10-18T05:11:29.2850244Z   token: ***
+2026-10-18T05:11:29.2851185Z   ssh-strict: true
+2026-10-18T05:11:29.2852068Z   ssh-user: git
+2026-10-18T05:11:29.2853033Z   persist-credentials: true
+2026-10-18T05:11:29.2853999Z   clean: true
+2026-10-18T05:11:29.2855334Z   sparse-checkout-cone-mode: true
+2026-10-18T05:11:29.2856440Z   fetch-tags: false
+2026-10-18T05:11:29.2857350Z   show-progress: true
+2026-10-18T05:11:29.2858285Z   lfs: false
+2026-10-18T05:11:29.2859180Z   submodules: false
+2026-10-18T05:11:29.2860117Z   set-safe-directory: true
+2026-10-18T05:11:29.2861187Z   allow-unsafe-pr-checkout: false
+2026-10-18T05:11:29.2862436Z ##[endgroup]
+2026-10-18T05:11:29.3832356Z Syncing repository: gastownhall/bdp
+2026-10-18T05:11:29.3836000Z ##[group]Getting Git version info
+2026-10-18T05:11:29.3837331Z Working directory is '/home/runner/work/bdp/bdp'
+2026-10-18T05:11:29.3839463Z [command]/usr/bin/git version
+2026-10-18T05:11:29.3905101Z git version 2.55.0
+2026-10-18T05:11:29.3926498Z ##[endgroup]
+2026-10-18T05:11:29.3946367Z Temporarily overriding HOME='/home/runner/work/_temp/41cc6aeb-0b9f-4473-98dc-6c41520ce0b4' before making global git config changes
+2026-10-18T05:11:29.3957690Z Adding repository directory to the temporary git global config as a safe directory
+2026-10-18T05:11:29.3961321Z [command]/usr/bin/git config --global --add safe.directory /home/runner/work/bdp/bdp
+2026-10-18T05:11:29.4023435Z Deleting the contents of '/home/runner/work/bdp/bdp'
+2026-10-18T05:11:29.4026696Z ##[group]Initializing the repository
+2026-10-18T05:11:29.4028731Z [command]/usr/bin/git init /home/runner/work/bdp/bdp
+2026-10-18T05:11:29.4137697Z hint: Using 'master' as the name for the initial branch. This default branch name
+2026-10-18T05:11:29.4139765Z hint: will change to "main" in Git 3.0. To configure the initial branch name
+2026-10-18T05:11:29.4141620Z hint: to use in all of your new repositories, which will suppress this warning,
+2026-10-18T05:11:29.4143224Z hint: call:
+2026-10-18T05:11:29.4144063Z hint:
+2026-10-18T05:11:29.4145419Z hint: 	git config --global init.defaultBranch <name>
+2026-10-18T05:11:29.4146993Z hint:
+2026-10-18T05:11:29.4148134Z hint: Names commonly chosen instead of 'master' are 'main', 'trunk' and
+2026-10-18T05:11:29.4149816Z hint: 'development'. The just-created branch can be renamed via this command:
+2026-10-18T05:11:29.4151170Z hint:
+2026-10-18T05:11:29.4152026Z hint: 	git branch -m <name>
+2026-10-18T05:11:29.4152902Z hint:
+2026-10-18T05:11:29.4154152Z hint: Disable this message with "git config set advice.defaultBranchName false"
+2026-10-18T05:11:29.4159801Z Initialized empty Git repository in /home/runner/work/bdp/bdp/.git/
+2026-10-18T05:11:29.4168107Z [command]/usr/bin/git remote add origin https://github.com/gastownhall/bdp
+2026-10-18T05:11:29.4233083Z ##[endgroup]
+2026-10-18T05:11:29.4235148Z ##[group]Disabling automatic garbage collection
+2026-10-18T05:11:29.4237254Z [command]/usr/bin/git config --local gc.auto 0
+2026-10-18T05:11:29.4262245Z ##[endgroup]
+2026-10-18T05:11:29.4264979Z ##[group]Setting up auth
+2026-10-18T05:11:29.4268826Z [command]/usr/bin/git config --local --name-only --get-regexp core\.sshCommand
+2026-10-18T05:11:29.4300546Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'core\.sshCommand' && git config --local --unset-all 'core.sshCommand' || :"
+2026-10-18T05:11:29.4702393Z [command]/usr/bin/git config --local --name-only --get-regexp http\.https\:\/\/github\.com\/\.extraheader
+2026-10-18T05:11:29.4737386Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'http\.https\:\/\/github\.com\/\.extraheader' && git config --local --unset-all 'http.https://github.com/.extraheader' || :"
+2026-10-18T05:11:29.4924405Z [command]/usr/bin/git config --local --name-only --get-regexp ^includeIf\.gitdir:
+2026-10-18T05:11:29.4955621Z [command]/usr/bin/git submodule foreach --recursive git config --local --show-origin --name-only --get-regexp remote.origin.url
+2026-10-18T05:11:29.5127222Z [command]/usr/bin/git config --local http.https://github.com/.extraheader AUTHORIZATION: basic ***
+2026-10-18T05:11:29.5158024Z ##[endgroup]
+2026-10-18T05:11:29.5159695Z ##[group]Fetching the repository
+2026-10-18T05:11:29.5166861Z [command]/usr/bin/git -c protocol.version=2 fetch --prune --no-recurse-submodules origin +refs/heads/*:refs/remotes/origin/* +refs/tags/*:refs/tags/*
+2026-10-18T05:11:30.8897202Z From https://github.com/gastownhall/bdp
+2026-10-18T05:11:30.8898843Z  * [new branch]      aliases              -> origin/aliases
+2026-10-18T05:11:30.8899479Z  * [new branch]      attribution          -> origin/attribution
+2026-10-18T05:11:30.8900447Z  * [new branch]      claude/janet-type-cli-seam-tracking-20261011 -> origin/claude/janet-type-cli-seam-tracking-20261011
+2026-10-18T05:11:30.8901572Z  * [new branch]      codex/iris-bdp-batch-subsets-proposal -> origin/codex/iris-bdp-batch-subsets-proposal
+2026-10-18T05:11:30.8902500Z  * [new branch]      codex/iris-bdp-interchange-proposal -> origin/codex/iris-bdp-interchange-proposal
+2026-10-18T05:11:30.8903428Z  * [new branch]      codex/iris-bdp-lifecycle-events-proposal -> origin/codex/iris-bdp-lifecycle-events-proposal
+2026-10-18T05:11:30.8904375Z  * [new branch]      codex/janet-alias-final-20260914 -> origin/codex/janet-alias-final-20260914
+2026-10-18T05:11:30.8905546Z  * [new branch]      codex/janet-authority-identity-publish -> origin/codex/janet-authority-identity-publish
+2026-10-18T05:11:30.8906747Z  * [new branch]      codex/janet-authority-identity-release -> origin/codex/janet-authority-identity-release
+2026-10-18T05:11:30.8907676Z  * [new branch]      codex/janet-bdp-demo-20260917 -> origin/codex/janet-bdp-demo-20260917
+2026-10-18T05:11:30.8908687Z  * [new branch]      codex/janet-bdp-history-client-20260920 -> origin/codex/janet-bdp-history-client-20260920
+2026-10-18T05:11:30.8909690Z  * [new branch]      codex/janet-bdp-spec-sync-20261006 -> origin/codex/janet-bdp-spec-sync-20261006
+2026-10-18T05:11:30.8910660Z  * [new branch]      codex/janet-client-read-publish -> origin/codex/janet-client-read-publish
+2026-10-18T05:11:30.8911634Z  * [new branch]      codex/janet-dynamic-read-kernel-20260911 -> origin/codex/janet-dynamic-read-kernel-20260911
+2026-10-18T05:11:30.8912584Z  * [new branch]      codex/janet-dynamic-read-plane-20260911 -> origin/codex/janet-dynamic-read-plane-20260911
+2026-10-18T05:11:30.8913505Z  * [new branch]      codex/janet-dynamic-read-publish-20260911 -> origin/codex/janet-dynamic-read-publish-20260911
+2026-10-18T05:11:30.8914776Z  * [new branch]      codex/janet-dynamic-read-release-20260911 -> origin/codex/janet-dynamic-read-release-20260911
+2026-10-18T05:11:30.8915918Z  * [new branch]      codex/janet-dynamic-read-s5-bridge-20260911 -> origin/codex/janet-dynamic-read-s5-bridge-20260911
+2026-10-18T05:11:30.8917169Z  * [new branch]      codex/janet-dynamic-read-s5-bridge-correction-20260911 -> origin/codex/janet-dynamic-read-s5-bridge-correction-20260911
+2026-10-18T05:11:30.8918686Z  * [new branch]      codex/janet-dynamic-read-s5-bridge-publish-20260911 -> origin/codex/janet-dynamic-read-s5-bridge-publish-20260911
+2026-10-18T05:11:30.8920049Z  * [new branch]      codex/janet-dynamic-read-s5-bridge-release-20260911 -> origin/codex/janet-dynamic-read-s5-bridge-release-20260911
+2026-10-18T05:11:30.8921384Z  * [new branch]      codex/janet-dynamic-read-s5-bridge-source-council-20260911 -> origin/codex/janet-dynamic-read-s5-bridge-source-council-20260911
+2026-10-18T05:11:30.8922655Z  * [new branch]      codex/janet-dynamic-read-source-correction-20260911 -> origin/codex/janet-dynamic-read-source-correction-20260911
+2026-10-18T05:11:30.8923480Z  * [new branch]      codex/janet-history-packet -> origin/codex/janet-history-packet
+2026-10-18T05:11:30.8924138Z  * [new branch]      codex/janet-history-publish -> origin/codex/janet-history-publish
+2026-10-18T05:11:30.8925873Z  * [new branch]      codex/janet-installed-contract-artifacts-20260914 -> origin/codex/janet-installed-contract-artifacts-20260914
+2026-10-18T05:11:30.8927306Z  * [new branch]      codex/janet-installed-schema-evaluator-20260914 -> origin/codex/janet-installed-schema-evaluator-20260914
+2026-10-18T05:11:30.8928504Z  * [new branch]      codex/janet-installed-schema-graph-20260914 -> origin/codex/janet-installed-schema-graph-20260914
+2026-10-18T05:11:30.8929690Z  * [new branch]      codex/janet-member-context-timestamp-20260911 -> origin/codex/janet-member-context-timestamp-20260911
+2026-10-18T05:11:30.8931437Z  * [new branch]      codex/janet-member-context-timestamp-council-fix-20260911 -> origin/codex/janet-member-context-timestamp-council-fix-20260911
+2026-10-18T05:11:30.8932635Z  * [new branch]      codex/janet-member-executor-20260911 -> origin/codex/janet-member-executor-20260911
+2026-10-18T05:11:30.8933709Z  * [new branch]      codex/janet-member-executor-council-fix-20260911 -> origin/codex/janet-member-executor-council-fix-20260911
+2026-10-18T05:11:30.8935288Z  * [new branch]      codex/janet-member-executor-prerequisites-20260911 -> origin/codex/janet-member-executor-prerequisites-20260911
+2026-10-18T05:11:30.8936062Z  * [new branch]      codex/janet-member-executor-publish-20260911 -> origin/codex/janet-member-executor-publish-20260911
+2026-10-18T05:11:30.8936788Z  * [new branch]      codex/janet-member-executor-release-20260911 -> origin/codex/janet-member-executor-release-20260911
+2026-10-18T05:11:30.8937499Z  * [new branch]      codex/janet-member-executor-source-20260911 -> origin/codex/janet-member-executor-source-20260911
+2026-10-18T05:11:30.8938464Z  * [new branch]      codex/janet-member-prerequisites-fix-20260911 -> origin/codex/janet-member-prerequisites-fix-20260911
+2026-10-18T05:11:30.8939138Z  * [new branch]      codex/janet-memory-blog-20260924 -> origin/codex/janet-memory-blog-20260924
+2026-10-18T05:11:30.8939792Z  * [new branch]      codex/janet-raw-http-manifest-receiving -> origin/codex/janet-raw-http-manifest-receiving
+2026-10-18T05:11:30.8940656Z  * [new branch]      codex/janet-raw-prerequisites-publish-20260911 -> origin/codex/janet-raw-prerequisites-publish-20260911
+2026-10-18T05:11:30.8941840Z  * [new branch]      codex/janet-raw-prerequisites-release-20260911 -> origin/codex/janet-raw-prerequisites-release-20260911
+2026-10-18T05:11:30.8942943Z  * [new branch]      codex/janet-raw-receiving-council-fix-20260911 -> origin/codex/janet-raw-receiving-council-fix-20260911
+2026-10-18T05:11:30.8943727Z  * [new branch]      codex/janet-raw-receiving-resumed-20260911 -> origin/codex/janet-raw-receiving-resumed-20260911
+2026-10-18T05:11:30.8944434Z  * [new branch]      codex/janet-read-erasure-pointer -> origin/codex/janet-read-erasure-pointer
+2026-10-18T05:11:30.8945344Z  * [new branch]      codex/janet-read-foundation-integration -> origin/codex/janet-read-foundation-integration
+2026-10-18T05:11:30.8946093Z  * [new branch]      codex/janet-read-update-components-publish -> origin/codex/janet-read-update-components-publish
+2026-10-18T05:11:30.8946961Z  * [new branch]      codex/janet-ready-seed-order-binding-correction-20260911 -> origin/codex/janet-ready-seed-order-binding-correction-20260911
+2026-10-18T05:11:30.8947781Z  * [new branch]      codex/janet-ready-seed-order-fix-20260911 -> origin/codex/janet-ready-seed-order-fix-20260911
+2026-10-18T05:11:30.8948528Z  * [new branch]      codex/janet-ready-seed-order-publish-20260911 -> origin/codex/janet-ready-seed-order-publish-20260911
+2026-10-18T05:11:30.8949293Z  * [new branch]      codex/janet-ready-seed-order-release-20260911 -> origin/codex/janet-ready-seed-order-release-20260911
+2026-10-18T05:11:30.8949953Z  * [new branch]      codex/janet-research-pr595 -> origin/codex/janet-research-pr595
+2026-10-18T05:11:30.8950560Z  * [new branch]      codex/janet-runtime-defaults-20260914 -> origin/codex/janet-runtime-defaults-20260914
+2026-10-18T05:11:30.8951291Z  * [new branch]      codex/janet-runtime-defaults-corrected-20260914 -> origin/codex/janet-runtime-defaults-corrected-20260914
+2026-10-18T05:11:30.8952150Z  * [new branch]      codex/janet-schema-contains-20260915 -> origin/codex/janet-schema-contains-20260915
+2026-10-18T05:11:30.8952792Z  * [new branch]      codex/janet-schema-content-20260916 -> origin/codex/janet-schema-content-20260916
+2026-10-18T05:11:30.8953440Z  * [new branch]      codex/janet-schema-dynamic-20260916 -> origin/codex/janet-schema-dynamic-20260916
+2026-10-18T05:11:30.8954167Z  * [new branch]      codex/janet-schema-guarded-recursion-20260916 -> origin/codex/janet-schema-guarded-recursion-20260916
+2026-10-18T05:11:30.8955077Z  * [new branch]      codex/janet-schema-pattern-20260916 -> origin/codex/janet-schema-pattern-20260916
+2026-10-18T05:11:30.8955890Z  * [new branch]      codex/janet-schema-pattern-properties-20260916 -> origin/codex/janet-schema-pattern-properties-20260916
+2026-10-18T05:11:30.8956698Z  * [new branch]      codex/janet-schema-unevaluated-20260915 -> origin/codex/janet-schema-unevaluated-20260915
+2026-10-18T05:11:30.8957422Z  * [new branch]      codex/janet-seed-corrected-20260914 -> origin/codex/janet-seed-corrected-20260914
+2026-10-18T05:11:30.8958141Z  * [new branch]      codex/janet-sequence-lifecycle-20260911 -> origin/codex/janet-sequence-lifecycle-20260911
+2026-10-18T05:11:30.8959010Z  * [new branch]      codex/janet-sequence-lifecycle-correction-20260911 -> origin/codex/janet-sequence-lifecycle-correction-20260911
+2026-10-18T05:11:30.8959916Z  * [new branch]      codex/janet-sequence-lifecycle-publish-20260911 -> origin/codex/janet-sequence-lifecycle-publish-20260911
+2026-10-18T05:11:30.8960888Z  * [new branch]      codex/janet-sequence-lifecycle-release-20260911 -> origin/codex/janet-sequence-lifecycle-release-20260911
+2026-10-18T05:11:30.8961937Z  * [new branch]      codex/janet-sequence-lifecycle-source-council-20260911 -> origin/codex/janet-sequence-lifecycle-source-council-20260911
+2026-10-18T05:11:30.8962828Z  * [new branch]      codex/janet-timestamp-publish-20260911 -> origin/codex/janet-timestamp-publish-20260911
+2026-10-18T05:11:30.8963580Z  * [new branch]      codex/janet-timestamp-release-20260911 -> origin/codex/janet-timestamp-release-20260911
+2026-10-18T05:11:30.8964319Z  * [new branch]      codex/janet-validation-order-20260914 -> origin/codex/janet-validation-order-20260914
+2026-10-18T05:11:30.8965173Z  * [new branch]      codex/janet-wildcard-read-runtime -> origin/codex/janet-wildcard-read-runtime
+2026-10-18T05:11:30.8965906Z  * [new branch]      codex/melinda-memory-types -> origin/codex/melinda-memory-types
+2026-10-18T05:11:30.8966903Z  * [new branch]      codex/preview2-attribution-basis-20261009 -> origin/codex/preview2-attribution-basis-20261009
+2026-10-18T05:11:30.8968011Z  * [new branch]      codex/preview2-common-metadata -> origin/codex/preview2-common-metadata
+2026-10-18T05:11:30.8969117Z  * [new branch]      codex/trish-bdp-design-authority -> origin/codex/trish-bdp-design-authority
+2026-10-18T05:11:30.8970022Z  * [new branch]      codex/trish-memory-layout -> origin/codex/trish-memory-layout
+2026-10-18T05:11:30.8970917Z  * [new branch]      codex/trish-preview3-fixed-types -> origin/codex/trish-preview3-fixed-types
+2026-10-18T05:11:30.8971874Z  * [new branch]      codex/trish-preview3-link-plan -> origin/codex/trish-preview3-link-plan
+2026-10-18T05:11:30.8972914Z  * [new branch]      codex/trish-reference-cli-design -> origin/codex/trish-reference-cli-design
+2026-10-18T05:11:30.8974047Z  * [new branch]      codex/trish-spec-authority-layout -> origin/codex/trish-spec-authority-layout
+2026-10-18T05:11:30.8975364Z  * [new branch]      codex/trish-spec-integration -> origin/codex/trish-spec-integration
+2026-10-18T05:11:30.8976418Z  * [new branch]      codex/trish-spec-readme-status -> origin/codex/trish-spec-readme-status
+2026-10-18T05:11:30.8977464Z  * [new branch]      codex/trish-types-profile-completion -> origin/codex/trish-types-profile-completion
+2026-10-18T05:11:30.8978480Z  * [new branch]      codex/trish-types-wip-main -> origin/codex/trish-types-wip-main
+2026-10-18T05:11:30.8979836Z  * [new branch]      codex/vickie-alias-minimum -> origin/codex/vickie-alias-minimum
+2026-10-18T05:11:30.8980941Z  * [new branch]      codex/vickie-alias-minimum-integration -> origin/codex/vickie-alias-minimum-integration
+2026-10-18T05:11:30.8982069Z  * [new branch]      codex/vickie-alias-minimum-receiving-repair -> origin/codex/vickie-alias-minimum-receiving-repair
+2026-10-18T05:11:30.8983209Z  * [new branch]      codex/vickie-alias-opaque-minimum -> origin/codex/vickie-alias-opaque-minimum
+2026-10-18T05:11:30.8984243Z  * [new branch]      codex/vickie-artifact-set-execution -> origin/codex/vickie-artifact-set-execution
+2026-10-18T05:11:30.8985885Z  * [new branch]      codex/vickie-artifact-set-execution-main-integration -> origin/codex/vickie-artifact-set-execution-main-integration
+2026-10-18T05:11:30.8986952Z  * [new branch]      codex/vickie-artifact-set-failure-retention -> origin/codex/vickie-artifact-set-failure-retention
+2026-10-18T05:11:30.8987753Z  * [new branch]      codex/vickie-artifact-set-review-closure -> origin/codex/vickie-artifact-set-review-closure
+2026-10-18T05:11:30.8988492Z  * [new branch]      codex/vickie-artifact-set-validator -> origin/codex/vickie-artifact-set-validator
+2026-10-18T05:11:30.8989207Z  * [new branch]      codex/vickie-authorization-transition -> origin/codex/vickie-authorization-transition
+2026-10-18T05:11:30.8989932Z  * [new branch]      codex/vickie-bdp-alias-matrix-timeout -> origin/codex/vickie-bdp-alias-matrix-timeout
+2026-10-18T05:11:30.8990720Z  * [new branch]      codex/vickie-bdp-alias-qualified-integration -> origin/codex/vickie-bdp-alias-qualified-integration
+2026-10-18T05:11:30.8991872Z  * [new branch]      codex/vickie-bdp-alias-setup-witnesses -> origin/codex/vickie-bdp-alias-setup-witnesses
+2026-10-18T05:11:30.8993119Z  * [new branch]      codex/vickie-bdp-alias-witnesses-integration -> origin/codex/vickie-bdp-alias-witnesses-integration
+2026-10-18T05:11:30.8994121Z  * [new branch]      codex/vickie-bdp-atomic-qualified-integration -> origin/codex/vickie-bdp-atomic-qualified-integration
+2026-10-18T05:11:30.8995312Z  * [new branch]      codex/vickie-bdp-dependencies-retention-integration -> origin/codex/vickie-bdp-dependencies-retention-integration
+2026-10-18T05:11:30.8996198Z  * [new branch]      codex/vickie-bdp-development-routing-repair -> origin/codex/vickie-bdp-development-routing-repair
+2026-10-18T05:11:30.8997034Z  * [new branch]      codex/vickie-bdp-pending-qualified-integration -> origin/codex/vickie-bdp-pending-qualified-integration
+2026-10-18T05:11:30.8997880Z  * [new branch]      codex/vickie-bdp-profile-boundary-integration -> origin/codex/vickie-bdp-profile-boundary-integration
+2026-10-18T05:11:30.8998700Z  * [new branch]      codex/vickie-bdp-profile-boundary-repair -> origin/codex/vickie-bdp-profile-boundary-repair
+2026-10-18T05:11:30.8999599Z  * [new branch]      codex/vickie-bdp-profile-editorial -> origin/codex/vickie-bdp-profile-editorial
+2026-10-18T05:11:30.9000598Z  * [new branch]      codex/vickie-bdp-profile-runtime -> origin/codex/vickie-bdp-profile-runtime
+2026-10-18T05:11:30.9001770Z  * [new branch]      codex/vickie-bdp-profile-write-candidate -> origin/codex/vickie-bdp-profile-write-candidate
+2026-10-18T05:11:30.9002990Z  * [new branch]      codex/vickie-bdp-profile-write-successor -> origin/codex/vickie-bdp-profile-write-successor
+2026-10-18T05:11:30.9004085Z  * [new branch]      codex/vickie-bdp-profiles-integration -> origin/codex/vickie-bdp-profiles-integration
+2026-10-18T05:11:30.9005607Z  * [new branch]      codex/vickie-bdp-provenance-runtime-integration -> origin/codex/vickie-bdp-provenance-runtime-integration
+2026-10-18T05:11:30.9006855Z  * [new branch]      codex/vickie-bdp-read-reseal -> origin/codex/vickie-bdp-read-reseal
+2026-10-18T05:11:30.9008112Z  * [new branch]      codex/vickie-bdp-retention-evidence-clarity -> origin/codex/vickie-bdp-retention-evidence-clarity
+2026-10-18T05:11:30.9009555Z  * [new branch]      codex/vickie-bdp-routing-alias-integration -> origin/codex/vickie-bdp-routing-alias-integration
+2026-10-18T05:11:30.9011090Z  * [new branch]      codex/vickie-bdp-submission-qualified-integration -> origin/codex/vickie-bdp-submission-qualified-integration
+2026-10-18T05:11:30.9012261Z  * [new branch]      codex/vickie-bdp-transaction-alias-witnesses -> origin/codex/vickie-bdp-transaction-alias-witnesses
+2026-10-18T05:11:30.9013258Z  * [new branch]      codex/vickie-bdp-transaction-aliases -> origin/codex/vickie-bdp-transaction-aliases
+2026-10-18T05:11:30.9014395Z  * [new branch]      codex/vickie-bdp-transaction-atomic-cause-repair -> origin/codex/vickie-bdp-transaction-atomic-cause-repair
+2026-10-18T05:11:30.9015850Z  * [new branch]      codex/vickie-bdp-transaction-carriers -> origin/codex/vickie-bdp-transaction-carriers
+2026-10-18T05:11:30.9017283Z  * [new branch]      codex/vickie-bdp-transaction-dependencies -> origin/codex/vickie-bdp-transaction-dependencies
+2026-10-18T05:11:30.9018824Z  * [new branch]      codex/vickie-bdp-transaction-dependencies-integration -> origin/codex/vickie-bdp-transaction-dependencies-integration
+2026-10-18T05:11:30.9020078Z  * [new branch]      codex/vickie-bdp-transaction-mutations -> origin/codex/vickie-bdp-transaction-mutations
+2026-10-18T05:11:30.9021001Z  * [new branch]      codex/vickie-bdp-transaction-read -> origin/codex/vickie-bdp-transaction-read
+2026-10-18T05:11:30.9021854Z  * [new branch]      codex/vickie-bdp-transaction-retention -> origin/codex/vickie-bdp-transaction-retention
+2026-10-18T05:11:30.9022895Z  * [new branch]      codex/vickie-bdp-transaction-runtime -> origin/codex/vickie-bdp-transaction-runtime
+2026-10-18T05:11:30.9024006Z  * [new branch]      codex/vickie-bdp-transaction-sequence -> origin/codex/vickie-bdp-transaction-sequence
+2026-10-18T05:11:30.9025672Z  * [new branch]      codex/vickie-bdp-transaction-sequence-cleanup-repair -> origin/codex/vickie-bdp-transaction-sequence-cleanup-repair
+2026-10-18T05:11:30.9026964Z  * [new branch]      codex/vickie-bdp-transaction-submission -> origin/codex/vickie-bdp-transaction-submission
+2026-10-18T05:11:30.9028194Z  * [new branch]      codex/vickie-bdp-update-alias-qualification -> origin/codex/vickie-bdp-update-alias-qualification
+2026-10-18T05:11:30.9029279Z  * [new branch]      codex/vickie-bdp-update-completion -> origin/codex/vickie-bdp-update-completion
+2026-10-18T05:11:30.9030622Z  * [new branch]      codex/vickie-bdp-update-contextual-qualification -> origin/codex/vickie-bdp-update-contextual-qualification
+2026-10-18T05:11:30.9031443Z  * [new branch]      codex/vickie-bdp-update-disconnect -> origin/codex/vickie-bdp-update-disconnect
+2026-10-18T05:11:30.9032139Z  * [new branch]      codex/vickie-bdp-update-discovery -> origin/codex/vickie-bdp-update-discovery
+2026-10-18T05:11:30.9033004Z  * [new branch]      codex/vickie-bdp-update-expired-creator-qualification -> origin/codex/vickie-bdp-update-expired-creator-qualification
+2026-10-18T05:11:30.9033775Z  * [new branch]      codex/vickie-bdp-update-http -> origin/codex/vickie-bdp-update-http
+2026-10-18T05:11:30.9034468Z  * [new branch]      codex/vickie-bdp-update-http-qualification -> origin/codex/vickie-bdp-update-http-qualification
+2026-10-18T05:11:30.9035534Z  * [new branch]      codex/vickie-bdp-update-pending-qualification -> origin/codex/vickie-bdp-update-pending-qualification
+2026-10-18T05:11:30.9036646Z  * [new branch]      codex/vickie-bdp-update-process-qualification -> origin/codex/vickie-bdp-update-process-qualification
+2026-10-18T05:11:30.9037887Z  * [new branch]      codex/vickie-bdp-update-qualification -> origin/codex/vickie-bdp-update-qualification
+2026-10-18T05:11:30.9038790Z  * [new branch]      codex/vickie-bdp-update-retention-qualification -> origin/codex/vickie-bdp-update-retention-qualification
+2026-10-18T05:11:30.9039569Z  * [new branch]      codex/vickie-bdp-write-integration -> origin/codex/vickie-bdp-write-integration
+2026-10-18T05:11:30.9040218Z  * [new branch]      codex/vickie-bead-event-minimum -> origin/codex/vickie-bead-event-minimum
+2026-10-18T05:11:30.9040892Z  * [new branch]      codex/vickie-changefeed-opaque-minimum -> origin/codex/vickie-changefeed-opaque-minimum
+2026-10-18T05:11:30.9041821Z  * [new branch]      codex/vickie-changefeed-parameter-context -> origin/codex/vickie-changefeed-parameter-context
+2026-10-18T05:11:30.9042490Z  * [new branch]      codex/vickie-changefeed-sse -> origin/codex/vickie-changefeed-sse
+2026-10-18T05:11:30.9043126Z  * [new branch]      codex/vickie-changefeed-sse-repair -> origin/codex/vickie-changefeed-sse-repair
+2026-10-18T05:11:30.9043744Z  * [new branch]      codex/vickie-command-minimum -> origin/codex/vickie-command-minimum
+2026-10-18T05:11:30.9044378Z  * [new branch]      codex/vickie-command-minimum-catalog -> origin/codex/vickie-command-minimum-catalog
+2026-10-18T05:11:30.9045282Z  * [new branch]      codex/vickie-command-minimum-evidence -> origin/codex/vickie-command-minimum-evidence
+2026-10-18T05:11:30.9046025Z  * [new branch]      codex/vickie-comparison-timeout-context -> origin/codex/vickie-comparison-timeout-context
+2026-10-18T05:11:30.9046757Z  * [new branch]      codex/vickie-compatible-missing-minimum -> origin/codex/vickie-compatible-missing-minimum
+2026-10-18T05:11:30.9047478Z  * [new branch]      codex/vickie-completed-key-conflict -> origin/codex/vickie-completed-key-conflict
+2026-10-18T05:11:30.9048264Z  * [new branch]      codex/vickie-completed-key-conflict-external-repair -> origin/codex/vickie-completed-key-conflict-external-repair
+2026-10-18T05:11:30.9049141Z  * [new branch]      codex/vickie-completed-key-conflict-integration -> origin/codex/vickie-completed-key-conflict-integration
+2026-10-18T05:11:30.9050004Z  * [new branch]      codex/vickie-completed-key-conflict-review-repair -> origin/codex/vickie-completed-key-conflict-review-repair
+2026-10-18T05:11:30.9050874Z  * [new branch]      codex/vickie-contract-capture-evidence -> origin/codex/vickie-contract-capture-evidence
+2026-10-18T05:11:30.9051574Z  * [new branch]      codex/vickie-contracts-evidence-final -> origin/codex/vickie-contracts-evidence-final
+2026-10-18T05:11:30.9052238Z  * [new branch]      codex/vickie-cross-carrier-draft -> origin/codex/vickie-cross-carrier-draft
+2026-10-18T05:11:30.9052930Z  * [new branch]      codex/vickie-current-changefeed-minimum -> origin/codex/vickie-current-changefeed-minimum
+2026-10-18T05:11:30.9053659Z  * [new branch]      codex/vickie-current-minimum-receiving -> origin/codex/vickie-current-minimum-receiving
+2026-10-18T05:11:30.9054385Z  * [new branch]      codex/vickie-current-observation-minimum -> origin/codex/vickie-current-observation-minimum
+2026-10-18T05:11:30.9055349Z  * [new branch]      codex/vickie-deletion-safety-schema-repair -> origin/codex/vickie-deletion-safety-schema-repair
+2026-10-18T05:11:30.9056046Z  * [new branch]      codex/vickie-depth-key-order -> origin/codex/vickie-depth-key-order
+2026-10-18T05:11:30.9056673Z  * [new branch]      codex/vickie-direct-refusal-context -> origin/codex/vickie-direct-refusal-context
+2026-10-18T05:11:30.9057309Z  * [new branch]      codex/vickie-discovery-limits -> origin/codex/vickie-discovery-limits
+2026-10-18T05:11:30.9057994Z  * [new branch]      codex/vickie-discovery-limits-integration -> origin/codex/vickie-discovery-limits-integration
+2026-10-18T05:11:30.9058770Z  * [new branch]      codex/vickie-discovery-limits-review-repair -> origin/codex/vickie-discovery-limits-review-repair
+2026-10-18T05:11:30.9059559Z  * [new branch]      codex/vickie-discovery-minimum-integration -> origin/codex/vickie-discovery-minimum-integration
+2026-10-18T05:11:30.9060324Z  * [new branch]      codex/vickie-discovery-minimum-service -> origin/codex/vickie-discovery-minimum-service
+2026-10-18T05:11:30.9061083Z  * [new branch]      codex/vickie-effects-metadata-integration -> origin/codex/vickie-effects-metadata-integration
+2026-10-18T05:11:30.9061967Z  * [new branch]      codex/vickie-event-admission-replay-minimum -> origin/codex/vickie-event-admission-replay-minimum
+2026-10-18T05:11:30.9063040Z  * [new branch]      codex/vickie-event-missing-context -> origin/codex/vickie-event-missing-context
+2026-10-18T05:11:30.9064059Z  * [new branch]      codex/vickie-event-restart-witness -> origin/codex/vickie-event-restart-witness
+2026-10-18T05:11:30.9065124Z  * [new branch]      codex/vickie-event-source-main-integration -> origin/codex/vickie-event-source-main-integration
+2026-10-18T05:11:30.9066060Z  * [new branch]      codex/vickie-event-source-sse -> origin/codex/vickie-event-source-sse
+2026-10-18T05:11:30.9066946Z  * [new branch]      codex/vickie-finite-event-minimum -> origin/codex/vickie-finite-event-minimum
+2026-10-18T05:11:30.9067906Z  * [new branch]      codex/vickie-four-part-editorial -> origin/codex/vickie-four-part-editorial
+2026-10-18T05:11:30.9068817Z  * [new branch]      codex/vickie-fresh-depth-serving -> origin/codex/vickie-fresh-depth-serving
+2026-10-18T05:11:30.9069628Z  * [new branch]      codex/vickie-guarded-batch -> origin/codex/vickie-guarded-batch
+2026-10-18T05:11:30.9070576Z  * [new branch]      codex/vickie-initial-collection-unknown -> origin/codex/vickie-initial-collection-unknown
+2026-10-18T05:11:30.9071645Z  * [new branch]      codex/vickie-installed-connect-regression -> origin/codex/vickie-installed-connect-regression
+2026-10-18T05:11:30.9072542Z  * [new branch]      codex/vickie-installed-marker -> origin/codex/vickie-installed-marker
+2026-10-18T05:11:30.9073463Z  * [new branch]      codex/vickie-installed-marker-complete -> origin/codex/vickie-installed-marker-complete
+2026-10-18T05:11:30.9074428Z  * [new branch]      codex/vickie-installed-profiles -> origin/codex/vickie-installed-profiles
+2026-10-18T05:11:30.9075590Z  * [new branch]      codex/vickie-installed-profiles-replication -> origin/codex/vickie-installed-profiles-replication
+2026-10-18T05:11:30.9077038Z  * [new branch]      codex/vickie-installed-write-integration -> origin/codex/vickie-installed-write-integration
+2026-10-18T05:11:30.9077674Z  * [new branch]      codex/vickie-link-event-minimum -> origin/codex/vickie-link-event-minimum
+2026-10-18T05:11:30.9078254Z  * [new branch]      codex/vickie-local-schema-serving -> origin/codex/vickie-local-schema-serving
+2026-10-18T05:11:30.9078877Z  * [new branch]      codex/vickie-maintenance-integration -> origin/codex/vickie-maintenance-integration
+2026-10-18T05:11:30.9079515Z  * [new branch]      codex/vickie-materialization-closure -> origin/codex/vickie-materialization-closure
+2026-10-18T05:11:30.9080145Z  * [new branch]      codex/vickie-materialization-followup -> origin/codex/vickie-materialization-followup
+2026-10-18T05:11:30.9080799Z  * [new branch]      codex/vickie-metadata-set-integration -> origin/codex/vickie-metadata-set-integration
+2026-10-18T05:11:30.9081760Z  * [new branch]      codex/vickie-minimum-current-resource -> origin/codex/vickie-minimum-current-resource
+2026-10-18T05:11:30.9082657Z  * [new branch]      codex/vickie-minimum-receiving -> origin/codex/vickie-minimum-receiving
+2026-10-18T05:11:30.9083604Z  * [new branch]      codex/vickie-missing-minimum-integration -> origin/codex/vickie-missing-minimum-integration
+2026-10-18T05:11:30.9084321Z  * [new branch]      codex/vickie-missing-minimum-review-repair -> origin/codex/vickie-missing-minimum-review-repair
+2026-10-18T05:11:30.9085282Z  * [new branch]      codex/vickie-noop-conformance -> origin/codex/vickie-noop-conformance
+2026-10-18T05:11:30.9085912Z  * [new branch]      codex/vickie-numeric-admission-contract -> origin/codex/vickie-numeric-admission-contract
+2026-10-18T05:11:30.9086640Z  * [new branch]      codex/vickie-numeric-admission-main-integration -> origin/codex/vickie-numeric-admission-main-integration
+2026-10-18T05:11:30.9087397Z  * [new branch]      codex/vickie-numeric-admission-review-repair -> origin/codex/vickie-numeric-admission-review-repair
+2026-10-18T05:11:30.9088097Z  * [new branch]      codex/vickie-numeric-contract-closure -> origin/codex/vickie-numeric-contract-closure
+2026-10-18T05:11:30.9088734Z  * [new branch]      codex/vickie-numeric-metadata-closure -> origin/codex/vickie-numeric-metadata-closure
+2026-10-18T05:11:30.9089368Z  * [new branch]      codex/vickie-numeric-r-binding-repair -> origin/codex/vickie-numeric-r-binding-repair
+2026-10-18T05:11:30.9090219Z  * [new branch]      codex/vickie-numeric-r-diagnostics-integration -> origin/codex/vickie-numeric-r-diagnostics-integration
+2026-10-18T05:11:30.9090863Z  * [new branch]      codex/vickie-parser-refusal -> origin/codex/vickie-parser-refusal
+2026-10-18T05:11:30.9091603Z  * [new branch]      codex/vickie-pr150-main-reconciliation -> origin/codex/vickie-pr150-main-reconciliation
+2026-10-18T05:11:30.9092574Z  * [new branch]      codex/vickie-pr64-freeze-repair -> origin/codex/vickie-pr64-freeze-repair
+2026-10-18T05:11:30.9093472Z  * [new branch]      codex/vickie-principal-cumulative -> origin/codex/vickie-principal-cumulative
+2026-10-18T05:11:30.9094377Z  * [new branch]      codex/vickie-principal-key-isolation -> origin/codex/vickie-principal-key-isolation
+2026-10-18T05:11:30.9095600Z  * [new branch]      codex/vickie-profile-contract-council-repairs -> origin/codex/vickie-profile-contract-council-repairs
+2026-10-18T05:11:30.9096761Z  * [new branch]      codex/vickie-profile-contract-dag-repair -> origin/codex/vickie-profile-contract-dag-repair
+2026-10-18T05:11:30.9097857Z  * [new branch]      codex/vickie-profile-contract-selection -> origin/codex/vickie-profile-contract-selection
+2026-10-18T05:11:30.9098801Z  * [new branch]      codex/vickie-profile-review-closure -> origin/codex/vickie-profile-review-closure
+2026-10-18T05:11:30.9099742Z  * [new branch]      codex/vickie-profile-services -> origin/codex/vickie-profile-services
+2026-10-18T05:11:30.9100764Z  * [new branch]      codex/vickie-read-update-admission-comparators -> origin/codex/vickie-read-update-admission-comparators
+2026-10-18T05:11:30.9102145Z  * [new branch]      codex/vickie-read-update-admission-complete -> origin/codex/vickie-read-update-admission-complete
+2026-10-18T05:11:30.9103311Z  * [new branch]      codex/vickie-read-update-admission-evidence -> origin/codex/vickie-read-update-admission-evidence
+2026-10-18T05:11:30.9104508Z  * [new branch]      codex/vickie-read-update-admission-promoted -> origin/codex/vickie-read-update-admission-promoted
+2026-10-18T05:11:30.9106155Z  * [new branch]      codex/vickie-read-update-artifact-retention -> origin/codex/vickie-read-update-artifact-retention
+2026-10-18T05:11:30.9107023Z  * [new branch]      codex/vickie-read-update-attribution-integration -> origin/codex/vickie-read-update-attribution-integration
+2026-10-18T05:11:30.9107869Z  * [new branch]      codex/vickie-read-update-attribution-numeric -> origin/codex/vickie-read-update-attribution-numeric
+2026-10-18T05:11:30.9108725Z  * [new branch]      codex/vickie-read-update-attribution-review-repair -> origin/codex/vickie-read-update-attribution-review-repair
+2026-10-18T05:11:30.9109560Z  * [new branch]      codex/vickie-read-update-budget-closure -> origin/codex/vickie-read-update-budget-closure
+2026-10-18T05:11:30.9110376Z  * [new branch]      codex/vickie-read-update-budget-final -> origin/codex/vickie-read-update-budget-final
+2026-10-18T05:11:30.9111456Z  * [new branch]      codex/vickie-read-update-budget-repair -> origin/codex/vickie-read-update-budget-repair
+2026-10-18T05:11:30.9112633Z  * [new branch]      codex/vickie-read-update-document-patch -> origin/codex/vickie-read-update-document-patch
+2026-10-18T05:11:30.9113360Z  * [new branch]      codex/vickie-read-update-executable -> origin/codex/vickie-read-update-executable
+2026-10-18T05:11:30.9114037Z  * [new branch]      codex/vickie-read-update-inherited -> origin/codex/vickie-read-update-inherited
+2026-10-18T05:11:30.9114950Z  * [new branch]      codex/vickie-read-update-numeric-admission -> origin/codex/vickie-read-update-numeric-admission
+2026-10-18T05:11:30.9115727Z  * [new branch]      codex/vickie-read-update-oracle-repair -> origin/codex/vickie-read-update-oracle-repair
+2026-10-18T05:11:30.9116437Z  * [new branch]      codex/vickie-read-update-patch-closure -> origin/codex/vickie-read-update-patch-closure
+2026-10-18T05:11:30.9117165Z  * [new branch]      codex/vickie-read-update-patch-followup -> origin/codex/vickie-read-update-patch-followup
+2026-10-18T05:11:30.9118062Z  * [new branch]      codex/vickie-read-update-read-coverage -> origin/codex/vickie-read-update-read-coverage
+2026-10-18T05:11:30.9118883Z  * [new branch]      codex/vickie-read-update-reference-evidence -> origin/codex/vickie-read-update-reference-evidence
+2026-10-18T05:11:30.9119655Z  * [new branch]      codex/vickie-read-update-reference-repair -> origin/codex/vickie-read-update-reference-repair
+2026-10-18T05:11:30.9120412Z  * [new branch]      codex/vickie-read-update-retention-followup -> origin/codex/vickie-read-update-retention-followup
+2026-10-18T05:11:30.9121142Z  * [new branch]      codex/vickie-read-update-retry-closure -> origin/codex/vickie-read-update-retry-closure
+2026-10-18T05:11:30.9121864Z  * [new branch]      codex/vickie-read-update-retry-controls -> origin/codex/vickie-read-update-retry-controls
+2026-10-18T05:11:30.9122579Z  * [new branch]      codex/vickie-read-update-retry-evidence -> origin/codex/vickie-read-update-retry-evidence
+2026-10-18T05:11:30.9123295Z  * [new branch]      codex/vickie-read-update-schema-cohort -> origin/codex/vickie-read-update-schema-cohort
+2026-10-18T05:11:30.9124044Z  * [new branch]      codex/vickie-read-update-schema-execution -> origin/codex/vickie-read-update-schema-execution
+2026-10-18T05:11:30.9125056Z  * [new branch]      codex/vickie-read-update-sequence -> origin/codex/vickie-read-update-sequence
+2026-10-18T05:11:30.9125705Z  * [new branch]      codex/vickie-read-update-w1 -> origin/codex/vickie-read-update-w1
+2026-10-18T05:11:30.9126304Z  * [new branch]      codex/vickie-read-update-w1-followup -> origin/codex/vickie-read-update-w1-followup
+2026-10-18T05:11:30.9126958Z  * [new branch]      codex/vickie-read-update-w1b -> origin/codex/vickie-read-update-w1b
+2026-10-18T05:11:30.9127474Z  * [new branch]      codex/vickie-read-update-w2 -> origin/codex/vickie-read-update-w2
+2026-10-18T05:11:30.9128029Z  * [new branch]      codex/vickie-read-update-w2-repair -> origin/codex/vickie-read-update-w2-repair
+2026-10-18T05:11:30.9128656Z  * [new branch]      codex/vickie-receipt-missing-context -> origin/codex/vickie-receipt-missing-context
+2026-10-18T05:11:30.9129318Z  * [new branch]      codex/vickie-receipt-numeric-integration -> origin/codex/vickie-receipt-numeric-integration
+2026-10-18T05:11:30.9129959Z  * [new branch]      codex/vickie-receipt-page-evidence -> origin/codex/vickie-receipt-page-evidence
+2026-10-18T05:11:30.9130599Z  * [new branch]      codex/vickie-receipt-page-helper-repair -> origin/codex/vickie-receipt-page-helper-repair
+2026-10-18T05:11:30.9131261Z  * [new branch]      codex/vickie-receipt-page-observation -> origin/codex/vickie-receipt-page-observation
+2026-10-18T05:11:30.9131878Z  * [new branch]      codex/vickie-receipt-root-minimum -> origin/codex/vickie-receipt-root-minimum
+2026-10-18T05:11:30.9132476Z  * [new branch]      codex/vickie-reference-integration -> origin/codex/vickie-reference-integration
+2026-10-18T05:11:30.9133095Z  * [new branch]      codex/vickie-retry-diagnostic-closure -> origin/codex/vickie-retry-diagnostic-closure
+2026-10-18T05:11:30.9133750Z  * [new branch]      codex/vickie-retry-runtime-integration -> origin/codex/vickie-retry-runtime-integration
+2026-10-18T05:11:30.9134369Z  * [new branch]      codex/vickie-revision-provenance -> origin/codex/vickie-revision-provenance
+2026-10-18T05:11:30.9135209Z  * [new branch]      codex/vickie-same-key-dispatch -> origin/codex/vickie-same-key-dispatch
+2026-10-18T05:11:30.9135823Z  * [new branch]      codex/vickie-schema-evidence-followup -> origin/codex/vickie-schema-evidence-followup
+2026-10-18T05:11:30.9136458Z  * [new branch]      codex/vickie-schema-property-change -> origin/codex/vickie-schema-property-change
+2026-10-18T05:11:30.9137112Z  * [new branch]      codex/vickie-schema-provenance-clarity -> origin/codex/vickie-schema-provenance-clarity
+2026-10-18T05:11:30.9137812Z  * [new branch]      codex/vickie-scope-event-sse-opaque-minimum -> origin/codex/vickie-scope-event-sse-opaque-minimum
+2026-10-18T05:11:30.9138483Z  * [new branch]      codex/vickie-selector-review-repair -> origin/codex/vickie-selector-review-repair
+2026-10-18T05:11:30.9139180Z  * [new branch]      codex/vickie-sequence-depth-retained -> origin/codex/vickie-sequence-depth-retained
+2026-10-18T05:11:30.9139843Z  * [new branch]      codex/vickie-sequence-member-transactions -> origin/codex/vickie-sequence-member-transactions
+2026-10-18T05:11:30.9140517Z  * [new branch]      codex/vickie-sequence-refusal-context -> origin/codex/vickie-sequence-refusal-context
+2026-10-18T05:11:30.9141151Z  * [new branch]      codex/vickie-set-description-repair -> origin/codex/vickie-set-description-repair
+2026-10-18T05:11:30.9141823Z  * [new branch]      codex/vickie-set-numeric-repair-integration -> origin/codex/vickie-set-numeric-repair-integration
+2026-10-18T05:11:30.9142559Z  * [new branch]      codex/vickie-snapshot-core-efficiency-repair -> origin/codex/vickie-snapshot-core-efficiency-repair
+2026-10-18T05:11:30.9143247Z  * [new branch]      codex/vickie-snapshot-deadline-repair -> origin/codex/vickie-snapshot-deadline-repair
+2026-10-18T05:11:30.9143896Z  * [new branch]      codex/vickie-snapshot-evidence-polish -> origin/codex/vickie-snapshot-evidence-polish
+2026-10-18T05:11:30.9144618Z  * [new branch]      codex/vickie-snapshot-http-serving -> origin/codex/vickie-snapshot-http-serving
+2026-10-18T05:11:30.9145295Z  * [new branch]      codex/vickie-snapshot-installed-evidence -> origin/codex/vickie-snapshot-installed-evidence
+2026-10-18T05:11:30.9145943Z  * [new branch]      codex/vickie-snapshot-ledger-closure -> origin/codex/vickie-snapshot-ledger-closure
+2026-10-18T05:11:30.9146585Z  * [new branch]      codex/vickie-snapshot-opaque-minimum -> origin/codex/vickie-snapshot-opaque-minimum
+2026-10-18T05:11:30.9147321Z  * [new branch]      codex/vickie-snapshot-page-boundary-repair -> origin/codex/vickie-snapshot-page-boundary-repair
+2026-10-18T05:11:30.9148034Z  * [new branch]      codex/vickie-snapshot-reviewed-integration -> origin/codex/vickie-snapshot-reviewed-integration
+2026-10-18T05:11:30.9148731Z  * [new branch]      codex/vickie-snapshot-runtime-integration -> origin/codex/vickie-snapshot-runtime-integration
+2026-10-18T05:11:30.9149379Z  * [new branch]      codex/vickie-snapshot-serving-final -> origin/codex/vickie-snapshot-serving-final
+2026-10-18T05:11:30.9150038Z  * [new branch]      codex/vickie-snapshot-serving-integration -> origin/codex/vickie-snapshot-serving-integration
+2026-10-18T05:11:30.9150653Z  * [new branch]      codex/vickie-start-now-resume -> origin/codex/vickie-start-now-resume
+2026-10-18T05:11:30.9151224Z  * [new branch]      codex/vickie-transaction-changefeed -> origin/codex/vickie-transaction-changefeed
+2026-10-18T05:11:30.9151883Z  * [new branch]      codex/vickie-transaction-conditional-reads -> origin/codex/vickie-transaction-conditional-reads
+2026-10-18T05:11:30.9152527Z  * [new branch]      codex/vickie-transaction-contracts -> origin/codex/vickie-transaction-contracts
+2026-10-18T05:11:30.9153183Z  * [new branch]      codex/vickie-transaction-contracts-evidence -> origin/codex/vickie-transaction-contracts-evidence
+2026-10-18T05:11:30.9153877Z  * [new branch]      codex/vickie-transaction-event-closure -> origin/codex/vickie-transaction-event-closure
+2026-10-18T05:11:30.9154635Z  * [new branch]      codex/vickie-transaction-events-finite -> origin/codex/vickie-transaction-events-finite
+2026-10-18T05:11:30.9155453Z  * [new branch]      codex/vickie-transaction-events-repair -> origin/codex/vickie-transaction-events-repair
+2026-10-18T05:11:30.9156117Z  * [new branch]      codex/vickie-transaction-harness-carrier -> origin/codex/vickie-transaction-harness-carrier
+2026-10-18T05:11:30.9156784Z  * [new branch]      codex/vickie-transaction-harness-closure -> origin/codex/vickie-transaction-harness-closure
+2026-10-18T05:11:30.9157451Z  * [new branch]      codex/vickie-transaction-harness-final -> origin/codex/vickie-transaction-harness-final
+2026-10-18T05:11:30.9158153Z  * [new branch]      codex/vickie-transaction-harness-review-final -> origin/codex/vickie-transaction-harness-review-final
+2026-10-18T05:11:30.9158855Z  * [new branch]      codex/vickie-transaction-http -> origin/codex/vickie-transaction-http
+2026-10-18T05:11:30.9159451Z  * [new branch]      codex/vickie-transaction-http-methods -> origin/codex/vickie-transaction-http-methods
+2026-10-18T05:11:30.9160092Z  * [new branch]      codex/vickie-transaction-installed-h1b -> origin/codex/vickie-transaction-installed-h1b
+2026-10-18T05:11:30.9160795Z  * [new branch]      codex/vickie-transaction-installed-h1b-closure -> origin/codex/vickie-transaction-installed-h1b-closure
+2026-10-18T05:11:30.9161552Z  * [new branch]      codex/vickie-transaction-installed-integration -> origin/codex/vickie-transaction-installed-integration
+2026-10-18T05:11:30.9162266Z  * [new branch]      codex/vickie-transaction-materialization -> origin/codex/vickie-transaction-materialization
+2026-10-18T05:11:30.9162890Z  * [new branch]      codex/vickie-transaction-minimum -> origin/codex/vickie-transaction-minimum
+2026-10-18T05:11:30.9163459Z  * [new branch]      codex/vickie-transaction-owned -> origin/codex/vickie-transaction-owned
+2026-10-18T05:11:30.9164067Z  * [new branch]      codex/vickie-transaction-owned-evidence -> origin/codex/vickie-transaction-owned-evidence
+2026-10-18T05:11:30.9164955Z  * [new branch]      codex/vickie-transaction-page-witness -> origin/codex/vickie-transaction-page-witness
+2026-10-18T05:11:30.9165635Z  * [new branch]      codex/vickie-transaction-point-minimum -> origin/codex/vickie-transaction-point-minimum
+2026-10-18T05:11:30.9166301Z  * [new branch]      codex/vickie-transaction-receipt-guards -> origin/codex/vickie-transaction-receipt-guards
+2026-10-18T05:11:30.9167033Z  * [new branch]      codex/vickie-transaction-receipt-pages -> origin/codex/vickie-transaction-receipt-pages
+2026-10-18T05:11:30.9167675Z  * [new branch]      codex/vickie-transaction-recovery-low -> origin/codex/vickie-transaction-recovery-low
+2026-10-18T05:11:30.9168342Z  * [new branch]      codex/vickie-transaction-recovery-repair -> origin/codex/vickie-transaction-recovery-repair
+2026-10-18T05:11:30.9169027Z  * [new branch]      codex/vickie-transaction-recovery-witness -> origin/codex/vickie-transaction-recovery-witness
+2026-10-18T05:11:30.9169712Z  * [new branch]      codex/vickie-transaction-runtime-closure -> origin/codex/vickie-transaction-runtime-closure
+2026-10-18T05:11:30.9170413Z  * [new branch]      codex/vickie-transaction-runtime-integration -> origin/codex/vickie-transaction-runtime-integration
+2026-10-18T05:11:30.9171067Z  * [new branch]      codex/vickie-transaction-service -> origin/codex/vickie-transaction-service
+2026-10-18T05:11:30.9171686Z  * [new branch]      codex/vickie-transaction-set-bounds -> origin/codex/vickie-transaction-set-bounds
+2026-10-18T05:11:30.9172330Z  * [new branch]      codex/vickie-transaction-set-conformance -> origin/codex/vickie-transaction-set-conformance
+2026-10-18T05:11:30.9172955Z  * [new branch]      codex/vickie-transaction-set-core -> origin/codex/vickie-transaction-set-core
+2026-10-18T05:11:30.9173588Z  * [new branch]      codex/vickie-transaction-set-final-docs -> origin/codex/vickie-transaction-set-final-docs
+2026-10-18T05:11:30.9174222Z  * [new branch]      codex/vickie-transaction-set-http -> origin/codex/vickie-transaction-set-http
+2026-10-18T05:11:30.9175129Z  * [new branch]      codex/vickie-transaction-set-integration -> origin/codex/vickie-transaction-set-integration
+2026-10-18T05:11:30.9175858Z  * [new branch]      codex/vickie-transaction-set-main-integration -> origin/codex/vickie-transaction-set-main-integration
+2026-10-18T05:11:30.9176567Z  * [new branch]      codex/vickie-transaction-set-owned-oracle -> origin/codex/vickie-transaction-set-owned-oracle
+2026-10-18T05:11:30.9177219Z  * [new branch]      codex/vickie-transaction-set-repair -> origin/codex/vickie-transaction-set-repair
+2026-10-18T05:11:30.9177866Z  * [new branch]      codex/vickie-transaction-set-review-repair -> origin/codex/vickie-transaction-set-review-repair
+2026-10-18T05:11:30.9178550Z  * [new branch]      codex/vickie-transaction-timer-isolation -> origin/codex/vickie-transaction-timer-isolation
+2026-10-18T05:11:30.9179228Z  * [new branch]      codex/vickie-tx-discovery-repair -> origin/codex/vickie-tx-discovery-repair
+2026-10-18T05:11:30.9179808Z  * [new branch]      codex/vickie-type-incident-minimum -> origin/codex/vickie-type-incident-minimum
+2026-10-18T05:11:30.9180485Z  * [new branch]      codex/vickie-type-incident-minimum-integration -> origin/codex/vickie-type-incident-minimum-integration
+2026-10-18T05:11:30.9181255Z  * [new branch]      codex/vickie-type-incident-minimum-review-repair -> origin/codex/vickie-type-incident-minimum-review-repair
+2026-10-18T05:11:30.9181941Z  * [new branch]      codex/vickie-update-cold-directory -> origin/codex/vickie-update-cold-directory
+2026-10-18T05:11:30.9182539Z  * [new branch]      codex/vickie-update-command-minimum -> origin/codex/vickie-update-command-minimum
+2026-10-18T05:11:30.9183116Z  * [new branch]      codex/vickie-update-contracts -> origin/codex/vickie-update-contracts
+2026-10-18T05:11:30.9183688Z  * [new branch]      codex/vickie-update-guarded-overlap -> origin/codex/vickie-update-guarded-overlap
+2026-10-18T05:11:30.9184250Z  * [new branch]      codex/vickie-update-installed -> origin/codex/vickie-update-installed
+2026-10-18T05:11:30.9185084Z  * [new branch]      codex/vickie-update-installed-followup -> origin/codex/vickie-update-installed-followup
+2026-10-18T05:11:30.9185720Z  * [new branch]      codex/vickie-update-installed-repair -> origin/codex/vickie-update-installed-repair
+2026-10-18T05:11:30.9186327Z  * [new branch]      codex/vickie-update-payload-symlink -> origin/codex/vickie-update-payload-symlink
+2026-10-18T05:11:30.9187063Z  * [new branch]      codex/vickie-write-evidence-integration -> origin/codex/vickie-write-evidence-integration
+2026-10-18T05:11:30.9187724Z  * [new branch]      codex/vickie-write-profiles-reviewed -> origin/codex/vickie-write-profiles-reviewed
+2026-10-18T05:11:30.9188232Z  * [new branch]      disclosure           -> origin/disclosure
+2026-10-18T05:11:30.9188671Z  * [new branch]      docs/beads-protocol-name -> origin/docs/beads-protocol-name
+2026-10-18T05:11:30.9189136Z  * [new branch]      janet-numeric-model  -> origin/janet-numeric-model
+2026-10-18T05:11:30.9189571Z  * [new branch]      janet-owned-wildcard -> origin/janet-owned-wildcard
+2026-10-18T05:11:30.9190049Z  * [new branch]      janet-read-projection-gate -> origin/janet-read-projection-gate
+2026-10-18T05:11:30.9190556Z  * [new branch]      janet-w1-read-update-wire -> origin/janet-w1-read-update-wire
+2026-10-18T05:11:30.9191090Z  * [new branch]      janet-w1-transactional-packet -> origin/janet-w1-transactional-packet
+2026-10-18T05:11:30.9191539Z  * [new branch]      main                 -> origin/main
+2026-10-18T05:11:30.9191901Z  * [new branch]      ordering             -> origin/ordering
+2026-10-18T05:11:30.9192300Z  * [new branch]      owned-links-clarity  -> origin/owned-links-clarity
+2026-10-18T05:11:30.9192719Z  * [new branch]      owned-references     -> origin/owned-references
+2026-10-18T05:11:30.9193129Z  * [new branch]      refs-uri-native      -> origin/refs-uri-native
+2026-10-18T05:11:30.9193597Z  * [new branch]      vickie-tx-collection-minimum -> origin/vickie-tx-collection-minimum
+2026-10-18T05:11:30.9194127Z  * [new branch]      vickie-tx-discovery-assembly -> origin/vickie-tx-discovery-assembly
+2026-10-18T05:11:30.9194800Z  * [new branch]      vickie-tx-sequence-alias -> origin/vickie-tx-sequence-alias
+2026-10-18T05:11:30.9195328Z  * [new branch]      vickie-tx-snapshot-minimum -> origin/vickie-tx-snapshot-minimum
+2026-10-18T05:11:30.9196765Z [command]/usr/bin/git branch --list --remote origin/codex/vickie-current-changefeed-minimum
+2026-10-18T05:11:30.9197310Z   origin/codex/vickie-current-changefeed-minimum
+2026-10-18T05:11:30.9198125Z [command]/usr/bin/git rev-parse refs/remotes/origin/codex/vickie-current-changefeed-minimum
+2026-10-18T05:11:30.9198591Z cce884ccea1db97cbc6fd7bff876d4d6091f9081
+2026-10-18T05:11:30.9199366Z ##[endgroup]
+2026-10-18T05:11:30.9199844Z ##[group]Determining the checkout info
+2026-10-18T05:11:30.9200271Z ##[endgroup]
+2026-10-18T05:11:30.9200544Z [command]/usr/bin/git sparse-checkout disable
+2026-10-18T05:11:30.9201278Z [command]/usr/bin/git config --local --unset-all extensions.worktreeConfig
+2026-10-18T05:11:30.9202099Z ##[group]Checking out the ref
+2026-10-18T05:11:30.9202714Z [command]/usr/bin/git checkout --progress --force -B codex/vickie-current-changefeed-minimum refs/remotes/origin/codex/vickie-current-changefeed-minimum
+2026-10-18T05:11:30.9941649Z Switched to a new branch 'codex/vickie-current-changefeed-minimum'
+2026-10-18T05:11:30.9946556Z branch 'codex/vickie-current-changefeed-minimum' set up to track 'origin/codex/vickie-current-changefeed-minimum'.
+2026-10-18T05:11:30.9959329Z ##[endgroup]
+2026-10-18T05:11:30.9997626Z [command]/usr/bin/git log -1 --format=%H
+2026-10-18T05:11:31.0018559Z cce884ccea1db97cbc6fd7bff876d4d6091f9081

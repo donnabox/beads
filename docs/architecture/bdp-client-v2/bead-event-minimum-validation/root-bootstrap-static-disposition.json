@@ -1,0 +1,9 @@
+{
+  "accepted": true,
+  "sourceBindingSha256": "7c120a0e2bca99dbe41f7d6666a564704d4188d2cbf2eb94d759db13f31b9d87",
+  "dependencyInstallAuthorized": true,
+  "staticValidationAuthorized": true,
+  "runtimeValidationAuthorized": false,
+  "nativePreparationReviewSha256": "4faaca3106568656534accc85d8d30465302559573d97e86902c60d56ee77acd",
+  "reason": "Root inspected actual gates, supervisor, bootstrap/static commands and audit tools capture; independent rehash of 72 implementation files, references and 679 source files. Fresh offline frozen-lock scripts-disabled install and capture only initially. Static prefix requires root measured-tool acceptance. Source remains frozen during actual Claude review; no runtime/build release."
+}

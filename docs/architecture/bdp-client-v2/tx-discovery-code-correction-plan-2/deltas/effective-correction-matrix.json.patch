@@ -1,0 +1,31 @@
+--- plan1/correction-matrix.json
++++ plan2/effective-correction-matrix.json
+@@ -1,5 +1,5 @@
+ {
+-  "state": "CLOSED exact root choices, no authored patch",
++  "state": "CLOSED exact all10 root1 choices plus accepted root2 F5/F10 precision; native/root plan2 acceptance pending",
+   "rootDispositionSha256": "4bf597a51f7bbbc872a7ed2e1bcb6ef49942ad4cc6c12f5afe705b2ca73ad705",
+   "actualFindings": 10,
+   "nativeAliases": {
+@@ -103,8 +103,8 @@
+           1309
+         ]
+       },
+-      "change": "A trusted local cold adapter constructs a REAL fresh frozen runtime object {canonicalScope:scope,send:fixture.send} before either positive cold work invocation; pass that object alone to cold callback/helpers. Shared cold helper type exposes only those two client fields. Keep fixture in existing lifecycle wrapper/adapter; no cast/spread or promise of not reading forbidden fields.",
+-      "oracle": "No own property/accessor exposes child,rawready,targets,events,directory,pending,tokens,metadata,stopWork or cleanup capability. All positive helpers use only send; canonicalScope is initial client input. Bound send encapsulates credential references/dial mapping/caps, never returns secrets or provisioning targets. Existing noncold negative/lifecycle lanes retain needed full fixture. No duplicate runner/public API/HTTP request."
++      "change": "Trusted cold adapter constructs a REAL fresh frozen {canonicalScope,send:closureBoundSend} before both positive work invocations. Closure-bound send invokes actual fixture.send ONCE and copies ONLY actual status, detached headers and bodyText into a narrow readonly client response. No full response spread/exactRequest/headerLines/wire telemetry/credentials/lifecycle fields; no type-only cast. Shared cold helper input/response types narrow to these exact fields. Existing wrapper retains full fixture/actual transport telemetry; noncold lanes retain needed full access.",
++      "oracle": "No fixture/rawready/targets/child/events/directory/pending/tokens/metadata or injected request-credential mechanism crosses the client shape/return. This is not a universal secrecy guarantee on arbitrary served response contents. Same43+28 calls and every request/cap/deadline. No public API/runner/executor change."
+     },
+     {
+       "id": "F6",
+@@ -191,7 +191,8 @@
+         ]
+       },
+       "change": "Pass expectedPosition pos-0 to d3Response only on the receiving reader success row (status<400); keep undefined on receiving/auth errors.",
+-      "oracle": "Actual wire epoch/view/position asserted while only reader enters owner/discovery. Same8 calls per route and counters; invalid receiving rows still nondisclosing."
++      "oracle": "Direct projected HttpResponse epoch/view/pos0 headers asserted on reader success; source response evidence, not network-wire receipt. Same8 calls per route/counters; receiving/auth errors nondisclosing. Existing14 source wire exchanges counted separately."
+     }
+-  ]
++  ],
++  "additiveRootDispositionSha256": "8a83a9c4a7909c2810fe3643a3452b9474c180eb08a36075f383d8f756fea3ed"
+ }

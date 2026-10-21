@@ -1,0 +1,1299 @@
+{
+  "state": "CLOSED PLAN5 AUTHORITATIVE COMPOSITION \u2014 NATIVE/ROOT ACCEPTANCE PENDING",
+  "rule": "Read this composition with immutable plan4: all210 indexed plan4 artifacts remain effective except cold-positive-requests.json, resolved ONLY to this overlay corrected file. The only changed semantic content is its receiptRules sentence. Historical plan3/4 indices, native finding and dispositions keep their original meaning; new additive evidence does not rewrite them.",
+  "base": {
+    "root": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/tx-discovery-next-plan-4",
+    "indexPath": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/tx-discovery-next-plan-4/index.json",
+    "indexSha256": "991e4ecd87aba8b08b6eda9f2ba7c0637a1ecdefe1f0aedddff5bbafe00a1083",
+    "indexedFiles": 210,
+    "planPath": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/tx-discovery-next-plan-4/plan.md",
+    "planSha256": "877eb6b0a57cb5425316e05308a6e05955056f5fa5ba5ad64daa0488da854211"
+  },
+  "overrides": {
+    "cold-positive-requests.json": {
+      "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/tx-discovery-next-plan-5/cold-positive-requests.json",
+      "sha256": "cd80851dda5be952c2a3f5c4c19b9ff047a7f14a6d801dff4b21a1f63625756f",
+      "jsonPointer": "/receiptRules",
+      "before": "Every non-sequence command validates mutationReceipt and follows actual receipt.id. Sequence validates transactionalSequenceResponse with per-member keys and no outer header; follows actual created/updated Resource refs. Canonical schema validations and exact actual afterstate, not hashes alone.",
+      "after": "Every non-sequence, non-replay command validates mutationReceipt and follows actual receipt.id. Sequence validates transactionalSequenceResponse with per-member keys and no outer header; follows actual created/updated Resource refs. Canonical schema validations and exact actual afterstate, not hashes alone.",
+      "onlySentenceChanged": true
+    }
+  },
+  "effectiveFiles": {
+    "actual-inputs.json": {
+      "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/tx-discovery-next-plan-4/actual-inputs.json",
+      "sha256": "ab6f5141f5169b4427ebda5393c9d39f57e4e38d46f5ee93eab08bc3cca1c34f",
+      "bytes": 15972,
+      "authority": "immutable indexed plan4 content"
+    },
+    "cold-input-contract.json": {
+      "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/tx-discovery-next-plan-4/cold-input-contract.json",
+      "sha256": "02fd6824e324d4cfefd29d4f3f76552f0aa129edc7e6efd768b3818327e30105",
+      "bytes": 2622,
+      "authority": "immutable indexed plan4 content"
+    },
+    "cold-positive-requests.json": {
+      "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/tx-discovery-next-plan-5/cold-positive-requests.json",
+      "sha256": "cd80851dda5be952c2a3f5c4c19b9ff047a7f14a6d801dff4b21a1f63625756f",
+      "bytes": 24999,
+      "authority": "plan5 sole leaf correction"
+    },
+    "completion.json": {
+      "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/tx-discovery-next-plan-4/completion.json",
+      "sha256": "71a2688d66d480a993879bdb2e7e904bf4fc4a8df77c9790488ff9427d9f40c5",
+      "bytes": 870,
+      "authority": "immutable indexed plan4 content"
+    },
+    "context/actual-review-terminal-1/actual-stream.jsonl": {
+      "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/tx-discovery-next-plan-4/context/actual-review-terminal-1/actual-stream.jsonl",
+      "sha256": "2e79d0ace0234c32b0b395a091c70fc030c53bda6558548fbbd02e09463a6b42",
+      "bytes": 2631948,
+      "authority": "immutable indexed plan4 content"
+    },
+    "context/actual-review-terminal-1/actual-terminal-results.json": {
+      "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/tx-discovery-next-plan-4/context/actual-review-terminal-1/actual-terminal-results.json",
+      "sha256": "8ed99a33d9194028665ffcadf70cef65197ab5ea211e42ee2037356e47a3d6ef",
+      "bytes": 28355,
+      "authority": "immutable indexed plan4 content"
+    },
+    "context/actual-review-terminal-1/audit-data.json": {
+      "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/tx-discovery-next-plan-4/context/actual-review-terminal-1/audit-data.json",
+      "sha256": "3715512d856d588772172a536af9541c520b20178738d23decc4dd1732641803",
+      "bytes": 68103,
+      "authority": "immutable indexed plan4 content"
+    },
+    "context/actual-review-terminal-1/closure.json": {
+      "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/tx-discovery-next-plan-4/context/actual-review-terminal-1/closure.json",
+      "sha256": "11b673382d9fb280687f49fb9e1504f5708eca8b222f87ce5be0fb164034fa8d",
+      "bytes": 1169,
+      "authority": "immutable indexed plan4 content"
+    },
+    "context/actual-review-terminal-1/findings-assessment.json": {
+      "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/tx-discovery-next-plan-4/context/actual-review-terminal-1/findings-assessment.json",
+      "sha256": "85c2db7de7f1027354ccb4942d550604e629a6cf6d6e4ebabf1ca831cbfe5aab",
+      "bytes": 4786,
+      "authority": "immutable indexed plan4 content"
+    },
+    "context/actual-review-terminal-1/independent-source-after.json": {
+      "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/tx-discovery-next-plan-4/context/actual-review-terminal-1/independent-source-after.json",
+      "sha256": "273f436f934a71e687394a5e48429e1a870bff95c508bd7070057395242cdd49",
+      "bytes": 109491,
+      "authority": "immutable indexed plan4 content"
+    },
+    "context/actual-review-terminal-1/index.json": {
+      "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/tx-discovery-next-plan-4/context/actual-review-terminal-1/index.json",
+      "sha256": "b27cfbb6f6f609920ee6c02767e679f6757e38e562e3386f8fcc574ae484ca31",
+      "bytes": 1348,
+      "authority": "immutable indexed plan4 content"
+    },
+    "context/actual-review-terminal-1/observation-001.json": {
+      "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/tx-discovery-next-plan-4/context/actual-review-terminal-1/observation-001.json",
+      "sha256": "80f1e23e72bbe89224afb2e7bc0abdce3160a81b88ffa81ea020ab2daf815777",
+      "bytes": 3119,
+      "authority": "immutable indexed plan4 content"
+    },
+    "context/actual-review-terminal-1/observation-002.json": {
+      "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/tx-discovery-next-plan-4/context/actual-review-terminal-1/observation-002.json",
+      "sha256": "936ec7b40361f677f5d8e05e0d4cfed6566b9fee71ea104dccd03af85652b967",
+      "bytes": 810,
+      "authority": "immutable indexed plan4 content"
+    },
+    "context/actual-review-terminal-1/postterminal-process-inventory.json": {
+      "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/tx-discovery-next-plan-4/context/actual-review-terminal-1/postterminal-process-inventory.json",
+      "sha256": "e7f5e95c39869f65e6ef79b218391417fbe9473a3f4c8260855ee112b934b8de",
+      "bytes": 2801,
+      "authority": "immutable indexed plan4 content"
+    },
+    "context/actual-review-terminal-1/report.md": {
+      "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/tx-discovery-next-plan-4/context/actual-review-terminal-1/report.md",
+      "sha256": "0d25f43aeaaeb952a3fe876d027cf916ece21f5773a99fba172383d7c07c41da",
+      "bytes": 4877,
+      "authority": "immutable indexed plan4 content"
+    },
+    "context/actual-review-terminal-1/reviewed-result.txt": {
+      "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/tx-discovery-next-plan-4/context/actual-review-terminal-1/reviewed-result.txt",
+      "sha256": "a8dd9b7e87b2ee7540bc71f8017670832e95187113e546676200a0cf1759a1d1",
+      "bytes": 24872,
+      "authority": "immutable indexed plan4 content"
+    },
+    "context/current-changefeed-publication-1/publication.json": {
+      "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/tx-discovery-next-plan-4/context/current-changefeed-publication-1/publication.json",
+      "sha256": "e3318cb8ecae14d77c73b42fde686eaa118cb2f86877323c4cb336ca8531b0b0",
+      "bytes": 908,
+      "authority": "immutable indexed plan4 content"
+    },
+    "context/current-changefeed-publication-1/source-map-before-commit.json": {
+      "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/tx-discovery-next-plan-4/context/current-changefeed-publication-1/source-map-before-commit.json",
+      "sha256": "ff8ad56f23c3d7ee6e652724501cdaa16ec9551ea24b1673dc6c74bf5c1c06b7",
+      "bytes": 87874,
+      "authority": "immutable indexed plan4 content"
+    },
+    "context/current-changefeed-typecheck-correction-1/source-binding.json": {
+      "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/tx-discovery-next-plan-4/context/current-changefeed-typecheck-correction-1/source-binding.json",
+      "sha256": "f03a40dc7431b657bd862e40b45b4c7c81ff7115cce1faef7b1640a0d17a155f",
+      "bytes": 91821,
+      "authority": "immutable indexed plan4 content"
+    },
+    "context/current-changefeed-validation4-actual-prefix-audit-1/terminal-1/index.json": {
+      "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/tx-discovery-next-plan-4/context/current-changefeed-validation4-actual-prefix-audit-1/terminal-1/index.json",
+      "sha256": "c2d8c11754d6b277a0a36fd2a22e24715cd5251eb6471e9fbf19ec7f6f2eac95",
+      "bytes": 1101,
+      "authority": "immutable indexed plan4 content"
+    },
+    "context/current-changefeed-validation4-actual-prefix-audit-1/terminal-1/report.json": {
+      "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/tx-discovery-next-plan-4/context/current-changefeed-validation4-actual-prefix-audit-1/terminal-1/report.json",
+      "sha256": "7a9478042d180335e6c0850b8030d9f7389b2ca9de69f0b8c617643c497755a0",
+      "bytes": 47156,
+      "authority": "immutable indexed plan4 content"
+    },
+    "context/current-changefeed-validation4-actual-prefix-audit-1/terminal-1/report.md": {
+      "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/tx-discovery-next-plan-4/context/current-changefeed-validation4-actual-prefix-audit-1/terminal-1/report.md",
+      "sha256": "737276da03095c01de486cca9927760be4712cff8156d5a0b8af0ee68215e79a",
+      "bytes": 2005,
+      "authority": "immutable indexed plan4 content"
+    },
+    "context/current-changefeed-validation4-root-final-local-acceptance-1/acceptance.json": {
+      "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/tx-discovery-next-plan-4/context/current-changefeed-validation4-root-final-local-acceptance-1/acceptance.json",
+      "sha256": "a678ca6eb557052ee6c10aecf7af37a27b83dd8ada81aea172c811c3b7e70792",
+      "bytes": 8861,
+      "authority": "immutable indexed plan4 content"
+    },
+    "context/plan3-native-precision-review-1/index.json": {
+      "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/tx-discovery-next-plan-4/context/plan3-native-precision-review-1/index.json",
+      "sha256": "9aadb90e0afc89d12b88552739478994acf2de3963c79fce2312f67bb1e7c429",
+      "bytes": 554,
+      "authority": "immutable indexed plan4 content"
+    },
+    "context/plan3-native-precision-review-1/input-verification.json": {
+      "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/tx-discovery-next-plan-4/context/plan3-native-precision-review-1/input-verification.json",
+      "sha256": "c7a9fdbcd91ab2ab7a7613e216ede7375055580b133996f0e8b03db783842d52",
+      "bytes": 2464,
+      "authority": "immutable indexed plan4 content"
+    },
+    "context/plan3-native-precision-review-1/review.json": {
+      "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/tx-discovery-next-plan-4/context/plan3-native-precision-review-1/review.json",
+      "sha256": "89f66628bb834b816524f6412685c77c3872d009202db12e55558f7f19e79186",
+      "bytes": 3082,
+      "authority": "immutable indexed plan4 content"
+    },
+    "context/plan3-native-precision-review-1/review.md": {
+      "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/tx-discovery-next-plan-4/context/plan3-native-precision-review-1/review.md",
+      "sha256": "07601522ff7464577bdde390941649145521dfc819b79d62bb5e98436db59e04",
+      "bytes": 1923,
+      "authority": "immutable indexed plan4 content"
+    },
+    "context/root-plan-disposition-1/disposition.json": {
+      "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/tx-discovery-next-plan-4/context/root-plan-disposition-1/disposition.json",
+      "sha256": "367b3bea6a4ccb21b0faec463e526cf8fc0d155c89a4855ff91bdbbf38ebf126",
+      "bytes": 8216,
+      "authority": "immutable indexed plan4 content"
+    },
+    "context/root-plan-disposition-1/disposition.md": {
+      "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/tx-discovery-next-plan-4/context/root-plan-disposition-1/disposition.md",
+      "sha256": "f53d940255f3a385dd6481ae8e93570f47b5cd0ada4a55f57321da040feb1d0a",
+      "bytes": 675,
+      "authority": "immutable indexed plan4 content"
+    },
+    "context/write-trusted-startup-lifecycle-next-plan-1/index.json": {
+      "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/tx-discovery-next-plan-4/context/write-trusted-startup-lifecycle-next-plan-1/index.json",
+      "sha256": "e4098fa33857a4e721f967a5c9b0387d9e41362653ae195dead449b784f48d33",
+      "bytes": 9951,
+      "authority": "immutable indexed plan4 content"
+    },
+    "context/write-trusted-startup-lifecycle-next-plan-1/plan.md": {
+      "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/tx-discovery-next-plan-4/context/write-trusted-startup-lifecycle-next-plan-1/plan.md",
+      "sha256": "158cfcbbbe8026a9792864038dae3205e783504450203f64dd30b7c666aa7da8",
+      "bytes": 19685,
+      "authority": "immutable indexed plan4 content"
+    },
+    "context/write-trusted-startup-next-plan-3/plan.md": {
+      "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/tx-discovery-next-plan-4/context/write-trusted-startup-next-plan-3/plan.md",
+      "sha256": "11f2c34a4eec98d3613e5ebb8b313cd9dbebff81e660a39aa23d8fc61bf2f67f",
+      "bytes": 27620,
+      "authority": "immutable indexed plan4 content"
+    },
+    "context-origins.json": {
+      "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/tx-discovery-next-plan-4/context-origins.json",
+      "sha256": "92c45d478860b8a1cea20c32d2299c06d83c6f2b78f130e7e1be5f76076b46d9",
+      "bytes": 33047,
+      "authority": "immutable indexed plan4 content"
+    },
+    "counterfactuals.json": {
+      "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/tx-discovery-next-plan-4/counterfactuals.json",
+      "sha256": "058cb18fa0ab4790a2663f82bff84e671a79aa6266c5fbcb29a7b3cc761a7c19",
+      "bytes": 1984,
+      "authority": "immutable indexed plan4 content"
+    },
+    "d1-committed.patch": {
+      "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/tx-discovery-next-plan-4/d1-committed.patch",
+      "sha256": "890ce777269f49e932b34b68705c56d9553e8e946dc708a7f524f3c7b8061745",
+      "bytes": 80267,
+      "authority": "immutable indexed plan4 content"
+    },
+    "data-deltas/actual-inputs.json.inverse.patch": {
+      "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/tx-discovery-next-plan-4/data-deltas/actual-inputs.json.inverse.patch",
+      "sha256": "8140b0ab47c9c51a37b151878623f1bc75663f65d777b1b4c61f2b88b8e66ab7",
+      "bytes": 18531,
+      "authority": "immutable indexed plan4 content"
+    },
+    "data-deltas/actual-inputs.json.patch": {
+      "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/tx-discovery-next-plan-4/data-deltas/actual-inputs.json.patch",
+      "sha256": "506d896c3651d713e10edf49d4c191fda3c65c7b0ad1ce6d0093097e3ae45c98",
+      "bytes": 21153,
+      "authority": "immutable indexed plan4 content"
+    },
+    "data-deltas/context-origins.json.inverse.patch": {
+      "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/tx-discovery-next-plan-4/data-deltas/context-origins.json.inverse.patch",
+      "sha256": "af2a235c4d1eee1eb51d7d3826241fac31f00287f0988d26083e2afd7606ccb1",
+      "bytes": 38025,
+      "authority": "immutable indexed plan4 content"
+    },
+    "data-deltas/context-origins.json.patch": {
+      "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/tx-discovery-next-plan-4/data-deltas/context-origins.json.patch",
+      "sha256": "30639ca25576f81402110a690a66ff668a2bb0333ebdcb6df10491923919b260",
+      "bytes": 38168,
+      "authority": "immutable indexed plan4 content"
+    },
+    "data-deltas/dispatch-and-schema.json.inverse.patch": {
+      "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/tx-discovery-next-plan-4/data-deltas/dispatch-and-schema.json.inverse.patch",
+      "sha256": "220ab75f25c57954f14f34dd6c8b92928c790003bcfc16b9c548beaf0b6f88dd",
+      "bytes": 1248,
+      "authority": "immutable indexed plan4 content"
+    },
+    "data-deltas/dispatch-and-schema.json.patch": {
+      "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/tx-discovery-next-plan-4/data-deltas/dispatch-and-schema.json.patch",
+      "sha256": "8f9946027a74adccec1156faea9eb3d41cf43ec3c7b0811a5f6b6297c6d1ca2f",
+      "bytes": 1248,
+      "authority": "immutable indexed plan4 content"
+    },
+    "data-deltas/preservation.json.inverse.patch": {
+      "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/tx-discovery-next-plan-4/data-deltas/preservation.json.inverse.patch",
+      "sha256": "c81215c642f029bb0bc7e0ba4748af87a2dfaa6ff31bafa0cb7bab7c1e448e58",
+      "bytes": 2465,
+      "authority": "immutable indexed plan4 content"
+    },
+    "data-deltas/preservation.json.patch": {
+      "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/tx-discovery-next-plan-4/data-deltas/preservation.json.patch",
+      "sha256": "994e90b09d4998a069d62065e5460af53198e09c7a880395b05ea0792a4e6227",
+      "bytes": 2465,
+      "authority": "immutable indexed plan4 content"
+    },
+    "data-deltas/source-bases.json.inverse.patch": {
+      "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/tx-discovery-next-plan-4/data-deltas/source-bases.json.inverse.patch",
+      "sha256": "b73831e4165dc53af6f4d52fc8d473607180930df08a9c6971e9609bfedf4436",
+      "bytes": 98187,
+      "authority": "immutable indexed plan4 content"
+    },
+    "data-deltas/source-bases.json.patch": {
+      "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/tx-discovery-next-plan-4/data-deltas/source-bases.json.patch",
+      "sha256": "0039f733108ef89080fc81c88f390d1ecbf2983b0c14c74d31bcf8bf601a5b77",
+      "bytes": 98187,
+      "authority": "immutable indexed plan4 content"
+    },
+    "data-deltas/status.json.inverse.patch": {
+      "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/tx-discovery-next-plan-4/data-deltas/status.json.inverse.patch",
+      "sha256": "0e23b426d7ee495c2951a0022a2b81fca1e44c5c6b9d72cb931037553412999e",
+      "bytes": 1712,
+      "authority": "immutable indexed plan4 content"
+    },
+    "data-deltas/status.json.patch": {
+      "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/tx-discovery-next-plan-4/data-deltas/status.json.patch",
+      "sha256": "345f94bb2e189413d478cae4912d2f7bcd2338a011063dab4ffe4ee3a9352127",
+      "bytes": 1712,
+      "authority": "immutable indexed plan4 content"
+    },
+    "dispatch-and-schema.json": {
+      "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/tx-discovery-next-plan-4/dispatch-and-schema.json",
+      "sha256": "f3baa125c102452fdb9808e7c3ab443d2a38c4bc289d2a0b87d322ab461eb36c",
+      "bytes": 2530,
+      "authority": "immutable indexed plan4 content"
+    },
+    "findings-resolution.json": {
+      "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/tx-discovery-next-plan-4/findings-resolution.json",
+      "sha256": "fbd7c5c52cd7018a51f8b01d8af3869b57d664594f9184678566cd902ca68c96",
+      "bytes": 8832,
+      "authority": "immutable indexed plan4 content"
+    },
+    "gates.json": {
+      "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/tx-discovery-next-plan-4/gates.json",
+      "sha256": "c3fb23a8baf803ecb8c3d0963fb8179fb536b4395d80f5694cd94f8f29fe92be",
+      "bytes": 765,
+      "authority": "immutable indexed plan4 content"
+    },
+    "inspection-deltas/http.patch": {
+      "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/tx-discovery-next-plan-4/inspection-deltas/http.patch",
+      "sha256": "4adf2fd02345fb4662f98b45b44e899abcd283798c72ab3e0fdd32f47fe533b0",
+      "bytes": 1465,
+      "authority": "immutable indexed plan4 content"
+    },
+    "inspection-deltas/service.patch": {
+      "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/tx-discovery-next-plan-4/inspection-deltas/service.patch",
+      "sha256": "d56aeddaf9726e695baa5fa16c0ba49ba86e21b0a8abd8f028b55c2633cc84b2",
+      "bytes": 1679,
+      "authority": "immutable indexed plan4 content"
+    },
+    "installed-callbacks.json": {
+      "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/tx-discovery-next-plan-4/installed-callbacks.json",
+      "sha256": "422190d787b43966d4135fed81010c4df1d0dadbe45f34b62601c6c6762ea31d",
+      "bytes": 64383,
+      "authority": "immutable indexed plan4 content"
+    },
+    "observation-contract.json": {
+      "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/tx-discovery-next-plan-4/observation-contract.json",
+      "sha256": "1b4805b5d40f58d57793227725163b84a6b7e31969fb9dc76609c85253d49977",
+      "bytes": 3758,
+      "authority": "immutable indexed plan4 content"
+    },
+    "plan.md": {
+      "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/tx-discovery-next-plan-4/plan.md",
+      "sha256": "877eb6b0a57cb5425316e05308a6e05955056f5fa5ba5ad64daa0488da854211",
+      "bytes": 24359,
+      "authority": "immutable indexed plan4 content"
+    },
+    "plan.successor-inverse.patch": {
+      "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/tx-discovery-next-plan-4/plan.successor-inverse.patch",
+      "sha256": "5c2f6774afae351777538938e8f509d0dce0399b7808152efca609eb9deabcca",
+      "bytes": 10987,
+      "authority": "immutable indexed plan4 content"
+    },
+    "plan.successor.patch": {
+      "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/tx-discovery-next-plan-4/plan.successor.patch",
+      "sha256": "b170fa48838ad67f4d5e63865ca246d81a0e7a97c7bfd9467bbc620eefd7556f",
+      "bytes": 10987,
+      "authority": "immutable indexed plan4 content"
+    },
+    "plan4-delta-manifest.json": {
+      "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/tx-discovery-next-plan-4/plan4-delta-manifest.json",
+      "sha256": "254ab3646122ff31075284c60c987494f6ab9bc5d9a9038aaa151059e0563bac",
+      "bytes": 8647,
+      "authority": "immutable indexed plan4 content"
+    },
+    "plan4-deltas/actual-inputs.json.forward.patch": {
+      "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/tx-discovery-next-plan-4/plan4-deltas/actual-inputs.json.forward.patch",
+      "sha256": "ad75d0e2e5f5a4b191702325278fddf6fd15354ba38682de32d9e8daa3d7005e",
+      "bytes": 1726,
+      "authority": "immutable indexed plan4 content"
+    },
+    "plan4-deltas/actual-inputs.json.inverse.patch": {
+      "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/tx-discovery-next-plan-4/plan4-deltas/actual-inputs.json.inverse.patch",
+      "sha256": "391c9485a9016852eeaf7ec5d69b0c7702fb2417942dc0adefff6e49edf61acc",
+      "bytes": 1726,
+      "authority": "immutable indexed plan4 content"
+    },
+    "plan4-deltas/cold-input-contract.json.forward.patch": {
+      "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/tx-discovery-next-plan-4/plan4-deltas/cold-input-contract.json.forward.patch",
+      "sha256": "e12b192384a2dd908f49100e9c6bbacd28a678178e3be1f1e9a56f5bee7cf932",
+      "bytes": 1447,
+      "authority": "immutable indexed plan4 content"
+    },
+    "plan4-deltas/cold-input-contract.json.inverse.patch": {
+      "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/tx-discovery-next-plan-4/plan4-deltas/cold-input-contract.json.inverse.patch",
+      "sha256": "7e8cb7e356ac8872e76e9eee2fd0495aa1950c8fef1f7ea546a468ba537df17e",
+      "bytes": 1447,
+      "authority": "immutable indexed plan4 content"
+    },
+    "plan4-deltas/cold-positive-requests.json.forward.patch": {
+      "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/tx-discovery-next-plan-4/plan4-deltas/cold-positive-requests.json.forward.patch",
+      "sha256": "4bb4b62d54f9200d7b13afb336afbb7388833908ce2b637ad0dfbf225e5dd3d0",
+      "bytes": 3198,
+      "authority": "immutable indexed plan4 content"
+    },
+    "plan4-deltas/cold-positive-requests.json.inverse.patch": {
+      "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/tx-discovery-next-plan-4/plan4-deltas/cold-positive-requests.json.inverse.patch",
+      "sha256": "a95df7ad92fa20d9b559abf60950b9cf85b9d1c2f27c5452686c5d09056380f5",
+      "bytes": 3198,
+      "authority": "immutable indexed plan4 content"
+    },
+    "plan4-deltas/counterfactuals.json.forward.patch": {
+      "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/tx-discovery-next-plan-4/plan4-deltas/counterfactuals.json.forward.patch",
+      "sha256": "23bb45752829b2c23312ef511784aff578fbe86988b95a2baccf913d0110dceb",
+      "bytes": 1205,
+      "authority": "immutable indexed plan4 content"
+    },
+    "plan4-deltas/counterfactuals.json.inverse.patch": {
+      "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/tx-discovery-next-plan-4/plan4-deltas/counterfactuals.json.inverse.patch",
+      "sha256": "105ee72cefbd7b127c0333697c1f7c6903ffa0a41c1240a77daf283ce88b86bb",
+      "bytes": 1205,
+      "authority": "immutable indexed plan4 content"
+    },
+    "plan4-deltas/dispatch-and-schema.json.forward.patch": {
+      "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/tx-discovery-next-plan-4/plan4-deltas/dispatch-and-schema.json.forward.patch",
+      "sha256": "0d2cf4dc06ea5c225322687cd3d80e5b1c39373029581dfaf35afac6f80db75b",
+      "bytes": 865,
+      "authority": "immutable indexed plan4 content"
+    },
+    "plan4-deltas/dispatch-and-schema.json.inverse.patch": {
+      "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/tx-discovery-next-plan-4/plan4-deltas/dispatch-and-schema.json.inverse.patch",
+      "sha256": "48028746bd1f51a00b12862e51a42546560f8d070ddfd6b8461d2ef8bf2b1907",
+      "bytes": 865,
+      "authority": "immutable indexed plan4 content"
+    },
+    "plan4-deltas/gates.json.forward.patch": {
+      "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/tx-discovery-next-plan-4/plan4-deltas/gates.json.forward.patch",
+      "sha256": "9fa27062d4113dfe31c60529c82bc4c450069217fd2dc1a4a44660dbfd2429a0",
+      "bytes": 1098,
+      "authority": "immutable indexed plan4 content"
+    },
+    "plan4-deltas/gates.json.inverse.patch": {
+      "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/tx-discovery-next-plan-4/plan4-deltas/gates.json.inverse.patch",
+      "sha256": "8a3b5c81086e978a1f44a198905bf150d76d4252f469a2e297df244254a21412",
+      "bytes": 1098,
+      "authority": "immutable indexed plan4 content"
+    },
+    "plan4-deltas/installed-callbacks.json.forward.patch": {
+      "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/tx-discovery-next-plan-4/plan4-deltas/installed-callbacks.json.forward.patch",
+      "sha256": "fddde5c6caf24159ce7a7d2509b22e6d4d7c816e516f75f4d8ebe1a11ec690a1",
+      "bytes": 68733,
+      "authority": "immutable indexed plan4 content"
+    },
+    "plan4-deltas/installed-callbacks.json.inverse.patch": {
+      "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/tx-discovery-next-plan-4/plan4-deltas/installed-callbacks.json.inverse.patch",
+      "sha256": "17b970a172dcc5deea5864ee4baa694d00a81c717f829ffdd958859fce35b34e",
+      "bytes": 68733,
+      "authority": "immutable indexed plan4 content"
+    },
+    "plan4-deltas/observation-contract.json.forward.patch": {
+      "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/tx-discovery-next-plan-4/plan4-deltas/observation-contract.json.forward.patch",
+      "sha256": "9d652db2bc3ce9ea2f4efb54637b26927deaf47d40ce71d68c12b50dcc7fed0d",
+      "bytes": 2536,
+      "authority": "immutable indexed plan4 content"
+    },
+    "plan4-deltas/observation-contract.json.inverse.patch": {
+      "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/tx-discovery-next-plan-4/plan4-deltas/observation-contract.json.inverse.patch",
+      "sha256": "a37d7728b3813ff74bc66c0a0bddbb56e24356d869a0519e586c51e8b45ca9f6",
+      "bytes": 2536,
+      "authority": "immutable indexed plan4 content"
+    },
+    "plan4-deltas/plan.md.forward.patch": {
+      "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/tx-discovery-next-plan-4/plan4-deltas/plan.md.forward.patch",
+      "sha256": "8780e1d868fc577967760820708a6c584be54ea3817130523b85defcb4d89e08",
+      "bytes": 30112,
+      "authority": "immutable indexed plan4 content"
+    },
+    "plan4-deltas/plan.md.inverse.patch": {
+      "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/tx-discovery-next-plan-4/plan4-deltas/plan.md.inverse.patch",
+      "sha256": "206491bb7dce1359990031de98a8fc405af00c264dbee35a7b3145a9d123aca5",
+      "bytes": 30112,
+      "authority": "immutable indexed plan4 content"
+    },
+    "plan4-deltas/preservation.json.forward.patch": {
+      "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/tx-discovery-next-plan-4/plan4-deltas/preservation.json.forward.patch",
+      "sha256": "0aeb21c79775f3a409eebed446c10b5ebc2119c2a8e9426addb949006f08ae50",
+      "bytes": 3337,
+      "authority": "immutable indexed plan4 content"
+    },
+    "plan4-deltas/preservation.json.inverse.patch": {
+      "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/tx-discovery-next-plan-4/plan4-deltas/preservation.json.inverse.patch",
+      "sha256": "c5e22909afd4a5027385b7189445ef81feb327ef74cbd89b96b45c82e501cb65",
+      "bytes": 3337,
+      "authority": "immutable indexed plan4 content"
+    },
+    "plan4-deltas/report.md.forward.patch": {
+      "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/tx-discovery-next-plan-4/plan4-deltas/report.md.forward.patch",
+      "sha256": "5cf0b304159cd454e7e41e91c8ebf50c8f863cfaf0561a55fa87a2ce0ace29c4",
+      "bytes": 4595,
+      "authority": "immutable indexed plan4 content"
+    },
+    "plan4-deltas/report.md.inverse.patch": {
+      "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/tx-discovery-next-plan-4/plan4-deltas/report.md.inverse.patch",
+      "sha256": "3fdc3ee69bb045110c1661f0415eb356d66c25101ffe1e77e8fc279692f821c4",
+      "bytes": 4595,
+      "authority": "immutable indexed plan4 content"
+    },
+    "plan4-deltas/shared-http-composition.md.forward.patch": {
+      "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/tx-discovery-next-plan-4/plan4-deltas/shared-http-composition.md.forward.patch",
+      "sha256": "ddf02a273b13fc771c413bffa3ecf79667da117e9c03b479136d7cd82044edf8",
+      "bytes": 6173,
+      "authority": "immutable indexed plan4 content"
+    },
+    "plan4-deltas/shared-http-composition.md.inverse.patch": {
+      "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/tx-discovery-next-plan-4/plan4-deltas/shared-http-composition.md.inverse.patch",
+      "sha256": "4d4d956c28b39d220f424942facd9746d46d0d2aec90a542a8fe8cd713f957a9",
+      "bytes": 6173,
+      "authority": "immutable indexed plan4 content"
+    },
+    "plan4-deltas/source-callbacks.json.forward.patch": {
+      "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/tx-discovery-next-plan-4/plan4-deltas/source-callbacks.json.forward.patch",
+      "sha256": "b9bd04870dea8ca2b5f2eecf44bff36a9b1b51fb2a63c496b1559d53788cf643",
+      "bytes": 6272,
+      "authority": "immutable indexed plan4 content"
+    },
+    "plan4-deltas/source-callbacks.json.inverse.patch": {
+      "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/tx-discovery-next-plan-4/plan4-deltas/source-callbacks.json.inverse.patch",
+      "sha256": "fcbaca95f2cdb7ec93ec068216cd46d58c87824c25371a5bfcd31ccadbbfe5d0",
+      "bytes": 6272,
+      "authority": "immutable indexed plan4 content"
+    },
+    "plan4-deltas/static-rebind-checks.json.forward.patch": {
+      "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/tx-discovery-next-plan-4/plan4-deltas/static-rebind-checks.json.forward.patch",
+      "sha256": "e6ec663fb0b0458c20fe3232ed2f76af2bec4c1f76d5956f1467b1d83a8efde1",
+      "bytes": 2692,
+      "authority": "immutable indexed plan4 content"
+    },
+    "plan4-deltas/static-rebind-checks.json.inverse.patch": {
+      "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/tx-discovery-next-plan-4/plan4-deltas/static-rebind-checks.json.inverse.patch",
+      "sha256": "c4b517b139e8f521bf5ebc9a26758b21c339f345db1374b920b868eca61264b9",
+      "bytes": 2672,
+      "authority": "immutable indexed plan4 content"
+    },
+    "plan4-deltas/status.json.forward.patch": {
+      "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/tx-discovery-next-plan-4/plan4-deltas/status.json.forward.patch",
+      "sha256": "8e998976ce4f1eb902199ccccdfabbf430d5ea6c6b13dc32135bae5289c17809",
+      "bytes": 2431,
+      "authority": "immutable indexed plan4 content"
+    },
+    "plan4-deltas/status.json.inverse.patch": {
+      "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/tx-discovery-next-plan-4/plan4-deltas/status.json.inverse.patch",
+      "sha256": "20be7fae8b9beb7e2d27aba882c950d35e347ee8f78ee7ac083e2bc12560a3dd",
+      "bytes": 2431,
+      "authority": "immutable indexed plan4 content"
+    },
+    "plan4-forward.patch": {
+      "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/tx-discovery-next-plan-4/plan4-forward.patch",
+      "sha256": "2ce17d5687a2181aa92e2585357ceca8233c46cdeba49408030794f2aa891230",
+      "bytes": 136420,
+      "authority": "immutable indexed plan4 content"
+    },
+    "plan4-initial-origins.json": {
+      "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/tx-discovery-next-plan-4/plan4-initial-origins.json",
+      "sha256": "cf6af6d50ef33e74a31657a16ebdabb8a2267071b258c6fc725630c885b15b63",
+      "bytes": 53165,
+      "authority": "immutable indexed plan4 content"
+    },
+    "plan4-inverse.patch": {
+      "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/tx-discovery-next-plan-4/plan4-inverse.patch",
+      "sha256": "574fab1f30fefceec0902f1f4fa55e93aeb81363fe11a771894853c72e5a9e8a",
+      "bytes": 136400,
+      "authority": "immutable indexed plan4 content"
+    },
+    "plan4-origins.json": {
+      "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/tx-discovery-next-plan-4/plan4-origins.json",
+      "sha256": "df74d9964bf14d8fff90c7760700d037ea275be7d1f2a1a1c0ef2a1c0fbbb2ce",
+      "bytes": 79113,
+      "authority": "immutable indexed plan4 content"
+    },
+    "predecessor/plan2/actual-inputs.json": {
+      "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/tx-discovery-next-plan-4/predecessor/plan2/actual-inputs.json",
+      "sha256": "415880af6b9b04e140ac9bf8627e3969c48089fc1010a8293e3b9bc5711f5e69",
+      "bytes": 9333,
+      "authority": "immutable indexed plan4 content"
+    },
+    "predecessor/plan2/cold-input-contract.json": {
+      "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/tx-discovery-next-plan-4/predecessor/plan2/cold-input-contract.json",
+      "sha256": "7a62b0eca649f19316b7d4346db2d9cbcda0a281df480f30f1e93d9ff0730245",
+      "bytes": 1750,
+      "authority": "immutable indexed plan4 content"
+    },
+    "predecessor/plan2/cold-positive-requests.json": {
+      "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/tx-discovery-next-plan-4/predecessor/plan2/cold-positive-requests.json",
+      "sha256": "ee4001be667ed8851c1330028da5fa20893c060446ac34fb432a49b694b157de",
+      "bytes": 23962,
+      "authority": "immutable indexed plan4 content"
+    },
+    "predecessor/plan2/context/d1-binding.json": {
+      "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/tx-discovery-next-plan-4/predecessor/plan2/context/d1-binding.json",
+      "sha256": "6b349233d20cc2b7d676e9a6ce8a66c43606cda8d7519a238a5ab8f896ab4983",
+      "bytes": 179868,
+      "authority": "immutable indexed plan4 content"
+    },
+    "predecessor/plan2/context/d1-root-source-inspection-1.json": {
+      "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/tx-discovery-next-plan-4/predecessor/plan2/context/d1-root-source-inspection-1.json",
+      "sha256": "c6e247f6495af8fa6a937cdde8ed378bd8a23950538f23e60dee03019cd3f316",
+      "bytes": 2071,
+      "authority": "immutable indexed plan4 content"
+    },
+    "predecessor/plan2/context/d1-source-map.json": {
+      "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/tx-discovery-next-plan-4/predecessor/plan2/context/d1-source-map.json",
+      "sha256": "3fd5db0a85b07dcc69eb319802b877b15de166312373f3cca7789bd5bb20bf38",
+      "bytes": 178266,
+      "authority": "immutable indexed plan4 content"
+    },
+    "predecessor/plan2/context/source/apps/bdptest/src/transactional-discovery-installed.test.ts": {
+      "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/tx-discovery-next-plan-4/predecessor/plan2/context/source/apps/bdptest/src/transactional-discovery-installed.test.ts",
+      "sha256": "7cf8822108489f3fb2f9c5ca1d97c6d7b832acca95a2f7d891c3413404d90c49",
+      "bytes": 11162,
+      "authority": "immutable indexed plan4 content"
+    },
+    "predecessor/plan2/context/source/packages/protocol/src/transaction-discovery-values.ts": {
+      "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/tx-discovery-next-plan-4/predecessor/plan2/context/source/packages/protocol/src/transaction-discovery-values.ts",
+      "sha256": "d52e19c0b250b1dcce7a1f46c3bbe9e2d9ba77ed3a1ea41e7dca20a7982893d7",
+      "bytes": 3168,
+      "authority": "immutable indexed plan4 content"
+    },
+    "predecessor/plan2/context/source/packages/server/src/read-http.ts": {
+      "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/tx-discovery-next-plan-4/predecessor/plan2/context/source/packages/server/src/read-http.ts",
+      "sha256": "31934105eff6fff8ded8ce2ca9e3c19028991ca7c3d5f51b848004177e8c9268",
+      "bytes": 8997,
+      "authority": "immutable indexed plan4 content"
+    },
+    "predecessor/plan2/context/source/packages/server/src/transaction-consistency.ts": {
+      "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/tx-discovery-next-plan-4/predecessor/plan2/context/source/packages/server/src/transaction-consistency.ts",
+      "sha256": "49cf5e1a7682b7fff570b3691b91d9de0816fc6fb93970847d5ece0992f21e9d",
+      "bytes": 7287,
+      "authority": "immutable indexed plan4 content"
+    },
+    "predecessor/plan2/context/source/packages/server/src/transaction-discovery.test.ts": {
+      "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/tx-discovery-next-plan-4/predecessor/plan2/context/source/packages/server/src/transaction-discovery.test.ts",
+      "sha256": "977dfae7a1cba9ffe11bdd3633ee26fa15eb8579254c6304eea1d6ac10667356",
+      "bytes": 6361,
+      "authority": "immutable indexed plan4 content"
+    },
+    "predecessor/plan2/context/source/packages/server/src/transaction-discovery.ts": {
+      "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/tx-discovery-next-plan-4/predecessor/plan2/context/source/packages/server/src/transaction-discovery.ts",
+      "sha256": "bb8055e2089f640a5d2071e389ac2011d08c038427265b50ab3d03c02047cfef",
+      "bytes": 2745,
+      "authority": "immutable indexed plan4 content"
+    },
+    "predecessor/plan2/context/source/packages/server/src/transaction-http.test.ts": {
+      "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/tx-discovery-next-plan-4/predecessor/plan2/context/source/packages/server/src/transaction-http.test.ts",
+      "sha256": "f972c417409302e750f0936c80be5c261de21556d5ca8a883bbe0f713f2049df",
+      "bytes": 247333,
+      "authority": "immutable indexed plan4 content"
+    },
+    "predecessor/plan2/context/source/packages/server/src/transaction-http.ts": {
+      "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/tx-discovery-next-plan-4/predecessor/plan2/context/source/packages/server/src/transaction-http.ts",
+      "sha256": "52a529218f3f999bbc1c86ec3b04b1198b22da7c5104e0d00e87761bb45f4967",
+      "bytes": 29186,
+      "authority": "immutable indexed plan4 content"
+    },
+    "predecessor/plan2/context/source/packages/server/src/transaction-installed-process.ts": {
+      "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/tx-discovery-next-plan-4/predecessor/plan2/context/source/packages/server/src/transaction-installed-process.ts",
+      "sha256": "6bd16f940f1f751189fc76419e3a18ca26cd5f54da3cfa3946b30c3956a2f8b7",
+      "bytes": 2630,
+      "authority": "immutable indexed plan4 content"
+    },
+    "predecessor/plan2/context/source/packages/server/src/transaction-service.ts": {
+      "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/tx-discovery-next-plan-4/predecessor/plan2/context/source/packages/server/src/transaction-service.ts",
+      "sha256": "a382109d25d3c98ce9c38d33524ad71ba42190aff6a05eb4486cf01d7321a487",
+      "bytes": 32016,
+      "authority": "immutable indexed plan4 content"
+    },
+    "predecessor/plan2/context/source/schemas/bdp-v0.schema.json": {
+      "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/tx-discovery-next-plan-4/predecessor/plan2/context/source/schemas/bdp-v0.schema.json",
+      "sha256": "0baa5d5ef67144f8e6513b4cde31168effc8df6d52ef3141b0f144b87f8dc227",
+      "bytes": 133208,
+      "authority": "immutable indexed plan4 content"
+    },
+    "predecessor/plan2/context/source/scripts/transaction-installed-observation.mjs": {
+      "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/tx-discovery-next-plan-4/predecessor/plan2/context/source/scripts/transaction-installed-observation.mjs",
+      "sha256": "6f772f3776d3c3effa788676d853cc2932a6ee59ad63ac3338ad1b487408914b",
+      "bytes": 3264,
+      "authority": "immutable indexed plan4 content"
+    },
+    "predecessor/plan2/context/startup-plan-3.md": {
+      "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/tx-discovery-next-plan-4/predecessor/plan2/context/startup-plan-3.md",
+      "sha256": "11f2c34a4eec98d3613e5ebb8b313cd9dbebff81e660a39aa23d8fc61bf2f67f",
+      "bytes": 27620,
+      "authority": "immutable indexed plan4 content"
+    },
+    "predecessor/plan2/context-origins.json": {
+      "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/tx-discovery-next-plan-4/predecessor/plan2/context-origins.json",
+      "sha256": "aabf2eed9190cdd26161d3b035b86e8b1cc477833e47ff37171c78d95835e1b5",
+      "bytes": 4518,
+      "authority": "immutable indexed plan4 content"
+    },
+    "predecessor/plan2/counterfactuals.json": {
+      "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/tx-discovery-next-plan-4/predecessor/plan2/counterfactuals.json",
+      "sha256": "af575aacce1b68f9d780dead626924083a367e436b2036af323e500e2f353087",
+      "bytes": 1547,
+      "authority": "immutable indexed plan4 content"
+    },
+    "predecessor/plan2/dispatch-and-schema.json": {
+      "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/tx-discovery-next-plan-4/predecessor/plan2/dispatch-and-schema.json",
+      "sha256": "43c731d3bfbafb497b5ce47a6ceccd644e40cae5ddf520b1325f0c13cdef256e",
+      "bytes": 1850,
+      "authority": "immutable indexed plan4 content"
+    },
+    "predecessor/plan2/index.json": {
+      "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/tx-discovery-next-plan-4/predecessor/plan2/index.json",
+      "sha256": "4fbc863fda9fc51950cf8237b0d47f61002468d6a81cebff696a0893741f5cf8",
+      "bytes": 5516,
+      "authority": "immutable indexed plan4 content"
+    },
+    "predecessor/plan2/installed-callbacks.json": {
+      "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/tx-discovery-next-plan-4/predecessor/plan2/installed-callbacks.json",
+      "sha256": "b1e57845d067d64304adaf0efefbb281019a21838ba61db9d59d850ba176876e",
+      "bytes": 53002,
+      "authority": "immutable indexed plan4 content"
+    },
+    "predecessor/plan2/native-precision-review-1/index.json": {
+      "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/tx-discovery-next-plan-4/predecessor/plan2/native-precision-review-1/index.json",
+      "sha256": "f93e1fed24bf740744bddb48b6c56fa97869d4162aa9131575bf302ee4b7aa31",
+      "bytes": 482,
+      "authority": "immutable indexed plan4 content"
+    },
+    "predecessor/plan2/native-precision-review-1/input-verification.json": {
+      "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/tx-discovery-next-plan-4/predecessor/plan2/native-precision-review-1/input-verification.json",
+      "sha256": "20aec020c723254c534115b1de0660969e1958add5a248a7a28638779e944847",
+      "bytes": 10835,
+      "authority": "immutable indexed plan4 content"
+    },
+    "predecessor/plan2/native-precision-review-1/precision-checks.json": {
+      "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/tx-discovery-next-plan-4/predecessor/plan2/native-precision-review-1/precision-checks.json",
+      "sha256": "c3c243c65b3f13a68c5474ef7d09474a56f788795bc874f746d3fa1c1d984268",
+      "bytes": 4790,
+      "authority": "immutable indexed plan4 content"
+    },
+    "predecessor/plan2/native-precision-review-1/review.json": {
+      "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/tx-discovery-next-plan-4/predecessor/plan2/native-precision-review-1/review.json",
+      "sha256": "775c8f6acdd2bf64766d39beb7feeb9da638b2d6ea5b7590b294c3f6fc693573",
+      "bytes": 1702,
+      "authority": "immutable indexed plan4 content"
+    },
+    "predecessor/plan2/native-precision-review-1/review.md": {
+      "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/tx-discovery-next-plan-4/predecessor/plan2/native-precision-review-1/review.md",
+      "sha256": "0a2679261566650473ed3ef5caffd8903fe3115a69928d458a3488d13993061d",
+      "bytes": 2990,
+      "authority": "immutable indexed plan4 content"
+    },
+    "predecessor/plan2/observation-contract.json": {
+      "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/tx-discovery-next-plan-4/predecessor/plan2/observation-contract.json",
+      "sha256": "8194b07f75a0dc3cfb32075bd89edd09a834adea596d0c13aff46466d272a4fc",
+      "bytes": 2864,
+      "authority": "immutable indexed plan4 content"
+    },
+    "predecessor/plan2/plan.md": {
+      "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/tx-discovery-next-plan-4/predecessor/plan2/plan.md",
+      "sha256": "52d086a1bcc94a582e10fcd104effa00356c67e2552c525e8fec3919f8337c39",
+      "bytes": 17178,
+      "authority": "immutable indexed plan4 content"
+    },
+    "predecessor/plan2/plan.successor-inverse.patch": {
+      "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/tx-discovery-next-plan-4/predecessor/plan2/plan.successor-inverse.patch",
+      "sha256": "466e14b54ee82d3749e7ee2558e40531f099b2c99328aec9dca808db32b17a63",
+      "bytes": 37085,
+      "authority": "immutable indexed plan4 content"
+    },
+    "predecessor/plan2/plan.successor.patch": {
+      "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/tx-discovery-next-plan-4/predecessor/plan2/plan.successor.patch",
+      "sha256": "5f7a736a847b748760a7044d0ce2e5238fac8a5c44f4d181b3c3b07d01ab9eb4",
+      "bytes": 37090,
+      "authority": "immutable indexed plan4 content"
+    },
+    "predecessor/plan2/predecessor/index.json": {
+      "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/tx-discovery-next-plan-4/predecessor/plan2/predecessor/index.json",
+      "sha256": "3cf3ef28c643410547fabb1830b8d2fbb37bcfa084b3dd46d3adea9c8c42b09f",
+      "bytes": 423,
+      "authority": "immutable indexed plan4 content"
+    },
+    "predecessor/plan2/predecessor/plan.md": {
+      "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/tx-discovery-next-plan-4/predecessor/plan2/predecessor/plan.md",
+      "sha256": "5a335cdb5f0a5c31ad590948dc19a0ee9fa9fc9be5b9cd1c4e7bddc00ef3e952",
+      "bytes": 19691,
+      "authority": "immutable indexed plan4 content"
+    },
+    "predecessor/plan2/predecessor/source-evidence.json": {
+      "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/tx-discovery-next-plan-4/predecessor/plan2/predecessor/source-evidence.json",
+      "sha256": "51686f0aeaefcd0af3cdfe77d7048b4e680c6a63a09f2f95a360e4f5d3654bb6",
+      "bytes": 7850,
+      "authority": "immutable indexed plan4 content"
+    },
+    "predecessor/plan2/preservation.json": {
+      "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/tx-discovery-next-plan-4/predecessor/plan2/preservation.json",
+      "sha256": "7d39216f50894f0d17cd2e64b9344d9fc2dbd78782aa847e510c4d41fa6caed1",
+      "bytes": 2035,
+      "authority": "immutable indexed plan4 content"
+    },
+    "predecessor/plan2/source-bases.json": {
+      "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/tx-discovery-next-plan-4/predecessor/plan2/source-bases.json",
+      "sha256": "5f88a0f4c110cfc013b4920c30f948d4f07f89ae92ef57361a7dde5e3679ea79",
+      "bytes": 182338,
+      "authority": "immutable indexed plan4 content"
+    },
+    "predecessor/plan2/source-callbacks.json": {
+      "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/tx-discovery-next-plan-4/predecessor/plan2/source-callbacks.json",
+      "sha256": "329ccfe8cd8cae2f828a720297398bee89822cb184328a2bf6d5f89130518d33",
+      "bytes": 33542,
+      "authority": "immutable indexed plan4 content"
+    },
+    "predecessor/plan2/status.json": {
+      "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/tx-discovery-next-plan-4/predecessor/plan2/status.json",
+      "sha256": "7bc4e21452818af8ab87bbcecbfc00ef2ded8c9648a0dac18eeb6dcf8c123e57",
+      "bytes": 1204,
+      "authority": "immutable indexed plan4 content"
+    },
+    "predecessor/plan3-current-contracts/actual-inputs.json": {
+      "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/tx-discovery-next-plan-4/predecessor/plan3-current-contracts/actual-inputs.json",
+      "sha256": "a4541e5659c4174e8d1442ee54aa21b101b200f5a83c75264fffd203a4613e71",
+      "bytes": 15040,
+      "authority": "immutable indexed plan4 content"
+    },
+    "predecessor/plan3-current-contracts/cold-input-contract.json": {
+      "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/tx-discovery-next-plan-4/predecessor/plan3-current-contracts/cold-input-contract.json",
+      "sha256": "7a62b0eca649f19316b7d4346db2d9cbcda0a281df480f30f1e93d9ff0730245",
+      "bytes": 1750,
+      "authority": "immutable indexed plan4 content"
+    },
+    "predecessor/plan3-current-contracts/cold-positive-requests.json": {
+      "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/tx-discovery-next-plan-4/predecessor/plan3-current-contracts/cold-positive-requests.json",
+      "sha256": "ee4001be667ed8851c1330028da5fa20893c060446ac34fb432a49b694b157de",
+      "bytes": 23962,
+      "authority": "immutable indexed plan4 content"
+    },
+    "predecessor/plan3-current-contracts/counterfactuals.json": {
+      "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/tx-discovery-next-plan-4/predecessor/plan3-current-contracts/counterfactuals.json",
+      "sha256": "af575aacce1b68f9d780dead626924083a367e436b2036af323e500e2f353087",
+      "bytes": 1547,
+      "authority": "immutable indexed plan4 content"
+    },
+    "predecessor/plan3-current-contracts/dispatch-and-schema.json": {
+      "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/tx-discovery-next-plan-4/predecessor/plan3-current-contracts/dispatch-and-schema.json",
+      "sha256": "32d36c13803778d528dfe6f16f459b0e37ef83d6cf586e2d1433ed947246fdd2",
+      "bytes": 2080,
+      "authority": "immutable indexed plan4 content"
+    },
+    "predecessor/plan3-current-contracts/gates.json": {
+      "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/tx-discovery-next-plan-4/predecessor/plan3-current-contracts/gates.json",
+      "sha256": "fd02dc6b16ad344d6b22e82961364cc90de7d56c1318d86b2aa12a04e918041e",
+      "bytes": 601,
+      "authority": "immutable indexed plan4 content"
+    },
+    "predecessor/plan3-current-contracts/installed-callbacks.json": {
+      "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/tx-discovery-next-plan-4/predecessor/plan3-current-contracts/installed-callbacks.json",
+      "sha256": "b1e57845d067d64304adaf0efefbb281019a21838ba61db9d59d850ba176876e",
+      "bytes": 53002,
+      "authority": "immutable indexed plan4 content"
+    },
+    "predecessor/plan3-current-contracts/observation-contract.json": {
+      "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/tx-discovery-next-plan-4/predecessor/plan3-current-contracts/observation-contract.json",
+      "sha256": "8194b07f75a0dc3cfb32075bd89edd09a834adea596d0c13aff46466d272a4fc",
+      "bytes": 2864,
+      "authority": "immutable indexed plan4 content"
+    },
+    "predecessor/plan3-current-contracts/plan.md": {
+      "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/tx-discovery-next-plan-4/predecessor/plan3-current-contracts/plan.md",
+      "sha256": "e3ac1d6f17f698e367ab7db6b2884efef0e40f2724eae81247edd640ba5144b3",
+      "bytes": 19253,
+      "authority": "immutable indexed plan4 content"
+    },
+    "predecessor/plan3-current-contracts/preservation.json": {
+      "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/tx-discovery-next-plan-4/predecessor/plan3-current-contracts/preservation.json",
+      "sha256": "109abcefd813426674f199440c94e4ac59e0fd8b23e167a445db823f8bfbcbd8",
+      "bytes": 2574,
+      "authority": "immutable indexed plan4 content"
+    },
+    "predecessor/plan3-current-contracts/report.md": {
+      "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/tx-discovery-next-plan-4/predecessor/plan3-current-contracts/report.md",
+      "sha256": "5cfc356dcb99dc5809735e40fd5e855e448c4abbdf3070c9b3991e0ecfdaff3b",
+      "bytes": 2314,
+      "authority": "immutable indexed plan4 content"
+    },
+    "predecessor/plan3-current-contracts/shared-http-composition.md": {
+      "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/tx-discovery-next-plan-4/predecessor/plan3-current-contracts/shared-http-composition.md",
+      "sha256": "ffb2a367297d4aefd593a9b60f8431332cb8b69334a3f7d89dd728c6f32091bd",
+      "bytes": 6924,
+      "authority": "immutable indexed plan4 content"
+    },
+    "predecessor/plan3-current-contracts/source-callbacks.json": {
+      "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/tx-discovery-next-plan-4/predecessor/plan3-current-contracts/source-callbacks.json",
+      "sha256": "329ccfe8cd8cae2f828a720297398bee89822cb184328a2bf6d5f89130518d33",
+      "bytes": 33542,
+      "authority": "immutable indexed plan4 content"
+    },
+    "predecessor/plan3-current-contracts/static-rebind-checks.json": {
+      "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/tx-discovery-next-plan-4/predecessor/plan3-current-contracts/static-rebind-checks.json",
+      "sha256": "407a525e172bf852f417852077767703bae0c83e330da988eb25d232990670ac",
+      "bytes": 1432,
+      "authority": "immutable indexed plan4 content"
+    },
+    "predecessor/plan3-current-contracts/status.json": {
+      "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/tx-discovery-next-plan-4/predecessor/plan3-current-contracts/status.json",
+      "sha256": "a0d844a780d5f9ef3a1ae23106a18537836dbddd8e10309cce2e747a9dde30a6",
+      "bytes": 1651,
+      "authority": "immutable indexed plan4 content"
+    },
+    "predecessor/plan3-index.json": {
+      "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/tx-discovery-next-plan-4/predecessor/plan3-index.json",
+      "sha256": "1ebde5ba44aecebc7fc2db327b1d4ef0fc8e4a94d3dea68682e082641629958a",
+      "bytes": 22362,
+      "authority": "immutable indexed plan4 content"
+    },
+    "preservation.json": {
+      "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/tx-discovery-next-plan-4/preservation.json",
+      "sha256": "628b45ed35d455c5606ed077abdec9ff97f99a9dc5aa50196379fe7cf6b2f265",
+      "bytes": 3383,
+      "authority": "immutable indexed plan4 content"
+    },
+    "protected-originals-after.json": {
+      "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/tx-discovery-next-plan-4/protected-originals-after.json",
+      "sha256": "fe48336a28709185ecc93f797979a87019d59a51c616900f3f3ef95dd547bde7",
+      "bytes": 525,
+      "authority": "immutable indexed plan4 content"
+    },
+    "protected-originals-before.json": {
+      "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/tx-discovery-next-plan-4/protected-originals-before.json",
+      "sha256": "38201662da601ea5fd91f66cc3c71e6edf998b4a727c406a4bc48bf79a7d796b",
+      "bytes": 49492,
+      "authority": "immutable indexed plan4 content"
+    },
+    "report.md": {
+      "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/tx-discovery-next-plan-4/report.md",
+      "sha256": "3312b612ec73cc3599716ced7951c776e5aa97961406f683e5584d3f7f28170c",
+      "bytes": 2211,
+      "authority": "immutable indexed plan4 content"
+    },
+    "shared-http-composition.md": {
+      "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/tx-discovery-next-plan-4/shared-http-composition.md",
+      "sha256": "c1f3d950be4332f509b7ebf07bd3cf9802c81844720db78146b99617738af0de",
+      "bytes": 7668,
+      "authority": "immutable indexed plan4 content"
+    },
+    "source/apps/bdptest/src/main.ts": {
+      "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/tx-discovery-next-plan-4/source/apps/bdptest/src/main.ts",
+      "sha256": "2749fa0ad9aadfc548f07b9e87d8b604290ed63e699423a18742fc9ab771e940",
+      "bytes": 4947,
+      "authority": "immutable indexed plan4 content"
+    },
+    "source/apps/bdptest/src/read-update-matrix.test.ts": {
+      "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/tx-discovery-next-plan-4/source/apps/bdptest/src/read-update-matrix.test.ts",
+      "sha256": "37558e78d79d665363528fb2bf4f81de4f4334cd8438a099030cac7a68e0637b",
+      "bytes": 254295,
+      "authority": "immutable indexed plan4 content"
+    },
+    "source/apps/bdptest/src/server-composition.test.ts": {
+      "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/tx-discovery-next-plan-4/source/apps/bdptest/src/server-composition.test.ts",
+      "sha256": "83f50cc80c8f69c290550f3dd78fe26f3be2d292df9efaf47f9bfc0da493b2df",
+      "bytes": 3204,
+      "authority": "immutable indexed plan4 content"
+    },
+    "source/apps/bdptest/src/server-composition.ts": {
+      "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/tx-discovery-next-plan-4/source/apps/bdptest/src/server-composition.ts",
+      "sha256": "ddd8efd9faf89a607fc767a961b476e6e8067130165f65d267822866ae28148a",
+      "bytes": 1336,
+      "authority": "immutable indexed plan4 content"
+    },
+    "source/apps/bdptest/src/transactional-discovery-installed.test.ts": {
+      "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/tx-discovery-next-plan-4/source/apps/bdptest/src/transactional-discovery-installed.test.ts",
+      "sha256": "7cf8822108489f3fb2f9c5ca1d97c6d7b832acca95a2f7d891c3413404d90c49",
+      "bytes": 11162,
+      "authority": "immutable indexed plan4 content"
+    },
+    "source/apps/bdptest/src/transactional-matrix.test.ts": {
+      "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/tx-discovery-next-plan-4/source/apps/bdptest/src/transactional-matrix.test.ts",
+      "sha256": "95e07ead41f9cb39087a155e87cad22998d92cd3967cb9c3c446568ff6139bc8",
+      "bytes": 183859,
+      "authority": "immutable indexed plan4 content"
+    },
+    "source/apps/bdptest/test-support/transactional-execution-binding.ts": {
+      "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/tx-discovery-next-plan-4/source/apps/bdptest/test-support/transactional-execution-binding.ts",
+      "sha256": "cde506c72a8710eafe58522900f6db70ed3701cf333560252dc8e7c5e706cf89",
+      "bytes": 7378,
+      "authority": "immutable indexed plan4 content"
+    },
+    "source/docs/design/startup-configuration.md": {
+      "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/tx-discovery-next-plan-4/source/docs/design/startup-configuration.md",
+      "sha256": "f957814cabb23136a6064b6ea2814bf6a5c454fe841666053bf1a01cae67d175",
+      "bytes": 37223,
+      "authority": "immutable indexed plan4 content"
+    },
+    "source/docs/specs/bdp.md": {
+      "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/tx-discovery-next-plan-4/source/docs/specs/bdp.md",
+      "sha256": "67772742d7d08f48c12196e9789f1859ad2d0e19f133ea65e197b049361f84f8",
+      "bytes": 397107,
+      "authority": "immutable indexed plan4 content"
+    },
+    "source/package.json": {
+      "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/tx-discovery-next-plan-4/source/package.json",
+      "sha256": "f081baa3202b4815663d360d3ad1608206efe1b023086a4c8feff4d7fb97d8d0",
+      "bytes": 1337,
+      "authority": "immutable indexed plan4 content"
+    },
+    "source/packages/config/src/index.ts": {
+      "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/tx-discovery-next-plan-4/source/packages/config/src/index.ts",
+      "sha256": "356febdfe9e3818f471da4c2ddf8d62370ad91542404e4aa630d3734a61babe3",
+      "bytes": 40311,
+      "authority": "immutable indexed plan4 content"
+    },
+    "source/packages/conformance/src/http-executor.ts": {
+      "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/tx-discovery-next-plan-4/source/packages/conformance/src/http-executor.ts",
+      "sha256": "770a8405ae1532484b5a2658619c067832644947888f95e0c6575002376f1b5d",
+      "bytes": 50611,
+      "authority": "immutable indexed plan4 content"
+    },
+    "source/packages/protocol/schemas/bdp-v0.schema.json": {
+      "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/tx-discovery-next-plan-4/source/packages/protocol/schemas/bdp-v0.schema.json",
+      "sha256": "0baa5d5ef67144f8e6513b4cde31168effc8df6d52ef3141b0f144b87f8dc227",
+      "bytes": 133208,
+      "authority": "immutable indexed plan4 content"
+    },
+    "source/packages/protocol/src/read-update-values.ts": {
+      "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/tx-discovery-next-plan-4/source/packages/protocol/src/read-update-values.ts",
+      "sha256": "d1fdbc660d5e2c009275c152bdcebda46031700920aa03bfea89f39564c89de2",
+      "bytes": 19883,
+      "authority": "immutable indexed plan4 content"
+    },
+    "source/packages/protocol/src/transaction-discovery-values.ts": {
+      "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/tx-discovery-next-plan-4/source/packages/protocol/src/transaction-discovery-values.ts",
+      "sha256": "d52e19c0b250b1dcce7a1f46c3bbe9e2d9ba77ed3a1ea41e7dca20a7982893d7",
+      "bytes": 3168,
+      "authority": "immutable indexed plan4 content"
+    },
+    "source/packages/server/package.json": {
+      "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/tx-discovery-next-plan-4/source/packages/server/package.json",
+      "sha256": "110e00c403c667d8c848c6280b2e98c47f98f134158a621967d889914d44632e",
+      "bytes": 495,
+      "authority": "immutable indexed plan4 content"
+    },
+    "source/packages/server/src/authority-read.ts": {
+      "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/tx-discovery-next-plan-4/source/packages/server/src/authority-read.ts",
+      "sha256": "fd6554c4ee0d08b997fb3622c2f21697f02d58b838f4ae0de10aca4707f67734",
+      "bytes": 44340,
+      "authority": "immutable indexed plan4 content"
+    },
+    "source/packages/server/src/development-composition.ts": {
+      "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/tx-discovery-next-plan-4/source/packages/server/src/development-composition.ts",
+      "sha256": "a7113a8a3164dc6f4b1f6b5bdcbf74cee811e5b8a0474d241ac30706997ee54f",
+      "bytes": 3484,
+      "authority": "immutable indexed plan4 content"
+    },
+    "source/packages/server/src/development-contracts.ts": {
+      "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/tx-discovery-next-plan-4/source/packages/server/src/development-contracts.ts",
+      "sha256": "182a1a6d06b09f08ca3c83ad0fb27a09a419ad3e99729528381f210973b2c40a",
+      "bytes": 11334,
+      "authority": "immutable indexed plan4 content"
+    },
+    "source/packages/server/src/index.ts": {
+      "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/tx-discovery-next-plan-4/source/packages/server/src/index.ts",
+      "sha256": "34f9d9de8b48852c64919e69ce93f149e9cdae5142c15c75e4c35f08f15efc44",
+      "bytes": 55615,
+      "authority": "immutable indexed plan4 content"
+    },
+    "source/packages/server/src/installed-reference-configuration.ts": {
+      "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/tx-discovery-next-plan-4/source/packages/server/src/installed-reference-configuration.ts",
+      "sha256": "1920271bd8f23bef75a685b8c4c06affaf6c84b9c220735115d1a7515688b268",
+      "bytes": 7815,
+      "authority": "immutable indexed plan4 content"
+    },
+    "source/packages/server/src/installed-reference.ts": {
+      "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/tx-discovery-next-plan-4/source/packages/server/src/installed-reference.ts",
+      "sha256": "c311a724d5d81710264b443da6800e960f49402f10383889de59714949b9eec7",
+      "bytes": 1585,
+      "authority": "immutable indexed plan4 content"
+    },
+    "source/packages/server/src/node-http-target.ts": {
+      "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/tx-discovery-next-plan-4/source/packages/server/src/node-http-target.ts",
+      "sha256": "5e9289ca34ac15061311c593f3c9d16d091020371d1165f18ce388a4b8fcb0ee",
+      "bytes": 2532,
+      "authority": "immutable indexed plan4 content"
+    },
+    "source/packages/server/src/read-conformance-capability.ts": {
+      "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/tx-discovery-next-plan-4/source/packages/server/src/read-conformance-capability.ts",
+      "sha256": "58d4529dc40bbf646f02bda4c7fa3fad9b83d21f3080152cc04867dbe3fa6f60",
+      "bytes": 2970,
+      "authority": "immutable indexed plan4 content"
+    },
+    "source/packages/server/src/read-http-routing.ts": {
+      "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/tx-discovery-next-plan-4/source/packages/server/src/read-http-routing.ts",
+      "sha256": "d9344b87838f8c71381ccf9efe28b4f023df45503570beb8fb4293d553caca42",
+      "bytes": 2967,
+      "authority": "immutable indexed plan4 content"
+    },
+    "source/packages/server/src/read-http.ts": {
+      "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/tx-discovery-next-plan-4/source/packages/server/src/read-http.ts",
+      "sha256": "31934105eff6fff8ded8ce2ca9e3c19028991ca7c3d5f51b848004177e8c9268",
+      "bytes": 8997,
+      "authority": "immutable indexed plan4 content"
+    },
+    "source/packages/server/src/read-request.ts": {
+      "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/tx-discovery-next-plan-4/source/packages/server/src/read-request.ts",
+      "sha256": "57675afc647df3e8ad1f26a40aef72584aa388ade6af4a465e3ffef16670f6a2",
+      "bytes": 36371,
+      "authority": "immutable indexed plan4 content"
+    },
+    "source/packages/server/src/transaction-authorization.ts": {
+      "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/tx-discovery-next-plan-4/source/packages/server/src/transaction-authorization.ts",
+      "sha256": "c87a7bfa8840aee2f097bf683fe3f3c97fcae80782020c6d5b1e41364d16b6d2",
+      "bytes": 4536,
+      "authority": "immutable indexed plan4 content"
+    },
+    "source/packages/server/src/transaction-batch.ts": {
+      "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/tx-discovery-next-plan-4/source/packages/server/src/transaction-batch.ts",
+      "sha256": "830ad57a680db7148fc75cd9cc10cadfc6a812448fd1704c1b0f47b13611808d",
+      "bytes": 45508,
+      "authority": "immutable indexed plan4 content"
+    },
+    "source/packages/server/src/transaction-changefeed.ts": {
+      "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/tx-discovery-next-plan-4/source/packages/server/src/transaction-changefeed.ts",
+      "sha256": "1e678ecb1b2c3e59023dbb6a2e6516763907babd79f7926ca572a4764e40fc1e",
+      "bytes": 7664,
+      "authority": "immutable indexed plan4 content"
+    },
+    "source/packages/server/src/transaction-consistency.ts": {
+      "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/tx-discovery-next-plan-4/source/packages/server/src/transaction-consistency.ts",
+      "sha256": "49cf5e1a7682b7fff570b3691b91d9de0816fc6fb93970847d5ece0992f21e9d",
+      "bytes": 7287,
+      "authority": "immutable indexed plan4 content"
+    },
+    "source/packages/server/src/transaction-discovery.test.ts": {
+      "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/tx-discovery-next-plan-4/source/packages/server/src/transaction-discovery.test.ts",
+      "sha256": "977dfae7a1cba9ffe11bdd3633ee26fa15eb8579254c6304eea1d6ac10667356",
+      "bytes": 6361,
+      "authority": "immutable indexed plan4 content"
+    },
+    "source/packages/server/src/transaction-discovery.ts": {
+      "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/tx-discovery-next-plan-4/source/packages/server/src/transaction-discovery.ts",
+      "sha256": "bb8055e2089f640a5d2071e389ac2011d08c038427265b50ab3d03c02047cfef",
+      "bytes": 2745,
+      "authority": "immutable indexed plan4 content"
+    },
+    "source/packages/server/src/transaction-events.ts": {
+      "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/tx-discovery-next-plan-4/source/packages/server/src/transaction-events.ts",
+      "sha256": "6c5ab4482f0b00110a71a96b16d44ca5fe713cb5f397ff78778cc6646f632a3a",
+      "bytes": 11915,
+      "authority": "immutable indexed plan4 content"
+    },
+    "source/packages/server/src/transaction-http.test.ts": {
+      "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/tx-discovery-next-plan-4/source/packages/server/src/transaction-http.test.ts",
+      "sha256": "f972c417409302e750f0936c80be5c261de21556d5ca8a883bbe0f713f2049df",
+      "bytes": 247333,
+      "authority": "immutable indexed plan4 content"
+    },
+    "source/packages/server/src/transaction-http.ts": {
+      "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/tx-discovery-next-plan-4/source/packages/server/src/transaction-http.ts",
+      "sha256": "be9402cadf5d2888dd42a1904bbd8eeea0b32643bd7d7949f0ae34a8eefdd2e0",
+      "bytes": 28966,
+      "authority": "immutable indexed plan4 content"
+    },
+    "source/packages/server/src/transaction-installed-configuration.ts": {
+      "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/tx-discovery-next-plan-4/source/packages/server/src/transaction-installed-configuration.ts",
+      "sha256": "e15cb54266848fdd4aa08b19b37f1b2eb080f4599d9414fad8d85b6f33f35d99",
+      "bytes": 2942,
+      "authority": "immutable indexed plan4 content"
+    },
+    "source/packages/server/src/transaction-installed-process.ts": {
+      "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/tx-discovery-next-plan-4/source/packages/server/src/transaction-installed-process.ts",
+      "sha256": "6bd16f940f1f751189fc76419e3a18ca26cd5f54da3cfa3946b30c3956a2f8b7",
+      "bytes": 2630,
+      "authority": "immutable indexed plan4 content"
+    },
+    "source/packages/server/src/transaction-installed.ts": {
+      "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/tx-discovery-next-plan-4/source/packages/server/src/transaction-installed.ts",
+      "sha256": "afddc6b0304fee4762c79e40ac6610a281ca8791928d8f779a900a7f6eac881a",
+      "bytes": 1112,
+      "authority": "immutable indexed plan4 content"
+    },
+    "source/packages/server/src/transaction-read.ts": {
+      "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/tx-discovery-next-plan-4/source/packages/server/src/transaction-read.ts",
+      "sha256": "bde7e3069f4a1cb028acaba725ad6f3bcdef692f914284f668631c700fe17683",
+      "bytes": 16779,
+      "authority": "immutable indexed plan4 content"
+    },
+    "source/packages/server/src/transaction-runtime-configuration.test.ts": {
+      "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/tx-discovery-next-plan-4/source/packages/server/src/transaction-runtime-configuration.test.ts",
+      "sha256": "3167dc4a4748f63ec069f0c9f3fddbcbd82a14aca127c49c5ba118bb8cd9f79d",
+      "bytes": 24066,
+      "authority": "immutable indexed plan4 content"
+    },
+    "source/packages/server/src/transaction-runtime-configuration.ts": {
+      "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/tx-discovery-next-plan-4/source/packages/server/src/transaction-runtime-configuration.ts",
+      "sha256": "57cd5d38c7199011d05589bc2b8ac1a0e2a4a9dc7585d019f9de5801a0a4d808",
+      "bytes": 16196,
+      "authority": "immutable indexed plan4 content"
+    },
+    "source/packages/server/src/transaction-runtime.ts": {
+      "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/tx-discovery-next-plan-4/source/packages/server/src/transaction-runtime.ts",
+      "sha256": "48cb5411407c456d7b3f301a4b67970061be9f51c94201de832ba5deff6ea2d4",
+      "bytes": 16727,
+      "authority": "immutable indexed plan4 content"
+    },
+    "source/packages/server/src/transaction-service.test.ts": {
+      "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/tx-discovery-next-plan-4/source/packages/server/src/transaction-service.test.ts",
+      "sha256": "e66f4384e7e6f4fb10b2072e298093991fffcfae606d005b54dda97dbf250705",
+      "bytes": 156515,
+      "authority": "immutable indexed plan4 content"
+    },
+    "source/packages/server/src/transaction-service.ts": {
+      "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/tx-discovery-next-plan-4/source/packages/server/src/transaction-service.ts",
+      "sha256": "d34b28787b70e5a14c38f1295a7cacc3bd2425768245ace46484f882987e9568",
+      "bytes": 32308,
+      "authority": "immutable indexed plan4 content"
+    },
+    "source/packages/server/src/transaction-set.ts": {
+      "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/tx-discovery-next-plan-4/source/packages/server/src/transaction-set.ts",
+      "sha256": "3085632e897481b048d563cf0ba3ea66dc96a0662cebfde9f978ee00675519e5",
+      "bytes": 6176,
+      "authority": "immutable indexed plan4 content"
+    },
+    "source/packages/server/src/transaction-store.ts": {
+      "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/tx-discovery-next-plan-4/source/packages/server/src/transaction-store.ts",
+      "sha256": "2feff60d7064cf6a1f8b15c8360b98c1671a04762346d1d6bb3a9321ef69a2d5",
+      "bytes": 96474,
+      "authority": "immutable indexed plan4 content"
+    },
+    "source/schemas/bdp-v0.schema.json": {
+      "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/tx-discovery-next-plan-4/source/schemas/bdp-v0.schema.json",
+      "sha256": "0baa5d5ef67144f8e6513b4cde31168effc8df6d52ef3141b0f144b87f8dc227",
+      "bytes": 133208,
+      "authority": "immutable indexed plan4 content"
+    },
+    "source/scripts/smoke-executables.mjs": {
+      "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/tx-discovery-next-plan-4/source/scripts/smoke-executables.mjs",
+      "sha256": "adeaea6e334f8fb6f7af5d09f0cb7ee0b729864affc45cb6baf84a95f1d4d9ae",
+      "bytes": 43245,
+      "authority": "immutable indexed plan4 content"
+    },
+    "source/scripts/transaction-installed-observation.mjs": {
+      "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/tx-discovery-next-plan-4/source/scripts/transaction-installed-observation.mjs",
+      "sha256": "6f772f3776d3c3effa788676d853cc2932a6ee59ad63ac3338ad1b487408914b",
+      "bytes": 3264,
+      "authority": "immutable indexed plan4 content"
+    },
+    "source-bases.json": {
+      "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/tx-discovery-next-plan-4/source-bases.json",
+      "sha256": "1c11ed14276ce5e5e1891f20bd67d5c6369d055cbfb1bd12424401bab2f72100",
+      "bytes": 91936,
+      "authority": "immutable indexed plan4 content"
+    },
+    "source-callbacks.json": {
+      "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/tx-discovery-next-plan-4/source-callbacks.json",
+      "sha256": "ce2d41413cd8575d5a3ddfd87615a1cb3d226cad2efa086737a8ee3f52a37472",
+      "bytes": 35253,
+      "authority": "immutable indexed plan4 content"
+    },
+    "source-input-copies.json": {
+      "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/tx-discovery-next-plan-4/source-input-copies.json",
+      "sha256": "ba7efa8e160689572b223ac5f68fdeba4015f9d220c005601433c392fb99a154",
+      "bytes": 17794,
+      "authority": "immutable indexed plan4 content"
+    },
+    "source-map.json": {
+      "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/tx-discovery-next-plan-4/source-map.json",
+      "sha256": "ff8ad56f23c3d7ee6e652724501cdaa16ec9551ea24b1673dc6c74bf5c1c06b7",
+      "bytes": 87874,
+      "authority": "immutable indexed plan4 content"
+    },
+    "static-rebind-checks.json": {
+      "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/tx-discovery-next-plan-4/static-rebind-checks.json",
+      "sha256": "2560d1802a6c495998001df6ddb98327d303654154c8eb63e759a11eba4c7432",
+      "bytes": 1203,
+      "authority": "immutable indexed plan4 content"
+    },
+    "status.json": {
+      "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/tx-discovery-next-plan-4/status.json",
+      "sha256": "2dcaa6a61d0e1860b547d6cdc7ef7749380dcb68fdb824a13999a3d75e635e52",
+      "bytes": 861,
+      "authority": "immutable indexed plan4 content"
+    },
+    "transport-and-lifecycle-contract.json": {
+      "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/tx-discovery-next-plan-4/transport-and-lifecycle-contract.json",
+      "sha256": "a903095b663bfb9e5fc110ac472e4c0fa6f46c675831a97322a1b2f320cbe4cf",
+      "bytes": 2981,
+      "authority": "immutable indexed plan4 content"
+    }
+  },
+  "sourceBinding": {
+    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/tx-discovery-next-plan-5/source-binding.json",
+    "sha256": "6730e80456f99be787e5409e111a175cc24fdd38a0ce5c50d6063c7613ce8e89"
+  },
+  "rootDisposition": {
+    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/tx-discovery-plan4-root-disposition-1/disposition.json",
+    "sha256": "078a52144946e0080fae42067940707c78fe1775175a518c20abbb7104b23a57"
+  },
+  "nativeFinding": {
+    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/tx-discovery-next-plan-4/native-precision-review-1/closure.json",
+    "sha256": "71a3dc3186b1589dc308c6bc5db26e9104e4f619c9908e552c8dfc31a9052143"
+  },
+  "allOtherFieldsAndTablesByteEquivalent": true,
+  "countsBudgetsFootprintUnchanged": true,
+  "noNewSourceOrReviewAuthority": true
+}

@@ -1,0 +1,88 @@
+{
+  "sourceBindingSha256": "cf670a46fd94495ea550878ef3e26d4d6e9e3487b04f058da2cdd2b58540114c",
+  "cpu": [
+    {
+      "file": "packages/conformance/src/read-update-artifact-set.test.ts",
+      "describe": "private two-artifact Read+Update set",
+      "title": "accepts the actual current corpus split with unchanged prerequisite groups and coverage",
+      "fullName": "private two-artifact Read+Update set accepts the actual current corpus split with unchanged prerequisite groups and coverage"
+    },
+    {
+      "file": "packages/conformance/src/cumulative-artifact.test.ts",
+      "describe": "",
+      "title": "pins cumulative source digest map, catalog order and every coverage binding",
+      "fullName": "pins cumulative source digest map, catalog order and every coverage binding"
+    },
+    {
+      "file": "packages/conformance/src/profile-contract-plan.test.ts",
+      "describe": "canonical cumulative profile contracts",
+      "title": "maps ordinary Update command-minimum evidence while TX mapping remains partial",
+      "fullName": "canonical cumulative profile contracts maps ordinary Update command-minimum evidence while TX mapping remains partial"
+    },
+    {
+      "file": "apps/bdptest/src/read-update-matrix.test.ts",
+      "describe": "",
+      "title": "pins cold RU directory literals, actual target bindings and parent preservation",
+      "fullName": "pins cold RU directory literals, actual target bindings and parent preservation"
+    },
+    {
+      "file": "apps/bdptest/src/read-update-matrix.test.ts",
+      "describe": "",
+      "title": "pins numeric admission source growth, old blocks and independent row ledgers",
+      "fullName": "pins numeric admission source growth, old blocks and independent row ledgers"
+    },
+    {
+      "file": "apps/bdptest/src/read-update-matrix.test.ts",
+      "describe": "",
+      "title": "pins metadata closure growth, old B actions and final N preservation",
+      "fullName": "pins metadata closure growth, old B actions and final N preservation"
+    },
+    {
+      "file": "apps/bdptest/src/read-update-matrix.test.ts",
+      "describe": "",
+      "title": "pins bounded R closure source, changed-action ledger and unchanged companions",
+      "fullName": "pins bounded R closure source, changed-action ledger and unchanged companions"
+    },
+    {
+      "file": "apps/bdptest/src/read-update-matrix.test.ts",
+      "describe": "",
+      "title": "pins command minimum literals, ordinary admission and parent preservation",
+      "fullName": "pins command minimum literals, ordinary admission and parent preservation"
+    }
+  ],
+  "cpuCount": 8,
+  "cpuHttp": 0,
+  "cpuChildren": 0,
+  "runtime": [
+    {
+      "title": "observes ignored command minimum fields with ordinary Update admission",
+      "expectedHttp": 11,
+      "maximumHttp": 11,
+      "children": 2,
+      "cooperativeMs": null,
+      "vitestMs": 30000
+    },
+    {
+      "title": "rejects a changed retained outcome in command minimum assertion input",
+      "expectedHttp": 2,
+      "maximumHttp": 11,
+      "children": 2,
+      "cooperativeMs": null,
+      "vitestMs": 30000
+    },
+    {
+      "title": "executes the partial cumulative RU matrix against actual installed factory HTTP and afterstate",
+      "expectedHttp": 2314,
+      "maximumHttp": 2314,
+      "children": 58,
+      "cooperativeMs": 90000,
+      "vitestMs": 120000
+    }
+  ],
+  "total": {
+    "expectedHttp": 2327,
+    "maximumHttp": 2336,
+    "children": 62
+  },
+  "limitations": "Exact planned three runtime callbacks; no execution by preparation. CPU evidence is already separately accepted by root, not rerun here."
+}

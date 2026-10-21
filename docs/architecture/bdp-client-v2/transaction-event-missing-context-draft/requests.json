@@ -1,0 +1,190 @@
+{
+  "installed": [
+    {
+      "id": "seed",
+      "method": "POST",
+      "url": "https://reference.invalid/acme/operations/batch",
+      "routeSource": "transaction-http.ts:168\u2013174 plus transaction-discovery.ts:19; verify ready target equals exact canonical URL before dispatch",
+      "accept": "application/json",
+      "credential": "operator",
+      "body": "{\"operations\":[{\"operation\":\"createBead\",\"id\":\"beads/known\",\"type\":\"https://reference.invalid/acme/types/task\",\"properties\":{\"title\":\"event-context\"}}]}",
+      "bodyBytes": 152,
+      "expectedStatus": 200,
+      "headers": {
+        "idempotency-key": "missing-event-context-seed",
+        "content-type": "application/json",
+        "accept": "application/json"
+      }
+    },
+    {
+      "id": "known",
+      "method": "GET",
+      "url": "https://reference.invalid/acme/events/",
+      "accept": "application/json",
+      "credential": "operator",
+      "bodyBytes": 0,
+      "expectedStatus": 200,
+      "headers": {
+        "accept": "application/json"
+      }
+    },
+    {
+      "id": "beads-JSON-GET",
+      "method": "GET",
+      "url": "https://reference.invalid/acme/beads/missing?view=events",
+      "accept": "application/json",
+      "credential": "operator",
+      "bodyBytes": 0,
+      "expectedStatus": 404,
+      "headers": {
+        "accept": "application/json"
+      }
+    },
+    {
+      "id": "beads-JSON-HEAD",
+      "method": "HEAD",
+      "url": "https://reference.invalid/acme/beads/missing?view=events",
+      "accept": "application/json",
+      "credential": "operator",
+      "bodyBytes": 0,
+      "expectedStatus": 404,
+      "headers": {
+        "accept": "application/json"
+      }
+    },
+    {
+      "id": "beads-SSE-GET",
+      "method": "GET",
+      "url": "https://reference.invalid/acme/beads/missing?view=events",
+      "accept": "text/event-stream",
+      "credential": "operator",
+      "bodyBytes": 0,
+      "expectedStatus": 404,
+      "headers": {
+        "accept": "text/event-stream"
+      }
+    },
+    {
+      "id": "beads-SSE-HEAD",
+      "method": "HEAD",
+      "url": "https://reference.invalid/acme/beads/missing?view=events",
+      "accept": "text/event-stream",
+      "credential": "operator",
+      "bodyBytes": 0,
+      "expectedStatus": 404,
+      "headers": {
+        "accept": "text/event-stream"
+      }
+    },
+    {
+      "id": "links-JSON-GET",
+      "method": "GET",
+      "url": "https://reference.invalid/acme/links/missing?view=events",
+      "accept": "application/json",
+      "credential": "operator",
+      "bodyBytes": 0,
+      "expectedStatus": 404,
+      "headers": {
+        "accept": "application/json"
+      }
+    },
+    {
+      "id": "links-JSON-HEAD",
+      "method": "HEAD",
+      "url": "https://reference.invalid/acme/links/missing?view=events",
+      "accept": "application/json",
+      "credential": "operator",
+      "bodyBytes": 0,
+      "expectedStatus": 404,
+      "headers": {
+        "accept": "application/json"
+      }
+    },
+    {
+      "id": "links-SSE-GET",
+      "method": "GET",
+      "url": "https://reference.invalid/acme/links/missing?view=events",
+      "accept": "text/event-stream",
+      "credential": "operator",
+      "bodyBytes": 0,
+      "expectedStatus": 404,
+      "headers": {
+        "accept": "text/event-stream"
+      }
+    },
+    {
+      "id": "links-SSE-HEAD",
+      "method": "HEAD",
+      "url": "https://reference.invalid/acme/links/missing?view=events",
+      "accept": "text/event-stream",
+      "credential": "operator",
+      "bodyBytes": 0,
+      "expectedStatus": 404,
+      "headers": {
+        "accept": "text/event-stream"
+      }
+    },
+    {
+      "id": "anonymous",
+      "method": "GET",
+      "url": "https://reference.invalid/acme/beads/missing?view=events",
+      "accept": "text/event-stream",
+      "credential": "anonymous",
+      "bodyBytes": 0,
+      "expectedStatus": 401,
+      "headers": {
+        "accept": "text/event-stream"
+      }
+    }
+  ],
+  "installedExpectedAndMaxHttp": 11,
+  "installedUniqueUrls": 4,
+  "installedMethodCounts": {
+    "POST": 1,
+    "GET": 6,
+    "HEAD": 4
+  },
+  "installedBodyBytes": 152,
+  "installedBodySha256": "e09f4e2f71b146c5de095f3a841a016c5ad64fe64759e7f217c4d6768fc0eae9",
+  "sourceSeedBody": "{\"operations\":[{\"operation\":\"createBead\",\"id\":\"beads/known\",\"type\":\"https://example.test/events/types/bead\",\"properties\":{\"n\":0}}]}",
+  "sourceSeedBodyBytes": 131,
+  "sourceSeedBodySha256": "b0eab30a1577cfa54510ae0c5cc2ffa6765ba679c3db916ac0d2fa612137258c",
+  "sourceScope": "https://example.test/events/",
+  "sourceRequestPattern": "Same ordered11 ledger rebased to source Scope/types/bead and properties n:0",
+  "existingSseHttp": {
+    "seed": 1,
+    "finiteKnownPage": 1,
+    "initialHead": 1,
+    "tenRowsGetHead": 20,
+    "overrideHeads": 3,
+    "jsonNegotiation": 1,
+    "anonymousHead": 1,
+    "total": 28,
+    "rawRecorder": 26,
+    "fetch": 2
+  },
+  "artifacts": {
+    "descriptor": {
+      "utf8": "{\"id\":\"https://reference.invalid/acme/types/task\",\"name\":\"Task\",\"describes\":\"bead\",\"conformsTo\":[],\"propertiesSchema\":\"https://reference.invalid/acme/schemas/properties\"}",
+      "bytes": 170,
+      "sha256": "f448e126550b2809d01dc6b24811d1796e82b2599c35b438550ed3bec65a2a22"
+    },
+    "schema": {
+      "utf8": "{\"$id\":\"https://reference.invalid/acme/schemas/properties\",\"type\":\"object\",\"properties\":{\"title\":{\"type\":\"string\"}},\"required\":[\"title\"],\"additionalProperties\":false}",
+      "bytes": 166,
+      "sha256": "1ed8b24d90a8c278bc466fd48ba1e849afac01326c377e5c6985855e62373f95"
+    },
+    "totalUtf8Bytes": 336,
+    "copies": "Author strings, IPC configuration strings and compiled child artifacts are distinct; no universal RSS/heap claim."
+  },
+  "responseBounds": {
+    "sourceBufferedChunksMaximum": 32768,
+    "sourceConcatMaximum": 32768,
+    "sourceAllCompletedBodiesMaximum": 360448,
+    "sourceMechanism": "Stream reader checks before retaining each chunk; abort on excess, await cancel, release lock; UTF8 fatal decode after bounded concat. Native fetch may own additional buffers, no universal heap bound.",
+    "installedBodyMaximum": 32768,
+    "installedResponseHeaderDefault": 65536,
+    "installedRawWireMaximum": 163840,
+    "retention": "Only completed response fingerprints plus fixed safe headers are persisted; full body assertions occur in memory."
+  }
+}

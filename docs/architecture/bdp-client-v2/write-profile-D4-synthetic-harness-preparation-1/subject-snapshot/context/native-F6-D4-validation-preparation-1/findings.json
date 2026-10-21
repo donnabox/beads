@@ -1,0 +1,114 @@
+{
+  "accepted": false,
+  "findings": [
+    {
+      "id": "F6-N1",
+      "severity": "Medium",
+      "title": "Selected installed command lacks the workload field required by its gate",
+      "file": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-D4-validation-preparation-1/gate.py",
+      "lines": [
+        116,
+        116
+      ],
+      "related": [
+        {
+          "file": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-D4-validation-preparation-1/commands.json",
+          "key": "commands.installed-owned-set"
+        }
+      ],
+      "evidence": "load_gate branches on selectedFullNames and directly indexes spec['prospectiveWorkload']; the only selected installed command has selectedFullNames/selectedFilesByFullName but no prospectiveWorkload. It therefore raises KeyError before installed product admission after otherwise valid releases.",
+      "impact": "The approved installed D4 callback is not authorable/executable through this frozen gate; static preparation claims selection finalization do not satisfy the actual interface.",
+      "smallestFix": "Bind the exact existing finite authored workload dictionary on that command, preserving the existing selection/32HTTP/2children/33receipt/96Events/5oracles and every budget. Add a static/synthetic gate interface control without invoking product.",
+      "observedRuntimeFailure": false
+    },
+    {
+      "id": "F6-N2",
+      "severity": "Medium",
+      "title": "The separate product session can outlive a worker killed before creation registration",
+      "file": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-D4-validation-preparation-1/worker.py",
+      "lines": [
+        38,
+        41
+      ],
+      "related": [
+        {
+          "file": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-D4-validation-preparation-1/worker.py",
+          "lines": [
+            96,
+            105
+          ]
+        },
+        {
+          "file": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-D4-validation-preparation-1/run.py",
+          "lines": [
+            103,
+            115
+          ]
+        },
+        {
+          "file": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-D4-validation-preparation-1/run.py",
+          "lines": [
+            144,
+            151
+          ]
+        },
+        {
+          "file": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-D4-validation-preparation-1/run.py",
+          "lines": [
+            197,
+            202
+          ]
+        }
+      ],
+      "evidence": "The worker checks positive admission, then creates child with start_new_session=True at40, and only afterward sends a fallible/blocking creation message at41. At the startup deadline (or another refusal) the watchdog can TERM the registered worker group before consuming that message. The separate product PGID is outside it. The worker has no signal/finally stop-and-reap fallback for this direct Popen child; its except block only records partial metadata/sends failed. If the worker exits before a census observes the child and before the creation receipt is consumed, the reparented product group is unknown to the parent census/cleanup.",
+      "impact": "A legitimate deadline/interruption race can leave product work outside the registered cleanup set and whole-attempt bound. This is a static legal ordering, not an observed D4 leak. Later unknown classification alone cannot terminate that group.",
+      "smallestFix": "Make spawn-to-parent-registration ownership continuous: retain a safe direct-child handle in the worker before any fallible IPC and provide bounded interruption/error cleanup until parent registration is acknowledged, under the original absolute clock. Parent must keep safe ownership even when registration/control fails. Do not kill unrelated numeric groups, broaden deadlines, or claim missing PID ownership. Cover this exact spawn/register/deadline ordering with an existing zero-product ownership control.",
+      "observedRuntimeFailure": false
+    },
+    {
+      "id": "F6-N3",
+      "severity": "Low",
+      "title": "Failed-only conforming classification trusts several unverified aggregates",
+      "file": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-D4-validation-preparation-1/audit.py",
+      "lines": [
+        42,
+        95
+      ],
+      "related": [
+        {
+          "file": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-D4-validation-preparation-1/context/semantic-audit-contract/partial-and-lifecycle-policy.json",
+          "key": "partialRules/lifecycleCrossChecks"
+        }
+      ],
+      "evidence": "audit_partial rederives attempted/settled/received/validated and handle counts, but never binds receiptPages,receiptComplete,receiptEntries or groups to actual response/assignment stages, and never equates lifecycle.pendingRequests to attempted-settled. Its Event count check only sums the supplied traversal.pages, without binding those page lengths/completion to captured Event bodies. A structurally valid failed report before delete can invent nonnull completed receipt counters or groups and still reach CONFORMING_FAILED_PARTIAL_NO_CREDIT.",
+      "impact": "No positive credit is granted, but fabricated/unknown failed evidence is incorrectly promoted to a conforming source observation, contrary to the accepted nullable/actual-source grammar.",
+      "smallestFix": "Track and rederive these values at the actual finite source assignment points in the failed path, preserving dynamic next<=12 and independentdispatch<=32, or classify unsupported/inconsistent aggregates as nonconforming/unknown without rewriting raw evidence. Add finite failed-only mutations within existing D02/D03 controls; preserve no-positive-credit and no successful-prefix requirement.",
+      "observedRuntimeFailure": false
+    },
+    {
+      "id": "F6-N4",
+      "severity": "Low",
+      "title": "Authenticated terminal zombies are treated as live executable identity changes",
+      "file": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-D4-validation-preparation-1/run.py",
+      "lines": [
+        37,
+        55
+      ],
+      "related": [
+        {
+          "file": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-D4-validation-preparation-1/run.py",
+          "lines": [
+            153,
+            175
+          ]
+        }
+      ],
+      "evidence": "Identities are (birth,comm), and every old comm difference sets sticky uncertain. The census has no process-state field, so the same authenticated PID/birth/PGID returned with terminal '<defunct>' comm cannot be distinguished from an unrelated live executable. It reaches ownership-unknown, and later actual absence does not clear it. This is a conditional source path; no D4 runtime outcome is asserted.",
+      "impact": "A normal exit sampled while the leader is a zombie can irreversibly refuse an otherwise correctly closed single attempt. Retrying is forbidden, so terminal-state handling needs explicit precision before execution.",
+      "smallestFix": "Read bounded ps state and distinguish a previously authenticated terminal/zombie from a live executable mismatch while retaining PID/birth/PGID/parent ownership and no PID-reuse weakening. Never count zombie state alone as final absence; still require bounded reaping/fresh group absence and retain live-descendant cleanup. Extend an existing ownership control, without new product work or deadline widening.",
+      "observedRuntimeFailure": false
+    }
+  ],
+  "sourceUnchanged": true,
+  "syntheticOrProductExecuted": false
+}

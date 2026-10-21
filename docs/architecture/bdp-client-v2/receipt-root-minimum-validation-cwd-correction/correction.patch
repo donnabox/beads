@@ -1,0 +1,11 @@
+--- before/commands.json
++++ after/commands.json
+@@ -291,7 +291,7 @@
+       ]
+     },
+     "consumer-install": {
+-      "cwd": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/receipt-root-minimum-validation",
++      "cwd": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/receipt-root-minimum-validation/run/consumer",
+       "argv": [
+         "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+         "/Users/dbox/.cache/node/corepack/v1/pnpm/11.20.0/bin/pnpm.cjs",

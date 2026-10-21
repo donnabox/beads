@@ -1,0 +1,2520 @@
+diff --git a/apps/bdptest/src/transactional-minimum-receiving-installed.test.ts b/apps/bdptest/src/transactional-minimum-receiving-installed.test.ts
+index 55ba338..3697296 100644
+--- a/apps/bdptest/src/transactional-minimum-receiving-installed.test.ts
++++ b/apps/bdptest/src/transactional-minimum-receiving-installed.test.ts
+@@ -505,10 +505,11 @@ it("rejects malformed read minimum tuples before observation while preserving re
+         expect(response.headers.get("x-bdp-development-limit")).toBeNull();
+         expect(context(response)).toStrictEqual(expectedContext);
+       } else {
+-        expect(response.status).toBe(500);
+-        expect(response.text).toBe("");
+-        expect(response.headers.get("x-bdp-development-limit")).toBe("minimum-position");
+-        expect(context(response)).toStrictEqual([null, null, null]);
++        expect(problem(response, 503, "catch-up-timeout")).toMatchObject({ retry: "after-delay" });
++        expect(response.headers.get("retry-after")).toBe("1");
++        expect(response.headers.get("cache-control")).toBe("private, no-store");
++        expect(response.headers.has("x-bdp-development-limit")).toBe(false);
++        expect(context(response)).toStrictEqual(expectedContext);
+       }
+     }
+     const missing = await exchange("compatible-missing", "GET", `${scope}beads/missing`, tuple);
+@@ -1042,3 +1043,596 @@ it("observes installed opaque receipt root timeout with principal nondisclosure"
+   if (failures.length > 1)
+     throw new AggregateError(failures, "installed receipt root and cleanup failed");
+ }, 60000);
++
++it("observes installed current observation minima within37requests", async () => {
++  const started = performance.now();
++  const controller = new AbortController();
++  const deadlineReason = new Error("installed current observation receiving deadline");
++  let deadlineExceeded = false,
++    cleanupExceeded = false,
++    launchAttempted = false,
++    closed = false;
++  const deadline = setTimeout(() => {
++    deadlineExceeded = true;
++    controller.abort(deadlineReason);
++  }, 45000);
++  const failures: unknown[] = [];
++  const categories: string[] = [];
++  const fail = (error: unknown, category: string) => {
++    if (!failures.includes(error)) {
++      failures.push(error);
++      categories.push(category);
++    }
++  };
++  let phase = "setup";
++  let directory: string | undefined;
++  let child: Awaited<ReturnType<typeof launchInstalledTransaction>> | undefined;
++  let binding: ReturnType<typeof installedTransactionBinding> | undefined;
++  let attempted = 0;
++  const childLifetime: {
++    close: { code: number | null; signal: NodeJS.Signals | null } | undefined;
++  } = { close: undefined };
++  let childDrain: Promise<void> | undefined;
++  const active = new Set<ClientRequest>();
++  const pending = new Set<Promise<unknown>>();
++  const responses: {
++    ordinal: number;
++    label: string;
++    method: string;
++    url: string;
++    credential: string;
++    requestBodyBytes: number;
++    requestBodySha256: string | null;
++    minimumFieldOccurrences: number[];
++    status: number;
++    bodyOctets: number;
++    bodySha256: string;
++    headers: Record<string, string | null>;
++  }[] = [];
++  const writer = randomBytes(32).toString("base64url"),
++    other = randomBytes(32).toString("base64url");
++  const linkType = `${scope}types/relation`;
++  const localArtifacts = {
++    ...artifacts,
++    descriptors: [
++      ...artifacts.descriptors,
++      {
++        retrievalUri: linkType,
++        utf8: JSON.stringify({
++          id: linkType,
++          name: "Relation",
++          describes: "link",
++          conformsTo: [],
++          source: { conformsTo: [beadType], external: "opaque" },
++          target: { conformsTo: [beadType], external: "opaque" },
++        }),
++      },
++    ],
++  };
++  try {
++    directory = mkdtempSync(path.join(tmpdir(), "bdp-current-observation-minimum-installed-"));
++    controller.signal.throwIfAborted();
++    launchAttempted = true;
++    child = await launchInstalledTransaction(
++      entry,
++      {
++        scope,
++        directory,
++        create: true,
++        artifacts: localArtifacts,
++        credentials: [
++          { token: writer, principal: "writer", canMutate: true },
++          { token: other, principal: "other", canMutate: false },
++        ],
++      },
++      controller.signal,
++    );
++    childDrain = new Promise<void>((resolve) => {
++      child!.child.once("close", (code, signal) => {
++        childLifetime.close = { code, signal };
++        resolve();
++      });
++    });
++    binding = installedTransactionBinding(child.ready, sourceCommit, fixture);
++    expect(child.ready.scope).toBe(scope);
++    expect(binding.operationTargets.batch).toBe(`${scope}operations/batch`);
++    const address = new URL(child.ready.listenUrl as string);
++    const granted = new Set([
++      `${scope}operations/batch`,
++      `${scope}operations/update-where`,
++      `${scope}types/task`,
++      `${scope}types/`,
++      `${scope}types/missing`,
++      `${scope}beads/r00?view=links`,
++      `${scope}beads/missing?view=links`,
++    ]);
++    const exchange = async (
++      label: string,
++      method: "GET" | "HEAD" | "POST",
++      url: string,
++      fields: string[] = [],
++      credential: "writer" | "other" | "anonymous" = "writer",
++      requestBody?: string,
++      key?: string,
++    ) => {
++      phase = label;
++      controller.signal.throwIfAborted();
++      expect(++attempted, "installed current observation dispatch bound").toBeLessThanOrEqual(37);
++      expect(granted.has(url), "fixed or actually issued URL grant").toBe(true);
++      const target = new URL(url);
++      expect(target.origin).toBe(new URL(scope).origin);
++      expect([target.hash, target.username, target.password]).toStrictEqual(["", "", ""]);
++      expect(Buffer.byteLength(url)).toBeLessThanOrEqual(8192);
++      const headers = [
++        "Host",
++        new URL(scope).host,
++        "Connection",
++        "close",
++        ...(fields.some((field, i) => i % 2 === 0 && field.toLowerCase() === "accept")
++          ? []
++          : ["Accept", "application/json"]),
++        ...(credential === "anonymous"
++          ? []
++          : ["Authorization", `Bearer ${credential === "writer" ? writer : other}`]),
++        ...(requestBody === undefined
++          ? []
++          : [
++              "Content-Type",
++              "application/json",
++              "Content-Length",
++              String(Buffer.byteLength(requestBody)),
++              "Idempotency-Key",
++              key ?? "missing-key",
++            ]),
++        ...fields,
++      ];
++      const operation = new Promise<{
++        status: number;
++        headers: Headers;
++        text: string;
++        bytes: number;
++      }>((resolve, reject) => {
++        const request = httpRequest(
++          {
++            hostname: address.hostname,
++            port: Number(address.port),
++            path: target.pathname + target.search,
++            method,
++            agent: false,
++            headers,
++            signal: AbortSignal.any([controller.signal, AbortSignal.timeout(5000)]),
++          },
++          (response) => {
++            const chunks: Buffer[] = [];
++            let bytes = 0;
++            response.on("data", (chunk: Buffer) => {
++              bytes += chunk.length;
++              if (bytes > 32768) {
++                const error = new Error("installed current observation response overflow");
++                response.destroy(error);
++                request.destroy(error);
++                return;
++              }
++              chunks.push(chunk);
++            });
++            response.once("aborted", () =>
++              reject(new Error("installed current observation response aborted")),
++            );
++            response.once("error", reject);
++            response.once("end", () => {
++              const received = new Headers();
++              for (let i = 0; i < response.rawHeaders.length; i += 2)
++                received.append(response.rawHeaders[i]!, response.rawHeaders[i + 1]!);
++              resolve({
++                status: response.statusCode ?? 0,
++                headers: received,
++                text: Buffer.concat(chunks).toString("utf8"),
++                bytes,
++              });
++            });
++          },
++        );
++        active.add(request);
++        request.once("close", () => active.delete(request));
++        request.once("error", reject);
++        request.end(requestBody);
++      });
++      pending.add(operation);
++      void operation.then(
++        () => pending.delete(operation),
++        () => pending.delete(operation),
++      );
++      const response = await operation;
++      const minimumNames = [
++        "bdp-minimum-scope-position",
++        "bdp-scope-epoch",
++        "bdp-authorization-view",
++      ];
++      responses.push({
++        ordinal: attempted,
++        label,
++        method,
++        url,
++        credential,
++        requestBodyBytes: requestBody === undefined ? 0 : Buffer.byteLength(requestBody),
++        requestBodySha256: requestBody === undefined ? null : digest(requestBody),
++        minimumFieldOccurrences: minimumNames.map(
++          (name) => fields.filter((field, i) => i % 2 === 0 && field.toLowerCase() === name).length,
++        ),
++        status: response.status,
++        bodyOctets: response.bytes,
++        bodySha256: digest(response.text),
++        headers: Object.fromEntries(
++          retainedHeaders.map((name) => [name, response.headers.get(name)]),
++        ),
++      });
++      expect(response.headers.get("x-bdp-development")).toBe("non-attesting");
++      return response;
++    };
++    type Response = Awaited<ReturnType<typeof exchange>>;
++    const context = (response: Response) => contextNames.map((name) => response.headers.get(name));
++    const problem = (response: Response, status: number, code: string) => {
++      expect(response.status).toBe(status);
++      expect(response.headers.get("content-type")).toBe("application/problem+json");
++      const value = record(JSON.parse(response.text));
++      expect(validProblem(value), JSON.stringify(validProblem.errors)).toBe(true);
++      expect(value).toMatchObject({ status, code });
++      return value;
++    };
++    const receipt = (response: Response, key: string, position: string) => {
++      expect(response.status).toBe(200);
++      const value = record(JSON.parse(response.text));
++      expect(validReceipt(value), JSON.stringify(validReceipt.errors)).toBe(true);
++      expect(value).toMatchObject({
++        status: "completed",
++        idempotencyKey: key,
++        requiredPosition: position,
++        effectPosition: position,
++      });
++      expect(context(response)[2]).toBe(position);
++      expect([value.scopeEpoch, value.authorizationView]).toStrictEqual(
++        context(response).slice(0, 2),
++      );
++      expect(
++        context(response)
++          .slice(0, 2)
++          .every((v) => typeof v === "string" && /^[A-Za-z0-9_-]{1,256}$/.test(v)),
++      ).toBe(true);
++      return value;
++    };
++    const seed = await exchange(
++      "seed",
++      "POST",
++      `${scope}operations/batch`,
++      [],
++      "writer",
++      seedBody,
++      "current-observation-seed",
++    );
++    const seeded = receipt(seed, "current-observation-seed", "pos-1");
++    expect(receiptResults(seeded)).toHaveLength(32);
++    const updated = await exchange(
++      "issue-page",
++      "POST",
++      `${scope}operations/update-where`,
++      [],
++      "writer",
++      setBody,
++      "current-observation-update",
++    );
++    const paged = receipt(updated, "current-observation-update", "pos-2");
++    const pageUrl = paged.next;
++    if (typeof pageUrl !== "string" || typeof paged.id !== "string")
++      throw new Error("actual second mutation page required");
++    const parsedPage = new URL(pageUrl);
++    expect(parsedPage.origin).toBe(new URL(scope).origin);
++    expect([parsedPage.search, parsedPage.hash, parsedPage.username, parsedPage.password]).toEqual([
++      "",
++      "",
++      "",
++      "",
++    ]);
++    expect(pageUrl.startsWith(`${paged.id}/pages/`)).toBe(true);
++    expect(pageUrl.slice(`${paged.id}/pages/`.length)).toMatch(/^[A-Za-z0-9_-]+$/);
++    granted.add(pageUrl);
++    const linked = await exchange(
++      "link",
++      "POST",
++      `${scope}operations/batch`,
++      [],
++      "writer",
++      JSON.stringify({
++        operations: [
++          {
++            operation: "createLink",
++            id: "links/l",
++            type: linkType,
++            source: "beads/r00",
++            target: "beads/r01",
++            properties: { n: 0 },
++          },
++        ],
++      }),
++      "current-observation-link",
++    );
++    receipt(linked, "current-observation-link", "pos-3");
++    const expectedContext = context(linked);
++    expect(expectedContext.slice(0, 2)).toEqual(context(seed).slice(0, 2));
++    const minimum = (position: string, epoch = expectedContext[0]!, view = expectedContext[1]!) => [
++      "BDP-Minimum-Scope-Position",
++      position,
++      "BDP-Scope-Epoch",
++      epoch,
++      "BDP-Authorization-View",
++      view,
++    ];
++    const validType = ajv.compile({ $ref: `${bundle.$id}#/$defs/typeDescriptor` });
++    const validTypes = ajv.compile({ $ref: `${bundle.$id}#/$defs/typesInventory` });
++    const validLinks = ajv.compile({ $ref: `${bundle.$id}#/$defs/currentLinkCollection` });
++    const validPage = ajv.compile({ $ref: `${bundle.$id}#/$defs/mutationReceiptPage` });
++    const pair = async (
++      label: string,
++      url: string,
++      fields: string[],
++      status: number,
++      code: string,
++    ) => {
++      const get = await exchange(`${label}-get`, "GET", url, [
++        ...fields,
++        ...(status === 503 ? ["If-None-Match", "*"] : []),
++      ]);
++      const head = await exchange(`${label}-head`, "HEAD", url, [
++        ...fields,
++        ...(status === 503 ? ["If-Match", '"mismatch"', "Accept", "image/png"] : []),
++      ]);
++      problem(get, status, code);
++      expect(head.status).toBe(status);
++      expect(head.text).toBe("");
++      expect(head.bytes).toBe(0);
++      expect(get.bytes).toBeGreaterThan(0);
++      expect(get.headers.get("content-length")).toBe(String(get.bytes));
++      for (const name of [
++        "content-length",
++        "content-type",
++        "cache-control",
++        "retry-after",
++        ...contextNames,
++      ])
++        expect(head.headers.get(name), name).toBe(get.headers.get(name));
++      for (const response of [get, head]) {
++        expect(context(response)).toEqual(expectedContext);
++        expect(response.headers.get("content-type")).toBe("application/problem+json");
++        expect(response.headers.get("cache-control")).toBe("private, no-store");
++        expect(response.headers.has("x-bdp-development-limit")).toBe(false);
++        if (status === 503) expect(response.headers.get("retry-after")).toBe("1");
++      }
++    };
++    for (const [label, target] of [
++      ["type", `${scope}types/task`],
++      ["types", `${scope}types/`],
++      ["incident", `${scope}beads/r00?view=links`],
++      ["page", pageUrl],
++    ] as const) {
++      const known = await exchange(`${label}-known`, "GET", target, minimum("pos-3"));
++      expect(known.status).toBe(200);
++      expect(context(known)).toEqual(expectedContext);
++      const value = record(JSON.parse(known.text));
++      const validate =
++        label === "type"
++          ? validType
++          : label === "types"
++            ? validTypes
++            : label === "incident"
++              ? validLinks
++              : validPage;
++      expect(validate(value), JSON.stringify(validate.errors)).toBe(true);
++      if (label === "type") expect(value).toMatchObject({ id: beadType, describes: "bead" });
++      else if (label === "types") {
++        expect(value.items).toEqual([
++          { id: linkType, name: "Relation", describes: "link" },
++          { id: beadType, name: "Task", describes: "bead" },
++        ]);
++        expect(value.next).toBeNull();
++      } else if (label === "incident") {
++        expect(value).toMatchObject({
++          items: [
++            {
++              id: `${scope}links/l`,
++              type: linkType,
++              source: `${scope}beads/r00`,
++              target: `${scope}beads/r01`,
++            },
++          ],
++          next: null,
++        });
++      } else {
++        expect(value.receipt).toBe(paged.id);
++        if (!Array.isArray(value.results) || value.results.length === 0)
++          throw new Error("nonempty real page required");
++        for (const result of value.results)
++          expect(record(result)).toMatchObject({
++            outcome: "updated",
++            resource: { type: beadType, properties: { n: 1 } },
++          });
++        expect(paged.requiredPosition).toBe("pos-2");
++      }
++      await pair(`${label}-opaque`, target, minimum("opaque"), 503, "catch-up-timeout");
++      await pair(
++        `${label}-epoch`,
++        target,
++        minimum("opaque", "foreign", expectedContext[1]!),
++        410,
++        "cursor-expired",
++      );
++      await pair(
++        `${label}-view`,
++        target,
++        minimum("opaque", expectedContext[0]!, "foreign"),
++        409,
++        "foreign-view",
++      );
++    }
++    await pair("missing-type", `${scope}types/missing`, minimum("opaque"), 503, "catch-up-timeout");
++    const missingIncident = await exchange(
++      "missing-incident",
++      "GET",
++      `${scope}beads/missing?view=links`,
++      minimum("opaque"),
++    );
++    const otherPage = await exchange("other-page", "GET", pageUrl, minimum("opaque"), "other");
++    for (const response of [missingIncident, otherPage]) {
++      problem(response, 404, "resource-not-found");
++      expect(context(response)).toEqual(expectedContext);
++      expect(response.headers.has("x-bdp-development-limit")).toBe(false);
++    }
++    const malformed = await exchange("malformed-page", "GET", pageUrl, [
++      "BDP-Minimum-Scope-Position",
++      "opaque",
++    ]);
++    problem(malformed, 400, "malformed-request");
++    expect(context(malformed)).toEqual([null, null, null]);
++    const anonymous = await exchange(
++      "anonymous-page",
++      "GET",
++      pageUrl,
++      minimum("opaque"),
++      "anonymous",
++    );
++    problem(anonymous, 401, "unauthenticated");
++    expect(context(anonymous)).toEqual([null, null, null]);
++    expect(attempted).toBe(37);
++    expect(responses).toHaveLength(37);
++    expect(
++      Object.fromEntries(
++        [200, 503, 410, 409, 404, 400, 401].map((status) => [
++          status,
++          responses.filter((r) => r.status === status).length,
++        ]),
++      ),
++    ).toEqual({ 200: 7, 503: 10, 410: 8, 409: 8, 404: 2, 400: 1, 401: 1 });
++    expect(
++      Object.fromEntries(
++        ["POST", "GET", "HEAD"].map((method) => [
++          method,
++          responses.filter((r) => r.method === method).length,
++        ]),
++      ),
++    ).toEqual({ POST: 3, GET: 21, HEAD: 13 });
++    controller.signal.throwIfAborted();
++  } catch (error) {
++    fail(error, phase);
++  } finally {
++    clearTimeout(deadline);
++    controller.abort();
++    const cleanupReason = new Error("installed current observation cleanup deadline");
++    let cleanupTimer: ReturnType<typeof setTimeout> | undefined;
++    // Await both operation settlement and transport close; one deadline also covers child close.
++    const transportDrain = Promise.all(
++      [...active].map(
++        (request) =>
++          new Promise<void>((resolve) => {
++            request.once("close", resolve);
++            request.destroy();
++          }),
++      ),
++    );
++    const cleaning = (async () => {
++      for (const result of await Promise.allSettled([...pending]))
++        if (result.status === "rejected") fail(result.reason, "transport-drain");
++      await transportDrain;
++      if (child) {
++        await child.close();
++        await childDrain;
++      }
++    })();
++    // Retain late failures after the race without letting a late close mark ownership clean.
++    void cleaning.catch((error) => fail(error, "late-cleanup"));
++    try {
++      await Promise.race([
++        cleaning,
++        new Promise<never>((_, reject) => {
++          cleanupTimer = setTimeout(() => {
++            cleanupExceeded = true;
++            child?.child.kill("SIGKILL");
++            reject(cleanupReason);
++          }, 10000);
++        }),
++      ]);
++      if (
++        child &&
++        !cleanupExceeded &&
++        child.child.exitCode === 0 &&
++        child.child.signalCode === null &&
++        childLifetime.close?.code === 0 &&
++        childLifetime.close.signal === null
++      )
++        closed = true;
++      else if (launchAttempted)
++        fail(new Error("installed current observation clean close unproved"), "unclean-close");
++    } catch (error) {
++      fail(error, "cleanup");
++    } finally {
++      clearTimeout(cleanupTimer);
++    }
++    if (deadlineExceeded) fail(deadlineReason, "deadline");
++    const stopped =
++      !launchAttempted ||
++      (child !== undefined && (child.child.exitCode !== null || child.child.signalCode !== null));
++    if (!stopped)
++      fail(new Error("installed current observation child stop unknown"), "unknown-stop");
++    try {
++      if (directory && (!launchAttempted || (closed && failures.length === 0)))
++        rmSync(directory, { recursive: true, force: true });
++    } catch (error) {
++      fail(error, "directory-cleanup");
++    }
++    const directoryAbsent = directory === undefined || !existsSync(directory);
++    if (!directoryAbsent)
++      fail(new Error("installed current observation directory preserved"), "directory-retained");
++    try {
++      console.log(
++        JSON.stringify({
++          observation: "private-installed-current-observation-minimum",
++          outcome: failures.length ? "failed" : "passed",
++          declaredSourceCommit: sourceCommit,
++          workspaceDirty,
++          entry: resolvedEntry,
++          entrySha256,
++          binding: binding ?? null,
++          artifactBytes:
++            localArtifacts.descriptors.reduce((n, d) => n + Buffer.byteLength(d.utf8), 0) +
++            localArtifacts.schemas.reduce((n, s) => n + Buffer.byteLength(s.utf8), 0),
++          elapsedMs: performance.now() - started,
++          attempted,
++          exchanges: responses.length,
++          completedResponses: responses,
++          deadlineExceeded,
++          cleanupExceeded,
++          launchAttempted,
++          startupCompleted: child !== undefined,
++          closed,
++          childClose: childLifetime.close ?? null,
++          childPid: child?.child.pid ?? null,
++          childExitCode: child?.child.exitCode ?? null,
++          childSignalCode: child?.child.signalCode ?? null,
++          directory: directory ?? null,
++          directoryAbsent,
++          activeRequests: active.size,
++          pendingOperations: pending.size,
++          failureCount: failures.length,
++          failureCategories: categories,
++          claimEligible: false,
++          retention:
++            "safe response metadata/fingerprints; bodies asserted in memory; no credentials logged",
++          startupLimitation:
++            "pre-ready or unclean ownership preserves directory for supervisor evidence",
++        }),
++      );
++    } catch (error) {
++      fail(error, "report");
++    }
++  }
++  if (failures.length === 1) throw failures[0];
++  if (failures.length > 1)
++    throw new AggregateError(failures, "installed current observation and cleanup failed");
++}, 60000);
+diff --git a/docs/design/transaction-implementation-progress.md b/docs/design/transaction-implementation-progress.md
+index 44e255c..698fc47 100644
+--- a/docs/design/transaction-implementation-progress.md
++++ b/docs/design/transaction-implementation-progress.md
+@@ -2060,3 +2060,10 @@ minimum semantics or incident-Link metadata Event membership.
+ Fresh finite changefeed start-now opaque-minimum draft (unexecuted): this subset now uses the existing bounded wait for lexically valid unrecognized minima with the actual current epoch/view, preserving the one-time admission checkpoint while recapturing current context per attempt. This supersedes the earlier unsupported-minimum gap statement only for finite non-SSE start=now (including minimum refusal before unsupported-Accept negotiation). Direct after/genesis, retained continuations, SSE and foreign-context opaque minima remain outside this extension; S1/G2 and public discovery/profile admission stay unresolved or closed as previously recorded. Earlier evidence retains its original source attribution; this draft adds no validation or qualification claim.
+ 
+ Fresh canonical Scope Event SSE reads without URL or raw/header reconnect controls now have a draft matched-context opaque-minimum path through the existing bounded waiter, before packet and stream admission. This separate Event slice does not supersede the preceding finite changefeed start-now paragraph's changefeed SSE exclusion. Resource Event SSE, reconnects, foreign opaque contexts, S1/G2 and public profile discovery/admission remain excluded; no validation or qualification is claimed for this draft.
++
++
++### Current-observation minimum closure (private candidate)
++
++The shared current-context checker first rejects an invalid owner position, then compares epoch and authorization view for an opaque minimum on an admitted waitable observation, before treating eligibility as unproved. This preserves the accepted invalid-owner precedence, including for internal discovery observations previously using the strict checker. Current Type/initial-Type and successful incident-Link reads use the existing bounded waiter; Type missing/hidden collisions use minimum-first ordering under the general remaining-read rule. Resource, alias and incident-anchor missing-first behavior remains. Owned receipt pages capture lexical minima and preserve parent/principal/epoch/token nondisclosure before minimum and retention. Internal discovery observation uses the same checker without exposing discovery or selecting a public profile.
++
++The associated source and installed witnesses cover capture across a real commit, finite draining before owner close, receipt-page retention and conditional/HEAD parity. Their new source-derived workload and predecessor adjustments are recorded separately; this paragraph is not a test-pass or profile-completion claim. Earlier private foreign-opaque outcomes remain historical evidence; this candidate supersedes that behavior only on already-admitted current observers. Strict retained/cursor/reconnect/Resource-SSE/changefeed-SSE paths, S1/G2 decisions and public discovery/admission remain outside this change. The exported visibility-gap compatibility class and its HTTP translation remain for retained compatibility; ordinary admitted current paths no longer witness that gap. Existing counterfactual injection controls are not ordinary-runtime results. Anonymous and malformed receipt-page controls are tested separately; their combined case is not claimed by the unchanged twelve-operation nondisclosure witness. Full candidate review and fresh source/packed-consumer validation remain required.
+diff --git a/packages/server/src/transaction-changefeed.test.ts b/packages/server/src/transaction-changefeed.test.ts
+index 6e521c5..b118f64 100644
+--- a/packages/server/src/transaction-changefeed.test.ts
++++ b/packages/server/src/transaction-changefeed.test.ts
+@@ -20,7 +20,6 @@ import { createTransactionService } from "./transaction-service.js";
+ import {
+   TransactionMinimumFailure,
+   TransactionMinimumUnproved,
+-  TransactionMinimumUnsupported,
+ } from "./transaction-consistency.js";
+ import { ScopeServerOperationAbortedError } from "./read-request.js";
+ import {
+@@ -1553,8 +1552,8 @@ it("keeps direct and excluded changefeed minimum paths strict", async () => {
+         undefined,
+         "finite-start-now",
+       ),
+-    ).rejects.toBeInstanceOf(TransactionMinimumUnsupported);
+-    outcomes.push("foreign-unsupported");
++    ).rejects.toMatchObject({ reason: "cursor-expired" });
++    outcomes.push("foreign-cursor-expired");
+     await instance.close();
+     expect(() =>
+       instance.changes({ start: "now" }, minimum, undefined, "finite-start-now"),
+diff --git a/packages/server/src/transaction-consistency.test.ts b/packages/server/src/transaction-consistency.test.ts
+index a5611a6..9cad651 100644
+--- a/packages/server/src/transaction-consistency.test.ts
++++ b/packages/server/src/transaction-consistency.test.ts
+@@ -152,14 +152,41 @@ it("captures lexical current minimums without widening strict consumers or invok
+     expect(() => checkCurrentReadMinimum(supplied, context, true)).toThrow(
+       TransactionMinimumUnproved,
+     );
+-    for (const foreign of [{ scopeEpoch: "other" }, { authorizationView: "other" }])
+-      expect(() => checkCurrentReadMinimum({ ...supplied, ...foreign }, context, true)).toThrow(
+-        TransactionMinimumUnsupported,
+-      );
++    for (const [foreign, reason] of [
++      [{ scopeEpoch: "other" }, "cursor-expired"],
++      [{ authorizationView: "other" }, "foreign-view"],
++    ] as const) {
++      let failure: unknown;
++      try {
++        checkCurrentReadMinimum({ ...supplied, ...foreign }, context, true);
++      } catch (error) {
++        failure = error;
++      }
++      expect(failure).toBeInstanceOf(TransactionMinimumFailure);
++      if (!(failure instanceof TransactionMinimumFailure))
++        throw new Error("expected minimum failure");
++      expect(failure.reason).toBe(reason);
++      expect(failure.context).toBe(context);
++    }
+     expect(() => checkCurrentReadMinimum(supplied, context, false)).toThrow(
+       TransactionMinimumUnsupported,
+     );
+   }
++  let bothMismatch: unknown;
++  try {
++    checkCurrentReadMinimum(
++      { scopeEpoch: "other", authorizationView: "other", minimumPosition: "opaque" },
++      context,
++      true,
++    );
++  } catch (error) {
++    bothMismatch = error;
++  }
++  expect(bothMismatch).toBeInstanceOf(TransactionMinimumFailure);
++  if (!(bothMismatch instanceof TransactionMinimumFailure))
++    throw new Error("expected contextual failure");
++  expect(bothMismatch.reason).toBe("cursor-expired");
++  expect(bothMismatch.context).toBe(context);
+   const getter = vi.fn(() => "opaque");
+   for (const value of [
+     new Proxy(tuple(), { get: getter }),
+diff --git a/packages/server/src/transaction-consistency.ts b/packages/server/src/transaction-consistency.ts
+index b3c5b17..1b91ca2 100644
+--- a/packages/server/src/transaction-consistency.ts
++++ b/packages/server/src/transaction-consistency.ts
+@@ -120,12 +120,11 @@ export function checkCurrentReadMinimum(
+   if (position(context.scopePosition) === undefined)
+     throw new Error("invalid owner minimum position");
+   if (position(minimum.minimumPosition) === undefined) {
+-    if (
+-      !waitable ||
+-      minimum.scopeEpoch !== context.scopeEpoch ||
+-      minimum.authorizationView !== context.authorizationView
+-    )
+-      throw new TransactionMinimumUnsupported("minimum-position");
++    if (!waitable) throw new TransactionMinimumUnsupported("minimum-position");
++    if (minimum.scopeEpoch !== context.scopeEpoch)
++      throw new TransactionMinimumFailure("cursor-expired", context);
++    if (minimum.authorizationView !== context.authorizationView)
++      throw new TransactionMinimumFailure("foreign-view", context);
+     throw new TransactionMinimumUnproved(context);
+   }
+   checkTransactionMinimum(minimum, context);
+diff --git a/packages/server/src/transaction-event-sse.test.ts b/packages/server/src/transaction-event-sse.test.ts
+index 1ebda14..9559251 100644
+--- a/packages/server/src/transaction-event-sse.test.ts
++++ b/packages/server/src/transaction-event-sse.test.ts
+@@ -994,8 +994,9 @@ it("publication cancels a queued Event frame before its drain permits another wr
+ 
+ it("gates initial Scope Event SSE opaque minima before scan packets", async () => {
+   const { DatabaseSync } = await import("node:sqlite");
+-  const { TransactionMinimumUnproved, TransactionMinimumFailure, TransactionMinimumUnsupported } =
+-    await import("./transaction-consistency.js");
++  const { TransactionMinimumUnproved, TransactionMinimumFailure } = await import(
++    "./transaction-consistency.js"
++  );
+   const f = ownerFixture();
+   let seedCommits = 0;
+   f.run([
+@@ -1104,7 +1105,10 @@ it("gates initial Scope Event SSE opaque minima before scan packets", async () =
+     ]) {
+       expect(
+         scan("foreign", `${scope}events/`, tuple, undefined, false, "initial-scope-sse"),
+-      ).toBeInstanceOf(TransactionMinimumUnsupported);
++      ).toMatchObject({
++        reason: tuple.scopeEpoch !== packet.context.scopeEpoch ? "cursor-expired" : "foreign-view",
++        context: packet.context,
++      });
+     }
+     const strict = [
+       scan("default", `${scope}events/`, minimum),
+@@ -1607,6 +1611,15 @@ it("serves initial Scope Event SSE opaque minima before conditional admission",
+             code: "catch-up-timeout",
+             retry: "after-delay",
+           });
++      } else if (status === 409 || status === 410) {
++        expect(safeContext(stream.headers)).toEqual(expectedContext);
++        expect(stream.headers["x-bdp-development-limit"]).toBeUndefined();
++        expect(stream.headers["content-type"]).toBe("application/problem+json");
++        if (method === "GET")
++          expect(JSON.parse(stream.body)).toMatchObject({
++            status,
++            code: status === 410 ? "cursor-expired" : "foreign-view",
++          });
+       } else if (status === 500) {
+         expect(stream.headers["x-bdp-development-limit"]).toBe("minimum-position");
+         expect(stream.body).toBe("");
+@@ -1743,8 +1756,8 @@ it("serves initial Scope Event SSE opaque minima before conditional admission",
+     await pair([...opaque, ["If-Match", '"wrong"']], 503);
+     await pair([["BDP-Minimum-Scope-Position", "unknown"]], 400);
+     await pair(minimum("pos-2"), 503);
+-    await raw("events/", [["BDP-Scope-Epoch", "foreign-epoch"], ...opaque.slice(1)], 500);
+-    await raw("events/", [opaque[0]!, ["BDP-Authorization-View", "foreign-view"], opaque[2]!], 500);
++    await raw("events/", [["BDP-Scope-Epoch", "foreign-epoch"], ...opaque.slice(1)], 410);
++    await raw("events/", [opaque[0]!, ["BDP-Authorization-View", "foreign-view"], opaque[2]!], 409);
+     await raw(`events/?after=${encodeURIComponent(after)}`, opaque, 500);
+     await raw("events/?after=", opaque, 400);
+     await raw("events/", [...opaque, ["Last-Event-ID", after]], 500);
+@@ -1828,7 +1841,7 @@ it("serves initial Scope Event SSE opaque minima before conditional admission",
+         counts[row.status] = (counts[row.status] ?? 0) + 1;
+         return counts;
+       }, {}),
+-    ).toEqual({ 200: 6, 503: 10, 500: 8, 400: 3, 404: 1, 401: 1, 304: 1, 412: 1 });
++    ).toEqual({ 200: 6, 503: 10, 500: 6, 400: 3, 404: 1, 401: 1, 304: 1, 412: 1, 409: 1, 410: 1 });
+   } catch (error) {
+     failures.push(error);
+   } finally {
+diff --git a/packages/server/src/transaction-events.test.ts b/packages/server/src/transaction-events.test.ts
+index 2581e05..97bcdf1 100644
+--- a/packages/server/src/transaction-events.test.ts
++++ b/packages/server/src/transaction-events.test.ts
+@@ -28,7 +28,6 @@ import {
+ import {
+   TransactionMinimumFailure,
+   TransactionMinimumUnproved,
+-  TransactionMinimumUnsupported,
+ } from "./transaction-consistency.js";
+ 
+ const cleanups: (() => void)[] = [];
+@@ -1373,7 +1372,10 @@ it("gates initial Scope Event unknown minima before retained scans", () => {
+     ]) {
+       groupReads = 0;
+       expect(() => read(source, undefined, { ...minimum, ...foreign })).toThrow(
+-        TransactionMinimumUnsupported,
++        expect.objectContaining({
++          reason: "scopeEpoch" in foreign ? "cursor-expired" : "foreign-view",
++          context: setup.context,
++        }),
+       );
+       expect(groupReads).toBe(0);
+     }
+@@ -1525,8 +1527,20 @@ it("serves initial finite Scope Event opaque minima through bounded waiting", as
+       true,
+     );
+     await pair("events/", {}, 200, undefined, true);
+-    await pair("events/", { ...opaque, "bdp-scope-epoch": "foreign-epoch" }, 500);
+-    await pair("events/", { ...opaque, "bdp-authorization-view": "foreign-view" }, 500);
++    await pair(
++      "events/",
++      { ...opaque, "bdp-scope-epoch": "foreign-epoch" },
++      410,
++      "cursor-expired",
++      true,
++    );
++    await pair(
++      "events/",
++      { ...opaque, "bdp-authorization-view": "foreign-view" },
++      409,
++      "foreign-view",
++      true,
++    );
+     await pair(
+       "events/",
+       { ...opaque, accept: "text/event-stream" },
+@@ -1614,7 +1628,10 @@ it("gates initial Bead Event unknown minima before retained scans", () => {
+     ]) {
+       groupReads = 0;
+       expect(() => read(source, undefined, { ...minimum, ...foreign })).toThrow(
+-        TransactionMinimumUnsupported,
++        expect.objectContaining({
++          reason: "scopeEpoch" in foreign ? "cursor-expired" : "foreign-view",
++          context: setup.context,
++        }),
+       );
+       expect(groupReads).toBe(0);
+     }
+@@ -1819,8 +1836,20 @@ it("serves initial finite Bead Event opaque minima with retained identity and ro
+       true,
+     );
+     await pair("beads/a?view=events", {}, 200, undefined, true);
+-    await pair("beads/a?view=events", { ...opaque, "bdp-scope-epoch": "foreign-epoch" }, 500);
+-    await pair("beads/a?view=events", { ...opaque, "bdp-authorization-view": "foreign-view" }, 500);
++    await pair(
++      "beads/a?view=events",
++      { ...opaque, "bdp-scope-epoch": "foreign-epoch" },
++      410,
++      "cursor-expired",
++      true,
++    );
++    await pair(
++      "beads/a?view=events",
++      { ...opaque, "bdp-authorization-view": "foreign-view" },
++      409,
++      "foreign-view",
++      true,
++    );
+     // Initial Link Events now wait; stream, continuation and media exclusions remain gaps.
+     await pair("links/l?view=events", opaque, 503, "catch-up-timeout", true);
+     await pair("beads/a?view=events", { ...opaque, accept: "text/event-stream" }, 500);
+@@ -1955,7 +1984,10 @@ it("gates initial Link Event unknown minima before retained scans", () => {
+     ]) {
+       groupReads = 0;
+       expect(() => read(source, undefined, { ...minimum, ...foreign })).toThrow(
+-        TransactionMinimumUnsupported,
++        expect.objectContaining({
++          reason: "scopeEpoch" in foreign ? "cursor-expired" : "foreign-view",
++          context: setup.context,
++        }),
+       );
+       expect(groupReads).toBe(0);
+     }
+@@ -2155,8 +2187,20 @@ it("serves initial finite Link Event opaque minima with retained identity and ro
+       true,
+     );
+     await pair("links/l?view=events", {}, 200, undefined, true);
+-    await pair("links/l?view=events", { ...opaque, "bdp-scope-epoch": "foreign-epoch" }, 500);
+-    await pair("links/l?view=events", { ...opaque, "bdp-authorization-view": "foreign-view" }, 500);
++    await pair(
++      "links/l?view=events",
++      { ...opaque, "bdp-scope-epoch": "foreign-epoch" },
++      410,
++      "cursor-expired",
++      true,
++    );
++    await pair(
++      "links/l?view=events",
++      { ...opaque, "bdp-authorization-view": "foreign-view" },
++      409,
++      "foreign-view",
++      true,
++    );
+     // Stream, continuation, reconnect and media exclusions remain private gaps.
+     await pair("links/l?view=events", { ...opaque, accept: "text/event-stream" }, 500);
+     await pair(`links/l?view=events&after=${encodeURIComponent(after)}`, opaque, 500);
+@@ -2215,7 +2259,7 @@ it("serves initial finite Link Event opaque minima with retained identity and ro
+       true,
+     );
+     expect(responses.filter((response) => response.status === 503)).toHaveLength(8);
+-    expect(responses.filter((response) => response.status === 500)).toHaveLength(12);
++    expect(responses.filter((response) => response.status === 500)).toHaveLength(8);
+     expect(calls).toBe(35);
+   } catch (error) {
+     failures.push(error);
+diff --git a/packages/server/src/transaction-http.test.ts b/packages/server/src/transaction-http.test.ts
+index eda8533..31fa74b 100644
+--- a/packages/server/src/transaction-http.test.ts
++++ b/packages/server/src/transaction-http.test.ts
+@@ -1,5 +1,5 @@
+ import { createHash } from "node:crypto";
+-import { mkdtempSync, rmSync, readFileSync } from "node:fs";
++import { existsSync, mkdtempSync, rmSync, readFileSync } from "node:fs";
+ import { tmpdir } from "node:os";
+ import path from "node:path";
+ import { connect } from "node:net";
+@@ -3061,9 +3061,20 @@ it("serves canonical current Type and incident minimums with truthful context an
+     ]) {
+       const refused = await send(suffix, { ...headers, ...patch });
+       if (suffix === "types/absent") {
+-        expect(refused.status).toBe(500);
+-        expect(refused.headers.get("x-bdp-development-limit")).toBe("minimum-position-visibility");
+-        expect(refused.headers.has("bdp-scope-position")).toBe(false);
++        const status =
++          "bdp-minimum-scope-position" in patch ? 503 : "bdp-scope-epoch" in patch ? 410 : 409;
++        expect(refused.status).toBe(status);
++        expect(refused.headers.has("x-bdp-development-limit")).toBe(false);
++        assertContext(refused);
++        expect(checkedProblem(await body(refused))).toMatchObject({
++          status,
++          code:
++            status === 503
++              ? "catch-up-timeout"
++              : status === 410
++                ? "cursor-expired"
++                : "foreign-view",
++        });
+       } else {
+         expect(refused.status).toBe(404);
+         assertContext(refused);
+@@ -3233,20 +3244,31 @@ it("serves conditioned live aliases and preserves bodyless redirects, refusal co
+         expect(response.headers.has(name)).toBe(false);
+     }
+   }
+-  // Unsupported private foreign-opaque gaps, not qualified foreign-view/expiry results.
++  // Opaque identities preserve actual epoch/view refusal before redirect construction.
+   for (const patch of [{ "bdp-scope-epoch": "foreign" }, { "bdp-authorization-view": "foreign" }]) {
++    let bytes = 0;
+     for (const method of ["GET", "HEAD"] as const) {
+       const response = await get(target, {
+         method,
+         headers: { ...headers, ...patch, "bdp-minimum-scope-position": "unknown" },
+       });
+-      expect(response.status).toBe(500);
+-      expect(response.headers.get("x-bdp-development-limit")).toBe("minimum-position");
++      const status = "bdp-scope-epoch" in patch ? 410 : 409;
++      expect(response.status).toBe(status);
++      expect(response.headers.has("x-bdp-development-limit")).toBe(false);
+       expect(response.headers.has("location")).toBe(false);
+       expect(response.headers.has("etag")).toBe(false);
+-      expect(await response.text()).toBe("");
+-      for (const name of Object.keys(context(created)))
+-        expect(response.headers.has(name)).toBe(false);
++      expect(context(response)).toEqual(context(created));
++      const text = await response.text();
++      if (method === "GET") {
++        bytes = Buffer.byteLength(text);
++        expect(checkedProblem(record(JSON.parse(text)))).toMatchObject({
++          status,
++          code: status === 410 ? "cursor-expired" : "foreign-view",
++        });
++      } else {
++        expect(text).toBe("");
++        expect(response.headers.get("content-length")).toBe(String(bytes));
++      }
+     }
+   }
+   const anonymous = await observe("GET", target, () =>
+@@ -5009,14 +5031,14 @@ it("waits for current Resources and initial collections with unknown minima and
+     expect(response.headers.has("x-bdp-development-limit")).toBe(false);
+   }
+   expect(waits).toBe(8);
+-  // Type routes stop at the strict unknown-token guard; incident-Link refusal
+-  // follows owner classification. Both retain the private label.
++  // Current Type inventory and successful incident lists share bounded eligibility waiting.
+   for (const suffix of ["types/", "beads/a?view=links"]) {
+     const response = await f.get(f.runtime.scope + suffix, { headers: tuple });
+-    expect(response.status).toBe(500);
+-    expect(response.headers.get("x-bdp-development-limit")).toBe("minimum-position");
+-    expect(response.headers.has("bdp-scope-position")).toBe(false);
+-    expect(await response.text()).toBe("");
++    expect(response.status).toBe(503);
++    expect(response.headers.has("x-bdp-development-limit")).toBe(false);
++    expect(response.headers.get("bdp-scope-position")).toBe("pos-1");
++    expect(response.headers.get("retry-after")).toBe("1");
++    expect(checkedProblem(await body(response))).toEqual(timeoutProblem);
+   }
+   // Repeated parameters are normative 400; limit=0 preserves existing parser parity.
+   // Both parser refusals precede semantic minimum support classification.
+@@ -5046,7 +5068,7 @@ it("waits for current Resources and initial collections with unknown minima and
+     expect(response.headers.get("bdp-scope-position")).toBe("pos-1");
+     expect(response.headers.has("x-bdp-development-limit")).toBe(false);
+   }
+-  expect(waits).toBe(8);
++  expect(waits).toBe(10);
+   const published = await f.runtime.replaceAuthorizationPolicy({ timeoutMs: 1000 });
+   let expectedBody: unknown;
+   for (const suffix of ["beads/a", "beads/missing", "beads/a?view=links"]) {
+@@ -5063,7 +5085,7 @@ it("waits for current Resources and initial collections with unknown minima and
+     expect(response.headers.get("bdp-authorization-view")).toBe(published.authorizationView);
+     expect(response.headers.get("bdp-scope-position")).toBe("pos-1");
+   }
+-  expect(waits).toBe(8);
++  expect(waits).toBe(10);
+ });
+ 
+ it("compares retained sequence members and accepts deep input while preserving receiving failures", async () => {
+@@ -5716,9 +5738,10 @@ it("preserves receiving and HTTP error precedence for parser refusals", async ()
+       { accept: "image/png" },
+     ];
+     for (const overlay of overlays) await f.problemPair(suffix, { ...f.opaque, ...overlay });
+-    // Strict Type requests and parser 404 residue retain the old private refusal.
+-    // beads/a?view=links is excluded: it observes the owner, so is not a pre-owner refusal.
+-    for (const excluded of ["types/", "types/task", "beads/a/"]) await f.gapPair(excluded);
++    // Strict continuation and retained Snapshot gates stay pre-owner private refusals.
++    // The parser404 residue preserves its existing route fence.
++    for (const excluded of ["beads/?cursor=missing", "snapshot?snapshot=unissued", "beads/a/"])
++      await f.gapPair(excluded);
+   });
+ });
+ 
+@@ -5801,9 +5824,17 @@ it("serves fresh Snapshot opaque minima with terminal preflight and retained fen
+     for (const field of ["bdp-scope-epoch", "bdp-authorization-view"]) {
+       for (const method of ["GET", "HEAD"] as const) {
+         const result = await get(url, method, { ...minimum, [field]: "foreign" });
+-        expect(result.response.status).toBe(500);
+-        expect(result.response.headers.get("x-bdp-development-limit")).toBe("minimum-position");
++        const status = field === "bdp-scope-epoch" ? 410 : 409;
++        expect(result.response.status).toBe(status);
++        expect(result.response.headers.has("x-bdp-development-limit")).toBe(false);
++        for (const [name, value] of Object.entries(current))
++          expect(result.response.headers.get(name)).toBe(value);
+         if (method === "HEAD") expect(result.text).toBe("");
++        else
++          expect(checkedProblem(record(JSON.parse(result.text)))).toMatchObject({
++            status,
++            code: status === 410 ? "cursor-expired" : "foreign-view",
++          });
+       }
+     }
+     for (const method of ["GET", "HEAD"] as const) {
+@@ -5846,12 +5877,12 @@ it("serves fresh Snapshot opaque minima with terminal preflight and retained fen
+     expect(responses).toHaveLength(27);
+     expect(waits).toBe(8);
+     const statusCounts = Object.fromEntries(
+-      [200, 503, 500, 400, 401].map((status) => [
++      [200, 503, 500, 400, 401, 409, 410].map((status) => [
+         status,
+         responses.filter((response) => response.status === status).length,
+       ]),
+     );
+-    expect(statusCounts).toEqual({ 200: 5, 503: 8, 500: 8, 400: 4, 401: 2 });
++    expect(statusCounts).toEqual({ 200: 5, 503: 8, 500: 4, 400: 4, 401: 2, 409: 2, 410: 2 });
+     await f.runtime.close();
+     console.log(
+       JSON.stringify({
+@@ -5944,16 +5975,22 @@ it("serves opaque receipt root minima before HTTP shortcuts with private fences"
+         accept: "image/png",
+       }),
+     );
+-    // These two private refusals preserve the excluded foreign-opaque gap, not 409/410 conformance.
++    // Incompatible actual context wins before unknown-position eligibility waiting.
+     for (const [method, field] of [
+       ["GET", "bdp-scope-epoch"],
+       ["HEAD", "bdp-authorization-view"],
+     ] as const) {
+       const result = await get(method, "owned-root", root, { ...minimum, [field]: "foreign" });
+-      expect(result.response.status).toBe(500);
+-      expect(result.text).toBe("");
+-      expect(result.response.headers.get("x-bdp-development-limit")).toBe("minimum-position");
+-      expect(Object.values(context(result.response))).toStrictEqual([null, null, null]);
++      const status = field === "bdp-scope-epoch" ? 410 : 409;
++      expect(result.response.status).toBe(status);
++      expect(result.response.headers.has("x-bdp-development-limit")).toBe(false);
++      expect(context(result.response)).toStrictEqual(current);
++      if (method === "HEAD") expect(result.text).toBe("");
++      else
++        expect(checkedProblem(record(JSON.parse(result.text)))).toMatchObject({
++          status,
++          code: "cursor-expired",
++        });
+     }
+     // Shared receiving/auth fences; these rows do not observe the receipt owner.
+     const malformed = await get("GET", "owned-root", root, {
+@@ -5980,7 +6017,7 @@ it("serves opaque receipt root minima before HTTP shortcuts with private fences"
+     expect(checkedProblem(record(JSON.parse(anonymous.text))).code).toBe("unauthenticated");
+     expect(Object.values(context(anonymous.response))).toStrictEqual([null, null, null]);
+     expect(responses.map(({ status }) => status)).toStrictEqual([
+-      200, 503, 503, 503, 500, 500, 400, 404, 404, 401,
++      200, 503, 503, 503, 410, 409, 400, 404, 404, 401,
+     ]);
+     expect(waits).toBe(3);
+     await f.runtime.close();
+@@ -5996,3 +6033,448 @@ it("serves opaque receipt root minima before HTTP shortcuts with private fences"
+     await f.runtime.close();
+   }
+ });
++
++it("serves current observation minimums with actual issued pages and HTTP parity", async () => {
++  const started = performance.now();
++  const scope = "https://current-observation.invalid/acme/";
++  const beadType = `${scope}types/task`,
++    linkType = `${scope}types/relation`;
++  const directory = mkdtempSync(path.join(tmpdir(), "bdp-current-observation-http-"));
++  let tick = 0,
++    waits = 0,
++    attempted = 0,
++    closed = false;
++  let runtime: Awaited<ReturnType<typeof startTransactionRuntime>> | undefined;
++  const failures: unknown[] = [];
++  const recordedFailures = new Set<unknown>();
++  const recordFailure = (error: unknown) => {
++    if (!recordedFailures.has(error)) {
++      recordedFailures.add(error);
++      failures.push(error);
++    }
++  };
++  const responses: {
++    label: string;
++    method: string;
++    url: string;
++    status: number;
++    bytes: number;
++    headers: Record<string, string | null>;
++  }[] = [];
++  const contextNames = ["bdp-scope-epoch", "bdp-authorization-view", "bdp-scope-position"] as const;
++  const granted = new Set([
++    `${scope}operations/batch`,
++    `${scope}operations/update-where`,
++    `${scope}types/task`,
++    `${scope}types/`,
++    `${scope}types/missing`,
++    `${scope}beads/r00?view=links`,
++    `${scope}beads/missing?view=links`,
++  ]);
++  const seedBody = JSON.stringify({
++    operations: Array.from({ length: 32 }, (_, n) => ({
++      operation: "createBead",
++      id: `beads/r${String(n).padStart(2, "0")}`,
++      type: beadType,
++      properties: { n: 0 },
++    })),
++  });
++  const setBody = JSON.stringify({
++    collection: "beads",
++    selector: `$[?@.type == "${beadType}"]`,
++    cardinality: { min: 32, max: 32 },
++    change: [{ op: "replace", path: "/n", value: 1 }],
++  });
++  try {
++    runtime = await startTransactionRuntime(
++      {
++        directory,
++        scope,
++        port: 0,
++        create: true,
++        types: [
++          parseTypeDescriptor({ id: beadType, name: "Task", describes: "bead", conformsTo: [] }),
++          parseTypeDescriptor({
++            id: linkType,
++            name: "Relation",
++            describes: "link",
++            conformsTo: [],
++            source: { conformsTo: [beadType], external: "opaque" },
++            target: { conformsTo: [beadType], external: "opaque" },
++          }),
++        ],
++        credentials: [
++          { token, principal: "p", canMutate: true },
++          { token: otherToken, principal: "other", canMutate: false },
++        ],
++      },
++      {
++        receiptMaximumItems: 2,
++        minimumReads: {
++          budgetMs: 2,
++          now: () => tick++,
++          wait: async () => {
++            waits++;
++          },
++        },
++      },
++    );
++    const listenUrl = runtime.listenUrl;
++    const exchange = async (
++      label: string,
++      method: "GET" | "HEAD" | "POST",
++      url: string,
++      fields: string[] = [],
++      credential: "writer" | "other" | "anonymous" = "writer",
++      requestBody?: string,
++      key?: string,
++    ) => {
++      if (attempted >= 37 || !granted.has(url))
++        throw new Error("unbound or excess current observation request");
++      attempted++;
++      const target = new URL(url);
++      expect(target.origin).toBe(new URL(scope).origin);
++      const headers = new Headers({ accept: "application/json", host: new URL(scope).host });
++      if (credential !== "anonymous")
++        headers.set("authorization", `Bearer ${credential === "writer" ? token : otherToken}`);
++      if (requestBody !== undefined) {
++        headers.set("content-type", "application/json");
++        headers.set("idempotency-key", key ?? "missing-key");
++      }
++      for (let i = 0; i < fields.length; i += 2) headers.set(fields[i]!, fields[i + 1]!);
++      const response = await fetch(new URL(target.pathname + target.search, listenUrl), {
++        method,
++        headers,
++        ...(requestBody === undefined ? {} : { body: requestBody }),
++        signal: AbortSignal.timeout(5000),
++        redirect: "manual",
++      });
++      const text = await response.text(),
++        bytes = Buffer.byteLength(text);
++      expect(response.headers.get("x-bdp-development")).toBe("non-attesting");
++      responses.push({
++        label,
++        method,
++        url,
++        status: response.status,
++        bytes,
++        headers: Object.fromEntries(
++          [
++            ...contextNames,
++            "content-type",
++            "content-length",
++            "retry-after",
++            "cache-control",
++            "x-bdp-development-limit",
++          ].map((name) => [name, response.headers.get(name)]),
++        ),
++      });
++      return { status: response.status, headers: response.headers, text, bytes };
++    };
++    type WireResponse = Awaited<ReturnType<typeof exchange>>;
++    const context = (response: WireResponse) =>
++      contextNames.map((name) => response.headers.get(name));
++    const problem = (response: WireResponse, status: number, code: string) => {
++      expect(response.status).toBe(status);
++      expect(response.headers.get("content-type")).toBe("application/problem+json");
++      const value = checkedProblem(record(JSON.parse(response.text)));
++      expect(value).toMatchObject({ status, code });
++      return value;
++    };
++    const receiptResults = (value: Record<string, unknown>) => {
++      if (!Array.isArray(value.results)) throw new Error("receipt results required");
++      return value.results;
++    };
++    const receipt = (response: WireResponse, key: string, position: string) => {
++      expect(response.status).toBe(200);
++      const value = record(JSON.parse(response.text));
++      expect(validateSelectorReceipt(value), JSON.stringify(validateSelectorReceipt.errors)).toBe(
++        true,
++      );
++      expect(value).toMatchObject({
++        status: "completed",
++        idempotencyKey: key,
++        requiredPosition: position,
++        effectPosition: position,
++      });
++      expect(context(response)[2]).toBe(position);
++      expect([value.scopeEpoch, value.authorizationView]).toStrictEqual(
++        context(response).slice(0, 2),
++      );
++      expect(
++        context(response)
++          .slice(0, 2)
++          .every((v) => typeof v === "string" && /^[A-Za-z0-9_-]{1,256}$/.test(v)),
++      ).toBe(true);
++      return value;
++    };
++    const seed = await exchange(
++      "seed",
++      "POST",
++      `${scope}operations/batch`,
++      [],
++      "writer",
++      seedBody,
++      "current-observation-seed",
++    );
++    const seeded = receipt(seed, "current-observation-seed", "pos-1");
++    expect(receiptResults(seeded)).toHaveLength(2);
++    const updated = await exchange(
++      "issue-page",
++      "POST",
++      `${scope}operations/update-where`,
++      [],
++      "writer",
++      setBody,
++      "current-observation-update",
++    );
++    const paged = receipt(updated, "current-observation-update", "pos-2");
++    const pageUrl = paged.next;
++    if (typeof pageUrl !== "string" || typeof paged.id !== "string")
++      throw new Error("actual second mutation page required");
++    const parsedPage = new URL(pageUrl);
++    expect(parsedPage.origin).toBe(new URL(scope).origin);
++    expect([parsedPage.search, parsedPage.hash, parsedPage.username, parsedPage.password]).toEqual([
++      "",
++      "",
++      "",
++      "",
++    ]);
++    expect(pageUrl.startsWith(`${paged.id}/pages/`)).toBe(true);
++    expect(pageUrl.slice(`${paged.id}/pages/`.length)).toMatch(/^[A-Za-z0-9_-]+$/);
++    granted.add(pageUrl);
++    const linked = await exchange(
++      "link",
++      "POST",
++      `${scope}operations/batch`,
++      [],
++      "writer",
++      JSON.stringify({
++        operations: [
++          {
++            operation: "createLink",
++            id: "links/l",
++            type: linkType,
++            source: "beads/r00",
++            target: "beads/r01",
++            properties: { n: 0 },
++          },
++        ],
++      }),
++      "current-observation-link",
++    );
++    receipt(linked, "current-observation-link", "pos-3");
++    const expectedContext = context(linked);
++    expect(expectedContext.slice(0, 2)).toEqual(context(seed).slice(0, 2));
++    const minimum = (position: string, epoch = expectedContext[0]!, view = expectedContext[1]!) => [
++      "BDP-Minimum-Scope-Position",
++      position,
++      "BDP-Scope-Epoch",
++      epoch,
++      "BDP-Authorization-View",
++      view,
++    ];
++    const validType = ajv.compile({ $ref: `${schema.$id}#/$defs/typeDescriptor` });
++    const validTypes = ajv.compile({ $ref: `${schema.$id}#/$defs/typesInventory` });
++    const validLinks = ajv.compile({ $ref: `${schema.$id}#/$defs/currentLinkCollection` });
++    const validPage = ajv.compile({ $ref: `${schema.$id}#/$defs/mutationReceiptPage` });
++    const pair = async (
++      label: string,
++      url: string,
++      fields: string[],
++      status: number,
++      code: string,
++    ) => {
++      const get = await exchange(`${label}-get`, "GET", url, [
++        ...fields,
++        ...(status === 503 ? ["If-None-Match", "*"] : []),
++      ]);
++      const head = await exchange(`${label}-head`, "HEAD", url, [
++        ...fields,
++        ...(status === 503 ? ["If-Match", '"mismatch"', "Accept", "image/png"] : []),
++      ]);
++      problem(get, status, code);
++      expect(head.status).toBe(status);
++      expect(head.text).toBe("");
++      expect(head.bytes).toBe(0);
++      expect(get.bytes).toBeGreaterThan(0);
++      expect(get.headers.get("content-length")).toBe(String(get.bytes));
++      for (const name of [
++        "content-length",
++        "content-type",
++        "cache-control",
++        "retry-after",
++        ...contextNames,
++      ])
++        expect(head.headers.get(name), name).toBe(get.headers.get(name));
++      for (const response of [get, head]) {
++        expect(context(response)).toEqual(expectedContext);
++        expect(response.headers.get("content-type")).toBe("application/problem+json");
++        expect(response.headers.get("cache-control")).toBe("private, no-store");
++        expect(response.headers.has("x-bdp-development-limit")).toBe(false);
++        if (status === 503) expect(response.headers.get("retry-after")).toBe("1");
++      }
++    };
++    for (const [label, target] of [
++      ["type", `${scope}types/task`],
++      ["types", `${scope}types/`],
++      ["incident", `${scope}beads/r00?view=links`],
++      ["page", pageUrl],
++    ] as const) {
++      const known = await exchange(`${label}-known`, "GET", target, minimum("pos-3"));
++      expect(known.status).toBe(200);
++      expect(context(known)).toEqual(expectedContext);
++      const value = record(JSON.parse(known.text));
++      const validate =
++        label === "type"
++          ? validType
++          : label === "types"
++            ? validTypes
++            : label === "incident"
++              ? validLinks
++              : validPage;
++      expect(validate(value), JSON.stringify(validate.errors)).toBe(true);
++      if (label === "type") expect(value).toMatchObject({ id: beadType, describes: "bead" });
++      else if (label === "types") {
++        expect(value.items).toEqual([
++          { id: beadType, name: "Task", describes: "bead" },
++          { id: linkType, name: "Relation", describes: "link" },
++        ]);
++        expect(value.next).toBeNull();
++      } else if (label === "incident") {
++        expect(value).toMatchObject({
++          items: [
++            {
++              id: `${scope}links/l`,
++              type: linkType,
++              source: `${scope}beads/r00`,
++              target: `${scope}beads/r01`,
++            },
++          ],
++          next: null,
++        });
++      } else {
++        expect(value.receipt).toBe(paged.id);
++        if (!Array.isArray(value.results) || value.results.length === 0)
++          throw new Error("nonempty real page required");
++        for (const result of value.results)
++          expect(record(result)).toMatchObject({
++            outcome: "updated",
++            resource: { type: beadType, properties: { n: 1 } },
++          });
++        expect(paged.requiredPosition).toBe("pos-2");
++      }
++      await pair(`${label}-opaque`, target, minimum("opaque"), 503, "catch-up-timeout");
++      await pair(
++        `${label}-epoch`,
++        target,
++        minimum("opaque", "foreign", expectedContext[1]!),
++        410,
++        "cursor-expired",
++      );
++      await pair(
++        `${label}-view`,
++        target,
++        minimum("opaque", expectedContext[0]!, "foreign"),
++        409,
++        "foreign-view",
++      );
++    }
++    await pair("missing-type", `${scope}types/missing`, minimum("opaque"), 503, "catch-up-timeout");
++    const missingIncident = await exchange(
++      "missing-incident",
++      "GET",
++      `${scope}beads/missing?view=links`,
++      minimum("opaque"),
++    );
++    const otherPage = await exchange("other-page", "GET", pageUrl, minimum("opaque"), "other");
++    for (const response of [missingIncident, otherPage]) {
++      problem(response, 404, "resource-not-found");
++      expect(context(response)).toEqual(expectedContext);
++      expect(response.headers.has("x-bdp-development-limit")).toBe(false);
++    }
++    const malformed = await exchange("malformed-page", "GET", pageUrl, [
++      "BDP-Minimum-Scope-Position",
++      "opaque",
++    ]);
++    problem(malformed, 400, "malformed-request");
++    expect(context(malformed)).toEqual([null, null, null]);
++    const anonymous = await exchange(
++      "anonymous-page",
++      "GET",
++      pageUrl,
++      minimum("opaque"),
++      "anonymous",
++    );
++    problem(anonymous, 401, "unauthenticated");
++    expect(context(anonymous)).toEqual([null, null, null]);
++    expect(attempted).toBe(37);
++    expect(responses).toHaveLength(37);
++    expect(
++      Object.fromEntries(
++        [200, 503, 410, 409, 404, 400, 401].map((status) => [
++          status,
++          responses.filter((r) => r.status === status).length,
++        ]),
++      ),
++    ).toEqual({ 200: 7, 503: 10, 410: 8, 409: 8, 404: 2, 400: 1, 401: 1 });
++    expect(
++      Object.fromEntries(
++        ["POST", "GET", "HEAD"].map((method) => [
++          method,
++          responses.filter((r) => r.method === method).length,
++        ]),
++      ),
++    ).toEqual({ POST: 3, GET: 21, HEAD: 13 });
++    expect(waits).toBe(10);
++  } catch (error) {
++    recordFailure(error);
++  } finally {
++    let closeTimer: ReturnType<typeof setTimeout> | undefined;
++    try {
++      if (runtime) {
++        const closing = runtime.close();
++        void closing.catch((error: unknown) => {
++          recordFailure(error);
++        });
++        await Promise.race([
++          closing,
++          new Promise<never>((_, reject) => {
++            closeTimer = setTimeout(
++              () => reject(new Error("current observation HTTP close timeout")),
++              1000,
++            );
++          }),
++        ]);
++        closed = true;
++      }
++    } catch (error) {
++      recordFailure(error);
++    } finally {
++      clearTimeout(closeTimer);
++    }
++    if (closed) {
++      try {
++        rmSync(directory, { recursive: true, force: true });
++      } catch (error) {
++        recordFailure(error);
++      }
++    }
++    console.log(
++      JSON.stringify({
++        observation: "current-observation-http",
++        elapsedMs: performance.now() - started,
++        attempted,
++        responses,
++        waits,
++        clockCalls: tick,
++        closed,
++        directory,
++        directoryAbsent: !existsSync(directory),
++        failureCount: failures.length,
++      }),
++    );
++  }
++  if (failures.length)
++    throw new AggregateError(failures, "current observation HTTP and cleanup failed");
++});
+diff --git a/packages/server/src/transaction-http.ts b/packages/server/src/transaction-http.ts
+index 2f01f38..5b4c3fd 100644
+--- a/packages/server/src/transaction-http.ts
++++ b/packages/server/src/transaction-http.ts
+@@ -570,7 +570,7 @@ export function createTransactionHttpHandler(
+       const access = { kind: "authenticated" as const, principal: authorization.principal };
+       if (url.pathname.slice(`${scopeUrl.pathname}receipts/`.length).includes("/pages/")) {
+         const minimum = hasMinimumControls(request)
+-          ? transactionMinimumHeaders(request.headers)
++          ? currentReadMinimumHeaders(request.headers)
+           : undefined;
+         const page = await service.receiptPage(
+           access,
+diff --git a/packages/server/src/transaction-read.test.ts b/packages/server/src/transaction-read.test.ts
+index 5f7db35..4e095bc 100644
+--- a/packages/server/src/transaction-read.test.ts
++++ b/packages/server/src/transaction-read.test.ts
+@@ -15,12 +15,10 @@ import {
+   createTransactionReadPlane,
+   currentReadMinimumKind,
+   transactionReadContexts,
+-  TransactionMinimumVisibilityGap,
+ } from "./transaction-read.js";
+ import {
+   TransactionMinimumFailure,
+   TransactionMinimumUnproved,
+-  TransactionMinimumUnsupported,
+ } from "./transaction-consistency.js";
+ import { createTransactionService } from "./transaction-service.js";
+ import { createTransactionHttpHandler } from "./transaction-http.js";
+@@ -1684,7 +1682,14 @@ describe("current Type and incident-Link minimums", () => {
+         if (request.kind === "resource") {
+           await expect(
+             plane.minimumFor(principal, { ...f.minimum(), ...patch }).perform(request),
+-          ).rejects.toBeInstanceOf(TransactionMinimumVisibilityGap);
++          ).rejects.toMatchObject({
++            reason:
++              "minimumPosition" in patch
++                ? "behind"
++                : "scopeEpoch" in patch
++                  ? "cursor-expired"
++                  : "foreign-view",
++          });
+         } else {
+           const missing = await plane
+             .minimumFor(principal, { ...f.minimum(), ...patch })
+@@ -2523,7 +2528,7 @@ describe("current alias minimum subset", () => {
+     f.reset();
+     let performCalls = 0;
+     performCalls++;
+-    await expect(facet.perform(request)).rejects.toBeInstanceOf(TransactionMinimumUnsupported);
++    await expect(facet.perform(request)).rejects.toMatchObject({ reason: "catch-up-timeout" });
+     performCalls++;
+     const missing = await facet.perform({ kind: "bead-links", bead: url("beads/missing") });
+     expect(missing).toMatchObject({
+@@ -2532,11 +2537,11 @@ describe("current alias minimum subset", () => {
+     });
+     expect(contexts(missing).current.scopePosition).toBe("pos-1");
+     expect([f.entries.length, f.mappings.length, waits, clockCalls, f.writes]).toEqual([
+-      2, 0, 0, 2, 2,
++      3, 0, 1, 4, 2,
+     ]);
+     console.log(
+       JSON.stringify({
+-        observation: "alias-minimum-incident-fence",
++        observation: "current-minimum-incident-wait",
+         performCalls,
+         entries: f.entries,
+         aliasLookups: f.mappings.length,
+diff --git a/packages/server/src/transaction-read.ts b/packages/server/src/transaction-read.ts
+index 7dc2c20..bde9c83 100644
+--- a/packages/server/src/transaction-read.ts
++++ b/packages/server/src/transaction-read.ts
+@@ -85,7 +85,7 @@ function dataOnlyReadRequest(request: ReadRequest): boolean {
+ /** Classify only own data fields. Authority receiving still validates the full request. */
+ export function currentReadMinimumKind(
+   request: ReadRequest,
+-): "resource" | "missing" | "initial-collection" | "strict" {
++): "resource" | "missing" | "initial-collection" | "type" | "initial-types" | "strict" {
+   if (isProxy(request) || !request || typeof request !== "object") return "strict";
+   const fields = Object.getOwnPropertyDescriptors(request);
+   const data = (key: string): unknown => {
+@@ -98,6 +98,13 @@ export function currentReadMinimumKind(
+   )
+     return "resource";
+   if (data("kind") === "bead-links" && data("continuation") === undefined) return "missing";
++  if (data("kind") === "resource" && data("resource") === "type") return "type";
++  if (
++    data("kind") === "collection" &&
++    data("collection") === "types" &&
++    data("continuation") === undefined
++  )
++    return "initial-types";
+   if (
+     data("kind") === "collection" &&
+     (data("collection") === "beads" || data("collection") === "links") &&
+@@ -213,7 +220,13 @@ export function createTransactionReadPlane(
+       const { minimum, kind } = capturedCondition(condition);
+       const current = transactionReadContexts(observation).current;
+       if (refusal?.code === "resource-not-found") {
++        // Initial Types reads return an inventory, possibly empty, not this refusal.
++        // Keep the defensive strict fallback for other refusal kinds below.
+         if (kind === "resource" || kind === "missing" || kind === "alias") return;
++        if (kind === "type") {
++          checkCurrentReadMinimum(minimum, current, true);
++          return;
++        }
+         try {
+           checkCurrentReadMinimum(minimum, current, false);
+           return;
+@@ -231,11 +244,7 @@ export function createTransactionReadPlane(
+           throw error;
+         }
+       }
+-      checkCurrentReadMinimum(
+-        minimum,
+-        current,
+-        kind === "resource" || kind === "initial-collection" || kind === "alias",
+-      );
++      checkCurrentReadMinimum(minimum, current, kind !== "strict");
+     },
+     captureReadAuthorization: (reader, principal) => {
+       const policy = owner.captureReadAuthorization(reader, principal);
+diff --git a/packages/server/src/transaction-receipt-pages.test.ts b/packages/server/src/transaction-receipt-pages.test.ts
+index a1c7b22..39d3e3c 100644
+--- a/packages/server/src/transaction-receipt-pages.test.ts
++++ b/packages/server/src/transaction-receipt-pages.test.ts
+@@ -1,6 +1,12 @@
++import {
++  TransactionMinimumFailure,
++  TransactionMinimumUnproved,
++  type TransactionMinimum,
++} from "./transaction-consistency.js";
+ import { DatabaseSync } from "node:sqlite";
+-import { mkdtempSync, readFileSync, rmSync } from "node:fs";
++import { existsSync, mkdtempSync, readFileSync, rmSync } from "node:fs";
+ import { tmpdir } from "node:os";
++import { isDeepStrictEqual } from "node:util";
+ import path from "node:path";
+ import { spawnSync } from "node:child_process";
+ import { afterEach, expect, it, vi } from "vitest";
+@@ -336,3 +342,154 @@ it("captures immutable current context for nondisclosable receipt pages before m
+     }),
+   ).toThrow("foreign-view");
+ });
++
++it("preserves receipt page detail when lexical eligibility is unproved", () => {
++  const cleanupBoundary = cleanup.length;
++  const failures: unknown[] = [];
++  let f: ReturnType<typeof fixture> | undefined;
++  let calls = 0,
++    offlineInspections = 0,
++    ownerOpens = 0,
++    postCloseProbes = 0,
++    payloadUnchanged = false,
++    closed = false,
++    directoryAbsent = false;
++  const rows: { label: string; outcome: string; context: unknown }[] = [];
++  const inventory = (db: DatabaseSync) => ({
++    receipts: db.prepare("SELECT * FROM receipts ORDER BY principal,key").all(),
++    plans: db.prepare("SELECT * FROM receipt_pages ORDER BY receipt,principal").all(),
++    ranges: db.prepare("SELECT * FROM receipt_page_ranges ORDER BY receipt,start").all(),
++  });
++  const inventories: {
++    baseline?: ReturnType<typeof inventory>;
++    after?: ReturnType<typeof inventory>;
++  } = {};
++  try {
++    const owned = fixture();
++    f = owned;
++    ownerOpens++;
++    // Transfer only this successfully constructed fixture's cleanup ownership.
++    cleanup.splice(cleanupBoundary);
++    const seed = owned.owner.executeObserved(owned.claim()),
++      page = pageUrl(seed.receipt.next);
++    const minimum = {
++      scopeEpoch: seed.context.scopeEpoch,
++      authorizationView: seed.context.authorizationView,
++      minimumPosition: "opaque",
++    };
++    const read = (label: string, principal: string, target: string, tuple: TransactionMinimum) => {
++      calls++;
++      try {
++        const result = owned.owner.readReceiptPage(principal, target, tuple);
++        rows.push({
++          label,
++          outcome: result.kind,
++          context: "context" in result ? result.context : null,
++        });
++        return result;
++      } catch (error) {
++        rows.push({
++          label,
++          outcome:
++            error instanceof TransactionMinimumFailure
++              ? error.reason
++              : error instanceof TransactionMinimumUnproved
++                ? "unproved"
++                : "unexpected",
++          context:
++            error instanceof TransactionMinimumFailure ||
++            error instanceof TransactionMinimumUnproved
++              ? error.context
++              : null,
++        });
++        throw error;
++      }
++    };
++    expect(read("known", "p", page, { ...minimum, minimumPosition: "pos-1" })).toMatchObject({
++      kind: "page",
++      context: seed.context,
++    });
++    for (const token of ["opaque", "pos-01"])
++      expect(() => read(token, "p", page, { ...minimum, minimumPosition: token })).toThrow(
++        TransactionMinimumUnproved,
++      );
++    for (const [patch, reason] of [
++      [{ scopeEpoch: "foreign" }, "cursor-expired"],
++      [{ authorizationView: "foreign" }, "foreign-view"],
++    ] as const)
++      expect(() => read(reason, "p", page, { ...minimum, ...patch })).toThrow(
++        expect.objectContaining({ reason, context: seed.context }),
++      );
++    expect(read("other-principal", "other", page, minimum)).toMatchObject({
++      kind: "missing",
++      context: seed.context,
++    });
++    expect(read("unknown-page", "p", `${seed.receipt.id}/pages/unknown`, minimum)).toMatchObject({
++      kind: "missing",
++      context: seed.context,
++    });
++    owned.raw((db) => {
++      offlineInspections++;
++      inventories.baseline = inventory(db);
++    });
++    owned.reopen();
++    ownerOpens++;
++    // No asynchronous yield until the second offline comparison: maintenance uses this clock.
++    owned.time(86401001);
++    expect(() => read("past-expiry", "p", page, minimum)).toThrow(TransactionMinimumUnproved);
++    owned.raw((db) => {
++      offlineInspections++;
++      inventories.after = inventory(db);
++    });
++    const { baseline, after } = inventories;
++    if (!baseline || !after) throw new Error("offline receipt inventory missing");
++    payloadUnchanged = isDeepStrictEqual(after, baseline);
++    expect(payloadUnchanged).toBe(true);
++    expect(after).toEqual(baseline);
++    expect(after.receipts).toHaveLength(1);
++    expect(after.plans).toHaveLength(1);
++    expect(after.ranges.length).toBeGreaterThan(0);
++    expect(JSON.parse(String(after.receipts[0]!.receipt)).detail).not.toBe("expired");
++    expect([calls, ownerOpens, offlineInspections]).toEqual([8, 2, 2]);
++  } catch (error) {
++    failures.push(error);
++  } finally {
++    if (f) {
++      try {
++        f.owner.close();
++        postCloseProbes++;
++        expect(f.owner.withRead(() => true)).toMatchObject({
++          kind: "entry-refused",
++          reason: "not-accepting",
++        });
++        closed = true;
++      } catch (error) {
++        failures.push(error);
++      }
++      if (closed) {
++        try {
++          rmSync(path.dirname(f.options.file), { recursive: true, force: true });
++        } catch (error) {
++          failures.push(error);
++        }
++      }
++      directoryAbsent = !existsSync(path.dirname(f.options.file));
++    }
++    console.log(
++      JSON.stringify({
++        observation: "current-observation-page-retention",
++        calls,
++        ownerOpens,
++        offlineInspections,
++        rows,
++        payloadUnchanged,
++        closed,
++        postCloseProbes,
++        directoryAbsent,
++        failureCount: failures.length,
++      }),
++    );
++  }
++  if (failures.length)
++    throw new AggregateError(failures, "receipt page retention and cleanup failed");
++});
+diff --git a/packages/server/src/transaction-service.test.ts b/packages/server/src/transaction-service.test.ts
+index ab43476..7eceab0 100644
+--- a/packages/server/src/transaction-service.test.ts
++++ b/packages/server/src/transaction-service.test.ts
+@@ -8,7 +8,7 @@ import {
+ import { ScopeServerOperationAbortedError, requestFromUrl } from "./read-request.js";
+ import { DatabaseSync } from "node:sqlite";
+ import { spawnSync } from "node:child_process";
+-import { mkdtempSync, rmSync } from "node:fs";
++import { existsSync, mkdtempSync, rmSync } from "node:fs";
+ import { tmpdir } from "node:os";
+ import path from "node:path";
+ import { afterEach, describe, expect, it, vi } from "vitest";
+@@ -1724,7 +1724,7 @@ describe("internal discovery minimum observation", () => {
+     const f = tracked({ now: () => 0, wait });
+     const assemble = vi.spyOn(discoveryAssembly, "assembleTransactionDiscovery");
+     expect(() =>
+-      f.service.discoveryObserved({ ...f.minimum(), minimumPosition: "pos-02" }),
++      f.service.discoveryObserved({ ...f.minimum(), minimumPosition: "two tokens" }),
+     ).toThrow("unsupported minimum tuple");
+     expect(f.entries()).toBe(0);
+     let nested: Promise<unknown> | undefined;
+@@ -3762,3 +3762,551 @@ it("drains an opaque receipt root wait before closing its owner", async () => {
+     await service.close();
+   }
+ });
++
++// Callback-local observer counters; construction, mutation and explicit probes are separate.
++const currentObservationSurfaces = ["type", "types", "incident", "page", "discovery"] as const;
++type CurrentObservationSurface = (typeof currentObservationSurfaces)[number];
++function currentObservationFixture(policy: NonNullable<TransactionServiceOptions["minimumReads"]>) {
++  const localBead = `${scope}types/task`,
++    localLink = `${scope}types/relation`;
++  const boundary = cleanup.length;
++  const f = fixture({
++    receiptMaximumItems: 2,
++    types: [
++      parseTypeDescriptor({ id: localBead, name: "Task", describes: "bead", conformsTo: [] }),
++      parseTypeDescriptor({
++        id: localLink,
++        name: "Relation",
++        describes: "link",
++        conformsTo: [],
++        source: { conformsTo: [localBead], external: "opaque" },
++        target: { conformsTo: [localBead], external: "opaque" },
++      }),
++    ],
++  });
++  const owner = f.owner;
++  let recording = false,
++    attempts = 0,
++    mutations = 0,
++    closeCalls = 0,
++    closed = false;
++  const entries: { method: string; context: unknown; minimum: unknown }[] = [];
++  const delegate = {
++    ...owner,
++    withRead: ((callback: Parameters<typeof owner.withRead>[0]) => {
++      if (recording) attempts++;
++      return owner.withRead((reader, context) => {
++        if (recording) entries.push({ method: "withRead", context, minimum: null });
++        return callback(reader, context);
++      });
++    }) as typeof owner.withRead,
++    readReceiptPage(...args: Parameters<typeof owner.readReceiptPage>) {
++      if (recording) attempts++;
++      try {
++        const result = owner.readReceiptPage(...args);
++        if (recording)
++          entries.push({
++            method: "readReceiptPage",
++            context: "context" in result ? result.context : null,
++            minimum: args[2] ?? null,
++          });
++        return result;
++      } catch (error) {
++        if (recording)
++          entries.push({
++            method: "readReceiptPage",
++            context:
++              error instanceof TransactionMinimumFailure ||
++              error instanceof TransactionMinimumUnproved
++                ? error.context
++                : null,
++            minimum: args[2] ?? null,
++          });
++        throw error;
++      }
++    },
++    close() {
++      closeCalls++;
++      owner.close();
++      closed = true;
++    },
++  };
++  const service = createTransactionService(delegate, {
++    ownerLifetime: "service",
++    read: {
++      ...f.read,
++      advertisedLimits: { ...f.read.advertisedLimits, page: { defaultItems: 2, maximumItems: 2 } },
++      pagination: { ...f.read.pagination, maxPageItems: 2 },
++    },
++    minimumReads: policy,
++  });
++  // Transfer cleanup only after successful construction. Unknown close retains the directory.
++  cleanup.splice(boundary);
++  const localCreate = (id: string) => ({ ...create(id), type: localBead });
++  const submit = async (operations: unknown[], key: string) => {
++    mutations++;
++    return requireReceipt(await service.submit(batch(operations, key)));
++  };
++  const invoke = (
++    surface: CurrentObservationSurface,
++    minimum: TransactionMinimum,
++    page: string,
++    target?: string,
++    principal = "p",
++  ) => {
++    if (surface === "page")
++      return service.receiptPage({ kind: "authenticated", principal }, target ?? page, minimum);
++    if (surface === "discovery") return service.discoveryObserved(minimum);
++    const request = requestFromUrl(
++      new URL(
++        target ??
++          (surface === "type"
++            ? "types/task"
++            : surface === "types"
++              ? "types/"
++              : "beads/a?view=links"),
++        scope,
++      ),
++      scope,
++    );
++    if (isReadProblem(request)) throw new Error("invalid current observation fixture route");
++    return service
++      .readAtMinimum({ kind: "authenticated", principal: { id: principal } }, minimum)
++      .perform(request);
++  };
++  return {
++    owner,
++    service,
++    invoke,
++    submit,
++    localCreate,
++    entries,
++    async seed() {
++      return submit(
++        [
++          localCreate("a"),
++          localCreate("b"),
++          {
++            operation: "createLink",
++            id: "links/l",
++            type: localLink,
++            source: "beads/a",
++            target: "beads/b",
++            properties: {},
++          },
++        ],
++        "current-observation-seed",
++      );
++    },
++    record(value: boolean) {
++      recording = value;
++    },
++    counts: () => ({ attempts, mutations, closeCalls, closed }),
++    remove() {
++      if (!closed) throw new Error("current observation owner close unproved");
++      rmSync(path.dirname(f.options.file), { recursive: true, force: true });
++      return !existsSync(path.dirname(f.options.file));
++    },
++  };
++}
++function currentObservationPage(value: ReturnType<typeof requireReceipt>) {
++  if (typeof value.receipt.next !== "string") throw new Error("actual issued page required");
++  return value.receipt.next;
++}
++async function currentObservationBound<T>(promise: Promise<T>, label: string): Promise<T> {
++  let timer: ReturnType<typeof setTimeout> | undefined;
++  try {
++    return await Promise.race([
++      promise,
++      new Promise<never>((_, reject) => {
++        timer = setTimeout(() => reject(new Error(label)), 1000);
++      }),
++    ]);
++  } finally {
++    clearTimeout(timer);
++  }
++}
++it("waits for lexical current observations and preserves captured tuples across real progress", async () => {
++  let tick = 0,
++    waits = 0,
++    operations = 0;
++  let changing:
++    | { scopeEpoch: string; authorizationView: string; minimumPosition: string }
++    | undefined;
++  let current: ReturnType<typeof requireReceipt>["context"];
++  const f = currentObservationFixture({
++    budgetMs: 2,
++    now: () => tick++,
++    wait: async () => {
++      waits++;
++      if (waits === 1) {
++        const advanced = await f.submit([f.localCreate("c")], "current-observation-advance");
++        current = advanced.context;
++        if (!changing) throw new Error("missing mutable tuple");
++        changing.minimumPosition = current.scopePosition;
++        changing.scopeEpoch = "caller-mutated";
++      }
++    },
++  });
++  const rows: { surface: string; minimum: string; outcome: string; context: unknown }[] = [];
++  const failures: unknown[] = [];
++  let directoryAbsent = false;
++  try {
++    const seed = await f.seed(),
++      page = currentObservationPage(seed);
++    current = seed.context;
++    const assemble = vi.spyOn(discoveryAssembly, "assembleTransactionDiscovery");
++    f.record(true);
++    for (const surface of currentObservationSurfaces) {
++      for (const label of ["opaque", "pos-01", "known", "epoch", "view"] as const) {
++        const minimum = {
++          scopeEpoch: label === "epoch" ? "foreign" : current.scopeEpoch,
++          authorizationView: label === "view" ? "foreign" : current.authorizationView,
++          minimumPosition:
++            label === "known" ? current.scopePosition : label === "pos-01" ? "pos-01" : "opaque",
++        };
++        if (operations === 0) changing = minimum;
++        operations++;
++        if (label === "known") {
++          const result = await f.invoke(surface, minimum, page);
++          expect(result).toBeDefined();
++          if (surface === "page") expect(result).toMatchObject({ kind: "page", context: current });
++          else if (surface === "discovery") expect(result).toMatchObject({ context: current });
++          else expect(result).not.toMatchObject({ kind: "problem" });
++          const observedContext = f.entries.at(-1)?.context;
++          expect(observedContext).toEqual(current);
++          rows.push({ surface, minimum: label, outcome: "success", context: observedContext });
++        } else {
++          const failure: unknown = await f
++            .invoke(surface, minimum, page)
++            .catch((error: unknown) => error);
++          expect(failure).toBeInstanceOf(TransactionMinimumFailure);
++          const reason =
++            label === "epoch"
++              ? "cursor-expired"
++              : label === "view"
++                ? "foreign-view"
++                : "catch-up-timeout";
++          expect(failure).toMatchObject({ reason, context: current });
++          rows.push({
++            surface,
++            minimum: label,
++            outcome: reason,
++            context: failure instanceof TransactionMinimumFailure ? failure.context : null,
++          });
++        }
++      }
++    }
++    expect(changing).toEqual({
++      scopeEpoch: "caller-mutated",
++      authorizationView: current.authorizationView,
++      minimumPosition: current.scopePosition,
++    });
++    expect(assemble).toHaveBeenCalledTimes(1);
++    expect([operations, f.counts().attempts, waits, tick, f.counts().mutations]).toEqual([
++      25, 35, 10, 45, 2,
++    ]);
++  } catch (error) {
++    failures.push(error);
++  } finally {
++    f.record(false);
++    try {
++      await currentObservationBound(f.service.close(), "current observation close timeout");
++      directoryAbsent = f.remove();
++    } catch (error) {
++      failures.push(error);
++    }
++    console.log(
++      JSON.stringify({
++        observation: "current-observation-service",
++        operations,
++        entries: f.entries,
++        waits,
++        clockCalls: tick,
++        rows,
++        ...f.counts(),
++        directoryAbsent,
++        failureCount: failures.length,
++      }),
++    );
++  }
++  if (failures.length) throw new AggregateError(failures, "current observation and cleanup failed");
++});
++it("orders Type refusal and receipt page nondisclosure before projection", async () => {
++  let tick = 0,
++    waits = 0,
++    operations = 0,
++    liveProbes = 0,
++    policyReplacements = 0;
++  const f = currentObservationFixture({
++    budgetMs: 2,
++    now: () => tick++,
++    wait: async () => {
++      waits++;
++    },
++  });
++  const rows: { label: string; outcome: string }[] = [];
++  const failures: unknown[] = [];
++  let directoryAbsent = false;
++  try {
++    const seed = await f.seed(),
++      page = currentObservationPage(seed);
++    const minimum = {
++      scopeEpoch: seed.context.scopeEpoch,
++      authorizationView: seed.context.authorizationView,
++      minimumPosition: "opaque",
++    };
++    f.record(true);
++    const run = async (label: string, invoke: () => Promise<unknown>, expected: string) => {
++      operations++;
++      const value = await invoke().then(
++        (result) => result,
++        (error: unknown) => error,
++      );
++      if (["catch-up-timeout", "cursor-expired", "foreign-view"].includes(expected)) {
++        expect(value).toBeInstanceOf(TransactionMinimumFailure);
++        expect(value).toMatchObject({ reason: expected });
++      } else if (expected === "malformed") expect(value).toBeInstanceOf(TypeError);
++      else if (expected === "unauthenticated")
++        expect(value).toMatchObject({ kind: "refused", code: expected });
++      else if (label.includes("page"))
++        expect(value).toMatchObject({ kind: "refused", code: "resource-not-found" });
++      else
++        expect(value).toMatchObject({
++          kind: "problem",
++          problem: { status: 404, code: "resource-not-found" },
++        });
++      rows.push({ label, outcome: expected });
++    };
++    for (const [label, patch, result] of [
++      ["known", { minimumPosition: "pos-1" }, "missing"],
++      ["opaque", {}, "catch-up-timeout"],
++      ["epoch", { scopeEpoch: "foreign" }, "cursor-expired"],
++      ["view", { authorizationView: "foreign" }, "foreign-view"],
++    ] as const)
++      await run(
++        `missing-type-${label}`,
++        () => f.invoke("type", { ...minimum, ...patch }, page, "types/absent"),
++        result,
++      );
++    await run(
++      "missing-incident",
++      () => f.invoke("incident", minimum, page, "beads/missing?view=links"),
++      "missing",
++    );
++    await run("foreign-page", () => f.invoke("page", minimum, page, page, "other"), "missing");
++    await run(
++      "unknown-page",
++      () => f.invoke("page", minimum, page, `${seed.receipt.id}/pages/unknown`),
++      "missing",
++    );
++    await run(
++      "anonymous-page",
++      () => f.service.receiptPage({ kind: "unauthenticated" }, page, minimum),
++      "unauthenticated",
++    );
++    await run(
++      "malformed-page",
++      () => f.service.receiptPage(access, page, { ...minimum, minimumPosition: "two tokens" }),
++      "malformed",
++    );
++    f.record(false);
++    policyReplacements++;
++    await f.service.replaceAuthorizationPolicy({ timeoutMs: 1000 });
++    liveProbes++;
++    const observed = f.owner.withRead((_reader, context) => context);
++    if (observed.kind !== "read") throw new Error("actual hidden context required");
++    const hidden = { ...minimum, authorizationView: observed.value.authorizationView };
++    f.record(true);
++    for (const [label, patch, result] of [
++      ["known", { minimumPosition: observed.value.scopePosition }, "missing"],
++      ["opaque", {}, "catch-up-timeout"],
++      ["view", { authorizationView: "foreign" }, "foreign-view"],
++    ] as const)
++      await run(
++        `hidden-type-${label}`,
++        () => f.invoke("type", { ...hidden, ...patch }, page),
++        result,
++      );
++    expect([
++      operations,
++      f.counts().attempts,
++      waits,
++      tick,
++      liveProbes,
++      policyReplacements,
++      f.counts().mutations,
++    ]).toEqual([12, 12, 2, 14, 1, 1, 1]);
++  } catch (error) {
++    failures.push(error);
++  } finally {
++    f.record(false);
++    try {
++      await currentObservationBound(f.service.close(), "current nondisclosure close timeout");
++      directoryAbsent = f.remove();
++    } catch (error) {
++      failures.push(error);
++    }
++    console.log(
++      JSON.stringify({
++        observation: "current-observation-nondisclosure",
++        operations,
++        entries: f.entries,
++        waits,
++        clockCalls: tick,
++        liveProbes,
++        policyReplacements,
++        rows,
++        ...f.counts(),
++        directoryAbsent,
++        failureCount: failures.length,
++      }),
++    );
++  }
++  if (failures.length)
++    throw new AggregateError(failures, "current nondisclosure and cleanup failed");
++});
++it.each(currentObservationSurfaces)(
++  "drains lexical current observation %s before close",
++  async (surface) => {
++    let now = 0,
++      clockCalls = 0,
++      waits = 0,
++      operations = 0,
++      liveProbes = 0,
++      postCloseProbes = 0;
++    let settled = false,
++      closeSettled = false;
++    const entered = Promise.withResolvers<void>(),
++      release = Promise.withResolvers<void>();
++    const f = currentObservationFixture({
++      budgetMs: 2,
++      now: () => {
++        clockCalls++;
++        return now;
++      },
++      wait: async () => {
++        waits++;
++        entered.resolve();
++        await release.promise;
++      },
++    });
++    type Outcome = { ok: true; value: unknown } | { ok: false; error: unknown };
++    let observed: Promise<Outcome> | undefined, closing: Promise<Outcome> | undefined;
++    const failures: unknown[] = [];
++    let directoryAbsent = false;
++    const close = () => {
++      if (!closing)
++        closing = f.service.close().then(
++          (value) => {
++            closeSettled = true;
++            return { ok: true as const, value };
++          },
++          (error: unknown) => {
++            closeSettled = true;
++            return { ok: false as const, error };
++          },
++        );
++      return closing;
++    };
++    try {
++      const seed = await f.seed(),
++        page = currentObservationPage(seed);
++      const minimum = {
++        scopeEpoch: seed.context.scopeEpoch,
++        authorizationView: seed.context.authorizationView,
++        minimumPosition: "opaque",
++      };
++      f.record(true);
++      operations++;
++      observed = f.invoke(surface, minimum, page).then(
++        (value) => {
++          settled = true;
++          return { ok: true as const, value };
++        },
++        (error: unknown) => {
++          settled = true;
++          return { ok: false as const, error };
++        },
++      );
++      const entry = await currentObservationBound(
++        Promise.race([
++          entered.promise.then(() => "entered" as const),
++          observed.then(() => "settled" as const),
++        ]),
++        "current observation wait entry timeout",
++      );
++      expect(entry).toBe("entered");
++      expect(settled).toBe(false);
++      liveProbes++;
++      expect(f.owner.withRead(() => true)).toEqual({ kind: "read", value: true });
++      close();
++      await Promise.resolve();
++      expect(closeSettled).toBe(false);
++      operations++;
++      // All selected methods check service admission synchronously at invocation.
++      expect(() => f.invoke(surface, minimum, page)).toThrow("closing or closed");
++    } catch (error) {
++      failures.push(error);
++    } finally {
++      now = 2;
++      release.resolve();
++      if (observed) {
++        try {
++          const outcome = await currentObservationBound(
++            observed,
++            "current observation settlement timeout",
++          );
++          expect(outcome).toMatchObject({ ok: false, error: { reason: "catch-up-timeout" } });
++        } catch (error) {
++          failures.push(error);
++        }
++      }
++      try {
++        const outcome = await currentObservationBound(close(), "current observation drain timeout");
++        if (!outcome.ok) {
++          failures.push(outcome.error);
++        } else {
++          postCloseProbes++;
++          expect(f.owner.withRead(() => true)).toMatchObject({
++            kind: "entry-refused",
++            reason: "not-accepting",
++          });
++          directoryAbsent = f.remove();
++        }
++      } catch (error) {
++        failures.push(error);
++      }
++      try {
++        expect([
++          operations,
++          f.counts().attempts,
++          waits,
++          clockCalls,
++          liveProbes,
++          postCloseProbes,
++        ]).toEqual([2, 2, 1, 3, 1, 1]);
++      } catch (error) {
++        failures.push(error);
++      }
++      console.log(
++        JSON.stringify({
++          observation: "current-observation-drain",
++          surface,
++          operations,
++          entries: f.entries,
++          waits,
++          clockCalls,
++          liveProbes,
++          postCloseProbes,
++          settled,
++          closeSettled,
++          ...f.counts(),
++          directoryAbsent,
++          failureCount: failures.length,
++        }),
++      );
++    }
++    if (failures.length) throw new AggregateError(failures, "current observation drain failed");
++  },
++);
+diff --git a/packages/server/src/transaction-service.ts b/packages/server/src/transaction-service.ts
+index 0ee2d2f..be3bcd9 100644
+--- a/packages/server/src/transaction-service.ts
++++ b/packages/server/src/transaction-service.ts
+@@ -4,7 +4,7 @@ import { transactionEventRequest, TransactionEventParameterError } from "./trans
+ import type { TransactionSnapshotRequest } from "./transaction-snapshot.js";
+ import type { TransactionChangefeedIntent } from "./transaction-changefeed.js";
+ import {
+-  checkTransactionMinimum,
++  checkCurrentReadMinimum,
+   snapshotTransactionMinimum,
+   snapshotCurrentReadMinimum,
+   waitForTransactionMinimum,
+@@ -265,10 +265,10 @@ export function createTransactionService(owner: Owner, options: TransactionServi
+     /** Internal candidate only: no wire exposure or readiness assertion. Without
+      * a minimum the synchronous observation does not inspect signal. */
+     discoveryObserved(supplied?: TransactionMinimum, signal?: AbortSignal) {
+-      const minimum = supplied === undefined ? undefined : snapshotTransactionMinimum(supplied);
++      const minimum = supplied === undefined ? undefined : snapshotCurrentReadMinimum(supplied);
+       const observe = () => {
+         const observed = owner.withRead((_reader, context) => {
+-          if (minimum !== undefined) checkTransactionMinimum(minimum, context);
++          if (minimum !== undefined) checkCurrentReadMinimum(minimum, context, true);
+           return Object.freeze({
+             scopeEpoch: context.scopeEpoch,
+             authorizationView: context.authorizationView,
+@@ -603,7 +603,7 @@ export function createTransactionService(owner: Owner, options: TransactionServi
+           minimum =
+             supplied === undefined || supplied === "unsupported"
+               ? supplied
+-              : snapshotTransactionMinimum(supplied);
++              : snapshotCurrentReadMinimum(supplied);
+         return waitForTransactionMinimum(() => {
+           const result = owner.readReceiptPage(principal, id, minimum);
+           // Prefix checking is defense in depth, not an independent plan witness.
+diff --git a/packages/server/src/transaction-snapshot.test.ts b/packages/server/src/transaction-snapshot.test.ts
+index 4cfd886..ec9215e 100644
+--- a/packages/server/src/transaction-snapshot.test.ts
++++ b/packages/server/src/transaction-snapshot.test.ts
+@@ -14,10 +14,7 @@ import {
+   stringifyJsonValue,
+ } from "@bdp/protocol";
+ import { openTransactionStore, type TransactionStoreOptions } from "./transaction-store.js";
+-import {
+-  TransactionMinimumUnproved,
+-  TransactionMinimumUnsupported,
+-} from "./transaction-consistency.js";
++import { TransactionMinimumUnproved } from "./transaction-consistency.js";
+ import { prepareTransactionSetCore } from "./transaction-batch.js";
+ import {
+   TRANSACTION_SNAPSHOT_LIMITS as limits,
+@@ -1477,10 +1474,10 @@ it("gates fresh Snapshot opaque minima before allocation and expiry", () => {
+   for (const kind of ["create", "preflight"] as const) {
+     unproved(kind);
+     expect(() => observe({ kind }, { ...minimum, scopeEpoch: "foreign" })).toThrow(
+-      TransactionMinimumUnsupported,
++      expect.objectContaining({ reason: "cursor-expired", context: first.context }),
+     );
+     expect(() => observe({ kind }, { ...minimum, authorizationView: "foreign" })).toThrow(
+-      TransactionMinimumUnsupported,
++      expect.objectContaining({ reason: "foreign-view", context: first.context }),
+     );
+     expect(() => observe({ kind }, { ...minimum, minimumPosition: "pos-2" })).toThrow("behind");
+   }
+diff --git a/packages/server/src/transaction-store.ts b/packages/server/src/transaction-store.ts
+index 695bf5e..87759bf 100644
+--- a/packages/server/src/transaction-store.ts
++++ b/packages/server/src/transaction-store.ts
+@@ -2275,7 +2275,7 @@ export function openTransactionStore(options: TransactionStoreOptions) {
+       const condition =
+         minimum === undefined || minimum === "unsupported"
+           ? minimum
+-          : snapshotTransactionMinimum(minimum);
++          : snapshotCurrentReadMinimum(minimum);
+       return enter(() =>
+         atomic(() => {
+           const marker = id.lastIndexOf("/pages/");
+@@ -2306,7 +2306,7 @@ export function openTransactionStore(options: TransactionStoreOptions) {
+           if (condition === "unsupported") return { kind: "unsupported" as const };
+           const context = readContext();
+           // Identity/nondisclosure precedes minimum; expiry is checked only afterwards.
+-          if (condition) checkTransactionMinimum(condition, context);
++          if (condition) checkCurrentReadMinimum(condition, context, true);
+           const remaining = expireRow(stored, instant()).row;
+           if (!remaining) throw new Error("completed page parent was forgotten");
+           const receipt = parseReceipt(remaining.receipt);

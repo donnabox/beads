@@ -1,0 +1,37 @@
+[
+  {
+    "id": "C1",
+    "condition": "Primitive initialization stalls before A",
+    "result": "No independent O-inclusive timer exists in the proposed process yet; unresolved startup boundary, not enforced120"
+  },
+  {
+    "id": "C2",
+    "condition": "Collector import/hash/read/write/close stalls after A",
+    "result": "Intact ancestor115TERM/119KILL/120alarm does not depend on collector cooperative progress; actual timing and OS latency remain separately qualified"
+  },
+  {
+    "id": "C3",
+    "condition": "Native has exited; collector blocks during final file publication",
+    "result": "Ancestor still armed and can terminate its owned collector; native exit alone is not root terminal"
+  },
+  {
+    "id": "C4",
+    "condition": "Collector killed while separate native is still running",
+    "result": "Native alarm remains independent at N+120; root failed domain may settle earlier but no whole-tree/root-deadline cleanup guarantee or historical group kill"
+  },
+  {
+    "id": "C5",
+    "condition": "Ancestor unexpectedly lost",
+    "result": "Whole-root enforcement assumption fails; partial evidence/UNKNOWN, no self-healing or global supervisor claim"
+  },
+  {
+    "id": "C6",
+    "condition": "Unexpected native inheritance keeps an outer stdout writer open",
+    "result": "Outer EOF remains missing; no leader-exit inference, exact future FD proof required, no normal acceptance"
+  },
+  {
+    "id": "C7",
+    "condition": "Collector exits114.9 but following actual tool/census completes after115",
+    "result": "Normal conjunction fails; no renewed timer, count removal or deadline widening"
+  }
+]

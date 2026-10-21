@@ -1,0 +1,106 @@
+[
+  {
+    "conclusion": "CLI severity option exists; default display cap20 unchanged",
+    "file": "primary/cli_options.rs",
+    "lines": [
+      58,
+      66,
+      240,
+      243
+    ],
+    "sourceSha256": "5f14d9c0d9088031cdc3b7f264fb65940f85ae6a2cd124c7ae9b069bbca9bb23"
+  },
+  {
+    "conclusion": "same explicit paths and analyzer only/skip/fix selectors; only new argv is severity",
+    "file": "primary/commands--lint.rs",
+    "lines": [
+      60,
+      76,
+      121,
+      148,
+      234,
+      245
+    ],
+    "sourceSha256": "2998e47841fdb260b6d9a59537b93a46742028c0611f4746956df0959fc93dd0"
+  },
+  {
+    "conclusion": "diagnostic severity passed independently to process_file; no write/fix enabled",
+    "file": "primary/runner--impls--process_file--lint_and_assist.rs",
+    "lines": [
+      31,
+      71
+    ],
+    "sourceSha256": "745c8a85bb2f395d2b0ff06be998e989d21208fd6061cc41168a863a6bb727b6"
+  },
+  {
+    "conclusion": "same settings/path/only/skip build enabled/disabled rule filter; analyze signal sink continues",
+    "file": "primary/crates--biome_service--src--file_handlers--javascript.rs",
+    "lines": [
+      1083,
+      1136
+    ],
+    "sourceSha256": "630f07ad690a600f23e2621640cf95c684ef3475d75c266278554d4f37402332"
+  },
+  {
+    "conclusion": "configured severity resolved then threshold applied BEFORE warning/info/error counters and capacity; Error/Fatal counted before capacity",
+    "file": "primary/crates--biome_service--src--file_handlers--mod.rs",
+    "lines": [
+      557,
+      612
+    ],
+    "sourceSha256": "727afffe497270959b3ae2072387f96ef1e2aa1298b1611e1208a196a6be5535"
+  },
+  {
+    "conclusion": "parse/analyzer lower severity filtered before counters too; initial parse diagnostic_count caveat remains",
+    "file": "primary/crates--biome_service--src--file_handlers--mod.rs",
+    "lines": [
+      519,
+      543,
+      615,
+      662
+    ],
+    "sourceSha256": "727afffe497270959b3ae2072387f96ef1e2aa1298b1611e1208a196a6be5535"
+  },
+  {
+    "conclusion": "aggregate errors propagated outside display capacity; Failure can add no printable diagnostic",
+    "file": "primary/runner--impls--collectors--default.rs",
+    "lines": [
+      125,
+      142,
+      169,
+      181,
+      218,
+      264
+    ],
+    "sourceSha256": "67061729ab7533d70fdbba60a7ef7985e1ed40a770b1332138d688194aa64d2c"
+  },
+  {
+    "conclusion": "errors>0 remains error-driven failure; warning-as-error is separate and originalargv does not set it",
+    "file": "primary/runner--impls--finalizers--default.rs",
+    "lines": [
+      60,
+      70,
+      136,
+      156
+    ],
+    "sourceSha256": "b79b28db7801b2ebca056372bc7f1bddf29a200130b5397e36be96f475198b38"
+  },
+  {
+    "conclusion": "non-default reporter sets capacityu32MAX; default reporter only preserved",
+    "file": "primary/runner--execution.rs",
+    "lines": [
+      30,
+      42
+    ],
+    "sourceSha256": "b6f723f97771f75aeb3398810c5b2f0dea987458f0c898476eeae2fb8e700bbf"
+  },
+  {
+    "conclusion": "native Err termination reports failure and installed JS shim propagates status",
+    "file": "primary/crates--biome_cli--src--main.rs",
+    "lines": [
+      35,
+      57
+    ],
+    "sourceSha256": "6a45f1785399a04398808e5b28e98769a9b26cbdf32cc8a81734e34034d9508d"
+  }
+]

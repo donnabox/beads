@@ -1,0 +1,14 @@
+Owned receipt roots with a lexically valid, unrecognized minimum position in their current epoch/view returned a private500. They now use the existing finite waiter and return contextual503 catch-up-timeout when eligibility remains unproved. GET/HEAD preserve retry metadata and representation length before conditional/media shortcuts.
+
+Principal-hidden and missing receipts retain current-context404; strict receipt pages, known minima, explicit API sentinel and retention ordering remain intact. Foreign opaque contexts remain an explicitly excluded gap. Six files change; no schema, discovery, public support or pinned-spec change.
+
+Validation: all19 fresh local stages passed, including typecheck/format/lint, build,12 selected source callbacks, archive/external-consumer verification and installed historical22 plus new5 requests through two cleanly exited children. Only the original successful dependency installation/tool capture was reused, with explicit unchanged-input binding. Lint retains58 warnings/six infos; the original format failure is preserved. All679 validated source files map byte-for-byte into commit `9d2cd441eac2be1d2b6487ab5648035e3219cc27` (tree `62628a006c36d101c310b5210de3f7e23d3a2fac`), sole parent PR157/08812c6. Exact-head [CI39019562524](https://github.com/gastownhall/bdp/actions/runs/39019562524) passed all27steps:9416tests/186files, one skip, seven preflight tests, package smoke and historical Read evidence gate. [CI evidence and limits](https://github.com/donnabox/beads/blob/codex/vickie-bdp-client-design/docs/architecture/bdp-client-v2/receipt-root-minimum-validation-successor-1/exact-head-ci.json) keep workspace observations separate from local packed verification.
+
+Native and actual Claude plan/code findings are dispositioned. Four formatter-only sites were independently reversed to the reviewed draft; no semantic change followed review. Review access limitations and historical evidence retain their original identities.
+
+- [Final local validation](https://github.com/donnabox/beads/blob/codex/vickie-bdp-client-design/docs/architecture/bdp-client-v2/receipt-root-minimum-validation-successor-1/root-final-validation.json)
+- [Council dispositions](https://github.com/donnabox/beads/blob/codex/vickie-bdp-client-design/docs/architecture/bdp-client-v2/receipt-root-minimum-code-review/root-final-dispositions.json)
+- [Formatter closure](https://github.com/donnabox/beads/blob/codex/vickie-bdp-client-design/docs/architecture/bdp-client-v2/receipt-root-minimum-author/successor-1/native-closure.md)
+- [Sole implementation plan](https://github.com/donnabox/beads/blob/codex/vickie-bdp-client-design/docs/architecture/bdp-client-v2/design.md)
+
+Stacked on PR157/08812c6; subsequent implementation outside frozen PR150/d4f3f4be. No main merge, release, Preview2 promotion or complete profile qualification. S1/G2 remain affected-capability gates.

@@ -1,0 +1,69 @@
+{
+  "state": "prospective authored workload, not observed results",
+  "sourceCallbacks": 22,
+  "existingSourceCallbacks": 9,
+  "newSourceCallbacks": 13,
+  "sourceStores": 22,
+  "sourceListeners": 2,
+  "emittedSourceHttp": 45,
+  "directHandlerRequests": 15,
+  "installedCallbacks": 2,
+  "installedHttp": [
+    31,
+    3
+  ],
+  "installedStores": 2,
+  "installedSequentialChildren": 3,
+  "totalStores": 24,
+  "networkHttp": 79,
+  "includingHandlerRequests": 94,
+  "A": {
+    "snapshotCalls": 14,
+    "preEntryExcludedCalls": 4,
+    "offlineInspections": 2,
+    "ownerOpens": 3,
+    "baseline": {
+      "snapshots": 1,
+      "records": 1,
+      "pages": 2
+    }
+  },
+  "BPerKind": {
+    "serviceSnapshotCalls": 2,
+    "ownerSnapshotCalls": 4,
+    "waits": 2,
+    "probes": 2,
+    "transactions": 1
+  },
+  "CPerKind": {
+    "serviceSnapshotCalls": 4,
+    "delegatedOwnerCalls": 5,
+    "postCloseOwnerRefusals": 1,
+    "waits": 3,
+    "probes": 3
+  },
+  "D": {
+    "requests": 27,
+    "waits": 8,
+    "statusCounts": {
+      "200": 5,
+      "503": 8,
+      "500": 8,
+      "400": 4,
+      "401": 2
+    }
+  },
+  "FPerRow": {
+    "serviceSnapshotCalls": 2,
+    "setupOwnerCalls": 1,
+    "checkedOwnerCalls": 0,
+    "waits": 0,
+    "clockCalls": "1 only unknown-preaborted; otherwise 0"
+  },
+  "timeoutsUnchanged": {
+    "sourceCallbackMs": 5000,
+    "installedRequestMs": 5000,
+    "installedOwnedMs": 45000,
+    "installedCallbackMs": 60000
+  }
+}

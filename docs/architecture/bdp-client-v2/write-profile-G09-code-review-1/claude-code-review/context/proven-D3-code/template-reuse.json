@@ -1,0 +1,58 @@
+{
+  "runnerTemplate": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/current-changefeed-code-review-1/claude-code-review/run.py",
+  "runnerTemplateSha256": "f8b34f560ee7a853199cd84797aca0f51bd308fd9e3e428d9bde335a6bd34403",
+  "runnerSubstitutions": [
+    {
+      "before": "/Users/dbox/repos/wt/vickie/vickie-current-changefeed-minimum",
+      "after": "/Users/dbox/repos/wt/vickie/vickie-tx-discovery-minimum",
+      "occurrences": 1
+    },
+    {
+      "before": "current-changefeed-code-review-1",
+      "after": "tx-discovery-code-review-1",
+      "occurrences": 1
+    },
+    {
+      "before": "a56254d682cf4623cab22a552e3d2f695f691795",
+      "after": "cce884ccea1db97cbc6fd7bff876d4d6091f9081",
+      "occurrences": 1
+    },
+    {
+      "before": "Exact frozen six-file dirty status required",
+      "after": "Exact frozen three-file dirty status required",
+      "occurrences": 1
+    }
+  ],
+  "runnerSha256": "e36bba99247cf6b581f90a30c0045239209ec80e13628a28d6c4b74d4b137bbd",
+  "parserUnchanged": true,
+  "argvUnchanged": true,
+  "guardUnchanged": true,
+  "supervisor5ByteIdentical": true,
+  "supervisor5Sha256": "791e5a566561798aa3352f19b021e6db9beeddb033ae5725c7d031d51716f95c",
+  "d1CompletedRunnerExit": {
+    "classification": "review_complete",
+    "reviewComplete": true,
+    "approvalInferred": false,
+    "exitCode": 0,
+    "timeout": false,
+    "elapsedSeconds": 1777.0004015844315,
+    "sourceInputsUnchanged": true,
+    "packetUnchanged": true,
+    "sampledPids": [
+      73969
+    ],
+    "remainingProcesses": [],
+    "cleanupRequired": false,
+    "wrapperErrorType": null,
+    "streamRecords": 6613,
+    "streamBytes": 3903704,
+    "parseErrors": 0,
+    "terminalResultCount": 1,
+    "lastEventElapsed": 1776.4257132504135,
+    "streamSha256": "ed7e0dbfc9acc5c0e3ce9e0fd051317cc0df9c740788dedb977c3680cff06b36",
+    "stderrSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  "sourceAuthorIndexSha256": "d9d35ff6f24ad71f0daea95cd8eec81faca097c0876e2ac1a905805a617b95d7",
+  "rootInspectionSha256": "3d3a6dd1b7a94e164f84d9d5b11ce6a3d92859ffa6802882f3fe875177dd5145",
+  "productSourceParserArgvSignalPolicyEdits": false
+}

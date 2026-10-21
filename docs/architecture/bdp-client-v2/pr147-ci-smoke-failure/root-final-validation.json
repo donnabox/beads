@@ -1,0 +1,49 @@
+{
+  "baseline": "ddfb5f43a058fe0f16ff9e04e528b4e7bfc03d87",
+  "exactRepair": {
+    "head": "ddfb5f43a058fe0f16ff9e04e528b4e7bfc03d87",
+    "file": "scripts/smoke-executables.mjs",
+    "sha256": "adeaea6e334f8fb6f7af5d09f0cb7ee0b729864affc45cb6baf84a95f1d4d9ae",
+    "diffSha256": "8ecdf489687ade462e16c88e8962d251dbe510738af03e63dc531e2f9a4a48ae"
+  },
+  "stages": {
+    "format-check": {
+      "exit": 0,
+      "accepted": true,
+      "elapsedSeconds": 0.15785720804706216,
+      "forcedCleanup": false,
+      "logSha256": "0fae482231a5ab58dcd6facb790e958fb2a72d45f8316f55d9441bd85fc4d0fc"
+    },
+    "lint": {
+      "exit": 0,
+      "accepted": true,
+      "elapsedSeconds": 0.2636181248817593,
+      "forcedCleanup": false,
+      "logSha256": "2b26fa3a48252b11eee60e99cba79f7c846f66a9fdb58aed18d68a2b108fa01c"
+    },
+    "fresh-build": {
+      "exit": 0,
+      "accepted": true,
+      "elapsedSeconds": 1.1731816250830889,
+      "forcedCleanup": false,
+      "logSha256": "232dac5e840e45b3bb06e6e04249b5241f2e1b4f6c797a22c046d916302ac208"
+    },
+    "smoke": {
+      "exit": 0,
+      "accepted": true,
+      "elapsedSeconds": 4.622941707959399,
+      "forcedCleanup": false,
+      "logSha256": "e5754ad7e1cd879865c772ea0acd47f1e997b1e47efd5fec4e8b3d475e69a4af"
+    },
+    "evidence-read": {
+      "exit": 0,
+      "accepted": true,
+      "elapsedSeconds": 0.26001687510870397,
+      "forcedCleanup": false,
+      "logSha256": "18a58981597b6d29981cfc6a9587156d7b37a5fc7ead823c32dc08cf350020b3"
+    }
+  },
+  "readEvidence": "raw0 evidence.verified",
+  "limitations": "No full-suite rerun locally; prior exact ddfb CI pnpm test pass is separate. New exact-head CI still required. Local smoke does not qualify write profiles.",
+  "dispatchCorrection": "Initial command ID format was rejected before any attempt marker/output/product execution. Correct authorized ID format-check then executed once; no product-stage retry."
+}

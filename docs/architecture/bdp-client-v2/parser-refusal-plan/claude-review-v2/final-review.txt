@@ -1,0 +1,77 @@
+# Plan review — parser-refusal-plan/plan-v2.md against snapshot @ e34a06d
+
+Verified against the pinned snapshot only (`snapshot-binding.json` files). No files written.
+
+## Findings
+
+**1. "Opaque unknown minimum" is never pinned to a non-`pos-` position token — Medium**
+- **Location:** plan-v2.md:34, 36, 38, 47 (A/B/C and installed tuple construction).
+- **Issue:** The gap being reordered is keyed on `!transactionMinimumHeaders(request.headers)` (`transaction-http.ts:583-587`), and `transactionMinimumHeaders` differs from `currentReadMinimumHeaders` only by `position()` (`transaction-consistency.ts:26-31,57-62`): it is `undefined` only when `minimumPosition` is neither `genesis` nor `^pos-(0|[1-9][0-9]*)$`. The plan says "complete opaque unknown minimum tuple" but never states this.
+- **Impact:** If authored with a lexically valid unknown position (e.g. `pos-999`), A's third matrix column collapses onto the "actual current minimum" control and exercises nothing new, and C's four valid-excluded controls become wrong: `types/` with a known-but-unproven position is `isCurrentTransactionMinimumRead === true` (`transaction-read.ts:48-54`), so it reaches the owner instead of returning 500/`minimum-position`.
+- **Correction:** State that the unknown tuple is the setup GET's actual epoch/view plus a non-`pos-`, non-`genesis` position token (existing spelling `minimumHeaders(seed, "opaque")`, `transaction-http.test.ts:4840`), and that the A/B/C oracles depend on that spelling.
+
+**2. Spec attribution for "validation before target existence" is overstated — Medium**
+- **Location:** plan-v2.md:11 (and the framing of :20, B's `beads/missing?view=bogus`).
+- **Issue:** Spec 5819-5824 orders only the *lexical tuple* refusal "after ordinary transport, target/method, and authentication/authorization checks, but before any owner read or target-existence lookup." Spec 5834-5839 requires uniform 404 for ordinary unknown/hidden targets and then only says "Ordinary request validation and the lexical receiving rule above still apply" — it does not rank query validation ahead of existence.
+- **Impact:** Reads as a normative oracle for 400-over-404 on hidden/missing targets, which the cited text does not supply.
+- **Correction:** Keep spec 1552-1555 as the normative anchor for unsupported/repeated collection parameters; justify 400-before-existence as parity with behavior that already exists on known minima (`transaction-http.ts:588`) and absent minima (`read-http-routing.ts:39-40`), labeled reference parity. The non-disclosure argument stands independently: the 400 is URL-derived and identical for existing, missing and hidden targets.
+
+**3. `limit=0` carries no normative anchor in the cited ranges — Low-Medium**
+- **Location:** plan-v2.md:11 and 34 (A's uniform oracle), :28 (predecessor sentinel update).
+- **Issue:** Spec 1552-1555 covers unsupported/repeated parameters only; a "positive integer `limit`" is normative only for retained-version pages (1775-1776). `limit=0` → 400 comes from `read-request.ts:258-263`.
+- **Impact:** Grouping limit0 under the 1552 rule presents a reference choice as spec-mandated, including in the draft sentinel rewrite.
+- **Correction:** Same oracle values, but label limit0 explicitly as parser parity (`parseOptionalLimit`), distinct from the normative unsupported/repeated rule.
+
+**4. A's HEAD oracle "zero body" is ambiguous and false if read as `content-length: 0` — Low-Medium**
+- **Location:** plan-v2.md:34.
+- **Issue:** `applyReadHttpSemantics` (`read-http.ts:42-46`) removes the body and sets HEAD `content-length` to the serialized GET problem length; the existing direct-handler pattern asserts GET `content-length === null` and HEAD `Number(content-length) === directGetBytes` (`transaction-http.test.ts:4557-4563`).
+- **Impact:** A literal `content-length === "0"` assertion at the direct-handler boundary is unsatisfiable.
+- **Correction:** Phrase A's HEAD oracle as "`body` undefined, `content-type: application/problem+json`, `cache-control: private, no-store`, `content-length` equal to the GET problem byte length".
+
+**5. Three-file scope cannot be confirmed from the snapshot — Low**
+- **Location:** plan-v2.md:53.
+- **Issue:** Only 13 files are pinned. Inside the snapshot the sole assertion binding a parser-error URL to the old 500 is `transaction-http.test.ts:4856-4862` (plus the draft's two added sentinels); other suites (packages/conformance, other `apps/bdptest` files) are not in evidence. Checked and unaffected: `transaction-http.test.ts:1781-1792` and `:2184-2205` use known minima / receipt routes, `:3126-3133` is the alias path (returns at `transaction-http.ts:498`).
+- **Impact:** "Expected source scope exactly three files" is an assumption, not a verified fact.
+- **Correction:** Add a release-gate step: on the successor, repo-wide search for parser-shaped URLs asserted against `x-bdp-development-limit: minimum-position` before freezing scope.
+
+**6. Installed credential description does not match the reused fixture — Low**
+- **Location:** plan-v2.md:44 ("one random operator credential").
+- **Issue:** `start()` mints two random credentials, operator and reader (installed test:191-201); `exchange` exposes operator/reader/anonymous handles.
+- **Impact:** Minor provenance misdescription of a fixture the plan says it reuses unchanged.
+- **Correction:** "the existing two-credential fixture, exercising only the operator handle."
+
+**7. Cited source pattern omits the owned cleanup tail — Low**
+- **Location:** plan-v2.md:32 (cites `transaction-http.test.ts:4459-4518`).
+- **Issue:** The pattern's store/directory cleanup and failure aggregation live at 4611-4627 (`service.close()` → `rmSync(directory)` → `AggregateError`).
+- **Correction:** Cite 4459-4518 **and** 4611-4627 so each new callback owns cleanup, matching "three stores, zero child processes".
+
+**8. Incidental-effect enumeration omits one combination the move does settle — Low**
+- **Location:** plan-v2.md:22.
+- **Issue:** Unknown token + foreign epoch/view + parser-400 now resolves to 400 (the owner-side foreign-view/cursor-expired comparison is never reached). This already holds for known minima at `transaction-http.ts:588`, and the plan's tests all use matched context, so no new policy is asserted — but the list should say so rather than leave it implicit under "not decided here" (which is correctly scoped to *otherwise valid* requests).
+- **Correction:** Add one clause: for parser-rejected requests the combination resolves to the parser 400 by construction; the policy question remains open only for otherwise-valid requests.
+
+**No blocking findings.** The narrow move is justified and correctly bounded (see verification notes below).
+
+## Verification of the two native corrections
+
+- **C's `types/task` substitution — confirmed.** `types/task` parses as `{kind:"resource", resource:"type"}` (`read-request.ts:200-219`; existing coverage at `transaction-http.test.ts:3023` proves the id resolves rather than 404ing), so `currentReadMinimumKind` returns `"strict"` (`transaction-read.ts:93-99`) and the unknown-token guard returns 500/`minimum-position` with no owner entry. The collection draft does not touch that classification (it adds `initial-collection` for beads/links only, patch lines 291-297). The discarded alternative is correctly characterized: `beads/a?view=links` is kind `"missing"` and `isCurrentTransactionMinimumRead === true`, so it reaches the owner — exactly what `transaction-http.test.ts:4856-4862` shows today (500 only after the owner-side unsupported path). Counts hold: C = 10 + 4 + 2 + 1 = 17, total 37 + 13 + 17 = **67**.
+- **Fresh build before HTTP suite collection — confirmed and necessary.** `transaction-http.test.ts:16-18` performs a top-level `await import(new URL("../dist/transaction-runtime.js", import.meta.url).href)` at module evaluation, so the emitted runtime loads on *any* selection from this file and is not redirected by workspace source aliases.
+
+## Other checks performed (all consistent with the plan)
+
+- **Precedence justified.** The current path converts a well-defined 400 into a bodyless private 500 only for unknown-token minima; known minima already return 400 at `transaction-http.ts:588`, and absent minima get 400 from `read-http-routing.ts:39-40` after a pure local `probe` (no owner). Spec 1552-1555 is normative for the collection cases; 1958-1961 reserves bodyless 500 for unexpected faults. No owner observation is needed, and a 400 makes no position claim.
+- **Guard residue is exactly 404.** `requestFromUrl`'s problem codomain is `{invalid-parameter 400, resource-not-found 404}` (`read-request.ts:142-256, 258-263, 273-293, 301-313, 315-344`), so after the move the guard's `isReadProblem` branch means precisely 404 — C's `beads/a/` controls (notFound via `relative !== localId`) keep 500/`minimum-position` unchanged.
+- **Untouched predecessors.** 401 (`:403`), malformed tuple (`:404-405`, `transaction-consistency.ts:15-25` makes a missing `authorization-view` malformed), snapshot/changefeed/events/receipts, and alias (`:498`) all return before the block.
+- **C's HTTP-error overlays are sound.** `applyReadHttpSemantics` only negotiates/evaluates conditions for 200-JSON or 204 (`read-http.ts:10-39`), so a 400 survives `If-None-Match: *`, `If-Match: "wrong"` and `Accept: image/png`; spec 1949-1954 and 1986-1988 back that normatively.
+- **Successor ordering.** The collection draft touches `transaction-read.ts(.test)` and the two test files only — no conflict with the HTTP block; its four-suffix loop keeps four calls when two sentinels flip to the 400 oracle; `types/` and `types/task` remain strict under it.
+- **Installed arithmetic and topology.** 1 + 12 + 4 + 6 + 2 = **25**; the ≤80 cap is per `start()` process (installed test:309), HEAD exchanges are established (e.g. :446, :1138-1142), 5s/90s/120s bounds match (:257, :158, :586), and cleanup/provenance (`installedTransactionBinding`, entry sha256, `claimEligible:false`) come free with `withInstalled`. The "42-exchange waiter callback" checks out: 38 existing + 4 added by the draft.
+
+## Optional improvements (non-blocking)
+
+- **O1.** In the installed callback, also assert absence of `bdp-scope-epoch`/`-authorization-view`/`-scope-position` on the 25 refusals (reference-only, mirroring installed test:557-558). It costs no exchange and is the only wire-observable proxy for "pre-owner" — stronger than the planned status/code oracle alone.
+- **O2.** Consider one installed excluded-route control (`types/` GET under the opaque tuple → 500/`minimum-position`). Without it, installed evidence cannot distinguish "guard reordered" from "guard deleted" (source callback C does). This breaks the stated exact 25 → 26 of 80, so it is root's call.
+- **O3.** Note which evidence is source-level vs emitted: A/B/C import the handler from source (`transaction-http.test.ts:12-14`), so they prove the source change; the emitted runtime is exercised by the fixture-based regressions and the installed callback. One sentence prevents the fresh-build gate from being read as emitted-artifact proof of A/B/C.
+- **O4.** Revised guard comment: say it preserves excluded valid-route labels and **404** parser labels (not the vaguer "non400"), since 404 is the entire residue. Also, the :18 citation `258–336` stops just before `normalizeEndpointParameter`'s `invalidParameter` returns at 339-342.
+- **O5.** HEAD refusals at the installed layer do carry `application/problem+json` today (installed test:1142); asserting it is free if you want parity with A's HEAD oracle, though status 400 + absent `x-bdp-development-limit` already excludes the old 500.
+
+This review is complete; it is not approval. Disposition remains with root.

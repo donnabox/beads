@@ -1,0 +1,13 @@
+# Root acceptance: matching no-op conformance slice
+
+Accepted for bounded authoring on 2026-10-14 after full root reading of v3, dispositions and native closure. Source base is remote main ea584103f0dc90ae365970bb672f24bedf318e42, reverified this turn, with reviewed tree48537438975a4c56ee1a5bb6056013bbddd38e03.
+
+Accepted plan transaction-next-conformance-plan-v3.md SHA2568d5b9baab8c98067729a297d6bdf10ab03b1ae9ce9717b810d4b24b7df29f495; dispositions e52aa0e3527c1938759fd0b9ffb3b9e2d640ba599a140e232bfee0e820626b9a; native closure8352ce8aff7366ff9a26644723b4445ea7724ab529c6f1e75bc3cb14469881ef. Completed external original-plan review b25abbc1f9c365bfdbb112133709325bc1e31170b825f0c06c5cbd95badc9c9f has six accepted findings, all explicitly closed in v3/native closure. Earlier native eventCount and tuple/head sensitivity corrections remain mandatory. No new full external round is needed for these bounded corrective plan edits; implementation still needs its own native plus Claude review.
+
+Root independently inspected actual captureValue, receipt registration and literal route order: unused scoped URL capture rejects null, does not grant receipt authority for this GET, and new route is seventh (zero-based6). It must not be represented as a named assertion failure. No-op positive and genuine effectful comparator are ordinary existing semantics; no outstanding wire ruling is inferred.
+
+Authorize exactly four files in an isolated checkout/branch from that main: transactional manifest and coverage JSON, transactional-cumulative.test.ts, and bdptest transactional-matrix.test.ts. Preserve all ten existing raw row objects, runtime/fixture/catalog/spec/schema/DSL/public flags. This is one partial installed conformance row, not runtime serving closure or profile qualification.
+
+Stage1 authoring stops: growth65536 manifest bytes,2200 nodes,16384 coverage bytes,220 new assertions. No silent expansion or oracle removal. Author must return normally formatted actual M/N/C/A, per-action assertions/captures, full coverage mirror and proposed measured margins before installed execution. Stage2 root acceptance is pending. Max margins8192 manifest bytes/128 nodes/2048 coverage bytes within absolute preflight ceilings; exact15/166actions and A/1316+Aassertion pins. All existing runtime/deadline/wire caps remain unchanged. Four cohorts maximum636exchanges/76children, actual counts separately recorded. No installed tests until measured acceptance.
+
+Use Node24.16.0/pnpm11.20.0. Local preparation/static validation may proceed, but stop for scope/budget/runtime/DSL ambiguity. No pushes, PR creation, merges or coordination edits delegated. Root owns outward actions, final review/CI and ordinary-ancestry verification.

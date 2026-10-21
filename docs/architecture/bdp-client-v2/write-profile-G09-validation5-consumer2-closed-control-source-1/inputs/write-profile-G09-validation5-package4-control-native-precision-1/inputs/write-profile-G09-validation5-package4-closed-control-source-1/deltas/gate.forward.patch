@@ -1,0 +1,26 @@
+--- /Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation-preparation-5/execution-gate.json
++++ /Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation5-package4-closed-control-source-1/execution-gate.proposed.json
+@@ -21,7 +21,11 @@
+     "legacy-schema-source",
+     "audit-legacy-schema-source",
+     "schema-confinement-source",
+-    "audit-schema-confinement-source"
++    "audit-schema-confinement-source",
++    "prepare-package-directory",
++    "pack-protocol",
++    "pack-server",
++    "verify-archives"
+   ],
+   "baseTools": {
+     "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation-preparation-5/base-tools.candidate.json",
+@@ -70,8 +74,8 @@
+     "sha256": "UNRESOLVED"
+   },
+   "rootDisposition": {
+-    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation5-source-pairs-closed-control-source-1/root-disposition.proposed.json",
+-    "sha256": "40fef117923935d76a39a63ed605edefd62ad991d482e4e8989abb68f117dc65"
++    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation5-package4-closed-control-source-1/root-disposition.proposed.json",
++    "sha256": "50f88b425a9260756f21d2122d28c0698f80f85aaacc0e1fc56c31884e54f01b"
+   },
+   "rootExactSourceAccepted": true,
+   "rootPlanAccepted": true,

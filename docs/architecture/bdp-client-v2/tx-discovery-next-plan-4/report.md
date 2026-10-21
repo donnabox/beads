@@ -1,0 +1,11 @@
+# Corrected D3a plan4 freeze
+
+Root disposition367b3bea accepts the13 findings from one complete actual PLAN result, with independent terminal closure11b67338. Supervised finalization remains FAILED, CLI exit UNKNOWN, and exit.json/source-after.json/final-review.txt/terminal-results.json remain missing. No replacement result or second actual PLAN was created.
+
+Plan4 binds the same679 cce884c source/spec677 bytes, the original47 source/spec inputs and3 narrow additional read-only evidence inputs (executor, target normalization, authority discovery union). Exactly3 future source files remain owned. No product source, shared executor/interface/schema/runtime, active plan, old packet, guard or flag was edited.
+
+The13 exact dispositions and their authored plan/data locations are in findings-resolution.json. The finite source inventory is now21callbacks/96direct/14wire, with Scope projection7 and Scope minimum10calls16entries6wait22clocks2assemblies; descriptor/Directory counters stay exact. There are9 clone-only counterfactuals/zero substituted wire. Cold requests/payloads/order remain43/28 and actual12 operation names. Installed remains11callbacks/190scheduled/187responses/3aborts, explicitly186publicexact+4localraw. The header bound stays16384;131072 body implies derived163840 wire. All original deadlines/retry rules stay fixed.
+
+WrongHost uses one anonymous local socket with literal wrong Host. The three pending sockets require actual write callback, complete independent descriptor response, then immediate UNSETTLED/no-response assertion before close under the fixed1000ms server budget; first503/response fails. These are bounded callback-local witnesses, not a new executor hook or server-admission observation.
+
+The actual source map and copied input map are exact. Original plan3/native/contracts, actual review raw stream/findings/failed-supervision terminal audit, root disposition and live original packet/flag bytes are preserved. Genuine forward/inverse deltas distinguish current4 from historical inherited patches. New plan4 native precision/root acceptance and later isolated source authoring release remain CLOSED. No helper/compiler/reviewer/runtime/Git execution occurred.

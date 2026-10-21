@@ -1,0 +1,11 @@
+Cold Update clients had no cumulative executable witness proving that discovered operation-directory values drove all nine mutation targets. Add a 21-exchange row that follows Scope → descriptor → directory, captures the returned targets through a second directory GET, then exercises Bead/Link creation, update and deletion, alias creation/deletion, and an ordinary Update sequence. Actual raw/client observations verify target bindings, complete request writes, full live Resource results and retained deletion identities.
+
+A negative control validates the real directory, then removes only updateLink from copied assertion input and requires the single named schema failure after three HTTP exchanges. Existing 54 scenario objects and 129 other coverage objects remain byte-preserved. Ordinary Update semantics and public profile admission are unchanged; this remains partial, ineligible evidence.
+
+Validation: pinned build/typecheck/format passed. Six selected CPU callbacks passed initially; the seventh exposed a historical coverage-size allowance. After correcting that data-only allowance, the affected callback passed. The original failure is retained. Native and actual Claude code reviews are complete; all findings were dispositioned against source and actual installed results. No mandatory repair remains. The original six passing CPU observations are bridged by the sole data-fence correction, not represented as reruns.
+
+Fresh installed validation passed on clean bb9600f1: cold-navigation positive, expected schema-failure control, and both cumulative shards. Actual total 2,327 HTTP requests and 61 child lifetimes; exact external package/dependency/payload bindings verified, all sampled processes and runtime directories absent after cleanup. This validates the new row and existing cumulative subset, not the complete profile.
+
+Plan of record: https://github.com/donnabox/beads/blob/codex/vickie-bdp-client-design/docs/architecture/bdp-client-v2/design.md (Vickie).
+
+Limits: fixed private configuration, incomplete cumulative coverage, and assertion-input-only negative control. Safe reports rely on trusted distinct caller paths; full-body equality is checked during execution, with only safe projections retained. Exact-head full CI remains the merge gate.

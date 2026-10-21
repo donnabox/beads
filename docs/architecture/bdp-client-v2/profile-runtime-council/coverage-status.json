@@ -1,0 +1,155 @@
+[
+  {
+    "packet": "01-profile-contract",
+    "native": "complete",
+    "claude": {
+      "exitCode": 0,
+      "status": "complete",
+      "output": "01-profile-contract-claude.stdout.txt",
+      "bytes": 21846
+    },
+    "gemini": {
+      "exitCode": 0,
+      "status": "complete",
+      "output": "01-profile-contract-gemini-direct.stdout.txt",
+      "bytes": 8410
+    }
+  },
+  {
+    "packet": "02-write-owner",
+    "native": "complete",
+    "claude": {
+      "exitCode": 0,
+      "status": "complete",
+      "output": "02-write-owner-claude.stdout.txt",
+      "bytes": 31415
+    },
+    "gemini": {
+      "exitCode": 0,
+      "status": "complete",
+      "output": "02-write-owner-gemini-direct.stdout.txt",
+      "bytes": 12340,
+      "coverage": "store480\u2013808 and sequence omitted; replacement02b complete"
+    }
+  },
+  {
+    "packet": "02b-tx-tail",
+    "native": "complete",
+    "claude": {
+      "exitCode": 0,
+      "status": "complete",
+      "output": "02b-tx-tail-claude.stdout.txt",
+      "bytes": 22954
+    },
+    "gemini": {
+      "exitCode": 0,
+      "status": "complete",
+      "output": "02b-tx-tail-gemini-retry-gemini.stdout.txt",
+      "bytes": 8739
+    }
+  },
+  {
+    "packet": "03-http-and-evidence",
+    "native": "complete",
+    "claude": {
+      "exitCode": 0,
+      "status": "complete",
+      "output": "03-http-and-evidence-claude.stdout.txt",
+      "bytes": 26461
+    },
+    "gemini": {
+      "exitCode": 0,
+      "status": "complete",
+      "output": "03-http-and-evidence-gemini-direct.stdout.txt",
+      "bytes": 9905
+    }
+  },
+  {
+    "packet": "04-alias-delta",
+    "native": "complete",
+    "claude": {
+      "exitCode": 0,
+      "status": "complete",
+      "output": "04-alias-delta-claude.stdout.txt",
+      "bytes": 21990
+    },
+    "gemini": {
+      "exitCode": 0,
+      "status": "complete",
+      "output": "04-alias-delta-gemini-direct.stdout.txt",
+      "bytes": 9467
+    }
+  },
+  {
+    "packet": "06-final-repairs",
+    "native": "complete",
+    "claude": {
+      "exitCode": 0,
+      "status": "complete",
+      "output": "06-final-repairs-claude.stdout.txt",
+      "bytes": 2512,
+      "completeText": "06-final-repairs-claude.recovered-full.txt",
+      "recoveryRecord": "06-final-repairs-claude.recovery.json"
+    },
+    "gemini": {
+      "exitCode": 0,
+      "status": "complete",
+      "output": "06-final-repairs-gemini.stdout.txt",
+      "bytes": 19604
+    }
+  },
+  {
+    "packet": "07-contextual-and-recovery",
+    "native": "complete",
+    "claude": {
+      "exitCode": 0,
+      "status": "complete",
+      "output": "07-contextual-and-recovery-claude.stdout.txt",
+      "bytes": 22438
+    },
+    "gemini": {
+      "exitCode": 0,
+      "status": "complete",
+      "output": "07-contextual-and-recovery-gemini.stdout.txt",
+      "bytes": 10311
+    }
+  },
+  {
+    "packet": "08a-transaction-dependencies",
+    "native": "complete",
+    "claude": {
+      "exitCode": 0,
+      "status": "complete",
+      "output": "08a-transaction-dependencies-claude.stdout.txt",
+      "bytes": 22018
+    },
+    "gemini": {
+      "exitCode": 3,
+      "status": "unavailable",
+      "output": "08a-transaction-dependencies-gemini.stdout.txt",
+      "bytes": 0,
+      "reason": "Individual quota / HTTP429",
+      "reviewPerformed": false,
+      "retryPlanned": false
+    }
+  },
+  {
+    "packet": "08b-retention-diagnostics",
+    "native": "complete",
+    "claude": {
+      "exitCode": 0,
+      "status": "complete",
+      "output": "08b-retention-diagnostics-claude.stdout.txt",
+      "bytes": 33306
+    },
+    "gemini": {
+      "exitCode": 3,
+      "status": "unavailable",
+      "output": "08b-retention-diagnostics-gemini.stdout.txt",
+      "bytes": 0,
+      "reason": "Individual quota / HTTP429",
+      "reviewPerformed": false,
+      "retryPlanned": false
+    }
+  }
+]

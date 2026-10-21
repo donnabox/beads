@@ -1,0 +1,6 @@
+{
+  "actualExit": 1,
+  "failure": "Audit assertion incorrectly required old4 approvedStages empty; old4 released:false retains historical 15-stage list",
+  "correction": "Require released:false; historical stage list is not execution permission when gate closed",
+  "scope": "Read-only review assertion; no candidate/helper/product action"
+}

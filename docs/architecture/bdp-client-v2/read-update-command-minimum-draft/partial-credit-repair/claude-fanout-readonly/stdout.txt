@@ -1,0 +1,103 @@
+## Verdict
+
+**No blocking correctness or credit finding.** The partial-credit repair is internally consistent across all six paths, the withheld whole-contract credit is substantively correct against the spec clause, and I found no stale positive whole/uncovered/omitted expectation anywhere in the repository. Concrete limits are listed in §C — notably that nothing in this correction was executed against installed HTTP, and I could not compute any SHA-256 with read-only tools.
+
+---
+
+## A. Required accountability areas — completed
+
+### 1. Non-harness TS hunks in the six-path diff ✔ completed
+
+`full.patch` contains **five** `diff --git` headers, not six: `cumulative-artifact.test.ts` nets to zero against the original parent. That is correct and intentional — b895 added `"read-update.http.command-minimum-fields"` to the reviewed whole-ID whitelist and `correction.patch:143-150` removes it, restoring the parent byte-for-byte. `packages/conformance/src/cumulative-artifact.test.ts:156-191` now holds exactly 34 IDs (counted), and the deleted entry sat between `sequence.member-problem-shape` and `numeric-model.same-value-no-op`, which matches coverage row order (`read-update-coverage-v1.json:10681 / 13326 / 13407`), so the order-sensitive `toEqual` is still correct after deletion.
+
+Hash classification (all verified as the right kind):
+
+| Pin | File:line | Kind | Correct? |
+|---|---|---|---|
+| `61d74c4c…` manifest row | `read-update-matrix.test.ts:2377` | current corpus | unchanged — row not touched ✔ |
+| `758b8f8e…` coverage row | `read-update-matrix.test.ts:2416` | current corpus | updated ✔ |
+| `10a7c6f9…` manifest file | `read-update-matrix.test.ts:~5347` | current corpus | updated at b895 ✔ |
+| `80f74625…` | `read-update-artifact-set.test.ts:230` | historical parent | unchanged ✔ — corroborated: it is the *replaced* current-manifest pin at `full.patch:823` |
+| `c86b3353…` / `f8f0b001…` | `read-update-artifact-set.test.ts:237 / 273` | historical grandparent | unchanged ✔ |
+| `85b717f1…` | `read-update-artifact-set.test.ts:260` | historical parent coverage | unchanged ✔ — chained: the 85b7 text must further reduce to the inherited `f8f0b001` pin, so it is not a free parameter |
+| `24d75461…` continuation | `read-update-artifact-set.test.ts:244` | unchanged companion | ✔ |
+| `7930b51e…` cold row | `read-update-matrix.test.ts:2473` | current corpus | unchanged ✔ |
+
+Catalog ordering verified directly: manifest RU scenario order (`matrices/read-update-v1.json`, 51 top-level IDs) is a strictly increasing subsequence of `catalog/read-update-v1.json` order, with `http.command-minimum-fields` last in both (catalog:1620; manifest:121569, last object before the array close at 122226). The `prerequisiteScenario` index check at `cumulative-artifact.test.ts:129-132` is vacuous for this row — none of its 11 actions declares one, which is also what `read-update-artifact-set.test.ts:283-288` relies on when it makes `scenarios.at(-1)` the sole shard-1 member.
+
+Byte fences are arithmetically exact four ways against the two named bases (`read-update-matrix.test.ts:5659` = 648157, `:5911` = 698614) and the two literal bases (703415; 703415+5546+3700):
+
+- 648157 + **72572** = 720729
+- 698614 + **22115** = 720729
+- 703415 + **17314** = 720729
+- 703415 + 5546 + 3700 + **8068** = 720729
+
+and the parent values (70150 / 19693 / 14892 / 5646) all resolve to 718307, giving the stated +2422 from parent and +102 from b895. The +102 is exactly reproducible by hand: `true`→`false` (+1) plus the 101-byte appended sentence. No node cap, body cap or timeout moved (`runner.ts:59`, `artifact-bundle.ts:21`, `nodes(manifest) <= 27158`, `450*1024`, `12000`, `maximumRequestBodyBytes: 131072` all untouched).
+
+Stale-expectation sweep: `toHaveLength((95|35))` → **zero matches repo-wide**; `\b(35|95)\b` in the app test → **zero matches**; the old row hash `63fc576c` and old coverage file hash `4120abfe` → **zero matches**. Every `uncoveredIds`/`reviewedWholeIds`/`omittedRequiredIds` membership assertion has the correct polarity (`read-update-matrix.test.ts:2731, 2750, 2826, 3489, 3911, 4342`).
+
+### 2. New canonical row and coverage object ✔ completed
+
+Counted on disk in `read-update-coverage-v1.json`: 130 rows, 56 `bounded-observation`, 74 `omitted`, 34 `wholeContract: true`. 56+74=130 and 130−34=96 — all four assertion sites agree.
+
+The row at `:13325-13384` carries exactly 47 assertion strings (lines 13334-13380) in the order `4,4,5,5,5,5,5,3,4,4,3` across 11 actions, which I matched one-for-one against the manifest actions at `matrices/read-update-v1.json:121580-122221` (`singleton-create` … `sequence-point`). This is independently re-derived at runtime in three places (`cumulative-artifact.test.ts:202-206`, `profile-contract-plan.test.ts:285-292`, `read-update-matrix.test.ts:2418-2425`), so the binding cannot drift from the manifest.
+
+Full-parent reconstruction remains proved, and I checked the helper rather than trusting the hash. `coldDirectorySpan` (`read-update-artifact-set.test.ts:154-186`) is a quote/escape-aware depth scanner returning the matching top-level object's `[start, end)`. The correction changes only bytes *inside* that span, so `prefix + priorMinimum + suffix` is bit-identical to what b895 produced — the 85b7 assertion is preserved **by construction**, not by coincidence. The `priorMinimum` literal at `:254` matches the parent bytes removed in `full.patch:1686-1690` exactly, including the 6-space inner and 4-space closing indentation. Manifest side: `currentText.slice(minimum.start-6, minimum.start) === ",\n    "` holds because the row is preceded by `    },\n    {` at `matrices:121567-121568`, and 51→50→49 scenario counts are right.
+
+Semantics behind the hashes: the row hash at `:2416` is over the **reconstructed** object from `read-update-artifact-set.ts:265-271`, whose key order (`id, status, wholeContract, reason, bindings`) matches `correction-measurements.json.newRow`. `status` is *forced* to `bounded-observation` for planned rows by the validator, so the row hash alone does not prove the file says `bounded-observation` — but `profile-contract-plan.test.ts:277` reads the raw JSON and does. Growth allowances are exact-data assertions as stated; they are not runtime capacity (coverage is parsed under the 1 MiB `fixture` bound with ~328 KB headroom).
+
+### 3. Honest credit ✔ completed
+
+The spec clause (`docs/specs/bdp.md:3581-3588`, under *Mutation command preconditions*, inside the Read+Update section) decomposes as: (a) MUST ignore the three fields; (b) presence/absence/completeness/values impose no barrier and no identity effect; (c) **ordinary field syntax and transport, header and body bounds still apply**; (d) authorization/idempotency/carrier validation/`expectedRevision` still apply; (e) no change to read conditions.
+
+The 11 actions observe (a), (b) (foreign values, empty value, duplicate `bdp-scope-epoch`/`BDP-Scope-Epoch`, non-token values, absence) and (d) (401/400/409/400/409). They observe **nothing** for (c): there is no over-bounded header or body variant, and the dedicated `read-update.http.request-too-large` required row is still `omitted` and absent from the manifest. So `wholeContract: false` is the correct call, and the appended sentence names precisely the missing conjunct. The clause is profile-scoped per `requiredProfile: "read-update"` and the separate TX inventory (`profile-contract-plan.test.ts:300-331`), and the harness full-Resource/replay equality is explicitly labelled a non-portable supplement in the reason text.
+
+No admission bypass is possible: `wholeContract` has exactly two consumers, both reporting-only — `uncoveredIds` (`read-update-artifact-execution.ts:177`) and `reviewedWholeIds` (`:328`). `omittedRequiredIds` (`:329`) and `authoredIds` (`:323`) are owner-derived, which is why 74/56 correctly stay put. `claimEligible` is a hardcoded `false` literal in both the set (`read-update-artifact-set.ts:285`) and the plan (`profile-contract-plan.ts:196, 359`). A `bounded-observation` row with `wholeContract: false` is explicitly supported by the validator (`read-update-artifact-set.ts:238-271`) and awards nothing.
+
+### 4. Cross-boundary preservation ✔ completed (bounded as instructed)
+
+11 requests / 47 assertions confirmed three ways: manifest (above), the static ledger `commandMinimumRequests` (`read-update-matrix.test.ts:719-997`, 11 entries, POST bodies 113+113+103+113+113+176+1+190+190 = **1112**, max 190, matching `postBytes` at `:2411`), and `review-successor/ledger.json` (11 actions, same order).
+
+The correction's first app-test hunk is at line **2413**; the first `it(` registration is at **2371**; all helper/oracle/`run`/`runShard`/lifecycle code (718–2370) is byte-unchanged. I re-read the oracle to confirm the control's character rather than take the bridge on faith: `commandMinimumOracle` (`:998-1225`) applies the counterfactual only at `localIndex === 1` (zero-based) = `singleton-replay` = one-based exchange 2, **after** full replay-equality and schema checks have passed, mutating only decoded `bodyText` with an asserted-identical byte length (`:1152-1158`). `finish` (`:1197-1202`) pins controlled mode to 8 outcomes, exactly 7 passing and the single failure `{singleton-replay, outcome}`, and uncontrolled mode to 47/47. Recorded `completions` are captured at `:1139` *before* the mutation, and provenance says so (`:1221`). No synthetic wire evidence is credited.
+
+### 5. Affected CPU selection and workload ✔ completed
+
+`root-http-count-audit.json` is arithmetically clean: 897+996+44 = 1937 and 135+242+0 = 377 → 2314; `nativeSubset: 21` is **not** added into either total, so there is no double counting. 2314 + 11 + 2 = 2327, matching `measurements.json.wire.combined` (2327 expected / 2336 maximum / 62 children).
+
+Attribution is handled correctly: `root-actual-observation.json.aggregate` retains `wholeMapped: 35 / uncovered: 95` as b895 metadata and is not rewritten; `execution-byte-bridge.json` bridges only the unchanged wire/oracle/payload bytes and explicitly states `noInstalledRerun: true`. The bridge supports preserved execution and does not relabel assessment output. The corrected 34/96 values are *statically derivable* from the coverage file via `rows.filter(r => !r.wholeContract)` — I verified the file yields 34/96 by count — so the updated runtime expectations are sound without a rerun.
+
+---
+
+## B. Findings
+
+All findings below are **non-blocking**. None requires a source change for correctness.
+
+**1 — Low (limit, not defect). Four installed-HTTP callbacks assert corrected counts but were never executed under the corrected source.**
+`apps/bdptest/src/read-update-matrix.test.ts:2730, 2748, 2825, 3488, 3910, 4342`. These run real installed HTTP and were last executed at b895, when they expected 95/35. The packet is explicit that no rerun occurred (`report.md:7`, `validation-summary.json.noInstalledRerun`). Impact: low — each value is a pure function of the coverage file (`read-update-artifact-execution.ts:177, 328` and `read-update-matrix.test.ts:2142-2147`), and I counted 34/96 on disk. Smallest correction: none to source; root should either accept the derivation or schedule one installed aggregate run before merge, and record which it chose.
+
+**2 — Low (diagnostics). The eight re-run CPU callbacks are not enumerated.**
+`partial-credit-repair/validation-summary.json` reports only `passed: 8, skipped: 336` and a result-bundle hash. By inspection the affected CPU-only callbacks are at least nine candidates (`read-update-matrix.test.ts:2371, 2466, ~5344, 5661, 6049, 6433`; `cumulative-artifact.test.ts:101`; `profile-contract-plan.test.ts:224`; `read-update-artifact-set.test.ts:216`), so I cannot confirm the selection was complete rather than eight of nine. Impact: low — most of these call `installedArtifactSet()`, so any structural break would surface in several of them. Smallest correction: add a `selectedTests: [...]` array to `validation-summary.json`.
+
+**3 — Low (optional documentation). `docs/design/read-update-executable-progress.md` has no command-minimum entry.**
+The doc never mentions the row (`[Mm]inimum` → zero matches) and its global figures are stale ("Of 129 required IDs, 103 remain uncovered", "Twenty-six proposed whole-contract rows", `:17`) against the current 130/96/34. This is **pre-existing drift, not introduced here**: the cold-directory row is equally undocumented, and no test pins the file. Impact: the human-readable progress record understates the authored inventory; the machine-checked inventory remains the authoritative and truthful artifact. Smallest correction (optional): one row in the W-series table noting bounded observation with bounds unobserved, and refresh the 129/103 sentence.
+
+**4 — Low (optional diagnostics). The "zero slack" claims on the four byte fences are authored, not enforced.**
+`read-update-matrix.test.ts:5665, 6056, 6437, 6581` are all `toBeLessThanOrEqual`, and the minimum row's *formatting* bytes are not exactly pinned by anything (the row hash is over `JSON.stringify` of the parsed object; the 85b7 reconstruction pins only the bytes outside the span). A future shrink of the reason text would silently pass all four while the comments still claim exactness. Impact: cosmetic/drift-detection only; the formatter check covers layout in practice. Smallest correction (optional): change one of the four to `toBe`, or drop the "zero slack" wording.
+
+**5 — Informational. `execution-byte-bridge.json` wording is slightly looser than the fact.**
+`"allHarnessBytesBeforeCpuRegistrationUnchanged": true` — the precise, verified statement is that bytes 1–2370 (everything up to the first `it(`) are unchanged, with the first modified line at 2413 inside the first test body. Substantively accurate; no action needed.
+
+**6 — Informational, out of scope of this correction. Derivative node headroom is tight.**
+`measurements.json` reports `proposedDerivativeEnvelope.nodes: 98868` against `ARTIFACT_MAX_JSON_NODES = 100_000` (`artifact-bundle.ts:21`) — 1132 nodes of headroom. The correction adds zero nodes (string-only change), so this is a b895-era condition, but root may want it on the record before the next manifest row lands.
+
+---
+
+## C. Limits of this review
+
+- **No execution.** I could not compute or confirm any SHA-256, including `758b8f8e…` (new coverage row), `287c2a25…` (coverage file), the four reconstruction digests, or `harnessPrefixSha256`. All digest claims rest on the reported format/CPU run. Exit 0 is not approval.
+- **The on-disk coverage size of 720729 is inferred, not measured** — from four mutually consistent base/allowance pairs plus the hand-recomputed +102 delta, which is strong but not a `stat`.
+- **"Exactly four modified files"** comes from the session-start `git status` snapshot, which matches `source-binding.json`. I could not re-confirm it live, nor verify the worktree is at commit b895 + those four.
+- **Not re-reviewed (per instruction):** transport/lifecycle harness internals at 1227–2257 beyond the oracle at 998–1225 and the uncovered/whole derivation; `schemas/bdp-v0.schema.json` (`mutationOutcome`, `readUpdateProblem` existence is asserted by the harness and literals reviews, not independently by me); `executable-manifest.ts`; `runner.ts` beyond the cap constants.
+- **Prior reviews treated as claims.** I re-derived the literals audit's F1 conclusion from the spec text and manifest rather than accepting it, and confirmed the applied correction matches its proposed repair item-for-item. The harness audit's entry 21 cites the now-superseded `63fc576c…` row hash; that is historical and correctly replaced.
+
+**Unpinned dependencies I relied on** (read inside the worktree, beyond the listed starting files): `packages/conformance/test-support/read-update-artifact-set.ts`, `packages/conformance/test-support/profile-contract-plan.ts`, `apps/bdptest/test-support/read-update-artifact-execution.ts`, `packages/conformance/src/artifact-bundle.ts`, `packages/conformance/src/runner.ts` (constants only), and — for the fanout sweep that found no other consumer of the changed files — `packages/conformance/src/transactional-cumulative.test.ts`, `packages/conformance/src/development-read-update.test.ts` (confirmed it reads `development/read-update-coverage-v1.json`, a different file), and `apps/bdptest/src/read-update-artifact-execution.test.ts` (synthetic inputs only).

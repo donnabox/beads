@@ -1,0 +1,43 @@
+# Native H1b implementation review
+
+Reviewed source `dfcf1a95950fd213a9c0b98c266ee9869918da06` against `80d9ef0941a6cb7d46c4b6ad18cab76a0fcfcd4f`, 27 files. Frozen author checkout: `/Users/dbox/repos/wt/vickie/vickie-transaction-installed-h1b`. Independent build/test/probe checkout: `/Users/dbox/repos/wt/vickie/vickie-h1b-native-review`. No author source changes or outward writes. No external H1b code-review findings consulted.
+
+Disposition: two P2 repairs needed. The four authored partial observations pass; neither finding is evidence that the store's four observed behaviors are incorrect. They affect the installed harness's lifecycle contract and ordinary capture semantics.
+
+## Findings
+
+### P2 — Make the declared cohort deadline abort the actual run and child lifecycle
+
+`apps/bdptest/src/transactional-matrix.test.ts:168–187` calls `runCumulativeTransactionalMatrix` without a `signal`. Its enclosing test's `120000` at line 228 is only a Vitest timeout; the same pattern occurs in countercontrol tests. `observe()` has no cooperative cohort timer. The accepted H1b plan explicitly requires a cohort bound of 120 seconds plus separately bounded cleanup. Individual 5-second requests and 10-second prepare/cleanup bounds do not imply that aggregate bound: the positive cohort has 35 actual exchanges and five physical sessions. A slow run can exceed 120 seconds while its individual operations remain within their deadlines.
+
+Vitest does not cancel this promise at its outer timeout, so the actual child can continue processing actions and the observation can later return four passing rows (or write the optional report), after the owning test has already timed out. `finally` at lines 191–194 only runs once that promise unwinds. The launch callback checks `signal.aborted` before launch at line 158 but does not forward ongoing cancellation to the inherited-IPC launcher.
+
+Independent bounded repro: a new review-only test invoked the unchanged `observe()` with a 50 ms outer Vitest timeout, using the same mechanism as the production 120-second test; it intentionally failed on timeout. An `afterAll` observer, 100 ms later, recorded a live installed-process child and an unsettled cohort. The cohort subsequently returned four passing rows. The observer awaited completion so the probe left no child behind. This proves missing cancellation, not that the normal fast frozen run exceeded 120 seconds. Evidence: `transaction-installed-h1b-native/deadline-probe.log`, `deadline-probe.json`, and `deadline-result.json`.
+
+Repair: use a real bounded controller for this cohort, pass its signal through runner and installed startup/session lifecycle, abort/drain on expiry, clear its timer in `finally`, and refuse success/report publication after abort. Keep per-request deadlines and separately bounded cleanup. Add short controlled abort/pre-abort tests proving no lingering child or later successful report; no actual 120-second delay test is necessary.
+
+### P2 — Do not treat every ordinary `/id` capture as a mutation receipt
+
+`packages/conformance/src/runner.ts:1453–1488` passes every JSON-pointer capture to the transactional receipt ledger. `packages/conformance/src/transactional-observation.ts:117–119` returns only for pointers other than `/id`; every `/id` capture must then validate as a mutationReceipt or throws. Consequently a normal Bead, Link, Type, or other resource ID cannot be captured in a cumulative Transactional HTTP scenario, even when it is never used to authorize a receipt read.
+
+Independent actual-installed repro: add one otherwise-unused `{binding: "ordinary-resource-id", from: {kind: "json-pointer", pointer: "/id"}}` capture to the existing `a-point` Bead GET in `transactional.batch.atomic-commit`. The manifest factory accepts it and the same receiver returns the expected resource, but the previously passing row becomes `harness-error`. No server, fixture, transport, assertions or response was changed. Evidence: `transaction-installed-h1b-native/ordinary-id-probe.log`, `ordinary-id-probe.json`, `ordinary-id-result.json`.
+
+Repair: keep ordinary capture extraction valid independently of receipt authority. Only a qualifying receipt source should add ledger authority; subsequent `transactional.receipt.read` must continue to reject an ordinary/unregistered capture. Preserve rejection of malformed receipt sources, forged URLs and mismatched wire evidence. Add a positive ordinary Resource-ID capture and a negative attempt to use that ID as receipt authority. This is required to reuse the new runner for inherited Read/Update observations; it does not require adding those rows in this repair.
+
+## Checks and accepted boundaries
+
+- Clean pre-build typecheck and build passed in the independent clone using Node 24.16.0 / pnpm 11.20.0. Logs: `transaction-installed-h1b-native/{install,typecheck,build}.log`.
+- Focused unmodified suite: **423 tests / 8 files passed**, 13.01 seconds. Files: conformance runner, report, transactional-cumulative, transactional-observation, executable-manifest; bdptest transactional-binding and transactional-matrix; server transaction-installed. Logs: `focused.log` / `focused.json` in the same directory. This includes actual installed processes, raw transport, registered dynamic-socket drain, metadata mismatch, permission swapping, process disconnect, public denial, and v3 exclusions. I did not rerun the full author-reported 8,477 tests or duplicate the full package smoke.
+- Two independent probes intentionally fail for the findings above; they are not baseline failures. Exact review-only patch is `transaction-installed-h1b-native/native-probes.patch`. It modifies only the disposable clone's test file, and leaves frozen dfcf unchanged.
+- Receipt source authority retains copied actual wire bytes and a SHA-256 reference; later GET validation compares the entire retained receipt body with the source body, independently of the client-action JSON projection. Source URL, schema/disposition/detail, pointer, exact request observation and session/configuration association are checked. Dynamic receipt routes are exact one-route modes, not a wildcard expansion. HEAD validates absent body separately from representation length.
+- Reopen preserves original source observation/session while the current validated physical generation advances. Shared dynamic promise registration and session abortion/drain have real hanging-socket coverage. This works when cleanup is invoked; it does not supply the missing aggregate abort in finding 1.
+- Actual installed configuration captures bounded private administrative inputs, canonical authority, contracts, policy/authentication and shipped payload. Source commit remains launcher/reviewer provenance, not receiver attestation of a Git checkout. Public admission stays closed; genuine TX bundle relabeling, reserved client operations and legacy v3 fields are rejected. The low-level exact serializer's TX allowance is bounded private transport support, not public profile qualification.
+- The three new accepted response header names are narrow and parser-tested. No Snapshot serving, SSE, history, catalog or normative profile changes are introduced by this delta.
+
+## Packed evidence cross-check
+
+Read `transaction-installed-h1b/report.md`, `packed/source.json`, `packed/summary.json`, and the actual `packed/transactional-observation.json`. Its SHA-256 equals the summary's `0d2c74fa6b4825bb7e2f544a2773019b5d6b172652b8c8f1da1954a4bbc703ce`; source is exact dfcf. Actual result has 255 catalog rows: 250 required plus five optional. Four pass as authored partial observations, 251 are not implemented; all 250 required obligations remain uncovered for whole-contract qualification. `claimEligible` is false.
+
+Actual evidence contains **35 HTTP exchanges**, **10 separately bound dynamic receipt exchanges**, and **five physical sessions**. The two reopened dynamic reads retain source generation 3 and bind current generation 4. Installed payload digest is `09768af5b56fe2db91ff53bb4254e08b4983734cc547b1e549de34385008f464`; runtime identity is `6f3efa69f6b6e490738ddeb301e2be569d6b3095695cdb488a8701f7b0237fff`. Author-reported fresh packed tests are TX14 and RU112; the native review independently ran the source-installed positive and controls in the 423-test suite, not those fresh tarball tests.
+
+The four partial observations are atomic-commit, rollback, receipt-readable, and failed-retained. Their current accounting is honest and must remain partial after these repairs. This review does not grant whole-contract or cumulative profile qualification.

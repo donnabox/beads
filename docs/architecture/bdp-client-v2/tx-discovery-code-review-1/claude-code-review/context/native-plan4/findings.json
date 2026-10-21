@@ -1,0 +1,15 @@
+[
+  {
+    "id": "N1-F7",
+    "severity": "Low",
+    "file": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/tx-discovery-next-plan-4/cold-positive-requests.json",
+    "line": 750,
+    "jsonPointer": "/receiptRules",
+    "finding": "Broad receiptRules still says every non-sequence command follows receipt.id, contradicting corrected replayReceipt and plan prose.",
+    "impact": "A literal implementation/reviewer could require two extra replay receipt GETs and reject the unchanged43/28 tables. The specific replay clarification makes intent clear but leaves conflicting acceptance prose.",
+    "fix": "Change only receiptRules to Every non-sequence, non-replay command validates mutationReceipt and follows actual receipt.id; preserve replay original retained-body comparison and all requests/counts. Freeze a separately named precision successor; originalplan4 stays untouched.",
+    "rootDisposition": "F7 accepted nonsequence/nonreplay wording",
+    "requiresSecondActualPlan": false,
+    "sourceChangeRequired": false
+  }
+]

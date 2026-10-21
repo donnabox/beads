@@ -1,0 +1,28 @@
+{
+  "changedFromSuccessor2": [
+    "apps/bdptest/src/transactional-event-missing-context-installed.test.ts"
+  ],
+  "unchangedTrackedFilesFromSuccessor2": 678,
+  "exactReleasedReplacementOnly": true,
+  "threeProductionFilesUnchanged": {
+    "packages/server/src/transaction-http.ts": "8b6e0be9f9df4c718a9e26d5dc321d7517780edef53b9580dae314328d6a3eca",
+    "packages/server/src/transaction-service.ts": "a3b0984a61603300024e22afc1d6826b89296bfc27d13465c1e1ede0b1791b8c",
+    "packages/server/src/transaction-store.ts": "dd5de25d1f73faa8c14c08d94d91a4b160a4abee991f4934495260ead93a9ab0"
+  },
+  "historicalInstalledPrefix": {
+    "bytes": 15956,
+    "sha256": "828c05f358ae5863c992f93194da15a31df9a200e073e5e3525531ba39fe7d0d",
+    "preserved": true
+  },
+  "otherFiveOwnedFilesByteIdentical": true,
+  "parserRegion": {
+    "bytes": 976,
+    "sha256": "608121c6366636acd322899a0aace194601fe04917523639af96a98f8297afa6",
+    "occurrences": 1
+  },
+  "httpTestSha256": "88748d8473a9940187724a0328aad45a46ca56c0de035c61d746b9de7214267f",
+  "selectionByteIdentical": true,
+  "selectionSha256": "2465fcdc4c318d43a792f603be827b4ac7f01e4087ab4fd4342a2bd7768cba9b",
+  "workloadAndDeadlinesUnchanged": true,
+  "cleanupSemantics": "Same Error append formerly reached via immediate local catch; bad close skips closed/removal; clean branch preserves assignment/removal order; surrounding catch/timers/aggregation byte-identical."
+}

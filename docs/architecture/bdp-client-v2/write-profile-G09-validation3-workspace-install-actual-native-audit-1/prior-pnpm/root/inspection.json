@@ -1,0 +1,103 @@
+{
+  "actualAuditStillPending": false,
+  "actualToolExits": [
+    0,
+    0,
+    0
+  ],
+  "actualToolIds": [
+    "063eea",
+    "05c275",
+    "19c9ae"
+  ],
+  "allLater32Unattempted": true,
+  "baseToolFilesRealpathsChecked": 3,
+  "exactActualSourceHashes": {
+    "A": "19e86b1287a88fa94f4d852d76ae3a74d8f128cd5739708d800b2e03f2dd1e57",
+    "B": "7bc8bfe3c7ccb5df4c4838324767a9bbe9541536e74dfd14b6b912ced694dce9",
+    "C": "1bd10d7891a2e356d73f3e4b6ae249b1cb911b91f9c21ad0b38ac27e95748218"
+  },
+  "implementation121Unchanged": true,
+  "innerElapsedSeconds": 4.587876874953508,
+  "innerVersion": "11.20.0",
+  "kind": "ROOT_ACTUAL_PNPM_FULL_CONJUNCTION_INSPECTION_BEFORE_NATIVE_DISPOSITION",
+  "matchingRowsIndependentlyRecomputed": [],
+  "nativePacket": {
+    "closureSha256": "c791ceeb136d3d2a21a960ba8ddd45d692ca6ff7162a139528214d06bc38efb0",
+    "indexSha256": "a16b8f7ed907312ce597f791c16cf1e09b453376d59cc7e04b74aa13b33a4fad",
+    "indexed": 61,
+    "origins": 48,
+    "physical": 62
+  },
+  "noCleanupTakenOrGlobalAbsenceClaim": true,
+  "phaseCorrectReferenceCounts": [
+    2278,
+    2571
+  ],
+  "rawToolReceiptIndependentlyDecoded": false,
+  "recordedTaskPGIDs": [
+    52678,
+    52683,
+    53433
+  ],
+  "recordedTaskPIDs": [
+    52682,
+    52683,
+    53433
+  ],
+  "rootDATAInspectionCorrection": "896837 read-only assertion compared JSONL PID strings against integers; corrected int parse; e104a0 additionally assumed emptytemp; actual pnpm retained node-compile-cache9entries. Observed only/no cleanup; source tests nestedbdp dirs. Both root DATA assumptions corrected, actual source/evidence unchanged/no targetretry.",
+  "rootDataCheckErrors": [
+    {
+      "chunk_id": "896837",
+      "exit_code": 1,
+      "original_token_count": 192,
+      "output": "Traceback (most recent call last):\n  File \"<stdin>\", line 46, in <module>\nAssertionError\nTraceback (most recent call last):\n  File \"/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-trusted-startup-validation-preparation-2/guarded-action-session-20261018-021624-549f.py\", line 20, in <module>\n    subprocess.run(sys.argv[1:], check=True)\n    ~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/opt/homebrew/Cellar/python@3.14/3.14.5/Frameworks/Python.framework/Versions/3.14/lib/python3.14/subprocess.py\", line 578, in run\n    raise CalledProcessError(retcode, process.args,\n                             output=stdout, stderr=stderr)\nsubprocess.CalledProcessError: Command '['/opt/homebrew/opt/python@3.14/bin/python3.14', '-']' returned non-zero exit status 1.\n",
+      "wall_time_seconds": 0.16990775
+    },
+    {
+      "chunk_id": "e104a0",
+      "exit_code": 1,
+      "original_token_count": 192,
+      "output": "Traceback (most recent call last):\n  File \"<stdin>\", line 62, in <module>\nAssertionError\nTraceback (most recent call last):\n  File \"/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-trusted-startup-validation-preparation-2/guarded-action-session-20261018-021624-549f.py\", line 20, in <module>\n    subprocess.run(sys.argv[1:], check=True)\n    ~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/opt/homebrew/Cellar/python@3.14/3.14.5/Frameworks/Python.framework/Versions/3.14/lib/python3.14/subprocess.py\", line 578, in run\n    raise CalledProcessError(retcode, process.args,\n                             output=stdout, stderr=stderr)\nsubprocess.CalledProcessError: Command '['/opt/homebrew/opt/python@3.14/bin/python3.14', '-']' returned non-zero exit status 1.\n",
+      "wall_time_seconds": 0.416125875
+    }
+  ],
+  "rootStreamsVerified": [
+    {
+      "bytes": 476,
+      "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation3-root-first4-dispatch-1/pnpm-version/pnpm-version.stdout",
+      "sha256": "0f386def78fd1ad0c1ebfed928494787e8ff44bf325d4335f330432377225d40"
+    },
+    {
+      "bytes": 0,
+      "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation3-root-first4-dispatch-1/pnpm-version/pnpm-version.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "bytes": 206316,
+      "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation3-root-first4-dispatch-1/pnpm-version/postterminal-census.stdout",
+      "sha256": "cd9a2c3d3524d29116ea4cb3a6a8babbeda5159839e00d7c7674d1fc3b9541fd"
+    },
+    {
+      "bytes": 0,
+      "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation3-root-first4-dispatch-1/pnpm-version/postterminal-census.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    }
+  ],
+  "selectedCensusRawRows": 1390,
+  "session": "2026-10-18T02:16:24Z-549f",
+  "source679AndBinaryDiffUnchanged": true,
+  "temporaryRootEntries": [
+    "node-compile-cache",
+    "node-compile-cache/v24.16.0-arm64-cf738c9d-501",
+    "node-compile-cache/v24.16.0-arm64-cf738c9d-501/21949e48",
+    "node-compile-cache/v24.16.0-arm64-cf738c9d-501/3088bb2c",
+    "node-compile-cache/v24.16.0-arm64-cf738c9d-501/42483939",
+    "node-compile-cache/v24.16.0-arm64-cf738c9d-501/63382e8b",
+    "node-compile-cache/v24.16.0-arm64-cf738c9d-501/836e5827",
+    "node-compile-cache/v24.16.0-arm64-cf738c9d-501/99ccc123",
+    "node-compile-cache/v24.16.0-arm64-cf738c9d-501/e0ed69ce"
+  ],
+  "temporaryRootExists": true,
+  "witnessSeconds": 11.364552542101592
+}

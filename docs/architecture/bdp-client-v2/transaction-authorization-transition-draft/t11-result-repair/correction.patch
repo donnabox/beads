@@ -1,0 +1,21 @@
+--- a/packages/server/src/transaction-authorization.test.ts
++++ b/packages/server/src/transaction-authorization.test.ts
+@@ -550,8 +550,16 @@
+   if (isReadProblem(request)) throw new Error("valid Resource read required");
+   const alice = service.readFor({ kind: "authenticated", principal: { id: "alice" } });
+   const bob = service.readFor({ kind: "authenticated", principal: { id: "bob" } });
+-  expect(await alice.perform(request)).toMatchObject({ kind: "resource" });
+-  expect(await bob.perform(request)).toMatchObject({ kind: "resource" });
++  const aliceRead = await alice.perform(request);
++  const bobRead = await bob.perform(request);
++  expect(aliceRead).toMatchObject({ kind: "success" });
++  expect(bobRead).toMatchObject({ kind: "success" });
++  if (aliceRead.kind !== "success" || bobRead.kind !== "success")
++    throw new Error("both principals must read the seeded Resource");
++  if (!Array.isArray(receipt.results) || !receipt.results[0]?.resource)
++    throw new Error("seed receipt Resource required");
++  expect(aliceRead.body).toEqual(receipt.results[0].resource);
++  expect(bobRead.body).toEqual(receipt.results[0].resource);
+   const readonly = {
+     carrier: { kind: "batch" as const },
+     body: JSON.stringify({ operations: [create("denied")] }),

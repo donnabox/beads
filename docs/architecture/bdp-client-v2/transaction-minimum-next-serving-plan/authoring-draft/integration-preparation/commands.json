@@ -1,0 +1,102 @@
+{
+  "status": "CLOSED_OPERATIVE_PENDING_ROOT_RELEASE",
+  "executionOrder": [
+    "typecheck",
+    "build",
+    "format-check",
+    "integration-owner-read",
+    "build-inventory"
+  ],
+  "commands": [
+    {
+      "id": "typecheck",
+      "cwd": "/Users/dbox/repos/wt/vickie/vickie-minimum-current-resource",
+      "argv": [
+        "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+        "/Users/dbox/.cache/node/corepack/v1/pnpm/11.20.0/bin/pnpm.cjs",
+        "run",
+        "typecheck"
+      ],
+      "released": false,
+      "supervisorSeconds": 120,
+      "automaticRetries": 0
+    },
+    {
+      "id": "build",
+      "cwd": "/Users/dbox/repos/wt/vickie/vickie-minimum-current-resource",
+      "argv": [
+        "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+        "/Users/dbox/.cache/node/corepack/v1/pnpm/11.20.0/bin/pnpm.cjs",
+        "run",
+        "build"
+      ],
+      "released": false,
+      "supervisorSeconds": 120,
+      "automaticRetries": 0
+    },
+    {
+      "id": "format-check",
+      "cwd": "/Users/dbox/repos/wt/vickie/vickie-minimum-current-resource",
+      "argv": [
+        "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+        "/Users/dbox/repos/wt/vickie/vickie-minimum-current-resource/node_modules/@biomejs/biome/bin/biome",
+        "format",
+        "--config-path",
+        "/Users/dbox/repos/wt/vickie/vickie-minimum-current-resource/biome.json",
+        "packages/server/src/transaction-read.test.ts",
+        "docs/design/transaction-implementation-progress.md"
+      ],
+      "released": false,
+      "supervisorSeconds": 120,
+      "automaticRetries": 0
+    },
+    {
+      "id": "integration-owner-read",
+      "cwd": "/Users/dbox/repos/wt/vickie/vickie-minimum-current-resource",
+      "argv": [
+        "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+        "/Users/dbox/repos/wt/vickie/vickie-minimum-current-resource/node_modules/vitest/vitest.mjs",
+        "run",
+        "packages/server/src/transaction-read.test.ts",
+        "--maxWorkers=1",
+        "--testNamePattern",
+        "^(?:current\\ alias\\ minimum\\ subset\\ does\\ not\\ relabel\\ alias\\ provider\\ or\\ malformed\\ context\\ failures\\ as\\ missing|uses\\ actual\\ current\\ policy\\ for\\ missing\\-first\\ and\\ unproved\\ Resource\\ attempts)$",
+        "--reporter=verbose",
+        "--reporter=json",
+        "--outputFile=/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-minimum-next-serving-plan/authoring-draft/integration-preparation/run/integration-owner-read.results.json"
+      ],
+      "released": false,
+      "supervisorSeconds": 120,
+      "automaticRetries": 0,
+      "selectedFullNames": [
+        "current alias minimum subset does not relabel alias provider or malformed context failures as missing",
+        "uses actual current policy for missing-first and unproved Resource attempts"
+      ],
+      "cases": 2,
+      "http": 0,
+      "owners": 2,
+      "directories": 2,
+      "listeners": 0,
+      "productChildren": 0,
+      "ownedTempPrefixes": [
+        "bdp-transaction-read-"
+      ]
+    },
+    {
+      "id": "build-inventory",
+      "cwd": "/Users/dbox/repos/wt/vickie/vickie-minimum-current-resource",
+      "argv": [
+        "/usr/bin/python3",
+        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-minimum-next-serving-plan/authoring-draft/integration-preparation/inventory.py"
+      ],
+      "released": false,
+      "supervisorSeconds": 120,
+      "automaticRetries": 0
+    }
+  ],
+  "sourceSupervisorReference": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-minimum-next-serving-plan/authoring-draft/source-validation-v3/run-source.py",
+  "sourceSupervisorReferenceSha256": "21fba33222f7328ff06731c97a6c6e81f262971ffff712d6547aaca626542344",
+  "inventoryReference": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-minimum-next-serving-plan/authoring-draft/source-validation-v3/inventory.py",
+  "inventoryReferenceSha256": "7757964f3a0a319d1674e30ec84905d0c9ae8ce40e0f1db301f304c250960bc6",
+  "environment": "Scrub BDP_* and Node overrides; controlled PATH/TMPDIR; CI=true; exclusive new output markers."
+}

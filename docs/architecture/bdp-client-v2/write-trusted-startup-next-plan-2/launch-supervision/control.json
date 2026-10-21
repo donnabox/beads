@@ -1,0 +1,29 @@
+{
+  "rootLaunchReleased": false,
+  "packet": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-trusted-startup-next-plan-2/claude-plan-review",
+  "expectedSession": "2026-10-18T02:16:24Z-549f",
+  "sourceRoot": "/Users/dbox/repos/wt/vickie/vickie-event-admission-replay-minimum",
+  "reviewerArgv": [
+    "/opt/homebrew/bin/claude",
+    "--safe-mode",
+    "-p",
+    "--tools",
+    "Read,Glob,Grep",
+    "--allowedTools",
+    "Read,Glob,Grep",
+    "--disable-slash-commands",
+    "--strict-mcp-config",
+    "--mcp-config",
+    "{\"mcpServers\":{}}",
+    "--no-session-persistence",
+    "--output-format",
+    "stream-json",
+    "--verbose",
+    "--include-partial-messages"
+  ],
+  "outerTotalSeconds": 1800,
+  "termAtSeconds": 1790,
+  "killAtSeconds": 1798,
+  "noRetry": true,
+  "authority": "CLOSED startup PLAN data/path rebind using accepted supervision2 unchanged. Native/root inspect before one flag-only release; no source authoring."
+}

@@ -1,0 +1,42 @@
+{
+  "state": "COMPLETE independent FULL STATIC review; one Low OPEN; execution CLOSED",
+  "completedAt": "2026-10-18T12:11:14.193438+00:00",
+  "reviewedPreparation": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-D4-validation-preparation-3",
+  "reviewedPreparationIndexSha256": "8629a07c6299b0f36572c2f8217dbf9c108a9f178f60d9ca6753d864353536b3",
+  "reviewedBindingSha256": "f67df42053f97d7dadeca6240e8c4e5e8fff200682716da6ca6d1ed44d73601b",
+  "reviewedImplementationIndexSha256": "dec44766de20e4279d5ea4bdbd5bedced198dd5798e63dad7eb172cf70f0ab36",
+  "reviewedClosureSha256": "0179e131888ea24fb145dd1385a107079390f70cb54c25a056759d518bb13c8b",
+  "sourceBindingSha256": "3f51eaa3d62157bafa78a63d20b7162ccaec135a3d6ae6c10d997e553b2af649",
+  "sourceIdentity": "1499aa6cf9a02c7b6dc07a3a70bffcf935c9d6fcba60ce57ddcf5e214b32cd92",
+  "sourceFiles": 679,
+  "owned": 1,
+  "protected": 678,
+  "physicalReviewed": 526,
+  "implementationReviewed": 520,
+  "originsVerified": 472,
+  "referencePinsVerified": 1557,
+  "genuinePairsVerified": 15,
+  "priorRequestedFixesResolved": 3,
+  "findings": {
+    "High": 0,
+    "Medium": 0,
+    "Low": 1
+  },
+  "findingIDs": [
+    "D4-P3-N1"
+  ],
+  "reportSha256": "5546f28b3f5900727d9c256d74ff7f6483831dc167b6b984d11a94f7763f2c49",
+  "findingsSha256": "698b948993f8622b35273f82ea7264aeab320c37dc13f0e895c1d87df79c6f93",
+  "truthTableSha256": "b68337c37d0a30d224b2772a24ae3347492646e28c799fc6bd5e7a40f473e406",
+  "sourceAndHelperBytesChanged": false,
+  "reviewedModulesImportedEvaluatedOrExecuted": false,
+  "syntheticHarness": "UNPREPARED/UNAPPROVED",
+  "syntheticOrProductExecution": false,
+  "gitOrReviewerInvoked": false,
+  "executionAcceptance": false,
+  "rootDisposition": "UNRESOLVED",
+  "currentGatesRemainFalse": true,
+  "approvedStages": [],
+  "runDirectoryExists": false,
+  "roleGuard": "2026-10-18T02:16:24Z-549f"
+}

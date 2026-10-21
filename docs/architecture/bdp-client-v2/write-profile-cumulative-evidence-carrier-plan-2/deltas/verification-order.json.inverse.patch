@@ -1,0 +1,25 @@
+--- plan2/verification-order.json
++++ plan1/verification-order.json
+@@ -2,7 +2,7 @@
+   "order": [
+     {
+       "n": 1,
+-      "check": "closed own-data API/source types and finite byte/JSON bounds; no side effect before refusal; unbound RU attempt is its distinct writer-owned closed schema and is rejected by bound carrier verifier"
++      "check": "closed own-data API/source types and finite byte/JSON bounds; no side effect before refusal"
+     },
+     {
+       "n": 2,
+@@ -30,11 +30,11 @@
+     },
+     {
+       "n": 8,
+-      "check": "Unfiltered IDs equal actual selectApplicableScenariosForProfile order INCLUDING five diagnostics; normative requirements remain separate. Conditional placeholder rule: when reached without a plan, missingPlanResult is harness-error/not-implemented; once abort or another actual matrix stop has occurred, stoppedScenarioResult fills the remaining suffix with harness-error/not-run regardless of plan/diagnostic presence. Preserve actual IDs/order/index/category/empty exchanges and infer no execution from empty assertions."
++      "check": "unfiltered result IDs equal current selectApplicableScenariosForProfile order INCLUDING five diagnostics; requirement IDs remain normative only; missing plans retain genuine harness-error/not-implemented empty placeholders; no extra credit"
+     },
+     {
+       "n": 9,
+-      "check": "Map actual returned owner rows by original row index/digest; preserve all failure/skipped/abort/deadline/cleanup/not-run/not-implemented/unobserved categories. Unexecuted rows have authoredAssertionsAllPassed:null, not vacuous every([])=true; do not rewrite stopped rows or pass them through legacy RU all-success association. Genuine aborted V03/V04 are retainable partial carrier data, not legacy succeeded summaries."
++      "check": "map returned owner rows by actual row index/digest; failures/skipped/aborted/deadline/cleanup/not-run/unobserved stay distinct; derive authored assertion projection from actual results and exact manifest bindings without duplicating runner semantics"
+     },
+     {
+       "n": 10,

@@ -1,0 +1,115 @@
+{
+  "method": "Static source/literal/count arithmetic only; no product imports/builds/tests/runtime.",
+  "files": {
+    "packages/server/src/transaction-consistency.ts": {
+      "sha256": "ad51311d6098db32fd47849e0b78d3118162cdf1e80ee9ef4d46324bfa9f436f",
+      "bytes": 7167,
+      "new": false
+    },
+    "packages/server/src/transaction-read.ts": {
+      "sha256": "7e2cc29b668bb80a3ba2948e90511518a98a7ff798b1dbfb8c6f51f0c0bd2a6f",
+      "bytes": 15957,
+      "new": false
+    },
+    "packages/server/src/transaction-service.ts": {
+      "sha256": "c700d5719918b60c3239a336eef02c9dff6717faca698777aba01181ebdcd278",
+      "bytes": 28348,
+      "new": false
+    },
+    "packages/server/src/transaction-http.ts": {
+      "sha256": "90489b22858be99579f7ce8753bab0d6204d4caae215f7a293c1537d09477636",
+      "bytes": 28706,
+      "new": false
+    },
+    "packages/server/src/transaction-consistency.test.ts": {
+      "sha256": "904d1f74ff06237da41c45f3dc1d4727a1387dc760950860ef548db51e7f02c4",
+      "bytes": 7999,
+      "new": false
+    },
+    "packages/server/src/transaction-read.test.ts": {
+      "sha256": "92139fb3313a0bb9e012d6eba213eb02c097b104166fb3fd7c9164ba39c4c59c",
+      "bytes": 87681,
+      "new": false
+    },
+    "packages/server/src/transaction-http.test.ts": {
+      "sha256": "1ae690d8135c0ecd44f01b39a3412f50921828d83e7395bd076ff2404e503672",
+      "bytes": 186758,
+      "new": false
+    },
+    "apps/bdptest/src/transactional-minimum-current-resource-installed.test.ts": {
+      "sha256": "440036edf77248d578ee2fc70c6e4b9d4bfdf305d88dfd913c3d81dc6364b803",
+      "bytes": 31480,
+      "new": true
+    },
+    "docs/specs/bdp.md": {
+      "sha256": "67772742d7d08f48c12196e9789f1859ad2d0e19f133ea65e197b049361f84f8",
+      "bytes": 397107,
+      "new": false
+    },
+    "docs/design/transaction-implementation-progress.md": {
+      "sha256": "8475dffe744267d735366438798ca388263359be744eba105d867818f0402182",
+      "bytes": 133772,
+      "new": false
+    }
+  },
+  "source": {
+    "selectedCallbacks": 15,
+    "http": 172,
+    "owners": 10,
+    "directories": 10,
+    "listeners": 5,
+    "productChildren": 0,
+    "httpBySelectedCallback": [
+      14,
+      62,
+      68,
+      19,
+      9
+    ],
+    "httpArithmetic": [
+      "1+2*(1+2)+1+5+1",
+      "2+4*2*2*2+2+4*2*3+1+1",
+      "1+3*(1+2*(1+2*2+2)+1+1)+2+6+2*(1+3)",
+      "2+2*2+3*2+1+4+1+1",
+      "1+2+3+3"
+    ],
+    "runtimeCounterClaim": false
+  },
+  "installed": {
+    "positiveHTTP": 32,
+    "negativeExpectedHTTP": [
+      2,
+      2
+    ],
+    "negativeMaxHTTP": [
+      32,
+      32
+    ],
+    "totalExpectedHTTP": 36,
+    "totalMaximumHTTP": 96,
+    "children": 3,
+    "directories": 3,
+    "listeners": 3,
+    "positiveRequestBodyBytes": 562,
+    "allCohortExpectedRequestBodyBytes": 1686,
+    "maximumRequestBodyBytes": 562,
+    "fixtureArtifactBytes": 314,
+    "seedSha256": "b2ed0ea801da54e92fd894c7c02cc9ca71788b3a3bc16362bd54c15f31565f94",
+    "literalRows": 32,
+    "sourceRowsMatchAccepted": true
+  },
+  "caps": {
+    "cohortMs": 30000,
+    "vitestMs": 45000,
+    "requestMs": 5000,
+    "startupMs": 10000,
+    "closeMs": 10000,
+    "supervisorMs": 120000,
+    "minimumWaitMs": 1000,
+    "publicationMs": 1000,
+    "responseBodyBytes": 32768,
+    "reportBytes": 65536,
+    "urlBytes": 8192
+  },
+  "runtimeExecuted": false
+}

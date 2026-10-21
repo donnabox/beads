@@ -1,0 +1,7 @@
+# Actual P5 node-version capture — pending independent audit
+
+ONE actual A/B/C completed with ordinary tool terminals e073df/37787e/968d98 all0 after separately durable activation4b225a5f. Full original tool results and issued source are preserved. A equals published baseline; B/C each substitute only the complete LF actual preceding tool-ID assignment after that actual terminal, with full inverse and unchanged guard/RAW_EXIT0. No retry or second census occurred.
+
+The actual inner log is exactly9bytes v24.16.0 plus LF, exit0/source1eca unchanged/elapsed3.758924957830459. First post-B-terminal clock witness reports8.820629875175655seconds from earliest root origin, strict115/outer120 unchanged. Root stdout/stderr are476/0 bytes; census205070/0. All raw/descriptor/EOF/terminal/census/reap/source/provenance conjuncts still require full independent native/root audit; provisional and clock receipts remain acceptedfalse by design.
+
+Tool-terminal observations are trusted-root source attribution of normalized actual tool results; independently decoded raw wire/tool receipts are UNRETAINED. Finite actually recorded PID/PGID absence is distinct from global/unseen containment or observer self-absence. Temporary metadata/scratch is retained; no cleanup or later runtime observation is invented. This is a version-stage observation only, no compiler/lint/test/build/install/profile/full-Write pass. Nextstage remains closed until actual independent audit, ROOT disposition and durable publication.

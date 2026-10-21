@@ -1,0 +1,17 @@
+430: 2026-10-15T13:36:14.5428418Z 062fd1086fda3af7098832a2ff2d6c72316d15b2
+1596: 2026-10-15T13:39:48.0331145Z  ✓ packages/server/src/transaction-http.test.ts > source-private actual Transactional HTTP > authenticates and hides receipts before minimum-control refusal or conditional shortcuts 31ms
+1722: 2026-10-15T13:39:52.6334871Z stdout | packages/server/src/transaction-http.test.ts > serves current missing receipt root and page context without changing nondisclosure or HEAD
+1725: 2026-10-15T13:39:52.6514516Z  ✓ packages/server/src/transaction-http.test.ts > serves current missing receipt root and page context without changing nondisclosure or HEAD 67ms
+2821: 2026-10-15T13:40:27.5509591Z  ✓ packages/server/src/transaction-service.test.ts > preserves current receipt absence context across ordinary and minimum service entrypoints 23ms
+5417: 2026-10-15T13:43:23.4910225Z  ✓ apps/bdptest/src/transactional-matrix.test.ts > aborts the actual cohort budget after real wire and drains all installed children 1847ms
+5418: 2026-10-15T13:43:23.5907284Z  ✓ apps/bdptest/src/transactional-matrix.test.ts > refuses a pre-aborted cohort before starting an installed child 1ms
+6471: 2026-10-15T13:44:49.5084054Z stdout | apps/bdptest/src/transactional-receipt-missing-context-installed.test.ts > observes genuine installed receipt root and page absence context at current heads
+6474: 2026-10-15T13:44:49.5324159Z  ✓ apps/bdptest/src/transactional-receipt-missing-context-installed.test.ts > observes genuine installed receipt root and page absence context at current heads 1142ms
+10188: 2026-10-15T13:46:15.8391288Z  ✓ packages/server/src/transaction-receipt-pages.test.ts > captures immutable current context for nondisclosable receipt pages before minimum checks 29ms
+11090: 2026-10-15T13:52:34.5650828Z  Test Files  175 passed (175)
+11091: 2026-10-15T13:52:34.5675475Z       Tests  9300 passed | 1 skipped (9301)
+11093: 2026-10-15T13:52:34.5683188Z    Duration  769.38s (transform 8.13s, setup 3.14s, import 43.12s, tests 1722.94s, environment 28ms)
+11114: 2026-10-15T13:52:36.8719999Z  Test Files  1 passed (1)
+11115: 2026-10-15T13:52:36.8720984Z       Tests  7 passed (7)
+11117: 2026-10-15T13:52:36.8722867Z    Duration  1.45s (transform 237ms, setup 44ms, import 307ms, tests 973ms, environment 0ms)
+11153: 2026-10-15T13:52:45.8599646Z {"level":"info","event":"evidence.verified","executable":"read-cohort-evidence","artifact":"docs/design/evidence/read-cohort/read-v1.json","constant":"674982be2123b9b7aae630bf79c3f774122900cd","runHead":"e5f7d0c43c151426350ceededdc77fe7e372db9b","evidenceCommit":"dbaf63a24219e1ea3f80394746853598b0d4464a","schemaReadProjection":"bd7da0fc3f8082e0bfb6f4969c04409f2a610e12408dbc6a0bd14b4b351127cc","schemaReadProjectionDefinitions":47,"schemaReadProjectionReachable":46,"rows":89}

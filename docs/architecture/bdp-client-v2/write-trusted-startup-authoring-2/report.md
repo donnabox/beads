@@ -1,0 +1,13 @@
+# Trusted startup authoring successor2
+
+Corrected root native CODE findings N1/N2 under review/release SHA256 `57c25a1292717c14d1348753da7772c3a29903dcbdd66d1deb28c3b5088d8c56`. Freeze1 and its56 files/docs mirror remain unchanged. This successor changes exactly the loader, its existing lossless-bound regression and one smoke witness comment; the other nine owned source files remain byte-identical to freeze1. No footprint, contract or deadline change.
+
+N1 replaces eager Object.values/per-sibling task queuing with lazy decoded-child iteration and one iterator frame per active container depth. Every discovered node is charged before scheduling descendants. Root depth0, maximum depth16/nodes100000 and atomic JsonNumberLiteral handling remain exact. The existing test now distinguishes exactly100000 nodes (root+array+99998 numbers reaches contract validation) from100001 (bounds refusal), preserving depth/atomic controls. The strict decoder still allocates the full lossless tree under the32MiB sole predecode byte bound; this correction limits additional traversal scheduling, not that accepted decoder risk.
+
+N2 clarifies that the occupied intended port excludes successful acquisition of that configured listener. Source forbidden-call instrumentation separately observes attempted startup calls. Only the comment changed; no smoke predicate/workload/lifecycle was widened. No attempted-bind observation is inferred from the occupied-port witness alone.
+
+Full base→successor patch SHA256 `95ac4b10eeba0da5b54f1f1c977289a3be3b6b545fb3aeefde5f00d980354ef1`; genuine freeze1→2 delta SHA256 `6e294ee199e3d1b1a32b87e3de9c0b32a2aecb353e50a977b7218ca201c26656`. Both full and successor patches/inverses reconstruct their exact source/baseline/predecessor copies in memory. Complete682-source maps,12 source copies, three predecessor copies, baseline copies, disposition, report schema/export inventory, authority origins and preservation records are included.
+
+Pinned Biome2.5.7 was hash-verified, then FORMAT ONLY on the three named correction files exited0 with no fixes. Read-only git diff --check exited0. No compiler, tests, lint/check, build, install, runtime/service, actual reviewer or git mutation ran. These are static/format records, not product-validation evidence. All build/package/external-consumer/execution identities remain UNRESOLVED and launch flags remain false.
+
+All670 non-owned baseline paths remain unchanged; exactly9 existing +3 new source files remain the full implementation. Original PR167 all679 base identities and D1 all679 frozen identities remain exact. Root owns new-file index mechanics, final source acceptance and subsequent independent/actual CODE and validation release. No readiness or profile-completion claim.

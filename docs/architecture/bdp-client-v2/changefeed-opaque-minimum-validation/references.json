@@ -1,0 +1,43 @@
+{
+  "authority": "successor3 only; predecessor validation references are implementation reuse, not new outcomes",
+  "files": {
+    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/changefeed-opaque-minimum-plan/successor-3/plan.md": "2f950b90595b799153efd454b78d8b95c1042de1ce20e01554adaa0c1173fced",
+    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/changefeed-opaque-minimum-plan/successor-3/selection.json": "6a04227516db1753f5ec3f8fb1d59ce8e5e0294c0b12340778c23bca6b2fc687",
+    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/changefeed-opaque-minimum-plan/successor-3/workload.json": "f36a0fe9561b78301abbc4f31a045e94f7ec9a2f71d44847c1ba731ca07e496a",
+    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/changefeed-opaque-minimum-plan/successor-3/binding.json": "030c9ebc651a2dc6905b615110d72838fc787c2e23b5a4d49ab79f7f6d01aef6",
+    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/changefeed-opaque-minimum-plan/successor-3/preparation-index.json": "fcdf4edbb62e149454179c2191e62ffe96d0f489d01e13032bcee07499bff15b",
+    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/alias-opaque-minimum-validation/implementation/run.py": "97ff77321cb82cb0e1fa90cbf160be88a838cf52f0429d404c999c96475c438f",
+    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/alias-opaque-minimum-validation/implementation/gate.py": "b62cb29ba58d8d25e26b9cd1ee122849ed5397b6d2543da7b62b040e11f1381c",
+    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/alias-opaque-minimum-validation/implementation/packages.py": "5c8280fd055b14f909b396a251be65e1b8a11b786aea5636faebc0a7c64fa12b",
+    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/alias-opaque-minimum-validation/implementation/audit.py": "51fc729d42934273b1a7ca1b9a48ddb42b8f68141d4f26539c53ab8880888f3f",
+    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/alias-opaque-minimum-validation/implementation/commands.json": "093bef1c4f8f0429a381d62b2c8bac217a4c4406f0bebcd406aee9a6e33f201d",
+    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/alias-opaque-minimum-validation/implementation/base-tools.json": "82d52d2d6dce29cfc94d281b463e56818f960aaa7337b73e2384fe23c47c977a",
+    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/alias-opaque-minimum-validation/implementation/expected-artifacts.json": "54bc34978ab5536be89db2abf4bd091266865746bd115212878557877f094b06",
+    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/alias-opaque-minimum-validation/implementation/audit-expectations.json": "0eb0f920f7cee0bcf8f76fa62bd7365f31a57e42ca4dadcb41f8b33ddfcaffca",
+    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/alias-opaque-minimum-validation/format-successor-1/run.py": "97ff77321cb82cb0e1fa90cbf160be88a838cf52f0429d404c999c96475c438f",
+    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/alias-opaque-minimum-validation/format-successor-1/packages.py": "5c8280fd055b14f909b396a251be65e1b8a11b786aea5636faebc0a7c64fa12b",
+    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/alias-opaque-minimum-validation/format-successor-1/audit.py": "51fc729d42934273b1a7ca1b9a48ddb42b8f68141d4f26539c53ab8880888f3f",
+    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/alias-opaque-minimum-validation/format-successor-1/native-final-validation.md": "ac969a6db70dbee18f4f8a69365b9bbce31d0bef7b8eabe449e776b6ae470461",
+    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/alias-opaque-minimum-validation/format-successor-1/root-final-validation.json": "b3e31ad7d9b15564a53cfccf4604f3ee90588c577dd74a62120de11e98d398f1",
+    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/guarded-action.py": "fd81ba029cd4e7c7e60623df89e8292af91141d311d9ce789ed19e2152375e84"
+  },
+  "baseToolBytes": {
+    "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node": {
+      "realpath": "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+      "sha256": "1ee75375e33b94fc34b3b19aede049e11dae90efb63b374dc96d6bdace70c4b8",
+      "matchesAliasPredecessor": true
+    },
+    "/Users/dbox/.cache/node/corepack/v1/pnpm/11.20.0/bin/pnpm.cjs": {
+      "realpath": "/Users/dbox/.cache/node/corepack/v1/pnpm/11.20.0/bin/pnpm.cjs",
+      "sha256": "67b035e322203961795e8e34ca63a08c37a4386eda94107fb3d28f3246d882ad",
+      "matchesAliasPredecessor": true
+    },
+    "/opt/homebrew/opt/python@3.14/bin/python3.14": {
+      "realpath": "/opt/homebrew/Cellar/python@3.14/3.14.5/Frameworks/Python.framework/Versions/3.14/bin/python3.14",
+      "sha256": "2477b47fa3ae65b9574eb18a15edb364e96948eaa1875ad3f1c80d780efc9c12",
+      "matchesAliasPredecessor": true
+    }
+  },
+  "activeAuthorSourceReadOrFrozen": false,
+  "newNodeModulesState": "Root reports absent; fresh bootstrap required. No active source inventory taken while writer runs."
+}

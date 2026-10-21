@@ -1,0 +1,25 @@
+{
+  "accepted": true,
+  "sourceBindingSha256": "5fecd704d54e08b0de899505decf8da1ae80f6ad64fdcbc90608e8a516f715db",
+  "dependencyInstallAuthorized": false,
+  "bootstrapReuseAccepted": true,
+  "bootstrapReuseBinding": {
+    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/parser-refusal-validation-successor-1/bootstrap-reuse-binding.json",
+    "sha256": "eca0ce4463b8ead4d4777841cc881f53a74a7d8a3804a6026bd04c1200b51017"
+  },
+  "staticValidationAuthorized": true,
+  "runtimeValidationAuthorized": true,
+  "actualCodeReviewDisposition": {
+    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/parser-refusal-code-review/root-disposition.md",
+    "sha256": "515f5016aee72dbf848ba76d8b2ae31f437dd586e25e60742a3d647537dda4c6"
+  },
+  "nativeSuccessorClosure": {
+    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/parser-refusal-author/successor-1/native-closure.md",
+    "sha256": "ffc43f6f3e73180cb9c09a638e554534ce4a858664dd33ba0f9a69133be9a672"
+  },
+  "note": "Both native reviews and actual Claude disposition accepted. All three fresh static stages passed on exact successor, normal exits/no survivors; root releases build/bind/focused selection/audit and fresh packaging through consumer install. Stop for measured consumer lock and provenance gates. No public qualification or commit/push released.",
+  "nativePreparationReview": {
+    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/parser-refusal-validation-successor-1/native-preparation-review.md",
+    "sha256": "464f2ff53b5e411b6e0bd5ae7a56711004b5bbb156088a4ae609a304e668b20b"
+  }
+}

@@ -1,0 +1,71 @@
+{
+  "method": "ast.parse ONLY, no import/evaluation/bytecode compile; Perl not parsed/evaluated",
+  "results": [
+    {
+      "name": "bootstrap.py",
+      "sha256": "ac3ea5619e2a2a72b6f471cf21e4e02bc1f9c56e6a07254d68c35edd63b4c5cc",
+      "syntax": "parsed",
+      "nodes": 492
+    },
+    {
+      "name": "gate_controls.py",
+      "sha256": "47e89d6e27c0ae5d1dc80aaeedd2199decdfff41a28dca97e8382348fefc6b8c",
+      "syntax": "parsed",
+      "nodes": 1082
+    },
+    {
+      "name": "harness.py",
+      "sha256": "ad7a8c61a591fdd2baa1370e065c145861798ba9ea4eb1a53e10f01c8ce5910e",
+      "syntax": "parsed",
+      "nodes": 1923
+    },
+    {
+      "name": "host_controls.py",
+      "sha256": "3aa0f1cf48cf404cc78203bd66089aacb12bc66bc7357ea35d28e19dad3a522d",
+      "syntax": "parsed",
+      "nodes": 1961
+    },
+    {
+      "name": "host_peer.py",
+      "sha256": "e586b1568c5b51e0e60386565922f35db98a8521ecd1b093e50d1646a6f12798",
+      "syntax": "parsed",
+      "nodes": 1283
+    },
+    {
+      "name": "outer_host.py",
+      "sha256": "abfb5adcade832dc0105b2abd29ca167d7ef14e6f15558db37e4921d1a8832e0",
+      "syntax": "parsed",
+      "nodes": 4579
+    },
+    {
+      "name": "outer_worker.py",
+      "sha256": "bbf1845fe061a1be43752c4e9bd39eb0889ca026cc61c65a55feb5e5d4b98682",
+      "syntax": "parsed",
+      "nodes": 1152
+    },
+    {
+      "name": "owned_spawn.py",
+      "sha256": "c4d73ba6d4d6d759b7e5dbeeb79986d2c8d6ccade163886b6a07b17cba02f3d8",
+      "syntax": "parsed",
+      "nodes": 776
+    },
+    {
+      "name": "report_controls.py",
+      "sha256": "d814d9edfb0f393e3f5c46550e56b8f273f9445e106ebba0e3d84603c2f4b12b",
+      "syntax": "parsed",
+      "nodes": 3411
+    },
+    {
+      "name": "scanner_controls.py",
+      "sha256": "91f0baa79720e450a8c345ca69f366fab00db56c98503c4c1d826939c559f437",
+      "syntax": "parsed",
+      "nodes": 2011
+    },
+    {
+      "name": "watchdog_controls.py",
+      "sha256": "8ad4abdbbc7a0973c99cf98a989e0130ca883288e6223595a157fa0bd67162ff",
+      "syntax": "parsed",
+      "nodes": 3451
+    }
+  ]
+}

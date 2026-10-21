@@ -1,0 +1,18 @@
+{
+  "status": "WIRE_CORRECTION_ACCEPTED_ONLY",
+  "at": "2026-10-15T21:53:09.046933+00:00",
+  "planSha256": "3ae160fd860de9b6a93c1ea499db4f5765c696fc44c1b03c0aeb8b887c6c787e",
+  "ledgerSha256": "d1d8574c3373ca04f899d78c97fba93af90f922a902f33bf4f8f435105fbf8c5",
+  "requestsSha256": "d8e3a11b780086209bd916c49e6d70ddb10fc6a1c77a21e1b7a17305c9f69f5b",
+  "actualClaudeOutputSha256": "25cf2d72c7c9d5bc02269a23e4f6db195a3542df6dd2d6953566fd6ad934cc43",
+  "nativeAuditSha256": "c7d52f10a80f52c7516091adc4784d3195b19523113f637f493ff80bedcd2987",
+  "rootRead": "All15 actual wire entries, complete native audit, complete plan diff and correction report; independently checked seven original request records unchanged and strict separate URL spellings. Source actual response interface/redactUrl/absent-body independently read. 24 reanchored source pins separately verified.",
+  "accepted": [
+    "F2 exact separate dispatch/report URLs",
+    "F5 required performed conflict check",
+    "F6 same epoch final reads",
+    "F12 exact control disposition prose",
+    "F14 exclusion"
+  ],
+  "remaining": "Composition actual review and aggregate findings disposition; authoring/execution remain closed."
+}

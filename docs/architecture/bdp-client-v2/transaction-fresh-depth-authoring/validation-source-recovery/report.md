@@ -1,0 +1,11 @@
+# Closed source recovery preparation
+
+This sibling reuses the current reviewed validation scripts, with absolute output/helper paths changed to validation-source-recovery and the commands hash rebound. No run, mirror, archives, consumer, live execution gate, final-source/input binding or root release was copied. The original six static successes,3set/7submission successes and sequence12pass/1failure remain unchanged in validation-preparation.
+
+The actual clean successor is a17af9bc4742be33dfd64071f62ffb2936c82d86, tree53622b009816615a6c458d24d3af6a64257659cd, direct parentf864c4dde1b679d674cefe68f9047dd5cb3d1abc, base68b0f462a9af80fe10f42f08deb487608053732b. All18 working hashes and cleanHEAD independently match recovery-candidate-commit.json. Only the bounded41-level JSON replay assertion changed; sequence hash31fba92ece191ad6be239b6c1edac8fe71ef63ce716597edc45d015e46730170. Prior pending preparation is preserved in pre-candidate-binding. All other17 source hashes, source body measurements, exact42 selections and81 prospective HTTP remain the current candidate values. Source phase retains explicit sourceValidationAuthorized/sourceCouncilAccepted authorization, while all other phases require complete council. No future commit is invented.
+
+The same31-stage template is retained; this is not a release to rerun any stage. Root may bind and release its chosen bounded prefix after reviewing actual repaired source. No earlier outputs count as successor passes. Packages and controls remain closed and depend on a new actual build inventory. Limits, cleanup, copied comparator-only mutation, direct Vitest exit recording and named nested RangeError adjudication are unchanged.
+
+Static preparation only: Python AST parsing, exact relative command/selection equivalence after path substitution, and source/probe metadata reads. No product imports, build, tests, services, package installation, source edits or Git mutations by this preparation. recovery-inputs.json pins original failure and diagnostic evidence; adaptation.patch lists every script delta.
+
+Root requested a fresh first14-stage source prefix (typecheck through build-inventory), including fresh build and all42 source cases, after actual release. This packet creates no release or execution gate. All later phases remain closed.

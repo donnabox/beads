@@ -1,0 +1,82 @@
+--- before/apps/bdptest/src/reference-deployment-lifecycle-installed.test.ts
++++ after/apps/bdptest/src/reference-deployment-lifecycle-installed.test.ts
+@@ -1,5 +1,6 @@
+ /** Private intended-listener observations; six TX cold cases require final combined D3a. */
+ import { it, expect } from "vitest";
++import { isDeepStrictEqual } from "node:util";
+ import { spawn, type ChildProcess } from "node:child_process";
+ import { createHash, randomBytes } from "node:crypto";
+ import { DatabaseSync } from "node:sqlite";
+@@ -62,7 +63,7 @@
+       const report = {
+         observation: "reference-lifecycle-installed", id, profile,
+         source: process.env.BDP_REFERENCE_DEPLOYMENT_SOURCE_COMMIT ?? null,
+-        entry: f.entry, entrySha256: hash(readFileSync(f.entry)),
++        entry: f.entry, entrySha256: f.entrySha256,
+         expected: { http: httpExpected, generations, guardChildren },
+         actual: { scheduled: f.records.length, complete: f.records.filter((r) => r.complete === true).length, originalGenerations: f.sessions.filter((s) => s.category !== "guard").length, guardChildren: f.sessions.filter((s) => s.category === "guard").length },
+         records: f.records, generations: f.sessions.map((s) => ({ category: s.category, ordinal: s.ordinal, pid: s.child.pid ?? null, ready: s.ready, exit: s.exit, close: s.close, outputBytes: s.outputBytes })),
+@@ -78,15 +79,16 @@
+   if (failure !== undefined) throw failure;
+   expect(cleanupKnown).toBe(true);
+ }
+-async function fixture(id: string, profile: Profile, started: number, controller: AbortController) {
++async function fixture(_id: string, profile: Profile, started: number, controller: AbortController) {
+   const root = mkdtempSync(path.join(tmpdir(), "bdp-reference-lifecycle-")), reserved = await reservation(), scope = `http://127.0.0.1:${reserved.port}/acme/`, type = scope + "types/bead", schema = scope + "schemas/n";
+   const workspace = fileURLToPath(new URL("../../../", import.meta.url));
+   const entry = realpathSync(process.env.BDP_REFERENCE_DEPLOYMENT_INSTALLED_ENTRY ?? path.join(workspace, "packages/server/dist/reference-deployment-process.js"));
++  const entrySha256 = hash(readFileSync(entry));
+   const directory = path.join(root, "store"), deploymentFile = path.join(root, "deployment.json");
+   // Shared envelope is NOT understood by the existing flat installed launcher.
+   if (profile === "transactional") mkdirSync(directory, { mode: 0o700 });
+   let writer = randomBytes(32).toString("base64url"), oldWriter = writer; const reader = randomBytes(32).toString("base64url"), secrets = [writer, reader];
+-  const allow = { read: true, create: true, write: true, unreadable: [], readOnly: [] };
++  const allow = { create: true, write: true, hidden: [], readOnly: [] };
+   const artifacts = { descriptors: [{ retrievalUri: type, utf8: JSON.stringify({ id: type, name: "Bead", describes: "bead", conformsTo: [], propertiesSchema: schema }) }], schemas: [{ retrievalUri: schema, utf8: JSON.stringify({ $id: schema, type: "object", properties: { n: { type: "integer" } }, additionalProperties: false }) }] };
+   const serverRoot = path.dirname(entry);
+   const ownerModule = await import(pathToFileURL(path.join(serverRoot, "development-authority.js")).href) as typeof import("../../../packages/server/src/development-authority.js");
+@@ -196,12 +198,12 @@
+     controls.push({ guard: mode, actualExitAndClose: true });
+   }
+   async function publicRefusal() {
+-    const config = path.join(root, "startup.json"); writeFileSync(config, JSON.stringify({ ...input, bdptest: { deploymentFile } }));
++    const config = path.join(root, "startup.json"); writeFileSync(config, JSON.stringify({ scope: input.scope, server: input.server, bdptest: { deploymentFile } }));
+     writeFileSync(deploymentFile, JSON.stringify(document));
+     const publicEntry = realpathSync(process.env.BDP_REFERENCE_DEPLOYMENT_PUBLIC_ENTRY ?? path.join(workspace, "apps/bdptest/dist/main.js"));
+     const session = own([publicEntry, "--serve", "--config", config], false, "public"); await ends(session); expect(session.exit).toEqual({ code: 2, signal: null }); expect(session.close).toEqual(session.exit); expect(session.messages).toEqual([]); expect(session.stderr).toContain("startup.profile_refused"); expect(existsSync(path.join(directory, profile === "read-update" ? "reference.sqlite" : "transaction.sqlite"))).toBe(false);
+   }
+-  return { root, reserved, entry, directory, document, input, profile, scope, type, secrets, sessions, records, pending, peers, controls, ownerProbes, client, launch, refused, stop, send, resource, ownerProbe, initialize, peer, guard, publicRefusal, async changeWriter() { oldWriter = writer; writer = randomBytes(32).toString("base64url"); secrets.push(writer); document.configuration.credentials[0]!.token = writer; } };
++  return { root, reserved, entry, entrySha256, directory, document, input, profile, scope, type, secrets, sessions, records, pending, peers, controls, ownerProbes, client, launch, refused, stop, send, resource, ownerProbe, initialize, peer, guard, publicRefusal, async changeWriter() { oldWriter = writer; writer = randomBytes(32).toString("base64url"); secrets.push(writer); document.configuration.credentials[0]!.token = writer; } };
+ }
+ async function navigate(client: ColdClient) {
+   const root = await client.send("Scope", "GET", client.scope, [200, 204]);
+@@ -219,9 +221,9 @@
+   expect(object(JSON.parse((await client.send("Type", "GET", client.type, 200)).bodyText)).id).toBe(client.type);
+   const created = await client.send("create", "POST", routes.createTarget, 200, "writer", payload(client), "startup-created"), resource = f.resource(created);
+   const id = String(resource.id); expect(id).toBe(client.scope + "beads/startup");
+-  expect(JSON.parse((await client.send("read", "GET", id, 200)).bodyText)).toEqual(resource);
++  expect(isDeepStrictEqual(JSON.parse((await client.send("read", "GET", id, 200)).bodyText), resource)).toBe(true);
+   const replay = await client.send("replay", "POST", routes.createTarget, 200, "writer", payload(client), "startup-created"); expect(replay.bodyText).toBe(created.bodyText);
+-  expect(JSON.parse((await client.send("reader-read", "GET", id, 200, "reader")).bodyText)).toEqual(resource);
++  expect(isDeepStrictEqual(JSON.parse((await client.send("reader-read", "GET", id, 200, "reader")).bodyText), resource)).toBe(true);
+   await client.send("reader-refused", "POST", routes.createTarget, 403, "reader", payload(client, "beads/refused"), "reader-refused");
+   await client.send("anonymous-refused", "GET", id, 401, "anonymous");
+   await client.send("descriptor-HEAD", "HEAD", routes.descriptorUrl, 200); await client.send("Directory-HEAD", "HEAD", routes.directoryUrl, 200); await client.send("absent", "GET", client.scope + "beads/not-created", 404);
+@@ -229,7 +231,7 @@
+ it.each([["I01", "read-update"], ["I02", "transactional"]] as const)("%s %s cold prepared startup (TX requires combined D3a)", async (id, profile) => cohort(id, profile, 13, 1, async (f) => { const session = await f.launch(); await cold(f); await f.stop(session); await f.ownerProbe(true); }), 60000);
+ it.each([["I03", "read-update"], ["I04", "transactional"]] as const)("%s %s two-generation read and replay", async (id, profile) => cohort(id, profile, 10, 2, async (f) => {
+   const one = await f.launch(), routes = await navigate(f.client), reply = await f.send("create", "POST", routes.createTarget, 200, "writer", payload(f.client), "startup-created"), resource = f.resource(reply); await f.send("read", "GET", String(resource.id), 200); await f.stop(one);
+-  const two = await f.launch(false), next = await navigate(f.client); expect(JSON.parse((await f.send("reopened-read", "GET", String(resource.id), 200)).bodyText)).toEqual(resource); expect((await f.send("replay", "POST", next.createTarget, 200, "writer", payload(f.client), "startup-created")).bodyText).toBe(reply.bodyText); await f.stop(two); await f.ownerProbe(true);
++  const two = await f.launch(false), next = await navigate(f.client); expect(isDeepStrictEqual(JSON.parse((await f.send("reopened-read", "GET", String(resource.id), 200)).bodyText), resource)).toBe(true); expect((await f.send("replay", "POST", next.createTarget, 200, "writer", payload(f.client), "startup-created")).bodyText).toBe(reply.bodyText); await f.stop(two); await f.ownerProbe(true);
+ }), 60000);
+ it("I05 RU current credential changes on the same store", async () => cohort("I05", "read-update", 10, 2, async (f) => {
+   const first = await f.launch(), routes = await navigate(f.client); const resource = f.resource(await f.send("create", "POST", routes.createTarget, 200, "writer", payload(f.client), "startup-created")); await f.stop(first); await f.changeWriter();
+@@ -243,7 +245,7 @@
+ it.each([
+   ["I12", "read-update", "SIGTERM"], ["I13", "transactional", "SIGTERM"], ["I14", "read-update", "SIGINT"], ["I15", "transactional", "SIGINT"], ["I16", "read-update", "disconnect"], ["I17", "transactional", "disconnect"],
+ ] as const)("%s %s %s stops then reopens", async (id, profile, mode) => cohort(id, profile, 9, 2, async (f) => {
+-  const one = await f.launch(), routes = await navigate(f.client), resource = f.resource(await f.send("create", "POST", routes.createTarget, 200, "writer", payload(f.client), "startup-created")); await f.send("read", "GET", String(resource.id), 200); await f.stop(one, mode); const proof = await reservation(f.input.server.port); await proof.close(); const two = await f.launch(false); await navigate(f.client); expect(JSON.parse((await f.send("reopened-read", "GET", String(resource.id), 200)).bodyText)).toEqual(resource); await f.stop(two); await f.ownerProbe(true);
++  const one = await f.launch(), routes = await navigate(f.client), resource = f.resource(await f.send("create", "POST", routes.createTarget, 200, "writer", payload(f.client), "startup-created")); await f.send("read", "GET", String(resource.id), 200); await f.stop(one, mode); const proof = await reservation(f.input.server.port); await proof.close(); const two = await f.launch(false); await navigate(f.client); expect(isDeepStrictEqual(JSON.parse((await f.send("reopened-read", "GET", String(resource.id), 200)).bodyText), resource)).toBe(true); await f.stop(two); await f.ownerProbe(true);
+ }), 60000);
+ it.each([["I18", "read-update"], ["I19", "transactional"]] as const)("%s %s observed non-reading peer chronology and reopen", async (id, profile) => cohort(id, profile, 8, 2, async (f) => {
+   const one = await f.launch(), routes = await navigate(f.client), resource = f.resource(await f.send("create", "POST", routes.createTarget, 200, "writer", payload(f.client), "startup-created")), peer = await f.peer(); await f.stop(one); await peer.afterStop(); const two = await f.launch(false); await navigate(f.client); await f.send("reopened-read", "GET", String(resource.id), 200); await f.stop(two); await f.ownerProbe(true);

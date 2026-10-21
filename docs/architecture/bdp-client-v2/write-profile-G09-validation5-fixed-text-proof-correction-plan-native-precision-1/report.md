@@ -1,0 +1,11 @@
+# Fixed-text proof correction plan precision
+
+Accepted as a CLOSED DATA correction plan, with no findings. This does not close P5-TEXT-N1 or accept future corrective evidence.
+
+Read the complete two-file plan and checked both raw hashes/modes/exact docs mirror, all four governing artifact pins, and the original46 inventory against its frozen index. The prior57-file native review remains immutable and accepted=false. The proposed additive proof packet does not yet exist.
+
+The plan correctly separates prebinding applicability from postbinding inverse validation. Applicability requires complete exact unresolved baseline equality, exactly one old LF assignment and zero new toy assignments. The already-bound input is explicitly a distinct retained variant with old0/new1 and unchanged sentinel comparison guard; it must be refused before replacement even though an inverse-only check could accept its bound form. Missing, duplicated and global-replacement inputs also remain inapplicable. Only the unchanged assignment-only input may produce a candidate with new1/old0 and complete inverse back to baseline.
+
+All40 finite prospective relations retain the same four stages, B/C sections and five named variants. Required operation identities, real input hashes/lengths/counts/baseline and guard equality, verdicts and positive-only candidate/inverse records make the intended DATA evidence independently recomputable without evaluating subject code. Negatives are explicitly NOT_APPLIED; toy IDs are inert tokens, not tool observations or runtime cells. Full original whole-template copies and failed evidence/source attribution remain historical.
+
+No original46/capture/helper byte change, new rule, guard weakening, executable body, rendered cell, candidate gate, manifest, wrapper, activation or runtime is authorized. The plan requires ROOT disposition and separately durable additive DATA-only author release before authoring; independent OTHER-native/root review of actual corrected evidence must precede fixed-text acceptance and later concrete-authority work. No proof cases were authored or executed in this review. No provider review or old attempt is repeated; no quality or whole-Write credit is claimed.

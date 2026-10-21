@@ -1,0 +1,15 @@
+diff --git a/scripts/smoke-executables.mjs b/scripts/smoke-executables.mjs
+index a18ef1e..1c6e3e7 100644
+--- a/scripts/smoke-executables.mjs
++++ b/scripts/smoke-executables.mjs
+@@ -257,6 +257,10 @@ async function installPackedWorkspace() {
+       "node-http-disconnect.d.ts.map",
+       "node-http-disconnect.js",
+       "node-http-disconnect.js.map",
++      "transaction-authorization.d.ts",
++      "transaction-authorization.d.ts.map",
++      "transaction-authorization.js",
++      "transaction-authorization.js.map",
+       "transaction-changefeed.d.ts",
+       "transaction-changefeed.d.ts.map",
+       "transaction-changefeed.js",

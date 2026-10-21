@@ -1,0 +1,28 @@
+{
+  "decision": "release fresh build and inventory only for independent installed validation",
+  "finalSource": {
+    "head": "1f9cb46c42fa69a09ac847f57e47bc96390aea6f",
+    "tree": "80a6fe0605698e18f9504432407e7943e1f665b4",
+    "base": "77f4b89c117e46f0e73476f69b4c8b377306452b",
+    "parents": [
+      "77f4b89c117e46f0e73476f69b4c8b377306452b"
+    ],
+    "sourceBindingSha256": "0abed77764ff7763e5e5a6f9b5a767090423fed01b21ea01b162a17b3b743e70",
+    "files": {
+      "packages/server/src/transaction-changefeed.ts": "fb5bc6f035db8faa351d019e7d2ae53dbb7785214f2168d931fa74e77ed14bf8",
+      "packages/server/src/transaction-store.ts": "c0d1ebcdef1b354aa0806b8106ac0a3b0b24e6c94f50ec49b550decdf36ccf89",
+      "packages/server/src/transaction-http.ts": "b51d02801e5924190aba77c377e538db0b8619149d6184e19cb56d440f40c2cf",
+      "packages/server/src/transaction-changefeed.test.ts": "eb29103cf4f9c79a06eb49261d01da274de229dbc9f0ba169418048bf79adb28",
+      "apps/bdptest/src/transactional-changefeed-refusal-context-installed.test.ts": "c8ec6da3cab3850d69b2b8b8b650b17f159fa9179930eeecd3a287716aa946af",
+      "docs/design/transaction-implementation-progress.md": "a1cc5b84d79485855dfbf1793628af4dcdba1147bd7938721a9af5317f57b569"
+    },
+    "historicalSourceControlBase": "9a42a4531def99e12fa9a1fba02e70558d643265",
+    "integration": "Fast-forward to actual PR129 with disjoint working draft preserved byte-for-byte, then ordinary commit",
+    "council": "native complete; initial actual Claude incomplete; focused supplement pending",
+    "publication": "local validation candidate only; main merge closed"
+  },
+  "preparationReviewSha256": "d832aa07cceb8730471543b193ecf714238a2e5e62c7861e4719125361f6c126",
+  "fullCouncil": "pending complete actual review; no main merge approval",
+  "sourceAcceptanceSha256": "45a03a0f71f1017694861b8e127d9ad664f22df156118522c33aeac35b76739b",
+  "controlAcceptanceSha256": "cee750da9f6363ae0d44fbbc10b45e1a687a76ce8a97f56ce556dc079ae9e9e5"
+}

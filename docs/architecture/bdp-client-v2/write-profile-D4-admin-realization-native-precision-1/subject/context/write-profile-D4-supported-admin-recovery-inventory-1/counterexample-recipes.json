@@ -1,0 +1,79 @@
+{
+  "status": "DATA_ONLY_FINITE_FUTURE_AUDIT_RECIPES_NOT_EXECUTABLE_OR_RELEASED",
+  "cases": [
+    {
+      "id": "CF01",
+      "family": "REC-RU",
+      "existingSubject": "W-RU-CRASH/SEQUENCE",
+      "counterexample": "retained success while resource absent, resource committed while keyunknown, or automatic unstarted tail execution after reopen",
+      "mustRefuse": "Any of these contradicts durable member unit/no resume; retained prefix plus cleared abandoned tail distinguished",
+      "prerequisite": "actual barrier/death/reopen facts on same selected installed basis; current source witnesses alone insufficient"
+    },
+    {
+      "id": "CF02",
+      "family": "REC-TX",
+      "existingSubject": "W-TX-CRASH/HOT",
+      "counterexample": "post-crash partial Resource/group/receipt or permanently old pending with same key causing second committed mutation",
+      "mustRefuse": "One atomic graph/group/terminalreceipt and exclusive admitted ownership; actual finite recovery bound, not successful launch alone",
+      "prerequisite": "genuine installed admission/commit evidence and supported failure/reopen route; test-only fault not injected via runtime config"
+    },
+    {
+      "id": "CF03",
+      "family": "RESTORE-ID",
+      "existingSubject": "ENTRY-05/08",
+      "counterexample": "new blank directory with same canonicalScope and matching installation/lineage strings is labelled complete same-logical-Scope restore after losing identity/key tombstones",
+      "mustRefuse": "Configuration equality and open success do not prove complete continuity; newlogicalScope needs differentURL if guarantee cannot be preserved",
+      "prerequisite": "actual supported restore procedure and independent complete-state/identity provenance; no procedure currently selected"
+    },
+    {
+      "id": "CF04",
+      "family": "RESTORE-TX",
+      "existingSubject": "ENTRY-06/09",
+      "counterexample": "SQL-edited receipt epoch or fresh create is labelled authoritative restore; prior key replays under new epoch or old groups served under new epoch",
+      "mustRefuse": "actual owner epoch, namespace, token fences and surviving identity/ledger must be observed, never fabricated by receipt mutation",
+      "prerequisite": "supported actual logicalrestore entry and exact finalconfig remains absent/UNKNOWN"
+    },
+    {
+      "id": "CF05",
+      "family": "ERASE-ACT",
+      "existingSubject": "ENTRY-04/06",
+      "counterexample": "ordinary delete/update or policy revocation relabelled erasure; nonempty erasure record emitted without adminact/samegroup live successor or complete JCS domain",
+      "mustRefuse": "erasure notBDPcommand/no MutationReceipt, distinct actualadmintransaction, graph and owned containing-version closure",
+      "prerequisite": "genuine supported adminact/authority/version evidence; current projection rejects nonempty arrays"
+    },
+    {
+      "id": "CF06",
+      "family": "ERASE-COPIES",
+      "existingSubject": "ENTRY-06/07",
+      "counterexample": "receipt/page/Event/snapshot or retained sequence still exposes erased metadata/provenance/inlineownedcontent after record processed; authorizationwithheld used as proof of destruction",
+      "mustRefuse": "controlled-copy cleanup before visibility, correct retained lineage/digest/disclosure and graph ordinal laws",
+      "prerequisite": "authoritative actual erasure plus complete declared controlled-copy inventory; no oldcopies enumerator currently exposed"
+    },
+    {
+      "id": "CF07",
+      "family": "ERASE-VIEW/FENCE",
+      "existingSubject": "ENTRY-06/07",
+      "counterexample": "minimumReplay stayspos0 afterP, preP snapshot still200, lagging queued preP frame published after fence, neverobservedview receives subject identity, epoch rotates on simpleerasure",
+      "mustRefuse": "per-view ordered fence/ledger/stream eligibility and stableepoch; actual socketwrite is not durableclient application",
+      "prerequisite": "real erasure lifecycle/authoritativeviewfixture/owned finite stream observation; current emptyledger notwitness"
+    },
+    {
+      "id": "CF08",
+      "family": "ERASE-CONSUMER",
+      "existingSubject": "no selectedconsumer",
+      "counterexample": "persistent Event-only consumer republishes old bytes afterepoch/view recovery with erasedstatus unknown",
+      "mustRefuse": "ledger/changefeed/snapshot-backed cleanup or rejection/discard before furtherpublication, not manufacturedN/A",
+      "prerequisite": "bind declared actualconsumer retention and acquisition/recovery route; none adopted here"
+    },
+    {
+      "id": "CF09",
+      "family": "DISCLOSURE",
+      "existingSubject": "ordinaryRead machinery",
+      "counterexample": "absence/revocation inferred as erasure; unauthorized410 or erasedpointer detail; conditional304 bypasses established erasure",
+      "mustRefuse": "positive authority erasure evidence, existing subjecthistorygate/uniform404 and precondition ordering; preserve ordinary discretionary vsTX erasure-specific duties",
+      "prerequisite": "actual authorized/unauthorized policy and version record; no fabricated credential or secret digest"
+    }
+  ],
+  "counts": "Nine finite recipe descriptions only; zero controls evaluated, zero product requests added, zero pass/coverage credit",
+  "noNewCommandsEndpointsOrSchema": "The missing operator mechanism is an explicit prerequisite, not an invented callable control."
+}

@@ -1,0 +1,80 @@
+{
+  "P2BothClosed": true,
+  "P2Prepared450PlusActual4": true,
+  "P3Absent": true,
+  "actualBinaryDiffSha256": "00804293791b29e26b6b7d58eb7b7f7bf17b20aecc765cbc389617d2daeb9b0f",
+  "actualGitHead": "cce884ccea1db97cbc6fd7bff876d4d6091f9081",
+  "actualGitTree": "6757829bd5b700faf28df39071190a272add90c9",
+  "at": "2026-10-18T20:39:51.591778+00:00",
+  "current679Canonical": "f6baa7922feea80b9ae9641abc08ed79c339ff719769cc95162fe87ddc70bc65",
+  "eightTextAssignmentAndBadGlobalRelations": [
+    {
+      "assignmentInverseExact": true,
+      "badGlobalRejected": true,
+      "phase": "B",
+      "stage": "node-version"
+    },
+    {
+      "assignmentInverseExact": true,
+      "badGlobalRejected": true,
+      "phase": "C",
+      "stage": "node-version"
+    },
+    {
+      "assignmentInverseExact": true,
+      "badGlobalRejected": true,
+      "phase": "B",
+      "stage": "pnpm-version"
+    },
+    {
+      "assignmentInverseExact": true,
+      "badGlobalRejected": true,
+      "phase": "C",
+      "stage": "pnpm-version"
+    },
+    {
+      "assignmentInverseExact": true,
+      "badGlobalRejected": true,
+      "phase": "B",
+      "stage": "workspace-install"
+    },
+    {
+      "assignmentInverseExact": true,
+      "badGlobalRejected": true,
+      "phase": "C",
+      "stage": "workspace-install"
+    },
+    {
+      "assignmentInverseExact": true,
+      "badGlobalRejected": true,
+      "phase": "B",
+      "stage": "bind-workspace-tools"
+    },
+    {
+      "assignmentInverseExact": true,
+      "badGlobalRejected": true,
+      "phase": "C",
+      "stage": "bind-workspace-tools"
+    }
+  ],
+  "fiveProgramsAndFiveDataByteExact": true,
+  "genuinePolicyForwardInverseRegenerated": true,
+  "helperImplementationFiles": 444,
+  "kind": "ROOT_STATIC_HASH_JSON_TEXT_GIT_INSPECTION_NO_SUBJECT_EVALUATION",
+  "ownDataObservationError": "Initial root reader assumed list origins; plan actually has wrapper copies list and nested origin objects, and reference-pins has files wrapper. Initial assert failed before any approval/output/source action; actual shapes then inspected and all values checked.",
+  "referencePins": 536,
+  "verified": [
+    {
+      "indexSha256": "7bc1dc269fcdd910261d9549ba8de4a653464481f62f08b13ee9e6a92fa0e5a8",
+      "name": "write-profile-G09-root-instantiation-correction-next-plan-1",
+      "origins": 43,
+      "physical": 61
+    },
+    {
+      "indexSha256": "b78321e88e2c69fdf1eb643b84744c0d16f9d2238d8eaf1362a0329b75425589",
+      "name": "write-profile-G09-root-instantiation-plan-native-precision-1",
+      "origins": 27,
+      "physical": 38
+    }
+  ]
+}

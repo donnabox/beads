@@ -1,0 +1,55 @@
+--- predecessor6/helper-static-inspection.json
++++ helper-static-inspection.json
+@@ -1,38 +1,42 @@
+ {
+-  "actualCurrentBinary": "4d57679e34192081ce3a300cfc88efa25abcadd4353891b63866c8e0223065dd",
+-  "allFiveByteAndASTIdenticalAccepted5and2": true,
+-  "commandsNamespaceOnly": true,
++  "actualCurrentBinary": "eed91e5f1abc48ef92f31d92690772c8a6489a48dd9e5e07af66de9c392712ab",
++  "allFiveByteAndASTIdenticalP6": true,
++  "commandsInverseNamespaceByteEquivalent": true,
+   "currentIndependentMechanics": "PENDING",
+-  "executed": false,
++  "freshVersionsToolsBuildArchiveConsumerProof": "UNRESOLVED",
++  "futureExecutionReleased": false,
+   "helpers": {
+     "audit.py": {
++      "byteAndASTIdenticalP6": true,
+       "bytes": 34757,
+       "sha256": "1d2bf73e1a35d37b1d1032358ea81c4c5a97ea0fa6304603730f17af96438d2b"
+     },
+     "gate.py": {
++      "byteAndASTIdenticalP6": true,
+       "bytes": 12588,
+       "sha256": "f3781357733810861cad42b92e667822e7d3ac60e1f214e39e7f22e1bb63bb8e"
+     },
+     "guarded-action-session-20261018-021624-549f.py": {
++      "byteAndASTIdenticalP6": true,
+       "bytes": 946,
+       "sha256": "b2d467920638e68d3b007ba9daa432e971636245eca988bfb29d7a99d6e3fb30"
+     },
+     "packages.py": {
++      "byteAndASTIdenticalP6": true,
+       "bytes": 8760,
+       "sha256": "162e4f04ffe9aeffe886b194c7ed41241c6ce3cf37e9c93f92fec0969095aea9"
+     },
+     "run.py": {
++      "byteAndASTIdenticalP6": true,
+       "bytes": 5357,
+       "sha256": "16049341d6d810ea5c46a88220da30f9a04e436ee7fea0061cc26e58ba76ba70"
+     }
+   },
+   "immediateAuditPairs": 16,
+-  "schemasChange": "EXACT11 installedExpected.installed-02 fieldOccurrences arrays only, ordered source-derived two fields including replay original key",
+-  "selectionBudgetsGrammarsOtherwiseUnchanged": true,
+-  "sourceBindingByteIdentical5": true,
+-  "sourceBindingSha256": "b3547ec381d4e05121d3994d6550fe2f160a8ba266195a8724a6d5a851e268d4",
++  "selectionAndBudgetsAndGrammarsUnchangedExceptExact8Arrays": true,
++  "sourceBindingSha256": "9bb16e9c984f7c259c6f4cb42ddad2886234771a90f4421c3fddec57c5079a41",
+   "sourceFiles": 679,
+-  "sourceIdentity": "9b7d3a753bc22a3188f5dda7199fdb7321f65dfa0fa745cce082f3f82a837a9f",
++  "sourceIdentity": "a61cd3fbf9fac68e3aad857a24a2456dd16b83048067eef85348d7091c0aa08e",
+   "stages": 52,
+-  "state": "STATIC ONLY, helpers never imported/evaluated/executed"
++  "state": "AUTHOR static only, no helper imports/evaluation/execution or selfapproval"
+ }

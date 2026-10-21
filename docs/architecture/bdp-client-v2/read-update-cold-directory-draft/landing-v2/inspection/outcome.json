@@ -1,0 +1,32 @@
+{
+  "inspection": "EXACT_CANDIDATE_CI_AND_COUNCIL_CHECKS_PASSED",
+  "head": "012d5c0cfcbb74b28d13538bacb10b4db98573aa",
+  "tree": "a49cb4b2cfc3a7ad9f66d0d790a7e1e4dbad168a",
+  "base": "67a2842e3f1918e70978f745587cf11eaf0df5a8",
+  "candidateParents": [
+    "bb9600f1b8b6f623e753543ed5792005eb9aacee"
+  ],
+  "actualSynthetic": "d45d1a530656b13e5b08e1aee31b2923bbb927b2",
+  "syntheticParents": [
+    "67a2842e3f1918e70978f745587cf11eaf0df5a8",
+    "012d5c0cfcbb74b28d13538bacb10b4db98573aa"
+  ],
+  "actualSteps": 27,
+  "rawLogSha256": "93fb090eba7ee7c43e92c4d32193346722f5989eae50251c7410306856073b8f",
+  "rootCouncilAcceptance": {
+    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/read-update-cold-directory-draft/landing-v2/root-final-council.json",
+    "sha256": "325c5b732cb4ff75b659b7206589aa62b9148b50b2588b4dad44f40673debf28"
+  },
+  "summaryLinesForHumanReview": [
+    "2026-10-16T01:19:50.9544783Z  \u001b[32m\u2713\u001b[39m apps/bdptest/src/read-update-matrix.test.ts\u001b[2m > \u001b[22mobserves all nine discovered RU operation targets through cold navigation\u001b[33m 3043\u001b[2mms\u001b[22m\u001b[39m",
+    "2026-10-16T01:34:14.3120986Z \u001b[2m Test Files \u001b[22m \u001b[1m\u001b[32m182 passed\u001b[39m\u001b[22m\u001b[90m (182)\u001b[39m",
+    "2026-10-16T01:34:14.3833894Z ##[group]Run pnpm e2e:ready:preflight",
+    "2026-10-16T01:34:14.3834268Z \u001b[36;1mpnpm e2e:ready:preflight\u001b[0m",
+    "2026-10-16T01:34:16.8032248Z \u001b[2m Test Files \u001b[22m \u001b[1m\u001b[32m1 passed\u001b[39m\u001b[22m\u001b[90m (1)\u001b[39m"
+  ],
+  "suiteTotals": null,
+  "humanFullLogReviewRequired": true,
+  "ready": false,
+  "mergeAuthorized": false,
+  "limitation": "Read-only point-in-time inspection. Root must freshly recheck head/base/checks immediately before any merge and independently verify actual merge parents/tree. Remote child PID absence cannot be inferred."
+}

@@ -1,0 +1,54 @@
+## Supplemental review — installed-test retry oracle correction
+
+## Findings
+
+**No findings.** The delta is correct, minimal, and spec-grounded. I found nothing to fix in it and no sibling assertion needing the same repair.
+
+---
+
+## Verification of the correction
+
+The changed line is `apps/bdptest/src/transactional-selector-admission-installed.test.ts:327`, inside the request-#5 `GET beads/late` 404 expectation (lines 324–328). `retry: "after-state-change"` is the normatively fixed disposition for `resource-not-found`, pinned identically in four independent places:
+
+| Source | Location | Pin |
+| --- | --- | --- |
+| Spec closed Read problem table | `docs/specs/bdp.md:1901` | `resource-not-found \| not-found \| 404 \| after-state-change` |
+| Protocol row table | `packages/protocol/src/index.ts:499` | `{ family: "not-found", status: 404, retry: "after-state-change" }` |
+| Server mapping | `packages/server/src/read-request.ts:265-267` | `notFound() → readProblem("resource-not-found")`, which emits that row verbatim (`index.ts:534-546`) |
+| Wire schema | `schemas/bdp-v0.schema.json` `$defs/readProblem` allOf | `if code == "resource-not-found" then { type: const .../not-found, status: const 404, retry: const "after-state-change" }` |
+
+So the previous `retry: "never"` was a **test-authoring error, not a production defect**. One detail makes that conclusive rather than merely likely: the test's own `send()` helper runs `checked(status === 404 ? "readProblem" : …)` at line 267 *before* the `toMatchObject` at 324. The old expectation therefore demanded a body that the test's own ajv validator would have rejected — it was internally self-contradictory. The server was always right.
+
+**Sibling pins checked — all correct, none need changing.** The only other `retry:` literals in the file are line 284 (`problem()` helper: `never` for 400 `malformed-request` and 413 `limit-exceeded` — matches the table on both rows, and was exercised correctly on the wire by observations #2 and #4) and line 374 (`never` for 409 `idempotency-conflict`, which is a Transactional direct code, not a Read-table code; the `readUpdateProblem` allOf pins exactly that). Line 324 was the file's only 404 expectation.
+
+**No count or bound moved.** A single string literal inside one `toMatchObject`; the 25-request ledger, 19 POST / 6 GET split, 9 route identities, 10 expected admitted keys, one child and one directory are untouched.
+
+---
+
+## Retained-evidence check (matches your description exactly)
+
+From `installed-selector.results.json`, `.log`, `.exit.json`:
+
+- One test, failed, duration 233.7 ms; the sole `AssertionError` is at `transactional-selector-admission-installed.test.ts:324:74` — precisely the corrected expectation, with "(1 matching property omitted from actual)", i.e. the retry value alone.
+- Exactly **5** observations: `200` seed → `400` `/selector` (bad-single) → `200` same-key reuse → `400` `/operations/1/selector` (bad-batch) → `404` `beads/late`.
+- Fifth body verbatim: `{"type":".../not-found","code":"resource-not-found","retry":"after-state-change","status":404}`, context `bdp-scope-position: pos-1`, `content-type: application/problem+json`, wire digest retained.
+- `failureCount: 1`; child pid `53950`, `exitCode: 0`, `signalCode: null`, `childAbsent: true`, `directoryAbsent: true`; supervisor `exit: 1`, `timeout: false`, `forcedCleanup: false`, `errors: []`, no remaining pids, temp entries, or runtime directories.
+- `workspaceDirty: false`, `sourceAttribution: 22777ec…`, and `sourceSha256After` records the installed test at `26b8dbc41caccc…` — the **original** frozen-draft bytes. The run therefore executed the pre-correction oracle against successor source tests and untouched production bytes, as stated.
+
+---
+
+## Observations (not findings)
+
+**O1 — Repository state differs from the prompt's description.** You described the change as an uncommitted working diff at HEAD `22777ec`. Actual state: the working tree is **clean** and the change is **committed** as `00d7fff3320eb10d4165718d23d86519cd3b7c5e` ("test(bdptest): honor missing-resource retry disposition", `Agent-Signature: Vickie; Codex; unknown-model; unknown-reasoning`), which is now HEAD. I verified via `git show` that the commit's content is byte-identical to the delta you supplied — one line, one file. No action required on the change itself, but one consequence is concrete: the installed test's content hash necessarily differs from the `26b8dbc41caccc…` recorded in the retained run and in the earlier frozen bindings. Any successor binding must rebind `apps/bdptest/src/transactional-selector-admission-installed.test.ts`; `26b8dbc…` should not be carried forward as the current installed bytes.
+
+**O2 — What the retained run does and does not establish.** It is genuine partial wire evidence for the first four exchanges: grammar refusal before key lookup on a fresh key (#2), no key capture on that refusal (#3 reuses the same key successfully), the batch pointer `/operations/1/selector` (#4), and no prefix execution (#5's 404). It establishes **nothing** about the remaining 20 exchanges — all three `413` capacity refusals and their `selector.*` limits and pointers, the three exact-boundary `200`s, the conflict/equal-replay precedence, the write and its receipt, and both changefeed pages plus the event page are entirely unexecuted. Nor does it adjudicate provenance: the exit record's own `resultLimitation` says "Exit0 is command completion, not independent oracle/claim/provenance adjudication."
+
+**O3 — Line 374's `idempotency-conflict` retry pin is statically correct but unexecuted.** Request #17 never ran; I verified that expectation against the schema only, not on the wire.
+
+---
+
+## Limitations
+
+- Nothing was executed for this supplemental review — no test, build, install, service, network request, Git write, or additional reviewer. Findings are from reading the committed diff, the four normative/implementation sources above, lines 305–335 of the installed test, and the three retained run artifacts.
+- This is a **test-oracle repair only**. No production, spec, HTTP-test or installed-request-ledger byte changed; the `sourceSha256After` record independently confirms the production and spec paths still carry the hashes reviewed earlier. Correcting the oracle is not evidence that the remaining 20 responses will pass, and it changes no server behavior.
+- The original failure evidence under `installed-preparation/run/` is immutable and was read, not modified.

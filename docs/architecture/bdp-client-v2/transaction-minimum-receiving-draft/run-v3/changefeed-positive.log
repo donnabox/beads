@@ -1,0 +1,31 @@
+
+ RUN  v4.1.10 /Users/dbox/repos/wt/vickie/vickie-minimum-receiving
+
+ ↓ packages/server/src/transaction-changefeed.test.ts > serves normalized whole groups and identical Scope facts for atomic replica reconstruction
+ ↓ packages/server/src/transaction-changefeed.test.ts > replica refuses partial publication, gaps, conflicts and owned upsert/tombstone disagreement
+ ↓ packages/server/src/transaction-changefeed.test.ts > keeps genesis checkpoint distinct from zero position and resumes after an empty caught-up page
+ ↓ packages/server/src/transaction-changefeed.test.ts > uses bounded context-fenced checkpoints, never Event IDs/raw positions/future rows
+ ↓ packages/server/src/transaction-changefeed.test.ts > rejects invalid feed intent  with the local parameter convention
+ ↓ packages/server/src/transaction-changefeed.test.ts > rejects invalid feed intent ?after=genesis&start=now with the local parameter convention
+ ↓ packages/server/src/transaction-changefeed.test.ts > rejects invalid feed intent ?start=then with the local parameter convention
+ ↓ packages/server/src/transaction-changefeed.test.ts > rejects invalid feed intent ?after= with the local parameter convention
+ ↓ packages/server/src/transaction-changefeed.test.ts > rejects invalid feed intent ?after=genesis&after=genesis with the local parameter convention
+ ↓ packages/server/src/transaction-changefeed.test.ts > rejects invalid feed intent ?start=now&limit=1 with the local parameter convention
+ ↓ packages/server/src/transaction-changefeed.test.ts > fails closed on corrupt stored framing without renumbering or changing graph state
+ ↓ packages/server/src/transaction-changefeed.test.ts > does not classify a missing previously committed cursor row as never issued or skip its gap
+ ↓ packages/server/src/transaction-changefeed.test.ts > serves128 Events from32 selected owned Links as one group despite a two-item receipt page setting
+ ↓ packages/server/src/transaction-changefeed.test.ts > captures feed body and serving context inside one fenced owner entry
+ ↓ packages/server/src/transaction-changefeed.test.ts > serves representative large postimages whole without importing the Event page byte cap
+ ↓ packages/server/src/transaction-changefeed.test.ts > refuses feed reads after uncertain commit fencing and recovers the committed group on reopen
+ ↓ packages/server/src/transaction-changefeed.test.ts > bounds rendered Scope/next overhead with a long installed Scope and no long cursor
+ ↓ packages/server/src/transaction-changefeed.test.ts > keeps start=now's original admission anchor through a minimum wait and drains on close
+ ↓ packages/server/src/transaction-changefeed.test.ts > serves actual HTTP finite GET/HEAD, absolute navigation, native conditions and restart
+ ✓ packages/server/src/transaction-changefeed.test.ts > decides actual HTTP minimum refusal before conditional shortcuts with final context 27ms
+ ↓ packages/server/src/transaction-changefeed.test.ts > preserves current context on owner-observed changefeed parameter refusals over HTTP
+
+ Test Files  1 passed (1)
+      Tests  1 passed | 20 skipped (21)
+   Start at  15:55:35
+   Duration  548ms (transform 317ms, setup 15ms, import 455ms, tests 28ms, environment 0ms)
+
+JSON report written to /Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-minimum-receiving-draft/run-v3/changefeed-positive.results.json

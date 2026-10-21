@@ -1,0 +1,35 @@
+--- preparation3/successor-disposition.json
++++ preparation2/successor-disposition.json
+@@ -1,22 +1,16 @@
+ {
+-  "state": "CLOSED minimal fixture type correction data successor; unexecuted",
+-  "predecessorIndexSha256": "03fb7810376c9e71dcdd5af5ef9d7e6723b101c138e97183fe24c95a9c302337",
+-  "correctionIndexSha256": "98ab5463b224a382ac414abe8ac719aadb3c4092cbed89c61e6257b9ca18237a",
+-  "nativePrecisionClosureSha256": "398b99f855e98eecf260362ccb94378e82e580765c0d807b0ed3b2faad855ecb",
+-  "sourcePatchSha256": "e577d453fd7819c6feb88e0a87e0d710725b70cc331d36be438d61ad7b7719a3",
+-  "sourceIdentity": "fa80acbc158736217d4b58eb3ad927add6099d12a8746254c08cefdf25be2471",
++  "state": "CLOSED minimal N1/N2 successor; unexecuted",
++  "rootDisposition": {
++    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-trusted-startup-validation-root-disposition-1/disposition.json",
++    "sha256": "d892f70f26064f6c9bce149dc8197421f08190e3874307fea195437a42e5bed2"
++  },
++  "predecessorIndexSha256": "34b03b3a3eec7aeca7d37e98008f32d0ab1db1557e4efe75b9b48fac51b3d87d",
++  "N1": "Actual close callback attempted/settled/succeeded; error or timeout sticky unknown preserves owned temp and60s guard; same shared cleanup deadline",
++  "N2": "Mandatory typed-zero failed tests/suites, optional typed-zero runtime suites",
++  "sourcePatchSha256": "4fd125d8613b0d3370227353b3e29e1ee73735466bd332a6961c400e3535fbe2",
+   "sourceFiles": 682,
+-  "unchangedSinceValidation2SourceFiles": 681,
+   "callbacks": 44,
+   "stages": 25,
+-  "privateSpecifierCount": 71,
+-  "loaderCalls": 6,
+-  "allStagesFresh": true,
+-  "bootstrapReuse": [],
+   "executionReleased": false,
+-  "schemaOrBudgetChanges": false,
+-  "priorFirstFour": "Historical passes only; no reuse",
+-  "priorTypecheck": "TS2540 failed; failed attempt and gate closure preserved",
+-  "correctedTypecheck": "UNATTEMPTED; requires native/root mechanics and exact source acceptance",
+-  "newActualCodeReviewAttempt": false
++  "schemaOrBudgetChanges": false
+ }

@@ -1,0 +1,26 @@
+{
+  "createdUtc": "2026-10-18T03:31:55.563866+00:00",
+  "accepted": false,
+  "sourceAuthoringReleased": false,
+  "runtimeValidationReleased": false,
+  "checkedPlanSha256": "fb4324a88b230c62ed05ac6969be6b7b6042ae66ba9d05714a94f9a6eef5cedd",
+  "checkedPatchSha256": "7848362fa82fdbc5ee31ce4fd838f25912b4c428871fb4854e02ff2baa69fc57",
+  "checkedOriginalIndexSha256": "19f91dd9b8c97e41ba6d99a3772533dceaf71b8b6382aa618d5ce350675d8f17",
+  "allOriginalIndexEntriesMatched": true,
+  "genuinePatchRegenerated": true,
+  "bothWorktreesCleanExactA562": true,
+  "all679SourceFilesMatchBoth": true,
+  "F2toF6PrecisionAccepted": true,
+  "deadlineOwnershipSelectionBehaviorUnchanged": true,
+  "findings": [
+    {
+      "id": "R1a",
+      "severity": "P2",
+      "location": "plan.md:59",
+      "summary": "Third claimed selected report belongs to an unselected callback; exact selection/workload still require2",
+      "fix": "Correct attribution to2selected reports and preserve third as unselected full-CI coverage; no scope change"
+    }
+  ],
+  "reportSha256": "ca01916dc66d17cd326abe5ccce2f1b73d2b5f160b598fa2fbc34fb56d705715",
+  "originalIndexRetained": true
+}

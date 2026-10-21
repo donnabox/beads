@@ -1,0 +1,480 @@
+{
+  "source": {
+    "source": "2bd484367f63c7b8cc25e144baec983c5e579798",
+    "tree": "20a494de5555b39ece1e3eb09e9dd2ad37cbd554",
+    "parent": "26d6cd1b947db8c00e24015771506d26098a293e",
+    "clean": true,
+    "branch": "codex/vickie-discovery-minimum-service",
+    "files": {
+      "docs/design/transaction-implementation-progress.md": {
+        "bytes": 111030,
+        "sha256": "bf58320d33fb4e4194e3c699a54f6b7c1d8f6b4368c6b38ca4ad3ede37b714a4"
+      },
+      "packages/server/src/transaction-service.test.ts": {
+        "bytes": 63656,
+        "sha256": "2bebf92f313530dde4bd987b3304f7c08a6430f500a91bbc21408aeccc40eca4"
+      },
+      "packages/server/src/transaction-service.ts": {
+        "bytes": 22862,
+        "sha256": "44d7541635fad6c3d9be827b97df4b78b7d4a1ed3d7bf658676f9875e6ddfc22"
+      }
+    },
+    "planSha256": "ee9de18ed49dcb296a91816ee0156e76d9b4a4afca1a5d4fc1519d37655279a6",
+    "claimEligible": false
+  },
+  "exits": {
+    "install": {
+      "exit": 0,
+      "expected": 0,
+      "seconds": 0.469,
+      "command": [
+        "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+        "/Users/dbox/.cache/node/corepack/v1/pnpm/11.20.0/bin/pnpm.cjs",
+        "install",
+        "--frozen-lockfile"
+      ]
+    },
+    "format-owned": {
+      "exit": 0,
+      "expected": 0,
+      "seconds": 1.377,
+      "command": [
+        "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+        "/Users/dbox/.cache/node/corepack/v1/pnpm/11.20.0/bin/pnpm.cjs",
+        "exec",
+        "biome",
+        "format",
+        "--write",
+        "packages/server/src/transaction-service.ts",
+        "packages/server/src/transaction-service.test.ts"
+      ]
+    },
+    "clean": {
+      "exit": 0,
+      "expected": 0,
+      "seconds": 0.263,
+      "command": [
+        "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+        "/Users/dbox/.cache/node/corepack/v1/pnpm/11.20.0/bin/pnpm.cjs",
+        "clean"
+      ]
+    },
+    "typecheck": {
+      "exit": 1,
+      "expected": 0,
+      "seconds": 0.82,
+      "command": [
+        "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+        "/Users/dbox/.cache/node/corepack/v1/pnpm/11.20.0/bin/pnpm.cjs",
+        "typecheck"
+      ]
+    },
+    "format-owned-fixed": {
+      "exit": 0,
+      "expected": 0,
+      "seconds": 0.241,
+      "command": [
+        "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+        "/Users/dbox/.cache/node/corepack/v1/pnpm/11.20.0/bin/pnpm.cjs",
+        "exec",
+        "biome",
+        "format",
+        "--write",
+        "packages/server/src/transaction-service.ts",
+        "packages/server/src/transaction-service.test.ts"
+      ]
+    },
+    "typecheck-fixed": {
+      "exit": 1,
+      "expected": 0,
+      "seconds": 0.245,
+      "command": [
+        "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+        "/Users/dbox/.cache/node/corepack/v1/pnpm/11.20.0/bin/pnpm.cjs",
+        "typecheck-fixed"
+      ]
+    },
+    "typecheck-corrected": {
+      "exit": 0,
+      "expected": 0,
+      "seconds": 0.809,
+      "command": [
+        "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+        "/Users/dbox/.cache/node/corepack/v1/pnpm/11.20.0/bin/pnpm.cjs",
+        "typecheck"
+      ]
+    },
+    "build": {
+      "exit": 0,
+      "expected": 0,
+      "seconds": 0.799,
+      "command": [
+        "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+        "/Users/dbox/.cache/node/corepack/v1/pnpm/11.20.0/bin/pnpm.cjs",
+        "build"
+      ]
+    },
+    "focused": {
+      "exit": 0,
+      "expected": 0,
+      "seconds": 3.609,
+      "command": [
+        "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+        "/Users/dbox/.cache/node/corepack/v1/pnpm/11.20.0/bin/pnpm.cjs",
+        "exec",
+        "vitest",
+        "run",
+        "packages/server/src/transaction-service.test.ts",
+        "packages/server/src/transaction-consistency.test.ts",
+        "packages/server/src/transaction-discovery.test.ts",
+        "packages/server/src/transaction-read.test.ts",
+        "packages/server/src/transaction-http.test.ts",
+        "packages/server/src/transaction-installed-contracts.test.ts",
+        "--maxWorkers=2",
+        "--reporter=verbose",
+        "--reporter=json",
+        "--outputFile.json=/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-discovery-minimum-service-implementation/focused.json"
+      ]
+    },
+    "check-boundaries": {
+      "exit": 0,
+      "expected": 0,
+      "seconds": 0.6,
+      "command": [
+        "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+        "/Users/dbox/.cache/node/corepack/v1/pnpm/11.20.0/bin/pnpm.cjs",
+        "check:boundaries"
+      ]
+    },
+    "format-check": {
+      "exit": 0,
+      "expected": 0,
+      "seconds": 0.307,
+      "command": [
+        "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+        "/Users/dbox/.cache/node/corepack/v1/pnpm/11.20.0/bin/pnpm.cjs",
+        "format:check"
+      ]
+    },
+    "lint": {
+      "exit": 0,
+      "expected": 0,
+      "seconds": 0.416,
+      "command": [
+        "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+        "/Users/dbox/.cache/node/corepack/v1/pnpm/11.20.0/bin/pnpm.cjs",
+        "lint"
+      ]
+    },
+    "evidence-verify": {
+      "exit": 0,
+      "expected": 0,
+      "seconds": 0.305,
+      "command": [
+        "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+        "/Users/dbox/.cache/node/corepack/v1/pnpm/11.20.0/bin/pnpm.cjs",
+        "evidence:verify"
+      ]
+    },
+    "controls-install": {
+      "exit": 0,
+      "expected": 0,
+      "seconds": 0.47,
+      "command": [
+        "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+        "/Users/dbox/.cache/node/corepack/v1/pnpm/11.20.0/bin/pnpm.cjs",
+        "install",
+        "--frozen-lockfile"
+      ]
+    },
+    "mutant-omitted-check": {
+      "exit": 1,
+      "expected": 1,
+      "seconds": 1.536,
+      "command": [
+        "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+        "/Users/dbox/.cache/node/corepack/v1/pnpm/11.20.0/bin/pnpm.cjs",
+        "exec",
+        "vitest",
+        "run",
+        "packages/server/src/transaction-service.test.ts",
+        "-t",
+        "releases the owner after an in-entry",
+        "--maxWorkers=2",
+        "--reporter=verbose",
+        "--reporter=json",
+        "--outputFile.json=/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-discovery-minimum-service-implementation/mutant-omitted-check.json"
+      ]
+    },
+    "mutant-mutable-control": {
+      "exit": 1,
+      "expected": 1,
+      "seconds": 0.799,
+      "command": [
+        "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+        "/Users/dbox/.cache/node/corepack/v1/pnpm/11.20.0/bin/pnpm.cjs",
+        "exec",
+        "vitest",
+        "run",
+        "packages/server/src/transaction-service.test.ts",
+        "-t",
+        "captures immutable minimum controls",
+        "--maxWorkers=2",
+        "--reporter=verbose",
+        "--reporter=json",
+        "--outputFile.json=/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-discovery-minimum-service-implementation/mutant-mutable-control.json"
+      ]
+    },
+    "mutant-in-entry-assembly": {
+      "exit": 1,
+      "expected": 1,
+      "seconds": 0.76,
+      "command": [
+        "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+        "/Users/dbox/.cache/node/corepack/v1/pnpm/11.20.0/bin/pnpm.cjs",
+        "exec",
+        "vitest",
+        "run",
+        "packages/server/src/transaction-service.test.ts",
+        "-t",
+        "returns an immutable same-entry eligible prefix",
+        "--maxWorkers=2",
+        "--reporter=verbose",
+        "--reporter=json",
+        "--outputFile.json=/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-discovery-minimum-service-implementation/mutant-in-entry-assembly.json"
+      ]
+    },
+    "controls-restored-green": {
+      "exit": 0,
+      "expected": 0,
+      "seconds": 0.818,
+      "command": [
+        "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+        "/Users/dbox/.cache/node/corepack/v1/pnpm/11.20.0/bin/pnpm.cjs",
+        "exec",
+        "vitest",
+        "run",
+        "packages/server/src/transaction-service.test.ts",
+        "-t",
+        "internal discovery minimum observation",
+        "--maxWorkers=2",
+        "--reporter=verbose",
+        "--reporter=json",
+        "--outputFile.json=/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-discovery-minimum-service-implementation/controls-restored-green.json"
+      ]
+    },
+    "frozen-build": {
+      "exit": 0,
+      "expected": 0,
+      "seconds": 0.813,
+      "command": [
+        "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+        "/Users/dbox/.cache/node/corepack/v1/pnpm/11.20.0/bin/pnpm.cjs",
+        "build"
+      ]
+    },
+    "direct-emitted": {
+      "exit": 0,
+      "expected": 0,
+      "seconds": 0.147,
+      "command": [
+        "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-discovery-minimum-service-implementation/emitted.mjs",
+        "/Users/dbox/repos/wt/vickie/vickie-discovery-minimum-service"
+      ]
+    },
+    "mutant-omitted-check-behind": {
+      "exit": 1,
+      "expected": 1,
+      "seconds": 0.755,
+      "command": [
+        "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+        "/Users/dbox/.cache/node/corepack/v1/pnpm/11.20.0/bin/pnpm.cjs",
+        "exec",
+        "vitest",
+        "run",
+        "packages/server/src/transaction-service.test.ts",
+        "-t",
+        "times out after two controlled attempts",
+        "--maxWorkers=2",
+        "--reporter=verbose",
+        "--reporter=json",
+        "--outputFile.json=/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-discovery-minimum-service-implementation/mutant-omitted-check-behind.json"
+      ]
+    }
+  },
+  "focused": {
+    "passed": 183,
+    "files": 6,
+    "failed": 0,
+    "skipped": 0
+  },
+  "sensitivity": {
+    "frozenSource": "2bd484367f63c7b8cc25e144baec983c5e579798",
+    "controlCheckout": "/Users/dbox/repos/wt/vickie/vickie-discovery-minimum-service-controls",
+    "restoredClean": true,
+    "mutants": [
+      {
+        "mutant": "omitted-check",
+        "sourceSha256": "90cd9c1821d6ad46156d07f6fbb83eab90257098f73efff942e8af60306f580d",
+        "failedTests": [
+          {
+            "name": "internal discovery minimum observation releases the owner after an in-entry scopeEpoch refusal",
+            "messages": [
+              "AssertionError: expected { discovery: { \u2026(17) }, \u2026(2) } to be an instance of TransactionMinimumFailure\n    at Proxy.<anonymous> (file:///Users/dbox/repos/wt/vickie/vickie-discovery-minimum-service-controls/node_modules/.pnpm/@vitest+expect@4.1.10/node_modules/@vitest/expect/dist/index.js:1386:15)\n    at Proxy.<anonymous> (file:///Users/dbox/repos/wt/vickie/vickie-discovery-minimum-service-controls/node_modules/.pnpm/@vitest+expect@4.1.10/node_modules/@vitest/expect/dist/index.js:1156:15)\n    at Proxy.methodWrapper (file:///Users/dbox/repos/wt/vickie/vickie-discovery-minimum-service-controls/node_modules/.pnpm/chai@6.2.2/node_modules/chai/index.js:1700:25)\n    at /Users/dbox/repos/wt/vickie/vickie-discovery-minimum-service-controls/packages/server/src/transaction-service.test.ts:1457:19\n    at processTicksAndRejections (node:internal/process/task_queues:104:5)\n    at file:///Users/dbox/repos/wt/vickie/vickie-discovery-minimum-service-controls/node_modules/.pnpm/@vitest+runner@4.1.10/node_modules/@vitest/runner/dist/chunk-artifact.js:1903:20"
+            ]
+          },
+          {
+            "name": "internal discovery minimum observation releases the owner after an in-entry authorizationView refusal",
+            "messages": [
+              "AssertionError: expected { discovery: { \u2026(17) }, \u2026(2) } to be an instance of TransactionMinimumFailure\n    at Proxy.<anonymous> (file:///Users/dbox/repos/wt/vickie/vickie-discovery-minimum-service-controls/node_modules/.pnpm/@vitest+expect@4.1.10/node_modules/@vitest/expect/dist/index.js:1386:15)\n    at Proxy.<anonymous> (file:///Users/dbox/repos/wt/vickie/vickie-discovery-minimum-service-controls/node_modules/.pnpm/@vitest+expect@4.1.10/node_modules/@vitest/expect/dist/index.js:1156:15)\n    at Proxy.methodWrapper (file:///Users/dbox/repos/wt/vickie/vickie-discovery-minimum-service-controls/node_modules/.pnpm/chai@6.2.2/node_modules/chai/index.js:1700:25)\n    at /Users/dbox/repos/wt/vickie/vickie-discovery-minimum-service-controls/packages/server/src/transaction-service.test.ts:1457:19\n    at processTicksAndRejections (node:internal/process/task_queues:104:5)\n    at file:///Users/dbox/repos/wt/vickie/vickie-discovery-minimum-service-controls/node_modules/.pnpm/@vitest+runner@4.1.10/node_modules/@vitest/runner/dist/chunk-artifact.js:1903:20"
+            ]
+          },
+          {
+            "name": "internal discovery minimum observation times out after two controlled attempts without assembly and leaves the owner reusable",
+            "messages": [
+              "AssertionError: expected { discovery: { \u2026(17) }, \u2026(2) } to be an instance of TransactionMinimumFailure\n    at Proxy.<anonymous> (file:///Users/dbox/repos/wt/vickie/vickie-discovery-minimum-service-controls/node_modules/.pnpm/@vitest+expect@4.1.10/node_modules/@vitest/expect/dist/index.js:1386:15)\n    at Proxy.<anonymous> (file:///Users/dbox/repos/wt/vickie/vickie-discovery-minimum-service-controls/node_modules/.pnpm/@vitest+expect@4.1.10/node_modules/@vitest/expect/dist/index.js:1156:15)\n    at Proxy.methodWrapper (file:///Users/dbox/repos/wt/vickie/vickie-discovery-minimum-service-controls/node_modules/.pnpm/chai@6.2.2/node_modules/chai/index.js:1700:25)\n    at /Users/dbox/repos/wt/vickie/vickie-discovery-minimum-service-controls/packages/server/src/transaction-service.test.ts:1482:19\n    at processTicksAndRejections (node:internal/process/task_queues:104:5)\n    at file:///Users/dbox/repos/wt/vickie/vickie-discovery-minimum-service-controls/node_modules/.pnpm/@vitest+runner@4.1.10/node_modules/@vitest/runner/dist/chunk-artifact.js:1903:20"
+            ]
+          }
+        ],
+        "additionalRun": "mutant-omitted-check-behind.json"
+      },
+      {
+        "mutant": "mutable-control",
+        "sourceSha256": "c014348050f3427ba6b820636684d368d87c9109ba5807bc9c87166f07894ec6",
+        "failedTests": [
+          {
+            "name": "internal discovery minimum observation captures immutable minimum controls and releases the owner during controlled catch-up",
+            "messages": [
+              "Error: transaction minimum read: cursor-expired\n    at checkTransactionMinimum (/Users/dbox/repos/wt/vickie/vickie-discovery-minimum-service-controls/packages/server/src/transaction-consistency.ts:70:11)\n    at /Users/dbox/repos/wt/vickie/vickie-discovery-minimum-service-controls/packages/server/src/transaction-service.ts:243:38\n    at /Users/dbox/repos/wt/vickie/vickie-discovery-minimum-service-controls/packages/server/src/transaction-store.ts:943:23\n    at enter (/Users/dbox/repos/wt/vickie/vickie-discovery-minimum-service-controls/packages/server/src/transaction-store.ts:348:14)\n    at Object.withRead (/Users/dbox/repos/wt/vickie/vickie-discovery-minimum-service-controls/packages/server/src/transaction-store.ts:899:12)\n    at Object.withRead (/Users/dbox/repos/wt/vickie/vickie-discovery-minimum-service-controls/packages/server/src/transaction-service.test.ts:1332:24)\n    at observe (/Users/dbox/repos/wt/vickie/vickie-discovery-minimum-service-controls/packages/server/src/transaction-service.ts:242:32)\n    at waitForTransactionMinimum (/Users/dbox/repos/wt/vickie/vickie-discovery-minimum-service-controls/packages/server/src/transaction-consistency.ts:109:20)\n    at processTicksAndRejections (node:internal/process/task_queues:104:5)\n    at /Users/dbox/repos/wt/vickie/vickie-discovery-minimum-service-controls/packages/server/src/transaction-service.ts:263:18"
+            ]
+          }
+        ]
+      },
+      {
+        "mutant": "in-entry-assembly",
+        "sourceSha256": "a850dd44daa673ea5576830afde79a515ba86fe22f909f51022a1bdadf90f6ca",
+        "failedTests": [
+          {
+            "name": "internal discovery minimum observation returns an immutable same-entry eligible prefix for pos-1 after release",
+            "messages": [
+              "Error: transaction store closed or reentrant\n    at enter (/Users/dbox/repos/wt/vickie/vickie-discovery-minimum-service-controls/packages/server/src/transaction-store.ts:345:31)\n    at Object.readConfiguration (/Users/dbox/repos/wt/vickie/vickie-discovery-minimum-service-controls/packages/server/src/transaction-store.ts:1712:30)\n    at /Users/dbox/repos/wt/vickie/vickie-discovery-minimum-service-controls/packages/server/src/transaction-service.test.ts:1378:26\n    at assembleTransactionDiscovery (file:///Users/dbox/repos/wt/vickie/vickie-discovery-minimum-service-controls/node_modules/.pnpm/@vitest+spy@4.1.10/node_modules/@vitest/spy/dist/index.js:332:34)\n    at assemble (/Users/dbox/repos/wt/vickie/vickie-discovery-minimum-service-controls/packages/server/src/transaction-service.ts:258:14)\n    at /Users/dbox/repos/wt/vickie/vickie-discovery-minimum-service-controls/packages/server/src/transaction-service.ts:249:11\n    at /Users/dbox/repos/wt/vickie/vickie-discovery-minimum-service-controls/packages/server/src/transaction-store.ts:943:23\n    at enter (/Users/dbox/repos/wt/vickie/vickie-discovery-minimum-service-controls/packages/server/src/transaction-store.ts:348:14)\n    at Object.withRead (/Users/dbox/repos/wt/vickie/vickie-discovery-minimum-service-controls/packages/server/src/transaction-store.ts:899:12)\n    at Object.withRead (/Users/dbox/repos/wt/vickie/vickie-discovery-minimum-service-controls/packages/server/src/transaction-service.test.ts:1332:24)"
+            ]
+          },
+          {
+            "name": "internal discovery minimum observation returns an immutable same-entry eligible prefix for pos-0 after release",
+            "messages": [
+              "Error: transaction store closed or reentrant\n    at enter (/Users/dbox/repos/wt/vickie/vickie-discovery-minimum-service-controls/packages/server/src/transaction-store.ts:345:31)\n    at Object.readConfiguration (/Users/dbox/repos/wt/vickie/vickie-discovery-minimum-service-controls/packages/server/src/transaction-store.ts:1712:30)\n    at /Users/dbox/repos/wt/vickie/vickie-discovery-minimum-service-controls/packages/server/src/transaction-service.test.ts:1378:26\n    at assembleTransactionDiscovery (file:///Users/dbox/repos/wt/vickie/vickie-discovery-minimum-service-controls/node_modules/.pnpm/@vitest+spy@4.1.10/node_modules/@vitest/spy/dist/index.js:332:34)\n    at assemble (/Users/dbox/repos/wt/vickie/vickie-discovery-minimum-service-controls/packages/server/src/transaction-service.ts:258:14)\n    at /Users/dbox/repos/wt/vickie/vickie-discovery-minimum-service-controls/packages/server/src/transaction-service.ts:249:11\n    at /Users/dbox/repos/wt/vickie/vickie-discovery-minimum-service-controls/packages/server/src/transaction-store.ts:943:23\n    at enter (/Users/dbox/repos/wt/vickie/vickie-discovery-minimum-service-controls/packages/server/src/transaction-store.ts:348:14)\n    at Object.withRead (/Users/dbox/repos/wt/vickie/vickie-discovery-minimum-service-controls/packages/server/src/transaction-store.ts:899:12)\n    at Object.withRead (/Users/dbox/repos/wt/vickie/vickie-discovery-minimum-service-controls/packages/server/src/transaction-service.test.ts:1332:24)"
+            ]
+          },
+          {
+            "name": "internal discovery minimum observation returns an immutable same-entry eligible prefix for genesis after release",
+            "messages": [
+              "Error: transaction store closed or reentrant\n    at enter (/Users/dbox/repos/wt/vickie/vickie-discovery-minimum-service-controls/packages/server/src/transaction-store.ts:345:31)\n    at Object.readConfiguration (/Users/dbox/repos/wt/vickie/vickie-discovery-minimum-service-controls/packages/server/src/transaction-store.ts:1712:30)\n    at /Users/dbox/repos/wt/vickie/vickie-discovery-minimum-service-controls/packages/server/src/transaction-service.test.ts:1378:26\n    at assembleTransactionDiscovery (file:///Users/dbox/repos/wt/vickie/vickie-discovery-minimum-service-controls/node_modules/.pnpm/@vitest+spy@4.1.10/node_modules/@vitest/spy/dist/index.js:332:34)\n    at assemble (/Users/dbox/repos/wt/vickie/vickie-discovery-minimum-service-controls/packages/server/src/transaction-service.ts:258:14)\n    at /Users/dbox/repos/wt/vickie/vickie-discovery-minimum-service-controls/packages/server/src/transaction-service.ts:249:11\n    at /Users/dbox/repos/wt/vickie/vickie-discovery-minimum-service-controls/packages/server/src/transaction-store.ts:943:23\n    at enter (/Users/dbox/repos/wt/vickie/vickie-discovery-minimum-service-controls/packages/server/src/transaction-store.ts:348:14)\n    at Object.withRead (/Users/dbox/repos/wt/vickie/vickie-discovery-minimum-service-controls/packages/server/src/transaction-store.ts:899:12)\n    at Object.withRead (/Users/dbox/repos/wt/vickie/vickie-discovery-minimum-service-controls/packages/server/src/transaction-service.test.ts:1332:24)"
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  "restoredNewCases": 11,
+  "directEmitted": {
+    "source": "2bd484367f63c7b8cc25e144baec983c5e579798",
+    "clean": true,
+    "probe": {
+      "kind": "direct-emitted-module",
+      "pid": 87053,
+      "calls": 4,
+      "ownerEntries": 4,
+      "syntheticWaits": 1,
+      "httpRequests": 0,
+      "listeners": 0,
+      "closed": true,
+      "temporaryStoreRemoved": true,
+      "assemblyInstrumentation": "source spies only; emitted probe observes two returned candidates",
+      "observations": [
+        {
+          "label": "ordinary",
+          "state": "pass",
+          "context": {
+            "scopeEpoch": "bfdb1253-092a-4106-ba97-b3bf94103caa",
+            "authorizationView": "development-all-visible",
+            "scopePosition": "pos-0"
+          },
+          "entries": 1
+        },
+        {
+          "label": "satisfied",
+          "state": "pass",
+          "context": {
+            "scopeEpoch": "bfdb1253-092a-4106-ba97-b3bf94103caa",
+            "authorizationView": "development-all-visible",
+            "scopePosition": "pos-0"
+          },
+          "entries": 2
+        },
+        {
+          "label": "timeout",
+          "state": "pass",
+          "errorClass": "TransactionMinimumFailure",
+          "reason": "catch-up-timeout",
+          "context": {
+            "scopeEpoch": "bfdb1253-092a-4106-ba97-b3bf94103caa",
+            "authorizationView": "development-all-visible",
+            "scopePosition": "pos-0"
+          },
+          "entries": 4
+        },
+        {
+          "label": "pre-abort",
+          "state": "pass",
+          "errorClass": "ScopeServerOperationAbortedError",
+          "entries": 4
+        }
+      ],
+      "modules": {
+        "transaction-service": {
+          "path": "/Users/dbox/repos/wt/vickie/vickie-discovery-minimum-service/packages/server/dist/transaction-service.js",
+          "sha256": "4548e255a57210bd69ba57ccd3fbd3b98afb7271cdfaa6a28af6b7f69c936bfc"
+        },
+        "transaction-store": {
+          "path": "/Users/dbox/repos/wt/vickie/vickie-discovery-minimum-service/packages/server/dist/transaction-store.js",
+          "sha256": "d36513cf65d43053b862a17c1c35c0514a7411711c165fab4c6386ebb42e6f23"
+        },
+        "transaction-consistency": {
+          "path": "/Users/dbox/repos/wt/vickie/vickie-discovery-minimum-service/packages/server/dist/transaction-consistency.js",
+          "sha256": "49ecc02d89212b5e815f0f9336a45d5318fa246fe934d8e0a343dd02958e3b23"
+        },
+        "read-request": {
+          "path": "/Users/dbox/repos/wt/vickie/vickie-discovery-minimum-service/packages/server/dist/read-request.js",
+          "sha256": "be23340bb132331fd3bcdae33eca90d6c85f18bbf2d8c004ca963f52cb8be624"
+        }
+      }
+    },
+    "probeExited": true
+  },
+  "measurementDisposition": {
+    "rootAccepted": true,
+    "emittedMeasures": [
+      "4 calls",
+      "4 owner entries",
+      "1 synthetic wait",
+      "2 returned candidates",
+      "2 exact error instances",
+      "0 HTTP requests"
+    ],
+    "sourceOnlyMeasures": "assembly spy counts: one per successful ordinary/eligible observation, zero on foreign/timeout/abort; not relabelled as emitted instrumentation",
+    "reason": "unmodified ESM named export cannot be spied without byte/loader instrumentation; no hook added"
+  },
+  "cleanup": {
+    "source": "2bd484367f63c7b8cc25e144baec983c5e579798",
+    "emittedPidAbsent": 87053,
+    "emittedStoreRemoved": true,
+    "pathBoundNodeProcesses": [],
+    "sourceClean": true,
+    "controlCheckoutClean": true,
+    "checkedAt": "2026-10-14T10:30:17.975521+00:00"
+  },
+  "remoteVerified": true,
+  "claimEligible": false
+}

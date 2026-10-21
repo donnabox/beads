@@ -1,0 +1,17 @@
+--- final/claude-code-review/tool-inventory.json
++++ scaffold/claude-code-review/tool-inventory.json
+@@ -1,5 +1,5 @@
+ {
+-  "scope": "Fresh static realpath/hash remeasurement; no CLI/version/model query",
++  "scope": "Fresh file realpath/hash reads; command -v claude=/opt/homebrew/bin/claude; no CLI/version/model query",
+   "tools": {
+     "/opt/homebrew/bin/claude": {
+       "realpath": "/opt/homebrew/Caskroom/claude-code@latest/2.1.263/claude",
+@@ -35,6 +35,6 @@
+     "ps": "/bin/ps",
+     "gh": "/opt/homebrew/bin/gh"
+   },
+-  "model": "Configured default only; no provider/model override, agents, turn cap, Gemini or retries",
++  "model": "Configured default only; no model/provider override, agent, turn or budget cap, Gemini, retries",
+   "argvSha256": "c7a06e44f911e415839ce4638c3ca20330b0ae204fe1f846632d367638090ede"
+ }

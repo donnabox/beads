@@ -1,0 +1,20 @@
+--- plan4/cold-input-contract.json
++++ plan3/cold-input-contract.json
+@@ -66,16 +66,5 @@
+     "descriptor/Directory/receipt/Resource/replication URLs from IPC or fixture",
+     "server administrative artifact retrieval URIs"
+   ],
+-  "metadataLane": "project only source/payload/runtime/config/artifact/policy/auth identities and dial binding; never pass raw ready or operationTargets to oracle",
+-  "negativeOnlyFixtureInput": {
+-    "knownBeadTypeContractId": "explicit provisioned Bead Type id is allowed only in the three noncold minimum-order seed request bodies",
+-    "notNavigationAuthority": true,
+-    "negativeCallbacks": "perform actual N1/N2/N3 to obtain actual operation route; this Type payload input is not cold provenance",
+-    "positiveColdOracleInputUnchanged": true
+-  },
+-  "positiveColdScopeLink": {
+-    "emitter": "\"<\" + new URL(\"bdp.json\", canonicalScope).href + \">; rel=\\\"service-desc\\\"; type=\\\"application/json\\\"\"",
+-    "fixtureExpectedBytes": "<https://reference.invalid/acme/bdp.json>; rel=\"service-desc\"; type=\"application/json\"",
+-    "comparison": "Exact response Link string equality to existing URL emitter, then parse ACTUAL header for navigation; canonicalScope is the actual callback Scope, not metadata target map."
+-  }
++  "metadataLane": "project only source/payload/runtime/config/artifact/policy/auth identities and dial binding; never pass raw ready or operationTargets to oracle"
+ }

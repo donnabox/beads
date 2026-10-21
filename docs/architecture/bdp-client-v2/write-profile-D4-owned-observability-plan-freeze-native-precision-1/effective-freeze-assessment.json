@@ -1,0 +1,20 @@
+{
+  "before": "Absolute no post-freeze query/file IO wording conflicts with original failure-finally os.getpgrp before closed skip.",
+  "effectiveAfter": [
+    "no new process/census/registration/task or registry-bearing operation",
+    "no reaping that changes recorded task state",
+    "preserve original finally, local os.getpgrp before closed skip, original descriptors cleanup, all signal/auth/reap/UNKNOWN predicates and order",
+    "all known groups already closed; any unexpected later relevant activity fails/UNKNOWN",
+    "declared final-registry and unchanged owner terminal followed by original native terminal allowed",
+    "do not invent ownerPgid from this allowed query"
+  ],
+  "effectiveComposition": "Original41 + required3 addendum + exact2 root precision; original57 full native report preserved as historical one-Low review, not rewritten.",
+  "pipeAndClock": "618240 is unchanged retention ceiling, not pipe-fit/atomicity guarantee. Single nonblocking exact-count short/EAGAIN/error stays FAILED/UNKNOWN; no retry, blocking flush, extra grace, new writer or clock reset. Future concrete same-clock root drain/parser/availability authority remains unprepared and separately reviewed.",
+  "sourcePathAssessment": [
+    "outer_host.py249 requires published IO, known IO exit, all groups closed and census None; clean250 also requires actual control exit/status/IO EOF/original strict clock",
+    "return257 always runs finally262; sticky failure264 invokes signal_owned",
+    "signal_owned122 makes existing local query before closed check123; with all groups closed no new group signal/receipt/anchor decision is reached",
+    "direct handle fallbacks265-268 retain original behavior; valid settled final boundary must not introduce new registry-relevant activity; abnormal cleanup cannot gain positive credit",
+    "descriptor/ACK/bus closure preserves original terminal failure paths; actual native/parent exits and BOTH root EOF remain required"
+  ]
+}

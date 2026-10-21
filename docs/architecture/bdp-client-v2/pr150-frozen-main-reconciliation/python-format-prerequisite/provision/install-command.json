@@ -1,0 +1,20 @@
+[
+  "/Users/dbox/repos/wt/vickie/bdp-integration-logs/pr150-frozen-main-reconciliation/tools/python-format-venv/bin/python",
+  "-I",
+  "-B",
+  "-m",
+  "pip",
+  "--isolated",
+  "install",
+  "--no-index",
+  "--find-links",
+  "/Users/dbox/repos/wt/vickie/bdp-integration-logs/pr150-frozen-main-reconciliation/python-format-prerequisite/provision/wheels",
+  "--require-hashes",
+  "--only-binary=:all:",
+  "--no-compile",
+  "--disable-pip-version-check",
+  "--report",
+  "/Users/dbox/repos/wt/vickie/bdp-integration-logs/pr150-frozen-main-reconciliation/python-format-prerequisite/provision/pip-install-report.json",
+  "-r",
+  "/Users/dbox/repos/wt/vickie/bdp-integration-logs/pr150-frozen-main-reconciliation/python-format-prerequisite/requirements.txt"
+]

@@ -1,0 +1,53 @@
+{
+  "name": "cpu-eight",
+  "argv": [
+    "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+    "/Users/dbox/repos/wt/vickie/vickie-update-cold-directory/node_modules/vitest/vitest.mjs",
+    "run",
+    "packages/conformance/src/read-update-artifact-set.test.ts",
+    "packages/conformance/src/cumulative-artifact.test.ts",
+    "packages/conformance/src/profile-contract-plan.test.ts",
+    "apps/bdptest/src/read-update-matrix.test.ts",
+    "--maxWorkers=1",
+    "--testNamePattern",
+    "(?:accepts\\ the\\ actual\\ current\\ corpus\\ split\\ with\\ unchanged\\ prerequisite\\ groups\\ and\\ coverage|pins\\ cumulative\\ source\\ digest\\ map,\\ catalog\\ order\\ and\\ every\\ coverage\\ binding|maps\\ ordinary\\ Update\\ command\\-minimum\\ evidence\\ while\\ TX\\ mapping\\ remains\\ partial|pins\\ cold\\ RU\\ directory\\ literals,\\ actual\\ target\\ bindings\\ and\\ parent\\ preservation|pins\\ numeric\\ admission\\ source\\ growth,\\ old\\ blocks\\ and\\ independent\\ row\\ ledgers|pins\\ metadata\\ closure\\ growth,\\ old\\ B\\ actions\\ and\\ final\\ N\\ preservation|pins\\ bounded\\ R\\ closure\\ source,\\ changed\\-action\\ ledger\\ and\\ unchanged\\ companions|pins\\ command\\ minimum\\ literals,\\ ordinary\\ admission\\ and\\ parent\\ preservation)$",
+    "--reporter=verbose",
+    "--reporter=json",
+    "--outputFile=/Users/dbox/repos/wt/vickie/bdp-integration-logs/read-update-command-minimum-draft/partial-credit-repair/validation/source-run/cpu-eight-tests.json"
+  ],
+  "cwd": "/Users/dbox/repos/wt/vickie/vickie-update-cold-directory",
+  "started": "2026-10-16T03:25:45.384229+00:00",
+  "head": "b89554c6004edf99d3278518bee1b150dce3fa98",
+  "workspaceDirty": true,
+  "sourceSha256": {
+    "apps/bdptest/src/read-update-matrix.test.ts": "376709ecdcf356a98c5bf7770e6b0a637ab6e06cf9a9f7ed68c2e5c15da9dd36",
+    "packages/conformance/src/cumulative-artifact.test.ts": "d3e8a462694174cf34db94700df51f3de6943aa1072dbf4bd04de7560db9b523",
+    "packages/conformance/src/profile-contract-plan.test.ts": "3fec4ca8c6eee7a20bbcdd1aa53ef2a015989087ba2f8d6b37fd997dcae7dd64",
+    "packages/conformance/test-support/read-update-coverage-v1.json": "287c2a258afd04a95417f5de416c81bd8159c95762d71d568a64f0b402159f0f"
+  },
+  "sourceDiffSha256": "81f12e47553a5362cddc4f6e2a0163c31dccf2f4208e77833180f446a3597900",
+  "rootAcceptanceSha256": "7ba2a9842034d8c6b60015120b65ea8e6cb1994d9c2b5a3043edfaa336b06bd1",
+  "preparationSha256": "52e99b0856d909cb3f5d5444386c5950321bcbe5bd6d9e687405a3388f766cce",
+  "bdpOverrides": {},
+  "guardedArgv": [
+    "/opt/homebrew/opt/python@3.14/bin/python3.14",
+    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/guarded-action.py",
+    "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+    "/Users/dbox/repos/wt/vickie/vickie-update-cold-directory/node_modules/vitest/vitest.mjs",
+    "run",
+    "packages/conformance/src/read-update-artifact-set.test.ts",
+    "packages/conformance/src/cumulative-artifact.test.ts",
+    "packages/conformance/src/profile-contract-plan.test.ts",
+    "apps/bdptest/src/read-update-matrix.test.ts",
+    "--maxWorkers=1",
+    "--testNamePattern",
+    "(?:accepts\\ the\\ actual\\ current\\ corpus\\ split\\ with\\ unchanged\\ prerequisite\\ groups\\ and\\ coverage|pins\\ cumulative\\ source\\ digest\\ map,\\ catalog\\ order\\ and\\ every\\ coverage\\ binding|maps\\ ordinary\\ Update\\ command\\-minimum\\ evidence\\ while\\ TX\\ mapping\\ remains\\ partial|pins\\ cold\\ RU\\ directory\\ literals,\\ actual\\ target\\ bindings\\ and\\ parent\\ preservation|pins\\ numeric\\ admission\\ source\\ growth,\\ old\\ blocks\\ and\\ independent\\ row\\ ledgers|pins\\ metadata\\ closure\\ growth,\\ old\\ B\\ actions\\ and\\ final\\ N\\ preservation|pins\\ bounded\\ R\\ closure\\ source,\\ changed\\-action\\ ledger\\ and\\ unchanged\\ companions|pins\\ command\\ minimum\\ literals,\\ ordinary\\ admission\\ and\\ parent\\ preservation)$",
+    "--reporter=verbose",
+    "--reporter=json",
+    "--outputFile=/Users/dbox/repos/wt/vickie/bdp-integration-logs/read-update-command-minimum-draft/partial-credit-repair/validation/source-run/cpu-eight-tests.json"
+  ],
+  "nodePathPrefix": "/Users/dbox/.nvm/versions/node/v24.16.0/bin",
+  "sourceAttribution": "Externally bound source snapshot or frozen package; not child-attested Git identity",
+  "plannedWorkload": {},
+  "derivativeBinding": null
+}

@@ -1,0 +1,19 @@
+--- plan4/basis-effects.json
++++ plan3/basis-effects.json
+@@ -1,5 +1,5 @@
+ {
+-  "state": "No source effects from PLAN4; parent plan3 publication effects below are historical and retained",
++  "state": "STATIC REBIND EFFECTS ONLY, no execution",
+   "changes": [
+     {
+       "path": "packages/config/src/index.ts",
+@@ -50,8 +50,5 @@
+     "TX": "transaction-runtime.ts314–344 actual bind-before-store legacy order still exists; this plan adds separate trusted preparation order only after future release",
+     "RU": "development-runtime.ts507–549 unchanged private bind-before-authority/principal legacy behavior; old503 startup witness preserved"
+   },
+-  "noNewLifecycleProof": "Accepted local loader44source/6installed and71 local private refusals plus exact CI9500/187/1skip/25loader/7preflight remain their scoped evidence. CI stock73attempts/66unique and stock lock/proof UNKNOWN are separate. None proves these51source/21installed lifecycle callbacks or public admission.",
+-  "sourceFilesChangedByPlan4": 0,
+-  "plan4Precision": "All10 actual findings +R1, exact same fdd source/spec/bounds/footprint; no source merge or semantics",
+-  "historicalChangesComparedPlan2": true
++  "noNewLifecycleProof": "44 focused source loader callbacks+6 installed loader calls/71 private refusal inventory from accepted startup validation prove their existing scope; not this plan51source/21installed lifecycle execution."
+ }

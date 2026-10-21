@@ -1,0 +1,110 @@
+{
+  "duration_api_ms": 1257098,
+  "stop_reason": "end_turn",
+  "session_id": "2a14c5b9-a260-451f-8137-24af04ff647e",
+  "total_cost_usd": 11.6283555,
+  "usage": {
+    "input_tokens": 126,
+    "cache_creation_input_tokens": 298001,
+    "cache_read_input_tokens": 12027417,
+    "output_tokens": 105193,
+    "output_tokens_details": {
+      "thinking_tokens": 89669
+    },
+    "server_tool_use": {
+      "web_search_requests": 0,
+      "web_fetch_requests": 0
+    },
+    "service_tier": "standard",
+    "cache_creation": {
+      "ephemeral_1h_input_tokens": 298001,
+      "ephemeral_5m_input_tokens": 0
+    },
+    "inference_geo": "global",
+    "iterations": [
+      {
+        "input_tokens": 2,
+        "output_tokens": 10540,
+        "cache_read_input_tokens": 300196,
+        "cache_creation_input_tokens": 2551,
+        "cache_creation": {
+          "ephemeral_5m_input_tokens": 0,
+          "ephemeral_1h_input_tokens": 2551
+        },
+        "type": "message"
+      }
+    ],
+    "speed": "standard"
+  },
+  "modelUsage": {
+    "claude-haiku-4-5-20251001": {
+      "inputTokens": 4107,
+      "outputTokens": 15,
+      "cacheReadInputTokens": 0,
+      "cacheCreationInputTokens": 0,
+      "webSearchRequests": 0,
+      "costUSD": 0.004182000000000001,
+      "contextWindow": 200000,
+      "maxOutputTokens": 32000,
+      "thinkingTokens": 0,
+      "canonicalModel": "claude-haiku-4-5",
+      "provider": "firstParty",
+      "costBasis": "list"
+    },
+    "claude-opus-5[1m]": {
+      "inputTokens": 126,
+      "outputTokens": 105193,
+      "cacheReadInputTokens": 12027417,
+      "cacheCreationInputTokens": 298001,
+      "webSearchRequests": 0,
+      "costUSD": 11.6241735,
+      "contextWindow": 1000000,
+      "maxOutputTokens": 64000,
+      "thinkingTokens": 89669,
+      "canonicalModel": "claude-opus-5",
+      "provider": "firstParty",
+      "costBasis": "list"
+    }
+  },
+  "permission_denials": [],
+  "terminal_reason": "completed",
+  "fast_mode_state": "off",
+  "fast_mode_disabled_reason": "sdk_opt_in_required",
+  "subagent_stats": {
+    "spawned": 0,
+    "requested": {
+      "background": 0,
+      "foreground": 0,
+      "unset": 0
+    },
+    "started_in_background": 0,
+    "max_depth": 0,
+    "spawned_by_subagents": 0,
+    "completed": 0,
+    "failed": 0,
+    "killed": {
+      "parent": 0,
+      "user": 0,
+      "system": 0
+    },
+    "refused": {
+      "depth_limit": 0,
+      "concurrency_limit": 0,
+      "budget": 0
+    },
+    "by_type": {}
+  },
+  "is_error": false,
+  "num_turns": 79,
+  "subtype": "success",
+  "api_error_status": null,
+  "result": "## Findings\n\n**1. [Medium] `R14`\u2013`R18` assert the wrong refusal code; `invalid-ownership` and `invalid-prerequisite` are never exercised.**\n`packages/conformance/test-support/profile-evidence.test.ts:488-505` (`sourceMutation`) and its five callers at `:799-839`.\n`source-data-cases.json` fixes R14/R15/R16/R17 \u2192 `invalid-ownership` and R18 \u2192 `invalid-prerequisite`. Every one of the five instead asserts `\"invalid-source\"`, because `sourceMutation` mutates the *sources*, confirms the pinned factory rejects them (`expect(() => createReadUpdateArtifactSet(...)).toThrow()`), and then calls `assembleProfileEvidence` with an **unbranded** set lookalike `{ ...ruSet() }`, which dies in `assertReadUpdateArtifactSet` (`read-update-artifact-set.ts:310`) before `model()` runs. A grep of the test file finds zero occurrences of either contracted code. Consequently the five cases are five identical copies of one brand check, and the module's own ownership/prerequisite logic \u2014 `profile-evidence.ts:281-283`, `:290`, `:293`, `:296-299`, plus the TX `invalid-ownership` refusals at `:252-265` \u2014 has no coverage at all; 2 of the 10 contracted error codes are untested. **Impact:** a regression that drops or mis-codes duplicate-owner, retired-ID, unknown-ID, out-of-order or later/cross-shard-prerequisite detection passes silently. **Smallest fix:** in each case, feed the mutated manifest/coverage through a *factory-created* set (as `prerequisiteData(\u2026, true)` already does at `:351-365`) so `model()` is reached, and assert the contracted code.\n\n**2. [Medium] `packages/conformance` now imports from `apps/bdptest`, inverting the workspace dependency direction and violating the plan.**\n`packages/conformance/test-support/profile-evidence.ts:29`:\n`import { installedContractsDigest } from \"../../../apps/bdptest/test-support/installed-contract-identity.js\";`\n`effective-plan4/plan.md` \u00b65 states explicitly: \"New module imports only existing private conformance internals.\" This is the only `packages/** \u2192 apps/**` import in the repo, and it is the reverse of the sanctioned direction that `vitest.config.ts:16-21` deliberately enforces (\"`apps/*` \u2026 aliasing them would register a target that does not exist and mask a misconfigured import\"). It also forms a package-level cycle with `apps/bdptest/test-support/read-update-artifact-execution.ts:28-31`. It does not break `tsc -b` only because `packages/conformance/tsconfig.json:7` excludes `test-support`. **Impact:** the conformance package's test-support surface is no longer self-contained; any boundary/project-reference tightening or a move of the app file breaks it. **Smallest fix:** drop the import. `profile-evidence.ts:401` already validates `/^development-schema5-[a-f0-9]{64}$/` immediately before the call, so `:411` can be `artifact.slice(\"development-schema5-\".length)` with identical behavior.\n\n**3. [Medium] The opt-in TX carrier path is unobservable: every failure is swallowed and nothing asserts the carrier retained its observation.**\n`apps/bdptest/src/transactional-matrix.test.ts:404-433`, `:481-483`, `:806-812`.\nThe handoff copy/hash/parse/projection block ends in `catch { carrierRefused = true; }`, `publishCarrier` ends in `catch { carrierRefused = true; }`, and the `finally` at `:807-812` only calls `carrier?.passed()`/`failed()`. No assertion anywhere checks `carrierRefused`, `evidence === \"retained\"`, or that a sidecar was written. So a writer refusal, a `baseline`/`sessions`/`result` representation mismatch, or a budget overrun all produce `[null]` observations with `evidence: \"absent\"` / `failureStages: [\"execution\"]` while the test still passes. This is not hypothetical: `effective-plan4/plan.md` \u00b629 records the predecessor sizing as **74,378 nodes / 2,936,736 wrapper bytes** against the `parseBoundedJson` cap of 100,000 nodes and the `copySourceBytes` cap of 4,194,304 bytes used at `:408` and `:411`; the current wrapper is the *seventeen*-contract run (256 rows, 234 exchanges, 24 sessions \u2014 `:582`, `:587`, `:789`), i.e. materially larger with ~26% node headroom. Note the asymmetry: the RU adapter lets the same refusals escape `ledger()` (`read-update-artifact-execution.ts:581`), so RU fails loud and TX fails silent. **Impact:** the only positive TX carrier run can ship an evidence-absent sidecar indistinguishably from success. **Smallest fix:** when `carrierPath` is set, expose the final envelope (or `carrierRefused`) and add one assertion in the existing `finally` that `attempt.owners[0].evidence === \"retained\"`.\n\n**4. [Low] `String(...)` coercion for `runtimeConfigurationIdentity` contradicts the accepted N3 contract.**\n`apps/bdptest/test-support/read-update-artifact-execution.ts:644-646`.\n`accepted-correction-plan1/primitive-and-cache-contract.json` N3 `primitiveSlots.runtimeConfigurationIdentity` says \"primitive lower64hex string \u2026 **never `String(value)` coercion**\". A non-string/absent `configurationIdentity` becomes `\"undefined\"`/`\"[object Object]\"`, which then fails `primitiveHash` as `invalid-source` instead of being rejected as a shape error at the adapter, and the throw escapes `ledger()` and fails the whole RU run. **Smallest fix:** read the value, require `typeof === \"string\"`, and pass it through unmodified.\n\n**5. [Low] Three contracted subassertions are vacuous \u2014 they assert JavaScript semantics, not subject behavior.**\n- `profile-evidence.test.ts:632-636` compares `canonicalJson(JSON.parse(JSON.stringify(value)))` against `canonicalJson(actual)` where `actual` is the *same* round-trip of the *same* literal; it can never fail and demonstrates nothing about V06's contracted \"undefined object-member omission and undefined array-item null\" representation rule. Fix: assert the literal expected string, e.g. `'{\"array\":[null,1],\"field\":\"result\"}'`.\n- `:1400`/`:1421`: `genuine` is a local literal never passed to the module, so `expect(genuine.result.real).toBe(true)` cannot detect replacement of genuine data (L03's subassertion).\n- `:1463-1474`: a `try { try { throw original } finally {} } catch` block asserting `observed === original` \u2014 pure language semantics, standing in for L05's \"original legacy errors remain original\" obligation.\n\n**6. [Low] `reports[]` rows are structurally heterogeneous.**\n`profile-evidence.ts:820-827` (absent) vs `:970-980` (present). Absent rows carry 6 keys and **omit** `runtimeConfigurationIdentity`, `exactConfigurationDigest` and `reportedCleanupState`, while nulling the other four \u2014 inconsistent with the same object's own `null` convention and with `output-schema.json`'s \"missing is null/unobserved rather than\" rule. Consumers cannot apply one closed-key schema to `reports`. **Smallest fix:** emit the three fields as `null` in the absent branch.\n\n**7. [Low] The new N5 guard bounds traversal but not capture cost.**\n`profile-evidence.ts:134-135`. The `> 10000` check runs *after* `record(value)`, i.e. after `Object.getOwnPropertyDescriptors` materializes all 10001 descriptors and `ownData`'s `allowed.includes(key)` (`profile-contract-plan.ts:84-91`) performs O(n\u00b2) scans. Supplied `ready`/`exactConfiguration` are caller in-memory objects, not parser-bounded, so ~10 such containers fit under the 100,000-node budget at ~50M comparisons each. The root N5 disposition (\"reject \u2026 before traversing a captured plain record\") is satisfied, so this is cost only, not a contract deviation. **Smallest fix:** test `Object.keys(value).length > 10000` before calling `record(value)`.\n\n## Verified without findings\n\nN1 digests are computed once per owner/call and reused (`:858`, `:912`). N3 primitive-slot ordering, Proxy/accessor/function refusal without invocation, and the preserved configuration brand hold (`:841-853`); R12/R13 tripwire counts are sound. N4 `stopsAfter`/`rowKind` match `runner.ts:448-476`, `2962-3056` and `789` exactly, including recheck-with-exchanges-and-actions, category/cleanup stops, plain-stopped suffix, and null credit for `not-run`/`not-implemented`. The N5 10000/10001 boundary behaves as the correction claims (10000 \u2192 `configuration-mismatch`, 10001 \u2192 `capacity`, nested getter uninvoked). TX baseline-4/served-11/IPC-13+3 session keys, 12 operation targets, reopen/ordinal/ordering, and the colon bindings match `installedTransactionBinding` and `coverage-v1.json` (17 rows). RU 8-key ready shape matches `installed-reference-process.ts:50-60` (no `listenUrl`). The route digest matches `exactConfigurationDigest`/`sortJsonValue` byte-for-byte. Sidecar IO is `wx` 0600 first-create, own-identity-verified temp+rename replacement, no collision takeover, no label/credential echo. 48 callback IDs, two-owner cap, 4 MiB/1 MiB caps, `claimEligible`/`qualificationReady` false, `wholeClauseQualification: \"unestablished\"`, the TX 63000 assertion and following callbacks, and default RU behavior with the sidecar absent are all preserved.\n\nNo format-check, compiler, lint, test, build, install or runtime step was executed; all assertions above are static. Review completion confers no qualification or approval.",
+  "ttft_ms": 2162,
+  "type": "result",
+  "duration_ms": 1257441,
+  "uuid": "93d2bb0f-c23b-431a-b79c-3fbd108897ed",
+  "ttft_stream_ms": 1569,
+  "time_to_request_ms": 535,
+  "first_content_frame_ms": 1569,
+  "queued_turn_count": 0
+}

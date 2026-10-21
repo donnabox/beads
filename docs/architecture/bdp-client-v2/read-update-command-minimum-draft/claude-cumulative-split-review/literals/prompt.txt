@@ -1,0 +1,489 @@
+Review this frozen ordinary Update command-minimum evidence change. Do not write or modify files. Output numbered findings only in stdout: severity, exact source location, concrete impact and smallest correction; distinguish mandatory bugs, optional improvements and missing supplied context. End with an explicit completion statement. No tools are enabled. Review only your assigned complementary scope; flag cross-boundary dependencies explicitly rather than granting whole-council approval.
+
+Immutable author b89554c6004edf99d3278518bee1b150dce3fa98, tree b3cd7f40d0ff40cc45c570a2468c38e96eccb7d7, direct parent 6f5e607bf338dd166820bfa3f9f480f7cd54c5f1. The plan/implementation author assembled this packet; root/native review is separate. Original full supplied-context review ended exit143/timeout after895.989s with empty stdout/stderr and unchanged inputs. It has NO verdict; these are two distinct complementary scopes, not claims that timeout approved code. No production/API/config fixture/parser/time/transport-cap change and no public profile activation.
+
+Accepted behavior: ordinary mutation POST ignores all three copied minimum controls while retaining authorization, key identity/conflict, carrier/schema and expectedRevision refusal. Eleven raw actions/47 portable assertions, nine POST bodies1112B/max190 and two absent GET bodies. Full Resource/schema/retained replay/state/header facts are a local supplemental oracle, not portable assertion credit. Raw exact input has no action ID: safe local ordinal/method/url/credentialRef is joined with actual runner exchange ID/method/url later. Control validates original response first, then only on row/localIndex1 (ordinal2) changes assertion input outcome created→updated. Genuine original response remains privately checked and its facts retained. Expected exactly7pass/1fail singleton-replay/outcome after2HTTP; do not weaken failures or call the control a server defect.
+
+Actual separate validation: six static stages passed; initial CPU8 had7pass/1catalog-order failure, corrected one-literal order then affected callback passed (8 distinct callbacks). Frozen successor is the author commit. Fresh installed12stages passed; selected positive11responses/47assertions, negative2responses/7pass1intendedfail, aggregate contains same11response/47assertion row. Aggregate HTTP2314=baseline897exchanges+996client+44setup+continuation135exchanges+242client. Native21 is already within897. Across selectedpositive/control/aggregate2327actualHTTP/62children; prospective max2336 is not actual traffic. Root independently checked provenance/payload and112sampledPIDs absent. These results constrain observed failures, not review correctness or public qualification. Original failures/timeouts remain preserved.
+
+
+Previous cumulative scope also ended at its existing900s bound (exit143/895.673s), empty stdout/stderr, unchanged source: no verdict. Harness scope independently completed exit0/537.243s,24entries with full source audit; root disposition remains separate. Neither timeout is approval. These two smaller scopes together cover the former cumulative assignment, with explicit shared contracts and exact changed code/data. Do not revisit the whole harness unless a literal/static dependency establishes a concrete problem. No source edits or tests are requested.
+L / LITERALS AND PORTABLE VALIDATION: review the complete eleven-action JSON row, complete old/new coverage mapping, accepted command-ignore scope and exact assertion feasibility/cause discrimination. All actual status/media/json-pointer/schema evaluation branches used by these47 assertions are supplied. Check body/key/revision/auth/header fidelity, meaningful negative outcomes and legitimate whole-obligation versus partial-profile credit. The harness validates original response/schema/full singleton and sequence Resource/replay/point state before projecting ONLY second response outcome created→updated, then joins genuine runner IDs and verifies7pass/1fail. Full new harness code is separately reviewed, not copied here. Fanout reviewer owns corpus preservation, counts/fences/derivatives/catalog-order and static source changes.
+
+DATA EDIT 1 packages/conformance/matrices/read-update-v1.json: append exactly this complete row after old baseline50; all old raw objects untouched.
+{"id":"read-update.http.command-minimum-fields","requiredProfile":"read-update","setup":{"fixture":"reference-read-update-schema-v1","requires":["installed-read-update-http"]},"applicability":{"requires":[]},"actions":[{"id":"singleton-create","family":"http","method":"POST","target":{"binding":"scope","path":"operations/create-bead"},"credentialRef":"operator","raw":{"headerLines":[{"name":"content-type","value":"application/json"},{"name":"idempotency-key","value":"minimum-singleton"},{"name":"bdp-minimum-scope-position","value":"pos-999"},{"name":"bdp-scope-epoch","value":"foreign-epoch"},{"name":"bdp-authorization-view","value":"foreign-view"}],"body":{"encoding":"utf8","value":"{\"id\":\"beads/w1-a\",\"type\":\"https://reference.invalid/acme/types/task\",\"properties\":{\"title\":\"minimum-singleton\"}}"}},"captures":[],"assertions":[{"id":"status","kind":"status","equals":200},{"id":"media","kind":"media-type","equals":"application/json"},{"id":"schema","kind":"json-schema","schema":"#/$defs/mutationResult"},{"id":"outcome","kind":"json-pointer","pointer":"/outcome","exists":true,"equals":"created"}]},{"id":"singleton-replay","family":"http","method":"POST","target":{"binding":"scope","path":"operations/create-bead"},"credentialRef":"operator","raw":{"headerLines":[{"name":"content-type","value":"application/json"},{"name":"idempotency-key","value":"minimum-singleton"},{"name":"bdp-minimum-scope-position","value":""},{"name":"bdp-scope-epoch","value":"epoch-one"},{"name":"BDP-Scope-Epoch","value":"epoch-two"},{"name":"bdp-authorization-view","value":"not a view!"}],"body":{"encoding":"utf8","value":"{\"id\":\"beads/w1-a\",\"type\":\"https://reference.invalid/acme/types/task\",\"properties\":{\"title\":\"minimum-singleton\"}}"}},"captures":[],"assertions":[{"id":"status","kind":"status","equals":200},{"id":"media","kind":"media-type","equals":"application/json"},{"id":"schema","kind":"json-schema","schema":"#/$defs/mutationResult"},{"id":"outcome","kind":"json-pointer","pointer":"/outcome","exists":true,"equals":"created"}]},{"id":"singleton-conflict","family":"http","method":"POST","target":{"binding":"scope","path":"operations/create-bead"},"credentialRef":"operator","raw":{"headerLines":[{"name":"content-type","value":"application/json"},{"name":"idempotency-key","value":"minimum-singleton"},{"name":"bdp-minimum-scope-position","value":"not a token!"}],"body":{"encoding":"utf8","value":"{\"id\":\"beads/w1-a\",\"type\":\"https://reference.invalid/acme/types/task\",\"properties\":{\"title\":\"changed\"}}"}},"captures":[],"assertions":[{"id":"status","kind":"status","equals":409},{"id":"media","kind":"media-type","equals":"application/problem+json"},{"id":"schema","kind":"json-schema","schema":"#/$defs/readUpdateProblem"},{"id":"code","kind":"json-pointer","pointer":"/code","exists":true,"equals":"idempotency-conflict"},{"id":"retry","kind":"json-pointer","pointer":"/retry","exists":true,"equals":"never"}]},{"id":"missing-key","family":"http","method":"POST","target":{"binding":"scope","path":"operations/create-bead"},"credentialRef":"operator","raw":{"headerLines":[{"name":"content-type","value":"application/json"},{"name":"bdp-scope-epoch","value":"epoch-one"},{"name":"BDP-Scope-Epoch","value":"epoch-two"},{"name":"bdp-authorization-view","value":"not a view!"}],"body":{"encoding":"utf8","value":"{\"id\":\"beads/w1-a\",\"type\":\"https://reference.invalid/acme/types/task\",\"properties\":{\"title\":\"minimum-singleton\"}}"}},"captures":[],"assertions":[{"id":"status","kind":"status","equals":400},{"id":"media","kind":"media-type","equals":"application/problem+json"},{"id":"schema","kind":"json-schema","schema":"#/$defs/readUpdateProblem"},{"id":"code","kind":"json-pointer","pointer":"/code","exists":true,"equals":"malformed-request"},{"id":"retry","kind":"json-pointer","pointer":"/retry","exists":true,"equals":"never"}]},{"id":"unauthenticated","family":"http","method":"POST","target":{"binding":"scope","path":"operations/create-bead"},"credentialRef":"unknown","raw":{"headerLines":[{"name":"content-type","value":"application/json"},{"name":"idempotency-key","value":"minimum-unauthenticated"},{"name":"bdp-minimum-scope-position","value":"pos-999"},{"name":"bdp-scope-epoch","value":"foreign-epoch"},{"name":"bdp-authorization-view","value":"foreign-view"}],"body":{"encoding":"utf8","value":"{\"id\":\"beads/w1-a\",\"type\":\"https://reference.invalid/acme/types/task\",\"properties\":{\"title\":\"minimum-singleton\"}}"}},"captures":[],"assertions":[{"id":"status","kind":"status","equals":401},{"id":"media","kind":"media-type","equals":"application/problem+json"},{"id":"schema","kind":"json-schema","schema":"#/$defs/readUpdateProblem"},{"id":"code","kind":"json-pointer","pointer":"/code","exists":true,"equals":"unauthenticated"},{"id":"retry","kind":"json-pointer","pointer":"/retry","exists":true,"equals":"after-state-change"}]},{"id":"stale-revision","family":"http","method":"POST","target":{"binding":"scope","path":"operations/update-bead"},"credentialRef":"operator","raw":{"headerLines":[{"name":"content-type","value":"application/json"},{"name":"idempotency-key","value":"minimum-stale"},{"name":"bdp-minimum-scope-position","value":""},{"name":"bdp-scope-epoch","value":"epoch-one"},{"name":"BDP-Scope-Epoch","value":"epoch-two"},{"name":"bdp-authorization-view","value":"not a view!"}],"body":{"encoding":"utf8","value":"{\"bead\":\"https://reference.invalid/acme/beads/w1-a\",\"expectedRevision\":\"minimum-stale-revision\",\"propertiesChange\":[{\"op\":\"replace\",\"path\":\"/title\",\"value\":\"must-not-commit\"}]}"}},"captures":[],"assertions":[{"id":"status","kind":"status","equals":409},{"id":"media","kind":"media-type","equals":"application/problem+json"},{"id":"schema","kind":"json-schema","schema":"#/$defs/readUpdateProblem"},{"id":"code","kind":"json-pointer","pointer":"/code","exists":true,"equals":"revision-mismatch"},{"id":"retry","kind":"json-pointer","pointer":"/retry","exists":true,"equals":"after-state-change"}]},{"id":"invalid-carrier","family":"http","method":"POST","target":{"binding":"scope","path":"operations/create-bead"},"credentialRef":"operator","raw":{"headerLines":[{"name":"content-type","value":"application/json"},{"name":"idempotency-key","value":"minimum-invalid"},{"name":"bdp-minimum-scope-position","value":"not a token!"}],"body":{"encoding":"utf8","value":"{"}},"captures":[],"assertions":[{"id":"status","kind":"status","equals":400},{"id":"media","kind":"media-type","equals":"application/problem+json"},{"id":"schema","kind":"json-schema","schema":"#/$defs/readUpdateProblem"},{"id":"code","kind":"json-pointer","pointer":"/code","exists":true,"equals":"malformed-request"},{"id":"retry","kind":"json-pointer","pointer":"/retry","exists":true,"equals":"never"}]},{"id":"singleton-point","family":"http","method":"GET","target":{"binding":"scope","path":"beads/w1-a"},"credentialRef":"operator","raw":{"headerLines":[]},"captures":[],"assertions":[{"id":"status","kind":"status","equals":200},{"id":"media","kind":"media-type","equals":"application/json"},{"id":"schema","kind":"json-schema","schema":"#/$defs/currentBeadRecord"}]},{"id":"sequence-create","family":"http","method":"POST","target":{"binding":"scope","path":"operations/sequence"},"credentialRef":"operator","raw":{"headerLines":[{"name":"content-type","value":"application/json"},{"name":"bdp-minimum-scope-position","value":"not a token!"}],"body":{"encoding":"utf8","value":"{\"operations\":[{\"operation\":\"createBead\",\"id\":\"beads/w1-b\",\"type\":\"https://reference.invalid/acme/types/task\",\"properties\":{\"title\":\"minimum-sequence\"},\"idempotencyKey\":\"minimum-sequence\"}]}"}},"captures":[],"assertions":[{"id":"status","kind":"status","equals":200},{"id":"media","kind":"media-type","equals":"application/json"},{"id":"schema","kind":"json-schema","schema":"#/$defs/sequenceResponse"},{"id":"outcome","kind":"json-pointer","pointer":"/results/0/outcome","exists":true,"equals":"created"}]},{"id":"sequence-replay","family":"http","method":"POST","target":{"binding":"scope","path":"operations/sequence"},"credentialRef":"operator","raw":{"headerLines":[{"name":"content-type","value":"application/json"},{"name":"bdp-minimum-scope-position","value":""},{"name":"bdp-scope-epoch","value":"epoch-one"},{"name":"BDP-Scope-Epoch","value":"epoch-two"},{"name":"bdp-authorization-view","value":"not a view!"}],"body":{"encoding":"utf8","value":"{\"operations\":[{\"operation\":\"createBead\",\"id\":\"beads/w1-b\",\"type\":\"https://reference.invalid/acme/types/task\",\"properties\":{\"title\":\"minimum-sequence\"},\"idempotencyKey\":\"minimum-sequence\"}]}"}},"captures":[],"assertions":[{"id":"status","kind":"status","equals":200},{"id":"media","kind":"media-type","equals":"application/json"},{"id":"schema","kind":"json-schema","schema":"#/$defs/sequenceResponse"},{"id":"outcome","kind":"json-pointer","pointer":"/results/0/outcome","exists":true,"equals":"created"}]},{"id":"sequence-point","family":"http","method":"GET","target":{"binding":"scope","path":"beads/w1-b"},"credentialRef":"operator","raw":{"headerLines":[]},"captures":[],"assertions":[{"id":"status","kind":"status","equals":200},{"id":"media","kind":"media-type","equals":"application/json"},{"id":"schema","kind":"json-schema","schema":"#/$defs/currentBeadRecord"}]}],"cleanup":{"resetFixture":true}}
+
+DATA EDIT 2 packages/conformance/test-support/read-update-coverage-v1.json: replace only exact old object with exact new object:
+OLD {"id":"read-update.http.command-minimum-fields","status":"omitted","wholeContract":false,"reason":"Private Read+Update and Transactional implementation tests cover ignored command minimum fields, but no cumulative executable row is bound to this required ID. Read minimum controls remain separate; no whole-contract credit is claimed.","bindings":[]}
+NEW {"id":"read-update.http.command-minimum-fields","status":"bounded-observation","wholeContract":true,"reason":"Installed ordinary Update commands ignore copied minimum fields and preserve authentication, keys, key conflict, carrier validation and revision refusal. The 47 portable assertions are supplemented by a harness-local raw-header and full Resource/replay oracle; that supplement is not portable runner credit. The command-ignore obligation does not alter ordinary Read dispatch or conditions (development-runtime.ts and read-http.ts); unchanged read.http.conditional-reads and read.http.head-conditional-parity remain partial preservation context, not additional credit. No Read minimum-position rule, Transactional credit or public qualification is claimed.","bindings":[{"scenario":"read-update.http.command-minimum-fields","assertions":["singleton-create.status","singleton-create.media","singleton-create.schema","singleton-create.outcome","singleton-replay.status","singleton-replay.media","singleton-replay.schema","singleton-replay.outcome","singleton-conflict.status","singleton-conflict.media","singleton-conflict.schema","singleton-conflict.code","singleton-conflict.retry","missing-key.status","missing-key.media","missing-key.schema","missing-key.code","missing-key.retry","unauthenticated.status","unauthenticated.media","unauthenticated.schema","unauthenticated.code","unauthenticated.retry","stale-revision.status","stale-revision.media","stale-revision.schema","stale-revision.code","stale-revision.retry","invalid-carrier.status","invalid-carrier.media","invalid-carrier.schema","invalid-carrier.code","invalid-carrier.retry","singleton-point.status","singleton-point.media","singleton-point.schema","sequence-create.status","sequence-create.media","sequence-create.schema","sequence-create.outcome","sequence-replay.status","sequence-replay.media","sequence-replay.schema","sequence-replay.outcome","sequence-point.status","sequence-point.media","sequence-point.schema"]}]}
+
+
+
+SOURCE docs/specs/bdp.md:3562–3588 exact committed excerpt
+```
+
+Read+Update returns an authoritative mutation postimage, but it does not
+promise that a later request routed to another replica observes it. It adds
+no exposed Scope epoch, Authorization View token or Scope position.
+
+### Mutation command preconditions
+
+BDP mutation POSTs address operation command targets, not selected Resource
+representations: no selected representation of the operation target is read
+or modified by executing the command. Under the method and
+selected-representation boundary in
+[RFC 9110 section 13.2.1](https://www.rfc-editor.org/rfc/rfc9110.html#section-13.2.1),
+HTTP conditional fields on these commands do not guard payload-named
+Resources or aliases. `expectedRevision` remains
+the explicit Resource revision guard. This assigns no blanket exemption for
+unsafe HTTP methods and does not change conditions on canonical Resource
+GET or HEAD requests. A read-side `412 Precondition Failed` is not the
+write-side `409 revision-mismatch`.
+
+On mutation POSTs to operation command targets, authorities MUST ignore the
+`BDP-Minimum-Scope-Position`, `BDP-Scope-Epoch`, and
+`BDP-Authorization-View` request fields. Their presence, absence, completeness,
+and field values do not impose a minimum-position barrier or affect command
+identity. Ordinary HTTP field syntax and transport, header, and body bounds
+still apply, as do authorization, idempotency, carrier validation, and
+`expectedRevision`. This rule applies to mutation POSTs under this profile and
+cumulative profiles. It does not change conditions on reads.
+```
+
+
+SOURCE packages/conformance/src/runner.ts:142–189 exact committed excerpt
+```
+export interface AssertionOutcome {
+  readonly id: string;
+  readonly passed: boolean;
+  readonly message?: string;
+}
+
+export interface ExactReportObservation {
+  readonly source: "raw-http1-serializer";
+  readonly writeState: RequestWriteState;
+  readonly headerProjection: "allowlisted-relative-order";
+  readonly headerLines: readonly { readonly name: string; readonly value: "<redacted>" }[];
+  readonly elidedHeaderLines: number;
+  readonly bodyPresent: boolean;
+  readonly bodyOctets: number;
+  readonly bodyDigest?: string;
+}
+
+export interface ObservedExchange extends TransactionalExchangeFields {
+  readonly request: {
+    readonly id: string;
+    readonly method: ScenarioRequest["method"];
+    readonly url: string;
+    readonly headers: Readonly<Record<string, string>>;
+    readonly wireHeadersObserved?: true;
+    readonly exact?: ExactReportObservation;
+  };
+  readonly response?: {
+    readonly url: string;
+    readonly status: number;
+    readonly headers: Readonly<Record<string, string>>;
+    readonly decodedBodyBytes: number;
+    readonly wireBodyOctets?: number;
+    readonly bodyKind: "empty" | "json" | "invalid-json" | "unrepresentable-json";
+  };
+  readonly transportError?: {
+    readonly category: string;
+    readonly message: string;
+    readonly writeState?: RequestWriteState;
+  };
+  readonly harnessError?: {
+    readonly category: "exact-configuration" | "exact-observation";
+    readonly message: string;
+    readonly writeState?: RequestWriteState;
+  };
+  readonly assertions: readonly AssertionOutcome[];
+}
+
+/** Redacted programmable-action evidence. Inputs, bindings, and output values are never reported. */
+```
+
+SOURCE packages/conformance/src/runner.ts:1210–1263 exact committed excerpt
+```
+      .then(() =>
+        exact && request.raw !== undefined && options.exactExecution !== undefined
+          ? options.exactExecution.execute({
+              method: request.method,
+              url,
+              signal: requestSignal,
+              raw: {
+                headerLines: request.raw.headerLines,
+                ...(body === undefined ? {} : { bodyBytes: Uint8Array.from(body) }),
+              },
+              ...(request.credentialRef === undefined
+                ? {}
+                : { credentialRef: request.credentialRef }),
+              ...(rawRequestTarget === undefined ? {} : { rawRequestTarget }),
+            })
+          : execute({
+              method: request.method,
+              url,
+              headers,
+              signal: requestSignal,
+              ...(rawRequestTarget === undefined ? {} : { rawRequestTarget }),
+            }),
+      )
+      .then(
+        (value) => {
+          settlement.settled = true;
+          return value;
+        },
+        (error: unknown) => {
+          settlement.settled = true;
+          throw error;
+        },
+      );
+    if (exact)
+      terminalWitness = executionOperation.then(
+        (value) => {
+          try {
+            capturedExact = snapshotExactObservation(value, options.exactExecution?.configuration);
+            return capturedExact.writeState;
+          } catch {
+            return undefined;
+          }
+        },
+        (error: unknown) => observedErrorWriteState(error),
+      );
+    response = await enforceDeadline(executionOperation, requestSignal, () =>
+      signal.aborted
+        ? new HttpTransportError("abort", "HTTP exchange was aborted")
+        : new HttpTransportError("timeout", "HTTP exchange timed out"),
+    );
+    if (exact && performance.now() >= requestEndsAt) {
+      requestDeadline.expire();
+      throw new HttpTransportError("timeout", "HTTP exchange timed out");
+    }
+```
+
+SOURCE packages/conformance/src/runner.ts:1356–1471 exact committed excerpt
+```
+    );
+  // The exact snapshot owns header evidence; do not reread a lossy compatibility view.
+  const effectiveRequest = exact ? undefined : response.effectiveRequest;
+  if (effectiveRequest !== undefined) assertEffectiveRequest(effectiveRequest, url, scope);
+  let next: ObservedExchange = {
+    ...observed,
+    ...(effectiveRequest === undefined
+      ? {}
+      : {
+          request: {
+            ...observed.request,
+            url: redactUrl(effectiveRequest.url),
+            headers: redactHeaders(effectiveRequest.headers, reportVersion),
+            ...(!exact && effectiveRequest.headersTransmitted === true
+              ? { wireHeadersObserved: true as const }
+              : {}),
+          },
+        }),
+    response: {
+      url: redactUrl(response.url),
+      status: response.status,
+      headers: redactHeaders(responseHeaders, reportVersion),
+      decodedBodyBytes: new TextEncoder().encode(response.bodyText).byteLength,
+      ...(response.bodyOctets === undefined ? {} : { wireBodyOctets: response.bodyOctets }),
+      bodyKind: bodyObservation.kind,
+    },
+  };
+  exchanges[exchanges.length - 1] = next;
+  if (bodyObservation.kind === "unrepresentable-json") {
+    if (bodyObservation.attribution === "runner-limit")
+      throw new ScenarioObservationLimitError(bodyObservation.reason);
+  }
+  let exactObservation: ExactRequestObservation | undefined;
+  let exactFailure = false;
+  if (exact) {
+    try {
+      if (response.url !== url || capturedExact === undefined)
+        throw new ExactHarnessError("exact-observation");
+      next = {
+        ...next,
+        request: {
+          ...next.request,
+          exact: projectExactObservation(capturedExact, body, options),
+        },
+      };
+      exactObservation = capturedExact;
+    } catch {
+      exactFailure = true;
+      next = {
+        ...next,
+        harnessError: {
+          category: "exact-observation",
+          message: "Exact HTTP observation was unavailable or malformed",
+        },
+      };
+    }
+  }
+  const assertionResponse: HttpExchangeResponse = {
+    url: response.url,
+    status: response.status,
+    bodyText: response.bodyText,
+    headers: responseHeaders,
+    ...(response.bodyOctets === undefined ? {} : { bodyOctets: response.bodyOctets }),
+    ...(effectiveRequest === undefined ? {} : { effectiveRequest }),
+  };
+  const exactWitness = exact
+    ? {
+        request,
+        url,
+        body,
+        observation: exactObservation,
+        configuration: options.exactExecution?.configuration,
+      }
+    : undefined;
+  const corsWitnessFailure =
+    exactWitness !== undefined &&
+    request.assertions.some(
+      (assertion) =>
+        assertion.kind === "header" &&
+        assertion.absent === true &&
+        assertion.name.startsWith("access-control-"),
+    )
+      ? exactCorsWitnessFailure(exactWitness)
+      : undefined;
+  const outcomes = request.assertions.map(
+    (assertion) =>
+      (assertion.kind.startsWith("request-")
+        ? evaluateExactAssertion(assertion, request, url, body, exactObservation, options)
+        : undefined) ??
+      wireOutcomes.get(assertion.id) ??
+      evaluateAssertion(
+        assertion,
+        assertionResponse,
+        bodyObservation,
+        schemaValidator,
+        fixture,
+        scope,
+        runProfile,
+        priorResponses,
+        headers,
+        exactWitness,
+        bindings,
+      ),
+  );
+  exchanges[exchanges.length - 1] = { ...next, assertions: outcomes };
+  if (exactFailure) throw new ExactHarnessError("exact-observation");
+  if (corsWitnessFailure !== undefined)
+    throw new ScenarioWireObservationUnavailableError(corsWitnessFailure);
+  if (outcomes.some(({ passed }) => !passed))
+    throw new ScenarioAssertionFailure(
+      outcomes
+        .filter(({ passed }) => !passed)
+        .map(({ message }) => message ?? "assertion failed")
+        .join("; "),
+    );
+  for (const capture of request.captures) {
+```
+
+
+COMPLETE NAMED SCHEMA OBJECTS (compact, references preserved):
+{"mutationResultMembers":{"type":"object","required":["outcome"],"properties":{"outcome":{"$ref":"#/$defs/mutationOutcome"},"resource":{"oneOf":[{"$ref":"#/$defs/beadRecord"},{"$ref":"#/$defs/linkRecord"}]},"deleted":{"$ref":"#/$defs/deletedIdentity"},"source":{"$ref":"#/$defs/absoluteHttpUrl"},"sourceRevision":{"type":"string","minLength":1}},"allOf":[{"if":{"properties":{"outcome":{"const":"deleted"}},"required":["outcome"]},"then":{"required":["deleted"],"properties":{"deleted":{"$ref":"#/$defs/deletedIdentity"},"resource":false}},"else":{"required":["resource"],"properties":{"resource":{"oneOf":[{"$ref":"#/$defs/beadRecord"},{"$ref":"#/$defs/linkRecord"}]},"deleted":false}}},{"if":{"required":["resource"],"properties":{"resource":{"$ref":"#/$defs/beadRecord"}}},"then":{"properties":{"source":false,"sourceRevision":false}}},{"if":{"required":["deleted"],"properties":{"deleted":{"type":"object","required":["resourceKind"],"properties":{"resourceKind":{"const":"bead"}}}}},"then":{"properties":{"source":false,"sourceRevision":false}}}],"dependentRequired":{"source":["sourceRevision"],"sourceRevision":["source"]}},"mutationResult":{"title":"BDP Read+Update mutation result","type":"object","allOf":[{"$ref":"#/$defs/mutationResultMembers"}],"unevaluatedProperties":false},"sequenceMemberResult":{"type":"object","allOf":[{"$ref":"#/$defs/mutationResultMembers"}],"properties":{"operationIndex":{"type":"integer","minimum":0},"operationName":{"$ref":"#/$defs/localName"}},"required":["operationIndex"],"unevaluatedProperties":false},"sequenceMemberAliasResult":{"type":"object","allOf":[{"$ref":"#/$defs/aliasResultMembers"}],"properties":{"operationIndex":{"type":"integer","minimum":0}},"required":["operationIndex"],"unevaluatedProperties":false},"sequenceMemberProblem":{"type":"object","allOf":[{"$ref":"#/$defs/readUpdateProblem"},{"properties":{"code":{"not":{"enum":["revision-unknown","revision-unretained","revision-reorganized","revision-not-tracked","revision-unrepresentable"]}}}}],"required":["status","operationIndex"],"properties":{"status":{"type":"integer"},"operationIndex":{"type":"integer","minimum":0},"operationName":{"$ref":"#/$defs/localName"},"outcome":false}},"sequenceResponse":{"title":"BDP Read+Update sequence response","type":"object","required":["results"],"properties":{"results":{"type":"array","minItems":1,"items":{"oneOf":[{"$ref":"#/$defs/sequenceMemberResult"},{"$ref":"#/$defs/sequenceMemberAliasResult"},{"$ref":"#/$defs/sequenceMemberProblem"}]}}},"additionalProperties":false},"currentBeadRecord":{"allOf":[{"$ref":"#/$defs/beadRecord"},{"type":"object","required":["metadata"],"properties":{"metadata":{"$ref":"#/$defs/metadata"},"links":{"$ref":"#/$defs/currentLinkCollection"},"ownedLinks":{"type":"object","additionalProperties":{"type":"array","items":{"$ref":"#/$defs/currentLinkRecord"}}}}}]},"beadRecord":{"type":"object","required":["id","type","revision","properties"],"properties":{"id":{"$ref":"#/$defs/absoluteHttpUrl"},"type":{"$ref":"#/$defs/absoluteHttpUrl"},"revision":{"type":"string","minLength":1},"properties":{"$ref":"#/$defs/properties"},"metadata":{"$ref":"#/$defs/metadata"},"links":{"$ref":"#/$defs/linkCollection"},"ownedLinks":{"type":"object","propertyNames":{"$ref":"#/$defs/absoluteHttpUrl"},"additionalProperties":{"type":"array","items":{"$ref":"#/$defs/linkRecord"}}},"revisionProvenance":{"$ref":"#/$defs/revisionProvenance"}},"additionalProperties":false},"metadata":{"type":"object","additionalProperties":true},"readUpdateProblem":{"title":"BDP Read+Update Problem Details","type":"object","required":["type","code","retry"],"properties":{"type":{"$ref":"#/$defs/absoluteHttpUrl"},"title":{"type":"string"},"status":{"type":"integer","enum":[400,401,403,404,409,410,413,415,422,429,503]},"detail":{"type":"string"},"instance":{"$ref":"#/$defs/absoluteUri"},"code":{"$ref":"#/$defs/readUpdateProblemCode"},"retry":{"$ref":"#/$defs/retryDisposition"},"retryAfter":{"type":"integer","minimum":0},"diagnostics":{"$ref":"#/$defs/validationDiagnostics"},"diagnosticsTruncated":{"type":"boolean"}},"allOf":[{"if":{"properties":{"code":{"$ref":"#/$defs/readProblemCode"}},"required":["code"]},"then":{"$ref":"#/$defs/readProblem"}},{"if":{"properties":{"code":{"const":"unsupported-media-type"}},"required":["code"]},"then":{"properties":{"type":{"const":"https://github.com/gastownhall/bdp/problems/request"},"status":{"const":415},"retry":{"const":"never"}}}},{"if":{"properties":{"code":{"const":"binding-unavailable"}},"required":["code"]},"then":{"properties":{"type":{"const":"https://github.com/gastownhall/bdp/problems/request"},"status":{"const":400},"retry":{"const":"never"}}}},{"if":{"properties":{"code":{"const":"validation-failed"}},"required":["code"]},"then":{"properties":{"type":{"const":"https://github.com/gastownhall/bdp/problems/validation"},"status":{"const":422},"retry":{"const":"never"}}}},{"if":{"properties":{"code":{"const":"type-not-installed"}},"required":["code"]},"then":{"properties":{"type":{"const":"https://github.com/gastownhall/bdp/problems/validation"},"status":{"const":422},"retry":{"const":"after-state-change"}}}},{"if":{"properties":{"code":{"const":"identity-taken"}},"required":["code"]},"then":{"properties":{"type":{"const":"https://github.com/gastownhall/bdp/problems/conflict"},"status":{"const":409},"retry":{"const":"never"}}}},{"if":{"properties":{"code":{"const":"alias-path-taken"}},"required":["code"]},"then":{"properties":{"type":{"const":"https://github.com/gastownhall/bdp/problems/conflict"},"status":{"const":409},"retry":{"const":"after-state-change"}}}},{"if":{"properties":{"code":{"const":"revision-mismatch"}},"required":["code"]},"then":{"properties":{"type":{"const":"https://github.com/gastownhall/bdp/problems/conflict"},"status":{"const":409},"retry":{"const":"after-state-change"}}}},{"if":{"properties":{"code":{"const":"incident-links-exist"}},"required":["code"]},"then":{"properties":{"type":{"const":"https://github.com/gastownhall/bdp/problems/conflict"},"status":{"const":409},"retry":{"const":"after-state-change"}}}},{"if":{"properties":{"code":{"const":"aggregate-constraint-violation"}},"required":["code"]},"then":{"properties":{"type":{"const":"https://github.com/gastownhall/bdp/problems/conflict"},"status":{"const":409},"retry":{"const":"after-state-change"}}}},{"if":{"properties":{"code":{"const":"idempotency-conflict"}},"required":["code"]},"then":{"properties":{"type":{"const":"https://github.com/gastownhall/bdp/problems/conflict"},"status":{"const":409},"retry":{"const":"never"}}}},{"if":{"properties":{"code":{"const":"idempotency-in-progress"}},"required":["code"]},"then":{"properties":{"type":{"const":"https://github.com/gastownhall/bdp/problems/conflict"},"status":{"const":409},"retry":{"const":"after-delay"}}}},{"if":{"properties":{"code":{"const":"idempotency-expired"}},"required":["code"]},"then":{"properties":{"type":{"const":"https://github.com/gastownhall/bdp/problems/gone"},"status":{"const":410},"retry":{"const":"never"}}}},{"if":{"properties":{"code":{"const":"revision-allocation-unsafe"}},"required":["code"]},"then":{"properties":{"type":{"const":"https://github.com/gastownhall/bdp/problems/conflict"},"status":{"const":409},"retry":{"const":"after-state-change"}}}},{"if":{"properties":{"code":{"const":"validation-failed"}},"required":["code"]},"then":{"required":["diagnostics"],"properties":{"diagnostics":{"$ref":"#/$defs/validationDiagnostics"}}}},{"if":{"not":{"properties":{"code":{"const":"validation-failed"}},"required":["code"]}},"then":{"properties":{"diagnostics":false,"diagnosticsTruncated":false}}},{"if":{"not":{"properties":{"code":{"const":"resource-pruned"}},"required":["code"]}},"then":{"properties":{"archivedAt":false}}},{"if":{"properties":{"retry":{"const":"after-delay"}},"required":["retry"]},"else":{"properties":{"retryAfter":false}}},{"if":{"properties":{"code":{"const":"revision-allocation-unsafe"}},"required":["code"]},"then":{"properties":{"missing":false,"window":false,"resource":false,"properties":false,"ownedLinks":false,"pointer":false,"identity":false,"revision":false,"revisionProvenance":false}}},{"if":{"not":{"properties":{"code":{"const":"revision-unretained"}},"required":["code"]}},"then":{"properties":{"missing":false}}}]},"resourceIdentity":{"type":"object","required":["id","type","revision"],"properties":{"id":{"$ref":"#/$defs/absoluteHttpUrl"},"type":{"$ref":"#/$defs/absoluteHttpUrl"},"revision":{"type":"string","minLength":1}},"additionalProperties":false},"deletedIdentity":{"type":"object","required":["resourceKind","resource"],"properties":{"resourceKind":{"$ref":"#/$defs/resourceKind"},"resource":{"$ref":"#/$defs/resourceIdentity"}},"additionalProperties":false}}
+
+
+SOURCE packages/conformance/src/runner.ts:2014–2043 — evaluateAssertion signature, exact precondition and complete status branch (verbatim)
+```
+function evaluateAssertion(
+  assertion: ScenarioAssertion,
+  response: HttpExchangeResponse,
+  body: ObservedBody,
+  schemaValidator: SchemaValidator | undefined,
+  fixture: ConformanceFixture,
+  scope: string,
+  runProfile: ScenarioRunOptions["profile"],
+  priorResponses: ReadonlyMap<string, ComparableResponse>,
+  requestedHeaders: Readonly<Record<string, string>>,
+  exactWitness?: ExactHeaderWitness,
+  bindings: ReadonlyMap<string, JsonValue> = new Map(),
+): AssertionOutcome {
+  if (
+    assertion.kind === "request-authored-body" ||
+    assertion.kind === "request-authored-headers" ||
+    assertion.kind === "request-write-state"
+  )
+    return outcome(assertion.id, false, "exact HTTP observation required");
+  if (assertion.kind === "wire-not-contains")
+    throw new ConformanceRunnerError("raw-wire assertion was not evaluated before normalization");
+  if (assertion.kind === "status") {
+    const expected =
+      assertion.equals === undefined ? (assertion.oneOf as readonly number[]) : [assertion.equals];
+    return outcome(
+      assertion.id,
+      expected.includes(response.status),
+      `expected status ${expected.join(" or ")}, got ${response.status}`,
+    );
+  }
+```
+
+SOURCE packages/conformance/src/runner.ts:2163–2171 — complete media-type branch (verbatim)
+```
+  if (assertion.kind === "media-type") {
+    const actual = response.headers["content-type"];
+    const mediaType = actual?.split(";", 1)[0]?.trim().toLowerCase();
+    return outcome(
+      assertion.id,
+      mediaType === assertion.equals,
+      `response media type did not equal '${assertion.equals}'`,
+    );
+  }
+```
+
+SOURCE packages/conformance/src/runner.ts:2231–2292 — complete json-pointer branch (verbatim)
+```
+  if (assertion.kind === "json-pointer") {
+    if (body.kind !== "json") return outcome(assertion.id, false, observedBodyIssue(body));
+    const value = jsonPointer(body.value, assertion.pointer);
+    const exists = value !== undefined;
+    if (assertion.equalsBinding !== undefined) {
+      const expected = bindings.get(assertion.equalsBinding);
+      if (expected === undefined)
+        throw new ConformanceRunnerError("JSON assertion capture is unavailable");
+      return outcome(
+        assertion.id,
+        exists && deepEqual(value, expected),
+        "JSON pointer did not equal the earlier observed capture",
+      );
+    }
+    const fixtureExpected =
+      assertion.fixturePointer === undefined
+        ? undefined
+        : jsonPointer(fixture, assertion.fixturePointer);
+    if (assertion.fixturePointer !== undefined && fixtureExpected === undefined)
+      throw new ConformanceRunnerError("fixture oracle pointer did not resolve");
+    let normalizedValue = value;
+    let normalizedFixtureExpected = fixtureExpected;
+    let normalizedEquals = assertion.equals;
+    if (assertion.normalize === "scope-relative-url") {
+      try {
+        normalizedValue = scopeRelativeUrl(value, scope);
+      } catch {
+        normalizedValue = undefined;
+      }
+    } else if (assertion.normalize === "iso-timestamps") {
+      const pointers = assertion.timestampPointers ?? [];
+      const expected =
+        assertion.fixturePointer !== undefined ? normalizedFixtureExpected : assertion.equals;
+      if (
+        !hasCanonicalIsoTimestamps(value, pointers) ||
+        !hasCanonicalIsoTimestamps(expected, pointers)
+      )
+        return outcome(
+          assertion.id,
+          false,
+          "declared timestamp pointer was absent or not a canonical ISO timestamp",
+        );
+      normalizedValue = normalizeIsoTimestampsAtPointers(value, pointers);
+      normalizedFixtureExpected = normalizeIsoTimestampsAtPointers(fixtureExpected, pointers);
+      normalizedEquals = normalizeIsoTimestampsAtPointers(
+        assertion.equals,
+        pointers,
+      ) as typeof assertion.equals;
+    }
+    return assertion.exists
+      ? outcome(
+          assertion.id,
+          exists &&
+            (assertion.equalsRunProfile === true
+              ? normalizedValue === runProfile
+              : assertion.fixturePointer !== undefined
+                ? deepEqual(normalizedValue, normalizedFixtureExpected)
+                : normalizedEquals === undefined || deepEqual(normalizedValue, normalizedEquals)),
+          "JSON pointer was absent or mismatched",
+        )
+      : outcome(assertion.id, !exists, "JSON pointer unexpectedly existed");
+  }
+```
+
+SOURCE packages/conformance/src/runner.ts:2390–2403 — complete final schema branch and function end (verbatim)
+```
+  if (body.kind !== "json") return outcome(assertion.id, false, observedBodyIssue(body));
+  if (schemaValidator === undefined)
+    throw new ConformanceRunnerError("schema assertion requires an offline schema validator");
+  const failures = schemaValidator.validate(assertion.schema, body.value);
+  return {
+    id: assertion.id,
+    passed: failures.length === 0,
+    ...(failures.length === 0
+      ? {}
+      : {
+          message: failures.map(({ message }) => `response body ${message}`).join("; "),
+        }),
+  };
+}
+```
+
+SOURCE packages/conformance/src/runner.ts:637–695 — sequential action loop and first-failure terminal classification (verbatim)
+```
+      for (const action of scenarioActionSequence(scenario)) {
+        actionSettlement.settled = true;
+        actionSettlement.description =
+          action.family === "http" ? "HTTP exchange" : "action execution";
+        try {
+          await runScenarioAction(
+            action,
+            bindings,
+            exchanges,
+            actions,
+            options.execute,
+            options.actionExecutor,
+            options.schemaValidator,
+            options.artifactBundle.fixture,
+            options.scope,
+            options.profile,
+            controller.signal,
+            options.requestTimeoutMs ?? 30_000,
+            actionSettlement,
+            priorResponses,
+            options,
+            transactional,
+          );
+        } catch (error) {
+          if (action.prerequisiteScenario !== undefined)
+            throw new ScenarioPrerequisiteRecheckFailure(action.prerequisiteScenario, error);
+          throw error;
+        }
+      }
+      runResult = result(metadata, scenario, "pass", undefined, exchanges);
+    }
+  } catch (error) {
+    if (controller.signal.aborted)
+      runResult = result(
+        metadata,
+        scenario,
+        "harness-error",
+        "scenario run was aborted",
+        exchanges,
+        "aborted",
+      );
+    else if (error instanceof ScenarioPrerequisiteRecheckFailure)
+      runResult = prerequisiteFailureResult(
+        metadata,
+        scenario,
+        error,
+        exchanges,
+        options.artifactBundle.catalog,
+      );
+    else if (error instanceof ScenarioActionExecutorMissingError)
+      runResult = result(
+        metadata,
+        scenario,
+        "harness-error",
+        error.message,
+        exchanges,
+        "not-implemented",
+      );
+    else if (error instanceof ScenarioAssertionFailure)
+```
+
+EXACT UNCHANGED NORMATIVE CATALOG ROW:
+{"id":"read-update.http.command-minimum-fields","title":"Mutation POSTs ignore the three read-consistency fields without a minimum-position barrier or command-identity effect, preserving ordinary admission and read minima","kind":"normative","requiredProfile":"read-update","requirements":[{"source":"docs/specs/bdp.md","anchor":"#mutation-command-preconditions","selectedText":"On mutation POSTs to operation command targets, authorities MUST ignore the `BDP-Minimum-Scope-Position`, `BDP-Scope-Epoch`, and `BDP-Authorization-View` request fields. Their presence, absence, completeness, and field values do not impose a minimum-position barrier or affect command identity. Ordinary HTTP field syntax and transport, header, and body bounds still apply, as do authorization, idempotency, carrier validation, and `expectedRevision`. This rule applies to mutation POSTs under this profile and cumulative profiles. It does not change conditions on reads."}]}
+
+EXACT IDENTITY PINS:
+{"manifest":{"parentSha256":"80f74625b6074892b707365859572f8bc0b8c10478d36ac307370ef6027f5fc3","currentSha256":"10a7c6f97a280cf88e58d3aa2039fe580904b74bfffcebda4747fc3c1a34b583"},"coverage":{"parentSha256":"85b717f1817d8ea295d0a7c51f8914bdfb942d1786d414924d3d5f80be7cd10a","currentSha256":"4120abfe2f724fe34b3868bd3533b181e18479768d5de752b5098c6288dbb395"},"newRowCompactSha256":"61d74c4cae007646ea04d928503e57933fa6bae7496758cb50d3e4b7907058c6","newCoverageCompactSha256":"63fc576c428b8d9ad0441a8e1840c5774188aa7f1080b691acc48b300def19e8"}
+
+OMISSIONS / RESPONSIBILITY: no entire old multi-megabyte corpus, old unrelated control bodies, socket implementation or recursive entire schema copied. All changed JSON objects are complete and compacted without field loss. F contains every changed static/fanout TS hunk; L contains exact relevant validation branches, with intervening unused assertion branches intentionally omitted and ranges explicit. Full runtime harness is in the completed A review; its actual private full-body checks complement portable assertions and cannot be credited as portable schema proof. Named schema objects preserve references; unrelated referenced URL/enum/link/provenance definitions are unchanged and not copied. Identify a genuinely load-bearing omitted dependency explicitly; do not infer absence from omission. Source checks and local installed results do not authorize public profile activation or substitute for your scope review. End with a completion statement covering all your assigned responsibilities.

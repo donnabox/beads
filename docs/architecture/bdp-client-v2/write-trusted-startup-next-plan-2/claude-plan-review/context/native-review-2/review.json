@@ -1,0 +1,277 @@
+{
+  "createdUtc": "2026-10-18T03:21:32.642977+00:00",
+  "reviewer": "Fresh independent native bounded PLAN reviewer",
+  "verdict": "REVISIONS_REQUIRED_N1",
+  "reviewedPlanSha256": "0e86b8db62d72c5794fe010a9eafe790526fc4d4ce5b1878baab0fe95de1b7f8",
+  "originalPacketInventory": {
+    "plan.md": "0e86b8db62d72c5794fe010a9eafe790526fc4d4ce5b1878baab0fe95de1b7f8",
+    "contract.md": "05227727a0218c8cf1192647d16bf41fd675131bfe870462b7884cb0e3fb9ac2",
+    "source-evidence.json": "b1b24b3bcc40318d3f79ece5f9df36eeef771cb4e48eb11b052a02ad0dcf5eca",
+    "index.json": "ff9564be4100fb3f1bd940671e32347dcd6c50f57a1ec6b822093bf546d22e01"
+  },
+  "source": {
+    "root": "/Users/dbox/repos/wt/vickie/vickie-event-admission-replay-minimum",
+    "head": "a56254d682cf4623cab22a552e3d2f695f691795",
+    "tree": "144f278c7f5a08516c4ac99ba553d4cc25bcf560",
+    "statusPorcelain": "",
+    "all19RecordedSourceInputsMatch": true
+  },
+  "scope": "Trusted-startup loader plan/contract and direct config/RU/TX capture/runtime/package/smoke source; no repo-wide audit",
+  "findings": [
+    {
+      "id": "N1",
+      "priority": "P1",
+      "severity": "High",
+      "title": "Seven-file footprint omits four exact package-export enforcement/regression files",
+      "planLocation": {
+        "file": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-trusted-startup-next-plan-1/plan.md",
+        "lines": [
+          54,
+          63,
+          64,
+          66,
+          94
+        ]
+      },
+      "sourceEvidence": [
+        {
+          "file": "/Users/dbox/repos/wt/vickie/vickie-event-admission-replay-minimum/scripts/smoke-safety.mjs",
+          "lines": [
+            5,
+            13
+          ],
+          "fact": "assertServerExports requires deep equality with exactly root and development exports."
+        },
+        {
+          "file": "/Users/dbox/repos/wt/vickie/vickie-event-admission-replay-minimum/scripts/smoke-executables.mjs",
+          "lines": [
+            408,
+            411
+          ],
+          "fact": "Packed smoke invokes this helper before any proposed loader checks."
+        },
+        {
+          "file": "/Users/dbox/repos/wt/vickie/vickie-event-admission-replay-minimum/scripts/smoke-safety.test.mjs",
+          "lines": [
+            7,
+            20
+          ],
+          "fact": "Existing regression fixture accepts only the old exact map and pins rejection behavior."
+        },
+        {
+          "file": "/Users/dbox/repos/wt/vickie/vickie-event-admission-replay-minimum/packages/server/src/transaction-snapshot.test.ts",
+          "lines": [
+            675,
+            680
+          ],
+          "fact": "Private Snapshot export test requires package keys exactly root/development and separately keeps private Snapshot/json-equality names out of public facades."
+        },
+        {
+          "file": "/Users/dbox/repos/wt/vickie/vickie-event-admission-replay-minimum/packages/server/src/read-sequence-lifecycle.test.ts",
+          "lines": [
+            1528,
+            1551
+          ],
+          "fact": "Lifecycle privacy test requires old exact package export map, in addition to actual lifecycle/facet privacy checks."
+        }
+      ],
+      "issue": "Adding ./reference-configuration to packages/server/package.json as required makes packed smoke and two existing full-suite package privacy tests fail their unchanged exact export assertions. The seven-file scope also omits the shared smoke allowlist and its positive regression fixture. Updating only emitted-file inventory/new loader tests cannot satisfy required checks within that footprint.",
+      "impact": "Deterministic required smoke and full-suite regressions, or unreviewed footprint escape/bypassed package privacy checks; installed-loader delivery cannot meet its done predicate.",
+      "smallestCorrection": "Create explicit eleven-file footprint successor: original seven plus scripts/smoke-safety.mjs, scripts/smoke-safety.test.mjs, packages/server/src/transaction-snapshot.test.ts and packages/server/src/read-sequence-lifecycle.test.ts. Update each exact export map/key expectation solely for ./reference-configuration -> dist/reference-deployment.d.ts/js. Keep shared smoke checker, missing/wildcard/private/candidate/runtime/admission refusals, Snapshot private-module checks and all lifecycle/facet privacy assertions. Do not strip the new export, weaken exact equality, duplicate the shared smoke allowlist or modify Snapshot/lifecycle production code.",
+      "productDecisionNeeded": false,
+      "requiresProtocolChange": false
+    }
+  ],
+  "boundedAcceptance": {
+    "architecture": "Accept existing-capture non-listening loader design and separate later lifecycle/admission boundary. No incoming BDP semantics or new product decision needed.",
+    "revision": "N1 requires an explicit eleven-file footprint successor preserving original plan and initial native review. No new design/product approval gate is introduced. Other inspected mechanisms have no additional concrete blocker.",
+    "next": "Root dispositions N1 and binds the exact successor/source for the required actual Claude PLAN review; this review does not release authoring or execution."
+  },
+  "checks": [
+    {
+      "area": "Trusted local input and shared config",
+      "conclusion": "Architecturally coherent",
+      "evidence": "One optional bdptest path follows existing globally known vocabulary/role-owned content validation and no-role view. Configuration stores only intent/path; no file I/O, auth.token reuse or fixture reinterpretation. Shared resolved Scope/listener/profile/six Read limits remain sole authority."
+    },
+    {
+      "area": "Existing RU capture delegation",
+      "conclusion": "Supported by inspected source",
+      "evidence": "captureInstalledReferenceConfiguration already validates closed storage/listener/credentials/policies/artifacts/multiplicity, compiles contracts and derives identities; empty descriptors choose full reference closure. DEVELOPMENT_OWNER_LIMITS.read supplies actual20/100,4096/32/256,60000 tuple. Preserve existing token uniqueness/principal semantics rather than adding new IAM behavior."
+    },
+    {
+      "area": "Existing TX capture and preflight",
+      "conclusion": "Supported by inspected source",
+      "evidence": "Installed capture returns canonical scope and privateport0; runtime capture compiles/authenticates data and supplies actual seam-free readOptions with2/32,4096/32/256,1000. No owner/listener is opened by these capture functions. Intended shared listener remains separately stored and is not falsely claimed as consumed by current candidate."
+    },
+    {
+      "area": "Non-listening boundary and later fail-before-bind",
+      "conclusion": "Boundary is explicit and correct",
+      "evidence": "No candidate/start/runtime factory is exported by the new data subpath. Current startTransactionRuntime listens before openTransactionStore; plan expressly defers that lifecycle repair and owner-metadata/admission checks to D3c/P rather than claiming them here. Loader success is not evidence eligibility or public activation."
+    },
+    {
+      "area": "Strict file/JSON/capture behavior",
+      "conclusion": "Plan provides concrete acceptance requirements",
+      "evidence": "Single ordinary-file handle, bounded32MiB+1 read/fatal UTF8/strict lossless duplicate-name/scalar/number admission, finite envelope bounds, own-data snapshot, fixed-code errors and no secret-bearing parser cause. Existing delegated inner artifact/compiler budgets remain authoritative. Final implementation must actually honor those requirements; no code was executed."
+    },
+    {
+      "area": "Package/dependency boundary",
+      "conclusion": "N1 revision required; otherwise feasible",
+      "evidence": "New module emits four files under existing tsconfig/dist packaging; narrow snapshot avoids server->config edge. Original plan covers exact dist inventory but misses four existing exact export-map/key enforcement/regression files. All four need narrow expectation updates; no production Snapshot/lifecycle changes."
+    },
+    {
+      "area": "Regression and installed tests",
+      "conclusion": "Meaningful proposed scope once N1 is corrected",
+      "evidence": "Config precedence/role/global typo/no-serve, actual RU/TX capture comparisons, secret-safe refusal, caller/file immutability, no store/listener side effects and fresh external-consumer subpath positive/negative checks prove this loader slice without treating it as public startup or profile completion."
+    }
+  ],
+  "inspectedSourceInputs": {
+    "packages/config/src/index.ts": {
+      "sha256": "356febdfe9e3818f471da4c2ddf8d62370ad91542404e4aa630d3734a61babe3",
+      "bytes": 40311,
+      "sourceEvidenceMatched": true
+    },
+    "packages/config/src/index.test.ts": {
+      "sha256": "a966a2c223f263d2db5dd0b48082f7bc57aca66e346ca109c1a9d1eab53c2a0f",
+      "bytes": 53079,
+      "sourceEvidenceMatched": true
+    },
+    "docs/design/startup-configuration.md": {
+      "sha256": "f957814cabb23136a6064b6ea2814bf6a5c454fe841666053bf1a01cae67d175",
+      "bytes": 37223,
+      "sourceEvidenceMatched": true
+    },
+    "packages/server/src/installed-reference-configuration.ts": {
+      "sha256": "1920271bd8f23bef75a685b8c4c06affaf6c84b9c220735115d1a7515688b268",
+      "bytes": 7815,
+      "sourceEvidenceMatched": true
+    },
+    "packages/server/src/transaction-installed-configuration.ts": {
+      "sha256": "e15cb54266848fdd4aa08b19b37f1b2eb080f4599d9414fad8d85b6f33f35d99",
+      "bytes": 2942,
+      "sourceEvidenceMatched": true
+    },
+    "packages/server/src/transaction-runtime-configuration.ts": {
+      "sha256": "57cd5d38c7199011d05589bc2b8ac1a0e2a4a9dc7585d019f9de5801a0a4d808",
+      "bytes": 16196,
+      "sourceEvidenceMatched": true
+    },
+    "packages/server/src/development-contracts.ts": {
+      "sha256": "182a1a6d06b09f08ca3c83ad0fb27a09a419ad3e99729528381f210973b2c40a",
+      "bytes": 11334,
+      "sourceEvidenceMatched": true
+    },
+    "packages/server/src/development-authority.ts": {
+      "sha256": "d49f89da345234f7eaee83dd872a5c2d7a1a8d38ffc794e5e69d333976d22d49",
+      "bytes": 14384,
+      "sourceEvidenceMatched": true
+    },
+    "packages/server/src/installed-contract-artifact.ts": {
+      "sha256": "db8f3b1e0a4b8dc1a07a56bcadb66d3cdbebff114fb119becec79d11474eb7f0",
+      "bytes": 17456,
+      "sourceEvidenceMatched": true
+    },
+    "packages/server/src/transaction-store.ts": {
+      "sha256": "3f04b440b3cf78f9d8d14650f27c6bdd5e47e6f1a8bd2fddba62407b37d08002",
+      "bytes": 96344,
+      "sourceEvidenceMatched": true
+    },
+    "packages/server/src/transaction-batch.ts": {
+      "sha256": "830ad57a680db7148fc75cd9cc10cadfc6a812448fd1704c1b0f47b13611808d",
+      "bytes": 45508,
+      "sourceEvidenceMatched": true
+    },
+    "packages/server/src/transaction-runtime.ts": {
+      "sha256": "48cb5411407c456d7b3f301a4b67970061be9f51c94201de832ba5deff6ea2d4",
+      "bytes": 16727,
+      "sourceEvidenceMatched": true
+    },
+    "packages/server/src/installed-reference.ts": {
+      "sha256": "c311a724d5d81710264b443da6800e960f49402f10383889de59714949b9eec7",
+      "bytes": 1585,
+      "sourceEvidenceMatched": true
+    },
+    "packages/server/src/transaction-installed.ts": {
+      "sha256": "afddc6b0304fee4762c79e40ac6610a281ca8791928d8f779a900a7f6eac881a",
+      "bytes": 1112,
+      "sourceEvidenceMatched": true
+    },
+    "packages/server/package.json": {
+      "sha256": "110e00c403c667d8c848c6280b2e98c47f98f134158a621967d889914d44632e",
+      "bytes": 495,
+      "sourceEvidenceMatched": true
+    },
+    "packages/server/tsconfig.json": {
+      "sha256": "da054bc9239dfe20febb2fd9255e4263781627499af7eccc3c40a5c80526b1da",
+      "bytes": 225,
+      "sourceEvidenceMatched": true
+    },
+    "packages/protocol/src/json-admission.ts": {
+      "sha256": "fad4bd5159e7ff9a309d9c094c0c8beb950593a60d69f088971cb9bb6b84e76e",
+      "bytes": 13557,
+      "sourceEvidenceMatched": true
+    },
+    "packages/protocol/src/index.ts": {
+      "sha256": "92e547e807ec2d23223c47dbc4e04867d55db89ac9aab5fbd55f33349f92bdc6",
+      "bytes": 21684,
+      "sourceEvidenceMatched": true
+    },
+    "scripts/smoke-executables.mjs": {
+      "sha256": "adeaea6e334f8fb6f7af5d09f0cb7ee0b729864affc45cb6baf84a95f1d4d9ae",
+      "bytes": 43245,
+      "sourceEvidenceMatched": true
+    },
+    "scripts/smoke-safety.mjs": {
+      "sha256": "8aa35543d3236187aa377ad01d2255ecc6abcab3a81665aa6498baff2bf73803",
+      "bytes": 1491,
+      "reason": "Narrow package-export regression/dependency/build boundary inspection"
+    },
+    "scripts/smoke-safety.test.mjs": {
+      "sha256": "86891633028185961018b63b4aac4bddef8660790fbb467fbbdabdcae7a126fa",
+      "bytes": 2307,
+      "reason": "Narrow package-export regression/dependency/build boundary inspection"
+    },
+    "scripts/check-dependency-boundaries.mjs": {
+      "sha256": "31a3c2c7f4aaf16fd9fa102831e4068455d7b622e605d9a65c15b99178f295e4",
+      "bytes": 6666,
+      "reason": "Narrow package-export regression/dependency/build boundary inspection"
+    },
+    "scripts/dependency-boundary-rules.mjs": {
+      "sha256": "5a48e2763b3da883bcc63e10e76381b453cfdbfe817576a0861d235c241e65ca",
+      "bytes": 6366,
+      "reason": "Narrow package-export regression/dependency/build boundary inspection"
+    },
+    "tsconfig.base.json": {
+      "sha256": "6c70be275f9f7d5de533cbd3f2454ae7cb84bc765ab84f4f199889580e18e152",
+      "bytes": 689,
+      "reason": "Narrow package-export regression/dependency/build boundary inspection"
+    },
+    "packages/server/src/transaction-snapshot.test.ts": {
+      "sha256": "57227357dccc13e6f47ec35aad06b238fba90743c4d0283361c4931ec1c5bad5",
+      "bytes": 60834,
+      "reason": "Root-directed bounded exact export-map regression fanout"
+    },
+    "packages/server/src/read-sequence-lifecycle.test.ts": {
+      "sha256": "264a629be30266f8932d09db39ce9cc4b532c54ef9f52a0689c753505eaf33fb",
+      "bytes": 60359,
+      "reason": "Root-directed bounded exact export-map regression fanout"
+    }
+  },
+  "limitations": [
+    "PLAN review only; final loader implementation/types/export map/bounded-reader behavior are not authored or executed",
+    "No tests, builds, installs, services, CLI reviewers or runtime were run",
+    "No proof of ordinary Write startup, public admission, existing store compatibility/live metadata or cumulative profile evidence is claimed"
+  ],
+  "originalPlanPreserved": true,
+  "sourceOrDesignEdits": false,
+  "remoteWrites": false,
+  "supersedesForFindingFootprintOnly": {
+    "review": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-trusted-startup-next-plan-1/native-review-1",
+    "indexSha256": "6c4e85b0be8b4d85754a5e9da138d065c9d372cd345cc613700c6b5a79769b4f",
+    "preservedFiles": {
+      "review.md": "a6a0274c70ddd4ec6e3f6061280164def62d30e5f0edefbfcd65971efdf26dd9",
+      "review.json": "a994319de6d523ecaa8f8fd4b1b6776ee82de07ec0f389bdd12e8b9a615eecaa",
+      "index.json": "6c4e85b0be8b4d85754a5e9da138d065c9d372cd345cc613700c6b5a79769b4f"
+    },
+    "reason": "Root-directed narrow export-map fanout inspection found two additional exact package assertions; original review preserved."
+  }
+}

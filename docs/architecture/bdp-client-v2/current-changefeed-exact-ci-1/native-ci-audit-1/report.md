@@ -1,0 +1,9 @@
+# D1 exact CI native audit
+
+Exact commit cce884c passed run39099693742: all27 steps successful. Complete API logs report186/186 test files and9474 passed/1 skipped/9475 tests,686.45s. The sole skipped callback is the runnable Read walkthrough. E2E preflight passed7 tests; smoke and existing Read evidence gate completed.
+
+All15 focused D1 source titles printed pass. Actual new9 and selected legacy2 source reports parse and pass; D records32 ready/drained rows. Finite installed4 records exit0/close0/stdio drain/pending0/directory removal. New installed10 records exit0/close0, drained work and exact retained group2; its tracked diff is correctly empty on the clean committed CI source. Historical installed10 has visible10 rows and child20899 exit0/no signal/closed/store absence, but GitHub masking breaks its JSON: raw bytes and an explicitly limited visible projection are retained without repair.
+
+Verified the API zip and all29 extracted members/mirrors. The original2333227-byte CLI capture remains preserved but lacks the main suite ending; the3831474-byte API test log provides actual final counts. Eight report lines have masking-invalid JSON and are not counted as fully parsed. No unhandled/runtime fatal diagnostic patterns were found. Format checked454 files with1 oversized-matrix warning; lint exited successfully with1169 warnings/131 infos; action Node20 deprecation warning remains.
+
+The89-row evidence.verified seal covers the existing historical Read artifact/runHead, not a new current-head or cumulative Write claim. CI callbacks use workspace dist; no external-consumer provenance is transferred from local validation. Process/store closure is reported by remote callbacks, without an independent post-job remote census. No CI rerun, product/runtime/Git/source/flag action occurred. Root owns exact CI disposition, PR and landing coordination.

@@ -1,0 +1,5 @@
+{
+  "correction": "Require exactly one matching resolution-bearing package block; snapshot blocks are distinct dependency records. No actual lock/source/package change or rerun.",
+  "operation": "Registry integrity lookup initially matched source lock package and snapshot sections by same identity",
+  "result": "AssertionError expected one match but two before audit-output creation"
+}

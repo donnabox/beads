@@ -1,0 +1,67 @@
+{
+  "kind": "independent-full-native-startup-validation-preparation-mechanics-review",
+  "reviewedUtc": "2026-10-18T05:16:59.225965+00:00",
+  "session": "2026-10-18T02:16:24Z-549f",
+  "decision": "REVISIONS REQUIRED: N1 and N2; execution remains CLOSED",
+  "bindings": {
+    "preparationIndexSha256": "34b03b3a3eec7aeca7d37e98008f32d0ab1db1557e4efe75b9b48fac51b3d87d",
+    "implementationIndexSha256": "63151ba9c85071c42f8ce4b53564657737e9c93462747e069a0c4bd6d1a196fa",
+    "sourceBindingSha256": "fcd37bf3a028b90d89fd5f98652510b9a0afaa849470e7aa6964b44c82cb9fc3",
+    "helpers": {
+      "gate.py": "79ebbbb9697807bb6fabe98d168800fc84ff83c0206629fda98602a67564da4a",
+      "run.py": "6af15172dc1dd2bbb70fca451bbb27bb2c34ee003849b6d48620caffcce33235",
+      "audit.py": "add9fb3e65a71a84e0a9c087b6177372cdd71dcb9f992695883ee7c820a90610",
+      "packages.py": "4e779f7d95dffec9534f258dec1fe3102f5e0d7419559bd8cb8c97631b529449",
+      "bound-consumer-loader.mjs": "6840b70451ee5fbba63d3ea565485169b80ec52124de27a3c08ceaa976e39a88",
+      "guarded-action-session-20261018-021624-549f.py": "b2d467920638e68d3b007ba9daa432e971636245eca988bfb29d7a99d6e3fb30"
+    }
+  },
+  "findings": [
+    {
+      "id": "N1",
+      "severity": "medium",
+      "file": "bound-consumer-loader.mjs",
+      "line": 488,
+      "relatedLines": [
+        479,
+        489,
+        493,
+        668,
+        669
+      ],
+      "title": "Owned guard close timeout is not recorded as unknown closure",
+      "trigger": "The guard close callback does not settle inside cleanupRemaining(), or reports a close error.",
+      "staticFlow": "within(closePromise,...,\"cleanup\") rejects; runWitness rejects, but work.catch captures the error and work.finally sets workSettled=true. The top catch marks failed but waiting for work now settles immediately. server.listening may already be false from close initiation, so final cleanupUnknown remains false even though the actual close callback was not observed successfully.",
+      "impact": "The failure outcome stays failed; this is not a false pass. However rm(temporaryRoot) may run and succeed, and the60s fail guard may be cleared while guard closure is unknown. That violates the explicit preserve-evidence rule and can leave an owned handle until the outer115/120 bound.",
+      "requestedRevision": "In a separately named successor, track actual guard-close callback settlement/success (not merely listening). Mark cleanupUnknown on close timeout/error and refuse evidence-directory removal and fail-guard clearing until actual owned close is known. Keep the single original cleanup deadline and60/115/120 bounds; do not add retries or widen deadlines.",
+      "runtimeReproduced": false
+    },
+    {
+      "id": "N2",
+      "severity": "medium",
+      "file": "audit.py",
+      "line": 31,
+      "relatedLines": [
+        32
+      ],
+      "title": "Required failed-test counters became optional",
+      "trigger": "A source JSON result contains exact passing selected callbacks/success/numPassedTests but omits numFailedTests or numFailedTestSuites.",
+      "staticFlow": "The new loop validates each failed/runtime counter only if that key exists. Missing required failure counters therefore skip validation, despite source-audit-contract.requiredResultKeys declaring both and the accepted predecessor requiring both.",
+      "impact": "Auditor can accept incomplete result grammar instead of failing closed on missing failed-test or failed-suite evidence. This is a narrow adaptation regression, not a demonstrated actual Vitest failure.",
+      "requestedRevision": "Restore mandatory type(result[key]) is int and ==0 checks for numFailedTests and numFailedTestSuites. Preserve the existing optional numRuntimeErrorTestSuites compatibility check. No new gate or report framework.",
+      "runtimeReproduced": false
+    }
+  ],
+  "otherwiseAcceptedBoundedMechanics": [
+    "Source gate explicitly binds682 paths against679 HEAD baselines, exactly3 new owned paths/HEAD absence/empty intent index blobs,12 owned files,670 unchanged baseline files, exact status/no staged source/no extra untracked paths and exact full patch; no git show of absent new HEAD paths.",
+    "Current-session guarded final stages, exclusive attempts/no retries, contiguous prefix release, required exact-source/native/actual/mechanics wrappers and fresh tool/build/archive/actual lock/proof barriers remain.",
+    "Source44 selector derives17+8loader/11config/8privacy-capture callbacks from pinned source and parameter rows; exact names/files/duplicate/unintended execution checks, source5s default and build-before-collection preserved.",
+    "External witness uses actual proven consumer public resolution/entry hash and pinned whole configuration/schema bodies,264 emitted inventory/eight new module entries, exact public/development/data export map, private declaration/root/refusal checks and six actual RU/TX calls. Counters are dynamic and failed outcomes do not become successful late.",
+    "Package helper preserves complete safe archive/source/build member checks, fixed actual8-package production graph, contained symlinks, actual generated lock/manifest/settings and recursive path-sensitive payload proof before pure loader invocation.",
+    "Stock full smoke remains additional separate consumer with no transferred root archive/lock/payload provenance. Source FD/forbidden-call mocks, installed intended-port-acquisition exclusion and process/store observations are kept distinct; no ordinary Write/profile or public qualification claim."
+  ],
+  "executionReleased": false,
+  "helpersExecuted": false,
+  "productCompilerFormatterTestsBuildInstallRuntimeReviewerGitSourceFlagsActions": false,
+  "next": "Preserve candidate1 and create smallest separately indexed successor correcting only N1/N2 with genuine deltas and mirrors. Native/root inspect exact corrections before any prefix release; no product source or new actual CODE/PLAN review is requested."
+}

@@ -1,0 +1,30 @@
+{
+  "actualConsumerInstallAttempts": 1,
+  "correctedSuccessor": {
+    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/root-G09-validation5-consumer-install-independent-actual-inspection-3.json",
+    "sha256": "082bf2745f579c4a6d19bfb6fb2e8a2669ea1cbce171109d486990b16eae32d2"
+  },
+  "first": {
+    "actualToolChunkId": "f1147a",
+    "cause": "JavaScript replacement-string dollar apostrophe expansion corrupted the generated Python regex. Python parsing failed before any body execution/output/subject action.",
+    "exitCode": 1,
+    "failure": "SyntaxError: unterminated string literal (detected at line157)",
+    "outputCreated": false,
+    "pythonBodyExecuted": false,
+    "source": "failed-python-generation-1.py",
+    "subjectInvocationOrMutation": false
+  },
+  "noRuntimeRetry": true,
+  "rawWireToolReceipts": "UNRETAINED; actual normalized chunk attribution and exact generated sources retained",
+  "scope": "ROOT_READONLY_STATIC_INSPECTION_DEVELOPMENT_ONLY",
+  "second": {
+    "actualToolChunkId": "43722a",
+    "cause": "Static lock header regex admitted deeper-indented nested keys and missed empty-map snapshot keys; exact two-space/nonspace keys and optional empty-map suffix were used in a separately named successor3.",
+    "exitCode": 1,
+    "failure": "AssertionError at line161",
+    "outputCreated": false,
+    "source": "failed-lock-header-reader-2.py",
+    "subjectInvocationOrMutation": false,
+    "subjectMismatch": false
+  }
+}

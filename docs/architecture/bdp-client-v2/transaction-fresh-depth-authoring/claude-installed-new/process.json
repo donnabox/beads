@@ -1,0 +1,23 @@
+{
+  "pid": 64790,
+  "started": "2026-10-16T06:35:00.875702+00:00",
+  "argv": [
+    "/opt/homebrew/bin/claude",
+    "--safe-mode",
+    "-p",
+    "--tools",
+    "Read,Glob,Grep",
+    "--allowedTools",
+    "Read,Glob,Grep",
+    "--disable-slash-commands",
+    "--strict-mcp-config",
+    "--mcp-config",
+    "{\"mcpServers\":{}}",
+    "--add-dir",
+    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-fresh-depth-authoring",
+    "--add-dir",
+    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-fresh-depth-plan/review-repair",
+    "--no-session-persistence"
+  ],
+  "timeoutSeconds": 900
+}

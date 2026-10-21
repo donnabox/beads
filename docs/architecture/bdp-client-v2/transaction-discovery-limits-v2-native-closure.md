@@ -1,0 +1,24 @@
+# Discovery limits projection v2 — native plan closure
+
+No remaining actionable finding in the revised projection-only plan. The concrete native clarifications and source-grounded external findings are addressed without adding runtime behavior, public serving or protocol law. This is plan closure, not implementation approval or a readiness finding.
+
+Reviewed repaired C3 source `3f486c245bfd31f41fd42f5acc8e0f13683bad42`, tree `2a68550d01df1cf829b9fd76183fa879e5f4acbe`, in `/Users/dbox/repos/wt/vickie/vickie-tx-discovery-repair`; verified clean exact HEAD. Read v2, dispositions, the prior native review and completed external review. Source inspection only: no tests, builds, services, source edits or outward actions.
+
+## Disposition checks
+
+1. **Read versus set coherence is now exact.** Existing `authority-read.ts:381–389` already validates captured advertised limits against Read enforcement. V2 prohibits duplicating that check. The new assembler comparison is specifically the captured Selector triple versus fixed `TRANSACTION_SELECTOR_LIMITS` at `transaction-set.ts:16`, lower and higher mismatch per component. Current runtime defaults agree; direct private service/assembler inputs are the real negative seam. No installed configuration option is invented. Refusal occurs after owner release and before candidate return; live enforcement remains unchanged.
+2. **Actual diagnostic sources and mandatory applicability are explicit.** V2 imports `TRANSACTION_RUNTIME_LIMITS` from batch and set limits from set, without a new constant/config layer. Batch freezes count16/bytes524288 at62–72; numeric paths831–832 and942–943 and actual owner evaluation atstore1224 use these values. Spec2598–2602/3469 plus real truncation tests2615–2660 support the required pair. Independent literal16/524288 assertions remain separate from source imports. Validation is not threaded through Read options or made globally mandatory in the generic schema parser.
+3. **Fresh source binding is mandatory.** The final clean successor must build/pack/install and run the unchanged actual12-exchange/one-child cohort, with16/1 ceiling and45/60/5/10 bounds. Prior b20/3f evidence stays historically valid and explicitly source-bound; it cannot be relabeled. Optional two RU regression scenarios are separately reported. No broader cohort or new mutant package is implied.
+4. **Inventory and traceability corrections are bounded.** `request.targetBytes8192` is correctly distinguished from header caps (`transaction-http.ts:63,263`). Fixed sequence32 at312 differs from lower submission maximum at340. Both optional disclosures remain omitted. Inherited `read-update.validation.diagnostics` and optional `transactional.receipt.validation-diagnostics` now name the applicable law without awarding credit. Receipt maximum versus collection default asymmetry is explicit.
+5. **The no-advertisement comment remains true.** Rejecting external7 is justified: importing an enforcing constant into an internal candidate does not publish a profile. HTTP refusal, exports, admission and catalogs remain unchanged. No fifth comment-only file or false serving claim is necessary.
+6. **The fourth test file is required and narrowly owned.** On exact3f, `transaction-service.test.ts:1288–1291` has a complete two-group `discovery.limits` equality in the new callback regression. Adding validation changes that correct expectation. V2 permits only the literal validation pair addition there, preserving receiver/getter-once, continuation Resource equality, invalid callback and existing mutable-limit tests. This closes the prior three-file inventory assumption without authorizing callback changes.
+7. **Shape and lifetime remain precise.** Three groups/seven scalar values,17 top-level fields, no private TTL/retention or capability additions. Parser/schema behavior stays generic; missing/changed validation fails the owner-specific oracle. Assembly remains after one owner entry (`transaction-service.ts:237–251`), with no new owner/config access or callback mutation.
+
+The revised four-file ownership and explicit stop-for-additional-dependency rule are coherent. Subsequent code council, exact-source validation, current-head CI and inherited C3 review gates remain required. Later HTTP activation, missing-resource404/minimum behavior and full-profile qualification are outside this closure.
+
+## Exact document bindings
+
+- `transaction-discovery-limits-plan-v2.md` SHA256 `c94c5528153a5879ba83166be9e8f653d071bd03e884e6b0a12ab9ea7499c348`.
+- `transaction-discovery-limits-review-dispositions.md` SHA256 `ea7c64df54625a30ec88c5d1e3e6cd096db2a375fa62b5ab7a63b62bd0b11676`.
+- `transaction-discovery-limits-claude-plan-review.txt` SHA256 `01fa770415bb8e70a7d9ae904db8925b1cd6ed0ab610614416a2774bcb044942`.
+- `transaction-discovery-limits-native-plan-review.md` SHA256 `febc16ad269d5129053b860ceda604b7b04aa01417e8b6cdf81cde83eb2fda70`.

@@ -1,0 +1,176 @@
+--- worker.py
++++ templates/D4-helper4/worker.py
+@@ -3,7 +3,7 @@
+ signal.pthread_sigmask(signal.SIG_SETMASK,[]) # parent registered ownership before unmask
+ sys.dont_write_bytecode=True
+ from pathlib import Path
+-from scanner import SummaryScanner,bounded_json,file_hash,secure_read,RESULTS,RAW,WRAPPER,SIDECAR,need
++from scanner import LogScanner,file_json,file_hash,RESULTS,need
+ if len(sys.argv)>1 and sys.argv[1]=='publish':
+  # Small private publisher is still an owned deadline-supervised direct child.
+  channel=socket.socket(fileno=int(sys.argv[2]));stage=sys.argv[3];data=b''
+@@ -21,89 +21,91 @@
+   if b'\n'in inbox:
+    line,inbox=inbox.split(b'\n',1);value=json.loads(line);need(value.get('event')==expected,'parent-control-order');return value
+   block=channel.recv(4096);need(block and len(inbox)+len(block)<=8192,'parent-control-bound');inbox+=block
+-failure_phase='gate'
+ try:
+- os.environ['CARRIER_VALIDATION_PHASE']='final'
++ os.environ['D4_VALIDATION_PHASE']='final'
+  from gate import *
+- g,spec=load_gate(name);failure_phase='prepare'
+- if not E.exists():E.mkdir(mode=0o700,exist_ok=False)
+- require(E.is_dir()and not E.is_symlink()and E.stat().st_mode&0o777==0o700 and E.stat().st_uid==os.getuid(),'Owned execution root')
+- for suffix in ['.started.json','.log','.exit.json','.results.json','.launch.json','.worker-verified.json','.acquisition.json']:
++ g,spec=load_gate(name);E.mkdir(exist_ok=True)
++ for suffix in ['.started.json','.log','.exit.json','.results.json','.phase-evidence.json','.worker-verified.json']:
+   require(not(E/(name+suffix)).exists(),'Preserve previous stage; no retry')
+- attempt=secrets.token_hex(16);owned=E/('attempt-'+name);owned.mkdir(mode=0o700,exist_ok=False);tmp=owned/'scratch';tmp.mkdir(mode=0o700,exist_ok=False)
++ attempt=secrets.token_hex(16);(E/('attempt-'+name)).mkdir(exist_ok=False)
++ tmp=Path(tempfile.mkdtemp(prefix='vickie-d4-validation-'+name+'-',dir='/private/tmp'))
+  env=os.environ.copy()
+  for k in list(env):
+-  if k.startswith(('BDP_','VITEST_','CARRIER_')) or k in ['NODE_OPTIONS','NODE_PATH','NODE_DEBUG','PYTHONOPTIMIZE','BIOME_BINARY','npm_execpath','npm_node_execpath','FORCE_COLOR']:env.pop(k)
+- env.update({'PATH':'/Users/dbox/.nvm/versions/node/v24.16.0/bin:'+env.get('PATH',''),'CI':'true','NO_COLOR':'1','PYTHONDONTWRITEBYTECODE':'1','CARRIER_VALIDATION_PHASE':'final','TMPDIR':str(tmp),'npm_config_cache':str(tmp/'npm-cache')});env.update(spec.get('environment',{}))
+- destinations=[]
+- if name=='single-installed-positive17':
+-  destinations=[owned/'original-legacy-wrapper.json',owned/'carrier.transactional.profile.attempt.json',owned/'carrier.transactional.profile.json']
+-  require(all(not f.exists()and not f.is_symlink()for f in destinations),'Source output destination must be absent before launch')
+-  env.update({'BDP_PRIVATE_PROFILE_EVIDENCE_PATH':str(owned/'carrier'),'BDP_TRANSACTIONAL_OBSERVATION_OUTPUT':str(destinations[0])})
+- if name=='private-verifier-emit':
+-  from private_emit import prepare_emit
+-  prepare_emit(g,owned)
+- if name=='IMMEDIATE-positive-carrier-audit':
+-  from audit import prepare_carrier_audit
+-  validated_acquisition=prepare_carrier_audit(g,owned);env['CARRIER_AUDIT_ACQUISITION_SHA256']=validated_acquisition['sha256']
+- started={'argv':spec['argv'],'cwd':spec['cwd'],'head':g['finalHead'],'tree':g['finalTree'],'sourceIdentity':g['_sourceIdentity'],'sourceBindingSha256':g['sourceBinding']['sha256'],'rootGateSha256':sha((P/'execution-gate.json').read_bytes()),'temporaryDirectory':str(tmp),'ownedAttemptRoot':str(owned),'attemptId':attempt,'singleMonotonicOrigin':origin,'outerSeconds':120,'workCutoffSeconds':105,'automaticRetries':0,'childUmask':0o077,'outputDestinationsAbsent':True if destinations else None,'outputDestinations':[str(f)for f in destinations]};write(name+'.started.json',started)
+- env['CARRIER_VALIDATION_STAGE']=name;env['CARRIER_VALIDATION_ATTEMPT']=sha((E/(name+'.started.json')).read_bytes());note('attempt',attemptId=attempt,sourceBindingSha256=g['sourceBinding']['sha256'])
+- require(time.monotonic()<origin+105,'Admission exhausted; no child spawn')
+- logpath=E/(name+'.log');logfd=os.open(logpath,os.O_WRONLY|os.O_CREAT|os.O_EXCL|os.O_CLOEXEC,0o600)
+- with os.fdopen(logfd,'wb')as log:
+-  failure_phase='spawn'
+-  child=subprocess.Popen(spec['argv'],cwd=spec['cwd'],env=env,stdin=subprocess.DEVNULL,stdout=subprocess.PIPE,stderr=subprocess.STDOUT,umask=0o077)
+-  created=time.time();note('created',pid=child.pid,pgid=os.getpgrp(),ppid=os.getpid(),executable=Path(spec['argv'][0]).name,createdEpoch=created)
+-  launch={'stage':name,'attemptId':attempt,'pid':child.pid,'ppid':os.getpid(),'pgid':os.getpgrp(),'createdEpoch':created,'argv':spec['argv'],'cwd':spec['cwd'],'sourceBindingSha256':g['sourceBinding']['sha256'],'startedSha256':sha((E/(name+'.started.json')).read_bytes()),'actualOwnedLaunchSetting':{'mechanism':'subprocess.Popen umask argument installed before exec','umask':0o077,'inheritedByVitestWorkersAndInstalledDescendants':True},'outputDestinationsAbsentBeforePopen':True if destinations else None};write(name+'.launch.json',launch)
+-  await_control('creation-ack');failure_phase='collect'
+-  scanner=SummaryScanner()if name=='single-installed-positive17'else None;logbytes=0;stdio_eof=False
+-  os.set_blocking(child.stdout.fileno(),False)
++  if k.startswith(('BDP_','VITEST_')) or k in ['NODE_OPTIONS','NODE_PATH','NODE_DEBUG','PYTHONOPTIMIZE','BIOME_BINARY','npm_execpath','npm_node_execpath','FORCE_COLOR']:env.pop(k)
++ env.update({'PATH':'/Users/dbox/.nvm/versions/node/v24.16.0/bin:'+env.get('PATH',''),'CI':'true','NO_COLOR':'1','PYTHONDONTWRITEBYTECODE':'1','D4_VALIDATION_PHASE':'final','TMPDIR':str(tmp),'npm_config_cache':str(tmp/'npm-cache')});env.update(spec.get('environment',{}));env['BDP_D4_VALIDATION_ATTEMPT_ID']=attempt
++ started={'argv':spec['argv'],'cwd':spec['cwd'],'head':g['finalHead'],'tree':g['finalTree'],'sourceIdentity':g['_sourceIdentity'],'rootGateSha256':sha((P/'execution-gate.json').read_bytes()),'temporaryDirectory':str(tmp),'attemptId':attempt,'singleMonotonicOrigin':origin,'outerSeconds':spec['outerSeconds'],'automaticRetries':0};write(name+'.started.json',started)
++ env['D4_VALIDATION_STAGE']=name;env['D4_VALIDATION_ATTEMPT']=sha((E/(name+'.started.json')).read_bytes());note('attempt',attemptId=attempt,sourceBindingSha256=g['sourceBinding']['sha256'])
++ admission=10 if name=='installed-owned-set' else 115
++ require(time.monotonic()<origin+admission,'Admission exhausted; no product spawn')
++ with (E/(name+'.log')).open('xb') as log:
++  child=subprocess.Popen(spec['argv'],cwd=spec['cwd'],env=env,stdout=log,stderr=subprocess.STDOUT)
++  note('created',pid=child.pid,pgid=os.getpgrp(),ppid=os.getpid(),executable=Path(spec['argv'][0]).name,createdEpoch=time.time())
++  await_control('creation-ack')
++ # Parent logfile handle is closed; only the child/group writers remain.
++ scanner=LogScanner(attempt) if name=='installed-owned-set' else None
++ with (E/(name+'.log')).open('rb') as tail:
+   while True:
+-   try:block=os.read(child.stdout.fileno(),65536)
+-   except BlockingIOError:block=None
+-   if block==b'':stdio_eof=True
+-   elif block:
+-    log.write(block);log.flush();logbytes+=len(block);require(logbytes<=min(RAW,spec.get('logBytesMax',RAW)),'Combined raw log capacity exceeded; retain file, no truncation/pass')
+-    if scanner:scanner.feed(block)
+-   if child.poll()is not None and stdio_eof:break
+-   if not block:time.sleep(.01)
+-  child.stdout.close()
++   chunk=tail.read(65536)
++   if chunk and scanner:
++    scanner.feed(chunk)
++    while scanner.notifications:
++     item=scanner.notifications.pop(0);note('phase',phase=item['phase'],sourceElapsedMilliseconds=item['sourceElapsedMilliseconds'])
++   if child.poll()is not None and not chunk:break
++   if not chunk:time.sleep(.01)
+  note('leader-exit',pid=child.pid,code=child.returncode);note('need-quiet');await_control('quiet')
+- if scanner:scanner.finish()
++ # Group quiet is parent-owned evidence. Drain any final retained bytes before parsing.
++ if scanner:
++  with (E/(name+'.log')).open('rb') as f:
++   f.seek(scanner.offset)
++   while True:
++    chunk=f.read(65536)
++    if not chunk:break
++    scanner.feed(chunk)
++    while scanner.notifications:
++     item=scanner.notifications.pop(0);note('phase',phase=item['phase'],sourceElapsedMilliseconds=item['sourceElapsedMilliseconds'])
++  scanner.finish()
++ unchanged=source_check(g['_sourceBinding'])==g['_sourceIdentity'];require(unchanged,'Final source differs')
++ if name not in ['node-version','pnpm-version','workspace-install','bind-workspace-tools','typecheck','format-check','lint','fresh-build','bind-fresh-build']:verify_build(g)
++ proof=verify_consumer(g) if spec.get('requiresConsumerProof')is True else None
++ runtime=[str(x)for x in tmp.rglob('*')if x.is_dir()and x.name.startswith('bdp-')];require(not runtime,'Runtime directories remain')
++ semantic=None
++ if scanner:
++  from audit import audit_d4,audit_partial
++  selected=E/(name+'.selected-report.json')
++  # Copy exactly the bounded already-scanned source line; never reserialize evidence.
++  report_record=scanner.reports[0]
++  with (E/(name+'.log')).open('rb')as source:
++   source.seek(report_record['offset']);report_bytes=source.read(report_record['bytes'])
++  require(len(report_bytes)==report_record['bytes'] and sha(report_bytes)==report_record['sha256'],'Selected raw report changed')
++  with selected.open('xb')as output:output.write(report_bytes)
++  # Same worker-owned group, no new session. Parent retains this identity even
++  # after product leader exit; all schema/compiler work charged to flush.
++  schema_process=subprocess.Popen(['/Users/dbox/.nvm/versions/node/v24.16.0/bin/node',str(P/'schema-audit.mjs'),str(selected)],cwd=W,env=env,stdin=subprocess.DEVNULL,stdout=subprocess.DEVNULL,stderr=subprocess.DEVNULL)
++  note('check-created',pid=schema_process.pid,pgid=os.getpgrp(),ppid=os.getpid(),role='pinned-schema-audit')
++  schema_exit=schema_process.wait()
++  note('check-exit',pid=schema_process.pid,code=schema_exit)
++  classification={0:'positive-schema-candidate',2:'nonconforming-failed',3:'conforming-failed-no-positive-credit',4:'protocol-schema-refusal'}.get(schema_exit,'schema-worker-failed')
++  partial=None
++  if schema_exit==3:
++   try:partial=audit_partial(scanner.reports[0]['value'])
++   except Exception:
++    classification='nonconforming-failed';partial={'classification':'UNSUPPORTED_OR_INCONSISTENT_FAILED_PARTIAL','positiveCredit':False,'claimEligible':False,'reason':'source-assignment-derivation-refused'}
++  write(name+'.schema-observation.json',{'ownedCheck':{'pid':schema_process.pid,'pgid':os.getpgrp(),'observedExit':schema_exit},'failedPartial':partial,'classification':classification,'rawExit':schema_exit,'selectedReportSha256':report_record['sha256'],'claimEligible':False,'positiveCredit':False})
++  require(schema_exit==0,'Actual complete schema observation refused')
++  require(child.returncode in spec.get('acceptedRawExitCodes',[0]),'Child exit refused')
++  result=file_json(E/(name+'.results.json'),RESULTS);semantic=audit_d4(scanner.reports[0]['value'],result,g,spec,tmp,proof)
++  write(name+'.phase-evidence.json',{'markers':scanner.markers,'selectedReport':{k:v for k,v in scanner.reports[0].items()if k!='value'},'attemptId':attempt,'semantic':semantic,'results':file_hash(E/(name+'.results.json'))})
+  require(child.returncode in spec.get('acceptedRawExitCodes',[0]),'Child exit refused')
+- failure_phase='binding'
+- unchanged=source_check(g['_sourceBinding'])==g['_sourceIdentity'];require(unchanged,'Final source differs')
+- if name not in ['node-version','pnpm-version','workspace-install','bind-workspace-tools','typecheck','format-check','lint','required-check-boundaries','fresh-build','bind-fresh-build']:verify_build(g)
+- proof=verify_consumer(g)if spec.get('requiresConsumerProof')is True else None
+- if spec.get('requiresPrivateEmitProof')is True:verify_private_emit(g)
+- runtime=[str(x)for x in tmp.rglob('*')if x.is_dir()and x.name.startswith('bdp-')];require(not runtime,'Runtime directories remain')
+- semantic=None;failure_phase='data-audit'
+- if spec.get('selectedFullNames'):
+-  from audit import selected_results
+-  semantic=selected_results(bounded_json(E/(name+'.results.json'),RESULTS),spec)
+- if scanner:
+-  facts=[];captured_bytes=[]
+-  for f,cap in zip(destinations,[WRAPPER,SIDECAR,SIDECAR]):
+-   data,fact=secure_read(f,owned,cap);facts.append(fact);captured_bytes.append(data)
+-  require(captured_bytes[1]==captured_bytes[2],'Actual final attempt/summary byte arrays differ')
+-  require({f.name for f in owned.iterdir()}=={'scratch',*(f.name for f in destinations)},'Unexpected source-output root residue; preserve evidence')
+-  summary=scanner.summaries[0];require(scanner.hash.hexdigest()==file_hash(logpath)['sha256'],'Full scanned positive log differs')
+-  write(name+'.acquisition.json',{'attemptId':attempt,'sourceBindingSha256':g['sourceBinding']['sha256'],'ownedAttemptRoot':str(owned),'originalSourceWrittenFiles':facts,'uniqueActualSummary':{k:v for k,v in summary.items()if k!='value'},'stdioEOF':stdio_eof,'productExit':child.returncode,'groupQuietObservedByParent':True,'selectedResults':semantic,'launchReceiptSha256':sha((E/(name+'.launch.json')).read_bytes()),'credit':'PENDING actual whole-stage terminal/root receipt and immediate independent full-byte audit; this is acquisition only','claimEligible':False})
+- if name=='private-verifier-emit':
+-  from private_emit import bind_emit
+-  bind_emit(g,owned)
+- if name=='prove-private-graph':
+-  emitted=bounded_json(E/'private-emit-proof.json',4194304);require(emitted['sourceIdentity']==g['_sourceIdentity']and emitted['sourceBindingSha256']==g['sourceBinding']['sha256']and emitted['files']and emitted['qualification']is False,'Actual private graph output absent/refused')
+- if name=='IMMEDIATE-positive-carrier-audit':
+-  audited=bounded_json(E/'positive-carrier-audit.json',4194304);require(audited['sourceIdentity']==g['_sourceIdentity']and audited['sourceBindingSha256']==g['sourceBinding']['sha256']and audited['exactFactoryVerifierAccepted']is True and audited['actualModeAll0600']is True and audited['preExecUmask077PrerequisiteVerified']is True and audited['required']==251 and audited['partialOwnerRows']==17 and audited['missingOwnerRows']==234 and audited['wholeClauseEstablished']==0 and audited['claimEligible']is False and audited['qualificationReady']is False,'Actual full-byte verifier output absent/refused')
+- require(time.monotonic()<origin+105,'Verification exceeded original work window')
+- failure_phase='publish';logfile=file_hash(logpath);verified={'sourceIdentity':g['_sourceIdentity'],'sourceBindingSha256':g['sourceBinding']['sha256'],'attemptId':attempt,'sourceUnchanged':unchanged,'productExit':child.returncode,'stdioEOF':stdio_eof,'log':logfile,'runtimeDirectoriesStillPresent':runtime,'semantic':semantic,'verifiedAtSeconds':time.monotonic()-origin};write(name+'.worker-verified.json',verified);note('verified',logSha256=logfile['sha256']);final=await_control('finalize')
+- record={'exit':child.returncode,'accepted':True,'acceptanceRequiresOuterReceipt':True,'sourceIdentity':g['_sourceIdentity'],'sourceBindingSha256':g['sourceBinding']['sha256'],'sourceUnchanged':True,'attemptId':attempt,'elapsedSeconds':time.monotonic()-origin,'forcedCleanup':False,'errors':[],'remainingProcesses':[],'runtimeDirectoriesStillPresent':[],'temporaryDirectory':str(tmp),'stdioEOF':stdio_eof,'logSha256':logfile['sha256'],'watchdogObservations':final};write(name+'.exit.json',record);note('published');channel.close()
++ logfile=file_hash(E/(name+'.log'));require(not scanner or logfile['sha256']==scanner.hash.hexdigest(),'Log changed during flush')
++ verified={'sourceIdentity':g['_sourceIdentity'],'sourceBindingSha256':g['sourceBinding']['sha256'],'attemptId':attempt,'sourceUnchanged':unchanged,'productExit':child.returncode,'log':logfile,'runtimeDirectoriesStillPresent':runtime,'semantic':semantic,'verifiedAtSeconds':time.monotonic()-origin};write(name+'.worker-verified.json',verified);note('verified',logSha256=logfile['sha256']);final=await_control('finalize')
++ record={'exit':child.returncode,'accepted':True,'acceptanceRequiresOuterReceipt':True,'sourceIdentity':g['_sourceIdentity'],'sourceBindingSha256':g['sourceBinding']['sha256'],'sourceUnchanged':True,'attemptId':attempt,'elapsedSeconds':time.monotonic()-origin,'forcedCleanup':False,'errors':[],'remainingProcesses':[],'runtimeDirectoriesStillPresent':[],'temporaryDirectory':str(tmp),'logSha256':logfile['sha256'],'watchdogObservations':final};write(name+'.exit.json',record);note('published');channel.close()
+ except BaseException as error:
++ # Failure metadata is cached-only. Full hash stays explicitly UNKNOWN if incomplete.
+  try:
+-  if 'E'in globals()and E.is_dir()and 'attempt'in globals():
+-   write(name+'.partial.json',{'attemptId':attempt,'errorClass':type(error).__name__,'failureStage':failure_phase,'atElapsedSeconds':time.monotonic()-origin,'sourceBindingSha256':g['sourceBinding']['sha256'],'childPid':child.pid if 'child'in globals()else None,'actualChildExitIfKnown':child.returncode if 'child'in globals()else None,'stdioEOF':stdio_eof if 'stdio_eof'in globals()else None,'logFullHash':'UNKNOWN','resultsFullHash':'UNKNOWN','observedSummaryCount':len(scanner.summaries)if 'scanner'in globals()and scanner else None,'claimEligible':False,'positiveCredit':False})
++  if 'E'in globals() and E.is_dir() and 'attempt'in globals():
++   write(name+'.partial.json',{'attemptId':attempt,'errorClass':type(error).__name__,'sourceBindingSha256':g['sourceBinding']['sha256'],'logFullHash':'UNKNOWN','resultsFullHash':'UNKNOWN','markers':scanner.markers if 'scanner'in globals() and scanner else [],'selectedReport':[{k:v for k,v in item.items() if k!='value'}for item in scanner.reports] if 'scanner'in globals() and scanner else [],'claimEligible':False,'positiveCredit':False})
+  except BaseException:pass
+- try:note('failed',errorClass=type(error).__name__,failureStage=failure_phase)
++ # Preserve raw files and partial records; no raw exception/input text in control.
++ try:note('failed',errorClass=type(error).__name__)
+  except BaseException:pass
+  raise SystemExit(1)

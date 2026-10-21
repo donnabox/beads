@@ -1,0 +1,44 @@
+{
+  "status": "accepted-measured-source-fences",
+  "at": "2026-10-15T17:07:28.460823+00:00",
+  "sourceBindingSha256": "d9b68985603f168061e341ad4445b0881ac225449e9b93475b1541a4310dae79",
+  "measurement": {
+    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/sequence-member-draft/source-author/measurements.json",
+    "sha256": "04d0c9577be30231dcbb62ee9eaac039a60a6153ee29b99a3be01940a2b67522"
+  },
+  "preFenceSource": {
+    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/sequence-member-draft/source-author/source-binding.json",
+    "sha256": "6dc92a67f17acdac93c4b2d6c27ec832d67ad6614c7a70a00ff7ebe407fda71c"
+  },
+  "runtimeLimitsUnchanged": true,
+  "simultaneousGrowthStopsSatisfied": true,
+  "margins": {
+    "bytes": 4096,
+    "nodes": 64,
+    "coverageBytes": 1024
+  },
+  "changes": {
+    "packages/conformance/src/transactional-cumulative.test.ts": {
+      "before": "6fc33c613f6b87bed19685fa2d75753211907a4db0680b6044c1a92df84c4589",
+      "after": "424ff6e05e3e86c9484522e7c8f70565995560ec98b06a88e7945f46c30f179e",
+      "replacements": {
+        "254599": "306371",
+        "742879": "794651",
+        "754685": "806457",
+        "38453": "48064",
+        "109115": "118726",
+        "6620": "8001",
+        "19639": "21020"
+      }
+    },
+    "apps/bdptest/src/transactional-matrix.test.ts": {
+      "before": "336f35c56b8c3c6e4d33d7f55af2f27a5a6ab6a8d6e44fcd1626875c77b6ba46",
+      "after": "dcf0161723a6b77dd4235111a83a6aa1ce0cbb6a1a5d79e362f992742bc503de",
+      "replacements": {
+        "760803": "812575",
+        "19795": "21176"
+      }
+    }
+  },
+  "reason": "One appended ten-action partial witness; 28 raw parent objects retained, all41 derivatives measured, original runtime limits and execution bounds unchanged. Exact source fences retain previous margins, not arbitrary growth allowance."
+}

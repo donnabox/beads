@@ -1,0 +1,77 @@
+{
+  "futureFiles": 9,
+  "existing": 5,
+  "absent": 4,
+  "rows": [
+    {
+      "path": "packages/server/src/development-authority.ts",
+      "kind": "modify",
+      "purpose": "Add private owner readConfiguration using store.scope, actual visitInstalledTypes, the same epoch/readLimits/bounds/capturedConfiguration already used by the lifecycle; no second metadata compiler or persisted authpolicy equality.",
+      "currentlyExists": true,
+      "actualSha256": "d49f89da345234f7eaee83dd872a5c2d7a1a8d38ffc794e5e69d333976d22d49"
+    },
+    {
+      "path": "packages/server/src/development-runtime.ts",
+      "kind": "modify",
+      "purpose": "Factor internal core; add startPreparedDevelopmentReferenceRuntime(handle), strict registered RU handle, all owner/principal/read-route preparation before intended bind; old entry order/return/close semantics remain.",
+      "currentlyExists": true,
+      "actualSha256": "37e222682645e9d8f2d5fcf62de208640fb6216c9e9f2f279ab6017e8b9d6ca9"
+    },
+    {
+      "path": "packages/server/src/transaction-runtime.ts",
+      "kind": "modify",
+      "purpose": "Factor capture-taking core; add startPreparedTransactionRuntime(handle), reuse registered preflight, validate owner readConfiguration and existing metadata before intended bind; preserve old entry and seams.",
+      "currentlyExists": true,
+      "actualSha256": "48cb5411407c456d7b3f301a4b67970061be9f51c94201de832ba5deff6ea2d4"
+    },
+    {
+      "path": "packages/server/src/reference-deployment-runtime.ts",
+      "kind": "new",
+      "purpose": "Private startPreparedReferenceDeployment(handle) dispatches only after WeakMap lookup; no caller admission bool/options, no package export; returns non-attesting lifecycle handle, private checked facts and completion.",
+      "currentlyExists": false,
+      "actualSha256": null
+    },
+    {
+      "path": "packages/server/src/reference-deployment-runtime.test.ts",
+      "kind": "new",
+      "purpose": "Finite source-only real-store/delegating-mock ordering and failure callbacks from source-witnesses.json.",
+      "currentlyExists": false,
+      "actualSha256": null
+    },
+    {
+      "path": "packages/server/src/reference-deployment-process.ts",
+      "kind": "new",
+      "purpose": "Private installed inherited-IPC bootstrap loads real file in same process, then prepared runtime, bounded stop/disconnect and fixed safe failures; no targets or secret-committing digests in ready/diagnostics.",
+      "currentlyExists": false,
+      "actualSha256": null
+    },
+    {
+      "path": "apps/bdptest/src/reference-deployment-lifecycle-installed.test.ts",
+      "kind": "new",
+      "purpose": "Finite installed callbacks in installed-witnesses.json; real emitted private process and credentialed cold HTTP/reopen/cleanup; does not import source to impersonate installed entry.",
+      "currentlyExists": false,
+      "actualSha256": null
+    },
+    {
+      "path": "scripts/smoke-executables.mjs",
+      "kind": "modify",
+      "purpose": "Closed emitted inventory adds exactly two new non-test module families (8 emitted files); refuse subpath/dist imports of both new private modules.",
+      "currentlyExists": true,
+      "actualSha256": "80c1ecf1d55939fbb0a0fe94aad46bcede1c9d7841dbc3793e00e4493440ddb3"
+    },
+    {
+      "path": "docs/design/startup-configuration.md",
+      "kind": "modify",
+      "purpose": "Document private intended-listener ordering, actual owner facts, errors/cleanup and absence of public activation; retain deployment bounds and redaction rules.",
+      "currentlyExists": true,
+      "actualSha256": "8a7d348e56adda7d0222d2180763149f348594a770fdd773e01076fb68c9caa8"
+    }
+  ],
+  "noAbsenceFabricatedIntoSourceMap": true,
+  "sharedTransactionHTTP": "outside nine files; actual startup source remains a562 version, D1/D3a later final combined rebind required",
+  "protectedOld503Source": {
+    "path": "apps/bdptest/src/installed-reference-startup.test.ts",
+    "sha256": "db93a0de4e13cf7330ba311435a3ea3af6877d4f6707f652875cba1b4364e0f2",
+    "semantics": "legacy RU private port0 listen-before-ready 503 fixtures preserved"
+  }
+}

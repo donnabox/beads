@@ -1,0 +1,51 @@
+--- a/packages/server/src/transaction-http.test.ts
++++ b/packages/server/src/transaction-http.test.ts
+@@ -3138,11 +3138,7 @@
+   const headers = minimumHeaders(created, "pos-1"),
+     target = `${f.runtime.scope}alias/work`;
+   const put = await observe("POST", f.runtime.targets.putAlias, () =>
+-    f.post(
+-      JSON.stringify({ alias: "alias/work", target: "beads/a" }),
+-      "alias-min-put",
+-      "putAlias",
+-    ),
++    f.post(JSON.stringify({ alias: "alias/work", target: "beads/a" }), "alias-min-put", "putAlias"),
+   );
+   expect(put.status).toBe(200);
+   expect(await body(put)).toMatchObject({ status: "completed", requiredPosition: "pos-1" });
+@@ -3238,10 +3234,7 @@
+     }
+   }
+   // Unsupported private foreign-opaque gaps, not qualified foreign-view/expiry results.
+-  for (const patch of [
+-    { "bdp-scope-epoch": "foreign" },
+-    { "bdp-authorization-view": "foreign" },
+-  ]) {
++  for (const patch of [{ "bdp-scope-epoch": "foreign" }, { "bdp-authorization-view": "foreign" }]) {
+     for (const method of ["GET", "HEAD"] as const) {
+       const response = await get(target, {
+         method,
+--- a/apps/bdptest/src/transactional-alias-installed.test.ts
++++ b/apps/bdptest/src/transactional-alias-installed.test.ts
+@@ -722,15 +722,12 @@
+       "if-match": '"different"',
+       accept: "text/plain",
+     };
+-    const get = await exchange(
+-      "GET",
+-      "alias/work",
+-      503,
+-      opaque,
+-      undefined,
+-      "transactionalProblem",
+-    );
+-    expect(get.value).toMatchObject({ code: "catch-up-timeout", status: 503, retry: "after-delay" });
++    const get = await exchange("GET", "alias/work", 503, opaque, undefined, "transactionalProblem");
++    expect(get.value).toMatchObject({
++      code: "catch-up-timeout",
++      status: 503,
++      retry: "after-delay",
++    });
+     assertContext(get.response);
+     expect(get.response.bodyOctets).toBeGreaterThan(0);
+     expect(get.response.headers["content-length"]).toBe(String(get.response.bodyOctets));

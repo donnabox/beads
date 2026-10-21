@@ -1,0 +1,82 @@
+{
+  "rootLaunchReleased": true,
+  "reviewHead": "b89554c6004edf99d3278518bee1b150dce3fa98",
+  "reviewTree": "b3cd7f40d0ff40cc45c570a2468c38e96eccb7d7",
+  "reviewParent": "6f5e607bf338dd166820bfa3f9f480f7cd54c5f1",
+  "sourceHashes": {
+    "apps/bdptest/src/read-update-matrix.test.ts": "376709ecdcf356a98c5bf7770e6b0a637ab6e06cf9a9f7ed68c2e5c15da9dd36",
+    "packages/conformance/matrices/read-update-v1.json": "10a7c6f97a280cf88e58d3aa2039fe580904b74bfffcebda4747fc3c1a34b583",
+    "packages/conformance/src/cumulative-artifact.test.ts": "d3e8a462694174cf34db94700df51f3de6943aa1072dbf4bd04de7560db9b523",
+    "packages/conformance/src/profile-contract-plan.test.ts": "3fec4ca8c6eee7a20bbcdd1aa53ef2a015989087ba2f8d6b37fd997dcae7dd64",
+    "packages/conformance/src/read-update-artifact-set.test.ts": "e5c8903119b7c336dcc1e1479378e22029aa4d36978817557e461ea723991379",
+    "packages/conformance/test-support/read-update-coverage-v1.json": "287c2a258afd04a95417f5de416c81bd8159c95762d71d568a64f0b402159f0f"
+  },
+  "committedSourceHashes": {
+    "apps/bdptest/src/read-update-matrix.test.ts": "1bf2661fa7bee90aa43622741d9e71d9770b2982d0a8804fa55ac1afb59e4d5d",
+    "packages/conformance/matrices/read-update-v1.json": "10a7c6f97a280cf88e58d3aa2039fe580904b74bfffcebda4747fc3c1a34b583",
+    "packages/conformance/src/cumulative-artifact.test.ts": "db55198580ece6fbd369f5365bbca75bdd41c3398e34d6e233fb39359ce29fee",
+    "packages/conformance/src/profile-contract-plan.test.ts": "3b7c41f005d37763a616746aba98447f941d8eeed2cadb231c0260f0bd2f9340",
+    "packages/conformance/src/read-update-artifact-set.test.ts": "e5c8903119b7c336dcc1e1479378e22029aa4d36978817557e461ea723991379",
+    "packages/conformance/test-support/read-update-coverage-v1.json": "4120abfe2f724fe34b3868bd3533b181e18479768d5de752b5098c6288dbb395"
+  },
+  "contextHashes": {
+    "packages/conformance/src/runner.ts": "ac20c7fbfe15a5e42a6559e89cd3467562efe9bc74d462478414414ed3efede1",
+    "docs/specs/bdp.md": "63e93be562334c84c1e967da2fce212e8ef515aa3c9448924c5f9a272ea7b80b",
+    "schemas/bdp-v0.schema.json": "0baa5d5ef67144f8e6513b4cde31168effc8df6d52ef3141b0f144b87f8dc227",
+    "packages/conformance/catalog/read-update-v1.json": "73d215813df034a2be0cd15d0caff7cf2c8823a067f271b9140c9cbb90e859c3",
+    "docs/design/read-update-executable-progress.md": "7e8400070c12e9b5094942c42f34b6a5691e2aee506b1db343a43d938ed61475",
+    "packages/conformance/src/executable-manifest.ts": "65af0451cd046d57c10b0666e54efbaaecc2225551d3accc5cc1d032322913fa"
+  },
+  "workingDiffSha256": "81f12e47553a5362cddc4f6e2a0163c31dccf2f4208e77833180f446a3597900",
+  "fullDiffSha256": "bdd01ec258c5955c6fbc14507c6bf59a409dbca7cab12554109066214e5ef4ef",
+  "changedPaths": [
+    "apps/bdptest/src/read-update-matrix.test.ts",
+    "packages/conformance/src/cumulative-artifact.test.ts",
+    "packages/conformance/src/profile-contract-plan.test.ts",
+    "packages/conformance/test-support/read-update-coverage-v1.json"
+  ],
+  "promptSha256": "7de16cb39ed67db798a0b88a979686d51dcaf4cf870ca2300e6b30758a4e57d1",
+  "plans": {
+    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/read-update-command-minimum-draft/partial-credit-repair/source-binding.json": "a027e05e421c0b3539da422cbe69f6262791f568add9606c1015a8dab1bfa13a",
+    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/read-update-command-minimum-draft/partial-credit-repair/correction.patch": "81f12e47553a5362cddc4f6e2a0163c31dccf2f4208e77833180f446a3597900",
+    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/read-update-command-minimum-draft/partial-credit-repair/full.patch": "bdd01ec258c5955c6fbc14507c6bf59a409dbca7cab12554109066214e5ef4ef",
+    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/read-update-command-minimum-draft/partial-credit-repair/execution-byte-bridge.json": "6828d13d3b77ec659db741da237c397cecb04d305d8a7142958506c2a04bdbb6",
+    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/read-update-command-minimum-draft/partial-credit-repair/correction-measurements.json": "8a77f013bc909900ddb88927ff369046e1d174f7f43ac430b2e7a38d134e9a06",
+    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/read-update-command-minimum-draft/partial-credit-repair/validation-summary.json": "c5710641fdff3e364afeb3587ea997de389461ec81e222b0beeee90234babe77",
+    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/read-update-command-minimum-draft/partial-credit-repair/report.md": "017f85de602ef73b71138471b3ecff104a759ad188ac5c823b2ece1bf6d7bc61",
+    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/read-update-command-minimum-draft/preservation.json": "c951d5d25c8a2106d31f676f8279245ad92338495394989085ab74864413a2c0",
+    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/read-update-command-minimum-draft/measurements.json": "83c342b299182c988ef2c574d3a10778df8cb0bfff3856d4156301381d6901fd",
+    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/read-update-command-minimum-draft/derivative-preflight.json": "c499c827fe1a70013aaa48ee58fe7d670851c297fcee60ce11eeaac7fd49480d",
+    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/read-update-command-minimum-draft/installed-preparation/root-actual-observation.json": "ad5b4e1cf072718f410f61b33cca6f87a90b6b5ac8c7d4ab0fba05f281ab692e",
+    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/read-update-command-minimum-draft/installed-preparation/root-http-count-audit.json": "ee730aeac6cd0eaa273b6bf9e30db41f4e1cf61b91f3009822e9f52533ab68c3",
+    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/read-update-command-minimum-draft/claude-split-review/harness/native-findings-audit.md": "d4d4b71766084f38532274f02625cd1aea5c1dfc55aafe37a3c611bfc0755697",
+    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/read-update-command-minimum-draft/claude-cumulative-split-review/literals/native-findings-audit.md": "a0e37d678e2d079acf83f802807af593081665e0751bde22a89b6ecf31f7ce07",
+    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/read-update-command-minimum-plan/review-successor/plan.md": "a49be8e237ae867f12d43691cf661ad44f5d49f92cce51d0369bb9a2615def18",
+    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/read-update-command-minimum-plan/review-successor/scenario.json": "bc2f3cfabe7336f7f3504ee0242d6504866a0c5a536f411e91b74fcd4af6e523",
+    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/read-update-command-minimum-plan/review-successor/ledger.json": "dc42fae0dc62695413c1e3878b7927da6a0e65fafb1a7eb99d07c1ddc9bcbfc8",
+    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/read-update-command-minimum-plan/review-successor/coverage-row.json": "99c575fb91e14f50ea4b0bde6ef423f0dff3c35c3449529aae50c89fd2e9b159",
+    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/read-update-command-minimum-draft/claude-code-preparation/exit.json": "6a667f7074f6688cf6f5903efa74faa0cf88294b9fa85d63cc92d158f727c9bf",
+    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/read-update-command-minimum-draft/claude-code-preparation/cleanup.json": "1d0b70f68cf0a9ca23615a1f58702e0cfe9f9c13cce0ce7c050ddd4c34da6ca7",
+    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/read-update-command-minimum-draft/claude-split-review/cumulative/exit.json": "7ce177be1f402641518aafc2a9ef41142991ef51008411bf94cbad8cd63c22b3",
+    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/read-update-command-minimum-draft/claude-split-review/cumulative/cleanup.json": "bd85586097bf536515e067f8c5b0caf13040517d3a377a8682399bdaf95cd56e",
+    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/read-update-command-minimum-draft/claude-cumulative-split-review/fanout/exit.json": "88a81bf259d377e42b50e1dd18ea8e8b39d14be688e94cc5bdedaa4da8dbf118",
+    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/read-update-command-minimum-draft/claude-cumulative-split-review/fanout/cleanup.json": "a0bf780a6fa2784875769d20b5ce0a7b228216b1d45be2bb8d34443a640e7cfb"
+  },
+  "argv": [
+    "/opt/homebrew/bin/claude",
+    "--safe-mode",
+    "-p",
+    "--tools",
+    "Read,Glob,Grep",
+    "--allowedTools",
+    "Read,Glob,Grep",
+    "--permission-prompts",
+    "none",
+    "--add-dir",
+    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/read-update-command-minimum-draft",
+    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/read-update-command-minimum-plan",
+    "--no-session-persistence"
+  ],
+  "scope": "Remaining cumulative fanout and four-file partial-credit correction; read-only tools, no repeated full harness review",
+  "publicationApproved": false
+}

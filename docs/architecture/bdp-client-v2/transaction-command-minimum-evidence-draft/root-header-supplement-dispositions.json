@@ -1,0 +1,29 @@
+{
+  "at": "2026-10-15T06:43:24.436399+00:00",
+  "review": {
+    "exitCode": 0,
+    "timeout": false,
+    "forcedTermination": false,
+    "elapsedSeconds": 337.4015824170783,
+    "sourceAndPlanUnchanged": true,
+    "stdoutSha256": "deeaaaefe345ef6e052b786bc1cc56e38cd8f5547f981ed46d35d23411cdd86a",
+    "stderrSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "cleanupSha256": "4423b5acf48533d40f0ff77ae48fc753d6971a6b404c7902833a3d617ca3fc8e",
+    "sourceAfterSha256": "f33134e3a77f857e81310582600d03eb6b40714f39d246f7c4aaa78a06e89dcf"
+  },
+  "scope": "Header successor fab20b65 only; not validation or Event-ID approval",
+  "findings": {
+    "F1": "Accept defensive names-only EXACT-CASE prefix comparison before value equality. Current serializer emits empty values, so current omission premise false; hardening protects future malformed observations without exposing credentials.",
+    "F2": "No duplicate count oracle. Existing runner exactHeadersMatch already verifies all credential/default/framing fields and final index===actual.length. Every new action retains authored-header assertion, and controls require that assertion passing. Keep no-BDP suffix guard.",
+    "F3": "No extra read-first-header oracle. Static minimum request ledger separately requires zero authored read headers; actual entire header list must have no bdp fields, while runner full authored-header assertion validates actual serialization. Empty prefix alone is not represented as proof.",
+    "F4": "Reject normalization. Literal mirror and catalog intentionally pin exact authored casing for raw serialization; no request/casing change is present. Names-only guard retains exact case."
+  },
+  "dispositionClarifications": {
+    "F2": "Only completed A/B receipts correlated to their respective Events; C sequence has no receipt. C transaction presence only schema-checked; no all-three-distinctness claim.",
+    "F3": "Keep full Resource equality and fixture canonical a/b/c ordering; actual installed run still needed. Projection mismatch is a real failure to diagnose, never automatic weakening.",
+    "F4": "Mode guard is explicit invariant defense, not additional coverage. Existing named error retained; both sites enforce same invariant.",
+    "F5": "63000ms unchanged; no timing evidence yet."
+  },
+  "newIndependentFinding": "Stale internal Event ID literals in new manifest/app require separate narrow repair against actual source-projected IDs before any test execution. Other prior rows unaffected.",
+  "validation": "Closed; both previous review targets retained immutable; successor code review required."
+}

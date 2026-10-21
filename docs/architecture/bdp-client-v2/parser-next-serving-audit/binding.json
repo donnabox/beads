@@ -1,0 +1,29 @@
+{
+  "status": "READ_ONLY_RECOMMENDATION_NOT_AUTHORING_RELEASE",
+  "head": "d4f3f4be88c7837b71d6646518ca3589d464ba3d",
+  "trackedInputsVerifiedUnchanged": 679,
+  "source": {
+    "docs/specs/bdp.md": "67772742d7d08f48c12196e9789f1859ad2d0e19f133ea65e197b049361f84f8",
+    "packages/server/src/transaction-http.ts": "9ee59d7b2f5ecf6bb1ace7bacb70fd5124343dc9320439afeb3c28cf2f174584",
+    "packages/server/src/transaction-store.ts": "f7fe71da918c135eb43cb4659f186df6cd442aed9c42c2835e95cde05c782a9e",
+    "packages/server/src/transaction-service.ts": "b6f9584d67992ddd3a08304a6b76563318252c316b09afd991e49a3304d3af05",
+    "packages/server/src/transaction-consistency.ts": "ad51311d6098db32fd47849e0b78d3118162cdf1e80ee9ef4d46324bfa9f436f",
+    "packages/server/src/transaction-read.ts": "e76595b1da4530c4178a668b72e8bdf91ded7cdea5a6052219a2b10ebffedcb2",
+    "packages/server/src/transaction-events.ts": "6c5ab4482f0b00110a71a96b16d44ca5fe713cb5f397ff78778cc6646f632a3a",
+    "packages/server/src/transaction-events.test.ts": "0152561cdf096a48b0b01ec0e0d8bc81208a905bb5bf71dad411694387b58b27",
+    "packages/server/src/transaction-event-sse.test.ts": "de14cbbbe935205c5ec43ef6cf6a055d3f1ca2b9632ee684c4c13fbfe9eed042",
+    "packages/server/src/transaction-discovery.ts": "bb8055e2089f640a5d2071e389ac2011d08c038427265b50ab3d03c02047cfef",
+    "packages/server/src/transaction-sequence-alias.test.ts": "5e819d7746238003bcabd791d5c6c08abccfcd5db12bd256cc99781078795ff4",
+    "apps/bdptest/src/transactional-event-sse-installed.test.ts": "b762563798d6d72afecfda0a4c8b831de69753df45c82f6050815599a24a1496",
+    "apps/bdptest/src/transactional-event-missing-context-installed.test.ts": "828c05f358ae5863c992f93194da15a31df9a200e073e5e3525531ba39fe7d0d"
+  },
+  "context": {
+    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/next-functional-gap-audit/audit.md": "70035265c3d80eafd08705459c0fb0a40ebd7cccdde7a882c3b1652e976ec564",
+    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/post-conditional-serving-audit.md": "5e7e0ebcb5134592a705a0295f2f6378e72cd45c7648831cfe4a4857a0a28e8a",
+    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-discovery-serving-plan-v2.md": "c0b55a25d6341e4195bed72795a1684eedc0cd3245bdf81708e8051c8e615aaa",
+    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/parser-refusal-author/successor-1/source-binding.json": "409312a502d66281858c8e0e82eb57ed8c0abd8a6793abeeb0327249adb4224f",
+    "/Users/dbox/repos/wt/vickie/bdp-client-design/checkout/docs/architecture/bdp-client-v2/design.md": "c5ab2d5bd89cf576cee9213460ee82000a73fd77bcd7038d4c423374f7b9a961"
+  },
+  "auditSha256": "d577c1774034363e96691673d560ff7425f4ca973e38621373a0de35b33c7f0b",
+  "inspectionLimit": "Bounded current minimum/Event/discovery/alias seams and targeted existing oracles; no execution or exhaustive conformance claim."
+}

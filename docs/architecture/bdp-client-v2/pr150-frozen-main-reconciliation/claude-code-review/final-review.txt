@@ -1,0 +1,125 @@
+I inspected the actual combined worktree, both frozen parent patches, the base-relative patches, the snapshots and the frozen validation records. No commands, builds, tests or writes were run; everything below is from Read/Glob/Grep.
+
+---
+
+# CODE review — staged uncommitted merge at `/Users/dbox/repos/wt/vickie/vickie-pr150-main-reconciliation`
+
+**Verdict: the resolution as authored is correct and minimal. I found no blocking bug in the combined source.** Four findings follow — one must-hold sequencing precondition, one unverifiable history fact in the evidence gate, and three low-severity accuracy/attribution items.
+
+## 1. Structural facts I independently established
+
+| Claim | How verified |
+|---|---|
+| `docs/specs/bdp.md` is incoming byte-exact | **Absent** from `second-parent.patch` entirely (file list at `second-parent.patch:1–10137`), so the staged blob equals 8d. Cross-checks: `source-freeze.json:159` and `incoming-manifest.json:199` both record `d38501c7…0985`. The worktree file is navigation-only, 148 anchor pairs, every destination `../../specs/...` |
+| Exactly one conflict; parent union is exact | Intersecting the two base-relative diff file lists (`candidate-from-common-base.patch` = 35 paths, `incoming-from-common-base.patch` = 99 rename-aware paths) yields **exactly 9** overlaps: `docs/specs/bdp.md` + the 8 named tests. `second-parent.patch` touches exactly the candidate's 35 paths **minus** `docs/specs/bdp.md` **plus** `specs/profiles/write/write.md` |
+| No conflict markers; index == worktree | Grep for `^(<{7}|={7}|>{7})` across the tree: no matches. `unstaged.patch` is empty |
+| Root schema deleted | `Glob schemas/*` at repo root: no files — satisfies `packages/conformance/src/spec-layout.test.ts:73` |
+
+## 2. Relocated minimum-read block — correct
+
+`specs/profiles/write/write.md:3817–3849` sits inside `### Transactional HTTP consistency` (`:3800`) and before `### Transactional Resource read context` (`:3860`). I compared it line-for-line against the frozen candidate monolith `candidate-monolith.md:5819–5851`: **byte-identical**, including
+
+- `:3824` `identity is known or supported; semantic handling follows the rules below.` (replacing "existing semantic consistency decisions remain")
+- `:3832–3837` uniform `404 resource-not-found` before semantic minimum comparison/waiting, with actual observation context and no hidden-target disclosure, ordinary validation and the lexical receiving rule still preceding
+- `:3839–3847` bounded minimum-read wait then `503 catch-up-timeout` / `retry: "after-delay"`, no stale success / fabricated expiry / lexical refusal
+- `:3848–3849` the retained exclusion sentence (continuations/Snapshots, successful incident-Link lists)
+
+The block adds no heading, no anchor and no Markdown link, so `docs/design/spec-path-map.json`, the physical link audit (`spec-layout.test.ts:33–48`), and the level-2 inventory check (`profile-catalog-boundaries.test.ts:234–240`) are structurally untouched. Problem codes used by the prose exist in the combined tree (`specs/profiles/core/bdp-v0.schema.json`: 8 occurrences; `packages/server/src/transaction-consistency.ts`, `transaction-http.ts`).
+
+## 3. Sealed citation preservation — correct, and the mechanism holds
+
+`packages/conformance/catalog/transactional-v1.json:1177–1181` (`transactional.changefeed.consistency-fields`) selects `It never reports success with an older position.` from `source: docs/specs/bdp.md`, `anchor: #transactional-http-consistency`. That file is absent from **both** parent patches → sealed bytes untouched.
+
+The sentence survives at `write.md:3841–3842`, re-wrapped across a line break. The resolution chain checks out:
+
+- `test-support/spec-source.ts:24` maps `docs/specs/bdp.md` → assembled Core+Write+conformance
+- `src/markdown.ts:67–69` + `:37–40` bound the section at the next heading of level ≤ 3, i.e. through `write.md:3859`
+- `src/catalog.ts:175` + `normalizeWhitespace` at `:356–357` (`/\s+/g → " "`) tolerate the wrap
+
+I also checked the inverse risk — that the rewrite silently invalidated a citation elsewhere. Greps across the whole tree for every removed/reworded fragment (`does one of three things`, `existing semantic consistency decisions`, `eligible replica`, `cursor-expired, or catch-up-timeout`, `representation at that position`) return **no** catalog or test dependency; the only hits are the new prose itself, one historical design doc (`docs/design/w1-transactional-packet.md:7100`) and an unrelated test title. `#transactional-http-consistency` is cited by exactly one scenario.
+
+## 4. Four hidden schema readers — correct
+
+`first-parent.patch` (d4 → result) contains exactly **one** hunk per file, path + formatter layout only, callback bodies untouched:
+
+| File | d4 line | now | enclosing callback |
+|---|---|---|---|
+| `transactional-event-sse-installed.test.ts` | 531 | **532** | inside `it(…restart with Last-Event-ID precedence and source binding)` at `:320` |
+| `transactional-fresh-depth-installed.test.ts` | 71 | **72** | module top level |
+| `transactional-minimum-current-resource-installed.test.ts` | 87 | **88** | module top level |
+| `transactional-sequence-depth-installed.test.ts` | 79 | **80** | module top level |
+
+Each reads `path.join(root, "specs/profiles/core/bdp-v0.schema.json")` where `root` is the workspace repo root (`transactional-event-sse-installed.test.ts:15` and equivalents) — **workspace** schema read, not packed child code, as root disposition #4 requires. Per-callback entries match the plan exactly: `transactional-minimum-current-resource-installed.test.ts:53–55` defaults to `packages/server/dist/transaction-installed.js`; the other three default to `transaction-installed-process.js` (`transactional-event-sse-installed.test.ts:25–28`). All five `commands.json` selectors (`:360, :393, :426, :459, :492`) match verbatim top-level `it(` titles with **no** `describe` wrapper, so the `^…$` patterns bind. The first SSE callback (`:80`, ending `:318`) never reaches the repaired read at `:532` — legacy fence confirmed.
+
+Formatting is consistent with the gate rather than invented: `biome.json:14` sets `lineWidth: 100`; the original one-liners were 99 (indented) and 95 (top-level) characters and become 117/113 after the +18-character path, forcing exactly the three-line break main itself emitted for the identical construct (`first-parent.patch:239–242, 297–300, 327–330`). `format:check` remains future verification.
+
+## 5. Eight automatic overlaps — candidate semantics plus incoming layout, intact
+
+I compared hunk headers between `candidate-from-common-base.patch` (base → d4) and `second-parent.patch` (8d → result) for all 35 files:
+
+- 27 non-overlap files: **identical** hunk headers, except the four hidden readers which are uniformly `+2` new-side lines (1003→1005, 865→867, 639→641, 739→741) — exactly the wrap.
+- `transactional-collection-minimum-installed.test.ts` and `transactional-depth-key-order-installed.test.ts`: uniform `+2` **old-side** offset shift with **identical hunk sizes** — main's 2-line wrap earlier in the file, d4's behavioral hunks fully applied.
+- `transactional-matrix.test.ts`, `transactional-cumulative.test.ts`, `transaction-http.test.ts`, `transaction-sequence.test.ts`, `transaction-set.test.ts`, `transaction-snapshot.test.ts`: **identical** headers (main's change there was a 1-line import/read swap, no shift), and no second-parent hunk at the swapped line → main's relocated path survives.
+
+Byte-level spot check of `transactional-cumulative.test.ts` hunks `@@ -1112 @@`, `@@ -1133 @@`, `@@ -1159 @@` in both patches: character-for-character identical, including `…toHaveLength(241)`.
+
+d4's load-bearing assertions are at the claimed lines in the combined tree: `apps/bdptest/src/transactional-matrix.test.ts:627` exchange sum `234`, `:628` `63000`, `:644` `120000` — distinct from `transactional-cumulative.test.ts:199` (`234` *unplanned* requirements). `coverage-v1.json:3–5` retains `claimEligible: false` / `status: "bounded-observation"` / `transportAdmission: "private-exact-available"`.
+
+## 6. Source assembly, schema identity, evidence preservation
+
+- `packages/conformance/test-support/spec-source.ts` is inherited byte-exact (absent from `second-parent.patch`); repository-boundary guard at `:26–27`, and `spec-layout.test.ts:61–67` exercises it.
+- Final-tree sweep (`rg bdp-v0.schema.json`, excluding `docs/`): **no live filesystem reader of the old root path remains.** Every residual mention is classified — stable `$id` URLs (`core.md:57,1043,1155`, both schema copies `:3`, `packages/protocol/src/index.ts:15`), the package subpath export (`packages/protocol/package.json:16–17`) and package-local reads (`read-values.ts:27`), the policy pin (`installed-schema-graph.policy.test.ts:28` + `test-support/schema-graph-policy.json:21`), historical comments (`schema-read-projection.ts:62`, `matrices/README.md:657`, `specs/profiles/types/README.md:22`), and the intentional non-existence assertion (`spec-layout.test.ts:73`).
+- `specs/profiles/core/bdp-v0.schema.json` and `packages/protocol/schemas/bdp-v0.schema.json` are absent from both parent patches → unchanged bytes, stable `$id`, byte-equality check intact.
+- `docs/design/evidence/**`, `packages/conformance/catalog/**`, `development/**`, `matrices/**`, `fixtures/**` and `packages/protocol/src/index.ts`: absent from both patches → no resealing or relabeling.
+- `.github/workflows/ci.yml:7` retains d4's `codex/vickie-*` push branch; `:19` keeps `timeout-minutes: 20`; `:77` still masks the raw evidence exit.
+
+---
+
+# Findings
+
+## F1 — Must-hold precondition (not a source defect): the candidate commit must exist before `evidence:verify` and before `packed-affected-3`
+
+`scripts/read-cohort-evidence.mjs:54–60` puts `SCHEMA_BUNDLE_PATH = "specs/profiles/core/bdp-v0.schema.json"` into `VERIFICATION_INPUT_PATHS`, and `:131–136` throws `EvidenceGateError("verification inputs carry uncommitted changes…")` when `git status --porcelain -- <those paths>` is nonempty. That error is caught at `:393–400` and returns **raw exit 1** — the one code `ci.yml:77`'s `|| test $? -eq 2` does not absorb.
+
+In the present staged state `specs/profiles/core/bdp-v0.schema.json` is a staged rename (`merge-resolution.json:13`), so running the gate now yields raw 1 for purely state reasons — neither the required 0 nor the NO_CLAIM 2. The same applies to `apps/bdptest/src/transactional-fresh-depth-installed.test.ts:421–422` (`expect(workspaceDirty).toBe(false)` under `BDP_TRANSACTIONAL_INSTALLED_ENTRY`; it is the **only** one of the five callbacks that hard-asserts this — the other four merely record `workspaceDirty` in their reports), and to `commands.json:374/407/440/473/506` whose `BDP_TRANSACTIONAL_SOURCE_COMMIT` is the unbound `<ACTUAL_RECONCILED_COMMIT>`.
+
+Smallest repair: none in source. Commit the candidate first (already required by the plan and by `validation/adaptation.md:3`), bind the actual SHA, and do **not** read a dirty-tree raw 1 as an evidence regression.
+
+## F2 — Medium: the evidence gate's `evidenceCommit` resolution across the newly added second parent is unverified
+
+`scripts/read-cohort-evidence.mjs:138–164` resolves `evidenceCommit = git log --max-count=1 --format=%H HEAD -- docs/design/evidence/read-cohort/read-v1.json packages/server/src/read-conformance-capability.ts`, then checks `merge-base --is-ancestor runHead evidenceCommit` and confines `diff --name-only runHead evidenceCommit` to `ALLOWED_EVIDENCE_DELTA_PATHS` (`:23–26`).
+
+The merge introduces a second parent whose history was never reachable from d4. Both paths are content-identical across base/d4/8d (absent from both base-relative diffs), and git's default history simplification should follow only the TREESAME first parent, preserving `evidenceCommit = dbaf63a24219e1ea3f80394746853598b0d4464a`. **I could not confirm this** — I executed nothing and cannot see whether any commit between `9df574a9` and `8d6671ed` touches either path (content equality does not imply no touch-and-revert). Failure mechanism: a main-side `evidenceCommit` makes `changedPathsSinceRunHead` include paths outside the two allowed ones → raw exit 1, which the frozen rule would misread as a product regression.
+
+Smallest repair: no source change. Add a validation postcondition that the emitted `evidence.verified` event (fields assembled at `:376–391`) still carries `runHead: e5f7d0c4…`, `evidenceCommit: dbaf63a2…`, `constant: 674982be…`, `47` / `46` / `89` — exactly `validation/parent-evidence-baseline.json:13` — and classify any `evidenceCommit` change as a history fact to diagnose, separate from the raw-0 requirement.
+
+## F3 — Low: `docs/design/spec-authority-migration.md:30–32` is now inaccurate for this tree
+
+It asserts: *"A normalized comparison against the base proves that Parts I–IV and all end matter retain exactly the same text, allowing only Markdown link destinations, the schema filesystem path and whitespace."*
+
+On the combined tree that is false for `#transactional-http-consistency`: `write.md:3823–3824` and `:3832–3849` carry d4's PR141 normative delta, which is not a link/path/whitespace difference from the common base. No gate reads this file (grep across `*.{ts,mjs,mts,py,json,yml}` for `spec-authority-migration`: no matches), so this is an accuracy defect the reconciliation introduces into an inherited claim, not a test failure.
+
+Smallest repair: one sentence in that section scoping the equality statement to main `8d6671ed`'s relocation and naming the transplanted block. If root prefers no prose churn (consistent with the plan's `protocol/src/index.ts` guidance), state the scoping in the integration PR body instead.
+
+## F4 — Low / optional: same class, `specs/README.md:22–26`
+
+"This editorial move does not change discovery values, profile inheritance, operation semantics, or capability advertisements" stays literally true of the *move*, but now sits in a tree that does change Transactional read semantics. Covered if F3's note is added; otherwise worth one line in the PR body. No source change needed.
+
+## F5 — Low / attribution, to restate verbatim in the final report
+
+The packed-consumer stage proves external-entry and package provenance, **not** packed schema-path coverage: all four repaired reads derive `root` from the workspace test file, so the relocated schema is read from the candidate checkout even under `BDP_TRANSACTIONAL_INSTALLED_ENTRY`; only the child server comes from the packed consumer. And `transactional-event-sse-installed.test.ts:80` (callback 1) never executes the repaired read. Root disposition #4 already says this; the risk is that the final report reads as packed schema-path evidence.
+
+## F6 — Low / informational, inherited
+
+`readProtocolSpecification` (`test-support/spec-source.ts:14–21`) strips the preface only where `<!-- protocol-text -->` exists; grep finds the marker in `write.md:15` and `conformance.md:13` but **not** in `core.md`, so core.md's preface is included in the assembled citation source. Inherited main behavior, unchanged by this merge and bounded by `profile-catalog-boundaries.test.ts:234–240`. Noting it only so a future inventory failure is not misattributed here.
+
+---
+
+# Evidence I could not inspect
+
+- **No execution of any kind.** Every statement about `format:check`, `lint`, `check:boundaries`, `typecheck`, `build`, `test`, `smoke`, `evidence:verify`, the five packed callbacks or exact-head CI is a reasoned expectation from the source, not a result. Tests and candidate CI remain future verification.
+- **No git commands and no hash recomputation.** Parent identity, tree identity, dirty status, blob equalities and both parent unions are established from the frozen patches, manifests and worktree bytes — by patch presence/absence and manifest agreement, not by recomputing any SHA-256 or object id. F2 is the one place where this limitation is load-bearing.
+- **The 3.5 MB d4 CI log** (`exact-head-ci.log`) is not among my inputs. I read only the quoted `evidence.verified` record at `parent-evidence-baseline.json:13`; I verified neither the stated line 11324 nor the log's hash. The underlying event/source return-0 reasoning is taken as recorded, not re-derived.
+- **Tooling and unbound slots:** `tools/go`, `tools/bin/bd`, `tools/python-venv`, `identity.json`, the Go distribution digest, bd build info, consumer hashes and Python dependency identities — not inspected; `<ACTUAL_RECONCILED_COMMIT>` and the measured-consumer values are still unbound by design.
+- **The validation runner itself** (`validation/run.py`, `guarded-action.py`, `runner-adaptation.patch`) — not inspected. I did read `commands.json`, which does **not** itself encode a clean-tree precondition; the `gate.source_check` the native audit attributes to the runner is therefore unconfirmed by me (relevant to F1).
+- **Not read exhaustively:** the remaining incoming editorial files (I inspected those bearing on the resolution, citations, schema paths, layout, CI, evidence and package surface, not all 99); the catalogs beyond the one cited scenario; and the 1506-line `manifest-v1.json` / 204-line `coverage-v1.json` additions, which I verified by diff-hunk identity rather than line by line.

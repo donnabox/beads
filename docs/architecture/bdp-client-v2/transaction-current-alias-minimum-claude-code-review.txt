@@ -1,0 +1,49 @@
+Review complete. No files written; no tests, builds, installs, or network were run.
+
+## Findings
+
+**1 — LOW (doc accuracy, pre-existing, now self-contradictory)**
+`docs/design/transaction-implementation-progress.md:151-153` — "Alias operations remain forbidden in batches, as required by the normative contract. **There are no HTTP alias routes, redirects**, replica alias projections or new profile claims."
+
+Impact: the frozen doc now asserts there are no HTTP alias routes or redirects ~540 lines before the new paragraph (`:693-710`) that documents bodyless 307 alias redirects at a minimum, and 500 lines before `:546`'s "Resource/collection/alias reads". A reader of the frozen artifact gets two contradictory statements of the executed subset — the exact thing this owned file's mandate ("reconcile … exact executed subset") exists to prevent. Not introduced here: the sentence is byte-identical in `2a78699` and went stale at `6ee16f2`, when the alias read route landed; it is plausibly readable as scoped to the alias-singleton increment, which is why it survived.
+
+Concrete fix (owned file, no new rule): in `:151-153` replace "There are no HTTP alias routes, redirects, replica alias projections or new profile claims." with "These alias singletons add no HTTP alias routes, redirects, replica alias projections or new profile claims; current alias read routing is described under the private HTTP receiver and current alias minimums below." — matching the doc's existing explicit-supersession convention (cf. `:1628`).
+
+**2 — LOW (validation coverage of the one admitted behavior change; plan-permitted)**
+`packages/server/src/transaction-http.ts:202` — `facet.resolveAlias(request.url, { signal: request.signal })` now forwards the signal on the **ordinary** (no-minimum) alias path too.
+
+Impact: the delta's only non-preserving change is not re-exercised at the wire by the pre-existing `apps/bdptest/src/transactional-alias-installed.test.ts` (36 requests/2 children), which is the installed owner of ordinary alias GET/HEAD and was neither modified nor re-run in `exits.json`. Practical risk is negligible — that file's only signal is a whole-observation deadline (`:104`, `:144`, `:198`), so an abort there already fails the test independently — and the abort-relevant suites in the accepted bounded list (`development-disconnect` 3 pass, plus `node-http-listener`, `http-handler`, `read-http` inside the 508) all passed. This is plan-conformant (not in the bounded regression list, no owned file touched) and the report discloses the behavior change at `report.md:7`.
+
+Concrete fix: none in source. If root wants wire-level closure, re-execute only `transactional-alias-installed.test.ts` unchanged against the frozen pack and file its exit/counts alongside `packed-minimum`; otherwise record in the report's Limits section that ordinary-alias signal forwarding is validated by source/bounded regressions only.
+
+No correctness, consistency, lifetime, cancellation, disclosure, or accounting defect found in the seven-file delta.
+
+## Normative conformance, source-bound
+
+| Required property | Verified at |
+|---|---|
+| Alias dispatch before canonical parser | `read-http-routing.ts:29-30` dispatches `routes.alias` before `requestFromUrl` at `:39`; `transaction-http.ts:529` wraps the whole `requestFromUrl`/early-400/predicate block in `alias === undefined` (not a removed disjunct) |
+| Outside the current Resource/Type predicate | `isCurrentTransactionMinimumRead` (`transaction-read.ts:30-60`) unchanged, no alias case; alias is a separate `if` condition, so a later predicate substitution cannot delete alias support |
+| Shape/auth/tuple order preserved | 405 `methodResponse` `:270`; 401 `:364`; malformed-alias classifier `:458-459` returns context-free 404 **before** the minimum gate `:525-528`; partial/unknown tuple → `minimum-position` gap `:528` |
+| Same-entry mapping/target/context + sourceCondition | `authority-read.ts:976-996` — one `prepared.enter` callback: `captureContext` → `materialize` (alias mapping, canonical target validation, visibility, `:769-787`) → `checkSourceCondition`, all before entry release; one-call integrity guard `:979-980` |
+| Finite retry re-resolves mapping | `transaction-consistency.ts:106-120` re-invokes `attempt()`, i.e. a fresh owner entry re-reading `reader.alias(suffix)`; retries only on `behind`; `catch-up-timeout` carries final-attempt context `:117` |
+| No owner entry across the wait | `transaction-read.test.ts` "rechecks a repointed alias…" performs a real `updateBead` **inside** the wait hook successfully; `entries === 1` before drain in the abort/drain test |
+| Alias-only mutations advance nothing | source: both targets' complete records `toEqual` pre-repoint bodies incl. `revision`; installed: `requiredPosition pos-1`, `expect(result).not.toHaveProperty("effectPosition")` on put/repoint/delete; redirects keep `pos-1`; wait test proves alias-only progress does **not** satisfy a future Resource bound (`waits === 2`) |
+| Cancellation / drain / options | pre-abort rejects before `makeIntent`/entry (`authority-read.ts:1068-1070`), asserted by `DatabaseSync.prototype.prepare` spy not called and `entries === 0` for **both** ordinary and minimum headers; abort during wait at `transaction-consistency.ts:107`; `run()`→`active` drained by `transaction-service.ts:547-568`; ordinary `ordinaryDeliveryOptions` (`transaction-read.ts:64-95`) and its proxy/accessor test unchanged |
+| 307 Location / no ETag vs Resource ETag | `transaction-http.ts:206-213` (307, absolute `result.target`, `content-length: 0`, `private, no-store`, no body); `applyReadHttpSemantics` (`read-http.ts:10-47`) touches only JSON-200/204, so 307 survives `If-None-Match: *` + mismatching `If-Match` + `Accept: text/plain`; `scopeDataResponse` sets ETag only for resource/properties |
+| Conditional / media / HEAD / foreign / future / missing | 503+`Retry-After: 1` (`:104`, `:561-574`), 409 bodyless with inherited GET `content-length`, 410 canonical Problem, satisfied 404 **with** context, incompatible missing → `minimum-position-visibility` 500 with no context/Location (`:585-586`); no `Location` on any refusal |
+| Applied exactly once | `applyReadHttpSemantics` invoked only at `transaction-http.ts:598` |
+
+## Independently recomputed evidence
+
+- Source `961125320766b3f02c3ff73ad6029f11117fedae` → tree `dc117ebe883a19fa51632bb808f4be8f4f14b030` (matches `report.md:3`, `source.json`); parent `2a78699…`; working tree clean. The prompt's source SHA carried one extra digit (`96112533…`); `9611253` resolves correctly.
+- All seven `source.json` byte counts and SHA-256s recomputed **OK** against the checkout; diff is exactly 7 files (+618/−14).
+- Preservation: the installed test's first 35,483 bytes hash to `81a619fd…` and are byte-identical to the **entire** parent file — the new scenario is a pure append (218/0 numstat). The older 36/2 alias scenario and `context()`'s no-ETag check are untouched. `transaction-http.test.ts` −1 line (`alias/missing` removed from the `minimum-position-route` list, now correctly 500 `minimum-position-visibility`); `transaction-read.test.ts` −2 lines (both obsolete `"unsupported"` alias rejections, replaced by `reason: behind` on a live alias and a context-bearing 404 where no alias exists).
+- Installed witness: `private-installed-alias-minimum` = **18 exchanges, 7 distinct URLs** (exactly the 7 planned), wire statuses in the planned row order `200,200,307,307,307,307,200,307,200,503,409,410,404,500,200,404,401,404`; HEAD rows 4/6/11/14 all `bodyOctets 0`; child PID 4765, exit 0, closed true, `workspaceDirty false`, `declaredSourceCommit 9611253…`, `claimEligible false`.
+- Evidence stays distinct: four scenarios, four separate child PIDs (4750/4761/4762/4765) — 38/1, 10/1, 20/1, 18/1, not an aggregated cohort; `remainingInstalledChildren: 0`. Mutants ran with `cwd=logs/sensitivity-source` (a disposable archive), and `sensitivity.py` asserts byte-equality with the frozen source afterwards. Both discriminators are real: dropping `sourceCondition` → "promise resolved … instead of rejecting"; returning the pre-wait target → expected `beads/b`, got `beads/a`. Restored source: 2 pass.
+- Counts match `report.md` exactly: 508/9 files, 7 pass/117 skipped/2 files, 3 pass, 4 installed, 2/200. Tarball digests `4683cb6c…` and `cfe3e338…` recomputed from `packs/` — match. Payload digest `c4a7f1c3…` present (shared by all four scenarios, as expected for one installed build).
+- Honest-reporting check: `focused-affected` named 10 paths but ran 9 — `packages/server/src/development-disconnect.test.ts` does not exist (real path `apps/bdptest/src/development-disconnect.test.ts`), which `report.md:17` discloses and then runs explicitly. `typecheck-entry-count` and `local-installed-alias` exit 1 with repairs, and the pnpm-rejected first mutant, are all preserved and disclosed. No full suite was run.
+
+## Boundaries held
+
+The unqualified all-visible collision is retained, not resolved: live-future 503/context/wait vs missing-future 500/no-context/no-wait is preserved in code (`TransactionMinimumVisibilityGap` → `developmentGap`), asserted in both source and installed rows, and labelled unqualified in `report.md:9` and `progress.md:703-706`. No alias-vs-target authorization rule, missing-precedence rule, or hidden-policy disclosure is introduced; unreadable targets remain unexercised and are stated as such. No parser, policy, store, schema, launcher, public-export, or discovery change — `discover` still returns `developmentGap("transactional-discovery")`; `claimEligible` stays false. Nothing in the delta implies or requires a broader policy redesign.

@@ -1,0 +1,22 @@
+{
+  "pid": 95515,
+  "pgid": 95515,
+  "started": "2026-10-16T19:17:56.385181+00:00",
+  "argv": [
+    "/opt/homebrew/bin/claude",
+    "--safe-mode",
+    "-p",
+    "--tools",
+    "Read,Glob,Grep",
+    "--allowedTools",
+    "Read,Glob,Grep",
+    "--disable-slash-commands",
+    "--strict-mcp-config",
+    "--mcp-config",
+    "{\"mcpServers\":{}}",
+    "--no-session-persistence"
+  ],
+  "timeoutSeconds": 900,
+  "termAfterSeconds": 895,
+  "headIsChronologyOnly": false
+}

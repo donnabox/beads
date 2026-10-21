@@ -1,0 +1,67 @@
+{
+  "released": false,
+  "session": "2026-10-08T20:26:35Z-81e5",
+  "finalHead": null,
+  "finalTree": null,
+  "rootAcceptance": {
+    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-fresh-depth-authoring/validation-service-successor/root-release.json",
+    "sha256": null
+  },
+  "sourceBinding": {
+    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-fresh-depth-authoring/validation-service-successor/final-source.json",
+    "sha256": null
+  },
+  "inputBinding": {
+    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-fresh-depth-authoring/validation-service-successor/input-binding.json",
+    "sha256": null
+  },
+  "approvedCommandIds": [],
+  "phaseRelease": {
+    "source": false,
+    "control": false,
+    "package": false,
+    "installed": false,
+    "adjudication": false
+  },
+  "preparationSha256": {
+    "adaptation.patch": "f8584c97c301e9a092ac55730647ea7ac3e7a8f458bc8f72ed989ff98fa2662c",
+    "commands.json": "43cdf3ec97c938d5615fa671671d2fee72f81d12fa6f33189d6978b8027b8673",
+    "control-execute.py": "069272bd3a4349628eb4df485059e5466ef80ac77ffd114154ba331b8786c71f",
+    "control-reporter-sources.json": "804838be6efa8a94d3fcb3e1e925cc63233489261143b85ba3321f22b717c9cd",
+    "control.py": "8cf93c47a942bffcdcdf945abda46f55591b49e4c82b979db54ee3abc55950e8",
+    "gate.py": "02706169d1288dde29b6153fa7b1b60775f039d63c7afedd4e602786fa0c54db",
+    "installed-oracles.json": "d7de5e85e705b65f7b996dba4eaa395d7e6d80ee4ed7e523f5791dd86f7fd9fd",
+    "inventory.py": "b9ac353ee250d66552e96bc67bc0d22c9168d1c8fc563d6da5517c6bd765486d",
+    "packages.py": "5b447ecaa6334bee7bddbcf7c477677ec400c6bbeb38e4c630863369b8dc1c62",
+    "predecessor-pins.json": "22ad13bf0961a2ef578a84d961aabd73926fc0d2523625865bbb8e8664b8b499",
+    "prepared-source.json": "9120c94ceadcc15f7b9089dd5c98bc6dd51915e179988c9f2044826daea5f13c",
+    "report.md": "a17c748576368231758235e5ce0f237c4e4276a7ac322b9792ec866d92aacc9f",
+    "review-installed.py": "1be391e9a6f86ceca05ef6a1a04659a9d4c5175efc45efc8f49b6ff786d58c89",
+    "review-source.py": "3ef7855bf8b946337449cb0567eb7c4d17e47c1920bd5e8e1a620a7703993aff",
+    "source-body-measurements.json": "ee531532781baa0aa82a619adbe5fd89c3a5b6385247e20e4ddb5cd7de29c7dc",
+    "source-selection.json": "d76071a97431e40d72c001188e3847b45d2cbd03fd9c2655a40b2aec2d9e8304",
+    "supervise.py": "c9b524743c8b71c4487e55f5719713985a1665b6e61ec32d2d99534796ff9194"
+  },
+  "guardSha256": "fd81ba029cd4e7c7e60623df89e8292af91141d311d9ce789ed19e2152375e84",
+  "toolHashes": {},
+  "sourceLockSha256": null,
+  "consumerLockSha256": null,
+  "installedProvenanceSha256": null,
+  "expectedProductionVersions": {
+    "@bdp/protocol": "0.0.0",
+    "@bdp/server": "0.0.0",
+    "ajv": "8.17.1",
+    "ajv-formats": "3.0.1",
+    "fast-deep-equal": "3.1.3",
+    "fast-uri": "3.1.5",
+    "json-schema-traverse": "1.0.0",
+    "require-from-string": "2.0.2"
+  },
+  "note": "CLOSED. Commit/council pending; root must stop package prefix at consumer-install, accept actual lock, then release verify-installed. Installed requires actual provenance.",
+  "consumerInventorySha256": null,
+  "councilAccepted": false,
+  "authorizationRequirements": {
+    "source": "rootAcceptance.sourceValidationAuthorized=true and sourceCouncilAccepted=true; exact clean source and explicit prefix still mandatory",
+    "allOtherPhases": "councilAccepted=true plus independent phase/prefix/provenance prerequisites"
+  }
+}

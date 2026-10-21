@@ -1,0 +1,262 @@
+
+### packages/server/src/transaction-http.ts:111–116 (98c600767e8e91a79e109cb741beb91e23b9bebe; full-file SHA256 b51d02801e5924190aba77c377e538db0b8619149d6184e19cb56d440f40c2cf)
+```
+  const response = problem(readProblem(code));
+  return observation ? context(response, observation) : response;
+}
+function context(response: HttpResponse, observation: TransactionReadContext): HttpResponse {
+  response.headers.set("bdp-scope-epoch", observation.scopeEpoch);
+  response.headers.set("bdp-authorization-view", observation.authorizationView);
+```
+
+### packages/server/src/transaction-http.ts:175–188 (98c600767e8e91a79e109cb741beb91e23b9bebe; full-file SHA256 b51d02801e5924190aba77c377e538db0b8619149d6184e19cb56d440f40c2cf)
+```
+  const names = new Map(Object.entries(targets).map(([name, url]) => [url, name]));
+  function receiptResponse(
+    observed: {
+      readonly receipt: { readonly id: string; readonly status: string };
+      readonly context: TransactionReadContext;
+    },
+    mutation: boolean,
+  ): HttpResponse {
+    const response = context(jsonResponse(observed.receipt), observed.context);
+    if (mutation && observed.receipt.status === "pending") {
+      response.headers.set("location", observed.receipt.id);
+      response.headers.set("retry-after", "1");
+      return { ...response, status: 202 };
+    }
+```
+
+### packages/server/src/transaction-http.ts:613–634 (98c600767e8e91a79e109cb741beb91e23b9bebe; full-file SHA256 b51d02801e5924190aba77c377e538db0b8619149d6184e19cb56d440f40c2cf)
+```
+        else if (error instanceof TransactionEventProjectionGap)
+          response = developmentGap(error.message);
+        else if (error instanceof TransactionMinimumVisibilityGap)
+          response = developmentGap("minimum-position-visibility");
+        else response = empty(500);
+      }
+      response.headers.set("x-bdp-development", "non-attesting");
+      if (request.method === "POST") response.headers.set("vary", "Accept");
+      if (
+        "kind" in response &&
+        (response.kind === "changefeed-stream" || response.kind === "event-stream")
+      )
+        return response;
+      return {
+        ...(request.method === "GET" || request.method === "HEAD"
+          ? applyReadHttpSemantics(request, response)
+          : response),
+        kind: "finite",
+      };
+    },
+  });
+}
+```
+
+### packages/server/src/read-http-routing.ts:44–54 (98c600767e8e91a79e109cb741beb91e23b9bebe; full-file SHA256 d9344b87838f8c71381ccf9efe28b4f023df45503570beb8fb4293d553caca42)
+```
+export function jsonResponse(body: unknown): HttpResponse {
+  return {
+    status: 200,
+    headers: new Headers({
+      "content-type": "application/json",
+      "cache-control": "private, no-store",
+    }),
+    body,
+  };
+}
+
+```
+
+### packages/server/src/transaction-events.ts:75–101 (98c600767e8e91a79e109cb741beb91e23b9bebe; full-file SHA256 c6052433662fcb2d0a202ad4e408a24d4c43f980313fa89659501b4475790db5)
+```
+  /^ev_([A-Za-z0-9_-]{43})_([A-Za-z0-9_-]{43})_([A-Za-z0-9_-]{43})_(pos-(?:0|[1-9][0-9]*))_(0|[1-9][0-9]*)$/;
+const hash = (tag: string, value: string) =>
+  createHash("sha256")
+    .update(JSON.stringify([tag, value]))
+    .digest("base64url");
+
+/** Scope and Resource token spelling is deliberately private, not a fixture law. */
+export function renderTransactionEvent(
+  context: Pick<TransactionReadContext, "scopeEpoch" | "authorizationView">,
+  source: string,
+  checkpoint: string,
+  event: TransactionEvent,
+): TransactionEvent {
+  if (
+    !position.test(checkpoint) ||
+    !Number.isSafeInteger(Number(checkpoint.slice(4))) ||
+    Number(checkpoint.slice(4)) < 1 ||
+    !Number.isSafeInteger(event.ordinal) ||
+    event.ordinal < 0
+  )
+    throw new Error("invalid committed Event position");
+  return {
+    ...event,
+    source,
+    id: `ev_${hash("epoch", context.scopeEpoch)}_${hash("view", context.authorizationView)}_${hash("source", source)}_${checkpoint}_${event.ordinal}`,
+  };
+}
+```
+
+### packages/server/src/resource-evaluator.ts:805–811 (98c600767e8e91a79e109cb741beb91e23b9bebe; full-file SHA256 89606787e455f4ed555b807d91c5331a376431807a9a581de1f94e538fcab4ff)
+```
+  const commonMetadata = deleting
+    ? (before?.metadata ?? {})
+    : "metadataChange" in input && input.metadataChange !== undefined
+      ? patch(before?.metadata ?? {}, input.metadataChange, "metadata", options)
+      : "metadata" in input
+        ? (input.metadata ?? {})
+        : (before?.metadata ?? {});
+```
+
+### packages/server/src/resource-evaluator.ts:867–903 (98c600767e8e91a79e109cb741beb91e23b9bebe; full-file SHA256 89606787e455f4ed555b807d91c5331a376431807a9a581de1f94e538fcab4ff)
+```
+  const contextInput = "revisionProvenance" in input ? input.revisionProvenance : undefined;
+  // Protocol defaults: omitted and {} both carry only undetermined states.
+  const needsContext =
+    !noOp &&
+    (options.recordChangeContext ||
+      (contextInput !== undefined &&
+        (Object.hasOwn(contextInput, "agent") || Object.hasOwn(contextInput, "message"))));
+  const metadata = (prior: ResourceRecord | undefined): VersionRecipe["metadata"] => {
+    if (noOp && prior)
+      return {
+        context: { kind: "preserved", value: prior.revisionProvenance },
+      };
+    const actor = contextInput?.actor;
+    return {
+      ...(actor === undefined ? {} : { actor }),
+      context: needsContext ? { kind: "native" } : { kind: "preserved", value: undefined },
+    };
+  };
+  const revision = noOp ? before?.revision : deleting ? undefined : allocateRevision();
+  let subjectRecipe: VersionRecipe | undefined = deleting
+    ? undefined
+    : {
+        id: uri,
+        type,
+        revision: revision as string,
+        properties,
+        commonMetadata,
+        metadata: metadata(before),
+        endpoints,
+      };
+  const ownedLinks = (
+    owner: VersionRecipe,
+    descriptor: BeadTypeDescriptor,
+    replacement?: VersionRecipe,
+    removed?: string,
+  ): VersionRecipe => {
+    if (descriptor.ownsOutgoing === undefined) return owner;
+```
+
+### packages/server/src/resource-evaluator.ts:1135–1164 (98c600767e8e91a79e109cb741beb91e23b9bebe; full-file SHA256 89606787e455f4ed555b807d91c5331a376431807a9a581de1f94e538fcab4ff)
+```
+  const record = freeze({
+    id: recipe.id,
+    type: recipe.type,
+    revision: recipe.revision,
+    properties: recipe.properties,
+    metadata: recipe.commonMetadata,
+    ...(context === undefined && recipe.metadata.actor === undefined
+      ? {}
+      : {
+          revisionProvenance: {
+            ...context,
+            ...(recipe.metadata.actor === undefined ? {} : { actor: recipe.metadata.actor }),
+          },
+        }),
+    ...(recipe.endpoints ?? {}),
+    ...(recipe.ownedLinks === undefined
+      ? {}
+      : {
+          ownedLinks: Object.fromEntries(
+            Object.entries(recipe.ownedLinks).map(([type, links]) => [
+              type,
+              links.map((link) =>
+                link.kind === "existing"
+                  ? link.value
+                  : materializeVersion(link.value, nativeContext, materialized),
+              ),
+            ]),
+          ),
+        }),
+  }) as ResourceRecord;
+```
+
+### docs/specs/bdp.md:3894–3940 (98c600767e8e91a79e109cb741beb91e23b9bebe; full-file SHA256 f036103ffdf5f89fa3a2033570e1e987c4cd203cd80b1c633cb44615123f892e)
+```
+Concurrent requests with the same key and the same semantic request join one
+execution. A duplicate may wait for the terminal response or receive the same
+pending receipt. Either way, it never executes again. For direct carriers,
+handing a duplicate a receipt presupposes established semantic equality. A
+request that encounters an unresolved reservation follows the bounded
+comparison rules below. Reusing the key for a different semantic request is
+an idempotency conflict. Once a mutation is admitted, client disconnection
+does not decide the outcome. The authority commits or rolls back, and it
+records one terminal receipt. Retrying returns
+that same outcome, including authority-allocated IDs.
+
+An idempotency key is the token defined under
+[Idempotency keys](#idempotency-keys): the `Idempotency-Key` HTTP field of
+a batch or singleton request and the `idempotencyKey` member of a sequence
+member carry the same case-sensitive `[A-Za-z0-9_-]{1,256}` token, bare,
+compared byte-exactly; a request whose key is absent, repeated, or outside
+the grammar is malformed. On a Transactional Scope the key's namespace is
+the canonical Scope URL, the Scope epoch, and the authenticated principal —
+the Read+Update namespace with the epoch it lacks — and every mutation
+carrier feeds that one namespace: a singleton request, a `batch`, and each
+member of a `sequence` is a Mutation Transaction with its own durable
+Mutation Receipt, and the carrier is delivery metadata that the semantic
+comparison excludes.
+
+The semantic identity of a Mutation Transaction is the sequence, in
+declaration order, of its operations' semantic identities under [Idempotency
+keys](#idempotency-keys): each is the operation kind plus its normalized
+record — durable references canonicalized, protocol defaults expanded, array
+order preserved, member order ignored, `name` and the carrier excluded,
+`expectedRevision` and `revisionProvenance` included, opaque URIs and pins
+compared byte-exactly, and the records compared under RFC 6902 Section 4.6.
+In a batch, a `@label` reference is normalized to the creating operation's
+zero-based index when that operation supplies no `id`, and to the supplied
+identity's canonical URL when it does — never to the label's spelling, so
+renaming a label is not a semantic change, and never to an allocated
+identity, which does not exist before commit. In a sequence, a `@name`
+reference is normalized to the identity its creating member bound, as in
+Read+Update. A one-operation batch, the equivalent singleton request, and the
+equivalent sequence member therefore present one semantic request, and any of
+them retrieves the receipt the others created.
+
+Concurrent identical requests join one execution and receive the same
+receipt identity, pending or terminal. Read+Update refuses a concurrent
+duplicate with `idempotency-in-progress` because it has no durable receipt
+to hand the duplicate; the Transactional profile joins the duplicate to
+the one execution and hands it the pending receipt, which is the same
+exactly-once promise made with the profile's own vehicle. A later identical
+```
+
+### docs/specs/bdp.md:5263–5277 (98c600767e8e91a79e109cb741beb91e23b9bebe; full-file SHA256 f036103ffdf5f89fa3a2033570e1e987c4cd203cd80b1c633cb44615123f892e)
+```
+The three Transactional response fields on a receipt or page response are
+the serving request's own observation, never the body's history:
+`BDP-Scope-Epoch` and `BDP-Authorization-View` carry the current epoch and
+the caller's current view token, and `BDP-Scope-Position` carries the
+position the read observed — at or after `effectPosition` on a terminal
+receipt served synchronously, honoring `BDP-Minimum-Scope-Position` on a
+later read exactly as any read does, and the observed head on a `202`. The
+body's `scopeEpoch`, `authorizationView`, `requiredPosition`, and
+`effectPosition` are the execution's recorded facts and never change; after
+a view rotation the body still names the view under which the transaction
+executed, and the recorded `requiredPosition` remains evidence about that
+view rather than a checkpoint for the current one.
+
+A `failed` receipt's `problem` is a Problem Details object of the receipt
+form. It carries the code's `status` — the HTTP status the failure would
+```
+
+### Complete selected schema definitions (compact JSON; omitted reference names below)
+```json
+{"mutationReceipt":{"title":"BDP Mutation Receipt","type":"object","allOf":[{"$ref":"#/$defs/receiptCore"}],"oneOf":[{"type":"object","required":["id","status","idempotencyKey","scopeEpoch","authorizationView","transaction"],"properties":{"id":true,"status":{"const":"pending"},"idempotencyKey":true,"scopeEpoch":true,"authorizationView":true,"transaction":true,"detail":false,"requiredPosition":false,"effectPosition":false,"results":false,"next":false,"allocated":false,"problem":false,"expiresAt":false}},{"type":"object","required":["id","status","detail","idempotencyKey","scopeEpoch","authorizationView","transaction","requiredPosition","results","next","expiresAt"],"properties":{"id":true,"status":{"const":"completed"},"detail":{"const":"available"},"idempotencyKey":true,"scopeEpoch":true,"authorizationView":true,"transaction":true,"requiredPosition":true,"effectPosition":true,"results":true,"next":true,"expiresAt":true,"allocated":false,"problem":false},"allOf":[{"if":{"properties":{"next":{"type":"null"}},"required":["next"]},"then":{"properties":{"results":{"type":"array","minItems":1}}}}]},{"type":"object","required":["id","status","detail","idempotencyKey","scopeEpoch","authorizationView","transaction","requiredPosition","problem","expiresAt"],"properties":{"id":true,"status":{"const":"failed"},"detail":{"const":"available"},"idempotencyKey":true,"scopeEpoch":true,"authorizationView":true,"transaction":true,"requiredPosition":true,"problem":true,"expiresAt":true,"effectPosition":false,"results":false,"next":false,"allocated":false}},{"type":"object","required":["id","status","detail","idempotencyKey","scopeEpoch","authorizationView","transaction","requiredPosition","allocated"],"properties":{"id":true,"status":{"const":"completed"},"detail":{"const":"expired"},"idempotencyKey":true,"scopeEpoch":true,"authorizationView":true,"transaction":true,"requiredPosition":true,"effectPosition":true,"allocated":true,"results":false,"next":false,"problem":false,"expiresAt":false}},{"type":"object","required":["id","status","detail","idempotencyKey","scopeEpoch","authorizationView","transaction","requiredPosition"],"properties":{"id":true,"status":{"const":"completed"},"detail":{"const":"withheld"},"idempotencyKey":true,"scopeEpoch":true,"authorizationView":true,"transaction":true,"requiredPosition":true,"effectPosition":true,"results":false,"next":false,"allocated":false,"problem":false,"expiresAt":false}}]},"receiptCore":{"type":"object","properties":{"id":{"$ref":"#/$defs/absoluteHttpUrl"},"status":{"$ref":"#/$defs/receiptStatus"},"detail":{"$ref":"#/$defs/receiptDetail"},"idempotencyKey":{"$ref":"#/$defs/idempotencyKey"},"scopeEpoch":{"$ref":"#/$defs/wireToken"},"authorizationView":{"$ref":"#/$defs/wireToken"},"transaction":{"$ref":"#/$defs/wireToken"},"requiredPosition":{"$ref":"#/$defs/wireToken"},"effectPosition":{"$ref":"#/$defs/wireToken"},"results":{"type":"array","items":{"$ref":"#/$defs/receiptResult"}},"next":{"oneOf":[{"$ref":"#/$defs/absoluteHttpUrl"},{"type":"null"}]},"allocated":{"type":"array","items":{"$ref":"#/$defs/allocatedIdentity"}},"problem":{"$ref":"#/$defs/receiptProblem"},"expiresAt":{"$ref":"#/$defs/dateTime"}},"allOf":[{"if":{"properties":{"status":{"const":"failed"}},"required":["status"]},"then":{"properties":{"effectPosition":false,"detail":{"const":"available"}}}}],"additionalProperties":false},"receiptResult":{"type":"object","required":["operationIndex","outcome"],"properties":{"operationIndex":{"type":"integer","minimum":0},"operationName":{"$ref":"#/$defs/localName"},"outcome":{"$ref":"#/$defs/receiptEntryOutcome"},"resource":{"oneOf":[{"allOf":[{"$ref":"#/$defs/beadRecord"},{"type":"object","properties":{"links":false}}]},{"$ref":"#/$defs/linkRecord"}]},"deleted":{"$ref":"#/$defs/deletedIdentity"},"erased":{"$ref":"#/$defs/resourceIdentity"},"source":{"$ref":"#/$defs/absoluteHttpUrl"},"sourceRevision":{"$ref":"#/$defs/revision"},"count":{"type":"integer","minimum":0},"alias":{"$ref":"#/$defs/absoluteHttpUrl"},"target":{"$ref":"#/$defs/absoluteHttpUrl"}},"allOf":[{"if":{"properties":{"outcome":{"enum":["created","updated"]}},"required":["outcome"],"not":{"properties":{"alias":true},"required":["alias"]}},"then":{"required":["resource"],"properties":{"resource":true,"deleted":false,"erased":false,"count":false}}},{"if":{"properties":{"outcome":{"const":"deleted"}},"required":["outcome"],"not":{"properties":{"alias":true},"required":["alias"]}},"then":{"required":["deleted"],"properties":{"deleted":true,"resource":false,"erased":false,"count":false}}},{"if":{"properties":{"outcome":{"const":"erased"}},"required":["outcome"]},"then":{"required":["erased"],"properties":{"erased":true,"resource":false,"deleted":false,"count":false}}},{"if":{"properties":{"outcome":{"const":"matched"}},"required":["outcome"]},"then":{"required":["count"],"properties":{"count":true,"operationName":false,"resource":false,"deleted":false,"erased":false,"source":false,"sourceRevision":false}}},{"if":{"properties":{"outcome":{"const":"withheld"}},"required":["outcome"]},"then":{"properties":{"resource":false,"deleted":false,"erased":false,"source":false,"sourceRevision":false,"count":false}}},{"if":{"required":["resource"],"properties":{"resource":{"$ref":"#/$defs/beadRecord"}}},"then":{"properties":{"source":false,"sourceRevision":false}}},{"if":{"required":["deleted"],"properties":{"deleted":{"type":"object","required":["resourceKind"],"properties":{"resourceKind":{"const":"bead"}}}}},"then":{"properties":{"source":false,"sourceRevision":false}}},{"if":{"required":["alias"]},"then":{"allOf":[{"$ref":"#/$defs/aliasResultMembers"}],"properties":{"operationIndex":{"const":0},"operationName":false,"resource":false,"deleted":false,"erased":false,"source":false,"sourceRevision":false,"count":false}},"else":{"properties":{"target":false}}}],"dependentRequired":{"source":["sourceRevision"],"sourceRevision":["source"]},"additionalProperties":false},"beadRecord":{"type":"object","required":["id","type","revision","properties"],"properties":{"id":{"$ref":"#/$defs/absoluteHttpUrl"},"type":{"$ref":"#/$defs/absoluteHttpUrl"},"revision":{"type":"string","minLength":1},"properties":{"$ref":"#/$defs/properties"},"metadata":{"$ref":"#/$defs/metadata"},"links":{"$ref":"#/$defs/linkCollection"},"ownedLinks":{"type":"object","propertyNames":{"$ref":"#/$defs/absoluteHttpUrl"},"additionalProperties":{"type":"array","items":{"$ref":"#/$defs/linkRecord"}}},"revisionProvenance":{"$ref":"#/$defs/revisionProvenance"}},"additionalProperties":false},"currentBeadRecord":{"allOf":[{"$ref":"#/$defs/beadRecord"},{"type":"object","required":["metadata"],"properties":{"metadata":{"$ref":"#/$defs/metadata"},"links":{"$ref":"#/$defs/currentLinkCollection"},"ownedLinks":{"type":"object","additionalProperties":{"type":"array","items":{"$ref":"#/$defs/currentLinkRecord"}}}}}]},"beadCollection":{"type":"object","required":["items","next"],"properties":{"items":{"type":"array","items":{"$ref":"#/$defs/beadRecord"}},"next":{"oneOf":[{"$ref":"#/$defs/absoluteHttpUrl"},{"type":"null"}]}},"additionalProperties":false},"currentBeadCollection":{"allOf":[{"$ref":"#/$defs/beadCollection"},{"type":"object","properties":{"items":{"type":"array","items":{"$ref":"#/$defs/currentBeadRecord"}}}}]},"eventPage":{"title":"BDP Event Source page","type":"object","required":["source","events","next"],"properties":{"source":{"$ref":"#/$defs/absoluteHttpUrl"},"events":{"type":"array","items":{"$ref":"#/$defs/event"}},"next":{"oneOf":[{"$ref":"#/$defs/absoluteHttpUrl"},{"type":"null"}]}},"additionalProperties":false},"event":{"title":"BDP Event","type":"object","required":["id","ordinal","type","source","subject","subjectType","transaction","time","data"],"properties":{"id":{"$ref":"#/$defs/wireToken"},"ordinal":{"type":"integer","minimum":0},"type":{"$ref":"#/$defs/eventType"},"source":{"$ref":"#/$defs/absoluteHttpUrl"},"subject":{"$ref":"#/$defs/absoluteHttpUrl"},"subjectType":{"$ref":"#/$defs/absoluteHttpUrl"},"transaction":{"$ref":"#/$defs/wireToken"},"time":{"$ref":"#/$defs/dateTime"},"data":{"type":"object"}},"allOf":[{"if":{"properties":{"type":{"const":"created"}},"required":["type"]},"then":{"properties":{"data":{"$ref":"#/$defs/createdData"}}}},{"if":{"properties":{"type":{"const":"updated"}},"required":["type"]},"then":{"properties":{"data":{"$ref":"#/$defs/updatedData"}}}},{"if":{"properties":{"type":{"const":"deleted"}},"required":["type"]},"then":{"properties":{"data":{"$ref":"#/$defs/deletedData"}}}},{"if":{"properties":{"type":{"enum":["linked","unlinked"]}},"required":["type"]},"then":{"properties":{"data":{"$ref":"#/$defs/linkDeltaData"}}}}],"additionalProperties":false},"createdData":{"type":"object","required":["revision","properties"],"properties":{"revision":{"$ref":"#/$defs/revision"},"properties":{"$ref":"#/$defs/properties"},"metadata":{"$ref":"#/$defs/metadata"},"source":{"$ref":"#/$defs/reference"},"target":{"$ref":"#/$defs/reference"},"revisionProvenance":{"$ref":"#/$defs/revisionProvenance"}},"dependentRequired":{"source":["target"],"target":["source"]},"additionalProperties":false},"absoluteHttpUrl":{"type":"string","format":"uri","pattern":"^https?://.+"},"dateTime":{"type":"string","format":"date-time"},"wireToken":{"type":"string","pattern":"^[A-Za-z0-9_-]{1,256}$"},"properties":{"type":"object","additionalProperties":true},"metadata":{"type":"object","additionalProperties":true},"localName":{"type":"string","pattern":"^[A-Za-z][A-Za-z0-9_-]*$"}}
+```
+Omitted referenced definitions: aliasResultMembers, allocatedIdentity, currentLinkCollection, currentLinkRecord, deletedData, deletedIdentity, eventType, idempotencyKey, linkCollection, linkDeltaData, linkRecord, receiptDetail, receiptEntryOutcome, receiptProblem, receiptStatus, reference, resourceIdentity, revision, revisionProvenance, updatedData. Actual test loads the entire checked-in schema, not this excerpt.

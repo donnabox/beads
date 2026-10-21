@@ -1,0 +1,34 @@
+{
+  "accepted": true,
+  "head": "bb9600f1b8b6f623e753543ed5792005eb9aacee",
+  "tree": "aa8f7af9c4cdfafbd80547449ec2369f92071ab7",
+  "sourceBindingSha256": "89b6169c920a207acf64d31b326041cfcdd6e177d025f580b539b36ff8f65938",
+  "nativeReviewSha256": "9e7c56abf8f5bd345f98cc5ec926251c7397a222cdbc6808a8fb265cd82858fb",
+  "claudeOutputSha256": "99ffb2924fadd1bf1d2c8186b37862f6f6d8e654f607f0f88082ebbd75a9c447",
+  "findingsAuditSha256": "585ad673f7151db00ac11919f4d09bb82e5596c88eff77427c32b2e8768c9542",
+  "claudeExit": {
+    "exitCode": 0,
+    "timeout": false,
+    "forcedTermination": false,
+    "elapsedSeconds": 786.287777208956,
+    "sourceAndPlanUnchanged": true,
+    "stdoutSha256": "99ffb2924fadd1bf1d2c8186b37862f6f6d8e654f607f0f88082ebbd75a9c447",
+    "stderrSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "cleanupSha256": "c052792d96f9ab23e0fd719e0dcd189ab916489423f6ffc680ee08452c583dca",
+    "sourceAfterSha256": "53d5026fb266a4eea5907c0b24518a1cdb05e40d72614223244e4c9b73d87786"
+  },
+  "rootIndependentInspection": [
+    "complete Claude stdout and23-item audit",
+    "runner raw-wire vs assertion input separation",
+    "manifest-derived routes and sequence header law",
+    "complete changed oracle/control/report code",
+    "six-case numeric-fence bridge and source digest inputs",
+    "actual installed reports/counts/cleanup"
+  ],
+  "disposition": "No mandatory correction. F1 is deliberate assertion-input-only control; keep genuine wire facts. F2-6 diagnostic/report hygiene limitations recorded, current distinct paths and0600 outputs verified. All execution-blocking omitted dependencies resolved with source and completed installed observations. F18 bookkeeping is not independent coverage. Optional refactors/pins deferred.",
+  "sourceChangedAfterReview": false,
+  "publicQualification": false,
+  "ciRequired": true,
+  "mergeReleased": false,
+  "checkedAt": "2026-10-16T00:47:02.774202+00:00"
+}

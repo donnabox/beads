@@ -1,0 +1,21 @@
+{
+  "argv": [
+    "/opt/homebrew/bin/claude",
+    "--safe-mode",
+    "-p",
+    "--tools",
+    "Read,Glob,Grep",
+    "--allowedTools",
+    "Read,Glob,Grep",
+    "--no-session-persistence"
+  ],
+  "cwd": "/Users/dbox/repos/wt/vickie/vickie-minimum-current-resource",
+  "pid": 87475,
+  "processGroup": 87475,
+  "started": "2026-10-16T04:08:55.774380+00:00",
+  "timeoutSeconds": 900,
+  "promptSha256": "baf4dddd97005146dff9bebc80e052950afc5fb4e20bb5d4b6906c7572c2bdc3",
+  "scope": "scope-type",
+  "tempDirectory": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-minimum-next-serving-plan/authoring-draft/scope-type-repair/claude-review/scope-type/tmp",
+  "kind": "supplied-context plus read-only Read/Glob/Grep code review; no model override or product execution"
+}

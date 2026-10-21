@@ -1,0 +1,32 @@
+{
+  "sourceWorkflow": "/Users/dbox/repos/wt/vickie/vickie-trusted-startup-configuration/.github/workflows/ci.yml",
+  "workflowSha256": "268c9563e8d2f4fa4b7314492cb6c4994f7c76da9b26cda7a74c7e5b3c6f664a",
+  "requiredLocalCommands": [
+    "pnpm run check:boundaries",
+    "pnpm run e2e:ready:preflight",
+    "pnpm run smoke",
+    "pnpm run evidence:verify"
+  ],
+  "evidenceAcceptedRawCodes": [
+    0,
+    2
+  ],
+  "code2Meaning": "no evidence claimed; preserve output; never convert into claimed public Write admission",
+  "exactHeadCI": "UNRESOLVED separate root authority after source merge/integration policy; do not absorb spec proposal/main changes here",
+  "ciActualOrder": [
+    "exact Node24.16.0/pnpm11.20.0",
+    "Go1.26.2 and pinned bd1.0.5 source build plus actual identity checks",
+    "frozen install",
+    "format:check",
+    "lint",
+    "check:boundaries",
+    "typecheck",
+    "build before test collection",
+    "pnpm test with actual BDP_BD_MATRIX_EXECUTABLE and BDP_REQUIRE_BD_MATRIX=1",
+    "e2e:ready:preflight",
+    "smoke",
+    "evidence:verify with exact0/2 only"
+  ],
+  "ciTimeoutMinutes": 20,
+  "fullSuiteTiming": "Root decides combined reviewed source tree timing; this44callback local slice cannot stand in for full suite or CI. No CI or Git action authorized by this packet."
+}

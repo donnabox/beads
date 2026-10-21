@@ -1,0 +1,391 @@
+{
+  "status": "BOUNDED_SOURCE_AND_CONTROL_COMPLETE",
+  "head": "fc47fbfb5f1055766e2f680df40a1d729d39638d",
+  "tree": "11641e37dc87560c4e92928fed86c88b2b314412",
+  "parent": "427cfef6decbb422b393024e36218affc26007fa",
+  "clean": true,
+  "positive": {
+    "passed": 14,
+    "skipped": 363,
+    "failed": 0,
+    "exactPassedTitles": [
+      "proves static mismatch immediately, retains no timeout outcome and keeps the owner",
+      "preserves maintenance faults as bodyless internal errors before direct admission",
+      "keeps a live listener from serving through an owner fenced by injected commit uncertainty",
+      "uses one bounded comparison deadline and leaves the owner's reservation intact",
+      "uses the original finite comparison budget while an earlier sequence dependency is unresolved",
+      "returns a stopped comparison observation for a normally closed owner",
+      "preserves a fenced owner's comparison observation failure",
+      "preserves background maintenance failure in a closed comparison owner",
+      "propagates closed maintenance faults before admission (observed=false)",
+      "propagates closed maintenance faults before admission (observed=true)",
+      "preserves normal closed submission shape (observed=false)",
+      "preserves normal closed submission shape (observed=true)",
+      "distinguishes a stopped final observation at the reached comparison deadline",
+      "keeps full-owner unobserved comparison exact and excludes a caller callback"
+    ]
+  },
+  "control": {
+    "expectedFailure": true,
+    "failed": 1,
+    "skipped": 70,
+    "title": "preserves maintenance faults as bodyless internal errors before direct admission",
+    "error": {
+      "message": "maintenance failure is internal500: expected 503 to be 500 // Object.is equality",
+      "actual": "503",
+      "expected": "500",
+      "showDiff": true,
+      "operator": "strictEqual",
+      "diff": "- Expected\n+ Received\n\n- 500\n+ 503",
+      "name": "AssertionError",
+      "ok": false,
+      "stack": "AssertionError: maintenance failure is internal500: expected 503 to be 500 // Object.is equality\n    at /Users/dbox/repos/wt/vickie/vickie-comparison-fault-oldguard-control/packages/server/src/transaction-http.test.ts:932:66\n    at processTicksAndRejections (node:internal/process/task_queues:104:5)\n    at file:///Users/dbox/repos/wt/vickie/vickie-comparison-fault-oldguard-control/node_modules/.pnpm/@vitest+runner@4.1.10/node_modules/@vitest/runner/dist/chunk-artifact.js:1903:20",
+      "stacks": [
+        {
+          "method": "",
+          "file": "/Users/dbox/repos/wt/vickie/vickie-comparison-fault-oldguard-control/packages/server/src/transaction-http.test.ts",
+          "line": 932,
+          "column": 66
+        }
+      ]
+    },
+    "cleanup": {
+      "kind": "comparison-maintenance-fault-cleanup",
+      "requests": 2,
+      "responseStatus": 503,
+      "faultCalls": 1,
+      "intervalCancelled": true,
+      "closed": true,
+      "inventoryChecked": true
+    }
+  },
+  "scope": {
+    "sourceCases": 14,
+    "controlCases": 1,
+    "httpRequests": 7,
+    "listenerLifetimes": 4,
+    "storeDirectories": 15,
+    "ownerOpens": 16,
+    "readonlyInventoryHandles": 2,
+    "installedChildren": 0,
+    "basis": "selected source fixture paths plus exact completed case selection; newHTTP counters/cleanup observed; no independent syscall-level total counter"
+  },
+  "commands": {
+    "setup": {
+      "name": "setup",
+      "command": [
+        "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+        "/Users/dbox/.cache/node/corepack/v1/pnpm/11.20.0/bin/pnpm.cjs",
+        "install",
+        "--offline",
+        "--frozen-lockfile"
+      ],
+      "cwd": "/Users/dbox/repos/wt/vickie/vickie-comparison-fault-typing-repair",
+      "started": "2026-10-14T19:16:29.063331+00:00",
+      "elapsedSeconds": 0.844269499881193,
+      "exit": 0,
+      "timeout": false,
+      "processGroup": 22728,
+      "remainingProcessGroup": [],
+      "sampledTempEntries": [
+        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-comparison-fault-typing-repair/setup.tmp/node-compile-cache"
+      ],
+      "tempEntriesAfter": [
+        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-comparison-fault-typing-repair/setup.tmp/node-compile-cache"
+      ],
+      "samplingSeconds": 0.05
+    },
+    "typecheck": {
+      "name": "typecheck",
+      "command": [
+        "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+        "/Users/dbox/.cache/node/corepack/v1/pnpm/11.20.0/bin/pnpm.cjs",
+        "typecheck"
+      ],
+      "cwd": "/Users/dbox/repos/wt/vickie/vickie-comparison-fault-typing-repair",
+      "started": "2026-10-14T19:16:30.276406+00:00",
+      "elapsedSeconds": 1.8460692081134766,
+      "exit": 1,
+      "timeout": false,
+      "processGroup": 22749,
+      "remainingProcessGroup": [],
+      "sampledTempEntries": [
+        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-comparison-fault-typing-repair/typecheck.tmp/node-compile-cache"
+      ],
+      "tempEntriesAfter": [
+        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-comparison-fault-typing-repair/typecheck.tmp/node-compile-cache"
+      ],
+      "samplingSeconds": 0.05
+    },
+    "typecheck-stable-owner": {
+      "name": "typecheck-stable-owner",
+      "command": [
+        "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+        "/Users/dbox/.cache/node/corepack/v1/pnpm/11.20.0/bin/pnpm.cjs",
+        "typecheck"
+      ],
+      "cwd": "/Users/dbox/repos/wt/vickie/vickie-comparison-fault-typing-repair",
+      "started": "2026-10-14T19:17:37.503187+00:00",
+      "elapsedSeconds": 0.9541113330051303,
+      "exit": 0,
+      "timeout": false,
+      "processGroup": 23164,
+      "remainingProcessGroup": [],
+      "sampledTempEntries": [
+        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-comparison-fault-typing-repair/typecheck-stable-owner.tmp/node-compile-cache"
+      ],
+      "tempEntriesAfter": [
+        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-comparison-fault-typing-repair/typecheck-stable-owner.tmp/node-compile-cache"
+      ],
+      "samplingSeconds": 0.05
+    },
+    "build": {
+      "name": "build",
+      "command": [
+        "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+        "/Users/dbox/.cache/node/corepack/v1/pnpm/11.20.0/bin/pnpm.cjs",
+        "build"
+      ],
+      "cwd": "/Users/dbox/repos/wt/vickie/vickie-comparison-fault-typing-repair",
+      "started": "2026-10-14T19:17:38.824708+00:00",
+      "elapsedSeconds": 1.22625704202801,
+      "exit": 0,
+      "timeout": false,
+      "processGroup": 23212,
+      "remainingProcessGroup": [],
+      "sampledTempEntries": [
+        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-comparison-fault-typing-repair/build.tmp/node-compile-cache"
+      ],
+      "tempEntriesAfter": [
+        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-comparison-fault-typing-repair/build.tmp/node-compile-cache"
+      ],
+      "samplingSeconds": 0.05
+    },
+    "format-check": {
+      "name": "format-check",
+      "command": [
+        "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+        "/Users/dbox/.cache/node/corepack/v1/pnpm/11.20.0/bin/pnpm.cjs",
+        "format:check"
+      ],
+      "cwd": "/Users/dbox/repos/wt/vickie/vickie-comparison-fault-typing-repair",
+      "started": "2026-10-14T19:17:40.366938+00:00",
+      "elapsedSeconds": 1.6309576670173556,
+      "exit": 0,
+      "timeout": false,
+      "processGroup": 23297,
+      "remainingProcessGroup": [],
+      "sampledTempEntries": [
+        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-comparison-fault-typing-repair/format-check.tmp/node-compile-cache"
+      ],
+      "tempEntriesAfter": [
+        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-comparison-fault-typing-repair/format-check.tmp/node-compile-cache"
+      ],
+      "samplingSeconds": 0.05
+    },
+    "lint": {
+      "name": "lint",
+      "command": [
+        "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+        "/Users/dbox/.cache/node/corepack/v1/pnpm/11.20.0/bin/pnpm.cjs",
+        "lint"
+      ],
+      "cwd": "/Users/dbox/repos/wt/vickie/vickie-comparison-fault-typing-repair",
+      "started": "2026-10-14T19:17:42.314168+00:00",
+      "elapsedSeconds": 0.6365737079177052,
+      "exit": 0,
+      "timeout": false,
+      "processGroup": 23338,
+      "remainingProcessGroup": [],
+      "sampledTempEntries": [
+        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-comparison-fault-typing-repair/lint.tmp/node-compile-cache"
+      ],
+      "tempEntriesAfter": [
+        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-comparison-fault-typing-repair/lint.tmp/node-compile-cache"
+      ],
+      "samplingSeconds": 0.05
+    },
+    "boundaries": {
+      "name": "boundaries",
+      "command": [
+        "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+        "/Users/dbox/.cache/node/corepack/v1/pnpm/11.20.0/bin/pnpm.cjs",
+        "check:boundaries"
+      ],
+      "cwd": "/Users/dbox/repos/wt/vickie/vickie-comparison-fault-typing-repair",
+      "started": "2026-10-14T19:17:43.286722+00:00",
+      "elapsedSeconds": 0.6432584170252085,
+      "exit": 0,
+      "timeout": false,
+      "processGroup": 23367,
+      "remainingProcessGroup": [],
+      "sampledTempEntries": [
+        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-comparison-fault-typing-repair/boundaries.tmp/node-compile-cache"
+      ],
+      "tempEntriesAfter": [
+        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-comparison-fault-typing-repair/boundaries.tmp/node-compile-cache"
+      ],
+      "samplingSeconds": 0.05
+    },
+    "read-evidence": {
+      "name": "read-evidence",
+      "command": [
+        "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+        "/Users/dbox/.cache/node/corepack/v1/pnpm/11.20.0/bin/pnpm.cjs",
+        "evidence:verify"
+      ],
+      "cwd": "/Users/dbox/repos/wt/vickie/vickie-comparison-fault-typing-repair",
+      "started": "2026-10-14T19:17:44.271788+00:00",
+      "elapsedSeconds": 0.44153583399020135,
+      "exit": 0,
+      "timeout": false,
+      "processGroup": 23390,
+      "remainingProcessGroup": [],
+      "sampledTempEntries": [
+        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-comparison-fault-typing-repair/read-evidence.tmp/node-compile-cache"
+      ],
+      "tempEntriesAfter": [
+        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-comparison-fault-typing-repair/read-evidence.tmp/node-compile-cache"
+      ],
+      "samplingSeconds": 0.05
+    },
+    "positive": {
+      "name": "positive",
+      "command": [
+        "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+        "/Users/dbox/.cache/node/corepack/v1/pnpm/11.20.0/bin/pnpm.cjs",
+        "exec",
+        "vitest",
+        "run",
+        "packages/server/src/transaction-store.test.ts",
+        "packages/server/src/transaction-submission.test.ts",
+        "packages/server/src/transaction-service.test.ts",
+        "packages/server/src/transaction-dependencies.test.ts",
+        "packages/server/src/transaction-sequence-alias.test.ts",
+        "packages/server/src/transaction-http.test.ts",
+        "-t",
+        "(?:returns a stopped comparison observation for a normally closed owner|preserves a fenced owner's comparison observation failure|preserves background maintenance failure in a closed comparison owner|propagates closed maintenance faults before admission \\(observed=false\\)|propagates closed maintenance faults before admission \\(observed=true\\)|preserves normal closed submission shape \\(observed=false\\)|preserves normal closed submission shape \\(observed=true\\)|keeps full-owner unobserved comparison exact and excludes a caller callback|distinguishes a stopped final observation at the reached comparison deadline|uses the original finite comparison budget while an earlier sequence dependency is unresolved|proves static mismatch immediately, retains no timeout outcome and keeps the owner|uses one bounded comparison deadline and leaves the owner's reservation intact|preserves maintenance faults as bodyless internal errors before direct admission|keeps a live listener from serving through an owner fenced by injected commit uncertainty)$",
+        "--maxWorkers=1",
+        "--reporter=verbose",
+        "--reporter=json",
+        "--outputFile=/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-comparison-fault-typing-repair/positive.results.json",
+        "--reporter=/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-comparison-fault-typing-repair/nested-reporter.mjs"
+      ],
+      "cwd": "/Users/dbox/repos/wt/vickie/vickie-comparison-fault-typing-repair",
+      "started": "2026-10-14T19:17:55.411344+00:00",
+      "elapsedSeconds": 3.1765687081497163,
+      "exit": 0,
+      "timeout": false,
+      "processGroup": 23450,
+      "remainingProcessGroup": [],
+      "sampledTempEntries": [
+        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-comparison-fault-typing-repair/positive.tmp/7s8hy5_z3f5nZKNCtJTKq",
+        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-comparison-fault-typing-repair/positive.tmp/bdp-alias-turn-fVVUkf",
+        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-comparison-fault-typing-repair/positive.tmp/bdp-transaction-sequence-NSf300",
+        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-comparison-fault-typing-repair/positive.tmp/bdp-tx-http-3ZT6ad",
+        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-comparison-fault-typing-repair/positive.tmp/bdp-tx-service-63NpXu",
+        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-comparison-fault-typing-repair/positive.tmp/bdp-tx-submission-oAEEVC",
+        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-comparison-fault-typing-repair/positive.tmp/node-compile-cache"
+      ],
+      "tempEntriesAfter": [
+        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-comparison-fault-typing-repair/positive.tmp/node-compile-cache"
+      ],
+      "samplingSeconds": 0.05
+    },
+    "control-setup": {
+      "name": "control-setup",
+      "command": [
+        "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+        "/Users/dbox/.cache/node/corepack/v1/pnpm/11.20.0/bin/pnpm.cjs",
+        "install",
+        "--offline",
+        "--frozen-lockfile"
+      ],
+      "cwd": "/Users/dbox/repos/wt/vickie/vickie-comparison-fault-oldguard-control",
+      "started": "2026-10-14T19:18:35.144186+00:00",
+      "elapsedSeconds": 0.7590523338876665,
+      "exit": 0,
+      "timeout": false,
+      "processGroup": 23748,
+      "remainingProcessGroup": [],
+      "sampledTempEntries": [
+        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-comparison-fault-typing-repair/control-setup.tmp/node-compile-cache"
+      ],
+      "tempEntriesAfter": [
+        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-comparison-fault-typing-repair/control-setup.tmp/node-compile-cache"
+      ],
+      "samplingSeconds": 0.05
+    },
+    "control-build": {
+      "name": "control-build",
+      "command": [
+        "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+        "/Users/dbox/.cache/node/corepack/v1/pnpm/11.20.0/bin/pnpm.cjs",
+        "build"
+      ],
+      "cwd": "/Users/dbox/repos/wt/vickie/vickie-comparison-fault-oldguard-control",
+      "started": "2026-10-14T19:18:36.192095+00:00",
+      "elapsedSeconds": 1.6624422080349177,
+      "exit": 0,
+      "timeout": false,
+      "processGroup": 23764,
+      "remainingProcessGroup": [],
+      "sampledTempEntries": [
+        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-comparison-fault-typing-repair/control-build.tmp/node-compile-cache"
+      ],
+      "tempEntriesAfter": [
+        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-comparison-fault-typing-repair/control-build.tmp/node-compile-cache"
+      ],
+      "samplingSeconds": 0.05
+    },
+    "control": {
+      "name": "control",
+      "command": [
+        "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+        "/Users/dbox/.cache/node/corepack/v1/pnpm/11.20.0/bin/pnpm.cjs",
+        "exec",
+        "vitest",
+        "run",
+        "packages/server/src/transaction-http.test.ts",
+        "-t",
+        "preserves maintenance faults as bodyless internal errors before direct admission$",
+        "--maxWorkers=1",
+        "--reporter=verbose",
+        "--reporter=json",
+        "--outputFile=/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-comparison-fault-typing-repair/control.results.json",
+        "--reporter=/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-comparison-fault-typing-repair/nested-reporter.mjs"
+      ],
+      "cwd": "/Users/dbox/repos/wt/vickie/vickie-comparison-fault-oldguard-control",
+      "started": "2026-10-14T19:18:52.512536+00:00",
+      "elapsedSeconds": 1.8111547499429435,
+      "exit": 1,
+      "timeout": false,
+      "processGroup": 23854,
+      "remainingProcessGroup": [],
+      "sampledTempEntries": [
+        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-comparison-fault-typing-repair/control.tmp/NvAkvxNmg3WDag0RzMIrN",
+        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-comparison-fault-typing-repair/control.tmp/bdp-tx-http-ClhHin",
+        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-comparison-fault-typing-repair/control.tmp/node-compile-cache"
+      ],
+      "tempEntriesAfter": [
+        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-comparison-fault-typing-repair/control.tmp/node-compile-cache"
+      ],
+      "samplingSeconds": 0.05
+    }
+  },
+  "preservedFailures": [
+    "../transaction-comparison-fault-guard/first-attempt-stop.json",
+    "typing-attempt-stop.json"
+  ],
+  "noInstalledOrPackagingExecution": true,
+  "notClaimed": [
+    "full suite",
+    "default-installed maintenance fault sensitivity",
+    "profile qualification",
+    "public admission",
+    "PR120 landed",
+    "parent CI green"
+  ],
+  "cleanupSha256": "5bb13083bda279db68677b506837345bb465d9ec2d75c18a421f4fc0b1f2fa19",
+  "finalBindingSha256": "f9ba01d0db9edbc9dc6cc144bba31e631005003bc6ce776eef56bb9d95009fc4"
+}

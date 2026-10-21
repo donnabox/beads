@@ -1,0 +1,114 @@
+--- original/packages/server/src/transaction-service.test.ts
++++ successor-1/packages/server/src/transaction-service.test.ts
+@@ -2689,3 +2689,76 @@
+     await f.finish();
+   }
+ });
++
++it.each([
++  "already-aborted",
++  "invalid-policy",
++  "throwing-clock",
++  "nonfinite-clock",
++  "malformed-after-valid-preflight",
++] as const)("preserves initial Scope Event preflight before malformed capture: %s", async (label) => {
++  const f = fixture();
++  let reads = 0;
++  const clockError = new Error("finite Event initial clock sentinel");
++  const now = vi.fn(() => {
++    if (label === "throwing-clock") throw clockError;
++    return label === "nonfinite-clock" ? Number.NaN : 0;
++  });
++  const wait = vi.fn(async () => {});
++  const service = createTransactionService(
++    {
++      ...f.owner,
++      readEvents: (...args: Parameters<typeof f.owner.readEvents>) => {
++        reads++;
++        return f.owner.readEvents(...args);
++      },
++    },
++    {
++      ownerLifetime: "service",
++      read: f.read,
++      minimumReads: { budgetMs: label === "invalid-policy" ? 0 : 10, now, wait },
++    },
++  );
++  cleanup.push(() => service.close());
++  const pending = service.events(
++    `${scope}events/`,
++    undefined,
++    {
++      scopeEpoch: "bad space",
++      authorizationView: "development-all-visible",
++      minimumPosition: "opaque",
++    },
++    label === "already-aborted" ? AbortSignal.abort() : undefined,
++  );
++  expect(pending).toBeInstanceOf(Promise);
++  const error = await pending.then(
++    () => undefined,
++    (cause: unknown) => cause,
++  );
++  if (label === "already-aborted") expect(error).toBeInstanceOf(ScopeServerOperationAbortedError);
++  else if (label === "throwing-clock") expect(error).toBe(clockError);
++  else {
++    expect(error).toBeInstanceOf(TypeError);
++    expect(error).toMatchObject({
++      message:
++        label === "invalid-policy"
++          ? "finite minimum-read wait policy required"
++          : label === "nonfinite-clock"
++            ? "invalid minimum-read clock"
++            : "unsupported minimum tuple",
++    });
++  }
++  expect(now).toHaveBeenCalledTimes(label === "invalid-policy" ? 0 : 1);
++  expect(reads).toBe(0);
++  expect(wait).not.toHaveBeenCalled();
++  console.log(
++    JSON.stringify({
++      observation: "finite-event-minimum-preflight",
++      label,
++      serviceCalls: 1,
++      clockCalls: now.mock.calls.length,
++      ownerReads: reads,
++      waits: wait.mock.calls.length,
++    }),
++  );
++});
+--- original/packages/server/src/transaction-service.ts
++++ successor-1/packages/server/src/transaction-service.ts
+@@ -472,16 +472,23 @@
+       signal?: AbortSignal,
+     ) {
+       return run(() => {
+-        // Capture inside run to preserve closing and malformed-input delivery.
+-        const minimum =
+-          source === new URL("events/", scope).href &&
+-          after === undefined &&
+-          supplied !== undefined &&
+-          supplied !== "unsupported"
+-            ? snapshotCurrentReadMinimum(supplied)
+-            : supplied;
++        let minimum = supplied;
++        let captured = false;
+         return waitForTransactionMinimum(
+-          () => owner.readEvents(source, after, minimum),
++          () => {
++            // Preserve waiter preflight, then capture once before any deferred wait.
++            if (!captured) {
++              if (
++                source === new URL("events/", scope).href &&
++                after === undefined &&
++                supplied !== undefined &&
++                supplied !== "unsupported"
++              )
++                minimum = snapshotCurrentReadMinimum(supplied);
++              captured = true;
++            }
++            return owner.readEvents(source, after, minimum);
++          },
+           minimumReads,
+           signal,
+         );

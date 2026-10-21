@@ -1,0 +1,335 @@
+{
+  "actualRelations": {
+    "ARecoveredByExactlyTwoWholeAssignmentSubstitutions": true,
+    "BReproducedByForbiddenGlobalReplacementAndRefusedByAssignmentOnlyFullInverse": true
+  },
+  "count": 40,
+  "genuinePolicyForwardInversePairVerified": true,
+  "originalCounterexamplePreparedHashesVerified": 8,
+  "relations": [
+    {
+      "cell": "B",
+      "expected": false,
+      "relation": "missing",
+      "stage": "node-version",
+      "subjectEvaluated": false,
+      "textPredicate": false
+    },
+    {
+      "cell": "B",
+      "expected": false,
+      "relation": "duplicate",
+      "stage": "node-version",
+      "subjectEvaluated": false,
+      "textPredicate": false
+    },
+    {
+      "cell": "B",
+      "expected": false,
+      "relation": "already-substituted",
+      "stage": "node-version",
+      "subjectEvaluated": false,
+      "textPredicate": false
+    },
+    {
+      "cell": "B",
+      "expected": true,
+      "relation": "assignment-only",
+      "stage": "node-version",
+      "subjectEvaluated": false,
+      "textPredicate": true
+    },
+    {
+      "cell": "B",
+      "expected": false,
+      "relation": "global-replacement",
+      "stage": "node-version",
+      "subjectEvaluated": false,
+      "textPredicate": false
+    },
+    {
+      "cell": "C",
+      "expected": false,
+      "relation": "missing",
+      "stage": "node-version",
+      "subjectEvaluated": false,
+      "textPredicate": false
+    },
+    {
+      "cell": "C",
+      "expected": false,
+      "relation": "duplicate",
+      "stage": "node-version",
+      "subjectEvaluated": false,
+      "textPredicate": false
+    },
+    {
+      "cell": "C",
+      "expected": false,
+      "relation": "already-substituted",
+      "stage": "node-version",
+      "subjectEvaluated": false,
+      "textPredicate": false
+    },
+    {
+      "cell": "C",
+      "expected": true,
+      "relation": "assignment-only",
+      "stage": "node-version",
+      "subjectEvaluated": false,
+      "textPredicate": true
+    },
+    {
+      "cell": "C",
+      "expected": false,
+      "relation": "global-replacement",
+      "stage": "node-version",
+      "subjectEvaluated": false,
+      "textPredicate": false
+    },
+    {
+      "cell": "B",
+      "expected": false,
+      "relation": "missing",
+      "stage": "pnpm-version",
+      "subjectEvaluated": false,
+      "textPredicate": false
+    },
+    {
+      "cell": "B",
+      "expected": false,
+      "relation": "duplicate",
+      "stage": "pnpm-version",
+      "subjectEvaluated": false,
+      "textPredicate": false
+    },
+    {
+      "cell": "B",
+      "expected": false,
+      "relation": "already-substituted",
+      "stage": "pnpm-version",
+      "subjectEvaluated": false,
+      "textPredicate": false
+    },
+    {
+      "cell": "B",
+      "expected": true,
+      "relation": "assignment-only",
+      "stage": "pnpm-version",
+      "subjectEvaluated": false,
+      "textPredicate": true
+    },
+    {
+      "cell": "B",
+      "expected": false,
+      "relation": "global-replacement",
+      "stage": "pnpm-version",
+      "subjectEvaluated": false,
+      "textPredicate": false
+    },
+    {
+      "cell": "C",
+      "expected": false,
+      "relation": "missing",
+      "stage": "pnpm-version",
+      "subjectEvaluated": false,
+      "textPredicate": false
+    },
+    {
+      "cell": "C",
+      "expected": false,
+      "relation": "duplicate",
+      "stage": "pnpm-version",
+      "subjectEvaluated": false,
+      "textPredicate": false
+    },
+    {
+      "cell": "C",
+      "expected": false,
+      "relation": "already-substituted",
+      "stage": "pnpm-version",
+      "subjectEvaluated": false,
+      "textPredicate": false
+    },
+    {
+      "cell": "C",
+      "expected": true,
+      "relation": "assignment-only",
+      "stage": "pnpm-version",
+      "subjectEvaluated": false,
+      "textPredicate": true
+    },
+    {
+      "cell": "C",
+      "expected": false,
+      "relation": "global-replacement",
+      "stage": "pnpm-version",
+      "subjectEvaluated": false,
+      "textPredicate": false
+    },
+    {
+      "cell": "B",
+      "expected": false,
+      "relation": "missing",
+      "stage": "workspace-install",
+      "subjectEvaluated": false,
+      "textPredicate": false
+    },
+    {
+      "cell": "B",
+      "expected": false,
+      "relation": "duplicate",
+      "stage": "workspace-install",
+      "subjectEvaluated": false,
+      "textPredicate": false
+    },
+    {
+      "cell": "B",
+      "expected": false,
+      "relation": "already-substituted",
+      "stage": "workspace-install",
+      "subjectEvaluated": false,
+      "textPredicate": false
+    },
+    {
+      "cell": "B",
+      "expected": true,
+      "relation": "assignment-only",
+      "stage": "workspace-install",
+      "subjectEvaluated": false,
+      "textPredicate": true
+    },
+    {
+      "cell": "B",
+      "expected": false,
+      "relation": "global-replacement",
+      "stage": "workspace-install",
+      "subjectEvaluated": false,
+      "textPredicate": false
+    },
+    {
+      "cell": "C",
+      "expected": false,
+      "relation": "missing",
+      "stage": "workspace-install",
+      "subjectEvaluated": false,
+      "textPredicate": false
+    },
+    {
+      "cell": "C",
+      "expected": false,
+      "relation": "duplicate",
+      "stage": "workspace-install",
+      "subjectEvaluated": false,
+      "textPredicate": false
+    },
+    {
+      "cell": "C",
+      "expected": false,
+      "relation": "already-substituted",
+      "stage": "workspace-install",
+      "subjectEvaluated": false,
+      "textPredicate": false
+    },
+    {
+      "cell": "C",
+      "expected": true,
+      "relation": "assignment-only",
+      "stage": "workspace-install",
+      "subjectEvaluated": false,
+      "textPredicate": true
+    },
+    {
+      "cell": "C",
+      "expected": false,
+      "relation": "global-replacement",
+      "stage": "workspace-install",
+      "subjectEvaluated": false,
+      "textPredicate": false
+    },
+    {
+      "cell": "B",
+      "expected": false,
+      "relation": "missing",
+      "stage": "bind-workspace-tools",
+      "subjectEvaluated": false,
+      "textPredicate": false
+    },
+    {
+      "cell": "B",
+      "expected": false,
+      "relation": "duplicate",
+      "stage": "bind-workspace-tools",
+      "subjectEvaluated": false,
+      "textPredicate": false
+    },
+    {
+      "cell": "B",
+      "expected": false,
+      "relation": "already-substituted",
+      "stage": "bind-workspace-tools",
+      "subjectEvaluated": false,
+      "textPredicate": false
+    },
+    {
+      "cell": "B",
+      "expected": true,
+      "relation": "assignment-only",
+      "stage": "bind-workspace-tools",
+      "subjectEvaluated": false,
+      "textPredicate": true
+    },
+    {
+      "cell": "B",
+      "expected": false,
+      "relation": "global-replacement",
+      "stage": "bind-workspace-tools",
+      "subjectEvaluated": false,
+      "textPredicate": false
+    },
+    {
+      "cell": "C",
+      "expected": false,
+      "relation": "missing",
+      "stage": "bind-workspace-tools",
+      "subjectEvaluated": false,
+      "textPredicate": false
+    },
+    {
+      "cell": "C",
+      "expected": false,
+      "relation": "duplicate",
+      "stage": "bind-workspace-tools",
+      "subjectEvaluated": false,
+      "textPredicate": false
+    },
+    {
+      "cell": "C",
+      "expected": false,
+      "relation": "already-substituted",
+      "stage": "bind-workspace-tools",
+      "subjectEvaluated": false,
+      "textPredicate": false
+    },
+    {
+      "cell": "C",
+      "expected": true,
+      "relation": "assignment-only",
+      "stage": "bind-workspace-tools",
+      "subjectEvaluated": false,
+      "textPredicate": true
+    },
+    {
+      "cell": "C",
+      "expected": false,
+      "relation": "global-replacement",
+      "stage": "bind-workspace-tools",
+      "subjectEvaluated": false,
+      "textPredicate": false
+    }
+  ],
+  "sectionHashesVerified": 12,
+  "subjectEvaluations": 0,
+  "syntheticId": "STATIC_ONLY_TOOL_ID",
+  "syntheticOnlyNoRuntimeId": true
+}

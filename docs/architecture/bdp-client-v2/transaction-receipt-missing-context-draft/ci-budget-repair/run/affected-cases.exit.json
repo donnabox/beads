@@ -1,0 +1,86 @@
+{
+  "name": "affected-cases",
+  "argv": [
+    "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+    "/Users/dbox/repos/wt/vickie/vickie-sequence-member-evidence/node_modules/.pnpm/vitest@4.1.10_@types+node@24.13.3_vite@8.2.1_@types+node@24.13.3_/node_modules/vitest/vitest.mjs",
+    "run",
+    "apps/bdptest/src/transactional-matrix.test.ts",
+    "--maxWorkers=1",
+    "--reporter=verbose",
+    "--reporter=json",
+    "--outputFile=/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-receipt-missing-context-draft/ci-budget-repair/run/affected-cases.json",
+    "-t",
+    "^(?:aborts\\ the\\ actual\\ cohort\\ budget\\ after\\ real\\ wire\\ and\\ drains\\ all\\ installed\\ children|refuses\\ a\\ pre\\-aborted\\ cohort\\ before\\ starting\\ an\\ installed\\ child)$"
+  ],
+  "guardedArgv": [
+    "/opt/homebrew/opt/python@3.14/bin/python3.14",
+    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/guarded-action.py",
+    "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+    "/Users/dbox/repos/wt/vickie/vickie-sequence-member-evidence/node_modules/.pnpm/vitest@4.1.10_@types+node@24.13.3_vite@8.2.1_@types+node@24.13.3_/node_modules/vitest/vitest.mjs",
+    "run",
+    "apps/bdptest/src/transactional-matrix.test.ts",
+    "--maxWorkers=1",
+    "--reporter=verbose",
+    "--reporter=json",
+    "--outputFile=/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-receipt-missing-context-draft/ci-budget-repair/run/affected-cases.json",
+    "-t",
+    "^(?:aborts\\ the\\ actual\\ cohort\\ budget\\ after\\ real\\ wire\\ and\\ drains\\ all\\ installed\\ children|refuses\\ a\\ pre\\-aborted\\ cohort\\ before\\ starting\\ an\\ installed\\ child)$"
+  ],
+  "cwd": "/Users/dbox/repos/wt/vickie/vickie-sequence-member-evidence",
+  "started": "2026-10-15T13:30:05.355104+00:00",
+  "adjudication": {
+    "kind": "exact-source-selection",
+    "passedFullNames": [
+      "aborts the actual cohort budget after real wire and drains all installed children",
+      "refuses a pre-aborted cohort before starting an installed child"
+    ],
+    "skipped": 59,
+    "jsonSha256": "647a06995ba75dfb7efaa004744d9b40709f83c4a52a898fc0d81dd8eed68cb5",
+    "limitation": "Static HTTP/owner model is not an independently observed network quota; raw logs and reported cleanup remain separately reviewed."
+  },
+  "elapsedSeconds": 1.580501832999289,
+  "exit": 0,
+  "supervisorExit": 0,
+  "timeout": false,
+  "forcedCleanup": false,
+  "errors": [],
+  "processGroup": 23744,
+  "remainingBeforeCleanup": [],
+  "remainingAfterCleanup": [],
+  "sampledPids": [
+    23744,
+    23746,
+    23750,
+    23753,
+    23767,
+    23770
+  ],
+  "sampledPidsStillPresent": {},
+  "sampledTempEntries": [
+    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-receipt-missing-context-draft/ci-budget-repair/run/affected-cases.tmp/bdp-tx-installed-1axDq9",
+    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-receipt-missing-context-draft/ci-budget-repair/run/affected-cases.tmp/y-t9HITqlsVCbtfslKQmu"
+  ],
+  "tempEntriesAfter": [],
+  "remainingTempEntriesForClassification": [],
+  "runtimeDirectoriesStillPresent": [],
+  "unclassifiedTempEntriesStillPresent": [],
+  "sourceUnchanged": true,
+  "sourceSha256After": {
+    "packages/server/src/transaction-store.ts": "eec0f4723c8fcfb2245d2e80d77b2de014235cdb208101d523c0ab83fde78eed",
+    "packages/server/src/transaction-service.ts": "53f655faf494209996aac2e0f93a4c2c785e471f66aac6af9ea41f92c9cfbe00",
+    "packages/server/src/transaction-http.ts": "0e42f034c3aada6fd0a7696897200b336d2b0c547d69497e46500f6da4c2267a",
+    "packages/server/src/transaction-receipt-pages.test.ts": "e944bd61590f78a510b427b0f5d6eb7856f6b3715f9f0e5dc590bf8d4724c6a1",
+    "packages/server/src/transaction-service.test.ts": "c61ba7254ab1cf39abf85e6020e4f846ffb684740076de39f43fe12d509093b9",
+    "packages/server/src/transaction-http.test.ts": "37084d256def9c1f1cec33fc2c6a0d6e793dba3d29699a57bf105bda0cde68db",
+    "apps/bdptest/src/transactional-receipt-missing-context-installed.test.ts": "eaf1289ed0a8318ce949704ba4cd983755c6f5fd20ffe9d61712869894cb5064",
+    "docs/design/transaction-implementation-progress.md": "28b30246931ccf39588a0dd654715aa7f00eda95893a9b5ed8ec10ffe7fdf6fc",
+    "apps/bdptest/src/transactional-matrix.test.ts": "6c0c240afef61831d0573775ea35b0c04b116a55da1d3fb40127b9ede68e939c"
+  },
+  "samplingSeconds": 0.05,
+  "commandWindowSeconds": 115,
+  "groupHardDeadlineSeconds": 120,
+  "cleanupBound": "TERM at115s, KILL no later than120s; wait/reap after kill adds no product execution allowance",
+  "samplingLimitation": "Short-lived or detached descendants may evade group sampling; helper counts and independent final checks remain separate.",
+  "tempClassification": "Only the selected fixture prefixes under this attempt TMPDIR are owned runtime roots; all other entries are preserved for review, not deleted or called leaks.",
+  "resultLimitation": "Exit0 is command completion, not independent oracle/claim/provenance adjudication."
+}

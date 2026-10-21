@@ -1,0 +1,85 @@
+{
+  "head": "b604320267dd0adcf1ec91854550fb402a1155e7",
+  "tree": "04d6757bb4858297dfd5dc5e85576c30d1d1936c",
+  "parents": [
+    "50b242d265bb0dcfbfd0353caf76eb4c3d91bd9d",
+    "1ecb7e899c25feff849a97017b60c7b87c21830b"
+  ],
+  "clean": true,
+  "diffFrom50b": [
+    "apps/bdptest/src/read-update-matrix.test.ts"
+  ],
+  "files": [
+    {
+      "path": "apps/bdptest/src/read-update-matrix.test.ts",
+      "donor": "1ecb7e899c25feff849a97017b60c7b87c21830b",
+      "byteEqual": true,
+      "bytes": 173881,
+      "sha256": "459a367f6a9bfa2079e4e022d1f2352f3382581f553b4a4ec53d88c36860515c"
+    },
+    {
+      "path": "packages/conformance/matrices/read-update-reference-continuation-v1.json",
+      "donor": "8873facfe0d2e530c51953275eb2643ace4e12b7",
+      "byteEqual": true,
+      "bytes": 844551,
+      "sha256": "d6ad2f7abf0556227a20c786bd88d30c2c6f67a5d922c6fc3fc5168678fceec5"
+    },
+    {
+      "path": "packages/conformance/src/cumulative-artifact.test.ts",
+      "donor": "8873facfe0d2e530c51953275eb2643ace4e12b7",
+      "byteEqual": true,
+      "bytes": 13435,
+      "sha256": "08b6890f73083b467c56014396a77205fcf9b028d3a103562cf7f9f7025e4590"
+    },
+    {
+      "path": "packages/conformance/test-support/read-update-coverage-v1.json",
+      "donor": "8873facfe0d2e530c51953275eb2643ace4e12b7",
+      "byteEqual": true,
+      "bytes": 703415,
+      "sha256": "8274385bff08618e15ccbdb863127f5a472606970c14c735f4d9805f9ff01954"
+    },
+    {
+      "path": "apps/bdptest/src/transactional-matrix.test.ts",
+      "donor": "00fa81281291e83bac16f917250a7f5615c744ae",
+      "byteEqual": true,
+      "bytes": 38709,
+      "sha256": "1b43484c3c4aafc19fb348c7b84ca4cc1741a9b019d101d9fee1760ba56bbd60"
+    },
+    {
+      "path": "packages/conformance/src/transactional-cumulative.test.ts",
+      "donor": "00fa81281291e83bac16f917250a7f5615c744ae",
+      "byteEqual": true,
+      "bytes": 31809,
+      "sha256": "5b4c5467c0972c13f198d6fa1ff8b8c08ab0fc36f95d3e198c529be82fe91f2e"
+    },
+    {
+      "path": "packages/conformance/test-support/transactional/coverage-v1.json",
+      "donor": "00fa81281291e83bac16f917250a7f5615c744ae",
+      "byteEqual": true,
+      "bytes": 41812,
+      "sha256": "fdce14327cbe8a751abe423be38f273ed57d25af7f8cce4e4b724e6a3f1c4523"
+    },
+    {
+      "path": "packages/conformance/test-support/transactional/manifest-v1.json",
+      "donor": "00fa81281291e83bac16f917250a7f5615c744ae",
+      "byteEqual": true,
+      "bytes": 238693,
+      "sha256": "3a85360725608e57d264647f59685e768118604924e8c8503d15299cae94d8a6"
+    }
+  ],
+  "unchangedFixtures": [
+    {
+      "path": "packages/conformance/test-support/transactional/fixture-v1.json",
+      "bytes": 716,
+      "sha256": "3a7899ced771d4880066d98b0000c53f801ece53458502cc4f3bc641146c9a85",
+      "byteEqualCommonParent": true
+    },
+    {
+      "path": "packages/conformance/fixtures/read-update-reference-v1.json",
+      "bytes": 29707,
+      "sha256": "f89932d68e3bf5867d79eb3de680af4bc67b761b3c3bce5da127f6ca75e27765",
+      "byteEqualCommonParent": true
+    }
+  ],
+  "claimEligible": false
+}

@@ -1,0 +1,229 @@
+diff --git a/docs/design/transaction-implementation-progress.md b/docs/design/transaction-implementation-progress.md
+index 0693aaa..762e14a 100644
+--- a/docs/design/transaction-implementation-progress.md
++++ b/docs/design/transaction-implementation-progress.md
+@@ -1788,8 +1788,8 @@ including sixteen loopback HTTP requests across two fixtures. Five isolated
+ mutants fail the named context-presence, current-position, missing-tuple,
+ legacy-submission-shape and final-epoch-check assertions. Typecheck/build/static
+ checks and the historical Read seal pass; broader suites are not claimed.
+-Default installed timeout sensitivity remains unobserved: no new installed comparison override or load-based timing test is
+-introduced. Existing direct and sequence refusal installed cohorts remain separate
+-regressions, not timeout qualification; their execution is recorded outside
+-this source note. No public admission or discovery
+-claim changes.
++Default installed timeout sensitivity remains unobserved: no new installed
++comparison override or load-based timing test is introduced. Existing direct and
++sequence refusal installed cohorts remain separate regressions, not timeout
++qualification; their execution is recorded outside this source note. No public
++admission or discovery claim changes.
+diff --git a/packages/server/src/transaction-service.test.ts b/packages/server/src/transaction-service.test.ts
+index 6eb7ac5..54a76b3 100644
+--- a/packages/server/src/transaction-service.test.ts
++++ b/packages/server/src/transaction-service.test.ts
+@@ -436,7 +436,14 @@ describe("private same-owner Transactional service", () => {
+         ],
+       }),
+     );
++    const before = f.owner.withRead((_reader, context) => context);
++    if (before.kind !== "read") throw new Error("trusted initial context unavailable");
++    expect(before.value.scopePosition).toBe("pos-0");
+     const job = service.sequence("p", carrier);
++    const settled = job.then(
++      (value) => ({ value, error: undefined }),
++      (error: unknown) => ({ value: undefined, error }),
++    );
+     const request = batch(
+       [
+         {
+@@ -447,22 +454,75 @@ describe("private same-owner Transactional service", () => {
+       ],
+       "dependent",
+     );
+-    expect(await service.submit(request)).toEqual({
+-      kind: "refused",
+-      status: 503,
+-      code: "temporarily-unavailable",
+-      retry: "after-delay",
+-    });
+-    expect(waits).toBe(2);
+-    expect(f.owner.inspect().resources).toEqual([]);
+-    await scheduler.tick();
+-    await scheduler.tick();
+-    await job;
+-    expect(await service.submit(request)).toMatchObject({
+-      receipt: { status: "completed" },
+-      context: { scopePosition: "pos-2" },
+-    });
+-    expect(f.owner.inspect().groups).toHaveLength(2);
++    const failures: unknown[] = [];
++    let drained = false,
++      closed = false,
++      cleanupTurns = 0;
++    try {
++      expect(
++        await service.submit(request),
++        "observed service comparison deadline shape",
++      ).toStrictEqual({
++        kind: "comparison-refusal",
++        reason: "deadline",
++        status: 503,
++        code: "temporarily-unavailable",
++        retry: "after-delay",
++        context: {
++          scopeEpoch: before.value.scopeEpoch,
++          authorizationView: before.value.authorizationView,
++          scopePosition: "pos-0",
++        },
++      });
++      expect(waits).toBe(2);
++      expect(f.owner.inspect().resources).toEqual([]);
++      await scheduler.tick();
++      await scheduler.tick();
++      await job;
++      expect(await service.submit(request)).toMatchObject({
++        receipt: { status: "completed" },
++        context: { scopePosition: "pos-2" },
++      });
++      expect(f.owner.inspect().groups).toHaveLength(2);
++    } catch (error) {
++      failures.push(error);
++    } finally {
++      // At most the two admitted members remain. Release them even if an
++      // assertion failed before the first turn, then drain before closing.
++      for (let index = 0; index < carrier.members.length; index++) {
++        if (scheduler.callbacks.length === 0) break;
++        try {
++          await scheduler.tick();
++          cleanupTurns++;
++        } catch (error) {
++          failures.push(error);
++        }
++      }
++      try {
++        const outcome = await settled;
++        drained = true;
++        if (outcome.error !== undefined) throw outcome.error;
++      } catch (error) {
++        failures.push(error);
++      }
++      try {
++        await service.close();
++        closed = true;
++      } catch (error) {
++        failures.push(error);
++      }
++      console.info(
++        JSON.stringify({
++          kind: "comparison-service-deadline-cleanup",
++          drained,
++          closed,
++          cleanupTurns,
++          pendingCallbacks: scheduler.callbacks.length,
++        }),
++      );
++    }
++    if (failures.length)
++      throw new AggregateError(failures, "comparison service assertion or cleanup failed");
+   });
+ 
+   it.each(["after-admission", "after-effects", "delivered"] as const)(
+diff --git a/packages/server/src/transaction-store.test.ts b/packages/server/src/transaction-store.test.ts
+index 4468ace..04ec610 100644
+--- a/packages/server/src/transaction-store.test.ts
++++ b/packages/server/src/transaction-store.test.ts
+@@ -3311,6 +3311,45 @@ describe("private comparison deadline observation", () => {
+     expect(failure).toBeInstanceOf(Error);
+     expect((failure as Error).cause).toBe(original);
+     expect(() => f.store.observeComparisonDeadline(f.store.scopeEpoch)).toThrow(failure as Error);
++    f.store.close();
++    expect(
++      () => f.store.observeComparisonDeadline(f.store.scopeEpoch),
++      "closed fenced deadline preserves failure",
++    ).toThrow(failure as Error);
++  });
++  it("preserves background maintenance failure in a closed comparison owner", () => {
++    vi.useFakeTimers();
++    let f: ReturnType<typeof fixture> | undefined;
++    let inject = false;
++    const original = new Error("deadline background maintenance fault");
++    try {
++      f = fixture({
++        maintenanceIntervalMs: 25,
++        fault(stage) {
++          if (inject && stage === "before-maintenance-commit") throw original;
++        },
++      });
++      expect(vi.getTimerCount()).toBe(1);
++      inject = true;
++      vi.advanceTimersByTime(25);
++      expect(vi.getTimerCount()).toBe(0);
++      const store = f.store;
++      let failure: unknown;
++      try {
++        store.observeComparisonDeadline(store.scopeEpoch);
++      } catch (error) {
++        failure = error;
++      }
++      expect(failure, "closed maintenance deadline preserves failure").toBeInstanceOf(Error);
++      expect((failure as Error).message).toBe("transaction maintenance failed; owner fenced");
++      expect((failure as Error).cause).toBe(original);
++    } finally {
++      try {
++        f?.store.close();
++      } finally {
++        vi.useRealTimers();
++      }
++    }
+   });
+   it("propagates comparison metadata failure and releases the atomic owner", () => {
+     const f = fixture(),
+diff --git a/packages/server/src/transaction-submission.test.ts b/packages/server/src/transaction-submission.test.ts
+index c3f1cb0..8eb694c 100644
+--- a/packages/server/src/transaction-submission.test.ts
++++ b/packages/server/src/transaction-submission.test.ts
+@@ -1102,6 +1102,45 @@ describe("observed comparison deadline submission", () => {
+     expect(observe).not.toHaveBeenCalled();
+     expect(f.store.cancelSequence(attempt)).toBe(2);
+   });
++  it("distinguishes a stopped final observation at the reached comparison deadline", async () => {
++    const f = fixture(),
++      attempt = dependencies(f.store);
++    let now = 0,
++      waits = 0;
++    // Defensive composition only: no supported live epoch rotation is introduced.
++    const observe = vi.fn(() => ({ kind: "owner-stopped" as const })),
++      admitObserved = vi.fn(f.store.admitObserved);
++    try {
++      expect(
++        await submitTransaction(
++          { ...f.store, observeComparisonDeadline: observe, admitObserved },
++          dependent(),
++          {
++            budgetMs: 2,
++            now: () => now,
++            wait: async () => {
++              waits++;
++              expect(observe).not.toHaveBeenCalled();
++              now = 2;
++            },
++          },
++          true,
++        ),
++        "final stopped comparison refusal has no context",
++      ).toStrictEqual({
++        kind: "comparison-refusal",
++        reason: "owner-stopped",
++        status: 503,
++        code: "temporarily-unavailable",
++        retry: "after-delay",
++      });
++      expect(waits).toBe(1);
++      expect(admitObserved).toHaveBeenCalledTimes(1);
++      expect(observe).toHaveBeenCalledExactlyOnceWith(f.store.scopeEpoch);
++    } finally {
++      expect(f.store.cancelSequence(attempt)).toBe(2);
++    }
++  });
+   it("keeps full-owner unobserved comparison exact and excludes a caller callback", async () => {
+     const f = fixture(),
+       attempt = dependencies(f.store);

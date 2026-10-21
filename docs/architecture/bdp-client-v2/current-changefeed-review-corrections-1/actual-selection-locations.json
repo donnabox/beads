@@ -1,0 +1,232 @@
+{
+  "callbacks": [
+    {
+      "kind": "new",
+      "group": "A",
+      "file": "packages/server/src/transaction-changefeed.test.ts",
+      "fullName": "preserves changefeed cursor precedence under current-admission opaque minima",
+      "authoredTitleLiteral": "preserves changefeed cursor precedence under current-admission opaque minima",
+      "titleExpression": "literal",
+      "titleLine": 1913,
+      "fileSha256": "834d13d108cb0577cfbf0f7d32b7072a62deeb9db70a5bd72e960d5cfc42b9e3"
+    },
+    {
+      "kind": "new",
+      "group": "B",
+      "file": "packages/server/src/transaction-changefeed.test.ts",
+      "fullName": "captures current changefeed admission once across owner entries: start-now-unknown",
+      "authoredTitleLiteral": "captures current changefeed admission once across owner entries: ",
+      "titleExpression": "literal + label",
+      "titleLine": 2254,
+      "fileSha256": "834d13d108cb0577cfbf0f7d32b7072a62deeb9db70a5bd72e960d5cfc42b9e3"
+    },
+    {
+      "kind": "new",
+      "group": "B",
+      "file": "packages/server/src/transaction-changefeed.test.ts",
+      "fullName": "captures current changefeed admission once across owner entries: genesis-unknown",
+      "authoredTitleLiteral": "captures current changefeed admission once across owner entries: ",
+      "titleExpression": "literal + label",
+      "titleLine": 2254,
+      "fileSha256": "834d13d108cb0577cfbf0f7d32b7072a62deeb9db70a5bd72e960d5cfc42b9e3"
+    },
+    {
+      "kind": "new",
+      "group": "B",
+      "file": "packages/server/src/transaction-changefeed.test.ts",
+      "fullName": "captures current changefeed admission once across owner entries: retained-unknown",
+      "authoredTitleLiteral": "captures current changefeed admission once across owner entries: ",
+      "titleExpression": "literal + label",
+      "titleLine": 2254,
+      "fileSha256": "834d13d108cb0577cfbf0f7d32b7072a62deeb9db70a5bd72e960d5cfc42b9e3"
+    },
+    {
+      "kind": "new",
+      "group": "B",
+      "file": "packages/server/src/transaction-changefeed.test.ts",
+      "fullName": "captures current changefeed admission once across owner entries: retained-pos-01",
+      "authoredTitleLiteral": "captures current changefeed admission once across owner entries: ",
+      "titleExpression": "literal + label",
+      "titleLine": 2254,
+      "fileSha256": "834d13d108cb0577cfbf0f7d32b7072a62deeb9db70a5bd72e960d5cfc42b9e3"
+    },
+    {
+      "kind": "new",
+      "group": "C",
+      "file": "packages/server/src/transaction-changefeed.test.ts",
+      "fullName": "drains current changefeed admission before owner close: start-now",
+      "authoredTitleLiteral": "drains current changefeed admission before owner close: ",
+      "titleExpression": "literal + label",
+      "titleLine": 2386,
+      "fileSha256": "834d13d108cb0577cfbf0f7d32b7072a62deeb9db70a5bd72e960d5cfc42b9e3"
+    },
+    {
+      "kind": "new",
+      "group": "C",
+      "file": "packages/server/src/transaction-changefeed.test.ts",
+      "fullName": "drains current changefeed admission before owner close: retained",
+      "authoredTitleLiteral": "drains current changefeed admission before owner close: ",
+      "titleExpression": "literal + label",
+      "titleLine": 2386,
+      "fileSha256": "834d13d108cb0577cfbf0f7d32b7072a62deeb9db70a5bd72e960d5cfc42b9e3"
+    },
+    {
+      "kind": "new",
+      "group": "F",
+      "file": "packages/server/src/transaction-changefeed.test.ts",
+      "fullName": "preserves current changefeed anchor capture before waiter preflight",
+      "authoredTitleLiteral": "preserves current changefeed anchor capture before waiter preflight",
+      "titleExpression": "literal",
+      "titleLine": 2519,
+      "fileSha256": "834d13d108cb0577cfbf0f7d32b7072a62deeb9db70a5bd72e960d5cfc42b9e3"
+    },
+    {
+      "kind": "new",
+      "group": "D",
+      "file": "packages/server/src/transaction-sse.test.ts",
+      "fullName": "serves current changefeed opaque minima across finite and SSE admission",
+      "authoredTitleLiteral": "serves current changefeed opaque minima across finite and SSE admission",
+      "titleExpression": "literal",
+      "titleLine": 911,
+      "fileSha256": "87f360387a20635b58a73886806c6c4ad975d27257781aee086cfb87ca92fffd"
+    },
+    {
+      "kind": "legacy-unchanged",
+      "file": "packages/server/src/transaction-changefeed.test.ts",
+      "fullName": "keeps start=now's original admission anchor through a minimum wait and drains on close",
+      "sourceDerivedHttp": 0,
+      "sourceDerivedCommits": 2,
+      "authoredTitleLiteral": "keeps start=now's original admission anchor through a minimum wait and drains on close",
+      "titleExpression": "literal",
+      "titleLine": 548,
+      "fileSha256": "834d13d108cb0577cfbf0f7d32b7072a62deeb9db70a5bd72e960d5cfc42b9e3"
+    },
+    {
+      "kind": "legacy-unchanged",
+      "file": "packages/server/src/transaction-changefeed.test.ts",
+      "fullName": "keeps direct and excluded changefeed minimum paths strict",
+      "sourceDerivedHttp": 0,
+      "sourceDerivedCommits": 1,
+      "authoredTitleLiteral": "keeps direct and excluded changefeed minimum paths strict",
+      "titleExpression": "literal",
+      "titleLine": 1483,
+      "fileSha256": "834d13d108cb0577cfbf0f7d32b7072a62deeb9db70a5bd72e960d5cfc42b9e3"
+    },
+    {
+      "kind": "legacy-amended",
+      "file": "packages/server/src/transaction-changefeed.test.ts",
+      "fullName": "serves finite start-now opaque minima before HTTP shortcuts",
+      "sourceDerivedHttp": 10,
+      "sourceDerivedCommits": 1,
+      "authoredTitleLiteral": "serves finite start-now opaque minima before HTTP shortcuts",
+      "titleExpression": "literal",
+      "titleLine": 1598,
+      "fileSha256": "834d13d108cb0577cfbf0f7d32b7072a62deeb9db70a5bd72e960d5cfc42b9e3"
+    },
+    {
+      "kind": "legacy-unchanged",
+      "file": "packages/server/src/transaction-changefeed.test.ts",
+      "fullName": "decides actual HTTP minimum refusal before conditional shortcuts with final context",
+      "sourceDerivedHttp": 7,
+      "sourceDerivedCommits": 0,
+      "authoredTitleLiteral": "decides actual HTTP minimum refusal before conditional shortcuts with final context",
+      "titleExpression": "literal",
+      "titleLine": 694,
+      "fileSha256": "834d13d108cb0577cfbf0f7d32b7072a62deeb9db70a5bd72e960d5cfc42b9e3"
+    },
+    {
+      "kind": "legacy-unchanged",
+      "file": "packages/server/src/transaction-sse.test.ts",
+      "fullName": "disconnect cancels the actual finite minimum wait without consuming its remaining budget",
+      "sourceDerivedHttp": 2,
+      "sourceDerivedCommits": 0,
+      "authoredTitleLiteral": "disconnect cancels the actual finite minimum wait without consuming its remaining budget",
+      "titleExpression": "literal",
+      "titleLine": 588,
+      "fileSha256": "87f360387a20635b58a73886806c6c4ad975d27257781aee086cfb87ca92fffd"
+    },
+    {
+      "kind": "legacy-unchanged",
+      "file": "packages/server/src/transaction-sse.test.ts",
+      "fullName": "effective reconnect cursor owns epoch/view/retention decisions; overridden query is not looked up",
+      "sourceDerivedHttp": 9,
+      "sourceDerivedCommits": 1,
+      "authoredTitleLiteral": "effective reconnect cursor owns epoch/view/retention decisions; overridden query is not looked up",
+      "titleExpression": "literal",
+      "titleLine": 617,
+      "fileSha256": "87f360387a20635b58a73886806c6c4ad975d27257781aee086cfb87ca92fffd"
+    },
+    {
+      "kind": "historical-context",
+      "file": "apps/bdptest/src/transactional-changefeed-refusal-context-installed.test.ts",
+      "fullName": "observes genuine installed current context on changefeed parameter refusals",
+      "sourceDerivedHttp": 10,
+      "authoredTitleLiteral": "observes genuine installed current context on changefeed parameter refusals",
+      "titleExpression": "literal",
+      "titleLine": 95,
+      "fileSha256": "813c7446abbd064fe14425b81ae4befad7a55f54e30a44172209b6a82950fa77"
+    },
+    {
+      "kind": "historical-fresh",
+      "file": "apps/bdptest/src/transactional-changefeed-refusal-context-installed.test.ts",
+      "fullName": "observes genuine installed finite start-now opaque minimum refusal",
+      "sourceDerivedHttp": 4,
+      "authoredTitleLiteral": "observes genuine installed finite start-now opaque minimum refusal",
+      "titleExpression": "literal",
+      "titleLine": 441,
+      "fileSha256": "813c7446abbd064fe14425b81ae4befad7a55f54e30a44172209b6a82950fa77"
+    },
+    {
+      "kind": "new-E",
+      "file": "apps/bdptest/src/transactional-changefeed-refusal-context-installed.test.ts",
+      "fullName": "observes installed current changefeed minimum admission and retained replay",
+      "sourceDerivedHttp": 10,
+      "authoredTitleLiteral": "observes installed current changefeed minimum admission and retained replay",
+      "titleExpression": "literal",
+      "titleLine": 856,
+      "fileSha256": "813c7446abbd064fe14425b81ae4befad7a55f54e30a44172209b6a82950fa77"
+    }
+  ],
+  "sourceCallbacks": 15,
+  "installedCallbacks": 3,
+  "newSourceReports": 9,
+  "selectedLegacyReports": 2,
+  "selectedLegacyReportNames": [
+    "changefeed-opaque-boundaries",
+    "changefeed-opaque-http"
+  ],
+  "parameterContextUnselected": true,
+  "reportLocations": {
+    "A": {
+      "name": "current-changefeed-minimum-owner",
+      "file": "packages/server/src/transaction-changefeed.test.ts",
+      "line": 2070
+    },
+    "B": {
+      "name": "current-changefeed-minimum-capture",
+      "file": "packages/server/src/transaction-changefeed.test.ts",
+      "line": 2364
+    },
+    "C": {
+      "name": "current-changefeed-minimum-drain",
+      "file": "packages/server/src/transaction-changefeed.test.ts",
+      "line": 2496
+    },
+    "F": {
+      "name": "current-changefeed-minimum-preflight",
+      "file": "packages/server/src/transaction-changefeed.test.ts",
+      "line": 2622
+    },
+    "D": {
+      "name": "current-changefeed-minimum-http",
+      "file": "packages/server/src/transaction-sse.test.ts",
+      "line": 1553
+    },
+    "E": {
+      "name": "private-installed-current-changefeed-minimum",
+      "file": "apps/bdptest/src/transactional-changefeed-refusal-context-installed.test.ts",
+      "line": 1300
+    }
+  },
+  "allProspective": true
+}

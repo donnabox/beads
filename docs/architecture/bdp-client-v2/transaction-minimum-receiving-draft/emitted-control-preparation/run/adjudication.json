@@ -1,0 +1,22 @@
+{
+  "verdict": "EXPECTED_NAMED_CONTROL_FAILURE",
+  "actualTestExit": 1,
+  "namedFailure": "minimum-receiving-malformed-request",
+  "httpResponses": 1,
+  "sourceObservation": {
+    "observation": "minimum-receiving-control",
+    "requests": 1,
+    "status": 500,
+    "marker": "minimum-position",
+    "body": ""
+  },
+  "resultSha256": "adc0352f2c0ac8dabe7a5157e35b9cef8432c685da15bd14d44e5380ca327e5d",
+  "logSha256": "8c05b64b4f17926cc476d2af474d21a0760375f45fc32501234849389d8392ef",
+  "limitation": "One emitted source-consumer gate sensitivity only. Full positive Problem/schema checks belong to source positives. Control500 body is genuinely empty. Runtime owner/listener budget is source-derived; process/temp cleanup independently checked. Not installed qualification.",
+  "graph": {
+    "packetSha256": "73284d0875358b3b40f78249dc1a91b9e8acb30fb9a1a0a5df5509ab9fca6dcb",
+    "sourceAndBuildMembers": 1137,
+    "toolFiles": 1932,
+    "links": 180
+  }
+}

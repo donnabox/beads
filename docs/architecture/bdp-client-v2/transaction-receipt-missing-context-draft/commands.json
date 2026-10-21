@@ -1,0 +1,248 @@
+{
+  "status": "CLOSED_PREPARATION_ONLY",
+  "sourceBinding": "edc5c98c8e5c82f2073e1bf35aa84098efe9552c7dbc74537784de75788cca5a",
+  "commands": [
+    {
+      "id": "offline-setup",
+      "cwd": "/Users/dbox/repos/wt/vickie/vickie-sequence-member-evidence",
+      "argv": [
+        "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+        "/Users/dbox/.cache/node/corepack/v1/pnpm/11.20.0/bin/pnpm.cjs",
+        "install",
+        "--offline",
+        "--frozen-lockfile"
+      ],
+      "supervisorSeconds": 120
+    },
+    {
+      "id": "typecheck",
+      "cwd": "/Users/dbox/repos/wt/vickie/vickie-sequence-member-evidence",
+      "argv": [
+        "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+        "/Users/dbox/.cache/node/corepack/v1/pnpm/11.20.0/bin/pnpm.cjs",
+        "typecheck"
+      ],
+      "supervisorSeconds": 120
+    },
+    {
+      "id": "build",
+      "cwd": "/Users/dbox/repos/wt/vickie/vickie-sequence-member-evidence",
+      "argv": [
+        "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+        "/Users/dbox/.cache/node/corepack/v1/pnpm/11.20.0/bin/pnpm.cjs",
+        "build"
+      ],
+      "supervisorSeconds": 120
+    },
+    {
+      "id": "format-check",
+      "cwd": "/Users/dbox/repos/wt/vickie/vickie-sequence-member-evidence",
+      "argv": [
+        "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+        "/Users/dbox/.cache/node/corepack/v1/pnpm/11.20.0/bin/pnpm.cjs",
+        "exec",
+        "biome",
+        "format",
+        "packages/server/src/transaction-store.ts",
+        "packages/server/src/transaction-service.ts",
+        "packages/server/src/transaction-http.ts",
+        "packages/server/src/transaction-receipt-pages.test.ts",
+        "packages/server/src/transaction-service.test.ts",
+        "packages/server/src/transaction-http.test.ts",
+        "apps/bdptest/src/transactional-receipt-missing-context-installed.test.ts",
+        "docs/design/transaction-implementation-progress.md"
+      ],
+      "supervisorSeconds": 120
+    },
+    {
+      "id": "lint",
+      "cwd": "/Users/dbox/repos/wt/vickie/vickie-sequence-member-evidence",
+      "argv": [
+        "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+        "/Users/dbox/.cache/node/corepack/v1/pnpm/11.20.0/bin/pnpm.cjs",
+        "lint"
+      ],
+      "supervisorSeconds": 120
+    },
+    {
+      "id": "boundaries",
+      "cwd": "/Users/dbox/repos/wt/vickie/vickie-sequence-member-evidence",
+      "argv": [
+        "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+        "/Users/dbox/.cache/node/corepack/v1/pnpm/11.20.0/bin/pnpm.cjs",
+        "check:boundaries"
+      ],
+      "supervisorSeconds": 120
+    },
+    {
+      "id": "read-seal",
+      "cwd": "/Users/dbox/repos/wt/vickie/vickie-sequence-member-evidence",
+      "argv": [
+        "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+        "/Users/dbox/.cache/node/corepack/v1/pnpm/11.20.0/bin/pnpm.cjs",
+        "evidence:verify"
+      ],
+      "supervisorSeconds": 120
+    },
+    {
+      "cwd": "/Users/dbox/repos/wt/vickie/vickie-sequence-member-evidence",
+      "argv": [
+        "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+        "/Users/dbox/.cache/node/corepack/v1/pnpm/11.20.0/bin/pnpm.cjs",
+        "exec",
+        "vitest",
+        "run",
+        "packages/server/src/transaction-receipt-pages.test.ts",
+        "--maxWorkers=1",
+        "--reporter=verbose",
+        "--reporter=json",
+        "--outputFile=/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-receipt-missing-context-draft/run/pages-positive.json",
+        "-t",
+        "^(?:records\\ one\\ atomic\\ page\\ chain,\\ retains\\ original\\ postimages\\ and\\ all\\ tail\\ allocations\\ through\\ expiry|refuses\\ page\\ parents\\ outside\\ the\\ receipt\\ namespace\\ before\\ plan\\ lookup|captures\\ immutable\\ current\\ context\\ for\\ nondisclosable\\ receipt\\ pages\\ before\\ minimum\\ checks)$"
+      ],
+      "expectedCases": 3,
+      "supervisorSeconds": 120,
+      "id": "pages-positive",
+      "selectedFullNames": [
+        "records one atomic page chain, retains original postimages and all tail allocations through expiry",
+        "refuses page parents outside the receipt namespace before plan lookup",
+        "captures immutable current context for nondisclosable receipt pages before minimum checks"
+      ],
+      "cases": 3,
+      "http": 0,
+      "owners": 4,
+      "directories": 3,
+      "listeners": 0,
+      "productChildren": 0
+    },
+    {
+      "cwd": "/Users/dbox/repos/wt/vickie/vickie-sequence-member-evidence",
+      "argv": [
+        "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+        "/Users/dbox/.cache/node/corepack/v1/pnpm/11.20.0/bin/pnpm.cjs",
+        "exec",
+        "vitest",
+        "run",
+        "packages/server/src/transaction-service.test.ts",
+        "--maxWorkers=1",
+        "--reporter=verbose",
+        "--reporter=json",
+        "--outputFile=/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-receipt-missing-context-draft/run/service-positive.json",
+        "-t",
+        "^(?:private\\ same\\-owner\\ Transactional\\ service\\ authenticates\\ before\\ lookup\\ and\\ uniformly\\ hides\\ other\\ principals,\\ roots\\ and\\ unknown\\ URLs|private\\ same\\-owner\\ Transactional\\ service\\ retains\\ completed\\ identity,\\ forgets\\ expired\\ failed\\ detail\\ and\\ preserves\\ current\\ observation\\ across\\ reopen|private\\ minimum\\-read\\ owner/lifecycle\\ checks\\ minimum\\ before\\ read\\-triggered\\ expiry\\ but\\ honors\\ independently\\ forgotten\\ receipts\\ \\(false\\)|private\\ minimum\\-read\\ owner/lifecycle\\ checks\\ minimum\\ before\\ read\\-triggered\\ expiry\\ but\\ honors\\ independently\\ forgotten\\ receipts\\ \\(true\\)|preserves\\ current\\ receipt\\ absence\\ context\\ across\\ ordinary\\ and\\ minimum\\ service\\ entrypoints)$"
+      ],
+      "expectedCases": 5,
+      "supervisorSeconds": 120,
+      "id": "service-positive",
+      "selectedFullNames": [
+        "private same-owner Transactional service authenticates before lookup and uniformly hides other principals, roots and unknown URLs",
+        "private same-owner Transactional service retains completed identity, forgets expired failed detail and preserves current observation across reopen",
+        "private minimum-read owner/lifecycle checks minimum before read-triggered expiry but honors independently forgotten receipts (false)",
+        "private minimum-read owner/lifecycle checks minimum before read-triggered expiry but honors independently forgotten receipts (true)",
+        "preserves current receipt absence context across ordinary and minimum service entrypoints"
+      ],
+      "cases": 5,
+      "http": 0,
+      "owners": 6,
+      "directories": 5,
+      "listeners": 0,
+      "productChildren": 0
+    },
+    {
+      "cwd": "/Users/dbox/repos/wt/vickie/vickie-sequence-member-evidence",
+      "argv": [
+        "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+        "/Users/dbox/.cache/node/corepack/v1/pnpm/11.20.0/bin/pnpm.cjs",
+        "exec",
+        "vitest",
+        "run",
+        "packages/server/src/transaction-http.test.ts",
+        "--maxWorkers=1",
+        "--reporter=verbose",
+        "--reporter=json",
+        "--outputFile=/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-receipt-missing-context-draft/run/http-positive.json",
+        "-t",
+        "^(?:source\\-private\\ actual\\ Transactional\\ HTTP\\ authenticates\\ and\\ hides\\ receipts\\ before\\ minimum\\-control\\ refusal\\ or\\ conditional\\ shortcuts|orders\\ page\\ nondisclosure,\\ minimum\\ waits,\\ expiry\\ and\\ representation\\ using\\ actual\\ owner\\ state|refuses\\ unsupported\\ root\\ controls\\ after\\ nondisclosure\\ but\\ before\\ read\\-triggered\\ retention|keeps\\ failed\\ parent\\ rows\\ unchanged\\ for\\ nonexistent\\ page\\ reads\\ with\\ any\\ controls|checks\\ a\\ stored\\ failed\\ receipt\\ minimum\\ before\\ read\\-triggered\\ retention\\ disposal\\ over\\ HTTP|serves\\ current\\ missing\\ receipt\\ root\\ and\\ page\\ context\\ without\\ changing\\ nondisclosure\\ or\\ HEAD)$"
+      ],
+      "expectedCases": 6,
+      "supervisorSeconds": 120,
+      "id": "http-positive",
+      "selectedFullNames": [
+        "source-private actual Transactional HTTP authenticates and hides receipts before minimum-control refusal or conditional shortcuts",
+        "orders page nondisclosure, minimum waits, expiry and representation using actual owner state",
+        "refuses unsupported root controls after nondisclosure but before read-triggered retention",
+        "keeps failed parent rows unchanged for nonexistent page reads with any controls",
+        "checks a stored failed receipt minimum before read-triggered retention disposal over HTTP",
+        "serves current missing receipt root and page context without changing nondisclosure or HEAD"
+      ],
+      "cases": 6,
+      "http": 68,
+      "owners": 6,
+      "directories": 6,
+      "listeners": 6,
+      "productChildren": 0
+    },
+    {
+      "id": "omit-context-control",
+      "cwd": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-receipt-missing-context-draft/control/copy",
+      "argv": [
+        "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+        "/Users/dbox/.cache/node/corepack/v1/pnpm/11.20.0/bin/pnpm.cjs",
+        "exec",
+        "vitest",
+        "run",
+        "packages/server/src/transaction-http.test.ts",
+        "--maxWorkers=1",
+        "--reporter=verbose",
+        "--reporter=json",
+        "--outputFile=/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-receipt-missing-context-draft/run/omit-context-control.json",
+        "-t",
+        "^(?:serves\\ current\\ missing\\ receipt\\ root\\ and\\ page\\ context\\ without\\ changing\\ nondisclosure\\ or\\ HEAD)$"
+      ],
+      "selectedFullNames": [
+        "serves current missing receipt root and page context without changing nondisclosure or HEAD"
+      ],
+      "supervisorSeconds": 120,
+      "cases": 1,
+      "expectedTestExit": 1,
+      "http": 13,
+      "owners": 1,
+      "directories": 1,
+      "listeners": 1,
+      "productChildren": 0,
+      "requires": "copied current emitted graph and two projections only; separate closed gate"
+    },
+    {
+      "id": "installed-positive",
+      "cwd": "/Users/dbox/repos/wt/vickie/vickie-sequence-member-evidence",
+      "argv": [
+        "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+        "/Users/dbox/.cache/node/corepack/v1/pnpm/11.20.0/bin/pnpm.cjs",
+        "exec",
+        "vitest",
+        "run",
+        "apps/bdptest/src/transactional-receipt-missing-context-installed.test.ts",
+        "--maxWorkers=1",
+        "--reporter=verbose",
+        "--reporter=json",
+        "--outputFile=/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-receipt-missing-context-draft/run/installed-positive.json",
+        "-t",
+        "^(?:observes\\ genuine\\ installed\\ receipt\\ root\\ and\\ page\\ absence\\ context\\ at\\ current\\ heads)$"
+      ],
+      "selectedFullNames": [
+        "observes genuine installed receipt root and page absence context at current heads"
+      ],
+      "supervisorSeconds": 120,
+      "cases": 1,
+      "expectedTestExit": 0,
+      "http": 14,
+      "owners": 1,
+      "directories": 1,
+      "listeners": 1,
+      "productChildren": 1,
+      "requires": "clean final ordinary commit/fresh package/consumer and separate closed gate"
+    }
+  ],
+  "noAutomaticRetry": true,
+  "fullSuiteSelected": false
+}

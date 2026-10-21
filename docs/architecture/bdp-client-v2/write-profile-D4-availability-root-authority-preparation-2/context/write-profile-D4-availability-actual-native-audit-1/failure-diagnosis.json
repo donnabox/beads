@@ -1,0 +1,29 @@
+{
+  "actualBytesCount": 215,
+  "actualBytesPath": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-D4-availability-root-authority-preparation-1/attempt/native.stderr",
+  "actualBytesSha256": "e85485bdcc427a12f23fbc5e59fc3f4585c5649e348f7b4f76c716dd69b9a1d6",
+  "actualCallerProgress": "All authority/hash/guard checks passed far enough to create one native Popen; capture returned complete raw0/BOTH EOF/closed files before first post-capture check. Stdout parse111+ was not reached by caller.",
+  "category": "actual native-candidate diagnostic output blocks strict caller; not product defect",
+  "causalityEvidence": "Class-only RuntimeError is actual logged fact. Exact native-stderr failure is independently derived from frozen single synchronous source path and complete actual data: capture86/87 checks satisfied,215>0 at next110, failure journal immediately follows complete-native checkpoint. No guessed exception message is presented as captured.",
+  "firstDeterministicallyFailingPredicate": {
+    "actualReceivedBytes": 215,
+    "line": 110,
+    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-D4-availability-root-authority-preparation-1/capture.py",
+    "text": "need(native_state['streams'][1]['received']==0,'native-stderr')"
+  },
+  "id": "AVAIL-F1",
+  "nativeSource": {
+    "cause": "use warnings diagnoses separate _exit statement after exec as unlikely to be reached; actual215-byte stderr explicitly names line42",
+    "lines": [
+      40,
+      41,
+      42
+    ],
+    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-D4-synthetic-harness-preparation-4/availability_limit.pl"
+  },
+  "noRetry": true,
+  "noSubjectEdit": true,
+  "priority": "Medium",
+  "proposedFutureCorrectionOnly": "Separate immutable reviewed successor could combine existing exec argv with its failure fallback in one expression, exec LIST or POSIX::_exit(126), preserving argv/126 fallback/ownership/alarm/bounds and strict empty-stderr refusal. This candidate is UNAUTHORED/UNEVALUATED here. No warning filtering, stderr allowance, broad suppression, retry or relabeling. Root must separately disposition/release any change or new attempt.",
+  "rawDiagnostic": "Statement unlikely to be reached at /Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-D4-synthetic-harness-preparation-4/availability_limit.pl line 42.\n\t(Maybe you meant system() when you said exec()?)\n"
+}

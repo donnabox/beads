@@ -1,0 +1,36 @@
+## Findings
+
+**No actionable findings.** The correction is a minimal, behavior-neutral narrowing fix, and every preservation constraint I checked holds in the live file. Nothing rises to any severity level (no blocker/major/minor/nit requiring a change).
+
+## Verification against the live source
+
+Live file: `apps/bdptest/src/transactional-event-sse-installed.test.ts` (read directly; I could not confirm the stated SHA256 `0baf666…` because hashing requires a command — I verified by content comparison against `successor-3/before.ts` and the two patches instead).
+
+| Requirement | Result |
+|---|---|
+| Exactly one `const reportedStream = stream` | `:963`, immediately before the `console.log(` at `:964`; nothing between |
+| Placed after cleanup / ownership / directory handling | Stream drain `:913-916`, ownership proof `:940-953`, `rmSync` block `:954-962` all precede it |
+| Condition + 7 references replaced, report-local only | `:997` (condition), `:999`, `:1007`, `:1009`, `:1010`, `:1011`, `:1012`, `:1013` = 8 substitutions; grep count for `reportedStream` is exactly 9 in the file (1 declaration + 8), so no occurrence leaked outside `streamAtReport` |
+| Mutable→const narrowing in the header-map callback | `let stream: … \| undefined` at `:413`, sole assignment `:833`; callback at `:1007` now reads the `const` |
+| No assertion/optional weakening | No `!`, no `?.`, no cast added anywhere in `:997-1015`; pre-existing `session.handle!` sites untouched |
+| No `await`/scheduling change | No `await`, timer, or `.then` added; capture and report are adjacent synchronous statements |
+| Field/header allowlist/helpers unchanged | Same five header names `:1002-1006`, same `as const` tuple, same `Object.fromEntries`, same `hash(...)` / `idFrames(...)` calls, same eight field names |
+| Undefined branch remains | `: undefined` at `:1015`, property name `streamAtReport` retained |
+| Same recorder object / same reporting boundary | `reportedStream` is a reference alias, not a clone; `drained` at `:1012` reads the same mutated object, and the only writer (`closeStream` → `owned.drained = true`) is awaited at `:914`, before the capture |
+| Historical prefix / module setup | Correction hunks begin at line 960; first callback's independent `stream` (`:89`, `:215`, `:231`, `:244`, `:271`, `:303`) untouched |
+| Seed / requests / children / controls / oracles / budgets | `seedKey` `:374`, `toBeLessThan(5)` `:522` + 5-entry ordinal oracle through `:901`, `responses).toHaveLength(4)` `:903`, `sessions.length >= 2` `:572` / `toHaveLength(2)` `:941` / `[true, false]` `:942`, two `localSensitivityControls.push` `:817`/`:863` + `:904` oracle, redaction `:364`/`:1034` + `fingerprintScope` `:343`, budgets `45000/10000/60000/120000` `:984-987` and `}, 60000)` `:1050` |
+| No lifecycle/production change | Only the test file is modified; no helper, config, or `packages/**` edit in either patch |
+
+## Static compiler reasoning (not an observed pass)
+
+The retained diagnostic is `(1006,40): error TS18048` on the frozen successor-2 bytes. I confirmed that position resolves exactly to the `stream` identifier in `].map((name) => [name, stream.recorder.headers[name]] as const)` — column 40 is the first character of `stream` on `before.ts:1006`. It was the *only* reported reference because the other seven live in the ternary's own flow container, where the truthiness narrowing already applied; only the closure lost it.
+
+Why the fix should clear it, by construction: a reference to a `const` from an enclosing scope lets the checker extend the flow container outward to the declaration's container, so the ternary's true-branch narrowing reaches the arrow body — which is precisely what a reassignable `let` does not get. `reportedStream` also keeps the full `{ … } | undefined` union, because the `finally` block is reachable on paths where the `try` threw before `:833`; so the `: undefined` branch stays live and this is a genuine narrowing fix rather than an accidental type change.
+
+Separately, `biome.json` sets `lineWidth: 100`; the longest changed line (`:1007`) is 88 characters, so a formatter run should leave it on one line. That is a reading of the config, not an observed `format:check`.
+
+**All of the above is static reasoning. No compiler, formatter, linter, test, or build was executed in this review, and none may be inferred as passing.** The only observed compiler evidence in the record remains the failed successor-2 typecheck (exit 1), which stays immutable; a freshly bound validation successor is still required, and no approval follows from this review.
+
+## One non-defect note
+
+Only 1 of the 8 substitutions was strictly required to clear TS18048; the other 7 were already narrowed. Replacing all of them is redundant but semantically identical (same object, same synchronous statement boundary) and is what `successor-3-plan/plan.md` item 2 prescribes, so it is correct as authored, not an over-edit to fix. `native-closure.md`'s byte-reversal claim is consistent with what I checked independently — I did not rely on it as authority.

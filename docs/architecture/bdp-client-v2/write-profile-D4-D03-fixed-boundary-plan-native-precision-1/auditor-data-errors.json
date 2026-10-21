@@ -1,0 +1,13 @@
+{
+  "errors": [
+    {
+      "beforeOwnPacketCreated": true,
+      "cause": "Own static verifier assumed a gate key from a different schema. Actual H6 gate uses syntheticReleased/productReleased/approvedCases.",
+      "correction": "Read exact145-byte closed gate; rechecked actual declared fields false and approvedCases empty, with byte equality to closed copy. No subject evaluation or retry occurred.",
+      "error": "KeyError: 'released'",
+      "rawExit": 1,
+      "subjectOrAuthorityAction": false,
+      "toolChunk": "8fedfb"
+    }
+  ]
+}

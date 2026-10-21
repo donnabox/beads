@@ -1,0 +1,67 @@
+{
+  "accepted": true,
+  "source": "ff9c63417fbb348bf8ad9863483096ccc0329beb5c05b532333cf75cd0726a38",
+  "controls": [
+    {
+      "name": "restore-command",
+      "run": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-command-minimum-later-preparation-v3/run",
+      "resultsSha256": "7d61101b9e907a8b4ab3ec0c8fcc6942986a3b367c9beb99e7142a9ec6314d9d",
+      "logSha256": "7b565720ae15cac716e019f9da0c2b5586e8a498db3b722601abebea2dbed593",
+      "diagnostic": {
+        "status": 500,
+        "developmentLimit": "minimum-position",
+        "contentLength": "0"
+      },
+      "expectedPrefixHttp": 1,
+      "countBasis": "Reached named oracle in exact reviewed source prefix; no independent request-counter instrumentation.",
+      "cleanupIndependentlyVerified": true
+    },
+    {
+      "name": "bypass-receipt",
+      "run": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-command-minimum-later-preparation-v4/run",
+      "resultsSha256": "b51417d5c30c9bb42808c05d503d764826f7dc64d56097da13bbb6b35b05781e",
+      "logSha256": "834948574935b3f63ba54a73c226b264e2307683efaf65248fc5acdd3bea2fa6",
+      "diagnostic": {
+        "status": 200,
+        "context": {
+          "bdp-scope-epoch": "24a7a6c8-f48c-4547-9bf9-cac0c1e1b882",
+          "bdp-authorization-view": "development-all-visible",
+          "bdp-scope-position": "pos-1"
+        },
+        "body": {
+          "id": "http://127.0.0.1:58877/acme/receipts/5ef91e8c-3808-4885-bbd4-d6461643c00d",
+          "status": "completed",
+          "idempotencyKey": "receipt-minimum",
+          "scopeEpoch": "24a7a6c8-f48c-4547-9bf9-cac0c1e1b882",
+          "authorizationView": "development-all-visible",
+          "transaction": "b3145048-4649-46a9-8839-e2047e037060",
+          "detail": "available",
+          "requiredPosition": "pos-1",
+          "effectPosition": "pos-1",
+          "results": [
+            {
+              "operationIndex": 0,
+              "outcome": "created",
+              "resource": {
+                "id": "http://127.0.0.1:58877/acme/beads/a",
+                "type": "https://example.test/bead",
+                "revision": "a981ae86-2cf7-4f08-8023-4fe78e3cc29d",
+                "properties": {
+                  "title": "a"
+                },
+                "metadata": {}
+              }
+            }
+          ],
+          "next": null,
+          "expiresAt": "1970-01-02T00:00:01.000Z"
+        }
+      },
+      "expectedPrefixHttp": 2,
+      "countBasis": "Reached named oracle in exact reviewed source prefix; no independent request-counter instrumentation.",
+      "cleanupIndependentlyVerified": true
+    }
+  ],
+  "failedBuildPreserved": "v3 bypass TS2367; no runtime result; v4 corrected isolated fixture",
+  "publicQualification": false
+}

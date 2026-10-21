@@ -1,0 +1,100 @@
+{
+  "actualInnerCLIExit": "UNKNOWN",
+  "actualRootToolTerminal": {
+    "actualToolExitCode": 1,
+    "actualToolTerminalObserved": true,
+    "innerCliExit": "UNKNOWN",
+    "noRetry": true,
+    "returnedError": "guard subprocess CalledProcessError supervise.py returned non-zero exit status1",
+    "reviewTerminalResult": "MISSING",
+    "toolSession": 68709,
+    "utc": "2026-10-18T16:02:33.518971+00:00"
+  },
+  "boundedSourceInference": "Unchanged supervisor main blocking timeout path is process inventory; actual exception command/arguments/stack were not recorded. No deeper OS/provider/root cause established.",
+  "chronology": "TimeoutExpired469.850759 preceded cleanup TERM470.447 and later row_executable470.751726. Therefore the later (claude)/?Es identity row cannot be claimed as initiating cause.",
+  "earliestRecordedFailure": {
+    "elapsedSeconds": 469.85075874999166,
+    "errorType": "TimeoutExpired",
+    "kind": "outer_error"
+  },
+  "firstReviewerIdentityFailure": {
+    "elapsedSeconds": 470.7517262501642,
+    "exceptionType": "RuntimeError",
+    "row": {
+      "comm": "(claude)",
+      "pgid": 24992,
+      "pid": 24992,
+      "ppid": 1,
+      "start": "Sun Oct 18 08:52:36 2026",
+      "state": "?Es"
+    },
+    "stage": "row_executable"
+  },
+  "innerWrapperRawExit": -15,
+  "noRetry": true,
+  "outerRecordedElapsedSeconds": 471.87795995920897,
+  "significantOuterEvents": [
+    {
+      "elapsedSeconds": 0.010581458918750286,
+      "killAfterSeconds": 1798,
+      "kind": "preflight_complete",
+      "releasedBindingSha256": "c1458e39b62e5b60766049003ad4087218792814686e22af9fdb484537401718",
+      "termAfterSeconds": 1790,
+      "totalSeconds": 1800
+    },
+    {
+      "elapsedSeconds": 0.3750963341444731,
+      "kind": "wrapper_started",
+      "pgid": 24966,
+      "pid": 24966
+    },
+    {
+      "elapsedSeconds": 469.85075874999166,
+      "errorType": "TimeoutExpired",
+      "kind": "outer_error"
+    },
+    {
+      "elapsedSeconds": 470.44706016685814,
+      "kind": "signal",
+      "pgid": 24966,
+      "signal": 15
+    },
+    {
+      "elapsedSeconds": 470.44712208397686,
+      "kind": "signal",
+      "pgid": 24992,
+      "signal": 15
+    },
+    {
+      "complete": true,
+      "elapsedSeconds": 470.4471429171972,
+      "kind": "signal_pass",
+      "signal": 15,
+      "signaledGroups": [
+        24966,
+        24992
+      ]
+    },
+    {
+      "complete": true,
+      "elapsedSeconds": 471.6822578338906,
+      "kind": "signal_pass",
+      "signal": 17,
+      "signaledGroups": []
+    },
+    {
+      "complete": true,
+      "elapsedSeconds": 471.78570704208687,
+      "kind": "signal_pass",
+      "signal": 9,
+      "signaledGroups": []
+    },
+    {
+      "classification": "process_ownership_or_cleanup_failure",
+      "elapsedSeconds": 471.8791153342463,
+      "kind": "outer_terminal",
+      "remainingOwned": []
+    }
+  ],
+  "terminalResult": "ABSENT"
+}

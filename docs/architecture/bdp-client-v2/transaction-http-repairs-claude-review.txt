@@ -1,0 +1,99 @@
+Read-only review complete. Frozen tree unchanged: `HEAD=7bfba525bbb66e64647110ac336f76b164b41942`, `git status` clean, `git diff --check` clean, no files written (all probes were inline `node -e`; store dirs under `$TMPDIR`, removed).
+
+# Review — `b1de5f3..7bfba52` (incl. `8844fe7` method repair)
+
+## Scope and toolchain
+
+Diff is 4 files / +238 −11: `transaction-http.ts` (+35−11 net), `transaction-runtime.ts` (+31), `transaction-http.test.ts` (+157), progress doc (+26). Node 24.16.0 and pnpm 11.20.0, both from `~/.nvm/versions/node/v24.16.0/bin`, matching `.nvmrc` and `packageManager`. `pnpm install --frozen-lockfile` + `pnpm build` ran before any test.
+
+## Actual verification performed
+
+| Check | Result |
+|---|---|
+| `pnpm build` | exit 0 |
+| focused `transaction-http` + `transaction-runtime` + `transaction-service` | **49 tests / 3 files pass**, 1.34 s — exact match to `focused-final.log` |
+| `typecheck` / `check:boundaries` / `format:check` | exit 0; boundaries valid for 11 packages; 347 files formatted |
+| `lint` | exit 0, "Found 1 info"; tail **byte-identical** to the repairs `lint.log` apart from the timing line |
+| `evidence:verify` / `smoke` / `smoke:development` | all exit 0; `claimEligible:false` |
+| independent real-HTTP probes | 7 inline probe programs against `packages/server/dist/`, ~250 request/response pairs over loopback |
+
+Public surface unchanged: `packages/server/src/index.ts` references neither `transaction-http` nor `transaction-runtime`, and `scripts/smoke-executables.mjs:342-343` still asserts `createTransactionHttpHandler` and `startTransactionRuntime` are absent from the packed server. The new `methodResponse` member on the frozen handler handle is therefore source-private.
+
+## Closure status — independently closed
+
+**F-A closed.** `transaction-http.ts:224` gates the command branch before `service.submit` (:263) and `sequenceObserved` (:254). I probed all 27 combinations — 3 fields × {`createBead`, `batch`, `sequence`} × {future `pos-999`, already-satisfied `pos-1`, empty value} — and every one returned `500` + `x-bdp-development-limit: minimum-position`, no `Location`, empty body, target bead `404` afterwards, and the exact key reusable for a later `200`. The field set is complete against `bdp.md:5768-5782`, which defines exactly `BDP-Scope-Epoch`, `BDP-Authorization-View`, `BDP-Minimum-Scope-Position` — there is no fourth minimum control to miss. One new ordering regression, finding 1 below.
+
+**F-B closed for the operation namespace.** All of `update-where`, `delete-where`, `unknown`, `%62atch`, `batch?x=1`, `batch/`, `BATCH`, `batch;x`, `batch%3F`, `batch/extra`, `operations/?x=1` return `404 resource-not-found` with no `Allow` on GET, POST **and** DELETE; the canonical `POST …/operations/batch` still returns `200` afterwards. Malformed spellings are still refused earlier and correctly: `batch?`, `batch#f`, `//acme/…`, `/acme/./operations/batch`, `/acme/operations/../operations/batch` → `400 malformed-request`. Residual, finding 3.
+
+**F-C closed.** Verified on both carriers: batch depth-40 → `unsupported-transaction-composition`; sequence depth-40 → `unsupported-transaction-composition` (was `sequence-resource-alias`); batch `deleteWhere` → `unsupported-transaction-composition`; sequence alias member → `sequence-resource-alias`, still reachable and correctly reserved. All with empty bodies, no effects, keys reusable. Sequence `deleteWhere` → `400 malformed-request` is correct, not a mislabel: `bdp.md:85,130` scope the Read+Update `sequence` carrier to the six single-Resource and two alias operations, so a set member is genuinely not schema-legal there, while Transactional `batch` admits it syntactically and refuses it as an owner gap.
+
+**F-D closed for every ordinary method.** `PUT`, `DELETE`, `OPTIONS`, `TRACE`, `PATCH`, `QUERY`, `PROPFIND` all yield `405` with the correct `Allow` (`POST` on command targets, `GET, HEAD` elsewhere), empty body, no marker — no bodyless `500` remains. Because `methodResponse` returns `undefined` only for GET/HEAD and for POST on a registered target, the Fetch-forbidden methods can no longer reach `new Request` structurally. Refused methods carrying unconsumed bodies deliver cleanly: `PUT` with 0 / 1 KiB / 64 KiB / 256 KiB and `POST` to a 404 target with 0 / 64 KiB / 256 KiB all returned the refusal with `connection: close` and no `ECONNRESET`. CONNECT exception, finding 2.
+
+**Receipt nondisclosure and uniform wrong-method preserved.** GET/HEAD on both a real receipt and `receipts/unknown`, unauthenticated → `401` + `WWW-Authenticate`, no `Allow`, no `BDP-Scope-Position`. Foreign-principal and unknown receipts with a minimum header → `404` (the marker at :303 stays behind the refusal check, so it is not an existence oracle), while the owner's own receipt → `500` + marker. Wrong-method on receipts is `405 Allow: GET, HEAD` uniformly across own / unknown / foreign and across authenticated and unauthenticated — the gate now also precedes authentication, which removes rather than adds variation.
+
+## Dispositions E/F/G/H — named remaining gaps, not fixes
+
+- **F-E — documented only.** `closeListener` (`transaction-runtime.ts:203-207`) and `close()` (:282-304) are untouched by this diff; `closeAllConnections()` still runs before the `pending` drain. The progress doc now says so explicitly and does not use "drain" to mean response delivery. I verified the stated recovery path: re-POSTing a sequence returns **byte-identical member outcomes** at the same `pos-2` with no duplicate effect.
+- **F-F — documented only.** `grep` for `console.`/`process.stderr`/`emitWarning` across both files returns 0. Matches the report's explicit statement that no diagnostic channel was silently introduced.
+- **F-G — behavior unchanged, now documented and tested.** Only code change is the comment at `transaction-runtime.ts:38`. Reproduced with `maximumOperations: 1`: batch 2 ops → `413 limit: transaction.operations`; sequence 2 members → `200 pos-3`; sequence 32 → `200`; sequence 33 → `413 limit: sequence.operations`.
+- **F-H — documented only.** `transaction-service.ts` is not in the diff; the post-runner owner observation is unchanged.
+
+All four documents' wordings are accurate; I found no overclaim in `report.md` or the progress doc.
+
+---
+
+## Findings
+
+### 1 — LOW-MEDIUM — The command minimum-control refusal runs ahead of authentication, suppressing the `401` challenge
+
+- **Location:** `packages/server/src/transaction-http.ts:224`, inside the `operation !== undefined` branch. The auth decision for singleton/batch is only built at :257-262 and resolved inside `service.submit`; the sequence branch's own `401`/`403` checks are at :235-237 — all after :224.
+- **Repro (probed):** `POST /acme/operations/batch`, `Content-Type: application/json`, `Idempotency-Key: u2`, `BDP-Minimum-Scope-Position: pos-9`, **no `Authorization`** → `500`, `x-bdp-development-limit: minimum-position`, **no `WWW-Authenticate`**. The identical request without that header → `401` + `WWW-Authenticate: Bearer realm="bdp-transaction-development"`. Same on `operations/sequence`. A read-only (non-mutating) principal → `500` + marker instead of `403`. Contrast the read branch, which is correctly auth-first: `GET /acme/beads/a` unauthenticated + the same header → `401`.
+- **Impact:** no effect, no key capture and no protected state disclosed — verified `beads/a` still `404` after the unauthenticated probes. But a client or intermediary that relies on the `401`/`WWW-Authenticate` challenge to acquire credentials now gets an opaque bodyless `500` whenever it also sends a minimum control, and the fixture answers an unauthenticated request with a private development marker. It also breaks the ordering symmetry the slice deliberately maintains on the read side (`:291` before `:306`) and on the receipt branch (auth *and* existence before `:303`). This behavior is new in `7bfba52`, is not mentioned in `report.md` or the progress doc, and is untested — the new test always sends `Authorization: Bearer ${token}`.
+- **Fix:** resolve authorization before emitting the marker, without disturbing the ordinary path:
+  ```ts
+  if (hasMinimumControls(request)) {
+    if (authorization.kind === "unauthenticated") return transactionHttpProblem("unauthenticated");
+    if (!authorization.canMutate) return transactionHttpProblem("forbidden");
+    return developmentGap("minimum-position");
+  }
+  ```
+  This keeps the refusal strictly before any key binding or effect, so F-A stays closed, and leaves the existing test green (it authenticates with a mutating token). Add unauthenticated and read-only rows to that test.
+
+### 2 — LOW — Real authority-form `CONNECT` is refused `400 malformed-request`, never the method table; the test asserts a CONNECT shape no client sends
+
+- **Location:** `transaction-runtime.ts:186-197` (the new `connect` listener) versus the origin-form gate at `:114-122`, which precedes `methodResponse` at `:124`. Test row: `transaction-http.test.ts:723` includes `"CONNECT"` in the method list asserting `405`.
+- **Repro (probed):** raw `CONNECT 127.0.0.1:PORT HTTP/1.1` + `Host:` → **`400`** with a `malformed-request` problem body. Raw `CONNECT /acme/beads/a HTTP/1.1` → `405 Allow: GET, HEAD`. RFC 9110 §9.3.6 makes authority-form the only CONNECT request-target, so the `405` branch is unreachable in practice; the test passes only because its `rawMethod` helper always writes `url.pathname`.
+- **Impact:** the `connect` listener does fire and does produce a well-formed response instead of a destroyed socket, so F-D's "no bodyless `500`" goal holds. But the one method the listener was added for never reaches `methodResponse`, so a tunnel attempt is labelled a malformed request rather than an unsupported method, and the test's CONNECT row gives false confidence that the method table covers it. No tunnel is opened either way, hence LOW.
+- **Fix:** in the `connect` listener, refuse directly from the method (`empty(405, "GET, HEAD")` or a dedicated refusal) rather than routing an authority-form target through the origin-form path gate; or drop `CONNECT` from that test's method list and state in the progress doc that authority-form CONNECT is a `400`.
+
+### 3 — LOW — F-B's `404`-vs-`405` contradiction survives outside `operations/` and is recorded nowhere
+
+- **Location:** `transaction-http.ts:178-183` — the `404` arm is scoped to `pathname.startsWith(`${scopeUrl.pathname}operations/`)`; everything else falls to the shape-derived `405 Allow: GET, HEAD`.
+- **Repro (probed):** `GET /acme/operations` → `404`, but `POST /acme/operations` and `DELETE /acme/operations` → `405 Allow: GET, HEAD`. Same for `/acme/zzz`, and for any absent bead: `GET /acme/beads/a` → `404` while `POST`/`DELETE` → `405 Allow: GET, HEAD`.
+- **Impact:** this is literally F-B's original complaint — "handed a Read method table for a resource that does not exist" — now fixed inside `operations/*` and unchanged everywhere else. The design note at `:169-171` ("Target shape, never receipt existence or authorization, determines Allow") is the reason, and it is the right call: resolving existence before `Allow` would reintroduce exactly the receipt-existence oracle the slice works to avoid, which F-B's full fix text did not account for. So the gap is documentary, not architectural: `report.md` and the progress doc both describe the fix truthfully but narrowly, and nothing records that the contradiction persists for non-operation paths, so T3 may inherit F-B as fully closed.
+- **Fix:** no code change recommended. Add one sentence to the progress doc: `Allow` is derived from target shape only, so non-operation paths answer `405` for wrong methods whether or not a Read resource exists there — the nondisclosure requirement for receipts is what rules out existence-resolved `Allow`.
+
+### 4 — LOW — The batch-depth marker, which F-C used as its correctness reference, is still unasserted
+
+- **Location:** `transaction-http.test.ts:408-412` — the pre-existing batch depth case asserts `status === 500`, empty body, no effect and key reuse, but not the marker. The new test at `:832-842` pins the marker for the sequence carrier only.
+- **Repro (probed):** batch depth-40 does emit `unsupported-transaction-composition` today, so the behavior is correct. F-C's fix text asked for "a marker assertion to the depth cases on **both** carriers".
+- **Impact:** the side F-C treated as the reference is unpinned, so a future change that flips the batch depth marker would be caught on the sequence side only — and the whole point of F-C was that a wrong marker is the failure mode that tests do not otherwise see.
+- **Fix:** one line — `expect(depth.headers.get("x-bdp-development-limit")).toBe("unsupported-transaction-composition")`.
+
+---
+
+## INFO — no action, recorded for the next partition
+
+- **Unauthenticated operation-inventory oracle.** `GET /acme/operations/batch` → `405 Allow: POST` versus `GET /acme/operations/unknown` → `404`, both without credentials, so the registered target set is enumerable unauthenticated. **Pre-existing, not a regression:** at `b1de5f3` the same pair gave `405` versus `401` (the operation-branch method check at old `:199-200` already preceded the auth check at old `:290`), equally distinguishable. Recording it only because the slice otherwise refuses to expose an Operation Directory (`GET /acme/operations/` → `500 transactional-discovery`).
+- **`POST /acme/operations/` → `405 Allow: GET, HEAD`**, yet `GET /acme/operations/` is a declared gap returning `500 transactional-discovery` — `Allow` names a method that does not actually serve. Pre-existing.
+- **Runtime-path refusals bypass `handler.handle`**, so a POST refused by the runtime gate lacks the `vary: Accept` that the direct-handler path adds (`transaction-http.ts:332`). Cosmetic divergence introduced by evaluating `methodResponse` at both entry points; `x-bdp-development: non-attesting` is still set by `deliver`.
+- **Precedence ahead of the minimum gate:** target-too-large (`413`) and `415 unsupported-media-type` both return before `:224`. Both are effect-free refusals, and `415` pre-auth is pre-existing.
+- The method gate now also precedes the `Origin` refusal (`:156`), so `DELETE` with an `Origin` header yields `405` rather than `403`. No effect either way.
+
+## Limits of this review
+
+Static-and-probe, not proof: I re-ran the gates and the focused suite and wrote independent loopback probes, but I did not fuzz the carrier parsers, did not exercise concurrency beyond the suite's injected-scheduler cases, did not run the full workspace suite (per the brief), and did no crash or disk-fault testing. I verified F-E and F-H as *unchanged* from the diff plus the documented recovery claim, rather than re-deriving the socket-abort behavior the prior review established. `TRACK` is not probeable here — Node's parser rejects it before any listener runs.
+
+## Bottom line
+
+The four named repairs are real. F-A, F-C and F-D are genuinely closed in code and reproduce under independent probes; F-B is closed for the operation namespace it was filed against; E/F/G/H are honestly recorded as open with accurate wording, and F-G's documented split is now pinned by a real test. The one thing I would fix before T3 is finding 1: closing F-A moved an unsupported-control refusal in front of authentication, which costs the `401`/`WWW-Authenticate` challenge on commands and breaks the auth-first ordering the slice maintains everywhere else. Findings 2–4 are honesty and coverage items; finding 3 wants a doc sentence rather than code.

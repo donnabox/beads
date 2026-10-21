@@ -1,0 +1,121 @@
+{
+  "kind": "source-derived exact top-level titles; no describe prefix in selected files",
+  "source": [
+    {
+      "file": "packages/server/src/transaction-event-sse.test.ts",
+      "title": "gates current Event replay minima before cursor validation: scope",
+      "kind": "new"
+    },
+    {
+      "file": "packages/server/src/transaction-event-sse.test.ts",
+      "title": "gates current Event replay minima before cursor validation: bead",
+      "kind": "new"
+    },
+    {
+      "file": "packages/server/src/transaction-event-sse.test.ts",
+      "title": "gates current Event replay minima before cursor validation: link",
+      "kind": "new"
+    },
+    {
+      "file": "packages/server/src/transaction-event-sse.test.ts",
+      "title": "captures current Event replay minimum once across owner entries: scope-json",
+      "kind": "new"
+    },
+    {
+      "file": "packages/server/src/transaction-event-sse.test.ts",
+      "title": "captures current Event replay minimum once across owner entries: bead-json",
+      "kind": "new"
+    },
+    {
+      "file": "packages/server/src/transaction-event-sse.test.ts",
+      "title": "captures current Event replay minimum once across owner entries: link-json",
+      "kind": "new"
+    },
+    {
+      "file": "packages/server/src/transaction-event-sse.test.ts",
+      "title": "captures current Event replay minimum once across owner entries: scope-sse",
+      "kind": "new"
+    },
+    {
+      "file": "packages/server/src/transaction-event-sse.test.ts",
+      "title": "captures current Event replay minimum once across owner entries: bead-sse",
+      "kind": "new"
+    },
+    {
+      "file": "packages/server/src/transaction-event-sse.test.ts",
+      "title": "captures current Event replay minimum once across owner entries: link-sse",
+      "kind": "new"
+    },
+    {
+      "file": "packages/server/src/transaction-event-sse.test.ts",
+      "title": "drains current Event replay admission before owner close: json",
+      "kind": "new"
+    },
+    {
+      "file": "packages/server/src/transaction-event-sse.test.ts",
+      "title": "drains current Event replay admission before owner close: sse",
+      "kind": "new"
+    },
+    {
+      "file": "packages/server/src/transaction-event-sse.test.ts",
+      "title": "serves current Event replay minima across media and reconnect selection",
+      "kind": "new"
+    },
+    {
+      "file": "packages/server/src/transaction-events.test.ts",
+      "title": "serves initial finite Scope Event opaque minima through bounded waiting",
+      "kind": "legacy"
+    },
+    {
+      "file": "packages/server/src/transaction-events.test.ts",
+      "title": "serves initial finite Bead Event opaque minima with retained identity and route fences",
+      "kind": "legacy"
+    },
+    {
+      "file": "packages/server/src/transaction-events.test.ts",
+      "title": "serves initial finite Link Event opaque minima with retained identity and route fences",
+      "kind": "legacy"
+    },
+    {
+      "file": "packages/server/src/transaction-event-sse.test.ts",
+      "title": "serves initial Scope Event SSE opaque minima before conditional admission",
+      "kind": "legacy"
+    },
+    {
+      "file": "packages/server/src/transaction-event-sse.test.ts",
+      "title": "Event reconnect syntax, minimum ordering and exact context codes are preserved over HTTP",
+      "kind": "legacy"
+    }
+  ],
+  "installed": [
+    {
+      "file": "apps/bdptest/src/transactional-event-sse-installed.test.ts",
+      "title": "installed Event cursors survive restart with Last-Event-ID precedence and source binding",
+      "kind": "historical"
+    },
+    {
+      "file": "apps/bdptest/src/transactional-event-sse-installed.test.ts",
+      "title": "observes installed current Event replay minimum admission across sources",
+      "kind": "new"
+    }
+  ],
+  "counts": {
+    "sourceCallbacks": 17,
+    "installedCallbacks": 2,
+    "sourceHttp": 200,
+    "installedHistoricalHttp": 5,
+    "installedNewHttp": 10,
+    "sourceStores": 17,
+    "installedStores": 2,
+    "installedSequentialChildren": 3,
+    "sourceListeners": 6,
+    "newSourceReports": 12,
+    "existingSourceReports": 4
+  },
+  "sourceRegex": "^(?:gates\\ current\\ Event\\ replay\\ minima\\ before\\ cursor\\ validation:\\ scope|gates\\ current\\ Event\\ replay\\ minima\\ before\\ cursor\\ validation:\\ bead|gates\\ current\\ Event\\ replay\\ minima\\ before\\ cursor\\ validation:\\ link|captures\\ current\\ Event\\ replay\\ minimum\\ once\\ across\\ owner\\ entries:\\ scope\\-json|captures\\ current\\ Event\\ replay\\ minimum\\ once\\ across\\ owner\\ entries:\\ bead\\-json|captures\\ current\\ Event\\ replay\\ minimum\\ once\\ across\\ owner\\ entries:\\ link\\-json|captures\\ current\\ Event\\ replay\\ minimum\\ once\\ across\\ owner\\ entries:\\ scope\\-sse|captures\\ current\\ Event\\ replay\\ minimum\\ once\\ across\\ owner\\ entries:\\ bead\\-sse|captures\\ current\\ Event\\ replay\\ minimum\\ once\\ across\\ owner\\ entries:\\ link\\-sse|drains\\ current\\ Event\\ replay\\ admission\\ before\\ owner\\ close:\\ json|drains\\ current\\ Event\\ replay\\ admission\\ before\\ owner\\ close:\\ sse|serves\\ current\\ Event\\ replay\\ minima\\ across\\ media\\ and\\ reconnect\\ selection|serves\\ initial\\ finite\\ Scope\\ Event\\ opaque\\ minima\\ through\\ bounded\\ waiting|serves\\ initial\\ finite\\ Bead\\ Event\\ opaque\\ minima\\ with\\ retained\\ identity\\ and\\ route\\ fences|serves\\ initial\\ finite\\ Link\\ Event\\ opaque\\ minima\\ with\\ retained\\ identity\\ and\\ route\\ fences|serves\\ initial\\ Scope\\ Event\\ SSE\\ opaque\\ minima\\ before\\ conditional\\ admission|Event\\ reconnect\\ syntax,\\ minimum\\ ordering\\ and\\ exact\\ context\\ codes\\ are\\ preserved\\ over\\ HTTP)$",
+  "installedRegexes": {
+    "historical": "^installed\\ Event\\ cursors\\ survive\\ restart\\ with\\ Last\\-Event\\-ID\\ precedence\\ and\\ source\\ binding$",
+    "new": "^observes\\ installed\\ current\\ Event\\ replay\\ minimum\\ admission\\ across\\ sources$"
+  },
+  "runtimeExecuted": false
+}

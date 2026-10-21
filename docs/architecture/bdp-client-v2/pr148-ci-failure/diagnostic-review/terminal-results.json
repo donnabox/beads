@@ -1,0 +1,112 @@
+[
+  {
+    "duration_api_ms": 600623,
+    "stop_reason": "end_turn",
+    "session_id": "e637f615-2743-4ddf-9845-e9676a666ad3",
+    "total_cost_usd": 2.9896275,
+    "usage": {
+      "input_tokens": 62,
+      "cache_creation_input_tokens": 92431,
+      "cache_read_input_tokens": 1891751,
+      "output_tokens": 44694,
+      "output_tokens_details": {
+        "thinking_tokens": 33126
+      },
+      "server_tool_use": {
+        "web_search_requests": 0,
+        "web_fetch_requests": 0
+      },
+      "service_tier": "standard",
+      "cache_creation": {
+        "ephemeral_1h_input_tokens": 92431,
+        "ephemeral_5m_input_tokens": 0
+      },
+      "inference_geo": "global",
+      "iterations": [
+        {
+          "input_tokens": 2,
+          "output_tokens": 6868,
+          "cache_read_input_tokens": 96629,
+          "cache_creation_input_tokens": 548,
+          "cache_creation": {
+            "ephemeral_5m_input_tokens": 0,
+            "ephemeral_1h_input_tokens": 548
+          },
+          "type": "message"
+        }
+      ],
+      "speed": "standard"
+    },
+    "modelUsage": {
+      "claude-haiku-4-5-20251001": {
+        "inputTokens": 1687,
+        "outputTokens": 19,
+        "cacheReadInputTokens": 0,
+        "cacheCreationInputTokens": 0,
+        "webSearchRequests": 0,
+        "costUSD": 0.001782,
+        "contextWindow": 200000,
+        "maxOutputTokens": 32000,
+        "thinkingTokens": 0,
+        "canonicalModel": "claude-haiku-4-5",
+        "provider": "firstParty",
+        "costBasis": "list"
+      },
+      "claude-opus-5[1m]": {
+        "inputTokens": 62,
+        "outputTokens": 44694,
+        "cacheReadInputTokens": 1891751,
+        "cacheCreationInputTokens": 92431,
+        "webSearchRequests": 0,
+        "costUSD": 2.9878455,
+        "contextWindow": 1000000,
+        "maxOutputTokens": 64000,
+        "thinkingTokens": 33126,
+        "canonicalModel": "claude-opus-5",
+        "provider": "firstParty",
+        "costBasis": "list"
+      }
+    },
+    "permission_denials": [],
+    "terminal_reason": "completed",
+    "fast_mode_state": "off",
+    "fast_mode_disabled_reason": "sdk_opt_in_required",
+    "subagent_stats": {
+      "spawned": 0,
+      "requested": {
+        "background": 0,
+        "foreground": 0,
+        "unset": 0
+      },
+      "started_in_background": 0,
+      "max_depth": 0,
+      "spawned_by_subagents": 0,
+      "completed": 0,
+      "failed": 0,
+      "killed": {
+        "parent": 0,
+        "user": 0,
+        "system": 0
+      },
+      "refused": {
+        "depth_limit": 0,
+        "concurrency_limit": 0,
+        "budget": 0
+      },
+      "by_type": {}
+    },
+    "is_error": false,
+    "num_turns": 45,
+    "subtype": "success",
+    "api_error_status": null,
+    "result": "## Scope and what I verified\n\nRead in full: `source.patch` (single hunk, `@@ -2984,7 +2984,35 @@`), `report.md`, `diagnosis.md`; the applied region at `apps/bdptest/src/read-update-matrix.test.ts:2950-3023`; the reference pattern at `:3708-3750`; `run()` input/setup/report construction at `:1227-1528`, `:2119-2259`; runner types and classification at `packages/conformance/src/runner.ts:142-236`, `:448-460`, `:521-830`, `:2962-3056`, `:3185`; transport category vocabulary in `packages/conformance/src/http-executor.ts`; fixture `readSeedScenarios` and the three manifest scenarios.\n\nThe working tree at `:2987-3015` matches the patch post-image, and the hunk's context lines match `:2984-2986` / `:3016-3018`. I did not verify the SHA-256 pin or that no other working-tree edit exists \u2014 that needs `shasum`/`git`, which is out of scope here. No code, tests, formatter, typecheck or git commands were run.\n\nProvenance of every projected field (privacy check):\n\n| Field | Source | Bounded? |\n|---|---|---|\n| `expectedScenario`, `expectedAction` | test-local manifest IDs | yes |\n| `sessions`/`seedObservations`/`nativeReadObservations` | `.length` only (`:1406-1409`, `:2148-2151`) | yes |\n| `row.id` | catalog ID | yes |\n| `row.state`, `row.category` | closed unions (`runner.ts:205-215`) | yes |\n| `exchange.request.id`, failed assertion IDs | manifest IDs; runner always emits `assertion.id` (`runner.ts:3185` and all call sites) | yes |\n| `response.status` | number | yes |\n| `transportError.category` | fixed executor vocabulary (`configuration`/`timeout`/`abort`/`network`/`disconnect`/`body-limit`/`invalid-body`\u2026) | yes |\n| `harnessError.category` | `\"exact-configuration\" \\| \"exact-observation\"` | yes |\n| `writeState` | `\"not-started\" \\| \"started-completion-unestablished\" \\| \"complete\"` (`http-executor.ts:41`) | yes |\n\nNo bodies, headers, URLs, digests, reasons, error messages, raw configuration or child output reach the string. `token`/`wrongToken` redaction matches the established convention (`:1459`, `:2286`, `:3747-3749`) and is defense in depth only. Negative-control discrimination is untouched: the only removed line is the bare `expect(observed?.state).toBe(\"fail\")`, replaced by the same assertion with a message argument (Vitest 4 `expect(actual, message)`, already used at `:2895`, `:3513`, `:4366`); the exact-failed-assertion assertion at `:3016-3021` is byte-identical.\n\n# Findings\n\n**No blockers.** All items below are optional; 1\u20133 materially affect whether the diagnostic can actually discriminate the diagnosis's ranked hypotheses.\n\n1. **Medium \u2014 `cleanupFailed` mislabels \"cleanup skipped\", collapsing hypothesis 1 and 3.** `:2999` (`cleanupFailed: row.cleanupError !== undefined`). `runner.ts:790-797` sets `cleanupError` to *\"cleanup skipped because fixture preparation did not settle\"* / *\"\u2026an HTTP exchange did not settle\"* \u2014 a preparation/execution anomaly, not a cleanup failure \u2014 and `:803-805` adds *\"cleanup budget exhausted\u2026\"*. A preparation deadline (`category: \"deadline\"`, cleanup skipped) and a true cleanup timeout (`runner.ts:816-824`, `category: \"deadline\"`, `cleanupError: \"cleanup timed out\"`) both project as `{category:\"deadline\", cleanupFailed:true}`, distinguishable only indirectly via `exchanges`. Impact: the projection would name \"cleanup\" for a setup fault, which is exactly the setup/cleanup split the review asks for. Smallest correction: project the string itself \u2014 `cleanupError: row.cleanupError` \u2014 it is a closed runner vocabulary (6 literals, worst case embedding only `\"HTTP exchange\"`/`\"action execution\"`), so this adds no leak surface and removes the ambiguity.\n\n2. **Medium \u2014 category-less harness errors stay indistinguishable, which is the leading hypothesis.** `:2998` projects `category` only. The runner leaves `category` undefined for the plan/catalog mismatch (`runner.ts:528-534`), missing capabilities (`:606-613`), `TransactionalHarnessError` (`:716-717`), transport `configuration` (`:761-768`), generic `ConformanceRunnerError` (`:784-785`) and the final catch-all *\"scenario harness failed\"* (`:786-787`). A failing `expect` inside the test's own prepare callback (`:1488-1495`) lands in that catch-all. So the most likely projection for the observed failure is `{state:\"harness-error\", exchanges:[]}` with no category \u2014 i.e. still \"cause unknown\", just one level finer. Also omitted: `prerequisiteFailure` (`runner.ts:217-230`, `:3012-3020`, `:3047-3053`), so a `category:\"not-run\"` row does not say which prerequisite or which phase. Smallest correction, both bounded: add `genericHarnessReason: row.reason === \"scenario harness failed\"` (one boolean, zero arbitrary text) and `prerequisitePhase: row.prerequisiteFailure?.phase`, `prerequisiteCategory: row.prerequisiteFailure?.category`, `prerequisiteId: row.prerequisiteFailure?.id` (closed unions plus a catalog ID). Do **not** project `row.reason` generally \u2014 several branches carry `error.message`.\n\n3. **Low-Medium \u2014 the three counts are run-wide, so `nativeReadObservations` can read as target progress when it is the prerequisite's.** `:2991-2993`. The run selects `[\"read.discovery.scope-service-desc\", id]` (`:2985`), and a category-less harness error does not stop the matrix (`runner.ts:448-460`), so both rows execute. `nativeReadObservations` (`:1705`) aggregates both scenarios, so non-zero does not imply the target scenario ran anything. `sessions` (`:1496`) and `setupObservations` (`:1506`) happen to discriminate well here \u2014 discovery is *not* in `readSeedScenarios` (`fixtures/read-update-reference-v1.json:708-720`) while `read.resource.properties-view`, `read.collections.beads` and `read.http.conditional-reads` are \u2014 but the counts still mix rows. report.md describes them as \"installed session/seed/native-Read observation counts\" without this caveat. Smallest correction: filter on the recorded key each push already carries, e.g. `report.sessions.filter((s) => s.scenario === id).length` (precedent `:2273`) and `report.nativeReadObservations.filter((r) => (r as { scenario?: unknown }).scenario === id).length`. Avoid `coldObject` here \u2014 it throws on non-objects (`:405-409`).\n\n4. **Low \u2014 truncation is silent, with a head bias.** `:2995` (`scenarios.slice(0, 2)`), `:3000` (`exchanges.slice(0, 16)`), `:3003-3006` (failed assertions `.slice(0, 16)`). `slice(0,2)` is positionally safe today (the selection yields exactly two rows, catalog order preserved, `runner.ts:367-377`), but `read.http.conditional-reads` has 26 actions (`matrices/read-update-v1.json:3864-4924`), so the \"condition\" case can drop exchanges 17-26 with no marker \u2014 and a late interruption is precisely what you would want to see. The controlled action is safely inside the window in all three cases (`strong-none` is 7th, line 4077; `properties-view` and `beads` have 2 and 3 actions). Smallest correction: add `scenarioCount: report.result.scenarios.length`, `exchangeCount: row.exchanges.length`, `failedAssertionCount: exchange.assertions.filter((c) => !c.passed).length`, or slice the tail (`.slice(-16)`).\n\n5. **Low \u2014 `JSON.stringify` drops undefined keys, so absent evidence is unreadable as evidence.** `:2998`, `:3002`, `:3007-3009`. When `category`, `status`, `transportCategory`, `harnessCategory` or `writeState` are undefined the keys vanish, and a log reader cannot distinguish \"runner recorded nothing\" from \"the projection does not include this\" \u2014 the same gap that made the original CI log inconclusive. Smallest correction: `?? null` on those five fields.\n\n6. **Low \u2014 the projection is eager and drops the existing optional-chaining style, so a runtime `TypeError` would replace the original assertion failure.** `:2988-3014` vs `:3713-3744`, which uses `row?.exchanges?.map`. Types make `exchanges` and `assertions` required (`runner.ts:233`, `:186`) and every constructor supplies them (`:2970`, `:2982`, `:3021`, `:3054`), so practical risk is low, but the message is computed on all three cases including green ones. Smallest correction: wrap the projection in `try { \u2026 } catch { return \"diagnostic projection failed\" }`, or mirror the `?.` style.\n\n7. **Low / informational \u2014 the diagnostic only exists when `run()` resolves.** `:2985`. The bootstrap and aggregate-cleanup paths (`:1395-1405`, `:2240-2257`) throw instead of returning a report, and those failures would print nothing new. This matches the observed CI mode (assertion mismatch, so `run()` did resolve), so it is a limit, not a defect.\n\n8. **Nit \u2014 comment and report wording.** `:2987` says \"no bodies, headers, URLs, errors or child output\" while error *categories* are deliberately included; \"no error messages\" is accurate. The second assertion at `:3016-3021` carries no message (optional symmetry).\n\n9. **Verification requirement, not a defect.** report.md states no formatter/typecheck/lint ran, and I am not permitted to run them. Every field access has in-repo precedent (`.map` over the Legacy/Exact scenarios union at `:3721` and `test-support/read-update-artifact-execution.ts:226`; `harnessError?.category` / `writeState` fallback over the union at `:3729-3730`), and this file is inside `tsconfig.check.json` (`apps/*/src/**/*.ts`). The one construct with no exact precedent is `.slice()` applied to the `LegacyScenarioRunResult[] | ScenarioRunResult[]` union at `:2995` and `:3000`; `slice` is non-generic and non-overloaded in `ReadonlyArray`, so it should resolve, but on TypeScript 7.0.2 that must be confirmed by `pnpm typecheck`, plus `pnpm format:check` and `pnpm lint` (chain-break formatting at `:3003-3006` and `:3012-3014` is unverified).\n\n# Verdict\n\nThe patch is a sound diagnostic-only change: it is strictly additive, allowlisted, size-bounded (worst case tens of KB), credential-redacted, and it leaves the negative control's expected state, failed-assertion list, request content, run selection, cleanup and deadlines exactly as before. I found no privacy leak and no path by which the projection itself throws under the current runner types. It does separate the three phases at a coarse level \u2014 empty `exchanges` plus low `sessions`/`seedObservations` indicates preparation, populated `exchanges` with per-exchange categories indicates execution, `cleanupError`/`cleanupComplete` plus `category` indicates cleanup \u2014 but findings 1 and 2 mean the two highest-ranked hypotheses can still project identically or namelessly, so I would apply those two small changes before spending a run on it.\n\nI am not approving execution or integration, and nothing here explains or fixes the original `expected 'fail', got 'harness-error'` failure: no test has run on this patch, the cause remains unknown, and fresh full exact-head green CI is still required.",
+    "ttft_ms": 2512,
+    "type": "result",
+    "duration_ms": 600042,
+    "uuid": "b5482582-3771-4809-b8a4-df7b927ffc93",
+    "ttft_stream_ms": 1170,
+    "time_to_request_ms": 13,
+    "first_content_frame_ms": 1170,
+    "queued_turn_count": 0
+  }
+]

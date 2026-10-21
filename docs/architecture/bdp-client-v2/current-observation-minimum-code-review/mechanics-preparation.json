@@ -1,0 +1,92 @@
+{
+  "kind": "initial-closed-code-review-mechanics-only",
+  "createdUtc": "2026-10-17T18:58:12.524795+00:00",
+  "worktree": "/Users/dbox/repos/wt/vickie/vickie-current-observation-minimum",
+  "head": "d9c3eb9e61b1982b9bd56aa77e4cdc114384e886",
+  "prospectiveOwnedFiles": [
+    "packages/server/src/transaction-consistency.ts",
+    "packages/server/src/transaction-read.ts",
+    "packages/server/src/transaction-http.ts",
+    "packages/server/src/transaction-service.ts",
+    "packages/server/src/transaction-store.ts",
+    "packages/server/src/transaction-consistency.test.ts",
+    "packages/server/src/transaction-read.test.ts",
+    "packages/server/src/transaction-http.test.ts",
+    "packages/server/src/transaction-service.test.ts",
+    "packages/server/src/transaction-receipt-pages.test.ts",
+    "packages/server/src/transaction-snapshot.test.ts",
+    "packages/server/src/transaction-events.test.ts",
+    "packages/server/src/transaction-event-sse.test.ts",
+    "packages/server/src/transaction-changefeed.test.ts",
+    "apps/bdptest/src/transactional-minimum-receiving-installed.test.ts",
+    "docs/design/transaction-implementation-progress.md"
+  ],
+  "rootLaunchReleased": false,
+  "sourceBindingFinalized": false,
+  "finalPromptPrepared": false,
+  "nativeMechanicsReviewRequiredBeforeLaunch": true,
+  "finalBinding": null,
+  "finalSourceHashes": null,
+  "finalContextMap": null,
+  "finalPromptSha256": null,
+  "currentMutableSourceInspected": false,
+  "oneAttempt": true,
+  "timeoutSeconds": 1800,
+  "termAfterSeconds": 1790,
+  "automaticRetries": 0,
+  "modelOverride": null,
+  "tools": [
+    "Read",
+    "Glob",
+    "Grep"
+  ],
+  "predecessor": {
+    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/scope-event-sse-opaque-minimum-code-review/run.py": "5395ba0fbd9da794aad83b17b3292da1f3a2830eeb85de3ed244f1086b4702a6",
+    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/scope-event-sse-opaque-minimum-code-review/parse-stream.py": "77466c44356f316a66ccd093bb64b6cd053fb2efde207916858062c878ed4ac6",
+    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/scope-event-sse-opaque-minimum-code-review/arguments.json": "c7a06e44f911e415839ce4638c3ca20330b0ae204fe1f846632d367638090ede",
+    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/scope-event-sse-opaque-minimum-code-review/preparation-index.json": "12c20bbeb47b46706fc5939d2f58bc50228f46bc4bc01d037e673193ff809eb6",
+    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/scope-event-sse-opaque-minimum-code-review/binding.closed.json": "ad5818265a98e216044af3cd7137008234ffdfee2cb71356d52403fcaff3ee51",
+    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/scope-event-sse-opaque-minimum-code-review/completion-audit.json": "75be1647b50f7e0da132d261ae20d08e785136bd2b16583f769e4e6902a126d5"
+  },
+  "adaptation": [
+    {
+      "old": "/Users/dbox/repos/wt/vickie/vickie-scope-event-sse-opaque-minimum",
+      "new": "/Users/dbox/repos/wt/vickie/vickie-current-observation-minimum"
+    },
+    {
+      "old": "bbfa5b2cac0e381b497384e3a8e29cd937ea2738",
+      "new": "d9c3eb9e61b1982b9bd56aa77e4cdc114384e886"
+    },
+    {
+      "old": "Exact frozen seven-file dirty status required",
+      "new": "Exact frozen sixteen-file dirty status required"
+    }
+  ],
+  "inverseReconstructsPredecessor": true,
+  "contextCandidates": {
+    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/current-observation-minimum-plan/successor-2/plan.md": "5104f3d4c4154c70f8ce4417e82d5cffbdb7c166b7fa59c5d50bbb9c3d851fd2",
+    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/current-observation-minimum-plan/successor-2/selection.json": "9294d8a606bd34dca96d176ce179ae138e566571d4e2bfb1ca18677f094f6750",
+    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/current-observation-minimum-plan/successor-2/workload.json": "49e95e78368e639849b6e292c8501ca12ee8151d2f7300359ddda24601613298",
+    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/current-observation-minimum-plan/successor-2/source-binding.json": "8c7809358e89eec09667e9a6ea02e4d5b9c6f80b75ba16999065ece6b113861c",
+    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/current-observation-minimum-plan/successor-2/index.json": "8d42ccba536e0d114fe5c4a9ca227fe996ddd477bd74f9af6fb3100b2adbe524",
+    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/current-observation-minimum-plan/successor-2/dispositions.json": "67243c9cfcb835c4bcde12a4814be94c39b6758efd2a08b48bc59c5eda33a883",
+    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/current-observation-minimum-plan/successor-2/native-closure.md": "2c70f57992a5ffc1447f868395caa78b808f0de45ca903b6a6ebca4d7c1ac13b",
+    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/current-observation-minimum-plan/claude-plan-review/root-findings-dispositions.json": "b13c464565ed8fa817dde13dbff9b46274d8c797b08560064ec25de6c519192e",
+    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/current-observation-minimum-author/root-author-release.json": "b7f41f5ab5c54968622b09152ed5657afa76258e09b9e4be1fbd4b813937dcb7"
+  },
+  "toolCandidates": {
+    "/opt/homebrew/bin/claude": {
+      "realpath": "/opt/homebrew/Caskroom/claude-code@latest/2.1.263/claude",
+      "sha256": "ef5d2909c8af49f31ab6d5487e90316777bc2fac170adfe8160716caa8aaf4f9"
+    },
+    "/opt/homebrew/opt/python@3.14/bin/python3.14": {
+      "realpath": "/opt/homebrew/Cellar/python@3.14/3.14.5/Frameworks/Python.framework/Versions/3.14/bin/python3.14",
+      "sha256": "2477b47fa3ae65b9574eb18a15edb364e96948eaa1875ad3f1c80d780efc9c12"
+    },
+    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/guarded-action.py": {
+      "realpath": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/guarded-action.py",
+      "sha256": "fd81ba029cd4e7c7e60623df89e8292af91141d311d9ce789ed19e2152375e84"
+    }
+  },
+  "toolCandidatePolicy": "Current read-only byte measurement only; final binding must remeasure tools. No CLI invocation occurred."
+}

@@ -1,0 +1,36 @@
+{
+  "authority": "context/write-profile-D4-helper1-root-disposition-1/disposition.json",
+  "executionAccepted": false,
+  "findings": [
+    {
+      "correction": "source exact prospectiveWorkload tuple exists; no invented counts; P01 finite interface subcase",
+      "id": "F6-N1",
+      "paths": [
+        "commands.json"
+      ]
+    },
+    {
+      "correction": "product inherits parent-registered worker PGID; acknowledgement; PID-only quiet; all direct reaping guarded through fresh descendant absence; P01/P08/P09 finite controls",
+      "id": "F6-N2",
+      "paths": [
+        "run.py",
+        "worker.py"
+      ]
+    },
+    {
+      "correction": "derive receipt/Event/group/pending source assignments; final Event ambiguity explicitly unsupported/nonconforming; fixed-class retained failure; D02/D03 controls",
+      "id": "F6-N3",
+      "paths": [
+        "audit.py",
+        "worker.py"
+      ]
+    },
+    {
+      "correction": "stat parsed; terminal-Z comm exception requires same birth+PGID, sticky terminal state; no live/PID/PGID reuse weakening; reap only no-descendant census then fresh absence",
+      "id": "F6-N4",
+      "paths": [
+        "run.py"
+      ]
+    }
+  ]
+}

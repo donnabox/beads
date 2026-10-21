@@ -1,0 +1,11 @@
+# Required releases and stop conditions
+
+Both controls are CLOSED. Root/native must read the entire helper variant, all finite DATA and genuine adaptations before binding nativeHelperDisposition/current root source/CODE chain to exact implementation. Prior actual CODE applies only to original source; later085a/4f4f are separately native/root dispositioned.
+
+Synthetic-only release must preserve48 finite zero-product controls, including real scanner/schema/clock/ownership/publication counterexamples. Synthetic acceptance cannot be fabricated from static plans, AST parsing or source rows. Product stage additionally requires its exact independent synthetic acceptance. Root may authorize only the exact ordered stage prefix; no retry, no history reuse. Every accepted stage needs exclusive fresh files plus actual outer rawExit0/current-attempt/source-bound exit+watchdog hash receipt.
+
+Fresh first4 version/offline frozen install/actual16 tool files are observed, then root decides static/build release. Fresh build map/root acceptance precedes packaging; fresh complete archives/root acceptance precede consumer; actual fresh lock/manifest/settings/root acceptance precede installed proof. Complete installed payload/archive/consumer inventory/entry provenance/root acceptance precede the ONE D4 callback. No guessed future hashes or inherited consumer/scratch/package outputs.
+
+D4 retains source work90/callback120/cleanup10 and strict one outer150/TERM145/KILL149 clock with startup10/callback<=absolute130/flush<=absolute135/drain<=145. All checks/hash/schema/ownership setup and final proofs are on clock; no postdeadline promotion. Missing/late/overflow/unknown/failed assertion/schema/terminal/source drift stops and preserves evidence. Full hash remains UNKNOWN when unfinished; cleanup unknown never turns into clean removal. The collector may refuse otherwise valid large responses: capacities are evidence acceptance policy, not product maximum claims.
+
+After D4 terminal evidence, root independent terminal acceptance is required before remaining required CI checks. Smoke consumer is separate; existing Read evidence/preflight is not Write admission. Final combined source/configuration/proof rebind remains required. Administrative erasure/restore remain unresolved; not N/A. No full cumulative/cold/public claim follows from this fixture.

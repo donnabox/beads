@@ -1,0 +1,129 @@
+{
+  "accepted": false,
+  "actualExternalReviewerReadCurrentCorrectedSource": false,
+  "currentPrivateD1": {
+    "archiveMemberRecords": 321,
+    "archiveProofKeys": 11,
+    "archiveProofSha256": "adb24bc4154d97f48c2acb5c4e21bc67a3f541dfd8696bfaff95bf997e552fea",
+    "archivePublication": "f76f68452413b2f5415e4718c60626607f9e3cee",
+    "archiveRootDispositionSha256": "5f08d675179a7a93aa74d39e0723012db8c8045394e0dc188aa6d5ccb09f7508",
+    "archives": [
+      {
+        "archive": {
+          "bytes": 68665,
+          "mode": "0o644",
+          "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation-preparation-5/run/packages/bdp-protocol-0.0.0.tgz",
+          "sha256": "4683cb6c6333c332a4bcb7efc3e28f32d1d8d06a7264913f65c31d3a826d4227"
+        },
+        "membersRecorded": 63,
+        "package": "protocol"
+      },
+      {
+        "archive": {
+          "bytes": 445045,
+          "mode": "0o644",
+          "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation-preparation-5/run/packages/bdp-server-0.0.0.tgz",
+          "sha256": "f5cf974efd4e68087399a17619901d8c7ec17438eb154cc28570d1fa8eebf6f8"
+        },
+        "membersRecorded": 258,
+        "package": "server"
+      }
+    ],
+    "baseParent": "a56254d682cf4623cab22a552e3d2f695f691795",
+    "binaryDiffFromHEAD": "f87d60ddc56b23737c46ed14e1675cc751c0062c7ab3466c33606398ae305df6",
+    "buildArtifacts": 476,
+    "buildMapSha256": "8a0241044612922b2801e6b5d1670919d37671d8191f567e5d36807a223ed56a",
+    "clean": false,
+    "head": "cce884ccea1db97cbc6fd7bff876d4d6091f9081",
+    "reviewedDirtyPaths": [
+      "apps/bdptest/src/transactional-discovery-installed.test.ts",
+      "apps/bdptest/src/transactional-schema-installed.test.ts",
+      "packages/server/src/transaction-changefeed.test.ts",
+      "packages/server/src/transaction-http.test.ts",
+      "packages/server/src/transaction-http.ts",
+      "packages/server/src/transaction-installed-contracts.test.ts",
+      "packages/server/src/transaction-schema-http.test.ts",
+      "packages/server/src/transaction-schema-http.ts",
+      "packages/server/src/transaction-service.test.ts",
+      "packages/server/src/transaction-service.ts"
+    ],
+    "sourceBindingSha256": "e0252cb07ac1896fac0faab395e10e50ea58eac263b6d33ee224e378413c2d68",
+    "sourceFiles": 679,
+    "sourceIdentity": "1ecaf2e47369cc12cc26bc3ed693c5d4d3b9cffa4714b13dbe5567f9e46bfb15",
+    "sourceLockSha256": "4150d8821c96dbc2cfec0b2762ff76b58318079f65fa4f5c8858ef2dd61f8d6d",
+    "toolFiles": 11,
+    "tree": "6757829bd5b700faf28df39071190a272add90c9",
+    "workspaceToolsSha256": "69713067eef866d61e8e9e3c49d695bd2d534d1cb7d0913c977da4f3f7d2cdb0"
+  },
+  "finalDeliveryIdentity": "UNBOUND_NOT_A_SELECTION_OF_THIS_D1_CANDIDATE",
+  "observedAt": "2026-10-19T05:20:44.638670+00:00",
+  "observedRuntimeBoundary": {
+    "acceptedPrefix": 21,
+    "approvedPrefixExhausted": true,
+    "archiveAcceptanceExistsButLiveGateRootArchiveAcceptanceStill": {
+      "path": "UNRESOLVED",
+      "sha256": "UNRESOLVED"
+    },
+    "closedConsumerSourceOnlyRelease": {
+      "origin": "consumer-source-release",
+      "pointer": ""
+    },
+    "consumerInstalledOutputsObservedAbsent": [
+      "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation-preparation-5/run/consumer",
+      "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation-preparation-5/run/installed-provenance.json",
+      "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation-preparation-5/run/installed-consumer-inventory.json"
+    ],
+    "consumerLockInstalledProof": "UNRESOLVED",
+    "later13Runtime": "CLOSED",
+    "liveGateSnapshot": {
+      "anchors": [
+        {
+          "firstLineText": "  \"approvedStages\": [",
+          "lines": [
+            7
+          ],
+          "needle": "\"approvedStages\":"
+        },
+        {
+          "firstLineText": "  \"consumerLockSha256\": \"UNRESOLVED\",",
+          "lines": [
+            39
+          ],
+          "needle": "\"consumerLockSha256\":"
+        },
+        {
+          "firstLineText": "  \"rootArchiveAcceptance\": {",
+          "lines": [
+            60
+          ],
+          "needle": "\"rootArchiveAcceptance\":"
+        },
+        {
+          "firstLineText": "  \"rootConsumerLockAcceptance\": {",
+          "lines": [
+            68
+          ],
+          "needle": "\"rootConsumerLockAcceptance\":"
+        },
+        {
+          "firstLineText": "  \"rootConsumerProofAcceptance\": {",
+          "lines": [
+            72
+          ],
+          "needle": "\"rootConsumerProofAcceptance\":"
+        }
+      ],
+      "bytes": 3693,
+      "currentEqualityClaimed": false,
+      "id": "live-gate",
+      "mode": "0o644",
+      "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation-preparation-5/execution-gate.json",
+      "sha256": "34c333aa5b688d7abe944363b558e0bd431dd512ec84a24f8e0440d9d2bdf7ea",
+      "snapshotOnly": true
+    },
+    "noRuntimeReleaseFromInventory": true
+  },
+  "session": "2026-10-18T02:16:24Z-549f",
+  "sourceAttribution": "Base HEAD/tree plus independently verified reviewed dirty source identity, fresh build and archives. Base commit does not contain the draft; not child-attested source.",
+  "state": "INVENTORY_ONLY_NOT_ACCEPTANCE"
+}

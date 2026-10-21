@@ -1,0 +1,52 @@
+--- plan2/basis-binding.json
++++ plan3/basis-binding.json
+@@ -1,21 +1,34 @@
+ {
+-  "state": "CLOSED PLAN BASIS ONLY",
++  "state": "CLOSED STATIC D3c PLAN3 PUBLISHED SOURCE BASIS",
+   "sourceRoot": "/Users/dbox/repos/wt/vickie/vickie-trusted-startup-configuration",
+-  "base": "a56254d682cf4623cab22a552e3d2f695f691795",
++  "sourceCommit": "fdd3d2a4f8753b9d7562dcdb7ba413a33be82a10",
++  "sourceTree": "066da79d9b72f1c4aaf74c96c92be2551b9af71c",
++  "soleParent": "a56254d682cf4623cab22a552e3d2f695f691795",
+   "sourceFiles": 682,
+-  "sourceMapSha256": "7a503fb5271f29c01d411ac30bce2f5d6eadee17e4996e610160129687ee1849",
+-  "fullPatchSha256": "e577d453fd7819c6feb88e0a87e0d710725b70cc331d36be438d61ad7b7719a3",
+-  "sourceIdentity": "fa80acbc158736217d4b58eb3ad927add6099d12a8746254c08cefdf25be2471",
+-  "correctionIndexSha256": "98ab5463b224a382ac414abe8ac719aadb3c4092cbed89c61e6257b9ca18237a",
+-  "nativeFixtureClosureSha256": "398b99f855e98eecf260362ccb94378e82e580765c0d807b0ed3b2faad855ecb",
+-  "changedFromHistorical4fd": [
+-    "packages/server/src/reference-deployment.test.ts"
++  "sourceMapSha256": "054d825cdc815260f0d4472c4b13fafca0130f1330798c8204a45a8de53f403d",
++  "testedFullPatchSha256": "515e11937c2a89c5e22a696a11a0c01a547a532a02fd645a8994ef12d6d27343",
++  "testedSourceIdentity": "0c53a6bb33d57133c8fbb43b8787d9251ca4276abcdb18b2a9f434279bfe364b",
++  "sourceHeadCleanAuthority": "root publication readback; no Git invoked by planner",
++  "all682CurrentBytesMatchPublishedMap": true,
++  "plan2IndexSha256": "54fe3277f2c8a36b45710f434a9812f2c10ff2e87ac7587226c04a99adfb3a64",
++  "plan2PlanSha256": "24dcb188b228f9825dfdd54a37fb3289cc7511bf9ac5b5aecb5daa4ac5adec9a",
++  "plan2NativeClosureSha256": "77844d5c6a46f06ab52005676cce3abc96739f289cb7f7d3bb4aa7cf9f767fdf",
++  "plan2RootAcceptanceSha256": "d453a47d328d90c194c8e230f05768259d917920d8c2fbdd1953b39aa54be4c3",
++  "changedFromPlan2": [
++    "packages/config/src/index.ts",
++    "packages/server/src/reference-deployment.test.ts",
++    "packages/server/src/reference-deployment.ts"
+   ],
+-  "other681Identical": true,
+-  "historicalMapSha256": "716701cb78328a94c502e5eaf84c48ceda458432aee44fd489f36a0f0ac810bd",
+-  "historicalFullPatchSha256": "4fd125d8613b0d3370227353b3e29e1ee73735466bd332a6961c400e3535fbe2",
+-  "actualReviewerReadFixtureSuccessor": false,
+-  "validation3Success": "UNRESOLVED",
+-  "exactFutureIntegrationBasisRootAcceptance": "UNRESOLVED",
++  "other679Identical": true,
++  "rootLocalAcceptanceSha256": "720f0764f9364b695076b59132ec7ee744a4d4ae2c86f6fa025f51003cf68d97",
++  "nativeFinalClosureSha256": "d496fa1f8a2668e9a048b59b900a665b8173d2ade0570f4d4ac5d1298c99b6e4",
++  "pushReadbackVerifiedRecord": true,
++  "draftPR": 169,
++  "exactCIRun": 39105905478,
++  "exactCIJob": 117611570968,
++  "exactCI": "IN_PROGRESS",
++  "exactCIRootAcceptance": "UNRESOLVED",
++  "finalCombinedSourceConfigurationBasis": "UNRESOLVED",
++  "actualD3cPlanAttemptExists": false,
+   "executionReleased": false
+ }

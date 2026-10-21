@@ -1,0 +1,17 @@
+# D3a validation preparation2 — CLOSED
+
+This separately named successor proposes closure of native N1–N3 under root disposition9dcc8974. Preparation1, its failed mechanics review and index-closure supplement are preserved byte-for-byte under `predecessor/`. No original packet was amended. All52 stages,16 immediate callback/audit pairs, source679/six owned paths, selections and deadlines remain unchanged.
+
+`audit.py` is the sole semantic helper change. `run.py`, `gate.py`, `packages.py` and the exact current-session guard are byte-identical to preparation1. The auditor checks21 source reports (96 starts,90 retained returns,20 baselines,14 raw exchanges,9 zero-wire clones),18 affected historical changefeed reports,11 installed callbacks (190 scheduled/187 responses/3 aborts;186 exact/4 raw), and the separate14-wire schema callback. Source-derived nested matrices appear in `report-schemas.json`; raw failure/partial evidence is never filled in as success. Hidden/random configuration digests remain actual typed identities and cannot be independently recreated from retained fingerprints.
+
+No helper was imported or executed. Static verification used file reads, SHA256, JSON, difflib and AST parsing only. Product compilation/runtime, actual collection/pending counts, new build/archive/consumer/lock/proof identities and final validation acceptance remain UNRESOLVED. The original actual CODE review read earlier candidate bytes; corrected bytes have separate static native/root closure only.
+
+Root must obtain independent full successor mechanics acceptance and bind root dispositions before any release. Both gate snapshots have all release/approval booleans false and approvedStages empty. The complete physical index includes nested historical indices; only the root index excludes itself.
+
+Prospective invocation after explicit root release only:
+
+```text
+/opt/homebrew/opt/python@3.14/bin/python3.14 /Users/dbox/repos/wt/vickie/bdp-integration-logs/tx-discovery-validation-preparation-2/run.py STAGE
+```
+
+Use the exact ordered `commands.json` finalOrder; each callback must be immediately followed by its audit. No bootstrap reuse, callback retry, deadline widening or old dirty-helper execution.

@@ -1,0 +1,49 @@
+{
+  "state": "ACCEPTED bounded native precision closure",
+  "createdUtc": "2026-10-18T04:57:23.664313+00:00",
+  "session": "2026-10-18T02:16:24Z-549f",
+  "frozenIndexSha256": "85b2b9eeb6dc785ee7b8195f93e4c7759a2dd66ac71052d350539abb44c61576",
+  "sourceBindingSha256": "0af33f0428cbafaa8d9be9acd0570a3bb661d6b7a576b901fb9e1e9a3f5678cc",
+  "fullPatchSha256": "4fd125d8613b0d3370227353b3e29e1ee73735466bd332a6961c400e3535fbe2",
+  "basisPatchSha256": "00fa952644ab1725e4bfb8fc8c642683a39f60dd45f6a08de8881d590150a0b4",
+  "rootDispositionSha256": "3fc6bdf1758b0ad37fd49d140cd3f09faf9481ae81318fa5716ccc6d87c2b6f3",
+  "rootReleaseSha256": "e52117f5011f7cb905236772d2c978e0a6148fa64e9d1f619e9a54b0b51ebdf5",
+  "findingsClosed": [
+    "F1 exact nested path and fixture refusal before open",
+    "F2 no-emit digest documentation",
+    "F3 authoritative TX host",
+    "F7 quantitative isolated open witness",
+    "F8 original limits snapshot and empty syntax witness"
+  ],
+  "retainedFindings": [
+    "F4",
+    "F5",
+    "F6",
+    "F9",
+    "F10"
+  ],
+  "changedPaths": [
+    "docs/design/startup-configuration.md",
+    "packages/server/src/reference-deployment.test.ts",
+    "packages/server/src/reference-deployment.ts"
+  ],
+  "sourceMapCount": 682,
+  "otherOwnedPreserved": 9,
+  "nonownedPreserved": 670,
+  "d1Preserved": 679,
+  "originalPreserved": 679,
+  "indexedArtifactsVerified": 48,
+  "mirroredFilesVerified": 49,
+  "deltaInverseGenuine": true,
+  "fullPatchesReproduced": true,
+  "testWitnessesMeaningfulByStaticInspection": true,
+  "testsExecutedByAuditor": false,
+  "noBlockingFindings": true,
+  "runtimeQualification": false,
+  "reviewerRetry": false,
+  "publicActivation": false,
+  "sourceChangedByAuditor": false,
+  "originalIndexUnchanged": true,
+  "reportSha256": "02cafcf6b57950b5f325d347bb7d76fb65ebc1d2fa7d7cabd727564f10e29829",
+  "verificationSha256": "1072b43d65666f5042a47c4cfefb4a7045bb33078c9c806be26094a506e1f23c"
+}

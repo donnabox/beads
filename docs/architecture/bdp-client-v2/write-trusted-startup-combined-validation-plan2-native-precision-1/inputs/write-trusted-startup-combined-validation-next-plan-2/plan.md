@@ -1,0 +1,3 @@
+# Combined startup validation plan2 — full changed-path coverage
+
+Accept the inherited12-path omission finding. In the same format-check and lint stages, target all28 actual changed TypeScript, MJS and JSON paths. The one changed Markdown file is covered by the full native/root code/document review and exact686 source hash gate; no unsupported Biome Markdown format/lint result is claimed. No format-write or new tool, stage, callback, request, budget or deadline is added. The other67 stages and all189 other effective plan files remain unchanged in original plan1. This complete190-file effective composition remains CLOSED pending full independent precision and root acceptance; no executable helper or runtime authority follows.

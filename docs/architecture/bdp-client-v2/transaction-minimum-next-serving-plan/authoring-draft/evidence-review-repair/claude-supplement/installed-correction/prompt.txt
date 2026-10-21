@@ -1,0 +1,146 @@
+
+===== Scope =====
+Review this evidence-only correction and confirm whether any actionable defect remains in the previously reviewed installed witness. Read/Glob/Grep only; no files modified, Bash, tests/builds/services, network or model override. Complete findings/no-findings in final stdout, <=600words.
+
+Earlier actual installed review supplied full findings/conclusion, but supervisor termination at896.157s remains recorded (exit0, timeout=true/forced=true). Findings:15safeheaders insufficient for fullhidden/missing oracle; missing401challenge assertion; optional reducedoverflowreport; factualdocclarification. Root accepted firsttwo/doc, retains fail-closed overflow. Actual output path: /Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-minimum-next-serving-plan/authoring-draft/claude-installed-readonly/installed/stdout.txt
+
+No production change/newHTTP:32positive+2+2negativeexpected/96maximum/threechildren;30swork/45stest/120ssupervisor. Compare all rawheaderpairs exceptDate, normalizednames/order, duplicates preserved; digest avoids secret failureoutput. Report allowlist unchanged. Check completeheader comparison,401literal, HEAD and reportfailure boundaries. Installed execution pending. Exact clean candidate733728cf40fc2f57407000251673bd5d3218acd4/treeea0dccd68d91323887424cad9729e6593aef04f2; ordinary author d3fdf9fa then merge bf50e1e8 with actualmain df80, followed by factualdoccommit. No source behavior changed by integration.
+
+
+===== Complete two-file correction =====
+--- a/apps/bdptest/src/transactional-minimum-current-resource-installed.test.ts
++++ b/apps/bdptest/src/transactional-minimum-current-resource-installed.test.ts
+@@ -57,6 +57,18 @@
+   throw new Error("installed minimum entry override requires declared source commit");
+ const resolvedEntry = realpathSync(entry);
+ const digest = (value: string | Uint8Array) => createHash("sha256").update(value).digest("hex");
++function responseHeaderDigest(rawHeaders: readonly string[]): string {
++  const pairs: [string, string][] = [];
++  for (let i = 0; i < rawHeaders.length; i += 2) {
++    const name = rawHeaders[i]!.toLowerCase();
++    if (name !== "date") pairs.push([name, rawHeaders[i + 1]!]);
++  }
++  pairs.sort((left, right) => {
++    if (left[0] !== right[0]) return left[0] < right[0] ? -1 : 1;
++    return left[1] === right[1] ? 0 : left[1] < right[1] ? -1 : 1;
++  });
++  return digest(JSON.stringify(pairs));
++}
+ const entrySha256 = digest(readFileSync(resolvedEntry));
+ const workspaceDirty =
+   execFileSync("git", ["status", "--porcelain"], { cwd: root, encoding: "utf8" }).length > 0;
+@@ -443,6 +455,7 @@
+         headers: Headers;
+         text: string;
+         bytes: number;
++        headerDigest: string;
+       }>((resolve, reject) => {
+         const request = httpRequest(
+           {
+@@ -478,6 +491,7 @@
+                 headers: received,
+                 text: Buffer.concat(chunks).toString("utf8"),
+                 bytes,
++                headerDigest: responseHeaderDigest(response.rawHeaders),
+               });
+             });
+           },
+@@ -725,6 +739,7 @@
+         }
+         if (row.index === 29) {
+           expect(response.text).toBe(firstHidden!.text);
++          expect(response.headerDigest).toBe(firstHidden!.headerDigest);
+           for (const name of retainedHeaders)
+             expect(response.headers.get(name)).toBe(firstHidden!.headers.get(name));
+         }
+@@ -737,6 +752,10 @@
+           expect(response.bytes).toBe(0);
+           expect(response.headers.get("allow")).toBe("GET, HEAD");
+         } else {
++          if (row.status === 401)
++            expect(response.headers.get("www-authenticate")).toBe(
++              'Bearer realm="bdp-transaction-development"',
++            );
+           const value = parse(response);
+           expect(validProblem(value), JSON.stringify(validProblem.errors)).toBe(true);
+           expect(value).toMatchObject({
+--- a/docs/design/transaction-implementation-progress.md
++++ b/docs/design/transaction-implementation-progress.md
+@@ -2000,7 +2000,12 @@
+ missing/hidden Resource, alias and initial incident-anchor precedence and bounded
+ unproved-position waiting for existing current Bead/Link Resource/properties.
+ Strict consumers and pending Snapshot/incident-Event questions remain separate.
+-At this draft checkpoint no runtime tests, installed cohorts or qualification
+-have been established. Actual authorization main must be integrated ordinarily
+-before final validation; source and installed evidence will retain their exact
+-commit/build provenance.
++On that isolated candidate, all 11 source-validation stages passed, including
++the fresh build and 15 selected source callbacks; the preceding fixture-type and
++report-lint failures remain preserved under their original bindings. An installed
++minimum-current observation test is authored but unexecuted; no installed or
++counterfactual control run is recorded. Actual authorization main df80f8cb is ordinarily integrated through bf50e1e8;
++final installed validation remains pending. Unknown
++positions combined with foreign epoch/view remain a private unsupported
++development gap, outside the current operator ruling. Source and later installed
++evidence retain their exact commit/build provenance; no qualification is claimed.
+
+
+===== Finite response callback =====
+          (response) => {
+            const chunks: Buffer[] = [];
+            let bytes = 0;
+            response.on("data", (chunk: Buffer) => {
+              bytes += chunk.length;
+              if (bytes > 32768) {
+                const error = new Error("installed minimum response overflow");
+                response.destroy(error);
+                request.destroy(error);
+                return;
+              }
+              chunks.push(chunk);
+            });
+            response.once("aborted", () => reject(new Error("installed minimum response aborted")));
+            response.once("error", reject);
+            response.once("end", () => {
+              const received = new Headers();
+              for (let i = 0; i < response.rawHeaders.length; i += 2)
+                received.append(response.rawHeaders[i]!, response.rawHeaders[i + 1]!);
+              resolve({
+                status: response.statusCode ?? 0,
+                headers: received,
+                text: Buffer.concat(chunks).toString("utf8"),
+                bytes,
+                headerDigest: responseHeaderDigest(response.rawHeaders),
+              });
+            });
+          },
+        );
+        active.add(request);
+
+
+===== Unchanged overflow and final failure =====
+          "safe response headers and body fingerprints; actual bodies asserted in memory; no credentials or raw configuration retained",
+        startupLimitation:
+          "attempted launch without returned child leaves stop unknown and preserves owned directory for supervisor evidence",
+      });
+      if (Buffer.byteLength(report) > 65536)
+        fail(new Error("minimum current report ceiling"), "report");
+      else console.log(report);
+    } catch (error) {
+      fail(error, "report");
+    }
+  }
+  if (failures.length === 1) throw failures[0];
+  if (failures.length > 1)
+    throw new AggregateError(failures, "installed minimum receiving and cleanup failed");
+}, 45000);
+
+
+===== Read-only source paths =====
+Workspace /Users/dbox/repos/wt/vickie/vickie-minimum-current-resource
+apps/bdptest/src/transactional-minimum-current-resource-installed.test.ts
+docs/design/transaction-implementation-progress.md
+packages/server/src/transaction-http.ts
+scripts/transaction-installed-observation.mjs
+apps/bdptest/test-support/transactional-execution-binding.ts
+

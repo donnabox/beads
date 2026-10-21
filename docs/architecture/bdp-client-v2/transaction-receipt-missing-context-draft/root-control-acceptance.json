@@ -1,0 +1,13 @@
+{
+  "status": "accepted regression-control evidence after independent post-run audit",
+  "originalSupervisorVerdict": "CONTROL_NOT_ACCEPTED; sourceUnchanged false from graph postcheck preserved",
+  "noRerun": true,
+  "auditSha256": "67425cc07a53cdbe831ed24b24025c4bebf5303250dd9eed2b5cb1f16f8095e9",
+  "sourceBindingSha256": "edc5c98c8e5c82f2073e1bf35aa84098efe9552c7dbc74537784de75788cca5a",
+  "exactNamedFailures": 8,
+  "actualResponses": 13,
+  "physicalShimsVerified": 14,
+  "effectiveLinkChangesVerified": 38,
+  "rootVerification": "Rehashed reconstructed before/after shim files; canonicalized only NODE_PATH entries, cmd-shim-target comments and exec target paths, proving all other text unchanged and targets identical. Independently rechecked1106source/copy files, exact eight errors and sampled PID absence. Original failure remains unchanged.",
+  "scope": "emitted regression only; not installed/public qualification"
+}

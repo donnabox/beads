@@ -1,0 +1,83 @@
+{
+  "name": "app-static",
+  "argv": [
+    "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+    "/Users/dbox/repos/wt/vickie/vickie-transaction-conditional-reads/node_modules/vitest/vitest.mjs",
+    "run",
+    "apps/bdptest/src/transactional-matrix.test.ts",
+    "--maxWorkers=1",
+    "--reporter=verbose",
+    "--reporter=json",
+    "--outputFile=/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-conditional-reads-draft/rebind-validation-preparation/source-diagnostic/run/app-static.results.json",
+    "--testNamePattern",
+    "^(?:pins\\ the\\ matching\\ no\\-op\\ installed\\ route\\ digest\\ and\\ fifteen\\-action\\ ledger|pins\\ deletion\\-safety\\ derivative\\ carriers,\\ complete\\ positives,\\ and\\ measured\\ source\\ bounds|pins\\ conditional\\ raw\\ literals,\\ request\\ order\\ and\\ the\\ sole\\ header\\ control)$"
+  ],
+  "guardedArgv": [
+    "/opt/homebrew/opt/python@3.14/bin/python3.14",
+    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/guarded-action.py",
+    "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+    "/Users/dbox/repos/wt/vickie/vickie-transaction-conditional-reads/node_modules/vitest/vitest.mjs",
+    "run",
+    "apps/bdptest/src/transactional-matrix.test.ts",
+    "--maxWorkers=1",
+    "--reporter=verbose",
+    "--reporter=json",
+    "--outputFile=/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-conditional-reads-draft/rebind-validation-preparation/source-diagnostic/run/app-static.results.json",
+    "--testNamePattern",
+    "^(?:pins\\ the\\ matching\\ no\\-op\\ installed\\ route\\ digest\\ and\\ fifteen\\-action\\ ledger|pins\\ deletion\\-safety\\ derivative\\ carriers,\\ complete\\ positives,\\ and\\ measured\\ source\\ bounds|pins\\ conditional\\ raw\\ literals,\\ request\\ order\\ and\\ the\\ sole\\ header\\ control)$"
+  ],
+  "diagnosticOnly": true,
+  "nativeCodeReviewed": true,
+  "externalReviewPending": true,
+  "councilAccepted": false,
+  "cwd": "/Users/dbox/repos/wt/vickie/vickie-transaction-conditional-reads",
+  "started": "2026-10-16T20:10:53.751965+00:00",
+  "adjudication": {
+    "kind": "exact-source-selection",
+    "passedFullNames": [
+      "pins the matching no-op installed route digest and fifteen-action ledger",
+      "pins deletion-safety derivative carriers, complete positives, and measured source bounds",
+      "pins conditional raw literals, request order and the sole header control"
+    ],
+    "skipped": 64,
+    "jsonSha256": "860e1a5a9e3f06f2fab216e3395a8b8a697463600b01f4d0239de4e3620a579d",
+    "limitation": "Static HTTP/owner model is not an independently observed network quota; raw logs and reported cleanup remain separately reviewed."
+  },
+  "elapsedSeconds": 1.1860890830866992,
+  "exit": 0,
+  "supervisorExit": 0,
+  "timeout": false,
+  "forcedCleanup": false,
+  "errors": [],
+  "processGroup": 24186,
+  "remainingBeforeCleanup": [],
+  "remainingAfterCleanup": [],
+  "sampledPids": [
+    24186,
+    24188,
+    24195,
+    24197
+  ],
+  "sampledPidsStillPresent": {},
+  "sampledTempEntries": [
+    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-conditional-reads-draft/rebind-validation-preparation/source-diagnostic/run/app-static.tmp/leEyAGfu75Vi64a88O_4x"
+  ],
+  "tempEntriesAfter": [],
+  "remainingTempEntriesForClassification": [],
+  "runtimeDirectoriesStillPresent": [],
+  "unclassifiedTempEntriesStillPresent": [],
+  "sourceUnchanged": true,
+  "sourceSha256After": {
+    "packages/conformance/test-support/transactional/manifest-v1.json": "60c527f6a5673161eacf022c0015d09bea2743d153b8b0d0c86160b76fafeb68",
+    "packages/conformance/test-support/transactional/coverage-v1.json": "33032fe07eb06d2a8968fcd8e5a3cf93cb4637c551868c22da9ea0c4edd587a3",
+    "packages/conformance/src/transactional-cumulative.test.ts": "9f70f8a24ea358b2cd613fd392be68057abd7b1552ec8cc6c4bc1a3241de69f6",
+    "apps/bdptest/src/transactional-matrix.test.ts": "136de49e859546e081c39410f1d3ee6fc01e32faf1879084718ad67b553d62ec"
+  },
+  "samplingSeconds": 0.05,
+  "commandWindowSeconds": 115,
+  "groupHardDeadlineSeconds": 120,
+  "cleanupBound": "TERM at115s, KILL no later than120s; wait/reap after kill adds no product execution allowance",
+  "samplingLimitation": "Short-lived or detached descendants may evade group sampling; helper counts and independent final checks remain separate.",
+  "tempClassification": "Only the selected fixture prefixes under this attempt TMPDIR are owned runtime roots; all other entries are preserved for review, not deleted or called leaks.",
+  "resultLimitation": "A declared negative raw exit1 may complete its supervisor; subsequent strict review is mandatory. No generic exit1 acceptance or product qualification."
+}

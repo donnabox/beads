@@ -1,0 +1,35 @@
+{
+  "name": "verify-installed",
+  "argv": [
+    "python3",
+    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-changefeed-parameter-context-draft/installed-preparation/packages.py",
+    "installed"
+  ],
+  "cwd": "/Users/dbox/repos/wt/vickie/vickie-changefeed-parameter-context",
+  "started": "2026-10-15T14:54:43.925604+00:00",
+  "head": "1f9cb46c42fa69a09ac847f57e47bc96390aea6f",
+  "workspaceDirty": false,
+  "sourceSha256": {
+    "packages/server/src/transaction-changefeed.ts": "fb5bc6f035db8faa351d019e7d2ae53dbb7785214f2168d931fa74e77ed14bf8",
+    "packages/server/src/transaction-store.ts": "c0d1ebcdef1b354aa0806b8106ac0a3b0b24e6c94f50ec49b550decdf36ccf89",
+    "packages/server/src/transaction-http.ts": "b51d02801e5924190aba77c377e538db0b8619149d6184e19cb56d440f40c2cf",
+    "packages/server/src/transaction-changefeed.test.ts": "eb29103cf4f9c79a06eb49261d01da274de229dbc9f0ba169418048bf79adb28",
+    "apps/bdptest/src/transactional-changefeed-refusal-context-installed.test.ts": "c8ec6da3cab3850d69b2b8b8b650b17f159fa9179930eeecd3a287716aa946af",
+    "docs/design/transaction-implementation-progress.md": "a1cc5b84d79485855dfbf1793628af4dcdba1147bd7938721a9af5317f57b569"
+  },
+  "sourceDiffSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+  "rootAcceptanceSha256": "15dfa18e2f047532d0b47ab9933b2171fd179206d5f186b9991c61ca183d3307",
+  "preparationSha256": "1764ff4ec582f9ffc8d71b084745383feba2e965006d64ab20fb3c988a180c4a",
+  "bdpOverrides": {},
+  "guardedArgv": [
+    "/opt/homebrew/opt/python@3.14/bin/python3.14",
+    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/guarded-action.py",
+    "python3",
+    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-changefeed-parameter-context-draft/installed-preparation/packages.py",
+    "installed"
+  ],
+  "nodePathPrefix": "/Users/dbox/.nvm/versions/node/v24.16.0/bin",
+  "sourceAttribution": "Externally bound source snapshot or frozen package; not child-attested Git identity",
+  "plannedWorkload": {},
+  "derivativeBinding": null
+}

@@ -1,0 +1,40 @@
+{
+  "utc": "2026-10-18T09:27:08.746622+00:00",
+  "durableReleaseCommit": "6d2414ed3a02ea708a315d5eb155789957bee336",
+  "gateSha256": "edfc98920f10de617414fd058dfe8fd67ece4f2bbed09e3fb62611e9b731a669",
+  "rootReleaseSha256": "a763d0a1908918bf29cb3c7ef97acc4328d8f6c260e33ac248f3584af0d6ec07",
+  "stages": [
+    "node-version",
+    "pnpm-version",
+    "workspace-install",
+    "bind-workspace-tools"
+  ],
+  "actualRootWrapperArgv": [
+    [
+      "/opt/homebrew/opt/python@3.14/bin/python3.14",
+      "/Users/dbox/repos/wt/vickie/bdp-integration-logs/tx-discovery-validation-preparation-2/run.py",
+      "final",
+      "node-version"
+    ],
+    [
+      "/opt/homebrew/opt/python@3.14/bin/python3.14",
+      "/Users/dbox/repos/wt/vickie/bdp-integration-logs/tx-discovery-validation-preparation-2/run.py",
+      "final",
+      "pnpm-version"
+    ],
+    [
+      "/opt/homebrew/opt/python@3.14/bin/python3.14",
+      "/Users/dbox/repos/wt/vickie/bdp-integration-logs/tx-discovery-validation-preparation-2/run.py",
+      "final",
+      "workspace-install"
+    ],
+    [
+      "/opt/homebrew/opt/python@3.14/bin/python3.14",
+      "/Users/dbox/repos/wt/vickie/bdp-integration-logs/tx-discovery-validation-preparation-2/run.py",
+      "final",
+      "bind-workspace-tools"
+    ]
+  ],
+  "readmeErratum": "Frozen README omitted the required final mode argument in its prospective example. Root read actual helper usage and invokes exact run.py final STAGE; no helper/README mutation or failed invocation occurred.",
+  "noRetry": true
+}

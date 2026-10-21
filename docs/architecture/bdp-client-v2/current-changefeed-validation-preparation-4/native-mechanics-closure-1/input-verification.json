@@ -1,0 +1,30 @@
+{
+  "preparationArtifactsVerified": 238,
+  "preparationIndexAndMirrorVerified": true,
+  "sourceFilesIndependentlyRehashed": 679,
+  "helpersByteIdenticalTo3": {
+    "run.py": "cd36402bdddfc691029c2bd4c9ddeb71ca1a9edf4a1f9a4451a56613bd950c77",
+    "gate.py": "1f47a1d2c4f5de91d366ab64f7c7f7bb9bf471e957889d4a657294abbbc1627d",
+    "audit.py": "4669bf01024381545e0daccbc289d6ec5c549e12281b06180053b057bc300f26",
+    "packages.py": "d4be62bef0118a591eeecc97103cf600626e9d501ea63f7ffdbdee2eb8805bbd",
+    "guarded-action-session-20261018-021624-549f.py": "b2d467920638e68d3b007ba9daa432e971636245eca988bfb29d7a99d6e3fb30"
+  },
+  "pythonAstParsedOnly": 5,
+  "contextOriginCopyBindingsVerified": 135,
+  "referencePinsVerified": 79,
+  "implementationIdentitiesVerified": 15,
+  "genuineSuccessor4ForwardInversePairsVerified": 16,
+  "ordered28CommandsIdenticalAfterPathReplacement": true,
+  "schemaOnlyStateAndDFileHashChanges": true,
+  "tupleCorrectionSourceBindingExactCopy": true,
+  "originalClosedPredecessorSnapshotPreserved": true,
+  "allReleaseFlagsFalse": true,
+  "approvedStages": [],
+  "runDirectoryAbsent": true,
+  "freshFirstFourNoReuseRequired": true,
+  "inspectionScriptCorrections": [
+    "Initial standalone static inspector assumed reports key; actual key is observations. KeyError preserved in tool transcript.",
+    "Second standalone inspector assumed predecessor duplicate active gate copy; only immutable .closed snapshot is provided and required. FileNotFoundError preserved in tool transcript."
+  ],
+  "inspectionCompletion": "Corrected standalone static verification completed; no helper import/invocation."
+}

@@ -1,0 +1,112 @@
+[
+  {
+    "duration_api_ms": 1072491,
+    "stop_reason": "end_turn",
+    "session_id": "595147c1-b87f-4da5-a315-b3154cb388ad",
+    "total_cost_usd": 9.888275500000002,
+    "usage": {
+      "input_tokens": 148,
+      "cache_creation_input_tokens": 246215,
+      "cache_read_input_tokens": 10946545,
+      "output_tokens": 77992,
+      "output_tokens_details": {
+        "thinking_tokens": 61686
+      },
+      "server_tool_use": {
+        "web_search_requests": 0,
+        "web_fetch_requests": 0
+      },
+      "service_tier": "standard",
+      "cache_creation": {
+        "ephemeral_1h_input_tokens": 246215,
+        "ephemeral_5m_input_tokens": 0
+      },
+      "inference_geo": "global",
+      "iterations": [
+        {
+          "input_tokens": 2,
+          "output_tokens": 3987,
+          "cache_read_input_tokens": 245965,
+          "cache_creation_input_tokens": 4996,
+          "cache_creation": {
+            "ephemeral_5m_input_tokens": 0,
+            "ephemeral_1h_input_tokens": 4996
+          },
+          "type": "message"
+        }
+      ],
+      "speed": "standard"
+    },
+    "modelUsage": {
+      "claude-haiku-4-5-20251001": {
+        "inputTokens": 2223,
+        "outputTokens": 18,
+        "cacheReadInputTokens": 0,
+        "cacheCreationInputTokens": 0,
+        "webSearchRequests": 0,
+        "costUSD": 0.002313,
+        "contextWindow": 200000,
+        "maxOutputTokens": 32000,
+        "thinkingTokens": 0,
+        "canonicalModel": "claude-haiku-4-5",
+        "provider": "firstParty",
+        "costBasis": "list"
+      },
+      "claude-opus-5[1m]": {
+        "inputTokens": 148,
+        "outputTokens": 77992,
+        "cacheReadInputTokens": 10946545,
+        "cacheCreationInputTokens": 246215,
+        "webSearchRequests": 0,
+        "costUSD": 9.885962500000002,
+        "contextWindow": 1000000,
+        "maxOutputTokens": 64000,
+        "thinkingTokens": 61686,
+        "canonicalModel": "claude-opus-5",
+        "provider": "firstParty",
+        "costBasis": "list"
+      }
+    },
+    "permission_denials": [],
+    "terminal_reason": "completed",
+    "fast_mode_state": "off",
+    "fast_mode_disabled_reason": "sdk_opt_in_required",
+    "subagent_stats": {
+      "spawned": 0,
+      "requested": {
+        "background": 0,
+        "foreground": 0,
+        "unset": 0
+      },
+      "started_in_background": 0,
+      "max_depth": 0,
+      "spawned_by_subagents": 0,
+      "completed": 0,
+      "failed": 0,
+      "killed": {
+        "parent": 0,
+        "user": 0,
+        "system": 0
+      },
+      "refused": {
+        "depth_limit": 0,
+        "concurrency_limit": 0,
+        "budget": 0
+      },
+      "by_type": {}
+    },
+    "is_error": false,
+    "num_turns": 87,
+    "subtype": "success",
+    "api_error_status": null,
+    "result": "## Verdict\n\n**No blockers.** The three production edits are minimal, mutually consistent, and match plan\u2011v3 \u00a7\"Exactly six files and production edits\" plus dispositions 2 and 3. Every one of the three edits is independently discriminated by at least one new test. The six findings below are all optional; none should hold integration.\n\n## What I checked (independently, by reading)\n\nProduction:\n- `packages/server/src/transaction-http.ts:505-519` \u2014 single added operand; predicate still requires parsed `after === undefined`, no raw `after` key, `media === \"json\"`, no normalized `last-event-id`, zero raw `lastEventIds`; canonical Scope URL equality untouched; everything excluded still falls back to `transactionMinimumHeaders(...) ?? \"unsupported\"` \u2192 `developmentGap(\"minimum-position\")`. Only one place in the package computes this predicate (grepped).\n- `packages/server/src/transaction-service.ts:481-506` \u2014 capture stays inside the first waiter attempt and **outside** the classifier `catch`; `captured` latches once; `snapshotCurrentReadMinimum` can only throw out of the waiter (not swallowed); ordering policy \u2192 `now()` \u2192 `signal.aborted` \u2192 classify/capture is preserved by `waitForTransactionMinimum` (`transaction-consistency.ts:144-163`) and `run()`'s synchronous `check()` (`transaction-service.ts:140-141`).\n- `packages/server/src/transaction-store.ts:1653-1676` \u2014 lexical snapshot before `enter()`; inside the entry, `eventSourceKnown` (identity + `readPolicy === \"all-visible\"`, keyed on the local suffix, which matches the `identities` rows written at `transaction-store.ts:1292/1304`) precedes the `\"unsupported\"` sentinel and the semantic minimum; `checkCurrentReadMinimum(..., true)` precedes `retainedGroupReader()`/cursor/projection work. Deleted Links stay sources via resources\u2011only delete (`transaction-store.ts:1309-1313`).\n- Semantics for *valid* positions are byte\u2011for\u2011byte unchanged (both snapshot helpers accept `pos-N`, and `checkCurrentReadMinimum` delegates to `checkTransactionMinimum`), so the only behavior change is for lexically valid unrecognized tokens \u2014 consistent with bdp.md 5841\u20115849 without universalizing the Resource\u2011only MUST, and 5583\u20115584/5592\u20115594 own\u2011membership is unchanged (`transaction-events.ts:250-253` keeps `linked`/`unlinked` out of Link sources, which the retained `[\"created\",\"deleted\"]` assertions pin).\n- Regression sweep: every other site that reads Link Events (`transaction-event-sse.test.ts:304/504/523`, `transactional-event-sse-installed.test.ts:212`, `transactional-fresh-depth-installed.test.ts:311`, `transaction-http.test.ts:4529`, `transaction-events.test.ts:1031-1059`) passes either no minimum, an `after`-bearing/SSE minimum, or a partial tuple that still refuses at `transaction-http.ts:404` \u2014 none change status.\n\nCounts I recomputed from the code (they match `selection.json`/`workload.json`): new D = 35 calls / 200\u00d78, 400\u00d74, 404\u00d73, 500\u00d712, 503\u00d78; amended Bead D = 37 calls / 503\u00d710, 500\u00d712; A = 11 owner reads, 2 transactions, 1 policy call; B = 4/2/2/2 with `attemptTimes [0,0,5,10]`; C = 5/4/3/3 with `[0,0,5,10,15]`; E = 4 exchanges / 3 seed operations.\n\nStatic risk: no breakable line exceeds biome's `lineWidth: 100` in any changed region (the only >100 lines in these files are long `it(...)` title strings, including pre\u2011existing ones); the `&&`/`||` break shapes match biome's output; `Parameters<typeof openTransactionStore>[0][\"types\"]` resolves to the required `readonly TypeDescriptor[]` (`transaction-store.ts:201`), so the defaulted helper argument is type\u2011identical for all old callers; the new service `linkEventTypes` has no `propertiesSchema`, which is required because that fixture has no compiled contracts (`transaction-store.ts:298-299`), while the installed Link descriptor is Scope\u2011local as required for compiled types (`transaction-store.ts:293`). Element\u2011access narrowing (`page.events[0]`) follows the existing predecessor pattern.\n\nDiscrimination (what fails if an edit is reverted): revert store \u2192 A:1932 expects `TransactionMinimumUnproved` but gets `TypeError`, and D's 503 rows become bare 500s; revert service \u2192 B:3022 `f.entered(1, ...)` throws \"settled before expected wait\" (the mutated caller tuple would be honored on attempt 2) and F:3192 sees `reads === 1` instead of 0; revert HTTP \u2192 D:2143 gets 500.\n\n## Findings\n\n1. **Optional (low) \u2014 `packages/server/src/transaction-events.test.ts:1940-1945`.** The proven\u2011minimum positive read asserts only `current.kind === \"page\"` and `groupReads > 0`; nothing pins the served representation. A regression that satisfied the gate but served an empty or non\u2011member page would pass. Smallest correction: add `expect(current).toEqual(setup);` (both results are deterministic at `pos-1`, same context, same deterministic Event ids). Same gap exists in the Scope/Bead predecessors, so this is a consistency improvement, not a new defect.\n\n2. **Optional (low) \u2014 `packages/server/src/transaction-events.test.ts:2063-2068`.** D validates the live Link page only by schema plus `page.source`; own\u2011membership at the HTTP layer is asserted solely for the *retained* page (2190\u20112191). Consequence: an HTTP\u2011layer projection change that added a non\u2011member fact (e.g. a `linked` row) to a live Link page would be caught only at the owner layer (A) and in installed E. Smallest correction: after line 2067 add `expect(page.events.map((event) => event.type)).toEqual([\"created\"]);` and `expect(page.events[0].subject).toBe(`${scope}links/l`);`.\n\n3. **Optional (low) \u2014 `packages/server/src/transaction-events.test.ts:2211-2213`.** Plan D specifies the exact distribution `200\u00d78, 400\u00d74, 404\u00d73, 500\u00d712, 503\u00d78` and \"ordered method/suffix/status observations\", but only `503`, `500` and `calls` are asserted; the ordered array and the 200/400/404 families are logged only (2223\u20112233). Per\u2011row `expect(response.status\u2026)` already pins each individual status, so this is defense in depth for the audit rather than a behavioral hole. Smallest correction: add `expect(responses.filter((r) => r.status === 200)).toHaveLength(8);` plus the 400/404 equivalents, or assert the full ordered list the way the installed callback does at `apps/bdptest/src/transactional-event-missing-context-installed.test.ts:1195-1200`.\n\n4. **Optional (low) \u2014 `packages/server/src/transaction-events.test.ts:2038-2054` and `apps/bdptest/src/transactional-event-missing-context-installed.test.ts:1056-1127`.** The mandatory \"`x-bdp-development-limit` absent on non\u2011500\" rule is asserted only inside `pair` (2102) and inside E's 503 loop (1165). The five non\u2011`pair` exchanges in D (seed 2055, setup 2063, deletion 2167, `links/gone` 2178, retained 2185) and E's two 200 exchanges have no such assertion; a stray gap marker on a 200/404 would be recorded in the observation JSON but not fail. Smallest correction: inside each `exchange`, add `if (response.status !== 500) expect(response.headers[\"x-bdp-development-limit\"] ?? null).toBe(null);` (Headers form in D: `expect(response.headers.has(\"x-bdp-development-limit\")).toBe(false)`).\n\n5. **Optional (low) \u2014 `packages/server/src/transaction-events.test.ts:2217-2222`.** If `runtime.close()` rejects, `rmSync(directory, \u2026)` is skipped, so the temp directory survives; the log is still truthful (`directoryAbsent: false`, `failureCount \u2265 1`), so this is a leak\u2011hygiene point, not a false claim. Smallest correction: give `rmSync` its own `finally` (or a second `try`) so close failure cannot skip removal. Note the trade\u2011off: adopting it here diverges from the Bead predecessor at 2217, which plan\u2011v3 requires to stay unchanged (only two sentinels may move), so leaving it as\u2011is is also defensible.\n\n6. **Optional (cosmetic) \u2014 `packages/server/src/transaction-service.test.ts:2992-3003` and `3053-3064`.** The three\u2011operation seed literal is duplicated verbatim across B and C. Smallest correction: one module\u2011local `const linkSeed = [create(\"a\"), create(\"b\"), { operation: \"createLink\", \u2026 }]` next to `linkEventTypes:2975` and pass `batch(linkSeed)` in both. Purely editorial; the plan's \"no broad helper extraction\" also makes keeping the duplication acceptable.\n\n## Verification limits (not findings)\n\n- I did not execute anything, so all counts/statuses above are derived from source by inspection, exactly like the `workload.json` figures. Disposition 7's position holds in the code itself: the new D logs no wait counter, and `link-event-minimum-http` records only `calls`, `completedResponses`, `elapsedMs`, `productChildren: 0`, `directoryAbsent`, `failureCount` \u2014 no overclaimed instrumentation.\n- Byte\u2011level preservation claims (`preservation.json`: 37245\u2011byte installed prefix, inverse\u2011reconstruction hashes, 673 untouched files) are not verifiable with read\u2011only tools. What I can confirm from `full.patch` is that the installed file is append\u2011only after line 938, the events test changes are exactly the two sentinels plus an append, the service test change is exactly the defaulted helper argument plus an append, and the HTTP edit is exactly one added operand.\n- Timing headroom: the new D runs 8\u00d780 ms waits plus runtime startup inside the implicit 5000 ms vitest default (`vitest.config.ts` sets no `testTimeout`), and the amended Bead D now runs 10. That is inside the plan's \u22654000 ms audit stop rule; it is a watch item for the measured run, not a source defect.\n- The installed callback's correctness depends on the child accepting the callback\u2011local Link descriptor (`captureInstalledTransactionConfiguration` requires exactly `descriptors`/`schemas`, and `{conformsTo: [], external: \"opaque\"}` plus the reused `schemaUri` are valid shapes) \u2014 readable as consistent, but only the supervised installed stage can prove the child starts and returns 503 twice.",
+    "ttft_ms": 1622,
+    "type": "result",
+    "duration_ms": 1072504,
+    "uuid": "4ebedded-7a59-4ae4-a1b4-dab07a0ce8c1",
+    "ttft_stream_ms": 1053,
+    "time_to_request_ms": 11,
+    "first_content_frame_ms": 1053,
+    "queued_turn_count": 0
+  }
+]

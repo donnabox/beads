@@ -1,0 +1,16 @@
+--- a/packages/server/src/transaction-store.ts
++++ b/packages/server/src/transaction-store.ts
+@@ -1392,12 +1392,11 @@
+           if (!receiving.acceptsJson)
+             return {
+               kind: "not-acceptable" as const,
+-              ...(observed ? { context: readContext() } : {}),
++              context: readContext(),
+             };
+           if (observed) return { kind: "existing" as const, ...observeReceipt(result.receipt) };
+         }
+         if (
+-          observed &&
+           (result.kind === "conflict" ||
+             result.kind === "operation-limit" ||
+             result.kind === "not-acceptable")

@@ -1,0 +1,53 @@
+--- /Users/dbox/repos/wt/vickie/bdp-integration-logs/sequence-depth-retained-member-draft/source-validation-initial/run-source.py
++++ /Users/dbox/repos/wt/vickie/bdp-integration-logs/sequence-depth-retained-member-draft/source-validation-lint-successor/run-source.py
+@@ -18,17 +18,19 @@
+ E = P / "run"
+ L = Path("/Users/dbox/repos/wt/vickie/bdp-integration-logs")
+ GUARD = L / "guarded-action.py"
+-BINDING = D / "source-binding.json"
++BINDING = D / "lint-repair" / "source-binding.json"
+ COMMANDS = P / "commands.json"
+ BINDING_SHA = None  # Actual frozen manifest must be pinned by root gate, never guessed.
+-COMMANDS_SHA = '973548a176d4c84a8089a03d8b91010be2dadaaf46b10ac6128352d89b1b516d'
++COMMANDS_SHA = '69cefd9c7cca1d590aaaba94209589be7b083e7dfd44792edafab631cfdd26f8'
+ GUARD_SHA = 'fd81ba029cd4e7c7e60623df89e8292af91141d311d9ce789ed19e2152375e84'
+ HEAD = 'df80f8cb86b7763bc7bb005492e43d8840527045'
+ TREE = '25e9d4aa926ea728f5e356365cb1ffadba269221'
+ SESSION = "2026-10-08T20:26:35Z-81e5"
+-ORDER = ['offline-setup', 'typecheck', 'build', 'format-check', 'lint', 'boundaries', 'read-seal', 'preparation-positive', 'sequence-positive', 'http-positive']
++ORDER = ['format-check', 'lint', 'boundaries', 'read-seal', 'preparation-positive', 'sequence-positive', 'http-positive']
+ OWNED_PATHS = ['packages/server/src/transaction-batch.ts', 'packages/server/src/transaction-http.ts', 'packages/server/src/transaction-set.test.ts', 'packages/server/src/transaction-sequence.test.ts', 'packages/server/src/transaction-http.test.ts', 'apps/bdptest/src/transactional-sequence-depth-installed.test.ts', 'docs/design/transaction-implementation-progress.md']
+-CONTEXT_SHA = '7d34998a9e6cbe8f60c6a22afe284da36f745aec4555cf8390b0e040bae9edc9'
++CONTEXT_SHA = 'cda717f031df7d1e27d0ea908efe4707e1016b3ae05f2ab306915fbf726dec30'
++
++BRIDGE_SHA = '0eee8ad254a61236366423efe2df7f90520a72128567508b1cc26106dca6991f'
+ 
+ def require(ok, message):
+     if not ok:
+@@ -63,6 +65,16 @@
+     require(git("status", "--porcelain").decode() == context["expectedStatus"], "Reviewed git status changed")
+     all_inputs = {name: sha((W / name).read_bytes()) for name in context["sourceHashes"]}
+     require(all_inputs == context["sourceHashes"], "Reviewed context changed")
++    bridge_path = P / "build-reuse-bridge.json"
++    require(sha(bridge_path.read_bytes()) == BRIDGE_SHA, "Build bridge changed")
++    bridge = json.loads(bridge_path.read_text())
++    for path, expected in bridge["historicalRecords"].items():
++        require(sha(Path(path).read_bytes()) == expected, "Historical build attribution changed")
++    for path, expected in bridge["buildInputs"].items():
++        require(sha((W / path).read_bytes()) == expected, "Build input changed")
++    emitted = {str(p.relative_to(W)): sha(p.read_bytes()) for root in ("packages", "apps")
++               for directory in (W / root).glob("*/dist") for p in directory.rglob("*") if p.is_file()}
++    require(emitted == {p: item["sha256"] for p, item in bridge["emitted"].items()}, "Emitted build changed")
+     return all_inputs
+ 
+ def source_patch_hash():
+@@ -105,7 +117,8 @@
+     spec = dict(matches[0])
+     require(spec["cwd"] == str(W) and spec["supervisorSeconds"] == 120, "Unexpected cwd/bound")
+     tool_binding = json.loads(COMMANDS.read_text())["toolBinding"]
+-    expected_tool = tool_binding["expectedVitest"] if "selectedFullNames" in spec else tool_binding["pnpm"]
++    expected_tool = tool_binding["expectedVitest"] if "selectedFullNames" in spec else tool_binding["biome"] if name in ("format-check", "lint") else tool_binding["pnpm"]
++    require(sha(Path(tool_binding["biome"]).read_bytes()) == tool_binding["biomeSha256"], "Pinned Biome changed")
+     require(sha(Path(tool_binding["node"]).read_bytes()) == tool_binding["nodeSha256"], "Pinned Node changed")
+     require(sha(Path(tool_binding["pnpm"]).read_bytes()) == tool_binding["pnpmSha256"], "Pinned pnpm changed")
+     if "selectedFullNames" in spec:

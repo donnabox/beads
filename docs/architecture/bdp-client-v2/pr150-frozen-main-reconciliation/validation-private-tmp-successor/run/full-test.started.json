@@ -1,0 +1,25 @@
+{
+  "argv": [
+    "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+    "/Users/dbox/.cache/node/corepack/v1/pnpm/11.20.0/bin/pnpm.cjs",
+    "exec",
+    "vitest",
+    "run",
+    "--reporter=verbose",
+    "--reporter=json",
+    "--outputFile.json=/Users/dbox/repos/wt/vickie/bdp-integration-logs/pr150-frozen-main-reconciliation/validation-private-tmp-successor/run/full-test.json"
+  ],
+  "cwd": "/Users/dbox/repos/wt/vickie/vickie-pr150-main-reconciliation",
+  "head": "d7197e97a29bff8f075028419afad05388e2e655",
+  "tree": "630a94d0ca1545f898cb8a8b614d4b7d2dd6d454",
+  "sourceIdentity": "b9fe0a23fdb4026641227ec273f05cb2144855271094b6429193b10a7412375a",
+  "rootGateSha256": "54a0b1561b202b159e4e6724eec120637190c0a3a8262a562b62a94c4e839033",
+  "outerSeconds": 1800,
+  "automaticRetries": 0,
+  "overrides": {
+    "BDP_BD_MATRIX_EXECUTABLE": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/pr150-frozen-main-reconciliation/tools/bin/bd",
+    "BDP_REQUIRE_BD_MATRIX": "1"
+  },
+  "temporaryDirectory": "/private/tmp/vickie-pr150-validation-full-test-9xw0gq54",
+  "npmCache": "/private/tmp/vickie-pr150-validation-full-test-9xw0gq54/npm-cache"
+}

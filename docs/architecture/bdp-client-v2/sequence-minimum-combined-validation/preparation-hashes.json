@@ -1,0 +1,37 @@
+{
+  "status": "CLOSED",
+  "files": {
+    "adaptation.patch": "e60c3392cdc08922209c716e62e2bb768cd2b042e83cc577178a8b50ff5b79d9",
+    "review-sequence.py": "61a08b7ca7b5be5e4186273e243616d2c2740f9e0141f56cd0ee9b3c7430805f",
+    "report.md": "993f36b39e31bfe16f080b1badad21dec8b28148efd7df0c3d3b99ddca18c8f3",
+    "control.py": "b61402f368d17962b474e6f7d8c4b100bc28d03272603639bc33b0095b65b6d4",
+    "packages.py": "4dbbead34c2d43a3902d77b062791787eeed0d75cfd6a9f4ac46dec22ab6c414",
+    "execution-gate.example.json": "9eb7ff35d92e098d474044d486319051241f706b208865403afd6a346f4b37b1",
+    "commands.json": "c21793c3bdd46ad59854382bf141ca08d15fdfc5c14b177a11973d03b6721490",
+    "review-minimum.py": "d03f0f91e95a5be8f6fb62708e54ac1a3dff490cc4fb7ae0a2ffb10eb167cdf2",
+    "gate.py": "3825c0c456ee31ba602a215e7165cb35c6f455e09232193ec7870db317da55c6",
+    "sequence-requests.json": "21e2827907a4d6df1c74f323af9d5beec6076b054624b0bb9bedefdd85349576",
+    "minimum-requests.json": "1747a0132f3a656768454cc01a5b4bd4e05334b4369da62ae62ddd8510dfb350",
+    "final-source.example.json": "9abc15deb623519652f2ce3eb6d547895f82cfbe662650de2cd74cbcf172128f",
+    "supervise.py": "c9b524743c8b71c4487e55f5719713985a1665b6e61ec32d2d99534796ff9194",
+    "prepared-inputs.json": "048709bc86320b47146f243910845156233fe2c0fcb9eea120ae4607b528302b",
+    "inventory.py": "b9ac353ee250d66552e96bc67bc0d22c9168d1c8fc563d6da5517c6bd765486d"
+  },
+  "referenceScripts": {
+    "supervise.py": {
+      "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-minimum-next-serving-plan/authoring-draft/installed-preparation/supervise.py",
+      "sha256": "c9b524743c8b71c4487e55f5719713985a1665b6e61ec32d2d99534796ff9194"
+    },
+    "packages.py": {
+      "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-minimum-next-serving-plan/authoring-draft/installed-preparation/packages.py",
+      "sha256": "bee5a62a395abe14ac7824086e7959b1d421639ea9ea74dff533200b8f417a17"
+    },
+    "review-minimum.py": {
+      "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-minimum-next-serving-plan/authoring-draft/installed-preparation-v2/review-installed.py",
+      "sha256": "883b40e96881f8b4bfd6821a5dc25fe6744d9f164ca8cf7a699e7635370d8807"
+    }
+  },
+  "supervisorByteIdentical": true,
+  "syntaxOnly": true,
+  "executed": false
+}

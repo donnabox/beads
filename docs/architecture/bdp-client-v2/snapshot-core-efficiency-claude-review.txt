@@ -1,0 +1,75 @@
+Verified the diff, ran the author's focused suite on pinned Node, and probed the new SQL and map costs directly. No files were written or modified — measurements used `:memory:` SQLite and the repo's own test fixtures (which create their own temp dirs under `$TMPDIR`).
+
+## Independent confirmation first
+
+- **282/282 passed** (`transaction-snapshot` 40, `transaction-store` 132, `transaction-receipt-pages` 13, `transaction-events` 21, `transaction-changefeed` 20, `transaction-owned` 17, `transaction-http` 39), Node 24.16.0 / SQLite 3.53.0, 7.07 s. The 65,536-handle test is **2,649 ms** (recorded at 12,380 ms pre-repair) — the headline claim in report §1 is real, not rhetorical.
+- **Report item 6's rejection of the external review's ordering counterexample is correct and I'd keep it.** `validateCanonicalIdSegment` requires `canonicalPathSegment(decoded) === segment` (`packages/protocol/src/read-values.ts:460`) and `LITERAL_PATH_CHARACTER` (`:26`) is ASCII-only, so a raw supplementary-plane id cannot be admitted at all. Every canonical Resource id is pure ASCII, so `compareCanonicalIds`' UTF-16 comparison *is* byte order. The reviewer's BMP-vs-supplementary case is unreachable on the wire.
+- Successor-token reserve (`transaction-snapshot.ts:662-670`) and both 9→10 / 99→100 regressions are byte-unchanged from a0a068c and pass. Preserved as instructed.
+- Format/view refusal ordering holds: exact-bytes compare at `transaction-store.ts:500` precedes `DELETE FROM receipts WHERE owner IS NOT NULL` (`:517`), `DELETE FROM creator_facts` (`:519`) and `sweep` (`:520`). The `view` literal is now single-sourced (one occurrence in all of `src`).
+- The classification gate is correctly *ordered*: `ledgerBounds()` runs before `expire`'s `=0` candidate query and before `liveLedger`'s `=0` query, so both predicates are only evaluated once `$.expired` is proven boolean. It closes a real hole — a non-boolean `$.expired` is invisible to both `=0` predicates, so such a row would never expire, never be charged to the live budget, and retain its detail for the epoch.
+- The per-capture map's retained heap measures **2.3–3.0× encoded bytes** (≤ ~100 MiB at the 32 MiB `recordBytes` ceiling). The report's "no universal heap claim" hedge is adequate; I would not block on it.
+
+---
+
+## Findings
+
+### 1. Low — the new classification gate puts a full-ledger JSON scan on the 1 Hz sweep and on every Snapshot read
+**`packages/server/src/transaction-snapshot.ts:248-253`** (called from `:257` and `:588`)
+
+`ledgerBounds()` is reached from `expire()`, so the gate runs on **every** `captureSnapshot`, `readSnapshot`, `readSnapshotPage` and maintenance tick — inside the exclusive owner lock. Measured at a 65,536-row all-expired ledger (417-byte dispositions, `:memory:`, Node 24.16.0/SQLite 3.53.0):
+
+| query | ms |
+|---|---|
+| `ledgerBounds` aggregate (unchanged) | 3.0 |
+| **new classification gate** | **35.1** |
+| expire candidate scan (pre-existing) | 19.9 |
+| **new `liveLedger` scan** | **20.6** |
+
+`expire()` goes from ~23 ms to ~58 ms per call: the 1 Hz sweep's share of the owner lock rises from ~2.3% to ~5.8%, blocking mutation admission and Event reads. A refused `captureSnapshot` at the cap costs ~96 ms (two `ledgerBounds` + candidate scan). Two `json_type(...)` calls on the same row are not common-subexpression-eliminated — that alone is 14 ms of the 35.
+
+**Fix (measured):** collapse to one JSON parse per row — `ifnull(json_type(disposition,'$.expired'),'?') NOT IN ('true','false')` → **21.3 ms**, and move the expired-detail arm out of the `snapshots` scan per Finding 2 → **~0 ms**. Report §1 discloses "SQL still scans bounded historical rows for count/size/expiry/classification" but not that classification is now the dominant per-tick cost, nor that read entry points pay it.
+
+### 2. Low — the bounded-ledger gate is one-directional: detail orphaned from the ledger is invisible to every bound
+**`packages/server/src/transaction-snapshot.ts:248-253`**
+
+The gate asserts `expired=1 ⟹ no detail`, driven from `snapshots`. Nothing asserts the converse. `snapshot_records` / `snapshot_pages` rows whose `snapshot` has no `snapshots` row are: not counted by `ledgerBounds` (it only scans `snapshots`), not deleted by `expire` (it deletes by candidate id), not charged against `liveRecordBytes` (`capture` sums `row.d.bytes` from dispositions, `:598`/`:653`), and not refused at open.
+
+**Concrete:** delete one row from `snapshots` while leaving its 4,096 `snapshot_records` → the store opens cleanly, the permanent issued count drops by one (an issuance slot is silently recycled and that handle's lawful 410 becomes a 404), and ~32 MiB of unreachable bodies stay durable for the life of the file with no integrity error ever firing. Not introduced by this commit, but the gate added here is the natural home for it, and it is the adjacent half of the invariant the closure note states.
+
+**Fix:** add a detail-driven arm — `SELECT snapshot FROM snapshot_records WHERE ifnull((SELECT json_extract(disposition,'$.expired') FROM snapshots WHERE id=snapshot),1)=1 LIMIT 1` plus the same over `snapshot_pages`. Measured **~0 ms**, and it *subsumes* the expensive `EXISTS` arm now in the query, so Findings 1 and 2 share one fix.
+
+### 3. Low — `liveLedger` dropped its defensive expiry filter and now depends on caller ordering nothing enforces
+**`packages/server/src/transaction-snapshot.ts:285-296`** vs. the removed `live = all.filter((row) => !row.d.expired && now <= row.d.expires)`
+
+`liveLedger` returns every `expired=0` row with no `now <= d.expires` check, correct *only* because `captureSnapshot` (`transaction-store.ts:1287-1294`) runs `expire(now, …)` in a prior `atomic` with the **identical** `now`. `capture` is exported on the frozen object with no precondition check, and the invariant lives in a comment.
+
+**Concrete:** if that ordering is ever broken or the two `atomic` blocks are reordered/re-timed, a time-expired-but-unflagged handle consumes one of the 8 live slots and charges its `d.bytes` to the 64 MiB aggregate, so `capture` answers 503 `temporarily-unavailable` with `retryAfter: 0` (`Math.max(0, …)` floors the negative delta) instead of capturing — a refusal the client cannot act on. Secondarily, `integrity(rows.length <= limits.liveHandles)` turns the >8-live state from the old bounded 503 into a 500.
+
+**Fix:** keep the filter. `rows` is ≤ 9 by construction, so it is free: `.filter((row) => now <= row.d.expires)` after decode, taking `now` as a parameter — or assert the precondition explicitly rather than documenting it.
+
+### 4. Low — `readContext()` re-reads the immutable epoch from SQLite on every call, only to dodge an initialization-order problem
+**`packages/server/src/transaction-store.ts:547`** (vs. `const epoch` at `:528`, written once at `:492`)
+
+Hoisting `sweep` → `readContext()` (`:463`) put `readContext` ahead of `const epoch` in initialization order, so `scopeEpoch: epoch` became `scopeEpoch: metadata("epoch")`. `metadata()` is deliberately outside the Snapshot statement cache, so this is one extra `db.prepare` + `SELECT` on **every** read entry, mutation entry, Snapshot operation and 1 Hz tick — to re-read a value written once at provisioning and never updated (`grep` confirms no `UPDATE` of `epoch`).
+
+**Concrete:** per-entry contexts can now diverge from the once-captured `store.scopeEpoch` (`:1280`) and `readConfiguration.scopeEpoch` (`:532`) rather than refusing, and a damaged or absent `epoch` row fences the owner from the background timer (`:1197-1214`, which closes the db and sets sticky `maintenanceFailure`) — widening the accepted position-fencing surface to epoch as well.
+
+**Fix:** `let epoch: string`, assigned inside the provisioning `atomic` immediately before `sweep(instant())`, and have `readContext()` close over it. One validated constructor, one read, no divergence window — which is what external finding 8 actually asked for.
+
+### 5. Low — the repair's largest measured win has no regression guard
+**`packages/server/src/transaction-snapshot.test.ts:789-834`**
+
+The prepare-dedup test observes `DatabaseSync.prototype.prepare` only during one capture in a fixture with **zero** expiry candidates. So `expire()`'s per-candidate loop — `disposition()`'s two statements plus `UPDATE` and two `DELETE`s, 5 compilations per candidate (`transaction-snapshot.ts:270-281`) — is never exercised under the spy and has no statement-reuse assertion anywhere in the suite.
+
+**Concrete:** reverting just those five `statement(...)` calls to `db.prepare(...)` keeps all 282 tests green while restoring ~327,680 statement compilations at the 65,536-row ledger — most of the 12,380 ms → 2,649 ms improvement this repair is justified by.
+
+**Fix:** install the same `prepare` spy around the first post-expiry `captureSnapshot()` in the 65,536 test (or in "decodes only the bounded live subset" after advancing the clock) and assert no duplicate non-metadata SQL.
+
+### 6. Info — ceiling population is still never combined with owned-Link verification
+**`packages/server/src/transaction-snapshot.test.ts:529-554`** (`seedRecords`)
+
+External finding 4 noted this and the repair did not change it: the 4,096- and 128-record capacity fixtures still insert Beads with `ownedLinks: { [linkType]: [] }` and **zero** Links. The new `records`/`outgoing` maps (`transaction-snapshot.ts:616-637`) are exactly the structures whose cost scales with that combination, and no recorded run exercises both. I measured the retained-heap factor at 2.3–3.0× encoded (≤ ~100 MiB at ceiling), so this is a witness gap rather than a risk — but neither the report nor the closure note lists it among what was not run.
+
+---
+
+**Adjacent, not a finding against this diff:** `transaction-store.ts:1008` and `:1015` still run unindexed `kind='link' AND (source=? OR target=?)` / `kind='link' AND source=?` scans against the index-less transaction `resources` table, per mutation-evaluation callback. Outside the Snapshot core, not introduced here, and distinct from root5208's package inventory.

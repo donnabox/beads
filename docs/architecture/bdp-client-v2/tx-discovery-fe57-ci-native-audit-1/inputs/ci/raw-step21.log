@@ -1,0 +1,26 @@
+﻿2026-10-18T17:48:17.5215862Z ##[group]Run pnpm smoke
+2026-10-18T17:48:17.5216161Z pnpm smoke
+2026-10-18T17:48:17.5280059Z shell: /usr/bin/bash -e {0}
+2026-10-18T17:48:17.5280327Z env:
+2026-10-18T17:48:17.5280716Z   PNPM_HOME: /home/runner/setup-pnpm/node_modules/.bin
+2026-10-18T17:48:17.5281051Z   GOTOOLCHAIN: local
+2026-10-18T17:48:17.5281277Z ##[endgroup]
+2026-10-18T17:48:17.9837381Z $ node scripts/smoke-executables.mjs
+2026-10-18T17:48:21.0340127Z bdp: installed --help, --version, and diagnostics passed
+2026-10-18T17:48:21.4631601Z bdptest: installed --help, --version, and diagnostics passed
+2026-10-18T17:48:21.8815112Z bdpbd: installed --help, --version, and diagnostics passed
+2026-10-18T17:48:21.9660288Z bdp: installed clean lifecycle passed
+2026-10-18T17:48:22.0746801Z bdptest: installed clean lifecycle passed
+2026-10-18T17:48:22.1807882Z bdpbd: installed clean lifecycle passed
+2026-10-18T17:48:22.2835822Z bdptest: server.advertisedProfile and bdptest.fixture round-trip through tarball
+2026-10-18T17:48:22.3885871Z bdpbd: server.advertisedProfile and bd.executable round-trip through tarball
+2026-10-18T17:48:22.4965150Z bdptest: --config alone remains lifecycle-only
+2026-10-18T17:48:22.6071630Z bdpbd: --config alone remains lifecycle-only
+2026-10-18T17:48:22.7124596Z bdptest: --serve --config remains fail-closed before bind
+2026-10-18T17:48:22.8210420Z bdpbd: --serve --config remains fail-closed before bind
+2026-10-18T17:48:23.4337525Z bdptest: public Read admission serves discovery and stops cleanly
+2026-10-18T17:48:23.4338667Z bdptest: public profile admission fails closed before bind
+2026-10-18T17:48:23.8971734Z bdpbd: public Read admission serves discovery and stops cleanly
+2026-10-18T17:48:23.8973378Z bdpbd: public profile admission fails closed before bind
+2026-10-18T17:48:25.7520571Z {"event":"installed.reference.observed","claimEligible":false,"configurationIdentity":"4216aa83dff44fe5f2430b0cde44c140b61e5bff902dc1c2725766189fdaf51c","payloadIdentity":"729b744b17806cf5b66ae4834a8172420e0f56839aac1bf5a3351388def90cac","artifactIdentity":"development-schema5-e1dff401b5caafb04a4d935775d67eeefeae7bcf306d5d100b979a64eef148e7","allNineTargets":true,"stableScope":"https://reference.invalid/acme/"}
+2026-10-18T17:48:25.8377220Z bdp: role isolation lifecycle ignores invalid bdptest/server values

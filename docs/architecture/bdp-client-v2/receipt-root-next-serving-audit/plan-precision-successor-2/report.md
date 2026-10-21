@@ -1,0 +1,9 @@
+# Alias plan precision successor — CLOSED
+
+Original clean plan/selection/workload and full actual review inputs are preserved. The successor accepts all root-directed bounded corrections: unique new installed label, three unchanged source callbacks, honest legacy overlap and counts, precise production line pointers, no-success matching opaque semantics/default1000ms expectation, accurate launcher guarantee and unknown closure under unchanged10s outer deadline. Private foreign-opaque500 remains unsupported; no new policy is adopted.
+
+Changes to implementation scope are none: one production file and three existing test files, same new A/B/C/D/F/H/E behaviors and all existing deadlines. Selected source cases rise17→20 only by adding three unchanged regressions. Source network28→46, stores17→20; combined network70→88/stores19→22. Original64/45/11/51 read subgroup is explicitly separated from added35/6/7/24; all18 read-file cases99/51/18/75. Historical installed36 plus new6,3 children/2 stores remains unchanged. Existing18-request installed alias cohort is explicitly unselected and keeps its own identity.
+
+Counts were independently derived by reading the three exact bodies and their fixture/waiter helpers; no test/import/build/helper execution occurred. Current clean9d2cd441 and all679 source hashes verified before/after. No source/worktree/commit/main/publication mutation or actual review launch. Native/root inspection and exact-source recheck remain prerequisites to authoring.
+
+Actual Claude review is preserved with its stated access limits: targets, rebind/recommendation and source/spec were read; not all copied contexts were opened. Pinning or apparent availability is not a claim of reviewer access. Prior native plan missed the installed label collision and omitted legacy selection; this successor closes those reported defects without rewriting historical review outcomes.

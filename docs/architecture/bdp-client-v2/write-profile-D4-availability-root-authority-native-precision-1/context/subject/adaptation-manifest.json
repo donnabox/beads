@@ -1,0 +1,47 @@
+{
+  "nativeCodeChanged": false,
+  "notSelfApproval": true,
+  "pairs": [
+    {
+      "after": "capture.py",
+      "afterSha256": "a288d73db1ab2ab21bdb5942b1f4207e82308b0854c1a0dd0788cd396c956bc5",
+      "before": null,
+      "beforeSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "forward": "deltas/capture.py.forward.patch",
+      "forwardSha256": "7b3f735ddb5d94e79069cf7687816ceb0d9757d1d645a9254bd0028c8aa2c11c",
+      "inverse": "deltas/capture.py.inverse.patch",
+      "inverseSha256": "193212d40c80dfddc0cfa16419924ff397389b9fd7844d7d6db7cb257f1c27b4"
+    },
+    {
+      "after": "availability-release.proposed.json",
+      "afterSha256": "0239fde38765c7d0b01d5b91a9b4c60b10a6cf75699c4c5d4994a924ffe22fe1",
+      "before": null,
+      "beforeSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "forward": "deltas/availability-release.proposed.json.forward.patch",
+      "forwardSha256": "fc6686ef2d1473287c916c30909f0cb3425c8a723d2eab48c3e97c5bf6505327",
+      "inverse": "deltas/availability-release.proposed.json.inverse.patch",
+      "inverseSha256": "17358b0f6e1dc3f5248a24817e7102e3a95382bd9b9e528eafae8b589291206a"
+    },
+    {
+      "after": "native-command.json",
+      "afterSha256": "5274dc2f7d2fd4da69a996930f6f7fceb22f9824d15a3c5302b5265cef4a890f",
+      "before": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-D4-synthetic-harness-preparation-4/availability-command.json",
+      "beforeSha256": "e8489e9bdf0ee798d284cabfc041f1d18b1e7692ae5cce0be9412d7556a40663",
+      "forward": "deltas/native-command.json.forward.patch",
+      "forwardSha256": "ca5174f9f2bd8a8deb985210cb500dc337e8b61d5895a3f25ffa6acc487f85aa",
+      "inverse": "deltas/native-command.json.inverse.patch",
+      "inverseSha256": "58f6afd1c68c98f8b2e2319886b9ec1b82b11b0b43e66cb29a9f4072ddae1318"
+    },
+    {
+      "after": "execution-release-schema.json",
+      "afterSha256": "d5cbeba06d13b4c1683ed7515763f9f8f54539b3fd4f6c88e4415b70b8b56536",
+      "before": null,
+      "beforeSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "forward": "deltas/execution-release-schema.json.forward.patch",
+      "forwardSha256": "0d8b93de3c0d7ebab8ad2ed6eda7cba5f679b37bb28f8e19c74a731879149ca3",
+      "inverse": "deltas/execution-release-schema.json.inverse.patch",
+      "inverseSha256": "29c55d0d174f3425a080a317bdec0cb2799b64a1fd27c77ec4cbd02d402161ed"
+    }
+  ],
+  "rootCallerIsNewCode": true
+}

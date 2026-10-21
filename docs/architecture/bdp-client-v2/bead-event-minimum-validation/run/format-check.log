@@ -1,0 +1,177 @@
+packages/server/src/transaction-events.test.ts format ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+  × Formatter would have printed the following content:
+  
+    1894 1894 │     }
+    1895 1895 │     if (failures.length === 1) throw failures[0];
+    1896      │ - ··if·(failures.length·>·1)
+    1897      │ - ····throw·new·AggregateError(failures,·"Bead·Event·HTTP·observation·failed");
+         1896 │ + ··if·(failures.length·>·1)·throw·new·AggregateError(failures,·"Bead·Event·HTTP·observation·failed");
+    1898 1897 │   });
+    1899 1898 │   
+  
+
+packages/server/src/transaction-service.test.ts format ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+  × Formatter would have printed the following content:
+  
+    2892 2892 │     "noncanonical-query",
+    2893 2893 │     "relative-source",
+    2894      │ - ]·as·const)(
+    2895      │ - ··"preserves·initial·Bead·Event·classification·and·preflight:·%s",
+    2896      │ - ··async·(label)·=>·{
+    2897      │ - ····const·f·=·fixture();
+    2898      │ - ····let·reads·=·0;
+    2899      │ - ····const·clockError·=·new·Error("finite·Event·initial·clock·sentinel");
+    2900      │ - ····const·now·=·vi.fn(()·=>·{
+    2901      │ - ······if·(label·===·"throwing-clock")·throw·clockError;
+    2902      │ - ······return·label·===·"nonfinite-clock"·?·Number.NaN·:·0;
+    2903      │ - ····});
+    2904      │ - ····const·wait·=·vi.fn(async·()·=>·{});
+    2905      │ - ····const·service·=·createTransactionService(
+    2906      │ - ······{
+    2907      │ - ········...f.owner,
+    2908      │ - ········readEvents:·(...args:·Parameters<typeof·f.owner.readEvents>)·=>·{
+    2909      │ - ··········reads++;
+    2910      │ - ··········return·f.owner.readEvents(...args);
+    2911      │ - ········},
+    2912      │ - ······},
+    2913      │ - ······{
+    2914      │ - ········ownerLifetime:·"service",
+    2915      │ - ········read:·f.read,
+    2916      │ - ········minimumReads:·{·budgetMs:·label·===·"invalid-policy"·?·0·:·10,·now,·wait·},
+    2917      │ - ······},
+    2918      │ - ····);
+    2919      │ - ····cleanup.push(()·=>·service.close());
+    2920      │ - ····const·source·=
+    2921      │ - ······label·===·"noncanonical-query"
+    2922      │ - ········?·`${scope}beads/a?view=events&extra=x`
+    2923      │ - ········:·label·===·"relative-source"
+    2924      │ - ··········?·"beads/a?view=events"
+    2925      │ - ··········:·`${scope}beads/a?view=events`;
+    2926      │ - ····const·pending·=·service.events(
+    2927      │ - ······source,
+    2928      │ - ······undefined,
+    2929      │ - ······{
+    2930      │ - ········scopeEpoch:·"bad·space",
+    2931      │ - ········authorizationView:·"development-all-visible",
+    2932      │ - ········minimumPosition:·"opaque",
+    2933      │ - ······},
+    2934      │ - ······label·===·"already-aborted"·?·AbortSignal.abort()·:·undefined,
+    2935      │ - ····);
+    2936      │ - ····expect(pending).toBeInstanceOf(Promise);
+    2937      │ - ····const·error·=·await·pending.then(
+    2938      │ - ······()·=>·undefined,
+    2939      │ - ······(cause:·unknown)·=>·cause,
+    2940      │ - ····);
+    2941      │ - ····if·(label·===·"already-aborted")·expect(error).toBeInstanceOf(ScopeServerOperationAbortedError);
+    2942      │ - ····else·if·(label·===·"throwing-clock")·expect(error).toBe(clockError);
+    2943      │ - ····else·if·(label·===·"noncanonical-query")
+    2944      │ - ······expect(error).toBeInstanceOf(TransactionEventParameterError);
+    2945      │ - ····else·if·(label·===·"relative-source")·{
+    2946      │ - ······expect(error).toBeInstanceOf(TypeError);
+    2947      │ - ······expect(error).toMatchObject({·code:·"ERR_INVALID_URL"·});
+    2948      │ - ····}·else·{
+    2949      │ - ······expect(error).toBeInstanceOf(TypeError);
+    2950      │ - ······expect(error).toMatchObject({
+    2951      │ - ········message:
+    2952      │ - ··········label·===·"invalid-policy"
+    2953      │ - ············?·"finite·minimum-read·wait·policy·required"
+    2954      │ - ············:·label·===·"nonfinite-clock"
+    2955      │ - ··············?·"invalid·minimum-read·clock"
+    2956      │ - ··············:·"unsupported·minimum·tuple",
+    2957      │ - ······});
+    2958      │ - ····}
+    2959      │ - ····expect(now).toHaveBeenCalledTimes(label·===·"invalid-policy"·?·0·:·1);
+    2960      │ - ····expect(reads).toBe(label·===·"noncanonical-query"·||·label·===·"relative-source"·?·1·:·0);
+    2961      │ - ····expect(wait).not.toHaveBeenCalled();
+    2962      │ - ····console.log(
+    2963      │ - ······JSON.stringify({
+    2964      │ - ········observation:·"bead-event-minimum-preflight",
+    2965      │ - ········label,
+    2966      │ - ········serviceCalls:·1,
+    2967      │ - ········clockCalls:·now.mock.calls.length,
+    2968      │ - ········ownerReads:·reads,
+    2969      │ - ········waits:·wait.mock.calls.length,
+    2970      │ - ······}),
+    2971      │ - ····);
+    2972      │ - ··},
+    2973      │ - );
+         2894 │ + ]·as·const)("preserves·initial·Bead·Event·classification·and·preflight:·%s",·async·(label)·=>·{
+         2895 │ + ··const·f·=·fixture();
+         2896 │ + ··let·reads·=·0;
+         2897 │ + ··const·clockError·=·new·Error("finite·Event·initial·clock·sentinel");
+         2898 │ + ··const·now·=·vi.fn(()·=>·{
+         2899 │ + ····if·(label·===·"throwing-clock")·throw·clockError;
+         2900 │ + ····return·label·===·"nonfinite-clock"·?·Number.NaN·:·0;
+         2901 │ + ··});
+         2902 │ + ··const·wait·=·vi.fn(async·()·=>·{});
+         2903 │ + ··const·service·=·createTransactionService(
+         2904 │ + ····{
+         2905 │ + ······...f.owner,
+         2906 │ + ······readEvents:·(...args:·Parameters<typeof·f.owner.readEvents>)·=>·{
+         2907 │ + ········reads++;
+         2908 │ + ········return·f.owner.readEvents(...args);
+         2909 │ + ······},
+         2910 │ + ····},
+         2911 │ + ····{
+         2912 │ + ······ownerLifetime:·"service",
+         2913 │ + ······read:·f.read,
+         2914 │ + ······minimumReads:·{·budgetMs:·label·===·"invalid-policy"·?·0·:·10,·now,·wait·},
+         2915 │ + ····},
+         2916 │ + ··);
+         2917 │ + ··cleanup.push(()·=>·service.close());
+         2918 │ + ··const·source·=
+         2919 │ + ····label·===·"noncanonical-query"
+         2920 │ + ······?·`${scope}beads/a?view=events&extra=x`
+         2921 │ + ······:·label·===·"relative-source"
+         2922 │ + ········?·"beads/a?view=events"
+         2923 │ + ········:·`${scope}beads/a?view=events`;
+         2924 │ + ··const·pending·=·service.events(
+         2925 │ + ····source,
+         2926 │ + ····undefined,
+         2927 │ + ····{
+         2928 │ + ······scopeEpoch:·"bad·space",
+         2929 │ + ······authorizationView:·"development-all-visible",
+         2930 │ + ······minimumPosition:·"opaque",
+         2931 │ + ····},
+         2932 │ + ····label·===·"already-aborted"·?·AbortSignal.abort()·:·undefined,
+         2933 │ + ··);
+         2934 │ + ··expect(pending).toBeInstanceOf(Promise);
+         2935 │ + ··const·error·=·await·pending.then(
+         2936 │ + ····()·=>·undefined,
+         2937 │ + ····(cause:·unknown)·=>·cause,
+         2938 │ + ··);
+         2939 │ + ··if·(label·===·"already-aborted")·expect(error).toBeInstanceOf(ScopeServerOperationAbortedError);
+         2940 │ + ··else·if·(label·===·"throwing-clock")·expect(error).toBe(clockError);
+         2941 │ + ··else·if·(label·===·"noncanonical-query")
+         2942 │ + ····expect(error).toBeInstanceOf(TransactionEventParameterError);
+         2943 │ + ··else·if·(label·===·"relative-source")·{
+         2944 │ + ····expect(error).toBeInstanceOf(TypeError);
+         2945 │ + ····expect(error).toMatchObject({·code:·"ERR_INVALID_URL"·});
+         2946 │ + ··}·else·{
+         2947 │ + ····expect(error).toBeInstanceOf(TypeError);
+         2948 │ + ····expect(error).toMatchObject({
+         2949 │ + ······message:
+         2950 │ + ········label·===·"invalid-policy"
+         2951 │ + ··········?·"finite·minimum-read·wait·policy·required"
+         2952 │ + ··········:·label·===·"nonfinite-clock"
+         2953 │ + ············?·"invalid·minimum-read·clock"
+         2954 │ + ············:·"unsupported·minimum·tuple",
+         2955 │ + ····});
+         2956 │ + ··}
+         2957 │ + ··expect(now).toHaveBeenCalledTimes(label·===·"invalid-policy"·?·0·:·1);
+         2958 │ + ··expect(reads).toBe(label·===·"noncanonical-query"·||·label·===·"relative-source"·?·1·:·0);
+         2959 │ + ··expect(wait).not.toHaveBeenCalled();
+         2960 │ + ··console.log(
+         2961 │ + ····JSON.stringify({
+  10 more lines truncated
+  
+
+Checked 6 files in 13ms. No fixes applied.
+Found 2 errors.
+format ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+  × Some errors were emitted while running checks.
+  
+

@@ -1,0 +1,126 @@
+{
+  "packages/server/src/transaction-service.ts": [
+    {
+      "line": 707,
+      "text": "schemaObserved(supplied?: TransactionMinimum, signal?: AbortSignal) {"
+    }
+  ],
+  "packages/server/src/transaction-schema-http.ts": [
+    {
+      "line": 53,
+      "text": "malformedTransactionMinimumHeaders(request.headers)"
+    },
+    {
+      "line": 66,
+      "text": "const failure = transactionMinimumFailureResponse(error);"
+    }
+  ],
+  "packages/server/src/transaction-http.ts": [
+    {
+      "line": 116,
+      "text": "export function transactionMinimumFailureResponse(error: unknown): HttpResponse | undefined {"
+    },
+    {
+      "line": 422,
+      "text": "if (malformedTransactionMinimumHeaders(request.headers))"
+    },
+    {
+      "line": 670,
+      "text": "const minimumFailure = transactionMinimumFailureResponse(error);"
+    }
+  ],
+  "packages/server/src/transaction-service.test.ts": [
+    {
+      "line": 2208,
+      "text": "const pending = service.schemaObserved();"
+    },
+    {
+      "line": 2232,
+      "text": "const next = await service.schemaObserved();"
+    },
+    {
+      "line": 2237,
+      "text": "expect(() => service.schemaObserved()).toThrow(\"closing or closed\");"
+    },
+    {
+      "line": 2246,
+      "text": "nested = service.schemaObserved();"
+    },
+    {
+      "line": 2254,
+      "text": "await expect(service.schemaObserved()).rejects.toMatchObject({"
+    },
+    {
+      "line": 2259,
+      "text": "expect(() => service.schemaObserved()).toThrow(\"closing or closed\");"
+    },
+    {
+      "line": 4315,
+      "text": "async function g09ServiceCase("
+    },
+    {
+      "line": 4398,
+      "text": "return service.schemaObserved(...args);"
+    },
+    {
+      "line": 4405,
+      "text": "it(\"G09-S01 schemaObserved zero-min/current and captured supplied tuple\", async () => {"
+    },
+    {
+      "line": 4426,
+      "text": "it(\"G09-S02 schemaObserved epoch and view errors\", async () => {"
+    },
+    {
+      "line": 4455,
+      "text": "it(\"G09-S03 schemaObserved ahead and opaque bounded attempts\", async () => {"
+    }
+  ],
+  "packages/server/src/transaction-schema-http.test.ts": [
+    {
+      "line": 455,
+      "text": "it(\"G09-S04 schema selector receiving and exact identity\", async () => {"
+    },
+    {
+      "line": 508,
+      "text": "it(\"G09-S05 schema selector HTTP/min failure order\", async () => {"
+    },
+    {
+      "line": 582,
+      "text": "async function g09RuntimeCase("
+    },
+    {
+      "line": 756,
+      "text": "it(\"G09-S06 schema runtime satisfied and context errors\", async () => {"
+    },
+    {
+      "line": 781,
+      "text": "it(\"G09-S07 schema runtime ahead before conditional\", async () => {"
+    },
+    {
+      "line": 799,
+      "text": "it(\"G09-S08 schema runtime unknown before HEAD/media\", async () => {"
+    }
+  ],
+  "apps/bdptest/src/transactional-schema-installed.test.ts": [
+    {
+      "line": 466,
+      "text": "type G09InstalledRow = {"
+    },
+    {
+      "line": 501,
+      "text": "async function g09InstalledCase("
+    },
+    {
+      "line": 793,
+      "text": "const g09ProblemValidator = ajv.compile({ $ref: `${schema.$id}#/$defs/transactionalProblem` });"
+    },
+    {
+      "line": 808,
+      "text": "it(\"G09-I01 installed exact schema current minimum\", async () => {"
+    },
+    {
+      "line": 899,
+      "text": "it(\"G09-I02 installed receiving and exact retrieval membership\", async () => {"
+    }
+  ]
+}

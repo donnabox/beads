@@ -1,0 +1,55 @@
+{
+  "accepted": true,
+  "acceptedAt": "2026-10-18T05:07:55.500547+00:00",
+  "sourceBindingSha256": "f03a40dc7431b657bd862e40b45b4c7c81ff7115cce1faef7b1640a0d17a155f",
+  "actualStages": {
+    "node-version": "093b4c3818045fedf6b9810f455ba5f2e3ad045bf18a1d73410d97c9256e8845",
+    "pnpm-version": "1c41c9ae6e5f97488249c93a31c41bf93ce195eaf11fa5ac3204e5eaf2054232",
+    "workspace-install": "b28c191ad961fc79cea9a2d8e81f228a610a00ebdac3445ebcb52256c231084e",
+    "bind-workspace-tools": "22a017bb45e971537938b0c0ccb7d57eaa2b90bda7a38e57bac071b45c12a75c",
+    "typecheck": "d1dcc92103b4dab238bb233944534376f1b1cd022f8336f958c04a8b422adc24",
+    "format-check": "f8e2475567a3d8750fb029e14e501a55d2fbf879d9458eae684b13984d673e54",
+    "lint": "c117cd579a7216e11c4bf1775ae12f1ba0ab49b2497d7281fdb42dcc1f115a06",
+    "fresh-build": "afc0a6fce84d63abdaeb6b90f3b7e36c1f8e90cc7e3c48cea0e3830d5d2e0c78",
+    "bind-fresh-build": "37016e339191471feaa50d564ad2f2c4a2bdf0769fd3a8b969745ecf57dc7860",
+    "focused-source": "77bb28b176f0d6ab254ac1efc91d24ea15ea364bf8fdf336df90a25aa3be2ecf",
+    "audit-focused-source": "578edec15f68447d91ceec5d8c8cb2016d84b1c4b8a6b39dc838f7b2e724a54f",
+    "prepare-package-directory": "d3bde7742331fad36ddc185a288d8bef1cc78c7489660510d0a56fc0b06a74b8",
+    "pack-protocol": "40f1729f854f522ffd31a563a54587930ab253dcc58160803f1f905b8860ef43",
+    "pack-server": "ae76882ef49e6806bde81cbb82942f3db1cd19b7c88e30c12bb78e70f46613b3",
+    "verify-archives": "032f8c398e5cb604fc1b8f7ed5b2428921cf6880fee9ca19ae7862e018915a1f",
+    "prepare-consumer": "f28994288b92e13d163439b2007ecaea041ce9609baeb6c3ebbd1213a0f2f380",
+    "consumer-install": "5d3e1aaef05b59513a2f203c18b3ad3444741aa7b048f7152fc6e38870ff5b69",
+    "verify-installed-consumer": "ba713dcbd223c1528a6a6f364364336f8cdfb335621210d9efa5cae7781e1a48",
+    "historical-context-external": "dbd9d69082baa86b9b32b5810ea0019ed4e38d54094cb42e0330a9e164c14bd2",
+    "audit-historical-context-external": "8fe86ba6ce6bf5d437173d55e079adce212e1f30877610f14c9dbb9813d52f95",
+    "finite-start-now-external": "12370f50725e053aeb7706d521729ed3ccfe961cc85d11ad0e0c03bd818ce91d",
+    "audit-finite-start-now-external": "7d3a8f5728557bbf6061d01cf4322f66392be7fea1a0d42f5ed8adfd11cb1d95",
+    "current-changefeed-external": "401eca24b18df51b905bbae9545bb9631991777d7716141fcbf55523aede9998",
+    "audit-current-changefeed-external": "ee595891e9ad010537ad591222f9671e8c7de408dbbbc7347a32e269d6fdd176"
+  },
+  "installedPairs": {
+    "historical-context-external": {
+      "attempted": 10,
+      "observationSha256": "4f069741eafd50a4b9a184dfd1c60a1309e7cffed785af08a7434b1d771aa0e4",
+      "childPid": 31096,
+      "actualDirectoryAbsent": true
+    },
+    "finite-start-now-external": {
+      "attempted": 4,
+      "observationSha256": "adb45366d6342f68e430a868a43beaadd503cc4b611c7d0c813740e2cfe3b931",
+      "childPid": 35803,
+      "actualDirectoryAbsent": true
+    },
+    "current-changefeed-external": {
+      "attempted": 10,
+      "observationSha256": "97629c3cdfabde7996f7678597e1773f1e06ad06d5cda0193cff0889f7f5c4cf",
+      "childPid": 39921,
+      "actualDirectoryAbsent": true
+    }
+  },
+  "actualHttpRequests": 24,
+  "payloadIdentity": "0e4db6cff80b117661292e75da4d6d15a6bf67e3f1c97182a9dab8d691557aff",
+  "privateNonattestingOnly": true,
+  "next": "four required checks then final local acceptance/actual source commit/exact CI"
+}

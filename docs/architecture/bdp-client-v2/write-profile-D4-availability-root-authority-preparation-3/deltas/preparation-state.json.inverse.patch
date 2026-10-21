@@ -1,0 +1,18 @@
+--- /Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-D4-availability-root-authority-preparation-3/preparation-state.json
++++ /Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-D4-availability-root-authority-preparation-2/preparation-state.json
+@@ -5,12 +5,12 @@
+   "clockDomainVerified": false,
+   "futureRootExecutionReleaseAbsent": true,
+   "harnessAvailabilityAttemptAbsent": true,
+-  "historicalH4FailureAndH5MeasuredAvailability": "Preserved historical domains, not H6 proof",
+   "nativeInvocations": 0,
+-  "newH6Outcomes": "UNKNOWN/UNEXECUTED",
++  "newH5Outcomes": "UNKNOWN/UNEXECUTED",
+   "noRetry": true,
++  "originalH4Attempt": "FAILED immutable; never retry/relabel",
+   "productReleased": false,
+   "reviewLaunchReleased": false,
+-  "state": "FROZEN_CLOSED_AUTHOR3_ONLY_PENDING_OTHER_NATIVE_ROOT",
++  "state": "FROZEN CLOSED author2 preparation only; FULL OTHER-native/root PENDING",
+   "syntheticReleased": false
+ }

@@ -1,0 +1,294 @@
+{
+  "accepted": true,
+  "source": {
+    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-principal-key-draft/landing/final-source.json",
+    "sha256": "39ba2bc5cd749f4eab699abcb00e3bb9b4873cd3331d15d5c3ad39f9ba8664b8"
+  },
+  "council": {
+    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-principal-key-draft/root-final-council.json",
+    "sha256": "c13498fa6d66402130d23aeb9d6f4e6a09d8807b9cdc775ed5e07112a2a9a7f0"
+  },
+  "buildBridge": {
+    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-principal-key-draft/execution-preparation-v2/root-build-bridge.json",
+    "sha256": "f71a34182200c78ef7aa929a86d7b09ed00c98074543832f2fd4ed85b8004754"
+  },
+  "installedProvenance": {
+    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-principal-key-draft/execution-preparation-v2/run/installed-provenance.json",
+    "sha256": "c84b6e4305f80ef17403e7fede66f7d942011a928d0daeda120df0d450f701a6"
+  },
+  "stages": [
+    {
+      "id": "setup",
+      "exit": 0,
+      "evidence": {
+        "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-principal-key-draft/execution-preparation-v2/run/setup.exit.json",
+        "sha256": "a9671a7bc83a3d12068217e12e8334f0228c2cc996030ea1c0b9f66225a04121"
+      }
+    },
+    {
+      "id": "typecheck",
+      "exit": 0,
+      "evidence": {
+        "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-principal-key-draft/execution-preparation-v2/run/typecheck.exit.json",
+        "sha256": "bf4950b2663c15cb3b8e7419a13d4d81193d56e23c5e0320f392ebece89e166f"
+      }
+    },
+    {
+      "id": "build",
+      "exit": 0,
+      "evidence": {
+        "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-principal-key-draft/execution-preparation-v2/run/build.exit.json",
+        "sha256": "f96e26cc90d02cc3cf9d1839fca49f9f7ede9f0844c7cf8a60a380b8dc24c1d9"
+      }
+    },
+    {
+      "id": "format-check",
+      "exit": 0,
+      "evidence": {
+        "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-principal-key-draft/execution-preparation-v2/run/format-check.exit.json",
+        "sha256": "4f6b5c9f6344aa029a5e134ba7e9233c9833cea040ca76465f6317fe9fe820e7"
+      }
+    },
+    {
+      "id": "lint",
+      "exit": 0,
+      "evidence": {
+        "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-principal-key-draft/execution-preparation-v2/run/lint.exit.json",
+        "sha256": "18cf2721381e60a86be238c8a32c8446dc3a5a248be3d9a42732c03d4a137217"
+      }
+    },
+    {
+      "id": "boundaries",
+      "exit": 0,
+      "evidence": {
+        "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-principal-key-draft/execution-preparation-v2/run/boundaries.exit.json",
+        "sha256": "4eb7b38cefbd5283790771e56ff45bac24077d667d7ce74c796187dfb5cdf811"
+      }
+    },
+    {
+      "id": "read-seal",
+      "exit": 0,
+      "evidence": {
+        "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-principal-key-draft/execution-preparation-v2/run/read-seal.exit.json",
+        "sha256": "79525599f52f33594b61232e4e88a0fb46d902990e590a74ab88dcde91d70df2"
+      }
+    },
+    {
+      "id": "build-inventory",
+      "exit": 0,
+      "evidence": {
+        "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-principal-key-draft/execution-preparation-v2/run/build-inventory.exit.json",
+        "sha256": "5a0ad1e18c4a9274f5036c40f20b9dc24c3af85d58d6fe392267f6616c5afaad"
+      }
+    },
+    {
+      "id": "node-version",
+      "exit": 0,
+      "evidence": {
+        "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-principal-key-draft/execution-preparation-v2/run/node-version.exit.json",
+        "sha256": "27a3507dd46d96746179c82f8e679fbd7dae35cf61db75818430db8df418c1db"
+      }
+    },
+    {
+      "id": "package-directory",
+      "exit": 0,
+      "evidence": {
+        "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-principal-key-draft/execution-preparation-v2/run/package-directory.exit.json",
+        "sha256": "f778fc14c18f3d383b1dc6ee1c81f80d8f731e93f7ae1f334af6111079da37cc"
+      }
+    },
+    {
+      "id": "pack-protocol",
+      "exit": 0,
+      "evidence": {
+        "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-principal-key-draft/execution-preparation-v2/run/pack-protocol.exit.json",
+        "sha256": "f2b6760eec59269243b993d0a4e52df74e831dd7dca980a56b145ff145f280e4"
+      }
+    },
+    {
+      "id": "pack-server",
+      "exit": 0,
+      "evidence": {
+        "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-principal-key-draft/execution-preparation-v2/run/pack-server.exit.json",
+        "sha256": "83517b75febb9333cd9602b5d657970e6e8abcccd763366a77b897a8db8aea5e"
+      }
+    },
+    {
+      "id": "verify-tar",
+      "exit": 0,
+      "evidence": {
+        "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-principal-key-draft/execution-preparation-v2/run/verify-tar.exit.json",
+        "sha256": "2414f94de27295b3eead1e2cc8452167f1e8b8944ce2746c790ce30ed0903603"
+      }
+    },
+    {
+      "id": "prepare-consumer",
+      "exit": 0,
+      "evidence": {
+        "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-principal-key-draft/execution-preparation-v2/run/prepare-consumer.exit.json",
+        "sha256": "243f28c83fcdf28473bd632b52ad2cd0dcf8291aaf9de9888b980a4cb86c60d9"
+      }
+    },
+    {
+      "id": "consumer-install",
+      "exit": 0,
+      "evidence": {
+        "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-principal-key-draft/execution-preparation-v2/run/consumer-install.exit.json",
+        "sha256": "42b9e2d6bd97fce14964a6ba8c88bbfde23777b5c3bcddec44e498a5e526a83a"
+      }
+    },
+    {
+      "id": "verify-installed",
+      "exit": 0,
+      "evidence": {
+        "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-principal-key-draft/execution-preparation-v2/run/verify-installed.exit.json",
+        "sha256": "bfc1f021303f87fed050e9870e3cc802339e744b9380277e821807bf4bd6e7e3"
+      }
+    },
+    {
+      "id": "installed-positive",
+      "exit": 0,
+      "evidence": {
+        "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-principal-key-draft/execution-preparation-v2/run/installed-positive.exit.json",
+        "sha256": "62e3d0bdf5f257c87041c7cf4704f58901be3a851ba42a3e0048cc3f805d4ee6"
+      }
+    },
+    {
+      "id": "review-positive",
+      "exit": 0,
+      "evidence": {
+        "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-principal-key-draft/execution-preparation-v2/run/review-positive.exit.json",
+        "sha256": "7c8706a881d27c54eb269dc78ecef8395ad257e2361663b0a4a5182c13074c96"
+      }
+    },
+    {
+      "id": "installed-principal-collapse",
+      "exit": 1,
+      "evidence": {
+        "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-principal-key-draft/execution-preparation-v2/run/installed-principal-collapse.exit.json",
+        "sha256": "90767407a68bf3b24edba8b3ee68cc1d4d07f8cb96b60ca3c4ffafa115df7c48"
+      }
+    },
+    {
+      "id": "review-principal-collapse",
+      "exit": 0,
+      "evidence": {
+        "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-principal-key-draft/execution-preparation-v2/run/review-principal-collapse.exit.json",
+        "sha256": "0d55607a9f9c886b4548f1e19b6f8ad22028645dd25956896218ba375f94a0ad"
+      }
+    }
+  ],
+  "cohorts": [
+    {
+      "name": "installed-positive",
+      "actualHttp": 7,
+      "childPid": 32801,
+      "observation": {
+        "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-principal-key-draft/execution-preparation-v2/run/installed-positive.observation.json",
+        "sha256": "5a1f003f883ed6c3a9bcfc2df120711e6012b096fd6f534f3273325ea3d6f68f"
+      },
+      "results": {
+        "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-principal-key-draft/execution-preparation-v2/run/installed-positive.results.json",
+        "sha256": "5c767df30bb0c2a7181408f84227aaa3d33067d1680e2c4427f563d93085e31b"
+      }
+    },
+    {
+      "name": "installed-principal-collapse",
+      "actualHttp": 2,
+      "childPid": 32878,
+      "observation": {
+        "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-principal-key-draft/execution-preparation-v2/run/installed-principal-collapse.observation.json",
+        "sha256": "fcb11a87042e993a0268784e849428ca5e9e3da4a297c70ea2bd76cfca0dde86"
+      },
+      "results": {
+        "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-principal-key-draft/execution-preparation-v2/run/installed-principal-collapse.results.json",
+        "sha256": "477450f9bbaab05bc32784b398f8f8ec45d9e4046de6a8ec35d75fad9f397035"
+      }
+    }
+  ],
+  "sampledPidsIndependentlyAbsent": [
+    29621,
+    29623,
+    29628,
+    29644,
+    29646,
+    29651,
+    29664,
+    29691,
+    29693,
+    29698,
+    29724,
+    29725,
+    29743,
+    29750,
+    29752,
+    29796,
+    29798,
+    29803,
+    29816,
+    29822,
+    29839,
+    29841,
+    29846,
+    29859,
+    29865,
+    29885,
+    29887,
+    29893,
+    29907,
+    29924,
+    29926,
+    29931,
+    29944,
+    29984,
+    29986,
+    29991,
+    32370,
+    32372,
+    32397,
+    32399,
+    32404,
+    32435,
+    32437,
+    32442,
+    32465,
+    32467,
+    32471,
+    32493,
+    32495,
+    32500,
+    32514,
+    32537,
+    32539,
+    32549,
+    32579,
+    32581,
+    32586,
+    32645,
+    32647,
+    32653,
+    32684,
+    32686,
+    32715,
+    32728,
+    32801,
+    32824,
+    32826,
+    32831,
+    32834,
+    32862,
+    32864,
+    32869,
+    32871,
+    32878,
+    32899,
+    32901,
+    32906,
+    32913
+  ],
+  "actualHttp": 9,
+  "actualProductChildren": 2,
+  "actualControl": "Exactly named secondcreation expected200/actual409 idempotency-conflict; one genuine test failure, no generic exit acceptance. Full report strict adapter separately passed.",
+  "relativeOutputLimit": "Actual parent reporter wrote relative destination; worker argv guard was dormant, not credited branch coverage. See final council erratum.",
+  "noPublicQualification": true
+}

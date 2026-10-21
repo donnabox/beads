@@ -1,0 +1,63 @@
+--- /Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-first4-capture2-authority-precision-1/proposals/pnpm-version.capture.txt
++++ /Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation3-root-fixed-protocol-preparation-1/proposals/pnpm-version.capture.txt
+@@ -9,19 +9,19 @@
+ import os, json, hashlib, subprocess, select
+ from pathlib import Path
+ STAGE = 'pnpm-version'
+-ARGV = ['/opt/homebrew/opt/python@3.14/bin/python3.14', '/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation-preparation-2/run.py', 'final', 'pnpm-version']
++ARGV = ['/opt/homebrew/opt/python@3.14/bin/python3.14', '/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation-preparation-3/run.py', 'final', 'pnpm-version']
+ CWD = '/Users/dbox/repos/wt/vickie/vickie-schema-minimum'
+-P = Path('/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation-preparation-2')
++P = Path('/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation-preparation-3')
+ # Root must prepare/review/publish these exact replacements in a future literal
+ # command before invoking; this CLOSED proposal refuses unbound placeholders.
+ APPROVED_GATE_SHA256 = 'UNRESOLVED_FUTURE_ROOT_ACTIVATED_GATE_SHA256'
+-EXPECTED_IMPLEMENTATION_SHA256 = '57ecb824dec79722836e63b618e30e0557815142e796da988a80b65af2161413'
++EXPECTED_IMPLEMENTATION_SHA256 = '8ad44a93c1215bfe0b9777df4135385f72e82dd8873287a6988da2f1fb7615c6'
+ EXPECTED_SOURCE_BINDING_SHA256 = '712c3c5a8e1543bf5005cbb54d321c6874b7443afb7e01805f393434fe5cd714'
+-EXPECTED_COMMANDS_SHA256 = 'b898591c4d062da2ac044e8dbc633e92a0e4334bbf8bbe6b9102fe20b1f8c135'
+-OWNED_ROOT_OUTPUT = '/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation2-root-first4-dispatch-1/pnpm-version'
++EXPECTED_COMMANDS_SHA256 = 'd7189bd723bce76f8b214a33197ec48485e6f534f310dad10522f8612d495ef7'
++OWNED_ROOT_OUTPUT = '/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation3-root-first4-dispatch-1/pnpm-version'
+ # Additive exact externally pinned root execution acceptance; charged to ORIGIN.
+ APPROVED_EXECUTION_ACCEPTANCE_SHA256 = 'UNRESOLVED_FUTURE_ROOT_EXECUTION_ACCEPTANCE_SHA256'
+-EXECUTION_ACCEPTANCE_PATH = Path('/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-first4-root-execution-acceptance-1/acceptance.json')
++EXECUTION_ACCEPTANCE_PATH = Path('/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation3-root-execution-acceptance-1/acceptance.json')
+ assert type(APPROVED_EXECUTION_ACCEPTANCE_SHA256) is str and len(APPROVED_EXECUTION_ACCEPTANCE_SHA256)==64 and all(c in '0123456789abcdef' for c in APPROVED_EXECUTION_ACCEPTANCE_SHA256)
+ assert EXECUTION_ACCEPTANCE_PATH.is_file() and not EXECUTION_ACCEPTANCE_PATH.is_symlink()
+ execution_acceptance_raw = EXECUTION_ACCEPTANCE_PATH.read_bytes()
+@@ -32,8 +32,8 @@
+ assert execution_acceptance['session'] == '2026-10-18T02:16:24Z-549f'
+ assert execution_acceptance['mode'] == 'final'
+ assert execution_acceptance['sourceBindingSha256'] == '712c3c5a8e1543bf5005cbb54d321c6874b7443afb7e01805f393434fe5cd714'
+-assert execution_acceptance['implementationIndexSha256'] == '57ecb824dec79722836e63b618e30e0557815142e796da988a80b65af2161413'
+-assert execution_acceptance['commandsSha256'] == 'b898591c4d062da2ac044e8dbc633e92a0e4334bbf8bbe6b9102fe20b1f8c135'
++assert execution_acceptance['implementationIndexSha256'] == '8ad44a93c1215bfe0b9777df4135385f72e82dd8873287a6988da2f1fb7615c6'
++assert execution_acceptance['commandsSha256'] == 'd7189bd723bce76f8b214a33197ec48485e6f534f310dad10522f8612d495ef7'
+ assert type(execution_acceptance['approvedStages']) is list and execution_acceptance['approvedStages'] == ['node-version','pnpm-version','workspace-install','bind-workspace-tools']
+ assert STAGE in execution_acceptance['approvedStages']
+ assert type(execution_acceptance['activeGate']) is dict and set(execution_acceptance['activeGate']) == {'path','sha256'}
+@@ -213,9 +213,9 @@
+ OBSERVER_FIRST = time.monotonic()
+ import os, json, subprocess, hashlib
+ from pathlib import Path
+-ROOT = Path('/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation2-root-first4-dispatch-1/pnpm-version')
++ROOT = Path('/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation3-root-first4-dispatch-1/pnpm-version')
+ ACTUAL_A_TOOL_ID = 'UNRESOLVED_ACTUAL_TOOL_ID'
+-ACTUAL_A_TOOL_RAW_EXIT = None
++ACTUAL_A_TOOL_RAW_EXIT = 0
+ # These root-source observations must come from the actual ordinary-tool result,
+ # never from collector-provisional.json. Independently decoded raw tool receipt
+ # remains null/UNRETAINED if the tool did not supply a retained one.
+@@ -310,9 +310,9 @@
+ POST_TERMINAL_WITNESS = time.monotonic() # FIRST before all further DATA processing.
+ import json, hashlib
+ from pathlib import Path
+-ROOT = Path('/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation2-root-first4-dispatch-1/pnpm-version')
++ROOT = Path('/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation3-root-first4-dispatch-1/pnpm-version')
+ ACTUAL_B_TOOL_ID = 'UNRESOLVED_ACTUAL_B_TOOL_ID'
+-ACTUAL_B_TOOL_RAW_EXIT = None
++ACTUAL_B_TOOL_RAW_EXIT = 0
+ assert ACTUAL_B_TOOL_ID != 'UNRESOLVED_ACTUAL_B_TOOL_ID'
+ assert type(ACTUAL_B_TOOL_RAW_EXIT) is int and ACTUAL_B_TOOL_RAW_EXIT==0
+ origin_raw=(ROOT/'origin.json').read_bytes(); origin=json.loads(origin_raw)

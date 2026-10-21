@@ -1,0 +1,28 @@
+## Review — four changed production modules + normative diff
+
+Verified end‑to‑end against `authority-read.ts`, `transaction-store.ts` and `read-http*.ts`. No high‑severity correctness or security defect found. The key safety property holds: **no path returns a successful representation with the minimum unapplied.**
+
+Checked explicitly:
+- `dataOnlyReadRequest` (`transaction-read.ts:72-83`) is condition‑for‑condition identical to the authority's `ownData`/`snapshotRequest` (`authority-read.ts:297-313`), so the "bypass" branch at `transaction-read.ts:295-298` always ends in an authority `invalid-input` rejection — never an unconditioned 200, and the caller‑supplied `sourceCondition` on that branch never reaches `checkSourceCondition` (authority options validation throws at step 3, before `makeIntent`/`observe`).
+- Same equivalence holds for `captureTransactionReadDeliveryOptions` vs. the authority's option/signal checks, so `transaction-service.ts:392-395` likewise cannot produce an unconditioned success.
+- Classification and authority read the *same frozen* snapshot (`captureTransactionReadRequest`), and `currentReadMinimumKind` reads only `"value" in descriptor`, so no getter runs and kind cannot drift from the intent the authority materializes.
+- `TransactionMinimumUnsupported`/`Unproved` thrown inside the owner entry propagate with identity intact (store `enter` is try/finally only; `deliver` rejects with the original error), and because `finish()` runs after the entry, a thrown condition never retains a continuation cursor.
+- Unknown‑token label parity with the old `transactionMinimumHeaders` gate is preserved on every excluded route (`transaction-http.ts:586-590` for non‑alias; runtime `Unsupported` → `developmentGap("minimum-position")` for successful alias/incident reads).
+
+### Findings
+
+**1. Low–Medium (availability/cost) — the unproved wait is provably futile.**
+`transaction-consistency.ts:122-130`, retried at `:160-178` via `transaction-service.ts:397-401`.
+`position()` is a pure function of a frozen string, so a token‑valid but unrecognized `minimumPosition` (e.g. `pos-007`, a leading‑zero/typo client value) can *never* become recognized. Every such read of an existing authorized Bead/Link therefore burns the full `minimumReadBudgetMs` (default 1000 ms, `transaction-runtime-configuration.ts:112`) at a 5 ms step — ~200 owner entries and point reads — before a deterministic 503, and delays `service.close()` by up to the budget via `active`. Exposure is bounded (abort is checked at loop top, so a disconnecting client ends it in ~5 ms) and concurrency‑safe (entries are synchronous, no spurious reentrancy).
+Smallest fix: give the unproved case its own short budget, e.g. pass `{...minimumReads, budgetMs: Math.min(minimumReads.budgetMs ?? 1000, 50)}` when `position(minimum.minimumPosition) === undefined`. Note this trades against the new spec sentence "MUST use its bounded minimum-read wait" — that MUST currently buys nothing observable, so softening the spec is the alternative. Author's call.
+
+**2. Low — `transaction-http.ts:580` is now dead.**
+`malformedTransactionMinimumHeaders` (line 407) already 400s any partial or non‑token tuple, and `currentReadMinimumHeaders` accepts every remaining tuple, so `hasMinimumControls(request) && !minimum` can no longer be true. Harmless, but it reads as the unknown‑token gate that 586‑590 actually now is; leave with a comment or drop it so nobody re‑relies on it.
+
+**3. Low (normative gap) — `docs/specs/bdp.md`, new paragraph.**
+The unrecognized‑position rule is scoped to "with the actual current epoch and view". The implemented behavior for an *existing* Bead/Link with an unrecognized position plus a foreign epoch or view is `TransactionMinimumUnsupported` → 500 `x-bdp-development-limit: minimum-position` (`transaction-consistency.ts:123-128`, `transaction-http.ts:650-651`), which differs from the known‑position outcome (`cursor-expired`/`foreign-view`). Add one sentence: unrecognized positions combined with a non‑current epoch or view remain unsupported in this projection.
+
+**4. Material context, not a defect — `transaction-read.ts:207-208` changes *known*-position behavior too.**
+`if (kind !== "strict") return;` drops the previous `TransactionMinimumVisibilityGap` for "target missing **and** minimum behind/foreign/expired" on bead/link resource, properties, alias and initial `view=links` reads. A client that asked for position P can now receive a definite 404 observed at a position older than P; detectability rests entirely on the `BDP-Scope-Position` header the 404 carries (confirmed set: refusals are `phase:"observed"` and carry `observation`, `transaction-http.ts:231-233`, `:253-255`). This matches the authored spec paragraph, but it is the main downstream‑visible regression surface for consumers and conformance fixtures.
+
+**5. Info — `TransactionMinimumUnproved` has no HTTP mapping** (`transaction-http.ts:627-654`); it would fall through to bare `empty(500)` with no `x-bdp-development-limit`. Currently **unreachable**: `read.minimumFor` has exactly one consumer (`transaction-service.ts:384`) and both of its unwrapped fallbacks reject in the authority first. A one‑line `else if (error instanceof TransactionMinimumUnproved)` → `context(problem(catch-up-timeout…), error.context)` would make that structural rather than incidental.

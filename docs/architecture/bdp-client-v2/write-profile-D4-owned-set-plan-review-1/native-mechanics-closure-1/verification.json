@@ -1,0 +1,58 @@
+{
+  "preparationIndexSha256": "de9410cb3624b0e151422c96f27e9f9f091bb416ce1bb7c3e1f1dd6e76b9b667",
+  "indexedFiles": 87,
+  "totalIncludingIndex": 88,
+  "mirrorExact": true,
+  "originsVerified": 64,
+  "innerFrozenFiles": 63,
+  "contextCopiesVerified": 52,
+  "sourceFilesVerified": 679,
+  "artifactToolRefsVerified": 28,
+  "toolRealpathsVerified": 7,
+  "runnerLiteralChanges": 3,
+  "runnerSha256": "2a4a39cb7848ebf9237f97e428374fff59c467f11a48e62a86a6919c7a7173ab",
+  "supervisorByteIdenticalAccepted5": true,
+  "supervisorSha256": "791e5a566561798aa3352f19b021e6db9beeddb033ae5725c7d031d51716f95c",
+  "changedControlDataKeys": [
+    "packet",
+    "sourceRoot",
+    "authority",
+    "predecessorIndexSha256",
+    "rootDispositionSha256"
+  ],
+  "genuineForwardInversePairs": 2,
+  "bothFlagsFalse": true,
+  "attemptAbsent": true,
+  "nineAttemptOutputsAbsent": true,
+  "reviewerArgv": [
+    "/opt/homebrew/bin/claude",
+    "--safe-mode",
+    "-p",
+    "--tools",
+    "Read,Glob,Grep",
+    "--allowedTools",
+    "Read,Glob,Grep",
+    "--disable-slash-commands",
+    "--strict-mcp-config",
+    "--mcp-config",
+    "{\"mcpServers\":{}}",
+    "--no-session-persistence",
+    "--output-format",
+    "stream-json",
+    "--verbose",
+    "--include-partial-messages"
+  ],
+  "reviewerDeadlines": [
+    1800,
+    1790,
+    1798
+  ],
+  "productOuterTopicClosed": [
+    150,
+    145,
+    149
+  ],
+  "nativeD4AndRootExactBindingsVerified": true,
+  "guardCurrentSession": "2026-10-18T02:16:24Z-549f",
+  "helperReviewerRuntimeGitExecuted": false
+}

@@ -1,0 +1,69 @@
+Verification complete — every measured number in the plan reproduces exactly against `9eb9339`. Five findings.
+
+## Findings
+
+### 1. MEDIUM — Canonical insertion silently retargets a positional action-count witness the plan claims to preserve
+**Plan:** §Files ("Preserve existing assertions"; "Existing index-sensitive atomic-commit stays first") and the `transactional-cumulative.test.ts` bullet.
+**Code:** `packages/conformance/src/transactional-cumulative.test.ts:760-762`
+
+```js
+expect(manifest.scenarios.slice(2, 4).flatMap((r) => r.actions).length).toBe(38);
+```
+
+`slice(2, 4)` is `[set.cardinality, set.singleton-targets]` today (16 + 22 = 38). The plan's canonical order (`atomic-commit, rollback, set.mutation, set.zero-match, set.cardinality, set.singleton-targets, …`) shifts those rows to indices 4,5, so this assertion retargets to the two *new* rows. The plan names index-sensitivity only for `atomic-commit` at index 0 and never lists this one.
+
+Impact: two modes. Normally it fails and the author re-anchors (friction against the plan's "preserve existing assertions" claim). But if M and Z are authored at 22 and 16 actions, it sums to 38 and **passes while measuring the wrong rows** — silently deleting the existing witness that the two set-*operation* rows contain exactly 38 actions.
+
+Minimal correction: in the cumulative-test bullet, state explicitly that `slice(2, 4)` re-anchors to `slice(4, 6)` (preferably to id-based lookup), and name the second count-sensitive assertion at the same time — `:189` `expect(…readiness === "unplanned").toHaveLength(244)` must become `242`. §counts states "missing planned required 242" but the file bullet enumerates neither.
+
+### 2. MEDIUM — The 96 KiB incremental manifest ceiling is below the observed density of the only existing row with the same oracle shape
+**Plan:** §Measured budget ("incremental <=96KiB", "**224KiB total manifest**", "At most 48 new actions").
+**Code:** `transactional-cumulative.test.ts:763` (128 KiB), `:771` (5000 nodes)
+
+Measured pretty-printed density per row:
+
+| row | B/action | nodes/action |
+|---|---|---|
+| `batch.atomic-commit` (full-record + Event-inventory oracles) | **2,134** | 59.4 |
+| `set.singleton-targets` | 1,819 | 50.7 |
+| `set.cardinality` | 1,784 | 49.6 |
+
+96 KiB over 48 actions allows **2,048 B/action**. M is the full-record-plus-Event-inventory kind of row — the `atomic-commit` shape, not the set-operation shape — and `atomic-commit` already runs 2,134 B/action, 4.2% over the allowance. At that density: 48 × 2,134 = 102,418 B (100.0 KiB), exceeding the incremental ceiling by 4,114 B, and the total reaches 233,305 B (227.8 KiB), exceeding 224 KiB by 3,929 B.
+
+The two ceilings are not independent: 224 KiB (229,376) − (130,887 + 98,304) = **185 B**, the same slack the 128 KiB fence leaves today. An incremental overrun therefore breaches the total in the same step. At 46 actions the byte budget just survives (98,164 B); at 48 it does not. Node and coverage budgets are fine either way — worst case 3,647 + 2,853 = 6,500 ≤ 7,000 nodes, and coverage projects to ~16.2 KiB (341 new assertions × 48.5 B) against the 24 KiB allowance.
+
+Minimal correction: request 112 KiB incremental / 232 KiB total (keeps real slack at 48 × 2,134), or keep 96/224 and add an explicit per-action authoring ceiling of ≤2,048 B with a measure-before-authoring gate. Either is still an authoring fence, not a parser change.
+
+### 3. LOW — Z's 16-action cap is exactly saturated by its own named obligation list
+**Plan:** §Z ("Cap this row at16 actions"), §budget ("each row<=32/16").
+
+`ScenarioSetup` is only `{fixture, requires}` (`executable-manifest.ts:22-25`) — it cannot seed, so every seed is an action. Z's named obligations enumerate to 17: seed POST, seed receipt-read (required to bind a's record for the `exact-record`/`equalsBinding` pattern, since HTTP captures are URL-only), preimage GET a, seed Event GET, then POST + dynamic read + GET a + Event GET per zero-match operation (×2), then reopen + two rereads + GET a + Event GET. It fits 16 only by dropping the delete receipt's pre-reopen dynamic read — an asymmetry against `set.cardinality`, which gives its one failed receipt *two* reads (`cardinality-failed-facts`, `cardinality-failed-head`). M lands at ~30 of 32 by the same derivation, leaving 2 for the `-head` reads.
+
+Impact: no slack anywhere in the 48, while the plan forbids enlarging budgets without escalation. Note the comparison rows carry strictly fewer obligations — `set.cardinality` (16 actions) and `set.singleton-targets` (22) observe **no** Scope Events at all, whereas M adds four Event GETs and Z four.
+
+Minimal correction: state Z at 18 and the slice at 50 (→124 total), or record explicitly that the delete receipt gets no pre-reopen dynamic read and why that asymmetry is acceptable.
+
+### 4. LOW — The new route is unnamed, and the route inventory is order-sensitive
+**Plan:** §Files (`apps/bdptest/src/transactional-matrix.test.ts`: "eight-row count/session/route inventory").
+**Code:** `apps/bdptest/src/transactional-matrix.test.ts:184-194`
+
+The inventory is an independently authored, order-sensitive `toEqual` over 9 routes, and `exactMode.routes` is a closed allowlist derived from it. M's `GET {scope}beads/c` is a genuinely new route (current distinct targets are `beads/a`, `beads/b`, `beads/new`, `beads/`, `events/`, `links/l`), so the list grows 9→10. First-appearance order puts it at **position 8**, between `GET beads/b` and `POST update-where` — appending it fails the assertion. Insertion also moves first-appearance ownership of `beads/b`/`update-where`/`delete-where` from the set rows to M, though relative order is preserved.
+
+Minimal correction: name the route and its position in the bullet ("insert `GET {scope}beads/c` at index 7, 10 routes total"). The fixture genuinely stays byte-identical — `{binding:"scope", path:"beads/c"}` needs no binding, so that claim holds.
+
+### 5. LOW — No control discriminates Z's headline no-effect witness
+**Plan:** §Targeted controls, items 1-5 of "at most six".
+
+Controls cover postimage, prior record/metadata, receipt order, Event order, zero-receipt array size, and zero-Event inventory. Nothing targets Z's distinctive claim — `/effectPosition` absent plus epoch/view/position equal to the seed. That matters here because `response-metadata-equals` (`runner.ts:2181-2193`) compares only status and the named headers, with `current === prior` passing when both are `undefined`; the invariance assertion would be vacuous if the headers were ever absent. They are in fact emitted on POST receipts (`transaction-http.ts:184-191` → `context()`), so this is a discrimination gap, not a live defect — and one slot remains.
+
+Minimal correction: add the sixth control as a zero-match receipt expected to carry an `effectPosition`, or a position/epoch/view expectation pinned to a wrong prior request.
+
+## Verified clean
+
+Every measurement reproduces exactly: manifest 130,887 B / 3,647 nodes, coverage 23,604 / 541, fixture 721 / 15, six scenarios 74 actions, 128 KiB fence leaving **185 B** (`:763`), 1 MiB TX headroom 917,689 B. Catalog anchors `295/313/331/349/362/1068` and spec `bdp.md:4250-4256, 4866, 4905, 5160-5167, 5586` match the cited `selectedText` verbatim, including attribution-fanout's "deletion mints no version for the deleted Resources themselves". `artifact-bundle.ts` applies the 1,048,576 default and selects 4 MiB only for Read+Update (`:163`). All five server anchors (`transaction-set.test.ts:125,161,184,216,235`) carry the described witnesses, with `effectPosition` undefined on zero-match.
+
+Load-bearing assumptions confirmed rather than assumed: the installed Task properties schema is `{properties:{title:{type:"string"}}, additionalProperties:false}` with **no `required`**, so absent title is valid and `b.properties={}` is authorable; `replace` on a missing path fails at `resource-evaluator.ts:510`, mapping through `transaction-batch.ts:891-912` to `validation-failed` with pointer `/change/0/path` on a singleton carrier, `/results` and `/effectPosition` absent — the exact shape already pinned at `cardinality-failed`; the bounded ID-disjunction Selector is already exercised verbatim at `set.singleton-targets/set-update`, with `||` supported in `read-selector.ts:98`; `json-array-tuples` has `ordered: true` and all nine existing tuple oracles use it; `response-metadata-equals` on `events/` against a POST oracle is exactly what `batch.rollback` does; `exists:false` on `/effectPosition` is already in use; `beads/c` works as a literal relative path; HTTP captures are URL-only (`runner.ts:2478`) while client captures are unrestricted (`:1122-1129`), so the plan's preimage/revision split is the only workable one; `batch`/`update-where`/`delete-where` are all in the receipt-authority allowlist (`transactional-observation.ts:146-158`); `afterExchange` is a void gate and `observe({manifest})` is the real negative-only control seam (`:820`). Counts hold: 250 required, 255 applicable (5 optional), 6 pass → 8, sessions 9→13, children 10→14, exactly five `reopened-*` IDs → 9. Timeouts 90 s (hard-capped at `:111`) / 120 s / 5 s / 10 s unchanged. Packed evidence matches to the digit: 2570.9148330000003 ms, 2574 ms, 74 actions, 10 closed children, 87,429.085 ms remaining, 44 tests in 45.52 s.
+
+**No sharding or new caps needed** — confirmed. 224 KiB sits far under the 1 MiB TX parser bound; the receipt-authority ledger maximum is `scenarioActionSequence(scenario).length` (`runner.ts:635`), so M's four receipt bindings in a 32-action row need no change; 2 KiB bodies sit under the 64 KiB request bound and 32 KiB responses under the 1 MiB/2 MiB response limits. The fence adjustment is correctly *not* a product semantic: both ceilings live only in `transactional-cumulative.test.ts:763,771`, and a repo-wide sweep found no other manifest size or node assertion — `ARTIFACT_MAX_BYTES` is untouched. The four-file scope holds; no fifth file is implied by anything above. Scope boundaries respected: no Q1/Q2 Selector or metadata-only incident-Link semantics imported, no credit claimed for `event.set-expansion-order`, and the attribution-fanout deferral is correctly grounded in the unowned descriptors at `transactional-matrix.test.ts:52-62`.
+
+Acceptance, the pending author/source council, and the frozen-parent precondition remain yours.

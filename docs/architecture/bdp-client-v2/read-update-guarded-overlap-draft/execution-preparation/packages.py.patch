@@ -1,0 +1,19 @@
+--- receipt-installed/packages.py
++++ overlap-closed/packages.py
+@@ -48,7 +48,7 @@
+  C.mkdir(exist_ok=False)
+  for data in basis['packages'].values():assert sha(Path(data['archive']).read_bytes())==data['archiveSha256']
+  deps={f'@bdp/{n}':'file:'+basis['packages'][n]['archive'] for n in ['protocol','server']}
+- (C/'package.json').write_text(json.dumps({'name':'receipt-missing-context-external-consumer','private':True,'type':'module','dependencies':deps},indent=2)+'\n')
++ (C/'package.json').write_text(json.dumps({'name':'read-update-overlap-external-consumer','private':True,'type':'module','dependencies':deps},indent=2)+'\n')
+  # pnpm11 reads workspace overrides here. Frozen lock is independently pinned by root gate.
+  (C/'pnpm-workspace.yaml').write_text('overrides:\n  "@bdp/protocol": '+json.dumps(deps['@bdp/protocol'])+'\n  "fast-uri": "3.1.5"\n')
+ elif mode=='installed':
+@@ -106,6 +106,6 @@
+   else:walk('')
+   for dep in sorted(m.get('dependencies',{})):bind(resolve_dep(manifest,dep).parent,identity+'>'+dep,[*ancestors,root])
+  bind((C/'node_modules/@bdp/server').resolve(strict=True),'@bdp/server',[])
+- entry=(C/'node_modules/@bdp/server/dist/transaction-installed-process.js').resolve(strict=True);assert entry.is_relative_to(C.resolve())
++ entry=(C/'node_modules/@bdp/server/dist/installed-reference-process.js').resolve(strict=True);assert entry.is_relative_to(C.resolve())
+  write('installed-provenance.json',{'status':'VERIFIED_BEFORE_CHILD','sourceCommit':g['finalHead'],'sourceTree':g['finalTree'],'consumer':str(C),'entryRealpath':str(entry),'entrySha256':sha(entry.read_bytes()),'packages':packages,'installedProductionGraph':graph,'expectedProductionVersionsFromFrozenLock':expected,'sourceLockSha256':g['sourceLockSha256'],'consumerLockSha256':sha((C/'pnpm-lock.yaml').read_bytes()),'consumerManifestSha256':sha((C/'package.json').read_bytes()),'consumerSettingsSha256':sha((C/'pnpm-workspace.yaml').read_bytes()),'payloadIdentity':payload.hexdigest(),'payloadRecursiveVisits':visits,'payloadFileVisits':filecount,'limitations':'Read-only independent fixed dependency closure hash; compare against actual child result. Not source attestation or Node/TLS/deployment identity.'})
+ else:raise ValueError(mode)

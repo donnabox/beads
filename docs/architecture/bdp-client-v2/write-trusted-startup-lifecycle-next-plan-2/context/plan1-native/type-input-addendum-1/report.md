@@ -1,0 +1,5 @@
+# Type-input precision addendum
+
+N4, low, request-table.md:3 versus row4. The opening “Scope/fixture credential handles/transport only” excludes the configured installed Type URI that row4 expressly calls fixture input. This is a real input-declaration contradiction. Resolve it by naming the known canonical installed Type/contract identifier as an additional fixture input, distinct from operation-target knowledge; row4 still retrieves and validates its real descriptor. Do not add requests, derived Directory URLs or hidden context. D3a owns its fuller Types navigation proof; D3c need not duplicate it to close this wording.
+
+The13 cold requests,21 installed callbacks,126 finite HTTP dispatches and2 CONNECT attempts remain exact. This addendum adds one precision finding to the preserved N1–N3 report. It does not rewrite plan1, the original native review/index or source, and grants no authoring/runtime/review release. Root requested this bounded follow-up after the initial native closure froze.

@@ -1,0 +1,40 @@
+{
+  "rootLaunchReleased": true,
+  "authorization": "Root explicitly released one actual timeout-only supplement; no product execution or source edits.",
+  "workspace": "/Users/dbox/repos/wt/vickie/vickie-sequence-member-evidence",
+  "branch": "codex/vickie-event-missing-context",
+  "head": "3df82ac480f50c8f486b4e456336366e7acbdf87",
+  "tree": "d5f02c936cf080666a8e73bb5f253e52086705f4",
+  "hashes": {
+    "apps/bdptest/src/development-contracts.test.ts": "c27a4ff9012c85af17bd38e4f06a3b65d26a75a949e57a572a4382fd5bf6e522"
+  },
+  "reviewedSourceHashes": {
+    "apps/bdptest/src/development-contracts.test.ts": "c27a4ff9012c85af17bd38e4f06a3b65d26a75a949e57a572a4382fd5bf6e522",
+    "apps/bdptest/test-support/development-discovery.ts": "c5188d67dec391d8b7bb9f6f7b81d8ed52d67432df97cde0b19b08dc2f0f3c56",
+    "packages/server/src/installed-schema-evaluator.ts": "20662b8fb5457d4233e2cc22e35152aa43a2033b7db3568d42847a8752774544",
+    "packages/server/src/installed-schema-value.ts": "ba14d1a1ef75b13ac14ea20c3066b3f8b742a05d50ac8899fd7b456fa94b067c",
+    "packages/server/src/development-contracts.ts": "182a1a6d06b09f08ca3c83ad0fb27a09a419ad3e99729528381f210973b2c40a",
+    "packages/server/src/development-runtime.ts": "37e222682645e9d8f2d5fcf62de208640fb6216c9e9f2f279ab6017e8b9d6ca9"
+  },
+  "diffSha256": "4c355708c6f300d75824e6ac57eaa0e1acb2aa37691c1c59956993b9225d59ac",
+  "promptSha256": "5f970d415ca74057ae851f00ccc27b4f5f167829c99a8f69caa02dc4b7b87266",
+  "supervisorSha256": "49f11c59580bc2653a55d7d15bb191dce60ff35751255ed03ed7bf7b1443e532",
+  "plans": {
+    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-event-missing-context-draft/claude-ci-timeout-supplement/static-context.txt": "6c54d19c552992eff6b0783416e78288e87590aad3c6b2798d940e958f4f00e7",
+    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-event-missing-context-draft/claude-ci-timeout-supplement/correction.patch": "4c355708c6f300d75824e6ac57eaa0e1acb2aa37691c1c59956993b9225d59ac",
+    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-event-missing-context-draft/ci-timeout-diagnosis/proposal.md": "305dab085dea4fd6a9dea92c210c95cb16a10d86233cdf3fbb37e6aee24be271",
+    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-event-missing-context-draft/ci-timeout-diagnosis/native-review.md": "0f7de9be78b877358e19e66b3fe1c272ca0e651083f7ae8bfb4fa93c78a69c60",
+    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-event-missing-context-draft/ci-timeout-diagnosis/targeted-exit.json": "8488976803ddee6a529fa2d8a629f33c5f87659ffc83110bc65e0b67f676fcfc",
+    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-event-missing-context-draft/ci-timeout-diagnosis/targeted.json": "4b850cb45597e9e2ce32c33f8b178a5b7df35fa6d2fa9ea8e0c51615975bca18",
+    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-event-missing-context-draft/ci-timeout-diagnosis/targeted.log": "9116dd97984a60286950dec9b6754942ba006fa7690092e06796d3175560e458"
+  },
+  "timeoutSeconds": 900,
+  "argv": [
+    "/opt/homebrew/bin/claude",
+    "--safe-mode",
+    "-p",
+    "--tools",
+    "",
+    "--no-session-persistence"
+  ]
+}

@@ -1,0 +1,42 @@
+{
+  "checkedAt": "2026-10-14T15:44:45.239801+00:00",
+  "head": "8c78cba5d2be5d5612c6a9324ee36ed690fdeb19",
+  "base": "f0e1310605ef29c278793c1032ac90b3c95eabc5",
+  "tree": "f2bc6fd3750bb7b453984f9927f75e64554c777a",
+  "files": [
+    "apps/bdptest/src/transactional-sse-installed.test.ts",
+    "docs/design/transaction-implementation-progress.md",
+    "docs/design/w1-transactional-packet.md",
+    "docs/specs/bdp.md",
+    "packages/conformance/catalog/transactional-v1.json",
+    "packages/conformance/src/transactional-catalog.test.ts",
+    "packages/server/src/transaction-http.ts",
+    "packages/server/src/transaction-sse.test.ts"
+  ],
+  "ciRun": 38587341773,
+  "ciJob": 115942004193,
+  "ciAttempt": 2,
+  "tests": {
+    "passed": 9216,
+    "skipped": 1,
+    "files": 168
+  },
+  "preflightPassed": 7,
+  "smokePassed": true,
+  "readGateRows": 89,
+  "councilReports": {
+    "transaction-start-now-resume-native-code-review.md": "46677bae5a71ad6e0b42a84209a551f129420f0cc4247e3e0853671134c85dcb",
+    "transaction-start-now-resume-claude-code-review.txt": "8655cf945565d52f3ceb6c187999ed4c53966405607d8c4bb0bdb619f4ab9a06",
+    "transaction-start-now-resume-final-code-dispositions.md": "bf9e54b39e913489c3daaaac6a37631bea580479ce53814042b963bf15ca03b0",
+    "transaction-start-now-resume-native-retention-disposition.md": "768eb7dd75b6eda846068fe9a124e32397d509a8b8c400e4da7a51f7f407a74e",
+    "transaction-start-now-resume-review-repair-native-closure.md": "3df3fbfcdfb24793d6687678522e83fec004e270f887720ee514911081362d22",
+    "transaction-start-now-resume-main-integration-native-review.md": "27809d2210984ed43dff54081c03e1ca86e9cea3a7978c129dd2ac14444ebbb6",
+    "transaction-start-now-resume-main-integration/root-audit.json": "6d16124d68107e52bfe62b7e9f16758c1938def3162ec37bbb0da81b86fe57fb"
+  },
+  "allActionableFindingsDispositioned": true,
+  "ordinaryAncestry": true,
+  "ready": true,
+  "priorTimeoutPreserved": true,
+  "interruptedLocalMatrixExcluded": true,
+  "noReleaseOrProfilePromotion": true
+}

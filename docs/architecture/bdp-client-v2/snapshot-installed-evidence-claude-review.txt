@@ -1,0 +1,127 @@
+Reviewed `abd474c` against `2124adb`: two added files, 500 lines, no production changes. I read the test, the doc, and the inherited `scripts/transaction-installed-observation.mjs`, `apps/bdptest/test-support/transactional-execution-binding.ts`, `installed-contract-identity.ts`, `packages/conformance/src/http-executor.ts` (raw path), `test-support/profile-contract-plan.ts`, plus the in-process sibling `packages/server/src/transaction-snapshot-http.test.ts` for assertion parity. No files written.
+
+First, verification of the mechanics the doc leans on, since several findings depend on them:
+
+- **Canonical Host vs physical address is genuinely separated and genuinely checked.** `http-executor.ts:720` appends `Host: url.host` from the request URL, never from `dialRoute`; `host` is in `RESERVED_FIELDS` (`:343`) so a caller cannot inject a second one, making the first-occurrence `find` at test line 199 sound. Socket targeting comes from `child.ready.listenUrl`, which `installedTransactionBinding` pins to `http://127.0.0.1:<port>/` with no credentials/path/query. This part holds.
+- **Byte-literal retention holds.** `bodyText` is a `fatal: true` UTF-8 decode of exactly the framed body (`http-executor.ts:1192`), and valid UTF-8 ↔ string is a bijection, so the `bodyText` equality at line 349 does imply byte identity.
+- **Casts are not unchecked.** `ready.payloadIdentity as string` etc. land in `bindServedProfileConfiguration`, which enforces 64-hex / 40-hex (`profile-contract-plan.ts:134-141`), and `installedContractsDigest` enforces its own shape. The `as` casts are safe.
+- **`limits.liveHandles: 8`** (`transaction-snapshot.ts:25`) — the constant the second test is named after exists, but see finding 3.
+
+---
+
+## Findings, most severe first
+
+### 1. The replica/oracle is observed-vs-observed only; no authored create-path value is ever asserted
+**Location:** `apps/bdptest/src/transactional-snapshot-installed.test.ts:321-324` and `:367-392`; fixture at `:260-265`, `:300-307`.
+
+Every content assertion compares one server view to another server view. The only authored references used anywhere are **identifiers** and counts:
+- `:321-322` — ids vs `names`/`edges` (authored).
+- `:324` — `row.ownedLinks?.[linkType]` vs `links.rows[i]`, i.e. observed stream vs observed stream.
+- `:386` `assertReplica(replica, current)` — snapshot pages + changefeed vs point reads, all three server-produced.
+
+`properties`, `type`, and link `target` of the 34 beads and 34 links are **never** compared to the authored operations. The single authored value checked is `{ title: "after" }` at `:387`, which is the post-`updateBead` value delivered via the changefeed — the *replace* path, not the *create* path.
+
+**Impact:** uniform corruption or loss on the create path passes the whole test. If the server dropped `properties` from every created bead, or mojibake'd `café 🦉 b00` into `cafÃ© ðŸ¦‰ b00`, ids still match, `ownedLinks` still cross-equals, and snapshot/feed/point reads still agree. The `bodyOctets > bodyText.length` check at `:328` does not catch mojibake either — `cafÃ©` is still 6 bytes for 5 UTF-16 units. The deliberately non-ASCII fixture therefore buys nothing: nothing asserts what came back out. Note this mirrors the same gap in the in-process sibling (`transaction-snapshot-http.test.ts:63,268`), so it is an inherited pattern rather than a regression — but the doc's "each owned Link postimage are checked" (`docs/design/transaction-snapshot-installed-observations.md:21-22`) reads as an authored-value claim that the test does not make.
+
+Related, undisclosed: `:383` `delete wire.links` silently drops the point read's inbound-links affordance from the comparison. The in-process sibling carries an explanatory comment for this; here there is neither a comment nor a doc line.
+
+**Bounded fix:** build the authored expectation map alongside `names`/`edges` and assert it directly — for each `beads.rows[i]`, `expect(row.properties).toEqual({ title: \`café 🦉 ${names[i]}\` })` and `expect(row.type).toBe(beadType)`; for each `links.rows[i]`, additionally `source`/`target`. Add one doc sentence for the dropped `links` member.
+
+### 2. The observation record is emitted on failure, carries no outcome, and is suppressed on dirty child exit
+**Location:** `:238-257` (`close`), reached unconditionally from `:98-105`; feed at `:202-206`.
+
+`close()` ends with an unconditional `console.log` of `{observation: "private-installed-snapshot", …, claimEligible: false}`, and `withInstalled` calls `f.close()` from a bare `finally`. So:
+- When `run(f)` throws an assertion error, the child still closes cleanly, and the record **still prints** — truncated (`observations` is only pushed at `:202` after the in-`exchange` asserts pass) but otherwise shaped exactly like a passing record. Nothing in the JSON says pass or fail.
+- Conversely, when the child exits dirty, `child.close()` throws from the launcher (`transaction-installed-observation.mjs:53-54`) and the `console.log` after the try/finally is **skipped** — so a genuinely interesting failure produces no record at all.
+- `controller.signal.aborted` is never consulted before logging (this is native root's item 2, and I confirm it). I evaluate its impact as narrower than a false pass: every assertion step awaits an `execute` that receives `controller.signal`, so a post-deadline step rejects rather than silently passing, and an abort also drives the launcher's `onAbort` → SIGKILL → `result.signal !== null` → `closing` rejects → surfaces at `f.close()`. The residual defect is purely in the record: a run that overran its 45 s budget can emit a record that does not say so.
+- `responseBytes: response.bodyOctets ?? -1` (`:205`) encodes a missing value as data rather than failing, and `observations` records `method`/`status`/bytes but **no URL**, so the record cannot be audited against the routes actually exercised.
+
+**Impact:** for a commit whose entire purpose is producing an evidence artifact, the artifact is not sound: it is indistinguishable between pass and fail, absent on hard failure, and not route-identifiable.
+
+**Bounded fix:** set an `ok` flag after `await run(f)` resolves and thread it into `close(ok)`; include `outcome`, `aborted: controller.signal.aborted`, and `url` per observation; move the log so it also emits on the `child.close()` throw path (e.g. log in a `finally` that wraps the whole body, after the existing cleanup `finally`). Drop the `?? -1` and let a missing `bodyOctets` fail.
+
+### 3. The non-allocation conclusion silently depends on `liveHandles === 8`, which the test never establishes
+**Location:** `:396` (title), `:400`, `:427-431`.
+
+The test's observable facts are: 7 captures succeed, N non-allocating requests, an 8th capture succeeds, a 9th is refused 503. Letting `C` = live-handle capacity and `L` = handles leaked by the N intermediate requests, the 8th succeeding gives `7 + L + 1 ≤ C` and the 9th refusal gives `8 + L ≥ C`, hence `L = C − 8` exactly. **`L = 0` follows only if `C = 8`**, and the only source of "8" in this file is the test's own loop bound at `:400`. Nothing imports or asserts `limits.liveHandles`.
+
+Secondary: `transaction-snapshot.ts:621-628` raises the identical `temporarily-unavailable` code for *either* handle-count or `liveRecordBytes` exhaustion, so the 503 at `:430` does not identify which limit fired. With one small bead the byte branch is implausible in practice, but the test asserts the refusal, never the reason.
+
+**Impact:** if `limits.liveHandles` is raised to 10, this test keeps passing while two of the "nonallocating" requests leak a handle each — and the test name ("the actual eight-handle capacity boundary") and the doc both keep claiming non-allocation. The doc at `:40` discloses "a capacity inference, not direct observation of the private ledger," which is honest about the *ledger*, but does not disclose that the inference is conditional on an unasserted constant. Worth noting the in-process sibling proves this *directly* via `expect(await f.state()).toEqual(before)` around the same request block (`transaction-snapshot-http.test.ts:275,297`) — that direct control is exactly what was dropped in translation.
+
+**Bounded fix:** add a calibration leg in a fresh fixture — 8 back-to-back `f.capture()` calls succeed and the 9th returns 503, with zero intervening requests — which observes `C = 8` and makes `L = 0` derivable. One extra `withInstalled` block. Add the capacity-dependence sentence to the doc's bullet at `:39-40`.
+
+### 4. Changefeed exclusivity and finiteness are not asserted
+**Location:** `:354-376`, specifically the missing assertions around `:364` and on `feed.next`.
+
+Group count is pinned (`:364` `toHaveLength(1)`) and positions are pinned (`:365-366`), but the number of changes *within* the group is not, and `feed.next` is declared in the response type (`:356`) and never read.
+
+**Impact:** a feed emitting duplicate or extra-but-currently-correct `upsert` entries passes — `replica.set` is idempotent for a correct row, so `assertReplica` still matches and the `oldReplica` countercontrol still throws. A feed that never terminates its `next` chain also passes, because nothing follows it. The doc's "A finite changefeed is read from the literal captured checkpoint" (`:30`) is therefore unbacked. The in-process sibling does assert `expect(changes.groups[0]?.changes).toHaveLength(1)` (`transaction-snapshot-http.test.ts:267`); that assertion was lost here.
+
+**Bounded fix:** `expect(feed.next).toBeNull();` and `expect(feed.groups[0]?.changes).toHaveLength(1);` after `:366`.
+
+### 5. `withInstalled`'s bare `finally` replaces the original failure
+**Location:** `:100-104`.
+
+```js
+try { await run(f); } finally { await f.close(); }
+```
+Confirmed (native root item 1). If `run(f)` throws and `f.close()` also throws, the `finally` rejection wins and the real assertion error is discarded.
+
+**Impact:** diagnostic only — the test still fails either way, so this cannot produce a false pass. The practical cost is concrete though: an assertion failure that leaves the child wedged reports "installed transaction child did not close cleanly" instead of the actual mismatch, and per finding 2 the observation record is suppressed in exactly that case, so you lose both signals at once.
+
+**Bounded fix:** capture the run error, await `close()` in its own try, and rethrow via `AggregateError([runError, cleanupError])` — the convention the surrounding code already uses at `transaction-installed-observation.mjs:43,91` and `transactional-execution-binding.ts:180`.
+
+### 6. Universal response invariants are never asserted, including the non-attesting marker
+**Location:** `:54-60` (`json`), `:197-201` (`exchange`).
+
+`transaction-runtime.ts:77` (`deliver`) and `transaction-http.ts:492` set `x-bdp-development: non-attesting` on **every** transactional response. The new test never checks it — `x-bdp-development` appears in the file only as the `-limit` variant at `:426`. `content-type` is likewise never asserted on any response; `json()` just `JSON.parse`s. The in-process sibling checks the non-attesting header on every parsed response (`transaction-snapshot-http.test.ts:180`), and also asserts `vary: Accept` on the 406 (`:293`), which is dropped here too.
+
+**Impact:** the cheapest, most on-point control for this commit's central framing — "not profile admission or matrix credit" (`:1`) — is absent, so the test does not actually observe that the installed process marks its responses non-attesting. A response path bypassing `deliver` would go unnoticed. Separately, a server returning JSON under the wrong media type passes `json()`.
+
+**Bounded fix:** in `exchange()`, `expect(response.headers["x-bdp-development"]).toBe("non-attesting")`; in `json()`, assert `content-type` is `application/json`-family; restore the 406 `vary: Accept` check in the second test's status loop.
+
+### 7. The declared `sourceCommit` is not tied to the bytes under test
+**Location:** `:32-37`.
+
+`sourceCommit` defaults to `git rev-parse HEAD`, which ignores a dirty worktree, and `entry` defaults to `packages/server/dist/…`. Two consequences:
+- With uncommitted changes, the binding records commit X while the tested artifact is X-plus-edits. `bindServedProfileConfiguration` enforces `/^[0-9a-f]{40}$/` (`profile-contract-plan.ts:134`), so the usual `--dirty` escape hatch would be rejected and nothing else catches it.
+- The doc's headline claim — "Setting `BDP_TRANSACTIONAL_INSTALLED_ENTRY` to the actual installed tarball's private process path runs the identical tests against packed bytes" (`:8-10`) — pairs packed bytes with the *worktree* HEAD by default, which has no necessary relation to the tarball. Nothing requires the commit override when the entry is overridden.
+
+The test also computes **no** digest of `entry` itself; it records only the path string (`:250`) and otherwise relies on `ready.payloadIdentity`, which the subject computes over its own package closure (`installed-payload.ts:8`). `installedContractsDigest`'s header comment is explicit that it "never recompute[s] installed contracts." That self-attestation is a deliberate design choice, not a bug — but it means the packed-byte claim rests entirely on the subject's word, with nothing the test measured.
+
+**Impact:** the observation record can attribute an installed artifact to the wrong commit, which is the one thing an evidence record must not get wrong.
+
+**Bounded fix:** fail fast when `git status --porcelain` is non-empty unless `BDP_TRANSACTIONAL_SOURCE_COMMIT` is set explicitly; require that override whenever `BDP_TRANSACTIONAL_INSTALLED_ENTRY` is set; and record a test-computed `sha256` of the resolved (`realpath`'d) entry file in the observation so the record contains one independently measured identity.
+
+### 8. `json()`'s byte check is a tautology, and the cross-principal retention claim is narrower than documented
+**Location:** `:58`; `:272`, `:326-327`, `:346-351`.
+
+`expect(response.bodyOctets).toBe(Buffer.byteLength(response.bodyText))` can never fail. `bodyText` is produced by `new TextDecoder("utf-8", {fatal: true, ignoreBOM: true}).decode(body)` over exactly those `bodyOctets` (`http-executor.ts:1192`); well-formed UTF-8 round-trips losslessly, and `ignoreBOM: true` keeps a leading BOM rather than stripping it, removing the one case that would have made the comparison meaningful. It reads like a body-integrity guard and is one.
+
+Separately, the doc's "A different authorized reader receives the same retained representations" (`:27-28`) overstates the replay. `collect()` fetches the page literals as `"reader"` (`:272`) and the post-reopen replay also uses `"reader"` (`:347`) — same principal. Only `snapshot.id`, captured as operator at `:326`, actually crosses operator→reader. The cross-principal observation covers one URL, not the retained representations generally.
+
+**Bounded fix:** replace the tautology with a real framing check (e.g. `wireResponseBytes.length > bodyOctets` plus a declared `content-length` match), or delete it. For the doc: either capture the page literals as `"operator"` so every replayed URL crosses principals, or narrow the sentence to the manifest.
+
+### 9. The read-only credential's `canMutate: false` is configured but never exercised
+**Location:** `:116-118`, `:212-225`.
+
+The `reader` credential is created with `canMutate: false`, and `write()` takes a `credential` parameter — never called with anything but the default `"operator"`. The only authorization control is the anonymous 401 at `:406`.
+
+**Impact:** the test observes *authentication* but never *authorization*. The configured mutation policy that feeds the binding's `authenticationIdentity` is not observed through the installed listener at all, and the doc's "Real metadata binds … policy, authentication" (`:24-25`) is identity-binding only, not behavioral.
+
+**Bounded fix:** one call — attempt a `createBead` batch as `"reader"` and assert the refusal status and problem code.
+
+---
+
+## Items I checked and found sound
+
+Not flagging these, recorded so the gaps above aren't read as an exhaustive list of what was examined:
+
+- **Bounded lifecycle/cleanup** is otherwise correct. Both `start()` failure paths clear the 45 s timer and `rmSync` the mkdtemp directory (`:128-132`, `:138-146`); `close()` cleans up in a `finally`; `reopen()` leaking the old `child` reference on a failed relaunch is harmless because the launcher memoizes `closing` and self-cleans. 45 s fixture deadline < 60 s vitest timeout < per-request 5 s × bounded request count; launcher adds its own 10 s `bounded()` and a 64 KiB stdio cap.
+- **Scope-escape guard** (`:156-161`) is correct — `new URL` normalization means `/acme/../evil` resolves to `/evil` and is rejected, so server-supplied continuation tokens and manifest ids cannot redirect the observation off-scope.
+- **No vacuous optional chaining.** `exactRequest?.writeState`, `wireResponseBytes?.length`, and the Host `find(...)?.value` all fail on `undefined` rather than passing.
+- **Countercontrols at `:389-392` are meaningful.** `oldReplica` differs from `current` only in b00's `properties`, so it exercises the comparator's value sensitivity (not just its key sensitivity), and the `incomplete` case exercises key sensitivity. Both run against actually observed bytes.
+- **`collect()`'s `literals.has(next)` guard** prevents a continuation cycle from looping unbounded; divergent-token runaway is caught by the 45 s deadline.
+- **HEAD/`content-length` check at `:332`** is real — `parseRawResponse` returns the raw unframed remainder for HEAD, so a server erroneously sending a HEAD body would fail `:331`.
+- **Doc limits section is accurate** on the points it covers: no JSON Schema hosting claim (the test reads the two Type descriptors only, never `${scope}schemas/properties`), the 1 MiB decode bound is disclosed as a test bound rather than a server ceiling, and expiry/clock/fault/concurrency are explicitly disclaimed. `claimEligible: false` is asserted on the wire-adjacent side (`:136`) and in the binding.

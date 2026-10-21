@@ -1,0 +1,95 @@
+{
+  "name": "owners-followon",
+  "argv": [
+    "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+    "/Users/dbox/.cache/node/corepack/v1/pnpm/11.20.0/bin/pnpm.cjs",
+    "exec",
+    "vitest",
+    "run",
+    "packages/server/src/transaction-events.test.ts",
+    "--maxWorkers=1",
+    "--reporter=verbose",
+    "--reporter=json",
+    "--outputFile=/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-event-missing-context-draft/run-followon/owners-followon.json",
+    "-t",
+    "^(?:captures\\ immutable\\ current\\ context\\ for\\ missing\\ 'finite'\\ 'Bead'\\ Event\\ source|captures\\ immutable\\ current\\ context\\ for\\ missing\\ 'finite'\\ 'Link'\\ Event\\ source|captures\\ immutable\\ current\\ context\\ for\\ missing\\ 'SSE'\\ 'Bead'\\ Event\\ source|captures\\ immutable\\ current\\ context\\ for\\ missing\\ 'SSE'\\ 'Link'\\ Event\\ source)$"
+  ],
+  "guardedArgv": [
+    "/opt/homebrew/opt/python@3.14/bin/python3.14",
+    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/guarded-action.py",
+    "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+    "/Users/dbox/.cache/node/corepack/v1/pnpm/11.20.0/bin/pnpm.cjs",
+    "exec",
+    "vitest",
+    "run",
+    "packages/server/src/transaction-events.test.ts",
+    "--maxWorkers=1",
+    "--reporter=verbose",
+    "--reporter=json",
+    "--outputFile=/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-event-missing-context-draft/run-followon/owners-followon.json",
+    "-t",
+    "^(?:captures\\ immutable\\ current\\ context\\ for\\ missing\\ 'finite'\\ 'Bead'\\ Event\\ source|captures\\ immutable\\ current\\ context\\ for\\ missing\\ 'finite'\\ 'Link'\\ Event\\ source|captures\\ immutable\\ current\\ context\\ for\\ missing\\ 'SSE'\\ 'Bead'\\ Event\\ source|captures\\ immutable\\ current\\ context\\ for\\ missing\\ 'SSE'\\ 'Link'\\ Event\\ source)$"
+  ],
+  "cwd": "/Users/dbox/repos/wt/vickie/vickie-sequence-member-evidence",
+  "started": "2026-10-15T10:59:56.048361+00:00",
+  "adjudication": {
+    "kind": "exact-source-selection",
+    "passedFullNames": [
+      "captures immutable current context for missing 'finite' 'Bead' Event source",
+      "captures immutable current context for missing 'finite' 'Link' Event source",
+      "captures immutable current context for missing 'SSE' 'Bead' Event source",
+      "captures immutable current context for missing 'SSE' 'Link' Event source"
+    ],
+    "skipped": 29,
+    "jsonSha256": "2516ed6e778d4c59f222ccfd5b7c6791a98a3a7712f2e29bc7d301c6a49c1d51",
+    "limitation": "Static HTTP/owner model is not an independently observed network quota; raw logs and reported cleanup remain separately reviewed."
+  },
+  "elapsedSeconds": 1.3423285828903317,
+  "exit": 0,
+  "supervisorExit": 0,
+  "timeout": false,
+  "forcedCleanup": false,
+  "errors": [],
+  "processGroup": 82316,
+  "remainingBeforeCleanup": [],
+  "remainingAfterCleanup": [],
+  "sampledPids": [
+    82316,
+    82318,
+    82323,
+    82327,
+    82334
+  ],
+  "sampledPidsStillPresent": {},
+  "sampledTempEntries": [
+    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-event-missing-context-draft/run-followon/owners-followon.tmp/bdp-event-finite-8MmWTF",
+    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-event-missing-context-draft/run-followon/owners-followon.tmp/d7eZGLeiZ6zbGCdnpOhh0",
+    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-event-missing-context-draft/run-followon/owners-followon.tmp/node-compile-cache"
+  ],
+  "tempEntriesAfter": [
+    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-event-missing-context-draft/run-followon/owners-followon.tmp/node-compile-cache"
+  ],
+  "remainingTempEntriesForClassification": [
+    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-event-missing-context-draft/run-followon/owners-followon.tmp/node-compile-cache"
+  ],
+  "runtimeDirectoriesStillPresent": [],
+  "unclassifiedTempEntriesStillPresent": [
+    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-event-missing-context-draft/run-followon/owners-followon.tmp/node-compile-cache"
+  ],
+  "sourceUnchanged": true,
+  "sourceSha256After": {
+    "packages/server/src/transaction-store.ts": "b2a444f7997ba4e2b34bd57ed2a8119f0999e6146305b5aae4fc8735ff78bc7c",
+    "packages/server/src/transaction-http.ts": "9db33008a4c3a66214e2bf523b0b90f79c216c1f3f304c6df0491a0d1904439a",
+    "packages/server/src/transaction-events.test.ts": "0152561cdf096a48b0b01ec0e0d8bc81208a905bb5bf71dad411694387b58b27",
+    "apps/bdptest/src/transactional-event-missing-context-installed.test.ts": "828c05f358ae5863c992f93194da15a31df9a200e073e5e3525531ba39fe7d0d",
+    "docs/design/transaction-implementation-progress.md": "c31d464b9d7928639c54acf827844d3ae62691d026ee9557ed6f7b921643b278",
+    "packages/server/src/transaction-event-sse.test.ts": "69f58153b93947f028c37aebce2f57b0a25f725aacb9a1891c7b276b1c9e44c0"
+  },
+  "samplingSeconds": 0.05,
+  "commandWindowSeconds": 115,
+  "groupHardDeadlineSeconds": 120,
+  "cleanupBound": "TERM at115s, KILL no later than120s; wait/reap after kill adds no product execution allowance",
+  "samplingLimitation": "Short-lived or detached descendants may evade group sampling; helper counts and independent final checks remain separate.",
+  "tempClassification": "Only the selected fixture prefixes under this attempt TMPDIR are owned runtime roots; all other entries are preserved for review, not deleted or called leaks.",
+  "resultLimitation": "Exit0 is command completion, not independent oracle/claim/provenance adjudication."
+}

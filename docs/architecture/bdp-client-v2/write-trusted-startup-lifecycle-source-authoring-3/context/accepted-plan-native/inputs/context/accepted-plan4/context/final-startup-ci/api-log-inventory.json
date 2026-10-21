@@ -1,0 +1,127 @@
+{
+  "capturedUtc": "2026-10-18T07:17:13.656487+00:00",
+  "run": 39105905478,
+  "head": "fdd3d2a4f8753b9d7562dcdb7ba413a33be82a10",
+  "zipBytes": 914009,
+  "zipSha256": "0a49b3e5f549217eab713451a6146a10b278d49a13ece4fda449fa800ff360bc",
+  "members": {
+    "0_verify.txt": {
+      "bytes": 3895287,
+      "sha256": "e88780ffc990a6b8e67a5d11a5b4623390f0ead3937ae0fdb0522595f7b6b914"
+    },
+    "verify/system.txt": {
+      "bytes": 603,
+      "sha256": "7bafec5bdb55155737fab9f7125e8dd351331e4875b31d6756ecdc2e2ad4d6a5"
+    },
+    "verify/1_Set up job.txt": {
+      "bytes": 2423,
+      "sha256": "41cc1d366bd03253025fbee5d56407270c93b92956404b9c658c46e291c689cf"
+    },
+    "verify/2_Run actions_checkout@11d5960a326750d5838078e36cf38b85af677262.txt": {
+      "bytes": 54385,
+      "sha256": "03439c05a539d58abccda4f93bdd1323372fc1a54ea2b0b5db1d5f5679517ec5"
+    },
+    "verify/3_Run pnpm_action-setup@b906affcce14559ad1aafd4ab0e942779e9f58b1.txt": {
+      "bytes": 1528,
+      "sha256": "93f9268c5416b85977d6d47948db62aaeee2f877ffce352999f7cc1eab6a2b04"
+    },
+    "verify/4_Run actions_setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020.txt": {
+      "bytes": 2770,
+      "sha256": "04d23612c61cac1d454e8fdde19eaba784842c0cb4fbd205ffb720c39a1ae370"
+    },
+    "verify/5_Run actions_setup-go@924ae3a1cded613372ab5595356fb5720e22ba16.txt": {
+      "bytes": 4054,
+      "sha256": "8f73bf6e6b931db857b63b072f843cae8d189b9b794d07de6d98f4266b50f388"
+    },
+    "verify/6_Run test $(node --version) = v24.16.0.txt": {
+      "bytes": 428,
+      "sha256": "c06ce9ca344e5077971d0301f13a7bc845fee187b02fcd44bac9cd8e9a943b6a"
+    },
+    "verify/7_Run test $(pnpm --version) = 11.20.0.txt": {
+      "bytes": 426,
+      "sha256": "419744a8b4df8ff14d84362ffe756e00cb6829b209ab50c40904358d4f4d120b"
+    },
+    "verify/8_Run sudo apt-get update.txt": {
+      "bytes": 2942,
+      "sha256": "55abce58c4502aac5b5881d15301a0d61171353d7d204bde6a3dc153d3170dea"
+    },
+    "verify/9_Run sudo apt-get install --yes libicu-dev.txt": {
+      "bytes": 779,
+      "sha256": "4a6b20c7ac583da7f4c271dfa801ac4b7fd1e8d20fe5f5f6bd55a7e815ad2c10"
+    },
+    "verify/10_Run mkdir -p $RUNNER_TEMP_bdp-tools.txt": {
+      "bytes": 420,
+      "sha256": "3a9c652807b477ba4f75f8d333669c2188471044496cb3d0adb240bc5376bb7e"
+    },
+    "verify/11_Run go install github.com_steveyegge_beads_cmd_bd@v1.0.5.txt": {
+      "bytes": 19579,
+      "sha256": "311c6bcf8acb53e85562e495aee9d1d08337c9ba6331a5bed5d6d565b0afdfd8"
+    },
+    "verify/12_Verify the Go-installed source-build bd identity.txt": {
+      "bytes": 1414,
+      "sha256": "a964eb67f8d80bdf887edc03a87d310946c652dd393f96af3b5181630f680cc3"
+    },
+    "verify/13_Run pnpm install --frozen-lockfile.txt": {
+      "bytes": 1821,
+      "sha256": "4f210b6caf035bbd0d3f3750236af5da8a3c25992c2a363aef6976cf0255f88a"
+    },
+    "verify/14_Run pnpm formatcheck.txt": {
+      "bytes": 1153,
+      "sha256": "c5843ad724d5ba4b98d8e1e855ca403b2f60795ef38cbe556092830c2f31941f"
+    },
+    "verify/15_Run pnpm lint.txt": {
+      "bytes": 34474,
+      "sha256": "9ace6aab739b47d5328942b296d4f6b048a5df77fdb5829b21f366041da33f50"
+    },
+    "verify/16_Run pnpm checkboundaries.txt": {
+      "bytes": 556,
+      "sha256": "13f7c39f43e3b54671e45affb1e626b976ab2eb3743584b07bdafc4e5479c417"
+    },
+    "verify/17_Run pnpm typecheck.txt": {
+      "bytes": 440,
+      "sha256": "b50cdaba613433cbd702138d05b7aac9610138fa95c0b7a5d2a6ff2a5d3a7725"
+    },
+    "verify/18_Run pnpm build.txt": {
+      "bytes": 504,
+      "sha256": "21d81f924c3e2216320c4d557ee9e04ebf5b09842b8ed5384adbb21655432ae6"
+    },
+    "verify/19_Run pnpm test.txt": {
+      "bytes": 3756368,
+      "sha256": "9a2ce93f4ce98a090cc04db51ee8773b6c2a106750feb97eff0c69056cea3a15"
+    },
+    "verify/20_Run pnpm e2ereadypreflight.txt": {
+      "bytes": 2576,
+      "sha256": "d9beb40bde74b77ad494b67109e6cb707f21ae219ea6a949d1218f7613d63e3f"
+    },
+    "verify/21_Run pnpm smoke.txt": {
+      "bytes": 2476,
+      "sha256": "0ba6a667c35ca5ac2861bd11be683460c717f4508546946dfe5322bf4fe294ca"
+    },
+    "verify/22_Read-cohort evidence gate.txt": {
+      "bytes": 1005,
+      "sha256": "9972dfa4a5e5aed744254fcf2240194ccecef629b646c0a1f1848eea23ccd151"
+    },
+    "verify/41_Post Run actions_setup-go@924ae3a1cded613372ab5595356fb5720e22ba16.txt": {
+      "bytes": 50,
+      "sha256": "05ad0abf31201b6f15f631ff58ab3105bb571eccad057957a797a86d44510059"
+    },
+    "verify/42_Post Run actions_setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020.txt": {
+      "bytes": 483,
+      "sha256": "34d1ad0c35eb39723485e34961b7ba042a17c07ad74677dd5cd2f4d6bb9feed0"
+    },
+    "verify/43_Post Run pnpm_action-setup@b906affcce14559ad1aafd4ab0e942779e9f58b1.txt": {
+      "bytes": 103,
+      "sha256": "bf4fb47a3ab8e83de2d6936da634993190d2b1cb326a5518a899e93a3d4e9edf"
+    },
+    "verify/44_Post Run actions_checkout@11d5960a326750d5838078e36cf38b85af677262.txt": {
+      "bytes": 1701,
+      "sha256": "6ec343883a36dd01eb4ff45d5bb61e33b7a72ef757bc03eb0a9695a5ebde66d6"
+    },
+    "verify/45_Complete job.txt": {
+      "bytes": 507,
+      "sha256": "ed863157a2cbcc2317411cfc081bc5a8a419f399463a72ec085cc1a74c529cf9"
+    }
+  },
+  "allStepsSuccess": true,
+  "stepCount": 27
+}

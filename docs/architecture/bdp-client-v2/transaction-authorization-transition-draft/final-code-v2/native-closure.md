@@ -1,0 +1,11 @@
+# Native T1 pagination fixture closure
+
+No blocker in the exact three-edit correction. With33 Resources, read-pagination.ts:404–410 reserves ceil(items/limit)-1 future cursor positions. The unchanged transaction-runtime-configuration.ts:98–106 caps that at20. Therefore limit1 requires32 and correctly refuses; limit2 requires16 and still produces a genuine non-null continuation. The known capacity failure maps through read-request.ts:954–968 to temporarily-unavailable. This correction changes the fixture to fit the existing admitted capacity, without raising any production limit.
+
+Independently verified exactly two request URL substitutions (beads/?limit=1 to limit=2) and the corresponding strict initial-page equality to first.resources.slice(0,2). Full currentBeadCollection schema validation, mandatory actual next cursor, post-publication empty collection and later old-continuation foreign-view assertion remain unchanged. The first-page oracle still compares complete real receipt Resource postimages. Request count, operation bodies, owner/listener count, all timeouts and cleanup are identical. The other fourteen bound source files are byte-identical to final-code106e81.
+
+Original source-validation-v2 transport result remains failure: one failed T1, one passed T2, three unselected callbacks; exit1 without timeout. Actual T1 stopped at fourth response503 before publication; T2 passed separately. The retained source-v2 exit record reports empty process group/PID residue and temporary/runtime roots. I read those actual result/exit records; this source-only closure neither reruns them nor claims successor execution passed.
+
+Final binding `e0bbb4bf08afbc39b86fc04440ac91c1651f1bbed813d544c1d391de4b707491`; full patch `cfac763efe463fe61a9e16780b40c615dddc1ffc4768c4e2d6ebbf356ca96937`; runtime test `5775b00f7f8abd568367a3aa0f98732e601ed3a8c24fba0e0e93093de93a6a21`; exact correction `2432f7d675c6ebfd92f0b0567ad816af77c6f91b7555270cc3b2b1e5aa40e175`. All fifteen final source hashes checked before and after report creation; delta independently reconstructed from original frozen runtime test (identical to final-code predecessor).
+
+No product edits, imports, tests, builds or services were executed by this reviewer. Earlier native findings and closures are retained. Root owns further validation and council release.

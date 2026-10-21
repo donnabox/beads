@@ -1,0 +1,43 @@
+{
+  "case": "D02",
+  "variant": "unit",
+  "status": "UNIT_CONTROL_PASSED",
+  "executed": true,
+  "productCalls": 0,
+  "scope": "immutable actual callable; authored UNIT stimuli, host observations separately labeled",
+  "receipt": {
+    "divergent": {
+      "classification": "CONFORMING_FAILED_PARTIAL_NO_CREDIT",
+      "actualAttempted": 4,
+      "positiveCredit": false,
+      "claimEligible": false,
+      "path": "supported finite source assignments only; final Event boundary unsupported/refused; each actual-next loop<=12, dispatch<=32; not success32 prefix"
+    },
+    "unsupportedFinal": {
+      "refused": true,
+      "exceptionType": "Refusal",
+      "reason": "failed-unsupported-final-event-boundary"
+    },
+    "assignmentBeforeAssertion": [
+      {
+        "classification": "CONFORMING_FAILED_PARTIAL_NO_CREDIT",
+        "actualAttempted": 5,
+        "positiveCredit": false,
+        "claimEligible": false,
+        "path": "supported finite source assignments only; final Event boundary unsupported/refused; each actual-next loop<=12, dispatch<=32; not success32 prefix"
+      },
+      {
+        "classification": "CONFORMING_FAILED_PARTIAL_NO_CREDIT",
+        "actualAttempted": 6,
+        "positiveCredit": false,
+        "claimEligible": false,
+        "path": "supported finite source assignments only; final Event boundary unsupported/refused; each actual-next loop<=12, dispatch<=32; not success32 prefix"
+      }
+    ]
+  },
+  "unresolved": [],
+  "subjectImplementationSha256": "6cc0f6e04d12877439f26ebec5d9b65fa543894a7789dea143fef156efdb771e",
+  "hostContainmentCredit": false,
+  "profileCredit": false,
+  "syntheticAcceptance": false
+}

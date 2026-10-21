@@ -1,0 +1,74 @@
+{
+  "method": "Pure data reconstruction of exact ASCII source literals/property order, not JavaScript or product/helper execution; strings and fixed32-link expansion from source473\u2013495/522\u2013526/585\u2013611/670\u2013679/706\u2013718. GET body is undefined and omitted. A rejected dispatch still captures its fixed body before the65536 transport rejection; this bound comes from fixture construction, not transport cap.",
+  "POSTs": [
+    {
+      "POST": 1,
+      "requestBody": "{\"operations\":[{\"operation\":\"createBead\",\"id\":\"beads/a\",\"type\":\"https://reference.invalid/acme/types/bead\",\"properties\":{\"n\":0},\"metadata\":{\"stable\":true}},{\"operation\":\"createBead\",\"id\":\"beads/b\",\"type\":\"https://reference.invalid/acme/types/bead\",\"properties\":{\"n\":0},\"metadata\":{\"stable\":true}},{\"operation\":\"createBead\",\"id\":\"beads/owner\",\"type\":\"https://reference.invalid/acme/types/owner\",\"properties\":{\"n\":0},\"metadata\":{\"stable\":true}}]}",
+      "UTF8Bytes": 444,
+      "encodedReportStringBytes": 508
+    },
+    {
+      "POST": 2,
+      "requestBody": "{\"operations\":[{\"operation\":\"createLink\",\"id\":\"https://reference.invalid/acme/links/l00\",\"type\":\"https://reference.invalid/acme/types/link\",\"source\":\"beads/a\",\"target\":\"beads/b\",\"properties\":{\"n\":0}},{\"operation\":\"createLink\",\"id\":\"https://reference.invalid/acme/links/l01\",\"type\":\"https://reference.invalid/acme/types/link\",\"source\":\"beads/a\",\"target\":\"beads/b\",\"properties\":{\"n\":0}},{\"operation\":\"createLink\",\"id\":\"https://reference.invalid/acme/links/l02\",\"type\":\"https://reference.invalid/acme/types/link\",\"source\":\"beads/a\",\"target\":\"beads/b\",\"properties\":{\"n\":0}},{\"operation\":\"createLink\",\"id\":\"https://reference.invalid/acme/links/l03\",\"type\":\"https://reference.invalid/acme/types/link\",\"source\":\"beads/a\",\"target\":\"beads/b\",\"properties\":{\"n\":0}},{\"operation\":\"createLink\",\"id\":\"https://reference.invalid/acme/links/l04\",\"type\":\"https://reference.invalid/acme/types/link\",\"source\":\"beads/a\",\"target\":\"beads/b\",\"properties\":{\"n\":0}},{\"operation\":\"createLink\",\"id\":\"https://reference.invalid/acme/links/l05\",\"type\":\"https://reference.invalid/acme/types/link\",\"source\":\"beads/a\",\"target\":\"beads/b\",\"properties\":{\"n\":0}},{\"operation\":\"createLink\",\"id\":\"https://reference.invalid/acme/links/l06\",\"type\":\"https://reference.invalid/acme/types/link\",\"source\":\"beads/a\",\"target\":\"beads/b\",\"properties\":{\"n\":0}},{\"operation\":\"createLink\",\"id\":\"https://reference.invalid/acme/links/l07\",\"type\":\"https://reference.invalid/acme/types/link\",\"source\":\"beads/a\",\"target\":\"beads/b\",\"properties\":{\"n\":0}},{\"operation\":\"createLink\",\"id\":\"https://reference.invalid/acme/links/l08\",\"type\":\"https://reference.invalid/acme/types/link\",\"source\":\"beads/a\",\"target\":\"beads/b\",\"properties\":{\"n\":0}},{\"operation\":\"createLink\",\"id\":\"https://reference.invalid/acme/links/l09\",\"type\":\"https://reference.invalid/acme/types/link\",\"source\":\"beads/a\",\"target\":\"beads/b\",\"properties\":{\"n\":0}},{\"operation\":\"createLink\",\"id\":\"https://reference.invalid/acme/links/l10\",\"type\":\"https://reference.invalid/acme/types/link\",\"source\":\"beads/a\",\"target\":\"beads/b\",\"properties\":{\"n\":0}},{\"operation\":\"createLink\",\"id\":\"https://reference.invalid/acme/links/l11\",\"type\":\"https://reference.invalid/acme/types/link\",\"source\":\"beads/a\",\"target\":\"beads/b\",\"properties\":{\"n\":0}},{\"operation\":\"createLink\",\"id\":\"https://reference.invalid/acme/links/l12\",\"type\":\"https://reference.invalid/acme/types/link\",\"source\":\"beads/a\",\"target\":\"beads/b\",\"properties\":{\"n\":0}},{\"operation\":\"createLink\",\"id\":\"https://reference.invalid/acme/links/l13\",\"type\":\"https://reference.invalid/acme/types/link\",\"source\":\"beads/a\",\"target\":\"beads/b\",\"properties\":{\"n\":0}},{\"operation\":\"createLink\",\"id\":\"https://reference.invalid/acme/links/l14\",\"type\":\"https://reference.invalid/acme/types/link\",\"source\":\"beads/a\",\"target\":\"beads/b\",\"properties\":{\"n\":0}},{\"operation\":\"createLink\",\"id\":\"https://reference.invalid/acme/links/l15\",\"type\":\"https://reference.invalid/acme/types/link\",\"source\":\"beads/a\",\"target\":\"beads/b\",\"properties\":{\"n\":0}},{\"operation\":\"createLink\",\"id\":\"https://reference.invalid/acme/links/l16\",\"type\":\"https://reference.invalid/acme/types/link\",\"source\":\"beads/a\",\"target\":\"beads/b\",\"properties\":{\"n\":0}},{\"operation\":\"createLink\",\"id\":\"https://reference.invalid/acme/links/l17\",\"type\":\"https://reference.invalid/acme/types/link\",\"source\":\"beads/a\",\"target\":\"beads/b\",\"properties\":{\"n\":0}},{\"operation\":\"createLink\",\"id\":\"https://reference.invalid/acme/links/l18\",\"type\":\"https://reference.invalid/acme/types/link\",\"source\":\"beads/a\",\"target\":\"beads/b\",\"properties\":{\"n\":0}},{\"operation\":\"createLink\",\"id\":\"https://reference.invalid/acme/links/l19\",\"type\":\"https://reference.invalid/acme/types/link\",\"source\":\"beads/a\",\"target\":\"beads/b\",\"properties\":{\"n\":0}},{\"operation\":\"createLink\",\"id\":\"https://reference.invalid/acme/links/l20\",\"type\":\"https://reference.invalid/acme/types/link\",\"source\":\"beads/a\",\"target\":\"beads/b\",\"properties\":{\"n\":0}},{\"operation\":\"createLink\",\"id\":\"https://reference.invalid/acme/links/l21\",\"type\":\"https://reference.invalid/acme/types/link\",\"source\":\"beads/a\",\"target\":\"beads/b\",\"properties\":{\"n\":0}},{\"operation\":\"createLink\",\"id\":\"https://reference.invalid/acme/links/l22\",\"type\":\"https://reference.invalid/acme/types/link\",\"source\":\"beads/a\",\"target\":\"beads/b\",\"properties\":{\"n\":0}},{\"operation\":\"createLink\",\"id\":\"https://reference.invalid/acme/links/l23\",\"type\":\"https://reference.invalid/acme/types/link\",\"source\":\"beads/a\",\"target\":\"beads/b\",\"properties\":{\"n\":0}},{\"operation\":\"createLink\",\"id\":\"https://reference.invalid/acme/links/l24\",\"type\":\"https://reference.invalid/acme/types/link\",\"source\":\"beads/a\",\"target\":\"beads/b\",\"properties\":{\"n\":0}},{\"operation\":\"createLink\",\"id\":\"https://reference.invalid/acme/links/l25\",\"type\":\"https://reference.invalid/acme/types/link\",\"source\":\"beads/a\",\"target\":\"beads/b\",\"properties\":{\"n\":0}},{\"operation\":\"createLink\",\"id\":\"https://reference.invalid/acme/links/l26\",\"type\":\"https://reference.invalid/acme/types/link\",\"source\":\"beads/a\",\"target\":\"beads/b\",\"properties\":{\"n\":0}},{\"operation\":\"createLink\",\"id\":\"https://reference.invalid/acme/links/l27\",\"type\":\"https://reference.invalid/acme/types/link\",\"source\":\"beads/a\",\"target\":\"beads/b\",\"properties\":{\"n\":0}},{\"operation\":\"createLink\",\"id\":\"https://reference.invalid/acme/links/l28\",\"type\":\"https://reference.invalid/acme/types/link\",\"source\":\"beads/a\",\"target\":\"beads/b\",\"properties\":{\"n\":0}},{\"operation\":\"createLink\",\"id\":\"https://reference.invalid/acme/links/l29\",\"type\":\"https://reference.invalid/acme/types/link\",\"source\":\"beads/a\",\"target\":\"beads/b\",\"properties\":{\"n\":0}},{\"operation\":\"createLink\",\"id\":\"https://reference.invalid/acme/links/l30\",\"type\":\"https://reference.invalid/acme/types/link\",\"source\":\"beads/a\",\"target\":\"beads/b\",\"properties\":{\"n\":0}},{\"operation\":\"createLink\",\"id\":\"https://reference.invalid/acme/links/l31\",\"type\":\"https://reference.invalid/acme/types/link\",\"source\":\"beads/a\",\"target\":\"beads/b\",\"properties\":{\"n\":0}}]}",
+      "UTF8Bytes": 5936,
+      "encodedReportStringBytes": 6708
+    },
+    {
+      "POST": 3,
+      "requestBody": "{\"collection\":\"links\",\"selector\":\"$[?@.type == \\\"https://reference.invalid/acme/types/link\\\"]\",\"cardinality\":{\"min\":32,\"max\":32}}",
+      "UTF8Bytes": 129,
+      "encodedReportStringBytes": 149
+    },
+    {
+      "POST": 4,
+      "requestBody": "{\"operations\":[{\"operation\":\"createLink\",\"id\":\"links/later\",\"type\":\"https://reference.invalid/acme/types/link\",\"source\":\"beads/a\",\"target\":\"beads/b\",\"properties\":{\"n\":0}}]}",
+      "UTF8Bytes": 172,
+      "encodedReportStringBytes": 200
+    },
+    {
+      "POST": 5,
+      "requestBody": "{\"operations\":[{\"operation\":\"deleteWhere\",\"collection\":\"links\",\"selector\":\"$[?@.type == \\\"https://reference.invalid/acme/types/link\\\"]\",\"cardinality\":{\"min\":32,\"max\":32}}]}",
+      "UTF8Bytes": 172,
+      "encodedReportStringBytes": 198
+    },
+    {
+      "POST": 6,
+      "requestBody": "{\"operations\":[{\"operation\":\"createLink\",\"id\":\"links/owned\",\"type\":\"https://reference.invalid/acme/types/owned\",\"source\":\"beads/owner\",\"target\":\"beads/b\",\"properties\":{\"n\":0}}]}",
+      "UTF8Bytes": 177,
+      "encodedReportStringBytes": 205
+    },
+    {
+      "POST": 7,
+      "requestBody": "{\"collection\":\"links\",\"selector\":\"$[?@.id == \\\"https://reference.invalid/acme/links/owned\\\"]\",\"change\":[{\"op\":\"replace\",\"path\":\"/n\",\"value\":1}]}",
+      "UTF8Bytes": 144,
+      "encodedReportStringBytes": 170
+    },
+    {
+      "POST": 8,
+      "requestBody": "{\"collection\":\"links\",\"selector\":\"$[?@.id == \\\"https://reference.invalid/acme/links/owned\\\"]\",\"change\":[{\"op\":\"replace\",\"path\":\"/n\",\"value\":1}]}",
+      "UTF8Bytes": 144,
+      "encodedReportStringBytes": 170
+    },
+    {
+      "POST": 9,
+      "requestBody": "{\"operations\":[{\"operation\":\"createBead\",\"id\":\"beads/tentative\",\"type\":\"https://reference.invalid/acme/types/bead\",\"properties\":{\"n\":0},\"metadata\":{\"stable\":true}},{\"operation\":\"updateWhere\",\"collection\":\"links\",\"selector\":\"$[?@.id == \\\"https://reference.invalid/acme/links/owned\\\"]\",\"change\":[{\"op\":\"replace\",\"path\":\"/n\",\"value\":\"invalid\"}]}]}",
+      "UTF8Bytes": 344,
+      "encodedReportStringBytes": 398
+    },
+    {
+      "POST": 10,
+      "requestBody": "{\"operations\":[{\"operation\":\"deleteWhere\",\"collection\":\"links\",\"selector\":\"$[?@.type == \\\"https://reference.invalid/acme/types/link\\\"]\",\"cardinality\":{\"min\":32,\"max\":32}}]}",
+      "UTF8Bytes": 172,
+      "encodedReportStringBytes": 198
+    },
+    {
+      "POST": 11,
+      "requestBody": "{\"operations\":[{\"operation\":\"createBead\",\"id\":\"beads/tentative\",\"type\":\"https://reference.invalid/acme/types/bead\",\"properties\":{\"n\":0},\"metadata\":{\"stable\":true}},{\"operation\":\"updateWhere\",\"collection\":\"links\",\"selector\":\"$[?@.id == \\\"https://reference.invalid/acme/links/owned\\\"]\",\"change\":[{\"op\":\"replace\",\"path\":\"/n\",\"value\":\"invalid\"}]}]}",
+      "UTF8Bytes": 344,
+      "encodedReportStringBytes": 398
+    }
+  ],
+  "maximumRawBytes": 5936,
+  "sumRawBytes": 8178,
+  "sumEncodedReportStringBytes": 9302
+}

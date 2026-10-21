@@ -1,0 +1,78 @@
+## Verification result
+
+**No hidden scope expansion.** The 28,255/20,609-line churn in `packages/conformance/matrices/read-update-v1.json` is diff-algorithm noise. Structurally (parsed, per-scenario deep leaf diff):
+
+- 38 of 41 existing scenarios have **exactly one** leaf change: `/setup/fixture` → `reference-read-update-schema-v1`.
+- 3 existing scenarios changed materially: `read.types.descriptor` (13→17 actions, +4 exact descriptor GETs), `read-update.singleton.update-bead` (15→27), `read-update.singleton.document-patch-validation` (28→66). In all three, **every pre-existing action is byte-identical and in the same position**.
+- 2 added: `read-update.validation.type-contract` (30 actions/137 asserts), `read-update.validation.diagnostics` (31/180), both at correct canonical catalog positions (117/118 of 129); manifest order == catalog-filtered order.
+
+**Claims that hold (checked, not assumed):**
+
+| Claim | Evidence |
+|---|---|
+| 17-Type cohort | `contracts.descriptors` len 17, unique retrievalUri 17, `additions.schemas` 4; `REFERENCE_TYPE_DESCRIPTORS` = 8 bead + 5 link = 13 (`reference-domain.ts:3-27`) |
+| Exact `$id` ≡ retrievalUri ≡ `propertiesSchema` (council F3) | asserted per schema in `installed-schema-cohort.test.ts:42-46`; open root checked via `not.toHaveProperty("additionalProperties")` |
+| Sorted inventory (council F1) | fixture `/oracles/collections/type-summaries` and `/oracles/ordering/types` both 17; independently re-verified byte-lexicographic by full ID; new IDs at 1-based **11–14**, between `types/relationship` and `types/task` |
+| Complete-page bound (council F5) | `DEVELOPMENT_OWNER_LIMITS.read.page.defaultItems = 20`; `complete-page` (`/next === null`) retained; `toBeLessThanOrEqual(20)` guard present |
+| Four descriptor GETs in the inherited row (council F4) | `read.types.descriptor` gains 4 actions with full-object `exact` equality incl. endpoint declarations |
+| Child-declared intersection / whole-postimage / metadata exemption (council F6) | all probes declare `types/schema-{bead,link}-child`. Parent-only (`n=-1` → `schema-bead-base#/properties/n/minimum`), child-only (`enabled="wrong"` → `schema-bead-child#/properties/enabled/type`), whole-postimage (`remove /detail` with `enabled=true` retained → `#/then/required`, `instanceLocation: ""`), combined success (`enabled=false`+remove, `opaque` preserved), metadata accepting the exact rejected values (`{n:-1,enabled:"wrong"}`) |
+| Independent endpoint/afterstate | every refusal proposes an effectful `metadataChange` and is followed by an independent full GET with both static documents and `equalsBinding` postimage; patch-validation Link failures add `w1.a`/`w1.b` GETs (correctly bound to `arbitrary-metadata-record`, not the stale `validation-before-a`) |
+| Exact HTTP binding | all 8 new schema/descriptor GETs are `family:"http"` with `raw.headerLines`; routes auto-derive from the manifest via `knownReadBindings` — no wildcard, no hand-added allowlist |
+| Discriminating controls | all 6 assert the **exact failing assertion id list**, not just scenario failure; `counterfactualApplications === 0` guard makes the afterstate control fire once. All 6 corruptions stay schema-valid (`validationDiagnostic.dependentRequired` still satisfied; `/propertiesChange/0/value` is a legal `jsonPointer`) |
+| No runtime / profile-admission change | `--numstat`: only `apps/bdptest/**`, `packages/conformance/{fixtures,matrices,test-support}`, `docs/`. Normative `$defs.typeDescriptor` already admits `propertiesSchema` on links and is `additionalProperties:false` — no schema edit needed |
+| Rows remain partial, `claimEligible` false | whole-contract set **identical**, 26 IDs; status 41→43 bounded-observation, 88→86 omitted; both new rows `wholeContract:false`; `claimEligible:false` |
+| Budgets | manifest 2,036,656 B / 54,143 nodes / depth 11 / max container 228 vs 4 MiB / 100,000 / 128 / 10,000 — all enforced in `artifact-bundle.ts:19-22` |
+| Coverage↔manifest bindings | re-ran the gate's own projection over all 129 rows: **0 mismatches** |
+| `cumulative-artifact.test.ts` untouched | correct, not an omission: the gate derives `planned` from `bundle.manifest.scenarios`, and the 26-ID whole list is unchanged. The plan's "update it in lockstep" (line 23) was unnecessary |
+| Plan's "nonempty message" | satisfied by `#/$defs/harnessInstalled_readUpdateProblem` → `validationDiagnostic.required:["message"]`, `minLength:1` — no dedicated assertion needed |
+
+**Not verifiable by inspection** (no runs in frozen checkout): the two `exactConfigurationDigest` pins `bdffd6f957401222f6e5ffc928c7769d23976e8a8a8d5eb16dfa1bb7ce836a07`, and whether the suite passes.
+
+---
+
+## Findings
+
+### 1. MEDIUM — both new coverage rows carry a verbatim-identical `reason` that misdescribes each row
+**Location:** `packages/conformance/test-support/read-update-coverage-v1.json:6674` and `:6824`
+**Impact:** The two reasons are byte-identical. Neither states what its own row observes. `validation.diagnostics` (180 assertions: failing-Type identity, exact keyword URIs, instance pointers, observed 32/524288 bounds) is described as "no implicit network installation … not established" — a `validation.type-contract` clause with no bearing on it. `validation.type-contract` (137 assertions: `type-not-installed`, `validation-failed`, absent supplied identity, positive create controls) never mentions `type-not-installed`. Plan lines 29–30 give each row a distinct clause map and credit boundary, and the progress doc's third new paragraph describes them distinctly — the coverage `reason` is the row-local record a promotion reviewer reads, so a generic duplicate defeats the mechanism the plan relies on.
+**Fix:** Write per-row reasons from the plan's clause map: type-contract → both-kind inadmissible-property refusal with absent-ID GET, one missing Type per category returning `type-not-installed` with no allocation, positive controls; partial on cause inventory and no-implicit-network. diagnostics → exact failing Type, authored schema `$id` + keyword pointer, properties-relative instance location, canonical Problem tuple, observed discovery bounds; partial on truncation, evaluation order, retained-list compatibility, non-Type causes.
+
+### 2. MEDIUM — the progress doc retains a W1 invariant sentence that this same commit falsifies
+**Location:** `docs/design/read-update-executable-progress.md:133`
+**Impact:** The paragraph still asserts "no fixture, Type, installed contract or policy changed … the admitted route set is identical. Both digest pins reflect that order-only change." At 2c10d19 the fixture changed (id renamed, both Type oracles 13→17), the installed contract changed (17 descriptors + 4 schemas), the route set gained 8 exact GET routes (`types/schema-*`, `schemas/schema-*`), and both digest pins were rewritten `be0e83fb…`→`bdffd6f9…` **for that reason**, not for an order-only change. A reader auditing the digest movement is pointed at the wrong cause, in the one document whose purpose is honest evidence accounting.
+**Fix:** Scope the sentence to its historical pin ("at `39dd934`/`ededc12` …") or restate: the pins now also carry the cohort's new route and configuration identity.
+
+### 3. MEDIUM — the "thirteen byte-identical shipped descriptors" claim rests on a tautological assertion
+**Location:** `apps/bdptest/src/installed-schema-cohort.test.ts:35-37`; helper at `apps/bdptest/test-support/installed-schema-cohort.ts:58-62`
+**Impact:** The test compares `withSchemaCohort(...).contracts.descriptors.slice(0, 13)` against `shipped.map(d => ({retrievalUri: d.id, utf8: stringifyJsonValue(d)}))` — literally the expression `withSchemaCohort` itself evaluates. Its only informational content is "`referenceTypeArtifacts` returns exactly 13"; it cannot detect divergence from what the empty-descriptor shipped path installs. Over HTTP, the 13 pre-existing `read.types.descriptor` actions assert only `status`, closed-schema validity and `/id` (`normalize: scope-relative-url`) — not `conformsTo`, `source`/`target` or `ownsOutgoing` — and the fixture tuple oracle adds only name/describes. So nothing in this cohort compares the 13 shipped descriptor *bodies* against the shipped-set configuration, which is exactly the claim the progress doc's new section leads with. (By construction both capture branches run the same `referenceTypeArtifacts` + `stringifyJsonValue`, so this is a missing oracle, not a suspected mismatch.)
+**Fix:** In the same test, also capture `{...base, contracts: {descriptors: [], schemas: []}}` and assert the shipped capture's artifact entries equal the cohort capture's first 13 (by `retrievalUri` + bytes) — one call, genuinely independent of the helper. Alternatively give the 13 the same full-object `exact` assertion the 4 new descriptor actions use.
+
+### 4. MEDIUM/LOW — `installed-schema-cohort.test.ts` asserts far less about the capture than its name claims
+**Location:** `apps/bdptest/src/installed-schema-cohort.test.ts:16` (title) and `:48-49`
+**Impact:** The title says it "pins the complete schema cohort closure", but the capture step is `expect(captured.profile).toBe("read-update")` only. `captureInstalledReferenceConfiguration` returns `schemas` (the 4 hosted URIs/bytes), `configuration.contracts.descriptors` (17) and `artifactIdentity` — none are asserted. The closure claim is carried entirely by the capture not throwing, so a future change that silently dropped a schema from the hosted set (leaving `propertiesSchema` resolvable only via `$id` aliasing, per `installed-schema-graph.ts:517`) would pass this test; it would be caught only downstream by the matrix run's schema-document GETs.
+**Fix:** Assert `captured.schemas.map(s => s.uri)` equals the four `$id`s and `captured.configuration.contracts.descriptors.length === 17`, or rename the test.
+
+### 5. LOW — the four schema-rejection diagnostics never pin `document`
+**Location:** `packages/conformance/matrices/read-update-v1.json`, actions `schema-{validation,diagnostics}-{bead,link}-{base,child,complete}` and `schema-update-bead-base`
+**Impact:** They assert `diagnostics/0/{type,schemaLocation,instanceLocation}` but not `diagnostics/0/document`, while the pre-existing generic probe in the same row does (`bead-metadata-array` → `document: "metadata"`, plus `document-root`). `document` is precisely the field that distinguishes a properties diagnostic from a metadata one, and the metadata-exemption credit turns on that distinction; `instanceLocation: "/n"` alone is ambiguous between the two documents. The progress doc's "document-relative instance pointers" is therefore not fully pinned.
+**Fix:** Add `{"id":"document","kind":"json-pointer","pointer":"/body/diagnostics/0/document","exists":true,"equals":"properties"}` to the schema-failure probes. Free, and it strengthens both the intersection and exemption claims.
+
+### 6. LOW — `read-update.validation.type-contract` has no assertion-input sensitivity control
+**Location:** `apps/bdptest/src/read-update-matrix.test.ts:385-397` (all 6 new controls target `validation.diagnostics` and `singleton.document-patch-validation`)
+**Impact:** Plan line 46's done-criterion is "all newly credited laws have meaningful negative sensitivity controls". Two rows were newly credited (omitted → bounded-observation); `validation.type-contract` got 137 assertions and zero controls. Its `type-not-installed` vs `validation-failed` pair and the positive create controls do discriminate by construction, so this is a missing proof rather than a wrong claim — but it is the one promoted row where no control demonstrates the assertions can fail.
+**Fix:** One control, e.g. rewrite `problem-code` to `validation-failed` on the `schema-contract-bead-uninstalled` response (must fail `problem-code`), or make `after-schema-contract-bead-invalid` return a 200 record (must fail `status` + `absent`).
+
+### 7. LOW — diagnostics-row Link refusals omit the endpoint-preservation GETs its sibling row has
+**Location:** `packages/conformance/matrices/read-update-v1.json`, `after-schema-diagnostics-link-base` / `-link-child`; `docs/design/read-update-executable-progress.md:140`
+**Impact:** Those two have no `-endpoint-a`/`-endpoint-b` follow-ups, unlike every Link failure in `document-patch-validation`. The doc sentence "Each refusal proposes an effectful metadata change and is followed by a complete unchanged-record GET; Link failures additionally preserve both endpoints" reads as covering both new rows; only one row does it.
+**Fix:** Add the two GETs (binding to `validation-before-a`/`validation-before-b`, which are untouched in that row), or scope the sentence to the patch-validation row.
+
+### 8. LOW — the supplementary diagnostic-bound check is near-vacuous
+**Location:** `apps/bdptest/src/read-update-matrix.test.ts:828-855`
+**Impact:** It compares four single-element diagnostic lists (`length 1`, a few hundred bytes each) against bounds of 32 items / 524,288 bytes. The echo of `{diagnostics: 32, diagnosticBytes: 524288}` and `lists.toHaveLength(4)` are real pins; the two bound comparisons cannot fail for any plausible implementation and establish nothing about the truncation obligation the plan was worried about. The doc correctly marks it non-crediting, so this is not an overclaim — just inert weight in the owned test file.
+**Fix:** Either drop the two bound comparisons and keep the shape pins, or state in the doc that the bounds are echoed-and-recorded rather than exercised.
+
+---
+
+### Plan/council refinements: all accounted for
+F1 (both oracles, interleave 11–14) ✓ · F2 (26-ID gate, no whole-flag change) ✓ — and the anticipated `cumulative-artifact.test.ts` edit was correctly unnecessary · F3 (triple URI identity asserted) ✓ · F4 (4 descriptor GETs in the inherited row) ✓ · F5 (17-of-20 page bound, guarded) ✓ · F6 (every intersection probe child-declared, both kinds) ✓. Budget F7/F8 were landed at `64f`/`c3f` and are outside this diff. Nothing in the declared uncovered inventory is overclaimed: both property-change rows stay `whole=false`, and the 26/103/129 accounting is internally consistent.

@@ -1,0 +1,181 @@
+{
+  "status": "PROVISIONAL_PLAN_ONLY_ACTUAL_MERGE_PENDING_AUTHORING_BLOCKED",
+  "originalPlanSha256": "c9886e67e5abc5926329c5a621d29111d6b595d8d1a57bd49e28ab4e3ba9a33b",
+  "planSha256": "45acc3ab6580f6654c573b48f93b26b2c9a32a73297fc5ab6c2b53d0b18dffd5",
+  "actualMain": null,
+  "actualTree": null,
+  "solePlan": {
+    "path": "/Users/dbox/repos/wt/vickie/bdp-client-design/checkout/docs/architecture/bdp-client-v2/design.md",
+    "sha256": "6bc719cc4d13c6efbcc145442afb412679cb4c98320e815bd1846ea071b87c0c"
+  },
+  "positivePostBodies": [
+    {
+      "action": "s-sequence",
+      "body": "{\"operations\":[{\"operation\":\"createBead\",\"id\":\"beads/a\",\"type\":\"https://reference.invalid/acme/types/task\",\"properties\":{\"title\":\"member-first\"},\"idempotencyKey\":\"member-a\"},{\"operation\":\"deleteBead\",\"bead\":\"beads/missing\",\"idempotencyKey\":\"member-fail\"},{\"operation\":\"createBead\",\"id\":\"beads/b\",\"type\":\"https://reference.invalid/acme/types/task\",\"properties\":{\"title\":\"member-last\"},\"idempotencyKey\":\"member-b\"}]}",
+      "bytes": 414,
+      "sha256": "f3cde631127aaf530ea5349330e6c7bb46766b02b135f9c7c59acfcd2f2c71c7"
+    },
+    {
+      "action": "s-first-receipt",
+      "body": "{\"operations\":[{\"operation\":\"createBead\",\"id\":\"beads/a\",\"type\":\"https://reference.invalid/acme/types/task\",\"properties\":{\"title\":\"member-first\"}}]}",
+      "bytes": 147,
+      "sha256": "b3f8ec9abecce7f6de336c869281e69c2568798a9a44dccb6612a6c5fa44d775"
+    },
+    {
+      "action": "s-failed-receipt",
+      "body": "{\"operations\":[{\"operation\":\"deleteBead\",\"bead\":\"beads/missing\"}]}",
+      "bytes": 66,
+      "sha256": "47a4fd554c40bd307a50c37f422a945fae35091ac7fc206a7bb59274cb00a4ec"
+    },
+    {
+      "action": "s-last-receipt",
+      "body": "{\"operations\":[{\"operation\":\"createBead\",\"id\":\"beads/b\",\"type\":\"https://reference.invalid/acme/types/task\",\"properties\":{\"title\":\"member-last\"}}]}",
+      "bytes": 146,
+      "sha256": "6e27825f68db2ff5572688966faad2e924d2e2bdee4870d9339e56ee1db2c837"
+    },
+    {
+      "action": "s-replay",
+      "body": "{\"operations\":[{\"operation\":\"createBead\",\"id\":\"beads/a\",\"type\":\"https://reference.invalid/acme/types/task\",\"properties\":{\"title\":\"member-first\"},\"idempotencyKey\":\"member-a\"},{\"operation\":\"deleteBead\",\"bead\":\"beads/missing\",\"idempotencyKey\":\"member-fail\"},{\"operation\":\"createBead\",\"id\":\"beads/b\",\"type\":\"https://reference.invalid/acme/types/task\",\"properties\":{\"title\":\"member-last\"},\"idempotencyKey\":\"member-b\"}]}",
+      "bytes": 414,
+      "sha256": "f3cde631127aaf530ea5349330e6c7bb46766b02b135f9c7c59acfcd2f2c71c7"
+    }
+  ],
+  "negativePostBody": {
+    "action": "s-sequence",
+    "body": "{\"operations\":[{\"operation\":\"createBead\",\"id\":\"beads/a\",\"type\":\"https://reference.invalid/acme/types/task\",\"properties\":{\"title\":\"member-first\"},\"idempotencyKey\":\"member-a\"},{\"operation\":\"deleteBead\",\"bead\":\"beads/a\",\"idempotencyKey\":\"member-fail\"},{\"operation\":\"createBead\",\"id\":\"beads/b\",\"type\":\"https://reference.invalid/acme/types/task\",\"properties\":{\"title\":\"member-last\"},\"idempotencyKey\":\"member-b\"}]}",
+    "bytes": 408,
+    "sha256": "cc96f5caf3ee16a216a73ccbe6028aacecf2c1a8ff1dc1315025fbc175217c06"
+  },
+  "staticSelections": [
+    {
+      "file": "packages/conformance/src/transactional-cumulative.test.ts",
+      "names": [
+        "binds the canonical cumulative TX selection and exact source digests without qualification",
+        "rejects noncanonical selections, History, wrong factories, retired and misprofiled rows",
+        "copies source bytes before binding and exposes all missing obligations without executing them",
+        "pins the inherited command-minimum manifest facts, read-header absence and all thirteen prior objects",
+        "preserves every original TX scenario and coverage object while adding one bounded partial cross-carrier row",
+        "pins the one-page matched-plus-updated witness without advertised-limit or other-outcome credit"
+      ]
+    },
+    {
+      "file": "apps/bdptest/src/transactional-matrix.test.ts",
+      "names": [
+        "pins the matching no-op installed route digest and fifteen-action ledger",
+        "pins deletion-safety derivative carriers, complete positives, and measured source bounds"
+      ]
+    }
+  ],
+  "proposedLocal": {
+    "cohorts": 4,
+    "expectedHttp": 623,
+    "maxHttp": 632,
+    "children": 71
+  },
+  "failedPlanningWrite": "Historical v2 initial guarded write stopped before writing on live diff mismatch during separate Event repair; no product execution. V3 reanchor is read-only source/JSON inspection.",
+  "executed": false,
+  "previousPlanSha256": "a4bdc71227bea69f8f1b73b05f58ecaa1e02e75e95677904dc6f33d878f4e1b9",
+  "nativeReviewSha256": "a183189c1035b03ecf8f89488d2eb114a3b34dfef5dfca2e87266c27cb807f1c",
+  "staticCallbacks": 8,
+  "dispositions": {
+    "N1": "Exact deleted identity id/type/revision, properties/metadata absent, revision equals checked first creation; first/last full Resources and seven failure IDs unchanged.",
+    "N2": "Add existing preservation/fence callback; new-row removal precedes historical minimum/cross reconstruction; preserve historical hashes plus independently pin28 immediate-parent objects.",
+    "N3": "Root accepted eighth existing pagination callback after actual stale-index CI failure; preserve positional/semantic oracle, no added HTTP/child."
+  },
+  "measurementAuthority": {
+    "path": "transaction-command-minimum-evidence-draft/event-final/root-growth-retention.json",
+    "sha256": "f146b00019c269a2638101521c89ee18256d052fd66de9d03b57cd32a9649651"
+  },
+  "retainedGuards": {
+    "manifestDisk": 742879,
+    "manifestNormal": 754685,
+    "manifestNodes": 19639,
+    "coverageBytes": 109115,
+    "derivativeNormal": 760803,
+    "derivativeNodes": 19795
+  },
+  "allowanceIncreaseAccepted": false,
+  "negativeDeletedShape": {
+    "resourceKind": "bead",
+    "resource": {
+      "id": "https://reference.invalid/acme/beads/a",
+      "type": "https://reference.invalid/acme/types/task",
+      "revision": "ACTUAL_VALIDATED_FIRST_RESOURCE_REVISION"
+    }
+  },
+  "negativeDeletedAbsentFields": [
+    "resource.properties",
+    "resource.metadata"
+  ],
+  "negativeExpectedFailureIds": [
+    "serving-position",
+    "middle-type",
+    "middle-code",
+    "middle-status",
+    "middle-retry",
+    "middle-no-outcome",
+    "middle-no-deleted"
+  ],
+  "candidateCommit": "01a247b2283f70890c8c35ec65a43aa3c3ab0542",
+  "candidateTree": "b2d9f2c18502e0778c51123be8b4564af052d803",
+  "historicalVerifiedMain": "453b6dab386746bb03aac2c0a293572b8a71c969",
+  "historicalVerifiedTree": "40782d97c9764bc19ae78c46d1d39475e3db317a",
+  "ordinaryCandidateChain": [
+    "453b6dab386746bb03aac2c0a293572b8a71c969",
+    "a912c23fbd80e70ead382a27e700a70123bf3f21",
+    "01a247b2283f70890c8c35ec65a43aa3c3ab0542"
+  ],
+  "predecessorScopePaths": 12,
+  "predecessorIndexCorrection": {
+    "path": "packages/conformance/src/transactional-cumulative.test.ts",
+    "beforeIndex": 9,
+    "afterIndex": 10,
+    "diffSha256": "fdd1944a044a091ebe0bf0c81a88376e7c0dfc56b163064a9f6999333164d647"
+  },
+  "nativeV3ClosureSha256": "75975009d1760ed67f5ca1d805c7158d8c545849d9dbafa4ee98ccab43d191f6",
+  "rootTenActionNarrowingAccepted": true,
+  "authoringReleased": false,
+  "claudePlanReviewLaunched": false,
+  "candidateCI": {
+    "run": 38705226698,
+    "job": 116322877081,
+    "status": "PENDING_NOT_REVERIFIED_HERE",
+    "usableHeadroomSeconds": null
+  },
+  "historicalFailedCI": {
+    "run": 38702665285,
+    "suiteSeconds": 768.2,
+    "jobSeconds": 974,
+    "downstreamSkipped": true,
+    "usableForBudget": false
+  },
+  "historicalActualEvidence": {
+    "sourceCommit": "a912c23fbd80e70ead382a27e700a70123bf3f21",
+    "sourceCases": 30,
+    "installedCases": 5,
+    "http": 220,
+    "children": 28,
+    "successorRerunClaim": false
+  },
+  "historicalPendingPreservedDiffSha256": "ea04e6ba34c9e1d9b724348f32407c6fd6bd78b795cad0481e7f4093b0f21762",
+  "historicalPendingSourceBindingSha256": "ecc0ceea2ca3eed4f8acf2638dacc315b0c63235f7c266b2689f71dcc0962d47",
+  "historicalPendingEventRepair": "frozen source-only ea04 included; uncommitted, unmerged, unexecuted at planning binding; actual predecessor merge/CI mandatory",
+  "candidateMeasured": {
+    "diskBytes": 738624,
+    "normalBytes": 750430,
+    "compactBytes": 366116,
+    "nodes": 19570,
+    "actions": 210,
+    "assertions": 2294,
+    "coverageBytes": 108139,
+    "derivativeCount": 40,
+    "maxDerivativeNormalBytes": 756548,
+    "maxDerivativeNodes": 19726
+  },
+  "currentOwnedSourceHashes": {
+    "packages/conformance/test-support/transactional/manifest-v1.json": "29729151cf6da641545910ec3880f9609c13b319af7bbe99d3d2ad47833dab96",
+    "packages/conformance/test-support/transactional/coverage-v1.json": "4619813e9446e0e714a64c11eac184531950f57720e32c7ef414c7e3342121af",
+    "packages/conformance/src/transactional-cumulative.test.ts": "22a568820ab2abc187d37c27658fdcf6e5ad39e74e2172374e3658c180f7668e",
+    "apps/bdptest/src/transactional-matrix.test.ts": "e319109ab0e9f7258e6918ae789ed7a5672eb7aabd0ec8725ae38e3634164e68"
+  }
+}

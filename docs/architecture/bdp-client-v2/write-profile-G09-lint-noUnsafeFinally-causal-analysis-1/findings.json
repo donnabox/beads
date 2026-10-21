@@ -1,0 +1,19 @@
+{
+  "findings": [
+    {
+      "fileSha256": "0470da566dc7a294d19f749f6977f57f63648d52e857f235795d8857a401eef1",
+      "id": "G09-LINT-CAUSE-01",
+      "line": 4330,
+      "observed": "One actual error-only diagnostic flags explicit throw nested inside g09ServiceCase finally. Actual child exit1/acceptedfalse/qualityfalse.",
+      "path": "packages/server/src/transaction-service.test.ts",
+      "priority": "Medium",
+      "recommendedOption": "A",
+      "rule": "lint/correctness/noUnsafeFinally",
+      "sourceExplanation": "The throw is caught immediately by local catch and appended to failures; terminal AggregateError already occurs outsidefinally at4340. No actual runtime primary overwrite or owner-close failure was observed.",
+      "sourceFixAuthorized": false
+    }
+  ],
+  "originalUnfilteredPrimaryLocation": "NOT_PRINTED_IN_ORIGINAL_RAW; new same-source/rules diagnostic supplies current exact locus, not a rewritten original log",
+  "providerReviewRepeated": false,
+  "scope": "ACTUAL_DIAGNOSTIC_CAUSE_AND_INERT_CORRECTION_ONLY"
+}

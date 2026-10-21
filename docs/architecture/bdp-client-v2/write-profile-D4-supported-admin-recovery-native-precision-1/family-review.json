@@ -1,0 +1,404 @@
+{
+  "families": [
+    {
+      "family": "REC-RU",
+      "installedEvidence": "UNKNOWN_NOT_OBSERVED_HERE",
+      "lawIds": [
+        "read-update.idempotency.durable-boundary",
+        "read-update.idempotency.crash-mid-sequence"
+      ],
+      "nAWaiver": false,
+      "precisionAccepted": true,
+      "reason": "Member state/disposition/allocation atomicity, abandoned claims and committed sequence prefix are separate from TX receipt admission. Existing source child SIGKILL tests are not fresh installed proof.",
+      "sourceRefs": [
+        {
+          "endLine": 689,
+          "path": "packages/server/src/recovery-store.ts",
+          "sha256": "48b7901e48998fe29598168a527213ebfb49e1d6e5dc5c2eb6494c862b5de9f9",
+          "startLine": 560
+        },
+        {
+          "endLine": 948,
+          "path": "packages/server/src/recovery-store.test.ts",
+          "sha256": "5d3a51789a8d80d14407fec6db36ff6aa27461948c285745db80f1b71ee60d2e",
+          "startLine": 900
+        },
+        {
+          "endLine": 2176,
+          "path": "packages/server/src/sequence-executor.test.ts",
+          "sha256": "10bb61696597b6b2620a5168a2047f80ea9842bc479cf0c43c761b850b7f9c00",
+          "startLine": 2108
+        }
+      ]
+    },
+    {
+      "family": "REC-TX",
+      "installedEvidence": "UNKNOWN_NOT_OBSERVED_HERE",
+      "lawIds": [
+        "transactional.batch.atomic-commit",
+        "transactional.idempotency.durable-admission",
+        "transactional.idempotency.pending-recovery"
+      ],
+      "nAWaiver": false,
+      "precisionAccepted": true,
+      "reason": "Durable pending admission and graph/group/terminal receipt commit are distinct transactions with exclusive ownership; reopening retracts pending, never resumes it. Real hot journal recovery is not physical power-loss qualification.",
+      "sourceRefs": [
+        {
+          "endLine": 364,
+          "path": "packages/server/src/transaction-store.ts",
+          "sha256": "2feff60d7064cf6a1f8b15c8360b98c1671a04762346d1d6bb3a9321ef69a2d5",
+          "startLine": 358
+        },
+        {
+          "endLine": 639,
+          "path": "packages/server/src/transaction-store.ts",
+          "sha256": "2feff60d7064cf6a1f8b15c8360b98c1671a04762346d1d6bb3a9321ef69a2d5",
+          "startLine": 577
+        },
+        {
+          "endLine": 377,
+          "path": "packages/server/src/transaction-store.test.ts",
+          "sha256": "7cd155ddd959ec31a207adbe6f8eb0a26f0af968a144abb58915720436bf0774",
+          "startLine": 353
+        },
+        {
+          "endLine": 1255,
+          "path": "packages/server/src/transaction-store.test.ts",
+          "sha256": "7cd155ddd959ec31a207adbe6f8eb0a26f0af968a144abb58915720436bf0774",
+          "startLine": 1231
+        },
+        {
+          "endLine": 124,
+          "path": "packages/server/src/transaction-recovery.test.ts",
+          "sha256": "7267388d138d5c8ec0c223d545c641ea5fec9d9f9cea97b68550fdb698866303",
+          "startLine": 18
+        }
+      ]
+    },
+    {
+      "family": "RESTORE-ID",
+      "installedEvidence": "UNKNOWN_NOT_OBSERVED_HERE",
+      "lawIds": [
+        "read.scope.restore-identity",
+        "read-update.idempotency.restore"
+      ],
+      "nAWaiver": false,
+      "precisionAccepted": true,
+      "reason": "Same logical Scope requires identity and complete recovery continuity; missing tombstones cannot be repaired by matching lineage strings. Read fixture replacement is not durable restore.",
+      "sourceRefs": [
+        {
+          "endLine": 128,
+          "path": "packages/server/src/recovery-store.ts",
+          "sha256": "48b7901e48998fe29598168a527213ebfb49e1d6e5dc5c2eb6494c862b5de9f9",
+          "startLine": 115
+        },
+        {
+          "endLine": 280,
+          "path": "packages/server/src/recovery-store.ts",
+          "sha256": "48b7901e48998fe29598168a527213ebfb49e1d6e5dc5c2eb6494c862b5de9f9",
+          "startLine": 270
+        },
+        {
+          "endLine": 676,
+          "path": "packages/server/src/recovery-store.ts",
+          "sha256": "48b7901e48998fe29598168a527213ebfb49e1d6e5dc5c2eb6494c862b5de9f9",
+          "startLine": 631
+        },
+        {
+          "endLine": 711,
+          "path": "packages/server/src/recovery-store.test.ts",
+          "sha256": "5d3a51789a8d80d14407fec6db36ff6aa27461948c285745db80f1b71ee60d2e",
+          "startLine": 694
+        },
+        {
+          "endLine": 602,
+          "path": "apps/bdptest/src/read-matrix.test.ts",
+          "sha256": "b073336b967d4d8b09d74ea4c67712b28dd576d2902b1c12080960e0d58d8fd6",
+          "startLine": 577
+        }
+      ]
+    },
+    {
+      "family": "RESTORE-TX",
+      "installedEvidence": "UNKNOWN_NOT_OBSERVED_HERE",
+      "lawIds": [
+        "transactional.restore.epoch-fence",
+        "transactional.restore.key-namespace",
+        "transactional.erasure.restore"
+      ],
+      "nAWaiver": false,
+      "precisionAccepted": true,
+      "reason": "Actual destructive restore must establish new owner epoch and token/key fencing, preserve canonical identity/ledger, and serve prior-key first execution. SQL-edited receipt epoch and fresh create do not establish this.",
+      "sourceRefs": [
+        {
+          "endLine": 639,
+          "path": "packages/server/src/transaction-store.ts",
+          "sha256": "2feff60d7064cf6a1f8b15c8360b98c1671a04762346d1d6bb3a9321ef69a2d5",
+          "startLine": 584
+        },
+        {
+          "endLine": 3028,
+          "path": "packages/server/src/transaction-store.test.ts",
+          "sha256": "7cd155ddd959ec31a207adbe6f8eb0a26f0af968a144abb58915720436bf0774",
+          "startLine": 2993
+        },
+        {
+          "endLine": 1252,
+          "path": "packages/server/src/transaction-submission.test.ts",
+          "sha256": "22a6f8da462658b13fd1e7bd40a75ab39ba60103e4268b5f29d17efbca69d6b8",
+          "startLine": 1245
+        },
+        {
+          "endLine": 56,
+          "path": "packages/server/src/transaction-discovery.ts",
+          "sha256": "bb8055e2089f640a5d2071e389ac2011d08c038427265b50ab3d03c02047cfef",
+          "startLine": 54
+        }
+      ]
+    },
+    {
+      "family": "ERASE-ACT",
+      "installedEvidence": "UNKNOWN_NOT_OBSERVED_HERE",
+      "lawIds": [
+        "transactional.erasure.record-digest",
+        "transactional.erasure.digest-domain",
+        "transactional.erasure.historical-version",
+        "transactional.erasure.live-successor",
+        "transactional.erasure.live-tombstone",
+        "transactional.erasure.owned-link-cascade"
+      ],
+      "nAWaiver": false,
+      "precisionAccepted": true,
+      "reason": "Erasure is an administrative act, not a BDP mutation endpoint. No selected operator realization was identified. Empty erasure arrays cannot prove digest, live successor/tombstone or containing-owned-version obligations.",
+      "sourceRefs": [
+        {
+          "endLine": 248,
+          "path": "packages/server/src/transaction-store.ts",
+          "sha256": "2feff60d7064cf6a1f8b15c8360b98c1671a04762346d1d6bb3a9321ef69a2d5",
+          "startLine": 238
+        },
+        {
+          "endLine": 1375,
+          "path": "packages/server/src/transaction-store.ts",
+          "sha256": "2feff60d7064cf6a1f8b15c8360b98c1671a04762346d1d6bb3a9321ef69a2d5",
+          "startLine": 1360
+        },
+        {
+          "endLine": 146,
+          "path": "packages/server/src/transaction-changefeed.ts",
+          "sha256": "1e678ecb1b2c3e59023dbb6a2e6516763907babd79f7926ca572a4764e40fc1e",
+          "startLine": 128
+        },
+        {
+          "endLine": 728,
+          "path": "packages/server/src/transaction-service.ts",
+          "sha256": "d34b28787b70e5a14c38f1295a7cacc3bd2425768245ace46484f882987e9568",
+          "startLine": 726
+        },
+        {
+          "endLine": 21,
+          "path": "packages/server/src/transaction-discovery.ts",
+          "sha256": "bb8055e2089f640a5d2071e389ac2011d08c038427265b50ab3d03c02047cfef",
+          "startLine": 8
+        }
+      ]
+    },
+    {
+      "family": "ERASE-COPIES",
+      "installedEvidence": "UNKNOWN_NOT_OBSERVED_HERE",
+      "lawIds": [
+        "transactional.erasure.receipts",
+        "transactional.receipt.non-record-entries",
+        "transactional.sequence.member-reauthorization",
+        "transactional.erasure.event-withholding",
+        "transactional.erasure.graph-facts",
+        "transactional.event.cursor-after-withheld",
+        "transactional.erasure.retention-non-propagation"
+      ],
+      "nAWaiver": false,
+      "precisionAccepted": true,
+      "reason": "Controlled retained records, groups, Events, receipts/pages and snapshots/pages exist; authorization withholding does not destroy their bytes. Retention expiry does not propagate as erasure.",
+      "sourceRefs": [
+        {
+          "endLine": 248,
+          "path": "packages/server/src/transaction-store.ts",
+          "sha256": "2feff60d7064cf6a1f8b15c8360b98c1671a04762346d1d6bb3a9321ef69a2d5",
+          "startLine": 238
+        },
+        {
+          "endLine": 923,
+          "path": "packages/server/src/transaction-store.ts",
+          "sha256": "2feff60d7064cf6a1f8b15c8360b98c1671a04762346d1d6bb3a9321ef69a2d5",
+          "startLine": 877
+        },
+        {
+          "endLine": 2336,
+          "path": "packages/server/src/transaction-store.ts",
+          "sha256": "2feff60d7064cf6a1f8b15c8360b98c1671a04762346d1d6bb3a9321ef69a2d5",
+          "startLine": 2320
+        },
+        {
+          "endLine": 39,
+          "path": "packages/server/src/transaction-snapshot.ts",
+          "sha256": "dac7c2f121cfb6bae557b3917f5ec52e47a358ab39da4062f6a5c26f5b9fbd83",
+          "startLine": 36
+        },
+        {
+          "endLine": 125,
+          "path": "packages/server/src/transaction-authorization.ts",
+          "sha256": "c87a7bfa8840aee2f097bf683fe3f3c97fcae80782020c6d5b1e41364d16b6d2",
+          "startLine": 85
+        }
+      ]
+    },
+    {
+      "family": "ERASE-VIEW",
+      "installedEvidence": "UNKNOWN_NOT_OBSERVED_HERE",
+      "lawIds": [
+        "transactional.erasure.view-projection",
+        "transactional.snapshot.erasure-ledger",
+        "transactional.changefeed.wire-form",
+        "transactional.changefeed.projection-advance"
+      ],
+      "nAWaiver": false,
+      "precisionAccepted": true,
+      "reason": "Current all-visible-to-empty policy is authorization replacement; it is not per-view erasure ledger processing. Never-observed views require identifier-free advances, not disclosure.",
+      "sourceRefs": [
+        {
+          "endLine": 63,
+          "path": "packages/server/src/transaction-changefeed.ts",
+          "sha256": "1e678ecb1b2c3e59023dbb6a2e6516763907babd79f7926ca572a4764e40fc1e",
+          "startLine": 38
+        },
+        {
+          "endLine": 146,
+          "path": "packages/server/src/transaction-changefeed.ts",
+          "sha256": "1e678ecb1b2c3e59023dbb6a2e6516763907babd79f7926ca572a4764e40fc1e",
+          "startLine": 128
+        },
+        {
+          "endLine": 614,
+          "path": "packages/server/src/transaction-snapshot.ts",
+          "sha256": "dac7c2f121cfb6bae557b3917f5ec52e47a358ab39da4062f6a5c26f5b9fbd83",
+          "startLine": 594
+        },
+        {
+          "endLine": 44,
+          "path": "packages/server/src/transaction-authorization.ts",
+          "sha256": "c87a7bfa8840aee2f097bf683fe3f3c97fcae80782020c6d5b1e41364d16b6d2",
+          "startLine": 5
+        }
+      ]
+    },
+    {
+      "family": "ERASE-FENCE",
+      "installedEvidence": "UNKNOWN_NOT_OBSERVED_HERE",
+      "lawIds": [
+        "transactional.erasure.replication-invalidation",
+        "transactional.erasure.epoch-unrotated",
+        "transactional.erasure.live-publication",
+        "transactional.erasure.disconnect-race"
+      ],
+      "nAWaiver": false,
+      "precisionAccepted": true,
+      "reason": "No real erasure publication/fence witness exists: current minimum replay is genesis and ledger empty. Required stream eligibility, pre-P invalidation and durable client checkpoint cannot be inferred from socket write.",
+      "sourceRefs": [
+        {
+          "endLine": 56,
+          "path": "packages/server/src/transaction-discovery.ts",
+          "sha256": "bb8055e2089f640a5d2071e389ac2011d08c038427265b50ab3d03c02047cfef",
+          "startLine": 54
+        },
+        {
+          "endLine": 146,
+          "path": "packages/server/src/transaction-changefeed.ts",
+          "sha256": "1e678ecb1b2c3e59023dbb6a2e6516763907babd79f7926ca572a4764e40fc1e",
+          "startLine": 128
+        },
+        {
+          "endLine": 614,
+          "path": "packages/server/src/transaction-snapshot.ts",
+          "sha256": "dac7c2f121cfb6bae557b3917f5ec52e47a358ab39da4062f6a5c26f5b9fbd83",
+          "startLine": 594
+        }
+      ]
+    },
+    {
+      "family": "ERASE-CONSUMER",
+      "installedEvidence": "UNKNOWN_NOT_OBSERVED_HERE",
+      "lawIds": [
+        "transactional.erasure.unestablishable-content",
+        "transactional.erasure.persistent-event-consumer"
+      ],
+      "nAWaiver": false,
+      "precisionAccepted": true,
+      "reason": "A persistent Event-only consumer cannot claim protocol-backed erasure handling; an actual claimed acquisition/retention/recovery route must be bound before scope can be decided. Missing route is UNKNOWN, not N/A.",
+      "sourceRefs": [
+        {
+          "endLine": 63,
+          "path": "packages/server/src/transaction-changefeed.ts",
+          "sha256": "1e678ecb1b2c3e59023dbb6a2e6516763907babd79f7926ca572a4764e40fc1e",
+          "startLine": 38
+        },
+        {
+          "endLine": 614,
+          "path": "packages/server/src/transaction-snapshot.ts",
+          "sha256": "dac7c2f121cfb6bae557b3917f5ec52e47a358ab39da4062f6a5c26f5b9fbd83",
+          "startLine": 594
+        }
+      ]
+    },
+    {
+      "family": "DISCLOSURE",
+      "installedEvidence": "UNKNOWN_NOT_OBSERVED_HERE",
+      "lawIds": [
+        "read.disclosure.gone",
+        "read.http.conditional-reads",
+        "transactional.erasure.reads"
+      ],
+      "nAWaiver": false,
+      "precisionAccepted": true,
+      "reason": "Ordinary Read optional authorized Gone disclosure and mandatory TX erased-version duties remain distinct. Actual erased-version evidence precedes conditionals; revocation/absence is not erasure.",
+      "sourceRefs": [
+        {
+          "endLine": 125,
+          "path": "packages/server/src/transaction-authorization.ts",
+          "sha256": "c87a7bfa8840aee2f097bf683fe3f3c97fcae80782020c6d5b1e41364d16b6d2",
+          "startLine": 85
+        },
+        {
+          "endLine": 728,
+          "path": "packages/server/src/transaction-service.ts",
+          "sha256": "d34b28787b70e5a14c38f1295a7cacc3bd2425768245ace46484f882987e9568",
+          "startLine": 726
+        }
+      ]
+    },
+    {
+      "family": "OPTIONAL-HISTORY",
+      "installedEvidence": "UNKNOWN_NOT_OBSERVED_HERE",
+      "lawIds": [
+        "history.erasure",
+        "history.erasure.transactional"
+      ],
+      "nAWaiver": false,
+      "precisionAccepted": true,
+      "reason": "History false excludes optional history catalog rows only. Independent core transactional erasure laws remain selected; no waiver is introduced.",
+      "sourceRefs": [
+        {
+          "endLine": 11,
+          "path": "packages/conformance/src/profile-contract-selection.ts",
+          "sha256": "5b1caf61688bfa6a5465b5f8dc817b84f02be76bfc5bdd886a19e749b6441543",
+          "startLine": 10
+        },
+        {
+          "endLine": 65,
+          "path": "packages/conformance/src/profile-contract-selection.ts",
+          "sha256": "5b1caf61688bfa6a5465b5f8dc817b84f02be76bfc5bdd886a19e749b6441543",
+          "startLine": 58
+        }
+      ]
+    }
+  ],
+  "scope": "Recovery/restore/erasure slice only; cross-cited whole laws retain their other required duties"
+}

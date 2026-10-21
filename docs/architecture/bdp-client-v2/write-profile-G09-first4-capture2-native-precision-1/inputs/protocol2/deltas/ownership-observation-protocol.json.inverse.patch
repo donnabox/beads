@@ -1,0 +1,92 @@
+--- after/ownership-observation-protocol.json
++++ before/ownership-observation-protocol.json
+@@ -1,77 +1,15 @@
+ {
+-  "failures": [
+-    "Any missing/partial/error/null/nonzero/late/forced/unknown fact prevents positive acceptance",
+-    "No new1MiB cap, truncate-and-pass, unproved output fit, default empty stderr requirement or bare historical signal authority",
+-    "No preexit selfproof; no later static hashing or durableGit publication represented as runtime work already measured",
+-    "No stage, build, consumer, package, Write qualification or actual review gap waiver"
++  "fixedProcessCreation": "One exact stage run.py final fixedname, no arbitrary CLI/API; direct Popen retained FIRST, start_new_session creation PID=PGID basis recorded.",
++  "freshCensus": "After actual invocation terminal root independently retains selected-p/-g ps stdout/stderr, immediate direct probe handle/PID/PGID, actual raw exit/BOTH EOF/no clipped rows, actual zero selected rows (zombie is present). Repeat is not automatic on failure; no all-host list or historical bare-ID signals.",
++  "observabilityLimit": "Recorded-domain sampling cannot prove every transient/escaped task was captured. Any actual unknown ownership/finalization stays FAILED/UNKNOWN, no global guarantee.",
++  "pipes": "Actual stdout=PIPE/stderr=PIPE. Nonblocking interleaved drain, both actual EOF required conjunctively with raw terminal; normal actual exit only from direct handle poll/reap.",
++  "registrySources": [
++    "actual root direct handles/PID-PGID creation",
++    "actual helper .processes.jsonl and .exit sampledPids/remainingProcesses",
++    "actual helper guard/tool records as available",
++    "root owned census probes/observer/dispatcher records"
+   ],
+-  "fixedStages": [
+-    "node-version",
+-    "pnpm-version",
+-    "workspace-install",
+-    "bind-workspace-tools"
+-  ],
+-  "measurement": {
+-    "failureOuterSeconds": 120,
+-    "laterUpperBound": "After actual collector/tool terminal, independently observe all recorded task domain and reap census direct child; after observation/receipt tool actual terminal, a first monotonic sample in a final ordinary DATA observation provides a conservative common-clock upper bound on all target runtime+finalization and census/receipt publication. Later static hashing/auditing/Git publication is outside this runtime interval, explicitly so.",
+-    "noGrace": true,
+-    "noHardRealtimeGuarantee": true,
+-    "normalStrictSeconds": 115,
+-    "rootOrigin": "First ordinary-tool monotonic acquisition before subsequent collector imports/setup/authority/hash, and before fixed run.py child startup/imports/gate/source/tool/guard. Record actual receipt; no historical origin substituted. This is the target-invocation boundary, not a claim to clock the observer interpreter before its first clock sample."
+-  },
+-  "noExecutableHelpers": true,
+-  "noGeneralCommandInterface": true,
+-  "orderedProceduralPhases": [
+-    {
+-      "id": "A",
+-      "name": "One fixed collector acquisition cell",
+-      "requirements": [
+-        "Earliest root origin before fixed child invocation and all child imports/gate/hash/setup; no current gate activation authored here.",
+-        "Check exact reviewed source/implementation/gate/authority/tool and fixed argv/cwd/output namespace. Refuse existing attempt/output.",
+-        "Create owned raw stdout/stderr files exclusively0600; retain each acquired descriptor immediately. No new stream cap.",
+-        "One actual Popen PIPE/PIPE/start_new_session; retain direct handle immediately before fallible metadata. Record actual creation PID/PGID basis and collector PID/PGID; no inferred PGID from later arbitrary PID.",
+-        "Interleave nonblocking reads; count actual bytes received first; save successful returned write slices; hash identical saved slices; maintain actual prefix counts/errors. No filter or reconstruction.",
+-        "Actual zero-byte read establishes each EOF. Direct handle poll/reap establishes raw exit independently. Both actual EOF AND raw terminal AND actual close/fstat/count/hash consistency required.",
+-        "On ordinary failure preserve actual partial prefix/registry/as-of evidence best effort under same clock; missing publication/tail/error/late remains UNKNOWN.",
+-        "Consume actual inner started/process/exit evidence, preserving raw row shape; union all actually recorded wrapper/stage/guard/descendant/probe PID/PGIDs. No all-transient/global guarantee.",
+-        "All local runtime final checks and exclusive final raw/metadata file closes occur before collector exits; selfreceipt stays provisional. Never claim its own terminal or future final census.",
+-        "At115 normal acceptance fails. Existing safe unreaped direct handle termination can request cleanup; no historical group kills, no offclock successful grace, no automatic retries. At120 retain unknown/failure; no later stage."
+-      ]
+-    },
+-    {
+-      "id": "B",
+-      "name": "Independent postterminal selected-domain observation through ordinary tool",
+-      "requirements": [
+-        "Root first observes actual collector tool terminal and records tool ID/raw terminal attribution; do not infer terminal from pre-exit metadata.",
+-        "Read exact fixed attempt/receipt and retained actual registry; no product/import/helper evaluation. Union all actually recorded domain IDs/groups including collector, wrapper, nested children and prior owned probes.",
+-        "One direct /bin/ps census through PIPE/PIPE under remaining absolute origin+115; retain Popen handle immediately, actual psPID/creationPGID, raw0, both EOF, raw bytes/count/hash/file-close. If unavailable/late/partial/nonzero stop UNKNOWN/FAILED, no retry.",
+-        "Retain complete raw census. Filter only already-owned recorded IDs/PGIDs for acceptance; unrelated host rows are raw observation, never new task IDs. Zombies are present, reused matching IDs cause refusal/UNKNOWN, not silently ignored.",
+-        "Record independent observer/direct-probe separately: probe direct handle actually reaped; do not claim observer absent from its own live census. Observer actual terminal comes from ordinary root tool observation.",
+-        "All task-domain matching rows absent. Known membership after leader exit remains included; neither earlier sample nor leader exit is proof of group absence.",
+-        "Publish full actual postterminal observation receipt and close files on remaining same clock. No more runtime probes after this receipt; any later discovered recorded task expands required domain and invalidates earlier completion pending new separately authorized observation, never automatic repeat."
+-      ]
+-    },
+-    {
+-      "id": "C",
+-      "name": "Root DATA clock witness after actual phase-B terminal",
+-      "requirements": [
+-        "After root observes actual B ordinary-tool terminal, acquire monotonic first, using same clock domain/origin. Record actual root observation and stamp.",
+-        "Require elapsed<115 and phaseA/B actual tool terminals+all raw/ownership predicates; this sample upper-bounds all already-completed runtime finalization, probe drain/reap and receipt publication.",
+-        "This is an ordinary DATA observation, not a child supervisor or process probe. No new runtime child or census is launched.",
+-        "Source-attributed root actual tool terminal is honest if raw tool receipt is not independently retained; retain actual available receipt and explicitly mark missing raw provenance UNKNOWN.",
+-        "No need for another supervisor proving the clock witness itself. Acceptance is a static root adjudication of already completed target runtime and observation, not a pre-exit event pretending to prove its own process closure."
+-      ]
+-    }
+-  ],
+-  "positiveConjunction": [
+-    "exact root authority/source/helper2/tool/bounds/prefix and no prior attempts",
+-    "actual wrapper raw0 plus actual inner raw0/accepted/errors[]/source unchanged/no force",
+-    "actual separate stdout and stderr full EOF/count/hash/file identity/close proof",
+-    "all runtime checks/final receipts before actual collector terminal",
+-    "independent actual census raw0/BOTH EOF/complete selected recorded domain absent/direct probe reaped",
+-    "actual root tool terminal attribution for collector and observer",
+-    "actual final common-clock observation strictly<115 after runtime finalization+census receipt publication",
+-    "independent exact expected version/tools source facts"
+-  ],
+-  "state": "CLOSED_DATA_ONLY_NO_EXECUTION_AUTHORITY"
++  "retention": "Count each read first. Save every successful returned write and hash identical slices. Preserve partial failure raw/prefix/counts/last actual exit/EOF UNKNOWN; no repair/truncation/filtering.",
++  "timeouts": "All waits use remaining absolute root deadline. At115 normal proof already fails; safe direct unreaped TERM may request existing helper cleanup; no historical PGID kill/reap assumption/new identity relaxation. At120 no added grace or claimed cleanup. Unknown/live descendants require root separate authorized recovery; no next stage.",
++  "wholeClockFinality": "Root outer record must cover this final observation/publication; parent pre-exit metadata alone cannot. Current vehicle binding remains UNRESOLVED."
+ }

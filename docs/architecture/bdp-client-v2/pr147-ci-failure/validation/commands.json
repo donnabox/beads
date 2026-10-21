@@ -1,0 +1,70 @@
+{
+  "order": [
+    "typecheck",
+    "format-check",
+    "lint",
+    "focused-three",
+    "full-two-files"
+  ],
+  "commands": {
+    "typecheck": [
+      "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+      "/Users/dbox/.cache/node/corepack/v1/pnpm/11.20.0/bin/pnpm.cjs",
+      "run",
+      "typecheck"
+    ],
+    "format-check": [
+      "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+      "/Users/dbox/repos/wt/vickie/vickie-fresh-depth-serving/node_modules/@biomejs/biome/bin/biome",
+      "format",
+      "--config-path=/Users/dbox/repos/wt/vickie/vickie-fresh-depth-serving/biome.json",
+      "packages/server/src/transaction-set.test.ts",
+      "packages/server/src/transaction-submission.test.ts"
+    ],
+    "lint": [
+      "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+      "/Users/dbox/repos/wt/vickie/vickie-fresh-depth-serving/node_modules/@biomejs/biome/bin/biome",
+      "lint",
+      "--config-path=/Users/dbox/repos/wt/vickie/vickie-fresh-depth-serving/biome.json",
+      "packages/server/src/transaction-set.test.ts",
+      "packages/server/src/transaction-submission.test.ts"
+    ],
+    "focused-three": [
+      "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+      "/Users/dbox/repos/wt/vickie/vickie-fresh-depth-serving/node_modules/vitest/vitest.mjs",
+      "run",
+      "packages/server/src/transaction-set.test.ts",
+      "packages/server/src/transaction-submission.test.ts",
+      "--maxWorkers=1",
+      "--reporter=verbose",
+      "--reporter=json",
+      "--outputFile=/Users/dbox/repos/wt/vickie/bdp-integration-logs/pr147-ci-failure/validation/focused-three.results.json",
+      "--testNamePattern",
+      "PENDING_EXACT_THREE_FROM_ROOT_BOUND_HELPER_TITLE"
+    ],
+    "full-two-files": [
+      "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+      "/Users/dbox/repos/wt/vickie/vickie-fresh-depth-serving/node_modules/vitest/vitest.mjs",
+      "run",
+      "packages/server/src/transaction-set.test.ts",
+      "packages/server/src/transaction-submission.test.ts",
+      "--maxWorkers=1",
+      "--reporter=verbose",
+      "--reporter=json",
+      "--outputFile=/Users/dbox/repos/wt/vickie/bdp-integration-logs/pr147-ci-failure/validation/full-two-files.results.json"
+    ]
+  },
+  "maxSeconds": 120,
+  "termSeconds": 115,
+  "automaticRetries": 0,
+  "focusExisting": [
+    "preserves literal Selector identity and original mixed-carrier diagnostic pointers",
+    "executes deep values through set and dependent sequence with durable receipt recovery"
+  ],
+  "helperTitle": null,
+  "expectedFocusedCases": 3,
+  "expectedFullCases": 105,
+  "http": 0,
+  "productChildren": 0,
+  "note": "Full source-file owner/store lifetimes retain existing callbacks; no installed rerun. Only focused deep callback1dir/2sequential opens, other2CPU."
+}

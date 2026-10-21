@@ -1,0 +1,19 @@
+# CLOSED first trusted-startup CODE review
+
+Target: `/Users/dbox/repos/wt/vickie/vickie-trusted-startup-configuration` on heada562/tree144f, exactly12 dirty files and682 tracked source identities. Actual indexed gitdiffHEAD patch SHA256 `00fa952644ab1725e4bfb8fc8c642683a39f60dd45f6a08de8881d590150a0b4` supersedes the historical author2 custom patch only as git/index representation; source bytes are identical. Root author2/native/index-transition acceptance is bound, not inferred from preparation.
+
+The prompt requires the full three new modules/test plus full12-file patch, then changed regions/relevant surrounding helpers of the nine existing files. It grants focused source follow-through without requiring full unrelated legacy test files. Findings-first output is limited to1500 words. Exact privacy/tuple/FD/lossless/packaging behavior remains review scope. Root native CODE closed N1/N2; compile/tests/emitted declarations/installed runtime remain unverified.
+
+The dirty-source runner derives from current-changefeed CODE. Its genuine delta changes only target worktree, current-session guard path and six-to-twelve status-message text. Existing HEAD/exact status/owned diff/all-file/context/artifact/prompt/runner invariance stays intact. Parser, exact-session guard and default Read/Glob/Grep safe/empty-MCP args are unchanged; tool bytes were rehashed without CLI execution. Supervisor4 remains byte-identical `e61b9008610b7349b06e8c322e240d707dbdedb9124c611890132f2cf81fb32b`. The data adapter only rebinds this CLOSED packet/source/authority and retains1790TERM/1798KILL/1800total/no-retry.
+
+There is no attempt directory or reviewer output. Both launch flags are false. Root must independently accept mechanics, verify current exact source/tools/session, and make its separately recorded flag-only release: claude-code-review/binding.json rootLaunchReleased false→true and launch-supervision/control.json rootLaunchReleased false→true. Keep launch-supervision/closed-binding.json and frozen-packet-index.json unchanged. Supervisor verifies the released binding differs only by that flag; every other frozen packet file must retain its hash. Existing outputs or attempt marker prohibit another run.
+
+Prospective invocation ONLY after root release:
+
+`/opt/homebrew/opt/python@3.14/bin/python3.14 /Users/dbox/repos/wt/vickie/bdp-integration-logs/write-trusted-startup-code-review-1/launch-supervision/supervise.py`
+
+Never invoke run.py or Claude directly, never retry, never widen deadlines. Guard verifies the exact current remote role session immediately before reviewer execution; outer supervisor performs ongoing checks and owns wrapper/reviewer/observed-group cleanup. Supersession stops outward execution; local partial/error evidence may be retained. Terminal completion is not approval; root must disposition substantive results. The accepted supervisor's documented PID/start/group ownership limitations and lack of hard-real-time OS guarantee remain.
+
+Full accepted author2, plan3/precision and successful actual startup PLAN audit are copied as immutable provenance, each byte rehashed. Their historical flags/indices keep historical meanings. The packet binds all98 context inputs and9 artifact inputs, and its106-file frozen packet index is separate from this complete preparation index. The mirrored packet uses canonical L paths for prospective execution; do not execute the docs mirror.
+
+Preparation performed only read-only git/source/tool byte inspections, data/copy/index creation, Python AST parsing and in-memory text-delta checks. No actual CODE or PLAN CLI, tests/compiler/build/install/runtime/service, source edit, git mutation/push, design/launch change or coordination action occurred. This is the first startup CODE attempt preparation, never a PLAN retry. Root alone releases execution.

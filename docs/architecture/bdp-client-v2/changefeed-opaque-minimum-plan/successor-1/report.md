@@ -1,0 +1,5 @@
+# Native precision successor
+
+Implements accepted native N1 plus both metadata/attribution notes only. A and B now attach immediate outcome observers, race wait-entered against premature settlement, and unconditionally release held latches before observed operation/service-close drainage in finally. Primary and cleanup errors remain distinct. B's synchronous not-settled flag is explicitly not independent deferred-close proof. D and the new installed witness explicitly require application/problem+json and Retry-After 1 on503.
+
+The five production/test paths, normal successful schedule,17 source callbacks,44 source HTTP, historical10/new4 installed HTTP,58 aggregate HTTP,19 directories,2 children and all deadlines are unchanged. selection.json and workload.json are exact byte copies. No product or test execution occurred; source remains clean5ceb with all679 bytes unchanged. The original reviewed five artifacts are preserved and pinned in binding.json. This successor is a plan only; root still owns source and execution release. Prior PR160 CI text is preparation chronology, not a fresh CI assertion.

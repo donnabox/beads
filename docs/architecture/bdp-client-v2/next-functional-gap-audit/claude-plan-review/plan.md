@@ -1,0 +1,11 @@
+# Closed actual-Claude plan review packet
+
+RootLaunchReleased: false. No review or product execution has occurred. Root must inspect binding and explicitly release before run.py; this packet is not source authoring permission.
+
+Target is the bounded initial matched-context Bead/Link collection minimum plan. The current clean checkout is pinned at48067830, whose inspected source bytes match2dfd. Nine actual source/spec files remain pinned unchanged. The sole design context is the frozen byte-identical context-snapshots/sole-design.md copy at plan commit8a0a16e6b46c99e46310038e40787623241e83c0; sole-design-provenance.json records original absolute path, actual commit and hash. It is review context, not a competing plan authority. Routine authorized live-plan checkpoints do not invalidate this snapshot. The four original audit/plan artifacts remain unchanged and pinned. No historical packets are required reading.
+
+Uses the previously successful monitored successor3 runner/parser, adapted only in description, cwd and clean-checkout assertion text. Claude safe-mode, default configured model, Read/Glob/Grep only, strict empty MCP, disabled slash commands, no session persistence. Stream-json verbose partial records are retained; progress is metadata-only. Single attempt;3600s total deadline with TERM at3595 and4/1second cleanup; output bounds64MiB/4MiB. Source/context/artifact/head/patch pins are checked before and after. Unknown/missing/error/max-turn/partial-only results, timeout, changed inputs, forced cleanup or surviving owned processes are failures; terminal success still requires root findings disposition.
+
+No model override, retry, source writes, product imports, tests/builds/services. rootLaunchReleased=false causes immediate refusal before attempt artifacts. Root should coordinate stable checkout/context files for this review; a changed pin requires explicit rebind, never silent acceptance. No new execution probe or review launch was used while preparing this packet.
+
+Original prep binding/prompt/packet plan are preserved under historical-prep-live-design. This amendment changes only sole design reference/pinning and packet documentation; runner/parser, nine actual source/spec pins, source head and closed launch state are unchanged.

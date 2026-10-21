@@ -1,0 +1,46 @@
+[
+  {
+    "acceptedObservationSha256": "7a68a0e3de5c5d98fde2f944b9f72ee88ce2bcd7dfb3c0e0504a028c2fdb7ad7",
+    "actualReports": 21,
+    "immediateAuditActualExit0": true,
+    "rawLogSha256": "68d2cba69d0bda01fe2296a0c1d30158b3010d11c648178348bfc25d470573ec",
+    "resultsSha256": "7429ffe4e5fbb5a2d108d91b950f2be99a06a3769d3fa4c04c06f1a77aa24a7c",
+    "selectedPassed": 21,
+    "stage": "focused-source",
+    "totalCallbacks": 110,
+    "unselectedSkippedOrPending": 89
+  },
+  {
+    "acceptedObservationSha256": "d74af4ea318d45089e596c571c8557ba8115e04f878080a294e6c472d1249124",
+    "actualReports": 18,
+    "immediateAuditActualExit0": true,
+    "rawLogSha256": "1ec82d2a2635846defe24140904ea07ff576fa9104c2814a901be04574d09ad1",
+    "resultsSha256": "7e3ae9c9951b2080b14ba8277bc45a2fcfe5e9c51906b15814db505de05ce2d4",
+    "selectedPassed": 32,
+    "stage": "legacy-changefeed-source",
+    "totalCallbacks": 38,
+    "unselectedSkippedOrPending": 6
+  },
+  {
+    "acceptedObservationSha256": "908d27d501da39417096e63a05c80da51b7e175d3bd5930463601b49b5206b56",
+    "actualReports": 0,
+    "immediateAuditActualExit0": true,
+    "rawLogSha256": "43f083fb9513478ca238a7724285172b6ee327e3ac07cb26a3c9cf495ed54fbd",
+    "resultsSha256": "50f1e918d1eaea9fbdf1eca92160f41984559d92ab7c0bec078b2f4e09f380df",
+    "selectedPassed": 9,
+    "stage": "legacy-installed-contracts-source",
+    "totalCallbacks": 13,
+    "unselectedSkippedOrPending": 4
+  },
+  {
+    "acceptedObservationSha256": "a62c1e6ce35587d3cd36ef564dea7540e3ce17bbbe444f3f41f475cf93ef273f",
+    "actualReports": 0,
+    "immediateAuditActualExit0": true,
+    "rawLogSha256": "18b247d4ae9bbb50b9d71aeeeeeaa76f7f6c22086f45b233097ec42d6bac2ec4",
+    "resultsSha256": "fcc874bd2a2fa114ace79cc98585ce676467ac10bb4a1538c63ebe1a8c760019",
+    "selectedPassed": 1,
+    "stage": "schema-confinement-source",
+    "totalCallbacks": 2,
+    "unselectedSkippedOrPending": 1
+  }
+]

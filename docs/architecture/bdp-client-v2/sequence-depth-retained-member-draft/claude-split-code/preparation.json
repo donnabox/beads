@@ -1,0 +1,40 @@
+{
+  "status": "CLOSED: no root-release files, no launch",
+  "sourceBinding": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/sequence-depth-retained-member-draft/lint-repair/source-binding.json",
+  "sourceBindingSha256": "9eb076e7fee0b300010a4edac01f55fecd7ab6f1d27955931e7791556d2080ec",
+  "fullPatchSha256": "7b9e25c8e907a91e3813011468158c5b1256c8dc9e00da069a7a639383c0bcd3",
+  "meaningfulWorkingPins": 33,
+  "predecessorReview": "exit143/895.953701s/empty stdout+stderr; INCONCLUSIVE",
+  "runnerDelta": "Only E absolute directory changed; argv/tools/deadlines/output lifecycle/guards unchanged. Two separate one-attempt output directories.",
+  "scopes": [
+    {
+      "scope": "production",
+      "paths": [
+        "packages/server/src/transaction-batch.ts",
+        "packages/server/src/transaction-http.ts",
+        "packages/server/src/transaction-set.test.ts",
+        "packages/server/src/transaction-sequence.test.ts"
+      ],
+      "promptBytes": 5525,
+      "promptSha256": "34d3c6ec44adc04e8f67381ef47eeb80777cfbb0eebfb0d9a9555c27b4ed7573",
+      "runnerSha256": "60fc40979517ba1b8696723bf20febfb4247e6740e0d070998b7fa7b056b81eb",
+      "bindingSha256": "75a1efe40988160b4011164bd1ed9a5d3a3e2d6dab1c76ad3ec2615f32bd3ca1",
+      "scopePatchSha256": "17f4ef57196d98b598e2e1d26ce0df170c25a936c9c24375d2b604c1024feb70",
+      "rootReleasePresent": false
+    },
+    {
+      "scope": "evidence",
+      "paths": [
+        "packages/server/src/transaction-http.test.ts",
+        "apps/bdptest/src/transactional-sequence-depth-installed.test.ts",
+        "docs/design/transaction-implementation-progress.md"
+      ],
+      "promptBytes": 6895,
+      "promptSha256": "cc0e70a777cfc3ad99f6a365cef479e2ff52619b759336799ef9eda516e157a1",
+      "runnerSha256": "917434502db11cc5a3cc1d507a005eea3cdd2c3a68e3d90197097774dc36a6b4",
+      "bindingSha256": "5f4de7f554f3caeecbf9efb815fc8f08749b690811c924daa601836487e0d43d",
+      "scopePatchSha256": "447d88e56fda68e73c752f41866e42dc1d50df463bf32452fdf4c6763d56cbfe",
+      "rootReleasePresent": false
+    }
+  ]
+}

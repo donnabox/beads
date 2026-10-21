@@ -1,0 +1,24 @@
+{
+  "mode": "directory-missing-update-link",
+  "trigger": {
+    "scenario": "read-update.discovery.operation-directory",
+    "action": "directory",
+    "ordinal": 3,
+    "method": "GET",
+    "url": "https://reference.invalid/acme/operations/"
+  },
+  "operation": "Validate genuine status200/closed directory first; remove only updateLink from copied assertion-input JSON, update bodyText/bodyOctets consistently; do not mutate request or actual raw evidence.",
+  "expectedFailedAssertionIds": [
+    "schema"
+  ],
+  "expectedPassedAssertionIds": [
+    "status"
+  ],
+  "fullyQualifiedFailure": "read-update.discovery.operation-directory:directory:schema",
+  "applicationCount": 1,
+  "expectedHttp": 3,
+  "maximumHttp": 21,
+  "mutationRequestsBeforeFailure": 0,
+  "automaticRetries": 0,
+  "serverFault": false
+}

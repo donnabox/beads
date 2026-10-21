@@ -1,0 +1,16 @@
+[
+  {
+    "path": "apps/bdptest/src/transactional-matrix.test.ts",
+    "query": "metadataChange|incident-link-metadata|metadata-only|snapshot|view=events",
+    "exitCode": 0,
+    "output": "1513:          else body.operations[1].metadataChange[0].value = { tag: \"different\" };\n1604:      metadataChange: [{ op: \"replace\", path: \"\", value: { phase: prefix } }],\n1727:      metadataChange: [\n",
+    "sha256": "95e07ead41f9cb39087a155e87cad22998d92cd3967cb9c3c446568ff6139bc8"
+  },
+  {
+    "path": "packages/conformance/test-support/transactional/fixture-v1.json",
+    "query": "metadataChange|incident-link-metadata|metadata-only|snapshot|view=events",
+    "exitCode": 1,
+    "output": "",
+    "sha256": "3a7899ced771d4880066d98b0000c53f801ece53458502cc4f3bc641146c9a85"
+  }
+]

@@ -1,0 +1,11 @@
+--- /Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation-preparation-1/audit.py
++++ /Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation-preparation-2/audit.py
+@@ -274,7 +274,7 @@
+     require(type(receipt['results']) is list and len(receipt['results'])==1,'G09 one create-bead result');item=receipt['results'][0]
+     keys(item,['operationIndex','outcome','resource'],['operationName']);exact(item,{'operationIndex':0,'outcome':'created'})
+     if 'operationName' in item:require(type(item['operationName']) is str and len(item['operationName'])>0,'G09 actual operation name')
+-    resource=item['resource'];keys(resource,['id','type','revision','properties']);exact(resource,{'id':rules['canonicalScope']+'beads/g09','type':rules['canonicalScope']+'types/task','properties':{'title':'café'}});require(type(resource['revision']) is str and len(resource['revision'])>0,'G09 actual created revision')
++    resource=item['resource'];keys(resource,['id','type','revision','properties','metadata']);exact(resource,{'id':rules['canonicalScope']+'beads/g09','type':rules['canonicalScope']+'types/task','properties':{'title':'café'},'metadata':{}});require(type(resource['revision']) is str and len(resource['revision'])>0,'G09 actual created revision')
+    elif w['status'] in [304,412,406,405]:
+     require(text=='' and r['bodyOctets']==0,'G09 conditional/media/method bodyless')
+     if w['status']==304:require('content-length' not in h,'G09 actual304 absent length')

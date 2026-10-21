@@ -1,0 +1,3 @@
+# PR131 exact-head CI outcome
+
+Run38768400100/job116537531157 succeeded on head1b491d8b and tested merge5dd229cb, tree10810a80. All27steps passed:9308tests,1skip,178files;7preflight checks, installed smoke and historical89-row Read evidence gate. Suite784.04s; job1005s within unchanged1200s limit. The new witness passed1084ms with13responses; child20136 exited0 and store removal was reported. CI uses workspace emitted output; separately recorded fresh archive/consumer proof is not reattributed. No profile qualification or release. Raw log SHA256 2a0bb89796111f456d5bcbd36cc3f6a81c31d7f803de721226e8c7995b7cfe35.

@@ -1,0 +1,42 @@
+{
+  "accepted": true,
+  "state": "Independent CLOSED first D4 PLAN packet mechanics accepted; no launch",
+  "session": "2026-10-18T02:16:24Z-549f",
+  "preparationIndexSha256": "de9410cb3624b0e151422c96f27e9f9f091bb416ce1bb7c3e1f1dd6e76b9b667",
+  "preparationBindingSha256": "87533ffd0bdab2652a62f0840d3c88fa7309c96d42ebd84af12836a1a62c0b3b",
+  "bindingSha256": "0d2f3143637e0a1b82a47371cc96dc28efcf8547f88a676b6e6271232a75e6d5",
+  "controlSha256": "be7049fc5bbc1b22b43741c8f098c80508cc93f0e3efa7f73d5b8b2987ffe88b",
+  "runnerSha256": "2a4a39cb7848ebf9237f97e428374fff59c467f11a48e62a86a6919c7a7173ab",
+  "supervisorSha256": "791e5a566561798aa3352f19b021e6db9beeddb033ae5725c7d031d51716f95c",
+  "frozenInnerIndexSha256": "7a1832d9be55fed0a807e230d199f06a11202747ebda28ce5200a0372a7431c1",
+  "promptSha256": "3dda5e9d1901db63264e6a5eabcc807e20ea964fdef6c3bc73233dd14578172e",
+  "planIndexSha256": "e2dc915f645a9c0dabd194d49f6a3b9b4949689d1971aacfb3d7fd33e04e2baf",
+  "planSha256": "3a2fcd7082e800affde96515c606d08d1129fa41547f207a60075e99cb8744a0",
+  "nativePlanClosureSha256": "cab4360581f71a799a08e0130e967fa551b9f4b62b1b39ff8ddf3e08513d94e5",
+  "rootPlanAcceptanceSha256": "0125557ff2973d281edd75efe7c8973d15a70cb7af71af13757d7087bb64dc18",
+  "sourceCommit": "cce884ccea1db97cbc6fd7bff876d4d6091f9081",
+  "sourceTree": "6757829bd5b700faf28df39071190a272add90c9",
+  "sourceFiles": 679,
+  "specSha256": "67772742d7d08f48c12196e9789f1859ad2d0e19f133ea65e197b049361f84f8",
+  "findings": [],
+  "requiredRevisions": [],
+  "rootLaunchReleased": false,
+  "actualReviewExecuted": false,
+  "sourceAuthoringReleased": false,
+  "productExecutionReleased": false,
+  "allowedActualReviewAttemptsAfterSeparateRootRelease": 1,
+  "retryAllowed": false,
+  "reviewerDeadlines": [
+    1800,
+    1790,
+    1798
+  ],
+  "productOuterProposalStillClosed": [
+    150,
+    145,
+    149
+  ],
+  "scope": "Static data/code-identity adaptation acceptance; root must inspect/release one exact attempt and independently audit/disposition terminal before authoring. No runtime/profile credit.",
+  "guardCurrentRemoteSessionVerified": true,
+  "helperReviewerRuntimeGitExecuted": false
+}

@@ -1,0 +1,25 @@
+{
+  "state": "CLOSED prospective root two-flag release only",
+  "mutableReleaseFiles": [
+    {
+      "file": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-final-discovery-owner-plan-review-1/claude-plan-review/binding.json",
+      "key": "rootLaunchReleased",
+      "before": false,
+      "after": true,
+      "closedExactCopy": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-final-discovery-owner-plan-review-1/launch-supervision/closed-binding.json"
+    },
+    {
+      "file": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-final-discovery-owner-plan-review-1/launch-supervision/control.json",
+      "key": "rootLaunchReleased",
+      "before": false,
+      "after": true,
+      "closedExactCopy": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-final-discovery-owner-plan-review-1/launch-supervision/control.closed.json"
+    }
+  ],
+  "allOtherBytesAndSourceRequiredUnchanged": true,
+  "controlMutableHashExcludedFromRunnerArtifactPins": true,
+  "closedControlBytesRemainPinned": true,
+  "flagsFalseNow": true,
+  "rootNativeMechanicsAndDurablePushReadbackRequired": true,
+  "noActualLaunch": true
+}

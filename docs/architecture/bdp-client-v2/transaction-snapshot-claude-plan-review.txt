@@ -1,0 +1,138 @@
+Review complete. No files written or modified; nothing built.
+
+# Plan review: `transaction-snapshot-plan.md` vs. frozen G1 `a7430dd` + normative spec
+
+Verified against `HEAD = a7430ddf0fc2e56b0923d8c75fcfc752ee89ac88` (clean tree), `docs/specs/bdp.md` (6,980 lines), `schemas/bdp-v0.schema.json` (5,590 lines), and `packages/conformance/catalog/transactional-v1.json` as they exist at that commit.
+
+**Overall:** scope is correctly drawn. Minimal mandatory Snapshot only, durable same-owner atomic capture, independently bounded streams, checkpoint rendezvous, restart/expiry/integrity, negative replica controls — no new product semantics, no optional History, no public claim, H1 actual-metadata/canonical-host seam kept separate. The seam analysis against a743 is accurate in nearly every particular. The defects are concentrated in three places: the chosen failure codes, the Q1/Q2 "unresolved" framing (both are answerable from actual clauses), and the byte arithmetic's missing input.
+
+---
+
+## HIGH
+
+### H‑1 · Capacity refusal as bodyless 500 is forbidden by an actual clause
+**Location:** plan:54 ("No new 413/503 code is inferred. Bodyless 500 is the existing honest private unsupported/service path"); done-when #8.
+
+`docs/specs/bdp.md:1049–1053` is directly on point: an omitted `limits` bound "does not mean infinite capacity and **does not permit silent truncation or a non-normative failure response**." A bodyless 500 for a capacity refusal is a non-normative failure response for an unadvertised bound.
+
+Applicable normative refusals exist *and are already emitted by this tree*:
+- `limit-exceeded` — 413, `never` (`bdp.md:1905`). Precedent: `packages/server/src/transaction-http.ts:269` already emits it with a **private, unadvertised** limit name (`sequence.operations`). `limit` is SHOULD (`bdp.md:5261`), so it may be omitted.
+- `temporarily-unavailable` — 503, `after-delay` (`bdp.md:1907`). Already emitted at `packages/server/src/transaction-runtime.ts:205`.
+
+**Remedy:** split the two cases the plan currently collapses. Permanent per-Snapshot over-capacity (this Scope exceeds the row/byte ceiling; no retry helps) → `limit-exceeded` 413 with `limit` omitted. Transient aggregate/live-handle exhaustion (clears when handles expire inside the 5-minute lifetime) → `temporarily-unavailable` 503 with `Retry-After`. Reserve bodyless 500 strictly for genuine internal faults — which is what done-when #6 already correctly assigns to pre-expiry corruption. Rewrite plan:54 and done-when #8 accordingly.
+
+### H‑2 · Q1 is answered by normative clauses the plan never cites
+**Location:** plan:66 (Question S1-Q1); plan:64; done-when #9.
+
+The plan's citation set omits the five clauses that decide this.
+
+- `bdp.md:5233–5244` — the directly analogous rule for retained immutable representations: "The three Transactional response fields on a receipt or page response are **the serving request's own observation, never the body's history**… `BDP-Scope-Position` carries the position the read observed… **honoring `BDP-Minimum-Scope-Position` on a later read exactly as any read does**," while the body's recorded positions "never change."
+- `bdp.md:5793` — the general clause: every Scope-bounded read reports the prefix it observed.
+- `bdp.md:5916` — the manifest/stream table row expressly admits "ordinary epoch/view, **minimum-position**, and service failures." The target is not exempt.
+- `bdp.md:4618–4623` — fixes the ordering: authentication → principal/epoch non-disclosure → **minimum-position context and consistency wait** → page expiry → representation.
+- `bdp.md:5293–5296` / `5899–5902` — `catch-up-timeout`; body immutability.
+
+**Resolution:** headers carry the current serving observation; the body's `scopePosition`/`checkpoint`/`expiresAt` stay immutable; the minimum is compared against the current observation. So "minimum later than immutable anchor but not later than current head" → **200 with the retained manifest**, header position ≥ minimum. Minimum beyond current head → finite wait, then `503 catch-up-timeout`. No conflict with `:5786` ("never reports success with an older position") because the reported position is the current one. The plan's own worry — "waiting cannot make that Snapshot newer," "without inventing catch-up-timeout proof" — is the argument *for* this reading, not against it: the alternative makes a minimum on a retained handle fail unconditionally, which fits badly with an `after-delay` code.
+
+This is already how a743 behaves for the analogous retained case: `checkTransactionMinimum` compares against the live owner context (`transaction-consistency.ts:73–77`) and is invoked on the retained receipt path (`transaction-store.ts:716–719`); `transaction-http.ts:91–95,168,190` writes `transactionReadContexts(...).current` to the wire while `transaction-read.ts:123–126` keeps the retained original paired as `snapshot`. The progress note at `docs/design/transaction-implementation-progress.md:470–476` already documents the `sourceContext` / `snapshotSourceContext` split the plan gestures at.
+
+**Remedy:** reuse `checkTransactionMinimum` against the current context for retained reads; delete the Q1 gap. Keep the asymmetry explicit — **creation** compares the minimum against the captured prefix (same entry, so anchor = observation); **refetch** compares against the current observation with the body untouched. Drop done-when #9's "Retained minimum Q1 remains visibly unsupported." One interpretive step is being taken (extending the receipt rule's structure to snapshots via `:5793`) — name it so council can rule on that step alone. If root rejects it, the fallback is `catch-up-timeout`/`cursor-expired` per `:5783–5786`, *not* a 500.
+
+### H‑3 · The Q1 interim mitigation is itself non-normative
+**Location:** plan:66 ("explicitly refuse unsupported retained minimum controls").
+
+`bdp.md:5783–5786` closes the authority's dispositions to exactly three: return at-or-after, wait/route, or return foreign-view / cursor-expired / catch-up-timeout. `:5916` lists minimum-position failures as ordinary on this row, and `:1051–1053` forbids a non-normative failure response. The `developmentGap` bodyless 500 (`transaction-http.ts:97–101`) is none of the three. This remedy stands independently of H‑2: even if council defers the wire semantics, shipping the refusal is worse than shipping either permitted disposition.
+
+**Remedy:** if Q1 is genuinely deferred, refuse with `catch-up-timeout` (503, after the existing finite deadline) rather than a development-gap 500 — that is a permitted disposition and needs no new code.
+
+---
+
+## MEDIUM
+
+### M‑1 · The page-fit proof is missing its binding input
+**Location:** plan:56 ("A page must fit at least one legal installed Resource; prove that inequality").
+
+The plan enumerates "installed representation/source URL bounds, including lossless serialization and inline-owned bodies" but never names the quantity that actually bounds inline-owned bodies: the Type Descriptor `ownsOutgoing` maxima. `max` is schema-**required** on both `ownedLinkDeclaration` and `ownedWildcardDeclaration` (`schemas/bdp-v0.schema.json`, both `"required": ["max"]`), enforced per-type and as a **total** by the wildcard at `resource-evaluator.ts:927–956`.
+
+Critically, `representationBytes` (256 KiB, `transaction-batch.ts:64`) is enforced at write time against the **stored** record *without* `ownedLinks` (`resource-evaluator.ts:1050–1058`); `ownedLinks` is a read projection (`:897–957`). So the served record is strictly larger than the enforced bound.
+
+Running the actual numbers: the installed reference closure (`packages/protocol/src/reference-domain.ts:63–70`) gives `decision` = `{"*":8, relates:1, cites:8}` and `feature` = `{"*":8}`. Worst-case Bead wire record = 9 × 256 KiB = **2.25 MiB**, so the proposed 4 MiB page bound *does* fit one legal Resource — but only via the wildcard **total**, not the sum of per-type maxima.
+
+**Remedy:** state the inequality as `pageBytes ≥ representationBytes × (1 + totalOwnedMax) + framing`, cite `resource-evaluator.ts:942–946` as the enforcement site for `totalOwnedMax`, and add a fixture with a Bead at the wildcard maximum carrying maximum-size owned Links.
+
+### M‑2 · The three capacity numbers are mutually inconsistent
+**Location:** plan:54 (4,096 rows / 32 MiB per Snapshot; 8 live handles / 64 MiB aggregate).
+
+4,096 × 2.25 MiB ≫ 32 MiB, so the byte cap binds at ~14 worst-case Beads — the row cap is decorative for Bead-heavy graphs. 8 × 32 MiB = 256 MiB ≫ 64 MiB aggregate, so only ~2 maximum-size handles fit, not 8. The plan presents these as independent knobs and never states the implied worst-case Scope ceiling, while plan:9 promises "a complete finite Snapshot of the current fixed all-visible Scope."
+
+**Remedy:** present the per-Snapshot pair as one derived predicate, state the implied worst-case Resource ceiling explicitly, and add a done-when row asserting both that a Scope at the row cap with realistic records fits in 32 MiB and that the aggregate cap is reached at the stated handle count.
+
+### M‑3 · No validator decided, yet 304/412 are required evidence
+**Location:** done-when #6 ("Conditionals cannot bypass fences; 304/412 context and HEAD bodylessness tested").
+
+`bdp.md:5919–5921` requires the conditional rules to apply to snapshot targets. But the shared conditional path keys entirely off ETag (`read-http.ts:29,50–54`), and today the ETag derives from a Resource revision (`scopeDataResponse(parsed, body, revision?)`, `transaction-http.ts:182–188`). A manifest has no Resource revision. With no ETag, 304 is unreachable and `If-Match: *` silently succeeds (`read-http.ts:63`). The plan never decides this.
+
+**Remedy:** specify a strong entity tag derived from the immutable tuple (snapshot identity + stream kind + page range), note it is stable for the handle's lifetime (which is what makes it correct here), and assert in done-when #6 that the epoch/view/minimum/expiry/integrity fences precede the 304/412 decision.
+
+### M‑4 · `retention.maximumSnapshotLifetime` is mis-situated
+**Location:** plan:16.
+
+Its normative definition is `bdp.md:1067–1068`: it "bounds the lifetime of a **pagination continuation** when advertised." It is not a Scope Snapshot handle bound at all. Citing it among the Snapshot anchors invites exactly the inference the plan warns against.
+
+**Remedy:** drop it from the Snapshot anchors, or relabel it as the pagination-cursor bound. The actual authority for Snapshot expiry is `bdp.md:3749–3750` — "Individual snapshots and receipts carry their exact expiry."
+
+### M‑5 · Q2 is resolvable now; there is no normative floor
+**Location:** plan:68 (Question S1-Q2); plan:48.
+
+`bdp.md:5904–5907` and `:5916` fix 410-vs-404 but state no duration. The spec elsewhere explicitly contemplates forgetting and declines to require a floor: `:4602` lists "a forgotten failed receipt" as a uniform 404; `:1823` states "There is no minimum cursor lifetime"; `:5755–5756` rejects per-client retention pins outright. The only hard obligations are continuability through `expiresAt` (`:5927`), pre-expiry inability as service failure (`:5906–5907`, catalog `transactional.snapshot.expiry` at `:6927`), 410 while recognized-and-expired, 404 when unknown.
+
+So the normative answer to "how long must this private service retain expired-handle disposition metadata?" is: **no minimum exists**. Any bounded local horizon is conformant, and collapsing a long-forgotten handle to 404 is not a violation.
+
+**Remedy:** resolve Q2 locally now, choosing the horizon for one reason only — making done-when #6's 410 path deterministic. Retain disposition for ≥ one lifetime past expiry, swept by the existing maintenance pass (`transaction-store.ts:463–464,1183`), driven by the injected clock rather than wall time. Record it as the local convention plan:68 already permits; no council normative ruling is needed. Plan:48's "Do not silently turn a known expired handle into unknown while promising a stronger distinction than storage preserves" is the right instinct and survives unchanged.
+
+### M‑6 · Done-when #10's "actual wire URLs" is unreachable in the stated sequence
+**Location:** done-when #10; plan:77.
+
+Transactional discovery is an explicit 500 gap at a743 — `transaction-http.ts:152`: `discover: async () => developmentGap("transactional-discovery")`. The only discovery builders are Read/Read+Update (`development-composition.ts:30`, `index.ts:1480`), and the installed reference process pins `profile = "read-update"` (`installed-reference-configuration.ts`). Closed profile membership (`bdp.md:3753–3785`) forbids advertising `snapshot` until every Transactional member is served. So the installed fixture cannot *discover* the creation target; it must construct it — which reads as the thing #10 forbids ("No row is passed by copying narrative fixtures or synthetic responses").
+
+**Remedy:** name the private target spelling explicitly (`{scope}snapshot`, plus the manifest/stream query namespace), state that installed tests construct it from the configured Scope exactly as the already-private unadvertised `changes/` route does, and say plainly that this is capture-from-wire evidence but **not** discovery conformance.
+
+---
+
+## LOW
+
+- **L‑1 · plan:28** conflates two token spaces: "Genesis remains the oldest legal cursor (`minimumReplayPosition` locally `pos-0`)." `after` takes a checkpoint whose genesis spelling is the literal `"genesis"` (`transaction-changefeed.ts:57,70–71`); `minimumReplayPosition` is a position (`bdp.md:3730,3746`). G1's own progress note already says "The reserved genesis checkpoint is distinct from the pos-0 position." `minimumReplayPosition` also has no serving site at a743. **Remedy:** split the sentence; have done-when #4 name the checkpoint space it actually tests.
+- **L‑2 · plan:32** "`transaction-runtime.ts` remains the only owner factory" — it is the only *listener/process* factory. The owner factory is `openTransactionStore` (`transaction-store.ts:198`), called directly 25× by `transaction-store.test.ts`, and the test-only `fault` hook lives there (`:137–138`, used at `:460,1077,1138`). Done-when #7's injected uncertain commit/rollback requires that direct path. **Remedy:** reword, and name the `fault` labels the capture path will add.
+- **L‑3 · plan:42–44** never states the capture **order**, though page boundaries are "fixed by the captured configuration" and done-when #3 relies on duplicate/omit detection. The store's existing enumeration is `ORDER BY id` (`transaction-store.ts:760`), the spec baseline is `canonical-uri` (`bdp.md:3769–3771`), and `ownedLinks` is itself ordered by ascending canonical `id` (`bdp.md:480`; `resource-evaluator.ts:928`). **Remedy:** state ascending code-unit order of canonical `id` per stream, persisted as the captured ordinal.
+- **L‑4 · plan:44** `resources` has no index on `(kind, id)` (DDL `transaction-store.ts:165`), so each keyset page filters `kind` over the primary-key index. Fine at 4,096 rows, but a format bump is required anyway. **Remedy:** add the index with the capture tables, or state the scan cost as accepted.
+- **L‑5 · plan:46** "A private format bump/refusal is required" doesn't say which refusal. `format` (`transaction-store.ts:159`) yields "transaction installation mismatch" (`:486`); `identityPolicy` (`:162`) yields "explicit new-store provisioning required" (`:481–483`). Done-when #8 conflates them as "Prior-format/config mismatch." **Remedy:** bump `format` for the table-shape addition, carry capture capacity in the same `configuration` JSON so a limits-only change also yields installation mismatch, assert both separately — and state explicitly that prior installed evidence stores become unopenable (implied by "no migration/reseed," never said next to done-when #11's "No immutable old evidence reseal").
+- **L‑6 · done-when #6** "foreign principal/view": the view token is the constant `"development-all-visible"` (`transaction-store.ts:514`), so `bdp.md:3704` ("A token change requires a fresh snapshot") cannot be evidenced — only forged/foreign supplied-token refusal can. plan:11 covers this by excluding mutable views; #6 should say which it exercises.
+
+---
+
+## Verified correct — do not re-litigate
+
+- All six catalog rows exist: `packages/conformance/catalog/transactional-v1.json:1265,1278,1291,1304,1937,1955`; `bdp.md:6925–6928,6967–6968`.
+- `snapshotManifest` is at `schemas/bdp-v0.schema.json:4784–4853`; `beadCollection`/`linkCollection` at `:927–972`. **plan:21 is exactly right**: the manifest's `beads.items` really does set `"links": false` (`:4840`) and `ownedLinks` really does remain in `beadRecord` (`:797`). Stronger support available: `bdp.md:1589–1591` makes the `links` exclusion a general collection law ("a Bead collection cannot embed each Bead's incident Links"), so continuation pages inherit it — lean on that instead of restating per-page.
+- `wireToken` is `^[A-Za-z0-9_-]{1,256}$` (`:2823`), so both `"genesis"` and `cg_…` validate as `checkpoint`, and `pos-0` validates as `scopePosition`. plan:30's "reuse `transactionCheckpoint`, including genesis at zero" is sound.
+- Groups are never pruned (DDL `transaction-store.ts:172`; `sweep` touches receipts only), so plan:28's "no per-Snapshot pins or any new replay log" holds and matches `bdp.md:5755–5756`.
+- `withRead().resources()` does build the entire array (`transaction-store.ts:756–764`) — unsuitable for bounded capture, as claimed.
+- Origin is refused by the transactional listener (`transaction-runtime.ts:208–212`, "This fixture has no CORS policy"), so plan:70's CORS claim is accurate.
+- Bodyless 405 with `Allow: GET, HEAD` for unknown shapes already exists (`transaction-http.ts:197–208`) — done-when #5's method row is largely pre-satisfied.
+- Change groups carry a structurally empty `erasures` (`transaction-store.ts:1103`; `transaction-changefeed.ts:40,118–119,154`), so plan:11's empty-ledger framing is structural, not conditional, and the deferral of `bdp.md:6458–6478` is safe.
+- Node pinned to 24.16.0 (`package.json:9`, `.nvmrc`); the `MAX_STRING_LENGTH` guard precedent exists at `transaction-changefeed.ts:26–27`. plan:56's arithmetic discipline matches it.
+- Hot-journal recovery does precede configuration comparison (`transaction-store.ts:468–471` then `:480`), and the comparison precedes the receipt/sweep maintenance at `:501–505` — so plan:46 and plan:58's "persisted and compared before BDP maintenance on reopen" land on a seam that already exists.
+- HEAD-on-creation treatment (plan:62) matches `bdp.md:5832–5838` precisely, including "A HEAD preflight is not a reservation."
+
+---
+
+## Bounded independent work this implies
+
+Q1 and Q2 both resolve from actual clauses (H‑2, M‑5), so neither is a blocking council item. What remains genuinely independent and bounded:
+
+1. **One council ruling, narrow:** does the receipt rule's header/body split (`bdp.md:5233–5244`) extend to retained Snapshot responses via `:5793`? One yes/no. Everything else in Q1 follows.
+2. **Capacity derivation** (M‑1, M‑2): re-derive the page/manifest/per-Snapshot/aggregate numbers from `representationBytes × (1 + totalOwnedMax)`, and publish the implied worst-case Scope ceiling.
+3. **Validator choice** (M‑3): one decision on the Snapshot entity tag.
+4. **Local retention convention** (M‑5): one number, chosen for test determinism, documented.
+
+Items 2–4 are reference engineering decisions on this private server, exactly as plan:96 says. None requires BDP semantics to change, and none blocks the plan's recommended first authoring boundary (durable capture + immutable finite streams + replica rendezvous).

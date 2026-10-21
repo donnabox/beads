@@ -1,0 +1,22 @@
+--- /Users/dbox/repos/wt/vickie/bdp-integration-logs/current-observation-minimum-validation/required-checks-format-successor-1/gate.py
++++ /Users/dbox/repos/wt/vickie/bdp-integration-logs/current-observation-minimum-validation/required-checks-lint-successor-1/gate.py
+@@ -1,7 +1,7 @@
+ from pathlib import Path
+ import json,hashlib,subprocess,os,importlib.util
+ P=Path(__file__).resolve().parent
+-V=Path("/Users/dbox/repos/wt/vickie/bdp-integration-logs/current-observation-minimum-validation/format-successor-1")
++V=Path("/Users/dbox/repos/wt/vickie/bdp-integration-logs/current-observation-minimum-validation/lint-successor-1")
+ W=Path("/Users/dbox/repos/wt/vickie/vickie-current-observation-minimum")
+ E=P/'run';MODE='final'
+ sha=lambda b:hashlib.sha256(b).hexdigest()
+--- /Users/dbox/repos/wt/vickie/bdp-integration-logs/current-observation-minimum-validation/required-checks-format-successor-1/commands.json
++++ /Users/dbox/repos/wt/vickie/bdp-integration-logs/current-observation-minimum-validation/required-checks-lint-successor-1/commands.json
+@@ -28,7 +28,7 @@
+         "scripts/e2e-ready.test.mjs",
+         "--reporter=verbose",
+         "--reporter=json",
+-        "--outputFile.json=/Users/dbox/repos/wt/vickie/bdp-integration-logs/current-observation-minimum-validation/required-checks-format-successor-1/run/preflight.results.json"
++        "--outputFile.json=/Users/dbox/repos/wt/vickie/bdp-integration-logs/current-observation-minimum-validation/required-checks-lint-successor-1/run/preflight.results.json"
+       ],
+       "outerSeconds": 120,
+       "termAfterSeconds": 115,

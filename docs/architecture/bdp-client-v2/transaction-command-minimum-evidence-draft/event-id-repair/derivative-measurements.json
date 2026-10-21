@@ -1,0 +1,4150 @@
+{
+  "status": "UNEXECUTED_DATA_ONLY_MEASUREMENT",
+  "sourceHashes": {
+    "packages/conformance/test-support/transactional/manifest-v1.json": "29729151cf6da641545910ec3880f9609c13b319af7bbe99d3d2ad47833dab96",
+    "packages/conformance/test-support/transactional/coverage-v1.json": "4619813e9446e0e714a64c11eac184531950f57720e32c7ef414c7e3342121af",
+    "packages/conformance/src/transactional-cumulative.test.ts": "6ca35fc3b9d7d35b9f0fc7e513cf1eeb3b95a81a7e772755432dc435de346f9f",
+    "apps/bdptest/src/transactional-matrix.test.ts": "e319109ab0e9f7258e6918ae789ed7a5672eb7aabd0ec8725ae38e3634164e68",
+    "packages/conformance/src/profile-contract-plan.test.ts": "e5be4864e456431db74bd325ec64d785bf3c5301a6be5b230bfcc7351ade4fc4"
+  },
+  "historicalMeasurementsSHA256": "a827bebbdab479c119d3425e16a079d3bcd9cea6da09c9ea30d95313e8d96c87",
+  "canonical": {
+    "normalBytes": 750430,
+    "normalSHA256": "570016630bd7d4f761aa6fa561e243fd4a33cbb9496f0b59f2285f32cddc182f",
+    "compactBytes": 366116,
+    "compactSHA256": "ee2d0759f69368684bdc7df2146c5735a18f9b4d89d80413191f25c8741f9bcd",
+    "nodes": 19570,
+    "actions": 210,
+    "assertions": 2294
+  },
+  "existingMutatedInvocations": 38,
+  "existingUnchangedInvocations": 14,
+  "newSelectedMutatedInvocations": 2,
+  "totalObserveInvocations": 54,
+  "derivatives": [
+    {
+      "normalBytes": 750423,
+      "normalSHA256": "56dfb4ffc523342be5b3ead74e41341ac36e4455dbc9fa906a7b4a3abf6b147a",
+      "compactBytes": 366109,
+      "compactSHA256": "e9e70a77d2e6b0f83227df997e76566b95c30bffdbf2789f0d002088040b06ea",
+      "nodes": 19570,
+      "actions": 210,
+      "assertions": 2294,
+      "name": "receipt-binding",
+      "deltaNormalBytes": -7,
+      "deltaNodes": 0,
+      "category": "existing-manifest-derivative",
+      "historicalArtifact": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-cross-carrier-draft/derivative-receipt-binding.json",
+      "historicalSHA256": "a41d03017e7d8655d1d9caaef9a3c59cf5ff352cd9da10d1441bede8f8901464",
+      "historicalNormalBytes": 695591,
+      "historicalNodes": 18107,
+      "oldRowsTransformationPreserved": true,
+      "prelaunchRejected": false,
+      "changes": [
+        {
+          "pointer": "/scenarios/1/actions/2/input/binding",
+          "before": "commit-receipt",
+          "after": "subject"
+        }
+      ],
+      "changedBodies": []
+    },
+    {
+      "normalBytes": 750431,
+      "normalSHA256": "b9e1a040d1ee23032fb222f9b1e94510b47dbbb6e240870732df85abadbbd224",
+      "compactBytes": 366117,
+      "compactSHA256": "3c9b436c21830531183b42a0d133f72d8b17586b6bb6900d563d3d097ce0ebbe",
+      "nodes": 19570,
+      "actions": 210,
+      "assertions": 2294,
+      "name": "receipt-method",
+      "deltaNormalBytes": 1,
+      "deltaNodes": 0,
+      "category": "existing-manifest-derivative",
+      "historicalArtifact": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-cross-carrier-draft/derivative-receipt-method.json",
+      "historicalSHA256": "db368a926909fb81b3ae3817b7ec96fd7e5de63b081a0e9bcee232e72aa87750",
+      "historicalNormalBytes": 695599,
+      "historicalNodes": 18107,
+      "oldRowsTransformationPreserved": true,
+      "prelaunchRejected": false,
+      "changes": [
+        {
+          "pointer": "/scenarios/1/actions/2/input/method",
+          "before": "GET",
+          "after": "POST"
+        }
+      ],
+      "changedBodies": []
+    },
+    {
+      "normalBytes": 750469,
+      "normalSHA256": "c3da287fbfe50d97ea26e32ee0ec72b97ad737a46ac6a52ebfd9b0179207cb4a",
+      "compactBytes": 366141,
+      "compactSHA256": "ead9d1266b602c1f9a6e16e8a83bc85c189bbf22e2116ee0c66d7055ae818cb2",
+      "nodes": 19571,
+      "actions": 210,
+      "assertions": 2294,
+      "name": "receipt-credential",
+      "deltaNormalBytes": 39,
+      "deltaNodes": 1,
+      "category": "existing-manifest-derivative",
+      "historicalArtifact": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-cross-carrier-draft/derivative-receipt-credential.json",
+      "historicalSHA256": "6b4a08abddb6e6cc15ba2b7e6943abf8251a7997fc3d755b64f6442ff946c6ce",
+      "historicalNormalBytes": 695637,
+      "historicalNodes": 18108,
+      "oldRowsTransformationPreserved": true,
+      "prelaunchRejected": false,
+      "changes": [
+        {
+          "pointer": "/scenarios/1/actions/2/input/credentialRef",
+          "after": "reader",
+          "added": true
+        }
+      ],
+      "changedBodies": []
+    },
+    {
+      "normalBytes": 749747,
+      "normalSHA256": "6ab15cb8d3d259669e2e7631ab0df89e242499319aed7bef84649694967debe3",
+      "compactBytes": 365809,
+      "compactSHA256": "65447ebd5cfc530ad2adcedd2e79423b41aa0b533a234356c82d45197e5923d4",
+      "nodes": 19549,
+      "actions": 210,
+      "assertions": 2290,
+      "name": "receipt-body-assertion",
+      "deltaNormalBytes": -683,
+      "deltaNodes": -21,
+      "category": "existing-manifest-derivative",
+      "historicalArtifact": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-cross-carrier-draft/derivative-receipt-body-assertion.json",
+      "historicalSHA256": "66b2d2d65bb87f139ce531d6fad43ab6da985e63a4dfbc32c71d86f4160a366d",
+      "historicalNormalBytes": 694915,
+      "historicalNodes": 18086,
+      "oldRowsTransformationPreserved": true,
+      "prelaunchRejected": false,
+      "changes": [
+        {
+          "pointer": "/scenarios/1/actions/2/assertions",
+          "before": [
+            {
+              "id": "status",
+              "kind": "json-pointer",
+              "pointer": "/status",
+              "exists": true,
+              "equals": 200
+            },
+            {
+              "id": "body-present",
+              "kind": "json-pointer",
+              "pointer": "/bodyPresent",
+              "exists": true,
+              "equals": true
+            },
+            {
+              "id": "epoch",
+              "kind": "json-pointer",
+              "pointer": "/headers/bdp-scope-epoch",
+              "exists": true
+            },
+            {
+              "id": "view",
+              "kind": "json-pointer",
+              "pointer": "/headers/bdp-authorization-view",
+              "exists": true
+            },
+            {
+              "id": "position",
+              "kind": "json-pointer",
+              "pointer": "/headers/bdp-scope-position",
+              "exists": true
+            }
+          ],
+          "after": [
+            {
+              "id": "deliberate-counterfactual",
+              "kind": "json-pointer",
+              "pointer": "/body/results/0/resource/properties/title",
+              "exists": true,
+              "equals": "never-observed"
+            }
+          ]
+        }
+      ],
+      "changedBodies": []
+    },
+    {
+      "normalBytes": 750631,
+      "normalSHA256": "bc67542e29d9389e3821e7f44c16be18ea6a295dcb9f4e52ebb2a687bad2c52a",
+      "compactBytes": 366197,
+      "compactSHA256": "439e9d3fe5979725fa03f8984b1433d14a9617ee2cfea78bb9e0394765ef5ede",
+      "nodes": 19575,
+      "actions": 210,
+      "assertions": 2294,
+      "name": "ordinary-capture",
+      "deltaNormalBytes": 201,
+      "deltaNodes": 5,
+      "category": "existing-manifest-derivative",
+      "historicalArtifact": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-cross-carrier-draft/derivative-ordinary-capture.json",
+      "historicalSHA256": "49f45001274cbb1888a3127e5ad699cc8fa1316034c1ac1d6c2eb1a90c42098d",
+      "historicalNormalBytes": 695799,
+      "historicalNodes": 18112,
+      "oldRowsTransformationPreserved": true,
+      "prelaunchRejected": false,
+      "changes": [
+        {
+          "pointer": "/scenarios/1/actions/3/captures",
+          "before": [],
+          "after": [
+            {
+              "binding": "ordinary-resource-id",
+              "from": {
+                "kind": "json-pointer",
+                "pointer": "/id"
+              }
+            }
+          ]
+        }
+      ],
+      "changedBodies": []
+    },
+    {
+      "normalBytes": 751140,
+      "normalSHA256": "3d5de8c2b52103492c87ec935453ac0a58144805d3d845cc5c5f6a7cbea77794",
+      "compactBytes": 366460,
+      "compactSHA256": "b6be472183a1c973f2457804d075ea9d51d43247af234c8f6397ec674961ba4f",
+      "nodes": 19590,
+      "actions": 211,
+      "assertions": 2295,
+      "name": "forbidden-receipt-use",
+      "deltaNormalBytes": 710,
+      "deltaNodes": 20,
+      "category": "existing-manifest-derivative",
+      "historicalArtifact": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-cross-carrier-draft/derivative-forbidden-receipt-use.json",
+      "historicalSHA256": "536e761b287e80d9c4a0736d3423f60761d4e6878ebe3c210e2b5a83355ffeca",
+      "historicalNormalBytes": 696308,
+      "historicalNodes": 18127,
+      "oldRowsTransformationPreserved": true,
+      "prelaunchRejected": false,
+      "changes": [
+        {
+          "pointer": "/scenarios/1/actions",
+          "before": [
+            {
+              "id": "unauthenticated",
+              "family": "http",
+              "method": "GET",
+              "target": {
+                "binding": "subject"
+              },
+              "credentialRef": "anonymous",
+              "raw": {
+                "headerLines": []
+              },
+              "captures": [],
+              "assertions": [
+                {
+                  "id": "status",
+                  "kind": "status",
+                  "equals": 401
+                },
+                {
+                  "id": "request-headers",
+                  "kind": "request-authored-headers"
+                },
+                {
+                  "id": "request-body",
+                  "kind": "request-authored-body"
+                }
+              ]
+            },
+            {
+              "id": "commit",
+              "family": "http",
+              "method": "POST",
+              "target": {
+                "binding": "batch"
+              },
+              "credentialRef": "operator",
+              "raw": {
+                "headerLines": [
+                  {
+                    "name": "content-type",
+                    "value": "application/json"
+                  },
+                  {
+                    "name": "idempotency-key",
+                    "value": "commit"
+                  }
+                ],
+                "body": {
+                  "encoding": "utf8",
+                  "value": "{\"operations\":[{\"operation\":\"createBead\",\"id\":\"beads/a\",\"type\":\"https://reference.invalid/acme/types/task\",\"properties\":{\"title\":\"a\"},\"name\":\"a\"},{\"operation\":\"updateBead\",\"bead\":\"@a\",\"propertiesChange\":[{\"op\":\"replace\",\"path\":\"/title\",\"value\":\"updated\"}]},{\"operation\":\"createBead\",\"id\":\"beads/b\",\"type\":\"https://reference.invalid/acme/types/task\",\"properties\":{\"title\":\"b\"}},{\"operation\":\"createLink\",\"id\":\"links/l\",\"type\":\"https://reference.invalid/acme/types/relationship\",\"source\":\"@a\",\"target\":\"beads/b\",\"properties\":{}}]}"
+                }
+              },
+              "captures": [
+                {
+                  "binding": "commit-receipt",
+                  "from": {
+                    "kind": "json-pointer",
+                    "pointer": "/id"
+                  }
+                }
+              ],
+              "assertions": [
+                {
+                  "id": "http-status",
+                  "kind": "status",
+                  "equals": 200
+                },
+                {
+                  "id": "disposition",
+                  "kind": "json-pointer",
+                  "pointer": "/status",
+                  "exists": true,
+                  "equals": "completed"
+                },
+                {
+                  "id": "initial",
+                  "kind": "json-pointer",
+                  "pointer": "/results/0/resource/properties/title",
+                  "exists": true,
+                  "equals": "a"
+                },
+                {
+                  "id": "updated",
+                  "kind": "json-pointer",
+                  "pointer": "/results/1/resource/properties/title",
+                  "exists": true,
+                  "equals": "updated"
+                },
+                {
+                  "id": "local-name",
+                  "kind": "json-pointer",
+                  "pointer": "/results/0/operationName",
+                  "exists": true,
+                  "equals": "a"
+                },
+                {
+                  "id": "index",
+                  "kind": "json-pointer",
+                  "pointer": "/results/3/operationIndex",
+                  "exists": true,
+                  "equals": 3
+                },
+                {
+                  "id": "request-headers",
+                  "kind": "request-authored-headers"
+                },
+                {
+                  "id": "request-body",
+                  "kind": "request-authored-body"
+                },
+                {
+                  "id": "receipt-schema",
+                  "kind": "json-schema",
+                  "schema": "#/$defs/mutationReceipt"
+                },
+                {
+                  "id": "present-bdp-scope-epoch",
+                  "kind": "header",
+                  "name": "bdp-scope-epoch",
+                  "absent": false
+                },
+                {
+                  "id": "present-bdp-authorization-view",
+                  "kind": "header",
+                  "name": "bdp-authorization-view",
+                  "absent": false
+                },
+                {
+                  "id": "present-bdp-scope-position",
+                  "kind": "header",
+                  "name": "bdp-scope-position",
+                  "absent": false
+                }
+              ]
+            },
+            {
+              "id": "committed-facts",
+              "family": "client",
+              "operation": "transactional.receipt-read",
+              "input": {
+                "binding": "commit-receipt",
+                "method": "GET"
+              },
+              "captures": [
+                {
+                  "binding": "a-final",
+                  "from": {
+                    "kind": "json-pointer",
+                    "pointer": "/body/results/1/resource"
+                  }
+                },
+                {
+                  "binding": "link-final",
+                  "from": {
+                    "kind": "json-pointer",
+                    "pointer": "/body/results/3/resource"
+                  }
+                },
+                {
+                  "binding": "created-revision",
+                  "from": {
+                    "kind": "json-pointer",
+                    "pointer": "/body/results/0/resource/revision"
+                  }
+                },
+                {
+                  "binding": "updated-revision",
+                  "from": {
+                    "kind": "json-pointer",
+                    "pointer": "/body/results/1/resource/revision"
+                  }
+                }
+              ],
+              "assertions": [
+                {
+                  "id": "status",
+                  "kind": "json-pointer",
+                  "pointer": "/status",
+                  "exists": true,
+                  "equals": 200
+                },
+                {
+                  "id": "body-present",
+                  "kind": "json-pointer",
+                  "pointer": "/bodyPresent",
+                  "exists": true,
+                  "equals": true
+                },
+                {
+                  "id": "epoch",
+                  "kind": "json-pointer",
+                  "pointer": "/headers/bdp-scope-epoch",
+                  "exists": true
+                },
+                {
+                  "id": "view",
+                  "kind": "json-pointer",
+                  "pointer": "/headers/bdp-authorization-view",
+                  "exists": true
+                },
+                {
+                  "id": "position",
+                  "kind": "json-pointer",
+                  "pointer": "/headers/bdp-scope-position",
+                  "exists": true
+                }
+              ]
+            },
+            {
+              "id": "a-point",
+              "family": "http",
+              "method": "GET",
+              "target": {
+                "binding": "scope",
+                "path": "beads/a"
+              },
+              "credentialRef": "operator",
+              "raw": {
+                "headerLines": []
+              },
+              "captures": [],
+              "assertions": [
+                {
+                  "id": "http-status",
+                  "kind": "status",
+                  "equals": 200
+                },
+                {
+                  "id": "final-record",
+                  "kind": "json-pointer",
+                  "pointer": "",
+                  "exists": true,
+                  "equalsBinding": "a-final"
+                },
+                {
+                  "id": "schema",
+                  "kind": "json-schema",
+                  "schema": "#/$defs/currentBeadRecord"
+                },
+                {
+                  "id": "request-headers",
+                  "kind": "request-authored-headers"
+                },
+                {
+                  "id": "request-body",
+                  "kind": "request-authored-body"
+                }
+              ]
+            },
+            {
+              "id": "link-point",
+              "family": "http",
+              "method": "GET",
+              "target": {
+                "binding": "scope",
+                "path": "links/l"
+              },
+              "credentialRef": "operator",
+              "raw": {
+                "headerLines": []
+              },
+              "captures": [],
+              "assertions": [
+                {
+                  "id": "http-status",
+                  "kind": "status",
+                  "equals": 200
+                },
+                {
+                  "id": "final-record",
+                  "kind": "json-pointer",
+                  "pointer": "",
+                  "exists": true,
+                  "equalsBinding": "link-final"
+                },
+                {
+                  "id": "schema",
+                  "kind": "json-schema",
+                  "schema": "#/$defs/currentLinkRecord"
+                },
+                {
+                  "id": "request-headers",
+                  "kind": "request-authored-headers"
+                },
+                {
+                  "id": "request-body",
+                  "kind": "request-authored-body"
+                }
+              ]
+            },
+            {
+              "id": "beads",
+              "family": "http",
+              "method": "GET",
+              "target": {
+                "binding": "scope",
+                "path": "beads/",
+                "query": {
+                  "limit": "32"
+                }
+              },
+              "credentialRef": "operator",
+              "raw": {
+                "headerLines": []
+              },
+              "captures": [],
+              "assertions": [
+                {
+                  "id": "http-status",
+                  "kind": "status",
+                  "equals": 200
+                },
+                {
+                  "id": "no-next",
+                  "kind": "json-pointer",
+                  "pointer": "/next",
+                  "exists": true,
+                  "equals": null
+                },
+                {
+                  "id": "inventory",
+                  "kind": "json-array-tuples",
+                  "pointer": "/items",
+                  "ordered": true,
+                  "projections": [
+                    {
+                      "pointer": "/properties/title"
+                    }
+                  ],
+                  "equals": [
+                    [
+                      "updated"
+                    ],
+                    [
+                      "b"
+                    ]
+                  ]
+                },
+                {
+                  "id": "schema",
+                  "kind": "json-schema",
+                  "schema": "#/$defs/currentBeadCollection"
+                },
+                {
+                  "id": "request-headers",
+                  "kind": "request-authored-headers"
+                },
+                {
+                  "id": "request-body",
+                  "kind": "request-authored-body"
+                }
+              ]
+            },
+            {
+              "id": "events",
+              "family": "http",
+              "method": "GET",
+              "target": {
+                "binding": "scope",
+                "path": "events/"
+              },
+              "credentialRef": "operator",
+              "raw": {
+                "headerLines": []
+              },
+              "captures": [],
+              "assertions": [
+                {
+                  "id": "http-status",
+                  "kind": "status",
+                  "equals": 200
+                },
+                {
+                  "id": "no-next",
+                  "kind": "json-pointer",
+                  "pointer": "/next",
+                  "exists": true,
+                  "equals": null
+                },
+                {
+                  "id": "types",
+                  "kind": "json-array-tuples",
+                  "pointer": "/events",
+                  "ordered": true,
+                  "projections": [
+                    {
+                      "pointer": "/type"
+                    }
+                  ],
+                  "equals": [
+                    [
+                      "created"
+                    ],
+                    [
+                      "updated"
+                    ],
+                    [
+                      "created"
+                    ],
+                    [
+                      "created"
+                    ],
+                    [
+                      "linked"
+                    ],
+                    [
+                      "linked"
+                    ]
+                  ]
+                },
+                {
+                  "id": "schema",
+                  "kind": "json-schema",
+                  "schema": "#/$defs/eventPage"
+                },
+                {
+                  "id": "request-headers",
+                  "kind": "request-authored-headers"
+                },
+                {
+                  "id": "request-body",
+                  "kind": "request-authored-body"
+                },
+                {
+                  "id": "source-subject-ordinal",
+                  "kind": "json-array-tuples",
+                  "pointer": "/events",
+                  "ordered": true,
+                  "projections": [
+                    {
+                      "pointer": "/source"
+                    },
+                    {
+                      "pointer": "/subject"
+                    },
+                    {
+                      "pointer": "/ordinal"
+                    }
+                  ],
+                  "equals": [
+                    [
+                      "https://reference.invalid/acme/events/",
+                      "https://reference.invalid/acme/beads/a",
+                      0
+                    ],
+                    [
+                      "https://reference.invalid/acme/events/",
+                      "https://reference.invalid/acme/beads/a",
+                      1
+                    ],
+                    [
+                      "https://reference.invalid/acme/events/",
+                      "https://reference.invalid/acme/beads/b",
+                      2
+                    ],
+                    [
+                      "https://reference.invalid/acme/events/",
+                      "https://reference.invalid/acme/links/l",
+                      3
+                    ],
+                    [
+                      "https://reference.invalid/acme/events/",
+                      "https://reference.invalid/acme/links/l",
+                      4
+                    ],
+                    [
+                      "https://reference.invalid/acme/events/",
+                      "https://reference.invalid/acme/links/l",
+                      5
+                    ]
+                  ]
+                },
+                {
+                  "id": "serving-context",
+                  "kind": "response-metadata-equals",
+                  "request": "commit",
+                  "headers": [
+                    "bdp-scope-epoch",
+                    "bdp-authorization-view",
+                    "bdp-scope-position"
+                  ]
+                },
+                {
+                  "id": "created-revision",
+                  "kind": "json-pointer",
+                  "pointer": "/events/0/data/revision",
+                  "exists": true,
+                  "equalsBinding": "created-revision"
+                },
+                {
+                  "id": "previous-revision",
+                  "kind": "json-pointer",
+                  "pointer": "/events/1/data/previousRevision",
+                  "exists": true,
+                  "equalsBinding": "created-revision"
+                },
+                {
+                  "id": "updated-revision",
+                  "kind": "json-pointer",
+                  "pointer": "/events/1/data/revision",
+                  "exists": true,
+                  "equalsBinding": "updated-revision"
+                },
+                {
+                  "id": "present-bdp-scope-epoch",
+                  "kind": "header",
+                  "name": "bdp-scope-epoch",
+                  "absent": false
+                },
+                {
+                  "id": "present-bdp-authorization-view",
+                  "kind": "header",
+                  "name": "bdp-authorization-view",
+                  "absent": false
+                },
+                {
+                  "id": "present-bdp-scope-position",
+                  "kind": "header",
+                  "name": "bdp-scope-position",
+                  "absent": false
+                }
+              ]
+            }
+          ],
+          "after": [
+            {
+              "id": "unauthenticated",
+              "family": "http",
+              "method": "GET",
+              "target": {
+                "binding": "subject"
+              },
+              "credentialRef": "anonymous",
+              "raw": {
+                "headerLines": []
+              },
+              "captures": [],
+              "assertions": [
+                {
+                  "id": "status",
+                  "kind": "status",
+                  "equals": 401
+                },
+                {
+                  "id": "request-headers",
+                  "kind": "request-authored-headers"
+                },
+                {
+                  "id": "request-body",
+                  "kind": "request-authored-body"
+                }
+              ]
+            },
+            {
+              "id": "commit",
+              "family": "http",
+              "method": "POST",
+              "target": {
+                "binding": "batch"
+              },
+              "credentialRef": "operator",
+              "raw": {
+                "headerLines": [
+                  {
+                    "name": "content-type",
+                    "value": "application/json"
+                  },
+                  {
+                    "name": "idempotency-key",
+                    "value": "commit"
+                  }
+                ],
+                "body": {
+                  "encoding": "utf8",
+                  "value": "{\"operations\":[{\"operation\":\"createBead\",\"id\":\"beads/a\",\"type\":\"https://reference.invalid/acme/types/task\",\"properties\":{\"title\":\"a\"},\"name\":\"a\"},{\"operation\":\"updateBead\",\"bead\":\"@a\",\"propertiesChange\":[{\"op\":\"replace\",\"path\":\"/title\",\"value\":\"updated\"}]},{\"operation\":\"createBead\",\"id\":\"beads/b\",\"type\":\"https://reference.invalid/acme/types/task\",\"properties\":{\"title\":\"b\"}},{\"operation\":\"createLink\",\"id\":\"links/l\",\"type\":\"https://reference.invalid/acme/types/relationship\",\"source\":\"@a\",\"target\":\"beads/b\",\"properties\":{}}]}"
+                }
+              },
+              "captures": [
+                {
+                  "binding": "commit-receipt",
+                  "from": {
+                    "kind": "json-pointer",
+                    "pointer": "/id"
+                  }
+                }
+              ],
+              "assertions": [
+                {
+                  "id": "http-status",
+                  "kind": "status",
+                  "equals": 200
+                },
+                {
+                  "id": "disposition",
+                  "kind": "json-pointer",
+                  "pointer": "/status",
+                  "exists": true,
+                  "equals": "completed"
+                },
+                {
+                  "id": "initial",
+                  "kind": "json-pointer",
+                  "pointer": "/results/0/resource/properties/title",
+                  "exists": true,
+                  "equals": "a"
+                },
+                {
+                  "id": "updated",
+                  "kind": "json-pointer",
+                  "pointer": "/results/1/resource/properties/title",
+                  "exists": true,
+                  "equals": "updated"
+                },
+                {
+                  "id": "local-name",
+                  "kind": "json-pointer",
+                  "pointer": "/results/0/operationName",
+                  "exists": true,
+                  "equals": "a"
+                },
+                {
+                  "id": "index",
+                  "kind": "json-pointer",
+                  "pointer": "/results/3/operationIndex",
+                  "exists": true,
+                  "equals": 3
+                },
+                {
+                  "id": "request-headers",
+                  "kind": "request-authored-headers"
+                },
+                {
+                  "id": "request-body",
+                  "kind": "request-authored-body"
+                },
+                {
+                  "id": "receipt-schema",
+                  "kind": "json-schema",
+                  "schema": "#/$defs/mutationReceipt"
+                },
+                {
+                  "id": "present-bdp-scope-epoch",
+                  "kind": "header",
+                  "name": "bdp-scope-epoch",
+                  "absent": false
+                },
+                {
+                  "id": "present-bdp-authorization-view",
+                  "kind": "header",
+                  "name": "bdp-authorization-view",
+                  "absent": false
+                },
+                {
+                  "id": "present-bdp-scope-position",
+                  "kind": "header",
+                  "name": "bdp-scope-position",
+                  "absent": false
+                }
+              ]
+            },
+            {
+              "id": "committed-facts",
+              "family": "client",
+              "operation": "transactional.receipt-read",
+              "input": {
+                "binding": "commit-receipt",
+                "method": "GET"
+              },
+              "captures": [
+                {
+                  "binding": "a-final",
+                  "from": {
+                    "kind": "json-pointer",
+                    "pointer": "/body/results/1/resource"
+                  }
+                },
+                {
+                  "binding": "link-final",
+                  "from": {
+                    "kind": "json-pointer",
+                    "pointer": "/body/results/3/resource"
+                  }
+                },
+                {
+                  "binding": "created-revision",
+                  "from": {
+                    "kind": "json-pointer",
+                    "pointer": "/body/results/0/resource/revision"
+                  }
+                },
+                {
+                  "binding": "updated-revision",
+                  "from": {
+                    "kind": "json-pointer",
+                    "pointer": "/body/results/1/resource/revision"
+                  }
+                }
+              ],
+              "assertions": [
+                {
+                  "id": "status",
+                  "kind": "json-pointer",
+                  "pointer": "/status",
+                  "exists": true,
+                  "equals": 200
+                },
+                {
+                  "id": "body-present",
+                  "kind": "json-pointer",
+                  "pointer": "/bodyPresent",
+                  "exists": true,
+                  "equals": true
+                },
+                {
+                  "id": "epoch",
+                  "kind": "json-pointer",
+                  "pointer": "/headers/bdp-scope-epoch",
+                  "exists": true
+                },
+                {
+                  "id": "view",
+                  "kind": "json-pointer",
+                  "pointer": "/headers/bdp-authorization-view",
+                  "exists": true
+                },
+                {
+                  "id": "position",
+                  "kind": "json-pointer",
+                  "pointer": "/headers/bdp-scope-position",
+                  "exists": true
+                }
+              ]
+            },
+            {
+              "id": "a-point",
+              "family": "http",
+              "method": "GET",
+              "target": {
+                "binding": "scope",
+                "path": "beads/a"
+              },
+              "credentialRef": "operator",
+              "raw": {
+                "headerLines": []
+              },
+              "captures": [
+                {
+                  "binding": "ordinary-resource-id",
+                  "from": {
+                    "kind": "json-pointer",
+                    "pointer": "/id"
+                  }
+                }
+              ],
+              "assertions": [
+                {
+                  "id": "http-status",
+                  "kind": "status",
+                  "equals": 200
+                },
+                {
+                  "id": "final-record",
+                  "kind": "json-pointer",
+                  "pointer": "",
+                  "exists": true,
+                  "equalsBinding": "a-final"
+                },
+                {
+                  "id": "schema",
+                  "kind": "json-schema",
+                  "schema": "#/$defs/currentBeadRecord"
+                },
+                {
+                  "id": "request-headers",
+                  "kind": "request-authored-headers"
+                },
+                {
+                  "id": "request-body",
+                  "kind": "request-authored-body"
+                }
+              ]
+            },
+            {
+              "id": "link-point",
+              "family": "http",
+              "method": "GET",
+              "target": {
+                "binding": "scope",
+                "path": "links/l"
+              },
+              "credentialRef": "operator",
+              "raw": {
+                "headerLines": []
+              },
+              "captures": [],
+              "assertions": [
+                {
+                  "id": "http-status",
+                  "kind": "status",
+                  "equals": 200
+                },
+                {
+                  "id": "final-record",
+                  "kind": "json-pointer",
+                  "pointer": "",
+                  "exists": true,
+                  "equalsBinding": "link-final"
+                },
+                {
+                  "id": "schema",
+                  "kind": "json-schema",
+                  "schema": "#/$defs/currentLinkRecord"
+                },
+                {
+                  "id": "request-headers",
+                  "kind": "request-authored-headers"
+                },
+                {
+                  "id": "request-body",
+                  "kind": "request-authored-body"
+                }
+              ]
+            },
+            {
+              "id": "beads",
+              "family": "http",
+              "method": "GET",
+              "target": {
+                "binding": "scope",
+                "path": "beads/",
+                "query": {
+                  "limit": "32"
+                }
+              },
+              "credentialRef": "operator",
+              "raw": {
+                "headerLines": []
+              },
+              "captures": [],
+              "assertions": [
+                {
+                  "id": "http-status",
+                  "kind": "status",
+                  "equals": 200
+                },
+                {
+                  "id": "no-next",
+                  "kind": "json-pointer",
+                  "pointer": "/next",
+                  "exists": true,
+                  "equals": null
+                },
+                {
+                  "id": "inventory",
+                  "kind": "json-array-tuples",
+                  "pointer": "/items",
+                  "ordered": true,
+                  "projections": [
+                    {
+                      "pointer": "/properties/title"
+                    }
+                  ],
+                  "equals": [
+                    [
+                      "updated"
+                    ],
+                    [
+                      "b"
+                    ]
+                  ]
+                },
+                {
+                  "id": "schema",
+                  "kind": "json-schema",
+                  "schema": "#/$defs/currentBeadCollection"
+                },
+                {
+                  "id": "request-headers",
+                  "kind": "request-authored-headers"
+                },
+                {
+                  "id": "request-body",
+                  "kind": "request-authored-body"
+                }
+              ]
+            },
+            {
+              "id": "events",
+              "family": "http",
+              "method": "GET",
+              "target": {
+                "binding": "scope",
+                "path": "events/"
+              },
+              "credentialRef": "operator",
+              "raw": {
+                "headerLines": []
+              },
+              "captures": [],
+              "assertions": [
+                {
+                  "id": "http-status",
+                  "kind": "status",
+                  "equals": 200
+                },
+                {
+                  "id": "no-next",
+                  "kind": "json-pointer",
+                  "pointer": "/next",
+                  "exists": true,
+                  "equals": null
+                },
+                {
+                  "id": "types",
+                  "kind": "json-array-tuples",
+                  "pointer": "/events",
+                  "ordered": true,
+                  "projections": [
+                    {
+                      "pointer": "/type"
+                    }
+                  ],
+                  "equals": [
+                    [
+                      "created"
+                    ],
+                    [
+                      "updated"
+                    ],
+                    [
+                      "created"
+                    ],
+                    [
+                      "created"
+                    ],
+                    [
+                      "linked"
+                    ],
+                    [
+                      "linked"
+                    ]
+                  ]
+                },
+                {
+                  "id": "schema",
+                  "kind": "json-schema",
+                  "schema": "#/$defs/eventPage"
+                },
+                {
+                  "id": "request-headers",
+                  "kind": "request-authored-headers"
+                },
+                {
+                  "id": "request-body",
+                  "kind": "request-authored-body"
+                },
+                {
+                  "id": "source-subject-ordinal",
+                  "kind": "json-array-tuples",
+                  "pointer": "/events",
+                  "ordered": true,
+                  "projections": [
+                    {
+                      "pointer": "/source"
+                    },
+                    {
+                      "pointer": "/subject"
+                    },
+                    {
+                      "pointer": "/ordinal"
+                    }
+                  ],
+                  "equals": [
+                    [
+                      "https://reference.invalid/acme/events/",
+                      "https://reference.invalid/acme/beads/a",
+                      0
+                    ],
+                    [
+                      "https://reference.invalid/acme/events/",
+                      "https://reference.invalid/acme/beads/a",
+                      1
+                    ],
+                    [
+                      "https://reference.invalid/acme/events/",
+                      "https://reference.invalid/acme/beads/b",
+                      2
+                    ],
+                    [
+                      "https://reference.invalid/acme/events/",
+                      "https://reference.invalid/acme/links/l",
+                      3
+                    ],
+                    [
+                      "https://reference.invalid/acme/events/",
+                      "https://reference.invalid/acme/links/l",
+                      4
+                    ],
+                    [
+                      "https://reference.invalid/acme/events/",
+                      "https://reference.invalid/acme/links/l",
+                      5
+                    ]
+                  ]
+                },
+                {
+                  "id": "serving-context",
+                  "kind": "response-metadata-equals",
+                  "request": "commit",
+                  "headers": [
+                    "bdp-scope-epoch",
+                    "bdp-authorization-view",
+                    "bdp-scope-position"
+                  ]
+                },
+                {
+                  "id": "created-revision",
+                  "kind": "json-pointer",
+                  "pointer": "/events/0/data/revision",
+                  "exists": true,
+                  "equalsBinding": "created-revision"
+                },
+                {
+                  "id": "previous-revision",
+                  "kind": "json-pointer",
+                  "pointer": "/events/1/data/previousRevision",
+                  "exists": true,
+                  "equalsBinding": "created-revision"
+                },
+                {
+                  "id": "updated-revision",
+                  "kind": "json-pointer",
+                  "pointer": "/events/1/data/revision",
+                  "exists": true,
+                  "equalsBinding": "updated-revision"
+                },
+                {
+                  "id": "present-bdp-scope-epoch",
+                  "kind": "header",
+                  "name": "bdp-scope-epoch",
+                  "absent": false
+                },
+                {
+                  "id": "present-bdp-authorization-view",
+                  "kind": "header",
+                  "name": "bdp-authorization-view",
+                  "absent": false
+                },
+                {
+                  "id": "present-bdp-scope-position",
+                  "kind": "header",
+                  "name": "bdp-scope-position",
+                  "absent": false
+                }
+              ]
+            },
+            {
+              "id": "ordinary-id-as-receipt",
+              "family": "client",
+              "operation": "transactional.receipt-read",
+              "input": {
+                "binding": "ordinary-resource-id",
+                "method": "GET"
+              },
+              "captures": [],
+              "assertions": [
+                {
+                  "id": "status",
+                  "kind": "json-pointer",
+                  "pointer": "/status",
+                  "exists": true,
+                  "equals": 200
+                }
+              ]
+            }
+          ]
+        }
+      ],
+      "changedBodies": []
+    },
+    {
+      "normalBytes": 750430,
+      "normalSHA256": "38c7033478eb99d4dedbd6cd97be8b07e64d1407cc44570652118595bbd55719",
+      "compactBytes": 366116,
+      "compactSHA256": "21f0f79e2c59f96d2b13fda7dd369e016fc3359b29eefa2e89012878bf0dd63a",
+      "nodes": 19570,
+      "actions": 210,
+      "assertions": 2294,
+      "name": "set-matched",
+      "deltaNormalBytes": 0,
+      "deltaNodes": 0,
+      "category": "existing-manifest-derivative",
+      "historicalArtifact": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-cross-carrier-draft/derivative-set-matched.json",
+      "historicalSHA256": "1e4ec33ce6004c060a989cb89a494f918374b9b81435c5f8f72a98790ec5ff31",
+      "historicalNormalBytes": 695598,
+      "historicalNodes": 18107,
+      "oldRowsTransformationPreserved": true,
+      "prelaunchRejected": false,
+      "changes": [
+        {
+          "pointer": "/scenarios/8/actions/5/assertions/7/equals/count",
+          "before": 2,
+          "after": 3
+        }
+      ],
+      "changedBodies": []
+    },
+    {
+      "normalBytes": 750430,
+      "normalSHA256": "76e6a1d17fea6a2d92b3beeed5060bbac80a2cedbed2d8b2e1eb674a0f59c5c7",
+      "compactBytes": 366116,
+      "compactSHA256": "35275c0245dbc75b02f0742b8d2451e15c73c4a8ce5ebc92824b4dbcd54f15f5",
+      "nodes": 19570,
+      "actions": 210,
+      "assertions": 2294,
+      "name": "set-order",
+      "deltaNormalBytes": 0,
+      "deltaNodes": 0,
+      "category": "existing-manifest-derivative",
+      "historicalArtifact": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-cross-carrier-draft/derivative-set-order.json",
+      "historicalSHA256": "3a982fdd54550f6a6a7f818e089db1c5efc3b60f83f44aadb4774b1374ac7284",
+      "historicalNormalBytes": 695598,
+      "historicalNodes": 18107,
+      "oldRowsTransformationPreserved": true,
+      "prelaunchRejected": false,
+      "changes": [
+        {
+          "pointer": "/scenarios/8/actions/5/assertions/11/equals",
+          "before": "https://reference.invalid/acme/beads/a",
+          "after": "https://reference.invalid/acme/beads/b"
+        }
+      ],
+      "changedBodies": []
+    },
+    {
+      "normalBytes": 750430,
+      "normalSHA256": "73f1428bc753a4d47b248196501ffebf143bddb376176b4eee4589b3cc3d75af",
+      "compactBytes": 366116,
+      "compactSHA256": "5a2a71092c87ba9ded05d1936b7f3198d6ce9d92af37a167d51ab3f3628ffcdd",
+      "nodes": 19570,
+      "actions": 210,
+      "assertions": 2294,
+      "name": "set-index",
+      "deltaNormalBytes": 0,
+      "deltaNodes": 0,
+      "category": "existing-manifest-derivative",
+      "historicalArtifact": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-cross-carrier-draft/derivative-set-index.json",
+      "historicalSHA256": "74ad28c0aa8b7e587b67f6e7c8b6b9a7487ada3c6daf6d86f50abe2aa5184379",
+      "historicalNormalBytes": 695598,
+      "historicalNodes": 18107,
+      "oldRowsTransformationPreserved": true,
+      "prelaunchRejected": false,
+      "changes": [
+        {
+          "pointer": "/scenarios/8/actions/5/assertions/16/equals",
+          "before": 0,
+          "after": 1
+        }
+      ],
+      "changedBodies": []
+    },
+    {
+      "normalBytes": 750437,
+      "normalSHA256": "324bbb2e328844419cda95eef41430a1d6a0d1629149b11211e881596b3c71e4",
+      "compactBytes": 366123,
+      "compactSHA256": "4b044b3e6e42d1760d2b2374958b060d5331815908ffdb5016d4b5fe06c9251a",
+      "nodes": 19570,
+      "actions": 210,
+      "assertions": 2294,
+      "name": "set-poststate",
+      "deltaNormalBytes": 7,
+      "deltaNodes": 0,
+      "category": "existing-manifest-derivative",
+      "historicalArtifact": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-cross-carrier-draft/derivative-set-poststate.json",
+      "historicalSHA256": "867dd00da85d0c8e199342951185a0069d2ec8af5848871b388a53bc0cfeab03",
+      "historicalNormalBytes": 695605,
+      "historicalNodes": 18107,
+      "oldRowsTransformationPreserved": true,
+      "prelaunchRejected": false,
+      "changes": [
+        {
+          "pointer": "/scenarios/8/actions/8/assertions/7/equals/title",
+          "before": "changed",
+          "after": "never-observed"
+        }
+      ],
+      "changedBodies": []
+    },
+    {
+      "normalBytes": 749708,
+      "normalSHA256": "287621e12d697f668ba48965b4f9944aa5915ba0b7a58ff0dcb5f28319989d64",
+      "compactBytes": 365770,
+      "compactSHA256": "6cd7b6faff356f3a21a14e92396fed2bcc46a0489fe0a07d8ea19f089263a13d",
+      "nodes": 19549,
+      "actions": 210,
+      "assertions": 2290,
+      "name": "cross-wired-receipt",
+      "deltaNormalBytes": -722,
+      "deltaNodes": -21,
+      "category": "existing-manifest-derivative",
+      "historicalArtifact": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-cross-carrier-draft/derivative-cross-wired-receipt.json",
+      "historicalSHA256": "8e4a1657659e7fd038c1b15d1018ea3c7928818f541b77284620c866cec30439",
+      "historicalNormalBytes": 694876,
+      "historicalNodes": 18086,
+      "oldRowsTransformationPreserved": true,
+      "prelaunchRejected": false,
+      "changes": [
+        {
+          "pointer": "/scenarios/8/actions/12/input/binding",
+          "before": "set-delete-receipt",
+          "after": "set-update-receipt"
+        },
+        {
+          "pointer": "/scenarios/8/actions/12/assertions",
+          "before": [
+            {
+              "id": "status",
+              "kind": "json-pointer",
+              "pointer": "/status",
+              "exists": true,
+              "equals": 200
+            },
+            {
+              "id": "body-present",
+              "kind": "json-pointer",
+              "pointer": "/bodyPresent",
+              "exists": true,
+              "equals": true
+            },
+            {
+              "id": "epoch",
+              "kind": "json-pointer",
+              "pointer": "/headers/bdp-scope-epoch",
+              "exists": true
+            },
+            {
+              "id": "view",
+              "kind": "json-pointer",
+              "pointer": "/headers/bdp-authorization-view",
+              "exists": true
+            },
+            {
+              "id": "position",
+              "kind": "json-pointer",
+              "pointer": "/headers/bdp-scope-position",
+              "exists": true
+            }
+          ],
+          "after": [
+            {
+              "id": "expected-delete-count",
+              "kind": "json-pointer",
+              "pointer": "/body/results/0/count",
+              "exists": true,
+              "equals": 1
+            }
+          ]
+        }
+      ],
+      "changedBodies": []
+    },
+    {
+      "normalBytes": 750437,
+      "normalSHA256": "35dcc29165fc19793621a685b3ef2465c7c1521faa6ad9db6dfe6ccaee1ba7d5",
+      "compactBytes": 366123,
+      "compactSHA256": "0e1558ce041cf6ccec96f4c2be0113bd1571cd01df71f15efea56e802754e2ef",
+      "nodes": 19570,
+      "actions": 210,
+      "assertions": 2294,
+      "name": "effects-changed-poststate",
+      "deltaNormalBytes": 7,
+      "deltaNodes": 0,
+      "category": "existing-manifest-derivative",
+      "historicalArtifact": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-cross-carrier-draft/derivative-effects-changed-poststate.json",
+      "historicalSHA256": "78840f8187cd3b20dceba6dbd89a64a64586906cde656d1d6b8f4305c9f45e30",
+      "historicalNormalBytes": 695605,
+      "historicalNodes": 18107,
+      "oldRowsTransformationPreserved": true,
+      "prelaunchRejected": false,
+      "changes": [
+        {
+          "pointer": "/scenarios/5/actions/15/assertions/5/equals/title",
+          "before": "changed",
+          "after": "never-observed"
+        }
+      ],
+      "changedBodies": []
+    },
+    {
+      "normalBytes": 750443,
+      "normalSHA256": "5c3379d60218251a5ed7703fc46e08feffca983821dd7791674e3e3de33ac579",
+      "compactBytes": 366129,
+      "compactSHA256": "caf5d0b36c776e52556e260a8240e2af8c14614526e56c87caef19d230c0c6c6",
+      "nodes": 19570,
+      "actions": 210,
+      "assertions": 2294,
+      "name": "effects-rollback-metadata",
+      "deltaNormalBytes": 13,
+      "deltaNodes": 0,
+      "category": "existing-manifest-derivative",
+      "historicalArtifact": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-cross-carrier-draft/derivative-effects-rollback-metadata.json",
+      "historicalSHA256": "b03e7e913ebce0699cacad0b6b870546598317a3a42fe5faa514cfcac453e0e5",
+      "historicalNormalBytes": 695611,
+      "historicalNodes": 18107,
+      "oldRowsTransformationPreserved": true,
+      "prelaunchRejected": false,
+      "changes": [
+        {
+          "pointer": "/scenarios/5/actions/8/assertions/6/equals/tag",
+          "before": "A",
+          "after": "never-observed"
+        }
+      ],
+      "changedBodies": []
+    },
+    {
+      "normalBytes": 750430,
+      "normalSHA256": "a0536c0d8ed9049375c81e409ffda25eb777dd5ecb8e70d638c58cf62cdcc449",
+      "compactBytes": 366116,
+      "compactSHA256": "7099f56508aca7032127cd711e5cdac3134394eb0a4044aeae5db60f4e4d52c0",
+      "nodes": 19570,
+      "actions": 210,
+      "assertions": 2294,
+      "name": "effects-receipt-order",
+      "deltaNormalBytes": 0,
+      "deltaNodes": 0,
+      "category": "existing-manifest-derivative",
+      "historicalArtifact": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-cross-carrier-draft/derivative-effects-receipt-order.json",
+      "historicalSHA256": "9614d7be7c62bdaeb5e6dfda7eb0370b6a77bf7d516573da2b0eaaefb4a3986f",
+      "historicalNormalBytes": 695598,
+      "historicalNodes": 18107,
+      "oldRowsTransformationPreserved": true,
+      "prelaunchRejected": false,
+      "changes": [
+        {
+          "pointer": "/scenarios/5/actions/12/assertions/12/equals",
+          "before": "https://reference.invalid/acme/beads/a",
+          "after": "https://reference.invalid/acme/beads/b"
+        }
+      ],
+      "changedBodies": []
+    },
+    {
+      "normalBytes": 750430,
+      "normalSHA256": "8d1d5fca3bd9e6c50f1a9ed0c8c4b47438952818ac92dd8231bab625e3a4a47c",
+      "compactBytes": 366116,
+      "compactSHA256": "a6f7b709198887a51c1bf6f607700d782999a098bb77644bb0232ba9f83daa4d",
+      "nodes": 19570,
+      "actions": 210,
+      "assertions": 2294,
+      "name": "effects-event-order",
+      "deltaNormalBytes": 0,
+      "deltaNodes": 0,
+      "category": "existing-manifest-derivative",
+      "historicalArtifact": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-cross-carrier-draft/derivative-effects-event-order.json",
+      "historicalSHA256": "73596d8669b7c4b74d2e8364580de8f09e4d6dc70fa91733d7b24dfb3922569d",
+      "historicalNormalBytes": 695598,
+      "historicalNodes": 18107,
+      "oldRowsTransformationPreserved": true,
+      "prelaunchRejected": false,
+      "changes": [
+        {
+          "pointer": "/scenarios/5/actions/17/assertions/6/equals/3/1",
+          "before": "https://reference.invalid/acme/beads/a",
+          "after": "https://reference.invalid/acme/beads/b"
+        },
+        {
+          "pointer": "/scenarios/5/actions/17/assertions/6/equals/4/1",
+          "before": "https://reference.invalid/acme/beads/b",
+          "after": "https://reference.invalid/acme/beads/a"
+        }
+      ],
+      "changedBodies": []
+    },
+    {
+      "normalBytes": 750430,
+      "normalSHA256": "6d81908ecc55eb7a92c49060c5a8ca5e07315d6ce31c457b20a0258868d1379e",
+      "compactBytes": 366116,
+      "compactSHA256": "48f01270ac28c7dc2a16b36e13e068f043ef1642479a5a12e2641e87852577d4",
+      "nodes": 19570,
+      "actions": 210,
+      "assertions": 2294,
+      "name": "effects-zero-results",
+      "deltaNormalBytes": 0,
+      "deltaNodes": 0,
+      "category": "existing-manifest-derivative",
+      "historicalArtifact": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-cross-carrier-draft/derivative-effects-zero-results.json",
+      "historicalSHA256": "0e17d50d62072612002fe3819f044efabb9b12df672f6df46131c003fb080aa3",
+      "historicalNormalBytes": 695598,
+      "historicalNodes": 18107,
+      "oldRowsTransformationPreserved": true,
+      "prelaunchRejected": false,
+      "changes": [
+        {
+          "pointer": "/scenarios/6/actions/4/assertions/7/equals/0/count",
+          "before": 0,
+          "after": 1
+        }
+      ],
+      "changedBodies": []
+    },
+    {
+      "normalBytes": 750576,
+      "normalSHA256": "22d3098eb600d8050c42b00eae3afd0ef46c4ec2ecb0c6463370b8d6e45102a0",
+      "compactBytes": 366171,
+      "compactSHA256": "63189518ae3c0d3159b804abe788768539dca01c8e8dd8ecba1c2f664a101a90",
+      "nodes": 19574,
+      "actions": 210,
+      "assertions": 2294,
+      "name": "effects-zero-events",
+      "deltaNormalBytes": 146,
+      "deltaNodes": 4,
+      "category": "existing-manifest-derivative",
+      "historicalArtifact": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-cross-carrier-draft/derivative-effects-zero-events.json",
+      "historicalSHA256": "047f4b7ae1ffb77d07f527568e45947b08b53fcaad036b58ec5e2923d7b64b2b",
+      "historicalNormalBytes": 695744,
+      "historicalNodes": 18111,
+      "oldRowsTransformationPreserved": true,
+      "prelaunchRejected": false,
+      "changes": [
+        {
+          "pointer": "/scenarios/6/actions/7/assertions/6/equals",
+          "before": [
+            [
+              "created",
+              "https://reference.invalid/acme/beads/a",
+              0
+            ]
+          ],
+          "after": [
+            [
+              "created",
+              "https://reference.invalid/acme/beads/a",
+              0
+            ],
+            [
+              "updated",
+              "https://reference.invalid/acme/beads/a",
+              0
+            ]
+          ]
+        }
+      ],
+      "changedBodies": []
+    },
+    {
+      "normalBytes": 750429,
+      "normalSHA256": "29726cc604d409d3949ec3272dad3101257a9b119601418406fc32ee63750c0f",
+      "compactBytes": 366115,
+      "compactSHA256": "686024066dac9883e78927f5c0b7c6844cae3a7177f21028c498190269cb6b3a",
+      "nodes": 19570,
+      "actions": 210,
+      "assertions": 2294,
+      "name": "effects-no-effect",
+      "deltaNormalBytes": -1,
+      "deltaNodes": 0,
+      "category": "existing-manifest-derivative",
+      "historicalArtifact": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-cross-carrier-draft/derivative-effects-no-effect.json",
+      "historicalSHA256": "12850a5bdc5111dd7cd4b470d10583be0b3a1a9a59c65f9a7d33a55249f0fdaa",
+      "historicalNormalBytes": 695597,
+      "historicalNodes": 18107,
+      "oldRowsTransformationPreserved": true,
+      "prelaunchRejected": false,
+      "changes": [
+        {
+          "pointer": "/scenarios/6/actions/4/assertions/8/exists",
+          "before": false,
+          "after": true
+        }
+      ],
+      "changedBodies": []
+    },
+    {
+      "normalBytes": 750419,
+      "normalSHA256": "1b3265da08d1469453721f621265569fc3c8b045eea95a9f5735952101d365c5",
+      "compactBytes": 366105,
+      "compactSHA256": "0735287486461ff32a65405d96bf42dd625758f856af45ece1256afb53d24939",
+      "nodes": 19570,
+      "actions": 210,
+      "assertions": 2294,
+      "name": "pagination-root-next",
+      "deltaNormalBytes": -11,
+      "deltaNodes": 0,
+      "category": "existing-manifest-derivative",
+      "historicalArtifact": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-cross-carrier-draft/derivative-pagination-root-next.json",
+      "historicalSHA256": "29b35b577a6502a99342856c92950d6a7468e691f29076b30fddb397c23754a0",
+      "historicalNormalBytes": 695587,
+      "historicalNodes": 18107,
+      "oldRowsTransformationPreserved": true,
+      "prelaunchRejected": false,
+      "changes": [
+        {
+          "pointer": "/scenarios/10/actions/4/assertions/8/equalsBinding",
+          "before": "p-page",
+          "removed": true
+        },
+        {
+          "pointer": "/scenarios/10/actions/4/assertions/8/equals",
+          "after": null,
+          "added": true
+        }
+      ],
+      "changedBodies": []
+    },
+    {
+      "normalBytes": 750430,
+      "normalSHA256": "56aa6e2501277e1aad77df48c12f38a78830242ba220f872f07eaf06d52da5fa",
+      "compactBytes": 366116,
+      "compactSHA256": "d530b6047ae7abefcbc72c08385242bccf659decc2b74d5e121d8ffc8554852e",
+      "nodes": 19570,
+      "actions": 210,
+      "assertions": 2294,
+      "name": "pagination-inline-boundary",
+      "deltaNormalBytes": 0,
+      "deltaNodes": 0,
+      "category": "existing-manifest-derivative",
+      "historicalArtifact": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-cross-carrier-draft/derivative-pagination-inline-boundary.json",
+      "historicalSHA256": "64f041d0d6c041554e5ed2d45b07a4458eec83d7c92b2de9d5836ba164103ef1",
+      "historicalNormalBytes": 695598,
+      "historicalNodes": 18107,
+      "oldRowsTransformationPreserved": true,
+      "prelaunchRejected": false,
+      "changes": [
+        {
+          "pointer": "/scenarios/10/actions/3/assertions/131/equals",
+          "before": "https://reference.invalid/acme/beads/p30",
+          "after": "https://reference.invalid/acme/beads/p31"
+        }
+      ],
+      "changedBodies": []
+    },
+    {
+      "normalBytes": 750430,
+      "normalSHA256": "917c44255be1e3beb74acee3943d7e1748165518a03268bf5b931c396cc0e984",
+      "compactBytes": 366116,
+      "compactSHA256": "94b9f29c46e5f13621fa6a20d36c46c320307ff1262507b31bcc3d51cc72dd67",
+      "nodes": 19570,
+      "actions": 210,
+      "assertions": 2294,
+      "name": "pagination-page-member",
+      "deltaNormalBytes": 0,
+      "deltaNodes": 0,
+      "category": "existing-manifest-derivative",
+      "historicalArtifact": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-cross-carrier-draft/derivative-pagination-page-member.json",
+      "historicalSHA256": "5c92b326303c16cf9744428b1ed07d06c82d4c10edcfeaa4db46cfb9e0d5dfef",
+      "historicalNormalBytes": 695598,
+      "historicalNodes": 18107,
+      "oldRowsTransformationPreserved": true,
+      "prelaunchRejected": false,
+      "changes": [
+        {
+          "pointer": "/scenarios/10/actions/5/assertions/13/equals",
+          "before": "https://reference.invalid/acme/beads/p31",
+          "after": "https://reference.invalid/acme/beads/p30"
+        }
+      ],
+      "changedBodies": []
+    },
+    {
+      "normalBytes": 750462,
+      "normalSHA256": "0204b55dd6e12f97adc5216bbe5da6eb2047c6f6988c4255fa1a025276af30be",
+      "compactBytes": 366148,
+      "compactSHA256": "e70eb0f817cde3c5e179c66ad845b5546a1dc955fbd590eb818b119e49bc957c",
+      "nodes": 19570,
+      "actions": 210,
+      "assertions": 2294,
+      "name": "pagination-page-parent",
+      "deltaNormalBytes": 32,
+      "deltaNodes": 0,
+      "category": "existing-manifest-derivative",
+      "historicalArtifact": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-cross-carrier-draft/derivative-pagination-page-parent.json",
+      "historicalSHA256": "ccc81483a82b6affe3fa5337cf79535085b16ab8c0ce7d3d7c3b4c386e6b5bf6",
+      "historicalNormalBytes": 695630,
+      "historicalNodes": 18107,
+      "oldRowsTransformationPreserved": true,
+      "prelaunchRejected": false,
+      "changes": [
+        {
+          "pointer": "/scenarios/10/actions/5/assertions/8/equalsBinding",
+          "before": "p-root",
+          "removed": true
+        },
+        {
+          "pointer": "/scenarios/10/actions/5/assertions/8/equals",
+          "after": "https://reference.invalid/acme/receipts/wrong",
+          "added": true
+        }
+      ],
+      "changedBodies": []
+    },
+    {
+      "normalBytes": 750428,
+      "normalSHA256": "45d144063a2a25d18e3039c1af899d9f5a357809069eca8da83103c1cd30f3be",
+      "compactBytes": 366114,
+      "compactSHA256": "ca47c8f2e51a199390c3e796021aa395155231bd287d7b8751c480af284b4392",
+      "nodes": 19570,
+      "actions": 210,
+      "assertions": 2294,
+      "name": "pagination-historical-title",
+      "deltaNormalBytes": -2,
+      "deltaNodes": 0,
+      "category": "existing-manifest-derivative",
+      "historicalArtifact": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-cross-carrier-draft/derivative-pagination-historical-title.json",
+      "historicalSHA256": "7f0e3916a674bb19a8539542c6dee8183e2432973efb26eca577c4b2efd55fb1",
+      "historicalNormalBytes": 695596,
+      "historicalNodes": 18107,
+      "oldRowsTransformationPreserved": true,
+      "prelaunchRejected": false,
+      "changes": [
+        {
+          "pointer": "/scenarios/10/actions/12/assertions/10/equals",
+          "before": "changed",
+          "after": "later"
+        }
+      ],
+      "changedBodies": []
+    },
+    {
+      "normalBytes": 750484,
+      "normalSHA256": "6d5c410b02e2b22a8079918a078fb3d866597a5d12f86c885917ce61eeadd10a",
+      "compactBytes": 366170,
+      "compactSHA256": "323e461684a971b7751bebae92415e8b0eef6388af547369c2311cad85d502dc",
+      "nodes": 19570,
+      "actions": 210,
+      "assertions": 2294,
+      "name": "pagination-terminal-next",
+      "deltaNormalBytes": 54,
+      "deltaNodes": 0,
+      "category": "existing-manifest-derivative",
+      "historicalArtifact": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-cross-carrier-draft/derivative-pagination-terminal-next.json",
+      "historicalSHA256": "86b29b4fa3a933836e0fb9e23b0a13f77ca8ddf61c3863d4742dc0d51c3a79c6",
+      "historicalNormalBytes": 695652,
+      "historicalNodes": 18107,
+      "oldRowsTransformationPreserved": true,
+      "prelaunchRejected": false,
+      "changes": [
+        {
+          "pointer": "/scenarios/10/actions/5/assertions/9/equals",
+          "before": null,
+          "after": "https://reference.invalid/acme/receipts/wrong/pages/next"
+        }
+      ],
+      "changedBodies": []
+    },
+    {
+      "normalBytes": 750427,
+      "normalSHA256": "fbdc92ffad03fcf6c678e72eb5016d18269eb84e92c4d7e0f03529e76b1330c0",
+      "compactBytes": 366113,
+      "compactSHA256": "e8465da099f12401c6b41d86941d93be8b193b8e820f0cbf7e2848199d2153a9",
+      "nodes": 19570,
+      "actions": 210,
+      "assertions": 2294,
+      "name": "conflict-code",
+      "deltaNormalBytes": -3,
+      "deltaNodes": 0,
+      "category": "existing-manifest-derivative",
+      "historicalArtifact": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-cross-carrier-draft/derivative-conflict-code.json",
+      "historicalSHA256": "60e006dfaaeb6711ee0a0ad49292b09053e8d059b0cf23437d671f3d3c79bce0",
+      "historicalNormalBytes": 695595,
+      "historicalNodes": 18107,
+      "oldRowsTransformationPreserved": true,
+      "prelaunchRejected": false,
+      "changes": [
+        {
+          "pointer": "/scenarios/11/actions/2/assertions/4/equals",
+          "before": "idempotency-conflict",
+          "after": "malformed-request"
+        }
+      ],
+      "changedBodies": []
+    },
+    {
+      "normalBytes": 750430,
+      "normalSHA256": "11e3f9f84843f3f99294e39f709b2d007ae25dbf8ef3cc50e030faa747d9898c",
+      "compactBytes": 366116,
+      "compactSHA256": "895c93a2e86895c3eadf6ec7fc9a5e1a5014281a1fe3ef1a7a76b6520ebe33f7",
+      "nodes": 19570,
+      "actions": 210,
+      "assertions": 2294,
+      "name": "conflict-reopened-status",
+      "deltaNormalBytes": 0,
+      "deltaNodes": 0,
+      "category": "existing-manifest-derivative",
+      "historicalArtifact": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-cross-carrier-draft/derivative-conflict-reopened-status.json",
+      "historicalSHA256": "c13a23398735b4d197d63dc0638e1283fced034567ccbfbb71df56ef188edb96",
+      "historicalNormalBytes": 695598,
+      "historicalNodes": 18107,
+      "oldRowsTransformationPreserved": true,
+      "prelaunchRejected": false,
+      "changes": [
+        {
+          "pointer": "/scenarios/11/actions/7/assertions/0/equals",
+          "before": 409,
+          "after": 200
+        }
+      ],
+      "changedBodies": []
+    },
+    {
+      "normalBytes": 750430,
+      "normalSHA256": "dc1242a79ad597e9064b34f870fccb745b35bd3c2a5238c6f55116aba69e447b",
+      "compactBytes": 366116,
+      "compactSHA256": "ce2ae3edc8297b3b61d2f43ee0e3f5ea2d03d305f934a0ba1e786896300917a1",
+      "nodes": 19570,
+      "actions": 210,
+      "assertions": 2294,
+      "name": "conflict-current-record",
+      "deltaNormalBytes": 0,
+      "deltaNodes": 0,
+      "category": "existing-manifest-derivative",
+      "historicalArtifact": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-cross-carrier-draft/derivative-conflict-current-record.json",
+      "historicalSHA256": "6bbb4e21f83daf62dd240fc121cc55f02055ee12325e1c995c015aa5664cff57",
+      "historicalNormalBytes": 695598,
+      "historicalNodes": 18107,
+      "oldRowsTransformationPreserved": true,
+      "prelaunchRejected": false,
+      "changes": [
+        {
+          "pointer": "/scenarios/11/actions/3/assertions/3/equals/0/0",
+          "before": "https://reference.invalid/acme/beads/a",
+          "after": "https://reference.invalid/acme/beads/b"
+        }
+      ],
+      "changedBodies": []
+    },
+    {
+      "normalBytes": 750417,
+      "normalSHA256": "b6f672558e4d6d331240271ef039f42893f31f71c5916ad3aff838137462042c",
+      "compactBytes": 366103,
+      "compactSHA256": "fd71808d075c1af9ecc8281a737e9188e4701a526a9804a8405a45fa5e8d0406",
+      "nodes": 19570,
+      "actions": 210,
+      "assertions": 2294,
+      "name": "conflict-retained-body",
+      "deltaNormalBytes": -13,
+      "deltaNodes": 0,
+      "category": "existing-manifest-derivative",
+      "historicalArtifact": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-cross-carrier-draft/derivative-conflict-retained-body.json",
+      "historicalSHA256": "20e3dc71bacc7810e1259c1f7fc80f7a36af738b6e36d3cc593890788943a4a5",
+      "historicalNormalBytes": 695585,
+      "historicalNodes": 18107,
+      "oldRowsTransformationPreserved": true,
+      "prelaunchRejected": false,
+      "changes": [
+        {
+          "pointer": "/scenarios/11/actions/8/assertions/3/equalsBinding",
+          "before": "c-body",
+          "removed": true
+        },
+        {
+          "pointer": "/scenarios/11/actions/8/assertions/3/equals",
+          "after": {},
+          "added": true
+        }
+      ],
+      "changedBodies": []
+    },
+    {
+      "normalBytes": 750430,
+      "normalSHA256": "84721eab910a237c5d2f01a0d6a786374e1d60ffc9bd3e662cec8661a04ab68e",
+      "compactBytes": 366116,
+      "compactSHA256": "772a132207488cef14b4b9d881a34a19edbf1712825ab7a9b0c891bb2feadfdc",
+      "nodes": 19570,
+      "actions": 210,
+      "assertions": 2294,
+      "name": "conflict-event",
+      "deltaNormalBytes": 0,
+      "deltaNodes": 0,
+      "category": "existing-manifest-derivative",
+      "historicalArtifact": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-cross-carrier-draft/derivative-conflict-event.json",
+      "historicalSHA256": "70db546b9f65550a3c191fc7c59bea91cca663752ec17ee4ca9445e7439d686b",
+      "historicalNormalBytes": 695598,
+      "historicalNodes": 18107,
+      "oldRowsTransformationPreserved": true,
+      "prelaunchRejected": false,
+      "changes": [
+        {
+          "pointer": "/scenarios/11/actions/11/assertions/3/equals/0/2",
+          "before": "https://reference.invalid/acme/beads/a",
+          "after": "https://reference.invalid/acme/beads/b"
+        }
+      ],
+      "changedBodies": []
+    },
+    {
+      "normalBytes": 750438,
+      "normalSHA256": "149a59538afb4a3c1efd04681ae34ed07737513d43ea255ca277d403050eb0d7",
+      "compactBytes": 366124,
+      "compactSHA256": "8db0f3366ac9d335179499cd3d31af338f49612ba407ca3d5fdbff906064f275",
+      "nodes": 19570,
+      "actions": 210,
+      "assertions": 2294,
+      "name": "noop-bead-property",
+      "deltaNormalBytes": 8,
+      "deltaNodes": 0,
+      "category": "existing-manifest-derivative",
+      "historicalArtifact": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-cross-carrier-draft/derivative-noop-bead-property.json",
+      "historicalSHA256": "791967a5fcaf41e02fe526ccdc4e172931b3a6cb6cd67d27a5f7a5c374ca8e0c",
+      "historicalNormalBytes": 695606,
+      "historicalNodes": 18107,
+      "oldRowsTransformationPreserved": true,
+      "prelaunchRejected": false,
+      "changes": [
+        {
+          "pointer": "/scenarios/4/actions/3/raw/body/value",
+          "before": "{\"operations\":[{\"operation\":\"updateBead\",\"bead\":\"beads/a\",\"propertiesChange\":[{\"op\":\"replace\",\"path\":\"/title\",\"value\":\"a\"}],\"metadataChange\":[{\"op\":\"replace\",\"path\":\"\",\"value\":{}}]},{\"operation\":\"updateLink\",\"link\":\"links/l\",\"propertiesChange\":[{\"op\":\"replace\",\"path\":\"/title\",\"value\":\"l\"}],\"metadataChange\":[{\"op\":\"replace\",\"path\":\"\",\"value\":{}}]}]}",
+          "after": "{\"operations\":[{\"operation\":\"updateBead\",\"bead\":\"beads/a\",\"propertiesChange\":[{\"op\":\"replace\",\"path\":\"/title\",\"value\":\"different\"}],\"metadataChange\":[{\"op\":\"replace\",\"path\":\"\",\"value\":{}}]},{\"operation\":\"updateLink\",\"link\":\"links/l\",\"propertiesChange\":[{\"op\":\"replace\",\"path\":\"/title\",\"value\":\"l\"}],\"metadataChange\":[{\"op\":\"replace\",\"path\":\"\",\"value\":{}}]}]}"
+        }
+      ],
+      "changedBodies": [
+        {
+          "scenario": "transactional.batch.no-op-entries",
+          "action": "n-noop",
+          "utf8Bytes": 358,
+          "sha256": "0d94e1d49cb00069a0e437eb9a84988cb6056a52e0362f8a8d80b7d53d9f7265",
+          "literal": "{\"operations\":[{\"operation\":\"updateBead\",\"bead\":\"beads/a\",\"propertiesChange\":[{\"op\":\"replace\",\"path\":\"/title\",\"value\":\"different\"}],\"metadataChange\":[{\"op\":\"replace\",\"path\":\"\",\"value\":{}}]},{\"operation\":\"updateLink\",\"link\":\"links/l\",\"propertiesChange\":[{\"op\":\"replace\",\"path\":\"/title\",\"value\":\"l\"}],\"metadataChange\":[{\"op\":\"replace\",\"path\":\"\",\"value\":{}}]}]}"
+        }
+      ]
+    },
+    {
+      "normalBytes": 750451,
+      "normalSHA256": "68f1e44b664781dcbfcebb26c522a11dd62bfa87db8adb9431704da2650eeb1a",
+      "compactBytes": 366137,
+      "compactSHA256": "ae8d63cd4c46390036e88327eaa8538fbfecb03f8ca3be5d50d14fb811fea619",
+      "nodes": 19570,
+      "actions": 210,
+      "assertions": 2294,
+      "name": "noop-link-metadata",
+      "deltaNormalBytes": 21,
+      "deltaNodes": 0,
+      "category": "existing-manifest-derivative",
+      "historicalArtifact": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-cross-carrier-draft/derivative-noop-link-metadata.json",
+      "historicalSHA256": "f48f1d3eba89f551d700466c61131862928deb7111859013d3b02b98adcc95c2",
+      "historicalNormalBytes": 695619,
+      "historicalNodes": 18107,
+      "oldRowsTransformationPreserved": true,
+      "prelaunchRejected": false,
+      "changes": [
+        {
+          "pointer": "/scenarios/4/actions/3/raw/body/value",
+          "before": "{\"operations\":[{\"operation\":\"updateBead\",\"bead\":\"beads/a\",\"propertiesChange\":[{\"op\":\"replace\",\"path\":\"/title\",\"value\":\"a\"}],\"metadataChange\":[{\"op\":\"replace\",\"path\":\"\",\"value\":{}}]},{\"operation\":\"updateLink\",\"link\":\"links/l\",\"propertiesChange\":[{\"op\":\"replace\",\"path\":\"/title\",\"value\":\"l\"}],\"metadataChange\":[{\"op\":\"replace\",\"path\":\"\",\"value\":{}}]}]}",
+          "after": "{\"operations\":[{\"operation\":\"updateBead\",\"bead\":\"beads/a\",\"propertiesChange\":[{\"op\":\"replace\",\"path\":\"/title\",\"value\":\"a\"}],\"metadataChange\":[{\"op\":\"replace\",\"path\":\"\",\"value\":{}}]},{\"operation\":\"updateLink\",\"link\":\"links/l\",\"propertiesChange\":[{\"op\":\"replace\",\"path\":\"/title\",\"value\":\"l\"}],\"metadataChange\":[{\"op\":\"replace\",\"path\":\"\",\"value\":{\"tag\":\"different\"}}]}]}"
+        }
+      ],
+      "changedBodies": [
+        {
+          "scenario": "transactional.batch.no-op-entries",
+          "action": "n-noop",
+          "utf8Bytes": 367,
+          "sha256": "07029563c8b625df70ef60a68209caa42f2ff01d7f7966515728f821141d27ae",
+          "literal": "{\"operations\":[{\"operation\":\"updateBead\",\"bead\":\"beads/a\",\"propertiesChange\":[{\"op\":\"replace\",\"path\":\"/title\",\"value\":\"a\"}],\"metadataChange\":[{\"op\":\"replace\",\"path\":\"\",\"value\":{}}]},{\"operation\":\"updateLink\",\"link\":\"links/l\",\"propertiesChange\":[{\"op\":\"replace\",\"path\":\"/title\",\"value\":\"l\"}],\"metadataChange\":[{\"op\":\"replace\",\"path\":\"\",\"value\":{\"tag\":\"different\"}}]}]}"
+        }
+      ]
+    },
+    {
+      "normalBytes": 750493,
+      "normalSHA256": "a90fdd035d1737bbd7101667042424509d52903476b04efd81230edd078c1384",
+      "compactBytes": 366126,
+      "compactSHA256": "acc428b0859c02fa04b93a605eeb051baa7aa1f404179f551cdf70e3934b2979",
+      "nodes": 19572,
+      "actions": 210,
+      "assertions": 2294,
+      "name": "noop-group-inventory-and-head",
+      "deltaNormalBytes": 63,
+      "deltaNodes": 2,
+      "category": "existing-manifest-derivative",
+      "historicalArtifact": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-cross-carrier-draft/derivative-noop-group-inventory-and-head.json",
+      "historicalSHA256": "f845f7675101e61a35a5d28494aef69e6ded78e0e03c8d9cf8228d4aef5be66b",
+      "historicalNormalBytes": 695661,
+      "historicalNodes": 18109,
+      "oldRowsTransformationPreserved": true,
+      "prelaunchRejected": false,
+      "changes": [
+        {
+          "pointer": "/scenarios/4/actions/8/assertions/8/equals",
+          "before": "pos-1",
+          "after": "pos-2"
+        },
+        {
+          "pointer": "/scenarios/4/actions/8/assertions/9/equals",
+          "before": [
+            [
+              "pos-1"
+            ]
+          ],
+          "after": [
+            [
+              "pos-1"
+            ],
+            [
+              "pos-2"
+            ]
+          ]
+        }
+      ],
+      "changedBodies": []
+    },
+    {
+      "normalBytes": 756548,
+      "normalSHA256": "3f1ceaa0c9ae24b6f152b406418f06f4b0c5eaf2a46fd0286d9f06db36c574ae",
+      "compactBytes": 369304,
+      "compactSHA256": "2c90a7f8ca70bdf7a8f25e2ce8b7172c861b2e39701e03f82e9b6507b8afc5cd",
+      "nodes": 19726,
+      "actions": 210,
+      "assertions": 2317,
+      "name": "deletion-incoming-order",
+      "deltaNormalBytes": 6118,
+      "deltaNodes": 156,
+      "category": "existing-manifest-derivative",
+      "historicalArtifact": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-cross-carrier-draft/derivative-deletion-incoming-order.json",
+      "historicalSHA256": "d7946494c15079d6a937da175964dc959cd4f40106beb7fb960ea5f187e1787f",
+      "historicalNormalBytes": 701716,
+      "historicalNodes": 18263,
+      "oldRowsTransformationPreserved": true,
+      "prelaunchRejected": false,
+      "changes": [
+        {
+          "pointer": "/scenarios/3/actions/4/raw/body/value",
+          "before": "{\"operations\":[{\"operation\":\"updateBead\",\"bead\":\"beads/b\",\"propertiesChange\":[{\"op\":\"replace\",\"path\":\"/title\",\"value\":\"incoming-survives-prefix\"}],\"metadataChange\":[{\"op\":\"replace\",\"path\":\"\",\"value\":{\"phase\":\"incoming-survives-prefix\"}}]},{\"operation\":\"deleteLink\",\"link\":\"links/l\"},{\"operation\":\"deleteBead\",\"bead\":\"beads/a\"},{\"operation\":\"deleteLink\",\"link\":\"links/r\"}]}",
+          "after": "{\"operations\":[{\"operation\":\"updateBead\",\"bead\":\"beads/b\",\"propertiesChange\":[{\"op\":\"replace\",\"path\":\"/title\",\"value\":\"incoming-survives-prefix\"}],\"metadataChange\":[{\"op\":\"replace\",\"path\":\"\",\"value\":{\"phase\":\"incoming-survives-prefix\"}}]},{\"operation\":\"deleteLink\",\"link\":\"links/l\"},{\"operation\":\"deleteLink\",\"link\":\"links/r\"},{\"operation\":\"deleteBead\",\"bead\":\"beads/a\"}]}"
+        },
+        {
+          "pointer": "/scenarios/3/actions/4/assertions",
+          "before": [
+            {
+              "id": "http-status",
+              "kind": "status",
+              "equals": 200
+            },
+            {
+              "id": "present-bdp-scope-epoch",
+              "kind": "header",
+              "name": "bdp-scope-epoch",
+              "absent": false
+            },
+            {
+              "id": "present-bdp-authorization-view",
+              "kind": "header",
+              "name": "bdp-authorization-view",
+              "absent": false
+            },
+            {
+              "id": "present-bdp-scope-position",
+              "kind": "header",
+              "name": "bdp-scope-position",
+              "absent": false
+            },
+            {
+              "id": "schema",
+              "kind": "json-schema",
+              "schema": "#/$defs/mutationReceipt"
+            },
+            {
+              "id": "serving-context",
+              "kind": "response-metadata-equals",
+              "request": "d-seed",
+              "headers": [
+                "bdp-scope-epoch",
+                "bdp-authorization-view",
+                "bdp-scope-position"
+              ]
+            },
+            {
+              "id": "request-headers",
+              "kind": "request-authored-headers"
+            },
+            {
+              "id": "request-body",
+              "kind": "request-authored-body"
+            },
+            {
+              "id": "disposition",
+              "kind": "json-pointer",
+              "pointer": "/status",
+              "exists": true,
+              "equals": "failed"
+            },
+            {
+              "id": "detail",
+              "kind": "json-pointer",
+              "pointer": "/detail",
+              "exists": true,
+              "equals": "available"
+            },
+            {
+              "id": "required-position",
+              "kind": "json-pointer",
+              "pointer": "/requiredPosition",
+              "exists": true,
+              "equals": "pos-1"
+            },
+            {
+              "id": "no-effect",
+              "kind": "json-pointer",
+              "pointer": "/effectPosition",
+              "exists": false
+            },
+            {
+              "id": "no-results",
+              "kind": "json-pointer",
+              "pointer": "/results",
+              "exists": false
+            },
+            {
+              "id": "no-next",
+              "kind": "json-pointer",
+              "pointer": "/next",
+              "exists": false
+            },
+            {
+              "id": "problem",
+              "kind": "json-pointer",
+              "pointer": "/problem",
+              "exists": true,
+              "equals": {
+                "type": "https://github.com/gastownhall/bdp/problems/conflict",
+                "status": 409,
+                "code": "incident-links-exist",
+                "retry": "after-state-change",
+                "operationIndex": 2
+              }
+            }
+          ],
+          "after": [
+            {
+              "id": "http-status",
+              "kind": "status",
+              "equals": 200
+            },
+            {
+              "id": "present-bdp-scope-epoch",
+              "kind": "header",
+              "name": "bdp-scope-epoch",
+              "absent": false
+            },
+            {
+              "id": "present-bdp-authorization-view",
+              "kind": "header",
+              "name": "bdp-authorization-view",
+              "absent": false
+            },
+            {
+              "id": "present-bdp-scope-position",
+              "kind": "header",
+              "name": "bdp-scope-position",
+              "absent": false
+            },
+            {
+              "id": "schema",
+              "kind": "json-schema",
+              "schema": "#/$defs/mutationReceipt"
+            },
+            {
+              "id": "serving-context",
+              "kind": "response-metadata-equals",
+              "request": "d-seed",
+              "headers": [
+                "bdp-scope-epoch",
+                "bdp-authorization-view",
+                "bdp-scope-position"
+              ]
+            },
+            {
+              "id": "request-headers",
+              "kind": "request-authored-headers"
+            },
+            {
+              "id": "request-body",
+              "kind": "request-authored-body"
+            },
+            {
+              "id": "disposition",
+              "kind": "json-pointer",
+              "pointer": "/status",
+              "exists": true,
+              "equals": "failed"
+            },
+            {
+              "id": "detail",
+              "kind": "json-pointer",
+              "pointer": "/detail",
+              "exists": true,
+              "equals": "available"
+            },
+            {
+              "id": "required-position",
+              "kind": "json-pointer",
+              "pointer": "/requiredPosition",
+              "exists": true,
+              "equals": "pos-1"
+            },
+            {
+              "id": "no-effect",
+              "kind": "json-pointer",
+              "pointer": "/effectPosition",
+              "exists": false
+            },
+            {
+              "id": "no-results",
+              "kind": "json-pointer",
+              "pointer": "/results",
+              "exists": false
+            },
+            {
+              "id": "no-next",
+              "kind": "json-pointer",
+              "pointer": "/next",
+              "exists": false
+            },
+            {
+              "id": "problem",
+              "kind": "json-pointer",
+              "pointer": "/problem",
+              "exists": true,
+              "equals": {
+                "type": "https://github.com/gastownhall/bdp/problems/conflict",
+                "status": 409,
+                "code": "incident-links-exist",
+                "retry": "after-state-change",
+                "operationIndex": 2
+              }
+            },
+            {
+              "id": "control-position",
+              "kind": "header",
+              "name": "bdp-scope-position",
+              "equals": "pos-2"
+            },
+            {
+              "id": "control-completed",
+              "kind": "json-pointer",
+              "pointer": "/status",
+              "exists": true,
+              "equals": "completed"
+            },
+            {
+              "id": "control-detail",
+              "kind": "json-pointer",
+              "pointer": "/detail",
+              "exists": true,
+              "equals": "available"
+            },
+            {
+              "id": "control-required",
+              "kind": "json-pointer",
+              "pointer": "/requiredPosition",
+              "exists": true,
+              "equals": "pos-2"
+            },
+            {
+              "id": "control-effect",
+              "kind": "json-pointer",
+              "pointer": "/effectPosition",
+              "exists": true,
+              "equals": "pos-2"
+            },
+            {
+              "id": "control-inline",
+              "kind": "json-pointer",
+              "pointer": "/next",
+              "exists": true,
+              "equals": null
+            },
+            {
+              "id": "control-ordered-results",
+              "kind": "json-array-tuples",
+              "pointer": "/results",
+              "ordered": true,
+              "projections": [
+                {
+                  "pointer": "/operationIndex"
+                },
+                {
+                  "pointer": "/outcome"
+                }
+              ],
+              "equals": [
+                [
+                  0,
+                  "updated"
+                ],
+                [
+                  1,
+                  "deleted"
+                ],
+                [
+                  2,
+                  "deleted"
+                ],
+                [
+                  3,
+                  "deleted"
+                ]
+              ]
+            },
+            {
+              "id": "control-updated-id",
+              "kind": "json-pointer",
+              "pointer": "/results/0/resource/id",
+              "exists": true,
+              "equals": "https://reference.invalid/acme/beads/b"
+            },
+            {
+              "id": "control-updated-type",
+              "kind": "json-pointer",
+              "pointer": "/results/0/resource/type",
+              "exists": true,
+              "equals": "https://reference.invalid/acme/types/task"
+            },
+            {
+              "id": "control-updated-properties",
+              "kind": "json-pointer",
+              "pointer": "/results/0/resource/properties",
+              "exists": true,
+              "equals": {
+                "title": "incoming-survives-prefix"
+              }
+            },
+            {
+              "id": "control-updated-metadata",
+              "kind": "json-pointer",
+              "pointer": "/results/0/resource/metadata",
+              "exists": true,
+              "equals": {
+                "phase": "incoming-survives-prefix"
+              }
+            },
+            {
+              "id": "control-l-kind",
+              "kind": "json-pointer",
+              "pointer": "/results/1/deleted/resourceKind",
+              "exists": true,
+              "equals": "link"
+            },
+            {
+              "id": "control-l-id",
+              "kind": "json-pointer",
+              "pointer": "/results/1/deleted/resource/id",
+              "exists": true,
+              "equals": "https://reference.invalid/acme/links/l"
+            },
+            {
+              "id": "control-l-type",
+              "kind": "json-pointer",
+              "pointer": "/results/1/deleted/resource/type",
+              "exists": true,
+              "equals": "https://reference.invalid/acme/types/relationship"
+            },
+            {
+              "id": "control-l-revision",
+              "kind": "json-pointer",
+              "pointer": "/results/1/deleted/resource/revision",
+              "exists": true,
+              "equalsBinding": "d-l-revision"
+            },
+            {
+              "id": "control-r-kind",
+              "kind": "json-pointer",
+              "pointer": "/results/2/deleted/resourceKind",
+              "exists": true,
+              "equals": "link"
+            },
+            {
+              "id": "control-r-id",
+              "kind": "json-pointer",
+              "pointer": "/results/2/deleted/resource/id",
+              "exists": true,
+              "equals": "https://reference.invalid/acme/links/r"
+            },
+            {
+              "id": "control-r-type",
+              "kind": "json-pointer",
+              "pointer": "/results/2/deleted/resource/type",
+              "exists": true,
+              "equals": "https://reference.invalid/acme/types/relationship"
+            },
+            {
+              "id": "control-r-revision",
+              "kind": "json-pointer",
+              "pointer": "/results/2/deleted/resource/revision",
+              "exists": true,
+              "equalsBinding": "d-r-revision"
+            },
+            {
+              "id": "control-a-kind",
+              "kind": "json-pointer",
+              "pointer": "/results/3/deleted/resourceKind",
+              "exists": true,
+              "equals": "bead"
+            },
+            {
+              "id": "control-a-id",
+              "kind": "json-pointer",
+              "pointer": "/results/3/deleted/resource/id",
+              "exists": true,
+              "equals": "https://reference.invalid/acme/beads/a"
+            },
+            {
+              "id": "control-a-type",
+              "kind": "json-pointer",
+              "pointer": "/results/3/deleted/resource/type",
+              "exists": true,
+              "equals": "https://reference.invalid/acme/types/task"
+            },
+            {
+              "id": "control-a-revision",
+              "kind": "json-pointer",
+              "pointer": "/results/3/deleted/resource/revision",
+              "exists": true,
+              "equalsBinding": "d-a-revision"
+            }
+          ]
+        }
+      ],
+      "changedBodies": [
+        {
+          "scenario": "transactional.batch.deletion-safety",
+          "action": "d-incoming-survives",
+          "utf8Bytes": 372,
+          "sha256": "35d1146063133b3a1018f0d939d95e6841adb332fb8de1b78c6ce4e528f26a5a",
+          "literal": "{\"operations\":[{\"operation\":\"updateBead\",\"bead\":\"beads/b\",\"propertiesChange\":[{\"op\":\"replace\",\"path\":\"/title\",\"value\":\"incoming-survives-prefix\"}],\"metadataChange\":[{\"op\":\"replace\",\"path\":\"\",\"value\":{\"phase\":\"incoming-survives-prefix\"}}]},{\"operation\":\"deleteLink\",\"link\":\"links/l\"},{\"operation\":\"deleteLink\",\"link\":\"links/r\"},{\"operation\":\"deleteBead\",\"bead\":\"beads/a\"}]}"
+        }
+      ]
+    },
+    {
+      "normalBytes": 756548,
+      "normalSHA256": "d750ae41c11a81726ba53831e27f655fe04877399814ff5cb4a8b98a849d8308",
+      "compactBytes": 369304,
+      "compactSHA256": "eea88de7d6736c07acabcfae044d29ceeec749dafff504505a5781f23948da3e",
+      "nodes": 19726,
+      "actions": 210,
+      "assertions": 2317,
+      "name": "deletion-outgoing-order",
+      "deltaNormalBytes": 6118,
+      "deltaNodes": 156,
+      "category": "existing-manifest-derivative",
+      "historicalArtifact": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-cross-carrier-draft/derivative-deletion-outgoing-order.json",
+      "historicalSHA256": "8ef35c0720a12727e91ba835c75a6fac97dcda860fd354688cb6c58fba46f990",
+      "historicalNormalBytes": 701716,
+      "historicalNodes": 18263,
+      "oldRowsTransformationPreserved": true,
+      "prelaunchRejected": false,
+      "changes": [
+        {
+          "pointer": "/scenarios/3/actions/9/raw/body/value",
+          "before": "{\"operations\":[{\"operation\":\"updateBead\",\"bead\":\"beads/b\",\"propertiesChange\":[{\"op\":\"replace\",\"path\":\"/title\",\"value\":\"outgoing-survives-prefix\"}],\"metadataChange\":[{\"op\":\"replace\",\"path\":\"\",\"value\":{\"phase\":\"outgoing-survives-prefix\"}}]},{\"operation\":\"deleteLink\",\"link\":\"links/r\"},{\"operation\":\"deleteBead\",\"bead\":\"beads/a\"},{\"operation\":\"deleteLink\",\"link\":\"links/l\"}]}",
+          "after": "{\"operations\":[{\"operation\":\"updateBead\",\"bead\":\"beads/b\",\"propertiesChange\":[{\"op\":\"replace\",\"path\":\"/title\",\"value\":\"outgoing-survives-prefix\"}],\"metadataChange\":[{\"op\":\"replace\",\"path\":\"\",\"value\":{\"phase\":\"outgoing-survives-prefix\"}}]},{\"operation\":\"deleteLink\",\"link\":\"links/r\"},{\"operation\":\"deleteLink\",\"link\":\"links/l\"},{\"operation\":\"deleteBead\",\"bead\":\"beads/a\"}]}"
+        },
+        {
+          "pointer": "/scenarios/3/actions/9/assertions",
+          "before": [
+            {
+              "id": "http-status",
+              "kind": "status",
+              "equals": 200
+            },
+            {
+              "id": "present-bdp-scope-epoch",
+              "kind": "header",
+              "name": "bdp-scope-epoch",
+              "absent": false
+            },
+            {
+              "id": "present-bdp-authorization-view",
+              "kind": "header",
+              "name": "bdp-authorization-view",
+              "absent": false
+            },
+            {
+              "id": "present-bdp-scope-position",
+              "kind": "header",
+              "name": "bdp-scope-position",
+              "absent": false
+            },
+            {
+              "id": "schema",
+              "kind": "json-schema",
+              "schema": "#/$defs/mutationReceipt"
+            },
+            {
+              "id": "serving-context",
+              "kind": "response-metadata-equals",
+              "request": "d-seed",
+              "headers": [
+                "bdp-scope-epoch",
+                "bdp-authorization-view",
+                "bdp-scope-position"
+              ]
+            },
+            {
+              "id": "request-headers",
+              "kind": "request-authored-headers"
+            },
+            {
+              "id": "request-body",
+              "kind": "request-authored-body"
+            },
+            {
+              "id": "disposition",
+              "kind": "json-pointer",
+              "pointer": "/status",
+              "exists": true,
+              "equals": "failed"
+            },
+            {
+              "id": "detail",
+              "kind": "json-pointer",
+              "pointer": "/detail",
+              "exists": true,
+              "equals": "available"
+            },
+            {
+              "id": "required-position",
+              "kind": "json-pointer",
+              "pointer": "/requiredPosition",
+              "exists": true,
+              "equals": "pos-1"
+            },
+            {
+              "id": "no-effect",
+              "kind": "json-pointer",
+              "pointer": "/effectPosition",
+              "exists": false
+            },
+            {
+              "id": "no-results",
+              "kind": "json-pointer",
+              "pointer": "/results",
+              "exists": false
+            },
+            {
+              "id": "no-next",
+              "kind": "json-pointer",
+              "pointer": "/next",
+              "exists": false
+            },
+            {
+              "id": "problem",
+              "kind": "json-pointer",
+              "pointer": "/problem",
+              "exists": true,
+              "equals": {
+                "type": "https://github.com/gastownhall/bdp/problems/conflict",
+                "status": 409,
+                "code": "incident-links-exist",
+                "retry": "after-state-change",
+                "operationIndex": 2
+              }
+            }
+          ],
+          "after": [
+            {
+              "id": "http-status",
+              "kind": "status",
+              "equals": 200
+            },
+            {
+              "id": "present-bdp-scope-epoch",
+              "kind": "header",
+              "name": "bdp-scope-epoch",
+              "absent": false
+            },
+            {
+              "id": "present-bdp-authorization-view",
+              "kind": "header",
+              "name": "bdp-authorization-view",
+              "absent": false
+            },
+            {
+              "id": "present-bdp-scope-position",
+              "kind": "header",
+              "name": "bdp-scope-position",
+              "absent": false
+            },
+            {
+              "id": "schema",
+              "kind": "json-schema",
+              "schema": "#/$defs/mutationReceipt"
+            },
+            {
+              "id": "serving-context",
+              "kind": "response-metadata-equals",
+              "request": "d-seed",
+              "headers": [
+                "bdp-scope-epoch",
+                "bdp-authorization-view",
+                "bdp-scope-position"
+              ]
+            },
+            {
+              "id": "request-headers",
+              "kind": "request-authored-headers"
+            },
+            {
+              "id": "request-body",
+              "kind": "request-authored-body"
+            },
+            {
+              "id": "disposition",
+              "kind": "json-pointer",
+              "pointer": "/status",
+              "exists": true,
+              "equals": "failed"
+            },
+            {
+              "id": "detail",
+              "kind": "json-pointer",
+              "pointer": "/detail",
+              "exists": true,
+              "equals": "available"
+            },
+            {
+              "id": "required-position",
+              "kind": "json-pointer",
+              "pointer": "/requiredPosition",
+              "exists": true,
+              "equals": "pos-1"
+            },
+            {
+              "id": "no-effect",
+              "kind": "json-pointer",
+              "pointer": "/effectPosition",
+              "exists": false
+            },
+            {
+              "id": "no-results",
+              "kind": "json-pointer",
+              "pointer": "/results",
+              "exists": false
+            },
+            {
+              "id": "no-next",
+              "kind": "json-pointer",
+              "pointer": "/next",
+              "exists": false
+            },
+            {
+              "id": "problem",
+              "kind": "json-pointer",
+              "pointer": "/problem",
+              "exists": true,
+              "equals": {
+                "type": "https://github.com/gastownhall/bdp/problems/conflict",
+                "status": 409,
+                "code": "incident-links-exist",
+                "retry": "after-state-change",
+                "operationIndex": 2
+              }
+            },
+            {
+              "id": "control-position",
+              "kind": "header",
+              "name": "bdp-scope-position",
+              "equals": "pos-2"
+            },
+            {
+              "id": "control-completed",
+              "kind": "json-pointer",
+              "pointer": "/status",
+              "exists": true,
+              "equals": "completed"
+            },
+            {
+              "id": "control-detail",
+              "kind": "json-pointer",
+              "pointer": "/detail",
+              "exists": true,
+              "equals": "available"
+            },
+            {
+              "id": "control-required",
+              "kind": "json-pointer",
+              "pointer": "/requiredPosition",
+              "exists": true,
+              "equals": "pos-2"
+            },
+            {
+              "id": "control-effect",
+              "kind": "json-pointer",
+              "pointer": "/effectPosition",
+              "exists": true,
+              "equals": "pos-2"
+            },
+            {
+              "id": "control-inline",
+              "kind": "json-pointer",
+              "pointer": "/next",
+              "exists": true,
+              "equals": null
+            },
+            {
+              "id": "control-ordered-results",
+              "kind": "json-array-tuples",
+              "pointer": "/results",
+              "ordered": true,
+              "projections": [
+                {
+                  "pointer": "/operationIndex"
+                },
+                {
+                  "pointer": "/outcome"
+                }
+              ],
+              "equals": [
+                [
+                  0,
+                  "updated"
+                ],
+                [
+                  1,
+                  "deleted"
+                ],
+                [
+                  2,
+                  "deleted"
+                ],
+                [
+                  3,
+                  "deleted"
+                ]
+              ]
+            },
+            {
+              "id": "control-updated-id",
+              "kind": "json-pointer",
+              "pointer": "/results/0/resource/id",
+              "exists": true,
+              "equals": "https://reference.invalid/acme/beads/b"
+            },
+            {
+              "id": "control-updated-type",
+              "kind": "json-pointer",
+              "pointer": "/results/0/resource/type",
+              "exists": true,
+              "equals": "https://reference.invalid/acme/types/task"
+            },
+            {
+              "id": "control-updated-properties",
+              "kind": "json-pointer",
+              "pointer": "/results/0/resource/properties",
+              "exists": true,
+              "equals": {
+                "title": "outgoing-survives-prefix"
+              }
+            },
+            {
+              "id": "control-updated-metadata",
+              "kind": "json-pointer",
+              "pointer": "/results/0/resource/metadata",
+              "exists": true,
+              "equals": {
+                "phase": "outgoing-survives-prefix"
+              }
+            },
+            {
+              "id": "control-r-kind",
+              "kind": "json-pointer",
+              "pointer": "/results/1/deleted/resourceKind",
+              "exists": true,
+              "equals": "link"
+            },
+            {
+              "id": "control-r-id",
+              "kind": "json-pointer",
+              "pointer": "/results/1/deleted/resource/id",
+              "exists": true,
+              "equals": "https://reference.invalid/acme/links/r"
+            },
+            {
+              "id": "control-r-type",
+              "kind": "json-pointer",
+              "pointer": "/results/1/deleted/resource/type",
+              "exists": true,
+              "equals": "https://reference.invalid/acme/types/relationship"
+            },
+            {
+              "id": "control-r-revision",
+              "kind": "json-pointer",
+              "pointer": "/results/1/deleted/resource/revision",
+              "exists": true,
+              "equalsBinding": "d-r-revision"
+            },
+            {
+              "id": "control-l-kind",
+              "kind": "json-pointer",
+              "pointer": "/results/2/deleted/resourceKind",
+              "exists": true,
+              "equals": "link"
+            },
+            {
+              "id": "control-l-id",
+              "kind": "json-pointer",
+              "pointer": "/results/2/deleted/resource/id",
+              "exists": true,
+              "equals": "https://reference.invalid/acme/links/l"
+            },
+            {
+              "id": "control-l-type",
+              "kind": "json-pointer",
+              "pointer": "/results/2/deleted/resource/type",
+              "exists": true,
+              "equals": "https://reference.invalid/acme/types/relationship"
+            },
+            {
+              "id": "control-l-revision",
+              "kind": "json-pointer",
+              "pointer": "/results/2/deleted/resource/revision",
+              "exists": true,
+              "equalsBinding": "d-l-revision"
+            },
+            {
+              "id": "control-a-kind",
+              "kind": "json-pointer",
+              "pointer": "/results/3/deleted/resourceKind",
+              "exists": true,
+              "equals": "bead"
+            },
+            {
+              "id": "control-a-id",
+              "kind": "json-pointer",
+              "pointer": "/results/3/deleted/resource/id",
+              "exists": true,
+              "equals": "https://reference.invalid/acme/beads/a"
+            },
+            {
+              "id": "control-a-type",
+              "kind": "json-pointer",
+              "pointer": "/results/3/deleted/resource/type",
+              "exists": true,
+              "equals": "https://reference.invalid/acme/types/task"
+            },
+            {
+              "id": "control-a-revision",
+              "kind": "json-pointer",
+              "pointer": "/results/3/deleted/resource/revision",
+              "exists": true,
+              "equalsBinding": "d-a-revision"
+            }
+          ]
+        }
+      ],
+      "changedBodies": [
+        {
+          "scenario": "transactional.batch.deletion-safety",
+          "action": "d-outgoing-survives",
+          "utf8Bytes": 372,
+          "sha256": "ed5db74c048942c6389f91265a0aa76ebfebba675c9b4371963cf85c3ee78577",
+          "literal": "{\"operations\":[{\"operation\":\"updateBead\",\"bead\":\"beads/b\",\"propertiesChange\":[{\"op\":\"replace\",\"path\":\"/title\",\"value\":\"outgoing-survives-prefix\"}],\"metadataChange\":[{\"op\":\"replace\",\"path\":\"\",\"value\":{\"phase\":\"outgoing-survives-prefix\"}}]},{\"operation\":\"deleteLink\",\"link\":\"links/r\"},{\"operation\":\"deleteLink\",\"link\":\"links/l\"},{\"operation\":\"deleteBead\",\"bead\":\"beads/a\"}]}"
+        }
+      ]
+    },
+    {
+      "normalBytes": 753534,
+      "normalSHA256": "d696209feb46c0f1841f3638162f61581b2de7b7af331c609f87f9d55dff4dc8",
+      "compactBytes": 367741,
+      "compactSHA256": "ea82b9097634e7fff21dddf746d34238c913f08820b3d67bfed83dbb22ea3c45",
+      "nodes": 19647,
+      "actions": 210,
+      "assertions": 2305,
+      "name": "deletion-committed-prefix-state",
+      "deltaNormalBytes": 3104,
+      "deltaNodes": 77,
+      "category": "existing-manifest-derivative",
+      "historicalArtifact": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-cross-carrier-draft/derivative-deletion-committed-prefix-state.json",
+      "historicalSHA256": "aeec75858730a87c662b08b84446d225737ec4e1f90d94355a479827a10aed92",
+      "historicalNormalBytes": 698702,
+      "historicalNodes": 18184,
+      "oldRowsTransformationPreserved": true,
+      "prelaunchRejected": false,
+      "changes": [
+        {
+          "pointer": "/scenarios/3/actions/4/raw/body/value",
+          "before": "{\"operations\":[{\"operation\":\"updateBead\",\"bead\":\"beads/b\",\"propertiesChange\":[{\"op\":\"replace\",\"path\":\"/title\",\"value\":\"incoming-survives-prefix\"}],\"metadataChange\":[{\"op\":\"replace\",\"path\":\"\",\"value\":{\"phase\":\"incoming-survives-prefix\"}}]},{\"operation\":\"deleteLink\",\"link\":\"links/l\"},{\"operation\":\"deleteBead\",\"bead\":\"beads/a\"},{\"operation\":\"deleteLink\",\"link\":\"links/r\"}]}",
+          "after": "{\"operations\":[{\"operation\":\"updateBead\",\"bead\":\"beads/b\",\"propertiesChange\":[{\"op\":\"replace\",\"path\":\"/title\",\"value\":\"incoming-survives-prefix\"}],\"metadataChange\":[{\"op\":\"replace\",\"path\":\"\",\"value\":{\"phase\":\"incoming-survives-prefix\"}}]},{\"operation\":\"deleteLink\",\"link\":\"links/l\"},{\"operation\":\"deleteLink\",\"link\":\"links/r\"}]}"
+        },
+        {
+          "pointer": "/scenarios/3/actions/4/assertions",
+          "before": [
+            {
+              "id": "http-status",
+              "kind": "status",
+              "equals": 200
+            },
+            {
+              "id": "present-bdp-scope-epoch",
+              "kind": "header",
+              "name": "bdp-scope-epoch",
+              "absent": false
+            },
+            {
+              "id": "present-bdp-authorization-view",
+              "kind": "header",
+              "name": "bdp-authorization-view",
+              "absent": false
+            },
+            {
+              "id": "present-bdp-scope-position",
+              "kind": "header",
+              "name": "bdp-scope-position",
+              "absent": false
+            },
+            {
+              "id": "schema",
+              "kind": "json-schema",
+              "schema": "#/$defs/mutationReceipt"
+            },
+            {
+              "id": "serving-context",
+              "kind": "response-metadata-equals",
+              "request": "d-seed",
+              "headers": [
+                "bdp-scope-epoch",
+                "bdp-authorization-view",
+                "bdp-scope-position"
+              ]
+            },
+            {
+              "id": "request-headers",
+              "kind": "request-authored-headers"
+            },
+            {
+              "id": "request-body",
+              "kind": "request-authored-body"
+            },
+            {
+              "id": "disposition",
+              "kind": "json-pointer",
+              "pointer": "/status",
+              "exists": true,
+              "equals": "failed"
+            },
+            {
+              "id": "detail",
+              "kind": "json-pointer",
+              "pointer": "/detail",
+              "exists": true,
+              "equals": "available"
+            },
+            {
+              "id": "required-position",
+              "kind": "json-pointer",
+              "pointer": "/requiredPosition",
+              "exists": true,
+              "equals": "pos-1"
+            },
+            {
+              "id": "no-effect",
+              "kind": "json-pointer",
+              "pointer": "/effectPosition",
+              "exists": false
+            },
+            {
+              "id": "no-results",
+              "kind": "json-pointer",
+              "pointer": "/results",
+              "exists": false
+            },
+            {
+              "id": "no-next",
+              "kind": "json-pointer",
+              "pointer": "/next",
+              "exists": false
+            },
+            {
+              "id": "problem",
+              "kind": "json-pointer",
+              "pointer": "/problem",
+              "exists": true,
+              "equals": {
+                "type": "https://github.com/gastownhall/bdp/problems/conflict",
+                "status": 409,
+                "code": "incident-links-exist",
+                "retry": "after-state-change",
+                "operationIndex": 2
+              }
+            }
+          ],
+          "after": [
+            {
+              "id": "http-status",
+              "kind": "status",
+              "equals": 200
+            },
+            {
+              "id": "present-bdp-scope-epoch",
+              "kind": "header",
+              "name": "bdp-scope-epoch",
+              "absent": false
+            },
+            {
+              "id": "present-bdp-authorization-view",
+              "kind": "header",
+              "name": "bdp-authorization-view",
+              "absent": false
+            },
+            {
+              "id": "present-bdp-scope-position",
+              "kind": "header",
+              "name": "bdp-scope-position",
+              "absent": false
+            },
+            {
+              "id": "schema",
+              "kind": "json-schema",
+              "schema": "#/$defs/mutationReceipt"
+            },
+            {
+              "id": "request-headers",
+              "kind": "request-authored-headers"
+            },
+            {
+              "id": "request-body",
+              "kind": "request-authored-body"
+            },
+            {
+              "id": "control-position",
+              "kind": "header",
+              "name": "bdp-scope-position",
+              "equals": "pos-2"
+            },
+            {
+              "id": "control-completed",
+              "kind": "json-pointer",
+              "pointer": "/status",
+              "exists": true,
+              "equals": "completed"
+            },
+            {
+              "id": "control-detail",
+              "kind": "json-pointer",
+              "pointer": "/detail",
+              "exists": true,
+              "equals": "available"
+            },
+            {
+              "id": "control-required",
+              "kind": "json-pointer",
+              "pointer": "/requiredPosition",
+              "exists": true,
+              "equals": "pos-2"
+            },
+            {
+              "id": "control-effect",
+              "kind": "json-pointer",
+              "pointer": "/effectPosition",
+              "exists": true,
+              "equals": "pos-2"
+            },
+            {
+              "id": "control-inline",
+              "kind": "json-pointer",
+              "pointer": "/next",
+              "exists": true,
+              "equals": null
+            },
+            {
+              "id": "control-ordered-results",
+              "kind": "json-array-tuples",
+              "pointer": "/results",
+              "ordered": true,
+              "projections": [
+                {
+                  "pointer": "/operationIndex"
+                },
+                {
+                  "pointer": "/outcome"
+                }
+              ],
+              "equals": [
+                [
+                  0,
+                  "updated"
+                ],
+                [
+                  1,
+                  "deleted"
+                ],
+                [
+                  2,
+                  "deleted"
+                ]
+              ]
+            },
+            {
+              "id": "control-updated-id",
+              "kind": "json-pointer",
+              "pointer": "/results/0/resource/id",
+              "exists": true,
+              "equals": "https://reference.invalid/acme/beads/b"
+            },
+            {
+              "id": "control-updated-type",
+              "kind": "json-pointer",
+              "pointer": "/results/0/resource/type",
+              "exists": true,
+              "equals": "https://reference.invalid/acme/types/task"
+            },
+            {
+              "id": "control-updated-properties",
+              "kind": "json-pointer",
+              "pointer": "/results/0/resource/properties",
+              "exists": true,
+              "equals": {
+                "title": "incoming-survives-prefix"
+              }
+            },
+            {
+              "id": "control-updated-metadata",
+              "kind": "json-pointer",
+              "pointer": "/results/0/resource/metadata",
+              "exists": true,
+              "equals": {
+                "phase": "incoming-survives-prefix"
+              }
+            },
+            {
+              "id": "control-l-kind",
+              "kind": "json-pointer",
+              "pointer": "/results/1/deleted/resourceKind",
+              "exists": true,
+              "equals": "link"
+            },
+            {
+              "id": "control-l-id",
+              "kind": "json-pointer",
+              "pointer": "/results/1/deleted/resource/id",
+              "exists": true,
+              "equals": "https://reference.invalid/acme/links/l"
+            },
+            {
+              "id": "control-l-type",
+              "kind": "json-pointer",
+              "pointer": "/results/1/deleted/resource/type",
+              "exists": true,
+              "equals": "https://reference.invalid/acme/types/relationship"
+            },
+            {
+              "id": "control-l-revision",
+              "kind": "json-pointer",
+              "pointer": "/results/1/deleted/resource/revision",
+              "exists": true,
+              "equalsBinding": "d-l-revision"
+            },
+            {
+              "id": "control-r-kind",
+              "kind": "json-pointer",
+              "pointer": "/results/2/deleted/resourceKind",
+              "exists": true,
+              "equals": "link"
+            },
+            {
+              "id": "control-r-id",
+              "kind": "json-pointer",
+              "pointer": "/results/2/deleted/resource/id",
+              "exists": true,
+              "equals": "https://reference.invalid/acme/links/r"
+            },
+            {
+              "id": "control-r-type",
+              "kind": "json-pointer",
+              "pointer": "/results/2/deleted/resource/type",
+              "exists": true,
+              "equals": "https://reference.invalid/acme/types/relationship"
+            },
+            {
+              "id": "control-r-revision",
+              "kind": "json-pointer",
+              "pointer": "/results/2/deleted/resource/revision",
+              "exists": true,
+              "equalsBinding": "d-r-revision"
+            }
+          ]
+        }
+      ],
+      "changedBodies": [
+        {
+          "scenario": "transactional.batch.deletion-safety",
+          "action": "d-incoming-survives",
+          "utf8Bytes": 328,
+          "sha256": "938633ef77b0957a14400fd02cf1c31bd4e91e3c582b9c02808baec6a3637acf",
+          "literal": "{\"operations\":[{\"operation\":\"updateBead\",\"bead\":\"beads/b\",\"propertiesChange\":[{\"op\":\"replace\",\"path\":\"/title\",\"value\":\"incoming-survives-prefix\"}],\"metadataChange\":[{\"op\":\"replace\",\"path\":\"\",\"value\":{\"phase\":\"incoming-survives-prefix\"}}]},{\"operation\":\"deleteLink\",\"link\":\"links/l\"},{\"operation\":\"deleteLink\",\"link\":\"links/r\"}]}"
+        }
+      ]
+    },
+    {
+      "normalBytes": 751771,
+      "normalSHA256": "3be5ad2d33d4b50412f1343d36e4b4bd4acde71e60d9bb577b2f05a1e00a1d53",
+      "compactBytes": 366795,
+      "compactSHA256": "bca285670e56e76ff95b292da54bdc3bec968ebef8023b956ec19380f07f8155",
+      "nodes": 19607,
+      "actions": 210,
+      "assertions": 2301,
+      "name": "cross-batch-semantic-conflict",
+      "deltaNormalBytes": 1341,
+      "deltaNodes": 37,
+      "category": "existing-manifest-derivative",
+      "historicalArtifact": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-cross-carrier-draft/derivative-cross-batch-semantic-conflict.json",
+      "historicalSHA256": "4de89753b7b07d99866d204b53b76b44933a1b0f182d5a3bf075df86fd3b536b",
+      "historicalNormalBytes": 696939,
+      "historicalNodes": 18144,
+      "oldRowsTransformationPreserved": true,
+      "prelaunchRejected": false,
+      "changes": [
+        {
+          "pointer": "/scenarios/12/actions/2/raw/body/value",
+          "before": "{\"operations\":[{\"operation\":\"createBead\",\"id\":\"beads/a\",\"type\":\"https://reference.invalid/acme/types/task\",\"properties\":{\"title\":\"carrier-original\"}}]}",
+          "after": "{\"operations\":[{\"operation\":\"createBead\",\"id\":\"beads/a\",\"type\":\"https://reference.invalid/acme/types/task\",\"properties\":{\"title\":\"carrier-conflict\"}}]}"
+        },
+        {
+          "pointer": "/scenarios/12/actions/2/assertions",
+          "before": [
+            {
+              "id": "http-status",
+              "kind": "status",
+              "equals": 200
+            },
+            {
+              "id": "schema",
+              "kind": "json-schema",
+              "schema": "#/$defs/mutationReceipt"
+            },
+            {
+              "id": "media",
+              "kind": "header",
+              "name": "content-type",
+              "equals": "application/json"
+            },
+            {
+              "id": "present-bdp-scope-epoch",
+              "kind": "header",
+              "name": "bdp-scope-epoch",
+              "absent": false
+            },
+            {
+              "id": "present-bdp-authorization-view",
+              "kind": "header",
+              "name": "bdp-authorization-view",
+              "absent": false
+            },
+            {
+              "id": "present-bdp-scope-position",
+              "kind": "header",
+              "name": "bdp-scope-position",
+              "absent": false
+            },
+            {
+              "id": "serving-position",
+              "kind": "header",
+              "name": "bdp-scope-position",
+              "equals": "pos-1"
+            },
+            {
+              "id": "serving-context",
+              "kind": "response-metadata-equals",
+              "request": "x-create",
+              "headers": [
+                "bdp-scope-epoch",
+                "bdp-authorization-view",
+                "bdp-scope-position"
+              ]
+            },
+            {
+              "id": "request-headers",
+              "kind": "request-authored-headers"
+            },
+            {
+              "id": "request-body",
+              "kind": "request-authored-body"
+            },
+            {
+              "id": "disposition",
+              "kind": "json-pointer",
+              "pointer": "/status",
+              "exists": true,
+              "equals": "completed"
+            },
+            {
+              "id": "detail",
+              "kind": "json-pointer",
+              "pointer": "/detail",
+              "exists": true,
+              "equals": "available"
+            },
+            {
+              "id": "key",
+              "kind": "json-pointer",
+              "pointer": "/idempotencyKey",
+              "exists": true,
+              "equals": "carrier-create"
+            },
+            {
+              "id": "no-next",
+              "kind": "json-pointer",
+              "pointer": "/next",
+              "exists": true,
+              "equals": null
+            },
+            {
+              "id": "required-position",
+              "kind": "json-pointer",
+              "pointer": "/requiredPosition",
+              "exists": true,
+              "equals": "pos-1"
+            },
+            {
+              "id": "effect-position",
+              "kind": "json-pointer",
+              "pointer": "/effectPosition",
+              "exists": true,
+              "equals": "pos-1"
+            },
+            {
+              "id": "literal-result",
+              "kind": "json-array-tuples",
+              "pointer": "/results",
+              "ordered": true,
+              "projections": [
+                {
+                  "pointer": "/operationIndex"
+                },
+                {
+                  "pointer": "/outcome"
+                },
+                {
+                  "pointer": "/resource/id"
+                },
+                {
+                  "pointer": "/resource/type"
+                },
+                {
+                  "pointer": "/resource/properties"
+                },
+                {
+                  "pointer": "/resource/metadata"
+                }
+              ],
+              "equals": [
+                [
+                  0,
+                  "created",
+                  "https://reference.invalid/acme/beads/a",
+                  "https://reference.invalid/acme/types/task",
+                  {
+                    "title": "carrier-original"
+                  },
+                  {}
+                ]
+              ]
+            },
+            {
+              "id": "no-name",
+              "kind": "json-pointer",
+              "pointer": "/results/0/operationName",
+              "exists": false
+            },
+            {
+              "id": "no-source",
+              "kind": "json-pointer",
+              "pointer": "/results/0/source",
+              "exists": false
+            },
+            {
+              "id": "retained-root",
+              "kind": "json-pointer",
+              "pointer": "/id",
+              "exists": true,
+              "equalsBinding": "x-created-root"
+            },
+            {
+              "id": "retained-body",
+              "kind": "json-pointer",
+              "pointer": "",
+              "exists": true,
+              "equalsBinding": "x-created-body"
+            }
+          ],
+          "after": [
+            {
+              "id": "http-status",
+              "kind": "status",
+              "equals": 200
+            },
+            {
+              "id": "schema",
+              "kind": "json-schema",
+              "schema": "#/$defs/mutationReceipt"
+            },
+            {
+              "id": "media",
+              "kind": "header",
+              "name": "content-type",
+              "equals": "application/json"
+            },
+            {
+              "id": "present-bdp-scope-epoch",
+              "kind": "header",
+              "name": "bdp-scope-epoch",
+              "absent": false
+            },
+            {
+              "id": "present-bdp-authorization-view",
+              "kind": "header",
+              "name": "bdp-authorization-view",
+              "absent": false
+            },
+            {
+              "id": "present-bdp-scope-position",
+              "kind": "header",
+              "name": "bdp-scope-position",
+              "absent": false
+            },
+            {
+              "id": "serving-position",
+              "kind": "header",
+              "name": "bdp-scope-position",
+              "equals": "pos-1"
+            },
+            {
+              "id": "serving-context",
+              "kind": "response-metadata-equals",
+              "request": "x-create",
+              "headers": [
+                "bdp-scope-epoch",
+                "bdp-authorization-view",
+                "bdp-scope-position"
+              ]
+            },
+            {
+              "id": "request-headers",
+              "kind": "request-authored-headers"
+            },
+            {
+              "id": "request-body",
+              "kind": "request-authored-body"
+            },
+            {
+              "id": "disposition",
+              "kind": "json-pointer",
+              "pointer": "/status",
+              "exists": true,
+              "equals": "completed"
+            },
+            {
+              "id": "detail",
+              "kind": "json-pointer",
+              "pointer": "/detail",
+              "exists": true,
+              "equals": "available"
+            },
+            {
+              "id": "key",
+              "kind": "json-pointer",
+              "pointer": "/idempotencyKey",
+              "exists": true,
+              "equals": "carrier-create"
+            },
+            {
+              "id": "no-next",
+              "kind": "json-pointer",
+              "pointer": "/next",
+              "exists": true,
+              "equals": null
+            },
+            {
+              "id": "required-position",
+              "kind": "json-pointer",
+              "pointer": "/requiredPosition",
+              "exists": true,
+              "equals": "pos-1"
+            },
+            {
+              "id": "effect-position",
+              "kind": "json-pointer",
+              "pointer": "/effectPosition",
+              "exists": true,
+              "equals": "pos-1"
+            },
+            {
+              "id": "literal-result",
+              "kind": "json-array-tuples",
+              "pointer": "/results",
+              "ordered": true,
+              "projections": [
+                {
+                  "pointer": "/operationIndex"
+                },
+                {
+                  "pointer": "/outcome"
+                },
+                {
+                  "pointer": "/resource/id"
+                },
+                {
+                  "pointer": "/resource/type"
+                },
+                {
+                  "pointer": "/resource/properties"
+                },
+                {
+                  "pointer": "/resource/metadata"
+                }
+              ],
+              "equals": [
+                [
+                  0,
+                  "created",
+                  "https://reference.invalid/acme/beads/a",
+                  "https://reference.invalid/acme/types/task",
+                  {
+                    "title": "carrier-original"
+                  },
+                  {}
+                ]
+              ]
+            },
+            {
+              "id": "no-name",
+              "kind": "json-pointer",
+              "pointer": "/results/0/operationName",
+              "exists": false
+            },
+            {
+              "id": "no-source",
+              "kind": "json-pointer",
+              "pointer": "/results/0/source",
+              "exists": false
+            },
+            {
+              "id": "retained-root",
+              "kind": "json-pointer",
+              "pointer": "/id",
+              "exists": true,
+              "equalsBinding": "x-created-root"
+            },
+            {
+              "id": "retained-body",
+              "kind": "json-pointer",
+              "pointer": "",
+              "exists": true,
+              "equalsBinding": "x-created-body"
+            },
+            {
+              "id": "control-status",
+              "kind": "status",
+              "equals": 409
+            },
+            {
+              "id": "control-schema",
+              "kind": "json-schema",
+              "schema": "#/$defs/transactionalProblem"
+            },
+            {
+              "id": "control-media",
+              "kind": "header",
+              "name": "content-type",
+              "equals": "application/problem+json"
+            },
+            {
+              "id": "control-type",
+              "kind": "json-pointer",
+              "pointer": "/type",
+              "exists": true,
+              "equals": "https://github.com/gastownhall/bdp/problems/conflict"
+            },
+            {
+              "id": "control-code",
+              "kind": "json-pointer",
+              "pointer": "/code",
+              "exists": true,
+              "equals": "idempotency-conflict"
+            },
+            {
+              "id": "control-problem-status",
+              "kind": "json-pointer",
+              "pointer": "/status",
+              "exists": true,
+              "equals": 409
+            },
+            {
+              "id": "control-retry",
+              "kind": "json-pointer",
+              "pointer": "/retry",
+              "exists": true,
+              "equals": "never"
+            }
+          ]
+        }
+      ],
+      "changedBodies": [
+        {
+          "scenario": "transactional.idempotency.cross-carrier",
+          "action": "x-create-batch",
+          "utf8Bytes": 151,
+          "sha256": "89fa5af1bd994134fa12d682e655e92dbbb03331237ab669b93c2bed4f639197",
+          "literal": "{\"operations\":[{\"operation\":\"createBead\",\"id\":\"beads/a\",\"type\":\"https://reference.invalid/acme/types/task\",\"properties\":{\"title\":\"carrier-conflict\"}}]}"
+        }
+      ]
+    },
+    {
+      "normalBytes": 751784,
+      "normalSHA256": "64c814c1f0188af65b503d0072976ba72fab1e1d63016cd0138afc1b19bdcd6e",
+      "compactBytes": 366666,
+      "compactSHA256": "cc278e2424c169f198ef211327bd22c8c031d52d710ace73902cded5ca315c32",
+      "nodes": 19606,
+      "actions": 210,
+      "assertions": 2297,
+      "name": "cross-sequence-fresh-key",
+      "deltaNormalBytes": 1354,
+      "deltaNodes": 36,
+      "category": "existing-manifest-derivative",
+      "historicalArtifact": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-cross-carrier-draft/derivative-cross-sequence-fresh-key.json",
+      "historicalSHA256": "71b59501977385b945c59b013e1cbb647956d09d91784bf4a3a2f33360cc37ca",
+      "historicalNormalBytes": 696952,
+      "historicalNodes": 18143,
+      "oldRowsTransformationPreserved": true,
+      "prelaunchRejected": false,
+      "changes": [
+        {
+          "pointer": "/scenarios/12/actions/3/raw/body/value",
+          "before": "{\"operations\":[{\"operation\":\"createBead\",\"id\":\"beads/a\",\"type\":\"https://reference.invalid/acme/types/task\",\"properties\":{\"title\":\"carrier-original\"},\"idempotencyKey\":\"carrier-create\",\"name\":\"first\"}]}",
+          "after": "{\"operations\":[{\"operation\":\"createBead\",\"id\":\"beads/a\",\"type\":\"https://reference.invalid/acme/types/task\",\"properties\":{\"title\":\"carrier-original\"},\"idempotencyKey\":\"carrier-create-new\",\"name\":\"first\"}]}"
+        },
+        {
+          "pointer": "/scenarios/12/actions/3/assertions",
+          "before": [
+            {
+              "id": "http-status",
+              "kind": "status",
+              "equals": 200
+            },
+            {
+              "id": "schema",
+              "kind": "json-schema",
+              "schema": "#/$defs/transactionalSequenceResponse"
+            },
+            {
+              "id": "media",
+              "kind": "header",
+              "name": "content-type",
+              "equals": "application/json"
+            },
+            {
+              "id": "present-bdp-scope-epoch",
+              "kind": "header",
+              "name": "bdp-scope-epoch",
+              "absent": false
+            },
+            {
+              "id": "present-bdp-authorization-view",
+              "kind": "header",
+              "name": "bdp-authorization-view",
+              "absent": false
+            },
+            {
+              "id": "present-bdp-scope-position",
+              "kind": "header",
+              "name": "bdp-scope-position",
+              "absent": false
+            },
+            {
+              "id": "serving-position",
+              "kind": "header",
+              "name": "bdp-scope-position",
+              "equals": "pos-1"
+            },
+            {
+              "id": "serving-context",
+              "kind": "response-metadata-equals",
+              "request": "x-create",
+              "headers": [
+                "bdp-scope-epoch",
+                "bdp-authorization-view",
+                "bdp-scope-position"
+              ]
+            },
+            {
+              "id": "request-headers",
+              "kind": "request-authored-headers"
+            },
+            {
+              "id": "request-body",
+              "kind": "request-authored-body"
+            },
+            {
+              "id": "presentation",
+              "kind": "json-array-tuples",
+              "pointer": "/results",
+              "ordered": true,
+              "projections": [
+                {
+                  "pointer": "/operationIndex"
+                },
+                {
+                  "pointer": "/outcome"
+                }
+              ],
+              "equals": [
+                [
+                  0,
+                  "created"
+                ]
+              ]
+            },
+            {
+              "id": "present-name",
+              "kind": "json-pointer",
+              "pointer": "/results/0/operationName",
+              "exists": true,
+              "equals": "first"
+            },
+            {
+              "id": "created-record",
+              "kind": "json-pointer",
+              "pointer": "/results/0/resource",
+              "exists": true,
+              "equalsBinding": "x-created-record"
+            },
+            {
+              "id": "no-receipt",
+              "kind": "json-pointer",
+              "pointer": "/receipt",
+              "exists": false
+            },
+            {
+              "id": "no-root",
+              "kind": "json-pointer",
+              "pointer": "/id",
+              "exists": false
+            },
+            {
+              "id": "no-problem",
+              "kind": "json-pointer",
+              "pointer": "/results/0/problem",
+              "exists": false
+            }
+          ],
+          "after": [
+            {
+              "id": "http-status",
+              "kind": "status",
+              "equals": 200
+            },
+            {
+              "id": "schema",
+              "kind": "json-schema",
+              "schema": "#/$defs/transactionalSequenceResponse"
+            },
+            {
+              "id": "media",
+              "kind": "header",
+              "name": "content-type",
+              "equals": "application/json"
+            },
+            {
+              "id": "present-bdp-scope-epoch",
+              "kind": "header",
+              "name": "bdp-scope-epoch",
+              "absent": false
+            },
+            {
+              "id": "present-bdp-authorization-view",
+              "kind": "header",
+              "name": "bdp-authorization-view",
+              "absent": false
+            },
+            {
+              "id": "present-bdp-scope-position",
+              "kind": "header",
+              "name": "bdp-scope-position",
+              "absent": false
+            },
+            {
+              "id": "serving-position",
+              "kind": "header",
+              "name": "bdp-scope-position",
+              "equals": "pos-1"
+            },
+            {
+              "id": "serving-context",
+              "kind": "response-metadata-equals",
+              "request": "x-create",
+              "headers": [
+                "bdp-scope-epoch",
+                "bdp-authorization-view",
+                "bdp-scope-position"
+              ]
+            },
+            {
+              "id": "request-headers",
+              "kind": "request-authored-headers"
+            },
+            {
+              "id": "request-body",
+              "kind": "request-authored-body"
+            },
+            {
+              "id": "presentation",
+              "kind": "json-array-tuples",
+              "pointer": "/results",
+              "ordered": true,
+              "projections": [
+                {
+                  "pointer": "/operationIndex"
+                },
+                {
+                  "pointer": "/outcome"
+                }
+              ],
+              "equals": [
+                [
+                  0,
+                  "created"
+                ]
+              ]
+            },
+            {
+              "id": "present-name",
+              "kind": "json-pointer",
+              "pointer": "/results/0/operationName",
+              "exists": true,
+              "equals": "first"
+            },
+            {
+              "id": "created-record",
+              "kind": "json-pointer",
+              "pointer": "/results/0/resource",
+              "exists": true,
+              "equalsBinding": "x-created-record"
+            },
+            {
+              "id": "no-receipt",
+              "kind": "json-pointer",
+              "pointer": "/receipt",
+              "exists": false
+            },
+            {
+              "id": "no-root",
+              "kind": "json-pointer",
+              "pointer": "/id",
+              "exists": false
+            },
+            {
+              "id": "no-problem",
+              "kind": "json-pointer",
+              "pointer": "/results/0/problem",
+              "exists": false
+            },
+            {
+              "id": "control-member",
+              "kind": "json-array-tuples",
+              "pointer": "/results",
+              "ordered": true,
+              "projections": [
+                {
+                  "pointer": "/operationIndex"
+                },
+                {
+                  "pointer": "/operationName"
+                },
+                {
+                  "pointer": "/type"
+                },
+                {
+                  "pointer": "/code"
+                },
+                {
+                  "pointer": "/status"
+                },
+                {
+                  "pointer": "/retry"
+                }
+              ],
+              "equals": [
+                [
+                  0,
+                  "first",
+                  "https://github.com/gastownhall/bdp/problems/conflict",
+                  "identity-taken",
+                  409,
+                  "never"
+                ]
+              ]
+            },
+            {
+              "id": "control-no-resource",
+              "kind": "json-pointer",
+              "pointer": "/results/0/resource",
+              "exists": false
+            },
+            {
+              "id": "control-no-outcome",
+              "kind": "json-pointer",
+              "pointer": "/results/0/outcome",
+              "exists": false
+            }
+          ]
+        }
+      ],
+      "changedBodies": [
+        {
+          "scenario": "transactional.idempotency.cross-carrier",
+          "action": "x-create-sequence",
+          "utf8Bytes": 204,
+          "sha256": "8f2afec79d0dd52a03cf234a371d1aef9a371ecaef63eb5cd0bed48258bb1fff",
+          "literal": "{\"operations\":[{\"operation\":\"createBead\",\"id\":\"beads/a\",\"type\":\"https://reference.invalid/acme/types/task\",\"properties\":{\"title\":\"carrier-original\"},\"idempotencyKey\":\"carrier-create-new\",\"name\":\"first\"}]}"
+        }
+      ]
+    },
+    {
+      "normalBytes": 750625,
+      "normalSHA256": "e036b2fa85d93a443a3cb39f8dfac23cb2a30762b729d3ac3bca892363e571fd",
+      "compactBytes": 366191,
+      "compactSHA256": "e2439a9f38dc342787455eded79d7580597d24b4cc8ebdcd227c532490e13058",
+      "nodes": 19575,
+      "actions": 210,
+      "assertions": 2294,
+      "name": "duplicate-receipt-binding",
+      "deltaNormalBytes": 195,
+      "deltaNodes": 5,
+      "category": "existing-manifest-derivative",
+      "historicalArtifact": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-cross-carrier-draft/derivative-duplicate-receipt-binding.json",
+      "historicalSHA256": "d799eada4cf3794c2c72c2a0628896c406b683d52f0bd93a70201941671b3a2b",
+      "historicalNormalBytes": 695793,
+      "historicalNodes": 18112,
+      "oldRowsTransformationPreserved": true,
+      "prelaunchRejected": true,
+      "changes": [
+        {
+          "pointer": "/scenarios/1/actions/3/captures",
+          "before": [],
+          "after": [
+            {
+              "binding": "commit-receipt",
+              "from": {
+                "kind": "json-pointer",
+                "pointer": "/id"
+              }
+            }
+          ]
+        }
+      ],
+      "changedBodies": []
+    },
+    {
+      "normalBytes": 750437,
+      "normalSHA256": "76228beffb8ad856916d0fee52dc06b66b20944399d1ff8568fe5731f0e27dc9",
+      "compactBytes": 366123,
+      "compactSHA256": "2b271f5df6c633ae6eadcef002df19aabd73f3c6db49e7bef680aa070d1fc9cb",
+      "nodes": 19570,
+      "actions": 210,
+      "assertions": 2294,
+      "name": "minimum-batch-body-conflict",
+      "deltaNormalBytes": 7,
+      "deltaNodes": 0,
+      "category": "new-selected-manifest-derivative",
+      "assertionsUnchanged": true,
+      "changes": [
+        {
+          "pointer": "/scenarios/0/actions/3/raw/body/value",
+          "before": "{\"operations\":[{\"operation\":\"createBead\",\"id\":\"beads/b\",\"type\":\"https://reference.invalid/acme/types/task\",\"properties\":{\"title\":\"minimum-b\"}}]}",
+          "after": "{\"operations\":[{\"operation\":\"createBead\",\"id\":\"beads/b\",\"type\":\"https://reference.invalid/acme/types/task\",\"properties\":{\"title\":\"minimum-conflict\"}}]}"
+        }
+      ],
+      "changedBodies": [
+        {
+          "scenario": "read-update.http.command-minimum-fields",
+          "action": "m-replay-b",
+          "utf8Bytes": 151,
+          "sha256": "fa0b2d26bb609a520338092538dbae4f416e22302d4b6db234e7a87d6e2c3492",
+          "literal": "{\"operations\":[{\"operation\":\"createBead\",\"id\":\"beads/b\",\"type\":\"https://reference.invalid/acme/types/task\",\"properties\":{\"title\":\"minimum-conflict\"}}]}"
+        }
+      ]
+    },
+    {
+      "normalBytes": 750428,
+      "normalSHA256": "a7f9be255ce7b551d5b97622e7edb2c1e942e77c3beb9bf02d630aa85e6a5e78",
+      "compactBytes": 366114,
+      "compactSHA256": "8e5e40ac289daa764e5e38c7f7f18d936fc7a8cfeabf4543786c72c6f8c75e71",
+      "nodes": 19570,
+      "actions": 210,
+      "assertions": 2294,
+      "name": "minimum-readonly-credential",
+      "deltaNormalBytes": -2,
+      "deltaNodes": 0,
+      "category": "new-selected-manifest-derivative",
+      "assertionsUnchanged": true,
+      "changes": [
+        {
+          "pointer": "/scenarios/0/actions/0/credentialRef",
+          "before": "operator",
+          "after": "reader"
+        }
+      ],
+      "changedBodies": []
+    }
+  ],
+  "maxNormalBytes": 756548,
+  "maxNodes": 19726,
+  "maxByteNames": [
+    "deletion-incoming-order",
+    "deletion-outgoing-order"
+  ],
+  "maxNodeNames": [
+    "deletion-incoming-order",
+    "deletion-outgoing-order"
+  ],
+  "proposedBothAppDerivativeFences": {
+    "oldNormalBytes": 705812,
+    "newNormalBytes": 760644,
+    "byteMargin": 4096,
+    "oldNodes": 18327,
+    "newNodes": 19790,
+    "nodeMargin": 64
+  },
+  "runtimeLimitsUnchanged": {
+    "manifestBytes": 1048576,
+    "nodes": 100000
+  },
+  "executed": false
+}

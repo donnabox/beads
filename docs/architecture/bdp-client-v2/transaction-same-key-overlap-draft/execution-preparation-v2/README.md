@@ -1,0 +1,13 @@
+# Closed same-key report-overflow successor validation
+
+Prepared against dirty HEAD `18f5428686dd84fb139c9dbbcbe39d5958012323`, tree `9c78087e1036dd26ca908e1d8feaa91263513717`. Only the exact report-overflow test repair differs from HEAD. Source-binding SHA `1b768f1e13191e972b8c818991ac1af2bf28c9ead2f579322de2ce109122cb27` binds both feature-owned files; repair.patch binds the one-file dirty delta and full-feature.patch separately retains the two-file footprint. No future commit or validation success is asserted.
+
+The original execution-preparation directory and all1068 enumerated files remain byte-identical (preservation.json). No old run, consumer tree, caches, live gate or acceptance was copied. The new directory contains only small scripts/bindings, patches and preparation records. Original outcomes remain historical.
+
+The20 exact command IDs, source tool invocations, selected callback, expected outcomes, deadlines and workload caps are unchanged. Commands substitute only this packet's paths; metadata binds the new source and actual repair parent. Planned workload remains positive6HTTP/1child and control expected2/max6HTTP/1child: combined8expected/12maximum and2children. Seven static checks plus fresh build inventory precede fresh archives/consumer and both installed cohorts. All commands remain bounded120s, sequential, no automatic retry.
+
+Four execution scripts—supervise.py, packages.py, inventory.py and review-cohort.py—are byte-identical to the reviewed original. gate.py updates the command hash and separates direct repair parent18f5428 from full feature footprint98c600, requiring ordinary ancestry and exact one-file/two-file scopes respectively. The adapter binding points to the new source hash/test hash; its safe schema, oracle and reference source pins remain unchanged. Success and negative reports still reject reportOverflow. The updated test additionally rejects a fallback stdout-overflow outcome rather than allowing it to pass.
+
+execution-gate.example.json is false with an empty approved prefix; no live gate/run exists. Actual candidate, root release/council/integration, fresh build bridge and consumer/provenance identities are pending. installed-test-tool.json retains an observed tool identity only; root must reverify it after setup. See root-release-checklist.md.
+
+Preparation validation was source/text inspection, JSON comparison, file hashing, Python AST parsing without imports, and read-only Git inspection only. No script, product import, test, setup, build, package, consumer install, service or reviewer was executed. All writes used the session guard.

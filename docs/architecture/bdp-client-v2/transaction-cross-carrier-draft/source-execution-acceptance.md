@@ -1,0 +1,5 @@
+# Root source execution acceptance
+
+Root read complete Claude review a85ec7d1, all findings dispositions, native preparation review72cf024b and final successor closure801b55c1. Final source bindingae34ce22/finalpatch68cb0cba is accepted for the existing bounded source commands only. Manifest/coverage and control data unchanged. Final two test hashes1c361acc and5420e0ba are verified against the checkout.
+
+Authorize offline frozen setup (node_modules absent), typecheck, build, format check, lint, dependency boundaries, Read evidence seal, full39 cumulative cases and exactly2 existing app-static cases. Source workload expected14/max24 loopback HTTP/12 listeners/zero installed children. Use reviewed commands7d67c2e and supervisor8977f22; one command at a time, preserve all exits/cleanup, stop on any failure. No automatic retry or source edits. Package/install and nine-cohort release remain separate after actual source results and clean ordinary source freeze. This acceptance is execution authority, not evidence that checks passed.

@@ -1,0 +1,87 @@
+{
+  "name": "pack-protocol",
+  "argv": [
+    "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+    "/Users/dbox/.cache/node/corepack/v1/pnpm/11.20.0/bin/pnpm.cjs",
+    "--filter",
+    "@bdp/protocol",
+    "pack",
+    "--pack-destination",
+    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-fresh-depth-authoring/validation-service-successor/run/packages"
+  ],
+  "guardedArgv": [
+    "/opt/homebrew/opt/python@3.14/bin/python3.14",
+    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/guarded-action.py",
+    "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+    "/Users/dbox/.cache/node/corepack/v1/pnpm/11.20.0/bin/pnpm.cjs",
+    "--filter",
+    "@bdp/protocol",
+    "pack",
+    "--pack-destination",
+    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-fresh-depth-authoring/validation-service-successor/run/packages"
+  ],
+  "cwd": "/Users/dbox/repos/wt/vickie/vickie-fresh-depth-serving",
+  "started": "2026-10-16T07:38:28.823484+00:00",
+  "adjudication": {
+    "kind": "command-only",
+    "testVerdict": "not-applicable"
+  },
+  "elapsedSeconds": 0.8506622498389333,
+  "exit": 0,
+  "supervisorExit": 0,
+  "timeout": false,
+  "forcedCleanup": false,
+  "errors": [],
+  "processGroup": 40858,
+  "remainingBeforeCleanup": [],
+  "remainingAfterCleanup": [],
+  "sampledPids": [
+    40858,
+    40860,
+    40864
+  ],
+  "sampledPidsStillPresent": {},
+  "sampledTempEntries": [
+    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-fresh-depth-authoring/validation-service-successor/run/pack-protocol.tmp/node-compile-cache"
+  ],
+  "tempEntriesAfter": [
+    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-fresh-depth-authoring/validation-service-successor/run/pack-protocol.tmp/node-compile-cache"
+  ],
+  "remainingTempEntriesForClassification": [
+    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-fresh-depth-authoring/validation-service-successor/run/pack-protocol.tmp/node-compile-cache"
+  ],
+  "runtimeDirectoriesStillPresent": [],
+  "unclassifiedTempEntriesStillPresent": [
+    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-fresh-depth-authoring/validation-service-successor/run/pack-protocol.tmp/node-compile-cache"
+  ],
+  "sourceUnchanged": true,
+  "sourceSha256After": {
+    "apps/bdptest/src/transactional-depth-key-order-installed.test.ts": "f4e19ef9b7aba1a12f3376540257b9680e27dcd00936048b066eb7667ebe19fe",
+    "apps/bdptest/src/transactional-fresh-depth-installed.test.ts": "df4030346fc5ec402c0d77d5a5c9953542f341aa86e242d2a5e6cdcf9e09f991",
+    "apps/bdptest/src/transactional-sequence-depth-installed.test.ts": "0a2a765cab6137f324cffb7ff7d96d1f3e81fef3a73c14f56adfd36309083aa7",
+    "docs/design/transaction-implementation-progress.md": "72a53d3fd078f5d35931cf99a1661d1f5c623d1b553f2befca7404f52c1a1e0b",
+    "packages/server/src/json-value-equality.ts": "f93e0bc3a090eeda9d40ec873c0024da2fbc368df5babe4f7d18cfa9b4780a66",
+    "packages/server/src/resource-evaluator.test.ts": "2a35e3add8eabe18d27a69c173b709e1d958c16191c049a4877d92a7b27fa7f1",
+    "packages/server/src/resource-evaluator.ts": "6784629841a92baaeed648862cfa84d071356ef82e6d29250b254a9eddf793a2",
+    "packages/server/src/transaction-batch.ts": "830ad57a680db7148fc75cd9cc10cadfc6a812448fd1704c1b0f47b13611808d",
+    "packages/server/src/transaction-http.test.ts": "9eb452b8e9d80b53f28cd61b40385886c3a61a992aadb1c9c201d9a188081cce",
+    "packages/server/src/transaction-http.ts": "81c130dd18f604ab1d13c03a2f52a98e11a6988f45d62af98b4b8c7499d14529",
+    "packages/server/src/transaction-sequence.test.ts": "31fba92ece191ad6be239b6c1edac8fe71ef63ce716597edc45d015e46730170",
+    "packages/server/src/transaction-set.test.ts": "aec0ce27196f6ec4916cb2f35b8a3de7ee879ab35f14aab657e11416254860b8",
+    "packages/server/src/transaction-set.ts": "3085632e897481b048d563cf0ba3ea66dc96a0662cebfde9f978ee00675519e5",
+    "packages/server/src/transaction-snapshot.test.ts": "b6c31d8b66650ec0668c85d1fb803dda1072ef463989299ed377dd18dcbfee98",
+    "packages/server/src/transaction-snapshot.ts": "dac7c2f121cfb6bae557b3917f5ec52e47a358ab39da4062f6a5c26f5b9fbd83",
+    "packages/server/src/transaction-store.ts": "f7fe71da918c135eb43cb4659f186df6cd442aed9c42c2835e95cde05c782a9e",
+    "packages/server/src/transaction-submission.test.ts": "026cf5ccc65026f0f6462deaba9e1e58cd7ab6c6ae341ef5ed3af0becbb0c182",
+    "packages/server/src/transaction-submission.ts": "580a5f56075c3f7e2c041354eab75529dd304f86588337f725f4cb33429b33bf",
+    "packages/server/src/transaction-service.ts": "b6f9584d67992ddd3a08304a6b76563318252c316b09afd991e49a3304d3af05",
+    "packages/server/src/transaction-service.test.ts": "32010b6fb1107076534c544f2bbb93e62cc39c89cd0fbc3c482f0736cc28cfe2"
+  },
+  "samplingSeconds": 0.05,
+  "commandWindowSeconds": 115,
+  "groupHardDeadlineSeconds": 120,
+  "cleanupBound": "TERM at115s, KILL no later than120s; wait/reap after kill adds no product execution allowance",
+  "samplingLimitation": "Short-lived or detached descendants may evade group sampling; helper counts and independent final checks remain separate.",
+  "tempClassification": "Only the selected fixture prefixes under this attempt TMPDIR are owned runtime roots; all other entries are preserved for review, not deleted or called leaks.",
+  "resultLimitation": "A declared negative raw exit1 may complete its supervisor; subsequent strict review is mandatory. No generic exit1 acceptance or product qualification."
+}

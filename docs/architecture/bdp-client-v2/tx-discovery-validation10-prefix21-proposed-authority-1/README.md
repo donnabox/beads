@@ -1,0 +1,1 @@
+CLOSED source-bound prefix21 proposal. Only package directory, protocol pack, server pack and strict archive verification next. Actual first17 remain unchanged. Full independent26-key/59-predicate precision/root acceptance/publication/readback precede exact activation and a second publication/readback before dispatch. No consumer/install/required/wholeWrite authority.

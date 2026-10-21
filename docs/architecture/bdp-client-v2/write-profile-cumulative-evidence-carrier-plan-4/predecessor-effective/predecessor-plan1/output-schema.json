@@ -1,0 +1,42 @@
+{
+  "closedRootKeys": [
+    "carrierVersion",
+    "kind",
+    "claimEligible",
+    "qualificationReady",
+    "profile",
+    "history",
+    "configuration",
+    "catalogDigests",
+    "artifactDigests",
+    "requiredIds",
+    "retiredIds",
+    "requirements",
+    "nonRequiredReportRows",
+    "reports",
+    "attempt",
+    "unresolvedConditions",
+    "limitations"
+  ],
+  "fixed": {
+    "carrierVersion": 1,
+    "kind": "private-profile-evidence",
+    "claimEligible": false,
+    "qualificationReady": false
+  },
+  "requirements": "one row per canonical selected normative ID in canonical order: id,requiredProfile,ownerId|null,readiness(existing six-state planner spelling),declaredWholeContract(boolean),wholeClauseQualification(unestablished),observation|null,missingSetup[],missingApplicability[],blockedPrerequisites[]. No missing ID is dropped.",
+  "observation": "ownerId,rawWrapperSha256,canonicalResultSha256,rowIndex,state,category|null,authoredAssertionInventoryDigest,authoredAssertionsAllPassed(boolean|null),reportedCleanupState,ownershipVerification(unverified). Only fixed categories/known manifest IDs/digests/counts are serialized; no request/response body, raw header, arbitrary message/reason/exception, resolver or credential string. Preserve raw actual wrapper only via existing protected writer; this slice makes no new raw copy.",
+  "declaredFlags": "RU current34 copied as declared flags; TX allfalse. Every wholeClauseQualification stays unestablished in this private carrier, regardless of declared flag/pass. Independent full governing-clause review plus actual final installed qualification belongs later.",
+  "nonRequiredReportRows": "exact known unfiltered metadata rows(5 diagnostics) retained as separate no-credit projection; no unknown/extra or wrong-profile rows; do not count diagnostics in requiredIds or planned owners",
+  "reports": "ordered ownerId + exact source/artifact/route/config digests and actual selected/result ID arrays + lifecycle/byte identity; no raw secret-bearing text",
+  "attempt": "same existing outcome/failure-stage facts, states and result references; expected counts distinct from actual returned/validated/settled facts; missing is null/unobserved rather than zero",
+  "unresolvedConditions": "explicit D2S1/G2 where affected, D3 cold/intended-listener/admission, D4 administration/restore and final combined source/config/provenance. Missing setup/applicability never certifies N/A. No resolved/waived status introduced.",
+  "limitations": [
+    "source-private carrier only; no public admission or proof token",
+    "trusted-source identity equality does not prove run truth",
+    "source/historical/data-unit observations never current installed qualification",
+    "reported cleanup is not verified child/owner closure",
+    "final combined basis unbound; incoming startup/D3a not adopted"
+  ],
+  "canonicalEncoding": "canonicalJson from existing module then UTF8, SHA256 raw serialized bytes; verify canonical bytes exactly and recompute every projection from independently supplied bound inputs/reports, rather than trust candidate counters/flags."
+}

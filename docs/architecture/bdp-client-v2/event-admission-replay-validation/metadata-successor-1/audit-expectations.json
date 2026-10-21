@@ -1,0 +1,427 @@
+{
+  "finalized": true,
+  "reportSchemasSha256": "596e3393642c75b13767a14aacdefe912a97070644c472bd2005dedc87cb56d6",
+  "operationTargets": {
+    "createBead": "create-bead",
+    "updateBead": "update-bead",
+    "deleteBead": "delete-bead",
+    "createLink": "create-link",
+    "updateLink": "update-link",
+    "deleteLink": "delete-link",
+    "putAlias": "put-alias",
+    "deleteAlias": "delete-alias",
+    "updateWhere": "update-where",
+    "deleteWhere": "delete-where",
+    "batch": "batch",
+    "sequence": "sequence"
+  },
+  "workload": {
+    "kind": "source-derived prospective workload; no observed pass or runtime counts",
+    "sourceCallbacks": 17,
+    "newSourceReports": 12,
+    "existingSourceReports": 4,
+    "sourceStores": 17,
+    "sourceListeners": 6,
+    "sourceHttp": 200,
+    "A": {
+      "callbacks": 3,
+      "seedCommitsPerCallback": 1,
+      "baselineOwnerCallsPerCallback": 2,
+      "measuredOwnerCallsPerCallback": 20,
+      "ownerCallsTotal": 66,
+      "waits": 0,
+      "groupObserver": "SQL preparations only, baseline unobserved"
+    },
+    "B": {
+      "callbacks": 6,
+      "baselineOwnerCallsPerCallback": 1,
+      "serviceCallsPerCallback": 1,
+      "attemptsPerCallback": 2,
+      "waitsPerCallback": 1,
+      "clockCallsPerCallback": 3,
+      "commitsPerCallback": 2
+    },
+    "C": {
+      "callbacks": 2,
+      "baselineOwnerCallsPerCallback": 1,
+      "serviceCallsPerCallback": 1,
+      "attemptsPerCallback": 1,
+      "waitsPerCallback": 1,
+      "clockCallsPerCallback": 2,
+      "commitsPerCallback": 1,
+      "postCloseProbesPerCallback": 1
+    },
+    "D": {
+      "callbacks": 1,
+      "seedCommits": 1,
+      "requests": 37,
+      "baselinePageSizes": {
+        "scope": [
+          2,
+          2,
+          1
+        ],
+        "bead": [
+          2
+        ],
+        "link": [
+          1
+        ]
+      },
+      "orderedRequests": [
+        {
+          "method": "POST",
+          "target": "operations/batch",
+          "status": 200
+        },
+        {
+          "method": "GET",
+          "target": "events/",
+          "status": 200
+        },
+        {
+          "method": "GET",
+          "target": "actual Scope next 1",
+          "status": 200
+        },
+        {
+          "method": "GET",
+          "target": "actual Scope next 2",
+          "status": 200
+        },
+        {
+          "method": "GET",
+          "target": "beads/a?view=events",
+          "status": 200
+        },
+        {
+          "method": "GET",
+          "target": "links/l?view=events",
+          "status": 200
+        },
+        {
+          "method": "GET",
+          "target": "events/",
+          "mode": "JSON issued after opaque",
+          "status": 503
+        },
+        {
+          "method": "GET",
+          "target": "events/",
+          "mode": "SSE issued after opaque",
+          "status": 503
+        },
+        {
+          "method": "GET",
+          "target": "events/",
+          "mode": "SSE Last-Event-ID opaque",
+          "status": 503
+        },
+        {
+          "method": "GET",
+          "target": "events/",
+          "mode": "SSE opaque foreign epoch",
+          "status": 410
+        },
+        {
+          "method": "GET",
+          "target": "events/",
+          "mode": "SSE opaque foreign view",
+          "status": 409
+        },
+        {
+          "method": "HEAD",
+          "target": "events/",
+          "mode": "SSE satisfied after HEAD",
+          "status": 200
+        },
+        {
+          "method": "GET",
+          "target": "beads/a?view=events",
+          "mode": "JSON issued after opaque",
+          "status": 503
+        },
+        {
+          "method": "GET",
+          "target": "beads/a?view=events",
+          "mode": "SSE issued after opaque",
+          "status": 503
+        },
+        {
+          "method": "GET",
+          "target": "beads/a?view=events",
+          "mode": "SSE Last-Event-ID opaque",
+          "status": 503
+        },
+        {
+          "method": "GET",
+          "target": "beads/a?view=events",
+          "mode": "SSE opaque foreign epoch",
+          "status": 410
+        },
+        {
+          "method": "GET",
+          "target": "beads/a?view=events",
+          "mode": "SSE opaque foreign view",
+          "status": 409
+        },
+        {
+          "method": "HEAD",
+          "target": "beads/a?view=events",
+          "mode": "SSE satisfied after HEAD",
+          "status": 200
+        },
+        {
+          "method": "GET",
+          "target": "links/l?view=events",
+          "mode": "JSON issued after opaque",
+          "status": 503
+        },
+        {
+          "method": "GET",
+          "target": "links/l?view=events",
+          "mode": "SSE issued after opaque",
+          "status": 503
+        },
+        {
+          "method": "GET",
+          "target": "links/l?view=events",
+          "mode": "SSE Last-Event-ID opaque",
+          "status": 503
+        },
+        {
+          "method": "GET",
+          "target": "links/l?view=events",
+          "mode": "SSE opaque foreign epoch",
+          "status": 410
+        },
+        {
+          "method": "GET",
+          "target": "links/l?view=events",
+          "mode": "SSE opaque foreign view",
+          "status": 409
+        },
+        {
+          "method": "HEAD",
+          "target": "links/l?view=events",
+          "mode": "SSE satisfied after HEAD",
+          "status": 200
+        },
+        {
+          "method": "GET",
+          "target": "beads/a?view=events",
+          "mode": "initial opaque SSE",
+          "status": 503
+        },
+        {
+          "method": "GET",
+          "target": "links/l?view=events",
+          "mode": "initial opaque SSE",
+          "status": 503
+        },
+        {
+          "method": "GET",
+          "mode": "malformed URL after with valid header",
+          "status": 400
+        },
+        {
+          "method": "GET",
+          "mode": "missing Resource repeated headers opaque",
+          "status": 404
+        },
+        {
+          "method": "GET",
+          "mode": "Scope repeated headers opaque",
+          "status": 503
+        },
+        {
+          "method": "GET",
+          "mode": "Scope repeated headers known",
+          "status": 400
+        },
+        {
+          "method": "GET",
+          "mode": "Scope JSON repeated malformed headers opaque",
+          "status": 503
+        },
+        {
+          "method": "GET",
+          "mode": "unsupported Accept opaque",
+          "status": 503
+        },
+        {
+          "method": "GET",
+          "mode": "unsupported Accept known empty response",
+          "status": 406
+        },
+        {
+          "method": "GET",
+          "mode": "If-None-Match opaque",
+          "status": 503
+        },
+        {
+          "method": "GET",
+          "mode": "If-Match opaque",
+          "status": 503
+        },
+        {
+          "method": "GET",
+          "mode": "Bead positive valid header overrides foreign URL after",
+          "status": 200
+        },
+        {
+          "method": "GET",
+          "mode": "Link positive initial",
+          "status": 200
+        }
+      ],
+      "positiveStreams": 2,
+      "timeoutResponses": 16,
+      "minimumBudgetMs": 25,
+      "cleanupInclusiveElapsedMustBeBelowMs": 4000
+    },
+    "legacyHttp": [
+      {
+        "title": "serves initial finite Scope Event opaque minima through bounded waiting",
+        "requests": 32
+      },
+      {
+        "title": "serves initial finite Bead Event opaque minima with retained identity and route fences",
+        "requests": 37
+      },
+      {
+        "title": "serves initial finite Link Event opaque minima with retained identity and route fences",
+        "requests": 35
+      },
+      {
+        "title": "serves initial Scope Event SSE opaque minima before conditional admission",
+        "requests": 31
+      },
+      {
+        "title": "Event reconnect syntax, minimum ordering and exact context codes are preserved over HTTP",
+        "requests": 28
+      }
+    ],
+    "installed": {
+      "historical": {
+        "requests": 5,
+        "children": 2,
+        "stores": 1,
+        "unchangedPrefix": true
+      },
+      "new": {
+        "requests": 10,
+        "children": 1,
+        "stores": 1,
+        "statuses": {
+          "200": 5,
+          "503": 5
+        },
+        "baselinePageEventCounts": {
+          "scope": 5,
+          "bead": 2,
+          "link": 1
+        },
+        "nextNull": true,
+        "orderedRequests": [
+          {
+            "ordinal": 1,
+            "method": "POST",
+            "target": "operations/batch",
+            "status": 200
+          },
+          {
+            "ordinal": 2,
+            "method": "GET",
+            "target": "events/",
+            "status": 200
+          },
+          {
+            "ordinal": 3,
+            "method": "GET",
+            "target": "beads/a?view=events",
+            "status": 200
+          },
+          {
+            "ordinal": 4,
+            "method": "GET",
+            "target": "links/l?view=events",
+            "status": 200
+          },
+          {
+            "ordinal": 5,
+            "method": "GET",
+            "target": "beads/a?view=events",
+            "status": 503
+          },
+          {
+            "ordinal": 6,
+            "method": "GET",
+            "target": "links/l?view=events",
+            "status": 503
+          },
+          {
+            "ordinal": 7,
+            "method": "GET",
+            "target": "events/?after=actual Scope first cursor",
+            "status": 503
+          },
+          {
+            "ordinal": 8,
+            "method": "GET",
+            "target": "links/l?view=events with actual Link Last-Event-ID",
+            "status": 503
+          },
+          {
+            "ordinal": 9,
+            "method": "GET",
+            "target": "beads/a?view=events JSON repeated malformed Last-Event-ID",
+            "status": 503
+          },
+          {
+            "ordinal": 10,
+            "method": "GET",
+            "target": "beads/a?view=events&after=actual Scope first cursor with actual Bead Last-Event-ID",
+            "status": 200
+          }
+        ],
+        "minimumBudgetMs": 1000
+      }
+    },
+    "combined": {
+      "callbacks": 19,
+      "httpRequests": 215,
+      "stores": 19,
+      "installedSequentialChildren": 3
+    },
+    "deadlines": {
+      "sourceCallbackDefaultMs": 5000,
+      "serviceLatchDrainMs": 1000,
+      "requestMs": 5000,
+      "installedWorkMs": 45000,
+      "installedCleanupMs": 10000,
+      "installedCallbackMs": 60000,
+      "outerSupervisorMs": 120000,
+      "outerTermMs": 115000
+    },
+    "executionAuthorized": false
+  },
+  "sourceLabels": [
+    "event-replay-minimum-owner",
+    "event-replay-minimum-owner",
+    "event-replay-minimum-owner",
+    "event-replay-minimum-capture",
+    "event-replay-minimum-capture",
+    "event-replay-minimum-capture",
+    "event-replay-minimum-capture",
+    "event-replay-minimum-capture",
+    "event-replay-minimum-capture",
+    "event-replay-minimum-drain",
+    "event-replay-minimum-drain",
+    "event-replay-minimum-http",
+    "finite-event-minimum-http",
+    "bead-event-minimum-http",
+    "link-event-minimum-http",
+    "scope-event-sse-minimum-http"
+  ]
+}

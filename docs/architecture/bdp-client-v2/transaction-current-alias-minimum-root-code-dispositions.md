@@ -1,0 +1,17 @@
+# Current alias minimum code-review dispositions
+
+Original source961125320766b3f02c3ff73ad6029f11117fedae remains frozen. Root read the complete native report (2f6f967b), full three-file repair delta at3959a25e70bc6dc9d143abfead187ccaf84ca11e and final repair report70600902. External original-source review completedexit0 and was fully read/reaped. It independently verified actual9611253/tree dc117e despite a prompt SHA typo; no mixed-source review is inferred.
+
+Native P2 is accepted and repaired: descriptor-safe options snapshot precedes signal use, preserves non-enumerable data, rejects proxies before reflection and accessors without evaluation. Signal predicate matches authority receiving exactly. On capture rejection the original invalid shape is delegated to authority, preserving its observed-Promise and lifecycle precedence; every capture rejection class is also an authority rejection class. The direct/service tests isolate valid aliases with satisfied minima and assert zero owner entries for rejected inputs, so this is not a successful unconditioned fallback. Opaque own data sourceCondition remains deliberately overridden by immutable configured minimum. Service captures once for all attempts. Root independently inspected authority ownData/deliver and entire new test table.
+
+334 affected tests/static/Readseal, fresh separate38/10/20/18-request minimum scenarios and RU2 pass at3959. Parent-production countercheck fails both newly added receiving tests on null laundering, restored repair passes; this is a bounded sensitivity check, not proof of every mutation. Installed tests remain unchanged and actual new payload91e78a is source-bound. Existing closed-error expectation correction is disclosed, with original failure retained. No public advertisement, profile qualification or remote exploitation inference.
+
+The analogous inherited minimum-perform defect remains outside PR112 and is now captured in transaction-next-serving-slice-plan.md for separate review; it is not silently waived or attributed to this alias change. No new protocol law is needed for that repair. Independent native repair closure157ddc5a is complete and root-read. Ordinary integration/exact-head CI and the external low dispositions below remain required before ready/merge.
+
+External LOW1 accepted: stale progress-document claim of no HTTP alias routes must be scoped to the historical alias-singleton increment and point to current routing sections. Minimal docs-only successor authorized in the integration lane, with exact donor proof identifying that one exception.
+
+External LOW2 accepted as a bounded regression addition: run unchanged ordinary transactional-alias-installed test against final actual pack, separately record36requests/2children. Source cancellation and disconnect evidence already passes, so no source/fixture/limit changes are warranted. This is not a new wire mutant or profile claim.
+
+No correctness defect was reported by external review; native P2 remains independently repaired/closed. Root requires final documentation and actual ordinary-alias regression verification before readiness.
+
+Final integration7171251 is independently closed by report4777e6d5, fully read by root. The exact doc-only change addresses externalLOW1, and fresh final ordinary-alias36/2 addresses LOW2; 63protocol+246server package files equal testedfc980. All accepted code/doc/regression findings are closed. Root separately verified currentmain89d+717 merge-tree equals final76931ff. Exact717CI remains the final merge gate.

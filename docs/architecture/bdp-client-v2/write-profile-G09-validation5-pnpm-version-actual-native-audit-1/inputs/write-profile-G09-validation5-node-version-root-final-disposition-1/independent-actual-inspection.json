@@ -1,0 +1,93 @@
+{
+  "actualIssuedSourceAssignmentOnlyWholeInverse": true,
+  "actualPhaseToolIds": {
+    "A": "e073df",
+    "B": "37787e",
+    "C": "968d98"
+  },
+  "actualProbeDirectReaped": true,
+  "actualPsRowsFullyInspected": 1380,
+  "actualRootCommonClockSeconds": 8.820629875175655,
+  "all3ActualOrdinaryTerminalsZero": true,
+  "all9EvidencePlus12RawMirrorsAndMetadata": true,
+  "allRootAndCensusStreamFacts": [
+    {
+      "actualRecordedDescriptor600EOFFullCountsClose": true,
+      "bytes": 476,
+      "kind": "collector",
+      "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation5-root-first4-dispatch-1/node-version/node-version.stdout",
+      "sha256": "47580eee403f12c8a1b6cb74b967cd83b7598cd079fa148a004354a529c99921"
+    },
+    {
+      "actualRecordedDescriptor600EOFFullCountsClose": true,
+      "bytes": 0,
+      "kind": "collector",
+      "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation5-root-first4-dispatch-1/node-version/node-version.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "actualRecordedDescriptor600EOFFullCountsClose": true,
+      "bytes": 205070,
+      "kind": "census",
+      "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation5-root-first4-dispatch-1/node-version/postterminal-census.stdout",
+      "sha256": "4f46072047c4ae72bea8f85d33842f5e383eccb6714b3a01e261ab863b68d9ee"
+    },
+    {
+      "actualRecordedDescriptor600EOFFullCountsClose": true,
+      "bytes": 0,
+      "kind": "census",
+      "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation5-root-first4-dispatch-1/node-version/postterminal-census.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    }
+  ],
+  "innerElapsedSeconds": 3.758924957830459,
+  "innerLogBytes": 9,
+  "innerRows": 1,
+  "innerSamples": 1,
+  "knownPgids": [
+    39207,
+    39211,
+    39915
+  ],
+  "knownPids": [
+    39210,
+    39211,
+    39915
+  ],
+  "matchingRows": [],
+  "nativeAudit": "PENDING",
+  "nextStageReleased": false,
+  "observedVersion": "v24.16.0",
+  "observerSelfAbsenceOrUnseenGlobalContainmentClaim": false,
+  "qualityPass": false,
+  "referenceTables": {
+    "authority": {
+      "oneExplicitLiveProjection": 1,
+      "records": 2206
+    },
+    "fixed": {
+      "oneExplicitLiveProjection": 1,
+      "records": 2082
+    },
+    "helper": {
+      "oneExplicitLiveProjection": 0,
+      "records": 1857
+    },
+    "proof": {
+      "oneExplicitLiveProjection": 1,
+      "records": 2207
+    }
+  },
+  "rootFinalAccepted": false,
+  "scope": "ONE actual node-version setup-stage capture only; no profile/compiler/lint/test/build/install/fullWrite claim",
+  "scratchRetained": {
+    "entriesAtStaticRead": [],
+    "existsAtStaticRead": true,
+    "noCleanupPerformed": true,
+    "notGlobalOrRuntimeDescendantCleanupProof": true,
+    "path": "/private/tmp/vickie-tx-discovery-validation-node-version-73fhh829"
+  },
+  "source679Helper105Other110Exact": true,
+  "stage": "node-version",
+  "toolTerminals": "Trusted-root normalized actual tool result attribution; independently decoded raw tool receipts UNRETAINED"
+}

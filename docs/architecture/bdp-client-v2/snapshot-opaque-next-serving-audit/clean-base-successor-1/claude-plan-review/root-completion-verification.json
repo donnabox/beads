@@ -1,0 +1,39 @@
+{
+  "atUtc": "2026-10-17T07:53:56.966695+00:00",
+  "actualResult": "review_complete; four plan-precision blockers and eight suggestions, not approval",
+  "exit": {
+    "classification": "review_complete",
+    "reviewComplete": true,
+    "approvalInferred": false,
+    "exitCode": 0,
+    "timeout": false,
+    "elapsedSeconds": 1123.9683412499726,
+    "sourceInputsUnchanged": true,
+    "packetUnchanged": true,
+    "sampledPids": [
+      64568,
+      64725,
+      64905,
+      65224
+    ],
+    "remainingProcesses": [],
+    "cleanupRequired": false,
+    "wrapperErrorType": null,
+    "streamRecords": 4645,
+    "streamBytes": 2455977,
+    "parseErrors": 0,
+    "terminalResultCount": 1,
+    "lastEventElapsed": 1123.5144499582238,
+    "streamSha256": "6ebcddc4216eefe71b8feb6baba33f8e0d3881fde6dfbeda64dd1a71a01295bd",
+    "stderrSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  "finalReviewSha256": "2780d62729197c2cb06b2573b3905c9d2484aadd48a5dc62ba64d94f08e01637",
+  "beforeAfterEqual": true,
+  "sampledPidsFreshlyAbsent": [
+    64568,
+    64725,
+    64905,
+    65224
+  ],
+  "limitation": "Reviewer could not locate relative context; full plan/selection inline and actual source/spec reviewed, but did not independently verify source equality or CI. Root/native separately verified these. Preserve disclosure; future prompts need absolute context paths."
+}

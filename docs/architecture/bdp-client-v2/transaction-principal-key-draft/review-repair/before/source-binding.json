@@ -1,0 +1,25 @@
+{
+  "status": "FROZEN_DRAFT_UNEXECUTED",
+  "workspace": "/Users/dbox/repos/wt/vickie/vickie-principal-key-isolation",
+  "branch": "codex/vickie-principal-key-isolation",
+  "head": "18104a03b850553641f24fe83e7318493fa102ca",
+  "tree": "10810a8016a451e241ea974487681dcddd63c2e4",
+  "diffSha256": "73432d0cc2cb5e41e8616d19645d1b43c308be712fdd4925d0946ffcd6964256",
+  "files": {
+    "apps/bdptest/src/transactional-principal-key-installed.test.ts": {
+      "sha256": "e6af6263f164032ea4ae97167740412b9ad2a23af98e2a92729cd85dfa6d9b32",
+      "bytes": 30679,
+      "new": true
+    },
+    "docs/design/transaction-implementation-progress.md": {
+      "sha256": "f0171eccfb02d85174abc51dca22f6b456b932fc2286d82319088bf497a5baf1",
+      "bytes": 129614,
+      "new": false
+    }
+  },
+  "planSha256": "783f439e36218efba63820f6b6baf96cb00bcf022fba6665a44a2d64e81148c9",
+  "ledgerSha256": "aa556158f879892795b62ba984ffd1226f4b09344d1a28d2b9bd486cb9532d79",
+  "finalIntegrationPending": true,
+  "supersedesHistoricalBinding": "initial-freeze/source-binding.json",
+  "cleanupCorrection": "launchAttempted distinguishes no launch from unknown pre-ready child; removal only no-launch or proven exited returned child"
+}

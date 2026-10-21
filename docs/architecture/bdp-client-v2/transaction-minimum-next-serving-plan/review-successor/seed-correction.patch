@@ -1,0 +1,253 @@
+--- before-seed-correction/plan.md
++++ review-successor/plan.md
+@@ -1,6 +1,6 @@
+ # Current Resource minimum precedence and unproved-position waiting — corrected plan
+ 
+-Proposed successor to plan c76853749217cd2a62b3d0e92c0c8976376ab8d86d78cdf9a49e24d2fa096bc8. Original source authority was merged6f5e607bf338dd166820bfa3f9f480f7cd54c5f1. This successor reads actual clean authorization candidate1647c5df37a82e1364d281ac46beb60a94ab6c76/treea070420a4c17aa67a821c742d363ff9e82e872a6; it does not call that candidate merged main. Actual authorization merge, ordinary isolated authoring parent and root release remain pending. Original plan/review/output are immutable. The two operator-rulings.json decisions are unchanged.
++Proposed successor to plan c76853749217cd2a62b3d0e92c0c8976376ab8d86d78cdf9a49e24d2fa096bc8. Original source authority was merged6f5e607bf338dd166820bfa3f9f480f7cd54c5f1. This successor reads actual clean authorization candidate1647c5df37a82e1364d281ac46beb60a94ab6c76/treea070420a4c17aa67a821c742d363ff9e82e872a6; it does not call that candidate merged main. Actual authorization merge and root authoring release remain pending. Root may explicitly release an isolated checkout from reviewed candidate1647 before that merge; candidate ancestry must remain labeled accurately, with actual authorization main integrated ordinarily before final validation. Original plan/review/output are immutable. The two operator-rulings.json decisions are unchanged.
+ 
+ ## Settled behavior and exclusions
+ 
+@@ -35,7 +35,7 @@
+ 
+ After the visible segment, first hidden response must have seed epoch/position and the new published view, different from initial view. Use that observed response tuple for every later unknown-current probe. Compare hidden and missing404 under that same view. No third read may be introduced solely to manufacture context. Link/alias hidden proof is new to this slice, not borrowed from the prior Bead-only installed witness.
+ 
+-Wait for root's actual authorization merge identity/tree, then start an isolated clean worktree at that actual main; the new author commit is an ordinary child. Preserve candidate/original-source reanchor evidence. Do not edit/rebase the active authorization worktree or split into extra pre-auth cohorts.
++Root may release isolated authoring from the actual reviewed authorization candidate1647, explicitly not merged main, or choose the actual authorization merge after it lands. Preserve the ordinary author ancestry and candidate/original-source evidence; integrate actual authorization main ordinarily before final validation and bind the resulting exact source/tree. Do not edit/rebase the active authorization worktree or split into extra pre-auth validation cohorts. No worktree creation or authoring is granted by this plan alone.
+ 
+ ## Owned scope and normative edit
+ 
+@@ -60,13 +60,13 @@
+ 
+ Full404 body is {type:"https://github.com/gastownhall/bdp/problems/not-found",code:"resource-not-found",retry:"after-state-change",status:404}. Full503 body is {type:"https://github.com/gastownhall/bdp/problems/unavailable",code:"catch-up-timeout",retry:"after-delay",status:503}; its family URI is already correct, so do not repair the serializer/schema. Require transactional Problem schema, application/problem+json, private/no-store and actual context;503 Retry-After1. HEAD sends zero body and corresponding representation metadata. Exact body comparison excludes automatic Date, not protocol fields. Named assertions/bodies/headers in final source must be frozen before release.
+ 
+-Seed is a genuine four-operation batch: create a and b, create self Link and put alias/work to a. Member bodies are keyless; outer HTTP Idempotency-Key is minimum-current-seed. Literal seed/types are attached, based on existing transaction-http.test fixture, with exact bytes/hash. One POST must complete with full schema and four expected results; retain actual Resource bodies/revisions and pos-1/epoch/view. Use returned runtime.targets.batch rather than guessing a route. Canonical Host follows the configured scope while sockets dial actual loopback listenUrl. Auth token is minted privately, never written in reports. GET/HEAD bodies absent; keep dynamic tuple derivation explicit.
++Seed is one genuine four-member sequence POST to actual runtime.targets.sequence (assert canonical operations/sequence): create a, create b, create self Link and put alias/work to a, in that order. Each member has its own distinct literal idempotencyKey; the outer request has no Idempotency-Key. Content-Type and Accept are application/json. Literal seed/types and their measured bytes/hash are attached. This is ordered execution, not an atomic seed claim: require HTTP200 and the complete transactionalSequenceResponse schema, exactly four operationIndex0/1/2/3 entries, each outcome created with no failure/problem. Require full expected Resource facts for the first three and exact alias created entry for the fourth. There is no per-member HTTP status or sequence receipt ID to invent. Three Resource commits advance actual Scope position to pos-3; alias changes no Resource Event/position. Assert the actual response position is pos-3 and retain its real epoch/view/position; derive exactly pos-4 for ahead probes. A partial or failed seed is nonpassing and cannot satisfy any control prerequisite. Canonical Host follows configured scope while sockets dial actual loopback listenUrl. Auth token is minted privately and never written in reports. GET/HEAD bodies are absent; post-publication ahead/foreign probes derive from the actual published/current context, and request29 repeats request18's exact authored tuple.
+ 
+ Positive32 + two separate controls expected2each =36expected HTTP; maximum32each =96maximum, three children/stores/listeners. This revises30/78 by six positive probes (and corresponding worst-case control fallback envelope), not execution evidence. Fixed30s work/5s request/10s startup-close/120s supervisor limits stay; four1s waits fit within the existing envelope without a throughput guarantee. No automatic retries, reopen, extra source built services or public claim.
+ 
+ ## Discriminating controls and retained evidence
+ 
+-Control restore-missing-gap: independent real seed200 establishes pos-1/context/full fixtures; GET beads/missing with that epoch/view and pos-2. Counterfactual restores only the prior missing-vs-minimum collision behavior. Before the named expected404 assertion fails, require actual500, x-bdp-development-limit minimum-position-visibility, empty body/no projected context, and no prior failure. Exact named failure: minimum-current:missing-before-minimum.
++Control restore-missing-gap: independent real sequence seed200 establishes actual pos-3/context/full fixtures; GET beads/missing with that epoch/view and pos-4. Counterfactual restores only the prior missing-vs-minimum collision behavior. Before the named expected404 assertion fails, require actual500, x-bdp-development-limit minimum-position-visibility, empty body/no projected context, and no prior failure. Exact named failure: minimum-current:missing-before-minimum.
+ 
+ Control restore-unknown-gap: independent real seed200/full fixture; GET beads/a with actual seed epoch/view and opaque. Restore only old early unknown rejection. Require actual500 with minimum-position label, empty body/no context before sole expected503 failure minimum-current:unknown-catch-up-timeout. No generic exit1/500 acceptance. Expected two completed responses, no later request, one named failure, complete seed/write evidence; unexpected wire/schema/cleanup errors are failures. If a derivative is ineffective, original positive-work envelope is a hard ceiling, never accepted sensitivity proof.
+ 
+--- before-seed-correction/ledger.json
++++ review-successor/ledger.json
+@@ -4,15 +4,15 @@
+   "rows": [
+     {
+       "method": "POST",
+-      "target": "operations/batch",
++      "target": "operations/sequence",
+       "status": 200,
+       "minimum": null,
+-      "oracle": "seed actual two Beads, Link and alias; freeze supported literal and genuine key before authoring",
++      "oracle": "HTTP200; complete transactionalSequenceResponse schema; exactly four entries with operationIndex0/1/2/3 and outcome created, no failure/problem. Full actual a/b/self Resources with exact identities/properties/Link endpoints and genuine revisions; entry3 exact created alias/work->beads/a. Actual response context must report pos-3; retain its epoch/view/position for later tuples. No per-member HTTP status or receipt ID inferred.",
+       "predecessorIndex": 1,
+       "index": 1,
+       "bodyPresent": true,
+       "accept": "application/json",
+-      "contextSource": null
++      "contextSource": "actual successful sequence response context; assert pos-3 before deriving pos-4"
+     },
+     {
+       "method": "GET",
+@@ -253,7 +253,7 @@
+       "index": 19,
+       "bodyPresent": false,
+       "accept": "application/json",
+-      "contextSource": "actual seed tuple with declared foreign/ahead modification"
++      "contextSource": "actual response18 epoch/view/position with the declared foreign/ahead modification"
+     },
+     {
+       "method": "GET",
+@@ -265,7 +265,7 @@
+       "index": 20,
+       "bodyPresent": false,
+       "accept": "application/json",
+-      "contextSource": "actual seed tuple with declared foreign/ahead modification"
++      "contextSource": "actual response18 epoch/view/position with the declared foreign/ahead modification"
+     },
+     {
+       "method": "HEAD",
+@@ -277,7 +277,7 @@
+       "index": 21,
+       "bodyPresent": false,
+       "accept": "application/json",
+-      "contextSource": "actual seed tuple with declared foreign/ahead modification"
++      "contextSource": "actual response18 epoch/view/position with the declared foreign/ahead modification"
+     },
+     {
+       "method": "GET",
+@@ -289,7 +289,7 @@
+       "index": 22,
+       "bodyPresent": false,
+       "accept": "application/json",
+-      "contextSource": "actual seed tuple with declared foreign/ahead modification"
++      "contextSource": "actual response18 epoch/view/position with the declared foreign/ahead modification"
+     },
+     {
+       "method": "HEAD",
+@@ -301,14 +301,14 @@
+       "index": 23,
+       "bodyPresent": false,
+       "accept": "application/json",
+-      "contextSource": "actual seed tuple with declared foreign/ahead modification"
+-    },
+-    {
+-      "method": "GET",
+-      "target": "beads/a",
+-      "status": 404,
+-      "minimum": "unknown-post-publication-context",
+-      "oracle": "hidden404 with actual context or disclosure",
++      "contextSource": "actual response18 epoch/view/position with the declared foreign/ahead modification"
++    },
++    {
++      "method": "GET",
++      "target": "beads/a",
++      "status": 404,
++      "minimum": "unknown-post-publication-context",
++      "oracle": "hidden404 with actual context and no disclosure",
+       "predecessorIndex": 21,
+       "index": 24,
+       "bodyPresent": false,
+@@ -320,7 +320,7 @@
+       "target": "links/self",
+       "status": 404,
+       "minimum": "unknown-post-publication-context",
+-      "oracle": "hidden404 with actual context or disclosure",
++      "oracle": "hidden404 with actual context and no disclosure",
+       "predecessorIndex": 22,
+       "index": 25,
+       "bodyPresent": false,
+@@ -332,7 +332,7 @@
+       "target": "alias/work",
+       "status": 404,
+       "minimum": "unknown-post-publication-context",
+-      "oracle": "hidden404 with actual context or disclosure",
++      "oracle": "hidden404 with actual context and no disclosure",
+       "predecessorIndex": 23,
+       "index": 26,
+       "bodyPresent": false,
+@@ -370,7 +370,7 @@
+       "index": 29,
+       "bodyPresent": false,
+       "accept": "application/json",
+-      "contextSource": "actual seed tuple with declared foreign/ahead modification"
++      "contextSource": "exact same authored ahead tuple and authorization as request18; compare current response tuple to actual response18"
+     },
+     {
+       "method": "GET",
+@@ -420,7 +420,7 @@
+       "maximumHTTP": 32,
+       "namedFailure": "minimum-current:missing-before-minimum",
+       "expectedActualStatus": 500,
+-      "seedPrerequisite": "actual seed200/completed schema/full expected results/currentpos1/complete write; no earlier error",
++      "seedPrerequisite": "actual sequence HTTP200/full sequence schema/exact four created entries/full fixtures/current pos-3 and observed epoch/view/complete write; no earlier error",
+       "actualBodyBytes": 0,
+       "projectedContextAbsent": true,
+       "method": "GET",
+@@ -430,7 +430,7 @@
+       "tuple": {
+         "scopeEpoch": "actual seed epoch",
+         "authorizationView": "actual seed view",
+-        "minimumPosition": "pos-2"
++        "minimumPosition": "pos-4"
+       },
+       "expectedDevelopmentLimit": "minimum-position-visibility",
+       "expectedAssertionStatus": 404
+@@ -441,7 +441,7 @@
+       "maximumHTTP": 32,
+       "namedFailure": "minimum-current:unknown-catch-up-timeout",
+       "expectedActualStatus": 500,
+-      "seedPrerequisite": "actual seed200/completed schema/full expected results/currentpos1/complete write; no earlier error",
++      "seedPrerequisite": "actual sequence HTTP200/full sequence schema/exact four created entries/full fixtures/current pos-3 and observed epoch/view/complete write; no earlier error",
+       "actualBodyBytes": 0,
+       "projectedContextAbsent": true,
+       "method": "GET",
+@@ -484,9 +484,9 @@
+   "installedNoWaitClaim": false,
+   "sourceNoWaitProof": "Actual entry/wait counters; no timing-only inference",
+   "seed": {
+-    "bodyUtf8": "{\"operations\":[{\"operation\":\"createBead\",\"id\":\"beads/a\",\"type\":\"https://example.test/bead\",\"properties\":{\"title\":\"a\"}},{\"operation\":\"createBead\",\"id\":\"beads/b\",\"type\":\"https://example.test/bead\",\"properties\":{\"title\":\"b\"}},{\"operation\":\"createLink\",\"id\":\"links/self\",\"type\":\"https://example.test/link\",\"source\":\"beads/a\",\"target\":\"beads/a\"},{\"operation\":\"putAlias\",\"alias\":\"alias/work\",\"target\":\"beads/a\"}]}",
+-    "bodyBytes": 407,
+-    "bodySha256": "8dba876b5174b87815515a4022359b0c188d9ab65f99173d67754038ddaf37ab",
++    "bodyUtf8": "{\"operations\":[{\"operation\":\"createBead\",\"id\":\"beads/a\",\"type\":\"https://example.test/bead\",\"properties\":{\"title\":\"a\"},\"idempotencyKey\":\"minimum-current-a\"},{\"operation\":\"createBead\",\"id\":\"beads/b\",\"type\":\"https://example.test/bead\",\"properties\":{\"title\":\"b\"},\"idempotencyKey\":\"minimum-current-b\"},{\"operation\":\"createLink\",\"id\":\"links/self\",\"type\":\"https://example.test/link\",\"source\":\"beads/a\",\"target\":\"beads/a\",\"idempotencyKey\":\"minimum-current-link\"},{\"operation\":\"putAlias\",\"alias\":\"alias/work\",\"target\":\"beads/a\",\"idempotencyKey\":\"minimum-current-alias\"}]}",
++    "bodyBytes": 562,
++    "bodySha256": "b2ed0ea801da54e92fd894c7c02cc9ca71788b3a3bc16362bd54c15f31565f94",
+     "headers": [
+       {
+         "name": "Content-Type",
+@@ -495,14 +495,10 @@
+       {
+         "name": "Accept",
+         "value": "application/json"
+-      },
+-      {
+-        "name": "Idempotency-Key",
+-        "value": "minimum-current-seed"
+       }
+     ],
+     "authorization": "private generated valid credential; never persisted",
+-    "target": "actual runtime.targets.batch, asserted canonical operations/batch",
++    "target": "actual runtime.targets.sequence, asserted canonical operations/sequence",
+     "configuredScope": "https://event-sse.invalid/acme/",
+     "canonicalHost": "event-sse.invalid",
+     "connectAuthority": "actual loopback listenUrl; no redirect",
+@@ -533,14 +529,16 @@
+       }
+     ],
+     "schemas": [],
+-    "provenance": "Existing transaction-http.test.ts fixture create/type/Link recipes and putAlias batch operation; new literal data-only construction, not executed",
+-    "receiptOracle": "completed available mutationReceipt schema; four ordered created/created/created/assigned results, exact a/b/self Resource and alias target identities, actual receipt ID and pos-1/epoch/view. No member idempotencyKey."
++    "provenance": "Committed1647 HTTP sequence branch309\u2013345; protocol read-update-preflight58\u201372; actual HTTP test525\u2013552 alias sequence; batch1024\u20131030 alias has no Resource Event/Scope position. Data-only literal construction, not executed.",
++    "sequenceOracle": "HTTP200; complete transactionalSequenceResponse schema; exactly four entries with operationIndex0/1/2/3 and outcome created, no failure/problem. Full actual a/b/self Resources with exact identities/properties/Link endpoints and genuine revisions; entry3 exact created alias/work->beads/a. Actual response context must report pos-3; retain its epoch/view/position for later tuples. No per-member HTTP status or receipt ID inferred.",
++    "atomicSeedClaim": false,
++    "outerIdempotencyKeyAbsent": true
+   },
+   "tupleRecipes": {
+-    "compatible": "actual seed epoch/view/pos-1",
+-    "ahead": "actual current epoch/view; pos-2 (strictly greater than verifiedseedpos1)",
+-    "foreign-epoch": "foreign-epoch plus current view/pos-1",
+-    "foreign-view": "current epoch plus foreign-view/pos-1",
++    "compatible": "actual seed epoch/view/pos-3",
++    "ahead": "actual current epoch/view; pos-4 (strictly greater than verified seed pos-3)",
++    "foreign-epoch": "foreign-epoch plus current view/pos-3",
++    "foreign-view": "current epoch plus foreign-view/pos-3",
+     "unknown-current-context": "actual seed epoch/view; opaque",
+     "unknown-post-publication-context": "actual response18 epoch/view; opaque",
+     "incomplete-or-duplicate": "raw deliberately malformed tuple, exact final header recipe frozen before code/runtime release"
+@@ -555,5 +553,7 @@
+     "childrenUnchanged": 3,
+     "timeoutsUnchanged": true,
+     "reason": "properties/initial incident-anchor coverage and same-view missing-hidden comparison"
+-  }
++  },
++  "isolatedCandidateAuthoringPermittedAfterRootRelease": true,
++  "finalActualAuthMainIntegrationBeforeValidationRequired": true
+ }
+--- before-seed-correction/source-binding.json
++++ review-successor/source-binding.json
+@@ -30,7 +30,9 @@
+     "schemas/bdp-v0.schema.json": "0baa5d5ef67144f8e6513b4cde31168effc8df6d52ef3141b0f144b87f8dc227",
+     "packages/server/src/index.ts": "34f9d9de8b48852c64919e69ce93f149e9cdae5142c15c75e4c35f08f15efc44",
+     "packages/server/package.json": "110e00c403c667d8c848c6280b2e98c47f98f134158a621967d889914d44632e",
+-    "packages/server/src/transaction-batch.ts": "70d941d416979edd54e250d51318cfb7e5d4ddb315ea6131de7ca5f56e98a014"
++    "packages/server/src/transaction-batch.ts": "70d941d416979edd54e250d51318cfb7e5d4ddb315ea6131de7ca5f56e98a014",
++    "packages/protocol/src/read-update-preflight.ts": "e9cea06515c1b7b5ffbfc275b82e9759e9083daa29c5daaab4485c161970275f",
++    "packages/server/src/transaction-sequence.ts": "019e02f2f392047d568d7464b1c5af0482d6d743ed09a6d0aa4edab151607cbe"
+   },
+   "originalSourcePins": {
+     "packages/server/src/transaction-consistency.ts": "00a420c3e9f5dcb1b8814a6476d5ce52edfb7adbbd1c64ab082833f17322a336",
+@@ -55,5 +57,8 @@
+   "actualMergedAuthoringParent": null,
+   "actualMergeRequired": true,
+   "authoringReleased": false,
+-  "sourceSnapshotKind": "committed Git objects, not dynamic imports"
++  "sourceSnapshotKind": "committed Git objects, not dynamic imports",
++  "actualMergeRequiredBeforeFinalValidation": true,
++  "isolatedCandidateAuthoringPermittedAfterRootRelease": true,
++  "actualMergeRequiredMeaning": "final validation/main integration; not a prohibition on root-released isolated candidate authoring"
+ }

@@ -1,0 +1,36 @@
+{
+  "basis": "73fc0daed2e5fa6843e581de9bf7a46e519562ab",
+  "baselineActions": 1861,
+  "continuationActions": 377,
+  "oldAuthoredActions": 2238,
+  "newAuthoredActions": 2259,
+  "seededScenarios": 11,
+  "seedPostPerScenario": 4,
+  "setupHttp": 44,
+  "oldFullHttp": 2282,
+  "newFullHttp": 2303,
+  "fullChildren": 57,
+  "positive": {
+    "expectedHttp": 21,
+    "maxHttp": 21,
+    "children": 2
+  },
+  "negative": {
+    "expectedHttp": 3,
+    "maxHttp": 21,
+    "children": 2
+  },
+  "total": {
+    "expectedHttp": 2327,
+    "maxHttp": 2345,
+    "children": 61
+  },
+  "automaticRetries": 0,
+  "redirects": 0,
+  "aggregateCooperativeMs": 90000,
+  "aggregateVitestMs": 120000,
+  "externalStageMs": 120000,
+  "exactRequestMs": 5000,
+  "timing": "No new duration measured; no automatic budget increase. Existing selected helper controls remain separate regression/CI work, not hidden inside this three-cohort allowance. Full CI incremental planned work +45 expectedHTTP/+63 maximum/+5children (new21 in full plus21+3 new selected callbacks).",
+  "smallExecutionSet": "3248–3278 retains only old create-bead/continuation IDs, so new row not executed in its abort/persistence/mismatch callbacks."
+}

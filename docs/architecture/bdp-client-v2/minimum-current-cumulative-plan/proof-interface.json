@@ -1,0 +1,51 @@
+{
+  "status": "proposed; no executable support yet",
+  "template": {
+    "responseHeaderFrom": "earlier-action-id"
+  },
+  "sourceFieldByDestination": {
+    "bdp-scope-epoch": "bdp-scope-epoch",
+    "bdp-authorization-view": "bdp-authorization-view",
+    "bdp-minimum-scope-position": "bdp-scope-position"
+  },
+  "lexicalPattern": "^[A-Za-z0-9_-]{1,256}$",
+  "sameSourceRequirements": [
+    "earlier HTTP action",
+    "passed authored assertions",
+    "status200",
+    "complete exact request/header/body witness",
+    "same scenario",
+    "same generation",
+    "same listenUrl",
+    "same runtimeConfigurationIdentity",
+    "same configurationDigest",
+    "same resolved credentialRef"
+  ],
+  "immutableFlow": [
+    "validated own-data template",
+    "actual eligible source snapshot",
+    "single frozen string-valued materialized request",
+    "exact transport input",
+    "all exact fidelity/capture assertions using same object",
+    "safe proof only after complete matching actual request"
+  ],
+  "reportLocation": "ObservedExchange.request.exact.consistency (optional v4 only)",
+  "reportFields": [
+    "sourceAction",
+    "sourceSession",
+    "credentialRef",
+    "sourceResponseDigest",
+    "sourceContextDigest",
+    "materializedAuthoredHeadersDigest"
+  ],
+  "compatibility": {
+    "v1": "unchanged",
+    "v2": "additive grammar; old literals/reports byte-identical; old readers may fail closed on new templates",
+    "report3": "unchanged; exact remains prohibited",
+    "report4": "optional safe metadata under exact envelope; no new version"
+  },
+  "noGenericCapture": true,
+  "noUrlBindingReuse": true,
+  "noLowLevelTransportTypeChange": true,
+  "correctionSource": "Current raw field value and runner prepareExactRequest/exactHeadersMatch both assume string; all paths must consume the same materialized string request."
+}

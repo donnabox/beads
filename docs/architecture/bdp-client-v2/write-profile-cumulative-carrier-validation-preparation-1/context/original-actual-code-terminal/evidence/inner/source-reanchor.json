@@ -1,0 +1,35 @@
+{
+  "state": "FINAL FROZEN exact root clean source3 identity; review launch CLOSED",
+  "sourceBindingFinalized": true,
+  "currentSourceFiles": 681,
+  "sourceMapSha256": "5e22e3fd6fdace97ef8d7e651f7dadcfb8d72bdc5a79831a24da8172f64df232",
+  "sourceAuthorIndexSha256": "9ec61ffdbd288c5414356398fe6ce1f6f46bfaa3292c70b7400e964f596d77ef",
+  "sourceAuthorBindingSha256": "43613fd01e5d2169603fe7727bdcbbe299e8259982889e7b3789eb8aba2a4159",
+  "subjectFiles": [
+    "apps/bdptest/src/transactional-matrix.test.ts",
+    "apps/bdptest/test-support/read-update-artifact-execution.ts",
+    "packages/conformance/test-support/profile-evidence.test.ts",
+    "packages/conformance/test-support/profile-evidence.ts"
+  ],
+  "all679OtherKnownPathsUnchangedByCapacityCorrection": true,
+  "all677CceOutsideOriginal4Protected": true,
+  "cceCumulativePatchSha256": "7f356823795f3e21430f4c8fbbe5bf76280246fc0885fe8066a499a106f985c9",
+  "correctionPatchSha256": "4a8db4de0210790b771eb910d43bf31e649bfd34a030bf1309c80f9e208af4ce",
+  "rootActualGitBinaryPatch": {
+    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-cumulative-carrier-root-clean-candidate-3/four-owned-files.binary.patch",
+    "sha256": "fd9f337373ed43afbe44c93d3cc197b8266b33e327d1cdd9ed1dcb50c648cacb"
+  },
+  "finalHead": "2834151544ca6bdc105191665f466c58eee7930f",
+  "finalTree": "9b17333ffa91c888c73b5243d55299541464c8a4",
+  "finalParents": [
+    "16c280991ae9d6dad19b9b58c7e141fa7ca68253"
+  ],
+  "actualCleanGitStatus": "",
+  "rootCleanCandidateSha256": "1aef1ebb62ada08897d0118b1271001333055f4b78c6fe64b2f4b326db829d41",
+  "rootCleanCandidateAuthority": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-cumulative-carrier-root-clean-candidate-3/candidate.json",
+  "priorFullCorrectedNativeClosureSha256": "16dba8e74825195db79fef08c5ee2ad362fa30c4c60c999662cdec11884757d5",
+  "N5NativeClosureSha256": "c8bc57c9ff47169a29944159d0853e75f4486def38b0995054e25a764ad87232",
+  "rootCorrectedAcceptance": "Root candidate1aef explicitly binds static/native accepted source3, clean identity only; no runtime/firstCODE release",
+  "historicalIdentity": "Source2/source3 dirty16c receipts remain historical; current clean2834 is root-owned receipt, not inferred",
+  "postformatState": "Source2 one format then manualprefix/R22 deltas preserved; source3 later pinned2-fileformat exit0/no fixes/preformat=final. Final format-check/compiler/tests/build/install/runtime UNRUN"
+}

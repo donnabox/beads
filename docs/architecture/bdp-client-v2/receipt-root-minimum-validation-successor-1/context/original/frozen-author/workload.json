@@ -1,0 +1,341 @@
+{
+  "state": "source-derived prospective workloads and report contracts; NOT executed observations",
+  "selectionSha256": "2f8165811cf7274583f1b4220e27e36495c79c9011dc84e48be0649b7b8ad420",
+  "totals": {
+    "sourceCallbacks": 12,
+    "sourceStores": 12,
+    "sourceNetworkRequests": 36,
+    "sourceNetworkMethods": {
+      "POST": 6,
+      "GET": 21,
+      "HEAD": 9
+    },
+    "sourceServiceLiveRootAttempts": 28,
+    "sourceServiceLivePageAttempts": 4,
+    "separatePostCloseOwnerProbes": 1,
+    "sourceServiceWaits": 9,
+    "sourceServiceClockCalls": 33,
+    "sourceServiceMutations": 9,
+    "installedCallbacks": 2,
+    "installedRequests": 27,
+    "installedChildrenSequential": 2,
+    "installedStores": 2,
+    "allSelectedStores": 14
+  },
+  "source": [
+    {
+      "file": "packages/server/src/transaction-service.test.ts",
+      "title": "captures opaque receipt root minima through real owner retries",
+      "new": true,
+      "label": "A",
+      "stores": 1,
+      "rootAttempts": 10,
+      "pageAttempts": 0,
+      "waits": 4,
+      "clockCalls": 11,
+      "mutations": 2,
+      "separatePostCloseOwnerProbes": 0
+    },
+    {
+      "file": "packages/server/src/transaction-service.test.ts",
+      "title": "drains an opaque receipt root wait before closing its owner",
+      "new": true,
+      "label": "B",
+      "stores": 1,
+      "rootAttempts": 2,
+      "pageAttempts": 0,
+      "waits": 1,
+      "clockCalls": 3,
+      "mutations": 1,
+      "separatePostCloseOwnerProbes": 1
+    },
+    {
+      "file": "packages/server/src/transaction-service.test.ts",
+      "suite": "private minimum-read owner/lifecycle",
+      "title": "checks minimum before read-triggered expiry but honors independently forgotten receipts (false)",
+      "new": false,
+      "label": "R-false",
+      "stores": 1,
+      "rootAttempts": 3,
+      "pageAttempts": 0,
+      "waits": 1,
+      "clockCalls": 4,
+      "mutations": 1,
+      "forget": false,
+      "minimumPosition": "pos-1"
+    },
+    {
+      "file": "packages/server/src/transaction-service.test.ts",
+      "suite": "private minimum-read owner/lifecycle",
+      "title": "checks minimum before read-triggered expiry but honors independently forgotten receipts (true)",
+      "new": false,
+      "label": "R-true",
+      "stores": 1,
+      "rootAttempts": 3,
+      "pageAttempts": 0,
+      "waits": 1,
+      "clockCalls": 3,
+      "mutations": 1,
+      "forget": true,
+      "minimumPosition": "pos-1"
+    },
+    {
+      "file": "packages/server/src/transaction-service.test.ts",
+      "suite": "private minimum-read owner/lifecycle",
+      "title": "checks minimum before read-triggered expiry but honors independently forgotten receipts (opaque false)",
+      "new": true,
+      "label": "R-opaque false",
+      "stores": 1,
+      "rootAttempts": 3,
+      "pageAttempts": 0,
+      "waits": 1,
+      "clockCalls": 4,
+      "mutations": 1,
+      "forget": false,
+      "minimumPosition": "unknown"
+    },
+    {
+      "file": "packages/server/src/transaction-service.test.ts",
+      "suite": "private minimum-read owner/lifecycle",
+      "title": "checks minimum before read-triggered expiry but honors independently forgotten receipts (opaque true)",
+      "new": true,
+      "label": "R-opaque true",
+      "stores": 1,
+      "rootAttempts": 3,
+      "pageAttempts": 0,
+      "waits": 1,
+      "clockCalls": 3,
+      "mutations": 1,
+      "forget": true,
+      "minimumPosition": "unknown"
+    },
+    {
+      "file": "packages/server/src/transaction-service.test.ts",
+      "title": "preserves current receipt absence context across ordinary and minimum service entrypoints",
+      "new": false,
+      "stores": 1,
+      "rootAttempts": 4,
+      "pageAttempts": 4,
+      "waits": 0,
+      "clockCalls": 5,
+      "mutations": 2
+    },
+    {
+      "file": "packages/server/src/transaction-http.test.ts",
+      "title": "authenticates and hides receipts before minimum-control refusal or conditional shortcuts",
+      "new": false,
+      "stores": 1,
+      "httpMethods": {
+        "POST": 1,
+        "GET": 5,
+        "HEAD": 1
+      },
+      "httpRequests": 7,
+      "suite": "source-private actual Transactional HTTP"
+    },
+    {
+      "file": "packages/server/src/transaction-http.test.ts",
+      "title": "keeps receipt minimum enforcement after commands ignore copied controls",
+      "new": false,
+      "stores": 1,
+      "httpMethods": {
+        "POST": 1,
+        "GET": 4,
+        "HEAD": 1
+      },
+      "httpRequests": 6
+    },
+    {
+      "file": "packages/server/src/transaction-http.test.ts",
+      "title": "checks a stored failed receipt minimum before read-triggered retention disposal over HTTP",
+      "new": false,
+      "stores": 1,
+      "httpMethods": {
+        "POST": 1,
+        "GET": 2,
+        "HEAD": 0
+      },
+      "httpRequests": 3
+    },
+    {
+      "file": "packages/server/src/transaction-http.test.ts",
+      "title": "refuses unsupported root controls after nondisclosure but before read-triggered retention",
+      "new": false,
+      "stores": 1,
+      "httpMethods": {
+        "POST": 2,
+        "GET": 4,
+        "HEAD": 4
+      },
+      "httpRequests": 10
+    },
+    {
+      "file": "packages/server/src/transaction-http.test.ts",
+      "title": "serves opaque receipt root minima before HTTP shortcuts with private fences",
+      "new": true,
+      "stores": 1,
+      "httpMethods": {
+        "POST": 1,
+        "GET": 6,
+        "HEAD": 3
+      },
+      "httpRequests": 10
+    }
+  ],
+  "installed": [
+    {
+      "file": "apps/bdptest/src/transactional-minimum-receiving-installed.test.ts",
+      "title": "rejects malformed read minimum tuples before observation while preserving receipt nondisclosure",
+      "new": false,
+      "httpRequests": 22,
+      "children": 1,
+      "stores": 1
+    },
+    {
+      "file": "apps/bdptest/src/transactional-minimum-receiving-installed.test.ts",
+      "title": "observes installed opaque receipt root timeout with principal nondisclosure",
+      "new": true,
+      "label": "E",
+      "httpRequests": 5,
+      "children": 1,
+      "stores": 1
+    }
+  ],
+  "newObservationContracts": {
+    "receipt-root-minimum-capture": {
+      "roots": 10,
+      "waits": 4,
+      "clockCalls": 11,
+      "submits": 2,
+      "ownerObservations": {
+        "count": 10,
+        "kinds": [
+          "unproved",
+          "unproved",
+          "unproved",
+          "unproved",
+          "unproved",
+          "unproved",
+          "receipt",
+          "unsupported",
+          "missing",
+          "missing"
+        ],
+        "contexts": "actual real-owner returned/thrown context; first pos-1 then actual pos-2; unsupported null"
+      }
+    },
+    "receipt-root-minimum-drain": {
+      "roots": 2,
+      "waits": 1,
+      "clockCalls": 3,
+      "postCloseProbes": 1,
+      "closed": true
+    },
+    "receipt-root-minimum-http": {
+      "requests": 10,
+      "waits": 3,
+      "responses": {
+        "fields": [
+          "method",
+          "route",
+          "status",
+          "bodyOctets"
+        ],
+        "methods": [
+          "POST",
+          "GET",
+          "HEAD",
+          "GET",
+          "GET",
+          "HEAD",
+          "GET",
+          "HEAD",
+          "GET",
+          "GET"
+        ],
+        "statuses": [
+          200,
+          503,
+          503,
+          503,
+          500,
+          500,
+          400,
+          404,
+          404,
+          401
+        ],
+        "routeClasses": [
+          "batch",
+          "owned-root",
+          "owned-root",
+          "owned-root",
+          "owned-root",
+          "owned-root",
+          "owned-root",
+          "other-principal-root",
+          "missing-root",
+          "owned-root"
+        ]
+      }
+    },
+    "private-installed-receipt-root-minimum": {
+      "attempted": 5,
+      "exchanges": 5,
+      "methods": [
+        "POST",
+        "GET",
+        "HEAD",
+        "GET",
+        "GET"
+      ],
+      "statuses": [
+        200,
+        503,
+        503,
+        404,
+        404
+      ],
+      "responseFields": [
+        "ordinal",
+        "label",
+        "method",
+        "url",
+        "credential",
+        "requestBodyBytes",
+        "requestBodySha256",
+        "minimumFieldOccurrences",
+        "status",
+        "bodyOctets",
+        "bodySha256",
+        "headers"
+      ],
+      "successLifecycle": {
+        "deadlineExceeded": false,
+        "cleanupExceeded": false,
+        "launchAttempted": true,
+        "startupCompleted": true,
+        "closed": true,
+        "childExitCode": 0,
+        "childSignalCode": null,
+        "directoryAbsent": true,
+        "activeRequests": 0,
+        "pendingOperations": 0,
+        "failureCount": 0,
+        "claimEligible": false
+      },
+      "identity": "actual returned PID/entry SHA/source declaration/installedTransactionBinding/artifact byte total; no preset runtime hashes"
+    }
+  },
+  "deadlines": {
+    "sourceCallbacks": "unchanged Vitest defaults; A budget3, B/R/D and amended historical retention budget2 deterministic seams",
+    "historicalMaintenanceIsolationMs": 1100,
+    "historicalMaintenanceIntervalMs": 60000,
+    "installedPerRequestMs": 5000,
+    "installedWorkMs": 45000,
+    "installedCombinedCleanupMs": 10000,
+    "installedCallbackMs": 60000,
+    "futureExternalLocalSupervisor": "separate root-reviewed120s nominal/TERM115; not a code or CI guarantee"
+  },
+  "claims": "No runtime outcomes observed; counts are selections/control-flow budgets. Existing R/absence/HTTP historical counters remain source-derived, not newly logged."
+}

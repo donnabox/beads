@@ -1,0 +1,104 @@
+{
+  "at": "2026-10-17T17:30:46.173666+00:00",
+  "sourceBindingSha256": "bcbd975c76b4af9af249cd89e46a80992cf99f3e7f5850f34eee510e287922b6",
+  "actualStages": {
+    "workspace-install": {
+      "exit": 0,
+      "accepted": true,
+      "elapsedSeconds": 6.7988777086138725,
+      "logSha256": "7eeda3c60351ffee0836371d441473577c5b57d9eb920fbe695c2a7208440181",
+      "sourceUnchangedAtStageEnd": true,
+      "sampledPids": [
+        69634
+      ],
+      "remainingProcesses": []
+    },
+    "bind-workspace-tools": {
+      "exit": 0,
+      "accepted": true,
+      "elapsedSeconds": 12.270980666857213,
+      "logSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceUnchangedAtStageEnd": true,
+      "sampledPids": [
+        71337,
+        71344,
+        71358,
+        71372,
+        71387,
+        71401,
+        71414,
+        71444,
+        71458,
+        71473,
+        71499,
+        71513,
+        71526,
+        71539,
+        71554,
+        71582,
+        71596,
+        71610,
+        71640,
+        71652,
+        71679,
+        71691,
+        71729,
+        71746,
+        71765,
+        71777,
+        71791,
+        71805,
+        71819,
+        71833,
+        71848,
+        71864,
+        71878,
+        71892,
+        71906,
+        71919,
+        71932,
+        71947,
+        71960,
+        71973,
+        71986,
+        72001,
+        72014,
+        72029,
+        72043,
+        72056,
+        72070,
+        72086,
+        72099,
+        72100
+      ],
+      "remainingProcesses": []
+    },
+    "typecheck": {
+      "exit": 0,
+      "accepted": true,
+      "elapsedSeconds": 8.04153662500903,
+      "logSha256": "91d54ffbee73a3ac72294d090e58d77745f8b93edbf94b862807698273a6505a",
+      "sourceUnchangedAtStageEnd": true,
+      "sampledPids": [
+        73633,
+        73658
+      ],
+      "remainingProcesses": []
+    },
+    "format-check": {
+      "exit": 1,
+      "accepted": false,
+      "elapsedSeconds": 6.688360000029206,
+      "logSha256": "180798e9230d659b7e25754b80dc515062a947918e29ef4c1a72785e51d1d469",
+      "sourceUnchangedAtStageEnd": true,
+      "sampledPids": [
+        75369,
+        75371
+      ],
+      "remainingProcesses": []
+    }
+  },
+  "formatCorrections": "Six measured layout sites in two tests; original diagnostic retained",
+  "noLaterStagesRun": true,
+  "next": "Formatting-only successor; two bootstrap results may be reused only through explicit mapping; nineteen later stages fresh"
+}

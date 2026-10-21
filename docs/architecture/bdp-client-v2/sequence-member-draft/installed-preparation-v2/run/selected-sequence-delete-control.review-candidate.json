@@ -1,0 +1,25 @@
+{
+  "candidateMatches": true,
+  "rootReviewRequired": true,
+  "command": "selected-sequence-delete-control",
+  "actualHttp": 1,
+  "reportedChildren": 2,
+  "reportedClosedChildren": 2,
+  "sampledPidsIndependentlyAbsent": [
+    5259,
+    5261,
+    5266,
+    5268,
+    5272,
+    5276
+  ],
+  "ownedRootsAbsent": true,
+  "payloadIdentity": "c46a251cdf51f274ec9bf4f0f401cedadcbaa7748cfb059d3009de34186753b9",
+  "sourceCommit": "82f60a25da8799334381f6ebd810f32a3574cd2d",
+  "sourceTree": "3cd1da66ba3a6cbd0bbdaa2442d10002939d826b",
+  "reportSha256": "0ae8e6cafa51b3060a6827c37d45798a20057deccc5288ae771641f210539d42",
+  "resultsSha256": "95a385f8a6ad76ca11788c99e560d2a9bc48d7973c8ce291ff8e29e4efbb3e2b",
+  "logSha256": "cba8afe59c660991937577d3aa649975259ecd301d0640004fdcc2668f252055",
+  "claimEligible": false,
+  "limitations": "Full raw bodies/Resource/Event/replay checks occur in frozen app and original-wire helper before redaction; this review cannot recover report body values. Cross reports deliberately retain original shape without new supplement; passing exact callback is the supplement evidence. Source attribution is supervisor verified, not child-attested Git. Process sampling cannot prove every detached/short-lived PID was seen."
+}

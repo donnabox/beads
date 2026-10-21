@@ -1,0 +1,213 @@
+{
+  "source": {
+    "head": "b3b9327c262ba16eb6b8f994303f3a08f098c7a6",
+    "tree": "b7c42f6fc27e19db0d25b20c356f6ed458505e33",
+    "parents": [
+      "b13055049ed7c1bd09ad2d7af29e0a38a81001ea"
+    ],
+    "branch": "codex/vickie-completed-key-conflict-review-repair",
+    "checkout": "/Users/dbox/repos/wt/vickie/vickie-completed-key-conflict-review-repair",
+    "clean": true,
+    "changed": {
+      "packages/conformance/src/transactional-cumulative.test.ts": "5d5485edf2bcfcb554240d8ab974e426bd194e02edf3aed30712ab31d884ab59"
+    },
+    "artifacts": {
+      "packages/conformance/test-support/transactional/manifest-v1.json": {
+        "bytes": 407227,
+        "sha256": "7f55695401b815534f17fc69dc924ee0c0920fb6c9175529709a8e60afda5786",
+        "byteIdenticalToParent": true
+      },
+      "packages/conformance/test-support/transactional/coverage-v1.json": {
+        "bytes": 60059,
+        "sha256": "c9b1583965cdf9289eea5ac933a39c06fc378c720678e2453aec2e7c8c5438da",
+        "byteIdenticalToParent": true
+      },
+      "packages/conformance/test-support/transactional/fixture-v1.json": {
+        "bytes": 716,
+        "sha256": "3a7899ced771d4880066d98b0000c53f801ece53458502cc4f3bc641146c9a85",
+        "byteIdenticalToParent": true
+      }
+    },
+    "allOtherTrackedFilesUnchanged": true,
+    "newRowActions": 12,
+    "newRowAssertions": 99,
+    "totalActions": 151,
+    "oldNineObjectsUnchanged": "entire manifest and coverage byte equality implies exact preservation"
+  },
+  "checks": {
+    "clean": {
+      "exit": 0,
+      "expected": 0,
+      "seconds": 0.783,
+      "command": [
+        "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+        "/Users/dbox/.cache/node/corepack/v1/pnpm/11.20.0/bin/pnpm.cjs",
+        "clean"
+      ]
+    },
+    "typecheck": {
+      "exit": 0,
+      "expected": 0,
+      "seconds": 0.874,
+      "command": [
+        "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+        "/Users/dbox/.cache/node/corepack/v1/pnpm/11.20.0/bin/pnpm.cjs",
+        "typecheck"
+      ]
+    },
+    "build": {
+      "exit": 0,
+      "expected": 0,
+      "seconds": 0.818,
+      "command": [
+        "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+        "/Users/dbox/.cache/node/corepack/v1/pnpm/11.20.0/bin/pnpm.cjs",
+        "build"
+      ]
+    },
+    "cumulative": {
+      "exit": 1,
+      "expected": 0,
+      "seconds": 1.729,
+      "command": [
+        "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+        "/Users/dbox/.cache/node/corepack/v1/pnpm/11.20.0/bin/pnpm.cjs",
+        "exec",
+        "vitest",
+        "run",
+        "packages/conformance/src/transactional-cumulative.test.ts",
+        "--maxWorkers=2",
+        "--reporter=verbose",
+        "--reporter=json",
+        "--outputFile=/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-completed-key-conflict-review-repair/cumulative.json"
+      ]
+    },
+    "final-typecheck": {
+      "exit": 0,
+      "expected": 0,
+      "seconds": 0.809,
+      "command": [
+        "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+        "/Users/dbox/.cache/node/corepack/v1/pnpm/11.20.0/bin/pnpm.cjs",
+        "typecheck"
+      ]
+    },
+    "final-build": {
+      "exit": 0,
+      "expected": 0,
+      "seconds": 0.78,
+      "command": [
+        "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+        "/Users/dbox/.cache/node/corepack/v1/pnpm/11.20.0/bin/pnpm.cjs",
+        "build"
+      ]
+    },
+    "final-cumulative": {
+      "exit": 0,
+      "expected": 0,
+      "seconds": 1.037,
+      "command": [
+        "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+        "/Users/dbox/.cache/node/corepack/v1/pnpm/11.20.0/bin/pnpm.cjs",
+        "exec",
+        "vitest",
+        "run",
+        "packages/conformance/src/transactional-cumulative.test.ts",
+        "--maxWorkers=2",
+        "--reporter=verbose",
+        "--reporter=json",
+        "--outputFile=/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-completed-key-conflict-review-repair/final-cumulative.json"
+      ]
+    },
+    "format": {
+      "exit": 0,
+      "expected": 0,
+      "seconds": 0.31,
+      "command": [
+        "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+        "/Users/dbox/.cache/node/corepack/v1/pnpm/11.20.0/bin/pnpm.cjs",
+        "format:check"
+      ]
+    },
+    "lint": {
+      "exit": 0,
+      "expected": 0,
+      "seconds": 0.428,
+      "command": [
+        "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+        "/Users/dbox/.cache/node/corepack/v1/pnpm/11.20.0/bin/pnpm.cjs",
+        "lint"
+      ]
+    },
+    "boundaries": {
+      "exit": 0,
+      "expected": 0,
+      "seconds": 0.524,
+      "command": [
+        "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+        "/Users/dbox/.cache/node/corepack/v1/pnpm/11.20.0/bin/pnpm.cjs",
+        "check:boundaries"
+      ]
+    },
+    "read-seal": {
+      "exit": 0,
+      "expected": 0,
+      "seconds": 0.313,
+      "command": [
+        "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+        "/Users/dbox/.cache/node/corepack/v1/pnpm/11.20.0/bin/pnpm.cjs",
+        "evidence:verify"
+      ]
+    },
+    "diff-check": {
+      "exit": 0,
+      "expected": 0,
+      "seconds": 0.012,
+      "command": [
+        "git",
+        "diff",
+        "--check"
+      ]
+    },
+    "frozen-cumulative": {
+      "exit": 0,
+      "expected": 0,
+      "seconds": 1.049,
+      "command": [
+        "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+        "/Users/dbox/.cache/node/corepack/v1/pnpm/11.20.0/bin/pnpm.cjs",
+        "exec",
+        "vitest",
+        "run",
+        "packages/conformance/src/transactional-cumulative.test.ts",
+        "--maxWorkers=2",
+        "--reporter=verbose",
+        "--reporter=json",
+        "--outputFile=/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-completed-key-conflict-review-repair/frozen-cumulative.json"
+      ]
+    }
+  },
+  "frozenFocused": {
+    "numPassedTests": 28,
+    "numFailedTests": 0,
+    "numTotalTests": 28,
+    "success": true
+  },
+  "controls": [
+    "c-state retained-record equalsBinding removed: rejected",
+    "c-state-reopened retained-record equalsBinding removed: rejected"
+  ],
+  "packedExecution": {
+    "newRun": false,
+    "historicalSource": "b13055049ed7c1bd09ad2d7af29e0a38a81001ea",
+    "report": "../transaction-completed-key-conflict-implementation/report.md",
+    "reason": "Only a test file changed; all artifact and production/package source bytes unchanged. No fresh tarball identity claim."
+  },
+  "claimEligible": false,
+  "remoteVerifiedHead": "b3b9327c262ba16eb6b8f994303f3a08f098c7a6",
+  "cleanup": {
+    "ownedProcessesRemaining": false,
+    "checkoutClean": true
+  },
+  "reportSha256": "869f7d523bb0757e57751b6dc9d6252a3c491f946be12a18f1fafbf6f119e6f7"
+}

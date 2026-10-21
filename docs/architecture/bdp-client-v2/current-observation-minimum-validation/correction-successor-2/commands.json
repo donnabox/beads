@@ -1,0 +1,699 @@
+{
+  "configurationFinalized": true,
+  "state": "Concrete source-bound current-observation preparation; all execution CLOSED",
+  "finalOrder": [
+    "workspace-install",
+    "bind-workspace-tools",
+    "typecheck",
+    "format-check",
+    "lint",
+    "fresh-build",
+    "bind-fresh-build",
+    "focused-source",
+    "review-focused-source",
+    "node-version",
+    "prepare-package-directory",
+    "pack-protocol",
+    "pack-server",
+    "verify-archives",
+    "prepare-consumer",
+    "consumer-install",
+    "verify-installed-consumer",
+    "receiving-history-external",
+    "review-receiving-history-external",
+    "current-observation-external",
+    "review-current-observation-external"
+  ],
+  "commands": {
+    "workspace-install": {
+      "cwd": "/Users/dbox/repos/wt/vickie/vickie-current-observation-minimum",
+      "argv": [
+        "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+        "/Users/dbox/.cache/node/corepack/v1/pnpm/11.20.0/bin/pnpm.cjs",
+        "install",
+        "--offline",
+        "--ignore-scripts",
+        "--frozen-lockfile"
+      ],
+      "outerSeconds": 120,
+      "automaticRetries": 0,
+      "acceptedRawExitCodes": [
+        0
+      ],
+      "termAfterSeconds": 115
+    },
+    "bind-workspace-tools": {
+      "cwd": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/current-observation-minimum-validation/correction-successor-2",
+      "argv": [
+        "/opt/homebrew/opt/python@3.14/bin/python3.14",
+        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/current-observation-minimum-validation/correction-successor-2/audit.py",
+        "tools"
+      ],
+      "outerSeconds": 120,
+      "automaticRetries": 0,
+      "acceptedRawExitCodes": [
+        0
+      ],
+      "termAfterSeconds": 115
+    },
+    "typecheck": {
+      "cwd": "/Users/dbox/repos/wt/vickie/vickie-current-observation-minimum",
+      "argv": [
+        "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+        "/Users/dbox/.cache/node/corepack/v1/pnpm/11.20.0/bin/pnpm.cjs",
+        "run",
+        "typecheck"
+      ],
+      "outerSeconds": 120,
+      "automaticRetries": 0,
+      "acceptedRawExitCodes": [
+        0
+      ],
+      "termAfterSeconds": 115
+    },
+    "format-check": {
+      "cwd": "/Users/dbox/repos/wt/vickie/vickie-current-observation-minimum",
+      "argv": [
+        "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+        "/Users/dbox/repos/wt/vickie/vickie-current-observation-minimum/node_modules/@biomejs/biome/bin/biome",
+        "format",
+        "--config-path=/Users/dbox/repos/wt/vickie/vickie-current-observation-minimum/biome.json",
+        "packages/server/src/transaction-consistency.ts",
+        "packages/server/src/transaction-read.ts",
+        "packages/server/src/transaction-http.ts",
+        "packages/server/src/transaction-service.ts",
+        "packages/server/src/transaction-store.ts",
+        "packages/server/src/transaction-consistency.test.ts",
+        "packages/server/src/transaction-read.test.ts",
+        "packages/server/src/transaction-http.test.ts",
+        "packages/server/src/transaction-service.test.ts",
+        "packages/server/src/transaction-receipt-pages.test.ts",
+        "packages/server/src/transaction-snapshot.test.ts",
+        "packages/server/src/transaction-events.test.ts",
+        "packages/server/src/transaction-event-sse.test.ts",
+        "packages/server/src/transaction-changefeed.test.ts",
+        "apps/bdptest/src/transactional-minimum-receiving-installed.test.ts"
+      ],
+      "outerSeconds": 120,
+      "automaticRetries": 0,
+      "acceptedRawExitCodes": [
+        0
+      ],
+      "termAfterSeconds": 115
+    },
+    "lint": {
+      "cwd": "/Users/dbox/repos/wt/vickie/vickie-current-observation-minimum",
+      "argv": [
+        "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+        "/Users/dbox/repos/wt/vickie/vickie-current-observation-minimum/node_modules/@biomejs/biome/bin/biome",
+        "lint",
+        "--config-path=/Users/dbox/repos/wt/vickie/vickie-current-observation-minimum/biome.json",
+        "packages/server/src/transaction-consistency.ts",
+        "packages/server/src/transaction-read.ts",
+        "packages/server/src/transaction-http.ts",
+        "packages/server/src/transaction-service.ts",
+        "packages/server/src/transaction-store.ts",
+        "packages/server/src/transaction-consistency.test.ts",
+        "packages/server/src/transaction-read.test.ts",
+        "packages/server/src/transaction-http.test.ts",
+        "packages/server/src/transaction-service.test.ts",
+        "packages/server/src/transaction-receipt-pages.test.ts",
+        "packages/server/src/transaction-snapshot.test.ts",
+        "packages/server/src/transaction-events.test.ts",
+        "packages/server/src/transaction-event-sse.test.ts",
+        "packages/server/src/transaction-changefeed.test.ts",
+        "apps/bdptest/src/transactional-minimum-receiving-installed.test.ts"
+      ],
+      "outerSeconds": 120,
+      "automaticRetries": 0,
+      "acceptedRawExitCodes": [
+        0
+      ],
+      "termAfterSeconds": 115
+    },
+    "fresh-build": {
+      "cwd": "/Users/dbox/repos/wt/vickie/vickie-current-observation-minimum",
+      "argv": [
+        "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+        "/Users/dbox/.cache/node/corepack/v1/pnpm/11.20.0/bin/pnpm.cjs",
+        "run",
+        "build"
+      ],
+      "outerSeconds": 120,
+      "automaticRetries": 0,
+      "acceptedRawExitCodes": [
+        0
+      ],
+      "termAfterSeconds": 115
+    },
+    "bind-fresh-build": {
+      "cwd": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/current-observation-minimum-validation/correction-successor-2",
+      "argv": [
+        "/opt/homebrew/opt/python@3.14/bin/python3.14",
+        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/current-observation-minimum-validation/correction-successor-2/audit.py",
+        "build"
+      ],
+      "outerSeconds": 120,
+      "automaticRetries": 0,
+      "acceptedRawExitCodes": [
+        0
+      ],
+      "termAfterSeconds": 115
+    },
+    "focused-source": {
+      "cwd": "/Users/dbox/repos/wt/vickie/vickie-current-observation-minimum",
+      "argv": [
+        "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+        "/Users/dbox/repos/wt/vickie/vickie-current-observation-minimum/node_modules/vitest/vitest.mjs",
+        "run",
+        "packages/server/src/transaction-changefeed.test.ts",
+        "packages/server/src/transaction-consistency.test.ts",
+        "packages/server/src/transaction-event-sse.test.ts",
+        "packages/server/src/transaction-events.test.ts",
+        "packages/server/src/transaction-http.test.ts",
+        "packages/server/src/transaction-read.test.ts",
+        "packages/server/src/transaction-receipt-pages.test.ts",
+        "packages/server/src/transaction-service.test.ts",
+        "packages/server/src/transaction-snapshot.test.ts",
+        "--maxWorkers=1",
+        "--reporter=verbose",
+        "--reporter=json",
+        "--outputFile.json=/Users/dbox/repos/wt/vickie/bdp-integration-logs/current-observation-minimum-validation/correction-successor-2/run/focused-source.results.json",
+        "--testNamePattern",
+        "^(?:current\\ Type\\ and\\ incident\\-Link\\ minimums\\ rejects\\ malformed\\ Type\\ ID\\ omitted\\ through\\ a\\ Promise\\ without\\ invoking\\ caller\\ data|current\\ Type\\ and\\ incident\\-Link\\ minimums\\ rejects\\ malformed\\ Type\\ ID\\ undefined\\ through\\ a\\ Promise\\ without\\ invoking\\ caller\\ data|current\\ Type\\ and\\ incident\\-Link\\ minimums\\ rejects\\ malformed\\ Type\\ ID\\ null\\ through\\ a\\ Promise\\ without\\ invoking\\ caller\\ data|current\\ Type\\ and\\ incident\\-Link\\ minimums\\ rejects\\ malformed\\ Type\\ ID\\ number\\ through\\ a\\ Promise\\ without\\ invoking\\ caller\\ data|current\\ Type\\ and\\ incident\\-Link\\ minimums\\ rejects\\ malformed\\ Type\\ ID\\ false\\ through\\ a\\ Promise\\ without\\ invoking\\ caller\\ data|current\\ Type\\ and\\ incident\\-Link\\ minimums\\ rejects\\ malformed\\ Type\\ ID\\ empty\\ through\\ a\\ Promise\\ without\\ invoking\\ caller\\ data|current\\ Type\\ and\\ incident\\-Link\\ minimums\\ rejects\\ malformed\\ Type\\ ID\\ method\\ through\\ a\\ Promise\\ without\\ invoking\\ caller\\ data|current\\ Type\\ and\\ incident\\-Link\\ minimums\\ rejects\\ malformed\\ Type\\ ID\\ accessor\\ through\\ a\\ Promise\\ without\\ invoking\\ caller\\ data|current\\ Type\\ and\\ incident\\-Link\\ minimums\\ rejects\\ malformed\\ Type\\ ID\\ inherited\\ through\\ a\\ Promise\\ without\\ invoking\\ caller\\ data|current\\ Type\\ and\\ incident\\-Link\\ minimums\\ rejects\\ malformed\\ Type\\ ID\\ proxy\\ through\\ a\\ Promise\\ without\\ invoking\\ caller\\ data|current\\ Type\\ and\\ incident\\-Link\\ minimums\\ rejects\\ malformed\\ Type\\ ID\\ revoked\\ through\\ a\\ Promise\\ without\\ invoking\\ caller\\ data|current\\ Type\\ and\\ incident\\-Link\\ minimums\\ projects\\ immutable\\ current\\ Types\\ and\\ exact\\ incident\\ directions\\ including\\ self\\-Link\\ deduplication|current\\ Type\\ and\\ incident\\-Link\\ minimums\\ keeps\\ types\\ limits,\\ allocation\\ and\\ retained\\ continuation\\ boundaries\\ distinct|current\\ Type\\ and\\ incident\\-Link\\ minimums\\ keeps\\ incident\\ limits,\\ allocation\\ and\\ retained\\ continuation\\ boundaries\\ distinct|current\\ Type\\ and\\ incident\\-Link\\ minimums\\ waits\\ and\\ cancels\\ current\\ surface\\ 0\\ without\\ retaining\\ an\\ owner\\ entry|current\\ Type\\ and\\ incident\\-Link\\ minimums\\ waits\\ and\\ cancels\\ current\\ surface\\ 1\\ without\\ retaining\\ an\\ owner\\ entry|current\\ Type\\ and\\ incident\\-Link\\ minimums\\ waits\\ and\\ cancels\\ current\\ surface\\ 2\\ without\\ retaining\\ an\\ owner\\ entry|current\\ Type\\ and\\ incident\\-Link\\ minimums\\ pre\\-aborts,\\ drains\\ and\\ releases\\ a\\ waiting\\ current\\ surface\\ 0|current\\ Type\\ and\\ incident\\-Link\\ minimums\\ pre\\-aborts,\\ drains\\ and\\ releases\\ a\\ waiting\\ current\\ surface\\ 1|current\\ Type\\ and\\ incident\\-Link\\ minimums\\ pre\\-aborts,\\ drains\\ and\\ releases\\ a\\ waiting\\ current\\ surface\\ 2|current\\ Type\\ and\\ incident\\-Link\\ minimums\\ keeps\\ compatible\\ missing\\ Types\\ and\\ absent/deleted\\ incident\\ anchors\\ separate\\ from\\ collisions|current\\ alias\\ minimum\\ subset\\ preserves\\ direct\\ minimum\\ alias\\ receiving\\ validation,\\ cancellation\\ and\\ lifecycle\\ precedence|current\\ alias\\ minimum\\ subset\\ preserves\\ service\\ minimum\\ alias\\ receiving\\ validation,\\ cancellation\\ and\\ lifecycle\\ precedence|current\\ alias\\ minimum\\ subset\\ conditions\\ alias\\ mapping\\ and\\ context\\ in\\ one\\ entry\\ without\\ revising\\ either\\ target|current\\ alias\\ minimum\\ subset\\ rechecks\\ a\\ repointed\\ alias\\ after\\ waiting\\ for\\ a\\ real\\ Resource\\ effect|current\\ alias\\ minimum\\ subset\\ keeps\\ live\\ alias\\ context\\ failures\\ and\\ compatible\\ absent/deleted/dangling\\ observations\\ distinct|current\\ alias\\ minimum\\ subset\\ forwards\\ ordinary\\ and\\ minimum\\ Request\\ aborts\\ before\\ SQL\\ and\\ drains\\ an\\ admitted\\ alias\\ wait|current\\ alias\\ minimum\\ subset\\ does\\ not\\ relabel\\ alias\\ provider\\ or\\ malformed\\ context\\ failures\\ as\\ missing|current\\ alias\\ minimum\\ subset\\ captures\\ unknown\\ alias\\ minima\\ while\\ resolving\\ each\\ retry\\ against\\ the\\ live\\ owner|current\\ alias\\ minimum\\ subset\\ captures\\ pos\\-01\\ alias\\ minima\\ while\\ resolving\\ each\\ retry\\ against\\ the\\ live\\ owner|current\\ alias\\ minimum\\ subset\\ preserves\\ absent\\ alias\\ nondisclosure\\ before\\ opaque\\ minimum\\ waiting|current\\ alias\\ minimum\\ subset\\ preserves\\ deleted\\ alias\\ nondisclosure\\ before\\ opaque\\ minimum\\ waiting|current\\ alias\\ minimum\\ subset\\ preserves\\ dangling\\ alias\\ nondisclosure\\ before\\ opaque\\ minimum\\ waiting|current\\ alias\\ minimum\\ subset\\ preserves\\ hidden\\ alias\\ nondisclosure\\ before\\ opaque\\ minimum\\ waiting|current\\ alias\\ minimum\\ subset\\ returns\\ current\\ alias\\ absence\\ when\\ an\\ admitted\\ opaque\\ wait\\ loses\\ its\\ mapping|current\\ alias\\ minimum\\ subset\\ drains\\ an\\ aborted\\ opaque\\ alias\\ wait\\ before\\ releasing\\ its\\ owner|current\\ alias\\ minimum\\ subset\\ preserves\\ incident\\-Link\\ opaque\\ exclusions\\ beside\\ alias\\ minima|current\\ minimum\\ perform\\ receiving\\ preserves\\ a\\ direct\\ non\\-enumerable\\ pre\\-aborted\\ signal\\ before\\ owner\\ entry|current\\ minimum\\ perform\\ receiving\\ preserves\\ direct\\ minimum\\ perform\\ receiving\\ validation,\\ cancellation\\ and\\ lifecycle\\ precedence|current\\ minimum\\ perform\\ receiving\\ preserves\\ service\\ minimum\\ perform\\ receiving\\ validation,\\ cancellation\\ and\\ lifecycle\\ precedence|internal\\ discovery\\ owner\\ observation\\ copies\\ exactly\\ one\\ owner\\ entry\\ and\\ parses\\ only\\ after\\ releasing\\ it|internal\\ discovery\\ owner\\ observation\\ keeps\\ entry\\ refusal\\ distinct\\ from\\ structural\\ validation\\ failure|internal\\ discovery\\ owner\\ observation\\ captures\\ nested\\ limits\\ once\\ and\\ enforces\\ the\\ captured\\ values\\ after\\ caller\\ mutation|internal\\ discovery\\ owner\\ observation\\ keeps\\ the\\ replay\\ position\\ floor\\ and\\ complete\\ genesis\\ groups\\ through\\ receipt\\ expiry\\ and\\ reopen|internal\\ discovery\\ minimum\\ observation\\ preserves\\ synchronous\\ no\\-minimum\\ timing\\ and\\ ignores\\ its\\ signal\\ and\\ wait\\ policy|internal\\ discovery\\ minimum\\ observation\\ returns\\ an\\ immutable\\ same\\-entry\\ eligible\\ prefix\\ for\\ pos\\-1\\ after\\ release|internal\\ discovery\\ minimum\\ observation\\ returns\\ an\\ immutable\\ same\\-entry\\ eligible\\ prefix\\ for\\ pos\\-0\\ after\\ release|internal\\ discovery\\ minimum\\ observation\\ returns\\ an\\ immutable\\ same\\-entry\\ eligible\\ prefix\\ for\\ genesis\\ after\\ release|internal\\ discovery\\ minimum\\ observation\\ captures\\ immutable\\ minimum\\ controls\\ and\\ releases\\ the\\ owner\\ during\\ controlled\\ catch\\-up|internal\\ discovery\\ minimum\\ observation\\ releases\\ the\\ owner\\ after\\ an\\ in\\-entry\\ scopeEpoch\\ refusal|internal\\ discovery\\ minimum\\ observation\\ releases\\ the\\ owner\\ after\\ an\\ in\\-entry\\ authorizationView\\ refusal|internal\\ discovery\\ minimum\\ observation\\ times\\ out\\ after\\ two\\ controlled\\ attempts\\ without\\ assembly\\ and\\ leaves\\ the\\ owner\\ reusable|internal\\ discovery\\ minimum\\ observation\\ rejects\\ pre\\-abort\\ before\\ entry\\ and\\ pending\\ abort\\ before\\ retry|internal\\ discovery\\ minimum\\ observation\\ drains\\ an\\ admitted\\ discovery\\ wait\\ before\\ closing\\ the\\ owner|internal\\ discovery\\ minimum\\ observation\\ keeps\\ malformed\\ input,\\ entry\\ refusal,\\ provider\\ and\\ parser\\ failures\\ distinct|captures\\ lexical\\ current\\ minimums\\ without\\ widening\\ strict\\ consumers\\ or\\ invoking\\ accessors|waits\\ for\\ unproved\\ current\\ eligibility\\ with\\ one\\ deadline\\ and\\ preserves\\ terminal\\ failures|distinguishes\\ closed\\ minimum\\ receiving\\ syntax\\ from\\ supported\\ position\\ identities|uses\\ actual\\ current\\ policy\\ for\\ missing\\-first\\ and\\ unproved\\ Resource\\ attempts|drains\\ an\\ admitted\\ unknown\\ minimum\\ to\\ timeout\\ and\\ rejects\\ new\\ reads\\ while\\ closing|records\\ one\\ atomic\\ page\\ chain,\\ retains\\ original\\ postimages\\ and\\ all\\ tail\\ allocations\\ through\\ expiry|captures\\ immutable\\ current\\ context\\ for\\ nondisclosable\\ receipt\\ pages\\ before\\ minimum\\ checks|checks\\ each\\ fresh\\ Snapshot\\ minimum\\ before\\ any\\ handle,\\ record,\\ page\\ or\\ expiry\\ work|does\\ not\\ expire\\ retained\\ Snapshot\\ details\\ on\\ an\\ ineligible\\ fresh\\ attempt|gates\\ fresh\\ Snapshot\\ opaque\\ minima\\ before\\ allocation\\ and\\ expiry|gates\\ initial\\ Scope\\ Event\\ unknown\\ minima\\ before\\ retained\\ scans|serves\\ initial\\ finite\\ Scope\\ Event\\ opaque\\ minima\\ through\\ bounded\\ waiting|gates\\ initial\\ Bead\\ Event\\ unknown\\ minima\\ before\\ retained\\ scans|serves\\ initial\\ finite\\ Bead\\ Event\\ opaque\\ minima\\ with\\ retained\\ identity\\ and\\ route\\ fences|gates\\ initial\\ Link\\ Event\\ unknown\\ minima\\ before\\ retained\\ scans|serves\\ initial\\ finite\\ Link\\ Event\\ opaque\\ minima\\ with\\ retained\\ identity\\ and\\ route\\ fences|gates\\ initial\\ Scope\\ Event\\ SSE\\ opaque\\ minima\\ before\\ scan\\ packets|captures\\ initial\\ Scope\\ Event\\ SSE\\ minima\\ once\\ and\\ recaptures\\ context\\ on\\ retry|drains\\ an\\ aborted\\ initial\\ Scope\\ Event\\ SSE\\ minimum\\ wait\\ before\\ owner\\ close|serves\\ initial\\ Scope\\ Event\\ SSE\\ opaque\\ minima\\ before\\ conditional\\ admission|keeps\\ direct\\ and\\ excluded\\ changefeed\\ minimum\\ paths\\ strict|serves\\ finite\\ start\\-now\\ opaque\\ minima\\ before\\ HTTP\\ shortcuts|serves\\ canonical\\ current\\ Type\\ and\\ incident\\ minimums\\ with\\ truthful\\ context\\ and\\ parser\\ boundaries|serves\\ conditioned\\ live\\ aliases\\ and\\ preserves\\ bodyless\\ redirects,\\ refusal\\ context\\ and\\ receiving\\ boundaries|waits\\ for\\ current\\ Resources\\ and\\ initial\\ collections\\ with\\ unknown\\ minima\\ and\\ preserves\\ residual\\ refusals|serves\\ fresh\\ Snapshot\\ opaque\\ minima\\ with\\ terminal\\ preflight\\ and\\ retained\\ fences|serves\\ opaque\\ receipt\\ root\\ minima\\ before\\ HTTP\\ shortcuts\\ with\\ private\\ fences|rejects\\ collection\\ parser\\ errors\\ before\\ unknown\\ minimum\\ support\\ checks|preserves\\ parser\\ refusal\\ parity\\ on\\ noncollection\\ and\\ excluded\\ query\\ routes|preserves\\ receiving\\ and\\ HTTP\\ error\\ precedence\\ for\\ parser\\ refusals|orders\\ page\\ nondisclosure,\\ minimum\\ waits,\\ expiry\\ and\\ representation\\ using\\ actual\\ owner\\ state|refuses\\ unsupported\\ root\\ controls\\ after\\ nondisclosure\\ but\\ before\\ read\\-triggered\\ retention|keeps\\ failed\\ parent\\ rows\\ unchanged\\ for\\ nonexistent\\ page\\ reads\\ with\\ any\\ controls|waits\\ for\\ lexical\\ current\\ observations\\ and\\ preserves\\ captured\\ tuples\\ across\\ real\\ progress|orders\\ Type\\ refusal\\ and\\ receipt\\ page\\ nondisclosure\\ before\\ projection|drains\\ lexical\\ current\\ observation\\ type\\ before\\ close|drains\\ lexical\\ current\\ observation\\ types\\ before\\ close|drains\\ lexical\\ current\\ observation\\ incident\\ before\\ close|drains\\ lexical\\ current\\ observation\\ page\\ before\\ close|drains\\ lexical\\ current\\ observation\\ discovery\\ before\\ close|preserves\\ receipt\\ page\\ detail\\ when\\ lexical\\ eligibility\\ is\\ unproved|serves\\ current\\ observation\\ minimums\\ with\\ actual\\ issued\\ pages\\ and\\ HTTP\\ parity)$"
+      ],
+      "outerSeconds": 120,
+      "automaticRetries": 0,
+      "acceptedRawExitCodes": [
+        0
+      ],
+      "selectedFullNames": [
+        "current Type and incident-Link minimums rejects malformed Type ID omitted through a Promise without invoking caller data",
+        "current Type and incident-Link minimums rejects malformed Type ID undefined through a Promise without invoking caller data",
+        "current Type and incident-Link minimums rejects malformed Type ID null through a Promise without invoking caller data",
+        "current Type and incident-Link minimums rejects malformed Type ID number through a Promise without invoking caller data",
+        "current Type and incident-Link minimums rejects malformed Type ID false through a Promise without invoking caller data",
+        "current Type and incident-Link minimums rejects malformed Type ID empty through a Promise without invoking caller data",
+        "current Type and incident-Link minimums rejects malformed Type ID method through a Promise without invoking caller data",
+        "current Type and incident-Link minimums rejects malformed Type ID accessor through a Promise without invoking caller data",
+        "current Type and incident-Link minimums rejects malformed Type ID inherited through a Promise without invoking caller data",
+        "current Type and incident-Link minimums rejects malformed Type ID proxy through a Promise without invoking caller data",
+        "current Type and incident-Link minimums rejects malformed Type ID revoked through a Promise without invoking caller data",
+        "current Type and incident-Link minimums projects immutable current Types and exact incident directions including self-Link deduplication",
+        "current Type and incident-Link minimums keeps types limits, allocation and retained continuation boundaries distinct",
+        "current Type and incident-Link minimums keeps incident limits, allocation and retained continuation boundaries distinct",
+        "current Type and incident-Link minimums waits and cancels current surface 0 without retaining an owner entry",
+        "current Type and incident-Link minimums waits and cancels current surface 1 without retaining an owner entry",
+        "current Type and incident-Link minimums waits and cancels current surface 2 without retaining an owner entry",
+        "current Type and incident-Link minimums pre-aborts, drains and releases a waiting current surface 0",
+        "current Type and incident-Link minimums pre-aborts, drains and releases a waiting current surface 1",
+        "current Type and incident-Link minimums pre-aborts, drains and releases a waiting current surface 2",
+        "current Type and incident-Link minimums keeps compatible missing Types and absent/deleted incident anchors separate from collisions",
+        "current alias minimum subset preserves direct minimum alias receiving validation, cancellation and lifecycle precedence",
+        "current alias minimum subset preserves service minimum alias receiving validation, cancellation and lifecycle precedence",
+        "current alias minimum subset conditions alias mapping and context in one entry without revising either target",
+        "current alias minimum subset rechecks a repointed alias after waiting for a real Resource effect",
+        "current alias minimum subset keeps live alias context failures and compatible absent/deleted/dangling observations distinct",
+        "current alias minimum subset forwards ordinary and minimum Request aborts before SQL and drains an admitted alias wait",
+        "current alias minimum subset does not relabel alias provider or malformed context failures as missing",
+        "current alias minimum subset captures unknown alias minima while resolving each retry against the live owner",
+        "current alias minimum subset captures pos-01 alias minima while resolving each retry against the live owner",
+        "current alias minimum subset preserves absent alias nondisclosure before opaque minimum waiting",
+        "current alias minimum subset preserves deleted alias nondisclosure before opaque minimum waiting",
+        "current alias minimum subset preserves dangling alias nondisclosure before opaque minimum waiting",
+        "current alias minimum subset preserves hidden alias nondisclosure before opaque minimum waiting",
+        "current alias minimum subset returns current alias absence when an admitted opaque wait loses its mapping",
+        "current alias minimum subset drains an aborted opaque alias wait before releasing its owner",
+        "current alias minimum subset preserves incident-Link opaque exclusions beside alias minima",
+        "current minimum perform receiving preserves a direct non-enumerable pre-aborted signal before owner entry",
+        "current minimum perform receiving preserves direct minimum perform receiving validation, cancellation and lifecycle precedence",
+        "current minimum perform receiving preserves service minimum perform receiving validation, cancellation and lifecycle precedence",
+        "internal discovery owner observation copies exactly one owner entry and parses only after releasing it",
+        "internal discovery owner observation keeps entry refusal distinct from structural validation failure",
+        "internal discovery owner observation captures nested limits once and enforces the captured values after caller mutation",
+        "internal discovery owner observation keeps the replay position floor and complete genesis groups through receipt expiry and reopen",
+        "internal discovery minimum observation preserves synchronous no-minimum timing and ignores its signal and wait policy",
+        "internal discovery minimum observation returns an immutable same-entry eligible prefix for pos-1 after release",
+        "internal discovery minimum observation returns an immutable same-entry eligible prefix for pos-0 after release",
+        "internal discovery minimum observation returns an immutable same-entry eligible prefix for genesis after release",
+        "internal discovery minimum observation captures immutable minimum controls and releases the owner during controlled catch-up",
+        "internal discovery minimum observation releases the owner after an in-entry scopeEpoch refusal",
+        "internal discovery minimum observation releases the owner after an in-entry authorizationView refusal",
+        "internal discovery minimum observation times out after two controlled attempts without assembly and leaves the owner reusable",
+        "internal discovery minimum observation rejects pre-abort before entry and pending abort before retry",
+        "internal discovery minimum observation drains an admitted discovery wait before closing the owner",
+        "internal discovery minimum observation keeps malformed input, entry refusal, provider and parser failures distinct",
+        "captures lexical current minimums without widening strict consumers or invoking accessors",
+        "waits for unproved current eligibility with one deadline and preserves terminal failures",
+        "distinguishes closed minimum receiving syntax from supported position identities",
+        "uses actual current policy for missing-first and unproved Resource attempts",
+        "drains an admitted unknown minimum to timeout and rejects new reads while closing",
+        "records one atomic page chain, retains original postimages and all tail allocations through expiry",
+        "captures immutable current context for nondisclosable receipt pages before minimum checks",
+        "checks each fresh Snapshot minimum before any handle, record, page or expiry work",
+        "does not expire retained Snapshot details on an ineligible fresh attempt",
+        "gates fresh Snapshot opaque minima before allocation and expiry",
+        "gates initial Scope Event unknown minima before retained scans",
+        "serves initial finite Scope Event opaque minima through bounded waiting",
+        "gates initial Bead Event unknown minima before retained scans",
+        "serves initial finite Bead Event opaque minima with retained identity and route fences",
+        "gates initial Link Event unknown minima before retained scans",
+        "serves initial finite Link Event opaque minima with retained identity and route fences",
+        "gates initial Scope Event SSE opaque minima before scan packets",
+        "captures initial Scope Event SSE minima once and recaptures context on retry",
+        "drains an aborted initial Scope Event SSE minimum wait before owner close",
+        "serves initial Scope Event SSE opaque minima before conditional admission",
+        "keeps direct and excluded changefeed minimum paths strict",
+        "serves finite start-now opaque minima before HTTP shortcuts",
+        "serves canonical current Type and incident minimums with truthful context and parser boundaries",
+        "serves conditioned live aliases and preserves bodyless redirects, refusal context and receiving boundaries",
+        "waits for current Resources and initial collections with unknown minima and preserves residual refusals",
+        "serves fresh Snapshot opaque minima with terminal preflight and retained fences",
+        "serves opaque receipt root minima before HTTP shortcuts with private fences",
+        "rejects collection parser errors before unknown minimum support checks",
+        "preserves parser refusal parity on noncollection and excluded query routes",
+        "preserves receiving and HTTP error precedence for parser refusals",
+        "orders page nondisclosure, minimum waits, expiry and representation using actual owner state",
+        "refuses unsupported root controls after nondisclosure but before read-triggered retention",
+        "keeps failed parent rows unchanged for nonexistent page reads with any controls",
+        "waits for lexical current observations and preserves captured tuples across real progress",
+        "orders Type refusal and receipt page nondisclosure before projection",
+        "drains lexical current observation type before close",
+        "drains lexical current observation types before close",
+        "drains lexical current observation incident before close",
+        "drains lexical current observation page before close",
+        "drains lexical current observation discovery before close",
+        "preserves receipt page detail when lexical eligibility is unproved",
+        "serves current observation minimums with actual issued pages and HTTP parity"
+      ],
+      "prospectiveWorkload": {
+        "cases": 97,
+        "legacyCases": 88,
+        "newCases": 9,
+        "newObservationRecords": 9,
+        "legacyObservationRecords": 28,
+        "newSourceNetworkRequests": 37,
+        "legacyTraffic": "separate, no inferred aggregate"
+      },
+      "selectionAttribution": "Five approved families expanded from frozen source; exact97 cases across9 modules;9 new plus28 separately attributed legacy report records.",
+      "termAfterSeconds": 115,
+      "selectedFilesByFullName": {
+        "current Type and incident-Link minimums rejects malformed Type ID omitted through a Promise without invoking caller data": "packages/server/src/transaction-read.test.ts",
+        "current Type and incident-Link minimums rejects malformed Type ID undefined through a Promise without invoking caller data": "packages/server/src/transaction-read.test.ts",
+        "current Type and incident-Link minimums rejects malformed Type ID null through a Promise without invoking caller data": "packages/server/src/transaction-read.test.ts",
+        "current Type and incident-Link minimums rejects malformed Type ID number through a Promise without invoking caller data": "packages/server/src/transaction-read.test.ts",
+        "current Type and incident-Link minimums rejects malformed Type ID false through a Promise without invoking caller data": "packages/server/src/transaction-read.test.ts",
+        "current Type and incident-Link minimums rejects malformed Type ID empty through a Promise without invoking caller data": "packages/server/src/transaction-read.test.ts",
+        "current Type and incident-Link minimums rejects malformed Type ID method through a Promise without invoking caller data": "packages/server/src/transaction-read.test.ts",
+        "current Type and incident-Link minimums rejects malformed Type ID accessor through a Promise without invoking caller data": "packages/server/src/transaction-read.test.ts",
+        "current Type and incident-Link minimums rejects malformed Type ID inherited through a Promise without invoking caller data": "packages/server/src/transaction-read.test.ts",
+        "current Type and incident-Link minimums rejects malformed Type ID proxy through a Promise without invoking caller data": "packages/server/src/transaction-read.test.ts",
+        "current Type and incident-Link minimums rejects malformed Type ID revoked through a Promise without invoking caller data": "packages/server/src/transaction-read.test.ts",
+        "current Type and incident-Link minimums projects immutable current Types and exact incident directions including self-Link deduplication": "packages/server/src/transaction-read.test.ts",
+        "current Type and incident-Link minimums keeps types limits, allocation and retained continuation boundaries distinct": "packages/server/src/transaction-read.test.ts",
+        "current Type and incident-Link minimums keeps incident limits, allocation and retained continuation boundaries distinct": "packages/server/src/transaction-read.test.ts",
+        "current Type and incident-Link minimums waits and cancels current surface 0 without retaining an owner entry": "packages/server/src/transaction-read.test.ts",
+        "current Type and incident-Link minimums waits and cancels current surface 1 without retaining an owner entry": "packages/server/src/transaction-read.test.ts",
+        "current Type and incident-Link minimums waits and cancels current surface 2 without retaining an owner entry": "packages/server/src/transaction-read.test.ts",
+        "current Type and incident-Link minimums pre-aborts, drains and releases a waiting current surface 0": "packages/server/src/transaction-read.test.ts",
+        "current Type and incident-Link minimums pre-aborts, drains and releases a waiting current surface 1": "packages/server/src/transaction-read.test.ts",
+        "current Type and incident-Link minimums pre-aborts, drains and releases a waiting current surface 2": "packages/server/src/transaction-read.test.ts",
+        "current Type and incident-Link minimums keeps compatible missing Types and absent/deleted incident anchors separate from collisions": "packages/server/src/transaction-read.test.ts",
+        "current alias minimum subset preserves direct minimum alias receiving validation, cancellation and lifecycle precedence": "packages/server/src/transaction-read.test.ts",
+        "current alias minimum subset preserves service minimum alias receiving validation, cancellation and lifecycle precedence": "packages/server/src/transaction-read.test.ts",
+        "current alias minimum subset conditions alias mapping and context in one entry without revising either target": "packages/server/src/transaction-read.test.ts",
+        "current alias minimum subset rechecks a repointed alias after waiting for a real Resource effect": "packages/server/src/transaction-read.test.ts",
+        "current alias minimum subset keeps live alias context failures and compatible absent/deleted/dangling observations distinct": "packages/server/src/transaction-read.test.ts",
+        "current alias minimum subset forwards ordinary and minimum Request aborts before SQL and drains an admitted alias wait": "packages/server/src/transaction-read.test.ts",
+        "current alias minimum subset does not relabel alias provider or malformed context failures as missing": "packages/server/src/transaction-read.test.ts",
+        "current alias minimum subset captures unknown alias minima while resolving each retry against the live owner": "packages/server/src/transaction-read.test.ts",
+        "current alias minimum subset captures pos-01 alias minima while resolving each retry against the live owner": "packages/server/src/transaction-read.test.ts",
+        "current alias minimum subset preserves absent alias nondisclosure before opaque minimum waiting": "packages/server/src/transaction-read.test.ts",
+        "current alias minimum subset preserves deleted alias nondisclosure before opaque minimum waiting": "packages/server/src/transaction-read.test.ts",
+        "current alias minimum subset preserves dangling alias nondisclosure before opaque minimum waiting": "packages/server/src/transaction-read.test.ts",
+        "current alias minimum subset preserves hidden alias nondisclosure before opaque minimum waiting": "packages/server/src/transaction-read.test.ts",
+        "current alias minimum subset returns current alias absence when an admitted opaque wait loses its mapping": "packages/server/src/transaction-read.test.ts",
+        "current alias minimum subset drains an aborted opaque alias wait before releasing its owner": "packages/server/src/transaction-read.test.ts",
+        "current alias minimum subset preserves incident-Link opaque exclusions beside alias minima": "packages/server/src/transaction-read.test.ts",
+        "current minimum perform receiving preserves a direct non-enumerable pre-aborted signal before owner entry": "packages/server/src/transaction-read.test.ts",
+        "current minimum perform receiving preserves direct minimum perform receiving validation, cancellation and lifecycle precedence": "packages/server/src/transaction-read.test.ts",
+        "current minimum perform receiving preserves service minimum perform receiving validation, cancellation and lifecycle precedence": "packages/server/src/transaction-read.test.ts",
+        "internal discovery owner observation copies exactly one owner entry and parses only after releasing it": "packages/server/src/transaction-service.test.ts",
+        "internal discovery owner observation keeps entry refusal distinct from structural validation failure": "packages/server/src/transaction-service.test.ts",
+        "internal discovery owner observation captures nested limits once and enforces the captured values after caller mutation": "packages/server/src/transaction-service.test.ts",
+        "internal discovery owner observation keeps the replay position floor and complete genesis groups through receipt expiry and reopen": "packages/server/src/transaction-service.test.ts",
+        "internal discovery minimum observation preserves synchronous no-minimum timing and ignores its signal and wait policy": "packages/server/src/transaction-service.test.ts",
+        "internal discovery minimum observation returns an immutable same-entry eligible prefix for pos-1 after release": "packages/server/src/transaction-service.test.ts",
+        "internal discovery minimum observation returns an immutable same-entry eligible prefix for pos-0 after release": "packages/server/src/transaction-service.test.ts",
+        "internal discovery minimum observation returns an immutable same-entry eligible prefix for genesis after release": "packages/server/src/transaction-service.test.ts",
+        "internal discovery minimum observation captures immutable minimum controls and releases the owner during controlled catch-up": "packages/server/src/transaction-service.test.ts",
+        "internal discovery minimum observation releases the owner after an in-entry scopeEpoch refusal": "packages/server/src/transaction-service.test.ts",
+        "internal discovery minimum observation releases the owner after an in-entry authorizationView refusal": "packages/server/src/transaction-service.test.ts",
+        "internal discovery minimum observation times out after two controlled attempts without assembly and leaves the owner reusable": "packages/server/src/transaction-service.test.ts",
+        "internal discovery minimum observation rejects pre-abort before entry and pending abort before retry": "packages/server/src/transaction-service.test.ts",
+        "internal discovery minimum observation drains an admitted discovery wait before closing the owner": "packages/server/src/transaction-service.test.ts",
+        "internal discovery minimum observation keeps malformed input, entry refusal, provider and parser failures distinct": "packages/server/src/transaction-service.test.ts",
+        "captures lexical current minimums without widening strict consumers or invoking accessors": "packages/server/src/transaction-consistency.test.ts",
+        "waits for unproved current eligibility with one deadline and preserves terminal failures": "packages/server/src/transaction-consistency.test.ts",
+        "distinguishes closed minimum receiving syntax from supported position identities": "packages/server/src/transaction-consistency.test.ts",
+        "uses actual current policy for missing-first and unproved Resource attempts": "packages/server/src/transaction-read.test.ts",
+        "drains an admitted unknown minimum to timeout and rejects new reads while closing": "packages/server/src/transaction-read.test.ts",
+        "records one atomic page chain, retains original postimages and all tail allocations through expiry": "packages/server/src/transaction-receipt-pages.test.ts",
+        "captures immutable current context for nondisclosable receipt pages before minimum checks": "packages/server/src/transaction-receipt-pages.test.ts",
+        "checks each fresh Snapshot minimum before any handle, record, page or expiry work": "packages/server/src/transaction-snapshot.test.ts",
+        "does not expire retained Snapshot details on an ineligible fresh attempt": "packages/server/src/transaction-snapshot.test.ts",
+        "gates fresh Snapshot opaque minima before allocation and expiry": "packages/server/src/transaction-snapshot.test.ts",
+        "gates initial Scope Event unknown minima before retained scans": "packages/server/src/transaction-events.test.ts",
+        "serves initial finite Scope Event opaque minima through bounded waiting": "packages/server/src/transaction-events.test.ts",
+        "gates initial Bead Event unknown minima before retained scans": "packages/server/src/transaction-events.test.ts",
+        "serves initial finite Bead Event opaque minima with retained identity and route fences": "packages/server/src/transaction-events.test.ts",
+        "gates initial Link Event unknown minima before retained scans": "packages/server/src/transaction-events.test.ts",
+        "serves initial finite Link Event opaque minima with retained identity and route fences": "packages/server/src/transaction-events.test.ts",
+        "gates initial Scope Event SSE opaque minima before scan packets": "packages/server/src/transaction-event-sse.test.ts",
+        "captures initial Scope Event SSE minima once and recaptures context on retry": "packages/server/src/transaction-event-sse.test.ts",
+        "drains an aborted initial Scope Event SSE minimum wait before owner close": "packages/server/src/transaction-event-sse.test.ts",
+        "serves initial Scope Event SSE opaque minima before conditional admission": "packages/server/src/transaction-event-sse.test.ts",
+        "keeps direct and excluded changefeed minimum paths strict": "packages/server/src/transaction-changefeed.test.ts",
+        "serves finite start-now opaque minima before HTTP shortcuts": "packages/server/src/transaction-changefeed.test.ts",
+        "serves canonical current Type and incident minimums with truthful context and parser boundaries": "packages/server/src/transaction-http.test.ts",
+        "serves conditioned live aliases and preserves bodyless redirects, refusal context and receiving boundaries": "packages/server/src/transaction-http.test.ts",
+        "waits for current Resources and initial collections with unknown minima and preserves residual refusals": "packages/server/src/transaction-http.test.ts",
+        "serves fresh Snapshot opaque minima with terminal preflight and retained fences": "packages/server/src/transaction-http.test.ts",
+        "serves opaque receipt root minima before HTTP shortcuts with private fences": "packages/server/src/transaction-http.test.ts",
+        "rejects collection parser errors before unknown minimum support checks": "packages/server/src/transaction-http.test.ts",
+        "preserves parser refusal parity on noncollection and excluded query routes": "packages/server/src/transaction-http.test.ts",
+        "preserves receiving and HTTP error precedence for parser refusals": "packages/server/src/transaction-http.test.ts",
+        "orders page nondisclosure, minimum waits, expiry and representation using actual owner state": "packages/server/src/transaction-http.test.ts",
+        "refuses unsupported root controls after nondisclosure but before read-triggered retention": "packages/server/src/transaction-http.test.ts",
+        "keeps failed parent rows unchanged for nonexistent page reads with any controls": "packages/server/src/transaction-http.test.ts",
+        "waits for lexical current observations and preserves captured tuples across real progress": "packages/server/src/transaction-service.test.ts",
+        "orders Type refusal and receipt page nondisclosure before projection": "packages/server/src/transaction-service.test.ts",
+        "drains lexical current observation type before close": "packages/server/src/transaction-service.test.ts",
+        "drains lexical current observation types before close": "packages/server/src/transaction-service.test.ts",
+        "drains lexical current observation incident before close": "packages/server/src/transaction-service.test.ts",
+        "drains lexical current observation page before close": "packages/server/src/transaction-service.test.ts",
+        "drains lexical current observation discovery before close": "packages/server/src/transaction-service.test.ts",
+        "preserves receipt page detail when lexical eligibility is unproved": "packages/server/src/transaction-receipt-pages.test.ts",
+        "serves current observation minimums with actual issued pages and HTTP parity": "packages/server/src/transaction-http.test.ts"
+      }
+    },
+    "review-focused-source": {
+      "cwd": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/current-observation-minimum-validation/correction-successor-2",
+      "argv": [
+        "/opt/homebrew/opt/python@3.14/bin/python3.14",
+        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/current-observation-minimum-validation/correction-successor-2/audit.py",
+        "source"
+      ],
+      "outerSeconds": 120,
+      "automaticRetries": 0,
+      "acceptedRawExitCodes": [
+        0
+      ],
+      "termAfterSeconds": 115
+    },
+    "node-version": {
+      "cwd": "/Users/dbox/repos/wt/vickie/vickie-current-observation-minimum",
+      "argv": [
+        "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+        "--version"
+      ],
+      "outerSeconds": 120,
+      "automaticRetries": 0,
+      "acceptedRawExitCodes": [
+        0
+      ],
+      "termAfterSeconds": 115
+    },
+    "prepare-package-directory": {
+      "cwd": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/current-observation-minimum-validation/correction-successor-2",
+      "argv": [
+        "/opt/homebrew/opt/python@3.14/bin/python3.14",
+        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/current-observation-minimum-validation/correction-successor-2/packages.py",
+        "directory"
+      ],
+      "outerSeconds": 120,
+      "automaticRetries": 0,
+      "acceptedRawExitCodes": [
+        0
+      ],
+      "termAfterSeconds": 115
+    },
+    "pack-protocol": {
+      "cwd": "/Users/dbox/repos/wt/vickie/vickie-current-observation-minimum",
+      "argv": [
+        "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+        "/Users/dbox/.cache/node/corepack/v1/pnpm/11.20.0/bin/pnpm.cjs",
+        "--filter",
+        "@bdp/protocol",
+        "pack",
+        "--pack-destination",
+        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/current-observation-minimum-validation/correction-successor-2/run/packages"
+      ],
+      "outerSeconds": 120,
+      "automaticRetries": 0,
+      "acceptedRawExitCodes": [
+        0
+      ],
+      "termAfterSeconds": 115
+    },
+    "pack-server": {
+      "cwd": "/Users/dbox/repos/wt/vickie/vickie-current-observation-minimum",
+      "argv": [
+        "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+        "/Users/dbox/.cache/node/corepack/v1/pnpm/11.20.0/bin/pnpm.cjs",
+        "--filter",
+        "@bdp/server",
+        "pack",
+        "--pack-destination",
+        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/current-observation-minimum-validation/correction-successor-2/run/packages"
+      ],
+      "outerSeconds": 120,
+      "automaticRetries": 0,
+      "acceptedRawExitCodes": [
+        0
+      ],
+      "termAfterSeconds": 115
+    },
+    "verify-archives": {
+      "cwd": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/current-observation-minimum-validation/correction-successor-2",
+      "argv": [
+        "/opt/homebrew/opt/python@3.14/bin/python3.14",
+        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/current-observation-minimum-validation/correction-successor-2/packages.py",
+        "tar"
+      ],
+      "outerSeconds": 120,
+      "automaticRetries": 0,
+      "acceptedRawExitCodes": [
+        0
+      ],
+      "termAfterSeconds": 115
+    },
+    "prepare-consumer": {
+      "cwd": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/current-observation-minimum-validation/correction-successor-2",
+      "argv": [
+        "/opt/homebrew/opt/python@3.14/bin/python3.14",
+        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/current-observation-minimum-validation/correction-successor-2/packages.py",
+        "consumer"
+      ],
+      "outerSeconds": 120,
+      "automaticRetries": 0,
+      "acceptedRawExitCodes": [
+        0
+      ],
+      "termAfterSeconds": 115
+    },
+    "consumer-install": {
+      "cwd": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/current-observation-minimum-validation/correction-successor-2/run/consumer",
+      "argv": [
+        "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+        "/Users/dbox/.cache/node/corepack/v1/pnpm/11.20.0/bin/pnpm.cjs",
+        "install",
+        "--offline",
+        "--ignore-scripts",
+        "--no-frozen-lockfile",
+        "--prod"
+      ],
+      "outerSeconds": 120,
+      "automaticRetries": 0,
+      "acceptedRawExitCodes": [
+        0
+      ],
+      "termAfterSeconds": 115
+    },
+    "verify-installed-consumer": {
+      "cwd": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/current-observation-minimum-validation/correction-successor-2",
+      "argv": [
+        "/opt/homebrew/opt/python@3.14/bin/python3.14",
+        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/current-observation-minimum-validation/correction-successor-2/packages.py",
+        "installed"
+      ],
+      "outerSeconds": 120,
+      "automaticRetries": 0,
+      "acceptedRawExitCodes": [
+        0
+      ],
+      "termAfterSeconds": 115
+    },
+    "receiving-history-external": {
+      "cwd": "/Users/dbox/repos/wt/vickie/vickie-current-observation-minimum",
+      "argv": [
+        "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+        "/Users/dbox/repos/wt/vickie/vickie-current-observation-minimum/node_modules/vitest/vitest.mjs",
+        "run",
+        "apps/bdptest/src/transactional-minimum-receiving-installed.test.ts",
+        "--maxWorkers=1",
+        "--reporter=verbose",
+        "--reporter=json",
+        "--outputFile.json=/Users/dbox/repos/wt/vickie/bdp-integration-logs/current-observation-minimum-validation/correction-successor-2/run/receiving-history-external.results.json",
+        "--testNamePattern",
+        "^rejects\\ malformed\\ read\\ minimum\\ tuples\\ before\\ observation\\ while\\ preserving\\ receipt\\ nondisclosure$"
+      ],
+      "outerSeconds": 120,
+      "automaticRetries": 0,
+      "acceptedRawExitCodes": [
+        0
+      ],
+      "selectedFullNames": [
+        "rejects malformed read minimum tuples before observation while preserving receipt nondisclosure"
+      ],
+      "prospectiveWorkload": {
+        "callbacks": 1,
+        "requests": 22,
+        "children": 1,
+        "stores": 1,
+        "workMs": 45000,
+        "requestMs": 5000,
+        "cleanupMs": 10000,
+        "callbackMs": 60000
+      },
+      "expectedObservation": "private-installed-minimum-receiving",
+      "expectedExchanges": 22,
+      "expectedChildren": 1,
+      "termAfterSeconds": 115,
+      "selectedFilesByFullName": {
+        "rejects malformed read minimum tuples before observation while preserving receipt nondisclosure": "apps/bdptest/src/transactional-minimum-receiving-installed.test.ts"
+      }
+    },
+    "review-receiving-history-external": {
+      "cwd": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/current-observation-minimum-validation/correction-successor-2",
+      "argv": [
+        "/opt/homebrew/opt/python@3.14/bin/python3.14",
+        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/current-observation-minimum-validation/correction-successor-2/audit.py",
+        "history"
+      ],
+      "outerSeconds": 120,
+      "automaticRetries": 0,
+      "acceptedRawExitCodes": [
+        0
+      ],
+      "termAfterSeconds": 115
+    },
+    "current-observation-external": {
+      "cwd": "/Users/dbox/repos/wt/vickie/vickie-current-observation-minimum",
+      "argv": [
+        "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+        "/Users/dbox/repos/wt/vickie/vickie-current-observation-minimum/node_modules/vitest/vitest.mjs",
+        "run",
+        "apps/bdptest/src/transactional-minimum-receiving-installed.test.ts",
+        "--maxWorkers=1",
+        "--reporter=verbose",
+        "--reporter=json",
+        "--outputFile.json=/Users/dbox/repos/wt/vickie/bdp-integration-logs/current-observation-minimum-validation/correction-successor-2/run/current-observation-external.results.json",
+        "--testNamePattern",
+        "^observes\\ installed\\ current\\ observation\\ minima\\ within37requests$"
+      ],
+      "outerSeconds": 120,
+      "automaticRetries": 0,
+      "acceptedRawExitCodes": [
+        0
+      ],
+      "selectedFullNames": [
+        "observes installed current observation minima within37requests"
+      ],
+      "prospectiveWorkload": {
+        "callbacks": 1,
+        "requests": 37,
+        "children": 1,
+        "stores": 1,
+        "workMs": 45000,
+        "requestMs": 5000,
+        "cleanupMs": 10000,
+        "callbackMs": 60000
+      },
+      "expectedObservation": "private-installed-current-observation-minimum",
+      "expectedExchanges": 37,
+      "expectedChildren": 1,
+      "termAfterSeconds": 115,
+      "selectedFilesByFullName": {
+        "observes installed current observation minima within37requests": "apps/bdptest/src/transactional-minimum-receiving-installed.test.ts"
+      }
+    },
+    "review-current-observation-external": {
+      "cwd": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/current-observation-minimum-validation/correction-successor-2",
+      "argv": [
+        "/opt/homebrew/opt/python@3.14/bin/python3.14",
+        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/current-observation-minimum-validation/correction-successor-2/audit.py",
+        "current"
+      ],
+      "outerSeconds": 120,
+      "automaticRetries": 0,
+      "acceptedRawExitCodes": [
+        0
+      ],
+      "termAfterSeconds": 115
+    }
+  },
+  "expectedProductionVersions": {
+    "@bdp/protocol": "0.0.0",
+    "@bdp/server": "0.0.0",
+    "ajv": "8.17.1",
+    "ajv-formats": "3.0.1",
+    "fast-deep-equal": "3.1.3",
+    "fast-uri": "3.1.5",
+    "json-schema-traverse": "1.0.0",
+    "require-from-string": "2.0.2"
+  },
+  "pending": [
+    "Native/root review of this closed validation rebind and staged execution release",
+    "Root measured base tools and fresh workspace bootstrap/tools",
+    "Actual build/archive/consumer lock/proof"
+  ],
+  "freshBootstrapStages": 2,
+  "postBootstrapStages": 19,
+  "totalStages": 21,
+  "reusedEvidence": [],
+  "sourceBindingSha256": "18b462abd5920fd09ee1a3eaede84c8c7d5b2025000ee66fa98e295890642f55",
+  "helperImplementationFinalized": true,
+  "runtimeTempPolicy": {
+    "root": "/private/tmp",
+    "allocation": "new unique task-owned directory per actual stage; record literal and realpath",
+    "reason": "avoid ancestor .beads/proxieddb discovery under /Users/dbox; no shared database access",
+    "noDirectoryCreatedYet": true
+  },
+  "requiredPublicationChecks": {
+    "state": "Separate required-checks sibling prepared CLOSED",
+    "commands": [
+      [
+        "pnpm",
+        "run",
+        "check:boundaries"
+      ],
+      [
+        "pnpm",
+        "run",
+        "e2e:ready:preflight"
+      ],
+      [
+        "pnpm",
+        "run",
+        "smoke"
+      ],
+      [
+        "pnpm",
+        "run",
+        "evidence:verify"
+      ]
+    ],
+    "policy": "Retain normal required checks/hooks and exact-head CI. Do not fabricate local pass or evidence, regenerate historical evidence, or add an arbitrary full local suite. Stage/supervisor scope for these normal checks must be fixed before release if root runs locally. Evidence nonzero remains explicit no-claim/failure, never silently accepted as qualification."
+  }
+}

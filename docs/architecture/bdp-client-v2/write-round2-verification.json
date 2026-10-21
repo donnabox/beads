@@ -1,0 +1,39 @@
+{
+  "source": "gastownhall/bdp",
+  "head": "28cfbade60b2a7c1bc7a1c3b56b5006f00c878b6",
+  "parents": [
+    "276d9fde7966e2825360b3ac50f08d29507f27f3",
+    "64fe7befb24b8d595dac611257cf840588436faa"
+  ],
+  "node": "24.16.0",
+  "pnpm": "11.20.0",
+  "checks": {
+    "frozenInstall": "pass",
+    "build": "pass",
+    "typecheck": "pass",
+    "dependencyBoundaries": "pass",
+    "vitest": {
+      "files": 110,
+      "passed": 7607,
+      "skipped": 1,
+      "failed": 0,
+      "maxWorkers": 2
+    },
+    "developmentProcessSmoke": "pass",
+    "installedPackageSmoke": "pass"
+  },
+  "commandCorrection": "Initial installed smoke command used nonexistent smoke:executables; corrected pnpm smoke completed successfully. No product failure inferred.",
+  "claim": "Combined development slices only; no full write-profile or CLI parity qualification.",
+  "logSha256": {
+    "smoke-development.log": "199975fe7b42d5fcec9eb12d48a5addc01457b3348acfa7f81d899a1734cab01",
+    "smoke-installed.log": "9496ce5c3f0c0e4f69a4b093a21a967dff1b070842b8ef9114d4eed76c9b031b",
+    "tests.json": "1a2e226c6b9c87a5f9c81060cb8cf3f0db0ee83735b5954b025cb4477b2abc43",
+    "typecheck.log": "91d54ffbee73a3ac72294d090e58d77745f8b93edbf94b862807698273a6505a",
+    "smoke-installed-corrected.log": "904f59ddeebb3a9634906c612fcf033b23f125be94c2adc5cd035f1d3278147d",
+    "boundaries.log": "53f4cd856bde25513486a59799c5a05e0650fbb756bf1580fb07e56c2fdeeef3",
+    "tests.log": "ccdd612e848753ad6aae68b9c4674ee27fc11a67845920bc825cfadacbca57c1",
+    "install.log": "2f2616985c16cea822f05ee83e01ae0c0592832d0dfe66b38df75d24e9b12d35",
+    "head.txt": "692e77a9b4290d710c8e882ed739173aa54c7b559f15099d7eb73573b13e6a0b",
+    "build.log": "232dac5e840e45b3bb06e6e04249b5241f2e1b4f6c797a22c046d916302ac208"
+  }
+}

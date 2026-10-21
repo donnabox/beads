@@ -1,0 +1,112 @@
+[
+  {
+    "duration_api_ms": 992054,
+    "stop_reason": "end_turn",
+    "session_id": "8fc20c32-c63e-421d-8824-b59893d763a7",
+    "total_cost_usd": 8.579071999999998,
+    "usage": {
+      "input_tokens": 136,
+      "cache_creation_input_tokens": 249872,
+      "cache_read_input_tokens": 8772064,
+      "output_tokens": 67635,
+      "output_tokens_details": {
+        "thinking_tokens": 49287
+      },
+      "server_tool_use": {
+        "web_search_requests": 0,
+        "web_fetch_requests": 0
+      },
+      "service_tier": "standard",
+      "cache_creation": {
+        "ephemeral_1h_input_tokens": 249872,
+        "ephemeral_5m_input_tokens": 0
+      },
+      "inference_geo": "global",
+      "iterations": [
+        {
+          "input_tokens": 2,
+          "output_tokens": 11822,
+          "cache_read_input_tokens": 247460,
+          "cache_creation_input_tokens": 7158,
+          "cache_creation": {
+            "ephemeral_5m_input_tokens": 0,
+            "ephemeral_1h_input_tokens": 7158
+          },
+          "type": "message"
+        }
+      ],
+      "speed": "standard"
+    },
+    "modelUsage": {
+      "claude-haiku-4-5-20251001": {
+        "inputTokens": 2675,
+        "outputTokens": 18,
+        "cacheReadInputTokens": 0,
+        "cacheCreationInputTokens": 0,
+        "webSearchRequests": 0,
+        "costUSD": 0.0027649999999999997,
+        "contextWindow": 200000,
+        "maxOutputTokens": 32000,
+        "thinkingTokens": 0,
+        "canonicalModel": "claude-haiku-4-5",
+        "provider": "firstParty",
+        "costBasis": "list"
+      },
+      "claude-opus-5[1m]": {
+        "inputTokens": 136,
+        "outputTokens": 67635,
+        "cacheReadInputTokens": 8772064,
+        "cacheCreationInputTokens": 249872,
+        "webSearchRequests": 0,
+        "costUSD": 8.576306999999998,
+        "contextWindow": 1000000,
+        "maxOutputTokens": 64000,
+        "thinkingTokens": 49287,
+        "canonicalModel": "claude-opus-5",
+        "provider": "firstParty",
+        "costBasis": "list"
+      }
+    },
+    "permission_denials": [],
+    "terminal_reason": "completed",
+    "fast_mode_state": "off",
+    "fast_mode_disabled_reason": "sdk_opt_in_required",
+    "subagent_stats": {
+      "spawned": 0,
+      "requested": {
+        "background": 0,
+        "foreground": 0,
+        "unset": 0
+      },
+      "started_in_background": 0,
+      "max_depth": 0,
+      "spawned_by_subagents": 0,
+      "completed": 0,
+      "failed": 0,
+      "killed": {
+        "parent": 0,
+        "user": 0,
+        "system": 0
+      },
+      "refused": {
+        "depth_limit": 0,
+        "concurrency_limit": 0,
+        "budget": 0
+      },
+      "by_type": {}
+    },
+    "is_error": false,
+    "num_turns": 102,
+    "subtype": "success",
+    "api_error_status": null,
+    "result": "## Scope and basis actually read\n\nPinned root `/Users/dbox/repos/wt/vickie/vickie-current-changefeed-minimum` at HEAD `cce884c`, clean. Effective plan = plan2 base with the single `context/plan3/output-schema.json` override; `composition.json` enumerates 86 effective entries (I counted 86, including the 25 frozen source/spec copies) and the one override at `output-schema.json:53`. I verified the plan against the real seams rather than against the prior reviews.\n\nConfirmed correct against actual source (not findings): N1's premise \u2014 `createArtifactEvidenceWriter(set, sourceCommit, filename, credentialValues)` has no configuration at constructor, and `start(index)`/`acquired(index)` carry none; configuration first appears as `report.configuration` in `returned` (`read-update-artifact-execution.ts:338\u2013343, 460\u2013468`). N3's premise \u2014 the abort check is at the *top* of the loop, so a pre-aborted matrix yields `stoppedScenarioResult` (harness-error/not-run) for every selected ID including absent plans and diagnostics, while a reached missing plan is not-implemented and does not stop the matrix (`runner.ts:384\u2013402, 455\u2013469, 2962\u20132984`). N2's owner \u2014 one `JSON.stringify(obj,null,2)+\"\\n\"` with the exact field order `sourceCommit, entry, ...observed, supplemental, sequenceMemberSupplemental, principalSupplemental, conditionalSupplemental`, and all four `summary()` helpers are side-effect-free (`transactional-matrix.test.ts:401\u2013419, 2671\u20132681, 4031\u20134041, 4559\u20134569`). Counts: RU 130 required / 56 owned / 74 omitted / 34 whole / 22 partial, TX 251 required / 17 owned / 0 whole / 234 absent, 5 diagnostics each; RU dot vs TX colon binding conventions; six-state planner readiness; bounds 1 MiB / 4 MiB / 100000 / 128 / 10000; the writer-filename gate correctly excludes the temporary-filename writers at `read-update-matrix.test.ts:4893, 5039, 5083`; boundary rules classify all four owned paths as test sources; no emit-root change needed.\n\n## Findings\n\n**F1 \u2014 Medium. The TX sidecar destination is unnamed and lands in the RU sidecar namespace, with no freshness refusal on the TX path.**\n`context/plan2/lifecycle-and-adapters.json:5` makes `BDP_PRIVATE_PROFILE_EVIDENCE_PATH` the sidecar *base* producing `.profile.attempt.json`/`.profile.json`. `:13` says only \"Optional private carrierPath scalar remains positive-only\" \u2014 plan1 said \"from same opt-in env\" and plan2 deleted that clause without naming any replacement (`deltas/lifecycle-and-adapters.json.patch:14\u201315`). `vitest.config.ts:66` collects both `apps/**/*.test.ts` files, so the RU positive callback (`read-update-matrix.test.ts:2563`) and the TX positive callback (`transactional-matrix.test.ts:385`) run in one `vitest run`, in parallel workers, under one process env. The only destination-existence refusal is the writer constructor list at `read-update-artifact-execution.ts:348\u2013356`, which covers only `filename`, `${filename}.attempt.json` and `${filename}.<shardId>.json`; `replaceFile` takes `wx` on the randomUUID temp only (`:410`) and then `renameSync` overwrites the destination unconditionally (`:411`). TX has no constructor and `:13`/`TX.*` state no collision refusal at all.\n*Consequence:* under the opt-in, the RU and TX carriers silently overwrite each other's `.profile.json`/`.profile.attempt.json`, and a stale sidecar from a prior run is overwritten even in the RU-only case. L10 (\"no existing file overwritten\", `source-data-cases.json:437`) is unachievable on the TX path.\n*Smallest correction:* in `lifecycle-and-adapters.json:13`, name a distinct TX-only source for `carrierPath` (a separate variable, or a mandatory per-profile suffix on the shared base), and add to both `:5` and `:13` an explicit `existsSync` refusal over the exact new destinations before any new output, mirroring `read-update-artifact-execution.ts:348\u2013356`.\n\n**F2 \u2014 Medium. The authored-assertion join rule across `exchanges[]` and `actions[]` is unspecified, so `authoredAssertionsAllPassed` can be computed from the wrong assertion set.**\n`context/plan3/output-schema.json:28` requires `authoredAssertionInventoryDigest` and `authoredAssertionsAllPassed`, and `verification-order.json:21,37` require \"full authored action/assertion bindings\" and honest credit. Authored IDs are `${action.id}.${assertion.id}` for RU (`read-update-artifact-set.ts:249`) and `${a.id}:${x.id}` for TX (`profile-contract-plan.test.ts:326`), i.e. keyed by manifest action. In the report, an http action's authored outcomes land on the matching `exchanges[].assertions`, but a programmatic action's authored outcomes land **only** on `actions[].assertions` (`runner.ts:1103\u20131118`) \u2014 and an exchange with the *same* `request.id` also exists for that action, carrying a different assertion set (`transactional-matrix.test.ts:544\u2013555`, and the explicit split at `:1287\u20131291`). Both profiles contain client-family actions (`read-update-artifact-execution.ts:49\u201357`).\n*Consequence:* an exchange-first lookup silently reads the wrong assertions for every client action and can report `authoredAssertionsAllPassed: true` from assertions that are not the authored ones \u2014 precisely the \"no count or assertion list proves its own semantic adequacy\" failure the plan forbids.\n*Smallest correction:* add to `verification-order.json` n=5/n=9 that each authored joined ID resolves its outcome by the manifest action's `family` \u2014 `actions[]` for non-http families, `exchanges[]` for http \u2014 and that `authoredAssertionsAllPassed` is `true` only when every authored ID resolves to `passed:true`, `false` when any resolved outcome is `passed:false`, and `null` when any authored ID has no resolved outcome.\n\n**F3 \u2014 Medium. Where a rejected or absent TX handoff surfaces is contradictory; as written it can fail the existing TX positive test.**\n`lifecycle-and-adapters.json:22` says \"Reject mutated hook data or missing/invalid handoff when carrierPath set\"; `:23` and `plan.md:19` say the same situation \"preserve[s] fixed failed/pending attempt with rawWrapper unavailable\". The handoff and its acceptance sit immediately after `control?.onObserved?.(observed)` inside `observe`'s try block (`transactional-matrix.test.ts:358\u2013361`); anything thrown there is captured as `failure` and rethrown at `:380`, so `observe` never returns and the 17-partial assertions at `:421\u2013643` never run.\n*Consequence:* the two clauses specify different behaviours. One implementation aborts the existing positive TX product test over a carrier-only problem \u2014 a change to existing behaviour under the opt-in, against \"Legacy-only bytes/field order/output/default behavior remain unchanged\"; the other records unavailability. Nothing in the plan decides it.\n*Smallest correction:* state in `TX.singleSerialization.acceptance`/`failure` that a rejected or absent handoff never propagates out of `observe` \u2014 it records `rawWrapperSha256: null` plus the fixed `evidence-mismatch`/`invalid-report` attempt state while `observe` still returns the genuine `{result,sessions,baseline}` \u2014 or, if aborting is intended, say so explicitly.\n\n**F4 \u2014 Low. Comparison semantics for the pre-hook capture versus the parsed handoff bytes are unspecified.**\n`lifecycle-and-adapters.json:22` compares an in-memory capture against values recovered from `JSON.stringify(...,null,2)` (V06 at `source-data-cases.json:59`, R20 at `:238`). JSON omits `undefined`-valued members and does not preserve key order, and `isDeepStrictEqual` \u2014 the house idiom (`read-update-artifact-execution.ts:4,90`) \u2014 treats `{a:undefined}` and `{}` as unequal. Current shapes happen to round-trip cleanly (`runner.ts:3174\u20133183` and `:1171\u20131180` use conditional spreads; `installedTransactionBinding` returns only JSON scalars, `transactional-execution-binding.ts:85\u201390`), but the plan does not pin that property.\n*Consequence:* a later shape change produces a false `evidence-mismatch`, which under F3 can abort the TX positive callback.\n*Smallest correction:* specify the comparison as equality of `canonicalJson(JSON.parse(JSON.stringify(preHook)))` against `canonicalJson(parsed.result/.sessions/.baseline)`, not raw structural deep-equality.\n\n**F5 \u2014 Low. `copySourceBytes`/`parseBoundedJson` cannot be reused for report wrappers without naming a `kind`.**\n`input-schema.json:24,26` and `budgets-and-secrecy.json:18,21` require reusing these helpers for a 4 MiB report wrapper, but both take `kind: keyof ConformanceArtifactBundleSources` = `\"catalog\"|\"manifest\"|\"fixture\"` (`artifact-bundle.ts:393,430`); there is no report kind, and the 4 MiB allowance exists only as `CUMULATIVE_MANIFEST_MAX_BYTES` (`:19`). The `kind`/label also appears verbatim in the thrown `ConformanceArtifactBundleError` message (`:405,409,438,442`).\n*Consequence:* an implementer either widens `packages/conformance/src/artifact-bundle.ts` \u2014 a fifth file outside `footprint.json`'s four owned paths \u2014 or passes a misleading `kind` whose text can leak through an error path that `error-contract.json:15` forbids echoing.\n*Smallest correction:* state in `input-schema.json` that report wrappers reuse `copySourceBytes(source,\"manifest\",4194304)` and `parseBoundedJson(bytes,\"manifest\",label)` unchanged, and that the carrier catches `ConformanceArtifactBundleError` and re-raises `ProfileEvidenceError` `capacity`/`invalid-source` without the message.\n\n**F6 \u2014 Low. `maxWorkers 2` is stated as if it were an existing default.**\n`plan.md:23`, `budgets-and-secrecy.json:25` and `validation-plan.json:11` say \"default5s/maxWorkers2\". `vitest.config.ts:62\u201372` sets neither `testTimeout` nor `maxWorkers`; 5 s is genuinely the vitest default, but `maxWorkers=2` appears only as an ad-hoc CLI flag in docs. `footprint.json:31\u201338` lists production configs as unchanged.\n*Consequence:* an implementer may add `maxWorkers: 2` to `vitest.config.ts` \u2014 a fifth file outside the footprint, and a global change to every existing test run.\n*Smallest correction:* in `validation-plan.json:11`, state that `--maxWorkers=2` is a command-line flag for the source-validation invocation only and that `vitest.config.ts` remains unmodified.\n\n**F7 \u2014 Low. `serializeProfileEvidence` is never stated to enforce the unbound closed schema, so the plan3 correction has no enforcement point.**\nThe unbound envelope is built by the RU helper (`lifecycle-and-adapters.json:8`), `plan.md:9` forbids a fourth export, and `input-schema.json:6` describes `serializeProfileEvidence` only as accepting the branch. Nothing says it validates `plan3/output-schema.json:49\u201364` `closedKeys`, the fixed values, or all-null observations.\n*Consequence:* `configuration:null`, all-130-null observations and false eligibility remain conventions; the single key added by plan3 gains no checked meaning.\n*Smallest correction:* add to `input-schema.json:6` that the unbound branch is validated against `unboundAttemptSchema.closedKeys` exactly (no missing or extra key), the fixed values, and `observations.length === requiredIds.length` with every element null, refusing `invalid-source` otherwise.\n\n**F8 \u2014 Low. The TX\u2192RU-helper import is not declared in the footprint.**\n`lifecycle-and-adapters.json:2` requires the sidecar writer functions to live in the RU helper and be used \"from existing TX callback\", but `footprint.json:17\u201321` declares only `../../../packages/conformance/test-support/profile-evidence.js` and `./profile-evidence.js`.\n*Consequence:* the only cross-file seam that persists TX evidence has no declared specifier for the later source review. (The edge itself is admissible: `check-dependency-boundaries.mjs:143` exempts test sources, and `@bdp/conformance` is already a devDependency of `@bdp/bdptest`.)\n*Smallest correction:* add `\"txTestToRUHelper\": \"../test-support/read-update-artifact-execution.js\"` to `footprint.json` `importDecision`.\n\n## Disposition\n\nEight findings, no Highs. F1\u2013F3 are substantive and should be resolved before source authoring; F4\u2013F8 are specification-completeness gaps with one-line corrections. None of them is the plan3 one-key omission, which I independently confirmed closed at `plan3/output-schema.json:53` with a complete, duplicate-free 14-key list covering every envelope field.\n\nThis review approves nothing. It releases no source authoring, no review launch and no runtime, and it establishes no Write-profile qualification, verified ownership or whole-clause credit; the final combined source/configuration basis remains unresolved, as do D2 S1/G2, D3 cold/listener/admission and D4 administration/restore. Completing this review does not qualify me or anything else \u2014 disposition belongs to root.",
+    "ttft_ms": 2955,
+    "type": "result",
+    "duration_ms": 1120155,
+    "uuid": "eb5e3364-c83b-4a12-a9e8-ae21671bb3bd",
+    "ttft_stream_ms": 2231,
+    "time_to_request_ms": 11,
+    "first_content_frame_ms": 2231,
+    "queued_turn_count": 0
+  }
+]

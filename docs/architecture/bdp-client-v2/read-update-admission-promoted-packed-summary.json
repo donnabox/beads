@@ -1,0 +1,58 @@
+{
+  "sourceCommit": "d9a22c312b5cc0a46a68852f2be6511fb1b39e14",
+  "sourceDirty": false,
+  "configuration": {
+    "scope": "https://reference.invalid/acme/",
+    "profile": "read-update",
+    "history": false,
+    "sourceCommit": "d9a22c312b5cc0a46a68852f2be6511fb1b39e14",
+    "installedPayloadDigest": "819c09e3ade4bbc533c118a956af23e22d44d5b7f87a73aef3d391a98dc11093",
+    "installedContractsDigest": "48667497d6e13064316d0364cf8f49dfc247ab9189306985a357d7b558333dfe",
+    "policyDigest": "dbe8dbd5430f26e19e754d38167cd8084a32d702c695550e2ee0063dc2912430",
+    "authenticationDigest": "66941efc779f4f2431d65fdd5b2387b2af67bd7c1559e09dac032f82259ea16e",
+    "fixtureDigest": "64814924334103e9375c043de472f8bf15c8b71a267a176e06cd0443b8249751",
+    "fixtureId": "reference-read-update-schema-v1",
+    "capabilities": [
+      "installed-read-update-http"
+    ]
+  },
+  "reportBinding": {
+    "artifacts": {
+      "catalogDigest": "e26d3fc758a34ebb0b5028be15d28e3e09db87dc7984bba7bad6a00b26329aa0",
+      "manifestDigest": "0c6e1c9e9853e82e714e919ba23fa33dbf267c8a36ae36aa9457c1a9d3efc64a",
+      "fixtureDigest": "64814924334103e9375c043de472f8bf15c8b71a267a176e06cd0443b8249751"
+    },
+    "exactConfigurationDigest": "a8d5687519da4040d2f23989f86f9bc804d30ac6c91a85074397eaf7c92de712"
+  },
+  "claimEligible": false,
+  "targetEntry": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/read-update-admission-promoted/packed/install/node_modules/@bdp/server/dist/installed-reference-process.js",
+  "requiredIds": 129,
+  "plannedIds": 47,
+  "uncoveredIds": 101,
+  "sessions": 47,
+  "observations": 903,
+  "setupObservations": 44,
+  "nativeReadObservations": 21,
+  "packedTests": 152,
+  "packedFiles": 4,
+  "admissionRows": [
+    {
+      "id": "read-update.singleton.idempotency-key-required",
+      "state": "pass",
+      "raw": 196,
+      "client": 88,
+      "assertions": 2303
+    },
+    {
+      "id": "read-update.singleton.unsupported-media-type",
+      "state": "pass",
+      "raw": 149,
+      "client": 34,
+      "assertions": 1341
+    }
+  ],
+  "timingsMs": {
+    "executes the partial cumulative RU matrix against actual installed factory HTTP and afterstate": 14384.347082999999,
+    "observes key and media admission against installed HTTP with paired afterstate": 1437.4883750000008
+  }
+}

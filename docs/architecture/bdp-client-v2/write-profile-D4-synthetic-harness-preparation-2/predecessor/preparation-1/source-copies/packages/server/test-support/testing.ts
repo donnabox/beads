@@ -1,0 +1,429 @@
+import {
+  isReadProblemCode,
+  type ReadProblem,
+  type ReadProblemCode,
+  readProblem,
+} from "@bdp/protocol";
+import { createReadPagination, type ScopePort, type ServerReadControls } from "../src/index.js";
+import {
+  hasReadConformanceEvidence,
+  type ReadServerTarget,
+} from "../src/read-conformance-capability.js";
+import { readConformanceMockState } from "./read-conformance-mock-state.js";
+
+/**
+ * Server-owned test seam. This entry is mapped only by the repository's test
+ * and no-emit typecheck configurations; it is outside the production source
+ * tree and cannot be emitted or imported by installed consumers.
+ */
+const conformance = readConformanceMockState();
+
+export function establishReadConformanceEvidenceForTesting(target: ReadServerTarget): () => void {
+  assertObservedReadConformanceMockForTesting(
+    conformance.installedMock,
+    hasReadConformanceEvidence,
+  );
+  conformance.grants.set(target, (conformance.grants.get(target) ?? 0) + 1);
+  let active = true;
+  return () => {
+    if (!active) return;
+    active = false;
+    const remaining = (conformance.grants.get(target) ?? 1) - 1;
+    if (remaining === 0) conformance.grants.delete(target);
+    else conformance.grants.set(target, remaining);
+  };
+}
+
+/** Injects one exact Resource failure through the non-emitted server test seam. */
+export function createReadResourceFaultPortForTesting(
+  port: ScopePort,
+  fault: {
+    readonly resource: "bead" | "link" | "type";
+    readonly id: string;
+    readonly error: Error;
+  },
+): ScopePort {
+  return {
+    async perform(operation, options) {
+      if (
+        operation.kind === "resource" &&
+        operation.resource === fault.resource &&
+        operation.id === fault.id
+      )
+        throw fault.error;
+      return port.perform(operation, options);
+    },
+  };
+}
+
+/**
+ * Injects every closed Read Problem row through an ordinary public Resource
+ * route. Semantic applicability remains owned by the scenarios that exercise
+ * natural triggers; this seam proves the shared server's exact serialization.
+ */
+export function createReadProblemTablePortForTesting(
+  port: ScopePort,
+  options: { readonly scope: string; readonly pathPrefix?: string },
+): ScopePort {
+  const pathPrefix = options.pathPrefix ?? "beads/__problem__/";
+  const prefix = new URL(pathPrefix, options.scope).href;
+  return {
+    async perform(operation, performOptions) {
+      if (
+        operation.kind === "resource" &&
+        operation.resource === "bead" &&
+        operation.id.startsWith(prefix)
+      ) {
+        const encodedCode = operation.id.slice(prefix.length);
+        if (!encodedCode.includes("/") && isReadProblemCode(encodedCode))
+          return { kind: "problem", problem: exactReadProblem(encodedCode) };
+      }
+      return port.perform(operation, performOptions);
+    },
+  };
+}
+
+export interface ControlledReadSessionForTesting {
+  readonly port: ScopePort;
+  readonly readControls: ServerReadControls;
+  advanceClock(milliseconds: number): void;
+  materializeAdvertisedLimitFixture(): void;
+  mutateSource(mutation: { readonly id: string; readonly revision: string }): void;
+  excludeResourceFromAuthorizationView(id: string): void;
+  deleteResource(id: string): void;
+  deletedResourceIds(): readonly string[];
+  adapterReads(): number;
+  adapterReadsByProjection(): Readonly<{ collection: number; incidentLinks: number }>;
+  forbidAdapterReads(): () => void;
+}
+
+/** Creates the deterministic source, clock, identity, and cursor controls used by Read matrices. */
+export function createControlledReadSessionForTesting(options: {
+  readonly scope: string;
+  readonly source: ScopePort;
+  readonly viewHeader: string;
+  readonly epochHeader: string;
+  readonly unauthenticatedChallenge: string;
+  readonly unauthenticatedProblemUrl?: string;
+  readonly limits?: {
+    readonly selector: { readonly bytes: number; readonly depth: number; readonly nodes: number };
+    readonly page: { readonly defaultItems: number; readonly maximumItems: number };
+    readonly cursorTtlMilliseconds: number;
+  };
+}): ControlledReadSessionForTesting {
+  let now = 1_000;
+  let token = 0;
+  let advertisedLimitFixtureRequested = false;
+  let mutation: { readonly id: string; readonly revision: string } | undefined;
+  const authorizationExcludedIds = new Set<string>();
+  let exclusionGeneration = 0;
+  let expandedGeneration = 0;
+  let expansionInFlight: Promise<void> | undefined;
+  const uriOf = (value: unknown): string | undefined =>
+    typeof value === "string"
+      ? value
+      : isPlainRecord(value) && typeof value.uri === "string"
+        ? value.uri
+        : undefined;
+  // Owned-closure law: an Authorization View that projects a Bead projects
+  // its owned Links and their in-Scope targets. Excluding a Resource
+  // therefore expands to a fixpoint — Links lose visibility with either
+  // endpoint, and a Bead that OWNS a Link to a hidden target (or whose
+  // owned Link is hidden directly) is hidden with it.
+  async function expandExclusionClosure(
+    performOptions: Parameters<ScopePort["perform"]>[1],
+  ): Promise<void> {
+    if (authorizationExcludedIds.size === 0) {
+      expandedGeneration = exclusionGeneration;
+      return;
+    }
+    // Single-flight: concurrent requests await the same expansion, and the
+    // generation is published only after the fixpoint completes, so a
+    // request can never race past a half-expanded exclusion set. A failed
+    // expansion publishes nothing — it rejects every awaiter (fail closed)
+    // and the next request retries it.
+    while (expandedGeneration !== exclusionGeneration) {
+      if (expansionInFlight === undefined) {
+        const generation = exclusionGeneration;
+        expansionInFlight = runExclusionExpansion(performOptions)
+          .then(() => {
+            expandedGeneration = generation;
+          })
+          .finally(() => {
+            expansionInFlight = undefined;
+          });
+      }
+      await expansionInFlight;
+    }
+  }
+
+  async function runExclusionExpansion(
+    performOptions: Parameters<ScopePort["perform"]>[1],
+  ): Promise<void> {
+    // Re-checked here, not only at perform entry: a generation bumped while
+    // an expansion is in flight would otherwise start fresh source reads
+    // after the read guard activated.
+    if (readsForbidden) throw new Error("pagination continuation reread the source adapter");
+    const [linksResult, beadsResult] = await Promise.all([
+      options.source.perform({ kind: "collection", collection: "links" }, performOptions),
+      options.source.perform({ kind: "collection", collection: "beads" }, performOptions),
+    ]);
+    if (linksResult.kind !== "success" || beadsResult.kind !== "success")
+      throw new Error("authorization-closure expansion could not read the source collections");
+    const linkItems = (linksResult.body as { readonly items: readonly unknown[] }).items;
+    const beadItems = (beadsResult.body as { readonly items: readonly unknown[] }).items;
+    let changed = true;
+    while (changed) {
+      changed = false;
+      for (const item of linkItems) {
+        if (!isPlainRecord(item) || typeof item.id !== "string") continue;
+        if (authorizationExcludedIds.has(item.id)) continue;
+        const source = uriOf(item.source);
+        const target = uriOf(item.target);
+        if (
+          (source !== undefined && authorizationExcludedIds.has(source)) ||
+          (target !== undefined && authorizationExcludedIds.has(target))
+        ) {
+          authorizationExcludedIds.add(item.id);
+          changed = true;
+        }
+      }
+      for (const item of beadItems) {
+        if (!isPlainRecord(item) || typeof item.id !== "string") continue;
+        if (authorizationExcludedIds.has(item.id)) continue;
+        if (!isPlainRecord(item.ownedLinks)) continue;
+        for (const entry of Object.values(item.ownedLinks)) {
+          if (!Array.isArray(entry)) continue;
+          const hiddenOwned = entry.some((owned) => {
+            if (!isPlainRecord(owned)) return false;
+            const target = uriOf(owned.target);
+            return (
+              (typeof owned.id === "string" && authorizationExcludedIds.has(owned.id)) ||
+              (target !== undefined && authorizationExcludedIds.has(target))
+            );
+          });
+          if (hiddenOwned) {
+            authorizationExcludedIds.add(item.id);
+            changed = true;
+            break;
+          }
+        }
+      }
+    }
+  }
+  const deletedIds = new Set<string>();
+  let reads = 0;
+  let collectionReads = 0;
+  let incidentLinkReads = 0;
+  let readsForbidden = false;
+  const port: ScopePort = {
+    async perform(operation, performOptions) {
+      reads += 1;
+      if (operation.kind === "collection") collectionReads += 1;
+      if (operation.kind === "bead-links") incidentLinkReads += 1;
+      if (readsForbidden) throw new Error("pagination continuation reread the source adapter");
+      await expandExclusionClosure(performOptions);
+      const directId =
+        operation.kind === "resource" || operation.kind === "properties"
+          ? operation.id
+          : operation.kind === "bead-links"
+            ? operation.bead
+            : undefined;
+      if (
+        directId !== undefined &&
+        (authorizationExcludedIds.has(directId) || deletedIds.has(directId))
+      )
+        return { kind: "problem", problem: exactReadProblem("resource-not-found") };
+      const result = await options.source.perform(operation, performOptions);
+      if (
+        result.kind !== "success" ||
+        (operation.kind !== "collection" && operation.kind !== "bead-links")
+      )
+        return result;
+      const originalBody = result.body;
+      const body = originalBody as { readonly items: readonly unknown[]; readonly next: null };
+      const activeMutation = mutation;
+      const absoluteMutationId =
+        activeMutation === undefined ? undefined : new URL(activeMutation.id, options.scope).href;
+      let items: readonly unknown[] = body.items;
+      let modified = false;
+      if (
+        advertisedLimitFixtureRequested &&
+        operation.kind === "collection" &&
+        operation.collection === "beads" &&
+        operation.type === undefined &&
+        operation.conformsTo === undefined
+      ) {
+        const template = body.items.find(
+          (item) => isPlainRecord(item) && typeof item.id === "string",
+        );
+        if (template === undefined || options.limits === undefined)
+          throw new Error("controlled advertised-limit fixture requires a Resource template");
+        const invalidItems = body.items.filter(
+          (item) => !isPlainRecord(item) || typeof item.id !== "string",
+        );
+        const requestedLength = options.limits.page.maximumItems + 1;
+        const materializedLength = Math.max(0, requestedLength - invalidItems.length);
+        items = [
+          ...invalidItems,
+          ...Array.from({ length: materializedLength }, (_, index) =>
+            Object.freeze({
+              ...template,
+              id: new URL(`beads/limit-${index}`, options.scope).href,
+              revision: `limit-${index}`,
+            }),
+          ),
+        ];
+        modified = true;
+      }
+      items = items.filter((item) => {
+        if (!isPlainRecord(item) || typeof item.id !== "string") return true;
+        const excluded = authorizationExcludedIds.has(item.id) || deletedIds.has(item.id);
+        if (excluded) modified = true;
+        return !excluded;
+      });
+      items = items.map((item) => {
+        if (
+          absoluteMutationId === undefined ||
+          !isPlainRecord(item) ||
+          item.id !== absoluteMutationId
+        )
+          return item;
+        modified = true;
+        return Object.freeze({ ...item, revision: activeMutation?.revision });
+      });
+      if (!modified) return result;
+      const controlledBody = Object.freeze({
+        ...body,
+        items: Object.freeze(items),
+      }) as typeof originalBody;
+      return { kind: "success", body: controlledBody };
+    },
+  };
+  const readControls: ServerReadControls = {
+    selectorLimits: options.limits?.selector ?? { bytes: 128, depth: 16, nodes: 64 },
+    pagination: createReadPagination({
+      scope: options.scope,
+      defaultPageItems: options.limits?.page.defaultItems ?? 2,
+      maxPageItems: options.limits?.page.maximumItems ?? 4,
+      cursorTtlMs: options.limits?.cursorTtlMilliseconds ?? 100,
+      retainedStateCapacity: 256,
+      maxRetainedCursorPositionsPerSnapshot: 100,
+      retainedSnapshotByteCapacity: 1_048_576,
+      retainedSnapshotNodeCapacity: 65_536,
+      maxOpaqueTokenLength: 64,
+      tokenGenerationAttempts: 4,
+      clock: () => now,
+      generateOpaqueToken: () => `matrix_${++token}`,
+    }),
+    unauthenticatedChallenge: options.unauthenticatedChallenge,
+    identityFor: (operation, { httpRequest }) => {
+      if (
+        options.unauthenticatedProblemUrl !== undefined &&
+        httpRequest?.url === options.unauthenticatedProblemUrl
+      )
+        return exactReadProblem("unauthenticated");
+      if (operation.kind === "scope-discovery") {
+        return {
+          authorizationView: "controlled-discovery-view",
+          scopeEpoch: "controlled-discovery-epoch",
+        };
+      }
+      const authorizationView = httpRequest?.headers.get(options.viewHeader);
+      const scopeEpoch = httpRequest?.headers.get(options.epochHeader);
+      return authorizationView === null || authorizationView === undefined || scopeEpoch == null
+        ? conformanceReadProblem("invalid-parameter")
+        : { authorizationView, scopeEpoch };
+    },
+    problemFor: (error) =>
+      conformanceReadProblem(
+        error.code === "foreign-view"
+          ? "foreign-view"
+          : error.code === "cursor-expired"
+            ? "cursor-expired"
+            : error.code === "invalid-limit" ||
+                error.code === "source-bytes-limit-exceeded" ||
+                error.code === "ast-depth-limit-exceeded" ||
+                error.code === "ast-nodes-limit-exceeded"
+              ? "limit-exceeded"
+              : "invalid-parameter",
+      ),
+  };
+  return Object.freeze({
+    port,
+    readControls,
+    advanceClock(milliseconds: number) {
+      if (!Number.isSafeInteger(milliseconds) || milliseconds < 0)
+        throw new Error("controlled pagination clock advance must be a non-negative integer");
+      now += milliseconds;
+    },
+    materializeAdvertisedLimitFixture() {
+      if (options.limits === undefined)
+        throw new Error("controlled advertised-limit fixture requires configured limits");
+      advertisedLimitFixtureRequested = true;
+    },
+    mutateSource(nextMutation: { readonly id: string; readonly revision: string }) {
+      if (
+        typeof nextMutation.id !== "string" ||
+        nextMutation.id.length === 0 ||
+        typeof nextMutation.revision !== "string" ||
+        nextMutation.revision.length === 0
+      )
+        throw new Error("controlled pagination mutation is invalid");
+      mutation = Object.freeze({ ...nextMutation });
+    },
+    excludeResourceFromAuthorizationView(id: string) {
+      if (typeof id !== "string" || id.length === 0)
+        throw new Error("controlled authorization exclusion is invalid");
+      authorizationExcludedIds.add(new URL(id, options.scope).href);
+      exclusionGeneration += 1;
+    },
+    deleteResource(id: string) {
+      if (typeof id !== "string" || id.length === 0)
+        throw new Error("controlled deleted Resource identity is invalid");
+      deletedIds.add(new URL(id, options.scope).href);
+    },
+    deletedResourceIds: () => Object.freeze([...deletedIds].sort()),
+    adapterReads: () => reads,
+    adapterReadsByProjection: () =>
+      Object.freeze({ collection: collectionReads, incidentLinks: incidentLinkReads }),
+    forbidAdapterReads: () => {
+      if (readsForbidden) throw new Error("source adapter read guard is already active");
+      readsForbidden = true;
+      return () => {
+        readsForbidden = false;
+      };
+    },
+  });
+}
+
+function conformanceReadProblem(
+  code:
+    | "invalid-parameter"
+    | "foreign-view"
+    | "cursor-expired"
+    | "resource-not-found"
+    | "limit-exceeded",
+): ReturnType<ServerReadControls["problemFor"]> {
+  return exactReadProblem(code);
+}
+
+function exactReadProblem(code: ReadProblemCode): ReadProblem {
+  // The injected Unretained case assumes positive incomplete-version knowledge;
+  // the shared constructor's inventory makes no claim about known locations.
+  return readProblem(code);
+}
+
+function isPlainRecord(value: unknown): value is Readonly<Record<string, unknown>> {
+  return typeof value === "object" && value !== null && !Array.isArray(value);
+}
+
+export function assertObservedReadConformanceMockForTesting(
+  installedMock: ((target: ReadServerTarget) => boolean) | undefined,
+  observedBinding: (target: ReadServerTarget) => boolean,
+): void {
+  if (installedMock !== observedBinding)
+    throw new Error("test-support module did not observe its installed Read evidence mock");
+}
+
+export { recordRawSse } from "./raw-sse-recorder.js";

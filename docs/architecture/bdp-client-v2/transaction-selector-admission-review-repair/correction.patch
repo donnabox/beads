@@ -1,0 +1,59 @@
+--- original/packages/server/src/read-selector.test.ts
++++ repair/packages/server/src/read-selector.test.ts
+@@ -489,6 +489,14 @@
+   expect(() => analyzeSelectorGrammar(`${source} true`, 65536)).toThrow(ReadSelectorError);
+ });
+ it("counts decoded Selector UTF-8 without URI decoding or identity rewriting", () => {
++  const scalars = '$[?@.missing == "é😀"]';
++  expect(Buffer.byteLength(scalars, "utf8")).toBe(25);
++  const boundary = `${scalars.slice(0, -1)}${" ".repeat(4096 - 25)}]`;
++  const beyond = `${boundary.slice(0, -1)} ]`;
++  expect(Buffer.byteLength(boundary, "utf8")).toBe(4096);
++  expect(Buffer.byteLength(beyond, "utf8")).toBe(4097);
++  expect(analyzeSelectorGrammar(boundary, 65536).bytes).toBe(4096);
++  expect(analyzeSelectorGrammar(beyond, 65536).bytes).toBe(4097);
+   const unicode = '$[?@.missing == "é"]';
+   const escaped = String.raw`$[?@.missing == "\u00e9"]`;
+   expect(analyzeSelectorGrammar(unicode, 65536).bytes).toBe(21);
+--- original/packages/server/src/transaction-set.test.ts
++++ repair/packages/server/src/transaction-set.test.ts
+@@ -1035,6 +1035,22 @@
+ });
+ 
+ it("preserves literal Selector identity and original mixed-carrier diagnostic pointers", () => {
++  const unicodeSelector = '$[?@.missing == "é😀"]';
++  const rawUnicode = JSON.stringify({ operations: [update(unicodeSelector)] });
++  const escapedUnicode = rawUnicode.replace("é", String.raw`\u00e9`);
++  expect(escapedUnicode).not.toBe(rawUnicode);
++  expect(JSON.parse(rawUnicode).operations[0].selector).toBe(unicodeSelector);
++  expect(JSON.parse(escapedUnicode).operations[0].selector).toBe(unicodeSelector);
++  const rawNormalized = batch.normalizeTransaction(
++    batch.prepareTransaction(scope, rawUnicode),
++    () => undefined,
++  );
++  const escapedNormalized = batch.normalizeTransaction(
++    batch.prepareTransaction(scope, escapedUnicode),
++    () => undefined,
++  );
++  expect(escapedNormalized.identity).toBe(rawNormalized.identity);
++  expect(escapedNormalized).toEqual(rawNormalized);
+   const literal = '$[?@.missing == "%41"]';
+   const original = JSON.stringify({ operations: [create("a"), update(literal)] });
+   const prepared = batch.prepareTransaction(scope, original);
+--- original/packages/server/src/transaction-submission.test.ts
++++ repair/packages/server/src/transaction-submission.test.ts
+@@ -1317,8 +1317,12 @@
+   const completed = await submitTransaction(f.store, submission([create()], "completed"));
+   const pending = own(f.store, submission([create("pending")], "pending"));
+   const before = f.store.inspect();
+-  const admit = vi.fn((...args: Parameters<typeof f.store.admit>) => f.store.admit(...args));
+-  const boundary = { ...f.store, admit: admit as typeof f.store.admit };
++  const store = f.store;
++  const admit = vi.fn((...args: Parameters<typeof store.admit>) => store.admit(...args));
++  const boundary = {
++    ...store,
++    admit: ((...args: Parameters<typeof store.admit>) => admit(...args)) as typeof store.admit,
++  };
+   for (const operation of ["updateWhere", "deleteWhere"] as const)
+     for (const carrier of ["singleton", "batch"] as const)
+       for (const key of ["fresh", "pending", "completed"]) {

@@ -1,0 +1,834 @@
+--- a/commands.json
++++ b/commands.json
+@@ -1,13 +1,13 @@
+ {
+   "configurationFinalized": true,
+   "closedPreparation": true,
+-  "sourceRoot": "/Users/dbox/repos/wt/vickie/vickie-current-changefeed-minimum",
+-  "executionRoot": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/current-changefeed-validation-preparation-4",
++  "sourceRoot": "/Users/dbox/repos/wt/vickie/vickie-trusted-startup-configuration",
++  "executionRoot": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-trusted-startup-validation-preparation-1",
+   "commands": {
+     "node-version": {
+       "id": "node-version",
+       "kind": "supervised-command",
+-      "cwd": "/Users/dbox/repos/wt/vickie/vickie-current-changefeed-minimum",
++      "cwd": "/Users/dbox/repos/wt/vickie/vickie-trusted-startup-configuration",
+       "argv": [
+         "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+         "--version"
+@@ -24,7 +24,7 @@
+     "pnpm-version": {
+       "id": "pnpm-version",
+       "kind": "supervised-command",
+-      "cwd": "/Users/dbox/repos/wt/vickie/vickie-current-changefeed-minimum",
++      "cwd": "/Users/dbox/repos/wt/vickie/vickie-trusted-startup-configuration",
+       "argv": [
+         "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+         "/Users/dbox/.cache/node/corepack/v1/pnpm/11.20.0/bin/pnpm.cjs",
+@@ -42,7 +42,7 @@
+     "workspace-install": {
+       "id": "workspace-install",
+       "kind": "supervised-command",
+-      "cwd": "/Users/dbox/repos/wt/vickie/vickie-current-changefeed-minimum",
++      "cwd": "/Users/dbox/repos/wt/vickie/vickie-trusted-startup-configuration",
+       "argv": [
+         "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+         "/Users/dbox/.cache/node/corepack/v1/pnpm/11.20.0/bin/pnpm.cjs",
+@@ -62,10 +62,10 @@
+     "bind-workspace-tools": {
+       "id": "bind-workspace-tools",
+       "kind": "supervised-readonly-helper",
+-      "cwd": "/Users/dbox/repos/wt/vickie/vickie-current-changefeed-minimum",
+-      "argv": [
+-        "/opt/homebrew/opt/python@3.14/bin/python3.14",
+-        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/current-changefeed-validation-preparation-4/audit.py",
++      "cwd": "/Users/dbox/repos/wt/vickie/vickie-trusted-startup-configuration",
++      "argv": [
++        "/opt/homebrew/opt/python@3.14/bin/python3.14",
++        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-trusted-startup-validation-preparation-1/audit.py",
+         "tools"
+       ],
+       "outerSeconds": 120,
+@@ -80,7 +80,7 @@
+     "typecheck": {
+       "id": "typecheck",
+       "kind": "supervised-command",
+-      "cwd": "/Users/dbox/repos/wt/vickie/vickie-current-changefeed-minimum",
++      "cwd": "/Users/dbox/repos/wt/vickie/vickie-trusted-startup-configuration",
+       "argv": [
+         "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+         "/Users/dbox/.cache/node/corepack/v1/pnpm/11.20.0/bin/pnpm.cjs",
+@@ -98,18 +98,24 @@
+     "format-check": {
+       "id": "format-check",
+       "kind": "supervised-command",
+-      "cwd": "/Users/dbox/repos/wt/vickie/vickie-current-changefeed-minimum",
+-      "argv": [
+-        "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+-        "/Users/dbox/repos/wt/vickie/vickie-current-changefeed-minimum/node_modules/@biomejs/biome/bin/biome",
++      "cwd": "/Users/dbox/repos/wt/vickie/vickie-trusted-startup-configuration",
++      "argv": [
++        "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
++        "/Users/dbox/repos/wt/vickie/vickie-trusted-startup-configuration/node_modules/@biomejs/biome/bin/biome",
+         "format",
+-        "--config-path=/Users/dbox/repos/wt/vickie/vickie-current-changefeed-minimum/biome.json",
+-        "packages/server/src/transaction-http.ts",
+-        "packages/server/src/transaction-service.ts",
+-        "packages/server/src/transaction-store.ts",
+-        "packages/server/src/transaction-changefeed.test.ts",
+-        "packages/server/src/transaction-sse.test.ts",
+-        "apps/bdptest/src/transactional-changefeed-refusal-context-installed.test.ts"
++        "--config-path=/Users/dbox/repos/wt/vickie/vickie-trusted-startup-configuration/biome.json",
++        "docs/design/startup-configuration.md",
++        "packages/config/src/index.test.ts",
++        "packages/config/src/index.ts",
++        "packages/server/package.json",
++        "packages/server/src/read-sequence-lifecycle.test.ts",
++        "packages/server/src/reference-deployment-state.ts",
++        "packages/server/src/reference-deployment.test.ts",
++        "packages/server/src/reference-deployment.ts",
++        "packages/server/src/transaction-snapshot.test.ts",
++        "scripts/smoke-executables.mjs",
++        "scripts/smoke-safety.mjs",
++        "scripts/smoke-safety.test.mjs"
+       ],
+       "outerSeconds": 120,
+       "termAtSeconds": 115,
+@@ -123,18 +129,24 @@
+     "lint": {
+       "id": "lint",
+       "kind": "supervised-command",
+-      "cwd": "/Users/dbox/repos/wt/vickie/vickie-current-changefeed-minimum",
+-      "argv": [
+-        "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+-        "/Users/dbox/repos/wt/vickie/vickie-current-changefeed-minimum/node_modules/@biomejs/biome/bin/biome",
++      "cwd": "/Users/dbox/repos/wt/vickie/vickie-trusted-startup-configuration",
++      "argv": [
++        "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
++        "/Users/dbox/repos/wt/vickie/vickie-trusted-startup-configuration/node_modules/@biomejs/biome/bin/biome",
+         "lint",
+-        "--config-path=/Users/dbox/repos/wt/vickie/vickie-current-changefeed-minimum/biome.json",
+-        "packages/server/src/transaction-http.ts",
+-        "packages/server/src/transaction-service.ts",
+-        "packages/server/src/transaction-store.ts",
+-        "packages/server/src/transaction-changefeed.test.ts",
+-        "packages/server/src/transaction-sse.test.ts",
+-        "apps/bdptest/src/transactional-changefeed-refusal-context-installed.test.ts"
++        "--config-path=/Users/dbox/repos/wt/vickie/vickie-trusted-startup-configuration/biome.json",
++        "docs/design/startup-configuration.md",
++        "packages/config/src/index.test.ts",
++        "packages/config/src/index.ts",
++        "packages/server/package.json",
++        "packages/server/src/read-sequence-lifecycle.test.ts",
++        "packages/server/src/reference-deployment-state.ts",
++        "packages/server/src/reference-deployment.test.ts",
++        "packages/server/src/reference-deployment.ts",
++        "packages/server/src/transaction-snapshot.test.ts",
++        "scripts/smoke-executables.mjs",
++        "scripts/smoke-safety.mjs",
++        "scripts/smoke-safety.test.mjs"
+       ],
+       "outerSeconds": 120,
+       "termAtSeconds": 115,
+@@ -148,7 +160,7 @@
+     "fresh-build": {
+       "id": "fresh-build",
+       "kind": "supervised-command",
+-      "cwd": "/Users/dbox/repos/wt/vickie/vickie-current-changefeed-minimum",
++      "cwd": "/Users/dbox/repos/wt/vickie/vickie-trusted-startup-configuration",
+       "argv": [
+         "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+         "/Users/dbox/.cache/node/corepack/v1/pnpm/11.20.0/bin/pnpm.cjs",
+@@ -167,10 +179,10 @@
+     "bind-fresh-build": {
+       "id": "bind-fresh-build",
+       "kind": "supervised-readonly-helper",
+-      "cwd": "/Users/dbox/repos/wt/vickie/vickie-current-changefeed-minimum",
+-      "argv": [
+-        "/opt/homebrew/opt/python@3.14/bin/python3.14",
+-        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/current-changefeed-validation-preparation-4/audit.py",
++      "cwd": "/Users/dbox/repos/wt/vickie/vickie-trusted-startup-configuration",
++      "argv": [
++        "/opt/homebrew/opt/python@3.14/bin/python3.14",
++        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-trusted-startup-validation-preparation-1/audit.py",
+         "build"
+       ],
+       "outerSeconds": 120,
+@@ -185,19 +197,25 @@
+     "focused-source": {
+       "id": "focused-source",
+       "kind": "supervised-command",
+-      "cwd": "/Users/dbox/repos/wt/vickie/vickie-current-changefeed-minimum",
+-      "argv": [
+-        "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+-        "/Users/dbox/repos/wt/vickie/vickie-current-changefeed-minimum/node_modules/vitest/vitest.mjs",
++      "cwd": "/Users/dbox/repos/wt/vickie/vickie-trusted-startup-configuration",
++      "argv": [
++        "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
++        "/Users/dbox/repos/wt/vickie/vickie-trusted-startup-configuration/node_modules/vitest/vitest.mjs",
+         "run",
+-        "packages/server/src/transaction-changefeed.test.ts",
+-        "packages/server/src/transaction-sse.test.ts",
++        "apps/bdptest/src/installed-reference-startup.test.ts",
++        "packages/config/src/index.test.ts",
++        "packages/server/src/read-sequence-lifecycle.test.ts",
++        "packages/server/src/reference-deployment.test.ts",
++        "packages/server/src/transaction-installed.test.ts",
++        "packages/server/src/transaction-runtime-configuration.test.ts",
++        "packages/server/src/transaction-snapshot.test.ts",
++        "scripts/smoke-safety.test.mjs",
+         "--maxWorkers=1",
+         "--reporter=verbose",
+         "--reporter=json",
+-        "--outputFile.json=/Users/dbox/repos/wt/vickie/bdp-integration-logs/current-changefeed-validation-preparation-4/run/focused-source.results.json",
++        "--outputFile.json=/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-trusted-startup-validation-preparation-1/run/focused-source.results.json",
+         "--testNamePattern",
+-        "^(?:preserves\\ changefeed\\ cursor\\ precedence\\ under\\ current\\-admission\\ opaque\\ minima|captures\\ current\\ changefeed\\ admission\\ once\\ across\\ owner\\ entries:\\ start\\-now\\-unknown|captures\\ current\\ changefeed\\ admission\\ once\\ across\\ owner\\ entries:\\ genesis\\-unknown|captures\\ current\\ changefeed\\ admission\\ once\\ across\\ owner\\ entries:\\ retained\\-unknown|captures\\ current\\ changefeed\\ admission\\ once\\ across\\ owner\\ entries:\\ retained\\-pos\\-01|drains\\ current\\ changefeed\\ admission\\ before\\ owner\\ close:\\ start\\-now|drains\\ current\\ changefeed\\ admission\\ before\\ owner\\ close:\\ retained|preserves\\ current\\ changefeed\\ anchor\\ capture\\ before\\ waiter\\ preflight|serves\\ current\\ changefeed\\ opaque\\ minima\\ across\\ finite\\ and\\ SSE\\ admission|keeps\\ start=now's\\ original\\ admission\\ anchor\\ through\\ a\\ minimum\\ wait\\ and\\ drains\\ on\\ close|keeps\\ direct\\ and\\ excluded\\ changefeed\\ minimum\\ paths\\ strict|serves\\ finite\\ start\\-now\\ opaque\\ minima\\ before\\ HTTP\\ shortcuts|decides\\ actual\\ HTTP\\ minimum\\ refusal\\ before\\ conditional\\ shortcuts\\ with\\ final\\ context|disconnect\\ cancels\\ the\\ actual\\ finite\\ minimum\\ wait\\ without\\ consuming\\ its\\ remaining\\ budget|effective\\ reconnect\\ cursor\\ owns\\ epoch/view/retention\\ decisions;\\ overridden\\ query\\ is\\ not\\ looked\\ up)$"
++        "^(?:captures\\ the\\ RU\\ default\\ closure\\ through\\ the\\ existing\\ capture\\ and\\ exposes\\ only\\ an\\ inert\\ handle|delegates\\ explicit\\ RU\\ schemas,\\ ownership\\ and\\ endpoint\\ multiplicity\\ without\\ an\\ alternate\\ compiler|keeps\\ TX\\ compilation,\\ credentials\\ and\\ capabilities\\ private\\ and\\ leaves\\ live\\ metadata\\ unavailable|accepts\\ duplicate\\ RU\\ principals\\ with\\ unique\\ tokens,\\ preserving\\ existing\\ semantics|snapshots\\ caller\\ settings\\ before\\ await\\ and\\ never\\ rereads\\ after\\ file\\ replacement|does\\ not\\ create\\ or\\ alter\\ a\\ pre\\-existing\\ read\\-only\\ target\\ store\\ directory|refuses\\ shared\\ listener/limits/fixture/fault\\ conflicts\\ before\\ opening\\ and\\ never\\ invokes\\ getters|accepts\\ the\\ supported\\ RU\\ IPv6\\ intended\\ listener|refuses\\ envelope\\ extensions,\\ wrong\\ profile/format\\ and\\ Directory/descriptor\\ wire\\ shapes|delegates\\ RU\\ credential,\\ policy,\\ provisioning,\\ artifact,\\ locality\\ and\\ aggregate\\ refusals|delegates\\ TX\\ exact\\ credential\\ and\\ compiled\\ closure\\ refusals|rejects\\ malformed\\ UTF8,\\ BOM,\\ escaped\\ duplicate\\ names,\\ lone\\ surrogates\\ and\\ unsafe\\ numbers\\ without\\ echo|bounds\\ the\\ lossless\\ tree\\ before\\ numeric\\ admission\\ and\\ treats\\ number\\ literals\\ as\\ atomic|isolates\\ the\\ outer\\ byte\\ ceiling\\ with\\ a\\ valid\\ small\\ envelope\\ and\\ legal\\ trailing\\ whitespace|closes\\ the\\ single\\ real\\ descriptor\\ on\\ success\\ and\\ syntax/contract\\ failures|bounds\\ reads\\ despite\\ stale\\ stat\\ and\\ closes\\ handles\\ on\\ overflow/read\\ failure/non\\-file|exports\\ only\\ the\\ loader\\ and\\ local\\ error\\ constructor\\ from\\ the\\ public\\ data\\ entry|accepts\\ the\\ deploymentFile\\-only\\ bdptest\\ section\\ for\\ read\\-update\\ with\\ one\\ selected\\ file\\ open|accepts\\ the\\ deploymentFile\\-only\\ bdptest\\ section\\ for\\ transactional\\ with\\ one\\ selected\\ file\\ open|refuses\\ a\\ nested\\ deploymentFile\\ mismatched\\-path\\ before\\ opening|refuses\\ a\\ nested\\ deploymentFile\\ invalid\\-path\\-type\\ before\\ opening|refuses\\ a\\ nested\\ deploymentFile\\ fixture\\-conflict\\ before\\ opening|refuses\\ unsupported\\ profile\\ read\\ before\\ opening|refuses\\ unsupported\\ profile\\ undefined\\ before\\ opening|refuses\\ unsupported\\ profile\\ future\\ before\\ opening|bdptest\\.deploymentFile\\ stores\\ a\\ nonsecret\\ absolute\\ path\\ without\\ opening\\ it\\ and\\ preserves\\ precedence|bdptest\\.deploymentFile\\ uses\\ UTF8\\ bytes\\ at\\ the\\ exact\\ path\\ bound|bdptest\\.deploymentFile\\ refuses\\ invalid\\ path\\ case\\ 0\\ with\\ field/rule\\-only\\ diagnostics|bdptest\\.deploymentFile\\ refuses\\ invalid\\ path\\ case\\ 1\\ with\\ field/rule\\-only\\ diagnostics|bdptest\\.deploymentFile\\ refuses\\ invalid\\ path\\ case\\ 2\\ with\\ field/rule\\-only\\ diagnostics|bdptest\\.deploymentFile\\ refuses\\ invalid\\ path\\ case\\ 3\\ with\\ field/rule\\-only\\ diagnostics|bdptest\\.deploymentFile\\ refuses\\ invalid\\ path\\ case\\ 4\\ with\\ field/rule\\-only\\ diagnostics|bdptest\\.deploymentFile\\ refuses\\ invalid\\ path\\ case\\ 5\\ with\\ field/rule\\-only\\ diagnostics|bdptest\\.deploymentFile\\ ignores\\ content\\ but\\ preserves\\ global\\ vocabulary\\ for\\ bdp|bdptest\\.deploymentFile\\ ignores\\ content\\ but\\ preserves\\ global\\ vocabulary\\ for\\ bdpbd|bdptest\\.deploymentFile\\ ignores\\ content\\ but\\ preserves\\ global\\ vocabulary\\ for\\ conformance|pins\\ the\\ root\\ and\\ explicit\\ development\\ facade\\ and\\ refuses\\ missing\\ or\\ broad\\ exports|refuses\\ root,\\ descendants\\ and\\ symlink\\ aliases\\ while\\ accepting\\ an\\ external\\ sibling|new\\ private\\ Snapshot\\ entry\\ points\\ do\\ not\\ escape\\ package\\ public\\ exports|G11\\ source\\ qualification\\ and\\ private\\ containment\\ keeps\\ lifecycle\\ internals\\ private\\ alongside\\ the\\ explicit\\ development\\ facade|captures\\ detached\\ bounded\\ own\\-data\\ launch\\ inputs\\ without\\ installing\\ alternate\\ runtime\\ controls|binds\\ every\\ default\\ tuple\\ leaf\\ in\\ the\\ pure\\ digest\\ dependency\\ test\\ \\(not\\ a\\ served\\ override\\)|effective\\ stream\\ availability\\ preserves\\ finite\\-only\\ idle\\ seams\\ at\\ the\\ strict\\ boundary|binds\\ every\\ fixed\\ owner\\-bound\\ group\\ into\\ configuration\\ identity\\ without\\ enabling\\ overrides)$"
+       ],
+       "outerSeconds": 120,
+       "termAtSeconds": 115,
+@@ -206,59 +224,112 @@
+         0
+       ],
+       "selectedFullNames": [
+-        "preserves changefeed cursor precedence under current-admission opaque minima",
+-        "captures current changefeed admission once across owner entries: start-now-unknown",
+-        "captures current changefeed admission once across owner entries: genesis-unknown",
+-        "captures current changefeed admission once across owner entries: retained-unknown",
+-        "captures current changefeed admission once across owner entries: retained-pos-01",
+-        "drains current changefeed admission before owner close: start-now",
+-        "drains current changefeed admission before owner close: retained",
+-        "preserves current changefeed anchor capture before waiter preflight",
+-        "serves current changefeed opaque minima across finite and SSE admission",
+-        "keeps start=now's original admission anchor through a minimum wait and drains on close",
+-        "keeps direct and excluded changefeed minimum paths strict",
+-        "serves finite start-now opaque minima before HTTP shortcuts",
+-        "decides actual HTTP minimum refusal before conditional shortcuts with final context",
+-        "disconnect cancels the actual finite minimum wait without consuming its remaining budget",
+-        "effective reconnect cursor owns epoch/view/retention decisions; overridden query is not looked up"
++        "captures the RU default closure through the existing capture and exposes only an inert handle",
++        "delegates explicit RU schemas, ownership and endpoint multiplicity without an alternate compiler",
++        "keeps TX compilation, credentials and capabilities private and leaves live metadata unavailable",
++        "accepts duplicate RU principals with unique tokens, preserving existing semantics",
++        "snapshots caller settings before await and never rereads after file replacement",
++        "does not create or alter a pre-existing read-only target store directory",
++        "refuses shared listener/limits/fixture/fault conflicts before opening and never invokes getters",
++        "accepts the supported RU IPv6 intended listener",
++        "refuses envelope extensions, wrong profile/format and Directory/descriptor wire shapes",
++        "delegates RU credential, policy, provisioning, artifact, locality and aggregate refusals",
++        "delegates TX exact credential and compiled closure refusals",
++        "rejects malformed UTF8, BOM, escaped duplicate names, lone surrogates and unsafe numbers without echo",
++        "bounds the lossless tree before numeric admission and treats number literals as atomic",
++        "isolates the outer byte ceiling with a valid small envelope and legal trailing whitespace",
++        "closes the single real descriptor on success and syntax/contract failures",
++        "bounds reads despite stale stat and closes handles on overflow/read failure/non-file",
++        "exports only the loader and local error constructor from the public data entry",
++        "accepts the deploymentFile-only bdptest section for read-update with one selected file open",
++        "accepts the deploymentFile-only bdptest section for transactional with one selected file open",
++        "refuses a nested deploymentFile mismatched-path before opening",
++        "refuses a nested deploymentFile invalid-path-type before opening",
++        "refuses a nested deploymentFile fixture-conflict before opening",
++        "refuses unsupported profile read before opening",
++        "refuses unsupported profile undefined before opening",
++        "refuses unsupported profile future before opening",
++        "bdptest.deploymentFile stores a nonsecret absolute path without opening it and preserves precedence",
++        "bdptest.deploymentFile uses UTF8 bytes at the exact path bound",
++        "bdptest.deploymentFile refuses invalid path case 0 with field/rule-only diagnostics",
++        "bdptest.deploymentFile refuses invalid path case 1 with field/rule-only diagnostics",
++        "bdptest.deploymentFile refuses invalid path case 2 with field/rule-only diagnostics",
++        "bdptest.deploymentFile refuses invalid path case 3 with field/rule-only diagnostics",
++        "bdptest.deploymentFile refuses invalid path case 4 with field/rule-only diagnostics",
++        "bdptest.deploymentFile refuses invalid path case 5 with field/rule-only diagnostics",
++        "bdptest.deploymentFile ignores content but preserves global vocabulary for bdp",
++        "bdptest.deploymentFile ignores content but preserves global vocabulary for bdpbd",
++        "bdptest.deploymentFile ignores content but preserves global vocabulary for conformance",
++        "pins the root and explicit development facade and refuses missing or broad exports",
++        "refuses root, descendants and symlink aliases while accepting an external sibling",
++        "new private Snapshot entry points do not escape package public exports",
++        "G11 source qualification and private containment keeps lifecycle internals private alongside the explicit development facade",
++        "captures detached bounded own-data launch inputs without installing alternate runtime controls",
++        "binds every default tuple leaf in the pure digest dependency test (not a served override)",
++        "effective stream availability preserves finite-only idle seams at the strict boundary",
++        "binds every fixed owner-bound group into configuration identity without enabling overrides"
+       ],
+       "selectedFilesByFullName": {
+-        "preserves changefeed cursor precedence under current-admission opaque minima": "packages/server/src/transaction-changefeed.test.ts",
+-        "captures current changefeed admission once across owner entries: start-now-unknown": "packages/server/src/transaction-changefeed.test.ts",
+-        "captures current changefeed admission once across owner entries: genesis-unknown": "packages/server/src/transaction-changefeed.test.ts",
+-        "captures current changefeed admission once across owner entries: retained-unknown": "packages/server/src/transaction-changefeed.test.ts",
+-        "captures current changefeed admission once across owner entries: retained-pos-01": "packages/server/src/transaction-changefeed.test.ts",
+-        "drains current changefeed admission before owner close: start-now": "packages/server/src/transaction-changefeed.test.ts",
+-        "drains current changefeed admission before owner close: retained": "packages/server/src/transaction-changefeed.test.ts",
+-        "preserves current changefeed anchor capture before waiter preflight": "packages/server/src/transaction-changefeed.test.ts",
+-        "serves current changefeed opaque minima across finite and SSE admission": "packages/server/src/transaction-sse.test.ts",
+-        "keeps start=now's original admission anchor through a minimum wait and drains on close": "packages/server/src/transaction-changefeed.test.ts",
+-        "keeps direct and excluded changefeed minimum paths strict": "packages/server/src/transaction-changefeed.test.ts",
+-        "serves finite start-now opaque minima before HTTP shortcuts": "packages/server/src/transaction-changefeed.test.ts",
+-        "decides actual HTTP minimum refusal before conditional shortcuts with final context": "packages/server/src/transaction-changefeed.test.ts",
+-        "disconnect cancels the actual finite minimum wait without consuming its remaining budget": "packages/server/src/transaction-sse.test.ts",
+-        "effective reconnect cursor owns epoch/view/retention decisions; overridden query is not looked up": "packages/server/src/transaction-sse.test.ts"
++        "captures the RU default closure through the existing capture and exposes only an inert handle": "packages/server/src/reference-deployment.test.ts",
++        "delegates explicit RU schemas, ownership and endpoint multiplicity without an alternate compiler": "packages/server/src/reference-deployment.test.ts",
++        "keeps TX compilation, credentials and capabilities private and leaves live metadata unavailable": "packages/server/src/reference-deployment.test.ts",
++        "accepts duplicate RU principals with unique tokens, preserving existing semantics": "packages/server/src/reference-deployment.test.ts",
++        "snapshots caller settings before await and never rereads after file replacement": "packages/server/src/reference-deployment.test.ts",
++        "does not create or alter a pre-existing read-only target store directory": "packages/server/src/reference-deployment.test.ts",
++        "refuses shared listener/limits/fixture/fault conflicts before opening and never invokes getters": "packages/server/src/reference-deployment.test.ts",
++        "accepts the supported RU IPv6 intended listener": "packages/server/src/reference-deployment.test.ts",
++        "refuses envelope extensions, wrong profile/format and Directory/descriptor wire shapes": "packages/server/src/reference-deployment.test.ts",
++        "delegates RU credential, policy, provisioning, artifact, locality and aggregate refusals": "packages/server/src/reference-deployment.test.ts",
++        "delegates TX exact credential and compiled closure refusals": "packages/server/src/reference-deployment.test.ts",
++        "rejects malformed UTF8, BOM, escaped duplicate names, lone surrogates and unsafe numbers without echo": "packages/server/src/reference-deployment.test.ts",
++        "bounds the lossless tree before numeric admission and treats number literals as atomic": "packages/server/src/reference-deployment.test.ts",
++        "isolates the outer byte ceiling with a valid small envelope and legal trailing whitespace": "packages/server/src/reference-deployment.test.ts",
++        "closes the single real descriptor on success and syntax/contract failures": "packages/server/src/reference-deployment.test.ts",
++        "bounds reads despite stale stat and closes handles on overflow/read failure/non-file": "packages/server/src/reference-deployment.test.ts",
++        "exports only the loader and local error constructor from the public data entry": "packages/server/src/reference-deployment.test.ts",
++        "accepts the deploymentFile-only bdptest section for read-update with one selected file open": "packages/server/src/reference-deployment.test.ts",
++        "accepts the deploymentFile-only bdptest section for transactional with one selected file open": "packages/server/src/reference-deployment.test.ts",
++        "refuses a nested deploymentFile mismatched-path before opening": "packages/server/src/reference-deployment.test.ts",
++        "refuses a nested deploymentFile invalid-path-type before opening": "packages/server/src/reference-deployment.test.ts",
++        "refuses a nested deploymentFile fixture-conflict before opening": "packages/server/src/reference-deployment.test.ts",
++        "refuses unsupported profile read before opening": "packages/server/src/reference-deployment.test.ts",
++        "refuses unsupported profile undefined before opening": "packages/server/src/reference-deployment.test.ts",
++        "refuses unsupported profile future before opening": "packages/server/src/reference-deployment.test.ts",
++        "bdptest.deploymentFile stores a nonsecret absolute path without opening it and preserves precedence": "packages/config/src/index.test.ts",
++        "bdptest.deploymentFile uses UTF8 bytes at the exact path bound": "packages/config/src/index.test.ts",
++        "bdptest.deploymentFile refuses invalid path case 0 with field/rule-only diagnostics": "packages/config/src/index.test.ts",
++        "bdptest.deploymentFile refuses invalid path case 1 with field/rule-only diagnostics": "packages/config/src/index.test.ts",
++        "bdptest.deploymentFile refuses invalid path case 2 with field/rule-only diagnostics": "packages/config/src/index.test.ts",
++        "bdptest.deploymentFile refuses invalid path case 3 with field/rule-only diagnostics": "packages/config/src/index.test.ts",
++        "bdptest.deploymentFile refuses invalid path case 4 with field/rule-only diagnostics": "packages/config/src/index.test.ts",
++        "bdptest.deploymentFile refuses invalid path case 5 with field/rule-only diagnostics": "packages/config/src/index.test.ts",
++        "bdptest.deploymentFile ignores content but preserves global vocabulary for bdp": "packages/config/src/index.test.ts",
++        "bdptest.deploymentFile ignores content but preserves global vocabulary for bdpbd": "packages/config/src/index.test.ts",
++        "bdptest.deploymentFile ignores content but preserves global vocabulary for conformance": "packages/config/src/index.test.ts",
++        "pins the root and explicit development facade and refuses missing or broad exports": "scripts/smoke-safety.test.mjs",
++        "refuses root, descendants and symlink aliases while accepting an external sibling": "scripts/smoke-safety.test.mjs",
++        "new private Snapshot entry points do not escape package public exports": "packages/server/src/transaction-snapshot.test.ts",
++        "G11 source qualification and private containment keeps lifecycle internals private alongside the explicit development facade": "packages/server/src/read-sequence-lifecycle.test.ts",
++        "captures detached bounded own-data launch inputs without installing alternate runtime controls": "packages/server/src/transaction-installed.test.ts",
++        "binds every default tuple leaf in the pure digest dependency test (not a served override)": "packages/server/src/transaction-runtime-configuration.test.ts",
++        "effective stream availability preserves finite-only idle seams at the strict boundary": "packages/server/src/transaction-runtime-configuration.test.ts",
++        "binds every fixed owner-bound group into configuration identity without enabling overrides": "apps/bdptest/src/installed-reference-startup.test.ts"
+       },
+       "callbackDefaultMs": 5000,
+       "prospectiveWorkload": {
+-        "callbacks": 15,
+-        "stores": 18,
+-        "ownerLifetimes": 19,
+-        "http": 60,
+-        "commits": 23,
+-        "listeners": 5,
+-        "newReports": 9,
+-        "legacyReports": 2
++        "callbacks": 44,
++        "sourceDerivedOnly": true,
++        "installedOrHTTPClaims": false
+       },
+       "configurationFinalized": true
+     },
+     "audit-focused-source": {
+       "id": "audit-focused-source",
+       "kind": "supervised-readonly-helper",
+-      "cwd": "/Users/dbox/repos/wt/vickie/vickie-current-changefeed-minimum",
+-      "argv": [
+-        "/opt/homebrew/opt/python@3.14/bin/python3.14",
+-        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/current-changefeed-validation-preparation-4/audit.py",
++      "cwd": "/Users/dbox/repos/wt/vickie/vickie-trusted-startup-configuration",
++      "argv": [
++        "/opt/homebrew/opt/python@3.14/bin/python3.14",
++        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-trusted-startup-validation-preparation-1/audit.py",
+         "source"
+       ],
+       "outerSeconds": 120,
+@@ -267,16 +338,16 @@
+       "acceptedRawExitCodes": [
+         0
+       ],
+-      "contract": "IMMEDIATE: exact15 unique titles/files passed, no failed/unhandled/runtime errors or unintended executions; validate actual A/B/C/F/D reports and historical reports against final bound schemas; strict status/context/framing/lifecycle plus independent stage process/directory closure. Resolve historical report inventory note before accepting counts.",
++      "contract": "Exact source-derived selected names/files/counts; all selected passed once, no unselected execution, failures/runtime errors/unhandled errors; stage source/build/process/directory closure. No structured report invented for assertion-only callbacks.",
+       "mustCompleteBeforeNextStage": true
+     },
+     "prepare-package-directory": {
+       "id": "prepare-package-directory",
+       "kind": "supervised-owned-preparation-helper",
+-      "cwd": "/Users/dbox/repos/wt/vickie/vickie-current-changefeed-minimum",
+-      "argv": [
+-        "/opt/homebrew/opt/python@3.14/bin/python3.14",
+-        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/current-changefeed-validation-preparation-4/packages.py",
++      "cwd": "/Users/dbox/repos/wt/vickie/vickie-trusted-startup-configuration",
++      "argv": [
++        "/opt/homebrew/opt/python@3.14/bin/python3.14",
++        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-trusted-startup-validation-preparation-1/packages.py",
+         "directory"
+       ],
+       "outerSeconds": 120,
+@@ -291,7 +362,7 @@
+     "pack-protocol": {
+       "id": "pack-protocol",
+       "kind": "supervised-command",
+-      "cwd": "/Users/dbox/repos/wt/vickie/vickie-current-changefeed-minimum",
++      "cwd": "/Users/dbox/repos/wt/vickie/vickie-trusted-startup-configuration",
+       "argv": [
+         "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+         "/Users/dbox/.cache/node/corepack/v1/pnpm/11.20.0/bin/pnpm.cjs",
+@@ -299,7 +370,7 @@
+         "@bdp/protocol",
+         "pack",
+         "--pack-destination",
+-        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/current-changefeed-validation-preparation-4/run/packages"
++        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-trusted-startup-validation-preparation-1/run/packages"
+       ],
+       "outerSeconds": 120,
+       "termAtSeconds": 115,
+@@ -312,7 +383,7 @@
+     "pack-server": {
+       "id": "pack-server",
+       "kind": "supervised-command",
+-      "cwd": "/Users/dbox/repos/wt/vickie/vickie-current-changefeed-minimum",
++      "cwd": "/Users/dbox/repos/wt/vickie/vickie-trusted-startup-configuration",
+       "argv": [
+         "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+         "/Users/dbox/.cache/node/corepack/v1/pnpm/11.20.0/bin/pnpm.cjs",
+@@ -320,7 +391,7 @@
+         "@bdp/server",
+         "pack",
+         "--pack-destination",
+-        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/current-changefeed-validation-preparation-4/run/packages"
++        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-trusted-startup-validation-preparation-1/run/packages"
+       ],
+       "outerSeconds": 120,
+       "termAtSeconds": 115,
+@@ -333,10 +404,10 @@
+     "verify-archives": {
+       "id": "verify-archives",
+       "kind": "supervised-readonly-helper",
+-      "cwd": "/Users/dbox/repos/wt/vickie/vickie-current-changefeed-minimum",
+-      "argv": [
+-        "/opt/homebrew/opt/python@3.14/bin/python3.14",
+-        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/current-changefeed-validation-preparation-4/packages.py",
++      "cwd": "/Users/dbox/repos/wt/vickie/vickie-trusted-startup-configuration",
++      "argv": [
++        "/opt/homebrew/opt/python@3.14/bin/python3.14",
++        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-trusted-startup-validation-preparation-1/packages.py",
+         "tar"
+       ],
+       "outerSeconds": 120,
+@@ -351,10 +422,10 @@
+     "prepare-consumer": {
+       "id": "prepare-consumer",
+       "kind": "supervised-owned-preparation-helper",
+-      "cwd": "/Users/dbox/repos/wt/vickie/vickie-current-changefeed-minimum",
+-      "argv": [
+-        "/opt/homebrew/opt/python@3.14/bin/python3.14",
+-        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/current-changefeed-validation-preparation-4/packages.py",
++      "cwd": "/Users/dbox/repos/wt/vickie/vickie-trusted-startup-configuration",
++      "argv": [
++        "/opt/homebrew/opt/python@3.14/bin/python3.14",
++        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-trusted-startup-validation-preparation-1/packages.py",
+         "consumer"
+       ],
+       "outerSeconds": 120,
+@@ -369,7 +440,7 @@
+     "consumer-install": {
+       "id": "consumer-install",
+       "kind": "supervised-command",
+-      "cwd": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/current-changefeed-validation-preparation-4/run/consumer",
++      "cwd": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-trusted-startup-validation-preparation-1/run/consumer",
+       "argv": [
+         "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+         "/Users/dbox/.cache/node/corepack/v1/pnpm/11.20.0/bin/pnpm.cjs",
+@@ -390,10 +461,10 @@
+     "verify-installed-consumer": {
+       "id": "verify-installed-consumer",
+       "kind": "supervised-readonly-helper",
+-      "cwd": "/Users/dbox/repos/wt/vickie/vickie-current-changefeed-minimum",
+-      "argv": [
+-        "/opt/homebrew/opt/python@3.14/bin/python3.14",
+-        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/current-changefeed-validation-preparation-4/packages.py",
++      "cwd": "/Users/dbox/repos/wt/vickie/vickie-trusted-startup-configuration",
++      "argv": [
++        "/opt/homebrew/opt/python@3.14/bin/python3.14",
++        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-trusted-startup-validation-preparation-1/packages.py",
+         "installed"
+       ],
+       "outerSeconds": 120,
+@@ -405,199 +476,10 @@
+       "contract": "Reproduce complete package-member linkage, resolved production dependency graph within owned consumer, actual lock and payload recursive hash; bind entry literal+realpath+bytes and full inventory/symlinks; no workspace fallback. Emit actual installed-provenance/inventory records.",
+       "mustCompleteBeforeNextStage": true
+     },
+-    "historical-context-external": {
+-      "id": "historical-context-external",
+-      "kind": "supervised-command",
+-      "cwd": "/Users/dbox/repos/wt/vickie/vickie-current-changefeed-minimum",
+-      "argv": [
+-        "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+-        "/Users/dbox/repos/wt/vickie/vickie-current-changefeed-minimum/node_modules/vitest/vitest.mjs",
+-        "run",
+-        "apps/bdptest/src/transactional-changefeed-refusal-context-installed.test.ts",
+-        "--maxWorkers=1",
+-        "--reporter=verbose",
+-        "--reporter=json",
+-        "--outputFile.json=/Users/dbox/repos/wt/vickie/bdp-integration-logs/current-changefeed-validation-preparation-4/run/historical-context-external.results.json",
+-        "--testNamePattern",
+-        "^observes\\ genuine\\ installed\\ current\\ context\\ on\\ changefeed\\ parameter\\ refusals$"
+-      ],
+-      "outerSeconds": 120,
+-      "termAtSeconds": 115,
+-      "automaticRetries": 0,
+-      "acceptedRawExitCodes": [
+-        0
+-      ],
+-      "selectedFullNames": [
+-        "observes genuine installed current context on changefeed parameter refusals"
+-      ],
+-      "selectedFilesByFullName": {
+-        "observes genuine installed current context on changefeed parameter refusals": "apps/bdptest/src/transactional-changefeed-refusal-context-installed.test.ts"
+-      },
+-      "expectedObservation": "private-installed-changefeed-parameter-context",
+-      "prospectiveHttp": 10,
+-      "prospectiveChildren": 1,
+-      "prospectiveStores": 1,
+-      "requestMs": 5000,
+-      "workMs": 45000,
+-      "totalCleanupMs": 10000,
+-      "callbackMs": 60000,
+-      "configurationFinalized": true,
+-      "environmentFromGate": "Actual verified external proof only; literal entry remains UNRESOLVED until root accepts generated proof.",
+-      "prospectiveWorkload": {
+-        "callbacks": 1,
+-        "http": 10,
+-        "children": 1,
+-        "stores": 1
+-      }
+-    },
+-    "audit-historical-context-external": {
+-      "id": "audit-historical-context-external",
+-      "kind": "supervised-readonly-helper",
+-      "cwd": "/Users/dbox/repos/wt/vickie/vickie-current-changefeed-minimum",
+-      "argv": [
+-        "/opt/homebrew/opt/python@3.14/bin/python3.14",
+-        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/current-changefeed-validation-preparation-4/audit.py",
+-        "history"
+-      ],
+-      "outerSeconds": 120,
+-      "termAtSeconds": 115,
+-      "automaticRetries": 0,
+-      "acceptedRawExitCodes": [
+-        0
+-      ],
+-      "contract": "IMMEDIATE: exact one callback/title/file and expected observation; raw stage exit0 and final binding invariance; actual 10 exchanges; consumer proof/payload/entry/lock chain; historical schema preserved; child/process/store closure verified before next callback.",
+-      "mustCompleteBeforeNextStage": true
+-    },
+-    "finite-start-now-external": {
+-      "id": "finite-start-now-external",
+-      "kind": "supervised-command",
+-      "cwd": "/Users/dbox/repos/wt/vickie/vickie-current-changefeed-minimum",
+-      "argv": [
+-        "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+-        "/Users/dbox/repos/wt/vickie/vickie-current-changefeed-minimum/node_modules/vitest/vitest.mjs",
+-        "run",
+-        "apps/bdptest/src/transactional-changefeed-refusal-context-installed.test.ts",
+-        "--maxWorkers=1",
+-        "--reporter=verbose",
+-        "--reporter=json",
+-        "--outputFile.json=/Users/dbox/repos/wt/vickie/bdp-integration-logs/current-changefeed-validation-preparation-4/run/finite-start-now-external.results.json",
+-        "--testNamePattern",
+-        "^observes\\ genuine\\ installed\\ finite\\ start\\-now\\ opaque\\ minimum\\ refusal$"
+-      ],
+-      "outerSeconds": 120,
+-      "termAtSeconds": 115,
+-      "automaticRetries": 0,
+-      "acceptedRawExitCodes": [
+-        0
+-      ],
+-      "selectedFullNames": [
+-        "observes genuine installed finite start-now opaque minimum refusal"
+-      ],
+-      "selectedFilesByFullName": {
+-        "observes genuine installed finite start-now opaque minimum refusal": "apps/bdptest/src/transactional-changefeed-refusal-context-installed.test.ts"
+-      },
+-      "expectedObservation": "private-installed-changefeed-opaque-minimum",
+-      "prospectiveHttp": 4,
+-      "prospectiveChildren": 1,
+-      "prospectiveStores": 1,
+-      "requestMs": 5000,
+-      "workMs": 45000,
+-      "totalCleanupMs": 10000,
+-      "callbackMs": 60000,
+-      "configurationFinalized": true,
+-      "environmentFromGate": "Actual verified external proof only; literal entry remains UNRESOLVED until root accepts generated proof.",
+-      "prospectiveWorkload": {
+-        "callbacks": 1,
+-        "http": 4,
+-        "children": 1,
+-        "stores": 1
+-      }
+-    },
+-    "audit-finite-start-now-external": {
+-      "id": "audit-finite-start-now-external",
+-      "kind": "supervised-readonly-helper",
+-      "cwd": "/Users/dbox/repos/wt/vickie/vickie-current-changefeed-minimum",
+-      "argv": [
+-        "/opt/homebrew/opt/python@3.14/bin/python3.14",
+-        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/current-changefeed-validation-preparation-4/audit.py",
+-        "finite"
+-      ],
+-      "outerSeconds": 120,
+-      "termAtSeconds": 115,
+-      "automaticRetries": 0,
+-      "acceptedRawExitCodes": [
+-        0
+-      ],
+-      "contract": "IMMEDIATE: exact one callback/title/file and expected observation; raw stage exit0 and final binding invariance; actual 4 exchanges; consumer proof/payload/entry/lock chain; historical schema preserved; child/process/store closure verified before next callback.",
+-      "mustCompleteBeforeNextStage": true
+-    },
+-    "current-changefeed-external": {
+-      "id": "current-changefeed-external",
+-      "kind": "supervised-command",
+-      "cwd": "/Users/dbox/repos/wt/vickie/vickie-current-changefeed-minimum",
+-      "argv": [
+-        "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+-        "/Users/dbox/repos/wt/vickie/vickie-current-changefeed-minimum/node_modules/vitest/vitest.mjs",
+-        "run",
+-        "apps/bdptest/src/transactional-changefeed-refusal-context-installed.test.ts",
+-        "--maxWorkers=1",
+-        "--reporter=verbose",
+-        "--reporter=json",
+-        "--outputFile.json=/Users/dbox/repos/wt/vickie/bdp-integration-logs/current-changefeed-validation-preparation-4/run/current-changefeed-external.results.json",
+-        "--testNamePattern",
+-        "^observes\\ installed\\ current\\ changefeed\\ minimum\\ admission\\ and\\ retained\\ replay$"
+-      ],
+-      "outerSeconds": 120,
+-      "termAtSeconds": 115,
+-      "automaticRetries": 0,
+-      "acceptedRawExitCodes": [
+-        0
+-      ],
+-      "selectedFullNames": [
+-        "observes installed current changefeed minimum admission and retained replay"
+-      ],
+-      "selectedFilesByFullName": {
+-        "observes installed current changefeed minimum admission and retained replay": "apps/bdptest/src/transactional-changefeed-refusal-context-installed.test.ts"
+-      },
+-      "expectedObservation": "private-installed-current-changefeed-minimum",
+-      "prospectiveHttp": 10,
+-      "prospectiveChildren": 1,
+-      "prospectiveStores": 1,
+-      "requestMs": 5000,
+-      "workMs": 45000,
+-      "totalCleanupMs": 10000,
+-      "callbackMs": 60000,
+-      "configurationFinalized": true,
+-      "environmentFromGate": "Actual verified external proof only; literal entry remains UNRESOLVED until root accepts generated proof.",
+-      "prospectiveWorkload": {
+-        "callbacks": 1,
+-        "http": 10,
+-        "children": 1,
+-        "stores": 1
+-      }
+-    },
+-    "audit-current-changefeed-external": {
+-      "id": "audit-current-changefeed-external",
+-      "kind": "supervised-readonly-helper",
+-      "cwd": "/Users/dbox/repos/wt/vickie/vickie-current-changefeed-minimum",
+-      "argv": [
+-        "/opt/homebrew/opt/python@3.14/bin/python3.14",
+-        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/current-changefeed-validation-preparation-4/audit.py",
+-        "current"
+-      ],
+-      "outerSeconds": 120,
+-      "termAtSeconds": 115,
+-      "automaticRetries": 0,
+-      "acceptedRawExitCodes": [
+-        0
+-      ],
+-      "contract": "IMMEDIATE: exact one callback/title/file and expected observation; raw stage exit0 and final binding invariance; actual 10 exchanges; consumer proof/payload/entry/lock chain; historical schema preserved; child/process/store closure verified before next callback.",
+-      "mustCompleteBeforeNextStage": true
+-    },
+     "required-check-boundaries": {
+       "id": "required-check-boundaries",
+       "kind": "supervised-command",
+-      "cwd": "/Users/dbox/repos/wt/vickie/vickie-current-changefeed-minimum",
++      "cwd": "/Users/dbox/repos/wt/vickie/vickie-trusted-startup-configuration",
+       "argv": [
+         "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+         "/Users/dbox/.cache/node/corepack/v1/pnpm/11.20.0/bin/pnpm.cjs",
+@@ -615,7 +497,7 @@
+     "required-e2e-ready-preflight": {
+       "id": "required-e2e-ready-preflight",
+       "kind": "supervised-command",
+-      "cwd": "/Users/dbox/repos/wt/vickie/vickie-current-changefeed-minimum",
++      "cwd": "/Users/dbox/repos/wt/vickie/vickie-trusted-startup-configuration",
+       "argv": [
+         "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+         "/Users/dbox/.cache/node/corepack/v1/pnpm/11.20.0/bin/pnpm.cjs",
+@@ -633,7 +515,7 @@
+     "required-smoke": {
+       "id": "required-smoke",
+       "kind": "supervised-command",
+-      "cwd": "/Users/dbox/repos/wt/vickie/vickie-current-changefeed-minimum",
++      "cwd": "/Users/dbox/repos/wt/vickie/vickie-trusted-startup-configuration",
+       "argv": [
+         "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+         "/Users/dbox/.cache/node/corepack/v1/pnpm/11.20.0/bin/pnpm.cjs",
+@@ -651,7 +533,7 @@
+     "required-evidence-verify": {
+       "id": "required-evidence-verify",
+       "kind": "supervised-command",
+-      "cwd": "/Users/dbox/repos/wt/vickie/vickie-current-changefeed-minimum",
++      "cwd": "/Users/dbox/repos/wt/vickie/vickie-trusted-startup-configuration",
+       "argv": [
+         "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+         "/Users/dbox/.cache/node/corepack/v1/pnpm/11.20.0/bin/pnpm.cjs",
+@@ -671,6 +553,62 @@
+         "1": "Claimed but unproved: failure",
+         "3": "Unable to inspect claim/stale build: failure"
+       },
++      "configurationFinalized": true
++    },
++    "bound-consumer-loader": {
++      "id": "bound-consumer-loader",
++      "kind": "supervised-command",
++      "cwd": "/Users/dbox/repos/wt/vickie/vickie-trusted-startup-configuration",
++      "argv": [
++        "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
++        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-trusted-startup-validation-preparation-1/bound-consumer-loader.mjs"
++      ],
++      "outerSeconds": 120,
++      "termAtSeconds": 115,
++      "automaticRetries": 0,
++      "acceptedRawExitCodes": [
++        0
++      ],
++      "configurationFinalized": true,
++      "bounds": {
++        "workMs": 45000,
++        "cleanupMs": 10000,
++        "processGuardMs": 60000,
++        "source": "Bounded adaptation of existing pure-loader witness, not a Vitest callback or service qualification"
++      }
++    },
++    "audit-bound-consumer-loader": {
++      "id": "audit-bound-consumer-loader",
++      "kind": "supervised-readonly-helper",
++      "cwd": "/Users/dbox/repos/wt/vickie/vickie-trusted-startup-configuration",
++      "argv": [
++        "/opt/homebrew/opt/python@3.14/bin/python3.14",
++        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-trusted-startup-validation-preparation-1/audit.py",
++        "installed"
++      ],
++      "outerSeconds": 120,
++      "termAtSeconds": 115,
++      "automaticRetries": 0,
++      "acceptedRawExitCodes": [
++        0
++      ],
++      "configurationFinalized": true
++    },
++    "audit-required-smoke": {
++      "id": "audit-required-smoke",
++      "kind": "supervised-readonly-helper",
++      "cwd": "/Users/dbox/repos/wt/vickie/vickie-trusted-startup-configuration",
++      "argv": [
++        "/opt/homebrew/opt/python@3.14/bin/python3.14",
++        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-trusted-startup-validation-preparation-1/audit.py",
++        "smoke"
++      ],
++      "outerSeconds": 120,
++      "termAtSeconds": 115,
++      "automaticRetries": 0,
++      "acceptedRawExitCodes": [
++        0
++      ],
+       "configurationFinalized": true
+     }
+   },
+@@ -693,15 +631,12 @@
+     "prepare-consumer",
+     "consumer-install",
+     "verify-installed-consumer",
+-    "historical-context-external",
+-    "audit-historical-context-external",
+-    "finite-start-now-external",
+-    "audit-finite-start-now-external",
+-    "current-changefeed-external",
+-    "audit-current-changefeed-external",
++    "bound-consumer-loader",
++    "audit-bound-consumer-loader",
+     "required-check-boundaries",
+     "required-e2e-ready-preflight",
+     "required-smoke",
++    "audit-required-smoke",
+     "required-evidence-verify"
+   ],
+   "expectedProductionVersions": {
+@@ -716,15 +651,9 @@
+   },
+   "bounds": {
+     "sourceDefaultCallbackMs": 5000,
+-    "newDWorkMs": 3000,
+-    "newDCleanupInclusiveStopMs": 4000,
+-    "sourceLatchMs": 1000,
+-    "sourceDrainMs": 1000,
+     "installedWorkMs": 45000,
+     "installedTotalCleanupMs": 10000,
+-    "installedCallbackMs": 60000,
+-    "requestMs": 5000,
+-    "recorderMs": 5000,
++    "installedCallbackOrProcessGuardMs": 60000,
+     "outerStageMs": 120000,
+     "termAtMs": 115000,
+     "automaticRetries": 0
+@@ -734,31 +663,35 @@
+   "rootBarriers": [
+     {
+       "before": "node-version",
+-      "require": "Current source binding plus accepted native and actual CODE dispositions, helper inspection, current-session/root release and measured base tool bytes"
++      "require": "root exact corrected source + native candidate helper acceptance + corrected-source native/actual disposition wrappers + measured base tool files"
+     },
+     {
+       "before": "typecheck",
+-      "require": "Fresh workspace install/tool map actually produced and root-pinned"
++      "require": "fresh offline install exit and actual measured workspace tools, root pinned"
+     },
+     {
+       "before": "focused-source",
+-      "require": "Actual build map/log/exit independently accepted by root"
++      "require": "fresh build BEFORE collection, actual build map/log/exit root accepted"
+     },
+     {
+       "before": "prepare-consumer",
+-      "require": "Actual safe complete archive provenance accepted by root"
++      "require": "complete actual archive member/source proof root accepted"
+     },
+     {
+       "before": "verify-installed-consumer",
+-      "require": "Root independently accepts ACTUAL generated lock/manifest/settings, not predicted hash"
+-    },
+-    {
+-      "before": "historical-context-external",
+-      "require": "Root independently accepts ACTUAL installed proof/inventory/payload and literal/resolved entry"
+-    },
+-    {
+-      "after": "required-evidence-verify",
+-      "require": "Root final local acceptance and separate exact-head CI/publish authority, all actual identities unresolved"
++      "require": "ACTUAL generated consumer lock/manifest/settings root accepted"
++    },
++    {
++      "before": "bound-consumer-loader",
++      "require": "ACTUAL graph/archive/provenance/inventory/entry root accepted"
++    },
++    {
++      "before": "required-smoke",
++      "require": "additional independently created consumer; do not attribute bound consumer proof"
++    },
++    {
++      "before": "CI",
++      "require": "root separate exact-head branch/CI release; no CI invocation from this packet"
+     }
+   ]
+ }

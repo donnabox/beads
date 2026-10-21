@@ -1,0 +1,215 @@
+--- transaction-command-minimum-later-preparation-v3/commands.json
++++ transaction-command-minimum-later-preparation-v4/commands.json
+@@ -1,7 +1,7 @@
+ {
+   "status": "DRAFT_ONLY_CLOSED_NO_EXECUTION",
+   "checkout": "/Users/dbox/repos/wt/vickie/vickie-command-minimum",
+-  "evidence": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-command-minimum-later-preparation-v3/run",
++  "evidence": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-command-minimum-later-preparation-v4/run",
+   "sourcePreparation": "../transaction-command-minimum-execution-preparation-v3",
+   "commands": {
+     "restore-command-prepare": {
+@@ -9,7 +9,7 @@
+       "cwd": "/Users/dbox/repos/wt/vickie/vickie-command-minimum",
+       "argv": [
+         "python3",
+-        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-command-minimum-later-preparation-v3/controls.py",
++        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-command-minimum-later-preparation-v4/controls.py",
+         "restore-command"
+       ],
+       "supervisorSeconds": 120,
+@@ -19,7 +19,7 @@
+     },
+     "restore-command-setup": {
+       "phase": "control",
+-      "cwd": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-command-minimum-later-preparation-v3/run/restore-command",
++      "cwd": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-command-minimum-later-preparation-v4/run/restore-command",
+       "argv": [
+         "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+         "/Users/dbox/.cache/node/corepack/v1/pnpm/11.20.0/bin/pnpm.cjs",
+@@ -39,7 +39,7 @@
+     },
+     "restore-command-build": {
+       "phase": "control",
+-      "cwd": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-command-minimum-later-preparation-v3/run/restore-command",
++      "cwd": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-command-minimum-later-preparation-v4/run/restore-command",
+       "argv": [
+         "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+         "/Users/dbox/.cache/node/corepack/v1/pnpm/11.20.0/bin/pnpm.cjs",
+@@ -57,7 +57,7 @@
+     },
+     "restore-command-test": {
+       "phase": "control",
+-      "cwd": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-command-minimum-later-preparation-v3/run/restore-command",
++      "cwd": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-command-minimum-later-preparation-v4/run/restore-command",
+       "argv": [
+         "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+         "/Users/dbox/.cache/node/corepack/v1/pnpm/11.20.0/bin/pnpm.cjs",
+@@ -70,7 +70,7 @@
+         "--maxWorkers=1",
+         "--reporter=verbose",
+         "--reporter=json",
+-        "--outputFile=/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-command-minimum-later-preparation-v3/run/restore-command-test.results.json"
++        "--outputFile=/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-command-minimum-later-preparation-v4/run/restore-command-test.results.json"
+       ],
+       "supervisorSeconds": 120,
+       "requires": [
+@@ -99,7 +99,7 @@
+       "cwd": "/Users/dbox/repos/wt/vickie/vickie-command-minimum",
+       "argv": [
+         "python3",
+-        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-command-minimum-later-preparation-v3/adjudicate.py",
++        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-command-minimum-later-preparation-v4/adjudicate.py",
+         "restore-command"
+       ],
+       "supervisorSeconds": 120,
+@@ -117,7 +117,7 @@
+       "cwd": "/Users/dbox/repos/wt/vickie/vickie-command-minimum",
+       "argv": [
+         "python3",
+-        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-command-minimum-later-preparation-v3/controls.py",
++        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-command-minimum-later-preparation-v4/controls.py",
+         "bypass-receipt"
+       ],
+       "supervisorSeconds": 120,
+@@ -127,7 +127,7 @@
+     },
+     "bypass-receipt-setup": {
+       "phase": "control",
+-      "cwd": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-command-minimum-later-preparation-v3/run/bypass-receipt",
++      "cwd": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-command-minimum-later-preparation-v4/run/bypass-receipt",
+       "argv": [
+         "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+         "/Users/dbox/.cache/node/corepack/v1/pnpm/11.20.0/bin/pnpm.cjs",
+@@ -147,7 +147,7 @@
+     },
+     "bypass-receipt-build": {
+       "phase": "control",
+-      "cwd": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-command-minimum-later-preparation-v3/run/bypass-receipt",
++      "cwd": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-command-minimum-later-preparation-v4/run/bypass-receipt",
+       "argv": [
+         "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+         "/Users/dbox/.cache/node/corepack/v1/pnpm/11.20.0/bin/pnpm.cjs",
+@@ -165,7 +165,7 @@
+     },
+     "bypass-receipt-test": {
+       "phase": "control",
+-      "cwd": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-command-minimum-later-preparation-v3/run/bypass-receipt",
++      "cwd": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-command-minimum-later-preparation-v4/run/bypass-receipt",
+       "argv": [
+         "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+         "/Users/dbox/.cache/node/corepack/v1/pnpm/11.20.0/bin/pnpm.cjs",
+@@ -178,7 +178,7 @@
+         "--maxWorkers=1",
+         "--reporter=verbose",
+         "--reporter=json",
+-        "--outputFile=/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-command-minimum-later-preparation-v3/run/bypass-receipt-test.results.json"
++        "--outputFile=/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-command-minimum-later-preparation-v4/run/bypass-receipt-test.results.json"
+       ],
+       "supervisorSeconds": 120,
+       "requires": [
+@@ -207,7 +207,7 @@
+       "cwd": "/Users/dbox/repos/wt/vickie/vickie-command-minimum",
+       "argv": [
+         "python3",
+-        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-command-minimum-later-preparation-v3/adjudicate.py",
++        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-command-minimum-later-preparation-v4/adjudicate.py",
+         "bypass-receipt"
+       ],
+       "supervisorSeconds": 120,
+@@ -236,7 +236,7 @@
+       "cwd": "/Users/dbox/repos/wt/vickie/vickie-command-minimum",
+       "argv": [
+         "python3",
+-        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-command-minimum-later-preparation-v3/packages.py",
++        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-command-minimum-later-preparation-v4/packages.py",
+         "directory"
+       ],
+       "supervisorSeconds": 120,
+@@ -258,7 +258,7 @@
+         "/Users/dbox/repos/wt/vickie/vickie-command-minimum/packages/protocol",
+         "pack",
+         "--pack-destination",
+-        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-command-minimum-later-preparation-v3/run/packages"
++        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-command-minimum-later-preparation-v4/run/packages"
+       ],
+       "supervisorSeconds": 120,
+       "requires": [
+@@ -279,7 +279,7 @@
+         "/Users/dbox/repos/wt/vickie/vickie-command-minimum/packages/server",
+         "pack",
+         "--pack-destination",
+-        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-command-minimum-later-preparation-v3/run/packages"
++        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-command-minimum-later-preparation-v4/run/packages"
+       ],
+       "supervisorSeconds": 120,
+       "requires": [
+@@ -295,7 +295,7 @@
+       "cwd": "/Users/dbox/repos/wt/vickie/vickie-command-minimum",
+       "argv": [
+         "python3",
+-        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-command-minimum-later-preparation-v3/packages.py",
++        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-command-minimum-later-preparation-v4/packages.py",
+         "tar"
+       ],
+       "supervisorSeconds": 120,
+@@ -316,7 +316,7 @@
+       "cwd": "/Users/dbox/repos/wt/vickie/vickie-command-minimum",
+       "argv": [
+         "python3",
+-        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-command-minimum-later-preparation-v3/packages.py",
++        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-command-minimum-later-preparation-v4/packages.py",
+         "consumer"
+       ],
+       "supervisorSeconds": 120,
+@@ -330,7 +330,7 @@
+     },
+     "consumer-install": {
+       "phase": "package",
+-      "cwd": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-command-minimum-later-preparation-v3/run/consumer",
++      "cwd": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-command-minimum-later-preparation-v4/run/consumer",
+       "argv": [
+         "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+         "/Users/dbox/.cache/node/corepack/v1/pnpm/11.20.0/bin/pnpm.cjs",
+@@ -353,7 +353,7 @@
+       "cwd": "/Users/dbox/repos/wt/vickie/vickie-command-minimum",
+       "argv": [
+         "python3",
+-        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-command-minimum-later-preparation-v3/packages.py",
++        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-command-minimum-later-preparation-v4/packages.py",
+         "installed"
+       ],
+       "supervisorSeconds": 120,
+@@ -380,7 +380,7 @@
+         "--maxWorkers=1",
+         "--reporter=verbose",
+         "--reporter=json",
+-        "--outputFile=/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-command-minimum-later-preparation-v3/run/fresh-tx.results.json"
++        "--outputFile=/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-command-minimum-later-preparation-v4/run/fresh-tx.results.json"
+       ],
+       "supervisorSeconds": 120,
+       "requires": [
+@@ -412,7 +412,7 @@
+       "cwd": "/Users/dbox/repos/wt/vickie/vickie-command-minimum",
+       "argv": [
+         "python3",
+-        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-command-minimum-later-preparation-v3/adjudicate.py",
++        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-command-minimum-later-preparation-v4/adjudicate.py",
+         "fresh-tx"
+       ],
+       "supervisorSeconds": 120,
+--- transaction-command-minimum-later-preparation-v3/execution-gate.example.json
++++ transaction-command-minimum-later-preparation-v4/execution-gate.example.json
+@@ -42,9 +42,9 @@
+       "snapshotSha256": null
+     },
+     "bypass-receipt": {
+-      "patchPath": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-command-minimum-draft/bypass-receipt-root-minimum.patch",
+-      "patchSha256": "ef665809f6821f8af08b61d00f821dcd5d1f9de1f50cb5cd95213fb120d40b0a",
+-      "afterSha256": "5976443c03b29d6f8e9cc763607b4148457f6bd6b81ce9e3173e9741dc30a358",
++      "patchPath": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-command-minimum-draft/bypass-receipt-root-minimum-v2.patch",
++      "patchSha256": "dca316bf79495061823fb12ed9ffd0c369e51ac2ca32858451c7301b8a691fff",
++      "afterSha256": "9da034938dc1a48dd48b961a0ec9fa518dc954d1bddcb2ab38f321a3da13a131",
+       "snapshotSha256": null
+     }
+   },

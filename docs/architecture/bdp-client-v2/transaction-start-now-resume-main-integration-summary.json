@@ -1,0 +1,280 @@
+{
+  "source": {
+    "source": "8c78cba5d2be5d5612c6a9324ee36ed690fdeb19",
+    "tree": "f2bc6fd3750bb7b453984f9927f75e64554c777a",
+    "parents": [
+      "902340fcc8d8fcdac337e33faf3461234b65b65a",
+      "f0e1310605ef29c278793c1032ac90b3c95eabc5"
+    ],
+    "mergeBase": "5995f6b08ebd045e4343059c2da1cffd38b09b80",
+    "exactAutomaticMergeTree": true,
+    "exactDisjointUnion": true,
+    "sseFiles": [
+      "apps/bdptest/src/transactional-sse-installed.test.ts",
+      "docs/design/transaction-implementation-progress.md",
+      "docs/design/w1-transactional-packet.md",
+      "docs/specs/bdp.md",
+      "packages/conformance/catalog/transactional-v1.json",
+      "packages/conformance/src/transactional-catalog.test.ts",
+      "packages/server/src/transaction-http.ts",
+      "packages/server/src/transaction-sse.test.ts"
+    ],
+    "mainFiles": [
+      "apps/bdptest/src/transactional-matrix.test.ts",
+      "packages/conformance/src/transactional-cumulative.test.ts",
+      "packages/conformance/test-support/transactional/coverage-v1.json",
+      "packages/conformance/test-support/transactional/manifest-v1.json"
+    ],
+    "sha256": {
+      "apps/bdptest/src/transactional-sse-installed.test.ts": "0af05a745d5c3ee74fb84adff995c39c6bf1c1ed1891a30dd5e0902f8d859d19",
+      "docs/design/transaction-implementation-progress.md": "97b34a9cc7d4bd6bf973015cc1c96b4c86900174f8354e688e0850dec6e086c1",
+      "docs/design/w1-transactional-packet.md": "6bf14c1cbb3707e25d4e72b23dd99d5f5399b80438d8826b313d8f210c81e6d6",
+      "docs/specs/bdp.md": "8a02d57e929b4cdef2495690864a21c5f107f8b1509308ee89e9d40714caa058",
+      "packages/conformance/catalog/transactional-v1.json": "c9125f914129c71f01cefc5c54b32db80637d37b57e321571c96e81936c31eb4",
+      "packages/conformance/src/transactional-catalog.test.ts": "b9f7b0c096554adb305e229af54495f4b6609f9ac50f413ca8478d7da8bf52ea",
+      "packages/server/src/transaction-http.ts": "ce94a326af825a84b70252bd8ea5a2c2cf410ef3e99e9223a125c985ecbbde36",
+      "packages/server/src/transaction-sse.test.ts": "7c8f45a2456c33a90b61b43388cf33d67784c47d0f63b95505f204b4ea1cd9b0",
+      "apps/bdptest/src/transactional-matrix.test.ts": "d6ab197494a383a7c76c40fa0daeedbde2a3d36dd1c78711cdd48fdd3ed1dcd8",
+      "packages/conformance/src/transactional-cumulative.test.ts": "4ed3e4ef8b105f9f5d85854a07f03e614adc8c9e4af952421a0b23889f759e9d",
+      "packages/conformance/test-support/transactional/coverage-v1.json": "dafedd035ca20f684559c739ebf2e6155f8446ce8062c3fa60ff86967b259bbd",
+      "packages/conformance/test-support/transactional/manifest-v1.json": "56318c56ee99bb981336e3f17560e7b079e88f2f85ef463874c1d556a066b2b2"
+    },
+    "cleanBefore": true,
+    "cleanAfter": true,
+    "packages": {
+      "protocol.tgz": {
+        "integrated": "4683cb6c6333c332a4bcb7efc3e28f32d1d8d06a7264913f65c31d3a826d4227",
+        "reviewed902": "4683cb6c6333c332a4bcb7efc3e28f32d1d8d06a7264913f65c31d3a826d4227"
+      },
+      "server.tgz": {
+        "integrated": "e0dd60d3101768be2d1ddeb5b45fd49939aefb01769cba7c0b7ad48d33f04d97",
+        "reviewed902": "e0dd60d3101768be2d1ddeb5b45fd49939aefb01769cba7c0b7ad48d33f04d97"
+      }
+    },
+    "exactInstalledPackageInputsUnchanged": true
+  },
+  "exits": {
+    "node-version": {
+      "command": [
+        "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+        "--version"
+      ],
+      "cwd": "/Users/dbox/repos/wt/vickie/vickie-start-now-resume",
+      "exit": 0,
+      "seconds": 0.019614667166024446
+    },
+    "pnpm-version": {
+      "command": [
+        "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+        "/Users/dbox/.cache/node/corepack/v1/pnpm/11.20.0/bin/pnpm.cjs",
+        "--version"
+      ],
+      "cwd": "/Users/dbox/repos/wt/vickie/vickie-start-now-resume",
+      "exit": 0,
+      "seconds": 0.18311125016771257
+    },
+    "build": {
+      "command": [
+        "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+        "/Users/dbox/.cache/node/corepack/v1/pnpm/11.20.0/bin/pnpm.cjs",
+        "build"
+      ],
+      "cwd": "/Users/dbox/repos/wt/vickie/vickie-start-now-resume",
+      "exit": 0,
+      "seconds": 0.766343625029549
+    },
+    "focused": {
+      "command": [
+        "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+        "/Users/dbox/.cache/node/corepack/v1/pnpm/11.20.0/bin/pnpm.cjs",
+        "exec",
+        "vitest",
+        "run",
+        "packages/server/src/transaction-sse.test.ts",
+        "packages/server/src/transaction-changefeed.test.ts",
+        "packages/server/src/transaction-http.test.ts",
+        "packages/server/src/transaction-event-sse.test.ts",
+        "packages/conformance/src/transactional-catalog.test.ts",
+        "packages/conformance/src/profile-catalog-boundaries.test.ts",
+        "packages/conformance/src/transactional-cumulative.test.ts",
+        "packages/conformance/src/cumulative-artifact.test.ts",
+        "--maxWorkers=2",
+        "--reporter=verbose",
+        "--reporter=json",
+        "--outputFile.json=/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-start-now-resume-main-integration/focused.json"
+      ],
+      "cwd": "/Users/dbox/repos/wt/vickie/vickie-start-now-resume",
+      "exit": 0,
+      "seconds": 5.378993750084192
+    },
+    "matrix-static": {
+      "command": [
+        "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+        "/Users/dbox/.cache/node/corepack/v1/pnpm/11.20.0/bin/pnpm.cjs",
+        "exec",
+        "vitest",
+        "run",
+        "apps/bdptest/src/transactional-matrix.test.ts",
+        "-t",
+        "^pins (the matching no-op installed route digest and fifteen-action ledger|deletion-safety derivative carriers, complete positives, and measured source bounds)$",
+        "--maxWorkers=1",
+        "--reporter=verbose",
+        "--reporter=json",
+        "--outputFile.json=/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-start-now-resume-main-integration/matrix-static.json"
+      ],
+      "cwd": "/Users/dbox/repos/wt/vickie/vickie-start-now-resume",
+      "exit": 0,
+      "seconds": 0.7129792079795152
+    },
+    "typecheck": {
+      "command": [
+        "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+        "/Users/dbox/.cache/node/corepack/v1/pnpm/11.20.0/bin/pnpm.cjs",
+        "typecheck"
+      ],
+      "cwd": "/Users/dbox/repos/wt/vickie/vickie-start-now-resume",
+      "exit": 0,
+      "seconds": 0.8200395838357508
+    },
+    "format-check": {
+      "command": [
+        "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+        "/Users/dbox/.cache/node/corepack/v1/pnpm/11.20.0/bin/pnpm.cjs",
+        "format:check"
+      ],
+      "cwd": "/Users/dbox/repos/wt/vickie/vickie-start-now-resume",
+      "exit": 0,
+      "seconds": 0.34368495899252594
+    },
+    "lint": {
+      "command": [
+        "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+        "/Users/dbox/.cache/node/corepack/v1/pnpm/11.20.0/bin/pnpm.cjs",
+        "lint"
+      ],
+      "cwd": "/Users/dbox/repos/wt/vickie/vickie-start-now-resume",
+      "exit": 0,
+      "seconds": 0.44193695788271725
+    },
+    "check-boundaries": {
+      "command": [
+        "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+        "/Users/dbox/.cache/node/corepack/v1/pnpm/11.20.0/bin/pnpm.cjs",
+        "check:boundaries"
+      ],
+      "cwd": "/Users/dbox/repos/wt/vickie/vickie-start-now-resume",
+      "exit": 0,
+      "seconds": 0.6122681670822203
+    },
+    "evidence-verify": {
+      "command": [
+        "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+        "/Users/dbox/.cache/node/corepack/v1/pnpm/11.20.0/bin/pnpm.cjs",
+        "evidence:verify"
+      ],
+      "cwd": "/Users/dbox/repos/wt/vickie/vickie-start-now-resume",
+      "exit": 0,
+      "seconds": 0.2877159579657018
+    },
+    "diff-check": {
+      "command": [
+        "git",
+        "diff",
+        "--check"
+      ],
+      "cwd": "/Users/dbox/repos/wt/vickie/vickie-start-now-resume",
+      "exit": 0,
+      "seconds": 0.010685458080843091
+    },
+    "pack-protocol": {
+      "command": [
+        "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+        "/Users/dbox/.cache/node/corepack/v1/pnpm/11.20.0/bin/pnpm.cjs",
+        "pack",
+        "--out",
+        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-start-now-resume-main-integration/packs/protocol.tgz"
+      ],
+      "cwd": "/Users/dbox/repos/wt/vickie/vickie-start-now-resume/packages/protocol",
+      "exit": 0,
+      "seconds": 0.22539708414115012
+    },
+    "pack-server": {
+      "command": [
+        "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+        "/Users/dbox/.cache/node/corepack/v1/pnpm/11.20.0/bin/pnpm.cjs",
+        "pack",
+        "--out",
+        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-start-now-resume-main-integration/packs/server.tgz"
+      ],
+      "cwd": "/Users/dbox/repos/wt/vickie/vickie-start-now-resume/packages/server",
+      "exit": 0,
+      "seconds": 0.28527262480929494
+    }
+  },
+  "focused": {
+    "passed": 208,
+    "files": 8,
+    "exit": 0
+  },
+  "matrixStatic": {
+    "passed": 2,
+    "skipped": 55,
+    "exit": 0
+  },
+  "deviation": {
+    "outcome": "interrupted, inconclusive; no full-suite result",
+    "exit": 143,
+    "reason": "Author selected unfiltered matrix beyond assigned source/static-only scope; root ordered stop. No retroactive approval.",
+    "completedMatrixTestCount": 34,
+    "completedMatrixTestLines": [
+      " \u2713 apps/bdptest/src/transactional-matrix.test.ts > observes twelve partial Transactional contracts through packed-capable actual installed HTTP 4202ms",
+      " \u2713 apps/bdptest/src/transactional-matrix.test.ts > refuses changed installed runtimeConfigurationIdentity before actions 2129ms",
+      " \u2713 apps/bdptest/src/transactional-matrix.test.ts > refuses changed installed artifactIdentity before actions 2022ms",
+      " \u2713 apps/bdptest/src/transactional-matrix.test.ts > refuses changed installed policyIdentity before actions 2045ms",
+      " \u2713 apps/bdptest/src/transactional-matrix.test.ts > refuses changed installed authenticationIdentity before actions 2010ms",
+      " \u2713 apps/bdptest/src/transactional-matrix.test.ts > refuses changed installed authorityMode before actions 2019ms",
+      " \u2713 apps/bdptest/src/transactional-matrix.test.ts > refuses missing metadata at bootstrap instead of accepting a nonattesting fixture 0ms",
+      " \u2713 apps/bdptest/src/transactional-matrix.test.ts > refuses altered private receipt binding without manufacturing observations 4024ms",
+      " \u2713 apps/bdptest/src/transactional-matrix.test.ts > refuses altered private receipt method without manufacturing observations 4002ms",
+      " \u2713 apps/bdptest/src/transactional-matrix.test.ts > refuses altered private receipt credential without manufacturing observations 4006ms",
+      " \u2713 apps/bdptest/src/transactional-matrix.test.ts > refuses altered private receipt body-assertion without manufacturing observations 3958ms",
+      " \u2713 apps/bdptest/src/transactional-matrix.test.ts > observes per-handle authorization and separately bound permission-swapped configurations 406ms",
+      " \u2713 apps/bdptest/src/transactional-matrix.test.ts > keeps the installed bootstrap inert on import and refuses missing IPC or invalid configuration 171ms",
+      " \u2713 apps/bdptest/src/transactional-matrix.test.ts > drains on inherited IPC disconnect and releases the installed owner for reopen 298ms",
+      " \u2713 apps/bdptest/src/transactional-matrix.test.ts > retains ordinary Resource /id capture without granting receipt authority 3978ms",
+      " \u2713 apps/bdptest/src/transactional-matrix.test.ts > does not follow an ordinary Resource /id through binding ordinary-resource-id 4095ms",
+      " \u2713 apps/bdptest/src/transactional-matrix.test.ts > aborts the actual cohort budget after real wire and drains all installed children 2042ms",
+      " \u2713 apps/bdptest/src/transactional-matrix.test.ts > refuses a pre-aborted cohort before starting an installed child 1ms",
+      " \u2713 apps/bdptest/src/transactional-matrix.test.ts > cancels installed startup through its signal and never publishes a late ready 471ms",
+      " \u2713 apps/bdptest/src/transactional-matrix.test.ts > rejects captured receipt binding reuse before installed preparation 7ms",
+      " \u2713 apps/bdptest/src/transactional-matrix.test.ts > records dynamic source/session configuration even when actual receipt HTTP returns401 2652ms",
+      " \u2713 apps/bdptest/src/transactional-matrix.test.ts > retains original cohort abort alongside an actual failed child cleanup 360ms",
+      " \u2713 apps/bdptest/src/transactional-matrix.test.ts > rejects the schema-valid wrong set matched expectation against actual installed results 3914ms",
+      " \u2713 apps/bdptest/src/transactional-matrix.test.ts > rejects the schema-valid wrong set order expectation against actual installed results 3902ms",
+      " \u2713 apps/bdptest/src/transactional-matrix.test.ts > rejects the schema-valid wrong set index expectation against actual installed results 3846ms",
+      " \u2713 apps/bdptest/src/transactional-matrix.test.ts > rejects the schema-valid wrong set poststate expectation against actual installed results 3858ms",
+      " \u2713 apps/bdptest/src/transactional-matrix.test.ts > allows a valid cross-wired set receipt binding but rejects its wrong result oracle 3942ms",
+      " \u2713 apps/bdptest/src/transactional-matrix.test.ts > refuses an omitted update-where route at exact plan preflight before scenario startup or any wire 207ms",
+      " \u2713 apps/bdptest/src/transactional-matrix.test.ts > refuses an omitted delete-where route at exact plan preflight before scenario startup or any wire 199ms",
+      " \u2713 apps/bdptest/src/transactional-matrix.test.ts > records the set-update source and exact failed dynamic request when its receipt credentials are denied 3944ms",
+      " \u2713 apps/bdptest/src/transactional-matrix.test.ts > records the set-delete source and exact failed dynamic request when its receipt credentials are denied 4005ms",
+      " \u2713 apps/bdptest/src/transactional-matrix.test.ts > discriminates actual set effects against wrong second postimage expectation 3905ms",
+      " \u2713 apps/bdptest/src/transactional-matrix.test.ts > discriminates actual set effects against wrong rollback metadata expectation 3830ms",
+      " \u2713 apps/bdptest/src/transactional-matrix.test.ts > discriminates actual set effects against wrong receipt order expectation 3798ms"
+    ],
+    "unfinished": "At least one source-dist installed child was active at interruption. Exact unfinished scenario/HTTP exchanges and cumulative child launches were not recorded; unknown. Next serial source case is Event order but not independently observed starting.",
+    "processSnapshot": "interrupted-processes.json",
+    "cleanup": "interrupted-cleanup.json",
+    "counts": "Completed test count is not cohort, child, or request count. No finite aggregate execution total claimed."
+  },
+  "cleanup": {
+    "checkedAt": "2026-10-14T15:16:20.544967+00:00",
+    "ownedProcessesRemaining": [],
+    "interruptedOwnedTempRemoved": "/var/folders/cc/hh74y1f16qj9gfbv8x4x2n6m0000gn/T/bdp-tx-installed-0orlQh",
+    "removalObserved": true,
+    "attribution": "Only matching bdp-tx-installed directory born within interrupted run, created at08:14:32 alongside captured newly started owned child93958; bootstrap-only. No other temp directory removed.",
+    "sourceClean": true
+  },
+  "installed902Evidence": "Remains attributed to902; no new approved installed cohort. Unintended source-dist matrix execution occurred and was interrupted, not qualification evidence.",
+  "claimEligible": false
+}

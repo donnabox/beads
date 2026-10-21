@@ -1,0 +1,67 @@
+{
+  "atUtc": "2026-10-17T06:13:49.005161+00:00",
+  "items": [
+    {
+      "finding": 1,
+      "disposition": "accept",
+      "rationale": "Measure allocation baseline after real capture; pages2, not0; require unchanged counts/disposition after probes."
+    },
+    {
+      "finding": 2,
+      "disposition": "accept",
+      "rationale": "D claims only observable HEAD metadata/emptybody and retainedbytes. No wire-only noallocation claim."
+    },
+    {
+      "finding": 3,
+      "disposition": "accept",
+      "rationale": "One callback-local exact executor, explicit local3dispatch guard and transport invariants; no nonexistent option or shared exchange helper."
+    },
+    {
+      "finding": 4,
+      "disposition": "accept",
+      "rationale": "Catch TypeError only around strict capture; fallback lexical failure rethrows original; kind/lifecycle outside catch; disclose synchronous recapture."
+    },
+    {
+      "finding": 5,
+      "disposition": "accept",
+      "rationale": "Retain minimum===undefined refusal fence even if currently unreachable."
+    },
+    {
+      "finding": 6,
+      "disposition": "accept",
+      "rationale": "A body fully synchronous, noawait or maintenance override."
+    },
+    {
+      "finding": 7,
+      "disposition": "accept",
+      "rationale": "Add one matched-context pos-01 create probe; A14 instead13, no other workload increase."
+    },
+    {
+      "finding": 8,
+      "disposition": "accept",
+      "rationale": "Compile mutationReceipt within new E callback using existing snapshotAjv; no shared helper mutation."
+    },
+    {
+      "finding": 9,
+      "disposition": "accept",
+      "rationale": "Post-close probe calls actual f.owner, outside delegated counter."
+    },
+    {
+      "finding": 10,
+      "disposition": "defer",
+      "rationale": "Unifying known/no-minimum kind inspection unnecessarily widens existing accessor behavior. Only newly admitted opaque path captures kind; preserve existing paths."
+    },
+    {
+      "finding": 11,
+      "disposition": "defer",
+      "rationale": "Existing strict-known disconnect behavior remains unchanged and fullCI covers it; bounded focused selection does not claim these rows."
+    },
+    {
+      "finding": 12,
+      "disposition": "accept",
+      "rationale": "Name unchanged withDeadline/finishObservation reuse; callback-local ownership and verified close before removal."
+    }
+  ],
+  "requiresNativeFindingAuditAndV3Closure": true,
+  "authoringReleased": false
+}

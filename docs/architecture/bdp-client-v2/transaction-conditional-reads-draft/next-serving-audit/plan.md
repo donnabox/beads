@@ -1,0 +1,41 @@
+# Next serving audit on b0213805
+
+No new unconditional Transactional or ordinary Update runtime defect was established in this bounded pass. The smallest useful independent next slice is **installed Event cursor continuity across an ordinary process restart**, including exclusive replay within one group, Last-Event-ID precedence and source binding. This is a missing installed observation in the inspected witnesses, not a diagnosed serving bug or a qualification claim. Production ownership is empty unless the new witness establishes a real mismatch.
+
+## What was ruled out, and why
+
+The sole plan's active T2/T3/T4 goal remains actual same-owner serving and recovery; current conditional GET/HEAD work already owns its specific gap. I reread the current source rather than relying on earlier audits. Transactional current-read/minimum handling in transaction-http.ts213–233,412–590 and transaction-service.ts380–575 retains the separated observation/wait boundary. Event projection and lease scans use current context; store.ts722–800 checks actual source membership and keeps within-group ordinals;1768 onward checks captured scan context. Sequence aliases are not an unimplemented follow-on: transactional-alias-installed.test.ts100 and301 onward already exercises turn-time retargeting, retained targets/misses and restart. Do not duplicate that slice.
+
+For ordinary Update, development-authority.ts166–180 captures trusted principal policy;295–341 submits through its existing lifecycle. member-executor.ts720–780 compares retained semantic identity before saved-result disclosure. The existing guarded-overlap and development discovery/contracts evidence already addresses receiving, conflict, disconnected sequence completion and current visibility. The targeted inspection found no new runtime mismatch there; extracting a fresh percentage or repeating those scenarios would not be a serving repair.
+
+The known discovery refusal in transaction-http.ts212/593–600 is still admission-bound, not permission to advertise incomplete Transactional. S1 retained Snapshot/continuation minima and G2 incident-Link metadata membership remain explicit unresolved decisions. This report adds no ruling, optional History/Types/provenance work, visibility API, or public-admission workaround. The supported all-visible→empty policy does not itself establish arbitrary partial ACL completeness.
+
+## Concrete observation gap and source reasoning
+
+The existing installed Event SSE callback (apps/bdptest/src/transactional-event-sse-installed.test.ts78–295) launches once, compares finite and SSE for Scope/Bead/Link, then exercises sparse live delivery with a query `after`. Its `open` helper191–201 sends Authorization and Accept only: it never sends Last-Event-ID and never reopens the store. Thus it cannot show that a cursor actually served before shutdown still selects the correct suffix after packed-process restart, or that a real header wins over a conflicting query on that restarted process.
+
+Source proof exists separately and should be reused: transaction-events.test.ts142/179 tests projection/reopen,232 tests within-group continuation and foreign/fabricated cursors; transaction-event-sse.test.ts341–349 tests same-process reconnect and following receiving cases. This is why no production fix is proposed. The gap is their installed composition, not absence of all regression coverage.
+
+The laws are settled in the pinned spec: bdp.md6212–6222 identifies deterministic source projections and view-bound cursors;6262–6273 defines exclusive `after` and stable checkpoint/ordinal/source IDs;6350–6361 requires SSE field equality and Last-Event-ID overriding the URL's original `after`. Production transaction-events.ts95–141 renders stable IDs and rejects a foreign source; store.ts722–743 verifies an actual retained event, not merely token syntax; HTTP520–528 chooses the single Last-Event-ID value before query after, and639–644 maps source mismatch to contextual400 invalid-parameter. No Snapshot minimum or incident-Link question is involved.
+
+## Proposed finite witness (planning only)
+
+Own only apps/bdptest/src/transactional-event-sse-installed.test.ts initially, adding one separate callback and reusing its existing Scope-local Task/schema fixture, raw executor, SSE recorder and installed launcher. No shared helper or production edits. Keep the historical callback intact. Exact source selector/body bytes and counters must be frozen at authoring before any execution.
+
+Use canonical https://reference.invalid/acme/, two distinct authority-accepted Bead IDs and the existing Task schema with properties {n:0}. One batch creates A then B, yielding two created Events in the same transaction. Five HTTP requests, exactly two sequential child/owner/listener lifetimes, one owned store directory:
+
+1. POST the two-create batch with one fresh explicit key; validate the complete receipt/schema, both independent expected Resources, effectPosition and transaction.
+2. GET events/ as JSON; validate exactly the two ordered full Events, actual IDs E0/E1, ordinals0/1, both transaction links, current context and next:null. Save actual opaque IDs, never synthesize them.
+3. Close the first child and prove exit; reopen the same directory with create:false and byte-identical artifacts, canonical Scope and authentication/policy identities. GET events/?after=E0; require the exact original E1 record alone (including time/id/data), no E0 and next:null. Compare epoch/view/current position with the observed pre-restart values. No second mutation.
+4. Open real SSE events/?after=E1 with Last-Event-ID:E0. Require the complete E1 frame, id/type fields equal to JSON, and exact full data equality to request2. The later query cursor would yield no Event, so observing E1 distinguishes real header precedence. Bound the reader; close and drain it, then verify all complete recorded id-bearing frames are precisely [E1]. Do not infer indefinite absence from an elapsed sleep or claim server pending admission.
+5. GET beads/a?view=events&after=E0 (the real Scope-source cursor) with JSON Accept; require contextual400 invalid-parameter and a full Problem schema. This is an explicitly invalid cross-source input, not a discovered Bead cursor. No resource metadata/link update is used.
+
+Use the existing 45s work/10s cleanup/60s callback envelope, finite5s ordinary requests and bounded SSE reader, with120s outer supervision. Do not add retries or an idle15s wait. A transport timeout is failure, never successful negative evidence. Retain allowlisted response facts/fingerprints, safe full Event values, actual payload/source/config identities and both child exits. Preserve the directory if a pre-ready or close failure leaves process stop unknown; aggregate primary and cleanup failures. This last requirement should not blindly copy the older callback's unconditional rmSync path.
+
+Fresh protocol/server archives, the verified external eight-package consumer and explicit installed entry/source override are required for installed attribution; ordinary local fallback is only development behavior. Report claimEligible:false and no cold discovery, erasure reconciliation, authorization transition or whole-profile claim. Validation should run only this new callback plus affected formatting/type checks after native and actual Claude plan/code review. If it fails semantically, preserve the actual trace and scope a source repair from the observed failure rather than changing expectations.
+
+No automatic production authoring is requested. If root prioritizes only established serving defects, there is no additional production slice justified by this audit; continue the already-owned conditional slice rather than inventing one. This report is supporting analysis under the sole plan.
+
+## Audit limits and attribution
+
+Read-only b0213805, clean tree, with source hashes in source-binding.json. No tests/imports/build/services/network/main inspection or checkout edits. Earlier after-authorization/fresh-depth/ordinary-Update audits were used to avoid repetition, not as exhaustive proofs. I authored the conditional draft and related earlier evidence, so this is an implementation-worker audit, not an independent council. All writing is limited to this external report directory and guarded by the active role session.

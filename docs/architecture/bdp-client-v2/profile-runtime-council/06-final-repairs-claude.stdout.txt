@@ -1,0 +1,21 @@
+plied, so the 253/797 figures could not be cross-checked against an artifact.
+- No commands, tests, or repository scans were run; coverage is limited to the packet.
+
+---
+
+## E. Known bounded exclusions relevant to this packet (not regressions)
+
+- Write-profile conformance claims remain disabled; the development lane is non-attesting (`claimEligible: false`, `kind: diagnostic`, `development.read-update.*` ids).
+- The private Transactional implementation is intentionally bounded; Transactional discovery members remain prohibited in the lower profiles.
+- Still omitted by design and consistent with the new limits strings: `claim-atomicity` (the linearizable-claims paragraph at `bdp.md` 3243–3248 is unobserved), expired-creator-binding and all expiry/retention/restoration rows, rate-limited / temporarily-unavailable transients, distributed or multiple writers, authorization-change and policy-change variants, installed-schema and owned-Link contracts, internal storage faults, and admission-midpoint atomicity.
+- Deterministic allocation collision-skipping remains an unqualified obligation on the allocation row; the single non-collision observation (A7) is explicitly not evidence for it.
+- Historical revision resolution and external pinned-reference fetch behavior remain outside the alias/pinned observations.
+- Discovery, Operation Directory and public profile claims remain gated.
+
+---
+
+## F. Bottom line
+
+Actionable now, in order: **A1** (evidence counts cannot describe one run, and the figures are unenforced), **A2** (a stated invariant contradicted by the same diff), **A3/Q8** (new normative discovery member without a value domain, a schema, or a conformance row), **A4** (storage-bound claim reversed with no mitigation at the site), **Q2** (the suites that actually guard the riskiest change are not named in the validation claim), **Q3** (slug-rule blast radius on unchanged catalog anchors), **Q1** (30 s cap vs non-cancellable child-process ownership).
+
+The four repairs the delta is named for do appear substantively closed rather than merely test-passing: owner-zero (`0` no longer satisfies every profile), Part-anchor slugging, original-response fencing in place of a dispatch count, and direct alias state witnesses before retained-replay. Their residuals are A6/A7/A9/A10 plus the hardcoded shared-ownership classification. I could not establish baseline-vs-regression for the `/development/*` read path (A5) or for alias-witness exhaustiveness (Q6) from the supplied excerpt.

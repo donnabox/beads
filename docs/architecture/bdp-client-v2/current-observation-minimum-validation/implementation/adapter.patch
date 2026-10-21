@@ -1,0 +1,1099 @@
+--- /Users/dbox/repos/wt/vickie/bdp-integration-logs/scope-event-sse-opaque-minimum-validation/implementation/run.py
++++ /Users/dbox/repos/wt/vickie/bdp-integration-logs/current-observation-minimum-validation/implementation/run.py
+@@ -1,7 +1,7 @@
+ """Single bounded stage. Usage: run.py final STAGE; workspace tools are captured after guarded offline install. Closed without root gate."""
+ import os,sys
+ if len(sys.argv)!=3 or sys.argv[1]!='final':raise SystemExit('usage: run.py final STAGE')
+-os.environ['SCOPE_EVENT_SSE_VALIDATION_PHASE']=sys.argv[1]
++os.environ['CURRENT_OBSERVATION_VALIDATION_PHASE']=sys.argv[1]
+ import sys
+ sys.dont_write_bytecode=True
+ from gate import *
+@@ -12,14 +12,14 @@
+ env=os.environ.copy()
+ for k in list(env):
+  if k.startswith(('BDP_','VITEST_')) or k in ['NODE_OPTIONS','NODE_PATH','NODE_DEBUG','PYTHONOPTIMIZE','BIOME_BINARY','npm_execpath','npm_node_execpath','FORCE_COLOR']:env.pop(k)
+-env.update({'PATH':'/Users/dbox/.nvm/versions/node/v24.16.0/bin:'+env.get('PATH',''),'CI':'true','NO_COLOR':'1','PYTHONDONTWRITEBYTECODE':'1','SCOPE_EVENT_SSE_VALIDATION_PHASE':MODE})
++env.update({'PATH':'/Users/dbox/.nvm/versions/node/v24.16.0/bin:'+env.get('PATH',''),'CI':'true','NO_COLOR':'1','PYTHONDONTWRITEBYTECODE':'1','CURRENT_OBSERVATION_VALIDATION_PHASE':MODE})
+ env.update(spec.get('environment',{}))
+ # Task-owned runtime roots avoid ancestor .beads discovery in the home checkout.
+-tmp=Path(tempfile.mkdtemp(prefix='vickie-scope-sse-validation-'+name+'-',dir='/private/tmp'))
++tmp=Path(tempfile.mkdtemp(prefix='vickie-current-observation-validation-'+name+'-',dir='/private/tmp'))
+ require(tmp.parent==Path('/private/tmp') and tmp.resolve()==tmp,'Unexpected owned temp path')
+ env['TMPDIR']=str(tmp);env['npm_config_cache']=str(tmp/'npm-cache')
+ write(name+'.started.json',{'argv':spec['argv'],'cwd':spec['cwd'],'head':g['finalHead'],'tree':g['finalTree'],'sourceIdentity':g['_sourceIdentity'],'rootGateSha256':sha((P/('bootstrap-gate.json' if MODE=='bootstrap' else 'execution-gate.json')).read_bytes()),'outerSeconds':120,'automaticRetries':0,'overrides':spec.get('environment',{}),'temporaryDirectory':str(tmp),'npmCache':str(tmp/'npm-cache')})
+-env['SCOPE_EVENT_SSE_VALIDATION_STAGE']=name;env['SCOPE_EVENT_SSE_VALIDATION_ATTEMPT']=sha((E/(name+'.started.json')).read_bytes())
++env['CURRENT_OBSERVATION_VALIDATION_STAGE']=name;env['CURRENT_OBSERVATION_VALIDATION_ATTEMPT']=sha((E/(name+'.started.json')).read_bytes())
+ start=time.monotonic();p=None;seen=set();forced=False;errors=[]
+ def rows():
+  return [r.split(None,3) for r in subprocess.check_output(['ps','-axo','pid=,ppid=,pgid=,comm='],text=True,timeout=2).splitlines() if len(r.split(None,3))==4]
+@@ -67,7 +67,7 @@
+  try:
+   unchanged=source_check(g['_sourceBinding'])==g['_sourceIdentity']
+   if MODE=='final' and name not in ['workspace-install','bind-workspace-tools','typecheck','format-check','lint','fresh-build','bind-fresh-build']:verify_build(g)
+-  if name in ['event-restart-external', 'review-event-restart-external', 'scope-event-sse-opaque-external', 'review-scope-event-sse-opaque-external']:verify_consumer(g)
++  if name in ['receiving-history-external', 'review-receiving-history-external', 'current-observation-external', 'review-current-observation-external']:verify_consumer(g)
+  except BaseException as e:errors.append('final binding:'+str(e))
+  try:runtime=[str(x) for x in tmp.rglob('*') if x.is_dir() and x.name.startswith('bdp-')]
+  except BaseException as e:errors.append('temp verification:'+type(e).__name__)
+--- /Users/dbox/repos/wt/vickie/bdp-integration-logs/scope-event-sse-opaque-minimum-validation/implementation/gate.py
++++ /Users/dbox/repos/wt/vickie/bdp-integration-logs/current-observation-minimum-validation/implementation/gate.py
+@@ -1,13 +1,13 @@
+-"""Scope Event SSE opaque closed gates; no product imports. Root owns releases and measured pins."""
++"""Current-observation minimum closed gates; no product imports. Root owns releases and measured pins."""
+ from pathlib import Path
+ import hashlib,json,subprocess,os
+ P=Path(__file__).resolve().parent
+-W=Path('/Users/dbox/repos/wt/vickie/vickie-scope-event-sse-opaque-minimum')
++W=Path('/Users/dbox/repos/wt/vickie/vickie-current-observation-minimum')
+ GUARD=Path('/Users/dbox/repos/wt/vickie/bdp-integration-logs/guarded-action.py')
+-MODE=os.environ.get('SCOPE_EVENT_SSE_VALIDATION_PHASE','final')
++MODE=os.environ.get('CURRENT_OBSERVATION_VALIDATION_PHASE','final')
+ assert MODE=='final'
+ E=P/'run'
+-INTEGRATION='bbfa5b2cac0e381b497384e3a8e29cd937ea2738'
++INTEGRATION='d9c3eb9e61b1982b9bd56aa77e4cdc114384e886'
+ sha=lambda b:hashlib.sha256(b).hexdigest()
+ def require(ok,message):
+  if not ok:raise RuntimeError(message)
+@@ -77,13 +77,13 @@
+ def load_gate(name,child=False):
+  require(__debug__,'Assertions required')
+  g=read(P/'execution-gate.json')
+- require(read(P/'commands.json').get('configurationFinalized') is True,'Authored Scope Event SSE opaque source/selection not finalized')
+- require(read(P/'audit-expectations.json').get('finalized') is True,'Actual Scope Event SSE opaque observation contracts not finalized')
++ require(read(P/'commands.json').get('configurationFinalized') is True,'Authored Current-observation minimum source/selection not finalized')
++ require(read(P/'audit-expectations.json').get('finalized') is True,'Actual Current-observation minimum observation contracts not finalized')
+  require(g['released'] is True and g['rootPlanAccepted'] is True and g['rootExactSourceAccepted'] is True and g['session']=='2026-10-08T20:26:35Z-81e5','Root release absent')
+  require(g['mode']==MODE,'Wrong phase')
+  if child:
+   record=E/(name+'.started.json')
+-  require(os.environ.get('SCOPE_EVENT_SSE_VALIDATION_STAGE')==name and record.is_file() and sha(record.read_bytes())==os.environ.get('SCOPE_EVENT_SSE_VALIDATION_ATTEMPT'),'Helper requires supervised attempt')
++  require(os.environ.get('CURRENT_OBSERVATION_VALIDATION_STAGE')==name and record.is_file() and sha(record.read_bytes())==os.environ.get('CURRENT_OBSERVATION_VALIDATION_ATTEMPT'),'Helper requires supervised attempt')
+   require(read(record)['rootGateSha256']==sha((P/('bootstrap-gate.json' if MODE=='bootstrap' else 'execution-gate.json')).read_bytes()),'Gate changed during attempt')
+  idx=P/'implementation-hashes.json';require(sha(idx.read_bytes())==g['implementationIndexSha256'],'Implementation index changed')
+  for f,h in read(idx)['files'].items():require(sha((P/f).read_bytes())==h,'Implementation changed '+f)
+@@ -109,7 +109,7 @@
+  for prior in order[:order.index(name)]:complete(prior,g)
+  if MODE=='final' and order.index(name)>order.index('bind-fresh-build'):verify_build(g)
+  if name=='verify-installed-consumer':require(isinstance(g.get('consumerLockSha256'),str) and sha((E/'consumer/pnpm-lock.yaml').read_bytes())==g['consumerLockSha256'],'Consumer lock not root-pinned')
+- if name in ['event-restart-external', 'review-event-restart-external', 'scope-event-sse-opaque-external', 'review-scope-event-sse-opaque-external']:
++ if name in ['receiving-history-external', 'review-receiving-history-external', 'current-observation-external', 'review-current-observation-external']:
+   proof=verify_consumer(g)
+   spec={**spec,'environment':{'BDP_TRANSACTIONAL_INSTALLED_ENTRY':proof['entryRealpath'],'BDP_TRANSACTIONAL_SOURCE_COMMIT':b['head']}}
+  guarded();return g,spec
+--- /Users/dbox/repos/wt/vickie/bdp-integration-logs/scope-event-sse-opaque-minimum-validation/implementation/packages.py
++++ /Users/dbox/repos/wt/vickie/bdp-integration-logs/current-observation-minimum-validation/implementation/packages.py
+@@ -1,5 +1,5 @@
+ """Read-only provenance modes plus external consumer preparation; never imports product.
+-Modes tar, consumer, installed. All require the Scope Event SSE opaque dirty-source gate; copied narrowly from pinned packages.py.
++Modes tar, consumer, installed. All require the Current-observation minimum dirty-source gate; copied narrowly from pinned packages.py.
+ """
+ from pathlib import Path
+ import json,tarfile,re,copy
+@@ -51,7 +51,7 @@
+  C.mkdir(exist_ok=False)
+  for data in basis['packages'].values():assert sha(Path(data['archive']).read_bytes())==data['archiveSha256']
+  deps={f'@bdp/{n}':'file:'+basis['packages'][n]['archive'] for n in ['protocol','server']}
+- (C/'package.json').write_text(json.dumps({'name':'scope-event-sse-opaque-external-consumer','private':True,'type':'module','dependencies':deps},indent=2)+'\n')
++ (C/'package.json').write_text(json.dumps({'name':'current-observation-external-consumer','private':True,'type':'module','dependencies':deps},indent=2)+'\n')
+  # pnpm11 reads workspace overrides here. Frozen lock is independently pinned by root gate.
+  (C/'pnpm-workspace.yaml').write_text('overrides:\n  "@bdp/protocol": '+json.dumps(deps['@bdp/protocol'])+'\n  "fast-uri": "3.1.5"\n')
+ elif mode=='installed':
+--- /Users/dbox/repos/wt/vickie/bdp-integration-logs/scope-event-sse-opaque-minimum-validation/implementation/audit.py
++++ /Users/dbox/repos/wt/vickie/bdp-integration-logs/current-observation-minimum-validation/implementation/audit.py
+@@ -1,16 +1,16 @@
+-"""Closed Scope Event SSE opaque proof auditor. Standard library only; no product imports.
+-Actual Scope Event SSE opaque report schemas reconciled; root release and final source binding required.
++"""Closed Current-observation minimum proof auditor. Standard library only; no product imports.
++Actual Current-observation minimum report schemas reconciled; root release and final source binding required.
+ """
+ import sys
+ sys.dont_write_bytecode=True
+ from gate import *
+ import re,math
+-from urllib.parse import urlsplit,parse_qsl,quote
++from urllib.parse import urlsplit
+ mode=sys.argv[1]
+-stage={'source':'focused-source','history':'event-restart-external','scope':'scope-event-sse-opaque-external'}.get(mode)
+-g,_=load_gate({'tools':'bind-workspace-tools','build':'bind-fresh-build','source':'review-focused-source','history':'review-event-restart-external','scope':'review-scope-event-sse-opaque-external'}[mode],child=True)
++stage={'source':'focused-source','history':'receiving-history-external','current':'current-observation-external'}.get(mode)
++g,_=load_gate({'tools':'bind-workspace-tools','build':'bind-fresh-build','source':'review-focused-source','history':'review-receiving-history-external','current':'review-current-observation-external'}[mode],child=True)
+ if mode=='tools':
+- tools=dict(read(P/'base-tools.json')['tools'])
++ tools=dict(document(g['baseTools'])['tools'])
+  paths=[W/'node_modules'/n for n in ['@biomejs/biome/bin/biome','vitest/vitest.mjs','typescript/bin/tsc','typescript/lib/tsc.js','typescript/lib/getExePath.js','typescript/package.json']]
+  paths += [W/'node_modules/.pnpm/@biomejs+cli-darwin-arm64@2.5.7/node_modules/@biomejs/cli-darwin-arm64/biome',W/'node_modules/.pnpm/@typescript+typescript-darwin-arm64@7.0.2/node_modules/@typescript/typescript-darwin-arm64/lib/tsc']
+  for p in paths:tools[str(p)]={'realpath':str(p.resolve(strict=True)),'sha256':sha(p.read_bytes())}
+@@ -21,148 +21,133 @@
+ elif mode=='build':
+  write('build-artifacts.json',{'head':g['finalHead'],'tree':g['finalTree'],'sourceIdentity':g['_sourceIdentity'],'artifacts':inventory(),**{key:{'path':str(E/('fresh-build.'+suffix)),'sha256':sha((E/('fresh-build.'+suffix)).read_bytes())} for key,suffix in [('start','started.json'),('exit','exit.json'),('log','log')]}})
+ else:
+- config=read(P/'commands.json')['commands'][stage];result=read(E/(stage+'.results.json'));ex=read(P/'audit-expectations.json')
++ from collections import Counter
++ config=read(P/'commands.json')['commands'][stage];result=read(E/(stage+'.results.json'));ex=read(P/'audit-expectations.json');contracts=read(P/'report-schemas.json')['contracts']
+  require(ex['finalized'] is True and sha((P/'report-schemas.json').read_bytes())==ex['reportSchemasSha256'],'Report contracts changed')
+  chosen=[]
+  for suite in result['testResults']:
+   for case in suite['assertionResults']:
+    if case['fullName'] in config['selectedFullNames']:
+-    require(Path(suite['name']).resolve()==(W/config['selectedFilesByFullName'][case['fullName']]).resolve(),'Selected callback file differs')
+-    chosen.append(case)
++    require(Path(suite['name']).resolve()==(W/config['selectedFilesByFullName'][case['fullName']]).resolve(),'Selected callback file differs');chosen.append(case)
+    else:require(case['status'] in ['pending','skipped','todo'],'Unexpected callback executed')
+- require(len(chosen)==len(config['selectedFullNames']) and sorted(x['fullName'] for x in chosen)==sorted(config['selectedFullNames']) and all(x['status']=='passed' for x in chosen) and result.get('success') is True,'Exact SSE callbacks did not pass')
++ require(len(chosen)==len(config['selectedFullNames']) and sorted(x['fullName'] for x in chosen)==sorted(config['selectedFullNames']) and all(x['status']=='passed' for x in chosen) and result.get('success') is True,'Exact selected callbacks did not pass')
+  execution=complete(stage,g);observations=[]
+  for line in (E/(stage+'.log')).read_text().splitlines():
+   try:x=json.loads(line.strip())
+   except json.JSONDecodeError:continue
+   if isinstance(x,dict) and 'observation' in x:observations.append(x)
+  report={'sourceIdentity':g['_sourceIdentity'],'sourceBindingSha256':g['sourceBinding']['sha256'],'qualification':False,'selectedCallbacks':config['selectedFullNames'],'resultsSha256':sha((E/(stage+'.results.json')).read_bytes()),'logSha256':sha((E/(stage+'.log')).read_bytes())}
+- def fingerprint(x):require(isinstance(x,str) and re.fullmatch('[a-f0-9]{64}',x),'Invalid SHA256')
+- def number(x):require(type(x) is int and x>=0,'Invalid nonnegative counter')
+  def scalars(o,expected):require(all(k in o and type(o[k]) is type(v) and o[k]==v for k,v in expected.items()),'Report scalar mismatch '+str(expected))
+  def rows(o,key,n):
+   value=o.get(key);require(isinstance(value,list) and len(value)==n,'Report array count '+key);return value
++ def fingerprint(x):require(isinstance(x,str) and re.fullmatch('[a-f0-9]{64}',x),'Invalid SHA256')
++ def counter(x):require(type(x) is int and x>=0,'Invalid counter')
+  def context(c):
+-  require(isinstance(c,dict) and set(c)=={'scopeEpoch','authorizationView','scopePosition'},'Owner context shape')
+-  require(all(isinstance(v,str) and re.fullmatch('[A-Za-z0-9_-]{1,256}',v) for v in c.values()),'Owner context token')
++  require(isinstance(c,dict) and set(c)=={'scopeEpoch','authorizationView','scopePosition'},'Context shape')
++  require(all(isinstance(v,str) and re.fullmatch('[A-Za-z0-9_-]{1,256}',v) for v in c.values()),'Context tokens')
++ def directory_absent(directory,prefix):
++  p=Path(directory);tmp=Path(read(E/(stage+'.started.json'))['temporaryDirectory'])
++  require(p.is_absolute() and p.parent==tmp and p.name.startswith(prefix) and not p.exists(),'Owned directory remains or attribution differs')
++ def base_success(o):
++  for key in ['failureCount','activeRequests','pendingOperations']:
++   if key in o:scalars(o,{key:0})
++  for key in ['closed','directoryAbsent']:
++   if key in o:scalars(o,{key:True})
++  if 'outcome' in o:scalars(o,{'outcome':'passed'})
++  for key in ['deadlineExceeded','cleanupExceeded','cleanupDeadlineExceeded']:
++   if key in o:scalars(o,{key:False})
++ def authored_contract(o):
++  contract=contracts[o['observation']];require(set(o)==set(contract['schema']['required']),'Actual report field set differs')
++  expected={k:v for k,v in contract['successExpected'].items() if k in o}
++  scalars(o,expected)
++  for key,n in contract['successExpected'].items():
++   if key.endswith('Length'):rows(o,key[:-6],n)
++  if 'entries' in o:
++   for e in o['entries']:
++    require(set(e)=={'method','context','minimum'} and e['method'] in ['withRead','readReceiptPage'],'Entry row shape')
++    if e['context'] is not None:context(e['context'])
++  if 'elapsedMs' in o:require(type(o['elapsedMs']) in [int,float] and math.isfinite(o['elapsedMs']) and o['elapsedMs']>=0,'Elapsed report')
+  names=['bdp-scope-epoch','bdp-authorization-view','bdp-scope-position']
+- def wire_context(h):
+-  c={k:h[k] for k in names};require(all(isinstance(v,str) and re.fullmatch('[A-Za-z0-9_-]{1,256}',v) for v in c.values()),'Wire context token');return c
+- def live(x):
+-  scalars(x,{'aborted':False,'destroyed':False});require(type(x['elapsedMs']) in [float,int] and 0<=x['elapsedMs']<5000,'Pre-close elapsed')
+- def stream_headers(h,c):
+-  require(h['content-type']=='text/event-stream' and h['cache-control']=='no-store, no-transform' and wire_context(h)==c and 'etag' not in h and 'content-length' not in h,'SSE media/context/no finite validators')
+- def decode_frames(frames):
+-  values=[]
+-  for frame in frames:
+-   require(isinstance(frame,str),'Frame text');lines=frame.split('\n');data=[x[6:] for x in lines if x.startswith('data: ')]
+-   require(len(data)==1,'Single full Event data line');event=json.loads(data[0]);require(isinstance(event,dict),'Event object')
+-   require([x[4:] for x in lines if x.startswith('id: ')]==[event['id']] and [x[7:] for x in lines if x.startswith('event: ')]==[event['type']],'Frame fields do not identify full Event')
+-   values.append(event)
+-  return values
+- def events_shape(events,scope,subjects,types):
+-  require(len(events)==len(subjects) and len(set(e['id'] for e in events))==len(events),'Distinct complete Events')
+-  for i,e in enumerate(events):
+-   require(e['ordinal']==i and e['type']==types[i] and e['source']==scope+'events/' and e['subject']==scope+subjects[i],'Event sequence/source/subject')
+-   require(isinstance(e['id'],str) and e['id'] and isinstance(e['transaction'],str) and e['transaction'] and isinstance(e['time'],str) and isinstance(e['data'],dict),'Event field shape')
+-  require(len(set(e['transaction'] for e in events))==1,'Events from one real commit')
+- def directory_absent(value,prefix):
+-  tmp=Path(read(E/(stage+'.started.json'))['temporaryDirectory']);d=Path(value)
+-  require(tmp.parent==Path('/private/tmp') and d.is_absolute() and d.is_relative_to(tmp) and d.name.startswith(prefix) and not d.exists(),'Store ownership/absence')
++ def wire_context(h):return [h.get(k) for k in names]
++ def wire37(o,installed):
++  rr=rows(o,'completedResponses' if installed else 'responses',37);scope='https://reference.invalid/acme/' if installed else 'https://current-observation.invalid/acme/'
++  methods=['POST']*3;labels=['seed','issue-page','link'];statuses=[200]*3;routes=['operations/batch','operations/update-where','operations/batch']
++  page=rr[24]['url'];u=urlsplit(page);require(u.scheme=='https' and u.netloc==urlsplit(scope).netloc and re.fullmatch('/acme/receipts/[A-Za-z0-9_-]+/pages/[A-Za-z0-9_-]+',u.path) and not u.query and not u.fragment,'Actual canonical page route')
++  for label,target in [('type','types/task'),('types','types/'),('incident','beads/r00?view=links'),('page',page[len(scope):])]:
++   labels.append(label+'-known');methods.append('GET');statuses.append(200);routes.append(target)
++   for part,status in [('opaque',503),('epoch',410),('view',409)]:
++    for method in ['GET','HEAD']:labels.append(label+'-'+part+'-'+method.lower());methods.append(method);statuses.append(status);routes.append(target)
++  labels+=['missing-type-get','missing-type-head','missing-incident','other-page','malformed-page','anonymous-page'];methods+=['GET','HEAD','GET','GET','GET','GET'];statuses+=[503,503,404,404,400,401];routes+=['types/missing','types/missing','beads/missing?view=links',page[len(scope):],page[len(scope):],page[len(scope):]]
++  require(len(labels)==37,'Bound37 matrix');current=wire_context(rr[2]['headers']);require(current[2]=='pos-3' and all(isinstance(x,str) and re.fullmatch('[A-Za-z0-9_-]{1,256}',x) for x in current),'Actual pos3 context')
++  for i,r in enumerate(rr):
++   scalars(r,{'label':labels[i],'method':methods[i],'status':statuses[i],'url':scope+routes[i]});h=r['headers'];size=r['bodyOctets'] if installed else r['bytes'];counter(size)
++   if installed:
++    scalars(r,{'ordinal':i+1});fingerprint(r['bodySha256']);counter(r['requestBodyBytes'])
++    if r['requestBodySha256'] is not None:fingerprint(r['requestBodySha256'])
++    require(r['credential']==('other' if labels[i]=='other-page' else 'anonymous' if labels[i]=='anonymous-page' else 'writer'),'Credential label');require(h['x-bdp-development']=='non-attesting','Non-attesting marker')
++   require(h.get('x-bdp-development-limit') is None,'Private gap marker on normative current response')
++   expected=current if i>=2 and statuses[i] not in [400,401] else [*current[:2],'pos-'+str(i+1)] if i<2 else [None]*3
++   require(wire_context(h)==expected,'Wire actual context')
++   if methods[i]=='HEAD':require(size==0,'HEAD body');
++   if statuses[i] in [503,410,409,404,400,401]:require(h['content-type']=='application/problem+json','Problem media')
++   if statuses[i]==503:require(h['retry-after']=='1' and h['cache-control']=='private, no-store','Timeout metadata')
++   if methods[i]=='HEAD':
++    prior=rr[i-1];ph=prior['headers'];require(prior['method']=='GET' and prior['status']==r['status'],'Paired GET')
++    for key in ['content-length','content-type','cache-control','retry-after',*names]:require(h.get(key)==ph.get(key),'GET/HEAD header parity')
++    require(ph['content-length']==str(prior['bodyOctets'] if installed else prior['bytes']),'Actual paired GET length')
++  require(dict(Counter(str(r['status']) for r in rr))==read(P/'workload.json')['newWireMatrix']['statuses'],'Status count')
++  require(dict(Counter(r['method'] for r in rr))=={'POST':3,'GET':21,'HEAD':13},'Method count')
+  if mode=='source':
+-  require(len(observations)==5 and sorted(o['observation'] for o in observations)==sorted(ex['sourceLabels']),'Expected four new and one historical observations')
+-  by={o['observation']:o for o in observations}
+-  a=by['scope-event-sse-minimum-owner'];scalars(a,{'reads':14,'seedCommits':1});rr=rows(a,'cases',14)
+-  require([r['label'] for r in rr]==['setup','unknown','pos-01','future','foreign','foreign','default','after','invalid-reconnect','bead','link','missing','malformed','known'],'Owner rows')
+-  require([r['outcome'] for r in rr]==['packet','TransactionMinimumUnproved','TransactionMinimumUnproved','TransactionMinimumFailure','TransactionMinimumUnsupported','TransactionMinimumUnsupported','TypeError','TypeError','TypeError','TypeError','TypeError','missing','TypeError','packet'],'Owner dispositions')
+-  scalars(rr[0],{'groupObserverActive':False,'groupPrepareCalls':None})
+-  for r in rr[1:13]:scalars(r,{'groupObserverActive':True,'groupPrepareCalls':0})
+-  scalars(rr[13],{'groupObserverActive':True});number(rr[13]['groupPrepareCalls']);require(rr[13]['groupPrepareCalls']>0,'Positive SQL preparation control')
+-  c=rr[0]['context'];context(c);require(c['scopePosition']=='pos-1','Seed current position')
+-  for i,r in enumerate(rr):require(r.get('context')==(c if i in [0,1,2,3,11,13] else None),'Owner context disclosure')
+-  b=by['scope-event-sse-minimum-capture'];scalars(b,{'seedCommits':1,'interveningCommits':1,'serviceCalls':5,'ownerAttempts':3,'waits':1,'clockCalls':4,'ownerCloseCalls':1,'closed':True,'failureCount':0})
+-  rr=rows(b,'attempts',3);base=rr[0]['context'];context(base);later={**base,'scopePosition':'pos-2'}
+-  require(base['scopePosition']=='pos-1' and [r['context'] for r in rr]==[base,later,later] and b['finalContext']==later,'Per-attempt current context')
+-  minimum={'scopeEpoch':base['scopeEpoch'],'authorizationView':base['authorizationView'],'minimumPosition':'unknown'}
+-  require([r['minimum'] for r in rr]==[minimum,minimum,{**minimum,'minimumPosition':'pos-2'}] and [r['outcome'] for r in rr]==['TransactionMinimumUnproved','TransactionMinimumUnproved','packet'],'Captured tuple/outcomes')
+-  require(rows(b,'probes',5)==[{'call':i+1,'outcome':v} for i,v in enumerate(['TypeError','promise-returned','promise-returned','TypeError','Error'])],'Capture probes')
+-  c=by['scope-event-sse-minimum-abort'];scalars(c,{'seedCommits':1,'interveningCommits':0,'serviceCalls':2,'ownerAttempts':1,'waits':1,'clockCalls':2,'ownerCloseCalls':1,'rawPostCloseProbes':1,'operationOutcome':'aborted','synchronouslyUnsettled':True,'closed':True,'failureCount':0})
+-  require(rows(c,'probes',2)==[{'call':1,'outcome':'promise-returned'},{'call':2,'outcome':'Error'}],'Abort probes')
+-  d=by['scope-event-sse-minimum-http'];scalars(d,{'requests':31,'seedCommits':1,'failureCount':0});rr=rows(d,'records',31)
+-  require(type(d['elapsedMs']) in [float,int] and math.isfinite(d['elapsedMs']) and d['elapsedMs']>=0,'HTTP elapsed')
+-  statuses=[200,200,200,200,200,503,503,503,503,503,503,503,503,400,400,503,503,500,500,500,400,500,500,500,500,500,404,401,304,412,200]
+-  methods=['POST','GET','GET','GET','HEAD','GET','HEAD','GET','HEAD','GET','HEAD','GET','HEAD','GET','HEAD','GET','HEAD','GET','GET','GET','GET','GET','GET','GET','GET','GET','GET','GET','HEAD','HEAD','GET']
+-  baseline=rows(d,'baselinePages',3);require([p['eventCount'] for p in baseline]==[2,2,1] and baseline[0]['target']=='events/' and baseline[2]['next'] is None,'Actual three page baseline')
+-  scope='https://event-sse.invalid/acme/';ctx=wire_context(rr[0]['context']);require(ctx[names[2]]=='pos-1','HTTP seed current position')
+-  for i,p in enumerate(baseline):
+-   require(p['context']==ctx and rr[i+1]['target']==p['target'],'Baseline response/context linkage')
+-   if i<2:
+-    u=urlsplit(p['next']);require(u.scheme=='https' and u.netloc=='event-sse.invalid' and u.path=='/acme/events/' and not u.fragment and len(parse_qsl(u.query))==1 and parse_qsl(u.query)[0][0]=='after','Canonical issued continuation')
+-    require(baseline[i+1]['target']==p['next'][len(scope):],'Actual issued next dial target')
+-  positive=d['positive'];scalars(positive,{'ready':True,'status':200,'drained':True});live(positive['liveBeforeClose']);stream_headers(positive['headers'],ctx)
+-  frames=rows(positive,'framesBeforeClose',5);require(positive['framesAfterDrain']==frames,'Exact frames after drain');events=decode_frames(frames)
+-  events_shape(events,scope,['beads/a','beads/b','links/l','links/l','links/l'],['created','created','created','linked','linked'])
+-  require(parse_qsl(urlsplit(baseline[0]['next']).query)==[('after',events[1]['id'])] and parse_qsl(urlsplit(baseline[1]['next']).query)==[('after',events[3]['id'])],'Issued boundaries match stream Events')
+-  targets=['operations/batch','events/',baseline[1]['target'],baseline[2]['target']]+['events/']*15+['events/?after='+quote(events[0]['id'],safe="~!*'()"),'events/?after=']+['events/']*3+['beads/a?view=events','links/l?view=events','beads/missing?view=events']+['events/']*4
+-  require(len(targets)==31,'Bound source target inventory')
+-  for i,r in enumerate(rr):
+-   require(set(r)=={'ordinal','method','target','status','bodyBytes','context'} and r['ordinal']==i+1 and r['method']==methods[i] and r['status']==statuses[i],'HTTP row shape/order/status');number(r['bodyBytes'])
+-   require(r['target']==targets[i],'HTTP route sequence')
+-   require(r['context']==(ctx if r['status'] in [200,503,404,304,412] else {}),'HTTP current/refusal context')
+-   if r['method']=='HEAD':require(r['bodyBytes']==0,'HEAD body')
+-  h=by['finite-event-minimum-http'];scalars(h,{'calls':32,'productChildren':0,'directoryAbsent':True,'failureCount':0})
+-  report.update({'actualInstrumentedObservations':observations,'newObservationRecords':4,'historicalObservationRecords':1,'prospectiveWorkload':ex['workload'],'limitations':'Eight passed callbacks; only four new and one existing report are counted as runtime instrumentation. Remaining legacy request/commit counts are source-derived. SQL preparations are not executions/allocation counts; row1 is explicitly unobserved. Reported frames are complete Event identities; baseline full-body/schema/conditional/capacity assertions remain in pinned callbacks. Immediate closed-promise flag is only a synchronous observation; completed close/drain is separately required.'})
++  expected={**ex['newSourceLabels'],**ex['legacyLabels']};require(dict(Counter(o['observation'] for o in observations))==expected,'New/legacy report inventory differs')
++  by={k:[o for o in observations if o['observation']==k] for k in expected}
++  for label in ex['newSourceLabels']:
++   for o in by[label]:authored_contract(o);base_success(o)
++  a=by['current-observation-service'][0];rr=rows(a,'rows',25)
++  expected_rows=[(surface,token,'success' if token=='known' else 'cursor-expired' if token=='epoch' else 'foreign-view' if token=='view' else 'catch-up-timeout') for surface in ['type','types','incident','page','discovery'] for token in ['opaque','pos-01','known','epoch','view']]
++  for r,(surface,token,outcome) in zip(rr,expected_rows):
++   scalars(r,{'surface':surface,'minimum':token,'outcome':outcome});context(r['context']);require(r['context']['scopePosition']=='pos-2','Actual progressed current context')
++  b=by['current-observation-nondisclosure'][0];require([r['label'] for r in b['rows']]==['missing-type-known','missing-type-opaque','missing-type-epoch','missing-type-view','missing-incident','foreign-page','unknown-page','anonymous-page','malformed-page','hidden-type-known','hidden-type-opaque','hidden-type-view'],'B labels')
++  require([r['outcome'] for r in b['rows']]==['missing','catch-up-timeout','cursor-expired','foreign-view','missing','missing','missing','unauthenticated','malformed','missing','catch-up-timeout','foreign-view'],'B outcomes')
++  require(sorted(o['surface'] for o in by['current-observation-drain'])==sorted(['type','types','incident','page','discovery']),'Five distinct drains')
++  d=by['current-observation-page-retention'][0];require([r['outcome'] for r in d['rows']]==['page','unproved','unproved','cursor-expired','foreign-view','missing','missing','unproved'],'D actual retained outcomes')
++  for r in d['rows']:context(r['context'])
++  e=by['current-observation-http'][0];wire37(e,False);directory_absent(e['directory'],'bdp-current-observation-http-')
++  for label in ex['legacyLabels']:
++   for o in by[label]:base_success(o)
++  scalar_legacy={'fresh-snapshot-opaque-owner':{'snapshotCalls':14,'preEntryExcludedCalls':4,'offlineInspections':2},'finite-event-minimum-owner':{'reads':8,'seedMutations':1},'finite-event-minimum-http':{'calls':32,'productChildren':0},'bead-event-minimum-owner':{'reads':12,'seedMutations':2,'policyReplacements':1,'groupReadsAfterHidden':0},'bead-event-minimum-http':{'calls':37,'productChildren':0},'link-event-minimum-owner':{'reads':11,'seedMutations':2,'policyReplacements':1,'groupReadsAfterHidden':0},'link-event-minimum-http':{'calls':35,'productChildren':0},'scope-event-sse-minimum-owner':{'reads':14,'seedCommits':1},'scope-event-sse-minimum-http':{'requests':31,'seedCommits':1},'alias-minimum-http':{'attempted':28,'waits':6},'fresh-snapshot-opaque-http':{'requests':27,'waits':8},'receipt-root-minimum-http':{'requests':10,'waits':3}}
++  for label,values in scalar_legacy.items():scalars(by[label][0],values)
++  for o in by['parser-refusal-source']:scalars(o,{'setupCalls':1,'refusedOwnerEntries':0,'refusedWaits':0,'refusedTokenAllocations':0,'owners':1,'httpRequests':0})
++  require(sorted(o['row'] for o in by['alias-minimum-capture'])==['pos-01','unknown'] and sorted(o['row'] for o in by['alias-minimum-missing'])==['absent','dangling','deleted','hidden'],'Legacy parameter rows')
++  require(by['fresh-snapshot-opaque-owner'][0]['baseline']==by['fresh-snapshot-opaque-owner'][0]['after'],'Legacy retained payload comparison')
++  for o in by['alias-minimum-capture']:scalars(o,{'apiCalls':3,'waits':2,'clockCalls':5,'writes':4});rows(o,'contexts',5);rows(o,'attempts',5);rows(o,'unproved',4)
++  for o in by['alias-minimum-missing']:scalars(o,{'apiCalls':3,'waits':0,'clockCalls':2,'writes':3 if o['row'] in ['deleted','dangling'] else 2});rows(o,'entries',3);rows(o,'mappings',3)
++  i=by['current-minimum-incident-wait'][0];scalars(i,{'performCalls':2,'aliasLookups':0,'waits':1,'clockCalls':4,'writes':2});rows(i,'entries',3)
++  require(by['fresh-snapshot-opaque-http'][0]['statusCounts']=={'200':5,'503':8,'500':4,'400':4,'401':2,'409':2,'410':2},'Fresh Snapshot updated context status counts')
++  require([r['status'] for r in by['receipt-root-minimum-http'][0]['responses']]==[200,503,503,503,410,409,400,404,404,401],'Receipt-root current context status sequence')
++  report.update(newObservations=[o for o in observations if o['observation'] in ex['newSourceLabels']],legacyObservations=[o for o in observations if o['observation'] in ex['legacyLabels']],newRecords=9,legacyRecords=28,attribution='97 exact passed source cases; semantic bodies checked by pinned callbacks. Separate new9 records and legacy28 runtime reports; no aggregate legacy traffic inference or historical relabeling.')
+  else:
+-  require(len(observations)==1,'One installed report expected');o=observations[0];is_history=mode=='history';expected_label='private-event-restart-cursor' if is_history else 'private-installed-scope-event-sse-opaque-minimum'
+-  scalars(o,{'observation':expected_label,'attribution':'external-installed-candidate','installedProvenance':'requires separately verified external package/consumer/source binding','claimEligible':False,'outcome':'passed','declaredSourceCommit':g['finalHead'],'node':'v24.16.0','pendingOperationsAtReport':0,'directoryRemoved':True,'failures':[]})
+-  witness='apps/bdptest/src/transactional-event-sse-installed.test.ts'
+-  require(o['witnessSource']=={'fingerprintScope':'witness file bytes and tracked working-tree diff only; excludes untracked inputs and installed payload provenance','head':g['finalHead'],'fileSha256':g['_sourceBinding']['trackedSourceFiles'][witness],'diffSha256':sha(git('diff','HEAD')),'dirtyPaths':git('diff','--name-only','HEAD').decode().splitlines()},'Witness attribution changed')
+-  require(o['deadlines']=={'work':45000,'cleanup':10000,'callback':60000,'outerSupervisor':120000,'finite':5000,'recorder':5000},'Deadlines changed')
+-  scope='https://reference.invalid/acme/';b=o['binding'];served=b['served']
+-  require(served['sourceCommit']==g['finalHead'] and served['profile']=='transactional' and served['history'] is False and served['scope']==scope and b['authorityMode']=='canonical','Runtime binding')
++  require(len(observations)==1,'One title-filtered installed report');o=observations[0];history=mode=='history'
++  label='private-installed-minimum-receiving' if history else 'private-installed-current-observation-minimum';scalars(o,{'observation':label,'outcome':'passed','declaredSourceCommit':g['finalHead'],'workspaceDirty':True,'claimEligible':False,'attempted':22 if history else 37,'exchanges':22 if history else 37,'launchAttempted':True,'startupCompleted':True,'closed':True,'deadlineExceeded':False,'cleanupExceeded':False,'directoryAbsent':True,'failureCount':0,'childExitCode':0,'childSignalCode':None,'failureCategories':[]});base_success(o)
++  require(type(o['childPid']) is int and o['childPid'] in execution['sampledPids'],'Actual sampled child PID')
++  directory_absent(o['directory'],'bdp-minimum-receiving-installed-' if history else 'bdp-current-observation-minimum-installed-')
++  proof=verify_consumer(g);require(Path(o['entry']).resolve(strict=True)==Path(proof['entryRealpath']) and o['entrySha256']==proof['entrySha256'],'External entry')
++  binding=o['binding'];served=binding['served'];scope='https://reference.invalid/acme/'
++  require(served['sourceCommit']==g['finalHead'] and served['installedPayloadDigest']==proof['payloadIdentity'] and served['scope']==scope and served['profile']=='transactional' and served['history'] is False and binding['authorityMode']=='canonical','Actual child serving binding')
+   for key in ['installedPayloadDigest','installedContractsDigest','policyDigest','authenticationDigest']:fingerprint(served[key])
+-  fingerprint(b['runtimeConfigurationIdentity']);fixture=W/'packages/conformance/test-support/transactional/fixture-v1.json';fj=read(fixture)
+-  require(served['fixtureDigest']==sha(fixture.read_bytes()) and served['fixtureId']==fj['id'] and served['capabilities']==sorted(fj['capabilities']),'Fixture binding')
+-  require(b['operationTargets']=={n:scope+'operations/'+s for n,s in ex['operationTargets'].items()},'Operation target binding')
+-  proof=verify_consumer(g);require(Path(o['entry']).resolve(strict=True)==Path(proof['entryRealpath']) and o['entrySha256']==proof['entrySha256'] and served['installedPayloadDigest']==proof['payloadIdentity'],'External entry/payload differs')
+-  subjects=['beads/a','beads/b'] if is_history else ['beads/a'];seed=json.dumps({'operations':[{'operation':'createBead','id':s,'type':scope+'types/task','properties':{'n':0}} for s in subjects]},separators=(',',':')).encode()
+-  scalars(o,{'seedKey':'event-restart-two-created-v1' if is_history else 'scope-sse-minimum-one-created-v1','seedBodyBytes':len(seed),'seedBodySha256':sha(seed)})
+-  events=rows(o,'events' if is_history else 'baselineEvents',len(subjects));events_shape(events,scope,subjects,['created']*len(subjects))
+-  ss=rows(o,'sessions',2 if is_history else 1);require(len(set(s['pid'] for s in ss))==len(ss),'Distinct child PIDs')
+-  for i,s in enumerate(ss):
+-   scalars(s,{'ordinal':i+1,'create':i==0,'state':'owned','closed':True,'stopUnknown':False,'exit':{'code':0,'signal':None}})
+-   require(type(s['pid']) is int and s['pid'] in execution['sampledPids'] and s['binding']==b,'Actual sampled child/binding')
+-   u=urlsplit(s['listenUrl']);require(u.scheme=='http' and u.hostname in ['127.0.0.1','localhost','::1'] and u.port is not None,'Actual local child listener')
+-   if not is_history:require(s['closeEvent']=={'code':0,'signal':None},'Actual child stdio close')
+-  requests=rows(o,'requests',5 if is_history else 6)
+-  expected_targets=['operations/batch','events/','events/?after='+quote(events[0]['id'],safe="~!*'()"),'events/?after='+quote(events[1]['id'],safe="~!*'()"),'beads/a?view=events&after='+quote(events[0]['id'],safe="~!*'()")] if is_history else ['operations/batch']+['events/']*5
+-  expected_methods=['POST','GET','GET','GET','GET'] if is_history else ['POST','GET','HEAD','GET','HEAD','GET']
+-  for i,r in enumerate(requests):require(r=={'ordinal':i+1,'session':1 if not is_history or i<2 else 2,'method':expected_methods[i],'target':expected_targets[i]},'Exact installed request sequence')
+-  responses=rows(o,'completedFiniteResponses',4 if is_history else 5);ordinals=[1,2,3,5] if is_history else [1,2,3,4,5];statuses=[200,200,200,400] if is_history else [200,200,200,503,503]
+-  ctx=wire_context(responses[0]['headers']);require(ctx[names[2]]=='pos-1','Installed seed current position')
+-  allowed_headers=set(names+['content-type','x-bdp-development']+([] if is_history else ['content-length','cache-control','retry-after']))
+-  for r,ordinal,status in zip(responses,ordinals,statuses):
+-   require(set(r)=={'ordinal','session','method','target','status','bodyOctets','bodySha256','wireSha256','headers'} and {k:r[k] for k in ['ordinal','session','method','target']}==requests[ordinal-1] and r['status']==status,'Finite exact response sequence/shape')
+-   number(r['bodyOctets']);fingerprint(r['bodySha256']);fingerprint(r['wireSha256']);h=r['headers'];require(set(h)<=allowed_headers and all(isinstance(v,str) for v in h.values()) and wire_context(h)==ctx and h['x-bdp-development']=='non-attesting','Finite safe headers/current context')
+-   if r['method']=='HEAD':require(r['bodyOctets']==0 and r['bodySha256']==sha(b''),'Finite HEAD zero body')
+-  sse=o['sse'];scalars(sse,{'requestOrdinal':4 if is_history else 6,'status':200,'drained':True});stream_headers(sse['headers'],ctx)
+-  frames=rows(sse,'completeObservedFrames',1);require(decode_frames(frames)==[events[-1]],'Complete SSE Event equality')
+-  if is_history:
+-   scalars(sse,{'session':2,'target':expected_targets[3],'lastEventId':events[0]['id']});require(type(sse['beforeIntentionalCloseMs']) in [float,int] and 0<=sse['beforeIntentionalCloseMs']<5000,'Historical live boundary')
+-   require(o['localSensitivityControls']==['restored-event-ordinal','frame-event-identity'],'Historical controls')
+-   require([r['headers']['content-type'] for r in responses]==['application/json']*3+['application/problem+json'],'Historical finite media')
+-   report['lifecycleLimit']='Two actual sampled children, reported zero exits, clean shutdown before reopen asserted by pinned callback. Historical report has no separate child closeEvent inventory. No new stdio-drain claim is applied retrospectively.'
++  fingerprint(binding['runtimeConfigurationIdentity']);fixture=W/'packages/conformance/test-support/transactional/fixture-v1.json';fj=read(fixture)
++  require(served['fixtureDigest']==sha(fixture.read_bytes()) and served['fixtureId']==fj['id'] and served['capabilities']==sorted(fj['capabilities']),'Actual fixture identity')
++  require(binding['operationTargets']=={n:scope+'operations/'+s for n,s in ex['operationTargets'].items()},'Actual operation binding')
++  if not history:authored_contract(o);wire37(o,True)
+   else:
+-   live(sse['liveBeforeClose']);require(sse['framesBeforeClose']==frames and sse['headers']['x-bdp-development']=='non-attesting','Live exact before/after frames')
+-   number(sse['wireBytes']);require(sse['wireBytes']>0,'Observed SSE wire bytes');fingerprint(sse['wireSha256'])
+-   require(o['localSensitivityControls']==['frame-event-identity'],'Frame negative control')
+-   require(responses[0]['headers']['content-type']=='application/json' and responses[1]['headers']['content-type']=='application/json' and responses[2]['headers']['content-type']=='text/event-stream' and 'content-length' not in responses[2]['headers'],'Known finite and HEAD media')
+-   for r in responses[3:]:
+-    h=r['headers'];require(h['content-type']=='application/problem+json' and h['cache-control']=='private, no-store' and h['retry-after']=='1','Opaque refusal metadata')
+-   require(responses[3]['bodyOctets']>0 and responses[3]['headers']['content-length']==str(responses[3]['bodyOctets']) and responses[4]['headers']['content-length']==responses[3]['headers']['content-length'],'Opaque GET/HEAD length parity')
+-   report['lifecycleLimit']='One reported child exit and closeEvent plus sampled process absence and owned directory removal; one ten-second cleanup budget in pinned callback. Promise settlement is not a socket-close census; unknown/pre-ready/deadline cleanup is failure, never late success.'
+-  at=o['streamAtReport'];scalars(at,{'status':200,'drained':True,'destroyed':True});stream_headers(at['headers'],ctx);require(at['completeObservedFrames']==frames,'Exact final drained frames');number(at['wireBytes']);require(at['wireBytes']>0,'Reported transport bytes');fingerprint(at['wireSha256'])
+-  if not is_history:require(at['wireSha256']==sse['wireSha256'] and at['wireBytes']==sse['wireBytes'],'Post-drain wire identity')
+-  directory_absent(o['directory'],'bdp-event-restart-installed-' if is_history else 'bdp-scope-sse-minimum-installed-')
+-  report.update({'observation':o,'attribution':'Reviewed dirty source -> fresh build -> archives -> independently verified external consumer -> actual child payload. Complete body/schema/authority/configuration assertions stay in pinned passing callbacks; no public qualification or source attestation.'})
++   rr=rows(o,'completedResponses',22);labels=['seed-post-ignores-malformed-minimum','issue-real-page','all-absent','missing-two','head-missing-epoch','raw-duplicate-0','raw-duplicate-1','raw-duplicate-2','single-comma-value','malformed-receipt-writer','malformed-receipt-other','malformed-page-writer','malformed-page-other','foreign-unknown-receipt','foreign-unknown-page','own-unknown-receipt','own-unknown-page','compatible-missing','compatible-existing','same-view-ahead','anonymous-malformed','method-before-minimum'];statuses=[200,200,200]+[400]*10+[404,404,503,503,404,200,503,401,405]
++   require(len(statuses)==22,'Historical matrix');ctx=wire_context(rr[1]['headers']);require(ctx[2]=='pos-2','Historical current position')
++   for i,r in enumerate(rr):
++    scalars(r,{'ordinal':i+1,'label':labels[i],'status':statuses[i],'method':'POST' if i in [0,1,21] else 'HEAD' if i==4 else 'GET'});fingerprint(r['bodySha256']);counter(r['bodyOctets']);h=r['headers'];require(h['x-bdp-development']=='non-attesting','Historical marker')
++    u=urlsplit(r['url']);require(u.scheme=='https' and u.netloc=='reference.invalid' and u.path.startswith('/acme/') and not u.query and not u.fragment,'Historical canonical route')
++    require(wire_context(h)==([*ctx[:2],'pos-1'] if i==0 else [None]*3 if statuses[i] in [400,401,405] else ctx),'Historical context')
++    require(h['x-bdp-development-limit'] is None,'Historical development gap marker')
++    if statuses[i]==503:require(h['retry-after']=='1' and h['content-type']=='application/problem+json','Historical timeout metadata')
++    if i==4:require(r['bodyOctets']==0 and h['content-length']==rr[3]['headers']['content-length'],'Historical HEAD parity')
++   report['historicalLifecycleLimit']='Original22 callback reports clean child exit and directory removal; it does not emit new F active-request/pending or child close-event fields. No retrospective stdio-close census claimed.'
++  report.update(observation=o,attribution='Frozen dirty source -> fresh emitted build -> exact archives -> accepted isolated consumer -> actual reported child payload. Workspace fallback and external installed evidence are distinct; no public profile qualification.')
+  write(stage+'.accepted-observation.json',report)
+--- /Users/dbox/repos/wt/vickie/bdp-integration-logs/scope-event-sse-opaque-minimum-validation/implementation/commands.json
++++ /Users/dbox/repos/wt/vickie/bdp-integration-logs/current-observation-minimum-validation/implementation/commands.json
+@@ -1,6 +1,6 @@
+ {
+   "configurationFinalized": true,
+-  "state": "Concrete frozen Scope Event SSE adapters; execution CLOSED",
++  "state": "Concrete source-bound current-observation preparation; all execution CLOSED",
+   "finalOrder": [
+     "workspace-install",
+     "bind-workspace-tools",
+@@ -19,14 +19,14 @@
+     "prepare-consumer",
+     "consumer-install",
+     "verify-installed-consumer",
+-    "event-restart-external",
+-    "review-event-restart-external",
+-    "scope-event-sse-opaque-external",
+-    "review-scope-event-sse-opaque-external"
++    "receiving-history-external",
++    "review-receiving-history-external",
++    "current-observation-external",
++    "review-current-observation-external"
+   ],
+   "commands": {
+     "workspace-install": {
+-      "cwd": "/Users/dbox/repos/wt/vickie/vickie-scope-event-sse-opaque-minimum",
++      "cwd": "/Users/dbox/repos/wt/vickie/vickie-current-observation-minimum",
+       "argv": [
+         "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+         "/Users/dbox/.cache/node/corepack/v1/pnpm/11.20.0/bin/pnpm.cjs",
+@@ -43,10 +43,10 @@
+       "termAfterSeconds": 115
+     },
+     "bind-workspace-tools": {
+-      "cwd": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/scope-event-sse-opaque-minimum-validation/implementation",
+-      "argv": [
+-        "/opt/homebrew/opt/python@3.14/bin/python3.14",
+-        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/scope-event-sse-opaque-minimum-validation/implementation/audit.py",
++      "cwd": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/current-observation-minimum-validation/implementation",
++      "argv": [
++        "/opt/homebrew/opt/python@3.14/bin/python3.14",
++        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/current-observation-minimum-validation/implementation/audit.py",
+         "tools"
+       ],
+       "outerSeconds": 120,
+@@ -57,7 +57,7 @@
+       "termAfterSeconds": 115
+     },
+     "typecheck": {
+-      "cwd": "/Users/dbox/repos/wt/vickie/vickie-scope-event-sse-opaque-minimum",
++      "cwd": "/Users/dbox/repos/wt/vickie/vickie-current-observation-minimum",
+       "argv": [
+         "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+         "/Users/dbox/.cache/node/corepack/v1/pnpm/11.20.0/bin/pnpm.cjs",
+@@ -72,18 +72,27 @@
+       "termAfterSeconds": 115
+     },
+     "format-check": {
+-      "cwd": "/Users/dbox/repos/wt/vickie/vickie-scope-event-sse-opaque-minimum",
+-      "argv": [
+-        "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+-        "/Users/dbox/repos/wt/vickie/vickie-scope-event-sse-opaque-minimum/node_modules/@biomejs/biome/bin/biome",
++      "cwd": "/Users/dbox/repos/wt/vickie/vickie-current-observation-minimum",
++      "argv": [
++        "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
++        "/Users/dbox/repos/wt/vickie/vickie-current-observation-minimum/node_modules/@biomejs/biome/bin/biome",
+         "format",
+-        "--config-path=/Users/dbox/repos/wt/vickie/vickie-scope-event-sse-opaque-minimum/biome.json",
++        "--config-path=/Users/dbox/repos/wt/vickie/vickie-current-observation-minimum/biome.json",
++        "packages/server/src/transaction-consistency.ts",
++        "packages/server/src/transaction-read.ts",
+         "packages/server/src/transaction-http.ts",
+         "packages/server/src/transaction-service.ts",
+         "packages/server/src/transaction-store.ts",
++        "packages/server/src/transaction-consistency.test.ts",
++        "packages/server/src/transaction-read.test.ts",
++        "packages/server/src/transaction-http.test.ts",
++        "packages/server/src/transaction-service.test.ts",
++        "packages/server/src/transaction-receipt-pages.test.ts",
++        "packages/server/src/transaction-snapshot.test.ts",
++        "packages/server/src/transaction-events.test.ts",
+         "packages/server/src/transaction-event-sse.test.ts",
+-        "apps/bdptest/src/transactional-event-sse-installed.test.ts",
+-        "packages/server/src/transaction-events.test.ts"
++        "packages/server/src/transaction-changefeed.test.ts",
++        "apps/bdptest/src/transactional-minimum-receiving-installed.test.ts"
+       ],
+       "outerSeconds": 120,
+       "automaticRetries": 0,
+@@ -93,18 +102,27 @@
+       "termAfterSeconds": 115
+     },
+     "lint": {
+-      "cwd": "/Users/dbox/repos/wt/vickie/vickie-scope-event-sse-opaque-minimum",
+-      "argv": [
+-        "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+-        "/Users/dbox/repos/wt/vickie/vickie-scope-event-sse-opaque-minimum/node_modules/@biomejs/biome/bin/biome",
++      "cwd": "/Users/dbox/repos/wt/vickie/vickie-current-observation-minimum",
++      "argv": [
++        "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
++        "/Users/dbox/repos/wt/vickie/vickie-current-observation-minimum/node_modules/@biomejs/biome/bin/biome",
+         "lint",
+-        "--config-path=/Users/dbox/repos/wt/vickie/vickie-scope-event-sse-opaque-minimum/biome.json",
++        "--config-path=/Users/dbox/repos/wt/vickie/vickie-current-observation-minimum/biome.json",
++        "packages/server/src/transaction-consistency.ts",
++        "packages/server/src/transaction-read.ts",
+         "packages/server/src/transaction-http.ts",
+         "packages/server/src/transaction-service.ts",
+         "packages/server/src/transaction-store.ts",
++        "packages/server/src/transaction-consistency.test.ts",
++        "packages/server/src/transaction-read.test.ts",
++        "packages/server/src/transaction-http.test.ts",
++        "packages/server/src/transaction-service.test.ts",
++        "packages/server/src/transaction-receipt-pages.test.ts",
++        "packages/server/src/transaction-snapshot.test.ts",
++        "packages/server/src/transaction-events.test.ts",
+         "packages/server/src/transaction-event-sse.test.ts",
+-        "apps/bdptest/src/transactional-event-sse-installed.test.ts",
+-        "packages/server/src/transaction-events.test.ts"
++        "packages/server/src/transaction-changefeed.test.ts",
++        "apps/bdptest/src/transactional-minimum-receiving-installed.test.ts"
+       ],
+       "outerSeconds": 120,
+       "automaticRetries": 0,
+@@ -114,7 +132,7 @@
+       "termAfterSeconds": 115
+     },
+     "fresh-build": {
+-      "cwd": "/Users/dbox/repos/wt/vickie/vickie-scope-event-sse-opaque-minimum",
++      "cwd": "/Users/dbox/repos/wt/vickie/vickie-current-observation-minimum",
+       "argv": [
+         "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+         "/Users/dbox/.cache/node/corepack/v1/pnpm/11.20.0/bin/pnpm.cjs",
+@@ -129,10 +147,10 @@
+       "termAfterSeconds": 115
+     },
+     "bind-fresh-build": {
+-      "cwd": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/scope-event-sse-opaque-minimum-validation/implementation",
+-      "argv": [
+-        "/opt/homebrew/opt/python@3.14/bin/python3.14",
+-        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/scope-event-sse-opaque-minimum-validation/implementation/audit.py",
++      "cwd": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/current-observation-minimum-validation/implementation",
++      "argv": [
++        "/opt/homebrew/opt/python@3.14/bin/python3.14",
++        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/current-observation-minimum-validation/implementation/audit.py",
+         "build"
+       ],
+       "outerSeconds": 120,
+@@ -143,19 +161,26 @@
+       "termAfterSeconds": 115
+     },
+     "focused-source": {
+-      "cwd": "/Users/dbox/repos/wt/vickie/vickie-scope-event-sse-opaque-minimum",
+-      "argv": [
+-        "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+-        "/Users/dbox/repos/wt/vickie/vickie-scope-event-sse-opaque-minimum/node_modules/vitest/vitest.mjs",
+-        "run",
++      "cwd": "/Users/dbox/repos/wt/vickie/vickie-current-observation-minimum",
++      "argv": [
++        "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
++        "/Users/dbox/repos/wt/vickie/vickie-current-observation-minimum/node_modules/vitest/vitest.mjs",
++        "run",
++        "packages/server/src/transaction-changefeed.test.ts",
++        "packages/server/src/transaction-consistency.test.ts",
+         "packages/server/src/transaction-event-sse.test.ts",
+         "packages/server/src/transaction-events.test.ts",
++        "packages/server/src/transaction-http.test.ts",
++        "packages/server/src/transaction-read.test.ts",
++        "packages/server/src/transaction-receipt-pages.test.ts",
++        "packages/server/src/transaction-service.test.ts",
++        "packages/server/src/transaction-snapshot.test.ts",
+         "--maxWorkers=1",
+         "--reporter=verbose",
+         "--reporter=json",
+-        "--outputFile.json=/Users/dbox/repos/wt/vickie/bdp-integration-logs/scope-event-sse-opaque-minimum-validation/implementation/run/focused-source.results.json",
++        "--outputFile.json=/Users/dbox/repos/wt/vickie/bdp-integration-logs/current-observation-minimum-validation/implementation/run/focused-source.results.json",
+         "--testNamePattern",
+-        "^(?:gates\\ initial\\ Scope\\ Event\\ SSE\\ opaque\\ minima\\ before\\ scan\\ packets|captures\\ initial\\ Scope\\ Event\\ SSE\\ minima\\ once\\ and\\ recaptures\\ context\\ on\\ retry|drains\\ an\\ aborted\\ initial\\ Scope\\ Event\\ SSE\\ minimum\\ wait\\ before\\ owner\\ close|serves\\ initial\\ Scope\\ Event\\ SSE\\ opaque\\ minima\\ before\\ conditional\\ admission|Event\\ reconnect\\ syntax,\\ minimum\\ ordering\\ and\\ exact\\ context\\ codes\\ are\\ preserved\\ over\\ HTTP|conditions,\\ HEAD,406\\ and\\ shared\\ cross\\-kind\\ capacity\\ preserve\\ initial\\ context\\ without\\ a\\ stream\\ slot|disconnect\\ during\\ an\\ Event\\ minimum\\ wait\\ releases\\ the\\ request\\ without\\ capturing\\ a\\ stream\\ slot|serves\\ initial\\ finite\\ Scope\\ Event\\ opaque\\ minima\\ through\\ bounded\\ waiting)$"
++        "^(?:current\\ Type\\ and\\ incident\\-Link\\ minimums\\ rejects\\ malformed\\ Type\\ ID\\ omitted\\ through\\ a\\ Promise\\ without\\ invoking\\ caller\\ data|current\\ Type\\ and\\ incident\\-Link\\ minimums\\ rejects\\ malformed\\ Type\\ ID\\ undefined\\ through\\ a\\ Promise\\ without\\ invoking\\ caller\\ data|current\\ Type\\ and\\ incident\\-Link\\ minimums\\ rejects\\ malformed\\ Type\\ ID\\ null\\ through\\ a\\ Promise\\ without\\ invoking\\ caller\\ data|current\\ Type\\ and\\ incident\\-Link\\ minimums\\ rejects\\ malformed\\ Type\\ ID\\ number\\ through\\ a\\ Promise\\ without\\ invoking\\ caller\\ data|current\\ Type\\ and\\ incident\\-Link\\ minimums\\ rejects\\ malformed\\ Type\\ ID\\ false\\ through\\ a\\ Promise\\ without\\ invoking\\ caller\\ data|current\\ Type\\ and\\ incident\\-Link\\ minimums\\ rejects\\ malformed\\ Type\\ ID\\ empty\\ through\\ a\\ Promise\\ without\\ invoking\\ caller\\ data|current\\ Type\\ and\\ incident\\-Link\\ minimums\\ rejects\\ malformed\\ Type\\ ID\\ method\\ through\\ a\\ Promise\\ without\\ invoking\\ caller\\ data|current\\ Type\\ and\\ incident\\-Link\\ minimums\\ rejects\\ malformed\\ Type\\ ID\\ accessor\\ through\\ a\\ Promise\\ without\\ invoking\\ caller\\ data|current\\ Type\\ and\\ incident\\-Link\\ minimums\\ rejects\\ malformed\\ Type\\ ID\\ inherited\\ through\\ a\\ Promise\\ without\\ invoking\\ caller\\ data|current\\ Type\\ and\\ incident\\-Link\\ minimums\\ rejects\\ malformed\\ Type\\ ID\\ proxy\\ through\\ a\\ Promise\\ without\\ invoking\\ caller\\ data|current\\ Type\\ and\\ incident\\-Link\\ minimums\\ rejects\\ malformed\\ Type\\ ID\\ revoked\\ through\\ a\\ Promise\\ without\\ invoking\\ caller\\ data|current\\ Type\\ and\\ incident\\-Link\\ minimums\\ projects\\ immutable\\ current\\ Types\\ and\\ exact\\ incident\\ directions\\ including\\ self\\-Link\\ deduplication|current\\ Type\\ and\\ incident\\-Link\\ minimums\\ keeps\\ types\\ limits,\\ allocation\\ and\\ retained\\ continuation\\ boundaries\\ distinct|current\\ Type\\ and\\ incident\\-Link\\ minimums\\ keeps\\ incident\\ limits,\\ allocation\\ and\\ retained\\ continuation\\ boundaries\\ distinct|current\\ Type\\ and\\ incident\\-Link\\ minimums\\ waits\\ and\\ cancels\\ current\\ surface\\ 0\\ without\\ retaining\\ an\\ owner\\ entry|current\\ Type\\ and\\ incident\\-Link\\ minimums\\ waits\\ and\\ cancels\\ current\\ surface\\ 1\\ without\\ retaining\\ an\\ owner\\ entry|current\\ Type\\ and\\ incident\\-Link\\ minimums\\ waits\\ and\\ cancels\\ current\\ surface\\ 2\\ without\\ retaining\\ an\\ owner\\ entry|current\\ Type\\ and\\ incident\\-Link\\ minimums\\ pre\\-aborts,\\ drains\\ and\\ releases\\ a\\ waiting\\ current\\ surface\\ 0|current\\ Type\\ and\\ incident\\-Link\\ minimums\\ pre\\-aborts,\\ drains\\ and\\ releases\\ a\\ waiting\\ current\\ surface\\ 1|current\\ Type\\ and\\ incident\\-Link\\ minimums\\ pre\\-aborts,\\ drains\\ and\\ releases\\ a\\ waiting\\ current\\ surface\\ 2|current\\ Type\\ and\\ incident\\-Link\\ minimums\\ keeps\\ compatible\\ missing\\ Types\\ and\\ absent/deleted\\ incident\\ anchors\\ separate\\ from\\ collisions|current\\ alias\\ minimum\\ subset\\ preserves\\ direct\\ minimum\\ alias\\ receiving\\ validation,\\ cancellation\\ and\\ lifecycle\\ precedence|current\\ alias\\ minimum\\ subset\\ preserves\\ service\\ minimum\\ alias\\ receiving\\ validation,\\ cancellation\\ and\\ lifecycle\\ precedence|current\\ alias\\ minimum\\ subset\\ conditions\\ alias\\ mapping\\ and\\ context\\ in\\ one\\ entry\\ without\\ revising\\ either\\ target|current\\ alias\\ minimum\\ subset\\ rechecks\\ a\\ repointed\\ alias\\ after\\ waiting\\ for\\ a\\ real\\ Resource\\ effect|current\\ alias\\ minimum\\ subset\\ keeps\\ live\\ alias\\ context\\ failures\\ and\\ compatible\\ absent/deleted/dangling\\ observations\\ distinct|current\\ alias\\ minimum\\ subset\\ forwards\\ ordinary\\ and\\ minimum\\ Request\\ aborts\\ before\\ SQL\\ and\\ drains\\ an\\ admitted\\ alias\\ wait|current\\ alias\\ minimum\\ subset\\ does\\ not\\ relabel\\ alias\\ provider\\ or\\ malformed\\ context\\ failures\\ as\\ missing|current\\ alias\\ minimum\\ subset\\ captures\\ unknown\\ alias\\ minima\\ while\\ resolving\\ each\\ retry\\ against\\ the\\ live\\ owner|current\\ alias\\ minimum\\ subset\\ captures\\ pos\\-01\\ alias\\ minima\\ while\\ resolving\\ each\\ retry\\ against\\ the\\ live\\ owner|current\\ alias\\ minimum\\ subset\\ preserves\\ absent\\ alias\\ nondisclosure\\ before\\ opaque\\ minimum\\ waiting|current\\ alias\\ minimum\\ subset\\ preserves\\ deleted\\ alias\\ nondisclosure\\ before\\ opaque\\ minimum\\ waiting|current\\ alias\\ minimum\\ subset\\ preserves\\ dangling\\ alias\\ nondisclosure\\ before\\ opaque\\ minimum\\ waiting|current\\ alias\\ minimum\\ subset\\ preserves\\ hidden\\ alias\\ nondisclosure\\ before\\ opaque\\ minimum\\ waiting|current\\ alias\\ minimum\\ subset\\ returns\\ current\\ alias\\ absence\\ when\\ an\\ admitted\\ opaque\\ wait\\ loses\\ its\\ mapping|current\\ alias\\ minimum\\ subset\\ drains\\ an\\ aborted\\ opaque\\ alias\\ wait\\ before\\ releasing\\ its\\ owner|current\\ alias\\ minimum\\ subset\\ preserves\\ incident\\-Link\\ opaque\\ exclusions\\ beside\\ alias\\ minima|current\\ minimum\\ perform\\ receiving\\ preserves\\ a\\ direct\\ non\\-enumerable\\ pre\\-aborted\\ signal\\ before\\ owner\\ entry|current\\ minimum\\ perform\\ receiving\\ preserves\\ direct\\ minimum\\ perform\\ receiving\\ validation,\\ cancellation\\ and\\ lifecycle\\ precedence|current\\ minimum\\ perform\\ receiving\\ preserves\\ service\\ minimum\\ perform\\ receiving\\ validation,\\ cancellation\\ and\\ lifecycle\\ precedence|internal\\ discovery\\ owner\\ observation\\ copies\\ exactly\\ one\\ owner\\ entry\\ and\\ parses\\ only\\ after\\ releasing\\ it|internal\\ discovery\\ owner\\ observation\\ keeps\\ entry\\ refusal\\ distinct\\ from\\ structural\\ validation\\ failure|internal\\ discovery\\ owner\\ observation\\ captures\\ nested\\ limits\\ once\\ and\\ enforces\\ the\\ captured\\ values\\ after\\ caller\\ mutation|internal\\ discovery\\ owner\\ observation\\ keeps\\ the\\ replay\\ position\\ floor\\ and\\ complete\\ genesis\\ groups\\ through\\ receipt\\ expiry\\ and\\ reopen|internal\\ discovery\\ minimum\\ observation\\ preserves\\ synchronous\\ no\\-minimum\\ timing\\ and\\ ignores\\ its\\ signal\\ and\\ wait\\ policy|internal\\ discovery\\ minimum\\ observation\\ returns\\ an\\ immutable\\ same\\-entry\\ eligible\\ prefix\\ for\\ pos\\-1\\ after\\ release|internal\\ discovery\\ minimum\\ observation\\ returns\\ an\\ immutable\\ same\\-entry\\ eligible\\ prefix\\ for\\ pos\\-0\\ after\\ release|internal\\ discovery\\ minimum\\ observation\\ returns\\ an\\ immutable\\ same\\-entry\\ eligible\\ prefix\\ for\\ genesis\\ after\\ release|internal\\ discovery\\ minimum\\ observation\\ captures\\ immutable\\ minimum\\ controls\\ and\\ releases\\ the\\ owner\\ during\\ controlled\\ catch\\-up|internal\\ discovery\\ minimum\\ observation\\ releases\\ the\\ owner\\ after\\ an\\ in\\-entry\\ scopeEpoch\\ refusal|internal\\ discovery\\ minimum\\ observation\\ releases\\ the\\ owner\\ after\\ an\\ in\\-entry\\ authorizationView\\ refusal|internal\\ discovery\\ minimum\\ observation\\ times\\ out\\ after\\ two\\ controlled\\ attempts\\ without\\ assembly\\ and\\ leaves\\ the\\ owner\\ reusable|internal\\ discovery\\ minimum\\ observation\\ rejects\\ pre\\-abort\\ before\\ entry\\ and\\ pending\\ abort\\ before\\ retry|internal\\ discovery\\ minimum\\ observation\\ drains\\ an\\ admitted\\ discovery\\ wait\\ before\\ closing\\ the\\ owner|internal\\ discovery\\ minimum\\ observation\\ keeps\\ malformed\\ input,\\ entry\\ refusal,\\ provider\\ and\\ parser\\ failures\\ distinct|captures\\ lexical\\ current\\ minimums\\ without\\ widening\\ strict\\ consumers\\ or\\ invoking\\ accessors|waits\\ for\\ unproved\\ current\\ eligibility\\ with\\ one\\ deadline\\ and\\ preserves\\ terminal\\ failures|distinguishes\\ closed\\ minimum\\ receiving\\ syntax\\ from\\ supported\\ position\\ identities|uses\\ actual\\ current\\ policy\\ for\\ missing\\-first\\ and\\ unproved\\ Resource\\ attempts|drains\\ an\\ admitted\\ unknown\\ minimum\\ to\\ timeout\\ and\\ rejects\\ new\\ reads\\ while\\ closing|records\\ one\\ atomic\\ page\\ chain,\\ retains\\ original\\ postimages\\ and\\ all\\ tail\\ allocations\\ through\\ expiry|captures\\ immutable\\ current\\ context\\ for\\ nondisclosable\\ receipt\\ pages\\ before\\ minimum\\ checks|checks\\ each\\ fresh\\ Snapshot\\ minimum\\ before\\ any\\ handle,\\ record,\\ page\\ or\\ expiry\\ work|does\\ not\\ expire\\ retained\\ Snapshot\\ details\\ on\\ an\\ ineligible\\ fresh\\ attempt|gates\\ fresh\\ Snapshot\\ opaque\\ minima\\ before\\ allocation\\ and\\ expiry|gates\\ initial\\ Scope\\ Event\\ unknown\\ minima\\ before\\ retained\\ scans|serves\\ initial\\ finite\\ Scope\\ Event\\ opaque\\ minima\\ through\\ bounded\\ waiting|gates\\ initial\\ Bead\\ Event\\ unknown\\ minima\\ before\\ retained\\ scans|serves\\ initial\\ finite\\ Bead\\ Event\\ opaque\\ minima\\ with\\ retained\\ identity\\ and\\ route\\ fences|gates\\ initial\\ Link\\ Event\\ unknown\\ minima\\ before\\ retained\\ scans|serves\\ initial\\ finite\\ Link\\ Event\\ opaque\\ minima\\ with\\ retained\\ identity\\ and\\ route\\ fences|gates\\ initial\\ Scope\\ Event\\ SSE\\ opaque\\ minima\\ before\\ scan\\ packets|captures\\ initial\\ Scope\\ Event\\ SSE\\ minima\\ once\\ and\\ recaptures\\ context\\ on\\ retry|drains\\ an\\ aborted\\ initial\\ Scope\\ Event\\ SSE\\ minimum\\ wait\\ before\\ owner\\ close|serves\\ initial\\ Scope\\ Event\\ SSE\\ opaque\\ minima\\ before\\ conditional\\ admission|keeps\\ direct\\ and\\ excluded\\ changefeed\\ minimum\\ paths\\ strict|serves\\ finite\\ start\\-now\\ opaque\\ minima\\ before\\ HTTP\\ shortcuts|serves\\ canonical\\ current\\ Type\\ and\\ incident\\ minimums\\ with\\ truthful\\ context\\ and\\ parser\\ boundaries|serves\\ conditioned\\ live\\ aliases\\ and\\ preserves\\ bodyless\\ redirects,\\ refusal\\ context\\ and\\ receiving\\ boundaries|waits\\ for\\ current\\ Resources\\ and\\ initial\\ collections\\ with\\ unknown\\ minima\\ and\\ preserves\\ residual\\ refusals|serves\\ fresh\\ Snapshot\\ opaque\\ minima\\ with\\ terminal\\ preflight\\ and\\ retained\\ fences|serves\\ opaque\\ receipt\\ root\\ minima\\ before\\ HTTP\\ shortcuts\\ with\\ private\\ fences|rejects\\ collection\\ parser\\ errors\\ before\\ unknown\\ minimum\\ support\\ checks|preserves\\ parser\\ refusal\\ parity\\ on\\ noncollection\\ and\\ excluded\\ query\\ routes|preserves\\ receiving\\ and\\ HTTP\\ error\\ precedence\\ for\\ parser\\ refusals|orders\\ page\\ nondisclosure,\\ minimum\\ waits,\\ expiry\\ and\\ representation\\ using\\ actual\\ owner\\ state|refuses\\ unsupported\\ root\\ controls\\ after\\ nondisclosure\\ but\\ before\\ read\\-triggered\\ retention|keeps\\ failed\\ parent\\ rows\\ unchanged\\ for\\ nonexistent\\ page\\ reads\\ with\\ any\\ controls|waits\\ for\\ lexical\\ current\\ observations\\ and\\ preserves\\ captured\\ tuples\\ across\\ real\\ progress|orders\\ Type\\ refusal\\ and\\ receipt\\ page\\ nondisclosure\\ before\\ projection|drains\\ lexical\\ current\\ observation\\ type\\ before\\ close|drains\\ lexical\\ current\\ observation\\ types\\ before\\ close|drains\\ lexical\\ current\\ observation\\ incident\\ before\\ close|drains\\ lexical\\ current\\ observation\\ page\\ before\\ close|drains\\ lexical\\ current\\ observation\\ discovery\\ before\\ close|preserves\\ receipt\\ page\\ detail\\ when\\ lexical\\ eligibility\\ is\\ unproved|serves\\ current\\ observation\\ minimums\\ with\\ actual\\ issued\\ pages\\ and\\ HTTP\\ parity)$"
+       ],
+       "outerSeconds": 120,
+       "automaticRetries": 0,
+@@ -163,43 +188,220 @@
+         0
+       ],
+       "selectedFullNames": [
++        "current Type and incident-Link minimums rejects malformed Type ID omitted through a Promise without invoking caller data",
++        "current Type and incident-Link minimums rejects malformed Type ID undefined through a Promise without invoking caller data",
++        "current Type and incident-Link minimums rejects malformed Type ID null through a Promise without invoking caller data",
++        "current Type and incident-Link minimums rejects malformed Type ID number through a Promise without invoking caller data",
++        "current Type and incident-Link minimums rejects malformed Type ID false through a Promise without invoking caller data",
++        "current Type and incident-Link minimums rejects malformed Type ID empty through a Promise without invoking caller data",
++        "current Type and incident-Link minimums rejects malformed Type ID method through a Promise without invoking caller data",
++        "current Type and incident-Link minimums rejects malformed Type ID accessor through a Promise without invoking caller data",
++        "current Type and incident-Link minimums rejects malformed Type ID inherited through a Promise without invoking caller data",
++        "current Type and incident-Link minimums rejects malformed Type ID proxy through a Promise without invoking caller data",
++        "current Type and incident-Link minimums rejects malformed Type ID revoked through a Promise without invoking caller data",
++        "current Type and incident-Link minimums projects immutable current Types and exact incident directions including self-Link deduplication",
++        "current Type and incident-Link minimums keeps types limits, allocation and retained continuation boundaries distinct",
++        "current Type and incident-Link minimums keeps incident limits, allocation and retained continuation boundaries distinct",
++        "current Type and incident-Link minimums waits and cancels current surface 0 without retaining an owner entry",
++        "current Type and incident-Link minimums waits and cancels current surface 1 without retaining an owner entry",
++        "current Type and incident-Link minimums waits and cancels current surface 2 without retaining an owner entry",
++        "current Type and incident-Link minimums pre-aborts, drains and releases a waiting current surface 0",
++        "current Type and incident-Link minimums pre-aborts, drains and releases a waiting current surface 1",
++        "current Type and incident-Link minimums pre-aborts, drains and releases a waiting current surface 2",
++        "current Type and incident-Link minimums keeps compatible missing Types and absent/deleted incident anchors separate from collisions",
++        "current alias minimum subset preserves direct minimum alias receiving validation, cancellation and lifecycle precedence",
++        "current alias minimum subset preserves service minimum alias receiving validation, cancellation and lifecycle precedence",
++        "current alias minimum subset conditions alias mapping and context in one entry without revising either target",
++        "current alias minimum subset rechecks a repointed alias after waiting for a real Resource effect",
++        "current alias minimum subset keeps live alias context failures and compatible absent/deleted/dangling observations distinct",
++        "current alias minimum subset forwards ordinary and minimum Request aborts before SQL and drains an admitted alias wait",
++        "current alias minimum subset does not relabel alias provider or malformed context failures as missing",
++        "current alias minimum subset captures unknown alias minima while resolving each retry against the live owner",
++        "current alias minimum subset captures pos-01 alias minima while resolving each retry against the live owner",
++        "current alias minimum subset preserves absent alias nondisclosure before opaque minimum waiting",
++        "current alias minimum subset preserves deleted alias nondisclosure before opaque minimum waiting",
++        "current alias minimum subset preserves dangling alias nondisclosure before opaque minimum waiting",
++        "current alias minimum subset preserves hidden alias nondisclosure before opaque minimum waiting",
++        "current alias minimum subset returns current alias absence when an admitted opaque wait loses its mapping",
++        "current alias minimum subset drains an aborted opaque alias wait before releasing its owner",
++        "current alias minimum subset preserves incident-Link opaque exclusions beside alias minima",
++        "current minimum perform receiving preserves a direct non-enumerable pre-aborted signal before owner entry",
++        "current minimum perform receiving preserves direct minimum perform receiving validation, cancellation and lifecycle precedence",
++        "current minimum perform receiving preserves service minimum perform receiving validation, cancellation and lifecycle precedence",
++        "internal discovery owner observation copies exactly one owner entry and parses only after releasing it",
++        "internal discovery owner observation keeps entry refusal distinct from structural validation failure",
++        "internal discovery owner observation captures nested limits once and enforces the captured values after caller mutation",
++        "internal discovery owner observation keeps the replay position floor and complete genesis groups through receipt expiry and reopen",
++        "internal discovery minimum observation preserves synchronous no-minimum timing and ignores its signal and wait policy",
++        "internal discovery minimum observation returns an immutable same-entry eligible prefix for pos-1 after release",
++        "internal discovery minimum observation returns an immutable same-entry eligible prefix for pos-0 after release",
++        "internal discovery minimum observation returns an immutable same-entry eligible prefix for genesis after release",
++        "internal discovery minimum observation captures immutable minimum controls and releases the owner during controlled catch-up",
++        "internal discovery minimum observation releases the owner after an in-entry scopeEpoch refusal",
++        "internal discovery minimum observation releases the owner after an in-entry authorizationView refusal",
++        "internal discovery minimum observation times out after two controlled attempts without assembly and leaves the owner reusable",
++        "internal discovery minimum observation rejects pre-abort before entry and pending abort before retry",
++        "internal discovery minimum observation drains an admitted discovery wait before closing the owner",
++        "internal discovery minimum observation keeps malformed input, entry refusal, provider and parser failures distinct",
++        "captures lexical current minimums without widening strict consumers or invoking accessors",
++        "waits for unproved current eligibility with one deadline and preserves terminal failures",
++        "distinguishes closed minimum receiving syntax from supported position identities",
++        "uses actual current policy for missing-first and unproved Resource attempts",
++        "drains an admitted unknown minimum to timeout and rejects new reads while closing",
++        "records one atomic page chain, retains original postimages and all tail allocations through expiry",
++        "captures immutable current context for nondisclosable receipt pages before minimum checks",
++        "checks each fresh Snapshot minimum before any handle, record, page or expiry work",
++        "does not expire retained Snapshot details on an ineligible fresh attempt",
++        "gates fresh Snapshot opaque minima before allocation and expiry",
++        "gates initial Scope Event unknown minima before retained scans",
++        "serves initial finite Scope Event opaque minima through bounded waiting",
++        "gates initial Bead Event unknown minima before retained scans",
++        "serves initial finite Bead Event opaque minima with retained identity and route fences",
++        "gates initial Link Event unknown minima before retained scans",
++        "serves initial finite Link Event opaque minima with retained identity and route fences",
+         "gates initial Scope Event SSE opaque minima before scan packets",
+         "captures initial Scope Event SSE minima once and recaptures context on retry",
+         "drains an aborted initial Scope Event SSE minimum wait before owner close",
+         "serves initial Scope Event SSE opaque minima before conditional admission",
+-        "Event reconnect syntax, minimum ordering and exact context codes are preserved over HTTP",
+-        "conditions, HEAD,406 and shared cross-kind capacity preserve initial context without a stream slot",
+-        "disconnect during an Event minimum wait releases the request without capturing a stream slot",
+-        "serves initial finite Scope Event opaque minima through bounded waiting"
++        "keeps direct and excluded changefeed minimum paths strict",
++        "serves finite start-now opaque minima before HTTP shortcuts",
++        "serves canonical current Type and incident minimums with truthful context and parser boundaries",
++        "serves conditioned live aliases and preserves bodyless redirects, refusal context and receiving boundaries",
++        "waits for current Resources and initial collections with unknown minima and preserves residual refusals",
++        "serves fresh Snapshot opaque minima with terminal preflight and retained fences",
++        "serves opaque receipt root minima before HTTP shortcuts with private fences",
++        "rejects collection parser errors before unknown minimum support checks",
++        "preserves parser refusal parity on noncollection and excluded query routes",
++        "preserves receiving and HTTP error precedence for parser refusals",
++        "orders page nondisclosure, minimum waits, expiry and representation using actual owner state",
++        "refuses unsupported root controls after nondisclosure but before read-triggered retention",
++        "keeps failed parent rows unchanged for nonexistent page reads with any controls",
++        "waits for lexical current observations and preserves captured tuples across real progress",
++        "orders Type refusal and receipt page nondisclosure before projection",
++        "drains lexical current observation type before close",
++        "drains lexical current observation types before close",
++        "drains lexical current observation incident before close",
++        "drains lexical current observation page before close",
++        "drains lexical current observation discovery before close",
++        "preserves receipt page detail when lexical eligibility is unproved",
++        "serves current observation minimums with actual issued pages and HTTP parity"
+       ],
+       "prospectiveWorkload": {
+-        "cases": 8,
+-        "stores": 8,
+-        "ownerLifetimes": 8,
+-        "listeners": 5,
+-        "networkRequests": 108,
+-        "newObservationRecords": 4,
+-        "historicalObservationRecords": 1,
+-        "totalObservationRecords": 5
++        "cases": 97,
++        "legacyCases": 88,
++        "newCases": 9,
++        "newObservationRecords": 9,
++        "legacyObservationRecords": 28,
++        "newSourceNetworkRequests": 37,
++        "legacyTraffic": "separate, no inferred aggregate"
+       },
+-      "selectionAttribution": "Eight exact callbacks across both source modules; four new reports plus one unchanged-schema legacy report, source-derived workload only.",
++      "selectionAttribution": "Five approved families expanded from frozen source; exact97 cases across9 modules;9 new plus28 separately attributed legacy report records.",
+       "termAfterSeconds": 115,
+       "selectedFilesByFullName": {
++        "current Type and incident-Link minimums rejects malformed Type ID omitted through a Promise without invoking caller data": "packages/server/src/transaction-read.test.ts",
++        "current Type and incident-Link minimums rejects malformed Type ID undefined through a Promise without invoking caller data": "packages/server/src/transaction-read.test.ts",
++        "current Type and incident-Link minimums rejects malformed Type ID null through a Promise without invoking caller data": "packages/server/src/transaction-read.test.ts",
++        "current Type and incident-Link minimums rejects malformed Type ID number through a Promise without invoking caller data": "packages/server/src/transaction-read.test.ts",
++        "current Type and incident-Link minimums rejects malformed Type ID false through a Promise without invoking caller data": "packages/server/src/transaction-read.test.ts",
++        "current Type and incident-Link minimums rejects malformed Type ID empty through a Promise without invoking caller data": "packages/server/src/transaction-read.test.ts",
++        "current Type and incident-Link minimums rejects malformed Type ID method through a Promise without invoking caller data": "packages/server/src/transaction-read.test.ts",
++        "current Type and incident-Link minimums rejects malformed Type ID accessor through a Promise without invoking caller data": "packages/server/src/transaction-read.test.ts",
++        "current Type and incident-Link minimums rejects malformed Type ID inherited through a Promise without invoking caller data": "packages/server/src/transaction-read.test.ts",
++        "current Type and incident-Link minimums rejects malformed Type ID proxy through a Promise without invoking caller data": "packages/server/src/transaction-read.test.ts",
++        "current Type and incident-Link minimums rejects malformed Type ID revoked through a Promise without invoking caller data": "packages/server/src/transaction-read.test.ts",
++        "current Type and incident-Link minimums projects immutable current Types and exact incident directions including self-Link deduplication": "packages/server/src/transaction-read.test.ts",
++        "current Type and incident-Link minimums keeps types limits, allocation and retained continuation boundaries distinct": "packages/server/src/transaction-read.test.ts",
++        "current Type and incident-Link minimums keeps incident limits, allocation and retained continuation boundaries distinct": "packages/server/src/transaction-read.test.ts",
++        "current Type and incident-Link minimums waits and cancels current surface 0 without retaining an owner entry": "packages/server/src/transaction-read.test.ts",
++        "current Type and incident-Link minimums waits and cancels current surface 1 without retaining an owner entry": "packages/server/src/transaction-read.test.ts",
++        "current Type and incident-Link minimums waits and cancels current surface 2 without retaining an owner entry": "packages/server/src/transaction-read.test.ts",
++        "current Type and incident-Link minimums pre-aborts, drains and releases a waiting current surface 0": "packages/server/src/transaction-read.test.ts",
++        "current Type and incident-Link minimums pre-aborts, drains and releases a waiting current surface 1": "packages/server/src/transaction-read.test.ts",
++        "current Type and incident-Link minimums pre-aborts, drains and releases a waiting current surface 2": "packages/server/src/transaction-read.test.ts",
++        "current Type and incident-Link minimums keeps compatible missing Types and absent/deleted incident anchors separate from collisions": "packages/server/src/transaction-read.test.ts",
++        "current alias minimum subset preserves direct minimum alias receiving validation, cancellation and lifecycle precedence": "packages/server/src/transaction-read.test.ts",
++        "current alias minimum subset preserves service minimum alias receiving validation, cancellation and lifecycle precedence": "packages/server/src/transaction-read.test.ts",
++        "current alias minimum subset conditions alias mapping and context in one entry without revising either target": "packages/server/src/transaction-read.test.ts",
++        "current alias minimum subset rechecks a repointed alias after waiting for a real Resource effect": "packages/server/src/transaction-read.test.ts",
++        "current alias minimum subset keeps live alias context failures and compatible absent/deleted/dangling observations distinct": "packages/server/src/transaction-read.test.ts",
++        "current alias minimum subset forwards ordinary and minimum Request aborts before SQL and drains an admitted alias wait": "packages/server/src/transaction-read.test.ts",
++        "current alias minimum subset does not relabel alias provider or malformed context failures as missing": "packages/server/src/transaction-read.test.ts",
++        "current alias minimum subset captures unknown alias minima while resolving each retry against the live owner": "packages/server/src/transaction-read.test.ts",
++        "current alias minimum subset captures pos-01 alias minima while resolving each retry against the live owner": "packages/server/src/transaction-read.test.ts",
++        "current alias minimum subset preserves absent alias nondisclosure before opaque minimum waiting": "packages/server/src/transaction-read.test.ts",
++        "current alias minimum subset preserves deleted alias nondisclosure before opaque minimum waiting": "packages/server/src/transaction-read.test.ts",
++        "current alias minimum subset preserves dangling alias nondisclosure before opaque minimum waiting": "packages/server/src/transaction-read.test.ts",
++        "current alias minimum subset preserves hidden alias nondisclosure before opaque minimum waiting": "packages/server/src/transaction-read.test.ts",
++        "current alias minimum subset returns current alias absence when an admitted opaque wait loses its mapping": "packages/server/src/transaction-read.test.ts",
++        "current alias minimum subset drains an aborted opaque alias wait before releasing its owner": "packages/server/src/transaction-read.test.ts",
++        "current alias minimum subset preserves incident-Link opaque exclusions beside alias minima": "packages/server/src/transaction-read.test.ts",
++        "current minimum perform receiving preserves a direct non-enumerable pre-aborted signal before owner entry": "packages/server/src/transaction-read.test.ts",
++        "current minimum perform receiving preserves direct minimum perform receiving validation, cancellation and lifecycle precedence": "packages/server/src/transaction-read.test.ts",
++        "current minimum perform receiving preserves service minimum perform receiving validation, cancellation and lifecycle precedence": "packages/server/src/transaction-read.test.ts",
++        "internal discovery owner observation copies exactly one owner entry and parses only after releasing it": "packages/server/src/transaction-service.test.ts",
++        "internal discovery owner observation keeps entry refusal distinct from structural validation failure": "packages/server/src/transaction-service.test.ts",
++        "internal discovery owner observation captures nested limits once and enforces the captured values after caller mutation": "packages/server/src/transaction-service.test.ts",
++        "internal discovery owner observation keeps the replay position floor and complete genesis groups through receipt expiry and reopen": "packages/server/src/transaction-service.test.ts",
++        "internal discovery minimum observation preserves synchronous no-minimum timing and ignores its signal and wait policy": "packages/server/src/transaction-service.test.ts",
++        "internal discovery minimum observation returns an immutable same-entry eligible prefix for pos-1 after release": "packages/server/src/transaction-service.test.ts",
++        "internal discovery minimum observation returns an immutable same-entry eligible prefix for pos-0 after release": "packages/server/src/transaction-service.test.ts",
++        "internal discovery minimum observation returns an immutable same-entry eligible prefix for genesis after release": "packages/server/src/transaction-service.test.ts",
++        "internal discovery minimum observation captures immutable minimum controls and releases the owner during controlled catch-up": "packages/server/src/transaction-service.test.ts",
++        "internal discovery minimum observation releases the owner after an in-entry scopeEpoch refusal": "packages/server/src/transaction-service.test.ts",
++        "internal discovery minimum observation releases the owner after an in-entry authorizationView refusal": "packages/server/src/transaction-service.test.ts",
++        "internal discovery minimum observation times out after two controlled attempts without assembly and leaves the owner reusable": "packages/server/src/transaction-service.test.ts",
++        "internal discovery minimum observation rejects pre-abort before entry and pending abort before retry": "packages/server/src/transaction-service.test.ts",
++        "internal discovery minimum observation drains an admitted discovery wait before closing the owner": "packages/server/src/transaction-service.test.ts",
++        "internal discovery minimum observation keeps malformed input, entry refusal, provider and parser failures distinct": "packages/server/src/transaction-service.test.ts",
++        "captures lexical current minimums without widening strict consumers or invoking accessors": "packages/server/src/transaction-consistency.test.ts",
++        "waits for unproved current eligibility with one deadline and preserves terminal failures": "packages/server/src/transaction-consistency.test.ts",
++        "distinguishes closed minimum receiving syntax from supported position identities": "packages/server/src/transaction-consistency.test.ts",
++        "uses actual current policy for missing-first and unproved Resource attempts": "packages/server/src/transaction-read.test.ts",
++        "drains an admitted unknown minimum to timeout and rejects new reads while closing": "packages/server/src/transaction-read.test.ts",
++        "records one atomic page chain, retains original postimages and all tail allocations through expiry": "packages/server/src/transaction-receipt-pages.test.ts",
++        "captures immutable current context for nondisclosable receipt pages before minimum checks": "packages/server/src/transaction-receipt-pages.test.ts",
++        "checks each fresh Snapshot minimum before any handle, record, page or expiry work": "packages/server/src/transaction-snapshot.test.ts",
++        "does not expire retained Snapshot details on an ineligible fresh attempt": "packages/server/src/transaction-snapshot.test.ts",
++        "gates fresh Snapshot opaque minima before allocation and expiry": "packages/server/src/transaction-snapshot.test.ts",
++        "gates initial Scope Event unknown minima before retained scans": "packages/server/src/transaction-events.test.ts",
++        "serves initial finite Scope Event opaque minima through bounded waiting": "packages/server/src/transaction-events.test.ts",
++        "gates initial Bead Event unknown minima before retained scans": "packages/server/src/transaction-events.test.ts",
++        "serves initial finite Bead Event opaque minima with retained identity and route fences": "packages/server/src/transaction-events.test.ts",
++        "gates initial Link Event unknown minima before retained scans": "packages/server/src/transaction-events.test.ts",
++        "serves initial finite Link Event opaque minima with retained identity and route fences": "packages/server/src/transaction-events.test.ts",
+         "gates initial Scope Event SSE opaque minima before scan packets": "packages/server/src/transaction-event-sse.test.ts",
+         "captures initial Scope Event SSE minima once and recaptures context on retry": "packages/server/src/transaction-event-sse.test.ts",
+         "drains an aborted initial Scope Event SSE minimum wait before owner close": "packages/server/src/transaction-event-sse.test.ts",
+         "serves initial Scope Event SSE opaque minima before conditional admission": "packages/server/src/transaction-event-sse.test.ts",
+-        "Event reconnect syntax, minimum ordering and exact context codes are preserved over HTTP": "packages/server/src/transaction-event-sse.test.ts",
+-        "conditions, HEAD,406 and shared cross-kind capacity preserve initial context without a stream slot": "packages/server/src/transaction-event-sse.test.ts",
+-        "disconnect during an Event minimum wait releases the request without capturing a stream slot": "packages/server/src/transaction-event-sse.test.ts",
+-        "serves initial finite Scope Event opaque minima through bounded waiting": "packages/server/src/transaction-events.test.ts"
++        "keeps direct and excluded changefeed minimum paths strict": "packages/server/src/transaction-changefeed.test.ts",
++        "serves finite start-now opaque minima before HTTP shortcuts": "packages/server/src/transaction-changefeed.test.ts",
++        "serves canonical current Type and incident minimums with truthful context and parser boundaries": "packages/server/src/transaction-http.test.ts",
++        "serves conditioned live aliases and preserves bodyless redirects, refusal context and receiving boundaries": "packages/server/src/transaction-http.test.ts",
++        "waits for current Resources and initial collections with unknown minima and preserves residual refusals": "packages/server/src/transaction-http.test.ts",
++        "serves fresh Snapshot opaque minima with terminal preflight and retained fences": "packages/server/src/transaction-http.test.ts",
++        "serves opaque receipt root minima before HTTP shortcuts with private fences": "packages/server/src/transaction-http.test.ts",
++        "rejects collection parser errors before unknown minimum support checks": "packages/server/src/transaction-http.test.ts",
++        "preserves parser refusal parity on noncollection and excluded query routes": "packages/server/src/transaction-http.test.ts",
++        "preserves receiving and HTTP error precedence for parser refusals": "packages/server/src/transaction-http.test.ts",
++        "orders page nondisclosure, minimum waits, expiry and representation using actual owner state": "packages/server/src/transaction-http.test.ts",
++        "refuses unsupported root controls after nondisclosure but before read-triggered retention": "packages/server/src/transaction-http.test.ts",
++        "keeps failed parent rows unchanged for nonexistent page reads with any controls": "packages/server/src/transaction-http.test.ts",
++        "waits for lexical current observations and preserves captured tuples across real progress": "packages/server/src/transaction-service.test.ts",
++        "orders Type refusal and receipt page nondisclosure before projection": "packages/server/src/transaction-service.test.ts",
++        "drains lexical current observation type before close": "packages/server/src/transaction-service.test.ts",
++        "drains lexical current observation types before close": "packages/server/src/transaction-service.test.ts",
++        "drains lexical current observation incident before close": "packages/server/src/transaction-service.test.ts",
++        "drains lexical current observation page before close": "packages/server/src/transaction-service.test.ts",
++        "drains lexical current observation discovery before close": "packages/server/src/transaction-service.test.ts",
++        "preserves receipt page detail when lexical eligibility is unproved": "packages/server/src/transaction-receipt-pages.test.ts",
++        "serves current observation minimums with actual issued pages and HTTP parity": "packages/server/src/transaction-http.test.ts"
+       }
+     },
+     "review-focused-source": {
+-      "cwd": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/scope-event-sse-opaque-minimum-validation/implementation",
+-      "argv": [
+-        "/opt/homebrew/opt/python@3.14/bin/python3.14",
+-        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/scope-event-sse-opaque-minimum-validation/implementation/audit.py",
++      "cwd": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/current-observation-minimum-validation/implementation",
++      "argv": [
++        "/opt/homebrew/opt/python@3.14/bin/python3.14",
++        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/current-observation-minimum-validation/implementation/audit.py",
+         "source"
+       ],
+       "outerSeconds": 120,
+@@ -210,7 +412,7 @@
+       "termAfterSeconds": 115
+     },
+     "node-version": {
+-      "cwd": "/Users/dbox/repos/wt/vickie/vickie-scope-event-sse-opaque-minimum",
++      "cwd": "/Users/dbox/repos/wt/vickie/vickie-current-observation-minimum",
+       "argv": [
+         "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+         "--version"
+@@ -223,10 +425,10 @@
+       "termAfterSeconds": 115
+     },
+     "prepare-package-directory": {
+-      "cwd": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/scope-event-sse-opaque-minimum-validation/implementation",
+-      "argv": [
+-        "/opt/homebrew/opt/python@3.14/bin/python3.14",
+-        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/scope-event-sse-opaque-minimum-validation/implementation/packages.py",
++      "cwd": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/current-observation-minimum-validation/implementation",
++      "argv": [
++        "/opt/homebrew/opt/python@3.14/bin/python3.14",
++        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/current-observation-minimum-validation/implementation/packages.py",
+         "directory"
+       ],
+       "outerSeconds": 120,
+@@ -237,7 +439,7 @@
+       "termAfterSeconds": 115
+     },
+     "pack-protocol": {
+-      "cwd": "/Users/dbox/repos/wt/vickie/vickie-scope-event-sse-opaque-minimum",
++      "cwd": "/Users/dbox/repos/wt/vickie/vickie-current-observation-minimum",
+       "argv": [
+         "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+         "/Users/dbox/.cache/node/corepack/v1/pnpm/11.20.0/bin/pnpm.cjs",
+@@ -245,7 +447,7 @@
+         "@bdp/protocol",
+         "pack",
+         "--pack-destination",
+-        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/scope-event-sse-opaque-minimum-validation/implementation/run/packages"
++        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/current-observation-minimum-validation/implementation/run/packages"
+       ],
+       "outerSeconds": 120,
+       "automaticRetries": 0,
+@@ -255,7 +457,7 @@
+       "termAfterSeconds": 115
+     },
+     "pack-server": {
+-      "cwd": "/Users/dbox/repos/wt/vickie/vickie-scope-event-sse-opaque-minimum",
++      "cwd": "/Users/dbox/repos/wt/vickie/vickie-current-observation-minimum",
+       "argv": [
+         "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+         "/Users/dbox/.cache/node/corepack/v1/pnpm/11.20.0/bin/pnpm.cjs",
+@@ -263,7 +465,7 @@
+         "@bdp/server",
+         "pack",
+         "--pack-destination",
+-        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/scope-event-sse-opaque-minimum-validation/implementation/run/packages"
++        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/current-observation-minimum-validation/implementation/run/packages"
+       ],
+       "outerSeconds": 120,
+       "automaticRetries": 0,
+@@ -273,10 +475,10 @@
+       "termAfterSeconds": 115
+     },
+     "verify-archives": {
+-      "cwd": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/scope-event-sse-opaque-minimum-validation/implementation",
+-      "argv": [
+-        "/opt/homebrew/opt/python@3.14/bin/python3.14",
+-        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/scope-event-sse-opaque-minimum-validation/implementation/packages.py",
++      "cwd": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/current-observation-minimum-validation/implementation",
++      "argv": [
++        "/opt/homebrew/opt/python@3.14/bin/python3.14",
++        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/current-observation-minimum-validation/implementation/packages.py",
+         "tar"
+       ],
+       "outerSeconds": 120,
+@@ -287,10 +489,10 @@
+       "termAfterSeconds": 115
+     },
+     "prepare-consumer": {
+-      "cwd": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/scope-event-sse-opaque-minimum-validation/implementation",
+-      "argv": [
+-        "/opt/homebrew/opt/python@3.14/bin/python3.14",
+-        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/scope-event-sse-opaque-minimum-validation/implementation/packages.py",
++      "cwd": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/current-observation-minimum-validation/implementation",
++      "argv": [
++        "/opt/homebrew/opt/python@3.14/bin/python3.14",
++        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/current-observation-minimum-validation/implementation/packages.py",
+         "consumer"
+       ],
+       "outerSeconds": 120,
+@@ -301,7 +503,7 @@
+       "termAfterSeconds": 115
+     },
+     "consumer-install": {
+-      "cwd": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/scope-event-sse-opaque-minimum-validation/implementation/run/consumer",
++      "cwd": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/current-observation-minimum-validation/implementation/run/consumer",
+       "argv": [
+         "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+         "/Users/dbox/.cache/node/corepack/v1/pnpm/11.20.0/bin/pnpm.cjs",
+@@ -319,10 +521,10 @@
+       "termAfterSeconds": 115
+     },
+     "verify-installed-consumer": {
+-      "cwd": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/scope-event-sse-opaque-minimum-validation/implementation",
+-      "argv": [
+-        "/opt/homebrew/opt/python@3.14/bin/python3.14",
+-        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/scope-event-sse-opaque-minimum-validation/implementation/packages.py",
++      "cwd": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/current-observation-minimum-validation/implementation",
++      "argv": [
++        "/opt/homebrew/opt/python@3.14/bin/python3.14",
++        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/current-observation-minimum-validation/implementation/packages.py",
+         "installed"
+       ],
+       "outerSeconds": 120,
+@@ -332,19 +534,19 @@
+       ],
+       "termAfterSeconds": 115
+     },
+-    "event-restart-external": {
+-      "cwd": "/Users/dbox/repos/wt/vickie/vickie-scope-event-sse-opaque-minimum",
+-      "argv": [
+-        "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+-        "/Users/dbox/repos/wt/vickie/vickie-scope-event-sse-opaque-minimum/node_modules/vitest/vitest.mjs",
+-        "run",
+-        "apps/bdptest/src/transactional-event-sse-installed.test.ts",
++    "receiving-history-external": {
++      "cwd": "/Users/dbox/repos/wt/vickie/vickie-current-observation-minimum",
++      "argv": [
++        "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
++        "/Users/dbox/repos/wt/vickie/vickie-current-observation-minimum/node_modules/vitest/vitest.mjs",
++        "run",
++        "apps/bdptest/src/transactional-minimum-receiving-installed.test.ts",
+         "--maxWorkers=1",
+         "--reporter=verbose",
+         "--reporter=json",
+-        "--outputFile.json=/Users/dbox/repos/wt/vickie/bdp-integration-logs/scope-event-sse-opaque-minimum-validation/implementation/run/event-restart-external.results.json",
++        "--outputFile.json=/Users/dbox/repos/wt/vickie/bdp-integration-logs/current-observation-minimum-validation/implementation/run/receiving-history-external.results.json",
+         "--testNamePattern",
+-        "^(?:installed\\ Event\\ cursors\\ survive\\ restart\\ with\\ Last\\-Event\\-ID\\ precedence\\ and\\ source\\ binding)$"
++        "^rejects\\ malformed\\ read\\ minimum\\ tuples\\ before\\ observation\\ while\\ preserving\\ receipt\\ nondisclosure$"
+       ],
+       "outerSeconds": 120,
+       "automaticRetries": 0,
+@@ -352,30 +554,31 @@
+         0
+       ],
+       "selectedFullNames": [
+-        "installed Event cursors survive restart with Last-Event-ID precedence and source binding"
++        "rejects malformed read minimum tuples before observation while preserving receipt nondisclosure"
+       ],
+       "prospectiveWorkload": {
+         "callbacks": 1,
+-        "requests": 5,
+-        "children": 2,
++        "requests": 22,
++        "children": 1,
+         "stores": 1,
+         "workMs": 45000,
++        "requestMs": 5000,
+         "cleanupMs": 10000,
+         "callbackMs": 60000
+       },
+-      "expectedObservation": "private-event-restart-cursor",
+-      "expectedExchanges": 5,
+-      "expectedChildren": 2,
++      "expectedObservation": "private-installed-minimum-receiving",
++      "expectedExchanges": 22,
++      "expectedChildren": 1,
+       "termAfterSeconds": 115,
+       "selectedFilesByFullName": {
+-        "installed Event cursors survive restart with Last-Event-ID precedence and source binding": "apps/bdptest/src/transactional-event-sse-installed.test.ts"
++        "rejects malformed read minimum tuples before observation while preserving receipt nondisclosure": "apps/bdptest/src/transactional-minimum-receiving-installed.test.ts"
+       }
+     },
+-    "review-event-restart-external": {
+-      "cwd": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/scope-event-sse-opaque-minimum-validation/implementation",
+-      "argv": [
+-        "/opt/homebrew/opt/python@3.14/bin/python3.14",
+-        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/scope-event-sse-opaque-minimum-validation/implementation/audit.py",
++    "review-receiving-history-external": {
++      "cwd": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/current-observation-minimum-validation/implementation",
++      "argv": [
++        "/opt/homebrew/opt/python@3.14/bin/python3.14",
++        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/current-observation-minimum-validation/implementation/audit.py",
+         "history"
+       ],
+       "outerSeconds": 120,
+@@ -385,19 +588,19 @@
+       ],
+       "termAfterSeconds": 115
+     },
+-    "scope-event-sse-opaque-external": {
+-      "cwd": "/Users/dbox/repos/wt/vickie/vickie-scope-event-sse-opaque-minimum",
+-      "argv": [
+-        "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+-        "/Users/dbox/repos/wt/vickie/vickie-scope-event-sse-opaque-minimum/node_modules/vitest/vitest.mjs",
+-        "run",
+-        "apps/bdptest/src/transactional-event-sse-installed.test.ts",
++    "current-observation-external": {
++      "cwd": "/Users/dbox/repos/wt/vickie/vickie-current-observation-minimum",
++      "argv": [
++        "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
++        "/Users/dbox/repos/wt/vickie/vickie-current-observation-minimum/node_modules/vitest/vitest.mjs",
++        "run",
++        "apps/bdptest/src/transactional-minimum-receiving-installed.test.ts",
+         "--maxWorkers=1",
+         "--reporter=verbose",
+         "--reporter=json",
+-        "--outputFile.json=/Users/dbox/repos/wt/vickie/bdp-integration-logs/scope-event-sse-opaque-minimum-validation/implementation/run/scope-event-sse-opaque-external.results.json",
++        "--outputFile.json=/Users/dbox/repos/wt/vickie/bdp-integration-logs/current-observation-minimum-validation/implementation/run/current-observation-external.results.json",
+         "--testNamePattern",
+-        "^(?:observes\\ genuine\\ installed\\ initial\\ Scope\\ Event\\ SSE\\ opaque\\ minimum\\ refusal)$"
++        "^observes\\ installed\\ current\\ observation\\ minima\\ within37requests$"
+       ],
+       "outerSeconds": 120,
+       "automaticRetries": 0,
+@@ -405,31 +608,32 @@
+         0
+       ],
+       "selectedFullNames": [
+-        "observes genuine installed initial Scope Event SSE opaque minimum refusal"
++        "observes installed current observation minima within37requests"
+       ],
+       "prospectiveWorkload": {
+         "callbacks": 1,
+-        "requests": 6,
++        "requests": 37,
+         "children": 1,
+         "stores": 1,
+         "workMs": 45000,
++        "requestMs": 5000,
+         "cleanupMs": 10000,
+         "callbackMs": 60000
+       },
+-      "expectedObservation": "private-installed-scope-event-sse-opaque-minimum",
+-      "expectedExchanges": 6,
++      "expectedObservation": "private-installed-current-observation-minimum",
++      "expectedExchanges": 37,
+       "expectedChildren": 1,
+       "termAfterSeconds": 115,
+       "selectedFilesByFullName": {
+-        "observes genuine installed initial Scope Event SSE opaque minimum refusal": "apps/bdptest/src/transactional-event-sse-installed.test.ts"
++        "observes installed current observation minima within37requests": "apps/bdptest/src/transactional-minimum-receiving-installed.test.ts"
+       }
+     },
+-    "review-scope-event-sse-opaque-external": {
+-      "cwd": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/scope-event-sse-opaque-minimum-validation/implementation",
+-      "argv": [
+-        "/opt/homebrew/opt/python@3.14/bin/python3.14",
+-        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/scope-event-sse-opaque-minimum-validation/implementation/audit.py",
+-        "scope"
++    "review-current-observation-external": {
++      "cwd": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/current-observation-minimum-validation/implementation",
++      "argv": [
++        "/opt/homebrew/opt/python@3.14/bin/python3.14",
++        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/current-observation-minimum-validation/implementation/audit.py",
++        "current"
+       ],
+       "outerSeconds": 120,
+       "automaticRetries": 0,
+@@ -450,16 +654,16 @@
+     "require-from-string": "2.0.2"
+   },
+   "pending": [
+-    "Actual Claude CODE disposition/root acceptance",
+-    "Native/root adapter review and staged releases",
+-    "Actual workspace tools/build/archive/consumer records",
+-    "Root measured consumer lock and installed provenance acceptance"
++    "Actual native and Claude CODE dispositions including stale Link500 aggregate",
++    "Native/root helper review",
++    "Root measured base tools and fresh workspace bootstrap/tools",
++    "Actual build/archive/consumer lock/proof"
+   ],
+   "freshBootstrapStages": 2,
+   "postBootstrapStages": 19,
+   "totalStages": 21,
+   "reusedEvidence": [],
+-  "sourceBindingSha256": "bcbd975c76b4af9af249cd89e46a80992cf99f3e7f5850f34eee510e287922b6",
++  "sourceBindingSha256": "0c6c47c5aafb0b2e0f9b9f1f879037c32159cecea02d963ce05932346a3a50b4",
+   "helperImplementationFinalized": true,
+   "runtimeTempPolicy": {
+     "root": "/private/tmp",
+@@ -468,7 +672,7 @@
+     "noDirectoryCreatedYet": true
+   },
+   "requiredPublicationChecks": {
+-    "state": "Root-owned follow-through; no execution authorized here",
++    "state": "Separate required-checks sibling prepared CLOSED",
+     "commands": [
+       [
+         "pnpm",

@@ -1,0 +1,35 @@
+--- worker.py
++++ predecessor1/worker.py
+@@ -1,6 +1,5 @@
+ """Owned blocking attempt worker, supervised under the parent's single monotonic origin."""
+-import sys,os,time,json,socket,subprocess,tempfile,secrets,hashlib,signal
+-signal.pthread_sigmask(signal.SIG_SETMASK,[]) # parent registered ownership before unmask
++import sys,os,time,json,socket,subprocess,tempfile,secrets,hashlib
+ sys.dont_write_bytecode=True
+ from pathlib import Path
+ from scanner import LogScanner,file_json,file_hash,RESULTS,need
+@@ -38,9 +37,8 @@
+  admission=10 if name=='installed-owned-set' else 115
+  require(time.monotonic()<origin+admission,'Admission exhausted; no product spawn')
+  with (E/(name+'.log')).open('xb') as log:
+-  child=subprocess.Popen(spec['argv'],cwd=spec['cwd'],env=env,stdout=log,stderr=subprocess.STDOUT)
+-  note('created',pid=child.pid,pgid=os.getpgrp(),ppid=os.getpid(),executable=Path(spec['argv'][0]).name,createdEpoch=time.time())
+-  await_control('creation-ack')
++  child=subprocess.Popen(spec['argv'],cwd=spec['cwd'],env=env,stdout=log,stderr=subprocess.STDOUT,start_new_session=True)
++  note('created',pid=child.pid,pgid=child.pid,ppid=os.getpid(),executable=Path(spec['argv'][0]).name,createdEpoch=time.time())
+  # Parent logfile handle is closed; only the child/group writers remain.
+  scanner=LogScanner(attempt) if name=='installed-owned-set' else None
+  with (E/(name+'.log')).open('rb') as tail:
+@@ -85,11 +83,7 @@
+   schema_exit=schema_process.wait()
+   note('check-exit',pid=schema_process.pid,code=schema_exit)
+   classification={0:'positive-schema-candidate',2:'nonconforming-failed',3:'conforming-failed-no-positive-credit',4:'protocol-schema-refusal'}.get(schema_exit,'schema-worker-failed')
+-  partial=None
+-  if schema_exit==3:
+-   try:partial=audit_partial(scanner.reports[0]['value'])
+-   except Exception:
+-    classification='nonconforming-failed';partial={'classification':'UNSUPPORTED_OR_INCONSISTENT_FAILED_PARTIAL','positiveCredit':False,'claimEligible':False,'reason':'source-assignment-derivation-refused'}
++  partial=audit_partial(scanner.reports[0]['value']) if schema_exit==3 else None
+   write(name+'.schema-observation.json',{'ownedCheck':{'pid':schema_process.pid,'pgid':os.getpgrp(),'observedExit':schema_exit},'failedPartial':partial,'classification':classification,'rawExit':schema_exit,'selectedReportSha256':report_record['sha256'],'claimEligible':False,'positiveCredit':False})
+   require(schema_exit==0,'Actual complete schema observation refused')
+   require(child.returncode in spec.get('acceptedRawExitCodes',[0]),'Child exit refused')

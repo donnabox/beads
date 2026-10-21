@@ -1,0 +1,35 @@
+{
+  "name": "offline-setup",
+  "argv": [
+    "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+    "/Users/dbox/.cache/node/corepack/v1/pnpm/11.20.0/bin/pnpm.cjs",
+    "install",
+    "--offline",
+    "--frozen-lockfile"
+  ],
+  "cwd": "/Users/dbox/repos/wt/vickie/vickie-sequence-member-evidence",
+  "started": "2026-10-15T14:10:25.284785+00:00",
+  "head": "9a42a4531def99e12fa9a1fba02e70558d643265",
+  "workspaceDirty": true,
+  "sourceSha256": {
+    "apps/bdptest/src/read-update-guarded-overlap-installed.test.ts": "6c3ff9bb8990b314f73337e8a774313fd78c6d7db89479292924b462a0f4a883",
+    "docs/design/update-implementation-progress.md": "8c6caae7f8ba4ccb2a2492596cc09dee6fbbfd630a9595ac04f5446f4b150cde"
+  },
+  "sourceDiffSha256": "42950f02c9d0778f1c2fb9b30e4952eb767f6b9046ba09aa29416d3024c5ef65",
+  "rootAcceptanceSha256": "0c2316600b528eb45fe65e697777650202637487d71d2d22510023694670965b",
+  "preparationSha256": "6a67e588e01e319467ddc82fd2e84a2ae99441948dff1997f50dcaed65c94c4c",
+  "bdpOverrides": {},
+  "guardedArgv": [
+    "/opt/homebrew/opt/python@3.14/bin/python3.14",
+    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/guarded-action.py",
+    "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+    "/Users/dbox/.cache/node/corepack/v1/pnpm/11.20.0/bin/pnpm.cjs",
+    "install",
+    "--offline",
+    "--frozen-lockfile"
+  ],
+  "nodePathPrefix": "/Users/dbox/.nvm/versions/node/v24.16.0/bin",
+  "sourceAttribution": "Externally bound source snapshot or frozen package; not child-attested Git identity",
+  "plannedWorkload": {},
+  "derivativeBinding": null
+}

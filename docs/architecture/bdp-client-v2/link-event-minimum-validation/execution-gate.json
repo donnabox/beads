@@ -1,0 +1,63 @@
+{
+  "released": true,
+  "rootPlanAccepted": true,
+  "rootExactSourceAccepted": true,
+  "session": "2026-10-08T20:26:35Z-81e5",
+  "mode": "final",
+  "approvedStages": [
+    "workspace-install",
+    "bind-workspace-tools",
+    "typecheck",
+    "format-check",
+    "lint",
+    "fresh-build",
+    "bind-fresh-build",
+    "focused-source",
+    "review-focused-source",
+    "node-version",
+    "prepare-package-directory",
+    "pack-protocol",
+    "pack-server",
+    "verify-archives",
+    "prepare-consumer",
+    "consumer-install",
+    "verify-installed-consumer",
+    "event-link-minimum-external",
+    "review-event-link-minimum-external",
+    "event-bead-minimum-external",
+    "review-event-bead-minimum-external",
+    "event-minimum-external",
+    "review-event-minimum-external",
+    "event-missing-context-external",
+    "review-event-missing-context-external"
+  ],
+  "staticValidationAuthorized": true,
+  "nativeCodeReviewDisposed": true,
+  "actualClaudeReviewDisposed": true,
+  "implementationIndexSha256": "3826b2faefa766e238c7afdb5dd4861d0d8eafdaf8708b5a897b7b3d98bb4911",
+  "sourceBinding": {
+    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/link-event-minimum-validation/source-binding.json",
+    "sha256": "97629a7fac3bc7b2e122b3446b1151497e60e8585e3ba8ebb9fa8c6d6503a2c9"
+  },
+  "baseTools": {
+    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/link-event-minimum-validation/base-tools.json",
+    "sha256": "a626e24eb381d668d2f4886ed095d4f7689caf6fb2aa4b8ec5286c40e3a0fbdd"
+  },
+  "workspaceTools": {
+    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/link-event-minimum-validation/run/workspace-tools.json",
+    "sha256": "745323190a5534a6714e17f8e8e3e57d507b59890750ccb81c7a192068972a8a"
+  },
+  "rootDisposition": {
+    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/link-event-minimum-validation/root-disposition.json",
+    "sha256": "570c150232038014c5d879fb9577eeeb2ce4047bf554f629b26ae08860c715af"
+  },
+  "consumerLockSha256": "b654ef7659d2807c1630c12ede740e6f51bb0b8e4b2b5c02b17b16f7654ebc39",
+  "installedProvenance": {
+    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/link-event-minimum-validation/run/installed-provenance.json",
+    "sha256": "1e2b8e36695a218fd9d3d2ff71bf6411c58fb8daf4b87ac854920c5c1b02c3e7"
+  },
+  "consumerInventory": {
+    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/link-event-minimum-validation/run/installed-consumer-inventory.json",
+    "sha256": "1054cea3a65aab738fd0794ef53ae01fdeedf51695e700b84aeffcb1a7ec15d3"
+  }
+}

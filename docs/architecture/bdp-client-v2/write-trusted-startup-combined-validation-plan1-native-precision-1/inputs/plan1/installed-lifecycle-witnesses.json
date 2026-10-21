@@ -1,0 +1,66 @@
+{
+  "state": "PROSPECTIVE existing callback behavior; no execution",
+  "sameStore": [
+    "I01/I02 cold genuine create/read/replay/auth/privacy/HEAD/absent followed by actual stop+ownerProbe(true).",
+    "I03/I04 create/read/stop;create:false second generation navigates same actual descriptor/Directory, actual read/replay original receipt;stop/probe(true).",
+    "I05 old token401/new token200/reader mutation403 after current credential replacement on exact same RU store; original created resource persists.",
+    "I06/I07 absent create:false candidate refused2+close2; exact directory existence/listing and missing store file.",
+    "I08/I09 actual initialized/closed owner; SQLite contractCapture set null using immediate parent ledger; candidate refused; restore exact prior metadata;real probe(false).",
+    "I10/I11 actual reserved nonzero port stays listening across attempted ready refusal; returned child exit2/close2;actual same store probe(false).",
+    "I12-I17 actual stop request SIGTERM/SIGINT/disconnect, real exit0+close0; actual intended-port reservation/release before second generation create:false navigation/read; probe(true).",
+    "I18/I19 CONNECT actual4xx bounded refusal bytes retained; socket paused, record actual already-closed/live/unknown state before shutdown; no forced-server-destruction inference; actual peer close after stop thensecondgenerationnavigate/read/probe(true).",
+    "I20 ordinary public RU refusal then3 guard processes; no HTTP or ready.",
+    "I21 public TXrefusal+invalidconfiguration guard+one genuine private ready generation+invalid stop ->exit2 ANDclose2/fixeddiag/noextra ready+actualownerProbe(false);source safety counterexamples only, no additional HTTP."
+  ],
+  "CONNECTControls": {
+    "attempts": 2,
+    "callbacks": [
+      "I18",
+      "I19"
+    ],
+    "maxRefusalHeaderBytes": 16384,
+    "refusalStatus": "actual >=400 and<500",
+    "connectAndAfterStopMs": 5000,
+    "workDeadlineDominates": true,
+    "beforeExactKeys": [
+      "exitBeforeShutdown",
+      "closeBeforeShutdown",
+      "refusalWireBase64",
+      "refusalStatus",
+      "serverTransportLiveAtShutdown",
+      "forcedServerDestructionClaimed",
+      "socketDestroyed",
+      "socketReadableEnded",
+      "socketReadyState",
+      "observedAlreadyClosed"
+    ],
+    "afterExactKeys": [
+      "CONNECT",
+      "wasAlreadyClosed",
+      "closeObserved",
+      "forcedServerDestructionClaimed"
+    ],
+    "forcedServerDestructionClaimed": false,
+    "rule": "Already normal-closed remains already-closed. Actual byte/refusal/chronology observations do not establish forced server destruction."
+  },
+  "readyIPC": {
+    "input": "one exact own-data configuration field containing ordinary shared configuration; same top-level deploymentFile; <=65536bytes;10s capped byremaining45",
+    "acceptedControl": "one own-data command:close; any malformed/unknown including stop is refusal+shutdown, not alternate API",
+    "nonEntry": "No IPC/withIPC imports inert; preserve exitCode and four listener counts before guard disconnect.",
+    "diagnostic": "reference deployment startup failed\n",
+    "outputConfigControlCapBytes": 65536,
+    "history": false,
+    "claimEligible": false
+  },
+  "source51Relations": [
+    "Source negative witnesses distinguish listen attempts from acquisitions; installed public-refusal child readiness absence alone cannot prove zero attempted bind.",
+    "Source per-callback SQLite slices/previous unknown retained; parent immediate owner ledger covers seven syntactic acquisition sites and actual loops.",
+    "Trusted acquire/readback/principal/service preparation precedes intended nonzero bind; source port0 legacy path ordering/503 behavior/result shape/cache/error semantics preserved.",
+    "No general cancellation rollback, arbitrary store integrity, malformed epoch grammar, crash recovery, administrative erasure/restore or whole Write proof is added."
+  ],
+  "unknownProcessRules": [
+    "Retain unreaped authenticated parent/child handles and current identity groups until actual absence; child exit vs stdio close vs descendant writer EOF remain distinct.",
+    "Root actual terminal process/tree/raw-output audit mandatory;37 counts product/guard children, not Vitest/helper/census processes.",
+    "Partial/forced cleanup/changed identity/remaining task means fail+retain; no late completed-close or self-reported elapsed promotion."
+  ]
+}

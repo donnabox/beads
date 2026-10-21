@@ -1,0 +1,108 @@
+I read the dispositions, both predecessor reviews, the full 7-file diff, and the surrounding semantics (`read-http.ts`, `transaction-http.ts` routing/`deliver`, `transaction-snapshot.ts` `capture`/`record`/`plan`/`page`, `transaction-store.ts#observeSnapshot`/`inspect`, `http-executor.ts` raw parse path, `schemas/bdp-v0.schema.json`, both sibling test files). No files written, no builds or tests run.
+
+# Review — frozen `6413cbc` vs parent `abd474c`
+
+Clean single-parent freeze, worktree clean, exactly the 7 files the disposition allowed (no store format, settings, schema, public exports, runner, H1b or G2a SSE).
+
+## What I verified independently of the author's report
+
+**Production change (`transaction-http.ts:361-375`) is correct.** The owner-free `candidate` is header-equivalent to the real preflight decision, so it cannot select the wrong branch: `snapshotResponse`'s `eligible` arm (`:348-358`) emits status 200 + `content-type: application/json` with **no** `etag`, and `context()` (`:92-97`) adds only `bdp-*` headers — so `conditionalReadStatus(request.headers, null)` and the `acceptsJson` test see identical inputs in both. `If-Match: "x"` → 412, `If-None-Match: *` → 304, `Accept: text/plain` → 406 in both; `If-Match: *` and `If-None-Match: "nonmatching"` → 200 in both (pinned by the pre-existing eighth-handle probe at `transaction-snapshot-http.test.ts:307-311`).
+
+- Candidate is used **only** as a boolean gate; no owner-free response is ever returned.
+- HEAD always runs the full preflight and always returns its decision (`:369-372`) — no allocation.
+- Every refusing GET runs the preflight, so `Vary: Accept` and same-entry `bdp-scope-*` context survive on 406/304/412.
+- Skipping the preflight on a would-be-200 GET cannot change a refusal into a success: `capture(now, context, retain)` is one function (`transaction-snapshot.ts:607-783`), so the retained path runs the identical `issuedHandles`/`resources`/`recordBytes`/`liveHandles`/`liveRecordBytes`/`integrity`/`checkGraph` checks in the identical order, and `observeSnapshot` (`transaction-store.ts:1296-1334`) wraps it in `atomic` with the same-entry `context` on the `TransactionSnapshotFailure` arm. The pre-existing integrity test at `transaction-snapshot-http.test.ts:589-606` already drives a plain GET down the new allocating path and asserts `f.state()` is unchanged, so rollback is witnessed.
+- Only GET/HEAD reach the route (`methodResponse:209`), so no non-safe method hits the new branch.
+
+**Oracles are real, not asserted.** `bodyReads` counts `statement.get` on `"SELECT * FROM resources WHERE id=? AND kind=?"`, which is unique to `record()` (`transaction-snapshot.ts:326`) — no other module uses that SQL. Statements are memoized (`:163-170`), the spy is installed before `fixture()`, and if the spy failed to attach the assertion reads 0 and **fails** rather than passing — a fail-safe oracle. `1` vs the old `2` is the correct discrimination. The 4 nonallocating cases each reading exactly `1` is a direct witness that the authoritative preflight ran before the response.
+
+**Retry guard is complete and the unreachability claim is accurate.** Both sites (`:627-632`, `:690-696`) are guarded; `retryAfter` is schema `integer, minimum: 0` (`schemas/bdp-v0.schema.json:2123-2126`), so `0` is valid. Empty-live 503 needs `totals.bytes > 64 MiB`, foreclosed by the 413 at `:619` at 32 MiB — and the second site is foreclosed by the accumulating check at `:657`.
+
+**Installed lifecycle closure holds.** `finishObservation` emits the ledger on assertion failure, on dirty-child `close()` throw (prior finding 2's suppressed case), and on late abort; `failures.includes` dedupes the abort reason so the single-failure case rethrows the reason itself, which the new countercontrols pin. `clearTimeout` still runs on every path. The non-attesting marker assertion is safe because `deliver` (`transaction-runtime.ts:74-81`) and the catch-all (`:148-152`) set it on every response, including Origin/405/Host refusals.
+
+**Calibration is sound.** The fresh leg's only requests are 1 write (no handle) + 8 captures + 1 refusal, so 8 successes bound `C ≥ 8` and the 9th refusal bounds `C ≤ 8`: `C = 8` is observed, making `L = 0` derivable in the observation fixture. Payload-digest equality ties the two fixtures.
+
+**Prior findings closed:** HTTP 1 (disclosed + measured predicate), 2 (fixed + witnessed), 3 (read-only creation, in-process *and* installed), 4 (`pageSchemas` on continuations; the inline first page was already covered — `snapshotManifest` `allOf`s `beadCollection` plus `links: false`, and an added `links` member is independently caught by the `delete wire.links; toEqual` replica comparison in both tests), 5 (preflight on the 9/99 boundary fixture with explicit zero-row checks), 6 (guard). Installed 1 (seeded oracle + countercontrol + `delete wire.links` comment/doc), 2, 3, 4, 5, 6, 7 (per the amended disposition), 8-cross-principal (`collect` now operator, all replays reader), 9 (reader batch 403 + absence 404). `claimEligible: false` and the public-admission-false framing are intact everywhere.
+
+---
+
+## Findings
+
+### 1. LOW-MEDIUM — the only pinned repeated-decision evidence runs under vitest's default 5 s timeout
+**Location:** `packages/server/src/transaction-snapshot-http.test.ts:665-713`.
+
+`vitest.config.ts` sets no `testTimeout`, so this test gets the 5000 ms default. Its work: 4,000 inserts of ~1 KiB bodies, **three** runtime close/reopen cycles (`f.offline` for the insert, then `f.state()` twice), and 8 full bounded passes — decode + `validateServerBead` + `checkGraph` + SHA-256 page packing over ~4 MB each, externally measured at ~90 ms per decision on this exact record shape.
+
+The sibling core file budgets every comparable near-ceiling test explicitly: `transaction-snapshot.test.ts:569` (15 s), `:590` (30 s), `:652` (15 s), `:819` (15 s). The existing offline-4097 test in this file (`:450-491`) does pass under the default, but it inserts *empty-properties* records and both its requests refuse at the O(1) count check before any decode — it never performs the pass this test performs eight times.
+
+**Impact.** `transaction-snapshot-serving-progress.md` cites this test as the pinned-Node-24 repeated-decision witness. A timeout on a loaded runner destroys the measurement and the `repeated-nonallocating-snapshot` `console.info` record instead of producing evidence. I did not run it (per the instruction to stay clear of the author's final runs), so this is a budget-margin finding, not an observed failure.
+
+**Bounded fix.** `}, 15000);` on `:713`, matching the file-set convention.
+
+### 2. LOW — prior installed finding 8's tautology was replaced with a different tautology, and the doc now claims a control that cannot fail
+**Location:** `apps/bdptest/src/transactional-snapshot-installed.test.ts:67-68`; doc claim at `docs/design/transaction-snapshot-installed-observations.md:68-69`.
+
+```ts
+if (response.headers["content-length"] !== undefined)
+  expect(Number(response.headers["content-length"])).toBe(response.bodyOctets);
+```
+
+`decodeResponseBody` (`packages/conformance/src/http-executor.ts:1217-1235`) throws `disconnect` when `framed.byteLength < expected` and `invalid-body` when `framed.byteLength > expected`, then returns `framed`; `parseRawResponse:1200` sets `bodyOctets = body.byteLength`. So whenever a content-length-framed response parses at all, `Number(content-length) === bodyOctets` holds **by construction** — exactly as unfalsifiable as the `Buffer.byteLength(bodyText)` comparison it replaced. And when `content-length` is absent (the chunked branch at `:1212-1215`), the guard is skipped, so there is no body-framing assertion at all.
+
+**Failure scenario.** A server regression that framed manifest bodies with `transfer-encoding: chunked` passes this test silently with zero framing coverage; a genuine length/body mismatch is caught by the executor's own transport error, not by this assertion. Either way `"Declared body length is checked against actual framing"` names an observed control the test does not contribute.
+
+**Bounded fix.** Make the declaration mandatory and compare against the wire instead of against a derived value: `expect(response.headers["content-length"]).toBeDefined()` plus `expect(response.wireResponseBytes!.length).toBeGreaterThan(response.bodyOctets)` — or delete the line and the doc sentence.
+
+### 3. LOW — the independently measured identity covers one module, not the closure that executes, and Limits does not say so
+**Location:** `apps/bdptest/src/transactional-snapshot-installed.test.ts:37-38`; doc `:11-13` and Limits `:74-88`.
+
+`entrySha256` hashes only `realpathSync(entry)`. The installed process's behavior comes from its whole package closure, which the entry merely imports. The closure identity remains `child.ready.payloadIdentity` — the subject's own computation over its own closure, which prior finding 7 correctly characterized as self-attestation. The doc's `"the realpath entry's independently measured SHA-256"` is literally accurate but the Limits section, which does enumerate every other non-claim, omits it.
+
+**Failure scenario.** A packed run whose tarball entry file is byte-identical while a sibling module in the installed closure differs: `entrySha256` matches, `declaredSourceCommit` matches, the ledger reads as pinned, and nothing the test measured distinguishes the two artifacts.
+
+**Bounded fix.** One Limits sentence: the measured SHA-256 covers the entry module only; the executing package closure identity remains the subject's self-attested `installedPayloadDigest`.
+
+### 4. LOW — the explicit-commit guard is file-local, but the doc states it as a property of packed-run mode
+**Location:** test `:35-36`; doc `:8-15`; sibling `apps/bdptest/src/transactional-matrix.test.ts:36-38` and `:79-81`.
+
+The guard and the entry hash exist only in this test file. The sibling installed matrix observation reads the **same** two env vars with the inherited laxity: `BDP_TRANSACTIONAL_INSTALLED_ENTRY` with no required commit override, no entry digest, no dirty diagnostic. Both files are collected by the same vitest `include`, so a packed run of the bdptest suite produces one rigorous ledger beside one inheriting the old attribution. Separately, `"The external packed-run supervisor separately checks clean source, builds that exact commit, packs/installs it, and supplies both environment values"` (`:14-15`) is stated in the present tense about a process that exists nowhere in the repository — nothing sets those variables in `scripts/`, CI, or any manifest.
+
+Editing the sibling is out of scope per the disposition ("do not edit shared launcher/binding/runner"), and root accepted the supervisor split. The **disclosure** is in scope: because this commit deliberately chose not to fail fast on a dirty worktree, the supervisor is the only enforcement, and the doc asserts its behavior rather than requiring it.
+
+**Bounded fix.** Scope the doc sentence to this test file, note that the sibling installed matrix observation retains the inherited default, and phrase the supervisor line as a requirement on an external packed run with nothing in-repo enforcing it.
+
+### 5. LOW — the new seeded oracle is a recursive subset match, so added members escape it
+**Location:** `apps/bdptest/src/transactional-snapshot-installed.test.ts:406-423`.
+
+`toMatchObject` permits extra properties at every nesting level, so `properties`, `metadata` and the row itself are only subset-checked. Prior finding 1's bounded fix used `toEqual` on `properties` for this reason.
+
+**Failure scenario.** A projection that *adds* a member uniformly — `properties: { title: "café 🦉 b00", injected: 1 }` on every snapshot bead *and* every point read — passes `assertSeeded`, and also passes `assertReplica` (`:348-351`) because both surfaces agree. The doc's `"A consistently wrong seeded postimage fails even if all server projections agree"` (`:27-28`) is true for wrong and missing values — the dropped-`properties` and mojibake cases that motivated the finding are genuinely caught — but not for added ones.
+
+**Bounded fix.** Inside `assertSeeded`, add `expect(row.properties).toEqual({ title: … })` and `expect(row.metadata).toEqual({ seeded: … })`, keeping `toMatchObject` for the row-level fields that legitimately vary (`revision`, `ownedLinks`). `metadata` is an admitted create-operation field (`packages/protocol/src/read-update-values.ts:69,84`), so the exact comparison is well-defined.
+
+### 6. LOW — no ledger is emitted when the fixture fails to start
+**Location:** `apps/bdptest/src/transactional-snapshot-installed.test.ts:147-155`; failure paths at `:179-183` and `:190-199`.
+
+`withInstalled` calls `start()` *outside* `finishObservation`, and `report` is unreachable before `baseline` exists. A launch failure or a ready-metadata validation failure therefore yields correct AggregateError causes and **zero** `private-installed-snapshot` records on stdout.
+
+**Failure scenario.** A harvester scanning observation logs cannot distinguish "the installed child never launched" from "the test file never ran" — on a commit whose stated purpose is a sound evidence artifact. The doc's `"ledger explicitly says passed or failed … including on cleanup failure"` (`:64-66`) is correctly scoped and does not overclaim, so this is an undisclosed gap rather than a false statement.
+
+**Bounded fix.** Emit a minimal record from both `start()` failure paths — `{ observation, outcome: "failed", stage: "startup", declaredSourceCommit, workspaceDirty, entry, entrySha256, claimEligible: false }`, omitting `binding` — or add one doc sentence stating that a startup failure produces causes but no ledger.
+
+### 7. LOW / informational — the ledger now records issued continuation URLs, including HMAC page tokens
+**Location:** `apps/bdptest/src/transactional-snapshot-installed.test.ts:264`, logged at `:319-320`.
+
+`observations[].url` for continuation reads is the server-issued `…snapshot?snapshot=<uuid>&stream=…&page=sp_<n>_<43-char HMAC>`. The adjacent comment commits to never logging credentials, and a page token is a per-snapshot capability component derived from the secret disposition seed (`transaction-snapshot.ts:115-120`). Mitigations are real: the route refuses unauthenticated requests before any token lookup (`transaction-http.ts:322`), and the child plus its temp store are destroyed in cleanup, so the token is dead before the record is read. The prior review explicitly asked for route identifiability, so the addition is sanctioned — recording it so the tension with the comment is visible rather than discovered later.
+
+**Bounded fix, only if a stricter reading is wanted.** Record `pathname` + `stream` + the token ordinal, or substitute the token's length for its value.
+
+---
+
+## Minor notes (not findings)
+
+- `transaction-snapshot.test.ts:778-780` — the `f.owner.inspect()` before/after pair reads as a nonallocation witness but `inspect()` returns only resources/groups/identities/position (`transaction-store.ts:1852-1868`); it cannot see the three snapshot tables. The actual witness is the explicit offline count at `:781-784`, which is correct and sufficient.
+- The calibration leg still asserts the 503 without disambiguating `liveHandles` from `liveRecordBytes` (both raise `temporarily-unavailable` at `transaction-snapshot.ts:623-633`). Prior finding 3's secondary item; implausible at one small bead, still undisclosed.
+- `git status --porcelain` now runs unconditionally at module load (`:39-40`), whereas `git rev-parse` previously ran only without the override — a packed run now needs the `git` binary even when both env vars are set. The repo must be present regardless (`fixture.bytes` reads `packages/conformance/test-support/transactional/fixture-v1.json`), so this is a nit.
+- `docs/design/transaction-snapshot-installed-observations.md:15, 51, 69` are un-rewrapped long lines inconsistent with the rest of the file, and both docs drop the space before several numerals ("ninth503", "possible304/412/406", "return200", "with1,024", "and99→100", ";406"). Biome does not format Markdown, so `format:check` will not catch either; cosmetic only.
+
+**Closure assessment.** All six HTTP-serving findings and all nine installed-evidence findings are addressed as dispositioned, with one exception: installed finding 8's tautology (finding 2 above) is not closed — the replacement is also unfalsifiable, and the doc now makes a stronger claim about it than before. Findings 1 and 6 are the two residuals I would fix before PR promotion; the rest are disclosure-only. No new completeness claims in the two docs exceed what the tests observe, apart from the specific sentences named in findings 2, 3, 4 and 5.

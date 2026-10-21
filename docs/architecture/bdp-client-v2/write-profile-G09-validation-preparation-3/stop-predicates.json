@@ -1,0 +1,27 @@
+{
+  "beforeEveryStage": [
+    "remote session mismatch",
+    "any implementation/reference/source/tool drift",
+    "stage not exact approved prefix",
+    "missing or mismatched source CODE/root disposition",
+    "prior stage failure/forced cleanup/source drift/log mismatch",
+    "missing currently applicable fresh build/archive/lock/consumer proof"
+  ],
+  "failurePolicy": "Keep exclusive raw/start/log/exit/process/report/results/partial evidence. Stop, close root gate; no retry, invented expected values or old consumer reuse.",
+  "rootOuter": [
+    "raw exit not accepted",
+    "whole actual wrapper elapsed>=120",
+    "TERM/KILL forced cleanup",
+    "missing actual terminal or BOTH PIPE EOF",
+    "known recorded PID/PGID remains or census unknown"
+  ],
+  "testAndAudit": [
+    "exact callback multiset mismatch or wrong file",
+    "selected failure or unselected execution",
+    "missing/duplicate/extra/invalid observation or key/type",
+    "unexpected unhandled diagnostics",
+    "actual counter/order/context/body/rawwire inconsistency",
+    "unknown child close/stdio/PID/directory cleanup",
+    "strict source3s/cleanup1/callback5 or installed45/10/60 exceeded"
+  ]
+}

@@ -1,0 +1,11 @@
+--- a/apps/bdptest/src/transactional-matrix.test.ts
++++ b/apps/bdptest/src/transactional-matrix.test.ts
+@@ -4063,7 +4063,7 @@
+   const declared = bundle.manifest.scenarios.find((r) => r.id === principalId)!;
+   for (const [i, exchange] of row.exchanges.entries()) {
+     expect(exchange.assertions.map((a) => a.id)).toEqual(
+-      declared.actions!.find((a) => a.id === conditionalActionIds[i])!.assertions.map((a) => a.id),
++      declared.actions![i]!.assertions.map((a) => a.id),
+     );
+     expect(exchange.assertions.every((a) => a.passed)).toBe(true);
+   }

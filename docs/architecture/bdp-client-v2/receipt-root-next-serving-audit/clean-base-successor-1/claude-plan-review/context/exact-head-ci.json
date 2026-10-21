@@ -1,0 +1,73 @@
+{
+  "at": "2026-10-17T09:17:18.233690+00:00",
+  "head": "9d2cd441eac2be1d2b6487ab5648035e3219cc27",
+  "tree": "62628a006c36d101c310b5210de3f7e23d3a2fac",
+  "runId": 39019562524,
+  "jobId": 117358476704,
+  "status": "completed",
+  "conclusion": "success",
+  "stepsSucceeded": 27,
+  "testsPassed": 9416,
+  "testFilesPassed": 186,
+  "testsSkipped": 1,
+  "preflightPassed": 7,
+  "packageSmokePassed": true,
+  "historicalReadEvidenceGatePassed": true,
+  "runMetadataSha256": "fe8b296b450601727b42e52343bb031fd892fbd40248029e5d99569e2431aff1",
+  "completeJobLog": {
+    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/receipt-root-minimum-validation-successor-1/ci-39019562524-job.log",
+    "sha256": "cbc63047b6392b021387998c1e949926ea70337ef913900510b2b15875ce3ba5",
+    "bytes": 3635502
+  },
+  "initialFormattedLog": {
+    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/receipt-root-minimum-validation-successor-1/ci-39019562524.log",
+    "sha256": "e3484a3e5f6ee3550d895adf959acd8cbb35cf60bdebce8b04005d854d5e5d9d",
+    "bytes": 1969115,
+    "limitation": "Partial pnpm test output ended09:08:27 with no test summary. Preserved; complete raw job retrieved separately, no CI rerun."
+  },
+  "parsedReceiptObservations": [
+    {
+      "observation": "private-installed-receipt-root-minimum",
+      "attempted": 5,
+      "exchanges": 5,
+      "childPid": 22151,
+      "closed": true,
+      "directoryAbsent": true,
+      "childExitCode": 0,
+      "claimEligible": false,
+      "entry": "/home/runner/work/bdp/bdp/packages/server/dist/transaction-installed-process.js",
+      "payloadIdentity": "a6afb3c1ebc106a30f0c2106c5ae1a8728f6a6810ff3d5da37b5f87b09705294",
+      "statuses": [
+        200,
+        503,
+        503,
+        404,
+        404
+      ]
+    }
+  ],
+  "unparseableObservationLines": 7,
+  "observationLimit": "Seven mask-damaged observations include historical22; not repaired or counted as structured CI evidence. Historical callback pass is visible; complete27 local packed responses remain separately verified. CI workspace payload a6afb3c1 differs from local external packed63ddf5df.",
+  "rootAuditCorrection": "Initial record construction assumed both CI receipt JSON records parse and stopped on assertion before writing. Inspected mask damage, retained raw bytes and narrowed to only intact newE5; no product or CI rerun.",
+  "pullRequest": {
+    "baseRefName": "codex/vickie-snapshot-opaque-minimum",
+    "headRefOid": "9d2cd441eac2be1d2b6487ab5648035e3219cc27",
+    "isDraft": true,
+    "state": "OPEN",
+    "statusCheckRollup": [
+      {
+        "__typename": "CheckRun",
+        "completedAt": "2026-10-17T09:12:31Z",
+        "conclusion": "SUCCESS",
+        "detailsUrl": "https://github.com/gastownhall/bdp/actions/runs/39019562524/job/117358476704",
+        "name": "verify",
+        "startedAt": "2026-10-17T09:01:44Z",
+        "status": "COMPLETED",
+        "workflowName": "CI"
+      }
+    ]
+  },
+  "commitMappingSha256": "c87a52869a593a532ff4a13c00759c7135141c10cead2a355ed0be22b3927324",
+  "fullProfileQualified": false,
+  "mainMerged": false
+}

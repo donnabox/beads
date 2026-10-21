@@ -1,0 +1,27 @@
+{
+  "argv": [
+    "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+    "/Users/dbox/repos/wt/vickie/vickie-changefeed-opaque-minimum/node_modules/vitest/vitest.mjs",
+    "run",
+    "apps/bdptest/src/transactional-changefeed-refusal-context-installed.test.ts",
+    "--maxWorkers=1",
+    "--reporter=verbose",
+    "--reporter=json",
+    "--outputFile.json=/Users/dbox/repos/wt/vickie/bdp-integration-logs/changefeed-opaque-minimum-validation/format-successor-1/run/changefeed-opaque-external.results.json",
+    "--testNamePattern",
+    "^(observes\\ genuine\\ installed\\ finite\\ start\\-now\\ opaque\\ minimum\\ refusal)$"
+  ],
+  "cwd": "/Users/dbox/repos/wt/vickie/vickie-changefeed-opaque-minimum",
+  "head": "5ceb213b632e17f28714684efc5e35a62b282bf6",
+  "tree": "7701b6a0084fe42b8990812e5fc3ddc5ce249a82",
+  "sourceIdentity": "c47a8bea7cb18b190235ebe4a560eec5d91eb34257e85db6040dc3fe3ccb8542",
+  "rootGateSha256": "98de0505cbb121683c73aba582bf55840bab3bb084ef63efe511de9b55ff8367",
+  "outerSeconds": 120,
+  "automaticRetries": 0,
+  "overrides": {
+    "BDP_TRANSACTIONAL_INSTALLED_ENTRY": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/changefeed-opaque-minimum-validation/format-successor-1/run/consumer/node_modules/.pnpm/@bdp+server@file+..+packages+bdp-server-0.0.0.tgz/node_modules/@bdp/server/dist/transaction-installed-process.js",
+    "BDP_TRANSACTIONAL_SOURCE_COMMIT": "5ceb213b632e17f28714684efc5e35a62b282bf6"
+  },
+  "temporaryDirectory": "/private/tmp/vickie-changefeed-validation-changefeed-opaque-external-u4b6jndh",
+  "npmCache": "/private/tmp/vickie-changefeed-validation-changefeed-opaque-external-u4b6jndh/npm-cache"
+}

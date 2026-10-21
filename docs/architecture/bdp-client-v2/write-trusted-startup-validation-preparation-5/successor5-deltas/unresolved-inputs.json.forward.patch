@@ -1,0 +1,18 @@
+--- preparation4/unresolved-inputs.json
++++ preparation5/unresolved-inputs.json
+@@ -1,6 +1,6 @@
+ {
+   "state": "CLOSED; preparation is reviewable but no stage executable",
+-  "rootExactCorrectedSourceAcceptance": "UNRESOLVED",
++  "rootExactCorrectedSourceAcceptance": "UNRESOLVED for current0c53 identity",
+   "independentCandidateMechanicsAcceptance": "UNRESOLVED",
+   "correctedSourceNativeCodeDispositionWrapper": "UNRESOLVED",
+   "correctedSourceActualCodeDispositionWrapper": "UNRESOLVED; original complete substantive result+failed finalization remains context",
+@@ -14,5 +14,6 @@
+   "rootFinalLocalAndExactHeadCI": "UNRESOLVED",
+   "automaticRetries": 0,
+   "allExecutionGatesFalse": true,
+-  "approvedStages": []
++  "approvedStages": [],
++  "exactAppliedFixtureCorrectionNativePrecision": "UNRESOLVED; native recommendation50b18 is not applied-source acceptance"
+ }

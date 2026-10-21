@@ -1,0 +1,216 @@
+{
+  "method": "Remove timestamp and leading ANSI presentation codes only; require payload-start {\"kind\": then json.loads whole payload. No JSON repair or nested fragment extraction. Line numbers 1-based in member19. Rawline digests omit newline.",
+  "validCount": 24,
+  "valid": [
+    {
+      "line": 290,
+      "kind": "comparison-maintenance-fault-cleanup",
+      "rawLineSha256": "4b2efa8d33b9f25c08081f6f632716a1cfcd76a0b823ea181fa69c39486d2de7",
+      "payloadSha256": "dedbd522c4795201cc710cd105a6cf68496f84ee280583f527849ae5d3b3151d",
+      "sourceCommit": null,
+      "control": null
+    },
+    {
+      "line": 415,
+      "kind": "comparison-service-deadline-cleanup",
+      "rawLineSha256": "c52503dbec14c1fcaf821aabdbef41c55c15949c047a6395c545194fd4b43e24",
+      "payloadSha256": "305ba092f482f2ab996b20886f491394d6097ee833a4a04f3a636a4594ef5024",
+      "sourceCommit": null,
+      "control": null
+    },
+    {
+      "line": 728,
+      "kind": "installed-tx-seventeen-partial-summary",
+      "rawLineSha256": "24337b9fda047e308b1918e4e7e8952b4c80409ed9ad1b3a024157083bbef054",
+      "payloadSha256": "f1d8ad1c6195ea163a40cce8188bae069a38acb1510e0ec5305c1b14a5f7e843",
+      "sourceCommit": "fdd3d2a4f8753b9d7562dcdb7ba413a33be82a10",
+      "control": null
+    },
+    {
+      "line": 5690,
+      "kind": "installed-selector-admission",
+      "rawLineSha256": "8f1cc82bc578b5759b2b285950e22310f80853177914f7b17ce140ba87699614",
+      "payloadSha256": "3bff3c82da540430d78ebf8dfba2cc42d5c679373ccd23124e5f35eec196844b",
+      "sourceCommit": null,
+      "control": null
+    },
+    {
+      "line": 6389,
+      "kind": "installed-valid-set-observation",
+      "rawLineSha256": "87d71d6e289b75b9f500921e7d23b76b7f0f2a5c888cd9062a1aa511e1c3c126",
+      "payloadSha256": "129e73eb0ebebcbd7212f9181b9c97643fb760b266231c24f3dbffdfc66c96d7",
+      "sourceCommit": null,
+      "control": null
+    },
+    {
+      "line": 10282,
+      "kind": "installed-tx-completed-conflict-control",
+      "rawLineSha256": "60311fe247be3734481532c2714a4f56ce6db3740534d788b1c04c9ca807d9f9",
+      "payloadSha256": "96763a803c4a95a2d226f8022ddab7fe3d2d7e0bf07128d8cb6c1663b0bc623f",
+      "sourceCommit": "fdd3d2a4f8753b9d7562dcdb7ba413a33be82a10",
+      "control": "conflict code"
+    },
+    {
+      "line": 10286,
+      "kind": "installed-tx-completed-conflict-control",
+      "rawLineSha256": "9d813e02e68e258be9a11961661bcaee3aec14f13b0edbfb3396d95a5fc917ba",
+      "payloadSha256": "8675f43f1def056e7d6c0308e1f57e02ebd70a049a23426439425479ce646652",
+      "sourceCommit": "fdd3d2a4f8753b9d7562dcdb7ba413a33be82a10",
+      "control": "reopened conflict status"
+    },
+    {
+      "line": 10290,
+      "kind": "installed-tx-completed-conflict-control",
+      "rawLineSha256": "f0e193b76ed3205510c08deec9f330a79903fc55a13d8ee7c29e7755e95ba431",
+      "payloadSha256": "1ec5ff13ca2762fdf0168b4050bfb0984861598b3688fc672db1beb70447e82e",
+      "sourceCommit": "fdd3d2a4f8753b9d7562dcdb7ba413a33be82a10",
+      "control": "current record"
+    },
+    {
+      "line": 10294,
+      "kind": "installed-tx-completed-conflict-control",
+      "rawLineSha256": "fee1e431f66466578a2c5030b701ee804821f009ac3fe801a5e7be4a4125725f",
+      "payloadSha256": "9a061912a17fd38a402892d9eb88ed97cf5a1f8a9747ef7a648e0b7166e6edea",
+      "sourceCommit": "fdd3d2a4f8753b9d7562dcdb7ba413a33be82a10",
+      "control": "retained replay body"
+    },
+    {
+      "line": 10298,
+      "kind": "installed-tx-completed-conflict-control",
+      "rawLineSha256": "90e9948d7f0433177f64cf100987e76165d294ceb012e533706a57abb66c2954",
+      "payloadSha256": "22951cdc3f7862eb3292ef83760b991893fc118f7fe278a3697a4d0fb6e5eefa",
+      "sourceCommit": "fdd3d2a4f8753b9d7562dcdb7ba413a33be82a10",
+      "control": "unchanged Event"
+    },
+    {
+      "line": 10303,
+      "kind": "installed-tx-matching-noop-control",
+      "rawLineSha256": "e8942cf49f09c43decf86b7130981bf5dc087418bfb268d4060470ffd515a9e1",
+      "payloadSha256": "6a4372525652a40f9037fdc0c79c17ae4b5034bc04d0f096e3c030287bf6eeac",
+      "sourceCommit": "fdd3d2a4f8753b9d7562dcdb7ba413a33be82a10",
+      "control": "bead-property"
+    },
+    {
+      "line": 10307,
+      "kind": "installed-tx-matching-noop-control",
+      "rawLineSha256": "94a68a61ec8d3651ed75c71b65971f94b45e5e70d13fc3063168314fd7b11b77",
+      "payloadSha256": "3e641d9f1d5a3001de8d0aedd26763dfd975a5d0caaf5add5adf9386c2a7816f",
+      "sourceCommit": "fdd3d2a4f8753b9d7562dcdb7ba413a33be82a10",
+      "control": "link-metadata"
+    },
+    {
+      "line": 10311,
+      "kind": "installed-tx-matching-noop-control",
+      "rawLineSha256": "2dc1df0e1ca82363dcc5577b91e23739ef841abee809ff5f7fc2bb5c92dd5ceb",
+      "payloadSha256": "92c44957a792a39135a87ae55d387de4e1a2e48d42b5857f8d233b64e811de74",
+      "sourceCommit": "fdd3d2a4f8753b9d7562dcdb7ba413a33be82a10",
+      "control": "group-inventory-and-head"
+    },
+    {
+      "line": 10316,
+      "kind": "installed-tx-deletion-control",
+      "rawLineSha256": "a13bbd557de8e813ff3dc50ecf112cbce8d3a0c78715b796c9ae1cdf08889a35",
+      "payloadSha256": "4b63f33ac46f8fbd2a153a64d71d777e6a685f892c70df33dd72e1241534634c",
+      "sourceCommit": "fdd3d2a4f8753b9d7562dcdb7ba413a33be82a10",
+      "control": "incoming-order"
+    },
+    {
+      "line": 10320,
+      "kind": "installed-tx-deletion-control",
+      "rawLineSha256": "9dd2a2d22bc12cbe3371e1ab6b097a152f2a8faf257929e0c3df1c548a0470e6",
+      "payloadSha256": "9d53307d5413aa4807146cf9dfda35ee0f763fd55636c5f2427a49afe93e5d36",
+      "sourceCommit": "fdd3d2a4f8753b9d7562dcdb7ba413a33be82a10",
+      "control": "outgoing-order"
+    },
+    {
+      "line": 10324,
+      "kind": "installed-tx-deletion-control",
+      "rawLineSha256": "412573f42745f8b9bf65c9b44a65512db37165488bdc9875c40c19f01cb2f15a",
+      "payloadSha256": "94573e93b6acac602964446467e91fec7e120e15ea14b23e979b1ce9f5535e9f",
+      "sourceCommit": "fdd3d2a4f8753b9d7562dcdb7ba413a33be82a10",
+      "control": "committed-prefix-state"
+    },
+    {
+      "line": 10328,
+      "kind": "installed-tx-cross-carrier-control",
+      "rawLineSha256": "f33a728d622241b1a676c1892b84e10bda1009ab29b6ac7c92cadf4b468d878c",
+      "payloadSha256": "e290f69e5d03b416f39abe507deeeecfec4f3b8043ac703fa52fc7c1c2565e06",
+      "sourceCommit": "fdd3d2a4f8753b9d7562dcdb7ba413a33be82a10",
+      "control": "batch-semantic-conflict"
+    },
+    {
+      "line": 10332,
+      "kind": "installed-tx-cross-carrier-control",
+      "rawLineSha256": "9c9b2853935466e7bf29757bc85ea5ae17d6208aca16f1b3bb71431870a070c9",
+      "payloadSha256": "7ec6fe7ee1a0b9a7c5ddaa8eb29f3fe9012164983440f345bdd6000756c99abc",
+      "sourceCommit": "fdd3d2a4f8753b9d7562dcdb7ba413a33be82a10",
+      "control": "sequence-fresh-key"
+    },
+    {
+      "line": 10336,
+      "kind": "installed-tx-command-minimum-control",
+      "rawLineSha256": "02c6baa1225b83fa36eced844fa3f3e88b46b001f197dda63b8f6c644c347320",
+      "payloadSha256": "45501caa88f483431b30c8fc1f2120597c6c57f745bcf21e6fe971602aebaa80",
+      "sourceCommit": "fdd3d2a4f8753b9d7562dcdb7ba413a33be82a10",
+      "control": "minimum-batch-body-conflict"
+    },
+    {
+      "line": 10340,
+      "kind": "installed-tx-command-minimum-control",
+      "rawLineSha256": "55913fe49e19e261e0e58a1d38d6251f86f95b5d68a23b7a165b593c627066ed",
+      "payloadSha256": "f95027a132a1a770c6dcdfa1de773418c4e6716545f1054687e93d369aff8051",
+      "sourceCommit": "fdd3d2a4f8753b9d7562dcdb7ba413a33be82a10",
+      "control": "minimum-readonly-credential"
+    },
+    {
+      "line": 10344,
+      "kind": "installed-tx-sequence-member-control",
+      "rawLineSha256": "1dc150a34c870fb41f40881cebd900e56bd985abb3ea177b9797fd0bea473b4b",
+      "payloadSha256": "377c0275423c290bc20a38f72294af10c4ae0d5200072d5f490d7c72dd36369d",
+      "sourceCommit": "fdd3d2a4f8753b9d7562dcdb7ba413a33be82a10",
+      "control": null
+    },
+    {
+      "line": 10348,
+      "kind": "installed-tx-principal-positive",
+      "rawLineSha256": "7098bd8132125d84b49075eb229cfdbc842e4fc41d46d5d727b90452cffee24e",
+      "payloadSha256": "9bfa49facb71c599904df8a7dff906b72caf6272b35339abd30240289dc1bb1b",
+      "sourceCommit": "fdd3d2a4f8753b9d7562dcdb7ba413a33be82a10",
+      "control": null
+    },
+    {
+      "line": 10352,
+      "kind": "installed-tx-principal-collapse",
+      "rawLineSha256": "06d654a4c5a848de66a766670ffd6842dd7b815c843bddc947824fb596a030a8",
+      "payloadSha256": "822e5650fc6ec3d33b2d71d8febd2b9a093407287c5b7cec1778353d640b902d",
+      "sourceCommit": "fdd3d2a4f8753b9d7562dcdb7ba413a33be82a10",
+      "control": null
+    },
+    {
+      "line": 10361,
+      "kind": "installed-tx-conditional",
+      "rawLineSha256": "0fb33feb2c9c1fb9e10bb73a9926a336311ccf8b226cabb6849cd65e56a89c1f",
+      "payloadSha256": "20a3d0420e0fcbae1826d9e85efea209f3503198d41d68fdc2bc526e0322b8d8",
+      "sourceCommit": "fdd3d2a4f8753b9d7562dcdb7ba413a33be82a10",
+      "control": true
+    }
+  ],
+  "invalid": [
+    {
+      "line": 10356,
+      "kindPrefix": "installed-tx-conditional",
+      "rawLineSha256": "7e96d98a02ccc182f02e3bb1223e874e7608ab9481c6791e81f97a682f75b42a",
+      "ansiStrippedTimestampedLineSha256": "0b7717b74b2f9566b36d7c9cce3505d442773cff52ad856092e88721fe87a8c8",
+      "payloadSha256": "1a8b2f3e1085cc30a734ee5fb072c0d9fbfa14827bd0ba9b434939b2dd04803a",
+      "payloadBytes": 8195,
+      "decodeError": "Expecting ',' delimiter",
+      "decodeErrorPosition": 5173,
+      "githubMaskPresent": true,
+      "repaired": false,
+      "detailedCredit": false
+    }
+  ],
+  "inspection1Preserved": true,
+  "inspection2BadLineHashView": "ANSI-stripped timestamped line; matches original record without changing raw bytes",
+  "damagedRecordDetailedCredit": false
+}

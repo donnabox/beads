@@ -1,0 +1,41 @@
+{
+  "head": "9a42a4531def99e12fa9a1fba02e70558d643265",
+  "tree": "a9cca0e1e5c52ac8bbd06ce989a94ca6e4f2b272",
+  "sourceHashes": {
+    "apps/bdptest/src/transactional-matrix.test.ts": "6c0c240afef61831d0573775ea35b0c04b116a55da1d3fb40127b9ede68e939c",
+    "packages/conformance/src/transactional-cumulative.test.ts": "22a568820ab2abc187d37c27658fdcf6e5ad39e74e2172374e3658c180f7668e",
+    "packages/conformance/src/transactional-observation.ts": "603fcc1240e43da3c477f42b8b942141c06c989a48a2a88099fd5d90e283159f",
+    "packages/conformance/src/runner.ts": "ac20c7fbfe15a5e42a6559e89cd3467562efe9bc74d462478414414ed3efede1",
+    "packages/conformance/test-support/transactional/manifest-v1.json": "29729151cf6da641545910ec3880f9609c13b319af7bbe99d3d2ad47833dab96",
+    "packages/conformance/test-support/transactional/coverage-v1.json": "4619813e9446e0e714a64c11eac184531950f57720e32c7ef414c7e3342121af"
+  },
+  "artifacts": {
+    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-sequence-member-plan-v5-B-preparation-main9a42/artifact-hashes.json": "67340e248aa7c238d38be7f9c2d9bf72756fc717f6d06dfe24c91549e029e58c",
+    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-sequence-member-plan-v5-B-preparation-main9a42/reanchor.md": "1371e460396fc4a10ff38bac8258a256015510594f88b49440ff8333cfd0dc23",
+    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-sequence-member-plan-v5-B-preparation-main9a42/source-binding.json": "185ef6484791ef35cd2091d736de95e9cc50de85d6a0d45f8d9833715c282949",
+    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-sequence-member-plan-v5-B-preparation-main9a42/report.md": "67560a4d6123797249bce8d19eac5d188a5f6d463a4bb4c3fc86738966f0befe",
+    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-sequence-member-plan-v5-B-preparation-main9a42/static-selections.json": "23da2a7725ed101cfe1a52f37f7a55903d4bc578bee12bcd976c0d345e70f578",
+    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-sequence-member-plan-v5-B-preparation-main9a42/prompt.txt": "c623e013032374b2513ebda2755ab0638a7ce89ca5e238cf1b5bd1ee40e834e0",
+    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-sequence-member-plan-v5-B-preparation-main9a42/source-delta.patch": "3021c22f5f833643a80a0ad24dd42714427c20292fd766c33d4973870d501780",
+    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-sequence-member-plan-v5-B-preparation-main9a42/source-context.txt": "a31a6832da1de54a99d19e8d47f8ce13aca72cf7ab6ce9c18d31c5fab64937ae",
+    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-sequence-member-plan-v5-B-preparation-main9a42/invocation-inventory.json": "fcec39140e91c89050b01578c9ba9ca82ded8a87d6c6ecd7138fd54f3a8ee0b0",
+    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-sequence-member-plan-v5-B-preparation-main9a42/parent-preservation.json": "fb8278aeee412d658a667f75eefe81e15c269739204d34da45dca5d8eb699edf"
+  },
+  "originalPromptSha256": "c623e013032374b2513ebda2755ab0638a7ce89ca5e238cf1b5bd1ee40e834e0",
+  "finalPromptSha256": "e0862b9ede33a1e3b2705cd1b8e1e9ce14908364733169559a6765a81c067c0a",
+  "finalPromptBytes": 88633,
+  "sourceMode": "git show immutable committed9a42 only; no working-tree byte binding",
+  "originalA": {
+    "stdoutSha256": "0b5a1ba0b62ba57893865a301f5f841cdeecf748862b71091e15264f77cb2533",
+    "nativeAuditSha256": "79aa548af10b7436b2ca443f76045c4a7f5e408da45eb340a8f6254c67e6bb3e",
+    "rootDispositionSha256": "ebe3688f91ec979e21e79bc52d92776e3d1abde27e021af2c09f8a78154836ef",
+    "all19Dispositioned": true
+  },
+  "originalB": {
+    "status": "INCONCLUSIVE_EMPTY_TIMEOUT_NO_VERDICT",
+    "exit": 143,
+    "elapsedSeconds": 900.9770699169021,
+    "actualExitSha256": "51868c31aadf0cc8dc22a4883dabf955f347affdac60721d54cba0c14171d1a7",
+    "newReviewReleased": false
+  }
+}

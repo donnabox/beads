@@ -1,0 +1,28 @@
+{
+  "atUtc": "2026-10-17T07:11:06.161407+00:00",
+  "result": "All21 fresh local stages passed; final independent audit accepted; root rehashed source/build/consumer and all stage records before commit",
+  "sourceFiles": 679,
+  "sourceBindingSha256": "ad2b24e1daaa2eef818eecddee1f82a4bc6b18166a2a1a88844d11d890181c99",
+  "dirtyPatchSha256": "32395d9dd40e2e7d3e762a4d4b18216f92df4c0642f44b2c2e8fa750b51e1421",
+  "nativeFinalAuditSha256": "a58d3965715b0c2884d1bbd1e951ba94f2fd9cd7015eea22c3a08ca8fd522679",
+  "nativeFinalAuditJsonSha256": "b84f2afb723c85a985ce0633fdbd4b8765cd39ad6c885e20ba51f6131cf1ea81",
+  "sourcePassedCallbacks": 22,
+  "newSourceRecords": 13,
+  "installedExchanges": [
+    31,
+    3
+  ],
+  "sampledPidsAbsent": 360,
+  "payloadIdentity": "13e0362ee11d9a21287184c3f645739d9c1efd33ff10ecbf138d2def5dc3e8c9",
+  "claimEligible": false,
+  "authorization": "ordinary seven-file commit and separate draft publication; no merge; exact-head CI required before integration",
+  "historicalEvidencePreserved": true,
+  "lintWarnings": 61,
+  "lintInfos": 7,
+  "limits": [
+    "O1 cancellation scheduling not independently discriminated",
+    "O3 waiter counts aggregate only",
+    "Historical store path not emitted; child closure and supervisor census retained",
+    "Retained S1/G2 and unknown-plus-foreign-policy gaps excluded"
+  ]
+}

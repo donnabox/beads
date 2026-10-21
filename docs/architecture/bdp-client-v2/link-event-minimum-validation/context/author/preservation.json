@@ -1,0 +1,41 @@
+{
+  "installedHistoricalPrefix": {
+    "bytes": 37245,
+    "beforeSha256": "e4510bf2dfdaacac981bf9583a2f6be4c536de5ceca5309c754f93fd56b6f652",
+    "afterPrefixSha256": "e4510bf2dfdaacac981bf9583a2f6be4c536de5ceca5309c754f93fd56b6f652",
+    "identical": true
+  },
+  "legacyEventTests": {
+    "onlyAllowedChanges": [
+      "missing-Link assertion/comment TypeError to contextual missing",
+      "seeded Link500 pair/comment to503",
+      "Bead HTTP503count8to10"
+    ],
+    "inverseSha256": "c627c3103b49af98df4c9d32e40456989da5deb7d5a3eec4ade539de7b24e44a",
+    "identicalAfterAllowedReversal": true
+  },
+  "legacyServiceTests": {
+    "onlyAllowedChange": "optional eventTypes helper argument defaulting to same Type array",
+    "inverseSha256": "45f2444071c5cbbd3651449f878feb1e70d9e51c3c57cdcc243395b7735b25a7",
+    "identicalAfterAllowedReversal": true
+  },
+  "httpReceivingAndOtherBytes": {
+    "identicalAfterRemovingSingleLinkKindLine": true
+  },
+  "unchangedTrackedFiles": 673,
+  "otherTrackedBytesIdentical": true,
+  "unchangedParserProjectionWaiterAndHttpTests": {
+    "packages/server/src/transaction-events.ts": "6c5ab4482f0b00110a71a96b16d44ca5fe713cb5f397ff78778cc6646f632a3a",
+    "packages/server/src/transaction-consistency.ts": "ad51311d6098db32fd47849e0b78d3118162cdf1e80ee9ef4d46324bfa9f436f",
+    "packages/server/src/transaction-http.test.ts": "88748d8473a9940187724a0328aad45a46ca56c0de035c61d746b9de7214267f"
+  },
+  "bounds": {
+    "sourceCallbackMs": 5000,
+    "installedCallbackMs": 60000,
+    "newHttpMinimumBudgetMs": 80,
+    "installedOwnedMs": 45000,
+    "installedRequestMs": 5000,
+    "outerStageMs": 120000
+  },
+  "sourceTimeoutOverrideAdded": false
+}

@@ -1,0 +1,54 @@
+{
+  "name": "missing-installed",
+  "argv": [
+    "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+    "/Users/dbox/repos/wt/vickie/vickie-minimum-current-resource/node_modules/vitest/vitest.mjs",
+    "run",
+    "apps/bdptest/src/transactional-collection-minimum-installed.test.ts",
+    "--maxWorkers=1",
+    "--testNamePattern",
+    "^(?:observes\\ genuine\\ installed\\ compatible\\ and\\ ahead\\ missing\\ minimum404)$",
+    "--reporter=verbose",
+    "--reporter=json",
+    "--outputFile=/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-minimum-next-serving-plan/authoring-draft/ci-expectation-repair/validation-v2/run/missing-installed.results.json"
+  ],
+  "cwd": "/Users/dbox/repos/wt/vickie/vickie-minimum-current-resource",
+  "started": "2026-10-16T04:52:37.725807+00:00",
+  "head": "2e1676caa0f5861d16c5741fbd412f6c3ef7c269",
+  "workspaceDirty": true,
+  "sourceSha256": {
+    "apps/bdptest/src/transactional-collection-minimum-installed.test.ts": "615caab0e5a846c546e718f65c4041c5ca41bef59df1d56a6dea0e42638b0174",
+    "packages/server/src/transaction-read.test.ts": "58e745c2ade0804bf0ab0230c34ff5e522c28725fa77ecb9303dbe972162e0f2"
+  },
+  "sourceDiffSha256": "c105a4c1ed07241e5d10ff9cd095bd1e9fbd78fe5f4128844842c2aaba497bf1",
+  "rootAcceptanceSha256": "11bec7d1f795884d9c8a35f6887eccd0bc17e76a592801af9c24f38ff497ccf6",
+  "preparationSha256": "c9b524743c8b71c4487e55f5719713985a1665b6e61ec32d2d99534796ff9194",
+  "bdpOverrides": {
+    "BDP_TRANSACTIONAL_INSTALLED_ENTRY": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-minimum-next-serving-plan/authoring-draft/installed-preparation/run/consumer/node_modules/.pnpm/@bdp+server@file+..+packages+bdp-server-0.0.0.tgz/node_modules/@bdp/server/dist/transaction-installed-process.js",
+    "BDP_TRANSACTIONAL_SOURCE_COMMIT": "733728cf40fc2f57407000251673bd5d3218acd4"
+  },
+  "guardedArgv": [
+    "/opt/homebrew/opt/python@3.14/bin/python3.14",
+    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/guarded-action.py",
+    "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+    "/Users/dbox/repos/wt/vickie/vickie-minimum-current-resource/node_modules/vitest/vitest.mjs",
+    "run",
+    "apps/bdptest/src/transactional-collection-minimum-installed.test.ts",
+    "--maxWorkers=1",
+    "--testNamePattern",
+    "^(?:observes\\ genuine\\ installed\\ compatible\\ and\\ ahead\\ missing\\ minimum404)$",
+    "--reporter=verbose",
+    "--reporter=json",
+    "--outputFile=/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-minimum-next-serving-plan/authoring-draft/ci-expectation-repair/validation-v2/run/missing-installed.results.json"
+  ],
+  "nodePathPrefix": "/Users/dbox/.nvm/versions/node/v24.16.0/bin",
+  "sourceAttribution": "Externally bound source snapshot or frozen package; not child-attested Git identity",
+  "plannedWorkload": {
+    "selectedCount": 1,
+    "httpExpectedAndMaximum": 10,
+    "productChildren": 1,
+    "storeLifetimes": 1,
+    "temporaryDirectories": 1
+  },
+  "derivativeBinding": null
+}

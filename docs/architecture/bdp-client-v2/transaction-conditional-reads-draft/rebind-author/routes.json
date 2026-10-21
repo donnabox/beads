@@ -1,0 +1,181 @@
+{
+  "routeOrder": [
+    {
+      "method": "POST",
+      "url": "https://reference.invalid/acme/operations/batch"
+    },
+    {
+      "method": "GET",
+      "url": "https://reference.invalid/acme/beads/?limit=32"
+    },
+    {
+      "method": "GET",
+      "url": "https://reference.invalid/acme/events/"
+    },
+    {
+      "method": "POST",
+      "url": "https://reference.invalid/acme/operations/create-bead"
+    },
+    {
+      "method": "POST",
+      "url": "https://reference.invalid/acme/operations/sequence"
+    },
+    {
+      "method": "POST",
+      "url": "https://reference.invalid/acme/operations/update-bead"
+    },
+    {
+      "method": "GET",
+      "url": "https://reference.invalid/acme/beads/a"
+    },
+    {
+      "method": "GET",
+      "url": "https://reference.invalid/acme/links/l"
+    },
+    {
+      "method": "GET",
+      "url": "https://reference.invalid/acme/beads/new"
+    },
+    {
+      "method": "GET",
+      "url": "https://reference.invalid/acme/changes/?after=genesis"
+    },
+    {
+      "method": "GET",
+      "url": "https://reference.invalid/acme/links/?limit=32"
+    },
+    {
+      "method": "GET",
+      "url": "https://reference.invalid/acme/beads/b"
+    },
+    {
+      "method": "GET",
+      "url": "https://reference.invalid/acme/beads/c"
+    },
+    {
+      "method": "POST",
+      "url": "https://reference.invalid/acme/operations/update-where"
+    },
+    {
+      "method": "POST",
+      "url": "https://reference.invalid/acme/operations/delete-where"
+    },
+    {
+      "method": "HEAD",
+      "url": "https://reference.invalid/acme/beads/a"
+    },
+    {
+      "method": "GET",
+      "url": "https://reference.invalid/acme/beads/missing"
+    },
+    {
+      "method": "HEAD",
+      "url": "https://reference.invalid/acme/beads/missing"
+    }
+  ],
+  "count": 18,
+  "configurationDigest": "5a32a664575b83fe55ea3b73b617fc738aefffd56d83affdf66a61d7fd8100e5",
+  "preimageBytes": 1434,
+  "derivedFromActualManifest": true,
+  "matchesIndependentPlanInventory": true,
+  "wirePreservation": [
+    {
+      "action": "seed",
+      "method": "POST",
+      "url": "https://reference.invalid/acme/operations/batch",
+      "rawUnchanged": true,
+      "credentialRefUnchanged": true
+    },
+    {
+      "action": "initial-get",
+      "method": "GET",
+      "url": "https://reference.invalid/acme/beads/a",
+      "rawUnchanged": true,
+      "credentialRefUnchanged": true
+    },
+    {
+      "action": "initial-head",
+      "method": "HEAD",
+      "url": "https://reference.invalid/acme/beads/a",
+      "rawUnchanged": true,
+      "credentialRefUnchanged": true
+    },
+    {
+      "action": "conditional-get",
+      "method": "GET",
+      "url": "https://reference.invalid/acme/beads/a",
+      "rawUnchanged": true,
+      "credentialRefUnchanged": true
+    },
+    {
+      "action": "conditional-head",
+      "method": "HEAD",
+      "url": "https://reference.invalid/acme/beads/a",
+      "rawUnchanged": true,
+      "credentialRefUnchanged": true
+    },
+    {
+      "action": "mismatch-get",
+      "method": "GET",
+      "url": "https://reference.invalid/acme/beads/a",
+      "rawUnchanged": true,
+      "credentialRefUnchanged": true
+    },
+    {
+      "action": "mismatch-head",
+      "method": "HEAD",
+      "url": "https://reference.invalid/acme/beads/a",
+      "rawUnchanged": true,
+      "credentialRefUnchanged": true
+    },
+    {
+      "action": "anonymous-get",
+      "method": "GET",
+      "url": "https://reference.invalid/acme/beads/a",
+      "rawUnchanged": true,
+      "credentialRefUnchanged": true
+    },
+    {
+      "action": "anonymous-head",
+      "method": "HEAD",
+      "url": "https://reference.invalid/acme/beads/a",
+      "rawUnchanged": true,
+      "credentialRefUnchanged": true
+    },
+    {
+      "action": "missing-get",
+      "method": "GET",
+      "url": "https://reference.invalid/acme/beads/missing",
+      "rawUnchanged": true,
+      "credentialRefUnchanged": true
+    },
+    {
+      "action": "missing-head",
+      "method": "HEAD",
+      "url": "https://reference.invalid/acme/beads/missing",
+      "rawUnchanged": true,
+      "credentialRefUnchanged": true
+    },
+    {
+      "action": "update",
+      "method": "POST",
+      "url": "https://reference.invalid/acme/operations/batch",
+      "rawUnchanged": true,
+      "credentialRefUnchanged": true
+    },
+    {
+      "action": "current-get",
+      "method": "GET",
+      "url": "https://reference.invalid/acme/beads/a",
+      "rawUnchanged": true,
+      "credentialRefUnchanged": true
+    },
+    {
+      "action": "current-head",
+      "method": "HEAD",
+      "url": "https://reference.invalid/acme/beads/a",
+      "rawUnchanged": true,
+      "credentialRefUnchanged": true
+    }
+  ]
+}

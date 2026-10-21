@@ -1,0 +1,186 @@
+--- a/packages/server/src/transaction-submission.test.ts
++++ b/packages/server/src/transaction-submission.test.ts
+@@ -1756,7 +1756,19 @@
+       stack.push([(a as Record<string, unknown>)[key], (b as Record<string, unknown>)[key]]);
+   }
+ }
++function assertDeepReceiptFrozen(value: unknown) {
++  const pending: unknown[] = [value];
++  while (pending.length) {
++    const node = pending.pop();
++    if (node !== null && typeof node === "object") {
++      if (!Object.isFrozen(node)) throw new Error("mutable nested receipt value");
++      for (const child of Object.values(node)) pending.push(child);
++    }
++  }
++}
+ it("executes deep values through set and dependent sequence with durable receipt recovery", () => {
++  const bead = `${scope}types/deep`,
++    link = `${scope}types/deep-link`;
+   const started = performance.now(),
+     directory = mkdtempSync(path.join(tmpdir(), "bdp-tx-deep-"));
+   const errors: unknown[] = [];
+@@ -1828,6 +1840,9 @@
+       true,
+     );
+     expect(single.status).toBe("completed");
++    const singleRead = store.readReceipt("p", single.id);
++    assertDeepSubmissionValue(singleRead.receipt, single);
++    assertDeepReceiptFrozen(singleRead.receipt);
+     const seedBody = `{"operations":[{"operation":"createBead","id":"beads/a","type":"${bead}"},{"operation":"createBead","id":"beads/b","type":"${bead}"},{"operation":"createBead","id":"beads/c","type":"${bead}","properties":{"deep":${deep}},"metadata":{"n":0}}]}`;
+     const seed = execute("seed", seedBody);
+     expect(seed.status).toBe("completed");
+@@ -1879,13 +1894,15 @@
+     const root = store.readReceipt("p", seed.id);
+     if (!root.receipt || typeof root.receipt.next !== "string")
+       throw new Error("issued deep receipt page required");
++    assertDeepReceiptFrozen(root.receipt);
+     const pageUrl = root.receipt.next;
+     const page = store.readReceiptPage("p", pageUrl);
+     if (page.kind !== "page") throw new Error("deep receipt page missing");
+     assertDeepSubmissionValue(page.page.results, seedResults.slice(2));
++    assertDeepReceiptFrozen(page.page);
+     const patched = execute(
+       "patch",
+-      '{"operations":[{"operation":"updateBead","bead":"beads/c","propertiesChange":[{"op":"copy","from":"/deep","path":"/copy"},{"op":"add","path":"/deep/-","value":2}]}]}',
++      `{"operations":[{"operation":"updateBead","bead":"beads/c","propertiesChange":[{"op":"add","path":"/copy","value":${deep}},{"op":"add","path":"/deep/-","value":2}]}]}`,
+     );
+     expect(patched.status).toBe("completed");
+     const patchedResource = (patched.results as { resource: Record<string, unknown> }[])[0]!
+@@ -1978,6 +1995,7 @@
+     const reopenedPage = store.readReceiptPage("p", pageUrl);
+     if (reopenedPage.kind !== "page") throw new Error("reopened deep receipt page missing");
+     assertDeepSubmissionValue(reopenedPage.page, page.page);
++    assertDeepReceiptFrozen(reopenedPage.page);
+     now = Math.max(Date.parse(String(seed.expiresAt)), Date.parse(String(failed.expiresAt))) + 1;
+     const expired = store.maintain();
+     expect(expired.completedExpired).toBeGreaterThan(0);
+@@ -1993,7 +2011,7 @@
+     );
+     expect(store.receipt("p", failed.id)).toBeUndefined();
+     expect(store.admit("p", "seed", prepareTransaction(scope, seedBody)).kind).toBe("existing");
+-    expect(execute("failed", JSON.stringify({ operations: [create("after-expiry")] })).status).toBe(
++    expect(execute("failed", JSON.stringify({ operations: [{ operation: "createBead", id: "beads/after-expiry", type: bead }] })).status).toBe(
+       "completed",
+     );
+     expect(measured.every((entry) => entry.identityBytes > 0)).toBe(true);
+--- a/apps/bdptest/src/transactional-depth-key-order-installed.test.ts
++++ b/apps/bdptest/src/transactional-depth-key-order-installed.test.ts
+@@ -311,6 +311,7 @@
+   let child: Awaited<ReturnType<typeof launchInstalledTransaction>> | undefined;
+   let binding: ReturnType<typeof installedTransactionBinding> | undefined;
+   let closed = false;
++  let launchAttempted = false;
+   let cleanupExceeded = false;
+   let attempted = 0;
+   let expectedContext: readonly [string, string] | undefined;
+@@ -361,6 +362,7 @@
+     }
+     directory = mkdtempSync(path.join(tmpdir(), "bdp-depth-key-installed-"));
+     controller.signal.throwIfAborted();
++    launchAttempted = true;
+     child = await launchInstalledTransaction(
+       entry,
+       {
+@@ -650,15 +652,24 @@
+       clearTimeout(cleanupTimer);
+     }
+     const stopped =
+-      child === undefined || child.child.exitCode !== null || child.child.signalCode !== null;
+-    if (!stopped) failures.push(new Error("installed depth/key child remains active"));
++      !launchAttempted ||
++      (child !== undefined && (child.child.exitCode !== null || child.child.signalCode !== null));
++    if (!stopped)
++      failures.push(
++        new Error(
++          child === undefined
++            ? "installed depth/key child stop unproven"
++            : "installed depth/key child remains active",
++        ),
++      );
+     try {
+       if (directory && stopped) rmSync(directory, { recursive: true, force: true });
+     } catch (error) {
+       failures.push(error);
+     }
+     const directoryAbsent = directory === undefined || !existsSync(directory);
+-    if (!directoryAbsent) failures.push(new Error("installed depth/key directory remains"));
++    if (stopped && !directoryAbsent)
++      failures.push(new Error("installed depth/key directory remains"));
+     clearTimeout(deadline);
+     if (deadlineExceeded && !failures.includes(deadlineReason)) failures.push(deadlineReason);
+     try {
+@@ -682,7 +693,9 @@
+           deadlineExceeded,
+           cleanupExceeded,
+           closed,
++          launchAttempted,
+           startupCompleted: child !== undefined,
++          stopKnown: stopped,
+           childPid: child?.child.pid ?? null,
+           childExitCode: child?.child.exitCode ?? null,
+           childSignalCode: child?.child.signalCode ?? null,
+--- a/packages/server/src/transaction-store.ts
++++ b/packages/server/src/transaction-store.ts
+@@ -81,6 +81,18 @@
+   type DependencyTemplate,
+   type ReferenceBindings,
+ } from "./transaction-dependencies.js";
++
++/** Freeze the complete parsed receipt graph without recursive depth limits. */
++function freezeReceiptValue(value: unknown): void {
++  const pending: unknown[] = [value];
++  while (pending.length) {
++    const node = pending.pop();
++    if (node !== null && typeof node === "object") {
++      for (const child of Object.values(node)) pending.push(child);
++      Object.freeze(node);
++    }
++  }
++}
+ 
+ // eventPacket structurally reads one group; changing the captured bound must
+ // fail closed until that algorithm and its count evidence are deliberately revised.
+@@ -892,12 +904,6 @@
+           cause: { id: receipt.id, key: receipt.idempotencyKey, field },
+         });
+     }
+-    const freeze = (value: unknown): void => {
+-      if (value !== null && typeof value === "object") {
+-        for (const child of Object.values(value)) freeze(child);
+-        Object.freeze(value);
+-      }
+-    };
+     const prefix = receiptPrefix(receipt); // Validate retained page plan even when every entry is withheld.
+     const projection = projectTransactionReceipt(
+       receipt,
+@@ -911,7 +917,7 @@
+             next: prefix.next,
+           }
+         : projection;
+-    freeze(projected);
++    freezeReceiptValue(projected);
+     return Object.freeze({ receipt: projected, context });
+   }
+   // Called only inside the guarded owner's transaction. Principal binding is
+@@ -2252,19 +2258,13 @@
+               projectTransactionEntry(entry, authorization.readPolicy === "all-visible"),
+             );
+           // Freeze the selected page entries before they escape the owner entry.
+-          const freeze = (value: unknown): void => {
+-            if (value && typeof value === "object") {
+-              Object.values(value).forEach(freeze);
+-              Object.freeze(value);
+-            }
+-          };
+           const next = plan.pages[index + 1];
+           const page = {
+             receipt: parentId,
+             results,
+             next: next ? pageUrl(parentId, next.token) : null,
+           };
+-          freeze(page);
++          freezeReceiptValue(page);
+           return Object.freeze({ kind: "page" as const, page, context });
+         }),
+       );

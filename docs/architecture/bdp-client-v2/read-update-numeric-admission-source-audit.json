@@ -1,0 +1,104 @@
+{
+  "base": "2a40740cb98545f4e83166c8e58e2aee0e587a65",
+  "sources": {
+    "packages/conformance/matrices/read-update-reference-continuation-v1.json": {
+      "bytes": 823730,
+      "nodes": 21614,
+      "sha256": "923443a20223cd84abc144f3dce4858fd0b5d18f2cea4a23a9a61a274a236267",
+      "growthBytes": 288678,
+      "growthNodes": 7328
+    },
+    "packages/conformance/fixtures/read-update-reference-v1.json": {
+      "bytes": 29707,
+      "nodes": 764,
+      "sha256": "f89932d68e3bf5867d79eb3de680af4bc67b761b3c3bce5da127f6ca75e27765",
+      "growthBytes": 652,
+      "growthNodes": 14
+    },
+    "packages/conformance/test-support/read-update-coverage-v1.json": {
+      "bytes": 698614,
+      "nodes": 14394,
+      "sha256": "14d856bc135c0c93f6ee74741530a38fb7ad5c1bd523bc97438bdf5714817ac3",
+      "growthBytes": 50457,
+      "growthNodes": 900
+    },
+    "packages/conformance/matrices/read-update-v1.json": {
+      "bytes": 3626922,
+      "nodes": 97116,
+      "sha256": "c86b33535f25a1d117ce021a3bb70164f5635bdaee50758e3428c130ccc3227f",
+      "growthBytes": 0,
+      "growthNodes": 0
+    },
+    "packages/conformance/test-support/read-update-artifact-set-v1.json": {
+      "bytes": 242,
+      "nodes": 9,
+      "sha256": "7277980894dd0955a8fcd22ba5d2845b0a6801b7e7e13a937018e11d3a65de37",
+      "growthBytes": 0,
+      "growthNodes": 0
+    }
+  },
+  "preservedBlocks": {
+    "read-update.singleton.attribution": "1b81ae03b7aea896732e001291bb2ef92edd6bf5586c13a7e91afaf563f3e769",
+    "read-update.alias.unknown-subject": "39eb2fe22d25eada2c43490f37b6cb5d66950bd90042af1ae954036426e07f2a",
+    "read-update.numeric-model.same-value-no-op": "368c2d3d2aead864bfe925f8777b55ce9b09a107c81429820ac390d6d0a8550d"
+  },
+  "addedBindings": {
+    "nr.source": "beads/nr-source",
+    "nr.target": "beads/nr-target",
+    "nr.bead-integer": "beads/nr-bead-integer",
+    "nr.bead-precision": "beads/nr-bead-precision",
+    "nr.bead-overflow": "beads/nr-bead-overflow",
+    "nr.link-integer": "links/nr-link-integer",
+    "nr.link-precision": "links/nr-link-precision",
+    "nr.link-overflow": "links/nr-link-overflow",
+    "nn.source": "beads/nn-source",
+    "nn.target": "beads/nn-target",
+    "nn.bead-properties": "beads/nn-bead-properties",
+    "nn.bead-metadata": "beads/nn-bead-metadata",
+    "nn.link-properties": "links/nn-link-properties",
+    "nn.link-metadata": "links/nn-link-metadata"
+  },
+  "rows": {
+    "read-update.numeric-model.round-trip-admission": {
+      "actions": 72,
+      "assertions": 521,
+      "raw": 29,
+      "client": 43,
+      "resources": 8,
+      "bindings": {
+        "nr.source": "beads/nr-source",
+        "nr.target": "beads/nr-target",
+        "nr.bead-integer": "beads/nr-bead-integer",
+        "nr.bead-precision": "beads/nr-bead-precision",
+        "nr.bead-overflow": "beads/nr-bead-overflow",
+        "nr.link-integer": "links/nr-link-integer",
+        "nr.link-precision": "links/nr-link-precision",
+        "nr.link-overflow": "links/nr-link-overflow"
+      },
+      "maxRawBodyBytes": 566
+    },
+    "read-update.numeric-model.nested-refusal": {
+      "actions": 52,
+      "assertions": 373,
+      "raw": 21,
+      "client": 31,
+      "resources": 6,
+      "bindings": {
+        "nn.source": "beads/nn-source",
+        "nn.target": "beads/nn-target",
+        "nn.bead-properties": "beads/nn-bead-properties",
+        "nn.bead-metadata": "beads/nn-bead-metadata",
+        "nn.link-properties": "links/nn-link-properties",
+        "nn.link-metadata": "links/nn-link-metadata"
+      },
+      "maxRawBodyBytes": 373
+    }
+  },
+  "inventory": {
+    "required": 129,
+    "whole": 30,
+    "authored": 54
+  },
+  "frozenHead": "131fb9874ae53f94ea7c15d5b77bd6caa4a704e9",
+  "frozenTree": "4cf48b5f9950470e8779c09264d4b5f71b169d2e"
+}

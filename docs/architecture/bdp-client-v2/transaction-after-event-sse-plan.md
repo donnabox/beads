@@ -1,0 +1,129 @@
+# After Event SSE: private set-operation HTTP serving
+
+Read-only proposal, 2026-10-13. Source inspected: frozen clean `33ebad3ec539852ff46990a3647ca8195276a9f8` in `/Users/dbox/repos/wt/vickie/vickie-event-source-sse`. No source edits, test runs, outward actions, or implementation authorization are part of this report. G2b is independently under review. Root must assign an accepted ordinary integrated base before authoring; do not build on an unreviewed repair implicitly.
+
+The sole plan remains `donnabox/beads:codex/vickie-bdp-client-design`, `docs/architecture/bdp-client-v2/design.md`, **Autonomous profile completion**. Its T2/T3 goal is working installed Transactional semantics; T4/P require actual cumulative evidence and cold discovery before public activation. This supporting plan proposes one bounded increment, not a qualification waiver. Native + Claude council and root disposition precede implementation.
+
+## Recommendation
+
+**S2a: serve valid, supported `updateWhere`/`deleteWhere` singleton and atomic batch requests through the existing Transactional owner.** The core is already implemented and tested; this increment should retire the normal preparation/HTTP exclusion without adding another evaluator, owner, receipt model or Selector language.
+
+The full negative Selector admission contract remains a genuine product/spec question. A schema-valid Selector string with invalid/out-of-profile grammar, or one exceeding `selector.bytes/depth/nodes`, is currently a private development refusal. This proposal does **not** choose its normative status or admission phase. A bounded private serving increment may accept the settled valid subset and retain explicit unsupported behavior for those categories, with no profile claim. Root explicitly permits isolating this work while leaving the question visible. Full set-serving qualification cannot be declared until the question is resolved and its precedence matrix is executable.
+
+A separate preexisting limitation also matters: the32-match cap bounds effects/results, not candidate enumeration. Identify and instrument that boundary in S2a; do not advertise an examined-work bound or invent a new public limit. A behavior-preserving streaming enumeration follow-up is described below and needs explicit shared-seam approval before inclusion.
+
+## Current required gaps, grounded in this source
+
+| Area | Actual source at33ebad3 | Remaining obligation / distinction |
+|---|---|---|
+| Atomic sets | `transaction-set.ts`, `transaction-batch.ts:125–171,780–869`, owner staged resources at `transaction-store.ts:1131–1138`; set/owned tests | Valid core exists. Normal batch/singleton preparation rejects sets; submission type admits only RU singleton verbs; HTTP operation table lacks two set targets. New serving proof is needed. |
+| Discovery/directory | `transaction-http.ts:201,230,540–546` returns `transactional-discovery` gap | Canonical cold Scope/descriptor/directory must eventually expose all required services and truthful limits/context. A private out-of-band target inventory is not cold discovery. Do not make discovery part of S2a. |
+| Consistency | Point, receipt, Event and changefeed bounded controls exist; `transaction-http.ts:297–303,387–389,527–537` preserves gaps | Mutation controls, Snapshot controls, unsupported/partial tuples and Read routes beyond canonical point/properties remain visible. Existing ambiguous absent-point/continuation cases are not decided here. |
+| Sequence aliases | `transaction-http.ts:326–330`, `prepareTransactionSequence` | Canonical local dependencies exist; Resource-alias member-turn behavior remains refused. Sets are not sequence members at all. |
+| Replication/Event serving | Snapshot, finite/SSE changefeed and finite Event runtime exist; G2b adds Event SSE | G2b still needs council acceptance. Metadata-only incident-Link membership remains a deterministic projection gap; G2a `start=now` plus Last-Event-ID remains a private gap. Erasure/publication fences, pruning/variable-view transitions and applicability remain separate. |
+| Policy/aggregate/restore | Current installed service has fixed supported policy and captured contracts; core supports more policy test cases | Component policy fixtures do not qualify mutable installed grants, unsupported aggregate policies or restore/erasure triggers. No new IAM, Types, History or provenance design here. |
+| Conformance | Private installed cohorts and target bindings exist; public profile admission remains closed | New actual observations are needed for set rows; source/schema/core green is not catalog qualification. Root/conformance lane owns credit and final public gating. |
+
+The old burn-down's missing G1/S1/Event runtime labels are historical: those surfaces now have private implementations. Their remaining qualification/edge obligations are distinct from an absent runtime. Do not count the250 catalog rows as250 unimplemented functions or mark them passed from this inventory.
+
+## Normative and schema anchors
+
+All line references below are to33ebad3 `docs/specs/bdp.md`; anchors are durable.
+
+- `#transactional-validation-and-results`,4165–4172: each operation validates staged state; any failure rolls back the complete transaction. `#set-authorization-and-retained-receipts`,4180–4186: select only visible Resources; any selected unwritable Resource fails all; reauthorize later receipt detail.
+- `#set-mutation`,4220–4286: properties-only update; unchanged metadata; operation-turn staged selection at one serialization point; provenance fans out like singletons, including owned sources; inclusive nonnegative cardinality; no expected-member-set guard; no partial page or omitted Events to fit a bound.
+- `#transactional-operation-directory-and-singletons`,4305–4381: twelve named operation targets; set singleton bodies exclude discriminator; singleton/batch share effects, authorization, idempotency, concurrency and Events. Read+Update does not gain set verbs.
+- `#batch-operation-target`,4460–4588: closed eight-record batch union includes sets, excludes aliases and per-member keys. Ordered pre-admission steps4490–4530 are bounds, syntax, principal, key, unknown-key controls, negotiation. Equal retained/pending outcomes bypass fresh execution capacity. Terminal failures after admission are receipt200; transient abort retracts key/receipt and returns503. Two set request roots are explicitly named.
+- `#set-mutation-objects`,4872–4942: collection exactly beads/links; complete canonical-response-shaped selection; arbitrary Selector literals are not reference-rewritten; writable-set and authoritative hidden constraints; explicit Link-delete then Bead-delete cascade.
+- `#mutation-receipt-responses`,4990ff and5141–5180: matched entry then per-Resource entries in canonical code-unit order, outer operation index, no-op entries, owned sourceRevision, immutable continuation pages; `page.maximumItems` counts matched too. Failure framing5247–5276 distinguishes operation-local vs transaction-wide limits and original-request pointers.
+- `#transactional-problem-details`,5284–5337: cardinality409 inside a failed receipt; closed direct/receipt code contexts; transaction work-limit failures may be retained limit-exceeded; no temporarily-unavailable retained outcome.
+- `#events-and-event-sources`,5573–5588: singleton-equivalent expansion, canonical selected-ID order, no zero-match/rollback Events, all facts committed together.
+- `#transactional-limits`,3795–3801: transaction operations/examined/matched/mutated/Events are counts, not byte budgets. Existing representation limits are separate.
+- `#bdp-json-and-http-protocol`,892–902 concerns I-JSON Unicode/duplicate-member syntax. It does not itself settle JSONPath grammar inside a valid JSON string. `#selection`,849–878 defines the bounded language; general Read collection invalid-parameter rules are not a set admission ruling.
+
+Normative bundle authority is `schemas/bdp-v0.schema.json`, mirrored under `packages/protocol/schemas/`. `$defs/updateWhereMembers`, `deleteWhereMembers`, the closed singleton roots and batch operation roots specify body shapes. `selector` is merely nonempty string. `cardinality` is a nonempty closed object with inclusive integer>=0 min/max. There is no min<=max syntax constraint or artificial safe-integer maximum. Do not use the nonnormative inline schema sketch as a competing parser source.
+
+Catalog inventory includes `transactional.set.mutation`, `.zero-match`, `.cardinality`, `.singleton-targets`, `.attribution-fanout`, `transactional.event.set-expansion-order`, plus batch atomicity/rollback/pre-admission/limits, receipt pagination/page restart/expiry and shared identity/recovery laws. Their selectedText verifies the above positive contracts; it does not resolve negative Selector timing. No catalog edit or row credit is proposed.
+
+## Existing seams and bounded change
+
+### One preparation/identity path
+
+`prepareTransactionSetCore` already preserves lossless values and original outer operation indices, composes RU syntax-only validation for ordinary operations, refuses set labels/body keys, and creates a branded private transaction. `prepareSetCore` uses existing Selector evaluation on an empty collection to accept valid bounded grammar and currently wraps every ReadSelectorError as a development limit. It does not execute or bind a key during preparation.
+
+Refactor the current normal/core split into one internal dispatch, rather than maintain two parsers that gradually differ. Normal batch preparation may delegate to the existing mixed set path; ensure its ordinary-operation recursion terminates in the ordinary parser and preserves label/witness indices. Keep the private set-only helper only if a real test seam still needs it, with identical machinery. No fake protocol brands.
+
+Add a **source-private singleton-operation union** extending the current ReadUpdateOperation with exactly updateWhere/deleteWhere; use it in batch singleton preparation and TransactionSubmission. Do not widen the public RU operation enum or sequence grammar. Singleton validation must reject illegal discriminator/name/body-key before wrapping: never silently strip an illegal field or let spreading body.operation override the route-selected operation.
+
+Keep complete closed shape checks (including later operations), key grammar and label checks before any key access. Preserve exact lossless cardinality values and patch/provenance input, original singleton/batch pointers, label normalization and exact Selector string identity. Numeric spelling equality applies to numeric JSON members; it does not normalize numeric-looking text within Selector strings. Do not impose new restrictions on @ text inside ordinary Selector strings.
+
+Unsupported negative Selector categories remain separately recognizable development gaps, not silently converted into malformed-request, invalid-parameter or a failed receipt. For this partial private composition, record the preflight unsupported category without consulting durable keys; after completing unambiguous closed-shape/key syntax checks and trusted authorization, return the existing bodyless development500 before key/effects. This is explicitly an unfinished private execution boundary, **not** the settled protocol phase for those inputs. Root/council must approve that partial boundary; no admitted pending key may be left behind by an unsupported late set.
+
+### Reuse submission, owner and HTTP
+
+`submitTransaction` already snapshots receiving controls, prepares before principal/key, and delegates authoritative compare/admit to the same owner. Use it unchanged in policy terms for the new private operation union. Retain same-entry receipt/context projection; no extra receipt lookup or second clock observation. Existing singleton↔one-operation batch equal identity must hold across actual HTTP.
+
+Add two entries to `TRANSACTION_HTTP_OPERATIONS`; the existing target map, raw method classification, exact canonical target/query policy and dispatch remain the authority. No ad hoc second route table. Sets remain forbidden in sequence and aliases remain forbidden in batch. Keep request bytes/media/key/auth/Accept handling and unsupported mutation minimum controls explicit. Revision guards belong to explicit operations; sets have cardinality, not expectedRevision/expectedMembers. Do not reinterpret HTTP If-Match as a set membership guard or change the existing POST receipt behavior.
+
+The evaluator already applies properties-only set patches through `applyResource`, validates each selected afterstate, versions owned sources and emits exact intermediate facts/final group postimages. Keep cardinality before the existing matched-count charge (the reviewed064 repair); no reversion to earlier ordering. Selected Resources mutate in compareCanonicalIds order. No-op selected Resources count toward matched/results, but mint no revision or Event. Aggregate/hidden authoritative checks continue through the common evaluator.
+
+No store write/format change is necessary merely to expose already-persistable set requests. Existing witness/receipt/identity shapes and compiled contracts already support them. Any representation or compatibility change discovered during authoring must be coordinated, not slipped into the wire patch.
+
+### Installed inventory dependency
+
+`apps/bdptest/test-support/transactional-execution-binding.ts:45–68` currently requires exactly ten target names. Adding two real targets necessarily requires this independent expectation to become twelve, along with its rejection tests; accepting arbitrary subsets/supersets would weaken the harness. Runtime metadata already derives targets from the HTTP handler. No new public Directory is implied.
+
+This helper belongs to the conformance/harness lane; root must reserve that narrow file/test overlap or assign its small additive update separately before the installed witness can use the new target. This is an actual prerequisite, not an optional cleanup. The ordinary public profile and executor route firewall stay closed: a private raw exact-mode test predeclares only its actual canonical set/batch/read/receipt/Event/changefeed routes. No ordinary runner admission, dynamic receipt authority rewrite, catalog change or fixture relabeling.
+
+## Bounds: output is bounded; examined work is not
+
+Current enforced tuple: request64KiB,32 outer operations, matched32 across repeated sets/no-ops, induced Events256, complete representation256KiB, properties64KiB, diagnostic512KiB/count16. Selector core bounds are4096 decoded UTF8 bytes/depth32/nodes256. Receipt inline/page maximum is32 at actual installed defaults. Owned fan-out uses the accepted one-Link+one-source/maximum-four-Event facts, without source preimage bodies. Reuse current materialization proof; do not reintroduce4096-Event historic assumptions or count bytes as Resources.
+
+At `transaction-store.ts:1131–1138`, staged resources uses SELECT id .all().map(requiredResource). At `transaction-batch.ts:804–819`, the evaluator materializes/parses/filters/selects the complete collection before checking32 matches. A selector matching zero can therefore read/allocate an arbitrary collection. The32-match cap proves no bound on candidate count, scan time, or visibility-closure traversal. Installed bounded fixtures prove only their actual workload. This remains a public-readiness gap.
+
+The smallest behavior-preserving memory follow-up would keep the scan within the synchronous owner entry, stream one frozen stored row at a time, retain only up to the existing32 selected records plus a total match count, and still evaluate the whole collection before cardinality then matched-budget decisions. If matches exceed32, do not retain more postimages but keep counting so cardinality409 still precedes matched413 when the complete match is known. Apply no mutations until selection/cardinality/budget finish. Do not silently truncate the matching set, claim an examined-resource cap, or change ordering to database UTF8 collation (canonical code-unit ordering still applies after bounded selection).
+
+That follow-up needs a guarded owner visitor/iterator with no escaped SQLite lifetime and a parse-once predicate from the existing Selector implementation. A narrow shared-selector seam would require root arbitration; do not copy the parser or add a second evaluator. It still would not bound total CPU or recursive owned-visibility work. A real examined/duration bound needs its exact count/configuration/failure/replay contract, not an invented limit here. **Do not automatically include this follow-up in S2a or pretend S2a closes it.** Root can order it before wider qualification after reviewing the code/impact. No new public limit or storage-configuration change is proposed by this plan.
+
+## File ownership proposal
+
+| Files | Scope |
+|---|---|
+| transaction-set.ts; transaction-batch.ts | Unify already-valid set preparation with normal private carriers; preserve negative-category distinction/identity; no evaluator redesign. |
+| transaction-submission.ts and tests | Private singleton union/preparation plumbing; real owner admission precedence and no-key controls. |
+| transaction-http.ts and tests | Two target entries and typed dispatch; existing raw method/auth/body/Accept/receipt behavior. Runtime transport changes only if a concrete necessary dependency appears. |
+| transaction-set.test.ts; transaction-owned.test.ts | Retire only explicit HTTP-closed assertions now covered by real serving; retain all core rollback/cardinality/identity/owned evidence and historic bounds. |
+| transaction-runtime-configuration.test.ts; app target-binding helper/tests | Exact live inventory and metadata evidence, coordinated with root/conformance owner; no weaker comparison. |
+| new apps/bdptest/src/transactional-set-installed.test.ts | Actual packed installed set/receipt/afterstate/Events/reopen proof with independent negative oracles. |
+| transaction-implementation-progress.md | Exact supported subset, tested limits and unresolved negative admission/enumeration gaps. |
+
+No protocol/schema/catalog/public exports, shared RU evaluator/Read routing/Selector, Type, provenance, History, CLI, Snapshot or Event pump edits in S2a. Store write or shared enumeration/Selector changes require a separately approved scope. No new production module should be necessary; if one is justified, ordinary smoke inventory and bare/dist denial changes require root coordination.
+
+## Executable done-when matrix
+
+1. Both canonical singleton targets and batch sets reach the same atomic owner with canonical Host/physical port0 and captured compiled artifacts. Wrong methods, alternate/query-bearing command URLs and raw TRACE/CONNECT cases retain existing shape-only behavior. Read/RU never accept sets.
+2. Closed shape errors anywhere in a mixed batch create no key, receipt, identity, group or Resource; prove corrected request under the same key then executes. Illegal set names/keys/expectedRevision/expectedMembers, singleton operation member, empty cardinality, negative/fractional bounds and undefined members have discriminating cases. Preserve exact valid integer numeric variants and invalid-number diagnostic admission.
+3. Valid supported requests satisfy actual precedence: body/syntax before principal; 401/403 before key; conflict before406; equal pending/completed/failed/expired duplicate before unknown-key controls; unknown operation-count bound before406; negotiation refusal binds nothing. All outer set members count, including mixed Resource/set batches. Unsupported Selector categories remain visible development gaps with no key/effects and no new normative status claim.
+4. Singleton↔one-op batch same key and semantic body return original receipt/disposition, not new selection; change population after original success/failure and prove retry does not reselect. Reopen uses same Scope/artifacts/configuration and create:false. Exact numeric identity/default/provenance and original pointer/index behavior remain unchanged.
+5. Staged selection sees earlier creations/updates/deletions and changes introduced by earlier sets; one set that changes its own predicate does not keep reselecting. Backward labels around intervening sets retain original creator/witness indices. Never substitute label strings inside Selector text.
+6. Zero-match returns matched0/no Events. All-noop reports every updated result with unchanged revision/sourceRevision/provenance, no group/effectPosition. Mixed no-op/effectful updates preserve canonical order and operation-local revision chains, including owned sources changed repeatedly by selected Links.
+7. Cardinality failure409 is embedded in receipt200 at the right outer index; late patch/schema/incident-Link/owned-source write failure rolls back earlier selected Resources and earlier explicit operations. Whole-transaction matched/Event limits fail without fabricated operationIndex. Existing cardinality-before-matched-cap result remains pinned.
+8. Properties-only set updates leave metadata intact; compiled validation/provenance uses existing evaluator. Owner policy fixtures select visible only, fail all if one selected Resource/source is unwritable, and honor hidden graph constraints. Actual installed proof is restricted to the supported fixed policy; component negative policy fixtures are not an installed mutable-policy claim.
+9. Explicit Link deleteWhere then guarded Bead delete succeeds atomically; reversing order fails with incident-links-exist and no change. Include self-Link endpoint facts and owned source versions. A stale explicit later revision guard after an earlier owned set update fails all.
+10. Receipt results are flat matched+per-Resource entries in canonical code-unit order with original indices/sourceRevision. Use32 selected Resources at installed page32 to force matched+32=33 entries and at least one durable next page; no page-size override hidden from metadata. Larger multi-operation receipt fixture can prove more pages within the existing total matched bound. Follow actual receipt/page URLs, schema-check them and preserve exact content across unrelated mutation/reopen. No fabricated next URL or truncation.
+11. Observe canonical Resources, finite Scope/Bead/Link Events and changefeed from before the command; selected facts/order match singleton semantics, one committed group has only final postimages/tombstones, failed/no-op commands add no group. Use gap-free properties-only histories so the known metadata-Link issue is not silently waived. Negative oracle removes/reorders a real observed expanded entry/Event or changes owned sourceRevision; the independent expected afterstate/results must fail.
+12. Disconnect after accepted submission does not cancel transaction ownership; real retry resolves original disposition. Component fault seam covers late failure/uncertain commit/reopen without split receipt/effects; retain original error causes and principal-bound receipt nondisclosure. No fake transport response or claimed real-power-loss test.
+13. Fresh installed evidence records source/tarball/payload/artifact/runtime identity, CSPRNG credentials (not logs), canonical Host/physical dial, actual wire/assertions and bounded finite requests. Use existing raw executor caps (headers16KiB/body64KiB; bounded response body/wire) and existing aggregate abort/cleanup patterns; do not raise timeouts to conceal failures. Schema-valid but deliberately wrong expectations must fail on actual observations.
+14. Clean pinned build/type/boundaries/format/lint/bothsmokes, focused set/owned/admission/HTTP/recovery/paging and finite/SSE/Snapshot regressions, unchanged Read seal, fresh packed TX/RU checks, no owned children. Source remains frozen for native+Claude review. Public profile selection, discovery and catalog qualification remain unchanged.
+
+## Product questions and next handoff
+
+**Q1 — embedded Selector grammar:** Is invalid or out-of-profile JSONPath carrier syntax with pre-key malformed-request, or another existing direct/receipt failure? The schema's nonempty string and the general I-JSON sentence do not determine that. No blanket Read invalid-parameter analogy.
+
+**Q2 — Selector operational complexity:** Where do selector.bytes/depth/nodes refusals occur relative to principal, retained-key comparison, unknown-key controls and negotiation, and what existing code/context/limit/pointer framing applies? The closed failed-receipt prose currently describes transaction work limits, while the six direct steps do not name these Selector bounds. A valid prefix exceeding a limit followed by malformed grammar also needs deterministic precedence. Identical retained duplicates must not be reexecuted or refused for fresh execution capacity by accident.
+
+These are the existing narrow admission questions, not a question whether to implement required sets. Root may approve S2a's explicit partial boundary while resolving them. Preserve a matrix for unknown/conflicting/equal/pending keys, unauthorized principals and unacceptable Accept across both questions. No proposed normative amendment is silently encoded by this plan.
+
+**Implementation choice, not new product law:** candidate materialization should be addressed by the owner/Selector memory seam above before general workload claims. Do not call32 matched a scan bound; no arbitrary new limit is proposed. The exact installed bounded-fixture slice can proceed independently with the limitation disclosed.
+
+After plan council/root disposition: reserve the target-binding helper overlap, choose accepted integrated predecessor including G2b review repairs, authorize one isolated S2a branch, and implement preparation→submission/HTTP→actual installed evidence in reviewable increments. No implementation begins from this report alone.

@@ -1,0 +1,17 @@
+
+ RUN  v4.1.10 /Users/dbox/repos/wt/vickie/vickie-authorization-transition
+
+ ↓ packages/server/src/transaction-authorization.test.ts > migrates exact legacy authorization facts and preserves a no-op policy across reopen
+ ✓ packages/server/src/transaction-authorization.test.ts > preserves policy and delivery leases after confirmed policy rollback 59ms
+ ↓ packages/server/src/transaction-authorization.test.ts > fences publication failure and recovers the committed empty policy
+ ↓ packages/server/src/transaction-authorization.test.ts > separates Snapshot view fences from durable maintenance and actual expiry
+ ✓ packages/server/src/transaction-authorization.test.ts > projects receipt records and allocations without changing non-record execution facts 12ms
+ ✓ packages/server/src/transaction-authorization.test.ts > bounds administrative drain without cancelling admitted sequence work 22ms
+ ✓ packages/server/src/transaction-authorization.test.ts > captures one Scope policy for distinct principals and renders empty historical advances 7ms
+
+ Test Files  1 passed (1)
+      Tests  4 passed | 3 skipped (7)
+   Start at  18:49:52
+   Duration  497ms (transform 190ms, setup 16ms, import 325ms, tests 101ms, environment 0ms)
+
+JSON report written to /Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-authorization-transition-plan/source-validation-evidence-repair/run/owner-targeted.results.json

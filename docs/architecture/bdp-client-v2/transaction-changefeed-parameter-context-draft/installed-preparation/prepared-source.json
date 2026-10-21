@@ -1,0 +1,25 @@
+{
+  "status": "FINAL_COMMIT_PENDING_CLOSED",
+  "workspace": "/Users/dbox/repos/wt/vickie/vickie-changefeed-parameter-context",
+  "parent": "9a42a4531def99e12fa9a1fba02e70558d643265",
+  "sourceBinding": {
+    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-changefeed-parameter-context-draft/source-binding.json",
+    "sha256": "0abed77764ff7763e5e5a6f9b5a767090423fed01b21ea01b162a17b3b743e70"
+  },
+  "draftPatch": {
+    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-changefeed-parameter-context-draft/draft.patch",
+    "sha256": "581eb3a0fcfe74b68d01a6a10b125cf00b7d6d5e7aa158645fa29bd3eee12375"
+  },
+  "sourceSha256": {
+    "packages/server/src/transaction-changefeed.ts": "fb5bc6f035db8faa351d019e7d2ae53dbb7785214f2168d931fa74e77ed14bf8",
+    "packages/server/src/transaction-store.ts": "c0d1ebcdef1b354aa0806b8106ac0a3b0b24e6c94f50ec49b550decdf36ccf89",
+    "packages/server/src/transaction-http.ts": "b51d02801e5924190aba77c377e538db0b8619149d6184e19cb56d440f40c2cf",
+    "packages/server/src/transaction-changefeed.test.ts": "eb29103cf4f9c79a06eb49261d01da274de229dbc9f0ba169418048bf79adb28",
+    "apps/bdptest/src/transactional-changefeed-refusal-context-installed.test.ts": "c8ec6da3cab3850d69b2b8b8b650b17f159fa9179930eeecd3a287716aa946af",
+    "docs/design/transaction-implementation-progress.md": "a1cc5b84d79485855dfbf1793628af4dcdba1147bd7938721a9af5317f57b569"
+  },
+  "fixture": {
+    "path": "/Users/dbox/repos/wt/vickie/vickie-changefeed-parameter-context/packages/conformance/test-support/transactional/fixture-v1.json",
+    "sha256": "3a7899ced771d4880066d98b0000c53f801ece53458502cc4f3bc641146c9a85"
+  }
+}

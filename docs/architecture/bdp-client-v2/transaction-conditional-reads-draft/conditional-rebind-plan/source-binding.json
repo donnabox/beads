@@ -1,0 +1,33 @@
+{
+  "status": "PLAN_ONLY_NO_SOURCE_MUTATION",
+  "workspace": "/Users/dbox/repos/wt/vickie/vickie-transaction-conditional-reads",
+  "head": "1ba65f2f192cc84e44eb09ef89b9693ec6cdaf05",
+  "files": {
+    "packages/conformance/test-support/transactional/manifest-v1.json": "479ec242a91668d5b54abd5711e75658b3ea9e57a20db49ac3eba3be1f3f63f2",
+    "packages/conformance/test-support/transactional/coverage-v1.json": "2d73a595ae02fef6e86b1c06bdef9e3549e004a16943e1b0afc76ff23e137e15",
+    "packages/conformance/src/transactional-cumulative.test.ts": "60acebc7f3bacc2b405a42b27b4d3a2d38473ba31fbbe4ec13b97a763d5bfde9",
+    "apps/bdptest/src/transactional-matrix.test.ts": "50470a99ecf9091d6cc4599fcf359bbe8085ab289968039f7900e25fa660a719",
+    "packages/conformance/catalog/transactional-v1.json": "c9125f914129c71f01cefc5c54b32db80637d37b57e321571c96e81936c31eb4",
+    "packages/conformance/catalog/read-v1.json": "769ff9f24cfdfe74a47670240b04149b520af23b2c71a431883fd15e988adeb0",
+    "packages/conformance/src/executable-manifest.ts": "65af0451cd046d57c10b0666e54efbaaecc2225551d3accc5cc1d032322913fa",
+    "packages/conformance/src/artifact-bundle.ts": "bbf54915eb792433ae492fd73a5334717e74e0942c485a72daa5105928546dd6",
+    "packages/conformance/src/runner.ts": "ac20c7fbfe15a5e42a6559e89cd3467562efe9bc74d462478414414ed3efede1",
+    "packages/conformance/src/runner.test.ts": "ad7e756bad1f70ecc6285e19830bc001ebec01899ed868af3fb4b08e888aba86",
+    "packages/conformance/test-support/profile-contract-plan.ts": "18c953443e6695cfa48f89677231fecffc349df02bd080f107a5c739db10b728",
+    "packages/conformance/test-support/transactional/fixture-v1.json": "3a7899ced771d4880066d98b0000c53f801ece53458502cc4f3bc641146c9a85",
+    "apps/bdptest/test-support/transactional-execution-binding.ts": "cde506c72a8710eafe58522900f6db70ed3701cf333560252dc8e7c5e706cf89",
+    "apps/bdptest/src/transactional-binding.test.ts": "957212ef227905f2b8b9ae3403fab9d6d0659ed308395696aef1baad112815d8"
+  },
+  "references": {
+    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-conditional-reads-draft/fence-amendment/source-binding.json": "b630e46d04a67edc5d59b511c8489a680d6275cd14ece3c65aa49a8b48299999",
+    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-conditional-reads-draft/claude-code-review/root-dispositions.md": "ad571142d3c33b6d3c82b90668e0cc554dad2bce317b62d80a5b7120bad8901e",
+    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-conditional-reads-draft/claude-code-review/native-findings-audit.md": "ce7b10ed18c3897aecf902e8c528ff9379e0fd59faf77a82528ce2c77767d65c",
+    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-conditional-reads-draft/source-author/selection.json": "603bba7a45b6aab085fbea8d86640fb7bef70e5faa6dfa34775bec5b3ba9f5d8"
+  },
+  "outputs": {
+    "plan.md": "574e19154137da4c142629cde00653a3244ca33838b336d011bcc5f6f6f51d53",
+    "proposed-measurements.json": "9d50025c02e7f18540ca40dd292a77076698c75df133cc042d3c25ff34aee209"
+  },
+  "executionAuthorized": false,
+  "sourceAuthoringAuthorized": false
+}

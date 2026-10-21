@@ -1,0 +1,34 @@
+{
+  "kind": "Data-only preparation inspection; no helper invocation",
+  "configurationFinalized": false,
+  "sourceBindingPresent": false,
+  "runtimeDirectoryPresent": false,
+  "freshBootstrapStages": 2,
+  "postBootstrapStages": 23,
+  "allStages": 25,
+  "sourceSelectors": 33,
+  "installedSelectors": 4,
+  "sourceObservationRecords": 28,
+  "linkHttpStatusDistribution": {
+    "200": 8,
+    "503": 8,
+    "500": 12,
+    "400": 4,
+    "404": 3
+  },
+  "amendedBeadHttpStatusDistribution": {
+    "200": 8,
+    "503": 10,
+    "500": 12,
+    "400": 4,
+    "404": 3
+  },
+  "auditElapsedExclusiveMs": 4000,
+  "implicitCallbackMs": 5000,
+  "packagesHelperByteIdentical": true,
+  "pythonHelpersParsedOnly": 4,
+  "allIndexedFilesAndReferencePinsMatch": true,
+  "allStageBounds120sNoRetry": true,
+  "authorConfirmedProspectiveContracts": "groupReadsAfterHidden:0; links/l, links/gone, links/missing and unsupported=x; E links/known; cleanup-inclusive elapsed; final actual draft must still be compared",
+  "qualification": false
+}

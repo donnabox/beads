@@ -1,0 +1,93 @@
+# Scope review — transport / setup / report / cleanup
+`apps/bdptest/src/transactional-same-key-overlap-installed.test.ts` @ `18f5428`
+
+**Line-number basis.** The `finally` block numbers below are exact: counting the supplied 788–958 excerpt lands precisely on `}, 60000);` = 958, matching the stated 958-line file. Numbers in the 1–530 block are derived by counting that excerpt and reconciling its end (`}` closing `send` = 530), which requires exactly one blank line I cannot see (almost certainly after the import group); treat block‑1 numbers as ±1 and use the quoted anchors as authoritative.
+
+---
+
+## Findings
+
+### 1. Unguarded `JSON.stringify(observation())` substitutes the primary failure and destroys the report — Medium
+**Lines 930, 942.** The write is protected (`try` at 935–940 → `reportWriteFailed` + `addFailure`), but the two serializations are not. A throw at 930 or 942 escapes the `finally` block, so lines 956–957 never execute: the real primary failure already sitting in `failures` (plus `failedAssertion`, `failedPhase`, `primaryFailureCount`, `cleanupFailureCount`) is replaced by a serialization `TypeError`, and **no** report reaches either the file or stdout. The test still fails, but every piece of retained evidence is lost — the exact outcome the two-sink design exists to prevent. The asymmetry against 935–940 shows this is unintended.
+
+Trigger availability is **missing-excerpt evidence**, not demonstrated: `observation()` embeds `binding` (859), whose `served` member is produced by `bindServedProfileConfiguration` from `@bdp/conformance/testing`, which is not supplied. Everything else in `observation()` is either file-local or arrived through IPC (`child.ready`), so it is JSON-safe by construction; `served` is the one value whose serializability cannot be established from the excerpts.
+
+Minimal correction:
+```ts
+let serialized: string | undefined;
+try { serialized = JSON.stringify(observation()); } catch (error) { addFailure(error); }
+```
+and guard both emissions, falling back to the minimal object (945–954) when `serialized === undefined`.
+
+### 2. `binding` is emitted wholesale with an unvalidated shape and unbounded size — Medium-Low
+**Line 859** (`binding: binding ?? null`), against the ceiling at 931/943. `fixture` (`{ bytes: Uint8Array }`, read at 71–75) is passed into `installedTransactionBinding` at 332. If `served` retains it, `JSON.stringify` expands the buffer into a numeric-keyed object and the 64 KiB ceiling at 931 fails **deterministically on every run** — a semantically passing observation is converted into a `same-key report ceiling` failure with no file written. This is a needed boundary clarification (production/counterpart-owned: what `bindServedProfileConfiguration` returns), but the test can defend itself regardless:
+```ts
+binding: binding === undefined ? null : {
+  authorityMode: binding.authorityMode,
+  runtimeConfigurationIdentity: binding.runtimeConfigurationIdentity,
+  operationTargets: binding.operationTargets,
+  servedSha256: sha(JSON.stringify(binding.served)),
+},
+```
+(inside the try from finding 1).
+
+### 3. stdout fallback hardcodes `outcome:"failed"` / `reportOverflow:true` without recording either — Low-Medium
+**Lines 942–954.** The ceiling decision at 943 is made on a *different* serialization than the one measured at 931, and three fields are variable-length between the two calls: `elapsedMs` (916, recomputed), `failureCount` (896, can gain a digit via `addFailure` at 933/939), `reportWriteFailed` (894). Concretely: if call 930 fits (file written, `reportOverflow` stays `false`, no failure added) and call 942 does not, stdout prints `outcome: "failed", reportOverflow: true, failureCount: 0` while the on-disk report says `outcome: "passed", reportOverflow: false` **and the test does not throw** (956–957 see `failures.length === 0`). The only machine-readable surface available to a supervisor without the file asserts a failure that did not occur. Symmetric case: call 930 overflows and call 942 fits → a `report ceiling` failure and no file, but a full report on stdout.
+
+Minimal correction — before building the fallback:
+```ts
+reportOverflow = true;
+addFailure(new Error("same-key report ceiling"));
+```
+and derive `outcome` from `failures.length` instead of hardcoding, so both sinks agree and the overflow genuinely fails the run.
+
+### 4. Module-scope `execFileSync` git probes are unbounded and fatal at collection — Low-Medium
+**Lines 66–68 and 70–71.** No `timeout`, default `maxBuffer` (1 MiB). These run during Vitest collection, outside both the 45 s work deadline (223–226) and the 60 s case budget (958). A hung or missing `git`, or a `git status --porcelain` listing exceeding 1 MiB (untracked-heavy tree), throws before `it()` registers — so the run yields **no safe report and no `workspaceDirty` evidence at all**, precisely in the case where `workspaceDirty: true` matters most for honest attribution. Minimal correction: pass `{ cwd: root, encoding: "utf8", timeout: 10000, maxBuffer: 1 << 20 }`, and for `workspaceDirty` catch failure and resolve it conservatively (`workspaceDirty = true`) rather than aborting collection; keep the hard throw only for the `rev-parse` fallback when no commit is declared.
+
+### 5. Stale `currentAssertion` after `check()` misattributes non-oracle failures — Low
+**Lines 246–251.** `check` sets `phase = "oracle"` and `currentAssertion`, and nothing restores either on return; only `phase` is reassigned later (288, 329, 639, 716, 728, 769). Consequences in the report:
+- All of provisioning (288–326) runs with `currentAssertion === "same-key-overlap:literal-inputs"`, so a confinement violation at 289/294/295/305 or a token-shape failure at 308 is labelled `failedAssertion: "same-key-overlap:literal-inputs"`.
+- The dial binding at 341 (`text(child.ready.listenUrl)`) runs with `phase === "oracle"`, `currentAssertion === "same-key-overlap:ready-targets"`.
+
+Report-only impact (the thrown error itself is accurate), but it degrades the `failedPhase`/`failedAssertion` split the report otherwise takes care to expose. Minimal correction: set `currentAssertion` beside each `phase` assignment (`phase = "setup"; currentAssertion = "same-key-overlap:provisioning";`, `currentAssertion = "same-key-overlap:dial-binding";` before 341), or have `check` restore the prior label/phase before returning.
+
+### 6. `artifacts` is the one configuration member reproduced raw in the safe report — Low
+**Line 871.** The allowlist comment at 849 and `credentialFreeConfigurationProjectionSha256` (870) exist specifically to digest rather than echo the launch configuration, yet `artifacts` — a member of the exact object handed to the child at 331 — is serialized verbatim. No secret is exposed (these are file-local literals whose bytes and digests are already asserted at 272–286), so this is rule-hygiene inconsistency, **not** a credential leak. Minimal correction:
+```ts
+artifactFingerprints: [...artifacts.descriptors, ...artifacts.schemas].map((a) => ({
+  retrievalUri: a.retrievalUri, bytes: Buffer.byteLength(a.utf8), sha256: sha(a.utf8),
+})),
+```
+
+### 7. Pre-ready retention produces a redundant second failure and an unswept directory — Low
+**Lines 828–843.** When `launchInstalledTransaction` throws after `spawn`, `child` is `undefined` → `stopped` false → the store is deliberately not removed (835) → 842–843 then necessarily adds `same-key owned directory retained` on top of `same-key pre-ready child stop unknown` (833–834), and a `bdp-same-key-overlap-installed-*` directory is left under tmpdir on every pre-ready failure. Not declining to delete is the right call — the launcher does SIGKILL + bounded reap before rethrowing (`scripts/transaction-installed-observation.mjs:88–96`), but the test cannot observe that, so it must not remove a store a possibly-live child owns. The defect is that intentional retention is reported as a *failure* rather than as a state. Minimal correction: gate the second check on `stopped` (`if (directory !== undefined && stopped && existsSync(directory))`) so retention-by-design is carried once by `stopKnowledge`/`directoryAbsent`/`directory`; optionally have the launcher surface `child` on startup failure so `stopped` becomes observable.
+
+### 8. Report carries no caveat bounding the dispatch claim — Low
+**Lines 882–884.** `clientDispatchDisciplinePassed`, `bothConnectedBeforeFirstResponse`, `bothWritesPrecededFirstResponse` are emitted with only `retention` (902–903) as prose; the client-side-only scoping lives in source comments (line 1 and 525) that never reach a report consumer. Minimal correction: add a sibling string, e.g. `dispatchClaim: "client lifetime/dispatch overlap only; not simultaneous server/wire receipt or an internal pending-join path"`.
+
+### 9. `outcome: "inconclusive-both-pending"` is not value-distinguishable from an accepted result — Low
+**Lines 897–901.** The run does fail (throw at the inconclusive branch → `failures` non-empty → 956/957), and `failedPhase: "inconclusive"`, `primaryFailureCount` and `failureCount` are all present, so a careful consumer can tell. But a supervisor keying on `outcome === "failed"` sees neither "failed" nor "passed". Minimal correction: add `accepted: failures.length === 0` beside `outcome`.
+
+### 10. Raw HTTP parse errors reach runner output on a non-report surface — Low
+**Lines 450–453 and 473.** `fail(error)` forwards the Node error unmodified; it is retained in `failures` and printed by the runner via 956/957. Node's `prepareError` attaches `rawPacket` (raw response bytes) to client-side `HPE_*` parse errors, so raw wire bytes can be printed even though they are correctly kept out of the allowlisted report. This is **not** a credential path — the `Authorization` header (375) is request-side and never echoed — but it is raw wire output on an unbounded surface. If you want the stricter guarantee, substitute a scrubbed error at those two sites (`new Error(\`same-key transport error: ${(error as { code?: string }).code ?? "unknown"}\`)`); the trade-off is lost diagnostics, partially offset by `failedAssertion`.
+
+### 11. Dead cleanup-rejection branches; late `addFailure` is unobservable — Informational
+**Lines 797, 815.** `Promise.allSettled([drain, stop])` at 814 can never yield a rejected result: `drain` (795–806) terminates in `allSettled(...).then(...)` or a resolving timer, and `stop` (807–812) already carries `addFailure` as its rejection handler. Relatedly, when `cleanupTimer` wins at 818–823, a later `stop` rejection calls `addFailure` after 956–957 has already thrown, so it is dropped — adequately covered by `cleanupExceeded: true`. No change required; 815's loop can be deleted.
+
+### 12. `--outputFile` argv guard cannot fire and is incomplete — Informational
+**Lines 296–306.** `directory` (290–293) is a fresh `mkdtempSync` path, so no externally supplied `--outputFile` can ever resolve inside it; the guard is purely defensive. It also misses `--outputFile.<reporter>=` forms and config-file reporter outputs, and compares a `path.resolve`d (not realpath'd) candidate. No action needed; if retained, realpath the existing parent and also match the `--outputFile.` prefix. Note `argument.slice(13)` is the correct length for `"--outputFile="`.
+
+---
+
+## Verified sound in this scope (so the above is read as a short list, not a thin one)
+
+- **Incomplete response/end/close:** layered and complete — 32 KiB data ceiling with `response.destroy()` (460–466), `aborted` (469–472), `close`-without-`end` → `same-key incomplete response` (474–478), and a belt-and-braces `!response.complete || !bytes` guard at 483–484; `settled` makes every path idempotent through `finish` (418–426). Fingerprints are pushed at 495–506 *before* decoding, so wire evidence survives a decode or oracle failure. `TextDecoder("utf-8", { fatal: true })` (508) rejects malformed bodies.
+- **Bounded termination:** 45 s work deadline cleared at 790; per-request 5 s timer cleared and the abort listener removed in `finish` (421–422), so neither leaks; `work.signal.throwIfAborted()` at 345 is synchronously inseparable from the `addEventListener` at 431, so there is no already-aborted-listener-never-fires window; drain is bounded at 5 s with `drainTimer` cleared (806); the cleanup race is bounded at 10 s with SIGKILL (818–823); budget composes to ≈55 s under the 60 s case timeout (958). Every bound violation (`deadlineExceeded`, `drainExceeded`, `cleanupExceeded`, `milestoneOverflow`, residual `liveSockets`) adds a failure at 844–846.
+- **Socket accounting:** `agent: false` + `Connection: close` + `await Promise.all(closing)` after each dispatch make `sockets.size === 6` / `maximumLiveSockets <= 2` meaningful rather than incidental; `mark`'s `index > 2` filter keeps the 32-milestone ceiling unreachable (≤13 kinds × 2 requests).
+- **Credential handling:** the token never enters the report, stdout, or any thrown error; 308 deliberately asserts a boolean rather than the value; the configuration object (308–314) is passed to the child but only digested (316–326); the child's stdout/stderr are consumed and byte-capped by the launcher and never forwarded.
+- **Path/symlink confinement:** `outside()` (92–99) has correct "must be outside" semantics; `resolvedOutput` (100–106) realpaths the parent, requires absolute, and prechecks non-existence, with `writeFileSync(..., { flag: "wx", mode: 0o600 })` (936) closing the TOCTOU — a dangling-symlink report path fails closed with `EEXIST` into `reportWriteFailed`; `rmSync` (837) targets only a realpath'd `mkdtemp` directory already proven outside `root`.
+- **Attribution honesty:** `sourceAttribution` (854), `workspaceDirty`, `entry`/`entrySha256`, `executionMode` (858), `stopKnowledge` (908), `childPid`/`childExitCode`/`childSignalCode` (905–907) all match the contract's "caller label, supervisor verifies" posture; `primaryFailureCount` is captured at 789 before any cleanup addition, and `addFailure`'s identity dedup (251–253) keeps the primary as `failures[0]`.
+
+## Limits
+
+No execution was performed or assumed; all conclusions are source-level. Findings 1 and 2 are conditioned on `bindServedProfileConfiguration`'s return shape, which is outside the supplied excerpts — report them as a boundary clarification to the production/counterpart owner, not as a proven runtime failure. Lines 531–787 (`receipt`, `current`, and the population of `receiptObservations`, which my scope only *emits* at 875) are the oracles scope's; one concrete cross-scope request: confirm that `receipt()` pushes bounded, credential-free entries into `receiptObservations`, since an empty array there alongside `completedResponses: 6` would be silently consistent in my report. I offer no verdict on the counterpart ranges, the appended documentation, or full-profile conformance.

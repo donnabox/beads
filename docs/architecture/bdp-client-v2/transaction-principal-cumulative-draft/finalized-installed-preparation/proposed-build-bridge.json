@@ -1,0 +1,32 @@
+{
+  "status": "proposed-byte-bridge-not-root-acceptance",
+  "accepted": false,
+  "inventorySha256": "0b803b9a14dc1026b02af7a86c131290c2871818e487d4d273c67d5b04ae17fe",
+  "originalInventory": {
+    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-principal-cumulative-draft/finalized-source-preparation-v2/run/build-output-inventory.json",
+    "sha256": "e6d7d949416d0d8c540d5675d134ad91109a467997d7453316cf5464599aeffb"
+  },
+  "buildHead": "5d7fa3f049fa0b4db3aa8dae20e20d8e47fb3854",
+  "buildWorkspaceDirty": true,
+  "finalHead": "1f0cb9455361cef2cc793558793e4a190be6f4fe",
+  "finalTree": "22176e75848cfd6f0a54f799aeb1e62998206edb",
+  "finalSource": {
+    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-principal-cumulative-draft/final-source.json",
+    "sha256": "5bb1be1e0a28ddfc4277c2d249a67f2a0f4e316fecd8dfab22f9bf996b156134"
+  },
+  "sourceBinding": {
+    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-principal-cumulative-draft/format-repair/source-binding.json",
+    "sha256": "0dbae7cb6139263cbfd3931e80d8dec2c628d7e982deecdd6c8242573a35c6e2"
+  },
+  "inputCount": 672,
+  "packageCount": 312,
+  "historicallyInventoriedEmittedCount": 440,
+  "allTrackedInputsMatchCommittedBlobs": true,
+  "allPackageAndHistoricalEmittedBytesUnchanged": true,
+  "currentAppObservation": {
+    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-principal-cumulative-draft/finalized-installed-preparation/current-app-output-observation.json",
+    "sha256": "4d6757d5249e4210dc6d0ae105215111e4da34b77ad714570f2a5210c40f8ae5"
+  },
+  "emittedInventoryScope": "Root-directed scope correction: cohorts execute the source Vitest app test and packaged protocol/server. apps/dist is unused and excluded; historical440 package dist inventory remains exact. No app-dist historical coverage or evidence adoption is claimed.",
+  "currentAppObservationExcludedFromBridge": true
+}

@@ -1,0 +1,69 @@
+diff --git a/packages/server/src/transaction-set.test.ts b/packages/server/src/transaction-set.test.ts
+index e5ada68..53595a9 100644
+--- a/packages/server/src/transaction-set.test.ts
++++ b/packages/server/src/transaction-set.test.ts
+@@ -1106,9 +1106,15 @@ it("preserves literal Selector identity and original mixed-carrier diagnostic po
+   expect(() =>
+     batch.prepareTransaction(scope, JSON.stringify({ operations: [deep, update("$..*")] })),
+   ).toThrow(TransactionSelectorSyntaxError);
+-  expect(() =>
+-    batch.prepareTransaction(scope, JSON.stringify({ operations: [deep, update()] })),
+-  ).toThrow(batch.TransactionDevelopmentLimitError);
++  const preparedDeep = batch.prepareTransaction(
++    scope,
++    JSON.stringify({ operations: [deep, update()] }),
++  );
++  expect(preparedDeep.carrier.operations).toHaveLength(2);
++  const preparedSet = preparedDeep.carrier.operations[1]!;
++  if (preparedSet.operation !== "updateWhere") throw new Error("expected prepared updateWhere");
++  expect(preparedSet.input.selector).toBe(update().selector);
++  expect(transactionSelectorCapacity(preparedSet)).toBeUndefined();
+   expect(() =>
+     transactionSelectorCapacity(
+       Object.freeze({
+diff --git a/packages/server/src/transaction-submission.test.ts b/packages/server/src/transaction-submission.test.ts
+index 9951df7..d550826 100644
+--- a/packages/server/src/transaction-submission.test.ts
++++ b/packages/server/src/transaction-submission.test.ts
+@@ -1751,13 +1751,39 @@ function assertDeepSubmissionValue(actual: unknown, expected: unknown) {
+     if (a === b) continue;
+     if (a === null || b === null || typeof a !== "object" || typeof b !== "object")
+       throw new Error("deep submission primitive mismatch");
+-    expect(Array.isArray(a)).toBe(Array.isArray(b));
++    if (Array.isArray(a) !== Array.isArray(b)) {
++      expect(Array.isArray(a)).toBe(Array.isArray(b));
++      throw new Error("deep submission array-kind mismatch");
++    }
+     const keys = Object.keys(a).sort();
+-    expect(keys).toEqual(Object.keys(b).sort());
++    const expectedKeys = Object.keys(b).sort();
++    if (keys.length !== expectedKeys.length || keys.some((key, i) => key !== expectedKeys[i])) {
++      expect(keys).toEqual(expectedKeys);
++      throw new Error("deep submission keys mismatch");
++    }
+     for (const key of keys)
+       stack.push([(a as Record<string, unknown>)[key], (b as Record<string, unknown>)[key]]);
+   }
+ }
++it("preserves independent deep submission oracle equality and rejection", () => {
++  const nested = (leaf: string) => `${"[".repeat(12000)}${leaf}${"]".repeat(12000)}`;
++  const left: unknown = JSON.parse(nested("0"));
++  const right: unknown = JSON.parse(nested("0"));
++  expect(() => assertDeepSubmissionValue(left, right)).not.toThrow();
++  const differing: unknown = JSON.parse(nested("1"));
++  expect(() => assertDeepSubmissionValue(left, differing)).toThrow("deep submission primitive mismatch");
++  expect(() => assertDeepSubmissionValue([], {})).toThrow();
++  expect(() => assertDeepSubmissionValue({ a: 1 }, { b: 1 })).toThrow();
++  expect(() => assertDeepSubmissionValue({ a: 1 }, { a: 1, b: 2 })).toThrow();
++  expect(() => assertDeepSubmissionValue({ a: 1, b: 2 }, { a: 1 })).toThrow();
++  expect(() => assertDeepSubmissionValue(null, {})).toThrow();
++  expect(() => assertDeepSubmissionValue({ a: 1, b: 2 }, { b: 2, a: 1 })).not.toThrow();
++  expect(() => assertDeepSubmissionValue(-0, 0)).not.toThrow();
++  expect(() =>
++    assertDeepSubmissionValue(Object.assign(Object.create(null), { a: 1 }), JSON.parse('{"a":1}')),
++  ).not.toThrow();
++  expect(() => assertDeepSubmissionValue([1, 2], [2, 1])).toThrow();
++});
+ function assertDeepReceiptFrozen(value: unknown) {
+   const pending: unknown[] = [value];
+   while (pending.length) {

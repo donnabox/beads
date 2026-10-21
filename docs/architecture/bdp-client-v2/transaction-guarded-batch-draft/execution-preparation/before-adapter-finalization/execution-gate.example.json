@@ -1,0 +1,57 @@
+{
+  "released": false,
+  "session": "2026-10-08T20:26:35Z-81e5",
+  "approvedCommandIds": [],
+  "node": "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+  "pnpm": "/Users/dbox/.cache/node/corepack/v1/pnpm/11.20.0/bin/pnpm.cjs",
+  "guardSha256": "fd81ba029cd4e7c7e60623df89e8292af91141d311d9ce789ed19e2152375e84",
+  "sourceBinding": {
+    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-guarded-batch-draft/source-binding.json",
+    "sha256": null
+  },
+  "sourceHead": null,
+  "sourceTree": null,
+  "sourceStatus": null,
+  "sourceDiffSha256": null,
+  "rootAcceptance": null,
+  "finalHead": null,
+  "finalTree": null,
+  "finalBase": "9bf601bfb570adae97ce8cdc99caf2cc7a2b34c1",
+  "finalSource": null,
+  "finalIntegrationAcceptance": null,
+  "councilAcceptance": null,
+  "buildOutputInventory": null,
+  "buildBridge": null,
+  "sourceLockSha256": null,
+  "consumerLockSha256": null,
+  "installedProvenance": null,
+  "reportContract": {
+    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-guarded-batch-draft/execution-preparation/report-adapter-binding.json",
+    "sha256": "6c178a1bae171fd790c242d2c256a57829cfbdd8a696b5a327498d20283bff6b"
+  },
+  "expectedProductionVersions": {
+    "@bdp/protocol": "0.0.0",
+    "@bdp/server": "0.0.0",
+    "ajv": "8.17.1",
+    "ajv-formats": "3.0.1",
+    "fast-deep-equal": "3.1.3",
+    "fast-uri": "3.1.5",
+    "json-schema-traverse": "1.0.0",
+    "require-from-string": "2.0.2"
+  },
+  "preparationSha256": {
+    "gate.py": "e258148197fcf3328e753949e377b0c8593491c54f942bee551058a4f73ec259",
+    "supervise.py": "da74971257c3cc804b404dbc2d72759e301431e04d2474c692a658ed43b18f9a",
+    "packages.py": "933f924ba37a686257f251aef1a6ae1af09307f6a80562524882aa5325698ba3",
+    "inventory.py": "f01a170801c8e259ea52696eb3c53402cc0e92ade8da797d5cec9e3f4c78127d",
+    "review-cohort.py": "cc8d43e47142d7c3060bf64905d181a9dc1dd45c8a2ca92c0db4adbc4beb44d7",
+    "commands.json": "9df8a6b9babd010afdc710935d408439f9954159c244e70b44287bb2489e68f5"
+  },
+  "note": "CLOSED example only; no execution-gate.json exists. Actual measured source and all stage releases pending.",
+  "installedTestTool": {
+    "path": "/Users/dbox/repos/wt/vickie/vickie-guarded-batch/node_modules/.pnpm/vitest@4.1.10_@types+node@24.13.3_vite@8.2.1_@types+node@24.13.3_/node_modules/vitest/vitest.mjs",
+    "sha256": null
+  },
+  "footprintBase": "9bf601bfb570adae97ce8cdc99caf2cc7a2b34c1",
+  "codeReviewState": null
+}

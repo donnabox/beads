@@ -1,0 +1,14 @@
+{
+  "id": "N4",
+  "severity": "low",
+  "location": "request-table.md:3 versus cold row4 at11",
+  "problem": "The opener says client input is configured Scope, fixture credential handles and transport only, while row4 uses a configured installed Type URI as fixture input. The restriction and request provenance are inconsistent as written.",
+  "impact": "An author could silently give the cold executor an undeclared Type oracle or add uncounted Types navigation to satisfy the opening contract. Neither follows the frozen13-request table.",
+  "minimalFix": "Explicitly declare the known canonical installed Type/contract ID as a fixture input distinct from forbidden operation-target URLs. Keep actual row4 Type retrieval/validation and all13 requests unchanged. Do not add Directory/target maps, schema const operation URLs, hidden requests or client privileges. Full Types collection navigation remains separate D3a evidence.",
+  "countsUnchanged": {
+    "coldRequests": 13,
+    "installedFiniteHttp": 126,
+    "rawConnectAttempts": 2
+  },
+  "newNavigationDependencyRequested": false
+}

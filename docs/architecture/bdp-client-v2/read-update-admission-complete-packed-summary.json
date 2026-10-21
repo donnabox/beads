@@ -1,0 +1,790 @@
+{
+  "sourceCommit": "8e12162e63502660cc562503c9506789919ab604",
+  "sourceDirty": false,
+  "configuration": {
+    "scope": "https://reference.invalid/acme/",
+    "profile": "read-update",
+    "history": false,
+    "sourceCommit": "8e12162e63502660cc562503c9506789919ab604",
+    "installedPayloadDigest": "819c09e3ade4bbc533c118a956af23e22d44d5b7f87a73aef3d391a98dc11093",
+    "installedContractsDigest": "48667497d6e13064316d0364cf8f49dfc247ab9189306985a357d7b558333dfe",
+    "policyDigest": "dbe8dbd5430f26e19e754d38167cd8084a32d702c695550e2ee0063dc2912430",
+    "authenticationDigest": "66941efc779f4f2431d65fdd5b2387b2af67bd7c1559e09dac032f82259ea16e",
+    "fixtureDigest": "64814924334103e9375c043de472f8bf15c8b71a267a176e06cd0443b8249751",
+    "fixtureId": "reference-read-update-schema-v1",
+    "capabilities": [
+      "installed-read-update-http"
+    ]
+  },
+  "baselineReceipt": {
+    "event": "qualification.ready",
+    "scope": "https://reference.invalid/acme/",
+    "claimEligible": false,
+    "configurationIdentity": "1720b63b49a7be3299d4b2865de4db9fcbe47560f217a32eea6397db7ea54ca5",
+    "artifactIdentity": "development-schema5-48667497d6e13064316d0364cf8f49dfc247ab9189306985a357d7b558333dfe",
+    "payloadIdentity": "819c09e3ade4bbc533c118a956af23e22d44d5b7f87a73aef3d391a98dc11093",
+    "policyIdentity": "dbe8dbd5430f26e19e754d38167cd8084a32d702c695550e2ee0063dc2912430",
+    "authenticationIdentity": "66941efc779f4f2431d65fdd5b2387b2af67bd7c1559e09dac032f82259ea16e",
+    "profile": "read-update",
+    "history": false
+  },
+  "reportBinding": {
+    "artifacts": {
+      "catalogDigest": "e26d3fc758a34ebb0b5028be15d28e3e09db87dc7984bba7bad6a00b26329aa0",
+      "manifestDigest": "ea794cc31863536b920a8abaa685e372c11b6a82abe1c67af26c83714398c5d4",
+      "fixtureDigest": "64814924334103e9375c043de472f8bf15c8b71a267a176e06cd0443b8249751"
+    },
+    "exactConfigurationDigest": "a8d5687519da4040d2f23989f86f9bc804d30ac6c91a85074397eaf7c92de712"
+  },
+  "claimEligible": false,
+  "required": 129,
+  "authored": 47,
+  "uncovered": 103,
+  "sessions": 47,
+  "clientObservations": 903,
+  "setupObservations": 44,
+  "nativeReadObservations": 21,
+  "catalogStates": {
+    "pass": 47,
+    "harness-error": 87
+  },
+  "testsPassed": 151,
+  "testsFailed": 0,
+  "newRows": [
+    {
+      "id": "read-update.singleton.idempotency-key-required",
+      "state": "pass",
+      "rawObserved": 196,
+      "clientObserved": 88,
+      "authored": {
+        "id": "read-update.singleton.idempotency-key-required",
+        "actions": 284,
+        "raw": 196,
+        "client": 88,
+        "setup": 0,
+        "maximumAuthoredBodyBytes": 661,
+        "collectionEnvelopesWithNormativeSchema": 138,
+        "perRoute": {
+          "GET scope": 1,
+          "GET service-desc": 1,
+          "GET operations": 2,
+          "GET types/task": 1,
+          "GET types/relates": 1,
+          "POST create-bead": 21,
+          "GET admission.beads.ak-source": 1,
+          "GET admission.beads.ak-target": 1,
+          "GET admission.beads.ak-update": 2,
+          "GET admission.beads.ak-delete": 2,
+          "POST create-link": 3,
+          "GET admission.links.ak-update": 2,
+          "GET admission.links.ak-delete": 2,
+          "POST put-alias": 3,
+          "GET admission.alias.ak-locator-put": 6,
+          "GET admission.alias.ak-locator-delete": 6,
+          "GET beads?limit=100": 69,
+          "GET links?limit=100": 69,
+          "POST operations/create-bead": 12,
+          "GET admission.beads.ak-route-create": 1,
+          "POST operations/update-bead": 3,
+          "POST update-bead": 1,
+          "POST operations/delete-bead": 3,
+          "POST delete-bead": 1,
+          "POST operations/create-link": 3,
+          "GET admission.links.ak-route-create": 1,
+          "POST operations/update-link": 3,
+          "POST update-link": 1,
+          "POST operations/delete-link": 3,
+          "POST delete-link": 1,
+          "POST operations/put-alias": 3,
+          "POST operations/delete-alias": 3,
+          "POST delete-alias": 1,
+          "GET admission.beads.ak-empty": 1,
+          "GET admission.beads.ak-long": 1,
+          "GET admission.beads.ak-quoted": 1,
+          "GET admission.beads.ak-space": 1,
+          "GET admission.beads.ak-tab": 1,
+          "GET admission.beads.ak-punctuation": 1,
+          "GET admission.beads.ak-comma": 1,
+          "GET admission.beads.ak-latin": 1,
+          "POST operations/sequence": 8,
+          "POST sequence": 8,
+          "GET admission.beads.ak-seq-empty-prefix": 1,
+          "GET admission.beads.ak-seq-empty-member": 1,
+          "GET admission.beads.ak-seq-long-prefix": 1,
+          "GET admission.beads.ak-seq-long-member": 1,
+          "GET admission.beads.ak-seq-quoted-prefix": 1,
+          "GET admission.beads.ak-seq-quoted-member": 1,
+          "GET admission.beads.ak-seq-space-prefix": 1,
+          "GET admission.beads.ak-seq-space-member": 1,
+          "GET admission.beads.ak-seq-tab-prefix": 1,
+          "GET admission.beads.ak-seq-tab-member": 1,
+          "GET admission.beads.ak-seq-punctuation-prefix": 1,
+          "GET admission.beads.ak-seq-punctuation-member": 1,
+          "GET admission.beads.ak-seq-comma-prefix": 1,
+          "GET admission.beads.ak-seq-comma-member": 1,
+          "GET admission.beads.ak-seq-latin-prefix": 1,
+          "GET admission.beads.ak-seq-latin-member": 1,
+          "GET admission.beads.ak-repeat-same-0": 1,
+          "GET admission.beads.ak-repeat-same": 1,
+          "GET admission.beads.ak-repeat-distinct-0": 1,
+          "GET admission.beads.ak-repeat-distinct-1": 1,
+          "GET admission.beads.ak-repeat-distinct": 1,
+          "GET admission.beads.ak-repeat-mixed-0": 1,
+          "GET admission.beads.ak-repeat-mixed-1": 1,
+          "GET admission.beads.ak-repeat-mixed": 1,
+          "GET admission.beads.ak-valid-one": 1,
+          "GET admission.beads.ak-valid-maximum": 1,
+          "GET admission.beads.ak-valid-alphabet": 1
+        },
+        "rawCarrierCoverage": {
+          "create-bead": [
+            {
+              "action": "key-route-create-bead",
+              "expectedStatus": 400,
+              "media": [
+                "application/json"
+              ]
+            },
+            {
+              "action": "key-empty",
+              "expectedStatus": 400,
+              "media": [
+                "application/json"
+              ]
+            },
+            {
+              "action": "key-long",
+              "expectedStatus": 400,
+              "media": [
+                "application/json"
+              ]
+            },
+            {
+              "action": "key-quoted",
+              "expectedStatus": 400,
+              "media": [
+                "application/json"
+              ]
+            },
+            {
+              "action": "key-space",
+              "expectedStatus": 400,
+              "media": [
+                "application/json"
+              ]
+            },
+            {
+              "action": "key-tab",
+              "expectedStatus": 400,
+              "media": [
+                "application/json"
+              ]
+            },
+            {
+              "action": "key-punctuation",
+              "expectedStatus": 400,
+              "media": [
+                "application/json"
+              ]
+            },
+            {
+              "action": "key-comma",
+              "expectedStatus": 400,
+              "media": [
+                "application/json"
+              ]
+            },
+            {
+              "action": "key-latin",
+              "expectedStatus": 400,
+              "media": [
+                "application/json"
+              ]
+            },
+            {
+              "action": "key-repeat-same",
+              "expectedStatus": 400,
+              "media": [
+                "application/json"
+              ]
+            },
+            {
+              "action": "key-repeat-distinct",
+              "expectedStatus": 400,
+              "media": [
+                "application/json"
+              ]
+            },
+            {
+              "action": "key-repeat-mixed",
+              "expectedStatus": 400,
+              "media": [
+                "application/json"
+              ]
+            }
+          ],
+          "update-bead": [
+            {
+              "action": "key-route-update-bead",
+              "expectedStatus": 400,
+              "media": [
+                "application/json"
+              ]
+            },
+            {
+              "action": "key-route-update-bead-malformed",
+              "expectedStatus": 400,
+              "media": [
+                "application/json"
+              ]
+            },
+            {
+              "action": "key-route-update-bead-repeated",
+              "expectedStatus": 400,
+              "media": [
+                "application/json"
+              ]
+            }
+          ],
+          "delete-bead": [
+            {
+              "action": "key-route-delete-bead",
+              "expectedStatus": 400,
+              "media": [
+                "application/json"
+              ]
+            },
+            {
+              "action": "key-route-delete-bead-malformed",
+              "expectedStatus": 400,
+              "media": [
+                "application/json"
+              ]
+            },
+            {
+              "action": "key-route-delete-bead-repeated",
+              "expectedStatus": 400,
+              "media": [
+                "application/json"
+              ]
+            }
+          ],
+          "create-link": [
+            {
+              "action": "key-route-create-link",
+              "expectedStatus": 400,
+              "media": [
+                "application/json"
+              ]
+            },
+            {
+              "action": "key-route-create-link-malformed",
+              "expectedStatus": 400,
+              "media": [
+                "application/json"
+              ]
+            },
+            {
+              "action": "key-route-create-link-repeated",
+              "expectedStatus": 400,
+              "media": [
+                "application/json"
+              ]
+            }
+          ],
+          "update-link": [
+            {
+              "action": "key-route-update-link",
+              "expectedStatus": 400,
+              "media": [
+                "application/json"
+              ]
+            },
+            {
+              "action": "key-route-update-link-malformed",
+              "expectedStatus": 400,
+              "media": [
+                "application/json"
+              ]
+            },
+            {
+              "action": "key-route-update-link-repeated",
+              "expectedStatus": 400,
+              "media": [
+                "application/json"
+              ]
+            }
+          ],
+          "delete-link": [
+            {
+              "action": "key-route-delete-link",
+              "expectedStatus": 400,
+              "media": [
+                "application/json"
+              ]
+            },
+            {
+              "action": "key-route-delete-link-malformed",
+              "expectedStatus": 400,
+              "media": [
+                "application/json"
+              ]
+            },
+            {
+              "action": "key-route-delete-link-repeated",
+              "expectedStatus": 400,
+              "media": [
+                "application/json"
+              ]
+            }
+          ],
+          "put-alias": [
+            {
+              "action": "key-route-put-alias",
+              "expectedStatus": 400,
+              "media": [
+                "application/json"
+              ]
+            },
+            {
+              "action": "key-route-put-alias-malformed",
+              "expectedStatus": 400,
+              "media": [
+                "application/json"
+              ]
+            },
+            {
+              "action": "key-route-put-alias-repeated",
+              "expectedStatus": 400,
+              "media": [
+                "application/json"
+              ]
+            }
+          ],
+          "delete-alias": [
+            {
+              "action": "key-route-delete-alias",
+              "expectedStatus": 400,
+              "media": [
+                "application/json"
+              ]
+            },
+            {
+              "action": "key-route-delete-alias-malformed",
+              "expectedStatus": 400,
+              "media": [
+                "application/json"
+              ]
+            },
+            {
+              "action": "key-route-delete-alias-repeated",
+              "expectedStatus": 400,
+              "media": [
+                "application/json"
+              ]
+            }
+          ],
+          "sequence": [
+            {
+              "action": "sequence-key-empty",
+              "expectedStatus": 400,
+              "media": [
+                "application/json"
+              ]
+            },
+            {
+              "action": "sequence-key-long",
+              "expectedStatus": 400,
+              "media": [
+                "application/json"
+              ]
+            },
+            {
+              "action": "sequence-key-quoted",
+              "expectedStatus": 400,
+              "media": [
+                "application/json"
+              ]
+            },
+            {
+              "action": "sequence-key-space",
+              "expectedStatus": 400,
+              "media": [
+                "application/json"
+              ]
+            },
+            {
+              "action": "sequence-key-tab",
+              "expectedStatus": 400,
+              "media": [
+                "application/json"
+              ]
+            },
+            {
+              "action": "sequence-key-punctuation",
+              "expectedStatus": 400,
+              "media": [
+                "application/json"
+              ]
+            },
+            {
+              "action": "sequence-key-comma",
+              "expectedStatus": 400,
+              "media": [
+                "application/json"
+              ]
+            },
+            {
+              "action": "sequence-key-latin",
+              "expectedStatus": 400,
+              "media": [
+                "application/json"
+              ]
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "read-update.singleton.unsupported-media-type",
+      "state": "pass",
+      "rawObserved": 140,
+      "clientObserved": 34,
+      "authored": {
+        "id": "read-update.singleton.unsupported-media-type",
+        "actions": 174,
+        "raw": 140,
+        "client": 34,
+        "setup": 0,
+        "maximumAuthoredBodyBytes": 424,
+        "collectionEnvelopesWithNormativeSchema": 82,
+        "perRoute": {
+          "GET scope": 1,
+          "GET service-desc": 1,
+          "GET operations": 2,
+          "GET types/task": 1,
+          "GET types/relates": 1,
+          "POST create-bead": 7,
+          "GET admission.beads.am-source": 1,
+          "GET admission.beads.am-target": 1,
+          "GET admission.beads.am-update": 2,
+          "GET admission.beads.am-delete": 1,
+          "GET admission.beads.am-alt-delete": 2,
+          "POST create-link": 3,
+          "GET admission.links.am-update": 2,
+          "GET admission.links.am-delete": 1,
+          "GET admission.links.am-alt-delete": 2,
+          "POST put-alias": 3,
+          "GET admission.alias.am-locator-put": 6,
+          "GET admission.alias.am-locator-delete": 5,
+          "GET admission.alias.am-locator-alt-delete": 2,
+          "GET beads?limit=100": 41,
+          "GET links?limit=100": 41,
+          "POST operations/create-bead": 8,
+          "GET admission.beads.am-route-create-alt": 1,
+          "POST operations/update-bead": 4,
+          "POST operations/delete-bead": 4,
+          "POST operations/create-link": 4,
+          "GET admission.links.am-route-create-alt": 1,
+          "POST operations/update-link": 4,
+          "POST operations/delete-link": 4,
+          "POST operations/put-alias": 4,
+          "POST operations/delete-alias": 4,
+          "POST operations/sequence": 4,
+          "GET admission.beads.am-seq-0-corrected": 1,
+          "GET admission.beads.am-seq-1-corrected": 1,
+          "GET admission.beads.am-plain-corrected": 1,
+          "GET admission.beads.am-problem-corrected": 1,
+          "GET admission.beads.am-charset": 1,
+          "GET admission.beads.am-irrelevant": 1
+        },
+        "rawCarrierCoverage": {
+          "create-bead": [
+            {
+              "action": "media-route-create-bead",
+              "expectedStatus": 415,
+              "media": []
+            },
+            {
+              "action": "media-route-create-bead-wrong",
+              "expectedStatus": 415,
+              "media": [
+                "text/plain"
+              ]
+            },
+            {
+              "action": "media-route-create-bead-wrong-parameters",
+              "expectedStatus": 415,
+              "media": [
+                "text/plain; charset=utf-8; arbitrary=ignored"
+              ]
+            },
+            {
+              "action": "media-route-create-bead-corrected",
+              "expectedStatus": 200,
+              "media": [
+                "application/json; charset=iso-8859-1; arbitrary=ignored"
+              ]
+            },
+            {
+              "action": "media-plain",
+              "expectedStatus": 415,
+              "media": [
+                "text/plain"
+              ]
+            },
+            {
+              "action": "media-problem",
+              "expectedStatus": 415,
+              "media": [
+                "application/problem+json"
+              ]
+            },
+            {
+              "action": "media-parameter-charset",
+              "expectedStatus": 200,
+              "media": [
+                "application/json; charset=iso-8859-1"
+              ]
+            },
+            {
+              "action": "media-parameter-irrelevant",
+              "expectedStatus": 200,
+              "media": [
+                "application/json; arbitrary=ignored"
+              ]
+            }
+          ],
+          "update-bead": [
+            {
+              "action": "media-route-update-bead",
+              "expectedStatus": 415,
+              "media": []
+            },
+            {
+              "action": "media-route-update-bead-wrong",
+              "expectedStatus": 415,
+              "media": [
+                "text/plain"
+              ]
+            },
+            {
+              "action": "media-route-update-bead-wrong-parameters",
+              "expectedStatus": 415,
+              "media": [
+                "text/plain; charset=utf-8; arbitrary=ignored"
+              ]
+            },
+            {
+              "action": "media-route-update-bead-corrected",
+              "expectedStatus": 200,
+              "media": [
+                "application/json; charset=iso-8859-1; arbitrary=ignored"
+              ]
+            }
+          ],
+          "delete-bead": [
+            {
+              "action": "media-route-delete-bead",
+              "expectedStatus": 415,
+              "media": []
+            },
+            {
+              "action": "media-route-delete-bead-wrong",
+              "expectedStatus": 415,
+              "media": [
+                "text/plain"
+              ]
+            },
+            {
+              "action": "media-route-delete-bead-wrong-parameters",
+              "expectedStatus": 415,
+              "media": [
+                "text/plain; charset=utf-8; arbitrary=ignored"
+              ]
+            },
+            {
+              "action": "media-route-delete-bead-corrected",
+              "expectedStatus": 200,
+              "media": [
+                "application/json; charset=iso-8859-1; arbitrary=ignored"
+              ]
+            }
+          ],
+          "create-link": [
+            {
+              "action": "media-route-create-link",
+              "expectedStatus": 415,
+              "media": []
+            },
+            {
+              "action": "media-route-create-link-wrong",
+              "expectedStatus": 415,
+              "media": [
+                "text/plain"
+              ]
+            },
+            {
+              "action": "media-route-create-link-wrong-parameters",
+              "expectedStatus": 415,
+              "media": [
+                "text/plain; charset=utf-8; arbitrary=ignored"
+              ]
+            },
+            {
+              "action": "media-route-create-link-corrected",
+              "expectedStatus": 200,
+              "media": [
+                "application/json; charset=iso-8859-1; arbitrary=ignored"
+              ]
+            }
+          ],
+          "update-link": [
+            {
+              "action": "media-route-update-link",
+              "expectedStatus": 415,
+              "media": []
+            },
+            {
+              "action": "media-route-update-link-wrong",
+              "expectedStatus": 415,
+              "media": [
+                "text/plain"
+              ]
+            },
+            {
+              "action": "media-route-update-link-wrong-parameters",
+              "expectedStatus": 415,
+              "media": [
+                "text/plain; charset=utf-8; arbitrary=ignored"
+              ]
+            },
+            {
+              "action": "media-route-update-link-corrected",
+              "expectedStatus": 200,
+              "media": [
+                "application/json; charset=iso-8859-1; arbitrary=ignored"
+              ]
+            }
+          ],
+          "delete-link": [
+            {
+              "action": "media-route-delete-link",
+              "expectedStatus": 415,
+              "media": []
+            },
+            {
+              "action": "media-route-delete-link-wrong",
+              "expectedStatus": 415,
+              "media": [
+                "text/plain"
+              ]
+            },
+            {
+              "action": "media-route-delete-link-wrong-parameters",
+              "expectedStatus": 415,
+              "media": [
+                "text/plain; charset=utf-8; arbitrary=ignored"
+              ]
+            },
+            {
+              "action": "media-route-delete-link-corrected",
+              "expectedStatus": 200,
+              "media": [
+                "application/json; charset=iso-8859-1; arbitrary=ignored"
+              ]
+            }
+          ],
+          "put-alias": [
+            {
+              "action": "media-route-put-alias",
+              "expectedStatus": 415,
+              "media": []
+            },
+            {
+              "action": "media-route-put-alias-wrong",
+              "expectedStatus": 415,
+              "media": [
+                "text/plain"
+              ]
+            },
+            {
+              "action": "media-route-put-alias-wrong-parameters",
+              "expectedStatus": 415,
+              "media": [
+                "text/plain; charset=utf-8; arbitrary=ignored"
+              ]
+            },
+            {
+              "action": "media-route-put-alias-corrected",
+              "expectedStatus": 200,
+              "media": [
+                "application/json; charset=iso-8859-1; arbitrary=ignored"
+              ]
+            }
+          ],
+          "delete-alias": [
+            {
+              "action": "media-route-delete-alias",
+              "expectedStatus": 415,
+              "media": []
+            },
+            {
+              "action": "media-route-delete-alias-wrong",
+              "expectedStatus": 415,
+              "media": [
+                "text/plain"
+              ]
+            },
+            {
+              "action": "media-route-delete-alias-wrong-parameters",
+              "expectedStatus": 415,
+              "media": [
+                "text/plain; charset=utf-8; arbitrary=ignored"
+              ]
+            },
+            {
+              "action": "media-route-delete-alias-corrected",
+              "expectedStatus": 200,
+              "media": [
+                "application/json; charset=iso-8859-1; arbitrary=ignored"
+              ]
+            }
+          ],
+          "sequence": [
+            {
+              "action": "media-route-sequence",
+              "expectedStatus": 415,
+              "media": []
+            },
+            {
+              "action": "media-route-sequence-wrong",
+              "expectedStatus": 415,
+              "media": [
+                "text/plain"
+              ]
+            },
+            {
+              "action": "media-route-sequence-wrong-parameters",
+              "expectedStatus": 415,
+              "media": [
+                "text/plain; charset=utf-8; arbitrary=ignored"
+              ]
+            },
+            {
+              "action": "media-route-sequence-corrected",
+              "expectedStatus": 200,
+              "media": [
+                "application/json; charset=iso-8859-1; arbitrary=ignored"
+              ]
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "timings": {
+    "executes the partial cumulative RU matrix against actual installed factory HTTP and afterstate": 13950.962167,
+    "observes key and media admission against installed HTTP with paired afterstate": 1666.6062919999968
+  }
+}

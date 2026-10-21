@@ -1,0 +1,14 @@
+--- before//Users/dbox/repos/wt/vickie/vickie-sequence-member-evidence/node_modules/.bin/biome
++++ after//Users/dbox/repos/wt/vickie/vickie-sequence-member-evidence/node_modules/.bin/biome
+@@ -25,9 +25,9 @@
+ esac
+ 
+ if [ -z "$NODE_PATH" ]; then
+-  export NODE_PATH="/Users/dbox/repos/wt/vickie/vickie-sequence-member-evidence/node_modules/.pnpm/@biomejs+biome@2.5.7/node_modules/@biomejs/biome/node_modules:/Users/dbox/repos/wt/vickie/vickie-sequence-member-evidence/node_modules/.pnpm/@biomejs+biome@2.5.7/node_modules:/Users/dbox/repos/wt/vickie/vickie-sequence-member-evidence/node_modules/.pnpm/node_modules"
++  export NODE_PATH="/Users/dbox/repos/wt/vickie/vickie-sequence-member-evidence/node_modules/.pnpm/@biomejs+biome@2.5.7/node_modules/@biomejs/biome/node_modules:/Users/dbox/repos/wt/vickie/vickie-sequence-member-evidence/node_modules/.pnpm/@biomejs+biome@2.5.7/node_modules:/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-receipt-missing-context-draft/control-preparation/copy/node_modules/.pnpm/node_modules"
+ else
+-  export NODE_PATH="/Users/dbox/repos/wt/vickie/vickie-sequence-member-evidence/node_modules/.pnpm/@biomejs+biome@2.5.7/node_modules/@biomejs/biome/node_modules:/Users/dbox/repos/wt/vickie/vickie-sequence-member-evidence/node_modules/.pnpm/@biomejs+biome@2.5.7/node_modules:/Users/dbox/repos/wt/vickie/vickie-sequence-member-evidence/node_modules/.pnpm/node_modules:$NODE_PATH"
++  export NODE_PATH="/Users/dbox/repos/wt/vickie/vickie-sequence-member-evidence/node_modules/.pnpm/@biomejs+biome@2.5.7/node_modules/@biomejs/biome/node_modules:/Users/dbox/repos/wt/vickie/vickie-sequence-member-evidence/node_modules/.pnpm/@biomejs+biome@2.5.7/node_modules:/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-receipt-missing-context-draft/control-preparation/copy/node_modules/.pnpm/node_modules:$NODE_PATH"
+ fi
+ if [ -n "$exe" ] && [ -x "$basedir/node.exe" ]; then
+   exec "$basedir/node.exe"  "$basedir_win/../@biomejs/biome/bin/biome" "$@"

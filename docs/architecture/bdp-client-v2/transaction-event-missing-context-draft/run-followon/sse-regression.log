@@ -1,0 +1,31 @@
+
+ RUN  v4.1.10 /Users/dbox/repos/wt/vickie/vickie-sequence-member-evidence
+
+ ↓ packages/server/src/transaction-event-sse.test.ts > Event pump adopts only delivered successors and never reads through a blocked frame
+ ↓ packages/server/src/transaction-event-sse.test.ts > empty historical packets emit heartbeats during backlog before a later relevant Event
+ ↓ packages/server/src/transaction-event-sse.test.ts > Event framing is complete UTF8 JSON with a conservative arithmetic bound
+ ↓ packages/server/src/transaction-event-sse.test.ts > real Scope, Bead and Link SSE equals finite bytes and follows a live change exactly once
+ ✓ packages/server/src/transaction-event-sse.test.ts > Event reconnect syntax, minimum ordering and exact context codes are preserved over HTTP 127ms
+ ↓ packages/server/src/transaction-event-sse.test.ts > conditions, HEAD,406 and shared cross-kind capacity preserve initial context without a stream slot
+ ↓ packages/server/src/transaction-event-sse.test.ts > retained deleted Bead and Link Sources stream while their canonical Resources are absent
+ ↓ packages/server/src/transaction-event-sse.test.ts > an initial metadata-only incident Link gap refuses Bead SSE while Scope and Link remain available
+ ↓ packages/server/src/transaction-event-sse.test.ts > a later projection gap closes without a second response and repeat reconnect reaches the same gap
+ ↓ packages/server/src/transaction-event-sse.test.ts > a blocked backlog heartbeat prevents the next owner pull until drain or cancellation
+ ↓ packages/server/src/transaction-event-sse.test.ts > known-source invalid cursor and capacity errors keep the captured context across an intervening commit
+ ↓ packages/server/src/transaction-event-sse.test.ts > disconnects an actual raw response before frame completion and replays from the last fully accepted Event (none before the partial first frame)
+ ↓ packages/server/src/transaction-event-sse.test.ts > Event pre-abort writes no headers and idle close cancels the shared stream cleanly
+ ↓ packages/server/src/transaction-event-sse.test.ts > disconnect during an Event minimum wait releases the request without capturing a stream slot
+ ↓ packages/server/src/transaction-event-sse.test.ts > wire Event JSON uses the same normalized numeric value and escaping as finite JSON
+ ↓ packages/server/src/transaction-event-sse.test.ts > Event Accept application/json;q=0.8,text/event-stream;q=0.8 selects application/json on the actual route
+ ↓ packages/server/src/transaction-event-sse.test.ts > Event Accept application/json;q=0.1,text/event-stream;q=0.9 selects text/event-stream on the actual route
+ ↓ packages/server/src/transaction-event-sse.test.ts > Event Accept application/json;q=0.9,text/event-stream;q=0.1 selects application/json on the actual route
+ ↓ packages/server/src/transaction-event-sse.test.ts > GET delivers the header-selected suffix when both cursors are valid: header-later
+ ↓ packages/server/src/transaction-event-sse.test.ts > GET delivers the header-selected suffix when both cursors are valid: header-earlier
+ ↓ packages/server/src/transaction-event-sse.test.ts > Event delivery receives the shared captured cadence object, separate from owner scan bounds
+
+ Test Files  1 passed (1)
+      Tests  1 passed | 20 skipped (21)
+   Start at  04:00:06
+   Duration  602ms (transform 300ms, setup 15ms, import 408ms, tests 128ms, environment 0ms)
+
+JSON report written to /Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-event-missing-context-draft/run-followon/sse-regression.json

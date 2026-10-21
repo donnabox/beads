@@ -1,0 +1,223 @@
+# Review — Read+Update guarded-overlap bounded private witness plan
+
+Scope: plan-level review against the supplied excerpts at `015cac1a`. No files written, no commands run, no code authored. The accepted **L1** disposition (callback-aggregated cleanup errors; unchanged launcher may mask a pre-ready startup error; pre-ready PID/child fields null/unknown) is treated as settled and is not re-reported below.
+
+---
+
+## Findings
+
+### 1. Frozen request contract omits three headers the server requires — High
+**Location:** plan "Minimal bounded observer and teardown" (header enumeration) and the ten-request table; `packages/server/src/development-runtime.ts:444–453`, `:96–99`, `:78–84`; `scripts/installed-reference-observation.mjs:104–120`, `:87–99`.
+
+**Issue:** The plan enumerates the observer's request headers as "explicit Content-Length, Accept:application/json, no redirects/retries and no Agent reuse" plus `Connection: close`/`agent:false`. Three required headers are absent, and the credential's origin is never assigned.
+
+**Evidence:**
+- `development-runtime.ts:444–448` rejects a POST whose `content-type` first token is not exactly `application/json` with `unsupported-media-type` (415). `Content-Type` is nowhere in the plan's header list.
+- `:451–453` requires `idempotency-key` to be present for an operation target (`key === undefined` → `malformed-request`). The table's "key overlap-a/b/seed" column implies it, but it is never stated as a header.
+- `:96–99` shows an `unauthenticated` refusal with `WWW-Authenticate: Bearer`; `installed-reference.ts:12–13` makes a credential mandatory; `requestInstalled` sends `authorization: Bearer ${token}` unconditionally (`:114`). Reads are explicitly gated by the same authority as writes (`development-runtime.ts:413–415`; `development-composition.ts:82–83` re-gates every route through `authority.discover()`).
+- `referenceConfiguration(directory, port, token, scope)` takes the token as a caller-supplied parameter (`:87–99`), and the plan's reuse list (`availablePort`, `referenceConfiguration`, `launchInstalledReference`) contains no token source.
+
+**Impact:** As frozen, request 1 answers 401 and requests 4/5/6 would answer 415 or `malformed-request`. The run fails for input-shape reasons with no bearing on the guard; the derivative control would also "fail" for the wrong reason and could be mistaken for a sensitive negative.
+
+**Smallest correction:** Freeze the exact per-request header set — `authorization: Bearer <test-minted token>` on all ten, `content-type: application/json` + single `idempotency-key` + `content-length` on POSTs only, `accept: application/json`, `connection: close` — state that the test mints the token locally and passes it to `referenceConfiguration`, require single-valued spellings (`:78–84` throws `malformed-request` on any repeated `content-type`/`content-encoding`/`idempotency-key`), and send no `content-encoding` (`:449–450`). Logging exclusion is already specified and unchanged.
+
+---
+
+### 2. The named oracle is weaker than the property it is said to witness — Medium
+**Location:** plan "Then assert named `overlap:exactly-one-winner`: status multiset exactly [200,409]"; `packages/server/src/resource-evaluator.ts:139–160`.
+
+**Issue:** The named oracle — the single assertion the counterfactual must fail — is defined as a status multiset only. Six distinct evaluator codes map to 409.
+
+**Evidence:** `resource-evaluator.ts:142–149`: `identity-taken` 409, `alias-path-taken` 409, `revision-mismatch` 409, `incident-links-exist` 409, `aggregate-constraint-violation` 409, `revision-allocation-unsafe` 409. The four-field Problem equality is specified in the plan as a separate adjacent assertion, outside the named oracle, and the control section binds only "the unchanged named [200,409] assertion must fail".
+
+**Impact:** A 409 carrying any other conflict code satisfies the named oracle, so the one named result that external review checks does not pin the witnessed property. The plan also leaves undefined what a third status class (500, 503 `temporarily-unavailable`, 406, 415) on request 5/6 means.
+
+**Smallest correction:** Define `overlap:exactly-one-winner` as the conjunction — exactly one 200 whose body is a complete valid `updated` postimage, and exactly one 409 whose parsed body deep-equals `{type: .../problems/conflict, code: revision-mismatch, status: 409, retry: after-state-change}` and nothing else — and bind the control's required failure to that conjunction. Add one sentence: any status outside {200, 409} on request 5/6 in the positive is recorded as inconclusive and stops for root disposition, not as a guard failure.
+
+---
+
+### 3. Deadline arithmetic is not internally consistent, and failure classes are not separated — Medium
+**Location:** plan "Use a 30s test-local work deadline covering startup/requests, followed by the existing bounded 10s launcher close; callback timeout 45s"; `scripts/installed-reference-observation.mjs:42–45`, `:76–79`.
+
+**Issue:** The nominal worst case of the bounds the plan itself fixes exceeds the work deadline that is said to cover them.
+
+**Evidence:** Launcher readiness is bounded at 10 000 ms (`:42–45`). Ten exchanges at a 5 s absolute per-exchange deadline sum to 50 s. 10 + 50 = 60 s against a 30 s work deadline (negative run: 10 + 30 = 40 s, also over). Cleanup path: 30 s work + 10 s bounded close = 40 s against a 45 s callback timeout — 5 s margin, on a repository whose most recent commit is `db5a4d6 test: allow evaluator refusal callback CI headroom`.
+
+**Impact:** A slow-but-correct run is terminated by the work deadline rather than by any exchange deadline, and the plan gives no record field distinguishing *work-deadline abort* from *exchange deadline* from *oracle failure* — exactly the three outcomes external review must tell apart. The 5 s callback margin is thin on the CI this repo has already had to add headroom for.
+
+**Smallest correction:** State that the work deadline is the dominating bound; add `terminationClass: oracle | exchange-deadline | work-deadline | transport | cleanup` to the safe record, with `work-deadline` classified as inconclusive; and either raise the test-local work/callback bounds so they cover startup + Σ exchanges, or reduce the per-exchange bound so Σ ≤ work deadline. No launcher or product timeout changes.
+
+---
+
+### 4. Counterfactual binding rests on an unsupplied payload-identity mechanism — Medium
+**Location:** plan "Hash the derivative's own runtime payload and compare the genuine ready payload to it"; `packages/server/src/installed-reference.ts:10`, `:26`; `scripts/installed-reference-observation.mjs:64`. `packages/server/src/installed-payload.ts` **is not supplied**.
+
+**Issue:** Two load-bearing assumptions are unverifiable from the supplied basis. (a) That `installedPayloadIdentity()` is a pure computation with no self-attestation against a committed manifest. If it compares and throws, the mutated derivative never reaches readiness and the control is infeasible as designed. (b) The comparison step has no stated mechanism — if the test re-implements the hashing, divergence produces a false mismatch and a false "not bound to its bytes" conclusion.
+
+**Evidence for feasibility so far:** `installed-reference.ts:10` computes the identity and `:26` only returns it — no comparison in the supplied file; the launcher accepts any value matching `/^[a-f0-9]{64}$/` (`:64`), never equality to an expected digest. This confirms the *launcher* will not reject a mutated payload, which is what the plan's "never demand that a mutated payload equal the positive one" relies on. It does not confirm (a).
+
+**Impact:** The derivative's binding to its own bytes is the plan's primary evidence that the child executed the patched guard site. If (a) is false the control cannot run; if (b) is left open the binding evidence may be unsound in either direction.
+
+**Smallest correction:** Add `packages/server/src/installed-payload.ts` to the mandatory reanchor read and record its disposition before freezing; obtain the expected identity by a single dynamic import of **the derivative's own** emitted `installed-payload.js` (no source edit, no new helper), and record the derivative value, the ready value, and the one-site patch before/after bytes side by side.
+
+---
+
+### 5. Symlink-escape detection is required but no method is specified — Medium
+**Location:** plan "Bind all copied regular files and symlink resolutions to the accepted consumer… Verify the child's actual relative module chain reaches that file and bare dependencies resolve through the copied unchanged graph."
+
+**Issue:** The requirement is correct; the verification is unspecified, and Node's default realpath-based module identity makes the failure mode silent.
+
+**Evidence:** The guard site is reachable entirely by intra-package relative specifiers — `installed-reference-process.ts:8` → `installed-reference.ts:4–6` → `development-runtime` / `member-executor` → `resource-evaluator` — which is good news for the patch. But `@bdp/protocol` is a bare dependency (`development-composition.ts:2–7`, `protocol/src/index.ts:13`), resolved through `node_modules`. Without `--preserve-symlinks`, a surviving pnpm symlink loads original workspace bytes while the copy's own recursive hash still differs, so a hash comparison alone does not detect the leak. `installed-reference-process.ts:67–75` (`isEntrypoint`, realpath both sides) stays satisfied either way, so it is not a detector.
+
+**Impact:** The control could report "two 200s from the derivative" while part of the executing graph was the unmutated source tree — the one outcome that would invalidate the counterfactual's attribution.
+
+**Smallest correction:** Before launch, `lstat`-sweep the derivative root and fail if any symlink resolves outside it; record the sweep result and the resolved realpath of the patched `resource-evaluator.js` in the safe record. Static check only — no loader hook, no runtime seam.
+
+---
+
+### 6. Request 9 cannot discriminate retention from re-execution — Medium
+**Location:** plan ten-request table rows 8–9 and the "two retained replays" done-criterion; `resource-evaluator.ts:151–160`, `:1022–1027`.
+
+**Issue:** The loser's disposition is exactly four static fields with no attempt-scoped content, and a *re-executed* B would fail `revision-mismatch` again against the changed state. So row 9 passes identically whether the disposition was retained or re-evaluated.
+
+**Evidence:** `fail()` constructs only `{type, code, status, retry}` (`:151–160`). After the winner commits, `before.revision ≠ R`, so `:1022–1027` refuses any re-execution of B with a byte-identical Problem. Row 8 *is* discriminating: a re-executed A with stale `expectedRevision` would now 409, so an identical 200 postimage with the same revision is genuine retention evidence. Row 10 complements row 8 (an unexpected re-execution of A would move the revision).
+
+**Impact:** Wording risk only — the progress doc could claim both replays witness non-re-execution. Note also that `member-executor.ts:586–588` releases the owned claim only for the transient-dependency path, and `:190–201` parses stored Problems, so retention of failures is strongly indicated but is not what rows 8–9 measure.
+
+**Smallest correction:** Wording. Attribute non-re-execution to row 8 plus row 10's unchanged revision; record row 9 as retained-disposition **response equality** only. No extra request, no ledger change.
+
+---
+
+### 7. The 65536-byte body ceiling is asserted, not evidenced, and all allowances depend on it — Medium
+**Location:** plan "Each request remains within the existing 65536-byte request ceiling… conservative positive body allowance 262238 bytes"; `development-composition.ts:33–42`; `development-runtime.ts:482`; `protocol/src/index.ts:79–82`.
+
+**Issue:** No supplied excerpt contains the numeric value of the request-body ceiling. The only ceiling in the supplied source is the server's 16 KiB **header** max (`development-runtime.ts:482`, `createServer({ maxHeaderSize: 16 * 1024 })`), which does support the plan's 16384 header figure. The body ceiling appears only as a pass-through: `request: { bodyBytes: authority.limits.requestBodyBytes }` (`development-composition.ts:36`).
+
+**Evidence / secondary point:** That same site constructs `request` with `bodyBytes` only, while `ReadAdvertisedLimits.request` declares `{ targetBytes, bodyBytes }` (`protocol/src/index.ts:79–82`). The plan must therefore not assert `targetBytes` in request 2's oracle. (Whether `parseReadUpdateDiscovery` tolerates the omission is not verifiable here — the RU parsers are not supplied — so the served limits shape should be observed, not frozen.)
+
+**Impact:** 262238, 131166 and the combined 393404 are all functions of an unverified constant. Arithmetic that is otherwise exact (see verified list below) would be presented as derived from source when it is derived from an assumption.
+
+**Smallest correction:** Read `limits.request.bodyBytes` from request 2's parsed discovery, check each body against the **observed** value before dispatch, and recompute/record the allowance from it; keep 65536 as the *expected* value to assert, not as the basis. Keep 16384 as a source-cited constant with the `:482` citation.
+
+---
+
+### 8. Requests 1–3 oracles rest on modules outside the supplied basis — Low/Medium
+**Location:** plan ten-request table rows 1–3; `development-composition.ts:16–17`, `:46–48`, `:84–85`, `:23–44`; `scripts/installed-reference-observation.mjs:69`. `read-http-routing.ts`, `applyReadHttpSemantics`, `parseReadUpdateDiscovery`, `parseReadUpdateOperationDirectory` are **not supplied**.
+
+**Issue:** Row 1's "204, actual service-desc Link" is inferred solely from `probe: async () => ({ serviceDescription })` (`:48`) with `serviceDescription = new URL("bdp.json", scope).href` (`:16`). Row 2's descriptor location and "no History" shape, and row 3's directory body, come from code I cannot see. `historicalResolution` reaches the document only via the `...data` spread (`:26–30`); the only History evidence supplied is the launcher's `ready.history === false` assertion (`:69`), which is a configuration field, not a discovery field.
+
+**Related, load-bearing detail:** The plan's rule "Do not generate an operation path and label it discovered" is correct and necessary — `docs/specs/bdp.md:2080–2087` shows directory *values* in a different spelling from the operation names (`"updateBead": "update-bead"`), while `development-runtime.ts:369` looks up `operations[name]` from the path. Separately, the directory is matched by exact string equality against `new URL("operations/", scope).href` — trailing slash included (`:17`, `:84`).
+
+**Impact:** Three of ten rows could fail on status/shape expectations frozen from inference, with no bearing on the guard.
+
+**Smallest correction:** Add those four read-path sites to the mandatory reanchor read and pin row 1's status, row 2's location, row 2's History spelling, and row 3's body shape then; until then mark them to-be-confirmed bindings rather than frozen oracles. Use the discovered directory value verbatim (resolving it against the Scope first if it is relative, then applying the canonical-Scope/userinfo/query/fragment guard), and use the directory URL exactly as discovered, trailing slash included.
+
+---
+
+### 9. The "exact selection" title is not a literal pattern — Low
+**Location:** plan "Exact selection: the new file with anchored literal title above"; the title `preserves one guarded winner and both retained dispositions across overlapping ordinary Read+Update requests`.
+
+**Issue:** `Read+Update` contains a regex metacharacter. Jest's `--testNamePattern` is a regex matched against the full concatenated name (describe prefixes included), so an `^…$`-anchored pattern with an unescaped `+` is not the claimed literal, and will match nothing if the test is nested in a `describe`.
+
+**Impact:** The "exact selection" that external review re-runs may select differently or select nothing — a silently green run.
+
+**Smallest correction:** Freeze the literal command string with `\+` escaped, and either declare no `describe` wrapper or include the describe prefix inside the anchors.
+
+---
+
+### 10. "No three Transactional context headers" is unimplementable as written — Low
+**Location:** plan "Both mutation dispositions require private,no-store, correct media type, no ETag or Location, and no three Transactional context headers"; `development-runtime.ts:85–94`, `:472`.
+
+**Issue:** The three header names are never given, and no supplied excerpt names them; "correct media type" is also ambiguous across the pair, which differ.
+
+**Evidence:** The complete mutation header-setting surface is supplied: `json()` writes `content-type` (`application/json`, or `application/problem+json` when `problem` is true — `:89`), `cache-control: private, no-store`, `content-length`, `x-bdp-development: non-attesting`; `:472` sets `vary: Accept` on both dispositions. No `ETag` or `Location` is set anywhere on this path, consistent with `docs/specs/bdp.md:2102–2107`.
+
+**Smallest correction:** Replace the clause with an exact-set assertion on the mutation response header set — `content-type` (per-status as above), `cache-control`, `content-length`, `x-bdp-development`, `vary`, plus Node's automatic `date`/`connection`. That subsumes "no ETag/Location/TX headers", is stronger, and needs no unsupplied vocabulary.
+
+---
+
+### 11. Event-cap enforcement semantics unspecified — Low
+**Location:** plan "maximum 32 events for the pair is sufficient and must be enforced."
+
+**Issue:** The named kinds are ten (invoked, end-called, socket-assigned, connected, finish, response-start, response-end, error, settled, socket-close) → 20 of 32 for the pair, leaving 12 for "bounded error information". But `aborted`, request `close` and response `close` — all three named in the reader's handling requirements — are not in the kind list, and "enforced" does not say whether overflow drops or fails.
+
+**Impact:** An incidental extra terminal event could fail a correct run, or be silently lost from the record external review reads.
+
+**Smallest correction:** Name every recordable kind, and on reaching the cap stop appending and increment a `droppedEvents` counter carried in the safe record. Never fail an oracle on event-count overflow alone.
+
+---
+
+### 12. Process/temp ledger omits non-reference children and the derivative root's disposal — Low
+**Location:** plan "Local dynamic ledger… 1 child" per invocation; "then remove the owned bdp-ru-guarded-overlap- directory"; "External review checks actual selected result and final PID/temp absence".
+
+**Issue:** Two unledgered surfaces. (a) The test "reads actual local Git state" and copies a full dependency closure; if either is done by spawning (`git`, a copier), the observable process count exceeds the stated 1 child per invocation. (b) The teardown clause names only the store directory. The derivative root has no owner, no disposal step, and no containment constraint — yet it is the physical evidence of the one-site patch and must outlive the run for review.
+
+**Impact:** "Final PID/temp absence" becomes ambiguous for external review, and the derivative could be left inside the worktree or inside a path CI globs.
+
+**Smallest correction:** State whether git/state inspection and the copy are in-process (`node:fs`) or spawned, and add any spawned processes to the ledger. Name the derivative root in the safe record (realpath + payload hash + patch-site before/after bytes), assert it lies outside the worktree and outside CI test globs, and give root an explicit post-review disposal step distinct from the store-directory removal.
+
+---
+
+### 13. The second owned path's existence is unverified — Low
+**Location:** plan path 2, `docs/design/update-implementation-progress.md`.
+
+**Issue:** The supplied working set contains only `docs/design/transaction-implementation-progress.md`. Whether `update-implementation-progress.md` exists is not determinable from the basis.
+
+**Impact:** "Accurately record the partial private witness… preserving cumulative/public gates" reads as an amendment; if the file does not exist, the plan silently creates a new design document — a different review surface, and a different claim about where this witness is recorded.
+
+**Smallest correction:** Confirm the path at reanchor and state explicitly whether path 2 is an amendment or a new file. Two-path scope unchanged either way.
+
+---
+
+### 14. Entry override has no validation contract — Low
+**Location:** plan "An optional file-local BDP_RU_GUARDED_OVERLAP_ENTRY chooses the actual external consumer entry; default is the existing emitted installed-reference-process.js".
+
+**Issue:** A committed test accepts an arbitrary filesystem path from the environment. The plan correctly forbids accepting a supplied *source-commit label* as attestation and requires recording entry realpath/hash, but places no constraint on the override value itself or on the default-path invariant.
+
+**Impact:** Provenance of a run becomes environment-determined with nothing asserting that the default CI invocation used the committed default entry.
+
+**Smallest correction:** Require the override to be an absolute realpath to an existing regular file; when unset, assert the resolved entry equals the committed default; and add one line to the progress doc that any non-default-entry run is not CI evidence. `installed-reference-process.ts:11` (`process.argv.length !== 2`) already constrains the argv shape and needs no change.
+
+---
+
+### 15. Overlap labeling versus expected arrival-order stability — Low
+**Location:** plan "Exactly what overlap is observed"; "Done when the exact 10-request positive establishes client-call overlap"; `recovery-store.ts:381–391`; `development-runtime.ts:454–466`.
+
+**Issue:** Two labeling risks, both wording-level. First, the plan's own overlap predicate — both requests invoked/end-called before either settlement, with distinct request and socket identities — is satisfied *by construction* when both are built in one JavaScript turn; it is not a measurement that can fail. Second, the winner is expected to be stable in practice, not merely nondeterministic in principle.
+
+**Evidence:** `transaction()` is entirely synchronous — `BEGIN IMMEDIATE`, synchronous callback, `rejectAsync(result)` at `:388` rejecting a promise result, `COMMIT` at `:390` — so store turns serialize and cannot interleave; the handler awaits `body(request)` at `:454` before `principalAuthority.mutate` at `:458–466`, so arrival order normally decides the winner. `agent:false` does yield a fresh socket per request, so the distinct-identity part is sound. The plan is already correct to decline a simultaneous-admission claim and to refuse to pin A or B.
+
+**Impact:** The private witness could be written up as race evidence, or a stable winner read as a fairness/nondeterminism property — neither is what this schedule shows.
+
+**Smallest correction:** Wording. Record `overlapObserved` as three-valued (true/false/unknown) and the observed winner as data; state in both the record and the progress doc that the overlap predicate is construction-guaranteed, that a stable winner follows from arrival ordering, and that neither is evidence of simultaneous admission. No scheduling hook, no stronger admission semantics.
+
+---
+
+## Confirmed feasible from the supplied source (no action needed)
+
+- **Fixture shapes are proven, not inferred.** `scripts/installed-reference-observation.mjs:201–215` creates `{id, type: ${scope}types/task, properties:{n}}` → 200 and updates with exactly `{bead, expectedRevision, propertiesChange:[{op:"replace",path:"/n",value}]}` → 200. So neither body needs `revisionProvenance`, absolute `bead` URLs are the proven spelling (`:205`, `:209`), and short alphanumeric keys are accepted (`"create"`, `"update"`). Row 7's oracle has direct precedent at `:216` (`deepEqual(GET body, mutation result resource)`).
+- **The task Type is runtime-provisioned.** `referenceConfiguration` ships `contracts: {descriptors: [], schemas: []}` (`:100`) and `docs/specs/bdp.md:2080–2087` defines no type-creation operation, so the Type cannot be created over the wire — request 4 cannot 422 for a missing Type unless the runtime's defaults changed. (The provisioning site itself is in the unsupplied region of `development-runtime.ts`.)
+- **The guard removal is a true one-site, behavior-complete deletion.** `resource-evaluator.ts:1022–1027` is the sole `revision-mismatch` site, downstream of policy (`:1015–1021`) and upstream of patch-limit checks (`:1030–1046`); deleting it lets the second update apply `replace /n` to the committed document, yielding two schema-valid `updated` postimages with the two distinct requested values.
+- **Exactly-one-winner is mechanically reachable.** Distinct keys avoid key-state collision; each `executeMember` turn is a synchronous `BEGIN IMMEDIATE` transaction (`recovery-store.ts:799–801`, `:381–391`), so the second sees the committed revision and `:1022–1027` refuses it. `available()`'s `nested-access` guard (`:379`) cannot fire from this pattern because no transaction spans an await.
+- **The loser's expected body matches the source exactly** — `{type: .../problems/conflict, code: revision-mismatch, status: 409, retry: after-state-change}`, four fields, returned directly as the response body (`development-runtime.ts:473–474`), with `member-executor.ts:196–201` rejecting positional fields in stored dispositions.
+- **Rejecting `requestInstalled` for new use is correct** (`:104–143`: unbounded `text +=`, no cancellation handle exposed, socket-inactivity `timeout` rather than an absolute deadline).
+- **The 16384 response-header bound needs no configuration** — it is Node's default `maxHeaderSize`, enforced by the parser, and is also settable per-`ClientRequest` on the pinned Node 24. This resolves the native reviewer's parser-limit checkpoint without new scope.
+- **Dispatching the path (not the absolute canonical URL) to the loopback listener is right.** The server reconstructs canonical-Scope URLs internally (`installed-reference.ts:20`; `development-composition.ts:16–17`, `:84`), and `requestInstalled` demonstrates that a default `Host: 127.0.0.1:port` with no `Origin` passes the receiver's gates.
+- **The mutated payload will not be rejected at readiness** — the launcher only regex-matches `/^[a-f0-9]{64}$/` on `payloadIdentity` (`:64`), never an expected digest. (Subject to finding 4(a).)
+- **File naming matches convention** — the untracked `apps/bdptest/src/transactional-receipt-missing-context-installed.test.ts` establishes the `*-installed.test.ts` pattern.
+- **Arithmetic independently reproduced by hand:** seed = **94** UTF-8 bytes (counted term by term); update body = **135 + L** with `L = |JSON.stringify(R)|` including its quotes; positive bodies **634 + 4L**; negative **364 + 2L₍neg₎**; conservative allowances **94 + 4×65536 = 262238**, **94 + 2×65536 = 131166**, combined **393404**; response ceiling **16 × 32768 = 524288**; ledger 10+6 = **16** HTTP, 2 callback executions, 2 owners/store directories, 2 product + 2 reservation listeners = **4** TCP listeners, ≤2 outstanding exchanges; amended variant **26 HTTP / 3 children**. All consistent — the request-total figures conditional on finding 7.
+
+## Explicit uncertainties (not assumed either way)
+
+| Not supplied | What depends on it |
+|---|---|
+| `packages/server/src/installed-payload.ts` | Finding 4 — feasibility of the entire counterfactual if it self-attests |
+| `read-http-routing.ts` / `applyReadHttpSemantics` | Finding 8 — row 1's 204 and `Link: rel=service-desc`, row 7/10 read projection |
+| `parseReadUpdateDiscovery` / `parseReadUpdateOperationDirectory` / `parseReadUpdateProblem` | Findings 7, 8 — served limits shape, History spelling, directory value form |
+| `development-runtime.ts` outside `:78–126`, `:350–485` | `url` construction, operation-map key spelling, Type provisioning, `authority.limits.requestBodyBytes` value |
+| `recovery-store.ts` after `:403` / `:830`; `member-executor.ts` after `:635` | Whether a failed member's disposition is persisted (finding 6 is insensitive to this either way) |
+| `observeInstalledReference` `:145–200` | Where the token and scope config are assembled in the existing precedent |
+| SHA-256 `b7673840…`, `4ed2467f…`, and the eleven file digests | Tools disabled — **not verified**; byte *lengths* were recomputed by hand, digests were not |
+| Jest config in `apps/bdptest` | Whether a JSON reporter and a 45 s per-test timeout are available without config changes |
+
+Two-path scope, the existing helper, the Transactional lane, scheduling, admission semantics, public/whole-contract qualification and `claimEligible:false` are untouched by every correction above; all fifteen are wording, enumeration, classification or pre-authoring read-list changes.

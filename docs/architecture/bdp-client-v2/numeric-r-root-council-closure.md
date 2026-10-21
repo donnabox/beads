@@ -1,0 +1,7 @@
+# Root closure: numeric R evidence council
+
+Native full four-file review covers4578 and found no actionable defect. Completed external review63309 (exit0) covers88 and identifies one High and two Low findings. High route pin is closed by ordinary4578: root/native/author independently reproduce both canonical full-tuple route hashes; fresh209 tests and genuine54-row aggregate pass. The original failed88 run remains recorded.
+
+Both Low findings are closed in7660d3d743883bab558a6a1ec9f4bf31979a4d90, direct6c23. Root read exact6insertions/2deletions and final report: restores independently recomputed R source-span SHA12982a61 for196702bytes; duplicate comparator control now duplicates a corrected action and asserts unique-refusal/comparator error specifically, so it reaches that guard. Manifest/coverage/control execution and runtime remain unchanged. Three focused guards and static checks pass; fresh exact7660 packed54-row cohort passes16.382321s with all cleanup complete. No need to relabel or repeat historical209 result; source-specific scopes stay explicit.
+
+No actionable R council finding remains. External review was on88; subsequent exact requested repairs and route correction are independently closed by root/native review and execution, not falsely described as a new external review of7660. Final ordinary integration with diagnosticc958 is pending, as are exactCI and merge-tree checks. Rwhole remainsfalse;33whole is diagnostic inventory only. The after-R whole-credit proposal is separate and not accepted by this code closure.

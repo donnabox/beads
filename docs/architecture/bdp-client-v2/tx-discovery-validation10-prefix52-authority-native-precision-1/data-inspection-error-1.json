@@ -1,0 +1,5 @@
+{
+  "correction": "Add standard os import to DATA verifier; exact candidate/source/gate bytes unchanged, no actual validation-stage retry.",
+  "operation": "New read/hash-only inventory verifier initially omitted standard-library os import",
+  "result": "NameError before review-output creation; no candidate/helper/runtime evaluated"
+}

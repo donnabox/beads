@@ -1,0 +1,35 @@
+Review this bounded implementation PLAN independently against the actual repository. This is not a review of an implemented Snapshot change. Do not write or modify any files. Output findings only in stdout. Do not run tests/builds/imports/services, commands, agents, or network operations. Read, Glob and Grep only.
+
+Working directory: /Users/dbox/repos/wt/vickie/vickie-link-event-minimum
+Clean review base: 0f215c05678f507dd8a39ee08e288f0901710135 (Link draft PR156 source, exact bytes pinned). No newer main and no product/source edits are authorized. The sole plan snapshot is background, not a request to broaden work.
+
+Read completely:
+- /Users/dbox/repos/wt/vickie/bdp-integration-logs/link-event-next-serving-audit/claude-plan-review/context/plan-v2.md
+- /Users/dbox/repos/wt/vickie/bdp-integration-logs/link-event-next-serving-audit/claude-plan-review/context/selection-v2.json
+- /Users/dbox/repos/wt/vickie/bdp-integration-logs/link-event-next-serving-audit/claude-plan-review/context/precision-disposition-v2.json
+Relevant planning context if needed: /Users/dbox/repos/wt/vickie/bdp-integration-logs/link-event-next-serving-audit/claude-plan-review/context/design.md; preservation inventory /Users/dbox/repos/wt/vickie/bdp-integration-logs/link-event-next-serving-audit/claude-plan-review/context/preservation-v2.json. Binding JSON is metadata, not historical validation material; you need not read all hashes. Native opinion is not an approval authority for your review.
+
+Then inspect actual source and existing tests. Complete files and broader relevant repo context are available read-only; follow needed helpers, do not limit yourself to the line ranges:
+- packages/server/src/transaction-http.ts: minimum receiving/outer catch, Snapshot route398-464 and final response handling620-684.
+- packages/server/src/transaction-service.ts: run/check133-156 and snapshot422-446; compare other current helper use only when useful, not a request to copy Event ordering.
+- packages/server/src/transaction-store.ts: observeSnapshot1558-1600, entry/instant/readContext dependencies.
+- packages/server/src/transaction-consistency.ts: complete capture, strict/lexical predicates, current checks and finite waiter.
+- packages/server/src/transaction-snapshot.ts: request union and actual expire/preflight/capture/retained semantics.
+- packages/server/src/transaction-snapshot.test.ts: fixture64-123 and owner cases1218-1285.
+- packages/server/src/transaction-service.test.ts: fixture55-112; Snapshot lifecycle1043-1057 and describe1093-1248; delegated-owner patterns if needed.
+- packages/server/src/transaction-http.test.ts: emitted-runtime import and fixture1-175; fresh minimum HTTP2805-2885.
+- apps/bdptest/src/transactional-snapshot-installed.test.ts: full lifecycle/provenance fixture1-421; helpers747-795; existing31-exchange cohort796-955; existing2-request fixed-head callback959 onward (preserved, not selected again).
+- scripts/transaction-installed-observation.mjs and apps/bdptest/test-support/transactional-execution-binding.ts for actual child/lifetime/provenance contracts.
+- docs/specs/bdp.md: remaining-read5841-5851, conditional5876-5878, fresh Snapshot5901-5911 and retained section following. Read surrounding normative context where needed. Schema transactionalProblem/snapshotManifest if assertions rely on them.
+
+Scope: fresh canonical no-query Snapshot GET/HEAD, owner/service create/preflight, lexically valid unrecognized minimum with actual current epoch/view. The general remaining-read law permits a reference wait/failure choice. The current Resource-specific MUST does NOT become a Snapshot MUST; retained Snapshot/continuation S1, incident-Link G2 and opaque-plus-foreign remain excluded. No public discovery/admission/profile claims, Types/History/provenance redesign, main or unrelated changes.
+
+Review the entire proposal for correctness, minimality, missing tests and executable fixture feasibility. In particular:
+1. Strict-first lexical fallback catches only strict helper failure, preserves malformed/known/retained error and lifecycle ordering; kind capture happens only after valid tuple and is reused. Owner independently revalidates, keeps readContext then instant before comparison, compares before Snapshot maintenance/allocation. No Event first-attempt ordering transplant, broad catch, duplicated preflight or deadline reset.
+2. Fresh versus retained/foreign exclusion and HTTP one terminal service call for capture/preflight, including HEAD/304/412/406 and lexical receiving/query/auth precedence.
+3. A13 owner calls/offline preservation, B/C controlled waits/real independent commit/caller mutation/cancellation/drain/probes, F7 sync-vs-rejected error controls. Counts must be observable; never count an owner-release probe as a Snapshot attempt.
+4. D27 emitted requests/statuses and setup, amended service15 direct handler calls, existing18 network requests, 22 source callback/store selection. Actual schema/required HEAD metadata/body and private500/401 limits.
+5. Existing installed31 requests/two sequential children stays historical except exchange19 successor oracle; new E exactly3 real requests/one child/store, actual seed response headers and ready/config/package binding, cleanup-inclusive45000ms deadline,5000ms exchange,60000ms callback. Callback-local cleanup must preserve failed/unknown/late-close evidence and report actual state. Shared historical helper not rewritten.
+6. Seven-file cap, old callback/source-region preservation, fresh build before dynamic emitted HTTP module collection, static/source/installed immediate audits then commit only afterward, exact-head CI/council integration still required. No new test execution now.
+
+Return numbered findings with severity, precise plan/source location, issue, impact and concrete correction. Distinguish blockers from optional precision. Flag an incorrect count, unsupported fixture assumption or semantic expansion directly. If no findings, say so explicitly. Do not create a new plan or claim functionality/completion from prospective counts. No praise required.

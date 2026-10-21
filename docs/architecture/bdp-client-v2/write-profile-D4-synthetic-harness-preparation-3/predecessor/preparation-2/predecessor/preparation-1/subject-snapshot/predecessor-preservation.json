@@ -1,0 +1,22 @@
+{
+  "entireHelper3": {
+    "path": "predecessor3",
+    "physicalFiles": 526,
+    "preparationIndexSha256": "8629a07c6299b0f36572c2f8217dbf9c108a9f178f60d9ca6753d864353536b3"
+  },
+  "nestedHelper2": {
+    "path": "predecessor3/predecessor2",
+    "physicalFiles": 296
+  },
+  "nestedHelper1": {
+    "path": "predecessor3/predecessor2/predecessor1",
+    "physicalFiles": 130
+  },
+  "nativeHelper3": {
+    "path": "context/helper3-native",
+    "physicalFiles": 96,
+    "indexSha256": "035317a73c2b9496af3fb4182dbe54e6a669e80c5eb671c0c09dbab701f2f409"
+  },
+  "priorStaticFailures": "predecessor3 exact2; active inherited diagnostic files remain exact historical copies, no new helper4 runtime failures",
+  "noResultOrAttemptReuse": true
+}

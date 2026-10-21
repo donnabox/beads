@@ -1,0 +1,11 @@
+# Final code-review preparation — closed, not launched
+
+Frozen six-path successor acf190e742dfb669fe5607085a3ac60c5ecb66f4f86b1f05025424a7873615b0 / full patch e0c25b193ef1191d10916728c54eb6a894c5f29992e0da768bd585ef089e98e3. Dirty parent88c9408e/treeb2d9 on codex/vickie-event-missing-context. All six snapshot hashes and the reconstructed full patch match actual checkout. No source edits or product imports/execution.
+
+Prompt 113717 UTF-8 bytes, SHA 32cb25e3d7fc3ef5dca25e703261a308c62a9baaa026b1495b1331e3cc8c7bc7. Complete37,584-byte six-file patch is included, including the entire new installed test. Relevant actual owner/HTTP/service/runtime/Read/fixture/launcher/raw serializer/installed binding helpers and complete existing SSE callback are supplied, with normative lead sentences. The exact executor's unused ordinary path is excluded; no claim of whole-repository context. Historical duplicated reports/plan chain are hash-bound, not dumped into the prompt. Initial untrimmed preparation is preserved in pre-trim-preparation/.
+
+Root accepted redirect:error and native N1 closure are explicit; original ledgers are clearly historical source attribution with unchanged workload proposals. Actual tests/control/installed evidence remain unexecuted. Scope remains9 source positives plus1control plus1installed:11 executions,61HTTP,11owners/directories,4listeners,1child;6newCI registrations. No public qualification.
+
+Wrapper remains unchanged SHA 5970b11353bb59248833cc5e8599c2712ef54fd1866c6e8086b9fb30da8edeaa; AST parsing only. Binding SHA 4d5e457d8394801c2da088d83d1c3a40bfa61cf3490aa1c5d8ef91d74b68837f. Default closed rootLaunchReleased=false; no live gate or process. Root must inspect final prompt/binding/wrapper and release one actual900s no-tools/no-modeloverride invocation. Fresh session guard required before launch. Exclusive run artifacts, all tracked/new declared source plus prompt/plan before/after checks, bounded process-group termination and terminal cleanup are retained. One-second group sampling can miss detached/short-lived descendants; no absolute process-proof claim.
+
+Prospective argv: ["/opt/homebrew/bin/claude", "--safe-mode", "-p", "--tools", "", "--no-session-persistence"]. No launch, test, build, install, service, commit, push or coordination update performed.

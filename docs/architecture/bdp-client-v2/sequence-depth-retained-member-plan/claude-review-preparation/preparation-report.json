@@ -1,0 +1,30 @@
+{
+  "state": "CLOSED PREPARATION; no review process launched and no root-release.json",
+  "promptBytes": 6495,
+  "promptSha256": "9ea3ec830c2a0ae5b99271d1e571b2ca443d5f5fdb0891cdfd172b3909ae3d98",
+  "runnerSha256": "d4d3f439bff5a0058f42d82dbc7e0990fa66f3210b60e7f47463a29baa96ce85",
+  "bindingSha256": "b0e92ebc379f7fe32106fa690b206cf8fe0e4c38f5586c125f85dc886b5f4065",
+  "reusedRunner": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-minimum-read-receiving-plan/claude-review-preparation/run.py",
+  "reusedRunnerSha256": "72eac46afdb130eb85829108bca92809c046afafcc520ca083f643ecbd0ca7fa",
+  "argv": [
+    "/opt/homebrew/bin/claude",
+    "--safe-mode",
+    "-p",
+    "--tools",
+    "Read,Glob,Grep",
+    "--allowedTools",
+    "Read,Glob,Grep",
+    "--disable-slash-commands",
+    "--strict-mcp-config",
+    "--mcp-config",
+    "{\"mcpServers\":{}}",
+    "--add-dir",
+    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/sequence-depth-retained-member-plan",
+    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-depth-key-order-plan",
+    "--no-session-persistence"
+  ],
+  "coverage": "Complete plan/ledger/native requirement and prior direct-only plan; full relevant actual batch/store/sequence/service/HTTP/parser/identity/normative/witness/helper/schema functions are requested via read-only tools. No giant inline copies. Additional tracked repository reads permitted for concrete gaps. Relevant22 existing source pins plus clean tree/HEAD/status are checked before and after.",
+  "changes": "cwd/output/source/binding, tool allowlist Read/Glob/Grep, explicit read directories, disabled skills/configured MCP; clean checkout checks. Existing895TERM/900KILL exclusive-output PID/group/temp/raw-exit supervision retained. No retry.",
+  "release": "Root must inspect exact prompt/runner/binding, set rootLaunchReleased true and write root-release.json pinning final runner/prompt/binding/reviewHead/reviewTree. Then root may call guarded-action.py python3 run.py once.",
+  "limitations": "Read tools may inspect additional tracked source beyond individually listed pins; clean complete tree/status pins catch tracked edits. Process-group sampling cannot prove absence of detached/short-lived descendants; reports retain that limitation."
+}

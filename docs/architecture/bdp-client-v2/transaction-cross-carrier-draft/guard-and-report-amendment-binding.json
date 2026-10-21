@@ -1,0 +1,37 @@
+{
+  "basisBindingSHA256": "6cb16804ef318023dcb764bbccd0f2c6534db2062658aefc9c86093acf50c686",
+  "dispositionSHA256": "b28db1b7ca095daf685a32483a8f62b1b8f10929f58ba61d9602e58905ea652a",
+  "nativePreflightSHA256": "118f48291723f906ba8eb8c9d9d82ce84d0c6b95fd773d37f33aaa2b83c72218",
+  "sourceApplied": false,
+  "stagingDirectory": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-cross-carrier-draft/guard-and-report-staging",
+  "files": [
+    {
+      "path": "packages/conformance/src/transactional-cumulative.test.ts",
+      "beforeSHA256": "ca689688836d2de747c0fa838d01ed14e7cefcadfd62be7f7b53632a1a513e12",
+      "afterSHA256": "cfb0cbb6d534d813b7b4364d86ba805319d82d3499a567c2bc0f4de9060c9972",
+      "beforeBytes": 88878,
+      "afterBytes": 89341
+    },
+    {
+      "path": "apps/bdptest/src/transactional-matrix.test.ts",
+      "beforeSHA256": "5b4cfb0a6c7e21514953464be5a9730cad122d1b1bb712f04f9f1d371b068740",
+      "afterSHA256": "08d64942a5e9014d64b15a404f44ef77337cd576ed302c0391dd4dc22822c35f",
+      "beforeBytes": 82676,
+      "afterBytes": 83085
+    }
+  ],
+  "patchSHA256": "83cf3edd53e4c584afe159ccb43f96c836e3bcbd7a56b080fa8070528bac5122",
+  "limits": {
+    "manifestDisk": 688302,
+    "manifestNormal": 699694,
+    "canonicalNodes": 18171,
+    "coverageDiskAndNormal": 100269,
+    "derivativeNormal": 705812,
+    "derivativeNodes": 18327,
+    "manifestDelta": 200022,
+    "coverageDelta": 29607,
+    "nodeDelta": 5152
+  },
+  "writer": "BDP_TRANSACTIONAL_CROSS_CARRIER_CONTROL_OUTPUT-<control>.json; JSON.stringify({ sourceCommit, entry, ...observed }, null, 2) plus newline",
+  "execution": "Prepared text only; no tests/build/typecheck/install/service/commit/push; original checkout and evidence preserved."
+}

@@ -1,0 +1,70 @@
+--- review-start/apps/bdptest/src/read-update-matrix.test.ts
++++ root-final/apps/bdptest/src/read-update-matrix.test.ts
+@@ -4584,10 +4584,12 @@
+   expect(countNodes(manifest) - METADATA_CLOSURE_CONTINUATION_NODES_BASE).toBeLessThanOrEqual(2000);
+   // Root-approved schema slice amendment: 698614+12288 -> 698614+14336.
+   // The 06b0e04 anchor predates this +2048 coverage allowance.
++  // Command-minimum catalog row adds 401B; the 243B excess raises 14336 to 14579.
++  // Both historical bases stay fixed; this measured allowance has zero slack.
+   expect(
+     source("packages/conformance/test-support/read-update-coverage-v1.json").bytes.length -
+       METADATA_CLOSURE_COVERAGE_BYTES_BASE,
+-  ).toBeLessThanOrEqual(14336);
++  ).toBeLessThanOrEqual(14579);
+   expect(
+     createHash("sha256")
+       .update(source("packages/conformance/fixtures/read-update-reference-v1.json").bytes)
+@@ -4965,7 +4967,9 @@
+   const coverage = source("packages/conformance/test-support/read-update-coverage-v1.json").bytes;
+   // Root-approved schema slice amendment: 703415+7168 -> 703415+9728.
+   // The b604 anchor above predates this +2560 coverage allowance.
+-  expect(coverage.length - 703415).toBeLessThanOrEqual(9728);
++  // The same 401B omitted row exceeds this allowance by 50B: 9728 -> 9778.
++  // Keep the historical base and other fences; no speculative margin is added.
++  expect(coverage.length - 703415).toBeLessThanOrEqual(9778);
+   const row = manifest.scenarios.find((r: { id: string }) => r.id === numericRoundTripId) as {
+     actions: readonly NumericRAction[];
+   };
+--- review-start/packages/conformance/src/profile-contract-plan.test.ts
++++ root-final/packages/conformance/src/profile-contract-plan.test.ts
+@@ -250,12 +250,16 @@
+       expect(selection.required.filter((row) => row.id === id)).toEqual(rows);
+       expect(selection.retiredIds).not.toContain(id);
+     }
++    expect(loadProfileContractSelection("read-update").required).toHaveLength(130);
+     expect(loadProfileContractSelection("read").required.map((row) => row.id)).not.toContain(id);
+     expect(
+       loadScenarioCatalogJson(read("transactional-v1.json")).scenarios.map((row) => row.id),
+     ).not.toContain(id);
+     const coverage = JSON.parse(
+-      readFileSync(new URL("../test-support/read-update-coverage-v1.json", import.meta.url), "utf8"),
++      readFileSync(
++        new URL("../test-support/read-update-coverage-v1.json", import.meta.url),
++        "utf8",
++      ),
+     ) as {
+       rows: {
+         id: string;
+@@ -265,6 +269,9 @@
+         bindings: unknown[];
+       }[];
+     };
++    expect(coverage.rows).toHaveLength(130);
++    expect(coverage.rows.filter((row) => !row.wholeContract)).toHaveLength(97);
++    expect(coverage.rows.filter((row) => row.status === "omitted")).toHaveLength(76);
+     const omitted = coverage.rows.filter((row) => row.id === id);
+     expect(omitted).toHaveLength(1);
+     expect(omitted[0]).toMatchObject({ id, status: "omitted", wholeContract: false, bindings: [] });
+--- review-start/packages/conformance/src/transactional-cumulative.test.ts
++++ root-final/packages/conformance/src/transactional-cumulative.test.ts
+@@ -78,7 +78,9 @@
+ it("binds the canonical cumulative TX selection and exact source digests without qualification", () => {
+   const actual = bundle();
+   expect(selected.required).toHaveLength(251);
+-  expect(selected.required.map((row) => row.id)).toContain("read-update.http.command-minimum-fields");
++  expect(selected.required.map((row) => row.id)).toContain(
++    "read-update.http.command-minimum-fields",
++  );
+   expect(actual.manifest.scenarios.map((row) => row.id)).not.toContain(
+     "read-update.http.command-minimum-fields",
+   );

@@ -1,0 +1,52 @@
+{
+  "purpose": "Recipes only; no execution gate. Root prepares/reviews actual targeted validation. Typecheck and two-file format check warranted; no rebuild/other-case repeat.",
+  "commands": [
+    {
+      "id": "transport-targeted",
+      "cwd": "/Users/dbox/repos/wt/vickie/vickie-authorization-transition",
+      "argv": [
+        "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+        "/Users/dbox/repos/wt/vickie/vickie-authorization-transition/node_modules/vitest/vitest.mjs",
+        "run",
+        "packages/server/src/transaction-runtime.test.ts",
+        "--maxWorkers=1",
+        "-t",
+        "^(?:narrows\\ current\\ Transactional\\ visibility\\ and\\ fences\\ issued\\ handles\\ after\\ policy\\ publication)$",
+        "--reporter=verbose",
+        "--reporter=json",
+        "--outputFile=/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-authorization-transition-draft/evidence-repair/validation-proposed/transport.results.json"
+      ],
+      "selected": [
+        "narrows current Transactional visibility and fences issued handles after policy publication"
+      ],
+      "expectedPassed": 1,
+      "timeoutSeconds": 120,
+      "released": false
+    },
+    {
+      "id": "owner-targeted",
+      "cwd": "/Users/dbox/repos/wt/vickie/vickie-authorization-transition",
+      "argv": [
+        "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+        "/Users/dbox/repos/wt/vickie/vickie-authorization-transition/node_modules/vitest/vitest.mjs",
+        "run",
+        "packages/server/src/transaction-authorization.test.ts",
+        "--maxWorkers=1",
+        "-t",
+        "^(?:preserves\\ policy\\ and\\ delivery\\ leases\\ after\\ confirmed\\ policy\\ rollback|projects\\ receipt\\ records\\ and\\ allocations\\ without\\ changing\\ non\\-record\\ execution\\ facts|bounds\\ administrative\\ drain\\ without\\ cancelling\\ admitted\\ sequence\\ work|captures\\ one\\ Scope\\ policy\\ for\\ distinct\\ principals\\ and\\ renders\\ empty\\ historical\\ advances)$",
+        "--reporter=verbose",
+        "--reporter=json",
+        "--outputFile=/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-authorization-transition-draft/evidence-repair/validation-proposed/owner.results.json"
+      ],
+      "selected": [
+        "preserves policy and delivery leases after confirmed policy rollback",
+        "projects receipt records and allocations without changing non-record execution facts",
+        "bounds administrative drain without cancelling admitted sequence work",
+        "captures one Scope policy for distinct principals and renders empty historical advances"
+      ],
+      "expectedPassed": 4,
+      "timeoutSeconds": 120,
+      "released": false
+    }
+  ]
+}

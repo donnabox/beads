@@ -1,0 +1,51 @@
+{
+  "all17P3InnerOutputsBoundToFrozenActualEvidence": true,
+  "first4SourceEvidenceTables": [
+    {
+      "frozenSourceEvidenceIndex": {
+        "bytes": 1187,
+        "mode": "0o644",
+        "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation3-node-version-root-tool-evidence-1/index.json",
+        "sha256": "93fcb5eb0afdd20f2fe18acba62f5b360181a23e03a2ca1ce6f6240cccf24b49"
+      },
+      "originalStageFilesChecked": 12,
+      "stage": "node-version"
+    },
+    {
+      "frozenSourceEvidenceIndex": {
+        "bytes": 1185,
+        "mode": "0o644",
+        "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation3-pnpm-version-root-tool-evidence-1/index.json",
+        "sha256": "dff257a04acf47fec756f41212d34ceb0be1071e18139755e9d4755dbd1f6796"
+      },
+      "originalStageFilesChecked": 12,
+      "stage": "pnpm-version"
+    },
+    {
+      "frozenSourceEvidenceIndex": {
+        "bytes": 1184,
+        "mode": "0o644",
+        "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation3-workspace-install-root-tool-evidence-1/index.json",
+        "sha256": "a12260234a4c3966d96757c6dda695a87fa9622e60735b221953bd1cf1b86570"
+      },
+      "originalStageFilesChecked": 12,
+      "stage": "workspace-install"
+    },
+    {
+      "frozenSourceEvidenceIndex": {
+        "bytes": 1184,
+        "mode": "0o644",
+        "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation3-bind-workspace-tools-root-tool-evidence-1/index.json",
+        "sha256": "18ddaa14524ed65edda028a7223c4cb8b4eb70000fae7975a2e503f615f1449d"
+      },
+      "originalStageFilesChecked": 13,
+      "stage": "bind-workspace-tools"
+    }
+  ],
+  "installedPackageJSONVersionsRecheckedAsDATA": {
+    "@biomejs/biome": "2.5.7",
+    "typescript": "7.0.2",
+    "vitest": "4.1.10"
+  },
+  "noVersionCompilerOrRuntimeInvocation": true
+}

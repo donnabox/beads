@@ -1,0 +1,53 @@
+# Conditional reads: four-file Transactional rebind proposal
+
+Status: plan only; source authoring and execution remain closed. This replaces the unexecuted representation proposal, not completed evidence. The original frozen draft, complete Claude code review, root dispositions, native findings audit and unimplemented parser-context alternative remain preserved. Working base is local 1ba65f2f192cc84e44eb09ef89b9693ec6cdaf05; root will integrate the reviewed serving successor by ordinary ancestry later, without a main dependency.
+
+## Decision and scope
+
+Rebind the new row to existing `transactional.http.conditional-reads` with `requiredProfile:"transactional"`. Both this requirement and `read.http.conditional-reads` remain required: no retirement, alias, catalog change or cross-credit. Read conditional remains explicitly unplanned. The Transactional coverage row remains `wholeContract:false`; `claimEligible:false` is unchanged. It proves ordinary401/404 precedence, bodyless304/412, current Scope context, and supporting GET/HEAD comparison before/after mutation. It omits minimum refusal, epoch/view mismatch, erasure/expiry, durable checkpoint behavior, optional-no-validator behavior, observed matching specific request tags, If-Match:* success and date combinations. No public admission or discovery claim follows.
+
+Owned paths remain exactly:
+- packages/conformance/test-support/transactional/manifest-v1.json
+- packages/conformance/test-support/transactional/coverage-v1.json
+- packages/conformance/src/transactional-cumulative.test.ts
+- apps/bdptest/src/transactional-matrix.test.ts
+
+No parser, bundle, runner, private planner, schema, fixture, catalog or production change. Existing strict Read protections remain untouched. The original nine-file parsing-context alternative is held, not implemented.
+
+## Canonical placement and raw preservation
+
+The TX catalog row is index131 of133 (`transactional-v1.json:2040–2066`); all16 existing planned rows precede it. Append the new row at planned index16 in manifest and coverage. The principal-isolation row returns to index0. Preserve each of the32 original raw objects exactly and reconstruct both complete parent files by removing only the new tail object and its exact preceding comma/newline/indentation. Keep existing parent hashes and old-object hashes unchanged. Update only the new removal helper, independent order list, new-row digest and dependent measurement pins. Use stable ID lookup for every new-row/action/coverage/control access; an explicit index16 assertion verifies catalog order, never selects the row by index.
+
+`runner.test.ts:6060–6263` has an existing eight-case first-page fixture spreading `manifest.scenarios[0]`. Restoring the original principal first row restores that fixture's original ReadUpdate profile and accepted POST carrier; no runner-test edit is needed. Its index dependency remains a pre-existing limitation, not silently generalized. Validate those eight existing expanded cases later, with their finite actual workload inventoried before release. The unowned binding tests use index0 as a session token, not action selection; retain their existing verification. No old row or historical outcome is relabeled.
+
+## Portable assertions and exact scenario
+
+Keep all14 actions, credentials, raw lines, bodies and actual URLs. Change the existing-A target to `{binding:"subject"}` only where it currently is scope plus `beads/a`; fixture-v1 declares the identical URL. Missing target stays scope-relative. No request body or wire change follows.
+
+Replace the two304 `etag` presence assertions with existing `equalsResponse:"initial-get"` assertions (runner2086–2102 validates the earlier observed tag). Remove exactly four portable assertions: `mismatch-get:etag`, `mismatch-get:no-media`, `mismatch-head:etag`, `mismatch-head:no-media`. This is198→194, total2840→2836; actions remain241 overall. HEAD metadata comparison remains: runner2185–2191 accepts both absent values as equal, so it does not require a412 ETag. Keep reference-specific ETag/type checks in the app oracle, distinct from normative coverage. Do not introduce normative304 media or Content-Length absence. An optional app-only304 length check is unnecessary for this repair.
+
+Coverage binds exactly the194 assertion IDs, one scenario to one requirement. Say the independent app wire oracle compares current Resources with observed receipt postimages; `captures:[]` stays empty and there is no portable object-capture claim. HEAD parity is supporting prose, not another coverage binding. Literal wildcard and independently verified nonmatching tag remain precisely described.
+
+The control still changes only the conditional-get If-None-Match value. The app first establishes its genuine200/full Resource/tag/body prerequisites. Exactly `conditional-get:status` and `conditional-get:body-absent` fail. The new304 equalsResponse assertion passes against this actual200's unchanged initial validator; no extra failure is permitted. The runner then stops the scenario after request4. Never classify a generic failure, timeout or missing prerequisite as control success.
+
+## Scenario-aware local wire routing
+
+Replace `conditionalPrefix` (app4496–4518). Its first14 assumption becomes false at tail placement. ExactHttpExchangeRequest has no scenario field; do not invent one or infer identity from URL, key, count or response.
+
+The existing app launch callback receives actual `(scenario,reopen,signal)` from `transactional-execution-binding.ts:113`, after runner preparation selects that scenario. After successful child launch, record a frozen local observation context `{scenario, reopen, sessionOrdinal}` beside the actual sessions record. Extend only this app's optional onDispatch/afterExchange callback signatures with that context as an additional argument; existing one/two-argument observers remain valid. At ordinary execute entry require a launched context, snapshot it, invoke dispatch with that snapshot, await the real target, require the same context still current, then invoke response observation with the same snapshot. Existing target session/configuration validation is unchanged; this local context is observation identity, not a new authorization capability.
+
+Route only context.scenario===conditionalId to conditional wire; route every other ordinary exchange to the unchanged principal/cross/minimum/member chain in its existing order. Never send conditional exchanges to old observers and never skip a nonconditional exchange. Track the conditional session ordinal, require no reopen and one continuous session, exact dispatch/response cardinality and same identity across the14 exchanges. Selected positive/control use the same context-checking adapter, with14/4 expected completion. Join final conditional report by stable scenario ID and exact action order and verify the corresponding genuine sessions entry; keep all prior safe report fields and add only nonsecret scenario/ordinal/reopen if retained. Do not add credentials/config/raw request material.
+
+For full cohorts, assert the conditional session follows all16 parent scenario presentations (including their legitimate reopens), independently verify the planned-scenario ordering from actual sessions, and retain existing old observer completion assertions. This can use the already retained actual sessions, filtered by reopen, rather than a guessed ordinal constant. Runner365–398 preserves catalog order, including explicit scenarioSelection; ordinary assertion failures in cross controls do not stop the whole matrix (`mustStopMatrixAfter`,448–471). Their tail conditional scenario must therefore still run and pass. A transport/category/cleanup stop fails the positive/tail-completion oracle instead of being ignored. Client-helper exchanges retain their existing separate observation path; no helper/runner interception is added.
+
+## Configuration and workload
+
+Route membership remains18 pairs; first-occurrence order changes because the row moves. The exact order is recorded in proposed-measurements.json: original15 routes first, then HEAD existingA, GET missingA, HEAD missingA. Update the independently authored app route inventory to that order. Exact-mode configuration/route hashes must be derived anew by the existing binding machinery; do not copy old configuration digests. Runtime descriptors, credentials, payload, fixture bytes and semantics remain identical. The row ID also changes the private scenario directory/session binding and manifest/coverage identities; retain truthful successor attribution.
+
+Prospective counts are unchanged: selected14positive+4control HTTP, two children each; full234/25children, cross-batch225/25, cross-sequence226/25, selected principal7/2 and collapse2/2. Across these seven cohorts:712 expected HTTP,727 diagnostic ceiling,83 children. The selected control's14-request artifact is not14 observed requests; its successful discrimination requires4. Bodies remain141B+130B; selected control transmits only the first141B body. All existing runtime, request, cleanup, response and test limits remain unchanged. No elapsed-budget enlargement follows changed catalog order.
+
+## Measurement and validation gate
+
+The attached counts/routes were calculated with standard-library JSON only, without importing or executing product code. Final formatted disk/normalized/node/coverage sizes, all42 actual derivative specimens, assertion/row/source hashes and complete parent reconstruction must be regenerated after authorized authoring. Existing numeric fences are not automatically widened; submit measured successor values while preserving accepted margins/historical bases. Existing derivatives must target rows/actions by stable ID and retain every old transformation; changing new row attribution cannot justify dropped controls.
+
+Refresh exact source selectors after factual title updates (Transactional conditional rather than inherited-Read credit), planned/unplanned identity expectations and194 pins. Total unplanned requirements remains234: one Read plan removed, one TX plan added. Preserve whole-contract false counts and standalone Read catalog/manifest/cohort bytes. First run type/format/lint and exact static bundle/planner/coverage checks after root release; include unchanged first-page eight-case and binding regressions at their separately measured envelope, then actual selected positive/control and affected full/cross cohorts using fresh installed payload provenance. No new parser tests are needed because no parser capability is introduced. Historical frozen draft has no executed results to migrate. Root/native review this plan before any source mutation.

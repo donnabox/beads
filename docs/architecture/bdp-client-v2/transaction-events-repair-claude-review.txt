@@ -1,0 +1,71 @@
+Read: `report.md`, `transaction-events-finite-claude-review.txt`, the full `e2f1385..5909666` diff, `transaction-store.ts` `readEvents`, `transaction-http.ts` `route`, `transaction-consistency.ts`, `transaction-events.ts`, `read-request.ts`/`read-http-routing.ts`/`read-http.ts`, `json-values.ts`, `transaction-service.ts`, `bdp.md` §1428-1440 / §5755-5790, and all 20 validation logs. Nothing written, built, or run.
+
+Diff is exactly the three claimed files. No `docs/`, `schemas/`, or `packages/protocol/` change; `TRANSACTION_EVENT_GROUP_BYTES` untouched (M32 stays separate); no new problem code; git status clean.
+
+---
+
+## Findings
+
+### 1. HEAD content-length regression cannot fail — the page under test is pure ASCII
+**Severity:** Low (test discriminating power)
+**Location:** `packages/server/src/transaction-events.test.ts:475-480`; invariant at `read-http.ts:44`
+
+`bead("a")` seeds `properties: {n: 0}` (`transaction-events.test.ts:93-97`) and the source URL is ASCII, so the `beads/a?view=events` body contains no multibyte code unit. `Buffer.byteLength(correspondingText) === correspondingText.length`, and the assertion passes identically if `read-http.ts:44` regressed from `Buffer.byteLength(stringifyJsonValue(body))` to `String#length`. The implementation is correct today; the new control does not hold it. report.md:27 states the invariant as "actual UTF8 byte count," which the test does not discriminate.
+
+**Remedy:** assert HEAD content-length against a source carrying non-ASCII Event data — the `'\"\\\n🦄'.repeat(100)` fixture already used at `:688` — or add `expect(head.headers.get("content-length")).not.toBe(String(correspondingText.length))`.
+
+### 2. Exact wire-byte equality of the new incremental accounting is never observed
+**Severity:** Low (test coverage; report overstates observation)
+**Location:** `packages/server/src/transaction-store.ts:1286-1288, 1328-1335`; test `:687-718`
+
+I verified the algebra is exact, not merely conservative: `envelopeBytes` is the `{source,events:[],next:null}` serialization minus the 4-byte `null`, `candidateBytes` contributes n−1 commas, the continuation adds `byteLength(json(url))` including quotes/escaping, key order `source, events, next` is identical in both literals, `stringifyJsonValue` preserves enumeration order (`json-values.ts:94-101`), `freezeEventPage` freezes in place without rebuilding keys (`transaction-events.ts:259-269`), and `renderTransactionEvent`'s spread fixes each Event's key order once (`:84-88`). The emitted overflow page is byte-for-byte the measurement that admitted the last accepted Event.
+
+None of that is asserted. The new test proves call counts (`:701`, `:706`) and a loose `< TRANSACTION_EVENT_PAGE_BYTES` (`:707`); `collect()` asserts only `<=` the bound (`:128`); the long-source split test (`:352-363`) splits thousands of bytes below 4 MiB. A one-byte drift — an added envelope field, a renamed `next`, a dropped comma — is silently admissible. report.md:22's "algebraically the same bytes as the prior serialization" is sound reasoning presented alongside observed evidence that does not cover it.
+
+**Remedy:** in the accounting test, assert the accumulated total equals `Buffer.byteLength(stringifyJsonValue({ source, events: result.page.events, next: eventContinuation(source, lastId) }))` — one equality pins the whole derivation.
+
+### 3. Retained-integrity limits list omits the positional-hole and body-type guards the new faults never reach
+**Severity:** Low (report accuracy / coverage)
+**Location:** `transaction-store.ts:1304` (`cursorMatched && p !== at`), `:1310` (`invalid retained Event group body`); report.md:30, 48
+
+The `"missing"` fault mocks the row-length statement's `get` to `undefined`, so it exercises only `:1298`. report.md:48 enumerates the branches that remain uncovered — inconsistent endpoint witnesses, missing incident endpoint witnesses, the unreachable first-Event overflow — but not `:1304` or `:1310`.
+
+The related asymmetry the original review raised (review §53: "owner corruption presented as a client error") **is** correctly disposed of at report.md:48: the cursor hash is unkeyed and forgeable, so a client-supplied position naming an absent first group cannot prove that row once existed, and `400 invalid-parameter` is the honest answer. I confirmed the discipline holds past that point — a hole *after* a matched cursor still fails closed at `:1304` with 500, so only the untrusted first position degrades.
+
+**Remedy:** name `:1304`/`:1310` in the limits list, or add a fault that deletes group P+1 after a cursor matched at P. Note that G1 is the owner here, not this repair: `replication-integration-disposition.md:5` and `replication-integration-native-review.md:7` record that the combined `d907a1e` candidate adds position/checkpoint/epoch/view corruption cases on top of a per-observation `retainedGroupReader()` that explicitly preserves length-before-body and minimum-before-any-scan. Separately scoped, already closed there, not a defect of 5909666.
+
+### 4. Malformed/query-bearing alias + minimum controls moved from the development gap to 404, undisclosed and untested
+**Severity:** Low (informational — behavior delta on a pre-existing route)
+**Location:** `transaction-http.ts:320-321` vs `:369-383`
+
+The new early `classifyAliasPath` return precedes minimum-control handling. For `{scope}alias/{path}?q=1` or a non-canonical alias segment plus any `bdp-*` minimum header — including an unparseable `bdp-minimum-scope-position: opaque-unknown` — the answer changed from `500 x-bdp-development-limit: minimum-position-route` to `404 resource-not-found`.
+
+This is normatively the better answer: bdp.md:1432-1435's uniform 404 for "an alias URL carrying a query or fragment" is unconditional, bdp.md:5782-5787 only forbids reporting *success* at an older position, and it matches the lane's own convention that non-existence refusals precede the barrier (pinned at `transaction-events.test.ts:455-459`, `beads/unknown?view=events` + `pos-99` → 404). But it is untested in either direction, and report.md:20 records only that "query-free alias/minimum behavior … [is] unchanged" — true for *well-formed* query-free aliases (`transaction-http.test.ts:1010-1022` still yields 500 for `alias/missing`), not for malformed ones. Same shape for `{scope}receipts?view=events` and `{scope}receipts/{token}/pages/{x}?view=events`, which also moved off 400 onto the receipt route with no witness (only `receipts/missing?view=events` and the known receipt root are covered).
+
+**Remedy:** add `alias/{malformed}?q=1` + minimum to the `transaction-http.test.ts:1010` suffix list at its new 404, or record the delta in the dispositions. No code change needed.
+
+### 5. `classifyAliasPath` evaluated twice per read
+**Severity:** Informational (duplication)
+**Location:** `transaction-http.ts:320` and `:377`
+
+`:377` can reuse `alias !== undefined`. Each call re-parses `new URL(scope)` (`read-request.ts:939`).
+
+---
+
+## Verified as claimed
+
+**Early minimum gate, confidentiality intact.** Gate sits at `transaction-store.ts:1279`, immediately after `readContext()` and before cursor parse, the `rowAt`/`bodyAt` prepares, the body `SELECT`, `JSON.parse`, projection and all byte work. The unknown-source identity probe (`:1267-1273`) and the `minimum === "unsupported"` return (`:1274`) still precede it, so source confidentiality ordering is unchanged. `waitForTransactionMinimum` retries only `reason === "behind"` at ≤5 ms against a 1000 ms budget (`transaction-consistency.ts:106-120`); each retry now costs one identity `SELECT` plus `readContext()` and zero `FROM groups` statements — `red.log` witnesses 2 → 0. Dropping the trailing check is safe: `context` is captured once inside a synchronous `enter()` under `PRAGMA locking_mode=EXCLUSIVE`, nothing in the loop writes, and the object returned is the object checked, so no success-at-an-older-position path exists. The requested precedence inversion is real and bounded: well-formed-but-invalid cursors (cross-source, never-member, foreign epoch/view) behind a future minimum now wait and answer `catch-up-timeout`/`cursor-expired`/`foreign-view`; grammar-malformed cursors still 400 immediately at `transaction-events.ts:158`, before the service. GET and HEAD pinned at test `:482-495`.
+
+**Uniform alias/receipt routing.** `alias/…?view=events` now returns `read-request.ts:943`'s `notFound()` through the same bare `problem()` the readRoute alias handler uses (`transaction-http.ts:150`) — no context-header delta. Receipt roots bypass Event parsing; unknown and known receipts both answer 404 `resource-not-found` on GET and HEAD with no body and no disclosure (`receiptAtMinimum` refuses the query-bearing href before the barrier, `transaction-service.ts:290-299`). Method and authn precedence preserved (`:218`, `:317`); `alias/latest` 307 unaffected, the string branch falls through (`transaction-http.test.ts:562-565`). `red.log` witnesses all three routes at 400 pre-fix, retained via soft assertions.
+
+**Linear wire accounting.** One envelope serialization plus one per candidate Event and one per candidate continuation; the `[...events, event]` full re-serialize is gone, removing the ~n/2 × page-bytes quadratic. Reservation remains exact, item ceiling and 4 MiB bound unchanged. Correctly *not* claimed: total retained-log scan length/time and parsed-group heap stay unbounded (report.md:22).
+
+**Zero-contribution regression.** Twelve unrelated groups yield `{events: [], next: null}` at `pos-13` through a resumed Bead cursor, and a later contributing mutation surfaces through the same old cursor at `pos-14` — the exact shape the original review asked for. It observes the semantic end, not the scan cost.
+
+**Integrity regressions.** Three read-seam faults assert the exact messages at `:1298`, `transaction-events.ts:192`, and `:229`, then prove the restored owner reproduces the original pages byte-identically. Mock hygiene is sound — the file's `afterEach` at `:29-32` restores globally.
+
+**Scope hygiene.** No SSE assertion (the `text/event-stream` 406 is pre-existing). The metadata-only incident Link branch is pinned only as `x-bdp-development-limit: incident-link-metadata` on GET and HEAD, with Scope and Link sources still 200, and report.md:28 explicitly declines the membership ruling. The `beads/%61?view=events` correction is right: `transaction-events.ts:151`'s canonical-pathname check refuses it as 400, so the original review's "distinct 404-ing source identity" example was wrong and no canonicalization semantics changed.
+
+**Validation logs match the report.** red 2 failed/12 passed (the two Medium defects, 7 soft assertions), green 14/14, extended2 19/19, final 238 tests/5 files, typecheck/build/boundaries/evidence clean, and no biome diagnostic names any of the three touched files — only the pre-existing 1.7 MiB `read-update-v1.json` size warning and 35 workspace warnings.
+
+No correctness defect found in the three changed files.

@@ -1,0 +1,87 @@
+diff --git a/apps/bdptest/src/transactional-minimum-current-resource-installed.test.ts b/apps/bdptest/src/transactional-minimum-current-resource-installed.test.ts
+index 6ab7df0..915711d 100644
+--- a/apps/bdptest/src/transactional-minimum-current-resource-installed.test.ts
++++ b/apps/bdptest/src/transactional-minimum-current-resource-installed.test.ts
+@@ -40,12 +40,12 @@ const artifacts: {
+ } = {
+   descriptors: [
+     {
+-      retrievalUri: "https://example.test/bead",
+-      utf8: '{"id":"https://example.test/bead","name":"Bead","describes":"bead","conformsTo":[]}',
++      retrievalUri: "https://event-sse.invalid/acme/types/bead",
++      utf8: '{"id":"https://event-sse.invalid/acme/types/bead","name":"Bead","describes":"bead","conformsTo":[]}',
+     },
+     {
+-      retrievalUri: "https://example.test/link",
+-      utf8: '{"id":"https://example.test/link","name":"Link","describes":"link","conformsTo":[],"source":{"conformsTo":["https://example.test/bead"],"external":"opaque"},"target":{"conformsTo":["https://example.test/bead"],"external":"opaque"}}',
++      retrievalUri: "https://event-sse.invalid/acme/types/link",
++      utf8: '{"id":"https://event-sse.invalid/acme/types/link","name":"Link","describes":"link","conformsTo":[],"source":{"conformsTo":["https://event-sse.invalid/acme/types/bead"],"external":"opaque"},"target":{"conformsTo":["https://event-sse.invalid/acme/types/bead"],"external":"opaque"}}',
+     },
+   ],
+   schemas: [],
+@@ -117,7 +117,7 @@ function sequenceResults(value: Record<string, unknown>) {
+   return value.results.map(record);
+ }
+ const seedBody =
+-  '{"operations":[{"operation":"createBead","id":"beads/a","type":"https://example.test/bead","properties":{"title":"a"},"idempotencyKey":"minimum-current-a"},{"operation":"createBead","id":"beads/b","type":"https://example.test/bead","properties":{"title":"b"},"idempotencyKey":"minimum-current-b"},{"operation":"createLink","id":"links/self","type":"https://example.test/link","source":"beads/a","target":"beads/a","idempotencyKey":"minimum-current-link"},{"operation":"putAlias","alias":"alias/work","target":"beads/a","idempotencyKey":"minimum-current-alias"}]}';
++  '{"operations":[{"operation":"createBead","id":"beads/a","type":"https://event-sse.invalid/acme/types/bead","properties":{"title":"a"},"idempotencyKey":"minimum-current-a"},{"operation":"createBead","id":"beads/b","type":"https://event-sse.invalid/acme/types/bead","properties":{"title":"b"},"idempotencyKey":"minimum-current-b"},{"operation":"createLink","id":"links/self","type":"https://event-sse.invalid/acme/types/link","source":"beads/a","target":"beads/a","idempotencyKey":"minimum-current-link"},{"operation":"putAlias","alias":"alias/work","target":"beads/a","idempotencyKey":"minimum-current-alias"}]}';
+ const rows = [
+   {
+     index: 2,
+@@ -391,7 +391,7 @@ it("serves missing-first current Resources and bounds unproved minimum eligibili
+   }[] = [];
+   const writer = randomBytes(32).toString("base64url");
+   try {
+-    expect(Buffer.byteLength(seedBody)).toBe(562);
++    expect(Buffer.byteLength(seedBody)).toBe(610);
+     directory = mkdtempSync(path.join(tmpdir(), "bdp-minimum-current-installed-"));
+     wrapper = path.join(directory, "private-bootstrap.mjs");
+     writeFileSync(wrapper, bootstrap, { mode: 0o600, flag: "wx" });
+@@ -566,7 +566,7 @@ it("serves missing-first current Resources and bounds unproved minimum eligibili
+       expect(validResource(value), JSON.stringify(validResource.errors)).toBe(true);
+       expect(value).toEqual({
+         id: scope + "beads/" + id,
+-        type: "https://example.test/bead",
++        type: "https://event-sse.invalid/acme/types/bead",
+         revision: expect.any(String),
+         properties: { title },
+         metadata: {},
+@@ -575,7 +575,7 @@ it("serves missing-first current Resources and bounds unproved minimum eligibili
+     expect(validLink(link), JSON.stringify(validLink.errors)).toBe(true);
+     expect(link).toEqual({
+       id: scope + "links/self",
+-      type: "https://example.test/link",
++      type: "https://event-sse.invalid/acme/types/link",
+       revision: expect.any(String),
+       source: scope + "beads/a",
+       target: scope + "beads/a",
+diff --git a/docs/design/transaction-implementation-progress.md b/docs/design/transaction-implementation-progress.md
+index b30b1dc..20fae18 100644
+--- a/docs/design/transaction-implementation-progress.md
++++ b/docs/design/transaction-implementation-progress.md
+@@ -2001,11 +2001,17 @@ missing/hidden Resource, alias and initial incident-anchor precedence and bounde
+ unproved-position waiting for existing current Bead/Link Resource/properties.
+ Strict consumers and pending Snapshot/incident-Event questions remain separate.
+ On that isolated candidate, all 11 source-validation stages passed, including
+-the fresh build and 15 selected source callbacks; the preceding fixture-type and
+-report-lint failures remain preserved under their original bindings. An installed
+-minimum-current observation test is authored but unexecuted; no installed or
+-counterfactual control run is recorded. Actual authorization main df80f8cb is ordinarily integrated through bf50e1e8;
+-final installed validation remains pending. Unknown
+-positions combined with foreign epoch/view remain a private unsupported
+-development gap, outside the current operator ruling. Source and later installed
+-evidence retain their exact commit/build provenance; no qualification is claimed.
++the fresh build and 15 selected source callbacks; preceding fixture-type and
++report-lint failures remain preserved under their original bindings. Actual
++authorization main df80f8cb is ordinarily integrated through bf50e1e8. On clean
++733728cf, five narrow integration stages passed, including the fresh build and
++two selected owner-read callbacks. Fresh archives and their external consumer
++passed package and dependency verification. The first installed positive failed
++before ready with zero HTTP requests: its compiled Type fixture used identities
++outside the configured Scope. That failure and its unknown-stop/retained-directory
++report remain preserved. The test-only Scope-local Type correction leaves all
++production bytes and the verified archives unchanged; successor installed and
++counterfactual results remain pending. Unknown positions combined with foreign
++epoch/view remain a private unsupported development gap, outside the current
++operator ruling. Source and installed evidence retain their exact commit/build
++provenance; no qualification is claimed.

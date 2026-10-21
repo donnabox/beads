@@ -1,0 +1,55 @@
+{
+  "accepted": true,
+  "at": "2026-10-15T20:54:56.368605+00:00",
+  "source": {
+    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-guarded-batch-draft/source-binding.json",
+    "sha256": "1ec4f7a37f765d086be85deb47441ec9c6ca82400507e78c0f1ce0202592cf87"
+  },
+  "stages": [
+    {
+      "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-guarded-batch-draft/execution-preparation/run/setup.exit.json",
+      "sha256": "53224020416d1b22f25564d37444486f776b012279445eb452cc63a608604f9a"
+    },
+    {
+      "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-guarded-batch-draft/execution-preparation/run/typecheck.exit.json",
+      "sha256": "6b8d5a3da5745446e3c4addd40eb49bffe97ac3e9ced054392067366a73bad69"
+    },
+    {
+      "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-guarded-batch-draft/execution-preparation/run/build.exit.json",
+      "sha256": "4a010d83b724134517a4d015feef6dde9aefdf8f87005f9d1c988b8258616b0c"
+    },
+    {
+      "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-guarded-batch-draft/execution-preparation/run/format-check.exit.json",
+      "sha256": "e65804ad70f4954efb4ee2d422d094a95e182b5db354cde6c4d0a3d3aeddf35e"
+    },
+    {
+      "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-guarded-batch-draft/execution-preparation/run/lint.exit.json",
+      "sha256": "216562c005b268c971ba5afe7218ea2cd39ad1f774ff30c3eb3bbef5d1db29da"
+    },
+    {
+      "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-guarded-batch-draft/execution-preparation/run/boundaries.exit.json",
+      "sha256": "21ebc36e1aa3302b9a3cefc97fc54c636bf5b20eeac6fd10c932f9e8907ca005"
+    },
+    {
+      "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-guarded-batch-draft/execution-preparation/run/read-seal.exit.json",
+      "sha256": "c5b1e7082f4e302ab84323c6e18c7ca908b312414dfdd85a05aef36dbb9e65b8"
+    },
+    {
+      "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-guarded-batch-draft/execution-preparation/run/build-inventory.exit.json",
+      "sha256": "892406fe100481790e8fde59ffa506f49a517634875df063120a3aaa1316c127"
+    }
+  ],
+  "warnings": "Format1oversized-matrix warning; lint851warnings/54infos. This is not zero-warning or unchanged diagnostic count.",
+  "readSealRows": 89,
+  "buildInventory": {
+    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-guarded-batch-draft/execution-preparation/run/build-output-inventory.json",
+    "sha256": "6bf78b1db8afac594ca9f519aee81a12794d3dc5d8038484ef769e24e75145e0"
+  },
+  "buildCounts": {
+    "inputs": 672,
+    "packageOutputs": 312,
+    "emittedFiles": 440
+  },
+  "scope": "Static/build only; no product callbacks/HTTP/children. Build occurred on dirty9bf601 source; retain that attribution.",
+  "remaining": "Native/actualClaude code council, clean candidate/build-byte bridge, fresh external package and exact7positive/3control."
+}

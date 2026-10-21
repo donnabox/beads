@@ -1,0 +1,25 @@
+{
+  "actualOriginalCodeReviewSha256": "484b0fba48b438a8f728b789e60d855b6f88455b6c75f017c1f84596b24cb3da",
+  "actualReviewerReadCorrectedBytes": false,
+  "corrections": [
+    {
+      "change": "clean requires actual non-null owned PID before exit/close predicates",
+      "id": "F-A"
+    },
+    {
+      "change": "single rawBuffer git diff capture hashed directly; same cwd/timeout2000/maxBuffer1048576; external mode still no Git",
+      "id": "F-B"
+    },
+    {
+      "change": "pending size vs28 received observations use separate existing pending-unsettled/observation-failed labels",
+      "id": "F-C.i"
+    },
+    {
+      "change": "one existing launch-failed assignment moved immediately after metadata.nullReason cleared",
+      "id": "F-C.ii"
+    }
+  ],
+  "independentNativeCorrectedSource": "UNRESOLVED",
+  "rootCorrectedSourceAcceptance": "UNRESOLVED",
+  "rootDispositionSha256": "9d81c2aeffad1acecea90e5a2a90fe7794c7a32824375e89c5bd75f06c3f45b4"
+}

@@ -1,0 +1,77 @@
+{
+  "kind": "independent-native-D1-exact-CI-audit",
+  "observedUtc": "2026-10-18T05:34:31.165548+00:00",
+  "decision": "EXACT COMMIT CI SUCCESS CORROBORATED; capture limitations retained",
+  "findings": [],
+  "runId": 39099693742,
+  "runUrl": "https://github.com/gastownhall/bdp/actions/runs/39099693742",
+  "head": "cce884ccea1db97cbc6fd7bff876d4d6091f9081",
+  "jobId": 117593239370,
+  "completedAt": "2026-10-18T05:26:16Z",
+  "all27StepsCompletedSuccess": true,
+  "fullSuite": {
+    "filesPassed": 186,
+    "filesTotal": 186,
+    "testsPassed": 9474,
+    "testsSkipped": 1,
+    "testsTotal": 9475,
+    "durationSeconds": 686.45,
+    "skip": {
+      "line": 9811,
+      "text": "2026-10-18T05:22:17.6998153Z  \u2193 scripts/demo-read.test.mjs > runnable Read walkthrough > matches real bd and preserves the established seed command recipe"
+    }
+  },
+  "preflightTestsPassed": 7,
+  "diagnostics": {
+    "formatWarnings": 1,
+    "formatFilesChecked": 454,
+    "formatWarning": "3.5MiB read-update-v1 matrix exceeds1MiB formatter maximum; no fixes applied",
+    "lintWarnings": 1169,
+    "lintInfos": 131,
+    "actionWarning": "Node20-target actions forced to Node24",
+    "fatalUnhandledPatterns": 0
+  },
+  "D1": {
+    "sourceNew9AndSelectedLegacy2Parsed": true,
+    "all15FocusedTitlesPrintedPass": true,
+    "fullSuiteAlsoRunsThirdHistoricalSourceReport": true,
+    "D32ReadyDrainedVerified": true,
+    "DActualCleanupInclusiveMs": 305.067818,
+    "installedActualExchanges": [
+      10,
+      4,
+      10
+    ],
+    "historical10": "GitHub-masked raw JSON invalid; exact visible rows and child20899 exit0/signalnull/closed/storeabsent suffix preserved without repair",
+    "finite4Child": 20927,
+    "finite4ObservedExitClose0StdioDrainPending0DirectoryRemoved": true,
+    "new10Child": 21036,
+    "new10ExitClose0DrainedRetainedGroup2": true,
+    "new10CleanTrackedDiffSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "workspaceEntrySha256": "bcf153170f953f9e28c6c89f1153be907f64df289e64f3ad929cad4a4a54c47c",
+    "ciWorkspacePayloadIdentity": "7cbcf15c426fa98f5a8779353dac339b2a9d69c84c79f8b374aeabdeb9f516d4"
+  },
+  "evidenceVerified": {
+    "level": "info",
+    "event": "evidence.verified",
+    "executable": "read-cohort-evidence",
+    "artifact": "docs/design/evidence/read-cohort/read-v1.json",
+    "constant": "674982be2123b9b7aae630bf79c3f774122900cd",
+    "runHead": "e5f7d0c43c151426350ceededdc77fe7e372db9b",
+    "evidenceCommit": "dbaf63a24219e1ea3f80394746853598b0d4464a",
+    "schemaReadProjection": "bd7da0fc3f8082e0bfb6f4969c04409f2a610e12408dbc6a0bd14b4b351127cc",
+    "schemaReadProjectionDefinitions": 47,
+    "schemaReadProjectionReachable": 46,
+    "rows": 89
+  },
+  "evidenceMeaning": "Existing Read artifact89-row seal at prior runHead/evidenceCommit, not current cumulative Read/Write qualification. Shell policy allows0/2; actual verified event retained; no exit2 inference/upgrade.",
+  "limitations": [
+    "Original gh CLI full.log is partial; actual main summary comes from independently verified API zip/extracted main log.",
+    "Eight captured observation lines have GitHub masking that breaks JSON, so those are not reported as fully parsed raw JSON. Historical10 uses only explicit visible projection; raw retained.",
+    "CI installed callbacks use workspace dist entry; no separately root-proven external consumer/archive/lock evidence is invented or transferred from local validation.",
+    "Remote PID/store closure is reported by callbacks; no independent post-job remote process census was performed.",
+    "No public Write qualification, current-head cohort seal, main landing or future integration authority inferred."
+  ],
+  "auditorExecutedCiOrProductGitSourceFlagActions": false,
+  "next": "Root independently dispositions exact CI and owns source publication/PR/main coordination. Preserve all raw captures and known limits."
+}

@@ -1,0 +1,41 @@
+{
+  "status": "PLAN_ONLY_PARENT_MERGE_PENDING",
+  "workspace": "/Users/dbox/repos/wt/vickie/vickie-sequence-member-evidence",
+  "head": "1a37f7209e3ff6f409f43491d670c881259406ba",
+  "tree": "a9cca0e1e5c52ac8bbd06ce989a94ca6e4f2b272",
+  "clean": true,
+  "ownedPaths": [
+    "packages/server/src/transaction-changefeed.ts",
+    "packages/server/src/transaction-store.ts",
+    "packages/server/src/transaction-http.ts",
+    "packages/server/src/transaction-changefeed.test.ts",
+    "apps/bdptest/src/transactional-changefeed-refusal-context-installed.test.ts",
+    "docs/design/transaction-implementation-progress.md"
+  ],
+  "newPaths": [
+    "apps/bdptest/src/transactional-changefeed-refusal-context-installed.test.ts"
+  ],
+  "files": {
+    "packages/server/src/transaction-changefeed.ts": "b731f660b3900be9914cc94bfe1d436514c9da323d825f9e377b33e3ca99ee19",
+    "packages/server/src/transaction-store.ts": "eec0f4723c8fcfb2245d2e80d77b2de014235cdb208101d523c0ab83fde78eed",
+    "packages/server/src/transaction-http.ts": "0e42f034c3aada6fd0a7696897200b336d2b0c547d69497e46500f6da4c2267a",
+    "packages/server/src/transaction-changefeed.test.ts": "3ef92bbedf31feef9bdf45a3fb2384e7487b91a5f688235da4abfeae4d94b7bb",
+    "docs/design/transaction-implementation-progress.md": "28b30246931ccf39588a0dd654715aa7f00eda95893a9b5ed8ec10ffe7fdf6fc",
+    "packages/server/src/transaction-service.ts": "53f655faf494209996aac2e0f93a4c2c785e471f66aac6af9ea41f92c9cfbe00",
+    "packages/server/src/transaction-events.ts": "c6052433662fcb2d0a202ad4e408a24d4c43f980313fa89659501b4475790db5",
+    "packages/server/src/read-http.ts": "31934105eff6fff8ded8ce2ca9e3c19028991ca7c3d5f51b848004177e8c9268",
+    "packages/server/src/read-http-routing.ts": "d9344b87838f8c71381ccf9efe28b4f023df45503570beb8fb4293d553caca42",
+    "packages/server/src/transaction-runtime.ts": "77954f0a85029d76443feac54cd53cda4339ffc126660ace5a9f5af92466c573",
+    "packages/server/src/transaction-installed-process.ts": "6bd16f940f1f751189fc76419e3a18ca26cd5f54da3cfa3946b30c3956a2f8b7",
+    "packages/server/src/installed-payload.ts": "d1095a8fa641c77ddef32b1d432273572f46b14499c526dbb0a85cfde82113f9",
+    "packages/protocol/src/index.ts": "92e547e807ec2d23223c47dbc4e04867d55db89ac9aab5fbd55f33349f92bdc6",
+    "scripts/transaction-installed-observation.mjs": "6f772f3776d3c3effa788676d853cc2932a6ee59ad63ac3338ad1b487408914b",
+    "apps/bdptest/src/transactional-event-missing-context-installed.test.ts": "828c05f358ae5863c992f93194da15a31df9a200e073e5e3525531ba39fe7d0d",
+    "apps/bdptest/test-support/transactional-execution-binding.ts": "cde506c72a8710eafe58522900f6db70ed3701cf333560252dc8e7c5e706cf89",
+    "docs/specs/bdp.md": "f036103ffdf5f89fa3a2033570e1e987c4cd203cd80b1c633cb44615123f892e",
+    "schemas/bdp-v0.schema.json": "0baa5d5ef67144f8e6513b4cde31168effc8df6d52ef3141b0f144b87f8dc227",
+    "vitest.config.ts": "a84575ea9ef0b6e75b6484024a627fa89422aea2fdbeb26127e09714dba0641f",
+    "packages/server/test-support/read-conformance-mock.ts": "dbfb86ac2325c684567ffce40f17105c6b12a63edfa54cc08f0601df8dc613f8",
+    "pnpm-lock.yaml": "4150d8821c96dbc2cfec0b2762ff76b58318079f65fa4f5c8858ef2dd61f8d6d"
+  }
+}

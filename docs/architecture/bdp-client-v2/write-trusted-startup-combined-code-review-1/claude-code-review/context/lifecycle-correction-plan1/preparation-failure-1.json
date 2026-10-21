@@ -1,0 +1,6 @@
+{
+  "stage": "parent inventory copying",
+  "exception": "KeyError: files",
+  "cause": "Root CODE disposition index is a flat filename-to-hash map, unlike other parents files wrapper.",
+  "resolution": "Read actual index keys, preserve copied bytes, use exact flat schema for this named parent. No product/helper/runtime/source execution or mutation."
+}

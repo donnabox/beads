@@ -1,0 +1,29 @@
+{
+  "state": "CLOSED snapshot of unresolved prerequisites; later named root release may supply resolutions externally without rewriting this historical snapshot",
+  "actualCiRunId": 39099693742,
+  "actualCiStatusAtRootInstruction": "RUNNING",
+  "rootExactCiAccepted": false,
+  "rootSharedHttpSourceBasisAccepted": false,
+  "genericSupervisor5RootStaticInspection": {
+    "accepted": true,
+    "sha256": "49e0bae65baf67e6b83df3e9cb8b5b73e28ce749b29200148d1d83822888e2d4",
+    "scope": "still explicitly requires native final actual-byte closure"
+  },
+  "genericSupervisor5NativeFinalClosure": {
+    "accepted": true,
+    "indexSha256": "025c36e2a76e0859b4cfe988508203ce10455fe2e6e66f7806fc5a9bdd947c9f",
+    "closureSha256": "bb6646afbea69e66cdc20488d27e0127895d29d404d1f90d0b0ef64dc9c867a3",
+    "codeSha256": "791e5a566561798aa3352f19b021e6db9beeddb033ae5725c7d031d51716f95c",
+    "executionReleased": false
+  },
+  "genericSupervisor5RootFinalAcceptance": "UNRESOLVED",
+  "packetNativeMechanicsAcceptance": "UNRESOLVED",
+  "packetRootMechanicsAcceptance": "UNRESOLVED",
+  "actualReviewLaunchReleased": false,
+  "approvedStages": [],
+  "sourceAuthoringReleased": false,
+  "requiresBeforeAnySourceAuthoring": "Actual one-attempt PLAN terminal audit and root disposition, exact source basis/serialization and separate bounded source release",
+  "retryAllowed": false,
+  "modelOverride": null,
+  "scope": "Preparation only; no semantic/source/product activation"
+}

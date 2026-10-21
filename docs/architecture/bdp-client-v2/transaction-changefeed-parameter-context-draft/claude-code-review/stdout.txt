@@ -1,0 +1,45 @@
+at `:452`, so rows 9 and 10 correctly observe `[null, null, null]`.
+- **Fanout and labels.** 12 dispatches in order: seed a, genesis page, future×{json,sse}×{GET,HEAD} (3–6), malformed reconnect GET/HEAD (7–8), anonymous (9), malformed URL (10), seed b (11), future + `If-None-Match: *` (12). Labels derive from `attempted` → exactly `changefeed-context:3,4,5,6,7,8,12`, matching `control-proposal.expectedFailures` and `ledger.control.expectedFailures`.
+- **Soft/hard split behaves as the control requires.** `expect.soft` (`:935`) does not throw, so all 12 responses complete; `failures` stays empty → `hardFailureCount: 0`; the initial 200 page's context headers (`transaction-http.ts:468`) are untouched by the emitted mutation, so the hard tuple at `:902` still passes in the control. Expected control shape (12 responses / 0 hard / 7 soft / exit 1) is internally consistent.
+- **Control mutation string occurs exactly once.** `transactionHttpProblem("invalid-parameter", error.context)` appears only at `transaction-http.ts:612`; the snapshot-branch uses (`:399,404`) take no second argument, so `exactOccurrenceCountRequired: 1` holds.
+- **HEAD representation semantics.** 400 problems carry a body, so `read-http.ts:42–45` computes `content-length` and strips the body; `transaction-runtime.ts:89–94` leaves that header intact and sends no body. Empty body + GET-equivalent `Content-Length` is therefore the correct oracle, and the null-`response.body` guard (`:813–834`) is right.
+- **Conditional ordering.** Request 12 throws inside the owner before any conditional evaluation; `applyReadHttpSemantics` only applies the conditional/406 path to 200-JSON or 204 (`read-http.ts:12–15`), so `If-None-Match: *` cannot produce 304/412. No new ruling on minima or retained anchors.
+- **No stream or frames on any 400.** The error is raised in `service.changes` before `streamResponse` (`transaction-http.ts:466–477`), so `kind` is never `changefeed-stream`.
+- **No type-identity hazard from the mixed graph.** The `instanceof` callbacks use the Vitest-aliased source graph; the HTTP callbacks use the emitted `../dist/transaction-runtime.js` graph, and never cross-check classes. The emitted catch and the emitted thrower share one module instance.
+- **Narrowing after the simplification.** In the `else if` (`:608–612`) `error` narrows to `TransactionEventParameterError | TransactionChangefeedParameterError`; both now declare `context?`, so `error.context` is well-typed and Event behaviour is byte-identical.
+- **Parameter properties are house-legal.** Identical shape already compiles in `transaction-events.ts:44–51` and `transaction-consistency.ts:56–63`, so `erasableSyntaxOnly` is not in force.
+- **Installed route grants cover all ten requests.** Initial four grants plus the two post-response-2 future grants satisfy `validateExactRunConfiguration` (`http-executor.ts:552–571`) for every dispatch; re-constructing the executor adds no request, owner or connection (`Connection: close`, per-exchange dial).
+- **Installed raw-request representation.** `Host: reference.invalid` matches the canonical-authority check (`transaction-runtime.ts:131–132`, `transaction-installed-configuration.ts:63`); the executor appends default `Accept` only when absent (`http-executor.ts:716–723`), so `values("accept")` is exactly the authored value; anonymous handle with `headerNames: []` passes the `seen.size === headerNames.length` check (`:715`) and skips the credential-target test (`:683–687`); `bodyDigest` agrees because both sides hash the same UTF-8 bytes.
+- **Installed final sequence oracle matches execution order** position-for-position across all ten triples.
+- **Cleanup.** Both callbacks abort the cohort, close the runtime/child, remove the directory, and collect primary plus each cleanup error independently; the launcher's `close` is memoised (`transaction-installed-observation.mjs:48–60`) so the abort-triggered and explicit calls await one promise; the deadline reason is pushed exactly once.
+- **Arithmetic.** Patch stats reconcile exactly: 21 + 317 + 11 + 1 + 1 = **351** insertions, 0 + 6 + 4 + 4 + 1 = **15** deletions, **439** new installed lines, and the old 697-line test file becomes 1008 lines. Counts: 9/19, 1/12, 1/10 → 11 callbacks, 41 HTTP, 5 owners+directories, 4 listeners, 1 child; 34 capped exchanges × 32768 = **1114112**; bodies 125 + 125 + 250 (control) + 153 = **653**; installed artifacts 170 + 166 = **336**. I recomputed the 125 B and 153 B seed bodies and both descriptor/schema lengths byte-by-byte — all match. The empty `%s` row's two-space title and its `\ \ ` argv escape are correct.
+- **No new disclosure surface.** The three fields are already returned on every successful read to the same authenticated principal, and the refusal is post-authentication; `authorizationView` is installation-fixed in this owner.
+
+## Missing context — findings not reachable from supplied material
+
+These are gaps in the review inputs, not defects:
+
+1. `read-http-routing.ts` (`jsonResponse`, `scopeDataResponse`) — the base header set for every 400 (drives finding 1).
+2. `packages/conformance/src/index.ts` — whether `createRawHttpExchangeExecutor` and `HttpMethod` are root exports, and the factory's required option surface (drives finding 6). `isSecretHeaderName`/`RESERVED_FIELDS` (`http-executor.ts` ~`:337–358`) are outside the excerpt; `last-event-id` eligibility rests on the F5 disposition.
+3. `transaction-installed-process.js` and the `qualification.ready` message shape — `installedTransactionBinding`'s required `payloadIdentity`/`artifactIdentity`/`policyIdentity`/`authenticationIdentity`/`runtimeConfigurationIdentity` members, and `bindServedProfileConfiguration`'s validation.
+4. `captureTransactionRuntimeConfiguration` — the default `authorityMode` and `liveStreamsAvailable`. The new source callback's host match depends on the default being listener-mode, as the pre-existing `httpFixture` already assumes.
+5. `stringifyJsonValue` whitespace/escaping. Byte length is order-invariant and the payload is pure ASCII, so `problemLength` is safe either way; the assertion is nonetheless a new absolute coupling where the pre-existing test only compared HEAD to GET (`:635`).
+6. No typecheck, build, lint, boundary check, test, control or installed execution has occurred — only pinned Biome formatting of the five TypeScript paths (exit 0, 3 reformatted) and `git diff --check` (exit 0). Every type-level claim above is a reading of the supplied text, not a compiler result.
+
+## Already-accepted evidence limitations (restated, not re-litigated)
+
+- Curated dependency pinning is explicitly not an import/package closure; build, consumer and copy closure remain later gates.
+- The seven historical minimum-regression fetches keep their existing readers and deadlines and carry no new byte cap; the draft and the progress-doc amendment both disclose this and the `41 × 32768` claim is correctly withdrawn.
+- Unexpected 200 on the reconnect rows is a hard prerequisite failure requiring diagnosis and proves nothing about field omission (finding 5 refines the artifact, not the rule).
+- Control copy/emitted spelling, tool-graph hashes, archive/consumer/eight-package closure, external entry and source attribution are all later gates; source attribution is supervisor-verified, not child-attested.
+- `fixture-v1.json` is a served-configuration identity input only; this witness exercises one of its five bindings and claims no capability or profile coverage. `claimEligible: false` and `x-bdp-development: non-attesting` are asserted throughout.
+
+## Suggested gating order
+
+1. Findings 1 and 7 (pin `read-http-routing.ts`; settle `requiredPosition`) — both are hard prerequisites that would otherwise consume the first positive run.
+2. Finding 2 (regression search) and finding 4 (caller enumeration) — cheap, read-only, and they close the two unverified claims.
+3. Findings 5, 6, 10, 11, 12 and optionally 13 — small edits to the two new callbacks; re-run Biome on the five TypeScript paths afterwards.
+4. Finding 9 — one-line Markdown edit; re-run `git diff --check`.
+5. Finding 3 — fold into the control copy inventory before the control is prepared; it does not block the positive source run.
+
+No files were written or modified.

@@ -1,0 +1,403 @@
+{
+  "mode": "positive",
+  "source": "c555fe01df5cd20454fb0d663431df816c1270aa",
+  "tree": "062a3ab7e24236417bd915b373a4b44ba9908647",
+  "authorSource": "c555fe01df5cd20454fb0d663431df816c1270aa",
+  "clean": true,
+  "packs": {
+    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-cold-schema-serving/packed-positive/packs/protocol.tgz": "4683cb6c6333c332a4bcb7efc3e28f32d1d8d06a7264913f65c31d3a826d4227",
+    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-cold-schema-serving/packed-positive/packs/server.tgz": "f940337b0b94eaf5930b6174e11c056947307245f262ec9ba60c13f941d06370"
+  },
+  "entry": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-cold-schema-serving/packed-positive/install/node_modules/@bdp/server/dist/transaction-installed-process.js",
+  "entrySha256": "bcf153170f953f9e28c6c89f1153be907f64df289e64f3ad929cad4a4a54c47c",
+  "observation": {
+    "observation": "private-installed-local-schemas",
+    "declaredSourceCommit": "c555fe01df5cd20454fb0d663431df816c1270aa",
+    "workspaceDirty": false,
+    "entry": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-cold-schema-serving/packed-positive/install/node_modules/@bdp/server/dist/transaction-installed-process.js",
+    "entrySha256": "bcf153170f953f9e28c6c89f1153be907f64df289e64f3ad929cad4a4a54c47c",
+    "binding": {
+      "served": {
+        "scope": "https://reference.invalid/acme/",
+        "profile": "transactional",
+        "history": false,
+        "sourceCommit": "c555fe01df5cd20454fb0d663431df816c1270aa",
+        "installedPayloadDigest": "0431b66bb506d46c3414587cf34f6d8007472a3aeaf2ec1488b3e59ae56b1200",
+        "installedContractsDigest": "50a4fd1834fe1e5df637c523484460a2e1787ceac4afa6712a78cbed4432fb4f",
+        "policyDigest": "e68489f44cefd408e083810ee0b791ee2c2632d15f7926a86c1ba7161309ea9d",
+        "authenticationDigest": "b580ddb7700d45706f2b52e371bde995094c333aec077c7854924a99ae0288d8",
+        "fixtureDigest": "3a7899ced771d4880066d98b0000c53f801ece53458502cc4f3bc641146c9a85",
+        "fixtureId": "reference-transactional-v1",
+        "capabilities": [
+          "installed-transactional-http",
+          "transactional-receipt-observation"
+        ]
+      },
+      "operationTargets": {
+        "createBead": "https://reference.invalid/acme/operations/create-bead",
+        "updateBead": "https://reference.invalid/acme/operations/update-bead",
+        "deleteBead": "https://reference.invalid/acme/operations/delete-bead",
+        "createLink": "https://reference.invalid/acme/operations/create-link",
+        "updateLink": "https://reference.invalid/acme/operations/update-link",
+        "deleteLink": "https://reference.invalid/acme/operations/delete-link",
+        "putAlias": "https://reference.invalid/acme/operations/put-alias",
+        "deleteAlias": "https://reference.invalid/acme/operations/delete-alias",
+        "updateWhere": "https://reference.invalid/acme/operations/update-where",
+        "deleteWhere": "https://reference.invalid/acme/operations/delete-where",
+        "batch": "https://reference.invalid/acme/operations/batch",
+        "sequence": "https://reference.invalid/acme/operations/sequence"
+      },
+      "runtimeConfigurationIdentity": "f97c60132d66528a636dc8bb38e1f294b557e4328f7d5e554393888763448915",
+      "authorityMode": "canonical"
+    },
+    "routes": [
+      {
+        "method": "GET",
+        "url": "https://reference.invalid/acme/types/?limit=32"
+      },
+      {
+        "method": "HEAD",
+        "url": "https://reference.invalid/acme/schemas/root"
+      },
+      {
+        "method": "GET",
+        "url": "https://reference.invalid/acme/schemas/unknown"
+      },
+      {
+        "method": "POST",
+        "url": "https://reference.invalid/acme/schemas/root"
+      },
+      {
+        "method": "GET",
+        "url": "https://reference.invalid/acme/"
+      },
+      {
+        "method": "POST",
+        "url": "https://reference.invalid/acme/operations/create-bead"
+      }
+    ],
+    "observedGrants": [
+      "https://reference.invalid/acme/types/task",
+      "https://reference.invalid/acme/schemas/root",
+      "https://reference.invalid/acme/schemas/value"
+    ],
+    "artifactBytes": [
+      {
+        "uri": "https://reference.invalid/acme/schemas/root",
+        "bytes": 174,
+        "sha256": "b559e973c5ab7e0534e59064e8088442fee0d896d4399ed33e9924b19b800012"
+      },
+      {
+        "uri": "https://reference.invalid/acme/schemas/value",
+        "bytes": 118,
+        "sha256": "a9eb6111f30bf9e672dd5dbca44667e1783b20d944a1fe29608d48d9df32add6"
+      }
+    ],
+    "sessions": [
+      {
+        "pid": 60913,
+        "exit": 0,
+        "signal": null
+      }
+    ],
+    "attemptedRequests": 14,
+    "completedResponses": [
+      {
+        "label": "types",
+        "method": "GET",
+        "url": "https://reference.invalid/acme/types/?limit=32",
+        "status": 200,
+        "requestBodyBytes": 0,
+        "requestBodySha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "responseBodyBytes": 107,
+        "responseBodySha256": "5d53194a477a1557c13db5c495cde71c9055e4b257dd67434ebb0948e4822773",
+        "wireSha256": "5f122bed1de60021aff16c2c4d62786bc69a03248e44a7d3fa1810f84536c0db",
+        "context": {
+          "epoch": "97d5c5c5-5ae5-40c9-a85b-9bf842a54d55",
+          "view": "development-all-visible",
+          "position": "pos-0"
+        }
+      },
+      {
+        "label": "type",
+        "method": "GET",
+        "url": "https://reference.invalid/acme/types/task",
+        "status": 200,
+        "requestBodyBytes": 0,
+        "requestBodySha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "responseBodyBytes": 164,
+        "responseBodySha256": "a74db20c8417f17641b5bbb7948501a38e402970fce4164496cb82765b8fe108",
+        "wireSha256": "3c4e22b525e998ad36b50ccda95a1ca4b63f95d9556a2ce1867bcfad98914765",
+        "context": {
+          "epoch": "97d5c5c5-5ae5-40c9-a85b-9bf842a54d55",
+          "view": "development-all-visible",
+          "position": "pos-0"
+        }
+      },
+      {
+        "label": "root",
+        "method": "GET",
+        "url": "https://reference.invalid/acme/schemas/root",
+        "status": 200,
+        "requestBodyBytes": 0,
+        "requestBodySha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "responseBodyBytes": 174,
+        "responseBodySha256": "b559e973c5ab7e0534e59064e8088442fee0d896d4399ed33e9924b19b800012",
+        "wireSha256": "7d07d4b524481f87873ce1d9e8330191db08516b0b211c83b546ca5dfe79e2de",
+        "context": {
+          "epoch": "97d5c5c5-5ae5-40c9-a85b-9bf842a54d55",
+          "view": "development-all-visible",
+          "position": "pos-0"
+        }
+      },
+      {
+        "label": "referenced",
+        "method": "GET",
+        "url": "https://reference.invalid/acme/schemas/value",
+        "status": 200,
+        "requestBodyBytes": 0,
+        "requestBodySha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "responseBodyBytes": 118,
+        "responseBodySha256": "a9eb6111f30bf9e672dd5dbca44667e1783b20d944a1fe29608d48d9df32add6",
+        "wireSha256": "47d8f45da86b22a4c08881f9c44904901389f2900e833655bb74599a9d0acdec",
+        "context": {
+          "epoch": "97d5c5c5-5ae5-40c9-a85b-9bf842a54d55",
+          "view": "development-all-visible",
+          "position": "pos-0"
+        }
+      },
+      {
+        "label": "head",
+        "method": "HEAD",
+        "url": "https://reference.invalid/acme/schemas/root",
+        "status": 200,
+        "requestBodyBytes": 0,
+        "requestBodySha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "responseBodyBytes": 0,
+        "responseBodySha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "wireSha256": "fc6a5f805be7d61e1b30a84b778941326989ce0a8a33d5a4a5d4b146f2a812b4",
+        "context": {
+          "epoch": "97d5c5c5-5ae5-40c9-a85b-9bf842a54d55",
+          "view": "development-all-visible",
+          "position": "pos-0"
+        }
+      },
+      {
+        "label": "unacceptable",
+        "method": "GET",
+        "url": "https://reference.invalid/acme/schemas/root",
+        "status": 406,
+        "requestBodyBytes": 0,
+        "requestBodySha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "responseBodyBytes": 0,
+        "responseBodySha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "wireSha256": "b44ae0fb8f6d45393ac7b925df4ebd2b0ac4a077219ce728640666e5f95d69f6",
+        "context": {
+          "epoch": "97d5c5c5-5ae5-40c9-a85b-9bf842a54d55",
+          "view": "development-all-visible",
+          "position": "pos-0"
+        }
+      },
+      {
+        "label": "not-modified",
+        "method": "GET",
+        "url": "https://reference.invalid/acme/schemas/root",
+        "status": 304,
+        "requestBodyBytes": 0,
+        "requestBodySha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "responseBodyBytes": 0,
+        "responseBodySha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "wireSha256": "64aa6019d56f329d20d28be02a35695c62c07378310d5a19f9f5fe97ee718086",
+        "context": {
+          "epoch": "97d5c5c5-5ae5-40c9-a85b-9bf842a54d55",
+          "view": "development-all-visible",
+          "position": "pos-0"
+        }
+      },
+      {
+        "label": "precondition",
+        "method": "GET",
+        "url": "https://reference.invalid/acme/schemas/root",
+        "status": 412,
+        "requestBodyBytes": 0,
+        "requestBodySha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "responseBodyBytes": 0,
+        "responseBodySha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "wireSha256": "b5a58e63fafbe99039fa00d51bb87a268e014a9c5e864d7f2c44c3fec0688bd2",
+        "context": {
+          "epoch": "97d5c5c5-5ae5-40c9-a85b-9bf842a54d55",
+          "view": "development-all-visible",
+          "position": "pos-0"
+        }
+      },
+      {
+        "label": "unknown",
+        "method": "GET",
+        "url": "https://reference.invalid/acme/schemas/unknown",
+        "status": 404,
+        "requestBodyBytes": 0,
+        "requestBodySha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "responseBodyBytes": 134,
+        "responseBodySha256": "6eb3ea2339cd9acd8b41edf491f4cebb381ce54504bab8215d4a421f32d68ce1",
+        "wireSha256": "a344c605602073d06a8b676b88736282f125758ec6ecf2ce6d22e2a1e4a5e184",
+        "context": {}
+      },
+      {
+        "label": "unauthenticated",
+        "method": "GET",
+        "url": "https://reference.invalid/acme/schemas/root",
+        "status": 401,
+        "requestBodyBytes": 0,
+        "requestBodySha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "responseBodyBytes": 136,
+        "responseBodySha256": "9d3ea90197aca7525a1eb9d6c0f2845d5ad3656852c3d5ca1f4fd2df55b346c3",
+        "wireSha256": "b1deb0e1a1d2f841ea8174514c16cef1f76487efe4c5f7e29bbab5c0e985dc3d",
+        "context": {}
+      },
+      {
+        "label": "method",
+        "method": "POST",
+        "url": "https://reference.invalid/acme/schemas/root",
+        "status": 405,
+        "requestBodyBytes": 0,
+        "requestBodySha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "responseBodyBytes": 0,
+        "responseBodySha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "wireSha256": "647d294d3b815132a7dfdb9b9951b1a7f9207c4a98b972817cfa0cb632832f3c",
+        "context": {}
+      },
+      {
+        "label": "discovery",
+        "method": "GET",
+        "url": "https://reference.invalid/acme/",
+        "status": 500,
+        "requestBodyBytes": 0,
+        "requestBodySha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "responseBodyBytes": 0,
+        "responseBodySha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "wireSha256": "d74b1c7a768eafb314e48c1088b849393a3b7e42f4b0715df6f160683367bf9e",
+        "context": {}
+      },
+      {
+        "label": "create",
+        "method": "POST",
+        "url": "https://reference.invalid/acme/operations/create-bead",
+        "status": 200,
+        "requestBodyBytes": 98,
+        "requestBodySha256": "52806b6d59a1d8ad439cecf883c193556c6ef59414a86bc075dd4fbd15a4b282",
+        "responseBodyBytes": 671,
+        "responseBodySha256": "4d14f7305fe4819e422a7a4e4b4e27e40641d948ea2b5ba96b68e99fed6bd167",
+        "wireSha256": "37d93512553db6ca219ae2f65bc1a069eec64b428bf1b3ab73af08b84b66373b",
+        "context": {
+          "epoch": "97d5c5c5-5ae5-40c9-a85b-9bf842a54d55",
+          "view": "development-all-visible",
+          "position": "pos-1"
+        }
+      },
+      {
+        "label": "root-after",
+        "method": "GET",
+        "url": "https://reference.invalid/acme/schemas/root",
+        "status": 200,
+        "requestBodyBytes": 0,
+        "requestBodySha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "responseBodyBytes": 174,
+        "responseBodySha256": "b559e973c5ab7e0534e59064e8088442fee0d896d4399ed33e9924b19b800012",
+        "wireSha256": "d2cf1d60845fc5fbe87dee418e92d5636c6b30b6a75d0d06bd06eb8e2b36f65e",
+        "context": {
+          "epoch": "97d5c5c5-5ae5-40c9-a85b-9bf842a54d55",
+          "view": "development-all-visible",
+          "position": "pos-1"
+        }
+      }
+    ],
+    "directoryAbsent": true,
+    "outcome": "passed",
+    "claimEligible": false,
+    "evidenceRetention": "Response fingerprints/context only; full wire/body bytes are not retained"
+  },
+  "exits": {
+    "build": {
+      "exit": 0,
+      "seconds": 0.8421775829046965,
+      "started": "2026-10-14T17:21:05Z",
+      "ended": "2026-10-14T17:21:06Z",
+      "command": [
+        "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+        "/Users/dbox/.cache/node/corepack/v1/pnpm/11.20.0/bin/pnpm.cjs",
+        "build"
+      ],
+      "cwd": "/Users/dbox/repos/wt/vickie/vickie-local-schema-serving",
+      "pid": 60853
+    },
+    "pack-protocol": {
+      "exit": 0,
+      "seconds": 0.2440595831722021,
+      "started": "2026-10-14T17:21:06Z",
+      "ended": "2026-10-14T17:21:06Z",
+      "command": [
+        "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+        "/Users/dbox/.cache/node/corepack/v1/pnpm/11.20.0/bin/pnpm.cjs",
+        "pack",
+        "--out",
+        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-cold-schema-serving/packed-positive/packs/protocol.tgz"
+      ],
+      "cwd": "/Users/dbox/repos/wt/vickie/vickie-local-schema-serving/packages/protocol",
+      "pid": 60893
+    },
+    "pack-server": {
+      "exit": 0,
+      "seconds": 0.290491791209206,
+      "started": "2026-10-14T17:21:06Z",
+      "ended": "2026-10-14T17:21:06Z",
+      "command": [
+        "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+        "/Users/dbox/.cache/node/corepack/v1/pnpm/11.20.0/bin/pnpm.cjs",
+        "pack",
+        "--out",
+        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-cold-schema-serving/packed-positive/packs/server.tgz"
+      ],
+      "cwd": "/Users/dbox/repos/wt/vickie/vickie-local-schema-serving/packages/server",
+      "pid": 60894
+    },
+    "install": {
+      "exit": 0,
+      "seconds": 0.6792109578382224,
+      "started": "2026-10-14T17:21:06Z",
+      "ended": "2026-10-14T17:21:07Z",
+      "command": [
+        "npm",
+        "install",
+        "--offline",
+        "--ignore-scripts",
+        "--no-audit",
+        "--no-fund"
+      ],
+      "cwd": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-cold-schema-serving/packed-positive/install",
+      "pid": 60895
+    },
+    "installed": {
+      "exit": 0,
+      "seconds": 0.9316402091644704,
+      "started": "2026-10-14T17:21:07Z",
+      "ended": "2026-10-14T17:21:08Z",
+      "command": [
+        "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+        "/Users/dbox/.cache/node/corepack/v1/pnpm/11.20.0/bin/pnpm.cjs",
+        "exec",
+        "vitest",
+        "run",
+        "apps/bdptest/src/transactional-schema-installed.test.ts",
+        "--maxWorkers=1",
+        "--reporter=verbose",
+        "--reporter=json",
+        "--outputFile.json=/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-cold-schema-serving/packed-positive/installed.json"
+      ],
+      "cwd": "/Users/dbox/repos/wt/vickie/vickie-local-schema-serving",
+      "pid": 60897
+    }
+  },
+  "childPidsAbsent": [
+    60913
+  ]
+}

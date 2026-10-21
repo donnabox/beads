@@ -1,0 +1,31 @@
+{
+  "rootLaunchReleased": false,
+  "packet": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-trusted-startup-lifecycle-code-review-1/claude-code-review",
+  "expectedSession": "2026-10-18T02:16:24Z-549f",
+  "sourceRoot": "/Users/dbox/repos/wt/vickie/vickie-trusted-startup-lifecycle-minimum",
+  "reviewerArgv": [
+    "/opt/homebrew/bin/claude",
+    "--safe-mode",
+    "-p",
+    "--tools",
+    "Read,Glob,Grep",
+    "--allowedTools",
+    "Read,Glob,Grep",
+    "--disable-slash-commands",
+    "--strict-mcp-config",
+    "--mcp-config",
+    "{\"mcpServers\":{}}",
+    "--no-session-persistence",
+    "--output-format",
+    "stream-json",
+    "--verbose",
+    "--include-partial-messages"
+  ],
+  "outerTotalSeconds": 1800,
+  "termAtSeconds": 1790,
+  "killAtSeconds": 1798,
+  "noRetry": true,
+  "authority": "CLOSED FIRST trusted lifecycle actual CODE ONLY; exact clean d181686/corrected-native2/root source static accepted. Independent packet mechanics/root durable two-flag release before ONE default Claude read-only attempt; original PLAN failure retained/no secondPLAN/no retry/no product validation.",
+  "predecessorIndexSha256": "6fcca98a7c50dde057f4994c5b352702f992ec5879fb0bc0706872689b29b5b1",
+  "rootDispositionSha256": "52c19d97ee97cc6beef68011a7b8a1a6f4b4c52a36f742cba89c2b253f0f439b"
+}

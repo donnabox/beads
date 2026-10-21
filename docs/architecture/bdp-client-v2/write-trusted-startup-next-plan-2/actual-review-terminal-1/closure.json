@@ -1,0 +1,41 @@
+{
+  "createdUtc": "2026-10-18T03:54:41.081786+00:00",
+  "auditClassification": "clean_complete_actual_review_pending_root_findings_disposition",
+  "actualReviewComplete": true,
+  "runnerExitCode": 0,
+  "outerWrapperExitCode": 0,
+  "sourceInvarianceAccepted": true,
+  "packetReleaseIdentityAccepted": true,
+  "observedProcessClosureAccepted": true,
+  "finalRoleVerified": true,
+  "findingsAvailable": true,
+  "reviewFindingCount": 8,
+  "optionalFindingCount": 1,
+  "approvalInferred": false,
+  "sourceAuthoringReleased": false,
+  "publicActivationReleased": false,
+  "rootFindingsDispositionRequired": true,
+  "counts": {
+    "sourceFiles": 679,
+    "contexts": 39,
+    "artifacts": 15,
+    "frozenPacketFiles": 52,
+    "frozenAdapterFiles": 9,
+    "checkedObservedPidsIncludingSupervisor": 121,
+    "observedGroups": 47
+  },
+  "rawStreamSha256": "19d6aa6c94a038f539fb05589d585d898d17944de7c3ec19a85143d987b88ff5",
+  "rawRecords": 3657,
+  "rawBytes": 2272500,
+  "reviewTextSha256": "1450385fcf727eaa8dde9718ab0c714f0b79ef7731be64a4740b5ec6464352d9",
+  "terminalResultSha256": "3f62ceac56e2d2116ac668d137376ac0a51453f8beeb5af68050f60169fcc08e",
+  "auditDataSha256": "d02900c1c0b4770a16b28df5ae8cfa10c72a7475375e3e8dcef8d000a425d13e",
+  "independentSourceAfterSha256": "95bc3282d38efd29fe2fd4de3a7770d59b03b6f8c61d6f76064dd290758bee3a",
+  "reportSha256": "5d6721457d3cbaf6beca20e8e8c07bd83b9cab529fbcdaa510b1da65153319c3",
+  "limitations": [
+    "Static provisional finding dispositions only; root decides exact plan changes",
+    "No actual product tests/build/runtime evidence or profile-completion claim",
+    "Finite observed PID/group absence; never-observed descendants/sockets not claimed",
+    "Successful code4 attempt does not fault-inject all supervisor recovery branches"
+  ]
+}

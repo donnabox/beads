@@ -1,0 +1,16 @@
+{
+  "artifact": "docs/design/evidence/read-cohort/read-v1.json",
+  "artifactSha256": "674982be2123b9b7aae630bf79c3f774122900cd0e9a50a8daf967bd5a251132",
+  "constant": "674982be2123b9b7aae630bf79c3f774122900cd",
+  "runHead": "e5f7d0c43c151426350ceededdc77fe7e372db9b",
+  "verificationInputs": {
+    "docs/design/evidence/read-cohort/read-v1.json": "674982be2123b9b7aae630bf79c3f774122900cd0e9a50a8daf967bd5a251132",
+    "packages/server/src/read-conformance-capability.ts": "58d4529dc40bbf646f02bda4c7fa3fad9b83d21f3080152cc04867dbe3fa6f60",
+    "packages/conformance/catalog/read-v1.json": "769ff9f24cfdfe74a47670240b04149b520af23b2c71a431883fd15e988adeb0",
+    "packages/conformance/matrices/read-v1.json": "7dd47ebe30080e02fa3fc59fea986f1ed84a14fd5ce30d7830279c7f34bb13bd",
+    "schemas/bdp-v0.schema.json": "0baa5d5ef67144f8e6513b4cde31168effc8df6d52ef3141b0f144b87f8dc227",
+    "packages/conformance/fixtures/read-reference-v1.json": "237571207e03259866860e4013ed33f40f8d97990da1a9d841753d8aa1336bb5",
+    "packages/conformance/fixtures/read-bdpbd-v1.json": "91470fee89d02ff0e251604a3ad443183c6f0a7c9ed12ec6138df1d17bc0d26d"
+  },
+  "attribution": "Existing sealed historical Read evidence, not a fresh cohort run and not evidence of Transactional or other unsupported profiles. No evidence:generate or bd baseline capture/verify command is included."
+}

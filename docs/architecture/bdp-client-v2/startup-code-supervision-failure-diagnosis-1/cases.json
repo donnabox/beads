@@ -1,0 +1,33 @@
+{
+  "startup": {
+    "supervision": "write-trusted-startup-code-review-1/launch-supervision",
+    "packet": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-trusted-startup-code-review-1/claude-code-review",
+    "root": "startup",
+    "helperVersion": 4,
+    "absentRunnerOutputs": [
+      "exit.json",
+      "source-after.json",
+      "terminal-results.json",
+      "final-review.txt"
+    ]
+  },
+  "d1-code": {
+    "supervision": "current-changefeed-code-review-1/launch-supervision",
+    "packet": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/current-changefeed-code-review-1/claude-code-review",
+    "root": "d1-code",
+    "helperVersion": 4,
+    "absentRunnerOutputs": []
+  },
+  "d1-plan": {
+    "supervision": "event-admission-next-serving-plan/clean-candidate-rebind-1/new-session-launch-supervision-2",
+    "packet": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/event-admission-next-serving-plan/clean-candidate-rebind-1/claude-plan-review-session-20261018-021624-1",
+    "root": "d1-plan",
+    "helperVersion": 2,
+    "absentRunnerOutputs": [
+      "exit.json",
+      "source-after.json",
+      "terminal-results.json",
+      "final-review.txt"
+    ]
+  }
+}

@@ -1,0 +1,44 @@
+{
+  "status": "ORIGINAL_FINDINGS_DISPOSITIONED_SUCCESSOR_CLOSURE_PENDING",
+  "checkedAt": "2026-10-15T18:40:48.408724+00:00",
+  "actualClaude": {
+    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-principal-key-draft/claude-code-review/stdout.txt",
+    "sha256": "f1b60d8ccaeb0b0089ed44acbb13b2a1f6b06ab11bd085d5e8fa5e8485801858"
+  },
+  "actualExit": {
+    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-principal-key-draft/claude-code-review/exit.json",
+    "sha256": "f1ffee3b77f2f9793bd0720eecaeb67814ad7a1747b012bcfabd5ee0c4f61eff"
+  },
+  "nativeAudit": {
+    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-principal-key-draft/claude-code-review/native-findings-audit.md",
+    "sha256": "8dac2db34c7d094b8b9db670bcd4906298e40db06aabe874e88213a8134672c4"
+  },
+  "repairPatch": {
+    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-principal-key-draft/review-repair/correction.patch",
+    "sha256": "445425a4893a2411578f98d9cefa765a7262761a14e859c61f1d3f2e68598ac9"
+  },
+  "sourceBinding": {
+    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-principal-key-draft/review-repair/source-binding.json",
+    "sha256": "fce5c0dfb33221f9cc29fd6420eab607722d88d0d9b6076b64a57f763f5f9406"
+  },
+  "pidIndependentlyAbsent": 22656,
+  "rootRead": "Full original Claude output, complete native audit, actual correction, served binding constructor, TS check config, argv guard, report adapter and source scope.",
+  "findings": {
+    "F1": "Repair accepted: resolve nonempty Vitest argv output path, preserve absolute env and store containment; positive actual validation will use relative output path.",
+    "F2": "Closed by actual primitive allowlisted frozen served constructor and strict external nested-field adapter. No raw configuration or cycles.",
+    "F3": "Git-checkout harness is explicit workload; separate clean source/archive/installed provenance; no source-tarball portability claim.",
+    "F4": "Missing report/collection error cannot qualify named negative; supervisor and adapter require exact real artifacts.",
+    "F5": "Optional checkpoint diagnostics deferred; retain real Vitest failure and monotonic elapsed-only exception; do not serialize arbitrary errors.",
+    "F6": "Optional Ajv diagnostics deferred; actual runtime schema compile remains installed validation gate.",
+    "F7": "Accept as const tuple narrowing. Original root typecheck covered test; no claim of failed lint/inferred any empirically.",
+    "F8": "Optional redundant assertion deferred; exact mutation and genuine409 namedcontrol sensitivity required.",
+    "F9": "Accept full historical author hash and actual integration citation; preserve original checkpoint attribution; formatter had actually passed."
+  },
+  "omittedContext": "Native full-source audit closes collection shape/order, limits, handles, Problem schema and launcher. Actual Ajv compile remains pending installed execution.",
+  "limitsUnchanged": {
+    "expectedHttp": 9,
+    "maximumHttp": 14,
+    "productChildren": 2
+  },
+  "acceptedForFinalMerge": false
+}

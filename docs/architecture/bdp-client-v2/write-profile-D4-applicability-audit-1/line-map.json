@@ -1,0 +1,312 @@
+[
+  {
+    "copy": "source/docs/specs/bdp.md",
+    "origin": "/Users/dbox/repos/wt/vickie/vickie-current-changefeed-minimum/docs/specs/bdp.md",
+    "sha256": "67772742d7d08f48c12196e9789f1859ad2d0e19f133ea65e197b049361f84f8",
+    "needle": "### Installed Type contracts",
+    "lines": [
+      2534
+    ]
+  },
+  {
+    "copy": "source/docs/specs/bdp.md",
+    "origin": "/Users/dbox/repos/wt/vickie/vickie-current-changefeed-minimum/docs/specs/bdp.md",
+    "sha256": "67772742d7d08f48c12196e9789f1859ad2d0e19f133ea65e197b049361f84f8",
+    "needle": "### Descriptor installation for mutation",
+    "lines": [
+      2558
+    ]
+  },
+  {
+    "copy": "source/docs/specs/bdp.md",
+    "origin": "/Users/dbox/repos/wt/vickie/vickie-current-changefeed-minimum/docs/specs/bdp.md",
+    "sha256": "67772742d7d08f48c12196e9789f1859ad2d0e19f133ea65e197b049361f84f8",
+    "needle": "### Type validation and diagnostics",
+    "lines": [
+      2586
+    ]
+  },
+  {
+    "copy": "source/docs/specs/bdp.md",
+    "origin": "/Users/dbox/repos/wt/vickie/vickie-current-changefeed-minimum/docs/specs/bdp.md",
+    "sha256": "67772742d7d08f48c12196e9789f1859ad2d0e19f133ea65e197b049361f84f8",
+    "needle": "#### Durability and recovery",
+    "lines": [
+      3367
+    ]
+  },
+  {
+    "copy": "source/docs/specs/bdp.md",
+    "origin": "/Users/dbox/repos/wt/vickie/vickie-current-changefeed-minimum/docs/specs/bdp.md",
+    "sha256": "67772742d7d08f48c12196e9789f1859ad2d0e19f133ea65e197b049361f84f8",
+    "needle": "### Version erasure",
+    "lines": [
+      6363
+    ]
+  },
+  {
+    "copy": "source/docs/specs/bdp.md",
+    "origin": "/Users/dbox/repos/wt/vickie/vickie-current-changefeed-minimum/docs/specs/bdp.md",
+    "sha256": "67772742d7d08f48c12196e9789f1859ad2d0e19f133ea65e197b049361f84f8",
+    "needle": "### History and Transactional erasure",
+    "lines": [
+      6599
+    ]
+  },
+  {
+    "copy": "source/docs/specs/bdp.md",
+    "origin": "/Users/dbox/repos/wt/vickie/vickie-current-changefeed-minimum/docs/specs/bdp.md",
+    "sha256": "67772742d7d08f48c12196e9789f1859ad2d0e19f133ea65e197b049361f84f8",
+    "needle": "transactional.restore.epoch-fence",
+    "lines": [
+      7029
+    ]
+  },
+  {
+    "copy": "source/docs/specs/bdp.md",
+    "origin": "/Users/dbox/repos/wt/vickie/vickie-current-changefeed-minimum/docs/specs/bdp.md",
+    "sha256": "67772742d7d08f48c12196e9789f1859ad2d0e19f133ea65e197b049361f84f8",
+    "needle": "read-update.idempotency.restore",
+    "lines": [
+      6864,
+      6903
+    ]
+  },
+  {
+    "copy": "source/docs/specs/bdp.md",
+    "origin": "/Users/dbox/repos/wt/vickie/vickie-current-changefeed-minimum/docs/specs/bdp.md",
+    "sha256": "67772742d7d08f48c12196e9789f1859ad2d0e19f133ea65e197b049361f84f8",
+    "needle": "read-update.idempotency.authorization-view",
+    "lines": [
+      6857,
+      6899
+    ]
+  },
+  {
+    "copy": "source/packages/server/src/transaction-store.ts",
+    "origin": "/Users/dbox/repos/wt/vickie/vickie-current-changefeed-minimum/packages/server/src/transaction-store.ts",
+    "sha256": "2feff60d7064cf6a1f8b15c8360b98c1671a04762346d1d6bb3a9321ef69a2d5",
+    "needle": "recoveredPending = atomic",
+    "lines": [
+      584
+    ]
+  },
+  {
+    "copy": "source/packages/server/src/transaction-store.ts",
+    "origin": "/Users/dbox/repos/wt/vickie/vickie-current-changefeed-minimum/packages/server/src/transaction-store.ts",
+    "sha256": "2feff60d7064cf6a1f8b15c8360b98c1671a04762346d1d6bb3a9321ef69a2d5",
+    "needle": "const readConfiguration =",
+    "lines": [
+      647
+    ]
+  },
+  {
+    "copy": "source/packages/server/src/transaction-store.ts",
+    "origin": "/Users/dbox/repos/wt/vickie/vickie-current-changefeed-minimum/packages/server/src/transaction-store.ts",
+    "sha256": "2feff60d7064cf6a1f8b15c8360b98c1671a04762346d1d6bb3a9321ef69a2d5",
+    "needle": "maximumEndpointMultiplicity: Object.freeze([])",
+    "lines": [
+      659
+    ]
+  },
+  {
+    "copy": "source/packages/server/src/transaction-store.ts",
+    "origin": "/Users/dbox/repos/wt/vickie/vickie-current-changefeed-minimum/packages/server/src/transaction-store.ts",
+    "sha256": "2feff60d7064cf6a1f8b15c8360b98c1671a04762346d1d6bb3a9321ef69a2d5",
+    "needle": "erasures: []",
+    "lines": [
+      1370
+    ]
+  },
+  {
+    "copy": "source/packages/server/src/transaction-store.ts",
+    "origin": "/Users/dbox/repos/wt/vickie/vickie-current-changefeed-minimum/packages/server/src/transaction-store.ts",
+    "sha256": "2feff60d7064cf6a1f8b15c8360b98c1671a04762346d1d6bb3a9321ef69a2d5",
+    "needle": "readConfiguration: () =>",
+    "lines": [
+      1919
+    ]
+  },
+  {
+    "copy": "source/packages/server/src/transaction-store.ts",
+    "origin": "/Users/dbox/repos/wt/vickie/vickie-current-changefeed-minimum/packages/server/src/transaction-store.ts",
+    "sha256": "2feff60d7064cf6a1f8b15c8360b98c1671a04762346d1d6bb3a9321ef69a2d5",
+    "needle": "replaceAuthorizationPolicy()",
+    "lines": [
+      1967
+    ]
+  },
+  {
+    "copy": "source/packages/server/src/transaction-snapshot.ts",
+    "origin": "/Users/dbox/repos/wt/vickie/vickie-current-changefeed-minimum/packages/server/src/transaction-snapshot.ts",
+    "sha256": "dac7c2f121cfb6bae557b3917f5ec52e47a358ab39da4062f6a5c26f5b9fbd83",
+    "needle": "readonly erasures: readonly never[]",
+    "lines": [
+      77
+    ]
+  },
+  {
+    "copy": "source/packages/server/src/transaction-snapshot.ts",
+    "origin": "/Users/dbox/repos/wt/vickie/vickie-current-changefeed-minimum/packages/server/src/transaction-snapshot.ts",
+    "sha256": "dac7c2f121cfb6bae557b3917f5ec52e47a358ab39da4062f6a5c26f5b9fbd83",
+    "needle": "erasures: []",
+    "lines": [
+      609
+    ]
+  },
+  {
+    "copy": "source/packages/server/src/recovery-store.ts",
+    "origin": "/Users/dbox/repos/wt/vickie/vickie-current-changefeed-minimum/packages/server/src/recovery-store.ts",
+    "sha256": "48b7901e48998fe29598168a527213ebfb49e1d6e5dc5c2eb6494c862b5de9f9",
+    "needle": "no logical import/export API",
+    "lines": [
+      280
+    ]
+  },
+  {
+    "copy": "source/packages/server/src/transaction-authorization.ts",
+    "origin": "/Users/dbox/repos/wt/vickie/vickie-current-changefeed-minimum/packages/server/src/transaction-authorization.ts",
+    "sha256": "c87a7bfa8840aee2f097bf683fe3f3c97fcae80782020c6d5b1e41364d16b6d2",
+    "needle": "readPolicy: \"all-visible\" | \"empty\"",
+    "lines": [
+      15
+    ]
+  },
+  {
+    "copy": "source/packages/server/src/transaction-authorization.ts",
+    "origin": "/Users/dbox/repos/wt/vickie/vickie-current-changefeed-minimum/packages/server/src/transaction-authorization.ts",
+    "sha256": "c87a7bfa8840aee2f097bf683fe3f3c97fcae80782020c6d5b1e41364d16b6d2",
+    "needle": "emptyTransactionAuthorization",
+    "lines": [
+      28
+    ]
+  },
+  {
+    "copy": "source/apps/bdptest/src/transactional-set-installed.test.ts",
+    "origin": "/Users/dbox/repos/wt/vickie/vickie-current-changefeed-minimum/apps/bdptest/src/transactional-set-installed.test.ts",
+    "sha256": "4f6dc193069667fb37dcbc1a694010a5b45dbea2c09a1422aaa480a806affcf0",
+    "needle": "ownsOutgoing:",
+    "lines": [
+      51
+    ]
+  },
+  {
+    "copy": "source/apps/bdptest/src/transactional-set-installed.test.ts",
+    "origin": "/Users/dbox/repos/wt/vickie/vickie-current-changefeed-minimum/apps/bdptest/src/transactional-set-installed.test.ts",
+    "sha256": "4f6dc193069667fb37dcbc1a694010a5b45dbea2c09a1422aaa480a806affcf0",
+    "needle": "installed valid sets preserve",
+    "lines": [
+      103
+    ]
+  },
+  {
+    "copy": "source/apps/bdptest/src/transactional-set-installed.test.ts",
+    "origin": "/Users/dbox/repos/wt/vickie/vickie-current-changefeed-minimum/apps/bdptest/src/transactional-set-installed.test.ts",
+    "sha256": "4f6dc193069667fb37dcbc1a694010a5b45dbea2c09a1422aaa480a806affcf0",
+    "needle": "90000",
+    "lines": [
+      107
+    ]
+  },
+  {
+    "copy": "source/apps/bdptest/src/transactional-set-installed.test.ts",
+    "origin": "/Users/dbox/repos/wt/vickie/vickie-current-changefeed-minimum/apps/bdptest/src/transactional-set-installed.test.ts",
+    "sha256": "4f6dc193069667fb37dcbc1a694010a5b45dbea2c09a1422aaa480a806affcf0",
+    "needle": "{ ...configuration, create: false }",
+    "lines": [
+      399
+    ]
+  },
+  {
+    "copy": "source/apps/bdptest/src/installed-reference.test.ts",
+    "origin": "/Users/dbox/repos/wt/vickie/vickie-current-changefeed-minimum/apps/bdptest/src/installed-reference.test.ts",
+    "sha256": "2c87160890b1c8aed2ada117a1aa293fe7fcfa85db794a3d9ef6514a39d199d1",
+    "needle": "hosts exact captured",
+    "lines": [
+      201
+    ]
+  },
+  {
+    "copy": "source/apps/bdptest/src/installed-reference.test.ts",
+    "origin": "/Users/dbox/repos/wt/vickie/vickie-current-changefeed-minimum/apps/bdptest/src/installed-reference.test.ts",
+    "sha256": "2c87160890b1c8aed2ada117a1aa293fe7fcfa85db794a3d9ef6514a39d199d1",
+    "needle": "permits distinct live policy",
+    "lines": [
+      293
+    ]
+  },
+  {
+    "copy": "source/packages/server/src/transaction-installed-contracts.test.ts",
+    "origin": "/Users/dbox/repos/wt/vickie/vickie-current-changefeed-minimum/packages/server/src/transaction-installed-contracts.test.ts",
+    "sha256": "f2dd0993c4fa61742435d3bedb101afb021ca0f1b5904147ab367ba243286bd1",
+    "needle": "installs a complete compiled owning",
+    "lines": [
+      347
+    ]
+  },
+  {
+    "copy": "source/packages/server/src/transaction-installed-contracts.test.ts",
+    "origin": "/Users/dbox/repos/wt/vickie/vickie-current-changefeed-minimum/packages/server/src/transaction-installed-contracts.test.ts",
+    "sha256": "f2dd0993c4fa61742435d3bedb101afb021ca0f1b5904147ab367ba243286bd1",
+    "needle": "serves same-owner Types",
+    "lines": [
+      378
+    ]
+  },
+  {
+    "copy": "source/apps/bdptest/src/development-contracts.test.ts",
+    "origin": "/Users/dbox/repos/wt/vickie/vickie-current-changefeed-minimum/apps/bdptest/src/development-contracts.test.ts",
+    "sha256": "c27a4ff9012c85af17bd38e4f06a3b65d26a75a949e57a572a4382fd5bf6e522",
+    "needle": "owned source guards",
+    "lines": [
+      193
+    ]
+  },
+  {
+    "copy": "source/apps/bdptest/src/development-contracts.test.ts",
+    "origin": "/Users/dbox/repos/wt/vickie/vickie-current-changefeed-minimum/apps/bdptest/src/development-contracts.test.ts",
+    "sha256": "c27a4ff9012c85af17bd38e4f06a3b65d26a75a949e57a572a4382fd5bf6e522",
+    "needle": "transport principals",
+    "lines": [
+      281
+    ]
+  },
+  {
+    "copy": "source/apps/bdptest/src/development-contracts.test.ts",
+    "origin": "/Users/dbox/repos/wt/vickie/vickie-current-changefeed-minimum/apps/bdptest/src/development-contracts.test.ts",
+    "sha256": "c27a4ff9012c85af17bd38e4f06a3b65d26a75a949e57a572a4382fd5bf6e522",
+    "needle": "reopens the same pinned",
+    "lines": [
+      364
+    ]
+  },
+  {
+    "copy": "source/packages/conformance/test-support/profile-contract-plan.ts",
+    "origin": "/Users/dbox/repos/wt/vickie/vickie-current-changefeed-minimum/packages/conformance/test-support/profile-contract-plan.ts",
+    "sha256": "18c953443e6695cfa48f89677231fecffc349df02bd080f107a5c739db10b728",
+    "needle": "Missing applicability",
+    "lines": [
+      215
+    ]
+  },
+  {
+    "copy": "source/packages/conformance/test-support/profile-contract-plan.ts",
+    "origin": "/Users/dbox/repos/wt/vickie/vickie-current-changefeed-minimum/packages/conformance/test-support/profile-contract-plan.ts",
+    "sha256": "18c953443e6695cfa48f89677231fecffc349df02bd080f107a5c739db10b728",
+    "needle": "applicability-unresolved",
+    "lines": [
+      185,
+      352
+    ]
+  },
+  {
+    "copy": "source/packages/conformance/test-support/profile-contract-plan.ts",
+    "origin": "/Users/dbox/repos/wt/vickie/vickie-current-changefeed-minimum/packages/conformance/test-support/profile-contract-plan.ts",
+    "sha256": "18c953443e6695cfa48f89677231fecffc349df02bd080f107a5c739db10b728",
+    "needle": "claimEligible: false",
+    "lines": [
+      196,
+      359
+    ]
+  }
+]

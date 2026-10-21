@@ -1,0 +1,100 @@
+Reviewed the plan against frozen `8d64fcf7fdaa34642fadb3c2c0b8f4729c7778df`. No files written or modified.
+
+## Verification of the plan's own citations
+
+Accurate as cited: `bdp.md:2532–2576` (pinned closure, no refresh at same Type ID, exact artifacts + fingerprint, retention while live/retained representations refer, Type ID + fingerprint for logical-Scope lifetime), `bdp.md:562–605` (intersection semantics), `development-contracts.ts:67–145` (reconstruct-from-base64, WeakSet brand, `development-schema5-` folding `captured.sha256`/`artifactLimits`/`SCHEMA_GRAPH_CEILINGS`/`EVALUATOR_CEILINGS`, registry exact-bytes gate at 141), `installed-reference-configuration.ts:123–159`, `installed-reference.ts:14–84`, `development-authority.ts:143–154, 180–188, 193–205`, `recovery-store.ts:191, 200, 586–595, 613, 617`, `development-contracts.test.ts:364–395`.
+
+Confirmed correct and load-bearing:
+- **Ordering trap is real.** `recovery-store.ts:613` commits the claimed-key sweep at `617`; `development-authority.ts:193` runs only after `openRecoveryStore` returns.
+- **Digest-vs-bytes distinction is drawn correctly.** `installation` metadata already folds `captured.sha256`, so a *changed-configuration* reopen already refuses at `recovery-store.ts:586–595`, i.e. pre-cleanup. The genuinely new coverage is (a) same-metadata row corruption and (b) availability of bytes. `development-contracts.test.ts:364` proves only mismatch refusal — plan line 14 states this precisely.
+- **Hot-journal claim holds.** The first header read is `PRAGMA journal_mode` (`recovery-store.ts:534`), before `BEGIN EXCLUSIVE` at `543`, so SQLite rollback precedes any metadata check; the plan's "restoration may change interrupted physical bytes" caveat is required and present. Refusal byte-identity also holds: the first write is `615`, after the proposed gate (existing witness: `recovery-store.test.ts:708–711`). The existing `staged` SIGKILL harness (`recovery-store.test.ts:898–932`) supports counterexample 5 without new machinery.
+- **Old→new refusal is free.** `recovery-store.ts:587` format check precedes `613`; a new table additionally trips `581–585`.
+- **No public API change needed.** `openRecoveryStore`/`RecoveryStoreOptions` are not re-exported; `packages/server/package.json` exposes only `./dist/index.js` and `./dist/development.js`, and `development.ts` exports only `startDevelopmentReferenceServer`, `DevelopmentServerOptions`, `DEVELOPMENT_BEAD_TYPE/LINK_TYPE`.
+- **TX dependency claim is accurate.** Frozen `DevelopmentContracts` (`development-contracts.ts:54–59`) has no capture. TX draft `cbecfea` adds `capture: { artifacts, artifactLimits, graphLimits, evaluatorLimits }`. RU cannot start before that lands — the plan correctly makes this a precondition.
+- **Evidence paragraph is correct.** `installed-reference.ts:46–51` hashes `dist` bytes, so touching `recovery-store.ts`/`development-authority.ts` changes `payloadIdentity`, and `read-update-matrix.test.ts:195–208` binds `sourceCommit` + `installedPayloadDigest` into the observation. The public Read seal does survive: `runHead e5f7d0c` is an ancestor of HEAD and `cohort-verification.ts:556` only requires `runHeadIsAncestor`.
+- **No invented permissions.** The plan stays inside existing administrative-configuration authority; no network retrieval, no public installation API, no Types lifecycle, no profile claim.
+
+---
+
+## HIGH
+
+**1. §1 serializes "policy identity" into the capture — contradicts §3 and breaks an existing passing contract.**
+File: plan line 24 (vs. plan line 42).
+Impact: `apps/bdptest/src/installed-reference.test.ts:484–503` reopens the *same directory* with `create:false` and changed `policies`, then changed `credentials`, and expects success with a changed `configurationIdentity`. Policy/auth identities are deliberately absent from store identity (`development-authority.ts:152–154` uses `contractIdentity` + aggregate only), and `createDevelopmentAccessPolicy.replace` (`development-contracts.ts:205`) mutates `policy.identity()` *within* a run (`development-contracts.test.ts:352`). Folding any policy identity into a locked equality gate refuses legitimate reopens and makes live policy replacement a startup failure.
+Fix: strike "policy identity" from §1's serialization list. Persist only `artifacts` + `artifactLimits` + `graphLimits` + `evaluatorLimits`. If "policy" meant the aggregate endpoint-multiplicity set, say so explicitly and note it is already covered by `installation` metadata, so it is a redundant witness, not a gate input.
+
+**2. §2's "or equivalent bounded dedicated row" leaves a mutation-writable table as a legitimate reading.**
+File: plan line 28.
+Impact: the `policy` table is upsertable from *any* member transaction (`MemberTransaction.putPolicy`, `recovery-store.ts:105`, impl `804–812`, unrestricted `name`). A capture placed there could be overwritten by an ordinary mutation, directly violating the immutability clause at `bdp.md:2544–2547`.
+Fix: pin the target. `metadata` is the only table written by name-scoped SQL only (`555`, `615`, `820`, `833`) and is unreachable from `MemberTransaction`; a new dedicated table with no `MemberTransaction` writer is the other acceptable choice. State that `policy` and `installed_types` are excluded.
+
+**3. The expected-capture parameter's type and trust model are unspecified — this is the plan's central feasibility hinge.**
+File: plan lines 30, 32 ("narrow immutable expected-capture value" vs. "Reject unexpected capture fields and invalid primitive values via the shared capture authority").
+Impact: if recovery-store validates capture *structure*, it must import the contract/artifact layer, contradicting "the storage owner need not know JSON Schema." Nothing stops this: `scripts/check-dependency-boundaries.mjs:10–22` enforces package-level dependencies only, with no intra-package layering rule. The same ambiguity decides where the serialization bound lives (plan line 32 requires it before file creation, i.e. before `recovery-store.ts:304/309–311`).
+Fix: specify the parameter as **opaque pre-serialized bounded text** plus a frozen `Record<id, bodyJson>`; locate the serializer and its ceiling in `development-authority` (or one shared single-purpose function); recovery-store does length-then-text equality and never parses.
+
+**4. The gate does not close the ordering trap for all startup refusal classes, but §3 reads as if it does.**
+File: plan lines 38, 53.
+Impact: after the change, two refusals still run *after* the `617` commit — `development-authority.ts:198–203` (stored Resource of an uninstalled Type) and `:206` `assertReadUpdateRuntimeCompatibility` (live properties over bound, incompatible retained outcomes; `read-update-runtime-limits.ts:61–76`). Both still destroy pending claims, and `:204 store.expire(clock())` runs before `:206`. §3's "must precede claimed-key deletion, allocation writes, startup commit, expiry and owner admission" will not be a universal property.
+Fix: scope the claim to the capture/inventory classes and state the Resource-Type scan and limits-compatibility scan as **accepted residual post-commit refusals** (they need Resource semantics and cannot move into a schema-ignorant store). Add that as an explicit non-goal rather than leaving it implied by counterexample 2.
+
+---
+
+## MEDIUM
+
+**5. Bounds cover the write path only; the untrusted read path inside the lock is unbounded.**
+File: plan line 32 ("Bound serialization before file creation/allocation").
+Impact: empirically verified on this machine (SQLite 3.53.1) — `PRAGMA quick_check` **does** evaluate CHECK constraints, invoking the registered function once per row. `recovery-store.ts:603` therefore JSON-parses every JSON-checked column *before* the proposed gate. A capture row in a `bdp_json_syntax_v2` column is fully parsed each open, on content from a possibly-corrupt file, and the equality compare then materializes the same text again. The plan's stated rationale ("without trusting its claimed digest or recompiling unbounded data inside the lock") is only half-true: text equality reads the same order of bytes as a digest recompute; the real benefit is that no parser or hash runs on attacker-controlled bytes.
+Fix: put the row in `metadata` (no CHECK), add a `SELECT length(value)` precheck before materializing, and state the measured ceiling. Derived from `CONTRACT_ARTIFACT_CEILINGS` (`installed-contract-artifact.ts:19–34`): base64 of `totalBytes` 16 MiB ≈ 22.37 MiB, plus a *separate* 16 MiB URI budget (`318`), plus ~8192 entries × ~150 B structural/`sha256`/`byteLength` overhead ≈ **40–42 MiB**. Plan line 32's rejection of an unrelated 1 MiB cap is correct (`artifactBytes` is 1 MiB *per artifact*; `totalBytes` is 16 MiB).
+
+**6. "Row must always exist" + "avoid broad fixture churn" are in tension because the new option's default is unstated.**
+File: plan lines 28, 48.
+Impact: the direct-caller surface is larger than §4 implies — 9 test files and ~40 `openRecoveryStore` call sites, including two *emitted subprocess programs* that reopen with no types (`recovery-store.test.ts:761–766`, `sequence-executor.test.ts:1894–1902`) and several that seed `types` on create then reopen with bare options (`member-executor.test.ts:111/226`, `alias-evaluator.test.ts:75/166`, `resource-evaluator.test.ts:1448/1493`, `read-sequence-lifecycle.test.ts:139/1021`). "Expect empty inventory" as the default refuses all of those; "required parameter" churns all of them.
+Fix: state the default explicitly — expect *compiled-capture absence*, and skip inventory comparison when no inventory is supplied — and accept the consequence in writing: the inventory gate is **opt-in and used only by `development-authority`**. Note that a captured store reopened without the expectation still refuses (absence ≠ present), which is the safety property that makes the default acceptable.
+
+**7. Whether `graphLimits`/`evaluatorLimits` are persisted is left ambiguous, with a no-diagnosis failure mode.**
+File: plan line 24 ("actual compiler limits"); plan line 54.
+Impact: `development-contracts.ts:131–135` folds code-level `SCHEMA_GRAPH_CEILINGS` and `EVALUATOR_CEILINGS` into `identity`, and those constants are not persisted anywhere. A future ceiling bump changes `installationIdentity`, so every existing store refuses at `recovery-store.ts:589` as an opaque `store-mismatch` with no way to attribute the cause. The TX draft already exposes all three on `capture`.
+Fix: persist `artifactLimits`, `graphLimits` and `evaluatorLimits` as witnesses so refusal is attributable, and state plainly that a ceilings bump is a deliberate no-migration refusal.
+
+**8. The format bump breaks the public development facade's existing stores, which §4 does not mention.**
+File: plan line 46 (discusses fixtures and `development-authority` only).
+Impact: `development.ts` exports `startDevelopmentReferenceServer` → `development-runtime` with no deployment → `openDevelopmentAuthority` with `configuration: undefined` → the built-in schema-free path. So the public, non-attesting facade is *always* the absence-marker case, and every existing format-3 development store refuses after the bump.
+Fix: name this in §4 as an intentional, unmigrated break of the public development facade's on-disk stores (acceptable given `private: true`, version `0.0.0`), rather than framing the bump as fixture-only.
+
+**9. Two counterexample predicates are unachievable as literally worded.**
+File: plan lines 53, 56 ("valid reopen recovers the original pending claim", "still recovers its pending key").
+Impact: a *successful* open deletes claimed rows (`recovery-store.ts:613`) and surfaces only `runtime.recoveredClaims` (`618–627`). Taken literally, these predicates cannot be written as tests.
+Fix: restate as: the **refused** open leaves the `key_state` claimed row present (raw-row inspection, which plan line 53 already calls for), and the **subsequent valid** open reports the expected `runtime.recoveredClaims` count — the pattern already used at `recovery-store.test.ts:911`.
+
+**10. No counterexample exercises the absence-marker development path, where the inventory gate matters most.**
+File: plan lines 52–57 (all seven use configured/installed fixtures).
+Impact: the built-in path's installation string is a literal constant (`development-authority.ts:78`) that does **not** hash its descriptors (`:91–107`). So for that path the in-lock inventory gate is the *only* pre-cleanup protection against changed/missing/extra `installed_types` rows — a real improvement this plan delivers but never claims or tests.
+Fix: add a counterexample for the schema-free path: absence marker present, `installed_types` row corrupted/removed/added with `installation` metadata unchanged, refusal before claimed-key deletion.
+
+**11. §3's hosted-schema requirement has no acceptance predicate distinguishing it from today.**
+File: plan line 42 ("hosted schema responses must use those same accepted artifacts").
+Impact: hosted bytes currently come from `bundle.schemas` (`installed-reference-configuration.ts:151–159`) — a parallel in-memory copy of the same buffers that were captured, URI-gated separately at `153–157`, and *not* deduped the way the capture is (`installed-contract-artifact.ts:384–389`). As written, the requirement could mean "no change" or "rewire configuration to serve from the capture," which is a different edit with different churn.
+Fix: pick one. Either state that hosted bytes are already the same buffers and equality follows from the installation digest (no code change, no predicate), or declare the rewiring in-scope with its own done predicate and keep the Scope-local check.
+
+---
+
+## LOW
+
+**12. Citation drift.** Plan line 13 cites `installed-reference-configuration.ts:172–184` for the credential/policy/profile/owner-limit binding; the actual span is `160–186` (aggregate `160–163`, authentication `170–172`, digest `175–186`). Plan line 14 cites `recovery-store.ts:550–562` for `installed_types` seeding; the types loop is `557–561` (`550–555` is metadata). Plan line 7's spec range should extend to `2576`, and should add `2578–2582` — "retained as one immutable validation closure" is the strongest wording for this slice and is currently uncited.
+
+**13. The built-in expected inventory is not immutable.** `development-authority.ts:107` builds `types` with `Object.fromEntries` and never freezes it, unlike `contracts.types` (`development-contracts.ts:139`). If the gate takes "a narrow immutable expected inventory," freeze it.
+
+**14. A dedicated table requires editing the exact sorted `expectedTables` list** (`recovery-store.ts:568–576`, compared by length *and* position). Fails loudly, but name it; using `metadata` avoids it entirely.
+
+---
+
+## Semantic decisions needing a ruling
+
+1. Does the built-in schema-free development authority count as having "installed Types" under `bdp.md:2532`? Its descriptors are built from JS literals via `parseTypeDescriptor` (`development-authority.ts:91–106`) — original bytes never existed. The plan's "explicit compiled-capture absence" (line 30) is defensible, but it must be stated as a **conformance non-claim**, consistent with plan line 62's "No new whole-contract credit."
+2. Retention scope: the plan retains the whole capture for the store lifetime (line 34) where the spec requires only retention-while-referenced plus Type ID + fingerprint for the Scope lifetime (`bdp.md:2551–2554`). Stronger than required and justified by avoiding lifecycle dependency tracking — worth ratifying explicitly as the chosen reading rather than leaving it as an implicit upgrade.
+3. Whether `installationId`/`lineageId` stay compact is a hard constraint, not a preference. `authority-read.ts:492` admits any nonempty string with no length bound and carries it into read observations alongside a 4 MiB `retainedSnapshotByteCapacity` (`development-authority.ts:67`), and `recovery-store.ts:290` only requires nonempty text. Plan line 28's warning is well-founded; promote it to a stated invariant.
+
+## Smallest-sufficient assessment
+
+The three-part shape is close to minimal and I found no cheaper sufficient design: a separate row is required because `installed_types` is Type-ID-keyed with canonical bodies consumed by the registry and Read lookup (`recovery-store.ts:449–453`, `development-contracts.ts:141`) and schemas have no Type ID; the in-lock gate is the only placement that precedes `613`; and the format bump gets old→new refusal for free at `587`. The main risk is not over-build — it is the four under-specified decisions above (expected-capture type, row location, option default, limits persistence), each of which an implementer could resolve in a way that breaks an existing passing contract.

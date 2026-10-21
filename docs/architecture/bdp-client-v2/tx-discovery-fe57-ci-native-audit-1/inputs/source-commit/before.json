@@ -1,0 +1,23 @@
+{
+  "utc": "2026-10-18T17:29:16.502955+00:00",
+  "session": "2026-10-18T02:16:24Z-549f",
+  "headBefore": "cce884ccea1db97cbc6fd7bff876d4d6091f9081",
+  "sourceCanonical": "a61cd3fbf9fac68e3aad857a24a2456dd16b83048067eef85348d7091c0aa08e",
+  "stagedSix": [
+    "apps/bdptest/src/transactional-discovery-installed.test.ts",
+    "apps/bdptest/src/transactional-schema-installed.test.ts",
+    "packages/server/src/transaction-changefeed.test.ts",
+    "packages/server/src/transaction-http.test.ts",
+    "packages/server/src/transaction-http.ts",
+    "packages/server/src/transaction-installed-contracts.test.ts"
+  ],
+  "binaryDiffSha256": "eed91e5f1abc48ef92f31d92690772c8a6489a48dd9e5e07af66de9c392712ab",
+  "rootFinal52AcceptanceSha256": "9ee5f9ddb070c4bf83e5912002d0e150cc0b1645b623416ad01d2255af4577b0",
+  "authorityPublicationReadback": "c147aaf787aa4fd65c47bd0362657058104e52db",
+  "addedLinesScannedForSecrets": 2552,
+  "newSecretPatterns": 0,
+  "wholeFileOnlyFalsePositives": "Four preexisting unchanged token fixture lines; absent from staged added diff.",
+  "documentationScope": "Internal private discovery/minimum regression slice, no README/setup/public API/shared agent workflow change.",
+  "newHeadCIRequired": true,
+  "mainLanding": false
+}

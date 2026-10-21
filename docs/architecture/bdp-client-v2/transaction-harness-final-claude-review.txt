@@ -1,0 +1,111 @@
+Static review only — no builds, tests, or writes in this frozen checkout. All conclusions are from reading `ee947ae..9d379c5` (9 files, +367/−49) and the surrounding code.
+
+# Final H1b harness supplement review — `ee947ae..9d379c5`
+
+**Disposition: all eight dispositions are closed as specified; six residues, none a reachable false-evidence fault.** Receipt attribution, dead-state removal, the explicit cleanup bound, abort-cause retention and the ordering prose all land as directed. Two residues are reachable-but-config-only, two are unreachable-defensive, two are witness-precision gaps.
+
+---
+
+## Findings
+
+### 1. MEDIUM — Any harness cleanup failure now discards the whole cohort observation; the doc only claims the both-fail case
+
+**Location** `apps/bdptest/src/transactional-matrix.test.ts:226-233`, `:259-262`; `docs/design/transaction-harness-review-closure.md:38`; `packages/conformance/src/runner.ts:814-824`
+
+**Evidence** The runner already attributes a failed `harness.cleanup`: `runner.ts:819` converts `state: "pass"` → `"harness-error"` and `:823` records `cleanupError: "cleanup failed"`. The new wrapper additionally retains the cause, then `:259-262` throws unconditionally whenever `cleanupFailures.length` — including when `failure === undefined` and the run produced a complete 255-row result. The doc says only "If abort and cleanup both fail, the final AggregateError preserves the original abort and the actual cleanup cause."
+
+**Impact** A single unclean child exit on any one of five sessions converts a row-level diagnostic into a whole-run throw with no `result` returned. Concretely, the witnesses that assert on `observed.result` and are *indifferent* to cleanup today — `:373` (`harness-error`/reason), `:575` (ordinary `/id` not followed), `:681-688` (401 dynamic linkage), `:322-324` (changed installed identity) — all become coupled to every session closing cleanly, and they fail with `"installed cohort cleanup failed"` instead of their own evidence. The supplement's own new test proves the aggregating path fires in practice.
+
+**Bounded fix** Aggregate only when `failure !== undefined`; otherwise return `{ ...observed, cleanupFailures }` and leave the runner's `cleanupError`/`harness-error` row as the publication gate. If the unconditional refusal is intended, say so at `docs:38` ("any cleanup failure refuses publication") rather than describing it as the both-fail case.
+
+### 2. LOW, reachable (configuration only) — the explicit cleanup bound removed construction-time `requestTimeoutMs` validation
+
+**Location** `packages/conformance/src/raw-http-scenario-target.ts:64-72`; `packages/conformance/src/http-executor.ts:180`
+
+**Evidence** The range check now guards the *resolved* `cleanupTimeoutMs`. Previously `cleanupTimeoutMs = snapshot.requestTimeoutMs ?? 30_000`, so the same predicate range-checked `requestTimeoutMs` at construction. With `cleanupTimeoutMs` supplied, `requestTimeoutMs` is never checked here.
+
+**Impact** `createRawHttpScenarioTarget(start, { requestTimeoutMs: 0, cleanupTimeoutMs: 10000 })` constructs successfully and refuses only inside `harness.prepare` at `createRawHttpExchangeExecutor` (`raw-http-scenario-target.ts:139` → `http-executor.ts:180`), i.e. after `await start(...)` has already spawned an installed child. The child is still closed by `closeStarted()` at `:154`, so nothing leaks — but the refusal is no longer fail-fast, and the new negative witness (`raw-http-scenario-target.test.ts:184-196`) only covers invalid cleanup bounds beside a *valid* request bound, so the inverse is unpinned.
+
+**Bounded fix** Apply the same `Number.isSafeInteger / >0 / ≤2_147_483_647` predicate to `snapshot.requestTimeoutMs` when it is defined, independently of the cleanup bound, and add `{ requestTimeoutMs: 0, cleanupTimeoutMs: 10000 }` to the existing `it.each`.
+
+### 3. LOW, reachable only off the current four rows — moving `validateReceiptWire` ahead of the status guard reports a non-200 mutation response as evidence self-disagreement
+
+**Location** `packages/conformance/src/transactional-observation.ts:165` (moved call) vs `:180-185` (status/wire guard), `:248`
+
+**Evidence** `validateReceiptWire` asserts `HTTP/1.1 ${response.status} OK` (`:248`, pre-existing hardcoded reason phrase). It now runs before the explicit `response.status !== 200` refusal. A real `201 Created` / `202 Accepted` canonical mutation response therefore throws `TransactionalHarnessError("receipt wire status mismatch")` rather than `"source receipt wire unavailable"`, even though wire and parsed response agree exactly.
+
+**Impact** Category is unaffected (both are `harness-error`, so no false *target* evidence), but the reason contradicts the classification the supplement just documented — `docs:36` defines wire mismatch as "receipt evidence self-disagreement". Not reachable in the four rows: `register` runs only after all assertions pass (`runner.ts:1455-1461`) and every mutation action asserts status 200, so only a 200-with-`OK` response reaches it. It becomes live for any row or target that does not assert 200.
+
+**Bounded fix** Keep the `response.status !== 200 || !response.wireResponseBytes || length > 2097152` guard immediately before `validateReceiptWire(response, "GET")`, preserving the new schema/identity ordering below it.
+
+### 4. LOW, unreachable-defensive — the read lane still classifies a missing validator as a target failure
+
+**Location** `packages/conformance/src/runner.ts:951-955`
+
+**Evidence**
+```ts
+input.method === "GET" &&
+(!schemaValidator ||
+  schemaValidator.validate("#/$defs/mutationReceipt", body).length ||
+  body.id !== source.receipt || ...)
+  → throw new TransactionalReceiptFailure("retained receipt schema or identity mismatch")
+```
+The register lane was split exactly as directed (`transactional-observation.ts:166` harness for the absent validator, `:168` receipt failure for a real invalid schema), but the read lane keeps `!schemaValidator` inside the same disjunction that now yields `state: "fail"`.
+
+**Impact** Unreachable today: `resolve()` requires a ledger entry, and `register` refuses with `TransactionalHarnessError("source receipt validator unavailable")` when no validator exists, so a receipt read cannot occur without one. The new `transactional-cumulative.test.ts` `"validator"` case confirms this — it asserts `reads === 0`. So this is dead code that states the opposite classification from the one the supplement documents, not a live misattribution.
+
+**Bounded fix** Hoist it: `if (!schemaValidator) throw new TransactionalHarnessError("receipt validator unavailable");` before the disjunction, leaving schema/identity as the target-failure arm.
+
+### 5. LOW — disposition 7's "traverse causes, not the top-level message" was applied only to the new witness
+
+**Location** `apps/bdptest/src/transactional-matrix.test.ts:608` vs `:704-720`
+
+**Evidence** The new killed-child witness walks `AggregateError.errors` and `.cause` through a `visit` helper and asserts both the original abort and `"installed transaction child did not close cleanly"`. The pre-existing cohort deadline witness still asserts only `rejects.toThrow("installed cohort deadline")`, which with finding 1's aggregation holds only while every child closes cleanly under abort — the exact path the new test demonstrates can fail.
+
+**Impact** No current failure (the abort path closes children cleanly today), but the deadline witness is one flaky child exit away from failing with an unrelated message, and `docs:38`'s "tests traverse causes rather than matching only its top-level message" overstates the suite.
+
+**Bounded fix** Extract the `visit` helper and assert the deadline reason through cause traversal at `:608`, as the new test does.
+
+### 6. LOW — the new foreign-identity witness does not pin which refusal fired
+
+**Location** `packages/conformance/src/transactional-observation.test.ts:243-247`
+
+**Evidence** `TransactionalReceiptFailure` is thrown from two branches in `register`: `"source receipt schema invalid"` (`transactional-observation.ts:168`) and `"source receipt identity invalid"` (`:178`). The test asserts only `.toThrow(TransactionalReceiptFailure)`.
+
+**Impact** The test's name claims it exercises a *schema-valid* but cross-origin `id`; if the `mutationReceipt` schema ever constrained `id` to the Scope prefix, the test would still pass while the identity branch at `:174-179` went unexercised. Same class of residue as the sibling test at `:207-219`, which does distinguish the two categories but also matches on class only.
+
+**Bounded fix** Assert `.toThrow("source receipt identity invalid")` at `:246` (and, at `:209/:212`, the corresponding fixed reasons) so the discriminating tests the disposition asked for cannot pass vacuously.
+
+### 7. INFORMATIONAL — cleanup and child-close bounds are now equal, so the nesting is not strictly monotone
+
+**Location** `apps/bdptest/test-support/transactional-execution-binding.ts:188` (`cleanupTimeoutMs: 10000`); `scripts/transaction-installed-observation.mjs:31` (`bounded()` = 10000); `apps/bdptest/src/transactional-matrix.test.ts:611`
+
+**Evidence** `close()` bounds cleanup with `AbortSignal.any([signal, AbortSignal.timeout(10000)])` (`raw-http-scenario-target.ts:94`), and that cleanup contains `controller.abort()` → `allSettled(pending)` → `child.close()`, whose own launcher bound is also 10 s. A child close that consumes its full bound still trips the cleanup bound, yielding `TransactionalHarnessError("transaction session reopen failed")`. In the reopen path the effective bound is the *remaining* `prepareTimeoutMs`, which is strictly less.
+
+**Impact** Not a defect, and the documentation is honest about it — `docs:29` explicitly declines the per-phase claim ("Close and reopen do not each receive a fresh additional 10 seconds") as disposition 3 required, and the previous hard 5 s cap is gone. Two second-order notes: the emergency `closeStarted()` path (`raw-http-scenario-target.ts:128`) now runs on a 10 s rather than 5 s bound that is not joined to the aggregate signal, and the cohort abort witness's `performance.now() - started < 15000` assertion at `:611` consequently has ~3 s of worst-case slack instead of ~8 s.
+
+**Bounded fix (optional)** Make the launcher's child-close `bounded()` strictly smaller than the raw cleanup bound (e.g. 8000), or raise `:611` to accommodate the new worst case.
+
+---
+
+## Closure confirmed
+
+**1. Receipt attribution and safe reasons — closed, with the categories as root directed, not as the predecessor proposed.** Harness: `receipt wire evidence unavailable`, `receipt wire header bound`, `receipt wire status mismatch`, `receipt wire header mismatch`, `duplicate receipt header`, `receipt wire headers mismatch`, `receipt wire body mismatch` (`transactional-observation.ts:239-274`, all seven converted), plus `source receipt validator unavailable` (`:166`). Target: `source receipt schema invalid` (`:168`), `source receipt identity invalid` (`:178`), `retained receipt JSON invalid` (`:224`), `retained receipt differs from original wire facts` (`:227`), `retained receipt schema or identity mismatch` (`runner.ts:955`). Root's distinction is honoured in both directions — the predecessor's proposal to make `source receipt schema invalid` a harness error was correctly declined, and the missing-validator case was split out instead. Every reason is a fixed literal; no server body or header value reaches a reason, and the new `expect(JSON.stringify(actual)).not.toContain("private-target-body")` pins that. Routing is complete: `runProgrammaticAction`'s passthrough (`runner.ts:1076`) and `runScenario`'s `fail` arm (`:726-729`) carry the message in the read lane; in the register lane the throw escapes `runRequest`'s capture loop to the same arm. No cycle: `transactional-observation.ts` imports only `import type` from `raw-http-scenario-target.js` and nothing from `runner.js`, while `runner.ts` imports the class as a value — the dependency stays one-way. `TransactionalReceiptFailure` is absent from both `src/index.ts` and `test-support/testing.ts`, so no public signature widened.
+
+**2. Dead retained state — closed.** `grep` for `retainedSource`, `entry.wire` and `.wire` over `transactional-observation.ts` and `runner.ts` returns nothing; the ledger entry type is now `{ reference, body }` (`:84`). `responseDigest` is retained as provenance per disposition 2 and is genuinely read — it ships inside `sourceReceiptObservation` on every dynamic exchange. The strict-bytes comparison root rejected was *not* introduced: `validate()` compares parsed JSON only, and the new `"allows changed serving headers while retaining original receipt JSON facts"` witness proves a changed `bdp-scope-position` passes while `requiredPosition: "pos-9"` refuses.
+
+**3. Explicit cleanup lifecycle budget — closed without deadline widening.** `cleanupTimeoutMs ?? requestTimeoutMs ?? 30_000` preserves the legacy default for every other raw target, and the `it.each([undefined, 200])` witness proves both arms against a real 30 ms `close()` seam with no 10 s sleep: the default arm rejects `{category: "abort"}` at the 5 ms request bound with `completed === false`, the explicit arm resolves with `completed === true`. `requestTimeoutMs: 5000` is unchanged, the dynamic lane's `Math.min(timeoutMs, 5000)` is untouched, and `cleanupTimeoutMs` does not reach any digest (`exactConfiguration` is built from `mode` alone, `configurationDigest` from `served`), so no evidence identity churns. Abort/child drain is preserved — `ending.controller.abort()` then `allSettled([...ending.pending])` then `ending.close(cleanupSignal)`.
+
+**4. `retainedSource` and prose — closed.** The disjunct and both guards are gone; the comment at `:158-159` now states the revocation rule correctly. "an already authorized receipt read" no longer appears anywhere under `docs/`, `packages/` or `apps/`, and `docs:31` reads "only the actual canonical mutation response". The new `"does not regrant receipt authority from a retained receipt GET"` witness pins the revocation, and `transactional-matrix.test.ts:537-585` still pins that an ordinary `/id` capture passes but cannot be followed.
+
+**5. Late `servedSession` attachment — closed, and the deletion is strictly safer than a no-op.** `served` is bound once at `runner.ts:1148` and spread at `:1160`, so the removed tail wrote the same value; because it targeted `exchanges[exchanges.length - 1]` rather than `observed`, removing it also eliminates the possibility of stamping an earlier session onto a later exchange. Dynamic-lane precedence is correct: `{ ...dynamic, ...(served ? {servedSession: served} : {}) }` with `transactional: undefined` in that lane means `dynamic.servedSession = active.binding` survives, which `:285` and `:291-294` (reopened generation strictly greater than the source generation) still pin.
+
+**6. Response-limit consolidation — correctly recorded as deferred** at `docs:38`, with no interface widening and no refactor attempted.
+
+**7. Original + cleanup abort causes — closed, with a real killed-child witness.** `if (failure === undefined && signal.aborted) failure = signal.reason` recovers the cohort reason when the runner reports abort as row state rather than throwing; the `new Set` dedupes the identity-shared case. The witness SIGKILLs the live scenario child, aborts with a distinct `original`, and traverses `.errors`/`.cause` to find both `original` and `"installed transaction child did not close cleanly"` — tracing a genuine `launcher close() → result.signal !== null → drainFailure` rejection, not a stub. No cleanup failure is swallowed: the wrapper rethrows, so the runner's row attribution is retained as well. (See finding 1 for the unconditional-escalation residue and finding 5 for the untraversed sibling witness.)
+
+**8. Abort ordering docs — closed.** `docs:23` is now scoped ("On ordinary non-abort cleanup, the session aborts/drains registered dynamic requests before signalling child shutdown") and `docs:29` states the concurrent reality ("Abort can concurrently initiate child close and request cancellation; pending work settles before final cleanup resolves, without a strict drain-before-child-signal ordering claim"). Both match `transaction-installed-observation.mjs:61-65` racing `transactional-execution-binding.ts:169-174`, and no new ordering guarantee is asserted. `docs:29` also correctly records the separately-bounded emergency cleanup and the non-publication rule.
+
+**Scope confirmed.** Nine files; nothing under `packages/server`, `packages/protocol`, any catalog/schema/manifest, or `index.ts`/`package.json`. The two library files touched are behaviour-preserving for other callers: the `RangeError` message changes only when `cleanupTimeoutMs` is supplied, and the deleted runner block was `served`-guarded, i.e. transactional-only. Four rows remain partial and public/legacy admission is untouched.
+
+**Not re-litigated.** Everything the predecessor cleared; the hardcoded `HTTP/1.1 <status> OK` reason phrase as a pre-existing defect (referenced in finding 3 only for the new ordering consequence); `source receipt disposition unavailable` / `source receipt exceeds inline fixture` remaining harness errors, consistent with the predecessor's own classification; and profile completeness beyond these nine files.

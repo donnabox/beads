@@ -1,0 +1,2864 @@
+Review the frozen guarded-batch installed evidence implementation below. Do not write or modify any files. Output findings only in stdout. No tools, shell, file access, session persistence or model override are available. Assess supplied actual source only. This is a complete standalone code review, not a continuation. Begin with numbered concrete findings (severity, file/line, problem, impact, minimal correction), or explicitly no actionable findings. Finish with material omitted context only when genuinely necessary. Keep the answer compact (ideally <=12,000 characters); do not defer findings to omitted sections or invent prior findings. Prioritize correctness, security, bounded execution, oracle discrimination and cleanup defects over speculative refactoring.
+
+Identity: actual clean candidate 9e5f040edab88be364f683098ead72f595f0ab55, tree81c6786a3075f1869f54460880cac1234c27fb77, direct parent 9bf601bfb570adae97ce8cdc99caf2cc7a2b34c1. The identical two frozen file hashes were authored/reviewed as dirty9bf601; historical source-binding/draft.patch remain unchanged. This packet targets the actual clean candidate and base-to-candidate diff, not a fabricated future commit. No authoring reattribution. Root's eight static/build stages passed on the dirty author source; root then independently bridged unchanged672 inputs/312 package outputs/440 emitted files across the ordinary commit. Installed cohorts remain future/pending; no results assumed. Only complete new test and exact progress append below change. Source/diff/38 meaningful dependency pins are externally bound. Root native code review found no actionable issue; form your own independent findings, not a rubber stamp.
+
+Accepted contract: one default-positive callback, seven HTTP200 requests/one fresh child/store; same callback in unguarded-contenders mode, three HTTP200 responses then exactly one named failure/one fresh child/store. No hidden dispatch, retry, poll, reopen, continuation, fixture scenario execution or catalog qualification. One deliberate retained losing-key replay is separate from automatic retries. No production/shared-helper change.
+
+Seed explicit-id Bead: independently validate complete schema/receipt/Resource atpos1 before capturing opaque revision. Dispatch two distinct-key batches without awaiting either; each creates its own marker then updates seed under captured revision. One completed winner has exactly two full results/effect=requiredpos2; one failed loser has requiredpos2 and exact embedded conflict/revision-mismatch/status409/retry after-state-change/zero-based operationIndex1, no effect/results/next. Outer status200. Exact losing body/key replay and actual issued-root GET reproduce complete failed receipt. Complete ordered collection is seedAfter then winnerMarker, next:null. Complete finite Scope Events are seed-created(pos1,ord0), winner-marker-created(pos2,ord0), seed-updated(pos2,ord1), exact transaction/full data/private ID derived from actual serving epoch/view/source. No loser marker or Event survives. No reservation-release, crash-durability or server-admission overlap claim.
+
+Control omits expectedRevision in BOTH contender updateBead operands, nothing else. Before named guarded-batch:one-retained-revision-failure: two completed/available schema-valid receipts, own exact two-result postimages, distinct IDs/transactions and updated seed revisions, effects{2,3}, required=effect, own effect<=current<=3, same epoch/view, dispatch/socket prerequisites. Actual failed-count0 versus1 must be sole failure; no later control requests. Independent two-successful-effect facts discriminate guard omission; this is input sensitivity, not a production mutant.
+
+Inputs: seed172B, guardless323B each; guarded/replay343+r (actual JSON-string encoded revision UTF8 bytes inclquotes, cap128). Reference UUID is measurement-only never sent. Positive reference1315/max1585B, control818B, combined max2403B. Descriptor170/schema166; five-key runtime configuration uses ephemeral writer token in memory. Canonical Host while dialing verified loopback; exact query grant only /beads/?limit=32 plus actual validated issued receipt root. Schema precedes baseline; no normative UUID requirement. Historical receipt fields distinguished from current serving headers.
+
+Transport: raw Node request no redirects, agent:false/Connection close, seven/three caps,max2 live pair sockets. Rejection handlers immediately attached; require invoked/end-called before firstsettled and distinct actual sockets/two complete responses. Stronger connected/write-before-response observations are not server-overlap proof. Streaming response cap32768 before append, maxHeaderSize16384, request header16384/body65536, fatalUTF8, null/empty/truncated/aborted/error fail. Work45s aggregate includes startup/schema/oracles; ready10s,exchange5s,hardlocalcleanup10s/drain5s,test60s,supervisor120s. No increased allowance. Launcher abort invokes graceful IPC close; nested10s failure-drain may outlive local await race: timeout nonpassing and external cleanup required. Unknown pre-ready child stop retains store; primary/cleanup/report failures aggregate. Both report serialization overflow branches fail; report65536B includingnewline.
+
+Safe report allowlist: actual source/entry/served config/artifact/policy/auth/payload digests, nonsecret artifactbytes, request hash/length/key/route, safe response headers/fingerprints, validated receipt identities/revisions/positions/problem, equality completions, mode/phase/prerequisites/winner/loser and lifecycle. Never credential config/tokenmap/Authorization/effectiveRequest/headerLines/arbitraryError fields. Full parsed comparisons are in memory; fingerprints are not retained fullwire. Exclusive outside-store/worktree output percohort; relative Vitest --outputFile resolved. claimEligible:false. Progress append is intentionally unexecuted authoring checkpoint, never later-proof relabeling.
+
+Final same-key precedent includes both overflow branches. Plan council resolved hardcleanup, collection ordering, POST Vary and zero-based index; independently flag concrete deviations. Harness-only Vitest admission mock cannot attest packed-child admission. Actual package/source/eight-dependency/member/PID cleanup proof is later rootgate, not assumed now.
+
+=== COMPLETE NEW FILE: apps/bdptest/src/transactional-guarded-batch-installed.test.ts ===
+1: /** Private installed guarded-batch witness; no profile qualification or server-admission claim. */
+2: import { execFileSync, type ChildProcess } from "node:child_process";
+3: import { createHash, randomBytes } from "node:crypto";
+4: import {
+5:   existsSync,
+6:   mkdtempSync,
+7:   readFileSync,
+8:   realpathSync,
+9:   rmSync,
+10:   writeFileSync,
+11: } from "node:fs";
+12: import { request, type ClientRequest, type IncomingHttpHeaders } from "node:http";
+13: import type { Socket } from "node:net";
+14: import { tmpdir } from "node:os";
+15: import path from "node:path";
+16: import { fileURLToPath } from "node:url";
+17: import { Ajv2020 } from "ajv/dist/2020.js";
+18: import { isJsonSchemaDateTime, isJsonSchemaUri } from "@bdp/protocol";
+19: import { expect, it } from "vitest";
+20: import { installedTransactionBinding } from "../test-support/transactional-execution-binding.js";
+21: 
+22: const root = realpathSync(fileURLToPath(new URL("../../../", import.meta.url)));
+23: const { launchInstalledTransaction } = (await import(
+24:   new URL("../../../scripts/transaction-installed-observation.mjs", import.meta.url).href
+25: )) as {
+26:   launchInstalledTransaction(
+27:     entry: string,
+28:     configuration: unknown,
+29:     signal?: AbortSignal,
+30:   ): Promise<{
+31:     child: ChildProcess;
+32:     ready: Record<string, unknown>;
+33:     close(): Promise<void>;
+34:   }>;
+35: };
+36: const scope = "https://reference.invalid/acme/";
+37: const beadType = `${scope}types/task`;
+38: const schemaUri = `${scope}schemas/properties`;
+39: const seedKey = "guarded-seed";
+40: const seedId = `${scope}beads/guarded-seed`;
+41: const seedBody =
+42:   '{"operations":[{"operation":"createBead","id":"beads/guarded-seed","type":"https://reference.invalid/acme/types/task","properties":{"title":"guarded-seed"},"metadata":{}}]}';
+43: function contenderBody(side: "a" | "b", revision: string, guarded: boolean) {
+44:   return JSON.stringify({
+45:     operations: [
+46:       {
+47:         operation: "createBead",
+48:         id: `beads/marker-${side}`,
+49:         type: beadType,
+50:         properties: { title: `marker-${side}` },
+51:         metadata: {},
+52:       },
+53:       {
+54:         operation: "updateBead",
+55:         bead: seedId,
+56:         ...(guarded ? { expectedRevision: revision } : {}),
+57:         propertiesChange: [{ op: "replace", path: "/title", value: `winner-${side}` }],
+58:       },
+59:     ],
+60:   });
+61: }
+62: const artifacts = {
+63:   descriptors: [
+64:     {
+65:       retrievalUri: beadType,
+66:       utf8: '{"id":"https://reference.invalid/acme/types/task","name":"Task","describes":"bead","conformsTo":[],"propertiesSchema":"https://reference.invalid/acme/schemas/properties"}',
+67:     },
+68:   ],
+69:   schemas: [
+70:     {
+71:       retrievalUri: schemaUri,
+72:       utf8: '{"$id":"https://reference.invalid/acme/schemas/properties","type":"object","properties":{"title":{"type":"string"}},"required":["title"],"additionalProperties":false}',
+73:     },
+74:   ],
+75: };
+76: const sha = (value: string | Uint8Array) => createHash("sha256").update(value).digest("hex");
+77: const entryOverride = process.env.BDP_TRANSACTIONAL_INSTALLED_ENTRY;
+78: if (entryOverride && !process.env.BDP_TRANSACTIONAL_SOURCE_COMMIT)
+79:   throw new Error("guarded-batch entry override requires declared source commit");
+80: const entry = realpathSync(
+81:   entryOverride ?? path.join(root, "packages/server/dist/transaction-installed-process.js"),
+82: );
+83: const entrySha256 = sha(readFileSync(entry));
+84: const declaredSourceCommit =
+85:   process.env.BDP_TRANSACTIONAL_SOURCE_COMMIT ??
+86:   execFileSync("git", ["rev-parse", "HEAD"], { cwd: root, encoding: "utf8" }).trim();
+87: if (!/^[a-f0-9]{40}$/.test(declaredSourceCommit)) throw new Error("invalid declared source commit");
+88: const workspaceDirty =
+89:   execFileSync("git", ["status", "--porcelain"], { cwd: root, encoding: "utf8" }).length > 0;
+90: const fixture = {
+91:   bytes: readFileSync(
+92:     path.join(root, "packages/conformance/test-support/transactional/fixture-v1.json"),
+93:   ),
+94: };
+95: const mode = process.env.BDP_TRANSACTIONAL_GUARDED_BATCH_MODE ?? "positive";
+96: if (mode !== "positive" && mode !== "unguarded-contenders")
+97:   throw new Error("invalid guarded-batch mode");
+98: const output = process.env.BDP_TRANSACTIONAL_GUARDED_BATCH_OUTPUT;
+99: const safeHeaderNames = [
+100:   "content-type",
+101:   "content-length",
+102:   "cache-control",
+103:   "x-bdp-development",
+104:   "vary",
+105:   "location",
+106:   "retry-after",
+107:   "bdp-scope-epoch",
+108:   "bdp-authorization-view",
+109:   "bdp-scope-position",
+110: ] as const;
+111: function outside(candidate: string, parent: string) {
+112:   const relative = path.relative(parent, candidate);
+113:   if (
+114:     !relative ||
+115:     (relative !== ".." && !relative.startsWith(`..${path.sep}`) && !path.isAbsolute(relative))
+116:   )
+117:     throw new Error("guarded-batch evidence/store path must be outside protected directory");
+118: }
+119: function resolvedOutput(filename: string) {
+120:   if (!path.isAbsolute(filename)) throw new Error("guarded-batch output must be absolute");
+121:   const resolved = path.join(realpathSync(path.dirname(filename)), path.basename(filename));
+122:   outside(resolved, root);
+123:   if (existsSync(resolved)) throw new Error("guarded-batch output must be exclusive");
+124:   return resolved;
+125: }
+126: const reportPath = output === undefined ? undefined : resolvedOutput(output);
+127: function record(value: unknown): Record<string, unknown> {
+128:   if (typeof value !== "object" || value === null || Array.isArray(value))
+129:     throw new Error("guarded-batch expected JSON object");
+130:   return value as Record<string, unknown>;
+131: }
+132: function text(value: unknown): string {
+133:   if (typeof value !== "string" || !value.length)
+134:     throw new Error("guarded-batch expected nonempty string");
+135:   return value;
+136: }
+137: function ownedUrl(value: unknown, collection: "receipts" | "beads") {
+138:   const literal = text(value),
+139:     url = new URL(literal),
+140:     prefix = `${scope}${collection}/`;
+141:   if (
+142:     literal.length > 8192 ||
+143:     Buffer.byteLength(literal) > 8192 ||
+144:     url.href !== literal ||
+145:     !literal.startsWith(prefix) ||
+146:     !/^[A-Za-z0-9_-]+$/.test(literal.slice(prefix.length)) ||
+147:     url.search ||
+148:     url.hash ||
+149:     url.username ||
+150:     url.password
+151:   )
+152:     throw new Error("guarded-batch invalid issued authority URL");
+153:   return literal;
+154: }
+155: function position(value: unknown) {
+156:   const literal = text(value);
+157:   if (!/^pos-(0|[1-9][0-9]*)$/.test(literal) || !Number.isSafeInteger(Number(literal.slice(4))))
+158:     throw new Error("guarded-batch invalid position");
+159:   return Number(literal.slice(4));
+160: }
+161: type Wire = { index: number; status: number; headers: IncomingHttpHeaders; body: unknown };
+162: type Receipt = {
+163:   body: Record<string, unknown>;
+164:   id: string;
+165:   transaction: string;
+166:   epoch: string;
+167:   view: string;
+168:   key: string;
+169:   resources: Record<string, unknown>[];
+170:   effect: number | null;
+171:   failed: boolean;
+172: };
+173: type Milestone = {
+174:   order: number;
+175:   request: number;
+176:   kind: string;
+177:   elapsedMs: number;
+178:   socket: number | null;
+179: };
+180: type ResponseObservation = {
+181:   index: number;
+182:   method: string;
+183:   url: string;
+184:   sentKey: string | null;
+185:   requestBodyBytes: number;
+186:   requestBodySha256: string | null;
+187:   status: number;
+188:   bodyBytes: number;
+189:   bodySha256: string;
+190:   headers: Record<string, string | null>;
+191: };
+192: 
+193: it("preserves one guarded batch winner and rolls back the losing marker through installed HTTP", async () => {
+194:   const started = performance.now(),
+195:     work = new AbortController();
+196:   const failures: unknown[] = [],
+197:     active = new Set<ClientRequest>();
+198:   const pending: Promise<Wire>[] = [],
+199:     closing: Promise<void>[] = [];
+200:   const responses: ResponseObservation[] = [],
+201:     milestones: Milestone[] = [];
+202:   const receiptObservations: {
+203:     index: number;
+204:     id: string;
+205:     transaction: string;
+206:     key: string;
+207:     status: string;
+208:     resources: { id: string; revision: string }[];
+209:     effectPosition: string | null;
+210:     requiredPosition: string;
+211:     servingPosition: string;
+212:     problem: Record<string, unknown> | null;
+213:   }[] = [];
+214:   const performed: string[] = [];
+215:   const requestSockets = new Map<number, number>();
+216:   const sockets = new Map<object, number>();
+217:   const liveSockets = new Set<Socket>();
+218:   let maximumLiveSockets = 0;
+219:   let milestoneOverflow = false,
+220:     deadlineExceeded = false,
+221:     cleanupExceeded = false,
+222:     drainExceeded = false;
+223:   let directory: string | undefined, temporaryRoot: string | undefined;
+224:   let child: Awaited<ReturnType<typeof launchInstalledTransaction>> | undefined;
+225:   let binding: ReturnType<typeof installedTransactionBinding> | undefined;
+226:   let projectionSha256: string | null = null;
+227:   let launchAttempted = false,
+228:     closed = false,
+229:     attempted = 0;
+230:   let currentAssertion = "guarded-batch:setup",
+231:     failedAssertion: string | null = null;
+232:   type Phase = "setup" | "launch" | "transport" | "oracle" | "inconclusive";
+233:   let phase: Phase = "setup",
+234:     failedPhase: Phase | null = null;
+235:   let reportWriteFailed = false,
+236:     reportOverflow = false;
+237:   let inconclusivePending = false;
+238:   const prerequisites = {
+239:     seedSchemaAndLiterals: false,
+240:     pairSchemasAndLiterals: false,
+241:     dispatchDiscipline: false,
+242:     controlTwoCompletedEffects: false,
+243:   };
+244:   let completedContenderCount: number | null = null,
+245:     failedContenderCount: number | null = null;
+246:   let selectedWinner: string | null = null,
+247:     selectedLoser: string | null = null;
+248:   let revisionEncodingBytes: number | null = null;
+249:   let bothConnectedBeforeFirstResponse = false,
+250:     bothWritesPrecededFirstResponse = false;
+251:   const deadline = setTimeout(() => {
+252:     deadlineExceeded = true;
+253:     work.abort(new Error("guarded-batch work deadline"));
+254:   }, 45000);
+255:   function destroyActive() {
+256:     for (const req of active) req.destroy();
+257:     for (const socket of liveSockets) socket.destroy();
+258:   }
+259:   work.signal.addEventListener("abort", destroyActive);
+260:   function mark(index: number, kind: string) {
+261:     if (index < 2 || index > 3 || milestones.some((m) => m.request === index && m.kind === kind))
+262:       return;
+263:     if (milestones.length >= 32) {
+264:       milestoneOverflow = true;
+265:       return;
+266:     }
+267:     milestones.push({
+268:       order: milestones.length,
+269:       request: index,
+270:       kind,
+271:       elapsedMs: performance.now() - started,
+272:       socket: requestSockets.get(index) ?? null,
+273:     });
+274:   }
+275:   function check(name: string, assertion: () => void) {
+276:     phase = "oracle";
+277:     currentAssertion = `guarded-batch:${name}`;
+278:     assertion();
+279:     performed.push(name);
+280:   }
+281:   function addFailure(error: unknown) {
+282:     if (!failures.includes(error)) failures.push(error);
+283:   }
+284:   try {
+285:     const ajv = new Ajv2020({ allErrors: true, strict: true });
+286:     ajv.addFormat("uri", { type: "string", validate: isJsonSchemaUri });
+287:     ajv.addFormat("date-time", { type: "string", validate: isJsonSchemaDateTime });
+288:     const bundle = JSON.parse(readFileSync(path.join(root, "schemas/bdp-v0.schema.json"), "utf8"));
+289:     ajv.addSchema(bundle);
+290:     const validators = Object.fromEntries(
+291:       ["mutationReceipt", "beadRecord", "currentBeadCollection", "eventPage"].map(
+292:         (name) => [name, ajv.compile({ $ref: `${bundle.$id}#/$defs/${name}` })] as const,
+293:       ),
+294:     );
+295:     function checked(value: unknown, name: string) {
+296:       const validate = validators[name];
+297:       if (!validate) throw new Error("guarded-batch unbound schema");
+298:       expect(validate(value), `guarded-batch:schema:${name}`).toBe(true);
+299:       return record(value);
+300:     }
+301:     check("literal-inputs", () => {
+302:       expect([Buffer.byteLength(seedBody), sha(seedBody)]).toStrictEqual([
+303:         172,
+304:         "a1937453b366087694cc040cc81534d1d073fed0e0bcc09b0fc6de39304ef3f0",
+305:       ]);
+306:       // A reference specimen measures construction only; it is never sent.
+307:       const reference = "00000000-0000-4000-8000-000000000000";
+308:       for (const [side, guardedHash, controlHash] of [
+309:         [
+310:           "a",
+311:           "386fc744c79e39fe4428c6a77c4d7b7b885dc18b41e2b90f1acdf0e0df5fb226",
+312:           "f707e87dc9ec95f6f564940d3fc097b6880aeeeda9ac493981d9a4344bb5a91d",
+313:         ],
+314:         [
+315:           "b",
+316:           "59f91799860c3fa0957c4e93fe3bd57fd94621b992da4772b67307329bde0e70",
+317:           "bbc04ffd826ba2519b86b4a22e47eff5566d2bb5ec90f45fe6ecb8779f6148a5",
+318:         ],
+319:       ] as const) {
+320:         const guarded = contenderBody(side, reference, true),
+321:           unguarded = contenderBody(side, reference, false);
+322:         expect([Buffer.byteLength(guarded), sha(guarded)]).toStrictEqual([381, guardedHash]);
+323:         expect([Buffer.byteLength(unguarded), sha(unguarded)]).toStrictEqual([323, controlHash]);
+324:         const withoutGuard = JSON.parse(guarded);
+325:         delete withoutGuard.operations[1].expectedRevision;
+326:         expect(JSON.parse(unguarded)).toStrictEqual(withoutGuard);
+327:       }
+328:       expect(
+329:         artifacts.descriptors.map((a) => [Buffer.byteLength(a.utf8), sha(a.utf8)]),
+330:       ).toStrictEqual([[170, "f448e126550b2809d01dc6b24811d1796e82b2599c35b438550ed3bec65a2a22"]]);
+331:       expect(artifacts.schemas.map((a) => [Buffer.byteLength(a.utf8), sha(a.utf8)])).toStrictEqual([
+332:         [166, "1ed8b24d90a8c278bc466fd48ba1e849afac01326c377e5c6985855e62373f95"],
+333:       ]);
+334:     });
+335:     phase = "setup";
+336:     temporaryRoot = realpathSync(tmpdir());
+337:     outside(temporaryRoot, root);
+338:     directory = realpathSync(mkdtempSync(path.join(temporaryRoot, "bdp-guarded-batch-installed-")));
+339:     outside(directory, root);
+340:     if (reportPath) outside(reportPath, directory);
+341:     for (let i = 0; i < process.argv.length; i++) {
+342:       const argument = process.argv[i]!;
+343:       let filename: string | undefined;
+344:       if (argument === "--outputFile") {
+345:         filename = process.argv[++i];
+346:         if (filename?.startsWith("-")) throw new Error("guarded-batch missing outputFile value");
+347:       } else if (argument.startsWith("--outputFile=")) filename = argument.slice(13);
+348:       else continue;
+349:       if (!filename) throw new Error("guarded-batch missing outputFile value");
+350:       outside(path.resolve(filename), directory);
+351:     }
+352:     const token = randomBytes(24).toString("base64url");
+353:     expect(/^[A-Za-z0-9_-]{32}$/.test(token), "guarded-batch token shape").toBe(true);
+354:     const configuration = {
+355:       scope,
+356:       directory,
+357:       create: true,
+358:       artifacts,
+359:       credentials: [{ token, principal: "writer", canMutate: true }],
+360:     };
+361:     // Supplemental nonsecret projection; the actual served identities below remain authoritative.
+362:     projectionSha256 = sha(
+363:       JSON.stringify({
+364:         scope,
+365:         directory,
+366:         create: true,
+367:         artifacts,
+368:         credentials: [
+369:           { token: { length: 32, charset: "base64url" }, principal: "writer", canMutate: true },
+370:         ],
+371:       }),
+372:     );
+373:     work.signal.throwIfAborted();
+374:     phase = "launch";
+375:     currentAssertion = "guarded-batch:launch";
+376:     launchAttempted = true;
+377:     child = await launchInstalledTransaction(entry, configuration, work.signal);
+378:     binding = installedTransactionBinding(child.ready, declaredSourceCommit, fixture);
+379:     check("ready-targets", () => {
+380:       expect(child?.ready.scope).toBe(scope);
+381:       expect(child?.ready.authorityMode).toBe("canonical");
+382:       expect(child?.ready.claimEligible).toBe(false);
+383:       expect(binding?.operationTargets.batch).toBe(`${scope}operations/batch`);
+384:     });
+385:     const address = new URL(text(child.ready.listenUrl));
+386:     // installedTransactionBinding independently checks the exact loopback URL and all targets.
+387:     let receiptUrl: string | undefined,
+388:       replayBody: string | undefined,
+389:       replayKey: string | undefined;
+390:     let aBody: string | undefined, bBody: string | undefined;
+391:     function send(index: number): Promise<Wire> {
+392:       work.signal.throwIfAborted();
+393:       if (attempted >= (mode === "positive" ? 7 : 3) || index !== attempted + 1)
+394:         throw new Error("guarded-batch dispatch ceiling/order");
+395:       phase = "transport";
+396:       currentAssertion = `guarded-batch:transport-${index}`;
+397:       const method = index <= 4 ? "POST" : "GET";
+398:       const literal =
+399:         index <= 4
+400:           ? `${scope}operations/batch`
+401:           : index === 5
+402:             ? receiptUrl
+403:             : index === 6
+404:               ? `${scope}beads/?limit=32`
+405:               : `${scope}events/`;
+406:       if (!literal) throw new Error("guarded-batch missing issued receipt root");
+407:       const url = new URL(literal);
+408:       if (
+409:         url.href !== literal ||
+410:         url.origin !== new URL(scope).origin ||
+411:         url.hash ||
+412:         url.username ||
+413:         url.password ||
+414:         (index === 6 ? url.search !== "?limit=32" : !!url.search)
+415:       )
+416:         throw new Error("guarded-batch route grant");
+417:       if (index === 5) ownedUrl(literal, "receipts");
+418:       const body =
+419:         index === 1
+420:           ? seedBody
+421:           : index === 2
+422:             ? aBody
+423:             : index === 3
+424:               ? bBody
+425:               : index === 4
+426:                 ? replayBody
+427:                 : undefined;
+428:       const sentKey =
+429:         index === 1
+430:           ? seedKey
+431:           : index === 2
+432:             ? "guarded-a"
+433:             : index === 3
+434:               ? "guarded-b"
+435:               : index === 4
+436:                 ? replayKey
+437:                 : undefined;
+438:       if (method === "POST" && (body === undefined || sentKey === undefined))
+439:         throw new Error("guarded-batch missing frozen request");
+440:       const headers: Record<string, string> = {
+441:         Host: url.host,
+442:         Authorization: `Bearer ${token}`,
+443:         Accept: "application/json",
+444:         Connection: "close",
+445:       };
+446:       if (body !== undefined) {
+447:         if (Buffer.byteLength(body) > 65536) throw new Error("guarded-batch request body ceiling");
+448:         headers["Content-Type"] = "application/json";
+449:         headers["Content-Length"] = String(Buffer.byteLength(body));
+450:         headers["Idempotency-Key"] = sentKey!;
+451:       }
+452:       if (
+453:         Buffer.byteLength(
+454:           Object.entries(headers)
+455:             .map(([name, value]) => `${name}: ${value}\r\n`)
+456:             .join("") + "\r\n",
+457:         ) > 16384
+458:       )
+459:         throw new Error("guarded-batch request header ceiling");
+460:       attempted++;
+461:       mark(index, "invoked");
+462:       const promise = new Promise<Wire>((resolve, reject) => {
+463:         let settled = false;
+464:         const req = request({
+465:           host: address.hostname,
+466:           port: Number(address.port),
+467:           method,
+468:           path: url.pathname + url.search,
+469:           headers,
+470:           agent: false,
+471:           maxHeaderSize: 16384,
+472:         });
+473:         active.add(req);
+474:         closing.push(
+475:           new Promise<void>((done) =>
+476:             req.once("close", () => {
+477:               active.delete(req);
+478:               mark(index, "request-close");
+479:               done();
+480:             }),
+481:           ),
+482:         );
+483:         const timeout = setTimeout(() => fail(new Error("guarded-batch request deadline")), 5000);
+484:         const onAbort = () => fail(new Error("guarded-batch request aborted"));
+485:         function finish(error: unknown, result?: Wire) {
+486:           if (settled) return;
+487:           settled = true;
+488:           clearTimeout(timeout);
+489:           work.signal.removeEventListener("abort", onAbort);
+490:           mark(index, "settled");
+491:           if (error !== undefined) reject(error);
+492:           else resolve(result!);
+493:         }
+494:         function fail(error: unknown) {
+495:           req.destroy();
+496:           finish(error);
+497:         }
+498:         work.signal.addEventListener("abort", onAbort, { once: true });
+499:         req.once("socket", (socket) => {
+500:           if (!sockets.has(socket)) sockets.set(socket, sockets.size + 1);
+501:           requestSockets.set(index, sockets.get(socket)!);
+502:           mark(index, "socket-assigned");
+503:           socket.once("connect", () => mark(index, "connected"));
+504:           liveSockets.add(socket);
+505:           maximumLiveSockets = Math.max(maximumLiveSockets, liveSockets.size);
+506:           closing.push(
+507:             new Promise<void>((done) =>
+508:               socket.once("close", () => {
+509:                 liveSockets.delete(socket);
+510:                 mark(index, "socket-close");
+511:                 done();
+512:               }),
+513:             ),
+514:           );
+515:         });
+516:         req.once("finish", () => mark(index, "finish"));
+517:         req.once("error", (error) => {
+518:           mark(index, "error");
+519:           finish(error);
+520:         });
+521:         req.once("response", (response) => {
+522:           mark(index, "response-start");
+523:           const chunks: Buffer[] = [];
+524:           let bytes = 0,
+525:             ended = false;
+526:           response.on("data", (chunk: Buffer) => {
+527:             if (settled) return;
+528:             if (bytes + chunk.length > 32768) {
+529:               response.destroy();
+530:               fail(new Error("guarded-batch response body ceiling"));
+531:               return;
+532:             }
+533:             bytes += chunk.length;
+534:             chunks.push(chunk);
+535:           });
+536:           response.once("aborted", () => {
+537:             mark(index, "aborted");
+538:             fail(new Error("guarded-batch response aborted"));
+539:           });
+540:           response.once("error", (error) => fail(error));
+541:           response.once("close", () => {
+542:             mark(index, "response-close");
+543:             if (!ended) fail(new Error("guarded-batch incomplete response"));
+544:           });
+545:           response.once("end", () => {
+546:             ended = true;
+547:             mark(index, "response-end");
+548:             if (settled) return;
+549:             try {
+550:               if (!response.complete || !bytes)
+551:                 throw new Error("guarded-batch empty or incomplete response");
+552:               const raw = Buffer.concat(chunks, bytes);
+553:               const safeHeaders = Object.fromEntries(
+554:                 safeHeaderNames.map((name) => [
+555:                   name,
+556:                   typeof response.headers[name] === "string"
+557:                     ? (response.headers[name] as string)
+558:                     : null,
+559:                 ]),
+560:               );
+561:               // Retain actual completed fingerprints before decoding or any oracle can fail.
+562:               responses.push({
+563:                 index,
+564:                 method,
+565:                 url: literal,
+566:                 sentKey: sentKey ?? null,
+567:                 requestBodyBytes: body === undefined ? 0 : Buffer.byteLength(body),
+568:                 requestBodySha256: body === undefined ? null : sha(body),
+569:                 status: response.statusCode ?? 0,
+570:                 bodyBytes: bytes,
+571:                 bodySha256: sha(raw),
+572:                 headers: safeHeaders,
+573:               });
+574:               const value: unknown = JSON.parse(
+575:                 new TextDecoder("utf-8", { fatal: true }).decode(raw),
+576:               );
+577:               if (value === null) throw new Error("guarded-batch null response body");
+578:               finish(undefined, {
+579:                 index,
+580:                 status: response.statusCode ?? 0,
+581:                 headers: response.headers,
+582:                 body: value,
+583:               });
+584:             } catch (error) {
+585:               fail(error);
+586:             }
+587:           });
+588:         });
+589:         mark(index, "end-called");
+590:         req.end(body);
+591:       });
+592:       // The second dispatch is synchronous; neither rejection waits for allSettled registration.
+593:       void promise.catch(() => undefined);
+594:       pending.push(promise);
+595:       return promise;
+596:     }
+597:     function header(wire: Wire, name: string) {
+598:       return text(wire.headers[name]);
+599:     }
+600:     function current(wire: Wire, epoch?: string, view?: string) {
+601:       const e = header(wire, "bdp-scope-epoch"),
+602:         v = header(wire, "bdp-authorization-view");
+603:       if (epoch !== undefined) expect(e).toBe(epoch);
+604:       if (view !== undefined) expect(v).toBe(view);
+605:       expect(header(wire, "content-type")).toBe("application/json");
+606:       expect(header(wire, "cache-control")).toBe("private, no-store");
+607:       expect(header(wire, "x-bdp-development")).toBe("non-attesting");
+608:       expect(Number(header(wire, "content-length"))).toBe(
+609:         responses.find((r) => r.index === wire.index)?.bodyBytes,
+610:       );
+611:       if (wire.index <= 4) expect(header(wire, "vary").toLowerCase()).toBe("accept");
+612:       return position(header(wire, "bdp-scope-position"));
+613:     }
+614:     let seedRevision: string | undefined;
+615:     function receipt(wire: Wire, sentKey: string, side?: "a" | "b"): Receipt {
+616:       phase = "oracle";
+617:       currentAssertion = `guarded-batch:receipt-${wire.index}`;
+618:       const body = checked(wire.body, "mutationReceipt");
+619:       if (body.status === "pending") {
+620:         inconclusivePending = true;
+621:         phase = "inconclusive";
+622:         throw new Error("guarded-batch unexpected pending receipt");
+623:       }
+624:       expect(wire.status).toBe(200);
+625:       const id = ownedUrl(body.id, "receipts"),
+626:         transaction = text(body.transaction),
+627:         epoch = text(body.scopeEpoch),
+628:         view = text(body.authorizationView);
+629:       expect(body.idempotencyKey).toBe(sentKey);
+630:       expect(body.detail).toBe("available");
+631:       const serving = current(wire, epoch, view),
+632:         required = position(body.requiredPosition);
+633:       const resources: Record<string, unknown>[] = [];
+634:       const failed = body.status === "failed";
+635:       let effect: number | null = null;
+636:       const core = {
+637:         id,
+638:         idempotencyKey: sentKey,
+639:         scopeEpoch: epoch,
+640:         authorizationView: view,
+641:         transaction,
+642:       };
+643:       if (failed) {
+644:         expect(mode).toBe("positive");
+645:         expect(side).toBeDefined();
+646:         expect(required).toBe(2);
+647:         expect(serving).toBe(2);
+648:         expect(body).toStrictEqual({
+649:           ...core,
+650:           status: "failed",
+651:           detail: "available",
+652:           requiredPosition: "pos-2",
+653:           problem: {
+654:             type: "https://github.com/gastownhall/bdp/problems/conflict",
+655:             code: "revision-mismatch",
+656:             status: 409,
+657:             retry: "after-state-change",
+658:             operationIndex: 1,
+659:           },
+660:           expiresAt: body.expiresAt,
+661:         });
+662:       } else {
+663:         expect(body.status).toBe("completed");
+664:         expect(Array.isArray(body.results)).toBe(true);
+665:         const results = body.results as unknown[];
+666:         expect(results).toHaveLength(side === undefined ? 1 : 2);
+667:         for (const [i, result] of results.entries()) {
+668:           const resource = checked(record(result).resource, "beadRecord");
+669:           const revision = text(resource.revision);
+670:           const id = side === undefined || i === 1 ? seedId : `${scope}beads/marker-${side}`;
+671:           const title =
+672:             side === undefined ? "guarded-seed" : i === 0 ? `marker-${side}` : `winner-${side}`;
+673:           expect(resource).toStrictEqual({
+674:             id,
+675:             type: beadType,
+676:             revision,
+677:             properties: { title },
+678:             metadata: {},
+679:           });
+680:           if (side !== undefined && i === 1) expect(revision).not.toBe(seedRevision);
+681:           resources.push(resource);
+682:         }
+683:         effect = position(body.effectPosition);
+684:         expect(required).toBe(effect);
+685:         if (side === undefined) {
+686:           expect(effect).toBe(1);
+687:           expect(serving).toBe(1);
+688:         } else if (mode === "positive") {
+689:           expect(effect).toBe(2);
+690:           expect(serving).toBe(2);
+691:         } else {
+692:           expect([2, 3]).toContain(effect);
+693:           expect(serving).toBeGreaterThanOrEqual(effect);
+694:           expect(serving).toBeLessThanOrEqual(3);
+695:         }
+696:         expect(body).toStrictEqual({
+697:           ...core,
+698:           status: "completed",
+699:           detail: "available",
+700:           requiredPosition: body.requiredPosition,
+701:           effectPosition: body.effectPosition,
+702:           results: resources.map((resource, i) => ({
+703:             operationIndex: i,
+704:             outcome: i === 0 ? "created" : "updated",
+705:             resource,
+706:           })),
+707:           next: null,
+708:           expiresAt: body.expiresAt,
+709:         });
+710:       }
+711:       receiptObservations.push({
+712:         index: wire.index,
+713:         id,
+714:         transaction,
+715:         key: sentKey,
+716:         status: text(body.status),
+717:         resources: resources.map((r) => ({ id: text(r.id), revision: text(r.revision) })),
+718:         effectPosition: effect === null ? null : text(body.effectPosition),
+719:         requiredPosition: text(body.requiredPosition),
+720:         servingPosition: header(wire, "bdp-scope-position"),
+721:         problem: failed ? record(body.problem) : null,
+722:       });
+723:       performed.push(`receipt-${wire.index}-schema-and-literals`);
+724:       return { body, id, transaction, epoch, view, key: sentKey, resources, effect, failed };
+725:     }
+726:     const seedWire = await send(1);
+727:     await Promise.all(closing);
+728:     const seed = receipt(seedWire, seedKey);
+729:     prerequisites.seedSchemaAndLiterals = true;
+730:     seedRevision = text(seed.resources[0]!.revision);
+731:     revisionEncodingBytes = Buffer.byteLength(JSON.stringify(seedRevision));
+732:     check("captured-revision-and-bodies", () => {
+733:       expect(revisionEncodingBytes).toBeLessThanOrEqual(128);
+734:       aBody = contenderBody("a", seedRevision!, mode === "positive");
+735:       bBody = contenderBody("b", seedRevision!, mode === "positive");
+736:       for (const body of [aBody, bBody]) {
+737:         expect(Buffer.byteLength(body)).toBe(
+738:           mode === "positive" ? 343 + revisionEncodingBytes! : 323,
+739:         );
+740:         const update = JSON.parse(body).operations[1];
+741:         if (mode === "positive") expect(update.expectedRevision).toBe(seedRevision);
+742:         else expect(Object.hasOwn(update, "expectedRevision")).toBe(false);
+743:       }
+744:     });
+745:     const originals = [
+746:       { side: "a", key: "guarded-a", body: aBody!, hash: sha(aBody!) },
+747:       { side: "b", key: "guarded-b", body: bBody!, hash: sha(bBody!) },
+748:     ] as const;
+749:     const aPromise = send(2),
+750:       bPromise = send(3);
+751:     const pair = await Promise.allSettled([aPromise, bPromise]);
+752:     const pairErrors = pair.flatMap((result) =>
+753:       result.status === "rejected" ? [result.reason] : [],
+754:     );
+755:     if (pairErrors.length)
+756:       throw new AggregateError(pairErrors, "guarded-batch pair transport failed");
+757:     const aWire = (pair[0] as PromiseFulfilledResult<Wire>).value,
+758:       bWire = (pair[1] as PromiseFulfilledResult<Wire>).value;
+759:     await Promise.all(closing);
+760:     check("dispatch-discipline", () => {
+761:       expect(milestoneOverflow).toBe(false);
+762:       const firstSettled = milestones.find((m) => m.kind === "settled")!.order;
+763:       for (const index of [2, 3])
+764:         for (const kind of ["invoked", "end-called"])
+765:           expect(
+766:             milestones.find((m) => m.request === index && m.kind === kind)?.order,
+767:           ).toBeLessThan(firstSettled);
+768:       expect(requestSockets.get(2)).toBeDefined();
+769:       expect(requestSockets.get(3)).toBeDefined();
+770:       expect(requestSockets.get(2)).not.toBe(requestSockets.get(3));
+771:       expect(milestones.filter((m) => m.kind === "response-end")).toHaveLength(2);
+772:       expect(maximumLiveSockets).toBeLessThanOrEqual(2);
+773:       prerequisites.dispatchDiscipline = true;
+774:     });
+775:     const firstResponse = milestones.find((m) => m.kind === "response-start")!.order;
+776:     bothConnectedBeforeFirstResponse = [2, 3].every((i) =>
+777:       milestones.some((m) => m.request === i && m.kind === "connected" && m.order < firstResponse),
+778:     );
+779:     bothWritesPrecededFirstResponse = [2, 3].every((i) =>
+780:       milestones.some((m) => m.request === i && m.kind === "finish" && m.order < firstResponse),
+781:     );
+782:     const a = receipt(aWire, "guarded-a", "a"),
+783:       b = receipt(bWire, "guarded-b", "b");
+784:     completedContenderCount = [a, b].filter((r) => !r.failed).length;
+785:     failedContenderCount = [a, b].filter((r) => r.failed).length;
+786:     check("pair-identities", () => {
+787:       expect(a.id).not.toBe(b.id);
+788:       expect(a.transaction).not.toBe(b.transaction);
+789:       for (const r of [a, b]) expect([r.epoch, r.view]).toStrictEqual([seed.epoch, seed.view]);
+790:       prerequisites.pairSchemasAndLiterals = true;
+791:     });
+792:     if (mode === "unguarded-contenders")
+793:       check("control-prerequisites", () => {
+794:         expect(completedContenderCount).toBe(2);
+795:         expect(failedContenderCount).toBe(0);
+796:         expect([a.effect, b.effect].sort()).toStrictEqual([2, 3]);
+797:         expect(a.resources[1]!.revision).not.toBe(b.resources[1]!.revision);
+798:         expect(attempted).toBe(3);
+799:         expect(responses).toHaveLength(3);
+800:         expect(sockets.size).toBe(3);
+801:         prerequisites.controlTwoCompletedEffects = true;
+802:       });
+803:     check("one-retained-revision-failure", () =>
+804:       expect(failedContenderCount, "guarded-batch:one-retained-revision-failure").toBe(1),
+805:     );
+806:     const loserIndex = a.failed ? 0 : 1,
+807:       winner = a.failed ? b : a,
+808:       loser = a.failed ? a : b;
+809:     const losingInput = originals[loserIndex],
+810:       winningSide = originals[1 - loserIndex]!.side;
+811:     selectedWinner = winner.key;
+812:     selectedLoser = loser.key;
+813:     receiptUrl = loser.id;
+814:     replayBody = losingInput.body;
+815:     replayKey = losingInput.key;
+816:     check("frozen-loser-replay-input", () => {
+817:       expect(replayKey).toBe(loser.key);
+818:       expect(replayBody).toBe(loserIndex === 0 ? aBody : bBody);
+819:       expect(sha(replayBody!)).toBe(losingInput.hash);
+820:       expect(Buffer.from(replayBody!)).toStrictEqual(Buffer.from(losingInput.body));
+821:     });
+822:     const replayWire = await send(4);
+823:     await Promise.all(closing);
+824:     const replay = receipt(replayWire, loser.key, losingInput.side);
+825:     check("retained-failure-full-equality", () => expect(replay.body).toStrictEqual(loser.body));
+826:     const recoveredWire = await send(5);
+827:     await Promise.all(closing);
+828:     const recovered = receipt(recoveredWire, loser.key, losingInput.side);
+829:     check("issued-failure-full-equality", () => expect(recovered.body).toStrictEqual(loser.body));
+830:     const marker = winner.resources[0]!,
+831:       seedAfter = winner.resources[1]!;
+832:     const collectionWire = await send(6);
+833:     await Promise.all(closing);
+834:     check("complete-rollback-resource-collection", () => {
+835:       expect(collectionWire.status).toBe(200);
+836:       expect(current(collectionWire, seed.epoch, seed.view)).toBe(2);
+837:       expect(checked(collectionWire.body, "currentBeadCollection")).toStrictEqual({
+838:         items: [seedAfter, marker],
+839:         next: null,
+840:       });
+841:     });
+842:     const eventWire = await send(7);
+843:     await Promise.all(closing);
+844:     check("complete-rollback-event-linkage", () => {
+845:       expect(eventWire.status).toBe(200);
+846:       expect(current(eventWire, seed.epoch, seed.view)).toBe(2);
+847:       const page = checked(eventWire.body, "eventPage");
+848:       expect(Array.isArray(page.events)).toBe(true);
+849:       const events = page.events as unknown[];
+850:       expect(events).toHaveLength(3);
+851:       const hash = (tag: string, value: string) =>
+852:         createHash("sha256")
+853:           .update(JSON.stringify([tag, value]))
+854:           .digest("base64url");
+855:       const source = `${scope}events/`;
+856:       const eventId = (p: number, ordinal: number) =>
+857:         `ev_${hash("epoch", header(eventWire, "bdp-scope-epoch"))}_${hash("view", header(eventWire, "bdp-authorization-view"))}_${hash("source", source)}_pos-${p}_${ordinal}`;
+858:       const created = (resource: Record<string, unknown>) => ({
+859:         revision: resource.revision,
+860:         properties: resource.properties,
+861:         metadata: resource.metadata,
+862:       });
+863:       expect(page).toStrictEqual({
+864:         source,
+865:         events: [
+866:           {
+867:             id: eventId(1, 0),
+868:             ordinal: 0,
+869:             type: "created",
+870:             source,
+871:             subject: seedId,
+872:             subjectType: beadType,
+873:             transaction: seed.transaction,
+874:             time: record(events[0]).time,
+875:             data: created(seed.resources[0]!),
+876:           },
+877:           {
+878:             id: eventId(2, 0),
+879:             ordinal: 0,
+880:             type: "created",
+881:             source,
+882:             subject: `${scope}beads/marker-${winningSide}`,
+883:             subjectType: beadType,
+884:             transaction: winner.transaction,
+885:             time: record(events[1]).time,
+886:             data: created(marker),
+887:           },
+888:           {
+889:             id: eventId(2, 1),
+890:             ordinal: 1,
+891:             type: "updated",
+892:             source,
+893:             subject: seedId,
+894:             subjectType: beadType,
+895:             transaction: winner.transaction,
+896:             time: record(events[2]).time,
+897:             data: {
+898:               previousRevision: seedRevision,
+899:               revision: seedAfter.revision,
+900:               change: [{ op: "replace", path: "/title", value: `winner-${winningSide}` }],
+901:             },
+902:           },
+903:         ],
+904:         next: null,
+905:       });
+906:     });
+907:     check("complete-fixed-schedule", () => {
+908:       expect(attempted).toBe(7);
+909:       expect(responses).toHaveLength(7);
+910:       expect(sockets.size).toBe(7);
+911:       expect(responses.map((r) => r.status)).toStrictEqual([200, 200, 200, 200, 200, 200, 200]);
+912:       expect(maximumLiveSockets).toBeLessThanOrEqual(2);
+913:       expect(responses.reduce((sum, r) => sum + r.requestBodyBytes, 0)).toBe(
+914:         172 + 3 * (343 + revisionEncodingBytes!),
+915:       );
+916:     });
+917:   } catch (error) {
+918:     failedAssertion = currentAssertion;
+919:     failedPhase = phase;
+920:     addFailure(error);
+921:   } finally {
+922:     const primaryFailureCount = failures.length;
+923:     clearTimeout(deadline);
+924:     work.abort();
+925:     destroyActive();
+926:     let cleanupTimer: ReturnType<typeof setTimeout> | undefined;
+927:     let drainTimer: ReturnType<typeof setTimeout> | undefined;
+928:     const drain = Promise.race([
+929:       Promise.allSettled([...pending, ...closing]).then((results) => {
+930:         for (const result of results) if (result.status === "rejected") addFailure(result.reason);
+931:       }),
+932:       new Promise<void>((resolve) => {
+933:         drainTimer = setTimeout(() => {
+934:           drainExceeded = true;
+935:           addFailure(new Error("guarded-batch request cleanup deadline"));
+936:           resolve();
+937:         }, 5000);
+938:       }),
+939:     ]).finally(() => clearTimeout(drainTimer));
+940:     const stop =
+941:       child === undefined
+942:         ? Promise.resolve()
+943:         : child.close().then(() => {
+944:             closed = true;
+945:           }, addFailure);
+946:     await Promise.race([
+947:       Promise.allSettled([drain, stop]).then((results) => {
+948:         for (const result of results) if (result.status === "rejected") addFailure(result.reason);
+949:       }),
+950:       new Promise<void>((resolve) => {
+951:         cleanupTimer = setTimeout(() => {
+952:           cleanupExceeded = true;
+953:           addFailure(new Error("guarded-batch cleanup deadline"));
+954:           child?.child.kill("SIGKILL");
+955:           resolve();
+956:         }, 10000);
+957:       }),
+958:     ]);
+959:     clearTimeout(cleanupTimer);
+960:     work.signal.removeEventListener("abort", destroyActive);
+961:     const stopped =
+962:       !launchAttempted ||
+963:       (child !== undefined && (child.child.exitCode !== null || child.child.signalCode !== null));
+964:     if (child !== undefined && (child.child.exitCode !== 0 || child.child.signalCode !== null))
+965:       addFailure(new Error("guarded-batch child did not exit cleanly"));
+966:     if (launchAttempted && child === undefined)
+967:       addFailure(new Error("guarded-batch pre-ready child stop unknown"));
+968:     if (directory !== undefined && stopped) {
+969:       try {
+970:         rmSync(directory, { recursive: true, force: true });
+971:       } catch (error) {
+972:         addFailure(error);
+973:       }
+974:     }
+975:     if (directory !== undefined && existsSync(directory))
+976:       addFailure(new Error("guarded-batch owned directory retained"));
+977:     if (deadlineExceeded) addFailure(new Error("guarded-batch work deadline exceeded"));
+978:     if (milestoneOverflow) addFailure(new Error("guarded-batch milestone ceiling"));
+979:     if (liveSockets.size) addFailure(new Error("guarded-batch owned sockets remain"));
+980:     const cleanupFailureCount = failures.length - primaryFailureCount;
+981:     const ready = child?.ready;
+982:     // Explicit allowlist: never retain credentials, runtime configuration, arbitrary errors or raw requests.
+983:     const observation = () => ({
+984:       label: "private-installed-guarded-batch",
+985:       mode,
+986:       declaredSourceCommit,
+987:       sourceAttribution: "caller label; supervisor must verify source/package equality",
+988:       workspaceDirty,
+989:       entry,
+990:       entrySha256,
+991:       executionMode: entryOverride ? "external-installed" : "workspace-emitted",
+992:       binding: binding ?? null,
+993:       servedIdentities:
+994:         ready === undefined
+995:           ? null
+996:           : {
+997:               runtimeConfigurationIdentity: ready.runtimeConfigurationIdentity,
+998:               artifactIdentity: ready.artifactIdentity,
+999:               policyIdentity: ready.policyIdentity,
+1000:               authenticationIdentity: ready.authenticationIdentity,
+1001:               payloadIdentity: ready.payloadIdentity,
+1002:             },
+1003:       credentialFreeConfigurationProjectionSha256: projectionSha256,
+1004:       artifacts,
+1005:       attempts: attempted,
+1006:       completedResponses: responses.length,
+1007:       responses,
+1008:       receiptObservations,
+1009:       milestones,
+1010:       milestoneOverflow,
+1011:       socketCount: sockets.size,
+1012:       maximumLiveSockets,
+1013:       liveSocketsAfterCleanup: liveSockets.size,
+1014:       requestSockets: [...requestSockets].map(([index, socket]) => ({ index, socket })),
+1015:       clientDispatchDisciplinePassed: performed.includes("dispatch-discipline"),
+1016:       bothConnectedBeforeFirstResponse,
+1017:       bothWritesPrecededFirstResponse,
+1018:       inconclusivePending,
+1019:       prerequisites,
+1020:       completedContenderCount,
+1021:       failedContenderCount,
+1022:       selectedWinner,
+1023:       selectedLoser,
+1024:       revisionEncodingBytes,
+1025:       performed,
+1026:       failedAssertion,
+1027:       namedAssertion: failedAssertion,
+1028:       failedPhase,
+1029:       primaryFailureCount,
+1030:       cleanupFailureCount,
+1031:       reportWriteFailed,
+1032:       reportOverflow,
+1033:       failureCount: failures.length,
+1034:       outcome: inconclusivePending ? "inconclusive-pending" : failures.length ? "failed" : "passed",
+1035:       retention:
+1036:         "Full parsed receipt/Resource/Event comparisons occur in memory; response fingerprints are not retained full-wire evidence.",
+1037:       launchAttempted,
+1038:       childPid: child?.child.pid ?? null,
+1039:       childExitCode: child?.child.exitCode ?? null,
+1040:       childSignalCode: child?.child.signalCode ?? null,
+1041:       stopKnowledge: stopped ? "known-stopped-or-never-launched" : "unknown",
+1042:       closed,
+1043:       temporaryRoot: temporaryRoot ?? null,
+1044:       directory: directory ?? null,
+1045:       directoryAbsent: directory === undefined ? null : !existsSync(directory),
+1046:       deadlineExceeded,
+1047:       cleanupExceeded,
+1048:       drainExceeded,
+1049:       elapsedMs: performance.now() - started,
+1050:       bounds: {
+1051:         workMs: 45000,
+1052:         requestMs: 5000,
+1053:         cleanupMs: 10000,
+1054:         requestDrainMs: 5000,
+1055:         testMs: 60000,
+1056:         maximumRequests: mode === "positive" ? 7 : 3,
+1057:         responseBodyBytes: 32768,
+1058:         responseHeaderBytes: 16384,
+1059:         reportBytes: 65536,
+1060:       },
+1061:       claimEligible: false,
+1062:     });
+1063:     let serialized = JSON.stringify(observation());
+1064:     if (Buffer.byteLength(serialized) + 1 > 65536) {
+1065:       reportOverflow = true;
+1066:       addFailure(new Error("guarded-batch report ceiling"));
+1067:     } else if (reportPath !== undefined) {
+1068:       try {
+1069:         writeFileSync(reportPath, serialized + "\n", { flag: "wx", mode: 0o600 });
+1070:       } catch (error) {
+1071:         reportWriteFailed = true;
+1072:         addFailure(error);
+1073:       }
+1074:     }
+1075:     serialized = JSON.stringify(observation());
+1076:     if (Buffer.byteLength(serialized) + 1 <= 65536) console.log(serialized);
+1077:     else {
+1078:       reportOverflow = true;
+1079:       addFailure(new Error("guarded-batch report ceiling"));
+1080:       console.log(
+1081:         JSON.stringify({
+1082:           label: "private-installed-guarded-batch",
+1083:           mode,
+1084:           outcome: "failed",
+1085:           reportOverflow: true,
+1086:           failureCount: failures.length,
+1087:           claimEligible: false,
+1088:         }),
+1089:       );
+1090:     }
+1091:   }
+1092:   if (failures.length === 1) throw failures[0];
+1093:   if (failures.length)
+1094:     throw new AggregateError(failures, "guarded-batch installed observation failed");
+1095: }, 60000);
+
+=== EXACT PROGRESS APPEND DIFF ===
+diff --git a/docs/design/transaction-implementation-progress.md b/docs/design/transaction-implementation-progress.md
+index bd02e4a..c366820 100644
+--- a/docs/design/transaction-implementation-progress.md
++++ b/docs/design/transaction-implementation-progress.md
+@@ -1958,3 +1958,15 @@ full parsed comparisons occur in memory. Authoring is based on merged
+ 98c600767e8e91a79e109cb741beb91e23b9bebe. Validation and code council remain
+ pending. This private draft does not qualify a profile, activate discovery or
+ settle the pending Snapshot and incident-Link metadata decisions.
++
++
++Private guarded-batch installed evidence draft (unexecuted): on verified main
++`9bf601bfb570adae97ce8cdc99caf2cc7a2b34c1`, one new callback stages distinct marker
++creations before two revision-guarded updates to the same observed Bead revision.
++The planned seven-request positive checks one winning effect, the retained failed
++receipt and exact replay/root recovery, and complete Resource/Event rollback
++evidence. Its separate three-request input control omits both guards and must
++establish two completed effects before the named failure oracle. This draft has
++not been built or executed; it adds no catalog credit, profile qualification or
++server-admission overlap claim. Existing historical validation remains attributed
++to its original sources.
+
+=== AUTHORITATIVE COMMITTED CONTEXT (base sources identical in candidate; indentation omitted in excerpts) ===
+
+--- scripts/transaction-installed-observation.mjs:1-97 ---
+1: /** Bounded inherited-IPC launcher. No request or observation emulation. */
+2: import { spawn } from "node:child_process";
+3: import { mkdir } from "node:fs/promises";
+4: export async function launchInstalledTransaction(entry, configuration, signal) {
+5: signal?.throwIfAborted();
+6: // Explicit launcher-owned provisioning; reopen keeps the directory/create:false.
+7: if (configuration.create) await mkdir(configuration.directory, { recursive: true, mode: 0o700 });
+8: signal?.throwIfAborted();
+9: const child = spawn(process.execPath, [entry], {
+10: cwd: "/tmp",
+11: stdio: ["ignore", "pipe", "pipe", "ipc"],
+12: });
+13: let bytes = 0;
+14: for (const stream of [child.stdout, child.stderr])
+15: stream.on("data", (chunk) => {
+16: bytes += chunk.length;
+17: if (bytes > 65536) child.kill("SIGKILL");
+18: });
+19: const exited = new Promise((resolve) =>
+20: child.once("exit", (code, signal) => resolve({ code, signal })),
+21: );
+22: async function bounded(promise) {
+23: let timer;
+24: try {
+25: return await Promise.race([
+26: promise,
+27: new Promise((_, reject) => {
+28: timer = setTimeout(() => {
+29: child.kill("SIGKILL");
+30: reject(new Error("installed transaction process deadline"));
+31: }, 10000);
+32: }),
+33: ]);
+34: } finally {
+35: clearTimeout(timer);
+36: }
+37: }
+38: async function drainFailure(error) {
+39: child.kill("SIGKILL");
+40: try {
+41: await bounded(exited);
+42: } catch (cleanup) {
+43: throw new AggregateError([error, cleanup], "installed transaction cleanup failed");
+44: }
+45: throw error;
+46: }
+47: let closing;
+48: const close = () =>
+49: (closing ??= (async () => {
+50: try {
+51: if (child.connected) child.send({ command: "close" });
+52: const result = await bounded(exited);
+53: if (result.code !== 0 || result.signal !== null)
+54: throw new Error("installed transaction child did not close cleanly");
+55: } catch (error) {
+56: await drainFailure(error);
+57: } finally {
+58: signal?.removeEventListener("abort", onAbort);
+59: }
+60: })());
+61: const onAbort = () => {
+62: void close().catch(() => {});
+63: };
+64: signal?.addEventListener("abort", onAbort, { once: true });
+65: if (signal?.aborted) onAbort();
+66: let detachReadyAbort = () => {};
+67: try {
+68: const ready = await bounded(
+69: new Promise((resolve, reject) => {
+70: const abort = () => reject(signal.reason);
+71: signal?.addEventListener("abort", abort, { once: true });
+72: detachReadyAbort = () => signal?.removeEventListener("abort", abort);
+73: if (signal?.aborted) {
+74: abort();
+75: return;
+76: }
+77: child.once("error", reject);
+78: child.once("message", resolve);
+79: void exited.then(() => reject(new Error("installed transaction exited before ready")));
+80: child.send({ configuration });
+81: }),
+82: );
+83: signal?.throwIfAborted();
+84: if (!ready || ready.event !== "qualification.ready" || JSON.stringify(ready).length > 65536)
+85: throw new Error("invalid installed ready message");
+86: return { child, ready, close };
+87: } catch (error) {
+88: try {
+89: await close();
+90: } catch (cleanup) {
+91: throw new AggregateError([error, cleanup], "installed transaction startup cleanup failed");
+92: }
+93: throw error;
+94: } finally {
+95: detachReadyAbort();
+96: }
+97: }
+
+--- packages/server/src/transaction-installed-configuration.ts:1-67 ---
+1: /** Private bounded launch data; compilation remains in the one runtime factory. */
+2: import path from "node:path";
+3: import { parseCanonicalScope } from "@bdp/protocol";
+4: import { administrativeArray, administrativeData } from "./development-contracts.js";
+5: import { CONTRACT_ARTIFACT_CEILINGS } from "./installed-contract-artifact.js";
+6: import type { TransactionRuntimeOptions } from "./transaction-runtime.js";
+7: function text(value: unknown, maximum: number): string {
+8: if (
+9: typeof value !== "string" ||
+10: !value.length ||
+11: !value.isWellFormed() ||
+12: Buffer.byteLength(value) > maximum
+13: )
+14: throw new TypeError("bounded installed transaction string required");
+15: return value;
+16: }
+17: export function captureInstalledTransactionConfiguration(
+18: input: unknown,
+19: ): TransactionRuntimeOptions {
+20: const own = administrativeData(input, [
+21: "scope",
+22: "directory",
+23: "create",
+24: "credentials",
+25: "artifacts",
+26: ]);
+27: const scope = parseCanonicalScope(text(own.scope, 8192));
+28: const directory = text(own.directory, 16384);
+29: if (!path.isAbsolute(directory) || typeof own.create !== "boolean")
+30: throw new TypeError("explicit provisioning required");
+31: const credentials = administrativeArray(own.credentials, 32).map((v) => {
+32: const c = administrativeData(v, ["token", "principal", "canMutate"]);
+33: const token = text(c.token, 256),
+34: principal = text(c.principal, 16384);
+35: if (!/^[A-Za-z0-9_-]{32,256}$/.test(token) || typeof c.canMutate !== "boolean")
+36: throw new TypeError("invalid installed credential");
+37: return Object.freeze({ token, principal, canMutate: c.canMutate });
+38: });
+39: if (!credentials.length || new Set(credentials.map((c) => c.token)).size !== credentials.length)
+40: throw new TypeError("unique credentials required");
+41: const supplied = administrativeData(own.artifacts, ["descriptors", "schemas"]);
+42: let total = 0;
+43: const artifacts = (value: unknown) =>
+44: Object.freeze(
+45: administrativeArray(value, CONTRACT_ARTIFACT_CEILINGS.submittedArtifacts).map((v) => {
+46: const a = administrativeData(v, ["retrievalUri", "utf8"]);
+47: const retrievalUri = text(a.retrievalUri, 16384),
+48: utf8 = text(a.utf8, CONTRACT_ARTIFACT_CEILINGS.artifactBytes);
+49: total += Buffer.byteLength(retrievalUri) + Buffer.byteLength(utf8);
+50: if (total > CONTRACT_ARTIFACT_CEILINGS.totalBytes)
+51: throw new TypeError("installed artifact capture bound");
+52: return Object.freeze({ retrievalUri, utf8 });
+53: }),
+54: );
+55: const descriptors = artifacts(supplied.descriptors),
+56: schemas = artifacts(supplied.schemas);
+57: if (!descriptors.length) throw new TypeError("compiled descriptor closure required");
+58: return Object.freeze({
+59: scope,
+60: directory,
+61: create: own.create,
+62: port: 0,
+63: authorityMode: "canonical",
+64: credentials: Object.freeze(credentials),
+65: artifacts: Object.freeze({ descriptors, schemas, limits: CONTRACT_ARTIFACT_CEILINGS }),
+66: });
+67: }
+
+--- packages/server/src/transaction-installed.ts:1-22 ---
+1: /** Private installed Transactional candidate; never a profile admission API. */
+2: import { captureInstalledTransactionConfiguration } from "./transaction-installed-configuration.js";
+3: import { installedPayloadIdentity } from "./installed-payload.js";
+4: import { startTransactionRuntime } from "./transaction-runtime.js";
+5: export async function startInstalledTransactionCandidate(input: unknown) {
+6: const captured = captureInstalledTransactionConfiguration(input);
+7: const payloadIdentity = await installedPayloadIdentity();
+8: const runtime = await startTransactionRuntime(captured);
+9: try {
+10: const metadata = runtime.configurationMetadata;
+11: if (!metadata || metadata.authorityMode !== "canonical" || metadata.scope !== captured.scope)
+12: throw new TypeError("installed transaction metadata unavailable");
+13: return Object.freeze({ ...runtime, configurationMetadata: metadata, payloadIdentity });
+14: } catch (error) {
+15: try {
+16: await runtime.close();
+17: } catch (cleanup) {
+18: throw new AggregateError([error, cleanup], "installed transaction startup cleanup failed");
+19: }
+20: throw error;
+21: }
+22: }
+
+--- packages/server/src/transaction-installed-process.ts:1-77 ---
+1: /** Private installed qualification bootstrap. No package export, bin or CLI flag.
+2: * No clock/store/outcome control. Configuration arrives only through inherited IPC.
+3: */
+4: import process from "node:process";
+5: import { realpathSync } from "node:fs";
+6: import { fileURLToPath } from "node:url";
+7: import { administrativeData } from "./development-contracts.js";
+8: import { startInstalledTransactionCandidate } from "./transaction-installed.js";
+9: 
+10: async function main() {
+11: if (!process.send || process.argv.length !== 2) throw new TypeError("inherited IPC required");
+12: const send = process.send.bind(process);
+13: const input = await new Promise<unknown>((resolve, reject) => {
+14: const timer = setTimeout(() => reject(new Error("configuration deadline")), 10000);
+15: process.once("disconnect", () => {
+16: clearTimeout(timer);
+17: reject(new Error("configuration disconnected"));
+18: });
+19: process.once("message", (message) => {
+20: clearTimeout(timer);
+21: resolve(message);
+22: });
+23: });
+24: const { configuration } = administrativeData(input, ["configuration"]);
+25: let stop!: () => void;
+26: let stopping = false;
+27: const stopped = new Promise<void>((resolve) => {
+28: stop = () => {
+29: stopping = true;
+30: resolve();
+31: };
+32: });
+33: process.once("SIGTERM", () => stop());
+34: process.once("SIGINT", () => stop());
+35: process.once("disconnect", () => stop());
+36: process.on("message", (message) => {
+37: try {
+38: const value = administrativeData(message, ["command"]);
+39: if (value.command !== "close") throw new TypeError("unsupported control");
+40: } catch {
+41: process.exitCode = 2;
+42: }
+43: stop();
+44: });
+45: if (!process.connected) stop();
+46: const runtime = await startInstalledTransactionCandidate(configuration);
+47: try {
+48: if (process.connected && !stopping)
+49: send({
+50: event: "qualification.ready",
+51: ...runtime.configurationMetadata,
+52: listenUrl: runtime.listenUrl,
+53: targets: runtime.targets,
+54: payloadIdentity: runtime.payloadIdentity,
+55: });
+56: await stopped;
+57: } finally {
+58: await runtime.close();
+59: if (process.connected) process.disconnect();
+60: }
+61: }
+62: function isEntrypoint(): boolean {
+63: const entry = process.argv[1];
+64: if (entry === undefined) return false;
+65: try {
+66: return realpathSync(entry) === realpathSync(fileURLToPath(import.meta.url));
+67: } catch {
+68: return false;
+69: }
+70: }
+71: if (isEntrypoint())
+72: void main().catch(() => {
+73: // Never echo credentials, input configuration or callback exceptions.
+74: process.stderr.write("installed transaction qualification failed\n");
+75: process.exitCode = 2;
+76: if (process.connected) process.disconnect();
+77: });
+
+--- apps/bdptest/test-support/transactional-execution-binding.ts:1-91 ---
+1: import { isDeepStrictEqual } from "node:util";
+2: import { installedContractsDigest } from "./installed-contract-identity.js";
+3: /** Source-only installed binding. Runner retains sole receipt observation authority. */
+4: import { createHash } from "node:crypto";
+5: import {
+6: createRawHttpScenarioTarget,
+7: type ExactHttpModeOptions,
+8: type ConformanceFixture,
+9: type ExecutableScenario,
+10: } from "@bdp/conformance";
+11: import {
+12: bindServedProfileConfiguration,
+13: assertSameServedProfileConfiguration,
+14: type TransactionalRunContext,
+15: type TransactionalSession,
+16: } from "@bdp/conformance/testing";
+17: export interface InstalledTransactionChild {
+18: readonly ready: Record<string, unknown>;
+19: close(): Promise<unknown>;
+20: }
+21: export function installedTransactionBinding(
+22: ready: Record<string, unknown>,
+23: sourceCommit: string,
+24: fixture: { bytes: Uint8Array },
+25: ) {
+26: if (
+27: ready.profile !== "transactional" ||
+28: ready.history !== false ||
+29: ready.claimEligible !== false ||
+30: ready.authorityMode !== "canonical" ||
+31: typeof ready.scope !== "string" ||
+32: typeof ready.runtimeConfigurationIdentity !== "string" ||
+33: !/^[a-f0-9]{64}$/.test(ready.runtimeConfigurationIdentity)
+34: )
+35: throw new Error("installed Transactional metadata unavailable");
+36: if (typeof ready.listenUrl !== "string")
+37: throw new Error("installed physical session unavailable");
+38: const url = new URL(ready.listenUrl);
+39: if (
+40: url.protocol !== "http:" ||
+41: url.hostname !== "127.0.0.1" ||
+42: !url.port ||
+43: url.username ||
+44: url.password ||
+45: url.pathname !== "/" ||
+46: url.search ||
+47: url.hash
+48: )
+49: throw new Error("invalid installed dial binding");
+50: const targetNames = {
+51: createBead: "create-bead",
+52: updateBead: "update-bead",
+53: deleteBead: "delete-bead",
+54: createLink: "create-link",
+55: updateLink: "update-link",
+56: deleteLink: "delete-link",
+57: putAlias: "put-alias",
+58: deleteAlias: "delete-alias",
+59: updateWhere: "update-where",
+60: deleteWhere: "delete-where",
+61: batch: "batch",
+62: sequence: "sequence",
+63: };
+64: const operationTargets = Object.freeze(
+65: Object.fromEntries(
+66: Object.entries(targetNames).map(([name, suffix]) => [
+67: name,
+68: `${ready.scope}operations/${suffix}`,
+69: ]),
+70: ),
+71: );
+72: if (!isDeepStrictEqual(ready.targets, operationTargets))
+73: throw new Error("installed operation target inventory mismatch");
+74: const served = bindServedProfileConfiguration({
+75: scope: ready.scope,
+76: profile: "transactional",
+77: history: false,
+78: sourceCommit,
+79: installedPayloadDigest: ready.payloadIdentity as string,
+80: installedContractsDigest: installedContractsDigest(ready.artifactIdentity),
+81: policyDigest: ready.policyIdentity as string,
+82: authenticationDigest: ready.authenticationIdentity as string,
+83: fixture,
+84: });
+85: return Object.freeze({
+86: served,
+87: operationTargets,
+88: runtimeConfigurationIdentity: ready.runtimeConfigurationIdentity,
+89: authorityMode: "canonical" as const,
+90: });
+91: }
+
+--- packages/server/src/transaction-runtime.ts:86-142 ---
+86: }
+87: function deliver(response: ServerResponse, selected: HttpResponse, raw?: string): void {
+88: if (response.destroyed) return;
+89: const bytes =
+90: raw ?? (selected.body === undefined ? undefined : stringifyJsonValue(selected.body));
+91: selected.headers.set("x-bdp-development", "non-attesting");
+92: if (bytes !== undefined) selected.headers.set("content-length", String(Buffer.byteLength(bytes)));
+93: response.writeHead(selected.status, Object.fromEntries(selected.headers));
+94: response.end(response.req.method === "HEAD" ? undefined : bytes);
+95: }
+96: export async function startTransactionRuntime(
+97: options: TransactionRuntimeOptions,
+98: seams: TransactionRuntimeTestSeams = {},
+99: ) {
+100: const captured = captureTransactionRuntimeConfiguration(options, seams);
+101: const { settings, configuredScope, contracts, types } = captured;
+102: const capturedSeams = captured.seams;
+103: let service: ReturnType<typeof createTransactionService> | undefined;
+104: let handler: ReturnType<typeof createTransactionHttpHandler> | undefined;
+105: let schemas: ReturnType<typeof createTransactionSchemaHttp> | undefined;
+106: let configurationMetadata: ReturnType<typeof captured.metadata>;
+107: let listenUrl = "";
+108: let scope = "",
+109: closing = false;
+110: const pending = new Set<Promise<void>>();
+111: // Retain only the first unexpected live fault. Wire cancellation remains
+112: // silent; close surfaces the original cause through existing aggregation.
+113: let firstStreamFault: { readonly cause: unknown } | undefined;
+114: const handle = async (request: IncomingMessage, response: ServerResponse): Promise<void> => {
+115: let signal: AbortSignal | undefined;
+116: let streamContext: TransactionReadContext | undefined;
+117: try {
+118: if (closing || !handler) {
+119: deliver(response, transactionHttpProblem("temporarily-unavailable"));
+120: return;
+121: }
+122: const raw = request.url ?? "";
+123: if (request.method === "POST" && Buffer.byteLength(raw) > TRANSACTION_HTTP_TARGET_BYTES) {
+124: deliver(response, transactionHttpProblem("request-too-large"));
+125: return;
+126: }
+127: if (
+128: normalizationSafeRawRequestPath(raw) === undefined ||
+129: !raw.startsWith("/") ||
+130: raw.startsWith("//") ||
+131: request.headers.host !==
+132: new URL(captured.authorityMode === "canonical" ? scope : listenUrl).host
+133: ) {
+134: deliver(response, transactionHttpProblem("malformed-request"));
+135: return;
+136: }
+137: const url = new URL(raw, scope);
+138: const methodFailure = handler.methodResponse(url, request.method ?? "GET");
+139: if (methodFailure) {
+140: // Refused bodies are not consumed and cannot keep this connection alive.
+141: methodFailure.headers.set("connection", "close");
+142: deliver(response, methodFailure);
+
+--- packages/server/src/transaction-runtime.ts:358-389 ---
+358: let completion: Promise<void> | undefined;
+359: return Object.freeze({
+360: scope,
+361: listenUrl,
+362: configurationMetadata,
+363: /** Test-only inventory, not an HTTP Operation Directory. */ targets: handler.targets,
+364: close(): Promise<void> {
+365: if (!completion) {
+366: closing = true;
+367: completion = (async () => {
+368: const failures: unknown[] = [];
+369: try {
+370: await closeListener();
+371: } catch (error) {
+372: failures.push(error);
+373: }
+374: await Promise.allSettled([...pending]);
+375: try {
+376: await service?.close();
+377: } catch (error) {
+378: failures.push(error);
+379: }
+380: if (firstStreamFault) failures.unshift(firstStreamFault.cause);
+381: if (failures.length)
+382: throw new AggregateError(failures, "transaction runtime shutdown failed");
+383: })();
+384: void completion.catch(() => {});
+385: }
+386: return completion;
+387: },
+388: });
+389: }
+
+--- packages/server/src/transaction-runtime-configuration.ts:370-404 ---
+370: throw new Error("live transaction descriptor closure mismatch");
+371: if (seamCapture.supplied || configuredScope === undefined || contracts === undefined)
+372: return undefined;
+373: const policyIdentity = transactionRuntimeDigest({
+374: revision: "transaction-policy-1",
+375: view: actual.authorizationView,
+376: read: "all-visible",
+377: aggregate: actual.scopeConfiguration.maximumEndpointMultiplicity,
+378: associations,
+379: });
+380: const runtimeConfigurationIdentity = transactionRuntimeDigest({
+381: revision: "transaction-runtime-1",
+382: scope,
+383: artifactIdentity: contracts.identity,
+384: settings,
+385: authorityMode,
+386: policyIdentity,
+387: authenticationIdentity,
+388: profile: "transactional",
+389: history: false,
+390: });
+391: return Object.freeze({
+392: authorityMode,
+393: runtimeConfigurationIdentity,
+394: artifactIdentity: contracts.identity,
+395: policyIdentity,
+396: authenticationIdentity,
+397: scope,
+398: profile: "transactional" as const,
+399: history: false as const,
+400: claimEligible: false as const,
+401: });
+402: },
+403: });
+404: }
+
+--- packages/server/src/transaction-http.ts:97-118 ---
+97: readonly retry: "after-delay";
+98: },
+99: ): HttpResponse {
+100: const response = jsonResponse(value);
+101: response.headers.set("content-type", "application/problem+json");
+102: if (value.code === "unauthenticated")
+103: response.headers.set("www-authenticate", 'Bearer realm="bdp-transaction-development"');
+104: if (value.retry === "after-delay") response.headers.set("retry-after", "1");
+105: return { ...response, status: value.status ?? 500 };
+106: }
+107: export function transactionHttpProblem(
+108: code: ReadProblemCode,
+109: observation?: TransactionReadContext,
+110: ): HttpResponse {
+111: const response = problem(readProblem(code));
+112: return observation ? context(response, observation) : response;
+113: }
+114: function context(response: HttpResponse, observation: TransactionReadContext): HttpResponse {
+115: response.headers.set("bdp-scope-epoch", observation.scopeEpoch);
+116: response.headers.set("bdp-authorization-view", observation.authorizationView);
+117: response.headers.set("bdp-scope-position", observation.scopePosition);
+118: return response;
+
+--- packages/server/src/transaction-http.ts:176-190 ---
+176: function receiptResponse(
+177: observed: {
+178: readonly receipt: { readonly id: string; readonly status: string };
+179: readonly context: TransactionReadContext;
+180: },
+181: mutation: boolean,
+182: ): HttpResponse {
+183: const response = context(jsonResponse(observed.receipt), observed.context);
+184: if (mutation && observed.receipt.status === "pending") {
+185: response.headers.set("location", observed.receipt.id);
+186: response.headers.set("retry-after", "1");
+187: return { ...response, status: 202 };
+188: }
+189: return response;
+190: }
+
+--- packages/server/src/transaction-http.ts:330-348 ---
+330: authorization.kind === "unauthenticated"
+331: ? authorization
+332: : authorization.canMutate
+333: ? { kind: "authorized", principal: authorization.principal }
+334: : { kind: "forbidden" };
+335: const result = await service.submit({
+336: carrier:
+337: operation === "batch"
+338: ? { kind: "batch" }
+339: : { kind: "singleton", operation: operation as TransactionSingletonOperation },
+340: body: received.text,
+341: key: request.headers.get("idempotency-key") ?? "",
+342: authorization: decision,
+343: receiving: { acceptsJson: acceptsJson(request.headers.get("accept")), maximumOperations },
+344: });
+345: if (result.kind === "receipt") return receiptResponse(result, true);
+346: if (result.kind === "comparison-refusal") {
+347: const response = problem(readProblem(result.code));
+348: if (result.reason === "owner-stopped") return response;
+
+--- packages/server/src/transaction-http.ts:389-389 ---
+389: if (authorization.kind === "unauthenticated") return transactionHttpProblem("unauthenticated");
+
+--- packages/server/src/transaction-http.ts:480-503 ---
+480: // when a query happens to spell view=events. Do not reclassify them as Events.
+481: const alias = classifyAliasPath(url, scope);
+482: if (alias !== undefined && typeof alias !== "string") return problem(alias);
+483: const receiptRoute =
+484: url.pathname.startsWith(`${scopeUrl.pathname}receipts/`) ||
+485: url.pathname === `${scopeUrl.pathname}receipts`;
+486: const eventRequest = receiptRoute ? undefined : transactionEventRequest(url, scope);
+487: if (eventRequest) {
+488: const minimum = hasMinimumControls(request)
+489: ? (transactionMinimumHeaders(request.headers) ?? "unsupported")
+490: : undefined;
+491: if (selectChangefeedMedia(request.headers.get("accept")) !== "sse") {
+492: const observed = await service.events(
+493: eventRequest.source.url,
+494: eventRequest.after,
+495: minimum,
+496: request.signal,
+497: );
+498: if (observed.kind === "missing")
+499: return transactionHttpProblem("resource-not-found", observed.context);
+500: if (observed.kind === "unsupported") return developmentGap("minimum-position");
+501: return context(jsonResponse(observed.page), observed.context);
+502: }
+503: const fields =
+
+--- packages/server/src/transaction-http.ts:519-565 ---
+519: : { ...response, kind: "event-stream", packet: observed, context: observed.context };
+520: }
+521: if (receiptRoute) {
+522: const minimum = hasMinimumControls(request)
+523: ? transactionMinimumHeaders(request.headers)
+524: : undefined;
+525: const access = { kind: "authenticated" as const, principal: authorization.principal };
+526: if (url.pathname.slice(`${scopeUrl.pathname}receipts/`.length).includes("/pages/")) {
+527: const page = await service.receiptPage(
+528: access,
+529: url.href,
+530: minimum ?? (hasMinimumControls(request) ? "unsupported" : undefined),
+531: );
+532: if (page.kind === "refused")
+533: return transactionHttpProblem(
+534: page.code,
+535: page.code === "resource-not-found" ? page.context : undefined,
+536: );
+537: if (page.kind === "unsupported") return developmentGap("minimum-position");
+538: return context(
+539: page.kind === "expired"
+540: ? transactionHttpProblem("cursor-expired")
+541: : jsonResponse(page.page),
+542: page.context,
+543: );
+544: }
+545: const result = hasMinimumControls(request)
+546: ? await service.receiptAtMinimum(access, url.href, minimum ?? "unsupported")
+547: : service.receipt(access, url.href);
+548: if (result.kind === "refused")
+549: return transactionHttpProblem(
+550: result.code,
+551: result.code === "resource-not-found" ? result.context : undefined,
+552: );
+553: // Missing barrier support cannot disclose a foreign receipt, nor permit a
+554: // conditional shortcut to serve an unchecked minimum checkpoint.
+555: if (result.kind === "unsupported") return developmentGap("minimum-position");
+556: return receiptResponse(result, false);
+557: }
+558: const minimum = hasMinimumControls(request)
+559: ? transactionMinimumHeaders(request.headers)
+560: : undefined;
+561: if (hasMinimumControls(request) && !minimum) return developmentGap("minimum-position");
+562: if (minimum && alias === undefined) {
+563: // Aliases have their own conditioned authority path, not a canonical
+564: // ReadRequest or a member of the current Resource/collection subset.
+565: const parsed = requestFromUrl(url, scope);
+
+--- packages/server/src/transaction-http.ts:613-634 ---
+613: else if (error instanceof TransactionEventProjectionGap)
+614: response = developmentGap(error.message);
+615: else if (error instanceof TransactionMinimumVisibilityGap)
+616: response = developmentGap("minimum-position-visibility");
+617: else response = empty(500);
+618: }
+619: response.headers.set("x-bdp-development", "non-attesting");
+620: if (request.method === "POST") response.headers.set("vary", "Accept");
+621: if (
+622: "kind" in response &&
+623: (response.kind === "changefeed-stream" || response.kind === "event-stream")
+624: )
+625: return response;
+626: return {
+627: ...(request.method === "GET" || request.method === "HEAD"
+628: ? applyReadHttpSemantics(request, response)
+629: : response),
+630: kind: "finite",
+631: };
+632: },
+633: });
+634: }
+
+--- packages/server/src/read-http.ts:1-47 ---
+1: import { stringifyJsonValue } from "@bdp/protocol";
+2: import type { HttpResponse } from "./index.js";
+3: 
+4: /** Apply shared HTTP rules only after routing, authorization and result validation.
+5: * This Read server selects parameter-free application/json on its 200 routes.
+6: * Its Scope port supplies no representation modification date, so neither date
+7: * precondition can be evaluated; Resource timestamps are not HTTP validators.
+8: * RFC 9110 sections 12.5.1, 13.1 and 13.2 govern negotiation and ordering.
+9: */
+10: export function applyReadHttpSemantics(request: Request, response: HttpResponse): HttpResponse {
+11: let selected = response;
+12: const json =
+13: response.status === 200 && response.headers.get("content-type") === "application/json";
+14: if (json || response.status === 204) {
+15: const headers = new Headers(response.headers);
+16: if (json) {
+17: const vary = headers.get("vary");
+18: if (
+19: vary !== "*" &&
+20: !vary?.split(",").some((field) => field.trim().toLowerCase() === "accept")
+21: )
+22: headers.set("vary", vary ? `${vary}, Accept` : "Accept");
+23: }
+24: // The Scope probe is an existing zero-length representation with no media
+25: // type to negotiate; it still evaluates entity-tag preconditions.
+26: const status =
+27: json && !acceptsJson(request.headers.get("accept"))
+28: ? 406
+29: : conditionalReadStatus(request.headers, headers.get("etag"));
+30: if (status !== 200) {
+31: headers.delete("content-type");
+32: if (status === 406) headers.delete("etag");
+33: // A 304 Content-Length may describe only the corresponding 200 body,
+34: // never an invented zero-length representation (RFC 9110 section 8.6).
+35: headers.delete("content-length");
+36: if (status !== 304) headers.set("content-length", "0");
+37: selected = { status, headers };
+38: } else selected = { ...response, headers };
+39: }
+40: // Keep the Fetch-level contract honest as well as the Node transport's final
+41: // defensive strip. HEAD has GET metadata, including the serialized length.
+42: if (request.method === "HEAD" && selected.body !== undefined) {
+43: const headers = new Headers(selected.headers);
+44: headers.set("content-length", String(Buffer.byteLength(stringifyJsonValue(selected.body))));
+45: return { status: selected.status, headers };
+46: }
+47: return selected;
+
+--- packages/server/src/read-http-routing.ts:1-54 ---
+1: /** Internal Read HTTP projection shared by admitted and source-only test compositions. */
+2: import {
+3: isReadProblem,
+4: type AbsoluteHttpUrl,
+5: type ReadProblem,
+6: type ReadRequest,
+7: } from "@bdp/protocol";
+8: import type { HttpHandler, HttpResponse } from "./index.js";
+9: import { classifyAliasPath, notFound, requestFromUrl } from "./read-request.js";
+10: import { resourceRevisionEtag } from "./read-http.js";
+11: 
+12: interface ReadHttpRoutes {
+13: readonly scope: AbsoluteHttpUrl;
+14: probe(request: Request): Promise<{ readonly serviceDescription: string }>;
+15: problem(problem: ReadProblem): HttpResponse;
+16: discover(request: Request): Promise<HttpResponse>;
+17: alias(path: string | ReadProblem, request: Request): Promise<HttpResponse>;
+18: perform(parsed: ReadRequest, request: Request): Promise<HttpResponse>;
+19: }
+20: /** Raw projection only; the caller applies Read HTTP semantics exactly once. */
+21: export function createReadHttpRoute(routes: ReadHttpRoutes): HttpHandler {
+22: return async (request) => {
+23: if (request.method !== "GET" && request.method !== "HEAD")
+24: return { status: 405, headers: new Headers({ allow: "GET, HEAD", "content-length": "0" }) };
+25: const url = new URL(request.url);
+26: const scopeUrl = new URL(routes.scope);
+27: if (url.origin !== scopeUrl.origin) return routes.problem(notFound());
+28: const probe = await routes.probe(request);
+29: const aliasPath = classifyAliasPath(url, routes.scope);
+30: if (aliasPath !== undefined) return routes.alias(aliasPath, request);
+31: if (url.pathname === scopeUrl.pathname)
+32: return {
+33: status: 204,
+34: headers: new Headers({
+35: link: `<${probe.serviceDescription}>; rel="service-desc"; type="application/json"`,
+36: }),
+37: };
+38: if (url.href === probe.serviceDescription) return routes.discover(request);
+39: const parsed = requestFromUrl(url, routes.scope);
+40: return isReadProblem(parsed) ? routes.problem(parsed) : routes.perform(parsed, request);
+41: };
+42: }
+43: 
+44: export function jsonResponse(body: unknown): HttpResponse {
+45: return {
+46: status: 200,
+47: headers: new Headers({
+48: "content-type": "application/json",
+49: "cache-control": "private, no-store",
+50: }),
+51: body,
+52: };
+53: }
+54: 
+
+--- packages/server/src/transaction-store.ts:201-231 ---
+201: identity: string;
+202: witnesses: string;
+203: owner: string | null;
+204: receipt: string;
+205: dependency: string | null;
+206: }
+207: const day = 86400000;
+208: export const TRANSACTION_RECEIPT_DETAIL_MS = day;
+209: const format = "bdp-private-transaction-snapshot-10";
+210: // Identity equality changed without changing the value codec. Retained keys
+211: // require both the current identity policy and the alias-aware store format.
+212: const identityPolicy = "transaction-revision-provenance-4";
+213: const schema = `
+214: CREATE TABLE metadata(name TEXT PRIMARY KEY, value TEXT NOT NULL) STRICT;
+215: CREATE TABLE resources(id TEXT PRIMARY KEY, body TEXT NOT NULL, kind TEXT NOT NULL, source TEXT, target TEXT) STRICT;
+216: CREATE TABLE identities(id TEXT PRIMARY KEY) STRICT;
+217: CREATE TABLE aliases(path TEXT PRIMARY KEY, target TEXT NOT NULL) STRICT;
+218: CREATE TABLE receipts(principal TEXT NOT NULL, key TEXT NOT NULL, identity TEXT NOT NULL, witnesses TEXT NOT NULL, owner TEXT, receipt TEXT NOT NULL, dependency TEXT, PRIMARY KEY(principal,key)) STRICT;
+219: CREATE TABLE receipt_pages(receipt TEXT PRIMARY KEY, principal TEXT NOT NULL, key TEXT NOT NULL, entries INTEGER NOT NULL, maximum INTEGER NOT NULL) STRICT;
+220: CREATE TABLE receipt_page_ranges(token TEXT PRIMARY KEY, receipt TEXT NOT NULL, start INTEGER NOT NULL, end INTEGER NOT NULL, UNIQUE(receipt,start)) STRICT;
+221: CREATE TABLE creator_facts(attempt TEXT NOT NULL, member INTEGER NOT NULL, fact TEXT, PRIMARY KEY(attempt,member)) STRICT;
+222: CREATE TABLE groups(position INTEGER PRIMARY KEY, body TEXT NOT NULL) STRICT;
+223: ${transactionSnapshotSchema}
+224: `;
+225: /** Shared private page bound, validated before provisioning or recovery. */
+226: export function transactionReceiptMaximum(value: number = TRANSACTION_MAXIMUM_OPERATIONS): number {
+227: if (!Number.isSafeInteger(value) || value < 1)
+228: throw new TypeError("positive receipt page maximum required");
+229: return value;
+230: }
+231: export interface TransactionReceiptPage {
+
+--- packages/server/src/transaction-store.ts:348-401 ---
+348: return value;
+349: }
+350: function enter<T>(run: () => T): T {
+351: if (ownerFailure) throw ownerFailure;
+352: if (maintenanceFailure)
+353: throw new Error("transaction maintenance failed; owner fenced", maintenanceFailure);
+354: if (closed || busy) throw new Error("transaction store closed or reentrant");
+355: busy = true;
+356: try {
+357: return run();
+358: } finally {
+359: busy = false;
+360: }
+361: }
+362: function fence(cause: unknown): Error {
+363: clearInterval(maintenanceTimer);
+364: // Cleanup can add the original application error to an earlier storage
+365: // failure. Replace the wrapper; mutating its cause would create a cycle.
+366: ownerFailure = new Error("transaction storage failure; owner fenced; reopen before use", {
+367: cause,
+368: });
+369: return ownerFailure;
+370: }
+371: function atomic<T>(run: () => T): T {
+372: if (ownerFailure) throw ownerFailure;
+373: let committing = false;
+374: try {
+375: db.exec("BEGIN IMMEDIATE");
+376: const value = run();
+377: committing = true;
+378: db.exec("COMMIT");
+379: return value;
+380: } catch (error) {
+381: let cleanRollback = false;
+382: let cause: unknown = error;
+383: try {
+384: if (db.isTransaction) {
+385: db.exec("ROLLBACK");
+386: cleanRollback = !db.isTransaction;
+387: }
+388: } catch (rollback) {
+389: cause = new AggregateError([error, rollback], "transaction and rollback failed");
+390: }
+391: const sqlite =
+392: error instanceof Error && "code" in error && String(error.code).startsWith("ERR_SQLITE");
+393: const constraint =
+394: sqlite &&
+395: "errcode" in error &&
+396: typeof error.errcode === "number" &&
+397: Number.isInteger(error.errcode) &&
+398: (error.errcode & 0xff) === 19;
+399: // Even a COMMIT that throws after taking effect has an uncertain outcome.
+400: // Reopen determines its durable state; compensation must not guess at it.
+401: if (committing || !cleanRollback || (sqlite && !constraint)) throw fence(cause);
+
+--- packages/server/src/transaction-store.ts:590-598 ---
+590: }),
+591: });
+592: function readContext(): TransactionReadContext {
+593: const position = metadata("position");
+594: if (!/^(0|[1-9][0-9]*)$/.test(position) || !Number.isSafeInteger(Number(position)))
+595: throw new Error("invalid transaction read position");
+596: return Object.freeze({
+597: scopeEpoch: epoch,
+598: authorizationView: view,
+
+--- packages/server/src/transaction-store.ts:651-664 ---
+651: function eventProjection(
+652: row: { position: number; value: unknown },
+653: context: TransactionReadContext,
+654: source: TransactionEventSource,
+655: cursor?: { position: number; ordinal: number; id: string },
+656: ) {
+657: const projected = projectTransactionEventGroup(row.value, context, source, scope, row.position);
+658: if (
+659: cursor &&
+660: (row.position !== cursor.position ||
+661: !projected.some((event) => event.ordinal === cursor.ordinal && event.id === cursor.id))
+662: )
+663: throw new TransactionEventParameterError(undefined, context);
+664: return projected;
+
+--- packages/server/src/transaction-store.ts:820-837 ---
+820: typeof value !== "string" ||
+821: !/^pos-(0|[1-9][0-9]*)$/.test(value) ||
+822: !Number.isSafeInteger(Number(value.slice(4))) ||
+823: Number(value.slice(4)) > Number(context.scopePosition.slice(4))
+824: )
+825: throw new Error("receipt position exceeds serving owner", {
+826: cause: { id: receipt.id, key: receipt.idempotencyKey, field },
+827: });
+828: }
+829: const freeze = (value: unknown): void => {
+830: if (value !== null && typeof value === "object") {
+831: for (const child of Object.values(value)) freeze(child);
+832: Object.freeze(value);
+833: }
+834: };
+835: const projected = receiptPrefix(receipt);
+836: freeze(projected);
+837: return Object.freeze({ receipt: projected, context });
+
+--- packages/server/src/transaction-store.ts:1054-1063 ---
+1054: pendingWins = false,
+1055: references?: ReferenceBindings,
+1056: template?: DependencyTemplate,
+1057: controls?: TransactionReceivingControls,
+1058: ): TransactionReceivingAdmission {
+1059: const stored = row(principal, key);
+1060: const prior = stored ? expireRow(stored, instant()).row : undefined;
+1061: if (pendingWins && prior?.owner !== null && prior !== undefined)
+1062: return { kind: "existing", receipt: parseReceipt(prior.receipt) };
+1063: if (prior?.dependency) {
+
+--- packages/server/src/transaction-store.ts:1100-1132 ---
+1100: if (op.operation !== "updateWhere" && op.operation !== "deleteWhere") continue;
+1101: const limit = transactionSelectorCapacity(op);
+1102: if (limit)
+1103: return {
+1104: kind: "selector-limit",
+1105: limit,
+1106: pointer:
+1107: batch.carrier.kind === "singleton" ? "/selector" : `/operations/${index}/selector`,
+1108: };
+1109: }
+1110: }
+1111: if (controls && !controls.acceptsJson) return { kind: "not-acceptable" };
+1112: const receipt: TransactionReceipt = {
+1113: id: `${scope}receipts/${randomUUID()}`,
+1114: status: "pending",
+1115: idempotencyKey: key,
+1116: scopeEpoch: epoch,
+1117: authorizationView: view,
+1118: transaction: randomUUID(),
+1119: };
+1120: const owner = randomUUID(),
+1121: claim = Object.freeze({ receipt });
+1122: db.prepare("INSERT INTO receipts VALUES(?,?,?,?,?,?,?)").run(
+1123: principal,
+1124: key,
+1125: normalized?.identity ?? "",
+1126: normalized?.witnessesJson ?? "",
+1127: owner,
+1128: json(receipt),
+1129: template ? json(template) : null,
+1130: );
+1131: claims.set(claim, { principal, key, owner, normalized });
+1132: return { kind: "owned", claim };
+
+--- packages/server/src/transaction-store.ts:1140-1152 ---
+1140: return enter(() => {
+1141: const owned = claims.get(claim);
+1142: if (!owned) throw new Error("foreign transaction claim");
+1143: try {
+1144: return atomic(() => {
+1145: const current = row(owned.principal, owned.key);
+1146: if (current?.owner !== owned.owner) throw new Error("transaction execution fenced");
+1147: const normalized = owned.normalized;
+1148: if (!normalized || current.dependency) throw new Error("unresolved execution");
+1149: const core = parseReceipt(current.receipt);
+1150: const previous = Number(metadata("position"));
+1151: if (
+1152: !Number.isSafeInteger(previous) ||
+
+--- packages/server/src/transaction-store.ts:1208-1320 ---
+1208: const suffix = randomUUID(),
+1209: id = `${kind === "bead" ? "beads" : "links"}/${suffix}`;
+1210: if (
+1211: !db.prepare("SELECT id FROM identities WHERE id=?").get(id) &&
+1212: (kind !== "bead" || alias(suffix) === undefined)
+1213: )
+1214: return id;
+1215: }
+1216: throw new Error("Resource identity allocation exhausted");
+1217: }),
+1218: allocateRevision: () => scoped(() => randomUUID()),
+1219: putResource: (r) =>
+1220: scoped(() => {
+1221: db.prepare("INSERT OR IGNORE INTO identities VALUES(?)").run(r.id);
+1222: db.prepare(
+1223: "INSERT INTO resources VALUES(?,?,?,?,?) ON CONFLICT(id) DO UPDATE SET body=excluded.body",
+1224: ).run(r.id, r.bodyJson, r.kind, r.source ?? null, r.target ?? null);
+1225: }),
+1226: deleteResource: (id) =>
+1227: scoped(() => {
+1228: // Retain its identity for the epoch; deletion never permits reuse.
+1229: db.prepare("DELETE FROM resources WHERE id=?").run(id);
+1230: }),
+1231: };
+1232: db.exec("SAVEPOINT effects");
+1233: const result = (() => {
+1234: try {
+1235: return evaluateTransaction(
+1236: normalized,
+1237: tx,
+1238: {
+1239: scope,
+1240: contracts: compiled?.registry ?? {
+1241: get(id, bytes) {
+1242: const descriptor = descriptors.find((d) => d.id === id);
+1243: return descriptor && installed.get(id) === bytes ? { descriptor } : undefined;
+1244: },
+1245: },
+1246: aliasPolicy: { canRead: () => true, canWriteBead: () => true },
+1247: policy: { canRead: () => true, canCreate: () => true, canWrite: () => true },
+1248: maximumEndpointMultiplicity: [],
+1249: observeCommitTime: instant,
+1250: recordChangeContext: false,
+1251: limits: TRANSACTION_RUNTIME_LIMITS,
+1252: },
+1253: core.transaction,
+1254: position,
+1255: now,
+1256: );
+1257: } finally {
+1258: active = false;
+1259: }
+1260: })();
+1261: options.fault?.("after-effects");
+1262: // The minimum starts when evaluation has become terminal, not at
+1263: // admission or before Resource callbacks have consumed execution time.
+1264: const expiresAt = new Date(instant() + day).toISOString();
+1265: let receipt: TransactionReceipt;
+1266: if (!result.ok) {
+1267: db.exec("ROLLBACK TO effects; RELEASE effects");
+1268: receipt = {
+1269: ...core,
+1270: status: "failed",
+1271: detail: "available",
+1272: requiredPosition: `pos-${previous}`,
+1273: problem: result.problem,
+1274: expiresAt,
+1275: };
+1276: } else {
+1277: db.exec("RELEASE effects");
+1278: const group = {
+1279: scopeEpoch: epoch,
+1280: authorizationView: view,
+1281: checkpoint: position,
+1282: position,
+1283: previousPosition: `pos-${previous}`,
+1284: projectionAdvance: false,
+1285: transaction: core.transaction,
+1286: changes: result.changes,
+1287: erasures: [],
+1288: eventCount: result.events.length,
+1289: events: result.events,
+1290: };
+1291: const effective = result.events.length > 0;
+1292: if (effective) {
+1293: db.prepare("INSERT INTO groups VALUES(?,?)").run(previous + 1, json(group));
+1294: db.prepare("UPDATE metadata SET value=? WHERE name='position'").run(
+1295: String(previous + 1),
+1296: );
+1297: }
+1298: receipt = {
+1299: ...core,
+1300: status: "completed",
+1301: detail: "available",
+1302: requiredPosition: effective ? position : `pos-${previous}`,
+1303: ...(effective ? { effectPosition: position } : {}),
+1304: results: result.results,
+1305: next: null,
+1306: expiresAt,
+1307: };
+1308: }
+1309: const changed = db
+1310: .prepare(
+1311: "UPDATE receipts SET receipt=?,owner=NULL WHERE principal=? AND key=? AND owner=?",
+1312: )
+1313: .run(json(receipt), owned.principal, owned.key, owned.owner);
+1314: if (changed.changes !== 1) throw new Error("terminal ownership lost");
+1315: if (owned.creator)
+1316: writeFact(
+1317: owned.creator.attempt,
+1318: owned.creator.member,
+1319: creatorFact(owned.creator.operation, receipt),
+1320: );
+
+--- packages/server/src/transaction-store.ts:1575-1631 ---
+1575: return Object.freeze({ kind: "missing" as const, context: readContext() });
+1576: if (minimum === "unsupported") return Object.freeze({ kind: "unsupported" as const });
+1577: const context = readContext(),
+1578: head = Number(context.scopePosition.slice(4));
+1579: // This owner entry cannot advance while scanning. Refuse/wait before any
+1580: // group read rather than repeating projection work on every wait attempt.
+1581: if (minimum !== undefined) checkTransactionMinimum(minimum, context);
+1582: const start = after === undefined ? undefined : parseTransactionEventCursor(after, context);
+1583: if (start) checkTransactionEventCursor(start, context, source.url);
+1584: let cursorMatched = start === undefined;
+1585: const events: import("./transaction-batch.js").TransactionEvent[] = [];
+1586: // Keep brackets/envelope once and replace the literal null with each
+1587: // candidate continuation string. Each Event is serialized exactly once.
+1588: const envelopeBytes =
+1589: Buffer.byteLength(json({ source: source.url, events: [], next: null })) - 4;
+1590: let eventBytes = 0;
+1591: let next: string | null = null;
+1592: const retainedGroupAtOrAfter = retainedGroupReader();
+1593: let at = start?.position ?? 1;
+1594: for (;;) {
+1595: const row = retainedGroupAtOrAfter(at, head);
+1596: if (!row) {
+1597: if (cursorMatched && at <= head) throw new Error("missing retained Event group");
+1598: break;
+1599: }
+1600: const p = row.position;
+1601: if (cursorMatched && p !== at) throw new Error("missing retained Event group");
+1602: const projected = eventProjection(
+1603: row,
+1604: context,
+1605: source,
+1606: !cursorMatched && start && after !== undefined ? { ...start, id: after } : undefined,
+1607: );
+1608: cursorMatched = true;
+1609: for (const event of projected) {
+1610: if (start && p === start.position && event.ordinal <= start.ordinal) continue;
+1611: // Reserve the exact continuation even if this Event is currently last.
+1612: const { eventBytes: candidateBytes, pageBytes: bytes } = eventCandidateBytes(
+1613: envelopeBytes,
+1614: source.url,
+1615: event,
+1616: eventBytes,
+1617: events.length,
+1618: );
+1619: if (events.length + 1 > receiptMaximumItems || bytes > TRANSACTION_EVENT_PAGE_BYTES) {
+1620: const last = events.at(-1);
+1621: if (!last) throw new Error("finite Event page cannot hold first retained Event");
+1622: next = eventContinuation(source.url, last.id);
+1623: break;
+1624: }
+1625: events.push(event);
+1626: eventBytes = candidateBytes;
+1627: }
+1628: if (next !== null) break;
+1629: at = p + 1;
+1630: }
+1631: if (!cursorMatched) throw new TransactionEventParameterError(undefined, context);
+
+--- packages/server/src/transaction-batch.ts:63-74 ---
+63: export const TRANSACTION_RUNTIME_LIMITS = Object.freeze({
+64: maximumOperations: 32,
+65: inducedEvents: 256,
+66: matchedResources: 32,
+67: representationBytes: 256 * 1024,
+68: scopeSourceBytes: 64 * 1024,
+69: requestBodyBytes: 64 * 1024,
+70: propertiesBytes: 64 * 1024,
+71: diagnosticBytes: 512 * 1024,
+72: diagnosticCount: 16,
+73: });
+74: export const TRANSACTION_MAXIMUM_OPERATIONS: number = TRANSACTION_RUNTIME_LIMITS.maximumOperations;
+
+--- packages/server/src/transaction-batch.ts:378-382 ---
+378: function canonicalReference(scope: string, uri: string): string {
+379: return /^[A-Za-z][A-Za-z0-9+.-]*:/.test(uri) ? uri : `${scope}${uri}`;
+380: }
+381: function witnessedReference(scope: string, value: unknown, root: "alias" | "beads"): string {
+382: if (typeof value !== "string" || !value.startsWith(`${scope}${root}/`))
+
+--- packages/server/src/transaction-batch.ts:680-710 ---
+680: if (
+681: !Number.isSafeInteger(matchMaximum) ||
+682: matchMaximum < 1 ||
+683: matchMaximum > TRANSACTION_RUNTIME_LIMITS.matchedResources
+684: )
+685: throw new TypeError("invalid evaluator matched Resource bound");
+686: let matchedResources = 0;
+687: const batch = state.batch;
+688: const bindings = new Map<string, string>();
+689: const results: unknown[] = [],
+690: events: TransactionEvent[] = [];
+691: const changes = new Map<string, TransactionStateChange>();
+692: function scopeEvent(subject: ResourceRecord, type: TransactionEvent["type"], data: unknown) {
+693: if (events.length >= eventMaximum) throw new EventExpansionLimit();
+694: const ordinal = events.length;
+695: events.push({
+696: id: `${position}-${ordinal}`,
+697: ordinal,
+698: type,
+699: // These are authority Scope-group facts, not Resource-source projections.
+700: // The latter rewrite source to `${resource.id}?view=events` on read.
+701: source: `${options.scope}events/`,
+702: subject: subject.id,
+703: subjectType: subject.type,
+704: transaction,
+705: time: new Date(now).toISOString(),
+706: data,
+707: });
+708: }
+709: function applyResource(
+710: op: { readonly operation: ResourceOperation; readonly name?: string },
+
+--- packages/server/src/transaction-batch.ts:740-767 ---
+740: const locator = `${options.scope}alias/${path}`;
+741: if (!aliases.has(locator)) return tx.alias(path);
+742: const target = aliases.get(locator);
+743: return target == null ? undefined : target.slice(options.scope.length);
+744: },
+745: },
+746: { operation: op.operation, input } as ResourceMutation,
+747: options,
+748: );
+749: if (result.effect === "failure")
+750: return {
+751: ok: false,
+752: problem: {
+753: ...receiptProblem(result.outcome),
+754: operationIndex,
+755: ...(op.name ? { operationName: op.name } : {}),
+756: },
+757: };
+758: const outcome = result.outcome;
+759: results.push({ operationIndex, ...(op.name ? { operationName: op.name } : {}), ...outcome });
+760: const resource = outcome.resource;
+761: if (op.name && outcome.outcome === "created" && resource) bindings.set(op.name, resource.id);
+762: // A retained revision is an observed no-op, not a committed transition.
+763: if (result.changed.length === 0 && result.deleted.length === 0) return;
+764: const subject = resource ?? before;
+765: if (!subject) throw new Error("successful transition lacks Resource state");
+766: // Evaluator IDs are local lookup paths; group identity is always canonical.
+767: // One owned operation changes at most the Link and its source Bead.
+
+--- packages/server/src/transaction-batch.ts:790-810 ---
+790: if (outcome.outcome === "created") {
+791: scopeEvent(subject, "created", {
+792: revision: subject.revision,
+793: properties: subject.properties,
+794: metadata: subject.metadata ?? {},
+795: ...(subject.revisionProvenance ? { revisionProvenance: subject.revisionProvenance } : {}),
+796: ...("source" in subject ? { source: subject.source, target: subject.target } : {}),
+797: });
+798: } else if (outcome.outcome === "updated") {
+799: if (!before) throw new Error("update lacks previous state");
+800: scopeEvent(subject, "updated", {
+801: previousRevision: before.revision,
+802: revision: subject.revision,
+803: ...(input.propertiesChange !== undefined ? { change: input.propertiesChange } : {}),
+804: ...(input.metadataChange !== undefined ? { metadataChange: input.metadataChange } : {}),
+805: ...(subject.revisionProvenance ? { revisionProvenance: subject.revisionProvenance } : {}),
+806: });
+807: } else {
+808: scopeEvent(subject, "deleted", { revision: subject.revision });
+809: }
+810: if ("source" in subject && outcome.outcome !== "updated") {
+
+--- packages/server/src/transaction-batch.ts:1040-1073 ---
+1040: const aliases = state.aliases[operationIndex];
+1041: if (!aliases) throw new Error("missing admitted operation witnesses");
+1042: for (const field of ["source", "target", "bead", "link"]) {
+1043: const ref = input[field] as string | { uri: string; revision: string } | undefined;
+1044: if (ref === undefined) continue;
+1045: const uri = referenceUri(ref);
+1046: if (uri.startsWith("@")) {
+1047: const id = bindings.get(uri.slice(1));
+1048: if (!id) throw new Error("validated binding missing");
+1049: input[field] = typeof ref === "string" ? id : { ...ref, uri: id };
+1050: } else if (transactionAliasFields(op.operation).includes(field)) {
+1051: const target = aliases.get(canonicalReference(options.scope, uri));
+1052: if (target != null)
+1053: input[field] = typeof ref === "string" ? target : { ...ref, uri: target };
+1054: }
+1055: }
+1056: const failure = applyResource(
+1057: { operation: op.operation as ResourceOperation, ...(op.name ? { name: op.name } : {}) },
+1058: input,
+1059: operationIndex,
+1060: aliases,
+1061: );
+1062: if (failure) return failure;
+1063: }
+1064: } catch (error) {
+1065: if (!(error instanceof EventExpansionLimit) && !(error instanceof MatchExpansionLimit))
+1066: throw error;
+1067: return {
+1068: ok: false,
+1069: problem: {
+1070: type: "https://github.com/gastownhall/bdp/problems/size",
+1071: status: 413,
+1072: code: "limit-exceeded",
+1073: retry: "never",
+
+--- packages/server/src/resource-evaluator.ts:135-160 ---
+135: constructor(readonly problem: ReadUpdateProblem) {
+136: super(problem.code);
+137: }
+138: }
+139: const failures = {
+140: "resource-not-found": ["not-found", 404, "after-state-change"],
+141: forbidden: ["authorization", 403, "after-state-change"],
+142: "identity-taken": ["conflict", 409, "never"],
+143: "alias-path-taken": ["conflict", 409, "after-state-change"],
+144: "type-not-installed": ["validation", 422, "after-state-change"],
+145: "revision-mismatch": ["conflict", 409, "after-state-change"],
+146: "incident-links-exist": ["conflict", 409, "after-state-change"],
+147: "aggregate-constraint-violation": ["conflict", 409, "after-state-change"],
+148: "limit-exceeded": ["size", 413, "never"],
+149: "revision-allocation-unsafe": ["conflict", 409, "after-state-change"],
+150: } as const;
+151: function fail(code: keyof typeof failures): never {
+152: const [family, status, retry] = failures[code];
+153: throw new Failure(
+154: parseReadUpdateProblem({
+155: type: `https://github.com/gastownhall/bdp/problems/${family}`,
+156: code,
+157: status,
+158: retry,
+159: }),
+160: );
+
+--- packages/server/src/resource-evaluator.ts:867-905 ---
+867: const contextInput = "revisionProvenance" in input ? input.revisionProvenance : undefined;
+868: // Protocol defaults: omitted and {} both carry only undetermined states.
+869: const needsContext =
+870: !noOp &&
+871: (options.recordChangeContext ||
+872: (contextInput !== undefined &&
+873: (Object.hasOwn(contextInput, "agent") || Object.hasOwn(contextInput, "message"))));
+874: const metadata = (prior: ResourceRecord | undefined): VersionRecipe["metadata"] => {
+875: if (noOp && prior)
+876: return {
+877: context: { kind: "preserved", value: prior.revisionProvenance },
+878: };
+879: const actor = contextInput?.actor;
+880: return {
+881: ...(actor === undefined ? {} : { actor }),
+882: context: needsContext ? { kind: "native" } : { kind: "preserved", value: undefined },
+883: };
+884: };
+885: const revision = noOp ? before?.revision : deleting ? undefined : allocateRevision();
+886: let subjectRecipe: VersionRecipe | undefined = deleting
+887: ? undefined
+888: : {
+889: id: uri,
+890: type,
+891: revision: revision as string,
+892: properties,
+893: commonMetadata,
+894: metadata: metadata(before),
+895: endpoints,
+896: };
+897: const ownedLinks = (
+898: owner: VersionRecipe,
+899: descriptor: BeadTypeDescriptor,
+900: replacement?: VersionRecipe,
+901: removed?: string,
+902: ): VersionRecipe => {
+903: if (descriptor.ownsOutgoing === undefined) return owner;
+904: const entries: Record<string, PreparedLink[]> = Object.create(null) as Record<
+905: string,
+
+--- packages/server/src/resource-evaluator.ts:1005-1032 ---
+1005: sourceRecipe?.metadata.context.kind === "native"
+1006: ? makeContext(contextInput, observeCommitTime(options.observeCommitTime))
+1007: : undefined;
+1008: const materialized = new Map<VersionRecipe, ResourceRecord>();
+1009: const after = subjectRecipe
+1010: ? materializeVersion(subjectRecipe, context, materialized)
+1011: : undefined;
+1012: const sourceAfter = sourceRecipe
+1013: ? (materializeVersion(sourceRecipe, context, materialized) as BeadRecord)
+1014: : undefined;
+1015: if (
+1016: creating
+1017: ? !after || !options.policy.canCreate(after)
+1018: : !before || !options.policy.canWrite(before, after)
+1019: )
+1020: fail("forbidden");
+1021: if (source && sourceAfter && !options.policy.canWrite(source, sourceAfter)) fail("forbidden");
+1022: if (
+1023: "expectedRevision" in input &&
+1024: input.expectedRevision !== undefined &&
+1025: input.expectedRevision !== before?.revision
+1026: )
+1027: fail("revision-mismatch");
+1028: if (deleting && resourceKind === "bead" && tx.incidentLinks(id).length)
+1029: fail("incident-links-exist");
+1030: if ("propertiesChange" in input || "metadataChange" in input) {
+1031: const limits = options.limits;
+1032: const changes = [
+
+--- packages/server/src/resource-evaluator.ts:1085-1098 ---
+1085: }
+1086: : {
+1087: outcome: creating ? "created" : "updated",
+1088: resource: after as ResourceRecord,
+1089: ...(sourceAfter ? { source: sourceAfter.id, sourceRevision: sourceAfter.revision } : {}),
+1090: };
+1091: // No Resource write happens until every validation/policy/CAS/limit check passes.
+1092: fault.check();
+1093: for (const write of writes) tx.putResource(write);
+1094: if (deleting) tx.deleteResource(id);
+1095: return freeze({
+1096: effect: "success",
+1097: outcome,
+1098: resolutions,
+
+--- packages/server/src/resource-evaluator.ts:1135-1165 ---
+1135: const record = freeze({
+1136: id: recipe.id,
+1137: type: recipe.type,
+1138: revision: recipe.revision,
+1139: properties: recipe.properties,
+1140: metadata: recipe.commonMetadata,
+1141: ...(context === undefined && recipe.metadata.actor === undefined
+1142: ? {}
+1143: : {
+1144: revisionProvenance: {
+1145: ...context,
+1146: ...(recipe.metadata.actor === undefined ? {} : { actor: recipe.metadata.actor }),
+1147: },
+1148: }),
+1149: ...(recipe.endpoints ?? {}),
+1150: ...(recipe.ownedLinks === undefined
+1151: ? {}
+1152: : {
+1153: ownedLinks: Object.fromEntries(
+1154: Object.entries(recipe.ownedLinks).map(([type, links]) => [
+1155: type,
+1156: links.map((link) =>
+1157: link.kind === "existing"
+1158: ? link.value
+1159: : materializeVersion(link.value, nativeContext, materialized),
+1160: ),
+1161: ]),
+1162: ),
+1163: }),
+1164: }) as ResourceRecord;
+1165: materialized.set(recipe, record);
+
+--- packages/server/src/transaction-events.ts:1-30 ---
+1: /** Private finite projection of committed facts. No pruning, mutable views,
+2: * SSE, replication bootstrap or public profile admission. */
+3: import { createHash } from "node:crypto";
+4: import { TransactionMinimumFailure } from "./transaction-consistency.js";
+5: import {
+6: parseCanonicalScope,
+7: resolveCanonicalLocalResourceId,
+8: stringifyJsonValue,
+9: type Reference,
+10: } from "@bdp/protocol";
+11: import {
+12: TRANSACTION_RUNTIME_LIMITS,
+13: type TransactionEvent,
+14: type TransactionStateChange,
+15: } from "./transaction-batch.js";
+16: import type { TransactionReadContext } from "./transaction-store.js";
+17: 
+18: export const TRANSACTION_EVENT_PAGE_BYTES = 4 * 1024 * 1024;
+19: /** Actual private stream mechanics, not public paging limits. */
+20: export const TRANSACTION_EVENT_STREAM = Object.freeze({
+21: maximumGroupsPerObservation: 1,
+22: packetBytes: TRANSACTION_EVENT_PAGE_BYTES,
+23: });
+24: // Same closed-shape proof as the admitted tuple in the implementation progress
+25: // document. This bounds encoded group bytes, not parsed object/heap overhead.
+26: const R = TRANSACTION_RUNTIME_LIMITS.representationBytes,
+27: Q = TRANSACTION_RUNTIME_LIMITS.requestBodyBytes,
+28: S = TRANSACTION_RUNTIME_LIMITS.scopeSourceBytes,
+29: N = 7 * Q,
+30: A = 8192,
+
+--- packages/server/src/transaction-events.ts:75-101 ---
+75: /^ev_([A-Za-z0-9_-]{43})_([A-Za-z0-9_-]{43})_([A-Za-z0-9_-]{43})_(pos-(?:0|[1-9][0-9]*))_(0|[1-9][0-9]*)$/;
+76: const hash = (tag: string, value: string) =>
+77: createHash("sha256")
+78: .update(JSON.stringify([tag, value]))
+79: .digest("base64url");
+80: 
+81: /** Scope and Resource token spelling is deliberately private, not a fixture law. */
+82: export function renderTransactionEvent(
+83: context: Pick<TransactionReadContext, "scopeEpoch" | "authorizationView">,
+84: source: string,
+85: checkpoint: string,
+86: event: TransactionEvent,
+87: ): TransactionEvent {
+88: if (
+89: !position.test(checkpoint) ||
+90: !Number.isSafeInteger(Number(checkpoint.slice(4))) ||
+91: Number(checkpoint.slice(4)) < 1 ||
+92: !Number.isSafeInteger(event.ordinal) ||
+93: event.ordinal < 0
+94: )
+95: throw new Error("invalid committed Event position");
+96: return {
+97: ...event,
+98: source,
+99: id: `ev_${hash("epoch", context.scopeEpoch)}_${hash("view", context.authorizationView)}_${hash("source", source)}_${checkpoint}_${event.ordinal}`,
+100: };
+101: }
+
+--- packages/server/src/authority-read.ts:878-898 ---
+878: ? selectReadResources(
+879: intent.selector,
+880: prepared.selector,
+881: result.items as readonly ResourceRecord[],
+882: )
+883: : result.items;
+884: const navigation = continuationUrlFor(intent, prepared.scope);
+885: return prepared.pagination.firstPageWithContext(
+886: {
+887: items: inCanonicalUriOrder(items),
+888: ...(intent.limit === undefined ? {} : { limit: intent.limit }),
+889: authorizationView: result.observation.authorizationView,
+890: scopeEpoch: result.observation.scopeEpoch,
+891: projection: navigation,
+892: continuationUrl: navigation,
+893: },
+894: result.observation.sourceContext,
+895: );
+896: }, result.observation);
+897: return isRefusal(body)
+898: ? body
+
+--- packages/server/src/read-request.ts:142-157 ---
+142: export function requestFromUrl(url: URL, scope: AbsoluteHttpUrl): ReadRequest | ReadProblem {
+143: const scopeUrl = new URL(scope);
+144: if (url.origin !== scopeUrl.origin) return notFound();
+145: if (!url.pathname.startsWith(scopeUrl.pathname)) return notFound();
+146: const relative = url.pathname.slice(scopeUrl.pathname.length);
+147: const segments = relative.split("/").filter(Boolean);
+148: if (segments.length === 1 && ["beads", "links", "types"].includes(segments[0] ?? "")) {
+149: const collection = segments[0] as "beads" | "links" | "types";
+150: if (relative !== `${collection}/`) return notFound();
+151: const parameterIssue = validateCollectionParameters(url, collection);
+152: if (parameterIssue !== undefined) return parameterIssue;
+153: const parameter = (name: string): string | undefined => url.searchParams.get(name) ?? undefined;
+154: const limit = parseOptionalLimit(parameter("limit"));
+155: if (isReadProblem(limit)) return limit;
+156: if (collection === "types") {
+157: if (parameter("cursor") !== undefined)
+
+--- packages/server/src/read-request.ts:258-262 ---
+258: function parseOptionalLimit(value: string | undefined): number | undefined | ReadProblem {
+259: if (value === undefined) return undefined;
+260: if (!/^[1-9][0-9]*$/.test(value)) return invalidParameter();
+261: const limit = Number(value);
+262: return Number.isSafeInteger(limit) ? limit : invalidParameter();
+
+--- packages/server/src/read-request.ts:376-382 ---
+376: export function inCanonicalUriOrder<Item extends { readonly id: string }>(
+377: items: readonly Item[],
+378: ): readonly Item[] {
+379: return Object.freeze([...items].sort((left, right) => compareCanonicalIds(left.id, right.id)));
+380: }
+381: 
+382: export function isPageOperation(operation: ReadRequest): operation is PageOperation {
+
+--- docs/specs/bdp.md:2150-2164 ---
+2150: equality and must not derive meaning from their spelling. If applying an
+2151: update leaves both `properties` and common `metadata` equal, under the JSON
+2152: value-comparison rules of RFC 6902 Section 4.6, to their values immediately
+2153: before that operation, then the operation retains the existing revision. A change to either value is one Resource
+2154: transition, with one new revision.
+2155: 
+2156: An explicit update or deletion may supply `expectedRevision`: the revision
+2157: observed by an earlier read or mutation result. The authority applies the
+2158: operation only if the Resource still has that revision. A mismatch fails the
+2159: individual operation without changing state. Omitting `expectedRevision` applies the change
+2160: to the Resource's current state.
+2161: 
+2162: Creation already requires the allocated or supplied identity to be absent.
+2163: Update and deletion already require their target to exist.
+2164: 
+
+--- docs/specs/bdp.md:4173-4185 ---
+4173: In an atomic batch, a revision mismatch fails the complete Mutation
+4174: Transaction. Resources created earlier in that transaction need no revision
+4175: guard, because no external mutation can intervene before commit.
+4176: 
+4177: ### Transactional validation and results
+4178: 
+4179: Each operation validates its resulting staged state before the next operation,
+4180: using [Validation and results](#validation-and-results) and additionally checking
+4181: set cardinality where applicable. At commit, concurrent transactions cannot
+4182: jointly violate the invariants. Any failure rolls back the complete Mutation
+4183: Transaction. Deletion results carry transaction metadata, and the transaction
+4184: result maps every local label to its allocated durable identity.
+4185: 
+
+--- docs/specs/bdp.md:5263-5290 ---
+5263: The three Transactional response fields on a receipt or page response are
+5264: the serving request's own observation, never the body's history:
+5265: `BDP-Scope-Epoch` and `BDP-Authorization-View` carry the current epoch and
+5266: the caller's current view token, and `BDP-Scope-Position` carries the
+5267: position the read observed — at or after `effectPosition` on a terminal
+5268: receipt served synchronously, honoring `BDP-Minimum-Scope-Position` on a
+5269: later read exactly as any read does, and the observed head on a `202`. The
+5270: body's `scopeEpoch`, `authorizationView`, `requiredPosition`, and
+5271: `effectPosition` are the execution's recorded facts and never change; after
+5272: a view rotation the body still names the view under which the transaction
+5273: executed, and the recorded `requiredPosition` remains evidence about that
+5274: view rather than a checkpoint for the current one.
+5275: 
+5276: A `failed` receipt's `problem` is a Problem Details object of the receipt
+5277: form. It carries the code's `status` — the HTTP status the failure would
+5278: have had as a direct response, required because the enclosing status is
+5279: `200 OK` — and `operationIndex`, the zero-based index of the operation
+5280: being evaluated when the failure was detected, with `operationName` when
+5281: that operation declared one. A failure the authority establishes for the
+5282: transaction as a whole rather than at one operation — a `limit-exceeded`
+5283: on `transaction.duration`, `transaction.inducedEvents`,
+5284: `transaction.examinedResources`, `transaction.matchedResources`, or
+5285: `transaction.mutatedResources` counted across operations, or an
+5286: `aggregate-constraint-violation` established at commit — omits
+5287: `operationIndex` rather than fabricating one. When the authority can locate
+5288: the cause within the request, the problem carries `pointer`, an RFC 6901
+5289: JSON Pointer into the request body as submitted, so that in a batch it
+5290: begins with `/operations/{operationIndex}` and in a singleton it addresses
+
+--- docs/specs/bdp.md:5350-5360 ---
+5350: `temporarily-unavailable`: an abort the authority does not retry is
+5351: transient and retracts the receipt under
+5352: [Mutation Transactions](#mutation-transactions), so no receipt is ever
+5353: bound to an outcome a retry could change. Inside a `failed` receipt, `retry`
+5354: `never` means the request as written can never succeed, and `retry`
+5355: `after-state-change` means a new request under a new key may succeed after
+5356: the client refreshes its state; neither means the same key executes again
+5357: while the failed receipt is retained. The Read+Update dispositions
+5358: `idempotency-in-progress` and `idempotency-expired` are never direct
+5359: problems on a Transactional Scope — a pending receipt is joined and an
+5360: expired one is returned — and occur only as the sequence-member projections
+
+--- tsconfig.json:1-16 ---
+1: {
+2: "files": [],
+3: "references": [
+4: { "path": "packages/protocol" },
+5: { "path": "packages/config" },
+6: { "path": "packages/client" },
+7: { "path": "packages/server" },
+8: { "path": "packages/conformance" },
+9: { "path": "packages/bd-domain" },
+10: { "path": "packages/adapter-in-memory" },
+11: { "path": "packages/adapter-bd" },
+12: { "path": "apps/bdp" },
+13: { "path": "apps/bdptest" },
+14: { "path": "apps/bdpbd" }
+15: ]
+16: }
+
+--- vitest.config.ts:9-20 ---
+9: /**
+10: * Aliases every `@bdp/*` library package to its TypeScript source so `pnpm
+11: * test` works from a clean checkout without a prior build. A package may also
+12: * own a source-only `test-support/testing.ts` subpath for cross-package integration tests;
+13: * it is deliberately absent from package exports and installed consumers.
+14: * Each package's production `exports` map still points at `dist/index.js`.
+15: *
+16: * Only `packages/*` are scanned: those are the export-bearing libraries that
+17: * tests import as `@bdp/*`. `apps/*` are CLI binaries with no `exports` and a
+18: * `src/main.ts` entrypoint, so aliasing them would register a target that
+19: * does not exist and mask a misconfigured import. The manifest is read
+20: * directly — a missing or malformed `package.json` fails the Vitest config
+
+--- vitest.config.ts:40-56 ---
+40: }
+41: const name = manifest.name;
+42: if (!name.startsWith("@bdp/")) continue;
+43: const sourceEntry = path.join(packageDir, "src", "index.ts");
+44: if (!existsSync(sourceEntry)) {
+45: throw new Error(
+46: `${manifestPath}: workspace package ${name} is missing its source entrypoint at ${sourceEntry}`,
+47: );
+48: }
+49: const testingEntry = path.join(packageDir, "test-support", "testing.ts");
+50: if (existsSync(testingEntry)) aliases[`${name}/testing`] = testingEntry;
+51: if (name === "@bdp/server")
+52: aliases[`${name}/development`] = path.join(packageDir, "src/development.ts");
+53: aliases[name] = sourceEntry;
+54: }
+55: return aliases;
+56: }
+
+--- vitest.config.ts:61-72 ---
+61: 
+62: export default defineConfig({
+63: resolve: { alias: collectWorkspaceSourceAliases() },
+64: test: {
+65: coverage: { enabled: false },
+66: include: ["packages/**/*.test.ts", "apps/**/*.test.ts", "scripts/**/*.test.mjs"],
+67: passWithNoTests: false,
+68: // Install the non-emitted admission mock before cross-package test modules
+69: // can instantiate @bdp/server through an adapter dependency.
+70: setupFiles: ["./packages/server/test-support/read-conformance-mock.ts"],
+71: },
+72: });
+
+--- packages/server/test-support/read-conformance-mock.ts:1-37 ---
+1: import { afterAll, vi } from "vitest";
+2: 
+3: import type { ReadServerTarget } from "../src/read-conformance-capability.js";
+4: import {
+5: type ReadConformanceMockState,
+6: readConformanceMockStateSymbol,
+7: } from "./read-conformance-mock-state.js";
+8: 
+9: /** Minimal global setup: install the non-emitted admission mock without loading @bdp/server. */
+10: const conformance = vi.hoisted(() => ({
+11: grants: new Map<ReadServerTarget, number>(),
+12: installedMock: undefined as ((target: ReadServerTarget) => boolean) | undefined,
+13: })) satisfies ReadConformanceMockState;
+14: 
+15: Reflect.set(globalThis, readConformanceMockStateSymbol, conformance);
+16: 
+17: vi.mock("../src/read-conformance-capability.js", async (importOriginal) => {
+18: const original = await importOriginal<typeof import("../src/read-conformance-capability.js")>();
+19: const installedMock = (target: ReadServerTarget): boolean =>
+20: (conformance.grants.get(target) ?? 0) > 0 || original.hasReadConformanceEvidence(target);
+21: conformance.installedMock = installedMock;
+22: return {
+23: ...original,
+24: hasReadConformanceEvidence: installedMock,
+25: };
+26: });
+27: 
+28: afterAll(() => {
+29: const leaked = [...conformance.grants.entries()].filter(([, count]) => count !== 0);
+30: conformance.grants.clear();
+31: if (leaked.length > 0)
+32: throw new Error(
+33: `test-only Read conformance grants leaked: ${leaked
+34: .map(([target, count]) => `${target}=${count}`)
+35: .join(", ")}`,
+36: );
+37: });
+
+--- Actual schema recursive closure: complete selected objects, compact JSON (not original whitespace) ---
+{"$schema":"https://json-schema.org/draft/2020-12/schema","$id":"https://github.com/gastownhall/bdp/schemas/bdp-v0.schema.json","$defs":{"absoluteHttpUrl":{"type":"string","format":"uri","pattern":"^https?://.+"},"absoluteUri":{"type":"string","format":"uri","pattern":"^[A-Za-z][A-Za-z0-9+.-]*:"},"aliasResultMembers":{"type":"object","required":["outcome","alias"],"properties":{"outcome":{"$ref":"#/$defs/mutationOutcome"},"alias":{"$ref":"#/$defs/absoluteHttpUrl"},"target":{"$ref":"#/$defs/absoluteHttpUrl"}},"allOf":[{"if":{"properties":{"outcome":{"const":"deleted"}},"required":["outcome"]},"then":{"properties":{"target":false}},"else":{"required":["target"]}}]},"allocatedIdentity":{"type":"object","required":["operationIndex"],"properties":{"operationIndex":{"type":"integer","minimum":0},"operationName":{"$ref":"#/$defs/localName"},"id":{"$ref":"#/$defs/absoluteHttpUrl"},"type":{"$ref":"#/$defs/absoluteHttpUrl"},"withheld":{"const":true}},"oneOf":[{"required":["id","type"],"properties":{"id":true,"type":true,"withheld":false}},{"required":["withheld"],"properties":{"withheld":true,"id":false,"type":false}}],"additionalProperties":false},"beadCollection":{"type":"object","required":["items","next"],"properties":{"items":{"type":"array","items":{"$ref":"#/$defs/beadRecord"}},"next":{"oneOf":[{"$ref":"#/$defs/absoluteHttpUrl"},{"type":"null"}]}},"additionalProperties":false},"beadRecord":{"type":"object","required":["id","type","revision","properties"],"properties":{"id":{"$ref":"#/$defs/absoluteHttpUrl"},"type":{"$ref":"#/$defs/absoluteHttpUrl"},"revision":{"type":"string","minLength":1},"properties":{"$ref":"#/$defs/properties"},"metadata":{"$ref":"#/$defs/metadata"},"links":{"$ref":"#/$defs/linkCollection"},"ownedLinks":{"type":"object","propertyNames":{"$ref":"#/$defs/absoluteHttpUrl"},"additionalProperties":{"type":"array","items":{"$ref":"#/$defs/linkRecord"}}},"revisionProvenance":{"$ref":"#/$defs/revisionProvenance"}},"additionalProperties":false},"contextMessage":{"oneOf":[{"type":"object","properties":{"state":{"const":"present"},"value":{"type":"string"}},"required":["state","value"],"additionalProperties":false},{"type":"object","properties":{"state":{"enum":["absent","undetermined"]}},"required":["state"],"additionalProperties":false}]},"contextString":{"oneOf":[{"type":"object","properties":{"state":{"const":"present"},"value":{"type":"string","minLength":1}},"required":["state","value"],"additionalProperties":false},{"type":"object","properties":{"state":{"enum":["absent","undetermined"]}},"required":["state"],"additionalProperties":false}]},"contextTime":{"oneOf":[{"type":"object","properties":{"state":{"const":"present"},"value":{"$ref":"#/$defs/dateTime"}},"required":["state","value"],"additionalProperties":false},{"type":"object","properties":{"state":{"enum":["undetermined"]}},"required":["state"],"additionalProperties":false}]},"createdData":{"type":"object","required":["revision","properties"],"properties":{"revision":{"$ref":"#/$defs/revision"},"properties":{"$ref":"#/$defs/properties"},"metadata":{"$ref":"#/$defs/metadata"},"source":{"$ref":"#/$defs/reference"},"target":{"$ref":"#/$defs/reference"},"revisionProvenance":{"$ref":"#/$defs/revisionProvenance"}},"dependentRequired":{"source":["target"],"target":["source"]},"additionalProperties":false},"currentBeadCollection":{"allOf":[{"$ref":"#/$defs/beadCollection"},{"type":"object","properties":{"items":{"type":"array","items":{"$ref":"#/$defs/currentBeadRecord"}}}}]},"currentBeadRecord":{"allOf":[{"$ref":"#/$defs/beadRecord"},{"type":"object","required":["metadata"],"properties":{"metadata":{"$ref":"#/$defs/metadata"},"links":{"$ref":"#/$defs/currentLinkCollection"},"ownedLinks":{"type":"object","additionalProperties":{"type":"array","items":{"$ref":"#/$defs/currentLinkRecord"}}}}}]},"currentLinkCollection":{"allOf":[{"$ref":"#/$defs/linkCollection"},{"type":"object","properties":{"items":{"type":"array","items":{"$ref":"#/$defs/currentLinkRecord"}}}}]},"currentLinkRecord":{"allOf":[{"$ref":"#/$defs/linkRecord"},{"type":"object","required":["metadata"],"properties":{"metadata":{"$ref":"#/$defs/metadata"}}}]},"dateTime":{"type":"string","format":"date-time"},"deletedData":{"type":"object","required":["revision"],"properties":{"revision":{"$ref":"#/$defs/revision"}},"additionalProperties":false},"deletedIdentity":{"type":"object","required":["resourceKind","resource"],"properties":{"resourceKind":{"$ref":"#/$defs/resourceKind"},"resource":{"$ref":"#/$defs/resourceIdentity"}},"additionalProperties":false},"event":{"title":"BDP Event","type":"object","required":["id","ordinal","type","source","subject","subjectType","transaction","time","data"],"properties":{"id":{"$ref":"#/$defs/wireToken"},"ordinal":{"type":"integer","minimum":0},"type":{"$ref":"#/$defs/eventType"},"source":{"$ref":"#/$defs/absoluteHttpUrl"},"subject":{"$ref":"#/$defs/absoluteHttpUrl"},"subjectType":{"$ref":"#/$defs/absoluteHttpUrl"},"transaction":{"$ref":"#/$defs/wireToken"},"time":{"$ref":"#/$defs/dateTime"},"data":{"type":"object"}},"allOf":[{"if":{"properties":{"type":{"const":"created"}},"required":["type"]},"then":{"properties":{"data":{"$ref":"#/$defs/createdData"}}}},{"if":{"properties":{"type":{"const":"updated"}},"required":["type"]},"then":{"properties":{"data":{"$ref":"#/$defs/updatedData"}}}},{"if":{"properties":{"type":{"const":"deleted"}},"required":["type"]},"then":{"properties":{"data":{"$ref":"#/$defs/deletedData"}}}},{"if":{"properties":{"type":{"enum":["linked","unlinked"]}},"required":["type"]},"then":{"properties":{"data":{"$ref":"#/$defs/linkDeltaData"}}}}],"additionalProperties":false},"eventPage":{"title":"BDP Event Source page","type":"object","required":["source","events","next"],"properties":{"source":{"$ref":"#/$defs/absoluteHttpUrl"},"events":{"type":"array","items":{"$ref":"#/$defs/event"}},"next":{"oneOf":[{"$ref":"#/$defs/absoluteHttpUrl"},{"type":"null"}]}},"additionalProperties":false},"eventType":{"enum":["created","updated","deleted","linked","unlinked"]},"historyMissing":{"type":"object","properties":{"complete":{"type":"boolean"},"items":{"type":"array","items":{"$ref":"#/$defs/historyMissingItem"},"maxItems":64,"uniqueItems":true}},"required":["complete","items"],"additionalProperties":false,"allOf":[{"if":{"properties":{"complete":{"const":true}},"required":["complete"]},"then":{"properties":{"items":{"type":"array","minItems":1}}}}]},"historyMissingItem":{"oneOf":[{"type":"object","properties":{"kind":{"const":"record"}},"required":["kind"],"additionalProperties":false},{"type":"object","properties":{"kind":{"const":"property"},"pointer":{"allOf":[{"$ref":"#/$defs/jsonPointer"},{"type":"string","pattern":"^/(properties(?:/|$)|ownedLinks/([^/~]|~[01])+/(0|[1-9][0-9]*)/properties(?:/|$))"}]}},"required":["kind","pointer"],"additionalProperties":false},{"type":"object","properties":{"kind":{"const":"owned-links"},"type":{"$ref":"#/$defs/absoluteHttpUrl"}},"required":["kind"],"additionalProperties":false}]},"idempotencyKey":{"type":"string","pattern":"^[A-Za-z0-9_-]{1,256}$"},"jsonPointer":{"type":"string","pattern":"^(/([^/~]|~[01])*)*$"},"linkCollection":{"type":"object","required":["items","next"],"properties":{"items":{"type":"array","items":{"$ref":"#/$defs/linkRecord"}},"next":{"oneOf":[{"$ref":"#/$defs/absoluteHttpUrl"},{"type":"null"}]}},"additionalProperties":false},"linkDeltaData":{"type":"object","required":["endpoint","link","source","target"],"properties":{"endpoint":{"enum":["source","target"]},"link":{"$ref":"#/$defs/typedLinkReference"},"source":{"$ref":"#/$defs/reference"},"target":{"$ref":"#/$defs/reference"}},"additionalProperties":false},"linkRecord":{"type":"object","required":["id","type","revision","source","target","properties"],"properties":{"id":{"$ref":"#/$defs/absoluteHttpUrl"},"type":{"$ref":"#/$defs/absoluteHttpUrl"},"revision":{"type":"string","minLength":1},"source":{"$ref":"#/$defs/reference"},"target":{"$ref":"#/$defs/reference"},"properties":{"$ref":"#/$defs/properties"},"metadata":{"$ref":"#/$defs/metadata"},"revisionProvenance":{"$ref":"#/$defs/revisionProvenance"}},"additionalProperties":false},"localName":{"type":"string","pattern":"^[A-Za-z][A-Za-z0-9_-]*$"},"metadata":{"type":"object","additionalProperties":true},"mutationOutcome":{"enum":["created","updated","deleted"]},"mutationReceipt":{"title":"BDP Mutation Receipt","type":"object","allOf":[{"$ref":"#/$defs/receiptCore"}],"oneOf":[{"type":"object","required":["id","status","idempotencyKey","scopeEpoch","authorizationView","transaction"],"properties":{"id":true,"status":{"const":"pending"},"idempotencyKey":true,"scopeEpoch":true,"authorizationView":true,"transaction":true,"detail":false,"requiredPosition":false,"effectPosition":false,"results":false,"next":false,"allocated":false,"problem":false,"expiresAt":false}},{"type":"object","required":["id","status","detail","idempotencyKey","scopeEpoch","authorizationView","transaction","requiredPosition","results","next","expiresAt"],"properties":{"id":true,"status":{"const":"completed"},"detail":{"const":"available"},"idempotencyKey":true,"scopeEpoch":true,"authorizationView":true,"transaction":true,"requiredPosition":true,"effectPosition":true,"results":true,"next":true,"expiresAt":true,"allocated":false,"problem":false},"allOf":[{"if":{"properties":{"next":{"type":"null"}},"required":["next"]},"then":{"properties":{"results":{"type":"array","minItems":1}}}}]},{"type":"object","required":["id","status","detail","idempotencyKey","scopeEpoch","authorizationView","transaction","requiredPosition","problem","expiresAt"],"properties":{"id":true,"status":{"const":"failed"},"detail":{"const":"available"},"idempotencyKey":true,"scopeEpoch":true,"authorizationView":true,"transaction":true,"requiredPosition":true,"problem":true,"expiresAt":true,"effectPosition":false,"results":false,"next":false,"allocated":false}},{"type":"object","required":["id","status","detail","idempotencyKey","scopeEpoch","authorizationView","transaction","requiredPosition","allocated"],"properties":{"id":true,"status":{"const":"completed"},"detail":{"const":"expired"},"idempotencyKey":true,"scopeEpoch":true,"authorizationView":true,"transaction":true,"requiredPosition":true,"effectPosition":true,"allocated":true,"results":false,"next":false,"problem":false,"expiresAt":false}},{"type":"object","required":["id","status","detail","idempotencyKey","scopeEpoch","authorizationView","transaction","requiredPosition"],"properties":{"id":true,"status":{"const":"completed"},"detail":{"const":"withheld"},"idempotencyKey":true,"scopeEpoch":true,"authorizationView":true,"transaction":true,"requiredPosition":true,"effectPosition":true,"results":false,"next":false,"allocated":false,"problem":false,"expiresAt":false}}]},"ownedLinkChange":{"type":"object","required":["operation","link"],"properties":{"operation":{"enum":["created","updated","deleted"]},"link":{"type":"object"}},"allOf":[{"if":{"properties":{"operation":{"const":"created"}},"required":["operation"]},"then":{"properties":{"link":{"$ref":"#/$defs/linkRecord"}}}},{"if":{"properties":{"operation":{"const":"updated"}},"required":["operation"]},"then":{"properties":{"link":{"$ref":"#/$defs/ownedLinkDelta"}}}},{"if":{"properties":{"operation":{"const":"deleted"}},"required":["operation"]},"then":{"properties":{"link":{"$ref":"#/$defs/resourceIdentity"}}}}],"additionalProperties":false},"ownedLinkDelta":{"type":"object","required":["id","type","previousRevision","revision"],"properties":{"id":{"$ref":"#/$defs/absoluteHttpUrl"},"type":{"$ref":"#/$defs/absoluteHttpUrl"},"previousRevision":{"$ref":"#/$defs/revision"},"revision":{"$ref":"#/$defs/revision"},"change":{"$ref":"#/$defs/propertyChange"},"metadataChange":{"$ref":"#/$defs/propertyChange"},"revisionProvenance":{"$ref":"#/$defs/revisionProvenance"}},"anyOf":[{"required":["change"],"properties":{"change":true}},{"required":["metadataChange"],"properties":{"metadataChange":true}}],"additionalProperties":false},"pinnedReference":{"type":"object","required":["uri","revision"],"properties":{"uri":{"$ref":"#/$defs/absoluteUri"},"revision":{"type":"string","minLength":1}},"additionalProperties":false},"properties":{"type":"object","additionalProperties":true},"propertyChange":{"type":"array","minItems":1,"items":{"oneOf":[{"type":"object","required":["op","path","value"],"properties":{"op":{"enum":["add","replace"]},"path":{"$ref":"#/$defs/jsonPointer"},"value":true},"additionalProperties":false},{"type":"object","required":["op","path"],"properties":{"op":{"const":"remove"},"path":{"$ref":"#/$defs/jsonPointer"}},"additionalProperties":false}]}},"readProblem":{"title":"BDP Read Problem Details","type":"object","required":["type","code","retry"],"properties":{"type":{"$ref":"#/$defs/absoluteHttpUrl"},"title":{"type":"string"},"status":{"type":"integer","enum":[400,401,403,404,409,410,413,429,503]},"detail":{"type":"string"},"instance":{"$ref":"#/$defs/absoluteUri"},"code":{"$ref":"#/$defs/readProblemCode"},"retry":{"$ref":"#/$defs/retryDisposition"}},"allOf":[{"if":{"properties":{"code":{"const":"malformed-request"}},"required":["code"]},"then":{"properties":{"type":{"const":"https://github.com/gastownhall/bdp/problems/request"},"status":{"const":400},"retry":{"const":"never"}}}},{"if":{"properties":{"code":{"const":"invalid-parameter"}},"required":["code"]},"then":{"properties":{"type":{"const":"https://github.com/gastownhall/bdp/problems/request"},"status":{"const":400},"retry":{"const":"never"}}}},{"if":{"properties":{"code":{"const":"unauthenticated"}},"required":["code"]},"then":{"properties":{"type":{"const":"https://github.com/gastownhall/bdp/problems/authentication"},"status":{"const":401},"retry":{"const":"after-state-change"}}}},{"if":{"properties":{"code":{"const":"forbidden"}},"required":["code"]},"then":{"properties":{"type":{"const":"https://github.com/gastownhall/bdp/problems/authorization"},"status":{"const":403},"retry":{"const":"after-state-change"}}}},{"if":{"properties":{"code":{"const":"resource-not-found"}},"required":["code"]},"then":{"properties":{"type":{"const":"https://github.com/gastownhall/bdp/problems/not-found"},"status":{"const":404},"retry":{"const":"after-state-change"}}}},{"if":{"properties":{"code":{"const":"foreign-view"}},"required":["code"]},"then":{"properties":{"type":{"const":"https://github.com/gastownhall/bdp/problems/conflict"},"status":{"const":409},"retry":{"const":"after-state-change"}}}},{"if":{"properties":{"code":{"const":"cursor-expired"}},"required":["code"]},"then":{"properties":{"type":{"const":"https://github.com/gastownhall/bdp/problems/gone"},"status":{"const":410},"retry":{"const":"after-state-change"}}}},{"if":{"properties":{"code":{"const":"request-too-large"}},"required":["code"]},"then":{"properties":{"type":{"const":"https://github.com/gastownhall/bdp/problems/size"},"status":{"const":413},"retry":{"const":"never"}}}},{"if":{"properties":{"code":{"const":"limit-exceeded"}},"required":["code"]},"then":{"properties":{"type":{"const":"https://github.com/gastownhall/bdp/problems/size"},"status":{"const":413},"retry":{"const":"never"}}}},{"if":{"properties":{"code":{"const":"rate-limited"}},"required":["code"]},"then":{"properties":{"type":{"const":"https://github.com/gastownhall/bdp/problems/rate-limit"},"status":{"const":429},"retry":{"const":"after-delay"}}}},{"if":{"properties":{"code":{"const":"temporarily-unavailable"}},"required":["code"]},"then":{"properties":{"type":{"const":"https://github.com/gastownhall/bdp/problems/unavailable"},"status":{"const":503},"retry":{"const":"after-delay"}}}},{"if":{"properties":{"code":{"const":"resource-pruned"}},"required":["code"]},"then":{"properties":{"type":{"const":"https://github.com/gastownhall/bdp/problems/gone"},"status":{"const":410},"retry":{"const":"never"}}}},{"if":{"properties":{"code":{"const":"resource-erased"}},"required":["code"]},"then":{"properties":{"type":{"const":"https://github.com/gastownhall/bdp/problems/gone"},"status":{"const":410},"retry":{"const":"never"}}}},{"if":{"properties":{"code":{"const":"revision-unknown"}},"required":["code"]},"then":{"properties":{"type":{"const":"https://github.com/gastownhall/bdp/problems/not-found"},"status":{"const":404},"retry":{"const":"after-state-change"}}}},{"if":{"properties":{"code":{"const":"revision-unretained"}},"required":["code"]},"then":{"properties":{"type":{"const":"https://github.com/gastownhall/bdp/problems/conflict"},"status":{"const":409},"retry":{"const":"after-state-change"}}}},{"if":{"properties":{"code":{"const":"revision-reorganized"}},"required":["code"]},"then":{"properties":{"type":{"const":"https://github.com/gastownhall/bdp/problems/gone"},"status":{"const":410},"retry":{"const":"after-state-change"}}}},{"if":{"properties":{"code":{"const":"revision-not-tracked"}},"required":["code"]},"then":{"properties":{"type":{"const":"https://github.com/gastownhall/bdp/problems/conflict"},"status":{"const":409},"retry":{"const":"after-state-change"}}}},{"if":{"properties":{"code":{"const":"revision-unrepresentable"}},"required":["code"]},"then":{"properties":{"type":{"const":"https://github.com/gastownhall/bdp/problems/conflict"},"status":{"const":409},"retry":{"const":"after-state-change"}}}},{"if":{"properties":{"code":{"const":"resource-pruned"}},"required":["code"]},"then":{"properties":{"archivedAt":{"$ref":"#/$defs/reference"}}}},{"if":{"not":{"properties":{"code":{"const":"resource-pruned"}},"required":["code"]}},"then":{"properties":{"archivedAt":false}}},{"if":{"properties":{"code":{"const":"resource-erased"}},"required":["code"]},"then":{"properties":{"pointer":false}}},{"if":{"properties":{"code":{"const":"revision-unretained"}},"required":["code"]},"then":{"required":["missing"],"properties":{"missing":{"$ref":"#/$defs/historyMissing"}}},"else":{"properties":{"missing":false}}},{"if":{"properties":{"code":{"enum":["revision-unknown","revision-unretained","revision-reorganized","revision-not-tracked","revision-unrepresentable"]}},"required":["code"]},"then":{"properties":{"window":false,"mayChangeAfterSync":false,"resource":false,"properties":false,"ownedLinks":false,"archivedAt":false,"pointer":false,"revisionProvenance":false}}}]},"readProblemCode":{"enum":["malformed-request","invalid-parameter","unauthenticated","forbidden","resource-not-found","resource-pruned","resource-erased","foreign-view","cursor-expired","request-too-large","limit-exceeded","rate-limited","temporarily-unavailable","revision-unknown","revision-unretained","revision-reorganized","revision-not-tracked","revision-unrepresentable"]},"readUpdateProblem":{"title":"BDP Read+Update Problem Details","type":"object","required":["type","code","retry"],"properties":{"type":{"$ref":"#/$defs/absoluteHttpUrl"},"title":{"type":"string"},"status":{"type":"integer","enum":[400,401,403,404,409,410,413,415,422,429,503]},"detail":{"type":"string"},"instance":{"$ref":"#/$defs/absoluteUri"},"code":{"$ref":"#/$defs/readUpdateProblemCode"},"retry":{"$ref":"#/$defs/retryDisposition"},"retryAfter":{"type":"integer","minimum":0},"diagnostics":{"$ref":"#/$defs/validationDiagnostics"},"diagnosticsTruncated":{"type":"boolean"}},"allOf":[{"if":{"properties":{"code":{"$ref":"#/$defs/readProblemCode"}},"required":["code"]},"then":{"$ref":"#/$defs/readProblem"}},{"if":{"properties":{"code":{"const":"unsupported-media-type"}},"required":["code"]},"then":{"properties":{"type":{"const":"https://github.com/gastownhall/bdp/problems/request"},"status":{"const":415},"retry":{"const":"never"}}}},{"if":{"properties":{"code":{"const":"binding-unavailable"}},"required":["code"]},"then":{"properties":{"type":{"const":"https://github.com/gastownhall/bdp/problems/request"},"status":{"const":400},"retry":{"const":"never"}}}},{"if":{"properties":{"code":{"const":"validation-failed"}},"required":["code"]},"then":{"properties":{"type":{"const":"https://github.com/gastownhall/bdp/problems/validation"},"status":{"const":422},"retry":{"const":"never"}}}},{"if":{"properties":{"code":{"const":"type-not-installed"}},"required":["code"]},"then":{"properties":{"type":{"const":"https://github.com/gastownhall/bdp/problems/validation"},"status":{"const":422},"retry":{"const":"after-state-change"}}}},{"if":{"properties":{"code":{"const":"identity-taken"}},"required":["code"]},"then":{"properties":{"type":{"const":"https://github.com/gastownhall/bdp/problems/conflict"},"status":{"const":409},"retry":{"const":"never"}}}},{"if":{"properties":{"code":{"const":"alias-path-taken"}},"required":["code"]},"then":{"properties":{"type":{"const":"https://github.com/gastownhall/bdp/problems/conflict"},"status":{"const":409},"retry":{"const":"after-state-change"}}}},{"if":{"properties":{"code":{"const":"revision-mismatch"}},"required":["code"]},"then":{"properties":{"type":{"const":"https://github.com/gastownhall/bdp/problems/conflict"},"status":{"const":409},"retry":{"const":"after-state-change"}}}},{"if":{"properties":{"code":{"const":"incident-links-exist"}},"required":["code"]},"then":{"properties":{"type":{"const":"https://github.com/gastownhall/bdp/problems/conflict"},"status":{"const":409},"retry":{"const":"after-state-change"}}}},{"if":{"properties":{"code":{"const":"aggregate-constraint-violation"}},"required":["code"]},"then":{"properties":{"type":{"const":"https://github.com/gastownhall/bdp/problems/conflict"},"status":{"const":409},"retry":{"const":"after-state-change"}}}},{"if":{"properties":{"code":{"const":"idempotency-conflict"}},"required":["code"]},"then":{"properties":{"type":{"const":"https://github.com/gastownhall/bdp/problems/conflict"},"status":{"const":409},"retry":{"const":"never"}}}},{"if":{"properties":{"code":{"const":"idempotency-in-progress"}},"required":["code"]},"then":{"properties":{"type":{"const":"https://github.com/gastownhall/bdp/problems/conflict"},"status":{"const":409},"retry":{"const":"after-delay"}}}},{"if":{"properties":{"code":{"const":"idempotency-expired"}},"required":["code"]},"then":{"properties":{"type":{"const":"https://github.com/gastownhall/bdp/problems/gone"},"status":{"const":410},"retry":{"const":"never"}}}},{"if":{"properties":{"code":{"const":"revision-allocation-unsafe"}},"required":["code"]},"then":{"properties":{"type":{"const":"https://github.com/gastownhall/bdp/problems/conflict"},"status":{"const":409},"retry":{"const":"after-state-change"}}}},{"if":{"properties":{"code":{"const":"validation-failed"}},"required":["code"]},"then":{"required":["diagnostics"],"properties":{"diagnostics":{"$ref":"#/$defs/validationDiagnostics"}}}},{"if":{"not":{"properties":{"code":{"const":"validation-failed"}},"required":["code"]}},"then":{"properties":{"diagnostics":false,"diagnosticsTruncated":false}}},{"if":{"not":{"properties":{"code":{"const":"resource-pruned"}},"required":["code"]}},"then":{"properties":{"archivedAt":false}}},{"if":{"properties":{"retry":{"const":"after-delay"}},"required":["retry"]},"else":{"properties":{"retryAfter":false}}},{"if":{"properties":{"code":{"const":"revision-allocation-unsafe"}},"required":["code"]},"then":{"properties":{"missing":false,"window":false,"resource":false,"properties":false,"ownedLinks":false,"pointer":false,"identity":false,"revision":false,"revisionProvenance":false}}},{"if":{"not":{"properties":{"code":{"const":"revision-unretained"}},"required":["code"]}},"then":{"properties":{"missing":false}}}]},"readUpdateProblemCode":{"enum":["malformed-request","invalid-parameter","unauthenticated","forbidden","resource-not-found","resource-pruned","resource-erased","foreign-view","cursor-expired","request-too-large","limit-exceeded","rate-limited","temporarily-unavailable","revision-unknown","revision-unretained","revision-reorganized","revision-not-tracked","revision-unrepresentable","unsupported-media-type","binding-unavailable","validation-failed","type-not-installed","identity-taken","alias-path-taken","revision-mismatch","incident-links-exist","aggregate-constraint-violation","idempotency-conflict","idempotency-in-progress","idempotency-expired","revision-allocation-unsafe"]},"receiptCore":{"type":"object","properties":{"id":{"$ref":"#/$defs/absoluteHttpUrl"},"status":{"$ref":"#/$defs/receiptStatus"},"detail":{"$ref":"#/$defs/receiptDetail"},"idempotencyKey":{"$ref":"#/$defs/idempotencyKey"},"scopeEpoch":{"$ref":"#/$defs/wireToken"},"authorizationView":{"$ref":"#/$defs/wireToken"},"transaction":{"$ref":"#/$defs/wireToken"},"requiredPosition":{"$ref":"#/$defs/wireToken"},"effectPosition":{"$ref":"#/$defs/wireToken"},"results":{"type":"array","items":{"$ref":"#/$defs/receiptResult"}},"next":{"oneOf":[{"$ref":"#/$defs/absoluteHttpUrl"},{"type":"null"}]},"allocated":{"type":"array","items":{"$ref":"#/$defs/allocatedIdentity"}},"problem":{"$ref":"#/$defs/receiptProblem"},"expiresAt":{"$ref":"#/$defs/dateTime"}},"allOf":[{"if":{"properties":{"status":{"const":"failed"}},"required":["status"]},"then":{"properties":{"effectPosition":false,"detail":{"const":"available"}}}}],"additionalProperties":false},"receiptDetail":{"enum":["available","expired","withheld"]},"receiptEntryOutcome":{"enum":["created","updated","deleted","matched","withheld","erased"]},"receiptProblem":{"title":"BDP Mutation Receipt problem","type":"object","required":["type","code","status","retry"],"properties":{"type":{"$ref":"#/$defs/absoluteHttpUrl"},"title":{"type":"string"},"status":{"type":"integer","enum":[400,403,404,409,413,422]},"detail":{"type":"string"},"instance":{"$ref":"#/$defs/absoluteUri"},"code":{"$ref":"#/$defs/receiptProblemCode"},"retry":{"$ref":"#/$defs/retryDisposition"},"operationIndex":{"type":"integer","minimum":0},"operationName":{"$ref":"#/$defs/localName"},"pointer":{"$ref":"#/$defs/jsonPointer"},"limit":{"type":"string","pattern":"^[a-z]+\\.[A-Za-z]+$"},"diagnostics":{"$ref":"#/$defs/validationDiagnostics"},"diagnosticsTruncated":{"type":"boolean"}},"allOf":[{"if":{"properties":{"code":{"$ref":"#/$defs/readUpdateProblemCode"}},"required":["code"]},"then":{"$ref":"#/$defs/readUpdateProblem"}},{"if":{"properties":{"code":{"const":"cardinality-violated"}},"required":["code"]},"then":{"properties":{"diagnostics":false,"diagnosticsTruncated":false,"type":{"const":"https://github.com/gastownhall/bdp/problems/conflict"},"status":{"const":409},"retry":{"const":"after-state-change"}}}},{"if":{"not":{"properties":{"code":{"enum":["limit-exceeded","aggregate-constraint-violation"]}},"required":["code"]}},"then":{"required":["operationIndex"],"properties":{"operationIndex":true}}},{"if":{"not":{"properties":{"code":{"const":"limit-exceeded"}},"required":["code"]}},"then":{"properties":{"limit":false}}},{"if":{"not":{"properties":{"code":{"const":"revision-unretained"}},"required":["code"]}},"then":{"properties":{"missing":false}}}],"dependentRequired":{"operationName":["operationIndex"]}},"receiptProblemCode":{"enum":["forbidden","resource-not-found","limit-exceeded","binding-unavailable","validation-failed","type-not-installed","identity-taken","alias-path-taken","revision-mismatch","incident-links-exist","aggregate-constraint-violation","cardinality-violated","revision-allocation-unsafe"]},"receiptResult":{"type":"object","required":["operationIndex","outcome"],"properties":{"operationIndex":{"type":"integer","minimum":0},"operationName":{"$ref":"#/$defs/localName"},"outcome":{"$ref":"#/$defs/receiptEntryOutcome"},"resource":{"oneOf":[{"allOf":[{"$ref":"#/$defs/beadRecord"},{"type":"object","properties":{"links":false}}]},{"$ref":"#/$defs/linkRecord"}]},"deleted":{"$ref":"#/$defs/deletedIdentity"},"erased":{"$ref":"#/$defs/resourceIdentity"},"source":{"$ref":"#/$defs/absoluteHttpUrl"},"sourceRevision":{"$ref":"#/$defs/revision"},"count":{"type":"integer","minimum":0},"alias":{"$ref":"#/$defs/absoluteHttpUrl"},"target":{"$ref":"#/$defs/absoluteHttpUrl"}},"allOf":[{"if":{"properties":{"outcome":{"enum":["created","updated"]}},"required":["outcome"],"not":{"properties":{"alias":true},"required":["alias"]}},"then":{"required":["resource"],"properties":{"resource":true,"deleted":false,"erased":false,"count":false}}},{"if":{"properties":{"outcome":{"const":"deleted"}},"required":["outcome"],"not":{"properties":{"alias":true},"required":["alias"]}},"then":{"required":["deleted"],"properties":{"deleted":true,"resource":false,"erased":false,"count":false}}},{"if":{"properties":{"outcome":{"const":"erased"}},"required":["outcome"]},"then":{"required":["erased"],"properties":{"erased":true,"resource":false,"deleted":false,"count":false}}},{"if":{"properties":{"outcome":{"const":"matched"}},"required":["outcome"]},"then":{"required":["count"],"properties":{"count":true,"operationName":false,"resource":false,"deleted":false,"erased":false,"source":false,"sourceRevision":false}}},{"if":{"properties":{"outcome":{"const":"withheld"}},"required":["outcome"]},"then":{"properties":{"resource":false,"deleted":false,"erased":false,"source":false,"sourceRevision":false,"count":false}}},{"if":{"required":["resource"],"properties":{"resource":{"$ref":"#/$defs/beadRecord"}}},"then":{"properties":{"source":false,"sourceRevision":false}}},{"if":{"required":["deleted"],"properties":{"deleted":{"type":"object","required":["resourceKind"],"properties":{"resourceKind":{"const":"bead"}}}}},"then":{"properties":{"source":false,"sourceRevision":false}}},{"if":{"required":["alias"]},"then":{"allOf":[{"$ref":"#/$defs/aliasResultMembers"}],"properties":{"operationIndex":{"const":0},"operationName":false,"resource":false,"deleted":false,"erased":false,"source":false,"sourceRevision":false,"count":false}},"else":{"properties":{"target":false}}}],"dependentRequired":{"source":["sourceRevision"],"sourceRevision":["source"]},"additionalProperties":false},"receiptStatus":{"enum":["pending","completed","failed"]},"reference":{"oneOf":[{"$ref":"#/$defs/absoluteUri"},{"$ref":"#/$defs/pinnedReference"}]},"resourceIdentity":{"type":"object","required":["id","type","revision"],"properties":{"id":{"$ref":"#/$defs/absoluteHttpUrl"},"type":{"$ref":"#/$defs/absoluteHttpUrl"},"revision":{"type":"string","minLength":1}},"additionalProperties":false},"resourceKind":{"enum":["bead","link"]},"retryDisposition":{"enum":["never","after-state-change","after-delay"]},"revision":{"type":"string","minLength":1},"revisionActor":{"type":"object","required":["id","basis"],"properties":{"basis":{"type":"string","enum":["writer-supplied","unknown"]},"id":{"type":"string","minLength":1}},"additionalProperties":false},"revisionProvenance":{"type":"object","minProperties":1,"properties":{"actor":{"$ref":"#/$defs/revisionActor"},"committedAt":{"$ref":"#/$defs/contextTime"},"agent":{"$ref":"#/$defs/contextString"},"message":{"$ref":"#/$defs/contextMessage"}},"additionalProperties":false,"dependentRequired":{"committedAt":["agent","message"],"agent":["committedAt","message"],"message":["committedAt","agent"]}},"typedLinkReference":{"type":"object","required":["id","type"],"properties":{"id":{"$ref":"#/$defs/absoluteHttpUrl"},"type":{"$ref":"#/$defs/absoluteHttpUrl"}},"additionalProperties":false},"updatedData":{"type":"object","required":["previousRevision","revision"],"properties":{"previousRevision":{"$ref":"#/$defs/revision"},"revision":{"$ref":"#/$defs/revision"},"change":{"$ref":"#/$defs/propertyChange"},"metadataChange":{"$ref":"#/$defs/propertyChange"},"ownedLink":{"$ref":"#/$defs/ownedLinkChange"},"revisionProvenance":{"$ref":"#/$defs/revisionProvenance"}},"oneOf":[{"type":"object","properties":{"change":true,"metadataChange":true,"ownedLink":false},"anyOf":[{"required":["change"],"properties":{"change":true}},{"required":["metadataChange"],"properties":{"metadataChange":true}}]},{"type":"object","required":["ownedLink"],"properties":{"ownedLink":true,"change":false,"metadataChange":false}}],"additionalProperties":false},"validationDiagnostic":{"type":"object","required":["message"],"properties":{"type":{"$ref":"#/$defs/absoluteHttpUrl"},"schemaLocation":{"$ref":"#/$defs/absoluteUri"},"document":{"enum":["properties","metadata"]},"instanceLocation":{"$ref":"#/$defs/jsonPointer"},"message":{"type":"string","minLength":1}},"additionalProperties":false,"dependentRequired":{"type":["schemaLocation"],"schemaLocation":["type"]}},"validationDiagnostics":{"type":"array","minItems":1,"items":{"$ref":"#/$defs/validationDiagnostic"}},"wireToken":{"type":"string","pattern":"^[A-Za-z0-9_-]{1,256}$"}}}

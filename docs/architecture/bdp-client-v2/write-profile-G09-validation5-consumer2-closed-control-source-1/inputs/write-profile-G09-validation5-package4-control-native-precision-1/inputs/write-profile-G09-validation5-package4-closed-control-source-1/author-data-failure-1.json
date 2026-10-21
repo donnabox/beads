@@ -1,0 +1,13 @@
+{
+  "attemptedInterpreter": "/opt/homebrew/opt/python3.14/bin/python3.14",
+  "correctInterpreter": "/opt/homebrew/opt/python@3.14/bin/python3.14",
+  "dataBody": "empty stdin body",
+  "dataInterpreterStarted": false,
+  "errorType": "FileNotFoundError",
+  "guardSessionValidatedBeforeRoutingFailure": true,
+  "noSubjectRetryOrSourceFix": true,
+  "phase": "OWN_DATA_QA_COMMAND_ROUTING",
+  "qualification": "Misspelled interpreter path on one empty author DATA-QA command; no subject command or artifact was invoked. Guard raised before the absent interpreter could start. Retained honestly as author-data failure only.",
+  "subjectArtifactOrRuntimeInvocation": false,
+  "subjectMismatch": false
+}

@@ -1,0 +1,139 @@
+Review complete. Nothing written or modified; no builds or tests run.
+
+---
+
+# Review — `0b34fe7` vs `c1a1744` (W2 first installed sequence observations)
+
+**Boundary verified.** 10 files, +20973/−40. Only `apps/bdptest/{src,test-support}`, `docs/design/read-update-executable-progress.md`, and `packages/conformance/{fixtures,matrices,src/cumulative-artifact.test.ts,test-support}`. `schemas/`, `packages/protocol/`, `packages/server/`, `packages/conformance/catalog/`, `src/index.ts`, `runner.ts`, `artifact-bundle.ts`, every `package.json` untouched. Tree clean at `0b34fe7`. Manifest is **purely additive**: 36 → 40 scenarios, 0 existing scenarios changed (byte-compared), `manifestVersion` still 2, `catalogId` still `read-update-v1`. Coverage inventory: exactly 3 disclosure-reason edits (the c1 Link rows) + 4 new sequence rows + exactly one promotion; no other row's status, flag, reason or bindings moved.
+
+**Verified against the recorded wire** (`read-update-sequence-probe.json`): manifest digest `8c3ad930…` and fixture digest `5790ed71…` reproduce the frozen blobs; `exactConfigurationDigest 3d36a52…` matches both committed pins; `counterfactualApplications: 0`; all four new rows `pass`; 94 of 134 catalog outcomes are `harness-error` (absent) and stay visible. The `member-shapes` response is real and exactly as claimed — index 0 `created`+`operationName: "prefix"`, index 1 `conflict/identity-taken/409/never`+`"collision"`, index 2 `not-found/resource-not-found/404/after-state-change` with **no** `operationName`, index 3 `created` with no name, no fifth entry. All 25 raw carrier variants observed at their claimed statuses (413/400×21/401/415/413) with `bodyOctets` equal to the authored source lengths. Freeze run: **870/870 pass, 28 files**, main matrix test 9.59 s against its unchanged 30 s budget.
+
+---
+
+## Findings
+
+### 1 — MEDIUM — the sole promoted whole row observes two of the three normative result-entry branches, and only one of the two name-declaring member kinds
+
+**Location** `packages/conformance/test-support/read-update-coverage-v1.json:4217` (`wholeContract: true`); scenario at `packages/conformance/matrices/read-update-v1.json:40299`, action `member-shapes` at `:40715`.
+
+The promotion rests on two cited clauses, and the second is universally quantified over entries: *"**Every entry** carries `operationIndex`, the member's zero-based position in the request's `operations` array, and carries `operationName` exactly when the member declared `name`"* (`docs/specs/bdp.md:3139`).
+
+`schemas/bdp-v0.schema.json` `$defs.sequenceResponse` resolves each entry through a three-branch `oneOf`: `sequenceMemberResult`, `sequenceMemberAliasResult` (`operationIndex` alone, `unevaluatedProperties: false`), `sequenceMemberProblem`. The row's four members are `createBead ×3` + `updateBead ×1`, so it witnesses **branch 1 and branch 3 only**. No alias-result entry is observed anywhere in the manifest, and the W2 plan explicitly parks alias sequence members elsewhere (`read-update-w2-sequence-plan.md:70`, "using an alias as setup does not cover an alias sequence member") — but that row is `alias.sequence-binding`, not this clause.
+
+Second gap: `name` is declarable on exactly two member kinds — `sequenceCreateBead` and `sequenceCreateLink` (`sequenceUpdateBead`/`sequenceDeleteBead`/`sequencePutAlias`/`sequenceDeleteAlias` all have `unevaluatedProperties: false` with no `name`). The row witnesses the "declared ⇒ present" and "undeclared ⇒ absent" directions only on `createBead`; `createLink` is never a sequence member.
+
+This is the project's own standard elsewhere: `read.types.descriptor` enumerates all thirteen descriptors, `result-headers` enumerates all eight singleton targets, and `create-link` was just held incomplete in this very commit for one unobserved conjunct (`docs/design/read-update-executable-progress.md:50`). The row's reason ("present names only for declared creators") is true of what ran but does not disclose that only Bead create/update entries were seen. `cumulative-artifact.test.ts:146` marks this list as requiring a clause-level audit, and no mechanical check constrains the flag.
+
+**Impact** The one row this slice promotes to `wholeContract: true` has an unobserved branch of its own cited clause. If the authority omitted `operationIndex` on alias-result entries, or dropped `operationName` on a named `createLink`, nothing in-tree would notice, yet the row reads as complete.
+
+**Fix** Cheapest genuine close — extend the existing `member-shapes` body from 4 to 6 members (well inside the advertised 32 and the 65536-byte cap) and add their index/name assertions:
+
+```json
+{ "operation": "createLink", "idempotencyKey": "w2-link", "type": "https://reference.invalid/acme/types/relates",
+  "source": "@prefix", "target": "beads/w2-collision", "name": "edge" },
+{ "operation": "putAlias", "idempotencyKey": "w2-alias", "alias": "alias/w2-shape", "target": "beads/w2-prefix" }
+```
+then `index-4`/`name-4` (`equals: "edge"`), `index-5`, `name-5` (`exists: false`), move `no-extra-result` to `/body/results/6`, extend `indices` to six tuples, and add one independent GET of each. The alias entry also pins the "`operationIndex` alone, and it is closed" half via the existing schema branch. Otherwise, append to the row's reason "only Bead create/update result entries and member problems were observed; alias result entries and a declared `createLink` name remain unobserved" and leave `wholeContract: false` until a later slice.
+
+### 2 — MEDIUM — the harness body cap was raised past the installed policy, but no row observes the advertised `/limits/request/bodyBytes`
+
+**Location** `apps/bdptest/src/read-update-matrix.test.ts:173` (`maximumRequestBodyBytes: 65536 → 131072`); carrier discovery assertions at `packages/conformance/matrices/read-update-v1.json:41339-41344`; claim at `docs/design/read-update-executable-progress.md` ("The harness request capacity is131072 bytes, solely to observe the installed unchanged65536-byte body policy").
+
+`development-composition.ts:36` advertises `/limits/request/bodyBytes` from `authority.limits.requestBodyBytes` (`development-authority.ts:42`, `64 * 1024`), and `$defs.readUpdateAdvertisedLimits` declares it. The carrier row correctly pins the count limit in-row — `target-member-limit`, `/limits/sequence/operations` `equals: 32` — but `grep '/limits/'` over the whole 1.68 MB manifest returns **exactly one hit**. The body bound is never observed anywhere.
+
+So the `body-size` variant (65937 authored octets → `413 request-too-large`) is bound only to two hard-coded integers in the test file (`:650` `< 65536`, `:655` `> 65536`). Both `limit-exceeded` and `request-too-large` map to `type: size` / `status: 413` / `retry: never` in `readProblem`, so `code` is the only discriminator — and the row does assert the two codes distinctly, which is good. But if the installed `requestBodyBytes` moved anywhere in `(65536, 65937]`, every assertion in the row still passes while the doc's "unchanged65536-byte body policy" becomes false. This is the exact asymmetry external L6 closed for the count case.
+
+Secondary: raising the cap to 131072 applies to the shared `exactMode` consumed by `createRawHttpScenarioTarget`, `createInstalledExactClient` and `seedInstalledReadFixture`, so **every** row may now exceed the installed policy. Nothing asserts that only `body-size` does.
+
+**Impact** The one place the harness was deliberately relaxed beyond installed policy has no in-row evidence of where that policy actually sits, and no guard that other authored bodies stay under it.
+
+**Fix** One assertion on the carrier row's `discovery` action, mirroring `target-member-limit`:
+```json
+{ "id": "target-body-limit", "kind": "json-pointer", "pointer": "/limits/request/bodyBytes", "exists": true, "equals": 65536 }
+```
+and, alongside the existing checks at `read-update-matrix.test.ts:650-656`, assert the complement — every authored raw body other than `body-size`, and every client `input.body`, serializes to ≤ 65536 bytes — so the elevated harness capacity can only ever be consumed by the one variant that is meant to consume it.
+
+### 3 — LOW — `order-and-partial-commit` is byte-identical to `member-problem-shape`; the inventory presents them as two observation sets and the duplicate carries no control
+
+**Location** `packages/conformance/matrices/read-update-v1.json:37413` vs `:40299`; reasons at `packages/conformance/test-support/read-update-coverage-v1.json:3913` and `:4218`.
+
+`jq 'del(.id)'` on the two scenarios diffs clean — same 13 actions, same bodies, same 78 assertions, same ids. The plan authorised "its own bound assertions" (`read-update-w2-sequence-plan.md:61`) and `cumulative-artifact.test.ts:186-190` correctly forces each row's bindings onto its own scenario id, so there is no cross-row credit. But:
+
+- The two reasons read as distinct observations ("Actual successful prefix, member failure and independent tail…" vs "exact result cardinality/order, present names only for declared creators…"), and `read-update-w2-report.md:11,14` describes them as different executed boundaries. Neither discloses that the row re-runs byte-identical HTTP. A reviewer told "four new rows / four same-ID scenarios" reasonably reads that as four observation sets; it is three.
+- All twelve W2 controls dispatch on `currentScenario`, and `memberControl` is gated to `"read-update.sequence.member-problem-shape"` (`read-update-matrix.test.ts:355`). The duplicate's 78 identical assertions therefore have **zero** row-local controls — the same shape as the prior review's Medium 2, though here the sensitivity argument carries over from the controlled twin by construction.
+- It also doubles a child-process launch and 13 exchanges for no new evidence.
+
+**Impact** Disclosure, plus ~9% of this slice's wall clock. Not a false pass.
+
+**Fix** Append to the `order-and-partial-commit` reason: "This row re-executes the same request set as `member-problem-shape` against a fresh instance to satisfy the one-row binding mechanism; its controls live on that row." If a cheap differentiation is wanted instead, make its prefix member an `updateBead` of an independently seeded Bead (the plan's "successful create/update before a failed member"), which would make the two rows observe genuinely different member kinds and incidentally help finding 1.
+
+### 4 — LOW — the packed observation backing all four rows is recorded at `c1a1744` with `sourceDirty: true`, not at the frozen commit
+
+**Location** `bdp-integration-logs/read-update-sequence-probe.json` (`sourceCommit: "c1a17442…"`, `sourceDirty: true`, written 01:27); claims at `read-update-w2-report.md:40,50`.
+
+The predecessor's packed evidence carried `sourceCommit c1a1744, sourceDirty: false`, which let a reviewer bind the wire to the frozen tree by commit. Here the only packed run predates both the 01:36 c1-closure edits and the 01:37 freeze, and self-reports a dirty tree, so plan item "Done when" #5 ("a fresh packed installed observation at the final clean source") is not literally met. The report's "frozen packed results follow below" also has nothing below it.
+
+I confirmed the binding holds by content rather than by commit: the probe's `manifestDigest 8c3ad930…` and `fixtureDigest 5790ed71…` are byte-exact for `0b34fe7`'s blobs, and its `exactConfigurationDigest 3d36a52…` equals both committed pins. The 01:36 edits touched only `cumulative-artifact.test.ts`, the planner's `manifestVersion` conjunct (a no-op for a v2 `read-update-v1` manifest) and two W1b control table rows — none can alter the sequence rows' wire.
+
+**Impact** Provenance only. A later reviewer reading the probe header alone would conclude the sequence evidence was not taken at the frozen source.
+
+**Fix** Re-run the packed observation at clean `0b34fe7` (`BDP_CUMULATIVE_REPORT_PATH`; the `writeFileSync` move to `:620` means it now emits even on failure), or record in the report that the packed run is digest-bound rather than commit-bound and cite the three digests.
+
+### 5 — LOW — the new raw-body octet check ignores `encoding` and will mis-compare any base64 body
+
+**Location** `apps/bdptest/src/read-update-matrix.test.ts:630-645` (and the same pattern at `:1060`).
+
+The action type is narrowed to `raw?: { body?: { value: string } }` and the comparison is `Buffer.byteLength(action.raw!.body!.value)`. `executable-manifest.ts:985-993` accepts `encoding: "utf8" | "base64"`; for a base64 body the authored `value` length is ~4/3 of the octets actually placed on the wire. All 25 current carrier bodies are `utf8`, so the check is correct today, and the failure mode is a confusing red test rather than a false pass — but the plan reserves base64 for exactly this lane ("Native raw actions already permit finite source bytes", `:81`).
+
+**Impact** The next authored base64 carrier body breaks a passing invariant with a misleading message.
+
+**Fix** Carry the encoding through: widen the type to `raw?: { body?: { encoding: "utf8" | "base64"; value: string } }` and compare against `Buffer.from(action.raw.body.value, action.raw.body.encoding).byteLength`.
+
+### 6 — LOW — the report's manifest byte figure is off by 14 bytes
+
+**Location** `bdp-integration-logs/read-update-w2-report.md:50`.
+
+"The manifest is1,680,134 bytes at this source"; `git cat-file -s` at `0b34fe7` gives **1,680,148**. The report hedges ("measured from Git below if different") and the in-tree doc is correct — it now claims only that the expansion "exceeds that bound", and the c1 restatement (1,047,302 bytes, just under 1 MiB) reproduces exactly. Flagging because the predecessor review raised a finding of precisely this type, and root reads the report.
+
+**Fix** Restate as 1,680,148 bytes, 40% of the private 4 MiB allowance.
+
+---
+
+## c1 follow-up closures — verified
+
+| c1 finding | Disposition |
+|---|---|
+| **1 MEDIUM** cross-profile budget gate uncontrolled | **CLOSED, and both conjuncts are now controlled.** `cumulative-artifact.test.ts:267-290` loops `("read", false)`, `("read-update", true)`, `("transactional", false)`. The gate is `selection.profile === "read-update" && !selection.history` (`profile-contract-plan.ts:238`). Deleting the profile conjunct un-throws the `read` and `transactional` cases; deleting `!history` un-throws the History case. `snapshotSource` at `:235` precedes all row validation, and the selections/configurations are built outside the `expect(() => …)`, so the asserted substring can only come from the byte cap. |
+| **2 MEDIUM** 107/108 new Link assertions uncontrolled | **CLOSED exactly as the fix proposed.** `retained-noop-link` → `matching-link-noop` with `["retained-link"]`, and `stale-unowned-link` → `stale-link-unowned-update` with `["revision-mismatch"]` (reusing `alias-path-taken`, whose conditional branch is byte-identical to `revision-mismatch`'s). `$defs.revision` is `{type:"string",minLength:1}`, so `"freshly-minted-on-noop"` keeps `harnessInstalled_mutationResult` valid and the expected set singular. Both pass in the freeze run. The other `matching-link-*`/`read-after-*` families remain uncontrolled — the same scope the prior fix proposed. |
+| **3 LOW** planner grants 4 MiB by self-declared `catalogId`, after parsing | **PARTIALLY CLOSED.** Consequence (2) is fixed: the recheck is now `!(catalogId === "read-update-v1" && manifestVersion === 2)` (`:250-255`), mirroring the factory's `manifestVersion === 2`, with a genuine control at `:291-299` (v1 clone with `raw` removed, padded to 1 MiB+1; reverting the conjunct makes it return a plan instead of throwing). Consequences (1) and (3) — 4 MiB decode/parse/complexity-walk before the 1 MiB refusal, and the discarded copy — persist and are now disclosed in `read-update-executable-progress.md`. Acceptable under "no runtime/protocol redesign". |
+| **4 LOW** doc said the manifest exceeded 1 MiB when it did not | **CLOSED.** Restated with the exact c1 figure; the W2 manifest genuinely exceeds the bound now (1,680,148 > 1,048,576), so the 4 MiB path is live rather than synthetic. |
+| **5 LOW** matching-Link probes are semantic no-ops | **CLOSED as disclosure**, in all three coverage reasons and the doc. |
+| **6 LOW** assertions pin consecutive-revision inequality, not advancement | **CLOSED** via the weaker-reason option: "prove consecutive Link revisions differ"; "Global non-recycling is not established by these finite consecutive comparisons." |
+| **7 LOW** `owned-plane` optional chaining can silently no-op | **CLOSED exactly as proposed** (`read-update-matrix.test.ts:544-549`, resolve → `if (!plane) throw`). |
+| **8 LOW** attribution's one-assertion close left on the table | **Deferred and disclosed** ("Attribution remains omitted; optional additional cross-row absence assertions are deferred"). |
+
+Prior re-flag — `read-update-catalog.test.ts` still compares only ids and order — is now load-bearing: `catalog.ts:175` validates `selectedText` against the whitespace-normalized spec section, but `title` is unvalidated, and this row's catalog title ("…and operationName inside 200 OK") paraphrases the spec cell at `docs/specs/bdp.md:6767` ("…and `operationName` **when declared**, inside a `200 OK` envelope"). The recorded obligation is intact in `requirements[].selectedText`; only the human-readable label is lossy, and the catalog is untouched here.
+
+---
+
+## What holds
+
+- **No runtime, protocol, Type, public schema, runner, catalog or admission change.** `installed-body-schema.ts` adds one list entry; `harnessInstalled_sequenceResponse` `$ref`s the unmodified `$defs.sequenceResponse`, which is `additionalProperties: false` over `results` — so the top-level envelope is genuinely closed, and the three-branch `oneOf` is mutually exclusive (a problem fails `sequenceMemberResult`'s `unevaluatedProperties: false`; a success fails `sequenceMemberProblem`'s `outcome: false`).
+- **The code/type/status/retry pins are not schema-redundant, and the schema is not bypassed.** `readUpdateProblem`/`readProblem` carry 20 `if/then` branches binding each code to its `type`/`status`/`retry`, so `schema` + `code` transitively pins the tuple; the `problem` control substitutes a *coherent* wrong tuple (404/not-found/resource-not-found/after-state-change) and fails exactly `["1-code","1-status","1-type","1-retry"]`, proving the pins discriminate beyond schema validity. `sequenceMemberProblem` deliberately has no `unevaluatedProperties: false`, so Problem bodies stay extensible — never a closed-object oracle.
+- **The alias/identity discriminator is real.** `resource-evaluator.ts:661-669` fires `identity-taken` only on `tx.identityWasCommitted(id)` and `alias-path-taken` only on `tx.alias(id.slice(6)) !== undefined`, with distinct `retry` (`never` vs `after-state-change`). `member-problem-shape` observes the first, `local-bindings` the second against a never-committed `beads/w2-held` (proved absent by `no-blocked` 404, then created by `fresh-creator-key`).
+- **The retained-failure chain is tight.** `occupy-path` → `failed-bindings` (409 `alias-path-taken` + 400 `binding-unavailable` + successful tail) → `release-path` (`outcome: deleted`) → `retained-bindings` whose `retained-results` deep-compares the **entire** replayed array, including the tail's original creation postimage, against the captured `failed-results`. Then `dependent-key-conflict` (changed input, old key → 409 `idempotency-conflict`) with `conflict-unchanged` proving the target preserved byte-for-byte, `fresh-dependent-key` + `fresh-dependent-read` performing the update, and `fresh-creator-key` + `freed-path-readable` proving the cleared path usable. `allocated-read.postimage` correctly compares against `results[1].resource` (the dependent's postimage), never the creator's stale creation record — exactly the trap the plan warned about.
+- **Key-reuse is a genuine no-retention discriminator, audited exhaustively.** 89 distinct keys in the carrier row; every reuse maps to precisely one refused→corrected pair, no accidental cross-variant collision. Every corrected submission changes `properties` from `{"n":0}` to `{"n":7}` under the original keys and asserts `created` plus an independent read of the new value — so a retained key would surface as `idempotency-conflict` or a stale postimage. `count-33`'s 32 reusable keys come back in `count-32` with `n: 1` and all 33 are read back; the 33rd key is reused by the `count-last` singleton. Invalid keys are correctly *not* reused; `empty`/`missing` carry no keys and the report says so. (`malformed-json` and `surrogate` do carry valid keys textually and *are* retention discriminators — the report understates them.)
+- **Pre-admission refusals are complete and effect-free.** 25 raw `family:http` + `raw` variants, each targeting one defect, every one asserting `status` + `readUpdateProblem` schema + `code` + member-level `status` + `/results` absent, followed by GETs of **every** otherwise-admissible requested identity (33 for the count case, not just the first). `top-key` sends the forbidden `idempotency-key` header through the raw lane — which `executable-manifest.ts:977` permits and the client lane refuses to fabricate, so the two lanes are used for what each can do.
+- **The sequence target comes from the real Directory.** `directory` validates `readUpdateOperationDirectory`; `directory-captures` captures `/body/sequence` and pins it; `targetBaseBinding: "operations"` resolves to the one explicitly allowlisted `POST ${scope}operations/sequence`. The dropped `{method:"POST", url: scope}` literal was genuinely redundant — `read.http.method-405`'s `post` action supplies it through `readRoutes` — and the removed inner dedup is subsumed by `uniqueRoutes` at `:201-205`. No wildcard: `allocated-read` reaches the captured `fresh-id` through the pre-existing canonical-Bead gate (`read-update-exact-client.ts:71-94`), one exact route per request.
+- **The optional key omission cannot become fabrication or silent emptiness.** `input.idempotencyKey === undefined ? [] : [{… string(input.idempotencyKey)}]` — `""` and non-strings throw. The new client test drives a real listener and records `[undefined, "supplied-key"]` with no third request; the new matrix test splices a key-less `create` into `singleton.create-bead` and the actual authority still answers 400 `malformed-request` before an ordinary create succeeds.
+- **The twelve response controls are post-capture and non-intrusive.** `observe()` fires inside the client on the genuine output before any mutation, `counterfactualApplications === 0` + `toBe(1)` bounds each to one application, dispatch is on `currentScenario` and sequence-call position — never a fabricated carrier key — and each expected failure set is exact under the schema (the `dependent-success` injection satisfies `mutationResultMembers` whose only `required` is `outcome`; `corrected-conflict`'s injected problem satisfies the `idempotency-conflict` branch, so only `created-0` fails). The three raw controls land cleanly too: `wrong-status`/`wrong-code` each fail exactly one assertion, which is what separates `limit-exceeded` from `request-too-large` given both share `type: size` / 413 / `never`.
+- **No count-derived qualification.** `uncoveredIds` is `required` minus `wholeContract` (`read-update-matrix.test.ts:604-606`), so 102 → 101 is the arithmetic consequence of the single promotion, not independent evidence. 129 required / 40 bounded / 89 omitted / 28 whole / 134 unfiltered / 94 absent all reconcile. `claimEligible: false` in the inventory, the planner (`:352`), the result and the report. `cumulative-artifact.test.ts:180-191` mechanically forces `omitted` + `wholeContract: false` + empty bindings for unplanned rows and requires each planned row's bindings to enumerate its own scenario's assertions in order.
+- **Structural bounds are unchanged and not close.** Manifest: 44,563 nodes (limit 100,000), max container 228 (limit 10,000), depth 12 (limit 128), 1,680,148 bytes (40% of the 4 MiB private allowance). Inner HTTP deadlines remain 5000 ms on both lanes; the 30 s aggregate budget was not touched and the measured run uses 32% of it.
+
+## Residual limitations of this review
+
+1. **Not re-executed.** Per instruction nothing was written and no build or test was run. Behavioural claims are re-derivation from the frozen manifest, fixture, normative schema, resource evaluator, JSON admission layer and control harness, cross-checked against `read-update-sequence-probe.json` and `read-update-sequence-freeze-tests.json`, and confirmed by reproducing the frozen manifest/fixture digests. `exactConfigurationDigest` was not recomputed from first principles.
+2. **Finding 1's proposed close is unexecuted.** I did not run a sequence containing `putAlias` or a named `createLink` member; `$defs.sequencePutAlias`/`sequenceCreateLink` and `transaction-store.test.ts:1453` establish the capability exists, not that the installed reference answers as I predict.
+3. **`duplicate-json` considered and not reported.** Its body is `{"operations":[], "\u006fperations":[…2 members…]}`, giving the carrier two independent grounds for 400 (duplicate decoded name, and an empty `operations` under a first-wins reading), which formally breaks "one defect per variant". I dropped it: `json-admission.ts:180` fails on duplicates, and with that check removed the decoder at `:183` is last-wins, so the request would be admitted and the absence assertions would fail. The variant discriminates against every realistic mutation; only a non-standard first-wins decoder would confound it.
+4. **Control minimality is still per-action.** Each counterfactual asserts the failing set of one named action; none asserts that no other action failed (`swap` and `binding-id` demonstrably corrupt downstream captures too). Inherited, not introduced.
+5. **Not inspected.** The focused/freeze `checks.log` contents, the `c1-closure` targeted run, and `read-update-installed-*` packed cohorts. Per instruction I did not read any native review.

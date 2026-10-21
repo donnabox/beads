@@ -1,0 +1,22 @@
+{
+  "expectedParentHead": "d4f3f4be88c7837b71d6646518ca3589d464ba3d",
+  "rootExpectedExit": 0,
+  "basis": "Exact d4 CI structured evidence.verified event follows successful verification and d4 implementation then returns0; CI wrapper alone permits0/2 and does not expose rawexit. Earlier local rawexit0 corroborates preserved evidence semantics but is not relabeled as d4 execution. Root explicitly requires unchanged0.",
+  "ciRecord": {
+    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/initial-collection-unknown-validation-successor-2/exact-head-ci.json",
+    "sha256": "c0e9bea8ce1642e306d0283f4239b9b69ef925f09e3d599e9d79d7b40910ec6e"
+  },
+  "ciLog": {
+    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/initial-collection-unknown-validation-successor-2/exact-head-ci.log",
+    "sha256": "20438c3ba79f29141e31d7bced2e69683fd6f2c44198145a248bd06962ca30ff",
+    "verifiedEventLine": 11324,
+    "verifiedEvent": "2026-10-16T23:41:28.7344875Z {\"level\":\"info\",\"event\":\"evidence.verified\",\"executable\":\"read-cohort-evidence\",\"artifact\":\"docs/design/evidence/read-cohort/read-v1.json\",\"constant\":\"674982be2123b9b7aae630bf79c3f774122900cd\",\"runHead\":\"e5f7d0c43c151426350ceededdc77fe7e372db9b\",\"evidenceCommit\":\"dbaf63a24219e1ea3f80394746853598b0d4464a\",\"schemaReadProjection\":\"bd7da0fc3f8082e0bfb6f4969c04409f2a610e12408dbc6a0bd14b4b351127cc\",\"schemaReadProjectionDefinitions\":47,\"schemaReadProjectionReachable\":46,\"rows\":89}"
+  },
+  "d4ScriptSha256": "451d77cf880329238f044e3f0e92d681d6493c509fcb3b050f6e292ce3f2a21e",
+  "earlierLocalRawExit": {
+    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/pr147-ci-smoke-failure/validation-preparation/evidence-read.exit.json",
+    "sha256": "b2149b12df03991ac377ff34f4bf7243f271d877e2be37735d2aa067aa7addba",
+    "exit": 0
+  },
+  "candidateRule": "Raw candidate exit0 required. Any0-to2 change stops for investigation even though generic CI accepts2. No claim-generation or evidence resealing."
+}

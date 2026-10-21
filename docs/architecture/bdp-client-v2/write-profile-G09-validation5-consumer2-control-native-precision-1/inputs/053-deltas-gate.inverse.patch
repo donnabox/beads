@@ -1,0 +1,35 @@
+--- /Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation5-consumer2-closed-control-source-1/execution-gate.proposed.json
++++ /Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation-preparation-5/execution-gate.json
+@@ -25,9 +25,7 @@
+     "prepare-package-directory",
+     "pack-protocol",
+     "pack-server",
+-    "verify-archives",
+-    "prepare-consumer",
+-    "consumer-install"
++    "verify-archives"
+   ],
+   "baseTools": {
+     "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation-preparation-5/base-tools.candidate.json",
+@@ -60,8 +58,8 @@
+   "nativeCodeReviewDisposed": true,
+   "released": true,
+   "rootArchiveAcceptance": {
+-    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation5-verify-archives-root-final-disposition-1/disposition.json",
+-    "sha256": "5f08d675179a7a93aa74d39e0723012db8c8045394e0dc188aa6d5ccb09f7508"
++    "path": "UNRESOLVED",
++    "sha256": "UNRESOLVED"
+   },
+   "rootBuildAcceptance": {
+     "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation5-bind-fresh-build-root-final-disposition-1/disposition.json",
+@@ -76,8 +74,8 @@
+     "sha256": "UNRESOLVED"
+   },
+   "rootDisposition": {
+-    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation5-consumer2-closed-control-source-1/root-disposition.proposed.json",
+-    "sha256": "c76e31358da9d81d4ecfdc0c452db86f430b5e33ad4b3f8151b117a483cf8175"
++    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation5-package4-closed-control-source-1/root-disposition.proposed.json",
++    "sha256": "50f88b425a9260756f21d2122d28c0698f80f85aaacc0e1fc56c31884e54f01b"
+   },
+   "rootExactSourceAccepted": true,
+   "rootPlanAccepted": true,

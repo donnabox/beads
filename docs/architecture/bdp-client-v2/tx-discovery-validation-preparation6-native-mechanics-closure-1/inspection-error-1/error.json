@@ -1,0 +1,8 @@
+{
+  "classification": "Auditor static comparison assertion; no candidate/helper/runtime execution",
+  "error": "AssertionError: pathOnly:audit-expectations.json",
+  "cause": "Initial comparison incorrectly assumed audit-expectations was path-only; its exact necessary schema SHA substitution was documented in the existing genuine delta.",
+  "correction": "Read complete delta; compare exact original JSON after reversing only reportSchemasSha256. Subsequent 12249 checks passed.",
+  "candidateChanged": false,
+  "helperExecuted": false
+}

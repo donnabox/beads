@@ -1,0 +1,217 @@
+{
+  "source": [
+    {
+      "cohort": "new-positive",
+      "ordinal": 1,
+      "method": "POST",
+      "route": "runtime.targets.batch",
+      "key": "maintenance-seed",
+      "utf8Body": "{\"operations\":[{\"operation\":\"createBead\",\"id\":\"beads/maintenance-seed\",\"type\":\"https://example.test/bead\",\"properties\":{\"title\":\"maintenance-seed\"}}]}",
+      "bodyBytes": 150,
+      "bodySha256": "ebed1022f902a4d57155354ab15fc832b4de1cca592fcc5ef1b3c88b32a51ef6"
+    },
+    {
+      "cohort": "new-positive",
+      "ordinal": 2,
+      "method": "POST",
+      "route": "runtime.targets.batch",
+      "key": "maintenance-after-fault",
+      "utf8Body": "{\"operations\":[{\"operation\":\"createBead\",\"id\":\"beads/maintenance-after-fault\",\"type\":\"https://example.test/bead\",\"properties\":{\"title\":\"maintenance-after-fault\"}}]}",
+      "bodyBytes": 164,
+      "bodySha256": "3d5544fd327029e7d8f310c910af9cbd090821a2ef58a50eef5ee40a34525fd3"
+    },
+    {
+      "cohort": "old-fencing",
+      "ordinal": 1,
+      "method": "POST",
+      "route": "runtime.targets.batch",
+      "key": "key",
+      "utf8Body": "{\"operations\":[{\"operation\":\"createBead\",\"id\":\"beads/a\",\"type\":\"https://example.test/bead\",\"properties\":{\"title\":\"a\"}}]}",
+      "bodyBytes": 120,
+      "bodySha256": "12f4f2ecab65f2b945c856774071f75ffa1ca5e12306b457cad111f526d429f0"
+    },
+    {
+      "cohort": "old-fencing",
+      "ordinal": 2,
+      "method": "GET",
+      "route": "runtime.scope + beads/",
+      "key": null,
+      "utf8Body": "",
+      "bodyBytes": 0,
+      "bodySha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "cohort": "old-fencing",
+      "ordinal": 3,
+      "method": "POST",
+      "route": "runtime.targets.batch",
+      "key": "key",
+      "utf8Body": "{\"operations\":[{\"operation\":\"createBead\",\"id\":\"beads/a\",\"type\":\"https://example.test/bead\",\"properties\":{\"title\":\"a\"}}]}",
+      "bodyBytes": 120,
+      "bodySha256": "12f4f2ecab65f2b945c856774071f75ffa1ca5e12306b457cad111f526d429f0"
+    },
+    {
+      "cohort": "old-guard-control",
+      "ordinal": 1,
+      "method": "POST",
+      "route": "runtime.targets.batch",
+      "key": "maintenance-seed",
+      "utf8Body": "{\"operations\":[{\"operation\":\"createBead\",\"id\":\"beads/maintenance-seed\",\"type\":\"https://example.test/bead\",\"properties\":{\"title\":\"maintenance-seed\"}}]}",
+      "bodyBytes": 150,
+      "bodySha256": "ebed1022f902a4d57155354ab15fc832b4de1cca592fcc5ef1b3c88b32a51ef6"
+    },
+    {
+      "cohort": "old-guard-control",
+      "ordinal": 2,
+      "method": "POST",
+      "route": "runtime.targets.batch",
+      "key": "maintenance-after-fault",
+      "utf8Body": "{\"operations\":[{\"operation\":\"createBead\",\"id\":\"beads/maintenance-after-fault\",\"type\":\"https://example.test/bead\",\"properties\":{\"title\":\"maintenance-after-fault\"}}]}",
+      "bodyBytes": 164,
+      "bodySha256": "3d5544fd327029e7d8f310c910af9cbd090821a2ef58a50eef5ee40a34525fd3"
+    }
+  ],
+  "optionalHealthyInstalled": [
+    {
+      "label": "seed-a",
+      "method": "POST",
+      "route": "https://reference.invalid/acme/operations/create-bead",
+      "key": "retained",
+      "accept": null,
+      "utf8Body": "{\"id\":\"beads/a\",\"type\":\"https://reference.invalid/acme/types/task\",\"properties\":{\"title\":\"a\"}}",
+      "bodyBytes": 94,
+      "bodySha256": "8730ee46597d5173aa5f13593fd8282ada4fecc1729fd568974cbcdee7275ee8"
+    },
+    {
+      "label": "seed-b",
+      "method": "POST",
+      "route": "https://reference.invalid/acme/operations/batch",
+      "key": "advance",
+      "accept": null,
+      "utf8Body": "{\"operations\":[{\"operation\":\"createBead\",\"id\":\"beads/b\",\"type\":\"https://reference.invalid/acme/types/task\",\"properties\":{\"title\":\"b\"}}]}",
+      "bodyBytes": 136,
+      "bodySha256": "bdec7df3b90efd349ee33374fe1cb8911aa7b7adbf06ca8d31e920e8115e166d"
+    },
+    {
+      "label": "singleton-conflict",
+      "method": "POST",
+      "route": "https://reference.invalid/acme/operations/create-bead",
+      "key": "retained",
+      "accept": null,
+      "utf8Body": "{\"id\":\"beads/changed\",\"type\":\"https://reference.invalid/acme/types/task\",\"properties\":{\"title\":\"changed\"}}",
+      "bodyBytes": 106,
+      "bodySha256": "89cc71bbe2d8fdfd7cbec72887b165d25755fd848af915de005436361fe94c8b"
+    },
+    {
+      "label": "batch-conflict",
+      "method": "POST",
+      "route": "https://reference.invalid/acme/operations/batch",
+      "key": "retained",
+      "accept": "text/plain",
+      "utf8Body": "{\"operations\":[{\"operation\":\"createBead\",\"id\":\"beads/changed\",\"type\":\"https://reference.invalid/acme/types/task\",\"properties\":{\"title\":\"changed\"}}]}",
+      "bodyBytes": 148,
+      "bodySha256": "626c3acb09d848f40a2a97f0e87ef4225cc2a59e864334245a6b7925f98b4951"
+    },
+    {
+      "label": "retained-negotiation",
+      "method": "POST",
+      "route": "https://reference.invalid/acme/operations/create-bead",
+      "key": "retained",
+      "accept": "text/plain",
+      "utf8Body": "{\"id\":\"beads/a\",\"type\":\"https://reference.invalid/acme/types/task\",\"properties\":{\"title\":\"a\"}}",
+      "bodyBytes": 94,
+      "bodySha256": "8730ee46597d5173aa5f13593fd8282ada4fecc1729fd568974cbcdee7275ee8"
+    },
+    {
+      "label": "fresh-negotiation",
+      "method": "POST",
+      "route": "https://reference.invalid/acme/operations/create-bead",
+      "key": "fresh-negotiation",
+      "accept": "text/plain",
+      "utf8Body": "{\"id\":\"beads/c\",\"type\":\"https://reference.invalid/acme/types/task\",\"properties\":{\"title\":\"c\"}}",
+      "bodyBytes": 94,
+      "bodySha256": "c54e2350ba3d0f5514cbef8dafcb231213608964c7e68a4e77cc6ada18127681"
+    },
+    {
+      "label": "fresh-capacity",
+      "method": "POST",
+      "route": "https://reference.invalid/acme/operations/batch",
+      "key": "fresh-capacity",
+      "accept": "text/plain",
+      "utf8Body": "{\"operations\":[{\"operation\":\"createBead\",\"id\":\"beads/overflow-0\",\"type\":\"https://reference.invalid/acme/types/task\",\"properties\":{\"title\":\"overflow-0\"}},{\"operation\":\"createBead\",\"id\":\"beads/overflow-1\",\"type\":\"https://reference.invalid/acme/types/task\",\"properties\":{\"title\":\"overflow-1\"}},{\"operation\":\"createBead\",\"id\":\"beads/overflow-2\",\"type\":\"https://reference.invalid/acme/types/task\",\"properties\":{\"title\":\"overflow-2\"}},{\"operation\":\"createBead\",\"id\":\"beads/overflow-3\",\"type\":\"https://reference.invalid/acme/types/task\",\"properties\":{\"title\":\"overflow-3\"}},{\"operation\":\"createBead\",\"id\":\"beads/overflow-4\",\"type\":\"https://reference.invalid/acme/types/task\",\"properties\":{\"title\":\"overflow-4\"}},{\"operation\":\"createBead\",\"id\":\"beads/overflow-5\",\"type\":\"https://reference.invalid/acme/types/task\",\"properties\":{\"title\":\"overflow-5\"}},{\"operation\":\"createBead\",\"id\":\"beads/overflow-6\",\"type\":\"https://reference.invalid/acme/types/task\",\"properties\":{\"title\":\"overflow-6\"}},{\"operation\":\"createBead\",\"id\":\"beads/overflow-7\",\"type\":\"https://reference.invalid/acme/types/task\",\"properties\":{\"title\":\"overflow-7\"}},{\"operation\":\"createBead\",\"id\":\"beads/overflow-8\",\"type\":\"https://reference.invalid/acme/types/task\",\"properties\":{\"title\":\"overflow-8\"}},{\"operation\":\"createBead\",\"id\":\"beads/overflow-9\",\"type\":\"https://reference.invalid/acme/types/task\",\"properties\":{\"title\":\"overflow-9\"}},{\"operation\":\"createBead\",\"id\":\"beads/overflow-10\",\"type\":\"https://reference.invalid/acme/types/task\",\"properties\":{\"title\":\"overflow-10\"}},{\"operation\":\"createBead\",\"id\":\"beads/overflow-11\",\"type\":\"https://reference.invalid/acme/types/task\",\"properties\":{\"title\":\"overflow-11\"}},{\"operation\":\"createBead\",\"id\":\"beads/overflow-12\",\"type\":\"https://reference.invalid/acme/types/task\",\"properties\":{\"title\":\"overflow-12\"}},{\"operation\":\"createBead\",\"id\":\"beads/overflow-13\",\"type\":\"https://reference.invalid/acme/types/task\",\"properties\":{\"title\":\"overflow-13\"}},{\"operation\":\"createBead\",\"id\":\"beads/overflow-14\",\"type\":\"https://reference.invalid/acme/types/task\",\"properties\":{\"title\":\"overflow-14\"}},{\"operation\":\"createBead\",\"id\":\"beads/overflow-15\",\"type\":\"https://reference.invalid/acme/types/task\",\"properties\":{\"title\":\"overflow-15\"}},{\"operation\":\"createBead\",\"id\":\"beads/overflow-16\",\"type\":\"https://reference.invalid/acme/types/task\",\"properties\":{\"title\":\"overflow-16\"}},{\"operation\":\"createBead\",\"id\":\"beads/overflow-17\",\"type\":\"https://reference.invalid/acme/types/task\",\"properties\":{\"title\":\"overflow-17\"}},{\"operation\":\"createBead\",\"id\":\"beads/overflow-18\",\"type\":\"https://reference.invalid/acme/types/task\",\"properties\":{\"title\":\"overflow-18\"}},{\"operation\":\"createBead\",\"id\":\"beads/overflow-19\",\"type\":\"https://reference.invalid/acme/types/task\",\"properties\":{\"title\":\"overflow-19\"}},{\"operation\":\"createBead\",\"id\":\"beads/overflow-20\",\"type\":\"https://reference.invalid/acme/types/task\",\"properties\":{\"title\":\"overflow-20\"}},{\"operation\":\"createBead\",\"id\":\"beads/overflow-21\",\"type\":\"https://reference.invalid/acme/types/task\",\"properties\":{\"title\":\"overflow-21\"}},{\"operation\":\"createBead\",\"id\":\"beads/overflow-22\",\"type\":\"https://reference.invalid/acme/types/task\",\"properties\":{\"title\":\"overflow-22\"}},{\"operation\":\"createBead\",\"id\":\"beads/overflow-23\",\"type\":\"https://reference.invalid/acme/types/task\",\"properties\":{\"title\":\"overflow-23\"}},{\"operation\":\"createBead\",\"id\":\"beads/overflow-24\",\"type\":\"https://reference.invalid/acme/types/task\",\"properties\":{\"title\":\"overflow-24\"}},{\"operation\":\"createBead\",\"id\":\"beads/overflow-25\",\"type\":\"https://reference.invalid/acme/types/task\",\"properties\":{\"title\":\"overflow-25\"}},{\"operation\":\"createBead\",\"id\":\"beads/overflow-26\",\"type\":\"https://reference.invalid/acme/types/task\",\"properties\":{\"title\":\"overflow-26\"}},{\"operation\":\"createBead\",\"id\":\"beads/overflow-27\",\"type\":\"https://reference.invalid/acme/types/task\",\"properties\":{\"title\":\"overflow-27\"}},{\"operation\":\"createBead\",\"id\":\"beads/overflow-28\",\"type\":\"https://reference.invalid/acme/types/task\",\"properties\":{\"title\":\"overflow-28\"}},{\"operation\":\"createBead\",\"id\":\"beads/overflow-29\",\"type\":\"https://reference.invalid/acme/types/task\",\"properties\":{\"title\":\"overflow-29\"}},{\"operation\":\"createBead\",\"id\":\"beads/overflow-30\",\"type\":\"https://reference.invalid/acme/types/task\",\"properties\":{\"title\":\"overflow-30\"}},{\"operation\":\"createBead\",\"id\":\"beads/overflow-31\",\"type\":\"https://reference.invalid/acme/types/task\",\"properties\":{\"title\":\"overflow-31\"}},{\"operation\":\"createBead\",\"id\":\"beads/overflow-32\",\"type\":\"https://reference.invalid/acme/types/task\",\"properties\":{\"title\":\"overflow-32\"}}]}",
+      "bodyBytes": 4616,
+      "bodySha256": "fe8750234527a921024115c489b435f0fb66758d17019062e50428f4cc679304"
+    },
+    {
+      "label": "retained-root",
+      "method": "GET",
+      "route": "ACTUAL_SEED_RECEIPT_URL",
+      "key": null,
+      "accept": null,
+      "utf8Body": "",
+      "bodyBytes": 0,
+      "bodySha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "label": "unchanged-beads",
+      "method": "GET",
+      "route": "https://reference.invalid/acme/beads/?limit=32",
+      "key": null,
+      "accept": null,
+      "utf8Body": "",
+      "bodyBytes": 0,
+      "bodySha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "label": "unchanged-events",
+      "method": "GET",
+      "route": "https://reference.invalid/acme/events/",
+      "key": null,
+      "accept": null,
+      "utf8Body": "",
+      "bodyBytes": 0,
+      "bodySha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "label": "retry-negotiation-key",
+      "method": "POST",
+      "route": "https://reference.invalid/acme/operations/create-bead",
+      "key": "fresh-negotiation",
+      "accept": null,
+      "utf8Body": "{\"id\":\"beads/c\",\"type\":\"https://reference.invalid/acme/types/task\",\"properties\":{\"title\":\"c\"}}",
+      "bodyBytes": 94,
+      "bodySha256": "c54e2350ba3d0f5514cbef8dafcb231213608964c7e68a4e77cc6ada18127681"
+    },
+    {
+      "label": "retry-capacity-key",
+      "method": "POST",
+      "route": "https://reference.invalid/acme/operations/batch",
+      "key": "fresh-capacity",
+      "accept": null,
+      "utf8Body": "{\"operations\":[{\"operation\":\"createBead\",\"id\":\"beads/d\",\"type\":\"https://reference.invalid/acme/types/task\",\"properties\":{\"title\":\"d\"}}]}",
+      "bodyBytes": 136,
+      "bodySha256": "c39c944cd13c464b4d886d0d1968296ad43f72c153532c49ce687153b9e36819"
+    },
+    {
+      "label": "final-beads",
+      "method": "GET",
+      "route": "https://reference.invalid/acme/beads/?limit=32",
+      "key": null,
+      "accept": null,
+      "utf8Body": "",
+      "bodyBytes": 0,
+      "bodySha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "label": "final-events",
+      "method": "GET",
+      "route": "https://reference.invalid/acme/events/",
+      "key": null,
+      "accept": null,
+      "utf8Body": "",
+      "bodyBytes": 0,
+      "bodySha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    }
+  ],
+  "measurement": "Authored UTF-8 payloads reconstructed from source literals; no HTTP performed. Runtime-generated host/headers/receipt URI unmeasured until approved execution."
+}

@@ -1,0 +1,28 @@
+{
+  "scope": "Only source metadata, chronology and explicit CI-PENDING release boundary; no semantic/workload change",
+  "priorIndexSha256": "8c9c12d4dd590154600474c6e5351c37be3da4979348f3f1366e269d55e88aed",
+  "priorPlanSha256": "4993e9ec934053c9c69abf1fcc444991a5c321a3abc9d21174d9b56b5d0154b2",
+  "newPlanSha256": "99128481d9665f7ae25f0cc8bf96c07ae270bf2d1660e37b1b1deb92d11ccd34",
+  "patchSha256": "13ff758111d5059802830379cbb43e4db83279e8c3c14b03677ff07369bffe01",
+  "actualCleanHead": "a56254d682cf4623cab22a552e3d2f695f691795",
+  "tree": "144f278c7f5a08516c4ac99ba553d4cc25bcf560",
+  "soleParent": "9f89271e2563a105410789ca8ca1e77dfb4d0b9f",
+  "all679CurrentCommittedPlanningTestedEqual": true,
+  "sourceChanges": [],
+  "unchangedContractFiles": {
+    "selection.json": "d6662e99711769723ff3dfaf7a72c7017ad3d2e4e0a12dc1ec59304588619d8f",
+    "workload.json": "8657dae2ac0dc2eb58810894075d8eb7735d2d4c633e867791b211d98add270d",
+    "report-schemas.json": "37e99f4ac3a1e14adab472e2a031702f680952263be2c5adc03c6e1bca00fa1a",
+    "preservation.json": "ebf08f645d5d796fd68be270354f28fe029cbd545df78721fa76d96cd634ee81"
+  },
+  "preservedMechanicsIndex": "8a0dba69b672084a31fe00dff5af0c0f520bd0185012180555a551954963c1db",
+  "claudeMechanicsChanged": false,
+  "finalPromptPrepared": false,
+  "noExecution": true,
+  "pending": [
+    "native/root rebind closure",
+    "exact-head green root acceptance",
+    "final actual Claude PLAN source/context/prompt/tool bindings",
+    "native final mechanics and root single-attempt launch release"
+  ]
+}

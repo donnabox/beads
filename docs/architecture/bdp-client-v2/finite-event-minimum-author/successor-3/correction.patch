@@ -1,0 +1,19 @@
+--- successor-2/apps/bdptest/src/transactional-event-missing-context-installed.test.ts
++++ successor-3/apps/bdptest/src/transactional-event-missing-context-installed.test.ts
+@@ -588,10 +588,12 @@
+           }),
+         ]);
+         if (Date.now() >= expiresAt) deadlineExceeded = true;
+-        if (deadlineExceeded || child.child.exitCode !== 0 || child.child.signalCode !== null)
+-          throw new Error("installed finite Event child close was not clean and timely");
+-        closed = true;
+-        if (directory) rmSync(directory, { recursive: true, force: true });
++        if (deadlineExceeded || child.child.exitCode !== 0 || child.child.signalCode !== null) {
++          failures.push(new Error("installed finite Event child close was not clean and timely"));
++        } else {
++          closed = true;
++          if (directory) rmSync(directory, { recursive: true, force: true });
++        }
+       }
+     } catch (error) {
+       failures.push(error);

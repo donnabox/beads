@@ -1,0 +1,28 @@
+# Minimum serving plan: authorization candidate reanchor
+
+The clean authorization candidate 1647c5df37a82e1364d281ac46beb60a94ab6c76 (tree a070420a4c17aa67a821c742d363ff9e82e872a6) changes four of the twelve committed plan pins; eight remain byte-identical. Its ordered parents are dae39d526ea543112da68bdb483a8af7e90972fd and reviewed main6f5e607bf338dd166820bfa3f9f480f7cd54c5f1. This is candidate analysis, not an assertion that authorization has merged. All active plan/Claude inputs are preserved.
+
+| Changed reference | Effect on the next slice |
+|---|---|
+| transaction-read.ts:132–179 | Policy identity and Read authorization now capture the actual immutable owner-entry policy. Keep this capture; add the narrow minimum condition around it. Existing visibility-gap and minimumFor behavior still need the planned repair. |
+| transaction-service.ts:120–162,329–411 | Mutation admission/drain is distinct from finite read activity. Private publication has its own finite timeout/cancellation, waits only for admitted mutations, then publishes. Preserve that lifecycle while extending only the minimum wait reason/capture. |
+| transaction-http.ts:196–236,608–645 | Both current Read and alias calls carry the authenticated request principal through a WeakMap and finally remove it. New early/nested tuple capture must preserve these calls and cleanup; do not revert to anonymous or bypass authentication. |
+| transaction-runtime-configuration.ts | Current policy participates in captured configuration consistency/digest checks. This is a context dependency, not a new M-owned production path or license to replace installed configuration evidence. |
+
+Unchanged pins are transaction-consistency.ts, its tests, transaction-read.test.ts, transaction-http.test.ts, authority-read.ts, read-request.ts, bdp.md and the progress document. Of the nine existing proposed owned files, three overlap authorization (read/service/http); the other six are unchanged. The tenth, a new installed witness, remains to be authored. Detailed hashes and exact four-pin diff accompany this report.
+
+## Genuine hidden-state dependency
+
+transaction-runtime.ts:370–373 exposes the existing private bounded service publication operation. transaction-service.ts:329–368 validates finite timeoutMs, pauses new mutation admission, drains the mutation set, checks cancellation/deadline immediately before publication and always resumes admission. transaction-store.ts:1903–1929 refuses pending owned claims/active sequences, durably commits the fresh empty policy and revokes leases. transaction-authorization.ts:18–35 distinguishes the initial literal development-all-visible from the rotated UUID, generation1, empty Read policy and disabled mutations. It is Scope-wide with principal-aware capture, not a per-principal ACL implementation.
+
+transaction-store.ts:1867–1873 retrieves the actual snapshot associated with the live reader capability. transaction-read.ts:169–177 feeds it into ordinary visibility. Unchanged authority-read.ts:771–787 resolves a real alias to its stored Bead and applies visibility; :795–807 applies actual visibility to Bead/Link Resource/properties. Thus the planned real seed followed by actual completed publication can exercise genuinely hidden Bead, Link and alias refusals. It must use the genuine published view for same-context unknown probes; deliberately foreign-context rows remain distinct. This source argument does not claim that prior installed auth tests already covered Link/alias minimum collisions.
+
+A bounded waiting read does not itself block private publication: the candidate drains mutations, not all active tasks. A deterministic source test can publish between fresh read attempts and require the later genuine hidden404, without fabricating projection data or changing the admitted mutation contract. Service close still drains admitted finite reads; explicit request cancellation remains separate. The old native caution about a publication/read drain cycle is not applicable to this candidate's separate mutation set.
+
+## Required integration and bounded follow-up
+
+After root verifies the actual authorization merge, create/reuse an isolated clean checkout at that actual merged commit/tree, with the next author commit an ordinary direct child. Do not use1647 as though it were merged main, rebase the authorization checkout, or edit active review inputs. Mechanically reanchor the plan and source pins to actual main, retaining this candidate comparison and the original6f review. Add the actual private authorization/store/runtime reference pins when preparing the implementation context; they need no new source ownership. Confirm the merge preserves the candidate bytes or enumerate any delta before release.
+
+Keep the two existing operator rulings, narrowly routed eligibility, unchanged ordinary negotiation/conditional precedence, recognized-only defaults outside the selected routes, and unresolved S1/G2/foreign-unknown boundaries. No new ruling follows from authorization integration. Preserve the proposed ten-file scope and 26+2+2 expected /78 maximum HTTP, three children,30s work/5s request/10s start-close/120s supervisor bounds. Actual seed bytes, callback selectors, private installed IPC adaptation and exact derivative sites remain draft-freeze obligations; no planned execution is represented as completed here.
+
+This agent authored authorization production/preparation portions; this is a factual reanchor analysis, not additional independent code approval. No product import, test, build, service, Git mutation or outward publication was performed.

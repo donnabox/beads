@@ -1,0 +1,117 @@
+Read-only review complete. All probes run on Node v24.16.0 (`/Users/dbox/.nvm/versions/node/v24.16.0/bin/node`); no files written or modified; tree still clean at `11fe839`.
+
+---
+
+# Supplemental review: `11fe839` relative `9da223a`
+
+**Frozen HEAD:** `11fe83926bace2c2a89a9b6f97cde7b02ce67229` · **Base:** `9da223a773dcb95d9bc57f3d18b1ff8169ed0838` · 12 files, +63/−34
+**Also inspected per instruction:** `90228b3` (recovery format refusal), `9da223a` (STATUS documentation)
+
+## Probes actually performed
+
+| Probe | Result |
+|---|---|
+| `tsc -p tsconfig.check.json` | **exit 0**. `tsconfig.check.json` includes `packages/*/src/**/*.ts` with no `*.test.ts` exclusion, so the new `expectTypeOf` guard is genuinely enforced by `pnpm typecheck` (it is inert under plain `vitest run`) |
+| Full `vitest run` on pinned v24.16.0 | **7582 passed, 5 failed, 1 skipped** (2 files). All 5 are one root cause — Finding A below |
+| `node scripts/read-cohort-evidence.mjs` (`pnpm evidence:verify`) | **fails**: `Read schema projection drift: re-seal required` |
+| SHA-256 of all 7 JCS vectors in `docs/design/w1-transactional-packet.md` §5.4 | **7/7 self-consistent**, including the two previously broken at `:4627`/`:4641` |
+| Independent recompute of the Read projection (sealed 47 × `$defs`, JCS, SHA-256) in Python at both commits | `9da223a` → `387cd60f…` (**exactly the pin**); `11fe839` → `bd7da0fc…`. Dispositive on causality |
+| `shasum -a 256` of both schema copies vs the refreshed policy pin | `3461e343…` matches `schema-graph-policy.json:21`; the two copies are byte-identical |
+| Mapped every `$ref` to `revisionProvenance`/`…Input` through `$defs` | 6 output sites (`beadRecord`, `linkRecord`, `createdData`, `updatedData`, `ownedLinkDelta`, `historyVersionRow`), 7 input sites, no crossover — `minProperties` tightens output only |
+| Scan of `fixtures/**` + `packages/conformance/**` for `revisionProvenance: {}` | 0 hits; `resource-evaluator.ts:1119` omits the member when context and actor are both absent, so the reference server cannot emit it |
+| `fixtures/history/wire.json` example bodies | Ajv-validated per example by `history-wire.test.ts:45-53`; the edited `create-bead-input` passes |
+| `biome format .` / `biome lint .` | format clean; 3 lint warnings + 1 info, all in files untouched by the delta (pre-existing) |
+| Retained-identity persistence surface | `semanticIdentityJson` is durable only in `recovery-store.ts` (`key_state.identity`), so format 3 is a complete boundary for those bytes |
+
+---
+
+## New findings
+
+### A. High — the `minProperties` repair moves a sealed Read-projection definition and re-opens the cohort gate
+**`schemas/bdp-v0.schema.json:5540`** and the byte-identical **`packages/protocol/schemas/bdp-v0.schema.json:5540`**
+
+`revisionProvenance` is sealed definition #29 in `READ_SCHEMA_SEALED_DEFINITIONS` (`packages/conformance/src/schema-read-projection.ts:110`). Adding `"minProperties": 1` changes that definition's text, so the projection digest moves — which RP1 defines as closing the cohort until re-sealed.
+
+I recomputed the projection independently (JSON array of `[name, definition]` pairs in sealed order, RFC 8785, SHA-256) from the git objects:
+
+- `9da223a:schemas/bdp-v0.schema.json` → `387cd60fc2a253885ae7cedbb9ee491a3dfd832af21e8c093664047f13c41dac` — **exactly** the pinned value
+- `11fe839` → `bd7da0fc3f8082e0bfb6f4969c04409f2a610e12408dbc6a0bd14b4b351127cc`
+
+So this is not the stale pin excluded by your instruction. `f1e83dc` closed that gate (STATUS.md:62-64 records the fresh `387cd60f` seal against run head `90228b3`), the suite was green at `9da223a`, and `11fe839` re-opened it with a one-line schema edit.
+
+**Impact.** 5 test failures across 2 files, and `pnpm evidence:verify` refuses:
+- `packages/conformance/src/schema-read-projection.test.ts` ×2 — including the test whose own comment says "a failure here is the re-seal trigger, seen before the gate sees it"
+- `scripts/read-cohort-evidence.test.mjs` ×3
+
+Stale pins to move: `packages/conformance/src/schema-read-projection.test.ts:38`, the four `bindings.schemaReadProjection` in `docs/design/evidence/read-cohort/read-v1.json`, and the digest asserted in prose at `STATUS.md:64`. (`bindings.schema` at `f1d66c66…` is also now stale, but whole-bundle drift is deliberately outside the digest, so no gate fires on it — consistent with the design, not a defect.)
+
+**Fix.** Either regenerate the Read cohort at a new run head and refresh all six pin sites — the same move `f1e83dc` made — or hold the `minProperties` tightening until a commit that carries a reseal. There is no third option: the constraint lives inside a sealed definition's text by construction.
+
+---
+
+### B. Medium — the accompanying review record asserts the opposite of what the change does
+**`packages/server/test-support/schema-graph-policy.json:27`** (`revisionProvenanceOutputReview`)
+
+Final sentence: *"This is not a Read projection pin or evidence reseal."* It is precisely that. The note also says "refresh only the protocol bundle source pin" — and the commit did refresh that pin (`f1d66c66…` → `3461e343…`, verified correct), which shows the bundle-bytes change was noticed while its projection consequence was ruled out in writing.
+
+**Impact.** These review strings are the durable record a later reviewer or operator consults to decide whether a schema edit needs a reseal. This one certifies "no reseal" for the exact edit class that forces one, and it will keep certifying it after the gate is fixed.
+
+**Fix.** Replace the last sentence with the true boundary: the edit changes the sealed `revisionProvenance` definition and therefore requires a fresh Read projection seal; the schema-graph/`schema-resource-index-2` retention conclusion in the rest of the note is unaffected and reads correctly.
+
+---
+
+### C. Low — `STATUS.md` now names two different current private storage formats
+**`STATUS.md:329-331`** vs **`STATUS.md:22-24`**
+
+`9da223a` added "Private recovery-store format 3 refuses older formats before claim cleanup or other recovery writes." The older readiness paragraph at `:329` still reads "Storage format 2 uses an application-registered JSON syntax function for writes and integrity checks, preserves deep JSON bytes, and **refuses old format-1 stores** before recovery writes." Wrong on both counts at HEAD (`recovery-store.ts:191` is `"3"`, and `:586-595` refuses format 1 *and* 2).
+
+**Impact.** Documentation only, but `STATUS.md` is the operator-facing readiness and compatibility record, and these two paragraphs give contradictory answers to "which stores does this build refuse?" — the exact question Finding 2's compatibility boundary exists to answer.
+
+**Fix.** Update `:329` to format 3 and to "refuses prior formats," or fold it into the new paragraph at `:22-27`.
+
+---
+
+### D. Low — the repaired TypeScript type still admits `{}`, the shape this same commit made invalid
+**`packages/protocol/src/history-values.ts:58-59`**
+
+Branch two of `RevisionContext` is all-optional (`committedAt?: never; agent?: never; message?: never`), and `actor` is optional, so every property of `RevisionProvenance` is optional and `{}` is assignable to it. Same commit added `minProperties: 1` so that `{}` is *not* a valid output envelope. The group constraint now mirrors the schema (correctly — and the normative all-or-none rule is stated at `docs/specs/bdp.md#immutable-change-context`), but the nonemptiness constraint does not. The new type test at `schema-bundle.test.ts:115-125` covers the group and not this.
+
+Not a regression — the three-independent-optionals version also admitted `{}`. I could not compile an isolated counterexample (TypeScript 7.0.2 ships no in-memory JS compiler API, and I did not write a scratch file), so this rests on the assignability rule for all-optional object types rather than on an executed check.
+
+**Impact.** Compile-time only, and narrower than the original Finding 6: an SDK consumer can still construct a `RevisionProvenance` that the output schema rejects at runtime. No internal producer reaches it.
+
+**Fix.** If it is worth closing: require at least one member, e.g. `({ actor: RevisionActor } & RevisionContext) | ({ actor?: RevisionActor } & RequiredContext)`, and add `expectTypeOf<{}>().not.toExtend<RevisionProvenance>()`. Reasonable to leave as-is and record the boundary instead.
+
+---
+
+### E. Low — residual dissolved vocabulary in the live fixture narration for the rows that were strengthened
+**`fixtures/read-update/singletons.json:4`, `:63`, `:279`** and **`fixtures/read-update/property-metadata-changes.json:4`**
+
+Finding 5 strengthened the three spec rows and three catalog titles to "the entire `revisionProvenance` envelope." The fixture corpus those rows bind still narrates the weaker, pre-consolidation form: *"a semantic no-op update that retains its revision and its prior attribution"* (`:4`), *"The revision and the prior version's attribution (human:janet) are retained"* (`:63`), *"The Link keeps its revision and its prior attribution"* (`:279`), *"equal replacements retain revisions and attribution"*.
+
+The bodies themselves are correct and carry actor-only envelopes, so these conditions are true-but-stale rather than wrong, and `fixtures/transactional/set-singletons.json:220` already uses the strong phrasing ("preserves the entire before record"). Design packets are exempt — `docs/design/history-profile-packet.md` and `w1-transactional-packet.md` both carry the "Current wire naming … preserve their original spelling" banner, which covers `history-profile-packet.md:584`. `fixtures/**` carries no such banner.
+
+**Fix.** Reword the four strings to "revision provenance" / "the entire `revisionProvenance` envelope," matching the repaired rows.
+
+---
+
+## Dispositions of the prior findings
+
+| # | Prior finding | Disposition |
+|---|---|---|
+| **1** | Broken JCS/SHA-256 erasure vectors | **Repaired, verified.** Both code blocks restored to `"status":"claimed"` with digests untouched; I recomputed all 7 vectors in §5.4 and all 7 match. Restored byte strings are valid JCS (`principal` < `status`, no space after colon). The recommended "revert to pre-sweep bytes" option was taken, which the file's line-3 banner covers. Residual, not flagged: §5.4's preamble still says the vectors are "computed by the packet's sanity script over the records the fixtures serve," while `fixtures/transactional/erasure-digest-vectors.json` now serves the new envelope under a different Scope (`owned-erasure`) — that divergence predates the sweep and is independent of it |
+| **2** | Rename changes retained idempotency identity bytes, no compatibility treatment | **Repaired, verified, and stronger than asked.** `member-identity.ts:382-387` now states the break for *every* affected input rather than the explicit-empty fold, and the dangling "provenance / compatibility readiness gate" phrase is gone, replaced by a real referent. I traced `semanticIdentityJson` — it is durable only in `recovery-store.ts`, so `90228b3`'s format-3 refusal (`recovery-store.ts:191`, gate at `:586-595`) is a complete boundary, not a partial one. Operator-side treatment landed in `9da223a` (`STATUS.md:22-27`), including "no automatic migration / preserve old stores." See Finding C for the one contradiction left in that file |
+| **3** | Output envelope permits `{}` | **Repaired as specified, but see Finding A.** `minProperties: 1` in both copies, `{}` flipped from accept to reject (`schema-bundle.test.ts:70`, `:92`), input left permissive and newly asserted both directly (`:84`) and through a real `createBead` request (`:85-90`). Ref mapping confirms output-only reach. The constraint has owning normative text at `docs/specs/bdp.md:908`. The defect is not the fix — it is that the fix landed without the reseal it forces |
+| **4** | Two fixture conditions contradict the contract | **Repaired, machine-checked.** Both reworded verbatim to the suggested text; `history-wire.test.ts` Ajv-validates every example body against its own `schema` pointer and passes |
+| **5** | Row prose understates no-op retention | **Repaired in the spec and catalog.** All three spec rows (`bdp.md:6493`, `:6501`, `:6502`) and all three catalog titles updated in lockstep; `requirements`/`selectedText` were already correct and `catalog.test.ts` passes. Incomplete in the bound fixture corpus — Finding E |
+| **6** | TS type does not encode the context all-or-none group | **Repaired with the suggested shape**, plus a new type test. Enforced by `pnpm typecheck` (test files are inside `tsconfig.check.json`'s include), inert under `vitest run`. One constraint short — Finding D |
+| **7** | "an `revisionProvenance`" | **Repaired.** Both spec sentences fixed and all three `selectedText` citations updated in the same commit; zero residual hits repo-wide; `catalog.test.ts` green |
+| **8** | Stale "context" naming on exported surfaces | **Kept, and the rationale holds for the option.** Verified at `resource-evaluator.ts:847-851`: `needsContext` keys on `options.recordChangeContext` or on `agent`/`message` presence, while the actor is read independently at `:857` — so `recordChangeContext` does gate the context group and not the actor, and the name is accurate. One caveat: that rationale does not reach `HISTORY_VALUE_SCHEMA_REFS.context` (`history-values.ts:17`), where the key `context` maps to `#/$defs/revisionProvenance` — the *whole* envelope, actor included. Cosmetic; asserted by name in `history-wire.test.ts:55-66` |
+| **9** | No wire fixture covers `actor` + `agent`/`message` input | **Repaired.** `fixtures/history/wire.json:595` adds `"actor": { "id": "human:donna", "basis": "writer-supplied" }` to `create-bead-input` alongside `agent`/`message`, closing Findings 4 and 9 together as suggested. `revisionProvenanceInput` has no `dependentRequired`, so the three-member combination is legal and validates |
+| **10** | Residual old vocabulary at `bdp.md:3298` | **Repaired.** Now "every whole row's revision and revision provenance"; no catalog cites it, and nothing else quotes the old form |
+
+## On the two commits you asked me to inspect separately
+
+**`90228b3` — no regression found.** The format check (`recovery-store.ts:586-595`) sits ahead of both the claim sweep (`:613`) and the startup write probe (`:615`), so refusal happens before any maintenance write; the `catch` rolls back, and the uncommitted-file cleanup at `:639-646` is correctly guarded by `!startupCommitAttempted`, so an existing store is never unlinked. Its test asserts byte-identity of the file across the refusal and that the format-2 body still contains `"changeContext"` afterward. No committed `*.sqlite` artifacts exist anywhere in the repo, and no other code path or fixture pins the literal `"2"`. Formats 2 and 3 share an identical SQL schema, so the boundary is declared rather than structural — which matches the comment's claim ("never reinterpreted or rewritten") and the `member-identity.ts` comment that now leans on it.
+
+**`9da223a` — accurate except Finding C.** The reseal narrative checks out: run head `90228b3` matches `read-v1.json`'s `runHead`, the capability-constant commit is `f1e83dc`, and the claimed projection `387cd60f` was the true projection of that tree (independently recomputed). The format-3 and "no automatic migration" paragraph is the operator-facing half of Finding 2's fix. The one defect is the unreconciled format-2 paragraph at `:329`. Note that `STATUS.md:64`'s digest claim became false one commit later, through Finding A.

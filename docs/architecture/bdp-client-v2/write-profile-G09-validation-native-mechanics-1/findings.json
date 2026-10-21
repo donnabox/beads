@@ -1,0 +1,71 @@
+[
+  {
+    "actualKeyset": [
+      "id",
+      "type",
+      "revision",
+      "properties",
+      "metadata"
+    ],
+    "actualMetadata": {},
+    "evidence": [
+      {
+        "file": "apps/bdptest/src/transactional-schema-installed.test.ts",
+        "lines": [
+          45,
+          51,
+          517,
+          523,
+          816,
+          822
+        ]
+      },
+      {
+        "file": "packages/server/src/transaction-runtime.ts",
+        "lines": [
+          326,
+          335
+        ]
+      },
+      {
+        "file": "packages/server/src/transaction-store.ts",
+        "lines": [
+          1318,
+          1334
+        ]
+      },
+      {
+        "file": "packages/server/src/transaction-batch.ts",
+        "lines": [
+          457,
+          468,
+          708,
+          740
+        ]
+      },
+      {
+        "file": "packages/server/src/resource-evaluator.ts",
+        "lines": [
+          841,
+          857,
+          977,
+          985,
+          1047,
+          1063,
+          1109,
+          1123
+        ]
+      }
+    ],
+    "executionAuthority": false,
+    "file": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation-preparation-1/audit.py",
+    "id": "G09-VAL-N1",
+    "line": 277,
+    "minimalCorrection": "In a separately released helper successor, require exactly id/type/revision/properties/metadata and require metadata exactly {}, preserving all other exact value checks and rejecting revisionProvenance/endpoints/ownedLinks/unexpected members for this fixture. No product/source/schema weakening is necessary.",
+    "predictedEffect": "Present frozen helper positively refuses the actual allowed five-key result. This is a static source prediction, not an observed failed runtime.",
+    "revisionProvenance": "ABSENT for this exact new-bead input: no revisionProvenance supplied and owner evaluator recordChangeContext=false. Do not mark arbitrarily optional.",
+    "severity": "Medium",
+    "title": "Exact create-result keyset refuses the fixture\u2019s required metadata member",
+    "trigger": "Any genuine successful G09-I01 create response reaches resource key validation after raw/body/context and receipt checks."
+  }
+]

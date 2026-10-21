@@ -1,0 +1,165 @@
+{
+  "preparedAt": "2026-10-17T20:20:06.064565+00:00",
+  "reviewTarget": "Independent full sixteen-file CODE review of genuinely changed six-file correction successor; not unchanged-target retry or correction-only review",
+  "sourceBindingSha256": "9c75bdd9409a3930ae75aaa539f08e0bd74904da6fed618f9b8c0206b4757310",
+  "authorIndexSha256": "f2c69a8b00c8ddcfd765fd4b6368cc7ec787661a614caaa23b02a3c3b5ad7d7c",
+  "authorEntriesVerified": 23,
+  "originalAuthorEntriesPreserved": 43,
+  "originalSourceBindingSha256": "d81b271b04b78af8da81b1f85bc84c9d2b2ff1856979d1a92c8d79215165843a",
+  "fullPatchSha256": "ca59dc9f280ed0ac281f5b6ec00ed6d0fab1197fae7ef3b6a281bf817476eb55",
+  "correctionPatchSha256": "616fe4a65fbe9576ac299ba9f727a725030ed8b3266bf9178afeee0658f935ad",
+  "sourceCount": 679,
+  "fullChangedScope": 16,
+  "outsideOwnedUnchanged": 663,
+  "changedSinceOriginal": 6,
+  "unchangedSinceOriginal": 673,
+  "sourceAttribution": "d9c3eb9 base plus frozen corrected sixteen-file draft; base commit alone is not this payload. Native closure is copied as review context, not a substitute for independent CODE verdict.",
+  "priorReview": {
+    "classification": "timeout",
+    "reviewComplete": false,
+    "exitCode": 143,
+    "sourceSha256": "d81b271b04b78af8da81b1f85bc84c9d2b2ff1856979d1a92c8d79215165843a",
+    "partialTextSha256": "0de92c4904366b611f9b8535c3d0711d3e6809376158c97e8bcbd284f089bd30",
+    "disposition": "Nine fully emitted provisional sections and cut10, no block-stop/terminal/approval. Root/native independently assessed corrections; original-target recovery proposal remains historical/unreleased. Original attempt and all inputs untouched."
+  },
+  "designAttribution": {
+    "snapshots": {
+      "design-original-plan-snapshot.md": "6e3887bef20acf4e34b5eafccc482a1b6245c974750b7a243f0d3163f26d0268",
+      "design-original-code-snapshot.md": "e7070e4b740ca89cb4eeff0e5cf80357ff5d6344fc95826cc82610d2df42891b",
+      "design-current-successor-snapshot.md": "10179d6cae54a16d1891aa91219de04fe9b42c3880dc3e10bea1464e7faf6374"
+    },
+    "currentDiffersFromOriginalCode": true,
+    "currentDiffersFromOriginalPlan": true,
+    "disposition": "Original and current immutable sole-design snapshots separately attributed; live path is provenance only. No earlier reviewer is claimed to have read current checkpoint."
+  },
+  "initialMechanicsIndexSha256": "dd09fee129d4b5d9bfa7de7365db5ad88288f59d2ed5ced9c7da044fcc167b55",
+  "runnerParserArgsByteIdenticalToOriginal": true,
+  "copiedContexts": {
+    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/current-observation-minimum-code-review-successor-1/context/source-binding.json": {
+      "source": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/current-observation-minimum-author/correction-successor-1/source-binding.json",
+      "sha256": "9c75bdd9409a3930ae75aaa539f08e0bd74904da6fed618f9b8c0206b4757310",
+      "bytes": 93655
+    },
+    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/current-observation-minimum-code-review-successor-1/context/author-index.json": {
+      "source": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/current-observation-minimum-author/correction-successor-1/index.json",
+      "sha256": "f2c69a8b00c8ddcfd765fd4b6368cc7ec787661a614caaa23b02a3c3b5ad7d7c",
+      "bytes": 2522
+    },
+    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/current-observation-minimum-code-review-successor-1/context/draft.patch": {
+      "source": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/current-observation-minimum-author/correction-successor-1/draft.patch",
+      "sha256": "ca59dc9f280ed0ac281f5b6ec00ed6d0fab1197fae7ef3b6a281bf817476eb55",
+      "bytes": 96436
+    },
+    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/current-observation-minimum-code-review-successor-1/context/correction.patch": {
+      "source": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/current-observation-minimum-author/correction-successor-1/correction.patch",
+      "sha256": "616fe4a65fbe9576ac299ba9f727a725030ed8b3266bf9178afeee0658f935ad",
+      "bytes": 18766
+    },
+    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/current-observation-minimum-code-review-successor-1/context/author-report.md": {
+      "source": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/current-observation-minimum-author/correction-successor-1/report.md",
+      "sha256": "803f6b3aa7c4bf908643e778aa072a692f2762f41eb96cac090911fda648516c",
+      "bytes": 2926
+    },
+    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/current-observation-minimum-code-review-successor-1/context/report-schemas.json": {
+      "source": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/current-observation-minimum-author/correction-successor-1/report-schemas.json",
+      "sha256": "4aa798e073074fe010a370ee1ea0075bd60b737a37c4aad942c04d034c6ec4f9",
+      "bytes": 26496
+    },
+    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/current-observation-minimum-code-review-successor-1/context/selection.json": {
+      "source": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/current-observation-minimum-author/correction-successor-1/selection.json",
+      "sha256": "6db62011c00a9bede399241e088e4881746bc8a464e0deb1dc91d00d0c2803a0",
+      "bytes": 52631
+    },
+    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/current-observation-minimum-code-review-successor-1/context/workload.json": {
+      "source": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/current-observation-minimum-author/correction-successor-1/workload.json",
+      "sha256": "33386d6740d9fc2bee34a86469b16c2ecf8e295f8202159047c8d20fa7c20687",
+      "bytes": 4816
+    },
+    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/current-observation-minimum-code-review-successor-1/context/preservation.json": {
+      "source": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/current-observation-minimum-author/correction-successor-1/preservation.json",
+      "sha256": "38ae2b9663ce14cab9b203313223556c5bd85cdbaa853193c411b03bc6605c49",
+      "bytes": 90822
+    },
+    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/current-observation-minimum-code-review-successor-1/context/root-correction-release.json": {
+      "source": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/current-observation-minimum-author/correction-successor-1/root-author-release.json",
+      "sha256": "d17818becf8a1d36b1280ba45fe4f381616095886d04be240a8c3665d4c3b051",
+      "bytes": 2065
+    },
+    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/current-observation-minimum-code-review-successor-1/context/accepted-plan.md": {
+      "source": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/current-observation-minimum-plan/successor-2/plan.md",
+      "sha256": "5104f3d4c4154c70f8ce4417e82d5cffbdb7c166b7fa59c5d50bbb9c3d851fd2",
+      "bytes": 32728
+    },
+    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/current-observation-minimum-code-review-successor-1/context/plan-findings-dispositions.json": {
+      "source": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/current-observation-minimum-plan/claude-plan-review/root-findings-dispositions.json",
+      "sha256": "b13c464565ed8fa817dde13dbff9b46274d8c797b08560064ec25de6c519192e",
+      "bytes": 2953
+    },
+    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/current-observation-minimum-code-review-successor-1/context/native-plan-closure.md": {
+      "source": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/current-observation-minimum-plan/successor-2/native-closure.md",
+      "sha256": "2c70f57992a5ffc1447f868395caa78b808f0de45ca903b6a6ebca4d7c1ac13b",
+      "bytes": 4882
+    },
+    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/current-observation-minimum-code-review-successor-1/context/correction-plan.md": {
+      "source": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/current-observation-minimum-code-review/changed-successor-correction-plan.md",
+      "sha256": "736bd71ce2dd404244e48b1a8595e110c1cfa98b509e18d0fd7d56d28059ea43",
+      "bytes": 8707
+    },
+    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/current-observation-minimum-code-review-successor-1/context/native-partial-claims-audit.md": {
+      "source": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/current-observation-minimum-code-review/partial-claims-native-audit.md",
+      "sha256": "282aeca71f8ecaf27e1b0605e10a89641b495f2bf2fd50f9ad7b1074573b83fe",
+      "bytes": 6145
+    },
+    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/current-observation-minimum-code-review-successor-1/context/original-timeout.json": {
+      "source": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/current-observation-minimum-code-review/exit.json",
+      "sha256": "ff10885a41bed5ba91433b5385d305ad5f4efaf922a9a82b680fb53287d5fdfa",
+      "bytes": 658
+    },
+    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/current-observation-minimum-code-review-successor-1/context/original-completion-audit.json": {
+      "source": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/current-observation-minimum-code-review/completion-audit.json",
+      "sha256": "64e57291b5c0a4371c10f7f71acb7300d0790f413af9a55d64898153a8813f2f",
+      "bytes": 12295
+    },
+    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/current-observation-minimum-code-review-successor-1/context/original-partial-output.txt": {
+      "source": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/current-observation-minimum-code-review/partial-final-output.txt",
+      "sha256": "0de92c4904366b611f9b8535c3d0711d3e6809376158c97e8bcbd284f089bd30",
+      "bytes": 11259
+    },
+    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/current-observation-minimum-code-review-successor-1/context/original-partial-attribution.json": {
+      "source": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/current-observation-minimum-code-review/partial-output-attribution.json",
+      "sha256": "36c85d2a33e40dd806f4c7d18cd81b69b087efd9156794842b6d2dad363b4274",
+      "bytes": 4732
+    },
+    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/current-observation-minimum-code-review-successor-1/context/original-source-binding.json": {
+      "source": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/current-observation-minimum-author/source-binding.json",
+      "sha256": "d81b271b04b78af8da81b1f85bc84c9d2b2ff1856979d1a92c8d79215165843a",
+      "bytes": 93051
+    },
+    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/current-observation-minimum-code-review-successor-1/context/design-original-plan-snapshot.md": {
+      "source": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/current-observation-minimum-code-review/context/design-original-plan-snapshot.md",
+      "sha256": "6e3887bef20acf4e34b5eafccc482a1b6245c974750b7a243f0d3163f26d0268",
+      "bytes": 260870
+    },
+    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/current-observation-minimum-code-review-successor-1/context/design-original-code-snapshot.md": {
+      "source": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/current-observation-minimum-code-review/context/design-current-code-snapshot.md",
+      "sha256": "e7070e4b740ca89cb4eeff0e5cf80357ff5d6344fc95826cc82610d2df42891b",
+      "bytes": 270280
+    },
+    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/current-observation-minimum-code-review-successor-1/context/design-current-successor-snapshot.md": {
+      "source": "/Users/dbox/repos/wt/vickie/bdp-client-design/checkout/docs/architecture/bdp-client-v2/design.md",
+      "sha256": "10179d6cae54a16d1891aa91219de04fe9b42c3880dc3e10bea1464e7faf6374",
+      "bytes": 276776
+    },
+    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/current-observation-minimum-code-review-successor-1/context/spec.md": {
+      "source": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/current-observation-minimum-code-review/context/spec.md",
+      "sha256": "67772742d7d08f48c12196e9789f1859ad2d0e19f133ea65e197b049361f84f8",
+      "bytes": 397107
+    },
+    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/current-observation-minimum-code-review-successor-1/context/native-correction-closure.md": {
+      "source": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/current-observation-minimum-author/correction-successor-1/native-closure.md",
+      "sha256": "a3b6dbd33832e9162d25fb8909010615f2a880fac536ca8cff6a39a6379d7bf9",
+      "bytes": 6480
+    }
+  },
+  "pendingContextMetadata": "context-candidates.pending.json preserves earlier preparation with closure unresolved; this final provenance and binding supersede only that pending state, without relabeling it."
+}

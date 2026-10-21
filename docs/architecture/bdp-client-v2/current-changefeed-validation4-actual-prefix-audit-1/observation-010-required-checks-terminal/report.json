@@ -1,0 +1,96 @@
+{
+  "kind": "independent-validation4-required-checks-audit",
+  "observedUtc": "2026-10-18T05:09:34.753080+00:00",
+  "decision": "FOUR REQUIRED CHECKS EXIT0; no findings",
+  "stages": [
+    {
+      "stage": "required-check-boundaries",
+      "actualExit": 0,
+      "elapsedSeconds": 4.293540207669139,
+      "logSha256": "53f4cd856bde25513486a59799c5a05e0650fbb756bf1580fb07e56c2fdeeef3",
+      "rootGateSha256": "5ded044cd2ce05f02bfad56b785c10dc3949c4c21faf89c25ee7b28e4fff8ca8"
+    },
+    {
+      "stage": "required-e2e-ready-preflight",
+      "actualExit": 0,
+      "elapsedSeconds": 4.970248542260379,
+      "logSha256": "d98f56a898eeec7bdf9a9ec2b01310dc241eb978dfce43bf347492c182d6c532",
+      "rootGateSha256": "5ded044cd2ce05f02bfad56b785c10dc3949c4c21faf89c25ee7b28e4fff8ca8"
+    },
+    {
+      "stage": "required-smoke",
+      "actualExit": 0,
+      "elapsedSeconds": 8.111255541909486,
+      "logSha256": "0ac9a742ca4711d08db91c0d7224c8da0f1d25907beebb2790b18fda1e7cb150",
+      "rootGateSha256": "5ded044cd2ce05f02bfad56b785c10dc3949c4c21faf89c25ee7b28e4fff8ca8"
+    },
+    {
+      "stage": "required-evidence-verify",
+      "actualExit": 0,
+      "elapsedSeconds": 4.046841208823025,
+      "logSha256": "79749014f712bd5d838b93088c70fef4cca1ae63d7738a613716ab37fa1295ba",
+      "rootGateSha256": "5ded044cd2ce05f02bfad56b785c10dc3949c4c21faf89c25ee7b28e4fff8ca8"
+    }
+  ],
+  "boundaryPackages": 11,
+  "e2ePreflightTestsPassed": 7,
+  "installedSmokeEvent": {
+    "event": "installed.reference.observed",
+    "claimEligible": false,
+    "configurationIdentity": "508d9f79458becb2b1265b57d2cf9a95e09775bd9af6a5d3a5b712a62a4d601b",
+    "payloadIdentity": "0e4db6cff80b117661292e75da4d6d15a6bf67e3f1c97182a9dab8d691557aff",
+    "artifactIdentity": "development-schema5-e1dff401b5caafb04a4d935775d67eeefeae7bcf306d5d100b979a64eef148e7",
+    "allNineTargets": true,
+    "stableScope": "https://reference.invalid/acme/"
+  },
+  "evidenceActualRawExit": 0,
+  "evidenceEvent": {
+    "level": "info",
+    "event": "evidence.verified",
+    "executable": "read-cohort-evidence",
+    "artifact": "docs/design/evidence/read-cohort/read-v1.json",
+    "constant": "674982be2123b9b7aae630bf79c3f774122900cd",
+    "runHead": "e5f7d0c43c151426350ceededdc77fe7e372db9b",
+    "evidenceCommit": "dbaf63a24219e1ea3f80394746853598b0d4464a",
+    "schemaReadProjection": "bd7da0fc3f8082e0bfb6f4969c04409f2a610e12408dbc6a0bd14b4b351127cc",
+    "schemaReadProjectionDefinitions": 47,
+    "schemaReadProjectionReachable": 46,
+    "rows": 89
+  },
+  "evidenceMeaning": "Existing Read evidence verified only for its artifact-bound claim/runHead/evidenceCommit; no new D1/Write qualification or current-head cohort claim inferred. No raw exit2 conversion occurred.",
+  "all679SourceUnchanged": true,
+  "sampledPidsIndependentlyAbsent": [
+    45995,
+    46019,
+    47418,
+    47447,
+    47457,
+    48962,
+    48986,
+    48987,
+    48995,
+    49008,
+    49011,
+    49015,
+    49020,
+    49023,
+    49027,
+    49032,
+    49034,
+    49037,
+    49040,
+    49043,
+    49046,
+    49049,
+    49051,
+    49062,
+    49063,
+    49066,
+    49069,
+    51020,
+    51044,
+    51070
+  ],
+  "qualification": false,
+  "observerRanValidationOrChangedSourceHelperGitGate": false
+}

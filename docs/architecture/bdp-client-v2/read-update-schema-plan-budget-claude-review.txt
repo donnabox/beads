@@ -1,0 +1,118 @@
+Verified against frozen basis `7d2d23c`. No files written; no builds or tests run; no native reports read.
+
+## Checks that hold (named targets, verified)
+
+| Target | Result |
+|---|---|
+| Harness empty-contract claim | `scripts/installed-reference-observation.mjs:100` inside cited `87–102` ✓ |
+| 13 shipped descriptors → 17 | 8 bead + 5 link in `reference-domain.ts:3-27`; `referenceTypeArtifacts` exported at `installed-reference-configuration.ts:23`, cited `19–78` ✓ |
+| Nonempty list *replaces* shipped set | `installed-reference-configuration.ts:135-146` ("Empty descriptors select the shipped…") ✓ |
+| Byte-identical 13 | plan's `referenceTypeArtifacts` + `stringifyJsonValue` reproduces the capture's own construction exactly ✓ |
+| Spec citations | `bdp.md:562-607` (intersection, no-restate, open root), `2533-2582` (pinning, `type-not-installed`, no implicit fetch) ✓ |
+| Diagnostic field oracles vs spec | `bdp.md:3448-3474`: `{type?, schemaLocation?, instanceLocation?, document?, message}`; `resource-evaluator.ts:277` sets `type: entry.descriptor.id`; `installed-schema-evaluator.ts:1133` builds `schemaLocation` as `canonicalUri#pointer`; 422/`never` ✓ |
+| Metadata exemption | `bdp.md:2211-2212` verbatim ✓ |
+| Intersection is implemented | `resource-evaluator.ts:251-306` iterates all effective contracts ✓ |
+| `if`/`then` vocabulary available | `installed-schema-shape.ts:111-113` ✓ |
+| `propertiesSchema` on Link descriptors; closed normative schema admits it | `protocol/src/index.ts:164-169`; `schemas/bdp-v0.schema.json` `$defs.typeDescriptor` permits it, so no normative edit and the Read seal holds ✓ |
+| Exact GET pin, no wildcard | `development-runtime.ts:333` exact `entry.uri === url.href`; search/hash rejected at capture ✓ |
+| Manifest budget figures | `matrices/read-update-v1.json` = **1,784,372 bytes / 47,409 nodes / depth 11 / container 228 / 41 scenarios**; `CUMULATIVE_MANIFEST_MAX_BYTES = 4_194_304`, `ARTIFACT_MAX_JSON_NODES = 100_000` — **all four plan numbers exact** ✓ |
+| Discovery limits 32 / 524288 | `development-authority.ts:45-46` ✓ |
+| 28 / 101 / 129 / 41 | coverage rows 129, whole 28, `claimEligible:false` ✓ |
+| Report identity | `read-update-matrix.test.ts:259-260,306` capture→IPC→binding for bootstrap and every scenario; contracts/configuration digests move with the new artifacts ✓ |
+| Test-only scope | `launchInstalledReference(entry, configuration)` takes a config, so no shared-launcher edit is needed; all 3 `referenceConfiguration(` sites are inside the owned test file; `apps/bdptest` ships `files:["dist"]` only ✓ |
+| No inherited Type-ID collision | manifest references exactly the 13 known segments; zero `type-not-installed` occurrences ✓ |
+| Installed-artifact ceilings | 17 descriptors + 4 schemas vs `descriptors: 4096, schemas: 4096, totalBytes: 16MiB` — ample ✓ |
+
+---
+
+## Findings
+
+### 1. MEDIUM — the inherited canonical-order oracle is not an append, and the plan does not name it
+**Location:** plan line 9 ("then append four fresh immutable Type IDs") and line 19 ("Update the existing row-local complete inventory and descriptor assertions to those exact IDs/name/describes tuples"); `packages/conformance/fixtures/read-update-reference-v1.json` → `/oracles/ordering/types`.
+
+`read.types.inventory` holds `wholeContract: true` on *two* fixture oracles, not one:
+- `fixture-type-summaries` → `/oracles/collections/type-summaries` (unordered tuples, 13 entries) — the plan covers this.
+- `canonical-uri-order` → `/oracles/ordering/types` (`ordered: true`, 13 entries) — **unmentioned**.
+
+Order is byte-lexicographic by Type ID: `installed-contract-artifact.ts:405` sorts captured artifacts by `Buffer.compare(uriBytes)`, and `authority-read.ts:402,809` preserves that order into `/items`. The four new IDs therefore land at positions **11–14, between `types/relationship` and `types/task`** — not at the end.
+
+**Impact:** the row's whole credit rests on "complete Type summary tuples … **canonical order**". The ordered oracle is either left at 13 (hard failure) or appended to under the plan's own framing (wrong order → failure). The word "append" is incorrect for the served inventory.
+
+**Fix:** name both oracles explicitly; replace "append" with "merge in byte-lexicographic Type-ID order", and state the interleave position.
+
+### 2. MEDIUM — declared file ownership omits the gate that enforces whole-contract credit
+**Location:** plan line 44 ("Proposed author files: …"); `packages/conformance/src/cumulative-artifact.test.ts:146-190`.
+
+That file is where credit is mechanically gated: a hardcoded 28-ID list marked *"Reviewed whole-contract IDs; changing this list requires a clause-level coverage audit"*; `expect(row.status).toBe(planned ? "bounded-observation" : "omitted")`; and `expect(row.bindings[0].assertions).toEqual(flattened action.id.assertion.id list)`.
+
+**Impact:** the two currently-`omitted` rows (`validation.type-contract`, `validation.diagnostics`) flip to `bounded-observation` once planned, and any whole-flag promotion requires editing this file — which the plan declares out of scope. "Existing coverage binding generation remains unchanged" (line 23) is true of the *mechanism* but understates that the coverage JSON and this gate must both be hand-updated in lockstep.
+
+**Fix:** add `packages/conformance/src/cumulative-artifact.test.ts` to the owned list and state that the 28-ID list is the single review point for whole-flag changes.
+
+### 3. MEDIUM — `$id` ≡ retrieval URI ≡ `propertiesSchema` is never pinned, and both new oracles depend on it
+**Location:** plan line 17 ("with explicit `$id`"), line 19 ("Schema resources should be dereferenced and compared with the authored contract"), line 30 ("authored schema `$id` plus failing keyword pointer").
+
+Three independent facts: `installed-schema-graph.ts:287-309` derives `canonicalUri` from `$id` resolved against the retrieval URI; `installed-schema-evaluator.ts:1133` emits `schemaLocation` from `canonicalUri`; `development-runtime.ts:333` serves a schema **only** at its captured `retrievalUri`. `installed-reference-configuration.ts:151-158` constrains only `retrievalUri`, and `installed-schema-graph.ts:517` resolves `propertiesSchema` against either `$id` or retrieval alias.
+
+**Impact:** if `$id` diverges from the hosted retrieval URI, nothing in the runtime objects, but `schemaLocation` then names a URI that returns nothing over HTTP — so the diagnostics oracle and the dereference-and-compare GET-pin oracle cannot both be satisfied. This is the central oracle of the slice and currently rests on an unstated assumption.
+
+**Fix:** require all three URIs identical for each of the four schemas, and assert the equality as a fixture invariant.
+
+### 4. LOW — three other inherited whole-credit rows are perturbed with no credit boundary
+**Location:** plan lines 25-30 (clause map covers four RU rows only) and line 46 ("all inherited applicable scenarios execute against this one configured installed factory with honest uncovered inventory").
+
+`read.types.descriptor`, `read.http.get-head`, `read.http.cache-cors` all hold `wholeContract: true` and read `types/` or `types/{task,relates}`. Their assertions are relative, not static, so none break: HEAD-vs-GET `response-metadata-equals` on `content-length`, `header-tokens` on `cache-control`, and `#/$defs/typeDescriptor`.
+
+**Impact:** no breakage, but `read.types.descriptor` keeps whole credit for "descriptor objects … are closed" over 13 of 17 installed Types, while the only four `propertiesSchema`-bearing descriptors — the variant most likely to stress closedness — live in new rows.
+
+**Fix:** either add the four descriptor GETs to `read.types.descriptor`, or record in the plan why they stay row-local.
+
+### 5. LOW — the tightest budget in the slice is absent from the budget section
+**Location:** plan line 40 ("Measure manifest JSON nodes first, then bytes/depth/container maxima").
+
+The manifest figures are exact and the node/byte ratios are correctly prioritized (47.4% vs 42.5%). But `read.types.inventory` also asserts `complete-page`: `/next` exists and equals `null`, and `DEVELOPMENT_OWNER_LIMITS.read.page.defaultItems = 20` (`development-authority.ts:49`). 17 Types leaves **3** of headroom — tighter than either manifest budget.
+
+**Impact:** the binding constraint on cohort size is unmeasured and unmentioned; the next cohort extension past 20 Types flips a whole-credit row's single-page assertion rather than hitting a manifest bound.
+
+**Fix:** list the 20-item default page alongside nodes/bytes/depth/container.
+
+### 6. LOW — the intersection claim requires child-declared probes, which the plan does not state
+**Location:** plan line 28 ("base-only failure (`n=-1`), child-only failure (`enabled="wrong"`)") against the credit claim "Demonstrates effective intersection".
+
+`resource-evaluator.ts:251-306` runs each effective contract's own validator and tags each diagnostic `type: entry.descriptor.id`. Intersection is discriminated from parent-only/child-only/override **only** if both single-cause failures are observed on a resource whose *declared* Type is the child.
+
+**Impact:** read as "a base-typed resource fails the base constraint, a child-typed resource fails the child constraint", the probe set proves neither intersection nor the stated credit — while still reading as satisfied.
+
+**Fix:** state that all four probes (and the complete-result and valid-combined cases) are on child-declared Beads and Links.
+
+---
+
+## Budget diff `a0b44be..7d2d23c` — prior three diagnostic LOWs
+
+All three are genuinely closed:
+
+- **Graceful exit** — `exitCode === 0 || signalCode === "SIGTERM"` correctly brackets the launcher's two lawful outcomes (`installed-reference-observation.mjs:76-79` sends SIGTERM; the construction-failure path at `:82` sends SIGKILL), and now rejects SIGKILL and nonzero exits.
+- **Exact cancellation result** — the triple matches `runner.ts:2746-2755` `stoppedScenarioResult` verbatim, and discriminates it from the two *other* `harness-error`/`not-run` producers (`:2781`, `:2816`) which carry prerequisite reasons. A prerequisite failure can no longer masquerade as a cancellation stop.
+- **Explicit abort reason** — `controller.signal.throwIfAborted()` surfaces `Error("cumulative run budget exceeded")` instead of letting 41 rows fail as "not pass".
+
+Two residuals:
+
+### 7. LOW — the aborted report is persisted before the abort check and records no cause
+**Location:** `apps/bdptest/src/read-update-matrix.test.ts:719-722`.
+
+`writeFileSync(process.env.BDP_CUMULATIVE_REPORT_PATH, …)` runs *before* `controller.signal.throwIfAborted()`. The report object has no abort field, and `stoppedScenarioResult` uses a fixed reason that never carries the caller's abort error.
+
+**Impact:** two concrete cases. (a) An aborted run leaves a report at the normal path with no abort marker — a consumer keying on file presence rather than exit status cannot tell it apart from a completed run. (b) Narrower but real: if the 90s timer fires after the runner finished all scenarios but before `run()` returns (report assembly includes `git status` and digest work), every row is `pass`, the all-pass report is written, and *then* the test fails for budget — the artifact and the verdict disagree.
+
+**Fix:** check the signal before writing, or thread the abort reason into the report so the artifact is self-describing.
+
+### 8. LOW — the new exit-shape control has no positive case and omits the never-settled shape
+**Location:** `apps/bdptest/src/read-update-matrix.test.ts:1319-1331`.
+
+The `it.each` covers `{null, SIGKILL}` and `{1, null}`. It omits `{null, null}` — the never-settled shape that was the superseded assertion's entire purpose — and asserts no accepted shape. The inline comment ("actual installed children are closed by each HTTP run") is an honest account of where the positive side comes from, and the new predicate does strictly imply "settled", so this is a proof gap rather than a behavior gap.
+
+**Fix:** add `{exitCode: null, signalCode: null}` to the rejected cases.
+
+---
+
+Nothing in the plan's stated uncovered inventory was treated as a defect: the deliberately-partial postures on `validation.diagnostics` (truncation, evaluation order, retained-list compatibility, non-Type causes) and on `validation.type-contract` (no-implicit-network) are correct against the catalog clauses — the diagnostics row does cite the `diagnosticsTruncated` requirement, and the plan honestly keeps the row partial rather than claiming it.

@@ -1,0 +1,635 @@
+Review this exact one-line test correction as a focused supplement to the completed receipt missing-context code review. Do not write or modify any files. Output findings only in stdout. Tools are disabled; complete supplied context below is the review target. Return numbered concrete findings with severity, location, impact and smallest correction; explicitly state if there is no blocking finding. Do not re-review unrelated production or demand broad new tests just because source is excerpted.
+
+The previous actual full code review returned eight findings. Its F1 identified a need to audit existing missing-receipt assertions; the independent full-source audit found this single stale absence expectation. Root authorized replacing only that assertion. Production, callback inputs, other assertions, timeouts and seven other draft files are unchanged. The fixture creates one transaction at pos-1; later requests are reads, including a hidden receipt requested by the other principal with foreign epoch and ahead pos-99. Receipt visibility is checked before semantic minimum enforcement and the same owner observation supplies current Scope context. This context does not disclose receipt membership. Missing authorized reads uniformly return404; unauthenticated requests remain401. Scope tokens are current fixed all-visible view, not the requested foreign minimum.
+
+Review whether exact pos-1 is correct, whether the one-line repair weakens any intended status/ordering test, and whether a concrete remaining defect in this correction exists. The existing callback has14HTTP/oneowner/listener/tempstore/no child, unchanged; execution of that exact callback is separately root-controlled. Original14 source-selected cases passed on the predecessor; they omitted this existing callback. No claim of this callback's actual outcome or successor installed/full-CI success is made here. Emitted production remains unchanged; prior build attribution stays historical. Exact-head full CI remains required. This is partial non-qualifying evidence, no profile promotion.
+
+Parent015cac1aa4fa827cc4a2c647dff08454c6c8e6f8. Successor binding e96f012c8502285454eb3867f8b7b35c82c483ae3ceb3f7fc21eaa31127d0cf3; full draft d0afee38fdab6f78bbebe6b131066204a58580c7bf0bbfce3cead43e36a73809. Prior actual Claude stdout96959814652b5360d014a6f67b162a1ff774aec8730cefe0da642371ddafb094 remains separate.
+
+## Exact correction
+```diff
+--- a/packages/server/src/transaction-http.test.ts
++++ b/packages/server/src/transaction-http.test.ts
+@@ -1763,7 +1763,7 @@
+     headers: { ...headers, authorization: `Bearer ${otherToken}`, "bdp-scope-epoch": "foreign" },
+   });
+   expect(hidden.status).toBe(404);
+-  expect(hidden.headers.has("bdp-scope-position")).toBe(false);
++  expect(hidden.headers.get("bdp-scope-position")).toBe("pos-1");
+   for (const suffix of [
+     "links/?cursor=missing",
+     "",
+```
+
+## Complete corrected callback
+```typescript
+it("uses actual epoch/view decisions and an exhausted wait before conditional or timeout responses", async () => {
+  let tick = 0;
+  const f = await fixture({
+    minimumReads: { budgetMs: 2, now: () => tick++, wait: async () => {} },
+  });
+  const created = await f.post(),
+    receipt = await body(created),
+    headers = minimumHeaders(created, "pos-99");
+  for (const target of [`${f.runtime.scope}beads/a`, id(receipt)]) {
+    const timeout = await f.get(target, { headers: { ...headers, "if-none-match": "*" } });
+    expect(timeout.status).toBe(503);
+    expect(timeout.headers.get("retry-after")).toBe("1");
+    expect(timeout.headers.get("bdp-scope-position")).toBe("pos-1");
+    expect(checkedProblem(await body(timeout))).toMatchObject({
+      code: "catch-up-timeout",
+      status: 503,
+      retry: "after-delay",
+    });
+    for (const [field, code, status] of [
+      ["bdp-scope-epoch", "cursor-expired", 410],
+      ["bdp-authorization-view", "foreign-view", 409],
+    ] as const) {
+      const refused = await f.get(target, {
+        headers: { ...headers, [field]: "foreign", "if-none-match": "*" },
+      });
+      expect(refused.status).toBe(status);
+      expect(checkedProblem(await body(refused))).toMatchObject({ code });
+      expect(refused.headers.get("bdp-scope-position")).toBe("pos-1");
+    }
+  }
+  const hidden = await f.get(id(receipt), {
+    headers: { ...headers, authorization: `Bearer ${otherToken}`, "bdp-scope-epoch": "foreign" },
+  });
+  expect(hidden.status).toBe(404);
+  expect(hidden.headers.get("bdp-scope-position")).toBe("pos-1");
+  for (const suffix of [
+    "links/?cursor=missing",
+    "",
+    "bdp.json",
+    "operations/",
+    "beads/?cursor=missing",
+  ]) {
+    const target = `${f.runtime.scope}${suffix}`;
+    const unsupported = await f.get(target, { headers });
+    expect(unsupported.status).toBe(500);
+    expect(unsupported.headers.get("x-bdp-development-limit")).toBe("minimum-position-route");
+  }
+  expect(
+    (
+      await f.get(`${f.runtime.scope}beads/a`, {
+        headers: { ...headers, "bdp-minimum-scope-position": "opaque-unknown" },
+      })
+    ).status,
+  ).toBe(500);
+});
+
+```
+
+## packages/server/src/transaction-http.test.ts:1–204
+```
+1: import { mkdtempSync, rmSync, readFileSync } from "node:fs";
+2: import { tmpdir } from "node:os";
+3: import path from "node:path";
+4: import { connect } from "node:net";
+5: import { DatabaseSync } from "node:sqlite";
+6: import { request as httpRequest } from "node:http";
+7: import { setImmediate } from "node:timers/promises";
+8: import { afterEach, describe, expect, it, vi } from "vitest";
+9: import { Ajv2020 } from "ajv/dist/2020.js";
+10: import { isJsonSchemaDateTime, isJsonSchemaUri, parseTypeDescriptor } from "@bdp/protocol";
+11: import type { TransactionRuntimeTestSeams } from "./transaction-runtime.js";
+12: const { startTransactionRuntime } = (await import(
+13:   new URL("../dist/transaction-runtime.js", import.meta.url).href
+14: )) as typeof import("./transaction-runtime.js");
+15: const ajv = new Ajv2020({ allErrors: true, strict: true });
+16: ajv.addFormat("uri", { type: "string", validate: isJsonSchemaUri });
+17: ajv.addFormat("date-time", { type: "string", validate: isJsonSchemaDateTime });
+18: const schema = JSON.parse(
+19:   readFileSync(new URL("../../../schemas/bdp-v0.schema.json", import.meta.url), "utf8"),
+20: );
+21: ajv.addSchema(schema);
+22: const validateTransactionalProblem = ajv.compile({
+23:   $ref: `${schema.$id}#/$defs/transactionalProblem`,
+24: });
+25: const validateSelectorReceipt = ajv.compile({ $ref: `${schema.$id}#/$defs/mutationReceipt` });
+26: const validateSequence = ajv.compile({
+27:   $ref: `${schema.$id}#/$defs/transactionalSequenceResponse`,
+28: });
+29: function checkedProblem(value: Record<string, unknown>) {
+30:   expect(
+31:     validateTransactionalProblem(value),
+32:     JSON.stringify(validateTransactionalProblem.errors),
+33:   ).toBe(true);
+34:   return value;
+35: }
+36: const token = "a".repeat(32),
+37:   otherToken = "b".repeat(32),
+38:   readToken = "c".repeat(32);
+39: const bead = "https://example.test/bead",
+40:   link = "https://example.test/link";
+41: const types = [
+42:   { id: bead, name: "Bead", describes: "bead", conformsTo: [] },
+43:   {
+44:     id: link,
+45:     name: "Link",
+46:     describes: "link",
+47:     conformsTo: [],
+48:     source: { conformsTo: [bead], external: "opaque" },
+49:     target: { conformsTo: [bead], external: "opaque" },
+50:   },
+51: ].map((value) => parseTypeDescriptor(value));
+52: const cleanup: (() => Promise<void> | void)[] = [];
+53: afterEach(async () => {
+54:   vi.restoreAllMocks();
+55:   for (const fn of cleanup.splice(0).reverse()) await fn();
+56: });
+57: function record(value: unknown): Record<string, unknown> {
+58:   if (!value || typeof value !== "object" || Array.isArray(value))
+59:     throw new Error("expected record");
+60:   return value as Record<string, unknown>;
+61: }
+62: function id(value: unknown): string {
+63:   const result = record(value).id;
+64:   if (typeof result !== "string") throw new Error("expected id");
+65:   return result;
+66: }
+67: async function body(response: Response) {
+68:   return record(await response.json());
+69: }
+70: const create = (name = "a") => ({
+71:   operation: "createBead",
+72:   id: `beads/${name}`,
+73:   type: bead,
+74:   properties: { title: name },
+75: });
+76: const batch = (operations: unknown[] = [create()]) => JSON.stringify({ operations });
+77: async function fixture(seams: TransactionRuntimeTestSeams = {}) {
+78:   const directory = mkdtempSync(path.join(tmpdir(), "bdp-tx-http-"));
+79:   cleanup.push(() => rmSync(directory, { recursive: true, force: true }));
+80:   let time = 1000;
+81:   const options = {
+82:     directory,
+83:     port: 0,
+84:     create: true,
+85:     types,
+86:     credentials: [
+87:       { token, principal: "p", canMutate: true },
+88:       { token: otherToken, principal: "other", canMutate: true },
+89:       { token: readToken, principal: "reader", canMutate: false },
+90:     ],
+91:   };
+92:   let runtime = await startTransactionRuntime(options, { clock: () => time, ...seams });
+93:   cleanup.push(() => runtime.close());
+94:   return {
+95:     get runtime() {
+96:       return runtime;
+97:     },
+98:     async retainedReceipts() {
+99:       await runtime.close();
+100:       const db = new DatabaseSync(path.join(directory, "transaction.sqlite"), { readOnly: true });
+101:       try {
+102:         return db
+103:           .prepare("SELECT receipt FROM receipts ORDER BY key")
+104:           .all()
+105:           .map((row) => JSON.parse(String(row.receipt)));
+106:       } finally {
+107:         db.close();
+108:       }
+109:     },
+110:     async retainedReceiptInventory() {
+111:       await runtime.close();
+112:       const db = new DatabaseSync(path.join(directory, "transaction.sqlite"), { readOnly: true });
+113:       try {
+114:         return db
+115:           .prepare("SELECT principal,key,receipt FROM receipts ORDER BY key")
+116:           .all()
+117:           .map((row) => ({
+118:             principal: row.principal,
+119:             key: row.key,
+120:             receipt: JSON.parse(String(row.receipt)),
+121:           }));
+122:       } finally {
+123:         db.close();
+124:       }
+125:     },
+126:     async receiptRows(key: string) {
+127:       const port = Number(new URL(runtime.scope).port);
+128:       await runtime.close();
+129:       const db = new DatabaseSync(path.join(directory, "transaction.sqlite"), { readOnly: true });
+130:       try {
+131:         return db.prepare("SELECT principal,key FROM receipts WHERE key=?").all(key);
+132:       } finally {
+133:         db.close();
+134:         runtime = await startTransactionRuntime(
+135:           { ...options, port, create: false },
+136:           { clock: () => time, ...seams },
+137:         );
+138:       }
+139:     },
+140:     setTime(value: number) {
+141:       time = value;
+142:     },
+143:     async get(url: string, init: RequestInit = {}) {
+144:       const headers = new Headers({
+145:         authorization: `Bearer ${token}`,
+146:         ...Object.fromEntries(new Headers(init.headers)),
+147:       });
+148:       return fetch(url, { ...init, headers, redirect: "manual" });
+149:     },
+150:     async post(
+151:       text = batch(),
+152:       key: string | null = "key",
+153:       target: keyof typeof runtime.targets = "batch",
+154:       headers: Record<string, string> = {},
+155:     ) {
+156:       return fetch(runtime.targets[target], {
+157:         method: "POST",
+158:         headers: {
+159:           authorization: `Bearer ${token}`,
+160:           "content-type": "application/json",
+161:           ...(key === null ? {} : { "idempotency-key": key }),
+162:           ...headers,
+163:         },
+164:         body: text,
+165:       });
+166:     },
+167:     async reopen(next: TransactionRuntimeTestSeams = seams) {
+168:       const port = Number(new URL(runtime.scope).port);
+169:       await runtime.close();
+170:       runtime = await startTransactionRuntime(
+171:         { ...options, port, create: false },
+172:         { clock: () => time, ...next },
+173:       );
+174:     },
+175:   };
+176: }
+177: function context(response: Response) {
+178:   return Object.fromEntries(
+179:     ["bdp-scope-epoch", "bdp-authorization-view", "bdp-scope-position"].map((name) => [
+180:       name,
+181:       response.headers.get(name),
+182:     ]),
+183:   );
+184: }
+185: 
+186: describe("source-private actual Transactional HTTP", () => {
+187:   it("serves canonical routes without advertising missing discovery or directory", async () => {
+188:     const f = await fixture();
+189:     expect(f.runtime.targets).toEqual(
+190:       Object.fromEntries(
+191:         Object.entries({
+192:           createBead: "create-bead",
+193:           updateBead: "update-bead",
+194:           deleteBead: "delete-bead",
+195:           createLink: "create-link",
+196:           updateLink: "update-link",
+197:           deleteLink: "delete-link",
+198:           putAlias: "put-alias",
+199:           deleteAlias: "delete-alias",
+200:           sequence: "sequence",
+201:           updateWhere: "update-where",
+202:           deleteWhere: "delete-where",
+203:           batch: "batch",
+204:         }).map(([name, suffix]) => [name, `${f.runtime.scope}operations/${suffix}`]),
+```
+
+## packages/server/src/transaction-http.test.ts:1646–1656
+```
+1646:   expect(direct.status).toBe(413);
+1647:   expect(await body(direct)).toMatchObject({ limit: "transaction.operations" });
+1648: });
+1649: 
+1650: function minimumHeaders(
+1651:   response: Response,
+1652:   position = response.headers.get("bdp-scope-position") ?? "pos-0",
+1653: ) {
+1654:   return {
+1655:     "bdp-scope-epoch": response.headers.get("bdp-scope-epoch") ?? "missing",
+1656:     "bdp-authorization-view": response.headers.get("bdp-authorization-view") ?? "missing",
+```
+
+## packages/server/src/transaction-http.test.ts:1732–1789
+```
+1732: it("uses actual epoch/view decisions and an exhausted wait before conditional or timeout responses", async () => {
+1733:   let tick = 0;
+1734:   const f = await fixture({
+1735:     minimumReads: { budgetMs: 2, now: () => tick++, wait: async () => {} },
+1736:   });
+1737:   const created = await f.post(),
+1738:     receipt = await body(created),
+1739:     headers = minimumHeaders(created, "pos-99");
+1740:   for (const target of [`${f.runtime.scope}beads/a`, id(receipt)]) {
+1741:     const timeout = await f.get(target, { headers: { ...headers, "if-none-match": "*" } });
+1742:     expect(timeout.status).toBe(503);
+1743:     expect(timeout.headers.get("retry-after")).toBe("1");
+1744:     expect(timeout.headers.get("bdp-scope-position")).toBe("pos-1");
+1745:     expect(checkedProblem(await body(timeout))).toMatchObject({
+1746:       code: "catch-up-timeout",
+1747:       status: 503,
+1748:       retry: "after-delay",
+1749:     });
+1750:     for (const [field, code, status] of [
+1751:       ["bdp-scope-epoch", "cursor-expired", 410],
+1752:       ["bdp-authorization-view", "foreign-view", 409],
+1753:     ] as const) {
+1754:       const refused = await f.get(target, {
+1755:         headers: { ...headers, [field]: "foreign", "if-none-match": "*" },
+1756:       });
+1757:       expect(refused.status).toBe(status);
+1758:       expect(checkedProblem(await body(refused))).toMatchObject({ code });
+1759:       expect(refused.headers.get("bdp-scope-position")).toBe("pos-1");
+1760:     }
+1761:   }
+1762:   const hidden = await f.get(id(receipt), {
+1763:     headers: { ...headers, authorization: `Bearer ${otherToken}`, "bdp-scope-epoch": "foreign" },
+1764:   });
+1765:   expect(hidden.status).toBe(404);
+1766:   expect(hidden.headers.get("bdp-scope-position")).toBe("pos-1");
+1767:   for (const suffix of [
+1768:     "links/?cursor=missing",
+1769:     "",
+1770:     "bdp.json",
+1771:     "operations/",
+1772:     "beads/?cursor=missing",
+1773:   ]) {
+1774:     const target = `${f.runtime.scope}${suffix}`;
+1775:     const unsupported = await f.get(target, { headers });
+1776:     expect(unsupported.status).toBe(500);
+1777:     expect(unsupported.headers.get("x-bdp-development-limit")).toBe("minimum-position-route");
+1778:   }
+1779:   expect(
+1780:     (
+1781:       await f.get(`${f.runtime.scope}beads/a`, {
+1782:         headers: { ...headers, "bdp-minimum-scope-position": "opaque-unknown" },
+1783:       })
+1784:     ).status,
+1785:   ).toBe(500);
+1786: });
+1787: 
+1788: it("preserves authentication on commands carrying copied read controls without reserving keys", async () => {
+1789:   const f = await fixture();
+```
+
+## packages/server/src/transaction-store.ts:590–599
+```
+590:   function readContext(): TransactionReadContext {
+591:     const position = metadata("position");
+592:     if (!/^(0|[1-9][0-9]*)$/.test(position) || !Number.isSafeInteger(Number(position)))
+593:       throw new Error("invalid transaction read position");
+594:     return Object.freeze({
+595:       scopeEpoch: epoch,
+596:       authorizationView: view,
+597:       scopePosition: `pos-${position}`,
+598:     });
+599:   }
+```
+
+## packages/server/src/transaction-store.ts:837–889
+```
+837:   // Called only inside the guarded owner's transaction. The fixed all-visible
+838:   // policy projects retained facts, including postimages since updated/deleted.
+839:   function disclosedReceipt(principal: string, id: string): Row | undefined {
+840:     for (const stored of db
+841:       .prepare("SELECT * FROM receipts WHERE principal=?")
+842:       .all(principal) as unknown as Row[]) {
+843:       const value = parseReceipt(stored.receipt);
+844:       if (value.id === id) return value.scopeEpoch === epoch ? stored : undefined;
+845:     }
+846:     return undefined;
+847:   }
+848:   function retainedReceipt(principal: string, id: string): TransactionReceipt | undefined {
+849:     const stored = disclosedReceipt(principal, id);
+850:     const remaining = stored && expireRow(stored, instant()).row;
+851:     return remaining ? parseReceipt(remaining.receipt) : undefined;
+852:   }
+853:   type ReceiptRead = {
+854:     readonly receipt: TransactionReceipt | undefined;
+855:     readonly context: TransactionReadContext;
+856:   };
+857:   function readReceipt(principal: string, id: string, minimum?: TransactionMinimum): ReceiptRead;
+858:   function readReceipt(
+859:     principal: string,
+860:     id: string,
+861:     minimum: "unsupported",
+862:   ): ReceiptRead | { readonly kind: "unsupported" };
+863:   function readReceipt(
+864:     principal: string,
+865:     id: string,
+866:     minimum?: TransactionMinimum | "unsupported",
+867:   ): ReceiptRead | { readonly kind: "unsupported" } {
+868:     if (typeof principal !== "string" || !principal || !principal.isWellFormed())
+869:       throw new TypeError("invalid trusted principal");
+870:     if (typeof id !== "string") throw new TypeError("receipt URL required");
+871:     const condition =
+872:       minimum === undefined || minimum === "unsupported"
+873:         ? minimum
+874:         : snapshotTransactionMinimum(minimum);
+875:     return enter(() =>
+876:       atomic(() => {
+877:         const stored = disclosedReceipt(principal, id);
+878:         if (stored && condition === "unsupported")
+879:           return Object.freeze({ kind: "unsupported" as const });
+880:         const context = readContext();
+881:         if (!stored) return Object.freeze({ receipt: undefined, context });
+882:         if (condition !== undefined && condition !== "unsupported")
+883:           checkTransactionMinimum(condition, context);
+884:         const remaining = expireRow(stored, instant()).row;
+885:         if (!remaining) return Object.freeze({ receipt: undefined, context });
+886:         return observeReceipt(parseReceipt(remaining.receipt), context);
+887:       }),
+888:     );
+889:   }
+```
+
+## packages/server/src/transaction-service.ts:207–222
+```
+207:   function receipt(
+208:     principal: string,
+209:     id: string,
+210:     minimum?: TransactionMinimum,
+211:   ): ReceiptObservation | Extract<TransactionServiceReceiptResult, { readonly status: 404 }> {
+212:     const observed = owner.readReceipt(principal, id, minimum);
+213:     return observed.receipt === undefined
+214:       ? Object.freeze({
+215:           kind: "refused",
+216:           status: 404,
+217:           code: "resource-not-found",
+218:           context: observed.context,
+219:         })
+220:       : checked({ ...observed, receipt: observed.receipt });
+221:   }
+222:   async function executeSequence(
+```
+
+## packages/server/src/transaction-service.ts:489–514
+```
+489:     receiptAtMinimum(
+490:       access:
+491:         | { readonly kind: "unauthenticated" }
+492:         | { readonly kind: "authenticated"; readonly principal: string },
+493:       id: string,
+494:       supplied: TransactionMinimum | "unsupported",
+495:     ): Promise<TransactionServiceReceiptResult | { readonly kind: "unsupported" }> {
+496:       return run(async () => {
+497:         if (access.kind === "unauthenticated")
+498:           return Object.freeze({ kind: "refused", status: 401, code: "unauthenticated" });
+499:         const principal = access.principal;
+500:         if (supplied === "unsupported") {
+501:           const observed = owner.readReceipt(principal, id, supplied);
+502:           if ("kind" in observed) return observed;
+503:           return Object.freeze({
+504:             kind: "refused",
+505:             status: 404,
+506:             code: "resource-not-found",
+507:             context: observed.context,
+508:           });
+509:         }
+510:         const minimum = snapshotTransactionMinimum(supplied);
+511:         return waitForTransactionMinimum(() => receipt(principal, id, minimum), minimumReads);
+512:       });
+513:     },
+514:     submit(request: TransactionSubmission): Promise<TransactionServiceSubmissionResult> {
+```
+
+## packages/server/src/transaction-http.ts:106–118
+```
+106: }
+107: export function transactionHttpProblem(
+108:   code: ReadProblemCode,
+109:   observation?: TransactionReadContext,
+110: ): HttpResponse {
+111:   const response = problem(readProblem(code));
+112:   return observation ? context(response, observation) : response;
+113: }
+114: function context(response: HttpResponse, observation: TransactionReadContext): HttpResponse {
+115:   response.headers.set("bdp-scope-epoch", observation.scopeEpoch);
+116:   response.headers.set("bdp-authorization-view", observation.authorizationView);
+117:   response.headers.set("bdp-scope-position", observation.scopePosition);
+118:   return response;
+```
+
+## packages/server/src/transaction-http.ts:525–554
+```
+525:       const access = { kind: "authenticated" as const, principal: authorization.principal };
+526:       if (url.pathname.slice(`${scopeUrl.pathname}receipts/`.length).includes("/pages/")) {
+527:         const page = await service.receiptPage(
+528:           access,
+529:           url.href,
+530:           minimum ?? (hasMinimumControls(request) ? "unsupported" : undefined),
+531:         );
+532:         if (page.kind === "refused")
+533:           return transactionHttpProblem(
+534:             page.code,
+535:             page.code === "resource-not-found" ? page.context : undefined,
+536:           );
+537:         if (page.kind === "unsupported") return developmentGap("minimum-position");
+538:         return context(
+539:           page.kind === "expired"
+540:             ? transactionHttpProblem("cursor-expired")
+541:             : jsonResponse(page.page),
+542:           page.context,
+543:         );
+544:       }
+545:       const result = hasMinimumControls(request)
+546:         ? await service.receiptAtMinimum(access, url.href, minimum ?? "unsupported")
+547:         : service.receipt(access, url.href);
+548:       if (result.kind === "refused")
+549:         return transactionHttpProblem(
+550:           result.code,
+551:           result.code === "resource-not-found" ? result.context : undefined,
+552:         );
+553:       // Missing barrier support cannot disclose a foreign receipt, nor permit a
+554:       // conditional shortcut to serve an unchecked minimum checkpoint.
+```
+
+## docs/specs/bdp.md:5806–5850
+```
+5806: On reads, a Transactional client requests a minimum visible position by sending those
+5807: same epoch and view fields plus:
+5808: 
+5809: ```http
+5810: BDP-Minimum-Scope-Position: opaque-position-42
+5811: ```
+5812: 
+5813: The authority then does one of three things: it returns a representation at
+5814: that position or later, it waits or routes to an eligible replica, or it
+5815: returns the normative foreign-view, cursor-expired, or catch-up-timeout
+5816: problem. It never reports success with an older position.
+5817: 
+5818: Transactional mutation POSTs follow the shared
+5819: [mutation command preconditions](#mutation-command-preconditions): copied read
+5820: minimum fields impose no barrier or command-identity input. This does not change
+5821: minimum controls on reads, including subsequent Mutation Receipt GET or HEAD
+5822: requests.
+5823: 
+5824: SSE responses use `Cache-Control: no-store, no-transform`.
+5825: Intermediaries must not cache or transform the stream.
+5826: 
+5827: ### Transactional Resource read context
+5828: 
+5829: Every Transactional Scope-bounded read reports the Scope epoch, Authorization
+5830: View token, and position of the transaction-consistent projected prefix it
+5831: observed. It reports them through the fields defined under
+5832: [Transactional HTTP consistency](#transactional-http-consistency). Read and Read+Update use Resource
+5833: revisions, entity tags, and snapshot-preserving pagination without exposing
+5834: Scope-history tokens.
+5835: 
+5836: ### Transactional conditional reads
+5837: 
+5838: A `304` is not delivery or application of a change group or erasure record
+5839: and MUST NOT advance a client's durable checkpoint.
+5840: 
+5841: Scope epoch/view, minimum-position and erasure/expiry checks MUST precede any
+5842: conditional shortcut. Required current Scope context remains required on
+5843: 304 and 412 responses.
+5844: 
+5845: The inherited HEAD rules also cover `changes/`, Scope `events/`, Resource
+5846: `view=events`, snapshot handles/streams and receipt/page URLs. For acceptable
+5847: SSE, HEAD returns the response metadata and ends without frames; it MUST NOT
+5848: remain open merely to stream events. HEAD acknowledges neither delivery nor
+5849: application and creates no mutation transaction.
+5850: 
+```
+
+## Full source dispositions for original eight findings (audit, not new execution)
+# Receipt missing-context: Claude source dispositions
+
+One concrete required test correction was found under F1. F2–F8 do not establish another mandatory source change. This is a read-only source audit, not a new test run, approval of installed evidence, or a replacement for exact-head full CI.
+
+Reviewed complete Claude stdout SHA256 96959814652b5360d014a6f67b162a1ff774aec8730cefe0da642371ddafb094 against the eight-file draft source binding edc5c98c8e5c82f2073e1bf35aa84098efe9552c7dbc74537784de75788cca5a, full patch 837bacdc192bcf0401171ecc9a8312ae034beabed7b69620b6a3beaef0cb9de7, base 015cac1aa4fa827cc4a2c647dff08454c6c8e6f8. Anchors below refer to that frozen workspace. No product edit or execution was performed in this audit.
+
+## F1 — required: reconcile one remaining stale header assertion
+
+At packages/server/src/transaction-http.test.ts:1762–1766, the existing callback “uses actual epoch/view decisions and an exhausted wait before conditional or timeout responses” reads a receipt as otherToken with foreign epoch/ahead minimum, correctly expects404, then incorrectly expects absence of bdp-scope-position. Current transaction-service.ts:206–220 and495–511 forward the genuine missing observation; transaction-http.ts:540–551 carries it on404. Nondisclosure precedes semantic minimum refusal. This fixture has only its initial commit, so the header must be pos-1.
+
+Smallest correction: replace the absence assertion with exact header value pos-1 (a complete tuple comparison is optional, not needed to repair this stale assertion). Select this exact existing callback once after correction. Its source-derived workload is14HTTP: one seed POST, two targets each with one timeout and two epoch/view refusals (six), one hidden receipt, five unsupported routes and one malformed-position request. One fixture owns one owner, listener and temporary store; zero installed product children. Existing fixture cleanup applies. No new timing allowance is justified.
+
+The original14 selected callbacks and typecheck/build are real but do not cover this callback. A repository search of service result producers, receipt/page calls, resource-not-found objects and literal/looped false context-header assertions found this concrete stale expectation. TransactionServiceReceiptResult is defined and produced in transaction-service.ts only; the old service hidden-object assertion at service.test.ts:237–242 is already reconciled. Other examined false-header assertions concern405/401, unsupported visibility, aliases or excluded sequence paths (HTTP1073/1089/1907/1920/2994/3026/3118/3123; service2020; SSE340). Page namespace defense equality at receipt-pages.test.ts:281–288 remains intentional. This bounded inventory is not a claim of full regression coverage. Exact-head full CI including downstream gates remains required; running three entire files additionally is not necessary merely to duplicate that gate once the concrete omission is repaired and its callback verified.
+
+## F2 — preserve historical checkpoint
+
+Progress document lines1865–1882 explicitly describe “This draft” and “At this draft checkpoint”. That is the authored pre-execution checkpoint, not a live statement that later external validation never happened. Replacing it with selected positives while control/installed are moving would relabel historical evidence and become stale again. Preserve it; current run/source/control/installed records retain their own source/time attribution. An eventual separately scoped current-status update is not this code correction.
+
+## F3 — already bound before dispatch
+
+apps/bdptest/test-support/transactional-execution-binding.ts:50–73 builds all12 exact target names, including updateWhere and createBead, and deep-compares ready.targets against the entire operationTargets object before returning. The new installed test calls installedTransactionBinding before constructing or dispatching routes (installed test:155 onward) and checks ready.scope against the fixed fixture scope. Thus the two literal operation URLs are already validated against emitted metadata; no guessed route can reach the first dispatch without the existing inventory check passing. Additional two assertions or deriving URLs would be redundant.
+
+## F4 — excerpt gap, HEAD handling exists
+
+packages/conformance/src/http-executor.ts:725 adds Connection: close for exact requests. isFramedResponseComplete at1091 deliberately does not infer HEAD completion from advertised GET content-length; socket completion leads to parseRawResponse at1191, which treats actual HEAD wire octets directly rather than decoding the advertised length. This also preserves illegal body octets for an oracle to reject. http-executor.test.ts:294 explicitly tests HEAD with Content-Length123 and no body, expecting empty text/zero octets. This audit does not rerun that test or convert its existence into fresh execution proof. Prior Event installed HEAD evidence is separate historical evidence. No throwaway exchange or extra installed run is required to resolve the source question.
+
+## F5 — premise is false for /pages
+
+transaction-http.ts:526 chooses receiptPage only if the suffix contains “/pages/”. A terminal “/pages” has no such substring and takes the root read at540–551, yielding current-context404. It cannot exercise the private marker<0 page defense at store2034–2035. The outside-namespace page guard at2038 is likewise a trusted private API defense; ordinary receipt routing supplies the Scope receipt namespace. Pinning headers on the existing terminal-/pages request is optional specificity, not coverage of a wire-visible contextless page defense.
+
+## F6 — optional table style
+
+The existing tables are finite and explicit: HTTP330–344 maps anonymous401, foreign404, owner410;2037–2045 maps owner500 versus foreign404;2050–2058 maps401/404;2158–2176 maps owner500/foreign404. Their status/principal predicates are correct for those exact rows, and status is independently asserted before presence. Expanding future rows warrants revisiting expectations, but there is no current silent mismatch in these four tables. Explicit expected-presence columns are optional cleanup and not required for this repair.
+
+## F7 — keep distinct error channels; actual result adjudication exists
+
+HTTP4053–4086 names the field primaryOrCleanupFailureCount, not total assertion failures. Soft tuples intentionally remain Vitest failures outside that local primary/cleanup array. tupleChecks explicitly counts attempts. The completed control has eight named errors in genuine Vitest JSON, all eight missing tuple values in the safe13-response record, and primaryOrCleanupFailureCount0 with both cleanup callbacks completed. Those are consistent statements. P/actual-audit/audit.json and root-control-acceptance.json retain the separate evidence, including the failed original wrapper graph postcheck; they do not infer a pass from the local summary. Adding matched/mismatched counters would be optional duplicated adjudication. Preserve actual reporter errors as the control verdict authority.
+
+## F8 — impossible collision under current source
+
+The new source test constructs the sibling literal “unknown” at HTTP3992. The actual owner mints admitted receipt IDs as scope + receipts/ + randomUUID() at transaction-store.ts:1106; “unknown” is not a UUID output. No configured mint seam or imported receipt can supply that literal in this fresh fixture. An explicit inequality is optional defense against a future mint policy change; there is no current random-collision probability with this literal.
+
+## Verified-note boundaries
+
+The reviewed same-entry context returns occur after existing integrity checks and before minimum checks; private namespace defenses remain unchanged. Context does not disclose receipt membership: missing/foreign uniform Problems and current authorized Scope context stay aligned. The metadata error/fence distinction,32-inline/one-tail installed fixture arithmetic and declared route ordering remain source-grounded. Source13-response/eight-tuple control is actual observed evidence; installed14 remains separately gated and cannot be claimed from source or static arithmetic. The required stale assertion repair changes no production behavior, fixture operation, runtime limit or public eligibility.

@@ -1,0 +1,65 @@
+--- /dev/null
++++ /Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-cumulative-carrier-validation-preparation-2/census-probe-contract.json
+@@ -0,0 +1,62 @@
++{
++  "acquisition": "Retain entire bounded stdout/stderr buffers until BOTH actual EOF and observed raw terminal. Only then, and strictly within original200ms, may complete strict UTF8/nonempty newline-ended rows drive observe/quiet/finalization/reap/group absence. EAGAIN is not EOF. Any capacity/late/nonzero/stderr/malformed condition is sticky refusal, exact received first-failure prefix is retained; unreceived suffix and absent terminal remain UNKNOWN.",
++  "caps": {
++    "clockOrigin": "same original first origin before imports/setup",
++    "conservativeReceiptEntriesMax": 2048,
++    "killSeconds": 119,
++    "outerSeconds": 120,
++    "probeCutoffSeconds": 0.2,
++    "publicationBytes": 1048576,
++    "retries": 0,
++    "stderrBytes": 4096,
++    "stdoutBytes": 262144,
++    "termSeconds": 115,
++    "workSeconds": 105
++  },
++  "cleanup": "Only direct retained Popen handle signals while unreaped; no historical bare PGID kill. Original group ownership/escalation/unknown logic unchanged. Probe/census failures may leave partial or missing publication; root must preserve FAILED/UNKNOWN, never reconstruct or retry.",
++  "controls": "C13/C15/C16 descriptions refined in place; all32 IDs UNEVALUATED, concrete zero-product harness remains separately UNPREPARED/UNAPPROVED.",
++  "event": "carrier-census-probe-terminal-v1",
++  "keys": [
++    "event",
++    "provisionalUntilActualOuterTerminal",
++    "stage",
++    "attemptId",
++    "sourceBindingSha256",
++    "watchdogPid",
++    "exitCodeCandidate",
++    "elapsedSeconds",
++    "probes",
++    "lastCompleteCensus",
++    "failurePrefix"
++  ],
++  "normalAcceptance": "Typed raw0 + both EOF + empty stderr + bounded complete stdout + parsedAsWholeCensus for every probe. Unique bounded final event is provisional, never approval by itself. Root whole-parent stdout/stderr EOF+raw0+strict elapsed<115 and independent fresh all task/probe identity census are conjunctive.",
++  "probeKeys": [
++    "sequence",
++    "pid",
++    "pgid",
++    "parentPid",
++    "registeredBy",
++    "createdAtSeconds",
++    "rawExit",
++    "stdoutEOF",
++    "stderrEOF",
++    "stdout",
++    "stderr",
++    "settledAtSeconds",
++    "parsedAsWholeCensus"
++  ],
++  "rawRetention": "Final parent event retains exact last complete census raw bytes as base64, exact received first-failure prefix with actual EOF/raw-known facts, and counts/SHA256/EOF/raw terminal for EVERY probe. Intermediate complete bodies are not all persisted: their receipt facts are same-run source attestations, not independent offline replay of unretained rows.",
++  "registry": "Immediately retain direct Popen handle and PID/setsid PGID before fallible nonblocking setup. Every created probe has one consecutive receipt, no clipping/omission. At most2048 receipts as a conservative finite tool capacity; publication must still fit existing1MiB independently, no fit guarantee.",
++  "rootFreshCensusFormat": [
++    "/bin/ps",
++    "-axo",
++    "pid=,ppid=,pgid=,stat=,lstart=,comm="
++  ],
++  "rootProbeIdentities": "all final registry pid/pgid, not just earlier watchdog snapshot or last probe",
++  "rootTaskGroups": "all watchdog knownGroups numeric keys",
++  "rootTaskPids": "watchdog ownedPids union watchdogPid and every knownGroups leader",
++  "sensitiveValues": "Native ps comm only, never argv/env/credentials. Raw bodies contain local PID/process executable metadata; bounded tool evidence, not product public output.",
++  "sourceGrammar": "Original product raw summary/9-key wrapper/sidecars unchanged. This terminal belongs exclusively to watchdog/root tool stdout.",
++  "state": "CLOSED tool receipt contract only; no evaluation",
++  "watchdogBoundary": "Existing watchdog is earlier snapshot before publisher closure; its probe receipt list must equal a prefix of final registry. Final event emitted only after LAST census; no further probe after it. Missing final event/root pipe EOF/raw0/wholeelapsed<115/fresh all-ID/group absence refuses."
++}

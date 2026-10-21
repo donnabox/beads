@@ -1,0 +1,48 @@
+{
+  "basis": "5d7fa3f049fa0b4db3aa8dae20e20d8e47fb3854",
+  "exhaustiveClause": "docs/specs/bdp.md:4618-4621",
+  "editRows": [
+    {
+      "line": 4630,
+      "target": "operations/",
+      "methods": "GET, HEAD",
+      "change": "add400 malformed-request"
+    },
+    {
+      "line": 4632,
+      "target": "receipt URL",
+      "methods": "GET, HEAD",
+      "change": "add400 malformed-request"
+    },
+    {
+      "line": 4633,
+      "target": "receipt page URL",
+      "methods": "GET, HEAD",
+      "change": "add400 malformed-request"
+    },
+    {
+      "line": 4635,
+      "target": "receipts root",
+      "methods": "GET, HEAD clause only",
+      "change": "400 malformed-request for malformed minimum;404 otherwise. Other methods remain405/Allow GET, HEAD."
+    }
+  ],
+  "excludedRows": [
+    4631,
+    4634
+  ],
+  "otherTables": [
+    {
+      "lines": "5945-5953",
+      "kind": "Snapshot summary",
+      "disposition": "Explicitly non-exhaustive ordinary shared failures; no row amendment needed."
+    },
+    {
+      "lines": "6587-6594",
+      "kind": "Observation summary",
+      "disposition": "Explicitly non-exhaustive ordinary shared failures; no row amendment needed."
+    }
+  ],
+  "search": "entire committed spec, exhaustive/status-table wording and GET/HEAD table rows",
+  "otherReadRoutes": "No other exhaustive per-target GET/HEAD status enumeration found. Existing Read closed Problem table1897 already defines400 malformed-request. No global table relaxation."
+}

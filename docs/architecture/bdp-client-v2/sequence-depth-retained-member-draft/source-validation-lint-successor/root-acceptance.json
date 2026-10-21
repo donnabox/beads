@@ -1,0 +1,20 @@
+{
+  "accepted": true,
+  "scope": "preliminary isolated cleanup successor only",
+  "sourceBinding": "9eb076e7fee0b300010a4edac01f55fecd7ab6f1d27955931e7791556d2080ec",
+  "commands": "69cefd9c7cca1d590aaaba94209589be7b083e7dfd44792edafab631cfdd26f8",
+  "reviewed": [
+    "full runner diff",
+    "full command diff",
+    "cleanup correction",
+    "post-build bridge limitation"
+  ],
+  "limits": {
+    "cases": 18,
+    "http": 21,
+    "owners": 16,
+    "listeners": 3,
+    "productChildren": 0
+  },
+  "preservedGates": "actual minimum main ordinary integration, fresh final build/installed, substantive Claude code review; no publication approval"
+}

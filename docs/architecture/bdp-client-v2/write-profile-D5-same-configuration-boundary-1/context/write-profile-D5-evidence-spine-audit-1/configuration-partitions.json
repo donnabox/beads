@@ -1,0 +1,46 @@
+{
+  "rule": "Equal same-profile ServedProfileConfiguration fields required to aggregate evidence; different profile selections/configurations remain explicitly separate experiments. Common final source does not make different fixtures equal.",
+  "boundFields": [
+    "scope",
+    "profile",
+    "history",
+    "sourceCommit",
+    "installedPayloadDigest",
+    "installedContractsDigest",
+    "policyDigest",
+    "authenticationDigest",
+    "fixtureDigest",
+    "fixtureId",
+    "capabilities"
+  ],
+  "identitySources": "owner/installer capture supplies true identities; binding factory validates plain data/format and equality; fixture ID/capabilities/hash derive from exact bytes",
+  "partitions": [
+    {
+      "id": "Read",
+      "scope": "actual Read selected target",
+      "inheritance": "independent Read profile proof is retained at its own target; it cannot stand in for Read behavior inherited on actual RU or TX listener"
+    },
+    {
+      "id": "RU",
+      "scope": "selected RU target with its actual schema/ownership/visibility/aggregate/auth fixture",
+      "inheritance": "all selected nonretired Read laws run here; RU direct Resources/alias identities, member keys and separate sequence commits stay RU"
+    },
+    {
+      "id": "TX",
+      "scope": "selected TX target with actual contracts/policy/auth fixture",
+      "inheritance": "all nonretired Read/RU laws observed through TX-specific receipt/sequence/replication forms; retired RU direct-form laws are replaced explicitly"
+    },
+    {
+      "id": "D4-owned-set",
+      "scope": "four Types/closed n:number/ownsOutgoing max32/one writer/empty Scope aggregate/Historyfalse",
+      "relation": "current standalone private configuration; not the D3a cold fixture or current TX matrix two-Type/five-credential configuration"
+    },
+    {
+      "id": "D3a-cold",
+      "scope": "plan4 cold discovery fixture; authoring not frozen here",
+      "relation": "requires final exact source/captured config rebind; source-known private ready.targets never counts as client discovery"
+    }
+  ],
+  "samePhysicalProcess": "fresh isolated scenario stores/listeners can realize same captured configuration with per-session identities, if verifier binds exact fixture/setup and truthfully distinguishes state/reset/reopen. Actual reopen uses same real store/canonicalScope, no copied DB. Do not pool differing captures under a target label.",
+  "credentialCaution": "authentication digests commit credential associations and may commit secret contents; do not emit raw tokens/headerLines or call digests secrecy guarantees. Fresh random credential change changes authentication binding; one cohort needs consistent captured association."
+}

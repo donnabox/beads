@@ -1,0 +1,21 @@
+[
+  {
+    "correction": "Set each proposedFullName exactly equal to that row basisSelection.name. Preserve every other field/count/source byte and original plan1. An explicit suffix-field rename is possible but unnecessary; eight string replacements are sufficient.",
+    "file": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-code-correction-plan-1/source-cases.proposed.json",
+    "id": "G09-CP1-N1",
+    "impact": "A later author or collector following this machine field could rename or mis-select callbacks. The canonical selection itself is correct; this is DATA precision, not a demonstrated product failure.",
+    "line": 24,
+    "otherLines": [
+      50,
+      76,
+      102,
+      128,
+      154,
+      180,
+      206
+    ],
+    "severity": "Low",
+    "sourceAuthoringReleased": false,
+    "summary": "Eight proposedFullName fields omit the G09-S0N prefix, contradicting the unchanged exact callback names in basisSelection.name, selection.proposed.json and plan.md17."
+  }
+]

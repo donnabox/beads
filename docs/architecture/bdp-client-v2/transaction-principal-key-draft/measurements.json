@@ -1,0 +1,285 @@
+{
+  "method": "standard-library extraction of actual formatted literal table, compared field-for-field to accepted ledger; no product import/execution",
+  "requests": [
+    {
+      "index": 1,
+      "label": "a-create",
+      "method": "POST",
+      "url": "https://reference.invalid/acme/operations/batch",
+      "credentialRef": "a",
+      "headerLines": [
+        {
+          "name": "accept",
+          "value": "application/json"
+        },
+        {
+          "name": "content-type",
+          "value": "application/json"
+        },
+        {
+          "name": "idempotency-key",
+          "value": "principal-shared"
+        }
+      ],
+      "body": "{\"operations\":[{\"operation\":\"createBead\",\"id\":\"beads/a\",\"type\":\"https://reference.invalid/acme/types/task\",\"properties\":{\"title\":\"a\"},\"metadata\":{}}]}",
+      "bodyBytes": 150,
+      "bodySha256": "54f0fefb0965a8210bb22cf09601c18296ef450489eff1aef5a8bea8b99d83b8",
+      "status": 200,
+      "currentPosition": "pos-1"
+    },
+    {
+      "index": 2,
+      "label": "b-independent-create",
+      "method": "POST",
+      "url": "https://reference.invalid/acme/operations/batch",
+      "credentialRef": "b",
+      "headerLines": [
+        {
+          "name": "accept",
+          "value": "application/json"
+        },
+        {
+          "name": "content-type",
+          "value": "application/json"
+        },
+        {
+          "name": "idempotency-key",
+          "value": "principal-shared"
+        }
+      ],
+      "body": "{\"operations\":[{\"operation\":\"createBead\",\"id\":\"beads/b\",\"type\":\"https://reference.invalid/acme/types/task\",\"properties\":{\"title\":\"b\"},\"metadata\":{}}]}",
+      "bodyBytes": 150,
+      "bodySha256": "b26bbe9a43f5cc9b54d7fe7778786b33e5e8d613bf30248de3af65f5eac0cdc8",
+      "status": 200,
+      "currentPosition": "pos-2"
+    },
+    {
+      "index": 3,
+      "label": "a-rotated-replay",
+      "method": "POST",
+      "url": "https://reference.invalid/acme/operations/batch",
+      "credentialRef": "a-rotated",
+      "headerLines": [
+        {
+          "name": "accept",
+          "value": "application/json"
+        },
+        {
+          "name": "content-type",
+          "value": "application/json"
+        },
+        {
+          "name": "idempotency-key",
+          "value": "principal-shared"
+        }
+      ],
+      "body": "{\"operations\":[{\"operation\":\"createBead\",\"id\":\"beads/a\",\"type\":\"https://reference.invalid/acme/types/task\",\"properties\":{\"title\":\"a\"},\"metadata\":{}}]}",
+      "bodyBytes": 150,
+      "bodySha256": "54f0fefb0965a8210bb22cf09601c18296ef450489eff1aef5a8bea8b99d83b8",
+      "status": 200,
+      "currentPosition": "pos-2"
+    },
+    {
+      "index": 4,
+      "label": "b-replay",
+      "method": "POST",
+      "url": "https://reference.invalid/acme/operations/batch",
+      "credentialRef": "b",
+      "headerLines": [
+        {
+          "name": "accept",
+          "value": "application/json"
+        },
+        {
+          "name": "content-type",
+          "value": "application/json"
+        },
+        {
+          "name": "idempotency-key",
+          "value": "principal-shared"
+        }
+      ],
+      "body": "{\"operations\":[{\"operation\":\"createBead\",\"id\":\"beads/b\",\"type\":\"https://reference.invalid/acme/types/task\",\"properties\":{\"title\":\"b\"},\"metadata\":{}}]}",
+      "bodyBytes": 150,
+      "bodySha256": "b26bbe9a43f5cc9b54d7fe7778786b33e5e8d613bf30248de3af65f5eac0cdc8",
+      "status": 200,
+      "currentPosition": "pos-2"
+    },
+    {
+      "index": 5,
+      "label": "a-conflict",
+      "method": "POST",
+      "url": "https://reference.invalid/acme/operations/batch",
+      "credentialRef": "a",
+      "headerLines": [
+        {
+          "name": "accept",
+          "value": "application/json"
+        },
+        {
+          "name": "content-type",
+          "value": "application/json"
+        },
+        {
+          "name": "idempotency-key",
+          "value": "principal-shared"
+        }
+      ],
+      "body": "{\"operations\":[{\"operation\":\"createBead\",\"id\":\"beads/c\",\"type\":\"https://reference.invalid/acme/types/task\",\"properties\":{\"title\":\"c\"},\"metadata\":{}}]}",
+      "bodyBytes": 150,
+      "bodySha256": "3de2f9bb5fb4b4b0537d252ba722b05a3385414129cf35fc6ab0355720f9ff62",
+      "status": 409,
+      "currentPosition": "pos-2"
+    },
+    {
+      "index": 6,
+      "label": "current-complete",
+      "method": "GET",
+      "url": "https://reference.invalid/acme/beads/?limit=32",
+      "credentialRef": "a",
+      "headerLines": [
+        {
+          "name": "accept",
+          "value": "application/json"
+        }
+      ],
+      "body": null,
+      "bodyBytes": 0,
+      "bodySha256": null,
+      "status": 200,
+      "currentPosition": "pos-2"
+    },
+    {
+      "index": 7,
+      "label": "events-complete",
+      "method": "GET",
+      "url": "https://reference.invalid/acme/events/",
+      "credentialRef": "a",
+      "headerLines": [
+        {
+          "name": "accept",
+          "value": "application/json"
+        }
+      ],
+      "body": null,
+      "bodyBytes": 0,
+      "bodySha256": null,
+      "status": 200,
+      "currentPosition": "pos-2"
+    }
+  ],
+  "routeBindings": [
+    {
+      "method": "POST",
+      "url": "https://reference.invalid/acme/operations/batch"
+    },
+    {
+      "method": "GET",
+      "url": "https://reference.invalid/acme/beads/?limit=32"
+    },
+    {
+      "method": "GET",
+      "url": "https://reference.invalid/acme/events/"
+    }
+  ],
+  "routePreimage": "[{\"method\":\"POST\",\"url\":\"https://reference.invalid/acme/operations/batch\"},{\"method\":\"GET\",\"url\":\"https://reference.invalid/acme/beads/?limit=32\"},{\"method\":\"GET\",\"url\":\"https://reference.invalid/acme/events/\"}]",
+  "routeSha256": "40b5131d96ba76a7a77212c92b9336148142f8afb648caac0107f1dc9af3a837",
+  "artifactMeasurements": [
+    {
+      "kind": "descriptors",
+      "retrievalUri": "https://reference.invalid/acme/types/task",
+      "utf8Bytes": 170,
+      "utf8Sha256": "f448e126550b2809d01dc6b24811d1796e82b2599c35b438550ed3bec65a2a22",
+      "retrievalUriBytes": 41
+    },
+    {
+      "kind": "schemas",
+      "retrievalUri": "https://reference.invalid/acme/schemas/properties",
+      "utf8Bytes": 166,
+      "utf8Sha256": "1ed8b24d90a8c278bc466fd48ba1e849afac01326c377e5c6985855e62373f95",
+      "retrievalUriBytes": 49
+    }
+  ],
+  "bodyTotals": {
+    "positive": 750,
+    "negativeExpected": 300,
+    "combinedExpected": 1050,
+    "perBodyMaximum": 150,
+    "combinedMaximumAtSevenEach": 1500,
+    "maximumBasis": "two complete ordered schedules, each exactly five POST x150B plus two bodyless GET; guard next index/method/URL/role/body before every dispatch"
+  },
+  "cohorts": [
+    {
+      "id": "positive",
+      "mode": "positive",
+      "expectedExit": 0,
+      "expectedHttp": 7,
+      "maxHttp": 7,
+      "children": 1,
+      "owners": 1,
+      "listeners": 1,
+      "directories": 1
+    },
+    {
+      "id": "principal-collapse",
+      "mode": "collapse-b-to-a",
+      "expectedExit": 1,
+      "expectedHttp": 2,
+      "maxHttp": 7,
+      "children": 1,
+      "owners": 1,
+      "listeners": 1,
+      "directories": 1,
+      "expectedFailure": "principal-key:b-independent-create:completed",
+      "actualExpectedStatus": 409,
+      "actualExpectedProblem": {
+        "type": "https://github.com/gastownhall/bdp/problems/conflict",
+        "code": "idempotency-conflict",
+        "status": 409,
+        "retry": "never"
+      },
+      "actualExpectedCurrentPosition": "pos-1"
+    }
+  ],
+  "totals": {
+    "expectedHttp": 9,
+    "maximumHttp": 14,
+    "children": 2,
+    "owners": 2,
+    "listeners": 2,
+    "directories": 2,
+    "reopens": 0,
+    "bootstrapHttp": 0,
+    "readonlyDatabaseHandles": 0
+  },
+  "limits": {
+    "workMs": 45000,
+    "launcherReadyMs": 10000,
+    "cleanupMs": 10000,
+    "testMs": 60000,
+    "supervisorMs": 120000,
+    "requestMs": 5000,
+    "responseBodyBytes": 32768,
+    "responseHeaderBytes": 65536,
+    "requestHeaderBytes": 16384,
+    "requestBodyBytes": 65536,
+    "urlBytes": 8192,
+    "maximumPositiveResponseBodyOctets": 229376,
+    "maximumTwoCohortResponseBodyOctets": 458752,
+    "responseBodyInterpretation": "accepted decoded body limit, not receive or peak heap",
+    "receivedFramedBodyGuardBytes": 98304,
+    "wireBufferMaximumBytes": 163840,
+    "sevenExchangeFramedBodyGuardBytes": 688128,
+    "fourteenExchangeFramedBodyGuardBytes": 1376256,
+    "sevenExchangeWireBufferBytes": 1146880,
+    "fourteenExchangeWireBufferBytes": 2293760,
+    "heapPeakBound": null,
+    "deadlineInterpretation": "aggregate work ceiling; no sum-of-individual-maxima completion guarantee"
+  },
+  "sourceLines": 785,
+  "sourceBytes": 30679,
+  "sourceExpectCallSites": 90,
+  "callbackRegistrations": 1,
+  "runtimeExecutionsPerformed": 0,
+  "cleanupState": "unknown-pre-ready preserves store, fails observation and requires external supervisor disposition"
+}

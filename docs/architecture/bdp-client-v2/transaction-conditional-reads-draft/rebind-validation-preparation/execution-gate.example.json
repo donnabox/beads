@@ -1,0 +1,50 @@
+{
+  "released": false,
+  "session": "2026-10-08T20:26:35Z-81e5",
+  "finalHead": null,
+  "finalTree": null,
+  "rootAcceptance": {
+    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-conditional-reads-draft/rebind-validation-preparation/root-release.json",
+    "sha256": null
+  },
+  "sourceBinding": {
+    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-conditional-reads-draft/rebind-validation-preparation/final-source.json",
+    "sha256": null
+  },
+  "inputBinding": {
+    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-conditional-reads-draft/rebind-validation-preparation/input-binding.json",
+    "sha256": null
+  },
+  "approvedCommandIds": [],
+  "phaseRelease": {
+    "source": false,
+    "package": false,
+    "installed": false,
+    "adjudication": false
+  },
+  "preparationSha256": {},
+  "guardSha256": "fd81ba029cd4e7c7e60623df89e8292af91141d311d9ce789ed19e2152375e84",
+  "toolHashes": {},
+  "sourceLockSha256": null,
+  "consumerLockSha256": null,
+  "installedProvenanceSha256": null,
+  "expectedProductionVersions": {
+    "@bdp/protocol": "0.0.0",
+    "@bdp/server": "0.0.0",
+    "ajv": "8.17.1",
+    "ajv-formats": "3.0.1",
+    "fast-deep-equal": "3.1.3",
+    "fast-uri": "3.1.5",
+    "json-schema-traverse": "1.0.0",
+    "require-from-string": "2.0.2"
+  },
+  "note": "CLOSED final integrated source; ordinary reviewed PR147 successor required. Bind actual finalBase/head/tree/parents, generated consumer lock and installed provenance in separate root releases.",
+  "consumerInventorySha256": null,
+  "councilAccepted": false,
+  "authorizationRequirements": {
+    "source": "rootAcceptance.sourceValidationAuthorized=true and sourceCouncilAccepted=true; exact clean source and explicit prefix still mandatory",
+    "allOtherPhases": "councilAccepted=true plus independent phase/prefix/provenance prerequisites",
+    "integration": "rootAcceptance ordinaryIntegrationAccepted, servingSuccessorExactHeadGreenCI and servingCouncilDisposed all true; actual servingSuccessorCommit must be ancestor"
+  },
+  "servingSuccessorCommit": null
+}

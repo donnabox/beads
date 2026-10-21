@@ -1,0 +1,36 @@
+--- preparation5/adaptation-provenance.json
++++ preparation4/adaptation-provenance.json
+@@ -1,22 +1,18 @@
+ {
+-  "state": "CLOSED data-only validation5 successor; no execution",
+-  "mechanicsPredecessor": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-trusted-startup-validation-preparation-4",
+-  "predecessorIndexSha256": "0bff51f3c4f142c641a585152756d504a9efd7d0fc2ab2d65f19b93f3e14012b",
+-  "sourceCorrectionIndexSha256": "6c342bbe6970afadeec6009d6bf4c9d8ef7bb59b2564567bd72420e2215078ad",
+-  "rootFrozenSourceBindingSha256": "92166de7cf4ec773d973dd6ab92cb15cf0e3fc4fa1a4b7896674a375b7c82824",
+-  "diagnosisIndexSha256": "a6602394dfab65c9fe7a3361e0bc5e95b9807ca89bdcb12b52a3779e90473e5f",
+-  "nativeRecommendationSha256": "50b18af2aed32d972229cdb0c628b32d154b5c9971f45b4e3bc082ea22ff198a",
+-  "correctedSourceNativePrecision": "UNRESOLVED; completed recommendation is proposal precision, not exact applied-source closure",
++  "state": "CLOSED data-only validation4 successor; no execution",
++  "mechanicsPredecessor": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-trusted-startup-validation-preparation-3",
++  "predecessorIndexSha256": "e72bd91b92a78da93a9e05550482faba347466457ff10db9887c6af86d41582e",
++  "sourceCorrectionIndexSha256": "9c8a051005b29686dddb1eb5cc939d35c0012d80b290d1a8d71e85a7c6b24b56",
+   "changes": [
+-    "exact682 source map/full12patch/one fixture after hash and source identity",
+-    "selected-file metadata hash only, same44 names/ownership/regex",
+-    "active execution/data paths4 to5",
++    "exact682 source map/full12patch/two production-file after hashes and sourceIdentity",
++    "active execution/data paths3 to4",
+     "bound-consumer-loader.mjs executionRoot literal only",
+-    "all release wrappers closed/unresolved and all25 stages fresh"
++    "fresh closed acceptance wrappers; all25 stages fresh"
+   ],
+   "helperSemanticChanges": false,
+-  "productionChanges": false,
+   "oldN1N2MechanicsPreserved": true,
+-  "sourceEditsByThisWorker": false,
+-  "executionReleased": false
++  "selectedTestHashesChanged": false,
++  "sourceEdits": false,
++  "executionReleased": false,
++  "regexProof": "Root frozen pure-data predicate result preserved; no Node/probe execution here."
+ }

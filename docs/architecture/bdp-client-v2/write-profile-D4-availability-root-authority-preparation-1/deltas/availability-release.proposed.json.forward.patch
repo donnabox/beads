@@ -1,0 +1,23 @@
+--- /dev/null
++++ /Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-D4-availability-root-authority-preparation-1/availability-release.proposed.json
+@@ -0,0 +1,20 @@
++{
++  "approvedInvocations": [
++    "AVAIL--availability"
++  ],
++  "availabilityOnly": true,
++  "durableRootRelease": {
++    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-D4-harness4-root-static-acceptance-1/acceptance.json",
++    "sha256": "633eee1e09a016ce709e1e4818d6eb67245283385e1d0f64958d04264aa6925b"
++  },
++  "harnessImplementationSha256": "9ae8e2914b36edd70773ef871f63b5a8fd762732826fe0427a3e8a6eb7112e37",
++  "nativeHarnessAcceptance": {
++    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-D4-synthetic-harness4-native-mechanics-1/closure.json",
++    "sha256": "ac43d3bfd86d98c35907bf9297bf30d1752dbf432905c22029e9b231dd23f5e1"
++  },
++  "noRetry": true,
++  "productReleased": false,
++  "scope": "D4 zero-product clock/bootstrap availability only",
++  "session": "2026-10-18T02:16:24Z-549f",
++  "syntheticReleased": false
++}

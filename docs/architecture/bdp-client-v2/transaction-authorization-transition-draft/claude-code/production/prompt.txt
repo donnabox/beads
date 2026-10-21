@@ -1,0 +1,1850 @@
+===== Review scope and accepted boundaries =====
+Actual CODE review of a private Scope authorization transition, not a plan review. Do not write or modify any files. Output findings only in stdout. No tools are available; use only supplied exact source and distinguish missing context from verified defects. Return concise numbered findings (severity, exact file/function, concrete mechanism, impact and minimal fix), then essential omitted context. Prefer actionable correctness/privacy/lifecycle/oracle findings; do not invent product decisions or request a broad redesign. State no findings if none established. Aim at most 1200 words.
+
+Two complementary reviews cover every complete changed diff: production owns all ten production paths; evidence owns all five test paths. Shared interfaces overlap deliberately. Root will aggregate both actual outputs; neither is claimed as a monolithic full review. Packet preparer authored the implementation, so these external outputs supplement a separate native code review. Original actual Claude PLAN review is not code approval.
+
+Policy binding is explicitly Scope-wide: authenticated principals share one durable immutable all-visible→empty/mutation-disabled snapshot. It is not a principal map, arbitrary ACL evaluator, regrant/public administration or public profile qualification. Principal-aware Read capture uses the current snapshot inside its live owner entry. Scope-wide Event/Changes/Snapshot trusted source APIs do not introduce per-principal scan storage.
+
+The accepted plan below is historical and superseded narrowly: admin timeoutMs is mandatory because scheduler delivery has no deadline; admin cancellation/timeout abandons waiting/publication, not admitted work. Final T5 uses FIVE rejected-open copies, including generation1 view array coercion. T9 [create a,delete a,create b] proves actual Resource-bearing issued page withholding and preserves the nonrecord prefix. T4 expects foreign-view. T1 uses limit2 for33 Resources (16 reserved continuations within unchanged20 capacity). Final receipt repair collapses completed nonempty all-withheld results OR expired allocations and removes results/next/allocated/expiresAt. Empty and failed/nonrecord facts remain. Allocation indices are retained facts, not disclosed by the whole-withheld form. No schema/state-cap expansion.
+
+Authored positive workload is11 callbacks/21HTTP/14 successful owner opens/11 normal dirs +5 rejected-open copy dirs/2listeners/0productchildren. Proposed C1 reuses T1 with coherent no-publication omission,7 expected/17maxHTTP,1owner/dir/listener; total28expected/38max. Root source-v2 failed T1 request4 at collection limit1 capacity; T2 passed (8 actual HTTP). After fixture limit2 repair, source-v3 passed six static stages then T1 reached real revocation/old-handle fences but failed receipt schema at request16: forbidden expiresAt. T2 passed again (20 actual HTTP); later nine callbacks were not run. Original failures/cleanup are retained. Source-v4 then passed six static stages and10 of11 selected callbacks (all21HTTP passed); T11 failed its first positive Read tag expectation resource instead of actual success. This final test-only successor corrects both tags and compares complete bodies with the real seed Resource. All production bytes remain source-v4 built/tested bytes. Later T11 assertions remain unproved until root targeted execution; no complete11-case success is claimed at assembly. Root may validate the same bytes separately. These observations are attributed to root-run evidence, not reviewer execution. Time/HTTP bounds are not performance proof.
+
+Snapshots qualify known unexpired old-view409 and same-view expiry410 only, not expired+foreign collisions. Initial finite Events show first32+next, not all33 Events. Receipt body execution context stays historical while HTTP context is current. Nonrecord receipt facts remain disclosed. No schema expansion or lifetime view freezing is required. Bytes already accepted by a socket cannot be recalled.
+
+===== Accepted plan attribution =====
+Full successor plan and native closure are hash-bound external inputs, not duplicated here. The code scope, accepted behavior and overriding lifetime/three-test corrections are stated above; this is code review, not reopening plan council.
+
+===== administrative-lifetime-correction.md =====
+# Administrative drain lifetime correction
+
+The frozen successor incorrectly says existing execution deadlines bound every drain. The actual private service scheduler explicitly provides no delivery timeout. Root accepted this correction before runtime execution.
+
+The trusted service/runtime replacement requires timeoutMs and optional signal, with timeoutMs a positive safe integer at most 2147483647. The service owns and clears its timer and abort listener. Deadline or caller cancellation abandons publication and reopens mutation admission under the old snapshot; already-admitted work continues normally. The operation checks cancellation and service lifetime immediately before synchronous owner publication. This adds no mutation deadline, wire control, receipt or rollback semantics.
+
+The sequence witness includes non-delivered scheduler cancellation and timeout, then ordinary work completion and a successful replacement, within its same owner and zero HTTP budget. Concrete calls will be frozen with the authored ledger.
+
+===== docs/specs/bdp.md:5230-5255 =====
+
+Every delivery of a receipt — the synchronous response, the response to a
+duplicate, a later `GET` or `HEAD`, every page, and the projection of a
+member's receipt into a sequence response — is one representation, the
+receipt as retained projected under the serving request's current
+Authorization View. An entry that carries a Resource record — `created`
+or `updated` — is served only when the current view projects that record
+as retained, whether or not the Resource still exists or is at that
+revision, and the view's closure over owned Links applies: hiding a Bead
+hides the entries of every Bead that owns a Link to it and of those Links.
+An entry the view does not project is served as `withheld`, carrying only
+`operationIndex` and, when present, `operationName`; an `allocated` entry
+is re-authorized the same way and carries `withheld` `true` in place of its
+identity. Entries that carry no record — `matched` counts, `deleted` and
+`erased` identities, and `withheld` entries — and a `failed` receipt's
+`problem` are the transaction's own execution facts, disclosed to the
+principal when it executed, and are served as retained. Alias result entries
+are non-Resource execution facts under this same rule.
+When a `completed`
+receipt's every entry is withheld, the receipt carries `detail` `withheld`
+and neither `results`, `next`, nor `allocated`; a `failed` receipt is never
+`withheld`. The disposition, `requiredPosition`, and `effectPosition` are
+never withheld. Withholding is authorization, never deletion: an entry
+whose Resource was since deleted is served like any other when the view
+projects its retained record.
+
+
+===== docs/specs/bdp.md:5751-5754 =====
+For an invisible group, `projectionAdvance` is true, `transaction` is absent,
+and `changes`, `erasures`, and `events` are empty. No Resource, Type, Link endpoint,
+actor, or transaction identifier from the hidden group crosses the
+authorization boundary.
+
+===== Selected unchanged schema definitions (exact JSON semantic objects; referenced definitions outside this selection are not expanded) =====
+{"$id":"https://github.com/gastownhall/bdp/schemas/bdp-v0.schema.json","$defs":{"receiptResult":{"type":"object","required":["operationIndex","outcome"],"properties":{"operationIndex":{"type":"integer","minimum":0},"operationName":{"$ref":"#/$defs/localName"},"outcome":{"$ref":"#/$defs/receiptEntryOutcome"},"resource":{"oneOf":[{"allOf":[{"$ref":"#/$defs/beadRecord"},{"type":"object","properties":{"links":false}}]},{"$ref":"#/$defs/linkRecord"}]},"deleted":{"$ref":"#/$defs/deletedIdentity"},"erased":{"$ref":"#/$defs/resourceIdentity"},"source":{"$ref":"#/$defs/absoluteHttpUrl"},"sourceRevision":{"$ref":"#/$defs/revision"},"count":{"type":"integer","minimum":0},"alias":{"$ref":"#/$defs/absoluteHttpUrl"},"target":{"$ref":"#/$defs/absoluteHttpUrl"}},"allOf":[{"if":{"properties":{"outcome":{"enum":["created","updated"]}},"required":["outcome"],"not":{"properties":{"alias":true},"required":["alias"]}},"then":{"required":["resource"],"properties":{"resource":true,"deleted":false,"erased":false,"count":false}}},{"if":{"properties":{"outcome":{"const":"deleted"}},"required":["outcome"],"not":{"properties":{"alias":true},"required":["alias"]}},"then":{"required":["deleted"],"properties":{"deleted":true,"resource":false,"erased":false,"count":false}}},{"if":{"properties":{"outcome":{"const":"erased"}},"required":["outcome"]},"then":{"required":["erased"],"properties":{"erased":true,"resource":false,"deleted":false,"count":false}}},{"if":{"properties":{"outcome":{"const":"matched"}},"required":["outcome"]},"then":{"required":["count"],"properties":{"count":true,"operationName":false,"resource":false,"deleted":false,"erased":false,"source":false,"sourceRevision":false}}},{"if":{"properties":{"outcome":{"const":"withheld"}},"required":["outcome"]},"then":{"properties":{"resource":false,"deleted":false,"erased":false,"source":false,"sourceRevision":false,"count":false}}},{"if":{"required":["resource"],"properties":{"resource":{"$ref":"#/$defs/beadRecord"}}},"then":{"properties":{"source":false,"sourceRevision":false}}},{"if":{"required":["deleted"],"properties":{"deleted":{"type":"object","required":["resourceKind"],"properties":{"resourceKind":{"const":"bead"}}}}},"then":{"properties":{"source":false,"sourceRevision":false}}},{"if":{"required":["alias"]},"then":{"allOf":[{"$ref":"#/$defs/aliasResultMembers"}],"properties":{"operationIndex":{"const":0},"operationName":false,"resource":false,"deleted":false,"erased":false,"source":false,"sourceRevision":false,"count":false}},"else":{"properties":{"target":false}}}],"dependentRequired":{"source":["sourceRevision"],"sourceRevision":["source"]},"additionalProperties":false},"mutationReceipt":{"title":"BDP Mutation Receipt","type":"object","allOf":[{"$ref":"#/$defs/receiptCore"}],"oneOf":[{"type":"object","required":["id","status","idempotencyKey","scopeEpoch","authorizationView","transaction"],"properties":{"id":true,"status":{"const":"pending"},"idempotencyKey":true,"scopeEpoch":true,"authorizationView":true,"transaction":true,"detail":false,"requiredPosition":false,"effectPosition":false,"results":false,"next":false,"allocated":false,"problem":false,"expiresAt":false}},{"type":"object","required":["id","status","detail","idempotencyKey","scopeEpoch","authorizationView","transaction","requiredPosition","results","next","expiresAt"],"properties":{"id":true,"status":{"const":"completed"},"detail":{"const":"available"},"idempotencyKey":true,"scopeEpoch":true,"authorizationView":true,"transaction":true,"requiredPosition":true,"effectPosition":true,"results":true,"next":true,"expiresAt":true,"allocated":false,"problem":false},"allOf":[{"if":{"properties":{"next":{"type":"null"}},"required":["next"]},"then":{"properties":{"results":{"type":"array","minItems":1}}}}]},{"type":"object","required":["id","status","detail","idempotencyKey","scopeEpoch","authorizationView","transaction","requiredPosition","problem","expiresAt"],"properties":{"id":true,"status":{"const":"failed"},"detail":{"const":"available"},"idempotencyKey":true,"scopeEpoch":true,"authorizationView":true,"transaction":true,"requiredPosition":true,"problem":true,"expiresAt":true,"effectPosition":false,"results":false,"next":false,"allocated":false}},{"type":"object","required":["id","status","detail","idempotencyKey","scopeEpoch","authorizationView","transaction","requiredPosition","allocated"],"properties":{"id":true,"status":{"const":"completed"},"detail":{"const":"expired"},"idempotencyKey":true,"scopeEpoch":true,"authorizationView":true,"transaction":true,"requiredPosition":true,"effectPosition":true,"allocated":true,"results":false,"next":false,"problem":false,"expiresAt":false}},{"type":"object","required":["id","status","detail","idempotencyKey","scopeEpoch","authorizationView","transaction","requiredPosition"],"properties":{"id":true,"status":{"const":"completed"},"detail":{"const":"withheld"},"idempotencyKey":true,"scopeEpoch":true,"authorizationView":true,"transaction":true,"requiredPosition":true,"effectPosition":true,"results":false,"next":false,"allocated":false,"problem":false,"expiresAt":false}}]},"mutationReceiptPage":{"title":"BDP Mutation Receipt page","type":"object","required":["receipt","results","next"],"properties":{"receipt":{"$ref":"#/$defs/absoluteHttpUrl"},"results":{"type":"array","minItems":1,"items":{"$ref":"#/$defs/receiptResult"}},"next":{"oneOf":[{"$ref":"#/$defs/absoluteHttpUrl"},{"type":"null"}]}},"additionalProperties":false},"changeGroup":{"title":"BDP change group","type":"object","required":["scopeEpoch","authorizationView","checkpoint","position","previousPosition","projectionAdvance","eventCount","changes","erasures","events"],"properties":{"scopeEpoch":{"$ref":"#/$defs/wireToken"},"authorizationView":{"$ref":"#/$defs/wireToken"},"checkpoint":{"$ref":"#/$defs/wireToken"},"position":{"$ref":"#/$defs/wireToken"},"previousPosition":{"$ref":"#/$defs/wireToken"},"projectionAdvance":{"type":"boolean"},"transaction":{"$ref":"#/$defs/wireToken"},"eventCount":{"type":"integer","minimum":0},"changes":{"type":"array","items":{"$ref":"#/$defs/stateChange"}},"erasures":{"type":"array","items":{"$ref":"#/$defs/erasureRecord"}},"events":{"type":"array","items":{"$ref":"#/$defs/event"}}},"allOf":[{"if":{"properties":{"projectionAdvance":{"const":true}},"required":["projectionAdvance"]},"then":{"properties":{"transaction":false,"eventCount":{"const":0},"changes":{"type":"array","maxItems":0},"erasures":{"type":"array","maxItems":0},"events":{"type":"array","maxItems":0}}},"else":{"type":"object","required":["transaction"],"properties":{"transaction":true},"anyOf":[{"properties":{"changes":{"type":"array","minItems":1}}},{"properties":{"erasures":{"type":"array","minItems":1}}},{"properties":{"events":{"type":"array","minItems":1}}}]}}],"additionalProperties":false}}}
+
+===== Complete production diff: packages/server/src/transaction-authorization.ts =====
+diff --git a/packages/server/src/transaction-authorization.ts b/packages/server/src/transaction-authorization.ts
+new file mode 100644
+index 0000000..02f6840
+--- /dev/null
++++ b/packages/server/src/transaction-authorization.ts
+@@ -0,0 +1,125 @@
++/** Private Scope policy. Installation facts and retained execution facts are separate. */
++import { randomUUID } from "node:crypto";
++import type { TransactionReceipt, TransactionReadContext } from "./transaction-store.js";
++
++export const INITIAL_TRANSACTION_VIEW = "development-all-visible";
++export interface TransactionAuthorizationLease {
++  readonly signal: AbortSignal;
++  release(): void;
++}
++export interface TransactionAuthorizationSnapshot {
++  readonly revision: 1;
++  readonly bindingKind: "scope";
++  readonly generation: 0 | 1;
++  readonly authorizationView: string;
++  readonly readPolicy: "all-visible" | "empty";
++  readonly canMutate: boolean;
++}
++export function initialTransactionAuthorization(): TransactionAuthorizationSnapshot {
++  return Object.freeze({
++    revision: 1,
++    bindingKind: "scope",
++    generation: 0,
++    authorizationView: INITIAL_TRANSACTION_VIEW,
++    readPolicy: "all-visible",
++    canMutate: true,
++  });
++}
++export function emptyTransactionAuthorization(): TransactionAuthorizationSnapshot {
++  return Object.freeze({
++    revision: 1,
++    bindingKind: "scope",
++    generation: 1,
++    authorizationView: randomUUID(),
++    readPolicy: "empty",
++    canMutate: false,
++  });
++}
++export function parseTransactionAuthorization(text: string): TransactionAuthorizationSnapshot {
++  if (Buffer.byteLength(text) > 4096) throw new Error("authorization policy exceeds storage bound");
++  const v: unknown = JSON.parse(text);
++  if (
++    !v ||
++    typeof v !== "object" ||
++    Array.isArray(v) ||
++    Object.keys(v).sort().join(",") !==
++      "authorizationView,bindingKind,canMutate,generation,readPolicy,revision"
++  )
++    throw new Error("invalid authorization policy fields");
++  const p = v as TransactionAuthorizationSnapshot;
++  if (
++    p.revision !== 1 ||
++    p.bindingKind !== "scope" ||
++    !(
++      (p.generation === 0 &&
++        p.authorizationView === INITIAL_TRANSACTION_VIEW &&
++        p.readPolicy === "all-visible" &&
++        p.canMutate === true) ||
++      (p.generation === 1 &&
++        typeof p.authorizationView === "string" &&
++        /^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/.test(
++          p.authorizationView,
++        ) &&
++        p.readPolicy === "empty" &&
++        p.canMutate === false)
++    )
++  )
++    throw new Error("invalid authorization policy");
++  return Object.freeze(p);
++}
++export class TransactionAuthorizationFailure extends Error {
++  constructor(
++    readonly code: "forbidden" | "temporarily-unavailable" | "foreign-view",
++    readonly context?: TransactionReadContext,
++  ) {
++    super("private authorization admission refused");
++  }
++}
++/** Execution identities survive; only Resource-bearing entries are withheld. */
++export function projectTransactionEntry(value: unknown, visible: boolean): unknown {
++  if (visible || !value || typeof value !== "object" || Array.isArray(value)) return value;
++  const entry = value as Record<string, unknown>;
++  if ((entry.outcome !== "created" && entry.outcome !== "updated") || entry.resource === undefined)
++    return value;
++  return {
++    operationIndex: entry.operationIndex,
++    ...(entry.operationName === undefined ? {} : { operationName: entry.operationName }),
++    outcome: "withheld",
++  };
++}
++export function projectTransactionReceipt(
++  receipt: TransactionReceipt,
++  visible: boolean,
++): TransactionReceipt {
++  if (visible) return receipt;
++  const projected = { ...receipt };
++  if (Array.isArray(receipt.allocated))
++    projected.allocated = receipt.allocated.map((entry: Record<string, unknown>) => ({
++      operationIndex: entry.operationIndex,
++      ...(entry.operationName === undefined ? {} : { operationName: entry.operationName }),
++      withheld: true,
++    }));
++  if (
++    receipt.status === "completed" &&
++    receipt.detail === "available" &&
++    Array.isArray(receipt.results)
++  ) {
++    projected.results = receipt.results.map((entry) => projectTransactionEntry(entry, false));
++  }
++  const allResultsWithheld =
++    Array.isArray(projected.results) &&
++    projected.results.length > 0 &&
++    projected.results.every((entry) => entry.outcome === "withheld");
++  const allAllocationsWithheld =
++    Array.isArray(projected.allocated) &&
++    projected.allocated.length > 0 &&
++    projected.allocated.every((entry) => entry.withheld === true);
++  if (receipt.status === "completed" && (allResultsWithheld || allAllocationsWithheld)) {
++    projected.detail = "withheld";
++    delete projected.results;
++    delete projected.next;
++    delete projected.allocated;
++    delete projected.expiresAt;
++  }
++  return projected;
++}
+
+===== Complete production diff: packages/server/src/transaction-changefeed.ts =====
+diff --git a/packages/server/src/transaction-changefeed.ts b/packages/server/src/transaction-changefeed.ts
+index d811a14..f7e567c 100644
+--- a/packages/server/src/transaction-changefeed.ts
++++ b/packages/server/src/transaction-changefeed.ts
+@@ -35,7 +35,7 @@ export class TransactionChangefeedParameterError extends Error {
+   }
+ }
+ export type TransactionChangefeedIntent = { readonly after: string } | { readonly start: "now" };
+-export interface TransactionChangeGroup {
++interface TransactionVisibleChangeGroup {
+   readonly scopeEpoch: string;
+   readonly authorizationView: string;
+   readonly checkpoint: string;
+@@ -48,6 +48,20 @@ export interface TransactionChangeGroup {
+   readonly eventCount: number;
+   readonly events: readonly TransactionEvent[];
+ }
++export type TransactionChangeGroup =
++  | TransactionVisibleChangeGroup
++  | {
++      readonly scopeEpoch: string;
++      readonly authorizationView: string;
++      readonly checkpoint: string;
++      readonly position: string;
++      readonly previousPosition: string;
++      readonly projectionAdvance: true;
++      readonly changes: readonly never[];
++      readonly erasures: readonly never[];
++      readonly eventCount: 0;
++      readonly events: readonly never[];
++    };
+ export interface TransactionChangefeedPage {
+   readonly scope: string;
+   readonly scopeEpoch: string;
+@@ -116,6 +130,7 @@ export function projectTransactionChangeGroup(
+   scope: string,
+   context: TransactionReadContext,
+   position: number,
++  visible = true,
+ ): TransactionChangeGroup {
+   if (!value || typeof value !== "object") throw new Error("invalid retained change group");
+   const group = value as TransactionChangeGroup;
+@@ -148,7 +163,21 @@ export function projectTransactionChangeGroup(
+     { kind: "scope", url: `${scope}events/` },
+     scope,
+     position,
++    visible,
+   );
++  if (!visible)
++    return {
++      scopeEpoch: context.scopeEpoch,
++      authorizationView: context.authorizationView,
++      checkpoint: transactionCheckpoint(scope, context, position),
++      position: group.position,
++      previousPosition: group.previousPosition,
++      projectionAdvance: true,
++      changes: [],
++      erasures: [],
++      eventCount: 0,
++      events: [],
++    };
+   return {
+     scopeEpoch: group.scopeEpoch,
+     authorizationView: group.authorizationView,
+
+===== Complete production diff: packages/server/src/transaction-events.ts =====
+diff --git a/packages/server/src/transaction-events.ts b/packages/server/src/transaction-events.ts
+index 29d94a7..0b24bb1 100644
+--- a/packages/server/src/transaction-events.ts
++++ b/packages/server/src/transaction-events.ts
+@@ -1,3 +1,4 @@
++import { INITIAL_TRANSACTION_VIEW } from "./transaction-authorization.js";
+ /** Private finite projection of committed facts. No pruning, mutable views,
+  * SSE, replication bootstrap or public profile admission. */
+ import { createHash } from "node:crypto";
+@@ -193,12 +194,13 @@ export function projectTransactionEventGroup(
+   source: TransactionEventSource,
+   scope: string,
+   expectedPosition: number,
++  visible = true,
+ ): readonly TransactionEvent[] {
+   if (!value || typeof value !== "object") throw new Error("invalid retained Event group");
+   const group = value as TransactionEventGroup;
+   if (
+     group.scopeEpoch !== context.scopeEpoch ||
+-    group.authorizationView !== context.authorizationView ||
++    group.authorizationView !== (visible ? context.authorizationView : INITIAL_TRANSACTION_VIEW) ||
+     group.position !== `pos-${expectedPosition}` ||
+     group.checkpoint !== group.position ||
+     !Array.isArray(group.events) ||
+@@ -246,7 +248,7 @@ export function projectTransactionEventGroup(
+       throw new Error("invalid retained Event framing");
+     const data = event.data as Record<string, unknown>;
+     let include = source.kind === "scope";
+-    if (source.kind !== "scope") {
++    if (visible && source.kind !== "scope") {
+       include =
+         event.subject === source.subject && ["created", "updated", "deleted"].includes(event.type);
+       if (source.kind === "bead" && (event.type === "linked" || event.type === "unlinked")) {
+@@ -264,7 +266,8 @@ export function projectTransactionEventGroup(
+           throw new TransactionEventProjectionGap("incident-link-metadata");
+       }
+     }
+-    if (include) result.push(renderTransactionEvent(context, source.url, group.checkpoint, event));
++    if (visible && include)
++      result.push(renderTransactionEvent(context, source.url, group.checkpoint, event));
+   }
+   return result;
+ }
+
+===== Complete production diff: packages/server/src/transaction-http.ts =====
+diff --git a/packages/server/src/transaction-http.ts b/packages/server/src/transaction-http.ts
+index 33e1e71..8a519ba 100644
+--- a/packages/server/src/transaction-http.ts
++++ b/packages/server/src/transaction-http.ts
+@@ -1,3 +1,4 @@
++import { TransactionAuthorizationFailure } from "./transaction-authorization.js";
+ import type { TransactionEventPacket } from "./transaction-store.js";
+ import type { TransactionSnapshotRequest } from "./transaction-snapshot.js";
+ import {
+@@ -192,6 +193,15 @@ export function createTransactionHttpHandler(
+     }
+     return response;
+   }
++  const readPrincipals = new WeakMap<
++    Request,
++    { readonly kind: "authenticated"; readonly principal: { readonly id: string } }
++  >();
++  const readPrincipal = (request: Request) => {
++    const principal = readPrincipals.get(request);
++    if (!principal) throw new Error("missing authenticated Read principal");
++    return principal;
++  };
+   const readRoute = createReadHttpRoute({
+     scope,
+     probe: async () => ({ serviceDescription: new URL("bdp.json", scope).href }),
+@@ -201,8 +211,8 @@ export function createTransactionHttpHandler(
+       if (isReadProblem(suffix)) return problem(suffix);
+       const minimum = transactionMinimumHeaders(request.headers);
+       const facet = minimum
+-        ? service.readAtMinimum({ kind: "anonymous" }, minimum)
+-        : service.readFor({ kind: "anonymous" });
++        ? service.readAtMinimum(readPrincipal(request), minimum)
++        : service.readFor(readPrincipal(request));
+       const result = await facet.resolveAlias(request.url, { signal: request.signal });
+       const response =
+         result.kind === "problem"
+@@ -222,8 +232,8 @@ export function createTransactionHttpHandler(
+     async perform(parsed, request) {
+       const minimum = transactionMinimumHeaders(request.headers);
+       const facet = minimum
+-        ? service.readAtMinimum({ kind: "anonymous" }, minimum)
+-        : service.readFor({ kind: "anonymous" });
++        ? service.readAtMinimum(readPrincipal(request), minimum)
++        : service.readFor(readPrincipal(request));
+       const result = await facet.perform(parsed, { signal: request.signal });
+       const response =
+         result.kind === "problem"
+@@ -594,6 +604,14 @@ export function createTransactionHttpHandler(
+     ): Promise<TransactionHttpResult> {
+       let response: HttpResponse | ChangefeedStream | EventStream;
+       try {
++        if (authorization.kind === "authenticated")
++          readPrincipals.set(
++            request,
++            Object.freeze({
++              kind: "authenticated",
++              principal: Object.freeze({ id: authorization.principal }),
++            }),
++          );
+         response = await route(request, authorization, received, lastEventIds);
+       } catch (error) {
+         if (error instanceof ScopeServerOperationAbortedError) throw error;
+@@ -611,7 +629,9 @@ export function createTransactionHttpHandler(
+             ),
+             error.context,
+           );
+-        } else if (
++        } else if (error instanceof TransactionAuthorizationFailure)
++          response = transactionHttpProblem(error.code, error.context);
++        else if (
+           error instanceof TransactionEventParameterError ||
+           error instanceof TransactionChangefeedParameterError
+         )
+@@ -621,6 +641,8 @@ export function createTransactionHttpHandler(
+         else if (error instanceof TransactionMinimumVisibilityGap)
+           response = developmentGap("minimum-position-visibility");
+         else response = empty(500);
++      } finally {
++        readPrincipals.delete(request);
+       }
+       response.headers.set("x-bdp-development", "non-attesting");
+       if (request.method === "POST") response.headers.set("vary", "Accept");
+
+===== Complete production diff: packages/server/src/transaction-read.ts =====
+diff --git a/packages/server/src/transaction-read.ts b/packages/server/src/transaction-read.ts
+index 1aff2ed..93ce6e6 100644
+--- a/packages/server/src/transaction-read.ts
++++ b/packages/server/src/transaction-read.ts
+@@ -130,7 +130,13 @@ export function createTransactionReadPlane(
+     entry: owner,
+     scopeEpoch: configuration.scopeEpoch,
+     installedTypes: configuration.installedTypes,
+-    scopeConfiguration: { capture: () => configuration.scopeConfiguration },
++    scopeConfiguration: {
++      capture: (reader) => ({
++        ...configuration.scopeConfiguration,
++        policyIdentity: owner.captureReadAuthorization(reader, { kind: "anonymous" })
++          .authorizationView,
++      }),
++    },
+     selectorLimits: options.selectorLimits,
+     pagination: options.pagination,
+     advertisedLimits: options.advertisedLimits,
+@@ -160,15 +166,18 @@ export function createTransactionReadPlane(
+       }
+       checkTransactionMinimum(minimum, current);
+     },
+-    captureReadAuthorization: () => ({
+-      kind: "authorized",
+-      authorization: {
+-        scopeEpoch: configuration.scopeEpoch,
+-        authorizationView: configuration.authorizationView,
+-        policy: { canRead: () => true },
+-        canReadType: () => true,
+-      },
+-    }),
++    captureReadAuthorization: (reader, principal) => {
++      const policy = owner.captureReadAuthorization(reader, principal);
++      return {
++        kind: "authorized",
++        authorization: {
++          scopeEpoch: configuration.scopeEpoch,
++          authorizationView: policy.authorizationView,
++          policy: { canRead: () => policy.readPolicy === "all-visible" },
++          canReadType: () => policy.readPolicy === "all-visible",
++        },
++      };
++    },
+   });
+   const checked = <Result extends AuthorityReadResult<ReadRequest> | AuthorityAliasResult>(
+     result: Result,
+
+===== Complete production diff: packages/server/src/transaction-runtime-configuration.ts =====
+diff --git a/packages/server/src/transaction-runtime-configuration.ts b/packages/server/src/transaction-runtime-configuration.ts
+index 8491049..43bd32e 100644
+--- a/packages/server/src/transaction-runtime-configuration.ts
++++ b/packages/server/src/transaction-runtime-configuration.ts
+@@ -359,7 +359,7 @@ export function captureTransactionRuntimeConfiguration(
+       if (!isDeepStrictEqual(actual.scopeSnapshot, settings.scopeSnapshot))
+         throw new Error("live transaction Snapshot configuration mismatch");
+       if (
+-        actual.authorizationView !== "development-all-visible" ||
++        actual.authorizationView !== actual.authorization.authorizationView ||
+         actual.scopeConfiguration.policyIdentity !== actual.authorizationView ||
+         actual.scopeConfiguration.maximumEndpointMultiplicity.length !== 0
+       )
+@@ -373,7 +373,7 @@ export function captureTransactionRuntimeConfiguration(
+       const policyIdentity = transactionRuntimeDigest({
+         revision: "transaction-policy-1",
+         view: actual.authorizationView,
+-        read: "all-visible",
++        read: actual.authorization.readPolicy,
+         aggregate: actual.scopeConfiguration.maximumEndpointMultiplicity,
+         associations,
+       });
+
+===== Complete production diff: packages/server/src/transaction-runtime.ts =====
+diff --git a/packages/server/src/transaction-runtime.ts b/packages/server/src/transaction-runtime.ts
+index c400ffd..96f7a89 100644
+--- a/packages/server/src/transaction-runtime.ts
++++ b/packages/server/src/transaction-runtime.ts
+@@ -1,3 +1,4 @@
++import { TransactionAuthorizationFailure } from "./transaction-authorization.js";
+ /** Source-private loopback fixture. Never selected by installed config/profile
+  * admission. It exposes actual routes, not an incomplete BDP discovery claim. */
+ import { createTransactionSchemaHttp } from "./transaction-schema-http.js";
+@@ -190,56 +191,60 @@ export async function startTransactionRuntime(
+         }
+         const activeService = service!;
+         streamContext = selected.context;
+-        await activeService.stream(async (streamSignal) => {
+-          try {
+-            streamSignal.throwIfAborted();
+-            if (!selected || selected.kind === "finite")
+-              throw new Error("missing stream selection");
+-            response.writeHead(selected.status, Object.fromEntries(selected.headers));
+-            response.flushHeaders();
+-            const pumping =
+-              selected.kind === "changefeed-stream"
+-                ? pumpTransactionChanges(
+-                    response,
+-                    selected.page,
+-                    async (after, nextSignal) => {
+-                      const observed = await activeService.changes(
+-                        { after },
+-                        undefined,
+-                        nextSignal,
+-                      );
+-                      if (observed.kind !== "page")
+-                        throw new Error("changefeed stream lost serving entry");
+-                      return observed.page;
+-                    },
+-                    streamSignal,
+-                    settings.changefeedStream,
+-                  )
+-                : pumpTransactionEvents(
+-                    response,
+-                    selected.packet,
+-                    (scan, nextSignal) => activeService.nextEvents(scan, nextSignal),
+-                    streamSignal,
+-                    settings.changefeedStream,
+-                  );
+-            // Transfer the initial packet into the pump; do not retain the HTTP
+-            // result/group body for the lifetime of the live stream.
+-            selected = undefined;
+-            await pumping;
+-          } catch (error) {
+-            // Capture before destroy() turns a genuine fault into a disconnect.
+-            if (
+-              response.headersSent &&
+-              !streamSignal.aborted &&
+-              !response.destroyed &&
+-              !firstStreamFault
+-            )
+-              firstStreamFault = { cause: error };
+-            throw error;
+-          } finally {
+-            response.destroy();
+-          }
+-        }, signal);
++        await activeService.stream(
++          async (streamSignal) => {
++            try {
++              streamSignal.throwIfAborted();
++              if (!selected || selected.kind === "finite")
++                throw new Error("missing stream selection");
++              response.writeHead(selected.status, Object.fromEntries(selected.headers));
++              response.flushHeaders();
++              const pumping =
++                selected.kind === "changefeed-stream"
++                  ? pumpTransactionChanges(
++                      response,
++                      selected.page,
++                      async (after, nextSignal) => {
++                        const observed = await activeService.changes(
++                          { after },
++                          undefined,
++                          nextSignal,
++                        );
++                        if (observed.kind !== "page")
++                          throw new Error("changefeed stream lost serving entry");
++                        return observed.page;
++                      },
++                      streamSignal,
++                      settings.changefeedStream,
++                    )
++                  : pumpTransactionEvents(
++                      response,
++                      selected.packet,
++                      (scan, nextSignal) => activeService.nextEvents(scan, nextSignal),
++                      streamSignal,
++                      settings.changefeedStream,
++                    );
++              // Transfer the initial packet into the pump; do not retain the HTTP
++              // result/group body for the lifetime of the live stream.
++              selected = undefined;
++              await pumping;
++            } catch (error) {
++              // Capture before destroy() turns a genuine fault into a disconnect.
++              if (
++                response.headersSent &&
++                !streamSignal.aborted &&
++                !response.destroyed &&
++                !firstStreamFault
++              )
++                firstStreamFault = { cause: error };
++              throw error;
++            } finally {
++              response.destroy();
++            }
++          },
++          signal,
++          streamContext,
++        );
+       }
+     } catch (error) {
+       if (
+@@ -248,6 +253,8 @@ export async function startTransactionRuntime(
+         error instanceof ScopeServerOperationAbortedError
+       ) {
+         response.destroy();
++      } else if (error instanceof TransactionAuthorizationFailure) {
++        deliver(response, transactionHttpProblem(error.code, error.context));
+       } else if (error instanceof TransactionStreamCapacityError) {
+         deliver(response, transactionHttpProblem("temporarily-unavailable", streamContext));
+       } else if (!response.destroyed) {
+@@ -360,6 +367,10 @@ export async function startTransactionRuntime(
+     scope,
+     listenUrl,
+     configurationMetadata,
++    replaceAuthorizationPolicy: (options: {
++      readonly timeoutMs: number;
++      readonly signal?: AbortSignal;
++    }) => service!.replaceAuthorizationPolicy(options),
+     /** Test-only inventory, not an HTTP Operation Directory. */ targets: handler.targets,
+     close(): Promise<void> {
+       if (!completion) {
+
+===== Complete production diff: packages/server/src/transaction-service.ts =====
+diff --git a/packages/server/src/transaction-service.ts b/packages/server/src/transaction-service.ts
+index 00c3048..335e221 100644
+--- a/packages/server/src/transaction-service.ts
++++ b/packages/server/src/transaction-service.ts
+@@ -1,3 +1,4 @@
++import { projectTransactionEntry } from "./transaction-authorization.js";
+ import { assembleTransactionDiscovery } from "./transaction-discovery.js";
+ import type { TransactionSnapshotRequest } from "./transaction-snapshot.js";
+ import type { TransactionChangefeedIntent } from "./transaction-changefeed.js";
+@@ -11,7 +12,7 @@ import {
+ /** Source-private same-owner lifecycle. No HTTP receiver, directory or profile
+  * advertisement. Passing ownerLifetime:"service" transfers owner shutdown to
+  * this service after successful construction; callers must stop using the owner.
+- * Only the existing fixed all-visible installation policy applies. */
++ * Trusted policy publication drains finite mutations before revoking delivery. */
+ import { createNodeLifecycleScheduler, type LifecycleScheduler } from "./sequence-executor.js";
+ import type { PreparedTransactionSequence } from "./transaction-batch.js";
+ import {
+@@ -116,6 +117,7 @@ export function createTransactionService(owner: Owner, options: TransactionServi
+   const minimumReads = Object.freeze({ ...options.minimumReads });
+   const read = createTransactionReadPlane(owner, capturedRead);
+   const active = new Set<Promise<unknown>>();
++  const mutations = new Set<Promise<unknown>>();
+   const maximumStreams = options.maximumStreams ?? 1;
+   if (!Number.isSafeInteger(maximumStreams) || maximumStreams < 1)
+     throw new TypeError("invalid private stream capacity");
+@@ -148,6 +150,15 @@ export function createTransactionService(owner: Owner, options: TransactionServi
+     }
+     return task.promise;
+   }
++  function mutate<T>(start: () => Promise<T>): Promise<T> {
++    const task = run(start);
++    mutations.add(task);
++    void task.then(
++      () => mutations.delete(task),
++      () => mutations.delete(task),
++    );
++    return task;
++  }
+   function nextTurn(): Promise<void> {
+     return new Promise((resolve, reject) => {
+       let scheduling = true,
+@@ -279,12 +290,23 @@ export function createTransactionService(owner: Owner, options: TransactionServi
+     },
+     /** Separate cancellable lifetime, never an infinite finite-work drain. The
+      * callback starts only after capacity registration and abort wiring. */
+-    stream(start: (signal: AbortSignal) => Promise<void>, supplied: AbortSignal): Promise<void> {
++    stream(
++      start: (signal: AbortSignal) => Promise<void>,
++      supplied: AbortSignal,
++      expected?: TransactionReadContext,
++    ): Promise<void> {
+       check();
+       if (supplied.aborted) return Promise.reject(supplied.reason);
+       if (streams.size >= maximumStreams)
+         throw new TransactionStreamCapacityError("private live stream capacity reached");
++      const selected = expected ?? owner.withRead((_reader, context) => context);
++      const context =
++        "kind" in selected ? (selected.kind === "read" ? selected.value : undefined) : selected;
++      if (!context) throw new Error("stream context observation refused");
++      const lease = owner.acquireAuthorizationLease(context);
+       const controller = new AbortController();
++      const revoke = () => controller.abort(lease.signal.reason);
++      lease.signal.addEventListener("abort", revoke, { once: true });
+       const abort = () => controller.abort(supplied.reason);
+       supplied.addEventListener("abort", abort, { once: true });
+       const task = Promise.withResolvers<void>();
+@@ -292,6 +314,8 @@ export function createTransactionService(owner: Owner, options: TransactionServi
+       const finish = () => {
+         supplied.removeEventListener("abort", abort);
+         streams.delete(controller);
++        lease.signal.removeEventListener("abort", revoke);
++        lease.release();
+       };
+       void task.promise.then(finish, finish);
+       try {
+@@ -301,6 +325,47 @@ export function createTransactionService(owner: Owner, options: TransactionServi
+       }
+       return task.promise;
+     },
++    /** Trusted administration, never HTTP. Cancellation stops waiting, not writes. */
++    replaceAuthorizationPolicy(options: {
++      readonly timeoutMs: number;
++      readonly signal?: AbortSignal;
++    }) {
++      const timeoutMs = options.timeoutMs,
++        signal = options.signal;
++      if (!Number.isSafeInteger(timeoutMs) || timeoutMs < 1 || timeoutMs > 2147483647)
++        throw new TypeError("finite administrative timeout required");
++      check();
++      signal?.throwIfAborted();
++      const deadline = performance.now() + timeoutMs;
++      const resume = owner.pauseMutationAdmission();
++      return run(async () => {
++        let abort: (() => void) | undefined;
++        let timer: ReturnType<typeof setTimeout> | undefined;
++        try {
++          const cancelled = new Promise<never>((_resolve, reject) => {
++            abort = () => reject(signal?.reason);
++            signal?.addEventListener("abort", abort, { once: true });
++            timer = setTimeout(() => reject(new Error("authorization drain deadline")), timeoutMs);
++            if (signal?.aborted) abort();
++          });
++          const settled = await Promise.race([Promise.allSettled([...mutations]), cancelled]);
++          signal?.throwIfAborted();
++          if (performance.now() >= deadline) throw new Error("authorization drain deadline");
++          check();
++          const failed = settled.filter((result) => result.status === "rejected");
++          if (failed.length)
++            throw new AggregateError(
++              failed.map((result) => result.reason),
++              "authorization drain failed",
++            );
++          return owner.replaceAuthorizationPolicy();
++        } finally {
++          clearTimeout(timer);
++          if (abort) signal?.removeEventListener("abort", abort);
++          resume();
++        }
++      });
++    },
+     closed: completion.promise,
+     /** Actual fixed-owner Read configuration; no Transactional discovery claims. */
+     readFor(principal: Parameters<typeof read.readFor>[0]) {
+@@ -512,7 +577,7 @@ export function createTransactionService(owner: Owner, options: TransactionServi
+       });
+     },
+     submit(request: TransactionSubmission): Promise<TransactionServiceSubmissionResult> {
+-      return run(async () => {
++      return mutate(async () => {
+         const authorization = Object.freeze({ ...request.authorization });
+         const result = await submitTransaction(
+           owner,
+@@ -535,7 +600,7 @@ export function createTransactionService(owner: Owner, options: TransactionServi
+       principal: string,
+       sequence: PreparedTransactionSequence,
+     ): Promise<TransactionSequenceResponse> {
+-      return run(() => executeSequence(principal, sequence));
++      return mutate(() => executeSequence(principal, sequence));
+     },
+     /** Authenticated exact local schema response; no mutation or minimum wait. */
+     schemaObserved() {
+@@ -558,21 +623,29 @@ export function createTransactionService(owner: Owner, options: TransactionServi
+         return observed.value;
+       });
+     },
+-    /** The fixed all-visible owner projects stable member execution facts and
+-     * captures the current serving context together, after ordered execution.
+-     * This does not project mutable grants or erasure; those remain unsupported. */
++    /** Project stable member execution facts in the current serving entry after
++     * ordered execution. Version erasure remains outside this private policy. */
+     sequenceObserved(principal: string, sequence: PreparedTransactionSequence) {
+-      return run(async () => {
++      return mutate(async () => {
+         const response = await executeSequence(principal, sequence);
+-        const observed = owner.withRead((_reader, context) => {
++        const observed = owner.withRead((reader, context) => {
++          const policy = owner.captureReadAuthorization(reader, {
++            kind: "authenticated",
++            principal: { id: principal },
++          });
++          const body = {
++            results: response.results.map((entry) =>
++              projectTransactionEntry(entry, policy.readPolicy === "all-visible"),
++            ),
++          };
+           const freeze = (value: unknown): void => {
+             if (value !== null && typeof value === "object") {
+               for (const child of Object.values(value)) freeze(child);
+               Object.freeze(value);
+             }
+           };
+-          freeze(response);
+-          return Object.freeze({ body: response, context });
++          freeze(body);
++          return Object.freeze({ body, context });
+         });
+         if (observed.kind === "entry-refused")
+           throw new Error("transaction sequence observation refused", { cause: observed.cause });
+@@ -580,7 +653,7 @@ export function createTransactionService(owner: Owner, options: TransactionServi
+       });
+     },
+     /** Authentication is transport-supplied, never inferred from actor or URL.
+-     * Current owner policy is all-visible; principal binding still denies foreign
++     * Current owner policy projects contents; principal binding denies foreign
+      * receipts uniformly. No key lookup, receipt listing or fabricated page URL. */
+     receipt(
+       access:
+
+===== Complete production diff: packages/server/src/transaction-snapshot.ts =====
+diff --git a/packages/server/src/transaction-snapshot.ts b/packages/server/src/transaction-snapshot.ts
+index a52a19b..559a2e7 100644
+--- a/packages/server/src/transaction-snapshot.ts
++++ b/packages/server/src/transaction-snapshot.ts
+@@ -1,3 +1,4 @@
++import { INITIAL_TRANSACTION_VIEW } from "./transaction-authorization.js";
+ /** Source-private durable Snapshot owner support. No HTTP route or admission claim. */
+ import { createHash, createHmac, randomBytes, randomUUID, timingSafeEqual } from "node:crypto";
+ import { isDeepStrictEqual } from "node:util";
+@@ -87,6 +88,7 @@ export class TransactionSnapshotFailure extends Error {
+     readonly code:
+       | "resource-not-found"
+       | "cursor-expired"
++      | "foreign-view"
+       | "limit-exceeded"
+       | "temporarily-unavailable",
+     readonly retryAfter?: number,
+@@ -95,6 +97,7 @@ export class TransactionSnapshotFailure extends Error {
+     const [family, status, retry] = {
+       "resource-not-found": ["not-found", 404, "after-state-change"],
+       "cursor-expired": ["gone", 410, "after-state-change"],
++      "foreign-view": ["conflict", 409, "after-state-change"],
+       "limit-exceeded": ["size", 413, "never"],
+       "temporarily-unavailable": ["unavailable", 503, "after-delay"],
+     }[code];
+@@ -155,6 +158,7 @@ export function transactionSnapshotStorage(
+   db: DatabaseSync,
+   canonicalScope: string,
+   types: readonly TypeDescriptor[],
++  visible: () => boolean = () => true,
+ ) {
+   const scope = parseCanonicalScope(canonicalScope),
+     limits = TRANSACTION_SNAPSHOT_LIMITS;
+@@ -203,7 +207,8 @@ export function transactionSnapshotStorage(
+       "issued page counts",
+     );
+     integrity(
+-      d.epoch === context.scopeEpoch && d.view === context.authorizationView,
++      d.epoch === context.scopeEpoch &&
++        (d.view === context.authorizationView || d.view === INITIAL_TRANSACTION_VIEW),
+       "persisted context mismatch",
+     );
+     integrity(
+@@ -570,6 +575,9 @@ export function transactionSnapshotStorage(
+       )
+         throw new TransactionSnapshotFailure("resource-not-found");
+     }
++    // Qualified witnesses separate unexpired foreign-view and same-view expiry.
++    // The simultaneous foreign+expired collision is not an admission claim.
++    if (d.view !== context.authorizationView) throw new TransactionSnapshotFailure("foreign-view");
+     if (d.expired || now > d.expires) throw new TransactionSnapshotFailure("cursor-expired");
+     return { d, ranges: plan(id, d) };
+   }
+@@ -613,9 +621,11 @@ export function transactionSnapshotStorage(
+     if (ledgerBounds() >= limits.issuedHandles)
+       throw new TransactionSnapshotFailure("limit-exceeded");
+     const live = liveLedger(now, context);
+-    const totals = statement(
+-      "SELECT count(*) AS count,coalesce(sum(length(CAST(body AS BLOB))),0) AS bytes,coalesce(sum(length(CAST(id AS BLOB))),0) AS idBytes FROM resources",
+-    ).get()!;
++    const totals = !visible()
++      ? { count: 0, bytes: 0, idBytes: 0 }
++      : statement(
++          "SELECT count(*) AS count,coalesce(sum(length(CAST(body AS BLOB))),0) AS bytes,coalesce(sum(length(CAST(id AS BLOB))),0) AS idBytes FROM resources",
++        ).get()!;
+     if (Number(totals.count) > limits.resources || Number(totals.bytes) > limits.recordBytes)
+       throw new TransactionSnapshotFailure("limit-exceeded");
+     // Empty-live pressure cannot occur with the current recordBytes < liveRecordBytes
+@@ -633,7 +643,9 @@ export function transactionSnapshotStorage(
+     }
+     integrity(Number(totals.idBytes) <= limits.recordBytes, "authority identity bytes");
+     // Count/byte checks precede bounded identity enumeration and every body load.
+-    const ids = statement("SELECT id,kind FROM resources LIMIT ?").all(limits.resources + 1);
++    const ids = visible()
++      ? statement("SELECT id,kind FROM resources LIMIT ?").all(limits.resources + 1)
++      : [];
+     integrity(ids.length === Number(totals.count), "authority inventory changed inside owner");
+     ids.sort((a, b) => compareCanonicalIds(String(a.id), String(b.id)));
+     // The nonallocating path uses fixed-width layout witnesses, never an issued
+
+===== Complete production diff: packages/server/src/transaction-store.ts =====
+diff --git a/packages/server/src/transaction-store.ts b/packages/server/src/transaction-store.ts
+index 0c7a94d..82aee6c 100644
+--- a/packages/server/src/transaction-store.ts
++++ b/packages/server/src/transaction-store.ts
+@@ -1,3 +1,14 @@
++import {
++  INITIAL_TRANSACTION_VIEW,
++  initialTransactionAuthorization,
++  emptyTransactionAuthorization,
++  parseTransactionAuthorization,
++  projectTransactionReceipt,
++  projectTransactionEntry,
++  TransactionAuthorizationFailure,
++  type TransactionAuthorizationSnapshot,
++  type TransactionAuthorizationLease,
++} from "./transaction-authorization.js";
+ import { transactionSelectorCapacity, type TransactionSelectorLimit } from "./transaction-set.js";
+ import {
+   TRANSACTION_SNAPSHOT_LIMITS,
+@@ -43,7 +54,7 @@ import { DatabaseSync } from "node:sqlite";
+ import { parseCanonicalScope, parseTypeDescriptor, type TypeDescriptor } from "@bdp/protocol";
+ import { assertDevelopmentContracts, type DevelopmentContracts } from "./development-contracts.js";
+ import { CONTRACT_ARTIFACT_CEILINGS } from "./installed-contract-artifact.js";
+-import type { AuthorityReadReader, OwnerReadEntryResult } from "./authority-read.js";
++import type { AuthorityReadReader, OwnerReadEntryResult, ReadPrincipal } from "./authority-read.js";
+ import type { EvaluatorStoredResource } from "./resource-evaluator.js";
+ import {
+   TransactionDevelopmentLimitError,
+@@ -192,7 +203,9 @@ export interface TransactionStoreOptions {
+       | "after-sequence-admission"
+       | "after-dependency-resolution"
+       | "after-snapshot-copy"
+-      | "after-snapshot-commit",
++      | "after-snapshot-commit"
++      | "before-policy-commit"
++      | "after-policy-commit",
+   ) => void;
+ }
+ interface Row {
+@@ -206,7 +219,7 @@ interface Row {
+ }
+ const day = 86400000;
+ export const TRANSACTION_RECEIPT_DETAIL_MS = day;
+-const format = "bdp-private-transaction-snapshot-10";
++const format = "bdp-private-transaction-snapshot-11";
+ // Identity equality changed without changing the value codec. Retained keys
+ // require both the current identity policy and the alias-aware store format.
+ const identityPolicy = "transaction-revision-provenance-4";
+@@ -245,10 +258,19 @@ interface ReceiptPagePlan {
+ /** Owns a single SQLite connection under persistent EXCLUSIVE locking. Admission
+  * is durable separately; graph/positions/group/terminal receipt are one commit.
+  * Startup retracts abandoned pending receipts instead of running requests itself.
+- * Fixed all-visible private policy only; this is not an authentication boundary. */
++ * Private Scope policy; this is not an authentication boundary. */
+ export function openTransactionStore(options: TransactionStoreOptions) {
+   const scope = parseCanonicalScope(options.scope);
+-  const view = "development-all-visible";
++  const view = INITIAL_TRANSACTION_VIEW;
++  let authorization: TransactionAuthorizationSnapshot = initialTransactionAuthorization();
++  const leases = new Set<AbortController>();
++  const readAuthorizations = new WeakMap<AuthorityReadReader, TransactionAuthorizationSnapshot>();
++  const activeSequences = new Set<TransactionSequenceAdmission>();
++  let mutationPause: object | undefined;
++  const revokeLeases = () => {
++    for (const lease of leases) lease.abort(new Error("authorization lease ended"));
++    leases.clear();
++  };
+   if (Buffer.byteLength(json(`${scope}events/`)) > TRANSACTION_RUNTIME_LIMITS.scopeSourceBytes)
+     throw new TypeError("transaction Scope exceeds private materialization bound");
+   if (!path.isAbsolute(options.file))
+@@ -286,13 +308,27 @@ export function openTransactionStore(options: TransactionStoreOptions) {
+     receiptMaximumItems,
+     snapshotLimits: TRANSACTION_SNAPSHOT_LIMITS,
+     snapshotTokenPolicy: TRANSACTION_SNAPSHOT_TOKEN_POLICY,
+-    authorizationView: view,
++    initialAuthorizationView: view,
++    policyStorageRevision: 1,
+     identityPolicy,
+     contractIdentity: compiled?.identity ?? null,
+     runtimeLimits: TRANSACTION_RUNTIME_LIMITS,
+     scope,
+     types: [...installed].sort(([a], [b]) => (a < b ? -1 : a > b ? 1 : 0)),
+   });
++  // Preserve the exact format-10 property ordering, not a permissive JSON comparison.
++  const legacyObject = JSON.parse(configuration) as Record<string, unknown>;
++  const legacyEntries = Object.entries(legacyObject).flatMap(([key, value]) =>
++    key === "policyStorageRevision"
++      ? []
++      : [
++          [
++            key === "initialAuthorizationView" ? "authorizationView" : key,
++            key === "format" ? "bdp-private-transaction-snapshot-10" : value,
++          ],
++        ],
++  );
++  const legacyBytes = json(Object.fromEntries(legacyEntries));
+   const clock = options.clock ?? Date.now;
+   const maintenanceInterval = options.maintenanceIntervalMs ?? 1000;
+   if (
+@@ -361,6 +397,7 @@ export function openTransactionStore(options: TransactionStoreOptions) {
+   }
+   function fence(cause: unknown): Error {
+     clearInterval(maintenanceTimer);
++    revokeLeases();
+     // Cleanup can add the original application error to an earlier storage
+     // failure. Replace the wrapper; mutating its cause would create a cycle.
+     ownerFailure = new Error("transaction storage failure; owner fenced; reopen before use", {
+@@ -501,7 +538,12 @@ export function openTransactionStore(options: TransactionStoreOptions) {
+     );
+     return { row: { ...stored, receipt: receiptText }, change: "completedExpired" };
+   }
+-  const snapshots = transactionSnapshotStorage(db, scope, descriptors);
++  const snapshots = transactionSnapshotStorage(
++    db,
++    scope,
++    descriptors,
++    () => authorization.readPolicy === "all-visible",
++  );
+   function sweep(now: number) {
+     snapshots.expire(now, readContext());
+     const counts = { completedExpired: 0, failedForgotten: 0 };
+@@ -536,13 +578,14 @@ export function openTransactionStore(options: TransactionStoreOptions) {
+         put.run("contractCapture", capture);
+         put.run("epoch", randomUUID());
+         put.run("position", "0");
++        put.run("authorizationPolicy", json(authorization));
+       } else {
+         const storedConfiguration = metadata("configuration");
+         if (JSON.parse(storedConfiguration).identityPolicy !== identityPolicy)
+           throw new Error(
+             "transaction identity policy mismatch; explicit new-store provisioning required",
+           );
+-        if (storedConfiguration !== configuration)
++        if (storedConfiguration !== configuration && storedConfiguration !== legacyBytes)
+           throw new Error("transaction installation mismatch");
+         // Exact bytes validate retained capture, including constant witnesses, even
+         // if the stored claimed identity was left unchanged by corruption.
+@@ -557,6 +600,22 @@ export function openTransactionStore(options: TransactionStoreOptions) {
+           metadata("contractCapture") !== capture
+         )
+           throw new Error("transaction contract capture mismatch");
++        if (storedConfiguration === legacyBytes) {
++          if (db.prepare("SELECT 1 FROM metadata WHERE name='authorizationPolicy'").get())
++            throw new Error("unexpected legacy authorization policy");
++          db.prepare("INSERT INTO metadata VALUES('authorizationPolicy',?)").run(
++            json(authorization),
++          );
++          db.prepare("UPDATE metadata SET value=? WHERE name='configuration'").run(configuration);
++        }
++        const policyLength = db
++          .prepare(
++            "SELECT length(CAST(value AS BLOB)) AS bytes FROM metadata WHERE name='authorizationPolicy'",
++          )
++          .get();
++        if (!policyLength || Number(policyLength.bytes) > 4096)
++          throw new Error("invalid stored authorization policy");
++        authorization = parseTransactionAuthorization(metadata("authorizationPolicy"));
+       }
+       // Immutable for this exclusive owner; establish it before the first sweep.
+       epoch = metadata("epoch");
+@@ -573,7 +632,7 @@ export function openTransactionStore(options: TransactionStoreOptions) {
+     throw error;
+   }
+   // Immutable installation facts are the same ones used by mutation evaluation.
+-  // No named policy registry exists in this fixed all-visible development owner.
++  // Current authorization is captured separately inside each serialized entry.
+   const readConfiguration = Object.freeze({
+     scopeEpoch: epoch,
+     authorizationView: view,
+@@ -595,7 +654,7 @@ export function openTransactionStore(options: TransactionStoreOptions) {
+       throw new Error("invalid transaction read position");
+     return Object.freeze({
+       scopeEpoch: epoch,
+-      authorizationView: view,
++      authorizationView: authorization.authorizationView,
+       scopePosition: `pos-${position}`,
+     });
+   }
+@@ -623,9 +682,12 @@ export function openTransactionStore(options: TransactionStoreOptions) {
+   function eventSourceKnown(source: TransactionEventSource): boolean {
+     return (
+       !source.subject ||
+-      Boolean(
+-        db.prepare("SELECT id FROM identities WHERE id=?").get(source.subject.slice(scope.length)),
+-      )
++      (authorization.readPolicy === "all-visible" &&
++        Boolean(
++          db
++            .prepare("SELECT id FROM identities WHERE id=?")
++            .get(source.subject.slice(scope.length)),
++        ))
+     );
+   }
+   function eventSource(sourceUrl: string): TransactionEventSource {
+@@ -654,7 +716,14 @@ export function openTransactionStore(options: TransactionStoreOptions) {
+     source: TransactionEventSource,
+     cursor?: { position: number; ordinal: number; id: string },
+   ) {
+-    const projected = projectTransactionEventGroup(row.value, context, source, scope, row.position);
++    const projected = projectTransactionEventGroup(
++      row.value,
++      context,
++      source,
++      scope,
++      row.position,
++      authorization.readPolicy === "all-visible",
++    );
+     if (
+       cursor &&
+       (row.position !== cursor.position ||
+@@ -802,7 +871,7 @@ export function openTransactionStore(options: TransactionStoreOptions) {
+       next: plan.pages[0] ? pageUrl(receipt.id, plan.pages[0].token) : null,
+     };
+   }
+-  // Fixed all-visible projection and current position are captured before this
++  // Current projection and position are captured before this
+   // authoritative transaction releases. No second clock/retention observation.
+   function observeReceipt(
+     receipt: TransactionReceipt,
+@@ -832,12 +901,24 @@ export function openTransactionStore(options: TransactionStoreOptions) {
+         Object.freeze(value);
+       }
+     };
+-    const projected = receiptPrefix(receipt);
++    const prefix = receiptPrefix(receipt); // Validate retained page plan even when every entry is withheld.
++    const projection = projectTransactionReceipt(
++      receipt,
++      authorization.readPolicy === "all-visible",
++    );
++    const projected =
++      projection.detail === "available" && Array.isArray(projection.results)
++        ? {
++            ...projection,
++            results: projection.results.slice(0, receiptMaximumItems),
++            next: prefix.next,
++          }
++        : projection;
+     freeze(projected);
+     return Object.freeze({ receipt: projected, context });
+   }
+-  // Called only inside the guarded owner's transaction. The fixed all-visible
+-  // policy projects retained facts, including postimages since updated/deleted.
++  // Called only inside the guarded owner's transaction. Principal binding is
++  // distinct from current-view projection of retained execution facts.
+   function disclosedReceipt(principal: string, id: string): Row | undefined {
+     for (const stored of db
+       .prepare("SELECT * FROM receipts WHERE principal=?")
+@@ -948,6 +1029,7 @@ export function openTransactionStore(options: TransactionStoreOptions) {
+           return undefined;
+         },
+       });
++      readAuthorizations.set(reader, authorization);
+       try {
+         const value = callback(reader, readContext());
+         if (
+@@ -963,6 +1045,7 @@ export function openTransactionStore(options: TransactionStoreOptions) {
+         return Object.freeze({ kind: "read", value });
+       } finally {
+         active = false;
++        readAuthorizations.delete(reader);
+       }
+     });
+   }
+@@ -1361,6 +1444,7 @@ export function openTransactionStore(options: TransactionStoreOptions) {
+       }),
+     );
+     state.cancelled = true;
++    activeSequences.delete(attempt);
+     for (const claim of state.owned.values()) claims.delete(claim);
+     return released;
+   }
+@@ -1370,6 +1454,7 @@ export function openTransactionStore(options: TransactionStoreOptions) {
+     } catch (cause) {
+       // Background failure is sticky and observable on the next owner entry;
+       // stop the timer and release the database instead of silently continuing.
++      revokeLeases();
+       maintenanceFailure = { cause };
+       clearInterval(maintenanceTimer);
+       try {
+@@ -1411,6 +1496,10 @@ export function openTransactionStore(options: TransactionStoreOptions) {
+     return enter(() => {
+       assertPreparedTransaction(batch, scope);
+       checkPrincipalKey(principal, key);
++      if (mutationPause)
++        throw new TransactionAuthorizationFailure("temporarily-unavailable", readContext());
++      if (!authorization.canMutate)
++        throw new TransactionAuthorizationFailure("forbidden", readContext());
+       const admission = atomic(() => {
+         const result = admitKey(principal, key, batch, false, undefined, undefined, receiving);
+         if (result.kind === "development-limit" && controls === undefined)
+@@ -1732,7 +1821,13 @@ export function openTransactionStore(options: TransactionStoreOptions) {
+         if ((!row && start < head) || (row && row.position !== start + 1))
+           throw new Error("missing retained change group");
+         const group = row
+-          ? projectTransactionChangeGroup(row.value, scope, context, row.position)
++          ? projectTransactionChangeGroup(
++              row.value,
++              scope,
++              context,
++              row.position,
++              authorization.readPolicy === "all-visible",
++            )
+           : undefined;
+         let next: string | null = null;
+         if (group && row && row.position < head) {
+@@ -1757,7 +1852,79 @@ export function openTransactionStore(options: TransactionStoreOptions) {
+         });
+       });
+     },
+-    readConfiguration: () => enter(() => readConfiguration),
++    readConfiguration: () =>
++      enter(() =>
++        Object.freeze({
++          ...readConfiguration,
++          authorizationView: authorization.authorizationView,
++          authorization,
++          scopeConfiguration: Object.freeze({
++            ...readConfiguration.scopeConfiguration,
++            policyIdentity: authorization.authorizationView,
++          }),
++        }),
++      ),
++    captureReadAuthorization(reader: AuthorityReadReader, principal: ReadPrincipal) {
++      // The reader is a capability for this exact live serialized entry.
++      const snapshot = readAuthorizations.get(reader);
++      if (!snapshot || !principal || typeof principal !== "object")
++        throw new Error("authorization capture outside owner entry");
++      return snapshot;
++    },
++    authorizationSnapshot: () => enter(() => authorization),
++    acquireAuthorizationLease(expected: TransactionReadContext): TransactionAuthorizationLease {
++      return enter(() => {
++        if (
++          expected.scopeEpoch !== epoch ||
++          expected.authorizationView !== authorization.authorizationView
++        )
++          throw new TransactionAuthorizationFailure("foreign-view", readContext());
++        const controller = new AbortController();
++        leases.add(controller);
++        return Object.freeze({
++          signal: controller.signal,
++          release: () => {
++            leases.delete(controller);
++          },
++        });
++      });
++    },
++    pauseMutationAdmission() {
++      return enter(() => {
++        if (mutationPause)
++          throw new TransactionAuthorizationFailure("temporarily-unavailable", readContext());
++        const token = Object.freeze({});
++        mutationPause = token;
++        return () => {
++          if (mutationPause === token) mutationPause = undefined;
++        };
++      });
++    },
++    replaceAuthorizationPolicy() {
++      return enter(() => {
++        if (
++          activeSequences.size ||
++          db.prepare("SELECT 1 FROM receipts WHERE owner IS NOT NULL LIMIT 1").get()
++        )
++          throw new TransactionAuthorizationFailure("temporarily-unavailable", readContext());
++        if (authorization.generation === 1) return authorization;
++        const next = emptyTransactionAuthorization();
++        atomic(() => {
++          db.prepare("UPDATE metadata SET value=? WHERE name='authorizationPolicy'").run(
++            json(next),
++          );
++          options.fault?.("before-policy-commit");
++        });
++        try {
++          options.fault?.("after-policy-commit");
++          authorization = next;
++          revokeLeases();
++        } catch (error) {
++          throw fence(error);
++        }
++        return authorization;
++      });
++    },
+     comparisonEpoch: () => {
+       if (closed && !ownerFailure && !maintenanceFailure) return undefined;
+       return enter(() => metadata("epoch"));
+@@ -1794,6 +1961,10 @@ export function openTransactionStore(options: TransactionStoreOptions) {
+     ): TransactionSequenceAdmission {
+       return enter(() => {
+         assertPreparedTransactionSequence(sequence, scope);
++        if (mutationPause)
++          throw new TransactionAuthorizationFailure("temporarily-unavailable", readContext());
++        if (!authorization.canMutate)
++          throw new TransactionAuthorizationFailure("forbidden", readContext());
+         for (const member of sequence.members) checkPrincipalKey(principal, member.key);
+         const owned = new Map<number, TransactionClaim>();
+         const id = randomUUID();
+@@ -1847,6 +2018,7 @@ export function openTransactionStore(options: TransactionStoreOptions) {
+             for (const claim of owned.values()) claims.delete(claim);
+           }
+         }
++        activeSequences.add(attempt);
+         sequenceAdmissions.set(attempt, {
+           principal,
+           id,
+@@ -1977,6 +2149,7 @@ export function openTransactionStore(options: TransactionStoreOptions) {
+           );
+         state.next++;
+         const done = state.next === state.sequence.members.length;
++        if (done) activeSequences.delete(attempt);
+         if (done)
+           enter(() =>
+             atomic(() => db.prepare("DELETE FROM creator_facts WHERE attempt=?").run(state.id)),
+@@ -2009,7 +2182,14 @@ export function openTransactionStore(options: TransactionStoreOptions) {
+       });
+     },
+     receipt(principal: string, id: string): TransactionReceipt | undefined {
+-      return enter(() => atomic(() => retainedReceipt(principal, id)));
++      return enter(() =>
++        atomic(() => {
++          const value = retainedReceipt(principal, id);
++          return (
++            value && projectTransactionReceipt(value, authorization.readPolicy === "all-visible")
++          );
++        }),
++      );
+     },
+     /** Trusted authenticated principal, never actor/provenance. Lookup, retention
+      * cleanup, fixed current projection and source context share one owner entry.
+@@ -2076,10 +2256,11 @@ export function openTransactionStore(options: TransactionStoreOptions) {
+           observeReceipt(receipt, context); // same projection/integrity policy, no second clock
+           const boundary = plan.pages[index];
+           if (!boundary) throw new Error("receipt page boundary missing");
+-          const results = (receipt.results as readonly unknown[]).slice(
+-            boundary.start,
+-            boundary.end,
+-          );
++          const results = (receipt.results as readonly unknown[])
++            .slice(boundary.start, boundary.end)
++            .map((entry) =>
++              projectTransactionEntry(entry, authorization.readPolicy === "all-visible"),
++            );
+           // Freeze the selected page entries before they escape the owner entry.
+           const freeze = (value: unknown): void => {
+             if (value && typeof value === "object") {
+@@ -2126,6 +2307,7 @@ export function openTransactionStore(options: TransactionStoreOptions) {
+     close() {
+       if (busy) throw new Error("transaction store reentrant close");
+       clearInterval(maintenanceTimer);
++      revokeLeases();
+       if (!closed) {
+         db.close();
+         closed = true;
+
+===== packages/server/src/transaction-store.ts:386-452 =====
+  function enter<T>(run: () => T): T {
+    if (ownerFailure) throw ownerFailure;
+    if (maintenanceFailure)
+      throw new Error("transaction maintenance failed; owner fenced", maintenanceFailure);
+    if (closed || busy) throw new Error("transaction store closed or reentrant");
+    busy = true;
+    try {
+      return run();
+    } finally {
+      busy = false;
+    }
+  }
+  function fence(cause: unknown): Error {
+    clearInterval(maintenanceTimer);
+    revokeLeases();
+    // Cleanup can add the original application error to an earlier storage
+    // failure. Replace the wrapper; mutating its cause would create a cycle.
+    ownerFailure = new Error("transaction storage failure; owner fenced; reopen before use", {
+      cause,
+    });
+    return ownerFailure;
+  }
+  function atomic<T>(run: () => T): T {
+    if (ownerFailure) throw ownerFailure;
+    let committing = false;
+    try {
+      db.exec("BEGIN IMMEDIATE");
+      const value = run();
+      committing = true;
+      db.exec("COMMIT");
+      return value;
+    } catch (error) {
+      let cleanRollback = false;
+      let cause: unknown = error;
+      try {
+        if (db.isTransaction) {
+          db.exec("ROLLBACK");
+          cleanRollback = !db.isTransaction;
+        }
+      } catch (rollback) {
+        cause = new AggregateError([error, rollback], "transaction and rollback failed");
+      }
+      const sqlite =
+        error instanceof Error && "code" in error && String(error.code).startsWith("ERR_SQLITE");
+      const constraint =
+        sqlite &&
+        "errcode" in error &&
+        typeof error.errcode === "number" &&
+        Number.isInteger(error.errcode) &&
+        (error.errcode & 0xff) === 19;
+      // Even a COMMIT that throws after taking effect has an uncertain outcome.
+      // Reopen determines its durable state; compensation must not guess at it.
+      if (committing || !cleanRollback || (sqlite && !constraint)) throw fence(cause);
+      throw error;
+    }
+  }
+  function cleanupThenThrow(error: unknown, cleanup: () => void): never {
+    if (ownerFailure) throw error;
+    try {
+      cleanup();
+    } catch (failure) {
+      const combined = new AggregateError([error, failure], "transaction and cleanup failed");
+      fence(combined);
+      throw combined;
+    }
+    throw error;
+  }
+
+===== packages/server/src/transaction-store.ts:865-935 =====
+  function receiptPrefix(receipt: TransactionReceipt): TransactionReceipt {
+    if (receipt.status !== "completed" || receipt.detail !== "available") return receipt;
+    const plan = pagePlan(receipt);
+    return {
+      ...receipt,
+      results: (receipt.results as readonly unknown[]).slice(0, plan.maximum),
+      next: plan.pages[0] ? pageUrl(receipt.id, plan.pages[0].token) : null,
+    };
+  }
+  // Current projection and position are captured before this
+  // authoritative transaction releases. No second clock/retention observation.
+  function observeReceipt(
+    receipt: TransactionReceipt,
+    context = readContext(),
+  ): TransactionReceiptObservation {
+    if (receipt.scopeEpoch !== context.scopeEpoch)
+      throw new Error("receipt epoch differs from serving owner", {
+        cause: { id: receipt.id, key: receipt.idempotencyKey },
+      });
+    for (const field of ["requiredPosition", "effectPosition"] as const) {
+      const value = receipt[field];
+      if (value === undefined && (field === "effectPosition" || receipt.status === "pending"))
+        continue;
+      if (
+        typeof value !== "string" ||
+        !/^pos-(0|[1-9][0-9]*)$/.test(value) ||
+        !Number.isSafeInteger(Number(value.slice(4))) ||
+        Number(value.slice(4)) > Number(context.scopePosition.slice(4))
+      )
+        throw new Error("receipt position exceeds serving owner", {
+          cause: { id: receipt.id, key: receipt.idempotencyKey, field },
+        });
+    }
+    const freeze = (value: unknown): void => {
+      if (value !== null && typeof value === "object") {
+        for (const child of Object.values(value)) freeze(child);
+        Object.freeze(value);
+      }
+    };
+    const prefix = receiptPrefix(receipt); // Validate retained page plan even when every entry is withheld.
+    const projection = projectTransactionReceipt(
+      receipt,
+      authorization.readPolicy === "all-visible",
+    );
+    const projected =
+      projection.detail === "available" && Array.isArray(projection.results)
+        ? {
+            ...projection,
+            results: projection.results.slice(0, receiptMaximumItems),
+            next: prefix.next,
+          }
+        : projection;
+    freeze(projected);
+    return Object.freeze({ receipt: projected, context });
+  }
+  // Called only inside the guarded owner's transaction. Principal binding is
+  // distinct from current-view projection of retained execution facts.
+  function disclosedReceipt(principal: string, id: string): Row | undefined {
+    for (const stored of db
+      .prepare("SELECT * FROM receipts WHERE principal=?")
+      .all(principal) as unknown as Row[]) {
+      const value = parseReceipt(stored.receipt);
+      if (value.id === id) return value.scopeEpoch === epoch ? stored : undefined;
+    }
+    return undefined;
+  }
+  function retainedReceipt(principal: string, id: string): TransactionReceipt | undefined {
+    const stored = disclosedReceipt(principal, id);
+    const remaining = stored && expireRow(stored, instant()).row;
+    return remaining ? parseReceipt(remaining.receipt) : undefined;
+  }
+
+===== packages/server/src/transaction-service.ts:119-161 =====
+  const active = new Set<Promise<unknown>>();
+  const mutations = new Set<Promise<unknown>>();
+  const maximumStreams = options.maximumStreams ?? 1;
+  if (!Number.isSafeInteger(maximumStreams) || maximumStreams < 1)
+    throw new TypeError("invalid private stream capacity");
+  const streams = new Map<AbortController, Promise<void>>();
+  let accepting = true;
+  let cleanupFailure: AggregateError | undefined;
+  let closing: Promise<void> | undefined;
+  const completion = Promise.withResolvers<void>();
+  void completion.promise.catch(() => {});
+  function check() {
+    if (cleanupFailure)
+      throw new Error("transaction service cleanup failed; close and reopen", {
+        cause: cleanupFailure,
+      });
+    if (!accepting) throw new Error("transaction service is closing or closed");
+  }
+  function run<T>(start: () => Promise<T>): Promise<T> {
+    check();
+    const task = Promise.withResolvers<T>();
+    active.add(task.promise);
+    // Observe rejected detached delivery without changing what its caller sees.
+    void task.promise.then(
+      () => active.delete(task.promise),
+      () => active.delete(task.promise),
+    );
+    try {
+      task.resolve(start());
+    } catch (error) {
+      task.reject(error);
+    }
+    return task.promise;
+  }
+  function mutate<T>(start: () => Promise<T>): Promise<T> {
+    const task = run(start);
+    mutations.add(task);
+    void task.then(
+      () => mutations.delete(task),
+      () => mutations.delete(task),
+    );
+    return task;
+  }
+
+===== packages/server/src/transaction-service.ts:293-368 =====
+    stream(
+      start: (signal: AbortSignal) => Promise<void>,
+      supplied: AbortSignal,
+      expected?: TransactionReadContext,
+    ): Promise<void> {
+      check();
+      if (supplied.aborted) return Promise.reject(supplied.reason);
+      if (streams.size >= maximumStreams)
+        throw new TransactionStreamCapacityError("private live stream capacity reached");
+      const selected = expected ?? owner.withRead((_reader, context) => context);
+      const context =
+        "kind" in selected ? (selected.kind === "read" ? selected.value : undefined) : selected;
+      if (!context) throw new Error("stream context observation refused");
+      const lease = owner.acquireAuthorizationLease(context);
+      const controller = new AbortController();
+      const revoke = () => controller.abort(lease.signal.reason);
+      lease.signal.addEventListener("abort", revoke, { once: true });
+      const abort = () => controller.abort(supplied.reason);
+      supplied.addEventListener("abort", abort, { once: true });
+      const task = Promise.withResolvers<void>();
+      streams.set(controller, task.promise);
+      const finish = () => {
+        supplied.removeEventListener("abort", abort);
+        streams.delete(controller);
+        lease.signal.removeEventListener("abort", revoke);
+        lease.release();
+      };
+      void task.promise.then(finish, finish);
+      try {
+        task.resolve(start(controller.signal));
+      } catch (error) {
+        task.reject(error);
+      }
+      return task.promise;
+    },
+    /** Trusted administration, never HTTP. Cancellation stops waiting, not writes. */
+    replaceAuthorizationPolicy(options: {
+      readonly timeoutMs: number;
+      readonly signal?: AbortSignal;
+    }) {
+      const timeoutMs = options.timeoutMs,
+        signal = options.signal;
+      if (!Number.isSafeInteger(timeoutMs) || timeoutMs < 1 || timeoutMs > 2147483647)
+        throw new TypeError("finite administrative timeout required");
+      check();
+      signal?.throwIfAborted();
+      const deadline = performance.now() + timeoutMs;
+      const resume = owner.pauseMutationAdmission();
+      return run(async () => {
+        let abort: (() => void) | undefined;
+        let timer: ReturnType<typeof setTimeout> | undefined;
+        try {
+          const cancelled = new Promise<never>((_resolve, reject) => {
+            abort = () => reject(signal?.reason);
+            signal?.addEventListener("abort", abort, { once: true });
+            timer = setTimeout(() => reject(new Error("authorization drain deadline")), timeoutMs);
+            if (signal?.aborted) abort();
+          });
+          const settled = await Promise.race([Promise.allSettled([...mutations]), cancelled]);
+          signal?.throwIfAborted();
+          if (performance.now() >= deadline) throw new Error("authorization drain deadline");
+          check();
+          const failed = settled.filter((result) => result.status === "rejected");
+          if (failed.length)
+            throw new AggregateError(
+              failed.map((result) => result.reason),
+              "authorization drain failed",
+            );
+          return owner.replaceAuthorizationPolicy();
+        } finally {
+          clearTimeout(timer);
+          if (abort) signal?.removeEventListener("abort", abort);
+          resume();
+        }
+      });
+    },
+
+===== packages/server/src/transaction-service.ts:628-654 =====
+    sequenceObserved(principal: string, sequence: PreparedTransactionSequence) {
+      return mutate(async () => {
+        const response = await executeSequence(principal, sequence);
+        const observed = owner.withRead((reader, context) => {
+          const policy = owner.captureReadAuthorization(reader, {
+            kind: "authenticated",
+            principal: { id: principal },
+          });
+          const body = {
+            results: response.results.map((entry) =>
+              projectTransactionEntry(entry, policy.readPolicy === "all-visible"),
+            ),
+          };
+          const freeze = (value: unknown): void => {
+            if (value !== null && typeof value === "object") {
+              for (const child of Object.values(value)) freeze(child);
+              Object.freeze(value);
+            }
+          };
+          freeze(body);
+          return Object.freeze({ body, context });
+        });
+        if (observed.kind === "entry-refused")
+          throw new Error("transaction sequence observation refused", { cause: observed.cause });
+        return observed.value;
+      });
+    },
+
+===== packages/server/src/authority-read.ts:457-504 =====
+function captureContext(
+  prepared: Prepared,
+  reader: AuthorityReadReader,
+  principal: ReadPrincipal,
+  intent: ReadIntent,
+  sourceContext?: ReadSourceContext,
+): ReadContext | ReadRefusal {
+  const capturedSource =
+    sourceContext === undefined ? undefined : ownData(sourceContext, "Read source context");
+  if (
+    capturedSource !== undefined &&
+    Object.values(capturedSource).some((value) => typeof value !== "string")
+  )
+    throw new AuthorityReadError("configuration", "Read source context must contain strings");
+  const decision = synchronous(prepared.capture(reader, principal, intent));
+  if (decision.kind === "problem") return preContext(parseReadProblem(decision.problem));
+  if (decision.kind !== "authorized")
+    throw new AuthorityReadError("configuration", "invalid Read authorization decision");
+  const authorization = synchronous(decision.authorization);
+  const { authorizationView, scopeEpoch, policy, canReadType } = authorization;
+  const canRead = policy.canRead;
+  if (typeof canRead !== "function" || typeof canReadType !== "function")
+    throw new AuthorityReadError("configuration", "complete captured Read policy required");
+  const view = identity(authorizationView, "Authorization View");
+  if (identity(scopeEpoch, "captured Scope epoch") !== prepared.scopeEpoch)
+    throw new AuthorityReadError(
+      "configuration",
+      "captured Scope epoch changed during plane lifetime",
+    );
+  const configuration = synchronous(prepared.configuration(reader));
+  const { policyIdentity, configurationIdentity, maximumEndpointMultiplicity } = configuration;
+  const observation = Object.freeze({
+    authorizationView: view,
+    scopeEpoch,
+    policyIdentity: identity(policyIdentity, "policy identity"),
+    configurationIdentity: identity(configurationIdentity, "configuration identity"),
+    ...(capturedSource === undefined ? {} : { sourceContext: capturedSource as ReadSourceContext }),
+  });
+  return Object.freeze({
+    observation,
+    aggregate: aggregateSnapshot(maximumEndpointMultiplicity),
+    policy: Object.freeze({
+      canRead: (record: ResourceRecord) => boolean(canRead.call(policy, record)),
+    }),
+    canReadType: (descriptor: TypeDescriptor) =>
+      boolean(canReadType.call(authorization, descriptor)),
+  });
+}
+
+===== packages/server/src/transaction-sse.ts:1-170 =====
+/** Source-private one-frame-at-a-time pump for change groups and Events. */
+import { constants } from "node:buffer";
+import { setTimeout as delay, setImmediate as yieldTurn } from "node:timers/promises";
+import { stringifyJsonValue } from "@bdp/protocol";
+import {
+  TRANSACTION_CHANGEFEED_BYTES,
+  type TransactionChangefeedPage,
+} from "./transaction-changefeed.js";
+
+import { TRANSACTION_EVENT_STREAM } from "./transaction-events.js";
+import type { TransactionEvent } from "./transaction-batch.js";
+import type { TransactionEventPacket, TransactionEventScan } from "./transaction-store.js";
+
+export const TRANSACTION_SSE_DEFAULTS = Object.freeze({
+  pollMilliseconds: 100,
+  heartbeatMilliseconds: 5000,
+  maximumStreams: 1,
+});
+/** Node timers clamp invalid/out-of-range values; refuse rather than busy-poll. */
+export function validateTransactionStreamTimers(
+  settings: { readonly pollMilliseconds: number; readonly heartbeatMilliseconds: number },
+  idleTimeout?: number,
+): void {
+  for (const value of [settings.pollMilliseconds, settings.heartbeatMilliseconds])
+    if (!Number.isSafeInteger(value) || value <= 0 || value > 2_147_483_647)
+      throw new TypeError("invalid transaction stream timer");
+  if (idleTimeout !== undefined && settings.heartbeatMilliseconds >= idleTimeout)
+    throw new TypeError("stream heartbeat must precede socket idle timeout");
+}
+// Includes id/event/data framing beyond the already bounded finite page. This
+// is a source-derived proof, never a new post-commit rejection of a legal group.
+export const TRANSACTION_SSE_FRAME_BYTES = TRANSACTION_CHANGEFEED_BYTES + 512;
+export const TRANSACTION_EVENT_FRAME_BYTES = TRANSACTION_EVENT_STREAM.packetBytes + 512;
+if (TRANSACTION_EVENT_FRAME_BYTES >= constants.MAX_STRING_LENGTH)
+  throw new Error("pinned runtime cannot encode the bounded Event frame");
+if (TRANSACTION_SSE_FRAME_BYTES >= constants.MAX_STRING_LENGTH)
+  throw new Error("pinned runtime cannot encode the bounded changefeed frame");
+
+export function transactionChangeFrame(group: TransactionChangefeedPage["groups"][number]): string {
+  return `id: ${group.checkpoint}\nevent: change-group\ndata: ${stringifyJsonValue(group)}\n\n`;
+}
+
+export function transactionEventFrame(event: TransactionEvent): string {
+  return `id: ${event.id}\nevent: ${event.type}\ndata: ${stringifyJsonValue(event)}\n\n`;
+}
+
+interface Sink {
+  readonly destroyed: boolean;
+  write(value: string): boolean;
+  once(event: "drain" | "close", listener: () => void): unknown;
+  once(event: "error", listener: (error: Error) => void): unknown;
+  removeListener(
+    event: "drain" | "error" | "close",
+    listener: (() => void) | ((error: Error) => void),
+  ): unknown;
+}
+/** write(false) accepted this frame into Node, but permits no subsequent owner
+ * read/comment until drain. It is not a client replica acknowledgement. */
+async function write(sink: Sink, value: string, signal: AbortSignal): Promise<void> {
+  signal.throwIfAborted();
+  if (sink.destroyed) throw new Error("stream transport closed");
+  if (sink.write(value)) return;
+  await new Promise<void>((resolve, reject) => {
+    const clean = () => {
+      sink.removeListener("drain", drained);
+      sink.removeListener("error", failed);
+      sink.removeListener("close", closed);
+      signal.removeEventListener("abort", aborted);
+    };
+    const drained = () => {
+      clean();
+      resolve();
+    };
+    const failed = (error: unknown) => {
+      clean();
+      reject(error);
+    };
+    const closed = () => failed(new Error("stream transport closed"));
+    const aborted = () => failed(signal.reason);
+    sink.once("drain", drained);
+    sink.once("error", failed);
+    sink.once("close", closed);
+    signal.addEventListener("abort", aborted, { once: true });
+    if (signal.aborted) aborted();
+    else if (sink.destroyed) closed();
+  });
+}
+
+interface Packet<Item, Cursor> {
+  readonly items: readonly Item[];
+  readonly continuation: Cursor;
+  readonly caughtUp: boolean;
+}
+type Timers = { readonly pollMilliseconds: number; readonly heartbeatMilliseconds: number };
+/** One private delivery loop. It retains only the current packet; continuations
+ * advance after its final drain, never on a speculative owner pull. */
+async function pump<Item, Cursor>(
+  sink: Sink,
+  initial: Packet<Item, Cursor> | undefined,
+  next: (cursor: Cursor, signal: AbortSignal) => Promise<Packet<Item, Cursor>>,
+  frame: (item: Item) => string,
+  signal: AbortSignal,
+  settings: Timers,
+): Promise<void> {
+  validateTransactionStreamTimers(settings);
+  let packet = initial;
+  initial = undefined;
+  let lastWrite = performance.now();
+  while (packet && !signal.aborted) {
+    for (const item of packet.items) {
+      await write(sink, frame(item), signal);
+      lastWrite = performance.now();
+    }
+    const continuation = packet.continuation,
+      caughtUp = packet.caughtUp;
+    packet = undefined;
+    // Empty historical packets must keep this check active too. Comments obey
+    // the same write/drain barrier; no timer queues independent writes.
+    if (performance.now() - lastWrite >= settings.heartbeatMilliseconds) {
+      await write(sink, ": heartbeat\n\n", signal);
+      lastWrite = performance.now();
+    }
+    if (caughtUp) await delay(settings.pollMilliseconds, undefined, { signal });
+    else await yieldTurn(undefined, { signal });
+    signal.throwIfAborted();
+    packet = await next(continuation, signal);
+  }
+}
+function changePacket(page: TransactionChangefeedPage) {
+  return {
+    items: page.groups,
+    continuation: page.groups.at(-1)?.checkpoint ?? page.after,
+    caughtUp: page.groups.length === 0,
+  };
+}
+function eventPacket(packet: TransactionEventPacket) {
+  return { items: packet.events, continuation: packet.scan, caughtUp: packet.caughtUp };
+}
+export function pumpTransactionChanges(
+  sink: Sink,
+  initial: TransactionChangefeedPage,
+  next: (after: string, signal: AbortSignal) => Promise<TransactionChangefeedPage>,
+  signal: AbortSignal,
+  settings: Timers = TRANSACTION_SSE_DEFAULTS,
+): Promise<void> {
+  return pump(
+    sink,
+    changePacket(initial),
+    async (after, signal) => changePacket(await next(after, signal)),
+    transactionChangeFrame,
+    signal,
+    settings,
+  );
+}
+export function pumpTransactionEvents(
+  sink: Sink,
+  initial: TransactionEventPacket,
+  next: (scan: TransactionEventScan, signal: AbortSignal) => Promise<TransactionEventPacket>,
+  signal: AbortSignal,
+  settings: Timers = TRANSACTION_SSE_DEFAULTS,
+): Promise<void> {
+  return pump(
+    sink,
+    eventPacket(initial),
+    async (scan, signal) => eventPacket(await next(scan, signal)),
+    transactionEventFrame,
+    signal,
+    settings,
+  );
+}
+
+===== Exact workload summary =====
+{"status":"planned successor workload unchanged; new pure projection assertions add zero HTTP/owners/callbacks","positive":{"callbacks":11,"http":21,"successfulOwnerOpens":14,"normalDirectories":11,"rejectedOpenCopyDirectories":5,"listeners":2,"productChildren":0},"includingProposedControl":{"callbackExecutions":12,"expectedHttp":28,"maximumHttp":38,"successfulOwnerOpens":15,"normalDirectories":12,"rejectedOpenCopyDirectories":5,"listeners":3,"productChildren":0},"control":{"released":false,"source":"/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-authorization-transition-plan/transport-author/control-proposal.md","expectedHttp":7,"maximumHttp":17,"namedFailure":"authorization-transition:generation-and-lease"}}
+

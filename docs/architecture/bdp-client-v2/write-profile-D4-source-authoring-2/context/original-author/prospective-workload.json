@@ -1,0 +1,108 @@
+{
+  "classification": "PROSPECTIVE, NOT EXECUTED OR PASSED",
+  "existingCallbackTitle": "installed valid sets preserve atomic effects, original receipts, owned versions and complete paged Events",
+  "callbackCount": 1,
+  "expectedInventory": {
+    "callbacks": 1,
+    "requests": 32,
+    "POST": 11,
+    "GET": 21,
+    "status200": 30,
+    "status404": 2,
+    "childrenAcquiredOnSuccess": 2,
+    "beforeRestart": 28,
+    "afterRestart": 4,
+    "receiptEntries": 33,
+    "receiptPageSizes": [
+      32,
+      1
+    ],
+    "seedEventPages": [
+      32,
+      32,
+      32,
+      3
+    ],
+    "seedEvents": 99,
+    "deleteEventPages": [
+      32,
+      32,
+      32
+    ],
+    "deleteEvents": 96,
+    "deleteGroups": 1,
+    "negativeOracles": 5
+  },
+  "actualObservations": null,
+  "sourceControlOracles": [
+    {
+      "id": "O1",
+      "lines": [
+        253,
+        264
+      ],
+      "mutant": "omit last receipt result",
+      "failure": "exact ordered 33-entry oracle"
+    },
+    {
+      "id": "O2",
+      "lines": [
+        273,
+        276
+      ],
+      "mutant": "omit first delete Event",
+      "failure": "exact96fact sequence"
+    },
+    {
+      "id": "O3",
+      "lines": [
+        277,
+        283
+      ],
+      "mutant": "swap first two complete 3-Event Link groups",
+      "failure": "exact canonical Link fact order"
+    },
+    {
+      "id": "O4",
+      "lines": [
+        355,
+        369
+      ],
+      "mutant": "mutually consistent actual n0 prestate, stale receipt/source/live Link",
+      "failure": "labeled requested owned Link properties literal n1 assertion"
+    },
+    {
+      "id": "O5",
+      "lines": [
+        370,
+        372
+      ],
+      "mutant": "wrong sourceRevision",
+      "failure": "sourceRevision equals actual live owner revision"
+    }
+  ],
+  "configurationInventorySha256": "a5aa9613cfb6906b736474c370194f3e5cdd17788d690ee4d62418a70d1e3d87",
+  "unchangedActualProductCalls": "Same sequence/payloads/keys/receipt/page cursor/reopen directory/credential; only local evidence capture/lifecycle barriers added. No new request or product counterprobe.",
+  "fixedBudgets": {
+    "workMs": 90000,
+    "callbackMs": 120000,
+    "requestMs": 5000,
+    "finalCleanupMs": 10000,
+    "preReopenCloseMaxMs": 10000,
+    "preReopenCloseAlsoWithinWork": true
+  },
+  "outerProposal": {
+    "totalMs": 150000,
+    "termMs": 145000,
+    "killMs": 149000,
+    "released": false,
+    "requirement": "S_bound+120000+F_bound+10000<=145000; startup/flush/full-report collector binding UNRESOLVED; no widening/sample-as-maximum/retry/framework"
+  },
+  "fullWireRetention": {
+    "perResponseMaximumBytes": 1179648,
+    "independentDispatchCap": 32,
+    "maximumRawWireComponentBytes": 37748736,
+    "maximumBase64ComponentCharacters": 50331648,
+    "completeSerializedReportCapacity": "UNRESOLVED; duplicate body/header/request/escaping/metadata not included in base64-only component limit"
+  }
+}

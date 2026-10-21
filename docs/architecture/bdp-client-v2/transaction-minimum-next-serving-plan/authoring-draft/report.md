@@ -1,0 +1,21 @@
+# Frozen minimum-serving draft
+
+Authoring only; no tests, typecheck, builds, installs, services, package generation or runtime observations were executed. The sole executed author tool was targeted Biome 2.5.7 formatting using this checkout's explicit configuration; all three recorded formatting invocations exited 0. Read-only diff whitespace check passed.
+
+Base is reviewed unmerged authorization candidate 1647c5df37a82e1364d281ac46beb60a94ab6c76, not main. W remains on codex/vickie-minimum-current-resource. Root must ordinarily integrate actual authorization main (including its two fixture repairs) and release validation. No commit/publication performed.
+
+Exactly ten allowed files are frozen. Production separates lexical current-read capture from the strict legacy helper; private unknown eligibility retries share the existing finite deadline, while missing/hidden current Resource, properties, alias and initial incident-anchor observations precede semantic minima. Type/collection and unsupported live-route behavior remains distinct. Existing negotiation/conditional selection is preserved; no new public status, runtime limit, schema or API entrypoint.
+
+Root's capture finding is repaired: both service attempts and direct minimum facet calls classify and delegate an immutable request snapshot before receiving signal callbacks. A genuine AbortSignal own getter mutation and rejected request accessor are covered inside an existing selected owner callback. The partial pre-repair packet is preserved; it was not released or executed. The first data-only packet script stopped at a quote-style extraction mismatch after writing partial files; final extraction now matches all 32 accepted rows and the exact 562-byte sequence literal.
+
+Source selection is 15 callbacks: five consistency, five owner/read, five HTTP. Static arithmetic is 172 HTTP, ten owners/directories, five listeners and zero product children; these are planned workload counts, not observations. The extra existing HTTP callback is necessary because its opaque current-Resource expectation changes from unsupported500 to bounded503. All exact full names and arithmetic are recorded. HTTP tests require a fresh emitted runtime build before import.
+
+Installed selection is one new callback in three separately gated cohorts: positive32 plus expected2+2 controls, 36 expected /96 maximum HTTP, three children/stores/listeners. Each uses the real installed library through a separately hashed private IPC bootstrap that only configures, publishes empty policy and closes. Requests dial actual loopback with canonical Host. No installed fallback to workspace product modules is allowed in eventual payload validation. Full sequence/Resource/Problem and HEAD framing/context assertions occur in memory; retained output is safe headers and fingerprints only. Source/entry/wrapper/binding and cleanup remain separately attributed.
+
+The sequence has four independently keyed operations, no outer key and no atomic-seed claim; actual pos-3 is required before deriving pos-4. Publication rotates the actual view; same-view hidden/missing comparison reuses the exact authored row18 tuple. Four unknown-minimum finite waits are planned. Defaults remain 30s cohort,45s Vitest,5s request,10s startup/close,120s supervisor,1s read wait/publication.
+
+Both negative recipes remain closed. Each requires the genuine named unsupported response, two completed exchanges, the exact subsequent status assertion failure, and clean child/store evidence. Generic exit1, missing output, startup failure, timing failure or cleanup error cannot qualify.
+
+Cleanup registers real source fixtures and reverse service closure; installed cleanup aborts/drains requests, closes the owned child, preserves a directory when startup stop is unknown, and retains primary/cleanup/report failures. No public qualification, discovery eligibility or installed execution is claimed. Reviewer/author overlap must be disclosed in subsequent council.
+
+Files: source-binding.json, draft.patch, source snapshots, selection.json, commands.json (closed), requests.json, measurements.json, control-plan.json, and condition-capture repair evidence. Exact hashes are in artifact-hashes.json.

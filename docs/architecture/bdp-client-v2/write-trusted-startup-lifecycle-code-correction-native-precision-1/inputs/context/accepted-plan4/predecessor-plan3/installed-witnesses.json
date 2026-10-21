@@ -1,0 +1,145 @@
+{
+  "state": "PROSPECTIVE NOT EXECUTED",
+  "callbacks": 21,
+  "plannedHttpDispatches": 126,
+  "requestMs": 5000,
+  "workMs": 45000,
+  "cleanupMs": 10000,
+  "callbackMs": 60000,
+  "outerMs": 120000,
+  "outerTermMs": 115000,
+  "retry": false,
+  "callbacksTable": [
+    {
+      "id": "I01",
+      "title": "RU cold prepared startup",
+      "scheduledHttp": 13,
+      "candidateGenerations": 1
+    },
+    {
+      "id": "I02",
+      "title": "TX cold prepared startup; requires D3a accepted receiver",
+      "scheduledHttp": 13,
+      "candidateGenerations": 1
+    },
+    {
+      "id": "I03",
+      "title": "RU two-generation create:false reopen and replay",
+      "scheduledHttp": 10,
+      "candidateGenerations": 2
+    },
+    {
+      "id": "I04",
+      "title": "TX two-generation create:false reopen and replay",
+      "scheduledHttp": 10,
+      "candidateGenerations": 2
+    },
+    {
+      "id": "I05",
+      "title": "RU changed current credential/policy on same installed store",
+      "scheduledHttp": 10,
+      "candidateGenerations": 2
+    },
+    {
+      "id": "I06",
+      "title": "RU missing store create:false",
+      "scheduledHttp": 0,
+      "candidateGenerations": 1
+    },
+    {
+      "id": "I07",
+      "title": "TX missing store create:false",
+      "scheduledHttp": 0,
+      "candidateGenerations": 1
+    },
+    {
+      "id": "I08",
+      "title": "RU persisted contractCapture mismatch",
+      "scheduledHttp": 0,
+      "candidateGenerations": 1
+    },
+    {
+      "id": "I09",
+      "title": "TX persisted contractCapture mismatch",
+      "scheduledHttp": 0,
+      "candidateGenerations": 1
+    },
+    {
+      "id": "I10",
+      "title": "RU occupied intended listener",
+      "scheduledHttp": 0,
+      "candidateGenerations": 1
+    },
+    {
+      "id": "I11",
+      "title": "TX occupied intended listener",
+      "scheduledHttp": 0,
+      "candidateGenerations": 1
+    },
+    {
+      "id": "I12",
+      "title": "RU SIGTERM shutdown, actual child exit and second-generation readback",
+      "scheduledHttp": 9,
+      "candidateGenerations": 2
+    },
+    {
+      "id": "I13",
+      "title": "TX SIGTERM shutdown, actual child exit and second-generation readback",
+      "scheduledHttp": 9,
+      "candidateGenerations": 2
+    },
+    {
+      "id": "I14",
+      "title": "RU SIGINT shutdown, actual child exit and second-generation readback",
+      "scheduledHttp": 9,
+      "candidateGenerations": 2
+    },
+    {
+      "id": "I15",
+      "title": "TX SIGINT shutdown, actual child exit and second-generation readback",
+      "scheduledHttp": 9,
+      "candidateGenerations": 2
+    },
+    {
+      "id": "I16",
+      "title": "RU IPC disconnect shutdown, actual child exit and second-generation readback",
+      "scheduledHttp": 9,
+      "candidateGenerations": 2
+    },
+    {
+      "id": "I17",
+      "title": "TX IPC disconnect shutdown, actual child exit and second-generation readback",
+      "scheduledHttp": 9,
+      "candidateGenerations": 2
+    },
+    {
+      "id": "I18",
+      "title": "RU non-reading CONNECT peer; observed peer-close chronology, shutdown then reopen",
+      "scheduledHttp": 8,
+      "candidateGenerations": 2
+    },
+    {
+      "id": "I19",
+      "title": "TX non-reading CONNECT peer; observed peer-close chronology, shutdown then reopen",
+      "scheduledHttp": 8,
+      "candidateGenerations": 2
+    },
+    {
+      "id": "I20",
+      "title": "RU ordinary bdptest --serve remains refused before intended acquisition",
+      "scheduledHttp": 0,
+      "candidateGenerations": 1
+    },
+    {
+      "id": "I21",
+      "title": "TX ordinary bdptest --serve remains refused before intended acquisition",
+      "scheduledHttp": 0,
+      "candidateGenerations": 1
+    }
+  ],
+  "rawConnectPeers": 2,
+  "countRules": "126 planned finite HTTP requests; 2 additional raw CONNECT peers. Counts are plans, not observations. Record dispatch, headers/body availability, actual complete responses, partials and cleanup separately; failure never synthesizes scheduled success. Outer bound is per selected callback command, not a claim the whole suite finishes in 120s.",
+  "additionalRawConnectAttempts": 2,
+  "totalPlannedHttpAttemptsIncludingConnect": 128,
+  "peerObservationRule": "I18/I19 record actual refusal bytes and peer state/close chronology before shutdown. Already normal-closed stays already closed. Claim shutdown-forced destruction only for observed live owned transport plus observed closure; otherwise refusal/cleanstop/reopen only. No sleep/retry/new seam or transport change, and no inference that RU and TX share the same socket lifecycle."
+}

@@ -1,0 +1,55 @@
+{
+  "mismatch": {
+    "capture": [
+      "old/current birth and PGID",
+      "row state/comm and exact old permittedComm/terminalSeen",
+      "held generation/last_at/census_at/original failure_at and origin",
+      "stored returncode/PID and existing registration facts or explicit absent null"
+    ],
+    "heldPredicateOrder": [
+      "birth or pgid mismatch rejects first",
+      "Z accepts once birth/group match",
+      "otherwise not terminalSeen and comm permitted"
+    ],
+    "path": "outer_host.py:50-53,104-109",
+    "preserve": [
+      "same uncertain reason/call/continue",
+      "no extra matches/poll/query/reap",
+      "one bounded write-once slot; original failure unchanged on capacity refusal"
+    ],
+    "trigger": "existing old identity and existing matches false branch only"
+  },
+  "publication": {
+    "absentFacts": "incomplete setup/read/poll/encoding/abnormal last-owner loss stays FAILED/UNKNOWN; no fabricated complete event",
+    "bankSources": [
+      "all registrations retained in order including duplicates",
+      "all identity PID/group items, sorted PID",
+      "all known groups, sorted PGID",
+      "all completed probe_receipts in creation order through LAST completed census"
+    ],
+    "finalBoundary": "published IO, IO/control settled, all known groups closed, census None",
+    "outstandingPrecisionFinding": "D4-OBS-N1",
+    "path": "outer_host.py:242-257,262-273",
+    "reapedRoles": [
+      "reaped census handles remain represented by completed probe receipts",
+      "reaped io/control/nested roles remain in registrations/groups/identities when observed",
+      "no post-snapshot probe omitted at valid final boundary"
+    ]
+  },
+  "signalError": {
+    "capture": [
+      "caught class/errno only",
+      "existing signal record/booleans and live PID list",
+      "already-computed direct_anchor/current/fresh_anchor",
+      "held direct returncode and group state/clocks"
+    ],
+    "notClaimed": [
+      "no chosen matching anchor PID",
+      "no captured ProcessLookupError fallback errno invented",
+      "no capture of uncaught or absent failures",
+      "no arbitrary exception message"
+    ],
+    "path": "outer_host.py:120-141",
+    "trigger": "existing group signal caught OSError branch"
+  }
+}

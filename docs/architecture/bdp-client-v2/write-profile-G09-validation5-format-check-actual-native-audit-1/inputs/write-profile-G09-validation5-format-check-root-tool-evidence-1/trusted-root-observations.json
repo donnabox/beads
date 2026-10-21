@@ -1,0 +1,67 @@
+{
+  "accepted": false,
+  "actualFormattingLog": {
+    "bytes": 44,
+    "exactText": "Checked 10 files in 32ms. No fixes applied.\n",
+    "mode": "0o644",
+    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation-preparation-5/run/format-check.log",
+    "sha256": "288451f050081a3f4b9a0c4cf096bc42bf5d2bec4480deebf8b211ea73dc10e9"
+  },
+  "actualFunctionsCellId": "3152",
+  "actualInnerElapsedSeconds": 4.285535833332688,
+  "actualInnerExit": 0,
+  "actualPhaseTerminalObservations": [
+    {
+      "actualRawExit": 0,
+      "actualTerminalToolId": "894526",
+      "phase": "A"
+    },
+    {
+      "actualRawExit": 0,
+      "actualTerminalToolId": "523458",
+      "phase": "B"
+    },
+    {
+      "actualRawExit": 0,
+      "actualTerminalToolId": "2c2aff",
+      "phase": "C"
+    }
+  ],
+  "censusRawStreamBytes": [
+    207800,
+    0
+  ],
+  "cleanupPerformedByStaticPacket": false,
+  "completedInvocationAndObservationUpperBoundSeconds": 9.313092125114053,
+  "firstPostBTerminalWitnessMonotonic": 2262887.809047833,
+  "fullIndependentConjunctionAudit": "PENDING",
+  "matchingTaskRows": [],
+  "nextStageReleased": false,
+  "observerSelfAbsenceOrGlobalContainmentClaim": false,
+  "ordinaryToolRecords": {
+    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation5-format-check-root-tool-evidence-1/dispatch-state.json",
+    "sha256": "150cd6dd34d048fbef835783b8712f6d36385542342cb8d9b7023bb3a4101210"
+  },
+  "probeDirectReaped": true,
+  "qualityPass": false,
+  "rawWireToolReceipts": "UNRETAINED_SOURCE_ATTRIBUTED_NORMALIZED_RESULTS",
+  "recordedTaskPGIDs": [
+    7606,
+    7610,
+    9211
+  ],
+  "recordedTaskPIDs": [
+    7609,
+    7610,
+    9211,
+    9213
+  ],
+  "rootOriginMonotonic": 2262878.495955708,
+  "rootRawStreamBytes": [
+    481,
+    0
+  ],
+  "stage": "format-check",
+  "strictUnder115": true,
+  "temporaryDirectory": "/private/tmp/vickie-tx-discovery-validation-format-check-0x8o0nkb"
+}

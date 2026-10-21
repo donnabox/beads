@@ -1,0 +1,22 @@
+{
+  "utc": "2026-10-18T16:01:01.229820+00:00",
+  "acceptedFinding": true,
+  "mechanicsAccepted": false,
+  "nativeIndex": {
+    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-cumulative-carrier-validation2-native-mechanics-1/index.json",
+    "sha256": "d85cba8f096603ad086468b38050c181de69bdf55ba92876ac43fc20f95e1db2"
+  },
+  "nativeClosure": {
+    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-cumulative-carrier-validation2-native-mechanics-1/closure.json",
+    "sha256": "3df85154962f53082c32e5d69d3c97090270114c556e4f84cd391ca18a2a396c"
+  },
+  "nativeReport": {
+    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-cumulative-carrier-validation2-native-mechanics-1/report.md",
+    "sha256": "0fd7e73b8c1821bf5a94b82a4c3bedf852473c2e6f5a3ff62cb5d58e04929481"
+  },
+  "nativeIndexedFilesAndMirrorVerified": 152,
+  "finding": "CV2-N1 Medium accepted: ordinary read/poll/pipe setup exceptions can skip bounded best-effort already-received failure-prefix/registry publication while tool stdout remains writable. Missing event is correctly fail-closed but does not fulfill retention contract.",
+  "notObservedRuntimeFailure": true,
+  "executionReleased": false,
+  "sourceOrSchemaChangesAuthorized": false
+}

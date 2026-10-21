@@ -1,0 +1,55 @@
+{
+  "base": "06b0e04a921c8501e36a8a68480cee72dc4c54b3",
+  "allowedFiles": [
+    "apps/bdptest/src/read-update-matrix.test.ts",
+    "packages/conformance/matrices/read-update-reference-continuation-v1.json",
+    "packages/conformance/src/cumulative-artifact.test.ts",
+    "packages/conformance/test-support/read-update-coverage-v1.json"
+  ],
+  "ledger": {
+    "packages/conformance/matrices/read-update-reference-continuation-v1.json": {
+      "bytes": 844551,
+      "nodes": 22146,
+      "sha256": "d6ad2f7abf0556227a20c786bd88d30c2c6f67a5d922c6fc3fc5168678fceec5",
+      "growthBytes": 20821,
+      "growthNodes": 532
+    },
+    "packages/conformance/test-support/read-update-coverage-v1.json": {
+      "bytes": 703415,
+      "nodes": 14460,
+      "sha256": "8274385bff08618e15ccbdb863127f5a472606970c14c735f4d9805f9ff01954",
+      "growthBytes": 4801,
+      "growthNodes": 66
+    }
+  },
+  "counts": {
+    "required": 129,
+    "authored": 54,
+    "whole": 31,
+    "uncovered": 98,
+    "omitted": 75
+  },
+  "preservation": {
+    "baselineFixtureIndexCatalogBytes": true,
+    "ACRNBlocks": true,
+    "oldB73ActionBytes": true,
+    "otherCoverageRows": true
+  },
+  "B": {
+    "actions": 81,
+    "newAssertions": 66,
+    "raw": 19,
+    "client": 62,
+    "newIds": [
+      "num-subject-metadata-closure-refused",
+      "num-subject-metadata-closure-unchanged",
+      "num-subject-metadata-closure-corrected",
+      "num-subject-metadata-closure-read",
+      "num-link-metadata-closure-refused",
+      "num-link-metadata-closure-unchanged",
+      "num-link-metadata-closure-corrected",
+      "num-link-metadata-closure-read"
+    ]
+  },
+  "claimEligible": false
+}

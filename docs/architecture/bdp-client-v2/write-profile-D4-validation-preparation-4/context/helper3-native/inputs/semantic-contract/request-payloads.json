@@ -1,0 +1,553 @@
+{
+  "scope": "https://reference.invalid/acme/",
+  "exactPOSTBodiesBySuccessOrdinal": {
+    "1": {
+      "operations": [
+        {
+          "operation": "createBead",
+          "id": "beads/a",
+          "type": "https://reference.invalid/acme/types/bead",
+          "properties": {
+            "n": 0
+          },
+          "metadata": {
+            "stable": true
+          }
+        },
+        {
+          "operation": "createBead",
+          "id": "beads/b",
+          "type": "https://reference.invalid/acme/types/bead",
+          "properties": {
+            "n": 0
+          },
+          "metadata": {
+            "stable": true
+          }
+        },
+        {
+          "operation": "createBead",
+          "id": "beads/owner",
+          "type": "https://reference.invalid/acme/types/owner",
+          "properties": {
+            "n": 0
+          },
+          "metadata": {
+            "stable": true
+          }
+        }
+      ]
+    },
+    "2": {
+      "operations": [
+        {
+          "operation": "createLink",
+          "id": "https://reference.invalid/acme/links/l00",
+          "type": "https://reference.invalid/acme/types/link",
+          "source": "beads/a",
+          "target": "beads/b",
+          "properties": {
+            "n": 0
+          }
+        },
+        {
+          "operation": "createLink",
+          "id": "https://reference.invalid/acme/links/l01",
+          "type": "https://reference.invalid/acme/types/link",
+          "source": "beads/a",
+          "target": "beads/b",
+          "properties": {
+            "n": 0
+          }
+        },
+        {
+          "operation": "createLink",
+          "id": "https://reference.invalid/acme/links/l02",
+          "type": "https://reference.invalid/acme/types/link",
+          "source": "beads/a",
+          "target": "beads/b",
+          "properties": {
+            "n": 0
+          }
+        },
+        {
+          "operation": "createLink",
+          "id": "https://reference.invalid/acme/links/l03",
+          "type": "https://reference.invalid/acme/types/link",
+          "source": "beads/a",
+          "target": "beads/b",
+          "properties": {
+            "n": 0
+          }
+        },
+        {
+          "operation": "createLink",
+          "id": "https://reference.invalid/acme/links/l04",
+          "type": "https://reference.invalid/acme/types/link",
+          "source": "beads/a",
+          "target": "beads/b",
+          "properties": {
+            "n": 0
+          }
+        },
+        {
+          "operation": "createLink",
+          "id": "https://reference.invalid/acme/links/l05",
+          "type": "https://reference.invalid/acme/types/link",
+          "source": "beads/a",
+          "target": "beads/b",
+          "properties": {
+            "n": 0
+          }
+        },
+        {
+          "operation": "createLink",
+          "id": "https://reference.invalid/acme/links/l06",
+          "type": "https://reference.invalid/acme/types/link",
+          "source": "beads/a",
+          "target": "beads/b",
+          "properties": {
+            "n": 0
+          }
+        },
+        {
+          "operation": "createLink",
+          "id": "https://reference.invalid/acme/links/l07",
+          "type": "https://reference.invalid/acme/types/link",
+          "source": "beads/a",
+          "target": "beads/b",
+          "properties": {
+            "n": 0
+          }
+        },
+        {
+          "operation": "createLink",
+          "id": "https://reference.invalid/acme/links/l08",
+          "type": "https://reference.invalid/acme/types/link",
+          "source": "beads/a",
+          "target": "beads/b",
+          "properties": {
+            "n": 0
+          }
+        },
+        {
+          "operation": "createLink",
+          "id": "https://reference.invalid/acme/links/l09",
+          "type": "https://reference.invalid/acme/types/link",
+          "source": "beads/a",
+          "target": "beads/b",
+          "properties": {
+            "n": 0
+          }
+        },
+        {
+          "operation": "createLink",
+          "id": "https://reference.invalid/acme/links/l10",
+          "type": "https://reference.invalid/acme/types/link",
+          "source": "beads/a",
+          "target": "beads/b",
+          "properties": {
+            "n": 0
+          }
+        },
+        {
+          "operation": "createLink",
+          "id": "https://reference.invalid/acme/links/l11",
+          "type": "https://reference.invalid/acme/types/link",
+          "source": "beads/a",
+          "target": "beads/b",
+          "properties": {
+            "n": 0
+          }
+        },
+        {
+          "operation": "createLink",
+          "id": "https://reference.invalid/acme/links/l12",
+          "type": "https://reference.invalid/acme/types/link",
+          "source": "beads/a",
+          "target": "beads/b",
+          "properties": {
+            "n": 0
+          }
+        },
+        {
+          "operation": "createLink",
+          "id": "https://reference.invalid/acme/links/l13",
+          "type": "https://reference.invalid/acme/types/link",
+          "source": "beads/a",
+          "target": "beads/b",
+          "properties": {
+            "n": 0
+          }
+        },
+        {
+          "operation": "createLink",
+          "id": "https://reference.invalid/acme/links/l14",
+          "type": "https://reference.invalid/acme/types/link",
+          "source": "beads/a",
+          "target": "beads/b",
+          "properties": {
+            "n": 0
+          }
+        },
+        {
+          "operation": "createLink",
+          "id": "https://reference.invalid/acme/links/l15",
+          "type": "https://reference.invalid/acme/types/link",
+          "source": "beads/a",
+          "target": "beads/b",
+          "properties": {
+            "n": 0
+          }
+        },
+        {
+          "operation": "createLink",
+          "id": "https://reference.invalid/acme/links/l16",
+          "type": "https://reference.invalid/acme/types/link",
+          "source": "beads/a",
+          "target": "beads/b",
+          "properties": {
+            "n": 0
+          }
+        },
+        {
+          "operation": "createLink",
+          "id": "https://reference.invalid/acme/links/l17",
+          "type": "https://reference.invalid/acme/types/link",
+          "source": "beads/a",
+          "target": "beads/b",
+          "properties": {
+            "n": 0
+          }
+        },
+        {
+          "operation": "createLink",
+          "id": "https://reference.invalid/acme/links/l18",
+          "type": "https://reference.invalid/acme/types/link",
+          "source": "beads/a",
+          "target": "beads/b",
+          "properties": {
+            "n": 0
+          }
+        },
+        {
+          "operation": "createLink",
+          "id": "https://reference.invalid/acme/links/l19",
+          "type": "https://reference.invalid/acme/types/link",
+          "source": "beads/a",
+          "target": "beads/b",
+          "properties": {
+            "n": 0
+          }
+        },
+        {
+          "operation": "createLink",
+          "id": "https://reference.invalid/acme/links/l20",
+          "type": "https://reference.invalid/acme/types/link",
+          "source": "beads/a",
+          "target": "beads/b",
+          "properties": {
+            "n": 0
+          }
+        },
+        {
+          "operation": "createLink",
+          "id": "https://reference.invalid/acme/links/l21",
+          "type": "https://reference.invalid/acme/types/link",
+          "source": "beads/a",
+          "target": "beads/b",
+          "properties": {
+            "n": 0
+          }
+        },
+        {
+          "operation": "createLink",
+          "id": "https://reference.invalid/acme/links/l22",
+          "type": "https://reference.invalid/acme/types/link",
+          "source": "beads/a",
+          "target": "beads/b",
+          "properties": {
+            "n": 0
+          }
+        },
+        {
+          "operation": "createLink",
+          "id": "https://reference.invalid/acme/links/l23",
+          "type": "https://reference.invalid/acme/types/link",
+          "source": "beads/a",
+          "target": "beads/b",
+          "properties": {
+            "n": 0
+          }
+        },
+        {
+          "operation": "createLink",
+          "id": "https://reference.invalid/acme/links/l24",
+          "type": "https://reference.invalid/acme/types/link",
+          "source": "beads/a",
+          "target": "beads/b",
+          "properties": {
+            "n": 0
+          }
+        },
+        {
+          "operation": "createLink",
+          "id": "https://reference.invalid/acme/links/l25",
+          "type": "https://reference.invalid/acme/types/link",
+          "source": "beads/a",
+          "target": "beads/b",
+          "properties": {
+            "n": 0
+          }
+        },
+        {
+          "operation": "createLink",
+          "id": "https://reference.invalid/acme/links/l26",
+          "type": "https://reference.invalid/acme/types/link",
+          "source": "beads/a",
+          "target": "beads/b",
+          "properties": {
+            "n": 0
+          }
+        },
+        {
+          "operation": "createLink",
+          "id": "https://reference.invalid/acme/links/l27",
+          "type": "https://reference.invalid/acme/types/link",
+          "source": "beads/a",
+          "target": "beads/b",
+          "properties": {
+            "n": 0
+          }
+        },
+        {
+          "operation": "createLink",
+          "id": "https://reference.invalid/acme/links/l28",
+          "type": "https://reference.invalid/acme/types/link",
+          "source": "beads/a",
+          "target": "beads/b",
+          "properties": {
+            "n": 0
+          }
+        },
+        {
+          "operation": "createLink",
+          "id": "https://reference.invalid/acme/links/l29",
+          "type": "https://reference.invalid/acme/types/link",
+          "source": "beads/a",
+          "target": "beads/b",
+          "properties": {
+            "n": 0
+          }
+        },
+        {
+          "operation": "createLink",
+          "id": "https://reference.invalid/acme/links/l30",
+          "type": "https://reference.invalid/acme/types/link",
+          "source": "beads/a",
+          "target": "beads/b",
+          "properties": {
+            "n": 0
+          }
+        },
+        {
+          "operation": "createLink",
+          "id": "https://reference.invalid/acme/links/l31",
+          "type": "https://reference.invalid/acme/types/link",
+          "source": "beads/a",
+          "target": "beads/b",
+          "properties": {
+            "n": 0
+          }
+        }
+      ]
+    },
+    "8": {
+      "collection": "links",
+      "selector": "$[?@.type == \"https://reference.invalid/acme/types/link\"]",
+      "cardinality": {
+        "min": 32,
+        "max": 32
+      }
+    },
+    "15": {
+      "operations": [
+        {
+          "operation": "createLink",
+          "id": "links/later",
+          "type": "https://reference.invalid/acme/types/link",
+          "source": "beads/a",
+          "target": "beads/b",
+          "properties": {
+            "n": 0
+          }
+        }
+      ]
+    },
+    "16": {
+      "operations": [
+        {
+          "operation": "deleteWhere",
+          "collection": "links",
+          "selector": "$[?@.type == \"https://reference.invalid/acme/types/link\"]",
+          "cardinality": {
+            "min": 32,
+            "max": 32
+          }
+        }
+      ]
+    },
+    "18": {
+      "operations": [
+        {
+          "operation": "createLink",
+          "id": "links/owned",
+          "type": "https://reference.invalid/acme/types/owned",
+          "source": "beads/owner",
+          "target": "beads/b",
+          "properties": {
+            "n": 0
+          }
+        }
+      ]
+    },
+    "21": {
+      "collection": "links",
+      "selector": "$[?@.id == \"https://reference.invalid/acme/links/owned\"]",
+      "change": [
+        {
+          "op": "replace",
+          "path": "/n",
+          "value": 1
+        }
+      ]
+    },
+    "24": {
+      "collection": "links",
+      "selector": "$[?@.id == \"https://reference.invalid/acme/links/owned\"]",
+      "change": [
+        {
+          "op": "replace",
+          "path": "/n",
+          "value": 1
+        }
+      ]
+    },
+    "25": {
+      "operations": [
+        {
+          "operation": "createBead",
+          "id": "beads/tentative",
+          "type": "https://reference.invalid/acme/types/bead",
+          "properties": {
+            "n": 0
+          },
+          "metadata": {
+            "stable": true
+          }
+        },
+        {
+          "operation": "updateWhere",
+          "collection": "links",
+          "selector": "$[?@.id == \"https://reference.invalid/acme/links/owned\"]",
+          "change": [
+            {
+              "op": "replace",
+              "path": "/n",
+              "value": "invalid"
+            }
+          ]
+        }
+      ]
+    },
+    "31": {
+      "operations": [
+        {
+          "operation": "deleteWhere",
+          "collection": "links",
+          "selector": "$[?@.type == \"https://reference.invalid/acme/types/link\"]",
+          "cardinality": {
+            "min": 32,
+            "max": 32
+          }
+        }
+      ]
+    },
+    "32": {
+      "operations": [
+        {
+          "operation": "createBead",
+          "id": "beads/tentative",
+          "type": "https://reference.invalid/acme/types/bead",
+          "properties": {
+            "n": 0
+          },
+          "metadata": {
+            "stable": true
+          }
+        },
+        {
+          "operation": "updateWhere",
+          "collection": "links",
+          "selector": "$[?@.id == \"https://reference.invalid/acme/links/owned\"]",
+          "change": [
+            {
+              "op": "replace",
+              "path": "/n",
+              "value": "invalid"
+            }
+          ]
+        }
+      ]
+    }
+  },
+  "bodyComparison": "Compare parsed JSON to exact finite authored object and, for integrity, retain SHA256 of actual requestBody UTF8. Source serializes JSON.stringify once; do not invent key-order normalization as raw request identity. GET requestBody absent in serialized source report, never null/empty surrogate.",
+  "fixedLinkIds": [
+    "https://reference.invalid/acme/links/l00",
+    "https://reference.invalid/acme/links/l01",
+    "https://reference.invalid/acme/links/l02",
+    "https://reference.invalid/acme/links/l03",
+    "https://reference.invalid/acme/links/l04",
+    "https://reference.invalid/acme/links/l05",
+    "https://reference.invalid/acme/links/l06",
+    "https://reference.invalid/acme/links/l07",
+    "https://reference.invalid/acme/links/l08",
+    "https://reference.invalid/acme/links/l09",
+    "https://reference.invalid/acme/links/l10",
+    "https://reference.invalid/acme/links/l11",
+    "https://reference.invalid/acme/links/l12",
+    "https://reference.invalid/acme/links/l13",
+    "https://reference.invalid/acme/links/l14",
+    "https://reference.invalid/acme/links/l15",
+    "https://reference.invalid/acme/links/l16",
+    "https://reference.invalid/acme/links/l17",
+    "https://reference.invalid/acme/links/l18",
+    "https://reference.invalid/acme/links/l19",
+    "https://reference.invalid/acme/links/l20",
+    "https://reference.invalid/acme/links/l21",
+    "https://reference.invalid/acme/links/l22",
+    "https://reference.invalid/acme/links/l23",
+    "https://reference.invalid/acme/links/l24",
+    "https://reference.invalid/acme/links/l25",
+    "https://reference.invalid/acme/links/l26",
+    "https://reference.invalid/acme/links/l27",
+    "https://reference.invalid/acme/links/l28",
+    "https://reference.invalid/acme/links/l29",
+    "https://reference.invalid/acme/links/l30",
+    "https://reference.invalid/acme/links/l31"
+  ],
+  "keyFactsBySuccessOrdinal": {
+    "1": "set_0",
+    "2": "set_1",
+    "8": "delete32",
+    "15": "set_2",
+    "16": "delete32",
+    "18": "set_3",
+    "21": "owned_update",
+    "24": "set_4",
+    "25": "compiled_fail",
+    "31": "delete32",
+    "32": "compiled_fail"
+  },
+  "keysAreSourceFactsNotReportFields": true
+}

@@ -1,0 +1,110 @@
+{
+  "accepted": false,
+  "findings": [
+    {
+      "additionalLocations": [
+        {
+          "file": "execution-contract.json",
+          "line": 70
+        },
+        {
+          "file": "execution-contract.json",
+          "line": 136
+        },
+        {
+          "file": "execution-contract.json",
+          "line": 142
+        },
+        {
+          "field": "callbackMsUnchanged",
+          "file": "integration.proposed.json"
+        }
+      ],
+      "evidence": [
+        {
+          "fact": "expect(performance.now()-started).toBeLessThanOrEqual(63000)",
+          "file": "source/apps/bdptest/src/transactional-matrix.test.ts",
+          "line": 628
+        },
+        {
+          "fact": "positive it callback timeout120000",
+          "file": "source/apps/bdptest/src/transactional-matrix.test.ts",
+          "line": 644
+        }
+      ],
+      "file": "execution-contract.json",
+      "fix": "In a separately frozen DATA successor distinguish actual Vitest timeout120000 from elapsed assertion63000, retain90s work/10s cleanup/5s request and independently enforced future outer bounds without widening. Preserve parent histories and explicitly erratum inherited prose; a new stricter63s whole-callback policy would need explicit disposition rather than being described as current.",
+      "id": "DISCOVERY-PLAN1-N1",
+      "impact": "Source authorship/validation could silently impose a new63s callback limit while claiming no new bound, or prepare incorrect fit/cleanup proof. The existing90s work allowance does not redefine either value.",
+      "line": 48,
+      "problem": "The plan calls63000 the existing/actual positive callback timeout and whole-callback bound. Exact pinned source declares120000;63000 is a separate elapsed assertion.",
+      "severity": "Medium"
+    },
+    {
+      "evidence": [
+        {
+          "actions": [
+            "d03-page-bound",
+            "d03-page-zero",
+            "d03-page-over",
+            "d03-selector-bound",
+            "d03-selector-over"
+          ],
+          "fact": "all depend on received types/beads URL",
+          "file": "owner-action-contracts.json"
+        },
+        {
+          "fact": "bindings are fresh per scenario: scope plus declared fixture/preparation bindings",
+          "file": "source/packages/conformance/src/runner.ts",
+          "line": 623
+        },
+        {
+          "fact": "unknown target binding is refused",
+          "file": "source/packages/conformance/src/runner.ts",
+          "line": 2504
+        },
+        {
+          "fact": "unchanged fixture has no types/beads binding; d02 captures are another scenario",
+          "file": "source/packages/conformance/test-support/transactional/fixture-v1.json"
+        }
+      ],
+      "file": "owner-action-contracts.json",
+      "fix": "Capture /types and /beads from the actual successful d03 descriptor into explicit lowercase d03 bindings; name those bindings in all five downstream target/query definitions and matching wire data. Use existing absolute json-pointer capture, with no new HTTP/actions/fixture/DSL construct.",
+      "id": "DISCOVERY-PLAN1-N2",
+      "impact": "The core39 plan is missing its actual cold dataflow. Implementation would fail unbound navigation or substitute a forbidden allowlist/fixture/ready-path oracle.",
+      "line": 333,
+      "pointer": "/rows/2/actions/1/captures",
+      "problem": "d03-descriptor has no captures, while the next five optional-limits requests require received Types or Beads navigation.",
+      "severity": "Medium"
+    },
+    {
+      "evidence": [
+        {
+          "fact": "ID_PATTERN /^[a-z0-9]+(?:[.-][a-z0-9]+)*$/",
+          "file": "source/packages/conformance/src/executable-manifest.ts",
+          "line": 417
+        },
+        {
+          "fact": "capture.binding passes readId",
+          "file": "source/packages/conformance/src/executable-manifest.ts",
+          "line": 1527
+        },
+        {
+          "fact": "readId enforces lowercase identifiers, max128",
+          "file": "source/packages/conformance/src/executable-manifest.ts",
+          "line": 2291
+        }
+      ],
+      "file": "owner-action-contracts.json",
+      "fix": "Rename only binding IDs/references to lowercase kebab spelling such as d04-create-bead/d04-put-alias/d04-delete-alias. Keep normative JSON member pointers /createBead,/putAlias,/deleteAlias and all39 requests unchanged; do not relax existing parser ID grammar.",
+      "id": "DISCOVERY-PLAN1-N3",
+      "impact": "The literal proposed manifest refuses before real HTTP. Expanding identifier grammar would exceed the declared two narrow DSL changes and is unnecessary.",
+      "pointer": "/rows/3/actions/2/captures",
+      "problem": "d04-createBead, d04-putAlias and d04-deleteAlias violate the unchanged lowercase capture binding identifier grammar.",
+      "severity": "Medium"
+    }
+  ],
+  "proposedDSLAdopted": false,
+  "revisionsRequired": true,
+  "sourceAuthoringReleased": false
+}

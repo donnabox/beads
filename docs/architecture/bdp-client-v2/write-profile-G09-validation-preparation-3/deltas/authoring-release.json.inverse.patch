@@ -1,0 +1,33 @@
+--- /Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation-preparation-3/authoring-release.json
++++ /Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation-preparation-2/authoring-release.json
+@@ -1,21 +1,11 @@
+ {
+-  "acceptedPlan": {
+-    "bytes": 9674,
+-    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-root-instantiation-correction-next-plan-1/index.json",
+-    "sha256": "7bc1dc269fcdd910261d9549ba8de4a653464481f62f08b13ee9e6a92fa0e5a8"
+-  },
+-  "kind": "DURABLE_ROOT_AUTHOR_ONLY_RELEASE",
+-  "nativePlanPrecision": {
+-    "bytes": 656,
+-    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-root-instantiation-plan-native-precision-1/closure.json",
+-    "sha256": "bbe58413217f7c15d8adee25e81c92d138bb75dec2391eb7a09b6cb380a77f26"
+-  },
+-  "publicationAttributedTo": "Root explicit instruction before P3creation; author issued no Git/network action",
+-  "publicationReadback": "befb27219e185ddc8ebb7494f7acd0594d84b3fc",
+-  "release": {
+-    "bytes": 4006,
+-    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-instantiation-plan-root-author-release-1/release.json",
+-    "sha256": "8551f1dd1a1ebb3bf8c1ba7bbe78c7145452a36232272e7d17ed3c5451a9347d"
+-  },
+-  "runtimeExecutionReleased": false
++  "authorOnly": true,
++  "durablePublicationReadback": "20d18cc28a13438bdd2a0de4b6a3a01eecdb879f",
++  "finding": "G09-VAL-N1",
++  "helperEvaluationOrExecutionReleased": false,
++  "otherNativeAcceptance": "PENDING",
++  "productSourceChanged": false,
++  "releasePath": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation1-root-finding-disposition-1/release.json",
++  "releaseSha256": "841fa1966f970a28fcb76f80740491795ab016c6bfda21595e2ec4bedb712ff3",
++  "session": "2026-10-18T02:16:24Z-549f"
+ }

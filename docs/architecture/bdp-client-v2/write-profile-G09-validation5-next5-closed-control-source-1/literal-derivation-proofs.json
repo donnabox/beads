@@ -1,0 +1,597 @@
+[
+  {
+    "acquisitionBodyClocksRawStreamsEOFGuardsRAWEXIT0OtherwiseExact": true,
+    "after": {
+      "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation5-next5-closed-control-source-1/cells/typecheck.A.txt",
+      "sha256": "3e46cb13702f8f050fa3258cfbfbd2724f06aae411ca73eb8ece8673cce48030"
+    },
+    "before": {
+      "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation5-root-instantiated-source-1/cells/bind-workspace-tools.A.txt",
+      "sha256": "0ff5b24bb2b1728b08003ade9549ce3a38b22c85bc4ecd5157e8f77205a03aa1"
+    },
+    "changes": [
+      {
+        "after": "STAGE = 'typecheck'\n",
+        "before": "STAGE = 'bind-workspace-tools'\n",
+        "count": 1
+      },
+      {
+        "after": "ARGV = ['/opt/homebrew/opt/python@3.14/bin/python3.14', '/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation-preparation-5/run.py', 'final', 'typecheck']\n",
+        "before": "ARGV = ['/opt/homebrew/opt/python@3.14/bin/python3.14', '/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation-preparation-5/run.py', 'final', 'bind-workspace-tools']\n",
+        "count": 1
+      },
+      {
+        "after": "OWNED_ROOT_OUTPUT = '/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation5-root-first4-dispatch-1/typecheck'\n",
+        "before": "OWNED_ROOT_OUTPUT = '/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation5-root-first4-dispatch-1/bind-workspace-tools'\n",
+        "count": 1
+      },
+      {
+        "after": "APPROVED_GATE_SHA256 = '18a440d47c2b4e7aef7e46afc73f627a27d13e51cae8b990cd2feade33c774a4'\n",
+        "before": "APPROVED_GATE_SHA256 = 'ad5b647e6b2f1aba93981d1a85fdb7ef0930062418012cf4acf90073de202919'\n",
+        "count": 1
+      },
+      {
+        "after": "APPROVED_EXECUTION_ACCEPTANCE_SHA256 = '84d98d3a56b09f8c0305ffbabf88174bc6d960f6bd3123fef2f9576240f707a4'\n",
+        "before": "APPROVED_EXECUTION_ACCEPTANCE_SHA256 = 'c8ee1a1cd556beae5ddb93454a5156a23c8bc817a4a4ff405996de49049f7ae1'\n",
+        "count": 1
+      },
+      {
+        "after": "EXECUTION_ACCEPTANCE_PATH = Path('/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation5-next5-closed-control-source-1/execution-manifest.json')\n",
+        "before": "EXECUTION_ACCEPTANCE_PATH = Path('/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation5-root-execution-acceptance-1/acceptance.json')\n",
+        "count": 1
+      },
+      {
+        "after": "assert type(execution_acceptance['approvedStages']) is list and execution_acceptance['approvedStages'] == ['node-version', 'pnpm-version', 'workspace-install', 'bind-workspace-tools', 'typecheck', 'format-check', 'lint', 'fresh-build', 'bind-fresh-build']\n",
+        "before": "assert type(execution_acceptance['approvedStages']) is list and execution_acceptance['approvedStages'] == ['node-version','pnpm-version','workspace-install','bind-workspace-tools']\n",
+        "count": 1
+      }
+    ],
+    "delta": "deltas/typecheck.A.patch",
+    "fullInverseExact": true,
+    "fullInverseSha256": "0ff5b24bb2b1728b08003ade9549ce3a38b22c85bc4ecd5157e8f77205a03aa1",
+    "phase": "A",
+    "stage": "typecheck"
+  },
+  {
+    "acquisitionBodyClocksRawStreamsEOFGuardsRAWEXIT0OtherwiseExact": true,
+    "after": {
+      "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation5-next5-closed-control-source-1/cells/typecheck.B.txt",
+      "sha256": "5f7f601f633e7f9aa3bfdfca9aed10633c6d35ebf41022f075473fc53c3451bd"
+    },
+    "before": {
+      "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation5-root-instantiated-source-1/cells/bind-workspace-tools.B.txt",
+      "sha256": "4c8ca7d2cd7e3f76fded3c3f97d080cc9af9001a016d069c102050d9541b3d53"
+    },
+    "changes": [
+      {
+        "after": "ROOT = Path('/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation5-root-first4-dispatch-1/typecheck')\n",
+        "before": "ROOT = Path('/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation5-root-first4-dispatch-1/bind-workspace-tools')\n",
+        "count": 1
+      },
+      {
+        "after": "assert provisional['stage']=='typecheck' and provisional['accepted'] is False\n",
+        "before": "assert provisional['stage']=='bind-workspace-tools' and provisional['accepted'] is False\n",
+        "count": 1
+      },
+      {
+        "after": "    value={'stage':'typecheck','phaseAToolId':ACTUAL_A_TOOL_ID,'phaseAToolRawExit':ACTUAL_A_TOOL_RAW_EXIT,'phaseAToolReceiptAttribution':'trusted root actual ordinary-tool observation; independently decoded raw tool receipt UNRETAINED unless separately actually supplied','originReceiptSha256':hashlib.sha256(origin_raw).hexdigest(),'provisionalReceiptSha256':hashlib.sha256(provisional_raw).hexdigest(),'rootOriginMonotonic':ORIGIN,'observerPid':os.getpid(),'observerPgid':os.getpgrp(),'probePid':p.pid if p is not None else None,'probeCreationPgid':p.pid if p is not None else None,'probeRawExit':p.returncode if p is not None else None,'probeBothEOF':complete,'probeDirectReaped':complete and p is not None and p.returncode is not None,'streams':facts,'taskPIDs':known_pids,'taskPGIDs':known_groups,'selectionOrigins':provisional['knownTaskRegistry']['origins'],'matchingTaskRows':matching if complete else None,'censusEndMonotonic':time.monotonic(),'failure':failure,'accepted':False,'actualObserverToolTerminal':None,'finalClockWitness':None}\n",
+        "before": "    value={'stage':'bind-workspace-tools','phaseAToolId':ACTUAL_A_TOOL_ID,'phaseAToolRawExit':ACTUAL_A_TOOL_RAW_EXIT,'phaseAToolReceiptAttribution':'trusted root actual ordinary-tool observation; independently decoded raw tool receipt UNRETAINED unless separately actually supplied','originReceiptSha256':hashlib.sha256(origin_raw).hexdigest(),'provisionalReceiptSha256':hashlib.sha256(provisional_raw).hexdigest(),'rootOriginMonotonic':ORIGIN,'observerPid':os.getpid(),'observerPgid':os.getpgrp(),'probePid':p.pid if p is not None else None,'probeCreationPgid':p.pid if p is not None else None,'probeRawExit':p.returncode if p is not None else None,'probeBothEOF':complete,'probeDirectReaped':complete and p is not None and p.returncode is not None,'streams':facts,'taskPIDs':known_pids,'taskPGIDs':known_groups,'selectionOrigins':provisional['knownTaskRegistry']['origins'],'matchingTaskRows':matching if complete else None,'censusEndMonotonic':time.monotonic(),'failure':failure,'accepted':False,'actualObserverToolTerminal':None,'finalClockWitness':None}\n",
+        "count": 1
+      }
+    ],
+    "delta": "deltas/typecheck.B.patch",
+    "fullInverseExact": true,
+    "fullInverseSha256": "4c8ca7d2cd7e3f76fded3c3f97d080cc9af9001a016d069c102050d9541b3d53",
+    "phase": "B",
+    "stage": "typecheck"
+  },
+  {
+    "acquisitionBodyClocksRawStreamsEOFGuardsRAWEXIT0OtherwiseExact": true,
+    "after": {
+      "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation5-next5-closed-control-source-1/cells/typecheck.C.txt",
+      "sha256": "25a9160a27f5cab8a0f3cdffa2801e805687a278e9a6e90864d66b6ca774954d"
+    },
+    "before": {
+      "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation5-root-instantiated-source-1/cells/bind-workspace-tools.C.txt",
+      "sha256": "4d723e4d414d18762a817c13293510f7229d9cb066c57c01beaa42a8ce481700"
+    },
+    "changes": [
+      {
+        "after": "ROOT = Path('/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation5-root-first4-dispatch-1/typecheck')\n",
+        "before": "ROOT = Path('/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation5-root-first4-dispatch-1/bind-workspace-tools')\n",
+        "count": 1
+      },
+      {
+        "after": "assert census['stage']=='typecheck' and census['accepted'] is False\n",
+        "before": "assert census['stage']=='bind-workspace-tools' and census['accepted'] is False\n",
+        "count": 1
+      },
+      {
+        "after": "witness={'stage':'typecheck','rootOriginMonotonic':origin['originMonotonic'],'postTerminalWitnessMonotonic':POST_TERMINAL_WITNESS,'completedInvocationAndObservationUpperBoundSeconds':elapsed,'strictUnder115':True,'phaseBActualToolId':ACTUAL_B_TOOL_ID,'phaseBActualToolRawExit':ACTUAL_B_TOOL_RAW_EXIT,'phaseBToolTerminalAttribution':'trusted root actual ordinary-tool observation; raw tool receipt UNRETAINED unless actually separately supplied','originReceiptSha256':hashlib.sha256(origin_raw).hexdigest(),'censusReceiptSha256':hashlib.sha256(census_raw).hexdigest(),'accepted':False,'requiresIndependentRootFullConjunction':True,'noNewRuntimeChildOrProbe':True,'laterStaticAuditAndGitExcludedFromRuntime':True}\n",
+        "before": "witness={'stage':'bind-workspace-tools','rootOriginMonotonic':origin['originMonotonic'],'postTerminalWitnessMonotonic':POST_TERMINAL_WITNESS,'completedInvocationAndObservationUpperBoundSeconds':elapsed,'strictUnder115':True,'phaseBActualToolId':ACTUAL_B_TOOL_ID,'phaseBActualToolRawExit':ACTUAL_B_TOOL_RAW_EXIT,'phaseBToolTerminalAttribution':'trusted root actual ordinary-tool observation; raw tool receipt UNRETAINED unless actually separately supplied','originReceiptSha256':hashlib.sha256(origin_raw).hexdigest(),'censusReceiptSha256':hashlib.sha256(census_raw).hexdigest(),'accepted':False,'requiresIndependentRootFullConjunction':True,'noNewRuntimeChildOrProbe':True,'laterStaticAuditAndGitExcludedFromRuntime':True}\n",
+        "count": 1
+      }
+    ],
+    "delta": "deltas/typecheck.C.patch",
+    "fullInverseExact": true,
+    "fullInverseSha256": "4d723e4d414d18762a817c13293510f7229d9cb066c57c01beaa42a8ce481700",
+    "phase": "C",
+    "stage": "typecheck"
+  },
+  {
+    "acquisitionBodyClocksRawStreamsEOFGuardsRAWEXIT0OtherwiseExact": true,
+    "after": {
+      "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation5-next5-closed-control-source-1/cells/format-check.A.txt",
+      "sha256": "3809cab27fcea17033f7cc4e105811f44d26173d94b8534ee9b820a460bfe119"
+    },
+    "before": {
+      "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation5-root-instantiated-source-1/cells/bind-workspace-tools.A.txt",
+      "sha256": "0ff5b24bb2b1728b08003ade9549ce3a38b22c85bc4ecd5157e8f77205a03aa1"
+    },
+    "changes": [
+      {
+        "after": "STAGE = 'format-check'\n",
+        "before": "STAGE = 'bind-workspace-tools'\n",
+        "count": 1
+      },
+      {
+        "after": "ARGV = ['/opt/homebrew/opt/python@3.14/bin/python3.14', '/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation-preparation-5/run.py', 'final', 'format-check']\n",
+        "before": "ARGV = ['/opt/homebrew/opt/python@3.14/bin/python3.14', '/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation-preparation-5/run.py', 'final', 'bind-workspace-tools']\n",
+        "count": 1
+      },
+      {
+        "after": "OWNED_ROOT_OUTPUT = '/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation5-root-first4-dispatch-1/format-check'\n",
+        "before": "OWNED_ROOT_OUTPUT = '/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation5-root-first4-dispatch-1/bind-workspace-tools'\n",
+        "count": 1
+      },
+      {
+        "after": "APPROVED_GATE_SHA256 = '18a440d47c2b4e7aef7e46afc73f627a27d13e51cae8b990cd2feade33c774a4'\n",
+        "before": "APPROVED_GATE_SHA256 = 'ad5b647e6b2f1aba93981d1a85fdb7ef0930062418012cf4acf90073de202919'\n",
+        "count": 1
+      },
+      {
+        "after": "APPROVED_EXECUTION_ACCEPTANCE_SHA256 = '84d98d3a56b09f8c0305ffbabf88174bc6d960f6bd3123fef2f9576240f707a4'\n",
+        "before": "APPROVED_EXECUTION_ACCEPTANCE_SHA256 = 'c8ee1a1cd556beae5ddb93454a5156a23c8bc817a4a4ff405996de49049f7ae1'\n",
+        "count": 1
+      },
+      {
+        "after": "EXECUTION_ACCEPTANCE_PATH = Path('/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation5-next5-closed-control-source-1/execution-manifest.json')\n",
+        "before": "EXECUTION_ACCEPTANCE_PATH = Path('/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation5-root-execution-acceptance-1/acceptance.json')\n",
+        "count": 1
+      },
+      {
+        "after": "assert type(execution_acceptance['approvedStages']) is list and execution_acceptance['approvedStages'] == ['node-version', 'pnpm-version', 'workspace-install', 'bind-workspace-tools', 'typecheck', 'format-check', 'lint', 'fresh-build', 'bind-fresh-build']\n",
+        "before": "assert type(execution_acceptance['approvedStages']) is list and execution_acceptance['approvedStages'] == ['node-version','pnpm-version','workspace-install','bind-workspace-tools']\n",
+        "count": 1
+      }
+    ],
+    "delta": "deltas/format-check.A.patch",
+    "fullInverseExact": true,
+    "fullInverseSha256": "0ff5b24bb2b1728b08003ade9549ce3a38b22c85bc4ecd5157e8f77205a03aa1",
+    "phase": "A",
+    "stage": "format-check"
+  },
+  {
+    "acquisitionBodyClocksRawStreamsEOFGuardsRAWEXIT0OtherwiseExact": true,
+    "after": {
+      "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation5-next5-closed-control-source-1/cells/format-check.B.txt",
+      "sha256": "cdfd7f6a5f4b0b9337c1c0f17fba0fc87d47a30e641981c249dd3b23ebd81183"
+    },
+    "before": {
+      "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation5-root-instantiated-source-1/cells/bind-workspace-tools.B.txt",
+      "sha256": "4c8ca7d2cd7e3f76fded3c3f97d080cc9af9001a016d069c102050d9541b3d53"
+    },
+    "changes": [
+      {
+        "after": "ROOT = Path('/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation5-root-first4-dispatch-1/format-check')\n",
+        "before": "ROOT = Path('/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation5-root-first4-dispatch-1/bind-workspace-tools')\n",
+        "count": 1
+      },
+      {
+        "after": "assert provisional['stage']=='format-check' and provisional['accepted'] is False\n",
+        "before": "assert provisional['stage']=='bind-workspace-tools' and provisional['accepted'] is False\n",
+        "count": 1
+      },
+      {
+        "after": "    value={'stage':'format-check','phaseAToolId':ACTUAL_A_TOOL_ID,'phaseAToolRawExit':ACTUAL_A_TOOL_RAW_EXIT,'phaseAToolReceiptAttribution':'trusted root actual ordinary-tool observation; independently decoded raw tool receipt UNRETAINED unless separately actually supplied','originReceiptSha256':hashlib.sha256(origin_raw).hexdigest(),'provisionalReceiptSha256':hashlib.sha256(provisional_raw).hexdigest(),'rootOriginMonotonic':ORIGIN,'observerPid':os.getpid(),'observerPgid':os.getpgrp(),'probePid':p.pid if p is not None else None,'probeCreationPgid':p.pid if p is not None else None,'probeRawExit':p.returncode if p is not None else None,'probeBothEOF':complete,'probeDirectReaped':complete and p is not None and p.returncode is not None,'streams':facts,'taskPIDs':known_pids,'taskPGIDs':known_groups,'selectionOrigins':provisional['knownTaskRegistry']['origins'],'matchingTaskRows':matching if complete else None,'censusEndMonotonic':time.monotonic(),'failure':failure,'accepted':False,'actualObserverToolTerminal':None,'finalClockWitness':None}\n",
+        "before": "    value={'stage':'bind-workspace-tools','phaseAToolId':ACTUAL_A_TOOL_ID,'phaseAToolRawExit':ACTUAL_A_TOOL_RAW_EXIT,'phaseAToolReceiptAttribution':'trusted root actual ordinary-tool observation; independently decoded raw tool receipt UNRETAINED unless separately actually supplied','originReceiptSha256':hashlib.sha256(origin_raw).hexdigest(),'provisionalReceiptSha256':hashlib.sha256(provisional_raw).hexdigest(),'rootOriginMonotonic':ORIGIN,'observerPid':os.getpid(),'observerPgid':os.getpgrp(),'probePid':p.pid if p is not None else None,'probeCreationPgid':p.pid if p is not None else None,'probeRawExit':p.returncode if p is not None else None,'probeBothEOF':complete,'probeDirectReaped':complete and p is not None and p.returncode is not None,'streams':facts,'taskPIDs':known_pids,'taskPGIDs':known_groups,'selectionOrigins':provisional['knownTaskRegistry']['origins'],'matchingTaskRows':matching if complete else None,'censusEndMonotonic':time.monotonic(),'failure':failure,'accepted':False,'actualObserverToolTerminal':None,'finalClockWitness':None}\n",
+        "count": 1
+      }
+    ],
+    "delta": "deltas/format-check.B.patch",
+    "fullInverseExact": true,
+    "fullInverseSha256": "4c8ca7d2cd7e3f76fded3c3f97d080cc9af9001a016d069c102050d9541b3d53",
+    "phase": "B",
+    "stage": "format-check"
+  },
+  {
+    "acquisitionBodyClocksRawStreamsEOFGuardsRAWEXIT0OtherwiseExact": true,
+    "after": {
+      "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation5-next5-closed-control-source-1/cells/format-check.C.txt",
+      "sha256": "e317a759a61a8ec009f3f30238f848fcbf44e66eacd8ad4e6f6bfacb7f5f944a"
+    },
+    "before": {
+      "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation5-root-instantiated-source-1/cells/bind-workspace-tools.C.txt",
+      "sha256": "4d723e4d414d18762a817c13293510f7229d9cb066c57c01beaa42a8ce481700"
+    },
+    "changes": [
+      {
+        "after": "ROOT = Path('/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation5-root-first4-dispatch-1/format-check')\n",
+        "before": "ROOT = Path('/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation5-root-first4-dispatch-1/bind-workspace-tools')\n",
+        "count": 1
+      },
+      {
+        "after": "assert census['stage']=='format-check' and census['accepted'] is False\n",
+        "before": "assert census['stage']=='bind-workspace-tools' and census['accepted'] is False\n",
+        "count": 1
+      },
+      {
+        "after": "witness={'stage':'format-check','rootOriginMonotonic':origin['originMonotonic'],'postTerminalWitnessMonotonic':POST_TERMINAL_WITNESS,'completedInvocationAndObservationUpperBoundSeconds':elapsed,'strictUnder115':True,'phaseBActualToolId':ACTUAL_B_TOOL_ID,'phaseBActualToolRawExit':ACTUAL_B_TOOL_RAW_EXIT,'phaseBToolTerminalAttribution':'trusted root actual ordinary-tool observation; raw tool receipt UNRETAINED unless actually separately supplied','originReceiptSha256':hashlib.sha256(origin_raw).hexdigest(),'censusReceiptSha256':hashlib.sha256(census_raw).hexdigest(),'accepted':False,'requiresIndependentRootFullConjunction':True,'noNewRuntimeChildOrProbe':True,'laterStaticAuditAndGitExcludedFromRuntime':True}\n",
+        "before": "witness={'stage':'bind-workspace-tools','rootOriginMonotonic':origin['originMonotonic'],'postTerminalWitnessMonotonic':POST_TERMINAL_WITNESS,'completedInvocationAndObservationUpperBoundSeconds':elapsed,'strictUnder115':True,'phaseBActualToolId':ACTUAL_B_TOOL_ID,'phaseBActualToolRawExit':ACTUAL_B_TOOL_RAW_EXIT,'phaseBToolTerminalAttribution':'trusted root actual ordinary-tool observation; raw tool receipt UNRETAINED unless actually separately supplied','originReceiptSha256':hashlib.sha256(origin_raw).hexdigest(),'censusReceiptSha256':hashlib.sha256(census_raw).hexdigest(),'accepted':False,'requiresIndependentRootFullConjunction':True,'noNewRuntimeChildOrProbe':True,'laterStaticAuditAndGitExcludedFromRuntime':True}\n",
+        "count": 1
+      }
+    ],
+    "delta": "deltas/format-check.C.patch",
+    "fullInverseExact": true,
+    "fullInverseSha256": "4d723e4d414d18762a817c13293510f7229d9cb066c57c01beaa42a8ce481700",
+    "phase": "C",
+    "stage": "format-check"
+  },
+  {
+    "acquisitionBodyClocksRawStreamsEOFGuardsRAWEXIT0OtherwiseExact": true,
+    "after": {
+      "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation5-next5-closed-control-source-1/cells/lint.A.txt",
+      "sha256": "bc8b0a112b5f2b4fceb6695998bbb71e64abcec7df00928506f74cbc4effa78b"
+    },
+    "before": {
+      "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation5-root-instantiated-source-1/cells/bind-workspace-tools.A.txt",
+      "sha256": "0ff5b24bb2b1728b08003ade9549ce3a38b22c85bc4ecd5157e8f77205a03aa1"
+    },
+    "changes": [
+      {
+        "after": "STAGE = 'lint'\n",
+        "before": "STAGE = 'bind-workspace-tools'\n",
+        "count": 1
+      },
+      {
+        "after": "ARGV = ['/opt/homebrew/opt/python@3.14/bin/python3.14', '/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation-preparation-5/run.py', 'final', 'lint']\n",
+        "before": "ARGV = ['/opt/homebrew/opt/python@3.14/bin/python3.14', '/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation-preparation-5/run.py', 'final', 'bind-workspace-tools']\n",
+        "count": 1
+      },
+      {
+        "after": "OWNED_ROOT_OUTPUT = '/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation5-root-first4-dispatch-1/lint'\n",
+        "before": "OWNED_ROOT_OUTPUT = '/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation5-root-first4-dispatch-1/bind-workspace-tools'\n",
+        "count": 1
+      },
+      {
+        "after": "APPROVED_GATE_SHA256 = '18a440d47c2b4e7aef7e46afc73f627a27d13e51cae8b990cd2feade33c774a4'\n",
+        "before": "APPROVED_GATE_SHA256 = 'ad5b647e6b2f1aba93981d1a85fdb7ef0930062418012cf4acf90073de202919'\n",
+        "count": 1
+      },
+      {
+        "after": "APPROVED_EXECUTION_ACCEPTANCE_SHA256 = '84d98d3a56b09f8c0305ffbabf88174bc6d960f6bd3123fef2f9576240f707a4'\n",
+        "before": "APPROVED_EXECUTION_ACCEPTANCE_SHA256 = 'c8ee1a1cd556beae5ddb93454a5156a23c8bc817a4a4ff405996de49049f7ae1'\n",
+        "count": 1
+      },
+      {
+        "after": "EXECUTION_ACCEPTANCE_PATH = Path('/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation5-next5-closed-control-source-1/execution-manifest.json')\n",
+        "before": "EXECUTION_ACCEPTANCE_PATH = Path('/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation5-root-execution-acceptance-1/acceptance.json')\n",
+        "count": 1
+      },
+      {
+        "after": "assert type(execution_acceptance['approvedStages']) is list and execution_acceptance['approvedStages'] == ['node-version', 'pnpm-version', 'workspace-install', 'bind-workspace-tools', 'typecheck', 'format-check', 'lint', 'fresh-build', 'bind-fresh-build']\n",
+        "before": "assert type(execution_acceptance['approvedStages']) is list and execution_acceptance['approvedStages'] == ['node-version','pnpm-version','workspace-install','bind-workspace-tools']\n",
+        "count": 1
+      }
+    ],
+    "delta": "deltas/lint.A.patch",
+    "fullInverseExact": true,
+    "fullInverseSha256": "0ff5b24bb2b1728b08003ade9549ce3a38b22c85bc4ecd5157e8f77205a03aa1",
+    "phase": "A",
+    "stage": "lint"
+  },
+  {
+    "acquisitionBodyClocksRawStreamsEOFGuardsRAWEXIT0OtherwiseExact": true,
+    "after": {
+      "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation5-next5-closed-control-source-1/cells/lint.B.txt",
+      "sha256": "548531a96b926f691ee89e1d2461407524dccc969194b8f2572abd8dc9c7fe85"
+    },
+    "before": {
+      "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation5-root-instantiated-source-1/cells/bind-workspace-tools.B.txt",
+      "sha256": "4c8ca7d2cd7e3f76fded3c3f97d080cc9af9001a016d069c102050d9541b3d53"
+    },
+    "changes": [
+      {
+        "after": "ROOT = Path('/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation5-root-first4-dispatch-1/lint')\n",
+        "before": "ROOT = Path('/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation5-root-first4-dispatch-1/bind-workspace-tools')\n",
+        "count": 1
+      },
+      {
+        "after": "assert provisional['stage']=='lint' and provisional['accepted'] is False\n",
+        "before": "assert provisional['stage']=='bind-workspace-tools' and provisional['accepted'] is False\n",
+        "count": 1
+      },
+      {
+        "after": "    value={'stage':'lint','phaseAToolId':ACTUAL_A_TOOL_ID,'phaseAToolRawExit':ACTUAL_A_TOOL_RAW_EXIT,'phaseAToolReceiptAttribution':'trusted root actual ordinary-tool observation; independently decoded raw tool receipt UNRETAINED unless separately actually supplied','originReceiptSha256':hashlib.sha256(origin_raw).hexdigest(),'provisionalReceiptSha256':hashlib.sha256(provisional_raw).hexdigest(),'rootOriginMonotonic':ORIGIN,'observerPid':os.getpid(),'observerPgid':os.getpgrp(),'probePid':p.pid if p is not None else None,'probeCreationPgid':p.pid if p is not None else None,'probeRawExit':p.returncode if p is not None else None,'probeBothEOF':complete,'probeDirectReaped':complete and p is not None and p.returncode is not None,'streams':facts,'taskPIDs':known_pids,'taskPGIDs':known_groups,'selectionOrigins':provisional['knownTaskRegistry']['origins'],'matchingTaskRows':matching if complete else None,'censusEndMonotonic':time.monotonic(),'failure':failure,'accepted':False,'actualObserverToolTerminal':None,'finalClockWitness':None}\n",
+        "before": "    value={'stage':'bind-workspace-tools','phaseAToolId':ACTUAL_A_TOOL_ID,'phaseAToolRawExit':ACTUAL_A_TOOL_RAW_EXIT,'phaseAToolReceiptAttribution':'trusted root actual ordinary-tool observation; independently decoded raw tool receipt UNRETAINED unless separately actually supplied','originReceiptSha256':hashlib.sha256(origin_raw).hexdigest(),'provisionalReceiptSha256':hashlib.sha256(provisional_raw).hexdigest(),'rootOriginMonotonic':ORIGIN,'observerPid':os.getpid(),'observerPgid':os.getpgrp(),'probePid':p.pid if p is not None else None,'probeCreationPgid':p.pid if p is not None else None,'probeRawExit':p.returncode if p is not None else None,'probeBothEOF':complete,'probeDirectReaped':complete and p is not None and p.returncode is not None,'streams':facts,'taskPIDs':known_pids,'taskPGIDs':known_groups,'selectionOrigins':provisional['knownTaskRegistry']['origins'],'matchingTaskRows':matching if complete else None,'censusEndMonotonic':time.monotonic(),'failure':failure,'accepted':False,'actualObserverToolTerminal':None,'finalClockWitness':None}\n",
+        "count": 1
+      }
+    ],
+    "delta": "deltas/lint.B.patch",
+    "fullInverseExact": true,
+    "fullInverseSha256": "4c8ca7d2cd7e3f76fded3c3f97d080cc9af9001a016d069c102050d9541b3d53",
+    "phase": "B",
+    "stage": "lint"
+  },
+  {
+    "acquisitionBodyClocksRawStreamsEOFGuardsRAWEXIT0OtherwiseExact": true,
+    "after": {
+      "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation5-next5-closed-control-source-1/cells/lint.C.txt",
+      "sha256": "0ee5eddb6a89dcf4a703a2b1f79b6a48beb7d546155cb6448ef981f87f1aa812"
+    },
+    "before": {
+      "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation5-root-instantiated-source-1/cells/bind-workspace-tools.C.txt",
+      "sha256": "4d723e4d414d18762a817c13293510f7229d9cb066c57c01beaa42a8ce481700"
+    },
+    "changes": [
+      {
+        "after": "ROOT = Path('/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation5-root-first4-dispatch-1/lint')\n",
+        "before": "ROOT = Path('/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation5-root-first4-dispatch-1/bind-workspace-tools')\n",
+        "count": 1
+      },
+      {
+        "after": "assert census['stage']=='lint' and census['accepted'] is False\n",
+        "before": "assert census['stage']=='bind-workspace-tools' and census['accepted'] is False\n",
+        "count": 1
+      },
+      {
+        "after": "witness={'stage':'lint','rootOriginMonotonic':origin['originMonotonic'],'postTerminalWitnessMonotonic':POST_TERMINAL_WITNESS,'completedInvocationAndObservationUpperBoundSeconds':elapsed,'strictUnder115':True,'phaseBActualToolId':ACTUAL_B_TOOL_ID,'phaseBActualToolRawExit':ACTUAL_B_TOOL_RAW_EXIT,'phaseBToolTerminalAttribution':'trusted root actual ordinary-tool observation; raw tool receipt UNRETAINED unless actually separately supplied','originReceiptSha256':hashlib.sha256(origin_raw).hexdigest(),'censusReceiptSha256':hashlib.sha256(census_raw).hexdigest(),'accepted':False,'requiresIndependentRootFullConjunction':True,'noNewRuntimeChildOrProbe':True,'laterStaticAuditAndGitExcludedFromRuntime':True}\n",
+        "before": "witness={'stage':'bind-workspace-tools','rootOriginMonotonic':origin['originMonotonic'],'postTerminalWitnessMonotonic':POST_TERMINAL_WITNESS,'completedInvocationAndObservationUpperBoundSeconds':elapsed,'strictUnder115':True,'phaseBActualToolId':ACTUAL_B_TOOL_ID,'phaseBActualToolRawExit':ACTUAL_B_TOOL_RAW_EXIT,'phaseBToolTerminalAttribution':'trusted root actual ordinary-tool observation; raw tool receipt UNRETAINED unless actually separately supplied','originReceiptSha256':hashlib.sha256(origin_raw).hexdigest(),'censusReceiptSha256':hashlib.sha256(census_raw).hexdigest(),'accepted':False,'requiresIndependentRootFullConjunction':True,'noNewRuntimeChildOrProbe':True,'laterStaticAuditAndGitExcludedFromRuntime':True}\n",
+        "count": 1
+      }
+    ],
+    "delta": "deltas/lint.C.patch",
+    "fullInverseExact": true,
+    "fullInverseSha256": "4d723e4d414d18762a817c13293510f7229d9cb066c57c01beaa42a8ce481700",
+    "phase": "C",
+    "stage": "lint"
+  },
+  {
+    "acquisitionBodyClocksRawStreamsEOFGuardsRAWEXIT0OtherwiseExact": true,
+    "after": {
+      "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation5-next5-closed-control-source-1/cells/fresh-build.A.txt",
+      "sha256": "e552ab136ec4757b7df68ee3532e7af22bcef043a901cced14b122f318fc3f50"
+    },
+    "before": {
+      "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation5-root-instantiated-source-1/cells/bind-workspace-tools.A.txt",
+      "sha256": "0ff5b24bb2b1728b08003ade9549ce3a38b22c85bc4ecd5157e8f77205a03aa1"
+    },
+    "changes": [
+      {
+        "after": "STAGE = 'fresh-build'\n",
+        "before": "STAGE = 'bind-workspace-tools'\n",
+        "count": 1
+      },
+      {
+        "after": "ARGV = ['/opt/homebrew/opt/python@3.14/bin/python3.14', '/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation-preparation-5/run.py', 'final', 'fresh-build']\n",
+        "before": "ARGV = ['/opt/homebrew/opt/python@3.14/bin/python3.14', '/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation-preparation-5/run.py', 'final', 'bind-workspace-tools']\n",
+        "count": 1
+      },
+      {
+        "after": "OWNED_ROOT_OUTPUT = '/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation5-root-first4-dispatch-1/fresh-build'\n",
+        "before": "OWNED_ROOT_OUTPUT = '/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation5-root-first4-dispatch-1/bind-workspace-tools'\n",
+        "count": 1
+      },
+      {
+        "after": "APPROVED_GATE_SHA256 = '18a440d47c2b4e7aef7e46afc73f627a27d13e51cae8b990cd2feade33c774a4'\n",
+        "before": "APPROVED_GATE_SHA256 = 'ad5b647e6b2f1aba93981d1a85fdb7ef0930062418012cf4acf90073de202919'\n",
+        "count": 1
+      },
+      {
+        "after": "APPROVED_EXECUTION_ACCEPTANCE_SHA256 = '84d98d3a56b09f8c0305ffbabf88174bc6d960f6bd3123fef2f9576240f707a4'\n",
+        "before": "APPROVED_EXECUTION_ACCEPTANCE_SHA256 = 'c8ee1a1cd556beae5ddb93454a5156a23c8bc817a4a4ff405996de49049f7ae1'\n",
+        "count": 1
+      },
+      {
+        "after": "EXECUTION_ACCEPTANCE_PATH = Path('/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation5-next5-closed-control-source-1/execution-manifest.json')\n",
+        "before": "EXECUTION_ACCEPTANCE_PATH = Path('/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation5-root-execution-acceptance-1/acceptance.json')\n",
+        "count": 1
+      },
+      {
+        "after": "assert type(execution_acceptance['approvedStages']) is list and execution_acceptance['approvedStages'] == ['node-version', 'pnpm-version', 'workspace-install', 'bind-workspace-tools', 'typecheck', 'format-check', 'lint', 'fresh-build', 'bind-fresh-build']\n",
+        "before": "assert type(execution_acceptance['approvedStages']) is list and execution_acceptance['approvedStages'] == ['node-version','pnpm-version','workspace-install','bind-workspace-tools']\n",
+        "count": 1
+      }
+    ],
+    "delta": "deltas/fresh-build.A.patch",
+    "fullInverseExact": true,
+    "fullInverseSha256": "0ff5b24bb2b1728b08003ade9549ce3a38b22c85bc4ecd5157e8f77205a03aa1",
+    "phase": "A",
+    "stage": "fresh-build"
+  },
+  {
+    "acquisitionBodyClocksRawStreamsEOFGuardsRAWEXIT0OtherwiseExact": true,
+    "after": {
+      "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation5-next5-closed-control-source-1/cells/fresh-build.B.txt",
+      "sha256": "ba9d4091b2e9a525ec364fb7fb8b1680a52ce30d358a40af37280c3b05214e4b"
+    },
+    "before": {
+      "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation5-root-instantiated-source-1/cells/bind-workspace-tools.B.txt",
+      "sha256": "4c8ca7d2cd7e3f76fded3c3f97d080cc9af9001a016d069c102050d9541b3d53"
+    },
+    "changes": [
+      {
+        "after": "ROOT = Path('/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation5-root-first4-dispatch-1/fresh-build')\n",
+        "before": "ROOT = Path('/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation5-root-first4-dispatch-1/bind-workspace-tools')\n",
+        "count": 1
+      },
+      {
+        "after": "assert provisional['stage']=='fresh-build' and provisional['accepted'] is False\n",
+        "before": "assert provisional['stage']=='bind-workspace-tools' and provisional['accepted'] is False\n",
+        "count": 1
+      },
+      {
+        "after": "    value={'stage':'fresh-build','phaseAToolId':ACTUAL_A_TOOL_ID,'phaseAToolRawExit':ACTUAL_A_TOOL_RAW_EXIT,'phaseAToolReceiptAttribution':'trusted root actual ordinary-tool observation; independently decoded raw tool receipt UNRETAINED unless separately actually supplied','originReceiptSha256':hashlib.sha256(origin_raw).hexdigest(),'provisionalReceiptSha256':hashlib.sha256(provisional_raw).hexdigest(),'rootOriginMonotonic':ORIGIN,'observerPid':os.getpid(),'observerPgid':os.getpgrp(),'probePid':p.pid if p is not None else None,'probeCreationPgid':p.pid if p is not None else None,'probeRawExit':p.returncode if p is not None else None,'probeBothEOF':complete,'probeDirectReaped':complete and p is not None and p.returncode is not None,'streams':facts,'taskPIDs':known_pids,'taskPGIDs':known_groups,'selectionOrigins':provisional['knownTaskRegistry']['origins'],'matchingTaskRows':matching if complete else None,'censusEndMonotonic':time.monotonic(),'failure':failure,'accepted':False,'actualObserverToolTerminal':None,'finalClockWitness':None}\n",
+        "before": "    value={'stage':'bind-workspace-tools','phaseAToolId':ACTUAL_A_TOOL_ID,'phaseAToolRawExit':ACTUAL_A_TOOL_RAW_EXIT,'phaseAToolReceiptAttribution':'trusted root actual ordinary-tool observation; independently decoded raw tool receipt UNRETAINED unless separately actually supplied','originReceiptSha256':hashlib.sha256(origin_raw).hexdigest(),'provisionalReceiptSha256':hashlib.sha256(provisional_raw).hexdigest(),'rootOriginMonotonic':ORIGIN,'observerPid':os.getpid(),'observerPgid':os.getpgrp(),'probePid':p.pid if p is not None else None,'probeCreationPgid':p.pid if p is not None else None,'probeRawExit':p.returncode if p is not None else None,'probeBothEOF':complete,'probeDirectReaped':complete and p is not None and p.returncode is not None,'streams':facts,'taskPIDs':known_pids,'taskPGIDs':known_groups,'selectionOrigins':provisional['knownTaskRegistry']['origins'],'matchingTaskRows':matching if complete else None,'censusEndMonotonic':time.monotonic(),'failure':failure,'accepted':False,'actualObserverToolTerminal':None,'finalClockWitness':None}\n",
+        "count": 1
+      }
+    ],
+    "delta": "deltas/fresh-build.B.patch",
+    "fullInverseExact": true,
+    "fullInverseSha256": "4c8ca7d2cd7e3f76fded3c3f97d080cc9af9001a016d069c102050d9541b3d53",
+    "phase": "B",
+    "stage": "fresh-build"
+  },
+  {
+    "acquisitionBodyClocksRawStreamsEOFGuardsRAWEXIT0OtherwiseExact": true,
+    "after": {
+      "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation5-next5-closed-control-source-1/cells/fresh-build.C.txt",
+      "sha256": "0ba94ccf8fc171afec8ac1bae6edb4e547dc54b960bf47f743ed7653eafbfab5"
+    },
+    "before": {
+      "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation5-root-instantiated-source-1/cells/bind-workspace-tools.C.txt",
+      "sha256": "4d723e4d414d18762a817c13293510f7229d9cb066c57c01beaa42a8ce481700"
+    },
+    "changes": [
+      {
+        "after": "ROOT = Path('/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation5-root-first4-dispatch-1/fresh-build')\n",
+        "before": "ROOT = Path('/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation5-root-first4-dispatch-1/bind-workspace-tools')\n",
+        "count": 1
+      },
+      {
+        "after": "assert census['stage']=='fresh-build' and census['accepted'] is False\n",
+        "before": "assert census['stage']=='bind-workspace-tools' and census['accepted'] is False\n",
+        "count": 1
+      },
+      {
+        "after": "witness={'stage':'fresh-build','rootOriginMonotonic':origin['originMonotonic'],'postTerminalWitnessMonotonic':POST_TERMINAL_WITNESS,'completedInvocationAndObservationUpperBoundSeconds':elapsed,'strictUnder115':True,'phaseBActualToolId':ACTUAL_B_TOOL_ID,'phaseBActualToolRawExit':ACTUAL_B_TOOL_RAW_EXIT,'phaseBToolTerminalAttribution':'trusted root actual ordinary-tool observation; raw tool receipt UNRETAINED unless actually separately supplied','originReceiptSha256':hashlib.sha256(origin_raw).hexdigest(),'censusReceiptSha256':hashlib.sha256(census_raw).hexdigest(),'accepted':False,'requiresIndependentRootFullConjunction':True,'noNewRuntimeChildOrProbe':True,'laterStaticAuditAndGitExcludedFromRuntime':True}\n",
+        "before": "witness={'stage':'bind-workspace-tools','rootOriginMonotonic':origin['originMonotonic'],'postTerminalWitnessMonotonic':POST_TERMINAL_WITNESS,'completedInvocationAndObservationUpperBoundSeconds':elapsed,'strictUnder115':True,'phaseBActualToolId':ACTUAL_B_TOOL_ID,'phaseBActualToolRawExit':ACTUAL_B_TOOL_RAW_EXIT,'phaseBToolTerminalAttribution':'trusted root actual ordinary-tool observation; raw tool receipt UNRETAINED unless actually separately supplied','originReceiptSha256':hashlib.sha256(origin_raw).hexdigest(),'censusReceiptSha256':hashlib.sha256(census_raw).hexdigest(),'accepted':False,'requiresIndependentRootFullConjunction':True,'noNewRuntimeChildOrProbe':True,'laterStaticAuditAndGitExcludedFromRuntime':True}\n",
+        "count": 1
+      }
+    ],
+    "delta": "deltas/fresh-build.C.patch",
+    "fullInverseExact": true,
+    "fullInverseSha256": "4d723e4d414d18762a817c13293510f7229d9cb066c57c01beaa42a8ce481700",
+    "phase": "C",
+    "stage": "fresh-build"
+  },
+  {
+    "acquisitionBodyClocksRawStreamsEOFGuardsRAWEXIT0OtherwiseExact": true,
+    "after": {
+      "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation5-next5-closed-control-source-1/cells/bind-fresh-build.A.txt",
+      "sha256": "a46d1c9df940a1ee6cd67b2e2d85f3899a4427e3e27ad700872746f9d4768466"
+    },
+    "before": {
+      "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation5-root-instantiated-source-1/cells/bind-workspace-tools.A.txt",
+      "sha256": "0ff5b24bb2b1728b08003ade9549ce3a38b22c85bc4ecd5157e8f77205a03aa1"
+    },
+    "changes": [
+      {
+        "after": "STAGE = 'bind-fresh-build'\n",
+        "before": "STAGE = 'bind-workspace-tools'\n",
+        "count": 1
+      },
+      {
+        "after": "ARGV = ['/opt/homebrew/opt/python@3.14/bin/python3.14', '/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation-preparation-5/run.py', 'final', 'bind-fresh-build']\n",
+        "before": "ARGV = ['/opt/homebrew/opt/python@3.14/bin/python3.14', '/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation-preparation-5/run.py', 'final', 'bind-workspace-tools']\n",
+        "count": 1
+      },
+      {
+        "after": "OWNED_ROOT_OUTPUT = '/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation5-root-first4-dispatch-1/bind-fresh-build'\n",
+        "before": "OWNED_ROOT_OUTPUT = '/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation5-root-first4-dispatch-1/bind-workspace-tools'\n",
+        "count": 1
+      },
+      {
+        "after": "APPROVED_GATE_SHA256 = '18a440d47c2b4e7aef7e46afc73f627a27d13e51cae8b990cd2feade33c774a4'\n",
+        "before": "APPROVED_GATE_SHA256 = 'ad5b647e6b2f1aba93981d1a85fdb7ef0930062418012cf4acf90073de202919'\n",
+        "count": 1
+      },
+      {
+        "after": "APPROVED_EXECUTION_ACCEPTANCE_SHA256 = '84d98d3a56b09f8c0305ffbabf88174bc6d960f6bd3123fef2f9576240f707a4'\n",
+        "before": "APPROVED_EXECUTION_ACCEPTANCE_SHA256 = 'c8ee1a1cd556beae5ddb93454a5156a23c8bc817a4a4ff405996de49049f7ae1'\n",
+        "count": 1
+      },
+      {
+        "after": "EXECUTION_ACCEPTANCE_PATH = Path('/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation5-next5-closed-control-source-1/execution-manifest.json')\n",
+        "before": "EXECUTION_ACCEPTANCE_PATH = Path('/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation5-root-execution-acceptance-1/acceptance.json')\n",
+        "count": 1
+      },
+      {
+        "after": "assert type(execution_acceptance['approvedStages']) is list and execution_acceptance['approvedStages'] == ['node-version', 'pnpm-version', 'workspace-install', 'bind-workspace-tools', 'typecheck', 'format-check', 'lint', 'fresh-build', 'bind-fresh-build']\n",
+        "before": "assert type(execution_acceptance['approvedStages']) is list and execution_acceptance['approvedStages'] == ['node-version','pnpm-version','workspace-install','bind-workspace-tools']\n",
+        "count": 1
+      }
+    ],
+    "delta": "deltas/bind-fresh-build.A.patch",
+    "fullInverseExact": true,
+    "fullInverseSha256": "0ff5b24bb2b1728b08003ade9549ce3a38b22c85bc4ecd5157e8f77205a03aa1",
+    "phase": "A",
+    "stage": "bind-fresh-build"
+  },
+  {
+    "acquisitionBodyClocksRawStreamsEOFGuardsRAWEXIT0OtherwiseExact": true,
+    "after": {
+      "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation5-next5-closed-control-source-1/cells/bind-fresh-build.B.txt",
+      "sha256": "29aefd9978b6b5f12cc2d829afabf4610b93e457c9e472d34613653f67fb4af6"
+    },
+    "before": {
+      "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation5-root-instantiated-source-1/cells/bind-workspace-tools.B.txt",
+      "sha256": "4c8ca7d2cd7e3f76fded3c3f97d080cc9af9001a016d069c102050d9541b3d53"
+    },
+    "changes": [
+      {
+        "after": "ROOT = Path('/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation5-root-first4-dispatch-1/bind-fresh-build')\n",
+        "before": "ROOT = Path('/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation5-root-first4-dispatch-1/bind-workspace-tools')\n",
+        "count": 1
+      },
+      {
+        "after": "assert provisional['stage']=='bind-fresh-build' and provisional['accepted'] is False\n",
+        "before": "assert provisional['stage']=='bind-workspace-tools' and provisional['accepted'] is False\n",
+        "count": 1
+      },
+      {
+        "after": "    value={'stage':'bind-fresh-build','phaseAToolId':ACTUAL_A_TOOL_ID,'phaseAToolRawExit':ACTUAL_A_TOOL_RAW_EXIT,'phaseAToolReceiptAttribution':'trusted root actual ordinary-tool observation; independently decoded raw tool receipt UNRETAINED unless separately actually supplied','originReceiptSha256':hashlib.sha256(origin_raw).hexdigest(),'provisionalReceiptSha256':hashlib.sha256(provisional_raw).hexdigest(),'rootOriginMonotonic':ORIGIN,'observerPid':os.getpid(),'observerPgid':os.getpgrp(),'probePid':p.pid if p is not None else None,'probeCreationPgid':p.pid if p is not None else None,'probeRawExit':p.returncode if p is not None else None,'probeBothEOF':complete,'probeDirectReaped':complete and p is not None and p.returncode is not None,'streams':facts,'taskPIDs':known_pids,'taskPGIDs':known_groups,'selectionOrigins':provisional['knownTaskRegistry']['origins'],'matchingTaskRows':matching if complete else None,'censusEndMonotonic':time.monotonic(),'failure':failure,'accepted':False,'actualObserverToolTerminal':None,'finalClockWitness':None}\n",
+        "before": "    value={'stage':'bind-workspace-tools','phaseAToolId':ACTUAL_A_TOOL_ID,'phaseAToolRawExit':ACTUAL_A_TOOL_RAW_EXIT,'phaseAToolReceiptAttribution':'trusted root actual ordinary-tool observation; independently decoded raw tool receipt UNRETAINED unless separately actually supplied','originReceiptSha256':hashlib.sha256(origin_raw).hexdigest(),'provisionalReceiptSha256':hashlib.sha256(provisional_raw).hexdigest(),'rootOriginMonotonic':ORIGIN,'observerPid':os.getpid(),'observerPgid':os.getpgrp(),'probePid':p.pid if p is not None else None,'probeCreationPgid':p.pid if p is not None else None,'probeRawExit':p.returncode if p is not None else None,'probeBothEOF':complete,'probeDirectReaped':complete and p is not None and p.returncode is not None,'streams':facts,'taskPIDs':known_pids,'taskPGIDs':known_groups,'selectionOrigins':provisional['knownTaskRegistry']['origins'],'matchingTaskRows':matching if complete else None,'censusEndMonotonic':time.monotonic(),'failure':failure,'accepted':False,'actualObserverToolTerminal':None,'finalClockWitness':None}\n",
+        "count": 1
+      }
+    ],
+    "delta": "deltas/bind-fresh-build.B.patch",
+    "fullInverseExact": true,
+    "fullInverseSha256": "4c8ca7d2cd7e3f76fded3c3f97d080cc9af9001a016d069c102050d9541b3d53",
+    "phase": "B",
+    "stage": "bind-fresh-build"
+  },
+  {
+    "acquisitionBodyClocksRawStreamsEOFGuardsRAWEXIT0OtherwiseExact": true,
+    "after": {
+      "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation5-next5-closed-control-source-1/cells/bind-fresh-build.C.txt",
+      "sha256": "1c72fa8e0fed3871f6ee728efafbe77803a66c83fc99417ac46f0014cd854d85"
+    },
+    "before": {
+      "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation5-root-instantiated-source-1/cells/bind-workspace-tools.C.txt",
+      "sha256": "4d723e4d414d18762a817c13293510f7229d9cb066c57c01beaa42a8ce481700"
+    },
+    "changes": [
+      {
+        "after": "ROOT = Path('/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation5-root-first4-dispatch-1/bind-fresh-build')\n",
+        "before": "ROOT = Path('/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation5-root-first4-dispatch-1/bind-workspace-tools')\n",
+        "count": 1
+      },
+      {
+        "after": "assert census['stage']=='bind-fresh-build' and census['accepted'] is False\n",
+        "before": "assert census['stage']=='bind-workspace-tools' and census['accepted'] is False\n",
+        "count": 1
+      },
+      {
+        "after": "witness={'stage':'bind-fresh-build','rootOriginMonotonic':origin['originMonotonic'],'postTerminalWitnessMonotonic':POST_TERMINAL_WITNESS,'completedInvocationAndObservationUpperBoundSeconds':elapsed,'strictUnder115':True,'phaseBActualToolId':ACTUAL_B_TOOL_ID,'phaseBActualToolRawExit':ACTUAL_B_TOOL_RAW_EXIT,'phaseBToolTerminalAttribution':'trusted root actual ordinary-tool observation; raw tool receipt UNRETAINED unless actually separately supplied','originReceiptSha256':hashlib.sha256(origin_raw).hexdigest(),'censusReceiptSha256':hashlib.sha256(census_raw).hexdigest(),'accepted':False,'requiresIndependentRootFullConjunction':True,'noNewRuntimeChildOrProbe':True,'laterStaticAuditAndGitExcludedFromRuntime':True}\n",
+        "before": "witness={'stage':'bind-workspace-tools','rootOriginMonotonic':origin['originMonotonic'],'postTerminalWitnessMonotonic':POST_TERMINAL_WITNESS,'completedInvocationAndObservationUpperBoundSeconds':elapsed,'strictUnder115':True,'phaseBActualToolId':ACTUAL_B_TOOL_ID,'phaseBActualToolRawExit':ACTUAL_B_TOOL_RAW_EXIT,'phaseBToolTerminalAttribution':'trusted root actual ordinary-tool observation; raw tool receipt UNRETAINED unless actually separately supplied','originReceiptSha256':hashlib.sha256(origin_raw).hexdigest(),'censusReceiptSha256':hashlib.sha256(census_raw).hexdigest(),'accepted':False,'requiresIndependentRootFullConjunction':True,'noNewRuntimeChildOrProbe':True,'laterStaticAuditAndGitExcludedFromRuntime':True}\n",
+        "count": 1
+      }
+    ],
+    "delta": "deltas/bind-fresh-build.C.patch",
+    "fullInverseExact": true,
+    "fullInverseSha256": "4d723e4d414d18762a817c13293510f7229d9cb066c57c01beaa42a8ce481700",
+    "phase": "C",
+    "stage": "bind-fresh-build"
+  }
+]

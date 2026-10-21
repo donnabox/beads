@@ -1,0 +1,29 @@
+--- a/packages/server/src/transaction-http.test.ts
++++ b/packages/server/src/transaction-http.test.ts
+@@ -4896,7 +4896,8 @@
+     expect(response.headers.has("x-bdp-development-limit")).toBe(false);
+   }
+   expect(waits).toBe(8);
+-  // Parser failures still hit the early unknown-token gap; this is an excluded residual.
++  // Excluded residuals: strict/parser-rejected routes stop at the early unknown-token gap;
++  // the incident-Link route is refused after classification. Both retain the private label.
+   for (const suffix of [
+     "types/",
+     "beads/a?view=links",
+--- a/packages/server/src/transaction-read.test.ts
++++ b/packages/server/src/transaction-read.test.ts
+@@ -615,7 +615,13 @@
+     const f = fixture();
+     const seeded = f.write([
+       ...seed,
+-      { operation: "createLink", id: "links/out", type: link, source: "beads/a", target: "beads/b" },
++      {
++        operation: "createLink",
++        id: "links/out",
++        type: link,
++        source: "beads/a",
++        target: "beads/b",
++      },
+     ]);
+     expect(seeded.status).toBe("completed");
+     let entries = 0,

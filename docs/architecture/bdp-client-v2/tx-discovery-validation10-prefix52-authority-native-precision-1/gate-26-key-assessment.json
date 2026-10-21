@@ -1,0 +1,253 @@
+[
+  {
+    "assessment": "UNCHANGED from accepted active24 authority",
+    "candidate": true,
+    "changedFromActive24": false,
+    "key": "actualClaudeReviewDisposed"
+  },
+  {
+    "assessment": "UNCHANGED from accepted active24 authority",
+    "candidate": {
+      "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/tx-discovery-validation-root-proposed-authority-10/actual-code-disposition.json",
+      "sha256": "c60dcb2420c18cedc63973781e3755a9b644e05b2f8bbd017e6131800cc75d80"
+    },
+    "changedFromActive24": false,
+    "key": "actualCodeDisposition"
+  },
+  {
+    "assessment": "prospective52 only",
+    "candidate": [
+      "node-version",
+      "pnpm-version",
+      "workspace-install",
+      "bind-workspace-tools",
+      "typecheck",
+      "format-check",
+      "lint",
+      "fresh-build",
+      "bind-fresh-build",
+      "focused-source",
+      "audit-focused-source",
+      "legacy-changefeed-source",
+      "audit-legacy-changefeed-source",
+      "legacy-installed-contracts-source",
+      "audit-legacy-installed-contracts-source",
+      "schema-confinement-source",
+      "audit-schema-confinement-source",
+      "prepare-package-directory",
+      "pack-protocol",
+      "pack-server",
+      "verify-archives",
+      "prepare-consumer",
+      "consumer-install",
+      "verify-installed-consumer",
+      "installed-01",
+      "audit-installed-01",
+      "installed-02",
+      "audit-installed-02",
+      "installed-03",
+      "audit-installed-03",
+      "installed-04",
+      "audit-installed-04",
+      "installed-05",
+      "audit-installed-05",
+      "installed-06",
+      "audit-installed-06",
+      "installed-07",
+      "audit-installed-07",
+      "installed-08",
+      "audit-installed-08",
+      "installed-09",
+      "audit-installed-09",
+      "installed-10",
+      "audit-installed-10",
+      "installed-11",
+      "audit-installed-11",
+      "schema-installed-positive",
+      "audit-schema-installed-positive",
+      "required-check-boundaries",
+      "required-e2e-ready-preflight",
+      "required-smoke",
+      "required-evidence-verify"
+    ],
+    "changedFromActive24": true,
+    "key": "approvedStages"
+  },
+  {
+    "assessment": "UNCHANGED from accepted active24 authority",
+    "candidate": {
+      "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/tx-discovery-validation-preparation-10/base-tools.candidate.json",
+      "sha256": "c05588f1210d14a4716a67ee0ee1dc727b5cb150e6e81727fbddbc17c424066a"
+    },
+    "changedFromActive24": false,
+    "key": "baseTools"
+  },
+  {
+    "assessment": "UNCHANGED from accepted active24 authority",
+    "candidate": [],
+    "changedFromActive24": false,
+    "key": "bootstrapReuse"
+  },
+  {
+    "assessment": "actual full accepted proof/document binding",
+    "candidate": {
+      "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/tx-discovery-validation-preparation-10/run/installed-consumer-inventory.json",
+      "sha256": "bb7ae079021d0b6c20bb8294a8daf7769284d66ad1741532b30957134318ad2d"
+    },
+    "changedFromActive24": true,
+    "key": "consumerInventory"
+  },
+  {
+    "assessment": "actual generated lockc1e500a7 pinned",
+    "candidate": "c1e500a7a72cac54ef471d26fb1ce7b15291a949ca4c288b5687c8035e612e11",
+    "changedFromActive24": false,
+    "key": "consumerLockSha256"
+  },
+  {
+    "assessment": "UNCHANGED from accepted active24 authority",
+    "candidate": "9c25ab144b84cd3a6192bb5061664570367ccf070b1a972243bb97f3e8022b75",
+    "changedFromActive24": false,
+    "key": "implementationIndexSha256"
+  },
+  {
+    "assessment": "actual full accepted proof/document binding",
+    "candidate": {
+      "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/tx-discovery-validation-preparation-10/run/installed-provenance.json",
+      "sha256": "c1ea45159b50d5e540b427d58e310bf0d8a85c661f39e9d78384477fc969dc63"
+    },
+    "changedFromActive24": true,
+    "key": "installedProvenance"
+  },
+  {
+    "assessment": "UNCHANGED from accepted active24 authority",
+    "candidate": {
+      "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/tx-discovery-snapshot-target-source-correction-1/index.json",
+      "sha256": "268ee16e9388dec80a80728d2890df1cec5f45953eef9880860432d99904b6d7"
+    },
+    "changedFromActive24": false,
+    "key": "knownCorrectedSourceFreeze"
+  },
+  {
+    "assessment": "UNCHANGED from accepted active24 authority",
+    "candidate": {
+      "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/tx-discovery-validation-preparation-3/predecessor2/predecessor/context/corrected-source2/context/original-actual-code-terminal-closure.json",
+      "sha256": "28a4f9ce58047194602d3f2385061f18ee9c0e6508543f71e4b4e4880c6e3084"
+    },
+    "changedFromActive24": false,
+    "key": "knownOriginalActualCodeTerminal"
+  },
+  {
+    "assessment": "UNCHANGED from accepted active24 authority",
+    "candidate": "final",
+    "changedFromActive24": false,
+    "key": "mode"
+  },
+  {
+    "assessment": "UNCHANGED from accepted active24 authority",
+    "candidate": {
+      "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/tx-discovery-validation-root-proposed-authority-10/native-code-disposition.json",
+      "sha256": "0daa3047b68a5c52c55e19211a61f4b5a97bc67c6444ac3a40c2b603341c7260"
+    },
+    "changedFromActive24": false,
+    "key": "nativeCodeDisposition"
+  },
+  {
+    "assessment": "UNCHANGED from accepted active24 authority",
+    "candidate": true,
+    "changedFromActive24": false,
+    "key": "nativeCodeReviewDisposed"
+  },
+  {
+    "assessment": "UNCHANGED from accepted active24 authority",
+    "candidate": true,
+    "changedFromActive24": false,
+    "key": "released"
+  },
+  {
+    "assessment": "actual source-bound archive acceptance",
+    "candidate": {
+      "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/tx-discovery-validation10-root-archive-acceptance-1/acceptance.json",
+      "sha256": "9f8c16e04de89a32f69efd6b9bc289035278940d2cc44d52552aca177903d7c5"
+    },
+    "changedFromActive24": false,
+    "key": "rootArchiveAcceptance"
+  },
+  {
+    "assessment": "actual fresh476 root barrier",
+    "candidate": {
+      "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/tx-discovery-validation10-root-build-acceptance-1/acceptance.json",
+      "sha256": "f511e198d40e56a51c2959b7efbc1d86e9e8de5eb9c3b18642cd7f6962f7f438"
+    },
+    "changedFromActive24": false,
+    "key": "rootBuildAcceptance"
+  },
+  {
+    "assessment": "actual root0c7c lock/manifest/settings acceptance",
+    "candidate": {
+      "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/tx-discovery-validation10-root-lock-acceptance-1/acceptance.json",
+      "sha256": "0c7c38612ce58932fb181f99b9b92e90f8e096648b457741ac45dd13336d6f63"
+    },
+    "changedFromActive24": false,
+    "key": "rootConsumerLockAcceptance"
+  },
+  {
+    "assessment": "actual full accepted proof/document binding",
+    "candidate": {
+      "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/tx-discovery-validation10-root-consumer-proof-acceptance-1/acceptance.json",
+      "sha256": "183f0ef434e6fb421522ee87df3c412c80a70845639a1895c10cedd39198884b"
+    },
+    "changedFromActive24": true,
+    "key": "rootConsumerProofAcceptance"
+  },
+  {
+    "assessment": "exact accepted source/static+runtime disposition for52",
+    "candidate": {
+      "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/tx-discovery-validation10-prefix52-proposed-authority-1/disposition.json",
+      "sha256": "8be4ac6ab50b834b08bb0be5745e5a5655b0512639922eb38a573c10fd65799f"
+    },
+    "changedFromActive24": true,
+    "key": "rootDisposition"
+  },
+  {
+    "assessment": "UNCHANGED from accepted active24 authority",
+    "candidate": true,
+    "changedFromActive24": false,
+    "key": "rootExactSourceAccepted"
+  },
+  {
+    "assessment": "UNCHANGED from accepted active24 authority",
+    "candidate": true,
+    "changedFromActive24": false,
+    "key": "rootPlanAccepted"
+  },
+  {
+    "assessment": "UNCHANGED from accepted active24 authority",
+    "candidate": "2026-10-18T02:16:24Z-549f",
+    "changedFromActive24": false,
+    "key": "session"
+  },
+  {
+    "assessment": "UNCHANGED from accepted active24 authority",
+    "candidate": {
+      "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/tx-discovery-validation-preparation-10/source-binding.json",
+      "sha256": "9bb16e9c984f7c259c6f4cb42ddad2886234771a90f4421c3fddec57c5079a41"
+    },
+    "changedFromActive24": false,
+    "key": "sourceBinding"
+  },
+  {
+    "assessment": "UNCHANGED from accepted active24 authority",
+    "candidate": true,
+    "changedFromActive24": false,
+    "key": "staticValidationAuthorized"
+  },
+  {
+    "assessment": "UNCHANGED from accepted active24 authority",
+    "candidate": {
+      "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/tx-discovery-validation-preparation-10/run/workspace-tools.json",
+      "sha256": "72150ced3b46657e65e67557e60c10a835cb152dd49757cbe7844b2f729a681d"
+    },
+    "changedFromActive24": false,
+    "key": "workspaceTools"
+  }
+]

@@ -1,0 +1,14 @@
+```bash
+grep -n '__ENTRY__\|const stopped =\|mode !== "positive"\|expect(mode)\.toBe\|toBeLessThanOrEqual(32)\|row.index === 32) fields\|incomplete-or-duplicate\|directoryAbsent\|startupLimitation\|index: 11\|index: 14\|minimumFieldOccurrences: minimumNames' apps/bdptest/src/transactional-minimum-current-resource-installed.test.ts
+```
+
+```
+333:    .replace("__ENTRY__", JSON.stringify(resolvedEntry))
+141:    index: 11,
+162:    index: 14,
+311:    minimum: "incomplete-or-duplicate",
+474:        minimumFieldOccurrences: minimumNames.map(
+628:      if (row.index === 32) fields = ["bdp-minimum-scope-position", "pos-3"];
+718:    expect(mode).toBe("positive")
+...
+```

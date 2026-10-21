@@ -1,0 +1,122 @@
+{
+  "originalPlanSha256": "707c5f4262fa8b6e345b64b6aaac7c5eba87e3cc4f338505672beb867b9c5fe0",
+  "actualClaudeStdoutSha256": "a948e0db94ecbf782544ca52c0c1449b31bf5713a0146a9383824f4e5d5501a4",
+  "nativeReviewSha256": "99a286423e3936672d71e9ed8948a6023d25e85b829036cec0420fd426e0992a",
+  "headAtDisposition": "1ba65f2f192cc84e44eb09ef89b9693ec6cdaf05",
+  "files": {
+    "docs/specs/bdp.md": {
+      "reviewedSha256": "67772742d7d08f48c12196e9789f1859ad2d0e19f133ea65e197b049361f84f8",
+      "currentSha256": "67772742d7d08f48c12196e9789f1859ad2d0e19f133ea65e197b049361f84f8",
+      "unchanged": true
+    },
+    "packages/server/src/index.ts": {
+      "reviewedSha256": "34f9d9de8b48852c64919e69ce93f149e9cdae5142c15c75e4c35f08f15efc44",
+      "currentSha256": "34f9d9de8b48852c64919e69ce93f149e9cdae5142c15c75e4c35f08f15efc44",
+      "unchanged": true
+    },
+    "packages/server/src/read-conformance-capability.ts": {
+      "reviewedSha256": "58d4529dc40bbf646f02bda4c7fa3fad9b83d21f3080152cc04867dbe3fa6f60",
+      "currentSha256": "58d4529dc40bbf646f02bda4c7fa3fad9b83d21f3080152cc04867dbe3fa6f60",
+      "unchanged": true
+    },
+    "packages/server/src/transaction-http.ts": {
+      "reviewedSha256": "81c130dd18f604ab1d13c03a2f52a98e11a6988f45d62af98b4b8c7499d14529",
+      "currentSha256": "81c130dd18f604ab1d13c03a2f52a98e11a6988f45d62af98b4b8c7499d14529",
+      "unchanged": true
+    },
+    "packages/server/src/read-http.ts": {
+      "reviewedSha256": "31934105eff6fff8ded8ce2ca9e3c19028991ca7c3d5f51b848004177e8c9268",
+      "currentSha256": "31934105eff6fff8ded8ce2ca9e3c19028991ca7c3d5f51b848004177e8c9268",
+      "unchanged": true
+    },
+    "packages/server/src/transaction-http.test.ts": {
+      "reviewedSha256": "9eb452b8e9d80b53f28cd61b40385886c3a61a992aadb1c9c201d9a188081cce",
+      "currentSha256": "9eb452b8e9d80b53f28cd61b40385886c3a61a992aadb1c9c201d9a188081cce",
+      "unchanged": true
+    },
+    "packages/server/src/transaction-discovery.ts": {
+      "reviewedSha256": "bb8055e2089f640a5d2071e389ac2011d08c038427265b50ab3d03c02047cfef",
+      "currentSha256": "bb8055e2089f640a5d2071e389ac2011d08c038427265b50ab3d03c02047cfef",
+      "unchanged": true
+    },
+    "packages/conformance/src/runner.ts": {
+      "reviewedSha256": "ac20c7fbfe15a5e42a6559e89cd3467562efe9bc74d462478414414ed3efede1",
+      "currentSha256": "ac20c7fbfe15a5e42a6559e89cd3467562efe9bc74d462478414414ed3efede1",
+      "unchanged": true
+    },
+    "packages/conformance/src/artifact-bundle.ts": {
+      "reviewedSha256": "bbf54915eb792433ae492fd73a5334717e74e0942c485a72daa5105928546dd6",
+      "currentSha256": "bbf54915eb792433ae492fd73a5334717e74e0942c485a72daa5105928546dd6",
+      "unchanged": true
+    },
+    "packages/conformance/src/profile-contract-selection.ts": {
+      "reviewedSha256": "5b1caf61688bfa6a5465b5f8dc817b84f02be76bfc5bdd886a19e749b6441543",
+      "currentSha256": "5b1caf61688bfa6a5465b5f8dc817b84f02be76bfc5bdd886a19e749b6441543",
+      "unchanged": true
+    },
+    "packages/conformance/catalog/read-v1.json": {
+      "reviewedSha256": "769ff9f24cfdfe74a47670240b04149b520af23b2c71a431883fd15e988adeb0",
+      "currentSha256": "769ff9f24cfdfe74a47670240b04149b520af23b2c71a431883fd15e988adeb0",
+      "unchanged": true
+    },
+    "packages/conformance/test-support/transactional/manifest-v1.json": {
+      "reviewedSha256": "cd90592e76cace65b115dbfedf5f604c9c4011ed2e1a0fad954c1edb12aca6cd",
+      "currentSha256": "cd90592e76cace65b115dbfedf5f604c9c4011ed2e1a0fad954c1edb12aca6cd",
+      "unchanged": true
+    },
+    "packages/conformance/test-support/transactional/coverage-v1.json": {
+      "reviewedSha256": "0c991feb128a50625397e337464badcb17d22a0c31e1d57a6b66fa1032a92a51",
+      "currentSha256": "0c991feb128a50625397e337464badcb17d22a0c31e1d57a6b66fa1032a92a51",
+      "unchanged": true
+    },
+    "apps/bdptest/src/transactional-matrix.test.ts": {
+      "reviewedSha256": "762f84132bdfae18a730e07ac3a759da2a55289644a7b97888f314a55dffae4e",
+      "currentSha256": "762f84132bdfae18a730e07ac3a759da2a55289644a7b97888f314a55dffae4e",
+      "unchanged": true
+    },
+    "scripts/generate-read-cohort.mts": {
+      "reviewedSha256": "42111310e1e76df5dee938648bc84144c30fe6a9f15c3b4d30caf670584b6847",
+      "currentSha256": "42111310e1e76df5dee938648bc84144c30fe6a9f15c3b4d30caf670584b6847",
+      "unchanged": true
+    },
+    "scripts/read-cohort-evidence.mjs": {
+      "reviewedSha256": "451d77cf880329238f044e3f0e92d681d6493c509fcb3b050f6e292ce3f2a21e",
+      "currentSha256": "451d77cf880329238f044e3f0e92d681d6493c509fcb3b050f6e292ce3f2a21e",
+      "unchanged": true
+    },
+    "packages/conformance/src/executable-manifest.ts": {
+      "currentSha256": "65af0451cd046d57c10b0666e54efbaaecc2225551d3accc5cc1d032322913fa"
+    },
+    "packages/conformance/src/transactional-observation.ts": {
+      "currentSha256": "603fcc1240e43da3c477f42b8b942141c06c989a48a2a88099fd5d90e283159f"
+    },
+    "packages/conformance/src/transactional-cumulative.test.ts": {
+      "currentSha256": "ea51f2604e8ab75d86bcb6c7faddb868ebf7f66b46be52c1c2364c2abc6a09dc"
+    },
+    "apps/bdptest/src/transactional-binding.test.ts": {
+      "currentSha256": "957212ef227905f2b8b9ae3403fab9d6d0659ed308395696aef1baad112815d8"
+    },
+    "packages/conformance/matrices/read-update-v1.json": {
+      "currentSha256": "10a7c6f97a280cf88e58d3aa2039fe580904b74bfffcebda4747fc3c1a34b583"
+    },
+    "packages/conformance/test-support/read-update-coverage-v1.json": {
+      "currentSha256": "287c2a258afd04a95417f5de416c81bd8159c95762d71d568a64f0b402159f0f"
+    }
+  },
+  "artifacts": {
+    "plan-v2.md": "08eba658ad70cac8d003a57b120d05cb59efc39d0c223aa5ef3652847f2e94eb",
+    "plan.patch": "64ec7b5861b6aaae519c49b1c2ebe495840a1e14f644c1fef8035b850a2d2652",
+    "dispositions.md": "c563a065cff2c258a07de3bab352511b40c384835c155d94379aa90b8fd2b2f4"
+  },
+  "authoringAuthorized": false,
+  "executionAuthorized": false,
+  "prospective": {
+    "positiveHttp": 14,
+    "negativeExpectedHttp": 4,
+    "combinedExpectedHttp": 18,
+    "diagnosticMaximumHttp": 28,
+    "childLaunches": 4,
+    "manifestActionTotal": 241,
+    "manifestAssertionTotal": "2642 + actual new-row assertion count (measure after authoring)"
+  }
+}

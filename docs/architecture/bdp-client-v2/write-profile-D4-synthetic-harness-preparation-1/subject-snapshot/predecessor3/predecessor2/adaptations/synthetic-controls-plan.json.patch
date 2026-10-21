@@ -1,0 +1,93 @@
+--- predecessor1/synthetic-controls-plan.json
++++ synthetic-controls-plan.json
+@@ -1,6 +1,4 @@
+ {
+-  "state": "CLOSED prospective controls ONLY; no synthetic runner invocation authorized",
+-  "count": 48,
+   "cases": [
+     {
+       "id": "M01",
+@@ -186,7 +184,7 @@
+     },
+     {
+       "id": "J11",
+-      "input": "giant unrelated line within raw threshold",
++      "input": "giant unrelated non-JSON line within raw threshold",
+       "predicate": "bounded skip without truncating saved log",
+       "productCalls": 0,
+       "status": "UNEXECUTED"
+@@ -199,6 +197,11 @@
+       "status": "UNEXECUTED"
+     },
+     {
++      "finiteSubcases": [
++        "missing prospectiveWorkload refuses; exact present workload reaches original selected-stage gate without executing product",
++        "blocked preflight no product after10",
++        "parent TERM pending while Popen/registry handlers install: contained worker cleaned under same clock"
++      ],
+       "id": "P01",
+       "input": "blocked gate/preflight",
+       "predicate": "worker terminated within same origin; no product after10",
+@@ -248,6 +251,12 @@
+       "status": "UNEXECUTED"
+     },
+     {
++      "finiteSubcases": [
++        "product spawn before created notification then IPC failure/worker exit; retained unreaped anchor contains shared-group members",
++        "created receipt+ack then worker exits with live member; no early poll/wait or quiet",
++        "previous live identity becomes matching terminal Z with <defunct> comm; retained until actual absence/reap",
++        "terminal-only newly contained member cannot later become live or establish live executable baseline"
++      ],
+       "id": "P08",
+       "input": "worker leader exits while authenticated child group remains",
+       "predicate": "retain group ownership and terminate; no absence inferred",
+@@ -255,6 +264,13 @@
+       "status": "UNEXECUTED"
+     },
+     {
++      "finiteSubcases": [
++        "unseen reparented member in registered worker PGID is discovered/contained and prevents quiet",
++        "member in worker PGID remains after primary exit: worker-PID-only quiet rejects",
++        "previous authenticated member changes live comm/birth/PGID: sticky UNKNOWN",
++        "closed PGID reappears or terminal identity becomes live: UNKNOWN/no unsafe signal",
++        "escaped group without fresh anchor: no historical numeric signal and no acceptance"
++      ],
+       "id": "P09",
+       "input": "escaped group without current identity anchor",
+       "predicate": "UNKNOWN refusal; no unsafe numeric signal",
+@@ -304,6 +320,11 @@
+       "status": "UNEXECUTED"
+     },
+     {
++      "finiteSubcases": [
++        "finite divergent seed page counts with later failed/unvalidated send: derive actual page lengths/counts/complete from visited source path, not successful prefix",
++        "final validated Event send, including divergent deletion pagination stopped by later source assertion: UNSUPPORTED_OR_INCONSISTENT_FAILED_PARTIAL; raw retained/no credit",
++        "first/second receipt response failure retains exact assignment-before-assertion counters"
++      ],
+       "id": "D02",
+       "input": "failed report has actual Event pagination divergent from positive table",
+       "predicate": "failed-only retained evidence; never enforce positive-prefix or grant credit",
+@@ -311,6 +332,10 @@
+       "status": "UNEXECUTED"
+     },
+     {
++      "finiteSubcases": [
++        "mutate each receiptPages[0]/[1], receiptComplete, receiptEntries, groups, pendingRequests, each Event pages/count/complete against derived facts: refuse",
++        "positive32 body/wire/postimage counterfactuals unchanged"
++      ],
+       "id": "D03",
+       "input": "counts32 but missing wire/changed body/incorrect owned postimage",
+       "predicate": "refuse actual crossrow evidence",
+@@ -339,8 +364,10 @@
+       "status": "UNEXECUTED"
+     }
+   ],
++  "count": 48,
+   "futureRelease": "independent mechanics+root durable synthetic-only release required; no product via these controls",
++  "noObservedPass": true,
++  "noRetry": true,
+   "sameFixedDeadlinePolicy": true,
+-  "noRetry": true,
+-  "noObservedPass": true
++  "state": "CLOSED prospective controls ONLY; no synthetic runner invocation authorized"
+ }

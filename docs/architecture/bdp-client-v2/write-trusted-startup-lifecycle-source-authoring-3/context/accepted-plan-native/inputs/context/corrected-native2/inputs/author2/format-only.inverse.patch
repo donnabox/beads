@@ -1,0 +1,378 @@
+--- b/packages/server/src/reference-deployment-runtime.test.ts
++++ a/packages/server/src/reference-deployment-runtime.test.ts
+@@ -265,8 +265,7 @@
+         }),
+     ),
+   );
+-  const unknown =
+-    cleanup.some((r) => r.status === "rejected") || callbackSQLite().some((r) => !r.closed);
++  const unknown = cleanup.some((r) => r.status === "rejected") || callbackSQLite().some((r) => !r.closed);
+   if (!unknown) for (const root of directories) rmSync(root, { recursive: true, force: true });
+   console.log(
+     JSON.stringify({
+@@ -616,15 +615,17 @@
+       (row === "resource-uninstalled-type" || row === "retained-runtime-compatibility")
+     ) {
+       if (!("forPrincipal" in seed)) throw Error("RU owner required");
+-      await seed.forPrincipal({ id: "writer" }).mutate(
+-        "createBead",
+-        JSON.stringify({
+-          id: "beads/seed",
+-          type: f.type,
+-          properties: { n: row === "retained-runtime-compatibility" ? "invalid" : 1 },
+-        }),
+-        "seed",
+-      );
++      await seed
++        .forPrincipal({ id: "writer" })
++        .mutate(
++          "createBead",
++          JSON.stringify({
++            id: "beads/seed",
++            type: f.type,
++            properties: { n: row === "retained-runtime-compatibility" ? "invalid" : 1 },
++          }),
++          "seed",
++        );
+     }
+     await seed.close();
+     const db = new DatabaseSync(f.file);
+--- b/apps/bdptest/src/reference-deployment-lifecycle-installed.test.ts
++++ a/apps/bdptest/src/reference-deployment-lifecycle-installed.test.ts
+@@ -193,11 +193,7 @@
+         }),
+       );
+       const parentResults = await parentCleanup;
+-      cleanupFailures.push(
+-        ...[...cleanup, ...parentResults].flatMap((result) =>
+-          result.status === "rejected" ? [result.reason] : [],
+-        ),
+-      );
++      cleanupFailures.push(...[...cleanup, ...parentResults].flatMap((result) => result.status === "rejected" ? [result.reason] : []));
+       cleanupKnown =
+         cleanup.every((r) => r.status === "fulfilled") &&
+         parentResults.every((r) => r.status === "fulfilled") &&
+@@ -221,11 +217,10 @@
+           cleanupKnown = false;
+         }
+       }
+-      if (cleanupFailures.length)
+-        failure = new AggregateError(
+-          [...(failure === undefined ? [] : [failure]), ...cleanupFailures],
+-          "lifecycle body and observed cleanup failed",
+-        );
++      if (cleanupFailures.length) failure = new AggregateError(
++        [...(failure === undefined ? [] : [failure]), ...cleanupFailures],
++        "lifecycle body and observed cleanup failed",
++      );
+       const report = {
+         observation: "reference-lifecycle-installed",
+         id,
+@@ -409,30 +404,15 @@
+     value: T,
+     work: (owned: T) => R | Promise<R>,
+   ): Promise<R> {
+-    const state = {
+-      kind,
+-      stage,
+-      closeAttempted: false,
+-      closeSettled: false,
+-      closeSucceeded: false,
+-      uncertain: false,
+-    };
++    const state = { kind, stage, closeAttempted: false, closeSettled: false, closeSucceeded: false, uncertain: false };
+     let closing: Promise<void> | undefined;
+     const close = () => {
+       if (!closing) {
+         state.closeAttempted = true;
+-        closing = Promise.resolve()
+-          .then(() => value.close())
+-          .then(
+-            () => {
+-              state.closeSettled = true;
+-              state.closeSucceeded = true;
+-            },
+-            (error: unknown) => {
+-              state.closeSettled = true;
+-              throw error;
+-            },
+-          );
++        closing = Promise.resolve().then(() => value.close()).then(
++          () => { state.closeSettled = true; state.closeSucceeded = true; },
++          (error: unknown) => { state.closeSettled = true; throw error; },
++        );
+         void closing.catch(() => {});
+       }
+       return closing;
+@@ -450,32 +430,23 @@
+         await limited(close(), started + 45000);
+       } catch (cleanup) {
+         state.uncertain = true; // Sticky even if a late close eventually settles.
+-        if (primary)
+-          throw new AggregateError(
+-            [primary.cause, cleanup],
+-            "parent owner operation and close failed",
+-          );
++        if (primary) throw new AggregateError([primary.cause, cleanup], "parent owner operation and close failed");
+         throw cleanup;
+       }
+     }
+     if (primary) throw primary.cause;
+     return result;
+   }
+-  const cleanupParents = (end: number) =>
+-    Promise.allSettled(
+-      parentOwners.map(async (owned) => {
+-        try {
+-          await limited(owned.close(), end); // Same memoized attempt, never a second close.
+-        } catch (error) {
+-          owned.state.uncertain = true;
+-          throw error;
+-        }
+-      }),
+-    );
+-  const parentOwnershipKnown = () =>
+-    parentOwners.every(
+-      ({ state }) => state.closeSettled && state.closeSucceeded && !state.uncertain,
+-    );
++  const cleanupParents = (end: number) => Promise.allSettled(parentOwners.map(async (owned) => {
++    try {
++      await limited(owned.close(), end); // Same memoized attempt, never a second close.
++    } catch (error) {
++      owned.state.uncertain = true;
++      throw error;
++    }
++  }));
++  const parentOwnershipKnown = () => parentOwners.every(({ state }) =>
++    state.closeSettled && state.closeSucceeded && !state.uncertain);
+   const parentOwnership = () => parentOwners.map(({ state }) => ({ ...state }));
+   const receiptSchema = JSON.parse(
+     readFileSync(path.join(workspace, "schemas/bdp-v0.schema.json"), "utf8"),
+@@ -753,49 +724,30 @@
+     const h = await loader.loadReferenceDeployment(input),
+       state = registry.referenceDeploymentState(h);
+     if (state.profile === "read-update") {
+-      await withParentOwner(
+-        "read-update-owner",
+-        "probe",
+-        await ownerModule.openDevelopmentAuthority({
+-          scope,
+-          directory,
+-          create: false,
+-          configuration: state.installed.configuration,
+-        }),
+-        () => undefined,
+-      );
++      await withParentOwner("read-update-owner", "probe", await ownerModule.openDevelopmentAuthority({
++        scope,
++        directory,
++        create: false,
++        configuration: state.installed.configuration,
++      }), () => undefined);
+     } else {
+       const module = (await import(
+         pathToFileURL(path.join(serverRoot, "transaction-store.js")).href
+       )) as typeof import("../../../packages/server/src/transaction-store.js");
+       const p = state.preflight;
+-      await withParentOwner(
+-        "transaction-owner",
+-        "probe",
+-        module.openTransactionStore({
+-          file: path.join(directory, "transaction.sqlite"),
+-          scope,
+-          create: false,
+-          types: p.types,
+-          contracts: p.contracts!,
+-          receiptMaximumItems: p.settings.receiptMaximumItems,
+-          maintenanceIntervalMs: p.settings.maintenanceIntervalMs,
+-        }),
+-        () => undefined,
+-      );
++      await withParentOwner("transaction-owner", "probe", module.openTransactionStore({
++        file: path.join(directory, "transaction.sqlite"),
++        scope,
++        create: false,
++        types: p.types,
++        contracts: p.contracts!,
++        receiptMaximumItems: p.settings.receiptMaximumItems,
++        maintenanceIntervalMs: p.settings.maintenanceIntervalMs,
++      }), () => undefined);
+     }
+-    const rows = await withParentOwner(
+-      "SQLite",
+-      "probe-resource-read",
+-      new DatabaseSync(
+-        path.join(directory, profile === "read-update" ? "reference.sqlite" : "transaction.sqlite"),
+-      ),
+-      (db) =>
+-        db
+-          .prepare("SELECT body FROM resources")
+-          .all()
+-          .map((r) => object(JSON.parse(String(r.body)))),
+-    );
++    const rows = await withParentOwner("SQLite", "probe-resource-read", new DatabaseSync(
++      path.join(directory, profile === "read-update" ? "reference.sqlite" : "transaction.sqlite"),
++    ), (db) => db.prepare("SELECT body FROM resources").all().map((r) => object(JSON.parse(String(r.body)))));
+     const retained = rows.find((r) => r.id === scope + "beads/startup");
+     expect(retained !== undefined).toBe(expectCreated);
+     if (expectCreated) {
+@@ -822,36 +774,26 @@
+     )) as typeof import("../../../packages/server/src/reference-deployment-state.js");
+     const state = registry.referenceDeploymentState(await loader.loadReferenceDeployment(input));
+     if (state.profile === "read-update") {
+-      await withParentOwner(
+-        "read-update-owner",
+-        "initialize",
+-        await ownerModule.openDevelopmentAuthority({
+-          scope,
+-          directory,
+-          create: true,
+-          configuration: state.installed.configuration,
+-        }),
+-        () => undefined,
+-      );
++      await withParentOwner("read-update-owner", "initialize", await ownerModule.openDevelopmentAuthority({
++        scope,
++        directory,
++        create: true,
++        configuration: state.installed.configuration,
++      }), () => undefined);
+     } else {
+       const m = (await import(
+         pathToFileURL(path.join(serverRoot, "transaction-store.js")).href
+       )) as typeof import("../../../packages/server/src/transaction-store.js");
+       const p = state.preflight;
+-      await withParentOwner(
+-        "transaction-owner",
+-        "initialize",
+-        m.openTransactionStore({
+-          file: path.join(directory, "transaction.sqlite"),
+-          scope,
+-          create: true,
+-          types: p.types,
+-          contracts: p.contracts!,
+-          receiptMaximumItems: p.settings.receiptMaximumItems,
+-          maintenanceIntervalMs: p.settings.maintenanceIntervalMs,
+-        }),
+-        () => undefined,
+-      );
++      await withParentOwner("transaction-owner", "initialize", m.openTransactionStore({
++        file: path.join(directory, "transaction.sqlite"),
++        scope,
++        create: true,
++        types: p.types,
++        contracts: p.contracts!,
++        receiptMaximumItems: p.settings.receiptMaximumItems,
++        maintenanceIntervalMs: p.settings.maintenanceIntervalMs,
++      }), () => undefined);
+     }
+     ownerProbes.push({ profile, actualFixtureInitializationAndClose: true });
+   }
+@@ -1100,18 +1042,8 @@
+     expect(anonymous.headers[name] === undefined).toBe(true);
+   const descriptorHead = await client.send("descriptor-HEAD", "HEAD", routes.descriptorUrl, 200);
+   const directoryHead = await client.send("Directory-HEAD", "HEAD", routes.directoryUrl, 200);
+-  for (const [get, head] of [
+-    [routes.descriptorResponse, descriptorHead],
+-    [routes.directoryResponse, directoryHead],
+-  ] as const)
+-    for (const name of [
+-      "content-type",
+-      "content-length",
+-      "cache-control",
+-      "etag",
+-      "last-modified",
+-      "vary",
+-    ])
++  for (const [get, head] of [[routes.descriptorResponse, descriptorHead], [routes.directoryResponse, directoryHead]] as const)
++    for (const name of ["content-type", "content-length", "cache-control", "etag", "last-modified", "vary"])
+       expect(head.headers[name] === get.headers[name]).toBe(true);
+   await client.send("absent", "GET", client.scope + "beads/not-created", 404);
+ }
+@@ -1245,30 +1177,18 @@
+     cohort(id, profile, 0, 1, async (f) => {
+       await f.initialize();
+       const file = path.join(
+-        f.directory,
+-        profile === "read-update" ? "reference.sqlite" : "transaction.sqlite",
+-      );
+-      const prior = await f.withParentOwner(
+-        "SQLite",
+-        "persisted-capture-edit",
+-        new DatabaseSync(file),
+-        (db) => {
+-          const value = String(
+-            db.prepare("SELECT value FROM metadata WHERE name='contractCapture'").get()!.value,
+-          );
+-          db.prepare("UPDATE metadata SET value='null' WHERE name='contractCapture'").run();
+-          return value;
+-        },
+-      );
++          f.directory,
++          profile === "read-update" ? "reference.sqlite" : "transaction.sqlite",
++        );
++      const prior = await f.withParentOwner("SQLite", "persisted-capture-edit", new DatabaseSync(file), (db) => {
++        const value = String(db.prepare("SELECT value FROM metadata WHERE name='contractCapture'").get()!.value);
++        db.prepare("UPDATE metadata SET value='null' WHERE name='contractCapture'").run();
++        return value;
++      });
+       await f.refused(false);
+-      await f.withParentOwner(
+-        "SQLite",
+-        "persisted-capture-restore",
+-        new DatabaseSync(file),
+-        (restore) => {
+-          restore.prepare("UPDATE metadata SET value=? WHERE name='contractCapture'").run(prior);
+-        },
+-      );
++      await f.withParentOwner("SQLite", "persisted-capture-restore", new DatabaseSync(file), (restore) => {
++        restore.prepare("UPDATE metadata SET value=? WHERE name='contractCapture'").run(prior);
++      });
+       await f.ownerProbe(false);
+     }),
+   60000,
+@@ -1361,34 +1281,20 @@
+ it(
+   "I20 ordinary RU refusal plus three actual private entry guards",
+   async () =>
+-    cohort(
+-      "I20",
+-      "read-update",
+-      0,
+-      1,
+-      async (f) => {
+-        await f.publicRefusal();
+-        await f.guard("inert-no-ipc");
+-        await f.guard("inert-ipc");
+-        await f.guard("missing-ipc");
+-      },
+-      3,
+-    ),
++    cohort("I20", "read-update", 0, 1, async (f) => {
++      await f.publicRefusal();
++      await f.guard("inert-no-ipc");
++      await f.guard("inert-ipc");
++      await f.guard("missing-ipc");
++    }, 3),
+   60000,
+ );
+ it(
+   "I21 ordinary TX refusal plus invalid configuration IPC guard",
+   async () =>
+-    cohort(
+-      "I21",
+-      "transactional",
+-      0,
+-      1,
+-      async (f) => {
+-        await f.publicRefusal();
+-        await f.guard("invalid-ipc");
+-      },
+-      1,
+-    ),
++    cohort("I21", "transactional", 0, 1, async (f) => {
++      await f.publicRefusal();
++      await f.guard("invalid-ipc");
++    }, 1),
+   60000,
+ );

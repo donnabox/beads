@@ -1,0 +1,48 @@
+--- /Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-changefeed-parameter-context-draft/execution-preparation/run-source.py
++++ /Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-depth-key-order-plan/execution-preparation/run-source.py
+@@ -1,4 +1,4 @@
+-"""Closed one-command source supervisor, adapted from reviewed Event source supervisor.
++"""Closed one-command source supervisor, adapted from the reviewed PR130 source supervisor.
+ Root supplies execution-gate.json; this file does not create/release that gate.
+ Usage: python3 run-source.py COMMAND_ID. Never retries or invokes controls/packages.
+ """
+@@ -14,20 +14,20 @@
+ 
+ P = Path(__file__).resolve().parent
+ D = P.parent
+-W = Path("/Users/dbox/repos/wt/vickie/vickie-changefeed-parameter-context")
+-E = D / "run"
++W = Path('/Users/dbox/repos/wt/vickie/vickie-sequence-member-evidence')
++E = P / "run"
+ L = Path("/Users/dbox/repos/wt/vickie/bdp-integration-logs")
+ GUARD = L / "guarded-action.py"
+-BINDING = D / "source-binding.json"
++BINDING = L / "transaction-depth-key-order-draft" / "source-binding.json"
+ COMMANDS = P / "commands.json"
+ BINDING_SHA = None  # Actual frozen manifest must be pinned by root gate, never guessed.
+-COMMANDS_SHA = '05a40c94cdfbf0a85cd7d37632b62b31503367c046b68390332c3f43950aa078'
++COMMANDS_SHA = '663f43a44047d02a016bf6b9511ff2dec45937f2bd8b5a4af0c757c1a5dea07c'
+ GUARD_SHA = "fd81ba029cd4e7c7e60623df89e8292af91141d311d9ce789ed19e2152375e84"
+-HEAD = "9a42a4531def99e12fa9a1fba02e70558d643265"
+-TREE = "a9cca0e1e5c52ac8bbd06ce989a94ca6e4f2b272"
++HEAD = "0d63cf59d447eca2e7ff8b2e0e6a5f31513b9a3a"
++TREE = "80a6fe0605698e18f9504432407e7943e1f665b4"
+ SESSION = "2026-10-08T20:26:35Z-81e5"
+ ORDER = ['offline-setup', 'typecheck', 'build', 'format-check', 'lint', 'boundaries', 'read-seal', 'source-positive']
+-OWNED_PATHS = ['packages/server/src/transaction-changefeed.ts', 'packages/server/src/transaction-store.ts', 'packages/server/src/transaction-http.ts', 'packages/server/src/transaction-changefeed.test.ts', 'apps/bdptest/src/transactional-changefeed-refusal-context-installed.test.ts', 'docs/design/transaction-implementation-progress.md']
++OWNED_PATHS = ['packages/server/src/transaction-batch.ts', 'packages/server/src/transaction-store.ts', 'packages/server/src/transaction-submission.ts', 'packages/server/src/transaction-set.test.ts', 'packages/server/src/transaction-submission.test.ts', 'packages/server/src/transaction-http.test.ts', 'apps/bdptest/src/transactional-depth-key-order-installed.test.ts', 'docs/design/transaction-implementation-progress.md']
+ 
+ def require(ok, message):
+     if not ok:
+@@ -42,9 +42,9 @@
+ def source_hashes():
+     require(sha(BINDING.read_bytes()) == BINDING_SHA, "Successor source binding changed")
+     binding = json.loads(BINDING.read_text())
+-    require(set(binding["files"]) == set(OWNED_PATHS), "Expected exactly six changefeed paths")
++    require(set(binding["files"]) == set(OWNED_PATHS), "Expected exactly eight depth/key-order paths")
+     require(binding["head"] == HEAD and binding["tree"] == TREE, "Manifest base mismatch")
+-    require(binding["branch"] == "codex/vickie-changefeed-parameter-context", "Unexpected draft branch")
++    require(binding["branch"] == "codex/vickie-depth-key-order", "Unexpected draft branch")
+     require(binding["workspace"] == str(W), "Manifest workspace mismatch")
+     require(git("rev-parse", "HEAD").decode().strip() == HEAD, "HEAD changed")
+     require(git("rev-parse", "HEAD^{tree}").decode().strip() == TREE, "Base tree changed")

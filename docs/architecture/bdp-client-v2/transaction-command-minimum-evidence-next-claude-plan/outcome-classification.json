@@ -1,0 +1,32 @@
+{
+  "checkedAt": "2026-10-15T05:00:40.717352+00:00",
+  "changedTrackedFiles": {
+    "apps/bdptest/src/read-update-matrix.test.ts": {
+      "before": "5ab7801337e4b59f771250931b4ea6aac6975c89a31e2fff2aa9d535d83cf4b0",
+      "after": "3ba256dbcee025836eac04ec1122a484734748c0eb22ad203c49a0d95debb3e5"
+    },
+    "packages/conformance/src/profile-contract-plan.test.ts": {
+      "before": "62bbfd74dade88354169062d973e1ec3259727d04c1b6c6e16124655f8654a8c",
+      "after": "585632596fcfa9a4451bffb94ce0b8f399ef2a2e4f45264cd23138619ba094d7"
+    },
+    "packages/conformance/src/transactional-cumulative.test.ts": {
+      "before": "1ee47d4c56b3de03bd81d1fab7f43c9a676cca503a18911864b0e023ed83b367",
+      "after": "9e62920410aa463b1ab494e5f2d5d04cd1d10d1fe66bb0056829bb813e2ffb49"
+    }
+  },
+  "addedTrackedFiles": [],
+  "targetArtifactsUnchanged": true,
+  "coreSourceAnchorsUnchanged": {
+    "packages/conformance/src/runner.ts": true,
+    "packages/conformance/src/http-executor.ts": true,
+    "apps/bdptest/src/transactional-matrix.test.ts": true,
+    "packages/conformance/test-support/transactional/manifest-v1.json": true,
+    "packages/conformance/test-support/transactional/coverage-v1.json": true
+  },
+  "headBefore": "bd2178dd6f4b9f7c2d239624d7edaa3d961c3e26",
+  "headAfter": "102e140fdd8ba27bcff7d80320c94ec7ace57dc3",
+  "treeAfter": "40782d97c9764bc19ae78c46d1d39475e3db317a",
+  "remainingReviewPidOrGroup": [],
+  "sourceBroadlyUnchanged": false,
+  "reviewVerdictAvailable": false
+}

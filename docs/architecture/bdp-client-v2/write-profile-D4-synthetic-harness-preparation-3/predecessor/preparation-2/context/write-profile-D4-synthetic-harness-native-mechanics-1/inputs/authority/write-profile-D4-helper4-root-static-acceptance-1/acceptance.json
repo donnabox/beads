@@ -1,0 +1,35 @@
+{
+  "utc": "2026-10-18T12:43:20.587916+00:00",
+  "accepted": true,
+  "scope": "CLOSED helper4 static mechanics only, no synthetic or product execution",
+  "implementation": {
+    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-D4-validation-preparation-4/implementation-hashes.json",
+    "sha256": "6cc0f6e04d12877439f26ebec5d9b65fa543894a7789dea143fef156efdb771e"
+  },
+  "native": {
+    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-D4-validation-preparation4-native-mechanics-closure-1/closure.json",
+    "sha256": "680069b2f517bf62645de30a23ea2cb26a2e85f6d84340a406ece84f97766e0b"
+  },
+  "rootReadFullNativeReportAndReleaseGates": true,
+  "exactTwoPredicatesAccepted": true,
+  "sourceStates": [
+    "000",
+    "100",
+    "110",
+    "111"
+  ],
+  "syntheticHarnessAbsent": true,
+  "allowedAuthoring": "B may AUTHOR ONLY separately named CLOSED write-profile-D4-synthetic-harness-preparation-1 against immutable helper4. Implement all48 finite controls and declared subcases on actual accepted subjects. Preserve source/helper bytes and actual invocation gates; no copied/reimplemented subject passing as real mechanics. Explicitly distinguish mock unit clock/OS conditions vs actual owned subprocess/clock observations; unsupported controls remain unresolved, never claimed complete.",
+  "authorOnlyRestrictions": [
+    "No import/eval/run of candidate helper or harness",
+    "No compiler/tests/build/install/runtime/schema/reviewer/Git/flags",
+    "No product source edits or execution gate changes",
+    "Full source/index/origins/genuine adapter diffs/command matrix/mirror required",
+    "Independent OTHER-native full harness mechanics plus durable root synthetic-only release required before any evaluation",
+    "No product stage before actual synthetic results and independent root acceptance",
+    "No schema/selection/limits/clock/retry weakening"
+  ],
+  "mustPushBeforeHarnessAuthoring": true,
+  "syntheticReleased": false,
+  "productReleased": false
+}

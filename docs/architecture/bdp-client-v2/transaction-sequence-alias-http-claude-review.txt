@@ -1,0 +1,70 @@
+I reviewed the four-file diff, the surrounding core (`member-identity.ts`, `member-executor.ts`, `transaction-sequence-alias.test.ts`, `resource-evaluator.ts`), the adjacent installed cohorts, and both external context files. No files were written and nothing was built or run.
+
+**Verified first (so the findings below are not re-litigating settled ground):** the gap removal is complete and safe — the `TypeError("development sequence Resource aliases require turn-time resolution")` producer exists only in the base commit (`transaction-http.ts:334` at `7035334`), no source, schema, conformance artifact or test still references `sequence-resource-alias`, and the surviving `TransactionDevelopmentLimitError` branch on the sequence route stays covered at `transaction-http.test.ts:966`. Both new HTTP tests' replay assertions do discriminate re-execution (test 1 via member 1 deleting `beads/b`, test 2 via a fresh allocated id). The doc's counts are correct: I enumerated 36 exchanges, 28 before reopen and 8 after, two child sessions, and the 5 s / 90 s / 120 s deadlines match `transactional-set-installed.test.ts`.
+
+---
+
+## Current defects
+
+**1. MEDIUM — Replay/restart claims rest entirely on body equality; `bdp-scope-position` is never checked**
+*Location:* `packages/server/src/transaction-http.test.ts:434-464`, `491-524`
+*Issue:* `transactionalSequenceResponse` is `additionalProperties: false` over `{results}` only, and `sequenceMemberResult` / `sequenceMemberAliasResult` carry no position field. For a sequence, the `bdp-scope-position` response header is therefore the *only* effect-count evidence available, and neither new test reads it — even though the existing suite establishes the convention at `:184`, `:402` and `:988`.
+*Impact:* "already committed prefix members stay committed… replay after listener reopen" is proven only by two identical JSON bodies. A regression that re-executed a member whose re-execution is body-identical would pass. That is not hypothetical: it is exactly the class the installed test guards against at `transactional-alias-installed.test.ts:314` with the comment "A retained prefix must not rerun its alias write" — a re-run `putAlias` returns the same result. HTTP test 2 has that same member (index 1) and no equivalent guard beyond the post-replay `alias/work` read.
+*Correction:* alias writes do not advance the scope position (confirmed at `:662`: one create + one `putAlias` ⇒ `pos-1`). So in test 1 assert `pos-2` on the first sequence response, unchanged after `put`, unchanged on both `replay` and `recovered`, then `pos-3` after `fresh`. In test 2 assert `pos-2` after the sequence (create + createLink), `pos-3` after `create("other")`, unchanged by the repoint and by the post-reopen replay.
+
+**2. MEDIUM — HTTP test 2 never observes the alias its earlier member assigns**
+*Location:* `packages/server/src/transaction-http.test.ts:491-507`
+*Issue:* `entries[1]` — the `putAlias` member result — is never asserted, and `alias/work` is first read at `:518`, after it has already been repointed to `beads/other`. The only evidence that member 1 committed `alias/work → created` is member 2's resolution.
+*Impact:* the doc's first claimed HTTP case ("an alias assigned by an earlier member") is asserted indirectly, and `sequenceMemberAliasResult` is the one branch of the schema's three-way result union that this commit never pins anywhere — a regression in its envelope (e.g. a dropped `target`, which `aliasResultMembers` requires for non-`deleted` outcomes) passes both new tests.
+*Correction:* add `expect(entries[1]).toMatchObject({ operationIndex: 1, outcome: "created", alias: `${f.runtime.scope}alias/work`, target: created })`, and a `f.get(`${f.runtime.scope}alias/work`)` → `307` → `created` immediately after the sequence, before `create("other")`.
+
+**3. MEDIUM — No independence control anywhere in the new cohort**
+*Location:* `apps/bdptest/src/transactional-alias-installed.test.ts` (whole file); `packages/server/src/transaction-http.test.ts:427-528`
+*Issue:* zero negative oracles. The doc states this discipline for installed witnesses one section earlier, at `docs/design/transaction-implementation-progress.md:1510`: "Independent corrupted expectations must fail." The set cohort carries 5 such controls, snapshot 4, collection-minimum 1; this one carries 0 while leaning on `toEqual` between two server-derived values throughout.
+*Impact:* nothing demonstrates that the comparisons can fail for the specific mutation class this slice is about — a re-resolved alias witness. The `toEqual(first)` / `toEqual(retained)` assertions are structurally the weakest point of the evidence and are the only thing standing between a correct implementation and an admission-time snapshot.
+*Correction:* add the two cheapest, mirroring `transactional-set-installed.test.ts:358-369`. Near `:312`, assert that the same comparison rejects a locally corrupted copy in which `members[1].resource.id` is `${scope}beads/a` (the admission-snapshot answer). Near `:318`, assert the retained/member comparison rejects a copy whose `properties.n` is `0`.
+
+**4. LOW-MEDIUM — The doc section asserts delivered evidence without identifying any run**
+*Location:* `docs/design/transaction-implementation-progress.md:1570-1571`, `1581`
+*Issue:* "A separate source-private installed observation uses the existing launcher and raw HTTP transport against the packed service" and "This is bounded private serving evidence" describe an authored fixture as an executed observation. No run is cited — no external log name, no observed digest, no date — while the adjacent reviewed section closes by tying its claim to a record (`:594`, "External exact-command results accompany the frozen candidate").
+*Impact:* with the packed observations still being finalized, the section's only readiness-bearing sentence is unsupported in-tree, which is precisely the preparation-run-as-frozen-proof mislabel. (The disclaimers at `:1581-1584` and `claimEligible: false` correctly withhold any public-profile claim — that part is clean.)
+*Correction:* restate `:1570-1579` as fixture content ("the fixture, when run, records…"), and either cite the external observation log by name or state plainly that the packed run record is pending. Separately, the report field `sourceCommit` (`transactional-alias-installed.test.ts:421`) may hold an env-declared value rather than an observed commit; the two most recent cohorts label it `declaredSourceCommit` (`transactional-snapshot-installed.test.ts:328`, collection-minimum).
+
+**5. LOW — Blanket supersession leaves two specifically false statements standing**
+*Location:* `docs/design/transaction-implementation-progress.md:1565-1566` vs `:578`, `:584`, `:604`
+*Issue:* "Earlier historical gap descriptions above describe their original slice, not the current receiver." But `:604` is not a gap description — it *reserves an identifier* ("the alias marker is reserved for the actual Resource-alias sequence restriction") that no longer exists in `transaction-http.ts`; and `:584` still lists "Resource-alias sequence timing" among open work.
+*Impact:* a reader grepping the marker's status finds a live reservation of a removed name, and the open-work list still reads as though this slice is unstarted. The S2a section at `:1523-1531` sets the house pattern by naming superseded statements explicitly.
+*Correction:* name the three statements (`:578` refusal list, `:584` remaining-work entry, `:604` marker reservation) in the supersession sentence, or amend them in place.
+
+**6. LOW — `operations/delete-alias` sits in the "closed route inventory" but is never exercised**
+*Location:* `apps/bdptest/src/transactional-alias-installed.test.ts:150`
+*Issue:* `deleteAlias` appears only as a sequence *member* operation (`:340`), never as a route. The doc cites the closed inventory at `:1577` as part of the fixture's bound, but the set is one entry wider than the 36 exchanges actually touch.
+*Correction:* drop the entry, and make the inventory self-proving by asserting in the `finally` that `new Set(observations.map((o) => o.url))` equals `targets` mapped through `${scope}…` — that converts the inventory from an authored comment into a checked fact.
+
+---
+
+## Optional hardening
+
+**7.** `exchange()` asserts only `x-bdp-development` (`transactional-alias-installed.test.ts:214`). The set cohort additionally requires `bdp-scope-epoch`, `bdp-authorization-view` and `bdp-scope-position` to be non-empty on every 200 (`transactional-set-installed.test.ts:177-179`); collection-minimum has a full `minimum()` helper. Adding the three-header presence check costs one line and covers the same envelope gap as finding 1 at the installed layer.
+
+**8.** `bodyOctets: response.bodyOctets` is recorded unguarded (`:209`). The field is optional on `HttpExchangeResponse` (`packages/conformance/src/http-executor.ts:90`) and `JSON.stringify` silently drops an `undefined` property, so a future executor change would emit log entries missing the octet count with no test failure. The raw socket executor always supplies it today (`:225`, `:1200`), so this is defensive only; collection-minimum guards it explicitly.
+
+**9.** `sessions` proves two clean exits (`:411-412`) but not two distinct processes. `expect(sessions[0].pid).not.toBe(sessions[1].pid)` pins the restart rather than inferring it from the launcher.
+
+**10.** `transaction-http.test.ts:546` (`f.post(batch([create("b")]), "a")`) is now vestigial. Before this commit it proved the refused alias sequence captured no member key; the alias sequence moved to test 1, where key `"a"` is legitimately claimed, so in test 3 the line posts under a key nothing ever claimed while the test name still says "without key capture". The equivalent sequence-route check survives at `:966-981` (`deep_sequence`). Drop it or re-point it at a key actually claimed earlier in test 3.
+
+**11.** Test 2 replays only after reopen; test 1 replays both before and after (`:457`, `:462`). The plan's done-when asks for comparison-only retry proofs "before and after reopen". One extra pre-reopen replay in test 2 would prove the allocated-id and pinned-endpoint identity stable within a single session too.
+
+**12.** Neither test schema-validates the replayed or recovered bodies (only the first response, `:438`, `:495`). `toEqual` against a validated body covers shape transitively; a direct `validateSequence` call on each makes every response independently checked.
+
+---
+
+## Already bounded — verified, not findings
+
+- **Covered in the separately reviewed core, which the plan explicitly allows not duplicating per transport:** pin-only mismatch conflict (`transaction-sequence-alias.test.ts:406`), distinct-missing-locator conflict (`:255`), direct-canonical-equals-retained (`:289`), cross-slot symbol correlation (`:386`), absolute/relative locator equivalence (`:128`, `:405`), cross-carrier retry of a *failed* member through a batch carrier (`:265`), alias-as-Link-subject ⇒ `resource-not-found` and putAlias-to-alias ⇒ `validation-failed` (`:301-313`, `transaction-store.test.ts:1902`). The installed test covers the *successful* cross-carrier retained case over HTTP (`:317`); HTTP failed-receipt projection is exercised independently at `transaction-http.test.ts:1387-1392`.
+- **Verbatim `revision: "opaque-pin"` on a resolved alias endpoint** matches `resource-evaluator.ts:725-737`, which stores the pin without validating it, and the spec line the plan cites ("Pins remain opaque and byte-exact after URI resolution"). The new tests freeze existing behavior rather than widening it.
+- **Hash-only observation records** (no request or response bodies) are the stated rule of the most recent cohort — `transactional-collection-minimum-installed.test.ts:352`, "Never log raw credentials, exactRequest headers or authored request bodies." Full configuration provenance is still carried: `binding.served` holds the payload, contracts, policy, authentication and fixture digests plus the source commit (`packages/conformance/test-support/profile-contract-plan.ts:148-160`), and `installedTransactionBinding` independently deep-equals the 12-route server target inventory and the `127.0.0.1` dial binding on every launch.
+- **`workspaceDirty` at module scope** matches snapshot and collection-minimum (the convention is split across cohorts, not violated).
+- **Credentials and configuration** are clean: per-run `randomBytes(32)` token, supplied only through `resolveCredentials`, never logged; `create: false` on relaunch exercises genuine reopen; `close()` awaits actual process exit and throws on a nonzero code or signal, so the recorded `exitCode` is real.
+- **No public profile readiness claim** is made: `claimEligible: false` asserted at launch (`:135`) and recorded (`:430`), file header and doc both disclaim discovery and qualification.
+- **Port reuse in `fixture().reopen()`** is a pre-existing pattern, not introduced here.

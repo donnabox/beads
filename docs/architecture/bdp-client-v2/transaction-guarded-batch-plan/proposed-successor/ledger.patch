@@ -1,0 +1,134 @@
+--- original/ledger.json
++++ proposed-successor/ledger.json
+@@ -1,11 +1,12 @@
+ {
+-  "status": "proposed plan only; no authoring or execution release",
++  "status": "proposed successor; incomplete original external review preserved; full standalone supplemental council/root acceptance pending; authoring/execution closed",
+   "planningHead": "98c600767e8e91a79e109cb741beb91e23b9bebe",
+   "planningTree": "fde859381752d15c8caabcbc946d3c2e384b9cf6",
+   "pendingPredecessor": {
+     "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-same-key-overlap-draft/source-binding.json",
+     "sha256": "ad840a73fe10f830e58959dcc7642b35ec91f0a2cea4db4f4fb9912f940df0d0",
+-    "state": "dirty unmerged/unexecuted author draft on98c600; not accepted runtime evidence"
++    "state": "Historical original planning capture: dirty, unmerged and unexecuted author draft on98c600; not guarded-batch runtime evidence",
++    "currentRootObservation": "Clean candidate18f5428/PR134 has locally validated6+2 responses; still unmerged, council and CI pending. Actual merged-parent reanchor remains required; no credit to this proposed slice."
+   },
+   "ownedPaths": [
+     "apps/bdptest/src/transactional-guarded-batch-installed.test.ts",
+@@ -222,7 +223,7 @@
+     ]
+   },
+   "control": {
+-    "onlyInputChange": "omit expectedRevision from operation1 of BOTH contender bodies; seed, keys, marker ids, titles and all other fields unchanged",
++    "onlyInputChange": "omit expectedRevision from the updateBead at zero-based operationIndex1 of BOTH contender bodies; all other values unchanged",
+     "whyBoth": "Omitting only one guard can still yield one failure if that unguarded contender executes first; omitting both makes the counterfactual order-independent.",
+     "prefixRequests": [
+       1,
+@@ -248,7 +249,13 @@
+     "namedFailure": "guarded-batch:one-retained-revision-failure",
+     "assertion": "actual failed contender count must equal1; observed0 after the control preconditions",
+     "expectedFailureCount": 1,
+-    "notAccepted": "generic failure, pending/failed control receipt, schema/transport/cleanup/report failure, false dispatch observation; no fallback follow-ups"
++    "notAccepted": "generic failure, pending/failed control receipt, schema/transport/cleanup/report failure, false dispatch observation; no fallback follow-ups",
++    "attribution": "prerequisite two-successful-effects evidence discriminates guard omission; named failed-count assertion is deterministic adjudication, not a production mutant detector",
++    "noOpExclusion": [
++      "guarded-seed",
++      "winner-a",
++      "winner-b"
++    ]
+   },
+   "workload": {
+     "positiveHttp": 7,
+@@ -278,7 +285,9 @@
+     "bootstrapRequests": 0,
+     "retry": 0,
+     "reopen": 0,
+-    "continuationFetch": 0
++    "continuationFetch": 0,
++    "retryMeaning": "automatic retries only",
++    "retainedReplay": 1
+   },
+   "limits": {
+     "workMs": 45000,
+@@ -297,7 +306,9 @@
+     "receiptUrlBytesAndCharacters": 8192,
+     "positiveRetainedBodySumCeiling": 229376,
+     "controlRetainedBodySumCeiling": 98304,
+-    "combinedRetainedBodySumCeiling": 327680
++    "combinedRetainedBodySumCeiling": 327680,
++    "workBudgetPolicy": "45000ms is sole binding aggregate work deadline; ready/exchange caps cannot all be spent independently",
++    "cleanupBudgetPolicy": "hard10000ms local race retained; inherited close may enter another drain after failure; late promises handled; deadline race is nonpassing; no increase"
+   },
+   "failedProblem": {
+     "type": "https://github.com/gastownhall/bdp/problems/conflict",
+@@ -307,5 +318,69 @@
+     "operationIndex": 1
+   },
+   "executionAuthorized": false,
+-  "profileQualification": false
++  "profileQualification": false,
++  "planningProvenance": {
++    "planningHead": "historical98c600 only",
++    "executionSourceCommit": "actual eventual clean candidate verified by supervisor against source/build/archive/installed payload; never hard-code planningHead",
++    "pendingPredecessor": "same-key draft unmerged at original planning capture; actual merge/dependency reanchor required"
++  },
++  "constructionAssertions": [
++    "capture revision from independently validated seed Resource",
++    "construct each closed body once via JSON.stringify with same captured revision",
++    "check both expectedRevision values exactly seed revision; encoded r<=128 and actual body length343+r",
++    "retain exact original body/key/hash per contender",
++    "replay selected loser exact original string/bytes/key/hash; no body reconstruction",
++    "control differs only by removing both operationIndex1.expectedRevision fields"
++  ],
++  "headerOracle": "named presence/value checks only; never exhaustive header-set equality",
++  "reports": {
++    "environment": "BDP_TRANSACTIONAL_GUARDED_BATCH_OUTPUT",
++    "cohortPaths": {
++      "positive": "<external-run>/positive-observation.json",
++      "unguarded-contenders": "<external-run>/unguarded-observation.json"
++    },
++    "vitestPaths": {
++      "positive": "<external-run>/positive-vitest.json",
++      "unguarded-contenders": "<external-run>/unguarded-vitest.json"
++    },
++    "exclusive": true,
++    "absolute": true,
++    "outsideWorktreeAndStore": true,
++    "requiredSafeFields": [
++      "mode",
++      "namedAssertion",
++      "failedPhase",
++      "failureCount",
++      "primaryFailureCount",
++      "cleanupFailureCount",
++      "reportWriteFailed",
++      "prerequisites",
++      "completedContenderCount",
++      "failedContenderCount",
++      "attempts",
++      "completedResponses",
++      "validatedReceiptFacts",
++      "performedEqualities",
++      "sourceEntryAndServedIdentityDigests",
++      "boundedMilestones",
++      "cleanupFacts"
++    ],
++    "negativeRequired": {
++      "namedAssertion": "guarded-batch:one-retained-revision-failure",
++      "completedContenderCount": 2,
++      "failedContenderCount": 0,
++      "attempts": 3,
++      "completedResponses": 3,
++      "failureCount": 1,
++      "cleanupFailureCount": 0,
++      "reportWriteFailed": false,
++      "prerequisites": "all independent successful fixture/control facts true before named throw"
++    },
++    "actualOutputPaths": "resolve and pin at measured execution gate; no file exists or run occurred now"
++  },
++  "fixtureBinding": {
++    "path": "packages/conformance/test-support/transactional/fixture-v1.json",
++    "shape": "{bytes:Uint8Array}",
++    "meaning": "identity metadata only; never execute extra scenarios or imply qualification"
++  }
+ }

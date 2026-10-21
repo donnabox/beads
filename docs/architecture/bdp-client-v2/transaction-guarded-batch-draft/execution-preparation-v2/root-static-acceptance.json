@@ -1,0 +1,48 @@
+{
+  "accepted": true,
+  "head": "9e5f040edab88be364f683098ead72f595f0ab55",
+  "workspaceDirty": true,
+  "stages": [
+    {
+      "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-guarded-batch-draft/execution-preparation-v2/run/setup.exit.json",
+      "sha256": "04718d672b8f37dd059541fa747632cfeb75ed889f4d49d201acdee1fe2bc13f"
+    },
+    {
+      "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-guarded-batch-draft/execution-preparation-v2/run/typecheck.exit.json",
+      "sha256": "6545a084a997e009cbe87d6ad69899eae7e4fa487e793004b6301b7eab66e46c"
+    },
+    {
+      "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-guarded-batch-draft/execution-preparation-v2/run/build.exit.json",
+      "sha256": "8fcd952d5bd7b209e7915af8ac45614bb9ae9dc72c6920790378eddbe9e333f6"
+    },
+    {
+      "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-guarded-batch-draft/execution-preparation-v2/run/format-check.exit.json",
+      "sha256": "4e181ec638f2c587ec8162d2a79328612933885a915a8bfb1640e5c42d4bb8d2"
+    },
+    {
+      "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-guarded-batch-draft/execution-preparation-v2/run/lint.exit.json",
+      "sha256": "b09e1c8619e6f480b982c1ad32f594f0afcbec97b2e1c155c2ecd8b58864b565"
+    },
+    {
+      "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-guarded-batch-draft/execution-preparation-v2/run/boundaries.exit.json",
+      "sha256": "b726fa0e099780e6a55d53008654f8f39add467618a0a4ebdc733eb404ad44d6"
+    },
+    {
+      "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-guarded-batch-draft/execution-preparation-v2/run/read-seal.exit.json",
+      "sha256": "6080745ba3376f2e7436573cec52154afa4ea27eaf71c3db9028a5c5781d2218"
+    },
+    {
+      "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-guarded-batch-draft/execution-preparation-v2/run/build-inventory.exit.json",
+      "sha256": "d3e9e4dfb77ce859bf57e2cec6cb494d33f4a970209a099e92ce7c41d6b2dca7"
+    }
+  ],
+  "sourceBinding": {
+    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-guarded-batch-draft/review-repair/source-binding.json",
+    "sha256": "77c27b159f545a82738c8acf50a3e0a741f41d0168d8da435c95900443b9217b"
+  },
+  "buildInventory": {
+    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-guarded-batch-draft/execution-preparation-v2/run/build-output-inventory.json",
+    "sha256": "91a24714ede735900ccdccf786595e8c0cfa7ac75716c6f431f84addc519b6d1"
+  },
+  "note": "Actual successor static executions on dirty9e5. Formatting/lint warnings retained in full logs. No installed successor result yet."
+}

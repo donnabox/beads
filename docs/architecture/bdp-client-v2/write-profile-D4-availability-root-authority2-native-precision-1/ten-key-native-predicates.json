@@ -1,0 +1,88 @@
+{
+  "exactKeyCount": 10,
+  "ownerKeysetLocation": "availability_owner.py107-108",
+  "keys": [
+    {
+      "key": "session",
+      "ownerSource": "availability_owner.py:109",
+      "candidateValue": "2026-10-18T02:16:24Z-549f",
+      "result": "STATICALLY_SATISFIED",
+      "meaning": "Exact static authority only, never measured clock availability"
+    },
+    {
+      "key": "scope",
+      "ownerSource": "availability_owner.py:109",
+      "candidateValue": "D4 zero-product clock/bootstrap availability only",
+      "result": "STATICALLY_SATISFIED",
+      "meaning": "Exact static authority only, never measured clock availability"
+    },
+    {
+      "key": "availabilityOnly",
+      "ownerSource": "availability_owner.py:109",
+      "candidateValue": true,
+      "result": "STATICALLY_SATISFIED",
+      "meaning": "Exact static authority only, never measured clock availability"
+    },
+    {
+      "key": "syntheticReleased",
+      "ownerSource": "availability_owner.py:109",
+      "candidateValue": false,
+      "result": "STATICALLY_SATISFIED",
+      "meaning": "Exact static authority only, never measured clock availability"
+    },
+    {
+      "key": "productReleased",
+      "ownerSource": "availability_owner.py:109",
+      "candidateValue": false,
+      "result": "STATICALLY_SATISFIED",
+      "meaning": "Exact static authority only, never measured clock availability"
+    },
+    {
+      "key": "approvedInvocations",
+      "ownerSource": "availability_owner.py:109",
+      "candidateValue": [
+        "AVAIL--availability"
+      ],
+      "result": "STATICALLY_SATISFIED",
+      "meaning": "Exact static authority only, never measured clock availability"
+    },
+    {
+      "key": "noRetry",
+      "ownerSource": "availability_owner.py:109",
+      "candidateValue": true,
+      "result": "STATICALLY_SATISFIED",
+      "meaning": "Exact static authority only, never measured clock availability"
+    },
+    {
+      "key": "harnessImplementationSha256",
+      "ownerSource": "availability_owner.py:110",
+      "candidateValue": "7e5ec687e6c39447efc43d5ad905a20602510d9227db342b1fad01ba873ae5e8",
+      "result": "STATICALLY_SATISFIED",
+      "meaning": "Exact static authority only, never measured clock availability"
+    },
+    {
+      "key": "nativeHarnessAcceptance",
+      "ownerSource": "availability_owner.py:111",
+      "candidateValue": {
+        "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-D4-synthetic-harness5-native-mechanics-1/closure.json",
+        "sha256": "09f823deb3284a47cbc56ea00fb19f169f10d4ab6b6519699a4b560b4e264f76"
+      },
+      "result": "STATICALLY_SATISFIED",
+      "meaning": "Exact static authority only, never measured clock availability"
+    },
+    {
+      "key": "durableRootRelease",
+      "ownerSource": "availability_owner.py:112",
+      "candidateValue": {
+        "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-D4-harness5-root-static-acceptance-1/acceptance.json",
+        "sha256": "155ccfa06d96906ba395364936de7ad3dd8245f5116b396a51697bfb6c823aea"
+      },
+      "result": "STATICALLY_SATISFIED",
+      "meaning": "Exact static authority only, never measured clock availability"
+    }
+  ],
+  "nativeDirectClosure": "09f823deb3284a47cbc56ea00fb19f169f10d4ab6b6519699a4b560b4e264f76",
+  "rootDirectAcceptance": "155ccfa06d96906ba395364936de7ad3dd8245f5116b396a51697bfb6c823aea",
+  "harnessImplementationSha256": "7e5ec687e6c39447efc43d5ad905a20602510d9227db342b1fad01ba873ae5e8",
+  "noCircularClockProof": true
+}

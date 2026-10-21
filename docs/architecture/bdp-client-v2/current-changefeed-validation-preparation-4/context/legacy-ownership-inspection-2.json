@@ -1,0 +1,38 @@
+{
+  "checkedAt": "2026-10-18T03:32:10.998454+00:00",
+  "supersedes": "current-changefeed-validation-root-inspection-1 selected-report attribution only; preserve mistaken original",
+  "cause": "Earlier root checked title/report existence without attributing the report to its nearest owning top-level callback. Independent native closure caught the mistake.",
+  "sourceSha256": "e3717ff2dfcc9af743e5c963de7f1c75778f827768765e9eb3aebe1545efd4d0",
+  "sourceHead": "a56254d682cf4623cab22a552e3d2f695f691795",
+  "callbackScopedReports": [
+    {
+      "observation": "private-source-changefeed-parameter-context",
+      "owningCallback": "preserves current context on owner-observed changefeed parameter refusals over HTTP",
+      "callbackLine": 755,
+      "observationLine": 1009,
+      "selected": false
+    },
+    {
+      "observation": "changefeed-opaque-boundaries",
+      "owningCallback": "keeps direct and excluded changefeed minimum paths strict",
+      "callbackLine": 1483,
+      "observationLine": 1584,
+      "selected": true
+    },
+    {
+      "observation": "changefeed-opaque-http",
+      "owningCallback": "serves finite start-now opaque minima before HTTP shortcuts",
+      "callbackLine": 1598,
+      "observationLine": 1880,
+      "selected": true
+    }
+  ],
+  "selectedHistoricalReports": 2,
+  "unselectedHistoricalReports": 1,
+  "newSelectedReports": 9,
+  "selectedCallbacks": 15,
+  "policy": "Preserve frozen selection/workload and two selected historical report schemas. Third report remains unselected ordinary full-CI coverage; do not add callback or require third selected output. Reconfirm final authored source/execution.",
+  "sourceDerivedOnly": true,
+  "sourceAuthoringReleased": false,
+  "validationExecutionReleased": false
+}

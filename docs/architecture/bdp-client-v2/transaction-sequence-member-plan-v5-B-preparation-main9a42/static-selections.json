@@ -1,0 +1,46 @@
+[
+  {
+    "file": "packages/conformance/src/transactional-cumulative.test.ts",
+    "sha256": "22a568820ab2abc187d37c27658fdcf6e5ad39e74e2172374e3658c180f7668e",
+    "cases": [
+      {
+        "title": "binds the canonical cumulative TX selection and exact source digests without qualification",
+        "line": 82
+      },
+      {
+        "title": "rejects noncanonical selections, History, wrong factories, retired and misprofiled rows",
+        "line": 126
+      },
+      {
+        "title": "copies source bytes before binding and exposes all missing obligations without executing them",
+        "line": 183
+      },
+      {
+        "title": "pins the inherited command-minimum manifest facts, read-header absence and all thirteen prior objects",
+        "line": 2724
+      },
+      {
+        "title": "preserves every original TX scenario and coverage object while adding one bounded partial cross-carrier row",
+        "line": 836
+      },
+      {
+        "title": "pins the one-page matched-plus-updated witness without advertised-limit or other-outcome credit",
+        "line": 1007
+      }
+    ]
+  },
+  {
+    "file": "apps/bdptest/src/transactional-matrix.test.ts",
+    "sha256": "6c0c240afef61831d0573775ea35b0c04b116a55da1d3fb40127b9ede68e939c",
+    "cases": [
+      {
+        "title": "pins the matching no-op installed route digest and fifteen-action ledger",
+        "line": 1321
+      },
+      {
+        "title": "pins deletion-safety derivative carriers, complete positives, and measured source bounds",
+        "line": 1607
+      }
+    ]
+  }
+]

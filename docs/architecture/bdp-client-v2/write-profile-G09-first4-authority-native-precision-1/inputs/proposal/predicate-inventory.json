@@ -1,0 +1,320 @@
+{
+  "first4Applicability": {
+    "approvedPrefixAndPriorStageComplete": "EXACT four names/prefix; actual prior outputs all UNATTEMPTED, stage2-4 future require all earlier complete on same source",
+    "archiveAcceptance": "Condition index>=21 false; remainsUNRESOLVED",
+    "buildAcceptance": "Condition index>8 false; remainsUNRESOLVED",
+    "commonReleaseSourceIndexReferencesBaseToolsGuard": "REQUIRED; only DATA field/hash/source checks performed here, future Git/guard/helper checks unexecuted",
+    "consumerLock": "Onlyverify-installed-consumer index23; not selected",
+    "consumerProof": "No selected first4 requiresConsumerProof; remainsUNRESOLVED",
+    "runtimeDisposition": "REQUIRED for each of first4 because none is typecheck/format-check/lint",
+    "workspaceTools": "Condition order index>3 false for first4; remainsUNRESOLVED"
+  },
+  "lines": [
+    {
+      "line": 27,
+      "requireCallOccurrences": 1,
+      "text": " require(type(record) is dict and set(record)=={'path','sha256'},'Unknown/missing document pin key')"
+    },
+    {
+      "line": 28,
+      "requireCallOccurrences": 1,
+      "text": " p=Path(record['path']);require(p.is_absolute() and p.is_file() and not p.is_symlink() and sha(p.read_bytes())==record['sha256'],'Document absent/changed '+str(p));return read(p)"
+    },
+    {
+      "line": 30,
+      "requireCallOccurrences": 1,
+      "text": " require(b['worktree']==str(W) and b['head']==INTEGRATION and git('branch','--show-current').decode().strip()==b['branch'],'Wrong source binding')"
+    },
+    {
+      "line": 31,
+      "requireCallOccurrences": 1,
+      "text": " require(git('rev-parse','HEAD').decode().strip()==b['head'] and git('rev-parse','HEAD^{tree}').decode().strip()==b['tree'],'Git identity changed')"
+    },
+    {
+      "line": 33,
+      "requireCallOccurrences": 1,
+      "text": " require(actual==b['trackedSourceFiles'],'Source files changed')"
+    },
+    {
+      "line": 34,
+      "requireCallOccurrences": 1,
+      "text": " require(sorted(git('diff','--name-only','HEAD').decode().splitlines())==b['dirtyPaths']==sorted(b['ownedFiles']) and not git('ls-files','--others','--exclude-standard').strip(),'Source scope differs')"
+    },
+    {
+      "line": 35,
+      "requireCallOccurrences": 1,
+      "text": " require(all(actual[p]==v['afterSha256'] and sha(git('show','HEAD:'+p))==v['beforeSha256'] for p,v in b['ownedFiles'].items()),'Owned source binding differs')"
+    },
+    {
+      "line": 36,
+      "requireCallOccurrences": 1,
+      "text": " require(not git('diff','--cached','--binary').strip(),'Staged source is forbidden')"
+    },
+    {
+      "line": 37,
+      "requireCallOccurrences": 1,
+      "text": " require(len(actual)==679 and len(b['ownedFiles'])==10,'Exact tracked/owned counts')"
+    },
+    {
+      "line": 38,
+      "requireCallOccurrences": 1,
+      "text": " require(sha(git('diff','--binary','HEAD'))==b['binaryDiffSha256'],'Source patch changed')"
+    },
+    {
+      "line": 39,
+      "requireCallOccurrences": 1,
+      "text": " require(all(sha(git('show','HEAD:'+f))==v for f,v in actual.items() if f not in b['ownedFiles']),'Other tracked source differs from HEAD')"
+    },
+    {
+      "line": 43,
+      "requireCallOccurrences": 1,
+      "text": "  p=Path(name);require(str(p.resolve(strict=True))==binding['realpath'] and sha(p.read_bytes())==binding['sha256'],'Tool changed '+name)"
+    },
+    {
+      "line": 49,
+      "requireCallOccurrences": 1,
+      "text": "   dist=package/'dist';require(dist.is_dir(),'Missing dist '+str(dist))"
+    },
+    {
+      "line": 51,
+      "requireCallOccurrences": 1,
+      "text": "    require(not p.is_symlink(),'Linked build output')"
+    },
+    {
+      "line": 54,
+      "requireCallOccurrences": 1,
+      "text": "  require(not p.is_symlink(),'Linked artifact')"
+    },
+    {
+      "line": 56,
+      "requireCallOccurrences": 1,
+      "text": " require(result,'Empty build inventory');return result"
+    },
+    {
+      "line": 63,
+      "requireCallOccurrences": 1,
+      "text": "    q=p.resolve(strict=True);require(q.is_relative_to(C.resolve()),'Consumer link escapes');links[r]={'link':os.readlink(p),'target':q.relative_to(C.resolve()).as_posix()}"
+    },
+    {
+      "line": 68,
+      "requireCallOccurrences": 1,
+      "text": " require(v['accepted'] and v['exit'] in read(P/'commands.json')['commands'][name].get('acceptedRawExitCodes',[0]) and not v['forcedCleanup'] and not v['errors'] and not v['remainingProcesses'] and not v['runtimeDirectoriesStillPresent'],'Prior stage failed '+name)"
+    },
+    {
+      "line": 69,
+      "requireCallOccurrences": 1,
+      "text": " require(v['sourceIdentity']==g['_sourceIdentity'] and v['sourceUnchanged'],'Prior source differs '+name)"
+    },
+    {
+      "line": 70,
+      "requireCallOccurrences": 1,
+      "text": " require(sha((E/(name+'.log')).read_bytes())==v['logSha256'],'Prior log changed '+name)"
+    },
+    {
+      "line": 74,
+      "requireCallOccurrences": 1,
+      "text": " require(b['head']==g['finalHead'] and b['tree']==g['finalTree'] and b['sourceIdentity']==g['_sourceIdentity'],'Build source differs')"
+    },
+    {
+      "line": 75,
+      "requireCallOccurrences": 1,
+      "text": " require(b['artifacts']==inventory(),'Build outputs changed')"
+    },
+    {
+      "line": 77,
+      "requireCallOccurrences": 1,
+      "text": "  item=b[key];require(sha(Path(item['path']).read_bytes())==item['sha256'],'Build record changed')"
+    },
+    {
+      "line": 80,
+      "requireCallOccurrences": 1,
+      "text": " require(expected==consumer_inventory(),'Consumer changed')"
+    },
+    {
+      "line": 81,
+      "requireCallOccurrences": 1,
+      "text": " require(proof['sourceCommit']==g['finalHead'] and proof['sourceTree']==g['finalTree'] and proof['sourceIdentity']==g['_sourceIdentity'] and proof['sourceBindingSha256']==g['sourceBinding']['sha256'],'Consumer source differs')"
+    },
+    {
+      "line": 82,
+      "requireCallOccurrences": 1,
+      "text": " require(sha((E/'consumer/pnpm-lock.yaml').read_bytes())==g['consumerLockSha256']==proof['consumerLockSha256'],'Consumer lock changed')"
+    },
+    {
+      "line": 83,
+      "requireCallOccurrences": 1,
+      "text": " tar=read(E/'tar-source-provenance.json');require(sha((E/'tar-source-provenance.json').read_bytes())==proof['tarProvenanceSha256'],'Tar provenance changed')"
+    },
+    {
+      "line": 84,
+      "requireCallOccurrences": 1,
+      "text": " for name,data in tar['packages'].items():require(sha(Path(data['archive']).read_bytes())==proof['packages'][name]['archiveSha256'],'Archive changed')"
+    },
+    {
+      "line": 85,
+      "requireCallOccurrences": 1,
+      "text": " entry=Path(proof['entryRealpath']);require(entry.resolve(strict=True).is_relative_to((E/'consumer').resolve()) and sha(entry.read_bytes())==proof['entrySha256'],'External entry changed')"
+    },
+    {
+      "line": 88,
+      "requireCallOccurrences": 1,
+      "text": " require(__debug__,'Assertions required')"
+    },
+    {
+      "line": 90,
+      "requireCallOccurrences": 1,
+      "text": " require(set(g)=={'rootExactSourceAccepted', 'session', 'rootArchiveAcceptance', 'knownOriginalActualCodeTerminal', 'consumerInventory', 'consumerLockSha256', 'workspaceTools', 'implementationIndexSha256', 'approvedStages', 'sourceBinding', 'actualClaudeReviewDisposed', 'installedProvenance', 'actualCodeDisposition', 'staticValidationAuthorized', 'released', 'baseTools', 'rootConsumerProofAcceptance', 'mode', 'bootstrapReuse', 'rootConsumerLockAcceptance', 'nativeCodeDisposition', 'rootPlanAccepted', 'rootDisposition', 'rootBuildAcceptance', 'knownCorrectedSourceFreeze', 'nativeCodeReviewDisposed'},'Unknown/missing gate key')"
+    },
+    {
+      "line": 91,
+      "requireCallOccurrences": 1,
+      "text": " require(all(type(g[k]) is bool for k in ['released','rootPlanAccepted','rootExactSourceAccepted','actualClaudeReviewDisposed','nativeCodeReviewDisposed','staticValidationAuthorized']),'Gate boolean type')"
+    },
+    {
+      "line": 92,
+      "requireCallOccurrences": 1,
+      "text": " require(read(P/'commands.json').get('configurationFinalized') is True,'Authored current changefeed source/selection not finalized')"
+    },
+    {
+      "line": 93,
+      "requireCallOccurrences": 1,
+      "text": " require(read(P/'audit-expectations.json').get('finalized') is True,'Actual current changefeed observation contracts not finalized')"
+    },
+    {
+      "line": 94,
+      "requireCallOccurrences": 1,
+      "text": " require(g['released'] is True and g['rootPlanAccepted'] is True and g['rootExactSourceAccepted'] is True and g['session']=='2026-10-18T02:16:24Z-549f','Root release absent')"
+    },
+    {
+      "line": 95,
+      "requireCallOccurrences": 1,
+      "text": " require(g['mode']==MODE,'Wrong phase')"
+    },
+    {
+      "line": 98,
+      "requireCallOccurrences": 1,
+      "text": "  require(os.environ.get('TX_DISCOVERY_VALIDATION_STAGE')==name and record.is_file() and sha(record.read_bytes())==os.environ.get('TX_DISCOVERY_VALIDATION_ATTEMPT'),'Helper requires supervised attempt')"
+    },
+    {
+      "line": 99,
+      "requireCallOccurrences": 1,
+      "text": "  require(read(record)['rootGateSha256']==sha((P/('bootstrap-gate.json' if MODE=='bootstrap' else 'execution-gate.json')).read_bytes()),'Gate changed during attempt')"
+    },
+    {
+      "line": 100,
+      "requireCallOccurrences": 1,
+      "text": " idx=P/'implementation-hashes.json';require(sha(idx.read_bytes())==g['implementationIndexSha256'],'Implementation index changed')"
+    },
+    {
+      "line": 101,
+      "requireCallOccurrences": 1,
+      "text": " for f,h in read(idx)['files'].items():require(sha((P/f).read_bytes())==h,'Implementation changed '+f)"
+    },
+    {
+      "line": 102,
+      "requireCallOccurrences": 1,
+      "text": " for f,h in read(P/'reference-pins.json').items():require(sha(Path(f).read_bytes())==h,'Reference changed '+f)"
+    },
+    {
+      "line": 104,
+      "requireCallOccurrences": 1,
+      "text": " disposition=document(g['rootDisposition']);require(disposition['accepted'] is True and disposition['sourceBindingSha256']==g['sourceBinding']['sha256'],'Root disposition differs')"
+    },
+    {
+      "line": 106,
+      "requireCallOccurrences": 1,
+      "text": " require(type(approved) is list and all(type(n) is str for n in approved),'Approved stage list type')"
+    },
+    {
+      "line": 107,
+      "requireCallOccurrences": 1,
+      "text": " require(approved==order[:len(approved)] and name in approved,'Stage not released')"
+    },
+    {
+      "line": 108,
+      "requireCallOccurrences": 1,
+      "text": " spec=cfg['commands'][name];require(spec['outerSeconds']==120 and spec.get('termAtSeconds')==115 and spec['automaticRetries']==0,'Limits changed')"
+    },
+    {
+      "line": 109,
+      "requireCallOccurrences": 1,
+      "text": " require(not any('UNRESOLVED' in arg or ('$'+'{') in arg or 'PENDING_SUCCESSOR' in arg for arg in spec['argv']),'Unbound command')"
+    },
+    {
+      "line": 110,
+      "requireCallOccurrences": 1,
+      "text": " if 'selectedFullNames' in spec:require(isinstance(spec['selectedFullNames'],list) and len(spec['selectedFullNames'])>0 and isinstance(spec['prospectiveWorkload'],dict),'Unbound callback selection/workload')"
+    },
+    {
+      "line": 112,
+      "requireCallOccurrences": 1,
+      "text": " require(base['sourceLockSha256']==g['sourceLockSha256'],'Base lock differs')"
+    },
+    {
+      "line": 115,
+      "requireCallOccurrences": 1,
+      "text": "  require(workspace['sourceIdentity']==g['_sourceIdentity'] and workspace['sourceLockSha256']==g['sourceLockSha256'],'Fresh workspace tool binding differs')"
+    },
+    {
+      "line": 116,
+      "requireCallOccurrences": 1,
+      "text": " require(g.get('bootstrapReuse')==[] and disposition.get('freshPipelineRequired') is True,'Only fresh pipeline is allowed')"
+    },
+    {
+      "line": 117,
+      "requireCallOccurrences": 1,
+      "text": " require(g['actualClaudeReviewDisposed'] is True and g['nativeCodeReviewDisposed'] is True,'Both CODE review dispositions remain required before validation')"
+    },
+    {
+      "line": 119,
+      "requireCallOccurrences": 1,
+      "text": "  d=document(g[label]);require(d.get('accepted') is True and d.get('sourceBindingSha256')==g['sourceBinding']['sha256'],'CODE disposition differs '+label)"
+    },
+    {
+      "line": 120,
+      "requireCallOccurrences": 1,
+      "text": " require(disposition['staticValidationAuthorized'] is True if name in ['typecheck','format-check','lint'] else disposition['runtimeValidationAuthorized'] is True,'Root disposition does not authorize this stage')"
+    },
+    {
+      "line": 124,
+      "requireCallOccurrences": 1,
+      "text": "  require(accepted.get('accepted') is True and accepted.get('sourceBindingSha256')==g['sourceBinding']['sha256'] and accepted.get('buildMapSha256')==sha((E/'build-artifacts.json').read_bytes()),'Root actual build acceptance missing')"
+    },
+    {
+      "line": 127,
+      "requireCallOccurrences": 1,
+      "text": "  require(accepted.get('accepted') is True and accepted.get('sourceBindingSha256')==g['sourceBinding']['sha256'] and accepted.get('tarProvenanceSha256')==sha((E/'tar-source-provenance.json').read_bytes()),'Root actual archive acceptance missing')"
+    },
+    {
+      "line": 130,
+      "requireCallOccurrences": 1,
+      "text": "  require(lock.get('accepted') is True and lock.get('sourceBindingSha256')==g['sourceBinding']['sha256'],'Root actual lock acceptance missing')"
+    },
+    {
+      "line": 131,
+      "requireCallOccurrences": 1,
+      "text": "  require(isinstance(g.get('consumerLockSha256'),str) and sha((E/'consumer/pnpm-lock.yaml').read_bytes())==g['consumerLockSha256']==lock['consumerLockSha256'],'Consumer lock not root-pinned')"
+    },
+    {
+      "line": 132,
+      "requireCallOccurrences": 1,
+      "text": "  require(lock.get('consumerManifestSha256')==sha((E/'consumer/package.json').read_bytes()) and lock.get('consumerSettingsSha256')==sha((E/'consumer/pnpm-workspace.yaml').read_bytes()),'Root actual consumer manifest/settings acceptance missing')"
+    },
+    {
+      "line": 135,
+      "requireCallOccurrences": 1,
+      "text": "  accepted=document(g['rootConsumerProofAcceptance']);require(accepted.get('accepted') is True and accepted.get('sourceBindingSha256')==g['sourceBinding']['sha256'] and accepted.get('installedProvenance')==g['installedProvenance'] and accepted.get('consumerInventory')==g['consumerInventory'],'Root actual proof acceptance missing')"
+    }
+  ],
+  "method": "Read full source as DATA and inventory literal require expressions, no AST/import/evaluation",
+  "noConditionalBranchWaivedOrRelaxed": true,
+  "notExecutedPredicates": [
+    "all Git/branch/HEAD/tree/status/staged/untracked/base-before/diff checks",
+    "guard subprocess",
+    "future sequentialcomplete/log/source checks",
+    "workspace install and actual tools/runtime versions",
+    "build/archive/consumer/proof branches"
+  ],
+  "requireCallsExcludingDefinition": 59,
+  "sourceGateSha256": "c3e631f818f63a17d1b5518b6122d761f6d1fecf5dfb3cb0b1b043d568204168"
+}

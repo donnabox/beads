@@ -1,0 +1,509 @@
+{
+  "kind": "independent-actual-code-review-completion-audit",
+  "at": "2026-10-17T17:26:51.644902+00:00",
+  "approvalInferred": false,
+  "disposition": "Completion/provenance only. Findings are attributed to Claude; root separately adjudicates them.",
+  "head": "bbfa5b2cac0e381b497384e3a8e29cd937ea2738",
+  "tree": "da812ea5a1da8f8fb5be9fd2856d312c316236a3",
+  "patchSha256": "484ba4710832edbc91615bd77e1ad8ce848acda4e3d37d833267c2173fe44717",
+  "ownedFiles": [
+    "packages/server/src/transaction-http.ts",
+    "packages/server/src/transaction-service.ts",
+    "packages/server/src/transaction-store.ts",
+    "packages/server/src/transaction-event-sse.test.ts",
+    "apps/bdptest/src/transactional-event-sse-installed.test.ts",
+    "docs/design/transaction-implementation-progress.md",
+    "packages/server/src/transaction-events.test.ts"
+  ],
+  "exit": {
+    "classification": "review_complete",
+    "reviewComplete": true,
+    "approvalInferred": false,
+    "exitCode": 0,
+    "timeout": false,
+    "elapsedSeconds": 1421.0664698341861,
+    "sourceInputsUnchanged": true,
+    "packetUnchanged": true,
+    "sampledPids": [
+      54894
+    ],
+    "remainingProcesses": [],
+    "cleanupRequired": false,
+    "wrapperErrorType": null,
+    "streamRecords": 5933,
+    "streamBytes": 3080244,
+    "parseErrors": 0,
+    "terminalResultCount": 1,
+    "lastEventElapsed": 1420.4154880000278,
+    "streamSha256": "8fd9ee1d8352da2f1e5158b8bf646a7fa3b94f115b8aa75faf92d939f0eda0cd",
+    "stderrSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  "process": {
+    "pid": 54894,
+    "pgid": 54894,
+    "started": "2026-10-17T16:58:45.622051+00:00",
+    "argv": [
+      "/opt/homebrew/bin/claude",
+      "--safe-mode",
+      "-p",
+      "--tools",
+      "Read,Glob,Grep",
+      "--allowedTools",
+      "Read,Glob,Grep",
+      "--disable-slash-commands",
+      "--strict-mcp-config",
+      "--mcp-config",
+      "{\"mcpServers\":{}}",
+      "--no-session-persistence",
+      "--output-format",
+      "stream-json",
+      "--verbose",
+      "--include-partial-messages"
+    ],
+    "timeoutSeconds": 1800,
+    "termAfterSeconds": 1790
+  },
+  "preparedIndexSha256": "12c20bbeb47b46706fc5939d2f58bc50228f46bc4bc01d037e673193ff809eb6",
+  "closedBindingSha256": "ad5818265a98e216044af3cd7137008234ffdfee2cb71356d52403fcaff3ee51",
+  "releasedBindingSha256": "fdd76a4339e3aaeb1cad12379f68888dddb06b4f7254f649c4c4b647efc6c2d7",
+  "onlyBindingDelta": {
+    "rootLaunchReleased": [
+      false,
+      true
+    ]
+  },
+  "verifiedPreparedEntries": 34,
+  "verifiedSourceFiles": 679,
+  "verifiedContexts": 22,
+  "verifiedArtifacts": 9,
+  "beforeAfterExactlyEqual": true,
+  "currentPinsAndExactDirtyScopeVerified": true,
+  "actualSampledPidAndGroupSurvivors": [],
+  "terminal": {
+    "count": 1,
+    "subtype": "success",
+    "is_error": false,
+    "matchesFinalTextBytes": true,
+    "permissionDenials": []
+  },
+  "actualTools": {
+    "counts": {
+      "Read": 52,
+      "Grep": 31,
+      "Glob": 4
+    },
+    "uniqueCalls": 87,
+    "matchingResults": 87,
+    "errorResultCount": 0,
+    "errorToolUseIds": [],
+    "successfulReadOwnedFiles": [
+      "apps/bdptest/src/transactional-event-sse-installed.test.ts",
+      "docs/design/transaction-implementation-progress.md",
+      "packages/server/src/transaction-event-sse.test.ts",
+      "packages/server/src/transaction-events.test.ts",
+      "packages/server/src/transaction-http.ts",
+      "packages/server/src/transaction-service.ts",
+      "packages/server/src/transaction-store.ts"
+    ],
+    "successfulCopiedContextReadPaths": [
+      "/Users/dbox/repos/wt/vickie/bdp-integration-logs/scope-event-sse-opaque-minimum-code-review/context/author-report.md",
+      "/Users/dbox/repos/wt/vickie/bdp-integration-logs/scope-event-sse-opaque-minimum-code-review/context/preservation-checks.json",
+      "/Users/dbox/repos/wt/vickie/bdp-integration-logs/scope-event-sse-opaque-minimum-code-review/context/report-schemas.json"
+    ],
+    "copiedContextWithoutSuccessfulRead": [
+      "/Users/dbox/repos/wt/vickie/bdp-integration-logs/scope-event-sse-opaque-minimum-code-review/context/accepted-plan.md",
+      "/Users/dbox/repos/wt/vickie/bdp-integration-logs/scope-event-sse-opaque-minimum-code-review/context/actual-plan-review.txt",
+      "/Users/dbox/repos/wt/vickie/bdp-integration-logs/scope-event-sse-opaque-minimum-code-review/context/author-index.json",
+      "/Users/dbox/repos/wt/vickie/bdp-integration-logs/scope-event-sse-opaque-minimum-code-review/context/bdp.md",
+      "/Users/dbox/repos/wt/vickie/bdp-integration-logs/scope-event-sse-opaque-minimum-code-review/context/design-actual-plan-review-checkpoint.md",
+      "/Users/dbox/repos/wt/vickie/bdp-integration-logs/scope-event-sse-opaque-minimum-code-review/context/design-current-code-checkpoint.md",
+      "/Users/dbox/repos/wt/vickie/bdp-integration-logs/scope-event-sse-opaque-minimum-code-review/context/design-original-plan-checkpoint.md",
+      "/Users/dbox/repos/wt/vickie/bdp-integration-logs/scope-event-sse-opaque-minimum-code-review/context/draft.patch",
+      "/Users/dbox/repos/wt/vickie/bdp-integration-logs/scope-event-sse-opaque-minimum-code-review/context/native-plan-closure.md",
+      "/Users/dbox/repos/wt/vickie/bdp-integration-logs/scope-event-sse-opaque-minimum-code-review/context/plan-completion-audit.md",
+      "/Users/dbox/repos/wt/vickie/bdp-integration-logs/scope-event-sse-opaque-minimum-code-review/context/plan-findings-audit.md",
+      "/Users/dbox/repos/wt/vickie/bdp-integration-logs/scope-event-sse-opaque-minimum-code-review/context/plan-index.json",
+      "/Users/dbox/repos/wt/vickie/bdp-integration-logs/scope-event-sse-opaque-minimum-code-review/context/required-contract-matrix.md",
+      "/Users/dbox/repos/wt/vickie/bdp-integration-logs/scope-event-sse-opaque-minimum-code-review/context/root-author-release.json",
+      "/Users/dbox/repos/wt/vickie/bdp-integration-logs/scope-event-sse-opaque-minimum-code-review/context/root-findings-acceptance.json",
+      "/Users/dbox/repos/wt/vickie/bdp-integration-logs/scope-event-sse-opaque-minimum-code-review/context/root-plan-dispositions.json",
+      "/Users/dbox/repos/wt/vickie/bdp-integration-logs/scope-event-sse-opaque-minimum-code-review/context/selection.json",
+      "/Users/dbox/repos/wt/vickie/bdp-integration-logs/scope-event-sse-opaque-minimum-code-review/context/source-binding.json",
+      "/Users/dbox/repos/wt/vickie/bdp-integration-logs/scope-event-sse-opaque-minimum-code-review/context/workload.json"
+    ],
+    "fullContextTextsInline": [
+      "draft.patch",
+      "selection.json",
+      "workload.json"
+    ],
+    "successfulReadCalls": [
+      {
+        "path": "/Users/dbox/repos/wt/vickie/vickie-scope-event-sse-opaque-minimum/packages/server/src/transaction-http.ts",
+        "offset": 420,
+        "limit": 230,
+        "toolUseId": "toolu_01Btr37KesvYQu1GLjAV8Non"
+      },
+      {
+        "path": "/Users/dbox/repos/wt/vickie/vickie-scope-event-sse-opaque-minimum/packages/server/src/transaction-service.ts",
+        "offset": 460,
+        "limit": 160,
+        "toolUseId": "toolu_018qMiNhPm84tboCd3RWGsSS"
+      },
+      {
+        "path": "/Users/dbox/repos/wt/vickie/vickie-scope-event-sse-opaque-minimum/packages/server/src/transaction-store.ts",
+        "offset": 1690,
+        "limit": 200,
+        "toolUseId": "toolu_01ADtvq1n9yJRBZCUJYt3owB"
+      },
+      {
+        "path": "/Users/dbox/repos/wt/vickie/vickie-scope-event-sse-opaque-minimum/packages/server/src/transaction-consistency.ts",
+        "offset": null,
+        "limit": null,
+        "toolUseId": "toolu_01RDmtZAEmNQYzhTUu6EBjiS"
+      },
+      {
+        "path": "/Users/dbox/repos/wt/vickie/vickie-scope-event-sse-opaque-minimum/packages/server/src/transaction-event-sse.test.ts",
+        "offset": 1,
+        "limit": 260,
+        "toolUseId": "toolu_01Xoa7ztgCptXtsfbzeEqmqj"
+      },
+      {
+        "path": "/Users/dbox/repos/wt/vickie/vickie-scope-event-sse-opaque-minimum/packages/server/src/transaction-event-sse.test.ts",
+        "offset": 260,
+        "limit": 180,
+        "toolUseId": "toolu_01NFDTCt997YxnfCHneVrpDc"
+      },
+      {
+        "path": "/Users/dbox/repos/wt/vickie/vickie-scope-event-sse-opaque-minimum/packages/server/test-support/raw-sse-recorder.ts",
+        "offset": null,
+        "limit": null,
+        "toolUseId": "toolu_01MLbE3o1X7wBYoBHSw7DvSi"
+      },
+      {
+        "path": "/Users/dbox/repos/wt/vickie/vickie-scope-event-sse-opaque-minimum/packages/server/src/transaction-service.ts",
+        "offset": 1,
+        "limit": 220,
+        "toolUseId": "toolu_01EUe56Cy9YXcS7JmSCUUP4A"
+      },
+      {
+        "path": "/Users/dbox/repos/wt/vickie/vickie-scope-event-sse-opaque-minimum/packages/server/src/transaction-service.ts",
+        "offset": 735,
+        "limit": 90,
+        "toolUseId": "toolu_01HybApX7MpYQRVWP1SPPKpp"
+      },
+      {
+        "path": "/Users/dbox/repos/wt/vickie/vickie-scope-event-sse-opaque-minimum/packages/server/src/transaction-service.ts",
+        "offset": 355,
+        "limit": 30,
+        "toolUseId": "toolu_014wqLbrZsi98bqaWSyhthRx"
+      },
+      {
+        "path": "/Users/dbox/repos/wt/vickie/vickie-scope-event-sse-opaque-minimum/packages/server/src/transaction-http.ts",
+        "offset": 1,
+        "limit": 420,
+        "toolUseId": "toolu_0117N2mRc9Az4b2LChX1CMwD"
+      },
+      {
+        "path": "/Users/dbox/repos/wt/vickie/vickie-scope-event-sse-opaque-minimum/packages/server/src/transaction-http.ts",
+        "offset": 636,
+        "limit": 140,
+        "toolUseId": "toolu_01Hz1EkYe9MGYWnVMCuCBvA8"
+      },
+      {
+        "path": "/Users/dbox/repos/wt/vickie/vickie-scope-event-sse-opaque-minimum/packages/server/src/transaction-store.ts",
+        "offset": 360,
+        "limit": 70,
+        "toolUseId": "toolu_01UmQmVm8tyDyQXkNDS1iHhm"
+      },
+      {
+        "path": "/Users/dbox/repos/wt/vickie/vickie-scope-event-sse-opaque-minimum/packages/server/src/transaction-store.ts",
+        "offset": 655,
+        "limit": 170,
+        "toolUseId": "toolu_01ASXAdCPG74WAaArKPWXBRZ"
+      },
+      {
+        "path": "/Users/dbox/repos/wt/vickie/vickie-scope-event-sse-opaque-minimum/packages/server/src/transaction-store.ts",
+        "offset": 2340,
+        "limit": 60,
+        "toolUseId": "toolu_013LG1yShnYxQp89f3FrEr5D"
+      },
+      {
+        "path": "/Users/dbox/repos/wt/vickie/vickie-scope-event-sse-opaque-minimum/packages/server/src/transaction-event-sse.test.ts",
+        "offset": 990,
+        "limit": 180,
+        "toolUseId": "toolu_01Vt6jT1QC9LQiQ9YneqDRTH"
+      },
+      {
+        "path": "/Users/dbox/repos/wt/vickie/vickie-scope-event-sse-opaque-minimum/packages/server/src/transaction-runtime.ts",
+        "offset": 340,
+        "limit": 80,
+        "toolUseId": "toolu_014ogZNEevkja8uY6EoFuXYG"
+      },
+      {
+        "path": "/Users/dbox/repos/wt/vickie/vickie-scope-event-sse-opaque-minimum/packages/server/src/transaction-runtime.ts",
+        "offset": 100,
+        "limit": 230,
+        "toolUseId": "toolu_01FbcKnmwMSajva2b9kg9hfW"
+      },
+      {
+        "path": "/Users/dbox/repos/wt/vickie/vickie-scope-event-sse-opaque-minimum/apps/bdptest/src/transactional-event-sse-installed.test.ts",
+        "offset": 1,
+        "limit": 120,
+        "toolUseId": "toolu_017hcWqyBHmQQx3sH2gQABtF"
+      },
+      {
+        "path": "/Users/dbox/repos/wt/vickie/vickie-scope-event-sse-opaque-minimum/apps/bdptest/src/transactional-event-sse-installed.test.ts",
+        "offset": 700,
+        "limit": 190,
+        "toolUseId": "toolu_01G7uECcEPjw2obGWHG8S5cM"
+      },
+      {
+        "path": "/Users/dbox/repos/wt/vickie/vickie-scope-event-sse-opaque-minimum/packages/conformance/src/http-executor.ts",
+        "offset": 1080,
+        "limit": 150,
+        "toolUseId": "toolu_01R7ixY2kJZpDQcfXsDuKwfU"
+      },
+      {
+        "path": "/Users/dbox/repos/wt/vickie/vickie-scope-event-sse-opaque-minimum/packages/conformance/src/http-executor.ts",
+        "offset": 860,
+        "limit": 110,
+        "toolUseId": "toolu_019KSpmTX2U3YbjKtDGb7yMo"
+      },
+      {
+        "path": "/Users/dbox/repos/wt/vickie/vickie-scope-event-sse-opaque-minimum/packages/conformance/src/http-executor.ts",
+        "offset": 969,
+        "limit": 70,
+        "toolUseId": "toolu_013xbjuFBuEkuz7hiiGaFUM5"
+      },
+      {
+        "path": "/Users/dbox/repos/wt/vickie/vickie-scope-event-sse-opaque-minimum/packages/conformance/src/http-executor.ts",
+        "offset": 700,
+        "limit": 90,
+        "toolUseId": "toolu_01KsfjH9povBrutWxEVZuUWQ"
+      },
+      {
+        "path": "/Users/dbox/repos/wt/vickie/vickie-scope-event-sse-opaque-minimum/packages/server/src/transaction-events.test.ts",
+        "offset": 1390,
+        "limit": 230,
+        "toolUseId": "toolu_01A9eJMX2gs3nmBVeWKBW881"
+      },
+      {
+        "path": "/Users/dbox/repos/wt/vickie/vickie-scope-event-sse-opaque-minimum/packages/server/src/transaction-event-sse.test.ts",
+        "offset": 439,
+        "limit": 360,
+        "toolUseId": "toolu_01UsMhuiGrKDP42woVXyHxS6"
+      },
+      {
+        "path": "/Users/dbox/repos/wt/vickie/vickie-scope-event-sse-opaque-minimum/packages/server/src/transaction-event-sse.test.ts",
+        "offset": 798,
+        "limit": 40,
+        "toolUseId": "toolu_01YM3i1fU1MCWCGmMB8C4bLC"
+      },
+      {
+        "path": "/Users/dbox/repos/wt/vickie/vickie-scope-event-sse-opaque-minimum/packages/server/src/transaction-sse.test.ts",
+        "offset": 395,
+        "limit": 30,
+        "toolUseId": "toolu_01TdnpSUvPpujvBrY37bjaJ2"
+      },
+      {
+        "path": "/Users/dbox/repos/wt/vickie/vickie-scope-event-sse-opaque-minimum/packages/server/src/transaction-sse.test.ts",
+        "offset": 590,
+        "limit": 30,
+        "toolUseId": "toolu_01VfmyfqDCKD6VeFQScBYj4K"
+      },
+      {
+        "path": "/Users/dbox/repos/wt/vickie/vickie-scope-event-sse-opaque-minimum/packages/server/src/transaction-sse.test.ts",
+        "offset": 890,
+        "limit": 30,
+        "toolUseId": "toolu_01W37GShJVqFqSdJ8iuX2Rb5"
+      },
+      {
+        "path": "/Users/dbox/repos/wt/vickie/vickie-scope-event-sse-opaque-minimum/packages/server/src/transaction-events.test.ts",
+        "offset": 455,
+        "limit": 100,
+        "toolUseId": "toolu_01HTopCYrHiDJiVSfBE2DEbH"
+      },
+      {
+        "path": "/Users/dbox/repos/wt/vickie/vickie-scope-event-sse-opaque-minimum/packages/server/src/transaction-http.test.ts",
+        "offset": 4620,
+        "limit": 110,
+        "toolUseId": "toolu_01Wamux25pQcb82XHjnjKPGk"
+      },
+      {
+        "path": "/Users/dbox/repos/wt/vickie/vickie-scope-event-sse-opaque-minimum/packages/server/src/transaction-http.test.ts",
+        "offset": 4810,
+        "limit": 120,
+        "toolUseId": "toolu_01VyZnypVYgKyYX1U9FNMoSL"
+      },
+      {
+        "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/scope-event-sse-opaque-minimum-code-review/context/report-schemas.json",
+        "offset": null,
+        "limit": null,
+        "toolUseId": "toolu_01KLycqWBZQiay8Ha8NoAfhW"
+      },
+      {
+        "path": "/Users/dbox/repos/wt/vickie/vickie-scope-event-sse-opaque-minimum/tsconfig.base.json",
+        "offset": null,
+        "limit": null,
+        "toolUseId": "toolu_01FSaZR9VoammsY6YmfL2jKu"
+      },
+      {
+        "path": "/Users/dbox/repos/wt/vickie/vickie-scope-event-sse-opaque-minimum/packages/server/tsconfig.json",
+        "offset": null,
+        "limit": null,
+        "toolUseId": "toolu_01HTgUvwbbb5JKhtrJPiqmhV"
+      },
+      {
+        "path": "/Users/dbox/repos/wt/vickie/vickie-scope-event-sse-opaque-minimum/packages/server/package.json",
+        "offset": null,
+        "limit": null,
+        "toolUseId": "toolu_01RpJaZBguihdM1u132CBi8Z"
+      },
+      {
+        "path": "/Users/dbox/repos/wt/vickie/vickie-scope-event-sse-opaque-minimum/tsconfig.check.json",
+        "offset": null,
+        "limit": null,
+        "toolUseId": "toolu_018VXNPUi4pvfzrKR8YrCKAn"
+      },
+      {
+        "path": "/Users/dbox/repos/wt/vickie/vickie-scope-event-sse-opaque-minimum/package.json",
+        "offset": null,
+        "limit": null,
+        "toolUseId": "toolu_01M1CM8eeJFkCiLriFRSdEoi"
+      },
+      {
+        "path": "/Users/dbox/repos/wt/vickie/vickie-scope-event-sse-opaque-minimum/biome.json",
+        "offset": null,
+        "limit": null,
+        "toolUseId": "toolu_01QCEFpDpA9HWM1xyGwwLQzv"
+      },
+      {
+        "path": "/Users/dbox/repos/wt/vickie/vickie-scope-event-sse-opaque-minimum/packages/server/src/transaction-event-sse.test.ts",
+        "offset": 1613,
+        "limit": 30,
+        "toolUseId": "toolu_013wMYxkASxNo5YaYtqUbkAp"
+      },
+      {
+        "path": "/Users/dbox/repos/wt/vickie/vickie-scope-event-sse-opaque-minimum/packages/server/src/transaction-runtime-configuration.ts",
+        "offset": 230,
+        "limit": 175,
+        "toolUseId": "toolu_01VpQVSFCJAgU73Gd99qEc38"
+      },
+      {
+        "path": "/Users/dbox/repos/wt/vickie/vickie-scope-event-sse-opaque-minimum/packages/server/src/transaction-runtime-configuration.ts",
+        "offset": 125,
+        "limit": 30,
+        "toolUseId": "toolu_01Lpb95oYu5byoDCoQHQRAH1"
+      },
+      {
+        "path": "/Users/dbox/repos/wt/vickie/vickie-scope-event-sse-opaque-minimum/packages/conformance/src/http-executor.ts",
+        "offset": 330,
+        "limit": 70,
+        "toolUseId": "toolu_01M3Z3qAx88kGJregnFoLWg9"
+      },
+      {
+        "path": "/Users/dbox/repos/wt/vickie/vickie-scope-event-sse-opaque-minimum/packages/conformance/src/http-executor.ts",
+        "offset": 528,
+        "limit": 60,
+        "toolUseId": "toolu_01BGx3c7X5W4fdFavnLSafRz"
+      },
+      {
+        "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/scope-event-sse-opaque-minimum-code-review/context/author-report.md",
+        "offset": null,
+        "limit": null,
+        "toolUseId": "toolu_01JkYGgVGeeZaTDvhvipcYjs"
+      },
+      {
+        "path": "/Users/dbox/repos/wt/vickie/vickie-scope-event-sse-opaque-minimum/apps/bdptest/src/transactional-event-sse-installed.test.ts",
+        "offset": 1388,
+        "limit": 120,
+        "toolUseId": "toolu_01MrioD1NvgNYTEDBLEehMDG"
+      },
+      {
+        "path": "/Users/dbox/repos/wt/vickie/vickie-scope-event-sse-opaque-minimum/packages/server/src/transaction-store.ts",
+        "offset": 460,
+        "limit": 25,
+        "toolUseId": "toolu_01SbbG9BeKezU1pJFtiuRdPt"
+      },
+      {
+        "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/scope-event-sse-opaque-minimum-code-review/context/preservation-checks.json",
+        "offset": null,
+        "limit": null,
+        "toolUseId": "toolu_01ULHwkfCUWzemxcnPvU2JAr"
+      },
+      {
+        "path": "/Users/dbox/repos/wt/vickie/vickie-scope-event-sse-opaque-minimum/vitest.config.ts",
+        "offset": null,
+        "limit": null,
+        "toolUseId": "toolu_01FvVHn1k22jHivSCNEwc84B"
+      },
+      {
+        "path": "/Users/dbox/repos/wt/vickie/vickie-scope-event-sse-opaque-minimum/.github/workflows/ci.yml",
+        "offset": null,
+        "limit": null,
+        "toolUseId": "toolu_01Rury1XGkvU4K4pTbCfxTso"
+      },
+      {
+        "path": "/Users/dbox/repos/wt/vickie/vickie-scope-event-sse-opaque-minimum/docs/design/transaction-implementation-progress.md",
+        "offset": 2055,
+        "limit": 10,
+        "toolUseId": "toolu_011bQh6mQyBuqBLzPLKLnrTW"
+      }
+    ],
+    "limits": "Read requests may be ranged. A successful path access does not imply whole-file inspection. Grep/Glob activity is not promoted to full-file reading. Hash pinning and prompt inclusion do not establish actual inspection."
+  },
+  "reviewerFindings": [
+    {
+      "number": 1,
+      "reviewerHeading": "Biome formatting violations will fail CI before anything else runs \u2014 Medium"
+    },
+    {
+      "number": 2,
+      "reviewerHeading": "`safeContext` silently degrades to `any`, voiding D's context contract \u2014 Low/Medium"
+    },
+    {
+      "number": 3,
+      "reviewerHeading": "No new case proves the unknown-minimum SSE refusal avoids the single stream slot \u2014 Low"
+    },
+    {
+      "number": 4,
+      "reviewerHeading": "Resource Event SSE now disagrees with its own JSON representation on the same minimum \u2014 Low (documented limitation)"
+    },
+    {
+      "number": 5,
+      "reviewerHeading": "`admission` is the one `beginEventScan` control with no type validation \u2014 Low"
+    },
+    {
+      "number": 6,
+      "reviewerHeading": "Private admission token is forwarded even when no minimum controls are present \u2014 Low"
+    },
+    {
+      "number": 7,
+      "reviewerHeading": "`closeSession`'s exit check relies on non-obvious optional-chain narrowing \u2014 Low"
+    },
+    {
+      "number": 8,
+      "reviewerHeading": "Test A emits no observation on failure, unlike B/C/D \u2014 Low"
+    },
+    {
+      "number": 9,
+      "reviewerHeading": "Stale `dist/` makes D silently test the old behavior locally \u2014 Informational"
+    },
+    {
+      "number": 10,
+      "reviewerHeading": "Doc paragraph 2060's unqualified \"SSE\" exclusion is now only disambiguated downstream \u2014 Informational"
+    }
+  ],
+  "outputHashes": {
+    "exit.json": "9626586586701698c93decff72c5a1845cafb641efcd1914199e6f192a72bff7",
+    "stream.jsonl": "8fd9ee1d8352da2f1e5158b8bf646a7fa3b94f115b8aa75faf92d939f0eda0cd",
+    "progress.jsonl": "ffff03a056602c7c1663b045a5528ee97fe3ac09f0d3993c9b324c404197e836",
+    "stderr.txt": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "terminal-results.json": "176e00af7fb07829fc4acf677ff077d60d716160edbe78f1fa8165037bb5bcaf",
+    "final-review.txt": "2228f28bcfc04415bb059b8e7c152cfe84094051b9475586bb97d4efa99ad1b1",
+    "source-before.json": "6a07d349314d02960e8f710d0fb7c7e69083ec18adfaf3ec53e7905cad9d56cd",
+    "source-after.json": "6a07d349314d02960e8f710d0fb7c7e69083ec18adfaf3ec53e7905cad9d56cd",
+    "process.json": "2ae1046bdde3e86a2fd9a0fa0314170cbeefeda5299441010201b134046dbef5",
+    "root-launch-release.json": "4100a25e25fe8e7869fcb26c0a0f559f857ac0d116533b71f4a486bf10c1a626"
+  }
+}

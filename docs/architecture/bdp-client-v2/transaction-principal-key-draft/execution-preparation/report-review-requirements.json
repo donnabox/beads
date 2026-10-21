@@ -1,0 +1,277 @@
+{
+  "status": "WAITING_ACTUAL_FROZEN_SOURCE_SHAPE",
+  "registration": {
+    "file": "apps/bdptest/src/transactional-principal-key-installed.test.ts",
+    "fullName": "observes independent principal keys and same-principal credential rotation through installed HTTP",
+    "registrations": 1,
+    "executions": 2
+  },
+  "cohorts": [
+    {
+      "id": "positive",
+      "mode": "positive",
+      "expectedExit": 0,
+      "expectedHttp": 7,
+      "maxHttp": 7,
+      "children": 1,
+      "owners": 1,
+      "listeners": 1,
+      "directories": 1
+    },
+    {
+      "id": "principal-collapse",
+      "mode": "collapse-b-to-a",
+      "expectedExit": 1,
+      "expectedHttp": 2,
+      "maxHttp": 7,
+      "children": 1,
+      "owners": 1,
+      "listeners": 1,
+      "directories": 1,
+      "expectedFailure": "principal-key:b-independent-create:completed",
+      "actualExpectedStatus": 409,
+      "actualExpectedProblem": {
+        "type": "https://github.com/gastownhall/bdp/problems/conflict",
+        "code": "idempotency-conflict",
+        "status": 409,
+        "retry": "never"
+      },
+      "actualExpectedCurrentPosition": "pos-1"
+    }
+  ],
+  "requestLedger": [
+    {
+      "index": 1,
+      "label": "a-create",
+      "method": "POST",
+      "url": "https://reference.invalid/acme/operations/batch",
+      "credentialRef": "a",
+      "headerLines": [
+        {
+          "name": "accept",
+          "value": "application/json"
+        },
+        {
+          "name": "content-type",
+          "value": "application/json"
+        },
+        {
+          "name": "idempotency-key",
+          "value": "principal-shared"
+        }
+      ],
+      "body": "{\"operations\":[{\"operation\":\"createBead\",\"id\":\"beads/a\",\"type\":\"https://reference.invalid/acme/types/task\",\"properties\":{\"title\":\"a\"},\"metadata\":{}}]}",
+      "bodyBytes": 150,
+      "bodySha256": "54f0fefb0965a8210bb22cf09601c18296ef450489eff1aef5a8bea8b99d83b8",
+      "status": 200,
+      "currentPosition": "pos-1"
+    },
+    {
+      "index": 2,
+      "label": "b-independent-create",
+      "method": "POST",
+      "url": "https://reference.invalid/acme/operations/batch",
+      "credentialRef": "b",
+      "headerLines": [
+        {
+          "name": "accept",
+          "value": "application/json"
+        },
+        {
+          "name": "content-type",
+          "value": "application/json"
+        },
+        {
+          "name": "idempotency-key",
+          "value": "principal-shared"
+        }
+      ],
+      "body": "{\"operations\":[{\"operation\":\"createBead\",\"id\":\"beads/b\",\"type\":\"https://reference.invalid/acme/types/task\",\"properties\":{\"title\":\"b\"},\"metadata\":{}}]}",
+      "bodyBytes": 150,
+      "bodySha256": "b26bbe9a43f5cc9b54d7fe7778786b33e5e8d613bf30248de3af65f5eac0cdc8",
+      "status": 200,
+      "currentPosition": "pos-2"
+    },
+    {
+      "index": 3,
+      "label": "a-rotated-replay",
+      "method": "POST",
+      "url": "https://reference.invalid/acme/operations/batch",
+      "credentialRef": "a-rotated",
+      "headerLines": [
+        {
+          "name": "accept",
+          "value": "application/json"
+        },
+        {
+          "name": "content-type",
+          "value": "application/json"
+        },
+        {
+          "name": "idempotency-key",
+          "value": "principal-shared"
+        }
+      ],
+      "body": "{\"operations\":[{\"operation\":\"createBead\",\"id\":\"beads/a\",\"type\":\"https://reference.invalid/acme/types/task\",\"properties\":{\"title\":\"a\"},\"metadata\":{}}]}",
+      "bodyBytes": 150,
+      "bodySha256": "54f0fefb0965a8210bb22cf09601c18296ef450489eff1aef5a8bea8b99d83b8",
+      "status": 200,
+      "currentPosition": "pos-2"
+    },
+    {
+      "index": 4,
+      "label": "b-replay",
+      "method": "POST",
+      "url": "https://reference.invalid/acme/operations/batch",
+      "credentialRef": "b",
+      "headerLines": [
+        {
+          "name": "accept",
+          "value": "application/json"
+        },
+        {
+          "name": "content-type",
+          "value": "application/json"
+        },
+        {
+          "name": "idempotency-key",
+          "value": "principal-shared"
+        }
+      ],
+      "body": "{\"operations\":[{\"operation\":\"createBead\",\"id\":\"beads/b\",\"type\":\"https://reference.invalid/acme/types/task\",\"properties\":{\"title\":\"b\"},\"metadata\":{}}]}",
+      "bodyBytes": 150,
+      "bodySha256": "b26bbe9a43f5cc9b54d7fe7778786b33e5e8d613bf30248de3af65f5eac0cdc8",
+      "status": 200,
+      "currentPosition": "pos-2"
+    },
+    {
+      "index": 5,
+      "label": "a-conflict",
+      "method": "POST",
+      "url": "https://reference.invalid/acme/operations/batch",
+      "credentialRef": "a",
+      "headerLines": [
+        {
+          "name": "accept",
+          "value": "application/json"
+        },
+        {
+          "name": "content-type",
+          "value": "application/json"
+        },
+        {
+          "name": "idempotency-key",
+          "value": "principal-shared"
+        }
+      ],
+      "body": "{\"operations\":[{\"operation\":\"createBead\",\"id\":\"beads/c\",\"type\":\"https://reference.invalid/acme/types/task\",\"properties\":{\"title\":\"c\"},\"metadata\":{}}]}",
+      "bodyBytes": 150,
+      "bodySha256": "3de2f9bb5fb4b4b0537d252ba722b05a3385414129cf35fc6ab0355720f9ff62",
+      "status": 409,
+      "currentPosition": "pos-2"
+    },
+    {
+      "index": 6,
+      "label": "current-complete",
+      "method": "GET",
+      "url": "https://reference.invalid/acme/beads/?limit=32",
+      "credentialRef": "a",
+      "headerLines": [
+        {
+          "name": "accept",
+          "value": "application/json"
+        }
+      ],
+      "body": null,
+      "bodyBytes": 0,
+      "bodySha256": null,
+      "status": 200,
+      "currentPosition": "pos-2"
+    },
+    {
+      "index": 7,
+      "label": "events-complete",
+      "method": "GET",
+      "url": "https://reference.invalid/acme/events/",
+      "credentialRef": "a",
+      "headerLines": [
+        {
+          "name": "accept",
+          "value": "application/json"
+        }
+      ],
+      "body": null,
+      "bodyBytes": 0,
+      "bodySha256": null,
+      "status": 200,
+      "currentPosition": "pos-2"
+    }
+  ],
+  "allowlist": {
+    "observationFields": [
+      "index",
+      "label",
+      "method",
+      "url",
+      "credentialRef",
+      "requestBodyBytes",
+      "requestBodySha256",
+      "writeState",
+      "status",
+      "bodyOctets",
+      "bodySha256",
+      "responseWireSha256",
+      "scopeEpoch",
+      "authorizationView",
+      "scopePosition",
+      "contentType",
+      "contentLength",
+      "validatedNegativeProblem",
+      "comparisonOutcome"
+    ],
+    "bindingFields": [
+      "declaredSourceCommit",
+      "workspaceDirty",
+      "entry",
+      "entrySha256",
+      "readyDerivedBinding",
+      "artifactRetrievalUris",
+      "descriptorSchemaUtf8",
+      "configurationIdentity",
+      "authenticationIdentity",
+      "routeDigest",
+      "payloadDigest",
+      "claimEligible"
+    ],
+    "lifecycleFields": [
+      "attempts",
+      "completedResponses",
+      "childPid",
+      "exitCode",
+      "signalCode",
+      "closed",
+      "directoryAbsent",
+      "safeFailureClassifications",
+      "namedAssertionIds",
+      "elapsedMs"
+    ],
+    "forbidden": [
+      "effectiveRequest",
+      "exactRequest",
+      "headerLines",
+      "token",
+      "tokenMap",
+      "authorizationValues",
+      "runtimeConfiguration",
+      "launcherOptions",
+      "wholeExchange",
+      "arbitraryErrorCause",
+      "requestWire",
+      "secretBearingAssertionDiffs"
+    ],
+    "outputLocation": "absolute evidence/results paths outside store subtree; output-write failures aggregate with primary/cleanup errors"
+  },
+  "entryVerification": "external consumer provenance and recursive payload versus genuine ready-derived report; caller source is not child attestation",
+  "cleanup": "actual child exit/signal and stopped/closed/store absent; independently absent PID/process group; no generic timeout accepted",
+  "negativeAdjudication": "one named expected200 assertion fails on complete actual409; exactly2responses/attempts; no other failure; retain original exit1"
+}

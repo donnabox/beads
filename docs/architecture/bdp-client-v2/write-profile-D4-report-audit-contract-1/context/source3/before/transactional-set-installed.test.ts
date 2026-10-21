@@ -1,0 +1,892 @@
+/** Actual private set serving observations; no ordinary runner/catalog/profile admission. */
+import { execFileSync, type ChildProcess } from "node:child_process";
+import { createHash, randomBytes } from "node:crypto";
+import { mkdtempSync, readFileSync, realpathSync, rmSync } from "node:fs";
+import { tmpdir } from "node:os";
+import path from "node:path";
+import { fileURLToPath } from "node:url";
+import { expect, it } from "vitest";
+import { Ajv2020 } from "ajv/dist/2020.js";
+import type { ValidateFunction } from "ajv";
+import { createRawHttpExchangeExecutor, HttpTransportError } from "@bdp/conformance";
+import { assertSameServedProfileConfiguration } from "@bdp/conformance/testing";
+import { isJsonSchemaUri, isJsonSchemaDateTime } from "@bdp/protocol";
+import { installedTransactionBinding } from "../test-support/transactional-execution-binding.js";
+const scope = "https://reference.invalid/acme/",
+  bead = `${scope}types/bead`,
+  owner = `${scope}types/owner`,
+  link = `${scope}types/link`,
+  owned = `${scope}types/owned`,
+  schema = `${scope}schemas/n`;
+const descriptors = [
+  { id: bead, name: "Bead", describes: "bead", conformsTo: [], propertiesSchema: schema },
+  {
+    id: owner,
+    name: "Owner",
+    describes: "bead",
+    conformsTo: [],
+    propertiesSchema: schema,
+    ownsOutgoing: { [owned]: { max: 32 } },
+  },
+  ...[link, owned].map((id) => ({
+    id,
+    name: id.endsWith("owned") ? "Owned" : "Link",
+    describes: "link",
+    conformsTo: [],
+    propertiesSchema: schema,
+    source: { conformsTo: [], external: "none" },
+    target: { conformsTo: [], external: "none" },
+  })),
+];
+const artifacts = {
+  descriptors: descriptors.map((d) => ({ retrievalUri: d.id, utf8: JSON.stringify(d) })),
+  schemas: [
+    {
+      retrievalUri: schema,
+      utf8: JSON.stringify({
+        $id: schema,
+        type: "object",
+        properties: { n: { type: "number" } },
+        required: ["n"],
+        additionalProperties: false,
+      }),
+    },
+  ],
+};
+function object(value: unknown): Record<string, unknown> {
+  if (!value || typeof value !== "object" || Array.isArray(value))
+    throw Error("expected wire object");
+  return value as Record<string, unknown>;
+}
+function array(value: unknown): Record<string, unknown>[] {
+  if (!Array.isArray(value)) throw Error("expected wire array");
+  return value.map(object);
+}
+it("installed valid sets preserve atomic effects, original receipts, owned versions and complete paged Events", async () => {
+  type InstalledChild = {
+    child: ChildProcess;
+    ready: Record<string, unknown>;
+    close(): Promise<void>;
+  };
+  type End = { code: number | null; signal: NodeJS.Signals | null };
+  type Acquisition = {
+    generation: number;
+    acquisition: "unknown" | "acquired";
+    refusal: "prelaunch-rejected" | "prelaunch-cleanup-unsettled" | null;
+    phase: "initial" | "reopen";
+    owned?: {
+      handle: InstalledChild;
+      pid: number | null;
+      exit: End | null;
+      closed: End | null;
+      exitObserved: Promise<End | null>;
+      closeObserved: Promise<End | null>;
+      closing?: Promise<void>;
+      closeSettled: boolean;
+      closeSucceeded: boolean;
+      closeFailed: boolean;
+      closeFailure?: unknown;
+    };
+  };
+  const started = performance.now(),
+    controller = new AbortController(),
+    deadline = setTimeout(
+      () => controller.abort(new Error("installed set cohort deadline")),
+      90000,
+    ),
+    failures: unknown[] = [],
+    failureStages = new Set<string>(),
+    observations: Record<string, unknown>[] = [],
+    pending = new Set<Promise<unknown>>(),
+    acquisitions: Acquisition[] = [],
+    oracleOutcomes = ["O1", "O2", "O3", "O4", "O5"].map((id) => ({
+      id,
+      state: "unobserved" as "unobserved" | "pass" | "failed",
+    })),
+    receiptPages: [number | null, number | null] = [null, null],
+    eventTraversals = {
+      seed: { pages: [] as number[], count: null as number | null, complete: false },
+      deletion: { pages: [] as number[], count: null as number | null, complete: false },
+    },
+    metadata = {
+      mode: null as "workspace" | "external" | null,
+      source: null as string | null,
+      entry: null as string | null,
+      entrySha256: null as string | null,
+      fixtureSha256: null as string | null,
+      workspaceDirty: null as boolean | "not-applicable-externally-bound" | null,
+      diffSha256: null as string | null,
+      disposition: null as "captured" | "not-applicable-externally-bound" | null,
+      nullReason: "metadata-capture-failed" as string | null,
+    };
+  let directory: string | null = null,
+    directoryDisposition: "removed" | "retained" | "unknown" = "unknown",
+    child: InstalledChild | undefined,
+    initialReady: Record<string, unknown> | null = null,
+    reopenedReady: Record<string, unknown> | null = null,
+    binding: ReturnType<typeof installedTransactionBinding> | null = null,
+    receiptEntries: number | null = null,
+    receiptComplete = false,
+    groups: number | null = null,
+    settled = 0,
+    key = 0,
+    phase = "metadata-capture-failed",
+    ownershipUncertain = false,
+    workEnded: number | null = null,
+    cleanupStarted: number | null = null,
+    cleanupEnded: number | null = null;
+  const remember = (error: unknown) => {
+    if (!failures.includes(error)) failures.push(error);
+  };
+  const problem = (stage: string) => {
+    failureStages.add(stage);
+    return new Error(stage);
+  };
+  const until = async <T>(promise: Promise<T>, end: number, stage: string): Promise<T> => {
+    const remaining = end - performance.now();
+    if (remaining <= 0) {
+      void promise.catch(() => {});
+      throw problem(stage);
+    }
+    let timer: ReturnType<typeof setTimeout> | undefined;
+    try {
+      return await Promise.race([
+        promise,
+        new Promise<never>((_, reject) => {
+          timer = setTimeout(() => reject(problem(stage)), remaining);
+        }),
+      ]);
+    } finally {
+      clearTimeout(timer);
+    }
+  };
+  const clean = (row: Acquisition) => {
+    const owned = row.owned;
+    return (
+      row.acquisition === "acquired" &&
+      owned !== undefined &&
+      owned.pid !== null &&
+      owned.exit?.code === 0 &&
+      owned.exit.signal === null &&
+      owned.closed?.code === 0 &&
+      owned.closed.signal === null &&
+      owned.closeSettled &&
+      owned.closeSucceeded
+    );
+  };
+  const requestClose = (row: Acquisition) => {
+    const owned = row.owned;
+    if (!owned) throw problem("child-close-unobserved");
+    // One call per returned handle; the unchanged launcher also caches its Promise.
+    return (owned.closing ??= Promise.resolve()
+      .then(() => owned.handle.close())
+      .then(
+        () => {
+          owned.closeSettled = true;
+          owned.closeSucceeded = true;
+        },
+        (error: unknown) => {
+          owned.closeSettled = true;
+          owned.closeFailed = true;
+          owned.closeFailure = error;
+          throw error;
+        },
+      ));
+  };
+  const closeObserved = async (row: Acquisition, end: number) => {
+    const owned = row.owned;
+    if (!owned) throw problem("child-close-unobserved");
+    try {
+      await until(
+        Promise.all([requestClose(row), owned.exitObserved, owned.closeObserved]),
+        end,
+        "cleanup-unsettled",
+      );
+      if (!owned.exit || owned.exit.code !== 0 || owned.exit.signal !== null)
+        throw problem("child-exit-failed");
+      if (!owned.closed || owned.closed.code !== 0 || owned.closed.signal !== null)
+        throw problem("child-close-unobserved");
+    } catch (error) {
+      ownershipUncertain = true;
+      throw error;
+    }
+  };
+  const oracle = (index: number, check: () => void) => {
+    const row = oracleOutcomes[index]!;
+    try {
+      check();
+      row.state = "pass";
+    } catch (error) {
+      row.state = "failed";
+      failureStages.add("clone-oracle-failed");
+      throw error;
+    }
+  };
+  try {
+    // Owned throwing I/O and validator preparation must fail inside this callback.
+    const root = fileURLToPath(new URL("../../../", import.meta.url));
+    metadata.mode =
+      process.env.BDP_TRANSACTIONAL_INSTALLED_ENTRY !== undefined ? "external" : "workspace";
+    const git = (args: string[]) =>
+      execFileSync("git", args, {
+        cwd: root,
+        encoding: "utf8",
+        timeout: 2000,
+        maxBuffer: 1048576,
+      });
+    if (metadata.mode === "external" && !process.env.BDP_TRANSACTIONAL_SOURCE_COMMIT)
+      throw problem("metadata-capture-failed");
+    const entry = realpathSync(
+        process.env.BDP_TRANSACTIONAL_INSTALLED_ENTRY ??
+          path.join(root, "packages/server/dist/transaction-installed-process.js"),
+      ),
+      source = process.env.BDP_TRANSACTIONAL_SOURCE_COMMIT ?? git(["rev-parse", "HEAD"]).trim(),
+      fixture = {
+        bytes: readFileSync(
+          path.join(root, "packages/conformance/test-support/transactional/fixture-v1.json"),
+        ),
+      };
+    if (!/^[a-f0-9]{40}$/.test(source)) throw problem("metadata-capture-failed");
+    metadata.source = source;
+    metadata.entry = entry;
+    metadata.entrySha256 = createHash("sha256").update(readFileSync(entry)).digest("hex");
+    metadata.fixtureSha256 = createHash("sha256").update(fixture.bytes).digest("hex");
+    if (metadata.mode === "external") {
+      metadata.workspaceDirty = "not-applicable-externally-bound";
+      metadata.disposition = "not-applicable-externally-bound";
+    } else {
+      metadata.workspaceDirty = git(["status", "--porcelain"]).length > 0;
+      metadata.diffSha256 = createHash("sha256")
+        .update(
+          execFileSync("git", ["diff", "--binary", "HEAD"], {
+            cwd: root,
+            timeout: 2000,
+            maxBuffer: 1048576,
+          }),
+        )
+        .digest("hex");
+      metadata.disposition = "captured";
+    }
+    const { launchInstalledTransaction } = (await import(
+      new URL("../../../scripts/transaction-installed-observation.mjs", import.meta.url).href
+    )) as {
+      launchInstalledTransaction(
+        entry: string,
+        configuration: unknown,
+        signal: AbortSignal,
+      ): Promise<InstalledChild>;
+    };
+    const ajv = new Ajv2020({ strict: true, allErrors: true });
+    ajv.addFormat("uri", { type: "string", validate: isJsonSchemaUri });
+    ajv.addFormat("date-time", { type: "string", validate: isJsonSchemaDateTime });
+    const bundle = JSON.parse(readFileSync(path.join(root, "schemas/bdp-v0.schema.json"), "utf8"));
+    ajv.addSchema(bundle);
+    const validators: Record<string, ValidateFunction> = Object.fromEntries(
+      ["mutationReceipt", "mutationReceiptPage", "eventPage", "changeGroup"].map((name) => [
+        name,
+        ajv.compile({ $ref: `${bundle.$id}#/$defs/${name}` }),
+      ]),
+    );
+    const checked = (name: string, value: unknown) => {
+      const validate = validators[name];
+      if (!validate) throw Error("validator missing");
+      expect(validate(value), JSON.stringify(validate.errors)).toBe(true);
+    };
+    metadata.nullReason = null;
+    phase = "launch-failed";
+    controller.signal.throwIfAborted();
+    directory = mkdtempSync(path.join(tmpdir(), "bdp-set-installed-"));
+    directoryDisposition = "retained";
+    const token = randomBytes(32).toString("base64url"),
+      configuration = {
+        scope,
+        directory,
+        create: true,
+        artifacts,
+        credentials: [{ token, principal: "writer", canMutate: true }],
+      };
+    const launch = async (generation: number, input: typeof configuration) => {
+      if (performance.now() >= started + 90000) throw problem("work-deadline");
+      const row: Acquisition = {
+        generation,
+        acquisition: "unknown",
+        refusal: null,
+        phase: generation === 1 ? "initial" : "reopen",
+      };
+      acquisitions.push(row);
+      try {
+        const handle = await launchInstalledTransaction(entry, input, controller.signal);
+        // No await/assertion between returned acquisition and event listener attachment.
+        const owned: NonNullable<Acquisition["owned"]> = {
+          handle,
+          pid: handle.child.pid ?? null,
+          exit: null,
+          closed: null,
+          exitObserved: Promise.resolve(null),
+          closeObserved: Promise.resolve(null),
+          closeSettled: false,
+          closeSucceeded: false,
+          closeFailed: false,
+        };
+        row.acquisition = "acquired";
+        row.owned = owned;
+        owned.exitObserved = new Promise((resolve) => {
+          handle.child.once("exit", (code, signal) => {
+            owned.exit = { code, signal };
+            resolve(owned.exit);
+          });
+          // A pre-return lost exit event cannot be reconstructed from snapshots.
+          if (handle.child.exitCode !== null || handle.child.signalCode !== null) resolve(null);
+        });
+        owned.closeObserved = new Promise((resolve) => {
+          handle.child.once("close", (code, signal) => {
+            owned.closed = { code, signal };
+            resolve(owned.closed);
+          });
+        });
+        if (owned.pid === null) throw problem("child-close-unobserved");
+        return handle;
+      } catch (error) {
+        if (row.acquisition === "unknown") {
+          ownershipUncertain = true;
+          row.refusal =
+            error instanceof AggregateError &&
+            error.message === "installed transaction startup cleanup failed"
+              ? "prelaunch-cleanup-unsettled"
+              : "prelaunch-rejected";
+          failureStages.add(row.refusal);
+          if (generation === 2) failureStages.add("reopen-refused-pre-ready");
+        }
+        throw error;
+      }
+    };
+    child = await launch(1, configuration);
+    phase = "binding-validation-failed";
+    initialReady = child.ready;
+    binding = installedTransactionBinding(initialReady, source, fixture);
+    const initialBinding = binding;
+    expect(Object.keys(initialReady.targets as object)).toHaveLength(12);
+    phase = "observation-failed";
+    const send = async (
+      target: string,
+      body?: unknown,
+      suppliedKey?: string,
+      expectedStatus = 200,
+    ) => {
+      if (!child) throw Error("closed installed session");
+      const current = installedTransactionBinding(child.ready, source, fixture);
+      assertSameServedProfileConfiguration(initialBinding.served, current.served);
+      expect(current.runtimeConfigurationIdentity).toBe(
+        initialBinding.runtimeConfigurationIdentity,
+      );
+      const address = new URL(child.ready.listenUrl as string),
+        url = new URL(target, scope).href,
+        method = body === undefined ? ("GET" as const) : ("POST" as const);
+      const execute = createRawHttpExchangeExecutor(
+        { transport: "plain", host: address.hostname, port: Number(address.port) },
+        {
+          requestTimeoutMs: 5000,
+          maximumBodyBytes: 1048576,
+          exactMode: {
+            scope,
+            profile: "transactional",
+            routes: [{ method, url }],
+            maximumRequestHeaderBytes: 16384,
+            maximumRequestBodyBytes: 65536,
+            defaultCredentialRef: "writer",
+            credentialHandles: [{ id: "writer", headerNames: ["authorization"] }],
+            resolveCredentials: () => ({ authorization: `Bearer ${token}` }),
+          },
+        },
+      );
+      const requestBody = typeof body === "string" ? body : JSON.stringify(body);
+      if (observations.length >= 32) throw problem("dispatch-cap-exceeded");
+      const row: Record<string, unknown> = {
+        ordinal: observations.length + 1,
+        generation: acquisitions.at(-1)!.generation,
+        method,
+        url,
+        requestBody,
+        settled: false,
+        received: false,
+        validated: false,
+        status: null,
+        headers: null,
+        body: null,
+        wireResponseBase64: null,
+        wireSha256: null,
+        writeState: null,
+        errorCategory: null,
+      };
+      observations.push(row);
+      let task: ReturnType<typeof execute> | undefined;
+      try {
+        task = execute({
+          method,
+          url,
+          signal: controller.signal,
+          credentialRef: "writer",
+          raw: {
+            headerLines:
+              body === undefined
+                ? []
+                : [
+                    { name: "Content-Type", value: "application/json" },
+                    { name: "Idempotency-Key", value: suppliedKey ?? `set_${key++}` },
+                  ],
+            ...(body === undefined ? {} : { bodyBytes: Buffer.from(requestBody!) }),
+          },
+        });
+        pending.add(task);
+        const response = await task;
+        // Preserve all available response facts before any status/schema assertion.
+        row.received = true;
+        row.status = response.status;
+        row.headers = response.headers;
+        row.body = response.bodyText;
+        row.writeState = response.exactRequest?.writeState ?? null;
+        row.wireResponseBase64 =
+          response.wireResponseBytes === undefined
+            ? null
+            : Buffer.from(response.wireResponseBytes).toString("base64");
+        row.wireSha256 =
+          response.wireResponseBytes === undefined
+            ? null
+            : createHash("sha256").update(response.wireResponseBytes).digest("hex");
+        expect(response.status, response.bodyText).toBe(expectedStatus);
+        expect(response.exactRequest?.writeState).toBe("complete");
+        expect(response.wireResponseBytes?.length).toBeGreaterThan(0);
+        if (expectedStatus === 200)
+          for (const header of ["bdp-scope-epoch", "bdp-authorization-view", "bdp-scope-position"])
+            expect(response.headers[header]?.length).toBeGreaterThan(0);
+        const parsed = object(JSON.parse(response.bodyText));
+        if (method === "POST" && expectedStatus === 200) checked("mutationReceipt", parsed);
+        row.validated = true;
+        return parsed;
+      } catch (error) {
+        if (row.received !== true) {
+          row.errorCategory = error instanceof HttpTransportError ? error.category : "unavailable";
+          row.writeState =
+            error instanceof HttpTransportError ? (error.requestWriteState ?? null) : null;
+          failureStages.add("exchange-rejected");
+        } else failureStages.add("response-validation-failed");
+        throw error;
+      } finally {
+        if (task) pending.delete(task);
+        row.settled = true;
+        settled++;
+      }
+    };
+    const run = (operations: unknown[], suppliedKey?: string) =>
+      send("operations/batch", { operations }, suppliedKey);
+    const create = (id: string, type = bead) => ({
+      operation: "createBead",
+      id: `beads/${id}`,
+      type,
+      properties: { n: 0 },
+      metadata: { stable: true },
+    });
+    await run([create("a"), create("b"), create("owner", owner)]);
+    const linkIds = Array.from(
+      { length: 32 },
+      (_, i) => `${scope}links/l${String(i).padStart(2, "0")}`,
+    );
+    await run(
+      linkIds.map((id) => ({
+        operation: "createLink",
+        id,
+        type: link,
+        source: "beads/a",
+        target: "beads/b",
+        properties: { n: 0 },
+      })),
+    );
+    const collectEvents = async (target: string, kind: "seed" | "deletion") => {
+      const captured = eventTraversals[kind];
+      const events: Record<string, unknown>[] = [],
+        lengths: number[] = [];
+      let next: string | null = target;
+      for (let pages = 0; next !== null; pages++) {
+        if (pages >= 12) throw Error("bounded Event fixture page count exceeded");
+        const page = await send(next);
+        const rows = array(page.events);
+        captured.pages.push(rows.length);
+        checked("eventPage", page);
+        lengths.push(rows.length);
+        events.push(...rows);
+        if (page.next !== null && typeof page.next !== "string") throw Error("invalid Event next");
+        next = page.next;
+      }
+      captured.complete = true;
+      captured.count = events.length;
+      return { events, lengths };
+    };
+    const seededEvents = await collectEvents("events/", "seed"),
+      lastSeedId = seededEvents.events.at(-1)?.id;
+    expect(typeof lastSeedId).toBe("string");
+    const feedStart = await send("changes/?start=now");
+    expect(feedStart.groups).toEqual([]);
+    const input = {
+      collection: "links",
+      selector: `$[?@.type == "${link}"]`,
+      cardinality: { min: 32, max: 32 },
+    };
+    const receipt = await send("operations/delete-where", input, "delete32");
+    receiptPages[0] = array(receipt.results).length;
+    expect(receipt.status).toBe("completed");
+    expect(array(receipt.results)).toHaveLength(32);
+    expect(typeof receipt.next).toBe("string");
+    const page = await send(receipt.next as string);
+    receiptPages[1] = array(page.results).length;
+    receiptComplete = page.next === null;
+    if (receiptComplete) receiptEntries = receiptPages[0]! + receiptPages[1];
+    checked("mutationReceiptPage", page);
+    expect(array(page.results)).toHaveLength(1);
+    expect(page.next).toBeNull();
+    const allResults = [...array(receipt.results), ...array(page.results)];
+    const assertResults = (rows: Record<string, unknown>[]) => {
+      expect(rows[0]).toEqual({ operationIndex: 0, outcome: "matched", count: 32 });
+      expect(
+        rows.slice(1).map((r) => ({
+          operationIndex: r.operationIndex,
+          outcome: r.outcome,
+          id: object(object(r.deleted).resource).id,
+        })),
+      ).toEqual(linkIds.map((id) => ({ operationIndex: 0, outcome: "deleted", id })));
+    };
+    assertResults(allResults);
+    oracle(0, () => expect(() => assertResults(allResults.slice(0, -1))).toThrow());
+    const suffixUrl = `events/?after=${encodeURIComponent(lastSeedId as string)}`;
+    const suffix = await collectEvents(suffixUrl, "deletion");
+    expect(suffix.lengths).toEqual([32, 32, 32]);
+    const expectedFacts = linkIds.flatMap((id) => [
+      { type: "deleted", subject: id },
+      { type: "unlinked", subject: id },
+      { type: "unlinked", subject: id },
+    ]);
+    const assertEvents = (events: Record<string, unknown>[]) =>
+      expect(events.map((e) => ({ type: e.type, subject: e.subject }))).toEqual(expectedFacts);
+    assertEvents(suffix.events);
+    oracle(1, () => expect(() => assertEvents(suffix.events.slice(1))).toThrow());
+    oracle(2, () =>
+      expect(() =>
+        assertEvents([
+          ...suffix.events.slice(3, 6),
+          ...suffix.events.slice(0, 3),
+          ...suffix.events.slice(6),
+        ]),
+      ).toThrow(),
+    );
+    const feed = await send(`changes/?after=${encodeURIComponent(feedStart.after as string)}`);
+    groups = array(feed.groups).length;
+    expect(array(feed.groups)).toHaveLength(1);
+    expect(feed.next).toBeNull();
+    const group = array(feed.groups)[0]!;
+    checked("changeGroup", group);
+    expect(array(group.events)).toHaveLength(96);
+    expect(
+      array(group.changes).map((c) => ({ operation: c.operation, id: object(c.resource).id })),
+    ).toEqual(linkIds.map((id) => ({ operation: "tombstone", id })));
+    await send(linkIds[0]!, undefined, undefined, 404);
+    // A retry never selects the later population under the same key.
+    await run([
+      {
+        operation: "createLink",
+        id: "links/later",
+        type: link,
+        source: "beads/a",
+        target: "beads/b",
+        properties: { n: 0 },
+      },
+    ]);
+    expect(await run([{ operation: "deleteWhere", ...input }], "delete32")).toEqual(receipt);
+    expect((await send("links/later")).id).toBe(`${scope}links/later`);
+    const ownedCreated = await run([
+      {
+        operation: "createLink",
+        id: "links/owned",
+        type: owned,
+        source: "beads/owner",
+        target: "beads/b",
+        properties: { n: 0 },
+      },
+    ]);
+    const ownedInput = {
+      collection: "links",
+      selector: `$[?@.id == "${scope}links/owned"]`,
+      change: [{ op: "replace", path: "/n", value: 1 }],
+    };
+    const sourceBefore = await send("beads/owner"),
+      linkBefore = await send("links/owned");
+    expect(linkBefore.properties).toEqual({ n: 0 });
+    expect(typeof sourceBefore.revision).toBe("string");
+    expect(typeof linkBefore.revision).toBe("string");
+    const updated = await send("operations/update-where", ownedInput, "owned_update");
+    const sourceAfter = await send("beads/owner"),
+      linkAfter = await send("links/owned"),
+      updatedEntry = array(updated.results)[1]!;
+    const assertOwnedTransition = (
+      receipt: Record<string, unknown>,
+      liveSource: Record<string, unknown>,
+      liveLink: Record<string, unknown>,
+    ) => {
+      expect(liveLink.properties, "requested owned Link properties").toEqual({ n: 1 });
+      expect(liveLink.metadata).toEqual(linkBefore.metadata);
+      expect(liveSource.properties).toEqual(sourceBefore.properties);
+      expect(liveSource.metadata).toEqual(sourceBefore.metadata);
+      expect(typeof liveLink.revision).toBe("string");
+      expect(liveLink.revision, "owned Link revision advances").not.toBe(linkBefore.revision);
+      expect(typeof liveSource.revision).toBe("string");
+      expect(liveSource.revision, "owner revision advances").not.toBe(sourceBefore.revision);
+      expect(receipt.effectPosition, "effectful owned update has a position").toEqual(
+        expect.any(String),
+      );
+      expect(receipt.effectPosition).not.toBe(ownedCreated.requiredPosition);
+      expect(receipt.requiredPosition).toBe(receipt.effectPosition);
+      const entry = array(receipt.results)[1]!;
+      expect(entry.sourceRevision).toBe(liveSource.revision);
+      expect(object(entry.resource)).toEqual(liveLink);
+      expect(object(liveSource.ownedLinks)[owned]).toEqual([liveLink]);
+    };
+    assertOwnedTransition(updated, sourceAfter, linkAfter);
+    // The native runtime mutant changes n1 to n0 and returns mutually consistent
+    // stale outputs. Reject that exact observation class at the intended literal
+    // assertion, rather than relying on an unrelated exception or inequality.
+    const staleReceipt = {
+      ...updated,
+      effectPosition: undefined,
+      requiredPosition: ownedCreated.requiredPosition,
+      results: [
+        array(updated.results)[0],
+        { ...updatedEntry, resource: linkBefore, sourceRevision: sourceBefore.revision },
+      ],
+    };
+    oracle(3, () =>
+      expect(() => assertOwnedTransition(staleReceipt, sourceBefore, linkBefore)).toThrow(
+        /requested owned Link properties/,
+      ),
+    );
+    const assertOwned = (row: Record<string, unknown>) =>
+      expect(row.sourceRevision).toBe(sourceAfter.revision);
+    oracle(4, () =>
+      expect(() => assertOwned({ ...updatedEntry, sourceRevision: "wrong" })).toThrow(),
+    );
+    const noop = await send("operations/update-where", ownedInput);
+    expect(noop.effectPosition).toBeUndefined();
+    expect(array(noop.results)[1]).toEqual(updatedEntry);
+    const bad = await run(
+      [
+        create("tentative"),
+        {
+          operation: "updateWhere",
+          ...ownedInput,
+          change: [{ op: "replace", path: "/n", value: "invalid" }],
+        },
+      ],
+      "compiled_fail",
+    );
+    expect(bad).toMatchObject({
+      status: "failed",
+      problem: { code: "validation-failed", operationIndex: 1, pointer: "/operations/1/change" },
+    });
+    expect(await send("beads/owner")).toEqual(sourceAfter);
+    expect(await send("links/owned")).toEqual(linkAfter);
+    await send("beads/tentative", undefined, undefined, 404);
+    // Live session replacement retains logical binding, original receipt and actual next URL.
+    if (pending.size !== 0) throw problem("pending-unsettled");
+    if (observations.filter((row) => row.received === true).length !== 28)
+      throw problem("observation-failed");
+    await closeObserved(acquisitions[0]!, Math.min(started + 90000, performance.now() + 10000));
+    if (!clean(acquisitions[0]!)) throw problem("child-close-unobserved");
+    child = undefined;
+    phase = "reopen-refused-pre-ready";
+    child = await launch(2, { ...configuration, create: false });
+    phase = "binding-validation-failed";
+    reopenedReady = child.ready;
+    const reopenedBinding = installedTransactionBinding(reopenedReady, source, fixture);
+    assertSameServedProfileConfiguration(initialBinding.served, reopenedBinding.served);
+    expect(reopenedBinding.runtimeConfigurationIdentity).toBe(
+      initialBinding.runtimeConfigurationIdentity,
+    );
+    phase = "observation-failed";
+    expect(await send(receipt.id as string)).toEqual(receipt);
+    expect(await send(receipt.next as string)).toEqual(page);
+    expect(await run([{ operation: "deleteWhere", ...input }], "delete32")).toEqual(receipt);
+    expect(
+      await run(
+        [
+          create("tentative"),
+          {
+            operation: "updateWhere",
+            ...ownedInput,
+            change: [{ op: "replace", path: "/n", value: "invalid" }],
+          },
+        ],
+        "compiled_fail",
+      ),
+    ).toEqual(bad);
+    expect(observations).toHaveLength(32);
+    expect(settled).toBe(32);
+    expect(observations.every((row) => row.received === true && row.validated === true)).toBe(true);
+    expect(oracleOutcomes.every((row) => row.state === "pass")).toBe(true);
+    if (performance.now() >= started + 90000) throw problem("work-deadline");
+  } catch (error) {
+    failureStages.add(phase);
+    remember(error);
+  } finally {
+    workEnded = performance.now();
+    if (workEnded >= started + 90000) {
+      failureStages.add("work-deadline");
+      remember(new Error("installed set work deadline"));
+    }
+    if (controller.signal.aborted) {
+      failureStages.add("work-aborted");
+      remember(controller.signal.reason);
+    }
+    clearTimeout(deadline);
+    // Work stops first. One shared ten-second cleanup window, no fresh per-child budget.
+    controller.abort(new Error("installed set cleanup"));
+    cleanupStarted = performance.now();
+    const cleanupEnd = cleanupStarted + 10000;
+    const cleanup = acquisitions
+      .filter((row) => row.owned !== undefined)
+      .map(async (row) => {
+        try {
+          await closeObserved(row, cleanupEnd);
+        } catch (error) {
+          remember(error);
+        }
+      });
+    try {
+      await until(
+        Promise.all([Promise.allSettled([...pending]), Promise.all(cleanup)]),
+        cleanupEnd,
+        "cleanup-unsettled",
+      );
+    } catch (error) {
+      remember(error);
+    }
+    for (const row of acquisitions) {
+      if (row.owned?.closeFailed) remember(row.owned.closeFailure);
+      if (!clean(row)) {
+        failureStages.add(row.owned ? "child-close-unobserved" : "cleanup-unsettled");
+        remember(new Error("installed set ownership or closure unestablished"));
+      }
+    }
+    if (pending.size !== 0 || settled !== observations.length) {
+      ownershipUncertain = true;
+      failureStages.add("pending-unsettled");
+      remember(new Error("installed set requests unsettled"));
+    }
+    if (
+      directory !== null &&
+      !ownershipUncertain &&
+      acquisitions.every(clean) &&
+      pending.size === 0 &&
+      settled === observations.length
+    ) {
+      try {
+        rmSync(directory, { recursive: true, force: true });
+        directoryDisposition = "removed";
+      } catch (error) {
+        directoryDisposition = "unknown";
+        failureStages.add("directory-removal-failed");
+        remember(error);
+      }
+    }
+    cleanupEnded = performance.now();
+    if (cleanupEnded > cleanupEnd) {
+      failureStages.add("cleanup-unsettled");
+      remember(new Error("installed set cleanup deadline"));
+    }
+  }
+  // Cached facts only: no Git, file reads, inferred child events or guessed SQLite presence.
+  const report = {
+    kind: "installed-valid-set-observation",
+    reportVersion: 2,
+    source: metadata.source,
+    workspaceDirty: metadata.workspaceDirty,
+    entry: metadata.entry,
+    entrySha256: metadata.entrySha256,
+    metadata,
+    binding,
+    claimEligible: false,
+    initialReady,
+    reopenedReady,
+    outcome: failures.length === 0 ? "observed" : "failed",
+    failureStages: [...failureStages],
+    counts: {
+      expected: {
+        requests: 32,
+        POST: 11,
+        GET: 21,
+        children: 2,
+        receiptEntries: 33,
+        receiptPages: [32, 1],
+        eventPages: [32, 32, 32],
+        events: 96,
+        groups: 1,
+        staticLocalOracleCount: 5,
+      },
+      observed: {
+        attempted: observations.length,
+        settled,
+        received: observations.filter((row) => row.received === true).length,
+        validated: observations.filter((row) => row.validated === true).length,
+        returnedChildHandles: acquisitions.filter((row) => row.acquisition === "acquired").length,
+        receiptEntries,
+        receiptPages,
+        receiptComplete,
+        eventPages: eventTraversals.deletion.pages,
+        events: eventTraversals.deletion.count,
+        eventTraversalComplete: eventTraversals.deletion.complete,
+        groups,
+      },
+    },
+    observations,
+    oracleOutcomes,
+    eventTraversals,
+    timing: {
+      workMilliseconds: workEnded === null ? null : workEnded - started,
+      cleanupMilliseconds:
+        cleanupStarted === null || cleanupEnded === null ? null : cleanupEnded - cleanupStarted,
+      workBudgetMilliseconds: 90000,
+      cleanupBudgetMilliseconds: 10000,
+    },
+    lifecycle: {
+      pendingRequests: pending.size,
+      ownershipUnknown: ownershipUncertain || acquisitions.some((row) => !clean(row)),
+      children: acquisitions.map((row) => ({
+        generation: row.generation,
+        phase: row.phase,
+        launchAttempted: true,
+        acquisition: row.acquisition,
+        refusal: row.refusal,
+        pid: row.owned?.pid ?? null,
+        exitCodeSnapshot: row.owned?.handle.child.exitCode ?? null,
+        signalCodeSnapshot: row.owned?.handle.child.signalCode ?? null,
+        observedExit: row.owned?.exit ?? null,
+        observedClose: row.owned?.closed ?? null,
+        closeRequested: row.owned?.closing !== undefined,
+        closePromiseSettled: row.owned?.closeSettled ?? null,
+        closePromiseSucceeded: row.owned?.closeSucceeded ?? null,
+        closure: clean(row) ? "observed-clean-exit-and-close" : "unknown-or-failed",
+      })),
+      directory: {
+        path: directory,
+        disposition: directoryDisposition,
+        storeFilePresence: "unknown",
+      },
+      descendantOwnership: "root-terminal-audit-required",
+    },
+    limitations: [
+      "private installed slice; no cold/public/whole-Write credit",
+      "same-store graceful reopen is not crash or logical restore",
+      "external payload/archive/consumer/lock/proof requires independent root binding",
+      "future startup/flush/detached-drain/full-report collector gate remains CLOSED",
+    ],
+  };
+  console.log(JSON.stringify(report));
+  if (failures.length)
+    throw new AggregateError(failures, "installed set observation or cleanup failed");
+}, 120000);

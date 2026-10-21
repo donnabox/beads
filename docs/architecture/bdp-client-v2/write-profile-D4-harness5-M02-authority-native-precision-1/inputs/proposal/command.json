@@ -1,0 +1,43 @@
+{
+  "case": "M02",
+  "variant": "unit",
+  "argv": [
+    "/usr/bin/env",
+    "-u",
+    "PERL5OPT",
+    "-u",
+    "PERL5LIB",
+    "-u",
+    "PERLLIB",
+    "-u",
+    "PERL5DB",
+    "-u",
+    "PERL_SIGNALS",
+    "LC_ALL=C",
+    "TZ=UTC",
+    "/usr/bin/perl5.34",
+    "-I/System/Library/Perl/5.34/darwin-thread-multi-2level",
+    "-I/System/Library/Perl/5.34",
+    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-D4-synthetic-harness-preparation-5/hard_limit.pl",
+    "M02",
+    "unit",
+    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-D4-harness5-M02-execution-release-1/release.json"
+  ],
+  "clock": {
+    "whole": 120,
+    "TERM": 115,
+    "KILL": 119,
+    "normalSettlementStrictBefore": 115
+  },
+  "stdio": "root-owned drained PIPE for both stdout/stderr; no TTY/direct file redirect",
+  "rootGuardRequiredImmediatelyBeforeLaunch": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-D4-validation-preparation-4/guarded-action-session-20261018-021624-549f.py",
+  "attempt": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-D4-synthetic-harness-preparation-5/attempts/M02--unit",
+  "approved": false,
+  "executed": false,
+  "noRetry": true,
+  "productCalls": 0,
+  "remainingUnsupported": [],
+  "cwd": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-D4-synthetic-harness-preparation-5",
+  "state": "CLOSED prospective literal ONE pilot; no attempt",
+  "futureExternalRelease": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-D4-harness5-M02-execution-release-1/release.json"
+}

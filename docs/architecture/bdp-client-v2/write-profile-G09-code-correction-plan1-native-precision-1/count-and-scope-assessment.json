@@ -1,0 +1,53 @@
+{
+  "allBoundsPreserved": true,
+  "extra": 3,
+  "installed": [
+    14,
+    16
+  ],
+  "installedNormalChildren": [
+    1,
+    1
+  ],
+  "newTotal": 26,
+  "oldDirect": [
+    3,
+    2,
+    2,
+    8,
+    8,
+    0,
+    0,
+    0
+  ],
+  "oldTotal": 23,
+  "ownedFuturePaths": [
+    "packages/server/src/transaction-service.test.ts",
+    "packages/server/src/transaction-schema-http.test.ts",
+    "apps/bdptest/src/transactional-schema-installed.test.ts"
+  ],
+  "ownerActionsNotSchemaCalls": "NewS01 admit1/execute1/inspect1/releaseprobe1; newS03 releaseprobe1 plus postclose inspectrefusal; original initialcontext probes3 and oldS03 releaseprobes2 remain separate",
+  "productionPathsChanged": 0,
+  "proposedDirect": [
+    4,
+    2,
+    3,
+    8,
+    9,
+    0,
+    0,
+    0
+  ],
+  "protectedOtherCurrentPaths": 676,
+  "separateLegacyInstalled14": "Exact original18590bytes/f2ba22 prefix, not reportunion",
+  "sourceAuthoredOrReleased": false,
+  "sourceCallbacks": 8,
+  "sourceFilesCurrent": 679,
+  "sourceFinalHashesLinesSelection": "UNKNOWN until later actual sourcefreeze; basis fields explicit, not relabelled future",
+  "sourceWire": 9,
+  "wire": [
+    5,
+    2,
+    2
+  ]
+}

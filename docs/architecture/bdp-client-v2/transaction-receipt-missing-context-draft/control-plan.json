@@ -1,0 +1,57 @@
+{
+  "status": "NOT_PREPARED_NOT_EXECUTED",
+  "kind": "emitted-only two HTTP refusal projection context arguments omitted",
+  "selectedFullName": "serves current missing receipt root and page context without changing nondisclosure or HEAD",
+  "expectedFailedCases": 1,
+  "expectedNamedTupleFailures": 8,
+  "http": 13,
+  "owners": 1,
+  "directories": 1,
+  "listeners": 1,
+  "productChildren": 0,
+  "noBuildOfMutantSource": true,
+  "namedTupleFailures": [
+    "unknown-root GET at first head",
+    "unknown-root HEAD at first head",
+    "foreign-root GET at first head",
+    "foreign-root HEAD at first head",
+    "foreign-page GET at first head",
+    "foreign-page HEAD at first head",
+    "foreign-root GET at later head",
+    "foreign-page GET at later head"
+  ],
+  "assertionPartition": {
+    "order": "per request hard prerequisites then exactly one named soft context-tuple equality",
+    "hard": [
+      "status404",
+      "GET schema and complete expected Problem OR HEAD empty body and equivalent GET representation length",
+      "content-type",
+      "content-length",
+      "cache-control",
+      "non-attesting marker",
+      "ETag absent",
+      "Last-Modified absent"
+    ],
+    "softOnly": [
+      "bdp-scope-epoch presence/value",
+      "bdp-authorization-view presence/value",
+      "bdp-scope-position presence/value"
+    ],
+    "otherResponses": "seed/visible-page/mutation/context comparator and401 prerequisites hard; eight soft failures only"
+  },
+  "sourceModule": "packages/server/src/transaction-http.ts",
+  "emittedModule": "packages/server/dist/transaction-http.js",
+  "mutations": [
+    {
+      "positive": "transactionHttpProblem(page.code, page.code === \"resource-not-found\" ? page.context : undefined)",
+      "negative": "transactionHttpProblem(page.code)"
+    },
+    {
+      "positive": "transactionHttpProblem(result.code, result.code === \"resource-not-found\" ? result.context : undefined)",
+      "negative": "transactionHttpProblem(result.code)"
+    }
+  ],
+  "bindingRequired": "Copy source/emitted/config/setup; every @bdp package/fallback link resolves to copy; run copied test from copied cwd; verify actual relative ../dist runtime HTTP import; no original W test invocation and no mutant TypeScript build",
+  "adjudication": "13 responses, eight named soft tuple failures, hard Problem/status/HEAD/metadata prerequisites all pass; cleanup errors or any other failure reject control",
+  "logInterpretation": "source primaryOrCleanupFailureCount excludes Vitest recorded soft failures; final Vitest JSON is authoritative for eight assertion failures"
+}

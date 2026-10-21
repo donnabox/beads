@@ -1,0 +1,137 @@
+{
+  "kind": "closed-prospective-plan-selection",
+  "ownedFiles": [
+    "packages/server/src/transaction-consistency.ts",
+    "packages/server/src/transaction-read.ts",
+    "packages/server/src/transaction-http.ts",
+    "packages/server/src/transaction-service.ts",
+    "packages/server/src/transaction-store.ts",
+    "packages/server/src/transaction-consistency.test.ts",
+    "packages/server/src/transaction-read.test.ts",
+    "packages/server/src/transaction-http.test.ts",
+    "packages/server/src/transaction-service.test.ts",
+    "packages/server/src/transaction-receipt-pages.test.ts",
+    "packages/server/src/transaction-snapshot.test.ts",
+    "packages/server/src/transaction-events.test.ts",
+    "packages/server/src/transaction-event-sse.test.ts",
+    "packages/server/src/transaction-changefeed.test.ts",
+    "apps/bdptest/src/transactional-minimum-receiving-installed.test.ts",
+    "docs/design/transaction-implementation-progress.md"
+  ],
+  "newSourceCallbacks": 9,
+  "newSourceHttp": 37,
+  "newSourceStores": 9,
+  "newSourceListeners": 1,
+  "existingSourceSelection": {
+    "transaction-consistency.test.ts": [
+      "captures lexical current minimums without widening strict consumers or invoking accessors",
+      "waits for unproved current eligibility with one deadline and preserves terminal failures",
+      "distinguishes closed minimum receiving syntax from supported position identities"
+    ],
+    "transaction-read.test.ts": [
+      "current Type and incident-Link minimums",
+      "current alias minimum subset",
+      "current minimum perform receiving",
+      "uses actual current policy for missing-first and unproved Resource attempts",
+      "drains an admitted unknown minimum to timeout and rejects new reads while closing"
+    ],
+    "transaction-service.test.ts": [
+      "internal discovery owner observation",
+      "internal discovery minimum observation"
+    ],
+    "transaction-receipt-pages.test.ts": [
+      "records one atomic page chain, retains original postimages and all tail allocations through expiry",
+      "captures immutable current context for nondisclosable receipt pages before minimum checks"
+    ],
+    "transaction-snapshot.test.ts": [
+      "checks each fresh Snapshot minimum before any handle, record, page or expiry work",
+      "does not expire retained Snapshot details on an ineligible fresh attempt",
+      "gates fresh Snapshot opaque minima before allocation and expiry"
+    ],
+    "transaction-events.test.ts": [
+      "gates initial Scope Event unknown minima before retained scans",
+      "serves initial finite Scope Event opaque minima through bounded waiting",
+      "gates initial Bead Event unknown minima before retained scans",
+      "serves initial finite Bead Event opaque minima with retained identity and route fences",
+      "gates initial Link Event unknown minima before retained scans",
+      "serves initial finite Link Event opaque minima with retained identity and route fences"
+    ],
+    "transaction-event-sse.test.ts": [
+      "gates initial Scope Event SSE opaque minima before scan packets",
+      "captures initial Scope Event SSE minima once and recaptures context on retry",
+      "drains an aborted initial Scope Event SSE minimum wait before owner close",
+      "serves initial Scope Event SSE opaque minima before conditional admission"
+    ],
+    "transaction-changefeed.test.ts": [
+      "keeps direct and excluded changefeed minimum paths strict",
+      "serves finite start-now opaque minima before HTTP shortcuts"
+    ],
+    "transaction-http.test.ts": [
+      "serves canonical current Type and incident minimums with truthful context and parser boundaries",
+      "serves conditioned live aliases and preserves bodyless redirects, refusal context and receiving boundaries",
+      "waits for current Resources and initial collections with unknown minima and preserves residual refusals",
+      "serves fresh Snapshot opaque minima with terminal preflight and retained fences",
+      "serves opaque receipt root minima before HTTP shortcuts with private fences",
+      "rejects collection parser errors before unknown minimum support checks",
+      "preserves parser refusal parity on noncollection and excluded query routes",
+      "preserves receiving and HTTP error precedence for parser refusals",
+      "orders page nondisclosure, minimum waits, expiry and representation using actual owner state",
+      "refuses unsupported root controls after nondisclosure but before read-triggered retention",
+      "keeps failed parent rows unchanged for nonexistent page reads with any controls"
+    ]
+  },
+  "newSourceSelection": {
+    "transaction-service.test.ts": {
+      "literalTitles": [
+        "waits for lexical current observations and preserves captured tuples across real progress",
+        "orders Type refusal and receipt page nondisclosure before projection"
+      ],
+      "parameterTitle": "drains lexical current observation %s before close",
+      "labels": [
+        "type",
+        "types",
+        "incident",
+        "page",
+        "discovery"
+      ]
+    },
+    "transaction-receipt-pages.test.ts": {
+      "literalTitles": [
+        "preserves receipt page detail when lexical eligibility is unproved"
+      ]
+    },
+    "transaction-http.test.ts": {
+      "literalTitles": [
+        "serves current observation minimums with actual issued pages and HTTP parity"
+      ]
+    }
+  },
+  "selectionInterpretation": "Exact existing literal callback titles except five existing describe families expressly named; author freezes expanded full names before execution. No dynamic module collection. New C expands five labels. No aggregate legacy count claimed.",
+  "newSourceReports": [
+    "current-observation-service",
+    "current-observation-nondisclosure",
+    "current-observation-drain (five discriminated rows)",
+    "current-observation-page-retention",
+    "current-observation-http"
+  ],
+  "installed": [
+    {
+      "file": "apps/bdptest/src/transactional-minimum-receiving-installed.test.ts",
+      "title": "rejects malformed read minimum tuples before observation while preserving receipt nondisclosure",
+      "http": 22,
+      "children": 1,
+      "stores": 1,
+      "attribution": "fresh successor of historical callback; owned page oracle changes"
+    },
+    {
+      "file": "apps/bdptest/src/transactional-minimum-receiving-installed.test.ts",
+      "title": "observes installed current observation minima within37requests",
+      "http": 37,
+      "children": 1,
+      "stores": 1,
+      "attribution": "new callback"
+    }
+  ],
+  "rootAuthoringReleased": false,
+  "executionReleased": false
+}

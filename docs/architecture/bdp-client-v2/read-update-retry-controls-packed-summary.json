@@ -1,0 +1,39 @@
+{
+  "sourceCommit": "a899872efcccc1e7871746c8c8cfb0eeefdc8db1",
+  "sourceDirty": false,
+  "configuration": {
+    "scope": "https://reference.invalid/acme/",
+    "profile": "read-update",
+    "history": false,
+    "sourceCommit": "a899872efcccc1e7871746c8c8cfb0eeefdc8db1",
+    "installedPayloadDigest": "cac59fd75a1e406211f4c39fe77e70ed1cfb9c1c4e5d625e1f93e0bc015511c5",
+    "installedContractsDigest": "48667497d6e13064316d0364cf8f49dfc247ab9189306985a357d7b558333dfe",
+    "policyDigest": "dbe8dbd5430f26e19e754d38167cd8084a32d702c695550e2ee0063dc2912430",
+    "authenticationDigest": "66941efc779f4f2431d65fdd5b2387b2af67bd7c1559e09dac032f82259ea16e",
+    "fixtureDigest": "a200afeb240f4c0c14e7bab43605d753e1640de8f17920c7dc5c174a901fb450",
+    "fixtureId": "reference-read-update-schema-v1",
+    "capabilities": [
+      "installed-read-update-http"
+    ]
+  },
+  "reportBinding": {
+    "artifacts": {
+      "catalogDigest": "e26d3fc758a34ebb0b5028be15d28e3e09db87dc7984bba7bad6a00b26329aa0",
+      "manifestDigest": "6961ecb631d971c1e22bda91074d63a008bfa659e38cc519b59963d39c6157cd",
+      "fixtureDigest": "a200afeb240f4c0c14e7bab43605d753e1640de8f17920c7dc5c174a901fb450"
+    },
+    "exactConfigurationDigest": "092b9ac9abf64dcd02f592059bc6333b0a6dfc69efe9d50332086335474c8f3c"
+  },
+  "claimEligible": false,
+  "requiredIds": 129,
+  "plannedIds": 45,
+  "uncoveredIds": 103,
+  "sessions": 45,
+  "observations": 781,
+  "setupObservations": 44,
+  "nativeReadObservations": 21,
+  "scenarioStates": {
+    "harness-error": 89,
+    "pass": 45
+  }
+}

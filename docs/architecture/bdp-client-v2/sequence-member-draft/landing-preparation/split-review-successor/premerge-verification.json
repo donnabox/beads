@@ -1,0 +1,50 @@
+{
+  "testedMerge": "6bb108b532ebda037ba63725f35b3a925048f2c6",
+  "parents": [
+    "18104a03b850553641f24fe83e7318493fa102ca",
+    "82f60a25da8799334381f6ebd810f32a3574cd2d"
+  ],
+  "at": "2026-10-15T18:16:48.502979+00:00",
+  "mode": "premerge",
+  "head": "82f60a25da8799334381f6ebd810f32a3574cd2d",
+  "tree": "3cd1da66ba3a6cbd0bbdaa2442d10002939d826b",
+  "base": "18104a03b850553641f24fe83e7318493fa102ca",
+  "run": 38778497973,
+  "job": 116572249950,
+  "ciLogSha256": "ad90468d26c6bb079f1a7600996df3ac6296e10720082334023c8721a328869f",
+  "pinsSha256": "c9f5e9e35c3abd4ab382319453c1497563f3bf5c1de4112623762a42bbbe912a",
+  "verifiedPaths": 4,
+  "requiredSteps": [
+    "Run pnpm install --frozen-lockfile",
+    "Run pnpm format:check",
+    "Run pnpm lint",
+    "Run pnpm check:boundaries",
+    "Run pnpm typecheck",
+    "Run pnpm build",
+    "Run pnpm test",
+    "Run pnpm e2e:ready:preflight",
+    "Run pnpm smoke",
+    "Read-cohort evidence gate"
+  ],
+  "claudeScopes": {
+    "wire": {
+      "exitCode": 0,
+      "elapsedSeconds": 731.5951857089531,
+      "exitSha256": "ee5d5eb1fb3389a01325aac8ecfab306aeeaf7ebf6dd5f51be9eaa4c1db29238",
+      "stdoutSha256": "72996311f2cf4112c7fa3105c4e4b034e6010c180307e88a9e127e7d9885b7d4",
+      "cleanupSha256": "faafe4d7a57d946fa3925a10b6192f2c1e3155d57487330a67e3511aa00f20f1",
+      "sourceAfterSha256": "f656770eee0c8202700a20b621ff77f752529b44fc6d6a9048281dce6d19a012",
+      "promptSha256": "2dd418c3f937d83972271d6fa38d6aa1ccf5727851804aa2f50c7481bb9b1e2d"
+    },
+    "manifest": {
+      "exitCode": 0,
+      "elapsedSeconds": 684.6852931668982,
+      "exitSha256": "78278575d77e52e369368291572702d44121e694733253fb43f25625af0fc680",
+      "stdoutSha256": "797e7cb90f042e68b7610951db1c1cb12ecfcc29765d0bcae0f6d1df682e6c98",
+      "cleanupSha256": "a42bbba5ee1ff4967a6c560f444d411109c9cc67f125e097fbc553cfbbd06065",
+      "sourceAfterSha256": "6f86652572826af45c71e847eec563cbd93bf6c6754302461b4d32a6f386e064",
+      "promptSha256": "f25fa4540326ae312ec3a3c75a1c9181345875a7412c4986333d9f5f8a168580"
+    }
+  },
+  "profileQualification": false
+}

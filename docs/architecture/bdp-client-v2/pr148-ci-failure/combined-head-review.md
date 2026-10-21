@@ -1,0 +1,17 @@
+# Independent combined-head scope audit
+
+No actionable integration finding and no additional code-council cycle needed for this ordinary, disjoint union. Combined candidate may be published for its own exact-head CI; this audit does not claim that combined CI has passed or authorize final integration without it.
+
+- Combined HEAD:c0bae663dd35854c1dfc4cdd06bdaa73a1a8b41b; tree:b457d89b2d81c128b043f6218bffa07c44845f39. Working tree clean.
+- Exact ordered parents:f7b8fc433915d5164d139701a8ee48d518976e6c (conditional plus bounded failure diagnostic) and61ef6b78b39e0852c3f17ddc8248794ea4d3881d (Event working-target merge).
+- Base:2dfd2c6cc84a28b1dd336f4184c1a5f910ce8a96. Reconstructed the full recursive tree union from both parent deltas against this base, comparing paths, modes, object types and blob IDs. It exactly equals the combined tree; no overlap, conflict-resolution edit, deletion or unrelated file appeared.
+
+Conditional parent changes five files: apps/bdptest/src/read-update-matrix.test.ts, apps/bdptest/src/transactional-matrix.test.ts, packages/conformance/src/transactional-cumulative.test.ts and transactional manifest-v1.json/coverage-v1.json. Event parent changes only apps/bdptest/src/transactional-event-sse-installed.test.ts. Every changed file in the combined tree is byte-identical to its reviewed parent. The conditional four-file hashes match the reviewed portability successor, diagnostic37558e78 matches its native/Claude-dispositioned draft, and Eventb7625637 matches the reviewed/validated successor4. Production/parser/runner/schema/fixture/helper bytes remain the base bytes.
+
+Read current native/actual-Claude root dispositions for the conditional successor and diagnostic; inherited Event dispositions were closed in the independent readiness audit. No review finding is reintroduced by this union. Event callback uses its own local artifacts and unchanged fixture-v1.json/installed binding helper, not the changed conditional manifest/coverage. Neither side changes shared runtime code, test configuration or lifecycle helpers. Combined-suite timing/resource interaction still requires real CI and is not disproved by disjoint file sets, but there is no concrete new semantic interaction warranting another speculative council or broader proof surface.
+
+Git graph inspection found exactly five commits reachable beyond2dfd: conditional8ee4d86c andf7b8fc43, Event7ed8fc34 and targetmerge61ef6b78, plus combinedmergec0bae663. Every parent chain closes at the accepted2dfd base. Thus no newer main ancestry was imported; this does not claim the historical base itself has no main ancestry.
+
+Independently fetched input CI summaries read-only. Run38970734053 succeeded at exact conditional headf7b8fc433915d5164d139701a8ee48d518976e6c. Run38969174869 succeeded at Event code commit7ed8fc34dad8217155150f8fbec5d0f687a6498b, not at merge61ef6b78. Verified Eventmerge61ef6b78 has exactly the same tree1cb53449fb531648faaae62add319c27edaa9694 as green7ed8fc34; keep this attribution precise. Neither input run is combined-head CI. URLs and complete exact fingerprints are in combined-head-review.json.
+
+No tests, imports, builds, source edits, commits or pushes were performed. Only this report and its JSON evidence were written through the live-session guard. Root owns publishing the combined candidate, exact-head CI review and later working-branch integration. No main/release/profile-completion claim follows.

@@ -1,0 +1,122 @@
+Audit complete. Working notes: the checkout is **not** at the commit the report calls frozen — `HEAD` is `9ea4089 "Snapshot served configuration as detached primitive data"`, one commit past `abdd1d4`. I reviewed `caf5ca7..abdd1d4` as asked and verified code findings against `git show abdd1d4:` content (line numbers below are `abdd1d4`'s), flagging where the follow-up commit already changes the answer.
+
+# Findings
+
+## 1. HIGH — The closed served-configuration mismatch binding is bypassable: two different targets compare equal
+**Location** `packages/conformance/test-support/profile-contract-plan.ts:158-175` (validation) and `:178-187` (`assertSameServedProfileConfiguration`)
+
+**Evidence** The digest/commit fields are validated by regex (`/^[0-9a-f]{64}$/.test(input[key])`), which coerces via `toString()`, while equality is decided by `canonicalJson`, which serializes a prototype-only object as `{}`. I ran the `abdd1d4` function verbatim:
+
+```
+A: BYPASS - two different policyDigests accepted as the same target
+   canonicalJson(policyDigest) for both = {} / {}
+B: reads=2  validated=a*40, stored="deadbeef"
+C: boxed fixtureDigest accepted
+```
+
+A: `policyDigest: Object.create({toString(){return "1".repeat(64)}})` vs `"2".repeat(64)` — both pass validation, both canonicalize to `{}`, `assertSameServedProfileConfiguration` returns without throwing. Same hole for `sourceCommit`, `installedPayloadDigest`, `installedContractsDigest`, `authenticationDigest`, `fixtureDigest`. (`scope` is protected by `url.href !== input.scope`; `fixtureId` by its `typeof` check.)
+B: validate-then-copy. `freeze({ ...input, … })` at `:175` re-reads every field *after* validation, so an enumerable getter passes the regex on read 1 and stores a different value on read 2.
+
+**Impact** This is exactly the property the design doc sells (`profile-contract-planning.md:21`, "refuses to combine records differing in any field") and the report's "Mismatches in any field refuse combination". At `abdd1d4` a launcher can combine a plan built against one installed payload/policy/auth/fixture identity with an execution against another, and the plan's own `configuration` can hold values that never passed validation. Everything the binding exists to prevent.
+
+**Fix** Already fixed, post-freeze, by `9ea4089` (`configurationData` + `primitiveString` + `capabilitySnapshot`: own-data-descriptor capture, proxy/accessor/boxed rejection, detached copy before validation). That commit is outside the reviewed range and outside the report's declared frozen artifact — it needs its own review, and the report's "Validation"/"Delivered" sections should stop describing `abdd1d4` as the frozen deliverable.
+
+## 2. HIGH — The new retirement edge has no normative spec basis and falsifies the spec's inheritance sentence
+**Location** `packages/conformance/catalog/read-update-v1.json:16`; `docs/specs/bdp.md:6798-6823`; `packages/conformance/src/read-update-catalog.test.ts:75-88`
+
+**Evidence** The spec enumerates retirements normatively, and only TX→RU: *"A Transactional claim inherits the Read rows and the Read+Update rows whose obligations the profile preserves … and retires the twelve Read+Update rows the profile contradicts … The retiring row names them in its `retires` member"* + twelve bullets (6798-6819). `#### Read+Update conformance rows` (6698-6704) declares no retirement at all. After this change I measured `retiredScenarioIds(combined, "transactional")` = **13** ids, one of them a Read row. The TX catalog test enforces the spec text bullet-by-bullet (`transactional-catalog.test.ts:204-228`, including `expect(boundedSection).toContain("retires the twelve\nRead+Update rows")`); `read-update-catalog.test.ts` asserts *nothing* about `retires` — it mirrors ids only.
+
+**Impact** The catalog is now sole authority for a cumulative-selection rule the normative spec does not state and, as written, contradicts. The report's "No spec change required" (line 19) is wrong. The asymmetry also means the RU edge has no erosion guard, in a repo whose test comments exist specifically so this "cannot erode silently".
+
+**Fix** Either (a) add the declared bullet under `#### Read+Update conformance rows`, amend 6798-6801 to "twelve Read+Update rows and one Read row", and add the mirroring assertion to `read-update-catalog.test.ts`; or (b) hold the catalog edge until that spec change lands. Note the retirement *reasoning* is sound — `read.discovery.document` asserts "These are the only members admitted by the closed `readDiscovery` definition" and that `aliases` is conditional, both false at RU — the defect is that only a design doc says so.
+
+## 3. HIGH — The retirement drops the only row binding "An omitted `order` means `canonical-uri`" from the RU and TX sets
+**Location** retired row `packages/conformance/catalog/read-v1.json:18` (second citation); replacement `read-update-v1.json` `read-update.discovery.document`
+
+**Evidence** I scanned every citation in all six catalogs: that sentence appears in exactly one row, `read.discovery.document`. `read.collections.beads`/`.links` bind only that `canonical-uri` ordering MUST be supported and how it compares — not the discovery default. The replacement row's single citation says only that `order` is "optional under their inherited contracts", a pointer rather than a binding. `maximumEndpointMultiplicity`'s optionality survives only as the same passing mention.
+
+**Impact** A normative default silently leaves the RU and TX required sets — the precise "missing mandatory row" the audit was supposed to rule out. The derived counts (129/250, which I independently recomputed and confirm) hide it, because one row left and one arrived.
+
+**Fix** Carry the orphaned citation into `read-update.discovery.document` (or a new `read-update.discovery.order-default` row) before retiring, and add a guard: for every retirement edge, assert each citation of the retired row is still bound by some row selected at the retiring profile. That test would have caught this.
+
+## 4. MEDIUM — `ready-unexecuted` is reported for manifest/profile combinations the runner categorically refuses
+**Location** `profile-contract-plan.ts:231-252`, `:262-269`; test `src/profile-contract-plan.test.ts:198-227`; guard `src/runner.ts:2557-2585`
+
+**Evidence** The planner never reads `manifest.manifestVersion` or `manifest.catalogId`, though `parseExecutableScenarioManifest` requires both (`executable-manifest.ts:466-470`) and `createBoundArtifactBundle` enforces the catalogId↔catalog binding (`artifact-bundle.ts:143-147`). `validateRunOptions` throws `"read-v1 executable scaffold currently supports targets advertising the Read profile only"` for (v1, `read-v1`, profile ≠ read), and for manifestVersion 2 throws unless the profile is `read` or `read-update` — so Transactional is refused outright. The new test feeds `matrices/read-v1.json` (v1, `catalogId: "read-v1"`) with a `read-update` selection and asserts `read.discovery.scope-service-desc` → `ready-unexecuted`.
+
+**Impact** The readiness vocabulary the doc defines as honest ("A future runner may attempt it", `profile-contract-planning.md:48`) is asserted for combinations no runner can attempt, and the one case is pinned by a passing test. A TX plan will report ~250 `ready-unexecuted` rows for a profile the runner refuses to start.
+
+**Fix** Validate `catalogId`/`manifestVersion` against the selection and mirror `runner.ts`'s admission guards, or add a distinct readiness (`carrier-unsupported`) rather than folding it into ready.
+
+## 5. MEDIUM — Readiness ignores `prerequisiteScenario`, and this retirement makes nine inherited Read rows unsatisfiable at RU/TX
+**Location** `profile-contract-plan.ts:255-273`; `runner.ts:320-324`, `:2744-2781`
+
+**Evidence** Measured against `matrices/read-v1.json`: nine rows name `read.discovery.document` as an action prerequisite — `read.collections.beads`, `.links`, `.structural-predicates`, `read.types.inventory`, `read.http.get-head`, `.method-405`, `.cache-cors`, `read.alias.resolution`, `.absent`. `selectApplicableScenariosForProfile` drops a retired row from `selected` with no error (only ids absent from the *catalog* throw, `runner.ts:321-324`), and `prerequisiteResultBeforeRun` then returns `harness-error`/`not-run` with `"prerequisite was not selected or did not run"`. The planner inspects only `setup.requires`/`applicability.requires`, so all nine would be reported `ready-unexecuted`.
+
+**Impact** Directly on the stated next step (U1's cumulative RU manifest). A cumulative run reusing the existing Read realizations converts nine inherited Read obligations into harness errors, after a plan that called them ready. Latent today only because `runner.ts:2557` blocks that manifest at non-Read profiles (finding 4).
+
+**Fix** Classify a row whose prerequisite is retired, unplanned or not-ready as not ready; add a test planning the real Read manifest at profile `read-update`.
+
+## 6. MEDIUM — The `readSource` seam defeats the "no smaller requirement list" property; `catalogDigests` is never verified
+**Location** `profile-contract-plan.ts:42-43` (third parameter), `:34-38` (comment), `:225-226` (WeakSet gate); `profile-contract-planning.md:7,9`
+
+**Evidence** I ran `loadProfileContractSelection("transactional", false, trimmedReadUpdateCatalog)` where the RU catalog keeps only the twelve TX-retired rows plus one: it returns a factory-blessed, WeakSet-approved, frozen selection with **182** required rows instead of **250**, and `planProfileExecution` accepts it without complaint. The only signal is a differing `catalogDigests["read-update-v1.json"]`, which nothing in the module or tests compares against anything. (`loadProfileContractSelection` is byte-identical at `abdd1d4` and `9ea4089`.)
+
+**Impact** The doc's "A factory selection is immutable and cannot be replaced by a caller's smaller structural lookalike" holds only against the post-hoc spread the test covers (`profile-contract-plan.test.ts:185-189`). The WeakSet reads as a control it is not, on the intended input path to an evidence-producing runner.
+
+**Fix** Recompute digests from the on-disk files and compare on the default path (or pin expected digests), and move the injection seam behind a separately named test-only export.
+
+## 7. MEDIUM — "One requirement set" is a hardcoded filename list with no completeness guard
+**Location** `profile-contract-plan.ts:19-21`
+
+**Evidence** `coreCatalogs`, `companionCatalogs`, `historyCatalog` are string literals; no test asserts they cover `catalog/*.json`. The idiom already exists in the repo for this exact directory — `profile-catalog-boundaries.test.ts:118-121` does `readdirSync(new URL("packages/conformance/catalog/", root))` — and for `matrices/` in both catalog tests.
+
+**Impact** The first added catalog (set mutation, erasure, …) silently drops out of the "complete required contract set" with no failing test, which is the module's whole claim.
+
+**Fix** Scan the directory, require every file to be explicitly classified core/companion/optional, and fail on an unclassified catalog.
+
+## 8. MEDIUM-LOW — Fixture identity and capabilities are three unverified caller claims, where the package already derives them from fixture bytes
+**Location** `profile-contract-plan.ts:116-120`, `:250-253`; compare `cohort-artifact.ts:448-466` and `artifact-bundle.ts:110-113,148-155`
+
+**Evidence** The manifest is consumed as bytes and parsed; the fixture is three independent strings (`fixtureDigest`, `fixtureId`, `capabilities`) with no cross-check. `deriveReadCohortNotApplicableRows` computes the identical applicability classification and documents the opposite discipline: *"Derived, never supplied; the verifier recomputes it from the committed catalog, manifest, and fixture bytes."* `createBoundArtifactBundle` parses the fixture, computes `fixtureDigest` from its bytes, and checks `setup.fixture === fixture.id`.
+
+**Impact** `capabilities` alone decides `setup-unavailable`/`applicability-unresolved` vs `ready-unexecuted`, so the one output property the doc insists on — "never turns missing fixture capability into an automatic N/A or pass" — rests entirely on launcher honesty, while the hardened derivation sits in the same package.
+
+**Fix** Accept the factory-created `ConformanceArtifactBundle` (or the fixture source bytes) and derive `fixtureId`/`fixtureDigest`/`capabilities` from it.
+
+## 9. LOW — Scope validation diverges from the runner's canonical-scope predicate
+**Location** `profile-contract-plan.ts:146-155` vs `runner.ts:3100-3110` + `isCanonicalUrlPath` `:3230-3244`
+
+**Evidence** Measured: `http://127.0.0.1:43210/a%2fb/`, `http://127.0.0.1:43210//x/` and `http://127.0.0.1:43210/%7Ea/` all pass `bindServedProfileConfiguration` and all fail `isCanonicalScope` (which rejects `%2f`/`%5c`, empty segments, and needless encoding of unreserved characters). Separately, `fixtureId` and `capabilities` skip the repo's `ARTIFACT_ID_PATTERN`/`BINDING_ID_PATTERN` and accept untrimmed strings — `" reference-read-v1 "` binds fine and can then only ever produce `manifest fixture mismatch`.
+
+**Impact** A "closed" binding that admits Scopes the executing runner rejects, and identities no manifest can name.
+
+**Fix** Export and reuse `isCanonicalScope` and the existing id patterns.
+
+## 10. LOW — Manifest bytes bypass the package's hardened source boundary
+**Location** `profile-contract-plan.ts:231-238`, `:278` vs `artifact-bundle.ts:306-329` (`copySourceBytes`) and `parseBoundedJson` (1 MiB, depth 128, 100k nodes, 10k container entries)
+
+**Evidence** `Uint8Array.from(execution.manifest.bytes)` accepts any array-like/iterable and coerces elements mod 256 (`300 → 44`), so `manifestDigest` can hash coerced bytes while the doc promises "exact executable manifest bytes". No size or JSON-shape bound is applied. `copySourceBytes` deliberately uses intrinsic `byteLength`/`Symbol.toStringTag` getters precisely to reject a non-`Uint8Array` lookalike — the threat model this module reimplements more weakly. Separately, `freeze` (`:288-294`) recurses with no cycle guard; unreachable with current inputs.
+
+**Fix** Export `copySourceBytes`-equivalent validation and use it before decoding and hashing.
+
+## 11. LOW — The 81-row audit table has no lockstep test, and citation sets are unguarded
+**Location** `docs/design/profile-contract-planning.md:60-143`; `packages/conformance/catalog/read-update-v1.json` (removed citation)
+
+**Evidence** I verified the table is currently exact: 81/81 rows, no duplicates, no extras, and all twelve "Replaced by" claims match the actual retiring row. But its machine-checked sibling — `packages/conformance/development/read-update-coverage-v1.json`, pinned by `development-read-update.test.ts:66-75` with `toHaveLength(81)` plus exact id-order equality — shows the convention this table skips. On the citation side, `validateCatalogCitations` only validates citations that remain and `read-update-catalog.test.ts:75-88` mirrors ids only, so a citation can be dropped with no signal; the new negative assertion (`profile-contract-plan.test.ts:103-110`) pins this one removal and nothing else.
+
+**Fix** Either move the table into a checked inventory or add a test parsing it against the catalogs — I confirmed such a test passes today.
+
+---
+
+# What I checked and found sound
+
+- **Companion dedup** is correct and complete: all six companion `read.*` rows are canonical-JSON-identical copies of `read-v1` rows and dedup cleanly; the five new companion obligations are all `read-update` (`read-update.numeric-model.{same-value-no-op,round-trip-admission,nested-refusal}`, `read-update.owned-wildcard.{explicit-precedence,undeclared-type-versions-source}`); merged set is 268 rows = 49+81+133+5.
+- **Counts** independently recomputed and confirmed: 44 Read normative (49 rows, 5 diagnostics), 129 RU, 250 TX; 1 RU→Read edge, 12 TX→RU edges.
+- **Diagnostic vs normative selection** is correct — diagnostics stay in source catalogs, never enter `required`, and a diagnostic manifest row is rejected as "not a selected requirement".
+- **The twelve TX retirements are sufficient — the audit did not force its conclusion.** I checked the riskiest "Inherited" verdicts against the spec rather than the doc: the sequence envelope survives verbatim (`bdp.md:4046-4061` "it keeps its envelope, its member records, its declaration order, its separate commitment, its lack of isolation"; status matrix `:4598` `` | `sequence` | `POST` | `200` envelope … never a sequence-level `202` receipt ``); `read-update.problem.table` is inherited by the spec's own words (`:5276-5277`); the direct/receipt code split (`:5300-5320`) matches the per-row notes, with `unauthenticated` 401, `request-too-large` 413, `idempotency-conflict` and `unsupported-media-type` all in the TX direct list and `method-405` in the matrix. I scanned all 69 non-retired RU rows for RU-only profile-scoped citations and for citations asserting a direct status TX moves into receipts, and found no 13th retirement candidate. The one citation removal is justified: "Read+Update has no durable Mutation Receipts and no BDP Events" is the RU-scoped statement at `bdp.md:3559`, false at TX, and `transactional.event.no-op-owned-update` independently binds the TX no-op Event law. `read-update.idempotency.durable-boundary` survives durable pending admission because the spec defines a disposition as a *terminal* outcome (`:3247-3250`).
+- **`read.discovery.optional-limits` retention** is right, and the doc's distinction (keeping an obligation ≠ copying its old realization) is correct: I confirmed both `read.discovery.document` and `read.discovery.optional-limits` hardcode the `readDiscovery` schema in `matrices/read-v1.json`.
+- **Existing artifacts and claims are unchanged.** The production bundle binds only `catalogId: read-v1` (`artifact-bundle.ts:115-117`) and the Read profile has zero retirements, so the sealed Read cohort (`docs/design/evidence/read-cohort/read-v1.json`, 89 rows, constant `674982be…` at `packages/server/src/read-conformance-capability.ts:27`) is untouched. The diff is five files; no schema, evidence, runtime or admission change.
+- **Test verification beyond the report.** I ran the full `packages/conformance` suite at the working tree: **24 files / 797 tests pass**, covering the thirteen files the report's focused 11-file run omitted (`artifact.test.ts`, `cohort-artifact`, `cohort-verification`, `report`, `schema-read-projection`, …), all of which consume these catalogs. `apps/bdptest/src/read-matrix.test.ts` passes (8 tests). The other `apps/bdptest` failures are the Node pin, not the diff — this machine is on v26.0.0 against the repo's v24.16.0 (`wrong pinned Node`, `durable reference storage requires Node v24.16.0`).
+
+**Process note:** the report's framing ("Frozen clean commit: `abdd1d4`", "Root should review … before merging") no longer matches the checkout, which carries an unreviewed follow-up commit that silently supersedes the security posture described in finding 1.

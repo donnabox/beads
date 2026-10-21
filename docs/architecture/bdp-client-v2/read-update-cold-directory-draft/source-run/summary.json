@@ -1,0 +1,59 @@
+{
+  "selectionExact": true,
+  "actualCases": [
+    {
+      "fullName": "pins cold RU directory literals, actual target bindings and parent preservation",
+      "status": "passed",
+      "failureMessages": []
+    },
+    {
+      "fullName": "pins numeric admission source growth, old blocks and independent row ledgers",
+      "status": "failed",
+      "failureMessages": [
+        "AssertionError: expected 70150 to be less than or equal to 66560\n    at /Users/dbox/repos/wt/vickie/vickie-update-cold-directory/apps/bdptest/src/read-update-matrix.test.ts:4991:72\n    at file:///Users/dbox/repos/wt/vickie/vickie-update-cold-directory/node_modules/.pnpm/@vitest+runner@4.1.10/node_modules/@vitest/runner/dist/chunk-artifact.js:302:11\n    at file:///Users/dbox/repos/wt/vickie/vickie-update-cold-directory/node_modules/.pnpm/@vitest+runner@4.1.10/node_modules/@vitest/runner/dist/chunk-artifact.js:1903:26\n    at file:///Users/dbox/repos/wt/vickie/vickie-update-cold-directory/node_modules/.pnpm/@vitest+runner@4.1.10/node_modules/@vitest/runner/dist/chunk-artifact.js:2326:20\n    at new Promise (<anonymous>)\n    at runWithCancel (file:///Users/dbox/repos/wt/vickie/vickie-update-cold-directory/node_modules/.pnpm/@vitest+runner@4.1.10/node_modules/@vitest/runner/dist/chunk-artifact.js:2323:10)\n    at file:///Users/dbox/repos/wt/vickie/vickie-update-cold-directory/node_modules/.pnpm/@vitest+runner@4.1.10/node_modules/@vitest/runner/dist/chunk-artifact.js:2305:20\n    at new Promise (<anonymous>)\n    at runWithTimeout (file:///Users/dbox/repos/wt/vickie/vickie-update-cold-directory/node_modules/.pnpm/@vitest+runner@4.1.10/node_modules/@vitest/runner/dist/chunk-artifact.js:2272:10)\n    at file:///Users/dbox/repos/wt/vickie/vickie-update-cold-directory/node_modules/.pnpm/@vitest+runner@4.1.10/node_modules/@vitest/runner/dist/chunk-artifact.js:2955:64"
+      ]
+    },
+    {
+      "fullName": "pins metadata closure growth, old B actions and final N preservation",
+      "status": "passed",
+      "failureMessages": []
+    },
+    {
+      "fullName": "pins bounded R closure source, changed-action ledger and unchanged companions",
+      "status": "passed",
+      "failureMessages": []
+    },
+    {
+      "fullName": "pins cumulative source digest map, catalog order and every coverage binding",
+      "status": "passed",
+      "failureMessages": []
+    },
+    {
+      "fullName": "canonical cumulative profile contracts inherits partial TX command-minimum evidence while preserving RU omission",
+      "status": "passed",
+      "failureMessages": []
+    },
+    {
+      "fullName": "private two-artifact Read+Update set accepts the actual current corpus split with unchanged prerequisite groups and coverage",
+      "status": "passed",
+      "failureMessages": []
+    }
+  ],
+  "passed": 6,
+  "failed": 1,
+  "skipped": 334,
+  "sourceUnchanged": true,
+  "stoppedOnFailure": true,
+  "installedExecuted": false,
+  "files": {
+    "fresh-build.started.json": "efa06f844659248f52c8876ee9c0d333448950b5162cf5f89deb8d2298ce3f75",
+    "cpu-seven.exit.json": "d1113e60ac2d8830afb55ff4947cb8f5bcba5a42befbcdccfb796a019fca4530",
+    "cpu-seven.started.json": "71872565d67305b39f6a80791dd8bf93d2ee7a56dc34fbcb4d6ea6d106e07f8d",
+    "cpu-seven.processes.jsonl": "b50f7fbb644639be0e0c2447534f3b4012efb3edb24181abded3fdd0cf90481e",
+    "fresh-build.log": "9a6ffbc69d7512f585701e205eb66de52012b7ea06677a3946e6c00d82c83106",
+    "cpu-seven-tests.json": "93e955a28ee9aac4384e125c054246cd40a268547006b253e1ccbfb08a01282c",
+    "fresh-build.exit.json": "f7bc3ddad8c10cb7139c8a68404274cb1479d023e5522e7becf729cd0ad79363",
+    "fresh-build.processes.jsonl": "49764907bb9ca5189f4cf8518ed21a591069226071e1df365c21c14cef512fc7",
+    "cpu-seven.log": "9bd627a40e8a9ee7289bb1f3b79579621a6671e48d8224bd479f4f9f05c2d455"
+  }
+}

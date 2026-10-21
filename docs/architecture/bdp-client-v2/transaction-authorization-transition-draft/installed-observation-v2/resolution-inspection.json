@@ -1,0 +1,40 @@
+{
+  "method": "Filesystem/manifest/exports source inspection only; no Node resolve/import executed",
+  "consumer": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-authorization-transition-draft/installed-validation-plan/run/consumer",
+  "protocolDependencies": {
+    "ajv": "8.17.1",
+    "ajv-formats": "3.0.1"
+  },
+  "serverDependencies": {
+    "fast-uri": "3.1.5",
+    "@bdp/protocol": "0.0.0"
+  },
+  "files": {
+    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-authorization-transition-draft/installed-validation-plan/run/consumer/node_modules/.pnpm/@bdp+protocol@file+..+packages+bdp-protocol-0.0.0.tgz/node_modules/@bdp/protocol/package.json": {
+      "sha256": "2415a9a929050fc642fceceb15dce1084debaf1bf7b05f1602ba034afa57f17f",
+      "consumerContained": true
+    },
+    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-authorization-transition-draft/installed-validation-plan/run/consumer/node_modules/.pnpm/@bdp+protocol@file+..+packages+bdp-protocol-0.0.0.tgz/node_modules/@bdp/protocol/dist/index.js": {
+      "sha256": "1554d12e06f39934809b0546aaa667ca682594b5a8597c82a36e7e80285b4a36",
+      "consumerContained": true
+    },
+    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-authorization-transition-draft/installed-validation-plan/run/consumer/node_modules/.pnpm/@bdp+protocol@file+..+packages+bdp-protocol-0.0.0.tgz/node_modules/@bdp/protocol/schemas/bdp-v0.schema.json": {
+      "sha256": "0baa5d5ef67144f8e6513b4cde31168effc8df6d52ef3141b0f144b87f8dc227",
+      "consumerContained": true
+    },
+    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-authorization-transition-draft/installed-validation-plan/run/consumer/node_modules/.pnpm/ajv@8.17.1/node_modules/ajv/package.json": {
+      "sha256": "ce1539e6f4e0f345ed402c47137d2679497b2035d4a4f420ee11acdde03dea92",
+      "consumerContained": true
+    },
+    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-authorization-transition-draft/installed-validation-plan/run/consumer/node_modules/.pnpm/ajv@8.17.1/node_modules/ajv/dist/2020.js": {
+      "sha256": "908e9670b478b2ba126802a221b7e47006f50cf467e2c5dd7935d3dbef10a20a",
+      "consumerContained": true
+    }
+  },
+  "exports": {
+    "Ajv2020": true,
+    "isJsonSchemaUri": true,
+    "isJsonSchemaDateTime": true
+  },
+  "resolution": "AJV resolves with createRequire(realpath protocol/package.json); direct @bdp/protocol continues to resolve from consumer package. All resolved module paths remain realpath-contained in consumer."
+}

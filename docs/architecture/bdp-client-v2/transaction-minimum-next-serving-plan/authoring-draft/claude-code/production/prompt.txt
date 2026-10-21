@@ -1,0 +1,1178 @@
+
+===== Review scope and accepted contract =====
+Review actual changed code. Do not write or modify any files. Output findings only in stdout. No tools/model override. Report concrete actionable correctness/security/regression findings with severity, exact location, evidence and smallest fix, plus only material missing context. Prefer <=800words. Do not promote speculative missing evidence into a verified defect.
+
+This is one of three complementary code scopes; root aggregates actual outputs. Full ten-file diff is separately bound, with exhaustive changed-hunk assignments. Source author assembled this packet; preparation is not independent review. Reviewed isolated1647 is an unmerged auth candidate, not main. Initial typecheck failed two missing fixture ownerLifetime properties; successors add those two and record report-overflow failure without a throw in finally. Final integration/package evidence remains separate. Actual author-run source validation now completed11stages/15selectedpasses (139notselected), with unchanged source and clean sampled-process checks. These are bound raw records, not independent code approval. Format1warning/lint936warnings76infos. No installed/control run occurred.
+
+Settled rules: after earlier transport/auth/lexical guards, observed missing/hidden Bead/Link Resource/properties, alias and initial incident anchor404 with actual current context precedes semantic minimum. Existing authorized Resource/properties with actual same epoch/view and unknown valid minimum waits existing1s then503catch-up-timeout/after-delay. Known tokens retain old behavior; excluded successful alias/Types/collections/incident/continuations and unknownforeign context remain unsupported. Existing negotiation/conditions remain unchanged: conditionalReadStatus returns200|304|412; JSON negotiation may select406. Selected404/503 bypass that stage. S1/G2questions excluded.
+
+Root capture finding: signal.aborted own getter could change route after classification. Final code captures frozen descriptors before service waiter and direct minimum facet; classification and authority use the same snapshot, invalid shapes retain authority rejection without getters. Regression is authored in existing callback. No broader API/schema/limits change.
+
+Prospective source15callbacks/172HTTP/10owners/5listeners/0product children. Installed32positive+2+2negative=36expected/96maximumHTTP/3children. Sequence four own-key members/no outer key/no atomicseedclaim; actualpos3 thenaheadpos4. Fresh installed override is library transaction-installed.js with separate privateIPCwrapper hash; Host canonical while dialing loopback. Root owns actual validation/releases.
+
+
+===== Complete assigned changed hunks =====
+diff --git a/packages/server/src/transaction-consistency.ts b/packages/server/src/transaction-consistency.ts
+index 52ffd00..b3c5b17 100644
+--- a/packages/server/src/transaction-consistency.ts
++++ b/packages/server/src/transaction-consistency.ts
+@@ -29,7 +29,8 @@ const position = (value: unknown): number | undefined => {
+   const number = Number(value.slice(4));
+   return Number.isSafeInteger(number) ? number : undefined;
+ };
+-export function snapshotTransactionMinimum(value: unknown): TransactionMinimum {
++/** Lexical data-only capture for the selected current-Read paths. */
++export function snapshotCurrentReadMinimum(value: unknown): TransactionMinimum {
+   if (!value || typeof value !== "object" || isProxy(value))
+     throw new TypeError("unsupported minimum tuple");
+   const fields = Object.getOwnPropertyDescriptors(value);
+@@ -48,12 +49,28 @@ export function snapshotTransactionMinimum(value: unknown): TransactionMinimum {
+     typeof authorizationView !== "string" ||
+     !token.test(authorizationView) ||
+     typeof minimumPosition !== "string" ||
+-    !token.test(minimumPosition) ||
+-    position(minimumPosition) === undefined
++    !token.test(minimumPosition)
+   )
+     throw new TypeError("unsupported minimum tuple");
+   return Object.freeze({ scopeEpoch, authorizationView, minimumPosition });
+ }
++export function snapshotTransactionMinimum(value: unknown): TransactionMinimum {
++  const minimum = snapshotCurrentReadMinimum(value);
++  if (position(minimum.minimumPosition) === undefined)
++    throw new TypeError("unsupported minimum tuple");
++  return minimum;
++}
++export function currentReadMinimumHeaders(headers: Headers): TransactionMinimum | undefined {
++  try {
++    return snapshotCurrentReadMinimum({
++      scopeEpoch: headers.get("bdp-scope-epoch"),
++      authorizationView: headers.get("bdp-authorization-view"),
++      minimumPosition: headers.get("bdp-minimum-scope-position"),
++    });
++  } catch {
++    return undefined;
++  }
++}
+ export function transactionMinimumHeaders(headers: Headers): TransactionMinimum | undefined {
+   try {
+     return snapshotTransactionMinimum({
+@@ -88,6 +105,31 @@ export function checkTransactionMinimum(
+     throw new Error("invalid owner minimum position");
+   if (current < required) throw new TransactionMinimumFailure("behind", context);
+ }
++/** An unknown identity is not behind or malformed, and carries no ordering claim. */
++export class TransactionMinimumUnproved extends Error {
++  constructor(readonly context: TransactionReadContext) {
++    super("current Resource minimum eligibility unproved");
++  }
++}
++export class TransactionMinimumUnsupported extends Error {}
++export function checkCurrentReadMinimum(
++  minimum: TransactionMinimum,
++  context: TransactionReadContext,
++  waitable: boolean,
++): void {
++  if (position(context.scopePosition) === undefined)
++    throw new Error("invalid owner minimum position");
++  if (position(minimum.minimumPosition) === undefined) {
++    if (
++      !waitable ||
++      minimum.scopeEpoch !== context.scopeEpoch ||
++      minimum.authorizationView !== context.authorizationView
++    )
++      throw new TransactionMinimumUnsupported("minimum-position");
++    throw new TransactionMinimumUnproved(context);
++  }
++  checkTransactionMinimum(minimum, context);
++}
+ export interface TransactionMinimumWaitOptions {
+   readonly budgetMs?: number;
+   readonly now?: () => number;
+@@ -120,7 +162,11 @@ export async function waitForTransactionMinimum<T>(
+     try {
+       return await attempt();
+     } catch (error) {
+-      if (!(error instanceof TransactionMinimumFailure) || error.reason !== "behind") throw error;
++      if (
++        !(error instanceof TransactionMinimumUnproved) &&
++        (!(error instanceof TransactionMinimumFailure) || error.reason !== "behind")
++      )
++        throw error;
+       const current = now();
+       if (!Number.isFinite(current) || current < previous)
+         throw new TypeError("invalid minimum-read clock");
+diff --git a/packages/server/src/transaction-read.ts b/packages/server/src/transaction-read.ts
+index 93ce6e6..9e88fca 100644
+--- a/packages/server/src/transaction-read.ts
++++ b/packages/server/src/transaction-read.ts
+@@ -3,9 +3,9 @@
+  * waits; continuation minimums, receipt serving and replication Snapshots are
+  * separate contracts. */
+ import {
+-  checkTransactionMinimum,
++  checkCurrentReadMinimum,
++  snapshotCurrentReadMinimum,
+   TransactionMinimumFailure,
+-  snapshotTransactionMinimum,
+   type TransactionMinimum,
+ } from "./transaction-consistency.js";
+ import { isProxy } from "node:util/types";
+@@ -59,6 +59,64 @@ export function isCurrentTransactionMinimumRead(request: ReadRequest, scope: str
+   }
+ }
+ 
++/** Capture route fields before any receiving signal callback can mutate the caller's
++ * request. Preserve rejected descriptors/prototypes for the authority's own
++ * receiving path; never invoke a getter while making this private snapshot. */
++export function captureTransactionReadRequest<O extends ReadRequest>(request: O): O {
++  if (request === null || typeof request !== "object" || isProxy(request)) return request;
++  return Object.freeze(
++    Object.create(Object.getPrototypeOf(request), Object.getOwnPropertyDescriptors(request)),
++  ) as O;
++}
++
++function dataOnlyReadRequest(request: ReadRequest): boolean {
++  if (request === null || typeof request !== "object" || isProxy(request) || Array.isArray(request))
++    return false;
++  const prototype = Object.getPrototypeOf(request);
++  return (
++    (prototype === Object.prototype || prototype === null) &&
++    Reflect.ownKeys(request).every((key) => {
++      const field = Object.getOwnPropertyDescriptor(request, key);
++      return typeof key === "string" && field !== undefined && "value" in field;
++    })
++  );
++}
++
++/** Classify only own data fields. Authority receiving still validates the full request. */
++export function currentReadMinimumKind(request: ReadRequest): "resource" | "missing" | "strict" {
++  if (isProxy(request) || !request || typeof request !== "object") return "strict";
++  const fields = Object.getOwnPropertyDescriptors(request);
++  const data = (key: string): unknown => {
++    const field = fields[key];
++    return field && "value" in field ? field.value : undefined;
++  };
++  if (
++    (data("kind") === "resource" || data("kind") === "properties") &&
++    (data("resource") === "bead" || data("resource") === "link")
++  )
++    return "resource";
++  if (data("kind") === "bead-links" && data("continuation") === undefined) return "missing";
++  return "strict";
++}
++type MinimumCondition = Readonly<{
++  minimum: TransactionMinimum;
++  kind: "resource" | "missing" | "strict";
++}>;
++const minimumConditions = new WeakSet<object>();
++function minimumCondition(
++  minimum: TransactionMinimum,
++  kind: MinimumCondition["kind"],
++): MinimumCondition {
++  const condition = Object.freeze({ minimum, kind });
++  minimumConditions.add(condition);
++  return condition;
++}
++function capturedCondition(value: unknown): MinimumCondition {
++  if (!value || typeof value !== "object" || !minimumConditions.has(value))
++    throw new TypeError("unrecognized private minimum condition");
++  return value as MinimumCondition;
++}
++
+ /** Preserve the authority's data-only option boundary while ignoring only the
+  * ordinary facet's sourceCondition. Signal validation stays with the authority. */
+ function ordinaryDeliveryOptions(
+@@ -144,11 +202,12 @@ export function createTransactionReadPlane(
+       // Preserve the initial collection's already-materialized request-control
+       // Problem. It is not a representation whose minimum can be satisfied.
+       if (refusal?.code === "invalid-parameter" || refusal?.code === "limit-exceeded") return;
+-      const minimum = snapshotTransactionMinimum(condition);
++      const { minimum, kind } = capturedCondition(condition);
+       const current = transactionReadContexts(observation).current;
+       if (refusal?.code === "resource-not-found") {
++        if (kind !== "strict") return;
+         try {
+-          checkTransactionMinimum(minimum, current);
++          checkCurrentReadMinimum(minimum, current, false);
+           return;
+         } catch (error) {
+           // Only simultaneous missing/consistency failures remain unqualified.
+@@ -164,7 +223,7 @@ export function createTransactionReadPlane(
+           throw error;
+         }
+       }
+-      checkTransactionMinimum(minimum, current);
++      checkCurrentReadMinimum(minimum, current, kind === "resource");
+     },
+     captureReadAuthorization: (reader, principal) => {
+       const policy = owner.captureReadAuthorization(reader, principal);
+@@ -228,27 +287,36 @@ export function createTransactionReadPlane(
+       principal: Parameters<AuthorityReadPlane["readFor"]>[0],
+       supplied: TransactionMinimum,
+     ): AuthorityReadFacet {
+-      const minimum = snapshotTransactionMinimum(supplied),
++      const minimum = snapshotCurrentReadMinimum(supplied),
+         facet = plane.readFor(principal);
+       return Object.freeze({
+         perform: (request, options) => {
+-          if (!isCurrentTransactionMinimumRead(request, owner.scope))
++          const capturedRequest = captureTransactionReadRequest(request);
++          if (!dataOnlyReadRequest(capturedRequest))
++            return observe(
++              facet.perform(capturedRequest, options).then((result) => checked(result)),
++            );
++          if (!isCurrentTransactionMinimumRead(capturedRequest, owner.scope))
+             return Promise.reject(new TypeError("minimum-read route outside supported subset"));
++          const condition = minimumCondition(minimum, currentReadMinimumKind(capturedRequest));
+           let captured: AuthorityReadDeliveryOptions | undefined;
+           try {
+             captured = captureTransactionReadDeliveryOptions(options);
+           } catch {
+             // Capture rejects only shapes the authority also rejects. Preserve
+             // its observed Promise and closed/reentrant receiving precedence.
+-            return observe(facet.perform(request, options).then((result) => checked(result)));
++            return observe(
++              facet.perform(capturedRequest, options).then((result) => checked(result)),
++            );
+           }
+           return observe(
+             facet
+-              .perform(request, { ...captured, sourceCondition: minimum })
++              .perform(capturedRequest, { ...captured, sourceCondition: condition })
+               .then((result) => checked(result)),
+           );
+         },
+         resolveAlias: (url, options) => {
++          const condition = minimumCondition(minimum, "missing");
+           let captured: AuthorityReadDeliveryOptions | undefined;
+           try {
+             captured = captureTransactionReadDeliveryOptions(options);
+@@ -259,7 +327,7 @@ export function createTransactionReadPlane(
+           }
+           return observe(
+             facet
+-              .resolveAlias(url, { ...captured, sourceCondition: minimum })
++              .resolveAlias(url, { ...captured, sourceCondition: condition })
+               .then((result) => checked(result)),
+           );
+         },
+diff --git a/packages/server/src/transaction-service.ts b/packages/server/src/transaction-service.ts
+index 335e221..8923810 100644
+--- a/packages/server/src/transaction-service.ts
++++ b/packages/server/src/transaction-service.ts
+@@ -5,6 +5,7 @@ import type { TransactionChangefeedIntent } from "./transaction-changefeed.js";
+ import {
+   checkTransactionMinimum,
+   snapshotTransactionMinimum,
++  snapshotCurrentReadMinimum,
+   waitForTransactionMinimum,
+   type TransactionMinimum,
+   type TransactionMinimumWaitOptions,
+@@ -22,6 +23,7 @@ import {
+ import {
+   createTransactionReadPlane,
+   captureTransactionReadDeliveryOptions,
++  captureTransactionReadRequest,
+   type TransactionReadOptions,
+ } from "./transaction-read.js";
+ import {
+@@ -379,20 +381,21 @@ export function createTransactionService(owner: Owner, options: TransactionServi
+     },
+     readAtMinimum(principal: Parameters<typeof read.readFor>[0], minimum: TransactionMinimum) {
+       check();
+-      const facet = read.minimumFor(principal, snapshotTransactionMinimum(minimum));
++      const facet = read.minimumFor(principal, snapshotCurrentReadMinimum(minimum));
+       const guarded: ReturnType<typeof read.readFor> = {
+         perform: (request, receiving) =>
+           run(() => {
++            const capturedRequest = captureTransactionReadRequest(request);
+             let captured: ReturnType<typeof captureTransactionReadDeliveryOptions>;
+             try {
+               captured = captureTransactionReadDeliveryOptions(receiving);
+             } catch {
+               // Preserve authority receiving errors without reading a caller
+               // signal getter or allowing an unconditioned successful fallback.
+-              return facet.perform(request, receiving);
++              return facet.perform(capturedRequest, receiving);
+             }
+             return waitForTransactionMinimum(
+-              () => facet.perform(request, captured),
++              () => facet.perform(capturedRequest, captured),
+               minimumReads,
+               captured?.signal,
+             );
+diff --git a/packages/server/src/transaction-http.ts b/packages/server/src/transaction-http.ts
+index 8a519ba..aea3b53 100644
+--- a/packages/server/src/transaction-http.ts
++++ b/packages/server/src/transaction-http.ts
+@@ -14,6 +14,8 @@ import {
+ import {
+   malformedTransactionMinimumHeaders,
+   transactionMinimumHeaders,
++  currentReadMinimumHeaders,
++  TransactionMinimumUnsupported,
+   TransactionMinimumFailure,
+ } from "./transaction-consistency.js";
+ /** Source-private partial Transactional HTTP projection. No discovery/profile
+@@ -54,6 +56,7 @@ import {
+   TransactionMinimumVisibilityGap,
+   transactionReadContexts,
+   isCurrentTransactionMinimumRead,
++  currentReadMinimumKind,
+ } from "./transaction-read.js";
+ import type { TransactionReadContext } from "./transaction-store.js";
+ import type { TransactionSubmission } from "./transaction-submission.js";
+@@ -209,7 +212,7 @@ export function createTransactionHttpHandler(
+     discover: async () => developmentGap("transactional-discovery"),
+     async alias(suffix, request) {
+       if (isReadProblem(suffix)) return problem(suffix);
+-      const minimum = transactionMinimumHeaders(request.headers);
++      const minimum = currentReadMinimumHeaders(request.headers);
+       const facet = minimum
+         ? service.readAtMinimum(readPrincipal(request), minimum)
+         : service.readFor(readPrincipal(request));
+@@ -230,7 +233,7 @@ export function createTransactionHttpHandler(
+         : response;
+     },
+     async perform(parsed, request) {
+-      const minimum = transactionMinimumHeaders(request.headers);
++      const minimum = currentReadMinimumHeaders(request.headers);
+       const facet = minimum
+         ? service.readAtMinimum(readPrincipal(request), minimum)
+         : service.readFor(readPrincipal(request));
+@@ -572,13 +575,19 @@ export function createTransactionHttpHandler(
+       return receiptResponse(result, false);
+     }
+     const minimum = hasMinimumControls(request)
+-      ? transactionMinimumHeaders(request.headers)
++      ? currentReadMinimumHeaders(request.headers)
+       : undefined;
+     if (hasMinimumControls(request) && !minimum) return developmentGap("minimum-position");
+     if (minimum && alias === undefined) {
+       // Aliases have their own conditioned authority path, not a canonical
+       // ReadRequest or a member of the current Resource/collection subset.
+       const parsed = requestFromUrl(url, scope);
++      // Preserve the old early unknown-token label on every excluded route.
++      if (
++        !transactionMinimumHeaders(request.headers) &&
++        (isReadProblem(parsed) || currentReadMinimumKind(parsed) === "strict")
++      )
++        return developmentGap("minimum-position");
+       if (isReadProblem(parsed) && parsed.status === 400) return problem(parsed);
+       if (isReadProblem(parsed) || !isCurrentTransactionMinimumRead(parsed, scope))
+         return developmentGap("minimum-position-route");
+@@ -638,6 +647,8 @@ export function createTransactionHttpHandler(
+           response = transactionHttpProblem("invalid-parameter", error.context);
+         else if (error instanceof TransactionEventProjectionGap)
+           response = developmentGap(error.message);
++        else if (error instanceof TransactionMinimumUnsupported)
++          response = developmentGap("minimum-position");
+         else if (error instanceof TransactionMinimumVisibilityGap)
+           response = developmentGap("minimum-position-visibility");
+         else response = empty(500);
+diff --git a/docs/specs/bdp.md b/docs/specs/bdp.md
+index 4cf679c..e097e46 100644
+--- a/docs/specs/bdp.md
++++ b/docs/specs/bdp.md
+@@ -5823,7 +5823,7 @@ repeated, or lexically invalid values MUST return `400 malformed-request`
+ after ordinary transport, target/method, and authentication/authorization checks,
+ but before any owner read or target-existence lookup. All three absent means
+ no minimum is requested. Lexical validity does not establish that a position
+-identity is known or supported; existing semantic consistency decisions remain.
++identity is known or supported; semantic handling follows the rules below.
+ 
+ This receiving refusal observes no projected prefix and MUST NOT report
+ `BDP-Scope-Epoch`, `BDP-Authorization-View`, or `BDP-Scope-Position`. It MUST NOT
+@@ -5831,10 +5831,24 @@ become a conditional `304` or `412`, a negotiation `406`, or an SSE stream.
+ Earlier ordinary target/method and Origin-policy refusals remain unchanged.
+ HEAD retains the corresponding GET response metadata and sends no body.
+ 
+-The authority then does one of three things: it returns a representation at
+-that position or later, it waits or routes to an eligible replica, or it
+-returns the normative foreign-view, cursor-expired, or catch-up-timeout
+-problem. It never reports success with an older position.
++For an ordinary unknown, deleted, or authorization-hidden Bead or Link
++Resource (including its properties view), alias target, or initial Bead
++view=links anchor, the authority MUST return the uniform 404 resource-not-found
++before semantic minimum comparison or waiting. This refusal reports the actual
++current observation context and does not disclose the hidden target. Ordinary
++request validation and the lexical receiving rule above still apply.
++
++For the remaining reads, the authority returns a representation at that position
++or later, waits or routes to an eligible replica, or returns the normative
++foreign-view, cursor-expired, or catch-up-timeout problem. It never reports
++success with an older position. For an existing authorized current Bead or Link
++Resource or properties view, a lexically valid but unrecognized minimum position
++with the actual current epoch and view does not prove eligibility. The authority
++MUST use its bounded minimum-read wait and, if eligibility remains unproved,
++return 503 catch-up-timeout with retry: "after-delay"; it MUST NOT substitute
++a stale success, fabricated expiry, or lexical malformed-request refusal.
++This rule does not establish precedence for retained continuations or Snapshots,
++nor extend unrecognized-position waiting to successful incident-Link lists.
+ 
+ Transactional mutation POSTs follow the shared
+ [mutation command preconditions](#mutation-command-preconditions): copied read
+
+
+===== Focus =====
+All four changed production modules and normative diff. Review receiving/capture identity, same-entry policy/context, missing-first and unknown waiting/error/lifecycle behavior. Tests are separately owned by source-tests and installed scopes.
+
+===== packages/server/src/authority-read.ts:297-330 =====
+function ownData(value: unknown, label: string): Record<string, unknown> {
+  if (value === null || typeof value !== "object" || isProxy(value) || Array.isArray(value))
+    throw new AuthorityReadError("invalid-input", `${label} must be a plain data object`);
+  const prototype = Object.getPrototypeOf(value);
+  if (prototype !== Object.prototype && prototype !== null)
+    throw new AuthorityReadError("invalid-input", `${label} must have a plain prototype`);
+  const result: Record<string, unknown> = Object.create(null);
+  for (const key of Reflect.ownKeys(value)) {
+    if (typeof key !== "string")
+      throw new AuthorityReadError("invalid-input", `${label} cannot have symbol fields`);
+    const descriptor = Object.getOwnPropertyDescriptor(value, key);
+    if (descriptor === undefined || !("value" in descriptor))
+      throw new AuthorityReadError("invalid-input", `${label} cannot have accessors`);
+    Object.defineProperty(result, key, { value: descriptor.value, enumerable: true });
+  }
+  return Object.freeze(result);
+}
+
+function snapshotRequest(value: unknown): ReadRequest {
+  const request = ownData(value, "Read request");
+  const variant = resolveReadRequestVariant(request);
+  if (variant === undefined)
+    throw new AuthorityReadError("invalid-input", "unsupported Read request shape");
+  for (const field of variant.required) {
+    if (typeof request[field] !== "string")
+      throw new AuthorityReadError("invalid-input", `Read request requires own ${field}`);
+  }
+  for (const [key, field] of Object.entries(request)) {
+    if (field !== undefined && typeof field !== (key === "limit" ? "number" : "string"))
+      throw new AuthorityReadError("invalid-input", `invalid Read request field ${key}`);
+  }
+  return request as unknown as ReadRequest;
+}
+
+
+
+===== packages/server/src/authority-read.ts:457-505 =====
+function captureContext(
+  prepared: Prepared,
+  reader: AuthorityReadReader,
+  principal: ReadPrincipal,
+  intent: ReadIntent,
+  sourceContext?: ReadSourceContext,
+): ReadContext | ReadRefusal {
+  const capturedSource =
+    sourceContext === undefined ? undefined : ownData(sourceContext, "Read source context");
+  if (
+    capturedSource !== undefined &&
+    Object.values(capturedSource).some((value) => typeof value !== "string")
+  )
+    throw new AuthorityReadError("configuration", "Read source context must contain strings");
+  const decision = synchronous(prepared.capture(reader, principal, intent));
+  if (decision.kind === "problem") return preContext(parseReadProblem(decision.problem));
+  if (decision.kind !== "authorized")
+    throw new AuthorityReadError("configuration", "invalid Read authorization decision");
+  const authorization = synchronous(decision.authorization);
+  const { authorizationView, scopeEpoch, policy, canReadType } = authorization;
+  const canRead = policy.canRead;
+  if (typeof canRead !== "function" || typeof canReadType !== "function")
+    throw new AuthorityReadError("configuration", "complete captured Read policy required");
+  const view = identity(authorizationView, "Authorization View");
+  if (identity(scopeEpoch, "captured Scope epoch") !== prepared.scopeEpoch)
+    throw new AuthorityReadError(
+      "configuration",
+      "captured Scope epoch changed during plane lifetime",
+    );
+  const configuration = synchronous(prepared.configuration(reader));
+  const { policyIdentity, configurationIdentity, maximumEndpointMultiplicity } = configuration;
+  const observation = Object.freeze({
+    authorizationView: view,
+    scopeEpoch,
+    policyIdentity: identity(policyIdentity, "policy identity"),
+    configurationIdentity: identity(configurationIdentity, "configuration identity"),
+    ...(capturedSource === undefined ? {} : { sourceContext: capturedSource as ReadSourceContext }),
+  });
+  return Object.freeze({
+    observation,
+    aggregate: aggregateSnapshot(maximumEndpointMultiplicity),
+    policy: Object.freeze({
+      canRead: (record: ResourceRecord) => boolean(canRead.call(policy, record)),
+    }),
+    canReadType: (descriptor: TypeDescriptor) =>
+      boolean(canReadType.call(authorization, descriptor)),
+  });
+}
+
+
+
+===== packages/server/src/authority-read.ts:730-840 =====
+function materialize(
+  prepared: Prepared,
+  reader: AuthorityReadReader,
+  context: ReadContext,
+  intent: ReadIntent,
+): Materialized {
+  const { observation, policy } = context;
+  const { scope } = prepared;
+  if (intent.kind === "scope-discovery") {
+    const data: AuthorityDiscoveryData = Object.freeze({
+      scope,
+      beads: new URL("beads/", scope).href as AbsoluteHttpUrl,
+      links: new URL("links/", scope).href as AbsoluteHttpUrl,
+      types: new URL("types/", scope).href as AbsoluteHttpUrl,
+      aliases: new URL("alias/", scope).href as AbsoluteHttpUrl,
+      order: "canonical-uri",
+      limits: prepared.limits,
+      maximumEndpointMultiplicity: context.aggregate,
+    });
+    return Object.freeze({ kind: "discovery", data, observation });
+  }
+  if (intent.kind !== "alias" && isPageOperation(intent)) {
+    const issue = control(() => {
+      prepared.pagination.validateLimit(intent.limit);
+      if (
+        intent.kind === "collection" &&
+        intent.collection !== "types" &&
+        intent.selector !== undefined
+      )
+        selectReadResources(intent.selector, prepared.selector, []);
+    }, observation);
+    if (isRefusal(issue)) return issue;
+    if (intent.continuation !== undefined) {
+      const details = continuationDetails(intent, scope);
+      if (isReadProblem(details)) return observed(details, observation);
+      return Object.freeze({ kind: "continuation", ...details, observation });
+    }
+  }
+  const graph = checkedGraph(reader, scope);
+  if (intent.kind === "alias") {
+    const suffix = aliasSuffix(intent.url, scope);
+    if (suffix === undefined) return observed(notFound(), observation);
+    const target = synchronous(reader.alias(suffix));
+    if (target === undefined) return observed(notFound(), observation);
+    if (typeof target !== "string")
+      throw new AuthorityReadError("integrity", "invalid stored alias target");
+    const canonical = `${scope}${target}`;
+    try {
+      validateServerLocalResourceId(canonical, scope, "bead");
+    } catch (cause) {
+      throw new AuthorityReadError("integrity", "invalid stored alias target", { cause });
+    }
+    const record = graph.point(target);
+    if (record !== undefined && "source" in record)
+      throw new AuthorityReadError("integrity", "alias target row is not a Bead");
+    return record !== undefined && graph.visible(record, policy)
+      ? Object.freeze({ kind: "target", target: record.id, observation })
+      : observed(notFound(), observation);
+  }
+  if (intent.kind === "resource" && intent.resource === "type") {
+    const descriptor = prepared.types.find((candidate) => candidate.id === intent.id);
+    return descriptor !== undefined && context.canReadType(descriptor)
+      ? Object.freeze({ kind: "success", body: descriptor, observation })
+      : observed(notFound(), observation);
+  }
+  if (intent.kind === "resource" || intent.kind === "properties") {
+    const record = graph.point(intent.id.slice(scope.length));
+    if (record === undefined) return observed(notFound(), observation);
+    const isLinkRecord = "source" in record;
+    if ((intent.resource === "link") !== isLinkRecord)
+      throw new AuthorityReadError("integrity", "requested Resource kind disagrees with row");
+    if (!graph.visible(record, policy)) return observed(notFound(), observation);
+    return Object.freeze({
+      kind: "success",
+      body: intent.kind === "properties" ? record.properties : record,
+      observation: Object.freeze({ ...observation, resourceRevision: record.revision }),
+    });
+  }
+  if (intent.kind === "collection" && intent.collection === "types") {
+    const items = prepared.types
+      .filter((descriptor) => context.canReadType(descriptor))
+      .map(({ id, name, describes }) => Object.freeze({ id, name, describes }));
+    return Object.freeze({ kind: "page", items: Object.freeze(items), observation });
+  }
+  let rows: readonly StoredResource[];
+  if (intent.kind === "bead-links") {
+    const anchor = graph.point(intent.bead.slice(scope.length));
+    if (anchor === undefined) return observed(notFound(), observation);
+    if ("source" in anchor)
+      throw new AuthorityReadError("integrity", "incident anchor is not a Bead");
+    if (!graph.visible(anchor, policy)) return observed(notFound(), observation);
+    rows = synchronous(reader.incidentLinks(intent.bead.slice(scope.length)));
+  } else rows = synchronous(reader.resources());
+  const items: ResourceRecord[] = [];
+  const seen = new Set<string>();
+  for (const row of rows) {
+    const record = graph.accept(row);
+    if (intent.kind === "bead-links" && !("source" in record))
+      throw new AuthorityReadError("integrity", "incident index returned a Bead");
+    if (
+      structural(record, intent, prepared.conformance) &&
+      graph.visible(record, policy) &&
+      !seen.has(record.id)
+    ) {
+      seen.add(record.id);
+      items.push(record);
+    }
+  }
+  return Object.freeze({ kind: "page", items: Object.freeze(items), observation });
+}
+
+
+
+===== packages/server/src/authority-read.ts:934-1157 =====
+function nativeSignalAborted(signal: AbortSignal | undefined): boolean {
+  if (signal === undefined) return false;
+  if (readSignalAborted === undefined)
+    throw new AuthorityReadError("configuration", "native AbortSignal state getter required");
+  return readSignalAborted.call(signal) as boolean;
+}
+
+/** A private current-Read component; supplied entry/configuration are not readiness.
+ * Work includes complete candidate/record bytes, owned-pair comparisons and the
+ * sum of per-candidate closure/parser/policy visits; the point cache saves SQL
+ * loads, not those repeated parses. Explicit owned point requests are bounded by
+ * distinct encountered IDs even when their rows also arrive in a collection.
+ * Selector validation/application parses twice; Type lookup is O(T), inventory
+ * filtering preserves callback order, and canonical sorting is O(N log N).
+ * Retained bytes/nodes and snapshots-plus-reserved-positions share plane-global
+ * budgets; the positions-per-snapshot cap is separate. Pressure can refuse new
+ * retaining pages without evicting existing cursors or blocking point reads.
+ * Neither page size nor retained budgets bound transient closure/copy work.
+ * Feasible workload qualification remains upstream; no latency bound is implied.
+ */
+export function createAuthorityReadPlane(options: AuthorityReadOptions): AuthorityReadPlane {
+  const prepared = prepare(options);
+  let busy = false;
+  let stopped = false;
+  let resolveClosed: () => void = () => undefined;
+  let rejectClosed: (reason: unknown) => void = () => undefined;
+  const closed = new Promise<void>((resolve, reject) => {
+    resolveClosed = resolve;
+    rejectClosed = reject;
+  });
+  void closed.catch(() => undefined);
+  const guard = (): void => {
+    if (busy) throw new AuthorityReadError("reentrant", "authority Read plane is already active");
+    if (stopped) throw new ScopeServerClosedError();
+  };
+  const observe = (
+    principal: ReadPrincipal,
+    intent: ReadIntent,
+    condition?: unknown,
+  ): ConcreteResult => {
+    let calls = 0;
+    let captured: Materialized | undefined;
+    const entry = synchronous(
+      prepared.enter((reader, sourceContext) => {
+        calls += 1;
+        if (calls !== 1)
+          throw new AuthorityReadError("integrity", "owner invoked Read callback more than once");
+        const context = captureContext(prepared, reader, principal, intent, sourceContext);
+        captured = isRefusal(context) ? context : materialize(prepared, reader, context, intent);
+        if (!isRefusal(context) && condition !== undefined) {
+          if (!prepared.checkSourceCondition)
+            throw new AuthorityReadError("invalid-input", "source conditions unsupported by owner");
+          synchronous(
+            prepared.checkSourceCondition(
+              condition,
+              context.observation,
+              isRefusal(captured) ? captured.problem : undefined,
+            ),
+          );
+        }
+        return captured;
+      }),
+    );
+    if (entry.kind === "entry-refused") {
+      if (calls !== 0)
+        throw new AuthorityReadError("integrity", "owner refused after invoking Read callback");
+      if (entry.reason === "reentrant")
+        throw new AuthorityReadError("reentrant", "authority owner is already active", {
+          cause: entry.cause,
+        });
+      if (entry.reason === "not-accepting") {
+        const error = new ScopeServerClosedError();
+        Object.defineProperty(error, "cause", {
+          value: entry.cause,
+          configurable: true,
+          writable: true,
+        });
+        throw error;
+      }
+      throw new AuthorityReadError("integrity", "unknown owner Read refusal");
+    }
+    if (entry.kind !== "read" || calls !== 1 || captured === undefined || entry.value !== captured)
+      throw new AuthorityReadError("integrity", "owner returned an invalid Read entry result");
+    return finish(prepared, intent, captured);
+  };
+
+  const plane: AuthorityReadPlane = {
+    closed,
+    readFor(value): AuthorityReadFacet {
+      guard();
+      const principal = principalSnapshot(value);
+      const deliver = <T>(
+        makeIntent: () => ReadIntent,
+        supplied?: AuthorityReadDeliveryOptions,
+      ): Promise<T> => {
+        // Even early receiving/state faults belong to this observed promise.
+        // Allocation itself does not mutate shared owner/plane state.
+        let fulfill: (value: T) => void = () => undefined;
+        let reject: (reason: unknown) => void = () => undefined;
+        const delivery = new Promise<T>((resolve, fail) => {
+          fulfill = resolve;
+          reject = fail;
+        });
+        void delivery.catch(() => undefined);
+        let signal: AbortSignal | undefined;
+        let sourceCondition: unknown;
+        let aborted = false;
+        let entered = false;
+        let listening = false;
+        let outcome: T | undefined;
+        let failure: { readonly error: unknown } | undefined;
+        const onAbort = (): void => {
+          aborted = true;
+        };
+        try {
+          guard();
+          busy = true;
+          entered = true;
+          if (supplied !== undefined) {
+            const receiving = ownData(supplied, "Read delivery options");
+            if (Object.keys(receiving).some((key) => key !== "signal" && key !== "sourceCondition"))
+              throw new AuthorityReadError("invalid-input", "unknown Read delivery option");
+            sourceCondition = receiving.sourceCondition;
+            const candidate = receiving.signal;
+            if (
+              candidate !== undefined &&
+              (typeof candidate !== "object" ||
+                candidate === null ||
+                isProxy(candidate) ||
+                !(candidate instanceof AbortSignal))
+            )
+              throw new AuthorityReadError("invalid-input", "Read signal must be an AbortSignal");
+            signal = candidate as AbortSignal | undefined;
+          }
+          const reportedAborted = signal?.aborted;
+          if (nativeSignalAborted(signal) || reportedAborted)
+            throw new ScopeServerOperationAbortedError();
+          principal.check();
+          const intent = makeIntent();
+          if (signal !== undefined) {
+            listening = true;
+            signal.addEventListener("abort", onAbort, { once: true });
+          }
+          let result: ConcreteResult;
+          if (intent.kind === "alias")
+            result = observe(principal.principal, intent, sourceCondition);
+          else {
+            const variant = resolveReadRequestVariant(intent);
+            if (variant === undefined)
+              throw new AuthorityReadError("invalid-input", "invalid Read request");
+            const issue = variant.validate(intent, {
+              scope: prepared.scope,
+              controlsEnabled: true,
+            });
+            result =
+              issue === undefined
+                ? observe(principal.principal, intent, sourceCondition)
+                : preContext(issue);
+          }
+          outcome = result as T;
+        } catch (error) {
+          // Work faults retain precedence over an abort observed during the work.
+          failure = { error };
+        } finally {
+          try {
+            if (listening) signal?.removeEventListener("abort", onAbort);
+          } catch (error) {
+            failure ??= { error };
+          }
+        }
+        try {
+          if (failure === undefined) {
+            const signalAborted = nativeSignalAborted(signal);
+            if (signalAborted || aborted) throw new ScopeServerOperationAbortedError();
+          }
+        } catch (error) {
+          failure ??= { error };
+        }
+        try {
+          if (failure !== undefined) reject(failure.error);
+          else fulfill(outcome as T);
+        } finally {
+          if (entered) busy = false;
+        }
+        return delivery;
+      };
+      return Object.freeze({
+        perform<O extends ReadRequest>(
+          request: O,
+          receiving?: AuthorityReadDeliveryOptions,
+        ): Promise<AuthorityReadResult<O>> {
+          return deliver(() => snapshotRequest(request), receiving);
+        },
+        resolveAlias(
+          url: string,
+          receiving?: AuthorityReadDeliveryOptions,
+        ): Promise<AuthorityAliasResult> {
+          return deliver(() => {
+            if (typeof url !== "string")
+              throw new AuthorityReadError(
+                "invalid-input",
+                "alias locator must be a primitive string",
+              );
+            return Object.freeze({ kind: "alias", url });
+          }, receiving);
+        },
+      });
+    },
+    close(): Promise<void> {
+      if (busy)
+        throw new AuthorityReadError("reentrant", "cannot close during an authority Read entry");
+      if (stopped) return closed;
+      stopped = true;
+      try {
+        prepared.pagination.close();
+        resolveClosed();
+      } catch (error) {
+        rejectClosed(error);
+      }
+      return closed;
+    },
+  };
+  return Object.freeze(plane);
+}
+
+
+===== Complete option capture helper context =====
+function ordinaryDeliveryOptions(
+  options: AuthorityReadDeliveryOptions | undefined,
+): AuthorityReadDeliveryOptions | undefined {
+  if (options === undefined) return undefined;
+  if (options === null || typeof options !== "object" || isProxy(options) || Array.isArray(options))
+    throw new AuthorityReadError(
+      "invalid-input",
+      "Read delivery options must be a plain data object",
+    );
+  const prototype = Object.getPrototypeOf(options);
+  if (prototype !== Object.prototype && prototype !== null)
+    throw new AuthorityReadError(
+      "invalid-input",
+      "Read delivery options must have a plain prototype",
+    );
+  let signal: PropertyDescriptor | undefined;
+  let unknownKey = false;
+  for (const key of Reflect.ownKeys(options)) {
+    if (typeof key !== "string")
+      throw new AuthorityReadError(
+        "invalid-input",
+        "Read delivery options cannot have symbol fields",
+      );
+    const descriptor = Object.getOwnPropertyDescriptor(options, key);
+    if (descriptor === undefined || !("value" in descriptor))
+      throw new AuthorityReadError("invalid-input", "Read delivery options cannot have accessors");
+    if (key !== "signal" && key !== "sourceCondition") unknownKey = true;
+    if (key === "signal") signal = descriptor;
+  }
+  if (unknownKey) throw new AuthorityReadError("invalid-input", "unknown Read delivery option");
+  return signal === undefined ? undefined : { signal: signal.value };
+}
+
+/** Source-private minimum-read receiving snapshot. Only authority-rejected option or
+ * signal shapes throw; callers retain authority error/lifecycle delivery on that
+ * path. The configured minimum replaces the caller's opaque condition value. */
+export function captureTransactionReadDeliveryOptions(
+  options: AuthorityReadDeliveryOptions | undefined,
+): AuthorityReadDeliveryOptions | undefined {
+  const captured = ordinaryDeliveryOptions(options);
+  const signal = captured?.signal;
+  if (
+    signal !== undefined &&
+    (typeof signal !== "object" ||
+      signal === null ||
+      isProxy(signal) ||
+      !(signal instanceof AbortSignal))
+  )
+    throw new AuthorityReadError("invalid-input", "Read signal must be an AbortSignal");
+  return captured === undefined ? undefined : Object.freeze(captured);
+}
+
+export type TransactionReadOptions = Pick<
+  AuthorityReadOptions,
+  "selectorLimits" | "pagination" | "advertisedLimits"
+>;
+
+/** The caller owns the store lifetime. Closing the plane invalidates its cursors
+ * but does not close or replace the mutation owner. Configuration is fixed for
+
+
+===== Service receiving and active-operation accounting =====
+    throw new TypeError("invalid private stream capacity");
+  const streams = new Map<AbortController, Promise<void>>();
+  let accepting = true;
+  let cleanupFailure: AggregateError | undefined;
+  let closing: Promise<void> | undefined;
+  const completion = Promise.withResolvers<void>();
+  void completion.promise.catch(() => {});
+  function check() {
+    if (cleanupFailure)
+      throw new Error("transaction service cleanup failed; close and reopen", {
+        cause: cleanupFailure,
+      });
+    if (!accepting) throw new Error("transaction service is closing or closed");
+  }
+  function run<T>(start: () => Promise<T>): Promise<T> {
+    check();
+    const task = Promise.withResolvers<T>();
+    active.add(task.promise);
+    // Observe rejected detached delivery without changing what its caller sees.
+    void task.promise.then(
+      () => active.delete(task.promise),
+      () => active.delete(task.promise),
+    );
+    try {
+      task.resolve(start());
+    } catch (error) {
+      task.reject(error);
+    }
+    return task.promise;
+  }
+  function mutate<T>(start: () => Promise<T>): Promise<T> {
+
+
+===== Complete service close =====
+    close(): Promise<void> {
+      if (closing) return closing;
+      accepting = false;
+      closing = (async () => {
+        for (const controller of streams.keys()) controller.abort(new Error("service shutdown"));
+        await Promise.allSettled([...streams.values(), ...active]);
+        const errors: unknown[] = [];
+        try {
+          await read.close();
+        } catch (error) {
+          errors.push(error);
+        }
+        try {
+          owner.close();
+        } catch (error) {
+          errors.push(error);
+        }
+        if (errors.length) throw new AggregateError(errors, "transaction service shutdown failed");
+      })();
+      void closing.then(completion.resolve, completion.reject);
+      return closing;
+    },
+  });
+}
+
+
+===== packages/server/src/read-http.ts:1-57 =====
+import { stringifyJsonValue } from "@bdp/protocol";
+import type { HttpResponse } from "./index.js";
+
+/** Apply shared HTTP rules only after routing, authorization and result validation.
+ * This Read server selects parameter-free application/json on its 200 routes.
+ * Its Scope port supplies no representation modification date, so neither date
+ * precondition can be evaluated; Resource timestamps are not HTTP validators.
+ * RFC 9110 sections 12.5.1, 13.1 and 13.2 govern negotiation and ordering.
+ */
+export function applyReadHttpSemantics(request: Request, response: HttpResponse): HttpResponse {
+  let selected = response;
+  const json =
+    response.status === 200 && response.headers.get("content-type") === "application/json";
+  if (json || response.status === 204) {
+    const headers = new Headers(response.headers);
+    if (json) {
+      const vary = headers.get("vary");
+      if (
+        vary !== "*" &&
+        !vary?.split(",").some((field) => field.trim().toLowerCase() === "accept")
+      )
+        headers.set("vary", vary ? `${vary}, Accept` : "Accept");
+    }
+    // The Scope probe is an existing zero-length representation with no media
+    // type to negotiate; it still evaluates entity-tag preconditions.
+    const status =
+      json && !acceptsJson(request.headers.get("accept"))
+        ? 406
+        : conditionalReadStatus(request.headers, headers.get("etag"));
+    if (status !== 200) {
+      headers.delete("content-type");
+      if (status === 406) headers.delete("etag");
+      // A 304 Content-Length may describe only the corresponding 200 body,
+      // never an invented zero-length representation (RFC 9110 section 8.6).
+      headers.delete("content-length");
+      if (status !== 304) headers.set("content-length", "0");
+      selected = { status, headers };
+    } else selected = { ...response, headers };
+  }
+  // Keep the Fetch-level contract honest as well as the Node transport's final
+  // defensive strip. HEAD has GET metadata, including the serialized length.
+  if (request.method === "HEAD" && selected.body !== undefined) {
+    const headers = new Headers(selected.headers);
+    headers.set("content-length", String(Buffer.byteLength(stringifyJsonValue(selected.body))));
+    return { status: selected.status, headers };
+  }
+  return selected;
+}
+
+export function conditionalReadStatus(headers: Headers, etag: string | null): 200 | 304 | 412 {
+  const match = headers.get("if-match");
+  if (match !== null && !tagListMatches(match, etag, true)) return 412;
+  const noneMatch = headers.get("if-none-match");
+  if (noneMatch !== null && tagListMatches(noneMatch, etag, false)) return 304;
+  return 200;
+}
+
+
+
+===== packages/server/src/read-http-routing.ts:1-76 =====
+/** Internal Read HTTP projection shared by admitted and source-only test compositions. */
+import {
+  isReadProblem,
+  type AbsoluteHttpUrl,
+  type ReadProblem,
+  type ReadRequest,
+} from "@bdp/protocol";
+import type { HttpHandler, HttpResponse } from "./index.js";
+import { classifyAliasPath, notFound, requestFromUrl } from "./read-request.js";
+import { resourceRevisionEtag } from "./read-http.js";
+
+interface ReadHttpRoutes {
+  readonly scope: AbsoluteHttpUrl;
+  probe(request: Request): Promise<{ readonly serviceDescription: string }>;
+  problem(problem: ReadProblem): HttpResponse;
+  discover(request: Request): Promise<HttpResponse>;
+  alias(path: string | ReadProblem, request: Request): Promise<HttpResponse>;
+  perform(parsed: ReadRequest, request: Request): Promise<HttpResponse>;
+}
+/** Raw projection only; the caller applies Read HTTP semantics exactly once. */
+export function createReadHttpRoute(routes: ReadHttpRoutes): HttpHandler {
+  return async (request) => {
+    if (request.method !== "GET" && request.method !== "HEAD")
+      return { status: 405, headers: new Headers({ allow: "GET, HEAD", "content-length": "0" }) };
+    const url = new URL(request.url);
+    const scopeUrl = new URL(routes.scope);
+    if (url.origin !== scopeUrl.origin) return routes.problem(notFound());
+    const probe = await routes.probe(request);
+    const aliasPath = classifyAliasPath(url, routes.scope);
+    if (aliasPath !== undefined) return routes.alias(aliasPath, request);
+    if (url.pathname === scopeUrl.pathname)
+      return {
+        status: 204,
+        headers: new Headers({
+          link: `<${probe.serviceDescription}>; rel="service-desc"; type="application/json"`,
+        }),
+      };
+    if (url.href === probe.serviceDescription) return routes.discover(request);
+    const parsed = requestFromUrl(url, routes.scope);
+    return isReadProblem(parsed) ? routes.problem(parsed) : routes.perform(parsed, request);
+  };
+}
+
+export function jsonResponse(body: unknown): HttpResponse {
+  return {
+    status: 200,
+    headers: new Headers({
+      "content-type": "application/json",
+      "cache-control": "private, no-store",
+    }),
+    body,
+  };
+}
+
+export function scopeDataResponse(
+  operation: ReadRequest,
+  body: unknown,
+  observedResourceRevision?: string,
+): HttpResponse {
+  const response = jsonResponse(body);
+  // Properties carry no revision in their body. Owner-backed adapters can supply
+  // the revision captured atomically with that value, never a later fresh read.
+  if (operation.kind === "properties" && observedResourceRevision !== undefined)
+    response.headers.set("etag", resourceRevisionEtag(observedResourceRevision));
+  if (
+    operation.kind === "resource" &&
+    operation.resource !== "type" &&
+    typeof body === "object" &&
+    body !== null &&
+    "revision" in body &&
+    typeof body.revision === "string"
+  ) {
+    response.headers.set("etag", resourceRevisionEtag(body.revision));
+  }
+  return response;
+}
+
+
+===== packages/server/src/transaction-store.ts:1015-1054 =====
+            db
+              .prepare(
+                "SELECT id FROM resources WHERE kind='link' AND (source=? OR target=?) ORDER BY id",
+              )
+              .all(id, id)
+              .map((row) => Object.freeze(requiredResource(String(row.id)))),
+          );
+        },
+        alias(path: string) {
+          check();
+          return alias(path);
+        },
+        policy(_name: string) {
+          check();
+          return undefined;
+        },
+      });
+      readAuthorizations.set(reader, authorization);
+      try {
+        const value = callback(reader, readContext());
+        if (
+          value !== null &&
+          (typeof value === "object" || typeof value === "function") &&
+          "then" in value &&
+          typeof value.then === "function"
+        ) {
+          // Observe forbidden asynchronous work; it cannot retain a live reader.
+          void Promise.resolve(value).catch(() => {});
+          throw new Error("transaction read callbacks must be synchronous");
+        }
+        return Object.freeze({ kind: "read", value });
+      } finally {
+        active = false;
+        readAuthorizations.delete(reader);
+      }
+    });
+  }
+  function resource(id: string): EvaluatorStoredResource | undefined {
+    const found = db.prepare("SELECT * FROM resources WHERE id=?").get(id);
+    if (!found) return undefined;
+
+
+===== packages/server/src/transaction-store.ts:1855-1875 =====
+    readConfiguration: () =>
+      enter(() =>
+        Object.freeze({
+          ...readConfiguration,
+          authorizationView: authorization.authorizationView,
+          authorization,
+          scopeConfiguration: Object.freeze({
+            ...readConfiguration.scopeConfiguration,
+            policyIdentity: authorization.authorizationView,
+          }),
+        }),
+      ),
+    captureReadAuthorization(reader: AuthorityReadReader, principal: ReadPrincipal) {
+      // The reader is a capability for this exact live serialized entry.
+      const snapshot = readAuthorizations.get(reader);
+      if (!snapshot || !principal || typeof principal !== "object")
+        throw new Error("authorization capture outside owner entry");
+      return snapshot;
+    },
+    authorizationSnapshot: () => enter(() => authorization),
+    acquireAuthorizationLease(expected: TransactionReadContext): TransactionAuthorizationLease {
+

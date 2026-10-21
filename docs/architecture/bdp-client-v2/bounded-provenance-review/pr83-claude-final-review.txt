@@ -1,0 +1,142 @@
+Review complete. Frozen HEAD `18415bcdcbf9546b5ab3f7fc0cfd78f8b8f6eb3d`, tree clean, no repo file written or modified.
+
+---
+
+# Bounded integration review — PR83 final council, HEAD `18415bc`
+
+## Findings
+
+### 1. Four distinct normative citations clobbered into duplicates during merge `e63ea03`
+**Severity: medium (traceability / conformance-catalog correctness)**
+**File:** `packages/conformance/catalog/read-v1.json:114,119,124,129,134` (scenario `read.resource.external-endpoint`)
+
+Merge `e63ea03` replaced four of the scenario's five `selectedText` values with four more copies of the first. Both merge parents carried five **distinct** texts:
+
+```
+  - Every Link endpoint MUST be a Reference: a URI, or a Pinned Reference with exactly `uri` and `revision`.
+  - An in-Scope endpoint MUST identify a live Bead by its canonical URL.
+  - At least one endpoint of every v0 Link MUST be an in-Scope Bead.
+  - A Bead whose Type owns outgoing Link Types MUST carry its `ownedLinks` member — …
+```
+
+**Impact.** The scenario's citations for Reference shape, in-Scope endpoint liveness, at-least-one-in-Scope endpoint, and the `ownedLinks` member are gone. I verified all four still appear verbatim in `docs/design/requirements.md#protocol-requirements` under the gate's own whitespace normalization, so this is a pure merge clobber, not an editorial update. It passes every gate because `validateCatalogCitations` (`packages/conformance/src/catalog.ts:175`) only checks that an excerpt *appears* in the anchored section — not that citations are distinct or preserved. A set-diff of every catalog across the merge shows `read-v1.json` is the only asymmetric one (8 triples removed, 4 added; all other catalogs n-for-n renames, 563 → 563 total entries, so neither a count audit nor a validity audit catches it). It is also the **only** intra-scenario duplicate citation set in the whole repo (scanned all of `catalog/` and `development/`).
+
+**Fix.** Restore the four parent texts from `cd22ac3`. Zero re-seal cost: `read-v1.json` bytes already drift from the sealed artifact (see finding 2), so a re-derive is required regardless.
+
+---
+
+### 2. Default `pnpm test` is red at HEAD; three sibling projection negatives are now vacuous
+**Severity: medium (gate integrity)**
+**Files:** `scripts/read-cohort-evidence.test.mjs:390,415` + 1 more; `packages/conformance/src/read-conformance-capability.ts:27`; `packages/conformance/src/schema-read-projection.test.ts:38`
+
+Full suite at HEAD: **1 file failed, 3 tests failed, 7857 passed, 1 skipped (117 files)**. The committed artifact binds `schemaReadProjection = 26db67b2…`; the committed bundle's sealed definitions project `bd7da0fc…`.
+
+Lineage check — artifact projection vs. committed pin:
+
+| head | artifact | pin | |
+|---|---|---|---|
+| `b7eefc9` / `5a67b75` / `cd22ac3` | `2db57a82` | `2db57a82` | match |
+| `65ff2f0` | `387cd60f` | `387cd60f` | match |
+| `2a4ede9` | `26db67b2` | `26db67b2` | match |
+| **`18415bc` (HEAD)** | `26db67b2` | `bd7da0fc` | **diverge** |
+
+**Impact.** HEAD is the first head in this lineage where the repository's own default test suite fails. Worse: the three failures are exactly the three *tolerance* assertions in `describe("Read schema projection drift over the committed cohort")`; the three sibling `refuses …` negatives still pass **vacuously** — they can no longer distinguish "a sealed definition changed" from "the artifact is stale," so that gate cannot catch a real re-seal-forcing regression until the cohort is re-derived. `evidence:verify` exits 1 with *projection* drift, not the `current catalog bytes drift for bdptest` the authored merge report records (that report was written at `65ff2f0`, where artifact == pin, so projection drift was impossible there). All four byte bindings drift — `catalog`, `manifest`, `fixture`, `schema`; only `validator` matches.
+
+Per your instruction I am **not** treating the imported PR64 observations (`runHead 2a4ede9`) being older than HEAD as a defect, and I make no claim that anything here qualifies PR83. The reportable part is the measured blast radius, which is larger than the integration record states.
+
+**Fix / decision.** Re-seal before merge, or explicitly gate that describe block with the pending-cohort reason recorded so the suite is green and the vacuity is visible.
+
+---
+
+### 3. Reconciled editorial made the properties-update `instanceLocation` non-conformant; new tests pin the non-conformant value
+**Severity: medium (spec ⇄ implementation divergence)**
+**Files:** `docs/specs/bdp.md:3460` (and the metadata-only allowance at `:3464`); `packages/server/src/transaction-batch.ts:445`; `packages/server/src/development-authority.ts:125`
+
+HEAD spec: "`instanceLocation`, when present, is a JSON Pointer **relative to the failing document**," with an omission allowance granted only for "a numeric failure in an unapplied **metadata** patch." At `b7eefc9` the same sentence read "`instanceLocation` locates it within `properties` **when it lies there**" — a conditional that tolerated the implementation's behavior.
+
+The properties-update path still emits an operation-relative **request-body** pointer. Both callers produce `instanceLocation: "/propertiesChange/0/value"`, and this delta's own tests assert it: `packages/server/src/transaction-store.test.ts:2573` and `packages/server/src/member-identity.test.ts:1418`. Creates correctly emit document-relative pointers (`/nested/bad`), and metadata updates correctly omit the pointer — so the field now carries two incompatible conventions within one profile.
+
+**Impact.** No shipped claim is wrong (RU/TX are development-only and non-attesting; the development manifest asserts no `instanceLocation` values). But spec and implementation now disagree on a field inside a `MUST carry diagnostics` clause, and the test suite encodes the disagreement. The prior native reports' "inherited caller convention" framing was accurate at `65ff2f0`; the editorial change in *this* delta is what removed the hedge.
+
+**Fix.** Either extend the omission allowance to unapplied `properties` patches (symmetric, one spec sentence + drop `instanceLocation` in the formatter's properties-update branch), or emit a document-relative pointer there.
+
+---
+
+### 4. Seal log has no entry for this delta's projection changes
+**Severity: low (documentation / re-seal justification)**
+**File:** `packages/conformance/matrices/README.md:834`
+
+The append-only log gained a "Common revision provenance" section for the `attribution`/`changeContext` → `revisionActor`/`revisionProvenance` rename, but nothing for the other post-`b7eefc9` projection movers: the manifest's migration to the `current*` roots (derived Read roots **20 → 16**, `schema-read-projection.test.ts:419-436`), the `revisionProvenance` `minProperties: 1` output tightening, and `validationDiagnostic.document`. This log is the record a future fresh cohort is justified against, so the re-seal narrative is incomplete.
+
+*(Unrelated check, clean: the two `w1-transactional-packet.md` reversions in `11fe839` are correct. I recomputed `sha256` of the restored `9c1e-r1` line and it reproduces the published `e9de824dfe1c…` vector exactly; the `basis: writer-supplied` variant was also non-canonical in both member order and spacing, so it could never have matched.)*
+
+---
+
+### 5. `w1` §5.4 digest vectors are the only remaining description of a shape the schema no longer defines
+**Severity: low (documentation)**
+**File:** `docs/design/w1-transactional-packet.md:4627,4641`
+
+The restored vectors describe `attribution: { principal, status }`, while §5.4's prose claims an implementation reproducing them "agrees with the scheme on … attribution." No current implementation can emit that record. Nothing executes these vectors (`packages/conformance/src/transactional-catalog.test.ts:87` only mirrors `<!-- catalog-rows -->` blocks), and no catalog row cites this file as a requirement source.
+
+**Fix / decision.** Regenerate text **and** digests together against `revisionProvenance`, or mark §5.4 explicitly as a historical council record.
+
+---
+
+### 6. Unknown-key batches normalize every operation before the operation-count refusal
+**Severity: low (efficiency)**
+**File:** `packages/server/src/transaction-store.ts:520` vs `:529`
+
+`prepareTransaction` no longer caps operation count (`transaction-batch.ts:84-89`; I verified 512 operations prepare cleanly — correct, since the spec makes the count an *admission control*, not carrier syntax). But `normalizeTransaction` runs over every operation — identity, witnesses, and per-field `resolveAlias` SQLite lookups — *before* `controls.maximumOperations` refuses. A 64 KiB batch of alias-spelled `updateBead` members does hundreds of point lookups inside the atomic owner step and is then refused with `operation-limit`.
+
+**Impact.** Bounded by the 64 KiB body cap, private-only, no durable effect (no receipt or owner is inserted).
+**Fix.** Move the count check above normalization on the `!prior` path only; it must stay below it for the prior-key equality/conflict comparison, which the spec orders first.
+
+---
+
+## Exact coverage verified (independent of prior report assertions)
+
+**Runtime:** Node `v24.16.0` from PATH (`~/.nvm/versions/node/v24.16.0/bin/node`), matching `engines`. Never Node 26.
+
+| Gate | Result |
+|---|---|
+| `tsc -p tsconfig.check.json` (noEmit) | exit 0 |
+| `tsc -b` | exit 0 |
+| `vitest run` (full) | **117 files, 7861 tests — 3 failed (finding 2), 7857 passed, 1 skipped** |
+| `apps/bdpbd` incl. real pinned bd 1.0.5 CLI plan run | 3 files / 28 passed (61.8 s) |
+| `apps/bdptest` matrix | 8 passed, incl. 5 new metadata negative controls + wire-observer test |
+| `packages/conformance` | 23 files / 754 passed |
+| `check:boundaries` | 11 packages valid |
+| `biome format` | clean |
+| `biome lint` | 5 warnings / 1 info (2 new: `transaction-store.test.ts:2618`, same rule as pre-existing `read-update-transport.test.ts:56`; non-blocking) |
+| `evidence:verify` | exit 1, projection drift (finding 2) |
+| installed-package smoke | **not executed** (needs `pnpm` `npm_execpath`) — instead compared the inventory in `scripts/smoke-executables.mjs` against the built `packages/server/dist`: **152 ↔ 152, zero diff in both directions**, covering both new modules (`transaction-submission`, `member-numeric-diagnostics`, 4 files each) |
+
+**Both target Read matrices pass at HEAD** — bdptest reference and bdpbd through the real pinned `bd` CLI — including the new `current*` metadata assertions. That is implementation evidence at this head, not a sealed cohort and not profile qualification.
+
+### Delta surfaces inspected
+
+- **TX provenance migration.** `transaction-batch.ts:308-310` normalizes `{}` → omission on a shallow copy used for identity only; execution is unaffected because `resource-evaluator.ts:867-874` treats `{}` and omission identically. Events at `:561`/`:571` carry the whole envelope and omit it when absent; no-op outcomes skip Events entirely (`:539`). The `updated` Event's `oneOf` (`schema:2997-3030`) is always satisfied because a change-free update is a no-op and never reaches `scopeEvent`.
+- **Output nonemptiness.** One `minProperties: 1` added at `schema:5543`. I checked all 28 `$ref` sites: output positions (`beadRecord`, `linkRecord`, `createdData`, `updatedData`, `ownedLinkDelta`, `historyVersionRow`) use `#/$defs/revisionProvenance`; every input position uses the separate, unchanged `revisionProvenanceInput`. `parseRevisionProvenanceInput({})` and `createBead` with `revisionProvenance: {}` still succeed (`schema-bundle.test.ts:84-90`). `materializeVersion` (`resource-evaluator.ts:1137-1147`) cannot emit `{}` — it omits the member unless context or actor exists. Type-level regression at `schema-bundle.test.ts:115-135`. The all-or-none context group is normatively stated at `bdp.md:1650`.
+- **Store gates.** `transaction-store.ts:112`/`:115` = `bdp-private-transaction-provenance-5` / `transaction-revision-provenance-4`; checks at `:385-391` precede pending-receipt retraction, creator-fact deletion and sweep (`:392-396`) and the maintenance timer (`:777`). `recovery-store.ts:191` = format 3, `development-authority.ts:36` = installation 2; checked at `recovery-store.ts:586-595`, before the recovery delete at `:608`. Byte-identical refusal is asserted, not claimed: `recovery-store.test.ts:1119` and `transaction-store.test.ts:1105`/`:1918` compare the whole file before/after and confirm retained `claimed` rows and legacy `changeContext` bodies survive untouched.
+- **Pre-admission ordering** matches `bdp.md:4490-4522` step for step: body bytes 413 → carrier syntax incl. `Idempotency-Key` syntax 400 → principal 401/403 → key state → operation count 413 → negotiation 406; conflict precedes negotiation, duplicates negotiate before capacity controls, unknown keys pay the count check before negotiation. I probed the error taxonomy directly rather than trusting it: unpaired surrogates (value and member name), duplicate decoded member names, non-JSON and empty `operations` all surface as `JsonSyntaxError`/`TypeError` → 400 `malformed-request`; `updateWhere`/`deleteWhere` and excess depth surface as `TransactionDevelopmentLimitError`, correctly *not* a protocol ruling; the 3-arg trusted entry still enforces 32 via default controls.
+- **Shared formatter.** `member-numeric-diagnostics.ts` is store- and clock-free with no public export, called from `member-identity.ts:431` (RU) and `transaction-batch.ts:442` (TX). The 10 TX tests are 2 documents × 4 operations (`it.each`) plus exact-65536-byte truncation and 16/17-count; each asserts full rollback via `inspect()` equality, receipt schema validity, durable exact replay after reopen, and conflict under a changed literal. Callers cannot relabel properties as metadata or strip the metadata marker (`member-identity.test.ts:1217-1245`).
+- **Current Read observer.** I checked `createCurrentReadWireValidator`'s routing against the actual routes in `read-request.ts:148-250`: `view` is honored only for `beads/{id}` (collection-level `view` is rejected), there is no nested `beads/{id}/links/` path, and `?view=properties`, `?revision=`, `types*` and discovery are correctly skipped — so the `local === "beads/"` test preceding the `view === "links"` test cannot mis-route a valid current-Read response. Applied in both lanes. `3e7b672` correctly removed it from `IN_PROCESS_ONLY_CAPABILITIES` (it is a function, not a capability token). The three unvalidated client operations use synthetic in-memory transports and observe no target.
+- **Projection.** 47 sealed names, 16 derived roots, 46/47 reachable (only `protocolProfile`), pin `bd7da0fc` green. Dropping the four plain record/collection names as *roots* loses no digest coverage: `current*` reaches them through `allOf` and they remain in the seal.
+- **Development diagnostic plan (`9e11bbb`).** Counts verified against the artifacts, not the README's prose: 29 manifest scenarios, 312 actions, 81 coverage rows, 58 bounded / 23 omitted — exact match. All 13 declared `action.assertion` refs for `development.read-update.expired-creator-binding` resolve against the manifest's 57 actual assertion IDs.
+- **Merge reconciliation.** `bdp.md` retains the full 142-heading four-part layout, heading-set-identical to `5a67b75`; zero duplicated long paragraphs; no stale `changeContext`/`attribution` identifiers in production code. I enumerated merge-only (`--cc`) edits for every merge in `b7eefc9..HEAD`; the server-code merge-only edits are exactly the intended format/installation/provenance migrations. `current-read-transport.ts` is correctly added to `READ_OBSERVER_SUPPORT_PATHS` (`read-harness-bindings.ts:10`) and needs no installed-inventory entry, since the client build excludes `test-support` (`packages/client/tsconfig.json`).
+
+## Remaining decisions
+
+1. **Re-seal vs. gate** for the projection and byte-binding drift (finding 2) — owner: parent workstream.
+2. **`instanceLocation` convention** for unapplied `properties` patches: symmetric omission allowance, or document-relative pointer (finding 3).
+3. **`w1` §5.4**: regenerate vectors against `revisionProvenance`, or mark historical (finding 5).
+4. **Seal-log entry** for the `current*`/root-set/`minProperties`/`document` changes (finding 4).
+5. **Unchanged explicit deferrals** (not touched by this delta): raw TX HTTP receiving — headers, media, targets, receipt representation, socket/disconnection ownership; set operations; owned-Link TX transitions.
+6. **Lint**: accept the 2 new `noNonNullAssertion` warnings (precedent exists) or fix them.
+
+## Non-claims and disclosures
+
+- No public write-profile claim and no Preview 2 qualification claim is made or implied. Both-target matrix passage is implementation evidence at this head, not a sealed cohort.
+- The imported PR64 evidence being pinned to run head `2a4ede9` rather than HEAD is the known pending condition and is not reported as a defect; finding 2 is about the measured gate state, not about the observations' age.
+- Installed-package smoke was not executed; the inventory was verified by exact comparison instead.
+- No repo file was written or modified; `git status` is clean at `18415bc`. I created only gitignored build outputs (`packages/*/dist`, `*.tsbuildinfo`) and one scratch file, `/private/tmp/parent-read-v1.json`, used for the finding-1 citation comparison.

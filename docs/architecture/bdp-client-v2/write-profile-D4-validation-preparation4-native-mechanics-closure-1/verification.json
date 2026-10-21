@@ -1,0 +1,54 @@
+{
+  "complete": true,
+  "fileDataChecks": 6536,
+  "physical": 863,
+  "indexed": 862,
+  "implementation": 857,
+  "exclusions": [
+    "implementation-hashes.json",
+    "preparation-index.json",
+    "execution-gate.json",
+    "execution-gate.closed.json",
+    "preparation-binding.json",
+    "closure.json"
+  ],
+  "origins": 802,
+  "referencePins": 2180,
+  "semanticPins": 186,
+  "sourceFiles": 679,
+  "owned": 1,
+  "protected": 678,
+  "deltas": 16,
+  "helperBytesUnchanged": [
+    "run.py",
+    "worker.py",
+    "gate.py",
+    "scanner.py",
+    "packages.py",
+    "schema-audit.mjs",
+    "guarded-action-session-20261018-021624-549f.py"
+  ],
+  "auditASTDelta": [
+    "failed-response-implies-settled",
+    "pending-category-write-state-null"
+  ],
+  "allPythonASTParsedOnly": [
+    "audit.py",
+    "run.py",
+    "worker.py",
+    "gate.py",
+    "scanner.py",
+    "packages.py",
+    "guarded-action-session-20261018-021624-549f.py"
+  ],
+  "commandsNamespaceOnly": true,
+  "all48UnexecutedIDsPreserved": true,
+  "D03AdditionalDescriptions": 20,
+  "gatesFalseNoRun": true,
+  "preparationIndexSha256": "da53881fc1cdf438746a089684d01dfe12431fd1105a8c87ad1e4e454c2c054c",
+  "preparationBindingSha256": "c12de044b1ea223a5d257c04c67373fe2f8de6ad470fb272d0ce979761773acf",
+  "implementationIndexSha256": "6cc0f6e04d12877439f26ebec5d9b65fa543894a7789dea143fef156efdb771e",
+  "auditSha256": "f29b7ad8a89ca85f022f494e77f59f62dcffcab29e1915931d62c0c15addd854",
+  "sourceBindingSha256": "3f51eaa3d62157bafa78a63d20b7162ccaec135a3d6ae6c10d997e553b2af649",
+  "scope": "static file/JSON/hash/difflib/AST only; no helper import/evaluation or control execution"
+}

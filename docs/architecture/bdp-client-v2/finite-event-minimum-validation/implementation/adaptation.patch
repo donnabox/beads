@@ -1,0 +1,215 @@
+--- /Users/dbox/repos/wt/vickie/bdp-integration-logs/parser-refusal-validation-successor-1/run.py
++++ /Users/dbox/repos/wt/vickie/bdp-integration-logs/finite-event-minimum-validation/implementation/run.py
+@@ -1,7 +1,7 @@
+-"""Single bounded stage. Usage: run.py final STAGE; parser tools are captured after guarded offline install. Closed without root gate."""
++"""Single bounded stage. Usage: run.py final STAGE; workspace tools are captured after guarded offline install. Closed without root gate."""
+ import os,sys
+ if len(sys.argv)!=3 or sys.argv[1]!='final':raise SystemExit('usage: run.py final STAGE')
+-os.environ['PARSER_VALIDATION_PHASE']=sys.argv[1]
++os.environ['FINITE_EVENT_VALIDATION_PHASE']=sys.argv[1]
+ import sys
+ sys.dont_write_bytecode=True
+ from gate import *
+@@ -12,10 +12,10 @@
+ env=os.environ.copy()
+ for k in list(env):
+  if k.startswith('BDP_') or k in ['NODE_OPTIONS','NODE_PATH','NODE_DEBUG','PYTHONOPTIMIZE','BIOME_BINARY','npm_execpath','npm_node_execpath','FORCE_COLOR']:env.pop(k)
+-env.update({'PATH':'/Users/dbox/.nvm/versions/node/v24.16.0/bin:'+env.get('PATH',''),'CI':'true','NO_COLOR':'1','PYTHONDONTWRITEBYTECODE':'1','PARSER_VALIDATION_PHASE':MODE})
++env.update({'PATH':'/Users/dbox/.nvm/versions/node/v24.16.0/bin:'+env.get('PATH',''),'CI':'true','NO_COLOR':'1','PYTHONDONTWRITEBYTECODE':'1','FINITE_EVENT_VALIDATION_PHASE':MODE})
+ env.update(spec.get('environment',{}));tmp=E/(name+'.tmp');tmp.mkdir();env['TMPDIR']=str(tmp);env['npm_config_cache']=str(tmp/'npm-cache')
+ write(name+'.started.json',{'argv':spec['argv'],'cwd':spec['cwd'],'head':g['finalHead'],'tree':g['finalTree'],'sourceIdentity':g['_sourceIdentity'],'rootGateSha256':sha((P/('bootstrap-gate.json' if MODE=='bootstrap' else 'execution-gate.json')).read_bytes()),'outerSeconds':120,'automaticRetries':0,'overrides':spec.get('environment',{})})
+-env['PARSER_VALIDATION_STAGE']=name;env['PARSER_VALIDATION_ATTEMPT']=sha((E/(name+'.started.json')).read_bytes())
++env['FINITE_EVENT_VALIDATION_STAGE']=name;env['FINITE_EVENT_VALIDATION_ATTEMPT']=sha((E/(name+'.started.json')).read_bytes())
+ start=time.monotonic();p=None;seen=set();forced=False;errors=[]
+ def rows():
+  return [r.split(None,3) for r in subprocess.check_output(['ps','-axo','pid=,ppid=,pgid=,comm='],text=True,timeout=2).splitlines() if len(r.split(None,3))==4]
+@@ -63,7 +63,7 @@
+  try:
+   unchanged=source_check(g['_sourceBinding'])==g['_sourceIdentity']
+   if MODE=='final' and name not in ['workspace-install','bind-workspace-tools','typecheck','format-check','lint','fresh-build','bind-fresh-build']:verify_build(g)
+-  if name in ['parser-external','review-parser-external','waiter-external','review-waiter-external']:verify_consumer(g)
++  if name in ['event-minimum-external','review-event-minimum-external','event-missing-context-external','review-event-missing-context-external']:verify_consumer(g)
+  except BaseException as e:errors.append('final binding:'+str(e))
+  try:runtime=[str(x) for x in tmp.rglob('*') if x.is_dir() and x.name.startswith('bdp-')]
+  except BaseException as e:errors.append('temp verification:'+type(e).__name__)
+--- /Users/dbox/repos/wt/vickie/bdp-integration-logs/parser-refusal-validation-preparation/gate.py
++++ /Users/dbox/repos/wt/vickie/bdp-integration-logs/finite-event-minimum-validation/implementation/gate.py
+@@ -1,13 +1,13 @@
+-"""Parser refusal closed gates; no product imports. Root owns releases and measured pins."""
++"""Finite Event closed gates; no product imports. Root owns releases and measured pins."""
+ from pathlib import Path
+ import hashlib,json,subprocess,os
+ P=Path(__file__).resolve().parent
+-W=Path('/Users/dbox/repos/wt/vickie/vickie-parser-refusal')
++W=Path('/Users/dbox/repos/wt/vickie/vickie-finite-event-minimum')
+ GUARD=Path('/Users/dbox/repos/wt/vickie/bdp-integration-logs/guarded-action.py')
+-MODE=os.environ.get('PARSER_VALIDATION_PHASE','final')
++MODE=os.environ.get('FINITE_EVENT_VALIDATION_PHASE','final')
+ assert MODE=='final'
+ E=P/'run'
+-INTEGRATION='d4f3f4be88c7837b71d6646518ca3589d464ba3d'
++INTEGRATION='b76c3b7df77ea9b33611bc9027db651833e20abb'
+ sha=lambda b:hashlib.sha256(b).hexdigest()
+ def require(ok,message):
+  if not ok:raise RuntimeError(message)
+@@ -77,11 +77,12 @@
+ def load_gate(name,child=False):
+  require(__debug__,'Assertions required')
+  g=read(P/'execution-gate.json')
++ require(read(P/'commands.json').get('configurationFinalized') is True,'Corrected successor source/selection not finalized')
+  require(g['released'] is True and g['rootPlanAccepted'] is True and g['rootExactSourceAccepted'] is True and g['session']=='2026-10-08T20:26:35Z-81e5','Root release absent')
+  require(g['mode']==MODE,'Wrong phase')
+  if child:
+   record=E/(name+'.started.json')
+-  require(os.environ.get('PARSER_VALIDATION_STAGE')==name and record.is_file() and sha(record.read_bytes())==os.environ.get('PARSER_VALIDATION_ATTEMPT'),'Helper requires supervised attempt')
++  require(os.environ.get('FINITE_EVENT_VALIDATION_STAGE')==name and record.is_file() and sha(record.read_bytes())==os.environ.get('FINITE_EVENT_VALIDATION_ATTEMPT'),'Helper requires supervised attempt')
+   require(read(record)['rootGateSha256']==sha((P/('bootstrap-gate.json' if MODE=='bootstrap' else 'execution-gate.json')).read_bytes()),'Gate changed during attempt')
+  idx=P/'implementation-hashes.json';require(sha(idx.read_bytes())==g['implementationIndexSha256'],'Implementation index changed')
+  for f,h in read(idx)['files'].items():require(sha((P/f).read_bytes())==h,'Implementation changed '+f)
+@@ -91,6 +92,8 @@
+  cfg=read(P/'commands.json');order=cfg[MODE+'Order'];approved=g['approvedStages']
+  require(approved==order[:len(approved)] and name in approved,'Stage not released')
+  spec=cfg['commands'][name];require(spec['outerSeconds']==120 and spec['automaticRetries']==0,'Limits changed')
++ require(not any('PENDING_SUCCESSOR' in arg for arg in spec['argv']),'Unbound command')
++ if 'selectedFullNames' in spec:require(isinstance(spec['selectedFullNames'],list) and len(spec['selectedFullNames'])>0 and isinstance(spec['prospectiveWorkload'],dict),'Unbound callback selection/workload')
+  base=document(g['baseTools']);tools_check(base['tools'])
+  require(base['sourceLockSha256']==g['sourceLockSha256'],'Base lock differs')
+  if name in ['workspace-install','bind-workspace-tools']:
+@@ -100,12 +103,12 @@
+   tb=document(g['workspaceTools']);tools_check(tb['tools'])
+   require(tb['sourceIdentity']==g['_sourceIdentity'] and tb['sourceLockSha256']==g['sourceLockSha256'] and tb['head']==g['finalHead'],'Installed tools source differs')
+   require(tb['installExitSha256']==sha((E/'workspace-install.exit.json').read_bytes()) and tb['installLogSha256']==sha((E/'workspace-install.log').read_bytes()),'Install evidence changed')
+-  require(g['actualClaudeReviewDisposed'] is True or (name in ['typecheck','format-check','lint'] and g['staticValidationAuthorized'] is True),'Actual Claude review pending; only explicit static prefix may run')
++  require((g['actualClaudeReviewDisposed'] is True and g['nativeCodeReviewDisposed'] is True) or (name in ['typecheck','format-check','lint'] and g['staticValidationAuthorized'] is True),'Code review disposition pending; only explicit static prefix may run')
+   require(disposition['staticValidationAuthorized'] is True if name in ['typecheck','format-check','lint'] else disposition['runtimeValidationAuthorized'] is True,'Root disposition does not authorize this stage')
+  for prior in order[:order.index(name)]:complete(prior,g)
+  if MODE=='final' and order.index(name)>order.index('bind-fresh-build'):verify_build(g)
+  if name=='verify-installed-consumer':require(isinstance(g.get('consumerLockSha256'),str) and sha((E/'consumer/pnpm-lock.yaml').read_bytes())==g['consumerLockSha256'],'Consumer lock not root-pinned')
+- if name in ['parser-external','review-parser-external','waiter-external','review-waiter-external']:
++ if name in ['event-minimum-external','review-event-minimum-external','event-missing-context-external','review-event-missing-context-external']:
+   proof=verify_consumer(g)
+   spec={**spec,'environment':{'BDP_TRANSACTIONAL_INSTALLED_ENTRY':proof['entryRealpath'],'BDP_TRANSACTIONAL_SOURCE_COMMIT':b['head']}}
+  guarded();return g,spec
+--- /Users/dbox/repos/wt/vickie/bdp-integration-logs/parser-refusal-validation-successor-1/audit.py
++++ /Users/dbox/repos/wt/vickie/bdp-integration-logs/finite-event-minimum-validation/implementation/audit.py
+@@ -1,10 +1,10 @@
+-"""Standard-library parser refusal validation auditor; no product imports."""
++"""Standard-library finite Event validation auditor; no product imports."""
+ import sys
+ sys.dont_write_bytecode=True
+ from gate import *
+ import re
+-mode=sys.argv[1];stage={'source':'focused-source','parser':'parser-external','waiter':'waiter-external'}.get(mode)
+-g,_=load_gate({'tools':'bind-workspace-tools','build':'bind-fresh-build','source':'review-focused-source','parser':'review-parser-external','waiter':'review-waiter-external'}[mode],child=True)
++mode=sys.argv[1];stage={'source':'focused-source','minimum':'event-minimum-external','missing':'event-missing-context-external'}.get(mode)
++g,_=load_gate({'tools':'bind-workspace-tools','build':'bind-fresh-build','source':'review-focused-source','minimum':'review-event-minimum-external','missing':'review-event-missing-context-external'}[mode],child=True)
+ if mode=='tools':
+  tools=dict(read(P/'base-tools.json')['tools'])
+  paths=[W/'node_modules'/n for n in ['@biomejs/biome/bin/biome','vitest/vitest.mjs','typescript/bin/tsc','typescript/lib/tsc.js','typescript/lib/getExePath.js','typescript/package.json']]
+@@ -22,49 +22,52 @@
+  chosen=[x for x in cases if x['fullName'] in config['selectedFullNames']]
+  require(len(chosen)==len(config['selectedFullNames']) and sorted(x['fullName'] for x in chosen)==sorted(config['selectedFullNames']) and all(x['status']=='passed' for x in chosen) and result.get('success') is True,'Exact selected callbacks did not pass')
+  require(all(x['status'] in ['pending','skipped','todo'] for x in cases if x not in chosen),'Unexpected callback executed')
++ complete(stage,g)
+  report={'sourceIdentity':g['_sourceIdentity'],'sourceBindingSha256':g['sourceBinding']['sha256'],'qualification':False,'selectedCallbacks':config['selectedFullNames'],'resultsSha256':sha((E/(stage+'.results.json')).read_bytes()),'logSha256':sha((E/(stage+'.log')).read_bytes())}
+  if mode=='source':
+-  report.update({'attribution':'Four source-handler callbacks and three emitted-runtime fixture callbacks on one freshly bound candidate','plannedWorkload':config['prospectiveWorkload'],'limits':'100 handler invocations (67 new+33 existing),91 emitted HTTP exchanges and7 stores are source-derived planned workload, not fabricated observations. Exact refusal/no-owner/wait/token and regression semantics are assertions of the pinned passing callbacks.'})
++  report.update({'attribution':'Selected source owner/service and fresh emitted HTTP callbacks; actual names verified individually','plannedWorkload':config['prospectiveWorkload'],'limits':'Counts are derived from frozen callback code, not fabricated observed owner/HTTP totals; preserve service precedence controls as separate service calls and owner attempts. Assertions of passing pinned callbacks supply semantic evidence.'})
+  else:
+   observations=[]
+   for line in (E/(stage+'.log')).read_text().splitlines():
+    try:x=json.loads(line.strip())
+    except json.JSONDecodeError:continue
+    if isinstance(x,dict) and 'observation' in x:observations.append(x)
+-  matches=[x for x in observations if x['observation']==config['expectedObservation']];require(len(matches)==1,'Missing/duplicate callback report');o=matches[0]
+-  require(o['claimEligible'] is False and o['outcome']=='passed' and o['aborted'] is False and o['closed'] is True and o['workspaceDirty'] is True and o['declaredSourceCommit']==g['finalHead'],'Outcome/source/cleanup differs')
+-  require(isinstance(o['childPid'],int) and o['childPid']>0 and o['childExitCode']==0,'Child exit absent')
+-  execution=complete(stage,g);require(o['childPid'] in execution['sampledPids'],'Reported child was not observed by supervisor')
+-  require(o['exchanges']==config['expectedExchanges'] and len(o['completedResponses'])==config['expectedExchanges'],'Exchange count differs')
++  require(len(observations)==1 and observations[0]['observation']==config['expectedObservation'],'Missing/duplicate/unexpected callback report');o=observations[0]
++  require(o['claimEligible'] is False and o['outcome']=='passed' and o['closed'] is True and o['deadlineExceeded'] is False and o['failureCount']==0 and o['startupCompleted'] is True,'Outcome/cleanup differs')
++  require(o['workspaceDirty'] is True and o['declaredSourceCommit']==g['finalHead'],'Source attribution differs')
++  require(isinstance(o['childPid'],int) and not isinstance(o['childPid'],bool) and o['childPid']>0 and o['childExitCode']==0 and o['childSignalCode'] is None,'Clean child exit absent')
++  execution=complete(stage,g);require(o['childPid'] in execution['sampledPids'],'Reported child not observed by supervisor')
++  require(o['attempted']==o['exchanges']==config['expectedExchanges'] and len(o['completedResponses'])==config['expectedExchanges'],'Exchange count differs')
++  directory=Path(o['directory']);require(directory.is_absolute() and directory.is_relative_to(E/(stage+'.tmp')) and directory.name.startswith('bdp-') and o['directoryAbsent'] is True and not directory.exists(),'Owned store cleanup differs')
+   for response in o['completedResponses']:
+-   require(response['method'] in ['GET','HEAD','POST'] and isinstance(response['status'],int) and response['url'].startswith('https://reference.invalid/acme/'),'Malformed response inventory')
+-   for field in ['wireSha256','bodySha256']:require(re.fullmatch('[0-9a-f]{64}',response[field]),'Response fingerprint absent')
++   require(response['method'] in ['GET','HEAD','POST'] and isinstance(response['status'],int) and isinstance(response['bodyOctets'],int) and response['bodyOctets']>=0,'Malformed response inventory')
++   for field in ['wireSha256','bodySha256']:require(isinstance(response[field],str) and re.fullmatch('[0-9a-f]{64}',response[field]),'Response fingerprint absent')
+   b=o['binding'];served=b['served'];require(served['sourceCommit']==g['finalHead'] and served['profile']=='transactional' and served['history'] is False and served['scope']=='https://reference.invalid/acme/' and b['authorityMode']=='canonical','Binding differs')
+   for field in ['installedPayloadDigest','installedContractsDigest','policyDigest','authenticationDigest']:require(re.fullmatch('[0-9a-f]{64}',served[field]),'Binding digest absent')
+   require(re.fullmatch('[0-9a-f]{64}',b['runtimeConfigurationIdentity']),'Runtime configuration binding absent')
+   fixture_path=W/'packages/conformance/test-support/transactional/fixture-v1.json';fixture=read(fixture_path)
+   require(served['fixtureDigest']==sha(fixture_path.read_bytes()) and served['fixtureId']==fixture['id'] and served['capabilities']==sorted(fixture['capabilities']),'Fixture binding differs')
+   proof=verify_consumer(g);entry=Path(proof['entryRealpath'])
+-  require(Path(o['entry']).resolve(strict=True)==entry and o['entrySha256']==proof['entrySha256'] and served['installedPayloadDigest']==proof['payloadIdentity'],'Actual child differs from independently verified external payload')
+-  unknown=[];known=[]
+-  if mode=='parser':
+-   expected=[('https://reference.invalid/acme/beads/','GET',200)]
+-   for collection in ['beads','links']:
+-    for query in ['unsupported=x','limit=1&limit=2','limit=0']:
+-     for method in ['GET','HEAD']:expected.append((f'https://reference.invalid/acme/{collection}/?{query}',method,400))
+-   for control in ['absent','current']:
+-    for method in ['GET','HEAD']:expected.append(('https://reference.invalid/acme/beads/?unsupported=x',method,400))
+-   for suffix in ['types/task?view=properties','beads/a?view=links&direction=sideways','beads/missing?view=bogus']:
+-    for method in ['GET','HEAD']:expected.append(('https://reference.invalid/acme/'+suffix,method,400))
+-   expected += [('https://reference.invalid/acme/beads/?unsupported=x','GET',400),('https://reference.invalid/acme/beads/?unsupported=x','HEAD',400)]
+-   require([(r['url'],r['method'],r['status']) for r in o['completedResponses']]==expected,'Parser request/result sequence differs')
+-   require(all(r['responseBytes']==0 for r in o['completedResponses'] if r['method']=='HEAD'),'HEAD wire body is not empty')
++  require(Path(o['entry']).resolve(strict=True)==entry and o['entrySha256']==proof['entrySha256'] and served['installedPayloadDigest']==proof['payloadIdentity'],'Child differs from independently verified external payload')
++  responses=o['completedResponses'];contextNames=['bdp-scope-epoch','bdp-authorization-view','bdp-scope-position']
++  if mode=='minimum':
++   require(o['launchStarted'] is True and o['closeAttempted'] is True and o['ownership']=='closed','Owned clean close absent')
++   require([(r['method'],r['status']) for r in responses]==[('GET',200),('GET',503),('HEAD',503)],'Initial finite Event exchange sequence differs')
++   setup,get,head=responses;context=[setup['headers'][n] for n in contextNames];require(all(context),'Real setup context absent')
++   for r in [get,head]:
++    h=r['headers'];require([h[n] for n in contextNames]==context and h['cache-control']=='private, no-store' and h['retry-after']=='1' and h['x-bdp-development-limit'] is None and h['x-bdp-development']=='non-attesting','Timeout context/retry differs')
++   require(get['bodyOctets']>0 and head['bodyOctets']==0 and head['bodySha256']==sha(b''),'GET/HEAD body differs')
++   require(get['headers']['content-type'].split(';',1)[0]=='application/problem+json' and head['headers']['content-type']==get['headers']['content-type'] and head['headers']['content-length']==str(get['bodyOctets']),'HEAD paired GET metadata differs')
+   else:
+-   expected=[(c,m) for c in ['beads','links'] for m in ['GET','HEAD']]
+-   unknown=[x for x in observations if x['observation']=='installed-unknown-collection-minimum-timeout']
+-   require([(x['collection'],x['method']) for x in unknown]==expected and all(x['claimEligible'] is False and 1000<=x['elapsedMs']<5000 for x in unknown),'Unknown-minimum timing observations differ')
+-   known=[x for x in observations if x['observation']=='installed-minimum-timeout']
+-   require([(x['collection'],x['method']) for x in known]==expected,'Historical recognized-minimum observations missing')
+-   require(len([x for x in observations if x['observation']=='installed-position-oracle-control'])==2,'Existing position controls missing')
+-  report.update({'attribution':'verified external candidate from frozen three-file dirty draft; base HEAD is chronology, not complete source identity','observation':o,'unknownMinimumTimings':unknown,'recognizedMinimumTimings':known,'storeCleanup':'Supervisor observed no surviving bdp-prefixed directory beneath the owned stage TMPDIR; callback reports close after awaited child.close and removal. No store path was emitted by this historical helper.','limits':'Existing helper reports one child PID and normal exit code, not a signal field. Parser400 schema/retry/context absence and historical503/conditional/retention assertions are established by the separately pinned passing callbacks; source-owner counts are not inferred from installed wire records. No complete profile or public qualification claim.'})
++   scope='https://reference.invalid/acme/'
++   expected=[('POST',scope+'operations/batch','application/json',200),('GET',scope+'events/','application/json',200)]
++   expected += [(method,scope+collection+'/missing?view=events',accept,404) for collection in ['beads','links'] for accept in ['application/json','text/event-stream'] for method in ['GET','HEAD']]
++   expected += [('GET',scope+'beads/missing?view=events','text/event-stream',401)]
++   require([(r['method'],r['url'],r['accept'],r['status']) for r in responses]==expected,'Historical request matrix differs')
++   context=[responses[1]['headers'][n] for n in contextNames];require(all(context),'Historical context absent')
++   for r in responses[2:10]:
++    h=r['headers'];require([h[n] for n in contextNames]==context and h['content-type']=='application/problem+json' and h['cache-control']=='private, no-store' and all(h[n] is None for n in ['retry-after','www-authenticate','x-bdp-development-limit']),'Historical missing metadata differs')
++    if r['method']=='HEAD':require(r['bodyOctets']==0 and r['bodySha256']==sha(b''),'Historical HEAD body differs')
++   require(all(responses[-1]['headers'][n] is None for n in contextNames),'Unauthenticated context exposed')
++  report.update({'attribution':'Verified external candidate; base HEAD plus exact dirty source/build/archive/consumer binding, not child source attestation','observation':o,'storeCleanup':'Reported clean exit, actual stage-owned directory absent, and supervisor PID/store census accepted. Historical unconditional deletion is not independently sufficient for clean exit.','limits':'Problem schema/exact-body and non-retained validator assertions ran inside the pinned callback. No invented elapsed-wait or raw request census beyond reported responses; no conformance/profile credit.'})
+  write(stage+'.accepted-observation.json',report)
+--- /Users/dbox/repos/wt/vickie/bdp-integration-logs/parser-refusal-validation-successor-1/packages.py
++++ /Users/dbox/repos/wt/vickie/bdp-integration-logs/finite-event-minimum-validation/implementation/packages.py
+@@ -1,5 +1,5 @@
+ """Read-only provenance modes plus external consumer preparation; never imports product.
+-Modes tar, consumer, installed. All require the parser refusal dirty-source gate; copied narrowly from pinned packages.py.
++Modes tar, consumer, installed. All require the finite Event dirty-source gate; copied narrowly from pinned packages.py.
+ """
+ from pathlib import Path
+ import json,tarfile,re,copy
+@@ -45,13 +45,13 @@
+    required.update(p.relative_to(root).as_posix() for p in (root/sub).rglob('*') if p.is_file())
+   assert set(files)==required,(name,set(files)^required)
+   packages[name]={'archive':str(archive),'archiveSha256':sha(archive.read_bytes()),'files':files}
+- write('tar-source-provenance.json',{'head':g['finalHead'],'tree':g['finalTree'],'clean':False,'dirtyPaths':g['_sourceBinding']['dirtyPaths'],'ownedSourceFiles':g['_sourceBinding']['ownedFiles'],'sourceIdentity':g['_sourceIdentity'],'sourceBindingSha256':g['sourceBinding']['sha256'],'binaryDiffSha256':g['_sourceBinding']['binaryDiffSha256'],'packages':packages,'sourceLockSha256':g['sourceLockSha256'],'sourceAttribution':'Base HEAD/tree plus independently verified three-file dirty source identity, fresh build and archives. Base commit does not contain the draft; not child-attested source.'})
++ write('tar-source-provenance.json',{'head':g['finalHead'],'tree':g['finalTree'],'clean':False,'dirtyPaths':g['_sourceBinding']['dirtyPaths'],'ownedSourceFiles':g['_sourceBinding']['ownedFiles'],'sourceIdentity':g['_sourceIdentity'],'sourceBindingSha256':g['sourceBinding']['sha256'],'binaryDiffSha256':g['_sourceBinding']['binaryDiffSha256'],'packages':packages,'sourceLockSha256':g['sourceLockSha256'],'sourceAttribution':'Base HEAD/tree plus independently verified reviewed dirty source identity, fresh build and archives. Base commit does not contain the draft; not child-attested source.'})
+ elif mode=='consumer':
+  basis=json.loads((E/'tar-source-provenance.json').read_text());assert basis['head']==g['finalHead']
+  C.mkdir(exist_ok=False)
+  for data in basis['packages'].values():assert sha(Path(data['archive']).read_bytes())==data['archiveSha256']
+  deps={f'@bdp/{n}':'file:'+basis['packages'][n]['archive'] for n in ['protocol','server']}
+- (C/'package.json').write_text(json.dumps({'name':'parser-refusal-external-consumer','private':True,'type':'module','dependencies':deps},indent=2)+'\n')
++ (C/'package.json').write_text(json.dumps({'name':'finite-event-minimum-external-consumer','private':True,'type':'module','dependencies':deps},indent=2)+'\n')
+  # pnpm11 reads workspace overrides here. Frozen lock is independently pinned by root gate.
+  (C/'pnpm-workspace.yaml').write_text('overrides:\n  "@bdp/protocol": '+json.dumps(deps['@bdp/protocol'])+'\n  "fast-uri": "3.1.5"\n')
+ elif mode=='installed':

@@ -1,0 +1,115 @@
+--- /Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-cumulative-carrier-negative-harness-plan-1/control-matrix.json
++++ /Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-cumulative-carrier-negative-harness-plan-2/control-matrix.json
+@@ -1,5 +1,5 @@
+ {
+-  "state": "CLOSED finite DATA plan, no executable harness",
++  "state": "CLOSED corrected DATA plan, no executable harness",
+   "ids": 32,
+   "prospectiveVariantInvocations": 128,
+   "controls": [
+@@ -1055,17 +1055,28 @@
+         {
+           "name": "IO-publication-after-cutoff",
+           "kind": "watchdog-OS",
+-          "construction": "Owned fixed peers only. Ignore TERM then require repeated same-owned escalation; publisher returns1; ps peer holds writer; final stdout reader delays via bounded owner pipe backpressure; IO path sink errors/partial writes/deadline test actual prefix, never reconstruct event. Last owner/native intact.",
+-          "expectedRefusalOrOrdering": "Raw failure/partial/UNKNOWN stays refusal; no new probe after finish",
+-          "expectedSubjectRawExitCodes": [
+-            1,
+-            -15,
+-            -9
+-          ],
+-          "orderingContrastMaySettle0": false,
+-          "required": true,
+-          "observed": "UNEXECUTED",
+-          "oracle": "COMMON + case-specific source/fixture differential + actual reached-helper/call trace; generic raw exit alone never matches. Fixture-only baseline (same helper bytes, no mutation) must reach selected phase; no skip if unreachable."
++          "construction": "Required real120 finish-expiry coverage, explicitly BLOCKED/unmatchable under unchanged intact-owner normal<115 domain. No executable dispatch, grace, new origin, clock scaling, deadline widening, retry or late UNKNOWN pass. Earlier IO-publication-unavailable/partial variants retain their own narrower error coverage only.",
++          "expectedRefusalOrOrdering": "BLOCKED coverage obligation; no claimed executable match. Real raw/EOF/terminal missing/late remains FAILED/UNKNOWN, never control-pass.",
++          "expectedSubjectRawExitCodes": [],
++          "orderingContrastMaySettle0": false,
++          "required": true,
++          "observed": "UNEXECUTED",
++          "oracle": "No normal matched result allowed. Machine/report coverage ledger MUST retain this required unmet128th selector; overall32-ID/128-variant complete coverage remains BLOCKED. Do not drop from selection or replace with earlier error/capacity/105/200ms witness.",
++          "coverageStatus": "BLOCKED_REQUIRED_UNMATCHABLE_IN_CURRENT_FAULT_DOMAIN",
++          "dispatchAuthorized": false,
++          "normalMatchedResultPermitted": false,
++          "cutoff": {
++            "source": "run.py34-45",
++            "identity": "finish publication loop begin+outer, outer=120; NOT105work or200ms census",
++            "absoluteSubjectBoundary": "subjectBegin+120",
++            "normalHarnessBoundary": "ROOTorigin+115 STRICT, ROOTorigin<=subjectBegin",
++            "incompatibility": "Waiting to actual finish120 expiry cannot produce normal root+owner completion strictly before115 on earlier same origin."
++          },
++          "finiteIntendedSchedule": [
++            "Reach actual census_io_failure on retained current probe using ordinary read/poll fault",
++            "Withhold terminal stdout sink readiness until subjectBegin+120, without altering clocks/origin/finish loop",
++            "Independent native TERM115/KILL119/outer120 may intervene first; such FAILED/UNKNOWN cannot match this required finish120-expiry coverage"
++          ]
+         }
+       ],
+       "noProductHTTP": true,
+@@ -1477,7 +1488,7 @@
+         "observed": "UNEXECUTED",
+         "target": "packages.py"
+       },
+-      "faultLocation": "packages.py:57-115;gate.py:131-139,177-182;carrier-audit.mjs:33 (wrong-payload only)",
++      "faultLocation": "packages.py:57-115;gate.py:131-139,177-182;carrier-audit.mjs:33 (wrong-payload only);gate.py:177-179 (wrong-settings only, original full comparison retained)",
+       "target": "consumer provenance/package modes + actual served-versus-proved payload comparison for wrong-payload only",
+       "variantCount": 7,
+       "variants": [
+@@ -1509,16 +1520,32 @@
+         },
+         {
+           "name": "wrong-settings",
+-          "kind": "Python-DATA",
+-          "construction": "Finite synthetic archive/consumer tree under owned root; change only selected leaf/link/hash; no pnpm/install/product. Upstream load_gate facade is declared unit fixture, actual proof validation remains unmodified",
+-          "expectedRefusalOrOrdering": "consumer lock/manifest/settings/full graph/entry/payload refusal",
+-          "expectedSubjectRawExitCodes": [
+-            17
+-          ],
+-          "orderingContrastMaySettle0": false,
+-          "required": true,
+-          "observed": "UNEXECUTED",
+-          "oracle": "COMMON + case-specific source/fixture differential + actual reached-helper/call trace; generic raw exit alone never matches. Fixture-only baseline (same helper bytes, no mutation) must reach selected phase; no skip if unreachable."
++          "kind": "Python-DATA-original-gate-branch",
++          "construction": "Owned unit E/consumer/pnpm-workspace.yaml initially exact fixed baseline bytes; independent rootConsumerLockAcceptance expected hash stays baseline. Change ONLY fast-uri string3.1.5→3.1.4. Coherent lock/manifest and all earlier source/tools/prefix/archive inputs. Actual document/read/hash/require and original settings comparison stay unmodified. Facades may supply only earlier IO dependencies; no injected refusal at load_gate or comparison.",
++          "expectedRefusalOrOrdering": "RuntimeError: Actual consumer lock/manifest/settings differ at original gate.py179, BEFORE guarded()/stage/product child",
++          "expectedSubjectRawExitCodes": [
++            17
++          ],
++          "orderingContrastMaySettle0": false,
++          "required": true,
++          "observed": "UNEXECUTED",
++          "oracle": "COMMON + case-specific source/fixture differential + actual reached-helper/call trace; generic raw exit alone never matches. Fixture-only baseline (same helper bytes, no mutation) must reach selected phase; no skip if unreachable.",
++          "targetOverride": "ORIGINAL gate.load_gate(name=\"verify-installed-consumer\") at177-179; NOT packages.py producer path/load_gate facade",
++          "independentOracle": {
++            "fixedBaselineUtf8": "overrides:\n  \"@bdp/protocol\": \"file:/unit-do-not-resolve/protocol.tgz\"\n  \"fast-uri\": \"3.1.5\"\n",
++            "fixedMutatedUtf8": "overrides:\n  \"@bdp/protocol\": \"file:/unit-do-not-resolve/protocol.tgz\"\n  \"fast-uri\": \"3.1.4\"\n",
++            "expectedSettingsSha256": "71420a62c4a8843ff69a3c097e2b307f85c9484a7d57946abba4a91baa00d44e",
++            "mutatedSettingsSha256": "ad057918888303ad35d035e3843bdafa3bef77a5bb7c2caa4d8caf1e6b09bdae",
++            "singleLeaf": "fast-uri version only",
++            "coherentOtherComparisons": [
++              "consumer lock == gate/root expected",
++              "manifest == independent root expected",
++              "accepted/sourceBinding fields valid unit fixture"
++            ],
++            "trace": "Original gate177 branch selected, document at178 read original strict pin, original sha(settings) at179 actual mutated digest, then original require refusal. Record fixed actual exception/code and NO post179 guard/spawn. Never accept refusal fabricated by facade.",
++            "healthyBaseline": "Same exact expected fixture passes original179 and reaches later guard line184; later actual-spawn denial sentinel may terminate baseline after reached-phase evidence. This is synthetic reachability only, never actual authority.",
++            "notClaimed": "packages.py114 computes/emits a settings digest, it is not the selected comparison/refusal; no package/product/helper change."
++          }
+         },
+         {
+           "name": "wrong-graph",
+@@ -2229,5 +2256,12 @@
+     }
+   ],
+   "noAutomaticSuite": true,
+-  "allOutcomes": "UNKNOWN/UNEXECUTED"
++  "allOutcomes": "UNKNOWN/UNEXECUTED",
++  "requiredNamedVariants": 128,
++  "requiredCoverageBlocked": 1,
++  "allExecutableReachabilityProven": false,
++  "blockedRequiredSelectors": [
++    "C16/IO-publication-after-cutoff"
++  ],
++  "dispatchCount": 0
+ }

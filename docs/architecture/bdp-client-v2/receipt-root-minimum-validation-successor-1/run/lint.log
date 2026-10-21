@@ -1,0 +1,263 @@
+packages/server/src/transaction-service.test.ts:702:22 lint/style/useTemplate  FIXABLE  ━━━━━━━━━━━━
+
+  i Template literals are preferred over string concatenation.
+  
+    700 │       service = f.open();
+    701 │     const depth = 12000;
+  > 702 │     const deepText = "[".repeat(depth) + "1" + "]".repeat(depth);
+        │                      ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    703 │     const carrier = prepareTransactionSequence(
+    704 │       scope,
+  
+  i Unsafe fix: Use a template literal.
+  
+     700  700 │         service = f.open();
+     701  701 │       const depth = 12000;
+     702      │ - ····const·deepText·=·"[".repeat(depth)·+·"1"·+·"]".repeat(depth);
+          702 │ + ····const·deepText·=·`${"[".repeat(depth)}1${"]".repeat(depth)}`;
+     703  703 │       const carrier = prepareTransactionSequence(
+     704  704 │         scope,
+  
+
+apps/bdptest/src/transactional-minimum-receiving-installed.test.ts:271:33 lint/style/noNonNullAssertion ━━━━━━━━━━
+
+  ! Forbidden non-null assertion.
+  
+    269 │               const received = new Headers();
+    270 │               for (let i = 0; i < response.rawHeaders.length; i += 2)
+  > 271 │                 received.append(response.rawHeaders[i]!, response.rawHeaders[i + 1]!);
+        │                                 ^^^^^^^^^^^^^^^^^^^^^^^
+    272 │               resolve({
+    273 │                 status: response.statusCode ?? 0,
+  
+
+apps/bdptest/src/transactional-minimum-receiving-installed.test.ts:271:58 lint/style/noNonNullAssertion ━━━━━━━━━━
+
+  ! Forbidden non-null assertion.
+  
+    269 │               const received = new Headers();
+    270 │               for (let i = 0; i < response.rawHeaders.length; i += 2)
+  > 271 │                 received.append(response.rawHeaders[i]!, response.rawHeaders[i + 1]!);
+        │                                                          ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    272 │               resolve({
+    273 │                 status: response.statusCode ?? 0,
+  
+
+apps/bdptest/src/transactional-minimum-receiving-installed.test.ts:398:7 lint/style/noNonNullAssertion ━━━━━━━━━━
+
+  ! Forbidden non-null assertion.
+  
+    396 │       "pos-2",
+    397 │       "BDP-Scope-Epoch",
+  > 398 │       expectedContext[0]!,
+        │       ^^^^^^^^^^^^^^^^^^^
+    399 │       "BDP-Authorization-View",
+    400 │       expectedContext[1]!,
+  
+
+apps/bdptest/src/transactional-minimum-receiving-installed.test.ts:400:7 lint/style/noNonNullAssertion ━━━━━━━━━━
+
+  ! Forbidden non-null assertion.
+  
+    398 │       expectedContext[0]!,
+    399 │       "BDP-Authorization-View",
+  > 400 │       expectedContext[1]!,
+        │       ^^^^^^^^^^^^^^^^^^^
+    401 │     ];
+    402 │     const point = `${scope}beads/r00`;
+  
+
+apps/bdptest/src/transactional-minimum-receiving-installed.test.ts:449:9 lint/style/noNonNullAssertion ━━━━━━━━━━
+
+  ! Forbidden non-null assertion.
+  
+    447 │         "pos-2",
+    448 │         "BDP-Authorization-View",
+  > 449 │         expectedContext[1]!,
+        │         ^^^^^^^^^^^^^^^^^^^
+    450 │         "If-None-Match",
+    451 │         "*",
+  
+
+apps/bdptest/src/transactional-minimum-receiving-installed.test.ts:459:11 lint/style/noNonNullAssertion  FIXABLE  ━━━━━━━━━━
+
+  ! Forbidden non-null assertion.
+  
+    457 │         await exchange(`raw-duplicate-${index}`, "GET", point, [
+    458 │           ...tuple,
+  > 459 │           tuple[index * 2]!.toLowerCase(),
+        │           ^^^^^^^^^^^^^^^^^
+    460 │           tuple[index * 2 + 1]!,
+    461 │         ]),
+  
+  i Unsafe fix: Replace with optional chain operator ?. This operator includes runtime checks, so it is safer than the compile-only non-null assertion operator
+  
+     457  457 │           await exchange(`raw-duplicate-${index}`, "GET", point, [
+     458  458 │             ...tuple,
+     459      │ - ··········tuple[index·*·2]!.toLowerCase(),
+          459 │ + ··········tuple[index·*·2]?.toLowerCase(),
+     460  460 │             tuple[index * 2 + 1]!,
+     461  461 │           ]),
+  
+
+apps/bdptest/src/transactional-minimum-receiving-installed.test.ts:460:11 lint/style/noNonNullAssertion ━━━━━━━━━━
+
+  ! Forbidden non-null assertion.
+  
+    458 │           ...tuple,
+    459 │           tuple[index * 2]!.toLowerCase(),
+  > 460 │           tuple[index * 2 + 1]!,
+        │           ^^^^^^^^^^^^^^^^^^^^^
+    461 │         ]),
+    462 │       );
+  
+
+apps/bdptest/src/transactional-minimum-receiving-installed.test.ts:465:9 lint/style/noNonNullAssertion ━━━━━━━━━━
+
+  ! Forbidden non-null assertion.
+  
+    463 │     malformed(
+    464 │       await exchange("single-comma-value", "GET", point, [
+  > 465 │         tuple[0]!,
+        │         ^^^^^^^^^
+    466 │         "pos-2,pos-2",
+    467 │         ...tuple.slice(2),
+  
+
+apps/bdptest/src/transactional-minimum-receiving-installed.test.ts:481:22 lint/style/noNonNullAssertion ━━━━━━━━━━
+
+  ! Forbidden non-null assertion.
+  
+    479 │           ),
+    480 │         );
+  > 481 │     const unknown = [tuple[0]!, "unknown", ...tuple.slice(2)];
+        │                      ^^^^^^^^^
+    482 │     for (const url of [receiptRoot, pageUrl]) {
+    483 │       const response = await exchange(
+  
+
+apps/bdptest/src/transactional-minimum-receiving-installed.test.ts:522:7 lint/style/noNonNullAssertion ━━━━━━━━━━
+
+  ! Forbidden non-null assertion.
+  
+    520 │     expect(context(compatible)).toStrictEqual(expectedContext);
+    521 │     const ahead = await exchange("same-view-ahead", "GET", point, [
+  > 522 │       tuple[0]!,
+        │       ^^^^^^^^^
+    523 │       "pos-3",
+    524 │       ...tuple.slice(2),
+  
+
+apps/bdptest/src/transactional-minimum-receiving-installed.test.ts:532:8 lint/style/noNonNullAssertion ━━━━━━━━━━
+
+  ! Forbidden non-null assertion.
+  
+    530 │       "GET",
+    531 │       point,
+  > 532 │       [tuple[0]!, "pos-2"],
+        │        ^^^^^^^^^
+    533 │       "anonymous",
+    534 │     );
+  
+
+apps/bdptest/src/transactional-minimum-receiving-installed.test.ts:537:76 lint/style/noNonNullAssertion ━━━━━━━━━━
+
+  ! Forbidden non-null assertion.
+  
+    535 │     problem(anonymous, 401, "unauthenticated");
+    536 │     expect(context(anonymous)).toStrictEqual([null, null, null]);
+  > 537 │     const method = await exchange("method-before-minimum", "POST", point, [tuple[0]!, "pos-2"]);
+        │                                                                            ^^^^^^^^^
+    538 │     expect(method.status).toBe(405);
+    539 │     expect(method.headers.get("allow")).toBe("GET, HEAD");
+  
+
+apps/bdptest/src/transactional-minimum-receiving-installed.test.ts:774:33 lint/style/noNonNullAssertion ━━━━━━━━━━
+
+  ! Forbidden non-null assertion.
+  
+    772 │               const received = new Headers();
+    773 │               for (let i = 0; i < response.rawHeaders.length; i += 2)
+  > 774 │                 received.append(response.rawHeaders[i]!, response.rawHeaders[i + 1]!);
+        │                                 ^^^^^^^^^^^^^^^^^^^^^^^
+    775 │               resolve({
+    776 │                 status: response.statusCode ?? 0,
+  
+
+apps/bdptest/src/transactional-minimum-receiving-installed.test.ts:774:58 lint/style/noNonNullAssertion ━━━━━━━━━━
+
+  ! Forbidden non-null assertion.
+  
+    772 │               const received = new Headers();
+    773 │               for (let i = 0; i < response.rawHeaders.length; i += 2)
+  > 774 │                 received.append(response.rawHeaders[i]!, response.rawHeaders[i + 1]!);
+        │                                                          ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    775 │               resolve({
+    776 │                 status: response.statusCode ?? 0,
+  
+
+apps/bdptest/src/transactional-minimum-receiving-installed.test.ts:894:7 lint/style/noNonNullAssertion ━━━━━━━━━━
+
+  ! Forbidden non-null assertion.
+  
+    892 │       "unknown",
+    893 │       "BDP-Scope-Epoch",
+  > 894 │       expectedContext[0]!,
+        │       ^^^^^^^^^^^^^^^^^^^
+    895 │       "BDP-Authorization-View",
+    896 │       expectedContext[1]!,
+  
+
+apps/bdptest/src/transactional-minimum-receiving-installed.test.ts:896:7 lint/style/noNonNullAssertion ━━━━━━━━━━
+
+  ! Forbidden non-null assertion.
+  
+    894 │       expectedContext[0]!,
+    895 │       "BDP-Authorization-View",
+  > 896 │       expectedContext[1]!,
+        │       ^^^^^^^^^^^^^^^^^^^
+    897 │     ];
+    898 │     const own = await exchange("owned-root", "GET", receiptRoot, [...tuple, "If-None-Match", "*"]);
+  
+
+packages/server/src/transaction-http.ts:478:50 lint/style/noNonNullAssertion ━━━━━━━━━━━━━━━━━━━━━━━
+
+  ! Forbidden non-null assertion.
+  
+    476 │       const fields =
+    477 │         lastEventIds ??
+  > 478 │         (request.headers.has("last-event-id") ? [request.headers.get("last-event-id")!] : []);
+        │                                                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    479 │       if (media === "sse" && fields.length > 1)
+    480 │         throw new TransactionChangefeedParameterError("repeated Last-Event-ID");
+  
+
+packages/server/src/transaction-http.ts:481:75 lint/style/noNonNullAssertion ━━━━━━━━━━━━━━━━━━━━━━━
+
+  ! Forbidden non-null assertion.
+  
+    479 │       if (media === "sse" && fields.length > 1)
+    480 │         throw new TransactionChangefeedParameterError("repeated Last-Event-ID");
+  > 481 │       const effective = media === "sse" && fields.length === 1 ? { after: fields[0]! } : changefeed;
+        │                                                                           ^^^^^^^^^^
+    482 │       const observed = await service.changes(effective, minimum, request.signal);
+    483 │       if (observed.kind === "unsupported") return developmentGap("minimum-position");
+  
+
+packages/server/src/transaction-http.ts:534:50 lint/style/noNonNullAssertion ━━━━━━━━━━━━━━━━━━━━━━━
+
+  ! Forbidden non-null assertion.
+  
+    532 │       const fields =
+    533 │         lastEventIds ??
+  > 534 │         (request.headers.has("last-event-id") ? [request.headers.get("last-event-id")!] : []);
+        │                                                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    535 │       const observed = await service.beginEvents(
+    536 │         eventRequest.source.url,
+  
+
+The number of diagnostics exceeds the limit allowed. Use --max-diagnostics to increase it.
+Diagnostics not shown: 44.
+Checked 6 files in 90ms. No fixes applied.
+Found 58 warnings.
+Found 6 infos.

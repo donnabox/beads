@@ -1,0 +1,23 @@
+--- /Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-cumulative-carrier-negative-harness-plan-2/findings-resolution.json
++++ /dev/null
+@@ -1,20 +0,0 @@
+-{
+-  "CNH-N1": {
+-    "disposition": "ACCEPTED DATA correction only",
+-    "actualTarget": "original gate.load_gate177-179",
+-    "fixedExpectedSha256": "71420a62c4a8843ff69a3c097e2b307f85c9484a7d57946abba4a91baa00d44e",
+-    "oneLeafMutatedSha256": "ad057918888303ad35d035e3843bdafa3bef77a5bb7c2caa4d8caf1e6b09bdae",
+-    "noInjectedRefusal": true
+-  },
+-  "CNH-N2": {
+-    "disposition": "ACCEPTED precision; required actual120-expiry coverage explicitly BLOCKED/unmatchable under strict normal<115",
+-    "selectorRetained": true,
+-    "normalMatchPermitted": false,
+-    "earlierErrorCoverageNotSubstitute": true
+-  },
+-  "rootReleaseSha256": "0893e0f2ff3029571994c52f17aab892d79a6ae29d940cc09f28ecdf27da7d9c",
+-  "independentNativeFindingsSha256": "d451adbe8b3c6a485ec4335c3bf68b5e33286f63427dad4bac3f582f9cae014a",
+-  "OTHERNativeAndRootPlan2Pending": true,
+-  "sourceAuthoringReleased": false,
+-  "actualRuns": 0
+-}

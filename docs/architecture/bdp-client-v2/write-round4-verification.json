@@ -1,0 +1,83 @@
+{
+  "kind": "bounded-development-integration-verification",
+  "sourceCommit": "26503a6fc52a01cf7e8181abce4cf39f55fac63c",
+  "repository": "gastownhall/bdp",
+  "branch": "codex/vickie-bdp-write-integration",
+  "pullRequests": {
+    "73": "778216c32c065f129061fb4c453096832f6e20ee",
+    "74": "84cd9e3bf3afc37ad3c72cb23922cbeb096ca70f"
+  },
+  "toolchain": {
+    "node": "24.16.0",
+    "pnpm": "11.20.0"
+  },
+  "suite": {
+    "filesPassed": 111,
+    "testsPassed": 7634,
+    "testsSkipped": 1,
+    "testsFailed": 0,
+    "maxWorkers": 2
+  },
+  "checks": [
+    {
+      "command": [
+        "build"
+      ],
+      "exitCode": 0
+    },
+    {
+      "command": [
+        "typecheck"
+      ],
+      "exitCode": 0
+    },
+    {
+      "command": [
+        "check:boundaries"
+      ],
+      "exitCode": 0
+    },
+    {
+      "command": [
+        "exec",
+        "vitest",
+        "run",
+        "--maxWorkers=2",
+        "--reporter=default",
+        "--reporter=json",
+        "--outputFile.json=/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-round4/tests.json"
+      ],
+      "exitCode": 0
+    },
+    {
+      "command": [
+        "smoke:development"
+      ],
+      "exitCode": 0
+    },
+    {
+      "command": [
+        "smoke"
+      ],
+      "exitCode": 0
+    }
+  ],
+  "logSha256": {
+    "smoke-development.log": "d5b012d61dca4c363a2d39dbadd299ce926093678822913d6599d0346e937aac",
+    "check-boundaries.log": "53f4cd856bde25513486a59799c5a05e0650fbb756bf1580fb07e56c2fdeeef3",
+    "tests.json": "5762461a350daee47b20d90be6889959c419c023abfec8717cc9c1f57d862cc1",
+    "disconnect-independent.log": "f4d48beb2f13492a35d568a34aee541ea3af20e30544023be53a6785541b82ce",
+    "typecheck.log": "91d54ffbee73a3ac72294d090e58d77745f8b93edbf94b862807698273a6505a",
+    "smoke.log": "904f59ddeebb3a9634906c612fcf033b23f125be94c2adc5cd035f1d3278147d",
+    "checks.json": "207a4dd1a2db4f412b3bfbd84551446ac45a53b3ec4a3ad16b7ac74be6b2b356",
+    "disconnect-independent.json": "6b45c7937621ea876af62ed0b780b2f791c9404bc3974c115208b5d0e608f369",
+    "tests.log": "8846e54744c4ea5fcd86469e956ad551ff2cb3f39651abd53b66bb80202bd084",
+    "build.log": "232dac5e840e45b3bb06e6e04249b5241f2e1b4f6c797a22c046d916302ac208"
+  },
+  "limitations": [
+    "No complete Read+Update or Transactional qualification or advertisement.",
+    "Disconnect and SIGKILL recovery are application-process observations, not power-loss proof.",
+    "Receipt sweep workload bounds and authorization/erasure projection remain unqualified.",
+    "Council findings require editorial repair and re-review; all PRs remain drafts."
+  ]
+}

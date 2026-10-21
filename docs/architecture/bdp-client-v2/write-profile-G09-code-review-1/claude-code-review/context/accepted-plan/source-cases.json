@@ -1,0 +1,89 @@
+{
+  "callbacks": [
+    {
+      "id": "G09-S01",
+      "proposedFullName": "schemaObserved zero-min/current and captured supplied tuple",
+      "workload": "3 direct service calls; receiving capture/mutation control, original zero-min timing and close/drain",
+      "callbackSeconds": 5,
+      "workSeconds": 3,
+      "cleanupSeconds": 1,
+      "cleanupInclusive": true,
+      "status": "PROSPECTIVE_NOT_AUTHORED"
+    },
+    {
+      "id": "G09-S02",
+      "proposedFullName": "schemaObserved epoch and view errors",
+      "workload": "2 direct service calls; actual context, zero waits",
+      "callbackSeconds": 5,
+      "workSeconds": 3,
+      "cleanupSeconds": 1,
+      "cleanupInclusive": true,
+      "status": "PROSPECTIVE_NOT_AUTHORED"
+    },
+    {
+      "id": "G09-S03",
+      "proposedFullName": "schemaObserved ahead and opaque bounded attempts",
+      "workload": "2 calls with existing source-injected finite clock;2 attempts+1 wait each; no await inside entry; source unit not real timing",
+      "callbackSeconds": 5,
+      "workSeconds": 3,
+      "cleanupSeconds": 1,
+      "cleanupInclusive": true,
+      "status": "PROSPECTIVE_NOT_AUTHORED"
+    },
+    {
+      "id": "G09-S04",
+      "proposedFullName": "schema selector receiving and exact identity",
+      "workload": "8 direct excluded calls; no observe; exact retrieval not$id/query/foreign/local Resource alias; no getter invocation",
+      "callbackSeconds": 5,
+      "workSeconds": 3,
+      "cleanupSeconds": 1,
+      "cleanupInclusive": true,
+      "status": "PROSPECTIVE_NOT_AUTHORED"
+    },
+    {
+      "id": "G09-S05",
+      "proposedFullName": "schema selector HTTP/min failure order",
+      "workload": "8 direct calls:200GET,200HEAD,304,412,406,410,409,503; no stale body or leaked metadata",
+      "callbackSeconds": 5,
+      "workSeconds": 3,
+      "cleanupSeconds": 1,
+      "cleanupInclusive": true,
+      "status": "PROSPECTIVE_NOT_AUTHORED"
+    },
+    {
+      "id": "G09-S06",
+      "proposedFullName": "schema runtime satisfied and context errors",
+      "workload": "5 real source wire requests: baselineGET, knownGET, knownHEAD, epochGET, viewHEAD; canonical Host, same captured bytes",
+      "callbackSeconds": 5,
+      "workSeconds": 3,
+      "cleanupSeconds": 1,
+      "cleanupInclusive": true,
+      "status": "PROSPECTIVE_NOT_AUTHORED"
+    },
+    {
+      "id": "G09-S07",
+      "proposedFullName": "schema runtime ahead before conditional",
+      "workload": "2 real source wire requests: baseline then aheadGET+If-None-Match:* ->503",
+      "callbackSeconds": 5,
+      "workSeconds": 3,
+      "cleanupSeconds": 1,
+      "cleanupInclusive": true,
+      "status": "PROSPECTIVE_NOT_AUTHORED"
+    },
+    {
+      "id": "G09-S08",
+      "proposedFullName": "schema runtime unknown before HEAD/media",
+      "workload": "2 real source wire requests: baseline then opaqueHEAD+conditional/media ->503",
+      "callbackSeconds": 5,
+      "workSeconds": 3,
+      "cleanupSeconds": 1,
+      "cleanupInclusive": true,
+      "status": "PROSPECTIVE_NOT_AUTHORED"
+    }
+  ],
+  "newCallbacks": 8,
+  "prospectiveDirectCalls": 23,
+  "prospectiveSourceWireRequests": 9,
+  "measurement": "exact final callback names/report grammar/source callsites unresolved until author freeze; no predicted timing pass",
+  "oldCallbacks": "preserve all except narrow supersession of known-schema min-refusal expectations in same existing source file; retain former hardcoded foreign tuple as410 control instead of deleting it"
+}

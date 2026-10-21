@@ -1,0 +1,274 @@
+{
+  "coldPositiveRequests": [
+    43,
+    28
+  ],
+  "counterfactuals": 9,
+  "execution": "NOT RUN; counts obtained from authored finite source table and loop expansion, not test collection/results",
+  "installed": {
+    "callbackCount": 11,
+    "callbackMs": 60000,
+    "callbacks": [
+      {
+        "callbackLocalRawRequests": 0,
+        "completedResponses": 12,
+        "expectedCloseAborts": 0,
+        "prospective": true,
+        "publicExactRequests": 12,
+        "scheduledRequests": 12,
+        "title": "private installed discovery owner regression successor"
+      },
+      {
+        "callbackLocalRawRequests": 0,
+        "completedResponses": 43,
+        "expectedCloseAborts": 0,
+        "prospective": true,
+        "publicExactRequests": 43,
+        "scheduledRequests": 43,
+        "title": "private installed cold resource-alias"
+      },
+      {
+        "callbackLocalRawRequests": 0,
+        "completedResponses": 28,
+        "expectedCloseAborts": 0,
+        "prospective": true,
+        "publicExactRequests": 28,
+        "scheduledRequests": 28,
+        "title": "private installed cold transactional-carriers"
+      },
+      {
+        "callbackLocalRawRequests": 0,
+        "completedResponses": 21,
+        "expectedCloseAborts": 0,
+        "prospective": true,
+        "publicExactRequests": 21,
+        "scheduledRequests": 21,
+        "title": "private installed raw receiving and minimum syntax"
+      },
+      {
+        "callbackLocalRawRequests": 1,
+        "completedResponses": 26,
+        "expectedCloseAborts": 0,
+        "prospective": true,
+        "publicExactRequests": 25,
+        "scheduledRequests": 26,
+        "title": "private installed discovery methods auth and transport"
+      },
+      {
+        "callbackLocalRawRequests": 0,
+        "completedResponses": 15,
+        "expectedCloseAborts": 0,
+        "prospective": true,
+        "publicExactRequests": 15,
+        "scheduledRequests": 15,
+        "title": "private installed discovery minimum ordering scope"
+      },
+      {
+        "callbackLocalRawRequests": 1,
+        "completedResponses": 4,
+        "expectedCloseAborts": 1,
+        "prospective": true,
+        "publicExactRequests": 4,
+        "scheduledRequests": 5,
+        "title": "private installed discovery close pending scope"
+      },
+      {
+        "callbackLocalRawRequests": 0,
+        "completedResponses": 15,
+        "expectedCloseAborts": 0,
+        "prospective": true,
+        "publicExactRequests": 15,
+        "scheduledRequests": 15,
+        "title": "private installed discovery minimum ordering descriptor"
+      },
+      {
+        "callbackLocalRawRequests": 1,
+        "completedResponses": 4,
+        "expectedCloseAborts": 1,
+        "prospective": true,
+        "publicExactRequests": 4,
+        "scheduledRequests": 5,
+        "title": "private installed discovery close pending descriptor"
+      },
+      {
+        "callbackLocalRawRequests": 0,
+        "completedResponses": 15,
+        "expectedCloseAborts": 0,
+        "prospective": true,
+        "publicExactRequests": 15,
+        "scheduledRequests": 15,
+        "title": "private installed discovery minimum ordering directory"
+      },
+      {
+        "callbackLocalRawRequests": 1,
+        "completedResponses": 4,
+        "expectedCloseAborts": 1,
+        "prospective": true,
+        "publicExactRequests": 4,
+        "scheduledRequests": 5,
+        "title": "private installed discovery close pending directory"
+      }
+    ],
+    "cleanupMs": 10000,
+    "completed": 187,
+    "expectedCloseAborts": 3,
+    "futureOuterMs": 120000,
+    "futureTermAtMs": 115000,
+    "localRaw": 4,
+    "publicExact": 186,
+    "requestMs": 5000,
+    "retries": 0,
+    "scheduled": 190,
+    "workMs": 45000
+  },
+  "requestBounds": {
+    "bodyBytes": 65536,
+    "headerBytes": 16384
+  },
+  "responseBounds": {
+    "bodyBytes": 131072,
+    "derivedWireBytes": 163840,
+    "headerBytes": 16384
+  },
+  "source": {
+    "actualWireRequests": 14,
+    "callbackTimeoutMs": "repository default 5000",
+    "callbacks": [
+      {
+        "directHandlerCalls": 7,
+        "prospective": true,
+        "title": "D3 source projection scope",
+        "wireRequests": 0
+      },
+      {
+        "directHandlerCalls": 8,
+        "prospective": true,
+        "title": "D3 source receiving scope",
+        "wireRequests": 0
+      },
+      {
+        "directHandlerCalls": 10,
+        "prospective": true,
+        "title": "D3 source minimum order scope",
+        "wireRequests": 0
+      },
+      {
+        "directHandlerCalls": 2,
+        "prospective": true,
+        "title": "D3 source catch-up scope",
+        "wireRequests": 0
+      },
+      {
+        "directHandlerCalls": 1,
+        "prospective": true,
+        "title": "D3 source abort scope",
+        "wireRequests": 0
+      },
+      {
+        "directHandlerCalls": 1,
+        "prospective": true,
+        "title": "D3 source close-drain scope",
+        "wireRequests": 0
+      },
+      {
+        "directHandlerCalls": 6,
+        "prospective": true,
+        "title": "D3 source projection descriptor",
+        "wireRequests": 0
+      },
+      {
+        "directHandlerCalls": 8,
+        "prospective": true,
+        "title": "D3 source receiving descriptor",
+        "wireRequests": 0
+      },
+      {
+        "directHandlerCalls": 9,
+        "prospective": true,
+        "title": "D3 source minimum order descriptor",
+        "wireRequests": 0
+      },
+      {
+        "directHandlerCalls": 2,
+        "prospective": true,
+        "title": "D3 source catch-up descriptor",
+        "wireRequests": 0
+      },
+      {
+        "directHandlerCalls": 1,
+        "prospective": true,
+        "title": "D3 source abort descriptor",
+        "wireRequests": 0
+      },
+      {
+        "directHandlerCalls": 1,
+        "prospective": true,
+        "title": "D3 source close-drain descriptor",
+        "wireRequests": 0
+      },
+      {
+        "directHandlerCalls": 6,
+        "prospective": true,
+        "title": "D3 source projection directory",
+        "wireRequests": 0
+      },
+      {
+        "directHandlerCalls": 8,
+        "prospective": true,
+        "title": "D3 source receiving directory",
+        "wireRequests": 0
+      },
+      {
+        "directHandlerCalls": 9,
+        "prospective": true,
+        "title": "D3 source minimum order directory",
+        "wireRequests": 0
+      },
+      {
+        "directHandlerCalls": 2,
+        "prospective": true,
+        "title": "D3 source catch-up directory",
+        "wireRequests": 0
+      },
+      {
+        "directHandlerCalls": 1,
+        "prospective": true,
+        "title": "D3 source abort directory",
+        "wireRequests": 0
+      },
+      {
+        "directHandlerCalls": 1,
+        "prospective": true,
+        "title": "D3 source close-drain directory",
+        "wireRequests": 0
+      },
+      {
+        "directHandlerCalls": 0,
+        "prospective": true,
+        "title": "D3 source raw receiving",
+        "wireRequests": 12
+      },
+      {
+        "directHandlerCalls": 10,
+        "prospective": true,
+        "title": "D3 source target transport boundary",
+        "wireRequests": 2
+      },
+      {
+        "counterfactualClones": 9,
+        "counterfactualWireRequests": 0,
+        "directHandlerCalls": 3,
+        "prospective": true,
+        "title": "D3 source cold oracle counterfactual",
+        "wireRequests": 0
+      }
+    ],
+    "directHandlerCalls": 96,
+    "legacyFirstCallbackRequestsSeparate": 7,
+    "newCallbacks": 21,
+    "newLocalRawPerExchangeCeilingMs": 5000,
+    "oldRawHelperMs": 2000,
+    "sharedCleanupMs": 1000,
+    "workMs": 3000
+  }
+}

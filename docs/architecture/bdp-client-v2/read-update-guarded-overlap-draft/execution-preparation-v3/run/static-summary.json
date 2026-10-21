@@ -1,0 +1,85 @@
+{
+  "status": "ALL_EIGHT_STATIC_STAGES_PASSED",
+  "sourceBindingSha256": "792d7e813bc153a7bcf1d7bf4c5750522644873c831d8812b42301702b512f6e",
+  "sourceParent": "9a42a4531def99e12fa9a1fba02e70558d643265",
+  "steps": [
+    {
+      "name": "offline-setup",
+      "exit": 0,
+      "supervisorExit": 0,
+      "seconds": 0.7239708751440048,
+      "logSha256": "0a7f211e56bad2d64a83208c89dadf8422f228b180b32e53513d6d14beb2b539",
+      "exitSha256": "2bd120749915a4334b7da3069efe5ff3b185d356ffb31130d67cb147fe147454"
+    },
+    {
+      "name": "typecheck",
+      "exit": 0,
+      "supervisorExit": 0,
+      "seconds": 1.3344834160525352,
+      "logSha256": "91d54ffbee73a3ac72294d090e58d77745f8b93edbf94b862807698273a6505a",
+      "exitSha256": "590b7ee56b9a10e8b86de4a594345111bd7bc52ddb3fddcd4ce763a5d21b55dd"
+    },
+    {
+      "name": "build",
+      "exit": 0,
+      "supervisorExit": 0,
+      "seconds": 1.4507339999545366,
+      "logSha256": "232dac5e840e45b3bb06e6e04249b5241f2e1b4f6c797a22c046d916302ac208",
+      "exitSha256": "e438b3e0186dea60af277420372cf9ae4a56e925edf1655affc2162c9ace03cf"
+    },
+    {
+      "name": "format-check",
+      "exit": 0,
+      "supervisorExit": 0,
+      "seconds": 0.7574423339683563,
+      "logSha256": "1d410c3f2656384dc1e72e30db00816f54cff4fa4e81f6cc7b24563630d3f7e3",
+      "exitSha256": "dd5fed21bf5a998c53391afdcec1edb14fd0c25b627cddf5e04a4822bbf5898b"
+    },
+    {
+      "name": "lint",
+      "exit": 0,
+      "supervisorExit": 0,
+      "seconds": 0.9489277908578515,
+      "logSha256": "0726d71d712254d71c9799bdf7b066256a1a602bc0ddc5474a2e6ed2a8798c99",
+      "exitSha256": "2a785023c7dbf238bd6c0398a8efe0a0ae73af4ed1e4f55cd3ccf752a1be88c5"
+    },
+    {
+      "name": "boundaries",
+      "exit": 0,
+      "supervisorExit": 0,
+      "seconds": 1.1048042080365121,
+      "logSha256": "53f4cd856bde25513486a59799c5a05e0650fbb756bf1580fb07e56c2fdeeef3",
+      "exitSha256": "f2be690d2053fefae55dc406ed60f5ce763b29200574589918641d9cf441a55c"
+    },
+    {
+      "name": "read-seal",
+      "exit": 0,
+      "supervisorExit": 0,
+      "seconds": 0.8405941659584641,
+      "logSha256": "79749014f712bd5d838b93088c70fef4cca1ae63d7738a613716ab37fa1295ba",
+      "exitSha256": "d1613464ca41e192b2798e73336e4b9d67c3dfd8e1b2d6c0e774991af81b4d17"
+    },
+    {
+      "name": "build-inventory",
+      "exit": 0,
+      "supervisorExit": 0,
+      "seconds": 0.6352265411987901,
+      "logSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "exitSha256": "a4d6b118c15134593c0f001370f3a1910623ac48c87177e8a74c8c9946010fc9"
+    }
+  ],
+  "buildInventorySha256": "0433c78fb3e73696cbd478e4b8828db048858f6e0f5626307bb3982e441f4bed",
+  "inputFiles": 667,
+  "packageOutputFiles": 312,
+  "cleanupSha256": "bdcd5c32aae709ef4a067f95b26462e2ee1710af096c3b689f37cfdd9dd1da46",
+  "lint": {
+    "errors": 0,
+    "warnings": 775,
+    "infos": 48
+  },
+  "readRows": 89,
+  "tests": 0,
+  "productChildren": 0,
+  "httpRequests": 0,
+  "scope": "Root limited static release while actual Claude repair supplement pending; no claim of council completion or package/behavioral readiness."
+}

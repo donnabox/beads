@@ -1,0 +1,115 @@
+{
+  "actualB": "NOT_INVOKED",
+  "actualC": "NOT_INVOKED",
+  "actualInnerNarrowFinalRemaining": [],
+  "actualInnerSamples": [
+    {
+      "group": [
+        [
+          "56114",
+          "55393",
+          "56114",
+          "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node"
+        ]
+      ],
+      "seconds": 0.048990500159561634
+    },
+    {
+      "group": [
+        [
+          "56114",
+          "55393",
+          "56114",
+          "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node"
+        ],
+        [
+          "56116",
+          "56114",
+          "56114",
+          "/Users/dbox/repos/wt/vickie/vickie-schema-minimum/node_modules/.pnpm/@biomejs+cli-darwin-arm64@2.5.7/node_modules/@biomejs/cli-darwin-arm64/biome"
+        ]
+      ],
+      "seconds": 0.14304150035604835
+    },
+    {
+      "group": [
+        [
+          "56114",
+          "55393",
+          "56114",
+          "<defunct>"
+        ]
+      ],
+      "seconds": 0.2382307923398912
+    }
+  ],
+  "administrativeIdentities": "UNRETAINED",
+  "knownTaskRegistry": {
+    "origins": [
+      {
+        "basis": "actual local getpid/getpgrp; no signal authority",
+        "pgid": 55380,
+        "pid": 55392,
+        "role": "collector"
+      },
+      {
+        "basis": "actual retained Popen start_new_session",
+        "pgid": 55393,
+        "pid": 55393,
+        "role": "direct-wrapper"
+      },
+      {
+        "pgid": 56114,
+        "pid": 56114,
+        "receipt": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation-preparation-3/run/lint.processes.jsonl",
+        "role": "actual-inner-sample"
+      },
+      {
+        "pgid": 56114,
+        "pid": 56114,
+        "receipt": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation-preparation-3/run/lint.processes.jsonl",
+        "role": "actual-inner-sample"
+      },
+      {
+        "pgid": 56114,
+        "pid": 56116,
+        "receipt": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation-preparation-3/run/lint.processes.jsonl",
+        "role": "actual-inner-sample"
+      },
+      {
+        "pgid": 56114,
+        "pid": 56114,
+        "receipt": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation-preparation-3/run/lint.processes.jsonl",
+        "role": "actual-inner-sample"
+      },
+      {
+        "pgid": null,
+        "pid": 56114,
+        "receipt": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation-preparation-3/run/lint.exit.json",
+        "role": "actual-inner-sampledPid"
+      },
+      {
+        "pgid": null,
+        "pid": 56116,
+        "receipt": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation-preparation-3/run/lint.exit.json",
+        "role": "actual-inner-sampledPid"
+      }
+    ],
+    "pgids": [
+      55380,
+      55393,
+      56114
+    ],
+    "pids": [
+      55392,
+      55393,
+      56114,
+      56116
+    ]
+  },
+  "noFreshProcessCensusOrCleanupTakenByAuditor": true,
+  "noGlobalObserverSelfAbsenceOrHardRealtimeClaim": true,
+  "normalCommonClockWitness": "MISSING_NOT_INVOKED",
+  "postATerminalCensus": "MISSING_NOT_INVOKED",
+  "rootPostTerminalCleanup": "UNKNOWN"
+}

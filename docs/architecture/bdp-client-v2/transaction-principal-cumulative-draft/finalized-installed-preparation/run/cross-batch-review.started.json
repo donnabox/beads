@@ -1,0 +1,33 @@
+{
+  "name": "cross-batch-review",
+  "argv": [
+    "python3",
+    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-principal-cumulative-draft/finalized-installed-preparation/review-installed.py",
+    "cross-batch"
+  ],
+  "cwd": "/Users/dbox/repos/wt/vickie/vickie-guarded-batch",
+  "started": "2026-10-15T22:30:33.894234+00:00",
+  "head": "1f0cb9455361cef2cc793558793e4a190be6f4fe",
+  "workspaceDirty": false,
+  "sourceSha256": {
+    "packages/conformance/test-support/transactional/manifest-v1.json": "cd90592e76cace65b115dbfedf5f604c9c4011ed2e1a0fad954c1edb12aca6cd",
+    "packages/conformance/test-support/transactional/coverage-v1.json": "0c991feb128a50625397e337464badcb17d22a0c31e1d57a6b66fa1032a92a51",
+    "packages/conformance/src/transactional-cumulative.test.ts": "ea51f2604e8ab75d86bcb6c7faddb868ebf7f66b46be52c1c2364c2abc6a09dc",
+    "apps/bdptest/src/transactional-matrix.test.ts": "762f84132bdfae18a730e07ac3a759da2a55289644a7b97888f314a55dffae4e"
+  },
+  "sourceDiffSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+  "rootAcceptanceSha256": "6e23056698c33c5a64e2ead002f1955eed2514a504f24f3d87d557486507a461",
+  "preparationSha256": "1764ff4ec582f9ffc8d71b084745383feba2e965006d64ab20fb3c988a180c4a",
+  "bdpOverrides": {},
+  "guardedArgv": [
+    "/opt/homebrew/opt/python@3.14/bin/python3.14",
+    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/guarded-action.py",
+    "python3",
+    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-principal-cumulative-draft/finalized-installed-preparation/review-installed.py",
+    "cross-batch"
+  ],
+  "nodePathPrefix": "/Users/dbox/.nvm/versions/node/v24.16.0/bin",
+  "sourceAttribution": "Externally bound source snapshot or frozen package; not child-attested Git identity",
+  "plannedWorkload": {},
+  "derivativeBinding": null
+}

@@ -1,0 +1,13 @@
+# Lifecycle source3: seven bounded CODE corrections
+
+Implemented all seven accepted root935f corrections under source-only release1b8e4c26 in a NEW isolated d181-based checkout. Exactly seven existing paths changed,679 other candidate files and the original reviewed686-file checkout remain exact. Final original-nine footprint against fdd retains677 protected paths; development-authority/private process are protected this correction.
+
+Prepared facts now capture inside startup try after the last prepared check/before publication. Final returns follow completion/ownerCompletion initialization and use inert facts, preserving legacy result keys/order/fallbacks/cache bodies. Invalid wrapper scope/types preserve ONE fixed primary through ONEcleanup and aggregate primary+cleanup when needed. RU task settlement matches TX; prepared RU host/S02 witness use genuine handle. Latent/unreachable defensive qualification remains, no observed failure/pass claim.
+
+I21 preserves public refusal then invalid initial-configuration guard, adds ONE planned ready TX generation/invalid stop/actual exit2 AND stdio close2/fixed output/no extra ready, then owned store+SQLite ownerProbe(false). Explicit totals33ordinary+4guards=37, still21callbacks/126HTTP+2CONNECT. Decoded regular/CONNECT raw byte screening precedes stdout; finite pure safe/leak controls remain inside I21. No actual credential echo claimed. One deep private refusal and optional workspace-dist override documentation complete the correction.
+
+All source51/default5s/21persisted/2HTTP and installed request5s/work45s/ONEcleanup10s/callback60s/futureouter120sTERM115/no retry remain. Six TX cold callbacks still depend on future accepted combinedD3a; no skips/standalone pass. Actual CODE reviewed prior d181 candidate/dependencies only, not relative missing context; original PLAN failed supervision chronology/scope limitation remain. No second actual review.
+
+ONE exact pinned Biome FORMAT--write on six codepaths exited0 in0.031210959s,Formatted6/Fixed3; Markdown excluded. Genuine semantic/preformat,format-only,finalcorrection and cumulativefdd9 forward/inverse pairs,all686maps,source/origin copies and raw formatter receipts retained. Format-only token comparison permits whitespace and added trailing call commas; the earlier overly strict assertion failure is preserved. No postformatter source edits. This is not a format-check/compiler/test result.
+
+No Git/compiler/lint/check/test/build/install/runtime/helper/reviewer/flag action beyond that explicit formatter exception. Independent FULL corrected native/root source acceptance, current Git/binary identity and separately bound combined-source validation/archive/consumer/lock/proof remain unresolved.

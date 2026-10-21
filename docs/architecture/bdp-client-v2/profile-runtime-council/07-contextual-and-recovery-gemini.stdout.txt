@@ -1,0 +1,103 @@
+### Executive Summary & Readiness Assessment
+
+This is a bounded readiness review of frozen BDP successor head `486ad62d7c6ecb8e36dad4e596b1597fde425cdd` against integration base `3a8f9d553a2944bc7d1d7812a284f0160dcbe798`.
+
+The packet covers two focused areas:
+1. **Contextual sequence validation observations**: Adds diagnostic scenarios `development.read-update.contextual-local-kind` and `development.read-update.contextual-durable-kind` along with manifest actions and catalog/coverage bindings.
+2. **Transactional SQLite failure hardening**: Implements guarded rollback, sticky ambiguous `COMMIT` fencing, retryable clean constraint rollback, and error-chain composition across `atomic`, `cleanupThenThrow`, `execute`, `admit`, `admitSequence`, and `nextSequence`.
+
+**Readiness Verdict**: **Conditional Pass with One Finding**. The conformance diagnostics changes are sound, non-attesting, and honest. Transaction store failure fencing is largely robust, but contains an error-chain preservation and sticky fencing gap in `nextSequence` recovery.
+
+---
+
+### Actionable Findings
+
+#### Finding 1: Cause preservation and sticky fence omitted on sequence cancellation failure in `nextSequence`
+* **Severity**: Medium
+* **File and Exact Section**: [`packages/server/src/transaction-store.ts`](file:///packages/server/src/transaction-store.ts#L780-L795) (diff chunk around lines 780–795)
+* **Concrete Issue**:
+  When a sequence member turn encounters an error in `nextSequence`, it attempts compensating cancellation via `cancelSequence(attempt)`. If `cancelSequence` throws, `nextSequence` directly throws `new AggregateError([error, cleanup], "transaction sequence cancellation failed")` without passing the combined error to `fence(...)`:
+  ```ts
+  } catch (error) {
+    state.busy = false;
+    if (ownerFailure) throw error;
+    try {
+      cancelSequence(attempt);
+    } catch (cleanup) {
+      throw new AggregateError(
+        [error, cleanup],
+        "transaction sequence cancellation failed",
+      );
+    }
+    throw error;
+  }
+  ```
+  Unlike `execute`, `admit`, and `admitSequence`—which route through `cleanupThenThrow(error, ...)` to fence `combined = new AggregateError([error, failure])`—`nextSequence` does not update `ownerFailure` with the combined aggregate error:
+  1. If `cancelSequence` fails due to an SQLite storage failure inside its `atomic` block, `atomic` sets `ownerFailure` to only the storage failure (`cause`). The original sequence execution failure (`error`) is never recorded in `ownerFailure`. Subsequent owner entries (`store.inspect()`, `store.admit()`, etc.) via `enter()` throw `ownerFailure`, which reports only the cleanup failure, dropping the root trigger (`error`).
+  2. If `cancelSequence` throws any non-storage failure (where `atomic` does not set `ownerFailure`), `ownerFailure` remains unset. The owner is not fenced despite failed compensating sequence cancellation and abandoned uncancelled pending reservations.
+* **Reachable Trigger**:
+  An execution error occurs during `nextSequence` (e.g., transaction evaluation failure or injected fault), and the automatic sequence rollback in `cancelSequence` fails during receipt deletion (e.g., storage fault or unexpected state error).
+* **Impact**:
+  Violates cause preservation across subsequent owner entries. Callers inspecting the fenced owner receive an incomplete error chain missing the root sequence failure. If cancellation fails outside of an engine storage fault, the owner remains unfenced in an inconsistent reservation state.
+* **Fix / Next Step**:
+  Align `nextSequence` with `execute`, `admit`, and `admitSequence` by routing cancellation through `cleanupThenThrow(error, () => cancelSequence(attempt))` or explicitly invoking `fence(new AggregateError([error, cleanup], "transaction sequence cancellation failed"))` before throwing.
+
+---
+
+### Questions Needing Omitted Context
+
+1. **`nextSequence` execution body**: Lines ~740–779 of [`packages/server/src/transaction-store.ts`](file:///packages/server/src/transaction-store.ts) are omitted between the sequence turn setup and the catch block. It cannot be verified from the supplied packet whether any individual member execution step inside `nextSequence` catches or masks errors before reaching line 780.
+2. **`retract` implementation details**: The test suite exercises `store.retract(claim)` to confirm it throws `"owner fenced"`, but the implementation of `retract` is located in the omitted portion of [`packages/server/src/transaction-store.ts`](file:///packages/server/src/transaction-store.ts).
+
+---
+
+### Analysis of Packet Subsystems
+
+#### 1. Contextual Diagnostics & Conformance Read Evidence
+* **`development.read-update.contextual-local-kind`**: Validates carrier-syntax rejection (`400 malformed-request`, no results) when an `@name` Bead binding is presented as an `updateLink` target. Follow-up `GET` verifies no state was created; subsequent submission under the original keys succeeds.
+* **`development.read-update.contextual-durable-kind`**: Validates member-level rejection (`404 resource-not-found`, `retry: "after-state-change"`) when a durable Link subject is passed to `updateBead`, while the independent tail member commits. Replay under the retained key verifies idempotency conflict on semantic modification, and guarded `expectedRevision` check confirms the Link revision remained untouched.
+* **Accounting and Bounds**:
+  * Manifest count incremented from 25 scenarios / 264 actions to 27 scenarios / 280 actions (+2 scenarios, +16 actions), matching README and manifest changes exactly.
+  * Catalog coverage rows incremented from 54 bounded observations / 27 omitted to 55 bounded / 26 omitted.
+  * Limits explicitly documented in coverage and README. No normative write-profile claims admitted; observations remain non-attesting.
+
+#### 2. Transactional SQLite Failure Hardening
+* **Guarded Rollback**: `atomic` verifies `if (db.isTransaction)` before issuing `ROLLBACK` and confirms `cleanRollback = !db.isTransaction`. If `ROLLBACK` itself fails, it aggregates the original error with the rollback failure (`new AggregateError([error, rollback])`).
+* **Ambiguous `COMMIT` Sticky Fence**: `committing = true` is set immediately before `db.exec("COMMIT")`. Any error thrown during commit—whether the commit took effect on disk or failed beforehand—triggers `fence(cause)`. `ownerFailure` sticky-fences all subsequent `enter()` and `atomic()` calls until reopen.
+* **Clean Rollback Retry**: When `run()` fails due to an actual SQLite constraint violation (`(errcode & 0xff) === 19`), `sqlite && !constraint` evaluates to `false`. If rollback is verified clean, `atomic` re-throws the constraint error without fencing, permitting clean idempotency/caller retry.
+* **Acyclic Persistent Error Chains**: When compensating cleanup fails in `cleanupThenThrow`, `fence` creates a new `ownerFailure` wrapping `AggregateError([error, failure])` rather than mutating existing error instances, preventing cycles.
+* **No Partial Publication**: Resources, change groups, position metadata, and terminal receipt status commit in a single SQLite transaction. Ambiguous commits fence the owner, preventing tentative reads or partial receipt disclosure.
+
+---
+
+### Known Bounded Exclusions Relevant to this Packet
+
+1. **Development Conformancelane Exclusions**:
+   - Observations are development-only, local, and non-attesting; normative Read+Update rows remain uncertified and public write profile claims disabled.
+   - Contextual validation covers wrong-kind local binding and wrong-kind durable Bead subject only; forward/unknown labels, key/name uniqueness, owned results (`source`/`sourceRevision`), and wider scope containment remain unqualified.
+2. **Private Transaction Store Exclusions**:
+   - Fixed all-visible private policy only; not an authentication or authorization boundary.
+   - Initial transaction slice is restricted to schema-free unowned Types (`propertiesSchema` undefined, `ownsOutgoing` undefined).
+   - Fault seams are source-private injected test hooks, not proofs of physical media/disk controller failure.
+
+---
+
+### Files and Ranges Actually Read
+
+* [`packages/conformance/development/README.md`](file:///packages/conformance/development/README.md): lines 3–23, 191–213
+* [`packages/conformance/development/read-update-catalog-v1.json`](file:///packages/conformance/development/read-update-catalog-v1.json): lines 1063–1212
+* [`packages/conformance/development/read-update-coverage-v1.json`](file:///packages/conformance/development/read-update-coverage-v1.json): lines 775–830
+* [`packages/conformance/development/read-update-manifest-v1.json`](file:///packages/conformance/development/read-update-manifest-v1.json): lines 11340–12330
+* [`packages/server/src/transaction-store.test.ts`](file:///packages/server/src/transaction-store.test.ts): lines 7–18, 2034–2364
+* [`packages/server/src/transaction-store.ts`](file:///packages/server/src/transaction-store.ts): diff lines 129–205, 558–618, 633–745, 780–795; excerpt lines 1–205, 570–660
+* [`docs/specs/bdp.md`](file:///docs/specs/bdp.md): excerpt lines 2582–2608, 3141–3200, 3900–3924
+
+#### Explicit Truncation and Unread Scope
+* [`packages/conformance/development/README.md`](file:///packages/conformance/development/README.md): lines 24–190 omitted.
+* [`packages/conformance/development/read-update-catalog-v1.json`](file:///packages/conformance/development/read-update-catalog-v1.json): lines 1–1062 omitted.
+* [`packages/conformance/development/read-update-coverage-v1.json`](file:///packages/conformance/development/read-update-coverage-v1.json): lines 1–774, 831–end omitted.
+* [`packages/conformance/development/read-update-manifest-v1.json`](file:///packages/conformance/development/read-update-manifest-v1.json): lines 1–11339 omitted.
+* [`packages/server/src/transaction-store.test.ts`](file:///packages/server/src/transaction-store.test.ts): lines 19–2033 omitted.
+* [`packages/server/src/transaction-store.ts`](file:///packages/server/src/transaction-store.ts): lines 206–569, 661–725, 745–779, 796–end omitted.
+* [`docs/specs/bdp.md`](file:///docs/specs/bdp.md): lines 1–2581, 2609–3140, 3201–3899, 3925–end omitted.
+* Entire-branch coverage is explicitly not claimed.

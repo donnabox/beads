@@ -1,0 +1,73 @@
+{
+  "createdUtc": "2026-10-18T04:49:10.458506+00:00",
+  "completeActualResultAcceptedAsSubstantiveEvidence": true,
+  "cleanSupervisedRun": false,
+  "failurePreserved": "process_ownership_or_cleanup_failure; wrapper-15/outer642.011s; ownershipUnknowntrue/finalRolefalse; exact identity cause unresolved",
+  "cliExit": "UNKNOWN",
+  "rawSha256": "959b47c76c8f32846eb7a53bbc4e3828ed1973e838aa58a31dab85db68418768",
+  "actualRecords": 2519,
+  "actualResultSha256": "40ae1279e4747e6c245d8302df6d7febc99a9fe4dca25b01f9fd0d4e0c665502",
+  "terminalAuditIndexSha256": "12bd2c053b8a0a00daac44688518f2d87305bf4d1addc992e6f819d63313a6e9",
+  "terminalAuditClosureSha256": "c0c4f77ce7df474665f4a5025a4db0011590ba1d656a9255b32c87875a06c3dd",
+  "rootLive682AndExactGitStatusPatchVerified": true,
+  "auditBasenameErratum": "Audit says final-review.md; actual runner final-review.txt is independently confirmed missing. Original audit stays preserved. No runner output reconstructed.",
+  "findings": [
+    {
+      "id": "F1",
+      "disposition": "accept bounded config-section interoperability fix",
+      "change": "nested bdptest type/allowlist accepts optional deploymentFile; if present require exact equality with top-level deploymentFile to maintain one selected path. Preserve fixture refusal. Add deploymentFile-only pass, mismatched path refuse-before-open, fixture+deploymentFile refuse-before-open witnesses"
+    },
+    {
+      "id": "F2",
+      "disposition": "accept documentation only",
+      "change": "state public file/auth digests commit to secret-containing contents and must not be emitted in diagnostics; no salt/hash identity change"
+    },
+    {
+      "id": "F3",
+      "disposition": "accept authoritative host reuse",
+      "change": "use TRANSACTION_RUNTIME_DEFAULTS.transport.host instead of identical TX loopback literal; no host behavior change"
+    },
+    {
+      "id": "F4",
+      "disposition": "reject removing pre-file tuple refusal; retain existing preflight comparison and captured readOptions postcheck; defer abstraction"
+    },
+    {
+      "id": "F5",
+      "disposition": "retain harmless refactor tripwires; no required code change"
+    },
+    {
+      "id": "F6",
+      "disposition": "retain bounded MAX+1 allocation; optimization deferred, preserve stale-stat real read bound"
+    },
+    {
+      "id": "F7",
+      "disposition": "accept exactly-one-open witness on successful load with isolated counter"
+    },
+    {
+      "id": "F8",
+      "disposition": "accept explicit original preflightReadLimits snapshot assertion and small empty-file syntax refusal; defer optional exact32MiB accept fixture"
+    },
+    {
+      "id": "F9",
+      "disposition": "retain equivalent cross-package path validators; no new runtime dependency"
+    },
+    {
+      "id": "F10",
+      "disposition": "informational fixed non-echo error phases retained"
+    }
+  ],
+  "sourceCorrectionReleased": true,
+  "ownedCorrectionPaths": [
+    "packages/server/src/reference-deployment.ts",
+    "packages/server/src/reference-deployment.test.ts",
+    "docs/design/startup-configuration.md"
+  ],
+  "sourceBasisPatchSha256": "00fa952644ab1725e4bfb8fc8c642683a39f60dd45f6a08de8881d590150a0b4",
+  "requires": [
+    "named write-trusted-startup-code-corrections-1 source freeze/delta/inverse/maps/copies",
+    "independent native precision closure and root exact-source acceptance before validation"
+  ],
+  "noReviewerRetry": true,
+  "runtimeValidationReleased": false,
+  "noPublicProfileOrListenerActivation": true
+}

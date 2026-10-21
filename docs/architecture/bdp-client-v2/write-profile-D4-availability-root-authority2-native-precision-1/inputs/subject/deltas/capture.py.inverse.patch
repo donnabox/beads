@@ -1,0 +1,13 @@
+--- /Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-D4-availability-root-authority-preparation-2/capture.py
++++ /Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-D4-availability-root-authority-preparation-1/capture.py
+@@ -6,8 +6,8 @@
+ import os,sys,json,math,hashlib,subprocess,select,signal,shutil
+ from pathlib import Path
+ HERE=Path(__file__).resolve().parent
+-H=Path('/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-D4-synthetic-harness-preparation-5')
+-FUTURE_RELEASE=Path('/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-D4-availability-root-execution-release-2/release.json')
++H=Path('/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-D4-synthetic-harness-preparation-4')
++FUTURE_RELEASE=Path('/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-D4-availability-root-execution-release-1/release.json')
+ PYTHON='/opt/homebrew/opt/python@3.14/bin/python3.14'
+ GUARD=Path('/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-D4-validation-preparation-4/guarded-action-session-20261018-021624-549f.py')
+ SESSION='2026-10-18T02:16:24Z-549f'

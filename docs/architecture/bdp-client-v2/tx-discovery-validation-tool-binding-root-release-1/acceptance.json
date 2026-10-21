@@ -1,0 +1,42 @@
+{
+  "utc": "2026-10-18T09:30:31.022383+00:00",
+  "session": "2026-10-18T02:16:24Z-549f",
+  "acceptedWorkspaceTools": true,
+  "stagesAccepted": [
+    "node-version",
+    "pnpm-version",
+    "workspace-install",
+    "bind-workspace-tools"
+  ],
+  "rawExits": [
+    0,
+    0,
+    0,
+    0
+  ],
+  "sourceBindingSha256": "44d5826ee8f260d0de1ab1570b02ff0427c59a12707333060697f9cf047ad05d",
+  "sourceIdentity": "6bbcce5e8d6c107607822b24853bb8121f7d612137f00d3f0f173b747773f6ea",
+  "actualToolRecords": 11,
+  "versions": {
+    "@biomejs/biome": "2.5.7",
+    "vitest": "4.1.10",
+    "typescript": "7.0.2"
+  },
+  "workspaceTools": {
+    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/tx-discovery-validation-preparation-2/run/workspace-tools.json",
+    "sha256": "d914e1c669fe7c89dd7abca219f2da33da33e978e40f6f3708a16cef4955cff3"
+  },
+  "freshObservedPidsAbsent": 39,
+  "matches": [],
+  "sourceUnchanged": true,
+  "noRetriesOrForcedCleanup": true,
+  "install": "Offline frozen-lock ignore-scripts,61 reused/zero downloaded. Actual installation+tool versions accepted, no build/test/runtime claim.",
+  "approvedNextFive": [
+    "typecheck",
+    "format-check",
+    "lint",
+    "fresh-build",
+    "bind-fresh-build"
+  ],
+  "requiredBuildBarrier": "After bind-fresh-build root verifies actual output map before any source test."
+}

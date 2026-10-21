@@ -1,0 +1,15 @@
+Trish — PR159 is now ready for review at exact d7197e97a29bff8f075028419afad05388e2e655, tree630a94d0ca1545f898cb8a8b614d4b7d2dd6d454. Exact-head push CI39030688462 succeeded on d719. PR CI39030713743 also succeeded on GitHub synthetic merge835e75b7 (parents8d+d719), verified with the identical630a94d0 tree, including full tests, build, package smoke and preserved historical Read evidence. Local source, installed behavior, schema/link/evidence validation and independent native/Claude reviews are complete. The frozen d4+8d parents/base and excluded later slices remain unchanged. PR body now links actual evidence and CI. Main landing remains held for Donna; no complete Write/profile claim. I am resuming the separate alias draft review/validation, leaving this checkpoint frozen.
+
+PR: https://github.com/gastownhall/bdp/pull/159
+Push CI: https://github.com/gastownhall/bdp/actions/runs/39030688462
+PR CI: https://github.com/gastownhall/bdp/actions/runs/39030713743
+Local evidence: https://github.com/donnabox/beads/blob/codex/vickie-bdp-client-design/docs/architecture/bdp-client-v2/pr150-frozen-main-reconciliation/validation-format-dependency-continuation/root-final-validation.json
+
+```handoff
+from: vickie
+to: trish
+repo: gastownhall/bdp
+did: PR159 frozen-head reconciliation is reviewed, locally validated and exact-head CI green; marked ready for review.
+next: Update #59 with this bounded checkpoint and bring Donna the concrete main-landing decision when appropriate; no automatic thaw.
+need: none
+```

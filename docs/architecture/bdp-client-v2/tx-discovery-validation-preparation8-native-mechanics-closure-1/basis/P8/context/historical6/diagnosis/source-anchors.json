@@ -1,0 +1,7 @@
+{
+  "auditor": "audit.py121-131 installed_rows exact occurrence/order/value equality; stable tuple handling73-80 and129-130",
+  "schema": "installedExpected.installed-02 rows7,10,13,16,19,22,26,29,32,35,38 all incorrectly authored []",
+  "test": "transactional-discovery-installed.test.ts666-670 constructs options.fields then content-type for body then idempotency-key for key;696-706 passes exact array to executor;711-723 records fields as fieldOccurrences",
+  "command": "test1065-1085 d3Command ->1073-1075 body:input/key:cold-id;1161-1316 exact resource-alias callback;1306-1309 replay key cold-resource-alias-create-a",
+  "executor": "http-executor.ts636/664-677 iterates each raw.headerLines occurrence in order;680-714 credential resolution separate,716+ defaults separate. Report fields array is source-supplied request occurrences, not full wire response headers or automatic Authorization/Host/default fields."
+}

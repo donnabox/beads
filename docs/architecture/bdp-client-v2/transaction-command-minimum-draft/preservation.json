@@ -1,0 +1,17 @@
+{
+  "RU": {
+    "parentPrefixSha256": "bc46335efb066a032f0deeaae944b4f241ab9cb625bd38b5916b972ed820d44d",
+    "reconstructedPrefixSha256": "bc46335efb066a032f0deeaae944b4f241ab9cb625bd38b5916b972ed820d44d",
+    "permittedImportAddition": true
+  },
+  "TX18": {
+    "parentPrefixSha256": "69fc8bd2efdbf7a30d9dbdb88a7772ced92ae8bd724a4ba159a88980e2c2df47",
+    "reconstructedPrefixSha256": "69fc8bd2efdbf7a30d9dbdb88a7772ced92ae8bd724a4ba159a88980e2c2df47",
+    "permittedImportAddition": false
+  },
+  "otherTrackedEntriesExact": 656,
+  "inventorySha256": "8faede00fd0a4368ebf5c7ac3f13ba38d8cb89e20ebb4102d62422738c87b6a1",
+  "sourceUnchangedAfterFreeze": true,
+  "catalogSentenceRetained": true,
+  "preparationCorrection": "Initial prefix audit removed added import members but failed to reconstruct the original single-line import formatting. It exited1 on RU prefix before TX check. Exact approved full import replacement now reconstructs both historical byte prefixes. This was a pure text audit failure, not a product test failure; source unchanged."
+}

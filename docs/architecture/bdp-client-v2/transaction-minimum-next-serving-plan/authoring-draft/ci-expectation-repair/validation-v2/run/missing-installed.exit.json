@@ -1,0 +1,78 @@
+{
+  "name": "missing-installed",
+  "argv": [
+    "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+    "/Users/dbox/repos/wt/vickie/vickie-minimum-current-resource/node_modules/vitest/vitest.mjs",
+    "run",
+    "apps/bdptest/src/transactional-collection-minimum-installed.test.ts",
+    "--maxWorkers=1",
+    "--testNamePattern",
+    "^(?:observes\\ genuine\\ installed\\ compatible\\ and\\ ahead\\ missing\\ minimum404)$",
+    "--reporter=verbose",
+    "--reporter=json",
+    "--outputFile=/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-minimum-next-serving-plan/authoring-draft/ci-expectation-repair/validation-v2/run/missing-installed.results.json"
+  ],
+  "guardedArgv": [
+    "/opt/homebrew/opt/python@3.14/bin/python3.14",
+    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/guarded-action.py",
+    "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+    "/Users/dbox/repos/wt/vickie/vickie-minimum-current-resource/node_modules/vitest/vitest.mjs",
+    "run",
+    "apps/bdptest/src/transactional-collection-minimum-installed.test.ts",
+    "--maxWorkers=1",
+    "--testNamePattern",
+    "^(?:observes\\ genuine\\ installed\\ compatible\\ and\\ ahead\\ missing\\ minimum404)$",
+    "--reporter=verbose",
+    "--reporter=json",
+    "--outputFile=/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-minimum-next-serving-plan/authoring-draft/ci-expectation-repair/validation-v2/run/missing-installed.results.json"
+  ],
+  "cwd": "/Users/dbox/repos/wt/vickie/vickie-minimum-current-resource",
+  "started": "2026-10-16T04:52:37.725807+00:00",
+  "adjudication": {
+    "kind": "exact-source-selection",
+    "passedFullNames": [
+      "observes genuine installed compatible and ahead missing minimum404"
+    ],
+    "skipped": 4,
+    "jsonSha256": "2092ef088412a5b1b10fb1d81842af77582d2a5b877275d00d63af2a9d028d45",
+    "limitation": "Static HTTP/owner model is not an independently observed network quota; raw logs and reported cleanup remain separately reviewed."
+  },
+  "elapsedSeconds": 2.437783374916762,
+  "exit": 0,
+  "supervisorExit": 0,
+  "timeout": false,
+  "forcedCleanup": false,
+  "errors": [],
+  "processGroup": 80065,
+  "remainingBeforeCleanup": [],
+  "remainingAfterCleanup": [],
+  "sampledPids": [
+    80065,
+    80218,
+    81152,
+    82007,
+    84860,
+    85248
+  ],
+  "sampledPidsStillPresent": {},
+  "sampledTempEntries": [
+    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-minimum-next-serving-plan/authoring-draft/ci-expectation-repair/validation-v2/run/missing-installed.tmp/Qr3Gg5uhNPW_hSr9CXSvm",
+    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-minimum-next-serving-plan/authoring-draft/ci-expectation-repair/validation-v2/run/missing-installed.tmp/bdp-collection-minimum-installed-pwg78O"
+  ],
+  "tempEntriesAfter": [],
+  "remainingTempEntriesForClassification": [],
+  "runtimeDirectoriesStillPresent": [],
+  "unclassifiedTempEntriesStillPresent": [],
+  "sourceUnchanged": true,
+  "sourceSha256After": {
+    "apps/bdptest/src/transactional-collection-minimum-installed.test.ts": "615caab0e5a846c546e718f65c4041c5ca41bef59df1d56a6dea0e42638b0174",
+    "packages/server/src/transaction-read.test.ts": "58e745c2ade0804bf0ab0230c34ff5e522c28725fa77ecb9303dbe972162e0f2"
+  },
+  "samplingSeconds": 0.05,
+  "commandWindowSeconds": 115,
+  "groupHardDeadlineSeconds": 120,
+  "cleanupBound": "TERM at115s, KILL no later than120s; wait/reap after kill adds no product execution allowance",
+  "samplingLimitation": "Short-lived or detached descendants may evade group sampling; helper counts and independent final checks remain separate.",
+  "tempClassification": "Only the selected fixture prefixes under this attempt TMPDIR are owned runtime roots; all other entries are preserved for review, not deleted or called leaks.",
+  "resultLimitation": "A declared negative raw exit1 may complete its supervisor; subsequent strict review is mandatory. No generic exit1 acceptance or product qualification."
+}

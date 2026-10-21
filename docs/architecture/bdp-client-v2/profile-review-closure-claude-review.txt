@@ -1,0 +1,68 @@
+I've completed the review. Everything below is derived from the frozen source, the four prior reports, and the retained evidence; nothing was written, built, or run (only reads and `git` queries).
+
+## Scope confirmed
+
+`d907a1e..31aab4d` is 7 commits / 11 files / +174−39. Production delta is exactly one expression: `transaction-http.ts:392` `classifyAliasPath(url, scope) !== undefined` → `alias !== undefined`. Everything else is tests, two coverage `reason` strings, and prose.
+
+**That reuse is semantics-identical.** `const alias = classifyAliasPath(url, scope)` at `:335` is the only call site; `classifyAliasPath` (`read-request.ts:935-952`) reads only `url.origin/pathname/search/hash` and is pure, `requestFromUrl` does not mutate `url`, and `:336` already returns for the `ReadProblem` case — so at `:392` both spellings reduce to "alias is a string". The pre-existing witness at `transaction-http.test.ts:1011` (`alias/missing` + minimum → 500 `minimum-position-route`) still discriminates it. No production semantic change beyond the reuse.
+
+---
+
+## Closure defects
+
+### 1. LOW — schema finding C closed on only half its clause
+**Location:** `packages/conformance/test-support/read-update-coverage-v1.json:6831` (`read-update.validation.diagnostics`)
+
+The prescribed remedy was to append the `:1467` clause **verbatim**: *"Properties document omission and root instanceLocation presence are installed choices, not universal mandatory spellings."* What landed is only the first half — *"Properties document omission is an installed choice, not a universal mandatory spelling."* The row's positive list still reads "**properties-relative instance location**" uncaveated, and the matrix pins `instanceLocation` to `""` at `read-update-v1.json:13714, 13859, 14005, 14228, 15697` and to `/n`/`/enabled` elsewhere.
+
+**Impact:** exactly finding C's failure scenario survives — a promotion reviewer reading the row-local `reason` (which finding 1's own premise designates as the authority record) sees the root-pointer spelling presented as an observation with no "installed choice" qualifier.
+
+**Fix:** replace the appended sentence at `:6831` with the `:1467` clause verbatim. (`:972` needs no instanceLocation clause; that row has one `document` absent-pin and no instance-pointer assertion.)
+
+### 2. LOW — the declined wire-byte equality rests on an overstated cost
+**Location:** `docs/design/transaction-event-review-closure.md:33-39`; test at `packages/server/src/transaction-events.test.ts:729-752`; accounting at `transaction-store.ts:1312-1348`
+
+The disclosure of what *is* observed is accurate — I confirmed one envelope serialization pinned to `{events: [], next: null}` (`:741-744`), exactly 20 per-Event serializations (`:745-748`), the `'"\\\n🦄'.repeat(100)` payload, and only a loose `toBeLessThan(TRANSACTION_EVENT_PAGE_BYTES)` (`:749`). But the stated reason for declining — that closing it "would justify exposing a production hook or copying its implementation into a test" — is not the only option, and the gap it leaves is the one the accounting rewrite created.
+
+A fully black-box witness exists because `wire(page) = envelopeBytes + eventBytes + byteLength(json(next))` is *definitionally* the `bytes` value computed when the last accepted Event was admitted (`:1343-1348`):
+
+```
+const w = Buffer.byteLength(stringifyJsonValue(page1));
+expect(w).toBeLessThanOrEqual(TRANSACTION_EVENT_PAGE_BYTES);        // catches under-count
+expect(w + 1 + Buffer.byteLength(stringifyJsonValue(page2.events[0])))
+  .toBeGreaterThan(TRANSACTION_EVENT_PAGE_BYTES);                   // catches over-count
+```
+
+on a byte-driven split (not the item-ceiling split the current fixture takes). No internals exposed, no formula copied.
+
+**Impact:** a one-byte drift — an added envelope member, a renamed `next`, a dropped comma — stays silently admissible, which is the regression class the rewrite introduced.
+
+**Fix:** either add the two assertions above to the accounting test, or restate the rationale as a cost/priority decision rather than an exposure constraint.
+
+---
+
+## Remaining genuine qualification gaps (not closure defects)
+
+- **"Byte-identical" capture is still one step removed from installed bytes.** `installed-schema-cohort.test.ts:58-61` compares `contracts.types[id]`, which is `stringifyJsonValue(parsedDescriptor)` (`development-contracts.ts:96`) — a canonical re-serialization, not the installed artifact bytes. The exact digest is already exposed as `contracts.capture.artifacts[].sha256` (`installed-contract-artifact.ts:392`). This is what finding D prescribed, executed verbatim, so it is not a failed closure — but `read-update-executable-progress.md:138`'s adjective "byte-identical" remains witnessed indirectly. In isolation the loop is also vacuum-tolerant (`undefined === undefined` if an id were absent; the preceding `toEqual` currently prevents that). One-line close: compare the shipped-id `sha256` entries of `capture.artifacts` across the two captures.
+- **Mixed-workload margin vs. the admitted bound is unquantified.** Measured group 50,568,556 bytes against the admitted serialized bound of 169,345,024 — a factor of 3.35 — while RSS already reached 84.6% of the 1 GiB gate (886,912 of 1,048,576 KiB). The doc correctly says "serialized bounds, not heap bounds" and "substantially less margin than the set-only case," but never states that the measured shape sits at ~30% of the bound it is cited beside, nor that the bound's reachability is unestablished.
+- **The gate is enforced on the weaker of two published metrics.** `supervisor.py:14-15` gates on `ps`-sampled peak (832,480 KiB), which under-measures the child's own `resourceUsage().maxRSS` (886,912 KiB) by 54,432 KiB at 100 ms sampling. Both figures are published and "sampling gaps" is disclosed; the asymmetry itself is not.
+- **The new positional-hole fence is identified structurally, not by assertion.** `transaction-store.ts:1304` (`cursorMatched && p !== at`) and `:1298` (absent row) throw the identical string `"missing retained Event group"`. I verified the new test can only reach `:1304` — with groups at 1,2,3, a cursor matched at 1 and position 2 deleted, `retainedGroupAtOrAfter(2, 3)` returns position 3, so `:1298` is unreachable — but the assertion alone does not distinguish them. Consistent with the closure note's general "fail-closed rather than every error string" stance.
+- **Materialization evidence has no in-doc source pin.** The new progress-doc section names no commit or evidence path; the binding (source `d907a1e` + three test/prose working files, emitted tree `73b5a986…`) lives only in the run logs. `transaction-implementation-progress.md` carries no commit pins anywhere, so this is file-local convention rather than drift — but it is the standard the sibling doc was held to under finding B.
+- **Pre-existing, explicitly retained:** overwritten historical stress scripts remain unreconstructable; the default E256 refusal is still only reached through the lowered evaluator seam (correctly worded — I confirmed cascading owned deletion can exceed 4 facts/operation at `transaction-batch.ts:756`, so 256 is not unreachable and the careful phrasing is right); and `9d2ddba`'s unlogged command outcomes are closed by disclosure (`schema-provenance-clarity-report.md`) rather than retention.
+- **Minor pointer:** `transaction-implementation-progress.md:1030` now carries the correct 169345024 but still says "the admitted materialization tuple **below**"; the nearest table (`:1078-1080`) contains only rejected/superseded rows including 253493248, with the current figure 89 lines later at `:1119`.
+
+---
+
+## Verified closed (re-derived, not taken from the reports)
+
+**Events repair (5/5).** UTF-8 control now discriminates: `properties.text = '"\\\n🦄'` lands in the created Event's `data.properties` (`transaction-batch.ts:691`), `stringifyJsonValue` delegates string escaping to `JSON.stringify` (`json-values.ts:114`) which leaves U+1F984 raw, so byteLength 7 ≠ length 5 and `not.toBe(String(length))` fails on a `String#length` regression. `body-type` fault isolates `transaction-store.ts:555` by mocking only `SELECT body FROM groups WHERE position=?` to `{body: null}`. Positional-hole test is sound end to end — `groups(position INTEGER PRIMARY KEY, body TEXT NOT NULL)` is two columns, so the restore is row-byte-identical and the "exact original pages" claim holds. All four new routes discriminate the precedence claim (`alias/%61` and `alias/%61?q=1` refuse at `:336` before minimum handling; `receipts?view=events` and `<receipt>/pages/missing?view=events` refuse on query-bearing href before the unsupported-minimum gap), under both `pos-99` and unparseable `opaque-unknown`.
+
+**Materialization (8/8), all figures reconciled against the logs.** mixed-m32: 63 seeded pairs, sources exactly 262,144, Links 261,849–261,850, explicit 31 / matched 32 / operations 32, explicit array 3,287 bytes, 12,403 numbers → 272,985 normalized, request exactly 65,536, receipt 64 entries / 16,507,992 bytes, group 50,568,556, 8.073 s, 886,912 self / 832,480 sampled — every one matches `mixed-m32.log` and `.summary.json`. The script genuinely hits both budget maxima with disjoint sets (explicit targets `l32..l62` at `n=1`, selector matches `l0..l31` at `n==0`), and asserts both afterstates (`n===2` and `n===1`), retry digest, receipt page, finite Link Event, and all four after reopen. `provenance.mjs:10-15` asserts exactly the five tuple fields the report claims. `supervisor.py:9` uses `open('x')` — log-only overwrite refusal, as worded. Compatibility derives `oldMatched:64`/`newMatched:32` from imported tuples with matching before/after database digests and no fabricated maintenance flag. dense 551,504/523,040 and noop 288,544/261,840 confirmed. All 15 `.exit` files are 0; 51 tests / 2 files.
+
+**Schema (A, B, E, F, G).** Digest attribution corrected and accurate (`exactConfigurationDigest` covers routes, not artifact bytes). The evidence pin is real: `9d2ddba` and `2c10d19` are both ancestors of `d907a1e`, and `replication-integration-validation/packed/matrix.log` shows the 112-test / 4-file packed run. The lint delta is genuinely gone — 45 warnings at the materialization tree (d907a1e base) → 44 at both the clarity tree and the integration, i.e. exactly the one hoisted non-null assertion. Note the hoisted guard is *not* dead code as it might appear: `diagnostics` comes from `structuredClone(actual)`, not from the `schema-contract-code` branch, so `if (!diagnostic) throw` replaces a `TypeError` with a named one — same failure, better message.
+
+**Replication (1, 2, 3).** Stale bound corrected; 253493248 survives only in the superseded table row. Loop flattening is workload-identical (same ids, same two batches, same 128-Event witness). Probe supersession recorded in prose with the in-suite derivation named — `TRANSACTION_CHANGEFEED_BYTES` and `expect(...).toBe(186334744)` at `transaction-changefeed.test.ts:415` both exist. Findings 4–6 are declined explicitly with "None was claimed executed."
+
+**Integration evidence is real and pinned to this head.** `vickie-review-closure-validation` is at `31aab4d`, clean. Full suite 146 files / 8,400 passed + 1 skipped (102 s), all 11 commands exit 0, plus a fresh packed matrix (112/4) and a packed `installed-schema-cohort` run, both recorded against `sourceCommit: 31aab4d…`. Every new test appears passing by name in `fulltests.log`.
+
+**No actionable regression found.** The two closure defects are both Low and both fixable in one line plus two assertions.

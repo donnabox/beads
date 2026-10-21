@@ -1,0 +1,53 @@
+## Focused supplement — one-line stale-assertion repair (`transaction-http.test.ts:1765`)
+
+Review target: the single replaced assertion and its enclosing unchanged callback. No files written, no commands run.
+
+### 1. `pos-1` is the correct exact value — verified, no defect
+**Severity:** none (verification)
+**Location:** `packages/server/src/transaction-http.test.ts:1766`; `transaction-store.ts:590–599`, `:877–886`; `transaction-service.ts:207–220`, `:496–511`; `transaction-http.ts:545–552`, `:114–118`
+
+The value is pinned by three independent source paths that agree:
+
+- Fixture mutation count: the only non-GET in the callback is the single `f.post()` at `:1737`; every later call is `f.get`. `fixture()` itself commits nothing, and the store clock is fixed (`clock: () => time`, `time = 1000`, no `setTime`), so `instant()` never advances and `expireRow` prunes nothing. Position therefore cannot move between the POST and the `hidden` request.
+- Sibling corroboration inside the same unchanged callback: six existing `bdp-scope-position === "pos-1"` assertions (`:1744` and `:1759`, over two targets × {timeout, epoch-refusal, view-refusal}) run against the same fixture with the same `headers` (minimum `pos-99`), the last of them immediately preceding `hidden`. These predate the correction at parent `015cac1`.
+- Header is actually emitted on this response: `other` has no row, so `disclosedReceipt` returns `undefined`, `readReceipt` returns `{ receipt: undefined, context }` at `transaction-store.ts:881`, service maps it to refused/404 with `context` (`transaction-service.ts:213–219`), and `transaction-http.ts:551` forwards `result.context` for `resource-not-found`, with `context()` setting all three fields.
+
+Note the corroboration is source-level plus parent history; this callback was not among the 14 executed cases, so it is not fresh-execution evidence.
+
+**Smallest correction:** none.
+
+### 2. The repair does not weaken any status or ordering test — verified, no defect
+**Severity:** none (verification)
+**Location:** `:1765–1766` vs. unchanged `:1740–1764`, `:1767–1785`
+
+- All status assertions are untouched. The visibility-before-minimum ordering property is carried entirely by `expect(hidden.status).toBe(404)`: a foreign epoch plus an ahead minimum would yield `410 cursor-expired` or `503 catch-up-timeout` if the minimum were evaluated first (`transaction-store.ts:882–883` is unreachable because `:881` returns earlier). That discrimination is unchanged.
+- `.get(...) === "pos-1"` strictly subsumes the deleted presence check's failure modes: absence now yields `null !== "pos-1"` and fails. It additionally fails on an echo of the supplied `pos-99`, so the repair *adds* ordering/provenance evidence (context derived from the owner's actual observation, not from supplied controls) rather than removing any.
+- No membership disclosure is asserted into existence: `readContext()` uses store-level epoch/view/position, so an owner 404 and a foreign 404 produce the identical status and identical tuple. Pinning `pos-1` for principal `other` asserts the uniformity, not a leak.
+
+**Smallest correction:** none.
+
+### 3. Remaining gap: the one divergent supplied field left unasserted is `bdp-scope-epoch`
+**Severity:** low — non-blocking, optional
+**Location:** `:1762–1766`
+**Impact:** This request deliberately supplies two divergent controls: `bdp-minimum-scope-position: pos-99` and `bdp-scope-epoch: foreign` (the supplied view is the genuine one, proven by the `503` rather than `410` at `:1742`). The corrected line closes the position-echo hole but leaves the epoch-echo hole open: a regression that echoed the client's `foreign` epoch back in `bdp-scope-epoch` while still reporting the real position would pass this callback. This is the sharpest residual, precisely because `foreign` is the value under attacker control on this exact response.
+**Smallest correction (one line, same existing response, no new request or fixture):**
+```ts
+expect(hidden.headers.get("bdp-scope-epoch")).toBe(headers["bdp-scope-epoch"]);
+```
+`headers["bdp-scope-epoch"]` is the genuine current epoch (established by the unchanged `:1742` 503). Not required for the authorized stale-assertion repair; the F1 scoping that called a full-tuple comparison optional remains defensible.
+
+### 4. Informational: literal coupling is unchanged in kind
+**Severity:** informational — no action
+**Location:** `:1766`
+**Impact:** `pos-1` hardcodes fixture state, so adding a mutation ahead of this point would break it. It introduces no new maintenance class: the six sibling assertions at `:1744`/`:1759` are coupled identically and would fail in the same batch.
+**Smallest correction:** none.
+
+### 5. Informational: the 404 body is not schema-checked in this callback
+**Severity:** informational — pre-existing, outside the authorized scope
+**Location:** `:1762–1766`
+**Impact:** Unlike the sibling refusals, `hidden` never reads its body, so the `resource-not-found` problem document is unvalidated here. Unchanged by this correction and unrelated to the stale header expectation.
+**Smallest correction:** if ever wanted, `expect(checkedProblem(await body(hidden))).toMatchObject({ code: "resource-not-found" })` — explicitly not requested here.
+
+---
+
+**Blocking status: no blocking finding.** The exact `pos-1` value is correct, the replacement weakens no status or ordering coverage and tightens provenance, and no concrete defect exists in the correction itself. Finding 3 is the only actionable residual and is optional. Consistent with the supplied framing: this is partial, non-qualifying evidence — no claim is made about this callback's actual outcome, installed success, or profile promotion, and exact-head full CI remains required.

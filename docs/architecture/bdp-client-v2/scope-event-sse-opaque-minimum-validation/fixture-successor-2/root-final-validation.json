@@ -1,0 +1,19 @@
+{
+  "at": "2026-10-17T18:11:08.763158+00:00",
+  "accepted": true,
+  "sourceBindingSha256": "74cba5a75d6e43858e1ef09f719d1a967052bc9de0ec614e0bf6b397ca597c03",
+  "nativeAuditSha256": "90b50a49aa35239310813ad42732b77dde43082aa5987cdbf11fcfce909e1acc",
+  "freshStages": 19,
+  "requiredChecks": 4,
+  "originalBootstrapOnly": 2,
+  "files": [
+    "apps/bdptest/src/transactional-event-sse-installed.test.ts",
+    "docs/design/transaction-implementation-progress.md",
+    "packages/server/src/transaction-event-sse.test.ts",
+    "packages/server/src/transaction-events.test.ts",
+    "packages/server/src/transaction-http.ts",
+    "packages/server/src/transaction-service.ts",
+    "packages/server/src/transaction-store.ts"
+  ],
+  "publicProfileComplete": false
+}

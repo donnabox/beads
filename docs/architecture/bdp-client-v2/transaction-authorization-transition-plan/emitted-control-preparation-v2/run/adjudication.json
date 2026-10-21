@@ -1,0 +1,146 @@
+{
+  "verdict": "EXPECTED_NAMED_CONTROL_FAILURE",
+  "actualTestExit": 1,
+  "namedFailure": "authorization-transition:generation-and-lease",
+  "httpExchanges": 7,
+  "safeObservations": [
+    {
+      "label": "authorization-transition-before-cleanup",
+      "name": "visibility-handles",
+      "attempts": 7,
+      "observations": [
+        {
+          "index": 1,
+          "method": "POST",
+          "target": "/acme/operations/batch",
+          "status": 200,
+          "bodyBytes": 8074,
+          "bodySha256": "92b95b6a74d8bd9ff17b6f49fc6cc54d6ee157980bb9d631d423fc0206b1f9e3",
+          "requestBodyBytes": 3728,
+          "requestBodySha256": "a778feb6f8559743228db36139ccc653370c43a30cdcf3d2017db2e85349b054",
+          "context": [
+            "07c83289-6b62-407f-9106-f46f30325b6b",
+            "development-all-visible",
+            "pos-1"
+          ]
+        },
+        {
+          "index": 2,
+          "method": "POST",
+          "target": "/acme/operations/batch",
+          "status": 200,
+          "bodyBytes": 673,
+          "bodySha256": "60328d6f7a10d41699a3e4e57abd90ad09142f0b0f4d0951e37860b860a0073b",
+          "requestBodyBytes": 132,
+          "requestBodySha256": "8f22a1dee8d5c16750f476c2c0f4883ca91c257014e07b9efef9d2e678a98220",
+          "context": [
+            "07c83289-6b62-407f-9106-f46f30325b6b",
+            "development-all-visible",
+            "pos-2"
+          ]
+        },
+        {
+          "index": 3,
+          "method": "GET",
+          "target": "/acme/beads/b00",
+          "status": 200,
+          "bodyBytes": 185,
+          "bodySha256": "526e2e1d7c2c3f8b33a2cfcb7eda5f216346642014a9a354cee8cbdfed49fb9a",
+          "requestBodyBytes": 0,
+          "context": [
+            "07c83289-6b62-407f-9106-f46f30325b6b",
+            "development-all-visible",
+            "pos-2"
+          ]
+        },
+        {
+          "index": 4,
+          "method": "GET",
+          "target": "/acme/beads/?limit=2",
+          "status": 200,
+          "bodyBytes": 478,
+          "bodySha256": "c65e88c4df81312d5673d48f29f1af69130de157cef45e74ef74b164161c78a9",
+          "requestBodyBytes": 0,
+          "context": [
+            "07c83289-6b62-407f-9106-f46f30325b6b",
+            "development-all-visible",
+            "pos-2"
+          ]
+        },
+        {
+          "index": 5,
+          "method": "GET",
+          "target": "/acme/snapshot",
+          "status": 200,
+          "bodyBytes": 6586,
+          "bodySha256": "df4efb5d72babbe95d58dadab944a9871b507629111990bdb5c100567f2cf05c",
+          "requestBodyBytes": 0,
+          "context": [
+            "07c83289-6b62-407f-9106-f46f30325b6b",
+            "development-all-visible",
+            "pos-2"
+          ]
+        },
+        {
+          "index": 6,
+          "method": "GET",
+          "target": "/acme/events/",
+          "status": 200,
+          "bodyBytes": 17040,
+          "bodySha256": "11bf620181542d047d7d174bc3eaea7afa636ed2110e467de810103cdf2cd61d",
+          "requestBodyBytes": 0,
+          "context": [
+            "07c83289-6b62-407f-9106-f46f30325b6b",
+            "development-all-visible",
+            "pos-2"
+          ]
+        },
+        {
+          "index": 7,
+          "method": "GET",
+          "target": "/acme/changes/?start=now",
+          "stream": true,
+          "status": 200,
+          "context": [
+            "07c83289-6b62-407f-9106-f46f30325b6b",
+            "development-all-visible",
+            "pos-2"
+          ]
+        },
+        {
+          "publication": {
+            "revision": 1,
+            "bindingKind": "scope",
+            "generation": 0,
+            "authorizationView": "development-all-visible",
+            "readPolicy": "all-visible",
+            "canMutate": true
+          },
+          "oldStreamClosedAtPublication": false
+        }
+      ],
+      "failures": 1
+    },
+    {
+      "label": "authorization-transition-cleanup",
+      "name": "visibility-handles",
+      "attempts": 7,
+      "runtimeReturned": true,
+      "closed": true,
+      "directory": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-authorization-transition-plan/emitted-control-preparation-v2/run/suppress-policy-publication.tmp/bdp-authorization-http-Gs3iHV",
+      "directoryRemoved": true,
+      "failures": 1,
+      "claimEligible": false
+    }
+  ],
+  "resultSha256": "174bf40f2b073d7009b7742cc003e2ad0d163a1e39a324a57fa6c87b30624428",
+  "logSha256": "9391dcccb5669cb3727b00fde9dba041be9663953a164f829b30978e12e5dffd",
+  "stderrSha256": "09c28ccbe787c7bacead2044ac00c18a1026276ff74ad9676f3b4405273406b1",
+  "limitation": "One emitted source-consumer sensitivity only. Six finite responses plus one open stream; raw body schema/full assertions execute before the named failure but are not reconstructed from fingerprints. No installed qualification or network-byte attestation.",
+  "graph": {
+    "packetSha256": "8bfb392db3e7ab4267f33e378f4ef1be79051a84d8f32eab9c9f76a1626faa25",
+    "sourceAndBuildMembers": 1143,
+    "toolFiles": 1932,
+    "links": 180
+  }
+}

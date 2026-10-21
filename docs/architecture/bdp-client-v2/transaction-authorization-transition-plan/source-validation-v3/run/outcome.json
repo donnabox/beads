@@ -1,0 +1,523 @@
+{
+  "status": "FAILED_PARTIAL_SOURCE_VALIDATION",
+  "executor": "root ran source-validation-v3; update_implementation read-only actual-evidence inspection",
+  "sourceBindingSha256": "7f5a3690a399951640a40ca1d812294cb85fdc2e3902ecd8ff6a09cfb5a4d77c",
+  "stages": {
+    "typecheck": {
+      "exit": 0,
+      "supervisorExit": 0,
+      "elapsedSeconds": 1.5107140829786658,
+      "timeout": false,
+      "forcedCleanup": false,
+      "sourceUnchanged": true,
+      "errors": []
+    },
+    "build": {
+      "exit": 0,
+      "supervisorExit": 0,
+      "elapsedSeconds": 1.4516714590135962,
+      "timeout": false,
+      "forcedCleanup": false,
+      "sourceUnchanged": true,
+      "errors": []
+    },
+    "format-check": {
+      "exit": 0,
+      "supervisorExit": 0,
+      "elapsedSeconds": 0.9138950000051409,
+      "timeout": false,
+      "forcedCleanup": false,
+      "sourceUnchanged": true,
+      "errors": []
+    },
+    "lint": {
+      "exit": 0,
+      "supervisorExit": 0,
+      "elapsedSeconds": 1.0301688329782337,
+      "timeout": false,
+      "forcedCleanup": false,
+      "sourceUnchanged": true,
+      "errors": []
+    },
+    "boundaries": {
+      "exit": 0,
+      "supervisorExit": 0,
+      "elapsedSeconds": 1.0700237080454826,
+      "timeout": false,
+      "forcedCleanup": false,
+      "sourceUnchanged": true,
+      "errors": []
+    },
+    "read-seal": {
+      "exit": 0,
+      "supervisorExit": 0,
+      "elapsedSeconds": 0.7747594157699496,
+      "timeout": false,
+      "forcedCleanup": false,
+      "sourceUnchanged": true,
+      "errors": []
+    },
+    "transport": {
+      "exit": 1,
+      "supervisorExit": 1,
+      "elapsedSeconds": 1.3864342500455678,
+      "timeout": false,
+      "forcedCleanup": false,
+      "sourceUnchanged": true,
+      "errors": []
+    }
+  },
+  "actualCases": [
+    {
+      "fullName": "narrows current Transactional visibility and fences issued handles after policy publication",
+      "status": "failed"
+    },
+    {
+      "fullName": "cancels an active Event stream after policy publication",
+      "status": "passed"
+    }
+  ],
+  "failure": "T1 request16 returned200 mutationReceipt, schema validator rejected withheld receipt expiresAt at #/oneOf/4/properties/expiresAt/false schema. Exact receipt equality and request17 replay were not reached.",
+  "actualHttp": 20,
+  "perCallbackAttempts": {
+    "visibility-handles": 16,
+    "active-event": 4
+  },
+  "safeObservations": [
+    {
+      "label": "authorization-transition-before-cleanup",
+      "name": "visibility-handles",
+      "attempts": 16,
+      "observations": [
+        {
+          "index": 1,
+          "method": "POST",
+          "target": "/acme/operations/batch",
+          "status": 200,
+          "bodyBytes": 8074,
+          "bodySha256": "2b4d62f0a31a318f8287828afe582f51779afbfa5a968d0675517decec5c7c71",
+          "requestBodyBytes": 3728,
+          "requestBodySha256": "a778feb6f8559743228db36139ccc653370c43a30cdcf3d2017db2e85349b054",
+          "context": [
+            "c1d21afa-d993-4a9b-984a-e26221831991",
+            "development-all-visible",
+            "pos-1"
+          ]
+        },
+        {
+          "index": 2,
+          "method": "POST",
+          "target": "/acme/operations/batch",
+          "status": 200,
+          "bodyBytes": 673,
+          "bodySha256": "e3780025507b2913cc83bde5b0939c15e8e17359df8a3a0ac138dcfca66da674",
+          "requestBodyBytes": 132,
+          "requestBodySha256": "8f22a1dee8d5c16750f476c2c0f4883ca91c257014e07b9efef9d2e678a98220",
+          "context": [
+            "c1d21afa-d993-4a9b-984a-e26221831991",
+            "development-all-visible",
+            "pos-2"
+          ]
+        },
+        {
+          "index": 3,
+          "method": "GET",
+          "target": "/acme/beads/b00",
+          "status": 200,
+          "bodyBytes": 185,
+          "bodySha256": "28432420eec773b34a49aa8d7ac19d3bc198956d3b3b0fcc8fa6ed9c33c93ad9",
+          "requestBodyBytes": 0,
+          "context": [
+            "c1d21afa-d993-4a9b-984a-e26221831991",
+            "development-all-visible",
+            "pos-2"
+          ]
+        },
+        {
+          "index": 4,
+          "method": "GET",
+          "target": "/acme/beads/?limit=2",
+          "status": 200,
+          "bodyBytes": 478,
+          "bodySha256": "2be1c6215f484a4fcb7a032c43ea5c5cb3cc8a56db95a021e0dfa4479e2855d9",
+          "requestBodyBytes": 0,
+          "context": [
+            "c1d21afa-d993-4a9b-984a-e26221831991",
+            "development-all-visible",
+            "pos-2"
+          ]
+        },
+        {
+          "index": 5,
+          "method": "GET",
+          "target": "/acme/snapshot",
+          "status": 200,
+          "bodyBytes": 6586,
+          "bodySha256": "3ed50c750db1a2a8d2e7e047fb3419a7a55cfd4eed35a0261099f82652e8cf48",
+          "requestBodyBytes": 0,
+          "context": [
+            "c1d21afa-d993-4a9b-984a-e26221831991",
+            "development-all-visible",
+            "pos-2"
+          ]
+        },
+        {
+          "index": 6,
+          "method": "GET",
+          "target": "/acme/events/",
+          "status": 200,
+          "bodyBytes": 17040,
+          "bodySha256": "297b5c5a33e7a579fd1822008fac25be37a56221b3a5276041f8fd230f03bd5f",
+          "requestBodyBytes": 0,
+          "context": [
+            "c1d21afa-d993-4a9b-984a-e26221831991",
+            "development-all-visible",
+            "pos-2"
+          ]
+        },
+        {
+          "index": 7,
+          "method": "GET",
+          "target": "/acme/changes/?start=now",
+          "stream": true,
+          "status": 200,
+          "context": [
+            "c1d21afa-d993-4a9b-984a-e26221831991",
+            "development-all-visible",
+            "pos-2"
+          ],
+          "closed": true,
+          "clientAbortedBeforeClose": false,
+          "wireBytes": 354,
+          "completeFrames": 0
+        },
+        {
+          "publication": {
+            "revision": 1,
+            "bindingKind": "scope",
+            "generation": 1,
+            "authorizationView": "7b67d749-f882-4d4d-9bd3-6d0dce761c22",
+            "readPolicy": "empty",
+            "canMutate": false
+          },
+          "oldStreamClosedAtPublication": false
+        },
+        {
+          "index": 8,
+          "method": "GET",
+          "target": "/acme/beads/b00",
+          "status": 404,
+          "bodyBytes": 134,
+          "bodySha256": "6eb3ea2339cd9acd8b41edf491f4cebb381ce54504bab8215d4a421f32d68ce1",
+          "requestBodyBytes": 0,
+          "context": [
+            "c1d21afa-d993-4a9b-984a-e26221831991",
+            "7b67d749-f882-4d4d-9bd3-6d0dce761c22",
+            "pos-2"
+          ]
+        },
+        {
+          "index": 9,
+          "method": "GET",
+          "target": "/acme/beads/?limit=2",
+          "status": 200,
+          "bodyBytes": 24,
+          "bodySha256": "9172f6f02ae5ecbbc5a9e487c33e751478b6207a8db8c534a21c7b404004c0db",
+          "requestBodyBytes": 0,
+          "context": [
+            "c1d21afa-d993-4a9b-984a-e26221831991",
+            "7b67d749-f882-4d4d-9bd3-6d0dce761c22",
+            "pos-2"
+          ]
+        },
+        {
+          "index": 10,
+          "method": "GET",
+          "target": "/acme/snapshot",
+          "status": 200,
+          "bodyBytes": 498,
+          "bodySha256": "36abe0db314c877942a7933e12085a3b2ee956f3e701cc36e25584a6e4cd7dc9",
+          "requestBodyBytes": 0,
+          "context": [
+            "c1d21afa-d993-4a9b-984a-e26221831991",
+            "7b67d749-f882-4d4d-9bd3-6d0dce761c22",
+            "pos-2"
+          ]
+        },
+        {
+          "index": 11,
+          "method": "GET",
+          "target": "/acme/snapshot?snapshot=d76d0d6e-3e5f-4275-b20f-bc909240d53a",
+          "status": 409,
+          "bodyBytes": 127,
+          "bodySha256": "7cb8af9c90cff30f35b0d6deb2b4a47931671d3ef57c2c96b4e952fe809af0f9",
+          "requestBodyBytes": 0,
+          "context": [
+            "c1d21afa-d993-4a9b-984a-e26221831991",
+            "7b67d749-f882-4d4d-9bd3-6d0dce761c22",
+            "pos-2"
+          ]
+        },
+        {
+          "index": 12,
+          "method": "GET",
+          "target": "/acme/snapshot?snapshot=d76d0d6e-3e5f-4275-b20f-bc909240d53a&stream=beads&page=sp_1_wWDMhc3yFpMgz78avO2hVZmWHPKQRi3zaOBfXE5IReY",
+          "status": 409,
+          "bodyBytes": 127,
+          "bodySha256": "7cb8af9c90cff30f35b0d6deb2b4a47931671d3ef57c2c96b4e952fe809af0f9",
+          "requestBodyBytes": 0,
+          "context": [
+            "c1d21afa-d993-4a9b-984a-e26221831991",
+            "7b67d749-f882-4d4d-9bd3-6d0dce761c22",
+            "pos-2"
+          ]
+        },
+        {
+          "index": 13,
+          "method": "GET",
+          "target": "/acme/beads/?limit=2&cursor=4vN4FOimfvbvpGCNHC2yW2MnLb488hyQ",
+          "status": 409,
+          "bodyBytes": 127,
+          "bodySha256": "7cb8af9c90cff30f35b0d6deb2b4a47931671d3ef57c2c96b4e952fe809af0f9",
+          "requestBodyBytes": 0,
+          "context": [
+            "c1d21afa-d993-4a9b-984a-e26221831991",
+            "7b67d749-f882-4d4d-9bd3-6d0dce761c22",
+            "pos-2"
+          ]
+        },
+        {
+          "index": 14,
+          "method": "GET",
+          "target": "/acme/changes/?start=now",
+          "stream": true,
+          "status": 409,
+          "context": [
+            "c1d21afa-d993-4a9b-984a-e26221831991",
+            "7b67d749-f882-4d4d-9bd3-6d0dce761c22",
+            "pos-2"
+          ],
+          "closed": true,
+          "clientAbortedBeforeClose": false,
+          "wireBytes": 481,
+          "completeFrames": 0
+        },
+        {
+          "index": 15,
+          "method": "GET",
+          "target": "/acme/events/?after=ev_2-RFEK56hNjCVclblL_yJnjhzS4Jvntb1NWImyCc8-g_bLUW9ljdXBysp41tfjGcabueApuHaoJDxyqyaQ2NBU4_RgIUXrU0P6WM7j6wYd02OFPUOAPbSxfmIxxMOjxonVU_pos-1_31",
+          "status": 409,
+          "bodyBytes": 127,
+          "bodySha256": "7cb8af9c90cff30f35b0d6deb2b4a47931671d3ef57c2c96b4e952fe809af0f9",
+          "requestBodyBytes": 0,
+          "context": [
+            "c1d21afa-d993-4a9b-984a-e26221831991",
+            "7b67d749-f882-4d4d-9bd3-6d0dce761c22",
+            "pos-2"
+          ]
+        },
+        {
+          "index": 16,
+          "method": "GET",
+          "target": "/acme/receipts/13500496-eba4-4eac-aa63-281bc9265715",
+          "status": 200,
+          "bodyBytes": 411,
+          "bodySha256": "2a0282eb517989250443e9468b0184306bd5e5d29be03af88e2ec3614036fcdd",
+          "requestBodyBytes": 0,
+          "context": [
+            "c1d21afa-d993-4a9b-984a-e26221831991",
+            "7b67d749-f882-4d4d-9bd3-6d0dce761c22",
+            "pos-2"
+          ]
+        }
+      ],
+      "failures": 1
+    },
+    {
+      "label": "authorization-transition-cleanup",
+      "name": "visibility-handles",
+      "attempts": 16,
+      "runtimeReturned": true,
+      "closed": true,
+      "directory": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-authorization-transition-plan/source-validation-v3/run/transport.tmp/bdp-authorization-http-AxcRkO",
+      "directoryRemoved": true,
+      "failures": 1,
+      "claimEligible": false
+    },
+    {
+      "label": "authorization-transition-before-cleanup",
+      "name": "active-event",
+      "attempts": 4,
+      "observations": [
+        {
+          "index": 1,
+          "method": "POST",
+          "target": "/acme/operations/batch",
+          "status": 200,
+          "bodyBytes": 911,
+          "bodySha256": "1ee5ae4c208f6eea598851f8089c7c66130bf65ebbf43a50d1ba07d561fe7abf",
+          "requestBodyBytes": 244,
+          "requestBodySha256": "77b717d875eb96e4f16756f40001700f9cf4848be09a7acfb2c7b44ccc36f072",
+          "context": [
+            "6814f50b-8272-468a-9016-f9a20152ea99",
+            "development-all-visible",
+            "pos-1"
+          ]
+        },
+        {
+          "index": 2,
+          "method": "GET",
+          "target": "/acme/events/",
+          "status": 200,
+          "bodyBytes": 1116,
+          "bodySha256": "34076fe3d5d2c19bb271758fb123b21ee049720f1cb71b0aa1521606c48c82de",
+          "requestBodyBytes": 0,
+          "context": [
+            "6814f50b-8272-468a-9016-f9a20152ea99",
+            "development-all-visible",
+            "pos-1"
+          ]
+        },
+        {
+          "index": 3,
+          "method": "GET",
+          "target": "/acme/events/",
+          "stream": true,
+          "status": 200,
+          "context": [
+            "6814f50b-8272-468a-9016-f9a20152ea99",
+            "development-all-visible",
+            "pos-1"
+          ],
+          "closed": true,
+          "clientAbortedBeforeClose": false,
+          "wireBytes": 1748,
+          "completeFrames": 2
+        },
+        {
+          "index": 4,
+          "method": "GET",
+          "target": "/acme/events/",
+          "status": 200,
+          "bodyBytes": 75,
+          "bodySha256": "04302344fbb0c8084c335f83f1f90c6e800d5181197774ecf53e8a6f8e40c87b",
+          "requestBodyBytes": 0,
+          "context": [
+            "6814f50b-8272-468a-9016-f9a20152ea99",
+            "95655f1b-a676-4229-a89b-2fa0e84a3bcc",
+            "pos-1"
+          ]
+        },
+        {
+          "deliveredFrames": 2,
+          "publishedView": "95655f1b-a676-4229-a89b-2fa0e84a3bcc",
+          "oldStreamClosed": true
+        }
+      ],
+      "failures": 0
+    },
+    {
+      "label": "authorization-transition-cleanup",
+      "name": "active-event",
+      "attempts": 4,
+      "runtimeReturned": true,
+      "closed": true,
+      "directory": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-authorization-transition-plan/source-validation-v3/run/transport.tmp/bdp-authorization-http-rGyA2s",
+      "directoryRemoved": true,
+      "failures": 0,
+      "claimEligible": false
+    }
+  ],
+  "cleanup": {
+    "reportedStoreDirectories": [
+      "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-authorization-transition-plan/source-validation-v3/run/transport.tmp/bdp-authorization-http-AxcRkO",
+      "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-authorization-transition-plan/source-validation-v3/run/transport.tmp/bdp-authorization-http-rGyA2s"
+    ],
+    "reportedStoresStillPresent": [],
+    "sampledPids": [
+      98355,
+      98357,
+      98410,
+      98434,
+      98478,
+      98480,
+      98484,
+      98507,
+      98508,
+      98535,
+      98536,
+      98537,
+      98544,
+      98603,
+      98606,
+      98610,
+      98633,
+      98639,
+      98667,
+      98669,
+      98674,
+      98697,
+      98704,
+      98738,
+      98740,
+      98744,
+      98769,
+      98845,
+      98847,
+      98851,
+      98874,
+      98957,
+      98959,
+      98966,
+      98969
+    ],
+    "sampledPidsStillPresent": [],
+    "transportTempEntriesAfter": []
+  },
+  "notExecuted": [
+    "queued-frame",
+    "stale-lease",
+    "authorization-owner",
+    "C1",
+    "installed"
+  ],
+  "attribution": "Six static stages passed. T2 passed; T1 remains failed despite reaching publication/old-handle fences. No complete11case/21HTTP or qualification claim. No rerun, source/schema change or control generation.",
+  "artifacts": {
+    "typecheck": {
+      ".exit.json": "4e746b74e74efbf124652078c3a0ad30f3fae7a4da023ad5ca5b0361c456d637",
+      ".log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      ".stderr.log": "91d54ffbee73a3ac72294d090e58d77745f8b93edbf94b862807698273a6505a"
+    },
+    "build": {
+      ".exit.json": "eb282ee6f32153479a9da1c4342213cf3bd9dcfbd995b3ef805a9cc3c91631cb",
+      ".log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      ".stderr.log": "232dac5e840e45b3bb06e6e04249b5241f2e1b4f6c797a22c046d916302ac208"
+    },
+    "format-check": {
+      ".exit.json": "951f7e1b0c2478a2c0954b95f4dcd1476db2cb6a861ab566021ca0f46bb15d49",
+      ".log": "ed298d0112b529353ad29e1ea127efa0759cc23ecd4a2cc56f92b7389f266413",
+      ".stderr.log": "27d4a8f9f57ffa2ed1a62044be304d354ca11792394fc73b595fd300491885e9"
+    },
+    "lint": {
+      ".exit.json": "7ab610e8166e1fcc8b70f4fa1768c57b66617fa9517644e7ea24fbe82a1781a6",
+      ".log": "e22fba9708b4d83143dbdda7baf731ce50691f6115632dc95ba6a2385754b97d",
+      ".stderr.log": "c9497dce407f442e96ffe33ce2d9fee1de9978d2c8a3a561c0ef457f1321681f"
+    },
+    "boundaries": {
+      ".exit.json": "f0502fef09b9e4d566b6bfc012ef48d49603978049ffda4e0683804b1ed4eb90",
+      ".log": "25f2896a4960c5d83a2204d5d35f52d3e1a6f7e77d5f53a88ddc9d70b9ebe696",
+      ".stderr.log": "d260441eb2539a76bd20c55dd70475eb60928b9473eb9ca28381db489a642c51"
+    },
+    "read-seal": {
+      ".exit.json": "9ef543f6280a000babae946573440fe2a2328e99d4012f40d3204c47caf4645f",
+      ".log": "18a58981597b6d29981cfc6a9587156d7b37a5fc7ead823c32dc08cf350020b3",
+      ".stderr.log": "dd750dcee9bf2c0c1be7ded137d7691e5cbad5444a22f6abc980bf6a9b724308"
+    },
+    "transport": {
+      ".exit.json": "4243be9b8f7d42d7e91626cbe8e4aea67539ea3448db43954390fd9e56444f1e",
+      ".log": "85b1f72020130643414fc39369da1020c507d6d3b02038d8b00e119fd0c69f71",
+      ".stderr.log": "11713f50040c42fbcda96b29a12f21d6b274bcd978cf1541b35664ae18d09cc7"
+    }
+  },
+  "transportJsonSha256": "436074562781bf83a7d0501fca65368c1b8b31e6da5101752b00b387da38af27"
+}

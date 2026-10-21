@@ -1,0 +1,94 @@
+{
+  "state": "Only two successful original bootstrap stages reused as prerequisites; no successor run attribution",
+  "predecessorSource": {
+    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/scope-event-sse-opaque-minimum-validation/implementation/source-binding.json",
+    "sha256": "bcbd975c76b4af9af249cd89e46a80992cf99f3e7f5850f34eee510e287922b6"
+  },
+  "successorSource": {
+    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/scope-event-sse-opaque-minimum-validation/format-successor-1/source-binding.json",
+    "sha256": "af2702018538f2e9776561b1aa3e2b56c1fde41329ee896645f01136c7a05e43"
+  },
+  "predecessorSourceIdentity": "db9e4f028ccab8618e0bdb4c4b8c87033571b138d171986d9a030e77767c8bfb",
+  "successorSourceIdentity": "41d71ce7bc02fc4ee8e729e443490d94ee1b0c69469dfc7ddfea24469a5ffaad",
+  "allowedSourceChanges": {
+    "apps/bdptest/src/transactional-event-sse-installed.test.ts": {
+      "before": "67d6d2c7f07a233c97517609d03b7d2f1d63e49c9526b351c252b93682b159fe",
+      "after": "0d2c2ddf069a57e9a4533894da03589beb1645d7608537dac45c2995ee7c0a23"
+    },
+    "packages/server/src/transaction-event-sse.test.ts": {
+      "before": "c5f51b0b8b645332f6b59b15e4af4eb1a799aa3f2e424f83d4f1ae00e0797d26",
+      "after": "0bd45d46a5401c23e98d110c5f2dc0a6159965e8df09dc2c19105c7b282c8f0f"
+    }
+  },
+  "unchangedOtherSourceFiles": 677,
+  "dependencyInputs": {
+    ".node-version": "2722b61f414f07f08be7f1f1316012813818f26f1c40d6a24a748686cec7d2ff",
+    ".npmrc": "7151cf397def0c2cb0ab65643701d27d335a72c90f775675b5f826bc7005818a",
+    ".nvmrc": "2722b61f414f07f08be7f1f1316012813818f26f1c40d6a24a748686cec7d2ff",
+    "apps/bdp/package.json": "862dbaed2f8efb3cc039de70e2b6f928cea32a3dff24226242d6102a13ac3421",
+    "apps/bdpbd/package.json": "406919d9f53f4b102b0448472e5195ffb0f8ac332995d529084fe9905ff6849a",
+    "apps/bdptest/package.json": "38b8b72d245af1d147bc0e7ec90abc42c3f513468397d9886444c8ab46cfdb4a",
+    "package.json": "f081baa3202b4815663d360d3ad1608206efe1b023086a4c8feff4d7fb97d8d0",
+    "packages/adapter-bd/package.json": "678e848888f078cdf2c3b2c26058ca973bf4739be13d1c3077c4d63e54c9cac3",
+    "packages/adapter-in-memory/package.json": "ef062f61923313e35d2165d72363310c22fadfb9081c0111805501918c68c93c",
+    "packages/bd-domain/package.json": "a72b9fcbe511216e1503e4748bed79a136f4c2d8728413c6e292646e0e3f8429",
+    "packages/client/package.json": "0891e97c217e6ecf514326746d06431f38838ffd5f0a6b91ede38493219b0128",
+    "packages/config/package.json": "983ca52c4463429c9c5dfe37ac1e7205f51b12d455d7057c45b987a638466c05",
+    "packages/conformance/package.json": "418d4d50ea4fbed59dbc2df3dc1298d30b56760428e47a5be1ae39a46960abc8",
+    "packages/protocol/package.json": "80e6aef5232de49581cc14ba75ab780b41145a54d5754596297dcf22d38ad5e2",
+    "packages/server/package.json": "110e00c403c667d8c848c6280b2e98c47f98f134158a621967d889914d44632e",
+    "pnpm-lock.yaml": "4150d8821c96dbc2cfec0b2762ff76b58318079f65fa4f5c8858ef2dd61f8d6d",
+    "pnpm-workspace.yaml": "08d75840c97ab0e72d1d9b5b84a17e47a2e06cb159a5fbec5ee0a6a56682dad7"
+  },
+  "workspaceTools": {
+    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/scope-event-sse-opaque-minimum-validation/implementation/run/workspace-tools.json",
+    "sha256": "91e80ed42b72d4e66f52030caedb2f516e9f1573d0c85813fabd16131a8392f2"
+  },
+  "origins": {
+    "workspace-install": {
+      "started.json": {
+        "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/scope-event-sse-opaque-minimum-validation/implementation/run/workspace-install.started.json",
+        "sha256": "002655e6c9ad9a454a6594a949d660e5abd1fa93fae598cf000a7b854435e644"
+      },
+      "exit.json": {
+        "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/scope-event-sse-opaque-minimum-validation/implementation/run/workspace-install.exit.json",
+        "sha256": "a1a61b1ac21d575e50cefe219c55110c5ec2439258d3c9363b49a5f696b70bf6"
+      },
+      "log": {
+        "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/scope-event-sse-opaque-minimum-validation/implementation/run/workspace-install.log",
+        "sha256": "7eeda3c60351ffee0836371d441473577c5b57d9eb920fbe695c2a7208440181"
+      },
+      "processes.jsonl": {
+        "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/scope-event-sse-opaque-minimum-validation/implementation/run/workspace-install.processes.jsonl",
+        "sha256": "bf59d7336bd3de620949c88005c5678c669aa3eec8132b8988f87766f9c8332e"
+      }
+    },
+    "bind-workspace-tools": {
+      "started.json": {
+        "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/scope-event-sse-opaque-minimum-validation/implementation/run/bind-workspace-tools.started.json",
+        "sha256": "c96f769b196683a3f7b8f3a3313e93d95f4d44c8c73dab8ea787285a9398e252"
+      },
+      "exit.json": {
+        "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/scope-event-sse-opaque-minimum-validation/implementation/run/bind-workspace-tools.exit.json",
+        "sha256": "bed055fa2fd37482916c64d8206c5de434af8b13e4f65d5a34c2f356fe77bf4d"
+      },
+      "log": {
+        "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/scope-event-sse-opaque-minimum-validation/implementation/run/bind-workspace-tools.log",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "processes.jsonl": {
+        "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/scope-event-sse-opaque-minimum-validation/implementation/run/bind-workspace-tools.processes.jsonl",
+        "sha256": "0948b99984e55c29991d2edf503140aeeee9ae06a606f06657e5d8adf3c2bf20"
+      }
+    }
+  },
+  "toolCount": 11,
+  "excludedPriorStages": [
+    "typecheck",
+    "format-check"
+  ],
+  "sourceCorrection": {
+    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/scope-event-sse-opaque-minimum-author/format-successor-1/correction.patch",
+    "sha256": "737af2dcebea4537a225ddd26698ef9522f48f503cbba78d7e0c3b79a9304acd"
+  }
+}

@@ -1,0 +1,48 @@
+--- process-wait-call-inventory.json
++++ predecessor3/process-wait-call-inventory.json
+@@ -1,20 +1,27 @@
+ {
+-  "state": "AST data inspection; no process/helper execution",
+-  "priorInventory": "predecessor3/process-wait-call-inventory.json",
+-  "sevenHelpersByteExact": [
+-    "run.py",
+-    "worker.py",
+-    "gate.py",
+-    "scanner.py",
+-    "packages.py",
+-    "schema-audit.mjs",
+-    "guarded-action-session-20261018-021624-549f.py"
+-  ],
+-  "auditAfterRemovingTwoNewNeedASTEqualsPrior": true,
+-  "processQueryWaitSignalOwnershipDeadlineRetryChanges": false,
+-  "noAdditionalQueriesWritesSignalsRetries": true,
+-  "addedCallsOnly": [
+-    "need(received implies settled)",
+-    "need(pending category and writeState null)"
+-  ]
++  "parent": {
++    "censusPoll": "fixed /bin/ps direct child only; bounded200ms probe; unrelated to worker anchor",
++    "identitySignalPaths": "returncode is None without poll/wait; unreaped direct child only; fresh <=200ms authenticated row anchor otherwise",
++    "waitCalls": [],
++    "workerPublisherPoll": [
++      {
++        "after": "subsequent fresh group absence mandatory",
++        "function": "reap_after_quiet",
++        "path": "run.py",
++        "receiver": "handle",
++        "requirements": [
++          "fresh post-registration census",
++          "not ownershipUnknown",
++          "no other owned member including terminal",
++          "leader terminalZ or absent"
++        ]
++      }
++    ]
++  },
++  "state": "STATIC source inventory; no process/helper launched",
++  "worker": {
++    "childPoll": "direct product leader can reap; parent registered unreaped worker PGID still contains all remaining writers",
++    "publisher": "bounded <=1MiB own mode; parent retains unreaped direct publisher until terminal/absent no-descendant census",
++    "schemaWait": "same owned worker PGID; actual creation/exit recorded within flush clock"
++  }
+ }

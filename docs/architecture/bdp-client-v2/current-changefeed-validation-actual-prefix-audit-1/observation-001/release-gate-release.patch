@@ -1,0 +1,56 @@
+--- closed/execution-gate.json
++++ released/execution-gate.json
+@@ -1,25 +1,30 @@
+ {
+-  "released": false,
+-  "rootPlanAccepted": false,
+-  "rootExactSourceAccepted": false,
++  "released": true,
++  "rootPlanAccepted": true,
++  "rootExactSourceAccepted": true,
+   "session": "2026-10-18T02:16:24Z-549f",
+   "mode": "final",
+-  "approvedStages": [],
++  "approvedStages": [
++    "node-version",
++    "pnpm-version",
++    "workspace-install",
++    "bind-workspace-tools"
++  ],
+   "sourceBinding": {
+     "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/current-changefeed-validation-preparation-3/source-binding.json",
+     "sha256": "92152f96be110929dc66bb9fc2d038922944d5b9f9a46f40c9e8ec1076a520ec"
+   },
+   "rootDisposition": {
+-    "path": "UNRESOLVED",
+-    "sha256": "UNRESOLVED"
++    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/current-changefeed-corrected-source-root-release-1/root-disposition.json",
++    "sha256": "4849a14fd8235514aac202cf05c6e2e37302d7e0fc17713f5e2134b19f6108b8"
+   },
+   "nativeCodeDisposition": {
+-    "path": "UNRESOLVED",
+-    "sha256": "UNRESOLVED"
++    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/current-changefeed-corrected-source-root-release-1/native-code-disposition.json",
++    "sha256": "263adaa5c07875e4904e2babb33d6be7fb7b01f247d8b471caa0b4e9c2292e2c"
+   },
+   "actualCodeDisposition": {
+-    "path": "UNRESOLVED",
+-    "sha256": "UNRESOLVED"
++    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/current-changefeed-corrected-source-root-release-1/actual-code-disposition.json",
++    "sha256": "480f21d107f5b6065b212073af93da3378ad032696531d5f6829004a75b5af40"
+   },
+   "baseTools": {
+     "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/current-changefeed-validation-preparation-3/base-tools.candidate.json",
+@@ -29,9 +34,9 @@
+     "path": "UNRESOLVED",
+     "sha256": "UNRESOLVED"
+   },
+-  "actualClaudeReviewDisposed": false,
+-  "nativeCodeReviewDisposed": false,
+-  "staticValidationAuthorized": false,
++  "actualClaudeReviewDisposed": true,
++  "nativeCodeReviewDisposed": true,
++  "staticValidationAuthorized": true,
+   "bootstrapReuse": [],
+   "rootBuildAcceptance": {
+     "path": "UNRESOLVED",

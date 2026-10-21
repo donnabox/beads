@@ -1,0 +1,146 @@
+{
+  "commit": "5d7fa3f049fa0b4db3aa8dae20e20d8e47fb3854",
+  "tree": "057f879132074166f2c0f643a8b45bbd9dd47c6f",
+  "sourceRead": "immutable actual merged parent blobs; all24 original pins unchanged; no product execution",
+  "paths": [
+    {
+      "path": "packages/conformance/test-support/transactional/manifest-v1.json",
+      "bytes": 790009,
+      "sha256": "a11a79f6d0f9ffa5933a680a3e4fed87987789c3deca50a38cda8563132d242e"
+    },
+    {
+      "path": "packages/conformance/test-support/transactional/coverage-v1.json",
+      "bytes": 117702,
+      "sha256": "346e1edaa22af789f89017fdc2fef6bb01b7564ed72a65344e9fe5635887c74f"
+    },
+    {
+      "path": "packages/conformance/src/transactional-cumulative.test.ts",
+      "bytes": 109530,
+      "sha256": "313e6a947b33a3893565ea5db2d9d4a962b46c2e926900598e9285e657a31bf2"
+    },
+    {
+      "path": "apps/bdptest/src/transactional-matrix.test.ts",
+      "bytes": 131746,
+      "sha256": "dcf0161723a6b77dd4235111a83a6aa1ce0cbb6a1a5d79e362f992742bc503de"
+    },
+    {
+      "path": "packages/conformance/test-support/transactional/fixture-v1.json",
+      "bytes": 716,
+      "sha256": "3a7899ced771d4880066d98b0000c53f801ece53458502cc4f3bc641146c9a85"
+    },
+    {
+      "path": "apps/bdptest/src/transactional-principal-key-installed.test.ts",
+      "bytes": 30958,
+      "sha256": "0f941001445e001f96f8c432a7099a5eb29dc4b68bc4458d6d1dfae472a3ce20"
+    },
+    {
+      "path": "apps/bdptest/test-support/transactional-execution-binding.ts",
+      "bytes": 7378,
+      "sha256": "cde506c72a8710eafe58522900f6db70ed3701cf333560252dc8e7c5e706cf89"
+    },
+    {
+      "path": "packages/conformance/src/profile-contract-selection.ts",
+      "bytes": 5113,
+      "sha256": "5b1caf61688bfa6a5465b5f8dc817b84f02be76bfc5bdd886a19e749b6441543"
+    },
+    {
+      "path": "packages/conformance/src/artifact-bundle.ts",
+      "bytes": 21853,
+      "sha256": "bbf54915eb792433ae492fd73a5334717e74e0942c485a72daa5105928546dd6"
+    },
+    {
+      "path": "packages/conformance/src/runner.ts",
+      "bytes": 133683,
+      "sha256": "ac20c7fbfe15a5e42a6559e89cd3467562efe9bc74d462478414414ed3efede1"
+    },
+    {
+      "path": "packages/conformance/src/executable-manifest.ts",
+      "bytes": 96906,
+      "sha256": "65af0451cd046d57c10b0666e54efbaaecc2225551d3accc5cc1d032322913fa"
+    },
+    {
+      "path": "packages/conformance/src/http-executor.ts",
+      "bytes": 50611,
+      "sha256": "770a8405ae1532484b5a2658619c067832644947888f95e0c6575002376f1b5d"
+    },
+    {
+      "path": "packages/conformance/test-support/profile-contract-plan.ts",
+      "bytes": 15083,
+      "sha256": "18c953443e6695cfa48f89677231fecffc349df02bd080f107a5c739db10b728"
+    },
+    {
+      "path": "packages/conformance/catalog/read-update-v1.json",
+      "bytes": 85899,
+      "sha256": "73d215813df034a2be0cd15d0caff7cf2c8823a067f271b9140c9cbb90e859c3"
+    },
+    {
+      "path": "packages/conformance/catalog/transactional-v1.json",
+      "bytes": 94826,
+      "sha256": "c9125f914129c71f01cefc5c54b32db80637d37b57e321571c96e81936c31eb4"
+    },
+    {
+      "path": "packages/protocol/schemas/bdp-v0.schema.json",
+      "bytes": 133208,
+      "sha256": "0baa5d5ef67144f8e6513b4cde31168effc8df6d52ef3141b0f144b87f8dc227"
+    },
+    {
+      "path": "packages/server/src/transaction-installed-process.ts",
+      "bytes": 2630,
+      "sha256": "6bd16f940f1f751189fc76419e3a18ca26cd5f54da3cfa3946b30c3956a2f8b7"
+    },
+    {
+      "path": "packages/server/src/transaction-runtime.ts",
+      "bytes": 16173,
+      "sha256": "77954f0a85029d76443feac54cd53cda4339ffc126660ace5a9f5af92466c573"
+    },
+    {
+      "path": "packages/server/src/transaction-runtime-configuration.ts",
+      "bytes": 16165,
+      "sha256": "e594e930f845255cafc7e2f5b5b28149b7e95fe8a09052b187a492c96328f7ca"
+    },
+    {
+      "path": "packages/server/src/transaction-http.ts",
+      "bytes": 27155,
+      "sha256": "b51d02801e5924190aba77c377e538db0b8619149d6184e19cb56d440f40c2cf"
+    },
+    {
+      "path": "packages/server/src/transaction-store.ts",
+      "bytes": 87238,
+      "sha256": "fcd6882b29e538db45867c894c06dfbaa6ca588db0c2e403ef1b7abb14f6c706"
+    },
+    {
+      "path": "packages/server/src/transaction-service.ts",
+      "bytes": 25130,
+      "sha256": "53f655faf494209996aac2e0f93a4c2c785e471f66aac6af9ea41f92c9cfbe00"
+    },
+    {
+      "path": "packages/server/src/index.ts",
+      "bytes": 55615,
+      "sha256": "34f9d9de8b48852c64919e69ce93f149e9cdae5142c15c75e4c35f08f15efc44"
+    },
+    {
+      "path": "docs/specs/bdp.md",
+      "bytes": 394427,
+      "sha256": "f036103ffdf5f89fa3a2033570e1e987c4cd203cd80b1c633cb44615123f892e"
+    },
+    {
+      "path": "packages/conformance/src/schema-validator.ts",
+      "bytes": 2239,
+      "sha256": "0006229c7a5103e7820e131c2ee693c95e2c446e9f66584d0639d1f1291c7272"
+    },
+    {
+      "path": "packages/conformance/src/schema-validator.test.ts",
+      "bytes": 2887,
+      "sha256": "e1e142b95b9702a4c32195c076a719629677d46908ea9e2f9be442c2def262b1"
+    }
+  ],
+  "ownedPaths": [
+    "packages/conformance/test-support/transactional/manifest-v1.json",
+    "packages/conformance/test-support/transactional/coverage-v1.json",
+    "packages/conformance/src/transactional-cumulative.test.ts",
+    "apps/bdptest/src/transactional-matrix.test.ts"
+  ],
+  "actualAuthoringParent": null,
+  "authoringReleased": false,
+  "historicalReviewCommit": "9bf601bfb570adae97ce8cdc99caf2cc7a2b34c1"
+}

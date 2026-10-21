@@ -1,0 +1,34 @@
+--- plan4/outcome-join-contract.json
++++ /dev/null
+@@ -1,31 +0,0 @@
+-{
+-  "state": "FULL active family-specific authored outcome join",
+-  "authority": "exact manifest action.family + exact coverage action/assertion IDs, not report order or exchange presence",
+-  "lanes": {
+-    "http": "find exactly matching exchanges[] actionId then that exchange assertions[] assertionId",
+-    "every non-http family": "find exactly matching actions[] actionId then that action assertions[] assertionId; ignore same-ID HTTP exchange assertions for this purpose"
+-  },
+-  "binding": "RU coverage action.assertion dot vs TX action:assertion colon retained. Resolve from canonical manifest IDs; reject duplicate action rows, duplicate assertion IDs/bindings, unknown authored IDs or incorrect family/lane. No exchange-first fallback. Report synthetic or installed attribution remains independent.",
+-  "precedence": [
+-    {
+-      "when": "any authored ID resolves passed:false",
+-      "authoredAssertionsAllPassed": false
+-    },
+-    {
+-      "when": "no resolved false and at least one authored ID unresolved",
+-      "authoredAssertionsAllPassed": null
+-    },
+-    {
+-      "when": "every authored ID resolved passed:true",
+-      "authoredAssertionsAllPassed": true
+-    }
+-  ],
+-  "unexecuted": "Stopped/not-run/reached not-implemented/unexecuted rows retain null execution credit regardless of empty assertions. Validate full inventory before join; empty inventory/list adequacy/counts never establish semantic whole-clause credit.",
+-  "wholeClauseQualification": "always unestablished, both global eligibility flags false",
+-  "caseBindings": [
+-    "V05",
+-    "R22",
+-    "V03",
+-    "V04"
+-  ]
+-}

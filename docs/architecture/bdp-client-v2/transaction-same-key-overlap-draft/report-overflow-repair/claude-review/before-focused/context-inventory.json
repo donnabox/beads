@@ -1,0 +1,73 @@
+{
+  "source": {
+    "head": "18f5428686dd84fb139c9dbbcbe39d5958012323",
+    "tree": "9c78087e1036dd26ca908e1d8feaa91263513717",
+    "parent": "98c600767e8e91a79e109cb741beb91e23b9bebe",
+    "status": " M apps/bdptest/src/transactional-same-key-overlap-installed.test.ts\n",
+    "testBeforeSha256": "e6a52fa4d645ffef04e4b6e8ccd9bbcb7495624ae0e3f46536e0e9ac6b707974",
+    "testAfterSha256": "b13688d6b02c5901e68251620ab6d7e00f9f675af4025319817f9e8cc6c9bca3",
+    "repairPatchSha256": "18651f9db0489fb1ba60ce3f61433e3d7e6ca822d68c1ae45957f6fd0aa0b996",
+    "workingSourceHashes": {
+      "apps/bdptest/src/transactional-same-key-overlap-installed.test.ts": "b13688d6b02c5901e68251620ab6d7e00f9f675af4025319817f9e8cc6c9bca3",
+      "docs/design/transaction-implementation-progress.md": "21069d8d8eb5d5048a1dbcb38871ea0f8e72b463e9456633b12b4860e024a728"
+    },
+    "committedReferenceHashes": {
+      "apps/bdptest/test-support/transactional-execution-binding.ts": "cde506c72a8710eafe58522900f6db70ed3701cf333560252dc8e7c5e706cf89",
+      "packages/conformance/test-support/profile-contract-plan.ts": "18c953443e6695cfa48f89677231fecffc349df02bd080f107a5c739db10b728",
+      "scripts/transaction-installed-observation.mjs": "6f772f3776d3c3effa788676d853cc2932a6ee59ad63ac3338ad1b487408914b",
+      "packages/conformance/test-support/transactional/fixture-v1.json": "3a7899ced771d4880066d98b0000c53f801ece53458502cc4f3bc641146c9a85"
+    },
+    "scope": "working test-only repair on unchanged clean predecessor; no execution"
+  },
+  "sections": [
+    {
+      "title": "Exact complete repair diff",
+      "bytes": 1086,
+      "sha256": "18651f9db0489fb1ba60ce3f61433e3d7e6ca822d68c1ae45957f6fd0aa0b996"
+    },
+    {
+      "title": "Original actual lifecycle F3; surrounding findings separately dispositioned",
+      "bytes": 1264,
+      "sha256": "92b96e3f5b1a5e4cfc0aa180e6f666eebade6672b32cce53eb19bffc32a369c1"
+    },
+    {
+      "title": "Independent native exact repair review",
+      "bytes": 2621,
+      "sha256": "7ec170ba989cc50b642e81b966f48ae95a7c46ef137cdc17b0180a7d8aae3670"
+    },
+    {
+      "title": "Current test imports, configuration, accumulator and setup: lines1-334",
+      "bytes": 12808,
+      "sha256": "a55c6c4ee3578803c5c7d93b3f6729680df4953abe46588f4d6f7600b0258fc5"
+    },
+    {
+      "title": "Current test final request, catch, complete finally and final throws: lines765-end",
+      "bytes": 7368,
+      "sha256": "94dd091102f9c4cf15c900c3b7108156f3b4dd2bef6ae84a08764f25dbf28d9c"
+    },
+    {
+      "title": "Unchanged installed binding helper, full source",
+      "bytes": 7378,
+      "sha256": "cde506c72a8710eafe58522900f6db70ed3701cf333560252dc8e7c5e706cf89"
+    },
+    {
+      "title": "Unchanged bindServedProfileConfiguration: lines102-162",
+      "bytes": 2338,
+      "sha256": "89d2d9c3eedd454916aee5a9aa2521d1df5a1111aabd940897b27acb5ee0a97a"
+    },
+    {
+      "title": "Unchanged inherited launcher, full source",
+      "bytes": 3264,
+      "sha256": "6f772f3776d3c3effa788676d853cc2932a6ee59ad63ac3338ad1b487408914b"
+    },
+    {
+      "title": "Root synthetic extracted-source branch evidence",
+      "bytes": 4241,
+      "sha256": "561ecf2430be3b4bb58f54f69fe3afdba78c99af065f3c5be21ebb5dec269f38"
+    }
+  ],
+  "promptBytes": 44602,
+  "promptSha256": "dd9b2b078672340a9721078d03593578bb91d0b85ef8855c49567ce5d29a1bd0",
+  "fullChangedDiffIncluded": true,
+  "scope": "only exact overflow fallback repair; no launch"
+}

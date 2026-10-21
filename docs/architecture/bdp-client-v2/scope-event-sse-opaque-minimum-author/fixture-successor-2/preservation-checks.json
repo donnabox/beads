@@ -1,0 +1,42 @@
+{
+  "predecessor": {
+    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/scope-event-sse-opaque-minimum-author/format-successor-1/source-binding.json",
+    "sha256": "f9e9773d5364dea9490fa68c9b8dcc989ff5faaddf3d039b2a14102feb51f880"
+  },
+  "changedFile": "packages/server/src/transaction-event-sse.test.ts",
+  "beforeSha256": "0bd45d46a5401c23e98d110c5f2dc0a6159965e8df09dc2c19105c7b282c8f0f",
+  "afterSha256": "d7c257a2c9f78ffd07a18b86e2b480e07e1cdeeddf43cafabfb0cd53a011fbd9",
+  "exactBefore": "receiving: { acceptsJson: true, maximumOperations: 100 },",
+  "exactAfter": "receiving: { acceptsJson: true, maximumOperations: 1 },",
+  "inverseRestoresPredecessor": true,
+  "unchangedOtherPredecessorFiles": 678,
+  "unchangedBaseOutsideOwnedFiles": 672,
+  "unchangedProductionAndDocumentation": true,
+  "unchangedSelectionWorkloadSchemasLifecycleOracles": true,
+  "originalPreservation": {
+    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/scope-event-sse-opaque-minimum-author/format-successor-1/preservation-checks.json",
+    "sha256": "2975ce08497c0edb0c20a5876cd1ce79cdfa40836719ff800379d34a520eb4ef"
+  },
+  "failedEvidence": {
+    "focused-source.started.json": {
+      "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/scope-event-sse-opaque-minimum-validation/format-successor-1/run/focused-source.started.json",
+      "sha256": "65e67e8a7ccb2e48f6e10a47fa0bb4bbd702edc691e27c6e7500194f4e8a4ca3"
+    },
+    "focused-source.exit.json": {
+      "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/scope-event-sse-opaque-minimum-validation/format-successor-1/run/focused-source.exit.json",
+      "sha256": "44cd5d4a27e40c179ff8ae73f89d78ae60047c6b9216b1f10469fac743189f8a"
+    },
+    "focused-source.log": {
+      "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/scope-event-sse-opaque-minimum-validation/format-successor-1/run/focused-source.log",
+      "sha256": "b3e378f44b7025f68187bf9b7c37eb8a8b709dcafafc9868914dfc5206761560"
+    },
+    "focused-source.processes.jsonl": {
+      "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/scope-event-sse-opaque-minimum-validation/format-successor-1/run/focused-source.processes.jsonl",
+      "sha256": "90ae8a53b5180c5d49b116218cf5ec97ba00d80b0aa71840fff4705c0161b2ad"
+    },
+    "focused-source.results.json": {
+      "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/scope-event-sse-opaque-minimum-validation/format-successor-1/run/focused-source.results.json",
+      "sha256": "f8f4c1a9f19741151ba958e336903acada243675d21f238019143dd36385635b"
+    }
+  }
+}

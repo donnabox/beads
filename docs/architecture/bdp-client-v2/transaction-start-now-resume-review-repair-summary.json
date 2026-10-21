@@ -1,0 +1,463 @@
+{
+  "source": "902340fcc8d8fcdac337e33faf3461234b65b65a",
+  "tree": "36d4518ab01be4b6aa4c301351d1d47ac674beb8",
+  "parent": "d53450a4f337bcd01aa5963980b6e85eb50a987e",
+  "clean": true,
+  "productionUnchangedFromD534": true,
+  "focused": {
+    "passed": 163,
+    "files": 6,
+    "exit": 0
+  },
+  "finalCitationRerun": {
+    "passed": 9,
+    "exit": 0
+  },
+  "exits": {
+    "source": {
+      "format-owned": {
+        "exit": 0,
+        "seconds": 0.2860368329565972,
+        "command": [
+          "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+          "/Users/dbox/.cache/node/corepack/v1/pnpm/11.20.0/bin/pnpm.cjs",
+          "exec",
+          "biome",
+          "format",
+          "--write",
+          "packages/server/src/transaction-http.ts",
+          "packages/server/src/transaction-sse.test.ts",
+          "apps/bdptest/src/transactional-sse-installed.test.ts",
+          "packages/conformance/src/transactional-catalog.test.ts"
+        ]
+      },
+      "typecheck": {
+        "exit": 0,
+        "seconds": 0.8281659591011703,
+        "command": [
+          "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+          "/Users/dbox/.cache/node/corepack/v1/pnpm/11.20.0/bin/pnpm.cjs",
+          "typecheck"
+        ]
+      },
+      "build": {
+        "exit": 0,
+        "seconds": 0.8233470839913934,
+        "command": [
+          "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+          "/Users/dbox/.cache/node/corepack/v1/pnpm/11.20.0/bin/pnpm.cjs",
+          "build"
+        ]
+      },
+      "focused": {
+        "exit": 0,
+        "seconds": 5.021412250120193,
+        "command": [
+          "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+          "/Users/dbox/.cache/node/corepack/v1/pnpm/11.20.0/bin/pnpm.cjs",
+          "exec",
+          "vitest",
+          "run",
+          "packages/server/src/transaction-sse.test.ts",
+          "packages/server/src/transaction-changefeed.test.ts",
+          "packages/server/src/transaction-http.test.ts",
+          "packages/server/src/transaction-event-sse.test.ts",
+          "packages/conformance/src/transactional-catalog.test.ts",
+          "packages/conformance/src/profile-catalog-boundaries.test.ts",
+          "--maxWorkers=2",
+          "--reporter=verbose",
+          "--reporter=json",
+          "--outputFile.json=/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-start-now-resume-review-repair/focused.json"
+        ]
+      },
+      "format": {
+        "exit": 0,
+        "seconds": 0.350617750082165,
+        "command": [
+          "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+          "/Users/dbox/.cache/node/corepack/v1/pnpm/11.20.0/bin/pnpm.cjs",
+          "format:check"
+        ]
+      },
+      "lint": {
+        "exit": 0,
+        "seconds": 0.45043391617946327,
+        "command": [
+          "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+          "/Users/dbox/.cache/node/corepack/v1/pnpm/11.20.0/bin/pnpm.cjs",
+          "lint"
+        ]
+      },
+      "boundaries": {
+        "exit": 0,
+        "seconds": 0.5573016670532525,
+        "command": [
+          "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+          "/Users/dbox/.cache/node/corepack/v1/pnpm/11.20.0/bin/pnpm.cjs",
+          "check:boundaries"
+        ]
+      },
+      "read-seal": {
+        "exit": 0,
+        "seconds": 0.29145091609098017,
+        "command": [
+          "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+          "/Users/dbox/.cache/node/corepack/v1/pnpm/11.20.0/bin/pnpm.cjs",
+          "evidence:verify"
+        ]
+      },
+      "diff": {
+        "exit": 0,
+        "seconds": 0.010325707960873842,
+        "command": [
+          "git",
+          "diff",
+          "--check"
+        ]
+      }
+    },
+    "positive": {
+      "final-citations": {
+        "exit": 0,
+        "seconds": 0.9907064170110971,
+        "command": [
+          "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+          "/Users/dbox/.cache/node/corepack/v1/pnpm/11.20.0/bin/pnpm.cjs",
+          "exec",
+          "vitest",
+          "run",
+          "packages/conformance/src/transactional-catalog.test.ts",
+          "--maxWorkers=1",
+          "--reporter=verbose",
+          "--reporter=json",
+          "--outputFile.json=/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-start-now-resume-review-repair/packed-positive/citations.json"
+        ]
+      },
+      "build": {
+        "exit": 0,
+        "seconds": 0.8205868748482317,
+        "command": [
+          "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+          "/Users/dbox/.cache/node/corepack/v1/pnpm/11.20.0/bin/pnpm.cjs",
+          "build"
+        ]
+      },
+      "pack-protocol": {
+        "exit": 0,
+        "seconds": 0.2330591669306159,
+        "command": [
+          "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+          "/Users/dbox/.cache/node/corepack/v1/pnpm/11.20.0/bin/pnpm.cjs",
+          "pack",
+          "--out",
+          "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-start-now-resume-review-repair/packed-positive/packs/protocol.tgz"
+        ]
+      },
+      "pack-server": {
+        "exit": 0,
+        "seconds": 0.27848508302122355,
+        "command": [
+          "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+          "/Users/dbox/.cache/node/corepack/v1/pnpm/11.20.0/bin/pnpm.cjs",
+          "pack",
+          "--out",
+          "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-start-now-resume-review-repair/packed-positive/packs/server.tgz"
+        ]
+      },
+      "install": {
+        "exit": 0,
+        "seconds": 0.5531876250170171,
+        "command": [
+          "npm",
+          "install",
+          "--ignore-scripts",
+          "--no-audit",
+          "--no-fund"
+        ]
+      },
+      "installed-sse": {
+        "exit": 0,
+        "seconds": 16.474140957929194,
+        "command": [
+          "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+          "/Users/dbox/.cache/node/corepack/v1/pnpm/11.20.0/bin/pnpm.cjs",
+          "exec",
+          "vitest",
+          "run",
+          "apps/bdptest/src/transactional-sse-installed.test.ts",
+          "--maxWorkers=1",
+          "--reporter=verbose",
+          "--reporter=json",
+          "--outputFile.json=/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-start-now-resume-review-repair/packed-positive/installed.json"
+        ]
+      }
+    },
+    "counterfactual": {
+      "dependencies": {
+        "exit": 0,
+        "expected": 0,
+        "seconds": 0.448968542041257,
+        "command": [
+          "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+          "/Users/dbox/.cache/node/corepack/v1/pnpm/11.20.0/bin/pnpm.cjs",
+          "install",
+          "--frozen-lockfile"
+        ]
+      },
+      "build": {
+        "exit": 0,
+        "expected": 0,
+        "seconds": 1.4183782499749213,
+        "command": [
+          "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+          "/Users/dbox/.cache/node/corepack/v1/pnpm/11.20.0/bin/pnpm.cjs",
+          "build"
+        ]
+      },
+      "minimum-wait-mutant": {
+        "exit": 1,
+        "expected": 1,
+        "seconds": 1.56989312521182,
+        "command": [
+          "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+          "/Users/dbox/.cache/node/corepack/v1/pnpm/11.20.0/bin/pnpm.cjs",
+          "exec",
+          "vitest",
+          "run",
+          "packages/server/src/transaction-sse.test.ts",
+          "-t",
+          "start=now reconnect checkpoint survives a controlled minimum wait",
+          "--maxWorkers=1",
+          "--reporter=verbose",
+          "--reporter=json",
+          "--outputFile.json=/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-start-now-resume-review-repair/packed-counterfactual/minimum-wait-mutant.json"
+        ]
+      },
+      "pack-protocol": {
+        "exit": 0,
+        "expected": 0,
+        "seconds": 0.24001679196953773,
+        "command": [
+          "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+          "/Users/dbox/.cache/node/corepack/v1/pnpm/11.20.0/bin/pnpm.cjs",
+          "pack",
+          "--out",
+          "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-start-now-resume-review-repair/packed-counterfactual/packs/protocol.tgz"
+        ]
+      },
+      "pack-server": {
+        "exit": 0,
+        "expected": 0,
+        "seconds": 0.2928431669715792,
+        "command": [
+          "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+          "/Users/dbox/.cache/node/corepack/v1/pnpm/11.20.0/bin/pnpm.cjs",
+          "pack",
+          "--out",
+          "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-start-now-resume-review-repair/packed-counterfactual/packs/server.tgz"
+        ]
+      },
+      "install": {
+        "exit": 0,
+        "expected": 0,
+        "seconds": 0.4445597077719867,
+        "command": [
+          "npm",
+          "install",
+          "--ignore-scripts",
+          "--no-audit",
+          "--no-fund"
+        ]
+      },
+      "ignored-header": {
+        "exit": 1,
+        "expected": 1,
+        "seconds": 25.988753541838378,
+        "command": [
+          "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+          "/Users/dbox/.cache/node/corepack/v1/pnpm/11.20.0/bin/pnpm.cjs",
+          "exec",
+          "vitest",
+          "run",
+          "apps/bdptest/src/transactional-sse-installed.test.ts",
+          "-t",
+          "installed same start=now URL",
+          "--maxWorkers=1",
+          "--reporter=verbose",
+          "--reporter=json",
+          "--outputFile.json=/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-start-now-resume-review-repair/packed-counterfactual/installed.json"
+        ]
+      }
+    }
+  },
+  "positive": {
+    "source": {
+      "source": "902340fcc8d8fcdac337e33faf3461234b65b65a",
+      "tree": "36d4518ab01be4b6aa4c301351d1d47ac674beb8",
+      "clean": true,
+      "packs": {
+        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-start-now-resume-review-repair/packed-positive/packs/protocol.tgz": "4683cb6c6333c332a4bcb7efc3e28f32d1d8d06a7264913f65c31d3a826d4227",
+        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-start-now-resume-review-repair/packed-positive/packs/server.tgz": "e0dd60d3101768be2d1ddeb5b45fd49939aefb01769cba7c0b7ad48d33f04d97"
+      },
+      "entry": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-start-now-resume-review-repair/packed-positive/install/node_modules/@bdp/server/dist/transaction-installed-process.js",
+      "entrySha256": "bcf153170f953f9e28c6c89f1153be907f64df289e64f3ad929cad4a4a54c47c"
+    },
+    "testsPassed": 2,
+    "exit": 0,
+    "seconds": 16.474140957929194,
+    "idleMilliseconds": 15186.441833,
+    "oldIdleRequests": 4,
+    "newAuthoredAttempts": 8,
+    "children": 2,
+    "newPhase": "complete",
+    "bindings": [
+      {
+        "served": {
+          "scope": "https://reference.invalid/acme/",
+          "profile": "transactional",
+          "history": false,
+          "sourceCommit": "902340fcc8d8fcdac337e33faf3461234b65b65a",
+          "installedPayloadDigest": "a4f4d446ff0e506a329fc19d8f0dbac9a81e325e80750a30936a31bb9e57f6b6",
+          "installedContractsDigest": "ecadbf2f7c92004ae5b6a02502f337f7a9a49fec7eef07be57e2ad6dbf3f8544",
+          "policyDigest": "1796f61cff79ad216c4b07a3a66427db77683ca6c3c5755ad7db8d5088ec5eba",
+          "authenticationDigest": "53ab6ed2f73848e75e7d23ff3ceafe90142438756f8c6dee6b20e823927307af",
+          "fixtureDigest": "3a7899ced771d4880066d98b0000c53f801ece53458502cc4f3bc641146c9a85",
+          "fixtureId": "reference-transactional-v1",
+          "capabilities": [
+            "installed-transactional-http",
+            "transactional-receipt-observation"
+          ]
+        },
+        "operationTargets": {
+          "createBead": "https://reference.invalid/acme/operations/create-bead",
+          "updateBead": "https://reference.invalid/acme/operations/update-bead",
+          "deleteBead": "https://reference.invalid/acme/operations/delete-bead",
+          "createLink": "https://reference.invalid/acme/operations/create-link",
+          "updateLink": "https://reference.invalid/acme/operations/update-link",
+          "deleteLink": "https://reference.invalid/acme/operations/delete-link",
+          "putAlias": "https://reference.invalid/acme/operations/put-alias",
+          "deleteAlias": "https://reference.invalid/acme/operations/delete-alias",
+          "updateWhere": "https://reference.invalid/acme/operations/update-where",
+          "deleteWhere": "https://reference.invalid/acme/operations/delete-where",
+          "batch": "https://reference.invalid/acme/operations/batch",
+          "sequence": "https://reference.invalid/acme/operations/sequence"
+        },
+        "runtimeConfigurationIdentity": "3b276893df94dd2e3db027e07496fb249712e2808e072f76e20573be3145eb49",
+        "authorityMode": "canonical"
+      },
+      {
+        "served": {
+          "scope": "https://reference.invalid/acme/",
+          "profile": "transactional",
+          "history": false,
+          "sourceCommit": "902340fcc8d8fcdac337e33faf3461234b65b65a",
+          "installedPayloadDigest": "a4f4d446ff0e506a329fc19d8f0dbac9a81e325e80750a30936a31bb9e57f6b6",
+          "installedContractsDigest": "ecadbf2f7c92004ae5b6a02502f337f7a9a49fec7eef07be57e2ad6dbf3f8544",
+          "policyDigest": "600222747a1c4b6caddf5230ea29ab653315a24e0f53c42d5ca1a537aa645829",
+          "authenticationDigest": "5ae08f0c02b0ed0cc9026d80c6bb32faa4cd5c02c81794e5dcc5de39024d757d",
+          "fixtureDigest": "3a7899ced771d4880066d98b0000c53f801ece53458502cc4f3bc641146c9a85",
+          "fixtureId": "reference-transactional-v1",
+          "capabilities": [
+            "installed-transactional-http",
+            "transactional-receipt-observation"
+          ]
+        },
+        "operationTargets": {
+          "createBead": "https://reference.invalid/acme/operations/create-bead",
+          "updateBead": "https://reference.invalid/acme/operations/update-bead",
+          "deleteBead": "https://reference.invalid/acme/operations/delete-bead",
+          "createLink": "https://reference.invalid/acme/operations/create-link",
+          "updateLink": "https://reference.invalid/acme/operations/update-link",
+          "deleteLink": "https://reference.invalid/acme/operations/delete-link",
+          "putAlias": "https://reference.invalid/acme/operations/put-alias",
+          "deleteAlias": "https://reference.invalid/acme/operations/delete-alias",
+          "updateWhere": "https://reference.invalid/acme/operations/update-where",
+          "deleteWhere": "https://reference.invalid/acme/operations/delete-where",
+          "batch": "https://reference.invalid/acme/operations/batch",
+          "sequence": "https://reference.invalid/acme/operations/sequence"
+        },
+        "runtimeConfigurationIdentity": "e3a6c91e9fd88adef2d270953d1a249936fd5dfcd5bc52563aa4c5c4e3cf5465",
+        "authorityMode": "canonical"
+      }
+    ]
+  },
+  "counterfactual": {
+    "source": {
+      "source": "383737edc17e37eaaa2e6fcfe915251e86298d92",
+      "tree": "6d5a3587ffbc5fd8481bed8af781687cbfbe0159",
+      "parent": "902340fcc8d8fcdac337e33faf3461234b65b65a",
+      "clean": true,
+      "packs": {
+        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-start-now-resume-review-repair/packed-counterfactual/packs/protocol.tgz": "4683cb6c6333c332a4bcb7efc3e28f32d1d8d06a7264913f65c31d3a826d4227",
+        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-start-now-resume-review-repair/packed-counterfactual/packs/server.tgz": "64aaa227c9338cefebeffb758840538316699a598d40a31132536bbecaffbe85"
+      },
+      "entry": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-start-now-resume-review-repair/packed-counterfactual/install/node_modules/@bdp/server/dist/transaction-installed-process.js",
+      "entrySha256": "bcf153170f953f9e28c6c89f1153be907f64df289e64f3ad929cad4a4a54c47c",
+      "namedOracleFailure": "offline-G2-before-live-G3: saved-checkpoint replay did not deliver the offline group",
+      "actualRequests": 5,
+      "children": 1,
+      "reconnectStatus": 200,
+      "reconnectGroupFrames": 0,
+      "childClosed": true
+    },
+    "exit": 1,
+    "expectedFailure": true,
+    "testsFailed": 1,
+    "testsSkipped": 1,
+    "authoredAttempts": 5,
+    "children": 1,
+    "failure": [
+      "offline-G2-before-live-G3: saved-checkpoint replay did not deliver the offline group"
+    ],
+    "sourceMinimumWait": {
+      "source": "383737edc17e37eaaa2e6fcfe915251e86298d92",
+      "expectedFailure": true,
+      "test": "start=now reconnect checkpoint survives a controlled minimum wait",
+      "failureMessages": [
+        "AssertionError: expected 'pos-3' to be 'pos-2' // Object.is equality\n    at /Users/dbox/repos/wt/vickie/vickie-start-now-resume-review-counterfactual/packages/server/src/transaction-sse.test.ts:906:41\n    at processTicksAndRejections (node:internal/process/task_queues:104:5)\n    at file:///Users/dbox/repos/wt/vickie/vickie-start-now-resume-review-counterfactual/node_modules/.pnpm/@vitest+runner@4.1.10/node_modules/@vitest/runner/dist/chunk-artifact.js:1903:20"
+      ],
+      "scope": "Source fixture against separately built derivative; not an installed cohort"
+    }
+  },
+  "budgets": {
+    "fresh": {
+      "requests": 17,
+      "children": 3,
+      "ceilingRequests": 20,
+      "ceilingChildren": 3
+    },
+    "historicalD534": {
+      "requests": 17,
+      "children": 3
+    },
+    "combined": {
+      "requests": 34,
+      "children": 6,
+      "ceilingRequests": 37,
+      "ceilingChildren": 6
+    },
+    "countSemantics": "New/negative request arrays are authored attempts; old idle count follows the passing preserved fixed sequence. Not an independent retained wire-request ledger. Source mutant and cleanup-tail probe excluded from installed counts."
+  },
+  "preservation": {
+    "productionByteIdenticalToD534": true,
+    "oldInstalledScenarioByteIdenticalToD534": true,
+    "explicitStartProhibitionByteIdentical": true,
+    "originalEvidenceCopyAllBytesIdentical": true
+  },
+  "cleanup": {
+    "checkedAt": "2026-10-14T15:02:16.659987+00:00",
+    "sourceClean": {
+      "/Users/dbox/repos/wt/vickie/vickie-start-now-resume": true,
+      "/Users/dbox/repos/wt/vickie/vickie-start-now-resume-review-counterfactual": true
+    },
+    "ownedNodeProcesses": [],
+    "newPositiveChildClosed": true,
+    "newPositiveDirectoryObservedRemoved": true,
+    "counterfactualChildClosed": true,
+    "counterfactualDirectoryObservedRemoved": true,
+    "allRecordedStreamsDestroyed": true,
+    "oldIdleCleanup": "Preserved successful test finally plus no remaining owned process; old observation does not independently log directory removal."
+  },
+  "claimEligible": false,
+  "evidenceRetention": "Raw SSE bytes/frames/hashes and three positive finite parity body strings retained. Finite actual write completion/status/nonempty-wire checks execute, but full finite request projections and wire bytes are discarded by existing helper."
+}

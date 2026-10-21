@@ -1,0 +1,30 @@
+{
+  "createdUtc": "2026-10-18T03:01:11.575095+00:00",
+  "finding": "N2",
+  "status": "open",
+  "mechanicsAcceptedForLaunch": false,
+  "rootLaunchReleased": false,
+  "supplement": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/event-admission-next-serving-plan/clean-candidate-rebind-1/new-session-launch-supervision-1",
+  "checkedIndexSha256": "83df3c024abe4a97277bd0844b29c687cea15ba4c31013f561113bcf8afea8b6",
+  "checkedSupervisorSha256": "5893380eeec2e135a1597c5a0549640f8f09fb0b10224caaff8b94d16cea3f8a",
+  "findings": [
+    {
+      "id": "N2a",
+      "severity": "P2",
+      "location": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/event-admission-next-serving-plan/clean-candidate-rebind-1/new-session-launch-supervision-1/supervise.py:197",
+      "summary": "Guard Popen is not registered before fallible inventory; failed registration loses ownership root",
+      "launchGate": true
+    },
+    {
+      "id": "N2b",
+      "severity": "P2",
+      "location": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/event-admission-next-serving-plan/clean-candidate-rebind-1/new-session-launch-supervision-1/supervise.py:176",
+      "summary": "Preemptive killSent flag suppresses all later KILL after one inventory failure",
+      "launchGate": true
+    }
+  ],
+  "allIndexedHashesMatched": true,
+  "frozenPacketAndSourceUnchanged": true,
+  "actualExecution": false,
+  "reportSha256": "eee4994fe95c5d11364a0e2ea656d8b46dc6ed87672e586be699e7650a103886"
+}

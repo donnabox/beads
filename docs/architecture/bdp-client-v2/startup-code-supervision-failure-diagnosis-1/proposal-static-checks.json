@@ -1,0 +1,68 @@
+{
+  "proposalApplied": false,
+  "proposalExecuted": false,
+  "beforeHelperSha256": "e61b9008610b7349b06e8c322e240d707dbdedb9124c611890132f2cf81fb32b",
+  "proposedTextSha256": "791e5a566561798aa3352f19b021e6db9beeddb033ae5725c7d031d51716f95c",
+  "protectedCallSequences": {
+    "require": {
+      "identical": true,
+      "beforeCount": 22,
+      "afterCount": 22
+    },
+    "subprocess.Popen": {
+      "identical": true,
+      "beforeCount": 2,
+      "afterCount": 2
+    },
+    "subprocess.check_output": {
+      "identical": true,
+      "beforeCount": 1,
+      "afterCount": 1
+    },
+    "os.killpg": {
+      "identical": true,
+      "beforeCount": 1,
+      "afterCount": 1
+    },
+    "os.getpgid": {
+      "identical": true,
+      "beforeCount": 1,
+      "afterCount": 1
+    },
+    "poll_direct": {
+      "identical": true,
+      "beforeCount": 7,
+      "afterCount": 7
+    },
+    "check_session": {
+      "identical": true,
+      "beforeCount": 3,
+      "afterCount": 3
+    },
+    "wait_check": {
+      "identical": true,
+      "beforeCount": 3,
+      "afterCount": 3
+    },
+    "send_owned": {
+      "identical": true,
+      "beforeCount": 8,
+      "afterCount": 8
+    },
+    "fail": {
+      "identical": true,
+      "beforeCount": 7,
+      "afterCount": 7
+    },
+    "inventory": {
+      "identical": true,
+      "beforeCount": 1,
+      "afterCount": 1
+    }
+  },
+  "addedProcessQueries": 0,
+  "addedSignals": 0,
+  "addedFileWrites": 0,
+  "addedRetries": 0,
+  "note": "Pure AST/source-order inspection of inert proposed text only; not behavioral qualification. Current helper/source/packet unchanged. Proposal captures only the first failing stage, already-read process row and exception class into existing terminal output. No arbitrary record/argv/exception message is emitted. Prior local generators failed a terminal-field whitespace anchor before writing any patch; this is the only written proposal."
+}

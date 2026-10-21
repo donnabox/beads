@@ -1,0 +1,423 @@
+{
+  "status": "DELEGATED_INTEGRATION_VALIDATION_ONLY",
+  "workspace": "/Users/dbox/repos/wt/vickie/vickie-update-cold-directory",
+  "node": "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+  "pnpm": "/Users/dbox/.cache/node/corepack/v1/pnpm/11.20.0/bin/pnpm.cjs",
+  "executionOrder": [
+    "fresh-build",
+    "typecheck",
+    "format-check",
+    "boundaries",
+    "lint",
+    "read-evidence",
+    "cpu-eight",
+    "node-version",
+    "package-directory",
+    "pack-protocol",
+    "pack-server",
+    "verify-tar",
+    "prepare-consumer",
+    "consumer-install",
+    "verify-installed",
+    "selected-positive",
+    "selected-minimum-control"
+  ],
+  "commands": {
+    "node-version": {
+      "phase": "package",
+      "cwd": "/Users/dbox/repos/wt/vickie/vickie-update-cold-directory",
+      "argv": [
+        "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+        "--version"
+      ],
+      "supervisorSeconds": 120,
+      "requires": [
+        {
+          "id": "cpu-eight",
+          "supervisorExit": 0
+        }
+      ],
+      "ownedTempPrefixes": []
+    },
+    "package-directory": {
+      "phase": "package",
+      "cwd": "/Users/dbox/repos/wt/vickie/vickie-update-cold-directory",
+      "argv": [
+        "python3",
+        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/read-update-command-minimum-draft/integration-validation/packages.py",
+        "directory"
+      ],
+      "supervisorSeconds": 120,
+      "requires": [
+        {
+          "id": "node-version",
+          "supervisorExit": 0
+        }
+      ],
+      "ownedTempPrefixes": []
+    },
+    "pack-protocol": {
+      "phase": "package",
+      "cwd": "/Users/dbox/repos/wt/vickie/vickie-update-cold-directory",
+      "argv": [
+        "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+        "/Users/dbox/.cache/node/corepack/v1/pnpm/11.20.0/bin/pnpm.cjs",
+        "--filter",
+        "@bdp/protocol",
+        "pack",
+        "--pack-destination",
+        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/read-update-command-minimum-draft/integration-validation/run/packages"
+      ],
+      "supervisorSeconds": 120,
+      "requires": [
+        {
+          "id": "package-directory",
+          "supervisorExit": 0
+        }
+      ],
+      "ownedTempPrefixes": []
+    },
+    "pack-server": {
+      "phase": "package",
+      "cwd": "/Users/dbox/repos/wt/vickie/vickie-update-cold-directory",
+      "argv": [
+        "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+        "/Users/dbox/.cache/node/corepack/v1/pnpm/11.20.0/bin/pnpm.cjs",
+        "--filter",
+        "@bdp/server",
+        "pack",
+        "--pack-destination",
+        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/read-update-command-minimum-draft/integration-validation/run/packages"
+      ],
+      "supervisorSeconds": 120,
+      "requires": [
+        {
+          "id": "pack-protocol",
+          "supervisorExit": 0
+        }
+      ],
+      "ownedTempPrefixes": []
+    },
+    "verify-tar": {
+      "phase": "package",
+      "cwd": "/Users/dbox/repos/wt/vickie/vickie-update-cold-directory",
+      "argv": [
+        "python3",
+        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/read-update-command-minimum-draft/integration-validation/packages.py",
+        "tar"
+      ],
+      "supervisorSeconds": 120,
+      "requires": [
+        {
+          "id": "pack-server",
+          "supervisorExit": 0
+        }
+      ],
+      "ownedTempPrefixes": []
+    },
+    "prepare-consumer": {
+      "phase": "package",
+      "cwd": "/Users/dbox/repos/wt/vickie/vickie-update-cold-directory",
+      "argv": [
+        "python3",
+        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/read-update-command-minimum-draft/integration-validation/packages.py",
+        "consumer"
+      ],
+      "supervisorSeconds": 120,
+      "requires": [
+        {
+          "id": "verify-tar",
+          "supervisorExit": 0
+        }
+      ],
+      "ownedTempPrefixes": []
+    },
+    "consumer-install": {
+      "phase": "package",
+      "cwd": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/read-update-command-minimum-draft/integration-validation/run/consumer",
+      "argv": [
+        "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+        "/Users/dbox/.cache/node/corepack/v1/pnpm/11.20.0/bin/pnpm.cjs",
+        "install",
+        "--offline",
+        "--ignore-scripts",
+        "--no-frozen-lockfile",
+        "--prod"
+      ],
+      "supervisorSeconds": 120,
+      "requires": [
+        {
+          "id": "prepare-consumer",
+          "supervisorExit": 0
+        }
+      ],
+      "ownedTempPrefixes": []
+    },
+    "verify-installed": {
+      "phase": "package",
+      "cwd": "/Users/dbox/repos/wt/vickie/vickie-update-cold-directory",
+      "argv": [
+        "python3",
+        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/read-update-command-minimum-draft/integration-validation/packages.py",
+        "installed"
+      ],
+      "supervisorSeconds": 120,
+      "requires": [
+        {
+          "id": "consumer-install",
+          "supervisorExit": 0
+        }
+      ],
+      "ownedTempPrefixes": []
+    },
+    "selected-positive": {
+      "phase": "installed",
+      "cwd": "/Users/dbox/repos/wt/vickie/vickie-update-cold-directory",
+      "argv": [
+        "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+        "/Users/dbox/repos/wt/vickie/vickie-update-cold-directory/node_modules/vitest/vitest.mjs",
+        "run",
+        "apps/bdptest/src/read-update-matrix.test.ts",
+        "--maxWorkers=1",
+        "--testNamePattern",
+        "^observes\\ ignored\\ command\\ minimum\\ fields\\ with\\ ordinary\\ Update\\ admission$",
+        "--reporter=verbose",
+        "--reporter=json",
+        "--outputFile=/Users/dbox/repos/wt/vickie/bdp-integration-logs/read-update-command-minimum-draft/integration-validation/run/selected-positive.results.json"
+      ],
+      "supervisorSeconds": 120,
+      "requires": [
+        {
+          "id": "verify-installed",
+          "supervisorExit": 0
+        }
+      ],
+      "ownedTempPrefixes": [
+        "bdp-cumulative-ru-"
+      ],
+      "selectedFullNames": [
+        "observes ignored command minimum fields with ordinary Update admission"
+      ],
+      "expectedCases": 1,
+      "expectedExit": 0,
+      "actualRunnerFailureExpected": false,
+      "reportOverrides": {
+        "BDP_COMMAND_MINIMUM_REPORT_PATH": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/read-update-command-minimum-draft/integration-validation/run/selected-positive-minimum.json"
+      },
+      "workload": {
+        "title": "observes ignored command minimum fields with ordinary Update admission",
+        "expectedHttp": 11,
+        "maximumHttp": 11,
+        "children": 2,
+        "cooperativeMs": null,
+        "vitestMs": 30000
+      }
+    },
+    "fresh-build": {
+      "phase": "build",
+      "cwd": "/Users/dbox/repos/wt/vickie/vickie-update-cold-directory",
+      "argv": [
+        "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+        "/Users/dbox/.cache/node/corepack/v1/pnpm/11.20.0/bin/pnpm.cjs",
+        "build"
+      ],
+      "supervisorSeconds": 120,
+      "requires": [],
+      "ownedTempPrefixes": []
+    },
+    "selected-minimum-control": {
+      "phase": "installed",
+      "cwd": "/Users/dbox/repos/wt/vickie/vickie-update-cold-directory",
+      "argv": [
+        "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+        "/Users/dbox/repos/wt/vickie/vickie-update-cold-directory/node_modules/vitest/vitest.mjs",
+        "run",
+        "apps/bdptest/src/read-update-matrix.test.ts",
+        "--maxWorkers=1",
+        "--testNamePattern",
+        "^rejects\\ a\\ changed\\ retained\\ outcome\\ in\\ command\\ minimum\\ assertion\\ input$",
+        "--reporter=verbose",
+        "--reporter=json",
+        "--outputFile=/Users/dbox/repos/wt/vickie/bdp-integration-logs/read-update-command-minimum-draft/integration-validation/run/selected-minimum-control.results.json"
+      ],
+      "supervisorSeconds": 120,
+      "requires": [
+        {
+          "id": "selected-positive",
+          "supervisorExit": 0
+        }
+      ],
+      "ownedTempPrefixes": [
+        "bdp-cumulative-ru-"
+      ],
+      "selectedFullNames": [
+        "rejects a changed retained outcome in command minimum assertion input"
+      ],
+      "expectedCases": 1,
+      "expectedExit": 0,
+      "actualRunnerFailureExpected": true,
+      "reportOverrides": {
+        "BDP_COMMAND_MINIMUM_REPORT_PATH": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/read-update-command-minimum-draft/integration-validation/run/selected-minimum-control-minimum.json"
+      },
+      "workload": {
+        "title": "rejects a changed retained outcome in command minimum assertion input",
+        "expectedHttp": 2,
+        "maximumHttp": 11,
+        "children": 2,
+        "cooperativeMs": null,
+        "vitestMs": 30000
+      }
+    },
+    "typecheck": {
+      "phase": "source",
+      "cwd": "/Users/dbox/repos/wt/vickie/vickie-update-cold-directory",
+      "argv": [
+        "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+        "/Users/dbox/.cache/node/corepack/v1/pnpm/11.20.0/bin/pnpm.cjs",
+        "run",
+        "typecheck"
+      ],
+      "supervisorSeconds": 120,
+      "requires": [
+        {
+          "id": "fresh-build",
+          "supervisorExit": 0
+        }
+      ],
+      "ownedTempPrefixes": []
+    },
+    "format-check": {
+      "phase": "source",
+      "cwd": "/Users/dbox/repos/wt/vickie/vickie-update-cold-directory",
+      "argv": [
+        "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+        "/Users/dbox/repos/wt/vickie/vickie-update-cold-directory/node_modules/@biomejs/biome/bin/biome",
+        "format",
+        "--config-path",
+        "/Users/dbox/repos/wt/vickie/vickie-update-cold-directory/biome.json",
+        "apps/bdptest/src/read-update-matrix.test.ts",
+        "packages/conformance/src/cumulative-artifact.test.ts",
+        "packages/conformance/src/profile-contract-plan.test.ts",
+        "packages/conformance/src/read-update-artifact-set.test.ts"
+      ],
+      "supervisorSeconds": 120,
+      "requires": [
+        {
+          "id": "typecheck",
+          "supervisorExit": 0
+        }
+      ],
+      "ownedTempPrefixes": []
+    },
+    "boundaries": {
+      "phase": "source",
+      "cwd": "/Users/dbox/repos/wt/vickie/vickie-update-cold-directory",
+      "argv": [
+        "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+        "/Users/dbox/.cache/node/corepack/v1/pnpm/11.20.0/bin/pnpm.cjs",
+        "run",
+        "check:boundaries"
+      ],
+      "supervisorSeconds": 120,
+      "requires": [
+        {
+          "id": "format-check",
+          "supervisorExit": 0
+        }
+      ],
+      "ownedTempPrefixes": []
+    },
+    "lint": {
+      "phase": "source",
+      "cwd": "/Users/dbox/repos/wt/vickie/vickie-update-cold-directory",
+      "argv": [
+        "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+        "/Users/dbox/.cache/node/corepack/v1/pnpm/11.20.0/bin/pnpm.cjs",
+        "run",
+        "lint"
+      ],
+      "supervisorSeconds": 120,
+      "requires": [
+        {
+          "id": "boundaries",
+          "supervisorExit": 0
+        }
+      ],
+      "ownedTempPrefixes": []
+    },
+    "read-evidence": {
+      "phase": "source",
+      "cwd": "/Users/dbox/repos/wt/vickie/vickie-update-cold-directory",
+      "argv": [
+        "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+        "/Users/dbox/.cache/node/corepack/v1/pnpm/11.20.0/bin/pnpm.cjs",
+        "run",
+        "evidence:verify"
+      ],
+      "supervisorSeconds": 120,
+      "requires": [
+        {
+          "id": "lint",
+          "supervisorExit": 0
+        }
+      ],
+      "ownedTempPrefixes": []
+    },
+    "cpu-eight": {
+      "phase": "source",
+      "cwd": "/Users/dbox/repos/wt/vickie/vickie-update-cold-directory",
+      "argv": [
+        "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+        "/Users/dbox/repos/wt/vickie/vickie-update-cold-directory/node_modules/vitest/vitest.mjs",
+        "run",
+        "packages/conformance/src/read-update-artifact-set.test.ts",
+        "packages/conformance/src/cumulative-artifact.test.ts",
+        "packages/conformance/src/profile-contract-plan.test.ts",
+        "apps/bdptest/src/read-update-matrix.test.ts",
+        "--maxWorkers=1",
+        "--testNamePattern",
+        "(?:accepts\\ the\\ actual\\ current\\ corpus\\ split\\ with\\ unchanged\\ prerequisite\\ groups\\ and\\ coverage|pins\\ cumulative\\ source\\ digest\\ map,\\ catalog\\ order\\ and\\ every\\ coverage\\ binding|maps\\ ordinary\\ Update\\ command\\-minimum\\ evidence\\ while\\ TX\\ mapping\\ remains\\ partial|pins\\ cold\\ RU\\ directory\\ literals,\\ actual\\ target\\ bindings\\ and\\ parent\\ preservation|pins\\ numeric\\ admission\\ source\\ growth,\\ old\\ blocks\\ and\\ independent\\ row\\ ledgers|pins\\ metadata\\ closure\\ growth,\\ old\\ B\\ actions\\ and\\ final\\ N\\ preservation|pins\\ bounded\\ R\\ closure\\ source,\\ changed\\-action\\ ledger\\ and\\ unchanged\\ companions|pins\\ command\\ minimum\\ literals,\\ ordinary\\ admission\\ and\\ parent\\ preservation)$",
+        "--reporter=verbose",
+        "--reporter=json",
+        "--outputFile=/Users/dbox/repos/wt/vickie/bdp-integration-logs/read-update-command-minimum-draft/integration-validation/run/cpu-eight-tests.json"
+      ],
+      "supervisorSeconds": 120,
+      "requires": [
+        {
+          "id": "read-evidence",
+          "supervisorExit": 0
+        }
+      ],
+      "ownedTempPrefixes": [],
+      "selectedFullNames": [
+        "private two-artifact Read+Update set accepts the actual current corpus split with unchanged prerequisite groups and coverage",
+        "pins cumulative source digest map, catalog order and every coverage binding",
+        "canonical cumulative profile contracts maps ordinary Update command-minimum evidence while TX mapping remains partial",
+        "pins cold RU directory literals, actual target bindings and parent preservation",
+        "pins numeric admission source growth, old blocks and independent row ledgers",
+        "pins metadata closure growth, old B actions and final N preservation",
+        "pins bounded R closure source, changed-action ledger and unchanged companions",
+        "pins command minimum literals, ordinary admission and parent preservation"
+      ]
+    }
+  },
+  "ownedPaths": [
+    "apps/bdptest/src/read-update-matrix.test.ts",
+    "packages/conformance/matrices/read-update-v1.json",
+    "packages/conformance/src/cumulative-artifact.test.ts",
+    "packages/conformance/src/profile-contract-plan.test.ts",
+    "packages/conformance/src/read-update-artifact-set.test.ts",
+    "packages/conformance/test-support/read-update-coverage-v1.json"
+  ],
+  "limits": {
+    "expectedHttp": 13,
+    "maximumHttp": 22,
+    "children": 4,
+    "selectedCases": 2,
+    "automaticRetries": 0,
+    "maximumWorkers": 1,
+    "selectedVitestMs": 30000,
+    "supervisorTermSeconds": 115,
+    "supervisorKillSeconds": 120
+  }
+}

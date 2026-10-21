@@ -1,0 +1,1687 @@
+--- rebind-validation-preparation/commands.json
++++ installed-successor/commands.json
+@@ -1,16 +1,8 @@
+ {
+-  "status": "CLOSED_FINAL_INTEGRATION_TEMPLATE: corrected four-file rebind; root acceptance and actual integrated identities pending",
++  "status": "CLOSED clean-commit successor; actual candidate identity pending; fresh56-case source prerequisite retained separately",
+   "executionOrder": [
+-    "typecheck",
+-    "format-check",
+-    "lint",
+-    "boundaries",
+     "fresh-build",
+     "read-seal",
+-    "cumulative-full",
+-    "binding-source",
+-    "receipt-first-page",
+-    "app-static",
+     "build-inventory",
+     "node-version",
+     "package-directory",
+@@ -36,8 +28,8 @@
+     "cross-sequence-review"
+   ],
+   "commands": {
+-    "typecheck": {
+-      "id": "typecheck",
++    "fresh-build": {
++      "id": "fresh-build",
+       "cwd": "/Users/dbox/repos/wt/vickie/vickie-transaction-conditional-reads",
+       "supervisorSeconds": 120,
+       "automaticRetries": 0,
+@@ -45,7 +37,7 @@
+         "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+         "/Users/dbox/.cache/node/corepack/v1/pnpm/11.20.0/bin/pnpm.cjs",
+         "run",
+-        "typecheck"
++        "build"
+       ],
+       "cases": 0,
+       "http": 0,
+@@ -56,8 +48,8 @@
+       "ownedTempPrefixes": [],
+       "phase": "source"
+     },
+-    "fresh-build": {
+-      "id": "fresh-build",
++    "read-seal": {
++      "id": "read-seal",
+       "cwd": "/Users/dbox/repos/wt/vickie/vickie-transaction-conditional-reads",
+       "supervisorSeconds": 120,
+       "automaticRetries": 0,
+@@ -65,7 +57,7 @@
+         "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+         "/Users/dbox/.cache/node/corepack/v1/pnpm/11.20.0/bin/pnpm.cjs",
+         "run",
+-        "build"
++        "evidence:verify"
+       ],
+       "cases": 0,
+       "http": 0,
+@@ -76,222 +68,6 @@
+       "ownedTempPrefixes": [],
+       "phase": "source"
+     },
+-    "format-check": {
+-      "id": "format-check",
+-      "cwd": "/Users/dbox/repos/wt/vickie/vickie-transaction-conditional-reads",
+-      "supervisorSeconds": 120,
+-      "automaticRetries": 0,
+-      "argv": [
+-        "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+-        "/Users/dbox/.cache/node/corepack/v1/pnpm/11.20.0/bin/pnpm.cjs",
+-        "run",
+-        "format:check"
+-      ],
+-      "cases": 0,
+-      "http": 0,
+-      "owners": 0,
+-      "listeners": 0,
+-      "directories": 0,
+-      "productChildren": 0,
+-      "ownedTempPrefixes": [],
+-      "phase": "source"
+-    },
+-    "lint": {
+-      "id": "lint",
+-      "cwd": "/Users/dbox/repos/wt/vickie/vickie-transaction-conditional-reads",
+-      "supervisorSeconds": 120,
+-      "automaticRetries": 0,
+-      "argv": [
+-        "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+-        "/Users/dbox/.cache/node/corepack/v1/pnpm/11.20.0/bin/pnpm.cjs",
+-        "run",
+-        "lint"
+-      ],
+-      "cases": 0,
+-      "http": 0,
+-      "owners": 0,
+-      "listeners": 0,
+-      "directories": 0,
+-      "productChildren": 0,
+-      "ownedTempPrefixes": [],
+-      "phase": "source"
+-    },
+-    "boundaries": {
+-      "id": "boundaries",
+-      "cwd": "/Users/dbox/repos/wt/vickie/vickie-transaction-conditional-reads",
+-      "supervisorSeconds": 120,
+-      "automaticRetries": 0,
+-      "argv": [
+-        "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+-        "/Users/dbox/.cache/node/corepack/v1/pnpm/11.20.0/bin/pnpm.cjs",
+-        "run",
+-        "check:boundaries"
+-      ],
+-      "cases": 0,
+-      "http": 0,
+-      "owners": 0,
+-      "listeners": 0,
+-      "directories": 0,
+-      "productChildren": 0,
+-      "ownedTempPrefixes": [],
+-      "phase": "source"
+-    },
+-    "read-seal": {
+-      "id": "read-seal",
+-      "cwd": "/Users/dbox/repos/wt/vickie/vickie-transaction-conditional-reads",
+-      "supervisorSeconds": 120,
+-      "automaticRetries": 0,
+-      "argv": [
+-        "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+-        "/Users/dbox/.cache/node/corepack/v1/pnpm/11.20.0/bin/pnpm.cjs",
+-        "run",
+-        "evidence:verify"
+-      ],
+-      "cases": 0,
+-      "http": 0,
+-      "owners": 0,
+-      "listeners": 0,
+-      "directories": 0,
+-      "productChildren": 0,
+-      "ownedTempPrefixes": [],
+-      "phase": "source"
+-    },
+-    "cumulative-full": {
+-      "phase": "source",
+-      "cwd": "/Users/dbox/repos/wt/vickie/vickie-transaction-conditional-reads",
+-      "argv": [
+-        "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+-        "/Users/dbox/repos/wt/vickie/vickie-transaction-conditional-reads/node_modules/vitest/vitest.mjs",
+-        "run",
+-        "packages/conformance/src/transactional-cumulative.test.ts",
+-        "--maxWorkers=1",
+-        "--reporter=verbose",
+-        "--reporter=json",
+-        "--outputFile=/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-conditional-reads-draft/rebind-validation-preparation/run/cumulative-full.results.json"
+-      ],
+-      "selectedFullNames": [
+-        "binds the canonical cumulative TX selection and exact source digests without qualification",
+-        "rejects noncanonical selections, History, wrong factories, retired and misprofiled rows",
+-        "copies source bytes before binding and exposes all missing obligations without executing them",
+-        "enforces TX1MiB and preserves RU4MiB at factory and planner boundaries",
+-        "private runner refuses lookalikes, RU bundles, wrong profiles and absent exact transport before setup",
+-        "keeps private cumulative factories, TX runner, receipt recorder and brand predicate out of public exports",
+-        "refuses reserved receipt actions in an ordinary RU run before setup or a programmable callback",
+-        "uses preparation rather than HTTP timeout for private reopen lifecycle",
+-        "preserves every original TX scenario and coverage object while adding one bounded partial cross-carrier row",
+-        "pins required context presence before equality in set and cross-carrier rows",
+-        "pins the one-page matched-plus-updated witness without advertised-limit or other-outcome credit",
+-        "pins complete conflict responses and rejects retained-record equality weakening",
+-        "rejects removing mandatory context presence from either comparison side",
+-        "pins the completed-key conflict law, five presentations, and semantic request difference",
+-        "pins the complete matching no-op partition and its exact selected clauses",
+-        "pins complete operation-time deletion safety and its exact selected clause",
+-        "resolves every authored TX schema and rejects the undefined deleted-point reference",
+-        "pins the inherited command-minimum manifest facts, read-header absence and all thirteen prior objects",
+-        "pins the partial principal namespace row, full parent and exact credential roles",
+-        "pins partial Transactional conditional actions, full parent bytes and the two-failure control",
+-        "denies genuine TX bundles through public runner declared read",
+-        "denies genuine TX bundles through public runner declared read-update",
+-        "denies genuine TX bundles through public runner declared transactional",
+-        "retains safe wire receipt reason with correct attribution over raw HTTP (harness-error/receipt wire headers mismatch/batch)",
+-        "retains safe wire receipt reason with correct attribution over raw HTTP (harness-error/receipt wire headers mismatch/update-where)",
+-        "retains safe validator receipt reason with correct attribution over raw HTTP (harness-error/source receipt validator unavailable/batch)",
+-        "retains safe validator receipt reason with correct attribution over raw HTTP (harness-error/source receipt validator unavailable/update-where)",
+-        "retains safe wire-id receipt reason with correct attribution over raw HTTP (harness-error/receipt wire body mismatch/batch)",
+-        "retains safe wire-id receipt reason with correct attribution over raw HTTP (harness-error/receipt wire body mismatch/update-where)",
+-        "retains safe source-id receipt reason with correct attribution over raw HTTP (fail/source receipt identity invalid/batch)",
+-        "retains safe source-id receipt reason with correct attribution over raw HTTP (fail/source receipt identity invalid/update-where)",
+-        "retains safe source-schema receipt reason with correct attribution over raw HTTP (fail/source receipt schema invalid/batch)",
+-        "retains safe source-schema receipt reason with correct attribution over raw HTTP (fail/source receipt schema invalid/update-where)",
+-        "retains safe retained receipt reason with correct attribution over raw HTTP (fail/retained receipt differs from original wire facts/batch)",
+-        "retains safe retained receipt reason with correct attribution over raw HTTP (fail/retained receipt differs from original wire facts/update-where)",
+-        "rejects independent no-op oracle weakening in n-noop:bead-retained-record",
+-        "rejects independent no-op oracle weakening in n-noop:no-effect",
+-        "rejects independent no-op oracle weakening in n-noop:present-bdp-scope-position",
+-        "rejects independent no-op oracle weakening in n-noop-groups:group-inventory",
+-        "rejects deletion-safety oracle weakening: unchanged-link",
+-        "rejects deletion-safety oracle weakening: problem-index",
+-        "rejects deletion-safety oracle weakening: rollback-metadata"
+-      ],
+-      "cases": 42,
+-      "http": 14,
+-      "expectedHTTP": 14,
+-      "maxHTTP": 14,
+-      "owners": 0,
+-      "directories": 0,
+-      "listeners": 12,
+-      "productChildren": 0,
+-      "ownedTempPrefixes": [],
+-      "id": "cumulative-full",
+-      "automaticRetries": 0,
+-      "supervisorSeconds": 120
+-    },
+-    "app-static": {
+-      "phase": "source",
+-      "cwd": "/Users/dbox/repos/wt/vickie/vickie-transaction-conditional-reads",
+-      "argv": [
+-        "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+-        "/Users/dbox/repos/wt/vickie/vickie-transaction-conditional-reads/node_modules/vitest/vitest.mjs",
+-        "run",
+-        "apps/bdptest/src/transactional-matrix.test.ts",
+-        "--maxWorkers=1",
+-        "--reporter=verbose",
+-        "--reporter=json",
+-        "--outputFile=/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-conditional-reads-draft/rebind-validation-preparation/run/app-static.results.json",
+-        "--testNamePattern",
+-        "^(?:pins\\ the\\ matching\\ no\\-op\\ installed\\ route\\ digest\\ and\\ fifteen\\-action\\ ledger|pins\\ deletion\\-safety\\ derivative\\ carriers,\\ complete\\ positives,\\ and\\ measured\\ source\\ bounds|pins\\ conditional\\ raw\\ literals,\\ request\\ order\\ and\\ the\\ sole\\ header\\ control)$"
+-      ],
+-      "selectedFullNames": [
+-        "pins the matching no-op installed route digest and fifteen-action ledger",
+-        "pins deletion-safety derivative carriers, complete positives, and measured source bounds",
+-        "pins conditional raw literals, request order and the sole header control"
+-      ],
+-      "cases": 3,
+-      "http": 0,
+-      "expectedHTTP": 0,
+-      "maxHTTP": 0,
+-      "owners": 0,
+-      "directories": 0,
+-      "listeners": 0,
+-      "productChildren": 0,
+-      "ownedTempPrefixes": [],
+-      "id": "app-static",
+-      "automaticRetries": 0,
+-      "supervisorSeconds": 120
+-    },
+-    "binding-source": {
+-      "phase": "source",
+-      "cwd": "/Users/dbox/repos/wt/vickie/vickie-transaction-conditional-reads",
+-      "argv": [
+-        "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+-        "/Users/dbox/repos/wt/vickie/vickie-transaction-conditional-reads/node_modules/vitest/vitest.mjs",
+-        "run",
+-        "apps/bdptest/src/transactional-binding.test.ts",
+-        "--maxWorkers=1",
+-        "--reporter=verbose",
+-        "--reporter=json",
+-        "--outputFile=/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-conditional-reads-draft/rebind-validation-preparation/run/binding-source.results.json",
+-        "--testNamePattern",
+-        "^(?:aborts\\ and\\ drains\\ a\\ real\\ registered\\ dynamic\\ socket\\ via\\ close|aborts\\ and\\ drains\\ a\\ real\\ registered\\ dynamic\\ socket\\ via\\ cohort|rebinds\\ ordinary\\ raw\\ requests\\ to\\ the\\ new\\ validated\\ physical\\ session\\ while\\ base\\ mode\\ stays\\ fixed)$"
+-      ],
+-      "selectedFullNames": [
+-        "aborts and drains a real registered dynamic socket via close",
+-        "aborts and drains a real registered dynamic socket via cohort",
+-        "rebinds ordinary raw requests to the new validated physical session while base mode stays fixed"
+-      ],
+-      "cases": 3,
+-      "http": 4,
+-      "expectedHTTP": 4,
+-      "maxHTTP": 4,
+-      "owners": 0,
+-      "directories": 0,
+-      "listeners": 4,
+-      "productChildren": 0,
+-      "ownedTempPrefixes": [],
+-      "id": "binding-source",
+-      "automaticRetries": 0,
+-      "supervisorSeconds": 120
+-    },
+     "build-inventory": {
+       "id": "build-inventory",
+       "cwd": "/Users/dbox/repos/wt/vickie/vickie-transaction-conditional-reads",
+@@ -299,7 +75,7 @@
+       "automaticRetries": 0,
+       "argv": [
+         "/opt/homebrew/opt/python@3.14/bin/python3.14",
+-        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-conditional-reads-draft/rebind-validation-preparation/inventory.py"
++        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-conditional-reads-draft/rebind-validation-preparation/installed-successor/inventory.py"
+       ],
+       "phase": "source"
+     },
+@@ -321,7 +97,7 @@
+       "automaticRetries": 0,
+       "argv": [
+         "/opt/homebrew/opt/python@3.14/bin/python3.14",
+-        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-conditional-reads-draft/rebind-validation-preparation/packages.py",
++        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-conditional-reads-draft/rebind-validation-preparation/installed-successor/packages.py",
+         "directory"
+       ],
+       "phase": "package"
+@@ -338,7 +114,7 @@
+         "@bdp/protocol",
+         "pack",
+         "--pack-destination",
+-        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-conditional-reads-draft/rebind-validation-preparation/run/packages"
++        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-conditional-reads-draft/rebind-validation-preparation/installed-successor/run/packages"
+       ],
+       "phase": "package"
+     },
+@@ -354,7 +130,7 @@
+         "@bdp/server",
+         "pack",
+         "--pack-destination",
+-        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-conditional-reads-draft/rebind-validation-preparation/run/packages"
++        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-conditional-reads-draft/rebind-validation-preparation/installed-successor/run/packages"
+       ],
+       "phase": "package"
+     },
+@@ -365,7 +141,7 @@
+       "automaticRetries": 0,
+       "argv": [
+         "/opt/homebrew/opt/python@3.14/bin/python3.14",
+-        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-conditional-reads-draft/rebind-validation-preparation/packages.py",
++        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-conditional-reads-draft/rebind-validation-preparation/installed-successor/packages.py",
+         "tar"
+       ],
+       "phase": "package"
+@@ -377,14 +153,14 @@
+       "automaticRetries": 0,
+       "argv": [
+         "/opt/homebrew/opt/python@3.14/bin/python3.14",
+-        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-conditional-reads-draft/rebind-validation-preparation/packages.py",
++        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-conditional-reads-draft/rebind-validation-preparation/installed-successor/packages.py",
+         "consumer"
+       ],
+       "phase": "package"
+     },
+     "consumer-install": {
+       "id": "consumer-install",
+-      "cwd": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-conditional-reads-draft/rebind-validation-preparation/run/consumer",
++      "cwd": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-conditional-reads-draft/rebind-validation-preparation/installed-successor/run/consumer",
+       "supervisorSeconds": 120,
+       "automaticRetries": 0,
+       "argv": [
+@@ -405,7 +181,7 @@
+       "automaticRetries": 0,
+       "argv": [
+         "/opt/homebrew/opt/python@3.14/bin/python3.14",
+-        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-conditional-reads-draft/rebind-validation-preparation/packages.py",
++        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-conditional-reads-draft/rebind-validation-preparation/installed-successor/packages.py",
+         "installed"
+       ],
+       "phase": "package"
+@@ -422,7 +198,7 @@
+         "--maxWorkers=1",
+         "--reporter=verbose",
+         "--reporter=json",
+-        "--outputFile=/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-conditional-reads-draft/rebind-validation-preparation/run/conditional-positive.results.json",
++        "--outputFile=/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-conditional-reads-draft/rebind-validation-preparation/installed-successor/run/conditional-positive.results.json",
+         "--testNamePattern",
+         "^(?:observes\\ partial\\ Transactional\\ conditional\\ reads\\ and\\ HEAD\\ after\\ mutation\\ \\(control\\ false\\))$"
+       ],
+@@ -450,9 +226,9 @@
+         "maximumRequestBodyBytes": 271
+       },
+       "reportOverrides": {
+-        "BDP_TRANSACTIONAL_CONDITIONAL_OUTPUT": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-conditional-reads-draft/rebind-validation-preparation/run/conditional-positive.observation.json"
+-      },
+-      "observationPath": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-conditional-reads-draft/rebind-validation-preparation/run/conditional-positive.observation.json"
++        "BDP_TRANSACTIONAL_CONDITIONAL_OUTPUT": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-conditional-reads-draft/rebind-validation-preparation/installed-successor/run/conditional-positive.observation.json"
++      },
++      "observationPath": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-conditional-reads-draft/rebind-validation-preparation/installed-successor/run/conditional-positive.observation.json"
+     },
+     "conditional-positive-review": {
+       "id": "conditional-positive-review",
+@@ -460,7 +236,7 @@
+       "cwd": "/Users/dbox/repos/wt/vickie/vickie-transaction-conditional-reads",
+       "argv": [
+         "/opt/homebrew/opt/python@3.14/bin/python3.14",
+-        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-conditional-reads-draft/rebind-validation-preparation/review-cohort.py",
++        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-conditional-reads-draft/rebind-validation-preparation/installed-successor/review-cohort.py",
+         "conditional-positive"
+       ],
+       "supervisorSeconds": 120,
+@@ -478,7 +254,7 @@
+         "--maxWorkers=1",
+         "--reporter=verbose",
+         "--reporter=json",
+-        "--outputFile=/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-conditional-reads-draft/rebind-validation-preparation/run/conditional-control.results.json",
++        "--outputFile=/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-conditional-reads-draft/rebind-validation-preparation/installed-successor/run/conditional-control.results.json",
+         "--testNamePattern",
+         "^(?:observes\\ partial\\ Transactional\\ conditional\\ reads\\ and\\ HEAD\\ after\\ mutation\\ \\(control\\ true\\))$"
+       ],
+@@ -506,9 +282,9 @@
+         "maximumRequestBodyBytes": 271
+       },
+       "reportOverrides": {
+-        "BDP_TRANSACTIONAL_CONDITIONAL_OUTPUT": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-conditional-reads-draft/rebind-validation-preparation/run/conditional-control.observation.json"
+-      },
+-      "observationPath": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-conditional-reads-draft/rebind-validation-preparation/run/conditional-control.observation.json"
++        "BDP_TRANSACTIONAL_CONDITIONAL_OUTPUT": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-conditional-reads-draft/rebind-validation-preparation/installed-successor/run/conditional-control.observation.json"
++      },
++      "observationPath": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-conditional-reads-draft/rebind-validation-preparation/installed-successor/run/conditional-control.observation.json"
+     },
+     "conditional-control-review": {
+       "id": "conditional-control-review",
+@@ -516,7 +292,7 @@
+       "cwd": "/Users/dbox/repos/wt/vickie/vickie-transaction-conditional-reads",
+       "argv": [
+         "/opt/homebrew/opt/python@3.14/bin/python3.14",
+-        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-conditional-reads-draft/rebind-validation-preparation/review-cohort.py",
++        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-conditional-reads-draft/rebind-validation-preparation/installed-successor/review-cohort.py",
+         "conditional-control"
+       ],
+       "supervisorSeconds": 120,
+@@ -534,7 +310,7 @@
+         "--maxWorkers=1",
+         "--reporter=verbose",
+         "--reporter=json",
+-        "--outputFile=/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-conditional-reads-draft/rebind-validation-preparation/run/full-positive.results.json",
++        "--outputFile=/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-conditional-reads-draft/rebind-validation-preparation/installed-successor/run/full-positive.results.json",
+         "--testNamePattern",
+         "^(?:observes\\ seventeen\\ partial\\ Transactional\\ contracts\\ through\\ packed\\-capable\\ actual\\ installed\\ HTTP)$"
+       ],
+@@ -562,9 +338,9 @@
+         "maximumRequestBodyBytes": 18877
+       },
+       "reportOverrides": {
+-        "BDP_TRANSACTIONAL_OBSERVATION_OUTPUT": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-conditional-reads-draft/rebind-validation-preparation/run/full-positive.observation.json"
+-      },
+-      "observationPath": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-conditional-reads-draft/rebind-validation-preparation/run/full-positive.observation.json"
++        "BDP_TRANSACTIONAL_OBSERVATION_OUTPUT": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-conditional-reads-draft/rebind-validation-preparation/installed-successor/run/full-positive.observation.json"
++      },
++      "observationPath": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-conditional-reads-draft/rebind-validation-preparation/installed-successor/run/full-positive.observation.json"
+     },
+     "full-positive-review": {
+       "id": "full-positive-review",
+@@ -572,7 +348,7 @@
+       "cwd": "/Users/dbox/repos/wt/vickie/vickie-transaction-conditional-reads",
+       "argv": [
+         "/opt/homebrew/opt/python@3.14/bin/python3.14",
+-        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-conditional-reads-draft/rebind-validation-preparation/review-cohort.py",
++        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-conditional-reads-draft/rebind-validation-preparation/installed-successor/review-cohort.py",
+         "full-positive"
+       ],
+       "supervisorSeconds": 120,
+@@ -590,7 +366,7 @@
+         "--maxWorkers=1",
+         "--reporter=verbose",
+         "--reporter=json",
+-        "--outputFile=/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-conditional-reads-draft/rebind-validation-preparation/run/cross-batch.results.json",
++        "--outputFile=/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-conditional-reads-draft/rebind-validation-preparation/installed-successor/run/cross-batch.results.json",
+         "--testNamePattern",
+         "^(?:discriminates\\ retained\\ cross\\-carrier\\ evidence\\ against\\ batch\\-semantic\\-conflict)$"
+       ],
+@@ -618,9 +394,9 @@
+         "maximumRequestBodyBytes": 17821
+       },
+       "reportOverrides": {
+-        "BDP_TRANSACTIONAL_CROSS_CARRIER_CONTROL_OUTPUT": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-conditional-reads-draft/rebind-validation-preparation/run/cross-batch.observation"
+-      },
+-      "observationPath": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-conditional-reads-draft/rebind-validation-preparation/run/cross-batch.observation-batch-semantic-conflict.json"
++        "BDP_TRANSACTIONAL_CROSS_CARRIER_CONTROL_OUTPUT": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-conditional-reads-draft/rebind-validation-preparation/installed-successor/run/cross-batch.observation"
++      },
++      "observationPath": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-conditional-reads-draft/rebind-validation-preparation/installed-successor/run/cross-batch.observation-batch-semantic-conflict.json"
+     },
+     "cross-batch-review": {
+       "id": "cross-batch-review",
+@@ -628,7 +404,7 @@
+       "cwd": "/Users/dbox/repos/wt/vickie/vickie-transaction-conditional-reads",
+       "argv": [
+         "/opt/homebrew/opt/python@3.14/bin/python3.14",
+-        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-conditional-reads-draft/rebind-validation-preparation/review-cohort.py",
++        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-conditional-reads-draft/rebind-validation-preparation/installed-successor/review-cohort.py",
+         "cross-batch"
+       ],
+       "supervisorSeconds": 120,
+@@ -646,7 +422,7 @@
+         "--maxWorkers=1",
+         "--reporter=verbose",
+         "--reporter=json",
+-        "--outputFile=/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-conditional-reads-draft/rebind-validation-preparation/run/cross-sequence.results.json",
++        "--outputFile=/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-conditional-reads-draft/rebind-validation-preparation/installed-successor/run/cross-sequence.results.json",
+         "--testNamePattern",
+         "^(?:discriminates\\ retained\\ cross\\-carrier\\ evidence\\ against\\ sequence\\-fresh\\-key)$"
+       ],
+@@ -674,9 +450,9 @@
+         "maximumRequestBodyBytes": 18025
+       },
+       "reportOverrides": {
+-        "BDP_TRANSACTIONAL_CROSS_CARRIER_CONTROL_OUTPUT": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-conditional-reads-draft/rebind-validation-preparation/run/cross-sequence.observation"
+-      },
+-      "observationPath": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-conditional-reads-draft/rebind-validation-preparation/run/cross-sequence.observation-sequence-fresh-key.json"
++        "BDP_TRANSACTIONAL_CROSS_CARRIER_CONTROL_OUTPUT": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-conditional-reads-draft/rebind-validation-preparation/installed-successor/run/cross-sequence.observation"
++      },
++      "observationPath": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-conditional-reads-draft/rebind-validation-preparation/installed-successor/run/cross-sequence.observation-sequence-fresh-key.json"
+     },
+     "cross-sequence-review": {
+       "id": "cross-sequence-review",
+@@ -684,58 +460,11 @@
+       "cwd": "/Users/dbox/repos/wt/vickie/vickie-transaction-conditional-reads",
+       "argv": [
+         "/opt/homebrew/opt/python@3.14/bin/python3.14",
+-        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-conditional-reads-draft/rebind-validation-preparation/review-cohort.py",
++        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-conditional-reads-draft/rebind-validation-preparation/installed-successor/review-cohort.py",
+         "cross-sequence"
+       ],
+       "supervisorSeconds": 120,
+       "automaticRetries": 0
+-    },
+-    "receipt-first-page": {
+-      "id": "receipt-first-page",
+-      "phase": "source",
+-      "cwd": "/Users/dbox/repos/wt/vickie/vickie-transaction-conditional-reads",
+-      "argv": [
+-        "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+-        "/Users/dbox/repos/wt/vickie/vickie-transaction-conditional-reads/node_modules/vitest/vitest.mjs",
+-        "run",
+-        "packages/conformance/src/runner.test.ts",
+-        "--maxWorkers=1",
+-        "--reporter=verbose",
+-        "--reporter=json",
+-        "--outputFile=/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-conditional-reads-draft/rebind-validation-preparation/run/receipt-first-page.results.json",
+-        "--testNamePattern",
+-        "^(?:observes\\ private\\ first\\-page\\ authority\\ over\\ actual\\ HTTP:\\ id\\-first|observes\\ private\\ first\\-page\\ authority\\ over\\ actual\\ HTTP:\\ page\\-first|observes\\ private\\ first\\-page\\ authority\\ over\\ actual\\ HTTP:\\ wrong\\-parent|observes\\ private\\ first\\-page\\ authority\\ over\\ actual\\ HTTP:\\ empty\\-page|observes\\ private\\ first\\-page\\ authority\\ over\\ actual\\ HTTP:\\ changed\\-page|observes\\ private\\ first\\-page\\ authority\\ over\\ actual\\ HTTP:\\ cancel\\-page|observes\\ private\\ first\\-page\\ authority\\ over\\ actual\\ HTTP:\\ null\\-next|observes\\ private\\ first\\-page\\ authority\\ over\\ actual\\ HTTP:\\ absent\\-next)$"
+-      ],
+-      "selectedFullNames": [
+-        "observes private first-page authority over actual HTTP: id-first",
+-        "observes private first-page authority over actual HTTP: page-first",
+-        "observes private first-page authority over actual HTTP: wrong-parent",
+-        "observes private first-page authority over actual HTTP: empty-page",
+-        "observes private first-page authority over actual HTTP: changed-page",
+-        "observes private first-page authority over actual HTTP: cancel-page",
+-        "observes private first-page authority over actual HTTP: null-next",
+-        "observes private first-page authority over actual HTTP: absent-next"
+-      ],
+-      "cases": 8,
+-      "http": 29,
+-      "expectedHTTP": 29,
+-      "maxHTTP": 40,
+-      "owners": 0,
+-      "directories": 0,
+-      "listeners": 8,
+-      "productChildren": 0,
+-      "ownedTempPrefixes": [],
+-      "supervisorSeconds": 120,
+-      "automaticRetries": 0,
+-      "workload": {
+-        "requestAttemptsExpected": 29,
+-        "requestAttemptsDiagnosticMaximum": 40,
+-        "deliberatelyCanceledRequests": 1,
+-        "listeners": 8,
+-        "children": 0,
+-        "ownerStores": 0,
+-        "limitation": "Source-derived attempt inventory; cancellation is not completed HTTP evidence."
+-      }
+     },
+     "principal-positive": {
+       "id": "principal-positive",
+@@ -749,7 +478,7 @@
+         "--maxWorkers=1",
+         "--reporter=verbose",
+         "--reporter=json",
+-        "--outputFile=/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-conditional-reads-draft/rebind-validation-preparation/run/principal-positive.results.json",
++        "--outputFile=/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-conditional-reads-draft/rebind-validation-preparation/installed-successor/run/principal-positive.results.json",
+         "--testNamePattern",
+         "^(?:observes\\ authenticated\\ principal\\ isolation\\ and\\ rotation\\ through\\ selected\\ cumulative\\ HTTP)$"
+       ],
+@@ -776,9 +505,9 @@
+         "requestBodyBytes": 750,
+         "maximumRequestBodyBytes": 750
+       },
+-      "observationPath": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-conditional-reads-draft/rebind-validation-preparation/run/principal-positive.observation.json",
++      "observationPath": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-conditional-reads-draft/rebind-validation-preparation/installed-successor/run/principal-positive.observation.json",
+       "reportOverrides": {
+-        "BDP_TRANSACTIONAL_PRINCIPAL_CUMULATIVE_OUTPUT": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-conditional-reads-draft/rebind-validation-preparation/run/principal-positive.observation.json"
++        "BDP_TRANSACTIONAL_PRINCIPAL_CUMULATIVE_OUTPUT": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-conditional-reads-draft/rebind-validation-preparation/installed-successor/run/principal-positive.observation.json"
+       }
+     },
+     "principal-positive-review": {
+@@ -787,7 +516,7 @@
+       "cwd": "/Users/dbox/repos/wt/vickie/vickie-transaction-conditional-reads",
+       "argv": [
+         "/opt/homebrew/opt/python@3.14/bin/python3.14",
+-        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-conditional-reads-draft/rebind-validation-preparation/review-cohort.py",
++        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-conditional-reads-draft/rebind-validation-preparation/installed-successor/review-cohort.py",
+         "principal-positive"
+       ],
+       "supervisorSeconds": 120,
+@@ -805,7 +534,7 @@
+         "--maxWorkers=1",
+         "--reporter=verbose",
+         "--reporter=json",
+-        "--outputFile=/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-conditional-reads-draft/rebind-validation-preparation/run/principal-collapse.results.json",
++        "--outputFile=/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-conditional-reads-draft/rebind-validation-preparation/installed-successor/run/principal-collapse.results.json",
+         "--testNamePattern",
+         "^(?:discriminates\\ principal\\ isolation\\ against\\ a\\ separately\\ bound\\ collapsed\\ namespace)$"
+       ],
+@@ -832,9 +561,9 @@
+         "requestBodyBytes": 300,
+         "maximumRequestBodyBytes": 750
+       },
+-      "observationPath": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-conditional-reads-draft/rebind-validation-preparation/run/principal-collapse.observation.json",
++      "observationPath": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-conditional-reads-draft/rebind-validation-preparation/installed-successor/run/principal-collapse.observation.json",
+       "reportOverrides": {
+-        "BDP_TRANSACTIONAL_PRINCIPAL_CUMULATIVE_OUTPUT": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-conditional-reads-draft/rebind-validation-preparation/run/principal-collapse.observation.json"
++        "BDP_TRANSACTIONAL_PRINCIPAL_CUMULATIVE_OUTPUT": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-conditional-reads-draft/rebind-validation-preparation/installed-successor/run/principal-collapse.observation.json"
+       }
+     },
+     "principal-collapse-review": {
+@@ -843,7 +572,7 @@
+       "cwd": "/Users/dbox/repos/wt/vickie/vickie-transaction-conditional-reads",
+       "argv": [
+         "/opt/homebrew/opt/python@3.14/bin/python3.14",
+-        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-conditional-reads-draft/rebind-validation-preparation/review-cohort.py",
++        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-conditional-reads-draft/rebind-validation-preparation/installed-successor/review-cohort.py",
+         "principal-collapse"
+       ],
+       "supervisorSeconds": 120,
+@@ -876,9 +605,9 @@
+       ],
+       "status": 409,
+       "specimen": "cross-batch-semantic-conflict.json",
+-      "specimenPath": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-conditional-reads-draft/rebind-author/derivatives/cross-batch-semantic-conflict.json",
+-      "specimenSha256": "f642bfc2c01e14e4d7c483e95a8d13bcba826f47f0d56b2a3fb1eb5395861cb2",
+-      "compactSha256": "384f9e21780d79c0becfffe3e59567cb3854deaa62f96ec1cfd89058386cc67c",
++      "specimenPath": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-conditional-reads-draft/rebind-author/successor/derivatives/cross-batch-semantic-conflict.json",
++      "specimenSha256": "b74a745c8a79b5fecb4d025ff54ecc7c7b16417e3b6dab9b417333350bf6be70",
++      "compactSha256": "24aff99b3670034d77b0ad60ea169b33b7f14848b250888be60b3c2e1559912e",
+       "allAssertionIds": [
+         "http-status",
+         "schema",
+@@ -925,9 +654,9 @@
+       ],
+       "status": 200,
+       "specimen": "cross-sequence-fresh-key.json",
+-      "specimenPath": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-conditional-reads-draft/rebind-author/derivatives/cross-sequence-fresh-key.json",
+-      "specimenSha256": "11c8430f2c81b2515a200bdf7cf834b54ff1e937c8a921d48f9d95fef789a3d6",
+-      "compactSha256": "159e27acd785b64a27d2354bc9fb31c7193d69e6ea3f8df4857dcdb7b86e659e",
++      "specimenPath": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-conditional-reads-draft/rebind-author/successor/derivatives/cross-sequence-fresh-key.json",
++      "specimenSha256": "46e325803d0f3111a79e6c1a53ec3f29e2303bedb165356434dea8b24c65d31e",
++      "compactSha256": "4d267985f5cecece787ba26f5983b2f189d542d113f06ebd569c0c75ee50e940",
+       "allAssertionIds": [
+         "http-status",
+         "schema",
+@@ -952,20 +681,17 @@
+     }
+   },
+   "workload": {
+-    "sourceCases": 56,
+-    "sourceSyntheticHTTPAttempts": 47,
+-    "sourceMaximumDiagnosticHTTPAttempts": 58,
+-    "sourceDeliberatelyCanceledHTTP": 3,
+-    "sourceListeners": 24,
+-    "sourceProductChildren": 0,
++    "reusedSourceCases": 56,
++    "newSourceCases": 0,
+     "installedCases": 7,
+     "installedExpectedHTTP": 712,
+     "installedMaxHTTP": 727,
+     "installedChildren": 83,
+-    "totalExpectedHTTPAttempts": 759,
+-    "totalDiagnosticMaxHTTPAttempts": 785,
++    "installedOwnerDirectories": 7,
++    "installedExpectedBodyBytes": 56185,
++    "installedMaximumBodyBytes": 56765,
+     "automaticRetries": 0,
+-    "limitation": "Prospective source-derived counts; three deliberate aborts include two binding requests and one first-page request. Not observed completed traffic."
++    "limitation": "Source56-case results remain attributed to diagnostic2dfd predecessor; no duplicate source execution. Installed counts are prospective until measured."
+   },
+   "timers": {
+     "cohortMs": 90000,
+--- rebind-validation-preparation/execution-gate.example.json
++++ installed-successor/execution-gate.example.json
+@@ -4,16 +4,16 @@
+   "finalHead": null,
+   "finalTree": null,
+   "rootAcceptance": {
+-    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-conditional-reads-draft/rebind-validation-preparation/root-release.json",
++    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-conditional-reads-draft/rebind-validation-preparation/installed-successor/root-release.json",
+     "sha256": null
+   },
+   "sourceBinding": {
+-    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-conditional-reads-draft/rebind-validation-preparation/final-source.json",
++    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-conditional-reads-draft/rebind-validation-preparation/installed-successor/final-source.json",
+     "sha256": null
+   },
+   "inputBinding": {
+-    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-conditional-reads-draft/rebind-validation-preparation/input-binding.json",
+-    "sha256": null
++    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-conditional-reads-draft/rebind-validation-preparation/installed-successor/input-binding.json",
++    "sha256": "f60a4db0976ab95045c85fa6bb04b9de47ddcbb321caa9b87401406da965683b"
+   },
+   "approvedCommandIds": [],
+   "phaseRelease": {
+@@ -24,8 +24,14 @@
+   },
+   "preparationSha256": {},
+   "guardSha256": "fd81ba029cd4e7c7e60623df89e8292af91141d311d9ce789ed19e2152375e84",
+-  "toolHashes": {},
+-  "sourceLockSha256": null,
++  "toolHashes": {
++    "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node": "1ee75375e33b94fc34b3b19aede049e11dae90efb63b374dc96d6bdace70c4b8",
++    "/Users/dbox/.cache/node/corepack/v1/pnpm/11.20.0/bin/pnpm.cjs": "67b035e322203961795e8e34ca63a08c37a4386eda94107fb3d28f3246d882ad",
++    "/Users/dbox/repos/wt/vickie/vickie-transaction-conditional-reads/node_modules/vitest/vitest.mjs": "39db22f579acf5639bbb17a261408debbde03f4692c0c439e77e7f13aeba74d6",
++    "/Users/dbox/repos/wt/vickie/vickie-transaction-conditional-reads/node_modules/@biomejs/biome/bin/biome": "7ffb4d217e5ddefcc19ca6afe76bb982f5eb36c9a124448105195fbcfc84bd77",
++    "/opt/homebrew/opt/python@3.14/bin/python3.14": "2477b47fa3ae65b9574eb18a15edb364e96948eaa1875ad3f1c80d780efc9c12"
++  },
++  "sourceLockSha256": "4150d8821c96dbc2cfec0b2762ff76b58318079f65fa4f5c8858ef2dd61f8d6d",
+   "consumerLockSha256": null,
+   "installedProvenanceSha256": null,
+   "expectedProductionVersions": {
+@@ -38,7 +44,7 @@
+     "json-schema-traverse": "1.0.0",
+     "require-from-string": "2.0.2"
+   },
+-  "note": "CLOSED final integrated source; ordinary reviewed PR147 successor required. Bind actual finalBase/head/tree/parents, generated consumer lock and installed provenance in separate root releases.",
++  "note": "CLOSED ordinary clean-commit successor. Root must bind actual candidate identity and accept exact prior diagnostic content equivalence. Fresh build/archive/consumer/provenance hashes remain unknown.",
+   "consumerInventorySha256": null,
+   "councilAccepted": false,
+   "authorizationRequirements": {
+@@ -46,5 +52,9 @@
+     "allOtherPhases": "councilAccepted=true plus independent phase/prefix/provenance prerequisites",
+     "integration": "rootAcceptance ordinaryIntegrationAccepted, servingSuccessorExactHeadGreenCI and servingCouncilDisposed all true; actual servingSuccessorCommit must be ancestor"
+   },
+-  "servingSuccessorCommit": null
++  "servingSuccessorCommit": null,
++  "diagnosticPrerequisite": {
++    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-conditional-reads-draft/rebind-validation-preparation/installed-successor/diagnostic-prerequisite.json",
++    "sha256": "952948ce25d9ae0aca29ce473798d0681ff09211c8e4c833ebb43e74069a29b7"
++  }
+ }
+--- rebind-validation-preparation/gate.py
++++ installed-successor/gate.py
+@@ -3,7 +3,7 @@
+ import hashlib,json,subprocess,os
+ P=Path(__file__).resolve().parent;D=P;L=Path('/Users/dbox/repos/wt/vickie/bdp-integration-logs')
+ W=Path('/Users/dbox/repos/wt/vickie/vickie-transaction-conditional-reads');E=P/'run';GUARD=L/'guarded-action.py';COMMANDS=P/'commands.json'
+-COMMANDS_SHA='3f7424d0dfdc9bb05f12910763e4f57278eae7f23f1813abb0e2de8f3ffd25f0'
++COMMANDS_SHA='40dcb8dc501c576640c320dc4288163910bef5baebbd8eb83a80f299494928c7'
+ sha=lambda b:hashlib.sha256(b).hexdigest()
+ def re_full_sha(s):return len(s)==40 and all(c in "0123456789abcdef" for c in s)
+ def require(ok,message):
+@@ -69,6 +69,31 @@
+     links[r]={'link':os.readlink(p),'target':target.relative_to(C.resolve()).as_posix()}
+    elif p.is_file():files[r]=sha(p.read_bytes())
+  return {'files':files,'links':links}
++def verify_diagnostic_prerequisite(g):
++ q=document(g,'diagnosticPrerequisite')
++ for path,digest in q['files'].items():require(sha(Path(path).read_bytes())==digest,'Diagnostic evidence changed '+path)
++ b=json.loads(Path(q['sourceBinding']).read_text());inputs=json.loads(Path(q['inputBinding']).read_text());tools=json.loads(Path(q['toolBinding']).read_text())
++ require(input_files()==inputs==document(g,'inputBinding'),'Committed inputs differ from validated diagnostic snapshot')
++ require(g['toolHashes']==tools['toolHashes'] and g['guardSha256']==tools['guard']['sha256'] and g['sourceLockSha256']==tools['sourceLockSha256'],'Diagnostic tool/guard/lock equivalence differs')
++ final=document(g,'sourceBinding')
++ require(final['parents']==[b['head']] and final['diffBase']==b['head'],'Candidate is not ordinary diagnostic successor')
++ require(final['files']==b['files'] and final['diffSha256']==b['diffSha256'],'Committed four-file bytes/patch differ from validated draft')
++ root=json.loads(Path(q['rootOutcome']).read_text());require(root['passedSelected']==56 and root['sourceUnchanged'] is True,'Diagnostic root outcome differs')
++ cfg=json.loads(Path(q['commands']).read_text());total=0
++ for name in cfg['executionOrder']:
++  spec=cfg['commands'][name];x=json.loads((Path(q['run'])/(name+'.exit.json')).read_text());start=json.loads((Path(q['run'])/(name+'.started.json')).read_text())
++  require(x['exit']==x['supervisorExit']==0 and x['sourceUnchanged'] is True,'Diagnostic stage failed '+name)
++  require(start['head']==b['head'] and start['sourceDiffSha256']==b['diffSha256'] and x['sourceSha256After']=={p:v['sha256'] for p,v in b['files'].items()},'Diagnostic source attribution differs')
++  for k in ['timeout','forcedCleanup','errors','remainingAfterCleanup','sampledPidsStillPresent','runtimeDirectoriesStillPresent']:require(not x[k],'Diagnostic cleanup differs '+name+':'+k)
++  if 'selectedFullNames' in spec:
++   report=json.loads((Path(q['run'])/(name+'.results.json')).read_text());cases=[a for f in report['testResults'] for a in f.get('assertionResults',[]) if a['status'] not in ['pending','skipped','todo']]
++   require(sorted(a['fullName'] for a in cases if a['status']=='passed')==sorted(spec['selectedFullNames']) and len(cases)==spec['cases'],'Diagnostic exact selection differs '+name)
++   require(report['success'] is True and report['numFailedTests']==0 and report['numPassedTests']==spec['cases'],'Diagnostic result failed '+name)
++   require(not report.get('unhandledErrors') and not report.get('errors') and not report.get('numRuntimeErrorTestSuites',0),'Diagnostic report errors '+name)
++   require(all(not f.get('message') and not f.get('failureMessage') for f in report['testResults']),'Diagnostic file failure '+name)
++   total+=len(cases)
++ require(total==56,'Diagnostic exact case count differs')
++
+ def load_gate(name):
+  require(__debug__,'Assertions required');g=gate();cfg=json.loads(COMMANDS.read_text())
+  require(g['released'] is True and g['session']=='2026-10-08T20:26:35Z-81e5','Execution closed')
+@@ -89,6 +114,8 @@
+  serving=g.get('servingSuccessorCommit');require(isinstance(serving,str) and re_full_sha(serving),'Actual serving successor missing')
+  git('merge-base','--is-ancestor',serving,g['finalHead'])
+  source=source_hashes()
++ require(a.get('diagnosticPrerequisiteAccepted') is True,'Root must accept exact diagnostic equivalence')
++ verify_diagnostic_prerequisite(g)
+  for prior in order[:order.index(name)]:completed(prior)
+  require(spec['supervisorSeconds']==120 and spec['automaticRetries']==0,'Limits differ')
+  require(set(g['toolHashes'])=={'/Users/dbox/.nvm/versions/node/v24.16.0/bin/node','/Users/dbox/.cache/node/corepack/v1/pnpm/11.20.0/bin/pnpm.cjs',str(W/'node_modules/vitest/vitest.mjs'),str(W/'node_modules/@biomejs/biome/bin/biome'),'/opt/homebrew/opt/python@3.14/bin/python3.14'},'Exact tool pins absent')
+--- rebind-validation-preparation/prepared-source.json
++++ installed-successor/prepared-source.json
+@@ -1,24 +1,24 @@
+ {
+   "workspace": "/Users/dbox/repos/wt/vickie/vickie-transaction-conditional-reads",
+-  "reviewBase": "1ba65f2f192cc84e44eb09ef89b9693ec6cdaf05",
++  "reviewBase": "2dfd2c6cc84a28b1dd336f4184c1a5f910ce8a96",
+   "finalBase": null,
+   "finalHead": null,
+   "finalTree": null,
+   "parents": null,
+   "diffSha256": null,
+   "files": {
+-    "packages/conformance/test-support/transactional/manifest-v1.json": "60c527f6a5673161eacf022c0015d09bea2743d153b8b0d0c86160b76fafeb68",
+-    "packages/conformance/test-support/transactional/coverage-v1.json": "33032fe07eb06d2a8968fcd8e5a3cf93cb4637c551868c22da9ea0c4edd587a3",
+-    "packages/conformance/src/transactional-cumulative.test.ts": "9f70f8a24ea358b2cd613fd392be68057abd7b1552ec8cc6c4bc1a3241de69f6",
+-    "apps/bdptest/src/transactional-matrix.test.ts": "136de49e859546e081c39410f1d3ee6fc01e32faf1879084718ad67b553d62ec"
++    "packages/conformance/test-support/transactional/manifest-v1.json": "bbb7def1bf11e1d14efbcb369e6a7fae6eb5aff01f483f8e99f7443ce9a6ee73",
++    "packages/conformance/test-support/transactional/coverage-v1.json": "a2c620ce489257f4cd425207195af89b4e2aac238333cf6e7d21ce629d98a238",
++    "packages/conformance/src/transactional-cumulative.test.ts": "5ecfa916baca16b24c9c57b5f52e6c2cb5fa771d8cc6b5ea412ba570ba796993",
++    "apps/bdptest/src/transactional-matrix.test.ts": "95e07ead41f9cb39087a155e87cad22998d92cd3967cb9c3c446568ff6139bc8"
+   },
+-  "status": "Corrected reviewed four-file bytes pinned; clean ordinary integrated finalBase/head/tree/parents remain unknown, never inferred",
++  "status": "Corrected186assertion four-file bytes fixed; actual ordinary clean final candidate identities unknown until root creates/verifies commit",
+   "authorBinding": {
+-    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-conditional-reads-draft/rebind-author/source-binding.json",
+-    "sha256": "bf626872ba83bfafab4b957632247684d1169e0b9e3fbf6c627f8c4a644413d6"
++    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-conditional-reads-draft/rebind-author/successor/source-binding.json",
++    "sha256": "2d43cf58a05eb60d247fdc122b7e17621e98bbb899b2dbffbb6d95e3c451b592"
+   },
+   "reviewedSourceBinding": {
+-    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-conditional-reads-draft/rebind-correction/source-binding.json",
+-    "sha256": "1095d0093a729c9138c22c6419da528fefbece42be5707dd16db1238e91d61ee"
++    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-conditional-reads-draft/rebind-author/successor/source-binding.json",
++    "sha256": "2d43cf58a05eb60d247fdc122b7e17621e98bbb899b2dbffbb6d95e3c451b592"
+   }
+ }
+--- rebind-validation-preparation/reference-pins.json
++++ installed-successor/reference-pins.json
+@@ -1,34 +1,38 @@
+ {
+   "baseline": {
+-    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-conditional-reads-draft/validation-preparation/conditional-report-contract.json": "03cb54007f84609642733bb62f36801d1d2ed030897bf9df33bc8bceb3df170b",
+-    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-conditional-reads-draft/validation-preparation/principal-report-contract.json": "50d649aa82fa535e2e6e601da616b1b80d80823c504012c91d73223bb9fedfae",
+-    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-conditional-reads-draft/validation-preparation/adaptation.patch": "e413c3b671cd8b256057adb320d397aa55a43563f61e25de76baf5e74799b276",
+-    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-conditional-reads-draft/validation-preparation/request-ledger.json": "c25a2660dfef0e6ff274dd561ce91e27b568b2835bd5d95204b964c865672f2c",
+-    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-conditional-reads-draft/validation-preparation/report.md": "89b5b6d157a74c9a0de9e9cbdd24668d13238b7b8709cae63fd329366e43132d",
+-    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-conditional-reads-draft/validation-preparation/prepared-source.json": "7fa197f40a7df843e2b5f1214a4e40a1f177deb204ab0ea537d2d265d4f24654",
+-    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-conditional-reads-draft/validation-preparation/review-cohort.py": "9ee500c6b2feeb254d58305051fe8f29cc0466b29c5781259b2e126ca0af75bd",
+-    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-conditional-reads-draft/validation-preparation/review-existing.py": "a91f3800aad6c5658bf34c28d023a6524901dfd102ad67a6ddf4160af55a6aa4",
+-    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-conditional-reads-draft/validation-preparation/packages.py": "5b447ecaa6334bee7bddbcf7c477677ec400c6bbeb38e4c630863369b8dc1c62",
+-    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-conditional-reads-draft/validation-preparation/reference-pins.json": "c72806fe66b7a1a08576370344cf262ec3ff84500a689b1be4700e60e64755af",
+-    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-conditional-reads-draft/validation-preparation/execution-gate.example.json": "bd2c551a0aa3009a0117bbf6ab8d7309c50d0f9f0980d7b62788fa809cebc3ba",
+-    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-conditional-reads-draft/validation-preparation/commands.json": "8c049f7e46a13c76824792dfed1d12dead70f666eb073e76949e7823d56fb070",
+-    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-conditional-reads-draft/validation-preparation/principal-requests.json": "d8e3a11b780086209bd916c49e6d70ddb10fc6a1c77a21e1b7a17305c9f69f5b",
+-    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-conditional-reads-draft/validation-preparation/preparation-hashes.json": "43abe3d2f9b495134b80d68f1d0d059da94da28ec5c7f8b19430fba81021e67a",
+-    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-conditional-reads-draft/validation-preparation/gate.py": "5fb408ec1087c84b7f2ec0f12dcf752167d6422ade1e5eacb9561f69ff632de8",
+-    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-conditional-reads-draft/validation-preparation/selection.json": "6f6f8d0d6e52a1a6467fc7bd0735da66093e6af26b08188cf0ea3be160c89594",
+-    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-conditional-reads-draft/validation-preparation/supervise.py": "c9b524743c8b71c4487e55f5719713985a1665b6e61ec32d2d99534796ff9194",
+-    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-conditional-reads-draft/validation-preparation/principal-control.json": "62f9c52cd6ac0eb01edb260756cd46cd83f783570fd9a270987561479174eb42",
+-    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-conditional-reads-draft/validation-preparation/inventory.py": "b9ac353ee250d66552e96bc67bc0d22c9168d1c8fc563d6da5517c6bd765486d"
++    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-conditional-reads-draft/rebind-validation-preparation/conditional-report-contract.json": "05b8f35441ae446e5904a6fcc9201be064a96fedf868696c51fedadc0f3cd7ac",
++    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-conditional-reads-draft/rebind-validation-preparation/root-preparation-inspection.md": "09abeea085d22ec0816fa01d20cc286e0b8be4c62570159bc512fb047e56b9cc",
++    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-conditional-reads-draft/rebind-validation-preparation/principal-report-contract.json": "50d649aa82fa535e2e6e601da616b1b80d80823c504012c91d73223bb9fedfae",
++    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-conditional-reads-draft/rebind-validation-preparation/adaptation.patch": "1be4983e50d435855e718a95ed10459d443df00986dbea230fd50f3c843c5f21",
++    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-conditional-reads-draft/rebind-validation-preparation/request-ledger.json": "17572c475f95b2bf60b55bc55fbd8be58b15a226194559f44f0095bf539791a7",
++    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-conditional-reads-draft/rebind-validation-preparation/report.md": "8a84c9f83816c8fd813cf0e24bc6f348a9e6f1ca182aec057d437d428e049d65",
++    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-conditional-reads-draft/rebind-validation-preparation/workload-correction.md": "64123d74b15032045e2979e89721c151ceb38582690d1784cf4a89c4b1dd4a0d",
++    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-conditional-reads-draft/rebind-validation-preparation/prepared-source.json": "e18ddbe2ee9b4c6bf5c397e2da5b40d0b08a5779e6de6024fdd350eb855eeb0c",
++    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-conditional-reads-draft/rebind-validation-preparation/review-cohort.py": "f958359a9cc12106e30feb1220d6dcfa4f7ad09ab6aaef830f2753c8b7367b7c",
++    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-conditional-reads-draft/rebind-validation-preparation/review-existing.py": "0ac45038f444368c158452399eaaaf3ba7134bf1f4da3a859b44e1b061cf547c",
++    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-conditional-reads-draft/rebind-validation-preparation/packages.py": "5b447ecaa6334bee7bddbcf7c477677ec400c6bbeb38e4c630863369b8dc1c62",
++    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-conditional-reads-draft/rebind-validation-preparation/reference-pins.json": "cc180c37dacd958d5aaf44e50e8ce4483d684227dd3c7239a5fc3979067d9ba7",
++    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-conditional-reads-draft/rebind-validation-preparation/execution-gate.example.json": "3bec89d7ced9491a7e8799d832b25161de3dda247acaf7f45342d7f7be81a86c",
++    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-conditional-reads-draft/rebind-validation-preparation/commands.json": "3f7424d0dfdc9bb05f12910763e4f57278eae7f23f1813abb0e2de8f3ffd25f0",
++    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-conditional-reads-draft/rebind-validation-preparation/principal-requests.json": "d8e3a11b780086209bd916c49e6d70ddb10fc6a1c77a21e1b7a17305c9f69f5b",
++    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-conditional-reads-draft/rebind-validation-preparation/preparation-hashes.json": "953f2aa02ef54d8cb9ff9bea69a8c73922f4ff5e6899c48084cddda3126ccef2",
++    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-conditional-reads-draft/rebind-validation-preparation/gate.py": "08a4234b43fffba5042da8f6e0ae01aa866b6f6a98bc48bfce66af84daecafe7",
++    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-conditional-reads-draft/rebind-validation-preparation/selection.json": "a491f550f0ef4f9f4dac23d5faecd34daa1d05c22f5bae44c849c44bff0dfc63",
++    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-conditional-reads-draft/rebind-validation-preparation/source-workload.json": "6e329706770ccd5c489c41e828f103ec64c4c5aa5a910b13727d54a20150ca55",
++    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-conditional-reads-draft/rebind-validation-preparation/supervise.py": "c9b524743c8b71c4487e55f5719713985a1665b6e61ec32d2d99534796ff9194",
++    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-conditional-reads-draft/rebind-validation-preparation/principal-control.json": "62f9c52cd6ac0eb01edb260756cd46cd83f783570fd9a270987561479174eb42",
++    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-conditional-reads-draft/rebind-validation-preparation/inventory.py": "b9ac353ee250d66552e96bc67bc0d22c9168d1c8fc563d6da5517c6bd765486d"
+   },
+-  "reviewed": {
+-    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-conditional-reads-draft/rebind-correction/source-binding.json": "1095d0093a729c9138c22c6419da528fefbece42be5707dd16db1238e91d61ee",
+-    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-conditional-reads-draft/rebind-correction/native-verification.md": "9d5f73f84c415c64088e452d76c52f12d0011d77c6b5227b9de640a73c511c50",
+-    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-conditional-reads-draft/rebind-author/report.md": "bbf9db4161ee5fa8d094023c83920069edda5e8e3416a2cfbb03c17306313714",
+-    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-conditional-reads-draft/rebind-author/report-contract.json": "05b8f35441ae446e5904a6fcc9201be064a96fedf868696c51fedadc0f3cd7ac",
+-    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-conditional-reads-draft/rebind-author/request-ledger.json": "17572c475f95b2bf60b55bc55fbd8be58b15a226194559f44f0095bf539791a7",
+-    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-conditional-reads-draft/rebind-author/selection.json": "11c1ea4fc0943e6120261b0614e3ceace389a0b51ad591404ae6906e9223f2a5",
+-    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-conditional-reads-draft/rebind-author/root-data-measurement.json": "1780b89d0f279087c683dc03f8ed175cd8141350bf9fe9579d012a65aec8b2f6",
+-    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-conditional-reads-draft/conditional-rebind-plan/plan.md": "574e19154137da4c142629cde00653a3244ca33838b336d011bcc5f6f6f51d53",
+-    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-conditional-reads-draft/conditional-rebind-plan/native-plan-review.md": "bbe1dbf2e1e7ce6a638b0d9cdaabc1fafc50bc36380dcdf6b5a679a9f16dc792"
++  "current": {
++    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-conditional-reads-draft/rebind-author/successor/source-binding.json": "2d43cf58a05eb60d247fdc122b7e17621e98bbb899b2dbffbb6d95e3c451b592",
++    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-conditional-reads-draft/rebind-author/successor/full.patch": "cf8e895dea0d37d0bbf504a584cf5f213ab811089d4cc9aa32cba5368b910423",
++    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-conditional-reads-draft/rebind-author/successor/correction.patch": "82b8040ca719db7e9da6335868adfe49ae742d1feee2207deff6fe32cbbe8d5e",
++    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-conditional-reads-draft/rebind-author/successor/measurements.json": "946208e919bb49ceb8e7045792bb3c2dd707fdbb43790c4f0e40ae1d1bc05627",
++    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-conditional-reads-draft/rebind-author/successor/preservation.json": "27e89a2da40c40dba4873da9d1d9c032c424c8cb63a1c0642ddc94cb44307f00",
++    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-conditional-reads-draft/rebind-validation-preparation/installed-successor/clean-commit-plan.md": "dc8d771b8bce1d6fe20b8b06c30aa4491e761d0179382982916d219a4a488295",
++    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-conditional-reads-draft/rebind-validation-preparation/installed-successor/root-plan-acceptance.json": "3deb0f86b83e4bbd1b73072e8e55fb9149bc331fe4a4329a89657b79340fa962",
++    "/Users/dbox/repos/wt/vickie/vickie-transaction-conditional-reads/docs/specs/bdp.md": "67772742d7d08f48c12196e9789f1859ad2d0e19f133ea65e197b049361f84f8",
++    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-conditional-reads-draft/rebind-author/successor/derivatives/cross-batch-semantic-conflict.json": "b74a745c8a79b5fecb4d025ff54ecc7c7b16417e3b6dab9b417333350bf6be70",
++    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-conditional-reads-draft/rebind-author/successor/derivatives/cross-sequence-fresh-key.json": "46e325803d0f3111a79e6c1a53ec3f29e2303bedb165356434dea8b24c65d31e"
+   }
+ }
+--- rebind-validation-preparation/report.md
++++ installed-successor/report.md
+@@ -1,60 +1,13 @@
+-# Corrected conditional rebind — CLOSED validation preparation
++# CLOSED clean installed-validation successor
+ 
+-No tests, build, product imports, package creation, consumer install, child launch, or validation command ran during this preparation. Only source/report reads, JSON parsing, AST parsing, hashing, and guarded external packet writes were performed. Both execution gates remain absent; their example documents have `released: false`, empty approved prefixes, and closed phases. Root alone may create release documents and actual gates.
++Prepared under accepted clean-commit plan; no execution, source edits or release. Future final candidate SHA/tree/parents/patch and generated build/archive/consumer identities remain unset. Root first creates and verifies the ordinary clean successor of2dfd with exact reviewed four-file bytes, then binds the actual object. The original clean-source gates remain in place; there is no dirty-provenance mode.
+ 
+-## Source and scope
++The supervisor, build inventory, package verifier and three principal contract/ledger/control files are byte-identical to the original preparation. Command objects differ only by output/helper paths. Seven installed selectors remain conditional14/4,principal7/2,full234,cross225/226; prospective total712expected/727diagnostic requests,83children,7owner directories. Existing120second supervisor/115second command window,no retries,63second app assertion/90second cohort/120second test limits and cleanup/provenance safeguards are unchanged.
+ 
+-The corrected reviewed draft is based on `1ba65f2f192cc84e44eb09ef89b9693ec6cdaf05`, tree `773614c5ebc6c97d90c4c629c7c7a02ed51bc2ef`. Its four exact source hashes are in `prepared-source.json`, sourced from `rebind-correction/source-binding.json` SHA256 `1095d0093a729c9138c22c6419da528fefbece42be5707dd16db1238e91d61ee`. The corrected full patch SHA256 is `bc7e620ea97a37933901ee4bf2e2d818685178bd974a262e88b025e513e2a60a`. Those source hashes were rechecked during preparation; this does not attest future integrated bytes.
++The completed eight-stage56-case source prefix is omitted from future execution. New gate function verifies its separately bound evidence in place: exact56names/statuses/aggregate errors, clean stage exits, historical2dfd attribution, all679tracked inputs, tools/guard/lock, and current ordinary sole-parent successor with exactly equal four-file hashes/full patch. Root must explicitly accept this equivalence. Old diagnostic results are never labeled as executed on a future commit. Changed inputs/tools cause refusal, requiring root to assess appropriate fresh checks.
+ 
+-The conditional row is `transactional.http.conditional-reads`, appended after the sixteen unchanged parent rows. Its fourteen actions contain exactly 194 portable assertions. The positive must actually complete all fourteen; the nonmatching If-None-Match control must stop after exactly four with precisely the two expected failures, genuine 200/full current body, and initial validator equality. The app retains implementation-specific 412 metadata checks; this packet does not restore those as portable spec requirements. Matching 304 validators must equal the earlier GET validator.
++Remaining25stages begin fresh-build→read-seal→build-inventory, then existing package/consumer provenance chain and each installed cohort immediately followed by its data-only reviewer. Generated consumer lock and installed provenance/inventory still need separate root releases. All gates remain closed and no actual final-source/root-release/execution-gate/run outputs exist.
+ 
+-The new adjudicator joins the supplemental session to actual successful launch records by scenario/reopen/sessionOrdinal, checks every actual session ordinal, preserves all sixteen parent first presentations in full/cross cohorts, and requires exactly one final non-reopen conditional session. Selected conditional runs use ordinal zero. Existing principal/member/cross evidence continues through the original reviewer with the new configuration digest. Credential handles and redacted body fingerprints are corroboration, not independent wire credential attestation or reconstruction of full JSON bodies. Full JSON/schema/postimage equality still executes in the frozen app callback before redaction.
++Corrected conditional ledger has186assertions; raw request data/control/configuration digest are unchanged. Artifact-dependent cross-specimen hashes use the corrected42specimen measurement. Reference401absence remains app-only. Existing full reviewer already checks actual logged elapsed≤63000ms; its candidate now also records that observed app elapsed and supervisor elapsed with the unchanged63/90/120limits. No source instrumentation or added timing run.
+ 
+-## Initial source-only gate
+-
+-`source-preflight/` is an independent closed dirty-source packet. After root accepts the corrected code/council and explicitly releases it, its exact ordered commands are typecheck, format-check, lint, boundaries, cumulative-full, binding-source, receipt-first-page, app-static. The gate binds actual dirty status, HEAD/tree, exact four-file patch, every tracked input, source lock, tools, and the command digest before and after execution. It contains no build or installed command.
+-
+-There are 56 selected source cases: whole cumulative file 42, physical-binding regressions 3, receipt first-page fixtures 8, and app static checks 3. App static callbacks do not launch the constructed dist path, so they can run before build. `read-seal` imports conformance/server dist and is reserved for the final packet after fresh-build. These source-only results cannot become final integrated or installed evidence.
+-
+-The eight unchanged first-page fixtures were individually inventoried from `packages/conformance/src/runner.test.ts` (source hash in `source-workload.json`):
+-
+-- id-first: 5 HTTP attempts, one listener, one logical reopen.
+-- page-first: 5 attempts, one listener, one logical reopen.
+-- wrong-parent: 4 attempts, one listener, rejects wrong parent.
+-- empty-page: 4 attempts, one listener, rejects empty page.
+-- changed-page: 5 attempts, one listener, one logical reopen, rejects changed page.
+-- cancel-page: 4 attempts, one listener, last request intentionally aborted and drained.
+-- null-next: 1 attempt, one listener, stops on null next link.
+-- absent-next: 1 attempt, one listener, stops on absent next link.
+-
+-These are 29 expected attempts, with a diagnostic ceiling of 40; eight two-byte seed POSTs contain 16 total body bytes. They create no product child or owner store. Their finally blocks close all connections and await listener close. They exercise the restored principal index-zero fixture shape without adding new source tests.
+-
+-The three binding cases make 1, 1, and 2 attempts respectively across 1, 1, and 2 listeners: close-abort and cohort-abort must drain their registered socket promises before mock child close; rebind must read bodies from the first and second physical listeners while base mode stays fixed. There are four total attempts and two deliberate aborts, no product children/stores. Cumulative source cases add fourteen synthetic attempts across twelve listeners. App static cases add none. Total source inventory is 47 expected attempts, 58 diagnostic maximum, 24 listeners, and three deliberate aborts. Attempt counts must not be represented as completed HTTP evidence.
+-
+-## Final integrated packet, still closed
+-
+-The outer packet requires ordinary integration of the reviewed PR147 successor, its exact-head green CI and council disposition, and a clean final candidate. Actual final base/head/tree/ordered parents, patch, tracked inputs, successor commit, and root acceptance remain explicitly unknown/null until root binds the real result. No future hashes have been invented. The final candidate must preserve these reviewed four-file bytes, have only those four changes relative to its accepted final base, and have both the reviewed base and serving successor as ancestors as required by the gate. Any rebase/conflict/content change requires new review and pins.
+-
+-The full command order is in `commands.json`: source checks; fresh-build; read-seal and selected source cases; build inventory; Node/package metadata; protocol/server tar creation and source-to-tar verification; separate offline external consumer preparation/install; root acceptance of its actual generated lock; installed payload verification; root acceptance of installed provenance and full consumer inventory; then each of seven installed cohorts immediately followed by its data-only review. There is no workspace entry fallback.
+-
+-Selected installed workload:
+-
+-- Conditional positive: 14 completed requests, 2 children, 271 request-body bytes.
+-- Conditional nonmatching-header control: exactly 4 completed requests, diagnostic maximum 14, 2 children, 141 actual/271 maximum request-body bytes.
+-- Principal positive: 7 requests, 2 children, 750 request-body bytes.
+-- Principal collapsed namespace control: exactly 2 requests, diagnostic maximum 7, 2 children, 300 actual/750 maximum request-body bytes.
+-- Full cumulative: 234 requests, 25 children, 18,877 request-body bytes.
+-- Cross-batch semantic-conflict control: 225 requests, 25 children, 17,821 request-body bytes.
+-- Cross-sequence fresh-key control: 226 requests, 25 children, 18,025 request-body bytes.
+-
+-Across the seven distinct installed cohorts: 712 expected requests, 727 diagnostic maximum, 83 children, seven temporary owner-store directories, and 56,185 expected/56,765 maximum request-body bytes. Source and installed combined prospective attempts are 759 expected/785 diagnostic maximum. These are finite prospective workload descriptions, not completion or qualification percentages. Old Read conditional catalog evidence remains unplanned; all reports must retain `claimEligible: false`.
+-
+-## Supervision and provenance
+-
+-Each command uses the inherited 120-second wrapper, TERM at 115 and KILL at 120, no automatic retry, exclusive start/result markers, exact selected-case verification, source before/after checks, process-group samples, PID/temporary-directory cleanup checks, and root review of results. Failed or timed-out stages halt the ordered prefix; a new attempt requires a distinct reviewed packet. Unexpected files are preserved instead of erased.
+-
+-`supervise.py`, `inventory.py`, `packages.py`, and all three principal contract/ledger/control files are byte-identical to the previous reviewed preparation. Packaging compares source archive members and installed external payload, accounts only for intentional workspace dependency rewriting, pins eight production dependencies, checks symlink containment, and records the actual installed entry and consumer inventory. A fresh build and fresh external consumer are required; prior successful build/install evidence cannot be relabeled.
+-
+-`adaptation.patch` shows changes to inherited gate and reviewers. `reference-pins.json` binds the original packet and reviewed plan/author/correction/measurement artifacts. `preparation-hashes.json` binds this complete closed packet including the source-preflight subpacket. Source hashes, derivative specimen/compact hashes, 194-assertion ledger, JSON syntax, and Python AST syntax were checked without loading product modules or executing validation.
+-
+-Release readiness: ready for root inspection of this preparation only. Initial source preflight needs explicit root release. Final integrated phases additionally need actual ordinary successor integration, exact source/ancestry/CI/council bindings, fresh build, actual generated consumer lock, and actual installed provenance acceptance. This is not a claim that validation passed or that the write profile is complete.
++Preparation checks were data-only JSON parsing, Python AST parsing, hashing, exact command comparison and static identity comparisons. No product imports, validation scripts, builds, archive creation, package install or services ran. adaptation.patch contains inherited-file changes; diagnostic-prerequisite.json pins original evidence; preparation-hashes.json indexes this packet. Both original preparation and diagnostic packets remain unchanged. Publication/main merge remains separately gated.
+--- rebind-validation-preparation/request-ledger.json
++++ installed-successor/request-ledger.json
+@@ -896,9 +896,6 @@
+         "request-headers",
+         "request-body",
+         "cache",
+-        "absent-bdp-scope-epoch",
+-        "absent-bdp-authorization-view",
+-        "absent-bdp-scope-position",
+         "media",
+         "challenge",
+         "schema",
+@@ -924,24 +921,6 @@
+           "kind": "header",
+           "name": "cache-control",
+           "equals": "private, no-store"
+-        },
+-        {
+-          "id": "absent-bdp-scope-epoch",
+-          "kind": "header",
+-          "name": "bdp-scope-epoch",
+-          "absent": true
+-        },
+-        {
+-          "id": "absent-bdp-authorization-view",
+-          "kind": "header",
+-          "name": "bdp-authorization-view",
+-          "absent": true
+-        },
+-        {
+-          "id": "absent-bdp-scope-position",
+-          "kind": "header",
+-          "name": "bdp-scope-position",
+-          "absent": true
+         },
+         {
+           "id": "media",
+@@ -997,11 +976,7 @@
+         "request-headers",
+         "request-body",
+         "cache",
+-        "absent-bdp-scope-epoch",
+-        "absent-bdp-authorization-view",
+-        "absent-bdp-scope-position",
+         "body-absent",
+-        "media",
+         "challenge",
+         "get-metadata"
+       ],
+@@ -1027,32 +1002,8 @@
+           "equals": "private, no-store"
+         },
+         {
+-          "id": "absent-bdp-scope-epoch",
+-          "kind": "header",
+-          "name": "bdp-scope-epoch",
+-          "absent": true
+-        },
+-        {
+-          "id": "absent-bdp-authorization-view",
+-          "kind": "header",
+-          "name": "bdp-authorization-view",
+-          "absent": true
+-        },
+-        {
+-          "id": "absent-bdp-scope-position",
+-          "kind": "header",
+-          "name": "bdp-scope-position",
+-          "absent": true
+-        },
+-        {
+           "id": "body-absent",
+           "kind": "body-absent"
+-        },
+-        {
+-          "id": "media",
+-          "kind": "header",
+-          "name": "content-type",
+-          "equals": "application/problem+json"
+         },
+         {
+           "id": "challenge",
+@@ -1213,7 +1164,6 @@
+         "present-bdp-scope-position",
+         "position",
+         "body-absent",
+-        "media",
+         "get-metadata"
+       ],
+       "captures": [],
+@@ -1264,12 +1214,6 @@
+         {
+           "id": "body-absent",
+           "kind": "body-absent"
+-        },
+-        {
+-          "id": "media",
+-          "kind": "header",
+-          "name": "content-type",
+-          "equals": "application/problem+json"
+         },
+         {
+           "id": "get-metadata",
+@@ -1780,7 +1724,7 @@
+       ]
+     }
+   ],
+-  "assertions": 194,
++  "assertions": 186,
+   "bytes": 271,
+   "automaticRetries": 0,
+   "control": {
+@@ -1794,7 +1738,7 @@
+     ],
+     "genericFailureAccepted": false
+   },
+-  "context": "All authorized rows observe stable actual epoch/view and pos-1 until update, then pos-2. Anonymous401 has no context. No minimum, no Event/Snapshot, no discovery.",
++  "context": "Authorized rows observe actual epoch/view and pos-1 until update, then pos-2. Anonymous401 context absence is a reference-only app oracle, not a portable obligation. No minimum, Event/Snapshot or discovery credit.",
+   "fullPostimageEquality": "Independent app wire observer only; HTTP URL-only captures intentionally empty.",
+   "scenario": "transactional.http.conditional-reads"
+ }
+--- rebind-validation-preparation/review-cohort.py
++++ installed-successor/review-cohort.py
+@@ -70,6 +70,7 @@
+     require(isinstance(response['bodyBytes'],int) and 0<=response['bodyBytes']<=8192 and re.fullmatch('[0-9a-f]{64}',response['bodyDigest']),'Response fingerprint/bound differs')
+     headers=response['headers'];require(set(headers)<=allowed and headers.get('cache-control')=='private, no-store','Response headers differ')
+     context=['bdp-scope-epoch','bdp-authorization-view','bdp-scope-position']
++    # Reference-only authentication context absence; not portable assertion credit.
+     if i in (7,8):
+         require(all(k not in headers for k in context) and headers.get('www-authenticate')=='Bearer realm="bdp-transaction-development"','Anonymous context/challenge differs')
+     else:
+--- rebind-validation-preparation/review-existing.py
++++ installed-successor/review-existing.py
+@@ -141,5 +141,6 @@
+ if name=="full-positive":require(logs[0]["actions"]==241 and logs[0]["sessions"]==24 and logs[0]["elapsedMs"]<=63000,"Full cohort bound differs")
+ if cross:require(logs[0]["failures"]==oracle["failedIds"] and logs[0]["observedStatus"]==oracle["status"] and logs[0]["exchanges"]==actual,"Cross log outcome differs")
+ review={"candidateMatches":True,"rootReviewRequired":True,"command":name,"actualHttp":actual,"actualRequestBodyBytes":body_bytes,"reportedChildren":logs[0]["childLaunches"],"reportedClosedChildren":logs[0]["closedChildren"],"sampledPidsIndependentlyAbsent":outcome["sampledPids"],"ownedRootsAbsent":True,"payloadIdentity":p["payloadIdentity"],"sourceCommit":g["finalHead"],"sourceTree":g["finalTree"],"reportSha256":sha(report.read_bytes()),"resultsSha256":sha((E/(name+".results.json")).read_bytes()),"logSha256":sha((E/(name+".log")).read_bytes()),"principalPerformed":o["principalSupplemental"]["performed"],"claimEligible":False,"limitations":"Full receipt/Resource/Event/replay comparisons occur in frozen app before redaction; fingerprints cannot reconstruct bodies or independently prove equality. Credential refs are actual input handles, not wire credential attestation. Real ready payload and source/archive verification are distinct; no child Git attestation. Process sampling may miss short-lived/detached descendants; root independent cleanup review remains required."}
++if name=="full-positive":review["timing"]={"appElapsedMs":logs[0]["elapsedMs"],"appAssertionLimitMs":63000,"cohortAbortMs":90000,"testTimeoutMs":120000,"supervisorElapsedSeconds":outcome["elapsedSeconds"]}
+ with (E/(name+".review-candidate.json")).open("x") as f:f.write(json.dumps(review,indent=2)+"\n")
+ print(json.dumps(review))
+--- rebind-validation-preparation/selection.json
++++ installed-successor/selection.json
+@@ -1,193 +1,8 @@
+ {
+-  "status": "CLOSED",
+-  "sourceBinding": {
+-    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-conditional-reads-draft/rebind-correction/source-binding.json",
+-    "sha256": "1095d0093a729c9138c22c6419da528fefbece42be5707dd16db1238e91d61ee"
+-  },
+-  "sourceCommands": {
+-    "cumulative-full": {
+-      "phase": "source",
+-      "cwd": "/Users/dbox/repos/wt/vickie/vickie-transaction-conditional-reads",
+-      "argv": [
+-        "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+-        "/Users/dbox/repos/wt/vickie/vickie-transaction-conditional-reads/node_modules/vitest/vitest.mjs",
+-        "run",
+-        "packages/conformance/src/transactional-cumulative.test.ts",
+-        "--maxWorkers=1",
+-        "--reporter=verbose",
+-        "--reporter=json",
+-        "--outputFile=/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-conditional-reads-draft/rebind-validation-preparation/run/cumulative-full.results.json"
+-      ],
+-      "selectedFullNames": [
+-        "binds the canonical cumulative TX selection and exact source digests without qualification",
+-        "rejects noncanonical selections, History, wrong factories, retired and misprofiled rows",
+-        "copies source bytes before binding and exposes all missing obligations without executing them",
+-        "enforces TX1MiB and preserves RU4MiB at factory and planner boundaries",
+-        "private runner refuses lookalikes, RU bundles, wrong profiles and absent exact transport before setup",
+-        "keeps private cumulative factories, TX runner, receipt recorder and brand predicate out of public exports",
+-        "refuses reserved receipt actions in an ordinary RU run before setup or a programmable callback",
+-        "uses preparation rather than HTTP timeout for private reopen lifecycle",
+-        "preserves every original TX scenario and coverage object while adding one bounded partial cross-carrier row",
+-        "pins required context presence before equality in set and cross-carrier rows",
+-        "pins the one-page matched-plus-updated witness without advertised-limit or other-outcome credit",
+-        "pins complete conflict responses and rejects retained-record equality weakening",
+-        "rejects removing mandatory context presence from either comparison side",
+-        "pins the completed-key conflict law, five presentations, and semantic request difference",
+-        "pins the complete matching no-op partition and its exact selected clauses",
+-        "pins complete operation-time deletion safety and its exact selected clause",
+-        "resolves every authored TX schema and rejects the undefined deleted-point reference",
+-        "pins the inherited command-minimum manifest facts, read-header absence and all thirteen prior objects",
+-        "pins the partial principal namespace row, full parent and exact credential roles",
+-        "pins partial Transactional conditional actions, full parent bytes and the two-failure control",
+-        "denies genuine TX bundles through public runner declared read",
+-        "denies genuine TX bundles through public runner declared read-update",
+-        "denies genuine TX bundles through public runner declared transactional",
+-        "retains safe wire receipt reason with correct attribution over raw HTTP (harness-error/receipt wire headers mismatch/batch)",
+-        "retains safe wire receipt reason with correct attribution over raw HTTP (harness-error/receipt wire headers mismatch/update-where)",
+-        "retains safe validator receipt reason with correct attribution over raw HTTP (harness-error/source receipt validator unavailable/batch)",
+-        "retains safe validator receipt reason with correct attribution over raw HTTP (harness-error/source receipt validator unavailable/update-where)",
+-        "retains safe wire-id receipt reason with correct attribution over raw HTTP (harness-error/receipt wire body mismatch/batch)",
+-        "retains safe wire-id receipt reason with correct attribution over raw HTTP (harness-error/receipt wire body mismatch/update-where)",
+-        "retains safe source-id receipt reason with correct attribution over raw HTTP (fail/source receipt identity invalid/batch)",
+-        "retains safe source-id receipt reason with correct attribution over raw HTTP (fail/source receipt identity invalid/update-where)",
+-        "retains safe source-schema receipt reason with correct attribution over raw HTTP (fail/source receipt schema invalid/batch)",
+-        "retains safe source-schema receipt reason with correct attribution over raw HTTP (fail/source receipt schema invalid/update-where)",
+-        "retains safe retained receipt reason with correct attribution over raw HTTP (fail/retained receipt differs from original wire facts/batch)",
+-        "retains safe retained receipt reason with correct attribution over raw HTTP (fail/retained receipt differs from original wire facts/update-where)",
+-        "rejects independent no-op oracle weakening in n-noop:bead-retained-record",
+-        "rejects independent no-op oracle weakening in n-noop:no-effect",
+-        "rejects independent no-op oracle weakening in n-noop:present-bdp-scope-position",
+-        "rejects independent no-op oracle weakening in n-noop-groups:group-inventory",
+-        "rejects deletion-safety oracle weakening: unchanged-link",
+-        "rejects deletion-safety oracle weakening: problem-index",
+-        "rejects deletion-safety oracle weakening: rollback-metadata"
+-      ],
+-      "cases": 42,
+-      "http": 14,
+-      "expectedHTTP": 14,
+-      "maxHTTP": 14,
+-      "owners": 0,
+-      "directories": 0,
+-      "listeners": 12,
+-      "productChildren": 0,
+-      "ownedTempPrefixes": [],
+-      "id": "cumulative-full",
+-      "automaticRetries": 0,
+-      "supervisorSeconds": 120
+-    },
+-    "binding-source": {
+-      "phase": "source",
+-      "cwd": "/Users/dbox/repos/wt/vickie/vickie-transaction-conditional-reads",
+-      "argv": [
+-        "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+-        "/Users/dbox/repos/wt/vickie/vickie-transaction-conditional-reads/node_modules/vitest/vitest.mjs",
+-        "run",
+-        "apps/bdptest/src/transactional-binding.test.ts",
+-        "--maxWorkers=1",
+-        "--reporter=verbose",
+-        "--reporter=json",
+-        "--outputFile=/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-conditional-reads-draft/rebind-validation-preparation/run/binding-source.results.json",
+-        "--testNamePattern",
+-        "^(?:aborts\\ and\\ drains\\ a\\ real\\ registered\\ dynamic\\ socket\\ via\\ close|aborts\\ and\\ drains\\ a\\ real\\ registered\\ dynamic\\ socket\\ via\\ cohort|rebinds\\ ordinary\\ raw\\ requests\\ to\\ the\\ new\\ validated\\ physical\\ session\\ while\\ base\\ mode\\ stays\\ fixed)$"
+-      ],
+-      "selectedFullNames": [
+-        "aborts and drains a real registered dynamic socket via close",
+-        "aborts and drains a real registered dynamic socket via cohort",
+-        "rebinds ordinary raw requests to the new validated physical session while base mode stays fixed"
+-      ],
+-      "cases": 3,
+-      "http": 4,
+-      "expectedHTTP": 4,
+-      "maxHTTP": 4,
+-      "owners": 0,
+-      "directories": 0,
+-      "listeners": 4,
+-      "productChildren": 0,
+-      "ownedTempPrefixes": [],
+-      "id": "binding-source",
+-      "automaticRetries": 0,
+-      "supervisorSeconds": 120
+-    },
+-    "receipt-first-page": {
+-      "id": "receipt-first-page",
+-      "phase": "source",
+-      "cwd": "/Users/dbox/repos/wt/vickie/vickie-transaction-conditional-reads",
+-      "argv": [
+-        "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+-        "/Users/dbox/repos/wt/vickie/vickie-transaction-conditional-reads/node_modules/vitest/vitest.mjs",
+-        "run",
+-        "packages/conformance/src/runner.test.ts",
+-        "--maxWorkers=1",
+-        "--reporter=verbose",
+-        "--reporter=json",
+-        "--outputFile=/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-conditional-reads-draft/rebind-validation-preparation/run/receipt-first-page.results.json",
+-        "--testNamePattern",
+-        "^(?:observes\\ private\\ first\\-page\\ authority\\ over\\ actual\\ HTTP:\\ id\\-first|observes\\ private\\ first\\-page\\ authority\\ over\\ actual\\ HTTP:\\ page\\-first|observes\\ private\\ first\\-page\\ authority\\ over\\ actual\\ HTTP:\\ wrong\\-parent|observes\\ private\\ first\\-page\\ authority\\ over\\ actual\\ HTTP:\\ empty\\-page|observes\\ private\\ first\\-page\\ authority\\ over\\ actual\\ HTTP:\\ changed\\-page|observes\\ private\\ first\\-page\\ authority\\ over\\ actual\\ HTTP:\\ cancel\\-page|observes\\ private\\ first\\-page\\ authority\\ over\\ actual\\ HTTP:\\ null\\-next|observes\\ private\\ first\\-page\\ authority\\ over\\ actual\\ HTTP:\\ absent\\-next)$"
+-      ],
+-      "selectedFullNames": [
+-        "observes private first-page authority over actual HTTP: id-first",
+-        "observes private first-page authority over actual HTTP: page-first",
+-        "observes private first-page authority over actual HTTP: wrong-parent",
+-        "observes private first-page authority over actual HTTP: empty-page",
+-        "observes private first-page authority over actual HTTP: changed-page",
+-        "observes private first-page authority over actual HTTP: cancel-page",
+-        "observes private first-page authority over actual HTTP: null-next",
+-        "observes private first-page authority over actual HTTP: absent-next"
+-      ],
+-      "cases": 8,
+-      "http": 29,
+-      "expectedHTTP": 29,
+-      "maxHTTP": 40,
+-      "owners": 0,
+-      "directories": 0,
+-      "listeners": 8,
+-      "productChildren": 0,
+-      "ownedTempPrefixes": [],
+-      "supervisorSeconds": 120,
+-      "automaticRetries": 0,
+-      "workload": {
+-        "requestAttemptsExpected": 29,
+-        "requestAttemptsDiagnosticMaximum": 40,
+-        "deliberatelyCanceledRequests": 1,
+-        "listeners": 8,
+-        "children": 0,
+-        "ownerStores": 0,
+-        "limitation": "Source-derived attempt inventory; cancellation is not completed HTTP evidence."
+-      }
+-    },
+-    "app-static": {
+-      "phase": "source",
+-      "cwd": "/Users/dbox/repos/wt/vickie/vickie-transaction-conditional-reads",
+-      "argv": [
+-        "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+-        "/Users/dbox/repos/wt/vickie/vickie-transaction-conditional-reads/node_modules/vitest/vitest.mjs",
+-        "run",
+-        "apps/bdptest/src/transactional-matrix.test.ts",
+-        "--maxWorkers=1",
+-        "--reporter=verbose",
+-        "--reporter=json",
+-        "--outputFile=/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-conditional-reads-draft/rebind-validation-preparation/run/app-static.results.json",
+-        "--testNamePattern",
+-        "^(?:pins\\ the\\ matching\\ no\\-op\\ installed\\ route\\ digest\\ and\\ fifteen\\-action\\ ledger|pins\\ deletion\\-safety\\ derivative\\ carriers,\\ complete\\ positives,\\ and\\ measured\\ source\\ bounds|pins\\ conditional\\ raw\\ literals,\\ request\\ order\\ and\\ the\\ sole\\ header\\ control)$"
+-      ],
+-      "selectedFullNames": [
+-        "pins the matching no-op installed route digest and fifteen-action ledger",
+-        "pins deletion-safety derivative carriers, complete positives, and measured source bounds",
+-        "pins conditional raw literals, request order and the sole header control"
+-      ],
+-      "cases": 3,
+-      "http": 0,
+-      "expectedHTTP": 0,
+-      "maxHTTP": 0,
+-      "owners": 0,
+-      "directories": 0,
+-      "listeners": 0,
+-      "productChildren": 0,
+-      "ownedTempPrefixes": [],
+-      "id": "app-static",
+-      "automaticRetries": 0,
+-      "supervisorSeconds": 120
+-    }
++  "status": "CLOSED future clean candidate unset",
++  "diagnosticPrerequisite": {
++    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-conditional-reads-draft/rebind-validation-preparation/installed-successor/diagnostic-prerequisite.json",
++    "sha256": "952948ce25d9ae0aca29ce473798d0681ff09211c8e4c833ebb43e74069a29b7"
+   },
+   "installedCommands": {
+     "conditional-positive": {
+@@ -202,7 +17,7 @@
+         "--maxWorkers=1",
+         "--reporter=verbose",
+         "--reporter=json",
+-        "--outputFile=/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-conditional-reads-draft/rebind-validation-preparation/run/conditional-positive.results.json",
++        "--outputFile=/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-conditional-reads-draft/rebind-validation-preparation/installed-successor/run/conditional-positive.results.json",
+         "--testNamePattern",
+         "^(?:observes\\ partial\\ Transactional\\ conditional\\ reads\\ and\\ HEAD\\ after\\ mutation\\ \\(control\\ false\\))$"
+       ],
+@@ -230,9 +45,9 @@
+         "maximumRequestBodyBytes": 271
+       },
+       "reportOverrides": {
+-        "BDP_TRANSACTIONAL_CONDITIONAL_OUTPUT": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-conditional-reads-draft/rebind-validation-preparation/run/conditional-positive.observation.json"
+-      },
+-      "observationPath": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-conditional-reads-draft/rebind-validation-preparation/run/conditional-positive.observation.json"
++        "BDP_TRANSACTIONAL_CONDITIONAL_OUTPUT": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-conditional-reads-draft/rebind-validation-preparation/installed-successor/run/conditional-positive.observation.json"
++      },
++      "observationPath": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-conditional-reads-draft/rebind-validation-preparation/installed-successor/run/conditional-positive.observation.json"
+     },
+     "conditional-control": {
+       "id": "conditional-control",
+@@ -246,7 +61,7 @@
+         "--maxWorkers=1",
+         "--reporter=verbose",
+         "--reporter=json",
+-        "--outputFile=/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-conditional-reads-draft/rebind-validation-preparation/run/conditional-control.results.json",
++        "--outputFile=/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-conditional-reads-draft/rebind-validation-preparation/installed-successor/run/conditional-control.results.json",
+         "--testNamePattern",
+         "^(?:observes\\ partial\\ Transactional\\ conditional\\ reads\\ and\\ HEAD\\ after\\ mutation\\ \\(control\\ true\\))$"
+       ],
+@@ -274,9 +89,141 @@
+         "maximumRequestBodyBytes": 271
+       },
+       "reportOverrides": {
+-        "BDP_TRANSACTIONAL_CONDITIONAL_OUTPUT": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-conditional-reads-draft/rebind-validation-preparation/run/conditional-control.observation.json"
+-      },
+-      "observationPath": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-conditional-reads-draft/rebind-validation-preparation/run/conditional-control.observation.json"
++        "BDP_TRANSACTIONAL_CONDITIONAL_OUTPUT": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-conditional-reads-draft/rebind-validation-preparation/installed-successor/run/conditional-control.observation.json"
++      },
++      "observationPath": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-conditional-reads-draft/rebind-validation-preparation/installed-successor/run/conditional-control.observation.json"
++    },
++    "full-positive": {
++      "id": "full-positive",
++      "phase": "installed",
++      "cwd": "/Users/dbox/repos/wt/vickie/vickie-transaction-conditional-reads",
++      "argv": [
++        "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
++        "/Users/dbox/repos/wt/vickie/vickie-transaction-conditional-reads/node_modules/vitest/vitest.mjs",
++        "run",
++        "apps/bdptest/src/transactional-matrix.test.ts",
++        "--maxWorkers=1",
++        "--reporter=verbose",
++        "--reporter=json",
++        "--outputFile=/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-conditional-reads-draft/rebind-validation-preparation/installed-successor/run/full-positive.results.json",
++        "--testNamePattern",
++        "^(?:observes\\ seventeen\\ partial\\ Transactional\\ contracts\\ through\\ packed\\-capable\\ actual\\ installed\\ HTTP)$"
++      ],
++      "selectedFullNames": [
++        "observes seventeen partial Transactional contracts through packed-capable actual installed HTTP"
++      ],
++      "cases": 1,
++      "http": 234,
++      "expectedHTTP": 234,
++      "maxHTTP": 234,
++      "owners": 25,
++      "directories": 1,
++      "listeners": 25,
++      "productChildren": 25,
++      "ownedTempPrefixes": [
++        "bdp-tx-installed-"
++      ],
++      "supervisorSeconds": 120,
++      "automaticRetries": 0,
++      "workload": {
++        "httpExpected": 234,
++        "httpMaximum": 234,
++        "children": 25,
++        "requestBodyBytes": 18877,
++        "maximumRequestBodyBytes": 18877
++      },
++      "reportOverrides": {
++        "BDP_TRANSACTIONAL_OBSERVATION_OUTPUT": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-conditional-reads-draft/rebind-validation-preparation/installed-successor/run/full-positive.observation.json"
++      },
++      "observationPath": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-conditional-reads-draft/rebind-validation-preparation/installed-successor/run/full-positive.observation.json"
++    },
++    "cross-batch": {
++      "id": "cross-batch",
++      "phase": "installed",
++      "cwd": "/Users/dbox/repos/wt/vickie/vickie-transaction-conditional-reads",
++      "argv": [
++        "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
++        "/Users/dbox/repos/wt/vickie/vickie-transaction-conditional-reads/node_modules/vitest/vitest.mjs",
++        "run",
++        "apps/bdptest/src/transactional-matrix.test.ts",
++        "--maxWorkers=1",
++        "--reporter=verbose",
++        "--reporter=json",
++        "--outputFile=/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-conditional-reads-draft/rebind-validation-preparation/installed-successor/run/cross-batch.results.json",
++        "--testNamePattern",
++        "^(?:discriminates\\ retained\\ cross\\-carrier\\ evidence\\ against\\ batch\\-semantic\\-conflict)$"
++      ],
++      "selectedFullNames": [
++        "discriminates retained cross-carrier evidence against batch-semantic-conflict"
++      ],
++      "cases": 1,
++      "http": 225,
++      "expectedHTTP": 225,
++      "maxHTTP": 225,
++      "owners": 25,
++      "directories": 1,
++      "listeners": 25,
++      "productChildren": 25,
++      "ownedTempPrefixes": [
++        "bdp-tx-installed-"
++      ],
++      "supervisorSeconds": 120,
++      "automaticRetries": 0,
++      "workload": {
++        "httpExpected": 225,
++        "httpMaximum": 225,
++        "children": 25,
++        "requestBodyBytes": 17821,
++        "maximumRequestBodyBytes": 17821
++      },
++      "reportOverrides": {
++        "BDP_TRANSACTIONAL_CROSS_CARRIER_CONTROL_OUTPUT": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-conditional-reads-draft/rebind-validation-preparation/installed-successor/run/cross-batch.observation"
++      },
++      "observationPath": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-conditional-reads-draft/rebind-validation-preparation/installed-successor/run/cross-batch.observation-batch-semantic-conflict.json"
++    },
++    "cross-sequence": {
++      "id": "cross-sequence",
++      "phase": "installed",
++      "cwd": "/Users/dbox/repos/wt/vickie/vickie-transaction-conditional-reads",
++      "argv": [
++        "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
++        "/Users/dbox/repos/wt/vickie/vickie-transaction-conditional-reads/node_modules/vitest/vitest.mjs",
++        "run",
++        "apps/bdptest/src/transactional-matrix.test.ts",
++        "--maxWorkers=1",
++        "--reporter=verbose",
++        "--reporter=json",
++        "--outputFile=/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-conditional-reads-draft/rebind-validation-preparation/installed-successor/run/cross-sequence.results.json",
++        "--testNamePattern",
++        "^(?:discriminates\\ retained\\ cross\\-carrier\\ evidence\\ against\\ sequence\\-fresh\\-key)$"
++      ],
++      "selectedFullNames": [
++        "discriminates retained cross-carrier evidence against sequence-fresh-key"
++      ],
++      "cases": 1,
++      "http": 226,
++      "expectedHTTP": 226,
++      "maxHTTP": 226,
++      "owners": 25,
++      "directories": 1,
++      "listeners": 25,
++      "productChildren": 25,
++      "ownedTempPrefixes": [
++        "bdp-tx-installed-"
++      ],
++      "supervisorSeconds": 120,
++      "automaticRetries": 0,
++      "workload": {
++        "httpExpected": 226,
++        "httpMaximum": 226,
++        "children": 25,
++        "requestBodyBytes": 18025,
++        "maximumRequestBodyBytes": 18025
++      },
++      "reportOverrides": {
++        "BDP_TRANSACTIONAL_CROSS_CARRIER_CONTROL_OUTPUT": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-conditional-reads-draft/rebind-validation-preparation/installed-successor/run/cross-sequence.observation"
++      },
++      "observationPath": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-conditional-reads-draft/rebind-validation-preparation/installed-successor/run/cross-sequence.observation-sequence-fresh-key.json"
+     },
+     "principal-positive": {
+       "id": "principal-positive",
+@@ -290,7 +237,7 @@
+         "--maxWorkers=1",
+         "--reporter=verbose",
+         "--reporter=json",
+-        "--outputFile=/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-conditional-reads-draft/rebind-validation-preparation/run/principal-positive.results.json",
++        "--outputFile=/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-conditional-reads-draft/rebind-validation-preparation/installed-successor/run/principal-positive.results.json",
+         "--testNamePattern",
+         "^(?:observes\\ authenticated\\ principal\\ isolation\\ and\\ rotation\\ through\\ selected\\ cumulative\\ HTTP)$"
+       ],
+@@ -317,9 +264,9 @@
+         "requestBodyBytes": 750,
+         "maximumRequestBodyBytes": 750
+       },
+-      "observationPath": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-conditional-reads-draft/rebind-validation-preparation/run/principal-positive.observation.json",
+-      "reportOverrides": {
+-        "BDP_TRANSACTIONAL_PRINCIPAL_CUMULATIVE_OUTPUT": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-conditional-reads-draft/rebind-validation-preparation/run/principal-positive.observation.json"
++      "observationPath": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-conditional-reads-draft/rebind-validation-preparation/installed-successor/run/principal-positive.observation.json",
++      "reportOverrides": {
++        "BDP_TRANSACTIONAL_PRINCIPAL_CUMULATIVE_OUTPUT": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-conditional-reads-draft/rebind-validation-preparation/installed-successor/run/principal-positive.observation.json"
+       }
+     },
+     "principal-collapse": {
+@@ -334,7 +281,7 @@
+         "--maxWorkers=1",
+         "--reporter=verbose",
+         "--reporter=json",
+-        "--outputFile=/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-conditional-reads-draft/rebind-validation-preparation/run/principal-collapse.results.json",
++        "--outputFile=/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-conditional-reads-draft/rebind-validation-preparation/installed-successor/run/principal-collapse.results.json",
+         "--testNamePattern",
+         "^(?:discriminates\\ principal\\ isolation\\ against\\ a\\ separately\\ bound\\ collapsed\\ namespace)$"
+       ],
+@@ -361,160 +308,32 @@
+         "requestBodyBytes": 300,
+         "maximumRequestBodyBytes": 750
+       },
+-      "observationPath": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-conditional-reads-draft/rebind-validation-preparation/run/principal-collapse.observation.json",
+-      "reportOverrides": {
+-        "BDP_TRANSACTIONAL_PRINCIPAL_CUMULATIVE_OUTPUT": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-conditional-reads-draft/rebind-validation-preparation/run/principal-collapse.observation.json"
++      "observationPath": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-conditional-reads-draft/rebind-validation-preparation/installed-successor/run/principal-collapse.observation.json",
++      "reportOverrides": {
++        "BDP_TRANSACTIONAL_PRINCIPAL_CUMULATIVE_OUTPUT": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-conditional-reads-draft/rebind-validation-preparation/installed-successor/run/principal-collapse.observation.json"
+       }
+-    },
+-    "full-positive": {
+-      "id": "full-positive",
+-      "phase": "installed",
+-      "cwd": "/Users/dbox/repos/wt/vickie/vickie-transaction-conditional-reads",
+-      "argv": [
+-        "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+-        "/Users/dbox/repos/wt/vickie/vickie-transaction-conditional-reads/node_modules/vitest/vitest.mjs",
+-        "run",
+-        "apps/bdptest/src/transactional-matrix.test.ts",
+-        "--maxWorkers=1",
+-        "--reporter=verbose",
+-        "--reporter=json",
+-        "--outputFile=/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-conditional-reads-draft/rebind-validation-preparation/run/full-positive.results.json",
+-        "--testNamePattern",
+-        "^(?:observes\\ seventeen\\ partial\\ Transactional\\ contracts\\ through\\ packed\\-capable\\ actual\\ installed\\ HTTP)$"
+-      ],
+-      "selectedFullNames": [
+-        "observes seventeen partial Transactional contracts through packed-capable actual installed HTTP"
+-      ],
+-      "cases": 1,
+-      "http": 234,
+-      "expectedHTTP": 234,
+-      "maxHTTP": 234,
+-      "owners": 25,
+-      "directories": 1,
+-      "listeners": 25,
+-      "productChildren": 25,
+-      "ownedTempPrefixes": [
+-        "bdp-tx-installed-"
+-      ],
+-      "supervisorSeconds": 120,
+-      "automaticRetries": 0,
+-      "workload": {
+-        "httpExpected": 234,
+-        "httpMaximum": 234,
+-        "children": 25,
+-        "requestBodyBytes": 18877,
+-        "maximumRequestBodyBytes": 18877
+-      },
+-      "reportOverrides": {
+-        "BDP_TRANSACTIONAL_OBSERVATION_OUTPUT": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-conditional-reads-draft/rebind-validation-preparation/run/full-positive.observation.json"
+-      },
+-      "observationPath": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-conditional-reads-draft/rebind-validation-preparation/run/full-positive.observation.json"
+-    },
+-    "cross-batch": {
+-      "id": "cross-batch",
+-      "phase": "installed",
+-      "cwd": "/Users/dbox/repos/wt/vickie/vickie-transaction-conditional-reads",
+-      "argv": [
+-        "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+-        "/Users/dbox/repos/wt/vickie/vickie-transaction-conditional-reads/node_modules/vitest/vitest.mjs",
+-        "run",
+-        "apps/bdptest/src/transactional-matrix.test.ts",
+-        "--maxWorkers=1",
+-        "--reporter=verbose",
+-        "--reporter=json",
+-        "--outputFile=/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-conditional-reads-draft/rebind-validation-preparation/run/cross-batch.results.json",
+-        "--testNamePattern",
+-        "^(?:discriminates\\ retained\\ cross\\-carrier\\ evidence\\ against\\ batch\\-semantic\\-conflict)$"
+-      ],
+-      "selectedFullNames": [
+-        "discriminates retained cross-carrier evidence against batch-semantic-conflict"
+-      ],
+-      "cases": 1,
+-      "http": 225,
+-      "expectedHTTP": 225,
+-      "maxHTTP": 225,
+-      "owners": 25,
+-      "directories": 1,
+-      "listeners": 25,
+-      "productChildren": 25,
+-      "ownedTempPrefixes": [
+-        "bdp-tx-installed-"
+-      ],
+-      "supervisorSeconds": 120,
+-      "automaticRetries": 0,
+-      "workload": {
+-        "httpExpected": 225,
+-        "httpMaximum": 225,
+-        "children": 25,
+-        "requestBodyBytes": 17821,
+-        "maximumRequestBodyBytes": 17821
+-      },
+-      "reportOverrides": {
+-        "BDP_TRANSACTIONAL_CROSS_CARRIER_CONTROL_OUTPUT": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-conditional-reads-draft/rebind-validation-preparation/run/cross-batch.observation"
+-      },
+-      "observationPath": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-conditional-reads-draft/rebind-validation-preparation/run/cross-batch.observation-batch-semantic-conflict.json"
+-    },
+-    "cross-sequence": {
+-      "id": "cross-sequence",
+-      "phase": "installed",
+-      "cwd": "/Users/dbox/repos/wt/vickie/vickie-transaction-conditional-reads",
+-      "argv": [
+-        "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+-        "/Users/dbox/repos/wt/vickie/vickie-transaction-conditional-reads/node_modules/vitest/vitest.mjs",
+-        "run",
+-        "apps/bdptest/src/transactional-matrix.test.ts",
+-        "--maxWorkers=1",
+-        "--reporter=verbose",
+-        "--reporter=json",
+-        "--outputFile=/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-conditional-reads-draft/rebind-validation-preparation/run/cross-sequence.results.json",
+-        "--testNamePattern",
+-        "^(?:discriminates\\ retained\\ cross\\-carrier\\ evidence\\ against\\ sequence\\-fresh\\-key)$"
+-      ],
+-      "selectedFullNames": [
+-        "discriminates retained cross-carrier evidence against sequence-fresh-key"
+-      ],
+-      "cases": 1,
+-      "http": 226,
+-      "expectedHTTP": 226,
+-      "maxHTTP": 226,
+-      "owners": 25,
+-      "directories": 1,
+-      "listeners": 25,
+-      "productChildren": 25,
+-      "ownedTempPrefixes": [
+-        "bdp-tx-installed-"
+-      ],
+-      "supervisorSeconds": 120,
+-      "automaticRetries": 0,
+-      "workload": {
+-        "httpExpected": 226,
+-        "httpMaximum": 226,
+-        "children": 25,
+-        "requestBodyBytes": 18025,
+-        "maximumRequestBodyBytes": 18025
+-      },
+-      "reportOverrides": {
+-        "BDP_TRANSACTIONAL_CROSS_CARRIER_CONTROL_OUTPUT": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-conditional-reads-draft/rebind-validation-preparation/run/cross-sequence.observation"
+-      },
+-      "observationPath": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-conditional-reads-draft/rebind-validation-preparation/run/cross-sequence.observation-sequence-fresh-key.json"
+     }
+   },
+   "workload": {
+-    "sourceCases": 56,
+-    "sourceSyntheticHTTPAttempts": 47,
+-    "sourceMaximumDiagnosticHTTPAttempts": 58,
+-    "sourceDeliberatelyCanceledHTTP": 3,
+-    "sourceListeners": 24,
+-    "sourceProductChildren": 0,
++    "reusedSourceCases": 56,
++    "newSourceCases": 0,
+     "installedCases": 7,
+     "installedExpectedHTTP": 712,
+     "installedMaxHTTP": 727,
+     "installedChildren": 83,
+-    "totalExpectedHTTPAttempts": 759,
+-    "totalDiagnosticMaxHTTPAttempts": 785,
++    "installedOwnerDirectories": 7,
++    "installedExpectedBodyBytes": 56185,
++    "installedMaximumBodyBytes": 56765,
+     "automaticRetries": 0,
+-    "limitation": "Prospective source-derived counts; three deliberate aborts include two binding requests and one first-page request. Not observed completed traffic."
++    "limitation": "Source56-case results remain attributed to diagnostic2dfd predecessor; no duplicate source execution. Installed counts are prospective until measured."
+   },
+-  "sourceWorkload": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-conditional-reads-draft/rebind-validation-preparation/source-workload.json",
++  "timers": {
++    "cohortMs": 90000,
++    "prepareMs": 10000,
++    "requestMs": 5000,
++    "cleanupMs": 10000,
++    "testMs": 120000,
++    "fullPositiveElapsedAssertionMs": 63000
++  },
+   "noExecution": true
+ }

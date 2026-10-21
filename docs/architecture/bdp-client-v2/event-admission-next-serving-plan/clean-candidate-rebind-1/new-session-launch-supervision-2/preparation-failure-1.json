@@ -1,0 +1,14 @@
+{
+  "operation": "Packaging-only static changed-file inventory assertion",
+  "exitCode": 1,
+  "errorType": "AssertionError",
+  "cause": "Expected list order differed from directory iteration order; actual changed-file set matched exactly",
+  "actual": [
+    "README.md",
+    "control.json",
+    "preparation-report.json",
+    "supervise.py"
+  ],
+  "correction": "Compare sorted changed-file sets; preserve this failure record",
+  "sourceOrExecutionEffect": false
+}

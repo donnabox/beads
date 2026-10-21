@@ -1,0 +1,7 @@
+# Current minimum perform receiving — root acceptance
+
+Accept exact plan-v3 d04250fa83eef371f55e9f7096f5d6d179dfd0bc97d582febcf569ae31fb19a2. Full native/original external review and all F1–F6 dispositions have been read; independent v3 closure8f18f43e verifies the repair plan and bounded tests. No product ruling or new wire semantics is introduced.
+
+Authoring base is reviewed frozen alias integration7171251d282769c1b9e2a39aed63e16f8b24ed96/tree76931ffeede5532cf11bd742d41dac9cdf5e7f01. It is an ordinary integration of current main content plus fully reviewed alias work; current main89d+717 computes the same exact tree. PR112 CI is pending, so this acceptance authorizes isolated successor authoring only, not PR112 merge/readiness or public admission. Any new CI defect affecting this base must be reviewed before continuation.
+
+update_implementation owns NEW /Users/dbox/repos/wt/vickie/vickie-current-minimum-receiving, branchcodex/vickie-current-minimum-receiving. Exactly transaction-read.ts/.test.ts and transaction-service.ts/.test.ts. Reuse and narrowly rename source-private capture helper if useful, preserve its semantics and all alias branches. Do not edit authority, classifier, HTTP, schemas, artifacts, runtime configuration or public exports. Follow v3 counterfactuals and exact existing installed titles/bounds. Frozen source, actual source-bound fresh pack observations, disclosed failures and cleanup are required before council. Root retains all PR/main decisions.

@@ -1,0 +1,113 @@
+{
+  "outcome": "VERIFIED_ACTUAL_ORDINARY_MERGE_EQUALS_TESTED_TREE",
+  "checkedAt": "2026-10-15T23:43:46.109566+00:00",
+  "merge": "67a2842e3f1918e70978f745587cf11eaf0df5a8",
+  "tree": "596abe870220fb61ce606f8382a9da52d554d063",
+  "orderedParents": [
+    "73fc0daed2e5fa6843e581de9bf7a46e519562ab",
+    "c18c71202c90fa2558f34107ad342befabf750fe"
+  ],
+  "candidate": "c18c71202c90fa2558f34107ad342befabf750fe",
+  "pr": {
+    "number": 137,
+    "merged": true,
+    "mergedAt": "2026-10-15T23:41:41Z",
+    "head": "c18c71202c90fa2558f34107ad342befabf750fe",
+    "mergeCommit": "67a2842e3f1918e70978f745587cf11eaf0df5a8"
+  },
+  "remoteMain": "67a2842e3f1918e70978f745587cf11eaf0df5a8",
+  "gitApiAgreement": true,
+  "testedSynthetic": {
+    "sha": "6b4fc76d87d4f61e61cc973f4f2435300d87f435",
+    "tree": "596abe870220fb61ce606f8382a9da52d554d063",
+    "parents": [
+      "73fc0daed2e5fa6843e581de9bf7a46e519562ab",
+      "c18c71202c90fa2558f34107ad342befabf750fe"
+    ],
+    "rawLogSha256": "86ba19acedeb493782b163279d2e5b52792b6d5768dd3e4a74df705326307593"
+  },
+  "sourceBinding": {
+    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-minimum-receiving-draft/final-source.json",
+    "sha256": "273b5d230ddbac111b106463a5af351db14d77082d77e9c090b4802d96c0d923"
+  },
+  "featureDiffSha256": "4c9a9c6757f18080821522477591167c21039e92fcdf6c83c3e8ff74c78eaa1d",
+  "exactChangedPathCount": 11,
+  "files": {
+    "docs/specs/bdp.md": {
+      "sha256": "63e93be562334c84c1e967da2fce212e8ef515aa3c9448924c5f9a272ea7b80b",
+      "bytes": 396081,
+      "matchesFinalSource": true
+    },
+    "packages/server/src/transaction-consistency.ts": {
+      "sha256": "00a420c3e9f5dcb1b8814a6476d5ce52edfb7adbbd1c64ab082833f17322a336",
+      "bytes": 5482,
+      "matchesFinalSource": true
+    },
+    "packages/server/src/transaction-http.ts": {
+      "sha256": "ebb3550110bd6fda638572966e5faa05c15f062f37a10947f6e442fc7d4570f4",
+      "bytes": 27317,
+      "matchesFinalSource": true
+    },
+    "packages/server/src/transaction-consistency.test.ts": {
+      "sha256": "4d45ba52c028c3081188a6f76498889d7170cceaaad114004458b86331191bc9",
+      "bytes": 4562,
+      "matchesFinalSource": true
+    },
+    "packages/server/src/transaction-http.test.ts": {
+      "sha256": "ca2e4e7663a93060ba2a0788c5ef349a3de4991e3108f81507f37a723d964781",
+      "bytes": 183466,
+      "matchesFinalSource": true
+    },
+    "packages/server/src/transaction-snapshot-http.test.ts": {
+      "sha256": "61023b5f24396fe484c7820c706b560cb87abd7a3e16670f5a0944fbefd44d8a",
+      "bytes": 28484,
+      "matchesFinalSource": true
+    },
+    "packages/server/src/transaction-schema-http.test.ts": {
+      "sha256": "eee33a0948c9a0981a2a963cec5a8f16102ae5bab32128f83c39956abe0a952b",
+      "bytes": 16571,
+      "matchesFinalSource": true
+    },
+    "packages/server/src/transaction-changefeed.test.ts": {
+      "sha256": "97c3f8604ccbb7f3141a22e5c3d338f51929b308b80614309a7e837801b12043",
+      "bytes": 39542,
+      "matchesFinalSource": true
+    },
+    "apps/bdptest/src/transactional-snapshot-installed.test.ts": {
+      "sha256": "58f4ad828861ea332de7bf4413f48eb4646f32237b76d3a4db310e081b99ffe9",
+      "bytes": 36872,
+      "matchesFinalSource": true
+    },
+    "apps/bdptest/src/transactional-minimum-receiving-installed.test.ts": {
+      "sha256": "cefde296b07d6be86a83d13892a603588c9054bdd54196048a855e74f9e9b7f9",
+      "bytes": 23338,
+      "matchesFinalSource": true
+    },
+    "docs/design/transaction-implementation-progress.md": {
+      "sha256": "9aa001e2da6e37f0e12aa15fd124a489bc951519064370afbb76c9aee9aad185",
+      "bytes": 133067,
+      "matchesFinalSource": true
+    }
+  },
+  "allTreeObjectsAndModesEqualCandidate": true,
+  "checkoutBefore": {
+    "head": "c18c71202c90fa2558f34107ad342befabf750fe",
+    "status": ""
+  },
+  "checkoutAfter": {
+    "head": "c18c71202c90fa2558f34107ad342befabf750fe",
+    "status": ""
+  },
+  "guardedFetch": {
+    "argv": [
+      "git",
+      "fetch",
+      "--no-tags",
+      "origin",
+      "67a2842e3f1918e70978f745587cf11eaf0df5a8"
+    ],
+    "exitCode": 0,
+    "stderr": "From https://github.com/gastownhall/bdp\n * branch            67a2842e3f1918e70978f745587cf11eaf0df5a8 -> FETCH_HEAD\n"
+  },
+  "limits": "Read-only Git/API/hash verification; fetch updated object database/FETCH_HEAD only. No checkout/source changes, tests, services, readiness or merge action. No remote PID absence claim."
+}

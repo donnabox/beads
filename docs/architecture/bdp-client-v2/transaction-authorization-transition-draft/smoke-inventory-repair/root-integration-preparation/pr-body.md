@@ -1,0 +1,9 @@
+Persist a private authorization-policy transition from all-visible, writable access to an empty view with mutations disabled. The transition drains admitted mutations within a bounded administrative deadline, publishes a new durable view, and revokes old stream delivery leases. Current reads and receipt pages project the new policy; old-view checkpoints, Snapshots, and continuations retain their view errors. Durable Event identity is preserved across the transition.
+
+This is a Scope-wide private transition, not per-resource or per-principal ACL support. Public profile admission remains unchanged.
+
+Validation covers11 distinct source cases,22HTTP exchanges, rollback/reopen, projected receipt schemas, HEAD, stale handles and queued delivery. The coherent old-policy control fails only its intended assertion. Fresh archives and an external consumer passed the18-request visibility and4-request active-Event witnesses at the original clean integration. The first external observer attempt failed resolving AJV before a product child or request; its corrected external dependency anchor and both outcomes are retained.
+
+CI first exposed stale assumptions in two existing fixtures; their repair passed both complete files (114tests). The next CI passed all9,334tests (one skip,183files) and7preflight cases, then exposed four missing entries in the strict packed-output inventory. Those explicit entries are now included without weakening equality, export or test-support checks. Syntax, formatting and complete isolated smoke pass locally. Both failed CI attempts remain recorded; fresh exact-head CI is still required before merge.
+
+The feature scope is18files: the15-file implementation/tests, two compatibility-fixture repairs and one four-line smoke inventory update. Neither follow-up repair changes production or installed payload bytes.

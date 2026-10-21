@@ -1,0 +1,108 @@
+{
+  "actualProbeStarted": false,
+  "candidateDirectNativeClosure": "ac43d3bfd86d98c35907bf9297bf30d1752dbf432905c22029e9b231dd23f5e1",
+  "candidateDirectStaticRootAcceptance": "633eee1e09a016ce709e1e4818d6eb67245283385e1d0f64958d04264aa6925b",
+  "clockProofCycle": false,
+  "exactKeySetCallerLine": 92,
+  "exactKeysMatched": true,
+  "keyCount": 14,
+  "method": "Own direct DATA equality/source-predicate inspection; no subject/schema import/evaluation",
+  "nativeCandidateExactKeys": 10,
+  "rows": [
+    {
+      "actualValue": true,
+      "callerLine": 93,
+      "disposition": "matches exact current source/value/pin",
+      "key": "accepted"
+    },
+    {
+      "actualValue": "2026-10-18T02:16:24Z-549f",
+      "callerLine": 93,
+      "disposition": "matches exact current source/value/pin",
+      "key": "session"
+    },
+    {
+      "actualValue": "ONE D4 availability native invocation only",
+      "callerLine": 93,
+      "disposition": "matches exact current source/value/pin",
+      "key": "scope"
+    },
+    {
+      "actualValue": true,
+      "callerLine": 93,
+      "disposition": "matches exact current source/value/pin",
+      "key": "availabilityOnly"
+    },
+    {
+      "actualValue": false,
+      "callerLine": 93,
+      "disposition": "matches exact current source/value/pin",
+      "key": "syntheticReleased"
+    },
+    {
+      "actualValue": false,
+      "callerLine": 93,
+      "disposition": "matches exact current source/value/pin",
+      "key": "productReleased"
+    },
+    {
+      "actualValue": true,
+      "callerLine": 93,
+      "disposition": "matches exact current source/value/pin",
+      "key": "noRetry"
+    },
+    {
+      "actualValue": "a288d73db1ab2ab21bdb5942b1f4207e82308b0854c1a0dd0788cd396c956bc5",
+      "callerLine": 94,
+      "disposition": "matches exact current source/value/pin",
+      "key": "callerSha256"
+    },
+    {
+      "actualValue": "0239fde38765c7d0b01d5b91a9b4c60b10a6cf75699c4c5d4994a924ffe22fe1",
+      "callerLine": 94,
+      "disposition": "matches exact current source/value/pin",
+      "key": "candidateSha256"
+    },
+    {
+      "actualValue": "6cfb6be54e57a4f9e5b0c2b8446c6097461886fc99939a29903afbca7e5c3f30",
+      "callerLine": 94,
+      "disposition": "matches exact current source/value/pin",
+      "key": "preparationImplementationSha256"
+    },
+    {
+      "actualValue": "9ae8e2914b36edd70773ef871f63b5a8fd762732826fe0427a3e8a6eb7112e37",
+      "callerLine": 94,
+      "disposition": "matches exact current source/value/pin",
+      "key": "harnessImplementationSha256"
+    },
+    {
+      "actualValue": {
+        "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-D4-availability-root-authority-native-precision-1/closure.json",
+        "sha256": "996202fa3b616bd8b31b5b2f936eb427d5b9eba61aa3654236f98a42a20382bf"
+      },
+      "callerLine": 95,
+      "disposition": "matches exact current source/value/pin",
+      "key": "otherNativePrecision"
+    },
+    {
+      "actualValue": [
+        "AVAIL--availability"
+      ],
+      "callerLine": 96,
+      "disposition": "matches exact current source/value/pin",
+      "key": "approvedInvocations"
+    },
+    {
+      "actualValue": "25d0a0d18b5f83645f09d772322054969df26479",
+      "callerLine": 96,
+      "disposition": "matches frozen caller predicate; publication field is source-attributed foundation only",
+      "key": "durablePublicationReadback"
+    }
+  ],
+  "strictPinnedClosureFields": [
+    "accepted=true",
+    "callerSha256 exact",
+    "candidateSha256 exact",
+    "preparationImplementationSha256 exact"
+  ]
+}

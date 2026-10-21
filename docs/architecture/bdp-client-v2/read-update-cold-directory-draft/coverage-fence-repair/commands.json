@@ -1,0 +1,36 @@
+{
+  "stages": [
+    {
+      "id": "typecheck",
+      "argv": [
+        "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+        "/Users/dbox/.cache/node/corepack/v1/pnpm/11.20.0/bin/pnpm.cjs",
+        "typecheck"
+      ]
+    },
+    {
+      "id": "format-check",
+      "argv": [
+        "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+        "/Users/dbox/repos/wt/vickie/vickie-update-cold-directory/node_modules/@biomejs/biome/bin/biome",
+        "format",
+        "apps/bdptest/src/read-update-matrix.test.ts"
+      ]
+    },
+    {
+      "id": "numeric-callback",
+      "argv": [
+        "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+        "/Users/dbox/repos/wt/vickie/vickie-update-cold-directory/node_modules/vitest/vitest.mjs",
+        "run",
+        "apps/bdptest/src/read-update-matrix.test.ts",
+        "--maxWorkers=1",
+        "--testNamePattern",
+        "^pins numeric admission source growth, old blocks and independent row ledgers$",
+        "--reporter=verbose",
+        "--reporter=json",
+        "--outputFile=/Users/dbox/repos/wt/vickie/bdp-integration-logs/read-update-cold-directory-draft/coverage-fence-repair/source-run/numeric-tests.json"
+      ]
+    }
+  ]
+}

@@ -1,0 +1,30 @@
+{
+  "state": "CLOSED additive author precision; independent native/root acceptance still required",
+  "session": "2026-10-18T02:16:24Z-549f",
+  "parentIndexSha256": "663469c3a69f009e03753ccb0e9f735e7301b8a57378dc9c22ba08f546bb6bd7",
+  "parentPlanSha256": "98c8d80e9a4d233b89ab3a78c40be29f3c2abcbd7914150a303a850e392607a0",
+  "rootFinalDispositionSha256": "4bf597a51f7bbbc872a7ed2e1bcb6ef49942ad4cc6c12f5afe705b2ca73ad705",
+  "parentBytesPreserved": true,
+  "corrections": [
+    {
+      "id": "F5-response-precision",
+      "scope": "Necessary private client-view implementation detail within existing F5, no extra source path/request/public API",
+      "currentEvidence": "transactional-discovery-installed.test.ts686–688 injects transport credentials; existing send706–729 returns full HttpExchangeResponse, including exactRequest.headerLines. Merely copying send:f.send removes fixture fields but cannot support the drafted statement that the returned object never exposes transport secrets.",
+      "requiredImplementation": "Construct the same fresh runtime client object with ONLY canonicalScope and send, but its bound send delegates ONCE to existing fixture.send and returns a fresh explicit client response projection of actual status, copied headers and bodyText only. Never spread the full response, return exactRequest/request bytes/credential handles, or attach child/ready/targets/events/directory/pending/tokens/metadata. Keep full response/wire/writeState/report telemetry in existing trusted fixture/wrapper where the call is already observed. Narrow shared cold helper response parameters structurally to the fields actually consumed; noncold lanes retain original full transport result.",
+      "semantics": "Preserves actual status/header/body evidence and every underlying call/count/cap/deadline; no synthetic response values or rerun/calibration request. Full requested and received transport telemetry remains genuine in the trusted lane. This is local data projection, not a new executor/runtime/framework/public API.",
+      "acceptance": "Native/root precision must approve this additive detail; no source release inferred."
+    },
+    {
+      "id": "F10-source-classification",
+      "scope": "Wording only, no additional source change beyond root F10",
+      "replaceClaim": "The source receiving reader assertion checks projected HttpResponse epoch/view/position from a direct handler call, not actual network-wire receipt. Installed wire context is independently checked under F4. Passing pos-0 retains the same direct-call counters and grants no extra wire observation."
+    }
+  ],
+  "allTenRootCorrectionsOtherwiseUnchanged": true,
+  "futureOwnedSourceFiles": 6,
+  "allProductCountsAndBudgetsUnchanged": true,
+  "sourceAuthoringReleased": false,
+  "productExecutionReleased": false,
+  "secondActualCodeAllowed": false,
+  "secondActualPlanAllowed": false
+}

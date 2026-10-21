@@ -1,0 +1,104 @@
+--- /Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-integration-preflight-4/source-map-verification.json
++++ /Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-integration-preflight-3/source-map-verification.json
+@@ -1,37 +1,66 @@
+ {
+-  "utc": "2026-10-18T17:51:52.722826+00:00",
+-  "all5444SourceByteChecks": 5444,
+-  "basePlusSixAcceptedStaticLaneMapsAndOptionalG09": 8,
+-  "sourceRoots": {
+-    "base": "/Users/dbox/repos/wt/vickie/vickie-event-admission-replay-minimum",
+-    "D1": "/Users/dbox/repos/wt/vickie/vickie-current-changefeed-minimum",
+-    "pureLoader": "/Users/dbox/repos/wt/vickie/vickie-trusted-startup-configuration",
+-    "D3a": "/Users/dbox/repos/wt/vickie/vickie-tx-discovery-minimum",
+-    "startup": "/Users/dbox/repos/wt/vickie/vickie-trusted-startup-lifecycle-correction-minimum",
+-    "D4": "/Users/dbox/repos/wt/vickie/vickie-owned-set-retarget-minimum",
+-    "carrier": "/Users/dbox/repos/wt/vickie/vickie-cumulative-evidence-carrier-correction-minimum",
+-    "G09": "/Users/dbox/repos/wt/vickie/vickie-schema-minimum"
+-  },
+-  "mapCounts": {
+-    "D4": 679,
+-    "carrier": 681,
+-    "D3a": 679,
+-    "startup": 686,
+-    "D1": 679,
+-    "base": 679,
+-    "pureLoader": 682,
+-    "G09": 679
+-  },
+-  "canonicalIdentities": {
+-    "D4": "1499aa6cf9a02c7b6dc07a3a70bffcf935c9d6fcba60ce57ddcf5e214b32cd92",
+-    "carrier": "78e11962df1a744c685c9911d13c0bff3fa42fcdec9310b75ec8f83a17996c7f",
+-    "D3a": "a61cd3fbf9fac68e3aad857a24a2456dd16b83048067eef85348d7091c0aa08e",
+-    "startup": "80f2d46a5a480e76eaafd0ac160ff08323c8485f782c56a37305698b2435831e",
+-    "D1": "096b4f8e59ad1c6e4b10105eacb3691c60a66334b015d8c43756c8b3aeb7995b",
+-    "base": "10928ef28513fb178c3310c6610c689e7b6a39c4262d8363da3082598fd6ddbb",
+-    "pureLoader": "0c53a6bb33d57133c8fbb43b8787d9251ca4276abcdb18b2a9f434279bfe364b",
+-    "G09": "eeb78c7d5c97f45b18f3c0465926d905915c302dae4da25a24f887e3e9247227"
+-  },
+-  "noGitOrSourceMutation": true,
+-  "historyPreflight3All258RehashedAndMirrored": true
++  "GitInvoked": false,
++  "allSourceByteHashesChecked": 4765,
++  "commonBase679Included": true,
++  "currentLaneFiles": 4086,
++  "maps": [
++    {
++      "allCurrentBytesVerified": true,
++      "files": 679,
++      "lane": "base",
++      "mapPath": "maps/base.json",
++      "mapSha256": "1fb4209b11aa49ca8c77c17f825097b6bcc05eb8dd645be12d25415a5f5184e8",
++      "sourceRoot": "/Users/dbox/repos/wt/vickie/vickie-event-admission-replay-minimum"
++    },
++    {
++      "allCurrentBytesVerified": true,
++      "files": 679,
++      "lane": "D1",
++      "mapPath": "maps/D1.json",
++      "mapSha256": "ff8ad56f23c3d7ee6e652724501cdaa16ec9551ea24b1673dc6c74bf5c1c06b7",
++      "sourceRoot": "/Users/dbox/repos/wt/vickie/vickie-current-changefeed-minimum"
++    },
++    {
++      "allCurrentBytesVerified": true,
++      "files": 682,
++      "lane": "pureLoader",
++      "mapPath": "maps/pureLoader.json",
++      "mapSha256": "054d825cdc815260f0d4472c4b13fafca0130f1330798c8204a45a8de53f403d",
++      "sourceRoot": "/Users/dbox/repos/wt/vickie/vickie-trusted-startup-configuration"
++    },
++    {
++      "allCurrentBytesVerified": true,
++      "files": 679,
++      "lane": "D3a",
++      "mapPath": "maps/D3a.json",
++      "mapSha256": "0f259127fcad3d5206d724de2b57ba31e14cda36a76daa46a4b79e50d8fb3caf",
++      "sourceRoot": "/Users/dbox/repos/wt/vickie/vickie-tx-discovery-minimum"
++    },
++    {
++      "allCurrentBytesVerified": true,
++      "files": 686,
++      "lane": "startup",
++      "mapPath": "maps/startup.json",
++      "mapSha256": "601d8f8534250b34773aea56666f9040df82d3cda8ca0945d99cbce967f44d91",
++      "sourceRoot": "/Users/dbox/repos/wt/vickie/vickie-trusted-startup-lifecycle-correction-minimum"
++    },
++    {
++      "allCurrentBytesVerified": true,
++      "files": 679,
++      "lane": "D4",
++      "mapPath": "maps/D4.json",
++      "mapSha256": "7fb84ed403b7be9dd587ed2b2980d0d8e5def7e260186c948abd1c4a1f997dda",
++      "sourceRoot": "/Users/dbox/repos/wt/vickie/vickie-owned-set-retarget-minimum"
++    },
++    {
++      "allCurrentBytesVerified": true,
++      "files": 681,
++      "lane": "carrier",
++      "mapPath": "maps/carrier.json",
++      "mapSha256": "919829b131a0521c455a4fba968ae25edcda55c27c371b354e2af1c84a7fb096",
++      "sourceRoot": "/Users/dbox/repos/wt/vickie/vickie-cumulative-evidence-carrier-correction-minimum"
++    }
++  ],
++  "recordedHeadTreeAuthority": "root publication/candidate/source-inspection receipts only, never queried or inferred from branch names",
++  "utc": "2026-10-18T12:51:34.538425+00:00"
+ }

@@ -1,0 +1,93 @@
+--- historical/v7-companion.json
++++ closed/v8-companion.json
+@@ -241,24 +241,24 @@
+     "rootDispositionSha256": "ebe3688f91ec979e21e79bc52d92776e3d1abde27e021af2c09f8a78154836ef",
+     "all19Dispositioned": true
+   },
+-  "status": "CLOSED_V7_CANDIDATE_REANCHOR_DEPTH_MERGE_PENDING",
+-  "planSha256": "a05c4a7fc15eb3c89aeabd2734360d4692fee3c00694eeb6e271ecc125a58f5f",
+-  "previousPlanSha256": "591b1088e101bdb12d90e3366eea1ec2c605777a59e37ca804f68062da5e4a9e",
+-  "previousCompanionSha256": "15e050224f9bc5e1f2cee34d74023b2711adfb8e6651c337ca4f1cb55c2cf694",
+-  "patchSha256": "625e6fc18d57e450f06fa257e50d3b4ef2513713d7571ea476e94814e93a14c3",
+-  "currentContextCommit": "0d63cf59d447eca2e7ff8b2e0e6a5f31513b9a3a",
+-  "currentContextTree": "80a6fe0605698e18f9504432407e7943e1f665b4",
++  "status": "CLOSED_V8_MERGED_REANCHOR_ROOT_AUTHORING_REVIEW_PENDING",
++  "planSha256": "57c662f5e65fae5a4e1d103f1953a2754bbcf9a9d0e8ebb15f418805bab26f74",
++  "previousPlanSha256": "a05c4a7fc15eb3c89aeabd2734360d4692fee3c00694eeb6e271ecc125a58f5f",
++  "previousCompanionSha256": "2d2c341cda07ce15a189aa6d5fd0103b0c41750779dbfab51c0b40340b564a73",
++  "patchSha256": "538423da004c959afd25d935e40cb96c6f1061fa901816f948466732060b61c1",
++  "currentContextCommit": "18104a03b850553641f24fe83e7318493fa102ca",
++  "currentContextTree": "10810a8016a451e241ea974487681dcddd63c2e4",
+   "contextOrderedParents": [
+-    "77f4b89c117e46f0e73476f69b4c8b377306452b",
+-    "1f9cb46c42fa69a09ac847f57e47bc96390aea6f"
++    "0d63cf59d447eca2e7ff8b2e0e6a5f31513b9a3a",
++    "1b491d8b888627fcaa5f18908d4308b343397ca3"
+   ],
+   "contextProof": {
+-    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-changefeed-parameter-context-draft/landing/postmerge-verification.json",
+-    "sha256": "aeb03629fd82d95ee80c5d42deab0777210b457f622a22e5630dad4ed0f91f1e"
++    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-depth-key-order-draft/landing-preparation/postmerge-verification.json",
++    "sha256": "1447582be38d1af3d9e84db1c6ac408bd25381bb92aa389d62ba0cc67f61cb53"
+   },
+   "reviewedBaseCommit": "9a42a4531def99e12fa9a1fba02e70558d643265",
+-  "actualAuthoringParent": null,
+-  "actualAuthoringTree": null,
++  "actualAuthoringParent": "18104a03b850553641f24fe83e7318493fa102ca",
++  "actualAuthoringTree": "10810a8016a451e241ea974487681dcddd63c2e4",
+   "parameterMerge": "VERIFIED_0d63cf59d447eca2e7ff8b2e0e6a5f31513b9a3a",
+   "authoringReleased": false,
+   "executed": false,
+@@ -357,7 +357,19 @@
+       "jobSeconds": 914,
+       "jobMarginSeconds": 286
+     },
+-    "throughputGuarantee": false
++    "throughputGuarantee": false,
++    "PR131": {
++      "run": 38768400100,
++      "job": 116537531157,
++      "suiteSeconds": 784.04,
++      "jobSeconds": 1005,
++      "jobMarginSeconds": 195,
++      "testsPassed": 9308,
++      "testsSkipped": 1,
++      "testFilesPassed": 178,
++      "allStepsPassed": 27,
++      "throughputGuarantee": false
++    }
+   },
+   "axes": {
+     "mutationCurrent": {
+@@ -379,7 +391,7 @@
+     "orthogonal": true
+   },
+   "reviewRerunRequested": false,
+-  "depthMerge": "PENDING",
++  "depthMerge": "VERIFIED_18104a03b850553641f24fe83e7318493fa102ca",
+   "depthCandidate": {
+     "head": "1b491d8b888627fcaa5f18908d4308b343397ca3",
+     "tree": "10810a8016a451e241ea974487681dcddd63c2e4",
+@@ -388,9 +400,21 @@
+     ],
+     "pr": 131,
+     "ciRun": 38768400100,
+-    "ciState": "RUNNING_AS_REPORTED_BY_ROOT_AT_PREPARATION",
++    "ciState": "COMPLETED_SUCCESS_EXACT_HEAD",
+     "finalSourcePath": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-depth-key-order-draft/final-source.json",
+     "finalSourceSha256": "b5a5ecfff73cfa349e4e3ff1b2c9014edb2a75a8f16065be9b9c265d804fb579",
+     "isAuthoringParent": false
++  },
++  "actualDepthMerge": {
++    "head": "18104a03b850553641f24fe83e7318493fa102ca",
++    "tree": "10810a8016a451e241ea974487681dcddd63c2e4",
++    "parents": [
++      "0d63cf59d447eca2e7ff8b2e0e6a5f31513b9a3a",
++      "1b491d8b888627fcaa5f18908d4308b343397ca3"
++    ],
++    "testedSynthetic": "5dd229cb1beda15d0611fcc3c656161c365bbffb",
++    "ciOutcomePath": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-depth-key-order-draft/landing-preparation/ci-outcome.json",
++    "ciOutcomeSha256": "37f72f818e33fc3f1431d472dded3a4ee992eb209be2077edb40f60732b3ae4d",
++    "authoringReleased": false
+   }
+ }

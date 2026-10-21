@@ -1,0 +1,517 @@
+{
+  "configurationFinalized": true,
+  "state": "Frozen Event authored source/selection; all execution gates CLOSED",
+  "finalOrder": [
+    "workspace-install",
+    "bind-workspace-tools",
+    "typecheck",
+    "format-check",
+    "lint",
+    "fresh-build",
+    "bind-fresh-build",
+    "focused-source",
+    "review-focused-source",
+    "node-version",
+    "prepare-package-directory",
+    "pack-protocol",
+    "pack-server",
+    "verify-archives",
+    "prepare-consumer",
+    "consumer-install",
+    "verify-installed-consumer",
+    "historical-event-restart-external",
+    "review-historical-event-restart-external",
+    "current-event-admission-replay-external",
+    "review-current-event-admission-replay-external"
+  ],
+  "commands": {
+    "workspace-install": {
+      "cwd": "/Users/dbox/repos/wt/vickie/vickie-event-admission-replay-minimum",
+      "argv": [
+        "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+        "/Users/dbox/.cache/node/corepack/v1/pnpm/11.20.0/bin/pnpm.cjs",
+        "install",
+        "--offline",
+        "--ignore-scripts",
+        "--frozen-lockfile"
+      ],
+      "outerSeconds": 120,
+      "automaticRetries": 0,
+      "acceptedRawExitCodes": [
+        0
+      ],
+      "termAfterSeconds": 115
+    },
+    "bind-workspace-tools": {
+      "cwd": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/event-admission-replay-validation/metadata-successor-1",
+      "argv": [
+        "/opt/homebrew/opt/python@3.14/bin/python3.14",
+        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/event-admission-replay-validation/metadata-successor-1/audit.py",
+        "tools"
+      ],
+      "outerSeconds": 120,
+      "automaticRetries": 0,
+      "acceptedRawExitCodes": [
+        0
+      ],
+      "termAfterSeconds": 115
+    },
+    "typecheck": {
+      "cwd": "/Users/dbox/repos/wt/vickie/vickie-event-admission-replay-minimum",
+      "argv": [
+        "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+        "/Users/dbox/.cache/node/corepack/v1/pnpm/11.20.0/bin/pnpm.cjs",
+        "run",
+        "typecheck"
+      ],
+      "outerSeconds": 120,
+      "automaticRetries": 0,
+      "acceptedRawExitCodes": [
+        0
+      ],
+      "termAfterSeconds": 115
+    },
+    "format-check": {
+      "cwd": "/Users/dbox/repos/wt/vickie/vickie-event-admission-replay-minimum",
+      "argv": [
+        "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+        "/Users/dbox/repos/wt/vickie/vickie-event-admission-replay-minimum/node_modules/@biomejs/biome/bin/biome",
+        "format",
+        "--config-path=/Users/dbox/repos/wt/vickie/vickie-event-admission-replay-minimum/biome.json",
+        "apps/bdptest/src/transactional-event-sse-installed.test.ts",
+        "packages/server/src/transaction-event-sse.test.ts",
+        "packages/server/src/transaction-events.test.ts",
+        "packages/server/src/transaction-http.ts",
+        "packages/server/src/transaction-service.ts",
+        "packages/server/src/transaction-store.ts"
+      ],
+      "outerSeconds": 120,
+      "automaticRetries": 0,
+      "acceptedRawExitCodes": [
+        0
+      ],
+      "termAfterSeconds": 115
+    },
+    "lint": {
+      "cwd": "/Users/dbox/repos/wt/vickie/vickie-event-admission-replay-minimum",
+      "argv": [
+        "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+        "/Users/dbox/repos/wt/vickie/vickie-event-admission-replay-minimum/node_modules/@biomejs/biome/bin/biome",
+        "lint",
+        "--config-path=/Users/dbox/repos/wt/vickie/vickie-event-admission-replay-minimum/biome.json",
+        "apps/bdptest/src/transactional-event-sse-installed.test.ts",
+        "packages/server/src/transaction-event-sse.test.ts",
+        "packages/server/src/transaction-events.test.ts",
+        "packages/server/src/transaction-http.ts",
+        "packages/server/src/transaction-service.ts",
+        "packages/server/src/transaction-store.ts"
+      ],
+      "outerSeconds": 120,
+      "automaticRetries": 0,
+      "acceptedRawExitCodes": [
+        0
+      ],
+      "termAfterSeconds": 115
+    },
+    "fresh-build": {
+      "cwd": "/Users/dbox/repos/wt/vickie/vickie-event-admission-replay-minimum",
+      "argv": [
+        "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+        "/Users/dbox/.cache/node/corepack/v1/pnpm/11.20.0/bin/pnpm.cjs",
+        "run",
+        "build"
+      ],
+      "outerSeconds": 120,
+      "automaticRetries": 0,
+      "acceptedRawExitCodes": [
+        0
+      ],
+      "termAfterSeconds": 115
+    },
+    "bind-fresh-build": {
+      "cwd": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/event-admission-replay-validation/metadata-successor-1",
+      "argv": [
+        "/opt/homebrew/opt/python@3.14/bin/python3.14",
+        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/event-admission-replay-validation/metadata-successor-1/audit.py",
+        "build"
+      ],
+      "outerSeconds": 120,
+      "automaticRetries": 0,
+      "acceptedRawExitCodes": [
+        0
+      ],
+      "termAfterSeconds": 115
+    },
+    "focused-source": {
+      "cwd": "/Users/dbox/repos/wt/vickie/vickie-event-admission-replay-minimum",
+      "argv": [
+        "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+        "/Users/dbox/repos/wt/vickie/vickie-event-admission-replay-minimum/node_modules/vitest/vitest.mjs",
+        "run",
+        "packages/server/src/transaction-event-sse.test.ts",
+        "packages/server/src/transaction-events.test.ts",
+        "--maxWorkers=1",
+        "--reporter=verbose",
+        "--reporter=json",
+        "--outputFile.json=/Users/dbox/repos/wt/vickie/bdp-integration-logs/event-admission-replay-validation/metadata-successor-1/run/focused-source.results.json",
+        "--testNamePattern",
+        "^(?:gates\\ current\\ Event\\ replay\\ minima\\ before\\ cursor\\ validation:\\ scope|gates\\ current\\ Event\\ replay\\ minima\\ before\\ cursor\\ validation:\\ bead|gates\\ current\\ Event\\ replay\\ minima\\ before\\ cursor\\ validation:\\ link|captures\\ current\\ Event\\ replay\\ minimum\\ once\\ across\\ owner\\ entries:\\ scope\\-json|captures\\ current\\ Event\\ replay\\ minimum\\ once\\ across\\ owner\\ entries:\\ bead\\-json|captures\\ current\\ Event\\ replay\\ minimum\\ once\\ across\\ owner\\ entries:\\ link\\-json|captures\\ current\\ Event\\ replay\\ minimum\\ once\\ across\\ owner\\ entries:\\ scope\\-sse|captures\\ current\\ Event\\ replay\\ minimum\\ once\\ across\\ owner\\ entries:\\ bead\\-sse|captures\\ current\\ Event\\ replay\\ minimum\\ once\\ across\\ owner\\ entries:\\ link\\-sse|drains\\ current\\ Event\\ replay\\ admission\\ before\\ owner\\ close:\\ json|drains\\ current\\ Event\\ replay\\ admission\\ before\\ owner\\ close:\\ sse|serves\\ current\\ Event\\ replay\\ minima\\ across\\ media\\ and\\ reconnect\\ selection|serves\\ initial\\ finite\\ Scope\\ Event\\ opaque\\ minima\\ through\\ bounded\\ waiting|serves\\ initial\\ finite\\ Bead\\ Event\\ opaque\\ minima\\ with\\ retained\\ identity\\ and\\ route\\ fences|serves\\ initial\\ finite\\ Link\\ Event\\ opaque\\ minima\\ with\\ retained\\ identity\\ and\\ route\\ fences|serves\\ initial\\ Scope\\ Event\\ SSE\\ opaque\\ minima\\ before\\ conditional\\ admission|Event\\ reconnect\\ syntax,\\ minimum\\ ordering\\ and\\ exact\\ context\\ codes\\ are\\ preserved\\ over\\ HTTP)$"
+      ],
+      "outerSeconds": 120,
+      "termAfterSeconds": 115,
+      "automaticRetries": 0,
+      "acceptedRawExitCodes": [
+        0
+      ],
+      "selectedFullNames": [
+        "gates current Event replay minima before cursor validation: scope",
+        "gates current Event replay minima before cursor validation: bead",
+        "gates current Event replay minima before cursor validation: link",
+        "captures current Event replay minimum once across owner entries: scope-json",
+        "captures current Event replay minimum once across owner entries: bead-json",
+        "captures current Event replay minimum once across owner entries: link-json",
+        "captures current Event replay minimum once across owner entries: scope-sse",
+        "captures current Event replay minimum once across owner entries: bead-sse",
+        "captures current Event replay minimum once across owner entries: link-sse",
+        "drains current Event replay admission before owner close: json",
+        "drains current Event replay admission before owner close: sse",
+        "serves current Event replay minima across media and reconnect selection",
+        "serves initial finite Scope Event opaque minima through bounded waiting",
+        "serves initial finite Bead Event opaque minima with retained identity and route fences",
+        "serves initial finite Link Event opaque minima with retained identity and route fences",
+        "serves initial Scope Event SSE opaque minima before conditional admission",
+        "Event reconnect syntax, minimum ordering and exact context codes are preserved over HTTP"
+      ],
+      "selectedFilesByFullName": {
+        "gates current Event replay minima before cursor validation: scope": "packages/server/src/transaction-event-sse.test.ts",
+        "gates current Event replay minima before cursor validation: bead": "packages/server/src/transaction-event-sse.test.ts",
+        "gates current Event replay minima before cursor validation: link": "packages/server/src/transaction-event-sse.test.ts",
+        "captures current Event replay minimum once across owner entries: scope-json": "packages/server/src/transaction-event-sse.test.ts",
+        "captures current Event replay minimum once across owner entries: bead-json": "packages/server/src/transaction-event-sse.test.ts",
+        "captures current Event replay minimum once across owner entries: link-json": "packages/server/src/transaction-event-sse.test.ts",
+        "captures current Event replay minimum once across owner entries: scope-sse": "packages/server/src/transaction-event-sse.test.ts",
+        "captures current Event replay minimum once across owner entries: bead-sse": "packages/server/src/transaction-event-sse.test.ts",
+        "captures current Event replay minimum once across owner entries: link-sse": "packages/server/src/transaction-event-sse.test.ts",
+        "drains current Event replay admission before owner close: json": "packages/server/src/transaction-event-sse.test.ts",
+        "drains current Event replay admission before owner close: sse": "packages/server/src/transaction-event-sse.test.ts",
+        "serves current Event replay minima across media and reconnect selection": "packages/server/src/transaction-event-sse.test.ts",
+        "serves initial finite Scope Event opaque minima through bounded waiting": "packages/server/src/transaction-events.test.ts",
+        "serves initial finite Bead Event opaque minima with retained identity and route fences": "packages/server/src/transaction-events.test.ts",
+        "serves initial finite Link Event opaque minima with retained identity and route fences": "packages/server/src/transaction-events.test.ts",
+        "serves initial Scope Event SSE opaque minima before conditional admission": "packages/server/src/transaction-event-sse.test.ts",
+        "Event reconnect syntax, minimum ordering and exact context codes are preserved over HTTP": "packages/server/src/transaction-event-sse.test.ts"
+      },
+      "prospectiveWorkload": {
+        "sourceCallbacks": 17,
+        "installedCallbacks": 2,
+        "sourceHttp": 200,
+        "installedHistoricalHttp": 5,
+        "installedNewHttp": 10,
+        "sourceStores": 17,
+        "installedStores": 2,
+        "installedSequentialChildren": 3,
+        "sourceListeners": 6,
+        "newSourceReports": 12,
+        "existingSourceReports": 4
+      }
+    },
+    "review-focused-source": {
+      "cwd": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/event-admission-replay-validation/metadata-successor-1",
+      "argv": [
+        "/opt/homebrew/opt/python@3.14/bin/python3.14",
+        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/event-admission-replay-validation/metadata-successor-1/audit.py",
+        "source"
+      ],
+      "outerSeconds": 120,
+      "automaticRetries": 0,
+      "acceptedRawExitCodes": [
+        0
+      ],
+      "termAfterSeconds": 115
+    },
+    "node-version": {
+      "cwd": "/Users/dbox/repos/wt/vickie/vickie-event-admission-replay-minimum",
+      "argv": [
+        "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+        "--version"
+      ],
+      "outerSeconds": 120,
+      "automaticRetries": 0,
+      "acceptedRawExitCodes": [
+        0
+      ],
+      "termAfterSeconds": 115
+    },
+    "prepare-package-directory": {
+      "cwd": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/event-admission-replay-validation/metadata-successor-1",
+      "argv": [
+        "/opt/homebrew/opt/python@3.14/bin/python3.14",
+        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/event-admission-replay-validation/metadata-successor-1/packages.py",
+        "directory"
+      ],
+      "outerSeconds": 120,
+      "automaticRetries": 0,
+      "acceptedRawExitCodes": [
+        0
+      ],
+      "termAfterSeconds": 115
+    },
+    "pack-protocol": {
+      "cwd": "/Users/dbox/repos/wt/vickie/vickie-event-admission-replay-minimum",
+      "argv": [
+        "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+        "/Users/dbox/.cache/node/corepack/v1/pnpm/11.20.0/bin/pnpm.cjs",
+        "--filter",
+        "@bdp/protocol",
+        "pack",
+        "--pack-destination",
+        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/event-admission-replay-validation/metadata-successor-1/run/packages"
+      ],
+      "outerSeconds": 120,
+      "automaticRetries": 0,
+      "acceptedRawExitCodes": [
+        0
+      ],
+      "termAfterSeconds": 115
+    },
+    "pack-server": {
+      "cwd": "/Users/dbox/repos/wt/vickie/vickie-event-admission-replay-minimum",
+      "argv": [
+        "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+        "/Users/dbox/.cache/node/corepack/v1/pnpm/11.20.0/bin/pnpm.cjs",
+        "--filter",
+        "@bdp/server",
+        "pack",
+        "--pack-destination",
+        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/event-admission-replay-validation/metadata-successor-1/run/packages"
+      ],
+      "outerSeconds": 120,
+      "automaticRetries": 0,
+      "acceptedRawExitCodes": [
+        0
+      ],
+      "termAfterSeconds": 115
+    },
+    "verify-archives": {
+      "cwd": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/event-admission-replay-validation/metadata-successor-1",
+      "argv": [
+        "/opt/homebrew/opt/python@3.14/bin/python3.14",
+        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/event-admission-replay-validation/metadata-successor-1/packages.py",
+        "tar"
+      ],
+      "outerSeconds": 120,
+      "automaticRetries": 0,
+      "acceptedRawExitCodes": [
+        0
+      ],
+      "termAfterSeconds": 115
+    },
+    "prepare-consumer": {
+      "cwd": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/event-admission-replay-validation/metadata-successor-1",
+      "argv": [
+        "/opt/homebrew/opt/python@3.14/bin/python3.14",
+        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/event-admission-replay-validation/metadata-successor-1/packages.py",
+        "consumer"
+      ],
+      "outerSeconds": 120,
+      "automaticRetries": 0,
+      "acceptedRawExitCodes": [
+        0
+      ],
+      "termAfterSeconds": 115
+    },
+    "consumer-install": {
+      "cwd": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/event-admission-replay-validation/metadata-successor-1/run/consumer",
+      "argv": [
+        "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+        "/Users/dbox/.cache/node/corepack/v1/pnpm/11.20.0/bin/pnpm.cjs",
+        "install",
+        "--offline",
+        "--ignore-scripts",
+        "--no-frozen-lockfile",
+        "--prod"
+      ],
+      "outerSeconds": 120,
+      "automaticRetries": 0,
+      "acceptedRawExitCodes": [
+        0
+      ],
+      "termAfterSeconds": 115
+    },
+    "verify-installed-consumer": {
+      "cwd": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/event-admission-replay-validation/metadata-successor-1",
+      "argv": [
+        "/opt/homebrew/opt/python@3.14/bin/python3.14",
+        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/event-admission-replay-validation/metadata-successor-1/packages.py",
+        "installed"
+      ],
+      "outerSeconds": 120,
+      "automaticRetries": 0,
+      "acceptedRawExitCodes": [
+        0
+      ],
+      "termAfterSeconds": 115
+    },
+    "historical-event-restart-external": {
+      "cwd": "/Users/dbox/repos/wt/vickie/vickie-event-admission-replay-minimum",
+      "argv": [
+        "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+        "/Users/dbox/repos/wt/vickie/vickie-event-admission-replay-minimum/node_modules/vitest/vitest.mjs",
+        "run",
+        "apps/bdptest/src/transactional-event-sse-installed.test.ts",
+        "--maxWorkers=1",
+        "--reporter=verbose",
+        "--reporter=json",
+        "--outputFile.json=/Users/dbox/repos/wt/vickie/bdp-integration-logs/event-admission-replay-validation/metadata-successor-1/run/historical-event-restart-external.results.json",
+        "--testNamePattern",
+        "^installed\\ Event\\ cursors\\ survive\\ restart\\ with\\ Last\\-Event\\-ID\\ precedence\\ and\\ source\\ binding$"
+      ],
+      "outerSeconds": 120,
+      "termAfterSeconds": 115,
+      "automaticRetries": 0,
+      "acceptedRawExitCodes": [
+        0
+      ],
+      "selectedFullNames": [
+        "installed Event cursors survive restart with Last-Event-ID precedence and source binding"
+      ],
+      "selectedFilesByFullName": {
+        "installed Event cursors survive restart with Last-Event-ID precedence and source binding": "apps/bdptest/src/transactional-event-sse-installed.test.ts"
+      },
+      "prospectiveWorkload": {
+        "callbacks": 1,
+        "requests": 5,
+        "children": 2,
+        "stores": 1,
+        "workMs": 45000,
+        "requestMs": 5000,
+        "cleanupMs": 10000,
+        "callbackMs": 60000
+      },
+      "expectedObservation": "private-event-restart-cursor",
+      "expectedExchanges": 5,
+      "expectedChildren": 2
+    },
+    "review-historical-event-restart-external": {
+      "cwd": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/event-admission-replay-validation/metadata-successor-1",
+      "argv": [
+        "/opt/homebrew/opt/python@3.14/bin/python3.14",
+        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/event-admission-replay-validation/metadata-successor-1/audit.py",
+        "history"
+      ],
+      "outerSeconds": 120,
+      "automaticRetries": 0,
+      "acceptedRawExitCodes": [
+        0
+      ],
+      "termAfterSeconds": 115
+    },
+    "current-event-admission-replay-external": {
+      "cwd": "/Users/dbox/repos/wt/vickie/vickie-event-admission-replay-minimum",
+      "argv": [
+        "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+        "/Users/dbox/repos/wt/vickie/vickie-event-admission-replay-minimum/node_modules/vitest/vitest.mjs",
+        "run",
+        "apps/bdptest/src/transactional-event-sse-installed.test.ts",
+        "--maxWorkers=1",
+        "--reporter=verbose",
+        "--reporter=json",
+        "--outputFile.json=/Users/dbox/repos/wt/vickie/bdp-integration-logs/event-admission-replay-validation/metadata-successor-1/run/current-event-admission-replay-external.results.json",
+        "--testNamePattern",
+        "^observes\\ installed\\ current\\ Event\\ replay\\ minimum\\ admission\\ across\\ sources$"
+      ],
+      "outerSeconds": 120,
+      "termAfterSeconds": 115,
+      "automaticRetries": 0,
+      "acceptedRawExitCodes": [
+        0
+      ],
+      "selectedFullNames": [
+        "observes installed current Event replay minimum admission across sources"
+      ],
+      "selectedFilesByFullName": {
+        "observes installed current Event replay minimum admission across sources": "apps/bdptest/src/transactional-event-sse-installed.test.ts"
+      },
+      "prospectiveWorkload": {
+        "callbacks": 1,
+        "requests": 10,
+        "children": 1,
+        "stores": 1,
+        "workMs": 45000,
+        "requestMs": 5000,
+        "cleanupMs": 10000,
+        "callbackMs": 60000
+      },
+      "expectedObservation": "private-installed-event-admission-replay-minimum",
+      "expectedExchanges": 10,
+      "expectedChildren": 1
+    },
+    "review-current-event-admission-replay-external": {
+      "cwd": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/event-admission-replay-validation/metadata-successor-1",
+      "argv": [
+        "/opt/homebrew/opt/python@3.14/bin/python3.14",
+        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/event-admission-replay-validation/metadata-successor-1/audit.py",
+        "replay"
+      ],
+      "outerSeconds": 120,
+      "automaticRetries": 0,
+      "acceptedRawExitCodes": [
+        0
+      ],
+      "termAfterSeconds": 115
+    }
+  },
+  "expectedProductionVersions": {
+    "@bdp/protocol": "0.0.0",
+    "@bdp/server": "0.0.0",
+    "ajv": "8.17.1",
+    "ajv-formats": "3.0.1",
+    "fast-deep-equal": "3.1.3",
+    "fast-uri": "3.1.5",
+    "json-schema-traverse": "1.0.0",
+    "require-from-string": "2.0.2"
+  },
+  "pending": [
+    "Native/root review of this closed validation rebind and staged execution release",
+    "Root measured base tools and fresh workspace bootstrap/tools",
+    "Actual build/archive/consumer lock/proof"
+  ],
+  "freshBootstrapStages": 2,
+  "postBootstrapStages": 19,
+  "totalStages": 21,
+  "reusedEvidence": [],
+  "sourceBindingSha256": "6837b28c3ec6c75bf9c085f002029932a65b3c32e7da482cf3497b3f7d8dd4c9",
+  "helperImplementationFinalized": true,
+  "runtimeTempPolicy": {
+    "root": "/private/tmp",
+    "allocation": "new unique task-owned directory per actual stage; record literal and realpath",
+    "reason": "avoid ancestor .beads/proxieddb discovery under /Users/dbox; no shared database access",
+    "noDirectoryCreatedYet": true
+  },
+  "requiredPublicationChecks": {
+    "state": "Separate required-checks sibling prepared CLOSED",
+    "commands": [
+      [
+        "pnpm",
+        "run",
+        "check:boundaries"
+      ],
+      [
+        "pnpm",
+        "run",
+        "e2e:ready:preflight"
+      ],
+      [
+        "pnpm",
+        "run",
+        "smoke"
+      ],
+      [
+        "pnpm",
+        "run",
+        "evidence:verify"
+      ]
+    ],
+    "policy": "Retain normal required checks/hooks and exact-head CI. Do not fabricate local pass or evidence, regenerate historical evidence, or add an arbitrary full local suite. Stage/supervisor scope for these normal checks must be fixed before release if root runs locally. Evidence nonzero remains explicit no-claim/failure, never silently accepted as qualification."
+  }
+}

@@ -1,0 +1,9 @@
+# Carrier source3: bounded N5 capacity correction
+
+Added the missing10000-key guard in the intrinsic supplied-record capture path before recursive child traversal. It uses the existing fixed capacity refusal; primitive/Proxy/accessor/function checks and shared100000-node/depth128 budget remain. Exactly the private module and test file changed; all679 other candidate files, both adapters and677 cce paths remain exact.
+
+Existing R24 now contains two finite boundary controls. An intentionally malformed supplied transport record with a10000-key nested object must finish capture and reach ordinary configuration-mismatch; it is not represented as a valid configuration. A10001-key nested object whose final value contains an accessor must fail specifically with capacity before traversing that child, with zero accessor invocations asserted. These are prospective assertions, not executed results. All48 callback IDs/default5s and original TX63000 assertion, runner calls, wire/children, source4MiB/summary1MiB/two-owner and output contracts remain unchanged.
+
+Before/after maps cover all681 files. Exact source2/native/root-disposition/Git-inspection origins are preserved as historical authority; true correction, semantic/preformat, format-only, cumulative16c and cumulativecce forward/inverse pairs identify the two original new files by existence. Source2 sole Low finding remains immutable; this packet proposes its correction, with independent native/root acceptance unresolved. Root must supply current Git binary/status/new clean HEAD separately.
+
+The exact authorized pinned Biome FORMAT--write invocation ran once on the two paths, exited0 in0.0289583751s and reported No fixes applied; preformat equals final. No postformat edits, format-check/compiler/lint/test/build/install/runtime/helper/reviewer/Git/flag execution occurred. FIRST actual CODE and subsequent exact validation remain CLOSED.

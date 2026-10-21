@@ -1,0 +1,9 @@
+# Closed actual Claude code review of parser refusal draft
+
+Review the whole frozen three-file implementation against d4f3f4be and the pinned monolithic specification, including production, test fixture/counters, typing, HEAD handling, actual installed topology and cleanup. This preparation supplies no self-review verdict. Author packet and complete patch are preserved; source remains live and frozen at the released worktree. All679 tracked files are bound (three changed files plus676 context files), HEAD and exact dirty tracked scope verified by the runner. Preparation additionally confirms branch and no untracked files. No historical validation evidence is presented as current pass.
+
+rootLaunchReleased:false. Root inspects and releases exactly one run; no retries. Safe mode, default model (no override), Read/Glob/Grep only, no slash commands, strict empty MCP, no session persistence. stream-json/verbose/partial records retain observable intermediate activity. Actual args, executable hashes and previous local help evidence are bound.3600s wall bound, TERM at3595, process group cleanup and sampling unchanged. One nonempty successful terminal result with exit0, unchanged source/packet and no cleanup/survivors yields reviewComplete; partial output, timeout, max-turn, error or permissions denial never approval. Root dispositions findings independently.
+
+Runner is copied from the completed initial-collection-unknown-review; only cwd changes to vickie-parser-refusal. Parser and argument bytes are identical. Python AST/data/hash checks during preparation do not execute either runner or product imports. No tests/build/install/source edit/commit/push permitted.
+
+Exact launch after root releases binding: /opt/homebrew/opt/python@3.14/bin/python3.14 /Users/dbox/repos/wt/vickie/bdp-integration-logs/parser-refusal-code-review/run.py

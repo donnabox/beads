@@ -1,0 +1,29 @@
+## Review: lint repair (noUnsafeFinally) on guarded Read+Update overlap test
+
+### Behavior assessment — no semantic change found
+
+Comparing the two full sources, the only differences are the added module-scope `writeObservation` (after.ts:131–134) and the one-line call site replacing two lines (after.ts:668). Specifically preserved:
+
+- **Order of operations**: `path.isAbsolute` guard → `JSON.stringify(record)` → `writeFileSync(..., { flag: "wx" })`. Unchanged, including the exclusive-create flag (no clobber of an existing output path).
+- **Failure preservation**: the `throw new Error("overlap:absolute-output")` was already caught by the adjacent `catch` and funneled into `failures` / `cleanupFailures.push("report-write")` / `terminationClass ??= "cleanup"`. It never propagated out of `finally`, so it never masked the pending `try`/`catch` outcome — the lint rule was firing lexically, not on a real masking hazard. Moving the throw out of the `finally` ancestry removes the lexical trigger without altering which exception wins; any throw from `writeObservation` is still caught at the call site.
+- **Cleanup**: no change to `clearTimeout(timer)`, the abort, `active` destruction, drain/close `allSettled`, `rmSync`, the trailing `console.log(JSON.stringify(record))`, or the final `AggregateError`. The post-failure mutations to `record` (outcome/failureCount/cleanupFailures/terminationClass) still occur after the write attempt and therefore still affect only the stdout copy, not the file — same as before.
+- **Privacy**: the thrown message is a fixed code with no interpolation of `output`; the env var and path are still not written into `record` or into the error surfaced in the `AggregateError`. No new logging, no new filesystem target, no environment mutation (scrubbing remains the external supervisor's job).
+- **Timing/accounting**: `writeObservation` is synchronous, post-cleanup, no timers and no I/O other than the single write — the 30s work deadline / 45s Vitest budget, `attempted`/`bodyBytes` invariants, and the mode/entry logic are untouched.
+
+### Findings
+
+**1. `record: unknown` is looser than the value it replaces — Low**
+- Location: after.ts:131 (`function writeObservation(output: string, record: unknown)`)
+- Impact: `JSON.stringify` accepts `any`, so this compiles, but TS's overload declares a `string` return while `JSON.stringify(undefined)` returns `undefined` at runtime. A future second caller passing `undefined`/a non-object would silently write the literal line `undefined`, where the inline version was structurally pinned to the concrete `record` object. No effect on current behavior (the single call site passes the record object).
+- Fix: narrow the parameter to `object` (or a named observation type / `Record<string, unknown>`).
+
+**2. Supplied patch paths are a draft pair, not the test file — Low (process)**
+- Location: diff header — `bdp-integration-logs/read-update-guarded-overlap-draft/lint-repair/before.ts` → `.../after.ts`
+- Impact: the before/after paths differ and point at a scratch directory, so this diff is not applicable with `git apply` to `apps/bdptest/src/read-update-guarded-overlap-installed.test.ts` (the untracked file in the working tree). The reviewed change is correct, but landing it requires reproducing the same two edits in the real file, and the pinned lint run has not been exercised against that file.
+- Fix: regenerate the patch against the actual test path before landing, then re-run the pinned lint; expectation is that the rule clears, since it keys on `finally` ancestry up to the nearest function boundary and the throw is now at module scope — but that is an expectation, not a verified run (you stated no execution yet).
+
+**Informational (no action needed):** the thrown `Error`'s stack now originates in `writeObservation` rather than inline in `finally`. The stack is not serialized into `record`, so neither the file nor stdout changes; only the `AggregateError` member's stack frame differs. Also, the helper name does not advertise its absolute-path precondition — cosmetic only.
+
+Hunk line arithmetic is self-consistent (+5 on the first hunk, −1 net on the second, offsets 128→128 and 660→665), and `writeObservation` collides with no existing identifier or import in the file.
+
+No findings re-open the original overlap/lifecycle scope, and I have not treated absent snippets as defects.

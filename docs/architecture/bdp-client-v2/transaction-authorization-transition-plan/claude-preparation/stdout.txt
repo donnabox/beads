@@ -1,0 +1,99 @@
+# Review — private authorization-transition plan (planning only; no files written, no commands run)
+
+All line references are to the exact supplied excerpts. Evidence counts in the plan are proposed, not executed; I treat them as claims.
+
+---
+
+## Findings
+
+**1. Architecture — adopt the bounded principal→snapshot map, not a Scope-wide binding.**
+*Severity:* High (design gate) · *Location:* `transaction-store.ts:251,576-591`; `transaction-runtime-configuration.ts:226-232`; `bdp.md:5234`
+*Issue:* The packet asks whether a single Scope-wide all→empty binding is the smallest safe start. It is not. Three supplied facts already make the serving principal the natural key: receipt projection is defined under *"the serving request's current Authorization View"* (5234), credentials already carry a validated `principal` (227-232), and `disclosedReceipt` is already keyed `WHERE principal=?` (841-843). A Scope-wide row makes the *durable* shape wrong, so adding partial policy later re-migrates retained facts — exactly what root forbids. Worse, a Scope-wide view token binds client cursors to a projection identity that must later split per principal, breaking the "stable across restarts that preserve the same projection" property (3709-3711).
+*Remedy:* Durable shape = `policy(principal, generation, view, readPolicy, canMutate)` with one reserved wildcard-principal row as the Scope default; the first release populates only wildcard rows and only the two built-in `readPolicy` values. Runtime shape = one frozen `AuthorizationSnapshot { principal, generation, view, readPolicy, canMutate }` captured once per guarded owner observation, and made the *sole* source for read policy, `canReadType`, write-path policy, mutation permission, receipt projection and the view token. Resolution order: exact principal row, else wildcard. This is additive-only when partial policy arrives.
+
+**2. Retained-group view equality is a fault path, and the served group re-emits stored view bytes.**
+*Severity:* Critical · *Location:* `transaction-events.ts:199-209`; `transaction-changefeed.ts:152-164`
+*Issue:* `projectTransactionEventGroup` throws plain `Error("retained Event group context mismatch")` when `group.authorizationView !== context.authorizationView`. After any rotation, *every* retained group row carries the old writer view, so every historical changefeed/Event projection becomes an integrity fault (500) instead of the required identifier-free projection advance. Separately, `projectTransactionChangeGroup` copies `scopeEpoch: group.scopeEpoch, authorizationView: group.authorizationView` into the wire group, but 6117/6135 require those values *as the group is served* — a rotated store would serve a stale view token and poison client fences.
+*Remedy:* Split the one equality check into two: (a) validate the stored `authorizationView` against the writer view recorded for that position in the durable generation record (plus the existing epoch/position/checkpoint/ordinal/framing checks) — mismatch there stays a fault; (b) render under the current snapshot, emitting `context.scopeEpoch`/`context.authorizationView` on the wire. Do not delete the check; re-anchor it to the writer generation.
+
+**3. Snapshot handle refusal is classified as corruption and runs before token legitimacy; `expire()` will fence the owner.**
+*Severity:* Critical · *Location:* `transaction-snapshot.ts:205-208,546-575`; `transaction-store.ts:1534-1548`
+*Issue:* `integrity(d.epoch === context.scopeEpoch && d.view === context.authorizationView, "persisted context mismatch")` makes an expected old-view handle a fault, not `409 foreign-view` (1904, 3714). Ordering is also inverted versus requirement 5: `resolve` calls `disposition()` (view check) *before* the `timingSafeEqual` page-token legitimacy check (560-572) and before expiry (573). Most dangerous: `readSnapshot`/`readSnapshotPage` call `atomic(() => snapshots.expire(now, context))` *before* resolving the target; if `expire` validates dispositions against the current context, the first post-transition snapshot read faults inside `atomic`, which calls `fence()` (362-370) and bricks the owner for every later witness.
+*Remedy:* (i) `expire` must use epoch/position/time only and never compare the current view. (ii) Decode-and-structure integrity stays a fault; a cleanly decoded record whose `view` matches a *known prior generation* raises a new `TransactionSnapshotFailure("foreign-view")` → 409 `conflict`, `after-state-change`; an unknown/undecodable view value remains a fault. (iii) Order: id shape → existence/nondisclosure → page-token `timingSafeEqual` → expiry/foreign-view (per finding 13) → materialization.
+
+**4. A rotation during a live stream is recorded as a stream fault.**
+*Severity:* High · *Location:* `transaction-store.ts:1689-1694`; `transaction-runtime.ts:205-213,229-237`
+*Issue:* `advanceEventScan` throws a generic `Error("Event scan context changed or head regressed")` on view change; the changefeed pull raises `TransactionMinimumFailure("foreign-view")` from `checkpointPosition` (changefeed 90-91), and `transaction-runtime.ts` then records `firstStreamFault` whenever `headersSent && !streamSignal.aborted`. A *correct* transition that wins the race against a pending pull therefore surfaces as a service fault, and `changes(...)` returning non-`page` throws `"changefeed stream lost serving entry"`.
+*Remedy:* Abort every registered old-view lease signal inside the same guarded owner operation, after commit and before releasing `busy`, so `streamSignal.aborted` is already true on the losing path. Additionally classify an expected `foreign-view` fence raised inside a live pull as ordinary termination (no `firstStreamFault`, no second HTTP response, no synthesized Event — requirement 6), keeping head-regression and epoch change as faults. Drop old-generation `eventScans` entries at publication so a retained scan handle cannot be advanced afterwards.
+
+**5. Mutation permission is credential-derived and the write path hard-codes all-true policy.**
+*Severity:* High · *Location:* `transaction-http.ts:306-312,333-338`; `transaction-runtime-configuration.ts:321-330`; `transaction-store.ts:1246-1247`
+*Issue:* `canMutate` is read off the immutable credential in the HTTP layer before the owner is consulted, which is precisely the bypass requirement 4 names. Independently, the batch execution context passes `aliasPolicy: { canRead: ()=>true, canWriteBead: ()=>true }` and `policy: { canRead: ()=>true, canCreate: ()=>true, canWrite: ()=>true }`, so "direct owner mutation entry must enforce the selected restriction" is unmet and postimage/change computation would run under all-visible read even when the serving view is empty.
+*Remedy:* Make effective mutation permission the conjunction of the credential grant and the snapshot's `canMutate`, resolved inside the guarded observation; keep the HTTP 403 only as a credential-level refusal so an unauthorized credential still never reaches the owner. Thread the snapshot into the batch context so `policy`/`aliasPolicy` are snapshot-derived even while both built-ins are degenerate — otherwise the later grant case rewrites this seam. Add an owner CPU witness that a direct `run([...])` refuses under revoked mutation with no admission, position, group or receipt row.
+
+**6. The rotating view cannot live in the exact-bytes installation configuration.**
+*Severity:* High · *Location:* `transaction-store.ts:251,284-295,540-546`; `transaction-runtime-configuration.ts:357-377`
+*Issue:* `configuration` embeds `authorizationView: view` and reopen enforces `storedConfiguration !== configuration` → `"transaction installation mismatch"`. If the transition rewrites that row, the installation-identity detector and old-binary rejection are destroyed; if it does not, the row permanently claims `development-all-visible` while the live view differs. Then `transaction-runtime-configuration.ts:362-366` hard-asserts `actual.authorizationView !== "development-all-visible" || policyIdentity !== authorizationView` → `"unexpected live transaction policy"`, and 373-377 digests a literal `read: "all-visible"`. A legitimately transitioned store would refuse to serve on reopen and, before that, publish a policy identity asserting all-visible for an empty view.
+*Remedy:* Keep `configuration` immutable and provisioning-only: rename the field to `initialAuthorizationView`, add `policyStorageRevision: "transaction-policy-store-1"`, and put current generation/view/read/canMutate in a separate mandatory `policy` metadata record created in the same open `atomic()` (531). Widen the runtime liveness assertion to the bounded set of built-in policy identities and derive `policyIdentity` from the snapshot (revision + view + readPolicy + canMutate), preserving the mismatch-detection intent. Publish the metadata `policyIdentity` explicitly as a provisioning-time fact or recompute it on transition — as written it goes stale silently.
+
+**7. The projection-advance group has no type, and its checkpoint form is unpinned.**
+*Severity:* High · *Location:* `transaction-changefeed.ts:38-50,79,144-164`; `bdp.md:6141-6157`
+*Issue:* `TransactionChangeGroup` declares `projectionAdvance: false` and a *required* `transaction: string`, and the projector hard-codes `projectionAdvance: false`. The empty-view rendering required by requirement 3 has no representable shape. Separately, line 79 is a ternary whose non-advance branch tags epoch and view into the checkpoint; if the advance branch is view-free, then under the empty view *every* checkpoint is view-free, and an empty-view client's checkpoint would survive a later re-grant — a hole in the exact fence the plan is built on.
+*Remedy:* Make the type a union with `TransactionProjectionAdvanceGroup { projectionAdvance: true; eventCount: 0; changes: []; erasures: []; events: [] }`, no `transaction`, `previousPosition` preserved; extend `freezeChangefeedPage` and the published `changeGroup`/`changefeedPage` validation to admit it (this is a bounded schema-bundle addition the plan does not list — name it in scope rather than discovering it while authoring). Require projection-advance checkpoints to carry the serving view tag; only a literal position-0 checkpoint may be view-free.
+
+**8. The view token must be generation-unique, not policy-content-derived.**
+*Severity:* Medium-High · *Location:* plan requirement 1; `bdp.md:3709-3715`
+*Issue:* "An actual projection change allocates a new stable opaque view" does not forbid reuse. With two built-in policies, an all→empty→all sequence that derives the token from policy content reproduces the first token, letting a stale old-view cursor resume against a different logical projection.
+*Remedy:* Derive the token from (epoch, monotone generation counter, policy), persist the counter, and assert in a reopen witness that re-selecting a previously held policy yields a *fresh* token while a reopen with no transition yields the identical token.
+
+**9. The read plane has no view-stability guard, and `observeReceipt` can take a second observation.**
+*Severity:* Medium-High · *Location:* `authority-read.ts:474-503`; `transaction-store.ts:807-810`
+*Issue:* `authority-read.ts:481-485` asserts the captured *epoch* cannot change during plane lifetime but has no equivalent for the view — with a rotating view, requirement 1's single-capture rule is unenforced at the exact boundary that is supposed to enforce it. And `observeReceipt(receipt, context = readContext())` defaults to a fresh `readContext()`, i.e. an independent second policy/position read.
+*Remedy:* Add a captured-view/generation stability assertion alongside the epoch one, keyed to the snapshot generation, so a plane built from one snapshot cannot project rows observed under another. Make `readContext()` produce exactly one observation per `enter()` and thread it; remove the defaulted parameter.
+
+**10. Receipt full-withholding shape and the retained receipt page token.**
+*Severity:* Medium · *Location:* `transaction-store.ts:800-803,835-837`; `bdp.md:5240-5253`
+*Issue:* `receiptPrefix` always emits `results` and a `next` page URL. Under full withholding 5248-5250 requires *neither* `results`, `next`, nor `allocated`, with `detail: withheld`. An already-issued receipt page URL is also an escape path if the page handler does not re-authorize under the current snapshot.
+*Remedy:* Compute withholding from the snapshot before paging; when every entry is withheld emit no `results`/`next`/`allocated` and set `detail: withheld`, retaining disposition, `requiredPosition`, `effectPosition` (5251). Re-authorize issued receipt-page tokens under the current snapshot and pin their post-transition status (see missing context).
+
+**11. The "no historical reprojection" claim is too strong.**
+*Severity:* Medium · *Location:* `transaction-changefeed.ts:81-92`; `transaction-store.ts:1716-1744`
+*Issue:* `checkpointPosition` returns 0 early for a zero checkpoint, before any view tag check, and `readChanges` happily walks positions 1..head from `start=0`. So a position-0 cursor crosses the transition and reprojects every historical group under the empty view. That is defensible behavior, but it means the empty-view renderer *is* on the historical path and the plan's "requires no arbitrary pre/post filtering" is an assumption, not a consequence.
+*Remedy:* State the zero checkpoint as deliberately view-free, and add a witness that resuming from 0 after the transition yields only identifier-free projection advances (no transaction or Resource IDs, `eventCount` 0) for the full retained range.
+
+**12. The minimum-wait loop may retry a terminal fence.**
+*Severity:* Medium · *Location:* `transaction-service.ts:390-412`
+*Issue:* `changes()` takes `captureChangesStart()` in one owner entry and `readChanges(after, minimum)` in another, then wraps the read in `waitForTransactionMinimum(..., minimumReads, signal)`. A rotation between the two makes the anchor old-view; whether the resulting `foreign-view` failure is terminal or retried is not settled by the supplied code.
+*Remedy:* Pin `foreign-view`/`cursor-expired` as terminal inside `waitForTransactionMinimum` (only genuine minimum-position waits retry), and require `captureChangesStart()` to return a view-tagged checkpoint so the race fails closed rather than silently continuing under the new view.
+
+**13. Witness and sensitivity-control gaps.**
+*Severity:* Medium · *Location:* plan witness sections
+*Issue:* (a) No post-transition witness distinguishes `404` for an unknown snapshot id from the new `409` for a known foreign handle on the HTTP path, and none exercises an *expired* old-view handle — yet 5973 lists both `410 cursor-expired` and "ordinary epoch/view" failures without fixing precedence. (b) Witness 15 seeds 33 creates, so all entries withhold; a blanket-withhold implementation passes while violating 5243-5247 (`matched` counts, `deleted`/`erased` identities and a `failed` receipt's `problem` are execution facts served as retained). (c) One sensitivity control suppressing *both* publication and cancellation can pass by coincidence.
+*Remedy:* Add the 404-unknown and 410-expired post-transition cases (accepting 16→18 HTTP in the main callback, or placing them in the CPU callback — this is witness count, not a runtime-limit increase). Add a second receipt fixture containing at least one non-Resource entry that must stay disclosed. Split the control into two: rotation-suppressed (must fail the 409 oracles, leases still abort) and lease-abort-suppressed (must fail the pump oracle). The zero-HTTP pump oracle is otherwise well-founded: per `transaction-sse.ts:63-86`, `write` registers the abort listener and checks `signal.aborted` immediately, so a pre-aborted lease rejects before a chunk is pushed — assert `sink.chunks` unchanged, `scans` empty, and listener count 0, exactly as `transaction-event-sse.test.ts:107-119` does.
+
+**14. Old-binary rejection diagnosis.**
+*Severity:* Low · *Location:* `transaction-store.ts:540-546`
+*Issue:* Old binaries reject the new configuration only at the byte-equality check (545); the `JSON.parse(...).identityPolicy` read at 541 runs first.
+*Remedy:* Keep `identityPolicy` present and in the same position in the new configuration so the old binary throws `"transaction installation mismatch"` rather than a parse failure. Also require the migration to refuse when `options.create` is true and a policy row already exists, and to accept only the exact legacy byte preimage — meaning a legacy configuration builder with the exact original key order must be retained, since `json({...})` serializes in insertion order.
+
+---
+
+## Missing context needed before authoring
+
+- The omitted `?` branch of `transaction-changefeed.ts:79` (projection-advance checkpoint form) — finding 7 turns on it.
+- `transaction-snapshot.ts` `disposition()` body and whether `expire()` validates the current view (finding 3).
+- `TransactionSnapshotFailure` variant set and its HTTP mapping; whether a `foreign-view` variant exists.
+- Event cursor grammar: whether the `ev_…` id at `transaction-events.ts:96-100` is accepted as `after` (witness 14 is a 409 oracle only if it is).
+- `metadata()` behavior on a missing key, and `receiptPrefix`/`plan` bodies (finding 10).
+- `waitForTransactionMinimum` retry classification (finding 12).
+- Exact legacy configuration preimage bytes, key order, and the chosen format/revision literals.
+- Receipt-page handler: does it re-resolve authorization, and what status should an issued old-view receipt page return?
+- Whether the published metadata `policyIdentity` has any external consumer that would observe staleness after a transition.
+
+## Pending product decisions (not settled by this plan)
+
+Precedence between `410 cursor-expired` and `409 foreign-view` for a handle that is both expired and old-view; the status for an issued old-view receipt-page token; and, for the later partial-policy work, whether create is permitted under a read-empty-but-mutation-allowed policy. Pin each explicitly rather than letting implementation order decide.
+
+## Verdict
+
+**Approve the architecture, reject the plan as written for authoring.** The principal→snapshot seam is the right foundation and the witness strategy is largely sound. But findings 2, 3 and 5 mean the current code would turn the plan's own required refusals into 500-class faults — one of them fencing the owner through `atomic`/`fence` — and finding 7 shows the empty-view wire shape has no representable type. Fix 2, 3, 5, 6 and 7 in the plan (classification split, `expire` de-coupling, snapshot-sourced mutation/write policy, provisioning-vs-current configuration split, projection-advance union plus its schema addition), adopt the per-principal durable shape and generation-unique token from findings 1 and 8, then add the witnesses in 13. The remaining items are tightenings that can land with the same change.

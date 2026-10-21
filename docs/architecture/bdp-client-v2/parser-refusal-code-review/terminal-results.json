@@ -1,0 +1,112 @@
+[
+  {
+    "duration_api_ms": 1018893,
+    "stop_reason": "end_turn",
+    "session_id": "4a84839b-4d9b-44a8-9ffa-a08b0e5650a2",
+    "total_cost_usd": 9.500725000000003,
+    "usage": {
+      "input_tokens": 160,
+      "cache_creation_input_tokens": 229220,
+      "cache_read_input_tokens": 10592962,
+      "output_tokens": 76356,
+      "output_tokens_details": {
+        "thinking_tokens": 57991
+      },
+      "server_tool_use": {
+        "web_search_requests": 0,
+        "web_fetch_requests": 0
+      },
+      "service_tier": "standard",
+      "cache_creation": {
+        "ephemeral_1h_input_tokens": 229220,
+        "ephemeral_5m_input_tokens": 0
+      },
+      "inference_geo": "global",
+      "iterations": [
+        {
+          "input_tokens": 2,
+          "output_tokens": 6742,
+          "cache_read_input_tokens": 226290,
+          "cache_creation_input_tokens": 7676,
+          "cache_creation": {
+            "ephemeral_5m_input_tokens": 0,
+            "ephemeral_1h_input_tokens": 7676
+          },
+          "type": "message"
+        }
+      ],
+      "speed": "standard"
+    },
+    "modelUsage": {
+      "claude-haiku-4-5-20251001": {
+        "inputTokens": 2259,
+        "outputTokens": 17,
+        "cacheReadInputTokens": 0,
+        "cacheCreationInputTokens": 0,
+        "webSearchRequests": 0,
+        "costUSD": 0.002344,
+        "contextWindow": 200000,
+        "maxOutputTokens": 32000,
+        "thinkingTokens": 0,
+        "canonicalModel": "claude-haiku-4-5",
+        "provider": "firstParty",
+        "costBasis": "list"
+      },
+      "claude-opus-5[1m]": {
+        "inputTokens": 160,
+        "outputTokens": 76356,
+        "cacheReadInputTokens": 10592962,
+        "cacheCreationInputTokens": 229220,
+        "webSearchRequests": 0,
+        "costUSD": 9.498381000000002,
+        "contextWindow": 1000000,
+        "maxOutputTokens": 64000,
+        "thinkingTokens": 57991,
+        "canonicalModel": "claude-opus-5",
+        "provider": "firstParty",
+        "costBasis": "list"
+      }
+    },
+    "permission_denials": [],
+    "terminal_reason": "completed",
+    "fast_mode_state": "off",
+    "fast_mode_disabled_reason": "sdk_opt_in_required",
+    "subagent_stats": {
+      "spawned": 0,
+      "requested": {
+        "background": 0,
+        "foreground": 0,
+        "unset": 0
+      },
+      "started_in_background": 0,
+      "max_depth": 0,
+      "spawned_by_subagents": 0,
+      "completed": 0,
+      "failed": 0,
+      "killed": {
+        "parent": 0,
+        "user": 0,
+        "system": 0
+      },
+      "refused": {
+        "depth_limit": 0,
+        "concurrency_limit": 0,
+        "budget": 0
+      },
+      "by_type": {}
+    },
+    "is_error": false,
+    "num_turns": 92,
+    "subtype": "success",
+    "api_error_status": null,
+    "result": "I read the full patch, the three current files end to end, the normative sections, the plan, the manifest and the author report, plus the dependency chain (`read-request.ts`, `read-http-routing.ts`, `read-http.ts`, `transaction-consistency.ts`, `transaction-read.ts`, `transaction-service.ts`, `transaction-store.ts`, `transaction-runtime.ts`, `transaction-schema-http.ts`, `http-executor.ts`, the launcher and the binding helper). Nothing was executed.\n\n## Verification summary (what I confirmed, not assumed)\n\n**Production ordering (`transaction-http.ts:578\u2013591`).** The block is entered only when `hasMinimumControls(request) && currentReadMinimumHeaders(...)` is truthy **and** `alias === undefined`. Line 403 (`unauthenticated`) and 404\u2013405 (`malformedTransactionMinimumHeaders`) still precede it, so spec 5819\u20135824 ordering holds. `methodResponse` (287), POST target bytes (282), snapshot (406), changefeed (468), alias (497), events (502) and receipt (537) routes all remain upstream and untouched. The only behavioral delta is: *lexically valid but unknown* position + `requestFromUrl` 400 \u2192 now `400` instead of `500 minimum-position`. Known-token (`pos-N`/`genesis`) parser 400s were already delivered at this point, and absent-minimum requests still reach `readRoute` (`read-http-routing.ts:39\u201340`) which 400s identically. Parser **404** still falls to the unknown-token guard (500 `minimum-position`) or, with a known token, to 590 (`minimum-position-route`) \u2014 unchanged. No successful route is broadened; no grammar changed; `alias`, `types/absent` visibility (`minimum-position-visibility`), and discovery (594\u2013599, reached only after the block) are unaffected because scope-root/`bdp.json`/`operations/` all yield `notFound()` (404), never 400.\n\n**Typing of the retained guards.** Because the moved return uses a *conjunction*, `parsed` is not narrowed afterwards, so `isReadProblem(parsed) || currentReadMinimumKind(parsed) === \"strict\"` (584\u2013588) and `isReadProblem(parsed) || !isCurrentTransactionMinimumRead(parsed, scope)` (589\u2013590) keep their `||`-right-operand narrowing to `ReadRequest`. Discrimination is preserved.\n\n**Regression sweep for the moved return.** I enumerated every existing assertion that could depend on the old behavior. All other unknown-token sites are on routes that never reach this block (receipt: `transaction-http.test.ts:2194`; snapshot manifest: 2875; alias: 3130; installed receipt: `transactional-minimum-receiving-installed.test.ts:503`; snapshot installed: 895) or use known tokens (`2726`, `2937`, `1982`, `schema-http` 216\u2013229 which are 404-not-400 paths). `beads/?limit=0`/`limit=1&limit=2` at 2735\u20132736 and `types/?limit=1&limit=2` at 3028 use `pos-1`/`pos-2`, so they were already 400. The two sentinels at 4910 are the only required change, and `expect(waits).toBe(8)` at 4898/4935/4952, the 503 collection/resource block (4841\u20134897), materialized 400/413 (4923\u20134934), strict/incident 500 (4901\u20134907) and hidden 404 (4938\u20134951) all still hold; the callback's exchange count is still 18.\n\n**New source oracles.** Every chosen suffix genuinely yields `invalid-parameter` from `requestFromUrl` (allowlist 308\u2013313 / `parseOptionalLimit` 258\u2013263 / `direction` 240\u2013241 / view fallthrough 253), corroborated by `read-request.test.ts:162\u2013170`. `beads/a`, `links/a`, `types/task` parse as canonical local IDs (`read-values.ts:328\u2013346`), so none of them degrade into the 404 branch. `\"opaque\"` passes the token regex (`transaction-consistency.ts:13`) but fails `position()` (26\u201331), so `currentReadMinimumHeaders` is truthy while `transactionMinimumHeaders` is `undefined` \u2014 the literal does exercise the non-pos/non-genesis path. `gapPair`'s three cases are correct: `types/` and `types/task` are `\"strict\"` per `currentReadMinimumKind` (101\u2013107, 95\u201399), and `beads/a/` is a parser 404. HEAD `content-length` equals the paired GET byte length because `applyReadHttpSemantics` (`read-http.ts:42\u201346`) uses `stringifyJsonValue`, whose length is identical to `JSON.stringify` for these ASCII problem bodies, and `problem()` sets no `content-length` on GET. `Accept: image/png`, `If-None-Match: *` and `If-Match: \"wrong\"` cannot alter a 400 because the `json`/204 branch at `read-http.ts:12\u201314` never engages \u2014 matching spec 1986\u20131987 and 1949\u20131954. Counts are exactly 37/13/17 = 67, three stores, zero listeners/children; the real-owner facade is byte-equivalent to the proven one at 4475\u20134484 and `transaction-store.ts:1549` returns only own-enumerable members, so the spread delegates correctly.\n\n**Installed callback.** 1 + 12 + 4 + 6 + 2 = 25 wrapped exchanges, one `withInstalled` \u2192 one child, one temp store, operator-only (`defaultCredentialRef`), 5 s/90 s/120 s/80-exchange bounds and `start`/`report`/`close` provenance all unchanged. The `schemas/`-prefixed guard in `transaction-schema-http.ts:22` means `types/task?view=properties` is *not* intercepted by the artifact route despite `beadType === ${scope}types/task`. `bodyOctets` is `0` for HEAD by construction (`http-executor.ts:1191\u20131193`) while `content-length` is *not* asserted, so zero wire bytes is correctly kept distinct from `content-length: 0`; and `deliver` (`transaction-runtime.ts:88\u201395`) preserves `content-type` on HEAD. `Connection: close` is always appended (`http-executor.ts:725`), so HEAD exchanges terminate immediately rather than on keep-alive. The whole pre-existing prefix (including the 42-exchange callback at 391) is a byte-identical prefix per the hunk header `@@ -1485,3 +1485,71 @@`.\n\n---\n\n## Findings\n\n### Blockers (defects in the authored bytes)\n\n**None.** I found no compile error, no lint/format violation against `biome.json` (`lineWidth: 100`, recommended preset) or `tsconfig.base.json` (`strict`, `noUncheckedIndexedAccess`, `exactOptionalPropertyTypes`, `noUnusedLocals`), and no assertion that contradicts the behavior the dependency chain actually produces.\n\n### Blocking prerequisite (not a patch defect, but required before any collection)\n\n**1. Severity S1 (gating). `packages/server/src/transaction-http.test.ts:16\u201318` + `apps/bdptest/src/transactional-collection-minimum-installed.test.ts:34\u201342`.**\n`packages/server/dist/` does not exist in this worktree (verified: no `packages/server/dist/transaction-http.js`, no `dist` directory at all). The HTTP suite performs `await import(new URL(\"../dist/transaction-runtime.js\", \u2026))` at module evaluation, and the installed suite does `realpathSync(entry)` on `packages/server/dist/transaction-installed-process.js` at module load. **Impact:** both suites currently fail at import, and \u2014 more importantly \u2014 the two corrected sentinels at `transaction-http.test.ts:4910\u20134922` run through the *emitted* runtime, so a stale (pre-change) `dist` would still return `500 minimum-position` and fail `expect(response.status).toBe(400)`. The three new callbacks at 5559/5570/5584 import the source handler (line 14) and are genuinely source evidence, but they cannot be collected without the emitted file existing. **Smallest correction:** none in the patch; perform the fresh bound build of this exact candidate before collecting either suite, exactly as plan-v3 \u00a7\"Planned source proof\" and report.md state. This is confirmation of the declared gate, not a new requirement.\n\n### Optional improvements\n\n**2. Severity S3. `packages/server/src/transaction-http.test.ts:5484\u20135489`, `4913\u20134918`; `apps/bdptest/src/transactional-collection-minimum-installed.test.ts:1510\u20131515`.**\nAll three new/changed GET-body oracles use `toMatchObject`, and `checkedProblem`/`problemSchema` validate against `$defs/transactionalProblem`, which deliberately has no `additionalProperties: false` (spec 1936\u20131937 admits RFC 9457 extension members). **Impact:** a parser refusal that leaked an extra body member \u2014 including a `scopePosition`/`scopeEpoch`-style field, which is precisely what these callbacks exist to exclude from the wire \u2014 would pass. The header-absence loops at 5499\u20135505 / 1525\u20131531 only cover fields. **Smallest correction:** use `toEqual` instead of `toMatchObject` in `problemPair`, in the two sentinels, and in the installed `refusal`; the expected bodies are fully determined (`readProblem(\"invalid-parameter\" | \"malformed-request\" | \"unauthenticated\")` yields exactly `{type, code, retry, status}`), and sibling callbacks already use `toEqual` (4846, installed 1449).\n\n**3. Severity S3. `packages/server/src/transaction-http.test.ts:5499\u20135505`.**\n`problemPair` drops the `etag` / `location` / `link` absence assertions that the sibling owner fixture carries at 4565\u20134574. **Impact:** for the three conditional/negotiation overlays in callback C (5596\u20135601) the specific regression of interest is an ordinary refusal acquiring validator or redirect metadata (spec 1988: \"An ordinary refusal is not replaced by `304`\"). The `status` assertion already excludes 304/412/307, so the residual exposure is narrow. **Smallest correction:** add `\"etag\"`, `\"location\"`, `\"link\"` to the existing absence array at 5499\u20135504.\n\n**4. Severity S3. `apps/bdptest/src/transactional-collection-minimum-installed.test.ts:1502\u20131532`.**\nThe installed `refusal` never asserts `cache-control`, although this is the only emitted-wire proof of these refusals and spec 1969\u20131970 requires `Cache-Control: private, no-store` on scope-bounded authorization-dependent responses (the source helper does assert it at 5482). **Impact:** a transport-level cache-field regression on parser refusals would be invisible to the installed oracle. **Smallest correction:** add `expect(response.headers[\"cache-control\"]).toBe(\"private, no-store\");` inside `refusal`.\n\n**5. Severity S4. `packages/server/src/transaction-http.test.ts:5602\u20135603`.**\nThe comment \"A missing incident-Link anchor instead observes the owner and returns 404\" describes a route this callback deliberately does **not** exercise (plan-v3 \u00a7C explicitly excludes `beads/a?view=links` here, and the empty fixture is never asked). **Impact:** an unverified behavioral claim sits next to passing assertions and can later be mistaken for covered behavior. **Smallest correction:** reword to state that the route is excluded and why, e.g. \"`beads/a?view=links` is excluded: it observes the owner, so it is not a pre-owner refusal.\"\n\n**6. Severity S4. `packages/server/src/transaction-http.test.ts:5559`, `5570`, `5584`.**\nThe three new `it(...)` calls specify no timeout, so they inherit Vitest's 5000 ms default; each opens an on-disk SQLite store, constructs a service and performs a real collection read plus 36/12/16 handler calls. The sibling source-handler callback at 4459 is precedent for this being sufficient, and most neighbouring callbacks in this file pass an explicit bound (20000/30000/120000). **Impact:** avoidable default-timeout sensitivity on slow CI. **Smallest correction:** append an explicit timeout argument (e.g. `}, 30000);`) to the three new callbacks.\n\n**7. Severity S4. `bdp-integration-logs/parser-refusal-author/callback-selection.json:59`.**\nThe note for the 4819 regression still reads \"\u2026+4 residual+2 materialized refusal\u2026\" while the body now contains 2 residual-500 plus 2 parser-400 exchanges; the appended clause \"Includes 2 changed parser sentinels; count unchanged\" mitigates it and the total (18) is correct. **Impact:** documentation only. **Smallest correction:** restate as \"2 residual 500 + 2 parser 400\". Noted only because the manifest is a declared workload record; per your instruction the manifest is hashes, not review homework.\n\n**8. Severity S4 (pre-existing, relocated unchanged). `packages/server/src/transaction-http.ts:582`.**\nThe predicate tests `parsed.status === 400` rather than the problem code. Today `requestFromUrl` returns only `invalid-parameter` (400) or `resource-not-found` (404), so it is exhaustive; a future parser problem with another status would silently fall through to the 500 gap. This is the pre-existing expression moved verbatim, not a change introduced here. **Smallest correction:** none required for this patch; if desired later, assert the code rather than the status.\n\n---\n\n## Scope and claim honesty\n\n- The change is confined to refusal *delivery*; it adds no route success, no query-grammar change, no state comparison, no discovery or admission activation. `beads/missing` with a valid query still returns the uniform contextual 404 through the owner (preserved by 4938\u20134951), so spec 5834\u20135839 is not weakened.\n- The incidental consequences \u2014 parser 400 now preceding existence/hidden classification, and preceding context comparison when an unknown token is paired with a foreign epoch/view \u2014 are reference parser parity with the already-shipped known-token and absent-minimum behavior. **I am not treating the unresolved foreign-context policy, or S1/G2, as a requirement**, and the authored tests correctly avoid asserting it (every tuple uses the setup GET's actual epoch/view).\n- `limit=0` is labeled as `parseOptionalLimit` parity rather than a spec 1552\u20131555 mandate in all three places (4908, 5563, installed 1534); unsupported/repeated are labeled normative. HEAD `content-length` and context-absence on pre-owner refusals are labeled reference oracles. Zero HEAD wire octets is kept distinct from `content-length: 0`, and context absence is explicitly not claimed as owner-entry proof (installed 1523\u20131524) \u2014 the source counters carry that. These labels are accurate.\n- The 67 new source handler invocations are kept separate from the 33 existing direct calls and the 91 emitted-runtime exchanges, and the new 25 installed exchanges are separate from the historical 42. No past run is relabeled as current evidence.\n\n**This review is a code review only. It does not authorize execution, integration or publication, and it does not constitute native/code approval; exact-head green CI, the fresh bound build, scope/ancestry review and final branch-tree verification remain outstanding and are owned by root.**",
+    "ttft_ms": 1631,
+    "type": "result",
+    "duration_ms": 1018747,
+    "uuid": "072363e8-98a2-421d-a6ce-787960bc23de",
+    "ttft_stream_ms": 1054,
+    "time_to_request_ms": 15,
+    "first_content_frame_ms": 1055,
+    "queued_turn_count": 0
+  }
+]

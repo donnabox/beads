@@ -1,0 +1,52 @@
+{
+  "at": "2026-10-17T20:59:01.488953+00:00",
+  "records": {
+    "workspace-install": {
+      "exitSha256": "6973a3374375f672beed5dd37faab35538181eece26d97196d57bed257e9c255",
+      "logSha256": "5328cb786ee82d724656ed3a7507a3dd5426911ef9bbe8dccb63402e65091365",
+      "exit": 0,
+      "accepted": true,
+      "elapsedSeconds": 4.234958250075579
+    },
+    "bind-workspace-tools": {
+      "exitSha256": "bc5b2cba2387a09a98ef436a6b05ec43bba507baafd4899161487a2c14bbd676",
+      "logSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "exit": 0,
+      "accepted": true,
+      "elapsedSeconds": 9.325863624922931
+    },
+    "typecheck": {
+      "exitSha256": "fc9155c7dd4e78eede517a4d6808314c1bf442012e43653d66c7f6c7052d549d",
+      "logSha256": "91d54ffbee73a3ac72294d090e58d77745f8b93edbf94b862807698273a6505a",
+      "exit": 0,
+      "accepted": true,
+      "elapsedSeconds": 5.84645887510851
+    },
+    "format-check": {
+      "exitSha256": "3a62edbe1741d42efed7e02e5c84f0917319708011a1663783acf172adbf593a",
+      "logSha256": "7a508856024472ade1dce58f9b4f932a9a6e1ee2c64b086e1ad24be4721c8259",
+      "exit": 1,
+      "accepted": false,
+      "elapsedSeconds": 5.0477596670389175
+    }
+  },
+  "failedFiles": [
+    "apps/bdptest/src/transactional-minimum-receiving-installed.test.ts",
+    "packages/server/src/transaction-consistency.test.ts",
+    "packages/server/src/transaction-event-sse.test.ts",
+    "packages/server/src/transaction-events.test.ts",
+    "packages/server/src/transaction-http.test.ts",
+    "packages/server/src/transaction-read.test.ts",
+    "packages/server/src/transaction-receipt-pages.test.ts",
+    "packages/server/src/transaction-service.test.ts",
+    "packages/server/src/transaction-snapshot.test.ts"
+  ],
+  "truncatedDiagnosticDiffs": [
+    "installed",
+    "http",
+    "service"
+  ],
+  "sourceFilesVerified": 679,
+  "gateClosed": true,
+  "laterStagesAttempted": false
+}

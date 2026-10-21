@@ -1,0 +1,400 @@
+{
+  "status": "CLOSED_OPERATIVE_REQUIRES_ROOT_FINAL_DATA_GATE",
+  "workspace": "/Users/dbox/repos/wt/vickie/vickie-minimum-receiving",
+  "node": "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+  "pnpm": "/Users/dbox/.cache/node/corepack/v1/pnpm/11.20.0/bin/pnpm.cjs",
+  "executionOrder": [
+    "node-version",
+    "package-directory",
+    "pack-protocol",
+    "pack-server",
+    "verify-tar",
+    "prepare-consumer",
+    "consumer-install",
+    "verify-installed",
+    "minimum-positive",
+    "minimum-positive-review",
+    "snapshot-capacity",
+    "snapshot-capacity-review",
+    "snapshot-fresh",
+    "snapshot-fresh-review"
+  ],
+  "commands": {
+    "node-version": {
+      "phase": "package",
+      "cwd": "/Users/dbox/repos/wt/vickie/vickie-minimum-receiving",
+      "argv": [
+        "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+        "--version"
+      ],
+      "supervisorSeconds": 120,
+      "requires": [],
+      "ownedTempPrefixes": []
+    },
+    "package-directory": {
+      "phase": "package",
+      "cwd": "/Users/dbox/repos/wt/vickie/vickie-minimum-receiving",
+      "argv": [
+        "python3",
+        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-minimum-receiving-draft/installed-preparation/packages.py",
+        "directory"
+      ],
+      "supervisorSeconds": 120,
+      "requires": [
+        {
+          "id": "node-version",
+          "supervisorExit": 0
+        }
+      ],
+      "ownedTempPrefixes": []
+    },
+    "pack-protocol": {
+      "phase": "package",
+      "cwd": "/Users/dbox/repos/wt/vickie/vickie-minimum-receiving",
+      "argv": [
+        "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+        "/Users/dbox/.cache/node/corepack/v1/pnpm/11.20.0/bin/pnpm.cjs",
+        "--filter",
+        "@bdp/protocol",
+        "pack",
+        "--pack-destination",
+        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-minimum-receiving-draft/installed-preparation/run/packages"
+      ],
+      "supervisorSeconds": 120,
+      "requires": [
+        {
+          "id": "package-directory",
+          "supervisorExit": 0
+        }
+      ],
+      "ownedTempPrefixes": []
+    },
+    "pack-server": {
+      "phase": "package",
+      "cwd": "/Users/dbox/repos/wt/vickie/vickie-minimum-receiving",
+      "argv": [
+        "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+        "/Users/dbox/.cache/node/corepack/v1/pnpm/11.20.0/bin/pnpm.cjs",
+        "--filter",
+        "@bdp/server",
+        "pack",
+        "--pack-destination",
+        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-minimum-receiving-draft/installed-preparation/run/packages"
+      ],
+      "supervisorSeconds": 120,
+      "requires": [
+        {
+          "id": "pack-protocol",
+          "supervisorExit": 0
+        }
+      ],
+      "ownedTempPrefixes": []
+    },
+    "verify-tar": {
+      "phase": "package",
+      "cwd": "/Users/dbox/repos/wt/vickie/vickie-minimum-receiving",
+      "argv": [
+        "python3",
+        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-minimum-receiving-draft/installed-preparation/packages.py",
+        "tar"
+      ],
+      "supervisorSeconds": 120,
+      "requires": [
+        {
+          "id": "pack-server",
+          "supervisorExit": 0
+        }
+      ],
+      "ownedTempPrefixes": []
+    },
+    "prepare-consumer": {
+      "phase": "package",
+      "cwd": "/Users/dbox/repos/wt/vickie/vickie-minimum-receiving",
+      "argv": [
+        "python3",
+        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-minimum-receiving-draft/installed-preparation/packages.py",
+        "consumer"
+      ],
+      "supervisorSeconds": 120,
+      "requires": [
+        {
+          "id": "verify-tar",
+          "supervisorExit": 0
+        }
+      ],
+      "ownedTempPrefixes": []
+    },
+    "consumer-install": {
+      "phase": "package",
+      "cwd": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-minimum-receiving-draft/installed-preparation/run/consumer",
+      "argv": [
+        "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+        "/Users/dbox/.cache/node/corepack/v1/pnpm/11.20.0/bin/pnpm.cjs",
+        "install",
+        "--offline",
+        "--ignore-scripts",
+        "--no-frozen-lockfile",
+        "--prod"
+      ],
+      "supervisorSeconds": 120,
+      "requires": [
+        {
+          "id": "prepare-consumer",
+          "supervisorExit": 0
+        }
+      ],
+      "ownedTempPrefixes": []
+    },
+    "verify-installed": {
+      "phase": "package",
+      "cwd": "/Users/dbox/repos/wt/vickie/vickie-minimum-receiving",
+      "argv": [
+        "python3",
+        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-minimum-receiving-draft/installed-preparation/packages.py",
+        "installed"
+      ],
+      "supervisorSeconds": 120,
+      "requires": [
+        {
+          "id": "consumer-install",
+          "supervisorExit": 0
+        }
+      ],
+      "ownedTempPrefixes": []
+    },
+    "minimum-positive": {
+      "phase": "installed",
+      "cwd": "/Users/dbox/repos/wt/vickie/vickie-minimum-receiving",
+      "argv": [
+        "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+        "/Users/dbox/repos/wt/vickie/vickie-minimum-receiving/node_modules/.pnpm/vitest@4.1.10_@types+node@24.13.3_vite@8.2.1_@types+node@24.13.3_/node_modules/vitest/vitest.mjs",
+        "run",
+        "apps/bdptest/src/transactional-minimum-receiving-installed.test.ts",
+        "--maxWorkers=1",
+        "--reporter=verbose",
+        "--reporter=json",
+        "--outputFile=/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-minimum-receiving-draft/installed-preparation/run/minimum-positive.results.json",
+        "-t",
+        "^rejects\\ malformed\\ read\\ minimum\\ tuples\\ before\\ observation\\ while\\ preserving\\ receipt\\ nondisclosure$"
+      ],
+      "supervisorSeconds": 120,
+      "requires": [
+        {
+          "id": "verify-installed",
+          "supervisorExit": 0
+        }
+      ],
+      "ownedTempPrefixes": [
+        "bdp-minimum-receiving-installed-"
+      ],
+      "selectedFullNames": [
+        "rejects malformed read minimum tuples before observation while preserving receipt nondisclosure"
+      ],
+      "selectedPathNames": [
+        {
+          "file": "apps/bdptest/src/transactional-minimum-receiving-installed.test.ts",
+          "fullName": "rejects malformed read minimum tuples before observation while preserving receipt nondisclosure"
+        }
+      ],
+      "expectedCases": 1,
+      "expectedExit": 0,
+      "reportOverrides": {},
+      "workload": {
+        "httpScheduled": 22,
+        "productChildren": 1,
+        "directories": 1,
+        "owners": 1,
+        "listeners": 1,
+        "workMs": 45000,
+        "vitestMs": 60000,
+        "requestMs": 5000,
+        "externalMs": 120000
+      },
+      "entryOverrides": {
+        "BDP_TRANSACTIONAL_INSTALLED_ENTRY": null,
+        "BDP_TRANSACTIONAL_SOURCE_COMMIT": null
+      }
+    },
+    "minimum-positive-review": {
+      "phase": "review",
+      "cwd": "/Users/dbox/repos/wt/vickie/vickie-minimum-receiving",
+      "argv": [
+        "python3",
+        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-minimum-receiving-draft/installed-preparation/review-installed.py",
+        "minimum-positive"
+      ],
+      "supervisorSeconds": 120,
+      "requires": [
+        {
+          "id": "minimum-positive",
+          "supervisorExit": 0
+        }
+      ],
+      "ownedTempPrefixes": []
+    },
+    "snapshot-capacity": {
+      "phase": "installed",
+      "cwd": "/Users/dbox/repos/wt/vickie/vickie-minimum-receiving",
+      "argv": [
+        "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+        "/Users/dbox/repos/wt/vickie/vickie-minimum-receiving/node_modules/.pnpm/vitest@4.1.10_@types+node@24.13.3_vite@8.2.1_@types+node@24.13.3_/node_modules/vitest/vitest.mjs",
+        "run",
+        "apps/bdptest/src/transactional-snapshot-installed.test.ts",
+        "--maxWorkers=1",
+        "--reporter=verbose",
+        "--reporter=json",
+        "--outputFile=/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-minimum-receiving-draft/installed-preparation/run/snapshot-capacity.results.json",
+        "-t",
+        "^observes\\ nonallocating\\ creation\\ decisions\\ through\\ the\\ actual\\ eight\\-handle\\ capacity\\ boundary$"
+      ],
+      "supervisorSeconds": 120,
+      "requires": [
+        {
+          "id": "minimum-positive-review",
+          "supervisorExit": 0
+        }
+      ],
+      "ownedTempPrefixes": [
+        "bdp-snapshot-installed-"
+      ],
+      "selectedFullNames": [
+        "observes nonallocating creation decisions through the actual eight-handle capacity boundary"
+      ],
+      "selectedPathNames": [
+        {
+          "file": "apps/bdptest/src/transactional-snapshot-installed.test.ts",
+          "fullName": "observes nonallocating creation decisions through the actual eight-handle capacity boundary"
+        }
+      ],
+      "expectedCases": 1,
+      "expectedExit": 0,
+      "reportOverrides": {},
+      "workload": {
+        "httpScheduled": 39,
+        "productChildren": 3,
+        "directories": 2,
+        "owners": 3,
+        "listeners": 3,
+        "workMs": 45000,
+        "vitestMs": 60000,
+        "requestMs": 5000,
+        "externalMs": 120000
+      },
+      "entryOverrides": {
+        "BDP_TRANSACTIONAL_INSTALLED_ENTRY": null,
+        "BDP_TRANSACTIONAL_SOURCE_COMMIT": null
+      }
+    },
+    "snapshot-capacity-review": {
+      "phase": "review",
+      "cwd": "/Users/dbox/repos/wt/vickie/vickie-minimum-receiving",
+      "argv": [
+        "python3",
+        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-minimum-receiving-draft/installed-preparation/review-installed.py",
+        "snapshot-capacity"
+      ],
+      "supervisorSeconds": 120,
+      "requires": [
+        {
+          "id": "snapshot-capacity",
+          "supervisorExit": 0
+        }
+      ],
+      "ownedTempPrefixes": []
+    },
+    "snapshot-fresh": {
+      "phase": "installed",
+      "cwd": "/Users/dbox/repos/wt/vickie/vickie-minimum-receiving",
+      "argv": [
+        "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+        "/Users/dbox/repos/wt/vickie/vickie-minimum-receiving/node_modules/.pnpm/vitest@4.1.10_@types+node@24.13.3_vite@8.2.1_@types+node@24.13.3_/node_modules/vitest/vitest.mjs",
+        "run",
+        "apps/bdptest/src/transactional-snapshot-installed.test.ts",
+        "--maxWorkers=1",
+        "--reporter=verbose",
+        "--reporter=json",
+        "--outputFile=/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-minimum-receiving-draft/installed-preparation/run/snapshot-fresh.results.json",
+        "-t",
+        "^observes\\ fresh\\ Snapshot\\ minima\\ with\\ exact\\ current\\ context\\ and\\ retained\\ gaps\\ over\\ packed\\ bytes$"
+      ],
+      "supervisorSeconds": 120,
+      "requires": [
+        {
+          "id": "snapshot-capacity-review",
+          "supervisorExit": 0
+        }
+      ],
+      "ownedTempPrefixes": [
+        "bdp-snapshot-installed-"
+      ],
+      "selectedFullNames": [
+        "observes fresh Snapshot minima with exact current context and retained gaps over packed bytes"
+      ],
+      "selectedPathNames": [
+        {
+          "file": "apps/bdptest/src/transactional-snapshot-installed.test.ts",
+          "fullName": "observes fresh Snapshot minima with exact current context and retained gaps over packed bytes"
+        }
+      ],
+      "expectedCases": 1,
+      "expectedExit": 0,
+      "reportOverrides": {},
+      "workload": {
+        "httpScheduled": 31,
+        "productChildren": 2,
+        "directories": 1,
+        "owners": 2,
+        "listeners": 2,
+        "workMs": 45000,
+        "vitestMs": 60000,
+        "requestMs": 5000,
+        "externalMs": 120000
+      },
+      "entryOverrides": {
+        "BDP_TRANSACTIONAL_INSTALLED_ENTRY": null,
+        "BDP_TRANSACTIONAL_SOURCE_COMMIT": null
+      }
+    },
+    "snapshot-fresh-review": {
+      "phase": "review",
+      "cwd": "/Users/dbox/repos/wt/vickie/vickie-minimum-receiving",
+      "argv": [
+        "python3",
+        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-minimum-receiving-draft/installed-preparation/review-installed.py",
+        "snapshot-fresh"
+      ],
+      "supervisorSeconds": 120,
+      "requires": [
+        {
+          "id": "snapshot-fresh",
+          "supervisorExit": 0
+        }
+      ],
+      "ownedTempPrefixes": []
+    }
+  },
+  "limits": {
+    "cases": 3,
+    "httpScheduled": 92,
+    "productChildren": 6,
+    "directories": 4,
+    "owners": 6,
+    "listeners": 6,
+    "automaticRetries": 0,
+    "maximumWorkers": 1
+  },
+  "note": "No execution-gate.json exists; all candidate/build/release data remain pending.",
+  "ownedPaths": [
+    "docs/specs/bdp.md",
+    "packages/server/src/transaction-consistency.ts",
+    "packages/server/src/transaction-http.ts",
+    "packages/server/src/transaction-consistency.test.ts",
+    "packages/server/src/transaction-http.test.ts",
+    "packages/server/src/transaction-snapshot-http.test.ts",
+    "packages/server/src/transaction-schema-http.test.ts",
+    "packages/server/src/transaction-changefeed.test.ts",
+    "apps/bdptest/src/transactional-snapshot-installed.test.ts",
+    "apps/bdptest/src/transactional-minimum-receiving-installed.test.ts",
+    "docs/design/transaction-implementation-progress.md"
+  ]
+}

@@ -1,0 +1,33 @@
+{
+  "compiler": {
+    "actualCandidateEvidence": "tool-candidates.json, tool-source/getExePath.js and native package metadata",
+    "argv": [
+      "${FRESH_BOUND_NATIVE_TYPESCRIPT7_TSC}",
+      "--project",
+      "${OWNED_ATTEMPT_ROOT}/compiler-project.json",
+      "--pretty",
+      "false",
+      "--listEmittedFiles"
+    ],
+    "cwd": "${FROZEN_SOURCE_ROOT}",
+    "noRelaxations": "Inherit strict/exactOptional/noUnchecked/noUnused/noEmitOnError/NodeNext/ES2024 and paths from frozen tsconfig.check/base; override emission flags only. No skipLibCheck, unsafe transpilation, package/file rewrites or suppressed diagnostics. Any compiler failure means no audit execution/positive credit.",
+    "projectTemplate": "private-emit-project.template.json"
+  },
+  "postStage": "No compiled artifact or compiler config written to source tree; no package publish/exports edit/new production API. Owned temp directory may remain as protected evidence, not runtime residue. Inventory and process closure under stage clock; removal only owned paths if separately desired, not assumed.",
+  "reason": "Normal tsc build includes conformance/src and excludes test-support; normal package exports expose no private carrier. Node24 direct strip-only import is not a valid assumed seam for class constructor parameter property readonly code. Use actual locked TypeScript compiler; do not evaluate source TS directly, transpile-only or add production exports.",
+  "resourcesProposed": {
+    "allOverages": "honest bounded failure; preserve partial outputs/errors, never raise cap or relaunch automatically",
+    "compileLogsCombinedMax": 16777216,
+    "outputBytesMax": 67108864,
+    "outputFilesMax": 512
+  },
+  "runtimeLayout": {
+    "catalogs": "copy exact six source/catalog/*.json into private-emit/packages/conformance/catalog preserving loader relative URL; hash before/after and bind all six classified names. Never use inspectProfileContractSourcesForTest as authority.",
+    "dependencies": "private-emit/node_modules may be one explicitly inventoried symlink to SAME fresh validated workspace node_modules; bind realpaths/versions/bytes of actual resolving @bdp/protocol and ajv closure. Workspace audit-tool dependencies are distinct from installed product consumer; protocol built bytes must match source/build/archive proof. No arbitrary NODE_PATH, loader, alias hook or package-export bypass.",
+    "entry": "private-emit/packages/conformance/test-support/profile-evidence.js",
+    "factory": "private-emit/packages/conformance/test-support/profile-contract-plan.js",
+    "moduleMarker": "future tool creates private-emit/package.json exactly {\"type\":\"module\"}, own attempt only",
+    "requiredProof": "Fresh compiler output inventory/file hashes and actual runtime import resolution census, source/catalog/lock/tool mapping. Static17-file scan is conservative including type-only edges; it does not know final emitted file count or runtime graph. Those receipts remain UNKNOWN. Refuse any unpinned/unresolved runtime import before positive audit, not fallback to directTS or Vitest."
+  },
+  "state": "PROPOSED separately supervised compiler/data audit seam; not helper/source authorship or runtime proof"
+}

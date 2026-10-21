@@ -1,0 +1,163 @@
+--- /Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation3-root-proposed-authority-1/native-code-disposition.json
++++ /Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation5-root-proposed-authority-1/native-code-disposition.json
+@@ -1,7 +1,8 @@
+ {
+   "F7F8F9": "Recorded unchanged per8c782 root disposition",
++  "P4BackendIdentityCleanup": "UNKNOWN; no writer-death or retry inferred",
+   "accepted": true,
+-  "actualRootApproval": "ROOT_STATIC_EVIDENCE_DISPOSITION_ACCEPTED; execution conditional on separate exact protocol/native/root/publication/activation barriers",
++  "actualRuntimeReleased": false,
+   "approvedStages": [
+     "node-version",
+     "pnpm-version",
+@@ -9,6 +10,7 @@
+     "bind-workspace-tools"
+   ],
+   "bootstrapReuse": [],
++  "candidateNeverActivatedAtFreeze": true,
+   "closedNativeFindings": [
+     "F1",
+     "F2",
+@@ -17,51 +19,114 @@
+     "F5",
+     "G09-CODE-N1"
+   ],
+-  "currentRootCandidateNeverActivated": true,
+   "executionAuthorityRequiresExternalActivation": true,
+-  "freshP3Only": true,
++  "fixedCapturePlusAdditiveProofRoot": {
++    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation5-fixed-protocol-with-proof-root-acceptance-1/acceptance.json",
++    "sha256": "d4a17f3d3f38696446d65616d27b926e457a48eb7c915d32c10158cc016d138b"
++  },
++  "freshP5Only": true,
+   "freshPipelineRequired": true,
+-  "helper3ImplementationSha256": "8ad44a93c1215bfe0b9777df4135385f72e82dd8873287a6988da2f1fb7615c6",
+-  "helper3PreparationIndex": {
+-    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation-preparation-3/preparation-index.json",
+-    "sha256": "bf105b842dffc26d8083850d53fc4df6902335ed8301ee48eff611042ee8632a"
++  "helperImplementationSha256": "c2a7d11deb63169052434c3b45c62bd30664009d4ea6a3e9b42c4cd85bd649a6",
++  "helperNative": {
++    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation5-closed-helper-native-precision-1/closure.json",
++    "sha256": "3449c7c460e0a4ca6356c5cfd7731329eec6a96f051f92eb306911eec3c5c8cd"
+   },
+-  "helper3RootStaticAcceptance": {
+-    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation3-root-static-acceptance-1/acceptance.json",
+-    "sha256": "2381755eec2437e5d8f81bfb3c7e2728f897288d33fc93a1c882b8adff802aa2"
++  "helperPreparation": {
++    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation-preparation-5/preparation-index.json",
++    "sha256": "2e1717523848f0aea7d7f70434c6930d8f07c78d33b55cffa4a318ad17393872"
+   },
+-  "helper3StaticNative": {
+-    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation3-native-mechanics-1/closure.json",
+-    "sha256": "c6c364831d70c6caa05c6008ab3ef69ed4de35129245fbf81377f9d8c947abea"
++  "helperRoot": {
++    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation5-closed-helper-root-acceptance-1/acceptance.json",
++    "sha256": "cea1e1b76610d644cc1f1904f32f0f9eec786c9cdaa1f1461f53ecb9d5e1eb3e"
++  },
++  "historicalF6StaticBasis": {
++    "actualCurrentFiles": 679,
++    "canonical": "f6baa7922feea80b9ae9641abc08ed79c339ff719769cc95162fe87ddc70bc65",
++    "compilerRuntimePassClaim": false,
++    "index": {
++      "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-source-correction-authoring-2/index.json",
++      "sha256": "784402dcfdd70603886928b49fb56f9ccc9134aa7a3229d29c0923dcc48edc14"
++    },
++    "native": {
++      "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-corrected-native-code-review-2/closure.json",
++      "sha256": "55c270e44ca306510135516911ae09712a8d9aa43dfefd769f4f12f1799e0f5b"
++    },
++    "onlyThreeTestPathsCorrectedAgainstEEB": true,
++    "ownedAgainstCCE": 10,
++    "protectedAgainstCCE": 669,
++    "protectedAgainstEEB": 676,
++    "rootGitObservation": {
++      "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-root-corrected-source-inspection-2/inspection.json",
++      "sha256": "7541f44c72df29c3f9ba9f48246ecd25231cf7629e34c2a67f02334973570cb2"
++    },
++    "rootStatic": {
++      "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-corrected-source-root-acceptance-2/acceptance.json",
++      "sha256": "a9cf24e1c322318e73bf43d8a29fc773a57dae22abe5320fd8ca89277edf356c"
++    },
++    "secondActualReviewPerformed": false,
++    "sourceAuthorBinding": {
++      "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-source-correction-authoring-2/source-binding.json",
++      "sha256": "96451d5d1946a46adbe2add092691284048836c787723fe2c9ca5a02de0bc24e"
++    }
+   },
+   "laterStagesAuthorized": false,
+-  "nativeReviewAcceptedExistingScope": "Full corrected f6 source2 static native review only; no compiler/runtime/actual Claude current-source review",
+   "nativeSourceReview": {
+-    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-corrected-native-code-review-2/closure.json",
+-    "sha256": "55c270e44ca306510135516911ae09712a8d9aa43dfefd769f4f12f1799e0f5b"
++    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-noUnsafeFinally-corrected-source-native-review-1/closure.json",
++    "sha256": "22f65448b080be632c60b74d66d6e90568b3686a3bcc4c1b2278d0ddc187e00b"
+   },
+   "noExistingAttemptReuse": true,
++  "noProviderCurrentSourceCoverageClaim": true,
+   "noRetry": true,
+-  "predecessorRootCandidate": {
+-    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-first4-root-proposed-authority-2/native-code-disposition.json",
+-    "sha256": "a72619384a1443e44022d81d957aa1056be1fb7ee6bc086f5fd9d5f78cf60faa"
++  "priorFailedP3": {
++    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation3-lint-failure-1/index.json",
++    "sha256": "244dcb96fc965f987f3d6d56545d40e535670af361ca5c6f624d455838a6feec"
+   },
+-  "priorAttemptRemainsFailedStopped": true,
+-  "priorFailedAttemptDisposition": {
+-    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-first4-root-failed-disposition-1/disposition.json",
+-    "sha256": "ed89eca81b2fc467f4eb5fa3f142eeac5aa47bbcf1231ed75b0bdbff5d9b9756"
++  "priorFailedP4": {
++    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation4-helper-partial-authoring-stop-1/index.json",
++    "sha256": "7f72a19dbc9aab58f8881a063d85d5a0253677e5aa47fb1027ea4c73952d048c"
+   },
+   "publicProfileOrWholeWriteCredit": false,
+-  "role": "ROOT disposition of existing corrected-source native CODE evidence; not a new reviewer approval",
++  "role": "ROOT disposition of bounded current1eca native CODE evidence, not a new reviewer acceptance",
+   "rootStaticSourceAcceptance": {
+-    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-corrected-source-root-acceptance-2/acceptance.json",
+-    "sha256": "a9cf24e1c322318e73bf43d8a29fc773a57dae22abe5320fd8ca89277edf356c"
++    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-noUnsafeFinally-corrected-source-root-acceptance-1/acceptance.json",
++    "sha256": "cd63d77725504acad4bbfc50822e23c956f0df88d131152f40e9867a85c61773"
+   },
+-  "runtimeAuthorizationMeaning": "EXACT four tool/install stages only, conditionally under separately independently accepted protocol and published root activation; no product callback or later30 stage authority",
++  "runtimeAuthorizationMeaning": "CONDITIONAL exact four fresh tool/version/install/bind stages only AFTER independent final source/control/manifest/rendering precision and complete authority publication then exact livewrite and separately durable activation. No product callback or later30 authority.",
+   "runtimeValidationAuthorized": true,
+   "session": "2026-10-18T02:16:24Z-549f",
+-  "sourceBindingSha256": "712c3c5a8e1543bf5005cbb54d321c6874b7443afb7e01805f393434fe5cd714",
+-  "sourceIdentity": "f6baa7922feea80b9ae9641abc08ed79c339ff719769cc95162fe87ddc70bc65",
++  "sourceBindingSha256": "e0252cb07ac1896fac0faab395e10e50ea58eac263b6d33ee224e378413c2d68",
++  "sourceExactStaticBasis": {
++    "actualCurrentFiles": 679,
++    "actualProviderReadCurrent": false,
++    "canonical": "1ecaf2e47369cc12cc26bc3ed693c5d4d3b9cffa4714b13dbe5567f9e46bfb15",
++    "compilerOrRuntimePassClaim": false,
++    "correctionAgainstF6": "One test path direct error append and exclusive else delete; same error order/close-before-delete/budgets",
++    "native": {
++      "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-noUnsafeFinally-corrected-source-native-review-1/closure.json",
++      "sha256": "22f65448b080be632c60b74d66d6e90568b3686a3bcc4c1b2278d0ddc187e00b"
++    },
++    "ownedAgainstCCE": 10,
++    "protectedAgainstCCE": 669,
++    "protectedAgainstF6": 678,
++    "rootGitObservation": {
++      "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-noUnsafeFinally-root-source-observation-1/observation.json",
++      "sha256": "fdc283817c69de00c290040e6155cfbcc25e62ea92ce3173dfff5e6c83951124"
++    },
++    "rootStatic": {
++      "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-noUnsafeFinally-corrected-source-root-acceptance-1/acceptance.json",
++      "sha256": "cd63d77725504acad4bbfc50822e23c956f0df88d131152f40e9867a85c61773"
++    },
++    "secondActualReviewPerformed": false,
++    "source56": {
++      "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-noUnsafeFinally-source-authoring-1/index.json",
++      "sha256": "c6af0535192a377dee265674a52119b00357f1e2068d17a66398d095ba1c000d"
++    },
++    "sourceBinding": {
++      "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation-preparation-5/source-binding.json",
++      "sha256": "e0252cb07ac1896fac0faab395e10e50ea58eac263b6d33ee224e378413c2d68"
++    }
++  },
++  "sourceIdentity": "1ecaf2e47369cc12cc26bc3ed693c5d4d3b9cffa4714b13dbe5567f9e46bfb15",
+   "staticValidationAuthorized": true,
+   "thisDocumentIsNotNativeAuthorsOwnAcceptance": true,
+   "unmeasuredFitRisk": "F6 retained with fixed absolute bounds; no timeout reset/widening"

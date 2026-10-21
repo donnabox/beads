@@ -1,0 +1,1229 @@
+{
+  "sourceIdentity": "a61cd3fbf9fac68e3aad857a24a2456dd16b83048067eef85348d7091c0aa08e",
+  "sourceBindingSha256": "9bb16e9c984f7c259c6f4cb42ddad2886234771a90f4421c3fddec57c5079a41",
+  "resultsSha256": "01f8d03d4826c0ad7e18e24ebb8bb33990dda8ee86cb4df96faa90abbfdb91d4",
+  "logSha256": "7f974a94ba77803ffba31cf3ee8b4492da4a24af1232b57dd73c5f30e0023d8e",
+  "selectedFullNames": [
+    "private installed cold resource-alias"
+  ],
+  "reports": [
+    {
+      "observation": "private installed cold resource-alias",
+      "declaredSourceCommit": "cce884ccea1db97cbc6fd7bff876d4d6091f9081",
+      "workspaceDirty": true,
+      "entryLiteral": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/tx-discovery-validation-preparation-10/run/consumer/node_modules/.pnpm/@bdp+server@file+..+packages+bdp-server-0.0.0.tgz/node_modules/@bdp/server/dist/transaction-installed-process.js",
+      "entry": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/tx-discovery-validation-preparation-10/run/consumer/node_modules/.pnpm/@bdp+server@file+..+packages+bdp-server-0.0.0.tgz/node_modules/@bdp/server/dist/transaction-installed-process.js",
+      "entrySha256": "bcf153170f953f9e28c6c89f1153be907f64df289e64f3ad929cad4a4a54c47c",
+      "sourceAttribution": "externally bound by exact source/archive/consumer/lock/proof; no child attestation",
+      "metadata": {
+        "scope": "https://reference.invalid/acme/",
+        "profile": "transactional",
+        "history": false,
+        "claimEligible": false,
+        "payloadIdentity": "729b744b17806cf5b66ae4834a8172420e0f56839aac1bf5a3351388def90cac",
+        "artifactIdentity": "development-schema5-c998ec157f2270b746dabe2adf0c5e82edaa96ebb53feb232dd1e521204b930f",
+        "policyIdentity": "38c66d22a4ce126be7217effe17e217393d2af5567fa77ac6edcc52ffd9c9c24",
+        "authenticationIdentity": "4c5cce4bab9ed814840db2e99d5548ef1cc61400cdc0db6a4990672ec0c0af24",
+        "runtimeConfigurationIdentity": "88bc397c5ae9470b1c798b12de22e0beab2148449f07fbf707008db261026efd",
+        "authorityMode": "canonical"
+      },
+      "counts": {
+        "scheduled": 43,
+        "completed": 43,
+        "aborts": 0,
+        "exact": 43,
+        "raw": 0
+      },
+      "records": [
+        {
+          "id": "N1",
+          "transport": "public-exact",
+          "method": "GET",
+          "url": "https://reference.invalid/acme/",
+          "credential": "writer",
+          "fieldOccurrences": [],
+          "status": 204,
+          "headers": {
+            "bdp-authorization-view": "development-all-visible",
+            "bdp-scope-epoch": "dcbd0950-5a4c-4966-ad15-26275de82b0c",
+            "bdp-scope-position": "pos-0",
+            "cache-control": "private, no-store",
+            "link": "<https://reference.invalid/acme/bdp.json>; rel=\"service-desc\"; type=\"application/json\"",
+            "x-bdp-development": "non-attesting",
+            "date": "Sun, 18 Oct 2026 17:09:16 GMT",
+            "connection": "close"
+          },
+          "bodyOctets": 0,
+          "bodySha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "wireSha256": "63d1556f5ccbeff284367932f223d5db9d33892a85d1a0bb85e0f5f61ae25029",
+          "requestWriteState": "complete"
+        },
+        {
+          "id": "N2",
+          "transport": "public-exact",
+          "method": "GET",
+          "url": "https://reference.invalid/acme/bdp.json",
+          "credential": "writer",
+          "fieldOccurrences": [],
+          "status": 200,
+          "headers": {
+            "bdp-authorization-view": "development-all-visible",
+            "bdp-scope-epoch": "dcbd0950-5a4c-4966-ad15-26275de82b0c",
+            "bdp-scope-position": "pos-0",
+            "cache-control": "private, no-store",
+            "content-length": "861",
+            "content-type": "application/json",
+            "vary": "Accept",
+            "x-bdp-development": "non-attesting",
+            "date": "Sun, 18 Oct 2026 17:09:16 GMT",
+            "connection": "close"
+          },
+          "bodyOctets": 861,
+          "bodySha256": "80cfee70427b2e9124e76e831a348a66cb13a976248e7c25c4d2b4862895afdd",
+          "wireSha256": "427af73af8f82524e5c7e2c77f7074984683d581277c133635f11122fef2e8b5",
+          "requestWriteState": "complete"
+        },
+        {
+          "id": "N3",
+          "transport": "public-exact",
+          "method": "GET",
+          "url": "https://reference.invalid/acme/operations/",
+          "credential": "writer",
+          "fieldOccurrences": [],
+          "status": 200,
+          "headers": {
+            "bdp-authorization-view": "development-all-visible",
+            "bdp-scope-epoch": "dcbd0950-5a4c-4966-ad15-26275de82b0c",
+            "bdp-scope-position": "pos-0",
+            "cache-control": "private, no-store",
+            "content-length": "311",
+            "content-type": "application/json",
+            "vary": "Accept",
+            "x-bdp-development": "non-attesting",
+            "date": "Sun, 18 Oct 2026 17:09:16 GMT",
+            "connection": "close"
+          },
+          "bodyOctets": 311,
+          "bodySha256": "c6928fb8a26446ad9775eadb34b3f53289bf7628d441f0418c7984361405127f",
+          "wireSha256": "39c50462bacb724d8f987eb8c5d9db6bd52b9dd3c7ab5b137efaa30e98f36852",
+          "requestWriteState": "complete"
+        },
+        {
+          "id": "T1",
+          "transport": "public-exact",
+          "method": "GET",
+          "url": "https://reference.invalid/acme/types/",
+          "credential": "writer",
+          "fieldOccurrences": [],
+          "status": 200,
+          "headers": {
+            "bdp-authorization-view": "development-all-visible",
+            "bdp-scope-epoch": "dcbd0950-5a4c-4966-ad15-26275de82b0c",
+            "bdp-scope-position": "pos-0",
+            "cache-control": "private, no-store",
+            "content-length": "191",
+            "content-type": "application/json",
+            "vary": "Accept",
+            "x-bdp-development": "non-attesting",
+            "date": "Sun, 18 Oct 2026 17:09:16 GMT",
+            "connection": "close"
+          },
+          "bodyOctets": 191,
+          "bodySha256": "54a7c082e89af3dbcc2a8c1dbd6c6eb73419fa349ea9c1d3f936d4fb93782706",
+          "wireSha256": "3ef68190f5d431852de885b29d7dafc37ffa82202283ee93b5a62923c1113d54",
+          "requestWriteState": "complete"
+        },
+        {
+          "id": "T2",
+          "transport": "public-exact",
+          "method": "GET",
+          "url": "https://reference.invalid/acme/types/bead",
+          "credential": "writer",
+          "fieldOccurrences": [],
+          "status": 200,
+          "headers": {
+            "bdp-authorization-view": "development-all-visible",
+            "bdp-scope-epoch": "dcbd0950-5a4c-4966-ad15-26275de82b0c",
+            "bdp-scope-position": "pos-0",
+            "cache-control": "private, no-store",
+            "content-length": "161",
+            "content-type": "application/json",
+            "vary": "Accept",
+            "x-bdp-development": "non-attesting",
+            "date": "Sun, 18 Oct 2026 17:09:16 GMT",
+            "connection": "close"
+          },
+          "bodyOctets": 161,
+          "bodySha256": "95eaea529e4ba9eddc2a2e7d9a8a4582218607dbfa9db672b10b355fa0d45862",
+          "wireSha256": "6065d7b4ae6ab002d8bd00da868b5a14b43c1ca89f5f1bdfb1adb264d211aeb0",
+          "requestWriteState": "complete"
+        },
+        {
+          "id": "T3",
+          "transport": "public-exact",
+          "method": "GET",
+          "url": "https://reference.invalid/acme/types/link",
+          "credential": "writer",
+          "fieldOccurrences": [],
+          "status": 200,
+          "headers": {
+            "bdp-authorization-view": "development-all-visible",
+            "bdp-scope-epoch": "dcbd0950-5a4c-4966-ad15-26275de82b0c",
+            "bdp-scope-position": "pos-0",
+            "cache-control": "private, no-store",
+            "content-length": "341",
+            "content-type": "application/json",
+            "vary": "Accept",
+            "x-bdp-development": "non-attesting",
+            "date": "Sun, 18 Oct 2026 17:09:16 GMT",
+            "connection": "close"
+          },
+          "bodyOctets": 341,
+          "bodySha256": "ae57f361562890312895f12fec6f11f3ea9e7e49eca40f750797ff5645ae4e2e",
+          "wireSha256": "7834599b35314952c91150eff69a0c7de97be2d587f47922e764204b04893f30",
+          "requestWriteState": "complete"
+        },
+        {
+          "id": "resource-alias-create-a",
+          "transport": "public-exact",
+          "method": "POST",
+          "url": "https://reference.invalid/acme/operations/create-bead",
+          "credential": "writer",
+          "fieldOccurrences": [
+            {
+              "name": "content-type",
+              "value": "application/json"
+            },
+            {
+              "name": "idempotency-key",
+              "value": "cold-resource-alias-create-a"
+            }
+          ],
+          "status": 200,
+          "headers": {
+            "bdp-authorization-view": "development-all-visible",
+            "bdp-scope-epoch": "dcbd0950-5a4c-4966-ad15-26275de82b0c",
+            "bdp-scope-position": "pos-1",
+            "cache-control": "private, no-store",
+            "content-length": "677",
+            "content-type": "application/json",
+            "vary": "Accept",
+            "x-bdp-development": "non-attesting",
+            "date": "Sun, 18 Oct 2026 17:09:16 GMT",
+            "connection": "close"
+          },
+          "bodyOctets": 677,
+          "bodySha256": "b85c516116f8c217a9f5f26b136ad295681504ce0bb4c3827b9224047848ee86",
+          "wireSha256": "4ed1bb0f3e5a8a322e0a6ca99619669abb0585b2bd30ac836de60663160b7802",
+          "requestWriteState": "complete"
+        },
+        {
+          "id": "resource-alias-create-a-receipt",
+          "transport": "public-exact",
+          "method": "GET",
+          "url": "https://reference.invalid/acme/receipts/1102a9aa-4f43-411e-a2de-24c731392ebc",
+          "credential": "writer",
+          "fieldOccurrences": [],
+          "status": 200,
+          "headers": {
+            "bdp-authorization-view": "development-all-visible",
+            "bdp-scope-epoch": "dcbd0950-5a4c-4966-ad15-26275de82b0c",
+            "bdp-scope-position": "pos-1",
+            "cache-control": "private, no-store",
+            "content-length": "677",
+            "content-type": "application/json",
+            "vary": "Accept",
+            "x-bdp-development": "non-attesting",
+            "date": "Sun, 18 Oct 2026 17:09:16 GMT",
+            "connection": "close"
+          },
+          "bodyOctets": 677,
+          "bodySha256": "b85c516116f8c217a9f5f26b136ad295681504ce0bb4c3827b9224047848ee86",
+          "wireSha256": "4ed1bb0f3e5a8a322e0a6ca99619669abb0585b2bd30ac836de60663160b7802",
+          "requestWriteState": "complete"
+        },
+        {
+          "id": "create-a-after",
+          "transport": "public-exact",
+          "method": "GET",
+          "url": "https://reference.invalid/acme/beads/a",
+          "credential": "writer",
+          "fieldOccurrences": [],
+          "status": 200,
+          "headers": {
+            "bdp-authorization-view": "development-all-visible",
+            "bdp-scope-epoch": "dcbd0950-5a4c-4966-ad15-26275de82b0c",
+            "bdp-scope-position": "pos-1",
+            "cache-control": "private, no-store",
+            "content-length": "183",
+            "content-type": "application/json",
+            "etag": "\"6997b130-84e0-49cf-9b42-8f0fa5017461\"",
+            "vary": "Accept",
+            "x-bdp-development": "non-attesting",
+            "date": "Sun, 18 Oct 2026 17:09:16 GMT",
+            "connection": "close"
+          },
+          "bodyOctets": 183,
+          "bodySha256": "a0b6e2daf3134b2268bfb16f7f8670fd34dd3c9d23ea25554918c977c376c2cb",
+          "wireSha256": "56061cf1263944c723ecf98a147441460209bf0497e76141551334f230afbcd7",
+          "requestWriteState": "complete"
+        },
+        {
+          "id": "resource-alias-create-b",
+          "transport": "public-exact",
+          "method": "POST",
+          "url": "https://reference.invalid/acme/operations/create-bead",
+          "credential": "writer",
+          "fieldOccurrences": [
+            {
+              "name": "content-type",
+              "value": "application/json"
+            },
+            {
+              "name": "idempotency-key",
+              "value": "cold-resource-alias-create-b"
+            }
+          ],
+          "status": 200,
+          "headers": {
+            "bdp-authorization-view": "development-all-visible",
+            "bdp-scope-epoch": "dcbd0950-5a4c-4966-ad15-26275de82b0c",
+            "bdp-scope-position": "pos-2",
+            "cache-control": "private, no-store",
+            "content-length": "677",
+            "content-type": "application/json",
+            "vary": "Accept",
+            "x-bdp-development": "non-attesting",
+            "date": "Sun, 18 Oct 2026 17:09:16 GMT",
+            "connection": "close"
+          },
+          "bodyOctets": 677,
+          "bodySha256": "2505685bf8d8d2d2a964b2671dd459c9e84ee40c1a5be620568b6847524edd84",
+          "wireSha256": "72b813c58d53b2a60e4a60dec63d803931c30a6b0204b76c40886cd1a615c11e",
+          "requestWriteState": "complete"
+        },
+        {
+          "id": "resource-alias-create-b-receipt",
+          "transport": "public-exact",
+          "method": "GET",
+          "url": "https://reference.invalid/acme/receipts/e446007c-cc63-46c3-b741-b6b5799357f0",
+          "credential": "writer",
+          "fieldOccurrences": [],
+          "status": 200,
+          "headers": {
+            "bdp-authorization-view": "development-all-visible",
+            "bdp-scope-epoch": "dcbd0950-5a4c-4966-ad15-26275de82b0c",
+            "bdp-scope-position": "pos-2",
+            "cache-control": "private, no-store",
+            "content-length": "677",
+            "content-type": "application/json",
+            "vary": "Accept",
+            "x-bdp-development": "non-attesting",
+            "date": "Sun, 18 Oct 2026 17:09:16 GMT",
+            "connection": "close"
+          },
+          "bodyOctets": 677,
+          "bodySha256": "2505685bf8d8d2d2a964b2671dd459c9e84ee40c1a5be620568b6847524edd84",
+          "wireSha256": "72b813c58d53b2a60e4a60dec63d803931c30a6b0204b76c40886cd1a615c11e",
+          "requestWriteState": "complete"
+        },
+        {
+          "id": "create-b-after",
+          "transport": "public-exact",
+          "method": "GET",
+          "url": "https://reference.invalid/acme/beads/b",
+          "credential": "writer",
+          "fieldOccurrences": [],
+          "status": 200,
+          "headers": {
+            "bdp-authorization-view": "development-all-visible",
+            "bdp-scope-epoch": "dcbd0950-5a4c-4966-ad15-26275de82b0c",
+            "bdp-scope-position": "pos-2",
+            "cache-control": "private, no-store",
+            "content-length": "183",
+            "content-type": "application/json",
+            "etag": "\"f88c279b-a4e6-422a-b2e2-53d24cd51d61\"",
+            "vary": "Accept",
+            "x-bdp-development": "non-attesting",
+            "date": "Sun, 18 Oct 2026 17:09:16 GMT",
+            "connection": "close"
+          },
+          "bodyOctets": 183,
+          "bodySha256": "796719a7dc2ed35cc9285fd06c3ed39c036e09fe5990911c444aac453a45105d",
+          "wireSha256": "476626684cbf056f0ecf3a211c1f5ae52f622f48524d389d77dbfb329524d498",
+          "requestWriteState": "complete"
+        },
+        {
+          "id": "resource-alias-update-a",
+          "transport": "public-exact",
+          "method": "POST",
+          "url": "https://reference.invalid/acme/operations/update-bead",
+          "credential": "writer",
+          "fieldOccurrences": [
+            {
+              "name": "content-type",
+              "value": "application/json"
+            },
+            {
+              "name": "idempotency-key",
+              "value": "cold-resource-alias-update-a"
+            }
+          ],
+          "status": 200,
+          "headers": {
+            "bdp-authorization-view": "development-all-visible",
+            "bdp-scope-epoch": "dcbd0950-5a4c-4966-ad15-26275de82b0c",
+            "bdp-scope-position": "pos-3",
+            "cache-control": "private, no-store",
+            "content-length": "678",
+            "content-type": "application/json",
+            "vary": "Accept",
+            "x-bdp-development": "non-attesting",
+            "date": "Sun, 18 Oct 2026 17:09:16 GMT",
+            "connection": "close"
+          },
+          "bodyOctets": 678,
+          "bodySha256": "69eddde2afb07f1d1dfa84e9251f504cefe05ca8827a258ff82e00bdfb45f787",
+          "wireSha256": "cbebf9895a66a5719bd0ecff7961d4317f85359489b8f6434919be60499f9461",
+          "requestWriteState": "complete"
+        },
+        {
+          "id": "resource-alias-update-a-receipt",
+          "transport": "public-exact",
+          "method": "GET",
+          "url": "https://reference.invalid/acme/receipts/cbfb8039-7dc2-4ca7-a4df-43f06fb7472e",
+          "credential": "writer",
+          "fieldOccurrences": [],
+          "status": 200,
+          "headers": {
+            "bdp-authorization-view": "development-all-visible",
+            "bdp-scope-epoch": "dcbd0950-5a4c-4966-ad15-26275de82b0c",
+            "bdp-scope-position": "pos-3",
+            "cache-control": "private, no-store",
+            "content-length": "678",
+            "content-type": "application/json",
+            "vary": "Accept",
+            "x-bdp-development": "non-attesting",
+            "date": "Sun, 18 Oct 2026 17:09:16 GMT",
+            "connection": "close"
+          },
+          "bodyOctets": 678,
+          "bodySha256": "69eddde2afb07f1d1dfa84e9251f504cefe05ca8827a258ff82e00bdfb45f787",
+          "wireSha256": "cbebf9895a66a5719bd0ecff7961d4317f85359489b8f6434919be60499f9461",
+          "requestWriteState": "complete"
+        },
+        {
+          "id": "update-a-after",
+          "transport": "public-exact",
+          "method": "GET",
+          "url": "https://reference.invalid/acme/beads/a",
+          "credential": "writer",
+          "fieldOccurrences": [],
+          "status": 200,
+          "headers": {
+            "bdp-authorization-view": "development-all-visible",
+            "bdp-scope-epoch": "dcbd0950-5a4c-4966-ad15-26275de82b0c",
+            "bdp-scope-position": "pos-3",
+            "cache-control": "private, no-store",
+            "content-length": "184",
+            "content-type": "application/json",
+            "etag": "\"068cf4a1-f450-433d-ae37-db591b5ab459\"",
+            "vary": "Accept",
+            "x-bdp-development": "non-attesting",
+            "date": "Sun, 18 Oct 2026 17:09:16 GMT",
+            "connection": "close"
+          },
+          "bodyOctets": 184,
+          "bodySha256": "2f804214c6872c4d9b11ed1629e64b19339ea6a8eb314d3b138aa36f14cfaac7",
+          "wireSha256": "9783b3b6b74a8242c7cee3d92119e4bd70d9de085d36eea0a6013d6b462ce20c",
+          "requestWriteState": "complete"
+        },
+        {
+          "id": "resource-alias-create-l",
+          "transport": "public-exact",
+          "method": "POST",
+          "url": "https://reference.invalid/acme/operations/create-link",
+          "credential": "writer",
+          "fieldOccurrences": [
+            {
+              "name": "content-type",
+              "value": "application/json"
+            },
+            {
+              "name": "idempotency-key",
+              "value": "cold-resource-alias-create-l"
+            }
+          ],
+          "status": 200,
+          "headers": {
+            "bdp-authorization-view": "development-all-visible",
+            "bdp-scope-epoch": "dcbd0950-5a4c-4966-ad15-26275de82b0c",
+            "bdp-scope-position": "pos-4",
+            "cache-control": "private, no-store",
+            "content-length": "777",
+            "content-type": "application/json",
+            "vary": "Accept",
+            "x-bdp-development": "non-attesting",
+            "date": "Sun, 18 Oct 2026 17:09:16 GMT",
+            "connection": "close"
+          },
+          "bodyOctets": 777,
+          "bodySha256": "02000e4957b51d4212850ab08a9e945b31055f86affa77e011220c3ee86e836c",
+          "wireSha256": "b7916462e6865a5ef5f347d12e48c6df7354ea6411d2e7ecd8f46416023c189a",
+          "requestWriteState": "complete"
+        },
+        {
+          "id": "resource-alias-create-l-receipt",
+          "transport": "public-exact",
+          "method": "GET",
+          "url": "https://reference.invalid/acme/receipts/cb559161-30ae-4bd0-8311-2948eb788d30",
+          "credential": "writer",
+          "fieldOccurrences": [],
+          "status": 200,
+          "headers": {
+            "bdp-authorization-view": "development-all-visible",
+            "bdp-scope-epoch": "dcbd0950-5a4c-4966-ad15-26275de82b0c",
+            "bdp-scope-position": "pos-4",
+            "cache-control": "private, no-store",
+            "content-length": "777",
+            "content-type": "application/json",
+            "vary": "Accept",
+            "x-bdp-development": "non-attesting",
+            "date": "Sun, 18 Oct 2026 17:09:16 GMT",
+            "connection": "close"
+          },
+          "bodyOctets": 777,
+          "bodySha256": "02000e4957b51d4212850ab08a9e945b31055f86affa77e011220c3ee86e836c",
+          "wireSha256": "b7916462e6865a5ef5f347d12e48c6df7354ea6411d2e7ecd8f46416023c189a",
+          "requestWriteState": "complete"
+        },
+        {
+          "id": "create-l-after",
+          "transport": "public-exact",
+          "method": "GET",
+          "url": "https://reference.invalid/acme/links/l",
+          "credential": "writer",
+          "fieldOccurrences": [],
+          "status": 200,
+          "headers": {
+            "bdp-authorization-view": "development-all-visible",
+            "bdp-scope-epoch": "dcbd0950-5a4c-4966-ad15-26275de82b0c",
+            "bdp-scope-position": "pos-4",
+            "cache-control": "private, no-store",
+            "content-length": "283",
+            "content-type": "application/json",
+            "etag": "\"a385ce19-ce0d-4fd2-aa9c-a8e67c81f19a\"",
+            "vary": "Accept",
+            "x-bdp-development": "non-attesting",
+            "date": "Sun, 18 Oct 2026 17:09:16 GMT",
+            "connection": "close"
+          },
+          "bodyOctets": 283,
+          "bodySha256": "3e4021576c806f504e3f08d8baa3916bb8311207686f0594dacb661eb6711d4d",
+          "wireSha256": "72e3814bf6c8a69ab659de1b1759cb8da98afe2e95d94caf3f63c04dc06484be",
+          "requestWriteState": "complete"
+        },
+        {
+          "id": "resource-alias-update-l",
+          "transport": "public-exact",
+          "method": "POST",
+          "url": "https://reference.invalid/acme/operations/update-link",
+          "credential": "writer",
+          "fieldOccurrences": [
+            {
+              "name": "content-type",
+              "value": "application/json"
+            },
+            {
+              "name": "idempotency-key",
+              "value": "cold-resource-alias-update-l"
+            }
+          ],
+          "status": 200,
+          "headers": {
+            "bdp-authorization-view": "development-all-visible",
+            "bdp-scope-epoch": "dcbd0950-5a4c-4966-ad15-26275de82b0c",
+            "bdp-scope-position": "pos-5",
+            "cache-control": "private, no-store",
+            "content-length": "778",
+            "content-type": "application/json",
+            "vary": "Accept",
+            "x-bdp-development": "non-attesting",
+            "date": "Sun, 18 Oct 2026 17:09:16 GMT",
+            "connection": "close"
+          },
+          "bodyOctets": 778,
+          "bodySha256": "59e8fa8a38c1223e228fb228ba551f75de85fdc70e1e8d6f25d45078ffdce644",
+          "wireSha256": "18d44ac08dba545ed1fa9ccddd6ef182234b0c473e07f2038aad328ceb5eba3d",
+          "requestWriteState": "complete"
+        },
+        {
+          "id": "resource-alias-update-l-receipt",
+          "transport": "public-exact",
+          "method": "GET",
+          "url": "https://reference.invalid/acme/receipts/e21e4108-b193-48cf-9eb0-3d44dfb49041",
+          "credential": "writer",
+          "fieldOccurrences": [],
+          "status": 200,
+          "headers": {
+            "bdp-authorization-view": "development-all-visible",
+            "bdp-scope-epoch": "dcbd0950-5a4c-4966-ad15-26275de82b0c",
+            "bdp-scope-position": "pos-5",
+            "cache-control": "private, no-store",
+            "content-length": "778",
+            "content-type": "application/json",
+            "vary": "Accept",
+            "x-bdp-development": "non-attesting",
+            "date": "Sun, 18 Oct 2026 17:09:16 GMT",
+            "connection": "close"
+          },
+          "bodyOctets": 778,
+          "bodySha256": "59e8fa8a38c1223e228fb228ba551f75de85fdc70e1e8d6f25d45078ffdce644",
+          "wireSha256": "18d44ac08dba545ed1fa9ccddd6ef182234b0c473e07f2038aad328ceb5eba3d",
+          "requestWriteState": "complete"
+        },
+        {
+          "id": "update-l-after",
+          "transport": "public-exact",
+          "method": "GET",
+          "url": "https://reference.invalid/acme/links/l",
+          "credential": "writer",
+          "fieldOccurrences": [],
+          "status": 200,
+          "headers": {
+            "bdp-authorization-view": "development-all-visible",
+            "bdp-scope-epoch": "dcbd0950-5a4c-4966-ad15-26275de82b0c",
+            "bdp-scope-position": "pos-5",
+            "cache-control": "private, no-store",
+            "content-length": "284",
+            "content-type": "application/json",
+            "etag": "\"6557c67e-9b3e-4380-bae5-461ff8d1c088\"",
+            "vary": "Accept",
+            "x-bdp-development": "non-attesting",
+            "date": "Sun, 18 Oct 2026 17:09:16 GMT",
+            "connection": "close"
+          },
+          "bodyOctets": 284,
+          "bodySha256": "c62e5b7607b271fa25f30c533f519b39e9c5e3b8fde08272612632a00faeee91",
+          "wireSha256": "996a0ed4631c7627f621b9ba1126efc4b967f7a47a53002c3c4afd56642e9e2b",
+          "requestWriteState": "complete"
+        },
+        {
+          "id": "resource-alias-put-alias",
+          "transport": "public-exact",
+          "method": "POST",
+          "url": "https://reference.invalid/acme/operations/put-alias",
+          "credential": "writer",
+          "fieldOccurrences": [
+            {
+              "name": "content-type",
+              "value": "application/json"
+            },
+            {
+              "name": "idempotency-key",
+              "value": "cold-resource-alias-put-alias"
+            }
+          ],
+          "status": 200,
+          "headers": {
+            "bdp-authorization-view": "development-all-visible",
+            "bdp-scope-epoch": "dcbd0950-5a4c-4966-ad15-26275de82b0c",
+            "bdp-scope-position": "pos-5",
+            "cache-control": "private, no-store",
+            "content-length": "560",
+            "content-type": "application/json",
+            "vary": "Accept",
+            "x-bdp-development": "non-attesting",
+            "date": "Sun, 18 Oct 2026 17:09:16 GMT",
+            "connection": "close"
+          },
+          "bodyOctets": 560,
+          "bodySha256": "3d83128ff198eab9b695f8cb8685fca74bd49c9d8bdc8b655170c970c9ec7f72",
+          "wireSha256": "605c1836049eaf73277260b8f27fa832bc748d1624f169fe312ad4b817a026d7",
+          "requestWriteState": "complete"
+        },
+        {
+          "id": "resource-alias-put-alias-receipt",
+          "transport": "public-exact",
+          "method": "GET",
+          "url": "https://reference.invalid/acme/receipts/e42a6fc4-6fb2-4fc7-9126-ca1d59948ac1",
+          "credential": "writer",
+          "fieldOccurrences": [],
+          "status": 200,
+          "headers": {
+            "bdp-authorization-view": "development-all-visible",
+            "bdp-scope-epoch": "dcbd0950-5a4c-4966-ad15-26275de82b0c",
+            "bdp-scope-position": "pos-5",
+            "cache-control": "private, no-store",
+            "content-length": "560",
+            "content-type": "application/json",
+            "vary": "Accept",
+            "x-bdp-development": "non-attesting",
+            "date": "Sun, 18 Oct 2026 17:09:16 GMT",
+            "connection": "close"
+          },
+          "bodyOctets": 560,
+          "bodySha256": "3d83128ff198eab9b695f8cb8685fca74bd49c9d8bdc8b655170c970c9ec7f72",
+          "wireSha256": "605c1836049eaf73277260b8f27fa832bc748d1624f169fe312ad4b817a026d7",
+          "requestWriteState": "complete"
+        },
+        {
+          "id": "alias-after",
+          "transport": "public-exact",
+          "method": "GET",
+          "url": "https://reference.invalid/acme/alias/work",
+          "credential": "writer",
+          "fieldOccurrences": [],
+          "status": 307,
+          "headers": {
+            "bdp-authorization-view": "development-all-visible",
+            "bdp-scope-epoch": "dcbd0950-5a4c-4966-ad15-26275de82b0c",
+            "bdp-scope-position": "pos-5",
+            "cache-control": "private, no-store",
+            "content-length": "0",
+            "location": "https://reference.invalid/acme/beads/a",
+            "x-bdp-development": "non-attesting",
+            "date": "Sun, 18 Oct 2026 17:09:16 GMT",
+            "connection": "close"
+          },
+          "bodyOctets": 0,
+          "bodySha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "wireSha256": "1ce605e39108ac1450cc47b5b9056cce782c0687fb870cec394108b5264e56d4",
+          "requestWriteState": "complete"
+        },
+        {
+          "id": "alias-follow",
+          "transport": "public-exact",
+          "method": "GET",
+          "url": "https://reference.invalid/acme/beads/a",
+          "credential": "writer",
+          "fieldOccurrences": [],
+          "status": 200,
+          "headers": {
+            "bdp-authorization-view": "development-all-visible",
+            "bdp-scope-epoch": "dcbd0950-5a4c-4966-ad15-26275de82b0c",
+            "bdp-scope-position": "pos-5",
+            "cache-control": "private, no-store",
+            "content-length": "184",
+            "content-type": "application/json",
+            "etag": "\"068cf4a1-f450-433d-ae37-db591b5ab459\"",
+            "vary": "Accept",
+            "x-bdp-development": "non-attesting",
+            "date": "Sun, 18 Oct 2026 17:09:16 GMT",
+            "connection": "close"
+          },
+          "bodyOctets": 184,
+          "bodySha256": "2f804214c6872c4d9b11ed1629e64b19339ea6a8eb314d3b138aa36f14cfaac7",
+          "wireSha256": "e948fcbb7dd98c99ad7d9807c97307e56b7bef45fc820b151eea61307db00497",
+          "requestWriteState": "complete"
+        },
+        {
+          "id": "resource-alias-delete-alias",
+          "transport": "public-exact",
+          "method": "POST",
+          "url": "https://reference.invalid/acme/operations/delete-alias",
+          "credential": "writer",
+          "fieldOccurrences": [
+            {
+              "name": "content-type",
+              "value": "application/json"
+            },
+            {
+              "name": "idempotency-key",
+              "value": "cold-resource-alias-delete-alias"
+            }
+          ],
+          "status": 200,
+          "headers": {
+            "bdp-authorization-view": "development-all-visible",
+            "bdp-scope-epoch": "dcbd0950-5a4c-4966-ad15-26275de82b0c",
+            "bdp-scope-position": "pos-5",
+            "cache-control": "private, no-store",
+            "content-length": "513",
+            "content-type": "application/json",
+            "vary": "Accept",
+            "x-bdp-development": "non-attesting",
+            "date": "Sun, 18 Oct 2026 17:09:16 GMT",
+            "connection": "close"
+          },
+          "bodyOctets": 513,
+          "bodySha256": "0422399878ae576aed58f2c765a4dbe11fbffa5f521856f9bf340fac5b42869d",
+          "wireSha256": "86c97a77b46a8b8aaf7ff066b06aa22a880a55ac7754b9bfce4e0057c2623da4",
+          "requestWriteState": "complete"
+        },
+        {
+          "id": "resource-alias-delete-alias-receipt",
+          "transport": "public-exact",
+          "method": "GET",
+          "url": "https://reference.invalid/acme/receipts/a8a5c0fd-9fd9-4781-ad92-325c88e6f586",
+          "credential": "writer",
+          "fieldOccurrences": [],
+          "status": 200,
+          "headers": {
+            "bdp-authorization-view": "development-all-visible",
+            "bdp-scope-epoch": "dcbd0950-5a4c-4966-ad15-26275de82b0c",
+            "bdp-scope-position": "pos-5",
+            "cache-control": "private, no-store",
+            "content-length": "513",
+            "content-type": "application/json",
+            "vary": "Accept",
+            "x-bdp-development": "non-attesting",
+            "date": "Sun, 18 Oct 2026 17:09:16 GMT",
+            "connection": "close"
+          },
+          "bodyOctets": 513,
+          "bodySha256": "0422399878ae576aed58f2c765a4dbe11fbffa5f521856f9bf340fac5b42869d",
+          "wireSha256": "86c97a77b46a8b8aaf7ff066b06aa22a880a55ac7754b9bfce4e0057c2623da4",
+          "requestWriteState": "complete"
+        },
+        {
+          "id": "alias-missing",
+          "transport": "public-exact",
+          "method": "GET",
+          "url": "https://reference.invalid/acme/alias/work",
+          "credential": "writer",
+          "fieldOccurrences": [],
+          "status": 404,
+          "headers": {
+            "bdp-authorization-view": "development-all-visible",
+            "bdp-scope-epoch": "dcbd0950-5a4c-4966-ad15-26275de82b0c",
+            "bdp-scope-position": "pos-5",
+            "cache-control": "private, no-store",
+            "content-length": "134",
+            "content-type": "application/problem+json",
+            "x-bdp-development": "non-attesting",
+            "date": "Sun, 18 Oct 2026 17:09:16 GMT",
+            "connection": "close"
+          },
+          "bodyOctets": 134,
+          "bodySha256": "6eb3ea2339cd9acd8b41edf491f4cebb381ce54504bab8215d4a421f32d68ce1",
+          "wireSha256": "23337495f4c26c096fd3a342b0497200faa33615cf9b4ce7373e93024b8726af",
+          "requestWriteState": "complete"
+        },
+        {
+          "id": "resource-alias-delete-l",
+          "transport": "public-exact",
+          "method": "POST",
+          "url": "https://reference.invalid/acme/operations/delete-link",
+          "credential": "writer",
+          "fieldOccurrences": [
+            {
+              "name": "content-type",
+              "value": "application/json"
+            },
+            {
+              "name": "idempotency-key",
+              "value": "cold-resource-alias-delete-l"
+            }
+          ],
+          "status": 200,
+          "headers": {
+            "bdp-authorization-view": "development-all-visible",
+            "bdp-scope-epoch": "dcbd0950-5a4c-4966-ad15-26275de82b0c",
+            "bdp-scope-position": "pos-6",
+            "cache-control": "private, no-store",
+            "content-length": "676",
+            "content-type": "application/json",
+            "vary": "Accept",
+            "x-bdp-development": "non-attesting",
+            "date": "Sun, 18 Oct 2026 17:09:16 GMT",
+            "connection": "close"
+          },
+          "bodyOctets": 676,
+          "bodySha256": "ab9b6998aca3cc7232682227b5804a440444b99171a7586d4270bb6a5da24ab9",
+          "wireSha256": "6cfff91b656ff50c9271afcc540ec9486908e0f8a3094de05db25c6f291d50ca",
+          "requestWriteState": "complete"
+        },
+        {
+          "id": "resource-alias-delete-l-receipt",
+          "transport": "public-exact",
+          "method": "GET",
+          "url": "https://reference.invalid/acme/receipts/4478fb5e-9c73-4d80-aad5-d3d9fe84ce2d",
+          "credential": "writer",
+          "fieldOccurrences": [],
+          "status": 200,
+          "headers": {
+            "bdp-authorization-view": "development-all-visible",
+            "bdp-scope-epoch": "dcbd0950-5a4c-4966-ad15-26275de82b0c",
+            "bdp-scope-position": "pos-6",
+            "cache-control": "private, no-store",
+            "content-length": "676",
+            "content-type": "application/json",
+            "vary": "Accept",
+            "x-bdp-development": "non-attesting",
+            "date": "Sun, 18 Oct 2026 17:09:16 GMT",
+            "connection": "close"
+          },
+          "bodyOctets": 676,
+          "bodySha256": "ab9b6998aca3cc7232682227b5804a440444b99171a7586d4270bb6a5da24ab9",
+          "wireSha256": "6cfff91b656ff50c9271afcc540ec9486908e0f8a3094de05db25c6f291d50ca",
+          "requestWriteState": "complete"
+        },
+        {
+          "id": "delete-l-after",
+          "transport": "public-exact",
+          "method": "GET",
+          "url": "https://reference.invalid/acme/links/l",
+          "credential": "writer",
+          "fieldOccurrences": [],
+          "status": 404,
+          "headers": {
+            "bdp-authorization-view": "development-all-visible",
+            "bdp-scope-epoch": "dcbd0950-5a4c-4966-ad15-26275de82b0c",
+            "bdp-scope-position": "pos-6",
+            "cache-control": "private, no-store",
+            "content-length": "134",
+            "content-type": "application/problem+json",
+            "x-bdp-development": "non-attesting",
+            "date": "Sun, 18 Oct 2026 17:09:16 GMT",
+            "connection": "close"
+          },
+          "bodyOctets": 134,
+          "bodySha256": "6eb3ea2339cd9acd8b41edf491f4cebb381ce54504bab8215d4a421f32d68ce1",
+          "wireSha256": "78bf1ac4bcf29b12d07148b6f9cb8a8cb776cef45673ad9837115fd6f68e70e3",
+          "requestWriteState": "complete"
+        },
+        {
+          "id": "resource-alias-delete-b",
+          "transport": "public-exact",
+          "method": "POST",
+          "url": "https://reference.invalid/acme/operations/delete-bead",
+          "credential": "writer",
+          "fieldOccurrences": [
+            {
+              "name": "content-type",
+              "value": "application/json"
+            },
+            {
+              "name": "idempotency-key",
+              "value": "cold-resource-alias-delete-b"
+            }
+          ],
+          "status": 200,
+          "headers": {
+            "bdp-authorization-view": "development-all-visible",
+            "bdp-scope-epoch": "dcbd0950-5a4c-4966-ad15-26275de82b0c",
+            "bdp-scope-position": "pos-7",
+            "cache-control": "private, no-store",
+            "content-length": "676",
+            "content-type": "application/json",
+            "vary": "Accept",
+            "x-bdp-development": "non-attesting",
+            "date": "Sun, 18 Oct 2026 17:09:16 GMT",
+            "connection": "close"
+          },
+          "bodyOctets": 676,
+          "bodySha256": "967573cbe30e4f7fe2ef7f3b0ce8cf55b2d2bf7f2505c793e6a5e04273a49d43",
+          "wireSha256": "ad9726f347ffc5c5900cff870f1b949dc414236430398fb63293e376d3a28e0e",
+          "requestWriteState": "complete"
+        },
+        {
+          "id": "resource-alias-delete-b-receipt",
+          "transport": "public-exact",
+          "method": "GET",
+          "url": "https://reference.invalid/acme/receipts/cda15a9c-8bcf-4faf-ba2e-eb7c37b8e65e",
+          "credential": "writer",
+          "fieldOccurrences": [],
+          "status": 200,
+          "headers": {
+            "bdp-authorization-view": "development-all-visible",
+            "bdp-scope-epoch": "dcbd0950-5a4c-4966-ad15-26275de82b0c",
+            "bdp-scope-position": "pos-7",
+            "cache-control": "private, no-store",
+            "content-length": "676",
+            "content-type": "application/json",
+            "vary": "Accept",
+            "x-bdp-development": "non-attesting",
+            "date": "Sun, 18 Oct 2026 17:09:16 GMT",
+            "connection": "close"
+          },
+          "bodyOctets": 676,
+          "bodySha256": "967573cbe30e4f7fe2ef7f3b0ce8cf55b2d2bf7f2505c793e6a5e04273a49d43",
+          "wireSha256": "ad9726f347ffc5c5900cff870f1b949dc414236430398fb63293e376d3a28e0e",
+          "requestWriteState": "complete"
+        },
+        {
+          "id": "delete-b-after",
+          "transport": "public-exact",
+          "method": "GET",
+          "url": "https://reference.invalid/acme/beads/b",
+          "credential": "writer",
+          "fieldOccurrences": [],
+          "status": 404,
+          "headers": {
+            "bdp-authorization-view": "development-all-visible",
+            "bdp-scope-epoch": "dcbd0950-5a4c-4966-ad15-26275de82b0c",
+            "bdp-scope-position": "pos-7",
+            "cache-control": "private, no-store",
+            "content-length": "134",
+            "content-type": "application/problem+json",
+            "x-bdp-development": "non-attesting",
+            "date": "Sun, 18 Oct 2026 17:09:16 GMT",
+            "connection": "close"
+          },
+          "bodyOctets": 134,
+          "bodySha256": "6eb3ea2339cd9acd8b41edf491f4cebb381ce54504bab8215d4a421f32d68ce1",
+          "wireSha256": "6ce4cce94586db3bf8e5b84b207476bf16ec31a423dcd1b12bc1a8bc58d17c2c",
+          "requestWriteState": "complete"
+        },
+        {
+          "id": "resource-alias-delete-a",
+          "transport": "public-exact",
+          "method": "POST",
+          "url": "https://reference.invalid/acme/operations/delete-bead",
+          "credential": "writer",
+          "fieldOccurrences": [
+            {
+              "name": "content-type",
+              "value": "application/json"
+            },
+            {
+              "name": "idempotency-key",
+              "value": "cold-resource-alias-delete-a"
+            }
+          ],
+          "status": 200,
+          "headers": {
+            "bdp-authorization-view": "development-all-visible",
+            "bdp-scope-epoch": "dcbd0950-5a4c-4966-ad15-26275de82b0c",
+            "bdp-scope-position": "pos-8",
+            "cache-control": "private, no-store",
+            "content-length": "676",
+            "content-type": "application/json",
+            "vary": "Accept",
+            "x-bdp-development": "non-attesting",
+            "date": "Sun, 18 Oct 2026 17:09:16 GMT",
+            "connection": "close"
+          },
+          "bodyOctets": 676,
+          "bodySha256": "6c7a5f5542da97b8c8a0328c4a31c050700c0caef4cc07de161f5acef9694df0",
+          "wireSha256": "622ac97d80b81e8bd0046e36f81324013fa06e8ce4e734c59c1a4108408afc19",
+          "requestWriteState": "complete"
+        },
+        {
+          "id": "resource-alias-delete-a-receipt",
+          "transport": "public-exact",
+          "method": "GET",
+          "url": "https://reference.invalid/acme/receipts/87afda46-7062-4126-94c7-b8763e128647",
+          "credential": "writer",
+          "fieldOccurrences": [],
+          "status": 200,
+          "headers": {
+            "bdp-authorization-view": "development-all-visible",
+            "bdp-scope-epoch": "dcbd0950-5a4c-4966-ad15-26275de82b0c",
+            "bdp-scope-position": "pos-8",
+            "cache-control": "private, no-store",
+            "content-length": "676",
+            "content-type": "application/json",
+            "vary": "Accept",
+            "x-bdp-development": "non-attesting",
+            "date": "Sun, 18 Oct 2026 17:09:16 GMT",
+            "connection": "close"
+          },
+          "bodyOctets": 676,
+          "bodySha256": "6c7a5f5542da97b8c8a0328c4a31c050700c0caef4cc07de161f5acef9694df0",
+          "wireSha256": "622ac97d80b81e8bd0046e36f81324013fa06e8ce4e734c59c1a4108408afc19",
+          "requestWriteState": "complete"
+        },
+        {
+          "id": "delete-a-after",
+          "transport": "public-exact",
+          "method": "GET",
+          "url": "https://reference.invalid/acme/beads/a",
+          "credential": "writer",
+          "fieldOccurrences": [],
+          "status": 404,
+          "headers": {
+            "bdp-authorization-view": "development-all-visible",
+            "bdp-scope-epoch": "dcbd0950-5a4c-4966-ad15-26275de82b0c",
+            "bdp-scope-position": "pos-8",
+            "cache-control": "private, no-store",
+            "content-length": "134",
+            "content-type": "application/problem+json",
+            "x-bdp-development": "non-attesting",
+            "date": "Sun, 18 Oct 2026 17:09:16 GMT",
+            "connection": "close"
+          },
+          "bodyOctets": 134,
+          "bodySha256": "6eb3ea2339cd9acd8b41edf491f4cebb381ce54504bab8215d4a421f32d68ce1",
+          "wireSha256": "78e376c3ce85d6c2fab6ba905c5c7696f17ad01e0430bedf001517117bf37116",
+          "requestWriteState": "complete"
+        },
+        {
+          "id": "replay-create",
+          "transport": "public-exact",
+          "method": "POST",
+          "url": "https://reference.invalid/acme/operations/create-bead",
+          "credential": "writer",
+          "fieldOccurrences": [
+            {
+              "name": "content-type",
+              "value": "application/json"
+            },
+            {
+              "name": "idempotency-key",
+              "value": "cold-resource-alias-create-a"
+            }
+          ],
+          "status": 200,
+          "headers": {
+            "bdp-authorization-view": "development-all-visible",
+            "bdp-scope-epoch": "dcbd0950-5a4c-4966-ad15-26275de82b0c",
+            "bdp-scope-position": "pos-8",
+            "cache-control": "private, no-store",
+            "content-length": "677",
+            "content-type": "application/json",
+            "vary": "Accept",
+            "x-bdp-development": "non-attesting",
+            "date": "Sun, 18 Oct 2026 17:09:16 GMT",
+            "connection": "close"
+          },
+          "bodyOctets": 677,
+          "bodySha256": "b85c516116f8c217a9f5f26b136ad295681504ce0bb4c3827b9224047848ee86",
+          "wireSha256": "be16b92fd013f53e1a2b5ed1e60974e30b776ea1f0a1a51d517ea162c403bf26",
+          "requestWriteState": "complete"
+        },
+        {
+          "id": "replay-after-a",
+          "transport": "public-exact",
+          "method": "GET",
+          "url": "https://reference.invalid/acme/beads/a",
+          "credential": "writer",
+          "fieldOccurrences": [],
+          "status": 404,
+          "headers": {
+            "bdp-authorization-view": "development-all-visible",
+            "bdp-scope-epoch": "dcbd0950-5a4c-4966-ad15-26275de82b0c",
+            "bdp-scope-position": "pos-8",
+            "cache-control": "private, no-store",
+            "content-length": "134",
+            "content-type": "application/problem+json",
+            "x-bdp-development": "non-attesting",
+            "date": "Sun, 18 Oct 2026 17:09:16 GMT",
+            "connection": "close"
+          },
+          "bodyOctets": 134,
+          "bodySha256": "6eb3ea2339cd9acd8b41edf491f4cebb381ce54504bab8215d4a421f32d68ce1",
+          "wireSha256": "78e376c3ce85d6c2fab6ba905c5c7696f17ad01e0430bedf001517117bf37116",
+          "requestWriteState": "complete"
+        },
+        {
+          "id": "refresh-descriptor",
+          "transport": "public-exact",
+          "method": "GET",
+          "url": "https://reference.invalid/acme/bdp.json",
+          "credential": "writer",
+          "fieldOccurrences": [],
+          "status": 200,
+          "headers": {
+            "bdp-authorization-view": "development-all-visible",
+            "bdp-scope-epoch": "dcbd0950-5a4c-4966-ad15-26275de82b0c",
+            "bdp-scope-position": "pos-8",
+            "cache-control": "private, no-store",
+            "content-length": "861",
+            "content-type": "application/json",
+            "vary": "Accept",
+            "x-bdp-development": "non-attesting",
+            "date": "Sun, 18 Oct 2026 17:09:16 GMT",
+            "connection": "close"
+          },
+          "bodyOctets": 861,
+          "bodySha256": "2ea11c775f7f6044b2de91bf61a8e57e5129cde622128ff7c1aa1a735c864f8a",
+          "wireSha256": "198213f879e13b5090cbe614d0e7cbcf4ec4aa7bc0120dfa6707cea5712067df",
+          "requestWriteState": "complete"
+        },
+        {
+          "id": "head-descriptor",
+          "transport": "public-exact",
+          "method": "HEAD",
+          "url": "https://reference.invalid/acme/bdp.json",
+          "credential": "writer",
+          "fieldOccurrences": [],
+          "status": 200,
+          "headers": {
+            "bdp-authorization-view": "development-all-visible",
+            "bdp-scope-epoch": "dcbd0950-5a4c-4966-ad15-26275de82b0c",
+            "bdp-scope-position": "pos-8",
+            "cache-control": "private, no-store",
+            "content-length": "861",
+            "content-type": "application/json",
+            "vary": "Accept",
+            "x-bdp-development": "non-attesting",
+            "date": "Sun, 18 Oct 2026 17:09:16 GMT",
+            "connection": "close"
+          },
+          "bodyOctets": 0,
+          "bodySha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "wireSha256": "6ff0173cf57d3f422df2614002ba088c15f3cc13aeee8e80430e40a0c9fbd38a",
+          "requestWriteState": "complete"
+        },
+        {
+          "id": "head-directory",
+          "transport": "public-exact",
+          "method": "HEAD",
+          "url": "https://reference.invalid/acme/operations/",
+          "credential": "writer",
+          "fieldOccurrences": [],
+          "status": 200,
+          "headers": {
+            "bdp-authorization-view": "development-all-visible",
+            "bdp-scope-epoch": "dcbd0950-5a4c-4966-ad15-26275de82b0c",
+            "bdp-scope-position": "pos-8",
+            "cache-control": "private, no-store",
+            "content-length": "311",
+            "content-type": "application/json",
+            "vary": "Accept",
+            "x-bdp-development": "non-attesting",
+            "date": "Sun, 18 Oct 2026 17:09:16 GMT",
+            "connection": "close"
+          },
+          "bodyOctets": 0,
+          "bodySha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "wireSha256": "eb21f984b5610a8592a7acd55801bec8e873284ef7ea040b1a53dcfa02689b76",
+          "requestWriteState": "complete"
+        },
+        {
+          "id": "head-scope",
+          "transport": "public-exact",
+          "method": "HEAD",
+          "url": "https://reference.invalid/acme/",
+          "credential": "writer",
+          "fieldOccurrences": [],
+          "status": 204,
+          "headers": {
+            "bdp-authorization-view": "development-all-visible",
+            "bdp-scope-epoch": "dcbd0950-5a4c-4966-ad15-26275de82b0c",
+            "bdp-scope-position": "pos-8",
+            "cache-control": "private, no-store",
+            "link": "<https://reference.invalid/acme/bdp.json>; rel=\"service-desc\"; type=\"application/json\"",
+            "x-bdp-development": "non-attesting",
+            "date": "Sun, 18 Oct 2026 17:09:16 GMT",
+            "connection": "close"
+          },
+          "bodyOctets": 0,
+          "bodySha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "wireSha256": "c73aff7d8f678ad47758ffbc91dc9389d621d12a719a3dd56bffbbb24b53336a",
+          "requestWriteState": "complete"
+        }
+      ],
+      "child": {
+        "pid": 70687,
+        "exitSeen": true,
+        "closeSeen": true,
+        "code": 0,
+        "signal": null
+      },
+      "workSettled": true,
+      "cleanupKnown": true,
+      "pending": 0,
+      "directory": "/private/tmp/vickie-tx-discovery-validation-installed-02-d8ws9l6_/bdp-d3-installed-A1B3Q8",
+      "directoryAbsent": true,
+      "elapsedMs": 317.380542,
+      "failureCount": 0,
+      "outcome": "passed",
+      "claimEligible": false
+    }
+  ],
+  "claimEligible": false,
+  "limitations": "Private exact source/build/archive/consumer only. Historical lanes distinct. Failure/partial records remain raw, never reconstructed; no public Write qualification/admission claim."
+}

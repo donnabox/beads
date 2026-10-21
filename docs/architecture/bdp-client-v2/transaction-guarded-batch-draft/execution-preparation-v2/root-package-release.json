@@ -1,0 +1,25 @@
+{
+  "released": true,
+  "head": "8833c9242b7788e843e9eb97a2c99b2277fe75ef",
+  "tree": "057f879132074166f2c0f643a8b45bbd9dd47c6f",
+  "basis": [
+    {
+      "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-guarded-batch-draft/execution-preparation-v2/root-static-acceptance.json",
+      "sha256": "2540ef2611db4d09fe1cc3e8b4a3ef7e0cfc016978d4eaac200802ac7c69c7b7"
+    },
+    {
+      "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-guarded-batch-draft/execution-preparation-v2/run/root-build-bridge.json",
+      "sha256": "919272c2041a6bbe15018353ad3271820e6ff39c4386bd9f23cbd588c6809838"
+    }
+  ],
+  "allowedNext": [
+    "node-version",
+    "package-directory",
+    "pack-protocol",
+    "pack-server",
+    "verify-tar",
+    "prepare-consumer",
+    "consumer-install"
+  ],
+  "note": "Fresh successor packaging only."
+}

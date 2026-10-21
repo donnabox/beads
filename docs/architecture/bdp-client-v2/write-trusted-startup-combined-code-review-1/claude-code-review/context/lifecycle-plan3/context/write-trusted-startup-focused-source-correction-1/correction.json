@@ -1,0 +1,25 @@
+{
+  "accepted": true,
+  "session": "2026-10-18T02:16:24Z-549f",
+  "utc": "2026-10-18T06:21:37.606077+00:00",
+  "change": "Exactly existing refusal row10 uses referenced schemas/item via existing artifacts(); test-only, no production change",
+  "diagnosisIndexSha256": "a6602394dfab65c9fe7a3361e0bc5e95b9807ca89bdcb12b52a3779e90473e5f",
+  "independentRecommendationAcceptance": {
+    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-trusted-startup-validation4-actual-prefix-audit-1/native-failure-diagnosis-1/recommendation-precision.json",
+    "sha256": "50b18af2aed32d972229cdb0c628b32d154b5c9971f45b4e3bc082ea22ff198a"
+  },
+  "beforeTestSha256": "5b9de79791eb041e74b4153ffc19dfaf28b029599644a7bda056a84432ef0289",
+  "afterTestSha256": "adfbf6b0132cc24b3b65bf482000de2da43bf242102020637ed894b2cdd0cee9",
+  "other681Unchanged": true,
+  "trackedCount": 682,
+  "full12PatchSha256": "515e11937c2a89c5e22a696a11a0c01a547a532a02fd645a8994ef12d6d27343",
+  "sourceMapSha256": "054d825cdc815260f0d4472c4b13fafca0130f1330798c8204a45a8de53f403d",
+  "sourceBindingSha256": "92166de7cf4ec773d973dd6ab92cb15cf0e3fc4fa1a4b7896674a375b7c82824",
+  "sourceIdentity": "0c53a6bb33d57133c8fbb43b8787d9251ca4276abcdb18b2a9f434279bfe364b",
+  "failedValidation4Preserved": true,
+  "actualFailingOrdinal": "UNLOGGED; row10 attribution is static inference",
+  "runtimeExecuted": false,
+  "formatted": false,
+  "validationReleased": false,
+  "next": "Independent exact corrected-source precision and separately named fresh CLOSED validation5; no retry of4."
+}

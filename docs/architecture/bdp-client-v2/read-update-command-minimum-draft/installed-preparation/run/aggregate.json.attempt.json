@@ -1,0 +1,1797 @@
+{
+  "claimEligible": false,
+  "outcome": "observed",
+  "sourceCommit": "b89554c6004edf99d3278518bee1b150dce3fa98",
+  "setDigest": "ff8e609b794f09b358ae758aafb378ecbbe7861313be8fb9cffe920cc85f312b",
+  "indexDigest": "7277980894dd0955a8fcd22ba5d2845b0a6801b7e7e13a937018e11d3a65de37",
+  "coverageDigest": "4120abfe2f724fe34b3868bd3533b181e18479768d5de752b5098c6288dbb395",
+  "fixtureDigest": "f89932d68e3bf5867d79eb3de680af4bc67b761b3c3bce5da127f6ca75e27765",
+  "catalogDigests": {
+    "read-v1.json": "769ff9f24cfdfe74a47670240b04149b520af23b2c71a431883fd15e988adeb0",
+    "read-update-v1.json": "73d215813df034a2be0cd15d0caff7cf2c8823a067f271b9140c9cbb90e859c3",
+    "transactional-v1.json": "c9125f914129c71f01cefc5c54b32db80637d37b57e321571c96e81936c31eb4",
+    "numeric-model-v1.json": "f4428d53cc1e67beaa146ba9811cd9676e47e84d75a344ba68eb9a24cdc2d0a5",
+    "owned-wildcard-v1.json": "6023bff763b7579992fc9092901f2f8ddfc752f264c2a9de6bc0caf0880c5ecd"
+  },
+  "requiredObservations": [
+    {
+      "id": "read.discovery.scope-service-desc",
+      "owner": "baseline",
+      "observation": {
+        "shardId": "baseline",
+        "resultDigest": "117d5ddfd07762df6bf81d6d5004aaa321bdd606facad83dcde1871737d37cd4",
+        "rowIndex": 0,
+        "state": "pass"
+      }
+    },
+    {
+      "id": "read.discovery.canonical-navigation",
+      "owner": "baseline",
+      "observation": {
+        "shardId": "baseline",
+        "resultDigest": "117d5ddfd07762df6bf81d6d5004aaa321bdd606facad83dcde1871737d37cd4",
+        "rowIndex": 1,
+        "state": "pass"
+      }
+    },
+    {
+      "id": "read.discovery.optional-limits",
+      "owner": null,
+      "observation": {
+        "shardId": "baseline",
+        "resultDigest": "117d5ddfd07762df6bf81d6d5004aaa321bdd606facad83dcde1871737d37cd4",
+        "rowIndex": 2,
+        "state": "harness-error",
+        "category": "not-implemented"
+      },
+      "reason": "not-planned"
+    },
+    {
+      "id": "read.resource.bead-record",
+      "owner": "baseline",
+      "observation": {
+        "shardId": "baseline",
+        "resultDigest": "117d5ddfd07762df6bf81d6d5004aaa321bdd606facad83dcde1871737d37cd4",
+        "rowIndex": 4,
+        "state": "pass"
+      }
+    },
+    {
+      "id": "read.resource.link-record",
+      "owner": "baseline",
+      "observation": {
+        "shardId": "baseline",
+        "resultDigest": "117d5ddfd07762df6bf81d6d5004aaa321bdd606facad83dcde1871737d37cd4",
+        "rowIndex": 5,
+        "state": "pass"
+      }
+    },
+    {
+      "id": "read.resource.external-endpoint",
+      "owner": null,
+      "observation": {
+        "shardId": "baseline",
+        "resultDigest": "117d5ddfd07762df6bf81d6d5004aaa321bdd606facad83dcde1871737d37cd4",
+        "rowIndex": 6,
+        "state": "harness-error",
+        "category": "not-implemented"
+      },
+      "reason": "not-planned"
+    },
+    {
+      "id": "read.resource.properties-view",
+      "owner": "baseline",
+      "observation": {
+        "shardId": "baseline",
+        "resultDigest": "117d5ddfd07762df6bf81d6d5004aaa321bdd606facad83dcde1871737d37cd4",
+        "rowIndex": 7,
+        "state": "pass"
+      }
+    },
+    {
+      "id": "read.resource.default-bounded",
+      "owner": "baseline",
+      "observation": {
+        "shardId": "baseline",
+        "resultDigest": "117d5ddfd07762df6bf81d6d5004aaa321bdd606facad83dcde1871737d37cd4",
+        "rowIndex": 8,
+        "state": "pass"
+      }
+    },
+    {
+      "id": "read.resource.not-found-nondisclosure",
+      "owner": null,
+      "observation": {
+        "shardId": "baseline",
+        "resultDigest": "117d5ddfd07762df6bf81d6d5004aaa321bdd606facad83dcde1871737d37cd4",
+        "rowIndex": 9,
+        "state": "harness-error",
+        "category": "not-implemented"
+      },
+      "reason": "not-planned"
+    },
+    {
+      "id": "read.types.inventory",
+      "owner": "baseline",
+      "observation": {
+        "shardId": "baseline",
+        "resultDigest": "117d5ddfd07762df6bf81d6d5004aaa321bdd606facad83dcde1871737d37cd4",
+        "rowIndex": 10,
+        "state": "pass"
+      }
+    },
+    {
+      "id": "read.types.descriptor",
+      "owner": "baseline",
+      "observation": {
+        "shardId": "baseline",
+        "resultDigest": "117d5ddfd07762df6bf81d6d5004aaa321bdd606facad83dcde1871737d37cd4",
+        "rowIndex": 11,
+        "state": "pass"
+      }
+    },
+    {
+      "id": "read.collections.beads",
+      "owner": "baseline",
+      "observation": {
+        "shardId": "baseline",
+        "resultDigest": "117d5ddfd07762df6bf81d6d5004aaa321bdd606facad83dcde1871737d37cd4",
+        "rowIndex": 13,
+        "state": "pass"
+      }
+    },
+    {
+      "id": "read.collections.links",
+      "owner": "baseline",
+      "observation": {
+        "shardId": "baseline",
+        "resultDigest": "117d5ddfd07762df6bf81d6d5004aaa321bdd606facad83dcde1871737d37cd4",
+        "rowIndex": 14,
+        "state": "pass"
+      }
+    },
+    {
+      "id": "read.collections.structural-predicates",
+      "owner": null,
+      "observation": {
+        "shardId": "baseline",
+        "resultDigest": "117d5ddfd07762df6bf81d6d5004aaa321bdd606facad83dcde1871737d37cd4",
+        "rowIndex": 15,
+        "state": "harness-error",
+        "category": "not-implemented"
+      },
+      "reason": "not-planned"
+    },
+    {
+      "id": "read.collections.selector",
+      "owner": null,
+      "observation": {
+        "shardId": "baseline",
+        "resultDigest": "117d5ddfd07762df6bf81d6d5004aaa321bdd606facad83dcde1871737d37cd4",
+        "rowIndex": 16,
+        "state": "harness-error",
+        "category": "not-implemented"
+      },
+      "reason": "not-planned"
+    },
+    {
+      "id": "read.collections.pagination-snapshot",
+      "owner": null,
+      "observation": {
+        "shardId": "baseline",
+        "resultDigest": "117d5ddfd07762df6bf81d6d5004aaa321bdd606facad83dcde1871737d37cd4",
+        "rowIndex": 17,
+        "state": "harness-error",
+        "category": "not-implemented"
+      },
+      "reason": "not-planned"
+    },
+    {
+      "id": "read.collections.cursor-errors",
+      "owner": null,
+      "observation": {
+        "shardId": "baseline",
+        "resultDigest": "117d5ddfd07762df6bf81d6d5004aaa321bdd606facad83dcde1871737d37cd4",
+        "rowIndex": 18,
+        "state": "harness-error",
+        "category": "not-implemented"
+      },
+      "reason": "not-planned"
+    },
+    {
+      "id": "read.collections.invalid-query",
+      "owner": "baseline",
+      "observation": {
+        "shardId": "baseline",
+        "resultDigest": "117d5ddfd07762df6bf81d6d5004aaa321bdd606facad83dcde1871737d37cd4",
+        "rowIndex": 19,
+        "state": "pass"
+      }
+    },
+    {
+      "id": "read.bead-links.directions",
+      "owner": null,
+      "observation": {
+        "shardId": "baseline",
+        "resultDigest": "117d5ddfd07762df6bf81d6d5004aaa321bdd606facad83dcde1871737d37cd4",
+        "rowIndex": 20,
+        "state": "harness-error",
+        "category": "not-implemented"
+      },
+      "reason": "not-planned"
+    },
+    {
+      "id": "read.bead-links.pagination",
+      "owner": null,
+      "observation": {
+        "shardId": "baseline",
+        "resultDigest": "117d5ddfd07762df6bf81d6d5004aaa321bdd606facad83dcde1871737d37cd4",
+        "rowIndex": 21,
+        "state": "harness-error",
+        "category": "not-implemented"
+      },
+      "reason": "not-planned"
+    },
+    {
+      "id": "read.http.get-head",
+      "owner": "baseline",
+      "observation": {
+        "shardId": "baseline",
+        "resultDigest": "117d5ddfd07762df6bf81d6d5004aaa321bdd606facad83dcde1871737d37cd4",
+        "rowIndex": 22,
+        "state": "pass"
+      }
+    },
+    {
+      "id": "read.http.method-405",
+      "owner": "baseline",
+      "observation": {
+        "shardId": "baseline",
+        "resultDigest": "117d5ddfd07762df6bf81d6d5004aaa321bdd606facad83dcde1871737d37cd4",
+        "rowIndex": 23,
+        "state": "pass"
+      }
+    },
+    {
+      "id": "read.http.problem-table",
+      "owner": null,
+      "observation": {
+        "shardId": "baseline",
+        "resultDigest": "117d5ddfd07762df6bf81d6d5004aaa321bdd606facad83dcde1871737d37cd4",
+        "rowIndex": 24,
+        "state": "harness-error",
+        "category": "not-implemented"
+      },
+      "reason": "not-planned"
+    },
+    {
+      "id": "read.http.internal-fault",
+      "owner": null,
+      "observation": {
+        "shardId": "baseline",
+        "resultDigest": "117d5ddfd07762df6bf81d6d5004aaa321bdd606facad83dcde1871737d37cd4",
+        "rowIndex": 25,
+        "state": "harness-error",
+        "category": "not-implemented"
+      },
+      "reason": "not-planned"
+    },
+    {
+      "id": "read.http.cache-cors",
+      "owner": "baseline",
+      "observation": {
+        "shardId": "baseline",
+        "resultDigest": "117d5ddfd07762df6bf81d6d5004aaa321bdd606facad83dcde1871737d37cd4",
+        "rowIndex": 26,
+        "state": "pass"
+      }
+    },
+    {
+      "id": "read.http.raw-request-targets",
+      "owner": null,
+      "observation": {
+        "shardId": "baseline",
+        "resultDigest": "117d5ddfd07762df6bf81d6d5004aaa321bdd606facad83dcde1871737d37cd4",
+        "rowIndex": 27,
+        "state": "harness-error",
+        "category": "not-implemented"
+      },
+      "reason": "not-planned"
+    },
+    {
+      "id": "read.scope.restore-identity",
+      "owner": null,
+      "observation": {
+        "shardId": "baseline",
+        "resultDigest": "117d5ddfd07762df6bf81d6d5004aaa321bdd606facad83dcde1871737d37cd4",
+        "rowIndex": 29,
+        "state": "harness-error",
+        "category": "not-implemented"
+      },
+      "reason": "not-planned"
+    },
+    {
+      "id": "read.alias.resolution",
+      "owner": null,
+      "observation": {
+        "shardId": "baseline",
+        "resultDigest": "117d5ddfd07762df6bf81d6d5004aaa321bdd606facad83dcde1871737d37cd4",
+        "rowIndex": 32,
+        "state": "harness-error",
+        "category": "not-implemented"
+      },
+      "reason": "not-planned"
+    },
+    {
+      "id": "read.alias.absent",
+      "owner": null,
+      "observation": {
+        "shardId": "baseline",
+        "resultDigest": "117d5ddfd07762df6bf81d6d5004aaa321bdd606facad83dcde1871737d37cd4",
+        "rowIndex": 33,
+        "state": "harness-error",
+        "category": "not-implemented"
+      },
+      "reason": "not-planned"
+    },
+    {
+      "id": "read.disclosure.gone",
+      "owner": null,
+      "observation": {
+        "shardId": "baseline",
+        "resultDigest": "117d5ddfd07762df6bf81d6d5004aaa321bdd606facad83dcde1871737d37cd4",
+        "rowIndex": 34,
+        "state": "harness-error",
+        "category": "not-implemented"
+      },
+      "reason": "not-planned"
+    },
+    {
+      "id": "read.disclosure.gate",
+      "owner": null,
+      "observation": {
+        "shardId": "baseline",
+        "resultDigest": "117d5ddfd07762df6bf81d6d5004aaa321bdd606facad83dcde1871737d37cd4",
+        "rowIndex": 35,
+        "state": "harness-error",
+        "category": "not-implemented"
+      },
+      "reason": "not-planned"
+    },
+    {
+      "id": "read.owned.closure",
+      "owner": null,
+      "observation": {
+        "shardId": "baseline",
+        "resultDigest": "117d5ddfd07762df6bf81d6d5004aaa321bdd606facad83dcde1871737d37cd4",
+        "rowIndex": 36,
+        "state": "harness-error",
+        "category": "not-implemented"
+      },
+      "reason": "not-planned"
+    },
+    {
+      "id": "read.attribution.carried",
+      "owner": null,
+      "observation": {
+        "shardId": "baseline",
+        "resultDigest": "117d5ddfd07762df6bf81d6d5004aaa321bdd606facad83dcde1871737d37cd4",
+        "rowIndex": 37,
+        "state": "harness-error",
+        "category": "not-implemented"
+      },
+      "reason": "not-planned"
+    },
+    {
+      "id": "read.attribution.link",
+      "owner": null,
+      "observation": {
+        "shardId": "baseline",
+        "resultDigest": "117d5ddfd07762df6bf81d6d5004aaa321bdd606facad83dcde1871737d37cd4",
+        "rowIndex": 38,
+        "state": "harness-error",
+        "category": "not-implemented"
+      },
+      "reason": "not-planned"
+    },
+    {
+      "id": "read.owned-wildcard.declaration",
+      "owner": null,
+      "observation": {
+        "shardId": "baseline",
+        "resultDigest": "117d5ddfd07762df6bf81d6d5004aaa321bdd606facad83dcde1871737d37cd4",
+        "rowIndex": 39,
+        "state": "harness-error",
+        "category": "not-implemented"
+      },
+      "reason": "not-planned"
+    },
+    {
+      "id": "read.owned-wildcard.max-required",
+      "owner": null,
+      "observation": {
+        "shardId": "baseline",
+        "resultDigest": "117d5ddfd07762df6bf81d6d5004aaa321bdd606facad83dcde1871737d37cd4",
+        "rowIndex": 40,
+        "state": "harness-error",
+        "category": "not-implemented"
+      },
+      "reason": "not-planned"
+    },
+    {
+      "id": "read.owned-wildcard.explicit-max-bounded",
+      "owner": null,
+      "observation": {
+        "shardId": "baseline",
+        "resultDigest": "117d5ddfd07762df6bf81d6d5004aaa321bdd606facad83dcde1871737d37cd4",
+        "rowIndex": 41,
+        "state": "harness-error",
+        "category": "not-implemented"
+      },
+      "reason": "not-planned"
+    },
+    {
+      "id": "read.owned-wildcard.present-entries",
+      "owner": null,
+      "observation": {
+        "shardId": "baseline",
+        "resultDigest": "117d5ddfd07762df6bf81d6d5004aaa321bdd606facad83dcde1871737d37cd4",
+        "rowIndex": 42,
+        "state": "harness-error",
+        "category": "not-implemented"
+      },
+      "reason": "not-planned"
+    },
+    {
+      "id": "read.owned-wildcard.closure",
+      "owner": null,
+      "observation": {
+        "shardId": "baseline",
+        "resultDigest": "117d5ddfd07762df6bf81d6d5004aaa321bdd606facad83dcde1871737d37cd4",
+        "rowIndex": 43,
+        "state": "harness-error",
+        "category": "not-implemented"
+      },
+      "reason": "not-planned"
+    },
+    {
+      "id": "read.numeric-model.declared-token-model",
+      "owner": null,
+      "observation": {
+        "shardId": "baseline",
+        "resultDigest": "117d5ddfd07762df6bf81d6d5004aaa321bdd606facad83dcde1871737d37cd4",
+        "rowIndex": 44,
+        "state": "harness-error",
+        "category": "not-implemented"
+      },
+      "reason": "not-planned"
+    },
+    {
+      "id": "read.http.accept-negotiation",
+      "owner": "baseline",
+      "observation": {
+        "shardId": "baseline",
+        "resultDigest": "117d5ddfd07762df6bf81d6d5004aaa321bdd606facad83dcde1871737d37cd4",
+        "rowIndex": 45,
+        "state": "pass"
+      }
+    },
+    {
+      "id": "read.http.conditional-reads",
+      "owner": "baseline",
+      "observation": {
+        "shardId": "baseline",
+        "resultDigest": "117d5ddfd07762df6bf81d6d5004aaa321bdd606facad83dcde1871737d37cd4",
+        "rowIndex": 46,
+        "state": "pass"
+      }
+    },
+    {
+      "id": "read.http.head-conditional-parity",
+      "owner": "baseline",
+      "observation": {
+        "shardId": "baseline",
+        "resultDigest": "117d5ddfd07762df6bf81d6d5004aaa321bdd606facad83dcde1871737d37cd4",
+        "rowIndex": 47,
+        "state": "pass"
+      }
+    },
+    {
+      "id": "read-update.discovery.document",
+      "owner": "baseline",
+      "observation": {
+        "shardId": "baseline",
+        "resultDigest": "117d5ddfd07762df6bf81d6d5004aaa321bdd606facad83dcde1871737d37cd4",
+        "rowIndex": 48,
+        "state": "pass"
+      }
+    },
+    {
+      "id": "read-update.discovery.aliases",
+      "owner": null,
+      "observation": {
+        "shardId": "baseline",
+        "resultDigest": "117d5ddfd07762df6bf81d6d5004aaa321bdd606facad83dcde1871737d37cd4",
+        "rowIndex": 49,
+        "state": "harness-error",
+        "category": "not-implemented"
+      },
+      "reason": "not-planned"
+    },
+    {
+      "id": "read-update.discovery.limits",
+      "owner": null,
+      "observation": {
+        "shardId": "baseline",
+        "resultDigest": "117d5ddfd07762df6bf81d6d5004aaa321bdd606facad83dcde1871737d37cd4",
+        "rowIndex": 50,
+        "state": "harness-error",
+        "category": "not-implemented"
+      },
+      "reason": "not-planned"
+    },
+    {
+      "id": "read-update.discovery.operation-directory",
+      "owner": "baseline",
+      "observation": {
+        "shardId": "baseline",
+        "resultDigest": "117d5ddfd07762df6bf81d6d5004aaa321bdd606facad83dcde1871737d37cd4",
+        "rowIndex": 51,
+        "state": "pass"
+      }
+    },
+    {
+      "id": "read-update.singleton.create-bead",
+      "owner": "baseline",
+      "observation": {
+        "shardId": "baseline",
+        "resultDigest": "117d5ddfd07762df6bf81d6d5004aaa321bdd606facad83dcde1871737d37cd4",
+        "rowIndex": 52,
+        "state": "pass"
+      }
+    },
+    {
+      "id": "read-update.singleton.update-bead",
+      "owner": "baseline",
+      "observation": {
+        "shardId": "baseline",
+        "resultDigest": "117d5ddfd07762df6bf81d6d5004aaa321bdd606facad83dcde1871737d37cd4",
+        "rowIndex": 53,
+        "state": "pass"
+      }
+    },
+    {
+      "id": "read-update.singleton.document-patch-merge-replace",
+      "owner": "baseline",
+      "observation": {
+        "shardId": "baseline",
+        "resultDigest": "117d5ddfd07762df6bf81d6d5004aaa321bdd606facad83dcde1871737d37cd4",
+        "rowIndex": 54,
+        "state": "pass"
+      }
+    },
+    {
+      "id": "read-update.singleton.document-patch-atomicity",
+      "owner": "baseline",
+      "observation": {
+        "shardId": "baseline",
+        "resultDigest": "117d5ddfd07762df6bf81d6d5004aaa321bdd606facad83dcde1871737d37cd4",
+        "rowIndex": 55,
+        "state": "pass"
+      }
+    },
+    {
+      "id": "read-update.singleton.document-patch-validation",
+      "owner": "baseline",
+      "observation": {
+        "shardId": "baseline",
+        "resultDigest": "117d5ddfd07762df6bf81d6d5004aaa321bdd606facad83dcde1871737d37cd4",
+        "rowIndex": 56,
+        "state": "pass"
+      }
+    },
+    {
+      "id": "read-update.singleton.delete-bead",
+      "owner": "baseline",
+      "observation": {
+        "shardId": "baseline",
+        "resultDigest": "117d5ddfd07762df6bf81d6d5004aaa321bdd606facad83dcde1871737d37cd4",
+        "rowIndex": 57,
+        "state": "pass"
+      }
+    },
+    {
+      "id": "read-update.singleton.incident-links-nondisclosure",
+      "owner": null,
+      "observation": {
+        "shardId": "baseline",
+        "resultDigest": "117d5ddfd07762df6bf81d6d5004aaa321bdd606facad83dcde1871737d37cd4",
+        "rowIndex": 58,
+        "state": "harness-error",
+        "category": "not-implemented"
+      },
+      "reason": "not-planned"
+    },
+    {
+      "id": "read-update.singleton.create-link",
+      "owner": "baseline",
+      "observation": {
+        "shardId": "baseline",
+        "resultDigest": "117d5ddfd07762df6bf81d6d5004aaa321bdd606facad83dcde1871737d37cd4",
+        "rowIndex": 59,
+        "state": "pass"
+      }
+    },
+    {
+      "id": "read-update.singleton.update-link",
+      "owner": "baseline",
+      "observation": {
+        "shardId": "baseline",
+        "resultDigest": "117d5ddfd07762df6bf81d6d5004aaa321bdd606facad83dcde1871737d37cd4",
+        "rowIndex": 60,
+        "state": "pass"
+      }
+    },
+    {
+      "id": "read-update.singleton.delete-link",
+      "owner": "baseline",
+      "observation": {
+        "shardId": "baseline",
+        "resultDigest": "117d5ddfd07762df6bf81d6d5004aaa321bdd606facad83dcde1871737d37cd4",
+        "rowIndex": 61,
+        "state": "pass"
+      }
+    },
+    {
+      "id": "read-update.singleton.owned-link-source-revision",
+      "owner": "baseline",
+      "observation": {
+        "shardId": "baseline",
+        "resultDigest": "117d5ddfd07762df6bf81d6d5004aaa321bdd606facad83dcde1871737d37cd4",
+        "rowIndex": 62,
+        "state": "pass"
+      }
+    },
+    {
+      "id": "read-update.singleton.owned-link-no-op",
+      "owner": "baseline",
+      "observation": {
+        "shardId": "baseline",
+        "resultDigest": "117d5ddfd07762df6bf81d6d5004aaa321bdd606facad83dcde1871737d37cd4",
+        "rowIndex": 63,
+        "state": "pass"
+      }
+    },
+    {
+      "id": "read-update.singleton.attribution",
+      "owner": "reference-continuation",
+      "observation": {
+        "shardId": "reference-continuation",
+        "resultDigest": "dc154ea5a4fce015b16020e9a8d69ea43d508f00170b9001f36c6a1a633d415a",
+        "rowIndex": 0,
+        "state": "pass"
+      }
+    },
+    {
+      "id": "read-update.singleton.expected-revision",
+      "owner": "baseline",
+      "observation": {
+        "shardId": "baseline",
+        "resultDigest": "117d5ddfd07762df6bf81d6d5004aaa321bdd606facad83dcde1871737d37cd4",
+        "rowIndex": 65,
+        "state": "pass"
+      }
+    },
+    {
+      "id": "read-update.singleton.expected-revision-race",
+      "owner": null,
+      "observation": {
+        "shardId": "baseline",
+        "resultDigest": "117d5ddfd07762df6bf81d6d5004aaa321bdd606facad83dcde1871737d37cd4",
+        "rowIndex": 66,
+        "state": "harness-error",
+        "category": "not-implemented"
+      },
+      "reason": "not-planned"
+    },
+    {
+      "id": "read-update.singleton.hidden-subject",
+      "owner": null,
+      "observation": {
+        "shardId": "baseline",
+        "resultDigest": "117d5ddfd07762df6bf81d6d5004aaa321bdd606facad83dcde1871737d37cd4",
+        "rowIndex": 67,
+        "state": "harness-error",
+        "category": "not-implemented"
+      },
+      "reason": "not-planned"
+    },
+    {
+      "id": "read-update.singleton.idempotency-key-required",
+      "owner": "baseline",
+      "observation": {
+        "shardId": "baseline",
+        "resultDigest": "117d5ddfd07762df6bf81d6d5004aaa321bdd606facad83dcde1871737d37cd4",
+        "rowIndex": 68,
+        "state": "pass"
+      }
+    },
+    {
+      "id": "read-update.singleton.unauthenticated",
+      "owner": null,
+      "observation": {
+        "shardId": "baseline",
+        "resultDigest": "117d5ddfd07762df6bf81d6d5004aaa321bdd606facad83dcde1871737d37cd4",
+        "rowIndex": 69,
+        "state": "harness-error",
+        "category": "not-implemented"
+      },
+      "reason": "not-planned"
+    },
+    {
+      "id": "read-update.singleton.idempotent-retry",
+      "owner": "baseline",
+      "observation": {
+        "shardId": "baseline",
+        "resultDigest": "117d5ddfd07762df6bf81d6d5004aaa321bdd606facad83dcde1871737d37cd4",
+        "rowIndex": 70,
+        "state": "pass"
+      }
+    },
+    {
+      "id": "read-update.singleton.idempotency-conflict",
+      "owner": "baseline",
+      "observation": {
+        "shardId": "baseline",
+        "resultDigest": "117d5ddfd07762df6bf81d6d5004aaa321bdd606facad83dcde1871737d37cd4",
+        "rowIndex": 71,
+        "state": "pass"
+      }
+    },
+    {
+      "id": "read-update.singleton.unsupported-media-type",
+      "owner": "baseline",
+      "observation": {
+        "shardId": "baseline",
+        "resultDigest": "117d5ddfd07762df6bf81d6d5004aaa321bdd606facad83dcde1871737d37cd4",
+        "rowIndex": 72,
+        "state": "pass"
+      }
+    },
+    {
+      "id": "read-update.singleton.method-405",
+      "owner": null,
+      "observation": {
+        "shardId": "baseline",
+        "resultDigest": "117d5ddfd07762df6bf81d6d5004aaa321bdd606facad83dcde1871737d37cd4",
+        "rowIndex": 73,
+        "state": "harness-error",
+        "category": "not-implemented"
+      },
+      "reason": "not-planned"
+    },
+    {
+      "id": "read-update.singleton.no-local-bindings",
+      "owner": "baseline",
+      "observation": {
+        "shardId": "baseline",
+        "resultDigest": "117d5ddfd07762df6bf81d6d5004aaa321bdd606facad83dcde1871737d37cd4",
+        "rowIndex": 74,
+        "state": "pass"
+      }
+    },
+    {
+      "id": "read-update.singleton.result-headers",
+      "owner": "baseline",
+      "observation": {
+        "shardId": "baseline",
+        "resultDigest": "117d5ddfd07762df6bf81d6d5004aaa321bdd606facad83dcde1871737d37cd4",
+        "rowIndex": 75,
+        "state": "pass"
+      }
+    },
+    {
+      "id": "read-update.alias.put-creates",
+      "owner": "baseline",
+      "observation": {
+        "shardId": "baseline",
+        "resultDigest": "117d5ddfd07762df6bf81d6d5004aaa321bdd606facad83dcde1871737d37cd4",
+        "rowIndex": 76,
+        "state": "pass"
+      }
+    },
+    {
+      "id": "read-update.alias.put-repoints",
+      "owner": "baseline",
+      "observation": {
+        "shardId": "baseline",
+        "resultDigest": "117d5ddfd07762df6bf81d6d5004aaa321bdd606facad83dcde1871737d37cd4",
+        "rowIndex": 77,
+        "state": "pass"
+      }
+    },
+    {
+      "id": "read-update.alias.delete-releases",
+      "owner": "baseline",
+      "observation": {
+        "shardId": "baseline",
+        "resultDigest": "117d5ddfd07762df6bf81d6d5004aaa321bdd606facad83dcde1871737d37cd4",
+        "rowIndex": 78,
+        "state": "pass"
+      }
+    },
+    {
+      "id": "read-update.alias.uniqueness-invariant",
+      "owner": null,
+      "observation": {
+        "shardId": "baseline",
+        "resultDigest": "117d5ddfd07762df6bf81d6d5004aaa321bdd606facad83dcde1871737d37cd4",
+        "rowIndex": 79,
+        "state": "harness-error",
+        "category": "not-implemented"
+      },
+      "reason": "not-planned"
+    },
+    {
+      "id": "read-update.alias.link-coexistence",
+      "owner": null,
+      "observation": {
+        "shardId": "baseline",
+        "resultDigest": "117d5ddfd07762df6bf81d6d5004aaa321bdd606facad83dcde1871737d37cd4",
+        "rowIndex": 80,
+        "state": "harness-error",
+        "category": "not-implemented"
+      },
+      "reason": "not-planned"
+    },
+    {
+      "id": "read-update.alias.allocation-avoids-aliases",
+      "owner": null,
+      "observation": {
+        "shardId": "baseline",
+        "resultDigest": "117d5ddfd07762df6bf81d6d5004aaa321bdd606facad83dcde1871737d37cd4",
+        "rowIndex": 81,
+        "state": "harness-error",
+        "category": "not-implemented"
+      },
+      "reason": "not-planned"
+    },
+    {
+      "id": "read-update.alias.non-canonical-target",
+      "owner": "baseline",
+      "observation": {
+        "shardId": "baseline",
+        "resultDigest": "117d5ddfd07762df6bf81d6d5004aaa321bdd606facad83dcde1871737d37cd4",
+        "rowIndex": 82,
+        "state": "pass"
+      }
+    },
+    {
+      "id": "read-update.alias.unknown-subject",
+      "owner": "reference-continuation",
+      "observation": {
+        "shardId": "reference-continuation",
+        "resultDigest": "dc154ea5a4fce015b16020e9a8d69ea43d508f00170b9001f36c6a1a633d415a",
+        "rowIndex": 1,
+        "state": "pass"
+      }
+    },
+    {
+      "id": "read-update.alias.carrier-syntax",
+      "owner": null,
+      "observation": {
+        "shardId": "baseline",
+        "resultDigest": "117d5ddfd07762df6bf81d6d5004aaa321bdd606facad83dcde1871737d37cd4",
+        "rowIndex": 84,
+        "state": "harness-error",
+        "category": "not-implemented"
+      },
+      "reason": "not-planned"
+    },
+    {
+      "id": "read-update.alias.authorization",
+      "owner": null,
+      "observation": {
+        "shardId": "baseline",
+        "resultDigest": "117d5ddfd07762df6bf81d6d5004aaa321bdd606facad83dcde1871737d37cd4",
+        "rowIndex": 85,
+        "state": "harness-error",
+        "category": "not-implemented"
+      },
+      "reason": "not-planned"
+    },
+    {
+      "id": "read-update.alias.forbidden",
+      "owner": null,
+      "observation": {
+        "shardId": "baseline",
+        "resultDigest": "117d5ddfd07762df6bf81d6d5004aaa321bdd606facad83dcde1871737d37cd4",
+        "rowIndex": 86,
+        "state": "harness-error",
+        "category": "not-implemented"
+      },
+      "reason": "not-planned"
+    },
+    {
+      "id": "read-update.alias.no-version-minted",
+      "owner": "baseline",
+      "observation": {
+        "shardId": "baseline",
+        "resultDigest": "117d5ddfd07762df6bf81d6d5004aaa321bdd606facad83dcde1871737d37cd4",
+        "rowIndex": 87,
+        "state": "pass"
+      }
+    },
+    {
+      "id": "read-update.alias.sequence-binding",
+      "owner": null,
+      "observation": {
+        "shardId": "baseline",
+        "resultDigest": "117d5ddfd07762df6bf81d6d5004aaa321bdd606facad83dcde1871737d37cd4",
+        "rowIndex": 88,
+        "state": "harness-error",
+        "category": "not-implemented"
+      },
+      "reason": "not-planned"
+    },
+    {
+      "id": "read-update.alias.retained-without-reauthorization",
+      "owner": null,
+      "observation": {
+        "shardId": "baseline",
+        "resultDigest": "117d5ddfd07762df6bf81d6d5004aaa321bdd606facad83dcde1871737d37cd4",
+        "rowIndex": 89,
+        "state": "harness-error",
+        "category": "not-implemented"
+      },
+      "reason": "not-planned"
+    },
+    {
+      "id": "read-update.alias.reference-resolution",
+      "owner": null,
+      "observation": {
+        "shardId": "baseline",
+        "resultDigest": "117d5ddfd07762df6bf81d6d5004aaa321bdd606facad83dcde1871737d37cd4",
+        "rowIndex": 90,
+        "state": "harness-error",
+        "category": "not-implemented"
+      },
+      "reason": "not-planned"
+    },
+    {
+      "id": "read-update.alias.reference-idempotency",
+      "owner": null,
+      "observation": {
+        "shardId": "baseline",
+        "resultDigest": "117d5ddfd07762df6bf81d6d5004aaa321bdd606facad83dcde1871737d37cd4",
+        "rowIndex": 91,
+        "state": "harness-error",
+        "category": "not-implemented"
+      },
+      "reason": "not-planned"
+    },
+    {
+      "id": "read-update.sequence.order-and-partial-commit",
+      "owner": "baseline",
+      "observation": {
+        "shardId": "baseline",
+        "resultDigest": "117d5ddfd07762df6bf81d6d5004aaa321bdd606facad83dcde1871737d37cd4",
+        "rowIndex": 92,
+        "state": "pass"
+      }
+    },
+    {
+      "id": "read-update.sequence.local-bindings",
+      "owner": "baseline",
+      "observation": {
+        "shardId": "baseline",
+        "resultDigest": "117d5ddfd07762df6bf81d6d5004aaa321bdd606facad83dcde1871737d37cd4",
+        "rowIndex": 93,
+        "state": "pass"
+      }
+    },
+    {
+      "id": "read-update.sequence.transient-predecessor",
+      "owner": null,
+      "observation": {
+        "shardId": "baseline",
+        "resultDigest": "117d5ddfd07762df6bf81d6d5004aaa321bdd606facad83dcde1871737d37cd4",
+        "rowIndex": 94,
+        "state": "harness-error",
+        "category": "not-implemented"
+      },
+      "reason": "not-planned"
+    },
+    {
+      "id": "read-update.sequence.expired-creator-binding",
+      "owner": null,
+      "observation": {
+        "shardId": "baseline",
+        "resultDigest": "117d5ddfd07762df6bf81d6d5004aaa321bdd606facad83dcde1871737d37cd4",
+        "rowIndex": 95,
+        "state": "harness-error",
+        "category": "not-implemented"
+      },
+      "reason": "not-planned"
+    },
+    {
+      "id": "read-update.sequence.retained-failure",
+      "owner": null,
+      "observation": {
+        "shardId": "baseline",
+        "resultDigest": "117d5ddfd07762df6bf81d6d5004aaa321bdd606facad83dcde1871737d37cd4",
+        "rowIndex": 96,
+        "state": "harness-error",
+        "category": "not-implemented"
+      },
+      "reason": "not-planned"
+    },
+    {
+      "id": "read-update.sequence.member-problem-shape",
+      "owner": "baseline",
+      "observation": {
+        "shardId": "baseline",
+        "resultDigest": "117d5ddfd07762df6bf81d6d5004aaa321bdd606facad83dcde1871737d37cd4",
+        "rowIndex": 97,
+        "state": "pass"
+      }
+    },
+    {
+      "id": "read-update.sequence.retry-after-hint",
+      "owner": null,
+      "observation": {
+        "shardId": "baseline",
+        "resultDigest": "117d5ddfd07762df6bf81d6d5004aaa321bdd606facad83dcde1871737d37cd4",
+        "rowIndex": 98,
+        "state": "harness-error",
+        "category": "not-implemented"
+      },
+      "reason": "not-planned"
+    },
+    {
+      "id": "read-update.sequence.carrier-rejection",
+      "owner": "baseline",
+      "observation": {
+        "shardId": "baseline",
+        "resultDigest": "117d5ddfd07762df6bf81d6d5004aaa321bdd606facad83dcde1871737d37cd4",
+        "rowIndex": 99,
+        "state": "pass"
+      }
+    },
+    {
+      "id": "read-update.sequence.contextual-validation",
+      "owner": null,
+      "observation": {
+        "shardId": "baseline",
+        "resultDigest": "117d5ddfd07762df6bf81d6d5004aaa321bdd606facad83dcde1871737d37cd4",
+        "rowIndex": 100,
+        "state": "harness-error",
+        "category": "not-implemented"
+      },
+      "reason": "not-planned"
+    },
+    {
+      "id": "read-update.sequence.idempotent-retry",
+      "owner": "baseline",
+      "observation": {
+        "shardId": "baseline",
+        "resultDigest": "117d5ddfd07762df6bf81d6d5004aaa321bdd606facad83dcde1871737d37cd4",
+        "rowIndex": 101,
+        "state": "pass"
+      }
+    },
+    {
+      "id": "read-update.sequence.disconnect",
+      "owner": null,
+      "observation": {
+        "shardId": "baseline",
+        "resultDigest": "117d5ddfd07762df6bf81d6d5004aaa321bdd606facad83dcde1871737d37cd4",
+        "rowIndex": 102,
+        "state": "harness-error",
+        "category": "not-implemented"
+      },
+      "reason": "not-planned"
+    },
+    {
+      "id": "read-update.sequence.internal-fault",
+      "owner": null,
+      "observation": {
+        "shardId": "baseline",
+        "resultDigest": "117d5ddfd07762df6bf81d6d5004aaa321bdd606facad83dcde1871737d37cd4",
+        "rowIndex": 103,
+        "state": "harness-error",
+        "category": "not-implemented"
+      },
+      "reason": "not-planned"
+    },
+    {
+      "id": "read-update.sequence.interleaving",
+      "owner": null,
+      "observation": {
+        "shardId": "baseline",
+        "resultDigest": "117d5ddfd07762df6bf81d6d5004aaa321bdd606facad83dcde1871737d37cd4",
+        "rowIndex": 104,
+        "state": "harness-error",
+        "category": "not-implemented"
+      },
+      "reason": "not-planned"
+    },
+    {
+      "id": "read-update.idempotency.in-progress",
+      "owner": null,
+      "observation": {
+        "shardId": "baseline",
+        "resultDigest": "117d5ddfd07762df6bf81d6d5004aaa321bdd606facad83dcde1871737d37cd4",
+        "rowIndex": 105,
+        "state": "harness-error",
+        "category": "not-implemented"
+      },
+      "reason": "not-planned"
+    },
+    {
+      "id": "read-update.idempotency.key-reservation",
+      "owner": null,
+      "observation": {
+        "shardId": "baseline",
+        "resultDigest": "117d5ddfd07762df6bf81d6d5004aaa321bdd606facad83dcde1871737d37cd4",
+        "rowIndex": 106,
+        "state": "harness-error",
+        "category": "not-implemented"
+      },
+      "reason": "not-planned"
+    },
+    {
+      "id": "read-update.idempotency.claim-atomicity",
+      "owner": null,
+      "observation": {
+        "shardId": "baseline",
+        "resultDigest": "117d5ddfd07762df6bf81d6d5004aaa321bdd606facad83dcde1871737d37cd4",
+        "rowIndex": 107,
+        "state": "harness-error",
+        "category": "not-implemented"
+      },
+      "reason": "not-planned"
+    },
+    {
+      "id": "read-update.idempotency.concurrent-dependent-retry",
+      "owner": null,
+      "observation": {
+        "shardId": "baseline",
+        "resultDigest": "117d5ddfd07762df6bf81d6d5004aaa321bdd606facad83dcde1871737d37cd4",
+        "rowIndex": 108,
+        "state": "harness-error",
+        "category": "not-implemented"
+      },
+      "reason": "not-planned"
+    },
+    {
+      "id": "read-update.idempotency.transient-not-retained",
+      "owner": null,
+      "observation": {
+        "shardId": "baseline",
+        "resultDigest": "117d5ddfd07762df6bf81d6d5004aaa321bdd606facad83dcde1871737d37cd4",
+        "rowIndex": 109,
+        "state": "harness-error",
+        "category": "not-implemented"
+      },
+      "reason": "not-planned"
+    },
+    {
+      "id": "read-update.idempotency.semantic-identity",
+      "owner": null,
+      "observation": {
+        "shardId": "baseline",
+        "resultDigest": "117d5ddfd07762df6bf81d6d5004aaa321bdd606facad83dcde1871737d37cd4",
+        "rowIndex": 110,
+        "state": "harness-error",
+        "category": "not-implemented"
+      },
+      "reason": "not-planned"
+    },
+    {
+      "id": "read-update.idempotency.principal-isolation",
+      "owner": null,
+      "observation": {
+        "shardId": "baseline",
+        "resultDigest": "117d5ddfd07762df6bf81d6d5004aaa321bdd606facad83dcde1871737d37cd4",
+        "rowIndex": 111,
+        "state": "harness-error",
+        "category": "not-implemented"
+      },
+      "reason": "not-planned"
+    },
+    {
+      "id": "read-update.idempotency.cross-carrier",
+      "owner": "baseline",
+      "observation": {
+        "shardId": "baseline",
+        "resultDigest": "117d5ddfd07762df6bf81d6d5004aaa321bdd606facad83dcde1871737d37cd4",
+        "rowIndex": 112,
+        "state": "pass"
+      }
+    },
+    {
+      "id": "read-update.idempotency.authorization-view",
+      "owner": null,
+      "observation": {
+        "shardId": "baseline",
+        "resultDigest": "117d5ddfd07762df6bf81d6d5004aaa321bdd606facad83dcde1871737d37cd4",
+        "rowIndex": 113,
+        "state": "harness-error",
+        "category": "not-implemented"
+      },
+      "reason": "not-planned"
+    },
+    {
+      "id": "read-update.idempotency.forbidden-retained",
+      "owner": null,
+      "observation": {
+        "shardId": "baseline",
+        "resultDigest": "117d5ddfd07762df6bf81d6d5004aaa321bdd606facad83dcde1871737d37cd4",
+        "rowIndex": 114,
+        "state": "harness-error",
+        "category": "not-implemented"
+      },
+      "reason": "not-planned"
+    },
+    {
+      "id": "read-update.idempotency.retention-minimum",
+      "owner": null,
+      "observation": {
+        "shardId": "baseline",
+        "resultDigest": "117d5ddfd07762df6bf81d6d5004aaa321bdd606facad83dcde1871737d37cd4",
+        "rowIndex": 115,
+        "state": "harness-error",
+        "category": "not-implemented"
+      },
+      "reason": "not-planned"
+    },
+    {
+      "id": "read-update.idempotency.expired",
+      "owner": null,
+      "observation": {
+        "shardId": "baseline",
+        "resultDigest": "117d5ddfd07762df6bf81d6d5004aaa321bdd606facad83dcde1871737d37cd4",
+        "rowIndex": 116,
+        "state": "harness-error",
+        "category": "not-implemented"
+      },
+      "reason": "not-planned"
+    },
+    {
+      "id": "read-update.idempotency.expired-failure",
+      "owner": null,
+      "observation": {
+        "shardId": "baseline",
+        "resultDigest": "117d5ddfd07762df6bf81d6d5004aaa321bdd606facad83dcde1871737d37cd4",
+        "rowIndex": 117,
+        "state": "harness-error",
+        "category": "not-implemented"
+      },
+      "reason": "not-planned"
+    },
+    {
+      "id": "read-update.idempotency.durable-boundary",
+      "owner": null,
+      "observation": {
+        "shardId": "baseline",
+        "resultDigest": "117d5ddfd07762df6bf81d6d5004aaa321bdd606facad83dcde1871737d37cd4",
+        "rowIndex": 118,
+        "state": "harness-error",
+        "category": "not-implemented"
+      },
+      "reason": "not-planned"
+    },
+    {
+      "id": "read-update.idempotency.crash-mid-sequence",
+      "owner": null,
+      "observation": {
+        "shardId": "baseline",
+        "resultDigest": "117d5ddfd07762df6bf81d6d5004aaa321bdd606facad83dcde1871737d37cd4",
+        "rowIndex": 119,
+        "state": "harness-error",
+        "category": "not-implemented"
+      },
+      "reason": "not-planned"
+    },
+    {
+      "id": "read-update.idempotency.restore",
+      "owner": null,
+      "observation": {
+        "shardId": "baseline",
+        "resultDigest": "117d5ddfd07762df6bf81d6d5004aaa321bdd606facad83dcde1871737d37cd4",
+        "rowIndex": 120,
+        "state": "harness-error",
+        "category": "not-implemented"
+      },
+      "reason": "not-planned"
+    },
+    {
+      "id": "read-update.problem.table",
+      "owner": null,
+      "observation": {
+        "shardId": "baseline",
+        "resultDigest": "117d5ddfd07762df6bf81d6d5004aaa321bdd606facad83dcde1871737d37cd4",
+        "rowIndex": 121,
+        "state": "harness-error",
+        "category": "not-implemented"
+      },
+      "reason": "not-planned"
+    },
+    {
+      "id": "read-update.validation.type-contract",
+      "owner": "baseline",
+      "observation": {
+        "shardId": "baseline",
+        "resultDigest": "117d5ddfd07762df6bf81d6d5004aaa321bdd606facad83dcde1871737d37cd4",
+        "rowIndex": 122,
+        "state": "pass"
+      }
+    },
+    {
+      "id": "read-update.validation.diagnostics",
+      "owner": "baseline",
+      "observation": {
+        "shardId": "baseline",
+        "resultDigest": "117d5ddfd07762df6bf81d6d5004aaa321bdd606facad83dcde1871737d37cd4",
+        "rowIndex": 123,
+        "state": "pass"
+      }
+    },
+    {
+      "id": "read-update.validation.identity-taken",
+      "owner": null,
+      "observation": {
+        "shardId": "baseline",
+        "resultDigest": "117d5ddfd07762df6bf81d6d5004aaa321bdd606facad83dcde1871737d37cd4",
+        "rowIndex": 124,
+        "state": "harness-error",
+        "category": "not-implemented"
+      },
+      "reason": "not-planned"
+    },
+    {
+      "id": "read-update.validation.aggregate-constraint",
+      "owner": null,
+      "observation": {
+        "shardId": "baseline",
+        "resultDigest": "117d5ddfd07762df6bf81d6d5004aaa321bdd606facad83dcde1871737d37cd4",
+        "rowIndex": 125,
+        "state": "harness-error",
+        "category": "not-implemented"
+      },
+      "reason": "not-planned"
+    },
+    {
+      "id": "read-update.http.command-minimum-fields",
+      "owner": "baseline",
+      "observation": {
+        "shardId": "baseline",
+        "resultDigest": "117d5ddfd07762df6bf81d6d5004aaa321bdd606facad83dcde1871737d37cd4",
+        "rowIndex": 126,
+        "state": "pass"
+      }
+    },
+    {
+      "id": "read-update.http.request-too-large",
+      "owner": null,
+      "observation": {
+        "shardId": "baseline",
+        "resultDigest": "117d5ddfd07762df6bf81d6d5004aaa321bdd606facad83dcde1871737d37cd4",
+        "rowIndex": 127,
+        "state": "harness-error",
+        "category": "not-implemented"
+      },
+      "reason": "not-planned"
+    },
+    {
+      "id": "read-update.http.cache-no-store",
+      "owner": null,
+      "observation": {
+        "shardId": "baseline",
+        "resultDigest": "117d5ddfd07762df6bf81d6d5004aaa321bdd606facad83dcde1871737d37cd4",
+        "rowIndex": 128,
+        "state": "harness-error",
+        "category": "not-implemented"
+      },
+      "reason": "not-planned"
+    },
+    {
+      "id": "read-update.http.cors-idempotency-key",
+      "owner": null,
+      "observation": {
+        "shardId": "baseline",
+        "resultDigest": "117d5ddfd07762df6bf81d6d5004aaa321bdd606facad83dcde1871737d37cd4",
+        "rowIndex": 129,
+        "state": "harness-error",
+        "category": "not-implemented"
+      },
+      "reason": "not-planned"
+    },
+    {
+      "id": "read-update.numeric-model.same-value-no-op",
+      "owner": "reference-continuation",
+      "observation": {
+        "shardId": "reference-continuation",
+        "resultDigest": "dc154ea5a4fce015b16020e9a8d69ea43d508f00170b9001f36c6a1a633d415a",
+        "rowIndex": 2,
+        "state": "pass"
+      }
+    },
+    {
+      "id": "read-update.numeric-model.round-trip-admission",
+      "owner": "reference-continuation",
+      "observation": {
+        "shardId": "reference-continuation",
+        "resultDigest": "dc154ea5a4fce015b16020e9a8d69ea43d508f00170b9001f36c6a1a633d415a",
+        "rowIndex": 3,
+        "state": "pass"
+      }
+    },
+    {
+      "id": "read-update.numeric-model.nested-refusal",
+      "owner": "reference-continuation",
+      "observation": {
+        "shardId": "reference-continuation",
+        "resultDigest": "dc154ea5a4fce015b16020e9a8d69ea43d508f00170b9001f36c6a1a633d415a",
+        "rowIndex": 4,
+        "state": "pass"
+      }
+    },
+    {
+      "id": "read-update.owned-wildcard.explicit-precedence",
+      "owner": null,
+      "observation": {
+        "shardId": "baseline",
+        "resultDigest": "117d5ddfd07762df6bf81d6d5004aaa321bdd606facad83dcde1871737d37cd4",
+        "rowIndex": 133,
+        "state": "harness-error",
+        "category": "not-implemented"
+      },
+      "reason": "not-planned"
+    },
+    {
+      "id": "read-update.owned-wildcard.undeclared-type-versions-source",
+      "owner": null,
+      "observation": {
+        "shardId": "baseline",
+        "resultDigest": "117d5ddfd07762df6bf81d6d5004aaa321bdd606facad83dcde1871737d37cd4",
+        "rowIndex": 134,
+        "state": "harness-error",
+        "category": "not-implemented"
+      },
+      "reason": "not-planned"
+    }
+  ],
+  "observedIds": [
+    "read.discovery.scope-service-desc",
+    "read.discovery.canonical-navigation",
+    "read.resource.bead-record",
+    "read.resource.link-record",
+    "read.resource.properties-view",
+    "read.resource.default-bounded",
+    "read.types.inventory",
+    "read.types.descriptor",
+    "read.collections.beads",
+    "read.collections.links",
+    "read.collections.invalid-query",
+    "read.http.get-head",
+    "read.http.method-405",
+    "read.http.cache-cors",
+    "read.http.accept-negotiation",
+    "read.http.conditional-reads",
+    "read.http.head-conditional-parity",
+    "read-update.discovery.document",
+    "read-update.discovery.operation-directory",
+    "read-update.singleton.create-bead",
+    "read-update.singleton.update-bead",
+    "read-update.singleton.document-patch-merge-replace",
+    "read-update.singleton.document-patch-atomicity",
+    "read-update.singleton.document-patch-validation",
+    "read-update.singleton.delete-bead",
+    "read-update.singleton.create-link",
+    "read-update.singleton.update-link",
+    "read-update.singleton.delete-link",
+    "read-update.singleton.owned-link-source-revision",
+    "read-update.singleton.owned-link-no-op",
+    "read-update.singleton.attribution",
+    "read-update.singleton.expected-revision",
+    "read-update.singleton.idempotency-key-required",
+    "read-update.singleton.idempotent-retry",
+    "read-update.singleton.idempotency-conflict",
+    "read-update.singleton.unsupported-media-type",
+    "read-update.singleton.no-local-bindings",
+    "read-update.singleton.result-headers",
+    "read-update.alias.put-creates",
+    "read-update.alias.put-repoints",
+    "read-update.alias.delete-releases",
+    "read-update.alias.non-canonical-target",
+    "read-update.alias.unknown-subject",
+    "read-update.alias.no-version-minted",
+    "read-update.sequence.order-and-partial-commit",
+    "read-update.sequence.local-bindings",
+    "read-update.sequence.member-problem-shape",
+    "read-update.sequence.carrier-rejection",
+    "read-update.sequence.idempotent-retry",
+    "read-update.idempotency.cross-carrier",
+    "read-update.validation.type-contract",
+    "read-update.validation.diagnostics",
+    "read-update.http.command-minimum-fields",
+    "read-update.numeric-model.same-value-no-op",
+    "read-update.numeric-model.round-trip-admission",
+    "read-update.numeric-model.nested-refusal"
+  ],
+  "observedStatePartitions": {
+    "pass": [
+      "read.discovery.scope-service-desc",
+      "read.discovery.canonical-navigation",
+      "read.resource.bead-record",
+      "read.resource.link-record",
+      "read.resource.properties-view",
+      "read.resource.default-bounded",
+      "read.types.inventory",
+      "read.types.descriptor",
+      "read.collections.beads",
+      "read.collections.links",
+      "read.collections.invalid-query",
+      "read.http.get-head",
+      "read.http.method-405",
+      "read.http.cache-cors",
+      "read.http.accept-negotiation",
+      "read.http.conditional-reads",
+      "read.http.head-conditional-parity",
+      "read-update.discovery.document",
+      "read-update.discovery.operation-directory",
+      "read-update.singleton.create-bead",
+      "read-update.singleton.update-bead",
+      "read-update.singleton.document-patch-merge-replace",
+      "read-update.singleton.document-patch-atomicity",
+      "read-update.singleton.document-patch-validation",
+      "read-update.singleton.delete-bead",
+      "read-update.singleton.create-link",
+      "read-update.singleton.update-link",
+      "read-update.singleton.delete-link",
+      "read-update.singleton.owned-link-source-revision",
+      "read-update.singleton.owned-link-no-op",
+      "read-update.singleton.attribution",
+      "read-update.singleton.expected-revision",
+      "read-update.singleton.idempotency-key-required",
+      "read-update.singleton.idempotent-retry",
+      "read-update.singleton.idempotency-conflict",
+      "read-update.singleton.unsupported-media-type",
+      "read-update.singleton.no-local-bindings",
+      "read-update.singleton.result-headers",
+      "read-update.alias.put-creates",
+      "read-update.alias.put-repoints",
+      "read-update.alias.delete-releases",
+      "read-update.alias.non-canonical-target",
+      "read-update.alias.unknown-subject",
+      "read-update.alias.no-version-minted",
+      "read-update.sequence.order-and-partial-commit",
+      "read-update.sequence.local-bindings",
+      "read-update.sequence.member-problem-shape",
+      "read-update.sequence.carrier-rejection",
+      "read-update.sequence.idempotent-retry",
+      "read-update.idempotency.cross-carrier",
+      "read-update.validation.type-contract",
+      "read-update.validation.diagnostics",
+      "read-update.http.command-minimum-fields",
+      "read-update.numeric-model.same-value-no-op",
+      "read-update.numeric-model.round-trip-admission",
+      "read-update.numeric-model.nested-refusal"
+    ],
+    "fail": [],
+    "notRun": [],
+    "notImplemented": [
+      "read.discovery.optional-limits",
+      "read.resource.external-endpoint",
+      "read.resource.not-found-nondisclosure",
+      "read.collections.structural-predicates",
+      "read.collections.selector",
+      "read.collections.pagination-snapshot",
+      "read.collections.cursor-errors",
+      "read.bead-links.directions",
+      "read.bead-links.pagination",
+      "read.http.problem-table",
+      "read.http.internal-fault",
+      "read.http.raw-request-targets",
+      "read.scope.restore-identity",
+      "read.alias.resolution",
+      "read.alias.absent",
+      "read.disclosure.gone",
+      "read.disclosure.gate",
+      "read.owned.closure",
+      "read.attribution.carried",
+      "read.attribution.link",
+      "read.owned-wildcard.declaration",
+      "read.owned-wildcard.max-required",
+      "read.owned-wildcard.explicit-max-bounded",
+      "read.owned-wildcard.present-entries",
+      "read.owned-wildcard.closure",
+      "read.numeric-model.declared-token-model",
+      "read-update.discovery.aliases",
+      "read-update.discovery.limits",
+      "read-update.singleton.incident-links-nondisclosure",
+      "read-update.singleton.expected-revision-race",
+      "read-update.singleton.hidden-subject",
+      "read-update.singleton.unauthenticated",
+      "read-update.singleton.method-405",
+      "read-update.alias.uniqueness-invariant",
+      "read-update.alias.link-coexistence",
+      "read-update.alias.allocation-avoids-aliases",
+      "read-update.alias.carrier-syntax",
+      "read-update.alias.authorization",
+      "read-update.alias.forbidden",
+      "read-update.alias.sequence-binding",
+      "read-update.alias.retained-without-reauthorization",
+      "read-update.alias.reference-resolution",
+      "read-update.alias.reference-idempotency",
+      "read-update.sequence.transient-predecessor",
+      "read-update.sequence.expired-creator-binding",
+      "read-update.sequence.retained-failure",
+      "read-update.sequence.retry-after-hint",
+      "read-update.sequence.contextual-validation",
+      "read-update.sequence.disconnect",
+      "read-update.sequence.internal-fault",
+      "read-update.sequence.interleaving",
+      "read-update.idempotency.in-progress",
+      "read-update.idempotency.key-reservation",
+      "read-update.idempotency.claim-atomicity",
+      "read-update.idempotency.concurrent-dependent-retry",
+      "read-update.idempotency.transient-not-retained",
+      "read-update.idempotency.semantic-identity",
+      "read-update.idempotency.principal-isolation",
+      "read-update.idempotency.authorization-view",
+      "read-update.idempotency.forbidden-retained",
+      "read-update.idempotency.retention-minimum",
+      "read-update.idempotency.expired",
+      "read-update.idempotency.expired-failure",
+      "read-update.idempotency.durable-boundary",
+      "read-update.idempotency.crash-mid-sequence",
+      "read-update.idempotency.restore",
+      "read-update.problem.table",
+      "read-update.validation.identity-taken",
+      "read-update.validation.aggregate-constraint",
+      "read-update.http.request-too-large",
+      "read-update.http.cache-no-store",
+      "read-update.http.cors-idempotency-key",
+      "read-update.owned-wildcard.explicit-precedence",
+      "read-update.owned-wildcard.undeclared-type-versions-source"
+    ],
+    "other": [],
+    "unobserved": []
+  },
+  "uncoveredIds": [
+    "read.discovery.optional-limits",
+    "read.resource.bead-record",
+    "read.resource.external-endpoint",
+    "read.resource.not-found-nondisclosure",
+    "read.collections.structural-predicates",
+    "read.collections.selector",
+    "read.collections.pagination-snapshot",
+    "read.collections.cursor-errors",
+    "read.bead-links.directions",
+    "read.bead-links.pagination",
+    "read.http.problem-table",
+    "read.http.internal-fault",
+    "read.http.raw-request-targets",
+    "read.scope.restore-identity",
+    "read.alias.resolution",
+    "read.alias.absent",
+    "read.disclosure.gone",
+    "read.disclosure.gate",
+    "read.owned.closure",
+    "read.attribution.carried",
+    "read.attribution.link",
+    "read.owned-wildcard.declaration",
+    "read.owned-wildcard.max-required",
+    "read.owned-wildcard.explicit-max-bounded",
+    "read.owned-wildcard.present-entries",
+    "read.owned-wildcard.closure",
+    "read.numeric-model.declared-token-model",
+    "read.http.accept-negotiation",
+    "read.http.conditional-reads",
+    "read.http.head-conditional-parity",
+    "read-update.discovery.document",
+    "read-update.discovery.aliases",
+    "read-update.discovery.limits",
+    "read-update.singleton.update-bead",
+    "read-update.singleton.document-patch-merge-replace",
+    "read-update.singleton.document-patch-atomicity",
+    "read-update.singleton.document-patch-validation",
+    "read-update.singleton.incident-links-nondisclosure",
+    "read-update.singleton.create-link",
+    "read-update.singleton.expected-revision-race",
+    "read-update.singleton.hidden-subject",
+    "read-update.singleton.unauthenticated",
+    "read-update.singleton.idempotent-retry",
+    "read-update.singleton.method-405",
+    "read-update.alias.delete-releases",
+    "read-update.alias.uniqueness-invariant",
+    "read-update.alias.link-coexistence",
+    "read-update.alias.allocation-avoids-aliases",
+    "read-update.alias.unknown-subject",
+    "read-update.alias.carrier-syntax",
+    "read-update.alias.authorization",
+    "read-update.alias.forbidden",
+    "read-update.alias.sequence-binding",
+    "read-update.alias.retained-without-reauthorization",
+    "read-update.alias.reference-resolution",
+    "read-update.alias.reference-idempotency",
+    "read-update.sequence.order-and-partial-commit",
+    "read-update.sequence.local-bindings",
+    "read-update.sequence.transient-predecessor",
+    "read-update.sequence.expired-creator-binding",
+    "read-update.sequence.retained-failure",
+    "read-update.sequence.retry-after-hint",
+    "read-update.sequence.carrier-rejection",
+    "read-update.sequence.contextual-validation",
+    "read-update.sequence.idempotent-retry",
+    "read-update.sequence.disconnect",
+    "read-update.sequence.internal-fault",
+    "read-update.sequence.interleaving",
+    "read-update.idempotency.in-progress",
+    "read-update.idempotency.key-reservation",
+    "read-update.idempotency.claim-atomicity",
+    "read-update.idempotency.concurrent-dependent-retry",
+    "read-update.idempotency.transient-not-retained",
+    "read-update.idempotency.semantic-identity",
+    "read-update.idempotency.principal-isolation",
+    "read-update.idempotency.cross-carrier",
+    "read-update.idempotency.authorization-view",
+    "read-update.idempotency.forbidden-retained",
+    "read-update.idempotency.retention-minimum",
+    "read-update.idempotency.expired",
+    "read-update.idempotency.expired-failure",
+    "read-update.idempotency.durable-boundary",
+    "read-update.idempotency.crash-mid-sequence",
+    "read-update.idempotency.restore",
+    "read-update.problem.table",
+    "read-update.validation.type-contract",
+    "read-update.validation.diagnostics",
+    "read-update.validation.identity-taken",
+    "read-update.validation.aggregate-constraint",
+    "read-update.http.request-too-large",
+    "read-update.http.cache-no-store",
+    "read-update.http.cors-idempotency-key",
+    "read-update.numeric-model.round-trip-admission",
+    "read-update.owned-wildcard.explicit-precedence",
+    "read-update.owned-wildcard.undeclared-type-versions-source"
+  ],
+  "shards": [
+    {
+      "id": "baseline",
+      "source": "matrices/read-update-v1.json",
+      "manifestDigest": "10a7c6f97a280cf88e58d3aa2039fe580904b74bfffcebda4747fc3c1a34b583",
+      "status": "returned",
+      "cleanup": "complete",
+      "evidence": "retained",
+      "resultDigest": "117d5ddfd07762df6bf81d6d5004aaa321bdd606facad83dcde1871737d37cd4",
+      "writtenReportDigest": "6f1bcf7b113ac89f8f279b80544175550ba53e33cdf99135516d41e3576c3797",
+      "writtenReportBytes": 4804916,
+      "timing": {
+        "budgetRemainingMsAtStart": 89926.035833,
+        "elapsedMs": 14858.285917,
+        "outcome": "pass"
+      },
+      "report": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/read-update-command-minimum-draft/installed-preparation/run/aggregate.json.baseline.json"
+    },
+    {
+      "id": "reference-continuation",
+      "source": "matrices/read-update-reference-continuation-v1.json",
+      "manifestDigest": "24d754618b51f255b5885d83c53ccf9a06593031e1812739a4f2b504c4a1df8d",
+      "status": "returned",
+      "cleanup": "complete",
+      "evidence": "retained",
+      "resultDigest": "dc154ea5a4fce015b16020e9a8d69ea43d508f00170b9001f36c6a1a633d415a",
+      "writtenReportDigest": "0967a9468b256e6f2a5eedd642cb879a754c2f1164d2fe44a0362fc197b32426",
+      "writtenReportBytes": 1027242,
+      "timing": {
+        "budgetRemainingMsAtStart": 75130.754625,
+        "elapsedMs": 16807.956459,
+        "outcome": "pass"
+      },
+      "report": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/read-update-command-minimum-draft/installed-preparation/run/aggregate.json.reference-continuation.json"
+    }
+  ]
+}

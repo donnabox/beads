@@ -1,0 +1,10 @@
+Initial finite canonical Bead Event GET/HEAD requests with a lexically valid opaque minimum and the current epoch/view now wait within the existing bound and return contextual503 catch-up-timeout when eligibility remains unproved. They previously hit the private minimum-position refusal. The service captures the tuple after its existing preflight, preserves it across retries, and the owner checks source visibility before minimum comparison or retained scanning. Authorized deleted Bead identities remain Event Sources; unknown and hidden identities remain contextual404.
+
+Adds owner/service, emitted HTTP and installed-observation controls for retained identities, hidden-source ordering, preflight failures, cancellation/drain, conditions and GET/HEAD response parity. The two obsolete Bead refusal assertions are updated; historical installed callbacks remain intact. Changes are confined to three production files and three test files, stacked on PR154 (`codex/vickie-finite-event-minimum`).
+
+Validation at draft time:
+- Passed fresh typecheck, format, lint, emitted build/inventory and25 selected source callbacks with immediate result/cleanup audit. The new37-request HTTP callback completed in686ms under its unchanged5s bound. This is selected coverage, not the full suite.
+- **Pending:** three packed/installed cohorts and their immediate provenance/cleanup audits; final all679-file dirty-to-clean commit equivalence; exact-head CI.
+- Actual Claude and native code review covered the original draft; root dispositions and independent exact reversal cover the subsequent two-test formatting-only correction. The predecessor formatting failure is preserved with its original identity; successor static checks passed.
+
+Foreign-context opaque minima, Link Event minima, after-bearing reads, SSE/reconnect, incompatible-media behavior, S1/G2 decisions and discovery/public admission remain outside this change. The unchanged G2 test is separate evidence, not a combined metadata-gap/opaque qualification. This does not advertise or complete a write profile, alter the frozen PR150 checkpoint, or authorize main integration/release.

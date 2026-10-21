@@ -1,0 +1,64 @@
+{
+  "kind": "formatting successor byte preservation; semantic equivalence pending native syntax review",
+  "predecessorBindingSha256": "cb403c8a0ed4f58cb60788d45ff06206e58f6320a58f23c03fecebc05da52e8d",
+  "predecessorIndexSha256": "e94a2ce59c1ddab279adc2e29c4512ce65556cb2bd92f838a9e6e37363112fe9",
+  "beforeSourceCount": 679,
+  "afterSourceCount": 679,
+  "formatterChangedFiles": [
+    "apps/bdptest/src/transactional-event-sse-installed.test.ts",
+    "packages/server/src/transaction-event-sse.test.ts",
+    "packages/server/src/transaction-events.test.ts",
+    "packages/server/src/transaction-service.ts",
+    "packages/server/src/transaction-store.ts"
+  ],
+  "formatterUnchangedFiles": 674,
+  "unchangedHttpSha256": "52a529218f3f999bbc1c86ec3b04b1198b22da7c5104e0d00e87761bb45f4967",
+  "ownedFilesRelativeBase": [
+    "apps/bdptest/src/transactional-event-sse-installed.test.ts",
+    "packages/server/src/transaction-event-sse.test.ts",
+    "packages/server/src/transaction-events.test.ts",
+    "packages/server/src/transaction-http.ts",
+    "packages/server/src/transaction-service.ts",
+    "packages/server/src/transaction-store.ts"
+  ],
+  "outsideOriginalSixUnchanged": 673,
+  "installedHistoricalPrefix": {
+    "bytes": 69775,
+    "sha256": "0d2c2ddf069a57e9a4533894da03589beb1645d7608537dac45c2995ee7c0a23",
+    "byteExact": true
+  },
+  "sseHistoricalPrefix": {
+    "normalizedOnlyInterAppendWhitespace": true,
+    "bytesThroughHistoricalEnd": 65702,
+    "sha256": "e9726dce10e0c51c2f6c32ef13d5d592a49fb41e655cbd16aba2c4f9ba64a730",
+    "equal": true
+  },
+  "contracts": {
+    "selection.json": {
+      "predecessorSha256": "b4587e00c2a3012e1c698905dddb5ff4dc66c4fe5e8e3166116b1acf469aa519",
+      "successorSha256": "b4587e00c2a3012e1c698905dddb5ff4dc66c4fe5e8e3166116b1acf469aa519",
+      "byteExact": true
+    },
+    "selection-planning.json": {
+      "predecessorSha256": "813839522750a213d44274a397787cd41c4c016db545304987f23d04dee1c6bc",
+      "successorSha256": "813839522750a213d44274a397787cd41c4c016db545304987f23d04dee1c6bc",
+      "byteExact": true
+    },
+    "workload.json": {
+      "predecessorSha256": "9f9e09a91697ed8aafa52d3a4fc1003241cf3720ef8a84cdad61b0047dcc1aba",
+      "successorSha256": "9f9e09a91697ed8aafa52d3a4fc1003241cf3720ef8a84cdad61b0047dcc1aba",
+      "byteExact": true
+    },
+    "report-schemas.json": {
+      "predecessorSha256": "596e3393642c75b13767a14aacdefe912a97070644c472bd2005dedc87cb56d6",
+      "successorSha256": "596e3393642c75b13767a14aacdefe912a97070644c472bd2005dedc87cb56d6",
+      "byteExact": true
+    }
+  },
+  "formatOnlyCommand": [
+    "format",
+    "--write"
+  ],
+  "noImportSortingOrLintFix": true,
+  "nativeSyntaxEquivalencePending": true
+}

@@ -1,0 +1,24 @@
+{
+  "argv": [
+    "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+    "/Users/dbox/repos/wt/vickie/vickie-snapshot-opaque-minimum/node_modules/vitest/vitest.mjs",
+    "run",
+    "packages/server/src/transaction-http.test.ts",
+    "packages/server/src/transaction-service.test.ts",
+    "packages/server/src/transaction-snapshot.test.ts",
+    "--maxWorkers=1",
+    "--reporter=verbose",
+    "--reporter=json",
+    "--outputFile=/Users/dbox/repos/wt/vickie/bdp-integration-logs/snapshot-opaque-minimum-validation/run/focused-source.results.json",
+    "--testNamePattern",
+    "^(?:checks\\ each\\ fresh\\ Snapshot\\ minimum\\ before\\ any\\ handle,\\ record,\\ page\\ or\\ expiry\\ work|does\\ not\\ expire\\ retained\\ Snapshot\\ details\\ on\\ an\\ ineligible\\ fresh\\ attempt|fresh\\ Snapshot\\ minimum\\ service\\ freezes\\ create\\ controls\\ and\\ retries\\ after\\ a\\ real\\ independent\\ commit|fresh\\ Snapshot\\ minimum\\ service\\ keeps\\ create\\ timeout\\ and\\ pre\\-abort\\ distinct\\ from\\ owner\\ work|fresh\\ Snapshot\\ minimum\\ service\\ freezes\\ preflight\\ controls\\ and\\ retries\\ after\\ a\\ real\\ independent\\ commit|fresh\\ Snapshot\\ minimum\\ service\\ keeps\\ preflight\\ timeout\\ and\\ pre\\-abort\\ distinct\\ from\\ owner\\ work|fresh\\ Snapshot\\ minimum\\ service\\ uses\\ one\\ service\\ call\\ for\\ each\\ fresh\\ HTTP\\ branch,\\ with\\ terminal\\ preflight|drains\\ admitted\\ finite\\ Snapshot\\ observation\\ and\\ refuses\\ new\\ work\\ while\\ closing|serves\\ complete\\ fresh\\ Snapshot\\ minima\\ with\\ exact\\ timeout,\\ foreign\\ and\\ conditional\\ context|gates\\ fresh\\ Snapshot\\ opaque\\ minima\\ before\\ allocation\\ and\\ expiry|captures\\ fresh\\ Snapshot\\ create\\ opaque\\ controls\\ across\\ independent\\ commits|cancels\\ and\\ drains\\ fresh\\ Snapshot\\ create\\ opaque\\ waits|captures\\ fresh\\ Snapshot\\ preflight\\ opaque\\ controls\\ across\\ independent\\ commits|cancels\\ and\\ drains\\ fresh\\ Snapshot\\ preflight\\ opaque\\ waits|serves\\ fresh\\ Snapshot\\ opaque\\ minima\\ with\\ terminal\\ preflight\\ and\\ retained\\ fences|preserves\\ fresh\\ Snapshot\\ capture\\ and\\ refusal\\ order:\\ malformed\\-aborted|preserves\\ fresh\\ Snapshot\\ capture\\ and\\ refusal\\ order:\\ malformed\\-invalid\\-kind|preserves\\ fresh\\ Snapshot\\ capture\\ and\\ refusal\\ order:\\ retained\\-unknown|preserves\\ fresh\\ Snapshot\\ capture\\ and\\ refusal\\ order:\\ retained\\-known|preserves\\ fresh\\ Snapshot\\ capture\\ and\\ refusal\\ order:\\ closed\\-malformed|preserves\\ fresh\\ Snapshot\\ capture\\ and\\ refusal\\ order:\\ closed\\-unknown\\-fresh|preserves\\ fresh\\ Snapshot\\ capture\\ and\\ refusal\\ order:\\ unknown\\-preaborted)$"
+  ],
+  "cwd": "/Users/dbox/repos/wt/vickie/vickie-snapshot-opaque-minimum",
+  "head": "0f215c05678f507dd8a39ee08e288f0901710135",
+  "tree": "03371e5c2e1ea756e1501e0e26cccb7aa2f5d04e",
+  "sourceIdentity": "70caea36ed38911ce11f7376de8c45d005e3b638074163eca54bc14b1819b78b",
+  "rootGateSha256": "86f607cdac8edf10df99b38b83c8596e08c57f68928a98ad8a5a4fa15257ceed",
+  "outerSeconds": 120,
+  "automaticRetries": 0,
+  "overrides": {}
+}

@@ -1,0 +1,20 @@
+$ pnpm clean && tsc -b
+$ tsc -b --clean && node scripts/clean-build.mjs
+packages/server/src/transaction-http.ts(538,11): error TS2367: This comparison appears to be unintentional because the types '"receipt"' and '"unsupported"' have no overlap.
+packages/adapter-in-memory/src/index.ts(44,8): error TS2307: Cannot find module '@bdp/server' or its corresponding type declarations.
+packages/adapter-in-memory/src/index.ts(232,60): error TS18048: 'disclosed' is possibly 'undefined'.
+packages/adapter-bd/src/index.ts(37,8): error TS2307: Cannot find module '@bdp/server' or its corresponding type declarations.
+apps/bdptest/src/development-main.ts(4,49): error TS2307: Cannot find module '@bdp/server/development' or its corresponding type declarations.
+apps/bdptest/src/main.ts(19,8): error TS2307: Cannot find module '@bdp/server' or its corresponding type declarations.
+apps/bdptest/src/main.ts(73,22): error TS7006: Parameter 'error' implicitly has an 'any' type.
+apps/bdptest/src/main.ts(138,54): error TS18046: 'error' is of type 'unknown'.
+apps/bdptest/src/main.ts(142,52): error TS18046: 'error' is of type 'unknown'.
+apps/bdptest/src/server-composition.ts(1,69): error TS2307: Cannot find module '@bdp/adapter-in-memory' or its corresponding type declarations.
+apps/bdptest/src/server-composition.ts(10,8): error TS2307: Cannot find module '@bdp/server' or its corresponding type declarations.
+apps/bdpbd/src/main.ts(19,8): error TS2307: Cannot find module '@bdp/server' or its corresponding type declarations.
+apps/bdpbd/src/main.ts(76,22): error TS7006: Parameter 'error' implicitly has an 'any' type.
+apps/bdpbd/src/main.ts(143,54): error TS18046: 'error' is of type 'unknown'.
+apps/bdpbd/src/main.ts(147,52): error TS18046: 'error' is of type 'unknown'.
+apps/bdpbd/src/server-composition.ts(3,42): error TS2307: Cannot find module '@bdp/adapter-bd' or its corresponding type declarations.
+apps/bdpbd/src/server-composition.ts(12,8): error TS2307: Cannot find module '@bdp/server' or its corresponding type declarations.
+[ELIFECYCLE] Command failed with exit code 1.

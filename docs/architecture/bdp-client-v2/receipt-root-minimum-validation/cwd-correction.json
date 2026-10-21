@@ -1,0 +1,23 @@
+{
+  "reason": "Native N1: package-manager cwd must select generated consumer manifest",
+  "planPath": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/receipt-root-minimum-validation-cwd-correction/plan.md",
+  "planSha256": "35129cd1d00d591918fe67e7bf83c8d3dbe37e2f5f835d9bde6a47e3187006e8",
+  "preservedPacket": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/receipt-root-minimum-validation-before-cwd-correction",
+  "preservationPath": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/receipt-root-minimum-validation-cwd-correction/preservation.json",
+  "preservationSha256": "1f5d20c24e4e49b4d0da5f4ad9e17e11f60da62e0ebe1129f27bd7c7f8c91f71",
+  "predecessorIndexSha256": "1a396a942df0d6a51b61b2ee841f78351d22dc8ed032ae2922a0cdf5352455bf",
+  "oldCommandsSha256": "ca2c63e3705808e1227da98d174712c1ae86949d5adbd141cca57914786d0a01",
+  "newCommandsSha256": "4f0852c9641f387270bdf6426938015c2516cd1f8006cdff6023fb04270b708c",
+  "correctionPath": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/receipt-root-minimum-validation-cwd-correction/correction.patch",
+  "correctionSha256": "223e84eb25ca1125fa79c70c8c4804d78aba607c04ecab49bbfe0183d1351103",
+  "soleExecutableChange": "commands.consumer-install.cwd adds /run/consumer",
+  "unchangedHelpers": {
+    "gate.py": "d9442762dd491b55b68cc97b506c8ac553ee9f23d59fedc76a92bd003a15f3d1",
+    "run.py": "6f1931366d28a8c90a74717f1166a9e91056436e710a91898d6b16bd748ee264",
+    "packages.py": "7cc95a52b27573eac3c4b4bf6d3ffe15df3bb635ed261e099fd37883a709f85d",
+    "audit.py": "3cd9f3a01d9e30d8b82fccf8c4847521dc75857cf96d65d4bdb18b62d243ce0b"
+  },
+  "sourceBindingSha256": "1b27cf5ed010bf8dc9405632c0777dac52350fdfcc6d72041c14dabbbb127477",
+  "execution": false,
+  "gatesClosed": true
+}

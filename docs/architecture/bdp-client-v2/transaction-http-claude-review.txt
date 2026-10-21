@@ -1,0 +1,114 @@
+All checks reproduced against the frozen commit; worktree unchanged (`git status` clean, HEAD still `b1de5f3`). Findings below.
+
+---
+
+# Review — frozen Transactional HTTP candidate `b1de5f3`
+
+## Exact review scope
+
+- **Diff reviewed:** `bddc448..b1de5f3`, decomposed into the two halves it actually contains:
+  - `bddc448..635f8ad` — ordinary merge of PR86 `03b7f43` (`development-runtime.ts`, `development-authority.ts`, `index.ts`, **`read-http-routing.ts` (new)**, `read-pagination-public.test.ts`, `apps/bdptest/*`). **Reviewed only as prior work the candidate consumes**, not as T2b output.
+  - `635f8ad..b1de5f3` — the T2b slice proper: `transaction-http.ts` (new, 319), `transaction-runtime.ts` (new, 281), `transaction-service.ts` (+114), `transaction-store.ts` (+94), `transaction-submission.ts` (+45), `transaction-batch.ts` (+6), `transaction-comparison.ts` (+9), four test files, `smoke-executables.mjs`, progress doc.
+- **Documents read:** `transaction-http/report.md`, `transaction-http/plan.md`, `transaction-service-claude-review.txt` (F1–F8 + INFO), `transaction-http-claude-plan-review.txt` (16 findings), `docs/specs/bdp.md` (2700–2712, 2832–2846, 3150–3172, 4485–4620, 5758–5812), `docs/design/transaction-implementation-progress.md`.
+- **Executed (Node 24.16.0 via `~/.nvm`, pnpm 11.20.0, build first, no source changes):** `pnpm build`; the report's 13-file focused set; **full workspace `pnpm test`**; `typecheck`, `check:boundaries`, `format:check`, `lint`, `evidence:verify`, `smoke`, `smoke:development`. Plus three read-only `node --input-type=module -e` probes against `packages/server/dist/` (no files written to the repo; temp store dirs created and removed, same as the suite does).
+
+## Verification independently reproduced
+
+| Claim in report | Result |
+|---|---|
+| focused: 565 tests / 13 files | **565 / 13 pass**, 2.99 s — exact match |
+| typecheck / boundaries / format / evidence | exit 0; boundaries valid for 11 packages; evidence artifact still 89 rows, same hashes |
+| lint: 3 warnings + 1 info, no errors | reproduced; all four are in files T2b does not touch |
+| smoke + smoke:development | both PASS, `claimEligible:false` |
+| no full-suite claim | I ran it anyway: **123 files, 7976 passed, 1 skipped, 0 failed** — no regression from the shared-constant/`observeReceipt` edits |
+| no test processes remain | confirmed |
+
+**F1–F8 closures — all genuinely closed in code, not just in tests.** F1: context is read inside the *same* `BEGIN IMMEDIATE` as the terminal write (`transaction-store.ts:897` `observeReceipt` after `fault("after-terminal")`, still inside `atomic`) and inside the *same* admit transaction on replay (`:997`); the `isTransaction===true` assertion in the store test is real. F2: the delivery path no longer touches `SELECT * FROM receipts WHERE principal=?` — the service test proves it by throwing on that SQL. F3: `observeReceipt:455-468` enforces `scopePosition >= requiredPosition/effectPosition` with persisted-fact injection coverage. F4: `retainedReceipt:486` returns `undefined` on epoch mismatch (uniform 404), injection-tested, honestly labelled "not rotation". F5–F8: all present as described. Clock-jump handling is correct: the fault seam moves the clock *before* observation and the first delivery still reports `detail:"available"`, with expiry applied only on the later independent GET.
+
+**16 plan dispositions — 13 fully closed** (1, 3, 5, 7-fencing, 8, 10, 11, 12, 13, 14, 15, 16, and 9). Partial: **2** (see F-B), **4** (see F-A), **6** (see F-B), **7-drain** (see F-E). Non-disclosure, POST-condition receipt preservation, 304/412 current context, canonical-scope-across-ports, and the genuine-comparison 503 are all correct and correctly tested. No discovery is advertised (`Link: service-desc` is suppressed and asserted absent); nothing new is publicly exported, and the smoke negative-check was extended to both new symbols.
+
+---
+
+## Findings
+
+### F-A — MEDIUM — Command requests accept and silently ignore `BDP-Minimum-Scope-Position`, then report success at a lower position
+
+- **Location:** `packages/server/src/transaction-http.ts:285,288` (the `hasMinimumControls` gates) sit inside the branch guarded by the method check at `:273`; every POST path returns at `:184`–`:270` before reaching them.
+- **Repro:** `POST …/operations/batch` with `Idempotency-Key: m1` and `BDP-Minimum-Scope-Position: pos-999` → **`200`** with `BDP-Scope-Position: pos-3`. (Probe P4; a GET with the same header on any Read or receipt route correctly yields bodyless `500` + `x-bdp-development-limit: minimum-position`.)
+- **Impact:** `bdp.md:5766-5786` defines the minimum-position contract over *Transactional Scope-bounded responses*, and receipts are exactly that — they carry all three fields. The authority must return at-or-later, wait/route, or fail; here it returns success below the required position. This is the one surface where the slice does the thing plan line 20 forbids ("No field will be silently ignored to return stale `200`/`304`") and that disposition 4 ("All supplied controls refused … including already-satisfied minima") reads as covering. The report's own sentence is narrower ("…before successful/conditional **Read**"), so this is a gap in the implementation and in disposition 4, not an overclaim in the report.
+- **Fix:** evaluate `hasMinimumControls(request)` on the command branch too, before `service.submit`/`sequenceObserved` (i.e. before any key binding or effect), returning the same bodyless `500` + marker. Add the existing no-key-capture assertion pattern (`post(…, "m1")` afterwards must still `200`) so the refusal is proven effect-free.
+
+### F-B — LOW-MEDIUM — POST to any unrouted target answers `405 Allow: GET, HEAD`, so the set targets are not the "ordinary 404" disposition 2 promised
+
+- **Location:** `transaction-http.ts:272-273` — authentication, then a blanket `empty(405, "GET, HEAD")` for every non-GET/HEAD method, before any existence determination.
+- **Repro (probes P3/P6c and the percent-encoded case):**
+  - `POST …/operations/update-where` → **`405 Allow: GET, HEAD`** (GET on the same URL correctly gives `404`, which is all `transaction-http.test.ts:132` checks)
+  - `POST …/operations/batch?x=1` → **`405 Allow: GET, HEAD`** — i.e. the allowed method on a real command target is told that only GET/HEAD are allowed
+  - `POST …/operations/%62atch` → same
+- **Impact:** disposition 2 settled this as "do not route the two set targets at all, so `POST …/update-where` is an ordinary `404 resource-not-found`". Half of that landed. A client POSTing a schema-valid set operation to its canonical target is handed a Read method table for a resource that does not exist, and a query-bearing command target advertises a method table that contradicts `bdp.md:4601` (`Allow: POST` on command targets). No key is bound and nothing executes, so this is wire-table honesty, not a safety defect.
+- **Fix:** before the blanket `405`, resolve whether the path is a Read-addressable resource; `404 resource-not-found` for anything that is not (set targets, unknown `operations/*`), and keep `405 Allow: GET, HEAD` only where a Read resource genuinely exists. Minimum viable version: explicitly match the two set-operation target names and `404` them for all methods. Separately decide whether a command target with a query is the command target (match on `pathname`) or a `404`.
+
+### F-C — LOW — Sequence depth-limit refusal is mislabelled `sequence-resource-alias`
+
+- **Location:** `transaction-http.ts:224-232` catches `TransactionDevelopmentLimitError` and the alias `TypeError` in one arm and emits a single marker. `transaction-batch.ts:81` throws `TransactionDevelopmentLimitError("development batch depth limit")` from `losslessText` for depth > 32, reached via `prepareTransactionSequence` (`:153`).
+- **Repro (P1):** `POST …/operations/sequence` with one member whose `properties` nest 40 deep → `500`, **`x-bdp-development-limit: sequence-resource-alias`**, empty body. The equivalent batch body correctly reports `unsupported-transaction-composition` (`transaction-http.test.ts:407` only asserts status/emptiness, so the suite does not catch this).
+- **Impact:** status, bodylessness and no-effect behaviour are all correct; only the development marker lies. Since the marker is the *only* thing distinguishing the deliberate non-qualified gaps from each other and from a real fault, a wrong marker directly undermines the "label honestly, don't mislabel categories" rule the plan sets at line 24.
+- **Fix:** split the catch — `TransactionDevelopmentLimitError` → `developmentGap("unsupported-transaction-composition")` (matching the batch path), the alias `TypeError` → `developmentGap("sequence-resource-alias")`. Add a marker assertion to the depth cases on both carriers.
+
+### F-D — LOW — `TRACE`/`CONNECT`/`TRACK` produce a bodyless `500` instead of a method refusal
+
+- **Location:** `transaction-runtime.ts:138` — `new Request(new URL(raw, scope), { method: request.method ?? "GET", headers })`. These are Fetch-forbidden methods, so the constructor throws; the outer `catch` at `:154` writes a bodyless `500`.
+- **Repro:** `TRACE /acme/beads/a` with a valid Bearer token → **`500`**, empty body, no `Allow`, no marker. (`OPTIONS` and `PATCH` correctly give `405` with the right `Allow`; the suite tests only GET/HEAD/PUT/OPTIONS.)
+- **Impact:** `bdp.md:3161` reserves the bodyless `500` for "an unexpected internal fault". Spending it on an ordinary unsupported method pollutes exactly the signal this slice deliberately overloads for its declared development gaps and for owner fencing, making the `500` surface harder to reason about in review and in T3.
+- **Fix:** validate the method against the known set in the runtime before constructing `Request` (or construct with a safe placeholder and pass the raw method through separately), so unsupported methods reach the handler's own method tables and get `405` with the correct `Allow`.
+
+### F-E — LOW — `close()` destroys in-flight responses for still-connected clients
+
+- **Location:** `transaction-runtime.ts:178-182` — `closeListener()` calls `server.close(cb)` **and `server.closeAllConnections()`**, and `close()` awaits it at `:263` *before* `Promise.allSettled([...pending])` at `:267`.
+- **Repro (probe):** start a sequence POST with a manual scheduler, leave the client connected, call `runtime.close()`, then release the turns → client gets **`UND_ERR_SOCKET`**; after reopen on the same port, `beads/a` and `beads/b` both `200`. The existing test (`transaction-http.test.ts:428`) destroys the client first, so it cannot observe this.
+- **Impact:** "graceful close drains accepted work" is true of the store and false of the wire: a well-behaved client mid-POST loses its receipt (and its `202`/`Location`) and can only learn the outcome by re-POSTing the key after reopen. Disposition 7 did accept "close stops delivery", so this is within the agreed behaviour — but the words "graceful"/"drain" in plan line 8, done-when 5, and the report's "graceful close drains it" will be read as response delivery, and are not.
+- **Fix:** either (a) `server.closeIdleConnections()` at close and `closeAllConnections()` only after the `pending` drain (optionally under a bounded deadline), so in-flight writes finish; or (b) leave the behaviour and say explicitly in the report that an in-flight response is aborted and the receipt is recovered by key replay after reopen.
+
+### F-F — LOW — Every internal fault is discarded with no cause and no diagnostic channel — the mirror of F8
+
+- **Location:** `transaction-http.ts:306-311` (`catch { response = empty(500); }`) and `transaction-runtime.ts:154-163` (`catch { … writeHead(500) … }`). Neither file contains any logging (`grep` for `console.`/`stderr`: none).
+- **Repro:** the F-D `TRACE` `500`, the fenced-owner `500` (`transaction-http.test.ts:664`), and a hypothetical genuine bug are byte-identical on the wire and leave no trace anywhere in the process.
+- **Impact:** F8 was raised precisely because the one unrecoverable path discarded its identifiers; `transaction-store.ts:452/465` and `transaction-service.ts:136/198` now carefully attach `{id, key}` causes — and the HTTP layer then drops every one of them on the floor. For a fixture whose declared purpose is executable witnessing, the cheapest failure to diagnose is the one it is most likely to hit.
+- **Fix:** keep the response unchanged (no disclosure), but retain the error — e.g. a test-visible `lastFault` on the frozen runtime handle, or `process.emitWarning`/stderr behind the existing non-attesting marker. Do not add it to the body or headers.
+
+### F-G — LOW — The private receiving `maximumOperations` governs only direct transactions, not sequence members
+
+- **Location:** `transaction-http.ts:219` compares `carrier.operations.length` against the module constant `TRANSACTION_MAXIMUM_OPERATIONS`, not the handler's configured `maximumOperations` parameter (`:93`), which is passed only into `receiving` at `:252`.
+- **Repro (P2):** runtime with `maximumOperations: 1` → 2-member **sequence** executes (`200`, `pos-2`); 2-operation **batch** refused `413 limit-exceeded limit=transaction.operations`. `transaction-http.test.ts:186` uses this seam but exercises only the direct path.
+- **Impact:** defensible on the spec — `sequence.operations` (`bdp.md:2705`) and `transaction.operations` are distinct advertised groups, and the `413 limit-exceeded`/`limit: sequence.operations` emitted at `:220` is the correct shape per `bdp.md:2839` — but a single private knob named "maximum operations" that silently covers half the receiving surface is a trap for the next slice, and it is untested.
+- **Fix:** either apply the configured value to both carriers, or take two explicit bounds and name them for the two limit groups; add a sequence case to the capacity test.
+
+### F-H — LOW — The sequence envelope's context is still captured in a second owner entry (F1's shape, narrowed)
+
+- **Location:** `transaction-service.ts:216-231` — `await executeSequence(...)` commits every member, *then* `owner.withRead(...)` opens a separate entry for the context.
+- **Repro:** the slice's own test pins it — `transaction-service.test.ts` "does not return an observed sequence when the final owner observation fails": members commit, the metadata read is made to throw, the job rejects, the work is retained and the response is lost (over HTTP: bodyless `500`).
+- **Impact:** this is exactly the execution↔observation split F1 was filed against, narrowed from "any ≥1-day clock step" to "owner read failure/fencing", and recoverable because re-POSTing the sequence replays each member key. The report discloses it accurately ("captured in one owner read after its existing runner"), so this is not an overclaim — recording it so the T3 partition inherits it as named work rather than rediscovering it. Note the F3-style `scopePosition >= effectPosition` guard is not applicable here: sequence entries are *result* projections (`transaction-sequence.ts:32-74`), not receipts, and carry no position fields.
+- **Fix (T3):** capture the final context inside the last turn's store transaction, as `executeObserved` now does for direct receipts.
+
+---
+
+## INFO (no action required, recorded for the next partition)
+
+- **`406` carries Scope context**, unlike `401`/`404`/`405`/`413`. `applyReadHttpSemantics` (`read-http.ts:30-38`) copies the `200` headers forward, which is what correctly preserves context on `304`/`412`; `406` rides along. Only reachable after authentication *and* principal binding, so no non-disclosure issue — but T3 should not treat `{200,304,412}` as the exhaustive context list.
+- **The runtime's `closing` → `503 + Retry-After` branch is effectively unreachable.** `close()` runs `server.close()` + `closeAllConnections()` synchronously, so the listener is gone by the time `close()` returns; the guards at `transaction-runtime.ts:103` and `:140` can only fire for a request already parsed in the same tick, and no test reaches them. Harmless today because `service.close()` runs only after `pending` drains — so `check()` cannot throw "closing or closed" mid-request — but disposition 7(a)'s `503` is therefore asserted by code shape only.
+- **Double carrier parse on the sequence path.** `prepareReadUpdateSequence` runs at `transaction-http.ts:211` and again inside `prepareTransactionSequence` (`transaction-batch.ts:150`); a 64 KiB sequence body is fully parsed twice before admission.
+- **Absolute-form request targets are refused `400`** (`transaction-runtime.ts:113-114` requires origin-form). RFC 9112 §3.2.2 requires servers to accept absolute-form. Private fixture; nothing in-tree sends it.
+- **`TRANSACTION_MAXIMUM_OPERATIONS = 32` is declared on line 1 of `transaction-batch.ts`, above the file's doc comment** — cosmetic only; biome accepts it, imports still hoist.
+- **Path traversal is correctly refused:** `GET /acme/receipts/../beads/a` → `400 malformed-request` via `normalizationSafeRawRequestPath`. `GET …/receipts` (no slash) → `404`, `DELETE …/receipts` → `405 Allow: GET, HEAD`, and the `405` on receipt URLs is uniform across known/unknown/foreign tokens (method check precedes existence), so there is no disclosure oracle.
+
+## Limits of this review
+
+- Tests are evidence, not proof: I re-ran the suites and wrote independent probes, but I did not fuzz the carrier parsers, did not exercise concurrency beyond the injected-scheduler cases the suite already uses, and did not attempt real crash/power-loss or disk-fault testing — the report's "process/fault-injection witnesses, not power-loss or disk qualification" framing is accurate and I did not go past it.
+- I reviewed PR86's contribution (`read-http-routing.ts`, `development-*`, `apps/bdptest/development-discovery.test.ts`) only insofar as T2b consumes it; its own correctness is out of scope here.
+- Performance claims are unmeasured in this pass: I confirmed the hot-path scan is *gone* (by the SQL-throwing test and by reading `executeObserved`/`admitObserved`), but did not re-run the T2a scaling table against the GET path, which the report correctly still lists as an open gap.
+- The `prepareTransactionSequence` error surface was audited by reading; I confirmed the reachable non-syntax throws are the alias `TypeError` and the depth `TransactionDevelopmentLimitError` (F-C), but internal invariant throws ("prepared sequence lost creator/member key") would surface as bodyless `500` and I could not construct an input that reaches them.
+- No files written or modified; no pushes, PRs, bus or launch writes; no network beyond loopback probes. `git status` clean, HEAD still `b1de5f3`.
+
+## Bottom line
+
+The candidate is sound and the report is honest — I found no overclaim, no fabricated discovery, no public-profile leak, and no regression (full workspace suite green at 7976 tests). F1–F8 are genuinely closed at the code level, not papered over by tests. The residual work is one real conformance hole (**F-A**, minimum-position on commands), one half-landed disposition (**F-B**, set targets), and five low-severity honesty/diagnosability items. None of them blocks root integration; **F-A** and **F-B** are the two I would fix before T3 starts building the barrier seam on top of this surface.

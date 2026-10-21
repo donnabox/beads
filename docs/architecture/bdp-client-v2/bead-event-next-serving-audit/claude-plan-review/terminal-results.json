@@ -1,0 +1,112 @@
+[
+  {
+    "duration_api_ms": 1210877,
+    "stop_reason": "end_turn",
+    "session_id": "8708d3c7-d182-467c-914a-4a13a7bc71bb",
+    "total_cost_usd": 12.039446999999997,
+    "usage": {
+      "input_tokens": 166,
+      "cache_creation_input_tokens": 268020,
+      "cache_read_input_tokens": 14285700,
+      "output_tokens": 88532,
+      "output_tokens_details": {
+        "thinking_tokens": 70640
+      },
+      "server_tool_use": {
+        "web_search_requests": 0,
+        "web_fetch_requests": 0
+      },
+      "service_tier": "standard",
+      "cache_creation": {
+        "ephemeral_1h_input_tokens": 268020,
+        "ephemeral_5m_input_tokens": 0
+      },
+      "inference_geo": "global",
+      "iterations": [
+        {
+          "input_tokens": 2,
+          "output_tokens": 12803,
+          "cache_read_input_tokens": 268395,
+          "cache_creation_input_tokens": 4371,
+          "cache_creation": {
+            "ephemeral_5m_input_tokens": 0,
+            "ephemeral_1h_input_tokens": 4371
+          },
+          "type": "message"
+        }
+      ],
+      "speed": "standard"
+    },
+    "modelUsage": {
+      "claude-haiku-4-5-20251001": {
+        "inputTokens": 2162,
+        "outputTokens": 21,
+        "cacheReadInputTokens": 0,
+        "cacheCreationInputTokens": 0,
+        "webSearchRequests": 0,
+        "costUSD": 0.002267,
+        "contextWindow": 200000,
+        "maxOutputTokens": 32000,
+        "thinkingTokens": 0,
+        "canonicalModel": "claude-haiku-4-5",
+        "provider": "firstParty",
+        "costBasis": "list"
+      },
+      "claude-opus-5[1m]": {
+        "inputTokens": 166,
+        "outputTokens": 88532,
+        "cacheReadInputTokens": 14285700,
+        "cacheCreationInputTokens": 268020,
+        "webSearchRequests": 0,
+        "costUSD": 12.037179999999998,
+        "contextWindow": 1000000,
+        "maxOutputTokens": 64000,
+        "thinkingTokens": 70640,
+        "canonicalModel": "claude-opus-5",
+        "provider": "firstParty",
+        "costBasis": "list"
+      }
+    },
+    "permission_denials": [],
+    "terminal_reason": "completed",
+    "fast_mode_state": "off",
+    "fast_mode_disabled_reason": "sdk_opt_in_required",
+    "subagent_stats": {
+      "spawned": 0,
+      "requested": {
+        "background": 0,
+        "foreground": 0,
+        "unset": 0
+      },
+      "started_in_background": 0,
+      "max_depth": 0,
+      "spawned_by_subagents": 0,
+      "completed": 0,
+      "failed": 0,
+      "killed": {
+        "parent": 0,
+        "user": 0,
+        "system": 0
+      },
+      "refused": {
+        "depth_limit": 0,
+        "concurrency_limit": 0,
+        "budget": 0
+      },
+      "by_type": {}
+    },
+    "is_error": false,
+    "num_turns": 86,
+    "subtype": "success",
+    "api_error_status": null,
+    "result": "I reviewed plan\u2011v3, selection\u2011v2, the binding, the native N1 packet, and the actual source at clean `5bcd277`. Nothing was executed; findings are from reading only.\n\n## Verification basis (what I independently confirmed)\n\n- **HTTP seam** `transaction-http.ts:505-513` is exactly the Bead\u2011OR\u2011canonical\u2011Scope guard the plan extends; lexical `malformedTransactionMinimumHeaders` precedes it at `:404-405`; final refusals at `:586-611`; `x-bdp-development: non-attesting` is set unconditionally at `:667` (and `transaction-runtime.ts:92`), while `x-bdp-development-limit` is set only by `developmentGap` at `:149`. **N1 is factually correct and plan D now states it correctly.**\n- **Service seam** `transaction-service.ts:469-511`: single capture behind `captured`, `snapshotCurrentReadMinimum` outside the classification catch, catch limited to `TypeError`/`TransactionEventParameterError`. `waitForTransactionMinimum` (`transaction-consistency.ts:139-179`) really orders policy \u2192 one `now()` \u2192 `signal.aborted` \u2192 attempt, matching the plan's stated precedence.\n- **Owner seam** `transaction-store.ts:1654-1655` predicate; `eventSourceKnown` (`:693-703`) precedes the `unsupported` sentinel and `checkCurrentReadMinimum` (`:1673`); `retainedGroupReader()` \u2014 the only `FROM groups` prepare \u2014 is constructed at `:1686`, i.e. after the minimum check, which is why `groupReads === 0` is a real oracle. `deleteResource` (`:1309-1313`) deletes only from `resources`, kind\u2011agnostically retaining `identities`, so deleted Links really remain Event Sources.\n- **Projection** `transaction-events.ts:250-253`: a Link source includes only `created|updated|deleted` with `subject === source.subject`; `linked`/`unlinked` (whose subject is also the Link) are excluded. With `createLink` \u2192 `created` and `deleteLink` \u2192 `deleted` (confirmed by `transaction-events.test.ts:155` and `transaction-owned.test.ts:410`), A\u20119 and D\u201133 give exactly a 2\u2011event page, and `receiptMaximumItems = 2` yields `next: null`. **The plan's \"fits two Events\" claim is correct.**\n- **Both sentinel dispositions are right.** At `transaction-events.test.ts:1620` the fixture seeds only `bead(\"a\")`, so an extended owner returns `{kind:\"missing\", context: setup.context}` (identity absent, position still pos\u20111) with `reads` unchanged at 12. At `:1816` the Link **is** seeded, so `500 \u2192 503` with `observed=true` holds (no mutation before that row); 503 goes 8\u219210 and 500 goes 14\u219212 with 37 requests unchanged \u2014 I recounted both.\n- **Fixture prerequisites are real.** `transaction-events.test.ts:40-58` already carries Bead *and* Link descriptors; `:99-118` provides `bead()`, `link()`, `remove`; `:150` already runs the exact `[bead(\"a\"), bead(\"b\"), link()]` seed. Service default `types` (`transaction-service.test.ts:26`) is Bead\u2011only, `fixture(extra)` spreads at `:65`, and `TransactionStoreOptions.types` is required (`transaction-store.ts:201`), so `Parameters<typeof openTransactionStore>[0]['types']` is a valid annotation. `properties: {}` is fine for a schema\u2011less Link (`transaction-batch.ts:462`).\n- **Counts are internally consistent and derivable.** I hand\u2011counted the historical callback at `transaction-events.test.ts:399-584`: **exactly 59 requests**, so 128 = 32 + 37 + 59 and 163 = 128 + 35 hold. 33 = 25 + 8 (I enumerated selection\u2011v2's 25). Listeners = 3 existing (`:404`, `:1407`, `:1688`) + D = 4. 22 = 11 + 3 + 4 + 4; 185 = 163 + 22. D's own 35 partitions to 503\u00d78 / 500\u00d712 / 400\u00d74 / 404\u00d73 / 200\u00d78 exactly as stated.\n- **Scope containment holds.** A repo\u2011wide search for Link Event URLs finds minimum\u2011bearing uses only at `transaction-events.test.ts:1620` and `:1816` (both in scope). `transaction-events.test.ts:1055-1059` passes `after:\"bad\"`, `transaction-http.test.ts:4528-4529` is the partial\u2011tuple 400 loop, `gapPair` is only used for `types/`, `types/task`, `beads/a/`, and the fresh\u2011depth/SSE installed uses carry no minimum. The historical 59\u2011request callback's G2 rows (`:571-578`) carry no minimum and stay unchanged. **Six files is sufficient; no out\u2011of\u2011scope test regresses.**\n- **Normative basis checks out.** 5819\u20115832 (lexical), 5834\u20115839 (Resource/properties 404 \u2014 notably *not* Events), 5841\u20115843 (general remaining\u2011read permission), 5844\u20115849 (Resource/properties MUST, correctly **not** generalized), 5850\u20115851 (no extension to continuations/incident\u2011Link lists), 5583\u20115595, 5665\u20115676, 6212\u20116221, 6258\u20116263, 6612\u20116616, 5329\u20115332, 1986\u20111989, 5876\u20115878 all read as the plan represents them. The plan claims a permitted reference choice, not a MUST, and does not rule on S1/G2/foreign policy.\n\n## Blockers\n\n**None.** I found no blocking defect in plan\u2011v3 against this repository.\n\n## Optional precision (ordered by value; none blocking)\n\n1. **Medium \u2014 F's four\u2011row reduction leaves dead locals that will fail typecheck.** \u00a7F / `transaction-service.test.ts:2886-2970`. Dropping `invalid-policy`/`throwing-clock`/`nonfinite-clock` makes `clockError` (`:2897`) unreferenced and collapses the `budgetMs: label === \"invalid-policy\" ? 0 : 10` and `now` label branches. `tsconfig.base.json:17` sets `noUnusedLocals`, so a verbatim copy of the Bead harness aborts the static stage under \"stop on first failure, no auto\u2011fix\". *Correction:* state in \u00a7F that the template drops `clockError` and uses constant `now: () => 0` / `budgetMs: 10`, and that `expect(now).toHaveBeenCalledTimes(1)` loses its label conditional.\n\n2. **Medium \u2014 specify the narrowing\u2011safe service predicate.** \u00a7Service / `transaction-service.ts:488-490`. Extending `parsed?.source.kind === \"bead\"` into a disjunction must keep `parsed` narrowed to non\u2011undefined for the following `parsed.after` / `parsed.source.url` terms under `strict` + `exactOptionalPropertyTypes`; this workstream already lost a run to a TS18048 narrowing loss. *Correction:* pin the shape, e.g. `parsed !== undefined && (parsed.source.kind === \"bead\" || parsed.source.kind === \"link\") && parsed.after === undefined && parsed.source.url === source`, and restate that the `try` boundary still wraps only `new URL(...)`/`transactionEventRequest`, never `snapshotCurrentReadMinimum`.\n\n3. **Low \u2014 the owner `kind` disjunction becomes vacuous and unverifiable.** \u00a7Owner / `transaction-store.ts:1654-1655`, `transaction-events.ts:56`. `TransactionEventSource[\"kind\"]` is exactly `\"scope\" | \"bead\" | \"link\"`, so after the change the kind test is always true and no test can distinguish it from `after === undefined`. (Biome's `recommended` preset won't flag it, so there is no lint risk.) *Correction:* one clause in \u00a7Owner saying the kinds stay enumerated solely as forward\u2011safety against a future fourth kind, and that the updated comment must not read as a live discriminator.\n\n4. **Low \u2014 F's Link\u2011specificity claim is stronger than the code supports.** \u00a7F. Only `malformed-after-valid-preflight` actually discriminates the Link classifier (ownerReads 0 vs 1 today). `noncanonical-query` throws in the query\u2011key loop at `transaction-events.ts:156-158`, *before* the kind branch at `:162-174`; `relative-source` throws in `new URL`; both are kind\u2011independent, and `already-aborted` is a precedence guard. *Correction:* reword \"two source rows discriminate fallback\" to \"preserve the unchanged source\u2011error/fallback precedence\", keeping the honest statement that one row carries the Link\u2011classifier oracle.\n\n5. **Low \u2014 \"No other initial Event-source exclusion remains\" (D) overstates coverage.** \u00a7D row 17\u201124 / `transaction-http.ts:513`. The guard's sixth term `(lastEventIds?.length ?? 0) === 0` is not exercised by any of the four pairs, and a repeated raw `Last-Event-ID` is not producible through `fetch`'s `Headers`. *Correction:* \"no other exclusion reachable through this harness\", with the raw multi\u2011value term named as covered only by the SSE repeated\u2011field path.\n\n6. **Low \u2014 pin the elapsed guard instead of \"approaches unchanged 5s bound\".** \u00a7D and \u00a7sentinels. `vitest.config.ts` sets no `testTimeout`, and none of these callbacks pass an explicit timeout, so 5000 ms is the *implicit default*, not a knob. D adds ~640 ms of waits and the amended Bead D adds ~160 ms on top of its existing ~640 ms. *Correction:* state the numeric elapsed margin the audit will apply against the recorded `elapsedMs` (both callbacks already log it), and state explicitly that 5000 ms is the framework default that must not be overridden.\n\n7. **Low \u2014 \"8 bounded waits\" is derived, not asserted.** \u00a7D / selection\u2011v2 `minimumWaitRequests: 8`. Like the Scope/Bead predecessors, D infers waits from the 503 count plus elapsed; there is no wait counter at the HTTP layer. *Correction:* label it a derived expectation, and add the explicit negative that rows 29\u201130 (unknown Link 404) and 13\u201124 (Unsupported 500) perform **zero** waits, since `waitForTransactionMinimum` rethrows anything other than Unproved/behind.\n\n8. **Low \u2014 selection\u2011v2 records only one of the two sentinel dispositions.** `selection-v2.json:76-82` vs `:268-277`. The Bead HTTP change has a dedicated `oldBeadHttpSentinelChange` block, but the Bead *owner* callback entry carries only unchanged counts, so an auditor binding to selection\u2011v2 alone would not see that `transaction-events.test.ts:1620` changes from `toThrow(TypeError)` to a `{kind:\"missing\"}` equality. *Correction:* add a `dispositionChanged` note (counts unchanged, assertion and comment changed) to that `existingSource` entry.\n\n9. **Low \u2014 \"installed historical prefix\" hash is currently a whole\u2011file hash.** `plan-v3-binding.json:708-711` vs its own `allTrackedFiles` entry for `apps/bdptest/src/transactional-event-missing-context-installed.test.ts` \u2014 both are `e4510bf2\u2026`, because the file ends at line 940 and E is appended after it. *Correction:* say the preservation check compares the **first 37245 bytes**, not a file hash, since the file hash necessarily changes once E is appended.\n\n10. **Low \u2014 installed Link descriptor endpoint mode is wider than E needs.** \u00a7E vs `apps/bdptest/src/transactional-event-sse-installed.test.ts:62-63`, the only existing installed Link descriptor, which uses `external: \"none\"` for in\u2011Scope endpoints. E seeds only in\u2011Scope `beads/known`/`beads/other`. Both admit the seed, so this is not a defect. *Correction:* either match the installed precedent with `\"none\"`, or keep `\"opaque\"` with a one\u2011line rationale that it mirrors the source Event fixture (`transaction-events.test.ts:54-55`).\n\n11. **Low \u2014 add the retention anchor the plan relies on.** \u00a7Behavior/\u00a7Owner cite `transaction-store.ts:693-710` for retained identity but not the retention mechanism itself. *Correction:* also cite `:1309-1313` (`deleteResource` touches only `resources`), which is what makes \"retained deleted identities remain Event Sources\" true for Links with no new work.\n\n12. **Low \u2014 tighten two normative citations.** \u00a7Behavior line 9 cites \"Link own created/updated/deleted membership 5583\u20135585\"; the Link sentence is 5583\u20115584, and the create/delete fact pairing that justifies the 2\u2011event retained page is 5592\u20115594. *Correction:* cite 5583\u20115584 plus 5592\u20115594.\n\n## Not reviewed / not verifiable from source\n\nI did not run tests, builds, imports, or services, so every count in the plan remains prospective. The \"old 21 post\u2011bootstrap stages \u2192 23\" figure and the `installedCallbackMs`/archive/consumer provenance claims rest on prior validation paperwork, which I treated as out of scope per your instruction; 21 + 1 callback + 1 audit = 23 is internally consistent but I did not confirm the 21. Native acceptance of N1 was re\u2011derived from source rather than assumed, and I make no statement about public conformance, profile support, or approval.",
+    "ttft_ms": 2358,
+    "type": "result",
+    "duration_ms": 1211092,
+    "uuid": "314aabcb-847a-4121-81dc-a17d19dc0b4e",
+    "ttft_stream_ms": 1170,
+    "time_to_request_ms": 16,
+    "first_content_frame_ms": 1171,
+    "queued_turn_count": 0
+  }
+]

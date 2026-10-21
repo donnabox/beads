@@ -1,0 +1,39 @@
+## Inputs
+
+`review.md` read at `bdp-integration-logs/installed-marker/review.md`. `installed-marker-native-review.md` is **not** in that directory — read at `bdp-integration-logs/installed-marker-native-review.md`. Prior finding read at `bdp-integration-logs/update-installed-followup-claude-review.txt` (finding **A**, lines 76–93; policyIdentity note, line 203).
+
+Diff confirmed three files / 21 insertions / 1 deletion. Tree clean, `HEAD` = `8611eba…` at entry and exit. No repo file written or modified. One scratch probe (`/private/tmp/hdr-probe.mjs`, Node `setHeader`+`writeHead` merge semantics) was created and deleted; nothing else outside the repo was touched.
+
+## Closure verification
+
+Prior finding **A** asked for three things. Two were applied, one was correctly declined:
+
+- `development-runtime.ts:116` — marker now inside `empty()`. Static enumeration of every response write path in the receiver: `:88` json ✓, `:113` empty ✓ (new), `:143` readJson ✓, `:361` schema route ✓ (via `:335`), `:397` composed read ✓ (via `:393`), `:431` 307 ✗, `:488` raw CONNECT ✗. All four 405s from A's MISS column (`:342`, `:378`, `:385`, `:440`) plus the 406 at `:468` and 500 at `:478` are now marked.
+- `installed-reference-observation.mjs:286-298` — the new assertion sits in a loop over `descriptor`, `discovery.operations`, `target("createBead")`. Traced each to a real `empty()` site: descriptor and Operation Directory → `:385` (`allow: GET, HEAD`), createBead → `:378` (`allow: POST`). Allow and empty-body checks retained. Marker now asserted on two distinct `empty()` call sites in both emitted and packed runs.
+- **Dropping `setHeader` at `:335` was correctly not done.** It is not redundant: the schema success path builds `selected.headers` at `:352` without the marker and writes it at `:361`, so the marker on schema 200/HEAD/304 comes solely from `:335`. Deleting it would un-mark those and break `installed-reference.test.ts:165,168`. A's fix step 2 was wrong; declining it is right.
+
+Also verified: no duplicate-header regression on the schema 405 (`:335` then `:342` set the same name). Probed live — Node merges to a single `x-bdp-development: non-attesting`, raw count 1, so `installed-reference.test.ts:175` is unaffected. The two repo sites that enumerate header names (`conformance/src/runner.ts:3060`, `protocol/src/transactional-http-contracts.test.ts:371`) are allowlist-filtered / illustration-only, so an added response header cannot break them.
+
+`policyIdentity` strengthening is provably safe: `development-contracts.ts:216-219` is `createHash("sha256")…digest("hex")`, always lowercase 64-hex, with no fallback on the installed path (`installed-reference-configuration.ts:169`). All four asserted readiness identities now use the identical sibling regex, and no weaker duplicate assertion survives elsewhere.
+
+## Findings
+
+**1 — LOW · `packages/server/src/development-runtime.ts:431-435` · residual, pre-existing, not a regression**
+The 307 alias redirect writes `location` + `cache-control` directly and carries no marker. It is live in the installed candidate and is already exercised by the very routine that gained the new assertions — `installed-reference-observation.mjs:248-250` asserts `status === 307` and `headers.location`. Impact: one live response remains byte-indistinguishable from an attesting deployment, in the same class A described. Fix: add `"x-bdp-development": "non-attesting"` to the `writeHead` object at `:431`, and assert it at `script:249` beside the existing `location` check.
+
+**2 — LOW · `packages/server/src/development-runtime.ts:487-491` · residual + doc overclaim**
+The raw CONNECT refusal writes `HTTP/1.1 405 … Allow: GET, HEAD … Content-Length: 0` as a literal socket string, unmarked. Registered only when `transport !== undefined` — i.e. **exclusively** the private installed candidate (`:63`), the configuration this candidate qualifies. This contradicts the new progress text "Bodyless method refusals from the shared receiver now carry the same non-attesting marker": this is a bodyless method refusal from the shared receiver, with an Allow header, and it has no marker. No test covers it. Fix: insert `X-Bdp-Development: non-attesting\r\n` into the `socket.end` string, or narrow the progress sentence to `empty()`-emitted refusals as `review.md` and the native review both do.
+
+**3 — LOW · `scripts/installed-reference-observation.mjs:61-68` · same class as the closed policyIdentity note**
+The readiness message carries five identity fields (`installed-reference-process.ts:50-58`); the block asserts four. `artifactIdentity` has **no** shape assertion anywhere — the only assertions on it are stability comparisons (`installed-reference.test.ts:119,252,404`), which a structured value would satisfy unchanged. This is the exact rationale of the note just closed at `:65`. Note the fix is not the sibling regex: `artifactIdentity` is `contracts.identity` from `development-contracts.ts:128`, which is **prefixed** — `development-schema5-<sha256hex>`. Fix: `assert.match(ready.artifactIdentity, /^development-schema5-[a-f0-9]{64}$/)`.
+
+**4 — INFO · `packages/server/src/development-runtime.ts:335` vs `:116`**
+The schema-route 405 now sets the marker twice. Verified harmless (single emitted header, identical value) and `:335` must stay for the success path per the closure note above. No action; recorded only so a later reader does not re-derive A's incorrect "drop `:334`" step.
+
+## Conclusion
+
+**CLOSED** — for the defect actually in scope. `empty()`-emitted bodyless refusals now carry the non-attesting marker on every call site; the marker is asserted on two distinct live `empty()` 405 sites across three routes in both emitted and packed observation, with Allow and empty-body checks intact; the weak `typeof … === "string"` policyIdentity assertion is replaced with the sibling 64-hex pattern and that pattern is provably correct for all policy inputs. The asymmetry A identified — schema 405 marked, other 405s not — is eliminated, and the fix is at the helper rather than a call site as A asked.
+
+**No current regression found.** Source behavior change is one constant header on an already non-attesting receiver; no duplicate-header artifact, no header-enumeration site affected, no admission/schema/store/evaluator/export surface touched, and no assertion loosened anywhere in the diff.
+
+**NOT CLOSED** — the marker *class* as a whole. Findings 1 and 2 are the complete remaining set of unmarked response paths in the shared receiver, both live in the installed candidate, both pre-existing. The native review disclaims these explicitly ("does not broaden the marker claim to independently handcrafted response paths outside `empty()`") and `review.md` scopes its claim to `empty()`, so both are accurate; only the new progress-doc sentence in finding 2 reads broader than the code supports. Findings 1–3 are each one line and would finish the class.

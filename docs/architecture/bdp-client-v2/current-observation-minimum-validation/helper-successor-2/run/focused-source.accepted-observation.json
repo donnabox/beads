@@ -1,0 +1,4547 @@
+{
+  "sourceIdentity": "2ce269a06d4e5146a309134492c7bfc6f0b3825f60889ede0e6ffaccc9e82bab",
+  "sourceBindingSha256": "f133bf6d5d8f9ebf9fbe21f171d6e77e4d18fc1797a5593090ec40d7601cc406",
+  "qualification": false,
+  "selectedCallbacks": [
+    "current Type and incident-Link minimums rejects malformed Type ID omitted through a Promise without invoking caller data",
+    "current Type and incident-Link minimums rejects malformed Type ID undefined through a Promise without invoking caller data",
+    "current Type and incident-Link minimums rejects malformed Type ID null through a Promise without invoking caller data",
+    "current Type and incident-Link minimums rejects malformed Type ID number through a Promise without invoking caller data",
+    "current Type and incident-Link minimums rejects malformed Type ID false through a Promise without invoking caller data",
+    "current Type and incident-Link minimums rejects malformed Type ID empty through a Promise without invoking caller data",
+    "current Type and incident-Link minimums rejects malformed Type ID method through a Promise without invoking caller data",
+    "current Type and incident-Link minimums rejects malformed Type ID accessor through a Promise without invoking caller data",
+    "current Type and incident-Link minimums rejects malformed Type ID inherited through a Promise without invoking caller data",
+    "current Type and incident-Link minimums rejects malformed Type ID proxy through a Promise without invoking caller data",
+    "current Type and incident-Link minimums rejects malformed Type ID revoked through a Promise without invoking caller data",
+    "current Type and incident-Link minimums projects immutable current Types and exact incident directions including self-Link deduplication",
+    "current Type and incident-Link minimums keeps types limits, allocation and retained continuation boundaries distinct",
+    "current Type and incident-Link minimums keeps incident limits, allocation and retained continuation boundaries distinct",
+    "current Type and incident-Link minimums waits and cancels current surface 0 without retaining an owner entry",
+    "current Type and incident-Link minimums waits and cancels current surface 1 without retaining an owner entry",
+    "current Type and incident-Link minimums waits and cancels current surface 2 without retaining an owner entry",
+    "current Type and incident-Link minimums pre-aborts, drains and releases a waiting current surface 0",
+    "current Type and incident-Link minimums pre-aborts, drains and releases a waiting current surface 1",
+    "current Type and incident-Link minimums pre-aborts, drains and releases a waiting current surface 2",
+    "current Type and incident-Link minimums keeps compatible missing Types and absent/deleted incident anchors separate from collisions",
+    "current alias minimum subset preserves direct minimum alias receiving validation, cancellation and lifecycle precedence",
+    "current alias minimum subset preserves service minimum alias receiving validation, cancellation and lifecycle precedence",
+    "current alias minimum subset conditions alias mapping and context in one entry without revising either target",
+    "current alias minimum subset rechecks a repointed alias after waiting for a real Resource effect",
+    "current alias minimum subset keeps live alias context failures and compatible absent/deleted/dangling observations distinct",
+    "current alias minimum subset forwards ordinary and minimum Request aborts before SQL and drains an admitted alias wait",
+    "current alias minimum subset does not relabel alias provider or malformed context failures as missing",
+    "current alias minimum subset captures unknown alias minima while resolving each retry against the live owner",
+    "current alias minimum subset captures pos-01 alias minima while resolving each retry against the live owner",
+    "current alias minimum subset preserves absent alias nondisclosure before opaque minimum waiting",
+    "current alias minimum subset preserves deleted alias nondisclosure before opaque minimum waiting",
+    "current alias minimum subset preserves dangling alias nondisclosure before opaque minimum waiting",
+    "current alias minimum subset preserves hidden alias nondisclosure before opaque minimum waiting",
+    "current alias minimum subset returns current alias absence when an admitted opaque wait loses its mapping",
+    "current alias minimum subset drains an aborted opaque alias wait before releasing its owner",
+    "current alias minimum subset preserves incident-Link opaque exclusions beside alias minima",
+    "current minimum perform receiving preserves a direct non-enumerable pre-aborted signal before owner entry",
+    "current minimum perform receiving preserves direct minimum perform receiving validation, cancellation and lifecycle precedence",
+    "current minimum perform receiving preserves service minimum perform receiving validation, cancellation and lifecycle precedence",
+    "internal discovery owner observation copies exactly one owner entry and parses only after releasing it",
+    "internal discovery owner observation keeps entry refusal distinct from structural validation failure",
+    "internal discovery owner observation captures nested limits once and enforces the captured values after caller mutation",
+    "internal discovery owner observation keeps the replay position floor and complete genesis groups through receipt expiry and reopen",
+    "internal discovery minimum observation preserves synchronous no-minimum timing and ignores its signal and wait policy",
+    "internal discovery minimum observation returns an immutable same-entry eligible prefix for pos-1 after release",
+    "internal discovery minimum observation returns an immutable same-entry eligible prefix for pos-0 after release",
+    "internal discovery minimum observation returns an immutable same-entry eligible prefix for genesis after release",
+    "internal discovery minimum observation captures immutable minimum controls and releases the owner during controlled catch-up",
+    "internal discovery minimum observation releases the owner after an in-entry scopeEpoch refusal",
+    "internal discovery minimum observation releases the owner after an in-entry authorizationView refusal",
+    "internal discovery minimum observation times out after two controlled attempts without assembly and leaves the owner reusable",
+    "internal discovery minimum observation rejects pre-abort before entry and pending abort before retry",
+    "internal discovery minimum observation drains an admitted discovery wait before closing the owner",
+    "internal discovery minimum observation keeps malformed input, entry refusal, provider and parser failures distinct",
+    "captures lexical current minimums without widening strict consumers or invoking accessors",
+    "waits for unproved current eligibility with one deadline and preserves terminal failures",
+    "distinguishes closed minimum receiving syntax from supported position identities",
+    "uses actual current policy for missing-first and unproved Resource attempts",
+    "drains an admitted unknown minimum to timeout and rejects new reads while closing",
+    "records one atomic page chain, retains original postimages and all tail allocations through expiry",
+    "captures immutable current context for nondisclosable receipt pages before minimum checks",
+    "checks each fresh Snapshot minimum before any handle, record, page or expiry work",
+    "does not expire retained Snapshot details on an ineligible fresh attempt",
+    "gates fresh Snapshot opaque minima before allocation and expiry",
+    "gates initial Scope Event unknown minima before retained scans",
+    "serves initial finite Scope Event opaque minima through bounded waiting",
+    "gates initial Bead Event unknown minima before retained scans",
+    "serves initial finite Bead Event opaque minima with retained identity and route fences",
+    "gates initial Link Event unknown minima before retained scans",
+    "serves initial finite Link Event opaque minima with retained identity and route fences",
+    "gates initial Scope Event SSE opaque minima before scan packets",
+    "captures initial Scope Event SSE minima once and recaptures context on retry",
+    "drains an aborted initial Scope Event SSE minimum wait before owner close",
+    "serves initial Scope Event SSE opaque minima before conditional admission",
+    "keeps direct and excluded changefeed minimum paths strict",
+    "serves finite start-now opaque minima before HTTP shortcuts",
+    "serves canonical current Type and incident minimums with truthful context and parser boundaries",
+    "serves conditioned live aliases and preserves bodyless redirects, refusal context and receiving boundaries",
+    "waits for current Resources and initial collections with unknown minima and preserves residual refusals",
+    "serves fresh Snapshot opaque minima with terminal preflight and retained fences",
+    "serves opaque receipt root minima before HTTP shortcuts with private fences",
+    "rejects collection parser errors before unknown minimum support checks",
+    "preserves parser refusal parity on noncollection and excluded query routes",
+    "preserves receiving and HTTP error precedence for parser refusals",
+    "orders page nondisclosure, minimum waits, expiry and representation using actual owner state",
+    "refuses unsupported root controls after nondisclosure but before read-triggered retention",
+    "keeps failed parent rows unchanged for nonexistent page reads with any controls",
+    "waits for lexical current observations and preserves captured tuples across real progress",
+    "orders Type refusal and receipt page nondisclosure before projection",
+    "drains lexical current observation type before close",
+    "drains lexical current observation types before close",
+    "drains lexical current observation incident before close",
+    "drains lexical current observation page before close",
+    "drains lexical current observation discovery before close",
+    "preserves receipt page detail when lexical eligibility is unproved",
+    "serves current observation minimums with actual issued pages and HTTP parity"
+  ],
+  "resultsSha256": "9f7adaa74fbd30a2068e940e3c39d6a57ddf189ad2fd41bdc9af7acfc979908d",
+  "logSha256": "b3a13ede1e9070b81d0595c09a75543106589bbd1472edcad2713686bedc98f5",
+  "newObservations": [
+    {
+      "observation": "current-observation-http",
+      "elapsedMs": 39.74808299999995,
+      "attempted": 37,
+      "responses": [
+        {
+          "label": "seed",
+          "method": "POST",
+          "url": "https://current-observation.invalid/acme/operations/batch",
+          "status": 200,
+          "bytes": 1090,
+          "headers": {
+            "bdp-scope-epoch": "b29715c7-74b0-405f-9d2e-9d8575e1aeda",
+            "bdp-authorization-view": "development-all-visible",
+            "bdp-scope-position": "pos-1",
+            "content-type": "application/json",
+            "content-length": "1090",
+            "retry-after": null,
+            "cache-control": "private, no-store",
+            "x-bdp-development-limit": null
+          }
+        },
+        {
+          "label": "issue-page",
+          "method": "POST",
+          "url": "https://current-observation.invalid/acme/operations/update-where",
+          "status": 200,
+          "bytes": 886,
+          "headers": {
+            "bdp-scope-epoch": "b29715c7-74b0-405f-9d2e-9d8575e1aeda",
+            "bdp-authorization-view": "development-all-visible",
+            "bdp-scope-position": "pos-2",
+            "content-type": "application/json",
+            "content-length": "886",
+            "retry-after": null,
+            "cache-control": "private, no-store",
+            "x-bdp-development-limit": null
+          }
+        },
+        {
+          "label": "link",
+          "method": "POST",
+          "url": "https://current-observation.invalid/acme/operations/batch",
+          "status": 200,
+          "bytes": 831,
+          "headers": {
+            "bdp-scope-epoch": "b29715c7-74b0-405f-9d2e-9d8575e1aeda",
+            "bdp-authorization-view": "development-all-visible",
+            "bdp-scope-position": "pos-3",
+            "content-type": "application/json",
+            "content-length": "831",
+            "retry-after": null,
+            "cache-control": "private, no-store",
+            "x-bdp-development-limit": null
+          }
+        },
+        {
+          "label": "type-known",
+          "method": "GET",
+          "url": "https://current-observation.invalid/acme/types/task",
+          "status": 200,
+          "bytes": 109,
+          "headers": {
+            "bdp-scope-epoch": "b29715c7-74b0-405f-9d2e-9d8575e1aeda",
+            "bdp-authorization-view": "development-all-visible",
+            "bdp-scope-position": "pos-3",
+            "content-type": "application/json",
+            "content-length": "109",
+            "retry-after": null,
+            "cache-control": "private, no-store",
+            "x-bdp-development-limit": null
+          }
+        },
+        {
+          "label": "type-opaque-get",
+          "method": "GET",
+          "url": "https://current-observation.invalid/acme/types/task",
+          "status": 503,
+          "bytes": 127,
+          "headers": {
+            "bdp-scope-epoch": "b29715c7-74b0-405f-9d2e-9d8575e1aeda",
+            "bdp-authorization-view": "development-all-visible",
+            "bdp-scope-position": "pos-3",
+            "content-type": "application/problem+json",
+            "content-length": "127",
+            "retry-after": "1",
+            "cache-control": "private, no-store",
+            "x-bdp-development-limit": null
+          }
+        },
+        {
+          "label": "type-opaque-head",
+          "method": "HEAD",
+          "url": "https://current-observation.invalid/acme/types/task",
+          "status": 503,
+          "bytes": 0,
+          "headers": {
+            "bdp-scope-epoch": "b29715c7-74b0-405f-9d2e-9d8575e1aeda",
+            "bdp-authorization-view": "development-all-visible",
+            "bdp-scope-position": "pos-3",
+            "content-type": "application/problem+json",
+            "content-length": "127",
+            "retry-after": "1",
+            "cache-control": "private, no-store",
+            "x-bdp-development-limit": null
+          }
+        },
+        {
+          "label": "type-epoch-get",
+          "method": "GET",
+          "url": "https://current-observation.invalid/acme/types/task",
+          "status": 410,
+          "bytes": 125,
+          "headers": {
+            "bdp-scope-epoch": "b29715c7-74b0-405f-9d2e-9d8575e1aeda",
+            "bdp-authorization-view": "development-all-visible",
+            "bdp-scope-position": "pos-3",
+            "content-type": "application/problem+json",
+            "content-length": "125",
+            "retry-after": null,
+            "cache-control": "private, no-store",
+            "x-bdp-development-limit": null
+          }
+        },
+        {
+          "label": "type-epoch-head",
+          "method": "HEAD",
+          "url": "https://current-observation.invalid/acme/types/task",
+          "status": 410,
+          "bytes": 0,
+          "headers": {
+            "bdp-scope-epoch": "b29715c7-74b0-405f-9d2e-9d8575e1aeda",
+            "bdp-authorization-view": "development-all-visible",
+            "bdp-scope-position": "pos-3",
+            "content-type": "application/problem+json",
+            "content-length": "125",
+            "retry-after": null,
+            "cache-control": "private, no-store",
+            "x-bdp-development-limit": null
+          }
+        },
+        {
+          "label": "type-view-get",
+          "method": "GET",
+          "url": "https://current-observation.invalid/acme/types/task",
+          "status": 409,
+          "bytes": 127,
+          "headers": {
+            "bdp-scope-epoch": "b29715c7-74b0-405f-9d2e-9d8575e1aeda",
+            "bdp-authorization-view": "development-all-visible",
+            "bdp-scope-position": "pos-3",
+            "content-type": "application/problem+json",
+            "content-length": "127",
+            "retry-after": null,
+            "cache-control": "private, no-store",
+            "x-bdp-development-limit": null
+          }
+        },
+        {
+          "label": "type-view-head",
+          "method": "HEAD",
+          "url": "https://current-observation.invalid/acme/types/task",
+          "status": 409,
+          "bytes": 0,
+          "headers": {
+            "bdp-scope-epoch": "b29715c7-74b0-405f-9d2e-9d8575e1aeda",
+            "bdp-authorization-view": "development-all-visible",
+            "bdp-scope-position": "pos-3",
+            "content-type": "application/problem+json",
+            "content-length": "127",
+            "retry-after": null,
+            "cache-control": "private, no-store",
+            "x-bdp-development-limit": null
+          }
+        },
+        {
+          "label": "types-known",
+          "method": "GET",
+          "url": "https://current-observation.invalid/acme/types/",
+          "status": 200,
+          "bytes": 219,
+          "headers": {
+            "bdp-scope-epoch": "b29715c7-74b0-405f-9d2e-9d8575e1aeda",
+            "bdp-authorization-view": "development-all-visible",
+            "bdp-scope-position": "pos-3",
+            "content-type": "application/json",
+            "content-length": "219",
+            "retry-after": null,
+            "cache-control": "private, no-store",
+            "x-bdp-development-limit": null
+          }
+        },
+        {
+          "label": "types-opaque-get",
+          "method": "GET",
+          "url": "https://current-observation.invalid/acme/types/",
+          "status": 503,
+          "bytes": 127,
+          "headers": {
+            "bdp-scope-epoch": "b29715c7-74b0-405f-9d2e-9d8575e1aeda",
+            "bdp-authorization-view": "development-all-visible",
+            "bdp-scope-position": "pos-3",
+            "content-type": "application/problem+json",
+            "content-length": "127",
+            "retry-after": "1",
+            "cache-control": "private, no-store",
+            "x-bdp-development-limit": null
+          }
+        },
+        {
+          "label": "types-opaque-head",
+          "method": "HEAD",
+          "url": "https://current-observation.invalid/acme/types/",
+          "status": 503,
+          "bytes": 0,
+          "headers": {
+            "bdp-scope-epoch": "b29715c7-74b0-405f-9d2e-9d8575e1aeda",
+            "bdp-authorization-view": "development-all-visible",
+            "bdp-scope-position": "pos-3",
+            "content-type": "application/problem+json",
+            "content-length": "127",
+            "retry-after": "1",
+            "cache-control": "private, no-store",
+            "x-bdp-development-limit": null
+          }
+        },
+        {
+          "label": "types-epoch-get",
+          "method": "GET",
+          "url": "https://current-observation.invalid/acme/types/",
+          "status": 410,
+          "bytes": 125,
+          "headers": {
+            "bdp-scope-epoch": "b29715c7-74b0-405f-9d2e-9d8575e1aeda",
+            "bdp-authorization-view": "development-all-visible",
+            "bdp-scope-position": "pos-3",
+            "content-type": "application/problem+json",
+            "content-length": "125",
+            "retry-after": null,
+            "cache-control": "private, no-store",
+            "x-bdp-development-limit": null
+          }
+        },
+        {
+          "label": "types-epoch-head",
+          "method": "HEAD",
+          "url": "https://current-observation.invalid/acme/types/",
+          "status": 410,
+          "bytes": 0,
+          "headers": {
+            "bdp-scope-epoch": "b29715c7-74b0-405f-9d2e-9d8575e1aeda",
+            "bdp-authorization-view": "development-all-visible",
+            "bdp-scope-position": "pos-3",
+            "content-type": "application/problem+json",
+            "content-length": "125",
+            "retry-after": null,
+            "cache-control": "private, no-store",
+            "x-bdp-development-limit": null
+          }
+        },
+        {
+          "label": "types-view-get",
+          "method": "GET",
+          "url": "https://current-observation.invalid/acme/types/",
+          "status": 409,
+          "bytes": 127,
+          "headers": {
+            "bdp-scope-epoch": "b29715c7-74b0-405f-9d2e-9d8575e1aeda",
+            "bdp-authorization-view": "development-all-visible",
+            "bdp-scope-position": "pos-3",
+            "content-type": "application/problem+json",
+            "content-length": "127",
+            "retry-after": null,
+            "cache-control": "private, no-store",
+            "x-bdp-development-limit": null
+          }
+        },
+        {
+          "label": "types-view-head",
+          "method": "HEAD",
+          "url": "https://current-observation.invalid/acme/types/",
+          "status": 409,
+          "bytes": 0,
+          "headers": {
+            "bdp-scope-epoch": "b29715c7-74b0-405f-9d2e-9d8575e1aeda",
+            "bdp-authorization-view": "development-all-visible",
+            "bdp-scope-position": "pos-3",
+            "content-type": "application/problem+json",
+            "content-length": "127",
+            "retry-after": null,
+            "cache-control": "private, no-store",
+            "x-bdp-development-limit": null
+          }
+        },
+        {
+          "label": "incident-known",
+          "method": "GET",
+          "url": "https://current-observation.invalid/acme/beads/r00?view=links",
+          "status": 200,
+          "bytes": 355,
+          "headers": {
+            "bdp-scope-epoch": "b29715c7-74b0-405f-9d2e-9d8575e1aeda",
+            "bdp-authorization-view": "development-all-visible",
+            "bdp-scope-position": "pos-3",
+            "content-type": "application/json",
+            "content-length": "355",
+            "retry-after": null,
+            "cache-control": "private, no-store",
+            "x-bdp-development-limit": null
+          }
+        },
+        {
+          "label": "incident-opaque-get",
+          "method": "GET",
+          "url": "https://current-observation.invalid/acme/beads/r00?view=links",
+          "status": 503,
+          "bytes": 127,
+          "headers": {
+            "bdp-scope-epoch": "b29715c7-74b0-405f-9d2e-9d8575e1aeda",
+            "bdp-authorization-view": "development-all-visible",
+            "bdp-scope-position": "pos-3",
+            "content-type": "application/problem+json",
+            "content-length": "127",
+            "retry-after": "1",
+            "cache-control": "private, no-store",
+            "x-bdp-development-limit": null
+          }
+        },
+        {
+          "label": "incident-opaque-head",
+          "method": "HEAD",
+          "url": "https://current-observation.invalid/acme/beads/r00?view=links",
+          "status": 503,
+          "bytes": 0,
+          "headers": {
+            "bdp-scope-epoch": "b29715c7-74b0-405f-9d2e-9d8575e1aeda",
+            "bdp-authorization-view": "development-all-visible",
+            "bdp-scope-position": "pos-3",
+            "content-type": "application/problem+json",
+            "content-length": "127",
+            "retry-after": "1",
+            "cache-control": "private, no-store",
+            "x-bdp-development-limit": null
+          }
+        },
+        {
+          "label": "incident-epoch-get",
+          "method": "GET",
+          "url": "https://current-observation.invalid/acme/beads/r00?view=links",
+          "status": 410,
+          "bytes": 125,
+          "headers": {
+            "bdp-scope-epoch": "b29715c7-74b0-405f-9d2e-9d8575e1aeda",
+            "bdp-authorization-view": "development-all-visible",
+            "bdp-scope-position": "pos-3",
+            "content-type": "application/problem+json",
+            "content-length": "125",
+            "retry-after": null,
+            "cache-control": "private, no-store",
+            "x-bdp-development-limit": null
+          }
+        },
+        {
+          "label": "incident-epoch-head",
+          "method": "HEAD",
+          "url": "https://current-observation.invalid/acme/beads/r00?view=links",
+          "status": 410,
+          "bytes": 0,
+          "headers": {
+            "bdp-scope-epoch": "b29715c7-74b0-405f-9d2e-9d8575e1aeda",
+            "bdp-authorization-view": "development-all-visible",
+            "bdp-scope-position": "pos-3",
+            "content-type": "application/problem+json",
+            "content-length": "125",
+            "retry-after": null,
+            "cache-control": "private, no-store",
+            "x-bdp-development-limit": null
+          }
+        },
+        {
+          "label": "incident-view-get",
+          "method": "GET",
+          "url": "https://current-observation.invalid/acme/beads/r00?view=links",
+          "status": 409,
+          "bytes": 127,
+          "headers": {
+            "bdp-scope-epoch": "b29715c7-74b0-405f-9d2e-9d8575e1aeda",
+            "bdp-authorization-view": "development-all-visible",
+            "bdp-scope-position": "pos-3",
+            "content-type": "application/problem+json",
+            "content-length": "127",
+            "retry-after": null,
+            "cache-control": "private, no-store",
+            "x-bdp-development-limit": null
+          }
+        },
+        {
+          "label": "incident-view-head",
+          "method": "HEAD",
+          "url": "https://current-observation.invalid/acme/beads/r00?view=links",
+          "status": 409,
+          "bytes": 0,
+          "headers": {
+            "bdp-scope-epoch": "b29715c7-74b0-405f-9d2e-9d8575e1aeda",
+            "bdp-authorization-view": "development-all-visible",
+            "bdp-scope-position": "pos-3",
+            "content-type": "application/problem+json",
+            "content-length": "127",
+            "retry-after": null,
+            "cache-control": "private, no-store",
+            "x-bdp-development-limit": null
+          }
+        },
+        {
+          "label": "page-known",
+          "method": "GET",
+          "url": "https://current-observation.invalid/acme/receipts/dac166b2-4587-47bd-bba4-666c784d6f8e/pages/bbee1ca5-abd7-40e5-b122-218b1673c5c8",
+          "status": 200,
+          "bytes": 767,
+          "headers": {
+            "bdp-scope-epoch": "b29715c7-74b0-405f-9d2e-9d8575e1aeda",
+            "bdp-authorization-view": "development-all-visible",
+            "bdp-scope-position": "pos-3",
+            "content-type": "application/json",
+            "content-length": "767",
+            "retry-after": null,
+            "cache-control": "private, no-store",
+            "x-bdp-development-limit": null
+          }
+        },
+        {
+          "label": "page-opaque-get",
+          "method": "GET",
+          "url": "https://current-observation.invalid/acme/receipts/dac166b2-4587-47bd-bba4-666c784d6f8e/pages/bbee1ca5-abd7-40e5-b122-218b1673c5c8",
+          "status": 503,
+          "bytes": 127,
+          "headers": {
+            "bdp-scope-epoch": "b29715c7-74b0-405f-9d2e-9d8575e1aeda",
+            "bdp-authorization-view": "development-all-visible",
+            "bdp-scope-position": "pos-3",
+            "content-type": "application/problem+json",
+            "content-length": "127",
+            "retry-after": "1",
+            "cache-control": "private, no-store",
+            "x-bdp-development-limit": null
+          }
+        },
+        {
+          "label": "page-opaque-head",
+          "method": "HEAD",
+          "url": "https://current-observation.invalid/acme/receipts/dac166b2-4587-47bd-bba4-666c784d6f8e/pages/bbee1ca5-abd7-40e5-b122-218b1673c5c8",
+          "status": 503,
+          "bytes": 0,
+          "headers": {
+            "bdp-scope-epoch": "b29715c7-74b0-405f-9d2e-9d8575e1aeda",
+            "bdp-authorization-view": "development-all-visible",
+            "bdp-scope-position": "pos-3",
+            "content-type": "application/problem+json",
+            "content-length": "127",
+            "retry-after": "1",
+            "cache-control": "private, no-store",
+            "x-bdp-development-limit": null
+          }
+        },
+        {
+          "label": "page-epoch-get",
+          "method": "GET",
+          "url": "https://current-observation.invalid/acme/receipts/dac166b2-4587-47bd-bba4-666c784d6f8e/pages/bbee1ca5-abd7-40e5-b122-218b1673c5c8",
+          "status": 410,
+          "bytes": 125,
+          "headers": {
+            "bdp-scope-epoch": "b29715c7-74b0-405f-9d2e-9d8575e1aeda",
+            "bdp-authorization-view": "development-all-visible",
+            "bdp-scope-position": "pos-3",
+            "content-type": "application/problem+json",
+            "content-length": "125",
+            "retry-after": null,
+            "cache-control": "private, no-store",
+            "x-bdp-development-limit": null
+          }
+        },
+        {
+          "label": "page-epoch-head",
+          "method": "HEAD",
+          "url": "https://current-observation.invalid/acme/receipts/dac166b2-4587-47bd-bba4-666c784d6f8e/pages/bbee1ca5-abd7-40e5-b122-218b1673c5c8",
+          "status": 410,
+          "bytes": 0,
+          "headers": {
+            "bdp-scope-epoch": "b29715c7-74b0-405f-9d2e-9d8575e1aeda",
+            "bdp-authorization-view": "development-all-visible",
+            "bdp-scope-position": "pos-3",
+            "content-type": "application/problem+json",
+            "content-length": "125",
+            "retry-after": null,
+            "cache-control": "private, no-store",
+            "x-bdp-development-limit": null
+          }
+        },
+        {
+          "label": "page-view-get",
+          "method": "GET",
+          "url": "https://current-observation.invalid/acme/receipts/dac166b2-4587-47bd-bba4-666c784d6f8e/pages/bbee1ca5-abd7-40e5-b122-218b1673c5c8",
+          "status": 409,
+          "bytes": 127,
+          "headers": {
+            "bdp-scope-epoch": "b29715c7-74b0-405f-9d2e-9d8575e1aeda",
+            "bdp-authorization-view": "development-all-visible",
+            "bdp-scope-position": "pos-3",
+            "content-type": "application/problem+json",
+            "content-length": "127",
+            "retry-after": null,
+            "cache-control": "private, no-store",
+            "x-bdp-development-limit": null
+          }
+        },
+        {
+          "label": "page-view-head",
+          "method": "HEAD",
+          "url": "https://current-observation.invalid/acme/receipts/dac166b2-4587-47bd-bba4-666c784d6f8e/pages/bbee1ca5-abd7-40e5-b122-218b1673c5c8",
+          "status": 409,
+          "bytes": 0,
+          "headers": {
+            "bdp-scope-epoch": "b29715c7-74b0-405f-9d2e-9d8575e1aeda",
+            "bdp-authorization-view": "development-all-visible",
+            "bdp-scope-position": "pos-3",
+            "content-type": "application/problem+json",
+            "content-length": "127",
+            "retry-after": null,
+            "cache-control": "private, no-store",
+            "x-bdp-development-limit": null
+          }
+        },
+        {
+          "label": "missing-type-get",
+          "method": "GET",
+          "url": "https://current-observation.invalid/acme/types/missing",
+          "status": 503,
+          "bytes": 127,
+          "headers": {
+            "bdp-scope-epoch": "b29715c7-74b0-405f-9d2e-9d8575e1aeda",
+            "bdp-authorization-view": "development-all-visible",
+            "bdp-scope-position": "pos-3",
+            "content-type": "application/problem+json",
+            "content-length": "127",
+            "retry-after": "1",
+            "cache-control": "private, no-store",
+            "x-bdp-development-limit": null
+          }
+        },
+        {
+          "label": "missing-type-head",
+          "method": "HEAD",
+          "url": "https://current-observation.invalid/acme/types/missing",
+          "status": 503,
+          "bytes": 0,
+          "headers": {
+            "bdp-scope-epoch": "b29715c7-74b0-405f-9d2e-9d8575e1aeda",
+            "bdp-authorization-view": "development-all-visible",
+            "bdp-scope-position": "pos-3",
+            "content-type": "application/problem+json",
+            "content-length": "127",
+            "retry-after": "1",
+            "cache-control": "private, no-store",
+            "x-bdp-development-limit": null
+          }
+        },
+        {
+          "label": "missing-incident",
+          "method": "GET",
+          "url": "https://current-observation.invalid/acme/beads/missing?view=links",
+          "status": 404,
+          "bytes": 134,
+          "headers": {
+            "bdp-scope-epoch": "b29715c7-74b0-405f-9d2e-9d8575e1aeda",
+            "bdp-authorization-view": "development-all-visible",
+            "bdp-scope-position": "pos-3",
+            "content-type": "application/problem+json",
+            "content-length": "134",
+            "retry-after": null,
+            "cache-control": "private, no-store",
+            "x-bdp-development-limit": null
+          }
+        },
+        {
+          "label": "other-page",
+          "method": "GET",
+          "url": "https://current-observation.invalid/acme/receipts/dac166b2-4587-47bd-bba4-666c784d6f8e/pages/bbee1ca5-abd7-40e5-b122-218b1673c5c8",
+          "status": 404,
+          "bytes": 134,
+          "headers": {
+            "bdp-scope-epoch": "b29715c7-74b0-405f-9d2e-9d8575e1aeda",
+            "bdp-authorization-view": "development-all-visible",
+            "bdp-scope-position": "pos-3",
+            "content-type": "application/problem+json",
+            "content-length": "134",
+            "retry-after": null,
+            "cache-control": "private, no-store",
+            "x-bdp-development-limit": null
+          }
+        },
+        {
+          "label": "malformed-page",
+          "method": "GET",
+          "url": "https://current-observation.invalid/acme/receipts/dac166b2-4587-47bd-bba4-666c784d6f8e/pages/bbee1ca5-abd7-40e5-b122-218b1673c5c8",
+          "status": 400,
+          "bytes": 118,
+          "headers": {
+            "bdp-scope-epoch": null,
+            "bdp-authorization-view": null,
+            "bdp-scope-position": null,
+            "content-type": "application/problem+json",
+            "content-length": "118",
+            "retry-after": null,
+            "cache-control": "private, no-store",
+            "x-bdp-development-limit": null
+          }
+        },
+        {
+          "label": "anonymous-page",
+          "method": "GET",
+          "url": "https://current-observation.invalid/acme/receipts/dac166b2-4587-47bd-bba4-666c784d6f8e/pages/bbee1ca5-abd7-40e5-b122-218b1673c5c8",
+          "status": 401,
+          "bytes": 136,
+          "headers": {
+            "bdp-scope-epoch": null,
+            "bdp-authorization-view": null,
+            "bdp-scope-position": null,
+            "content-type": "application/problem+json",
+            "content-length": "136",
+            "retry-after": null,
+            "cache-control": "private, no-store",
+            "x-bdp-development-limit": null
+          }
+        }
+      ],
+      "waits": 10,
+      "clockCalls": 52,
+      "closed": true,
+      "directory": "/private/tmp/vickie-current-observation-validation-focused-source-uxcqsvbn/bdp-current-observation-http-y3zSEP",
+      "directoryAbsent": true,
+      "failureCount": 0
+    },
+    {
+      "observation": "current-observation-service",
+      "operations": 25,
+      "entries": [
+        {
+          "method": "withRead",
+          "context": {
+            "scopeEpoch": "a194fb84-f0be-4a94-9322-7bf46522bb80",
+            "authorizationView": "development-all-visible",
+            "scopePosition": "pos-1"
+          },
+          "minimum": null
+        },
+        {
+          "method": "withRead",
+          "context": {
+            "scopeEpoch": "a194fb84-f0be-4a94-9322-7bf46522bb80",
+            "authorizationView": "development-all-visible",
+            "scopePosition": "pos-2"
+          },
+          "minimum": null
+        },
+        {
+          "method": "withRead",
+          "context": {
+            "scopeEpoch": "a194fb84-f0be-4a94-9322-7bf46522bb80",
+            "authorizationView": "development-all-visible",
+            "scopePosition": "pos-2"
+          },
+          "minimum": null
+        },
+        {
+          "method": "withRead",
+          "context": {
+            "scopeEpoch": "a194fb84-f0be-4a94-9322-7bf46522bb80",
+            "authorizationView": "development-all-visible",
+            "scopePosition": "pos-2"
+          },
+          "minimum": null
+        },
+        {
+          "method": "withRead",
+          "context": {
+            "scopeEpoch": "a194fb84-f0be-4a94-9322-7bf46522bb80",
+            "authorizationView": "development-all-visible",
+            "scopePosition": "pos-2"
+          },
+          "minimum": null
+        },
+        {
+          "method": "withRead",
+          "context": {
+            "scopeEpoch": "a194fb84-f0be-4a94-9322-7bf46522bb80",
+            "authorizationView": "development-all-visible",
+            "scopePosition": "pos-2"
+          },
+          "minimum": null
+        },
+        {
+          "method": "withRead",
+          "context": {
+            "scopeEpoch": "a194fb84-f0be-4a94-9322-7bf46522bb80",
+            "authorizationView": "development-all-visible",
+            "scopePosition": "pos-2"
+          },
+          "minimum": null
+        },
+        {
+          "method": "withRead",
+          "context": {
+            "scopeEpoch": "a194fb84-f0be-4a94-9322-7bf46522bb80",
+            "authorizationView": "development-all-visible",
+            "scopePosition": "pos-2"
+          },
+          "minimum": null
+        },
+        {
+          "method": "withRead",
+          "context": {
+            "scopeEpoch": "a194fb84-f0be-4a94-9322-7bf46522bb80",
+            "authorizationView": "development-all-visible",
+            "scopePosition": "pos-2"
+          },
+          "minimum": null
+        },
+        {
+          "method": "withRead",
+          "context": {
+            "scopeEpoch": "a194fb84-f0be-4a94-9322-7bf46522bb80",
+            "authorizationView": "development-all-visible",
+            "scopePosition": "pos-2"
+          },
+          "minimum": null
+        },
+        {
+          "method": "withRead",
+          "context": {
+            "scopeEpoch": "a194fb84-f0be-4a94-9322-7bf46522bb80",
+            "authorizationView": "development-all-visible",
+            "scopePosition": "pos-2"
+          },
+          "minimum": null
+        },
+        {
+          "method": "withRead",
+          "context": {
+            "scopeEpoch": "a194fb84-f0be-4a94-9322-7bf46522bb80",
+            "authorizationView": "development-all-visible",
+            "scopePosition": "pos-2"
+          },
+          "minimum": null
+        },
+        {
+          "method": "withRead",
+          "context": {
+            "scopeEpoch": "a194fb84-f0be-4a94-9322-7bf46522bb80",
+            "authorizationView": "development-all-visible",
+            "scopePosition": "pos-2"
+          },
+          "minimum": null
+        },
+        {
+          "method": "withRead",
+          "context": {
+            "scopeEpoch": "a194fb84-f0be-4a94-9322-7bf46522bb80",
+            "authorizationView": "development-all-visible",
+            "scopePosition": "pos-2"
+          },
+          "minimum": null
+        },
+        {
+          "method": "withRead",
+          "context": {
+            "scopeEpoch": "a194fb84-f0be-4a94-9322-7bf46522bb80",
+            "authorizationView": "development-all-visible",
+            "scopePosition": "pos-2"
+          },
+          "minimum": null
+        },
+        {
+          "method": "withRead",
+          "context": {
+            "scopeEpoch": "a194fb84-f0be-4a94-9322-7bf46522bb80",
+            "authorizationView": "development-all-visible",
+            "scopePosition": "pos-2"
+          },
+          "minimum": null
+        },
+        {
+          "method": "withRead",
+          "context": {
+            "scopeEpoch": "a194fb84-f0be-4a94-9322-7bf46522bb80",
+            "authorizationView": "development-all-visible",
+            "scopePosition": "pos-2"
+          },
+          "minimum": null
+        },
+        {
+          "method": "withRead",
+          "context": {
+            "scopeEpoch": "a194fb84-f0be-4a94-9322-7bf46522bb80",
+            "authorizationView": "development-all-visible",
+            "scopePosition": "pos-2"
+          },
+          "minimum": null
+        },
+        {
+          "method": "withRead",
+          "context": {
+            "scopeEpoch": "a194fb84-f0be-4a94-9322-7bf46522bb80",
+            "authorizationView": "development-all-visible",
+            "scopePosition": "pos-2"
+          },
+          "minimum": null
+        },
+        {
+          "method": "withRead",
+          "context": {
+            "scopeEpoch": "a194fb84-f0be-4a94-9322-7bf46522bb80",
+            "authorizationView": "development-all-visible",
+            "scopePosition": "pos-2"
+          },
+          "minimum": null
+        },
+        {
+          "method": "withRead",
+          "context": {
+            "scopeEpoch": "a194fb84-f0be-4a94-9322-7bf46522bb80",
+            "authorizationView": "development-all-visible",
+            "scopePosition": "pos-2"
+          },
+          "minimum": null
+        },
+        {
+          "method": "readReceiptPage",
+          "context": {
+            "scopeEpoch": "a194fb84-f0be-4a94-9322-7bf46522bb80",
+            "authorizationView": "development-all-visible",
+            "scopePosition": "pos-2"
+          },
+          "minimum": {
+            "scopeEpoch": "a194fb84-f0be-4a94-9322-7bf46522bb80",
+            "authorizationView": "development-all-visible",
+            "minimumPosition": "opaque"
+          }
+        },
+        {
+          "method": "readReceiptPage",
+          "context": {
+            "scopeEpoch": "a194fb84-f0be-4a94-9322-7bf46522bb80",
+            "authorizationView": "development-all-visible",
+            "scopePosition": "pos-2"
+          },
+          "minimum": {
+            "scopeEpoch": "a194fb84-f0be-4a94-9322-7bf46522bb80",
+            "authorizationView": "development-all-visible",
+            "minimumPosition": "opaque"
+          }
+        },
+        {
+          "method": "readReceiptPage",
+          "context": {
+            "scopeEpoch": "a194fb84-f0be-4a94-9322-7bf46522bb80",
+            "authorizationView": "development-all-visible",
+            "scopePosition": "pos-2"
+          },
+          "minimum": {
+            "scopeEpoch": "a194fb84-f0be-4a94-9322-7bf46522bb80",
+            "authorizationView": "development-all-visible",
+            "minimumPosition": "pos-01"
+          }
+        },
+        {
+          "method": "readReceiptPage",
+          "context": {
+            "scopeEpoch": "a194fb84-f0be-4a94-9322-7bf46522bb80",
+            "authorizationView": "development-all-visible",
+            "scopePosition": "pos-2"
+          },
+          "minimum": {
+            "scopeEpoch": "a194fb84-f0be-4a94-9322-7bf46522bb80",
+            "authorizationView": "development-all-visible",
+            "minimumPosition": "pos-01"
+          }
+        },
+        {
+          "method": "readReceiptPage",
+          "context": {
+            "scopeEpoch": "a194fb84-f0be-4a94-9322-7bf46522bb80",
+            "authorizationView": "development-all-visible",
+            "scopePosition": "pos-2"
+          },
+          "minimum": {
+            "scopeEpoch": "a194fb84-f0be-4a94-9322-7bf46522bb80",
+            "authorizationView": "development-all-visible",
+            "minimumPosition": "pos-2"
+          }
+        },
+        {
+          "method": "readReceiptPage",
+          "context": {
+            "scopeEpoch": "a194fb84-f0be-4a94-9322-7bf46522bb80",
+            "authorizationView": "development-all-visible",
+            "scopePosition": "pos-2"
+          },
+          "minimum": {
+            "scopeEpoch": "foreign",
+            "authorizationView": "development-all-visible",
+            "minimumPosition": "opaque"
+          }
+        },
+        {
+          "method": "readReceiptPage",
+          "context": {
+            "scopeEpoch": "a194fb84-f0be-4a94-9322-7bf46522bb80",
+            "authorizationView": "development-all-visible",
+            "scopePosition": "pos-2"
+          },
+          "minimum": {
+            "scopeEpoch": "a194fb84-f0be-4a94-9322-7bf46522bb80",
+            "authorizationView": "foreign",
+            "minimumPosition": "opaque"
+          }
+        },
+        {
+          "method": "withRead",
+          "context": {
+            "scopeEpoch": "a194fb84-f0be-4a94-9322-7bf46522bb80",
+            "authorizationView": "development-all-visible",
+            "scopePosition": "pos-2"
+          },
+          "minimum": null
+        },
+        {
+          "method": "withRead",
+          "context": {
+            "scopeEpoch": "a194fb84-f0be-4a94-9322-7bf46522bb80",
+            "authorizationView": "development-all-visible",
+            "scopePosition": "pos-2"
+          },
+          "minimum": null
+        },
+        {
+          "method": "withRead",
+          "context": {
+            "scopeEpoch": "a194fb84-f0be-4a94-9322-7bf46522bb80",
+            "authorizationView": "development-all-visible",
+            "scopePosition": "pos-2"
+          },
+          "minimum": null
+        },
+        {
+          "method": "withRead",
+          "context": {
+            "scopeEpoch": "a194fb84-f0be-4a94-9322-7bf46522bb80",
+            "authorizationView": "development-all-visible",
+            "scopePosition": "pos-2"
+          },
+          "minimum": null
+        },
+        {
+          "method": "withRead",
+          "context": {
+            "scopeEpoch": "a194fb84-f0be-4a94-9322-7bf46522bb80",
+            "authorizationView": "development-all-visible",
+            "scopePosition": "pos-2"
+          },
+          "minimum": null
+        },
+        {
+          "method": "withRead",
+          "context": {
+            "scopeEpoch": "a194fb84-f0be-4a94-9322-7bf46522bb80",
+            "authorizationView": "development-all-visible",
+            "scopePosition": "pos-2"
+          },
+          "minimum": null
+        },
+        {
+          "method": "withRead",
+          "context": {
+            "scopeEpoch": "a194fb84-f0be-4a94-9322-7bf46522bb80",
+            "authorizationView": "development-all-visible",
+            "scopePosition": "pos-2"
+          },
+          "minimum": null
+        }
+      ],
+      "waits": 10,
+      "clockCalls": 45,
+      "rows": [
+        {
+          "surface": "type",
+          "minimum": "opaque",
+          "outcome": "catch-up-timeout",
+          "context": {
+            "scopeEpoch": "a194fb84-f0be-4a94-9322-7bf46522bb80",
+            "authorizationView": "development-all-visible",
+            "scopePosition": "pos-2"
+          }
+        },
+        {
+          "surface": "type",
+          "minimum": "pos-01",
+          "outcome": "catch-up-timeout",
+          "context": {
+            "scopeEpoch": "a194fb84-f0be-4a94-9322-7bf46522bb80",
+            "authorizationView": "development-all-visible",
+            "scopePosition": "pos-2"
+          }
+        },
+        {
+          "surface": "type",
+          "minimum": "known",
+          "outcome": "success",
+          "context": {
+            "scopeEpoch": "a194fb84-f0be-4a94-9322-7bf46522bb80",
+            "authorizationView": "development-all-visible",
+            "scopePosition": "pos-2"
+          }
+        },
+        {
+          "surface": "type",
+          "minimum": "epoch",
+          "outcome": "cursor-expired",
+          "context": {
+            "scopeEpoch": "a194fb84-f0be-4a94-9322-7bf46522bb80",
+            "authorizationView": "development-all-visible",
+            "scopePosition": "pos-2"
+          }
+        },
+        {
+          "surface": "type",
+          "minimum": "view",
+          "outcome": "foreign-view",
+          "context": {
+            "scopeEpoch": "a194fb84-f0be-4a94-9322-7bf46522bb80",
+            "authorizationView": "development-all-visible",
+            "scopePosition": "pos-2"
+          }
+        },
+        {
+          "surface": "types",
+          "minimum": "opaque",
+          "outcome": "catch-up-timeout",
+          "context": {
+            "scopeEpoch": "a194fb84-f0be-4a94-9322-7bf46522bb80",
+            "authorizationView": "development-all-visible",
+            "scopePosition": "pos-2"
+          }
+        },
+        {
+          "surface": "types",
+          "minimum": "pos-01",
+          "outcome": "catch-up-timeout",
+          "context": {
+            "scopeEpoch": "a194fb84-f0be-4a94-9322-7bf46522bb80",
+            "authorizationView": "development-all-visible",
+            "scopePosition": "pos-2"
+          }
+        },
+        {
+          "surface": "types",
+          "minimum": "known",
+          "outcome": "success",
+          "context": {
+            "scopeEpoch": "a194fb84-f0be-4a94-9322-7bf46522bb80",
+            "authorizationView": "development-all-visible",
+            "scopePosition": "pos-2"
+          }
+        },
+        {
+          "surface": "types",
+          "minimum": "epoch",
+          "outcome": "cursor-expired",
+          "context": {
+            "scopeEpoch": "a194fb84-f0be-4a94-9322-7bf46522bb80",
+            "authorizationView": "development-all-visible",
+            "scopePosition": "pos-2"
+          }
+        },
+        {
+          "surface": "types",
+          "minimum": "view",
+          "outcome": "foreign-view",
+          "context": {
+            "scopeEpoch": "a194fb84-f0be-4a94-9322-7bf46522bb80",
+            "authorizationView": "development-all-visible",
+            "scopePosition": "pos-2"
+          }
+        },
+        {
+          "surface": "incident",
+          "minimum": "opaque",
+          "outcome": "catch-up-timeout",
+          "context": {
+            "scopeEpoch": "a194fb84-f0be-4a94-9322-7bf46522bb80",
+            "authorizationView": "development-all-visible",
+            "scopePosition": "pos-2"
+          }
+        },
+        {
+          "surface": "incident",
+          "minimum": "pos-01",
+          "outcome": "catch-up-timeout",
+          "context": {
+            "scopeEpoch": "a194fb84-f0be-4a94-9322-7bf46522bb80",
+            "authorizationView": "development-all-visible",
+            "scopePosition": "pos-2"
+          }
+        },
+        {
+          "surface": "incident",
+          "minimum": "known",
+          "outcome": "success",
+          "context": {
+            "scopeEpoch": "a194fb84-f0be-4a94-9322-7bf46522bb80",
+            "authorizationView": "development-all-visible",
+            "scopePosition": "pos-2"
+          }
+        },
+        {
+          "surface": "incident",
+          "minimum": "epoch",
+          "outcome": "cursor-expired",
+          "context": {
+            "scopeEpoch": "a194fb84-f0be-4a94-9322-7bf46522bb80",
+            "authorizationView": "development-all-visible",
+            "scopePosition": "pos-2"
+          }
+        },
+        {
+          "surface": "incident",
+          "minimum": "view",
+          "outcome": "foreign-view",
+          "context": {
+            "scopeEpoch": "a194fb84-f0be-4a94-9322-7bf46522bb80",
+            "authorizationView": "development-all-visible",
+            "scopePosition": "pos-2"
+          }
+        },
+        {
+          "surface": "page",
+          "minimum": "opaque",
+          "outcome": "catch-up-timeout",
+          "context": {
+            "scopeEpoch": "a194fb84-f0be-4a94-9322-7bf46522bb80",
+            "authorizationView": "development-all-visible",
+            "scopePosition": "pos-2"
+          }
+        },
+        {
+          "surface": "page",
+          "minimum": "pos-01",
+          "outcome": "catch-up-timeout",
+          "context": {
+            "scopeEpoch": "a194fb84-f0be-4a94-9322-7bf46522bb80",
+            "authorizationView": "development-all-visible",
+            "scopePosition": "pos-2"
+          }
+        },
+        {
+          "surface": "page",
+          "minimum": "known",
+          "outcome": "success",
+          "context": {
+            "scopeEpoch": "a194fb84-f0be-4a94-9322-7bf46522bb80",
+            "authorizationView": "development-all-visible",
+            "scopePosition": "pos-2"
+          }
+        },
+        {
+          "surface": "page",
+          "minimum": "epoch",
+          "outcome": "cursor-expired",
+          "context": {
+            "scopeEpoch": "a194fb84-f0be-4a94-9322-7bf46522bb80",
+            "authorizationView": "development-all-visible",
+            "scopePosition": "pos-2"
+          }
+        },
+        {
+          "surface": "page",
+          "minimum": "view",
+          "outcome": "foreign-view",
+          "context": {
+            "scopeEpoch": "a194fb84-f0be-4a94-9322-7bf46522bb80",
+            "authorizationView": "development-all-visible",
+            "scopePosition": "pos-2"
+          }
+        },
+        {
+          "surface": "discovery",
+          "minimum": "opaque",
+          "outcome": "catch-up-timeout",
+          "context": {
+            "scopeEpoch": "a194fb84-f0be-4a94-9322-7bf46522bb80",
+            "authorizationView": "development-all-visible",
+            "scopePosition": "pos-2"
+          }
+        },
+        {
+          "surface": "discovery",
+          "minimum": "pos-01",
+          "outcome": "catch-up-timeout",
+          "context": {
+            "scopeEpoch": "a194fb84-f0be-4a94-9322-7bf46522bb80",
+            "authorizationView": "development-all-visible",
+            "scopePosition": "pos-2"
+          }
+        },
+        {
+          "surface": "discovery",
+          "minimum": "known",
+          "outcome": "success",
+          "context": {
+            "scopeEpoch": "a194fb84-f0be-4a94-9322-7bf46522bb80",
+            "authorizationView": "development-all-visible",
+            "scopePosition": "pos-2"
+          }
+        },
+        {
+          "surface": "discovery",
+          "minimum": "epoch",
+          "outcome": "cursor-expired",
+          "context": {
+            "scopeEpoch": "a194fb84-f0be-4a94-9322-7bf46522bb80",
+            "authorizationView": "development-all-visible",
+            "scopePosition": "pos-2"
+          }
+        },
+        {
+          "surface": "discovery",
+          "minimum": "view",
+          "outcome": "foreign-view",
+          "context": {
+            "scopeEpoch": "a194fb84-f0be-4a94-9322-7bf46522bb80",
+            "authorizationView": "development-all-visible",
+            "scopePosition": "pos-2"
+          }
+        }
+      ],
+      "attempts": 35,
+      "mutations": 2,
+      "closeCalls": 1,
+      "closed": true,
+      "directoryAbsent": true,
+      "failureCount": 0
+    },
+    {
+      "observation": "current-observation-nondisclosure",
+      "operations": 12,
+      "entries": [
+        {
+          "method": "withRead",
+          "context": {
+            "scopeEpoch": "9432e886-ecaf-4117-839d-47e595efb0f4",
+            "authorizationView": "development-all-visible",
+            "scopePosition": "pos-1"
+          },
+          "minimum": null
+        },
+        {
+          "method": "withRead",
+          "context": {
+            "scopeEpoch": "9432e886-ecaf-4117-839d-47e595efb0f4",
+            "authorizationView": "development-all-visible",
+            "scopePosition": "pos-1"
+          },
+          "minimum": null
+        },
+        {
+          "method": "withRead",
+          "context": {
+            "scopeEpoch": "9432e886-ecaf-4117-839d-47e595efb0f4",
+            "authorizationView": "development-all-visible",
+            "scopePosition": "pos-1"
+          },
+          "minimum": null
+        },
+        {
+          "method": "withRead",
+          "context": {
+            "scopeEpoch": "9432e886-ecaf-4117-839d-47e595efb0f4",
+            "authorizationView": "development-all-visible",
+            "scopePosition": "pos-1"
+          },
+          "minimum": null
+        },
+        {
+          "method": "withRead",
+          "context": {
+            "scopeEpoch": "9432e886-ecaf-4117-839d-47e595efb0f4",
+            "authorizationView": "development-all-visible",
+            "scopePosition": "pos-1"
+          },
+          "minimum": null
+        },
+        {
+          "method": "withRead",
+          "context": {
+            "scopeEpoch": "9432e886-ecaf-4117-839d-47e595efb0f4",
+            "authorizationView": "development-all-visible",
+            "scopePosition": "pos-1"
+          },
+          "minimum": null
+        },
+        {
+          "method": "readReceiptPage",
+          "context": {
+            "scopeEpoch": "9432e886-ecaf-4117-839d-47e595efb0f4",
+            "authorizationView": "development-all-visible",
+            "scopePosition": "pos-1"
+          },
+          "minimum": {
+            "scopeEpoch": "9432e886-ecaf-4117-839d-47e595efb0f4",
+            "authorizationView": "development-all-visible",
+            "minimumPosition": "opaque"
+          }
+        },
+        {
+          "method": "readReceiptPage",
+          "context": {
+            "scopeEpoch": "9432e886-ecaf-4117-839d-47e595efb0f4",
+            "authorizationView": "development-all-visible",
+            "scopePosition": "pos-1"
+          },
+          "minimum": {
+            "scopeEpoch": "9432e886-ecaf-4117-839d-47e595efb0f4",
+            "authorizationView": "development-all-visible",
+            "minimumPosition": "opaque"
+          }
+        },
+        {
+          "method": "withRead",
+          "context": {
+            "scopeEpoch": "9432e886-ecaf-4117-839d-47e595efb0f4",
+            "authorizationView": "3c91da04-c33e-4214-bedb-13cb29c0d0d2",
+            "scopePosition": "pos-1"
+          },
+          "minimum": null
+        },
+        {
+          "method": "withRead",
+          "context": {
+            "scopeEpoch": "9432e886-ecaf-4117-839d-47e595efb0f4",
+            "authorizationView": "3c91da04-c33e-4214-bedb-13cb29c0d0d2",
+            "scopePosition": "pos-1"
+          },
+          "minimum": null
+        },
+        {
+          "method": "withRead",
+          "context": {
+            "scopeEpoch": "9432e886-ecaf-4117-839d-47e595efb0f4",
+            "authorizationView": "3c91da04-c33e-4214-bedb-13cb29c0d0d2",
+            "scopePosition": "pos-1"
+          },
+          "minimum": null
+        },
+        {
+          "method": "withRead",
+          "context": {
+            "scopeEpoch": "9432e886-ecaf-4117-839d-47e595efb0f4",
+            "authorizationView": "3c91da04-c33e-4214-bedb-13cb29c0d0d2",
+            "scopePosition": "pos-1"
+          },
+          "minimum": null
+        }
+      ],
+      "waits": 2,
+      "clockCalls": 14,
+      "liveProbes": 1,
+      "policyReplacements": 1,
+      "rows": [
+        {
+          "label": "missing-type-known",
+          "outcome": "missing"
+        },
+        {
+          "label": "missing-type-opaque",
+          "outcome": "catch-up-timeout"
+        },
+        {
+          "label": "missing-type-epoch",
+          "outcome": "cursor-expired"
+        },
+        {
+          "label": "missing-type-view",
+          "outcome": "foreign-view"
+        },
+        {
+          "label": "missing-incident",
+          "outcome": "missing"
+        },
+        {
+          "label": "foreign-page",
+          "outcome": "missing"
+        },
+        {
+          "label": "unknown-page",
+          "outcome": "missing"
+        },
+        {
+          "label": "anonymous-page",
+          "outcome": "unauthenticated"
+        },
+        {
+          "label": "malformed-page",
+          "outcome": "malformed"
+        },
+        {
+          "label": "hidden-type-known",
+          "outcome": "missing"
+        },
+        {
+          "label": "hidden-type-opaque",
+          "outcome": "catch-up-timeout"
+        },
+        {
+          "label": "hidden-type-view",
+          "outcome": "foreign-view"
+        }
+      ],
+      "attempts": 12,
+      "mutations": 1,
+      "closeCalls": 1,
+      "closed": true,
+      "directoryAbsent": true,
+      "failureCount": 0
+    },
+    {
+      "observation": "current-observation-drain",
+      "surface": "type",
+      "operations": 2,
+      "entries": [
+        {
+          "method": "withRead",
+          "context": {
+            "scopeEpoch": "d3b8986f-0179-4538-a711-301784480954",
+            "authorizationView": "development-all-visible",
+            "scopePosition": "pos-1"
+          },
+          "minimum": null
+        },
+        {
+          "method": "withRead",
+          "context": {
+            "scopeEpoch": "d3b8986f-0179-4538-a711-301784480954",
+            "authorizationView": "development-all-visible",
+            "scopePosition": "pos-1"
+          },
+          "minimum": null
+        }
+      ],
+      "waits": 1,
+      "clockCalls": 3,
+      "liveProbes": 1,
+      "postCloseProbes": 1,
+      "settled": true,
+      "closeSettled": true,
+      "attempts": 2,
+      "mutations": 1,
+      "closeCalls": 1,
+      "closed": true,
+      "directoryAbsent": true,
+      "failureCount": 0
+    },
+    {
+      "observation": "current-observation-drain",
+      "surface": "types",
+      "operations": 2,
+      "entries": [
+        {
+          "method": "withRead",
+          "context": {
+            "scopeEpoch": "05b1b198-4fb7-406a-b757-2d36b83caad1",
+            "authorizationView": "development-all-visible",
+            "scopePosition": "pos-1"
+          },
+          "minimum": null
+        },
+        {
+          "method": "withRead",
+          "context": {
+            "scopeEpoch": "05b1b198-4fb7-406a-b757-2d36b83caad1",
+            "authorizationView": "development-all-visible",
+            "scopePosition": "pos-1"
+          },
+          "minimum": null
+        }
+      ],
+      "waits": 1,
+      "clockCalls": 3,
+      "liveProbes": 1,
+      "postCloseProbes": 1,
+      "settled": true,
+      "closeSettled": true,
+      "attempts": 2,
+      "mutations": 1,
+      "closeCalls": 1,
+      "closed": true,
+      "directoryAbsent": true,
+      "failureCount": 0
+    },
+    {
+      "observation": "current-observation-drain",
+      "surface": "incident",
+      "operations": 2,
+      "entries": [
+        {
+          "method": "withRead",
+          "context": {
+            "scopeEpoch": "ea227e4d-4763-489b-ad83-38ceca837397",
+            "authorizationView": "development-all-visible",
+            "scopePosition": "pos-1"
+          },
+          "minimum": null
+        },
+        {
+          "method": "withRead",
+          "context": {
+            "scopeEpoch": "ea227e4d-4763-489b-ad83-38ceca837397",
+            "authorizationView": "development-all-visible",
+            "scopePosition": "pos-1"
+          },
+          "minimum": null
+        }
+      ],
+      "waits": 1,
+      "clockCalls": 3,
+      "liveProbes": 1,
+      "postCloseProbes": 1,
+      "settled": true,
+      "closeSettled": true,
+      "attempts": 2,
+      "mutations": 1,
+      "closeCalls": 1,
+      "closed": true,
+      "directoryAbsent": true,
+      "failureCount": 0
+    },
+    {
+      "observation": "current-observation-drain",
+      "surface": "page",
+      "operations": 2,
+      "entries": [
+        {
+          "method": "readReceiptPage",
+          "context": {
+            "scopeEpoch": "751dd297-1dba-458c-89c4-ddebe47114e5",
+            "authorizationView": "development-all-visible",
+            "scopePosition": "pos-1"
+          },
+          "minimum": {
+            "scopeEpoch": "751dd297-1dba-458c-89c4-ddebe47114e5",
+            "authorizationView": "development-all-visible",
+            "minimumPosition": "opaque"
+          }
+        },
+        {
+          "method": "readReceiptPage",
+          "context": {
+            "scopeEpoch": "751dd297-1dba-458c-89c4-ddebe47114e5",
+            "authorizationView": "development-all-visible",
+            "scopePosition": "pos-1"
+          },
+          "minimum": {
+            "scopeEpoch": "751dd297-1dba-458c-89c4-ddebe47114e5",
+            "authorizationView": "development-all-visible",
+            "minimumPosition": "opaque"
+          }
+        }
+      ],
+      "waits": 1,
+      "clockCalls": 3,
+      "liveProbes": 1,
+      "postCloseProbes": 1,
+      "settled": true,
+      "closeSettled": true,
+      "attempts": 2,
+      "mutations": 1,
+      "closeCalls": 1,
+      "closed": true,
+      "directoryAbsent": true,
+      "failureCount": 0
+    },
+    {
+      "observation": "current-observation-drain",
+      "surface": "discovery",
+      "operations": 2,
+      "entries": [
+        {
+          "method": "withRead",
+          "context": {
+            "scopeEpoch": "369d6f45-ee12-4da6-a1f1-c51e27129f15",
+            "authorizationView": "development-all-visible",
+            "scopePosition": "pos-1"
+          },
+          "minimum": null
+        },
+        {
+          "method": "withRead",
+          "context": {
+            "scopeEpoch": "369d6f45-ee12-4da6-a1f1-c51e27129f15",
+            "authorizationView": "development-all-visible",
+            "scopePosition": "pos-1"
+          },
+          "minimum": null
+        }
+      ],
+      "waits": 1,
+      "clockCalls": 3,
+      "liveProbes": 1,
+      "postCloseProbes": 1,
+      "settled": true,
+      "closeSettled": true,
+      "attempts": 2,
+      "mutations": 1,
+      "closeCalls": 1,
+      "closed": true,
+      "directoryAbsent": true,
+      "failureCount": 0
+    },
+    {
+      "observation": "current-observation-page-retention",
+      "calls": 8,
+      "ownerOpens": 2,
+      "offlineInspections": 2,
+      "rows": [
+        {
+          "label": "known",
+          "outcome": "page",
+          "context": {
+            "scopeEpoch": "8e50e9f6-9d07-434f-9a15-c02f295b58a0",
+            "authorizationView": "development-all-visible",
+            "scopePosition": "pos-1"
+          }
+        },
+        {
+          "label": "opaque",
+          "outcome": "unproved",
+          "context": {
+            "scopeEpoch": "8e50e9f6-9d07-434f-9a15-c02f295b58a0",
+            "authorizationView": "development-all-visible",
+            "scopePosition": "pos-1"
+          }
+        },
+        {
+          "label": "pos-01",
+          "outcome": "unproved",
+          "context": {
+            "scopeEpoch": "8e50e9f6-9d07-434f-9a15-c02f295b58a0",
+            "authorizationView": "development-all-visible",
+            "scopePosition": "pos-1"
+          }
+        },
+        {
+          "label": "cursor-expired",
+          "outcome": "cursor-expired",
+          "context": {
+            "scopeEpoch": "8e50e9f6-9d07-434f-9a15-c02f295b58a0",
+            "authorizationView": "development-all-visible",
+            "scopePosition": "pos-1"
+          }
+        },
+        {
+          "label": "foreign-view",
+          "outcome": "foreign-view",
+          "context": {
+            "scopeEpoch": "8e50e9f6-9d07-434f-9a15-c02f295b58a0",
+            "authorizationView": "development-all-visible",
+            "scopePosition": "pos-1"
+          }
+        },
+        {
+          "label": "other-principal",
+          "outcome": "missing",
+          "context": {
+            "scopeEpoch": "8e50e9f6-9d07-434f-9a15-c02f295b58a0",
+            "authorizationView": "development-all-visible",
+            "scopePosition": "pos-1"
+          }
+        },
+        {
+          "label": "unknown-page",
+          "outcome": "missing",
+          "context": {
+            "scopeEpoch": "8e50e9f6-9d07-434f-9a15-c02f295b58a0",
+            "authorizationView": "development-all-visible",
+            "scopePosition": "pos-1"
+          }
+        },
+        {
+          "label": "past-expiry",
+          "outcome": "unproved",
+          "context": {
+            "scopeEpoch": "8e50e9f6-9d07-434f-9a15-c02f295b58a0",
+            "authorizationView": "development-all-visible",
+            "scopePosition": "pos-1"
+          }
+        }
+      ],
+      "payloadUnchanged": true,
+      "closed": true,
+      "postCloseProbes": 1,
+      "directoryAbsent": true,
+      "failureCount": 0
+    }
+  ],
+  "legacyObservations": [
+    {
+      "observation": "finite-event-minimum-owner",
+      "reads": 8,
+      "seedMutations": 1
+    },
+    {
+      "observation": "finite-event-minimum-http",
+      "calls": 32,
+      "productChildren": 0,
+      "directoryAbsent": true,
+      "failureCount": 0
+    },
+    {
+      "observation": "bead-event-minimum-owner",
+      "reads": 12,
+      "seedMutations": 2,
+      "policyReplacements": 1,
+      "groupReadsAfterHidden": 0
+    },
+    {
+      "observation": "bead-event-minimum-http",
+      "calls": 37,
+      "completedResponses": [
+        {
+          "method": "POST",
+          "suffix": "operations/batch",
+          "status": 200
+        },
+        {
+          "method": "GET",
+          "suffix": "beads/a?view=events",
+          "status": 200
+        },
+        {
+          "method": "GET",
+          "suffix": "beads/a?view=events",
+          "status": 503
+        },
+        {
+          "method": "HEAD",
+          "suffix": "beads/a?view=events",
+          "status": 503
+        },
+        {
+          "method": "GET",
+          "suffix": "beads/a?view=events",
+          "status": 503
+        },
+        {
+          "method": "HEAD",
+          "suffix": "beads/a?view=events",
+          "status": 503
+        },
+        {
+          "method": "GET",
+          "suffix": "beads/a?view=events",
+          "status": 503
+        },
+        {
+          "method": "HEAD",
+          "suffix": "beads/a?view=events",
+          "status": 503
+        },
+        {
+          "method": "GET",
+          "suffix": "beads/a?view=events",
+          "status": 200
+        },
+        {
+          "method": "HEAD",
+          "suffix": "beads/a?view=events",
+          "status": 200
+        },
+        {
+          "method": "GET",
+          "suffix": "beads/a?view=events",
+          "status": 200
+        },
+        {
+          "method": "HEAD",
+          "suffix": "beads/a?view=events",
+          "status": 200
+        },
+        {
+          "method": "GET",
+          "suffix": "beads/a?view=events",
+          "status": 410
+        },
+        {
+          "method": "HEAD",
+          "suffix": "beads/a?view=events",
+          "status": 410
+        },
+        {
+          "method": "GET",
+          "suffix": "beads/a?view=events",
+          "status": 409
+        },
+        {
+          "method": "HEAD",
+          "suffix": "beads/a?view=events",
+          "status": 409
+        },
+        {
+          "method": "GET",
+          "suffix": "links/l?view=events",
+          "status": 503
+        },
+        {
+          "method": "HEAD",
+          "suffix": "links/l?view=events",
+          "status": 503
+        },
+        {
+          "method": "GET",
+          "suffix": "beads/a?view=events",
+          "status": 500
+        },
+        {
+          "method": "HEAD",
+          "suffix": "beads/a?view=events",
+          "status": 500
+        },
+        {
+          "method": "GET",
+          "suffix": "beads/a?view=events&after=ev_QqEDlPVDPUWZVX2G7hthuZTNQOMXtOrKedWPTii9WsQ_bLUW9ljdXBysp41tfjGcabueApuHaoJDxyqyaQ2NBU4_ZlXdrPe-wBM8V56cGijFFYVqR_tNFIKLlLrlkd9fwN0_pos-1_0",
+          "status": 500
+        },
+        {
+          "method": "HEAD",
+          "suffix": "beads/a?view=events&after=ev_QqEDlPVDPUWZVX2G7hthuZTNQOMXtOrKedWPTii9WsQ_bLUW9ljdXBysp41tfjGcabueApuHaoJDxyqyaQ2NBU4_ZlXdrPe-wBM8V56cGijFFYVqR_tNFIKLlLrlkd9fwN0_pos-1_0",
+          "status": 500
+        },
+        {
+          "method": "GET",
+          "suffix": "beads/a?view=events",
+          "status": 500
+        },
+        {
+          "method": "HEAD",
+          "suffix": "beads/a?view=events",
+          "status": 500
+        },
+        {
+          "method": "GET",
+          "suffix": "beads/a?view=events",
+          "status": 500
+        },
+        {
+          "method": "HEAD",
+          "suffix": "beads/a?view=events",
+          "status": 500
+        },
+        {
+          "method": "GET",
+          "suffix": "beads/a?view=events",
+          "status": 400
+        },
+        {
+          "method": "HEAD",
+          "suffix": "beads/a?view=events",
+          "status": 400
+        },
+        {
+          "method": "GET",
+          "suffix": "beads/a?view=events&unsupported=x",
+          "status": 400
+        },
+        {
+          "method": "HEAD",
+          "suffix": "beads/a?view=events&unsupported=x",
+          "status": 400
+        },
+        {
+          "method": "GET",
+          "suffix": "beads/missing?view=events",
+          "status": 404
+        },
+        {
+          "method": "HEAD",
+          "suffix": "beads/missing?view=events",
+          "status": 404
+        },
+        {
+          "method": "POST",
+          "suffix": "operations/batch",
+          "status": 200
+        },
+        {
+          "method": "GET",
+          "suffix": "beads/gone",
+          "status": 404
+        },
+        {
+          "method": "GET",
+          "suffix": "beads/gone?view=events",
+          "status": 200
+        },
+        {
+          "method": "GET",
+          "suffix": "beads/gone?view=events",
+          "status": 503
+        },
+        {
+          "method": "HEAD",
+          "suffix": "beads/gone?view=events",
+          "status": 503
+        }
+      ],
+      "elapsedMs": 843,
+      "productChildren": 0,
+      "directoryAbsent": true,
+      "failureCount": 0
+    },
+    {
+      "observation": "link-event-minimum-owner",
+      "reads": 11,
+      "seedMutations": 2,
+      "policyReplacements": 1,
+      "groupReadsAfterHidden": 0
+    },
+    {
+      "observation": "link-event-minimum-http",
+      "calls": 35,
+      "completedResponses": [
+        {
+          "method": "POST",
+          "suffix": "operations/batch",
+          "status": 200
+        },
+        {
+          "method": "GET",
+          "suffix": "links/l?view=events",
+          "status": 200
+        },
+        {
+          "method": "GET",
+          "suffix": "links/l?view=events",
+          "status": 503
+        },
+        {
+          "method": "HEAD",
+          "suffix": "links/l?view=events",
+          "status": 503
+        },
+        {
+          "method": "GET",
+          "suffix": "links/l?view=events",
+          "status": 503
+        },
+        {
+          "method": "HEAD",
+          "suffix": "links/l?view=events",
+          "status": 503
+        },
+        {
+          "method": "GET",
+          "suffix": "links/l?view=events",
+          "status": 503
+        },
+        {
+          "method": "HEAD",
+          "suffix": "links/l?view=events",
+          "status": 503
+        },
+        {
+          "method": "GET",
+          "suffix": "links/l?view=events",
+          "status": 200
+        },
+        {
+          "method": "HEAD",
+          "suffix": "links/l?view=events",
+          "status": 200
+        },
+        {
+          "method": "GET",
+          "suffix": "links/l?view=events",
+          "status": 200
+        },
+        {
+          "method": "HEAD",
+          "suffix": "links/l?view=events",
+          "status": 200
+        },
+        {
+          "method": "GET",
+          "suffix": "links/l?view=events",
+          "status": 410
+        },
+        {
+          "method": "HEAD",
+          "suffix": "links/l?view=events",
+          "status": 410
+        },
+        {
+          "method": "GET",
+          "suffix": "links/l?view=events",
+          "status": 409
+        },
+        {
+          "method": "HEAD",
+          "suffix": "links/l?view=events",
+          "status": 409
+        },
+        {
+          "method": "GET",
+          "suffix": "links/l?view=events",
+          "status": 500
+        },
+        {
+          "method": "HEAD",
+          "suffix": "links/l?view=events",
+          "status": 500
+        },
+        {
+          "method": "GET",
+          "suffix": "links/l?view=events&after=ev_U4dJciY-VvmpHBVS5bqPuFUfY-e-Pn4EmBLLUfENA_E_bLUW9ljdXBysp41tfjGcabueApuHaoJDxyqyaQ2NBU4_ylOTgJfJ6NLdqGYzFz6yxWI03ihAmTWnI7ackR8mTPU_pos-1_2",
+          "status": 500
+        },
+        {
+          "method": "HEAD",
+          "suffix": "links/l?view=events&after=ev_U4dJciY-VvmpHBVS5bqPuFUfY-e-Pn4EmBLLUfENA_E_bLUW9ljdXBysp41tfjGcabueApuHaoJDxyqyaQ2NBU4_ylOTgJfJ6NLdqGYzFz6yxWI03ihAmTWnI7ackR8mTPU_pos-1_2",
+          "status": 500
+        },
+        {
+          "method": "GET",
+          "suffix": "links/l?view=events",
+          "status": 500
+        },
+        {
+          "method": "HEAD",
+          "suffix": "links/l?view=events",
+          "status": 500
+        },
+        {
+          "method": "GET",
+          "suffix": "links/l?view=events",
+          "status": 500
+        },
+        {
+          "method": "HEAD",
+          "suffix": "links/l?view=events",
+          "status": 500
+        },
+        {
+          "method": "GET",
+          "suffix": "links/l?view=events",
+          "status": 400
+        },
+        {
+          "method": "HEAD",
+          "suffix": "links/l?view=events",
+          "status": 400
+        },
+        {
+          "method": "GET",
+          "suffix": "links/l?view=events&unsupported=x",
+          "status": 400
+        },
+        {
+          "method": "HEAD",
+          "suffix": "links/l?view=events&unsupported=x",
+          "status": 400
+        },
+        {
+          "method": "GET",
+          "suffix": "links/missing?view=events",
+          "status": 404
+        },
+        {
+          "method": "HEAD",
+          "suffix": "links/missing?view=events",
+          "status": 404
+        },
+        {
+          "method": "POST",
+          "suffix": "operations/batch",
+          "status": 200
+        },
+        {
+          "method": "GET",
+          "suffix": "links/gone",
+          "status": 404
+        },
+        {
+          "method": "GET",
+          "suffix": "links/gone?view=events",
+          "status": 200
+        },
+        {
+          "method": "GET",
+          "suffix": "links/gone?view=events",
+          "status": 503
+        },
+        {
+          "method": "HEAD",
+          "suffix": "links/gone?view=events",
+          "status": 503
+        }
+      ],
+      "elapsedMs": 676,
+      "productChildren": 0,
+      "directoryAbsent": true,
+      "failureCount": 0
+    },
+    {
+      "observation": "alias-minimum-http",
+      "attempted": 28,
+      "responses": [
+        {
+          "method": "POST",
+          "route": "operations/batch",
+          "status": 200,
+          "bodyOctets": 870,
+          "context": {
+            "bdp-scope-epoch": "6839ab16-f458-4472-8352-d96c59e50c90",
+            "bdp-authorization-view": "development-all-visible",
+            "bdp-scope-position": "pos-1"
+          },
+          "headers": {
+            "location": null,
+            "etag": null,
+            "content-length": "870",
+            "cache-control": "private, no-store",
+            "retry-after": null,
+            "x-bdp-development-limit": null
+          }
+        },
+        {
+          "method": "POST",
+          "route": "operations/put-alias",
+          "status": 200,
+          "bodyOctets": 535,
+          "context": {
+            "bdp-scope-epoch": "6839ab16-f458-4472-8352-d96c59e50c90",
+            "bdp-authorization-view": "development-all-visible",
+            "bdp-scope-position": "pos-1"
+          },
+          "headers": {
+            "location": null,
+            "etag": null,
+            "content-length": "535",
+            "cache-control": "private, no-store",
+            "retry-after": null,
+            "x-bdp-development-limit": null
+          }
+        },
+        {
+          "method": "GET",
+          "route": "alias/work",
+          "status": 307,
+          "bodyOctets": 0,
+          "context": {
+            "bdp-scope-epoch": "6839ab16-f458-4472-8352-d96c59e50c90",
+            "bdp-authorization-view": "development-all-visible",
+            "bdp-scope-position": "pos-1"
+          },
+          "headers": {
+            "location": "http://127.0.0.1:59477/acme/beads/a",
+            "etag": null,
+            "content-length": "0",
+            "cache-control": "private, no-store",
+            "retry-after": null,
+            "x-bdp-development-limit": null
+          }
+        },
+        {
+          "method": "GET",
+          "route": "alias/work",
+          "status": 307,
+          "bodyOctets": 0,
+          "context": {
+            "bdp-scope-epoch": "6839ab16-f458-4472-8352-d96c59e50c90",
+            "bdp-authorization-view": "development-all-visible",
+            "bdp-scope-position": "pos-1"
+          },
+          "headers": {
+            "location": "http://127.0.0.1:59477/acme/beads/a",
+            "etag": null,
+            "content-length": "0",
+            "cache-control": "private, no-store",
+            "retry-after": null,
+            "x-bdp-development-limit": null
+          }
+        },
+        {
+          "method": "HEAD",
+          "route": "alias/work",
+          "status": 307,
+          "bodyOctets": 0,
+          "context": {
+            "bdp-scope-epoch": "6839ab16-f458-4472-8352-d96c59e50c90",
+            "bdp-authorization-view": "development-all-visible",
+            "bdp-scope-position": "pos-1"
+          },
+          "headers": {
+            "location": "http://127.0.0.1:59477/acme/beads/a",
+            "etag": null,
+            "content-length": "0",
+            "cache-control": "private, no-store",
+            "retry-after": null,
+            "x-bdp-development-limit": null
+          }
+        },
+        {
+          "method": "HEAD",
+          "route": "alias/work",
+          "status": 307,
+          "bodyOctets": 0,
+          "context": {
+            "bdp-scope-epoch": "6839ab16-f458-4472-8352-d96c59e50c90",
+            "bdp-authorization-view": "development-all-visible",
+            "bdp-scope-position": "pos-1"
+          },
+          "headers": {
+            "location": "http://127.0.0.1:59477/acme/beads/a",
+            "etag": null,
+            "content-length": "0",
+            "cache-control": "private, no-store",
+            "retry-after": null,
+            "x-bdp-development-limit": null
+          }
+        },
+        {
+          "method": "GET",
+          "route": "alias/work",
+          "status": 503,
+          "bodyOctets": 127,
+          "context": {
+            "bdp-scope-epoch": "6839ab16-f458-4472-8352-d96c59e50c90",
+            "bdp-authorization-view": "development-all-visible",
+            "bdp-scope-position": "pos-1"
+          },
+          "headers": {
+            "location": null,
+            "etag": null,
+            "content-length": "127",
+            "cache-control": "private, no-store",
+            "retry-after": "1",
+            "x-bdp-development-limit": null
+          }
+        },
+        {
+          "method": "HEAD",
+          "route": "alias/work",
+          "status": 503,
+          "bodyOctets": 0,
+          "context": {
+            "bdp-scope-epoch": "6839ab16-f458-4472-8352-d96c59e50c90",
+            "bdp-authorization-view": "development-all-visible",
+            "bdp-scope-position": "pos-1"
+          },
+          "headers": {
+            "location": null,
+            "etag": null,
+            "content-length": "127",
+            "cache-control": "private, no-store",
+            "retry-after": "1",
+            "x-bdp-development-limit": null
+          }
+        },
+        {
+          "method": "GET",
+          "route": "alias/work",
+          "status": 409,
+          "bodyOctets": 127,
+          "context": {
+            "bdp-scope-epoch": "6839ab16-f458-4472-8352-d96c59e50c90",
+            "bdp-authorization-view": "development-all-visible",
+            "bdp-scope-position": "pos-1"
+          },
+          "headers": {
+            "location": null,
+            "etag": null,
+            "content-length": "127",
+            "cache-control": "private, no-store",
+            "retry-after": null,
+            "x-bdp-development-limit": null
+          }
+        },
+        {
+          "method": "HEAD",
+          "route": "alias/work",
+          "status": 409,
+          "bodyOctets": 0,
+          "context": {
+            "bdp-scope-epoch": "6839ab16-f458-4472-8352-d96c59e50c90",
+            "bdp-authorization-view": "development-all-visible",
+            "bdp-scope-position": "pos-1"
+          },
+          "headers": {
+            "location": null,
+            "etag": null,
+            "content-length": "127",
+            "cache-control": "private, no-store",
+            "retry-after": null,
+            "x-bdp-development-limit": null
+          }
+        },
+        {
+          "method": "GET",
+          "route": "alias/work",
+          "status": 410,
+          "bodyOctets": 125,
+          "context": {
+            "bdp-scope-epoch": "6839ab16-f458-4472-8352-d96c59e50c90",
+            "bdp-authorization-view": "development-all-visible",
+            "bdp-scope-position": "pos-1"
+          },
+          "headers": {
+            "location": null,
+            "etag": null,
+            "content-length": "125",
+            "cache-control": "private, no-store",
+            "retry-after": null,
+            "x-bdp-development-limit": null
+          }
+        },
+        {
+          "method": "HEAD",
+          "route": "alias/work",
+          "status": 410,
+          "bodyOctets": 0,
+          "context": {
+            "bdp-scope-epoch": "6839ab16-f458-4472-8352-d96c59e50c90",
+            "bdp-authorization-view": "development-all-visible",
+            "bdp-scope-position": "pos-1"
+          },
+          "headers": {
+            "location": null,
+            "etag": null,
+            "content-length": "125",
+            "cache-control": "private, no-store",
+            "retry-after": null,
+            "x-bdp-development-limit": null
+          }
+        },
+        {
+          "method": "GET",
+          "route": "alias/work",
+          "status": 503,
+          "bodyOctets": 127,
+          "context": {
+            "bdp-scope-epoch": "6839ab16-f458-4472-8352-d96c59e50c90",
+            "bdp-authorization-view": "development-all-visible",
+            "bdp-scope-position": "pos-1"
+          },
+          "headers": {
+            "location": null,
+            "etag": null,
+            "content-length": "127",
+            "cache-control": "private, no-store",
+            "retry-after": "1",
+            "x-bdp-development-limit": null
+          }
+        },
+        {
+          "method": "HEAD",
+          "route": "alias/work",
+          "status": 503,
+          "bodyOctets": 0,
+          "context": {
+            "bdp-scope-epoch": "6839ab16-f458-4472-8352-d96c59e50c90",
+            "bdp-authorization-view": "development-all-visible",
+            "bdp-scope-position": "pos-1"
+          },
+          "headers": {
+            "location": null,
+            "etag": null,
+            "content-length": "127",
+            "cache-control": "private, no-store",
+            "retry-after": "1",
+            "x-bdp-development-limit": null
+          }
+        },
+        {
+          "method": "GET",
+          "route": "alias/work",
+          "status": 503,
+          "bodyOctets": 127,
+          "context": {
+            "bdp-scope-epoch": "6839ab16-f458-4472-8352-d96c59e50c90",
+            "bdp-authorization-view": "development-all-visible",
+            "bdp-scope-position": "pos-1"
+          },
+          "headers": {
+            "location": null,
+            "etag": null,
+            "content-length": "127",
+            "cache-control": "private, no-store",
+            "retry-after": "1",
+            "x-bdp-development-limit": null
+          }
+        },
+        {
+          "method": "HEAD",
+          "route": "alias/work",
+          "status": 503,
+          "bodyOctets": 0,
+          "context": {
+            "bdp-scope-epoch": "6839ab16-f458-4472-8352-d96c59e50c90",
+            "bdp-authorization-view": "development-all-visible",
+            "bdp-scope-position": "pos-1"
+          },
+          "headers": {
+            "location": null,
+            "etag": null,
+            "content-length": "127",
+            "cache-control": "private, no-store",
+            "retry-after": "1",
+            "x-bdp-development-limit": null
+          }
+        },
+        {
+          "method": "GET",
+          "route": "alias/missing",
+          "status": 404,
+          "bodyOctets": 134,
+          "context": {
+            "bdp-scope-epoch": "6839ab16-f458-4472-8352-d96c59e50c90",
+            "bdp-authorization-view": "development-all-visible",
+            "bdp-scope-position": "pos-1"
+          },
+          "headers": {
+            "location": null,
+            "etag": null,
+            "content-length": "134",
+            "cache-control": "private, no-store",
+            "retry-after": null,
+            "x-bdp-development-limit": null
+          }
+        },
+        {
+          "method": "GET",
+          "route": "alias/missing",
+          "status": 404,
+          "bodyOctets": 134,
+          "context": {
+            "bdp-scope-epoch": "6839ab16-f458-4472-8352-d96c59e50c90",
+            "bdp-authorization-view": "development-all-visible",
+            "bdp-scope-position": "pos-1"
+          },
+          "headers": {
+            "location": null,
+            "etag": null,
+            "content-length": "134",
+            "cache-control": "private, no-store",
+            "retry-after": null,
+            "x-bdp-development-limit": null
+          }
+        },
+        {
+          "method": "GET",
+          "route": "alias/work?invalid=1",
+          "status": 404,
+          "bodyOctets": 134,
+          "context": {
+            "bdp-scope-epoch": null,
+            "bdp-authorization-view": null,
+            "bdp-scope-position": null
+          },
+          "headers": {
+            "location": null,
+            "etag": null,
+            "content-length": "134",
+            "cache-control": "private, no-store",
+            "retry-after": null,
+            "x-bdp-development-limit": null
+          }
+        },
+        {
+          "method": "GET",
+          "route": "alias/work",
+          "status": 400,
+          "bodyOctets": 118,
+          "context": {
+            "bdp-scope-epoch": null,
+            "bdp-authorization-view": null,
+            "bdp-scope-position": null
+          },
+          "headers": {
+            "location": null,
+            "etag": null,
+            "content-length": "118",
+            "cache-control": "private, no-store",
+            "retry-after": null,
+            "x-bdp-development-limit": null
+          }
+        },
+        {
+          "method": "GET",
+          "route": "alias/missing",
+          "status": 404,
+          "bodyOctets": 134,
+          "context": {
+            "bdp-scope-epoch": "6839ab16-f458-4472-8352-d96c59e50c90",
+            "bdp-authorization-view": "development-all-visible",
+            "bdp-scope-position": "pos-1"
+          },
+          "headers": {
+            "location": null,
+            "etag": null,
+            "content-length": "134",
+            "cache-control": "private, no-store",
+            "retry-after": null,
+            "x-bdp-development-limit": null
+          }
+        },
+        {
+          "method": "GET",
+          "route": "alias/work?invalid=1",
+          "status": 404,
+          "bodyOctets": 134,
+          "context": {
+            "bdp-scope-epoch": null,
+            "bdp-authorization-view": null,
+            "bdp-scope-position": null
+          },
+          "headers": {
+            "location": null,
+            "etag": null,
+            "content-length": "134",
+            "cache-control": "private, no-store",
+            "retry-after": null,
+            "x-bdp-development-limit": null
+          }
+        },
+        {
+          "method": "GET",
+          "route": "alias/work",
+          "status": 410,
+          "bodyOctets": 125,
+          "context": {
+            "bdp-scope-epoch": "6839ab16-f458-4472-8352-d96c59e50c90",
+            "bdp-authorization-view": "development-all-visible",
+            "bdp-scope-position": "pos-1"
+          },
+          "headers": {
+            "location": null,
+            "etag": null,
+            "content-length": "125",
+            "cache-control": "private, no-store",
+            "retry-after": null,
+            "x-bdp-development-limit": null
+          }
+        },
+        {
+          "method": "HEAD",
+          "route": "alias/work",
+          "status": 410,
+          "bodyOctets": 0,
+          "context": {
+            "bdp-scope-epoch": "6839ab16-f458-4472-8352-d96c59e50c90",
+            "bdp-authorization-view": "development-all-visible",
+            "bdp-scope-position": "pos-1"
+          },
+          "headers": {
+            "location": null,
+            "etag": null,
+            "content-length": "125",
+            "cache-control": "private, no-store",
+            "retry-after": null,
+            "x-bdp-development-limit": null
+          }
+        },
+        {
+          "method": "GET",
+          "route": "alias/work",
+          "status": 409,
+          "bodyOctets": 127,
+          "context": {
+            "bdp-scope-epoch": "6839ab16-f458-4472-8352-d96c59e50c90",
+            "bdp-authorization-view": "development-all-visible",
+            "bdp-scope-position": "pos-1"
+          },
+          "headers": {
+            "location": null,
+            "etag": null,
+            "content-length": "127",
+            "cache-control": "private, no-store",
+            "retry-after": null,
+            "x-bdp-development-limit": null
+          }
+        },
+        {
+          "method": "HEAD",
+          "route": "alias/work",
+          "status": 409,
+          "bodyOctets": 0,
+          "context": {
+            "bdp-scope-epoch": "6839ab16-f458-4472-8352-d96c59e50c90",
+            "bdp-authorization-view": "development-all-visible",
+            "bdp-scope-position": "pos-1"
+          },
+          "headers": {
+            "location": null,
+            "etag": null,
+            "content-length": "127",
+            "cache-control": "private, no-store",
+            "retry-after": null,
+            "x-bdp-development-limit": null
+          }
+        },
+        {
+          "method": "GET",
+          "route": "alias/work",
+          "status": 401,
+          "bodyOctets": 136,
+          "context": {
+            "bdp-scope-epoch": null,
+            "bdp-authorization-view": null,
+            "bdp-scope-position": null
+          },
+          "headers": {
+            "location": null,
+            "etag": null,
+            "content-length": "136",
+            "cache-control": "private, no-store",
+            "retry-after": null,
+            "x-bdp-development-limit": null
+          }
+        },
+        {
+          "method": "DELETE",
+          "route": "alias/work",
+          "status": 405,
+          "bodyOctets": 0,
+          "context": {
+            "bdp-scope-epoch": null,
+            "bdp-authorization-view": null,
+            "bdp-scope-position": null
+          },
+          "headers": {
+            "location": null,
+            "etag": null,
+            "content-length": "0",
+            "cache-control": "private, no-store",
+            "retry-after": null,
+            "x-bdp-development-limit": null
+          }
+        }
+      ],
+      "waits": 6,
+      "outcome": "passed"
+    },
+    {
+      "observation": "parser-refusal-source",
+      "calls": 37,
+      "setupCalls": 1,
+      "setupEntries": [
+        "readConfiguration",
+        "readConfiguration",
+        "withRead",
+        "captureReadAuthorization",
+        "captureReadAuthorization"
+      ],
+      "refusedOwnerEntries": [],
+      "refusedWaits": 0,
+      "refusedTokenAllocations": 0,
+      "owners": 1,
+      "httpRequests": 0
+    },
+    {
+      "observation": "parser-refusal-source",
+      "calls": 13,
+      "setupCalls": 1,
+      "setupEntries": [
+        "readConfiguration",
+        "readConfiguration",
+        "withRead",
+        "captureReadAuthorization",
+        "captureReadAuthorization"
+      ],
+      "refusedOwnerEntries": [],
+      "refusedWaits": 0,
+      "refusedTokenAllocations": 0,
+      "owners": 1,
+      "httpRequests": 0
+    },
+    {
+      "observation": "parser-refusal-source",
+      "calls": 17,
+      "setupCalls": 1,
+      "setupEntries": [
+        "readConfiguration",
+        "readConfiguration",
+        "withRead",
+        "captureReadAuthorization",
+        "captureReadAuthorization"
+      ],
+      "refusedOwnerEntries": [],
+      "refusedWaits": 0,
+      "refusedTokenAllocations": 0,
+      "owners": 1,
+      "httpRequests": 0
+    },
+    {
+      "observation": "fresh-snapshot-opaque-http",
+      "requests": 27,
+      "responses": [
+        {
+          "method": "POST",
+          "path": "/acme/operations/batch",
+          "status": 200
+        },
+        {
+          "method": "GET",
+          "path": "/acme/snapshot",
+          "status": 200
+        },
+        {
+          "method": "HEAD",
+          "path": "/acme/snapshot",
+          "status": 200
+        },
+        {
+          "method": "GET",
+          "path": "/acme/snapshot",
+          "status": 503
+        },
+        {
+          "method": "GET",
+          "path": "/acme/snapshot",
+          "status": 503
+        },
+        {
+          "method": "GET",
+          "path": "/acme/snapshot",
+          "status": 503
+        },
+        {
+          "method": "GET",
+          "path": "/acme/snapshot",
+          "status": 503
+        },
+        {
+          "method": "HEAD",
+          "path": "/acme/snapshot",
+          "status": 503
+        },
+        {
+          "method": "HEAD",
+          "path": "/acme/snapshot",
+          "status": 503
+        },
+        {
+          "method": "HEAD",
+          "path": "/acme/snapshot",
+          "status": 503
+        },
+        {
+          "method": "HEAD",
+          "path": "/acme/snapshot",
+          "status": 503
+        },
+        {
+          "method": "GET",
+          "path": "/acme/snapshot",
+          "status": 410
+        },
+        {
+          "method": "HEAD",
+          "path": "/acme/snapshot",
+          "status": 410
+        },
+        {
+          "method": "GET",
+          "path": "/acme/snapshot",
+          "status": 409
+        },
+        {
+          "method": "HEAD",
+          "path": "/acme/snapshot",
+          "status": 409
+        },
+        {
+          "method": "GET",
+          "path": "/acme/snapshot",
+          "status": 400
+        },
+        {
+          "method": "HEAD",
+          "path": "/acme/snapshot",
+          "status": 400
+        },
+        {
+          "method": "GET",
+          "path": "/acme/snapshot?snapshot=db721a19-3807-44f8-a9ef-21aac6f100a4",
+          "status": 500
+        },
+        {
+          "method": "HEAD",
+          "path": "/acme/snapshot?snapshot=db721a19-3807-44f8-a9ef-21aac6f100a4",
+          "status": 500
+        },
+        {
+          "method": "GET",
+          "path": "/acme/snapshot?snapshot=db721a19-3807-44f8-a9ef-21aac6f100a4&stream=beads&page=unused",
+          "status": 500
+        },
+        {
+          "method": "HEAD",
+          "path": "/acme/snapshot?snapshot=db721a19-3807-44f8-a9ef-21aac6f100a4&stream=beads&page=unused",
+          "status": 500
+        },
+        {
+          "method": "GET",
+          "path": "/acme/snapshot?snapshot=db721a19-3807-44f8-a9ef-21aac6f100a4",
+          "status": 200
+        },
+        {
+          "method": "HEAD",
+          "path": "/acme/snapshot?snapshot=db721a19-3807-44f8-a9ef-21aac6f100a4",
+          "status": 200
+        },
+        {
+          "method": "GET",
+          "path": "/acme/snapshot?unsupported=x",
+          "status": 400
+        },
+        {
+          "method": "HEAD",
+          "path": "/acme/snapshot?unsupported=x",
+          "status": 400
+        },
+        {
+          "method": "GET",
+          "path": "/acme/snapshot",
+          "status": 401
+        },
+        {
+          "method": "HEAD",
+          "path": "/acme/snapshot",
+          "status": 401
+        }
+      ],
+      "statusCounts": {
+        "200": 5,
+        "400": 4,
+        "401": 2,
+        "409": 2,
+        "410": 2,
+        "500": 4,
+        "503": 8
+      },
+      "waits": 8
+    },
+    {
+      "observation": "receipt-root-minimum-http",
+      "requests": 10,
+      "responses": [
+        {
+          "method": "POST",
+          "route": "batch",
+          "status": 200,
+          "bodyOctets": 636
+        },
+        {
+          "method": "GET",
+          "route": "owned-root",
+          "status": 503,
+          "bodyOctets": 127
+        },
+        {
+          "method": "HEAD",
+          "route": "owned-root",
+          "status": 503,
+          "bodyOctets": 0
+        },
+        {
+          "method": "GET",
+          "route": "owned-root",
+          "status": 503,
+          "bodyOctets": 127
+        },
+        {
+          "method": "GET",
+          "route": "owned-root",
+          "status": 410,
+          "bodyOctets": 125
+        },
+        {
+          "method": "HEAD",
+          "route": "owned-root",
+          "status": 409,
+          "bodyOctets": 0
+        },
+        {
+          "method": "GET",
+          "route": "owned-root",
+          "status": 400,
+          "bodyOctets": 118
+        },
+        {
+          "method": "HEAD",
+          "route": "other-principal-root",
+          "status": 404,
+          "bodyOctets": 0
+        },
+        {
+          "method": "GET",
+          "route": "missing-root",
+          "status": 404,
+          "bodyOctets": 134
+        },
+        {
+          "method": "GET",
+          "route": "owned-root",
+          "status": 401,
+          "bodyOctets": 136
+        }
+      ],
+      "waits": 3
+    },
+    {
+      "observation": "scope-event-sse-minimum-owner",
+      "reads": 14,
+      "seedCommits": 1,
+      "cases": [
+        {
+          "label": "setup",
+          "outcome": "packet",
+          "groupObserverActive": false,
+          "groupPrepareCalls": null,
+          "context": {
+            "scopeEpoch": "276288f4-3794-4f81-91b4-0683e1fd2411",
+            "authorizationView": "development-all-visible",
+            "scopePosition": "pos-1"
+          }
+        },
+        {
+          "label": "unknown",
+          "outcome": "TransactionMinimumUnproved",
+          "groupObserverActive": true,
+          "groupPrepareCalls": 0,
+          "context": {
+            "scopeEpoch": "276288f4-3794-4f81-91b4-0683e1fd2411",
+            "authorizationView": "development-all-visible",
+            "scopePosition": "pos-1"
+          }
+        },
+        {
+          "label": "pos-01",
+          "outcome": "TransactionMinimumUnproved",
+          "groupObserverActive": true,
+          "groupPrepareCalls": 0,
+          "context": {
+            "scopeEpoch": "276288f4-3794-4f81-91b4-0683e1fd2411",
+            "authorizationView": "development-all-visible",
+            "scopePosition": "pos-1"
+          }
+        },
+        {
+          "label": "future",
+          "outcome": "TransactionMinimumFailure",
+          "groupObserverActive": true,
+          "groupPrepareCalls": 0,
+          "context": {
+            "scopeEpoch": "276288f4-3794-4f81-91b4-0683e1fd2411",
+            "authorizationView": "development-all-visible",
+            "scopePosition": "pos-1"
+          }
+        },
+        {
+          "label": "foreign",
+          "outcome": "TransactionMinimumFailure",
+          "groupObserverActive": true,
+          "groupPrepareCalls": 0,
+          "context": {
+            "scopeEpoch": "276288f4-3794-4f81-91b4-0683e1fd2411",
+            "authorizationView": "development-all-visible",
+            "scopePosition": "pos-1"
+          }
+        },
+        {
+          "label": "foreign",
+          "outcome": "TransactionMinimumFailure",
+          "groupObserverActive": true,
+          "groupPrepareCalls": 0,
+          "context": {
+            "scopeEpoch": "276288f4-3794-4f81-91b4-0683e1fd2411",
+            "authorizationView": "development-all-visible",
+            "scopePosition": "pos-1"
+          }
+        },
+        {
+          "label": "default",
+          "outcome": "TypeError",
+          "groupObserverActive": true,
+          "groupPrepareCalls": 0
+        },
+        {
+          "label": "after",
+          "outcome": "TypeError",
+          "groupObserverActive": true,
+          "groupPrepareCalls": 0
+        },
+        {
+          "label": "invalid-reconnect",
+          "outcome": "TypeError",
+          "groupObserverActive": true,
+          "groupPrepareCalls": 0
+        },
+        {
+          "label": "bead",
+          "outcome": "TypeError",
+          "groupObserverActive": true,
+          "groupPrepareCalls": 0
+        },
+        {
+          "label": "link",
+          "outcome": "TypeError",
+          "groupObserverActive": true,
+          "groupPrepareCalls": 0
+        },
+        {
+          "label": "missing",
+          "outcome": "missing",
+          "groupObserverActive": true,
+          "groupPrepareCalls": 0,
+          "context": {
+            "scopeEpoch": "276288f4-3794-4f81-91b4-0683e1fd2411",
+            "authorizationView": "development-all-visible",
+            "scopePosition": "pos-1"
+          }
+        },
+        {
+          "label": "malformed",
+          "outcome": "TypeError",
+          "groupObserverActive": true,
+          "groupPrepareCalls": 0
+        },
+        {
+          "label": "known",
+          "outcome": "packet",
+          "groupObserverActive": true,
+          "groupPrepareCalls": 2,
+          "context": {
+            "scopeEpoch": "276288f4-3794-4f81-91b4-0683e1fd2411",
+            "authorizationView": "development-all-visible",
+            "scopePosition": "pos-1"
+          }
+        }
+      ]
+    },
+    {
+      "observation": "scope-event-sse-minimum-capture",
+      "seedCommits": 1,
+      "interveningCommits": 1,
+      "serviceCalls": 5,
+      "ownerAttempts": 3,
+      "waits": 1,
+      "clockCalls": 4,
+      "ownerCloseCalls": 1,
+      "attempts": [
+        {
+          "minimum": {
+            "scopeEpoch": "6a1315f8-2de8-446c-969e-b579d6fc2645",
+            "authorizationView": "development-all-visible",
+            "minimumPosition": "unknown"
+          },
+          "outcome": "TransactionMinimumUnproved",
+          "context": {
+            "scopeEpoch": "6a1315f8-2de8-446c-969e-b579d6fc2645",
+            "authorizationView": "development-all-visible",
+            "scopePosition": "pos-1"
+          }
+        },
+        {
+          "minimum": {
+            "scopeEpoch": "6a1315f8-2de8-446c-969e-b579d6fc2645",
+            "authorizationView": "development-all-visible",
+            "minimumPosition": "unknown"
+          },
+          "outcome": "TransactionMinimumUnproved",
+          "context": {
+            "scopeEpoch": "6a1315f8-2de8-446c-969e-b579d6fc2645",
+            "authorizationView": "development-all-visible",
+            "scopePosition": "pos-2"
+          }
+        },
+        {
+          "minimum": {
+            "scopeEpoch": "6a1315f8-2de8-446c-969e-b579d6fc2645",
+            "authorizationView": "development-all-visible",
+            "minimumPosition": "pos-2"
+          },
+          "outcome": "packet",
+          "context": {
+            "scopeEpoch": "6a1315f8-2de8-446c-969e-b579d6fc2645",
+            "authorizationView": "development-all-visible",
+            "scopePosition": "pos-2"
+          }
+        }
+      ],
+      "probes": [
+        {
+          "call": 1,
+          "outcome": "TypeError"
+        },
+        {
+          "call": 2,
+          "outcome": "promise-returned"
+        },
+        {
+          "call": 3,
+          "outcome": "promise-returned"
+        },
+        {
+          "call": 4,
+          "outcome": "TypeError"
+        },
+        {
+          "call": 5,
+          "outcome": "Error"
+        }
+      ],
+      "finalContext": {
+        "scopeEpoch": "6a1315f8-2de8-446c-969e-b579d6fc2645",
+        "authorizationView": "development-all-visible",
+        "scopePosition": "pos-2"
+      },
+      "closed": true,
+      "failureCount": 0
+    },
+    {
+      "observation": "scope-event-sse-minimum-abort",
+      "seedCommits": 1,
+      "interveningCommits": 0,
+      "serviceCalls": 2,
+      "ownerAttempts": 1,
+      "waits": 1,
+      "clockCalls": 2,
+      "ownerCloseCalls": 1,
+      "rawPostCloseProbes": 1,
+      "probes": [
+        {
+          "call": 1,
+          "outcome": "promise-returned"
+        },
+        {
+          "call": 2,
+          "outcome": "Error"
+        }
+      ],
+      "operationOutcome": "aborted",
+      "synchronouslyUnsettled": true,
+      "closed": true,
+      "failureCount": 0
+    },
+    {
+      "observation": "scope-event-sse-minimum-http",
+      "requests": 31,
+      "records": [
+        {
+          "ordinal": 1,
+          "method": "POST",
+          "target": "operations/batch",
+          "status": 200,
+          "bodyBytes": 1024,
+          "context": {
+            "bdp-scope-epoch": "98880eb5-e401-4ba3-94c7-19693c198908",
+            "bdp-authorization-view": "development-all-visible",
+            "bdp-scope-position": "pos-1"
+          }
+        },
+        {
+          "ordinal": 2,
+          "method": "GET",
+          "target": "events/",
+          "status": 200,
+          "bodyBytes": 1301,
+          "context": {
+            "bdp-scope-epoch": "98880eb5-e401-4ba3-94c7-19693c198908",
+            "bdp-authorization-view": "development-all-visible",
+            "bdp-scope-position": "pos-1"
+          }
+        },
+        {
+          "ordinal": 3,
+          "method": "GET",
+          "target": "events/?after=ev_LL-GfEZT-Cf99nAZLIj6rA0fJv9HOmD4_hj19f35nog_bLUW9ljdXBysp41tfjGcabueApuHaoJDxyqyaQ2NBU4_RgIUXrU0P6WM7j6wYd02OFPUOAPbSxfmIxxMOjxonVU_pos-1_1",
+          "status": 200,
+          "bodyBytes": 1541,
+          "context": {
+            "bdp-scope-epoch": "98880eb5-e401-4ba3-94c7-19693c198908",
+            "bdp-authorization-view": "development-all-visible",
+            "bdp-scope-position": "pos-1"
+          }
+        },
+        {
+          "ordinal": 4,
+          "method": "GET",
+          "target": "events/?after=ev_LL-GfEZT-Cf99nAZLIj6rA0fJv9HOmD4_hj19f35nog_bLUW9ljdXBysp41tfjGcabueApuHaoJDxyqyaQ2NBU4_RgIUXrU0P6WM7j6wYd02OFPUOAPbSxfmIxxMOjxonVU_pos-1_3",
+          "status": 200,
+          "bodyBytes": 735,
+          "context": {
+            "bdp-scope-epoch": "98880eb5-e401-4ba3-94c7-19693c198908",
+            "bdp-authorization-view": "development-all-visible",
+            "bdp-scope-position": "pos-1"
+          }
+        },
+        {
+          "ordinal": 5,
+          "method": "HEAD",
+          "target": "events/",
+          "status": 200,
+          "bodyBytes": 0,
+          "context": {
+            "bdp-scope-epoch": "98880eb5-e401-4ba3-94c7-19693c198908",
+            "bdp-authorization-view": "development-all-visible",
+            "bdp-scope-position": "pos-1"
+          }
+        },
+        {
+          "ordinal": 6,
+          "method": "GET",
+          "target": "events/",
+          "status": 503,
+          "bodyBytes": 127,
+          "context": {
+            "bdp-scope-epoch": "98880eb5-e401-4ba3-94c7-19693c198908",
+            "bdp-authorization-view": "development-all-visible",
+            "bdp-scope-position": "pos-1"
+          }
+        },
+        {
+          "ordinal": 7,
+          "method": "HEAD",
+          "target": "events/",
+          "status": 503,
+          "bodyBytes": 0,
+          "context": {
+            "bdp-scope-epoch": "98880eb5-e401-4ba3-94c7-19693c198908",
+            "bdp-authorization-view": "development-all-visible",
+            "bdp-scope-position": "pos-1"
+          }
+        },
+        {
+          "ordinal": 8,
+          "method": "GET",
+          "target": "events/",
+          "status": 503,
+          "bodyBytes": 127,
+          "context": {
+            "bdp-scope-epoch": "98880eb5-e401-4ba3-94c7-19693c198908",
+            "bdp-authorization-view": "development-all-visible",
+            "bdp-scope-position": "pos-1"
+          }
+        },
+        {
+          "ordinal": 9,
+          "method": "HEAD",
+          "target": "events/",
+          "status": 503,
+          "bodyBytes": 0,
+          "context": {
+            "bdp-scope-epoch": "98880eb5-e401-4ba3-94c7-19693c198908",
+            "bdp-authorization-view": "development-all-visible",
+            "bdp-scope-position": "pos-1"
+          }
+        },
+        {
+          "ordinal": 10,
+          "method": "GET",
+          "target": "events/",
+          "status": 503,
+          "bodyBytes": 127,
+          "context": {
+            "bdp-scope-epoch": "98880eb5-e401-4ba3-94c7-19693c198908",
+            "bdp-authorization-view": "development-all-visible",
+            "bdp-scope-position": "pos-1"
+          }
+        },
+        {
+          "ordinal": 11,
+          "method": "HEAD",
+          "target": "events/",
+          "status": 503,
+          "bodyBytes": 0,
+          "context": {
+            "bdp-scope-epoch": "98880eb5-e401-4ba3-94c7-19693c198908",
+            "bdp-authorization-view": "development-all-visible",
+            "bdp-scope-position": "pos-1"
+          }
+        },
+        {
+          "ordinal": 12,
+          "method": "GET",
+          "target": "events/",
+          "status": 503,
+          "bodyBytes": 127,
+          "context": {
+            "bdp-scope-epoch": "98880eb5-e401-4ba3-94c7-19693c198908",
+            "bdp-authorization-view": "development-all-visible",
+            "bdp-scope-position": "pos-1"
+          }
+        },
+        {
+          "ordinal": 13,
+          "method": "HEAD",
+          "target": "events/",
+          "status": 503,
+          "bodyBytes": 0,
+          "context": {
+            "bdp-scope-epoch": "98880eb5-e401-4ba3-94c7-19693c198908",
+            "bdp-authorization-view": "development-all-visible",
+            "bdp-scope-position": "pos-1"
+          }
+        },
+        {
+          "ordinal": 14,
+          "method": "GET",
+          "target": "events/",
+          "status": 400,
+          "bodyBytes": 118,
+          "context": {}
+        },
+        {
+          "ordinal": 15,
+          "method": "HEAD",
+          "target": "events/",
+          "status": 400,
+          "bodyBytes": 0,
+          "context": {}
+        },
+        {
+          "ordinal": 16,
+          "method": "GET",
+          "target": "events/",
+          "status": 503,
+          "bodyBytes": 127,
+          "context": {
+            "bdp-scope-epoch": "98880eb5-e401-4ba3-94c7-19693c198908",
+            "bdp-authorization-view": "development-all-visible",
+            "bdp-scope-position": "pos-1"
+          }
+        },
+        {
+          "ordinal": 17,
+          "method": "HEAD",
+          "target": "events/",
+          "status": 503,
+          "bodyBytes": 0,
+          "context": {
+            "bdp-scope-epoch": "98880eb5-e401-4ba3-94c7-19693c198908",
+            "bdp-authorization-view": "development-all-visible",
+            "bdp-scope-position": "pos-1"
+          }
+        },
+        {
+          "ordinal": 18,
+          "method": "GET",
+          "target": "events/",
+          "status": 410,
+          "bodyBytes": 125,
+          "context": {
+            "bdp-scope-epoch": "98880eb5-e401-4ba3-94c7-19693c198908",
+            "bdp-authorization-view": "development-all-visible",
+            "bdp-scope-position": "pos-1"
+          }
+        },
+        {
+          "ordinal": 19,
+          "method": "GET",
+          "target": "events/",
+          "status": 409,
+          "bodyBytes": 127,
+          "context": {
+            "bdp-scope-epoch": "98880eb5-e401-4ba3-94c7-19693c198908",
+            "bdp-authorization-view": "development-all-visible",
+            "bdp-scope-position": "pos-1"
+          }
+        },
+        {
+          "ordinal": 20,
+          "method": "GET",
+          "target": "events/?after=ev_LL-GfEZT-Cf99nAZLIj6rA0fJv9HOmD4_hj19f35nog_bLUW9ljdXBysp41tfjGcabueApuHaoJDxyqyaQ2NBU4_RgIUXrU0P6WM7j6wYd02OFPUOAPbSxfmIxxMOjxonVU_pos-1_0",
+          "status": 500,
+          "bodyBytes": 0,
+          "context": {}
+        },
+        {
+          "ordinal": 21,
+          "method": "GET",
+          "target": "events/?after=",
+          "status": 400,
+          "bodyBytes": 118,
+          "context": {}
+        },
+        {
+          "ordinal": 22,
+          "method": "GET",
+          "target": "events/",
+          "status": 500,
+          "bodyBytes": 0,
+          "context": {}
+        },
+        {
+          "ordinal": 23,
+          "method": "GET",
+          "target": "events/",
+          "status": 500,
+          "bodyBytes": 0,
+          "context": {}
+        },
+        {
+          "ordinal": 24,
+          "method": "GET",
+          "target": "events/",
+          "status": 500,
+          "bodyBytes": 0,
+          "context": {}
+        },
+        {
+          "ordinal": 25,
+          "method": "GET",
+          "target": "beads/a?view=events",
+          "status": 500,
+          "bodyBytes": 0,
+          "context": {}
+        },
+        {
+          "ordinal": 26,
+          "method": "GET",
+          "target": "links/l?view=events",
+          "status": 500,
+          "bodyBytes": 0,
+          "context": {}
+        },
+        {
+          "ordinal": 27,
+          "method": "GET",
+          "target": "beads/missing?view=events",
+          "status": 404,
+          "bodyBytes": 134,
+          "context": {
+            "bdp-scope-epoch": "98880eb5-e401-4ba3-94c7-19693c198908",
+            "bdp-authorization-view": "development-all-visible",
+            "bdp-scope-position": "pos-1"
+          }
+        },
+        {
+          "ordinal": 28,
+          "method": "GET",
+          "target": "events/",
+          "status": 401,
+          "bodyBytes": 136,
+          "context": {}
+        },
+        {
+          "ordinal": 29,
+          "method": "HEAD",
+          "target": "events/",
+          "status": 304,
+          "bodyBytes": 0,
+          "context": {
+            "bdp-scope-epoch": "98880eb5-e401-4ba3-94c7-19693c198908",
+            "bdp-authorization-view": "development-all-visible",
+            "bdp-scope-position": "pos-1"
+          }
+        },
+        {
+          "ordinal": 30,
+          "method": "HEAD",
+          "target": "events/",
+          "status": 412,
+          "bodyBytes": 0,
+          "context": {
+            "bdp-scope-epoch": "98880eb5-e401-4ba3-94c7-19693c198908",
+            "bdp-authorization-view": "development-all-visible",
+            "bdp-scope-position": "pos-1"
+          }
+        },
+        {
+          "ordinal": 31,
+          "method": "GET",
+          "target": "events/",
+          "status": 200,
+          "bodyBytes": 3828,
+          "context": {
+            "bdp-scope-epoch": "98880eb5-e401-4ba3-94c7-19693c198908",
+            "bdp-authorization-view": "development-all-visible",
+            "bdp-scope-position": "pos-1"
+          }
+        }
+      ],
+      "seedCommits": 1,
+      "elapsedMs": 296.751459,
+      "baselinePages": [
+        {
+          "target": "events/",
+          "eventCount": 2,
+          "next": "https://event-sse.invalid/acme/events/?after=ev_LL-GfEZT-Cf99nAZLIj6rA0fJv9HOmD4_hj19f35nog_bLUW9ljdXBysp41tfjGcabueApuHaoJDxyqyaQ2NBU4_RgIUXrU0P6WM7j6wYd02OFPUOAPbSxfmIxxMOjxonVU_pos-1_1",
+          "context": {
+            "bdp-scope-epoch": "98880eb5-e401-4ba3-94c7-19693c198908",
+            "bdp-authorization-view": "development-all-visible",
+            "bdp-scope-position": "pos-1"
+          }
+        },
+        {
+          "target": "events/?after=ev_LL-GfEZT-Cf99nAZLIj6rA0fJv9HOmD4_hj19f35nog_bLUW9ljdXBysp41tfjGcabueApuHaoJDxyqyaQ2NBU4_RgIUXrU0P6WM7j6wYd02OFPUOAPbSxfmIxxMOjxonVU_pos-1_1",
+          "eventCount": 2,
+          "next": "https://event-sse.invalid/acme/events/?after=ev_LL-GfEZT-Cf99nAZLIj6rA0fJv9HOmD4_hj19f35nog_bLUW9ljdXBysp41tfjGcabueApuHaoJDxyqyaQ2NBU4_RgIUXrU0P6WM7j6wYd02OFPUOAPbSxfmIxxMOjxonVU_pos-1_3",
+          "context": {
+            "bdp-scope-epoch": "98880eb5-e401-4ba3-94c7-19693c198908",
+            "bdp-authorization-view": "development-all-visible",
+            "bdp-scope-position": "pos-1"
+          }
+        },
+        {
+          "target": "events/?after=ev_LL-GfEZT-Cf99nAZLIj6rA0fJv9HOmD4_hj19f35nog_bLUW9ljdXBysp41tfjGcabueApuHaoJDxyqyaQ2NBU4_RgIUXrU0P6WM7j6wYd02OFPUOAPbSxfmIxxMOjxonVU_pos-1_3",
+          "eventCount": 1,
+          "next": null,
+          "context": {
+            "bdp-scope-epoch": "98880eb5-e401-4ba3-94c7-19693c198908",
+            "bdp-authorization-view": "development-all-visible",
+            "bdp-scope-position": "pos-1"
+          }
+        }
+      ],
+      "positive": {
+        "ready": true,
+        "status": 200,
+        "headers": {
+          "bdp-authorization-view": "development-all-visible",
+          "bdp-scope-epoch": "98880eb5-e401-4ba3-94c7-19693c198908",
+          "bdp-scope-position": "pos-1",
+          "cache-control": "no-store, no-transform",
+          "content-type": "text/event-stream",
+          "vary": "Accept",
+          "x-bdp-development": "non-attesting",
+          "date": "Sat, 17 Oct 2026 21:35:58 GMT",
+          "connection": "close",
+          "transfer-encoding": "chunked"
+        },
+        "framesBeforeClose": [
+          "id: ev_LL-GfEZT-Cf99nAZLIj6rA0fJv9HOmD4_hj19f35nog_bLUW9ljdXBysp41tfjGcabueApuHaoJDxyqyaQ2NBU4_RgIUXrU0P6WM7j6wYd02OFPUOAPbSxfmIxxMOjxonVU_pos-1_0\nevent: created\ndata: {\"id\":\"ev_LL-GfEZT-Cf99nAZLIj6rA0fJv9HOmD4_hj19f35nog_bLUW9ljdXBysp41tfjGcabueApuHaoJDxyqyaQ2NBU4_RgIUXrU0P6WM7j6wYd02OFPUOAPbSxfmIxxMOjxonVU_pos-1_0\",\"ordinal\":0,\"type\":\"created\",\"source\":\"https://event-sse.invalid/acme/events/\",\"subject\":\"https://event-sse.invalid/acme/beads/a\",\"subjectType\":\"https://event-sse.invalid/acme/types/task\",\"transaction\":\"a776c837-9b52-4fd3-9fd0-bec4e66b3155\",\"time\":\"2026-10-17T21:35:57.979Z\",\"data\":{\"revision\":\"827c9f0e-e30f-4e18-a5a5-45bc3f023c4a\",\"properties\":{\"n\":0},\"metadata\":{}}}",
+          "id: ev_LL-GfEZT-Cf99nAZLIj6rA0fJv9HOmD4_hj19f35nog_bLUW9ljdXBysp41tfjGcabueApuHaoJDxyqyaQ2NBU4_RgIUXrU0P6WM7j6wYd02OFPUOAPbSxfmIxxMOjxonVU_pos-1_1\nevent: created\ndata: {\"id\":\"ev_LL-GfEZT-Cf99nAZLIj6rA0fJv9HOmD4_hj19f35nog_bLUW9ljdXBysp41tfjGcabueApuHaoJDxyqyaQ2NBU4_RgIUXrU0P6WM7j6wYd02OFPUOAPbSxfmIxxMOjxonVU_pos-1_1\",\"ordinal\":1,\"type\":\"created\",\"source\":\"https://event-sse.invalid/acme/events/\",\"subject\":\"https://event-sse.invalid/acme/beads/b\",\"subjectType\":\"https://event-sse.invalid/acme/types/task\",\"transaction\":\"a776c837-9b52-4fd3-9fd0-bec4e66b3155\",\"time\":\"2026-10-17T21:35:57.979Z\",\"data\":{\"revision\":\"da8cf9f2-e89c-4e68-afe4-36cbd7a4adf8\",\"properties\":{\"n\":0},\"metadata\":{}}}",
+          "id: ev_LL-GfEZT-Cf99nAZLIj6rA0fJv9HOmD4_hj19f35nog_bLUW9ljdXBysp41tfjGcabueApuHaoJDxyqyaQ2NBU4_RgIUXrU0P6WM7j6wYd02OFPUOAPbSxfmIxxMOjxonVU_pos-1_2\nevent: created\ndata: {\"id\":\"ev_LL-GfEZT-Cf99nAZLIj6rA0fJv9HOmD4_hj19f35nog_bLUW9ljdXBysp41tfjGcabueApuHaoJDxyqyaQ2NBU4_RgIUXrU0P6WM7j6wYd02OFPUOAPbSxfmIxxMOjxonVU_pos-1_2\",\"ordinal\":2,\"type\":\"created\",\"source\":\"https://event-sse.invalid/acme/events/\",\"subject\":\"https://event-sse.invalid/acme/links/l\",\"subjectType\":\"https://event-sse.invalid/acme/types/link\",\"transaction\":\"a776c837-9b52-4fd3-9fd0-bec4e66b3155\",\"time\":\"2026-10-17T21:35:57.979Z\",\"data\":{\"revision\":\"8eced72c-4162-42d0-9639-988365d5f89a\",\"properties\":{\"n\":0},\"metadata\":{},\"source\":\"https://event-sse.invalid/acme/beads/a\",\"target\":\"https://event-sse.invalid/acme/beads/b\"}}",
+          "id: ev_LL-GfEZT-Cf99nAZLIj6rA0fJv9HOmD4_hj19f35nog_bLUW9ljdXBysp41tfjGcabueApuHaoJDxyqyaQ2NBU4_RgIUXrU0P6WM7j6wYd02OFPUOAPbSxfmIxxMOjxonVU_pos-1_3\nevent: linked\ndata: {\"id\":\"ev_LL-GfEZT-Cf99nAZLIj6rA0fJv9HOmD4_hj19f35nog_bLUW9ljdXBysp41tfjGcabueApuHaoJDxyqyaQ2NBU4_RgIUXrU0P6WM7j6wYd02OFPUOAPbSxfmIxxMOjxonVU_pos-1_3\",\"ordinal\":3,\"type\":\"linked\",\"source\":\"https://event-sse.invalid/acme/events/\",\"subject\":\"https://event-sse.invalid/acme/links/l\",\"subjectType\":\"https://event-sse.invalid/acme/types/link\",\"transaction\":\"a776c837-9b52-4fd3-9fd0-bec4e66b3155\",\"time\":\"2026-10-17T21:35:57.979Z\",\"data\":{\"endpoint\":\"source\",\"link\":{\"id\":\"https://event-sse.invalid/acme/links/l\",\"type\":\"https://event-sse.invalid/acme/types/link\"},\"source\":\"https://event-sse.invalid/acme/beads/a\",\"target\":\"https://event-sse.invalid/acme/beads/b\"}}",
+          "id: ev_LL-GfEZT-Cf99nAZLIj6rA0fJv9HOmD4_hj19f35nog_bLUW9ljdXBysp41tfjGcabueApuHaoJDxyqyaQ2NBU4_RgIUXrU0P6WM7j6wYd02OFPUOAPbSxfmIxxMOjxonVU_pos-1_4\nevent: linked\ndata: {\"id\":\"ev_LL-GfEZT-Cf99nAZLIj6rA0fJv9HOmD4_hj19f35nog_bLUW9ljdXBysp41tfjGcabueApuHaoJDxyqyaQ2NBU4_RgIUXrU0P6WM7j6wYd02OFPUOAPbSxfmIxxMOjxonVU_pos-1_4\",\"ordinal\":4,\"type\":\"linked\",\"source\":\"https://event-sse.invalid/acme/events/\",\"subject\":\"https://event-sse.invalid/acme/links/l\",\"subjectType\":\"https://event-sse.invalid/acme/types/link\",\"transaction\":\"a776c837-9b52-4fd3-9fd0-bec4e66b3155\",\"time\":\"2026-10-17T21:35:57.979Z\",\"data\":{\"endpoint\":\"target\",\"link\":{\"id\":\"https://event-sse.invalid/acme/links/l\",\"type\":\"https://event-sse.invalid/acme/types/link\"},\"source\":\"https://event-sse.invalid/acme/beads/a\",\"target\":\"https://event-sse.invalid/acme/beads/b\"}}"
+        ],
+        "framesAfterDrain": [
+          "id: ev_LL-GfEZT-Cf99nAZLIj6rA0fJv9HOmD4_hj19f35nog_bLUW9ljdXBysp41tfjGcabueApuHaoJDxyqyaQ2NBU4_RgIUXrU0P6WM7j6wYd02OFPUOAPbSxfmIxxMOjxonVU_pos-1_0\nevent: created\ndata: {\"id\":\"ev_LL-GfEZT-Cf99nAZLIj6rA0fJv9HOmD4_hj19f35nog_bLUW9ljdXBysp41tfjGcabueApuHaoJDxyqyaQ2NBU4_RgIUXrU0P6WM7j6wYd02OFPUOAPbSxfmIxxMOjxonVU_pos-1_0\",\"ordinal\":0,\"type\":\"created\",\"source\":\"https://event-sse.invalid/acme/events/\",\"subject\":\"https://event-sse.invalid/acme/beads/a\",\"subjectType\":\"https://event-sse.invalid/acme/types/task\",\"transaction\":\"a776c837-9b52-4fd3-9fd0-bec4e66b3155\",\"time\":\"2026-10-17T21:35:57.979Z\",\"data\":{\"revision\":\"827c9f0e-e30f-4e18-a5a5-45bc3f023c4a\",\"properties\":{\"n\":0},\"metadata\":{}}}",
+          "id: ev_LL-GfEZT-Cf99nAZLIj6rA0fJv9HOmD4_hj19f35nog_bLUW9ljdXBysp41tfjGcabueApuHaoJDxyqyaQ2NBU4_RgIUXrU0P6WM7j6wYd02OFPUOAPbSxfmIxxMOjxonVU_pos-1_1\nevent: created\ndata: {\"id\":\"ev_LL-GfEZT-Cf99nAZLIj6rA0fJv9HOmD4_hj19f35nog_bLUW9ljdXBysp41tfjGcabueApuHaoJDxyqyaQ2NBU4_RgIUXrU0P6WM7j6wYd02OFPUOAPbSxfmIxxMOjxonVU_pos-1_1\",\"ordinal\":1,\"type\":\"created\",\"source\":\"https://event-sse.invalid/acme/events/\",\"subject\":\"https://event-sse.invalid/acme/beads/b\",\"subjectType\":\"https://event-sse.invalid/acme/types/task\",\"transaction\":\"a776c837-9b52-4fd3-9fd0-bec4e66b3155\",\"time\":\"2026-10-17T21:35:57.979Z\",\"data\":{\"revision\":\"da8cf9f2-e89c-4e68-afe4-36cbd7a4adf8\",\"properties\":{\"n\":0},\"metadata\":{}}}",
+          "id: ev_LL-GfEZT-Cf99nAZLIj6rA0fJv9HOmD4_hj19f35nog_bLUW9ljdXBysp41tfjGcabueApuHaoJDxyqyaQ2NBU4_RgIUXrU0P6WM7j6wYd02OFPUOAPbSxfmIxxMOjxonVU_pos-1_2\nevent: created\ndata: {\"id\":\"ev_LL-GfEZT-Cf99nAZLIj6rA0fJv9HOmD4_hj19f35nog_bLUW9ljdXBysp41tfjGcabueApuHaoJDxyqyaQ2NBU4_RgIUXrU0P6WM7j6wYd02OFPUOAPbSxfmIxxMOjxonVU_pos-1_2\",\"ordinal\":2,\"type\":\"created\",\"source\":\"https://event-sse.invalid/acme/events/\",\"subject\":\"https://event-sse.invalid/acme/links/l\",\"subjectType\":\"https://event-sse.invalid/acme/types/link\",\"transaction\":\"a776c837-9b52-4fd3-9fd0-bec4e66b3155\",\"time\":\"2026-10-17T21:35:57.979Z\",\"data\":{\"revision\":\"8eced72c-4162-42d0-9639-988365d5f89a\",\"properties\":{\"n\":0},\"metadata\":{},\"source\":\"https://event-sse.invalid/acme/beads/a\",\"target\":\"https://event-sse.invalid/acme/beads/b\"}}",
+          "id: ev_LL-GfEZT-Cf99nAZLIj6rA0fJv9HOmD4_hj19f35nog_bLUW9ljdXBysp41tfjGcabueApuHaoJDxyqyaQ2NBU4_RgIUXrU0P6WM7j6wYd02OFPUOAPbSxfmIxxMOjxonVU_pos-1_3\nevent: linked\ndata: {\"id\":\"ev_LL-GfEZT-Cf99nAZLIj6rA0fJv9HOmD4_hj19f35nog_bLUW9ljdXBysp41tfjGcabueApuHaoJDxyqyaQ2NBU4_RgIUXrU0P6WM7j6wYd02OFPUOAPbSxfmIxxMOjxonVU_pos-1_3\",\"ordinal\":3,\"type\":\"linked\",\"source\":\"https://event-sse.invalid/acme/events/\",\"subject\":\"https://event-sse.invalid/acme/links/l\",\"subjectType\":\"https://event-sse.invalid/acme/types/link\",\"transaction\":\"a776c837-9b52-4fd3-9fd0-bec4e66b3155\",\"time\":\"2026-10-17T21:35:57.979Z\",\"data\":{\"endpoint\":\"source\",\"link\":{\"id\":\"https://event-sse.invalid/acme/links/l\",\"type\":\"https://event-sse.invalid/acme/types/link\"},\"source\":\"https://event-sse.invalid/acme/beads/a\",\"target\":\"https://event-sse.invalid/acme/beads/b\"}}",
+          "id: ev_LL-GfEZT-Cf99nAZLIj6rA0fJv9HOmD4_hj19f35nog_bLUW9ljdXBysp41tfjGcabueApuHaoJDxyqyaQ2NBU4_RgIUXrU0P6WM7j6wYd02OFPUOAPbSxfmIxxMOjxonVU_pos-1_4\nevent: linked\ndata: {\"id\":\"ev_LL-GfEZT-Cf99nAZLIj6rA0fJv9HOmD4_hj19f35nog_bLUW9ljdXBysp41tfjGcabueApuHaoJDxyqyaQ2NBU4_RgIUXrU0P6WM7j6wYd02OFPUOAPbSxfmIxxMOjxonVU_pos-1_4\",\"ordinal\":4,\"type\":\"linked\",\"source\":\"https://event-sse.invalid/acme/events/\",\"subject\":\"https://event-sse.invalid/acme/links/l\",\"subjectType\":\"https://event-sse.invalid/acme/types/link\",\"transaction\":\"a776c837-9b52-4fd3-9fd0-bec4e66b3155\",\"time\":\"2026-10-17T21:35:57.979Z\",\"data\":{\"endpoint\":\"target\",\"link\":{\"id\":\"https://event-sse.invalid/acme/links/l\",\"type\":\"https://event-sse.invalid/acme/types/link\"},\"source\":\"https://event-sse.invalid/acme/beads/a\",\"target\":\"https://event-sse.invalid/acme/beads/b\"}}"
+        ],
+        "liveBeforeClose": {
+          "aborted": false,
+          "destroyed": false,
+          "elapsedMs": 1.86262499999998
+        },
+        "drained": true
+      },
+      "failureCount": 0
+    },
+    {
+      "observation": "alias-minimum-capture",
+      "row": "unknown",
+      "apiCalls": 3,
+      "attempts": [
+        {
+          "target": "beads/a",
+          "context": {
+            "scopeEpoch": "303ac4db-ec08-4497-bc14-8965cdac85f2",
+            "authorizationView": "development-all-visible",
+            "scopePosition": "pos-1"
+          }
+        },
+        {
+          "target": "beads/a",
+          "context": {
+            "scopeEpoch": "303ac4db-ec08-4497-bc14-8965cdac85f2",
+            "authorizationView": "development-all-visible",
+            "scopePosition": "pos-1"
+          }
+        },
+        {
+          "target": "beads/b",
+          "context": {
+            "scopeEpoch": "303ac4db-ec08-4497-bc14-8965cdac85f2",
+            "authorizationView": "development-all-visible",
+            "scopePosition": "pos-1"
+          }
+        },
+        {
+          "target": "beads/b",
+          "context": {
+            "scopeEpoch": "303ac4db-ec08-4497-bc14-8965cdac85f2",
+            "authorizationView": "development-all-visible",
+            "scopePosition": "pos-2"
+          }
+        },
+        {
+          "target": "beads/b",
+          "context": {
+            "scopeEpoch": "303ac4db-ec08-4497-bc14-8965cdac85f2",
+            "authorizationView": "development-all-visible",
+            "scopePosition": "pos-2"
+          }
+        }
+      ],
+      "contexts": [
+        {
+          "scopeEpoch": "303ac4db-ec08-4497-bc14-8965cdac85f2",
+          "authorizationView": "development-all-visible",
+          "scopePosition": "pos-1"
+        },
+        {
+          "scopeEpoch": "303ac4db-ec08-4497-bc14-8965cdac85f2",
+          "authorizationView": "development-all-visible",
+          "scopePosition": "pos-1"
+        },
+        {
+          "scopeEpoch": "303ac4db-ec08-4497-bc14-8965cdac85f2",
+          "authorizationView": "development-all-visible",
+          "scopePosition": "pos-1"
+        },
+        {
+          "scopeEpoch": "303ac4db-ec08-4497-bc14-8965cdac85f2",
+          "authorizationView": "development-all-visible",
+          "scopePosition": "pos-2"
+        },
+        {
+          "scopeEpoch": "303ac4db-ec08-4497-bc14-8965cdac85f2",
+          "authorizationView": "development-all-visible",
+          "scopePosition": "pos-2"
+        }
+      ],
+      "unproved": [
+        {
+          "scopeEpoch": "303ac4db-ec08-4497-bc14-8965cdac85f2",
+          "authorizationView": "development-all-visible",
+          "scopePosition": "pos-1"
+        },
+        {
+          "scopeEpoch": "303ac4db-ec08-4497-bc14-8965cdac85f2",
+          "authorizationView": "development-all-visible",
+          "scopePosition": "pos-1"
+        },
+        {
+          "scopeEpoch": "303ac4db-ec08-4497-bc14-8965cdac85f2",
+          "authorizationView": "development-all-visible",
+          "scopePosition": "pos-1"
+        },
+        {
+          "scopeEpoch": "303ac4db-ec08-4497-bc14-8965cdac85f2",
+          "authorizationView": "development-all-visible",
+          "scopePosition": "pos-2"
+        }
+      ],
+      "directContext": {
+        "scopeEpoch": "303ac4db-ec08-4497-bc14-8965cdac85f2",
+        "authorizationView": "development-all-visible",
+        "scopePosition": "pos-1"
+      },
+      "timeoutContext": {
+        "scopeEpoch": "303ac4db-ec08-4497-bc14-8965cdac85f2",
+        "authorizationView": "development-all-visible",
+        "scopePosition": "pos-2"
+      },
+      "positiveContext": {
+        "scopeEpoch": "303ac4db-ec08-4497-bc14-8965cdac85f2",
+        "authorizationView": "development-all-visible",
+        "scopePosition": "pos-2"
+      },
+      "waits": 2,
+      "clockCalls": 5,
+      "writes": 4,
+      "outcome": "passed"
+    },
+    {
+      "observation": "alias-minimum-capture",
+      "row": "pos-01",
+      "apiCalls": 3,
+      "attempts": [
+        {
+          "target": "beads/a",
+          "context": {
+            "scopeEpoch": "38f34267-04d7-4e3c-9076-f943c0243fa2",
+            "authorizationView": "development-all-visible",
+            "scopePosition": "pos-1"
+          }
+        },
+        {
+          "target": "beads/a",
+          "context": {
+            "scopeEpoch": "38f34267-04d7-4e3c-9076-f943c0243fa2",
+            "authorizationView": "development-all-visible",
+            "scopePosition": "pos-1"
+          }
+        },
+        {
+          "target": "beads/b",
+          "context": {
+            "scopeEpoch": "38f34267-04d7-4e3c-9076-f943c0243fa2",
+            "authorizationView": "development-all-visible",
+            "scopePosition": "pos-1"
+          }
+        },
+        {
+          "target": "beads/b",
+          "context": {
+            "scopeEpoch": "38f34267-04d7-4e3c-9076-f943c0243fa2",
+            "authorizationView": "development-all-visible",
+            "scopePosition": "pos-2"
+          }
+        },
+        {
+          "target": "beads/b",
+          "context": {
+            "scopeEpoch": "38f34267-04d7-4e3c-9076-f943c0243fa2",
+            "authorizationView": "development-all-visible",
+            "scopePosition": "pos-2"
+          }
+        }
+      ],
+      "contexts": [
+        {
+          "scopeEpoch": "38f34267-04d7-4e3c-9076-f943c0243fa2",
+          "authorizationView": "development-all-visible",
+          "scopePosition": "pos-1"
+        },
+        {
+          "scopeEpoch": "38f34267-04d7-4e3c-9076-f943c0243fa2",
+          "authorizationView": "development-all-visible",
+          "scopePosition": "pos-1"
+        },
+        {
+          "scopeEpoch": "38f34267-04d7-4e3c-9076-f943c0243fa2",
+          "authorizationView": "development-all-visible",
+          "scopePosition": "pos-1"
+        },
+        {
+          "scopeEpoch": "38f34267-04d7-4e3c-9076-f943c0243fa2",
+          "authorizationView": "development-all-visible",
+          "scopePosition": "pos-2"
+        },
+        {
+          "scopeEpoch": "38f34267-04d7-4e3c-9076-f943c0243fa2",
+          "authorizationView": "development-all-visible",
+          "scopePosition": "pos-2"
+        }
+      ],
+      "unproved": [
+        {
+          "scopeEpoch": "38f34267-04d7-4e3c-9076-f943c0243fa2",
+          "authorizationView": "development-all-visible",
+          "scopePosition": "pos-1"
+        },
+        {
+          "scopeEpoch": "38f34267-04d7-4e3c-9076-f943c0243fa2",
+          "authorizationView": "development-all-visible",
+          "scopePosition": "pos-1"
+        },
+        {
+          "scopeEpoch": "38f34267-04d7-4e3c-9076-f943c0243fa2",
+          "authorizationView": "development-all-visible",
+          "scopePosition": "pos-1"
+        },
+        {
+          "scopeEpoch": "38f34267-04d7-4e3c-9076-f943c0243fa2",
+          "authorizationView": "development-all-visible",
+          "scopePosition": "pos-2"
+        }
+      ],
+      "directContext": {
+        "scopeEpoch": "38f34267-04d7-4e3c-9076-f943c0243fa2",
+        "authorizationView": "development-all-visible",
+        "scopePosition": "pos-1"
+      },
+      "timeoutContext": {
+        "scopeEpoch": "38f34267-04d7-4e3c-9076-f943c0243fa2",
+        "authorizationView": "development-all-visible",
+        "scopePosition": "pos-2"
+      },
+      "positiveContext": {
+        "scopeEpoch": "38f34267-04d7-4e3c-9076-f943c0243fa2",
+        "authorizationView": "development-all-visible",
+        "scopePosition": "pos-2"
+      },
+      "waits": 2,
+      "clockCalls": 5,
+      "writes": 4,
+      "outcome": "passed"
+    },
+    {
+      "observation": "alias-minimum-missing",
+      "row": "absent",
+      "apiCalls": 3,
+      "probeCalls": 1,
+      "conditionedCalls": 2,
+      "entries": [
+        {
+          "scopeEpoch": "eae03127-cc1b-4f27-994a-13cf8823fe25",
+          "authorizationView": "development-all-visible",
+          "scopePosition": "pos-1"
+        },
+        {
+          "scopeEpoch": "eae03127-cc1b-4f27-994a-13cf8823fe25",
+          "authorizationView": "development-all-visible",
+          "scopePosition": "pos-1"
+        },
+        {
+          "scopeEpoch": "eae03127-cc1b-4f27-994a-13cf8823fe25",
+          "authorizationView": "development-all-visible",
+          "scopePosition": "pos-1"
+        }
+      ],
+      "mappings": [
+        {
+          "context": {
+            "scopeEpoch": "eae03127-cc1b-4f27-994a-13cf8823fe25",
+            "authorizationView": "development-all-visible",
+            "scopePosition": "pos-1"
+          }
+        },
+        {
+          "context": {
+            "scopeEpoch": "eae03127-cc1b-4f27-994a-13cf8823fe25",
+            "authorizationView": "development-all-visible",
+            "scopePosition": "pos-1"
+          }
+        },
+        {
+          "context": {
+            "scopeEpoch": "eae03127-cc1b-4f27-994a-13cf8823fe25",
+            "authorizationView": "development-all-visible",
+            "scopePosition": "pos-1"
+          }
+        }
+      ],
+      "ordinaryContext": {
+        "scopeEpoch": "eae03127-cc1b-4f27-994a-13cf8823fe25",
+        "authorizationView": "development-all-visible",
+        "scopePosition": "pos-1"
+      },
+      "conditionedContexts": [
+        {
+          "scopeEpoch": "eae03127-cc1b-4f27-994a-13cf8823fe25",
+          "authorizationView": "development-all-visible",
+          "scopePosition": "pos-1"
+        },
+        {
+          "scopeEpoch": "eae03127-cc1b-4f27-994a-13cf8823fe25",
+          "authorizationView": "development-all-visible",
+          "scopePosition": "pos-1"
+        }
+      ],
+      "waits": 0,
+      "clockCalls": 2,
+      "writes": 2,
+      "policyReplacements": 0,
+      "outcome": "passed"
+    },
+    {
+      "observation": "alias-minimum-missing",
+      "row": "deleted",
+      "apiCalls": 3,
+      "probeCalls": 1,
+      "conditionedCalls": 2,
+      "entries": [
+        {
+          "scopeEpoch": "c4057213-14f4-4979-917e-5408b6661478",
+          "authorizationView": "development-all-visible",
+          "scopePosition": "pos-1"
+        },
+        {
+          "scopeEpoch": "c4057213-14f4-4979-917e-5408b6661478",
+          "authorizationView": "development-all-visible",
+          "scopePosition": "pos-1"
+        },
+        {
+          "scopeEpoch": "c4057213-14f4-4979-917e-5408b6661478",
+          "authorizationView": "development-all-visible",
+          "scopePosition": "pos-1"
+        }
+      ],
+      "mappings": [
+        {
+          "context": {
+            "scopeEpoch": "c4057213-14f4-4979-917e-5408b6661478",
+            "authorizationView": "development-all-visible",
+            "scopePosition": "pos-1"
+          }
+        },
+        {
+          "context": {
+            "scopeEpoch": "c4057213-14f4-4979-917e-5408b6661478",
+            "authorizationView": "development-all-visible",
+            "scopePosition": "pos-1"
+          }
+        },
+        {
+          "context": {
+            "scopeEpoch": "c4057213-14f4-4979-917e-5408b6661478",
+            "authorizationView": "development-all-visible",
+            "scopePosition": "pos-1"
+          }
+        }
+      ],
+      "ordinaryContext": {
+        "scopeEpoch": "c4057213-14f4-4979-917e-5408b6661478",
+        "authorizationView": "development-all-visible",
+        "scopePosition": "pos-1"
+      },
+      "conditionedContexts": [
+        {
+          "scopeEpoch": "c4057213-14f4-4979-917e-5408b6661478",
+          "authorizationView": "development-all-visible",
+          "scopePosition": "pos-1"
+        },
+        {
+          "scopeEpoch": "c4057213-14f4-4979-917e-5408b6661478",
+          "authorizationView": "development-all-visible",
+          "scopePosition": "pos-1"
+        }
+      ],
+      "waits": 0,
+      "clockCalls": 2,
+      "writes": 3,
+      "policyReplacements": 0,
+      "outcome": "passed"
+    },
+    {
+      "observation": "alias-minimum-missing",
+      "row": "dangling",
+      "apiCalls": 3,
+      "probeCalls": 1,
+      "conditionedCalls": 2,
+      "entries": [
+        {
+          "scopeEpoch": "62f45935-de88-4813-bed8-dcd9b2b772be",
+          "authorizationView": "development-all-visible",
+          "scopePosition": "pos-2"
+        },
+        {
+          "scopeEpoch": "62f45935-de88-4813-bed8-dcd9b2b772be",
+          "authorizationView": "development-all-visible",
+          "scopePosition": "pos-2"
+        },
+        {
+          "scopeEpoch": "62f45935-de88-4813-bed8-dcd9b2b772be",
+          "authorizationView": "development-all-visible",
+          "scopePosition": "pos-2"
+        }
+      ],
+      "mappings": [
+        {
+          "target": "beads/a",
+          "context": {
+            "scopeEpoch": "62f45935-de88-4813-bed8-dcd9b2b772be",
+            "authorizationView": "development-all-visible",
+            "scopePosition": "pos-2"
+          }
+        },
+        {
+          "target": "beads/a",
+          "context": {
+            "scopeEpoch": "62f45935-de88-4813-bed8-dcd9b2b772be",
+            "authorizationView": "development-all-visible",
+            "scopePosition": "pos-2"
+          }
+        },
+        {
+          "target": "beads/a",
+          "context": {
+            "scopeEpoch": "62f45935-de88-4813-bed8-dcd9b2b772be",
+            "authorizationView": "development-all-visible",
+            "scopePosition": "pos-2"
+          }
+        }
+      ],
+      "ordinaryContext": {
+        "scopeEpoch": "62f45935-de88-4813-bed8-dcd9b2b772be",
+        "authorizationView": "development-all-visible",
+        "scopePosition": "pos-2"
+      },
+      "conditionedContexts": [
+        {
+          "scopeEpoch": "62f45935-de88-4813-bed8-dcd9b2b772be",
+          "authorizationView": "development-all-visible",
+          "scopePosition": "pos-2"
+        },
+        {
+          "scopeEpoch": "62f45935-de88-4813-bed8-dcd9b2b772be",
+          "authorizationView": "development-all-visible",
+          "scopePosition": "pos-2"
+        }
+      ],
+      "waits": 0,
+      "clockCalls": 2,
+      "writes": 3,
+      "policyReplacements": 0,
+      "outcome": "passed"
+    },
+    {
+      "observation": "alias-minimum-missing",
+      "row": "hidden",
+      "apiCalls": 3,
+      "probeCalls": 1,
+      "conditionedCalls": 2,
+      "entries": [
+        {
+          "scopeEpoch": "ecebd850-dc98-466a-a88d-8e7b5b2e9321",
+          "authorizationView": "325ff7ac-caed-41b9-8ac6-c91f07b36850",
+          "scopePosition": "pos-1"
+        },
+        {
+          "scopeEpoch": "ecebd850-dc98-466a-a88d-8e7b5b2e9321",
+          "authorizationView": "325ff7ac-caed-41b9-8ac6-c91f07b36850",
+          "scopePosition": "pos-1"
+        },
+        {
+          "scopeEpoch": "ecebd850-dc98-466a-a88d-8e7b5b2e9321",
+          "authorizationView": "325ff7ac-caed-41b9-8ac6-c91f07b36850",
+          "scopePosition": "pos-1"
+        }
+      ],
+      "mappings": [
+        {
+          "target": "beads/a",
+          "context": {
+            "scopeEpoch": "ecebd850-dc98-466a-a88d-8e7b5b2e9321",
+            "authorizationView": "325ff7ac-caed-41b9-8ac6-c91f07b36850",
+            "scopePosition": "pos-1"
+          }
+        },
+        {
+          "target": "beads/a",
+          "context": {
+            "scopeEpoch": "ecebd850-dc98-466a-a88d-8e7b5b2e9321",
+            "authorizationView": "325ff7ac-caed-41b9-8ac6-c91f07b36850",
+            "scopePosition": "pos-1"
+          }
+        },
+        {
+          "target": "beads/a",
+          "context": {
+            "scopeEpoch": "ecebd850-dc98-466a-a88d-8e7b5b2e9321",
+            "authorizationView": "325ff7ac-caed-41b9-8ac6-c91f07b36850",
+            "scopePosition": "pos-1"
+          }
+        }
+      ],
+      "ordinaryContext": {
+        "scopeEpoch": "ecebd850-dc98-466a-a88d-8e7b5b2e9321",
+        "authorizationView": "325ff7ac-caed-41b9-8ac6-c91f07b36850",
+        "scopePosition": "pos-1"
+      },
+      "conditionedContexts": [
+        {
+          "scopeEpoch": "ecebd850-dc98-466a-a88d-8e7b5b2e9321",
+          "authorizationView": "325ff7ac-caed-41b9-8ac6-c91f07b36850",
+          "scopePosition": "pos-1"
+        },
+        {
+          "scopeEpoch": "ecebd850-dc98-466a-a88d-8e7b5b2e9321",
+          "authorizationView": "325ff7ac-caed-41b9-8ac6-c91f07b36850",
+          "scopePosition": "pos-1"
+        }
+      ],
+      "waits": 0,
+      "clockCalls": 2,
+      "writes": 2,
+      "policyReplacements": 1,
+      "outcome": "passed"
+    },
+    {
+      "observation": "alias-minimum-transition",
+      "apiCalls": 1,
+      "attempts": [
+        {
+          "target": "beads/a",
+          "context": {
+            "scopeEpoch": "f3b87d46-a40b-4635-a176-7a8ab4c22964",
+            "authorizationView": "development-all-visible",
+            "scopePosition": "pos-1"
+          }
+        },
+        {
+          "context": {
+            "scopeEpoch": "f3b87d46-a40b-4635-a176-7a8ab4c22964",
+            "authorizationView": "development-all-visible",
+            "scopePosition": "pos-1"
+          }
+        }
+      ],
+      "contexts": [
+        {
+          "scopeEpoch": "f3b87d46-a40b-4635-a176-7a8ab4c22964",
+          "authorizationView": "development-all-visible",
+          "scopePosition": "pos-1"
+        },
+        {
+          "scopeEpoch": "f3b87d46-a40b-4635-a176-7a8ab4c22964",
+          "authorizationView": "development-all-visible",
+          "scopePosition": "pos-1"
+        }
+      ],
+      "unproved": [
+        {
+          "scopeEpoch": "f3b87d46-a40b-4635-a176-7a8ab4c22964",
+          "authorizationView": "development-all-visible",
+          "scopePosition": "pos-1"
+        }
+      ],
+      "resultContext": {
+        "scopeEpoch": "f3b87d46-a40b-4635-a176-7a8ab4c22964",
+        "authorizationView": "development-all-visible",
+        "scopePosition": "pos-1"
+      },
+      "terminalStatus": 404,
+      "waits": 1,
+      "clockCalls": 2,
+      "writes": 3,
+      "outcome": "passed"
+    },
+    {
+      "observation": "alias-minimum-drain",
+      "apiCalls": 2,
+      "handlerRequests": 1,
+      "entries": [
+        {
+          "scopeEpoch": "f0b6f3dd-a5cf-4486-9e22-20e280681b04",
+          "authorizationView": "development-all-visible",
+          "scopePosition": "pos-1"
+        }
+      ],
+      "mappings": [
+        {
+          "target": "beads/a",
+          "context": {
+            "scopeEpoch": "f0b6f3dd-a5cf-4486-9e22-20e280681b04",
+            "authorizationView": "development-all-visible",
+            "scopePosition": "pos-1"
+          }
+        }
+      ],
+      "waits": 1,
+      "clockCalls": 3,
+      "writes": 2,
+      "closed": true,
+      "postCloseProbes": 1,
+      "outcome": "passed"
+    },
+    {
+      "observation": "current-minimum-incident-wait",
+      "performCalls": 2,
+      "entries": [
+        {
+          "scopeEpoch": "abf2fda3-6bd2-4e5d-b7c2-aee54822f9e0",
+          "authorizationView": "development-all-visible",
+          "scopePosition": "pos-1"
+        },
+        {
+          "scopeEpoch": "abf2fda3-6bd2-4e5d-b7c2-aee54822f9e0",
+          "authorizationView": "development-all-visible",
+          "scopePosition": "pos-1"
+        },
+        {
+          "scopeEpoch": "abf2fda3-6bd2-4e5d-b7c2-aee54822f9e0",
+          "authorizationView": "development-all-visible",
+          "scopePosition": "pos-1"
+        }
+      ],
+      "aliasLookups": 0,
+      "waits": 1,
+      "clockCalls": 4,
+      "writes": 2,
+      "missingContext": {
+        "scopeEpoch": "abf2fda3-6bd2-4e5d-b7c2-aee54822f9e0",
+        "authorizationView": "development-all-visible",
+        "scopePosition": "pos-1"
+      },
+      "outcome": "passed"
+    },
+    {
+      "observation": "changefeed-opaque-boundaries",
+      "outcome": "passed",
+      "captures": 2,
+      "reads": 4,
+      "waits": 0,
+      "clocks": 2,
+      "outcomes": [
+        "default-owner-TypeError",
+        "default-service-TypeError",
+        "after-TypeError",
+        "malformed-TypeError",
+        "unsupported-sentinel",
+        "foreign-cursor-expired",
+        "valid-closed",
+        "malformed-before-closed",
+        "owner-closed"
+      ],
+      "failureCount": 0
+    },
+    {
+      "observation": "changefeed-opaque-http",
+      "outcome": "passed",
+      "attempted": 10,
+      "exchanges": 10,
+      "records": [
+        {
+          "ordinal": 1,
+          "method": "POST",
+          "url": "https://example.test/feed/operations/batch",
+          "status": 200,
+          "bodyOctets": 704,
+          "bodySha256": "daba0adc61fe82b03ff1a54d78d1e96728b5578e4d7d0f7bb1b25f3f1213ad46",
+          "headers": {
+            "bdp-scope-epoch": "219b3051-fc12-44c6-81af-c364cd418ab6",
+            "bdp-authorization-view": "development-all-visible",
+            "bdp-scope-position": "pos-1",
+            "content-type": "application/json",
+            "content-length": "704",
+            "cache-control": "private, no-store",
+            "retry-after": null,
+            "etag": null,
+            "x-bdp-development-limit": null
+          }
+        },
+        {
+          "ordinal": 2,
+          "method": "GET",
+          "url": "https://example.test/feed/changes/?start=now",
+          "status": 200,
+          "bodyOctets": 294,
+          "bodySha256": "11454c1c98a3e06eb5ff708d9bc84d917bf6c58b1ad0d064ca409e3ada238d29",
+          "headers": {
+            "bdp-scope-epoch": "219b3051-fc12-44c6-81af-c364cd418ab6",
+            "bdp-authorization-view": "development-all-visible",
+            "bdp-scope-position": "pos-1",
+            "content-type": "application/json",
+            "content-length": "294",
+            "cache-control": "private, no-store",
+            "retry-after": null,
+            "etag": null,
+            "x-bdp-development-limit": null
+          }
+        },
+        {
+          "ordinal": 3,
+          "method": "HEAD",
+          "url": "https://example.test/feed/changes/?start=now",
+          "status": 200,
+          "bodyOctets": 0,
+          "bodySha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "headers": {
+            "bdp-scope-epoch": "219b3051-fc12-44c6-81af-c364cd418ab6",
+            "bdp-authorization-view": "development-all-visible",
+            "bdp-scope-position": "pos-1",
+            "content-type": "application/json",
+            "content-length": "294",
+            "cache-control": "private, no-store",
+            "retry-after": null,
+            "etag": null,
+            "x-bdp-development-limit": null
+          }
+        },
+        {
+          "ordinal": 4,
+          "method": "GET",
+          "url": "https://example.test/feed/changes/?start=now",
+          "status": 503,
+          "bodyOctets": 127,
+          "bodySha256": "5e7c50923b5ef2e22379c96cbec4f9197175e38d9a81970f7db4f81ae46255b0",
+          "headers": {
+            "bdp-scope-epoch": "219b3051-fc12-44c6-81af-c364cd418ab6",
+            "bdp-authorization-view": "development-all-visible",
+            "bdp-scope-position": "pos-1",
+            "content-type": "application/problem+json",
+            "content-length": "127",
+            "cache-control": "private, no-store",
+            "retry-after": "1",
+            "etag": null,
+            "x-bdp-development-limit": null
+          }
+        },
+        {
+          "ordinal": 5,
+          "method": "HEAD",
+          "url": "https://example.test/feed/changes/?start=now",
+          "status": 503,
+          "bodyOctets": 0,
+          "bodySha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "headers": {
+            "bdp-scope-epoch": "219b3051-fc12-44c6-81af-c364cd418ab6",
+            "bdp-authorization-view": "development-all-visible",
+            "bdp-scope-position": "pos-1",
+            "content-type": "application/problem+json",
+            "content-length": "127",
+            "cache-control": "private, no-store",
+            "retry-after": "1",
+            "etag": null,
+            "x-bdp-development-limit": null
+          }
+        },
+        {
+          "ordinal": 6,
+          "method": "GET",
+          "url": "https://example.test/feed/changes/?start=now",
+          "status": 503,
+          "bodyOctets": 127,
+          "bodySha256": "5e7c50923b5ef2e22379c96cbec4f9197175e38d9a81970f7db4f81ae46255b0",
+          "headers": {
+            "bdp-scope-epoch": "219b3051-fc12-44c6-81af-c364cd418ab6",
+            "bdp-authorization-view": "development-all-visible",
+            "bdp-scope-position": "pos-1",
+            "content-type": "application/problem+json",
+            "content-length": "127",
+            "cache-control": "private, no-store",
+            "retry-after": "1",
+            "etag": null,
+            "x-bdp-development-limit": null
+          }
+        },
+        {
+          "ordinal": 7,
+          "method": "HEAD",
+          "url": "https://example.test/feed/changes/?start=now",
+          "status": 503,
+          "bodyOctets": 0,
+          "bodySha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "headers": {
+            "bdp-scope-epoch": "219b3051-fc12-44c6-81af-c364cd418ab6",
+            "bdp-authorization-view": "development-all-visible",
+            "bdp-scope-position": "pos-1",
+            "content-type": "application/problem+json",
+            "content-length": "127",
+            "cache-control": "private, no-store",
+            "retry-after": "1",
+            "etag": null,
+            "x-bdp-development-limit": null
+          }
+        },
+        {
+          "ordinal": 8,
+          "method": "GET",
+          "url": "https://example.test/feed/changes/?after=genesis",
+          "status": 500,
+          "bodyOctets": 0,
+          "bodySha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "headers": {
+            "bdp-scope-epoch": null,
+            "bdp-authorization-view": null,
+            "bdp-scope-position": null,
+            "content-type": null,
+            "content-length": "0",
+            "cache-control": "private, no-store",
+            "retry-after": null,
+            "etag": null,
+            "x-bdp-development-limit": "minimum-position"
+          }
+        },
+        {
+          "ordinal": 9,
+          "method": "GET",
+          "url": "https://example.test/feed/changes/?start=now",
+          "status": 500,
+          "bodyOctets": 0,
+          "bodySha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "headers": {
+            "bdp-scope-epoch": null,
+            "bdp-authorization-view": null,
+            "bdp-scope-position": null,
+            "content-type": null,
+            "content-length": "0",
+            "cache-control": "private, no-store",
+            "retry-after": null,
+            "etag": null,
+            "x-bdp-development-limit": "minimum-position"
+          }
+        },
+        {
+          "ordinal": 10,
+          "method": "GET",
+          "url": "https://example.test/feed/changes/?start=now",
+          "status": 400,
+          "bodyOctets": 118,
+          "bodySha256": "c42495c7aceb17f70d66be3b14415057805675541db06619cc439bcc5cb010f2",
+          "headers": {
+            "bdp-scope-epoch": null,
+            "bdp-authorization-view": null,
+            "bdp-scope-position": null,
+            "content-type": "application/problem+json",
+            "content-length": "118",
+            "cache-control": "private, no-store",
+            "retry-after": null,
+            "etag": null,
+            "x-bdp-development-limit": null
+          }
+        }
+      ],
+      "deadlineExceeded": false,
+      "cleanupDeadlineExceeded": false,
+      "closed": true,
+      "directory": "/private/tmp/vickie-current-observation-validation-focused-source-uxcqsvbn/bdp-feed-opaque-http-AemYDN",
+      "directoryAbsent": true,
+      "failureCount": 0
+    },
+    {
+      "observation": "fresh-snapshot-opaque-owner",
+      "snapshotCalls": 14,
+      "preEntryExcludedCalls": 4,
+      "offlineInspections": 2,
+      "baseline": {
+        "snapshots": 1,
+        "records": 1,
+        "pages": 2,
+        "disposition": "{\"epoch\":\"d494d7b5-4874-4197-9e48-7c22f827a493\",\"view\":\"development-all-visible\",\"position\":1,\"created\":1000000,\"expires\":1300000,\"expired\":false,\"counts\":[1,0],\"bytes\":272,\"plan\":\"50b0ab7829978d8e9eb90cb7b7a7f586a577383e16dc48fa49dac9280947d1ed\",\"seed\":\"b142c4342eed6c808b60d663ad28d24c52fa9425d0f5ab74ab3c72e416b5f21d\",\"pageCounts\":[1,1],\"binding\":\"a5157d1e786e74205d2759c485147abaa47d4b36b38289ed989fc60e7a013c88\"}"
+      },
+      "after": {
+        "snapshots": 1,
+        "records": 1,
+        "pages": 2,
+        "disposition": "{\"epoch\":\"d494d7b5-4874-4197-9e48-7c22f827a493\",\"view\":\"development-all-visible\",\"position\":1,\"created\":1000000,\"expires\":1300000,\"expired\":false,\"counts\":[1,0],\"bytes\":272,\"plan\":\"50b0ab7829978d8e9eb90cb7b7a7f586a577383e16dc48fa49dac9280947d1ed\",\"seed\":\"b142c4342eed6c808b60d663ad28d24c52fa9425d0f5ab74ab3c72e416b5f21d\",\"pageCounts\":[1,1],\"binding\":\"a5157d1e786e74205d2759c485147abaa47d4b36b38289ed989fc60e7a013c88\"}"
+      }
+    }
+  ],
+  "newRecords": 9,
+  "legacyRecords": 28,
+  "attribution": "97 exact passed source cases; semantic bodies checked by pinned callbacks. Separate new9 records and legacy28 runtime reports; no aggregate legacy traffic inference or historical relabeling."
+}

@@ -1,0 +1,102 @@
+{
+  "CV2_N1": "STATICALLY_CLOSED",
+  "runSites": {
+    "stateResetBeforeFallibleAcquisition": "217-224",
+    "immediateDirectHandleAndReceiptRetention": "220-223",
+    "EAGAINPendingOtherReadException": "226-237",
+    "postBothEOFPollException": "241-245",
+    "fixedClassCurrentPrefixAndBestEffortSameClockFinish": "45-55",
+    "historicalFirstPrefixPreserved": "30-33",
+    "noProbeAfterTerminal": "34-44 and caller returns at224/237/244",
+    "existingProbeCleanup": "290-300"
+  },
+  "stateCases": [
+    {
+      "case": "Popen fails before handle return",
+      "facts": "probe=None, empty current buffers, both EOF=false, raw terminal=None; prior last complete and historical first prefix preserved; no old-probe attribution"
+    },
+    {
+      "case": "pipe setup fails after successful Popen",
+      "facts": "handle and PID/setsid-PGID receipt already retained; actual current buffers/EOF/observed raw only"
+    },
+    {
+      "case": "read or post-EOF poll fails",
+      "facts": "non-EAGAIN OSError/ValueError records fixed census-io; refresh actual received bytes and observed returncode without another poll; bounded finish(1), then existing finally"
+    },
+    {
+      "case": "earlier refusal plus later I/O failure",
+      "facts": "first failurePrefix not overwritten; separate censusIoFailurePrefix retains current sequence and current prefix"
+    },
+    {
+      "case": "publication itself fails/partial/late/oversize",
+      "facts": "raw failure/UNKNOWN; no fabricated EOF/exit/cleanup or event repair; no new probe/retry"
+    }
+  ],
+  "positiveGate": "gate.py85 exact extra key,86 censusIoFailurePrefix is None AND first failurePrefix None; existing all-EOF/raw0/strict<115/fresh ALL-PID/PGID closure predicates retained",
+  "negativeControlStatus": "C13/C15/C16 descriptions refined inside same32 IDs; zero controls run, concrete harness UNPREPARED/UNAPPROVED",
+  "astDataComparisons": {
+    "run.py": {
+      "unchangedFunctions": [
+        "refuse",
+        "enqueue",
+        "raw_fact",
+        "retain_prefix",
+        "birth_epoch",
+        "identity_matches",
+        "observe",
+        "reap_after_quiet",
+        "signal_owned",
+        "interrupt"
+      ],
+      "changedFunctions": [
+        "main",
+        "finish"
+      ],
+      "addedFunctions": [
+        "census_io_failure"
+      ]
+    },
+    "gate.py": {
+      "unchangedFunctions": [
+        "require",
+        "git",
+        "unique_object",
+        "invalid_constant",
+        "read",
+        "write",
+        "guarded",
+        "document",
+        "source_check",
+        "tools_check",
+        "inventory",
+        "consumer_inventory",
+        "complete",
+        "verify_build",
+        "verify_consumer",
+        "verify_private_emit",
+        "load_gate"
+      ],
+      "changedFunctions": [
+        "verify_probe_terminal"
+      ],
+      "addedFunctions": []
+    }
+  },
+  "byteExactOtherHelpers": [
+    "audit-common.mjs",
+    "audit.py",
+    "carrier-audit.mjs",
+    "guarded-action-session-20261018-021624-549f.py",
+    "packages.py",
+    "private-graph.mjs",
+    "private_emit.py",
+    "scanner.py",
+    "worker.py"
+  ],
+  "notClaimed": [
+    "Guaranteed publication or host durability",
+    "Positive cleanup on failed I/O exit",
+    "Offline replay of unretained intermediate census bodies",
+    "Hard real-time OS scheduling bound"
+  ]
+}

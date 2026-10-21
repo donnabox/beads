@@ -1,0 +1,107 @@
+[
+  {
+    "id": "native-D03-limiter",
+    "status": "EXISTS_NATIVE_SUBDOMAIN_ONLY",
+    "source": "inputs/H6/hard_limit.pl",
+    "anchors": [
+      10,
+      13,
+      14,
+      16,
+      30,
+      33,
+      35,
+      36,
+      42,
+      50,
+      51,
+      52,
+      53,
+      67
+    ],
+    "result": "BEGIN origin, independent alarm and responsive wait loop bound fixed owner subtree under original120/115/119; fixed 3-argument grammar/exec target cannot accept a root capture body; signal_child never owns root parent. Timer ends on native exit. Does not cover earlier root imports/preflight or later root IO."
+  },
+  {
+    "id": "native-availability-limiter",
+    "status": "EXISTS_AVAILABILITY_ONLY",
+    "source": "inputs/H6/availability_limit.pl",
+    "anchors": [
+      10,
+      14,
+      15,
+      29,
+      32,
+      34,
+      35,
+      41,
+      49,
+      50,
+      51,
+      66
+    ],
+    "result": "Same source pattern, fixed AVAIL/availability and availability_owner target; observed two-event path is not a D03 three-event caller or root timer."
+  },
+  {
+    "id": "C3-fixed-root-caller",
+    "status": "OBSERVATION_REJECTION_ONLY",
+    "source": "inputs/C3/capture.py",
+    "anchors": [
+      4,
+      5,
+      22,
+      25,
+      31,
+      43,
+      45,
+      50,
+      61,
+      65,
+      76,
+      78,
+      92,
+      98,
+      109,
+      111,
+      138,
+      141,
+      144,
+      145,
+      148
+    ],
+    "result": "Origin precedes remaining imports/setup, with cooperative elapsed checks and direct-handle TERM; synchronous file reads/writes/closes occur between checks, no independent root alarm/watchdog. Native is separate-session child launched only after preflight; after native exit caller still parses and publishes. Successful sample cannot establish total-root enforcement."
+  },
+  {
+    "id": "session-guard",
+    "status": "NO_TARGET_DEADLINE",
+    "source": "inputs/existing-session-guard.py",
+    "anchors": [
+      10,
+      12,
+      20
+    ],
+    "result": "30-second timeout applies only to gh role lookup. Final subprocess.run(check=True) has no timeout, retained root registry or whole-root deadline."
+  },
+  {
+    "id": "H6-owned-bootstrap/owner",
+    "status": "NATIVE_DOMAIN_ONLY",
+    "source": "inputs/H6/outer_host.py",
+    "anchors": [
+      13,
+      15,
+      16,
+      17,
+      129,
+      285,
+      344,
+      365,
+      370
+    ],
+    "result": "Consumes native origin and fixed parent authorization; owned responsive worker/census logic belongs below native, not a wrapper for root preflight/post-native IO."
+  },
+  {
+    "id": "ordinary-exec-tool",
+    "status": "NO_DOCUMENTED_WHOLE_TASK_KILL_BOUND",
+    "source": "exposed-tool-interface-assessment.json",
+    "result": "Exposed exec_command yield_time_ms controls waiting before output/session return; no timeout/absolute-deadline argument or automatic signal/ownership guarantee is documented. write_stdin and functions.exec yields also do not document a total-root kill policy. No backend/internal hard timeout is assumed."
+  }
+]

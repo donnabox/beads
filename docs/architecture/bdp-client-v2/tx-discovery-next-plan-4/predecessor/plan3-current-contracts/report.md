@@ -1,0 +1,11 @@
+# D3a basis successor3 freeze
+
+COMPLETE, CLOSED, read-only. The conditionally selected basis is the actually published D1 commit cce884ccea1db97cbc6fd7bff876d4d6091f9081, tree6757829bd5b700faf28df39071190a272add90c9, sole parenta562. The branch is clean and all679 measured files equal the tested publication map. Its six-file committed patch SHA890ce777 equals the exact root-tested patch. Root's28-stage local acceptance and native finalc2d8 are immutable context; exact CI acceptance and main landing are not inferred.
+
+The predecessor's34 indexed parent artifacts, its index and all5 native files are copied unchanged. Its actual input map contains45 paths (31+14), not34. Those45 paths are rebound to the published commit; only HTTP/service changed among them. Two additional read-only owner/current-classification files make47 active inputs for the requested D1 composition inspection. Spec/schema bytes remain pinned. Old4ff4 dirty identity remains historical only.
+
+The future footprint remains exactly three files. Discovery's one actual observation is inserted after existing specialized routes and before the generic current-Read minimum gate. D1 current-changefeed classification, cursor-before-minimum, once-only start capture, strict/default admission and undefined-minimum stream pump remain. shared-http-composition.md binds exact current anchors and the narrow supersession sites.
+
+All six witness/observation JSON contracts remain byte-identical: cold43/28 requests with all12 actual returned targets;21 source callbacks/94 direct calls/14 wire;11 installed callbacks/190 scheduled/187 responses/3 aborts; all original budgets. Counts are prospective. Genuine plan delta/inverse and six data delta/inverse pairs were reconstructed in memory, without source edits or helper execution.
+
+All97 origin/copy pairs,679 source files,34 parent artifacts and4 native-index members were rehashed. No source, design.md, launch, gate or prior packet edits; no compiler, formatter, tests, build, install, runtime, reviewer or git mutation. No actual fresh PLAN packet or helper proposal implementation was created. D3c plan1 remains frozen. Future authoring/review launch remain closed pending root exact CI/shared-file serialization, future mechanics acceptance and the distinct successor PLAN dispositions.

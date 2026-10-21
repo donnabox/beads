@@ -1,0 +1,172 @@
+{
+  "GitAncestryQueried": false,
+  "actualAssemblyAuthorized": false,
+  "beforeByteConflicts": [],
+  "carrierD4Decision": {
+    "decision": "both exact cce-relative owned deltas, disjoint paths; neither full snapshot may replace the other. No evidence/fixture/configuration pooling follows.",
+    "overlapPaths": []
+  },
+  "commonBase": "a56254d682cf4623cab22a552e3d2f695f691795",
+  "orderUsed": [
+    "D1",
+    "pureLoader",
+    "D3a",
+    "startup",
+    "D4",
+    "carrier"
+  ],
+  "overlaps": [
+    {
+      "decision": "explicit ancestry override ONLY; later exact owned delta replaces earlier ancestor bytes",
+      "earlier": "D1",
+      "earlierAfter": "834d13d108cb0577cfbf0f7d32b7072a62deeb9db70a5bd72e960d5cfc42b9e3",
+      "earlierBefore": "e3717ff2dfcc9af743e5c963de7f1c75778f827768765e9eb3aebe1545efd4d0",
+      "equal": true,
+      "later": "D3a",
+      "laterAfter": "e57a05adb613c7bfec646e19e282dcc536a20a3d8f0a5fd2858b734e60183da8",
+      "laterBefore": "834d13d108cb0577cfbf0f7d32b7072a62deeb9db70a5bd72e960d5cfc42b9e3",
+      "path": "packages/server/src/transaction-changefeed.test.ts"
+    },
+    {
+      "decision": "explicit ancestry override ONLY; later exact owned delta replaces earlier ancestor bytes",
+      "earlier": "D1",
+      "earlierAfter": "be9402cadf5d2888dd42a1904bbd8eeea0b32643bd7d7949f0ae34a8eefdd2e0",
+      "earlierBefore": "52a529218f3f999bbc1c86ec3b04b1198b22da7c5104e0d00e87761bb45f4967",
+      "equal": true,
+      "later": "D3a",
+      "laterAfter": "4a59ac8079853c2931e39088949c49b9fdca67929fdc6fc86e89ad382ba7bb87",
+      "laterBefore": "be9402cadf5d2888dd42a1904bbd8eeea0b32643bd7d7949f0ae34a8eefdd2e0",
+      "path": "packages/server/src/transaction-http.ts"
+    },
+    {
+      "decision": "explicit ancestry override ONLY; later exact owned delta replaces earlier ancestor bytes",
+      "earlier": "pureLoader",
+      "earlierAfter": "8a7d348e56adda7d0222d2180763149f348594a770fdd773e01076fb68c9caa8",
+      "earlierBefore": "f957814cabb23136a6064b6ea2814bf6a5c454fe841666053bf1a01cae67d175",
+      "equal": true,
+      "later": "startup",
+      "laterAfter": "0ab47c709ffcb74decb6180675f886ca4182fc25934fb7d7bd2828ce2dc368d3",
+      "laterBefore": "8a7d348e56adda7d0222d2180763149f348594a770fdd773e01076fb68c9caa8",
+      "path": "docs/design/startup-configuration.md"
+    },
+    {
+      "decision": "explicit ancestry override ONLY; later exact owned delta replaces earlier ancestor bytes",
+      "earlier": "pureLoader",
+      "earlierAfter": "80c1ecf1d55939fbb0a0fe94aad46bcede1c9d7841dbc3793e00e4493440ddb3",
+      "earlierBefore": "adeaea6e334f8fb6f7af5d09f0cb7ee0b729864affc45cb6baf84a95f1d4d9ae",
+      "equal": true,
+      "later": "startup",
+      "laterAfter": "806865aed9c3d3bca020655e9a708c794f7e68e60076afb430fae7d0d82707ea",
+      "laterBefore": "80c1ecf1d55939fbb0a0fe94aad46bcede1c9d7841dbc3793e00e4493440ddb3",
+      "path": "scripts/smoke-executables.mjs"
+    }
+  ],
+  "overlayRule": "Apply ONLY derived owned paths relative to exact named ancestor. Full snapshot replacement would erase independent D1/loader/startup/D3a/carrier changes. Data absence/byte agreement is not semantic merge proof.",
+  "pairwiseAll15": [
+    {
+      "earlier": "D1",
+      "later": "pureLoader",
+      "overlapPaths": [],
+      "sameStatedAncestor": true
+    },
+    {
+      "earlier": "D1",
+      "later": "D3a",
+      "overlapPaths": [
+        "packages/server/src/transaction-changefeed.test.ts",
+        "packages/server/src/transaction-http.ts"
+      ],
+      "sameStatedAncestor": false
+    },
+    {
+      "earlier": "D1",
+      "later": "startup",
+      "overlapPaths": [],
+      "sameStatedAncestor": false
+    },
+    {
+      "earlier": "D1",
+      "later": "D4",
+      "overlapPaths": [],
+      "sameStatedAncestor": false
+    },
+    {
+      "earlier": "D1",
+      "later": "carrier",
+      "overlapPaths": [],
+      "sameStatedAncestor": false
+    },
+    {
+      "earlier": "pureLoader",
+      "later": "D3a",
+      "overlapPaths": [],
+      "sameStatedAncestor": false
+    },
+    {
+      "earlier": "pureLoader",
+      "later": "startup",
+      "overlapPaths": [
+        "docs/design/startup-configuration.md",
+        "scripts/smoke-executables.mjs"
+      ],
+      "sameStatedAncestor": false
+    },
+    {
+      "earlier": "pureLoader",
+      "later": "D4",
+      "overlapPaths": [],
+      "sameStatedAncestor": false
+    },
+    {
+      "earlier": "pureLoader",
+      "later": "carrier",
+      "overlapPaths": [],
+      "sameStatedAncestor": false
+    },
+    {
+      "earlier": "D3a",
+      "later": "startup",
+      "overlapPaths": [],
+      "sameStatedAncestor": false
+    },
+    {
+      "earlier": "D3a",
+      "later": "D4",
+      "overlapPaths": [],
+      "sameStatedAncestor": true
+    },
+    {
+      "earlier": "D3a",
+      "later": "carrier",
+      "overlapPaths": [],
+      "sameStatedAncestor": true
+    },
+    {
+      "earlier": "startup",
+      "later": "D4",
+      "overlapPaths": [],
+      "sameStatedAncestor": false
+    },
+    {
+      "earlier": "startup",
+      "later": "carrier",
+      "overlapPaths": [],
+      "sameStatedAncestor": false
+    },
+    {
+      "earlier": "D4",
+      "later": "carrier",
+      "overlapPaths": [],
+      "sameStatedAncestor": true
+    }
+  ],
+  "recordedEdges": [
+    "a562\u2192D1 cce",
+    "a562\u2192pureLoader fdd",
+    "cce\u2192D3a six owned currenta61",
+    "fdd\u2192startup d181 nine owned cumulative +laterseven correction80f2",
+    "cce\u2192D4 one owned4f4f",
+    "cce\u2192carrier source3 clean28341515\u2192separate correction4 four owned78e1"
+  ],
+  "semanticMergeProof": false
+}

@@ -1,0 +1,279 @@
+{
+  "auditComplete": true,
+  "captureConjunctionSatisfied": true,
+  "diagnosticCaptureAccepted": true,
+  "qualityPass": false,
+  "lintStagePassed": false,
+  "nextStageAuthorized": false,
+  "profileOrWholeWriteCredit": false,
+  "classification": "COMPLETE_ERROR_ONLY_CAPTURE_NO_QUALITY_CREDIT",
+  "toolIds": [
+    "17aea7",
+    "2ac69c",
+    "e2966a"
+  ],
+  "actualRootToolRawExits": [
+    0,
+    0,
+    0
+  ],
+  "toolTerminalAttribution": "Trusted root source record, independently decoded original raw tool receipts UNRETAINED",
+  "innerRawExit": 1,
+  "innerAccepted": false,
+  "innerElapsedSeconds": 4.239512790925801,
+  "actualDescriptorStreamFacts": [
+    {
+      "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-lint-error-observation-root-dispatch-1/lint-error-observation/lint-error-observation.stdout",
+      "receivedBytes": 752,
+      "savedBytes": 752,
+      "hashedPrefixBytes": 752,
+      "savedPrefixSha256": "1d0f192e7bd6a09a410c4e497f213ade393b58353fe0410a304ba9e4ca659b2c",
+      "hashKnown": true,
+      "actualEOF": true,
+      "rawDescriptorClosed": true,
+      "fileIdentity": {
+        "device": 16777232,
+        "inode": 96093366,
+        "mode": 33152,
+        "uid": 501,
+        "bytes": 752
+      },
+      "writeOrCloseError": null,
+      "fullStreamSha256": "1d0f192e7bd6a09a410c4e497f213ade393b58353fe0410a304ba9e4ca659b2c",
+      "fullStreamState": "COMPLETE_ACTUAL_CAPTURE"
+    },
+    {
+      "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-lint-error-observation-root-dispatch-1/lint-error-observation/lint-error-observation.stderr",
+      "receivedBytes": 0,
+      "savedBytes": 0,
+      "hashedPrefixBytes": 0,
+      "savedPrefixSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "hashKnown": true,
+      "actualEOF": true,
+      "rawDescriptorClosed": true,
+      "fileIdentity": {
+        "device": 16777232,
+        "inode": 96093367,
+        "mode": 33152,
+        "uid": 501,
+        "bytes": 0
+      },
+      "writeOrCloseError": null,
+      "fullStreamSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "fullStreamState": "COMPLETE_ACTUAL_CAPTURE"
+    },
+    {
+      "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-lint-error-observation-root-dispatch-1/lint-error-observation/postterminal-census.stdout",
+      "receivedBytes": 205825,
+      "savedBytes": 205825,
+      "hashedPrefixBytes": 205825,
+      "savedPrefixSha256": "efce5c51ae3b9b3c92126024d6f9fd16a53da4415849a5826549f68ec023b667",
+      "hashKnown": true,
+      "fullStreamSha256": "efce5c51ae3b9b3c92126024d6f9fd16a53da4415849a5826549f68ec023b667",
+      "actualEOF": true,
+      "rawDescriptorClosed": true,
+      "fileIdentity": {
+        "device": 16777232,
+        "inode": 96093441,
+        "mode": 33152,
+        "uid": 501,
+        "bytes": 205825
+      },
+      "writeOrCloseError": null,
+      "fullStreamState": "COMPLETE_ACTUAL_CAPTURE"
+    },
+    {
+      "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-lint-error-observation-root-dispatch-1/lint-error-observation/postterminal-census.stderr",
+      "receivedBytes": 0,
+      "savedBytes": 0,
+      "hashedPrefixBytes": 0,
+      "savedPrefixSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "hashKnown": true,
+      "fullStreamSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "actualEOF": true,
+      "rawDescriptorClosed": true,
+      "fileIdentity": {
+        "device": 16777232,
+        "inode": 96093442,
+        "mode": 33152,
+        "uid": 501,
+        "bytes": 0
+      },
+      "writeOrCloseError": null,
+      "fullStreamState": "COMPLETE_ACTUAL_CAPTURE"
+    }
+  ],
+  "processSamples": 2,
+  "processRows": 3,
+  "censusRows": 1387,
+  "recordedTaskPIDs": [
+    38776,
+    38777,
+    39661,
+    39663
+  ],
+  "recordedTaskPGIDs": [
+    38771,
+    38777,
+    39661
+  ],
+  "matchingRows": [],
+  "observerPid": 40474,
+  "observerPgid": 40463,
+  "probePid": 40475,
+  "probeCreationPgid": 40475,
+  "probeRawExit": 0,
+  "probeBothEOF": true,
+  "probeDirectReaped": true,
+  "earliestOrigin": 2254757.995360166,
+  "postObserverToolTerminalFirstWitness": 2254768.051348166,
+  "commonClockUpperBoundSeconds": 10.055988000240177,
+  "normalStrictSeconds": 115,
+  "outerSeconds": 120,
+  "logBytes": 1022,
+  "logSha256": "36267e6a10a07f102abcca22670dd4c2c24aeee869e39ffc81680ac647f70314",
+  "diagnostic": {
+    "rule": "lint/correctness/noUnsafeFinally",
+    "path": "packages/server/src/transaction-service.test.ts",
+    "line": 4330,
+    "column": 24,
+    "errors": 1,
+    "fatalOrInfrastructureObserved": false
+  },
+  "authorityDirectPins": [
+    {
+      "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-lint-error-observation-preparation-1/execution-gate.json",
+      "sha256": "c127ce33601f47b6f15e0e0ad76fe812403c3edffc99a7663da71b5eac02fbe2"
+    },
+    {
+      "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-lint-error-observation-root-proposed-authority-1/execution-gate.proposed.json",
+      "sha256": "c127ce33601f47b6f15e0e0ad76fe812403c3edffc99a7663da71b5eac02fbe2"
+    },
+    {
+      "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-lint-error-observation-root-proposed-authority-1/index.json",
+      "sha256": "208dba8ccfcecdd70032b6504e1dd0c2d3f9d3bb90789903ab207eb1a6f5c942"
+    },
+    {
+      "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-lint-error-observation-candidate-native-precision-1/closure.json",
+      "sha256": "5e7a373fe35cde29bf5216c74abdc8805eb1fbd62f6c2fc170275803b0607ff3"
+    },
+    {
+      "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-lint-error-observation-candidate-root-static-acceptance-1/acceptance.json",
+      "sha256": "d37288e88a2af0aea8c85dec0ed2804b83e08e24136568853aa3436a4d76c867"
+    },
+    {
+      "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-lint-error-observation-preparation-1/preparation-index.json",
+      "sha256": "ce3c5c5dc67303293be1dd22c510248216edd8efb4fe818a8bf5364a9d4f7cea"
+    },
+    {
+      "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-lint-error-observation-helper-native-mechanics-1/closure.json",
+      "sha256": "3600e8b552612b7d01553af5d243c50d42759fae0aa186e1722f8f9db84d3cc3"
+    },
+    {
+      "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-lint-error-observation-helper-root-static-acceptance-1/acceptance.json",
+      "sha256": "7de285aecb711b4219de734d1c4dbcd0adbd888f2e8bb8395723ba4a24b7c68e"
+    },
+    {
+      "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-lint-error-observation-fixed-protocol-preparation-1/index.json",
+      "sha256": "ac3bc7ce56c4a84d2a7977813a649c196fd9e9a1c6d973574cf0ea87277bd385"
+    },
+    {
+      "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-lint-error-observation-fixed-protocol-preparation-1/proposals/lint-error-observation.capture.txt",
+      "sha256": "9b4c8f7b9e3b6f74c4ce8e94ddf311107486c7179582d31959c61b5d7f427162"
+    },
+    {
+      "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-lint-error-observation-fixed-protocol-preparation-1/section-boundaries.json",
+      "sha256": "2fc311dea0954296df937bd0c9630476b28b249b116b95bd688467cb0b820fdf"
+    },
+    {
+      "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-lint-error-observation-fixed-protocol-native-mechanics-1/closure.json",
+      "sha256": "a9d6ce30746d6d7ab9c1acd0ffa64c99abb3f510d5a14b4853b74c840495bdea"
+    },
+    {
+      "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-lint-error-observation-fixed-protocol-root-static-acceptance-1/acceptance.json",
+      "sha256": "f06fb31970b4732bb1fbcc127e13d5eced5ad3722044497a3f73094fa0b8e50f"
+    },
+    {
+      "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-lint-error-observation-root-rendering-authoring-release-1/release.json",
+      "sha256": "5f0bfcf0544644115c6762c424a5bd2d1845b13cf03c09abeb4c465e4675be19"
+    },
+    {
+      "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/root-G09-lint-error-observation-text-candidate-publication-1.remote-readback.json",
+      "sha256": "b0736105007643bdb05a95c481ca33a62e7f9573a851d304029aad47481f9e31"
+    },
+    {
+      "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-lint-error-observation-preparation-1/execution-gate.closed.json",
+      "sha256": "771887f040a1ac188df56442820aff56595e1d2da559c0a8292b1d01da7321fe"
+    },
+    {
+      "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-lint-error-observation-preparation-1/reference-pins.json",
+      "sha256": "74dd6767ba04e4d8901af330f06f6e24286770e9fca4eb3c6d781b9d0a2b8f3e"
+    },
+    {
+      "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-lint-error-observation-root-proposed-authority-1/reference-pins.json",
+      "sha256": "32dc5af24f19b94c422b85313782e5993c773ade9cd4a66b56e43215c0f73a92"
+    },
+    {
+      "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-lint-error-observation-fixed-protocol-preparation-1/reference-pins.json",
+      "sha256": "4d7c0f9b13d8a4ecd3b45f3f8147d0104c2b1a9ce70ee9787cffe956d1091f27"
+    },
+    {
+      "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation3-lint-root-failed-disposition-1/disposition.json",
+      "sha256": "0d2adcaa740ba347447942ede1d421d49991d3e3cb34eda70f38837671f0dad5"
+    },
+    {
+      "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-lint-error-observation-root-execution-acceptance-1/acceptance.json",
+      "sha256": "1018563f6f4514e3d2918c2a852e64b0d9f0cd0fe00f9fd81c5c6288d16ae0f0"
+    },
+    {
+      "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-lint-error-observation-root-execution-acceptance-1/index.json",
+      "sha256": "29cb94267c88b2d0d41c9f243650333fdeda0b506df960c4e4a647a92f23801a"
+    },
+    {
+      "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-lint-error-observation-root-instantiated-source-1/index.json",
+      "sha256": "b979d61b48c3a36711bcce342751cc63373b4a20a44abf15867eb1e2748d70a8"
+    },
+    {
+      "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-lint-error-observation-root-instantiated-source-1/instantiation.json",
+      "sha256": "fa8baef5ed2252b1eea44df4e1e670ff9cd4db62baf4f897cd36d5d2c2dbb299"
+    },
+    {
+      "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-lint-error-observation-final-manifest-native-precision-1/index.json",
+      "sha256": "6b4c25341676f9711df2fc6f87be5635866df9499b71781d9159f3ab419a6a57"
+    },
+    {
+      "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-lint-error-observation-final-manifest-native-precision-1/closure.json",
+      "sha256": "b4268d696eff8500cff39539c9480bf8b349589f8153ff582c797d8224b2d865"
+    },
+    {
+      "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-lint-error-observation-root-final-execution-acceptance-1/inspection.json",
+      "sha256": "359e221c6836cada664a88cc77c73d4ac0fe04e9a5c150a5599a8276abc88ba0"
+    },
+    {
+      "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-lint-error-observation-root-final-execution-acceptance-1/acceptance.json",
+      "sha256": "13d21429ec5af6fe03fe638cf80e322e222e7636035973ac7824edd6d9038247"
+    }
+  ],
+  "publicationObservations": [
+    {
+      "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/root-G09-lint-error-observation-complete-authority-publication-1.remote-readback.json",
+      "sha256": "c0ac69e0520681498c10a7d690e4978b5ced68b55daf3dbbac55aad6ec655202",
+      "commit": "ed10cc1f02e7b333df71ba8013440a21a4b23692",
+      "meaning": "Retained root publication/readback observation; not fresh Git verification by auditor"
+    },
+    {
+      "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/root-G09-lint-error-observation-activation-publication-1.remote-readback.json",
+      "sha256": "e46259bcef25ca7f26eb9bacdbcba5838389d80b0df0d38b52b34b23e2c41102",
+      "commit": "8ece77028405db997f8dd020f7b7da8c15f20fd7",
+      "meaning": "Retained root publication/readback observation; not fresh Git verification by auditor"
+    }
+  ],
+  "limitations": [
+    "Administrative guard/tool process identities UNKNOWN; no original raw tool receipt independently decoded.",
+    "Census proves only recorded task PID/group absence at its actual sample; observer/probe self absence, unseen/escaped/transient tasks and global containment are not established.",
+    "Inner workload stdout/stderr are merged in the complete .log; root wrapper and census have separate BOTHPIPE acquisition.",
+    "Temporary root retained; no empty-root or deletion proof.",
+    "C witness first sample bounds completed A/B observation on common clock; later audit/publication excluded, no OS hard realtime guarantee.",
+    "Original P3 failed lint remains failed; filtered diagnostic counters do not prove warning/info absence or ordinary lint quality."
+  ]
+}

@@ -1,0 +1,42 @@
+{
+  "state": "CLOSED PARTIAL REVIEW CANDIDATE; no evaluation",
+  "accepted": false,
+  "authoringFrozen": true,
+  "implementationIndexSha256": "e0328a5428af237b2903cfb91bec18fa89724cecc8927619ea26b074c87f9e1b",
+  "harnessImplementationSha256": "e0328a5428af237b2903cfb91bec18fa89724cecc8927619ea26b074c87f9e1b",
+  "implementationFiles": 1775,
+  "implementationExclusions": [
+    "closure.json",
+    "implementation-hashes.json",
+    "preparation-index.json"
+  ],
+  "bindingSha256": "0a7b610a6953bb9894a7d5109921f7701984d513860b7de9d22b0b40ce7531d9",
+  "subjectImplementationSha256": "6cc0f6e04d12877439f26ebec5d9b65fa543894a7789dea143fef156efdb771e",
+  "predecessorPreparationIndexSha256": "bdc40c720d0fe18147e684cc8ef7677b2ebfb79f17485e47a0192d3070b873f9",
+  "sourceMapSha256": "7fb84ed403b7be9dd587ed2b2980d0d8e5def7e260186c948abd1c4a1f997dda",
+  "currentSourcePaths": 679,
+  "originalCaseIDs": 48,
+  "finiteProspectiveInvocations": 60,
+  "genuineDeltaPairs": 12,
+  "pythonSyntaxMethod": "AST parse only",
+  "perlEvaluation": false,
+  "syntheticReleased": false,
+  "productReleased": false,
+  "approvedInvocations": [],
+  "noRetry": true,
+  "noAttempts": true,
+  "blockers": [
+    "BLOCK-HARD-ISOLATION",
+    "BLOCK-BOOTSTRAP-AVAILABILITY",
+    "BLOCK-NATIVE",
+    "SOURCE-ENV",
+    "PROTOCOL-AJV",
+    "FRESH-PROVENANCE",
+    "HOST-REMAINING",
+    "HOST-PIPE-SCOPE",
+    "PRODUCT-TIMING"
+  ],
+  "requiresOtherNativeFullReview": true,
+  "requiresDurableRootSyntheticOnlyRelease": true,
+  "noHostContainmentOrTimingProof": true
+}

@@ -1,0 +1,9 @@
+{
+  "finding": "N1 report loss on target cleanup failure",
+  "decision": "accepted and repaired",
+  "repair": "optional local synchronous onObserved invoked after actual returned result within try; writers before finally; callback failure captured and cleanup still runs",
+  "appSha256": "7bcb736e933c26d603ca40244e08eabef62f53a3894f988a2235751441796fe9",
+  "noSyntheticResults": true,
+  "rootReviewedCorrectionPatch": "9a15fb867f023d5ba38c04daee5f9fb018de490d81be5970dbffcb137324e2ac",
+  "executionAuthorized": false
+}

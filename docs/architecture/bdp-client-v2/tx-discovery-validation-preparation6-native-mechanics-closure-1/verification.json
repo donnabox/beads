@@ -1,0 +1,31 @@
+{
+  "state": "STATIC VERIFICATION COMPLETE; no helper imported or executed",
+  "accepted": true,
+  "checkCount": 12249,
+  "counts": {
+    "physical": 1312,
+    "indexed": 1311,
+    "implementation": 1301,
+    "origins": 1218,
+    "referencePins": 4105,
+    "source": 679,
+    "deltaPairs": 28,
+    "stages": 52,
+    "immediateAuditPairs": 16
+  },
+  "helpers": {
+    "run.py": "16049341d6d810ea5c46a88220da30f9a04e436ee7fea0061cc26e58ba76ba70",
+    "gate.py": "f3781357733810861cad42b92e667822e7d3ac60e1f214e39e7f22e1bb63bb8e",
+    "audit.py": "1d2bf73e1a35d37b1d1032358ea81c4c5a97ea0fa6304603730f17af96438d2b",
+    "packages.py": "162e4f04ffe9aeffe886b194c7ed41241c6ce3cf37e9c93f92fec0969095aea9",
+    "guarded-action-session-20261018-021624-549f.py": "b2d467920638e68d3b007ba9daa432e971636245eca988bfb29d7a99d6e3fb30"
+  },
+  "schemaReversalByteExact": true,
+  "onlyElevenArraysChanged": true,
+  "currentSourceIdentity": "9b7d3a753bc22a3188f5dda7199fdb7321f65dfa0fa745cce082f3f82a837a9f",
+  "preparationIndexSha256": "b897b61a370de781f6d83409f71a39f924c7f0c0960b1f46f5cb2a344ad4e6bc",
+  "implementationIndexSha256": "b53866b0483df6d941b3a7154f180dafffca394df35832ef31c64a3a4006bc73",
+  "sourceBindingSha256": "b3547ec381d4e05121d3994d6550fe2f160a8ba266195a8724a6d5a851e268d4",
+  "reportSchemaSha256": "b74e093741780341c0094aebb4d629582e9abd2532052bd15eab8051b5f256e0",
+  "allChecksPassed": true
+}

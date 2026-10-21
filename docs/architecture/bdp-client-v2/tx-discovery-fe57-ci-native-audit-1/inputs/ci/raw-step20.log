@@ -1,0 +1,24 @@
+﻿2026-10-18T17:48:15.2556789Z ##[group]Run pnpm e2e:ready:preflight
+2026-10-18T17:48:15.2557146Z pnpm e2e:ready:preflight
+2026-10-18T17:48:15.2623913Z shell: /usr/bin/bash -e {0}
+2026-10-18T17:48:15.2624179Z env:
+2026-10-18T17:48:15.2624451Z   PNPM_HOME: /home/runner/setup-pnpm/node_modules/.bin
+2026-10-18T17:48:15.2624788Z   GOTOOLCHAIN: local
+2026-10-18T17:48:15.2625011Z ##[endgroup]
+2026-10-18T17:48:15.7209276Z $ vitest run scripts/e2e-ready.test.mjs --reporter=verbose
+2026-10-18T17:48:16.0194268Z 
+2026-10-18T17:48:16.0198530Z  RUN  v4.1.10 /home/runner/work/bdp/bdp
+2026-10-18T17:48:16.0200062Z 
+2026-10-18T17:48:16.6188087Z  ✓ scripts/e2e-ready.test.mjs > E2E child supervision > terminates a descendant that inherits the supervised child's stdio 62ms
+2026-10-18T17:48:16.7208733Z  ✓ scripts/e2e-ready.test.mjs > E2E child supervision > kills a same-group descendant after its leader exits and it ignores SIGTERM 138ms
+2026-10-18T17:48:16.8773011Z  ✓ scripts/e2e-ready.test.mjs > E2E child supervision > reports a process group that survives SIGKILL and abandons its local handles 3ms
+2026-10-18T17:48:16.8776157Z  ✓ scripts/e2e-ready.test.mjs > E2E child supervision > observes a failed fire-and-forget termination without rejecting 1ms
+2026-10-18T17:48:16.8779334Z  ✓ scripts/e2e-ready.test.mjs > E2E child supervision > waits for the child close event after its process group disappears 2ms
+2026-10-18T17:48:17.1264573Z  ✓ scripts/e2e-ready.test.mjs > E2E child supervision > flushes a final unterminated server diagnostic before stop validation 155ms
+2026-10-18T17:48:17.4795560Z  ✓ scripts/e2e-ready.test.mjs > E2E child supervision > runs the packaged ready CLI against a test-admitted bdptest service 599ms
+2026-10-18T17:48:17.4817839Z 
+2026-10-18T17:48:17.4822601Z  Test Files  1 passed (1)
+2026-10-18T17:48:17.4823811Z       Tests  7 passed (7)
+2026-10-18T17:48:17.4824693Z    Start at  17:48:16
+2026-10-18T17:48:17.4825984Z    Duration  1.44s (transform 242ms, setup 43ms, import 311ms, tests 962ms, environment 0ms)
+2026-10-18T17:48:17.4827202Z 

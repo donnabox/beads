@@ -1,0 +1,41 @@
+# Sequence refusal draft — independent static preflight audit
+
+**No remaining preflight blockers.** The one route-grant correction identified during this review is present in the author-confirmed stable successor. Root can consider measured execution release on the identities below. This is static preflight review, not proof that tests compile/pass, installed behavior works, or code council is complete.
+
+## Exact reviewed draft
+
+Author update_implementation confirmed the original stage1 draft stable, then confirmed the receipt-root successor stable. Checkout `/Users/dbox/repos/wt/vickie/vickie-sequence-refusal-context` remains an uncommitted six-file draft on assigned main `d50f554cf6418ba036072ebf6795cb272cd6cbc1`, parent tree `7544b53aa8aa6d7edae94bd6bf0a4d157ee55985`.
+
+- `transaction-sequence-refusal-context/preflight.md`: SHA256 `d415f8c5a4b8bca180313528f0874b67702587c7ea6ec028edbcad3a27c9806f`.
+- `transaction-sequence-refusal-context/preflight-bounds.json`: SHA256 `cbeed40827a4b76b5c13cc0764bb89571c9a31ddd76232769f05ec2e75073ee8`.
+- `transaction-sequence-refusal-context/source.diff`: SHA256 `e555a7cfa328993aab66f378fcfda3a07b4d3e6df82cba289effb23aa1405e2f`.
+
+Checked accepted plan v2 and root-plan acceptance, all six source paths and hashes, installed test, control patches/selectors, body preimages and measured ledger. Source footprint is828 additions/6 removals, including the untracked installed test. Five source hashes are unchanged by the correction; only the new installed test changed. Original artifacts are preserved in `stage1-original/`; the correction record identifies both artifact sets. All six successor file hashes and sizes match the bounds artifact. No tests, builds, services, package installs, controls, network or outward actions ran in this review. Python was used only to read files, recompute hashes/byte counts and compare static JSON; it did not import or execute project code.
+
+## Closed correction: canonical receipt-root grant
+
+The original installed test accepted any same-origin URL beginning with the Scope receipt prefix. The receipt schema's receiptCore.id is only absoluteHttpUrl (`schemas/bdp-v0.schema.json:3815` and7); it does not enforce a root path. The raw executor's canonical URL check rejects fragments and malformed canonical encodings but allows legitimate query strings and additional path segments (`packages/conformance/src/http-executor.ts:398–428,532–563`). Therefore those lower layers did not justify granting a receipt page or query-bearing URL as the root.
+
+The successor's local `observedReceiptRoot` at `apps/bdptest/src/transactional-sequence-refusal-installed.test.ts:102` now checks canonical exact href, the fixed Scope prefix, a single nonempty `[A-Za-z0-9_-]+` suffix, no query/fragment/userinfo, and8192 length/byte bounds before assigning the dynamic route at366. This mirrors the existing source-private conformance receipt-root rule without changing exports. Its two valid and20 invalid source-only fixture cases include nested/page paths, query/fragment delimiters, noncanonical encoding, wrong Scope/origin, userinfo and length overflow. They make no HTTP requests and add no child. These tests are authored, not executed. The request/control ledger is byte-for-byte unchanged. No remaining route-grant issue was found in this bounded check.
+
+## Static execution bounds and oracles
+
+The actual installed flow has13 calls: two singleton seeds; initial413 and406; one observed root GET; Beads/Events; two different-identity key reuses; repeated413 and406; final Beads/Events. The counter enforces13 and the label list asserts the exact order. Four fixed routes plus the strictly validated observed receipt root form the only grants. No polling, Type fetch, hidden child/reopen, or additional installed control appears in the scenario.
+
+All13 retained body preimages match their byte counts and hashes. Body sizes are94,94,5497,176,0,0,0,104,94,5728,183,0,0 bytes; total11970, maximum5728. Both capacity payloads have33 independently keyed members, no carrier key, and fit65536. The exact executor retains request/header/response limits65536/16384/131072; runtime target8192 is separate. The largest static URL is53 bytes. Dynamic receipt root is explicitly bounded. Response sizes in preflight are planning estimates, not measurements. Five-second exchanges,90-second cohort,120-second outer and the existing close bound remain unchanged.
+
+The predecessor negative reaches request3 after genuine seed responses. Its capacity helper first checks413, validates the Problem and matches code=limit-exceeded plus limit=sequence.operations; only then does the named string-presence assertion fail on missing context. The early generic checks for actual write completion, Host, response wire and non-attesting/Vary behavior are also present on the predecessor path. Static inspection finds no earlier intended mismatch. Actual failure attribution and cleanup still require execution evidence; exit1 alone will not suffice.
+
+The positive repeats both refusals atpos-4 after real key-reuse commits. Expected IDs/properties/metadata and exact finite Event counts/next:null are independently specified; actual revision/transaction identities are compared to real receipts. The historical receipt body is compared unchanged while headers use currentpos-2. These checks implement the accepted limited evidence claim without claiming exhaustive cache or profile correctness.
+
+The author ledger remains **13 new positive +14 unchanged direct regression +3 expected predecessor =30 expected requests/three children**, with **40/three maximum**. The predecessor is separately packed assigned parentd50, not stale8c. One ordinary suite invocation adds13 requests/one child for the positive; the new static receipt-root cases add no transport work. The listed source/static/build commands do not select the broad workspace or transactional matrix. The build script is clean+TypeScript; evidence:verify reads existing evidence. No additional installed cohort is concealed in the displayed commands.
+
+## Controls, receipt separation and ownership
+
+All three patch hashes match the machine table. Omission and stale-position controls alter both selected branches but each runs the HTTP parameterization separately with413 first and406 first, so an initial failure cannot hide the other path. Omission preserves the owner call while removing context projection; stale context changes only position topos-1. Each reaches the named presence or position assertion after status/Problem/body checks. The over-wrap control adds context to excluded sequence errors; the selected service test checks the first carrier-key400 header absence before the observation spy. Thus its named absent-header failure discriminates the intended defect. This is five selected runs across three derivatives, not extra installed cohorts; no control has been executed yet.
+
+The HTTP refusal-only tests keep all live graph/Event/receipt observations before their final read-only principal/key/receipt inventory. That helper closes the runtime and is not followed by a live request. Exact inventory equals only the three seed receipts, and includes rejection-key absence for all initial/repeated33-member and one-member attempts. The separate reuse fixture legitimately expects receipts for subsequently admitted reused keys. No production inspection API or graph-only inference of receipt absence was introduced.
+
+The six modified paths match exclusive assignment: service/HTTP, their tests, installed test and progress document. Discovery service prefix and the direct-submission HTTP suffix remain unchanged; runtime/config/store/schema/parser/catalog/export surfaces are untouched. This review and the adjacent comparison/schema work are read-only, so no additional writer overlap was introduced. Future overlapping slices still require root assignment after this source is frozen/integrated.
+
+Execution release and later code review remain root-owned. A static preflight with no blockers does not waive exact source/package binding, named control failures, child/PID cleanup, preservation of failed attempts, independent native/Claude code review or CI gates.

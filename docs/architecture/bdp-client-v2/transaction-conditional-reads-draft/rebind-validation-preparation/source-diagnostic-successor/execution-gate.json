@@ -1,0 +1,74 @@
+{
+  "released": true,
+  "session": "2026-10-08T20:26:35Z-81e5",
+  "finalHead": "2dfd2c6cc84a28b1dd336f4184c1a5f910ce8a96",
+  "finalTree": "1823346779033dec6255bcab93f69d7149d33055",
+  "rootAcceptance": {
+    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-conditional-reads-draft/rebind-validation-preparation/source-diagnostic-successor/root-release.json",
+    "sha256": "8b533784667be29f86e9478885d9563ea4e562072952d040c6d22d367b38eb4b"
+  },
+  "sourceBinding": {
+    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-conditional-reads-draft/rebind-validation-preparation/source-diagnostic-successor/reviewed-source.json",
+    "sha256": "2d43cf58a05eb60d247fdc122b7e17621e98bbb899b2dbffbb6d95e3c451b592"
+  },
+  "inputBinding": {
+    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-conditional-reads-draft/rebind-validation-preparation/source-diagnostic-successor/input-binding.json",
+    "sha256": "f60a4db0976ab95045c85fa6bb04b9de47ddcbb321caa9b87401406da965683b"
+  },
+  "approvedCommandIds": [
+    "typecheck",
+    "format-check",
+    "lint",
+    "boundaries",
+    "cumulative-full",
+    "binding-source",
+    "receipt-first-page",
+    "app-static"
+  ],
+  "phaseRelease": {
+    "source": true
+  },
+  "preparationSha256": {
+    "adaptation.patch": "261f0bcf433df315c16d3daecd13ab90fcfc1f64b83e916d0df295c5410550f4",
+    "commands.json": "50d2f1782b17e6681cf06c233d3bfbd3b42e1b96d174179c3b598190f061e921",
+    "context-binding.json": "d933269be1358f46795ca4d18b02610382a727ebfc5254bbddfe282b97a92e91",
+    "execution-gate.example.json": "06bf2246194e11d6cb793e54979fd0eba5b2e0d3931ebf309c64e9a0bb00e3fa",
+    "gate.py": "4717fc48325c04144bd51fbc69f3d5c05e59887d45bbad3caf38a07cfc9224d0",
+    "input-binding.json": "f60a4db0976ab95045c85fa6bb04b9de47ddcbb321caa9b87401406da965683b",
+    "input-changes.json": "3e5c09d6be80229d93ca85cc741e793b9f73c33f1e16d1a8b224ef03e7cf08d6",
+    "predecessor-index.json": "9259e0cf5245fbe4e69a62e6a5f19767b40e11f86a5580b0c4c892954073a623",
+    "report.md": "f054fac6d507ab812e4f2536d7a7b3ce18c682f0215bc139f2edd049d6f7cc73",
+    "reviewed-source.json": "2d43cf58a05eb60d247fdc122b7e17621e98bbb899b2dbffbb6d95e3c451b592",
+    "root-release.example.json": "7d65ee65fd5f101847d4cc2420db8052f8e54de6d83a7ae18b7d14c8f45efaf1",
+    "supervise.py": "52ba9a5d35913b7b0c84793248481b877198098ffa490e86707e330e74322251",
+    "tool-binding.json": "8c24f6ce5924ec852d44e0679554828cbd67ad3673d76902f26b3f62a91ce520"
+  },
+  "guardSha256": "fd81ba029cd4e7c7e60623df89e8292af91141d311d9ce789ed19e2152375e84",
+  "toolHashes": {
+    "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node": "1ee75375e33b94fc34b3b19aede049e11dae90efb63b374dc96d6bdace70c4b8",
+    "/Users/dbox/.cache/node/corepack/v1/pnpm/11.20.0/bin/pnpm.cjs": "67b035e322203961795e8e34ca63a08c37a4386eda94107fb3d28f3246d882ad",
+    "/Users/dbox/repos/wt/vickie/vickie-transaction-conditional-reads/node_modules/vitest/vitest.mjs": "39db22f579acf5639bbb17a261408debbde03f4692c0c439e77e7f13aeba74d6",
+    "/Users/dbox/repos/wt/vickie/vickie-transaction-conditional-reads/node_modules/@biomejs/biome/bin/biome": "7ffb4d217e5ddefcc19ca6afe76bb982f5eb36c9a124448105195fbcfc84bd77",
+    "/opt/homebrew/opt/python@3.14/bin/python3.14": "2477b47fa3ae65b9574eb18a15edb364e96948eaa1875ad3f1c80d780efc9c12"
+  },
+  "sourceLockSha256": "4150d8821c96dbc2cfec0b2762ff76b58318079f65fa4f5c8858ef2dd61f8d6d",
+  "consumerLockSha256": null,
+  "installedProvenanceSha256": null,
+  "expectedProductionVersions": {
+    "@bdp/protocol": "0.0.0",
+    "@bdp/server": "0.0.0",
+    "ajv": "8.17.1",
+    "ajv-formats": "3.0.1",
+    "fast-deep-equal": "3.1.3",
+    "fast-uri": "3.1.5",
+    "json-schema-traverse": "1.0.0",
+    "require-from-string": "2.0.2"
+  },
+  "note": "CLOSED successor on corrected186/2828 draft. Native review and external focused review pending. No build/installed/integration/publication authorization.",
+  "consumerInventorySha256": null,
+  "councilAccepted": false,
+  "authorizationRequirements": {
+    "source": "rootAcceptance accepted, sourceValidationAuthorized, nativeCodeReviewed, externalReviewPending, diagnosticOnly, reviewedDirtySourceOnly true; councilAccepted false; exact 56 source-case prefix only"
+  },
+  "servingSuccessorCommit": null
+}

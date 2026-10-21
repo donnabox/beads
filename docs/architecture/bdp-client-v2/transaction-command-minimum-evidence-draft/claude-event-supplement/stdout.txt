@@ -1,0 +1,70 @@
+# Static review — successor delta (Event-ID correction + names-first header guard)
+
+Scope: the four-file successor delta, the root header dispositions, and the independent source audit, checked against the supplied serializer/runner/server excerpts. No tools, no execution, no files touched. Everything below is either (a) derivable from the quoted excerpts or (b) explicitly labeled as an unverified assumption.
+
+## Verified against actual source
+
+**The Event-ID correction is arithmetically correct for the quoted renderer.** `transaction-events.ts:76-79,99` produces `ev_${hash("epoch",epoch)}_${hash("view",view)}_${hash("source",source)}_${checkpoint}_${ordinal}` with `hash = sha256(JSON.stringify([tag,value])).base64url`. The app's construction at `apps/bdptest/src/transactional-matrix.test.ts:2510-2523` builds `[["epoch",e],["view",v],["source",`${scope}events/`]].map(sha256(JSON.stringify(t)).base64url).join("_")` and wraps it as `ev_<joined>_pos-N_0` — byte-identical shape and identical hash input (`JSON.stringify(tagged)` where `tagged === [tag, value]`). Corroborated independently by the server's own cursor grammar `transaction-events.ts:75`, which requires exactly three 43-char base64url segments, then `pos-N`, then an ordinal; 43 chars is unpadded base64url of SHA-256. The audit's prescribed non-circularity holds: no value is taken from `event.id`, and the production renderer is not imported.
+
+**The `pos-1/pos-2/pos-3` checkpoint literals are already corroborated by pre-existing assertions in the same hook**, so they add no new fixture coupling. `renderTransactionEvent` uses `group.checkpoint`, and `projectTransactionEventGroup` (`transaction-events.ts:202-203`) forces `checkpoint === position === pos-<scanPosition>`; `readEvents` scans `at = 1..head` (`transaction-store.ts:1583-1619`). Existing assertions at `transactional-matrix.test.ts:2414-2416` already pin serving position pos-1/pos-1/pos-2/pos-2/pos-3/pos-3 for the six mutation exchanges and pos-3 at the read, and only the three creates commit (replay returns the retained receipt; conflict and stale-update fail), so head = 3 with one event per group. `_0` is cross-checked by the adjacent `ordinal: 0` assertion on the same rendered object, since the renderer spreads `...event` and overwrites only `source`/`id`.
+
+**No weakening of Event inventory from dropping `/id` in the manifest.** The remaining 5-tuple pins subject a/b/c in order, so duplicate or substituted events remain detectable; ordered-tuple cardinality is enforced at `runner.ts:2381-2384`; presence/syntax of `id` stays covered by the `eventPage` schema assertion. Projections/`equals` arity stay in sync (5 and 5) in both the manifest hunk and `transactional-cumulative.test.ts:2699-2708`, and the JSON edit is well-formed. Assertion count legitimately stays 192 (`:2718`) — a projection was adjusted, not an assertion added or removed.
+
+**Root dispositions check out against the excerpts.**
+- F1 premise confirmed false-by-source as claimed: `http-executor.ts:338` (`*` repetition) and `:655-672` (unconditional `append`, no truthiness filter) emit empty-valued `M`/`Z` fields. The guard is purely defensive.
+- F1's *mechanism* also holds, which is the non-obvious part: `http-executor.ts:671` rejects any authored name matching `SECRET_FIELD`/`RESERVED_FIELDS`, so a credential line shifted into the authored window can never match an authored name — the names-only comparison always fails first, and only header *names* enter the diff.
+- F2 confirmed: `exactHeadersMatch` (`runner.ts:1827-1867`) checks authored name+value, credential block by handle names with dedup and exact count, generated defaults with the same `authored ∪ credential` filter the serializer uses (`:1852-1856` vs `http-executor.ts:718`), Host/Connection/Content-Length, and terminates on `index === actual.length`. Controls require it to pass (`transactional-matrix.test.ts:2778-2779`). A duplicate count oracle would add nothing.
+- F3 confirmed: the suffix scan at `:2368-2372` covers every line past the authored prefix; for the three `O` actions both prefix assertions are vacuous, which is exactly what F3 claims.
+- F4 confirmed: `append(entry.name, entry.value)` preserves authored case and `runner.ts:1828` compares case-sensitively, so an exact-case precheck is consistent, not over-strict.
+- Attribution disposition satisfied: the new coverage `reason` places exact IDs in the app-supplement clause and retains "These supplements are not manifest assertion bindings."
+
+## Findings
+
+**1. The header→context field identity that the whole new oracle rests on is not in evidence. Severity: Medium (unverified).**
+Location: `apps/bdptest/src/transactional-matrix.test.ts:2511-2512` vs `packages/server/src/transaction-http.ts:500` (`context(jsonResponse(observed.page), observed.context)`).
+Impact: the app hashes `response.headers["bdp-scope-epoch"]`/`["bdp-authorization-view"]`, while the renderer hashes `context.scopeEpoch`/`context.authorizationView`. Equality requires the `context()` helper to stamp those header values verbatim with no prefixing, re-encoding, or token wrapping. That helper is not among the excerpts, and the audit asserts the link without citing it. If it transforms the value, the exact-ID expectation is simply wrong and the pending installed run fails with an opaque 43-char diff.
+Fix: cite the `context()` header-stamping site (near `transaction-http.ts:500`) in the audit record before accepting, confirming verbatim copy of both fields.
+
+**2. The canonical scope Event Source URL is likewise assumed. Severity: Low-Medium (unverified, non-silent).**
+Location: `:2513` (`["source", \`${scope}events/\`]`) vs `transaction-events.ts:267` (`source.url`) via `eventSource(sourceUrl)` / `transactionEventRequest`, neither excerpted.
+Impact: if the canonical `source.url` differs (trailing slash, query retention), the ID is wrong. Not silent — the adjacent `source: \`${scope}events/\`` assertion in the same `toMatchObject` fails together with `id`, which is diagnosable rather than misleading.
+Fix: no code change; note in the record that `source` and `id` are co-dependent oracles so a URL-spelling regression surfaces on both.
+
+**3. Coverage bytes moved with no coverage-side pin re-verified, and the branch's fifth file is untouched by the successor. Severity: Medium (unverified, cross-file).**
+Location: `packages/conformance/test-support/transactional/coverage-v1.json` `reason`; `packages/conformance/src/profile-contract-plan.test.ts` (modified on the branch, **not** in this delta).
+Impact: the two `withoutMinimumRow` pins at `transactional-cumulative.test.ts:2732-2735` are provably unaffected — both edits are confined to the minimum row (manifest: the `m-events` action; coverage: the row `reason`) and that row is excluded from those digests, and the 13-prior-object slice check at `:2737-2740` is likewise unaffected. But the manifest shrank and coverage grew relative to the previously reviewed snapshot, and this delta updates no fence, no coverage digest, and nothing in `profile-contract-plan.test.ts`.
+Fix: before acceptance, confirm (i) `profile-contract-plan.test.ts` holds no full-coverage digest/byte/node or `reason` phrase-length constraint, (ii) no residual `pos-1-0`/`pos-2-0`/`pos-3-0` literal exists anywhere on the branch outside the stored-form producer `transaction-batch.ts:644-659`, and (iii) no literal manifest digest is pinned outside the two `withoutMinimumRow` values. Items (i)-(iii) are exactly the "remeasure all affected derivative bindings" step the audit deferred.
+
+**4. Indexed access drops the file's `!` idiom and can silently stringify `undefined`. Severity: Low.**
+Location: `:2523` `${["pos-1", "pos-2", "pos-3"][i]}`.
+Impact: the file is written for `noUncheckedIndexedAccess` (`minimumNames[i]!`, `requests[index]!`, `resources[i]!` — the last on the immediately preceding line). A template placeholder of type `string | undefined` is not a compile error, so an out-of-range index would embed the literal text `undefined` in the expected ID instead of failing loudly. Unreachable today (`i ∈ {0,1,2}`), so this is a diagnosability/consistency defect, not a failure.
+Fix: use `` `pos-${i + 1}` `` (matching the existing idiom at `:2424`) or add `!`. `pos-${i + 1}` remains an independent literal derivation and does not violate the audit's "do not derive from the Event under test" constraint.
+
+**5. The names-only precheck carries no rationale and reads as dead weight. Severity: Low.**
+Location: `:2362-2367`. The pre-existing comment above it is about credentials and generated framing, so it now appears to introduce the new assertion while actually explaining the one after it.
+Impact: a future maintainer (or a formatter/dedup pass) will see a names assertion strictly subsumed by the following value assertion and delete it, silently removing the F1 privacy property — which, per finding above, is the only thing standing between a shifted authored line and a credential value in a diff.
+Fix: one line, e.g. "names first so an omitted or misordered authored line fails before any value array — including a shifted credential value — is printed."
+
+**6. The coverage omissions list no longer matches what the manifest constrains. Severity: Low.**
+Location: `coverage-v1.json` minimum-row `reason`, "Whole contract remains unqualified: …" clause.
+Impact: the pre-successor row asserted exact served IDs (incorrectly); the row now constrains Event identity only through `eventPage` schema syntax. Because IDs are legitimately implementation-private (`docs/specs/bdp.md:5401-5403`), the manifest *cannot* portably pin them, so the correct remedy is attribution, not assertions — but the unqualified list currently does not mention Event-ID/cursor identity at all.
+Fix: add Event-ID and cursor identity/stability to the existing omissions sentence. This is attribution accuracy under disposition #4, not test expansion.
+
+**7. The deliberate duplication of a private server format has no pointer to its source. Severity: Low.**
+Location: `:2509` comment.
+Impact: the expectation intentionally re-implements `renderTransactionEvent` without importing it, so any legal future change to the private spelling breaks this test with no breadcrumb from the failure site to the producer.
+Fix: name the source in the comment — `packages/server/src/transaction-events.ts` `renderTransactionEvent` (:76-100).
+
+**8. Informational (out of delta scope, do not treat the delta as resolving it).**
+The served ID is a function of epoch and view, not only of checkpoint/ordinal/projection as `bdp.md:5401-5403` describes, and `bdp.md:5389` calls Event IDs immutable within a source. The counter-reading is that reads are deliberately fixed-view (`transaction-store.ts:1541-1542`, cursor context validation at `:1573`), so context is part of "the projection." The delta does not change production code and labels the spelling non-normative, which is right — but by asserting an epoch/view-bound ID as correct it quietly ratifies that interpretation, and the app expectation is only valid within one fixed-view session. Worth recording as root's interpretation rather than leaving it implicit in a test literal.
+
+## Explicitly not claimed
+
+- The new row digest `4344f370…` (`transactional-cumulative.test.ts:2722`), the 192 count, and the two `withoutMinimumRow` digests are consistent with each other and with `newRowCompactSha256` in MEASURED COUNTS, but all are unverifiable without execution; `"executed": false`. Note the digest hashes the parsed manifest row, so the Biome reflow of the `projections` map arrow cannot affect it.
+- All fence arithmetic is internally consistent (manifest disk/normal +4096, nodes +64, coverage +1024 over the measured values; every delta inside `planningLimits`). I cannot confirm the measurements correspond to the post-successor tree.
+- The new oracle sits at hook index 9, which depends on the pre-existing assumption that the `m-retained-a` dynamic exchange is never delivered to `afterExchange` (it is excluded from `minimumRawIds` and the hook asserts `source === "raw-http1-serializer"`). The executor wiring is not excerpted and this path is unexecuted; if that assumption is wrong the row fails at index 8 on URL mismatch before the ID check is ever reached. Pre-existing, not introduced here, but it gates this delta's only new oracle.
+- What the ID oracle actually proves: the server's ID derivation is consistent with the epoch/view it reported *in the same response*, plus the literal source and literal checkpoint/ordinal. It does not independently establish epoch/view provenance; those remain opaque tokens pinned only for cross-exchange stability (`:2417-2419`). The coverage wording is compatible with this, but reports should not be read as more.
+
+## Bottom line
+
+The delta does what the audit prescribed, and the ID derivation matches the quoted renderer exactly; I found no demonstrated failure in the four changed files. The blocking items before acceptance are both evidentiary rather than code: finding 1 (cite the header-stamping site that makes the epoch/view hash inputs identical) and finding 3 (the derivative-binding sweep this delta deferred). Findings 4-7 are small, in-scope, and safe to fold into the same commit.

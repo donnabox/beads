@@ -1,0 +1,19 @@
+--- preparation-status.json
++++ predecessor7/preparation-status.json
+@@ -1,13 +1,13 @@
+ {
+   "activeRunExists": false,
+-  "actualP8Results": "NONE",
++  "actualP7Results": "NONE",
+   "allFreshStages": 52,
+   "approvedStages": [],
+   "bootstrapReuse": [],
+   "consumerBodyCopiedOrReused": false,
+   "executionReleased": false,
+   "freshRuntimeOrHelpersExecuted": false,
+-  "oldP7Runtime47Pass1Fail4MissingHistorical": true,
++  "oldP6Runtime28Pass1FailHistorical": true,
+   "sourceBindingFinalized": true,
+-  "state": "FROZEN CLOSED P8 author preparation; other-native/root pending, not selfapproval"
++  "state": "FROZEN CLOSED P7 author preparation, independentother-native/root pending"
+ }

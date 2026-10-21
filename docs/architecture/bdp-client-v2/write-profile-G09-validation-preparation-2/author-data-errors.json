@@ -1,0 +1,16 @@
+[
+  {
+    "action": "standard-library DATA read only",
+    "exit": 1,
+    "failure": "SyntaxError unmatched closing parenthesis in display script; entire script parse failed before body",
+    "sequence": 1,
+    "subjectExecuted": false
+  },
+  {
+    "action": "standard-library DATA display read",
+    "exit": 1,
+    "failure": "IndexError from absent display substring after reading/printing beadRecord; no candidate/helper action",
+    "sequence": 2,
+    "subjectExecuted": false
+  }
+]

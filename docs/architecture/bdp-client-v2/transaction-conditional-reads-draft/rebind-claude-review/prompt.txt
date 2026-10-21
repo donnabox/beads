@@ -1,0 +1,1434 @@
+Review the current four-file uncommitted conditional-read conformance implementation, including the bounded TX-row rebind and subsequent one-line principal-oracle restoration. This is an actual CODE REVIEW, not a request to author a plan or execute tests.
+Do not write or modify any files. Output findings only in stdout. Do not execute code, commands, tests, builds, package managers, product imports, or servers. Use Read/Glob/Grep only. Broader repository reading is permitted when needed to establish a concrete finding.
+Return numbered actionable findings first, each with severity, exact current path/line, issue, impact, and concrete fix. If no findings, explicitly say so and identify remaining validation limitations. Do not claim execution evidence: this successor has not been run. Distinguish current-source defects from historical findings resolved in this successor, and from approved out-of-scope capabilities. Do not treat approved scope as full profile completion.
+
+SOURCE CONTRACT
+The workspace and exact HEAD below are frozen. HEAD is a required base, not just chronology. Four dirty files alone constitute the candidate; their SHA256 values below are authoritative. The full four-file diff against HEAD is available in the pinned correction draft.patch. Read and verify actual current implementation and relevant context, not only these summaries or incremental excerpts. Original frozen drafts/reports are preserved, not relabeled. Snapshot inventory provides read-only copies of all pinned inputs. Source and context are checked before/after the eventual bounded review by the wrapper.
+
+FOCUS
+1. Independently close the prior actual Claude findings using current parser/profile/runner semantics: the row is transactional.http.conditional-reads, requiredProfile transactional, at the tail after the original 16 rows. It is no longer a Read row containing successful POST setup. The separate inherited Read conditional requirement remains required/unplanned. wholeContract and claimEligible remain false. No public admission, fabricated discovery, or profile-support claim.
+2. Verify scenario-aware launch/dispatch observation, scenario/sessionOrdinal/reopen provenance, exact action-ID selection, response capture after actual dispatch, ordering of all parent rows/reopens, conditional completion last, and selected positive/control reports. Observer evidence must be from the actual scenario/session and actual request/response; no synthetic receipts or silent routing loss.
+3. Verify restoration of the original first row and all eight existing receipt index-zero consumers; confirm no collateral effect on principal, minimum-position, member, cross, replay or receipt tests. Native review's single principal helper regression is corrected by restoring the committed positional lookup; conditional finish intentionally retains stable-ID lookup. The appended native closure verifies the correction, but independently inspect it.
+4. Check all 14 real actions/194 portable assertions, 304 ETag equalsResponse semantics, portable412 constraints versus stricter local reference checks, full current representation/receipt postimage checks, and the one-change conditionalGET negative control (4 real requests, expected200body, exactly status/body-absent failures). Preserve method, URL, credentials, rawheaders/body and all declared omissions. No fabricated dynamic-capture claims.
+5. Verify 32 parent raw objects and complete historical bytes, tail placement, original evidence attribution, unchanged 42 derivatives, independent expected scenario/action/order lists, selection counts/route order/config digest, numeric bounds/margins and unchanged deadlines. Root's accepted data-only measurements do not establish executable pass results. Numerical report and HTTP counts are prospective contracts, not claimed observations or completion percentages.
+6. No production/parser/runner/schema/catalog changes are permitted; inspect those actual contexts to assess whether this test-only row rebind is sound. Current specification is the pinned monolithic docs/specs/bdp.md in this branch; do not chase main, editorial, Types, History, provenance or unrelated product work.
+
+The normalized JSON excerpts omit relocation noise, not semantics: compare the full actual manifest/coverage and full patch as needed. The TS incremental excerpt compares against the original Read-prefix draft, not HEAD; use full current files/full patch to assess total behavior. The historical Claude review is deliberately included verbatim and retains its prior target attribution.
+
+WORKSPACE /Users/dbox/repos/wt/vickie/vickie-transaction-conditional-reads
+HEAD 1ba65f2f192cc84e44eb09ef89b9693ec6cdaf05
+FOUR SOURCE HASHES
+{
+  "packages/conformance/test-support/transactional/manifest-v1.json": "60c527f6a5673161eacf022c0015d09bea2743d153b8b0d0c86160b76fafeb68",
+  "packages/conformance/test-support/transactional/coverage-v1.json": "33032fe07eb06d2a8968fcd8e5a3cf93cb4637c551868c22da9ea0c4edd587a3",
+  "packages/conformance/src/transactional-cumulative.test.ts": "9f70f8a24ea358b2cd613fd392be68057abd7b1552ec8cc6c4bc1a3241de69f6",
+  "apps/bdptest/src/transactional-matrix.test.ts": "136de49e859546e081c39410f1d3ee6fc01e32faf1879084718ad67b553d62ec"
+}
+PINNED CONTEXT PATHS
+/Users/dbox/repos/wt/vickie/vickie-transaction-conditional-reads/CONTEXT.md
+/Users/dbox/repos/wt/vickie/vickie-transaction-conditional-reads/docs/specs/bdp.md
+/Users/dbox/repos/wt/vickie/vickie-transaction-conditional-reads/packages/conformance/src/executable-manifest.ts
+/Users/dbox/repos/wt/vickie/vickie-transaction-conditional-reads/packages/conformance/src/artifact-bundle.ts
+/Users/dbox/repos/wt/vickie/vickie-transaction-conditional-reads/packages/conformance/src/runner.ts
+/Users/dbox/repos/wt/vickie/vickie-transaction-conditional-reads/packages/conformance/src/runner.test.ts
+/Users/dbox/repos/wt/vickie/vickie-transaction-conditional-reads/packages/conformance/src/profile-contract-selection.ts
+/Users/dbox/repos/wt/vickie/vickie-transaction-conditional-reads/packages/conformance/src/selection.ts
+/Users/dbox/repos/wt/vickie/vickie-transaction-conditional-reads/packages/conformance/src/http-executor.ts
+/Users/dbox/repos/wt/vickie/vickie-transaction-conditional-reads/packages/conformance/src/schema-validator.ts
+/Users/dbox/repos/wt/vickie/vickie-transaction-conditional-reads/packages/conformance/src/transactional-observation.ts
+/Users/dbox/repos/wt/vickie/vickie-transaction-conditional-reads/packages/conformance/test-support/profile-contract-plan.ts
+/Users/dbox/repos/wt/vickie/vickie-transaction-conditional-reads/packages/conformance/catalog/transactional-v1.json
+/Users/dbox/repos/wt/vickie/vickie-transaction-conditional-reads/packages/conformance/test-support/transactional/fixture-v1.json
+/Users/dbox/repos/wt/vickie/vickie-transaction-conditional-reads/schemas/bdp-v0.schema.json
+/Users/dbox/repos/wt/vickie/vickie-transaction-conditional-reads/apps/bdptest/test-support/transactional-execution-binding.ts
+/Users/dbox/repos/wt/vickie/vickie-transaction-conditional-reads/apps/bdptest/src/transactional-binding.test.ts
+/Users/dbox/repos/wt/vickie/vickie-transaction-conditional-reads/scripts/transaction-installed-observation.mjs
+/Users/dbox/repos/wt/vickie/vickie-transaction-conditional-reads/packages/server/src/authority-read.ts
+/Users/dbox/repos/wt/vickie/vickie-transaction-conditional-reads/packages/server/src/transaction-read.ts
+/Users/dbox/repos/wt/vickie/vickie-transaction-conditional-reads/packages/server/src/transaction-http.ts
+/Users/dbox/repos/wt/vickie/vickie-transaction-conditional-reads/packages/server/src/read-http.ts
+PINNED ARTIFACTS / READ-ONLY SNAPSHOTS
+/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-conditional-reads-draft/conditional-rebind-plan/plan.md
+/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-conditional-reads-draft/conditional-rebind-plan/native-plan-review.md
+/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-conditional-reads-draft/claude-code-review/root-dispositions.md
+/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-conditional-reads-draft/claude-code-review/native-findings-audit.md
+/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-conditional-reads-draft/claude-code-review/stdout.txt
+/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-conditional-reads-draft/claude-code-review/exit.json
+/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-conditional-reads-draft/rebind-author/native-code-review.md
+/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-conditional-reads-draft/rebind-author/root-data-measurement.json
+/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-conditional-reads-draft/rebind-author/measurements.json
+/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-conditional-reads-draft/rebind-author/preservation.json
+/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-conditional-reads-draft/rebind-author/selection.json
+/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-conditional-reads-draft/rebind-author/request-ledger.json
+/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-conditional-reads-draft/rebind-author/report-contract.json
+/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-conditional-reads-draft/rebind-author/routes.json
+/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-conditional-reads-draft/rebind-author/exact-configuration-preimage.json
+/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-conditional-reads-draft/rebind-author/exact-configuration-digest.txt
+/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-conditional-reads-draft/rebind-correction/source-binding.json
+/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-conditional-reads-draft/rebind-correction/root-disposition-note.md
+/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-conditional-reads-draft/rebind-correction/native-verification.md
+/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-conditional-reads-draft/rebind-correction/correction.patch
+/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-conditional-reads-draft/rebind-correction/draft.patch
+/Users/dbox/repos/wt/vickie/bdp-integration-logs/pr147-ci-failure/claude-code-review/run.py
+/Users/dbox/repos/wt/vickie/bdp-integration-logs/guarded-action.py
+/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-conditional-reads-draft/rebind-claude-review/snapshots/source/packages/conformance/test-support/transactional/manifest-v1.json
+/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-conditional-reads-draft/rebind-claude-review/snapshots/source/packages/conformance/test-support/transactional/coverage-v1.json
+/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-conditional-reads-draft/rebind-claude-review/snapshots/source/packages/conformance/src/transactional-cumulative.test.ts
+/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-conditional-reads-draft/rebind-claude-review/snapshots/source/apps/bdptest/src/transactional-matrix.test.ts
+/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-conditional-reads-draft/rebind-claude-review/snapshots/context/CONTEXT.md
+/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-conditional-reads-draft/rebind-claude-review/snapshots/context/docs/specs/bdp.md
+/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-conditional-reads-draft/rebind-claude-review/snapshots/context/packages/conformance/src/executable-manifest.ts
+/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-conditional-reads-draft/rebind-claude-review/snapshots/context/packages/conformance/src/artifact-bundle.ts
+/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-conditional-reads-draft/rebind-claude-review/snapshots/context/packages/conformance/src/runner.ts
+/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-conditional-reads-draft/rebind-claude-review/snapshots/context/packages/conformance/src/runner.test.ts
+/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-conditional-reads-draft/rebind-claude-review/snapshots/context/packages/conformance/src/profile-contract-selection.ts
+/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-conditional-reads-draft/rebind-claude-review/snapshots/context/packages/conformance/src/selection.ts
+/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-conditional-reads-draft/rebind-claude-review/snapshots/context/packages/conformance/src/http-executor.ts
+/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-conditional-reads-draft/rebind-claude-review/snapshots/context/packages/conformance/src/schema-validator.ts
+/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-conditional-reads-draft/rebind-claude-review/snapshots/context/packages/conformance/src/transactional-observation.ts
+/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-conditional-reads-draft/rebind-claude-review/snapshots/context/packages/conformance/test-support/profile-contract-plan.ts
+/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-conditional-reads-draft/rebind-claude-review/snapshots/context/packages/conformance/catalog/transactional-v1.json
+/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-conditional-reads-draft/rebind-claude-review/snapshots/context/packages/conformance/test-support/transactional/fixture-v1.json
+/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-conditional-reads-draft/rebind-claude-review/snapshots/context/schemas/bdp-v0.schema.json
+/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-conditional-reads-draft/rebind-claude-review/snapshots/context/apps/bdptest/test-support/transactional-execution-binding.ts
+/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-conditional-reads-draft/rebind-claude-review/snapshots/context/apps/bdptest/src/transactional-binding.test.ts
+/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-conditional-reads-draft/rebind-claude-review/snapshots/context/scripts/transaction-installed-observation.mjs
+/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-conditional-reads-draft/rebind-claude-review/snapshots/context/packages/server/src/authority-read.ts
+/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-conditional-reads-draft/rebind-claude-review/snapshots/context/packages/server/src/transaction-read.ts
+/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-conditional-reads-draft/rebind-claude-review/snapshots/context/packages/server/src/transaction-http.ts
+/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-conditional-reads-draft/rebind-claude-review/snapshots/context/packages/server/src/read-http.ts
+/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-conditional-reads-draft/rebind-claude-review/snapshots/artifacts/conditional-rebind-plan/plan.md
+/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-conditional-reads-draft/rebind-claude-review/snapshots/artifacts/conditional-rebind-plan/native-plan-review.md
+/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-conditional-reads-draft/rebind-claude-review/snapshots/artifacts/claude-code-review/root-dispositions.md
+/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-conditional-reads-draft/rebind-claude-review/snapshots/artifacts/claude-code-review/native-findings-audit.md
+/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-conditional-reads-draft/rebind-claude-review/snapshots/artifacts/claude-code-review/stdout.txt
+/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-conditional-reads-draft/rebind-claude-review/snapshots/artifacts/claude-code-review/exit.json
+/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-conditional-reads-draft/rebind-claude-review/snapshots/artifacts/rebind-author/native-code-review.md
+/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-conditional-reads-draft/rebind-claude-review/snapshots/artifacts/rebind-author/root-data-measurement.json
+/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-conditional-reads-draft/rebind-claude-review/snapshots/artifacts/rebind-author/measurements.json
+/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-conditional-reads-draft/rebind-claude-review/snapshots/artifacts/rebind-author/preservation.json
+/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-conditional-reads-draft/rebind-claude-review/snapshots/artifacts/rebind-author/selection.json
+/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-conditional-reads-draft/rebind-claude-review/snapshots/artifacts/rebind-author/request-ledger.json
+/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-conditional-reads-draft/rebind-claude-review/snapshots/artifacts/rebind-author/report-contract.json
+/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-conditional-reads-draft/rebind-claude-review/snapshots/artifacts/rebind-author/routes.json
+/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-conditional-reads-draft/rebind-claude-review/snapshots/artifacts/rebind-author/exact-configuration-preimage.json
+/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-conditional-reads-draft/rebind-claude-review/snapshots/artifacts/rebind-author/exact-configuration-digest.txt
+/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-conditional-reads-draft/rebind-claude-review/snapshots/artifacts/rebind-correction/source-binding.json
+/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-conditional-reads-draft/rebind-claude-review/snapshots/artifacts/rebind-correction/root-disposition-note.md
+/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-conditional-reads-draft/rebind-claude-review/snapshots/artifacts/rebind-correction/native-verification.md
+/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-conditional-reads-draft/rebind-claude-review/snapshots/artifacts/rebind-correction/correction.patch
+/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-conditional-reads-draft/rebind-claude-review/snapshots/artifacts/rebind-correction/draft.patch
+/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-conditional-reads-draft/rebind-author/before/packages/conformance/test-support/transactional/manifest-v1.json
+/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-conditional-reads-draft/rebind-claude-review/snapshots/original-draft/packages/conformance/test-support/transactional/manifest-v1.json
+/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-conditional-reads-draft/rebind-author/before/packages/conformance/test-support/transactional/coverage-v1.json
+/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-conditional-reads-draft/rebind-claude-review/snapshots/original-draft/packages/conformance/test-support/transactional/coverage-v1.json
+/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-conditional-reads-draft/rebind-author/before/packages/conformance/src/transactional-cumulative.test.ts
+/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-conditional-reads-draft/rebind-claude-review/snapshots/original-draft/packages/conformance/src/transactional-cumulative.test.ts
+/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-conditional-reads-draft/rebind-author/before/apps/bdptest/src/transactional-matrix.test.ts
+/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-conditional-reads-draft/rebind-claude-review/snapshots/original-draft/apps/bdptest/src/transactional-matrix.test.ts
+/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-conditional-reads-draft/rebind-claude-review/snapshots/infrastructure/pr147-ci-failure/claude-code-review/run.py
+/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-conditional-reads-draft/rebind-claude-review/snapshots/infrastructure/guarded-action.py
+/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-conditional-reads-draft/rebind-claude-review/incremental-typescript.patch
+/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-conditional-reads-draft/rebind-claude-review/normalized-new-row.patch
+/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-conditional-reads-draft/rebind-claude-review/placement.json
+/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-conditional-reads-draft/rebind-claude-review/snapshot-inventory.json
+
+===== Approved precise rebind plan | /Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-conditional-reads-draft/conditional-rebind-plan/plan.md =====
+# Conditional reads: four-file Transactional rebind proposal
+
+Status: plan only; source authoring and execution remain closed. This replaces the unexecuted representation proposal, not completed evidence. The original frozen draft, complete Claude code review, root dispositions, native findings audit and unimplemented parser-context alternative remain preserved. Working base is local 1ba65f2f192cc84e44eb09ef89b9693ec6cdaf05; root will integrate the reviewed serving successor by ordinary ancestry later, without a main dependency.
+
+## Decision and scope
+
+Rebind the new row to existing `transactional.http.conditional-reads` with `requiredProfile:"transactional"`. Both this requirement and `read.http.conditional-reads` remain required: no retirement, alias, catalog change or cross-credit. Read conditional remains explicitly unplanned. The Transactional coverage row remains `wholeContract:false`; `claimEligible:false` is unchanged. It proves ordinary401/404 precedence, bodyless304/412, current Scope context, and supporting GET/HEAD comparison before/after mutation. It omits minimum refusal, epoch/view mismatch, erasure/expiry, durable checkpoint behavior, optional-no-validator behavior, observed matching specific request tags, If-Match:* success and date combinations. No public admission or discovery claim follows.
+
+Owned paths remain exactly:
+- packages/conformance/test-support/transactional/manifest-v1.json
+- packages/conformance/test-support/transactional/coverage-v1.json
+- packages/conformance/src/transactional-cumulative.test.ts
+- apps/bdptest/src/transactional-matrix.test.ts
+
+No parser, bundle, runner, private planner, schema, fixture, catalog or production change. Existing strict Read protections remain untouched. The original nine-file parsing-context alternative is held, not implemented.
+
+## Canonical placement and raw preservation
+
+The TX catalog row is index131 of133 (`transactional-v1.json:2040–2066`); all16 existing planned rows precede it. Append the new row at planned index16 in manifest and coverage. The principal-isolation row returns to index0. Preserve each of the32 original raw objects exactly and reconstruct both complete parent files by removing only the new tail object and its exact preceding comma/newline/indentation. Keep existing parent hashes and old-object hashes unchanged. Update only the new removal helper, independent order list, new-row digest and dependent measurement pins. Use stable ID lookup for every new-row/action/coverage/control access; an explicit index16 assertion verifies catalog order, never selects the row by index.
+
+`runner.test.ts:6060–6263` has an existing eight-case first-page fixture spreading `manifest.scenarios[0]`. Restoring the original principal first row restores that fixture's original ReadUpdate profile and accepted POST carrier; no runner-test edit is needed. Its index dependency remains a pre-existing limitation, not silently generalized. Validate those eight existing expanded cases later, with their finite actual workload inventoried before release. The unowned binding tests use index0 as a session token, not action selection; retain their existing verification. No old row or historical outcome is relabeled.
+
+## Portable assertions and exact scenario
+
+Keep all14 actions, credentials, raw lines, bodies and actual URLs. Change the existing-A target to `{binding:"subject"}` only where it currently is scope plus `beads/a`; fixture-v1 declares the identical URL. Missing target stays scope-relative. No request body or wire change follows.
+
+Replace the two304 `etag` presence assertions with existing `equalsResponse:"initial-get"` assertions (runner2086–2102 validates the earlier observed tag). Remove exactly four portable assertions: `mismatch-get:etag`, `mismatch-get:no-media`, `mismatch-head:etag`, `mismatch-head:no-media`. This is198→194, total2840→2836; actions remain241 overall. HEAD metadata comparison remains: runner2185–2191 accepts both absent values as equal, so it does not require a412 ETag. Keep reference-specific ETag/type checks in the app oracle, distinct from normative coverage. Do not introduce normative304 media or Content-Length absence. An optional app-only304 length check is unnecessary for this repair.
+
+Coverage binds exactly the194 assertion IDs, one scenario to one requirement. Say the independent app wire oracle compares current Resources with observed receipt postimages; `captures:[]` stays empty and there is no portable object-capture claim. HEAD parity is supporting prose, not another coverage binding. Literal wildcard and independently verified nonmatching tag remain precisely described.
+
+The control still changes only the conditional-get If-None-Match value. The app first establishes its genuine200/full Resource/tag/body prerequisites. Exactly `conditional-get:status` and `conditional-get:body-absent` fail. The new304 equalsResponse assertion passes against this actual200's unchanged initial validator; no extra failure is permitted. The runner then stops the scenario after request4. Never classify a generic failure, timeout or missing prerequisite as control success.
+
+## Scenario-aware local wire routing
+
+Replace `conditionalPrefix` (app4496–4518). Its first14 assumption becomes false at tail placement. ExactHttpExchangeRequest has no scenario field; do not invent one or infer identity from URL, key, count or response.
+
+The existing app launch callback receives actual `(scenario,reopen,signal)` from `transactional-execution-binding.ts:113`, after runner preparation selects that scenario. After successful child launch, record a frozen local observation context `{scenario, reopen, sessionOrdinal}` beside the actual sessions record. Extend only this app's optional onDispatch/afterExchange callback signatures with that context as an additional argument; existing one/two-argument observers remain valid. At ordinary execute entry require a launched context, snapshot it, invoke dispatch with that snapshot, await the real target, require the same context still current, then invoke response observation with the same snapshot. Existing target session/configuration validation is unchanged; this local context is observation identity, not a new authorization capability.
+
+Route only context.scenario===conditionalId to conditional wire; route every other ordinary exchange to the unchanged principal/cross/minimum/member chain in its existing order. Never send conditional exchanges to old observers and never skip a nonconditional exchange. Track the conditional session ordinal, require no reopen and one continuous session, exact dispatch/response cardinality and same identity across the14 exchanges. Selected positive/control use the same context-checking adapter, with14/4 expected completion. Join final conditional report by stable scenario ID and exact action order and verify the corresponding genuine sessions entry; keep all prior safe report fields and add only nonsecret scenario/ordinal/reopen if retained. Do not add credentials/config/raw request material.
+
+For full cohorts, assert the conditional session follows all16 parent scenario presentations (including their legitimate reopens), independently verify the planned-scenario ordering from actual sessions, and retain existing old observer completion assertions. This can use the already retained actual sessions, filtered by reopen, rather than a guessed ordinal constant. Runner365–398 preserves catalog order, including explicit scenarioSelection; ordinary assertion failures in cross controls do not stop the whole matrix (`mustStopMatrixAfter`,448–471). Their tail conditional scenario must therefore still run and pass. A transport/category/cleanup stop fails the positive/tail-completion oracle instead of being ignored. Client-helper exchanges retain their existing separate observation path; no helper/runner interception is added.
+
+## Configuration and workload
+
+Route membership remains18 pairs; first-occurrence order changes because the row moves. The exact order is recorded in proposed-measurements.json: original15 routes first, then HEAD existingA, GET missingA, HEAD missingA. Update the independently authored app route inventory to that order. Exact-mode configuration/route hashes must be derived anew by the existing binding machinery; do not copy old configuration digests. Runtime descriptors, credentials, payload, fixture bytes and semantics remain identical. The row ID also changes the private scenario directory/session binding and manifest/coverage identities; retain truthful successor attribution.
+
+Prospective counts are unchanged: selected14positive+4control HTTP, two children each; full234/25children, cross-batch225/25, cross-sequence226/25, selected principal7/2 and collapse2/2. Across these seven cohorts:712 expected HTTP,727 diagnostic ceiling,83 children. The selected control's14-request artifact is not14 observed requests; its successful discrimination requires4. Bodies remain141B+130B; selected control transmits only the first141B body. All existing runtime, request, cleanup, response and test limits remain unchanged. No elapsed-budget enlargement follows changed catalog order.
+
+## Measurement and validation gate
+
+The attached counts/routes were calculated with standard-library JSON only, without importing or executing product code. Final formatted disk/normalized/node/coverage sizes, all42 actual derivative specimens, assertion/row/source hashes and complete parent reconstruction must be regenerated after authorized authoring. Existing numeric fences are not automatically widened; submit measured successor values while preserving accepted margins/historical bases. Existing derivatives must target rows/actions by stable ID and retain every old transformation; changing new row attribution cannot justify dropped controls.
+
+Refresh exact source selectors after factual title updates (Transactional conditional rather than inherited-Read credit), planned/unplanned identity expectations and194 pins. Total unplanned requirements remains234: one Read plan removed, one TX plan added. Preserve whole-contract false counts and standalone Read catalog/manifest/cohort bytes. First run type/format/lint and exact static bundle/planner/coverage checks after root release; include unchanged first-page eight-case and binding regressions at their separately measured envelope, then actual selected positive/control and affected full/cross cohorts using fresh installed payload provenance. No new parser tests are needed because no parser capability is introduced. Historical frozen draft has no executed results to migrate. Root/native review this plan before any source mutation.
+
+
+===== Prior actual Claude findings (historical original draft) | /Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-conditional-reads-draft/claude-code-review/stdout.txt =====
+## Review — conditional Read conformance row vs. pinned `docs/specs/bdp.md`
+
+I read the spec sections you pinned (`bdp.md:1980–2008`, `5871–5889`), the four-file diff, and the loader/runner/server code the row depends on. Scope honored: no files written, nothing executed, no redesign proposals, main excluded.
+
+Two corrections to the premise up front, both load-bearing:
+
+- **The change does not load.** Finding 1 is a hard blocker in the manifest, not a style issue.
+- I confirmed your attribution note is accurate: `captures` is `[]` everywhere in the new row, no `equalsBinding` assertions exist, and `assertions = 198` checks out (I recounted all 14 actions independently: 26+18+11+10+11+11+12+11+11+11+11+26+18+11 = 198). The coverage binding list matches the manifest one-for-one. Byte/node fences are internally consistent with the measured values you cited, and `Buffer.byteLength(preimage) === 1434` is arithmetically correct (I recomputed it; the old 1228 is also consistent with removing the 3 new pairs).
+
+---
+
+### 1. BLOCKER — the new row violates two `requiredProfile: "read"` gates in the manifest loader; the whole bundle throws at load
+
+**Where:** `packages/conformance/test-support/transactional/manifest-v1.json:7` (`"requiredProfile": "read"`) with `:20-22` (`seed`, `POST`) + its `raw.body`, and `:1164-1166` (`update`, `POST`) + its `raw.body`.
+**Gates:** `packages/conformance/src/executable-manifest.ts:840-852` and `:1003-1004`.
+
+```ts
+// executable-manifest.ts:840
+if (requiredProfile === "read" && method !== undefined) {
+  const ordinaryReadMethod = method === "GET" || method === "HEAD" || method === "OPTIONS";
+  ...
+  if (!ordinaryReadMethod && !(method === "POST" && negativeMethodProbe === true))
+    issues.push({ path: `${path}.method`,
+      message: "Read scenarios permit only GET, HEAD, OPTIONS, or an explicit POST probe" });
+}
+// executable-manifest.ts:1003
+if (profile === "read") issues.push({ path, message: "Read scenarios cannot carry an exact body" });
+```
+
+`requiredProfile` here is the **scenario's declared** profile (`parseScenario` → `parseActions(…, requiredProfile, …)` at `:545`/`:733`), not the run or bundle profile. `seed` and `update` are `POST` with `raw.body` and no `negativeMethodProbe`, so `parseExecutableScenarioManifest` collects **4 issues** and throws `ManifestValidationError` (`:504`). `createCumulativeTransactionalArtifactBundle` goes through the same validator (`artifact-bundle.ts:170`), and both test files build the bundle at module top level (`transactional-matrix.test.ts:44`, `transactional-cumulative.test.ts`), so **every test in both files fails during module evaluation** — this is not a single-assertion failure.
+
+You cannot sidestep by declaring `transactional`: `artifact-bundle.ts:222-226` requires the manifest row's `requiredProfile` to equal the catalog's, and `catalog/read-v1.json:814` says `read`. `prerequisiteScenario` does not help either — prerequisite actions are parsed inside *this* scenario's `actions` array and hit the same gate. This is also the first `"requiredProfile": "read"` row ever added to this manifest (the other 16 are `read-update`/`transactional`), which is why no existing row trips it.
+
+**Fix (in scope, no production change):** bind the row to **`transactional.http.conditional-reads`** (`packages/conformance/catalog/transactional-v1.json:2040-2066`, `requiredProfile: "transactional"`). Its pinned requirements are a strictly better match for what the row actually asserts — see finding 2. Knock-on regeneration required because the row is no longer `scenarios[0]`: `withoutConditionalRow`'s "first object" prefix trick (`transactional-cumulative.test.ts:3723-3740`), `manifest.scenarios[0]`/`[1]` indices (`:3779`, `:3204`), the `receipt.pagination` index `12` (`:1272`), the `uniqueRoutes` order (`transactional-matrix.test.ts:200-219`, `1394-1413`), `exactConfigurationDigest` `dba06191…`, the `1434` preimage length, and both parent-byte digests. The unplanned count stays `234` (one row still moves to planned).
+
+---
+
+### 2. HIGH — the row's strongest evidence is attributed to the wrong catalog clause
+
+**Where:** `manifest-v1.json:6-7` (row id/profile) vs. `catalog/read-v1.json:811-831`; coverage row `coverage-v1.json` `"id": "read.http.conditional-reads"`.
+
+`read.http.conditional-reads` owns exactly three requirements: bodyless 304/412 with no Problem body; refusal precedence; "Applicable cache fields remain required." It says **nothing** about `bdp-scope-epoch` / `bdp-authorization-view` / `bdp-scope-position`.
+
+But 21 of the row's 198 assertions are `present-bdp-*` / `absent-bdp-*` / `position` on 304, 412, 401 and 404 responses. Those discharge `bdp.md:5876-5878` ("Required current Scope context remains required on 304 and 412 responses"), which is owned by `transactional.http.conditional-reads` (`transactional-v1.json:2050-2054`) — a row the coverage leaves in the 234 unplanned set. So the coverage artifact credits Transactional-only evidence to a Read requirement, and leaves the requirement that evidence actually proves uncredited.
+
+**Impact:** coverage mis-attribution in the canonical artifact; a reader of `coverage-v1.json` cannot tell that the 304/412 context-header evidence belongs to a different clause.
+**Fix:** same as finding 1 — rebind to `transactional.http.conditional-reads`, whose four requirements cover refusal precedence, 304/412 context, and "Omitting optional validators does not permit ignoring HTTP preconditions." Keep `wholeContract: false` and the HEAD-parity disclaimer as-is (deliberately not binding `*.head-conditional-parity` is the conservative, correct call and I am not asking you to change it).
+
+---
+
+### 3. MEDIUM — the canonical manifest never ties the 304/412 ETag to the observed validator, although the runner has the purpose-built assertion
+
+**Where:** `manifest-v1.json:442-519` (`conditional-get`), `520-613` (`conditional-head`), `614-696` (`mismatch-get`), `698-797` (`mismatch-head`) — each asserts only `{ "kind": "header", "name": "etag", "absent": false }`.
+
+The runner already supports two assertions written for exactly this clause:
+
+- `header.equalsResponse` — `runner.ts:2086-2102`, resolves the earlier response's ETag through `observedEntityTag` and compares byte-exactly.
+- `header.presentIfResponse` — `runner.ts:2104-2114`, literally commented *"304 must retain metadata supplied on the earlier successful response."*
+
+Both are schema-validated and reference-checked (`executable-manifest.ts:1448-1457`). Neither is used. As authored, a target that returns an **arbitrary or stale** ETag on the 304/412 passes every manifest assertion in this row. The app-side oracle does enforce it (`transactional-matrix.test.ts:4425` `if (i >= 2 && i <= 6) expect(response.headers.etag).toBe(initialTag)` and `:4420` `if (i === 12) expect(...).not.toBe(initialTag)`), but that is non-portable: it never ships in the manifest/coverage artifact, so the coverage claim is weaker than the app run.
+
+**Fix:** add `{ "id": "etag-current", "kind": "header", "name": "etag", "equalsResponse": "initial-get" }` to `conditional-get`/`conditional-head`/`mismatch-get`/`mismatch-head`, and `"equalsResponse": "current-get"` logic (or at minimum a `presentIfResponse: "initial-get"` on `conditional-get`). This raises the assertion total and all pinned counts/digests — fold into the finding-1 regeneration.
+
+---
+
+### 4. MEDIUM — only `*` and a fabricated non-matching tag are exercised; no specific matching validator, and the coverage reason does not disclose it
+
+**Where:** `manifest-v1.json` `if-none-match: "*"` on actions 3, 4, 7, 8, 9, 10; `if-match: "\"conditional-no-match\""` on 5, 6.
+
+The catalog row's title is *"Read conditions use **observed validators** and preserve native bodyless outcomes"*, and the Transactional row pins *"Omitting optional validators does not permit ignoring HTTP preconditions."* The row never sends a concrete entity tag that **matches** — not `If-None-Match: <observed etag>` → 304, not `If-Match: <observed etag>` → 200, not `If-Match: *` → pass (`bdp.md:1995-1996` names all three). A server implementing only the `*` wildcard branch and a blanket "any specific tag fails" rule passes this row.
+
+This is forced by a real constraint, not an oversight: dynamic validator substitution lives on the non-exact `headers` path (`runner.ts:1161` `headers = exact ? {} : resolveScenarioHeaders(request.headers ?? {}, priorResponses)`), and raw `headerLines` are byte-literal. So `*` is the only option for a raw-exact row — that's fine. The defect is **disclosure**: the coverage `reason` omits it. "date/validator combinations … remain omitted" reads as *combined* date+validator conditions, not *"no matching specific entity tag is exercised at all."*
+
+The row does avoid the corresponding false-positive correctly: the app oracle asserts `initialTag !== conditionalFalseTag` (`transactional-matrix.test.ts:4420`, `:4429`), so the 412 cannot come from an accidental tag collision. Good.
+
+**Fix:** add an explicit clause to the coverage `reason`, e.g. "Conditions use `*` and a validated non-matching tag only; raw exact header lines cannot carry an observed validator, so matching specific `If-None-Match`/`If-Match` tags and `If-Match: *` remain omitted."
+
+---
+
+### 5. MEDIUM — `etag absent: false` on the 412 pair over-asserts beyond the spec and RFC 9110
+
+**Where:** `manifest-v1.json:679-684` (`mismatch-get:etag`) and the matching `mismatch-head:etag`.
+
+`bdp.md:1990-1991` requires 412 to be bodyless with no Problem body and keeps "applicable cache fields"; `bdp.md:5877-5878` adds the three Scope-context fields. Neither requires `ETag` on a 412. RFC 9110 §15.4.5 makes ETag mandatory on **304** only ("MUST generate … ETag … that would have been sent in a 200"); there is no equivalent for 412.
+
+This happens to pass against the reference service — `read-http.ts:30-38` deletes `content-type`/`content-length` and only drops `etag` for 406, so 412 keeps it — so this is a portability/false-negative risk in the canonical artifact, not a failing assertion: a spec-conformant implementation that omits ETag on 412 is rejected by this row.
+
+**Fix:** drop `etag` from the `mismatch-get`/`mismatch-head` assertion sets, or keep the 412 ETag check in the app-side oracle only (where it is a legitimate reference-service observation). Keep the 304 `etag` assertions — those are well-founded.
+
+---
+
+### 6. LOW–MEDIUM — asymmetric 304/412 evidence for a clause the spec states identically
+
+**Where:** `mismatch-get`/`mismatch-head` carry `no-media` (`content-type` absent, `manifest-v1.json:689-694`); `conditional-get`/`conditional-head` do not.
+
+`bdp.md:1990` treats both identically ("MUST be bodyless and MUST NOT carry a BDP Problem body"). `read-http.ts:31` deletes `content-type` for both statuses, so the 304 assertion would hold. As authored, a 304 advertising `Content-Type: application/problem+json` with a zero-length body satisfies the manifest.
+
+Also inconsistent: the app oracle checks `content-length === "0"` for 412 but asserts nothing for the 304's absent `content-length` (`transactional-matrix.test.ts:4330-4334`) — worth a `toBeUndefined()` there, since `read-http.ts:33-36` deliberately omits it on 304 and that comment-documented behavior is otherwise unpinned.
+
+**Fix:** add `no-media` to `conditional-get`/`conditional-head`; add the 304 `content-length` absence check to the app oracle.
+
+---
+
+### 7. LOW — the 401/404 expectations are new to this manifest; one concrete item is unverified
+
+I checked the parts I could read, and most of it is sound:
+
+- `www-authenticate: Bearer realm="bdp-transaction-development"` matches `packages/server/src/transaction-http.ts:110-111` exactly, and is set only for `code === "unauthenticated"`. ✓
+- `readProblem()` (`packages/protocol/src/index.ts:534-546`) returns exactly `{type, code, retry, status}` for `unauthenticated` and `resource-not-found` — no `title`/`detail` — so the `json-equals` 4-key shape is correct, and `#/$defs/readProblem` makes `title` optional (`schemas/bdp-v0.schema.json:48-75`). ✓
+- 401 context-header **absence** matches `transaction-http.ts:403` (`transactionHttpProblem("unauthenticated")` with no observation argument). ✓
+
+**Open item:** the 404 asserts `present-bdp-*` **and** `position: "pos-1"`. Those headers are attached only via `context(response, …)`, which `transaction-http.ts:240-255` applies conditionally on `"observation" in result`. If the read facet's `resource-not-found` problem result carries no observation, four assertions on `missing-get` and four on `missing-head` fail. Note the contrast: `transaction-schema-http.test.ts:266-267` and `:428-429` show 400/500 responses with those headers **undefined**, while `:195` shows them **present** on 304/412.
+
+For context, the only other anonymous read action in this manifest (`transactional.batch.atomic-commit:unauthenticated`, `manifest-v1.json:4611-4637`) asserts `status`/`request-headers`/`request-body` only — so every one of the new `cache`, `media`, `challenge`, `schema`, `problem`, `absent-bdp-*`, `present-bdp-*` expectations on refusal responses is first-of-kind here. Flagging the 404-observation question specifically so the scheduled run has a named failure hypothesis rather than a blanket "needs validation."
+
+---
+
+### 8. LOW — `conditionalPrefix` hardcodes `14` instead of the wire's own bound
+
+**Where:** `apps/bdptest/src/transactional-matrix.test.ts:4503` and `:4507`.
+
+```ts
+if (conditional.count() < 14) conditional.onDispatch(input);
+```
+
+The wire's bound is `maximum = control ? 4 : 14` (`:4246`). Passing a `conditionalReadWire(true)` into `conditionalPrefix` would route dispatch 5 into the wire, tripping `expect(dispatches.length).toBeLessThan(maximum)` (`:4276`) *inside the exact HTTP executor* — which surfaces as an opaque `HttpTransportError("configuration")` / `exact-configuration` harness error, not a readable assertion. No current call site does this, so it is latent.
+
+**Fix:** expose `expected: () => maximum` from the wire and compare against it in `conditionalPrefix`.
+
+Verified-correct around this, for the record: the divert boundary is sound. Execution order is **catalog** order, not manifest order (`runner.ts:376`, `selection.ts:54-63`, `profile-contract-selection.ts:9`), `read-v1.json` is first in `coreCatalogs`, and the conditional row is the only planned `read.*` row — so the first 14 HTTP exchanges really are this row's, and diverting them is *required* so that `principalNamespaceWire`'s self-gated first-7 window (`:3799-3821`) still sees its own requests. Its post-window guards (`:3801-3803`, `:3826`) are not weakened: the diverted requests are pinned to `operator`/`anonymous` by exact literal equality, and `conditionalPrefix` adds the reciprocal `idempotency-key` guard.
+
+---
+
+### 9. LOW — coverage `reason` says "captured receipt postimages" while `captures` is `[]`
+
+**Where:** `coverage-v1.json`, new row `reason`, first sentence: *"complete current Resources equal captured receipt postimages…"*
+
+There are no captures (`captures: []` on all 14 actions, asserted at `transactional-cumulative.test.ts:3774`). The later sentence does disclaim it correctly ("Full dynamic receipt/postimage equality is an independent app wire oracle, not a canonical manifest assertion"), so this is wording, not a false claim — but the two sentences contradict each other inside one `reason` string, and the word "captured" is the one a reader would key on.
+
+**Fix:** drop "captured", e.g. "…the independent app wire oracle compares each complete current Resource to the corresponding receipt postimage…". Note what the manifest *does* prove portably: the static `properties` literals (`"before"` → `"after"`) on `seed`/`initial-get`/`update`/`current-get` give a real before/after link; revision identity is app-oracle-only.
+
+---
+
+### 10. LOW — uses `scope` + `"beads/a"` instead of the fixture's declared `subject` binding
+
+**Where:** `manifest-v1.json:445-447` and the other 9 `beads/a` targets, vs. `test-support/transactional/fixture-v1.json:8` (`"subject": "https://reference.invalid/acme/beads/a"`).
+
+Functionally identical (both resolve through `resolveTarget`; `observe()`'s inventory at `transactional-matrix.test.ts:187` maps either to the same URL), and the existing `beads/a` route in the old inventory came from `binding: "subject"`. But hardcoding the path duplicates a declared binding, diverging from the convention every other row follows. `beads/missing` legitimately needs `scope` + path (no binding exists).
+
+**Fix:** use `{ "binding": "subject" }` for the 10 `beads/a` targets; update the `routes` projection in `transactional-cumulative.test.ts:3806-3815` accordingly.
+
+---
+
+### Security / privacy — no issues found
+
+I checked this specifically because the new wire reads raw request evidence:
+
+- `exactRequest.headerLines` (`http-executor.ts:756-758`) is **unredacted** and contains the resolved `authorization: Bearer <token>` appended at `:713`. The new oracle's comparison is scoped to `.slice(0, literal.headerLines.length)` (`:4297`), which covers only authored lines — credentials are appended *after* — so a failure diff cannot print a token. The suffix check (`:4299-4301`) reduces to a boolean.
+- `responses.push` (`:4436-4446`) stores only `action`, `status`, body bytes/digest, an allowlisted header subset, and request body bytes/digest. No header lines, no `effectiveRequest`, no credentials. The `summary()` docstring claim holds.
+- `bdp-authorization-view` is retained in `conditionalMetadata`, which is consistent with existing practice (`isSecretHeaderName` explicitly exempts it, `http-executor.ts:344`; the principal wire already records it).
+- Output path is guarded (`:4561-4562`: absolute, ≤4096 chars), matching `principalOutputPath()`.
+
+One diagnostic-quality nit, not a finding: the new oracle omits the `.map(h => h.name)` pre-check that `principalNamespaceWire` runs before the full `toEqual` (`:3836-3839`), so a mismatch reports values rather than names first. Strictly stronger assertion; only the failure message is less readable.
+
+---
+
+### Also verified correct (no action)
+
+- `response-metadata-equals` with `optionalHeaders: ["content-length","content-type","vary"]` on HEAD is valid per `executable-manifest.ts:1834-1876` and `:1436-1444`; all 8 `headers` are in `STABLE_RESPONSE_METADATA_HEADERS` (`:432-445`).
+- `body-absent` has real teeth on both 304 and 412: `parseRawResponse` returns raw framed bytes for HEAD/204/304 (`http-executor.ts:1190-1193`), and decodes against `Content-Length: 0` for the 412 — so a leaked body is caught either way.
+- `credentialRef: "anonymous"` works end to end (`{ id: "anonymous", headerNames: [] }` passes `:479`, `:683-687`, `:715`).
+- HEAD routes are accepted by `validateExactRunConfiguration` / `METHODS` (`:359`, `:552-571`).
+- HEAD `content-length` parity with the GET holds for 200 **and** for 401/404, because `read-http.ts:42-46` sets it from the serialized body outside the status-conditional block.
+- `vary: Accept` is retained on 304/412 and absent on problem responses, so every `get-metadata` `vary` comparison is consistent.
+- Control semantics: the two failures (`conditional-get:status`, `conditional-get:body-absent`) are exactly right — `etag`, `cache`, `position`, `present-bdp-*`, `request-*` all still pass on the 200 — and `ScenarioAssertionFailure` from `runner.ts:1464-1470` stops the row, leaving 4 exchanges and 10 unobserved requests. The server-side 200 for a non-matching specific tag has precedent at `read-http.test.ts:182`.
+- Manifest/coverage ordering constraint is satisfied: `transactional-cumulative.test.ts:102-105` requires manifest order to equal catalog order, which is why the row must be `scenarios[0]` *as currently bound* — and why rebinding per finding 1 moves it.
+- Capacity note: the manifest is now ~870 KB against the 1 MiB TX factory cap (`transactional-cumulative.test.ts:207-218`), ~174 KB of headroom. Not a defect; worth tracking before the next row of this size.
+
+
+===== Root dispositions of prior Claude findings | /Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-conditional-reads-draft/claude-code-review/root-dispositions.md =====
+# Conditional draft code review dispositions — pending precise rebind plan
+
+Actual Claude completed exit0 in876.505s, immutable four-file input and packet verified, no remaining sampled processes. Full stdout SHA25692cc4dfbafb95216873cf417f40c86a8ee689217ad6c7abbb75d6ea17db9d277. Native review separately established loader and indexed receipt fixture blockers. No draft tests have executed.
+
+Root chooses the smaller Transactional-row rebind alternative, subject to the precise bounded plan/native closure before authoring. The proposed source-private parsing-context expansion is held/unimplemented; its nine-file fanout report remains preserved. This changes only a proposed unexecuted scenario's attribution, never historical evidence. Both Read and Transactional conditional requirements remain required, with no retirement edge. Read conditional stays explicitly unplanned. Transactional evidence remains wholeContract:false/claimEligible:false, with minima/epoch mismatch/erasure/checkpoint/no-validator and matching-specific-tag coverage omitted explicitly.
+
+- F1 accepted loader blocker. Rebind to existing transactional.http.conditional-reads instead of adding parser capability. Update canonical placement, parent reconstruction, route/configuration pins and composed wire dispatch; preserve all32 old raw objects.
+- F2 partially accepted: TX is a better attribution for current context checks, but original Read evidence did support bodylessness/refusal/cache clauses; additional supporting assertions are not intrinsically false credit. Neither row becomes complete.
+- F3 accepted for304: replace presence with equalsResponse:initial-get using existing assertion. Do not add mandatory412etag via this finding; F5 governs it. Reference app fullResource/receipt equality remains separate.
+- F4 accepted disclosure: wildcard plus verified nonmatching literal only; no matching observed validator request, If-Match:* pass, date combinations or optional-no-validator coverage. No new dynamic exact header feature.
+- F5 accepted: drop mandatory412etag in portable assertions; keep exact reference-service ETag observation in app oracle. Pinned spec requires current context/bodylessness, not universal412ETag. RFC9110 sections15.4.5/15.5.13 inspected:304 metadata obligations differ from412. Source https://www.rfc-editor.org/rfc/rfc9110.html#name-304-not-modified .
+- F6 not accepted as normative media-absence requirement: bodyless/no Problem body is not a blanket prohibition on representation metadata. Keep implementation-specific reference checks separate, optionally assert actual304Content-Length absence in app oracle only.
+- F7 closed by native source check: authority-read.ts797 returns observed(notFound(),observation), transaction-http.ts254 attaches current tuple, so expectedpos1 is justified; actual installed execution remains required.
+- F8 addressed by replacing prefix assumption with precise scenario-aware routing in rebind plan. No fabricated responses or skipped observer work.
+- F9 accepted wording: independent app oracle compares corresponding receipt postimages; no captures/equalsBinding claim.
+- F10 optional consistency cleanup accepted if same actualURL and route observations preserved: subject binding for existingA, scope-relative missing target remains.
+
+All code changes and revised measurements remain pending. Full native disposition report and exact bounded rebind plan to be recorded alongside this decision.
+
+
+===== Native broader rebind review (before one-line correction) | /Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-conditional-reads-draft/rebind-author/native-code-review.md =====
+# Independent native code review — conditional rebind successor
+
+**Hold code approval and installed execution: one high-severity blocker.** No source edits were made. The four-file frozen draft and patch remained byte-identical throughout this review. This report does not approve execution, altered measurement fences or profile qualification.
+
+## Finding N1 — principal oracle now selects conditional action IDs (High, blocking)
+
+Location: apps/bdptest/src/transactional-matrix.test.ts:4066, inside assertPrincipalPositive.
+
+The changed expression is `declared.actions!.find((a) => a.id === conditionalActionIds[i])!.assertions`. `declared` is explicitly the principal-isolation row. Its first action is `pk-a-create`; its complete actions are pk-a-create, pk-b-create, pk-a-rotated, pk-b-replay, pk-a-conflict, pk-current and pk-events. The conditional list starts with `seed`, which does not exist in that row. On the first iteration the lookup therefore returns undefined and dereferencing `.assertions` throws, even after every genuine principal HTTP observation and portable assertion passed. The TypeScript non-null assertion cannot prevent the runtime error.
+
+This breaks the existing selected principal positive callback and both full/cross-carrier paths that invoke assertPrincipalPositive. In the latter paths it throws before the new conditional finish/tail checks, defeating the plan's explicit preservation of old observer completion and preventing the affected installed cohorts from validating. It is unrelated to the new scenario's correct ID-based selection at line4542.
+
+Bounded correction: restore the original `declared.actions![i]!.assertions` expression, whose order is already checked immediately above, or use the principal-specific `principalRequests[i]!.action` in the stable-ID lookup. Do not weaken or remove the old oracle. Preserve this review packet; author a one-line successor after other active readers finish, refresh its binding and review the exact correction before running the planned selected-principal/full/cross regressions. This finding was communicated promptly to root; no tests were run to rediscover the deterministic failure.
+
+## Reviewed behavior without additional findings
+
+- Actual scenario/session routing is correctly sourced from successful launch arguments. A frozen scenario/reopen/sessionOrdinal object is passed to dispatch, retained across the awaited real target operation and checked by reference before response observation. The callback does not invent an ExactHttpExchangeRequest scenario property or infer identity from URL, response or count. Existing execution/configuration checks remain in the unmodified binding helper.
+- conditionalScenarioWire routes only the actual conditional scenario to the new oracle. Other ordinary exchanges retain the principal dispatch and principal→cross/minimum/member response chain. Client-helper execution remains separate. Selected conditional runs reject unexpected nonconditional traffic. The above N1 is the concrete preservation regression; no other observer-routing regression was identified.
+- conditionalReadWire requires the same frozen non-reopen session for all dispatches/responses and exact cardinality. finish joins the genuine sessions record by ordinal, checks one conditional session, checks action order and portable assertion IDs by scenario/action ID, and for full cohorts checks all16 parent first presentations in independent order with the conditional session last. Legitimate parent reopens remain in the session sequence. Runner catalog ordering and mustStopMatrixAfter establish that ordinary cross-control assertion failures continue to this tail; exact-observation, cleanup and other stop failures cannot satisfy finish.
+- The one-header control remains a literal If-None-Match substitution at conditional-get. The original initial GET independently establishes a distinct actual validator; the altered fourth exchange must genuinely return200 with the full original receipt Resource and unchanged ETag. finish requires exactly status/body-absent failures, four completed exchanges and no transport/harness/prerequisite/cleanup failures. All other assertions, including the new ETag equalsResponse check, must pass. Missing execution, deadline or an arbitrary failure cannot substitute for discrimination.
+- Standard-library JSON inspection confirms14 actions and exactly194 portable assertion IDs, matching the194 coverage bindings in order. Both304 ETag checks use equalsResponse:initial-get. Neither mismatch412 action contains the removed ETag-presence or no-media assertion; the remaining HEAD metadata equality accepts both omitted ETags in the existing runner. Reference-only412 ETag/Content-Type observations remain inside the app oracle and are not promoted to a universal protocol rule.
+- The complete parent manifest/coverage are reconstructed byte-exactly by removing the new tail object. All32 prior raw objects match HEAD exactly. Parent hashes are cd90592e76cace65b115dbfedf5f604c9c4011ed2e1a0fad954c1edb12aca6cd and 0c991feb128a50625397e337464badcb17d22a0c31e1d57a6b66fa1032a92a51. Principal isolation is restored at index0, with requiredProfile read-update, so the existing eight first-page fixtures spreading that row no longer inherit the proposed Read-only POST restriction. Those runtime regressions remain required validation, not claimed passes.
+- Existing-A targets use the fixture subject binding with the same URL; missing targets remain scope-relative. No parser, runner, catalog, fixture, schema or production file was changed. The new row uses the existing Transactional requirement, with wholeContract:false; Read conditional remains explicitly unplanned. Coverage names its omitted minima, epoch/view, erasure/checkpoint, optional-no-validator, matching-specific-tag, If-Match:* and date cases. claimEligible remains false. Counts and measurement fences are not completion percentages or observed execution evidence.
+- App reports retain authored credential handles, safe response headers/body digests and nonsecret session identity. No effectiveRequest, bearer value or complete runtime credential configuration is newly retained. Schema/Resource validation and receipt-postimage comparison occur in the independent app observer, while captures remain empty; coverage describes that distinction accurately.
+
+## Scope and evidence
+
+Read the complete four-file diff, complete rebind plan and native plan closure, prior Claude root dispositions, new scenario/coverage objects, relevant actual app observer and installed binding code, runner ordering/stopping/header assertion logic and indexed receipt fixture. Read-only standard-library JSON/hash/raw-object analysis was used; no product imports, tests, builds, services, source mutation, main inspection, network publication or delegation. Root owns independent measurement-fence acceptance and actual Claude review. Existing authoring/runtime/deadline limits were not executed or qualified here.
+
+Source binding SHA256: bf626872ba83bfafab4b957632247684d1169e0b9e3fbf6c627f8c4a644413d6.
+Patch SHA256: 245c1247153d38875a9a9c716c323e3ca058b1a985a1eac68473d1d8356e47af.
+HEAD: 1ba65f2f192cc84e44eb09ef89b9693ec6cdaf05.
+Before and after hashes were checked against that binding; current git diff also exactly matches the pinned patch.
+
+## Four-file SHA256, unchanged before/after
+
+- `packages/conformance/test-support/transactional/manifest-v1.json`: `60c527f6a5673161eacf022c0015d09bea2743d153b8b0d0c86160b76fafeb68`
+- `packages/conformance/test-support/transactional/coverage-v1.json`: `33032fe07eb06d2a8968fcd8e5a3cf93cb4637c551868c22da9ea0c4edd587a3`
+- `packages/conformance/src/transactional-cumulative.test.ts`: `9f70f8a24ea358b2cd613fd392be68057abd7b1552ec8cc6c4bc1a3241de69f6`
+- `apps/bdptest/src/transactional-matrix.test.ts`: `a0a7462aaface5f1442e038e59f9a905b3c2b7c505e9bd57e283737708911569`
+
+## Additional read inputs (SHA256 at report)
+
+- `/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-conditional-reads-draft/conditional-rebind-plan/plan.md`: `574e19154137da4c142629cde00653a3244ca33838b336d011bcc5f6f6f51d53`
+- `/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-conditional-reads-draft/conditional-rebind-plan/native-plan-review.md`: `bbe1dbf2e1e7ce6a638b0d9cdaabc1fafc50bc36380dcdf6b5a679a9f16dc792`
+- `/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-conditional-reads-draft/claude-code-review/root-dispositions.md`: `ad571142d3c33b6d3c82b90668e0cc554dad2bce317b62d80a5b7120bad8901e`
+- `/Users/dbox/repos/wt/vickie/vickie-transaction-conditional-reads/apps/bdptest/test-support/transactional-execution-binding.ts`: `cde506c72a8710eafe58522900f6db70ed3701cf333560252dc8e7c5e706cf89`
+- `/Users/dbox/repos/wt/vickie/vickie-transaction-conditional-reads/packages/conformance/src/runner.ts`: `ac20c7fbfe15a5e42a6559e89cd3467562efe9bc74d462478414414ed3efede1`
+- `/Users/dbox/repos/wt/vickie/vickie-transaction-conditional-reads/packages/conformance/src/runner.test.ts`: `ad7e756bad1f70ecc6285e19830bc001ebec01899ed868af3fb4b08e888aba86`
+- `/Users/dbox/repos/wt/vickie/vickie-transaction-conditional-reads/packages/conformance/test-support/transactional/fixture-v1.json`: `3a7899ced771d4880066d98b0000c53f801ece53458502cc4f3bc641146c9a85`
+
+
+===== Root-authorized correction note | /Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-conditional-reads-draft/rebind-correction/root-disposition-note.md =====
+# Root-released principal helper correction
+
+Root authorized exactly one correction after native review b90ed1fb: restore assertPrincipalPositive's committed positional assertion lookup. The original frozen author packet and blocker/review reports remain preserved. This successor changes only that one app line; conditional finish retains its stable scenario/action ID lookup.
+
+Post-format data checks prove the complete principal helper byte-identical to HEAD1ba65f2f192cc84e44eb09ef89b9693ec6cdaf05, the manifest/coverage/cumulative files unchanged from root-accepted author data, and exactly one remaining conditionalActionIds[i] lookup in the conditional finish helper. Existing194-assertion/32raw-object/42-derivative measurements therefore retain their original source attribution; no old measurement was rewritten or recalculated.
+
+Pinned Node24.16 Biome formatting only ran. No product test/import/build, commit or publication ran. Source is frozen for independent native verification and actual Claude code review. Root's data acceptance does not authorize execution without the remaining gates.
+
+
+===== Correction-only patch | /Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-conditional-reads-draft/rebind-correction/correction.patch =====
+--- a/apps/bdptest/src/transactional-matrix.test.ts
++++ b/apps/bdptest/src/transactional-matrix.test.ts
+@@ -4063,7 +4063,7 @@
+   const declared = bundle.manifest.scenarios.find((r) => r.id === principalId)!;
+   for (const [i, exchange] of row.exchanges.entries()) {
+     expect(exchange.assertions.map((a) => a.id)).toEqual(
+-      declared.actions!.find((a) => a.id === conditionalActionIds[i])!.assertions.map((a) => a.id),
++      declared.actions![i]!.assertions.map((a) => a.id),
+     );
+     expect(exchange.assertions.every((a) => a.passed)).toBe(true);
+   }
+
+
+===== Native correction verification | /Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-conditional-reads-draft/rebind-correction/native-verification.md =====
+# Native closure: conditional principal-helper correction
+
+**N1 closed. No further finding in this one-line correction.** The complete assertPrincipalPositive helper is byte-identical to committed HEAD 1ba65f2f192cc84e44eb09ef89b9693ec6cdaf05, including its original positional assertion lookup and pre-existing exact principal action-order check. The helper no longer consults conditionalActionIds.
+
+Reversing only the corrected line inside that helper reconstructs the exact app SHA256 from the frozen rebind-author review. The other three owned source files remain byte-identical to that review. Current git diff matches the successor patch digest. This verifies the claimed bounded correction rather than merely observing that the bad expression disappeared. Prior broader native review remains applicable with its sole N1 resolved. This is code closure only; actual Claude disposition and root-controlled validation remain separate requirements.
+
+No tests, imports, builds or source edits. Guard verified the same role session before writing this report.
+
+Successor full patch SHA256: bc7e620ea97a37933901ee4bf2e2d818685178bd974a262e88b025e513e2a60a
+
+Principal helper SHA256: 09162bdefa50d64de65900956848ac22e8db8d46bff5ff40ac1650030ca793e0
+
+- `packages/conformance/test-support/transactional/manifest-v1.json`: `60c527f6a5673161eacf022c0015d09bea2743d153b8b0d0c86160b76fafeb68`
+- `packages/conformance/test-support/transactional/coverage-v1.json`: `33032fe07eb06d2a8968fcd8e5a3cf93cb4637c551868c22da9ea0c4edd587a3`
+- `packages/conformance/src/transactional-cumulative.test.ts`: `9f70f8a24ea358b2cd613fd392be68057abd7b1552ec8cc6c4bc1a3241de69f6`
+- `apps/bdptest/src/transactional-matrix.test.ts`: `136de49e859546e081c39410f1d3ee6fc01e32faf1879084718ad67b553d62ec`
+
+
+===== Root data-only measurement acceptance | /Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-conditional-reads-draft/rebind-author/root-data-measurement.json =====
+{
+  "dataOnly": true,
+  "productExecution": false,
+  "dataFiles": [
+    {
+      "file": "packages/conformance/test-support/transactional/manifest-v1.json",
+      "parentSha256": "cd90592e76cace65b115dbfedf5f604c9c4011ed2e1a0fad954c1edb12aca6cd",
+      "currentSha256": "60c527f6a5673161eacf022c0015d09bea2743d153b8b0d0c86160b76fafeb68",
+      "rawOldRows": 16,
+      "fullParentRecovered": true
+    },
+    {
+      "file": "packages/conformance/test-support/transactional/coverage-v1.json",
+      "parentSha256": "0c991feb128a50625397e337464badcb17d22a0c31e1d57a6b66fa1032a92a51",
+      "currentSha256": "33032fe07eb06d2a8968fcd8e5a3cf93cb4637c551868c22da9ea0c4edd587a3",
+      "rawOldRows": 16,
+      "fullParentRecovered": true
+    }
+  ],
+  "actual": {
+    "normalBytes": 882556,
+    "normalSha256": "101f70d3f2d6c4a75e41f878938fde18262f1933cf198013f30523f2b265c449",
+    "compactBytes": 431284,
+    "compactSha256": "97c0c5e1732e335913b9c7db4215ad2d2b64f6a3499e8d69db26306fae1eda93",
+    "nodes": 23166,
+    "actions": 241,
+    "assertions": 2836,
+    "diskBytes": 869264,
+    "diskSha256": "60c527f6a5673161eacf022c0015d09bea2743d153b8b0d0c86160b76fafeb68",
+    "coverageBytes": 133568,
+    "coverageNormalBytes": 133568,
+    "coverageSha256": "33032fe07eb06d2a8968fcd8e5a3cf93cb4637c551868c22da9ea0c4edd587a3",
+    "newAssertions": 194
+  },
+  "derivativesIndependentlyReconstructed": 42,
+  "acceptedMeasuredFences": {
+    "canonicalDisk": 873360,
+    "canonicalDiskDeltaFrom488280": 385080,
+    "canonicalNormal": 886652,
+    "canonicalNodes": 23230,
+    "canonicalNodesDeltaFrom13019": 10211,
+    "coverageDiskAndNormal": 134592,
+    "coverageDeltaFrom70662": 63930,
+    "derivativeNormal": 892770,
+    "derivativeNodes": 23386
+  },
+  "margins": {
+    "bytes": 4096,
+    "nodes": 64,
+    "coverage": 1024
+  },
+  "scope": "Fixture data measurement only. Known principal observer code blocker prevents execution; successor app code must be independently reviewed."
+}
+
+
+===== Current placement and preserved parent objects =====
+{
+  "packages/conformance/test-support/transactional/manifest-v1.json": {
+    "oldIndex": 0,
+    "newIndex": 16,
+    "currentFirstRow": "read-update.idempotency.principal-isolation",
+    "currentOrderedIds": [
+      "read-update.idempotency.principal-isolation",
+      "read-update.http.command-minimum-fields",
+      "transactional.batch.atomic-commit",
+      "transactional.batch.rollback",
+      "transactional.batch.deletion-safety",
+      "transactional.batch.no-op-entries",
+      "transactional.set.mutation",
+      "transactional.set.zero-match",
+      "transactional.set.cardinality",
+      "transactional.set.singleton-targets",
+      "transactional.receipt.readable",
+      "transactional.receipt.pagination",
+      "transactional.idempotency.conflict",
+      "transactional.idempotency.cross-carrier",
+      "transactional.idempotency.failed-retained",
+      "transactional.sequence.member-transactions",
+      "transactional.http.conditional-reads"
+    ],
+    "other16ObjectsAndRelativeOrderUnchanged": true
+  },
+  "packages/conformance/test-support/transactional/coverage-v1.json": {
+    "oldIndex": 0,
+    "newIndex": 16,
+    "currentFirstRow": "read-update.idempotency.principal-isolation",
+    "currentOrderedIds": [
+      "read-update.idempotency.principal-isolation",
+      "read-update.http.command-minimum-fields",
+      "transactional.batch.atomic-commit",
+      "transactional.batch.rollback",
+      "transactional.batch.deletion-safety",
+      "transactional.batch.no-op-entries",
+      "transactional.set.mutation",
+      "transactional.set.zero-match",
+      "transactional.set.cardinality",
+      "transactional.set.singleton-targets",
+      "transactional.receipt.readable",
+      "transactional.receipt.pagination",
+      "transactional.idempotency.conflict",
+      "transactional.idempotency.cross-carrier",
+      "transactional.idempotency.failed-retained",
+      "transactional.sequence.member-transactions",
+      "transactional.http.conditional-reads"
+    ],
+    "other16ObjectsAndRelativeOrderUnchanged": true
+  }
+}
+===== Normalized conditional row/coverage changes =====
+--- normalized-original-row/packages/conformance/test-support/transactional/manifest-v1.json
++++ normalized-current-row/packages/conformance/test-support/transactional/manifest-v1.json
+@@ -333,8 +333,7 @@
+         ]
+       },
+       "target": {
+-        "binding": "scope",
+-        "path": "beads/a"
++        "binding": "subject"
+       }
+     },
+     {
+@@ -427,8 +426,7 @@
+         ]
+       },
+       "target": {
+-        "binding": "scope",
+-        "path": "beads/a"
++        "binding": "subject"
+       }
+     },
+     {
+@@ -477,7 +475,7 @@
+           "name": "bdp-scope-position"
+         },
+         {
+-          "absent": false,
++          "equalsResponse": "initial-get",
+           "id": "etag",
+           "kind": "header",
+           "name": "etag"
+@@ -505,8 +503,7 @@
+         ]
+       },
+       "target": {
+-        "binding": "scope",
+-        "path": "beads/a"
++        "binding": "subject"
+       }
+     },
+     {
+@@ -555,7 +552,7 @@
+           "name": "bdp-scope-position"
+         },
+         {
+-          "absent": false,
++          "equalsResponse": "initial-get",
+           "id": "etag",
+           "kind": "header",
+           "name": "etag"
+@@ -603,8 +600,7 @@
+         ]
+       },
+       "target": {
+-        "binding": "scope",
+-        "path": "beads/a"
++        "binding": "subject"
+       }
+     },
+     {
+@@ -653,20 +649,8 @@
+           "name": "bdp-scope-position"
+         },
+         {
+-          "absent": false,
+-          "id": "etag",
+-          "kind": "header",
+-          "name": "etag"
+-        },
+-        {
+           "id": "body-absent",
+           "kind": "body-absent"
+-        },
+-        {
+-          "absent": true,
+-          "id": "no-media",
+-          "kind": "header",
+-          "name": "content-type"
+         }
+       ],
+       "captures": [],
+@@ -687,8 +671,7 @@
+         ]
+       },
+       "target": {
+-        "binding": "scope",
+-        "path": "beads/a"
++        "binding": "subject"
+       }
+     },
+     {
+@@ -737,20 +720,8 @@
+           "name": "bdp-scope-position"
+         },
+         {
+-          "absent": false,
+-          "id": "etag",
+-          "kind": "header",
+-          "name": "etag"
+-        },
+-        {
+           "id": "body-absent",
+           "kind": "body-absent"
+-        },
+-        {
+-          "absent": true,
+-          "id": "no-media",
+-          "kind": "header",
+-          "name": "content-type"
+         },
+         {
+           "headers": [
+@@ -791,8 +762,7 @@
+         ]
+       },
+       "target": {
+-        "binding": "scope",
+-        "path": "beads/a"
++        "binding": "subject"
+       }
+     },
+     {
+@@ -880,8 +850,7 @@
+         ]
+       },
+       "target": {
+-        "binding": "scope",
+-        "path": "beads/a"
++        "binding": "subject"
+       }
+     },
+     {
+@@ -978,8 +947,7 @@
+         ]
+       },
+       "target": {
+-        "binding": "scope",
+-        "path": "beads/a"
++        "binding": "subject"
+       }
+     },
+     {
+@@ -1502,8 +1470,7 @@
+         ]
+       },
+       "target": {
+-        "binding": "scope",
+-        "path": "beads/a"
++        "binding": "subject"
+       }
+     },
+     {
+@@ -1596,8 +1563,7 @@
+         ]
+       },
+       "target": {
+-        "binding": "scope",
+-        "path": "beads/a"
++        "binding": "subject"
+       }
+     }
+   ],
+@@ -1607,8 +1573,8 @@
+   "cleanup": {
+     "resetFixture": true
+   },
+-  "id": "read.http.conditional-reads",
+-  "requiredProfile": "read",
++  "id": "transactional.http.conditional-reads",
++  "requiredProfile": "transactional",
+   "setup": {
+     "fixture": "reference-transactional-v1",
+     "requires": [
+--- normalized-original-row/packages/conformance/test-support/transactional/coverage-v1.json
++++ normalized-current-row/packages/conformance/test-support/transactional/coverage-v1.json
+@@ -86,9 +86,7 @@
+         "mismatch-get:present-bdp-authorization-view",
+         "mismatch-get:present-bdp-scope-position",
+         "mismatch-get:position",
+-        "mismatch-get:etag",
+         "mismatch-get:body-absent",
+-        "mismatch-get:no-media",
+         "mismatch-head:status",
+         "mismatch-head:request-headers",
+         "mismatch-head:request-body",
+@@ -97,9 +95,7 @@
+         "mismatch-head:present-bdp-authorization-view",
+         "mismatch-head:present-bdp-scope-position",
+         "mismatch-head:position",
+-        "mismatch-head:etag",
+         "mismatch-head:body-absent",
+-        "mismatch-head:no-media",
+         "mismatch-head:get-metadata",
+         "anonymous-get:status",
+         "anonymous-get:request-headers",
+@@ -201,10 +197,10 @@
+         "current-head:body-absent",
+         "current-head:get-metadata"
+       ],
+-      "scenario": "read.http.conditional-reads"
++      "scenario": "transactional.http.conditional-reads"
+     }
+   ],
+-  "id": "read.http.conditional-reads",
+-  "reason": "Bounded inherited Read conditional GET/HEAD and ordinary 401/404 precedence on the same actual mutable Transactional configuration; complete current Resources equal captured receipt postimages and independent wire oracles check validators, revision changes and HEAD metadata. HEAD parity is supporting prose, not a second coverage binding. Whole contract remains unqualified: cold discovery, date/validator combinations, other Read surfaces, policy transitions, S1/G2 and full-profile admission remain omitted. Full dynamic receipt/postimage equality is an independent app wire oracle, not a canonical manifest assertion. HTTP captures are URL-only; no body capture capability is claimed.",
++  "id": "transactional.http.conditional-reads",
++  "reason": "Partial Transactional conditional-read evidence: ordinary authentication and missing-Resource refusals precede conditional shortcuts; 304 and 412 are bodyless and carry current Scope context. Supporting GET/HEAD observations compare validators before and after mutation. The independent app wire oracle compares complete current Resources with observed receipt postimages; there are no portable object captures. Uses wildcard If-None-Match and an independently verified nonmatching literal tag. Whole contract remains unqualified: minimum-position refusal, epoch/view mismatch, erasure/expiry, durable checkpoint behavior, optional-no-validator behavior, observed matching specific request tags, If-Match:* success and date combinations are not covered. The separate Read conditional requirement remains unplanned; no cross-credit or public profile claim follows.",
+   "wholeContract": false
+ }
+
+===== Two TypeScript files: incremental rebind/correction against original draft =====
+--- original-read-draft/packages/conformance/src/transactional-cumulative.test.ts
++++ current-tx-rebind/packages/conformance/src/transactional-cumulative.test.ts
+@@ -199,6 +199,9 @@
+   expect(plan.requirements.filter((r) => r.readiness === "unplanned")).toHaveLength(234);
+   expect(plan.unobservedIds).toEqual(selected.required.map((r) => r.id));
+   expect(plan.unobservedIds).toContain("read-update.http.command-minimum-fields");
++  expect(plan.requirements.find((r) => r.id === "read.http.conditional-reads")?.readiness).toBe(
++    "unplanned",
++  );
+   expect(plan.manifestDigest).toBe(actual.digests.manifestDigest);
+   expect(() => planProfileExecution(selected, configuration("read-update"))).toThrow("disagree");
+ });
+@@ -1125,7 +1128,6 @@
+     "transactional.batch.atomic-commit",
+   );
+   expect(manifest.scenarios.map((r: { id: string }) => r.id)).toEqual([
+-    "read.http.conditional-reads",
+     "read-update.idempotency.principal-isolation",
+     "read-update.http.command-minimum-fields",
+     "transactional.batch.atomic-commit",
+@@ -1142,10 +1144,11 @@
+     "transactional.idempotency.cross-carrier",
+     "transactional.idempotency.failed-retained",
+     "transactional.sequence.member-transactions",
++    "transactional.http.conditional-reads",
+   ]);
+   const counts = new Map<string, number>();
+   for (const [id, expected] of [
+-    ["read.http.conditional-reads", 14],
++    ["transactional.http.conditional-reads", 14],
+     ["transactional.set.cardinality", 16],
+     ["transactional.set.singleton-targets", 22],
+     ["transactional.set.mutation", 30],
+@@ -1182,20 +1185,22 @@
+   // Root-accepted sequence-member: disk790009/normal802361/nodes20956/coverage117702.
+   // Root-accepted principal: disk825049/normal837765/nodes21908/coverage124537.
+   // Root-accepted conditional Read: disk870122/normal883414/nodes23196/coverage133517.
++  // Proposed TX rebind measurement: disk869264/normal882556/nodes23166/coverage133568.
++  // Root must independently accept these measured fences before execution.
+   // These measured source authoring fences do not change runtime/parser limits.
+-  expect(read("manifest").byteLength - 488280).toBeLessThanOrEqual(385938);
+-  expect(read("manifest").byteLength).toBeLessThanOrEqual(874218);
+-  expect(Buffer.byteLength(JSON.stringify(manifest, null, 2) + "\n")).toBeLessThanOrEqual(887510);
+-  expect(read("coverage").byteLength - 70662).toBeLessThanOrEqual(63879);
+-  expect(read("coverage").byteLength).toBeLessThanOrEqual(134541);
++  expect(read("manifest").byteLength - 488280).toBeLessThanOrEqual(385080);
++  expect(read("manifest").byteLength).toBeLessThanOrEqual(873360);
++  expect(Buffer.byteLength(JSON.stringify(manifest, null, 2) + "\n")).toBeLessThanOrEqual(886652);
++  expect(read("coverage").byteLength - 70662).toBeLessThanOrEqual(63930);
++  expect(read("coverage").byteLength).toBeLessThanOrEqual(134592);
+   expect(
+     Buffer.byteLength(JSON.stringify(JSON.parse(read("coverage").toString()), null, 2) + "\n"),
+-  ).toBeLessThanOrEqual(134541);
++  ).toBeLessThanOrEqual(134592);
+   expect(
+     manifest.scenarios.flatMap((r: { actions: { assertions: unknown[] }[] }) =>
+       r.actions.flatMap((a) => a.assertions),
+     ),
+-  ).toHaveLength(2840);
++  ).toHaveLength(2836);
+   expect(read("fixture").byteLength).toBe(716);
+   expect(createHash("sha256").update(read("fixture")).digest("hex")).toBe(
+     "3a7899ced771d4880066d98b0000c53f801ece53458502cc4f3bc641146c9a85",
+@@ -1207,8 +1212,8 @@
+     nodes++;
+     if (value && typeof value === "object") pending.push(...Object.values(value));
+   }
+-  expect(nodes - 13019).toBeLessThanOrEqual(10241);
+-  expect(nodes).toBeLessThanOrEqual(23260);
++  expect(nodes - 13019).toBeLessThanOrEqual(10211);
++  expect(nodes).toBeLessThanOrEqual(23230);
+   // Clause ownership is independent from the exhaustive mechanical assertion mirror.
+   const clauseMap = {
+     "transactional.receipt.pagination": [
+@@ -1269,7 +1274,7 @@
+   const row = manifest.scenarios.find(
+     (r: { id: string }) => r.id === "transactional.receipt.pagination",
+   );
+-  expect(manifest.scenarios.indexOf(row)).toBe(12);
++  expect(manifest.scenarios.indexOf(row)).toBe(11);
+   expect(row.actions).toHaveLength(18);
+   const later = row.actions.find((a: { id: string }) => a.id === "p-later-state");
+   expect(later.captures).toEqual([]); // HTTP capture is URL-only; no unimplemented array capture.
+@@ -3203,7 +3208,7 @@
+ }
+ it("pins the partial principal namespace row, full parent and exact credential roles", () => {
+   const row = manifest.scenarios.find((r: { id: string }) => r.id === principalId)!;
+-  expect(manifest.scenarios[1]).toBe(row);
++  expect(manifest.scenarios[0]).toBe(row);
+   expect(row.requiredProfile).toBe("read-update");
+   expect(row.actions.flatMap((a: { captures: unknown[] }) => a.captures)).toEqual([]);
+   expect(row.actions.map((a: { id: string }) => a.id)).toEqual([
+@@ -3552,7 +3557,7 @@
+     withoutPrincipalRow(read(name).toString(), name);
+ });
+ 
+-const conditionalId = "read.http.conditional-reads";
++const conditionalId = "transactional.http.conditional-reads";
+ const conditionalParentPins = {
+   manifest: [
+     [
+@@ -3719,7 +3724,7 @@
+     ],
+   ],
+ } as const;
+-/** Removing only the new first object recovers the complete byte-exact parent. */
++/** Removing only the new tail object recovers the complete byte-exact parent. */
+ function withoutConditionalRow(text: string, name: "manifest" | "coverage") {
+   const key = name === "manifest" ? "scenarios" : "rows";
+   const objects = objectSlices(text, key);
+@@ -3730,9 +3735,9 @@
+   }
+   const raw = objects.get(conditionalId)!;
+   expect(typeof raw).toBe("string");
+-  const prefix = `"${key}": [\n    ${raw},\n`;
+-  expect(text.includes(prefix), "conditional-first-object").toBe(true);
+-  const parent = text.replace(prefix, `"${key}": [\n`);
++  const suffix = `,\n    ${raw}\n  ]\n}\n`;
++  expect(text.endsWith(suffix), "conditional-tail-object").toBe(true);
++  const parent = text.slice(0, -suffix.length) + "\n  ]\n}\n";
+   expect(createHash("sha256").update(parent).digest("hex"), "conditional-full-parent").toBe(
+     name === "manifest"
+       ? "cd90592e76cace65b115dbfedf5f604c9c4011ed2e1a0fad954c1edb12aca6cd"
+@@ -3740,10 +3745,11 @@
+   );
+   return parent;
+ }
+-it("pins inherited conditional Read actions, full parent bytes and the two-failure control", () => {
+-  const row = manifest.scenarios[0];
++it("pins partial Transactional conditional actions, full parent bytes and the two-failure control", () => {
++  const row = manifest.scenarios.find((r: { id: string }) => r.id === conditionalId)!;
++  expect(manifest.scenarios.indexOf(row)).toBe(16);
+   expect(row.id).toBe(conditionalId);
+-  expect(row.requiredProfile).toBe("read");
++  expect(row.requiredProfile).toBe("transactional");
+   expect(row.setup).toEqual({
+     fixture: "reference-transactional-v1",
+     requires: ["installed-transactional-http"],
+@@ -3766,17 +3772,19 @@
+     "current-get",
+     "current-head",
+   ]);
+-  expect(row.actions.flatMap((a: { assertions: unknown[] }) => a.assertions)).toHaveLength(198);
++  expect(row.actions.flatMap((a: { assertions: unknown[] }) => a.assertions)).toHaveLength(194);
+   expect(
+     createHash("sha256").update(JSON.stringify(row)).digest("hex"),
+     "conditional-complete-oracle",
+-  ).toBe("6def26abb023c472e59cf90e3d1e2e9310f92fdcb1d34184b807eb29e2ded3e2");
++  ).toBe("28fd6a7d9a0434fe3a875aa1ae1a97470e2013dfe1eccfe78f35a54464eadd75");
+   // HTTP captureValue accepts URL strings only; full dynamic receipt/postimage
+   // equality is enforced independently by the app's original-wire observer.
+   expect(row.actions.flatMap((a: { captures: unknown[] }) => a.captures)).toEqual([]);
+   for (const name of ["manifest", "coverage"] as const)
+     withoutConditionalRow(read(name).toString(), name);
+-  const coverage = JSON.parse(read("coverage").toString()).rows[0];
++  const coverage = JSON.parse(read("coverage").toString()).rows.find(
++    (r: { id: string }) => r.id === conditionalId,
++  )!;
+   expect(Object.keys(coverage)).toEqual(["id", "wholeContract", "reason", "bindings"]);
+   expect(coverage.id).toBe(conditionalId);
+   expect(coverage.wholeContract).toBe(false);
+@@ -3790,13 +3798,14 @@
+     },
+   ]);
+   const control = structuredClone(row);
+-  const header = control.actions[3].raw.headerLines.find(
++  const controlAction = control.actions.find((a: { id: string }) => a.id === "conditional-get")!;
++  const header = controlAction.raw.headerLines.find(
+     (h: { name: string }) => h.name === "if-none-match",
+   );
+   expect(header.value).toBe("*");
+   header.value = '"conditional-no-match"';
+   expect(
+-    control.actions[3].assertions
++    controlAction.assertions
+       .filter((a: { kind: string }) => ["status", "body-absent"].includes(a.kind))
+       .map((a: { id: string }) => a.id),
+   ).toEqual(["status", "body-absent"]);
+@@ -3809,8 +3818,8 @@
+   );
+   expect([...new Set(routes)]).toEqual([
+     "POST batch:",
+-    "GET scope:beads/a",
+-    "HEAD scope:beads/a",
++    "GET subject:",
++    "HEAD subject:",
+     "GET scope:beads/missing",
+     "HEAD scope:beads/missing",
+   ]);
+--- original-read-draft/apps/bdptest/src/transactional-matrix.test.ts
++++ current-tx-rebind/apps/bdptest/src/transactional-matrix.test.ts
+@@ -90,6 +90,11 @@
+   visit(error);
+   return seen;
+ }
++type ObservationSession = Readonly<{
++  scenario: string;
++  reopen: boolean;
++  sessionOrdinal: number;
++}>;
+ type InstalledObservation = {
+   result: Awaited<ReturnType<typeof runCumulativeTransactionalMatrix>>;
+   sessions: Record<string, unknown>[];
+@@ -101,7 +106,7 @@
+   readonly afterFirstExchangeBudgetMs?: number;
+   readonly scenarioSelection?: readonly string[];
+   readonly collapsePrincipalB?: boolean;
+-  readonly onDispatch?: (request: PrincipalDispatchInput) => void;
++  readonly onDispatch?: (request: PrincipalDispatchInput, session: ObservationSession) => void;
+   /** Retain genuine returned evidence before cleanup can fail; never replace it. */
+   readonly onObserved?: (observed: InstalledObservation) => void;
+   readonly invalidReceiptCredentials?: boolean | "set-update" | "set-delete";
+@@ -113,7 +118,11 @@
+   readonly signal?: AbortSignal;
+   readonly children?: ChildProcess[];
+   /** Negative-test gate after actual ordinary wire, never a response replacement. */
+-  readonly afterExchange?: (response: HttpExchangeResponse, signal: AbortSignal) => Promise<void>;
++  readonly afterExchange?: (
++    response: HttpExchangeResponse,
++    signal: AbortSignal,
++    session: ObservationSession,
++  ) => Promise<void>;
+   readonly ready?: (ready: Record<string, unknown>) => Record<string, unknown>;
+   readonly manifest?: (value: {
+     scenarios: { id: string; actions: Record<string, unknown>[] }[];
+@@ -163,6 +172,7 @@
+   };
+   let target: ReturnType<typeof createTransactionalExecutionBinding> | undefined;
+   const sessions: Record<string, unknown>[] = [];
++  let observationSession: ObservationSession | undefined;
+   const deniedReceiptUrls = new Set<string>();
+   const expireCohort = () => controller.abort(new Error("installed cohort deadline"));
+   const timer = setTimeout(expireCohort, budgetMs);
+@@ -199,15 +209,12 @@
+     // Independently authored route inventory, not a second derivation from the manifest.
+     expect(uniqueRoutes).toEqual([
+       { method: "POST", url: `${scope}operations/batch` },
+-      { method: "GET", url: `${scope}beads/a` },
+-      { method: "HEAD", url: `${scope}beads/a` },
+-      { method: "GET", url: `${scope}beads/missing` },
+-      { method: "HEAD", url: `${scope}beads/missing` },
+       { method: "GET", url: `${scope}beads/?limit=32` },
+       { method: "GET", url: `${scope}events/` },
+       { method: "POST", url: `${scope}operations/create-bead` },
+       { method: "POST", url: `${scope}operations/sequence` },
+       { method: "POST", url: `${scope}operations/update-bead` },
++      { method: "GET", url: `${scope}beads/a` },
+       { method: "GET", url: `${scope}links/l` },
+       { method: "GET", url: `${scope}beads/new` },
+       { method: "GET", url: `${scope}changes/?after=genesis` },
+@@ -216,6 +223,9 @@
+       { method: "GET", url: `${scope}beads/c` },
+       { method: "POST", url: `${scope}operations/update-where` },
+       { method: "POST", url: `${scope}operations/delete-where` },
++      { method: "HEAD", url: `${scope}beads/a` },
++      { method: "GET", url: `${scope}beads/missing` },
++      { method: "HEAD", url: `${scope}beads/missing` },
+     ]);
+     const omitted = control?.omitRoute;
+     if (omitted) {
+@@ -265,7 +275,8 @@
+           signal,
+         );
+         control?.children?.push(child.child);
+-        sessions.push({ ...child.ready, scenario, reopen });
++        observationSession = Object.freeze({ scenario, reopen, sessionOrdinal: sessions.length });
++        sessions.push({ ...child.ready, ...observationSession });
+         return control?.ready ? { ...child, ready: control.ready(child.ready) } : child;
+       },
+     });
+@@ -284,14 +295,20 @@
+         },
+         exactExecution: {
+           execute: async (request) => {
++            const session = observationSession;
++            if (!session)
++              throw new Error("ordinary exchange requires a launched observation session");
+             control?.onDispatch?.(
+               Object.freeze({
+                 method: request.method,
+                 url: request.url,
+                 credentialRef: request.credentialRef,
+               }),
++              session,
+             );
+             const response = await target!.target.execute(request);
++            if (observationSession !== session)
++              throw new Error("observation session changed during ordinary exchange");
+             if (afterFirstExchangeBudgetMs !== undefined && firstExchangeTimer === undefined) {
+               firstExchangeTimer = setTimeout(expireCohort, afterFirstExchangeBudgetMs);
+             }
+@@ -313,7 +330,7 @@
+               )
+                 deniedReceiptUrls.add(receipt.id);
+             }
+-            await control?.afterExchange?.(response, signal);
++            await control?.afterExchange?.(response, signal, session);
+             signal.throwIfAborted();
+             return response;
+           },
+@@ -373,14 +390,14 @@
+     memberWire = sequenceMemberWire(),
+     principalWire = principalNamespaceWire(),
+     conditionalWire = conditionalReadWire();
+-  const prefix = conditionalPrefix(
++  const conditionalRouting = conditionalScenarioWire(
+     conditionalWire,
+     principalWire.onDispatch,
+     withPrincipalWire(principalWire, composedMemberWire(crossWire, minimumWire, memberWire)),
+   );
+   const observed = await observe({
+     children,
+-    ...prefix,
++    ...conditionalRouting,
+     onObserved(observed) {
+       if (process.env.BDP_TRANSACTIONAL_OBSERVATION_OUTPUT)
+         writeFileSync(
+@@ -414,7 +431,7 @@
+     true,
+   );
+   expect(observed.result.declarations).toMatchObject({
+-    exactConfigurationDigest: "dba06191b37fd2deea15f876512321dae7695bdc792b7c02468b0b586b8954e4",
++    exactConfigurationDigest: "5a32a664575b83fe55ea3b73b617fc738aefffd56d83affdf66a61d7fd8100e5",
+   });
+   const dynamic = observed.result.scenarios
+     .flatMap((s) => s.exchanges)
+@@ -606,7 +623,7 @@
+   assertCommandMinimumPositive(observed, minimumWire);
+   assertMemberPositive(observed, memberWire);
+   assertPrincipalPositive(observed, principalWire);
+-  conditionalWire.finish(observed);
++  conditionalWire.finish(observed, true);
+   expect(observed.result.scenarios.reduce((n, row) => n + row.exchanges.length, 0)).toBe(234);
+   expect(performance.now() - started).toBeLessThanOrEqual(63000);
+   console.log(
+@@ -1393,15 +1410,12 @@
+     profile: "transactional",
+     routes: [
+       { method: "POST", url: `${scope}operations/batch` },
+-      { method: "GET", url: `${scope}beads/a` },
+-      { method: "HEAD", url: `${scope}beads/a` },
+-      { method: "GET", url: `${scope}beads/missing` },
+-      { method: "HEAD", url: `${scope}beads/missing` },
+       { method: "GET", url: `${scope}beads/?limit=32` },
+       { method: "GET", url: `${scope}events/` },
+       { method: "POST", url: `${scope}operations/create-bead` },
+       { method: "POST", url: `${scope}operations/sequence` },
+       { method: "POST", url: `${scope}operations/update-bead` },
++      { method: "GET", url: `${scope}beads/a` },
+       { method: "GET", url: `${scope}links/l` },
+       { method: "GET", url: `${scope}beads/new` },
+       { method: "GET", url: `${scope}changes/?after=genesis` },
+@@ -1410,11 +1424,14 @@
+       { method: "GET", url: `${scope}beads/c` },
+       { method: "POST", url: `${scope}operations/update-where` },
+       { method: "POST", url: `${scope}operations/delete-where` },
++      { method: "HEAD", url: `${scope}beads/a` },
++      { method: "GET", url: `${scope}beads/missing` },
++      { method: "HEAD", url: `${scope}beads/missing` },
+     ],
+     scope,
+   });
+   expect(createHash("sha256").update(preimage).digest("hex")).toBe(
+-    "dba06191b37fd2deea15f876512321dae7695bdc792b7c02468b0b586b8954e4",
++    "5a32a664575b83fe55ea3b73b617fc738aefffd56d83affdf66a61d7fd8100e5",
+   );
+   expect(Buffer.byteLength(preimage)).toBe(1434);
+   // Preserve every old route and grant only the three explicitly authored new pairs.
+@@ -1775,8 +1792,8 @@
+     }
+     // Historical root-accepted maximum701716B/18263nodes plus4096B/64nodes.
+     // Command-minimum measured maximum756707B/19731nodes plus4096B/64nodes.
+-    expect(Buffer.byteLength(normal)).toBeLessThanOrEqual(893628);
+-    expect(nodes).toBeLessThanOrEqual(23416);
++    expect(Buffer.byteLength(normal)).toBeLessThanOrEqual(892770);
++    expect(nodes).toBeLessThanOrEqual(23386);
+     const loaded = createCumulativeTransactionalArtifactBundle(
+       loadProfileContractSelection("transactional"),
+       { fixture: fixtureSource, manifest: { bytes: Buffer.from(wire) } },
+@@ -2186,8 +2203,8 @@
+     // Historical measurement-only derivative guards were650386B/17275nodes.
+     // Historical root-accepted maximum701716B/18263nodes plus4096B/64nodes.
+     // Command-minimum measured maximum756707B/19731nodes plus4096B/64nodes.
+-    expect(Buffer.byteLength(normal)).toBeLessThanOrEqual(893628);
+-    expect(nodes).toBeLessThanOrEqual(23416);
++    expect(Buffer.byteLength(normal)).toBeLessThanOrEqual(892770);
++    expect(nodes).toBeLessThanOrEqual(23386);
+     const loaded = createCumulativeTransactionalArtifactBundle(
+       loadProfileContractSelection("transactional"),
+       { fixture: fixtureSource, manifest: { bytes: Buffer.from(JSON.stringify(changed)) } },
+@@ -2228,7 +2245,7 @@
+       memberWire = sequenceMemberWire(),
+       principalWire = principalNamespaceWire(),
+       conditionalWire = conditionalReadWire();
+-    const prefixWire = conditionalPrefix(
++    const conditionalRouting = conditionalScenarioWire(
+       conditionalWire,
+       principalWire.onDispatch,
+       withPrincipalWire(principalWire, composedMemberWire(wire, minimumWire, memberWire)),
+@@ -2236,7 +2253,7 @@
+     let description: ReturnType<typeof applyCrossCarrierControl> | undefined;
+     const observed = await observe({
+       children,
+-      ...prefixWire,
++      ...conditionalRouting,
+       onObserved(observed) {
+         if (process.env.BDP_TRANSACTIONAL_CROSS_CARRIER_CONTROL_OUTPUT)
+           writeFileSync(
+@@ -2293,7 +2310,7 @@
+     assertCommandMinimumPositive(observed, minimumWire);
+     assertMemberPositive(observed, memberWire);
+     assertPrincipalPositive(observed, principalWire);
+-    conditionalWire.finish(observed);
++    conditionalWire.finish(observed, true);
+     expect(children).toHaveLength(25);
+     expect(children.every((c) => c.exitCode !== null || c.signalCode !== null)).toBe(true);
+     const exchanges = observed.result.scenarios.reduce((n, r) => n + r.exchanges.length, 0);
+@@ -4158,7 +4175,25 @@
+   );
+ }, 120000);
+ 
+-const conditionalId = "read.http.conditional-reads";
++const conditionalId = "transactional.http.conditional-reads";
++const conditionalParentScenarioIds = [
++  "read-update.idempotency.principal-isolation",
++  "read-update.http.command-minimum-fields",
++  "transactional.batch.atomic-commit",
++  "transactional.batch.rollback",
++  "transactional.batch.deletion-safety",
++  "transactional.batch.no-op-entries",
++  "transactional.set.mutation",
++  "transactional.set.zero-match",
++  "transactional.set.cardinality",
++  "transactional.set.singleton-targets",
++  "transactional.receipt.readable",
++  "transactional.receipt.pagination",
++  "transactional.idempotency.conflict",
++  "transactional.idempotency.cross-carrier",
++  "transactional.idempotency.failed-retained",
++  "transactional.sequence.member-transactions",
++] as const;
+ const conditionalFalseTag = '"conditional-no-match"';
+ const conditionalSeed =
+   '{"operations":[{"operation":"createBead","id":"beads/a","type":"https://reference.invalid/acme/types/task","properties":{"title":"before"}}]}';
+@@ -4259,6 +4294,15 @@
+     receipts: Record<string, unknown>[] = [];
+   const validator = createJsonSchemaValidator(schema);
+   let epoch: string | undefined, view: string | undefined, initialTag: string | undefined;
++  let session: ObservationSession | undefined;
++  function observeSession(current: ObservationSession) {
++    expect(current.scenario).toBe(conditionalId);
++    expect(current.reopen).toBe(false);
++    expect(Number.isSafeInteger(current.sessionOrdinal)).toBe(true);
++    expect(current.sessionOrdinal).toBeGreaterThanOrEqual(0);
++    if (session === undefined) session = current;
++    else expect(current).toBe(session);
++  }
+   function record(value: unknown): Record<string, unknown> {
+     expect(value).not.toBeNull();
+     expect(typeof value).toBe("object");
+@@ -4271,8 +4315,8 @@
+     return value as string;
+   }
+   return {
+-    count: () => responses.length,
+-    onDispatch(input: PrincipalDispatchInput) {
++    onDispatch(input: PrincipalDispatchInput, current: ObservationSession) {
++      observeSession(current);
+       expect(dispatches.length).toBeLessThan(maximum);
+       expect(dispatches.length).toBe(responses.length);
+       const literal = literals[dispatches.length]!;
+@@ -4285,7 +4329,12 @@
+         Object.freeze({ method: input.method, url: input.url, credentialRef: input.credentialRef }),
+       );
+     },
+-    async afterExchange(response: HttpExchangeResponse) {
++    async afterExchange(
++      response: HttpExchangeResponse,
++      _signal: AbortSignal,
++      current: ObservationSession,
++    ) {
++      observeSession(current);
+       const i = responses.length,
+         literal = literals[i]!;
+       expect(i).toBeLessThan(maximum);
+@@ -4445,7 +4494,31 @@
+         writeState: "complete",
+       });
+     },
+-    finish(observed: InstalledObservation) {
++    finish(observed: InstalledObservation, fullCohort = false) {
++      expect(session).toBeDefined();
++      expect(observed.sessions[session!.sessionOrdinal]).toMatchObject(session!);
++      const conditionalSessions = observed.sessions.filter((s) => s.scenario === conditionalId);
++      expect(conditionalSessions).toHaveLength(1);
++      expect(conditionalSessions[0]).toBe(observed.sessions[session!.sessionOrdinal]);
++      if (fullCohort) {
++        expect(observed.sessions.filter((s) => s.reopen === false).map((s) => s.scenario)).toEqual([
++          ...conditionalParentScenarioIds,
++          conditionalId,
++        ]);
++        expect(session!.sessionOrdinal).toBe(observed.sessions.length - 1);
++        expect(
++          observed.sessions
++            .slice(0, session!.sessionOrdinal)
++            .every((s) =>
++              conditionalParentScenarioIds.includes(
++                s.scenario as (typeof conditionalParentScenarioIds)[number],
++              ),
++            ),
++        ).toBe(true);
++      } else {
++        expect(session!.sessionOrdinal).toBe(0);
++        expect(observed.sessions).toHaveLength(1);
++      }
+       expect(dispatches).toHaveLength(maximum);
+       expect(responses).toHaveLength(maximum);
+       const row = observed.result.scenarios.find((r) => r.id === conditionalId)!;
+@@ -4466,7 +4539,8 @@
+         expect(exchange.assertions.map((a) => a.id)).toEqual(
+           bundle.manifest.scenarios
+             .find((r) => r.id === conditionalId)!
+-            .actions![i]!.assertions.map((a) => a.id),
++            .actions!.find((a) => a.id === conditionalActionIds[i])!
++            .assertions.map((a) => a.id),
+         );
+         failures.push(
+           ...exchange.assertions
+@@ -4482,6 +4556,7 @@
+     summary() {
+       return {
+         mode: control ? "nonmatching-if-none-match" : "positive",
++        session,
+         dispatches,
+         responses,
+         expectedExchanges: maximum,
+@@ -4491,26 +4566,29 @@
+     },
+   };
+ }
+-/** The new canonical prefix is consumed exactly once. It cannot reach the old
+- * principal/cross/minimum/member observers, and late repeated mutation keys fail. */
+-function conditionalPrefix(
++/** Route only the actual launched conditional session to the new observer. */
++function conditionalScenarioWire(
+   conditional: ReturnType<typeof conditionalReadWire>,
+-  oldDispatch: (request: PrincipalDispatchInput) => void,
+-  oldAfterExchange: (response: HttpExchangeResponse) => Promise<void>,
++  oldDispatch?: (request: PrincipalDispatchInput) => void,
++  oldAfterExchange?: (response: HttpExchangeResponse) => Promise<void>,
+ ) {
+   return {
+-    onDispatch(input: PrincipalDispatchInput) {
+-      if (conditional.count() < 14) conditional.onDispatch(input);
+-      else oldDispatch(input);
++    onDispatch(input: PrincipalDispatchInput, session: ObservationSession) {
++      if (session.scenario === conditionalId) conditional.onDispatch(input, session);
++      else {
++        if (!oldDispatch) throw new Error("unexpected nonconditional dispatch");
++        oldDispatch(input);
++      }
+     },
+-    async afterExchange(response: HttpExchangeResponse) {
+-      if (conditional.count() < 14) await conditional.afterExchange(response);
++    async afterExchange(
++      response: HttpExchangeResponse,
++      signal: AbortSignal,
++      session: ObservationSession,
++    ) {
++      if (session.scenario === conditionalId)
++        await conditional.afterExchange(response, signal, session);
+       else {
+-        const key = response.exactRequest?.headerLines.find(
+-          (h) => h.name.toLowerCase() === "idempotency-key",
+-        )?.value;
+-        expect(key).not.toBe("conditional-seed");
+-        expect(key).not.toBe("conditional-update");
++        if (!oldAfterExchange) throw new Error("unexpected nonconditional response");
+         await oldAfterExchange(response);
+       }
+     },
+@@ -4535,10 +4613,11 @@
+     "c86a262f896fd4b357050b2b952e8d9992aa5b98f4a5d60f1f6f793040770e20",
+   ]);
+   const canonical = JSON.parse(manifestSource.bytes.toString());
+-  const row = canonical.scenarios[0];
++  const row = canonical.scenarios.find((r: { id: string }) => r.id === conditionalId)!;
+   expect(row.id).toBe(conditionalId);
+-  for (const [i, action] of row.actions.entries()) {
+-    const literal = literals[i]!;
++  expect(row.actions.map((a: { id: string }) => a.id)).toEqual(conditionalActionIds);
++  for (const literal of literals) {
++    const action = row.actions.find((a: { id: string }) => a.id === literal.action)!;
+     expect(action.id).toBe(literal.action);
+     expect(action.method).toBe(literal.method);
+     expect(action.credentialRef).toBe(literal.credentialRef);
+@@ -4549,13 +4628,16 @@
+   }
+   const changed = structuredClone(canonical);
+   applyConditionalControl(changed);
+-  const changedHeader = changed.scenarios[0].actions[3].raw.headerLines.at(-1);
++  const changedHeader = changed.scenarios
++    .find((r: { id: string }) => r.id === conditionalId)!
++    .actions.find((a: { id: string }) => a.id === "conditional-get")!
++    .raw.headerLines.find((h: { name: string }) => h.name === "if-none-match")!;
+   expect(changedHeader).toEqual({ name: "if-none-match", value: conditionalFalseTag });
+   changedHeader.value = "*";
+   expect(changed).toEqual(canonical);
+ });
+ it.each([false, true])(
+-  "observes inherited conditional Read and HEAD after mutation (control %s)",
++  "observes partial Transactional conditional reads and HEAD after mutation (control %s)",
+   async (control) => {
+     const output = process.env.BDP_TRANSACTIONAL_CONDITIONAL_OUTPUT;
+     if (output !== undefined && (!path.isAbsolute(output) || output.length > 4096))
+@@ -4565,8 +4647,7 @@
+     const observed = await observe({
+       children,
+       scenarioSelection: [conditionalId],
+-      onDispatch: wire.onDispatch,
+-      afterExchange: wire.afterExchange,
++      ...conditionalScenarioWire(wire),
+       ...(control ? { manifest: applyConditionalControl } : {}),
+       onObserved(observed) {
+         if (output)

@@ -1,0 +1,82 @@
+Reviewed all three deltas independently against parent + `docs/specs/bdp.md`. No files written, no builds run. Findings below, numbered continuously.
+
+## (1) `vickie-read-update-document-patch` — a0b44be vs 5504538
+
+**1. Medium — whole-row claim over-reaches its governing section (unwitnessed clauses, undisclosed)**
+Location: `packages/conformance/test-support/read-update-coverage-v1.json:1023`; `docs/design/read-update-executable-progress.md:125`; `packages/conformance/matrices/read-update-v1.json` → `link-merge-replace`.
+Issue: `document-patch-merge-replace` carries `wholeContract: true`, and both the catalog citations anchor `#property-change-values`. The progress doc states the full section reached by each citation governs. Two normative clauses of that section have no witness anywhere:
+- "The other patch operations — `move`, `copy`, and `test` — are excluded from BDP v0." A scan of the whole manifest finds zero `"op":"move"|"copy"|"test"` probes.
+- "Operations execute in array order." The new Link arm copies the Bead arm's op set verbatim (`add /object`, `add /array/0`, `add /array/-`, `add /added`). All four target disjoint locations, and the only interacting pair (`/array/0`, `/array/-`) yields `["insert","old","tail","append"]` under either ordering — the result is invariant under all 24 permutations, so array-order execution is not observed.
+The rewritten reason and the doc's Limits cell disclose only null-assignment/missing-target breadth and the absent pointer-escape / array replace-remove matrix. Neither gap is recorded.
+Fix: add one order-sensitive pair to `link-merge-replace` (e.g. `add /array/0 "x"` followed by `remove /array/1`, or two ops on the same pointer) and one excluded-op refusal probe; otherwise name both unwitnessed clauses explicitly in the Limits cell and in the coverage `reason`.
+Classification: pre-existing unqualified contract (row was already `whole: true` at the parent), but newly re-asserted and left out of the delta's own enumerated disclosure.
+
+**2. Low–Medium — coverage reason dropped both of the parent's qualifiers while broadening coverage language**
+Location: `packages/conformance/test-support/read-update-coverage-v1.json:1023`.
+Issue: the parent reason ended "Negative controls must detect returned-body corruption; **scoped to the cited row clauses**." The replacement removes both clauses and substitutes a stronger coverage enumeration. The scoping sentence is exactly what bounded finding 1.
+Fix: restore "scoped to the cited row clauses" (and the control obligation) alongside the new enumeration.
+
+**3. Low — two spec-optional diagnostic members pinned as required shape; only one disclosed**
+Location: `packages/conformance/matrices/read-update-v1.json` → `bead-properties-null`, `bead-metadata-array`, `link-properties-scalar`, `link-metadata-remove` assertions `document` / `document-root`; `docs/design/read-update-executable-progress.md:129`; coverage reason at `:1336`.
+Issue: §Read+Update problem details says "The **optional** `document` is `properties` or `metadata`; omission means `properties`" and "`instanceLocation`, **when present**, is a JSON Pointer relative to the failing document." All four probes assert `document` `exists:false` for properties failures and `instanceLocation` `exists:true, equals ""`. The doc discloses the first ("one legal spelling of the properties document") but neither the doc nor the coverage reason records that `instanceLocation` presence is likewise an installed-authority choice, not a required clause.
+Fix: extend the limits sentence in the `document-patch-validation` reason to cover `instanceLocation` presence as installed-behaviour pinning.
+
+**4. Low — the clause carrying the `{}`-clears credit has no row-local sensitivity control**
+Location: `apps/bdptest/src/read-update-matrix.test.ts:109-115, 368-405`.
+Issue: the six added controls touch `link-merge-replace.properties`, `link-read-patched.postimage` and four validation diagnostics. `link-replace-roots`, `link-clear-properties`, `link-clear-metadata` and their GET `postimage` assertions — the evidence for the cited "root-pointer `replace` with `{}` clears either object" clause — have no control. (This matches the parent's one-control-per-row practice, e.g. `patch-array`, so it is not a regression.)
+Fix: add one control on a clearing assertion, or state in the Limits cell that the clearing assertions inherit sensitivity only from the shared literal/`equalsBinding` matcher.
+
+**5. Low — weakest of the six probes pins an under-specified case without disclosure**
+Location: `packages/conformance/matrices/read-update-v1.json` → `link-metadata-remove`.
+Issue: `metadataChange: [{op:"remove", path:""}]` is credited as a "metadata patch must yield a JSON object" observation. RFC 6902 does not define removing the whole document; the spec admits `remove` with an existing target and routes non-object results to `validation-failed`, but another conformant authority could reasonably classify a root `remove` as carrier syntax. Not noted as the softest probe.
+Fix: add a sentence, or replace with an unambiguous non-object metadata result (e.g. root `replace` with a string) and keep root-remove as supporting breadth.
+
+Verified accurate for this target: exactly one scenario changed + one added, no other scenario or top-level manifest change; new row inserted at canonical catalog order (index 22, after `document-patch-atomicity`); 28-entry whole-contract list unchanged and `document-patch-validation` absent from it; `uncoveredIds` = 129 − 28 = 101 holds; coverage bindings are mechanically equal to the manifest's `action.assertion` ids (`cumulative-artifact.test.ts:187`); both digest pins updated and no stale `89d4718…` anywhere; the client GET route **set** is byte-identical and only first-occurrence **order** changed (`w1.b`, `w1b.unowned-link` moved earlier) — `sortJsonValue` preserves array order, so order-only is the correct explanation, and `maximumRequestBodyBytes` is unchanged; no schema-cohort claim (fixture and the 13-type shipped closure contain zero `propertiesSchema`, so "effective-Type rejection unobserved" is factual); every refusal's opposite-document proposal is genuinely effectful (`/n` exists in both documents of all three seeds); base64 is a positive equivalence case, matching the renamed label; manifest 1,784,372 B / 47,409 nodes / depth 11 / largest container 228, and `manifestDigest bab6a53…` / `fixtureDigest 9bf5fcf…` reproduce exactly. The corrected `update-bead` table wording is right — `update-bead` does have `metadata-non-object` + `read-after-metadata-refusal`, so the parent's wording was the stale one.
+
+## (2) `vickie-read-update-retention-followup` — 6413f29 vs 8e3781c
+
+**6. Low — the new two-line production path has no test in its own suite**
+Location: `packages/server/src/recovery-store.ts:646-647`; `packages/server/src/recovery-store.test.ts:1159`.
+Issue: the new test's title claims ordering "before the format-4 integrity gate", but it only asserts the format-gate error (`store-mismatch` / "store format/Scope/installation/lineage mismatch"). The counterfactual that makes that ordering meaningful — format 4 with the row absent → `integrity` — lives only in `development-retention.test.ts`. So `recovery-store.ts:647` has no coverage in `recovery-store.test.ts`, and the ordering claim is not self-contained.
+Fix: in the same test, after the format-gate assertion, restore `format='4'` (capture row still absent) and assert `{reason:"integrity", message:"missing store metadata: contractCapture"}`; that makes the ordering local and covers the new line in the store's own suite.
+
+**7. Low — new RU/TX twin divergence not recorded in the deferred-consolidation note**
+Location: `docs/design/update-implementation-progress.md:648-656`; `packages/server/src/transaction-store.ts:475-480`.
+Issue: RU now discriminates an absent capture row (`integrity`). The documented TX twin still collapses it: `!captureLength` is tested first, so TX returns the generic "transaction contract capture mismatch" and its own `metadata()` integrity error at `transaction-store.ts:343` is unreachable for this case. The deferred-maintenance paragraph records only the shared ceiling factors and the length-check difference, not this new behavioural divergence a future consolidation must reconcile.
+Fix: add one sentence naming the missing-row discrimination as a third intentional difference pending consolidation.
+
+**8. Low (cosmetic) — inserted STATUS prose breaks the file's wrap**
+Location: `STATUS.md:46-50`.
+Issue: line 50 is 115 columns where the rest of the file wraps at 69–89. Markdown format check passes (proseWrap preserve), so this is editorial only.
+Fix: rewrap the inserted sentences to the file's width.
+
+Verified accurate for this target: 7 files / 80 insertions / 6 deletions; the only behavioural change is the two added lines, and `integrity` + "missing store metadata: `<name>`" exactly matches the pre-existing `meta()` convention at `recovery-store.ts:368-372` (which the old `||` short-circuit made unreachable — the diagnosed bug); creation always inserts `contractCapture` (default `"null"`, `:590-600`), so absence is genuine corruption and `integrity` is the right class; a present-but-unequal row still yields `store-mismatch`; gate order is schema → format/Scope/installation/lineage → capture → inventory → allocation → `quick_check`, all before the claim sweep at `:676`; `formatVersion = "4"`, so the `member-identity.ts:387` comment correction is right; all 14 corruption variants (5 + 9 compiled) map to the asserted reason/message and can no longer satisfy each other's oracle; `requireText` imposes no length bound, so the "caller-side bound" residual is accurately disclosed; the twin ceiling factors are identical (`8×totalBytes + 1024×submittedArtifacts + 4096`) and the "intentionally differ" description of the two length checks matches the code; the hot-journal qualification in STATUS is grounded in the existing `recovery-store.test.ts:1682` regression.
+
+## (3) `vickie-contracts-evidence-final` — fc75dc5 vs 7b6f8bc
+
+**9. Medium — the new `Reproduce:` instruction points at a probe whose fixture is read from an unpinned third checkout**
+Location: `apps/bdptest/src/development-contracts.test.ts:722`; `../bdp-integration-logs/transaction-contracts-evidence/prior-identity.mjs:63,66`.
+Issue: the probe asserts HEAD identity, ancestry and `git status --porcelain` cleanliness for the **predecessor** checkout (`:58-60`), but reads the `bundle()` body out of a third, live worktree — `/Users/dbox/repos/wt/vickie/vickie-transaction-contracts-evidence` (`:63`) — and re-declares `base`/`owner`/`edge`/`schema` as its own hardcoded literals (`:66`) rather than reading them from the frozen `sourceCheckout`. I confirmed all three checkouts' extracted `bundle()` bodies are byte-identical today (sha `7fe59ec7…`, 1030 bytes, same four constants), so the recorded identity is correct. But the reproduction instruction now baked into the frozen test is only accidentally valid: if that third worktree drifts, the probe recomputes an identity from a different fixture and still asserts success, with nothing tying it back to the literal the frozen test pins.
+Fix: read the fixture body and the four URL constants from `sourceCheckout`, and assert that checkout's HEAD/cleanliness the way the predecessor checkout already is.
+
+**10. Low — detachment control zeroes only index 0 of each artifact array**
+Location: `apps/bdptest/src/development-contracts.test.ts:731-735`; `packages/server/src/transaction-installed-contracts.test.ts:172-173`.
+Issue: the dev fixture has 3 descriptors / 2 schemas and the TX fixture 2 / 2, but only `descriptors[0]` and `schemas[0]` are `fill(0)`'d. A compiler that copied the first entry and aliased the rest would still satisfy `expect(capture).toEqual(saved)`. The doc's "after mutating both schema and descriptor input buffers" is literally true but reads as full coverage.
+Fix: `for (const a of [...input.descriptors, ...input.schemas]) a.utf8Bytes.fill(0);`.
+
+**11. Low — strengthened inventory assertion still does not pin the ordering rule**
+Location: `packages/server/src/transaction-installed-contracts.test.ts:413`.
+Issue: the expected `items` are derived from input order (`options.artifacts.descriptors`), which for this fixture coincides with id-sorted order (`types/base` < `types/child`). The assertion therefore passes under either rule and would silently change meaning if a future fixture's input order diverged from the served order — the same latent weakness the replaced hardcoded `[{id: base},{id: type}]` had. Separately, `types/` is not re-fetched after restart, so durable inventory projection across restart stays unobserved (pre-existing; the report does not claim it).
+Fix: sort the expectation explicitly by `id`, or assert the ordering rule in a dedicated check.
+
+**12. Low — "exact dependency closure" comment omits one closure member**
+Location: `prior-identity.mjs:10-13`.
+Issue: the comment calls `relevantSourceFiles` the "Exact production compiler/schema dependency closure", but the import closure of `packages/server/src/development-contracts.ts` also reaches `packages/server/src/resource-evaluator.ts` (`:21`). It is `import type`, hence erased, and `git diff --stat fccb951 3e2b878 -- packages/server/src/resource-evaluator.ts` is empty, so the conclusion is unaffected — only the "exact closure" wording is imprecise.
+Fix: say "runtime dependency closure (type-only imports excluded)", or add the file to the list.
+
+**13. Informational — counterexample log points at the final report**
+Location: `bdp-integration-logs/transaction-contracts-evidence-final/inventory-schema-counterexample.log` (last line).
+Issue: the preserved counterexample log ends "JSON report written to …/tests.json", so a reader following the log's own pointer lands on the passing run. The two JSONs are in fact distinct and correctly ordered (02:32:15 → 1 failed / 26 passed; 02:33:30 → 27 passed, `success: true`).
+Fix: note in the report that the counterexample JSON is a snapshot taken before the final run overwrote `tests.json`.
+
+Verified accurate for this target: tests/docs only, three files, no runtime change; the rejection of "full descriptors in the inventory" is correct — `docs/specs/bdp.md:1099-1100` says "each item is exactly the Type summary `{id, name, describes}`" and `$defs/typeSummary` is `additionalProperties: false`; full GET closure genuinely follows both ids and deep-compares (`:417-418`), with `base` re-compared after restart; receipt equality is a real strengthening (`toMatchObject`→`toEqual`) over receipts already validated against the normative `mutationReceipt` schema in the `run()` helper (`:151`); the identity comment is exactly right — `development-contracts.ts:144-153` digests artifacts plus `artifactLimits`, `graphLimits` and `evaluatorLimits`; the probe now computes rather than hardcodes the source-diff result, `predecessor-source.diff` records the command with `exit=0`, the file list is exactly 34 entries, and `broad-directory-control.log` correctly shows the only non-closure production change between the commits is `transaction-runtime.ts`.

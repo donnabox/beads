@@ -1,0 +1,62 @@
+
+ADDITIONAL EXACT SEMANTIC SOURCE: retained receipt allocation and created Event payload construction. These close context dependencies for A; they do not change the frozen plan.
+
+SOURCE packages/server/src/transaction-store.ts:1104-1125 (verbatim section)
+```
+    if (controls && !controls.acceptsJson) return { kind: "not-acceptable" };
+    const receipt: TransactionReceipt = {
+      id: `${scope}receipts/${randomUUID()}`,
+      status: "pending",
+      idempotencyKey: key,
+      scopeEpoch: epoch,
+      authorizationView: view,
+      transaction: randomUUID(),
+    };
+    const owner = randomUUID(),
+      claim = Object.freeze({ receipt });
+    db.prepare("INSERT INTO receipts VALUES(?,?,?,?,?,?,?)").run(
+      principal,
+      key,
+      normalized?.identity ?? "",
+      normalized?.witnessesJson ?? "",
+      owner,
+      json(receipt),
+      template ? json(template) : null,
+    );
+    claims.set(claim, { principal, key, owner, normalized });
+    return { kind: "owned", claim };
+```
+
+SOURCE packages/server/src/transaction-batch.ts:644-660 (verbatim section)
+```
+  function scopeEvent(subject: ResourceRecord, type: TransactionEvent["type"], data: unknown) {
+    if (events.length >= eventMaximum) throw new EventExpansionLimit();
+    const ordinal = events.length;
+    events.push({
+      id: `${position}-${ordinal}`,
+      ordinal,
+      type,
+      // These are authority Scope-group facts, not Resource-source projections.
+      // The latter rewrite source to `${resource.id}?view=events` on read.
+      source: `${options.scope}events/`,
+      subject: subject.id,
+      subjectType: subject.type,
+      transaction,
+      time: new Date(now).toISOString(),
+      data,
+    });
+  }
+```
+
+SOURCE packages/server/src/transaction-batch.ts:742-750 (verbatim section)
+```
+    if (outcome.outcome === "created") {
+      scopeEvent(subject, "created", {
+        revision: subject.revision,
+        properties: subject.properties,
+        metadata: subject.metadata ?? {},
+        ...(subject.revisionProvenance ? { revisionProvenance: subject.revisionProvenance } : {}),
+        ...("source" in subject ? { source: subject.source, target: subject.target } : {}),
+      });
+    } else if (outcome.outcome === "updated") {
+```

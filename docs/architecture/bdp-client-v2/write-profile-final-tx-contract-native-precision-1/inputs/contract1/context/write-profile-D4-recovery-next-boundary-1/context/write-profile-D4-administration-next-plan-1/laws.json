@@ -1,0 +1,100 @@
+[
+  {
+    "id": "U1",
+    "applicability": "unconditional for either selected mutation profile",
+    "pinnedLaw": "Resource identity/non-reuse; retained address stays bound to exact retained state.",
+    "anchors": "I1,I2",
+    "scopeLimit": "Required independently of a restore API; restoring without non-reuse continuity requires new logical Scope."
+  },
+  {
+    "id": "U2",
+    "applicability": "unconditional RU ordinary recovery",
+    "pinnedLaw": "Atomic per-member mutation/semantic identity/allocated IDs/terminal disposition; clear abandoned claims; preserve committed sequence prefix and do not auto-resume.",
+    "anchors": "RU1",
+    "scopeLimit": "Ordinary restart is supported; not TX atomic-batch or exposed epoch evidence."
+  },
+  {
+    "id": "U3",
+    "applicability": "unconditional TX ordinary recovery",
+    "pinnedLaw": "Preserve epoch across restart/failover preserving identical committed history; retain atomic committed history and fenced bindings.",
+    "anchors": "TX1,TX-REOPEN",
+    "scopeLimit": "Ordinary reopen does not qualify a history-changing restore."
+  },
+  {
+    "id": "U4",
+    "applicability": "unconditional TX wire/snapshot framing",
+    "pinnedLaw": "Always-present changes/erasures/events and correct visible/projection-advance shapes; snapshot carries projected ledger, empty before committed erasures.",
+    "anchors": "G1,E7",
+    "scopeLimit": "Current empty arrays prove only no-record framing; Historyfalse does not waive it."
+  },
+  {
+    "id": "C1",
+    "applicability": "trigger: erasure applies to a held version / record processed",
+    "pinnedLaw": "Apply to every obligated store/cache/replica; within receiving view obligation unconditional; local retention aging does not propagate.",
+    "anchors": "E1,E5,E7",
+    "scopeLimit": "Administrative route absent leaves trigger/assurance unqualified, never N/A."
+  },
+  {
+    "id": "C2",
+    "applicability": "trigger: administrative erasure commit",
+    "pinnedLaw": "Authority-minted ordinary visible group at its own position, no MutationReceipt or new BDP operation; exact sha-256-jcs digest; retain lineage/digest; do not rotate epoch.",
+    "anchors": "E1,E2,E3",
+    "scopeLimit": "No reuse of revision scheme spelling or recovery/config identity hash as version digest."
+  },
+  {
+    "id": "C3",
+    "applicability": "trigger: erased owned-Link version or live version",
+    "pinnedLaw": "Containing source versions each get record same group; live version gets successor/tombstone; content-free correct delta forms and incident-Link/owned-set closure.",
+    "anchors": "E3,E4",
+    "scopeLimit": "Historical-only milestone cannot claim live/cascade completion."
+  },
+  {
+    "id": "C4",
+    "applicability": "trigger: retained copy contains erased content",
+    "pinnedLaw": "Before further visibility scrub stored groups/Events/receipt pages/sequence dispositions/snapshots/caches/indexes; retain lineage and exact erased/withheld projections; Event gaps/exclusive cursors/eventCount correct.",
+    "anchors": "RCP1,E5",
+    "scopeLimit": "Historyfalse grants no controlled-copy waiver or fabricated optional History endpoint."
+  },
+  {
+    "id": "C5",
+    "applicability": "trigger: receiving view sees record at P",
+    "pinnedLaw": "Expire pre-P checkpoints/snapshots and advance floor; order eligibility/floor/complete P publication; close needing unpublished pre-P; never infer client application from socket write.",
+    "anchors": "E6",
+    "scopeLimit": "Nonreceiving views keep tokens and see identifier-free projection advance; already handed bytes not revoked."
+  },
+  {
+    "id": "C6",
+    "applicability": "trigger: any erasure already committed, thereafter",
+    "pinnedLaw": "Permanent identity-level ledger survives restore/epoch/view rotation; every snapshot projects it and receiver applies to prior generations/copies.",
+    "anchors": "E7",
+    "scopeLimit": "Permanent after first record; not an optional configurable retention promise."
+  },
+  {
+    "id": "C7",
+    "applicability": "trigger: TX restore/destructive reset/authority replacement may discard or rewrite history",
+    "pinnedLaw": "New epoch; preserve canonical identity if same logical Scope; fence history-dependent tokens and keys; retained addresses unchanged; reemit permanent ledger before any other new-epoch groups.",
+    "anchors": "I1,I2,TX1,E7",
+    "scopeLimit": "Erasure alone does not rotate epoch. Stock hot-journal reopen is not this trigger."
+  },
+  {
+    "id": "C8",
+    "applicability": "trigger: RU restore cannot preserve identity/recovery continuity",
+    "pinnedLaw": "Use different logical Scope and canonicalScope URL; no exposed RU epoch; old key namespace is not a transparent continuation.",
+    "anchors": "I1,RU1",
+    "scopeLimit": "Cannot borrow TX same-Scope epoch mechanism."
+  },
+  {
+    "id": "C9",
+    "applicability": "trigger: controlled retained content has unestablishable erasure status",
+    "pinnedLaw": "Reject/discard before publication; TX applies when ledger can no longer be obtained; History import requires authoritative origin/version/erasure evidence.",
+    "anchors": "H1,E7",
+    "scopeLimit": "Optional History import clauses identified separately; do not invent HTTP import or provenance fields."
+  },
+  {
+    "id": "H0",
+    "applicability": "optional feature not advertised in selected installations",
+    "pinnedLaw": "History-specific resolver/import/assurance surface not being added or claimed here.",
+    "anchors": "H1,TX-HISTORY",
+    "scopeLimit": "Excludes only optional History feature surface, not independent TX retained-copy, ledger or framing duties."
+  }
+]

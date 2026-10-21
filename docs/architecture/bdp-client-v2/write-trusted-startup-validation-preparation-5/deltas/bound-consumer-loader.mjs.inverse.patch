@@ -1,0 +1,11 @@
+--- preparation3/bound-consumer-loader.mjs
++++ preparation2/bound-consumer-loader.mjs
+@@ -10,7 +10,7 @@
+ import { tmpdir } from "node:os";
+ import path from "node:path";
+ import { pathToFileURL } from "node:url";
+-const executionRoot = "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-trusted-startup-validation-preparation-3/run";
++const executionRoot = "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-trusted-startup-validation-preparation-2/run";
+ const installRoot = path.join(executionRoot, "consumer");
+ const proofPath = path.join(executionRoot, "installed-provenance.json");
+ let proofBytes, proof, entryRealpath, temporaryRoot;

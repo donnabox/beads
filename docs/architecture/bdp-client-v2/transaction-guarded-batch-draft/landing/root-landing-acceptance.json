@@ -1,0 +1,60 @@
+{
+  "accepted": true,
+  "at": "2026-10-15T21:41:29.137821+00:00",
+  "head": "8833c9242b7788e843e9eb97a2c99b2277fe75ef",
+  "tree": "057f879132074166f2c0f643a8b45bbd9dd47c6f",
+  "base": "9bf601bfb570adae97ce8cdc99caf2cc7a2b34c1",
+  "synthetic": "2e96758fcdcc0801522e60040bc229075963e680",
+  "expectedMergedParents": [
+    "9bf601bfb570adae97ce8cdc99caf2cc7a2b34c1",
+    "8833c9242b7788e843e9eb97a2c99b2277fe75ef"
+  ],
+  "scope": [
+    "apps/bdptest/src/transactional-guarded-batch-installed.test.ts",
+    "docs/design/transaction-implementation-progress.md"
+  ],
+  "basis": [
+    {
+      "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-guarded-batch-draft/root-final-council.json",
+      "sha256": "a4ccf51ce99c5c907b6df0527b060461b90ca21c4e98f7bc3525ed3d60d89d55"
+    },
+    {
+      "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-guarded-batch-draft/execution-preparation-v2/root-installed-acceptance.json",
+      "sha256": "360a6208c55bfaa211383077eb6ab16bad7102ea48808846dd7e4ac6bc7db075"
+    },
+    {
+      "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-guarded-batch-draft/execution-preparation-v2/native-installed-audit.md",
+      "sha256": "bde5b08aa6ef5c7a4e10fe2857860aae3794802665fa2916930063102bf59d3d"
+    },
+    {
+      "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-guarded-batch-draft/landing/successor-ci/terminal/identity-outcome.json",
+      "sha256": "a2f001edbc63968420270ee75cf367f4036e7a6ce2e470d41ec1beab540d9418"
+    },
+    {
+      "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-guarded-batch-draft/landing/successor-ci/terminal/job.log",
+      "sha256": "856d5c3259216e47714fbbc08d4de0037fcf82afd328ea2c63cca9829dc06e18"
+    },
+    {
+      "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-guarded-batch-draft/landing/successor-ci/terminal/job.json",
+      "sha256": "2f73d2bcbff4afe5eb8774b2124feb525ab2e2ca6ef855cc0bb3f9f8b7bfc77b"
+    }
+  ],
+  "ci": {
+    "run": 38809393968,
+    "job": 116678483498,
+    "steps": 27,
+    "passed": 9312,
+    "skipped": 1,
+    "files": 181,
+    "suiteSeconds": 790.62,
+    "preflightPassed": 7,
+    "smokePassed": true,
+    "readRows": 89,
+    "jobSeconds": 1011,
+    "warnings": "851 lint warnings,54infos and format oversized warning retained"
+  },
+  "mergeAllowed": true,
+  "postMergeTreeVerificationRequired": true,
+  "releaseAllowed": false,
+  "profileClaimEligible": false
+}

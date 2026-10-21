@@ -1,0 +1,1009 @@
+diff --git a/apps/bdptest/src/transactional-minimum-receiving-installed.test.ts b/apps/bdptest/src/transactional-minimum-receiving-installed.test.ts
+index 57183ec..55ba338 100644
+--- a/apps/bdptest/src/transactional-minimum-receiving-installed.test.ts
++++ b/apps/bdptest/src/transactional-minimum-receiving-installed.test.ts
+@@ -498,10 +498,18 @@ it("rejects malformed read minimum tuples before observation while preserving re
+         url,
+         unknown,
+       );
+-      expect(response.status).toBe(500);
+-      expect(response.text).toBe("");
+-      expect(response.headers.get("x-bdp-development-limit")).toBe("minimum-position");
+-      expect(context(response)).toStrictEqual([null, null, null]);
++      if (url === receiptRoot) {
++        expect(problem(response, 503, "catch-up-timeout")).toMatchObject({ retry: "after-delay" });
++        expect(response.headers.get("retry-after")).toBe("1");
++        expect(response.headers.get("cache-control")).toBe("private, no-store");
++        expect(response.headers.get("x-bdp-development-limit")).toBeNull();
++        expect(context(response)).toStrictEqual(expectedContext);
++      } else {
++        expect(response.status).toBe(500);
++        expect(response.text).toBe("");
++        expect(response.headers.get("x-bdp-development-limit")).toBe("minimum-position");
++        expect(context(response)).toStrictEqual([null, null, null]);
++      }
+     }
+     const missing = await exchange("compatible-missing", "GET", `${scope}beads/missing`, tuple);
+     problem(missing, 404, "resource-not-found");
+@@ -622,3 +630,415 @@ it("rejects malformed read minimum tuples before observation while preserving re
+   if (failures.length > 1)
+     throw new AggregateError(failures, "installed minimum receiving and cleanup failed");
+ }, 60000);
++
++it("observes installed opaque receipt root timeout with principal nondisclosure", async () => {
++  const controller = new AbortController();
++  const deadlineReason = new Error("installed receipt root receiving deadline");
++  let deadlineExceeded = false,
++    cleanupExceeded = false,
++    launchAttempted = false,
++    closed = false;
++  const deadline = setTimeout(() => {
++    deadlineExceeded = true;
++    controller.abort(deadlineReason);
++  }, 45000);
++  const failures: unknown[] = [];
++  const categories: string[] = [];
++  const fail = (error: unknown, category: string) => {
++    if (!failures.includes(error)) {
++      failures.push(error);
++      categories.push(category);
++    }
++  };
++  let phase = "setup";
++  let directory: string | undefined;
++  let child: Awaited<ReturnType<typeof launchInstalledTransaction>> | undefined;
++  let binding: ReturnType<typeof installedTransactionBinding> | undefined;
++  let attempted = 0;
++  const active = new Set<ClientRequest>();
++  const pending = new Set<Promise<unknown>>();
++  const responses: {
++    ordinal: number;
++    label: string;
++    method: string;
++    url: string;
++    credential: string;
++    requestBodyBytes: number;
++    requestBodySha256: string | null;
++    minimumFieldOccurrences: number[];
++    status: number;
++    bodyOctets: number;
++    bodySha256: string;
++    headers: Record<string, string | null>;
++  }[] = [];
++  const writer = randomBytes(32).toString("base64url"),
++    other = randomBytes(32).toString("base64url");
++  try {
++    directory = mkdtempSync(path.join(tmpdir(), "bdp-receipt-root-minimum-installed-"));
++    controller.signal.throwIfAborted();
++    launchAttempted = true;
++    child = await launchInstalledTransaction(
++      entry,
++      {
++        scope,
++        directory,
++        create: true,
++        artifacts,
++        credentials: [
++          { token: writer, principal: "writer", canMutate: true },
++          { token: other, principal: "other", canMutate: false },
++        ],
++      },
++      controller.signal,
++    );
++    binding = installedTransactionBinding(child.ready, sourceCommit, fixture);
++    expect(child.ready.scope).toBe(scope);
++    expect(binding.operationTargets.batch).toBe(`${scope}operations/batch`);
++    const address = new URL(child.ready.listenUrl as string);
++    const granted = new Set([`${scope}operations/batch`, `${scope}receipts/missing`]);
++    const exchange = async (
++      label: string,
++      method: "GET" | "HEAD" | "POST",
++      url: string,
++      fields: string[] = [],
++      credential: "writer" | "other" | "anonymous" = "writer",
++      requestBody?: string,
++      key?: string,
++    ) => {
++      phase = label;
++      controller.signal.throwIfAborted();
++      expect(++attempted, "installed receipt root dispatch bound").toBeLessThanOrEqual(5);
++      expect(granted.has(url), "fixed or actually issued URL grant").toBe(true);
++      const target = new URL(url);
++      expect(target.origin).toBe(new URL(scope).origin);
++      expect([target.hash, target.username, target.password]).toStrictEqual(["", "", ""]);
++      expect(Buffer.byteLength(url)).toBeLessThanOrEqual(8192);
++      const headers = [
++        "Host",
++        new URL(scope).host,
++        "Connection",
++        "close",
++        "Accept",
++        "application/json",
++        ...(credential === "anonymous"
++          ? []
++          : ["Authorization", `Bearer ${credential === "writer" ? writer : other}`]),
++        ...(requestBody === undefined
++          ? []
++          : [
++              "Content-Type",
++              "application/json",
++              "Content-Length",
++              String(Buffer.byteLength(requestBody)),
++              "Idempotency-Key",
++              key ?? "missing-key",
++            ]),
++        ...fields,
++      ];
++      const operation = new Promise<{
++        status: number;
++        headers: Headers;
++        text: string;
++        bytes: number;
++      }>((resolve, reject) => {
++        const request = httpRequest(
++          {
++            hostname: address.hostname,
++            port: Number(address.port),
++            path: target.pathname + target.search,
++            method,
++            agent: false,
++            headers,
++            signal: AbortSignal.any([controller.signal, AbortSignal.timeout(5000)]),
++          },
++          (response) => {
++            const chunks: Buffer[] = [];
++            let bytes = 0;
++            response.on("data", (chunk: Buffer) => {
++              bytes += chunk.length;
++              if (bytes > 32768) {
++                const error = new Error("installed receipt root response overflow");
++                response.destroy(error);
++                request.destroy(error);
++                return;
++              }
++              chunks.push(chunk);
++            });
++            response.once("aborted", () =>
++              reject(new Error("installed receipt root response aborted")),
++            );
++            response.once("error", reject);
++            response.once("end", () => {
++              const received = new Headers();
++              for (let i = 0; i < response.rawHeaders.length; i += 2)
++                received.append(response.rawHeaders[i]!, response.rawHeaders[i + 1]!);
++              resolve({
++                status: response.statusCode ?? 0,
++                headers: received,
++                text: Buffer.concat(chunks).toString("utf8"),
++                bytes,
++              });
++            });
++          },
++        );
++        active.add(request);
++        request.once("close", () => active.delete(request));
++        request.once("error", reject);
++        request.end(requestBody);
++      });
++      pending.add(operation);
++      void operation.then(
++        () => pending.delete(operation),
++        () => pending.delete(operation),
++      );
++      const response = await operation;
++      const minimumNames = [
++        "bdp-minimum-scope-position",
++        "bdp-scope-epoch",
++        "bdp-authorization-view",
++      ];
++      responses.push({
++        ordinal: attempted,
++        label,
++        method,
++        url,
++        credential,
++        requestBodyBytes: requestBody === undefined ? 0 : Buffer.byteLength(requestBody),
++        requestBodySha256: requestBody === undefined ? null : digest(requestBody),
++        minimumFieldOccurrences: minimumNames.map(
++          (name) => fields.filter((field, i) => i % 2 === 0 && field.toLowerCase() === name).length,
++        ),
++        status: response.status,
++        bodyOctets: response.bytes,
++        bodySha256: digest(response.text),
++        headers: Object.fromEntries(
++          retainedHeaders.map((name) => [name, response.headers.get(name)]),
++        ),
++      });
++      expect(response.headers.get("x-bdp-development")).toBe("non-attesting");
++      return response;
++    };
++    type Response = Awaited<ReturnType<typeof exchange>>;
++    const context = (response: Response) => contextNames.map((name) => response.headers.get(name));
++    const problem = (response: Response, status: number, code: string) => {
++      expect(response.status).toBe(status);
++      expect(response.headers.get("content-type")).toBe("application/problem+json");
++      const value = record(JSON.parse(response.text));
++      expect(validProblem(value), JSON.stringify(validProblem.errors)).toBe(true);
++      expect(value).toMatchObject({ status, code });
++      return value;
++    };
++    const receipt = (response: Response, key: string, position: string) => {
++      expect(response.status).toBe(200);
++      const value = record(JSON.parse(response.text));
++      expect(validReceipt(value), JSON.stringify(validReceipt.errors)).toBe(true);
++      expect(value).toMatchObject({
++        status: "completed",
++        idempotencyKey: key,
++        requiredPosition: position,
++        effectPosition: position,
++      });
++      expect(context(response)[2]).toBe(position);
++      expect([value.scopeEpoch, value.authorizationView]).toStrictEqual(
++        context(response).slice(0, 2),
++      );
++      expect(
++        context(response)
++          .slice(0, 2)
++          .every((v) => typeof v === "string" && /^[A-Za-z0-9_-]{1,256}$/.test(v)),
++      ).toBe(true);
++      return value;
++    };
++    const key = `receipt-root-${randomBytes(12).toString("hex")}`;
++    const payload = JSON.stringify({
++      operations: [
++        {
++          operation: "createBead",
++          id: "beads/receipt-root",
++          type: beadType,
++          properties: { n: 0 },
++        },
++      ],
++    });
++    const seed = await exchange(
++      "seed",
++      "POST",
++      `${scope}operations/batch`,
++      [],
++      "writer",
++      payload,
++      key,
++    );
++    const seeded = receipt(seed, key, "pos-1");
++    expect(receiptResults(seeded)).toHaveLength(1);
++    expect(seeded.next).toBeNull();
++    const receiptRoot = seeded.id;
++    if (typeof receiptRoot !== "string") throw new Error("actual issued receipt root required");
++    const parsed = new URL(receiptRoot);
++    expect(parsed.href).toBe(receiptRoot);
++    expect(parsed.origin).toBe(new URL(scope).origin);
++    expect([parsed.search, parsed.hash, parsed.username, parsed.password]).toStrictEqual([
++      "",
++      "",
++      "",
++      "",
++    ]);
++    expect(receiptRoot.startsWith(`${scope}receipts/`)).toBe(true);
++    expect(receiptRoot.slice(`${scope}receipts/`.length)).toMatch(/^[A-Za-z0-9_-]+$/);
++    granted.add(receiptRoot);
++    const expectedContext = context(seed);
++    const tuple = [
++      "BDP-Minimum-Scope-Position",
++      "unknown",
++      "BDP-Scope-Epoch",
++      expectedContext[0]!,
++      "BDP-Authorization-View",
++      expectedContext[1]!,
++    ];
++    const own = await exchange("owned-root", "GET", receiptRoot, [...tuple, "If-None-Match", "*"]);
++    expect(problem(own, 503, "catch-up-timeout")).toMatchObject({ retry: "after-delay" });
++    const head = await exchange("owned-root-head", "HEAD", receiptRoot, [
++      ...tuple,
++      "If-Match",
++      '"absent"',
++    ]);
++    expect(head.status).toBe(503);
++    expect(head.text).toBe("");
++    expect(head.bytes).toBe(0);
++    expect(own.bytes).toBeGreaterThan(0);
++    expect(Number(own.headers.get("content-length"))).toBe(own.bytes);
++    expect(head.headers.get("content-length")).toBe(own.headers.get("content-length"));
++    for (const response of [own, head]) {
++      expect(context(response)).toStrictEqual(expectedContext);
++      expect(response.headers.get("content-type")).toBe("application/problem+json");
++      expect(response.headers.get("cache-control")).toBe("private, no-store");
++      expect(response.headers.get("retry-after")).toBe("1");
++      for (const name of ["etag", "last-modified", "x-bdp-development-limit"])
++        expect(response.headers.has(name)).toBe(false);
++    }
++    const foreign = await exchange("other-principal", "GET", receiptRoot, tuple, "other");
++    const missing = await exchange("missing-root", "GET", `${scope}receipts/missing`, tuple);
++    for (const response of [foreign, missing]) {
++      problem(response, 404, "resource-not-found");
++      expect(context(response)).toStrictEqual(expectedContext);
++      expect(response.headers.has("x-bdp-development-limit")).toBe(false);
++    }
++    expect(attempted).toBe(5);
++    expect(responses).toHaveLength(5);
++    expect(responses.map(({ method, status }) => ({ method, status }))).toStrictEqual([
++      { method: "POST", status: 200 },
++      { method: "GET", status: 503 },
++      { method: "HEAD", status: 503 },
++      { method: "GET", status: 404 },
++      { method: "GET", status: 404 },
++    ]);
++    controller.signal.throwIfAborted();
++  } catch (error) {
++    fail(error, phase);
++  } finally {
++    clearTimeout(deadline);
++    controller.abort();
++    const cleanupReason = new Error("installed receipt root cleanup deadline");
++    let cleanupTimer: ReturnType<typeof setTimeout> | undefined;
++    // Await both operation settlement and transport close; one deadline also covers child close.
++    const transportDrain = Promise.all(
++      [...active].map(
++        (request) =>
++          new Promise<void>((resolve) => {
++            request.once("close", resolve);
++            request.destroy();
++          }),
++      ),
++    );
++    const cleaning = (async () => {
++      for (const result of await Promise.allSettled([...pending]))
++        if (result.status === "rejected") fail(result.reason, "transport-drain");
++      await transportDrain;
++      if (child) await child.close();
++    })();
++    // Retain late failures after the race without letting a late close mark ownership clean.
++    void cleaning.catch((error) => fail(error, "late-cleanup"));
++    try {
++      await Promise.race([
++        cleaning,
++        new Promise<never>((_, reject) => {
++          cleanupTimer = setTimeout(() => {
++            cleanupExceeded = true;
++            child?.child.kill("SIGKILL");
++            reject(cleanupReason);
++          }, 10000);
++        }),
++      ]);
++      if (
++        child &&
++        !cleanupExceeded &&
++        child.child.exitCode === 0 &&
++        child.child.signalCode === null
++      )
++        closed = true;
++      else if (launchAttempted)
++        fail(new Error("installed receipt root clean close unproved"), "unclean-close");
++    } catch (error) {
++      fail(error, "cleanup");
++    } finally {
++      clearTimeout(cleanupTimer);
++    }
++    if (deadlineExceeded) fail(deadlineReason, "deadline");
++    const stopped =
++      !launchAttempted ||
++      (child !== undefined && (child.child.exitCode !== null || child.child.signalCode !== null));
++    if (!stopped) fail(new Error("installed receipt root child stop unknown"), "unknown-stop");
++    try {
++      if (directory && (!launchAttempted || (closed && failures.length === 0)))
++        rmSync(directory, { recursive: true, force: true });
++    } catch (error) {
++      fail(error, "directory-cleanup");
++    }
++    const directoryAbsent = directory === undefined || !existsSync(directory);
++    if (!directoryAbsent)
++      fail(new Error("installed receipt root directory preserved"), "directory-retained");
++    try {
++      console.log(
++        JSON.stringify({
++          observation: "private-installed-receipt-root-minimum",
++          outcome: failures.length ? "failed" : "passed",
++          declaredSourceCommit: sourceCommit,
++          workspaceDirty,
++          entry: resolvedEntry,
++          entrySha256,
++          binding: binding ?? null,
++          artifactBytes:
++            artifacts.descriptors.reduce((n, d) => n + Buffer.byteLength(d.utf8), 0) +
++            artifacts.schemas.reduce((n, s) => n + Buffer.byteLength(s.utf8), 0),
++          attempted,
++          exchanges: responses.length,
++          completedResponses: responses,
++          deadlineExceeded,
++          cleanupExceeded,
++          launchAttempted,
++          startupCompleted: child !== undefined,
++          closed,
++          childPid: child?.child.pid ?? null,
++          childExitCode: child?.child.exitCode ?? null,
++          childSignalCode: child?.child.signalCode ?? null,
++          directory: directory ?? null,
++          directoryAbsent,
++          activeRequests: active.size,
++          pendingOperations: pending.size,
++          failureCount: failures.length,
++          failureCategories: categories,
++          claimEligible: false,
++          retention:
++            "safe response metadata/fingerprints; bodies asserted in memory; no credentials logged",
++          startupLimitation:
++            "pre-ready or unclean ownership preserves directory for supervisor evidence",
++        }),
++      );
++    } catch (error) {
++      fail(error, "report");
++    }
++  }
++  if (failures.length === 1) throw failures[0];
++  if (failures.length > 1)
++    throw new AggregateError(failures, "installed receipt root and cleanup failed");
++}, 60000);
+diff --git a/packages/server/src/transaction-http.test.ts b/packages/server/src/transaction-http.test.ts
+index 67cc153..2583aa7 100644
+--- a/packages/server/src/transaction-http.test.ts
++++ b/packages/server/src/transaction-http.test.ts
+@@ -2172,7 +2172,11 @@ it("checks a stored failed receipt minimum before read-triggered retention dispo
+ });
+ 
+ it("refuses unsupported root controls after nondisclosure but before read-triggered retention", async () => {
+-  const f = await fixture({ maintenanceIntervalMs: 60000 });
++  let tick = 0;
++  const f = await fixture({
++    maintenanceIntervalMs: 60000,
++    minimumReads: { budgetMs: 2, now: () => tick++, wait: async () => {} },
++  });
+   const completed = await body(await f.post());
+   const failed = await body(
+     await f.post(batch([{ operation: "deleteBead", bead: "beads/missing" }]), "failed"),
+@@ -2184,7 +2188,7 @@ it("refuses unsupported root controls after nondisclosure but before read-trigge
+   for (const receipt of [completed, failed]) {
+     for (const method of ["GET", "HEAD"]) {
+       for (const [credential, status] of [
+-        [token, 500],
++        [token, 503],
+         [otherToken, 404],
+       ] as const) {
+         const response = await f.get(id(receipt), {
+@@ -2197,11 +2201,25 @@ it("refuses unsupported root controls after nondisclosure but before read-trigge
+           },
+         });
+         expect(response.status).toBe(status);
+-        if (status === 500)
+-          expect(response.headers.get("x-bdp-development-limit")).toBe("minimum-position");
+-        for (const header of ["bdp-scope-epoch", "bdp-authorization-view", "bdp-scope-position"])
+-          expect(response.headers.has(header)).toBe(status === 404);
+-        if (status === 500 || method === "HEAD") expect(await response.text()).toBe("");
++        expect(response.headers.get("x-bdp-development-limit")).toBeNull();
++        expect(context(response)).toStrictEqual({
++          "bdp-scope-epoch": String(receipt.scopeEpoch),
++          "bdp-authorization-view": String(receipt.authorizationView),
++          "bdp-scope-position": "pos-1",
++        });
++        if (status === 503) {
++          // Owned lexical roots now wait; the historical title remains an evidence identifier.
++          expect(response.headers.get("retry-after")).toBe("1");
++          expect(response.headers.get("cache-control")).toBe("private, no-store");
++        }
++        if (method === "HEAD") expect(await response.text()).toBe("");
++        else if (status === 503)
++          expect(checkedProblem(await body(response))).toMatchObject({
++            code: "catch-up-timeout",
++            status: 503,
++            retry: "after-delay",
++          });
++        else expect(checkedProblem(await body(response)).code).toBe("resource-not-found");
+       }
+     }
+   }
+@@ -5753,3 +5771,133 @@ it("serves fresh Snapshot opaque minima with terminal preflight and retained fen
+     await f.runtime.close();
+   }
+ });
++
++it("serves opaque receipt root minima before HTTP shortcuts with private fences", async () => {
++  let tick = 0,
++    waits = 0;
++  const f = await fixture({
++    minimumReads: {
++      budgetMs: 2,
++      now: () => tick++,
++      wait: async () => {
++        waits++;
++      },
++    },
++  });
++  const responses: { method: string; route: string; status: number; bodyOctets: number }[] = [];
++  async function observed(method: string, route: string, response: Response) {
++    const text = await response.text();
++    const bytes = Buffer.byteLength(text);
++    responses.push({ method, route, status: response.status, bodyOctets: bytes });
++    expect(response.headers.get("x-bdp-development")).toBe("non-attesting");
++    return { response, text, bytes };
++  }
++  try {
++    const seed = await observed("POST", "batch", await f.post());
++    expect(seed.response.status).toBe(200);
++    const receipt = record(JSON.parse(seed.text));
++    expect(validateSelectorReceipt(receipt), JSON.stringify(validateSelectorReceipt.errors)).toBe(
++      true,
++    );
++    expect(receipt).toMatchObject({
++      status: "completed",
++      requiredPosition: "pos-1",
++      effectPosition: "pos-1",
++    });
++    const root = id(receipt);
++    const minimum = minimumHeaders(seed.response, "unknown");
++    const current = context(seed.response);
++    expect(
++      Object.values(current).every((value) => typeof value === "string" && value.length > 0),
++    ).toBe(true);
++    const get = async (
++      method: "GET" | "HEAD",
++      route: string,
++      target: string,
++      headers: Record<string, string>,
++    ) => observed(method, route, await f.get(target, { method, headers }));
++    const timedOut = (result: Awaited<ReturnType<typeof observed>>, head = false) => {
++      expect(result.response.status).toBe(503);
++      expect(context(result.response)).toStrictEqual(current);
++      expect(result.response.headers.get("cache-control")).toBe("private, no-store");
++      expect(result.response.headers.get("retry-after")).toBe("1");
++      expect(result.response.headers.get("x-bdp-development-limit")).toBeNull();
++      expect(result.response.headers.get("content-type")).toBe("application/problem+json");
++      for (const name of ["etag", "last-modified"])
++        expect(result.response.headers.get(name)).toBeNull();
++      if (head) expect(result.bytes).toBe(0);
++      else
++        expect(checkedProblem(record(JSON.parse(result.text)))).toMatchObject({
++          code: "catch-up-timeout",
++          status: 503,
++          retry: "after-delay",
++        });
++    };
++    const own = await get("GET", "owned-root", root, { ...minimum, "if-none-match": "*" });
++    timedOut(own);
++    const head = await get("HEAD", "owned-root", root, { ...minimum, "if-match": '"absent"' });
++    timedOut(head, true);
++    expect(own.bytes).toBeGreaterThan(0);
++    expect(Number(own.response.headers.get("content-length"))).toBe(own.bytes);
++    expect(head.response.headers.get("content-length")).toBe(
++      own.response.headers.get("content-length"),
++    );
++    timedOut(
++      await get("GET", "owned-root", root, {
++        ...minimum,
++        "bdp-minimum-scope-position": "pos-01",
++        accept: "image/png",
++      }),
++    );
++    // These two private refusals preserve the excluded foreign-opaque gap, not 409/410 conformance.
++    for (const [method, field] of [
++      ["GET", "bdp-scope-epoch"],
++      ["HEAD", "bdp-authorization-view"],
++    ] as const) {
++      const result = await get(method, "owned-root", root, { ...minimum, [field]: "foreign" });
++      expect(result.response.status).toBe(500);
++      expect(result.text).toBe("");
++      expect(result.response.headers.get("x-bdp-development-limit")).toBe("minimum-position");
++      expect(Object.values(context(result.response))).toStrictEqual([null, null, null]);
++    }
++    // Shared receiving/auth fences; these rows do not observe the receipt owner.
++    const malformed = await get("GET", "owned-root", root, {
++      "bdp-minimum-scope-position": "unknown",
++    });
++    expect(malformed.response.status).toBe(400);
++    expect(checkedProblem(record(JSON.parse(malformed.text))).code).toBe("malformed-request");
++    expect(Object.values(context(malformed.response))).toStrictEqual([null, null, null]);
++    const foreign = await get("HEAD", "other-principal-root", root, {
++      ...minimum,
++      authorization: `Bearer ${otherToken}`,
++    });
++    expect(foreign.response.status).toBe(404);
++    expect(foreign.bytes).toBe(0);
++    expect(context(foreign.response)).toStrictEqual(current);
++    expect(foreign.response.headers.get("x-bdp-development-limit")).toBeNull();
++    const missing = await get("GET", "missing-root", `${f.runtime.scope}receipts/missing`, minimum);
++    expect(missing.response.status).toBe(404);
++    expect(checkedProblem(record(JSON.parse(missing.text))).code).toBe("resource-not-found");
++    expect(context(missing.response)).toStrictEqual(current);
++    expect(missing.response.headers.get("x-bdp-development-limit")).toBeNull();
++    const anonymous = await get("GET", "owned-root", root, { ...minimum, authorization: "" });
++    expect(anonymous.response.status).toBe(401);
++    expect(checkedProblem(record(JSON.parse(anonymous.text))).code).toBe("unauthenticated");
++    expect(Object.values(context(anonymous.response))).toStrictEqual([null, null, null]);
++    expect(responses.map(({ status }) => status)).toStrictEqual([
++      200, 503, 503, 503, 500, 500, 400, 404, 404, 401,
++    ]);
++    expect(waits).toBe(3);
++    await f.runtime.close();
++    console.log(
++      JSON.stringify({
++        observation: "receipt-root-minimum-http",
++        requests: responses.length,
++        responses,
++        waits,
++      }),
++    );
++  } finally {
++    await f.runtime.close();
++  }
++});
+diff --git a/packages/server/src/transaction-http.ts b/packages/server/src/transaction-http.ts
+index 047e011..ecf6b40 100644
+--- a/packages/server/src/transaction-http.ts
++++ b/packages/server/src/transaction-http.ts
+@@ -548,11 +548,11 @@ export function createTransactionHttpHandler(
+         : { ...response, kind: "event-stream", packet: observed, context: observed.context };
+     }
+     if (receiptRoute) {
+-      const minimum = hasMinimumControls(request)
+-        ? transactionMinimumHeaders(request.headers)
+-        : undefined;
+       const access = { kind: "authenticated" as const, principal: authorization.principal };
+       if (url.pathname.slice(`${scopeUrl.pathname}receipts/`.length).includes("/pages/")) {
++        const minimum = hasMinimumControls(request)
++          ? transactionMinimumHeaders(request.headers)
++          : undefined;
+         const page = await service.receiptPage(
+           access,
+           url.href,
+@@ -571,6 +571,9 @@ export function createTransactionHttpHandler(
+           page.context,
+         );
+       }
++      const minimum = hasMinimumControls(request)
++        ? currentReadMinimumHeaders(request.headers)
++        : undefined;
+       const result = hasMinimumControls(request)
+         ? await service.receiptAtMinimum(access, url.href, minimum ?? "unsupported")
+         : service.receipt(access, url.href);
+diff --git a/packages/server/src/transaction-service.test.ts b/packages/server/src/transaction-service.test.ts
+index ecd811a..ab43476 100644
+--- a/packages/server/src/transaction-service.test.ts
++++ b/packages/server/src/transaction-service.test.ts
+@@ -1,6 +1,10 @@
+ import * as discoveryAssembly from "./transaction-discovery.js";
+ import { TransactionEventParameterError } from "./transaction-events.js";
+-import { TransactionMinimumFailure, type TransactionMinimum } from "./transaction-consistency.js";
++import {
++  TransactionMinimumFailure,
++  TransactionMinimumUnproved,
++  type TransactionMinimum,
++} from "./transaction-consistency.js";
+ import { ScopeServerOperationAbortedError, requestFromUrl } from "./read-request.js";
+ import { DatabaseSync } from "node:sqlite";
+ import { spawnSync } from "node:child_process";
+@@ -891,9 +895,14 @@ describe("private minimum-read owner/lifecycle", () => {
+     });
+     expect(waits).toBe(1);
+   });
+-  it.each([false, true])(
++  it.each([
++    ["false", false, "pos-1"],
++    ["true", true, "pos-1"],
++    ["opaque false", false, "unknown"],
++    ["opaque true", true, "unknown"],
++  ] as const)(
+     "checks minimum before read-triggered expiry but honors independently forgotten receipts (%s)",
+-    async (forget) => {
++    async (_label, forget, minimumPosition) => {
+       const f = fixture();
+       let waits = 0,
+         tick = 0;
+@@ -914,7 +923,7 @@ describe("private minimum-read owner/lifecycle", () => {
+       const minimum = {
+         scopeEpoch: failed.context.scopeEpoch,
+         authorizationView: failed.context.authorizationView,
+-        minimumPosition: "pos-1",
++        minimumPosition,
+       };
+       expect(
+         await service.receiptAtMinimum(
+@@ -3488,3 +3497,268 @@ it.each([
+     }),
+   );
+ });
++
++it("captures opaque receipt root minima through real owner retries", async () => {
++  const f = fixture();
++  const owner = f.owner;
++  type RootResult = ReturnType<typeof owner.readReceipt>;
++  type OrdinaryRootResult = Exclude<RootResult, { readonly kind: "unsupported" }>;
++  const observations: {
++    kind: "unproved" | "unsupported" | "receipt" | "missing";
++    context: OrdinaryRootResult["context"] | null;
++  }[] = [];
++  let roots = 0,
++    waits = 0,
++    tick = 0,
++    submits = 0;
++  function countedReceipt(
++    principal: string,
++    id: string,
++    minimum?: TransactionMinimum,
++  ): OrdinaryRootResult;
++  function countedReceipt(principal: string, id: string, minimum: "unsupported"): RootResult;
++  function countedReceipt(
++    principal: string,
++    id: string,
++    minimum?: TransactionMinimum | "unsupported",
++  ): RootResult {
++    roots++;
++    try {
++      const observed =
++        minimum === "unsupported"
++          ? owner.readReceipt(principal, id, minimum)
++          : owner.readReceipt(principal, id, minimum);
++      observations.push(
++        "kind" in observed
++          ? { kind: "unsupported", context: null }
++          : { kind: observed.receipt ? "receipt" : "missing", context: observed.context },
++      );
++      return observed;
++    } catch (error) {
++      if (error instanceof TransactionMinimumUnproved)
++        observations.push({ kind: "unproved", context: error.context });
++      throw error;
++    }
++  }
++  let supplied: { scopeEpoch: string; authorizationView: string; minimumPosition: string };
++  const service = createTransactionService(
++    { ...owner, readReceipt: countedReceipt },
++    {
++      ownerLifetime: "service",
++      read: f.read,
++      minimumReads: {
++        budgetMs: 3,
++        now: () => tick++,
++        wait: async () => {
++          waits++;
++          if (waits === 1) {
++            supplied.minimumPosition = "pos-2";
++            submits++;
++            const later = requireReceipt(await service.submit(batch([create("later")], "later")));
++            expect(later.context.scopePosition).toBe("pos-2");
++          }
++        },
++      },
++    },
++  );
++  cleanup.push(() => service.close());
++  submits++;
++  const first = requireReceipt(await service.submit(batch()));
++  supplied = {
++    scopeEpoch: first.context.scopeEpoch,
++    authorizationView: first.context.authorizationView,
++    minimumPosition: "unknown",
++  };
++  const current = { ...first.context, scopePosition: "pos-2" };
++  await expect(service.receiptAtMinimum(access, first.receipt.id, supplied)).rejects.toMatchObject({
++    reason: "catch-up-timeout",
++    context: current,
++  });
++  expect(supplied.minimumPosition).toBe("pos-2");
++  expect(observations).toStrictEqual([
++    { kind: "unproved", context: first.context },
++    { kind: "unproved", context: current },
++    { kind: "unproved", context: current },
++  ]);
++  await expect(
++    service.receiptAtMinimum(access, first.receipt.id, {
++      ...supplied,
++      minimumPosition: "pos-01",
++    }),
++  ).rejects.toMatchObject({ reason: "catch-up-timeout", context: current });
++  expect(await service.receiptAtMinimum(access, first.receipt.id, supplied)).toMatchObject({
++    kind: "receipt",
++    receipt: first.receipt,
++    context: current,
++  });
++  expect(await service.receiptAtMinimum(access, first.receipt.id, "unsupported")).toStrictEqual({
++    kind: "unsupported",
++  });
++  for (const [principal, id] of [
++    ["other", first.receipt.id],
++    ["p", `${scope}receipts/missing`],
++  ] as const) {
++    expect(
++      await service.receiptAtMinimum({ kind: "authenticated", principal }, id, {
++        ...supplied,
++        minimumPosition: "unknown",
++      }),
++    ).toStrictEqual({ kind: "refused", status: 404, code: "resource-not-found", context: current });
++  }
++  const before = { roots, waits, tick };
++  expect(
++    await service.receiptAtMinimum({ kind: "unauthenticated" }, first.receipt.id, supplied),
++  ).toStrictEqual({ kind: "refused", status: 401, code: "unauthenticated" });
++  const malformed = service.receiptAtMinimum(access, first.receipt.id, {
++    ...supplied,
++    minimumPosition: "bad,tuple",
++  });
++  await expect(malformed).rejects.toThrow("unsupported minimum tuple");
++  expect({ roots, waits, tick }).toStrictEqual(before);
++  expect({ roots, waits, tick, submits }).toStrictEqual({
++    roots: 10,
++    waits: 4,
++    tick: 11,
++    submits: 2,
++  });
++  expect(observations.map((value) => value.kind)).toStrictEqual([
++    "unproved",
++    "unproved",
++    "unproved",
++    "unproved",
++    "unproved",
++    "unproved",
++    "receipt",
++    "unsupported",
++    "missing",
++    "missing",
++  ]);
++  expect(observations.slice(3, 6).map((value) => value.context)).toStrictEqual([
++    current,
++    current,
++    current,
++  ]);
++  await service.close();
++  console.log(
++    JSON.stringify({
++      observation: "receipt-root-minimum-capture",
++      roots,
++      waits,
++      clockCalls: tick,
++      submits,
++      ownerObservations: observations,
++    }),
++  );
++});
++
++it("drains an opaque receipt root wait before closing its owner", async () => {
++  const f = fixture();
++  const owner = f.owner;
++  type RootResult = ReturnType<typeof owner.readReceipt>;
++  type OrdinaryRootResult = Exclude<RootResult, { readonly kind: "unsupported" }>;
++  let roots = 0,
++    waits = 0,
++    tick = 0,
++    closed = false,
++    postCloseProbes = 0;
++  const entered = Promise.withResolvers<void>();
++  const release = Promise.withResolvers<void>();
++  function countedReceipt(
++    principal: string,
++    id: string,
++    minimum?: TransactionMinimum,
++  ): OrdinaryRootResult;
++  function countedReceipt(principal: string, id: string, minimum: "unsupported"): RootResult;
++  function countedReceipt(
++    principal: string,
++    id: string,
++    minimum?: TransactionMinimum | "unsupported",
++  ): RootResult {
++    roots++;
++    return minimum === "unsupported"
++      ? owner.readReceipt(principal, id, minimum)
++      : owner.readReceipt(principal, id, minimum);
++  }
++  const service = createTransactionService(
++    { ...owner, readReceipt: countedReceipt },
++    {
++      ownerLifetime: "service",
++      read: f.read,
++      minimumReads: {
++        budgetMs: 2,
++        now: () => tick++,
++        wait: async () => {
++          waits++;
++          entered.resolve();
++          await release.promise;
++        },
++      },
++    },
++  );
++  cleanup.push(() => service.close());
++  const pending: Promise<unknown>[] = [];
++  try {
++    const first = requireReceipt(await service.submit(batch()));
++    const minimum = {
++      scopeEpoch: first.context.scopeEpoch,
++      authorizationView: first.context.authorizationView,
++      minimumPosition: "unknown",
++    };
++    const read = service.receiptAtMinimum(access, first.receipt.id, minimum);
++    // Observe rejection immediately, while retaining it for the exact assertion below.
++    pending.push(read);
++    void read.catch(() => {});
++    await Promise.race([
++      entered.promise,
++      read.then(() => {
++        throw new Error("opaque receipt returned before its controlled wait");
++      }),
++    ]);
++    const closing = service.close();
++    pending.push(closing);
++    void closing.then(
++      () => {
++        closed = true;
++      },
++      () => {},
++    );
++    await Promise.resolve();
++    expect(closed).toBe(false);
++    const before = { roots, tick };
++    expect(() => service.receiptAtMinimum(access, first.receipt.id, minimum)).toThrow(
++      "closing or closed",
++    );
++    expect({ roots, tick }).toStrictEqual(before);
++    release.resolve();
++    await expect(read).rejects.toMatchObject({
++      reason: "catch-up-timeout",
++      context: first.context,
++    });
++    await closing;
++    expect(closed).toBe(true);
++    postCloseProbes++;
++    expect(() => f.owner.readReceipt("p", first.receipt.id)).toThrow(
++      "transaction store closed or reentrant",
++    );
++    expect({ roots, waits, tick, postCloseProbes }).toStrictEqual({
++      roots: 2,
++      waits: 1,
++      tick: 3,
++      postCloseProbes: 1,
++    });
++    console.log(
++      JSON.stringify({
++        observation: "receipt-root-minimum-drain",
++        roots,
++        waits,
++        clockCalls: tick,
++        postCloseProbes,
++        closed,
++      }),
++    );
++  } finally {
++    release.resolve();
++    await Promise.allSettled(pending);
++    await service.close();
++  }
++});
+diff --git a/packages/server/src/transaction-service.ts b/packages/server/src/transaction-service.ts
+index 7d288d4..5187ce9 100644
+--- a/packages/server/src/transaction-service.ts
++++ b/packages/server/src/transaction-service.ts
+@@ -627,7 +627,7 @@ export function createTransactionService(owner: Owner, options: TransactionServi
+             context: observed.context,
+           });
+         }
+-        const minimum = snapshotTransactionMinimum(supplied);
++        const minimum = snapshotCurrentReadMinimum(supplied);
+         return waitForTransactionMinimum(() => receipt(principal, id, minimum), minimumReads);
+       });
+     },
+diff --git a/packages/server/src/transaction-store.ts b/packages/server/src/transaction-store.ts
+index b74ebf4..0982fc9 100644
+--- a/packages/server/src/transaction-store.ts
++++ b/packages/server/src/transaction-store.ts
+@@ -959,7 +959,7 @@ export function openTransactionStore(options: TransactionStoreOptions) {
+     const condition =
+       minimum === undefined || minimum === "unsupported"
+         ? minimum
+-        : snapshotTransactionMinimum(minimum);
++        : snapshotCurrentReadMinimum(minimum);
+     return enter(() =>
+       atomic(() => {
+         const stored = disclosedReceipt(principal, id);
+@@ -968,7 +968,7 @@ export function openTransactionStore(options: TransactionStoreOptions) {
+         const context = readContext();
+         if (!stored) return Object.freeze({ receipt: undefined, context });
+         if (condition !== undefined && condition !== "unsupported")
+-          checkTransactionMinimum(condition, context);
++          checkCurrentReadMinimum(condition, context, true);
+         const remaining = expireRow(stored, instant()).row;
+         if (!remaining) return Object.freeze({ receipt: undefined, context });
+         return observeReceipt(parseReceipt(remaining.receipt), context);

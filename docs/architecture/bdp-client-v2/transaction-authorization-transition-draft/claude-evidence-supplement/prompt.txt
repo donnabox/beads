@@ -1,0 +1,1935 @@
+# Focused actual Claude code supplement — two-test evidence repair
+
+Do not write or modify any files. Output findings only in stdout. Tools are disabled; review supplied actual source only. Give a COMPLETE concise numbered findings-first review of this delta (severity/location/concrete issue/fix), or explicitly no findings. Please keep answer about1000–1600words; do not omit beginning sections or refer to unavailable prior findings. Missing context is a bounded limitation, not permission to assume contrary code.
+
+Scope is the exact test-only repair below on frozen dirty67a2842 with15feature paths. Only transaction-authorization.test.ts and transaction-runtime.test.ts changed since the already reviewed final-code-v4. All ten production files remain byte-identical. Original actual production review12findings and evidence review9findings completed; no missing original output. Root source-grounded production disposition found no mandatory production change and retains accepted failed-drain behavior. This supplement independently reviews the concrete evidence delta, not a fresh broad architecture redesign. Original evidence findings and full audit follow for transparency; the audit is implementation-author analysis, not an independent Claude verdict.
+
+Root approved only: T6 actual reopen durable rollback equality; T9 actual mixed receipt/page AJV validation; T10/T11 precise pause/forbidden codes; T11 transaction-id exclusion; T1 serverclosed Changes no-id frames and actual projected receipt HEAD. Root deferred generic timeout/T4sync guards and sixth tamper copy. Do not require a new product policy or treat these acknowledged deferrals as newly discovered regressions. Current arbitrary-shape corrupt-storage/future producer hardening remains outside this test delta. Public admission unchanged; no installed qualification implied.
+
+New successor has NOT yet been executed by this packet preparer. Historical11distinctpasses are10v4+targetedT11; historical C1 rawexit1/sole named failure after7HTTP retained. Exact first7 prerequisite/named gate bytes unchanged; new check after serverclosure and HEAD afterGET16. T1 now18HTTP, T2 stays4; complete11callbacks22HTTP15successfulopens11normaldirs+5rejectedcopies2listeners0children. Targeted validation planned only T1,T6,T9,T10,T11:5cases18HTTP6opens5dirs1listener. No build needed for test-only source delta if actual positive production/emitted inventory is explicitly unchanged; final clean packaging build separate. All old failures retained. Root owns execution/release, final council and integration.
+
+Focus whether checks are meaningful, correctly typed, schema-valid, use actual delivered byte/context evidence, preserve bounded cleanup and do not add hidden requests. HEAD response intentionally has body undefined and bodyBytes0, while GET/POST still parse JSON. Request Content-Length comparison uses actual GET bytes/header, not pretransition receipt or JSON reserialization. T2 remains unchanged but shares that helper. C1 is coherent missing-publication unit sensitivity, not independent proof of both publication submechanisms. Do not claim no previously delivered bytes can be recalled.
+
+
+## Exact two-file correction
+Path: /Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-authorization-transition-draft/evidence-repair/correction.patch
+SHA256: 36341fc9438db33c0f7a5dc2aee7086e2e14f2226d96833be9f11cb6ebdf46b0
+
+--- a/packages/server/src/transaction-authorization.test.ts
++++ b/packages/server/src/transaction-authorization.test.ts
+@@ -1,9 +1,15 @@
+-import { copyFileSync, mkdtempSync, rmSync } from "node:fs";
++import { copyFileSync, mkdtempSync, readFileSync, rmSync } from "node:fs";
+ import { tmpdir } from "node:os";
+ import path from "node:path";
+ import { DatabaseSync } from "node:sqlite";
+ import { afterEach, expect, it } from "vitest";
+-import { isReadProblem, parseTypeDescriptor } from "@bdp/protocol";
++import {
++  isReadProblem,
++  isJsonSchemaUri,
++  isJsonSchemaDateTime,
++  parseTypeDescriptor,
++} from "@bdp/protocol";
++import { Ajv2020 } from "ajv/dist/2020.js";
+ import { prepareTransaction, prepareTransactionSequence } from "./transaction-batch.js";
+ import { openTransactionStore, type TransactionStoreOptions } from "./transaction-store.js";
+ import { createTransactionService, type TransactionServiceOptions } from "./transaction-service.js";
+@@ -17,6 +23,19 @@
+ const scope = "https://example.test/authorization/";
+ const type = scope + "types/bead";
+ const types = [parseTypeDescriptor({ id: type, name: "Bead", describes: "bead", conformsTo: [] })];
++const receiptValidators = (() => {
++  const schema = JSON.parse(
++    readFileSync(new URL("../../../schemas/bdp-v0.schema.json", import.meta.url), "utf8"),
++  );
++  const ajv = new Ajv2020({ strict: true, allErrors: true });
++  ajv.addFormat("uri", { type: "string", validate: isJsonSchemaUri });
++  ajv.addFormat("date-time", { type: "string", validate: isJsonSchemaDateTime });
++  ajv.addSchema(schema);
++  return {
++    receipt: ajv.compile({ $ref: `${schema.$id}#/$defs/mutationReceipt` }),
++    page: ajv.compile({ $ref: `${schema.$id}#/$defs/mutationReceiptPage` }),
++  };
++})();
+ const cleanup: (() => void | Promise<void>)[] = [];
+ afterEach(async () => {
+   const failures: unknown[] = [];
+@@ -296,6 +315,8 @@
+   } finally {
+     lease.release();
+   }
++  f.reopen();
++  expect(f.owner.authorizationSnapshot()).toEqual(before);
+ });
+ 
+ it("fences publication failure and recovers the committed empty policy", () => {
+@@ -393,6 +414,10 @@
+   const old = context(f.owner);
+   f.owner.replaceAuthorizationPolicy();
+   const observed = f.owner.readReceipt("p", mixed.id);
++  expect(
++    receiptValidators.receipt(observed.receipt),
++    JSON.stringify(receiptValidators.receipt.errors),
++  ).toBe(true);
+   expect(observed.receipt).toEqual({
+     ...before,
+     results: [{ operationIndex: 0, outcome: "withheld" }, full[1]],
+@@ -402,6 +427,11 @@
+     authorizationView: f.owner.authorizationSnapshot().authorizationView,
+   });
+   const afterPage = f.owner.readReceiptPage("p", before.next);
++  if (afterPage.kind !== "page") throw new Error("projected issued page required");
++  expect(
++    receiptValidators.page(afterPage.page),
++    JSON.stringify(receiptValidators.page.errors),
++  ).toBe(true);
+   expect(afterPage).toEqual({
+     ...firstPage,
+     page: {
+@@ -472,7 +502,9 @@
+     await Promise.resolve();
+   };
+   try {
+-    expect(() => f.owner.replaceAuthorizationPolicy()).toThrow("authorization admission refused");
++    expect(() => f.owner.replaceAuthorizationPolicy()).toThrow(
++      expect.objectContaining({ code: "temporarily-unavailable" }),
++    );
+     const cancelled = new AbortController();
+     const first = service.replaceAuthorizationPolicy({ timeoutMs: 1000, signal: cancelled.signal });
+     const observedFirst = first.then(
+@@ -487,7 +519,7 @@
+         "paused",
+         prepareTransaction(scope, JSON.stringify({ operations: [create("paused")] })),
+       ),
+-    ).toThrow("authorization admission refused");
++    ).toThrow(expect.objectContaining({ code: "temporarily-unavailable" }));
+     const reason = new Error("administrative cancellation");
+     cancelled.abort(reason);
+     expect(await observedFirst).toBe(reason);
+@@ -584,7 +616,7 @@
+       "seed",
+       prepareTransaction(scope, JSON.stringify({ operations: [create("a")] })),
+     ),
+-  ).toThrow("authorization admission refused");
++  ).toThrow(expect.objectContaining({ code: "forbidden" }));
+   expect(f.owner.readReceipt("bob", receipt.id).receipt).toBeUndefined();
+   expect(f.owner.readReceipt("alice", receipt.id).receipt?.detail).toBe("withheld");
+   const page = f.owner.readChanges("genesis");
+@@ -603,7 +635,12 @@
+       events: [],
+     },
+   ]);
+-  expect(page.page.groups[0]?.checkpoint).not.toBe("genesis");
++  const checkpoint = page.page.groups[0]?.checkpoint;
++  if (typeof checkpoint !== "string" || typeof receipt.transaction !== "string")
++    throw new Error("actual checkpoint and seed transaction required");
++  expect(checkpoint).not.toBe("genesis");
++  expect(checkpoint).not.toContain(receipt.transaction);
++  expect(JSON.stringify(page.page.groups)).not.toContain(receipt.transaction);
+   expect(f.owner.inspect().resources).toHaveLength(1);
+   await service.close();
+ });
+--- a/packages/server/src/transaction-runtime.test.ts
++++ b/packages/server/src/transaction-runtime.test.ts
+@@ -258,7 +258,8 @@
+ type AuthorizationResponse = {
+   status: number;
+   headers: Record<string, string>;
+-  body: Record<string, unknown>;
++  body: Record<string, unknown> | undefined;
++  bodyBytes: number;
+ };
+ function authorizationContext(headers: Record<string, string>) {
+   return {
+@@ -274,7 +275,7 @@
+     validate(response.body),
+     `authorization-transition:schema ${schema} ${JSON.stringify(validate.errors)}`,
+   ).toBe(true);
+-  return response.body;
++  return authorizationObject(response.body);
+ }
+ function authorizationReceipt(
+   response: AuthorizationResponse,
+@@ -343,7 +344,7 @@
+     >;
+     request: (
+       target: string,
+-      method?: "GET" | "POST",
++      method?: "GET" | "HEAD" | "POST",
+       body?: string,
+       key?: string,
+     ) => Promise<AuthorizationResponse>;
+@@ -389,7 +390,7 @@
+     const active = runtime;
+     const request = async (
+       target: string,
+-      method: "GET" | "POST" = "GET",
++      method: "GET" | "HEAD" | "POST" = "GET",
+       body?: string,
+       key?: string,
+     ): Promise<AuthorizationResponse> => {
+@@ -439,7 +440,9 @@
+                   Array.isArray(v) ? v.join(", ") : (v ?? ""),
+                 ]),
+               );
+-              const value = authorizationObject(JSON.parse(text));
++              if (method === "HEAD" && bytes !== 0)
++                throw Error("authorization HEAD delivered body bytes");
++              const value = method === "HEAD" ? undefined : authorizationObject(JSON.parse(text));
+               observations.push({
+                 index: attempts,
+                 method,
+@@ -457,7 +460,7 @@
+                   headers["bdp-scope-position"],
+                 ],
+               });
+-              received.resolve({ status: res.statusCode!, headers, body: value });
++              received.resolve({ status: res.statusCode!, headers, body: value, bodyBytes: bytes });
+             } catch (error) {
+               received.reject(error);
+             }
+@@ -586,7 +589,7 @@
+ }
+ 
+ it("narrows current Transactional visibility and fences issued handles after policy publication", async () => {
+-  await withAuthorizationRuntime("visibility-handles", 17, async (f) => {
++  await withAuthorizationRuntime("visibility-handles", 18, async (f) => {
+     const ids = Array.from({ length: 32 }, (_, index) => `b${String(index).padStart(2, "0")}`);
+     const firstBody = authorizationSeed(ids);
+     const first = authorizationReceipt(
+@@ -655,6 +658,7 @@
+     ).toEqual({ generation: 1, readPolicy: "empty", canMutate: false, viewChanged: true });
+     await authorizationBound(stream.closed, "authorization-transition:generation-and-lease", 1000);
+     expect(streamClosed, "authorization-transition:generation-and-lease").toBe(true);
++    expect(stream.frames.filter((frame) => frame.startsWith("id:"))).toEqual([]);
+     const current = { ...second.context, authorizationView: policy.authorizationView };
+     const problem = async (target: string, status: number, code: string) => {
+       const response = await f.request(target);
+@@ -692,7 +696,12 @@
+     expect(reconnect.frames.filter((frame) => frame.startsWith("id:"))).toEqual([]);
+     const reconnectProblem = authorizationObject(JSON.parse(reconnect.body));
+     authorizationChecked(
+-      { status: reconnect.status, headers: reconnect.headers, body: reconnectProblem },
++      {
++        status: reconnect.status,
++        headers: reconnect.headers,
++        body: reconnectProblem,
++        bodyBytes: Buffer.byteLength(reconnect.body),
++      },
+       409,
+       "transactionalProblem",
+     );
+@@ -712,6 +721,18 @@
+     delete projected.expiresAt;
+     expect(retained).toEqual(projected);
+     expect(authorizationContext(receiptResponse.headers)).toEqual(current);
++    const receiptHead = await f.request(authorizationText(first.receipt.id), "HEAD");
++    expect(receiptHead.status).toBe(200);
++    expect(receiptHead.body).toBeUndefined();
++    expect(receiptHead.bodyBytes).toBe(0);
++    expect(receiptResponse.headers["content-length"]).toBe(String(receiptResponse.bodyBytes));
++    expect(receiptHead.headers["content-length"]).toBe(receiptResponse.headers["content-length"]);
++    expect(authorizationContext(receiptHead.headers)).toEqual(current);
++    for (const response of [receiptResponse, receiptHead]) {
++      expect(response.headers["cache-control"]).toBe("private, no-store");
++      expect(response.headers.etag).toBeUndefined();
++      expect(response.headers["last-modified"]).toBeUndefined();
++    }
+     const replay = await f.request(
+       f.runtime.targets.batch,
+       "POST",
+
+
+## Original complete actual evidence review
+Path: /Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-authorization-transition-draft/claude-code/evidence/stdout.txt
+SHA256: 166e7ed3fb0972d075eadbba6034e627cd7f00c6cad8c24001adef21e3e1f356
+
+# Evidence (test-path) review — Scope authorization transition
+
+Scope: the five complete test diffs. Production excerpts used only as shared interfaces. "Passed/failed" statements are taken from the supplied root-run attributions, not from execution by me.
+
+## Findings
+
+**1. Medium — `transaction-authorization.test.ts`, "preserves policy and delivery leases after confirmed policy rollback": the rollback is never confirmed durably.**
+The `before-policy-commit` fault throws *inside* `atomic(...)`, after `UPDATE metadata ... authorizationPolicy`. The only rollback oracle is `expect(f.owner.authorizationSnapshot()).toBe(before)` — but on that path `authorization = next` is never reached regardless of whether the SQLite transaction actually rolled back. If `atomic` failed to roll back (or the fault were ever moved outside it), the on-disk row would carry generation 1 while memory reports 0, and the store would surface a phantom revocation at the next open; this case would still pass. Minimal fix: after the final assertion, `f.reopen(); expect(f.owner.authorizationSnapshot()).toEqual(before);` (or a `f.raw` read of the metadata row). Cost: +1 owner open, 0 HTTP. Note the sibling fence case already reopens — the asymmetry is the tell.
+
+**2. Medium (fail-open) — same file, test 1: migration precedence over an existing policy row is unpinned.**
+Test 1 establishes exactly one migration fact: legacy `configuration` + *absent* `authorizationPolicy` ⇒ open succeeds with generation 0 / all-visible / mutable. All five rejected-open copies start from the *current* configuration. Nothing pins legacy configuration + a **present generation-1** row — a state constructible by the fixture's own `raw()` and reachable by operator metadata restore or a partially applied migration. If the migration branch installs the initial policy unconditionally, an administrative revocation is silently re-granted; every other metadata guard in this suite is fail-closed, so the omission is asymmetric. (Plain binary downgrade is blocked by the installation-mismatch guard, so this is tamper/restore, not routine lifecycle.) Minimal fix: a sixth rejected-open copy asserting refusal (or an explicit preserve assertion). Cost: +1 copy dir, +1 open, exceeding the frozen five copies by one.
+
+**3. Medium — projected shapes that are *not* wholly collapsed are never schema-validated anywhere.**
+Ajv exists only in `transaction-runtime.test.ts`. T1's seed receipt has 32 `created` entries, so post-publication it collapses whole and only the `withheld` branch is validated; its `next` is asserted `null`, so **`mutationReceiptPage` is never validated in this suite at all**. The two remaining wire shapes — the partially withheld receipt `{results:[{outcome:"withheld"},<deleted>], next:<url>, expiresAt:…}` and the all-withheld page — exist only as structural `toEqual` comparisons in `transaction-authorization.test.ts` ("projects receipt records and allocations…"). The documented source-v3 failure (forbidden `expiresAt` at request 16) was precisely a schema violation that structural equality cannot see. Minimal fix: compile `mutationReceipt` / `mutationReceiptPage` in the unit file and validate `observed.receipt` and `afterPage.page`. Cost: 0 HTTP, 0 owners.
+
+**4. Medium-low — the mandatory-timeout contract and the sync-throw surface are unexercised.**
+The lifetime correction makes `timeoutMs` mandatory and bounded (`!Number.isSafeInteger || <1 || >2147483647` ⇒ `TypeError`), yet every call in the suite passes 1000 or 10; neither the `TypeError` branch nor `signal?.throwIfAborted()` on an already-aborted signal is asserted. Both throw **synchronously**, while cancellation and deadline *reject* — a caller writing `await expect(...).rejects` would be misled. The same mixed contract appears in `service.stream`: aborted-supplied-signal rejects, but capacity and `foreign-view` throw synchronously, and `transaction-service.test.ts` masks this with `Promise.resolve().then(() => service.stream(...))`, so no evidence shows a handler path surviving a synchronous `TransactionAuthorizationFailure`. Minimal fix: two synchronous assertions in the existing drain case plus one direct (unwrapped) `expect(() => service.stream(...)).toThrow` in the service case. Cost: 0.
+
+**5. Low-medium — error oracles are substring-only and cannot identify which guard fired.**
+`toThrow("authorization admission refused")` matches every `TransactionAuthorizationFailure` irrespective of `code`, so in the drain case and in "captures one Scope policy…" a refusal caused by the published policy (`forbidden`) is indistinguishable from a leaked administrative pause (`temporarily-unavailable`) — and `resume()` is only reached in a `finally`, so a leak is exactly the failure this suite should catch. Likewise, all five rejected opens match `"authorization policy"` / `"installation mismatch"`, which `parseTransactionAuthorization` emits for three different guards (`exceeds storage bound`, `invalid … fields`, `invalid …`). Minimal fix: assert `code` (`expect.objectContaining({ code: "forbidden" })` via try/catch or `toThrowError`), and distinguish the open guards by message.
+
+**6. Low-medium — `transaction-runtime.test.ts` T1: the revoked change stream's delivered bytes are never inspected.**
+The test asserts only `stream.closed` / `streamClosed`. The recorder already exposes `frames` and `wireBytes`, but nothing asserts that no frame crossed the publication boundary (a flushed group or a terminating event carrying the hidden transaction would pass unnoticed). Minimal fix: after `await stream.closed`, `expect(stream.frames.filter((x) => x.startsWith("id:"))).toEqual([])`. Cost: 0 HTTP. (The analogous assertion on the 409 reconnect is near-vacuous for a different reason: a JSON problem body has no `\n\n`, so `frames` is always `[]` there.)
+
+**7. Low-medium — `transaction-authorization.test.ts`, last case: the hidden group's `checkpoint` is self-referenced.**
+`checkpoint: page.page.groups[0]?.checkpoint` makes the oracle vacuous for the single field of a `projectionAdvance` group that could carry identity across the boundary; `not.toBe("genesis")` does not address it. bdp.md:5751-5754 requires that no transaction identifier from the hidden group cross. The seed transaction id is in scope as `receipt.transaction`. Minimal fix: additionally assert the checkpoint neither equals nor contains it. Cost: 0.
+
+**8. Low-medium — no `HEAD` delivery of a withheld receipt is tested.**
+bdp.md:5230 names `HEAD` as one of the deliveries that must be projected under the current view; no test in any of the five paths issues a `HEAD`. A `Content-Length` or `ETag` derived from the retained (unprojected) receipt would leak entry count/size while the `GET` body stays correct. Minimal fix: one `HEAD` on `first.receipt.id` after request 16, comparing `content-length` (and `etag`, if served) with the projected `GET`. Cost: +1 HTTP, raising T1's exact bound 17→18.
+
+**9. Low — assertions over unreachable states; fixture nit.**
+The pure-projection cases use `results: []` on a `completed/available` receipt and `allocated: []` on an `expired` one; both are states the schema and the executor do not produce, so the `length > 0` guards are only exercised synthetically. Relatedly, the `allocated → {operationIndex, operationName?, withheld: true}` mapping is **unobservable**: under the Scope-wide binding every nonempty allocation set is wholly withheld, so the collapse always deletes the mapped array — no assertion can ever see that shape, and its conformance to the (unsupplied) allocated `$def` is unproven. Also, `fixture().raw()` closes the owner and never reopens it, so `f.owner` silently returns a closed handle until the next `reopen()`; every current call site happens to reopen.
+
+## Essential omitted context
+
+- Store `open`/migration code, `atomic`, `fence`, `enter`, `revokeLeases`, `expireRow`, `pagePlan`, `inspect`, `observeSnapshot`, `readChanges`, and the `receipt` vs `readReceipt` APIs (both are used; only `readReceipt` is in the excerpts). Findings 1–2 are stated as evidence gaps, not verified production defects, for this reason.
+- Test 3 asserts `lease.signal.aborted` after a fault that throws *before* `revokeLeases()`; this can only hold if `fence()` revokes leases, and that coupling is unverifiable here and undocumented in the diff.
+- The allocated-entry and `receiptCore`/`stateChange`/`event` `$defs` were not supplied, so finding 9's conformance claim is bounded.
+- T1/T2 import `../dist/transaction-runtime.js`; the HTTP evidence validates built bytes, and no assertion detects a source/dist divergence. Any fix landed for findings above must be rebuilt before re-running.
+- `inspect().position` is asserted as `"0"/"1"/"2"` while the wire uses `"pos-N"`; I assumed these are different representations rather than a defect.
+- Root-run attributions (source-v3/v4 outcomes, the 10-of-11 callback result) are taken as given; I executed nothing, and no timing/HTTP bound here is a performance claim.
+
+
+## Root dispositions / review target
+The complete implementation-author audit is pinned as an input; root accepted these concrete decisions:
+1 Durable rollback memory-only oracle insufficient: add existing fixture reopen/full snapshot equality (+1successfulopen).
+2 Source migration already atomically rejects legacy+presentpolicy. Review incorrectly says allfive rejectedcopies current; firsttwo arelegacy. Sixthvariant deferred, no newcopy.
+3 Add actualmixedroot/issuedpage mutationReceipt/mutationReceiptPage AJV validation while retaining exactstructuralequality.
+4 Generic timeout/abortedinput assertions and T4syncsurface expansion deferred, no newcallback.
+5 Replace existing two pause refusals with exacttemporarily-unavailable and postpublication directrefusal with exactforbidden.
+6 Require zero id-bearing frames on actual closed start=nowChangesstream with no latermutation. T3 remains deterministic queued-frame fence; no instantaneousrecall claim.
+7 Add checkpoint/group exclusion of actualseed receipt.transaction. No productionhelper import tautology.
+8 Add actualHEAD afterwithheldGET16/beforereplay, T1now18. ActualGETbytes/header comparison; HEADzeroactualbytes/undefinedbody/currentcontext, private-no-store/no validators.
+9 Syntheticemptyarrays remain explicitly non-wire projectionboundaries; do not expandprivatepolicy to expose mixedallocations. raw() closesowner, existingcallersreopen.
+These are root-approved deltas, not a Claude clean verdict. Full author audit SHA0c37811016b133f308a346c18d866117637a0d16cfbf230ca216b4d5189b29be remains available/pinned. Root added F7 and deferred optional six-copy/F4 portions after that audit. Original 9 findings above are verbatim and complete.
+
+## Actual source packages/server/src/transaction-authorization.test.ts:1–155
+Full-file SHA256: 4e2a4fb500e546e3a3d8d671125c37653a4df5bb46bae679f80123cc8c680760
+```ts
+import { copyFileSync, mkdtempSync, readFileSync, rmSync } from "node:fs";
+import { tmpdir } from "node:os";
+import path from "node:path";
+import { DatabaseSync } from "node:sqlite";
+import { afterEach, expect, it } from "vitest";
+import {
+  isReadProblem,
+  isJsonSchemaUri,
+  isJsonSchemaDateTime,
+  parseTypeDescriptor,
+} from "@bdp/protocol";
+import { Ajv2020 } from "ajv/dist/2020.js";
+import { prepareTransaction, prepareTransactionSequence } from "./transaction-batch.js";
+import { openTransactionStore, type TransactionStoreOptions } from "./transaction-store.js";
+import { createTransactionService, type TransactionServiceOptions } from "./transaction-service.js";
+import {
+  INITIAL_TRANSACTION_VIEW,
+  projectTransactionReceipt,
+} from "./transaction-authorization.js";
+import { TRANSACTION_SNAPSHOT_LIMITS } from "./transaction-snapshot.js";
+import { requestFromUrl } from "./read-request.js";
+
+const scope = "https://example.test/authorization/";
+const type = scope + "types/bead";
+const types = [parseTypeDescriptor({ id: type, name: "Bead", describes: "bead", conformsTo: [] })];
+const receiptValidators = (() => {
+  const schema = JSON.parse(
+    readFileSync(new URL("../../../schemas/bdp-v0.schema.json", import.meta.url), "utf8"),
+  );
+  const ajv = new Ajv2020({ strict: true, allErrors: true });
+  ajv.addFormat("uri", { type: "string", validate: isJsonSchemaUri });
+  ajv.addFormat("date-time", { type: "string", validate: isJsonSchemaDateTime });
+  ajv.addSchema(schema);
+  return {
+    receipt: ajv.compile({ $ref: `${schema.$id}#/$defs/mutationReceipt` }),
+    page: ajv.compile({ $ref: `${schema.$id}#/$defs/mutationReceiptPage` }),
+  };
+})();
+const cleanup: (() => void | Promise<void>)[] = [];
+afterEach(async () => {
+  const failures: unknown[] = [];
+  for (const close of cleanup.splice(0).reverse()) {
+    try {
+      await close();
+    } catch (error) {
+      failures.push(error);
+    }
+  }
+  if (failures.length) throw new AggregateError(failures, "authorization fixture cleanup");
+});
+const create = (id: string) => ({
+  operation: "createBead",
+  id: "beads/" + id,
+  type,
+  properties: { n: 0 },
+});
+function fixture(extra: Partial<TransactionStoreOptions> = {}) {
+  const directory = mkdtempSync(path.join(tmpdir(), "bdp-tx-authorization-"));
+  let now = 1000;
+  const options = {
+    file: path.join(directory, "store.sqlite"),
+    scope,
+    types,
+    create: true,
+    clock: () => now,
+    ...extra,
+  };
+  let owner: ReturnType<typeof openTransactionStore>;
+  const rawConnections = new Set<DatabaseSync>();
+  cleanup.push(() => {
+    const failures: unknown[] = [];
+    if (!owner) throw new Error("authorization startup failed; directory retained");
+    try {
+      owner.close();
+    } catch (error) {
+      failures.push(error);
+    }
+    for (const db of rawConnections) {
+      try {
+        db.close();
+      } catch (error) {
+        failures.push(error);
+      }
+    }
+    if (failures.length)
+      throw new AggregateError(failures, "authorization owner cleanup; directory retained");
+    rmSync(directory, { recursive: true, force: true });
+  });
+  owner = openTransactionStore(options);
+  return {
+    options,
+    get owner() {
+      return owner;
+    },
+    setTime(value: number) {
+      now = value;
+    },
+    reopen() {
+      owner.close();
+      owner = openTransactionStore({ ...options, create: false });
+      return owner;
+    },
+    execute(operations: unknown[], key: string, principal = "p") {
+      const admitted = owner.admit(
+        principal,
+        key,
+        prepareTransaction(scope, JSON.stringify({ operations })),
+      );
+      if (admitted.kind !== "owned") throw new Error("fixture requires fresh owned admission");
+      return owner.execute(admitted.claim);
+    },
+    raw<T>(run: (db: DatabaseSync) => T): T {
+      owner.close();
+      const db = new DatabaseSync(options.file);
+      rawConnections.add(db);
+      try {
+        return run(db);
+      } finally {
+        db.close();
+        rawConnections.delete(db);
+      }
+    },
+  };
+}
+function context(owner: ReturnType<typeof openTransactionStore>) {
+  const observed = owner.withRead((_reader, value) => value);
+  if (observed.kind !== "read") throw new Error("expected owner observation");
+  return observed.value;
+}
+function readOptions(): TransactionServiceOptions["read"] {
+  let token = 0;
+  return {
+    selectorLimits: { bytes: 4096, depth: 32, nodes: 256 },
+    advertisedLimits: {
+      page: { defaultItems: 2, maximumItems: 32 },
+      selector: { bytes: 4096, depth: 32, nodes: 256 },
+      cursorTtlMilliseconds: 1000,
+    },
+    pagination: {
+      scope,
+      defaultPageItems: 2,
+      maxPageItems: 32,
+      cursorTtlMs: 1000,
+      retainedStateCapacity: 100,
+      maxRetainedCursorPositionsPerSnapshot: 20,
+      retainedSnapshotByteCapacity: 100000,
+      retainedSnapshotNodeCapacity: 10000,
+      maxOpaqueTokenLength: 64,
+      tokenGenerationAttempts: 3,
+      idleCleanup: "on-demand",
+      clock: () => 1000,
+      generateOpaqueToken: () => "cursor_" + ++token,
+    },
+  };
+}
+```
+
+## Actual source packages/server/src/transaction-authorization.test.ts:301–320
+Full-file SHA256: 4e2a4fb500e546e3a3d8d671125c37653a4df5bb46bae679f80123cc8c680760
+```ts
+it("preserves policy and delivery leases after confirmed policy rollback", () => {
+  const failure = new Error("before policy commit");
+  const f = fixture({
+    fault: (phase) => {
+      if (phase === "before-policy-commit") throw failure;
+    },
+  });
+  const before = f.owner.authorizationSnapshot();
+  const lease = f.owner.acquireAuthorizationLease(context(f.owner));
+  try {
+    expect(() => f.owner.replaceAuthorizationPolicy()).toThrow(failure);
+    expect(f.owner.authorizationSnapshot()).toBe(before);
+    expect(lease.signal.aborted).toBe(false);
+    expect(f.execute([create("still-authorized")], "after-rollback").status).toBe("completed");
+  } finally {
+    lease.release();
+  }
+  f.reopen();
+  expect(f.owner.authorizationSnapshot()).toEqual(before);
+});
+```
+
+## Actual source packages/server/src/transaction-authorization.test.ts:394–466
+Full-file SHA256: 4e2a4fb500e546e3a3d8d671125c37653a4df5bb46bae679f80123cc8c680760
+```ts
+it("projects receipt records and allocations without changing non-record execution facts", () => {
+  const f = fixture({ receiptMaximumItems: 2 });
+  const mixed = f.execute(
+    [create("a"), { operation: "deleteBead", bead: "beads/a" }, create("b")],
+    "mixed",
+  );
+  const failed = f.execute([{ operation: "deleteBead", bead: "beads/missing" }], "failed");
+  expect(failed.status).toBe("failed");
+  const full = mixed.results;
+  if (!Array.isArray(full)) throw new Error("completed full receipt");
+  const before = f.owner.readReceipt("p", mixed.id).receipt;
+  if (!before || typeof before.next !== "string") throw new Error("real issued receipt page");
+  const firstPage = f.owner.readReceiptPage("p", before.next);
+  if (firstPage.kind !== "page") throw new Error("issued page unavailable");
+  expect(full[2]).toMatchObject({
+    operationIndex: 2,
+    outcome: "created",
+    resource: { id: scope + "beads/b", type },
+  });
+  expect(firstPage.page.results).toEqual([full[2]]);
+  const old = context(f.owner);
+  f.owner.replaceAuthorizationPolicy();
+  const observed = f.owner.readReceipt("p", mixed.id);
+  expect(
+    receiptValidators.receipt(observed.receipt),
+    JSON.stringify(receiptValidators.receipt.errors),
+  ).toBe(true);
+  expect(observed.receipt).toEqual({
+    ...before,
+    results: [{ operationIndex: 0, outcome: "withheld" }, full[1]],
+  });
+  expect(observed.context).toEqual({
+    ...old,
+    authorizationView: f.owner.authorizationSnapshot().authorizationView,
+  });
+  const afterPage = f.owner.readReceiptPage("p", before.next);
+  if (afterPage.kind !== "page") throw new Error("projected issued page required");
+  expect(
+    receiptValidators.page(afterPage.page),
+    JSON.stringify(receiptValidators.page.errors),
+  ).toBe(true);
+  expect(afterPage).toEqual({
+    ...firstPage,
+    page: {
+      ...firstPage.page,
+      results: [{ operationIndex: 2, outcome: "withheld" }],
+    },
+    context: observed.context,
+  });
+  expect(f.owner.readReceipt("p", failed.id).receipt).toEqual(failed);
+  // Exercise real compact allocations after ordinary retention, not fabricated receipts.
+  f.setTime(1001 + 86400000);
+  const expired = f.owner.readReceipt("p", mixed.id).receipt;
+  expect(expired).toEqual({
+    ...Object.fromEntries(
+      Object.entries(mixed).filter(
+        ([key]) => !["results", "next", "allocated", "expiresAt"].includes(key),
+      ),
+    ),
+    detail: "withheld",
+  });
+  // Pure projection boundaries add no owner, transaction, or HTTP work.
+  const emptyAvailable = { ...mixed, results: [] };
+  expect(projectTransactionReceipt(emptyAvailable, false)).toEqual(emptyAvailable);
+  const emptyExpired = { ...mixed };
+  emptyExpired.detail = "expired";
+  emptyExpired.allocated = [];
+  delete emptyExpired.results;
+  delete emptyExpired.next;
+  delete emptyExpired.expiresAt;
+  expect(projectTransactionReceipt(emptyExpired, false)).toEqual(emptyExpired);
+  expect(projectTransactionReceipt(failed, false)).toEqual(failed);
+});
+```
+
+## Actual source packages/server/src/transaction-authorization.test.ts:468–571
+Full-file SHA256: 4e2a4fb500e546e3a3d8d671125c37653a4df5bb46bae679f80123cc8c680760
+```ts
+it("bounds administrative drain without cancelling admitted sequence work", async () => {
+  const f = fixture();
+  const callbacks: (() => void)[] = [];
+  const scheduler = {
+    turn(callback: () => void) {
+      callbacks.push(callback);
+      return () => {
+        const index = callbacks.indexOf(callback);
+        if (index >= 0) callbacks.splice(index, 1);
+      };
+    },
+  };
+  const service = createTransactionService(f.owner, {
+    ownerLifetime: "service",
+    read: readOptions(),
+    scheduler,
+  });
+  cleanup.push(() => service.close());
+  const sequence = prepareTransactionSequence(
+    scope,
+    JSON.stringify({
+      operations: [create("a"), create("b")].map((op, i) => ({
+        ...op,
+        idempotencyKey: "member_" + i,
+      })),
+    }),
+  );
+  const pending = service.sequenceObserved("p", sequence);
+  void pending.catch(() => {});
+  const tick = async () => {
+    const callback = callbacks.shift();
+    if (!callback) throw new Error("scheduled sequence turn required");
+    callback();
+    await Promise.resolve();
+    await Promise.resolve();
+  };
+  try {
+    expect(() => f.owner.replaceAuthorizationPolicy()).toThrow(
+      expect.objectContaining({ code: "temporarily-unavailable" }),
+    );
+    const cancelled = new AbortController();
+    const first = service.replaceAuthorizationPolicy({ timeoutMs: 1000, signal: cancelled.signal });
+    const observedFirst = first.then(
+      () => {
+        throw new Error("cancelled publication");
+      },
+      (error: unknown) => error,
+    );
+    expect(() =>
+      f.owner.admit(
+        "p",
+        "paused",
+        prepareTransaction(scope, JSON.stringify({ operations: [create("paused")] })),
+      ),
+    ).toThrow(expect.objectContaining({ code: "temporarily-unavailable" }));
+    const reason = new Error("administrative cancellation");
+    cancelled.abort(reason);
+    expect(await observedFirst).toBe(reason);
+    expect(f.owner.authorizationSnapshot().generation).toBe(0);
+    // Scheduler deliberately delivers no turn during this finite administrative wait.
+    await expect(service.replaceAuthorizationPolicy({ timeoutMs: 10 })).rejects.toThrow(
+      "authorization drain deadline",
+    );
+    expect(f.owner.inspect().position).toBe("0");
+    expect(f.owner.authorizationSnapshot().generation).toBe(0);
+    await tick();
+    expect(f.owner.inspect().position).toBe("1");
+    const firstMember = sequence.members[0];
+    if (!firstMember) throw new Error("first member required");
+    const retained = f.owner.admit("p", "member_0", firstMember.request);
+    if (retained.kind !== "existing") throw new Error("committed prefix receipt required");
+    const publishing = service.replaceAuthorizationPolicy({ timeoutMs: 1000 });
+    void publishing.catch(() => {});
+    expect(f.owner.authorizationSnapshot().generation).toBe(0);
+    await tick();
+    const response = await pending;
+    expect(response.body.results).toHaveLength(2);
+    expect(response.context.authorizationView).toBe(INITIAL_TRANSACTION_VIEW);
+    const policy = await publishing;
+    expect(policy.generation).toBe(1);
+    expect(f.owner.inspect().position).toBe("2");
+    expect(f.owner.inspect().groups).toHaveLength(2);
+    expect(f.owner.inspect().resources).toHaveLength(2);
+    const projected = f.owner.readReceipt("p", retained.receipt.id);
+    expect(projected.receipt).toEqual({
+      ...Object.fromEntries(
+        Object.entries(retained.receipt).filter(
+          ([key]) => !["results", "next", "allocated", "expiresAt"].includes(key),
+        ),
+      ),
+      detail: "withheld",
+    });
+    expect(projected.context.authorizationView).toBe(policy.authorizationView);
+    expect(f.owner.readEvents(scope + "events/")).toMatchObject({
+      kind: "page",
+      page: { events: [], next: null },
+    });
+  } finally {
+    // Deliver every outstanding ordinary turn even if an assertion failed.
+    while (callbacks.length) await tick();
+    await Promise.allSettled([pending]);
+    await service.close();
+  }
+});
+```
+
+## Actual source packages/server/src/transaction-authorization.test.ts:573–646
+Full-file SHA256: 4e2a4fb500e546e3a3d8d671125c37653a4df5bb46bae679f80123cc8c680760
+```ts
+it("captures one Scope policy for distinct principals and renders empty historical advances", async () => {
+  const f = fixture();
+  const receipt = f.execute([create("a")], "seed", "alice");
+  const service = createTransactionService(f.owner, {
+    ownerLifetime: "service",
+    read: readOptions(),
+  });
+  cleanup.push(() => service.close());
+  const request = requestFromUrl(new URL(scope + "beads/a"), scope);
+  if (isReadProblem(request)) throw new Error("valid Resource read required");
+  const alice = service.readFor({ kind: "authenticated", principal: { id: "alice" } });
+  const bob = service.readFor({ kind: "authenticated", principal: { id: "bob" } });
+  const aliceRead = await alice.perform(request);
+  const bobRead = await bob.perform(request);
+  expect(aliceRead).toMatchObject({ kind: "success" });
+  expect(bobRead).toMatchObject({ kind: "success" });
+  if (aliceRead.kind !== "success" || bobRead.kind !== "success")
+    throw new Error("both principals must read the seeded Resource");
+  if (!Array.isArray(receipt.results) || !receipt.results[0]?.resource)
+    throw new Error("seed receipt Resource required");
+  expect(aliceRead.body).toEqual(receipt.results[0].resource);
+  expect(bobRead.body).toEqual(receipt.results[0].resource);
+  const readonly = {
+    carrier: { kind: "batch" as const },
+    body: JSON.stringify({ operations: [create("denied")] }),
+    key: "readonly",
+    authorization: { kind: "forbidden" as const },
+    receiving: { acceptsJson: true, maximumOperations: 32 },
+  };
+  expect(await service.submit(readonly)).toMatchObject({ kind: "refused", status: 403 });
+  const policy = await service.replaceAuthorizationPolicy({ timeoutMs: 1000 });
+  for (const facet of [alice, bob]) {
+    const result = await facet.perform(request);
+    expect(result).toMatchObject({
+      kind: "problem",
+      problem: { code: "resource-not-found" },
+      observation: { authorizationView: policy.authorizationView },
+    });
+  }
+  expect(await service.submit(readonly)).toMatchObject({ kind: "refused", status: 403 });
+  expect(() =>
+    f.owner.admit(
+      "alice",
+      "seed",
+      prepareTransaction(scope, JSON.stringify({ operations: [create("a")] })),
+    ),
+  ).toThrow(expect.objectContaining({ code: "forbidden" }));
+  expect(f.owner.readReceipt("bob", receipt.id).receipt).toBeUndefined();
+  expect(f.owner.readReceipt("alice", receipt.id).receipt?.detail).toBe("withheld");
+  const page = f.owner.readChanges("genesis");
+  if (page.kind !== "page") throw new Error("historical change page required");
+  expect(page.page.groups).toEqual([
+    {
+      scopeEpoch: f.owner.scopeEpoch,
+      authorizationView: policy.authorizationView,
+      checkpoint: page.page.groups[0]?.checkpoint,
+      position: "pos-1",
+      previousPosition: "pos-0",
+      projectionAdvance: true,
+      changes: [],
+      erasures: [],
+      eventCount: 0,
+      events: [],
+    },
+  ]);
+  const checkpoint = page.page.groups[0]?.checkpoint;
+  if (typeof checkpoint !== "string" || typeof receipt.transaction !== "string")
+    throw new Error("actual checkpoint and seed transaction required");
+  expect(checkpoint).not.toBe("genesis");
+  expect(checkpoint).not.toContain(receipt.transaction);
+  expect(JSON.stringify(page.page.groups)).not.toContain(receipt.transaction);
+  expect(f.owner.inspect().resources).toHaveLength(1);
+  await service.close();
+});
+```
+
+## Actual source packages/server/src/transaction-runtime.test.ts:1–18
+Full-file SHA256: 4ac87ec1121760db3aff9221c2d291c3dfca45adc065c09eebcd84ed88d882f5
+```ts
+import { createHash } from "node:crypto";
+import { request as authorizationHttpRequest } from "node:http";
+import { Ajv2020 } from "ajv/dist/2020.js";
+import { isJsonSchemaUri, isJsonSchemaDateTime, parseTypeDescriptor } from "@bdp/protocol";
+import { recordRawSse } from "../test-support/raw-sse-recorder.js";
+import { spawn } from "node:child_process";
+import { once } from "node:events";
+import { existsSync, mkdtempSync, readFileSync, rmSync } from "node:fs";
+import { tmpdir } from "node:os";
+import path from "node:path";
+import { createInterface } from "node:readline";
+import { CONTRACT_ARTIFACT_CEILINGS } from "./installed-contract-artifact.js";
+import { afterEach, expect, it } from "vitest";
+const cleanup: (() => void | Promise<void>)[] = [];
+afterEach(async () => {
+  for (const fn of cleanup.splice(0).reverse()) await fn();
+});
+const token = "x".repeat(32),
+```
+
+## Actual source packages/server/src/transaction-runtime.test.ts:197–793
+Full-file SHA256: 4ac87ec1121760db3aff9221c2d291c3dfca45adc065c09eebcd84ed88d882f5
+```ts
+// Private trusted administration exercised through a real listener; no wire admin route.
+const authorizationScope = "https://event-sse.invalid/acme/";
+const authorizationType = `${authorizationScope}types/task`;
+const authorizationSeed = (ids: readonly string[]) =>
+  JSON.stringify({
+    operations: ids.map((id) => ({
+      operation: "createBead",
+      id: `beads/${id}`,
+      type: authorizationType,
+      properties: { n: 0 },
+    })),
+  });
+const authorizationValidators = (() => {
+  const schema = JSON.parse(
+    readFileSync(new URL("../../../schemas/bdp-v0.schema.json", import.meta.url), "utf8"),
+  );
+  const ajv = new Ajv2020({ strict: true, allErrors: true });
+  ajv.addFormat("uri", { type: "string", validate: isJsonSchemaUri });
+  ajv.addFormat("date-time", { type: "string", validate: isJsonSchemaDateTime });
+  ajv.addSchema(schema);
+  return Object.fromEntries(
+    [
+      "mutationReceipt",
+      "currentBeadRecord",
+      "currentBeadCollection",
+      "snapshotManifest",
+      "eventPage",
+      "transactionalProblem",
+    ].map((name) => [name, ajv.compile({ $ref: `${schema.$id}#/$defs/${name}` })]),
+  );
+})();
+function authorizationObject(value: unknown): Record<string, unknown> {
+  if (!value || typeof value !== "object" || Array.isArray(value))
+    throw Error("expected observed object");
+  return value as Record<string, unknown>;
+}
+function authorizationText(value: unknown): string {
+  if (typeof value !== "string" || !value) throw Error("expected issued nonempty identity");
+  return value;
+}
+function authorizationRows(value: unknown): Record<string, unknown>[] {
+  if (!Array.isArray(value)) throw Error("expected observed array");
+  return value.map(authorizationObject);
+}
+async function authorizationBound<T>(
+  promise: Promise<T>,
+  label: string,
+  milliseconds = 5000,
+): Promise<T> {
+  let timer: ReturnType<typeof setTimeout> | undefined;
+  try {
+    return await Promise.race([
+      promise,
+      new Promise<never>((_resolve, reject) => {
+        timer = setTimeout(() => reject(Error(label)), milliseconds);
+      }),
+    ]);
+  } finally {
+    clearTimeout(timer);
+  }
+}
+type AuthorizationResponse = {
+  status: number;
+  headers: Record<string, string>;
+  body: Record<string, unknown> | undefined;
+  bodyBytes: number;
+};
+function authorizationContext(headers: Record<string, string>) {
+  return {
+    scopeEpoch: authorizationText(headers["bdp-scope-epoch"]),
+    authorizationView: authorizationText(headers["bdp-authorization-view"]),
+    scopePosition: authorizationText(headers["bdp-scope-position"]),
+  };
+}
+function authorizationChecked(response: AuthorizationResponse, status: number, schema: string) {
+  expect(response.status, `authorization-transition:status ${schema}`).toBe(status);
+  const validate = authorizationValidators[schema]!;
+  expect(
+    validate(response.body),
+    `authorization-transition:schema ${schema} ${JSON.stringify(validate.errors)}`,
+  ).toBe(true);
+  return authorizationObject(response.body);
+}
+function authorizationReceipt(
+  response: AuthorizationResponse,
+  key: string,
+  ids: readonly string[],
+  position: string,
+) {
+  const receipt = authorizationChecked(response, 200, "mutationReceipt");
+  expect(receipt).toMatchObject({
+    status: "completed",
+    detail: "available",
+    idempotencyKey: key,
+    requiredPosition: position,
+    effectPosition: position,
+    next: null,
+  });
+  const context = authorizationContext(response.headers);
+  expect(receipt.scopeEpoch).toBe(context.scopeEpoch);
+  expect(receipt.authorizationView).toBe(context.authorizationView);
+  expect(context.scopePosition).toBe(position);
+  const results = authorizationRows(receipt.results);
+  expect(results).toHaveLength(ids.length);
+  const resources = results.map((entry, index) => {
+    expect(entry).toMatchObject({ operationIndex: index, outcome: "created" });
+    const resource = authorizationObject(entry.resource);
+    expect(resource).toEqual({
+      id: `${authorizationScope}beads/${ids[index]}`,
+      type: authorizationType,
+      revision: authorizationText(resource.revision),
+      properties: { n: 0 },
+      metadata: {},
+    });
+    return resource;
+  });
+  return { receipt, resources, context };
+}
+function authorizationEvents(
+  page: Record<string, unknown>,
+  receipt: Record<string, unknown>,
+  resources: readonly Record<string, unknown>[],
+) {
+  expect(page.source).toBe(`${authorizationScope}events/`);
+  const events = authorizationRows(page.events);
+  expect(events).toHaveLength(resources.length);
+  for (const [index, event] of events.entries()) {
+    expect(event).toEqual({
+      id: authorizationText(event.id),
+      ordinal: index,
+      type: "created",
+      source: `${authorizationScope}events/`,
+      subject: resources[index]!.id,
+      subjectType: authorizationType,
+      transaction: receipt.transaction,
+      time: authorizationText(event.time),
+      data: { revision: resources[index]!.revision, properties: { n: 0 }, metadata: {} },
+    });
+  }
+  return events;
+}
+async function withAuthorizationRuntime(
+  name: string,
+  maximumRequests: number,
+  use: (fixture: {
+    runtime: Awaited<
+      ReturnType<typeof import("./transaction-runtime.js")["startTransactionRuntime"]>
+    >;
+    request: (
+      target: string,
+      method?: "GET" | "HEAD" | "POST",
+      body?: string,
+      key?: string,
+    ) => Promise<AuthorizationResponse>;
+    stream: (target: string, headers?: [string, string][]) => ReturnType<typeof recordRawSse>;
+    observations: Record<string, unknown>[];
+  }) => Promise<void>,
+) {
+  const directory = mkdtempSync(path.join(tmpdir(), "bdp-authorization-http-"));
+  const observations: Record<string, unknown>[] = [],
+    failures: unknown[] = [];
+  const streams: ReturnType<typeof recordRawSse>[] = [];
+  const controllers: AbortController[] = [];
+  let runtime:
+    | Awaited<ReturnType<typeof import("./transaction-runtime.js")["startTransactionRuntime"]>>
+    | undefined;
+  let attempts = 0,
+    closed = false;
+  const reserve = () => {
+    if (++attempts > maximumRequests) throw Error("authorization HTTP request bound");
+  };
+  try {
+    const module = (await import(
+      new URL("../dist/transaction-runtime.js", import.meta.url).href
+    )) as typeof import("./transaction-runtime.js");
+    runtime = await module.startTransactionRuntime(
+      {
+        directory,
+        create: true,
+        port: 0,
+        scope: authorizationScope,
+        types: [
+          parseTypeDescriptor({
+            id: authorizationType,
+            name: "Task",
+            describes: "bead",
+            conformsTo: [],
+          }),
+        ],
+        credentials: [{ token, principal: "p", canMutate: true }],
+      },
+      { clock: () => 1000000, maintenanceIntervalMs: 2147483647 },
+    );
+    const active = runtime;
+    const request = async (
+      target: string,
+      method: "GET" | "HEAD" | "POST" = "GET",
+      body?: string,
+      key?: string,
+    ): Promise<AuthorizationResponse> => {
+      reserve();
+      const canonical = new URL(target, authorizationScope);
+      expect(canonical.origin).toBe(new URL(authorizationScope).origin);
+      const dial = new URL(canonical.pathname + canonical.search, active.listenUrl);
+      const received = Promise.withResolvers<AuthorizationResponse>();
+      void received.promise.catch(() => {});
+      const req = authorizationHttpRequest(
+        dial,
+        {
+          method,
+          headers: {
+            authorization: `Bearer ${token}`,
+            accept: "application/json, application/problem+json",
+            connection: "close",
+            ...(body === undefined
+              ? {}
+              : {
+                  "content-type": "application/json",
+                  "content-length": String(Buffer.byteLength(body)),
+                  "idempotency-key": key!,
+                }),
+          },
+        },
+        (res) => {
+          const chunks: Buffer[] = [];
+          let bytes = 0;
+          res.on("data", (chunk: Buffer) => {
+            bytes += chunk.length;
+            if (bytes > 32768) {
+              res.destroy(Error("authorization response byte bound"));
+              req.destroy();
+              return;
+            }
+            chunks.push(Buffer.from(chunk));
+          });
+          res.once("error", received.reject);
+          res.once("aborted", () => received.reject(Error("authorization response aborted")));
+          res.once("end", () => {
+            try {
+              const text = Buffer.concat(chunks).toString("utf8");
+              const headers = Object.fromEntries(
+                Object.entries(res.headers).map(([k, v]) => [
+                  k,
+                  Array.isArray(v) ? v.join(", ") : (v ?? ""),
+                ]),
+              );
+              if (method === "HEAD" && bytes !== 0)
+                throw Error("authorization HEAD delivered body bytes");
+              const value = method === "HEAD" ? undefined : authorizationObject(JSON.parse(text));
+              observations.push({
+                index: attempts,
+                method,
+                target: canonical.pathname + canonical.search,
+                status: res.statusCode,
+                bodyBytes: bytes,
+                bodySha256: createHash("sha256").update(text).digest("hex"),
+                requestBodyBytes: body === undefined ? 0 : Buffer.byteLength(body),
+                ...(body === undefined
+                  ? {}
+                  : { requestBodySha256: createHash("sha256").update(body).digest("hex") }),
+                context: [
+                  headers["bdp-scope-epoch"],
+                  headers["bdp-authorization-view"],
+                  headers["bdp-scope-position"],
+                ],
+              });
+              received.resolve({ status: res.statusCode!, headers, body: value, bodyBytes: bytes });
+            } catch (error) {
+              received.reject(error);
+            }
+          });
+        },
+      );
+      req.once("error", received.reject);
+      const socketClosed = new Promise<void>((resolve) =>
+        req.once("close", () => {
+          received.reject(Error("authorization request closed before complete response"));
+          resolve();
+        }),
+      );
+      const timer = setTimeout(
+        () => req.destroy(Error("authorization finite request timeout")),
+        5000,
+      );
+      req.end(body);
+      try {
+        return await received.promise;
+      } finally {
+        clearTimeout(timer);
+        req.destroy();
+        await authorizationBound(socketClosed, "authorization finite close timeout");
+      }
+    };
+    const stream = (target: string, headers: [string, string][] = []) => {
+      reserve();
+      const controller = new AbortController();
+      controllers.push(controller);
+      const canonical = new URL(target, authorizationScope);
+      const result = recordRawSse({
+        dial: active.listenUrl,
+        host: new URL(active.listenUrl).host,
+        target: canonical.pathname + canonical.search,
+        signal: controller.signal,
+        timeoutMs: 5000,
+        headers: [
+          ["Authorization", `Bearer ${token}`],
+          ["Accept", "text/event-stream"],
+          ...headers,
+        ],
+      });
+      streams.push(result);
+      const observation: Record<string, unknown> = {
+        index: attempts,
+        method: "GET",
+        target: canonical.pathname + canonical.search,
+        stream: true,
+      };
+      observations.push(observation);
+      void result.ready.then(
+        () => {
+          observation.status = result.status;
+          observation.context = [
+            result.headers["bdp-scope-epoch"],
+            result.headers["bdp-authorization-view"],
+            result.headers["bdp-scope-position"],
+          ];
+        },
+        () => {
+          observation.failedBeforeHeaders = true;
+        },
+      );
+      void result.closed.then(() => {
+        observation.closed = true;
+        observation.clientAbortedBeforeClose = controller.signal.aborted;
+        observation.wireBytes = result.wireBytes.length;
+        observation.completeFrames = result.frames.length;
+      });
+      return result;
+    };
+    await use({ runtime: active, request, stream, observations });
+    expect(attempts).toBe(maximumRequests);
+  } catch (error) {
+    failures.push(error);
+  } finally {
+    console.info(
+      JSON.stringify({
+        label: "authorization-transition-before-cleanup",
+        name,
+        attempts,
+        observations,
+        failures: failures.length,
+      }),
+    );
+    for (const controller of controllers) controller.abort(Error("authorization fixture cleanup"));
+    for (const stream of streams) {
+      try {
+        await authorizationBound(stream.close(), "authorization stream close timeout");
+      } catch (error) {
+        failures.push(error);
+      }
+    }
+    if (runtime) {
+      try {
+        await authorizationBound(runtime.close(), "authorization runtime close timeout");
+        closed = true;
+      } catch (error) {
+        failures.push(error);
+      }
+    }
+    if (closed) {
+      try {
+        rmSync(directory, { recursive: true, force: true });
+      } catch (error) {
+        failures.push(error);
+      }
+    }
+    console.info(
+      JSON.stringify({
+        label: "authorization-transition-cleanup",
+        name,
+        attempts,
+        runtimeReturned: runtime !== undefined,
+        closed,
+        directory,
+        directoryRemoved: !existsSync(directory),
+        failures: failures.length,
+        claimEligible: false,
+      }),
+    );
+  }
+  if (failures.length)
+    throw new AggregateError(failures, "authorization transport witness and cleanup");
+}
+
+it("narrows current Transactional visibility and fences issued handles after policy publication", async () => {
+  await withAuthorizationRuntime("visibility-handles", 18, async (f) => {
+    const ids = Array.from({ length: 32 }, (_, index) => `b${String(index).padStart(2, "0")}`);
+    const firstBody = authorizationSeed(ids);
+    const first = authorizationReceipt(
+      await f.request(f.runtime.targets.batch, "POST", firstBody, "auth-transition-seed-32"),
+      "auth-transition-seed-32",
+      ids,
+      "pos-1",
+    );
+    const second = authorizationReceipt(
+      await f.request(
+        f.runtime.targets.batch,
+        "POST",
+        authorizationSeed(["b32"]),
+        "auth-transition-seed-1",
+      ),
+      "auth-transition-seed-1",
+      ["b32"],
+      "pos-2",
+    );
+    expect(second.context).toEqual({ ...first.context, scopePosition: "pos-2" });
+    expect(authorizationChecked(await f.request("beads/b00"), 200, "currentBeadRecord")).toEqual(
+      first.resources[0],
+    );
+    const collection = authorizationChecked(
+      await f.request("beads/?limit=2"),
+      200,
+      "currentBeadCollection",
+    );
+    expect(collection.items).toEqual(first.resources.slice(0, 2));
+    const collectionNext = authorizationText(collection.next);
+    const snapshot = authorizationChecked(await f.request("snapshot"), 200, "snapshotManifest");
+    expect(snapshot).toMatchObject({
+      scope: authorizationScope,
+      scopeEpoch: second.context.scopeEpoch,
+      authorizationView: second.context.authorizationView,
+      scopePosition: "pos-2",
+      erasures: [],
+      links: { items: [], next: null },
+    });
+    expect(authorizationObject(snapshot.beads).items).toEqual(first.resources);
+    const snapshotNext = authorizationText(authorizationObject(snapshot.beads).next);
+    const checkpoint = authorizationText(snapshot.checkpoint);
+    expect(checkpoint).not.toBe("genesis");
+    const page = authorizationChecked(await f.request("events/"), 200, "eventPage");
+    const events = authorizationEvents(page, first.receipt, first.resources);
+    authorizationText(page.next);
+    const stream = f.stream("changes/?start=now");
+    await stream.ready;
+    expect(stream.status).toBe(200);
+    expect(stream.headers["content-type"]).toBe("text/event-stream");
+    expect(authorizationContext(stream.headers)).toEqual(second.context);
+    let streamClosed = false;
+    void stream.closed.then(() => {
+      streamClosed = true;
+    });
+    const policy = await f.runtime.replaceAuthorizationPolicy({ timeoutMs: 1000 });
+    f.observations.push({ publication: { ...policy }, oldStreamClosedAtPublication: streamClosed });
+    expect(
+      {
+        generation: policy.generation,
+        readPolicy: policy.readPolicy,
+        canMutate: policy.canMutate,
+        viewChanged: policy.authorizationView !== second.context.authorizationView,
+      },
+      "authorization-transition:generation-and-lease",
+    ).toEqual({ generation: 1, readPolicy: "empty", canMutate: false, viewChanged: true });
+    await authorizationBound(stream.closed, "authorization-transition:generation-and-lease", 1000);
+    expect(streamClosed, "authorization-transition:generation-and-lease").toBe(true);
+    expect(stream.frames.filter((frame) => frame.startsWith("id:"))).toEqual([]);
+    const current = { ...second.context, authorizationView: policy.authorizationView };
+    const problem = async (target: string, status: number, code: string) => {
+      const response = await f.request(target);
+      const value = authorizationChecked(response, status, "transactionalProblem");
+      expect(value).toMatchObject({ status, code });
+      expect(authorizationContext(response.headers)).toEqual(current);
+      return value;
+    };
+    await problem("beads/b00", 404, "resource-not-found");
+    const empty = await f.request("beads/?limit=2");
+    expect(authorizationChecked(empty, 200, "currentBeadCollection")).toEqual({
+      items: [],
+      next: null,
+    });
+    expect(authorizationContext(empty.headers)).toEqual(current);
+    const fresh = await f.request("snapshot");
+    const emptySnapshot = authorizationChecked(fresh, 200, "snapshotManifest");
+    expect(emptySnapshot).toMatchObject({
+      scopeEpoch: current.scopeEpoch,
+      authorizationView: current.authorizationView,
+      scopePosition: "pos-2",
+      beads: { items: [], next: null },
+      links: { items: [], next: null },
+      erasures: [],
+    });
+    expect(emptySnapshot.id).not.toBe(snapshot.id);
+    expect(authorizationContext(fresh.headers)).toEqual(current);
+    await problem(authorizationText(snapshot.id), 409, "foreign-view");
+    await problem(snapshotNext, 409, "foreign-view");
+    await problem(collectionNext, 409, "foreign-view");
+    const reconnect = f.stream("changes/?start=now", [["Last-Event-ID", checkpoint]]);
+    await reconnect.ready;
+    await reconnect.closed;
+    expect(reconnect.status).toBe(409);
+    expect(reconnect.frames.filter((frame) => frame.startsWith("id:"))).toEqual([]);
+    const reconnectProblem = authorizationObject(JSON.parse(reconnect.body));
+    authorizationChecked(
+      {
+        status: reconnect.status,
+        headers: reconnect.headers,
+        body: reconnectProblem,
+        bodyBytes: Buffer.byteLength(reconnect.body),
+      },
+      409,
+      "transactionalProblem",
+    );
+    expect(reconnectProblem.code).toBe("foreign-view");
+    expect(authorizationContext(reconnect.headers)).toEqual(current);
+    await problem(
+      `events/?after=${encodeURIComponent(authorizationText(events.at(-1)!.id))}`,
+      409,
+      "foreign-view",
+    );
+    const receiptResponse = await f.request(authorizationText(first.receipt.id));
+    const retained = authorizationChecked(receiptResponse, 200, "mutationReceipt");
+    const projected: Record<string, unknown> = { ...first.receipt, detail: "withheld" };
+    delete projected.results;
+    delete projected.next;
+    delete projected.allocated;
+    delete projected.expiresAt;
+    expect(retained).toEqual(projected);
+    expect(authorizationContext(receiptResponse.headers)).toEqual(current);
+    const receiptHead = await f.request(authorizationText(first.receipt.id), "HEAD");
+    expect(receiptHead.status).toBe(200);
+    expect(receiptHead.body).toBeUndefined();
+    expect(receiptHead.bodyBytes).toBe(0);
+    expect(receiptResponse.headers["content-length"]).toBe(String(receiptResponse.bodyBytes));
+    expect(receiptHead.headers["content-length"]).toBe(receiptResponse.headers["content-length"]);
+    expect(authorizationContext(receiptHead.headers)).toEqual(current);
+    for (const response of [receiptResponse, receiptHead]) {
+      expect(response.headers["cache-control"]).toBe("private, no-store");
+      expect(response.headers.etag).toBeUndefined();
+      expect(response.headers["last-modified"]).toBeUndefined();
+    }
+    const replay = await f.request(
+      f.runtime.targets.batch,
+      "POST",
+      firstBody,
+      "auth-transition-seed-32",
+    );
+    expect(authorizationChecked(replay, 403, "transactionalProblem")).toMatchObject({
+      status: 403,
+      code: "forbidden",
+    });
+    expect(authorizationContext(replay.headers)).toEqual(current);
+  });
+}, 30000);
+
+it("cancels an active Event stream after policy publication", async () => {
+  await withAuthorizationRuntime("active-event", 4, async (f) => {
+    const created = authorizationReceipt(
+      await f.request(
+        f.runtime.targets.batch,
+        "POST",
+        authorizationSeed(["a", "b"]),
+        "auth-transition-event-seed",
+      ),
+      "auth-transition-event-seed",
+      ["a", "b"],
+      "pos-1",
+    );
+    const finite = authorizationChecked(await f.request("events/"), 200, "eventPage");
+    const events = authorizationEvents(finite, created.receipt, created.resources);
+    expect(finite.next).toBeNull();
+    const stream = f.stream("events/");
+    await stream.until(() => stream.frames.filter((frame) => frame.startsWith("id:")).length === 2);
+    expect(stream.status).toBe(200);
+    expect(authorizationContext(stream.headers)).toEqual(created.context);
+    const actual = stream.frames
+      .filter((frame) => frame.startsWith("id:"))
+      .map((frame) => JSON.parse(frame.split("\ndata: ")[1]!));
+    expect(actual).toEqual(events);
+    const policy = await f.runtime.replaceAuthorizationPolicy({ timeoutMs: 1000 });
+    expect(policy.generation).toBe(1);
+    await authorizationBound(stream.closed, "authorization Event stream not cancelled", 1000);
+    const after = await f.request("events/");
+    expect(authorizationChecked(after, 200, "eventPage")).toEqual({
+      source: `${authorizationScope}events/`,
+      events: [],
+      next: null,
+    });
+    expect(authorizationContext(after.headers)).toEqual({
+      ...created.context,
+      authorizationView: policy.authorizationView,
+    });
+    f.observations.push({
+      deliveredFrames: actual.length,
+      publishedView: policy.authorizationView,
+      oldStreamClosed: stream.destroyed,
+    });
+  });
+}, 30000);
+```
+
+## Actual source transaction-authorization.ts:81–125 (complete projection functions)
+Full-file SHA256: c87a7bfa8840aee2f097bf683fe3f3c97fcae80782020c6d5b1e41364d16b6d2
+```ts
+  const entry = value as Record<string, unknown>;
+  if ((entry.outcome !== "created" && entry.outcome !== "updated") || entry.resource === undefined)
+    return value;
+  return {
+    operationIndex: entry.operationIndex,
+    ...(entry.operationName === undefined ? {} : { operationName: entry.operationName }),
+    outcome: "withheld",
+  };
+}
+export function projectTransactionReceipt(
+  receipt: TransactionReceipt,
+  visible: boolean,
+): TransactionReceipt {
+  if (visible) return receipt;
+  const projected = { ...receipt };
+  if (Array.isArray(receipt.allocated))
+    projected.allocated = receipt.allocated.map((entry: Record<string, unknown>) => ({
+      operationIndex: entry.operationIndex,
+      ...(entry.operationName === undefined ? {} : { operationName: entry.operationName }),
+      withheld: true,
+    }));
+  if (
+    receipt.status === "completed" &&
+    receipt.detail === "available" &&
+    Array.isArray(receipt.results)
+  ) {
+    projected.results = receipt.results.map((entry) => projectTransactionEntry(entry, false));
+  }
+  const allResultsWithheld =
+    Array.isArray(projected.results) &&
+    projected.results.length > 0 &&
+    projected.results.every((entry) => entry.outcome === "withheld");
+  const allAllocationsWithheld =
+    Array.isArray(projected.allocated) &&
+    projected.allocated.length > 0 &&
+    projected.allocated.every((entry) => entry.withheld === true);
+  if (receipt.status === "completed" && (allResultsWithheld || allAllocationsWithheld)) {
+    projected.detail = "withheld";
+    delete projected.results;
+    delete projected.next;
+    delete projected.allocated;
+    delete projected.expiresAt;
+  }
+  return projected;
+}
+```
+
+## Actual source packages/server/src/transaction-store.ts:388–442
+Full-file SHA256: bc10df9d02316e395b8c4ea7db6134ab2646c8e8abd83ea785b0ea09f2f0c82c
+```ts
+    if (maintenanceFailure)
+      throw new Error("transaction maintenance failed; owner fenced", maintenanceFailure);
+    if (closed || busy) throw new Error("transaction store closed or reentrant");
+    busy = true;
+    try {
+      return run();
+    } finally {
+      busy = false;
+    }
+  }
+  function fence(cause: unknown): Error {
+    clearInterval(maintenanceTimer);
+    revokeLeases();
+    // Cleanup can add the original application error to an earlier storage
+    // failure. Replace the wrapper; mutating its cause would create a cycle.
+    ownerFailure = new Error("transaction storage failure; owner fenced; reopen before use", {
+      cause,
+    });
+    return ownerFailure;
+  }
+  function atomic<T>(run: () => T): T {
+    if (ownerFailure) throw ownerFailure;
+    let committing = false;
+    try {
+      db.exec("BEGIN IMMEDIATE");
+      const value = run();
+      committing = true;
+      db.exec("COMMIT");
+      return value;
+    } catch (error) {
+      let cleanRollback = false;
+      let cause: unknown = error;
+      try {
+        if (db.isTransaction) {
+          db.exec("ROLLBACK");
+          cleanRollback = !db.isTransaction;
+        }
+      } catch (rollback) {
+        cause = new AggregateError([error, rollback], "transaction and rollback failed");
+      }
+      const sqlite =
+        error instanceof Error && "code" in error && String(error.code).startsWith("ERR_SQLITE");
+      const constraint =
+        sqlite &&
+        "errcode" in error &&
+        typeof error.errcode === "number" &&
+        Number.isInteger(error.errcode) &&
+        (error.errcode & 0xff) === 19;
+      // Even a COMMIT that throws after taking effect has an uncertain outcome.
+      // Reopen determines its durable state; compensation must not guess at it.
+      if (committing || !cleanRollback || (sqlite && !constraint)) throw fence(cause);
+      throw error;
+    }
+  }
+  function cleanupThenThrow(error: unknown, cleanup: () => void): never {
+```
+
+## Actual owner receipt projection:876–924
+pagePlan maximum equality to configured receiptMaximumItems and contiguous count ranges were independently source-closed; no byte-adaptive boundary.
+```ts
+  function observeReceipt(
+    receipt: TransactionReceipt,
+    context = readContext(),
+  ): TransactionReceiptObservation {
+    if (receipt.scopeEpoch !== context.scopeEpoch)
+      throw new Error("receipt epoch differs from serving owner", {
+        cause: { id: receipt.id, key: receipt.idempotencyKey },
+      });
+    for (const field of ["requiredPosition", "effectPosition"] as const) {
+      const value = receipt[field];
+      if (value === undefined && (field === "effectPosition" || receipt.status === "pending"))
+        continue;
+      if (
+        typeof value !== "string" ||
+        !/^pos-(0|[1-9][0-9]*)$/.test(value) ||
+        !Number.isSafeInteger(Number(value.slice(4))) ||
+        Number(value.slice(4)) > Number(context.scopePosition.slice(4))
+      )
+        throw new Error("receipt position exceeds serving owner", {
+          cause: { id: receipt.id, key: receipt.idempotencyKey, field },
+        });
+    }
+    const freeze = (value: unknown): void => {
+      if (value !== null && typeof value === "object") {
+        for (const child of Object.values(value)) freeze(child);
+        Object.freeze(value);
+      }
+    };
+    const prefix = receiptPrefix(receipt); // Validate retained page plan even when every entry is withheld.
+    const projection = projectTransactionReceipt(
+      receipt,
+      authorization.readPolicy === "all-visible",
+    );
+    const projected =
+      projection.detail === "available" && Array.isArray(projection.results)
+        ? {
+            ...projection,
+            results: projection.results.slice(0, receiptMaximumItems),
+            next: prefix.next,
+          }
+        : projection;
+    freeze(projected);
+    return Object.freeze({ receipt: projected, context });
+  }
+  // Called only inside the guarded owner's transaction. Principal binding is
+  // distinct from current-view projection of retained execution facts.
+  function disclosedReceipt(principal: string, id: string): Row | undefined {
+    for (const stored of db
+      .prepare("SELECT * FROM receipts WHERE principal=?")
+```
+
+## Actual source packages/server/src/transaction-store.ts:1892–1935
+Full-file SHA256: bc10df9d02316e395b8c4ea7db6134ab2646c8e8abd83ea785b0ea09f2f0c82c
+```ts
+    pauseMutationAdmission() {
+      return enter(() => {
+        if (mutationPause)
+          throw new TransactionAuthorizationFailure("temporarily-unavailable", readContext());
+        const token = Object.freeze({});
+        mutationPause = token;
+        return () => {
+          if (mutationPause === token) mutationPause = undefined;
+        };
+      });
+    },
+    replaceAuthorizationPolicy() {
+      return enter(() => {
+        if (
+          activeSequences.size ||
+          db.prepare("SELECT 1 FROM receipts WHERE owner IS NOT NULL LIMIT 1").get()
+        )
+          throw new TransactionAuthorizationFailure("temporarily-unavailable", readContext());
+        if (authorization.generation === 1) return authorization;
+        const next = emptyTransactionAuthorization();
+        atomic(() => {
+          db.prepare("UPDATE metadata SET value=? WHERE name='authorizationPolicy'").run(
+            json(next),
+          );
+          options.fault?.("before-policy-commit");
+        });
+        try {
+          options.fault?.("after-policy-commit");
+          authorization = next;
+          revokeLeases();
+        } catch (error) {
+          throw fence(error);
+        }
+        return authorization;
+      });
+    },
+    comparisonEpoch: () => {
+      if (closed && !ownerFailure && !maintenanceFailure) return undefined;
+      return enter(() => metadata("epoch"));
+    },
+    /** Private deadline observation: one owner entry and one atomic metadata read. */
+    observeComparisonDeadline(
+      expectedEpoch: string,
+    ):
+```
+
+## Actual source packages/server/src/transaction-store.ts:2240–2281
+Full-file SHA256: bc10df9d02316e395b8c4ea7db6134ab2646c8e8abd83ea785b0ea09f2f0c82c
+```ts
+          if (!stored) throw new Error("receipt page parent missing");
+          const original = parseReceipt(stored.receipt);
+          if (original.id !== parentId) throw new Error("receipt page parent mismatch");
+          if (original.scopeEpoch !== epoch)
+            return Object.freeze({ kind: "missing" as const, context: readContext() });
+          const plan = pagePlan(original),
+            index = plan.pages.findIndex((page) => page.token === token);
+          if (index < 0) return Object.freeze({ kind: "missing" as const, context: readContext() });
+          if (condition === "unsupported") return { kind: "unsupported" as const };
+          const context = readContext();
+          // Identity/nondisclosure precedes minimum; expiry is checked only afterwards.
+          if (condition) checkTransactionMinimum(condition, context);
+          const remaining = expireRow(stored, instant()).row;
+          if (!remaining) throw new Error("completed page parent was forgotten");
+          const receipt = parseReceipt(remaining.receipt);
+          if (receipt.detail === "expired") return { kind: "expired" as const, context };
+          observeReceipt(receipt, context); // same projection/integrity policy, no second clock
+          const boundary = plan.pages[index];
+          if (!boundary) throw new Error("receipt page boundary missing");
+          const results = (receipt.results as readonly unknown[])
+            .slice(boundary.start, boundary.end)
+            .map((entry) =>
+              projectTransactionEntry(entry, authorization.readPolicy === "all-visible"),
+            );
+          // Freeze the selected page entries before they escape the owner entry.
+          const freeze = (value: unknown): void => {
+            if (value && typeof value === "object") {
+              Object.values(value).forEach(freeze);
+              Object.freeze(value);
+            }
+          };
+          const next = plan.pages[index + 1];
+          const page = {
+            receipt: parentId,
+            results,
+            next: next ? pageUrl(parentId, next.token) : null,
+          };
+          freeze(page);
+          return Object.freeze({ kind: "page" as const, page, context });
+        }),
+      );
+    },
+```
+
+## Unchanged admission contract
+transaction-store.ts1501/1966 throws TransactionAuthorizationFailure("forbidden",readContext()) when current canMutate is false; mutationPause and active pending replacement throw temporarily-unavailable. transaction-service.ts329–375 pauses then waits existingmutationpromises with finite administrative timeout; rejection retainsoldpolicy by acceptedplan, finally resumes. Allthese full files are source-hash pinned; the delta only sharpens existing expected codes, not behavior. Generic timeout assertions intentionally deferred.
+
+## Actual source packages/server/src/read-http.ts:1–47
+Full-file SHA256: 31934105eff6fff8ded8ce2ca9e3c19028991ca7c3d5f51b848004177e8c9268
+```ts
+import { stringifyJsonValue } from "@bdp/protocol";
+import type { HttpResponse } from "./index.js";
+
+/** Apply shared HTTP rules only after routing, authorization and result validation.
+ * This Read server selects parameter-free application/json on its 200 routes.
+ * Its Scope port supplies no representation modification date, so neither date
+ * precondition can be evaluated; Resource timestamps are not HTTP validators.
+ * RFC 9110 sections 12.5.1, 13.1 and 13.2 govern negotiation and ordering.
+ */
+export function applyReadHttpSemantics(request: Request, response: HttpResponse): HttpResponse {
+  let selected = response;
+  const json =
+    response.status === 200 && response.headers.get("content-type") === "application/json";
+  if (json || response.status === 204) {
+    const headers = new Headers(response.headers);
+    if (json) {
+      const vary = headers.get("vary");
+      if (
+        vary !== "*" &&
+        !vary?.split(",").some((field) => field.trim().toLowerCase() === "accept")
+      )
+        headers.set("vary", vary ? `${vary}, Accept` : "Accept");
+    }
+    // The Scope probe is an existing zero-length representation with no media
+    // type to negotiate; it still evaluates entity-tag preconditions.
+    const status =
+      json && !acceptsJson(request.headers.get("accept"))
+        ? 406
+        : conditionalReadStatus(request.headers, headers.get("etag"));
+    if (status !== 200) {
+      headers.delete("content-type");
+      if (status === 406) headers.delete("etag");
+      // A 304 Content-Length may describe only the corresponding 200 body,
+      // never an invented zero-length representation (RFC 9110 section 8.6).
+      headers.delete("content-length");
+      if (status !== 304) headers.set("content-length", "0");
+      selected = { status, headers };
+    } else selected = { ...response, headers };
+  }
+  // Keep the Fetch-level contract honest as well as the Node transport's final
+  // defensive strip. HEAD has GET metadata, including the serialized length.
+  if (request.method === "HEAD" && selected.body !== undefined) {
+    const headers = new Headers(selected.headers);
+    headers.set("content-length", String(Buffer.byteLength(stringifyJsonValue(selected.body))));
+    return { status: selected.status, headers };
+  }
+  return selected;
+```
+
+## Actual source packages/server/src/transaction-runtime.ts:87–95
+Full-file SHA256: 48cb5411407c456d7b3f301a4b67970061be9f51c94201de832ba5deff6ea2d4
+```ts
+}
+function deliver(response: ServerResponse, selected: HttpResponse, raw?: string): void {
+  if (response.destroyed) return;
+  const bytes =
+    raw ?? (selected.body === undefined ? undefined : stringifyJsonValue(selected.body));
+  selected.headers.set("x-bdp-development", "non-attesting");
+  if (bytes !== undefined) selected.headers.set("content-length", String(Buffer.byteLength(bytes)));
+  response.writeHead(selected.status, Object.fromEntries(selected.headers));
+  response.end(response.req.method === "HEAD" ? undefined : bytes);
+```
+
+## Actual source packages/server/src/transaction-changefeed.ts:133–185
+Full-file SHA256: 1e678ecb1b2c3e59023dbb6a2e6516763907babd79f7926ca572a4764e40fc1e
+```ts
+  visible = true,
+): TransactionChangeGroup {
+  if (!value || typeof value !== "object") throw new Error("invalid retained change group");
+  const group = value as TransactionChangeGroup;
+  if (
+    group.previousPosition !== `pos-${position - 1}` ||
+    group.projectionAdvance !== false ||
+    !Array.isArray(group.erasures) ||
+    group.erasures.length !== 0 ||
+    !Array.isArray(group.changes) ||
+    !Array.isArray(group.events) ||
+    group.changes.length + group.events.length === 0
+  )
+    throw new Error("invalid retained change group framing");
+  const ids = new Set<string>();
+  for (const change of group.changes) {
+    if (
+      !["upsert", "tombstone"].includes(change.operation) ||
+      !["bead", "link"].includes(change.resourceKind) ||
+      typeof change.resource?.id !== "string" ||
+      ids.has(change.resource.id)
+    )
+      throw new Error("invalid retained state change");
+    ids.add(change.resource.id);
+  }
+  // This same projection validates all-visible contiguous ordinals/context and
+  // gives exactly the Scope Event Source's fact representation and IDs.
+  const events = projectTransactionEventGroup(
+    value,
+    context,
+    { kind: "scope", url: `${scope}events/` },
+    scope,
+    position,
+    visible,
+  );
+  if (!visible)
+    return {
+      scopeEpoch: context.scopeEpoch,
+      authorizationView: context.authorizationView,
+      checkpoint: transactionCheckpoint(scope, context, position),
+      position: group.position,
+      previousPosition: group.previousPosition,
+      projectionAdvance: true,
+      changes: [],
+      erasures: [],
+      eventCount: 0,
+      events: [],
+    };
+  return {
+    scopeEpoch: group.scopeEpoch,
+    authorizationView: group.authorizationView,
+    checkpoint: transactionCheckpoint(scope, context, position),
+    position: group.position,
+```
+
+## Actual source packages/server/test-support/raw-sse-recorder.ts:1–158
+Full-file SHA256: 09ff8343ac1a5dbad77eaf24fc2745cc28ea870ada6b05dc4ea1644c0ad5ef81
+```ts
+/** Bounded observation of a deliberately nonterminal raw HTTP/1.1 stream.
+ * Separate from the finite exact executor: closing is not a completed response. */
+import { connect } from "node:net";
+export function recordRawSse(options: {
+  dial: string;
+  host: string;
+  target: string;
+  headers: readonly [string, string][];
+  method?: "GET" | "HEAD";
+  signal: AbortSignal;
+  timeoutMs?: number;
+}) {
+  const started = performance.now();
+  const ready = Promise.withResolvers<void>();
+  const closed = Promise.withResolvers<void>();
+  void ready.promise.catch(() => {});
+  const address = new URL(options.dial);
+  const socket = connect({ host: address.hostname, port: Number(address.port) });
+  const chunks: Buffer[] = [];
+  let total = 0,
+    status = 0,
+    headers: Record<string, string> = {},
+    body = "",
+    failure: unknown;
+  const subscribers = new Set<() => void>();
+  const abort = () =>
+    socket.destroy(
+      options.signal.reason instanceof Error
+        ? options.signal.reason
+        : new Error("SSE observation aborted"),
+    );
+  const timer = setTimeout(
+    () => socket.destroy(new Error("SSE observation deadline")),
+    options.timeoutMs ?? 25000,
+  );
+  options.signal.addEventListener("abort", abort, { once: true });
+  socket.once("connect", () => {
+    if (options.signal.aborted) {
+      abort();
+      return;
+    }
+    const lines: readonly (readonly [string, string])[] = [
+      ["Host", options.host],
+      ["Connection", "close"],
+      ...options.headers,
+    ];
+    if (lines.some(([k, v]) => /[\r\n]/.test(k + v)) || /[\r\n ]/.test(options.target)) {
+      socket.destroy(new Error("invalid raw request fixture"));
+      return;
+    }
+    socket.write(
+      `${options.method ?? "GET"} ${options.target} HTTP/1.1\r\n${lines.map(([k, v]) => `${k}: ${v}`).join("\r\n")}\r\n\r\n`,
+    );
+  });
+  socket.on("data", (chunk: Buffer) => {
+    total += chunk.length;
+    if (total > 2 * 1024 * 1024) {
+      socket.destroy(new Error("SSE observation wire bound"));
+      return;
+    }
+    chunks.push(Buffer.from(chunk));
+    try {
+      const wire = Buffer.concat(chunks);
+      const end = wire.indexOf("\r\n\r\n");
+      if (end < 0) {
+        if (wire.length > 16384) throw new Error("SSE header bound");
+        return;
+      }
+      if (end > 16384) throw new Error("SSE header bound");
+      const lines = wire.subarray(0, end).toString("latin1").split("\r\n");
+      status = Number(lines.shift()?.split(" ")[1]);
+      headers = Object.fromEntries(
+        lines.map((line) => {
+          const colon = line.indexOf(":");
+          return [line.slice(0, colon).toLowerCase(), line.slice(colon + 1).trim()];
+        }),
+      );
+      const bytes = wire.subarray(end + 4);
+      if (headers["transfer-encoding"] === "chunked") {
+        const decoded: Buffer[] = [];
+        let offset = 0;
+        while (offset < bytes.length) {
+          const lineEnd = bytes.indexOf("\r\n", offset);
+          if (lineEnd < 0) break;
+          const line = bytes.subarray(offset, lineEnd).toString("ascii");
+          if (!/^[0-9a-f]+$/i.test(line)) throw new Error("unexpected chunk framing");
+          const length = Number.parseInt(line, 16);
+          if (bytes.length < lineEnd + 2 + length + 2) break;
+          decoded.push(bytes.subarray(lineEnd + 2, lineEnd + 2 + length));
+          offset = lineEnd + 2 + length + 2;
+          if (length === 0) break;
+        }
+        body = Buffer.concat(decoded).toString("utf8");
+      } else body = bytes.toString("utf8");
+      ready.resolve();
+      for (const notify of subscribers) notify();
+    } catch (error) {
+      socket.destroy(error instanceof Error ? error : new Error("SSE decoder failure"));
+    }
+  });
+  socket.once("error", (error) => {
+    failure = error;
+    ready.reject(error);
+  });
+  socket.once("close", () => {
+    clearTimeout(timer);
+    options.signal.removeEventListener("abort", abort);
+    ready.reject(failure ?? new Error("SSE socket closed before headers"));
+    closed.resolve();
+    for (const notify of subscribers) notify();
+  });
+  if (options.signal.aborted) abort();
+  return {
+    ready: ready.promise,
+    closed: closed.promise,
+    get status() {
+      return status;
+    },
+    get headers() {
+      return headers;
+    },
+    get body() {
+      return body;
+    },
+    get frames() {
+      return body.split("\n\n").slice(0, -1);
+    },
+    get wireBytes() {
+      return Buffer.concat(chunks);
+    },
+    get elapsedMs() {
+      return performance.now() - started;
+    },
+    get destroyed() {
+      return socket.destroyed;
+    },
+    async until(predicate: () => boolean): Promise<void> {
+      if (predicate()) return;
+      await new Promise<void>((resolve, reject) => {
+        const notify = () => {
+          if (predicate()) {
+            subscribers.delete(notify);
+            resolve();
+          } else if (socket.destroyed) {
+            subscribers.delete(notify);
+            reject(failure ?? new Error("SSE closed before observation"));
+          }
+        };
+        subscribers.add(notify);
+        notify();
+      });
+    },
+    async close() {
+      socket.destroy();
+      await closed.promise;
+    },
+  };
+}
+```
+
+## Actual schema selected definitions
+Full schema SHA256: 0baa5d5ef67144f8e6513b4cde31168effc8df6d52ef3141b0f144b87f8dc227
+{"mutationReceipt":{"title":"BDP Mutation Receipt","type":"object","allOf":[{"$ref":"#/$defs/receiptCore"}],"oneOf":[{"type":"object","required":["id","status","idempotencyKey","scopeEpoch","authorizationView","transaction"],"properties":{"id":true,"status":{"const":"pending"},"idempotencyKey":true,"scopeEpoch":true,"authorizationView":true,"transaction":true,"detail":false,"requiredPosition":false,"effectPosition":false,"results":false,"next":false,"allocated":false,"problem":false,"expiresAt":false}},{"type":"object","required":["id","status","detail","idempotencyKey","scopeEpoch","authorizationView","transaction","requiredPosition","results","next","expiresAt"],"properties":{"id":true,"status":{"const":"completed"},"detail":{"const":"available"},"idempotencyKey":true,"scopeEpoch":true,"authorizationView":true,"transaction":true,"requiredPosition":true,"effectPosition":true,"results":true,"next":true,"expiresAt":true,"allocated":false,"problem":false},"allOf":[{"if":{"properties":{"next":{"type":"null"}},"required":["next"]},"then":{"properties":{"results":{"type":"array","minItems":1}}}}]},{"type":"object","required":["id","status","detail","idempotencyKey","scopeEpoch","authorizationView","transaction","requiredPosition","problem","expiresAt"],"properties":{"id":true,"status":{"const":"failed"},"detail":{"const":"available"},"idempotencyKey":true,"scopeEpoch":true,"authorizationView":true,"transaction":true,"requiredPosition":true,"problem":true,"expiresAt":true,"effectPosition":false,"results":false,"next":false,"allocated":false}},{"type":"object","required":["id","status","detail","idempotencyKey","scopeEpoch","authorizationView","transaction","requiredPosition","allocated"],"properties":{"id":true,"status":{"const":"completed"},"detail":{"const":"expired"},"idempotencyKey":true,"scopeEpoch":true,"authorizationView":true,"transaction":true,"requiredPosition":true,"effectPosition":true,"allocated":true,"results":false,"next":false,"problem":false,"expiresAt":false}},{"type":"object","required":["id","status","detail","idempotencyKey","scopeEpoch","authorizationView","transaction","requiredPosition"],"properties":{"id":true,"status":{"const":"completed"},"detail":{"const":"withheld"},"idempotencyKey":true,"scopeEpoch":true,"authorizationView":true,"transaction":true,"requiredPosition":true,"effectPosition":true,"results":false,"next":false,"allocated":false,"problem":false,"expiresAt":false}}]},"mutationReceiptPage":{"title":"BDP Mutation Receipt page","type":"object","required":["receipt","results","next"],"properties":{"receipt":{"$ref":"#/$defs/absoluteHttpUrl"},"results":{"type":"array","minItems":1,"items":{"$ref":"#/$defs/receiptResult"}},"next":{"oneOf":[{"$ref":"#/$defs/absoluteHttpUrl"},{"type":"null"}]}},"additionalProperties":false},"receiptCore":{"type":"object","properties":{"id":{"$ref":"#/$defs/absoluteHttpUrl"},"status":{"$ref":"#/$defs/receiptStatus"},"detail":{"$ref":"#/$defs/receiptDetail"},"idempotencyKey":{"$ref":"#/$defs/idempotencyKey"},"scopeEpoch":{"$ref":"#/$defs/wireToken"},"authorizationView":{"$ref":"#/$defs/wireToken"},"transaction":{"$ref":"#/$defs/wireToken"},"requiredPosition":{"$ref":"#/$defs/wireToken"},"effectPosition":{"$ref":"#/$defs/wireToken"},"results":{"type":"array","items":{"$ref":"#/$defs/receiptResult"}},"next":{"oneOf":[{"$ref":"#/$defs/absoluteHttpUrl"},{"type":"null"}]},"allocated":{"type":"array","items":{"$ref":"#/$defs/allocatedIdentity"}},"problem":{"$ref":"#/$defs/receiptProblem"},"expiresAt":{"$ref":"#/$defs/dateTime"}},"allOf":[{"if":{"properties":{"status":{"const":"failed"}},"required":["status"]},"then":{"properties":{"effectPosition":false,"detail":{"const":"available"}}}}],"additionalProperties":false},"receiptResult":{"type":"object","required":["operationIndex","outcome"],"properties":{"operationIndex":{"type":"integer","minimum":0},"operationName":{"$ref":"#/$defs/localName"},"outcome":{"$ref":"#/$defs/receiptEntryOutcome"},"resource":{"oneOf":[{"allOf":[{"$ref":"#/$defs/beadRecord"},{"type":"object","properties":{"links":false}}]},{"$ref":"#/$defs/linkRecord"}]},"deleted":{"$ref":"#/$defs/deletedIdentity"},"erased":{"$ref":"#/$defs/resourceIdentity"},"source":{"$ref":"#/$defs/absoluteHttpUrl"},"sourceRevision":{"$ref":"#/$defs/revision"},"count":{"type":"integer","minimum":0},"alias":{"$ref":"#/$defs/absoluteHttpUrl"},"target":{"$ref":"#/$defs/absoluteHttpUrl"}},"allOf":[{"if":{"properties":{"outcome":{"enum":["created","updated"]}},"required":["outcome"],"not":{"properties":{"alias":true},"required":["alias"]}},"then":{"required":["resource"],"properties":{"resource":true,"deleted":false,"erased":false,"count":false}}},{"if":{"properties":{"outcome":{"const":"deleted"}},"required":["outcome"],"not":{"properties":{"alias":true},"required":["alias"]}},"then":{"required":["deleted"],"properties":{"deleted":true,"resource":false,"erased":false,"count":false}}},{"if":{"properties":{"outcome":{"const":"erased"}},"required":["outcome"]},"then":{"required":["erased"],"properties":{"erased":true,"resource":false,"deleted":false,"count":false}}},{"if":{"properties":{"outcome":{"const":"matched"}},"required":["outcome"]},"then":{"required":["count"],"properties":{"count":true,"operationName":false,"resource":false,"deleted":false,"erased":false,"source":false,"sourceRevision":false}}},{"if":{"properties":{"outcome":{"const":"withheld"}},"required":["outcome"]},"then":{"properties":{"resource":false,"deleted":false,"erased":false,"source":false,"sourceRevision":false,"count":false}}},{"if":{"required":["resource"],"properties":{"resource":{"$ref":"#/$defs/beadRecord"}}},"then":{"properties":{"source":false,"sourceRevision":false}}},{"if":{"required":["deleted"],"properties":{"deleted":{"type":"object","required":["resourceKind"],"properties":{"resourceKind":{"const":"bead"}}}}},"then":{"properties":{"source":false,"sourceRevision":false}}},{"if":{"required":["alias"]},"then":{"allOf":[{"$ref":"#/$defs/aliasResultMembers"}],"properties":{"operationIndex":{"const":0},"operationName":false,"resource":false,"deleted":false,"erased":false,"source":false,"sourceRevision":false,"count":false}},"else":{"properties":{"target":false}}}],"dependentRequired":{"source":["sourceRevision"],"sourceRevision":["source"]},"additionalProperties":false},"allocatedIdentity":{"type":"object","required":["operationIndex"],"properties":{"operationIndex":{"type":"integer","minimum":0},"operationName":{"$ref":"#/$defs/localName"},"id":{"$ref":"#/$defs/absoluteHttpUrl"},"type":{"$ref":"#/$defs/absoluteHttpUrl"},"withheld":{"const":true}},"oneOf":[{"required":["id","type"],"properties":{"id":true,"type":true,"withheld":false}},{"required":["withheld"],"properties":{"withheld":true,"id":false,"type":false}}],"additionalProperties":false}}
+
+## Context limits
+This packet supplies complete changed callbacks/helper and exact corrected source. It does not reproduce unrelated migration/Snapshot tests, all schema reference definitions, or full immutable owner/runtime files. Actual AJV loads the complete unchanged schema, not this excerpt. Original review and source audit remain reference artifacts; unshown implementations must not be presumed broken. Current receipt policy intentionally preserves nonrecord execution identities; it is not a general partial-policy ACL implementation.

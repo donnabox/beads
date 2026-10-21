@@ -1,0 +1,13 @@
+# Actual package provenance audit
+
+**Package/source/consumer checks pass.** Frozen clean `c02ccc3706f2e258d380805162a8c47dbb73f4e1` / tree `088290751951c353797b984f690b7d9fd96deb80`, sole parent `eff171839fe4f37638284a4c3346428979d26b5d`, has only the four accepted conformance/test paths changed. I authored the preparation scripts; this is a separate inspection of actual data, not an independent review of those scripts.
+
+Recomputed and compared all **313 archive members** (63 protocol,250 server) against source/emitted files and installed consumer bytes. Root LICENSE mapping and only the server `@bdp/protocol` workspace-to-version package-manifest rewrite were accounted for. Actual installed inventories exactly match the archives. Protocol tar SHA `4683cb6c6333c332a4bcb7efc3e28f32d1d8d06a7264913f65c31d3a826d4227`; server tar SHA `83c732818de9aa88165c9f1c86c1e1e943c31290b7befc0599264b2b1812e5fe`.
+
+Resolved actual dependency links through real manifest paths and verified the exact eight-package closure and frozen-lock versions. Independently recomputed the payload algorithm from real files with sorted dependency/path traversal,14 path-sensitive package visits and473 file visits, including repeated dependency branches: **`2e982099f4c4e3688c47734256e2cc6b1cb461948a265bcc5fe1945fdfdda5d0`**, equal to recorded provenance. Entry SHA `bcf153170f953f9e28c6c89f1153be907f64df289e64f3ad929cad4a4a54c47c`. This is not child source attestation; actual child ready/config/payload comparison still belongs to cohort adjudication.
+
+The recorded build/pack/install argv selects `/Users/dbox/.nvm/versions/node/v24.16.0/bin/node`; a read-only `--version` check returned `v24.16.0`. All reviewed build/package/install/verifier records exit0 without forced cleanup or remaining runtime roots. Node compile-cache entries are retained and explicitly distinguished from service stores. Build input hashes match final source; no fresh build, pack, install, service or test was run here.
+
+One ancillary gate metadata correction is needed: `newControlReportsDispositionPath` now names `claude-root-dispositions.md`, while its digest remains the older root-measured-disposition hash. The actual target SHA is `055bdc8cce2ecddd9be95669931efd4222db2e93d98f35110ae44f76c1f88fa9`. This does not affect the verified source/archive/consumer bytes or payload; reconcile the record before releasing installed cohorts. No gate was edited by this audit.
+
+Full member hashes, source transformations, dependency edges, exact input hashes, command records and limitations are in `package-actual-audit.json` (SHA `8f4cb54260381780a233ab272129aa0b80fdb90c162c5180ad1aaf7bdecd67d4`). Only these two audit files were written; no shared database was accessed.

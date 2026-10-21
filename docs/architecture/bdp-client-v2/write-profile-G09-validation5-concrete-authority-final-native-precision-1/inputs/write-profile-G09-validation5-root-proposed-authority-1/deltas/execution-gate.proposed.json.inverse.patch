@@ -1,0 +1,61 @@
+--- /Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation5-root-proposed-authority-1/execution-gate.proposed.json
++++ /Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation-preparation-5/execution-gate.closed.json
+@@ -1,15 +1,10 @@
+ {
+-  "actualClaudeReviewDisposed": true,
++  "actualClaudeReviewDisposed": false,
+   "actualCodeDisposition": {
+-    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation5-root-proposed-authority-1/actual-code-disposition.json",
+-    "sha256": "43c5d39fac454099fcc576b36eb22a15f6ca8f35df0b718c4c848c12112794d8"
++    "path": "UNRESOLVED",
++    "sha256": "UNRESOLVED"
+   },
+-  "approvedStages": [
+-    "node-version",
+-    "pnpm-version",
+-    "workspace-install",
+-    "bind-workspace-tools"
+-  ],
++  "approvedStages": [],
+   "baseTools": {
+     "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation-preparation-5/base-tools.candidate.json",
+     "sha256": "07acf5436b1d66c270582e091abca66b9ddfaa4e92fb1bbba84f03c8bd654215"
+@@ -35,11 +30,11 @@
+   },
+   "mode": "final",
+   "nativeCodeDisposition": {
+-    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation5-root-proposed-authority-1/native-code-disposition.json",
+-    "sha256": "afb6ea3f0038bcbe5e25d396563f35de3830d3dee352edf3d19c3820c96c4fc2"
++    "path": "UNRESOLVED",
++    "sha256": "UNRESOLVED"
+   },
+-  "nativeCodeReviewDisposed": true,
+-  "released": true,
++  "nativeCodeReviewDisposed": false,
++  "released": false,
+   "rootArchiveAcceptance": {
+     "path": "UNRESOLVED",
+     "sha256": "UNRESOLVED"
+@@ -57,17 +52,17 @@
+     "sha256": "UNRESOLVED"
+   },
+   "rootDisposition": {
+-    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation5-root-proposed-authority-1/root-disposition.json",
+-    "sha256": "e545829cd9b937d37500be77d5cc4d476283b76602a364694f7e1333c261ad2e"
++    "path": "UNRESOLVED",
++    "sha256": "UNRESOLVED"
+   },
+-  "rootExactSourceAccepted": true,
+-  "rootPlanAccepted": true,
++  "rootExactSourceAccepted": false,
++  "rootPlanAccepted": false,
+   "session": "2026-10-18T02:16:24Z-549f",
+   "sourceBinding": {
+     "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation-preparation-5/source-binding.json",
+     "sha256": "e0252cb07ac1896fac0faab395e10e50ea58eac263b6d33ee224e378413c2d68"
+   },
+-  "staticValidationAuthorized": true,
++  "staticValidationAuthorized": false,
+   "workspaceTools": {
+     "path": "UNRESOLVED",
+     "sha256": "UNRESOLVED"

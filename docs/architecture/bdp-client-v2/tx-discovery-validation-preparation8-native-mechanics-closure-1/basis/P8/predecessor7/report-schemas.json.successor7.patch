@@ -1,0 +1,142 @@
+--- predecessor6/report-schemas.json
++++ report-schemas.json
+@@ -699,7 +699,16 @@
+       },
+       {
+         "credential": "writer",
+-        "fieldOccurrences": [],
++        "fieldOccurrences": [
++          {
++            "name": "content-type",
++            "value": "application/json"
++          },
++          {
++            "name": "idempotency-key",
++            "value": "cold-transactional-carriers-batch-seed"
++          }
++        ],
+         "id": "transactional-carriers-batch-seed",
+         "method": "POST",
+         "position": "pos-1",
+@@ -731,7 +740,12 @@
+       },
+       {
+         "credential": "writer",
+-        "fieldOccurrences": [],
++        "fieldOccurrences": [
++          {
++            "name": "content-type",
++            "value": "application/json"
++          }
++        ],
+         "id": "sequence-turns",
+         "method": "POST",
+         "position": "pos-3",
+@@ -761,7 +775,16 @@
+       },
+       {
+         "credential": "writer",
+-        "fieldOccurrences": [],
++        "fieldOccurrences": [
++          {
++            "name": "content-type",
++            "value": "application/json"
++          },
++          {
++            "name": "idempotency-key",
++            "value": "cold-transactional-carriers-set-update"
++          }
++        ],
+         "id": "transactional-carriers-set-update",
+         "method": "POST",
+         "position": "pos-4",
+@@ -793,7 +816,16 @@
+       },
+       {
+         "credential": "writer",
+-        "fieldOccurrences": [],
++        "fieldOccurrences": [
++          {
++            "name": "content-type",
++            "value": "application/json"
++          },
++          {
++            "name": "idempotency-key",
++            "value": "cold-transactional-carriers-set-delete"
++          }
++        ],
+         "id": "transactional-carriers-set-delete",
+         "method": "POST",
+         "position": "pos-5",
+@@ -825,7 +857,16 @@
+       },
+       {
+         "credential": "writer",
+-        "fieldOccurrences": [],
++        "fieldOccurrences": [
++          {
++            "name": "content-type",
++            "value": "application/json"
++          },
++          {
++            "name": "idempotency-key",
++            "value": "cold-transactional-carriers-batch-seed"
++          }
++        ],
+         "id": "replay-batch",
+         "method": "POST",
+         "position": "pos-5",
+@@ -1673,7 +1714,16 @@
+       },
+       {
+         "credential": "writer",
+-        "fieldOccurrences": [],
++        "fieldOccurrences": [
++          {
++            "name": "content-type",
++            "value": "application/json"
++          },
++          {
++            "name": "idempotency-key",
++            "value": "d3-minimum-seed"
++          }
++        ],
+         "id": "minimum-seed",
+         "method": "POST",
+         "position": "pos-1",
+@@ -2033,7 +2083,16 @@
+       },
+       {
+         "credential": "writer",
+-        "fieldOccurrences": [],
++        "fieldOccurrences": [
++          {
++            "name": "content-type",
++            "value": "application/json"
++          },
++          {
++            "name": "idempotency-key",
++            "value": "d3-minimum-seed"
++          }
++        ],
+         "id": "minimum-seed",
+         "method": "POST",
+         "position": "pos-1",
+@@ -2393,7 +2452,16 @@
+       },
+       {
+         "credential": "writer",
+-        "fieldOccurrences": [],
++        "fieldOccurrences": [
++          {
++            "name": "content-type",
++            "value": "application/json"
++          },
++          {
++            "name": "idempotency-key",
++            "value": "d3-minimum-seed"
++          }
++        ],
+         "id": "minimum-seed",
+         "method": "POST",
+         "position": "pos-1",

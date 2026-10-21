@@ -1,0 +1,13 @@
+# D1 F1–F3 correction precision closure
+
+No new concrete findings. F1/F2/F3 are closed by bounded static inspection of correction index `cb1a558d165ce396246b22b697e2182d8356a51f26077fe6faf4ed1af40178bb`, actual full patch `12c783fcce705fdd3410a0738d9b7020c6462d630eccd5d47af6c83a0be471c2` and source binding `92152f96be110929dc66bb9fc2d038922944d5b9f9a46f40c9e8ec1076a520ec` under root disposition `1f6dce33f3927e320b1c5773ac86cd1361bc5f35629207d401490e4867fb6ce4`. All45 indexed artifacts/mirror, all679 current source bytes and six exact copies verified.
+
+F1: recorded pinned Biome2.5.7 FORMAT ONLY targets exactly six owned files, two exits0. HTTP/store are identical to prior freeze and service only reflows its nested ternary. No production semantics changed. This verifies recorded format-write scope/identity, not a formatter-check or compiler/test pass.
+
+F2: D records actual finite/live ready snapshots before status assertions and seed ready/chunk/drain snapshots before seed assertions. Same-ordinal refresh carries truthful nullable availability, partial/drained/bodyState and drainKind. Finite drainage requires actual close plus complete finite body; intentional-live completion is set only after explicit rec.close following frame/live checks. Cleanup refresh does not call the intentional-live transition or clear failures. A mismatching status remains a failed callback even if its actual finite body later drains. Passing32 records, statuses, frame/context/HEAD oracles and3s work/4s inclusive cleanup remain required.
+
+F3: E caches actual git diff metadata inside45s work before launch with explicit bounded timeout/maxBuffer. Failure yields null hash, fixed sanitized reason and tracked-diff-metadata aggregate failure before launch; finally emits cached data without subprocess. Passing report grammar requires the actual bound patch hash and null reason. Existing45/10/60s and all successful oracles stay unchanged.
+
+Selection/workload remain exact:15 source callbacks,9 new reports plus TWO selected legacy reports, third parameter-context unselected; three installed callbacks10/4/10. Historical33419-byte SSE and33116-byte installed prefixes, original PR167679 and startup682 identities remain preserved. Genuine forward/inverse source correction hunks reconstruct exact bytes; all callback/report locations rebound. Old CODE/PLAN/schema evidence remains historical.
+
+Exact role guard passed first. No product/helper/reviewer/compiler/test/build/runtime or git/flag action ran. This is static correction closure, not observed drain/timing/installed proof. Root owns exact-source acceptance and separate CLOSED validation3 mechanics/release. No second actual CODE attempt is requested.

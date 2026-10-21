@@ -1,0 +1,72 @@
+{
+  "accepted": true,
+  "utc": "2026-10-18T08:11:18.506432+00:00",
+  "session": "2026-10-18T02:16:24Z-549f",
+  "scope": "ALL8 actualPLAN findings; corrected planning only",
+  "nativeTerminalClosureSha256": "d766fb8a941c20d6f49e8775579d4d2959d6b619e054a21d1456b6ec7d89d691",
+  "nativeTerminalIndexSha256": "902b709204cb9217931a103cc034503d2ddc039195d7ef5fbca71b36a892b523",
+  "rootInspectionSha256": "61236e26779652882cf9c794ad3eba195e5fec16e00d6260928b8d1b4c50e0a1",
+  "findings": [
+    {
+      "id": "F1",
+      "severity": "Medium",
+      "disposition": "ACCEPT with root precision",
+      "requiredCorrection": "Mandatory distinct destinations from existing opt-in base: RU .read-update.profile.attempt.json/.read-update.profile.json, TX .transactional.profile.attempt.json/.transactional.profile.json. Refuse any exact existing destination before new output. FIRST creation of each path exclusive wx0600, never rename overwrite; later atomic replacement ONLY own previously created output, never preexisting/other attempt. Preserve legacy paths/default behavior. L10 covers both profiles/stale/collision inside existing callback. Exists-only check cannot authorize TOCTOU overwrite."
+    },
+    {
+      "id": "F2",
+      "severity": "Medium",
+      "disposition": "ACCEPT with root precision",
+      "requiredCorrection": "Join authored outcomes by manifest action.family: http uses exchanges[].assertions, every non-http uses actions[].assertions. Exact action/assertion ID binding and duplicates checked; no exchange-first fallback. Boolean precedence: false if any resolved passed:false, else null if any unresolved, else true only all authored IDs resolved passed:true. Counts/empty inventory/list adequacy never grants whole credit. Preserve RUdot/TXcolon conventions."
+    },
+    {
+      "id": "F3",
+      "severity": "Medium",
+      "disposition": "ACCEPT with root precision",
+      "requiredCorrection": "New carrier handoff refusal/missing/invalid never escapes observe or replaces genuine result/sessions/baseline: fixed failed/pending carrier with rawWrapperSha256:null, existing product assertions continue. Preserve ORIGINAL legacy hook serialization/write failures and cleanup aggregation. Isolate new acceptance from original hook exceptions. Sidecar IO failure confers no carrier success; exact validation checks missing/invalid evidence. No secret diagnostics or fabricated digest."
+    },
+    {
+      "id": "F4",
+      "severity": "Low",
+      "disposition": "ACCEPT with root precision",
+      "requiredCorrection": "Compare explicit JSON projections of genuine detached pre-hook result/sessions/baseline: existing canonicalJson(JSON.parse(JSON.stringify(preHookField))) versus canonicalJson(parsed actual field). This compares JSON representation ONLY; do not normalize rawWrapperSha256/source/config/package identity or replace once-serialized exact legacy wrapper. Refused/missing projection -> fixed evidence failure."
+    },
+    {
+      "id": "F5",
+      "severity": "Low",
+      "disposition": "ACCEPT with root precision",
+      "requiredCorrection": "Reuse unchanged copySourceBytes(source,manifest,4194304) and parseBoundedJson(bytes,manifest,constant private-profile-report label). No fifth file/newkind. Catch ConformanceArtifactBundleError -> fixed ProfileEvidenceError capacity for known byte/node/depth/container limits, invalid-source otherwise; no original message/cause/input echo. Classify exact safe helper error shapes or independent bounded facts, not arbitrary input substring. Preserve4MiB/100000nodes/128depth/10000container limits."
+    },
+    {
+      "id": "F6",
+      "severity": "Low",
+      "disposition": "ACCEPT with root precision",
+      "requiredCorrection": "maxWorkers2 means explicit --maxWorkers=2 on source-validation CLI, not existing default. Callback default5s/configfile untouched; samefourpaths."
+    },
+    {
+      "id": "F7",
+      "severity": "Low",
+      "disposition": "ACCEPT with root precision",
+      "requiredCorrection": "Serializer validates unbound exact closedKeys including configuration:null, fixedvalues, observations.length===requiredIds.length and allnull. Refuse missing/extra/wrongvalues invalid-source; exactly3exports/130RU/null and falseeligibility remain."
+    },
+    {
+      "id": "F8",
+      "severity": "Low",
+      "disposition": "ACCEPT with root precision",
+      "requiredCorrection": "Footprint importDecision declares txTestToRUHelper ../test-support/read-update-artifact-execution.js; admissible existing test-source edge, no export/dependency/config/footprint expansion."
+    }
+  ],
+  "futurePlan": "write-profile-cumulative-evidence-carrier-plan-4",
+  "futurePaths": 4,
+  "finiteDataCallbacks": 48,
+  "callbackMs": 5000,
+  "maxWorkersCLI": 2,
+  "sourceAuthoringReleased": false,
+  "productExecutionReleased": false,
+  "secondActualPlanAllowed": false,
+  "independentFullPlanPrecisionAndRootRequired": true,
+  "wholeClauseCredit": false,
+  "claimEligible": false,
+  "qualificationReady": false,
+  "fullWriteComplete": false
+}

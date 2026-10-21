@@ -1,0 +1,155 @@
+# PLAN REVIEW — receipt-root/page missing-context serving slice
+
+Independent review only. No files read or written, no commands, no delegation. Line references below are to the snippets you supplied; I did not re-read the tree.
+
+---
+
+## Verdict
+
+The core repair is sound and correctly scoped. The five-branch split in `readReceiptPage` (two namespace defenses contextless, three genuine misses context-bearing) is the right cut, the precedence claims hold against the quoted code, and the nondisclosure argument is correct — the tuple is the *current* all-visible head, so it cannot discriminate unknown/foreign/prior-epoch/retracted/forgotten.
+
+The defects are concentrated in three places: (a) unenumerated exact-equality assertions outside the 14-case selection, (b) the installed witness's unproven preconditions (second credential, receipts-root prefix, position model), and (c) an under-specified hard/soft partition that the exactly-8 control gate depends on.
+
+---
+
+## Critical
+
+**1. [DEFECT] Exact-equality assertions outside the selection will break, and the stated gate provably cannot detect it.**
+*Plan*: "Complete ownership and caller/expectation fanout"; "Existing page tests that inspect `.kind` on missing remain valid"; "Typecheck plus exact selected regressions below address fanout".
+*Source*: `transaction-store.ts:2008-2089` missing variant; `transaction-receipt-pages.test.ts:280-290` is the only exact `toEqual({kind:"missing"})` the plan quotes.
+Adding `context` to the three genuine missing branches makes any `toEqual({kind:"missing"})` / `toStrictEqual` fail (Vitest `toEqual` fails on an extra *defined* key). The same applies to `toEqual({kind:"refused",status:404,code:"resource-not-found"})` for the root. The plan selects 3 of N cases in `transaction-receipt-pages.test.ts`, 5 of N in `transaction-service.test.ts`, 6 of N in `transaction-http.test.ts`, and asserts without enumeration that service `227-246` is "the sole exact hidden404 object" and that `transaction-owned.test.ts:482/491`, `transaction-set.test.ts:328/341/443/621`, `recovery.test.ts:110` touch only success paths. Typecheck does not see runtime matchers, and the three bounded selectors do not run the unselected cases.
+*Impact*: green local gate, red full CI at the root landing gate; unknown blast radius; done-when "all selected precedence/retention tests pass" is satisfiable while the suite is broken.
+*Fix (smallest)*: in the measured draft, enumerate every exact-equality assertion against a missing/refused result across the six files (grep `kind: "missing"`, `"resource-not-found"`, `toStrictEqual`), and either amend them or add their callbacks to the selection. Note `280-290` is genuinely safe: `${scope}receipts/pages/token` yields `parentId === ${scope}receipts`, which fails `startsWith(`${scope}receipts/`)` → defense branch, contextless.
+
+**2. [PROOF GAP] The installed witness needs a second authenticated principal, and no non-owned path may be edited to add one.**
+*Plan*: ledger ordinals 6–9 and 11–12 use `credential: "other"`; "No spec/catalog/schema/runner/fixture/installed launcher/runtime/exports edit"; `ownedPaths` contains only the new `apps/bdptest` test file.
+The plan explicitly audited one installed-entry limitation ("Existing installed entry offers no page-size override; do not add one") but never establishes that the installed `configuration` accepts a *second, non-owner* credential. Six of fourteen dispatches — the entire foreign-principal arm, which is the headline evidence — depend on it. An anonymous fallback yields 401, not 404, so it is not substitutable.
+*Impact*: if absent, the witness is unissuable without editing the installed launcher/entry, i.e. a scope violation; the plan would need re-scoping, not re-measurement.
+*Fix*: cite the installed configuration's credential field (shape and arity) alongside the existing page-size finding. If it is single-credential, replace the foreign-principal arm with unknown-token + prior-head probes and restate the ledger (14 → fewer dispatches, combined 95 → lower).
+
+---
+
+## High
+
+**3. [PROOF GAP] The `pos-1`/`pos-2`/`pos-3` model is unproven and drives 14 pinned ledger fields.**
+*Plan*: ledger `expectedContext` on all 14 ordinals; store case "retained old missing contexts stay frozen atpos1 and later results reportpos2".
+*Source*: `transaction-store.ts:590-598` reads `metadata("position")`; the increment site is not quoted.
+The plan assumes exactly one position per *committed transaction*, independent of operation count — a 32-op batch yields `pos-1`, a 33-entry update-where yields `pos-2`. If position advances per mutated Resource, every literal becomes `pos-32`/`pos-64`/`pos-65` and the store/service/HTTP tuple comparators shift too.
+*Impact*: wrong by construction in the ledger; caught only at measurement, after the frozen draft is pinned.
+*Fix*: cite the position-increment site, or make the installed expectations relational (`BDP-Scope-Position` of the 404 equals that of the immediately preceding mutation response; strictly later after ordinal 10) and keep literals only in the measured draft. The source tests already hedge correctly ("Use current owner result as the complete context comparator, not hardcoded epoch") — apply the same rule to the installed ledger.
+
+**4. [DEFECT] `receipts/unknown` hardcodes a discovered prefix; the smallest fix removes the assumption entirely.**
+*Plan*: ledger ordinals 4–5, `https://reference.invalid/acme/receipts/unknown`, `urlAuthority: "explicit negative raw diagnostic URL"`.
+*Source*: `bdp.md:5116-5133` — receipt URLs live "beneath the **discovered** `receipts` root"; `transaction-http.ts:481-485` keys `receiptRoute` off `${scopeUrl.pathname}receipts/`. The plan forbids a collection/discovery fetch.
+If the real receipts root is not literally `/acme/receipts/`, the request lands in `methodResponse` (`243-258`) and returns a *contextless* route-level 404 — which fails the positive assertion and, in the mutant control, is indistinguishable from the injected defect.
+*Impact*: the unknown-token arm (2 of 14 dispatches, 2 of 8 named mutant failures) rests on a literal the plan is not allowed to verify by request.
+*Fix*: derive it from the authority-echoed `$root` — replace only the final path segment of `response2.receipt.id` with a literal unknown token. Same request count, strict-canonical validation unchanged, no hardcoded prefix.
+
+**5. [DEFECT] `$root` has no servability control, so its 404s are not distinguishable from a misderived URL.**
+*Plan*: ledger ordinals 6, 7, 11 (and 13) use `$root` with `urlAuthority: "exact response2 receipt.id or receipt.next"`; the witness never GETs `$root` at 200.
+`$page` *does* have this control — ordinal 3 is a 200 for the same URL. `$root` does not. A root URL that was truncated, re-encoded, or taken from the wrong field produces exactly the expected 404s with exactly the expected context, so the foreign-principal nondisclosure claim is unfalsifiable at the installed layer.
+*Fix (zero extra requests)*: `readReceiptPage` builds `page = { receipt: parentId, ... }` (`transaction-store.ts:2080-2085`), so the ordinal-3 200 body already echoes the authority's own root URL. Assert `page.receipt === response2.receipt.id` and bind `$root` to that. This also resolves the loose `urlAuthority` in #16.
+
+**6. [DEFECT/GAP] The hard/soft partition is under-specified relative to the exactly-8 gate.**
+*Plan*: "Each404 GET has complete transactionalProblem schema/exact body and cache/absence headers **before** the named tuple assertion"; control expects "one failed case/eight specific assertion errors".
+If "absence headers" includes *presence* of `bdp-scope-epoch` / `bdp-authorization-view` / `bdp-scope-position` as a hard prerequisite, the mutant aborts at the first 404 with one hard failure, not eight soft ones — the control silently degrades to a weaker witness that still "fails", so the gate reads as satisfied.
+*Impact*: the discriminating property of the whole counterfactual (8 named, projection-attributable failures) is lost.
+*Fix*: enumerate the hard prerequisite header set explicitly (`cache-control`, `content-type`, `x-bdp-development`, `content-length`, plus the no-`etag`/no-`last-modified` checks) and state that all three `bdp-scope-*` presence **and** value checks live inside the single `expect.soft` named tuple assertion per request. Also state the structural rule (all hard assertions precede all soft ones, or per-request hard-then-soft) since the count is a gate.
+
+---
+
+## Medium
+
+**7. [DEFECT] `readContext()` must be evaluated per-branch at the return site, not hoisted.**
+*Plan*: "Preserve missing-plan/parent/chain integrity throws before constructing any normal response."
+*Source*: `transaction-store.ts:2041-2056`. The natural implementation — hoisting `const context = readContext()` just after the two namespace defenses — would place the corrupt-position throw (`590-592`) *before* `receipt page plan missing`, `receipt page parent missing`, `receipt page parent mismatch` and `pagePlan`'s throws, changing which error identity surfaces on a corrupt store.
+*Fix*: state normatively that `readContext()` is evaluated inside each of the three missing `return`s, after that path's integrity checks.
+
+**8. [PROOF GAP] Integrity fault classification: transient 500 or persistent owner fence?**
+*Plan*: "Metadata integrity limitation ... surface existing metadata corruption through the existing fault path rather than return a contextless404."
+*Source*: `enter` (`348-359`) fences on `ownerFailure`/`maintenanceFailure`; the assignment site is not quoted.
+The page miss path previously never called `readContext()`; it now can throw. If a throw inside `atomic()` sets `ownerFailure`, a corrupt-position store converts a harmless nondisclosable page 404 into a permanent owner fence. Marginal exposure is small (root `readReceipt` at `872` already calls `readContext()` unconditionally), but the plan asserts a conclusion it does not evidence.
+*Fix*: cite the `ownerFailure` assignment to classify the fault, and either add one corrupt-position page-miss assertion to the new store case or scope it out as unchanged-by-construction with the citation.
+
+**9. [DEFECT] "Prove no wait on nondisclosure" cannot be proven by an *incompatible* control.**
+*Plan*: service case "six ordinary/unsupported/incompatible root/page foreign-principal calls ... prove no wait on nondisclosure".
+*Source*: `transaction-consistency.ts:85-120` retries **only** `TransactionMinimumFailure` with `reason === "behind"`. A foreign-view/cursor-expired ("incompatible") minimum never waits even on a *visible* receipt, so observing no wait proves nothing about ordering.
+*Fix (count-neutral)*: on the nondisclosable targets, use a strictly-ahead position minimum (the only behind-inducing control) and assert no catch-up delay/`catch-up-timeout`. Incompatible-view precedence on visible receipts is already covered by the two selected `minimum-before-expiry (false/true)` cases, so the 13-call count is unchanged. Separately: name the specific failure reason for the store case's call 14 ("reject incompatible minimum on the real visible page") — `foreign-view` vs `cursor-expired` vs `behind` have different service-level consequences (409/410 immediately vs. wait then 503).
+
+**10. [PROOF GAP] `receiptMaximumItems: 2` is asserted as an existing HTTP-fixture seam but is absent from the quoted options.**
+*Plan*: "Use existing fixture's receiptMaximumItems2 only in source tests (already existing test seam)".
+*Source*: `transaction-http.test.ts:81-95` shows `options = {directory, port, create, types, credentials}` and `TransactionRuntimeTestSeams` as the *second* parameter; no `receiptMaximumItems` appears in either.
+If it is not a `startTransactionRuntime` option, the new HTTP case cannot build a paged receipt without editing non-owned runtime/fixture code.
+*Fix*: the existing selected case `orders page nondisclosure, minimum waits, expiry and representation using actual owner state` (18 HTTP) already serves a real page over HTTP — cite and reuse *its* paged-receipt seed mechanism. If it uses the default 32, the new case's "three-create receipt" must become a 32-match construction, which changes its seed body and must be re-derived.
+
+**11. [DEFECT] Type narrowing at `transaction-http.ts:532/544` is unspecified and in tension with "required context".**
+*Plan*: "make authenticated root404 carry **required** context while401 remains exact/contextless (type50–53)"; "refused projections532/544 pass only their supplied context".
+*Source*: `transaction-service.ts:50-53`. `if (result.kind === "refused")` does not narrow past the 401/404 members, so `result.context` is a type error unless `context` becomes optional on the whole refused union — which silently drops the "required" guarantee for the root. The page union (`436`) has a single merged refused member with a `code` union, so it needs the same treatment with the opposite optionality.
+*Fix*: narrow on `code`/`status` at both sites (`result.code === "resource-not-found" ? result.context : undefined`), keep `context` required on the root's 404 member, and split the page refused member into two members so the 401 arm structurally cannot carry context. Note the page 401 arm is dead at HTTP (auth at `389` precedes routing) — see #19.
+
+**12. [PROOF GAP] The emitted counterfactual's validity depends on `../dist` resolution from the copied test file.**
+*Plan*: "copy the reviewed source/emitted graph with all @bdp links resolving to the derivative ... Run only the new13-request source HTTP callback."
+*Source*: `transaction-http.test.ts:11-14` resolves `new URL("../dist/transaction-runtime.js", import.meta.url)` — relative to the *test file*. If Vitest is invoked from the original tree, the test imports the original `dist` and the mutation is unobserved: zero failures, and a control that "passed" by not failing where the plan expects it to fail.
+*Fix*: state that the selector runs from the copied tree root using the copy's own Vitest config/setup/`node_modules`, and add a positive binding check (the mutant run must first assert it loaded the derivative — e.g. a fingerprint of the copied `dist` path) before the eight soft assertions.
+
+**13. [DEFECT] The new source HTTP case's transport is specified two incompatible ways.**
+*Plan*: "New HTTP fixture bounds: ... 32768B bounded response consumption; use existing Event reader/raw-executor approach inside the owned test file" — but also "use existing fixture's receiptMaximumItems2", "exact returned root/next", "no automatic redirect".
+*Source*: the fixture's `get` (`142-148`) is `fetch(..., {redirect:"manual"})`, which already satisfies the redirect rule and has no bounded-consumption notion.
+*Impact*: which transport is used determines the counted exchanges (13), HEAD `content-length` observability, and whether a new reader is in scope at all.
+*Fix*: state that the source case uses the existing fixture `get`/`post` (13 fetches, `redirect:"manual"`) and that the bounded redirect-rejecting raw reader is used **only** in the installed test; drop the 32768B consumption clause from the source fixture bounds.
+
+**14. [PROOF GAP] `propertiesChange` is an unevidenced wire field name, and the 189B digest depends on it.**
+*Plan*: ledger ordinal 2 body, `bodyBytes: 189`, `bodySha256: 8435...`.
+*Source*: `transaction-batch.ts:885-912` shows the *internal* normalized `input.change` being mapped to `propertiesChange` for the per-resource apply; it does not evidence the request-level field name. `transactional-set-installed.test.ts:239-242` evidences only `{collection, selector, cardinality}` for delete-where.
+*Impact*: a wrong name 400s ordinal 2 and kills the witness at setup. If the field is `change`, the body is 179B and the digest changes.
+*Fix*: cite the update-where request schema's change field in the measured draft and re-derive bytes/digest.
+
+**15. [PROOF GAP] Two installed preconditions for the exact-32 construction are unevidenced.**
+*Plan*: "Use one real32-create batch, then a singleton update-where matching exactly32".
+(a) A **32-operation batch** sits exactly on a ceiling named `TRANSACTION_MAXIMUM_OPERATIONS` (`transaction-store.ts:224`), and the cited precedent quote (`237-258`) shows only the 1-operation delete-where, not the seed's shape. (b) `cardinality:{min:32,max:32}` requires **zero pre-existing** `types/task` beads; the plan performs no baseline inventory check and the descriptor/schema artifacts are not evidenced as bead-free.
+*Impact*: either precondition failing 400s ordinal 1 or 2.
+*Fix*: quote the set-installed seed's request shape (`205-236`) to establish a 32-op batch is admitted, and either cite the entry's empty-store guarantee or make ordinal 2's selector discriminate on a seed-only property (e.g. `@.properties.n == 0`) so `beads/later` can never perturb it. Note the match limit *is* evidenced: `matchedResources > matchMaximum` (`889-890`) with a successful 32-delete precedent.
+
+**16. [PROOF GAP] `receipt()` helper call sites are asserted, not enumerated.**
+*Plan*: "Internal receipt helper202–210 should return a checked receipt or frozen404 ... Ordinary receipt570–583 and supported minimum470–497 consume that result directly."
+Changing the private helper's return from `| undefined` to a refused object removes both `??` fallbacks. Any third call site silently receives a refused object where it expected `undefined` — truthy, so an `if (!r)` guard inverts. Typecheck catches most of this but not a `?? default` on a now-never-undefined value (which becomes dead, not an error).
+*Fix*: enumerate all call sites of the private `receipt()` in the measured draft.
+
+---
+
+## Low
+
+**17. [DEFECT] The `receipts` root / empty-token 404 newly gains context, unenumerated and untested.**
+`transaction-http.ts:483-485` sets `receiptRoute` for `pathname === ${scopeUrl.pathname}receipts` (and the trailing-slash form), and `521-526`'s `/pages/` test is false for both, so they route to `service.receipt` → `readReceipt` → missing + context. Per `bdp.md:4635` and `5116-5133` the root is "a namespace prefix, not a Resource". The plan's sentence "A canonical missing root uses existing readReceipt observation even for the nonlisting receipt namespace" acknowledges the path but neither enumerates it in the fanout nor probes it in the HTTP selection. No disclosure risk (same all-visible tuple), but it is an unasserted behavior change on a spec-named non-Resource. *Fix*: add it to the fanout list and assert it once in the new HTTP case, or state explicitly that the root/empty-token 404 is in scope and context-bearing.
+
+**18. [GAP] Residual contextless-404 asymmetry is left implicit.** Route-level 404s (`243-258`), alias problems (`482`), and Event 404s (`485`) stay contextless while receipt 404s gain context. That is correct scoping, but `bdp.md:5827-5833` says "Every Transactional Scope-bounded read reports..." — a later reader could mistake this slice for a completed repair of that law. *Fix*: record the residual gap in the owned `transaction-implementation-progress.md`.
+
+**19. [GAP] 401 evidence attribution.** The anonymous probes (installed 13–14; source new case) are decided at `transaction-http.ts:389`, before any service call. The service-level 401 members are reachable only from the new service case's three unauthenticated calls. The done-when's "401/defense/unsupported behavior remains exact" should attribute the two layers separately so the wire witness is not read as covering the service 401 members.
+
+**20. [GAP] Bound arithmetic.** `perRequestMs 5000 × 14 = 70s` (and `× 13 = 65s` for the source case) exceeds the stated `deadlineMs 45000`, plus 10s ready + 10s close from `scripts/transaction-installed-observation.mjs:30` and `:49-56`. Bounds nest safely, but the claim that 45s "encompasses startup/work/cleanup" is unsupported in the worst case: under contention the cohort deadline fires first and reports a deadline error rather than the intended per-request diagnostic. *Fix*: state that 45s is the binding cap and 5s is a liveness guard with expected total work far below it (no ceiling increase needed).
+
+**21. [GAP] Cap labels and response sizes.** The ledger's `requestHeaderCap 16384` / `requestBodyCap 65536` / `responseBodyCap 32768` do not map onto the stated existing executor bounds (32768 body / 65536 response header → 163840 wire). Separately, ordinals 1–3 return receipts with 32 inline result entries (~6KB each by estimate) against a 32768B consumption cap — comfortable, but unmeasured. *Fix*: relabel caps to the executor's actual field names and record measured response bytes for ordinals 1–3.
+
+**22. [GAP] `urlAuthority` transposition.** Ordinals 6–9 and 11–12 both read "exact response2 receipt.id **or** receipt.next", so `$root` and `$page` share one declared provenance and a transposition is undetectable. Ordinals 3, 13, 14 are precise. *Fix*: bind `$root := response2.receipt.id` and `$page := response2.receipt.next` distinctly (and see #5).
+
+**23. [Low, consolidated]**
+- Freezing is inconsistent: genuine missing returns frozen, defense branches unfrozen (`2039/2041/2053/2056`); the service's forwarded page refused should also be frozen to match the root's. Harmless, but state it.
+- `TransactionServiceReceiptResult` (`50-53`) is `export type`; its 404 member gains a required field. In-repo consumers are covered by typecheck; confirm the isolated offline consumer / 8-package closure gate does not assert the old shape.
+- `classifyAliasPath` (`481`) runs before `receiptRoute`; the plan should assert it returns `undefined` for all `${scope}receipts/...` pathnames, else some receipt 404s stay contextless by routing.
+- Confirm `apps/bdptest`'s runner discovers new test files by glob (the plan forbids a runner edit).
+- The preserved unsupported ordering means an *own* receipt whose detail has expired but whose row is unswept yields 500 rather than `bdp.md:4632`'s 404, because `disclosedReceipt` precedes `expireRow` (`transaction-store.ts:869-871`). This is existing deliberate behavior (test `2150-2181`), but the done-when should not be read as validating it.
+
+---
+
+## Verified correct — do not re-litigate
+
+- **Byte counts are exact.** Seed: operation object = 115B; `15 + 32×115 + 31 + 2 = 3728` ✓. update-where = 189B ✓ (contingent on #14's field name). Singleton = 92B ✓. Total 4009, max 3728 ✓. Artifact UTF-8 328B is consistent with the two quoted literals.
+- **32/33 construction is sound.** `createPagePlan` (`723-739`) at `receiptMaximumItems = 32`: 32 entries → zero ranges, `next: null`; 33 entries → one range `(32,33)`, prefix 32 inline + `next`, page = 1 tail entry with `next: null`. `pagePlan`'s chain validation passes (`start=32`, `end=min(64,33)=33`, final `start === max(32,33)`). `transaction-batch.ts:889-891` plus `transactional-set-installed.test.ts:237-250` jointly evidence both the 32→33 expansion *and* `receiptMaximumItems === 32`. Service prefix validation (`455-462`) passes: `1 ≥ 1`, `1 ≤ maximum`, `next === null`.
+- **Ordering of ordinals 1/2/10 is correct** — the `beads/later` task bead is created *after* the exact-32 update-where, so cardinality is not perturbed (subject to #15b for pre-existing beads).
+- **All count arithmetic closes.** Source HTTP `7+18+10+17+3+13 = 68` ✓; cases 14 ✓; ownerOpens `4+6+6 = 16` with 14 directories (2 reopens) ✓; listeners 6 = the 6 HTTP cases ✓; readonly handles 2 ✓. Combined: `68+13+14 = 95` ✓, `16+1+1 = 18` ✓, `14+1+1 = 16` ✓, `6+1+1 = 8` ✓, executions `14+1+1 = 16` ✓, new full-CI callbacks 4 ✓. Store case 14 page calls `1+9+3+1` ✓; service 13 `2+6+3+2` ✓; new HTTP 13 ✓; mutant 8 named failures = 5 root + 3 page, exercising both mutated projections independently ✓.
+- **Line references check out** against the snippets: `532` is the page refused return, `544` the root refused return, `389` auth, `483-485` routing, `590-598` `readContext`, `854-884` `readReceipt`.
+- **Precedence claims hold.** Root: nondisclosure before minimum (`872-873` returns on `!stored` before `checkTransactionMinimum`), minimum before expiry (`874`), unsupported only for visible (`869-870`). Page: identity before unsupported (`2053-2054`), before minimum (`2057`), before expiry (`2058`). Nondisclosure never waits — `waitForTransactionMinimum` retries only `reason === "behind"` and missing returns without throwing.
+- **No new oracle.** All five spec-enumerated 404 causes (`bdp.md:4632`, `5116-5133`) return the identical current all-visible tuple; `scopeEpoch`/`authorizationView` are owner-level closures and `scopePosition` is the current head, never the receipt's. Prior-epoch misses report the current epoch, not the receipt's.
+- **HEAD mechanics work.** `read-http.ts:40-46` copies headers (preserving `bdp-scope-*`) and sets `content-length` to the GET body length; `transaction-runtime.ts:89-94` then sees `body === undefined`, leaves `content-length` intact, and ends with no payload. The "HEAD body 0, length matches a preceding equivalent GET" requirement is satisfiable.
+- **Launcher reading is correct.** `closing ??=` (`scripts/transaction-installed-observation.mjs:48`) memoizes, so abort-then-explicit-close does not duplicate; `readyAndCloseEachMs 10000` matches the hardcoded `bounded` timeout at `:30`.
+- **Pending CI/merge, reanchoring, and the separate fresh-source/archive/consumer/8-package/PID gates** are correctly held outside this plan; I did not treat them as defects, and I did not require full-profile proof from the private partial witness.

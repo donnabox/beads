@@ -1,0 +1,24 @@
+[
+  {
+    "actualResult": "UNATTEMPTED/UNKNOWN",
+    "command": {
+      "acceptedRawExitCodes": [
+        0
+      ],
+      "argv": [
+        "/opt/homebrew/opt/python@3.14/bin/python3.14",
+        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/tx-discovery-validation-preparation-10/packages.py",
+        "installed"
+      ],
+      "automaticRetries": 0,
+      "contract": "Reproduce complete package-member linkage, resolved production dependency graph within owned consumer, actual lock and payload recursive hash; bind entry literal+realpath+bytes and full inventory/symlinks; no workspace fallback. Emit actual installed-provenance/inventory records.",
+      "cwd": "/Users/dbox/repos/wt/vickie/vickie-tx-discovery-minimum",
+      "id": "verify-installed-consumer",
+      "kind": "supervised-readonly-helper",
+      "mustCompleteBeforeNextStage": true,
+      "outerSeconds": 120,
+      "termAtSeconds": 115
+    },
+    "stage": "verify-installed-consumer"
+  }
+]

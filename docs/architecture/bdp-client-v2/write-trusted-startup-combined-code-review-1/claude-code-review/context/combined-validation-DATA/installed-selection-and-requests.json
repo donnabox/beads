@@ -1,0 +1,2649 @@
+{
+  "state": "SOURCE-DERIVED PROSPECTIVE success program, not observed traffic",
+  "fileSha256": "d045ecbafdd53db35842c08f38c754f0814f7de891cadb40303921fa4146bceb",
+  "callbacks": [
+    {
+      "id": "I01",
+      "fullName": "I01 read-update cold prepared startup (TX requires combined D3a)",
+      "file": "apps/bdptest/src/reference-deployment-lifecycle-installed.test.ts",
+      "profile": "read-update",
+      "HTTP": 13,
+      "CONNECT": 0,
+      "originalCandidateOrPublicGenerations": 1,
+      "guardChildren": 0,
+      "ownedChildren": 1,
+      "requests": [
+        {
+          "ordinal": 1,
+          "generation": 1,
+          "label": "Scope",
+          "method": "GET",
+          "target": "actual configured scope",
+          "status": [
+            200,
+            204
+          ],
+          "credentialRole": "writer",
+          "sourceBody": null,
+          "sourceIdempotencyKey": null
+        },
+        {
+          "ordinal": 2,
+          "generation": 1,
+          "label": "descriptor",
+          "method": "GET",
+          "target": "one actual received Scope Link rel=service-desc",
+          "status": 200,
+          "credentialRole": "writer",
+          "sourceBody": null,
+          "sourceIdempotencyKey": null
+        },
+        {
+          "ordinal": 3,
+          "generation": 1,
+          "label": "Directory",
+          "method": "GET",
+          "target": "actual parsed descriptor.operations",
+          "status": 200,
+          "credentialRole": "writer",
+          "sourceBody": null,
+          "sourceIdempotencyKey": null
+        },
+        {
+          "ordinal": 4,
+          "generation": 1,
+          "label": "Type",
+          "method": "GET",
+          "target": "actual fixture type URI",
+          "status": 200,
+          "credentialRole": "writer",
+          "sourceBody": null,
+          "sourceIdempotencyKey": null
+        },
+        {
+          "ordinal": 5,
+          "generation": 1,
+          "label": "create",
+          "method": "POST",
+          "target": "actual parsed Directory.createBead",
+          "status": 200,
+          "credentialRole": "writer",
+          "sourceBody": {
+            "id": "beads/startup",
+            "type": "actual fixture type URI",
+            "properties": {
+              "n": 1
+            }
+          },
+          "sourceIdempotencyKey": "startup-created"
+        },
+        {
+          "ordinal": 6,
+          "generation": 1,
+          "label": "read",
+          "method": "GET",
+          "target": "actual created resource.id",
+          "status": 200,
+          "credentialRole": "writer",
+          "sourceBody": null,
+          "sourceIdempotencyKey": null
+        },
+        {
+          "ordinal": 7,
+          "generation": 1,
+          "label": "replay",
+          "method": "POST",
+          "target": "actual parsed Directory.createBead",
+          "status": 200,
+          "credentialRole": "writer",
+          "sourceBody": {
+            "id": "beads/startup",
+            "type": "actual fixture type URI",
+            "properties": {
+              "n": 1
+            }
+          },
+          "sourceIdempotencyKey": "startup-created"
+        },
+        {
+          "ordinal": 8,
+          "generation": 1,
+          "label": "reader-read",
+          "method": "GET",
+          "target": "actual created resource.id",
+          "status": 200,
+          "credentialRole": "reader",
+          "sourceBody": null,
+          "sourceIdempotencyKey": null
+        },
+        {
+          "ordinal": 9,
+          "generation": 1,
+          "label": "reader-refused",
+          "method": "POST",
+          "target": "actual parsed Directory.createBead",
+          "status": 403,
+          "credentialRole": "reader",
+          "sourceBody": {
+            "id": "beads/refused",
+            "type": "actual fixture type URI",
+            "properties": {
+              "n": 1
+            }
+          },
+          "sourceIdempotencyKey": "reader-refused"
+        },
+        {
+          "ordinal": 10,
+          "generation": 1,
+          "label": "anonymous-refused",
+          "method": "GET",
+          "target": "actual created resource.id",
+          "status": 401,
+          "credentialRole": "anonymous",
+          "sourceBody": null,
+          "sourceIdempotencyKey": null
+        },
+        {
+          "ordinal": 11,
+          "generation": 1,
+          "label": "descriptor-HEAD",
+          "method": "HEAD",
+          "target": "same actual descriptor URL",
+          "status": 200,
+          "credentialRole": "writer",
+          "sourceBody": null,
+          "sourceIdempotencyKey": null
+        },
+        {
+          "ordinal": 12,
+          "generation": 1,
+          "label": "Directory-HEAD",
+          "method": "HEAD",
+          "target": "same actual Directory URL",
+          "status": 200,
+          "credentialRole": "writer",
+          "sourceBody": null,
+          "sourceIdempotencyKey": null
+        },
+        {
+          "ordinal": 13,
+          "generation": 1,
+          "label": "absent",
+          "method": "GET",
+          "target": "scope + beads/not-created",
+          "status": 404,
+          "credentialRole": "writer",
+          "sourceBody": null,
+          "sourceIdempotencyKey": null
+        }
+      ],
+      "sameActualD3aDependency": false,
+      "testNamePattern": "^I01\\ read\\-update\\ cold\\ prepared\\ startup\\ \\(TX\\ requires\\ combined\\ D3a\\)$",
+      "callbackMs": 60000,
+      "workMs": 45000,
+      "sharedCleanupMs": 10000,
+      "requestMs": 5000,
+      "outerMs": 120000,
+      "TERMms": 115000,
+      "noRetry": true,
+      "status": "PROSPECTIVE NOT RUN",
+      "parentOwnerSequence": [
+        {
+          "kind": "read-update-owner",
+          "stage": "probe"
+        },
+        {
+          "kind": "SQLite",
+          "stage": "probe-resource-read"
+        }
+      ],
+      "parentAcquisitions": 2,
+      "ownerProbes": [
+        {
+          "profile": "read-update",
+          "actualReopenAndClose": true,
+          "createdResourcePresent": true,
+          "refusedResourceAbsent": true
+        }
+      ],
+      "controls": [
+        {
+          "generation": 1,
+          "requested": "close",
+          "actualExitBefore": false
+        }
+      ]
+    },
+    {
+      "id": "I02",
+      "fullName": "I02 transactional cold prepared startup (TX requires combined D3a)",
+      "file": "apps/bdptest/src/reference-deployment-lifecycle-installed.test.ts",
+      "profile": "transactional",
+      "HTTP": 13,
+      "CONNECT": 0,
+      "originalCandidateOrPublicGenerations": 1,
+      "guardChildren": 0,
+      "ownedChildren": 1,
+      "requests": [
+        {
+          "ordinal": 1,
+          "generation": 1,
+          "label": "Scope",
+          "method": "GET",
+          "target": "actual configured scope",
+          "status": [
+            200,
+            204
+          ],
+          "credentialRole": "writer",
+          "sourceBody": null,
+          "sourceIdempotencyKey": null
+        },
+        {
+          "ordinal": 2,
+          "generation": 1,
+          "label": "descriptor",
+          "method": "GET",
+          "target": "one actual received Scope Link rel=service-desc",
+          "status": 200,
+          "credentialRole": "writer",
+          "sourceBody": null,
+          "sourceIdempotencyKey": null
+        },
+        {
+          "ordinal": 3,
+          "generation": 1,
+          "label": "Directory",
+          "method": "GET",
+          "target": "actual parsed descriptor.operations",
+          "status": 200,
+          "credentialRole": "writer",
+          "sourceBody": null,
+          "sourceIdempotencyKey": null
+        },
+        {
+          "ordinal": 4,
+          "generation": 1,
+          "label": "Type",
+          "method": "GET",
+          "target": "actual fixture type URI",
+          "status": 200,
+          "credentialRole": "writer",
+          "sourceBody": null,
+          "sourceIdempotencyKey": null
+        },
+        {
+          "ordinal": 5,
+          "generation": 1,
+          "label": "create",
+          "method": "POST",
+          "target": "actual parsed Directory.createBead",
+          "status": 200,
+          "credentialRole": "writer",
+          "sourceBody": {
+            "id": "beads/startup",
+            "type": "actual fixture type URI",
+            "properties": {
+              "n": 1
+            }
+          },
+          "sourceIdempotencyKey": "startup-created"
+        },
+        {
+          "ordinal": 6,
+          "generation": 1,
+          "label": "read",
+          "method": "GET",
+          "target": "actual created resource.id",
+          "status": 200,
+          "credentialRole": "writer",
+          "sourceBody": null,
+          "sourceIdempotencyKey": null
+        },
+        {
+          "ordinal": 7,
+          "generation": 1,
+          "label": "replay",
+          "method": "POST",
+          "target": "actual parsed Directory.createBead",
+          "status": 200,
+          "credentialRole": "writer",
+          "sourceBody": {
+            "id": "beads/startup",
+            "type": "actual fixture type URI",
+            "properties": {
+              "n": 1
+            }
+          },
+          "sourceIdempotencyKey": "startup-created"
+        },
+        {
+          "ordinal": 8,
+          "generation": 1,
+          "label": "reader-read",
+          "method": "GET",
+          "target": "actual created resource.id",
+          "status": 200,
+          "credentialRole": "reader",
+          "sourceBody": null,
+          "sourceIdempotencyKey": null
+        },
+        {
+          "ordinal": 9,
+          "generation": 1,
+          "label": "reader-refused",
+          "method": "POST",
+          "target": "actual parsed Directory.createBead",
+          "status": 403,
+          "credentialRole": "reader",
+          "sourceBody": {
+            "id": "beads/refused",
+            "type": "actual fixture type URI",
+            "properties": {
+              "n": 1
+            }
+          },
+          "sourceIdempotencyKey": "reader-refused"
+        },
+        {
+          "ordinal": 10,
+          "generation": 1,
+          "label": "anonymous-refused",
+          "method": "GET",
+          "target": "actual created resource.id",
+          "status": 401,
+          "credentialRole": "anonymous",
+          "sourceBody": null,
+          "sourceIdempotencyKey": null
+        },
+        {
+          "ordinal": 11,
+          "generation": 1,
+          "label": "descriptor-HEAD",
+          "method": "HEAD",
+          "target": "same actual descriptor URL",
+          "status": 200,
+          "credentialRole": "writer",
+          "sourceBody": null,
+          "sourceIdempotencyKey": null
+        },
+        {
+          "ordinal": 12,
+          "generation": 1,
+          "label": "Directory-HEAD",
+          "method": "HEAD",
+          "target": "same actual Directory URL",
+          "status": 200,
+          "credentialRole": "writer",
+          "sourceBody": null,
+          "sourceIdempotencyKey": null
+        },
+        {
+          "ordinal": 13,
+          "generation": 1,
+          "label": "absent",
+          "method": "GET",
+          "target": "scope + beads/not-created",
+          "status": 404,
+          "credentialRole": "writer",
+          "sourceBody": null,
+          "sourceIdempotencyKey": null
+        }
+      ],
+      "sameActualD3aDependency": true,
+      "testNamePattern": "^I02\\ transactional\\ cold\\ prepared\\ startup\\ \\(TX\\ requires\\ combined\\ D3a\\)$",
+      "callbackMs": 60000,
+      "workMs": 45000,
+      "sharedCleanupMs": 10000,
+      "requestMs": 5000,
+      "outerMs": 120000,
+      "TERMms": 115000,
+      "noRetry": true,
+      "status": "PROSPECTIVE NOT RUN",
+      "parentOwnerSequence": [
+        {
+          "kind": "transaction-owner",
+          "stage": "probe"
+        },
+        {
+          "kind": "SQLite",
+          "stage": "probe-resource-read"
+        }
+      ],
+      "parentAcquisitions": 2,
+      "ownerProbes": [
+        {
+          "profile": "transactional",
+          "actualReopenAndClose": true,
+          "createdResourcePresent": true,
+          "refusedResourceAbsent": true
+        }
+      ],
+      "controls": [
+        {
+          "generation": 1,
+          "requested": "close",
+          "actualExitBefore": false
+        }
+      ]
+    },
+    {
+      "id": "I03",
+      "fullName": "I03 read-update two-generation read and replay",
+      "file": "apps/bdptest/src/reference-deployment-lifecycle-installed.test.ts",
+      "profile": "read-update",
+      "HTTP": 10,
+      "CONNECT": 0,
+      "originalCandidateOrPublicGenerations": 2,
+      "guardChildren": 0,
+      "ownedChildren": 2,
+      "requests": [
+        {
+          "ordinal": 1,
+          "generation": 1,
+          "label": "Scope",
+          "method": "GET",
+          "target": "actual configured scope",
+          "status": [
+            200,
+            204
+          ],
+          "credentialRole": "writer",
+          "sourceBody": null,
+          "sourceIdempotencyKey": null
+        },
+        {
+          "ordinal": 2,
+          "generation": 1,
+          "label": "descriptor",
+          "method": "GET",
+          "target": "one actual received Scope Link rel=service-desc",
+          "status": 200,
+          "credentialRole": "writer",
+          "sourceBody": null,
+          "sourceIdempotencyKey": null
+        },
+        {
+          "ordinal": 3,
+          "generation": 1,
+          "label": "Directory",
+          "method": "GET",
+          "target": "actual parsed descriptor.operations",
+          "status": 200,
+          "credentialRole": "writer",
+          "sourceBody": null,
+          "sourceIdempotencyKey": null
+        },
+        {
+          "ordinal": 4,
+          "generation": 1,
+          "label": "create",
+          "method": "POST",
+          "target": "actual parsed Directory.createBead",
+          "status": 200,
+          "credentialRole": "writer",
+          "sourceBody": {
+            "id": "beads/startup",
+            "type": "actual fixture type URI",
+            "properties": {
+              "n": 1
+            }
+          },
+          "sourceIdempotencyKey": "startup-created"
+        },
+        {
+          "ordinal": 5,
+          "generation": 1,
+          "label": "read",
+          "method": "GET",
+          "target": "actual created resource.id",
+          "status": 200,
+          "credentialRole": "writer",
+          "sourceBody": null,
+          "sourceIdempotencyKey": null
+        },
+        {
+          "ordinal": 6,
+          "generation": 2,
+          "label": "Scope",
+          "method": "GET",
+          "target": "actual configured scope",
+          "status": [
+            200,
+            204
+          ],
+          "credentialRole": "writer",
+          "sourceBody": null,
+          "sourceIdempotencyKey": null
+        },
+        {
+          "ordinal": 7,
+          "generation": 2,
+          "label": "descriptor",
+          "method": "GET",
+          "target": "one actual received Scope Link rel=service-desc",
+          "status": 200,
+          "credentialRole": "writer",
+          "sourceBody": null,
+          "sourceIdempotencyKey": null
+        },
+        {
+          "ordinal": 8,
+          "generation": 2,
+          "label": "Directory",
+          "method": "GET",
+          "target": "actual parsed descriptor.operations",
+          "status": 200,
+          "credentialRole": "writer",
+          "sourceBody": null,
+          "sourceIdempotencyKey": null
+        },
+        {
+          "ordinal": 9,
+          "generation": 2,
+          "label": "reopened-read",
+          "method": "GET",
+          "target": "actual created resource.id",
+          "status": 200,
+          "credentialRole": "writer",
+          "sourceBody": null,
+          "sourceIdempotencyKey": null
+        },
+        {
+          "ordinal": 10,
+          "generation": 2,
+          "label": "replay",
+          "method": "POST",
+          "target": "actual parsed Directory.createBead",
+          "status": 200,
+          "credentialRole": "writer",
+          "sourceBody": {
+            "id": "beads/startup",
+            "type": "actual fixture type URI",
+            "properties": {
+              "n": 1
+            }
+          },
+          "sourceIdempotencyKey": "startup-created"
+        }
+      ],
+      "sameActualD3aDependency": false,
+      "testNamePattern": "^I03\\ read\\-update\\ two\\-generation\\ read\\ and\\ replay$",
+      "callbackMs": 60000,
+      "workMs": 45000,
+      "sharedCleanupMs": 10000,
+      "requestMs": 5000,
+      "outerMs": 120000,
+      "TERMms": 115000,
+      "noRetry": true,
+      "status": "PROSPECTIVE NOT RUN",
+      "parentOwnerSequence": [
+        {
+          "kind": "read-update-owner",
+          "stage": "probe"
+        },
+        {
+          "kind": "SQLite",
+          "stage": "probe-resource-read"
+        }
+      ],
+      "parentAcquisitions": 2,
+      "ownerProbes": [
+        {
+          "profile": "read-update",
+          "actualReopenAndClose": true,
+          "createdResourcePresent": true,
+          "refusedResourceAbsent": true
+        }
+      ],
+      "controls": [
+        {
+          "generation": 1,
+          "requested": "close",
+          "actualExitBefore": false
+        },
+        {
+          "generation": 2,
+          "requested": "close",
+          "actualExitBefore": false
+        }
+      ]
+    },
+    {
+      "id": "I04",
+      "fullName": "I04 transactional two-generation read and replay",
+      "file": "apps/bdptest/src/reference-deployment-lifecycle-installed.test.ts",
+      "profile": "transactional",
+      "HTTP": 10,
+      "CONNECT": 0,
+      "originalCandidateOrPublicGenerations": 2,
+      "guardChildren": 0,
+      "ownedChildren": 2,
+      "requests": [
+        {
+          "ordinal": 1,
+          "generation": 1,
+          "label": "Scope",
+          "method": "GET",
+          "target": "actual configured scope",
+          "status": [
+            200,
+            204
+          ],
+          "credentialRole": "writer",
+          "sourceBody": null,
+          "sourceIdempotencyKey": null
+        },
+        {
+          "ordinal": 2,
+          "generation": 1,
+          "label": "descriptor",
+          "method": "GET",
+          "target": "one actual received Scope Link rel=service-desc",
+          "status": 200,
+          "credentialRole": "writer",
+          "sourceBody": null,
+          "sourceIdempotencyKey": null
+        },
+        {
+          "ordinal": 3,
+          "generation": 1,
+          "label": "Directory",
+          "method": "GET",
+          "target": "actual parsed descriptor.operations",
+          "status": 200,
+          "credentialRole": "writer",
+          "sourceBody": null,
+          "sourceIdempotencyKey": null
+        },
+        {
+          "ordinal": 4,
+          "generation": 1,
+          "label": "create",
+          "method": "POST",
+          "target": "actual parsed Directory.createBead",
+          "status": 200,
+          "credentialRole": "writer",
+          "sourceBody": {
+            "id": "beads/startup",
+            "type": "actual fixture type URI",
+            "properties": {
+              "n": 1
+            }
+          },
+          "sourceIdempotencyKey": "startup-created"
+        },
+        {
+          "ordinal": 5,
+          "generation": 1,
+          "label": "read",
+          "method": "GET",
+          "target": "actual created resource.id",
+          "status": 200,
+          "credentialRole": "writer",
+          "sourceBody": null,
+          "sourceIdempotencyKey": null
+        },
+        {
+          "ordinal": 6,
+          "generation": 2,
+          "label": "Scope",
+          "method": "GET",
+          "target": "actual configured scope",
+          "status": [
+            200,
+            204
+          ],
+          "credentialRole": "writer",
+          "sourceBody": null,
+          "sourceIdempotencyKey": null
+        },
+        {
+          "ordinal": 7,
+          "generation": 2,
+          "label": "descriptor",
+          "method": "GET",
+          "target": "one actual received Scope Link rel=service-desc",
+          "status": 200,
+          "credentialRole": "writer",
+          "sourceBody": null,
+          "sourceIdempotencyKey": null
+        },
+        {
+          "ordinal": 8,
+          "generation": 2,
+          "label": "Directory",
+          "method": "GET",
+          "target": "actual parsed descriptor.operations",
+          "status": 200,
+          "credentialRole": "writer",
+          "sourceBody": null,
+          "sourceIdempotencyKey": null
+        },
+        {
+          "ordinal": 9,
+          "generation": 2,
+          "label": "reopened-read",
+          "method": "GET",
+          "target": "actual created resource.id",
+          "status": 200,
+          "credentialRole": "writer",
+          "sourceBody": null,
+          "sourceIdempotencyKey": null
+        },
+        {
+          "ordinal": 10,
+          "generation": 2,
+          "label": "replay",
+          "method": "POST",
+          "target": "actual parsed Directory.createBead",
+          "status": 200,
+          "credentialRole": "writer",
+          "sourceBody": {
+            "id": "beads/startup",
+            "type": "actual fixture type URI",
+            "properties": {
+              "n": 1
+            }
+          },
+          "sourceIdempotencyKey": "startup-created"
+        }
+      ],
+      "sameActualD3aDependency": true,
+      "testNamePattern": "^I04\\ transactional\\ two\\-generation\\ read\\ and\\ replay$",
+      "callbackMs": 60000,
+      "workMs": 45000,
+      "sharedCleanupMs": 10000,
+      "requestMs": 5000,
+      "outerMs": 120000,
+      "TERMms": 115000,
+      "noRetry": true,
+      "status": "PROSPECTIVE NOT RUN",
+      "parentOwnerSequence": [
+        {
+          "kind": "transaction-owner",
+          "stage": "probe"
+        },
+        {
+          "kind": "SQLite",
+          "stage": "probe-resource-read"
+        }
+      ],
+      "parentAcquisitions": 2,
+      "ownerProbes": [
+        {
+          "profile": "transactional",
+          "actualReopenAndClose": true,
+          "createdResourcePresent": true,
+          "refusedResourceAbsent": true
+        }
+      ],
+      "controls": [
+        {
+          "generation": 1,
+          "requested": "close",
+          "actualExitBefore": false
+        },
+        {
+          "generation": 2,
+          "requested": "close",
+          "actualExitBefore": false
+        }
+      ]
+    },
+    {
+      "id": "I05",
+      "fullName": "I05 RU current credential changes on the same store",
+      "file": "apps/bdptest/src/reference-deployment-lifecycle-installed.test.ts",
+      "profile": "read-update",
+      "HTTP": 10,
+      "CONNECT": 0,
+      "originalCandidateOrPublicGenerations": 2,
+      "guardChildren": 0,
+      "ownedChildren": 2,
+      "requests": [
+        {
+          "ordinal": 1,
+          "generation": 1,
+          "label": "Scope",
+          "method": "GET",
+          "target": "actual configured scope",
+          "status": [
+            200,
+            204
+          ],
+          "credentialRole": "writer",
+          "sourceBody": null,
+          "sourceIdempotencyKey": null
+        },
+        {
+          "ordinal": 2,
+          "generation": 1,
+          "label": "descriptor",
+          "method": "GET",
+          "target": "one actual received Scope Link rel=service-desc",
+          "status": 200,
+          "credentialRole": "writer",
+          "sourceBody": null,
+          "sourceIdempotencyKey": null
+        },
+        {
+          "ordinal": 3,
+          "generation": 1,
+          "label": "Directory",
+          "method": "GET",
+          "target": "actual parsed descriptor.operations",
+          "status": 200,
+          "credentialRole": "writer",
+          "sourceBody": null,
+          "sourceIdempotencyKey": null
+        },
+        {
+          "ordinal": 4,
+          "generation": 1,
+          "label": "create",
+          "method": "POST",
+          "target": "actual parsed Directory.createBead",
+          "status": 200,
+          "credentialRole": "writer",
+          "sourceBody": {
+            "id": "beads/startup",
+            "type": "actual fixture type URI",
+            "properties": {
+              "n": 1
+            }
+          },
+          "sourceIdempotencyKey": "startup-created"
+        },
+        {
+          "ordinal": 5,
+          "generation": 2,
+          "label": "Scope",
+          "method": "GET",
+          "target": "actual configured scope",
+          "status": [
+            200,
+            204
+          ],
+          "credentialRole": "writer",
+          "sourceBody": null,
+          "sourceIdempotencyKey": null
+        },
+        {
+          "ordinal": 6,
+          "generation": 2,
+          "label": "descriptor",
+          "method": "GET",
+          "target": "one actual received Scope Link rel=service-desc",
+          "status": 200,
+          "credentialRole": "writer",
+          "sourceBody": null,
+          "sourceIdempotencyKey": null
+        },
+        {
+          "ordinal": 7,
+          "generation": 2,
+          "label": "Directory",
+          "method": "GET",
+          "target": "actual parsed descriptor.operations",
+          "status": 200,
+          "credentialRole": "writer",
+          "sourceBody": null,
+          "sourceIdempotencyKey": null
+        },
+        {
+          "ordinal": 8,
+          "generation": 2,
+          "label": "old-token",
+          "method": "GET",
+          "target": "actual created resource.id",
+          "status": 401,
+          "credentialRole": "old-writer",
+          "sourceBody": null,
+          "sourceIdempotencyKey": null
+        },
+        {
+          "ordinal": 9,
+          "generation": 2,
+          "label": "new-token",
+          "method": "GET",
+          "target": "actual created resource.id",
+          "status": 200,
+          "credentialRole": "writer",
+          "sourceBody": null,
+          "sourceIdempotencyKey": null
+        },
+        {
+          "ordinal": 10,
+          "generation": 2,
+          "label": "reader-refused",
+          "method": "POST",
+          "target": "actual parsed Directory.createBead",
+          "status": 403,
+          "credentialRole": "reader",
+          "sourceBody": {
+            "id": "beads/refused",
+            "type": "actual fixture type URI",
+            "properties": {
+              "n": 1
+            }
+          },
+          "sourceIdempotencyKey": "reader-refused"
+        }
+      ],
+      "sameActualD3aDependency": false,
+      "testNamePattern": "^I05\\ RU\\ current\\ credential\\ changes\\ on\\ the\\ same\\ store$",
+      "callbackMs": 60000,
+      "workMs": 45000,
+      "sharedCleanupMs": 10000,
+      "requestMs": 5000,
+      "outerMs": 120000,
+      "TERMms": 115000,
+      "noRetry": true,
+      "status": "PROSPECTIVE NOT RUN",
+      "parentOwnerSequence": [
+        {
+          "kind": "read-update-owner",
+          "stage": "probe"
+        },
+        {
+          "kind": "SQLite",
+          "stage": "probe-resource-read"
+        }
+      ],
+      "parentAcquisitions": 2,
+      "ownerProbes": [
+        {
+          "profile": "read-update",
+          "actualReopenAndClose": true,
+          "createdResourcePresent": true,
+          "refusedResourceAbsent": true
+        }
+      ],
+      "controls": [
+        {
+          "generation": 1,
+          "requested": "close",
+          "actualExitBefore": false
+        },
+        {
+          "generation": 2,
+          "requested": "close",
+          "actualExitBefore": false
+        }
+      ]
+    },
+    {
+      "id": "I06",
+      "fullName": "I06 read-update absent create:false refuses without file",
+      "file": "apps/bdptest/src/reference-deployment-lifecycle-installed.test.ts",
+      "profile": "read-update",
+      "HTTP": 0,
+      "CONNECT": 0,
+      "originalCandidateOrPublicGenerations": 1,
+      "guardChildren": 0,
+      "ownedChildren": 1,
+      "requests": [],
+      "sameActualD3aDependency": false,
+      "testNamePattern": "^I06\\ read\\-update\\ absent\\ create:false\\ refuses\\ without\\ file$",
+      "callbackMs": 60000,
+      "workMs": 45000,
+      "sharedCleanupMs": 10000,
+      "requestMs": 5000,
+      "outerMs": 120000,
+      "TERMms": 115000,
+      "noRetry": true,
+      "status": "PROSPECTIVE NOT RUN",
+      "parentOwnerSequence": [],
+      "parentAcquisitions": 0,
+      "ownerProbes": [],
+      "controls": []
+    },
+    {
+      "id": "I07",
+      "fullName": "I07 transactional absent create:false refuses without file",
+      "file": "apps/bdptest/src/reference-deployment-lifecycle-installed.test.ts",
+      "profile": "transactional",
+      "HTTP": 0,
+      "CONNECT": 0,
+      "originalCandidateOrPublicGenerations": 1,
+      "guardChildren": 0,
+      "ownedChildren": 1,
+      "requests": [],
+      "sameActualD3aDependency": false,
+      "testNamePattern": "^I07\\ transactional\\ absent\\ create:false\\ refuses\\ without\\ file$",
+      "callbackMs": 60000,
+      "workMs": 45000,
+      "sharedCleanupMs": 10000,
+      "requestMs": 5000,
+      "outerMs": 120000,
+      "TERMms": 115000,
+      "noRetry": true,
+      "status": "PROSPECTIVE NOT RUN",
+      "parentOwnerSequence": [],
+      "parentAcquisitions": 0,
+      "ownerProbes": [],
+      "controls": []
+    },
+    {
+      "id": "I08",
+      "fullName": "I08 read-update real persisted capture mismatch refuses",
+      "file": "apps/bdptest/src/reference-deployment-lifecycle-installed.test.ts",
+      "profile": "read-update",
+      "HTTP": 0,
+      "CONNECT": 0,
+      "originalCandidateOrPublicGenerations": 1,
+      "guardChildren": 0,
+      "ownedChildren": 1,
+      "requests": [],
+      "sameActualD3aDependency": false,
+      "testNamePattern": "^I08\\ read\\-update\\ real\\ persisted\\ capture\\ mismatch\\ refuses$",
+      "callbackMs": 60000,
+      "workMs": 45000,
+      "sharedCleanupMs": 10000,
+      "requestMs": 5000,
+      "outerMs": 120000,
+      "TERMms": 115000,
+      "noRetry": true,
+      "status": "PROSPECTIVE NOT RUN",
+      "parentOwnerSequence": [
+        {
+          "kind": "read-update-owner",
+          "stage": "initialize"
+        },
+        {
+          "kind": "SQLite",
+          "stage": "persisted-capture-edit"
+        },
+        {
+          "kind": "SQLite",
+          "stage": "persisted-capture-restore"
+        },
+        {
+          "kind": "read-update-owner",
+          "stage": "probe"
+        },
+        {
+          "kind": "SQLite",
+          "stage": "probe-resource-read"
+        }
+      ],
+      "parentAcquisitions": 5,
+      "ownerProbes": [
+        {
+          "profile": "read-update",
+          "actualFixtureInitializationAndClose": true
+        },
+        {
+          "profile": "read-update",
+          "actualReopenAndClose": true,
+          "createdResourcePresent": false,
+          "refusedResourceAbsent": true
+        }
+      ],
+      "controls": []
+    },
+    {
+      "id": "I09",
+      "fullName": "I09 transactional real persisted capture mismatch refuses",
+      "file": "apps/bdptest/src/reference-deployment-lifecycle-installed.test.ts",
+      "profile": "transactional",
+      "HTTP": 0,
+      "CONNECT": 0,
+      "originalCandidateOrPublicGenerations": 1,
+      "guardChildren": 0,
+      "ownedChildren": 1,
+      "requests": [],
+      "sameActualD3aDependency": false,
+      "testNamePattern": "^I09\\ transactional\\ real\\ persisted\\ capture\\ mismatch\\ refuses$",
+      "callbackMs": 60000,
+      "workMs": 45000,
+      "sharedCleanupMs": 10000,
+      "requestMs": 5000,
+      "outerMs": 120000,
+      "TERMms": 115000,
+      "noRetry": true,
+      "status": "PROSPECTIVE NOT RUN",
+      "parentOwnerSequence": [
+        {
+          "kind": "transaction-owner",
+          "stage": "initialize"
+        },
+        {
+          "kind": "SQLite",
+          "stage": "persisted-capture-edit"
+        },
+        {
+          "kind": "SQLite",
+          "stage": "persisted-capture-restore"
+        },
+        {
+          "kind": "transaction-owner",
+          "stage": "probe"
+        },
+        {
+          "kind": "SQLite",
+          "stage": "probe-resource-read"
+        }
+      ],
+      "parentAcquisitions": 5,
+      "ownerProbes": [
+        {
+          "profile": "transactional",
+          "actualFixtureInitializationAndClose": true
+        },
+        {
+          "profile": "transactional",
+          "actualReopenAndClose": true,
+          "createdResourcePresent": false,
+          "refusedResourceAbsent": true
+        }
+      ],
+      "controls": []
+    },
+    {
+      "id": "I10",
+      "fullName": "I10 read-update occupied listener retains blocker",
+      "file": "apps/bdptest/src/reference-deployment-lifecycle-installed.test.ts",
+      "profile": "read-update",
+      "HTTP": 0,
+      "CONNECT": 0,
+      "originalCandidateOrPublicGenerations": 1,
+      "guardChildren": 0,
+      "ownedChildren": 1,
+      "requests": [],
+      "sameActualD3aDependency": false,
+      "testNamePattern": "^I10\\ read\\-update\\ occupied\\ listener\\ retains\\ blocker$",
+      "callbackMs": 60000,
+      "workMs": 45000,
+      "sharedCleanupMs": 10000,
+      "requestMs": 5000,
+      "outerMs": 120000,
+      "TERMms": 115000,
+      "noRetry": true,
+      "status": "PROSPECTIVE NOT RUN",
+      "parentOwnerSequence": [
+        {
+          "kind": "read-update-owner",
+          "stage": "probe"
+        },
+        {
+          "kind": "SQLite",
+          "stage": "probe-resource-read"
+        }
+      ],
+      "parentAcquisitions": 2,
+      "ownerProbes": [
+        {
+          "profile": "read-update",
+          "actualReopenAndClose": true,
+          "createdResourcePresent": false,
+          "refusedResourceAbsent": true
+        }
+      ],
+      "controls": []
+    },
+    {
+      "id": "I11",
+      "fullName": "I11 transactional occupied listener retains blocker",
+      "file": "apps/bdptest/src/reference-deployment-lifecycle-installed.test.ts",
+      "profile": "transactional",
+      "HTTP": 0,
+      "CONNECT": 0,
+      "originalCandidateOrPublicGenerations": 1,
+      "guardChildren": 0,
+      "ownedChildren": 1,
+      "requests": [],
+      "sameActualD3aDependency": false,
+      "testNamePattern": "^I11\\ transactional\\ occupied\\ listener\\ retains\\ blocker$",
+      "callbackMs": 60000,
+      "workMs": 45000,
+      "sharedCleanupMs": 10000,
+      "requestMs": 5000,
+      "outerMs": 120000,
+      "TERMms": 115000,
+      "noRetry": true,
+      "status": "PROSPECTIVE NOT RUN",
+      "parentOwnerSequence": [
+        {
+          "kind": "transaction-owner",
+          "stage": "probe"
+        },
+        {
+          "kind": "SQLite",
+          "stage": "probe-resource-read"
+        }
+      ],
+      "parentAcquisitions": 2,
+      "ownerProbes": [
+        {
+          "profile": "transactional",
+          "actualReopenAndClose": true,
+          "createdResourcePresent": false,
+          "refusedResourceAbsent": true
+        }
+      ],
+      "controls": []
+    },
+    {
+      "id": "I12",
+      "fullName": "I12 read-update SIGTERM stops then reopens",
+      "file": "apps/bdptest/src/reference-deployment-lifecycle-installed.test.ts",
+      "profile": "read-update",
+      "HTTP": 9,
+      "CONNECT": 0,
+      "originalCandidateOrPublicGenerations": 2,
+      "guardChildren": 0,
+      "ownedChildren": 2,
+      "requests": [
+        {
+          "ordinal": 1,
+          "generation": 1,
+          "label": "Scope",
+          "method": "GET",
+          "target": "actual configured scope",
+          "status": [
+            200,
+            204
+          ],
+          "credentialRole": "writer",
+          "sourceBody": null,
+          "sourceIdempotencyKey": null
+        },
+        {
+          "ordinal": 2,
+          "generation": 1,
+          "label": "descriptor",
+          "method": "GET",
+          "target": "one actual received Scope Link rel=service-desc",
+          "status": 200,
+          "credentialRole": "writer",
+          "sourceBody": null,
+          "sourceIdempotencyKey": null
+        },
+        {
+          "ordinal": 3,
+          "generation": 1,
+          "label": "Directory",
+          "method": "GET",
+          "target": "actual parsed descriptor.operations",
+          "status": 200,
+          "credentialRole": "writer",
+          "sourceBody": null,
+          "sourceIdempotencyKey": null
+        },
+        {
+          "ordinal": 4,
+          "generation": 1,
+          "label": "create",
+          "method": "POST",
+          "target": "actual parsed Directory.createBead",
+          "status": 200,
+          "credentialRole": "writer",
+          "sourceBody": {
+            "id": "beads/startup",
+            "type": "actual fixture type URI",
+            "properties": {
+              "n": 1
+            }
+          },
+          "sourceIdempotencyKey": "startup-created"
+        },
+        {
+          "ordinal": 5,
+          "generation": 1,
+          "label": "read",
+          "method": "GET",
+          "target": "actual created resource.id",
+          "status": 200,
+          "credentialRole": "writer",
+          "sourceBody": null,
+          "sourceIdempotencyKey": null
+        },
+        {
+          "ordinal": 6,
+          "generation": 2,
+          "label": "Scope",
+          "method": "GET",
+          "target": "actual configured scope",
+          "status": [
+            200,
+            204
+          ],
+          "credentialRole": "writer",
+          "sourceBody": null,
+          "sourceIdempotencyKey": null
+        },
+        {
+          "ordinal": 7,
+          "generation": 2,
+          "label": "descriptor",
+          "method": "GET",
+          "target": "one actual received Scope Link rel=service-desc",
+          "status": 200,
+          "credentialRole": "writer",
+          "sourceBody": null,
+          "sourceIdempotencyKey": null
+        },
+        {
+          "ordinal": 8,
+          "generation": 2,
+          "label": "Directory",
+          "method": "GET",
+          "target": "actual parsed descriptor.operations",
+          "status": 200,
+          "credentialRole": "writer",
+          "sourceBody": null,
+          "sourceIdempotencyKey": null
+        },
+        {
+          "ordinal": 9,
+          "generation": 2,
+          "label": "reopened-read",
+          "method": "GET",
+          "target": "actual created resource.id",
+          "status": 200,
+          "credentialRole": "writer",
+          "sourceBody": null,
+          "sourceIdempotencyKey": null
+        }
+      ],
+      "sameActualD3aDependency": false,
+      "testNamePattern": "^I12\\ read\\-update\\ SIGTERM\\ stops\\ then\\ reopens$",
+      "callbackMs": 60000,
+      "workMs": 45000,
+      "sharedCleanupMs": 10000,
+      "requestMs": 5000,
+      "outerMs": 120000,
+      "TERMms": 115000,
+      "noRetry": true,
+      "status": "PROSPECTIVE NOT RUN",
+      "parentOwnerSequence": [
+        {
+          "kind": "read-update-owner",
+          "stage": "probe"
+        },
+        {
+          "kind": "SQLite",
+          "stage": "probe-resource-read"
+        }
+      ],
+      "parentAcquisitions": 2,
+      "ownerProbes": [
+        {
+          "profile": "read-update",
+          "actualReopenAndClose": true,
+          "createdResourcePresent": true,
+          "refusedResourceAbsent": true
+        }
+      ],
+      "controls": [
+        {
+          "generation": 1,
+          "requested": "SIGTERM",
+          "actualExitBefore": false
+        },
+        {
+          "generation": 2,
+          "requested": "close",
+          "actualExitBefore": false
+        }
+      ]
+    },
+    {
+      "id": "I13",
+      "fullName": "I13 transactional SIGTERM stops then reopens",
+      "file": "apps/bdptest/src/reference-deployment-lifecycle-installed.test.ts",
+      "profile": "transactional",
+      "HTTP": 9,
+      "CONNECT": 0,
+      "originalCandidateOrPublicGenerations": 2,
+      "guardChildren": 0,
+      "ownedChildren": 2,
+      "requests": [
+        {
+          "ordinal": 1,
+          "generation": 1,
+          "label": "Scope",
+          "method": "GET",
+          "target": "actual configured scope",
+          "status": [
+            200,
+            204
+          ],
+          "credentialRole": "writer",
+          "sourceBody": null,
+          "sourceIdempotencyKey": null
+        },
+        {
+          "ordinal": 2,
+          "generation": 1,
+          "label": "descriptor",
+          "method": "GET",
+          "target": "one actual received Scope Link rel=service-desc",
+          "status": 200,
+          "credentialRole": "writer",
+          "sourceBody": null,
+          "sourceIdempotencyKey": null
+        },
+        {
+          "ordinal": 3,
+          "generation": 1,
+          "label": "Directory",
+          "method": "GET",
+          "target": "actual parsed descriptor.operations",
+          "status": 200,
+          "credentialRole": "writer",
+          "sourceBody": null,
+          "sourceIdempotencyKey": null
+        },
+        {
+          "ordinal": 4,
+          "generation": 1,
+          "label": "create",
+          "method": "POST",
+          "target": "actual parsed Directory.createBead",
+          "status": 200,
+          "credentialRole": "writer",
+          "sourceBody": {
+            "id": "beads/startup",
+            "type": "actual fixture type URI",
+            "properties": {
+              "n": 1
+            }
+          },
+          "sourceIdempotencyKey": "startup-created"
+        },
+        {
+          "ordinal": 5,
+          "generation": 1,
+          "label": "read",
+          "method": "GET",
+          "target": "actual created resource.id",
+          "status": 200,
+          "credentialRole": "writer",
+          "sourceBody": null,
+          "sourceIdempotencyKey": null
+        },
+        {
+          "ordinal": 6,
+          "generation": 2,
+          "label": "Scope",
+          "method": "GET",
+          "target": "actual configured scope",
+          "status": [
+            200,
+            204
+          ],
+          "credentialRole": "writer",
+          "sourceBody": null,
+          "sourceIdempotencyKey": null
+        },
+        {
+          "ordinal": 7,
+          "generation": 2,
+          "label": "descriptor",
+          "method": "GET",
+          "target": "one actual received Scope Link rel=service-desc",
+          "status": 200,
+          "credentialRole": "writer",
+          "sourceBody": null,
+          "sourceIdempotencyKey": null
+        },
+        {
+          "ordinal": 8,
+          "generation": 2,
+          "label": "Directory",
+          "method": "GET",
+          "target": "actual parsed descriptor.operations",
+          "status": 200,
+          "credentialRole": "writer",
+          "sourceBody": null,
+          "sourceIdempotencyKey": null
+        },
+        {
+          "ordinal": 9,
+          "generation": 2,
+          "label": "reopened-read",
+          "method": "GET",
+          "target": "actual created resource.id",
+          "status": 200,
+          "credentialRole": "writer",
+          "sourceBody": null,
+          "sourceIdempotencyKey": null
+        }
+      ],
+      "sameActualD3aDependency": true,
+      "testNamePattern": "^I13\\ transactional\\ SIGTERM\\ stops\\ then\\ reopens$",
+      "callbackMs": 60000,
+      "workMs": 45000,
+      "sharedCleanupMs": 10000,
+      "requestMs": 5000,
+      "outerMs": 120000,
+      "TERMms": 115000,
+      "noRetry": true,
+      "status": "PROSPECTIVE NOT RUN",
+      "parentOwnerSequence": [
+        {
+          "kind": "transaction-owner",
+          "stage": "probe"
+        },
+        {
+          "kind": "SQLite",
+          "stage": "probe-resource-read"
+        }
+      ],
+      "parentAcquisitions": 2,
+      "ownerProbes": [
+        {
+          "profile": "transactional",
+          "actualReopenAndClose": true,
+          "createdResourcePresent": true,
+          "refusedResourceAbsent": true
+        }
+      ],
+      "controls": [
+        {
+          "generation": 1,
+          "requested": "SIGTERM",
+          "actualExitBefore": false
+        },
+        {
+          "generation": 2,
+          "requested": "close",
+          "actualExitBefore": false
+        }
+      ]
+    },
+    {
+      "id": "I14",
+      "fullName": "I14 read-update SIGINT stops then reopens",
+      "file": "apps/bdptest/src/reference-deployment-lifecycle-installed.test.ts",
+      "profile": "read-update",
+      "HTTP": 9,
+      "CONNECT": 0,
+      "originalCandidateOrPublicGenerations": 2,
+      "guardChildren": 0,
+      "ownedChildren": 2,
+      "requests": [
+        {
+          "ordinal": 1,
+          "generation": 1,
+          "label": "Scope",
+          "method": "GET",
+          "target": "actual configured scope",
+          "status": [
+            200,
+            204
+          ],
+          "credentialRole": "writer",
+          "sourceBody": null,
+          "sourceIdempotencyKey": null
+        },
+        {
+          "ordinal": 2,
+          "generation": 1,
+          "label": "descriptor",
+          "method": "GET",
+          "target": "one actual received Scope Link rel=service-desc",
+          "status": 200,
+          "credentialRole": "writer",
+          "sourceBody": null,
+          "sourceIdempotencyKey": null
+        },
+        {
+          "ordinal": 3,
+          "generation": 1,
+          "label": "Directory",
+          "method": "GET",
+          "target": "actual parsed descriptor.operations",
+          "status": 200,
+          "credentialRole": "writer",
+          "sourceBody": null,
+          "sourceIdempotencyKey": null
+        },
+        {
+          "ordinal": 4,
+          "generation": 1,
+          "label": "create",
+          "method": "POST",
+          "target": "actual parsed Directory.createBead",
+          "status": 200,
+          "credentialRole": "writer",
+          "sourceBody": {
+            "id": "beads/startup",
+            "type": "actual fixture type URI",
+            "properties": {
+              "n": 1
+            }
+          },
+          "sourceIdempotencyKey": "startup-created"
+        },
+        {
+          "ordinal": 5,
+          "generation": 1,
+          "label": "read",
+          "method": "GET",
+          "target": "actual created resource.id",
+          "status": 200,
+          "credentialRole": "writer",
+          "sourceBody": null,
+          "sourceIdempotencyKey": null
+        },
+        {
+          "ordinal": 6,
+          "generation": 2,
+          "label": "Scope",
+          "method": "GET",
+          "target": "actual configured scope",
+          "status": [
+            200,
+            204
+          ],
+          "credentialRole": "writer",
+          "sourceBody": null,
+          "sourceIdempotencyKey": null
+        },
+        {
+          "ordinal": 7,
+          "generation": 2,
+          "label": "descriptor",
+          "method": "GET",
+          "target": "one actual received Scope Link rel=service-desc",
+          "status": 200,
+          "credentialRole": "writer",
+          "sourceBody": null,
+          "sourceIdempotencyKey": null
+        },
+        {
+          "ordinal": 8,
+          "generation": 2,
+          "label": "Directory",
+          "method": "GET",
+          "target": "actual parsed descriptor.operations",
+          "status": 200,
+          "credentialRole": "writer",
+          "sourceBody": null,
+          "sourceIdempotencyKey": null
+        },
+        {
+          "ordinal": 9,
+          "generation": 2,
+          "label": "reopened-read",
+          "method": "GET",
+          "target": "actual created resource.id",
+          "status": 200,
+          "credentialRole": "writer",
+          "sourceBody": null,
+          "sourceIdempotencyKey": null
+        }
+      ],
+      "sameActualD3aDependency": false,
+      "testNamePattern": "^I14\\ read\\-update\\ SIGINT\\ stops\\ then\\ reopens$",
+      "callbackMs": 60000,
+      "workMs": 45000,
+      "sharedCleanupMs": 10000,
+      "requestMs": 5000,
+      "outerMs": 120000,
+      "TERMms": 115000,
+      "noRetry": true,
+      "status": "PROSPECTIVE NOT RUN",
+      "parentOwnerSequence": [
+        {
+          "kind": "read-update-owner",
+          "stage": "probe"
+        },
+        {
+          "kind": "SQLite",
+          "stage": "probe-resource-read"
+        }
+      ],
+      "parentAcquisitions": 2,
+      "ownerProbes": [
+        {
+          "profile": "read-update",
+          "actualReopenAndClose": true,
+          "createdResourcePresent": true,
+          "refusedResourceAbsent": true
+        }
+      ],
+      "controls": [
+        {
+          "generation": 1,
+          "requested": "SIGINT",
+          "actualExitBefore": false
+        },
+        {
+          "generation": 2,
+          "requested": "close",
+          "actualExitBefore": false
+        }
+      ]
+    },
+    {
+      "id": "I15",
+      "fullName": "I15 transactional SIGINT stops then reopens",
+      "file": "apps/bdptest/src/reference-deployment-lifecycle-installed.test.ts",
+      "profile": "transactional",
+      "HTTP": 9,
+      "CONNECT": 0,
+      "originalCandidateOrPublicGenerations": 2,
+      "guardChildren": 0,
+      "ownedChildren": 2,
+      "requests": [
+        {
+          "ordinal": 1,
+          "generation": 1,
+          "label": "Scope",
+          "method": "GET",
+          "target": "actual configured scope",
+          "status": [
+            200,
+            204
+          ],
+          "credentialRole": "writer",
+          "sourceBody": null,
+          "sourceIdempotencyKey": null
+        },
+        {
+          "ordinal": 2,
+          "generation": 1,
+          "label": "descriptor",
+          "method": "GET",
+          "target": "one actual received Scope Link rel=service-desc",
+          "status": 200,
+          "credentialRole": "writer",
+          "sourceBody": null,
+          "sourceIdempotencyKey": null
+        },
+        {
+          "ordinal": 3,
+          "generation": 1,
+          "label": "Directory",
+          "method": "GET",
+          "target": "actual parsed descriptor.operations",
+          "status": 200,
+          "credentialRole": "writer",
+          "sourceBody": null,
+          "sourceIdempotencyKey": null
+        },
+        {
+          "ordinal": 4,
+          "generation": 1,
+          "label": "create",
+          "method": "POST",
+          "target": "actual parsed Directory.createBead",
+          "status": 200,
+          "credentialRole": "writer",
+          "sourceBody": {
+            "id": "beads/startup",
+            "type": "actual fixture type URI",
+            "properties": {
+              "n": 1
+            }
+          },
+          "sourceIdempotencyKey": "startup-created"
+        },
+        {
+          "ordinal": 5,
+          "generation": 1,
+          "label": "read",
+          "method": "GET",
+          "target": "actual created resource.id",
+          "status": 200,
+          "credentialRole": "writer",
+          "sourceBody": null,
+          "sourceIdempotencyKey": null
+        },
+        {
+          "ordinal": 6,
+          "generation": 2,
+          "label": "Scope",
+          "method": "GET",
+          "target": "actual configured scope",
+          "status": [
+            200,
+            204
+          ],
+          "credentialRole": "writer",
+          "sourceBody": null,
+          "sourceIdempotencyKey": null
+        },
+        {
+          "ordinal": 7,
+          "generation": 2,
+          "label": "descriptor",
+          "method": "GET",
+          "target": "one actual received Scope Link rel=service-desc",
+          "status": 200,
+          "credentialRole": "writer",
+          "sourceBody": null,
+          "sourceIdempotencyKey": null
+        },
+        {
+          "ordinal": 8,
+          "generation": 2,
+          "label": "Directory",
+          "method": "GET",
+          "target": "actual parsed descriptor.operations",
+          "status": 200,
+          "credentialRole": "writer",
+          "sourceBody": null,
+          "sourceIdempotencyKey": null
+        },
+        {
+          "ordinal": 9,
+          "generation": 2,
+          "label": "reopened-read",
+          "method": "GET",
+          "target": "actual created resource.id",
+          "status": 200,
+          "credentialRole": "writer",
+          "sourceBody": null,
+          "sourceIdempotencyKey": null
+        }
+      ],
+      "sameActualD3aDependency": true,
+      "testNamePattern": "^I15\\ transactional\\ SIGINT\\ stops\\ then\\ reopens$",
+      "callbackMs": 60000,
+      "workMs": 45000,
+      "sharedCleanupMs": 10000,
+      "requestMs": 5000,
+      "outerMs": 120000,
+      "TERMms": 115000,
+      "noRetry": true,
+      "status": "PROSPECTIVE NOT RUN",
+      "parentOwnerSequence": [
+        {
+          "kind": "transaction-owner",
+          "stage": "probe"
+        },
+        {
+          "kind": "SQLite",
+          "stage": "probe-resource-read"
+        }
+      ],
+      "parentAcquisitions": 2,
+      "ownerProbes": [
+        {
+          "profile": "transactional",
+          "actualReopenAndClose": true,
+          "createdResourcePresent": true,
+          "refusedResourceAbsent": true
+        }
+      ],
+      "controls": [
+        {
+          "generation": 1,
+          "requested": "SIGINT",
+          "actualExitBefore": false
+        },
+        {
+          "generation": 2,
+          "requested": "close",
+          "actualExitBefore": false
+        }
+      ]
+    },
+    {
+      "id": "I16",
+      "fullName": "I16 read-update disconnect stops then reopens",
+      "file": "apps/bdptest/src/reference-deployment-lifecycle-installed.test.ts",
+      "profile": "read-update",
+      "HTTP": 9,
+      "CONNECT": 0,
+      "originalCandidateOrPublicGenerations": 2,
+      "guardChildren": 0,
+      "ownedChildren": 2,
+      "requests": [
+        {
+          "ordinal": 1,
+          "generation": 1,
+          "label": "Scope",
+          "method": "GET",
+          "target": "actual configured scope",
+          "status": [
+            200,
+            204
+          ],
+          "credentialRole": "writer",
+          "sourceBody": null,
+          "sourceIdempotencyKey": null
+        },
+        {
+          "ordinal": 2,
+          "generation": 1,
+          "label": "descriptor",
+          "method": "GET",
+          "target": "one actual received Scope Link rel=service-desc",
+          "status": 200,
+          "credentialRole": "writer",
+          "sourceBody": null,
+          "sourceIdempotencyKey": null
+        },
+        {
+          "ordinal": 3,
+          "generation": 1,
+          "label": "Directory",
+          "method": "GET",
+          "target": "actual parsed descriptor.operations",
+          "status": 200,
+          "credentialRole": "writer",
+          "sourceBody": null,
+          "sourceIdempotencyKey": null
+        },
+        {
+          "ordinal": 4,
+          "generation": 1,
+          "label": "create",
+          "method": "POST",
+          "target": "actual parsed Directory.createBead",
+          "status": 200,
+          "credentialRole": "writer",
+          "sourceBody": {
+            "id": "beads/startup",
+            "type": "actual fixture type URI",
+            "properties": {
+              "n": 1
+            }
+          },
+          "sourceIdempotencyKey": "startup-created"
+        },
+        {
+          "ordinal": 5,
+          "generation": 1,
+          "label": "read",
+          "method": "GET",
+          "target": "actual created resource.id",
+          "status": 200,
+          "credentialRole": "writer",
+          "sourceBody": null,
+          "sourceIdempotencyKey": null
+        },
+        {
+          "ordinal": 6,
+          "generation": 2,
+          "label": "Scope",
+          "method": "GET",
+          "target": "actual configured scope",
+          "status": [
+            200,
+            204
+          ],
+          "credentialRole": "writer",
+          "sourceBody": null,
+          "sourceIdempotencyKey": null
+        },
+        {
+          "ordinal": 7,
+          "generation": 2,
+          "label": "descriptor",
+          "method": "GET",
+          "target": "one actual received Scope Link rel=service-desc",
+          "status": 200,
+          "credentialRole": "writer",
+          "sourceBody": null,
+          "sourceIdempotencyKey": null
+        },
+        {
+          "ordinal": 8,
+          "generation": 2,
+          "label": "Directory",
+          "method": "GET",
+          "target": "actual parsed descriptor.operations",
+          "status": 200,
+          "credentialRole": "writer",
+          "sourceBody": null,
+          "sourceIdempotencyKey": null
+        },
+        {
+          "ordinal": 9,
+          "generation": 2,
+          "label": "reopened-read",
+          "method": "GET",
+          "target": "actual created resource.id",
+          "status": 200,
+          "credentialRole": "writer",
+          "sourceBody": null,
+          "sourceIdempotencyKey": null
+        }
+      ],
+      "sameActualD3aDependency": false,
+      "testNamePattern": "^I16\\ read\\-update\\ disconnect\\ stops\\ then\\ reopens$",
+      "callbackMs": 60000,
+      "workMs": 45000,
+      "sharedCleanupMs": 10000,
+      "requestMs": 5000,
+      "outerMs": 120000,
+      "TERMms": 115000,
+      "noRetry": true,
+      "status": "PROSPECTIVE NOT RUN",
+      "parentOwnerSequence": [
+        {
+          "kind": "read-update-owner",
+          "stage": "probe"
+        },
+        {
+          "kind": "SQLite",
+          "stage": "probe-resource-read"
+        }
+      ],
+      "parentAcquisitions": 2,
+      "ownerProbes": [
+        {
+          "profile": "read-update",
+          "actualReopenAndClose": true,
+          "createdResourcePresent": true,
+          "refusedResourceAbsent": true
+        }
+      ],
+      "controls": [
+        {
+          "generation": 1,
+          "requested": "disconnect",
+          "actualExitBefore": false
+        },
+        {
+          "generation": 2,
+          "requested": "close",
+          "actualExitBefore": false
+        }
+      ]
+    },
+    {
+      "id": "I17",
+      "fullName": "I17 transactional disconnect stops then reopens",
+      "file": "apps/bdptest/src/reference-deployment-lifecycle-installed.test.ts",
+      "profile": "transactional",
+      "HTTP": 9,
+      "CONNECT": 0,
+      "originalCandidateOrPublicGenerations": 2,
+      "guardChildren": 0,
+      "ownedChildren": 2,
+      "requests": [
+        {
+          "ordinal": 1,
+          "generation": 1,
+          "label": "Scope",
+          "method": "GET",
+          "target": "actual configured scope",
+          "status": [
+            200,
+            204
+          ],
+          "credentialRole": "writer",
+          "sourceBody": null,
+          "sourceIdempotencyKey": null
+        },
+        {
+          "ordinal": 2,
+          "generation": 1,
+          "label": "descriptor",
+          "method": "GET",
+          "target": "one actual received Scope Link rel=service-desc",
+          "status": 200,
+          "credentialRole": "writer",
+          "sourceBody": null,
+          "sourceIdempotencyKey": null
+        },
+        {
+          "ordinal": 3,
+          "generation": 1,
+          "label": "Directory",
+          "method": "GET",
+          "target": "actual parsed descriptor.operations",
+          "status": 200,
+          "credentialRole": "writer",
+          "sourceBody": null,
+          "sourceIdempotencyKey": null
+        },
+        {
+          "ordinal": 4,
+          "generation": 1,
+          "label": "create",
+          "method": "POST",
+          "target": "actual parsed Directory.createBead",
+          "status": 200,
+          "credentialRole": "writer",
+          "sourceBody": {
+            "id": "beads/startup",
+            "type": "actual fixture type URI",
+            "properties": {
+              "n": 1
+            }
+          },
+          "sourceIdempotencyKey": "startup-created"
+        },
+        {
+          "ordinal": 5,
+          "generation": 1,
+          "label": "read",
+          "method": "GET",
+          "target": "actual created resource.id",
+          "status": 200,
+          "credentialRole": "writer",
+          "sourceBody": null,
+          "sourceIdempotencyKey": null
+        },
+        {
+          "ordinal": 6,
+          "generation": 2,
+          "label": "Scope",
+          "method": "GET",
+          "target": "actual configured scope",
+          "status": [
+            200,
+            204
+          ],
+          "credentialRole": "writer",
+          "sourceBody": null,
+          "sourceIdempotencyKey": null
+        },
+        {
+          "ordinal": 7,
+          "generation": 2,
+          "label": "descriptor",
+          "method": "GET",
+          "target": "one actual received Scope Link rel=service-desc",
+          "status": 200,
+          "credentialRole": "writer",
+          "sourceBody": null,
+          "sourceIdempotencyKey": null
+        },
+        {
+          "ordinal": 8,
+          "generation": 2,
+          "label": "Directory",
+          "method": "GET",
+          "target": "actual parsed descriptor.operations",
+          "status": 200,
+          "credentialRole": "writer",
+          "sourceBody": null,
+          "sourceIdempotencyKey": null
+        },
+        {
+          "ordinal": 9,
+          "generation": 2,
+          "label": "reopened-read",
+          "method": "GET",
+          "target": "actual created resource.id",
+          "status": 200,
+          "credentialRole": "writer",
+          "sourceBody": null,
+          "sourceIdempotencyKey": null
+        }
+      ],
+      "sameActualD3aDependency": true,
+      "testNamePattern": "^I17\\ transactional\\ disconnect\\ stops\\ then\\ reopens$",
+      "callbackMs": 60000,
+      "workMs": 45000,
+      "sharedCleanupMs": 10000,
+      "requestMs": 5000,
+      "outerMs": 120000,
+      "TERMms": 115000,
+      "noRetry": true,
+      "status": "PROSPECTIVE NOT RUN",
+      "parentOwnerSequence": [
+        {
+          "kind": "transaction-owner",
+          "stage": "probe"
+        },
+        {
+          "kind": "SQLite",
+          "stage": "probe-resource-read"
+        }
+      ],
+      "parentAcquisitions": 2,
+      "ownerProbes": [
+        {
+          "profile": "transactional",
+          "actualReopenAndClose": true,
+          "createdResourcePresent": true,
+          "refusedResourceAbsent": true
+        }
+      ],
+      "controls": [
+        {
+          "generation": 1,
+          "requested": "disconnect",
+          "actualExitBefore": false
+        },
+        {
+          "generation": 2,
+          "requested": "close",
+          "actualExitBefore": false
+        }
+      ]
+    },
+    {
+      "id": "I18",
+      "fullName": "I18 read-update observed non-reading peer chronology and reopen",
+      "file": "apps/bdptest/src/reference-deployment-lifecycle-installed.test.ts",
+      "profile": "read-update",
+      "HTTP": 8,
+      "CONNECT": 1,
+      "originalCandidateOrPublicGenerations": 2,
+      "guardChildren": 0,
+      "ownedChildren": 2,
+      "requests": [
+        {
+          "ordinal": 1,
+          "generation": 1,
+          "label": "Scope",
+          "method": "GET",
+          "target": "actual configured scope",
+          "status": [
+            200,
+            204
+          ],
+          "credentialRole": "writer",
+          "sourceBody": null,
+          "sourceIdempotencyKey": null
+        },
+        {
+          "ordinal": 2,
+          "generation": 1,
+          "label": "descriptor",
+          "method": "GET",
+          "target": "one actual received Scope Link rel=service-desc",
+          "status": 200,
+          "credentialRole": "writer",
+          "sourceBody": null,
+          "sourceIdempotencyKey": null
+        },
+        {
+          "ordinal": 3,
+          "generation": 1,
+          "label": "Directory",
+          "method": "GET",
+          "target": "actual parsed descriptor.operations",
+          "status": 200,
+          "credentialRole": "writer",
+          "sourceBody": null,
+          "sourceIdempotencyKey": null
+        },
+        {
+          "ordinal": 4,
+          "generation": 1,
+          "label": "create",
+          "method": "POST",
+          "target": "actual parsed Directory.createBead",
+          "status": 200,
+          "credentialRole": "writer",
+          "sourceBody": {
+            "id": "beads/startup",
+            "type": "actual fixture type URI",
+            "properties": {
+              "n": 1
+            }
+          },
+          "sourceIdempotencyKey": "startup-created"
+        },
+        {
+          "ordinal": 5,
+          "generation": 2,
+          "label": "Scope",
+          "method": "GET",
+          "target": "actual configured scope",
+          "status": [
+            200,
+            204
+          ],
+          "credentialRole": "writer",
+          "sourceBody": null,
+          "sourceIdempotencyKey": null
+        },
+        {
+          "ordinal": 6,
+          "generation": 2,
+          "label": "descriptor",
+          "method": "GET",
+          "target": "one actual received Scope Link rel=service-desc",
+          "status": 200,
+          "credentialRole": "writer",
+          "sourceBody": null,
+          "sourceIdempotencyKey": null
+        },
+        {
+          "ordinal": 7,
+          "generation": 2,
+          "label": "Directory",
+          "method": "GET",
+          "target": "actual parsed descriptor.operations",
+          "status": 200,
+          "credentialRole": "writer",
+          "sourceBody": null,
+          "sourceIdempotencyKey": null
+        },
+        {
+          "ordinal": 8,
+          "generation": 2,
+          "label": "reopened-read",
+          "method": "GET",
+          "target": "actual created resource.id",
+          "status": 200,
+          "credentialRole": "writer",
+          "sourceBody": null,
+          "sourceIdempotencyKey": null
+        }
+      ],
+      "sameActualD3aDependency": false,
+      "testNamePattern": "^I18\\ read\\-update\\ observed\\ non\\-reading\\ peer\\ chronology\\ and\\ reopen$",
+      "callbackMs": 60000,
+      "workMs": 45000,
+      "sharedCleanupMs": 10000,
+      "requestMs": 5000,
+      "outerMs": 120000,
+      "TERMms": 115000,
+      "noRetry": true,
+      "status": "PROSPECTIVE NOT RUN",
+      "parentOwnerSequence": [
+        {
+          "kind": "read-update-owner",
+          "stage": "probe"
+        },
+        {
+          "kind": "SQLite",
+          "stage": "probe-resource-read"
+        }
+      ],
+      "parentAcquisitions": 2,
+      "ownerProbes": [
+        {
+          "profile": "read-update",
+          "actualReopenAndClose": true,
+          "createdResourcePresent": true,
+          "refusedResourceAbsent": true
+        }
+      ],
+      "controls": [
+        {
+          "CONNECT": "actual-refusal",
+          "beforeShutdown": "exact actual bounded peer record, serverTransportLiveAtShutdown unknown/forcedServerDestructionClaimed false"
+        },
+        {
+          "generation": 1,
+          "requested": "close",
+          "actualExitBefore": false
+        },
+        {
+          "CONNECT": "actual-peer-close",
+          "wasAlreadyClosed": "same before.observedAlreadyClosed boolean",
+          "closeObserved": true,
+          "forcedServerDestructionClaimed": false
+        },
+        {
+          "generation": 2,
+          "requested": "close",
+          "actualExitBefore": false
+        }
+      ]
+    },
+    {
+      "id": "I19",
+      "fullName": "I19 transactional observed non-reading peer chronology and reopen",
+      "file": "apps/bdptest/src/reference-deployment-lifecycle-installed.test.ts",
+      "profile": "transactional",
+      "HTTP": 8,
+      "CONNECT": 1,
+      "originalCandidateOrPublicGenerations": 2,
+      "guardChildren": 0,
+      "ownedChildren": 2,
+      "requests": [
+        {
+          "ordinal": 1,
+          "generation": 1,
+          "label": "Scope",
+          "method": "GET",
+          "target": "actual configured scope",
+          "status": [
+            200,
+            204
+          ],
+          "credentialRole": "writer",
+          "sourceBody": null,
+          "sourceIdempotencyKey": null
+        },
+        {
+          "ordinal": 2,
+          "generation": 1,
+          "label": "descriptor",
+          "method": "GET",
+          "target": "one actual received Scope Link rel=service-desc",
+          "status": 200,
+          "credentialRole": "writer",
+          "sourceBody": null,
+          "sourceIdempotencyKey": null
+        },
+        {
+          "ordinal": 3,
+          "generation": 1,
+          "label": "Directory",
+          "method": "GET",
+          "target": "actual parsed descriptor.operations",
+          "status": 200,
+          "credentialRole": "writer",
+          "sourceBody": null,
+          "sourceIdempotencyKey": null
+        },
+        {
+          "ordinal": 4,
+          "generation": 1,
+          "label": "create",
+          "method": "POST",
+          "target": "actual parsed Directory.createBead",
+          "status": 200,
+          "credentialRole": "writer",
+          "sourceBody": {
+            "id": "beads/startup",
+            "type": "actual fixture type URI",
+            "properties": {
+              "n": 1
+            }
+          },
+          "sourceIdempotencyKey": "startup-created"
+        },
+        {
+          "ordinal": 5,
+          "generation": 2,
+          "label": "Scope",
+          "method": "GET",
+          "target": "actual configured scope",
+          "status": [
+            200,
+            204
+          ],
+          "credentialRole": "writer",
+          "sourceBody": null,
+          "sourceIdempotencyKey": null
+        },
+        {
+          "ordinal": 6,
+          "generation": 2,
+          "label": "descriptor",
+          "method": "GET",
+          "target": "one actual received Scope Link rel=service-desc",
+          "status": 200,
+          "credentialRole": "writer",
+          "sourceBody": null,
+          "sourceIdempotencyKey": null
+        },
+        {
+          "ordinal": 7,
+          "generation": 2,
+          "label": "Directory",
+          "method": "GET",
+          "target": "actual parsed descriptor.operations",
+          "status": 200,
+          "credentialRole": "writer",
+          "sourceBody": null,
+          "sourceIdempotencyKey": null
+        },
+        {
+          "ordinal": 8,
+          "generation": 2,
+          "label": "reopened-read",
+          "method": "GET",
+          "target": "actual created resource.id",
+          "status": 200,
+          "credentialRole": "writer",
+          "sourceBody": null,
+          "sourceIdempotencyKey": null
+        }
+      ],
+      "sameActualD3aDependency": true,
+      "testNamePattern": "^I19\\ transactional\\ observed\\ non\\-reading\\ peer\\ chronology\\ and\\ reopen$",
+      "callbackMs": 60000,
+      "workMs": 45000,
+      "sharedCleanupMs": 10000,
+      "requestMs": 5000,
+      "outerMs": 120000,
+      "TERMms": 115000,
+      "noRetry": true,
+      "status": "PROSPECTIVE NOT RUN",
+      "parentOwnerSequence": [
+        {
+          "kind": "transaction-owner",
+          "stage": "probe"
+        },
+        {
+          "kind": "SQLite",
+          "stage": "probe-resource-read"
+        }
+      ],
+      "parentAcquisitions": 2,
+      "ownerProbes": [
+        {
+          "profile": "transactional",
+          "actualReopenAndClose": true,
+          "createdResourcePresent": true,
+          "refusedResourceAbsent": true
+        }
+      ],
+      "controls": [
+        {
+          "CONNECT": "actual-refusal",
+          "beforeShutdown": "exact actual bounded peer record, serverTransportLiveAtShutdown unknown/forcedServerDestructionClaimed false"
+        },
+        {
+          "generation": 1,
+          "requested": "close",
+          "actualExitBefore": false
+        },
+        {
+          "CONNECT": "actual-peer-close",
+          "wasAlreadyClosed": "same before.observedAlreadyClosed boolean",
+          "closeObserved": true,
+          "forcedServerDestructionClaimed": false
+        },
+        {
+          "generation": 2,
+          "requested": "close",
+          "actualExitBefore": false
+        }
+      ]
+    },
+    {
+      "id": "I20",
+      "fullName": "I20 ordinary RU refusal plus three actual private entry guards",
+      "file": "apps/bdptest/src/reference-deployment-lifecycle-installed.test.ts",
+      "profile": "read-update",
+      "HTTP": 0,
+      "CONNECT": 0,
+      "originalCandidateOrPublicGenerations": 1,
+      "guardChildren": 3,
+      "ownedChildren": 4,
+      "requests": [],
+      "sameActualD3aDependency": false,
+      "testNamePattern": "^I20\\ ordinary\\ RU\\ refusal\\ plus\\ three\\ actual\\ private\\ entry\\ guards$",
+      "callbackMs": 60000,
+      "workMs": 45000,
+      "sharedCleanupMs": 10000,
+      "requestMs": 5000,
+      "outerMs": 120000,
+      "TERMms": 115000,
+      "noRetry": true,
+      "status": "PROSPECTIVE NOT RUN",
+      "parentOwnerSequence": [],
+      "parentAcquisitions": 0,
+      "ownerProbes": [],
+      "controls": [
+        {
+          "guard": "inert-no-ipc",
+          "actualExitAndClose": true
+        },
+        {
+          "guard": "inert-ipc",
+          "actualExitAndClose": true
+        },
+        {
+          "guard": "missing-ipc",
+          "actualExitAndClose": true
+        }
+      ]
+    },
+    {
+      "id": "I21",
+      "fullName": "I21 ordinary TX refusal, invalid configuration guard and post-ready invalid control",
+      "file": "apps/bdptest/src/reference-deployment-lifecycle-installed.test.ts",
+      "profile": "transactional",
+      "HTTP": 0,
+      "CONNECT": 0,
+      "originalCandidateOrPublicGenerations": 2,
+      "guardChildren": 1,
+      "ownedChildren": 3,
+      "requests": [],
+      "sameActualD3aDependency": false,
+      "testNamePattern": "^I21\\ ordinary\\ TX\\ refusal,\\ invalid\\ configuration\\ guard\\ and\\ post\\-ready\\ invalid\\ control$",
+      "callbackMs": 60000,
+      "workMs": 45000,
+      "sharedCleanupMs": 10000,
+      "requestMs": 5000,
+      "outerMs": 120000,
+      "TERMms": 115000,
+      "noRetry": true,
+      "status": "PROSPECTIVE NOT RUN",
+      "parentOwnerSequence": [
+        {
+          "kind": "transaction-owner",
+          "stage": "probe"
+        },
+        {
+          "kind": "SQLite",
+          "stage": "probe-resource-read"
+        }
+      ],
+      "parentAcquisitions": 2,
+      "ownerProbes": [
+        {
+          "profile": "transactional",
+          "actualReopenAndClose": true,
+          "createdResourcePresent": false,
+          "refusedResourceAbsent": true
+        }
+      ],
+      "controls": [
+        {
+          "guard": "invalid-ipc",
+          "actualExitAndClose": true
+        },
+        {
+          "generation": 3,
+          "requested": "invalid-post-ready-stop",
+          "actualExitBefore": false
+        }
+      ]
+    }
+  ],
+  "count": 21,
+  "HTTP": 126,
+  "CONNECT": 2,
+  "children": 37,
+  "ordinaryCandidatePublic": 33,
+  "guardChildren": 4,
+  "bodyKeyEvidenceBoundary": "sourceBody/sourceIdempotencyKey are source-derived intended inputs; report does NOT serialize request body/auth headers/idempotency headers. Actual records expose role/URL/label and actual response facts. Source/executor/config/proof provenance is mandatory.",
+  "failureRule": "Preserve actual dispatch/response/terminal partials; no success fill-in. Report may be withheld by secrecy check; missing fails and is not reconstructed.",
+  "coldNavigation": "No IPC target map. Scope actual Link -> descriptor.operations -> Directory.createBead. Confine received URLs using actual local(); Type fixture route is separate existing resource.",
+  "prospectiveParentAcquisitions": 42
+}

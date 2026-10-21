@@ -1,0 +1,21 @@
+{
+  "utc": "2026-10-18T12:40:46.661651+00:00",
+  "session": "2026-10-18T02:16:24Z-549f",
+  "independentReview": {
+    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-final-tx-contract-native-precision-1/closure.json",
+    "sha256": "466b4a27b2c54420efd4263f0781ca6d149ddc3c1ddd602a4d20804882e245cb"
+  },
+  "originalContract": {
+    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-final-tx-configuration-execution-contract-1/execution-contract.json",
+    "sha256": "a64f91838982b6481fc6e17f44123167ae4f2f9729a86bdcc49ac23a12794c06"
+  },
+  "finding": "TX-CONTRACT-N1",
+  "severity": "Low",
+  "acceptedFinding": true,
+  "rootReadFullReportAndAll10Stages": true,
+  "disposition": "Prepare named CLOSED contract2: owner authoring/review and exact manifest/fixture bytes frozen before final source/artifact/install proof; stage7 executes already-frozen reviewed owners. Any late source/artifact/owner/fixture change explicitly returns through the SAME existing freeze/proof barriers before execution. No new gate, law, count, deadline, API or semantic adoption.",
+  "allowedAuthoring": "A DATA-only successor write-profile-final-tx-configuration-execution-contract-2, preserve all original156 and independent190 evidence, genuine deltas/origins/mirror/index. All final identity/execution/publicAdmission/wholeQualification UNKNOWN or false as before.",
+  "mustPushBeforeAuthoring": true,
+  "executionReleased": false,
+  "helperOrProductSourceAuthoringReleased": false
+}

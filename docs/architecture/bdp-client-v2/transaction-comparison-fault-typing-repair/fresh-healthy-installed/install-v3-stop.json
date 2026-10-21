@@ -1,0 +1,35 @@
+{
+  "status": "STOPPED_CONSUMER_V3_MISSING_OFFLINE_TRANSITIVE_TARBALL",
+  "diagnostic": "ERR_PNPM_NO_OFFLINE_TARBALL for fast-uri3.1.8 selected via AJV^3.0.1; source lock pins3.1.5",
+  "commands": {
+    "name": "install-consumer-v3",
+    "command": [
+      "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+      "/Users/dbox/.cache/node/corepack/v1/pnpm/11.20.0/bin/pnpm.cjs",
+      "install",
+      "--offline",
+      "--no-frozen-lockfile",
+      "--prod"
+    ],
+    "cwd": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-comparison-fault-typing-repair/fresh-healthy-installed/consumer-v3",
+    "validatedBdpOverrides": {},
+    "started": "2026-10-14T19:27:13.667370+00:00",
+    "elapsedSeconds": 0.6464039168786258,
+    "exit": 1,
+    "timeout": false,
+    "processGroup": 26837,
+    "remainingProcessGroup": [],
+    "sampledTempEntries": [
+      "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-comparison-fault-typing-repair/fresh-healthy-installed/install-consumer-v3.tmp/node-compile-cache"
+    ],
+    "tempEntriesAfter": [
+      "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-comparison-fault-typing-repair/fresh-healthy-installed/install-consumer-v3.tmp/node-compile-cache"
+    ],
+    "samplingSeconds": 0.05
+  },
+  "installedChildren": 0,
+  "httpRequests": 0,
+  "sourceClean": true,
+  "rootNotified": true,
+  "retryPerformed": false
+}

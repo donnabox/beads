@@ -1,0 +1,61 @@
+{
+  "pr": 137,
+  "run": 38822874330,
+  "job": 116723389941,
+  "runAttempt": 1,
+  "head": "c18c71202c90fa2558f34107ad342befabf750fe",
+  "tree": "596abe870220fb61ce606f8382a9da52d554d063",
+  "base": "73fc0daed2e5fa6843e581de9bf7a46e519562ab",
+  "parents": [
+    "3cf662e8ccd75c9bd0fdb95953fdd676f1771aec",
+    "73fc0daed2e5fa6843e581de9bf7a46e519562ab"
+  ],
+  "authorCandidate": "3cf662e8ccd75c9bd0fdb95953fdd676f1771aec",
+  "authoringParent": "5d7fa3f049fa0b4db3aa8dae20e20d8e47fb3854",
+  "files": {
+    "docs/specs/bdp.md": "63e93be562334c84c1e967da2fce212e8ef515aa3c9448924c5f9a272ea7b80b",
+    "packages/server/src/transaction-consistency.ts": "00a420c3e9f5dcb1b8814a6476d5ce52edfb7adbbd1c64ab082833f17322a336",
+    "packages/server/src/transaction-http.ts": "ebb3550110bd6fda638572966e5faa05c15f062f37a10947f6e442fc7d4570f4",
+    "packages/server/src/transaction-consistency.test.ts": "4d45ba52c028c3081188a6f76498889d7170cceaaad114004458b86331191bc9",
+    "packages/server/src/transaction-http.test.ts": "ca2e4e7663a93060ba2a0788c5ef349a3de4991e3108f81507f37a723d964781",
+    "packages/server/src/transaction-snapshot-http.test.ts": "61023b5f24396fe484c7820c706b560cb87abd7a3e16670f5a0944fbefd44d8a",
+    "packages/server/src/transaction-schema-http.test.ts": "eee33a0948c9a0981a2a963cec5a8f16102ae5bab32128f83c39956abe0a952b",
+    "packages/server/src/transaction-changefeed.test.ts": "97c3f8604ccbb7f3141a22e5c3d338f51929b308b80614309a7e837801b12043",
+    "apps/bdptest/src/transactional-snapshot-installed.test.ts": "58f4ad828861ea332de7bf4413f48eb4646f32237b76d3a4db310e081b99ffe9",
+    "apps/bdptest/src/transactional-minimum-receiving-installed.test.ts": "cefde296b07d6be86a83d13892a603588c9054bdd54196048a855e74f9e9b7f9",
+    "docs/design/transaction-implementation-progress.md": "9aa001e2da6e37f0e12aa15fd124a489bc951519064370afbb76c9aee9aad185"
+  },
+  "featureDiffSha256": "4c9a9c6757f18080821522477591167c21039e92fcdf6c83c3e8ff74c78eaa1d",
+  "sourceBinding": {
+    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-minimum-receiving-draft/final-source.json",
+    "sha256": "273b5d230ddbac111b106463a5af351db14d77082d77e9c090b4802d96c0d923"
+  },
+  "workflowSha256": "fd0a08da61f74abe19c8db16d879bfff85d8090643bf4da326d3e597ae129be3",
+  "requiredSteps": [
+    "Run actions/checkout@11d5960a326750d5838078e36cf38b85af677262",
+    "Run pnpm/action-setup@b906affcce14559ad1aafd4ab0e942779e9f58b1",
+    "Run actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020",
+    "Run actions/setup-go@924ae3a1cded613372ab5595356fb5720e22ba16",
+    "Run test \"$(node --version)\" = \"v24.16.0\"",
+    "Run test \"$(pnpm --version)\" = \"11.20.0\"",
+    "Run sudo apt-get update",
+    "Run sudo apt-get install --yes libicu-dev",
+    "Run mkdir -p \"$RUNNER_TEMP/bdp-tools\"",
+    "Run go install github.com/steveyegge/beads/cmd/bd@v1.0.5",
+    "Verify the Go-installed source-build bd identity",
+    "Run pnpm install --frozen-lockfile",
+    "Run pnpm format:check",
+    "Run pnpm lint",
+    "Run pnpm check:boundaries",
+    "Run pnpm typecheck",
+    "Run pnpm build",
+    "Run pnpm test",
+    "Run pnpm e2e:ready:preflight",
+    "Run pnpm smoke",
+    "Read-cohort evidence gate"
+  ],
+  "expectedNewTestTitle": "rejects malformed read minimum tuples before observation while preserving receipt nondisclosure",
+  "suiteTotals": null,
+  "workflowTimeoutMinutes": 20,
+  "claims": "Preparation only. Exact required step names come from unchanged pinned workflow and prior actual workflow labels; no current success/count inferred."
+}

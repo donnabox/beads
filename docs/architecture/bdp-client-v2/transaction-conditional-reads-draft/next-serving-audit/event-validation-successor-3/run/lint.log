@@ -1,0 +1,303 @@
+apps/bdptest/src/transactional-event-sse-installed.test.ts:171:50 lint/style/noNonNullAssertion ━━━━━━━━━━
+
+  ! Forbidden non-null assertion.
+  
+    169 │     const frames = (r: ReturnType<typeof recordRawSse>) =>
+    170 │       r.frames.filter((f) => f.startsWith("id: "));
+  > 171 │     const parsed = (frame: string) => JSON.parse(frame.split("\ndata: ")[1]!);
+        │                                                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    172 │     const run = (operations: unknown[]) => exchange("operations/batch", { operations });
+    173 │     const create = (id: string) => ({
+  
+
+apps/bdptest/src/transactional-event-sse-installed.test.ts:220:43 lint/style/noNonNullAssertion ━━━━━━━━━━
+
+  ! Forbidden non-null assertion.
+  
+    218 │       expect(frames(live).map(parsed)).toEqual(finite.parsed.events);
+    219 │       for (const frame of frames(live))
+  > 220 │         expect(finite.bodyText).toContain(frame.split("\ndata: ")[1]!);
+        │                                           ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    221 │       expect(live.headers).toMatchObject({
+    222 │         "content-type": "text/event-stream",
+  
+
+apps/bdptest/src/transactional-event-sse-installed.test.ts:234:19 lint/style/noNonNullAssertion ━━━━━━━━━━
+
+  ! Forbidden non-null assertion.
+  
+    232 │     }
+    233 │     const initial = await exchange("beads/a?view=events");
+  > 234 │     const last = (initial.parsed.events.at(-1)! as { id: string }).id;
+        │                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    235 │     for (let n = 1; n <= 12; n++)
+    236 │       await run([
+  
+
+apps/bdptest/src/transactional-event-sse-installed.test.ts:263:19 lint/style/noNonNullAssertion ━━━━━━━━━━
+
+  ! Forbidden non-null assertion.
+  
+    261 │     ]);
+    262 │     await current.until(() => frames(current).length === 1);
+  > 263 │     expect(parsed(frames(current)[0]!).subject).toBe(`${scope}beads/a`);
+        │                   ^^^^^^^^^^^^^^^^^^^
+    264 │     const finiteLive = await exchange(sparseTarget);
+    265 │     expect(finiteLive.parsed.events).toEqual(frames(current).map(parsed));
+  
+
+apps/bdptest/src/transactional-event-sse-installed.test.ts:266:43 lint/style/noNonNullAssertion  FIXABLE  ━━━━━━━━━━
+
+  ! Forbidden non-null assertion.
+  
+    264 │     const finiteLive = await exchange(sparseTarget);
+    265 │     expect(finiteLive.parsed.events).toEqual(frames(current).map(parsed));
+  > 266 │     expect(finiteLive.bodyText).toContain(frames(current)[0]!.split("\ndata: ")[1]!);
+        │                                           ^^^^^^^^^^^^^^^^^^^
+    267 │     const elapsedIdle = performance.now() - idleStarted;
+    268 │     expect(elapsedIdle).toBeGreaterThanOrEqual(15000);
+  
+  i Unsafe fix: Replace with optional chain operator ?. This operator includes runtime checks, so it is safer than the compile-only non-null assertion operator
+  
+     264  264 │       const finiteLive = await exchange(sparseTarget);
+     265  265 │       expect(finiteLive.parsed.events).toEqual(frames(current).map(parsed));
+     266      │ - ····expect(finiteLive.bodyText).toContain(frames(current)[0]!.split("\ndata:·")[1]!);
+          266 │ + ····expect(finiteLive.bodyText).toContain(frames(current)[0]?.split("\ndata:·")[1]!);
+     267  267 │       const elapsedIdle = performance.now() - idleStarted;
+     268  268 │       expect(elapsedIdle).toBeGreaterThanOrEqual(15000);
+  
+
+apps/bdptest/src/transactional-event-sse-installed.test.ts:266:43 lint/style/noNonNullAssertion ━━━━━━━━━━
+
+  ! Forbidden non-null assertion.
+  
+    264 │     const finiteLive = await exchange(sparseTarget);
+    265 │     expect(finiteLive.parsed.events).toEqual(frames(current).map(parsed));
+  > 266 │     expect(finiteLive.bodyText).toContain(frames(current)[0]!.split("\ndata: ")[1]!);
+        │                                           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    267 │     const elapsedIdle = performance.now() - idleStarted;
+    268 │     expect(elapsedIdle).toBeGreaterThanOrEqual(15000);
+  
+
+apps/bdptest/src/transactional-event-sse-installed.test.ts:493:23 lint/style/noNonNullAssertion  FIXABLE  ━━━━━━━━━━
+
+  ! Forbidden non-null assertion.
+  
+    491 │     const data = frame.split("\n").filter((line) => line.startsWith("data: "));
+    492 │     expect(data).toHaveLength(1);
+  > 493 │     return JSON.parse(data[0]!.slice(6));
+        │                       ^^^^^^^^
+    494 │   }
+    495 │   function sameFrame(frame: string, expected: Record<string, unknown>) {
+  
+  i Unsafe fix: Replace with optional chain operator ?. This operator includes runtime checks, so it is safer than the compile-only non-null assertion operator
+  
+     491  491 │       const data = frame.split("\n").filter((line) => line.startsWith("data: "));
+     492  492 │       expect(data).toHaveLength(1);
+     493      │ - ····return·JSON.parse(data[0]!.slice(6));
+          493 │ + ····return·JSON.parse(data[0]?.slice(6));
+     494  494 │     }
+     495  495 │     function sameFrame(frame: string, expected: Record<string, unknown>) {
+  
+
+apps/bdptest/src/transactional-event-sse-installed.test.ts:651:31 lint/style/noNonNullAssertion  FIXABLE  ━━━━━━━━━━
+
+  ! Forbidden non-null assertion.
+  
+    649 │       beginRequest(session, method, target);
+    650 │       const url = new URL(target, scope).href;
+  > 651 │       const address = new URL(session.handle!.ready.listenUrl as string);
+        │                               ^^^^^^^^^^^^^^^
+    652 │       const execute = createRawHttpExchangeExecutor(
+    653 │         { transport: "plain", host: address.hostname, port: Number(address.port) },
+  
+  i Unsafe fix: Replace with optional chain operator ?. This operator includes runtime checks, so it is safer than the compile-only non-null assertion operator
+  
+     649  649 │         beginRequest(session, method, target);
+     650  650 │         const url = new URL(target, scope).href;
+     651      │ - ······const·address·=·new·URL(session.handle!.ready.listenUrl·as·string);
+          651 │ + ······const·address·=·new·URL(session.handle?.ready.listenUrl·as·string);
+     652  652 │         const execute = createRawHttpExchangeExecutor(
+     653  653 │           { transport: "plain", host: address.hostname, port: Number(address.port) },
+  
+
+apps/bdptest/src/transactional-event-sse-installed.test.ts:775:18 lint/style/noNonNullAssertion  FIXABLE  ━━━━━━━━━━
+
+  ! Forbidden non-null assertion.
+  
+    773 │         type: "created",
+    774 │         source: `${scope}events/`,
+  > 775 │         subject: resources[i]!.id,
+        │                  ^^^^^^^^^^^^^
+    776 │         subjectType: type,
+    777 │         transaction: receipt.transaction,
+  
+  i Unsafe fix: Replace with optional chain operator ?. This operator includes runtime checks, so it is safer than the compile-only non-null assertion operator
+  
+     773  773 │           type: "created",
+     774  774 │           source: `${scope}events/`,
+     775      │ - ········subject:·resources[i]!.id,
+          775 │ + ········subject:·resources[i]?.id,
+     776  776 │           subjectType: type,
+     777  777 │           transaction: receipt.transaction,
+  
+
+apps/bdptest/src/transactional-event-sse-installed.test.ts:780:21 lint/style/noNonNullAssertion  FIXABLE  ━━━━━━━━━━
+
+  ! Forbidden non-null assertion.
+  
+    778 │         time: expect.any(String),
+    779 │         data: {
+  > 780 │           revision: resources[i]!.revision,
+        │                     ^^^^^^^^^^^^^
+    781 │           properties: { n: 0 },
+    782 │           metadata: {},
+  
+  i Unsafe fix: Replace with optional chain operator ?. This operator includes runtime checks, so it is safer than the compile-only non-null assertion operator
+  
+     778  778 │           time: expect.any(String),
+     779  779 │           data: {
+     780      │ - ··········revision:·resources[i]!.revision,
+          780 │ + ··········revision:·resources[i]?.revision,
+     781  781 │             properties: { n: 0 },
+     782  782 │             metadata: {},
+  
+
+apps/bdptest/src/transactional-event-sse-installed.test.ts:788:16 lint/style/noNonNullAssertion ━━━━━━━━━━
+
+  ! Forbidden non-null assertion.
+  
+    786 │       expect((event.id as string).length).toBeGreaterThan(0);
+    787 │     });
+  > 788 │     const e0 = events[0]!,
+        │                ^^^^^^^^^^
+    789 │       e1 = events[1]!;
+    790 │     expect(e0.id).not.toBe(e1.id);
+  
+
+apps/bdptest/src/transactional-event-sse-installed.test.ts:789:12 lint/style/noNonNullAssertion ━━━━━━━━━━
+
+  ! Forbidden non-null assertion.
+  
+    787 │     });
+    788 │     const e0 = events[0]!,
+  > 789 │       e1 = events[1]!;
+        │            ^^^^^^^^^^
+    790 │     expect(e0.id).not.toBe(e1.id);
+    791 │     phase = "first clean shutdown";
+  
+
+apps/bdptest/src/transactional-event-sse-installed.test.ts:822:13 lint/style/noNonNullAssertion  FIXABLE  ━━━━━━━━━━
+
+  ! Forbidden non-null assertion.
+  
+    820 │     beginRequest(second, "GET", sseTarget);
+    821 │     const recorder = recordRawSse({
+  > 822 │       dial: second.handle!.ready.listenUrl as string,
+        │             ^^^^^^^^^^^^^^
+    823 │       host: "reference.invalid",
+    824 │       target: `/acme/${sseTarget}`,
+  
+  i Unsafe fix: Replace with optional chain operator ?. This operator includes runtime checks, so it is safer than the compile-only non-null assertion operator
+  
+     820  820 │       beginRequest(second, "GET", sseTarget);
+     821  821 │       const recorder = recordRawSse({
+     822      │ - ······dial:·second.handle!.ready.listenUrl·as·string,
+          822 │ + ······dial:·second.handle?.ready.listenUrl·as·string,
+     823  823 │         host: "reference.invalid",
+     824  824 │         target: `/acme/${sseTarget}`,
+  
+
+apps/bdptest/src/transactional-event-sse-installed.test.ts:847:15 lint/style/noNonNullAssertion ━━━━━━━━━━
+
+  ! Forbidden non-null assertion.
+  
+    845 │       "SSE first Event",
+    846 │     );
+  > 847 │     sameFrame(idFrames(recorder)[0]!, e1);
+        │               ^^^^^^^^^^^^^^^^^^^^^^
+    848 │     expect(controller.signal.aborted).toBe(false);
+    849 │     expect(recorder.destroyed).toBe(false);
+  
+
+apps/bdptest/src/transactional-event-sse-installed.test.ts:862:28 lint/style/noNonNullAssertion ━━━━━━━━━━
+
+  ! Forbidden non-null assertion.
+  
+    860 │     expect(observedFrames).toHaveLength(1);
+    861 │     observedFrames.forEach((frame) => sameFrame(frame, e1));
+  > 862 │     expect(() => sameFrame(observedFrames[0]!, e0)).toThrow();
+        │                            ^^^^^^^^^^^^^^^^^^
+    863 │     localSensitivityControls.push("frame-event-identity");
+    864 │     sseEvidence = {
+  
+
+apps/bdptest/src/transactional-event-sse-installed.test.ts:432:13 lint/suspicious/noAssignInExpressions ━━━━━━━━━━
+
+  × The assignment should not be in an expression.
+  
+    430 │     if (!stream) return Promise.resolve();
+    431 │     const owned = stream;
+  > 432 │     return (owned.closing ??= track(
+        │             ^^^^^^^^^^^^^^^^^^^^^^^^
+  > 433 │       owned.recorder.close().then(() => {
+  > 434 │         owned.drained = true;
+  > 435 │       }),
+  > 436 │     ));
+        │     ^
+    437 │   }
+    438 │   function closeSession(session: Session): Promise<void> {
+  
+  i The use of assignments in expressions is confusing.
+    Expressions are often considered as side-effect free.
+  
+
+apps/bdptest/src/transactional-event-sse-installed.test.ts:444:13 lint/suspicious/noAssignInExpressions ━━━━━━━━━━
+
+  × The assignment should not be in an expression.
+  
+    442 │     }
+    443 │     const handle = session.handle;
+  > 444 │     return (session.closing ??= track(
+        │             ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  > 445 │       handle.close().then(() => {
+         ...
+  > 450 │       }),
+  > 451 │     ));
+        │     ^
+    452 │   }
+    453 │   const workTimer = setTimeout(() => {
+  
+  i The use of assignments in expressions is confusing.
+    Expressions are often considered as side-effect free.
+  
+
+apps/bdptest/src/transactional-event-sse-installed.test.ts:861:20 lint/suspicious/useIterableCallbackReturn ━━━━━━━━━━
+
+  × This callback passed to forEach() iterable method should not return a value.
+  
+    859 │     const observedFrames = idFrames(recorder);
+    860 │     expect(observedFrames).toHaveLength(1);
+  > 861 │     observedFrames.forEach((frame) => sameFrame(frame, e1));
+        │                    ^^^^^^^
+    862 │     expect(() => sameFrame(observedFrames[0]!, e0)).toThrow();
+    863 │     localSensitivityControls.push("frame-event-identity");
+  
+  i Either remove this return or remove the returned value.
+  
+    859 │     const observedFrames = idFrames(recorder);
+    860 │     expect(observedFrames).toHaveLength(1);
+  > 861 │     observedFrames.forEach((frame) => sameFrame(frame, e1));
+        │                                       ^^^^^^^^^^^^^^^^^^^^
+    862 │     expect(() => sameFrame(observedFrames[0]!, e0)).toThrow();
+    863 │     localSensitivityControls.push("frame-event-identity");
+  
+
+Checked 1 file in 16ms. No fixes applied.
+Found 3 errors.
+Found 15 warnings.
+lint ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+  × Some errors were emitted while running checks.
+  
+

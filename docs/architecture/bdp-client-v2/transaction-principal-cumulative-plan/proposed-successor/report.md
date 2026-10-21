@@ -1,0 +1,1 @@
+Proposed narrow successor for genuine credential-dispatch evidence; exact two-artifact delta in correction.patch. Frozen original plan/ledger retained. Source binding is byte-identical. All payload/count/budget artifacts remain inherited from the frozen parent packet; no source or execution changes. Root acceptance pending.

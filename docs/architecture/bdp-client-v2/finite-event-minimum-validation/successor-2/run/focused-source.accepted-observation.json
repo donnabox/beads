@@ -1,0 +1,137 @@
+{
+  "sourceIdentity": "502d8fb13e471353de934ca6f11ad22aa76486aa1f3f6481f964222b67ca5458",
+  "sourceBindingSha256": "03bca6f1cd55c14418dc5bb9924419c1c64fd249f14f18c78f781162500daaf8",
+  "qualification": false,
+  "selectedCallbacks": [
+    "gates initial Scope Event unknown minima before retained scans",
+    "captures an initial Scope Event opaque tuple across one bounded wait",
+    "cancels and drains initial Scope Event opaque waits",
+    "serves only initial finite Scope Event opaque minima through bounded waiting",
+    "preserves initial Scope Event preflight before malformed capture: already-aborted",
+    "preserves initial Scope Event preflight before malformed capture: invalid-policy",
+    "preserves initial Scope Event preflight before malformed capture: throwing-clock",
+    "preserves initial Scope Event preflight before malformed capture: nonfinite-clock",
+    "preserves initial Scope Event preflight before malformed capture: malformed-after-valid-preflight",
+    "pages within groups, continues exclusively after end and rejects unrelated/fabricated cursors",
+    "checks minimum position before any retained group scan or body materialization",
+    "cancels finite Event waits through the facet and drains uncancelled waits before owner close",
+    "serves finite Event HTTP with current context, conditionals, HEAD and bounded minimum waits"
+  ],
+  "resultsSha256": "d9bad3ec71cd9dc6e54fd0e908359211779bb3d11546e394f58ec35b90a130af",
+  "logSha256": "e277e65bfb60e3a376818879556bcb1eed54c8c3c49346b2d71a96de288b3ba2",
+  "actualInstrumentedObservations": [
+    {
+      "observation": "finite-event-minimum-capture",
+      "reads": 4,
+      "serviceCalls": 2,
+      "waits": 2,
+      "probes": 2,
+      "groupReads": 0,
+      "attemptTimes": [
+        0,
+        0,
+        5,
+        10
+      ]
+    },
+    {
+      "observation": "finite-event-minimum-cancel-drain",
+      "reads": 5,
+      "serviceCalls": 4,
+      "waits": 3,
+      "probes": 3,
+      "groupReads": 0,
+      "attemptTimes": [
+        0,
+        0,
+        5,
+        10,
+        15
+      ],
+      "postCloseDirectRefusals": 1
+    },
+    {
+      "observation": "finite-event-minimum-preflight",
+      "label": "already-aborted",
+      "serviceCalls": 1,
+      "clockCalls": 1,
+      "ownerReads": 0,
+      "waits": 0
+    },
+    {
+      "observation": "finite-event-minimum-preflight",
+      "label": "invalid-policy",
+      "serviceCalls": 1,
+      "clockCalls": 0,
+      "ownerReads": 0,
+      "waits": 0
+    },
+    {
+      "observation": "finite-event-minimum-preflight",
+      "label": "throwing-clock",
+      "serviceCalls": 1,
+      "clockCalls": 1,
+      "ownerReads": 0,
+      "waits": 0
+    },
+    {
+      "observation": "finite-event-minimum-preflight",
+      "label": "nonfinite-clock",
+      "serviceCalls": 1,
+      "clockCalls": 1,
+      "ownerReads": 0,
+      "waits": 0
+    },
+    {
+      "observation": "finite-event-minimum-preflight",
+      "label": "malformed-after-valid-preflight",
+      "serviceCalls": 1,
+      "clockCalls": 1,
+      "ownerReads": 0,
+      "waits": 0
+    },
+    {
+      "observation": "finite-event-minimum-owner",
+      "reads": 8,
+      "seedMutations": 1
+    },
+    {
+      "observation": "finite-event-minimum-http",
+      "calls": 32,
+      "productChildren": 0,
+      "directoryAbsent": true,
+      "failureCount": 0
+    }
+  ],
+  "attribution": "Selected source owner/service and fresh emitted HTTP callbacks; actual names verified individually",
+  "plannedWorkload": {
+    "callbacks": 13,
+    "newSourceCallbacks": 9,
+    "existingSourceCallbacks": 4,
+    "stores": 13,
+    "inProcessListeners": 2,
+    "productChildren": 0,
+    "httpExchanges": 91,
+    "newHttpExchanges": 32,
+    "existingHttpExchanges": 59,
+    "newOwnerDirectReads": 8,
+    "newWaitServiceCalls": 6,
+    "newWaitDelegatedReads": 9,
+    "newWaits": 5,
+    "newWithReadProbes": 5,
+    "newPostCloseDirectRefusal": 1,
+    "additionalPreflightCallbacks": 5,
+    "additionalPreflightStores": 5,
+    "additionalPreflightServiceCalls": 5,
+    "additionalPreflightInitialClockCalls": 4,
+    "additionalPreflightOwnerReads": 0,
+    "additionalPreflightWaits": 0,
+    "additionalPreflightHttp": 0,
+    "existingOwnerDirectReads": 19,
+    "existingServiceCalls": 4,
+    "existingPostCloseDirectRefusal": 1,
+    "existingServiceRetryAttempts": null,
+    "countAttribution": "Frozen-source prospective workload; exact runtime callback names and new instrumented reports separately checked. Existing retry counts depend on real clock."
+  },
+  "limits": "Counts are derived from frozen callback code, not fabricated observed owner/HTTP totals; preserve service precedence controls as separate service calls and owner attempts. Assertions of passing pinned callbacks supply semantic evidence."
+}

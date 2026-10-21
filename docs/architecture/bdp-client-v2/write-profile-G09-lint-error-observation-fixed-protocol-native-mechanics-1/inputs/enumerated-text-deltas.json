@@ -1,0 +1,110 @@
+[
+  {
+    "label": "fixed helper namespace",
+    "old": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation-preparation-3",
+    "new": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-lint-error-observation-preparation-1",
+    "occurrences": 2
+  },
+  {
+    "label": "fixed diagnostic output namespace",
+    "old": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation3-root-next5-dispatch-1/lint",
+    "new": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-lint-error-observation-root-dispatch-1/lint-error-observation",
+    "occurrences": 3
+  },
+  {
+    "label": "fixed external manifest path",
+    "old": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation3-next5-root-execution-acceptance-1/acceptance.json",
+    "new": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-lint-error-observation-root-execution-acceptance-1/acceptance.json",
+    "occurrences": 1
+  },
+  {
+    "label": "accepted diagnostic implementation pin",
+    "old": "8ad44a93c1215bfe0b9777df4135385f72e82dd8873287a6988da2f1fb7615c6",
+    "new": "e5859fb63e924b6e931d33dd88e217dea97c091159507287c06bcb0312913a47",
+    "occurrences": 2
+  },
+  {
+    "label": "exact singleton commands pin",
+    "old": "d7189bd723bce76f8b214a33197ec48485e6f534f310dad10522f8612d495ef7",
+    "new": "7850e90410ac64eb109fbbe51650bee67bb5a7afa934edfa069c6e5c8aaadc94",
+    "occurrences": 2
+  },
+  {
+    "label": "exact fixed stage literal",
+    "old": "'lint'",
+    "new": "'lint-error-observation'",
+    "occurrences": 7
+  },
+  {
+    "label": "manifest approved singleton",
+    "old": "['node-version','pnpm-version','workspace-install','bind-workspace-tools','typecheck','format-check','lint-error-observation','fresh-build','bind-fresh-build']",
+    "new": "['lint-error-observation']",
+    "occurrences": 1
+  },
+  {
+    "label": "manifest diagnostic-only scope",
+    "old": "assert STAGE in execution_acceptance['approvedStages']\n",
+    "new": "assert STAGE in execution_acceptance['approvedStages']\nassert execution_acceptance['diagnosticOnly'] is True\nassert execution_acceptance['noPipelineCredit'] is True\nassert execution_acceptance['qualityAcceptance'] is False\n",
+    "occurrences": 1
+  },
+  {
+    "label": "exclusive first and only diagnostic parent",
+    "old": "    if STAGE == 'typecheck': root.parent.mkdir(mode=0o700, exist_ok=False)\n    else: assert root.parent.is_dir() and not root.parent.is_symlink()\n",
+    "new": "    root.parent.mkdir(mode=0o700, exist_ok=False)  # first and only diagnostic; prior parent blocks\n",
+    "occurrences": 1
+  },
+  {
+    "label": "child failure and local capture-only predicate",
+    "old": "        elif not (inner['exit']==0 and inner['accepted'] is True and inner['sourceUnchanged'] is True and inner['sourceIdentity']=='f6baa7922feea80b9ae9641abc08ed79c339ff719769cc95162fe87ddc70bc65' and inner['forcedCleanup'] is False and inner['errors']==[] and inner['remainingProcesses']==[] and inner['runtimeDirectoriesStillPresent']==[]): failure = failure or 'inner-not-accepted'\n",
+    "new": "        elif not (type(inner['exit']) is int and inner['exit']==1 and inner['accepted'] is False and inner['qualityPass'] is False and inner['observationComplete'] is True and inner['observationKind']=='ERROR_ONLY_NOT_QUALITY_PASS' and inner['status']=='CAPTURE_COMPLETE_PENDING_ROOT_CLASSIFICATION' and inner['diagnosticClassification']=='UNKNOWN_PENDING_ROOT_RAW_REVIEW' and inner['rootClassificationRequired'] is True and inner['sourceUnchanged'] is True and inner['sourceIdentity']=='f6baa7922feea80b9ae9641abc08ed79c339ff719769cc95162fe87ddc70bc65' and inner['forcedCleanup'] is False and inner['errors']==[] and inner['remainingProcesses']==[] and inner['runtimeDirectoriesStillPresent']==[]): failure = failure or 'inner-diagnostic-capture-incomplete'\n",
+    "occurrences": 1
+  },
+  {
+    "label": "manifest scope comment",
+    "old": "# End additive authority-only checks; every original A/B/C byte follows unchanged.",
+    "new": "# End diagnostic authority-only checks; enumerated local-capture predicate/scope changes follow.",
+    "occurrences": 1
+  },
+  {
+    "label": "diagnostic completion wording",
+    "old": "# A root record cannot become PASS unless ALL schema predicates hold and actual",
+    "new": "# A diagnostic cannot be complete unless ALL capture predicates hold and actual",
+    "occurrences": 1
+  },
+  {
+    "label": "no pipeline continuation wording",
+    "old": "Any late/nonzero/missing/partial/unknown fact stops the prefix; no new stage or retry.",
+    "new": "Any late/nonzero/missing/partial/unknown fact stops this diagnostic observation; no new stage or retry.",
+    "occurrences": 1
+  },
+  {
+    "label": "explicit receipt diagnostic-only scope: 'commandsSha256'",
+    "old": "'commandsSha256':EXPECTED_COMMANDS_SHA256},allow_nan=False)",
+    "new": "'commandsSha256':EXPECTED_COMMANDS_SHA256,'observationKind':'ERROR_ONLY_NOT_QUALITY_PASS','qualityPass':False,'nextStageAuthorized':False,'diagnosticClassification':'UNKNOWN_PENDING_ROOT_RAW_REVIEW','rootClassificationRequired':True},allow_nan=False)",
+    "occurrences": 1
+  },
+  {
+    "label": "explicit receipt diagnostic-only scope: 'requiresIndependentOrdinaryToolObservations'",
+    "old": "'requiresIndependentOrdinaryToolObservations':True},allow_nan=False)",
+    "new": "'requiresIndependentOrdinaryToolObservations':True,'observationKind':'ERROR_ONLY_NOT_QUALITY_PASS','qualityPass':False,'nextStageAuthorized':False,'diagnosticClassification':'UNKNOWN_PENDING_ROOT_RAW_REVIEW','rootClassificationRequired':True},allow_nan=False)",
+    "occurrences": 1
+  },
+  {
+    "label": "explicit receipt diagnostic-only scope: 'finalClockWitness'",
+    "old": "'finalClockWitness':None}\n",
+    "new": "'finalClockWitness':None,'observationKind':'ERROR_ONLY_NOT_QUALITY_PASS','qualityPass':False,'nextStageAuthorized':False,'diagnosticClassification':'UNKNOWN_PENDING_ROOT_RAW_REVIEW','rootClassificationRequired':True}\n",
+    "occurrences": 1
+  },
+  {
+    "label": "explicit receipt diagnostic-only scope: 'laterStaticAuditAndGitExcludedFromRuntime'",
+    "old": "'laterStaticAuditAndGitExcludedFromRuntime':True}\n",
+    "new": "'laterStaticAuditAndGitExcludedFromRuntime':True,'observationKind':'ERROR_ONLY_NOT_QUALITY_PASS','qualityPass':False,'nextStageAuthorized':False,'diagnosticClassification':'UNKNOWN_PENDING_ROOT_RAW_REVIEW','rootClassificationRequired':True}\n",
+    "occurrences": 1
+  },
+  {
+    "label": "fixed diagnostic purpose annotation",
+    "old": "STAGE = 'lint-error-observation'\n",
+    "new": "STAGE = 'lint-error-observation'\n\n# Child exit1 remains failed lint. Wrapper/tool exit0 means local capture only, never quality PASS.\n# Full raw error/fatal/infrastructure classification is independently required after A/B/C;\n# neither observationComplete nor UNKNOWN_PENDING_ROOT_RAW_REVIEW grants final root acceptance.\n",
+    "occurrences": 1
+  }
+]

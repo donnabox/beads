@@ -1,0 +1,20 @@
+{
+  "scope": "One test-only direct error accumulation replacing immediately caught throw; no runtime/oracle change",
+  "oldSourceSha256": "03f4e5c53cc8717a9818de97dd7a4c606cb1db6018844481e7cd43a18d55dd20",
+  "newSourceSha256": "b79b71b13e9e293cfccfa9147e092d4d3825ab7a241244decf00e15615c6d0a6",
+  "patchSha256": "be09970db8718cdf4d6bf6fd0c31c857ad7a8e25d7f7735c7508724a7addc63a",
+  "mutantSha256": "b7f0b1d8cb3036618be03d9ef72d53ae2f9b5fcb49cd2cb173b62b2e776d2cbf",
+  "priorEvidenceRetained": true,
+  "repeatOnly": [
+    "service positive",
+    "old-shape service assertion derivative",
+    "applicable build/type/static"
+  ],
+  "actualTotalCaseExecutionsAfterApprovedRepeat": 9,
+  "distinctPositiveCases": 4,
+  "distinctControlCases": 3,
+  "http": 0,
+  "installedChildren": 0,
+  "totalInProcessServicesAfterRepeat": 4,
+  "totalTemporaryStoresAfterRepeat": 9
+}

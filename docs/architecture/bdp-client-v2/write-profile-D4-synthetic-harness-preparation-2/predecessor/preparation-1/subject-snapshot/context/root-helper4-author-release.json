@@ -1,0 +1,40 @@
+{
+  "utc": "2026-10-18T12:14:43.740786+00:00",
+  "accepted": true,
+  "meaning": "Accept complete helper3 review findings; execution remains CLOSED",
+  "nativeClosure": {
+    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-D4-validation-preparation3-native-mechanics-closure-1/closure.json",
+    "sha256": "06c987aec2e78933054273322c2f2d237e7705566997f951f98aafd2128684c1"
+  },
+  "nativeIndex": {
+    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-D4-validation-preparation3-native-mechanics-closure-1/index.json",
+    "sha256": "035317a73c2b9496af3fb4182dbe54e6a669e80c5eb671c0c09dbab701f2f409"
+  },
+  "sourceTruthTable": {
+    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-D4-validation-preparation3-native-mechanics-closure-1/source-state-truth-table.json",
+    "sha256": "b68337c37d0a30d224b2772a24ae3347492646e28c799fc6bd5e7a40f473e406"
+  },
+  "finding": "D4-P3-N1 Low source-impossible failed-only observations; no positive promotion",
+  "requiredCorrection": "Exactly require received implies settled; if unreceived and unsettled require initial errorCategory null AND writeState null in addition to existing null response facts. Preserve settled/unreceived nonnull9category check and genuinely nullable settled writeState; validated implies received and settled remains. Observable S/R/V states only000/100/110/111, all eight rows explicitly covered.",
+  "sourceOnlyRelease": {
+    "owner": "changefeed_native_review",
+    "successor": "write-profile-D4-validation-preparation-4",
+    "afterDurablePushOnly": true,
+    "allowed": "Only audit.py state predicates plus existingD03 twenty finite described subcases/necessary namespace+bindings+origins+index/genuine deltas/fullpredecessor3preservation",
+    "otherSevenHelpersMustRemainByteExact": true,
+    "productSource679Unchanged": true,
+    "same21Stages48IDsBudgetsCapsPoliciesNoRetries": true,
+    "noSchemaWeakeningOrNewAllowedFailedStates": true,
+    "futureOtherNativeAndRootRequired": true,
+    "forbidden": [
+      "helper/schema/control evaluation/execution",
+      "product source edits",
+      "Git",
+      "compiler/tests/build/install/runtime",
+      "reviewer/flags"
+    ],
+    "syntheticHarness": "UNPREPARED/UNAPPROVED; descriptions not executionauthority",
+    "productExecutionReleased": false
+  },
+  "noWholeWriteQualification": true
+}

@@ -1,0 +1,40 @@
+{
+  "accepted": true,
+  "owner": "root",
+  "scope": "Eight frozen sequential commands, exactly12 static cases; no full installed matrix local run",
+  "sourceManifest": {
+    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-command-minimum-catalog-draft/review-repair/source-binding.json",
+    "sha256": "e6a3147f6a76028c5ca98726f5ba0bce62f431955bf359c90eaed7bffdba3270"
+  },
+  "nativeClosure": {
+    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-command-minimum-catalog-draft/review-repair/native-closure.md",
+    "sha256": "cd1746bd8630ce87296f931814803b95944bf9b8138fd0d343e573028226a322"
+  },
+  "claudeReview": {
+    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-command-minimum-catalog-draft/claude-review-v2/stdout.txt",
+    "sha256": "df9e921666cea5524cad204820779a62de2b76ee7cade71fb43c2d60953b0fb7"
+  },
+  "dispositions": {
+    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-command-minimum-catalog-draft/root-review-dispositions.json",
+    "sha256": "0d2632cc226539ef6d5e74f6045799fe42cb8aeb905e2d25a455cae722da1e46"
+  },
+  "sourceAudit": {
+    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-command-minimum-catalog-draft/claude-review-v2/claude-findings-source-audit.md",
+    "sha256": "cb1d71bf7dbb93b9995347f37193f04e60edabb2a6ba4b003fe00889efb9ded6"
+  },
+  "growthAcceptance": {
+    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-command-minimum-catalog-draft/review-repair/root-growth-acceptance.json",
+    "sha256": "e8e6ceb32b3419148a0540d8a64183b6a54f35561a908bfedc7eb541348688a8"
+  },
+  "preparationReviews": [
+    {
+      "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-command-minimum-catalog-validation/root-preparation-review.json",
+      "sha256": "8446cc03d6f199cb9875e500142e3ea267787c616a7752de01181853d6ad9ee1"
+    },
+    {
+      "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-command-minimum-catalog-validation/native-preparation-review.md",
+      "sha256": "092858a4c6f610c2053300b9615a3d320c8e7b10b30878c03d4c9913619b529c"
+    }
+  ],
+  "limits": "Stop on any failure; preserve outcomes; no automatic retry or source alteration. Exact12 reporter inspection and cleanup classification required before acceptance. Exact-head CI separate."
+}

@@ -1,0 +1,44 @@
+--- after/apps/bdptest/src/reference-deployment-lifecycle-installed.test.ts
++++ before/apps/bdptest/src/reference-deployment-lifecycle-installed.test.ts
+@@ -44,18 +44,12 @@
+ }
+ async function cohort(id: string, profile: Profile, httpExpected: number, generations: number, work: (f: Awaited<ReturnType<typeof fixture>>) => Promise<void>, guardChildren = 0) {
+   const started = performance.now(), controller = new AbortController(), timer = setTimeout(() => controller.abort(), 45000);
+-  const preparation: { root?: string; reservation?: Awaited<ReturnType<typeof reservation>> } = {};
+   let f: Awaited<ReturnType<typeof fixture>> | undefined, failure: unknown, cleanupKnown = true;
+-  try { f = await fixture(id, profile, started, controller, preparation); await work(f); expect(f.records).toHaveLength(httpExpected); expect(f.sessions.filter((s) => s.category !== "guard")).toHaveLength(generations); expect(f.sessions.filter((s) => s.category === "guard")).toHaveLength(guardChildren); }
++  try { f = await fixture(id, profile, started, controller); await work(f); expect(f.records).toHaveLength(httpExpected); expect(f.sessions.filter((s) => s.category !== "guard")).toHaveLength(generations); expect(f.sessions.filter((s) => s.category === "guard")).toHaveLength(guardChildren); }
+   catch (error) { failure = error; }
+   finally {
+     clearTimeout(timer); controller.abort();
+     const cleanupEnd = performance.now() + 10000;
+-    if (!f) {
+-      cleanupKnown = false;
+-      try { await preparation.reservation?.close(); } catch { /* unknown stays retained */ }
+-      console.log(JSON.stringify({ observation: "reference-lifecycle-installed", id, profile, phase: "fixture-preparation", outcome: "failed", claimEligible: false, ownership: "unknown", directory: preparation.root ?? null, directoryRetained: true }));
+-    }
+     if (f) {
+       for (const session of f.sessions) if (!session.exit && session.child.connected) session.child.send({ command: "close" }, () => {});
+       const cleanup = await Promise.allSettled(f.sessions.map(async (session) => {
+@@ -85,10 +79,8 @@
+   if (failure !== undefined) throw failure;
+   expect(cleanupKnown).toBe(true);
+ }
+-async function fixture(_id: string, profile: Profile, started: number, controller: AbortController, preparation: { root?: string; reservation?: Awaited<ReturnType<typeof reservation>> }) {
+-  const root = mkdtempSync(path.join(tmpdir(), "bdp-reference-lifecycle-")); preparation.root = root;
+-  const reserved = await reservation(); preparation.reservation = reserved;
+-  const scope = `http://127.0.0.1:${reserved.port}/acme/`, type = scope + "types/bead", schema = scope + "schemas/n";
++async function fixture(_id: string, profile: Profile, started: number, controller: AbortController) {
++  const root = mkdtempSync(path.join(tmpdir(), "bdp-reference-lifecycle-")), reserved = await reservation(), scope = `http://127.0.0.1:${reserved.port}/acme/`, type = scope + "types/bead", schema = scope + "schemas/n";
+   const workspace = fileURLToPath(new URL("../../../", import.meta.url));
+   const entry = realpathSync(process.env.BDP_REFERENCE_DEPLOYMENT_INSTALLED_ENTRY ?? path.join(workspace, "packages/server/dist/reference-deployment-process.js"));
+   const entrySha256 = hash(readFileSync(entry));
+@@ -191,7 +183,7 @@
+     const session = sessions.at(-1); if (!session?.ready) throw Error("ready required"); const dial = new URL(String(session.ready.listenUrl)); const socket = connect({ host: dial.hostname, port: Number(dial.port) }); peers.push(socket);
+     const closed = Promise.withResolvers<void>(); const state = { exitBeforeShutdown: false, closeBeforeShutdown: false, refusalWireBase64: "", refusalStatus: null as number | null, serverTransportLiveAtShutdown: "unknown", forcedServerDestructionClaimed: false };
+     socket.once("end", () => { state.exitBeforeShutdown = true; }); socket.once("close", () => { state.closeBeforeShutdown = true; closed.resolve(); }); socket.on("error", () => {});
+-    await limited(new Promise<void>((resolve, reject) => { let bytes = Buffer.alloc(0); socket.on("data", (chunk) => { try { bytes = Buffer.concat([bytes, chunk]); if (bytes.length > 16384) { reject(Error("CONNECT refusal bound")); socket.destroy(); return; } if (bytes.includes("\r\n\r\n")) { const match = /^HTTP\/1\.1 (\d{3}) /.exec(bytes.toString("latin1")); const status = match ? Number(match[1]) : 0; state.refusalStatus = status; state.refusalWireBase64 = bytes.toString("base64"); socket.pause(); expect(status).toBeGreaterThanOrEqual(400); expect(status).toBeLessThan(500); resolve(); } } catch (error) { reject(error); socket.destroy(); } }); socket.once("connect", () => socket.write(`CONNECT ${new URL(scope).host} HTTP/1.1\r\nHost: ${new URL(scope).host}\r\nAuthorization: Bearer ${writer}\r\n\r\n`)); socket.once("error", reject); }), Math.min(started + 45000, performance.now() + 5000));
++    await limited(new Promise<void>((resolve, reject) => { let bytes = Buffer.alloc(0); socket.on("data", (chunk) => { bytes = Buffer.concat([bytes, chunk]); if (bytes.length > 16384) { reject(Error("CONNECT refusal bound")); socket.destroy(); return; } if (bytes.includes("\r\n\r\n")) { const match = /^HTTP\/1\.1 (\d{3}) /.exec(bytes.toString("latin1")); const status = match ? Number(match[1]) : 0; state.refusalStatus = status; state.refusalWireBase64 = bytes.toString("base64"); socket.pause(); expect(status).toBeGreaterThanOrEqual(400); expect(status).toBeLessThan(500); resolve(); } }); socket.once("connect", () => socket.write(`CONNECT ${new URL(scope).host} HTTP/1.1\r\nHost: ${new URL(scope).host}\r\nAuthorization: Bearer ${writer}\r\n\r\n`)); socket.once("error", reject); }), Math.min(started + 45000, performance.now() + 5000));
+     const before = { ...state }; controls.push({ CONNECT: "actual-refusal", beforeShutdown: before });
+     return { async afterStop() { socket.resume(); await limited(closed.promise, Math.min(started + 45000, performance.now() + 5000)); controls.push({ CONNECT: "actual-peer-close", wasAlreadyClosed: before.closeBeforeShutdown, closeObserved: true, forcedServerDestructionClaimed: false }); } };
+   }

@@ -1,0 +1,10 @@
+--- a/packages/server/src/transaction-events.test.ts
++++ b/packages/server/src/transaction-events.test.ts
+@@ -1124,6 +1124,7 @@
+       try {
+         const response = await fetch(wire, {
+           method,
++          redirect: "error",
+           signal: AbortSignal.any([controller.signal, requestAbort.signal]),
+           headers: {
+             accept,

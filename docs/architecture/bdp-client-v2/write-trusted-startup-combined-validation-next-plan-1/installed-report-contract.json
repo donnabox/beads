@@ -1,0 +1,153 @@
+{
+  "state": "PROSPECTIVE DATA grammar derived from actual source3, not an authored runnable schema",
+  "normalReportExactKeys": [
+    "observation",
+    "id",
+    "profile",
+    "source",
+    "entry",
+    "entrySha256",
+    "expected",
+    "actual",
+    "records",
+    "generations",
+    "lifecycle",
+    "elapsedMs",
+    "outcome",
+    "claimEligible",
+    "limitations"
+  ],
+  "constants": {
+    "observation": "reference-lifecycle-installed",
+    "claimEligible": false,
+    "limitations": [
+      "private lifecycle only; no public admission",
+      "all six TX cold cases require accepted combined D3a; fdd-only cannot pass them",
+      "source/archive/consumer/lock/proof independently root-bound; no child attestation",
+      "no crash, logical restore or whole-profile claim"
+    ]
+  },
+  "expectedExactKeys": [
+    "http",
+    "generations",
+    "guardChildren"
+  ],
+  "actualExactKeys": [
+    "scheduled",
+    "complete",
+    "originalGenerations",
+    "guardChildren"
+  ],
+  "dispatchInitialExactKeys": [
+    "ordinal",
+    "generation",
+    "label",
+    "method",
+    "url",
+    "credential",
+    "complete",
+    "responseAvailable",
+    "wireAvailable"
+  ],
+  "dispatchInitialValues": {
+    "complete": false,
+    "responseAvailable": false,
+    "wireAvailable": false
+  },
+  "receivedAdds": [
+    "status",
+    "headers",
+    "bodyText",
+    "bodyOctets",
+    "bodySha256",
+    "writeState",
+    "wireBase64",
+    "wireSha256"
+  ],
+  "failureMayAdd": {
+    "terminal": "rejected"
+  },
+  "responseGrammar": [
+    "Counts ordinal1..actual scheduled; generation is actual sessions ordinal (not inferred total). Exact selected program label/method/actual URI/role required on a successful report.",
+    "Response available and complete facts are captured before status/write/wire/HEAD assertions. A rejected record may retain complete=true/responseAvailable=true. Do not collapse all errors into no response.",
+    "Positive every response status matches source program, writeState complete, actual wire exists/nonempty, HEAD bodyText empty; headers are string-valued actual projection.",
+    "bodyOctets is actual UTF8 response length and bodySha256 hash actual bodyText UTF8; wireBase64 canonical exact received bytes and wireSha256 actual hash. Check raw framing/status/header/body projection under actual executor grammar; never reconstruct missing wire.",
+    "GET/HEAD sourceBody/sourceIdempotencyKey and resolved credential text are NOT emitted report fields. Bind their meaning to actual frozen source/executor/configuration provenance.",
+    "Cold replay actual bodyText byte-equals original created response, parsed resource deep equality for writer/readers/reopen; actual ownerProbe compares persisted id/type/revision/properties/metadata.",
+    "Anonymous401 cold row has no bdp-scope-epoch/bdp-authorization-view/bdp-scope-position/link.",
+    "HEAD descriptor/Directory content-type/content-length/cache-control/etag/last-modified/vary equal actual initial GET. Do not substitute later GET or guessed cache data."
+  ],
+  "generationsExactKeys": [
+    "category",
+    "ordinal",
+    "pid",
+    "ready",
+    "exit",
+    "close",
+    "outputBytes"
+  ],
+  "childGrammar": [
+    "Category candidate/public/guard; ordinal actual creation order; positive required positive integer PID and independent actual exit AND stdio close with null signals.",
+    "Expected private clean close/SIGTERM/SIGINT/disconnect catches signal and exits0 ANDclose0; refusal/public/missingIPC/invalidconfiguration/invalidpostready exits2 ANDclose2. Inert import guards exit0 ANDclose0.",
+    "No ready on refusal or guards. Ready exact6 keys event/scope/listenUrl/profile/history/claimEligible; event qualification.ready/profile selected/historyfalse/claimEligiblefalse; actual listen origin matches same configured Scope. No targets/capability/capture/auth/file digest.",
+    "I20 exact sequence public refusal ordinal1; inert-no-ipc2,inert-ipc3,missing-ipc4. I21 public refusal1,invalid-ipc guard2,ready candidate3 then invalid stop control; candidate exits2 ANDclose2 without another ready.",
+    "Child stderr/stdout/messages are internally asserted but not serialized by report beyond ready/outputBytes; independent raw child stdio is NOT present in report. Whole Vitest raw must be retained; source/selection/assertion provenance carries fixed diagnostic checks. Do not fabricate those private captured strings into external evidence."
+  ],
+  "lifecycleExactKeys": [
+    "cleanupKnown",
+    "pending",
+    "directory",
+    "directoryAbsent",
+    "ownerProbes",
+    "parentOwnership",
+    "controls"
+  ],
+  "parentOwnerExactKeys": [
+    "kind",
+    "stage",
+    "closeAttempted",
+    "closeSettled",
+    "closeSucceeded",
+    "uncertain"
+  ],
+  "parentRules": [
+    "Immediately ledger each actual returned owner or DatabaseSync before fallible work; real close memoized, attempted/settled/succeeded distinct.",
+    "Failed or timed out primary close keeps uncertain sticky even if it later settles; one shared cleanupEnd, no renewed per-owner budget.",
+    "Accepted cleanup requires actual child exit+close for all37 planned acquisitions, parent close attempts settled+succeeded without uncertainty, pending0, reservationclose known, actual directoryAbsent after allowed removal.",
+    "Unknown parent/child/late work retains directory and fails. Unconditional rm does not prove ownership; observed database reopen+close does not prove crash recovery."
+  ],
+  "fixturePreparationFailureExactKeys": [
+    "observation",
+    "id",
+    "profile",
+    "phase",
+    "outcome",
+    "claimEligible",
+    "ownership",
+    "directory",
+    "directoryRetained"
+  ],
+  "fixturePreparationFailureValues": {
+    "phase": "fixture-preparation",
+    "outcome": "failed",
+    "claimEligible": false,
+    "ownership": "unknown",
+    "directoryRetained": true
+  },
+  "secrecy": [
+    "Actual credential strings are kept only in fixture; scan serialized report and decoded record wireBase64/control refusalWireBase64 before stdout. Source I21 tests safe and byte-embedded-secret counterexamples inside same callback, no HTTP.",
+    "Unsafe output withheld and original failure retained; missing observation cannot pass and must not be recreated. File/authentication digests commit secrets and are forbidden diagnostics."
+  ],
+  "time": [
+    "Report elapsedMs sampled after cleanup/removal before JSON serialization/output; it is not whole callback/stdio/outer terminal proof.",
+    "One work deadline45s, ONE remaining cleanup10s, callback60s, request5s, individual guards5/10s capped by remaining work; future outer120/TERM115 no retry.",
+    "Whole runner must own collection/import/work/child groups/flush/postchecks/publisher under original same clock. No hidden off-clock source/build/consumer scans."
+  ],
+  "failureRule": "Actual partial response/child/counter states remain failed/unestablished. Missing report, unknown process ownership or incomplete stdout is failure, never success inference.",
+  "failureRepresentation": "writeState assigned from response.exactRequest?.writeState is omitted by JSON if undefined; preserve actual omission on failed assertion. bodyOctets is actual raw-executor field, checked against actual bytes when present. Successful source assertions require writeState complete and raw wire; missing facts refuse positive credit, not repaired.",
+  "sourceAttestedAuthenticationLimitation": "Reports expose credential role labels and source assertions, not the random secret or an independently reproducible authentication/policy capture. Same-source/same-module/actual configuration and fresh entry proof are necessary attribution; this private fixture does not supply D3d verifier/admission semantics.",
+  "phaseTimingLimitation": "No separate work-ended/cleanup-started/cleanup-ended timestamps or phase markers are emitted. elapsedMs alone cannot independently prove each45s/10s phase. Existing source absolute deadlines and same-clock outer terminal observations remain required; future preparation must not manufacture phase timestamps or claim per-phase measured bounds from this aggregate. If stronger phase evidence is required, stop for a separately bounded/root-reviewed observation correction, not a new unreviewed source/helper seam.",
+  "parentLedgerSuccessCount": 42,
+  "parentLedgerCountMeaning": "Source-derived finite successful fixture acquisitions across21 callbacks; includes actual owner and SQLite reopen/edit/restore, not child or HTTP count and not an observed runtime total.",
+  "CONNECTBeforeServerState": "serverTransportLiveAtShutdown remains literal unknown in source; exitBeforeShutdown/closeBeforeShutdown are socket end/close flags, not child terminal observations. No positive forced destruction claim."
+}

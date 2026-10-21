@@ -1,0 +1,91 @@
+## Review — proposed live-alias opaque-minimum plan v2 (PROPOSED, not executed)
+
+Nothing below is an observation of a run. All counts I confirm are recomputations from pinned source, not measurements.
+
+---
+
+### Blockers
+
+**1. [Blocker] §E installed report label collides with an existing installed callback's identity.**
+Plan §E (line 104): "Report `private-installed-alias-minimum`". That exact observation label is already emitted by a different installed callback: `apps/bdptest/src/transactional-collection-minimum-installed.test.ts:1223`, case `observes genuine installed current alias minimums within18requests` (its own store, child, 18-exchange ceiling). The plan never mentions this callback at all.
+Impact: two distinct installed callbacks, children, stores and directories would emit identically labelled `observation` records — precisely the child/evidence conflation the plan's own discipline forbids, and it would corrupt post-run attribution between the new 6-exchange witness and an unrelated existing 18-exchange witness.
+Bounded correction: rename the new record (e.g. `private-installed-alias-opaque-minimum`), and add one sentence in §E stating that the existing same-named installed alias-minimum callback in `transactional-collection-minimum-installed.test.ts` is separate, unselected and unchanged.
+
+**2. [Blocker] The 17-case selection omits the only existing source oracle that exercises `resolveAlias` with an unrecognized minimum position — i.e. the direct regression guard for production item 3.**
+`packages/server/src/transaction-read.test.ts:2310` `uses actual current policy for missing-first and unproved Resource attempts` creates a real alias at line 2316 (`putAlias alias/work → beads/a`), builds an opaque tuple at 2353–2357 (`minimumPosition: "opaque"`), transitions the policy so the target is hidden, and then at **2454–2463** asserts `resolveAlias(url("alias/work"))` returns `404 resource-not-found`, equal current context, exactly `1` owner entry and `0` waits.
+Traced against source: with item 3 (alias added to the `resource-not-found` bypass at `transaction-read.ts:215-217`) this case stays green. Without item 3 — e.g. if an author adds `"alias"` only to the waitable predicate — control falls to `checkCurrentReadMinimum(minimum, current, false)`, `position("opaque")` is `undefined`, `!waitable` throws `TransactionMinimumUnsupported` (`transaction-consistency.ts:122-128`), which is not caught by the behind/foreign-view/cursor-expired guard, so the case **fails**. The plan's gate is "exact17 source cases … No arbitrary full suite", so this failure would not surface until post-commit CI.
+Two further unselected oracles cover the predicate branches the change must *not* move: `transaction-read.test.ts:1657` `keeps compatible missing Types and absent/deleted incident anchors separate from collisions` (lines 1662–1705: Type `TransactionMinimumVisibilityGap` branch plus absent/deleted incident anchors) and `transaction-http.test.ts:4837` `waits for current Resources and initial collections with unknown minima and preserves residual refusals` (lines 4919–4922: `beads/a?view=links` with an opaque tuple → 500 `minimum-position`). §F substitutes only partially — it covers bead-links at source level and not the Type visibility-gap or missing-first/unproved Resource paths.
+Bounded correction: add those three exact titles to `selection-v2.json` (`sourceCases` 17 → 20), mark them in the plan's retained table as unchanged, uninstrumented and not contributing to the 64/45/11/51 figures, and leave their bodies byte-identical.
+
+---
+
+### Medium
+
+**3. [Medium] The plan's stated premise understates existing coverage, and §B's `hidden` row is largely duplicative.**
+§"Contract and production change" (line 7) presents the seeded HTTP regression as the existing expectation for a live alias plus matching `unknown`. In fact `transaction-read.test.ts:2454-2463` already asserts source-level live-alias + opaque-minimum nondisclosure under a hidden target with exactly the counts §B proposes for its `hidden` row (1 entry, 0 waits, equal problem, equal current context), and `transaction-read.test.ts:2438-2453` already covers the hidden incident anchor with the same opaque tuple.
+Impact: §B's hidden row buys little new evidence while adding a store, a policy replacement and three counted entries; more importantly the inaccurate premise is what led to omitting those cases from the selection (finding 2).
+Bounded correction: amend line 7 to name the existing source oracle alongside the HTTP row; keep §B's four rows if desired (absent/deleted/dangling for *aliases* are genuinely new), but state explicitly that `hidden` is a deliberate re-assertion of existing covered behavior in a dedicated store.
+
+**4. [Medium] Wrong line pointer for the one production edit site.**
+§"Contract and production change" (line 7) and the inherited native review both cite `transaction-read.ts:333`. The alias tag selection is `minimumCondition(minimum, "missing")` at **line 331**; line 333 is `captured = captureTransactionReadDeliveryOptions(options)`. The bypass is at **215–217**, the waitable predicate at **234–238**, the private `kind` type at **109–112**.
+Impact: the plan asserts byte-exact pinning of all four alias-owned paths, so a pointer that resolves to the wrong statement is a defect that can misdirect a mechanical authoring pass into the receiving-capture branch.
+Bounded correction: replace `333` with `331` and add the three other exact line spans.
+
+**5. [Medium] §E's "one total cleanup deadline10s" is not separable from the shared launcher's own hardcoded 10s child-close bound.**
+`scripts/transaction-installed-observation.mjs:22-37` wraps child exit in its own 10 000 ms `bounded()` race inside `close()` (lines 48–60), and the plan forbids shared-harness edits. A 10s *total* outer budget covering pending raw transports **and** child close will therefore expire at or before the launcher's own bound, so a slow-but-eventually-clean close is indistinguishable from a hang: the callback would preserve the directory and report unclean closure on a run that actually closed correctly.
+Bounded correction: either set the callback's total cleanup budget above the launcher's internal bound (e.g. 12s; 45s work + 12s + slack still inside the 60s callback bound), or state in §E that outer expiry is reported as "closure unknown, directory preserved" with the launcher's late SIGKILL and late rejection explicitly observed.
+
+---
+
+### Low
+
+**6. [Low] §E's close-verification requirement is partly redundant and misdescribes the launcher.**
+"Do not remove the store just because close() resolved: require actual timely clean child exit0/no signal" — `close()` already throws `installed transaction child did not close cleanly` unless `code === 0 && signal === null` (script lines 52–54), so a resolved close already implies clean exit. The genuinely new requirements are recording the observed `child.exitCode`/`signalCode`, the drained-transport check and the ownership/absence check.
+Bounded correction: reword to record actual exit/signal and drain/ownership observations *in addition to* the launcher's existing clean-exit guarantee, so the plan does not imply the launcher is permissive.
+
+**7. [Low] §E does not declare the unavoidable ≥1s floor per opaque 503.**
+Steps 4 and 5 each necessarily consume the installed server's real minimum-read budget; the adjacent installed evidence pins that window at `1000 ms ≤ elapsed < 5000 ms` (`transactional-collection-minimum-installed.test.ts:514-515`). Against the plan's 5s per-request limit this is feasible but thin, and the plan currently leaves it implicit.
+Bounded correction: state the expected ≥1s-per-503 floor in §E so the 5s request and 45s work bounds are declared rather than discovered. (No latency assertion should be added for step 6 — the plan is right that absence must not be inferred from wire latency.)
+
+**8. [Low] No section states that a matching opaque alias minimum has no success path.**
+`checkCurrentReadMinimum` (`transaction-consistency.ts:122-130`) always throws `TransactionMinimumUnproved` when the position is unrecognized and epoch/view match, so every matching-opaque live-alias request burns the whole budget and ends in `catch-up-timeout`; a 307 is unreachable for such a tuple. §A asserts this per-case ("must still time out at pos2") but the general property is what derives §H's "6 waits" and §E's latency floor.
+Bounded correction: add one sentence to §"Contract and production change" so those figures are derived rather than incidental.
+
+---
+
+### Optional / flagged normative tension (no redesign)
+
+**9. [Optional — flagged normative tension, excluded area] The plan's citation of the general remaining-read law also indicts the private 500 it preserves.**
+Plan line 18 correctly refuses to read `bdp.md:5844-5849` as an alias mandate — that MUST is explicitly scoped to "an existing authorized current Bead or Link Resource or properties view" — and correctly relies on 5841–5843 for the finite-wait choice. But 5841–5843 enumerates the conforming outcomes for remaining reads as representation-at-or-later, wait/route, or `foreign-view`/`cursor-expired`/`catch-up-timeout`. §H step 6 and §"Contract" deliberately retain private `500` + `x-bdp-development-limit: minimum-position` (`transaction-http.ts:663-664`) for unknown position plus foreign epoch/view on a live alias, which is also outside that enumeration.
+This is the excluded "opaque foreign context policy"; **no normative decision is required for the slice in scope, and none should be taken here.** Bounded correction: in line 18 and §H step 6, describe the foreign-opaque 500 as a known unconforming private gap knowingly retained out of scope under the same sentence, rather than only as "excluded semantics".
+
+**10. [Optional] §F's first half duplicates an unselected HTTP oracle.**
+The successful-incident-list + opaque → Unsupported behavior is already asserted over HTTP at `transaction-http.test.ts:4919-4922`. §F's unique additions are the direct source-level `TransactionMinimumUnsupported` rejection and the explicit exported-classifier assertion. Keep §F (it is the cheapest fence against a mis-authored item 4), but either select that HTTP case (see finding 2) or note the overlap so §F is not presented as the sole fence.
+
+---
+
+### Informational — mechanical claims I verified against pinned source
+
+**11. [Informational] The four properties the review was asked to prove hold in the actual owner/service code, conditional on items 1–4 being authored as written.**
+- *Tuple capture once at facet creation*: `transaction-service.ts:385` (`snapshotCurrentReadMinimum`) then `transaction-read.ts:302`; the waiter re-invokes only `facet.resolveAlias` (`transaction-service.ts:413-417`). `snapshotCurrentReadMinimum` returns a frozen own-data copy (`transaction-consistency.ts:33-56`), so §A's post-creation caller mutation provably cannot replace the requirement.
+- *Every retry re-resolves mapping/target/policy/context in one entry*: `authority-read.ts:976-996` — a single `withRead`, `captureContext` (policy + `sourceContext`), `materialize` → `reader.alias` → `graph.point` → `graph.visible` (`769-787`), and `checkSourceCondition` all inside that entry; no target or `Location` is cached across a wait.
+- *Aliases cannot advance Resource positions*: existing green assertions `transaction-read.test.ts:1902-1908` (putAlias `requiredPosition: pos-1`, context stays `pos-1`), `1912-1943` (alias-only repoint does not satisfy `pos-2`; a real `updateBead` does), `1986-1987` (`deleteAlias` leaves `pos-1`). §A's 1,1,1,2,2 and §C's terminal `pos-1` follow.
+- *An admitted wait may return a later missing 404*: `transaction-consistency.ts:163` returns the resolved value, and an alias 404 is a resolved `ReadRefusal` (`authority-read.ts:773/787`), not a throw — so §C's second entry exits the loop with the current 404, no stale target, no forced timeout. Item 3 is normatively required, not cosmetic (`bdp.md:5834-5839`).
+
+**12. [Informational] Ordering, HTTP and arithmetic claims I recomputed and found consistent.**
+- Precedence: abort rethrown before problem mapping (`transaction-http.ts:639`); `catch-up-timeout` → 503 + context + `Retry-After: 1` (`640-653`, `112`); `TransactionMinimumUnsupported` → 500 marker (`663-664`); `TransactionMinimumVisibilityGap` → `minimum-position-visibility` (`665-666`); synchronous service admission via `check()` (`transaction-service.ts:384`, already asserted at `transaction-read.test.ts:2056`).
+- §H step 5 no-context expectations are correct for the right reasons: partial tuples refuse at `transaction-http.ts:404-405` (400, no context) and query aliases at `497-498` (404, no context), both before the owner; only the `alias/missing` rows reach the owner and carry context.
+- No conditional/negotiation shortcut can reach 307/503/404/500: `read-http.ts:12-14` gates on 200-JSON or 204 only; HEAD length parity comes from `read-http.ts:42-46`; the network fixture does declare `content-length` on GET (`transaction-http.test.ts:4780-4785`), so "GET length exact / HEAD equal" is sound.
+- §H totals recompute exactly: 2+4+10+1+5+4+2 = 28, status mix sums to 28, and 6 waits follow from the unchanged `budgetMs: 2`/`tick++` seam (2 attempts, 1 wait per timing-out request).
+- The retained-table historical figures are accurate: I recomputed all seven rows from source (entries 3/4/8/3/14/1/4 = 37; writes 2/2/3/4/5/2/2 = 20; waits 0/1/0/2/1/1/0 = 5; clocks 0/6/0/3/14/3/0 = 26), and the new-case arithmetic (27/25/6/25) and aggregates (64/45/11/51, 17 stores, 19 total, 70 network, 3 children, 3 in-process Requests, 2 post-close probes, 10 records) are internally consistent.
+- §B `hidden` is mechanically feasible: initial authorization is generation 0 (`transaction-authorization.ts:18-27`), so `replaceAuthorizationPolicy()` installs the empty policy (`transaction-store.ts:1940-1963`) — the `generation === 1` early return only blocks a *second* replacement; precedent `transaction-service.test.ts:2418`.
+- §E is feasible as specified: HEAD is body-safe in the raw executor (`http-executor.ts:1091`, `1191-1193`), multi-entry `exactMode.routes` allowlists are supported (`529-548`, `565`), and the fixture schema does require numeric `n` (`transactional-alias-installed.test.ts:61-72`). The preserved historical callback's 36 exchanges / 2 children / 90s / 5s / 120s all match source (`455`, `453`, `103-106`, `180`, `485`).
+- Four-file production/test scope: I found no other existing assertion of the old 500 for a live alias with an unrecognized position — `gapPair` is used only for `types/`, `types/task`, `beads/a/` (`transaction-http.test.ts:5626`), the installed alias cases use only known positions plus foreign fields, and no conformance catalog row binds an alias-opaque gap. The scope is sufficient *given* the selection addition in finding 2.
+
+---
+
+### Input access
+
+All 24 listed context paths and both review targets exist and were readable; nothing was inaccessible. I opened the two review targets (`plan-v2.md`, `selection-v2.json` — both matching the inline frozen copies), `context/rebind.json` and `context/native-recommendation-review.md`, plus the pinned `docs/specs/bdp.md` and the listed source/test files. I did not open the remaining context artifacts (CI records, receipt-* dispositions/audits, patches, binding/index JSONs, `design.md`, `required-contract-matrix.md`) — not needed for these findings, and their absence from my reading is not a gap claim about their contents. I did not reconstruct masked CI data, and I treated CI 39019562524 strictly as receipt-root baseline validation on `9d2cd44`, never as executed alias evidence; `rebind.json` itself records `rawLogIndependentlyAuditedByThisRebind: false`. The two formatter-only changed files named in `rebind.json` (`transactional-minimum-receiving-installed.test.ts`, `transaction-service.test.ts`) are outside the four alias-owned paths, consistent with the prompt.
+
+**Blocking issues exist: findings 1 and 2.** Both have cheap, bounded corrections (rename one record label; add three exact existing titles to the selection). Findings 3–5 should be fixed in the same pass; 6–10 are optional. No approval, authoring, run or artifact is implied by this review.

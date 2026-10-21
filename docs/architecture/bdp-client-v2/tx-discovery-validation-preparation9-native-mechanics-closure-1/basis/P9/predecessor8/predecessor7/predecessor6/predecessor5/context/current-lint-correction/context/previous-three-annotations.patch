@@ -1,0 +1,29 @@
+--- a/packages/server/src/transaction-http.test.ts
++++ b/packages/server/src/transaction-http.test.ts
+@@ -6754,7 +6754,7 @@
+   async function call(
+     url: string,
+     method = "GET",
+-    headers: HeadersInit = {},
++    headers: Record<string, string> = {},
+     role = "writer",
+     signal = budget.signal,
+   ) {
+@@ -6887,7 +6887,7 @@
+       const f = await d3Source(budget),
+         target = d3Target(route),
+         tuple = f.tuple("genesis");
+-      const rows: [string, HeadersInit, string, number][] = [
++      const rows: [string, Record<string, string>, string, number][] = [
+         ["GET", { "bdp-minimum-scope-position": "genesis" }, "anonymous", 401],
+         ["GET", {}, "reader", route === "scope" ? 204 : 200],
+         ["GET", { "bdp-minimum-scope-position": "genesis" }, "writer", 400],
+@@ -6901,7 +6901,7 @@
+               },
+               "writer",
+               400,
+-            ] as [string, HeadersInit, string, number],
++            ] as [string, Record<string, string>, string, number],
+         ),
+         ["GET", { ...tuple, "bdp-minimum-scope-position": "genesis,genesis" }, "writer", 400],
+         ["HEAD", { "bdp-minimum-scope-position": "genesis" }, "writer", 400],

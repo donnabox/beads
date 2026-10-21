@@ -1,0 +1,86 @@
+--- static-inspection.json
++++ predecessor1/static-inspection.json
+@@ -1,67 +1,25 @@
+ {
+   "all679SourceExact": true,
+   "baseProtected": 678,
+-  "draftAuthoringErrors": [
+-    "Two text-edit scripts stopped on absent indentation needles before any file write. One static inspection stopped on wrong top-level commands dictionary lookup after preserving historical adaptation bytes; no helper evaluated. Correct explicit commands nesting was then read and checked."
+-  ],
+-  "genuineSuccessorPairs": 11,
++  "genuineAdaptationPairs": 8,
+   "guardUnchanged": true,
+-  "helpers": {
+-    "audit.py": {
+-      "astSha256": "a89abd40cee35de52f060095af5cc5dcbf9197e735148ee4d39399ec209c99fc",
+-      "astUnchanged": false,
+-      "bytesUnchanged": false,
+-      "sha256": "6385959f7b4eee3f8f3a55c06050e0ff6bf49b33bd127f3325d01dfc0fa23883"
+-    },
+-    "gate.py": {
+-      "astSha256": "f4ba0247f1e542a94dd5b7803113a37e0f4a0f6d6b84df5bcae7b7932cd18185",
+-      "astUnchanged": true,
+-      "bytesUnchanged": true,
+-      "sha256": "643bf91061c9ea0da1f097e6ebd3b2b8d8594d6cfbf9b24782aaee34647de2cb"
+-    },
+-    "guarded-action-session-20261018-021624-549f.py": {
+-      "astSha256": "9c253c2c8c7065f0baa8efedad7a7fa5ba7446fa299da25e009dab7d5a33052e",
+-      "astUnchanged": true,
+-      "bytesUnchanged": true,
+-      "sha256": "b2d467920638e68d3b007ba9daa432e971636245eca988bfb29d7a99d6e3fb30"
+-    },
+-    "packages.py": {
+-      "astSha256": "4ec095956a0c8110d20c3f5997c04b5eab6991ba430dd875f00353ad01e93e9c",
+-      "astUnchanged": true,
+-      "bytesUnchanged": true,
+-      "sha256": "7a2408ee2020a05043d46934699fb01ed6d9da83b01c03cbcc84f8ece95a8494"
+-    },
+-    "run.py": {
+-      "astSha256": "4d15f67c49e67ea35f1ee339c4332b012309f6ea758532ce1e91c5762de15a96",
+-      "astUnchanged": false,
+-      "bytesUnchanged": false,
+-      "sha256": "8d566e38d3bd2d8fa25ed1ee666aabd6df41dd50abe78239873fec580cddb25b"
+-    },
+-    "scanner.py": {
+-      "astSha256": "977bdef7cdee69d2da04767af7ffad164a4553e9f6df96323625c1d82cbb4299",
+-      "astUnchanged": true,
+-      "bytesUnchanged": true,
+-      "sha256": "e86cee2b4fd5b8a1723040971dad77ebf00c2894fdd95dbad0084f7bee5fa47f"
+-    },
+-    "worker.py": {
+-      "astSha256": "6f0edd17326595102cdd62b2a77da200dfc14e2720797beb22e876760be8706f",
+-      "astUnchanged": false,
+-      "bytesUnchanged": false,
+-      "sha256": "0dd2a636948e47e1a9c6caae94bf45bbc3e34e4a2962cce82d3cb48025b47fd1"
+-    }
++  "mjsAndSchemaUncompiledUnexecuted": true,
++  "noRun": true,
++  "originCopiesReadMatched": 78,
++  "owned": 1,
++  "prospectiveSyntheticControls": 48,
++  "referencePinsReadMatched": 919,
++  "sevenPythonASTParses": {
++    "audit.py": "855e8c095187cd174ba5f78dcb71efa19f67741bffb05398cff35904fddf2afa",
++    "gate.py": "f4ba0247f1e542a94dd5b7803113a37e0f4a0f6d6b84df5bcae7b7932cd18185",
++    "guarded-action-session-20261018-021624-549f.py": "9c253c2c8c7065f0baa8efedad7a7fa5ba7446fa299da25e009dab7d5a33052e",
++    "packages.py": "4ec095956a0c8110d20c3f5997c04b5eab6991ba430dd875f00353ad01e93e9c",
++    "run.py": "f786e8ffd2df39ce9468fbb1aed2f20f4c8ca48bc8e9e4ba134c6f2767ec0b62",
++    "scanner.py": "977bdef7cdee69d2da04767af7ffad164a4553e9f6df96323625c1d82cbb4299",
++    "worker.py": "ab2ccaf0256a0ee5e70a991f9df43cf7e845efebcc9b95428e9ff6832426e767"
+   },
+-  "nativeRootAcceptance": "UNRESOLVED",
+-  "noRun": true,
+-  "originCopiesReadMatched": 216,
+-  "owned": 1,
+-  "positiveAuditAndWireFunctionsASTUnchanged": true,
+-  "predecessor130ByteExact": true,
+-  "prospectiveSyntheticControls": 48,
+-  "referencePinsReadMatched": 1188,
+-  "schemaAndMjsUnchanged": true,
+-  "schemaOrSyntheticCompiledOrExecuted": false,
+   "sourceIdentity": "1499aa6cf9a02c7b6dc07a3a70bffcf935c9d6fcba60ce57ddcf5e214b32cd92",
+   "stages": 21,
+-  "state": "STATIC AUTHOR inspection only; no helper imported/evaluated/compiled/executed",
++  "state": "STATIC author inspection; full independent native/root pending",
+   "syntheticProductCalls": 0
+ }

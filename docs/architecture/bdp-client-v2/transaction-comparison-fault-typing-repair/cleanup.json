@@ -1,0 +1,51 @@
+{
+  "checkedAt": "2026-10-14T19:22:03.335173+00:00",
+  "commandProcessGroups": [
+    "22728",
+    "22749",
+    "23164",
+    "23212",
+    "23297",
+    "23338",
+    "23367",
+    "23390",
+    "23450",
+    "23748",
+    "23764",
+    "23854"
+  ],
+  "remainingOwnedProcessRows": [],
+  "remainingTestStoreDirectories": {
+    "positive": [],
+    "control": []
+  },
+  "positiveHTTP": {
+    "kind": "comparison-maintenance-fault-cleanup",
+    "requests": 2,
+    "responseStatus": 500,
+    "faultCalls": 1,
+    "intervalCancelled": true,
+    "closed": true,
+    "inventoryChecked": true
+  },
+  "controlHTTP": {
+    "kind": "comparison-maintenance-fault-cleanup",
+    "requests": 2,
+    "responseStatus": 503,
+    "faultCalls": 1,
+    "intervalCancelled": true,
+    "closed": true,
+    "inventoryChecked": true
+  },
+  "positiveService": [
+    {
+      "kind": "comparison-service-deadline-cleanup",
+      "drained": true,
+      "closed": true,
+      "cleanupTurns": 0,
+      "pendingCallbacks": 0
+    }
+  ],
+  "nonStoreRetainedCache": "node-compile-cache directories retained under supervisor temp roots; no store or service process",
+  "directoryCountMethod": "15 completed selected fixture invocations imply15directories;50ms sampling misses short-lived paths and is not used as a measured total"
+}

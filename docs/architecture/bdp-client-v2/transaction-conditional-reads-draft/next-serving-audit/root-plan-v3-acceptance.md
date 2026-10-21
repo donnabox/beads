@@ -1,0 +1,5 @@
+# Root plan-v3 acceptance and bounded authoring release
+
+Root read plan-v3.md (SHA256 8cc581a267ad5e88de93548ba7d6d73fc38da5df7d53a7e719dd54647e4e95da) and accepts all nine findings dispositions. Authoring only is released to ci_repair_code_review: isolated /Users/dbox/repos/wt/vickie/vickie-event-restart-witness, branch codex/vickie-event-restart-witness, from local ddfb5f43a058fe0f16ff9e04e528b4e7bfc03d87. PR147 CI remains pending: this is drafting from that source, not integration acceptance.
+
+Own only apps/bdptest/src/transactional-event-sse-installed.test.ts and preserve the historical callback. Five HTTP requests, two sequential children, one store, two request-free sensitivity controls; 45/10/60/120 deadlines. No tests, build, imports, install, services, commit or push authorized in this authoring step. Existing pinned formatter may be used without materialization. Freeze exact callback, patch/source and workload for independent native and actual Claude code review before execution. No production/runtime change or qualification claim.

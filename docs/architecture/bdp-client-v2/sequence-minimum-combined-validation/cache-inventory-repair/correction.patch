@@ -1,0 +1,12 @@
+--- before/control.py
++++ after/control.py
+@@ -13,6 +13,9 @@
+  for root in roots:
+   if not root.exists():continue
+   for directory,dirs,names in os.walk(root,followlinks=False):
++   # Vitest rewrites these generated caches; retain actual tool/product/link pins.
++   if Path(directory).name == "node_modules":
++    dirs[:]=[name for name in dirs if name not in (".vite", ".vite-temp") or (Path(directory)/name).is_symlink()]
+    for name in dirs+names:
+     q=Path(directory)/name;r=q.relative_to(W).as_posix()
+     if q.is_symlink():links[r]=q

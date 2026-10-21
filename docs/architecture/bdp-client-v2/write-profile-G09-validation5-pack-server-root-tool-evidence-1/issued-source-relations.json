@@ -1,0 +1,36 @@
+{
+  "AActualPtySession": null,
+  "allActualPollsRetained": true,
+  "noRetry": true,
+  "rawWireToolReceipts": "UNRETAINED; normalized actual original tool results plus issued literal sources retained",
+  "relations": [
+    {
+      "actualExit": 0,
+      "actualTerminalToolId": "769d24",
+      "baselineSha256": "9c68f91b3bfcf2f1790e30e266bb564beb73a2402c70dfbc11c06a38a9b7e680",
+      "issuedSha256": "9c68f91b3bfcf2f1790e30e266bb564beb73a2402c70dfbc11c06a38a9b7e680",
+      "normalizedResultCount": 1,
+      "phase": "A",
+      "sourceRelation": "EXACT_A"
+    },
+    {
+      "actualExit": 0,
+      "actualTerminalToolId": "6c5f04",
+      "baselineSha256": "e8d0941a2f7a6fa9ace28b3c9d3edd7147afb0d3134759c693c69e6e09b400f8",
+      "issuedSha256": "9d14f959fa26ca3008836a31c58fb752198adf2f7c02c972b0b9744b539a89cc",
+      "normalizedResultCount": 1,
+      "phase": "B",
+      "sourceRelation": "ONE_COMPLETE_LF_PRECEDING_ACTUAL_TERMINAL_ID_ONLY_FULL_INVERSE"
+    },
+    {
+      "actualExit": 0,
+      "actualTerminalToolId": "d5949d",
+      "baselineSha256": "76be62d56c61b5a74e27b6bc53748a0666ffe3241fec6a3d78a01ee00fb7a05e",
+      "issuedSha256": "e36bc2689f839e3bd5f8d2405d5ad5b5de7863a456b565599bdb63a36fee9695",
+      "normalizedResultCount": 1,
+      "phase": "C",
+      "sourceRelation": "ONE_COMPLETE_LF_PRECEDING_ACTUAL_TERMINAL_ID_ONLY_FULL_INVERSE"
+    }
+  ],
+  "stage": "pack-server"
+}

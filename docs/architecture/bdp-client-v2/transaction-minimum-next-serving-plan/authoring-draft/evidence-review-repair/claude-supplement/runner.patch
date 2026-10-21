@@ -1,0 +1,11 @@
+--- production-readonly/run.py
++++ claude-supplement/run.py
+@@ -2,7 +2,7 @@
+ from pathlib import Path
+ import argparse,datetime,hashlib,json,os,signal,subprocess,time
+ parser=argparse.ArgumentParser()
+-parser.add_argument("scope",choices=("production",))
++parser.add_argument("scope",choices=("installed-correction",))
+ args=parser.parse_args()
+ C=Path(__file__).resolve().parent
+ P=C/args.scope

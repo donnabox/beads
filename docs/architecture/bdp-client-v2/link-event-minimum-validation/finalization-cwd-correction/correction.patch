@@ -1,0 +1,92 @@
+--- before-helper-cwd/commands.json
++++ current-link/commands.json
+@@ -96,7 +96,7 @@
+       ]
+     },
+     "bind-fresh-build": {
+-      "cwd": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/bead-event-minimum-validation",
++      "cwd": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/link-event-minimum-validation",
+       "argv": [
+         "/opt/homebrew/opt/python@3.14/bin/python3.14",
+         "/Users/dbox/repos/wt/vickie/bdp-integration-logs/link-event-minimum-validation/audit.py",
+@@ -194,7 +194,7 @@
+       }
+     },
+     "review-focused-source": {
+-      "cwd": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/bead-event-minimum-validation",
++      "cwd": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/link-event-minimum-validation",
+       "argv": [
+         "/opt/homebrew/opt/python@3.14/bin/python3.14",
+         "/Users/dbox/repos/wt/vickie/bdp-integration-logs/link-event-minimum-validation/audit.py",
+@@ -219,7 +219,7 @@
+       ]
+     },
+     "prepare-package-directory": {
+-      "cwd": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/bead-event-minimum-validation",
++      "cwd": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/link-event-minimum-validation",
+       "argv": [
+         "/opt/homebrew/opt/python@3.14/bin/python3.14",
+         "/Users/dbox/repos/wt/vickie/bdp-integration-logs/link-event-minimum-validation/packages.py",
+@@ -266,7 +266,7 @@
+       ]
+     },
+     "verify-archives": {
+-      "cwd": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/bead-event-minimum-validation",
++      "cwd": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/link-event-minimum-validation",
+       "argv": [
+         "/opt/homebrew/opt/python@3.14/bin/python3.14",
+         "/Users/dbox/repos/wt/vickie/bdp-integration-logs/link-event-minimum-validation/packages.py",
+@@ -279,7 +279,7 @@
+       ]
+     },
+     "prepare-consumer": {
+-      "cwd": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/bead-event-minimum-validation",
++      "cwd": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/link-event-minimum-validation",
+       "argv": [
+         "/opt/homebrew/opt/python@3.14/bin/python3.14",
+         "/Users/dbox/repos/wt/vickie/bdp-integration-logs/link-event-minimum-validation/packages.py",
+@@ -309,7 +309,7 @@
+       ]
+     },
+     "verify-installed-consumer": {
+-      "cwd": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/bead-event-minimum-validation",
++      "cwd": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/link-event-minimum-validation",
+       "argv": [
+         "/opt/homebrew/opt/python@3.14/bin/python3.14",
+         "/Users/dbox/repos/wt/vickie/bdp-integration-logs/link-event-minimum-validation/packages.py",
+@@ -357,7 +357,7 @@
+       "expectedExchanges": 3
+     },
+     "review-event-minimum-external": {
+-      "cwd": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/bead-event-minimum-validation",
++      "cwd": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/link-event-minimum-validation",
+       "argv": [
+         "/opt/homebrew/opt/python@3.14/bin/python3.14",
+         "/Users/dbox/repos/wt/vickie/bdp-integration-logs/link-event-minimum-validation/audit.py",
+@@ -405,7 +405,7 @@
+       "expectedExchanges": 11
+     },
+     "review-event-missing-context-external": {
+-      "cwd": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/bead-event-minimum-validation",
++      "cwd": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/link-event-minimum-validation",
+       "argv": [
+         "/opt/homebrew/opt/python@3.14/bin/python3.14",
+         "/Users/dbox/repos/wt/vickie/bdp-integration-logs/link-event-minimum-validation/audit.py",
+@@ -453,7 +453,7 @@
+       "expectedExchanges": 4
+     },
+     "review-event-bead-minimum-external": {
+-      "cwd": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/bead-event-minimum-validation",
++      "cwd": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/link-event-minimum-validation",
+       "argv": [
+         "/opt/homebrew/opt/python@3.14/bin/python3.14",
+         "/Users/dbox/repos/wt/vickie/bdp-integration-logs/link-event-minimum-validation/audit.py",
+@@ -530,7 +530,7 @@
+       "expectedExchanges": 4
+     },
+     "review-event-link-minimum-external": {
+-      "cwd": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/bead-event-minimum-validation",
++      "cwd": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/link-event-minimum-validation",
+       "argv": [
+         "/opt/homebrew/opt/python@3.14/bin/python3.14",
+         "/Users/dbox/repos/wt/vickie/bdp-integration-logs/link-event-minimum-validation/audit.py",

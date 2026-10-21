@@ -1,0 +1,30 @@
+--- after/proposals/workspace-install.capture.txt
++++ before/proposals/workspace-install.capture.txt
+@@ -19,27 +19,6 @@
+ EXPECTED_SOURCE_BINDING_SHA256 = '712c3c5a8e1543bf5005cbb54d321c6874b7443afb7e01805f393434fe5cd714'
+ EXPECTED_COMMANDS_SHA256 = 'b898591c4d062da2ac044e8dbc633e92a0e4334bbf8bbe6b9102fe20b1f8c135'
+ OWNED_ROOT_OUTPUT = '/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation2-root-first4-dispatch-1/workspace-install'
+-# Additive exact externally pinned root execution acceptance; charged to ORIGIN.
+-APPROVED_EXECUTION_ACCEPTANCE_SHA256 = 'UNRESOLVED_FUTURE_ROOT_EXECUTION_ACCEPTANCE_SHA256'
+-EXECUTION_ACCEPTANCE_PATH = Path('/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-first4-root-execution-acceptance-1/acceptance.json')
+-assert type(APPROVED_EXECUTION_ACCEPTANCE_SHA256) is str and len(APPROVED_EXECUTION_ACCEPTANCE_SHA256)==64 and all(c in '0123456789abcdef' for c in APPROVED_EXECUTION_ACCEPTANCE_SHA256)
+-assert EXECUTION_ACCEPTANCE_PATH.is_file() and not EXECUTION_ACCEPTANCE_PATH.is_symlink()
+-execution_acceptance_raw = EXECUTION_ACCEPTANCE_PATH.read_bytes()
+-assert hashlib.sha256(execution_acceptance_raw).hexdigest() == APPROVED_EXECUTION_ACCEPTANCE_SHA256
+-execution_acceptance = json.loads(execution_acceptance_raw, object_pairs_hook=lambda pairs: dict(pairs) if len(pairs)==len(dict(pairs)) else (_ for _ in ()).throw(ValueError('duplicate-root-execution-acceptance-key')), parse_constant=lambda _: (_ for _ in ()).throw(ValueError('nonfinite-root-execution-acceptance')))
+-assert type(execution_acceptance) is dict
+-assert execution_acceptance['accepted'] is True
+-assert execution_acceptance['session'] == '2026-10-18T02:16:24Z-549f'
+-assert execution_acceptance['mode'] == 'final'
+-assert execution_acceptance['sourceBindingSha256'] == '712c3c5a8e1543bf5005cbb54d321c6874b7443afb7e01805f393434fe5cd714'
+-assert execution_acceptance['implementationIndexSha256'] == '57ecb824dec79722836e63b618e30e0557815142e796da988a80b65af2161413'
+-assert execution_acceptance['commandsSha256'] == 'b898591c4d062da2ac044e8dbc633e92a0e4334bbf8bbe6b9102fe20b1f8c135'
+-assert type(execution_acceptance['approvedStages']) is list and execution_acceptance['approvedStages'] == ['node-version','pnpm-version','workspace-install','bind-workspace-tools']
+-assert STAGE in execution_acceptance['approvedStages']
+-assert type(execution_acceptance['activeGate']) is dict and set(execution_acceptance['activeGate']) == {'path','sha256'}
+-assert execution_acceptance['activeGate'] == {'path':str(P/'execution-gate.json'),'sha256':APPROVED_GATE_SHA256}
+-assert time.monotonic()-ORIGIN<115
+-# End additive authority-only checks; every original A/B/C byte follows unchanged.
+ proc = None
+ handles = []
+ streams = []

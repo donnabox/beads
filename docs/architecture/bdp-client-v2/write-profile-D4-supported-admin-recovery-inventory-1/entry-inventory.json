@@ -1,0 +1,189 @@
+{
+  "publicPackageExports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "default": "./dist/index.js"
+    },
+    "./development": {
+      "types": "./dist/development.d.ts",
+      "default": "./dist/development.js"
+    }
+  },
+  "entries": [
+    {
+      "id": "ENTRY-01",
+      "name": "ordinary bdptest --serve",
+      "support": "OPERATOR_FACING_READ_ONLY",
+      "path": "apps/bdptest/src/main.ts",
+      "lines": [
+        35,
+        82,
+        126,
+        157
+      ],
+      "authority": "createConfiguredBdptestReadServer then admitted Read server; index.ts288-309 refuses advertised profiles other than read",
+      "actions": "Read lifecycle/listener only; no Write admin/restore/erase route",
+      "applicability": "Provides no installed RU/TX administrative witness; private runtime cannot be relabelled ordinary public admission"
+    },
+    {
+      "id": "ENTRY-02",
+      "name": "bdptest-development / startDevelopmentReferenceServer",
+      "support": "OPERATOR_FACING_NON_ATTESTING_DEVELOPMENT",
+      "path": "apps/bdptest/src/development-main.ts",
+      "lines": [
+        6,
+        14,
+        21,
+        33
+      ],
+      "authority": "exact create,directory,port,token config; public @bdp/server/development facade delegates runtime; claimEligible:false",
+      "actions": "explicit development provisioning or existing-store reopen plus close on SIGINT/SIGTERM; canonical Scope derives from fixed development listener composition",
+      "notActions": [
+        "administrative erasure",
+        "logical import/export",
+        "new-epoch same-logical-Scope restore",
+        "cumulative public Write admission"
+      ],
+      "applicability": "Existing recovery route feasibility only; final source/policy/principal/listener/store and actual observed crash/restart evidence UNKNOWN"
+    },
+    {
+      "id": "ENTRY-03",
+      "name": "RU installed-reference candidate/process",
+      "support": "SOURCE_PRIVATE_INSTALLED_QUALIFICATION",
+      "path": "packages/server/src/installed-reference-process.ts",
+      "lines": [
+        10,
+        24,
+        35,
+        45,
+        62
+      ],
+      "authority": "inherited IPC only; configuration before startup; later message only command:close; package exports do not expose module",
+      "configuration": "installed-reference-configuration85-108 allows scope/listener/directory/create/credentials/policies/contracts/maximumEndpointMultiplicity, History:false",
+      "actions": "candidate provisioning/reopen/close, not admin acts",
+      "applicability": "Private installed replay possible through same credential/policy/config; no erase/import/restore operation supplied"
+    },
+    {
+      "id": "ENTRY-04",
+      "name": "TX installed candidate/process",
+      "support": "SOURCE_PRIVATE_INSTALLED_QUALIFICATION",
+      "path": "packages/server/src/transaction-installed-process.ts",
+      "lines": [
+        13,
+        32,
+        46,
+        57,
+        65
+      ],
+      "authority": "inherited IPC configuration then close only; configuration17-66 fixes port0/canonicalScope and limits fields to scope,directory,create,credentials,artifacts",
+      "actions": "provision or create:false reopen transaction.sqlite; no epoch/erasure/ledger/restore/fault command accepted",
+      "applicability": "Current D4 callback observes graceful same-store restart only, not admin restore/crash or erasure"
+    },
+    {
+      "id": "ENTRY-05",
+      "name": "openRecoveryStore",
+      "support": "INTERNAL_OWNER_ONLY",
+      "path": "packages/server/src/recovery-store.ts",
+      "lines": [
+        115,
+        146,
+        270,
+        282,
+        676
+      ],
+      "authority": "Node24.16.0/local supported filesystem, explicit installationId/lineageId/Scope and capture/Types; owner handle not principal-facing",
+      "actions": "SQLite recovery, synchronous owner reads, admissions/member commits/release/expiry/close",
+      "notActions": [
+        "logical import/export API",
+        "certification of partial or coherent full-store rollback",
+        "erasure ledger/ingestion"
+      ],
+      "applicability": "Internal source tests prove their own barriers; public facade does not export store capability"
+    },
+    {
+      "id": "ENTRY-06",
+      "name": "openTransactionStore",
+      "support": "INTERNAL_OWNER_ONLY",
+      "path": "packages/server/src/transaction-store.ts",
+      "lines": [
+        196,
+        270,
+        358,
+        584,
+        631,
+        1551
+      ],
+      "authority": "exclusive SQLite owner, exact config/contracts/types and persisted authorization; new epoch minted only on create, existing epoch loaded on reopen",
+      "actions": "internal admission/execute/retract/sequence/read/snapshot/events/changes/policy/close; fault injection test-only",
+      "notActions": [
+        "supported logical restore",
+        "supported epoch rotation",
+        "erasure ingestion or commit"
+      ],
+      "applicability": "No inference from raw SQL edits or freshcreate to a supported restore; returns source-private owner only"
+    },
+    {
+      "id": "ENTRY-07",
+      "name": "replaceAuthorizationPolicy",
+      "support": "PRIVATE_RUNTIME_HANDLE_POLICY_SEAM",
+      "path": "packages/server/src/transaction-runtime.ts",
+      "lines": [
+        366,
+        370,
+        373
+      ],
+      "authority": "private handle calls service policy drain/publication; store only supports all-visible generation0\u2192empty generation1 policy",
+      "actions": "authorization revocation/view rotation; not content destruction or epoch change",
+      "applicability": "Withheld \u2260 erased. Policy transition cannot substitute for erasure ledger or cleanup; final multi-view admin policy unknown"
+    },
+    {
+      "id": "ENTRY-08",
+      "name": "controlled Read restoreScope",
+      "support": "TEST_FIXTURE_ONLY",
+      "path": "apps/bdptest/src/read-matrix.test.ts",
+      "lines": [
+        577,
+        585,
+        593,
+        595
+      ],
+      "authority": "ControlledReadActionSession test capability in conformance/testing180-196; recreates portable fixture and carries deleted IDs",
+      "actions": "test-only Read identity/cursor restoration oracle with internal epoch value",
+      "applicability": "Does not establish actual durable RU keys/TX receipts/epoch-ledger restore or installed operator route; no old Read89\u2192Write credit"
+    },
+    {
+      "id": "ENTRY-09",
+      "name": "offline SQL mutation / test fault hooks",
+      "support": "TEST_FIXTURE_OR_CORRUPTION_ONLY",
+      "path": "packages/server/src/transaction-store.test.ts",
+      "lines": [
+        1231,
+        1237,
+        2993,
+        2999,
+        3014
+      ],
+      "authority": "child direct imports and test-only fault callbacks, DatabaseSync metadata/receipt edits",
+      "actions": "specific abrupt-exit, rollback, integrity and prior-epoch nondisclosure counterfactuals",
+      "applicability": "Not a documented admin restore/erase procedure and cannot be smuggled into installed config"
+    },
+    {
+      "id": "ENTRY-10",
+      "name": "copied hot SQLite image test",
+      "support": "SOURCE_STORAGE_TEST_ONLY",
+      "path": "packages/server/src/transaction-recovery.test.ts",
+      "lines": [
+        18,
+        43,
+        69,
+        72,
+        75,
+        94
+      ],
+      "authority": "test copies DB+journal after forced child death, tests config refusal before BDP cleanup",
+      "actions": "actual hot-journal recovery of retained committed pages under source fixture",
+      "applicability": "Not a general backup/restore administrative API; no ledger/epoch rotation/key namespace proof, not physical power-loss proof"
+    }
+  ],
+  "scope": "Only actual pinned files/functions; no proposed command, endpoint, administrative credential or new API"
+}

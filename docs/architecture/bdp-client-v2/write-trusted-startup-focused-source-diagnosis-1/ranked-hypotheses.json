@@ -1,0 +1,27 @@
+{
+  "state": "static diagnosis under explicit no-rerun restriction; no new probes",
+  "ranked": [
+    {
+      "rank": 1,
+      "hypothesis": "Unreferenced-schema fixture never invokes RU schema evaluator on shipped no-propertiesSchema Type closure",
+      "prediction": "Row10 resolves; replacing it by existing artifacts() with referenced schemas/item missing $ref reaches graph missing-resource and causes fixed contract refusal",
+      "evidence": "Direct source call graph supports; captured actual helper error is consistent. Actual row not logged."
+    },
+    {
+      "rank": 2,
+      "hypothesis": "RU policy refusal semantics were accidentally weakened or finite read-only policy is being rejected inconsistently",
+      "prediction": "A missing reader policy should resolve if weakened; actual createDevelopmentAccessPolicy.capture throws. Legal complete read-only reader policies must succeed. Source rejects this alternative; existing positive callback passed."
+    },
+    {
+      "rank": 3,
+      "hypothesis": "Aggregate absent-Type row is accidentally legal because of default inventory",
+      "prediction": "types/absent must exist as link descriptor for row12 to pass. Actual default inventory13 lacks it and captureDevelopmentAggregatePolicy requires it; source rejects this alternative."
+    },
+    {
+      "rank": 4,
+      "hypothesis": "Loader failure phase/catch mapping or lifetime failure caused the assertion",
+      "prediction": "Would get wrong error class/code, forbidden-start mock, timeout or cleanup error; actual failure is helper own throw after resolution, exit has no forced cleanup/remaining resources. Source/log evidence do not support."
+    }
+  ],
+  "skillConstraint": "Existing root-run failing command/log/JSON supply captured red signal. Root explicitly forbids rerun/probe/product/helper edits; no reproduction, instrumentation, fix or verified-green claim is made here."
+}

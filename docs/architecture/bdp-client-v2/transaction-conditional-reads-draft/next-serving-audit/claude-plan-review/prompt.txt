@@ -1,0 +1,171 @@
+Review the revised installed Event restart witness plan, not the unrelated CI repair. Do not write or modify any files. Output findings only in stdout. Do not run tests, builds, imports, servers, tools that mutate state, or inspect newer main. Read-only tools are available. No implementation is requested.
+
+Repository: /Users/dbox/repos/wt/vickie/vickie-fresh-depth-serving. Baseline source chronology b0213805e4b15bb7bac4e09da5fdddb236cf6ea5; HEAD may advance only through unrelated work during this review, so rely on the pinned file contents rather than HEAD equality. The root owns two CI-repair test files; ignore those unrelated changes. This private installed Transactional witness must remain claimEligible:false. No public profile advertisement, cold discovery, S1 retained Snapshot minimum decision, G2 incident-Link metadata decision, Types or History changes.
+
+Review concrete feasibility, protocol correctness, sensitivity of the five-request/two-child witness, installed attribution, health checks and bounded cleanup. Verify the recorder and launcher APIs rather than assuming close surfaces failure or always completes in10s. The original plan is included for chronology; plan-v2 supersedes it. The native review and accepted root conditions are evidence to challenge, not instructions to accept without checking. Identify real blockers or necessary corrections; distinguish implementation details already covered from omissions. Provide numbered findings with severity, file/section or line, issue, impact and concrete fix. If there are no blockers, say so explicitly and identify remaining code-review obligations. No praise needed.
+
+Start with these pinned source files (you may read other repository files if necessary, explicitly identify any additional dependency used):
+- apps/bdptest/src/transactional-event-sse-installed.test.ts
+- apps/bdptest/src/transactional-alias-installed.test.ts
+- apps/bdptest/test-support/transactional-execution-binding.ts
+- packages/server/test-support/raw-sse-recorder.ts
+- scripts/transaction-installed-observation.mjs
+- packages/server/src/transaction-events.ts
+- packages/server/src/transaction-events.test.ts
+- packages/server/src/transaction-store.ts
+- packages/server/src/transaction-http.ts
+- packages/server/src/transaction-runtime.ts
+- packages/server/src/transaction-installed-process.ts
+- schemas/bdp-v0.schema.json
+- docs/specs/bdp.md
+
+--- Original plan ---
+# Next serving audit on b0213805
+
+No new unconditional Transactional or ordinary Update runtime defect was established in this bounded pass. The smallest useful independent next slice is **installed Event cursor continuity across an ordinary process restart**, including exclusive replay within one group, Last-Event-ID precedence and source binding. This is a missing installed observation in the inspected witnesses, not a diagnosed serving bug or a qualification claim. Production ownership is empty unless the new witness establishes a real mismatch.
+
+## What was ruled out, and why
+
+The sole plan's active T2/T3/T4 goal remains actual same-owner serving and recovery; current conditional GET/HEAD work already owns its specific gap. I reread the current source rather than relying on earlier audits. Transactional current-read/minimum handling in transaction-http.ts213–233,412–590 and transaction-service.ts380–575 retains the separated observation/wait boundary. Event projection and lease scans use current context; store.ts722–800 checks actual source membership and keeps within-group ordinals;1768 onward checks captured scan context. Sequence aliases are not an unimplemented follow-on: transactional-alias-installed.test.ts100 and301 onward already exercises turn-time retargeting, retained targets/misses and restart. Do not duplicate that slice.
+
+For ordinary Update, development-authority.ts166–180 captures trusted principal policy;295–341 submits through its existing lifecycle. member-executor.ts720–780 compares retained semantic identity before saved-result disclosure. The existing guarded-overlap and development discovery/contracts evidence already addresses receiving, conflict, disconnected sequence completion and current visibility. The targeted inspection found no new runtime mismatch there; extracting a fresh percentage or repeating those scenarios would not be a serving repair.
+
+The known discovery refusal in transaction-http.ts212/593–600 is still admission-bound, not permission to advertise incomplete Transactional. S1 retained Snapshot/continuation minima and G2 incident-Link metadata membership remain explicit unresolved decisions. This report adds no ruling, optional History/Types/provenance work, visibility API, or public-admission workaround. The supported all-visible→empty policy does not itself establish arbitrary partial ACL completeness.
+
+## Concrete observation gap and source reasoning
+
+The existing installed Event SSE callback (apps/bdptest/src/transactional-event-sse-installed.test.ts78–295) launches once, compares finite and SSE for Scope/Bead/Link, then exercises sparse live delivery with a query `after`. Its `open` helper191–201 sends Authorization and Accept only: it never sends Last-Event-ID and never reopens the store. Thus it cannot show that a cursor actually served before shutdown still selects the correct suffix after packed-process restart, or that a real header wins over a conflicting query on that restarted process.
+
+Source proof exists separately and should be reused: transaction-events.test.ts142/179 tests projection/reopen,232 tests within-group continuation and foreign/fabricated cursors; transaction-event-sse.test.ts341–349 tests same-process reconnect and following receiving cases. This is why no production fix is proposed. The gap is their installed composition, not absence of all regression coverage.
+
+The laws are settled in the pinned spec: bdp.md6212–6222 identifies deterministic source projections and view-bound cursors;6262–6273 defines exclusive `after` and stable checkpoint/ordinal/source IDs;6350–6361 requires SSE field equality and Last-Event-ID overriding the URL's original `after`. Production transaction-events.ts95–141 renders stable IDs and rejects a foreign source; store.ts722–743 verifies an actual retained event, not merely token syntax; HTTP520–528 chooses the single Last-Event-ID value before query after, and639–644 maps source mismatch to contextual400 invalid-parameter. No Snapshot minimum or incident-Link question is involved.
+
+## Proposed finite witness (planning only)
+
+Own only apps/bdptest/src/transactional-event-sse-installed.test.ts initially, adding one separate callback and reusing its existing Scope-local Task/schema fixture, raw executor, SSE recorder and installed launcher. No shared helper or production edits. Keep the historical callback intact. Exact source selector/body bytes and counters must be frozen at authoring before any execution.
+
+Use canonical https://reference.invalid/acme/, two distinct authority-accepted Bead IDs and the existing Task schema with properties {n:0}. One batch creates A then B, yielding two created Events in the same transaction. Five HTTP requests, exactly two sequential child/owner/listener lifetimes, one owned store directory:
+
+1. POST the two-create batch with one fresh explicit key; validate the complete receipt/schema, both independent expected Resources, effectPosition and transaction.
+2. GET events/ as JSON; validate exactly the two ordered full Events, actual IDs E0/E1, ordinals0/1, both transaction links, current context and next:null. Save actual opaque IDs, never synthesize them.
+3. Close the first child and prove exit; reopen the same directory with create:false and byte-identical artifacts, canonical Scope and authentication/policy identities. GET events/?after=E0; require the exact original E1 record alone (including time/id/data), no E0 and next:null. Compare epoch/view/current position with the observed pre-restart values. No second mutation.
+4. Open real SSE events/?after=E1 with Last-Event-ID:E0. Require the complete E1 frame, id/type fields equal to JSON, and exact full data equality to request2. The later query cursor would yield no Event, so observing E1 distinguishes real header precedence. Bound the reader; close and drain it, then verify all complete recorded id-bearing frames are precisely [E1]. Do not infer indefinite absence from an elapsed sleep or claim server pending admission.
+5. GET beads/a?view=events&after=E0 (the real Scope-source cursor) with JSON Accept; require contextual400 invalid-parameter and a full Problem schema. This is an explicitly invalid cross-source input, not a discovered Bead cursor. No resource metadata/link update is used.
+
+Use the existing 45s work/10s cleanup/60s callback envelope, finite5s ordinary requests and bounded SSE reader, with120s outer supervision. Do not add retries or an idle15s wait. A transport timeout is failure, never successful negative evidence. Retain allowlisted response facts/fingerprints, safe full Event values, actual payload/source/config identities and both child exits. Preserve the directory if a pre-ready or close failure leaves process stop unknown; aggregate primary and cleanup failures. This last requirement should not blindly copy the older callback's unconditional rmSync path.
+
+Fresh protocol/server archives, the verified external eight-package consumer and explicit installed entry/source override are required for installed attribution; ordinary local fallback is only development behavior. Report claimEligible:false and no cold discovery, erasure reconciliation, authorization transition or whole-profile claim. Validation should run only this new callback plus affected formatting/type checks after native and actual Claude plan/code review. If it fails semantically, preserve the actual trace and scope a source repair from the observed failure rather than changing expectations.
+
+No automatic production authoring is requested. If root prioritizes only established serving defects, there is no additional production slice justified by this audit; continue the already-owned conditional slice rather than inventing one. This report is supporting analysis under the sole plan.
+
+## Audit limits and attribution
+
+Read-only b0213805, clean tree, with source hashes in source-binding.json. No tests/imports/build/services/network/main inspection or checkout edits. Earlier after-authorization/fresh-depth/ordinary-Update audits were used to avoid repetition, not as exhaustive proofs. I authored the conditional draft and related earlier evidence, so this is an implementation-worker audit, not an independent council. All writing is limited to this external report directory and guarded by the active role session.
+
+--- Complete native plan review ---
+# Independent native review: installed Event restart plan
+
+Disposition: **ready for bounded one-file authoring after the root records the two implementation conditions below**. No protocol decision, production change, additional HTTP request, or additional process lifetime is required. This is plan approval, not executed evidence or code approval. Root owns actual Claude council and release.
+
+Reviewed plan SHA256: `061a57d9db704af7ac8c8778ded998e4a64481f861eabaa79ec9a33c229313ec`.
+Source HEAD: `b0213805e4b15bb7bac4e09da5fdddb236cf6ea5`. Workspace contains exactly the root's two known frozen CI-repair files, transaction-set.test.ts and transaction-submission.test.ts; neither was edited or used to establish this Event conclusion.
+
+## Required implementation conditions
+
+1. **Check stream health before intentional close.** `recordRawSse.until` returns immediately when its predicate already holds, even if a transport failure has since destroyed the socket; `close` resolves the close promise without exposing stored failure. Explicitly await `ready`, assert status 200 and expected SSE media/context, await the required frame, then synchronously check the shared signal is not aborted and `destroyed === false` immediately before calling close (no intervening await). Drain close and only then assert the complete recorded id-bearing frame list is exactly [E1], with field and complete JSON equality. These checks are needed in addition to frame presence, not replaced by it. Do not turn timeout/early EOF into negative evidence. The recorder's 2 MiB bound and finite timer provide bounded failure; choose and pin the reader timeout rather than inherit an unexplained default. No shared-helper edit is necessary for this bounded witness.
+
+2. **Implement the cleanup bound; do not merely report it.** Existing launcher close can wait 10 seconds, then enter another 10-second kill/drain path. Thus directly awaiting it does not itself establish the proposed total 10-second cleanup budget. Keep an explicit local total cleanup deadline for stream and child draining; observe late promise rejection and retain the original failure together with cleanup failure. Record clean child exit only after actual exitCode 0/signalCode null. Preserve the store whenever startup failed before a child handle was returned or a close timed out/left stop unknown. Do not lose the previous handle in a finally block before capturing its exit facts. Reopen only after the first child has positively exited. The outer 120-second supervisor must retain PID/process-group evidence and own final cleanup of any unknown survivor; a timed-out callback is a failed observation, never a success. This can remain test-local and does not require changing the launcher or its historical callers.
+
+## Semantic and feasibility findings
+
+- The five-request topology is sufficient: two-create POST, initial finite Scope Events, post-restart finite suffix, post-restart SSE with conflicting query/header, and wrong-source finite request. No discovery request or public profile admission is being added. IPC ready/close traffic is not HTTP and must not be counted as extra HTTP.
+- The pinned spec at 6212–6222, 6262–6273 and 6350–6361 directly establishes source projections, exclusive source-local stable IDs and Last-Event-ID precedence. Two small created Events in one committed group fit the existing finite page and one-group stream packet without paging. Require the initial exact two ordered records, ordinals 0/1, distinct opaque observed IDs, same transaction and the full created data. Bind initial revisions to the two independently expected receipt Resources; do not derive all expectations from the Event records themselves.
+- The HTTP branch passes the single Last-Event-ID to beginEvents ahead of query after. E0 header with E1 query is discriminating: header handling must replay E1 while query-only handling has reached end. Encode each actual observed ID as a URL query value, do not reconstruct cursor spellings. Compare full Event values after restart, including time and data, and repeat id/type equality for the SSE fields.
+- `transaction-events.ts` checks source identity; `transaction-store.ts` verifies actual retained group membership and source Event ordinal. An observed Scope E0 sent to existing Bead A's source therefore exercises contextual invalid-parameter 400, not missing-resource precedence. Validate full transactionalProblem schema and current epoch/view/position equal to the saved current context. This involves neither S1 retained Snapshot minima nor G2 incident-Link metadata.
+- `installedTransactionBinding` includes payload, artifact/contracts, principal policy/authentication and runtime identities while excluding ephemeral listen address. Compare both returned bindings and canonical Scope, allowing only create true→false and actual ephemeral listener change; use the same store and byte-identical artifacts/credentials. Capture both distinct child PIDs, their clean exits and actual bound listen URLs privately. Same-port reuse is possible and should not be forbidden. No mutation occurs after initial creation, so pre/post current Scope position must remain equal.
+- Existing JSON schema definitions include mutationReceipt, event, eventPage and transactionalProblem. Add only local validator setup needed by this callback; no schema changes or producer imports to manufacture expected Events. The historical callback's response helper hardcodes status 200 and drops headers, so a small callback-local finite helper must retain response headers and accept explicit expected status for the fifth request. Its SSE opener also needs the actual reconnect header. Neither change requires rewriting the historical callback.
+- A bounded 45-second work / 10-second cleanup / 60-second callback and 120-second external envelope is plausible for five tiny requests and two sequential starts, provided the explicit cleanup condition above is implemented. Four finite HTTP requests use five-second limits; the stream is separately bounded. No 15-second idle assertion, retry, extra mutation, artificial transport completion or indefinite no-event claim belongs here.
+- Installed attribution still needs the planned fresh archives, verified external consumer, explicit installed entry/source override, pinned fixture/artifacts and source/payload identities. Local fallback is not fresh installed evidence. Keep claimEligible false and retain only allowlisted facts, safe Event data and fingerprints; do not log bearer tokens or full configuration. Preserve trace on semantic failure and scope any production repair separately.
+
+## Scope of this review
+
+Read-only native review; no tests, imports, build, services, main inspection, source edits, or network publication. The remote role guard ran before this sole report write. No delegation. Read relevant source ranges, helper implementations and pinned spec text; schema names were verified textually, not executed. The report is independent of the authoring worker's audit and supplements its partial earlier native pass. No runtime defect or qualification result is claimed.
+
+## Read source identity (SHA256)
+
+- `apps/bdptest/src/transactional-event-sse-installed.test.ts`: `385bfa8fbe86b717450f89aec2f10ef5d2113170383c35236bd995fa285bda0a`
+- `apps/bdptest/src/transactional-alias-installed.test.ts`: `9775936200fa2ab69acfe436d7b6c77b9a42a37aae5cef96d88b94ab8fd68481`
+- `apps/bdptest/test-support/transactional-execution-binding.ts`: `cde506c72a8710eafe58522900f6db70ed3701cf333560252dc8e7c5e706cf89`
+- `packages/server/test-support/raw-sse-recorder.ts`: `09ff8343ac1a5dbad77eaf24fc2745cc28ea870ada6b05dc4ea1644c0ad5ef81`
+- `scripts/transaction-installed-observation.mjs`: `6f772f3776d3c3effa788676d853cc2932a6ee59ad63ac3338ad1b487408914b`
+- `packages/server/src/transaction-events.ts`: `6c5ab4482f0b00110a71a96b16d44ca5fe713cb5f397ff78778cc6646f632a3a`
+- `packages/server/src/transaction-events.test.ts`: `0152561cdf096a48b0b01ec0e0d8bc81208a905bb5bf71dad411694387b58b27`
+- `packages/server/src/transaction-store.ts`: `f7fe71da918c135eb43cb4659f186df6cd442aed9c42c2835e95cde05c782a9e`
+- `packages/server/src/transaction-http.ts`: `81c130dd18f604ab1d13c03a2f52a98e11a6988f45d62af98b4b8c7499d14529`
+- `packages/server/src/transaction-runtime.ts`: `48cb5411407c456d7b3f301a4b67970061be9f51c94201de832ba5deff6ea2d4`
+- `packages/server/src/transaction-installed-process.ts`: `6bd16f940f1f751189fc76419e3a18ca26cd5f54da3cfa3946b30c3956a2f8b7`
+- `schemas/bdp-v0.schema.json`: `0baa5d5ef67144f8e6513b4cde31168effc8df6d52ef3141b0f144b87f8dc227`
+- `docs/specs/bdp.md`: `67772742d7d08f48c12196e9789f1859ad2d0e19f133ea65e197b049361f84f8`
+
+--- Root condition disposition ---
+# Root disposition of native Event restart plan review
+
+Root accepted both conditions from native-plan-review-complete.md exactly and authorized preparation of plan-v2.md and a closed actual-Claude plan-review packet. This records the root's delegation message; it is not a claim of operator protocol approval or source-authoring release.
+
+- Require explicit SSE ready/status/media/context/frame checks, followed by synchronous nonaborted signal and not-destroyed socket checks immediately before intentional close; compare the exact full frame list after drain.
+- Enforce a total cleanup deadline across stream and child drain, observe late promise rejection, aggregate failures, preserve the store on unknown or pre-ready failure, require actual clean child exit before reopen and retain PID evidence.
+
+No source authoring, test execution or Claude launch is authorized by this preparation packet. Root owns council disposition and launch release.
+
+--- Revised plan v2 ---
+# Next serving audit on b0213805 — revised execution plan
+
+No new unconditional Transactional or ordinary Update runtime defect was established in this bounded pass. The smallest useful independent next slice is **installed Event cursor continuity across an ordinary process restart**, including exclusive replay within one group, Last-Event-ID precedence and source binding. This is a missing installed observation in the inspected witnesses, not a diagnosed serving bug or a qualification claim. Production ownership is empty unless the new witness establishes a real mismatch.
+
+## What was ruled out, and why
+
+The sole plan's active T2/T3/T4 goal remains actual same-owner serving and recovery; current conditional GET/HEAD work already owns its specific gap. I reread the current source rather than relying on earlier audits. Transactional current-read/minimum handling in transaction-http.ts213–233,412–590 and transaction-service.ts380–575 retains the separated observation/wait boundary. Event projection and lease scans use current context; store.ts722–800 checks actual source membership and keeps within-group ordinals;1768 onward checks captured scan context. Sequence aliases are not an unimplemented follow-on: transactional-alias-installed.test.ts100 and301 onward already exercises turn-time retargeting, retained targets/misses and restart. Do not duplicate that slice.
+
+For ordinary Update, development-authority.ts166–180 captures trusted principal policy;295–341 submits through its existing lifecycle. member-executor.ts720–780 compares retained semantic identity before saved-result disclosure. The existing guarded-overlap and development discovery/contracts evidence already addresses receiving, conflict, disconnected sequence completion and current visibility. The targeted inspection found no new runtime mismatch there; extracting a fresh percentage or repeating those scenarios would not be a serving repair.
+
+The known discovery refusal in transaction-http.ts212/593–600 is still admission-bound, not permission to advertise incomplete Transactional. S1 retained Snapshot/continuation minima and G2 incident-Link metadata membership remain explicit unresolved decisions. This report adds no ruling, optional History/Types/provenance work, visibility API, or public-admission workaround. The supported all-visible→empty policy does not itself establish arbitrary partial ACL completeness.
+
+## Concrete observation gap and source reasoning
+
+The existing installed Event SSE callback (apps/bdptest/src/transactional-event-sse-installed.test.ts78–295) launches once, compares finite and SSE for Scope/Bead/Link, then exercises sparse live delivery with a query `after`. Its `open` helper191–201 sends Authorization and Accept only: it never sends Last-Event-ID and never reopens the store. Thus it cannot show that a cursor actually served before shutdown still selects the correct suffix after packed-process restart, or that a real header wins over a conflicting query on that restarted process.
+
+Source proof exists separately and should be reused: transaction-events.test.ts142/179 tests projection/reopen,232 tests within-group continuation and foreign/fabricated cursors; transaction-event-sse.test.ts341–349 tests same-process reconnect and following receiving cases. This is why no production fix is proposed. The gap is their installed composition, not absence of all regression coverage.
+
+The laws are settled in the pinned spec: bdp.md6212–6222 identifies deterministic source projections and view-bound cursors;6262–6273 defines exclusive `after` and stable checkpoint/ordinal/source IDs;6350–6361 requires SSE field equality and Last-Event-ID overriding the URL's original `after`. Production transaction-events.ts95–141 renders stable IDs and rejects a foreign source; store.ts722–743 verifies an actual retained event, not merely token syntax; HTTP520–528 chooses the single Last-Event-ID value before query after, and639–644 maps source mismatch to contextual400 invalid-parameter. No Snapshot minimum or incident-Link question is involved.
+
+## Proposed finite witness (planning only)
+
+Own only apps/bdptest/src/transactional-event-sse-installed.test.ts initially, adding one separate callback and reusing its existing Scope-local Task/schema fixture, raw executor, SSE recorder and installed launcher. No shared helper or production edits. Keep the historical callback intact. Exact source selector/body bytes and counters must be frozen at authoring before any execution.
+
+Use canonical https://reference.invalid/acme/, two distinct authority-accepted Bead IDs and the existing Task schema with properties {n:0}. One batch creates A then B, yielding two created Events in the same transaction. Five HTTP requests, exactly two sequential child/owner/listener lifetimes, one owned store directory:
+
+1. POST the two-create batch with one fresh explicit key; validate the complete receipt/schema, both independent expected Resources, effectPosition and transaction.
+2. GET events/ as JSON; validate exactly the two ordered full Events, actual IDs E0/E1, ordinals0/1, both transaction links, current context and next:null. Save actual opaque IDs, never synthesize them.
+3. Close the first child and prove exit; reopen the same directory with create:false and byte-identical artifacts, canonical Scope and authentication/policy identities. GET events/?after=E0; require the exact original E1 record alone (including time/id/data), no E0 and next:null. Compare epoch/view/current position with the observed pre-restart values. No second mutation.
+4. Open real SSE events/?after=E1 with Last-Event-ID:E0 using recordRawSse with timeoutMs:5000 and the shared work signal. Await ready; require status200, text/event-stream, no-store/no-transform and the saved epoch/view/Scope-position headers. Await until at least one id-bearing frame exists; require its full JSON to equal E1 and its id/event fields to equal E1.id/E1.type. Immediately before intentional close, synchronously require controller.signal.aborted===false and recorder.destroyed===false, then invoke close without an intervening await. Await the close/drain promise under the total cleanup bound and require every complete recorded id-bearing frame after draining to be precisely [E1], with full data and field equality again. The later query cursor would yield no Event, so observing E1 distinguishes header precedence. Frame presence alone is insufficient: until can return when its predicate is already true despite stored transport failure, and close does not expose stored failure. A timeout or early socket death must fail. Do not infer indefinite absence from an elapsed sleep or claim server pending admission.
+5. GET beads/a?view=events&after=E0 (the real Scope-source cursor) with JSON Accept; require contextual400 invalid-parameter and a full Problem schema. This is an explicitly invalid cross-source input, not a discovered Bead cursor. No resource metadata/link update is used.
+
+Use 45s work/10s final cleanup/60s callback and120s outer supervision. All four ordinary finite requests and the SSE reader have pinned5000ms limits. Do not add retries or an idle15s wait. A transport timeout is failure, never successful negative evidence.
+
+Test-local lifecycle mechanics (no shared helper edit): track each returned child handle, PID, ready metadata, launch ordinal and exit facts in a callback-owned session record; track a launch-in-flight/unknown-stop flag before each launch, clearing it only on successful returned handle ownership. A rejected launch before a handle is returned conservatively preserves the store, even if the helper attempted cleanup. First-child close occurs inside the45s work budget; retain the handle through completion, then require actual child.exitCode===0 and child.signalCode===null before the create:false launch. Do not null a handle in finally and lose an unknown owner. Require two distinct child PIDs and exactly two launches; ephemeral listen URLs may reuse a port. Compare installedTransactionBinding values, canonical Scope and runtime/payload/artifact/authentication/policy identities across starts.
+
+Create a callback-local boundedDrain helper that consumes a single absolute10s cleanup deadline shared by stream and child drain in the final cleanup phase. Attach fulfillment/rejection handlers to every close promise before racing the remaining budget, keep the underlying promise in a tracked set, and observe any late rejection rather than leaving an unhandled promise. A successful deadline race never substitutes for actual exit: record the exit only after it is observed. If a drain times out, record failure and mark process stop unknown; preserve the directory and report owned PID/listener evidence to the outer supervisor. The launcher itself can spend10s awaiting exit plus another10s in kill/drain, so bare await is not proof of the10s cleanup bound. The mid-work SSE intentional close is also bounded (at most the remaining work budget and10s), with its result tracked so final cleanup can safely observe it. On any primary failure, close the active stream before requesting child close; use the same remaining final-cleanup budget, aggregate primary and cleanup failures, and clear timers. If the total deadline is exhausted, attach observers and register child.close immediately instead of silently omitting process-stop initiation, but do not claim it drained.
+
+For directory removal require no launch-in-flight/unknown-stop state, every launched/returned child positively exited and every stream drained. Otherwise preserve it and throw the aggregate failure. The outer120s supervisor owns final PID/process-group inspection and forced cleanup when necessary; supervisor intervention is always failed observation, never test success. Retain allowlisted response facts/fingerprints, safe full Event values, source/payload/config identities and both actual child exits. Never copy the older callback's unconditional rmSync path.
+
+Fresh protocol/server archives, the verified external eight-package consumer and explicit installed entry/source override are required for installed attribution; ordinary local fallback is only development behavior. Report claimEligible:false and no cold discovery, erasure reconciliation, authorization transition or whole-profile claim. Validation should run only this new callback plus affected formatting/type checks after native and actual Claude plan/code review. If it fails semantically, preserve the actual trace and scope a source repair from the observed failure rather than changing expectations.
+
+No automatic production authoring is requested. If root prioritizes only established serving defects, there is no additional production slice justified by this audit; continue the already-owned conditional slice rather than inventing one. This report is supporting analysis under the sole plan.
+
+## Audit limits and attribution
+
+Read-only b0213805, clean tree, with source hashes in source-binding.json. No tests/imports/build/services/network/main inspection or checkout edits. Earlier after-authorization/fresh-depth/ordinary-Update audits were used to avoid repetition, not as exhaustive proofs. I authored the conditional draft and related earlier evidence, so this is an implementation-worker audit, not an independent council. All writing is limited to this external report directory and guarded by the active role session.
+
+## Revision and review binding
+
+This successor preserves the original plan.md unchanged and incorporates the accepted native conditions. The semantic workload remains five HTTP requests, two sequential children, one store and two created Events. Encode actual opaque IDs into query values; do not synthesize cursors. Validate mutationReceipt, eventPage/event and transactionalProblem with the existing schema bundle. A callback-local finite helper retains response headers and accepts an explicit expected status for request5; do not rewrite the historical callback. Initial receipt Resources must be checked against independent authored Resource expectations; Event data then binds to their observed revisions. The source HEAD is chronology only: the root may commit the unrelated two-test CI repair while this plan review is running. The thirteen explicitly pinned Event-related source files and all review inputs must remain byte-identical. No installed execution is released by this plan packet.

@@ -1,0 +1,12 @@
+[
+  {
+    "id": "G09-ACTUAL-N1",
+    "severity": "Medium",
+    "location": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-first4-root-failure-1/instantiated-phase-B.txt:11",
+    "title": "Actual phase B changed its protective sentinel comparison",
+    "evidence": "Assignment line6 and guard line11 both contain exec_command/terminal-chunk:5ea19f. The assertion compares that string with itself and deterministically fails before origin read line12 or census Popen line31. Actual trusted-root B tool bb9332 reports AssertionError line11 / exit1.",
+    "impact": "No actual B census/receipt or following C witness exists; node-version and all later prefix qualification remain unaccepted despite inner/A0.",
+    "attribution": "Root one-off source instantiation deviation only; approved frozen template and helper/product remain unchanged.",
+    "recommendation": "Preserve this failed attempt and STOP/reclosed gates. Any future separately authorized attempt must independently verify assignment-only substitutions and exact instantiated body before execution; no retry or source repair is authorized by this audit."
+  }
+]

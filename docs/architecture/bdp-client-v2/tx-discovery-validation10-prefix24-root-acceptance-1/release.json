@@ -1,0 +1,48 @@
+{
+  "utc": "2026-10-18T16:44:21.707325+00:00",
+  "accepted": true,
+  "session": "2026-10-18T02:16:24Z-549f",
+  "acceptance": {
+    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/tx-discovery-validation10-prefix24-root-acceptance-1/acceptance.json",
+    "sha256": "d5c03659bdfcd78bf08786e91435db939d304e8a285148b07412c5eed11f6a29"
+  },
+  "gateSha256": "51bbb118604339c7a2cb029343b751112827e8122c7aca858d5b1b05e98829be",
+  "approvedStages": [
+    "node-version",
+    "pnpm-version",
+    "workspace-install",
+    "bind-workspace-tools",
+    "typecheck",
+    "format-check",
+    "lint",
+    "fresh-build",
+    "bind-fresh-build",
+    "focused-source",
+    "audit-focused-source",
+    "legacy-changefeed-source",
+    "audit-legacy-changefeed-source",
+    "legacy-installed-contracts-source",
+    "audit-legacy-installed-contracts-source",
+    "schema-confinement-source",
+    "audit-schema-confinement-source",
+    "prepare-package-directory",
+    "pack-protocol",
+    "pack-server",
+    "verify-archives",
+    "prepare-consumer",
+    "consumer-install",
+    "verify-installed-consumer"
+  ],
+  "dispatchOnlyNext1": [
+    "verify-installed-consumer"
+  ],
+  "noRetry": true,
+  "preconditions": [
+    "Publish/readback candidate+FULLnative+erratum+root BEFOREactivation",
+    "Byteexact activate51bb/publish/readback activation BEFOREONEverify-installed stage",
+    "Actual raw0/wholewrapper<120/firstfailurelateunknown STOPnoRetry",
+    "Root FULLconsumer file/link/member/8graph/recursivepayload/entry/source-boundproof +native actual24 audit BEFORE independently reviewed52authority"
+  ],
+  "activationPerformed": false,
+  "executionDispatched": false
+}

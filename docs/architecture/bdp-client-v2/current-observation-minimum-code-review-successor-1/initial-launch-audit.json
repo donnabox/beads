@@ -1,0 +1,52 @@
+{
+  "at": "2026-10-17T20:22:26.630420+00:00",
+  "kind": "initial-changed-successor-launch-provenance-not-terminal",
+  "pid": 19586,
+  "pgid": 19586,
+  "started": "2026-10-17T20:21:43.652036+00:00",
+  "processSnapshot": [
+    {
+      "pid": "19586",
+      "ppid": "19572",
+      "pgid": "19586",
+      "elapsed": "00:43",
+      "comm": "/opt/homebrew/bin/claude"
+    }
+  ],
+  "argvMatches": true,
+  "timeoutSeconds": 1800,
+  "termAfterSeconds": 1790,
+  "closedBindingSha256": "58eaf70a89f44cbc01b2e175dfa5d61436977e6fd3b39188817a038e97e20edd",
+  "releasedBindingSha256": "fe7faf8b482b3cab42782a74bf1e410966f6e9ad4ac0706cf9e3dd1cd643215d",
+  "rootReleaseSha256": "1a0cca4310e797bc98b0522c439c876af69ee7297f1ede9488bb7ce51f502f65",
+  "authorizedChange": [
+    "rootLaunchReleased"
+  ],
+  "verifiedPins": {
+    "index": 38,
+    "source": 679,
+    "context": 25,
+    "artifacts": 9
+  },
+  "sourceBeforeMatches": true,
+  "head": "d9c3eb9e61b1982b9bd56aa77e4cdc114384e886",
+  "fullPatchSha256": "ca59dc9f280ed0ac281f5b6ec00ed6d0fab1197fae7ef3b6a281bf817476eb55",
+  "originalTimeoutAndHistoricalRecoveryPinsPreserved": true,
+  "streamSnapshotBytes": 459625,
+  "completeRecords": 282,
+  "unparsedPartialTailBytes": 0,
+  "invalidCompleteRecords": 0,
+  "toolUsesSoFar": {
+    "Read": 8
+  },
+  "errorMarkedToolResultsSoFar": 0,
+  "terminalResultsSoFar": 0,
+  "exitPresent": false,
+  "stderrBytesSoFar": 0,
+  "approvalInferred": false,
+  "reviewCompleteClaim": false,
+  "newAttemptLaunchedByAudit": false,
+  "pollingLoop": false,
+  "terminalAuditPending": true,
+  "terminalAuditScope": "On actual exit map raw/terminal/final, verify source-before/after/current all679/25/9 and38indexed with release exception, actual successful access/error scope and sampled PID/group absence. No partial findings approval."
+}

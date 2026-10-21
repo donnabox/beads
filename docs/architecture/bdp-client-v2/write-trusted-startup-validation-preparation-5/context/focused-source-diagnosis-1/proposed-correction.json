@@ -1,0 +1,17 @@
+{
+  "state": "INERT TEST-ONLY RECOMMENDATION; not applied/formatted/compiled/executed or source-released",
+  "onlyFuturePath": "packages/server/src/reference-deployment.test.ts",
+  "beforeSha256": "5b9de79791eb041e74b4153ffc19dfaf28b029599644a7bda056a84432ef0289",
+  "proposedAfterSha256": "adfbf6b0132cc24b3b65bf482000de2da43bf242102020637ed894b2cdd0cee9",
+  "proposedPatchSha256": "089370f6d93cc2aae590968d004b05205bcfe17caa08fef1264a3a6d10a7d112",
+  "proposedInverseSha256": "86eb9cfd9337d88a0dfd1197d01b4c1beecd2d71b74bc7d19f1db8f22af4ff25",
+  "change": "Replace only loop row10 standalone unreferenced schema fixture by existing complete artifacts() Type/ownership bundle and its referenced schemas/item carrying a missing external $ref.",
+  "prediction": "Existing compiler graph is invoked because base descriptor has propertiesSchema; graph resolves missing.test target to absent resource, evaluator refuses, compileDevelopmentContracts throws, loader maps fixed contract error.",
+  "sourceCountWouldStay": 682,
+  "other681SourceFilesWouldBeByteIdentical": true,
+  "selectedCallbackCountWouldStay": 44,
+  "newCallbackOrBudgetOrSchemaOrHelperChange": false,
+  "productionChangeRecommended": false,
+  "noRetry": true,
+  "requires": "Root exact recommendation acceptance/release and independent native precision before any source edit or separate fresh validation successor."
+}

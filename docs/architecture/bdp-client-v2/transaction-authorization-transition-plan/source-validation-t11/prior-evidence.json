@@ -1,0 +1,68 @@
+{
+  "sourceBindingPath": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-authorization-transition-plan/source-validation-v4/source-binding.json",
+  "sourceBindingSha256": "67db2aba969f85cce693ace1fbd9853027b00a1bb4d7e1777fd03ea646a5fe9c",
+  "artifactHashes": {
+    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-authorization-transition-plan/source-validation-v4/run/typecheck.exit.json": "9ba89bc0ad50de2737620fcf5a7927e7fb5346276807fc3e2d5af82b40991cc0",
+    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-authorization-transition-plan/source-validation-v4/run/build.exit.json": "5742ecb89800bda4ca212644ce546e8c36b691dc17d5ef374158434b7729d7f8",
+    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-authorization-transition-plan/source-validation-v4/run/format-check.exit.json": "73312f56db325bd62e27cee781dbede0b9b5951ced8505b1b2bfbc02add92509",
+    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-authorization-transition-plan/source-validation-v4/run/lint.exit.json": "393f7a4afb0bfb0eda90c7b1073329598faab8a6fc55aee6c477c391f9fcb8c6",
+    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-authorization-transition-plan/source-validation-v4/run/boundaries.exit.json": "2712bfd008b396d06a2bd9e65f82ba406b89b082eb36bd19b72ae20cf479d1aa",
+    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-authorization-transition-plan/source-validation-v4/run/read-seal.exit.json": "62dda5253ebcc1c2e2139fa8f5de4d569992d65913b0ea3d1bf96318c4a301a1",
+    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-authorization-transition-plan/source-validation-v4/run/transport.exit.json": "bbdc14d10f1d202c2c99c711f32ef49425b12c652406509e90a4452aff87e502",
+    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-authorization-transition-plan/source-validation-v4/run/queued-frame.exit.json": "f767a441891f5b7a15bc41f2d9255413a77777cef1590b7d37adc14dcfe9d0bd",
+    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-authorization-transition-plan/source-validation-v4/run/stale-lease.exit.json": "87c4224d24394f93176a787f7fd3be8d728f136039875ca8b39ff1de89833415",
+    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-authorization-transition-plan/source-validation-v4/run/authorization-owner.exit.json": "f49b7bf668b9f019a5866be2477f2682a7ca9074bba732f26ef11241c28f0287",
+    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-authorization-transition-plan/source-validation-v4/run/transport.results.json": "775504bcc2cd630a98a2d82f5247c3e766e61f14dfbe58e8d2d4a1bbbd0c27a2",
+    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-authorization-transition-plan/source-validation-v4/run/queued-frame.results.json": "493c3dfb6abd2283ab306e4cdfebbcd453a0bafe88eb4e9331cabf88cfb3e95b",
+    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-authorization-transition-plan/source-validation-v4/run/stale-lease.results.json": "27cb57211957ef26f7afa637fc53e6da733a45a640c81c02805d6b9ec5cd6707",
+    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-authorization-transition-plan/source-validation-v4/run/authorization-owner.results.json": "a6cf7c55046345898130564182a4a70797201c04778f22cd9f5d07c810650f9c"
+  },
+  "actualPriorCases": [
+    {
+      "fullName": "narrows current Transactional visibility and fences issued handles after policy publication",
+      "status": "passed"
+    },
+    {
+      "fullName": "cancels an active Event stream after policy publication",
+      "status": "passed"
+    },
+    {
+      "fullName": "publication cancels a queued Event frame before its drain permits another write",
+      "status": "passed"
+    },
+    {
+      "fullName": "rejects an old selected Event packet before stream registration and accepts a current lease",
+      "status": "passed"
+    },
+    {
+      "fullName": "migrates exact legacy authorization facts and preserves a no-op policy across reopen",
+      "status": "passed"
+    },
+    {
+      "fullName": "preserves policy and delivery leases after confirmed policy rollback",
+      "status": "passed"
+    },
+    {
+      "fullName": "fences publication failure and recovers the committed empty policy",
+      "status": "passed"
+    },
+    {
+      "fullName": "separates Snapshot view fences from durable maintenance and actual expiry",
+      "status": "passed"
+    },
+    {
+      "fullName": "projects receipt records and allocations without changing non-record execution facts",
+      "status": "passed"
+    },
+    {
+      "fullName": "bounds administrative drain without cancelling admitted sequence work",
+      "status": "passed"
+    },
+    {
+      "fullName": "captures one Scope policy for distinct principals and renders empty historical advances",
+      "status": "failed"
+    }
+  ],
+  "onlyChangedPath": "packages/server/src/transaction-authorization.test.ts",
+  "notRelabeled": "v4owner stage remainsfailed; ten passed callbacks retain prior attribution. This successor selects onlyfailedT11."
+}

@@ -1,0 +1,69 @@
+{
+  "expectedOnlyNotObserved": true,
+  "httpRequests": 5,
+  "finiteResponses": 4,
+  "sseConnections": 1,
+  "childLaunches": 2,
+  "sequentialOwners": 2,
+  "ownedStores": 1,
+  "effectiveBatches": 1,
+  "createdBeads": 2,
+  "createdEvents": 2,
+  "localSensitivityControls": [
+    "restored-event-ordinal",
+    "scope-prefix-frame"
+  ],
+  "expectedContextPosition": "pos-1",
+  "expectedAuthorizationView": "development-all-visible",
+  "deadlinesMs": {
+    "work": 45000,
+    "sharedFinalCleanup": 10000,
+    "callback": 60000,
+    "outerSupervisor": 120000,
+    "finiteRequest": 5000,
+    "recorder": 5000
+  },
+  "order": [
+    {
+      "ordinal": 1,
+      "session": 1,
+      "method": "POST",
+      "target": "operations/batch"
+    },
+    {
+      "ordinal": 2,
+      "session": 1,
+      "method": "GET",
+      "target": "events/"
+    },
+    {
+      "ordinal": 3,
+      "session": 2,
+      "method": "GET",
+      "target": "events/?after=<encoded actual E0>"
+    },
+    {
+      "ordinal": 4,
+      "session": 2,
+      "method": "GET",
+      "target": "events/?after=<encoded actual E1>",
+      "lastEventId": "actual E0",
+      "sse": true
+    },
+    {
+      "ordinal": 5,
+      "session": 2,
+      "method": "GET",
+      "target": "beads/a?view=events&after=<encoded actual E0>",
+      "expectedStatus": 400
+    }
+  ],
+  "installedRunRequires": [
+    "explicit external entry",
+    "explicit package source commit",
+    "fresh independently verified package/consumer binding",
+    "root-reviewed isolated supervisor",
+    "native + actual Claude exact-source code review",
+    "root execution release"
+  ]
+}

@@ -1,0 +1,598 @@
+{
+  "actualSectionFilesCreated": 0,
+  "finiteTextRelations": [
+    {
+      "expected": false,
+      "independentlyRecomputed": true,
+      "phase": "B",
+      "relation": "missing",
+      "stage": "typecheck",
+      "subjectEvaluated": false,
+      "textPredicate": false
+    },
+    {
+      "expected": false,
+      "independentlyRecomputed": true,
+      "phase": "B",
+      "relation": "duplicate",
+      "stage": "typecheck",
+      "subjectEvaluated": false,
+      "textPredicate": false
+    },
+    {
+      "expected": false,
+      "independentlyRecomputed": true,
+      "phase": "B",
+      "relation": "already-substituted",
+      "stage": "typecheck",
+      "subjectEvaluated": false,
+      "textPredicate": false
+    },
+    {
+      "expected": true,
+      "independentlyRecomputed": true,
+      "phase": "B",
+      "relation": "assignment-only",
+      "stage": "typecheck",
+      "subjectEvaluated": false,
+      "textPredicate": true
+    },
+    {
+      "expected": false,
+      "independentlyRecomputed": true,
+      "phase": "B",
+      "relation": "global-replacement",
+      "stage": "typecheck",
+      "subjectEvaluated": false,
+      "textPredicate": false
+    },
+    {
+      "expected": false,
+      "independentlyRecomputed": true,
+      "phase": "C",
+      "relation": "missing",
+      "stage": "typecheck",
+      "subjectEvaluated": false,
+      "textPredicate": false
+    },
+    {
+      "expected": false,
+      "independentlyRecomputed": true,
+      "phase": "C",
+      "relation": "duplicate",
+      "stage": "typecheck",
+      "subjectEvaluated": false,
+      "textPredicate": false
+    },
+    {
+      "expected": false,
+      "independentlyRecomputed": true,
+      "phase": "C",
+      "relation": "already-substituted",
+      "stage": "typecheck",
+      "subjectEvaluated": false,
+      "textPredicate": false
+    },
+    {
+      "expected": true,
+      "independentlyRecomputed": true,
+      "phase": "C",
+      "relation": "assignment-only",
+      "stage": "typecheck",
+      "subjectEvaluated": false,
+      "textPredicate": true
+    },
+    {
+      "expected": false,
+      "independentlyRecomputed": true,
+      "phase": "C",
+      "relation": "global-replacement",
+      "stage": "typecheck",
+      "subjectEvaluated": false,
+      "textPredicate": false
+    },
+    {
+      "expected": false,
+      "independentlyRecomputed": true,
+      "phase": "B",
+      "relation": "missing",
+      "stage": "format-check",
+      "subjectEvaluated": false,
+      "textPredicate": false
+    },
+    {
+      "expected": false,
+      "independentlyRecomputed": true,
+      "phase": "B",
+      "relation": "duplicate",
+      "stage": "format-check",
+      "subjectEvaluated": false,
+      "textPredicate": false
+    },
+    {
+      "expected": false,
+      "independentlyRecomputed": true,
+      "phase": "B",
+      "relation": "already-substituted",
+      "stage": "format-check",
+      "subjectEvaluated": false,
+      "textPredicate": false
+    },
+    {
+      "expected": true,
+      "independentlyRecomputed": true,
+      "phase": "B",
+      "relation": "assignment-only",
+      "stage": "format-check",
+      "subjectEvaluated": false,
+      "textPredicate": true
+    },
+    {
+      "expected": false,
+      "independentlyRecomputed": true,
+      "phase": "B",
+      "relation": "global-replacement",
+      "stage": "format-check",
+      "subjectEvaluated": false,
+      "textPredicate": false
+    },
+    {
+      "expected": false,
+      "independentlyRecomputed": true,
+      "phase": "C",
+      "relation": "missing",
+      "stage": "format-check",
+      "subjectEvaluated": false,
+      "textPredicate": false
+    },
+    {
+      "expected": false,
+      "independentlyRecomputed": true,
+      "phase": "C",
+      "relation": "duplicate",
+      "stage": "format-check",
+      "subjectEvaluated": false,
+      "textPredicate": false
+    },
+    {
+      "expected": false,
+      "independentlyRecomputed": true,
+      "phase": "C",
+      "relation": "already-substituted",
+      "stage": "format-check",
+      "subjectEvaluated": false,
+      "textPredicate": false
+    },
+    {
+      "expected": true,
+      "independentlyRecomputed": true,
+      "phase": "C",
+      "relation": "assignment-only",
+      "stage": "format-check",
+      "subjectEvaluated": false,
+      "textPredicate": true
+    },
+    {
+      "expected": false,
+      "independentlyRecomputed": true,
+      "phase": "C",
+      "relation": "global-replacement",
+      "stage": "format-check",
+      "subjectEvaluated": false,
+      "textPredicate": false
+    },
+    {
+      "expected": false,
+      "independentlyRecomputed": true,
+      "phase": "B",
+      "relation": "missing",
+      "stage": "lint",
+      "subjectEvaluated": false,
+      "textPredicate": false
+    },
+    {
+      "expected": false,
+      "independentlyRecomputed": true,
+      "phase": "B",
+      "relation": "duplicate",
+      "stage": "lint",
+      "subjectEvaluated": false,
+      "textPredicate": false
+    },
+    {
+      "expected": false,
+      "independentlyRecomputed": true,
+      "phase": "B",
+      "relation": "already-substituted",
+      "stage": "lint",
+      "subjectEvaluated": false,
+      "textPredicate": false
+    },
+    {
+      "expected": true,
+      "independentlyRecomputed": true,
+      "phase": "B",
+      "relation": "assignment-only",
+      "stage": "lint",
+      "subjectEvaluated": false,
+      "textPredicate": true
+    },
+    {
+      "expected": false,
+      "independentlyRecomputed": true,
+      "phase": "B",
+      "relation": "global-replacement",
+      "stage": "lint",
+      "subjectEvaluated": false,
+      "textPredicate": false
+    },
+    {
+      "expected": false,
+      "independentlyRecomputed": true,
+      "phase": "C",
+      "relation": "missing",
+      "stage": "lint",
+      "subjectEvaluated": false,
+      "textPredicate": false
+    },
+    {
+      "expected": false,
+      "independentlyRecomputed": true,
+      "phase": "C",
+      "relation": "duplicate",
+      "stage": "lint",
+      "subjectEvaluated": false,
+      "textPredicate": false
+    },
+    {
+      "expected": false,
+      "independentlyRecomputed": true,
+      "phase": "C",
+      "relation": "already-substituted",
+      "stage": "lint",
+      "subjectEvaluated": false,
+      "textPredicate": false
+    },
+    {
+      "expected": true,
+      "independentlyRecomputed": true,
+      "phase": "C",
+      "relation": "assignment-only",
+      "stage": "lint",
+      "subjectEvaluated": false,
+      "textPredicate": true
+    },
+    {
+      "expected": false,
+      "independentlyRecomputed": true,
+      "phase": "C",
+      "relation": "global-replacement",
+      "stage": "lint",
+      "subjectEvaluated": false,
+      "textPredicate": false
+    },
+    {
+      "expected": false,
+      "independentlyRecomputed": true,
+      "phase": "B",
+      "relation": "missing",
+      "stage": "fresh-build",
+      "subjectEvaluated": false,
+      "textPredicate": false
+    },
+    {
+      "expected": false,
+      "independentlyRecomputed": true,
+      "phase": "B",
+      "relation": "duplicate",
+      "stage": "fresh-build",
+      "subjectEvaluated": false,
+      "textPredicate": false
+    },
+    {
+      "expected": false,
+      "independentlyRecomputed": true,
+      "phase": "B",
+      "relation": "already-substituted",
+      "stage": "fresh-build",
+      "subjectEvaluated": false,
+      "textPredicate": false
+    },
+    {
+      "expected": true,
+      "independentlyRecomputed": true,
+      "phase": "B",
+      "relation": "assignment-only",
+      "stage": "fresh-build",
+      "subjectEvaluated": false,
+      "textPredicate": true
+    },
+    {
+      "expected": false,
+      "independentlyRecomputed": true,
+      "phase": "B",
+      "relation": "global-replacement",
+      "stage": "fresh-build",
+      "subjectEvaluated": false,
+      "textPredicate": false
+    },
+    {
+      "expected": false,
+      "independentlyRecomputed": true,
+      "phase": "C",
+      "relation": "missing",
+      "stage": "fresh-build",
+      "subjectEvaluated": false,
+      "textPredicate": false
+    },
+    {
+      "expected": false,
+      "independentlyRecomputed": true,
+      "phase": "C",
+      "relation": "duplicate",
+      "stage": "fresh-build",
+      "subjectEvaluated": false,
+      "textPredicate": false
+    },
+    {
+      "expected": false,
+      "independentlyRecomputed": true,
+      "phase": "C",
+      "relation": "already-substituted",
+      "stage": "fresh-build",
+      "subjectEvaluated": false,
+      "textPredicate": false
+    },
+    {
+      "expected": true,
+      "independentlyRecomputed": true,
+      "phase": "C",
+      "relation": "assignment-only",
+      "stage": "fresh-build",
+      "subjectEvaluated": false,
+      "textPredicate": true
+    },
+    {
+      "expected": false,
+      "independentlyRecomputed": true,
+      "phase": "C",
+      "relation": "global-replacement",
+      "stage": "fresh-build",
+      "subjectEvaluated": false,
+      "textPredicate": false
+    },
+    {
+      "expected": false,
+      "independentlyRecomputed": true,
+      "phase": "B",
+      "relation": "missing",
+      "stage": "bind-fresh-build",
+      "subjectEvaluated": false,
+      "textPredicate": false
+    },
+    {
+      "expected": false,
+      "independentlyRecomputed": true,
+      "phase": "B",
+      "relation": "duplicate",
+      "stage": "bind-fresh-build",
+      "subjectEvaluated": false,
+      "textPredicate": false
+    },
+    {
+      "expected": false,
+      "independentlyRecomputed": true,
+      "phase": "B",
+      "relation": "already-substituted",
+      "stage": "bind-fresh-build",
+      "subjectEvaluated": false,
+      "textPredicate": false
+    },
+    {
+      "expected": true,
+      "independentlyRecomputed": true,
+      "phase": "B",
+      "relation": "assignment-only",
+      "stage": "bind-fresh-build",
+      "subjectEvaluated": false,
+      "textPredicate": true
+    },
+    {
+      "expected": false,
+      "independentlyRecomputed": true,
+      "phase": "B",
+      "relation": "global-replacement",
+      "stage": "bind-fresh-build",
+      "subjectEvaluated": false,
+      "textPredicate": false
+    },
+    {
+      "expected": false,
+      "independentlyRecomputed": true,
+      "phase": "C",
+      "relation": "missing",
+      "stage": "bind-fresh-build",
+      "subjectEvaluated": false,
+      "textPredicate": false
+    },
+    {
+      "expected": false,
+      "independentlyRecomputed": true,
+      "phase": "C",
+      "relation": "duplicate",
+      "stage": "bind-fresh-build",
+      "subjectEvaluated": false,
+      "textPredicate": false
+    },
+    {
+      "expected": false,
+      "independentlyRecomputed": true,
+      "phase": "C",
+      "relation": "already-substituted",
+      "stage": "bind-fresh-build",
+      "subjectEvaluated": false,
+      "textPredicate": false
+    },
+    {
+      "expected": true,
+      "independentlyRecomputed": true,
+      "phase": "C",
+      "relation": "assignment-only",
+      "stage": "bind-fresh-build",
+      "subjectEvaluated": false,
+      "textPredicate": true
+    },
+    {
+      "expected": false,
+      "independentlyRecomputed": true,
+      "phase": "C",
+      "relation": "global-replacement",
+      "stage": "bind-fresh-build",
+      "subjectEvaluated": false,
+      "textPredicate": false
+    }
+  ],
+  "subjectEvaluations": 0,
+  "templates": [
+    {
+      "actualCellsCreated": false,
+      "bothAuthoritySHAsUnresolved": true,
+      "bytes": 28569,
+      "firstParent": "typecheck",
+      "fullForwardInverseVerified": true,
+      "genuineDiffsRegenerated": true,
+      "occurrences": 12,
+      "otherBodyBytesExactToBasis": true,
+      "path": "proposals/typecheck.capture.txt",
+      "patterns": 11,
+      "placeholderSections": {
+        "A": {
+          "bytes": 15003,
+          "sha256": "22c25d1010285f27e0974152d0b5912c92b1c45060929d91bcf1950b71e88174"
+        },
+        "B": {
+          "bytes": 6694,
+          "sha256": "66674a8e0f3ffe0dddd23e54567fabe0fd23c6fa623537c7d38c45db9fee6544"
+        },
+        "C": {
+          "bytes": 1775,
+          "sha256": "c26cf591ffcca6ce4e6388978d42fcce9a19890a2c9992489c84b56d321a1eab"
+        }
+      },
+      "sha256": "6d1e09a60095e8b964c3c459d4d8353cfef1775aa5ef84132838db849b04b07b",
+      "stage": "typecheck"
+    },
+    {
+      "actualCellsCreated": false,
+      "bothAuthoritySHAsUnresolved": true,
+      "bytes": 28596,
+      "firstParent": "typecheck",
+      "fullForwardInverseVerified": true,
+      "genuineDiffsRegenerated": true,
+      "occurrences": 12,
+      "otherBodyBytesExactToBasis": true,
+      "path": "proposals/format-check.capture.txt",
+      "patterns": 11,
+      "placeholderSections": {
+        "A": {
+          "bytes": 15012,
+          "sha256": "b4567b982eb7989d626db7a716700823c4e57410a29047903c2cdde68153acc8"
+        },
+        "B": {
+          "bytes": 6703,
+          "sha256": "2c6e3244f69a00d0e5ebf6083c095cd63bbf00c4c6f9c5250d2b6805a498d377"
+        },
+        "C": {
+          "bytes": 1784,
+          "sha256": "c85578e40de16dfe7fe654ae6e6f1587033ab5e48aea4e04358734d150b01ef6"
+        }
+      },
+      "sha256": "690c9ed622baaa18cb58e02b0ecdd6e96eb74e34256f76fae980f522b4a03038",
+      "stage": "format-check"
+    },
+    {
+      "actualCellsCreated": false,
+      "bothAuthoritySHAsUnresolved": true,
+      "bytes": 28524,
+      "firstParent": "typecheck",
+      "fullForwardInverseVerified": true,
+      "genuineDiffsRegenerated": true,
+      "occurrences": 12,
+      "otherBodyBytesExactToBasis": true,
+      "path": "proposals/lint.capture.txt",
+      "patterns": 11,
+      "placeholderSections": {
+        "A": {
+          "bytes": 14988,
+          "sha256": "0604cf17182e2d69785a5ebdad1d09d426b4f8b4c1b0c0ef66e169c8332016db"
+        },
+        "B": {
+          "bytes": 6679,
+          "sha256": "9b6e6f7ece10fcffa27b16e0d61ce8ff049ebf3fe6f26ace7a15fdff7afc1185"
+        },
+        "C": {
+          "bytes": 1760,
+          "sha256": "4311da95e62a2217cc2605f92cb8afd9b2ee1f66fb40edbde04de8d19251dddb"
+        }
+      },
+      "sha256": "815af1db1afa389933d756f82556470c2597e1c3eb341bff1a95c57274b2e787",
+      "stage": "lint"
+    },
+    {
+      "actualCellsCreated": false,
+      "bothAuthoritySHAsUnresolved": true,
+      "bytes": 28587,
+      "firstParent": "typecheck",
+      "fullForwardInverseVerified": true,
+      "genuineDiffsRegenerated": true,
+      "occurrences": 12,
+      "otherBodyBytesExactToBasis": true,
+      "path": "proposals/fresh-build.capture.txt",
+      "patterns": 11,
+      "placeholderSections": {
+        "A": {
+          "bytes": 15009,
+          "sha256": "530b9e60879409a54bd21199991dadc454418035336799ad53fd0ccfd7d0fe76"
+        },
+        "B": {
+          "bytes": 6700,
+          "sha256": "152ab75000cac68da1c822ac072ab0f4e04d13046c6ff130bd0a3fb277bea139"
+        },
+        "C": {
+          "bytes": 1781,
+          "sha256": "98b1ab72e6bed8b936e8ac3c685c99a1d909212ebbbe52f01099c509f9b3944c"
+        }
+      },
+      "sha256": "c25f4bd4e2e187c60e8ce4dc6436c4d53a5fe60d04b4f6e000991769a02d941f",
+      "stage": "fresh-build"
+    },
+    {
+      "actualCellsCreated": false,
+      "bothAuthoritySHAsUnresolved": true,
+      "bytes": 28632,
+      "firstParent": "typecheck",
+      "fullForwardInverseVerified": true,
+      "genuineDiffsRegenerated": true,
+      "occurrences": 12,
+      "otherBodyBytesExactToBasis": true,
+      "path": "proposals/bind-fresh-build.capture.txt",
+      "patterns": 11,
+      "placeholderSections": {
+        "A": {
+          "bytes": 15024,
+          "sha256": "94d85935affd2a5c52a1b8de6fac14705e098e34ee93c3013dffde58df46e5ed"
+        },
+        "B": {
+          "bytes": 6715,
+          "sha256": "b3678945496036a37db01480d643b12a95bf9dcf80c0950064ab4397dc531133"
+        },
+        "C": {
+          "bytes": 1796,
+          "sha256": "29baef8bef13febc9acfcb274ee676fea12930dcf4b1384aa7e2b17b2f3c60f4"
+        }
+      },
+      "sha256": "ee0bf4fd7b89b532e7cb5828a0cdf94bcff4b2e8debb3d09df6560691f5d4cf0",
+      "stage": "bind-fresh-build"
+    }
+  ]
+}

@@ -1,0 +1,3 @@
+# Actual package-directory preparation — pending independent acceptance
+
+One actual A889e55/B e1c2f6/C d53e4d all0. A initial session13026 and both actual polls retained; no second invocation. Inner11.064842625055462s and common root invocation/observation18.246213542297482s<115; empty log/source1eca unchanged. Existing package helper created only run/packages, currently empty; no archives, consumer, installed proof or product validation credit. Prior all17 controls/actuals and full3349authority d4cd9c5d plus separateactivation00fa9c5b retained. Actual native+ROOT full conjunction and durable disposition required BEFORE pack-protocol. Historical false/pending/failed/UNRETAINED wire/fullENV/finite process/scratch limits preserved.

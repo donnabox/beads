@@ -1,0 +1,11 @@
+# Independent exact-head CI audit
+
+Accepted: push run 39082528652, job 117542270952 completed successfully on `a56254d682cf4623cab22a552e3d2f695f691795`. All 27 steps succeeded. Raw checkout evidence names that exact commit; clean current checkout and all 679 committed/current files match the tested source map, tree `144f278c7f5a08516c4ac99ba553d4cc25bcf560`, sole parent `9f89271e2563a105410789ca8ca1e77dfb4d0b9f`. Captured PR167 remains draft at the same remote head; no PR mutation or rerun was performed.
+
+Raw log SHA256 `7b00eabdbd0527b97a8545f31d280c57c6bfb452bcde33a24678f865b15d0ea7` (3,886,658 bytes) independently confirms 9,464 passed tests across 186 files, one skipped test, plus seven preflight tests. All 12 new source observations parse intact: owner3/capture6/drain2/HTTP1. D reports 37 requests, 605.685465 ms, closed/removed and zero failures. These summaries do not establish a complete source wire census or profile qualification.
+
+The historical five-request/two-child and new ten-request/one-child JSON reports also parse intact and equal the captured audit values. They report passed, clean ownership/exit/drain/removal; the new report additionally records close-event zero. Both explicitly use development-local workspace dist with no installed provenance and claimEligible=false. Their payload is `495fa1d4afa2e44d7889b1f359fa8c9373c41235bc5d07abea9090e1007b6b77`, distinct from local external-consumer proof `da80f6d7f6c195328d4356e14f5446a00c4dd36f8755259609d482b51d003e5f`. CI packed smoke reports the latter payload and remains claimEligible=false. No remote PID or filesystem absence was independently inspected.
+
+Eight other masked observation lines (1711, 3340, 3679, 3696, 4720, 5821, 5868, 7157) cannot be parsed and were not reconstructed or treated as structured evidence. The Read gate verifies its historical 89-row seal with run `e5f7d0c43c151426350ceededdc77fe7e372db9b` and evidence commit `dbaf63a24219e1ea3f80394746853598b0d4464a`; its identity is not relabeled.
+
+All seven immutable capture entries match index `2119758ef5191f1827b1f119e971a07099dee48ee3fc91bb8c7ab582aac218fe`. Detailed native evidence: `native-terminal-audit.json`, SHA256 `b46bc3663e525b8a5d0a7c3c9703a62faf66a72c2fe52ecc1eee3d4af1d63e79`.

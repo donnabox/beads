@@ -1,0 +1,43 @@
+{
+  "candidate": "18f5428686dd84fb139c9dbbcbe39d5958012323",
+  "tree": "9c78087e1036dd26ca908e1d8feaa91263513717",
+  "parent": "98c600767e8e91a79e109cb741beb91e23b9bebe",
+  "candidatePatchSha256": "a4d740d866598f9e56a8c1a9f611d459eee607b5a9117a0fc7a52cbd9f9901b1",
+  "sourceHashes": {
+    "apps/bdptest/src/transactional-same-key-overlap-installed.test.ts": "e6a52fa4d645ffef04e4b6e8ccd9bbcb7495624ae0e3f46536e0e9ac6b707974",
+    "docs/design/transaction-implementation-progress.md": "21069d8d8eb5d5048a1dbcb38871ea0f8e72b463e9456633b12b4860e024a728"
+  },
+  "originalReview": {
+    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-same-key-overlap-draft/claude-code-preparation",
+    "outcome": "inconclusive timeout; empty stdout/stderr; no verdict",
+    "exitSha256": "cae00fb4d82fa0d94a1532ef9ed2caeae0b6a70e434b91260ec8a2ceff836959",
+    "sourceUnchanged": true
+  },
+  "ownership": {
+    "lifecycle": {
+      "testRanges": [
+        [
+          1,
+          530
+        ],
+        [
+          788,
+          958
+        ]
+      ],
+      "responsibility": "Configuration, entry/provenance labels, filesystem confinement, transport/event ordering machinery, request and response byte limits, all deadlines, failure/report retention and cleanup. Inspect shared call sequence as part of lifecycle safety."
+    },
+    "oracles": {
+      "testRanges": [
+        [
+          531,
+          787
+        ]
+      ],
+      "documentation": "Complete appended 21 lines; parent document prefix byte-identical",
+      "responsibility": "Receipt/schema/current-context acceptance, dispatch assertions, two-key negative sensitivity and prerequisite ordering, pending outcomes, replay/full Resource/Event equality and honest claim boundary. Inspect shared transport/report contracts for oracle visibility."
+    }
+  },
+  "sharedContract": "Exactly one test callback; positive six requests, distinct-key negative two then named identity failure. Neither scope alone closes whole-source council. No internal pending-join/server concurrency proof. Tests and production unchanged by packet preparation.",
+  "omittedBoth": "Production modules outside supplied excerpts, full auxiliary schema-reference closure, unrelated tests/dependencies, package-install implementation, prior historical plans and runtime outcomes. Existing native full-source review is separate; no missing supplied context constitutes proof of a defect."
+}

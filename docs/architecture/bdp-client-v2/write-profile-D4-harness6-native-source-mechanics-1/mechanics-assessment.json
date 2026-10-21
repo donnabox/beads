@@ -1,0 +1,100 @@
+{
+  "finalRegistry": {
+    "allFourBanksCompleteFromExistingRecords": true,
+    "byteCeilings": {
+      "registry": 600832,
+      "rootToolAcceptancePolicy": 1048576,
+      "threeEventsProspective": 618240
+    },
+    "eventDoesNotProveSuccess": true,
+    "exactEventKeys": [
+      "event",
+      "schemaVersion",
+      "case",
+      "variant",
+      "session",
+      "ownerPid",
+      "limiterPid",
+      "clockOrigin",
+      "freezeAt",
+      "lastCensusAt",
+      "lastCensusGeneration",
+      "registrations",
+      "observedIdentities",
+      "knownGroups",
+      "completedCensusProbes",
+      "firstMismatch",
+      "firstSignalError",
+      "syntheticAcceptance",
+      "productCalls"
+    ],
+    "includesCompletedProbesThroughLastCensus": true,
+    "locations": [
+      "outer_host.py:91-111",
+      "outer_host.py:344-365"
+    ],
+    "noProbeAfterFinalEvent": true,
+    "originalFinallyRetained": true,
+    "originalRegistrationOrderAndDuplicates": true,
+    "ownerPgidAbsent": true,
+    "ownerPidFromAgreeingHeldDirectParentFacts": true,
+    "preconditions": [
+      "published actual IO",
+      "io and control raw terminal available",
+      "all known groups closed",
+      "census None"
+    ],
+    "shortEagainOverflowLateFailure": true,
+    "singleNonblockingWriteNoRetryFlushOrGrace": true
+  },
+  "firstMismatch": {
+    "bounds": 32768,
+    "exactTupleOrExplicitUnavailable": true,
+    "locations": [
+      "outer_host.py:51-75",
+      "outer_host.py:193-198"
+    ],
+    "noMatchesPollQuerySignalCallAdded": true,
+    "onlyAlreadyHeldFacts": true,
+    "orderedBranchExplanationMatchesOriginalMatches": true,
+    "originalUncertainBeforeHook": true,
+    "sensitiveValuesExcluded": [
+      "exception message",
+      "strerror",
+      "environment",
+      "credentials",
+      "argv",
+      "all-host census rows"
+    ],
+    "writeOnce": true
+  },
+  "firstSignalError": {
+    "bounds": 65536,
+    "exactLivePidListOrUnavailable": true,
+    "heldAggregateAnchorBooleansOnly": true,
+    "locations": [
+      "outer_host.py:76-90",
+      "outer_host.py:232-236"
+    ],
+    "noChosenAnchorInvented": true,
+    "originalSignalErrorAndStickyFailureBeforeHook": true
+  },
+  "limits": [
+    "Static preservation is not a successful-write, pipe capacity, CPU, scheduling, clock-domain or hard-real-time proof.",
+    "Missing/partial registry, nonzero owner/native/root terminal, missing EOF, unknown ownership or fresh absence remains FAILED/UNKNOWN.",
+    "Final registry is enumeration of held identities, not offline replay of all intermediate census bodies, global process containment or causal repair.",
+    "D02 deeper cause UNKNOWN and sticky failed evidence preserved; M02/D02 never retried.",
+    "All58 remaining original invocations stay required/unattempted.",
+    "H6 has no availability/caller/control/product authority; separately authored exact fresh caller/authorities, OTHER-native/root precision and publication/readback are required."
+  ],
+  "metadataClassFix": {
+    "actualCaughtClass": true,
+    "affectedOriginalCallers": [
+      "D03",
+      "D04",
+      "D06"
+    ],
+    "location": "report_controls.py:15",
+    "reasonEqualityCatchTargetSchemaUnchanged": true
+  }
+}

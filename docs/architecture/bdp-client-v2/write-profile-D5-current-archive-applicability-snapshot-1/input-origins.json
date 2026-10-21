@@ -1,0 +1,1039 @@
+{
+  "observedAt": "2026-10-19T05:20:44.638670+00:00",
+  "origins": {
+    "archive-native": {
+      "anchors": [
+        {
+          "firstLineText": "  \"accepted\": true,",
+          "lines": [
+            5
+          ],
+          "needle": "\"accepted\":"
+        },
+        {
+          "firstLineText": "  \"findings\": [],",
+          "lines": [
+            20
+          ],
+          "needle": "\"findings\""
+        }
+      ],
+      "bytes": 3460,
+      "currentEqualityClaimed": true,
+      "id": "archive-native",
+      "mode": "0o644",
+      "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation5-verify-archives-actual-native-audit-1/closure.json",
+      "sha256": "ebf352c48cabc1078159e379574b651750a68425f83cd1f1ea447bfd4c755252",
+      "snapshotOnly": false
+    },
+    "archive-proof": {
+      "anchors": [
+        {
+          "firstLineText": "  \"head\": \"cce884ccea1db97cbc6fd7bff876d4d6091f9081\",",
+          "lines": [
+            2
+          ],
+          "needle": "\"head\":"
+        },
+        {
+          "firstLineText": "  \"clean\": false,",
+          "lines": [
+            4
+          ],
+          "needle": "\"clean\":"
+        },
+        {
+          "firstLineText": "  \"sourceIdentity\": \"1ecaf2e47369cc12cc26bc3ed693c5d4d3b9cffa4714b13dbe5567f9e46bfb15\",",
+          "lines": [
+            59
+          ],
+          "needle": "\"sourceIdentity\":"
+        },
+        {
+          "firstLineText": "  \"packages\": {",
+          "lines": [
+            62
+          ],
+          "needle": "\"packages\":"
+        },
+        {
+          "firstLineText": "  \"sourceAttribution\": \"Base HEAD/tree plus independently verified reviewed dirty source identity, fresh build and archives. Base commit does not contain the draft; not child-attested source.\"",
+          "lines": [
+            2003
+          ],
+          "needle": "\"sourceAttribution\":"
+        }
+      ],
+      "bytes": 131894,
+      "currentEqualityClaimed": true,
+      "id": "archive-proof",
+      "mode": "0o644",
+      "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation-preparation-5/run/tar-source-provenance.json",
+      "sha256": "adb24bc4154d97f48c2acb5c4e21bc67a3f541dfd8696bfaff95bf997e552fea",
+      "snapshotOnly": false
+    },
+    "archive-protocol": {
+      "bytes": 68665,
+      "currentEqualityClaimed": true,
+      "id": "archive-protocol",
+      "mode": "0o644",
+      "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation-preparation-5/run/packages/bdp-protocol-0.0.0.tgz",
+      "sha256": "4683cb6c6333c332a4bcb7efc3e28f32d1d8d06a7264913f65c31d3a826d4227",
+      "snapshotOnly": false
+    },
+    "archive-publication": {
+      "anchors": [
+        {
+          "firstLineText": "  \"commit\": \"f76f68452413b2f5415e4718c60626607f9e3cee\",",
+          "lines": [
+            5
+          ],
+          "needle": "\"commit\":"
+        },
+        {
+          "firstLineText": "  \"verifiedFiles\": 106",
+          "lines": [
+            15
+          ],
+          "needle": "\"verifiedFiles\":"
+        },
+        {
+          "firstLineText": "  \"runtimeAuthority\": false,",
+          "lines": [
+            14
+          ],
+          "needle": "\"runtimeAuthority\":"
+        }
+      ],
+      "bytes": 1174,
+      "currentEqualityClaimed": true,
+      "id": "archive-publication",
+      "mode": "0o644",
+      "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/root-G09-validation5-archives-final-and-consumer2-authoring-release-publication-1.remote-readback.json",
+      "sha256": "11783b6302a3419e1638035acebf76ccf0ae22c7a36de777911bfffb09f1c5c8",
+      "snapshotOnly": false
+    },
+    "archive-root": {
+      "anchors": [
+        {
+          "firstLineText": "  \"scope\": \"ONE_ACTUAL_ORIGINAL_COMBINED_ARCHIVE_VERIFIER_AND_ENTIRE_ELEVEN_KEY_321_MEMBER_DIRTY_SOURCE_BUILD_PROVENANCE_ONLY\",",
+          "lines": [
+            133
+          ],
+          "needle": "\"scope\":"
+        },
+        {
+          "firstLineText": "  \"sourceIdentity\": \"1ecaf2e47369cc12cc26bc3ed693c5d4d3b9cffa4714b13dbe5567f9e46bfb15\",",
+          "lines": [
+            139
+          ],
+          "needle": "\"sourceIdentity\":"
+        },
+        {
+          "firstLineText": "  \"wholeWriteCredit\": false",
+          "lines": [
+            146
+          ],
+          "needle": "\"wholeWriteCredit\":"
+        },
+        {
+          "firstLineText": "  \"consumerLockInstalledProofStillUnresolved\": true,",
+          "lines": [
+            43
+          ],
+          "needle": "\"consumerLockInstalledProofStillUnresolved\":"
+        },
+        {
+          "firstLineText": "  \"baseHead\": \"cce884ccea1db97cbc6fd7bff876d4d6091f9081\",",
+          "lines": [
+            38
+          ],
+          "needle": "\"baseHead\":"
+        },
+        {
+          "firstLineText": "  \"all321ActualMemberRecordsFullSourceBuildByteMapsReproduced\": true,",
+          "lines": [
+            36
+          ],
+          "needle": "\"all321ActualMemberRecordsFullSourceBuildByteMapsReproduced\":"
+        },
+        {
+          "firstLineText": "  \"tarProvenanceSha256\": \"adb24bc4154d97f48c2acb5c4e21bc67a3f541dfd8696bfaff95bf997e552fea\",",
+          "lines": [
+            145
+          ],
+          "needle": "\"tarProvenanceSha256\":"
+        }
+      ],
+      "bytes": 7487,
+      "currentEqualityClaimed": true,
+      "id": "archive-root",
+      "mode": "0o644",
+      "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation5-verify-archives-root-final-disposition-1/disposition.json",
+      "sha256": "5f08d675179a7a93aa74d39e0723012db8c8045394e0dc188aa6d5ccb09f7508",
+      "snapshotOnly": false
+    },
+    "archive-root-index": {
+      "bytes": 806,
+      "currentEqualityClaimed": true,
+      "id": "archive-root-index",
+      "mode": "0o644",
+      "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation5-verify-archives-root-final-disposition-1/index.json",
+      "sha256": "0cc713a6516e2225ba2391a01d576210c754486aed32565e9642c5e41bc77fcd",
+      "snapshotOnly": false
+    },
+    "archive-server": {
+      "bytes": 445045,
+      "currentEqualityClaimed": true,
+      "id": "archive-server",
+      "mode": "0o644",
+      "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation-preparation-5/run/packages/bdp-server-0.0.0.tgz",
+      "sha256": "f5cf974efd4e68087399a17619901d8c7ec17438eb154cc28570d1fa8eebf6f8",
+      "snapshotOnly": false
+    },
+    "build": {
+      "anchors": [
+        {
+          "firstLineText": "  \"head\": \"cce884ccea1db97cbc6fd7bff876d4d6091f9081\",",
+          "lines": [
+            2
+          ],
+          "needle": "\"head\":"
+        },
+        {
+          "firstLineText": "  \"sourceIdentity\": \"1ecaf2e47369cc12cc26bc3ed693c5d4d3b9cffa4714b13dbe5567f9e46bfb15\",",
+          "lines": [
+            4
+          ],
+          "needle": "\"sourceIdentity\":"
+        },
+        {
+          "firstLineText": "  \"artifacts\": {",
+          "lines": [
+            5
+          ],
+          "needle": "\"artifacts\":"
+        }
+      ],
+      "bytes": 58567,
+      "currentEqualityClaimed": true,
+      "id": "build",
+      "mode": "0o644",
+      "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation-preparation-5/run/build-artifacts.json",
+      "sha256": "8a0241044612922b2801e6b5d1670919d37671d8191f567e5d36807a223ed56a",
+      "snapshotOnly": false
+    },
+    "build-root": {
+      "anchors": [
+        {
+          "firstLineText": "  \"accepted\": true,",
+          "lines": [
+            2
+          ],
+          "needle": "\"accepted\":"
+        },
+        {
+          "firstLineText": "    \"actualFullInventoryFiles\": 476,",
+          "lines": [
+            15
+          ],
+          "needle": "\"actualFullInventoryFiles\":"
+        },
+        {
+          "firstLineText": "  \"profileOrWholeWriteCredit\": false,",
+          "lines": [
+            1484
+          ],
+          "needle": "\"profileOrWholeWriteCredit\":"
+        }
+      ],
+      "bytes": 43541,
+      "currentEqualityClaimed": true,
+      "id": "build-root",
+      "mode": "0o644",
+      "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation5-bind-fresh-build-root-final-disposition-1/disposition.json",
+      "sha256": "af7d1c0a6026964e7d68f4cf7d465125883c46801dacfd76f009311e416a8772",
+      "snapshotOnly": false
+    },
+    "carrier-native": {
+      "anchors": [
+        {
+          "firstLineText": "  \"sourceStaticAccepted\": true,",
+          "lines": [
+            3
+          ],
+          "needle": "\"sourceStaticAccepted\":"
+        },
+        {
+          "firstLineText": "  \"F3\": \"UNRESOLVED_FUTURE_POSITIVE_RETENTION_AUDIT\",",
+          "lines": [
+            19
+          ],
+          "needle": "\"F3\":"
+        },
+        {
+          "firstLineText": "  \"runtimeAccepted\": false,",
+          "lines": [
+            18
+          ],
+          "needle": "\"runtimeAccepted\":"
+        }
+      ],
+      "bytes": 983,
+      "currentEqualityClaimed": true,
+      "id": "carrier-native",
+      "mode": "0o644",
+      "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-cumulative-carrier-corrected-native-code-review-4/closure.json",
+      "sha256": "dff6fd004f6a681e05349c5d90da9c605e072218400acc16f72614ce4e4e9024",
+      "snapshotOnly": false
+    },
+    "carrier-root": {
+      "anchors": [
+        {
+          "firstLineText": "  \"scope\": \"FULL static corrected source semantic precision only; no compiler/build/test/helper/runtime execution release\",",
+          "lines": [
+            4
+          ],
+          "needle": "\"scope\":"
+        },
+        {
+          "firstLineText": "  \"sourceIdentity\": \"78e11962df1a744c685c9911d13c0bff3fa42fcdec9310b75ec8f83a17996c7f\",",
+          "lines": [
+            6
+          ],
+          "needle": "\"sourceIdentity\":"
+        },
+        {
+          "firstLineText": "  \"F3\": \"Future source-bound actual retained positive sidecar audit, lifecycle closure, capacity UNKNOWN; positive DATA108 native pending, no validation preparation exists\",",
+          "lines": [
+            14
+          ],
+          "needle": "\"F3\":"
+        },
+        {
+          "firstLineText": "  \"validationReleased\": false,",
+          "lines": [
+            17
+          ],
+          "needle": "\"validationReleased\":"
+        },
+        {
+          "firstLineText": "  \"wholeWriteQualified\": false",
+          "lines": [
+            18
+          ],
+          "needle": "\"wholeWriteQualified\":"
+        }
+      ],
+      "bytes": 1072,
+      "currentEqualityClaimed": true,
+      "id": "carrier-root",
+      "mode": "0o644",
+      "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-cumulative-carrier-source4-root-static-acceptance-1/acceptance.json",
+      "sha256": "a71d6811c6082d3151917a648b941158f5590359b14a3f19d498556fe9343075",
+      "snapshotOnly": false
+    },
+    "carrier-source": {
+      "anchors": [
+        {
+          "firstLineText": "F3 deliberately adds no throwing product-finally check. A fresh positive retained sidecar+original legacy-wrapper collector is still a separate future independently supervised validation obligation; missing/refused evidence must fail that validation even if product passes. No collector has been authored or released. Actual17 sizing/headroom remains unmeasured and no caps or deadlines were widened.",
+          "lines": [
+            11
+          ],
+          "needle": "F3 deliberately"
+        },
+        {
+          "firstLineText": "Existing48 DATA IDs/default5s remain. R14\u201318 have15 direct source-derived factory/assembler calls with exact factory type/message assertions, honest separate unbranded credit and reachable TX coverage/prerequisite cases. L03/L05 make eight actual private-helper calls with honest nine-key source-unit wrapper, clone/byte/hook/reference/error-cause checks. V06 has literal expected representation oracles. V01/V02/V06 assert exact nine report keys. L10 adds two real writer primitive controls with fresh paths and finally-restored environments. R12/R13/R24 retain/add exactly eight shape controls including malformed precedence and exact/one-over nested bounds.",
+          "lines": [
+            9
+          ],
+          "needle": "Existing48 DATA"
+        }
+      ],
+      "bytes": 3973,
+      "currentEqualityClaimed": true,
+      "id": "carrier-source",
+      "mode": "0o644",
+      "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-cumulative-carrier-source-authoring-4/report.md",
+      "sha256": "64da10cf8eac16f0ae683fef82cf43ca68e9b2c19c818b2cedebf159f394886d",
+      "snapshotOnly": false
+    },
+    "commands": {
+      "anchors": [
+        {
+          "firstLineText": "    \"consumer-install\": {",
+          "lines": [
+            189
+          ],
+          "needle": "\"consumer-install\":"
+        },
+        {
+          "firstLineText": "        \"--no-frozen-lockfile\",",
+          "lines": [
+            199
+          ],
+          "needle": "\"--no-frozen-lockfile\""
+        },
+        {
+          "firstLineText": "    \"prepare-consumer\": {",
+          "lines": [
+            568
+          ],
+          "needle": "\"prepare-consumer\":"
+        },
+        {
+          "firstLineText": "    \"verify-installed-consumer\": {",
+          "lines": [
+            797
+          ],
+          "needle": "\"verify-installed-consumer\":"
+        },
+        {
+          "firstLineText": "  \"finalOrder\": [",
+          "lines": [
+            848
+          ],
+          "needle": "\"finalOrder\":"
+        }
+      ],
+      "bytes": 35792,
+      "currentEqualityClaimed": true,
+      "id": "commands",
+      "mode": "0o644",
+      "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation-preparation-5/commands.json",
+      "sha256": "ef7d5889c4cdb6263d746d3d1ad698429d6a96d5c0dbd1e4d6764819b060ba8f",
+      "snapshotOnly": false
+    },
+    "consumer-source-release": {
+      "anchors": [
+        {
+          "firstLineText": "  \"liveGateWriteAuthority\": false,",
+          "lines": [
+            19
+          ],
+          "needle": "\"liveGateWriteAuthority\":"
+        },
+        {
+          "firstLineText": "  \"runtimeAuthority\": false,",
+          "lines": [
+            52
+          ],
+          "needle": "\"runtimeAuthority\":"
+        },
+        {
+          "firstLineText": "  \"stopBefore24ActualRootGeneratedNonfrozenLockManifestSettingsAcceptance\": true,",
+          "lines": [
+            60
+          ],
+          "needle": "\"stopBefore24ActualRootGeneratedNonfrozenLockManifestSettingsAcceptance\":"
+        }
+      ],
+      "bytes": 3978,
+      "currentEqualityClaimed": true,
+      "id": "consumer-source-release",
+      "mode": "0o644",
+      "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation5-consumer2-source-authoring-release-1/release.json",
+      "sha256": "8d72b43b9488f1475aecfcb5f68cf504b7c58e0fa4ba8ec43cd9d6c2deb848e0",
+      "snapshotOnly": false
+    },
+    "fixture": {
+      "anchors": [
+        {
+          "firstLineText": "  \"choice\": \"WIDER_REVIEWED_TX_FIXTURE_REQUIRED_FOR_FINAL_CANDIDATE\",",
+          "lines": [
+            3
+          ],
+          "needle": "\"choice\":"
+        },
+        {
+          "firstLineText": "  \"why\": \"Current Task/Relationship closure is title-only/additionalPropertiesfalse, no owned declarations. It cannot witness undeclared properties, owned/wildcard transitions or D4 ownership law branches. The17partial owners also omit many full-clause branches.\",",
+          "lines": [
+            5
+          ],
+          "needle": "\"why\":"
+        },
+        {
+          "firstLineText": "  \"finalFixtureId\": \"UNKNOWN\",",
+          "lines": [
+            13
+          ],
+          "needle": "\"finalFixtureId\":"
+        },
+        {
+          "firstLineText": "  \"d4Disposition\": \"Old4-Type/n-schema/onewriter32HTTP report stays separately bound. A final law owner may reuse reviewed source logic only after final source/fixture/configuration/executor/raw observation rebind and fresh execution, never report union.\"",
+          "lines": [
+            19
+          ],
+          "needle": "\"d4Disposition\":"
+        }
+      ],
+      "bytes": 2321,
+      "currentEqualityClaimed": true,
+      "id": "fixture",
+      "mode": "0o644",
+      "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-final-tx-configuration-execution-contract-2/fixture-decision.json",
+      "sha256": "bedbbe9e9f0757fb4667801d3075f2553c8f60cc4e89ef84af4bd6ee38fbddf0",
+      "snapshotOnly": false
+    },
+    "live-gate": {
+      "anchors": [
+        {
+          "firstLineText": "  \"approvedStages\": [",
+          "lines": [
+            7
+          ],
+          "needle": "\"approvedStages\":"
+        },
+        {
+          "firstLineText": "  \"consumerLockSha256\": \"UNRESOLVED\",",
+          "lines": [
+            39
+          ],
+          "needle": "\"consumerLockSha256\":"
+        },
+        {
+          "firstLineText": "  \"rootArchiveAcceptance\": {",
+          "lines": [
+            60
+          ],
+          "needle": "\"rootArchiveAcceptance\":"
+        },
+        {
+          "firstLineText": "  \"rootConsumerLockAcceptance\": {",
+          "lines": [
+            68
+          ],
+          "needle": "\"rootConsumerLockAcceptance\":"
+        },
+        {
+          "firstLineText": "  \"rootConsumerProofAcceptance\": {",
+          "lines": [
+            72
+          ],
+          "needle": "\"rootConsumerProofAcceptance\":"
+        }
+      ],
+      "bytes": 3693,
+      "currentEqualityClaimed": false,
+      "id": "live-gate",
+      "mode": "0o644",
+      "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation-preparation-5/execution-gate.json",
+      "sha256": "34c333aa5b688d7abe944363b558e0bd431dd512ec84a24f8e0440d9d2bdf7ea",
+      "snapshotOnly": true
+    },
+    "negative-root": {
+      "anchors": [
+        {
+          "firstLineText": "  \"CNH-N2\": \"Precise REQUIRED/BLOCKED actual subjectBegin+120 expiry; normalROOT<115 cannotobserve it. No dropping, matched/pass/lateUNKNOWN substitution or clockweakening.\",",
+          "lines": [
+            9
+          ],
+          "needle": "\"CNH-N2\":"
+        },
+        {
+          "firstLineText": "  \"executablePlanReady\": false,",
+          "lines": [
+            10
+          ],
+          "needle": "\"executablePlanReady\":"
+        },
+        {
+          "firstLineText": "  \"unresolved\": [",
+          "lines": [
+            14
+          ],
+          "needle": "\"unresolved\":"
+        }
+      ],
+      "bytes": 1384,
+      "currentEqualityClaimed": true,
+      "id": "negative-root",
+      "mode": "0o644",
+      "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-cumulative-carrier-negative-plan2-root-precision-acceptance-1/acceptance.json",
+      "sha256": "54e8fdad60102a9087e3374fd8300365dba9249e40031eb935bc6e7b18bef66d",
+      "snapshotOnly": false
+    },
+    "owner-failed-native": {
+      "anchors": [
+        {
+          "firstLineText": "  \"reviewAccepted\": false,",
+          "lines": [
+            22
+          ],
+          "needle": "\"reviewAccepted\":"
+        },
+        {
+          "firstLineText": "  \"terminalResults\": 0,",
+          "lines": [
+            31
+          ],
+          "needle": "\"terminalResults\":"
+        },
+        {
+          "firstLineText": "  \"wrapperRawExit\": -15",
+          "lines": [
+            32
+          ],
+          "needle": "\"wrapperRawExit\":"
+        }
+      ],
+      "bytes": 1080,
+      "currentEqualityClaimed": true,
+      "id": "owner-failed-native",
+      "mode": "0o644",
+      "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-final-discovery-owner-plan-review-1/actual-review-terminal-1/closure.json",
+      "sha256": "ef6bedbb89e43a3856a44d13e4e92adb87e4c5123c9b3614be0f9dccad60e568",
+      "snapshotOnly": false
+    },
+    "owner-failed-root": {
+      "anchors": [
+        {
+          "firstLineText": "  \"reviewComplete\": false,",
+          "lines": [
+            6
+          ],
+          "needle": "\"reviewComplete\":"
+        },
+        {
+          "firstLineText": "  \"innerCliExit\": \"UNKNOWN\",",
+          "lines": [
+            26
+          ],
+          "needle": "\"innerCliExit\":"
+        },
+        {
+          "firstLineText": "  \"terminalResultCount\": 0,",
+          "lines": [
+            27
+          ],
+          "needle": "\"terminalResultCount\":"
+        },
+        {
+          "firstLineText": "  \"retryAuthorized\": false,",
+          "lines": [
+            44
+          ],
+          "needle": "\"retryAuthorized\":"
+        },
+        {
+          "firstLineText": "  \"sourceOrDslAuthoringAuthorized\": false,",
+          "lines": [
+            45
+          ],
+          "needle": "\"sourceOrDslAuthoringAuthorized\":"
+        },
+        {
+          "firstLineText": "  \"remainingDecision\": \"Mandatory completed external PLAN result is absent; final discovery-owner source/DSL lane stays CLOSED. Reconcile this unresolved review gate with operator only after independent authorized work is exhausted. No review waiver inferred.\"",
+          "lines": [
+            52
+          ],
+          "needle": "\"remainingDecision\":"
+        }
+      ],
+      "bytes": 2835,
+      "currentEqualityClaimed": true,
+      "id": "owner-failed-root",
+      "mode": "0o644",
+      "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-final-discovery-plan-incomplete-root-disposition-1/disposition.json",
+      "sha256": "f2285fb737364c30fa7f50dbe4f9814d060aab7454729caafba4a77649b80b88",
+      "snapshotOnly": false
+    },
+    "same-configuration": {
+      "anchors": [
+        {
+          "firstLineText": "The concrete missing capability for D5 completion is an accepted final cumulative configuration/execution contract and complete fresh installed law proof, followed by public admission. It is not a demonstrated inability of one TX store to expose lower-profile routes. No final combined installed target/configuration exists in these six lane maps. D1 cce and pure-loader fdd retain their separately accepted increment/CI evidence; carrier remains an ineligible partial aggregator; D3a's preserved installed02 runtime PASS/audit FAIL is not silently repaired; lifecycle source3 root/native acceptance and D4 runtime qualification remain outside this audit. Existing private installed payloads and historical Read evidence are not a final combined cohort.",
+          "lines": [
+            21
+          ],
+          "needle": "The concrete missing capability"
+        },
+        {
+          "firstLineText": "No human decision is required to continue that preparation. A later decision remains explicit if supported administration/assurance scope is needed for triggered erasure/restore, or if public admission identity cannot be acquired without the known installed-payload/capability hash cycle. Keep those gates unresolved; do not normalize payload identity, silently omit laws, adopt the separate spec proposals or infer public eligibility. next-slice.json defines this boundary without authorizing adoption.",
+          "lines": [
+            25
+          ],
+          "needle": "No human decision"
+        }
+      ],
+      "bytes": 9697,
+      "currentEqualityClaimed": true,
+      "id": "same-configuration",
+      "mode": "0o644",
+      "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-D5-same-configuration-boundary-1/report.md",
+      "sha256": "554798c0f001b1e80c939c5762cd17647b8801163a9f2a988f6c30f09d681db9",
+      "snapshotOnly": false
+    },
+    "sole-plan": {
+      "anchors": [
+        {
+          "firstLineText": "<!-- VICKIE-CURRENT-START -->",
+          "lines": [
+            9
+          ],
+          "needle": "<!-- VICKIE-CURRENT-START -->"
+        }
+      ],
+      "bytes": 474629,
+      "currentEqualityClaimed": false,
+      "id": "sole-plan",
+      "mode": "0o644",
+      "path": "/Users/dbox/repos/wt/vickie/bdp-client-design/checkout/docs/architecture/bdp-client-v2/design.md",
+      "sha256": "26f1838488bbce1aa7485c4dc92ec8a90115a142873e63ddde96cde33aeee4b0",
+      "snapshotOnly": true
+    },
+    "source-binding": {
+      "anchors": [
+        {
+          "firstLineText": "  \"actualClaudeReadCorrectedBytes\": false,",
+          "lines": [
+            2
+          ],
+          "needle": "\"actualClaudeReadCorrectedBytes\":"
+        },
+        {
+          "firstLineText": "  \"binaryDiffSha256\": \"f87d60ddc56b23737c46ed14e1675cc751c0062c7ab3466c33606398ae305df6\",",
+          "lines": [
+            3
+          ],
+          "needle": "\"binaryDiffSha256\":"
+        },
+        {
+          "firstLineText": "  \"head\": \"cce884ccea1db97cbc6fd7bff876d4d6091f9081\",",
+          "lines": [
+            21
+          ],
+          "needle": "\"head\":"
+        },
+        {
+          "firstLineText": "  \"sourceIdentity\": \"1ecaf2e47369cc12cc26bc3ed693c5d4d3b9cffa4714b13dbe5567f9e46bfb15\",",
+          "lines": [
+            82
+          ],
+          "needle": "\"sourceIdentity\":"
+        },
+        {
+          "firstLineText": "  \"trackedSourceFiles\": {",
+          "lines": [
+            84
+          ],
+          "needle": "\"trackedSourceFiles\":"
+        },
+        {
+          "firstLineText": "  \"worktree\": \"/Users/dbox/repos/wt/vickie/vickie-schema-lint-correction-minimum\"",
+          "lines": [
+            766
+          ],
+          "needle": "\"worktree\":"
+        }
+      ],
+      "bytes": 94380,
+      "currentEqualityClaimed": true,
+      "id": "source-binding",
+      "mode": "0o644",
+      "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation-preparation-5/source-binding.json",
+      "sha256": "e0252cb07ac1896fac0faab395e10e50ea58eac263b6d33ee224e378413c2d68",
+      "snapshotOnly": false
+    },
+    "spine": {
+      "anchors": [
+        {
+          "firstLineText": "Every evidence aggregate must agree on canonicalScope, selected profile, History flag, exact source commit, actual installed payload, complete installed contracts/schema closure, policy, authentication association and exact fixture source/derived capabilities. Existing bindServedProfileConfiguration validates closed data/digest shape and equality, not the truth of observations; trusted installer/owner capture and independent raw provenance must establish truth. TX compares actual per-session runtime and served bindings; the RU association checks source/configuration, complete selected/result IDs, route digest, actual ready/session metadata and cleanup. Private ready.targets verifies trusted setup only; cold-client discovery must use real Scope\u2192actual Link\u2192descriptor\u2192actual Directory and actual returned targets. A separate qualified Read listener cannot supply inherited Read evidence for RU/TX.",
+          "lines": [
+            13
+          ],
+          "needle": "Every evidence aggregate"
+        },
+        {
+          "firstLineText": "A later fresh installed generator must wait for root-accepted final combined source/configuration and proper D3 lifecycle/cold navigation. Build exact candidate, pack/verify archives, install into a fresh external consumer with exact lock/proof/tool identities, capture actual entry/payload/configuration, run all applicable selected laws and inherited laws with their full semantic/afterstate/oracle controls, and retain raw attempts/response bytes plus genuine cleanup/terminal ownership evidence. Workspace-dist or source regression alone cannot supply installed credit. Exact commands/budgets remain future reviewed packet inputs; do not transplant startup45/10/60 bounds into existing90/120 cohorts. Never rerun failed evidence under the same attempt or copy historical outputs as fresh. The artifact verifier must rederive actual selection/conditions and require all selected applicable obligations complete, rather than trusting a declared count or removing failed rows.",
+          "lines": [
+            21
+          ],
+          "needle": "A later fresh installed generator"
+        },
+        {
+          "firstLineText": "Residual conditions are exact. D2S1 Snapshot/continuation anchor versus serving minimum and G2 metadata-only incident Link Event membership remain unresolved for affected full-support claims. D3a source is not frozen here; ordinary trusted RU/TX intended-listener lifecycle/readback and public capability/profile selection remain separate steps. D4 schema/ownership/auth/policy/restart needs final same-configuration evidence; missing administrative erasure ingestion/retained-copy assurance or logical restore route is notN/A, and Historyfalse does not waive mandatory TX erasure framing/retained-copy duties. Graceful reopen is not logical restore or physical powerloss; RU continuity/newScope and TX epoch/key/ledger laws stay distinct. No extra optional History/IAM/CORS requirement or new wire semantics is added. These unresolved questions do not block independent carrier/planning work, but they prevent an unsupported full completion claim.",
+          "lines": [
+            25
+          ],
+          "needle": "Residual conditions are exact"
+        },
+        {
+          "firstLineText": "Admission/sealing also has a concrete engineering identity gate: installed-payload.ts hashes the actual server/protocol dist and dependencies, including any shipped capability constant. Adding a server Write constant changes the measured payload. The later admission plan must address this without a hash fixed point, secret file exclusions, normalized identity changes or falsely labeling the pre-admission payload final. Prefer a separately verified non-secret administrative evidence input outside measured runtime closure if the implementation review accepts that placement/authority; exact design remains in the later admission plan. Retain current actual payload identity and old Read verifier. Public activation requires independent verified provenance and current configuration, then final shipping validation/CI\u2014not trusting the candidate's own readiness flag. No public-admission bypass is proposed here.",
+          "lines": [
+            23
+          ],
+          "needle": "Admission/sealing"
+        }
+      ],
+      "bytes": 12086,
+      "currentEqualityClaimed": true,
+      "id": "spine",
+      "mode": "0o644",
+      "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-D5-evidence-spine-audit-1/report.md",
+      "sha256": "b316b02edb77c3ffee599a6ac9e8fab93a3b69fd3e0f225448384c90950b4bc1",
+      "snapshotOnly": false
+    },
+    "tools": {
+      "anchors": [
+        {
+          "firstLineText": "  \"tools\": {",
+          "lines": [
+            2
+          ],
+          "needle": "\"tools\":"
+        },
+        {
+          "firstLineText": "  \"versions\": {",
+          "lines": [
+            48
+          ],
+          "needle": "\"versions\":"
+        },
+        {
+          "firstLineText": "  \"sourceIdentity\": \"1ecaf2e47369cc12cc26bc3ed693c5d4d3b9cffa4714b13dbe5567f9e46bfb15\",",
+          "lines": [
+            54
+          ],
+          "needle": "\"sourceIdentity\":"
+        },
+        {
+          "firstLineText": "  \"sourceLockSha256\": \"4150d8821c96dbc2cfec0b2762ff76b58318079f65fa4f5c8858ef2dd61f8d6d\",",
+          "lines": [
+            55
+          ],
+          "needle": "\"sourceLockSha256\":"
+        }
+      ],
+      "bytes": 4402,
+      "currentEqualityClaimed": true,
+      "id": "tools",
+      "mode": "0o644",
+      "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation-preparation-5/run/workspace-tools.json",
+      "sha256": "69713067eef866d61e8e9e3c49d695bd2d534d1cb7d0913c977da4f3f7d2cdb0",
+      "snapshotOnly": false
+    },
+    "tx-contract": {
+      "anchors": [
+        {
+          "firstLineText": "  \"prospectiveFinalCapturedConfiguration\": {",
+          "lines": [
+            36
+          ],
+          "needle": "\"prospectiveFinalCapturedConfiguration\":"
+        },
+        {
+          "firstLineText": "  \"prospectiveAcquisition\": {",
+          "lines": [
+            54
+          ],
+          "needle": "\"prospectiveAcquisition\":"
+        },
+        {
+          "firstLineText": "  \"sameConfigurationRule\": {",
+          "lines": [
+            79
+          ],
+          "needle": "\"sameConfigurationRule\":"
+        },
+        {
+          "firstLineText": "      \"id\": \"LAW_AND_SCOPE_FREEZE\",",
+          "lines": [
+            143
+          ],
+          "needle": "\"LAW_AND_SCOPE_FREEZE\""
+        },
+        {
+          "firstLineText": "      \"id\": \"ONE_REVIEWED_CONFIGURATION\",",
+          "lines": [
+            149
+          ],
+          "needle": "\"ONE_REVIEWED_CONFIGURATION\""
+        },
+        {
+          "firstLineText": "      \"id\": \"COMBINED_SOURCE_FREEZE\",",
+          "lines": [
+            155
+          ],
+          "needle": "\"COMBINED_SOURCE_FREEZE\""
+        },
+        {
+          "firstLineText": "      \"id\": \"FRESH_INSTALL_PROOF\",",
+          "lines": [
+            161
+          ],
+          "needle": "\"FRESH_INSTALL_PROOF\""
+        },
+        {
+          "firstLineText": "      \"id\": \"TRUSTED_BINDING_AND_BASELINE\",",
+          "lines": [
+            167
+          ],
+          "needle": "\"TRUSTED_BINDING_AND_BASELINE\""
+        },
+        {
+          "firstLineText": "      \"id\": \"SESSION_RESET_AND_REOPEN\",",
+          "lines": [
+            173
+          ],
+          "needle": "\"SESSION_RESET_AND_REOPEN\""
+        },
+        {
+          "firstLineText": "      \"id\": \"COMPLETE_EXECUTION_OWNERS\",",
+          "lines": [
+            179
+          ],
+          "needle": "\"COMPLETE_EXECUTION_OWNERS\""
+        },
+        {
+          "firstLineText": "      \"id\": \"FULL_CLAUSE_OBSERVATION_ADJUDICATION\",",
+          "lines": [
+            185
+          ],
+          "needle": "\"FULL_CLAUSE_OBSERVATION_ADJUDICATION\""
+        },
+        {
+          "firstLineText": "      \"id\": \"ADMIN_TRIGGER_AND_ASSURANCE\",",
+          "lines": [
+            191
+          ],
+          "needle": "\"ADMIN_TRIGGER_AND_ASSURANCE\""
+        },
+        {
+          "firstLineText": "      \"id\": \"FINAL_SAME_TARGET_AND_PUBLIC_ADMISSION\",",
+          "lines": [
+            197
+          ],
+          "needle": "\"FINAL_SAME_TARGET_AND_PUBLIC_ADMISSION\""
+        },
+        {
+          "firstLineText": "    \"required\": 251,",
+          "lines": [
+            23
+          ],
+          "needle": "\"required\": 251"
+        },
+        {
+          "firstLineText": "    \"existingPartialOwners\": 17,",
+          "lines": [
+            28
+          ],
+          "needle": "\"existingPartialOwners\":"
+        },
+        {
+          "firstLineText": "    \"missingOwners\": 234,",
+          "lines": [
+            29
+          ],
+          "needle": "\"missingOwners\":"
+        },
+        {
+          "firstLineText": "    \"finalWholeCoverage\": 0,",
+          "lines": [
+            30
+          ],
+          "needle": "\"finalWholeCoverage\":"
+        },
+        {
+          "firstLineText": "  \"laterDecisionOnlyIfNeeded\": \"Explicit operator/platform scope for unsupported administration or admission identity; root continues independentfeasibleprep first. No new API or normative semantics adopted by thispacket.\"",
+          "lines": [
+            243
+          ],
+          "needle": "\"laterDecisionOnlyIfNeeded\":"
+        }
+      ],
+      "bytes": 15539,
+      "currentEqualityClaimed": true,
+      "id": "tx-contract",
+      "mode": "0o644",
+      "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-final-tx-configuration-execution-contract-2/execution-contract.json",
+      "sha256": "d5bcf99d9e4119c08c9ac003363981c68ee09f1a7c16d71a20805294739be556",
+      "snapshotOnly": false
+    },
+    "tx-report": {
+      "anchors": [
+        {
+          "firstLineText": "Prepared the concrete cumulative execution boundary on the existing TX owner, not a new fused RU+TX owner. This packet enumerates all251 selected Historyfalse TX laws in canonical order:43Read,75Read+Update and133Transactional. It retains the17actual manifest owners as partial, marks234owners missing, and establishes zero complete laws. It authorizes no source, helper/schema evaluation, review or execution. All final runtime/configuration/acquisition identities are UNKNOWN.",
+          "lines": [
+            3
+          ],
+          "needle": "Prepared the concrete"
+        },
+        {
+          "firstLineText": "All13retirement edges are explicit, including transitive retirement of Read-only discovery. TX substitutes its exact discovery/limits/Directory, receipt/retained-key/reauthorization/recovery response vehicles while preserving lower laws it does not contradict. Inherited singleton semantics are checked through a TX receipt's single entry; aliases retain locator semantics. TX sequence remains ordered separately committing member transactions with partial progress/interleaving, never an atomic batch. The numeric same-value no-op row's RU-only no-receipts/noEvents citation remains scoped to RU: it cannot prohibit required TX receipts/Events or retire the numeric no-op obligation. Genuine RU inline results, per-member recovery and RU continuity still require their own separately bound RU cohort; their reports cannot prove TX inheritance.",
+          "lines": [
+            9
+          ],
+          "needle": "All13retirement"
+        },
+        {
+          "firstLineText": "A further concrete source constraint is capacity: the current17row manifest is867,804bytes against TX's1,048,576byte ordinary cap, leaving180,772bytes. The4,194,304cumulative override belongs to RU only. Existing128depth/100000nodes/10000container bounds and exact5srequest/65536header/1MiBbody/2MiBwire session bounds are retained. The existing TXpositive63000ms and carrier data5s callbacks are unchanged. Final251 authored workload size, collection capacity, callbacks/outer supervision and cleanup scheduling are UNKNOWN, not extrapolated passes or failures. No cap/deadline widening, automatic retry, implicit shard/report union or new helper is supplied.",
+          "lines": [
+            17
+          ],
+          "needle": "A further concrete source constraint"
+        },
+        {
+          "firstLineText": "Selected laws remain in the denominator when their owner, fixture or administration is absent. Historyfalse excludes only30optional History IDs; it does not waive mandatory TX framing, ledger/retained-copy acquisition, erasure or recovery. G06 preserves unsupported erasure/applied-ledger/logical-restore boundaries. The existing private pending-recovery seam offers a concrete next recipe: obtain an actual admitted pending receipt without executing it, controlled real process death, same-store createfalse recovery, old pending receipt nondisclosure and retry/replay exactly once with ordinary live continuity. That is setup/assurance plus later HTTP observation, not a new wire administration API, power-loss proof, erasure or logical-restore qualification. Other controlled-copy/import/restore routes and operator scope remain UNKNOWN. Root can continue independent preparation without asking a human now.",
+          "lines": [
+            19
+          ],
+          "needle": "Selected laws remain"
+        }
+      ],
+      "bytes": 9228,
+      "currentEqualityClaimed": true,
+      "id": "tx-report",
+      "mode": "0o644",
+      "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-final-tx-configuration-execution-contract-2/report.md",
+      "sha256": "f6b9aca26738455e8dc0acd5bca23732d4da04d18d8a1f252b08e9a70bee7a51",
+      "snapshotOnly": false
+    },
+    "tx-root": {
+      "anchors": [
+        {
+          "firstLineText": "  \"scope\": \"CLOSED planning data only; no owners/source/helper/runtime authority\",",
+          "lines": [
+            4
+          ],
+          "needle": "\"scope\":"
+        },
+        {
+          "firstLineText": "  \"allFinalFieldsUNKNOWN\": true,",
+          "lines": [
+            18
+          ],
+          "needle": "\"allFinalFieldsUNKNOWN\":"
+        },
+        {
+          "firstLineText": "  \"partialOwners\": 17,",
+          "lines": [
+            16
+          ],
+          "needle": "\"partialOwners\":"
+        },
+        {
+          "firstLineText": "  \"missingOwners\": 234,",
+          "lines": [
+            17
+          ],
+          "needle": "\"missingOwners\":"
+        },
+        {
+          "firstLineText": "  \"executionReleased\": false",
+          "lines": [
+            20
+          ],
+          "needle": "\"executionReleased\":"
+        }
+      ],
+      "bytes": 1020,
+      "currentEqualityClaimed": true,
+      "id": "tx-root",
+      "mode": "0o644",
+      "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-final-tx-contract2-root-planning-acceptance-1/acceptance.json",
+      "sha256": "8983848520b797d2f0b71ada12dbbff53e5e024906c8715acc3c6a1c8219eeff",
+      "snapshotOnly": false
+    }
+  },
+  "state": "EXPLICIT_METADATA_AND_LINE_ORIGINS_NOT_COPIED_AUTHORITY"
+}

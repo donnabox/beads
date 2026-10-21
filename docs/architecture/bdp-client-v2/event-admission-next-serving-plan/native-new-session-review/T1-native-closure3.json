@@ -1,0 +1,22 @@
+{
+  "createdUtc": "2026-10-18T03:35:23.632424+00:00",
+  "T1IdentityCorrectionAccepted": true,
+  "mechanicsAcceptedForLaunch": false,
+  "rootLaunchReleased": false,
+  "checkedIndexSha256": "c0c08fb25496dad113a6dab2a5cdf1009a6704c04d9eebc6584460a0ee1860d2",
+  "checkedSupervisorSha256": "26f6625c5eebe7a7f09d5134ffdd73fb565ff55c399e2a698fa0d27d7a9a93ea",
+  "all9IndexEntriesMatch": true,
+  "genuineDeltaInverseRegenerated": true,
+  "failedPredecessorUnchanged": true,
+  "findings": [
+    {
+      "id": "T1b",
+      "severity": "P2",
+      "location": "supervise.py:155",
+      "summary": "Known PGID not censused after leader gone unless a currently owned row anchors it",
+      "fix": "Census every known authenticated group; unknown attribution must fail rather than imply absence"
+    }
+  ],
+  "actualExecution": false,
+  "reportSha256": "22e80ba8d33212bc051778fc796c8e1c31f12b9a3555b42a16186dcdd20d87f8"
+}

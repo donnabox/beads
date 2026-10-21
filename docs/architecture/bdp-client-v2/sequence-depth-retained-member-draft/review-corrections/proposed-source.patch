@@ -1,0 +1,70 @@
+--- a/packages/server/src/transaction-batch.ts
++++ b/packages/server/src/transaction-batch.ts
+@@ -319,12 +319,12 @@
+     // Original raw member depth2 equals root0 / operations array1 / member2.
+     // The complete carrier parser already validated every label and reference.
+     const request = prepareDepthCarrier(
+-      {
++      Object.freeze({
+         kind: "singleton",
+         scope: carrier.scope,
+-        operations: [op],
+-        keys: [key],
+-      },
++        operations: Object.freeze([op]),
++        keys: Object.freeze([key]),
++      }),
+       object(raw[index]),
+       2,
+     );
+--- a/packages/server/src/transaction-set.test.ts
++++ b/packages/server/src/transaction-set.test.ts
+@@ -1235,6 +1235,13 @@
+     }
+     expect(Object.isFrozen(received)).toBe(true);
+     expect(Object.isFrozen(member.request)).toBe(true);
++    const memberCarrier = member.request.carrier;
++    expect(Object.isFrozen(memberCarrier)).toBe(true);
++    expect(Object.isFrozen(memberCarrier.operations)).toBe(true);
++    expect(Object.isFrozen(memberCarrier.keys)).toBe(true);
++    expect(Reflect.set(memberCarrier, "operations", [])).toBe(false);
++    expect(Reflect.set(memberCarrier.operations, "0", memberCarrier.operations[0])).toBe(false);
++    expect(Reflect.set(memberCarrier.keys, "0", memberCarrier.keys[0])).toBe(false);
+     expect(Object.keys(member.request)).toStrictEqual(["carrier"]);
+     expect(() => batch.transactionDepthRefusal({ ...member.request })).toThrow(TypeError);
+     expect(() => batch.assertPreparedTransaction({ ...member.request }, scope)).toThrow(TypeError);
+--- a/apps/bdptest/src/transactional-sequence-depth-installed.test.ts
++++ b/apps/bdptest/src/transactional-sequence-depth-installed.test.ts
+@@ -542,7 +542,6 @@
+     let cleanupReject: ((reason: Error) => void) | undefined;
+     const cleanupTimer = setTimeout(() => {
+       cleanupExceeded = true;
+-      failures.push(cleanupReason);
+       child?.child.kill("SIGKILL");
+       cleanupReject?.(cleanupReason);
+     }, 10000);
+@@ -565,14 +564,22 @@
+     const stopped =
+       !launchAttempted ||
+       (child !== undefined && (child.child.exitCode !== null || child.child.signalCode !== null));
+-    if (!stopped) failures.push(new Error("installed sequence depth child remains active"));
++    if (!stopped)
++      failures.push(
++        new Error(
++          child === undefined
++            ? "installed sequence depth child stop unproven"
++            : "installed sequence depth child remains active",
++        ),
++      );
+     try {
+       if (directory && stopped) rmSync(directory, { recursive: true, force: true });
+     } catch (error) {
+       failures.push(error);
+     }
+     const directoryAbsent = directory === undefined || !existsSync(directory);
+-    if (!directoryAbsent) failures.push(new Error("installed sequence depth directory remains"));
++    if (stopped && !directoryAbsent)
++      failures.push(new Error("installed sequence depth directory remains"));
+     clearTimeout(deadline);
+     if (deadlineExceeded && !failures.includes(deadlineReason)) failures.push(deadlineReason);
+     try {

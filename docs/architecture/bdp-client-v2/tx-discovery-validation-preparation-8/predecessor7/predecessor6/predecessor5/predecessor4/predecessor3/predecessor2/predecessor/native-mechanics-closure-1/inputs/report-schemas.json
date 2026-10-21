@@ -1,0 +1,668 @@
+{
+  "countsProspectiveUntilActual": true,
+  "failureGrammar": {
+    "installedLocalRaw": {
+      "availability": "wire available iff actualWireOctets>0; omitted optional status/hash never null invented; partial status is actual parsed prefix only",
+      "cleanup": "actual source retains unknown runtime ownership; failed stage blocks immediate success audit/release",
+      "optional": [
+        "partialStatus",
+        "actualWireSha256"
+      ],
+      "required": [
+        "id",
+        "transport",
+        "method",
+        "url",
+        "credential",
+        "state",
+        "terminal",
+        "partialWireAvailable",
+        "actualWireOctets"
+      ],
+      "terminal": [
+        "response",
+        "abort",
+        "timeout",
+        "network",
+        "bound",
+        "incomplete"
+      ]
+    },
+    "installedPublicRejected": {
+      "acceptance": false,
+      "required": [
+        "id",
+        "transport",
+        "terminal",
+        "errorClass"
+      ],
+      "terminal": "rejected"
+    },
+    "installedStartupUnknown": {
+      "acceptance": false,
+      "outcome": "failed",
+      "required": [
+        "observation",
+        "directory",
+        "startupOwnership",
+        "outcome",
+        "claimEligible"
+      ],
+      "startupOwnership": "unknown"
+    },
+    "legacy": "original source report shapes preserved; failed/raw logs preserved exactly, no callback replay",
+    "source": "observations array may be partial on failure; failureCount/cleanupKnown/workSettled/directory state actual, no fill-in; only completed raw responses emit source raw record"
+  },
+  "installedD3Required": [
+    "observation",
+    "declaredSourceCommit",
+    "workspaceDirty",
+    "entryLiteral",
+    "entry",
+    "entrySha256",
+    "sourceAttribution",
+    "metadata",
+    "counts",
+    "records",
+    "child",
+    "workSettled",
+    "cleanupKnown",
+    "pending",
+    "directory",
+    "directoryAbsent",
+    "elapsedMs",
+    "failureCount",
+    "outcome",
+    "claimEligible"
+  ],
+  "legacyChangefeedExpectedLabels": [
+    "private-source-changefeed-parameter-context",
+    "changefeed-opaque-capture",
+    "changefeed-opaque-capture",
+    "changefeed-opaque-abort",
+    "changefeed-opaque-preflight",
+    "changefeed-opaque-preflight",
+    "changefeed-opaque-preflight",
+    "changefeed-opaque-preflight",
+    "changefeed-opaque-boundaries",
+    "changefeed-opaque-http",
+    "current-changefeed-minimum-owner",
+    "current-changefeed-minimum-capture",
+    "current-changefeed-minimum-capture",
+    "current-changefeed-minimum-capture",
+    "current-changefeed-minimum-capture",
+    "current-changefeed-minimum-drain",
+    "current-changefeed-minimum-drain",
+    "current-changefeed-minimum-preflight"
+  ],
+  "legacyChangefeedShapes": {
+    "changefeed-opaque-abort": {
+      "optional": [],
+      "required": [
+        "observation",
+        "outcome",
+        "captures",
+        "reads",
+        "waits",
+        "clocks",
+        "closes",
+        "postCloseProbes",
+        "order",
+        "failureCount"
+      ]
+    },
+    "changefeed-opaque-boundaries": {
+      "optional": [],
+      "required": [
+        "observation",
+        "outcome",
+        "captures",
+        "reads",
+        "waits",
+        "clocks",
+        "outcomes",
+        "failureCount"
+      ]
+    },
+    "changefeed-opaque-capture": {
+      "optional": [],
+      "required": [
+        "observation",
+        "row",
+        "outcome",
+        "commits",
+        "captures",
+        "anchors",
+        "reads",
+        "waits",
+        "clocks",
+        "closes",
+        "positiveAfter",
+        "failureCount"
+      ]
+    },
+    "changefeed-opaque-http": {
+      "optional": [],
+      "required": [
+        "observation",
+        "outcome",
+        "attempted",
+        "exchanges",
+        "records",
+        "deadlineExceeded",
+        "cleanupDeadlineExceeded",
+        "closed",
+        "directory",
+        "directoryAbsent",
+        "failureCount"
+      ]
+    },
+    "changefeed-opaque-preflight": {
+      "optional": [],
+      "required": [
+        "observation",
+        "row",
+        "outcome",
+        "captures",
+        "reads",
+        "waits",
+        "clocks",
+        "errorName",
+        "failureCount"
+      ]
+    },
+    "current-changefeed-minimum-capture": {
+      "optional": [],
+      "required": [
+        "observation",
+        "label",
+        "outcome",
+        "reads",
+        "captures",
+        "anchors",
+        "waits",
+        "clocks",
+        "commits",
+        "closes",
+        "originalAfter",
+        "positiveGroup",
+        "cleanupState",
+        "failureCount",
+        "claimEligible"
+      ]
+    },
+    "current-changefeed-minimum-drain": {
+      "optional": [],
+      "required": [
+        "observation",
+        "label",
+        "outcome",
+        "reads",
+        "readsBeforeClosedProbe",
+        "captures",
+        "waits",
+        "clocks",
+        "closes",
+        "commits",
+        "serviceClosedProbes",
+        "rawClosedProbes",
+        "order",
+        "closeSettled",
+        "cleanupState",
+        "failureCount",
+        "claimEligible"
+      ]
+    },
+    "current-changefeed-minimum-owner": {
+      "optional": [],
+      "required": [
+        "observation",
+        "outcome",
+        "records",
+        "commits",
+        "ownerLifetimes",
+        "offlineDeletes",
+        "failureCount",
+        "claimEligible"
+      ]
+    },
+    "current-changefeed-minimum-preflight": {
+      "optional": [],
+      "required": [
+        "observation",
+        "rows",
+        "outcome",
+        "failureCount",
+        "claimEligible"
+      ]
+    },
+    "private-source-changefeed-parameter-context": {
+      "optional": [],
+      "required": [
+        "observation",
+        "outcome",
+        "attempted",
+        "completedResponses",
+        "exchanges",
+        "contextFailures",
+        "hardFailureCount",
+        "deadlineExceeded",
+        "startupCompleted",
+        "closed",
+        "directory",
+        "directoryAbsent",
+        "claimEligible"
+      ]
+    }
+  },
+  "legacyOwnerRequired": [
+    "observation",
+    "declaredSourceCommit",
+    "workspaceDirty",
+    "entry",
+    "entrySha256",
+    "binding",
+    "session",
+    "childTerminal",
+    "cleanupKnown",
+    "directory",
+    "directoryAbsent",
+    "exchanges",
+    "completedResponses",
+    "outcome",
+    "claimEligible"
+  ],
+  "legacySchemaRequired": [
+    "observation",
+    "declaredSourceCommit",
+    "workspaceDirty",
+    "entry",
+    "entrySha256",
+    "binding",
+    "routes",
+    "observedGrants",
+    "artifactBytes",
+    "sessions",
+    "attemptedRequests",
+    "completedResponses",
+    "directoryAbsent",
+    "outcome",
+    "claimEligible",
+    "evidenceRetention"
+  ],
+  "limits": "Header16384 includes terminator in both newrawhelpers, body131072/derivedwire163840/requestheader16384/requestbody65536; immutable source guards, no data truncation",
+  "metadataKeys": [
+    "scope",
+    "profile",
+    "history",
+    "claimEligible",
+    "payloadIdentity",
+    "artifactIdentity",
+    "policyIdentity",
+    "authenticationIdentity",
+    "runtimeConfigurationIdentity",
+    "authorityMode"
+  ],
+  "schemaLabels": [
+    "types",
+    "type",
+    "root",
+    "referenced",
+    "head",
+    "unacceptable",
+    "not-modified",
+    "precondition",
+    "unknown",
+    "unauthenticated",
+    "method",
+    "discovery",
+    "create",
+    "root-after"
+  ],
+  "sourceCounterfactuals": [
+    "missing-updateLink",
+    "wrong-version",
+    "wrong-profile",
+    "wrong-scope",
+    "unsafe-service-link",
+    "unsafe-directory-target",
+    "epoch-context-mismatch",
+    "head-context-mismatch",
+    "schema-valid-foreign-operations-base"
+  ],
+  "sourceExpected": {
+    "D3 source abort descriptor": {
+      "clones": 0,
+      "counters": {
+        "assemblies": 0,
+        "clocks": 2,
+        "commits": 0,
+        "direct": 1,
+        "discovery": 1,
+        "entries": 1,
+        "waits": 1
+      },
+      "direct": 1,
+      "rawStatuses": [],
+      "wire": 0
+    },
+    "D3 source abort directory": {
+      "clones": 0,
+      "counters": {
+        "assemblies": 0,
+        "clocks": 2,
+        "commits": 0,
+        "direct": 1,
+        "discovery": 1,
+        "entries": 1,
+        "waits": 1
+      },
+      "direct": 1,
+      "rawStatuses": [],
+      "wire": 0
+    },
+    "D3 source abort scope": {
+      "clones": 0,
+      "counters": {
+        "assemblies": 0,
+        "clocks": 2,
+        "commits": 0,
+        "direct": 1,
+        "discovery": 1,
+        "entries": 1,
+        "waits": 1
+      },
+      "direct": 1,
+      "rawStatuses": [],
+      "wire": 0
+    },
+    "D3 source catch-up descriptor": {
+      "clones": 0,
+      "counters": {
+        "assemblies": 2,
+        "clocks": 2,
+        "commits": 1,
+        "direct": 2,
+        "discovery": 2,
+        "entries": 3,
+        "waits": 1
+      },
+      "direct": 2,
+      "rawStatuses": [],
+      "wire": 0
+    },
+    "D3 source catch-up directory": {
+      "clones": 0,
+      "counters": {
+        "assemblies": 2,
+        "clocks": 2,
+        "commits": 1,
+        "direct": 2,
+        "discovery": 2,
+        "entries": 3,
+        "waits": 1
+      },
+      "direct": 2,
+      "rawStatuses": [],
+      "wire": 0
+    },
+    "D3 source catch-up scope": {
+      "clones": 0,
+      "counters": {
+        "assemblies": 2,
+        "clocks": 2,
+        "commits": 1,
+        "direct": 2,
+        "discovery": 2,
+        "entries": 3,
+        "waits": 1
+      },
+      "direct": 2,
+      "rawStatuses": [],
+      "wire": 0
+    },
+    "D3 source close-drain descriptor": {
+      "clones": 0,
+      "counters": {
+        "assemblies": 0,
+        "clocks": 3,
+        "commits": 0,
+        "direct": 1,
+        "discovery": 1,
+        "entries": 2,
+        "waits": 1
+      },
+      "direct": 1,
+      "rawStatuses": [],
+      "wire": 0
+    },
+    "D3 source close-drain directory": {
+      "clones": 0,
+      "counters": {
+        "assemblies": 0,
+        "clocks": 3,
+        "commits": 0,
+        "direct": 1,
+        "discovery": 1,
+        "entries": 2,
+        "waits": 1
+      },
+      "direct": 1,
+      "rawStatuses": [],
+      "wire": 0
+    },
+    "D3 source close-drain scope": {
+      "clones": 0,
+      "counters": {
+        "assemblies": 0,
+        "clocks": 3,
+        "commits": 0,
+        "direct": 1,
+        "discovery": 1,
+        "entries": 2,
+        "waits": 1
+      },
+      "direct": 1,
+      "rawStatuses": [],
+      "wire": 0
+    },
+    "D3 source cold oracle counterfactual": {
+      "clones": 9,
+      "counters": {
+        "assemblies": 3,
+        "clocks": 0,
+        "commits": 0,
+        "direct": 3,
+        "discovery": 3,
+        "entries": 3,
+        "waits": 0
+      },
+      "direct": 3,
+      "rawStatuses": [],
+      "wire": 0
+    },
+    "D3 source minimum order descriptor": {
+      "clones": 0,
+      "counters": {
+        "assemblies": 2,
+        "clocks": 19,
+        "commits": 1,
+        "direct": 9,
+        "discovery": 9,
+        "entries": 14,
+        "waits": 5
+      },
+      "direct": 9,
+      "rawStatuses": [],
+      "wire": 0
+    },
+    "D3 source minimum order directory": {
+      "clones": 0,
+      "counters": {
+        "assemblies": 2,
+        "clocks": 19,
+        "commits": 1,
+        "direct": 9,
+        "discovery": 9,
+        "entries": 14,
+        "waits": 5
+      },
+      "direct": 9,
+      "rawStatuses": [],
+      "wire": 0
+    },
+    "D3 source minimum order scope": {
+      "clones": 0,
+      "counters": {
+        "assemblies": 2,
+        "clocks": 22,
+        "commits": 1,
+        "direct": 10,
+        "discovery": 10,
+        "entries": 16,
+        "waits": 6
+      },
+      "direct": 10,
+      "rawStatuses": [],
+      "wire": 0
+    },
+    "D3 source projection descriptor": {
+      "clones": 0,
+      "counters": {
+        "assemblies": 6,
+        "clocks": 0,
+        "commits": 0,
+        "direct": 6,
+        "discovery": 6,
+        "entries": 6,
+        "waits": 0
+      },
+      "direct": 6,
+      "rawStatuses": [],
+      "wire": 0
+    },
+    "D3 source projection directory": {
+      "clones": 0,
+      "counters": {
+        "assemblies": 6,
+        "clocks": 0,
+        "commits": 0,
+        "direct": 6,
+        "discovery": 6,
+        "entries": 6,
+        "waits": 0
+      },
+      "direct": 6,
+      "rawStatuses": [],
+      "wire": 0
+    },
+    "D3 source projection scope": {
+      "clones": 0,
+      "counters": {
+        "assemblies": 7,
+        "clocks": 0,
+        "commits": 0,
+        "direct": 7,
+        "discovery": 7,
+        "entries": 7,
+        "waits": 0
+      },
+      "direct": 7,
+      "rawStatuses": [],
+      "wire": 0
+    },
+    "D3 source raw receiving": {
+      "clones": 0,
+      "counters": {
+        "assemblies": 0,
+        "clocks": 0,
+        "commits": 0,
+        "direct": 0,
+        "discovery": 0,
+        "entries": 0,
+        "waits": 0
+      },
+      "direct": 0,
+      "rawStatuses": [
+        400,
+        400,
+        400,
+        400,
+        400,
+        400,
+        400,
+        400,
+        400,
+        400,
+        400,
+        400
+      ],
+      "wire": 12
+    },
+    "D3 source receiving descriptor": {
+      "clones": 0,
+      "counters": {
+        "assemblies": 1,
+        "clocks": 0,
+        "commits": 0,
+        "direct": 8,
+        "discovery": 1,
+        "entries": 1,
+        "waits": 0
+      },
+      "direct": 8,
+      "rawStatuses": [],
+      "wire": 0
+    },
+    "D3 source receiving directory": {
+      "clones": 0,
+      "counters": {
+        "assemblies": 1,
+        "clocks": 0,
+        "commits": 0,
+        "direct": 8,
+        "discovery": 1,
+        "entries": 1,
+        "waits": 0
+      },
+      "direct": 8,
+      "rawStatuses": [],
+      "wire": 0
+    },
+    "D3 source receiving scope": {
+      "clones": 0,
+      "counters": {
+        "assemblies": 1,
+        "clocks": 0,
+        "commits": 0,
+        "direct": 8,
+        "discovery": 1,
+        "entries": 1,
+        "waits": 0
+      },
+      "direct": 8,
+      "rawStatuses": [],
+      "wire": 0
+    },
+    "D3 source target transport boundary": {
+      "clones": 0,
+      "counters": {
+        "assemblies": 0,
+        "clocks": 0,
+        "commits": 0,
+        "direct": 10,
+        "discovery": 0,
+        "entries": 0,
+        "waits": 0
+      },
+      "direct": 10,
+      "rawStatuses": [
+        400,
+        403
+      ],
+      "wire": 2
+    }
+  },
+  "sourceVsWire": "Direct source HttpResponse records/counters are separate from14 raw wire source exchanges; installed exact186 vs raw4; legacy14 superseded exchanges separately already existed; source report source phases never misclassified as installed wire",
+  "state": "Source-bound grammar; success acceptance uses strict missing/extra-key and typed actual fields. Raw failures remain evidence, never accepted or reconstructed."
+}

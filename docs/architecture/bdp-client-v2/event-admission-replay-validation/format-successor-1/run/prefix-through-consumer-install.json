@@ -1,0 +1,122 @@
+{
+  "at": "2026-10-17T23:57:53.656745+00:00",
+  "completedFreshStages": {
+    "typecheck": {
+      "exitSha256": "54f26f32749b31482c4e97e03f8e076e5181cf8dc9d40ea8024c0f6610d46bd1",
+      "logSha256": "91d54ffbee73a3ac72294d090e58d77745f8b93edbf94b862807698273a6505a",
+      "elapsedSeconds": 5.121287458110601
+    },
+    "format-check": {
+      "exitSha256": "5fc7aaa81ba89b915040d83a22ce1f4d436965e2bd20693bbfe0f0bd1d61812b",
+      "logSha256": "04666f7bea76742e24a3ac19abfe3df449c3e31dac98110180217a31355361b3",
+      "elapsedSeconds": 4.487930041272193
+    },
+    "lint": {
+      "exitSha256": "295c6997eb32fe557669e0260870e5c6a905fdfa31cea48cb0a770ab20b2e443",
+      "logSha256": "b2abddf9ba11552f7e7cc0c092d3d6056e150cb0e75fe27962a1b1f431a1afee",
+      "elapsedSeconds": 4.3486610827967525
+    },
+    "fresh-build": {
+      "exitSha256": "15f0e65b068cb16a190f7575791211bede13cb3fc46c7ec85713422d3cee13c9",
+      "logSha256": "232dac5e840e45b3bb06e6e04249b5241f2e1b4f6c797a22c046d916302ac208",
+      "elapsedSeconds": 4.9811182911507785
+    },
+    "bind-fresh-build": {
+      "exitSha256": "9828b10c4f4408108e747eeff2d3cb863489df7110cbf4060aee751379c2d5e4",
+      "logSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "elapsedSeconds": 8.796677624806762
+    },
+    "focused-source": {
+      "exitSha256": "44404c9ea1ed042fcd103fbf1870cbc3d1b54005a1a2a66f3b23bd600d2be494",
+      "logSha256": "1f85c302c50be8a539c71237d273f5fd966c4053288a9d62d8ef70f14bce0ebc",
+      "elapsedSeconds": 10.905682333279401
+    },
+    "review-focused-source": {
+      "exitSha256": "1392a97afa551e869577a9850765a7b0a7cd883543b8f9d5be8ec36e358af22a",
+      "logSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "elapsedSeconds": 9.007133374921978
+    },
+    "node-version": {
+      "exitSha256": "ca0b1489da89b6411669fe58d49d64640844dcc3cc33b8e9118e8c1f81cb9465",
+      "logSha256": "a8f8f7ba69d43285857a0ea34017ef8dadd3ba012404bb7dd188fc773cf63ee2",
+      "elapsedSeconds": 4.134029333014041
+    },
+    "prepare-package-directory": {
+      "exitSha256": "68d5186b42dcdb660efd232266cc126d51e7d0fb1a158fcae8740c1d136744b7",
+      "logSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "elapsedSeconds": 9.570520624984056
+    },
+    "pack-protocol": {
+      "exitSha256": "ee073508fd96c96104f968ac4d62b26515689a2bdf2ca7c8da7d363bd2dc52b2",
+      "logSha256": "375bda1dcb31e2c45043a8e1d5182ec24b316c92395f331aecb64fd3cbf171ef",
+      "elapsedSeconds": 4.35576020879671
+    },
+    "pack-server": {
+      "exitSha256": "1c94695bc464c538daf480976774a8a94efc86d673a5286524c1eab292a1c66c",
+      "logSha256": "d59d26d70c3d2e57c5d0ca91b31c94c50e80a849b71f51cd5be4dc6059e4e928",
+      "elapsedSeconds": 4.26967491582036
+    },
+    "verify-archives": {
+      "exitSha256": "b8ab8831dd894be80e214aa5c951ec5dc9eda31c9f25372758e228750f085c10",
+      "logSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "elapsedSeconds": 8.704529624897987
+    },
+    "prepare-consumer": {
+      "exitSha256": "7a820c6b496bdf46cb3e3e5d5e43b7338f36ebdfac801742e32ef8f2025e7f6f",
+      "logSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "elapsedSeconds": 8.46901937481016
+    },
+    "consumer-install": {
+      "exitSha256": "c8abf0a0a75b7f40a6a0eea9b3ade5bf04aeffd98f50e5b5fb5e49e1b982a83f",
+      "logSha256": "e21135579d58c64f1cd821a0d325914354ea49ba1092175f4ad08c934b62004c",
+      "elapsedSeconds": 4.775905707851052
+    }
+  },
+  "bootstrap": "Only original workspace-install and bind-workspace-tools reused via reviewed gate; no predecessor static/build/source reuse",
+  "source679Unchanged": true,
+  "sourceIdentity": "10928ef28513fb178c3310c6610c689e7b6a39c4262d8363da3082598fd6ddbb",
+  "sampledPidCount": 222,
+  "sampledPidsCurrentlyPresent": [],
+  "sourceResults": {
+    "passed": 17,
+    "skipped": 60,
+    "newReports": 12,
+    "legacyReports": 4,
+    "unreportedLegacyReconnectRequests": "28 remain source-derived"
+  },
+  "lint": {
+    "warnings": 121,
+    "infos": 6,
+    "undisplayedDiagnostics": 107
+  },
+  "artifacts": {
+    "consumer/pnpm-lock.yaml": {
+      "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/event-admission-replay-validation/format-successor-1/run/consumer/pnpm-lock.yaml",
+      "sha256": "9168a591301196cf620bfc9d9b2916b8235f28b71385f374f9cd6f6605beb3a9"
+    },
+    "tar-source-provenance.json": {
+      "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/event-admission-replay-validation/format-successor-1/run/tar-source-provenance.json",
+      "sha256": "40ab7489421c860abf53699a0419c1fe5e1142c00ac0088386b9ba4db55e2b31"
+    },
+    "build-artifacts.json": {
+      "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/event-admission-replay-validation/format-successor-1/run/build-artifacts.json",
+      "sha256": "cab83a014f2545f88ac4060d6a773d2d9705235d3c72faaf95a36ae260a28407"
+    },
+    "packages/bdp-protocol-0.0.0.tgz": {
+      "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/event-admission-replay-validation/format-successor-1/run/packages/bdp-protocol-0.0.0.tgz",
+      "sha256": "4683cb6c6333c332a4bcb7efc3e28f32d1d8d06a7264913f65c31d3a826d4227"
+    },
+    "packages/bdp-server-0.0.0.tgz": {
+      "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/event-admission-replay-validation/format-successor-1/run/packages/bdp-server-0.0.0.tgz",
+      "sha256": "a5c6c3ba9eea4f26720a795182b60188af67b68ef958bde9c20c313cc7a09d71"
+    },
+    "focused-source.accepted-observation.json": {
+      "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/event-admission-replay-validation/format-successor-1/run/focused-source.accepted-observation.json",
+      "sha256": "f18a9a47b5e0a6853df2a69390a12c9871dd0571098d87d734f978e89135858c"
+    }
+  },
+  "stoppedBefore": "verify-installed-consumer; lock acceptance required",
+  "installedCallbacksRun": false,
+  "requiredChecksRun": false,
+  "qualification": false
+}

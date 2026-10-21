@@ -1,0 +1,21 @@
+{
+  "createdUtc": "2026-10-18T04:46:52.157020+00:00",
+  "classification": "actual typecheck failure; no automatic retry",
+  "sourceBindingSha256": "92152f96be110929dc66bb9fc2d038922944d5b9f9a46f40c9e8ec1076a520ec",
+  "successfulStages": [
+    "node-version",
+    "pnpm-version",
+    "workspace-install",
+    "bind-workspace-tools"
+  ],
+  "failedStage": "typecheck",
+  "typecheckLogSha256": "94e8283f23558f7242d5f4725a2e141afa27a1917c7bea1aa8bd49f7bbe850d2",
+  "cause": "TS18048: destructuring inferred number[] rows makes get/head possibly undefined under noUncheckedIndexedAccess",
+  "errorCount": 5,
+  "allLaterStagesUnattempted": true,
+  "gateClosed": true,
+  "boundedCorrectionAuthorized": "exact three-row HEAD/GET comparison table gains as const tuple annotation; no values/assertions/defaults/deadlines changed",
+  "sourceAuthor": "root",
+  "secondActualCodeReviewRequired": false,
+  "independentNativePrecisionClosureAndNewValidationSuccessorRequired": true
+}

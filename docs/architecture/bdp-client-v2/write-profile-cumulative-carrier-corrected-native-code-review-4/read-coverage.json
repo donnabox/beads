@@ -1,0 +1,33 @@
+{
+  "ownedFullReadLines": {
+    "packages/conformance/test-support/profile-evidence.ts": 1215,
+    "packages/conformance/test-support/profile-evidence.test.ts": 2015,
+    "apps/bdptest/test-support/read-update-artifact-execution.ts": 845,
+    "apps/bdptest/src/transactional-matrix.test.ts": 4826
+  },
+  "ownedTotalLines": 8901,
+  "governingContexts": "Full plan2, seven actual findings, root disposition/source release, native plan closure, machine contracts, author report, preservation and format receipt",
+  "dependenciesFullRead": [
+    "read-update-artifact-set.ts",
+    "profile-contract-plan.ts",
+    "artifact-bundle.ts",
+    "canonical-json.ts",
+    "installed-contract-identity.ts",
+    "transactional-execution-binding.ts",
+    "profile-contract-selection.ts",
+    "selection.ts"
+  ],
+  "dependenciesTargetedRead": {
+    "runner.ts": [
+      "448-476",
+      "650-705",
+      "780-811",
+      "2950-3062"
+    ],
+    "executable-manifest.ts": [
+      "754-825"
+    ]
+  },
+  "copiedDependencies": 18,
+  "reviewerExecution": false
+}

@@ -1,0 +1,924 @@
+{
+  "status": "DATA_ONLY_UNEXECUTED",
+  "base": "1ba65f2f192cc84e44eb09ef89b9693ec6cdaf05",
+  "actual": {
+    "normalBytes": 882556,
+    "normalSha256": "101f70d3f2d6c4a75e41f878938fde18262f1933cf198013f30523f2b265c449",
+    "compactBytes": 431284,
+    "compactSha256": "97c0c5e1732e335913b9c7db4215ad2d2b64f6a3499e8d69db26306fae1eda93",
+    "nodes": 23166,
+    "actions": 241,
+    "assertions": 2836,
+    "diskBytes": 869264,
+    "diskSha256": "60c527f6a5673161eacf022c0015d09bea2743d153b8b0d0c86160b76fafeb68",
+    "coverageBytes": 133568,
+    "coverageNormalBytes": 133568,
+    "coverageSha256": "33032fe07eb06d2a8968fcd8e5a3cf93cb4637c551868c22da9ea0c4edd587a3",
+    "newAssertions": 194
+  },
+  "growth": {
+    "diskBytes": 44215,
+    "normalBytes": 44791,
+    "nodes": 1258,
+    "coverageBytes": 9031,
+    "assertions": 194
+  },
+  "preservation": [
+    {
+      "path": "packages/conformance/test-support/transactional/manifest-v1.json",
+      "parentSha256": "cd90592e76cace65b115dbfedf5f604c9c4011ed2e1a0fad954c1edb12aca6cd",
+      "parentBytes": 825049,
+      "reconstructionSha256": "cd90592e76cace65b115dbfedf5f604c9c4011ed2e1a0fad954c1edb12aca6cd",
+      "rawObjects": [
+        {
+          "id": "read-update.idempotency.principal-isolation",
+          "bytes": 35034,
+          "sha256": "154e599e9c3fd3fc050af199f4ab6158c8633bfe66cb39fd15e099fb85a7b1e5"
+        },
+        {
+          "id": "read-update.http.command-minimum-fields",
+          "bytes": 54412,
+          "sha256": "f04c001617ccad14ef67a82586ea5f61ec918bc2545bb041fafc21dee07b5d7e"
+        },
+        {
+          "id": "transactional.batch.atomic-commit",
+          "bytes": 14936,
+          "sha256": "0dfd3b9ed02d01f76ecac08c00b009b4bb9f03e57f7e15a2266eed82fc144747"
+        },
+        {
+          "id": "transactional.batch.rollback",
+          "bytes": 16319,
+          "sha256": "be24067358af7b5acf7bc1beae2eb6534cbc0effa6f65406ab61b139310bfc37"
+        },
+        {
+          "id": "transactional.batch.deletion-safety",
+          "bytes": 131808,
+          "sha256": "3e66e7c95aec963cc80e076249a5870b952765b2e98c1023ea148f8f628e6aeb"
+        },
+        {
+          "id": "transactional.batch.no-op-entries",
+          "bytes": 81047,
+          "sha256": "9307b230eb053131e9127cbbb5e6285305b79d6794edd22f5432a07fc74d9faa"
+        },
+        {
+          "id": "transactional.set.mutation",
+          "bytes": 71739,
+          "sha256": "6e7280a9ebbbc3faa1da989015cc802f82cd51b17a9cea11e7cc91392bef49d6"
+        },
+        {
+          "id": "transactional.set.zero-match",
+          "bytes": 36055,
+          "sha256": "35aa23bd32539869ea3db41e1c9f3e81a3217e2eb983e764e860a6e00c9eb2c9"
+        },
+        {
+          "id": "transactional.set.cardinality",
+          "bytes": 28546,
+          "sha256": "205af1c54d62efb09c9eadf20147a1730909e788c0d4763ce9718b8648f24ede"
+        },
+        {
+          "id": "transactional.set.singleton-targets",
+          "bytes": 40018,
+          "sha256": "561b8ebc21106628918111332a9ab7b47be7350935925ed1e76a6cb5bed576b9"
+        },
+        {
+          "id": "transactional.receipt.readable",
+          "bytes": 12545,
+          "sha256": "ddb97e450e233b941f7d905d49f48648d9965ed1b361dcdc5dee6f810038a1e0"
+        },
+        {
+          "id": "transactional.receipt.pagination",
+          "bytes": 138750,
+          "sha256": "c531c260349347cdc3e54ba68282f1a266a5fa207d3775660615f836a4768782"
+        },
+        {
+          "id": "transactional.idempotency.conflict",
+          "bytes": 29772,
+          "sha256": "ba93aea884ae462533d02695642f03a2ca854f5adabeb41867254216dabb2106"
+        },
+        {
+          "id": "transactional.idempotency.cross-carrier",
+          "bytes": 64106,
+          "sha256": "4ad8c05fe5fbb4682809d4481c93e2684fe30fbbb8962b4da498590637f8f35b"
+        },
+        {
+          "id": "transactional.idempotency.failed-retained",
+          "bytes": 18404,
+          "sha256": "a867694406dde07da71ac70197c60c478dd0fb3344cf2c8160795d1aa62d3378"
+        },
+        {
+          "id": "transactional.sequence.member-transactions",
+          "bytes": 51379,
+          "sha256": "c46b34914118dd34ea1e5f12304124550b9d3c4bfcd9671b99995d6af44a2e1b"
+        }
+      ]
+    },
+    {
+      "path": "packages/conformance/test-support/transactional/coverage-v1.json",
+      "parentSha256": "0c991feb128a50625397e337464badcb17d22a0c31e1d57a6b66fa1032a92a51",
+      "parentBytes": 124537,
+      "reconstructionSha256": "0c991feb128a50625397e337464badcb17d22a0c31e1d57a6b66fa1032a92a51",
+      "rawObjects": [
+        {
+          "id": "read-update.idempotency.principal-isolation",
+          "bytes": 6829,
+          "sha256": "6bbf6691e1c89ab2ef32ecd9f16868943af85414f6b4a689cf6e41cc5a3e27e7"
+        },
+        {
+          "id": "read-update.http.command-minimum-fields",
+          "bytes": 8888,
+          "sha256": "47914ed67c7b06e721e74134e0c633f3e1a7d461cb50ea200ff1874686885c2a"
+        },
+        {
+          "id": "transactional.batch.atomic-commit",
+          "bytes": 2383,
+          "sha256": "ffd77a9d34ac41a6e1f960671bea6880eb5b2ab7b11b3af4ccf0177363d7f4d7"
+        },
+        {
+          "id": "transactional.batch.rollback",
+          "bytes": 2857,
+          "sha256": "9e4f5cdb45f0133f1c6d23caa402701981db2e6f4198e23c667579622ace6769"
+        },
+        {
+          "id": "transactional.batch.deletion-safety",
+          "bytes": 17375,
+          "sha256": "ac27a329a1cc013e6a0e24e0f5cad6b5b4af6c128ad65302d030422a3c7e3c0a"
+        },
+        {
+          "id": "transactional.batch.no-op-entries",
+          "bytes": 10587,
+          "sha256": "383de4e0cb9b3bad310b9db7ff9009cb59fac55966f0309bc71c5d007bea6c1c"
+        },
+        {
+          "id": "transactional.set.mutation",
+          "bytes": 11676,
+          "sha256": "058147f8194f091ee5a7ef3d4fd378f0324f6570049df777f993acb5f967d540"
+        },
+        {
+          "id": "transactional.set.zero-match",
+          "bytes": 6520,
+          "sha256": "4e79e18a5e4c2735b5c686b9ad610dedc890386bfb06584f98268a421bbb832b"
+        },
+        {
+          "id": "transactional.set.cardinality",
+          "bytes": 5800,
+          "sha256": "2a255ed4d364c435c9f985d7a770386bc7b20b2865887b9c8cc2d6cc5f0dd116"
+        },
+        {
+          "id": "transactional.set.singleton-targets",
+          "bytes": 7314,
+          "sha256": "0c9008bac3e2c047d9aa8d47d343b7ed936c9c9352bb140c6422127c71b156b1"
+        },
+        {
+          "id": "transactional.receipt.readable",
+          "bytes": 2142,
+          "sha256": "684eba200912ccb0932c0a8286e350a6e545262a205b3ea3df47a12fc6dd18ec"
+        },
+        {
+          "id": "transactional.receipt.pagination",
+          "bytes": 13057,
+          "sha256": "0735edbca2fbf384f9f8147140a353dc084d9ad85facaddf2f5073f56a7256ee"
+        },
+        {
+          "id": "transactional.idempotency.conflict",
+          "bytes": 5188,
+          "sha256": "de9b758f8ac4df7db5597b1eb2b402a116720becc30a41e7198f78f244358ec0"
+        },
+        {
+          "id": "transactional.idempotency.cross-carrier",
+          "bytes": 11196,
+          "sha256": "c5e6076a2104c06f88fac88c77214522cab457faf925fe03881dff9778c35245"
+        },
+        {
+          "id": "transactional.idempotency.failed-retained",
+          "bytes": 2917,
+          "sha256": "63918cbb495a504fd2043f52b60e7cd8ef1518b8022a96edb0d02660c7df1a8e"
+        },
+        {
+          "id": "transactional.sequence.member-transactions",
+          "bytes": 9557,
+          "sha256": "aea606d1456549f6dd9dc1903e42568282154a61a9fbef50dab3526202eb4045"
+        }
+      ]
+    }
+  ],
+  "mutatorPreservation": {
+    "functions": [
+      {
+        "name": "applyDeletionControl",
+        "sha256": "b6f008b64e3df838b8f3d462289823273578a4b3e35c4d4582bb6396de2673b5",
+        "byteIdenticalToParentAndPriorMeasurement": true
+      },
+      {
+        "name": "applyCrossCarrierControl",
+        "sha256": "e320cb1d6ef755e38940669bd5fdc40c09a53185550384416644d9f1eb83b7ca",
+        "byteIdenticalToParentAndPriorMeasurement": true
+      },
+      {
+        "name": "applyCommandMinimumControl",
+        "sha256": "7e538bce0ab307a91112db2d2d2ffaebfa7f1736cf0043da1ffcaf78c2db4f92",
+        "byteIdenticalToParentAndPriorMeasurement": true
+      },
+      {
+        "name": "applyMemberControl",
+        "sha256": "0e54b54a82d6e153e33a14d8666f8bdf9e290bd4ce383be68973e60c39893bd4",
+        "byteIdenticalToParentAndPriorMeasurement": true
+      },
+      {
+        "name": "crossCarrierRequests",
+        "sha256": "5a96fe3e9f84256943cdd3a0a5052f43b2f7ddf70d5298b6ac8dc211a5da3bda",
+        "byteIdenticalToParentAndPriorMeasurement": true
+      },
+      {
+        "name": "minimumRequests",
+        "sha256": "7a62cd985b2879efef0f98b5b984f386dd43a3b7472a0ffac8c31102fd7e0397",
+        "byteIdenticalToParentAndPriorMeasurement": true
+      },
+      {
+        "name": "memberRequests",
+        "sha256": "e7dcde0b13c9050a54d455a7457c0c43b72f452226e192099d3d4e3c801ec278",
+        "byteIdenticalToParentAndPriorMeasurement": true
+      }
+    ],
+    "inline": [
+      {
+        "index": 0,
+        "sha256": "5645d26bb1f7910c2ea84cb3d81e8a0c6e150a6aa16ea547c8a8dd1e4a7471a7",
+        "byteIdenticalToParent": true
+      },
+      {
+        "index": 1,
+        "sha256": "d08b4e2b5a8b1dde79cd891e0809a12e5910c3fc5952e28f0267b0a026894025",
+        "byteIdenticalToParent": true
+      },
+      {
+        "index": 2,
+        "sha256": "ba39c4767b13fe0c1dd664c4d554b3fae4329eacab8e037271f202f66d283b90",
+        "byteIdenticalToParent": true
+      },
+      {
+        "index": 3,
+        "sha256": "8d3ed9d8b40ab63742e60648b57a1c0e1728b3600d6f4a95aba933e85e9c7b00",
+        "byteIdenticalToParent": true
+      },
+      {
+        "index": 4,
+        "sha256": "446c11d30507074c4d6737cbe1e509c35c9963c63b03ca2b78efc5f7ce057609",
+        "byteIdenticalToParent": true
+      },
+      {
+        "index": 5,
+        "sha256": "fe2b04a14cb4da9e89881efb4d8a39b1a14487c4357ac606fb28b764d0e6c421",
+        "byteIdenticalToParent": true
+      },
+      {
+        "index": 6,
+        "sha256": "63209b3f36457760386c71cf62ee39d7d9595abdff236ffd649f7deefbce77cd",
+        "byteIdenticalToParent": true
+      },
+      {
+        "index": 7,
+        "sha256": "cf23e8694e122e8c040900ac90dd00072fabfde3842cf4d358514af1b12b86ce",
+        "byteIdenticalToParent": true
+      },
+      {
+        "index": 8,
+        "sha256": "cd878ef8151cde86a2d7a9016f683f3538591f0ebbb361a035d75b1696ad7339",
+        "byteIdenticalToParent": true
+      },
+      {
+        "index": 9,
+        "sha256": "f2a43d2bc42e0fcf5c0b21454421989b8c62e086203b66b3022b58140685d3bf",
+        "byteIdenticalToParent": true
+      },
+      {
+        "index": 10,
+        "sha256": "c0ff4210dc0ed4a53e571099d6c11121e2c4803a1278482cc6c40e31f416d898",
+        "byteIdenticalToParent": true
+      },
+      {
+        "index": 11,
+        "sha256": "abcd84189f487a073b6547e1d46b27aac00141d04cc5a8a34eaf66357198db78",
+        "byteIdenticalToParent": true
+      },
+      {
+        "index": 12,
+        "sha256": "9d1566ca1a0d1e5d1e966305999da885e56a42683a49aa878e3fb058888cf7f9",
+        "byteIdenticalToParent": true
+      }
+    ],
+    "allUnchanged": true
+  },
+  "derivatives": [
+    {
+      "name": "effects-zero-results.json",
+      "historicalPath": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-principal-cumulative-draft/source-author/derivatives/effects-zero-results.json",
+      "historicalSha256": "cc09c29b33135c16abead1ec991b4d4a938efa12db9c8a10c118dfc74f733687",
+      "sha256": "687c94622ca79c0ee95150aa3bba38b1a1005b4bc1796e7673390ba32f52a770",
+      "oldTransformUnchanged": true,
+      "normalBytes": 882556,
+      "normalSha256": "687c94622ca79c0ee95150aa3bba38b1a1005b4bc1796e7673390ba32f52a770",
+      "compactBytes": 431284,
+      "compactSha256": "39b28159cd2f60997a0ef3fa73376c8dc5ef2079bd8a84bf10954f41e0c29847",
+      "nodes": 23166,
+      "actions": 241,
+      "assertions": 2836
+    },
+    {
+      "name": "duplicate-receipt-binding.json",
+      "historicalPath": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-principal-cumulative-draft/source-author/derivatives/duplicate-receipt-binding.json",
+      "historicalSha256": "0a24b5e21ddf74ec26488e42a2f091a37913f6024ebc967bd7c6990d915cf290",
+      "sha256": "605687485b579f472324eca41a97cddb88e63ed9d7f7b2ddcaf79c0f821c4666",
+      "oldTransformUnchanged": true,
+      "normalBytes": 882751,
+      "normalSha256": "605687485b579f472324eca41a97cddb88e63ed9d7f7b2ddcaf79c0f821c4666",
+      "compactBytes": 431359,
+      "compactSha256": "02f5d1cbd5ae96e5ffd136278b6a01ebdf1949ae6abab9a872d120e94f7c69b5",
+      "nodes": 23171,
+      "actions": 241,
+      "assertions": 2836
+    },
+    {
+      "name": "set-order.json",
+      "historicalPath": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-principal-cumulative-draft/source-author/derivatives/set-order.json",
+      "historicalSha256": "da30bbadae2edf1aba7749db7848de59cd688ad13b3b47db21f67bc8e8eae3c4",
+      "sha256": "0ece6ca7e210e3c0ed64871ca9fed1693054d2d314daaf16ef0a8a2211efec43",
+      "oldTransformUnchanged": true,
+      "normalBytes": 882556,
+      "normalSha256": "0ece6ca7e210e3c0ed64871ca9fed1693054d2d314daaf16ef0a8a2211efec43",
+      "compactBytes": 431284,
+      "compactSha256": "0889b0b9ee1eaf5ab2cf6ce605bc246a2ce3a15be4d406b3d44ed6091dd7fba7",
+      "nodes": 23166,
+      "actions": 241,
+      "assertions": 2836
+    },
+    {
+      "name": "conflict-event.json",
+      "historicalPath": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-principal-cumulative-draft/source-author/derivatives/conflict-event.json",
+      "historicalSha256": "9a60b038aa8b2bce2a170bb3c98fbb053a6831ed815a4b74583b7ed9dbcea4a1",
+      "sha256": "28b2db173f991c7ea387892d15ae2ac353cf70ee1ffc1cae911e40aad67a72bc",
+      "oldTransformUnchanged": true,
+      "normalBytes": 882556,
+      "normalSha256": "28b2db173f991c7ea387892d15ae2ac353cf70ee1ffc1cae911e40aad67a72bc",
+      "compactBytes": 431284,
+      "compactSha256": "12bda263bf8fc6137ee6c6990bbc8e607661635b7bc2abc42e6c7736c17e46ee",
+      "nodes": 23166,
+      "actions": 241,
+      "assertions": 2836
+    },
+    {
+      "name": "cross-wired-receipt.json",
+      "historicalPath": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-principal-cumulative-draft/source-author/derivatives/cross-wired-receipt.json",
+      "historicalSha256": "f1b7484b4df5a40a6f4f665952bc1c223051fe1eae39309dc74040550826a2c6",
+      "sha256": "b152e39964fa3ce6dce5338db324bf67201ef840c3fc446fb5ef750071b5eb69",
+      "oldTransformUnchanged": true,
+      "normalBytes": 881834,
+      "normalSha256": "b152e39964fa3ce6dce5338db324bf67201ef840c3fc446fb5ef750071b5eb69",
+      "compactBytes": 430938,
+      "compactSha256": "4726c053583c277105f520036c0c62a88277e40cd9e5bddd227f7f2723a5f2ae",
+      "nodes": 23145,
+      "actions": 241,
+      "assertions": 2832
+    },
+    {
+      "name": "ordinary-capture.json",
+      "historicalPath": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-principal-cumulative-draft/source-author/derivatives/ordinary-capture.json",
+      "historicalSha256": "9a0f18e24d63578a9e7ba8e5c37c0295a7cb5c8bf0f078bfecdcb394948e34bc",
+      "sha256": "949fabd11b4b150be83b2b43be58381743dc250a9062d1cc9752bf7f626a9406",
+      "oldTransformUnchanged": true,
+      "normalBytes": 882757,
+      "normalSha256": "949fabd11b4b150be83b2b43be58381743dc250a9062d1cc9752bf7f626a9406",
+      "compactBytes": 431365,
+      "compactSha256": "a7aaccf69221afcabc19aa52982e293cc4f40c7bddb79a03ab4173131fb5e324",
+      "nodes": 23171,
+      "actions": 241,
+      "assertions": 2836
+    },
+    {
+      "name": "cross-sequence-fresh-key.json",
+      "historicalPath": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-principal-cumulative-draft/source-author/derivatives/cross-sequence-fresh-key.json",
+      "historicalSha256": "1d503a8da250404ce498851d2c1d52a0647c7863d0e545becb2f1eb73da2fd23",
+      "sha256": "11c8430f2c81b2515a200bdf7cf834b54ff1e937c8a921d48f9d95fef789a3d6",
+      "oldTransformUnchanged": true,
+      "normalBytes": 883910,
+      "normalSha256": "11c8430f2c81b2515a200bdf7cf834b54ff1e937c8a921d48f9d95fef789a3d6",
+      "compactBytes": 431834,
+      "compactSha256": "159e27acd785b64a27d2354bc9fb31c7193d69e6ea3f8df4857dcdb7b86e659e",
+      "nodes": 23202,
+      "actions": 241,
+      "assertions": 2839
+    },
+    {
+      "name": "pagination-page-parent.json",
+      "historicalPath": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-principal-cumulative-draft/source-author/derivatives/pagination-page-parent.json",
+      "historicalSha256": "27ba380da694b2b2c293059ca09f5c8b8e684a53202cfd21f70ee557dd3a63ec",
+      "sha256": "ae03c1f8b2e9ada0e498e7326df13ec915a617d2f83fdb3ec53db74af8b4b3b8",
+      "oldTransformUnchanged": true,
+      "normalBytes": 882588,
+      "normalSha256": "ae03c1f8b2e9ada0e498e7326df13ec915a617d2f83fdb3ec53db74af8b4b3b8",
+      "compactBytes": 431316,
+      "compactSha256": "2911ce80ca4b833275ab6cdec3de9e2625c95356567686cf0a58d0f34883706b",
+      "nodes": 23166,
+      "actions": 241,
+      "assertions": 2836
+    },
+    {
+      "name": "pagination-root-next.json",
+      "historicalPath": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-principal-cumulative-draft/source-author/derivatives/pagination-root-next.json",
+      "historicalSha256": "8e4d572f1af4f602329bfcd14b0a04418d16d66d818a7bb6b29ba47209d5f53a",
+      "sha256": "bda5d478184d52653b7db7d25405cdb1f7d63a2e39f038b2153c8479df2cd90a",
+      "oldTransformUnchanged": true,
+      "normalBytes": 882545,
+      "normalSha256": "bda5d478184d52653b7db7d25405cdb1f7d63a2e39f038b2153c8479df2cd90a",
+      "compactBytes": 431273,
+      "compactSha256": "aeac3016cfcffbc15ce9c6d38ceb58f91bc7ae8815d6c4084163e9fdc0e469b8",
+      "nodes": 23166,
+      "actions": 241,
+      "assertions": 2836
+    },
+    {
+      "name": "pagination-historical-title.json",
+      "historicalPath": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-principal-cumulative-draft/source-author/derivatives/pagination-historical-title.json",
+      "historicalSha256": "74b7e71df46dce22f68a42641307e9bc78e393e0521201383cfe73bbd851be4a",
+      "sha256": "a1b69523d7af2feec02a13f70a0fde809159114c7f910f70e29e15c31a986490",
+      "oldTransformUnchanged": true,
+      "normalBytes": 882554,
+      "normalSha256": "a1b69523d7af2feec02a13f70a0fde809159114c7f910f70e29e15c31a986490",
+      "compactBytes": 431282,
+      "compactSha256": "44086f42cc7d758db39cd0b1cf875ab7a421ae283b0398f6c18f7c53cc14974f",
+      "nodes": 23166,
+      "actions": 241,
+      "assertions": 2836
+    },
+    {
+      "name": "receipt-body-assertion.json",
+      "historicalPath": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-principal-cumulative-draft/source-author/derivatives/receipt-body-assertion.json",
+      "historicalSha256": "3aa2598eb1c2627556b1bdde40f2caf5f240c22a7e66cbe37c7646c27531b236",
+      "sha256": "3e650e783c19db6ab492a89ac35d4e026bb74d44b5201bfb1add61099ba61fba",
+      "oldTransformUnchanged": true,
+      "normalBytes": 881873,
+      "normalSha256": "3e650e783c19db6ab492a89ac35d4e026bb74d44b5201bfb1add61099ba61fba",
+      "compactBytes": 430977,
+      "compactSha256": "47712737dc63cbc64a9d9e07e12fd56e8c2d7545ac788ff38f366494e1e574ac",
+      "nodes": 23145,
+      "actions": 241,
+      "assertions": 2832
+    },
+    {
+      "name": "receipt-credential.json",
+      "historicalPath": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-principal-cumulative-draft/source-author/derivatives/receipt-credential.json",
+      "historicalSha256": "44f284b2329f315258be355fff3cc642ddd96684528e481e878c5dcbdb4d4043",
+      "sha256": "aa02c90c22930f6b5da73f6cd5d652742a52dc7cb6182f18cd7a8cefca7a2ec5",
+      "oldTransformUnchanged": true,
+      "normalBytes": 882595,
+      "normalSha256": "aa02c90c22930f6b5da73f6cd5d652742a52dc7cb6182f18cd7a8cefca7a2ec5",
+      "compactBytes": 431309,
+      "compactSha256": "0408f34c5f92daead9fda14df246fe756d663c661eef5c9af4291aefa720e093",
+      "nodes": 23167,
+      "actions": 241,
+      "assertions": 2836
+    },
+    {
+      "name": "deletion-incoming-order.json",
+      "historicalPath": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-principal-cumulative-draft/source-author/derivatives/deletion-incoming-order.json",
+      "historicalSha256": "25725122b8f664a8e3947550ccd8c0827e81504f581bbf9c4ab56eabb86a7c5c",
+      "sha256": "64a32b28d0fa94973dd242db9e2b3142226c5ea900815f6cbbf08d7bf457b481",
+      "oldTransformUnchanged": true,
+      "normalBytes": 888674,
+      "normalSha256": "64a32b28d0fa94973dd242db9e2b3142226c5ea900815f6cbbf08d7bf457b481",
+      "compactBytes": 434472,
+      "compactSha256": "500544e0804e3732aea24cc39938bf7b7d93e7bd60a374ef6a49b9551f52a8a4",
+      "nodes": 23322,
+      "actions": 241,
+      "assertions": 2859
+    },
+    {
+      "name": "effects-event-order.json",
+      "historicalPath": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-principal-cumulative-draft/source-author/derivatives/effects-event-order.json",
+      "historicalSha256": "2eb06f653d246694e9b2ddafa7754e5bd62d807f37f6dcbb691cdd26f359a04e",
+      "sha256": "ff839b56a98adac06ba9bf8825fda7a20caeb031ce9951daeeb9e475ba60f06e",
+      "oldTransformUnchanged": true,
+      "normalBytes": 882556,
+      "normalSha256": "ff839b56a98adac06ba9bf8825fda7a20caeb031ce9951daeeb9e475ba60f06e",
+      "compactBytes": 431284,
+      "compactSha256": "0ec4034ecbdd58b5ff018465586bca12a712fd6382940d724925d4ea6daf0730",
+      "nodes": 23166,
+      "actions": 241,
+      "assertions": 2836
+    },
+    {
+      "name": "conflict-reopened-status.json",
+      "historicalPath": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-principal-cumulative-draft/source-author/derivatives/conflict-reopened-status.json",
+      "historicalSha256": "567b56aa5c32d74d1ea5cce2e77b2196501e9694847d500b85985316b786f26e",
+      "sha256": "1bb6b8965f32c0b1d1b35b097ab2af441e39eddcacf052bab2a9daec729707f2",
+      "oldTransformUnchanged": true,
+      "normalBytes": 882556,
+      "normalSha256": "1bb6b8965f32c0b1d1b35b097ab2af441e39eddcacf052bab2a9daec729707f2",
+      "compactBytes": 431284,
+      "compactSha256": "1b75accffcab7b55f8f67711c843c1b48b8f4538e75e43c5d75de4d16e384826",
+      "nodes": 23166,
+      "actions": 241,
+      "assertions": 2836
+    },
+    {
+      "name": "effects-rollback-metadata.json",
+      "historicalPath": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-principal-cumulative-draft/source-author/derivatives/effects-rollback-metadata.json",
+      "historicalSha256": "16217291c7172b36647dd086d380c5f54ffa3568935246625a826a6ddfcb4913",
+      "sha256": "d72f66a257f24c5528ff9e92947e31d0b8b1f96d0aa32764072ddf69cf5929f5",
+      "oldTransformUnchanged": true,
+      "normalBytes": 882569,
+      "normalSha256": "d72f66a257f24c5528ff9e92947e31d0b8b1f96d0aa32764072ddf69cf5929f5",
+      "compactBytes": 431297,
+      "compactSha256": "57388a4a0b11049de89e5d7809a683523839c14727ec005a673d7d497edf3b82",
+      "nodes": 23166,
+      "actions": 241,
+      "assertions": 2836
+    },
+    {
+      "name": "set-index.json",
+      "historicalPath": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-principal-cumulative-draft/source-author/derivatives/set-index.json",
+      "historicalSha256": "5a67037432b4adfae005d4bf7ea9d1ed4298fdc5bec5ebe5345d88ffeccb5865",
+      "sha256": "d3a326c54844e07bfe2c98f32b07024e69163d285b098c28d329a6cb827c117f",
+      "oldTransformUnchanged": true,
+      "normalBytes": 882556,
+      "normalSha256": "d3a326c54844e07bfe2c98f32b07024e69163d285b098c28d329a6cb827c117f",
+      "compactBytes": 431284,
+      "compactSha256": "63f355b85163ceeeb61446ab9475a03aedda00cc40b334b9aee08ad868ac5ebd",
+      "nodes": 23166,
+      "actions": 241,
+      "assertions": 2836
+    },
+    {
+      "name": "noop-bead-property.json",
+      "historicalPath": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-principal-cumulative-draft/source-author/derivatives/noop-bead-property.json",
+      "historicalSha256": "eb8189e361f575dade470e05af39d9989e7b93b5ef2c302864378425da6d3a3f",
+      "sha256": "a75b93e35ee8c98fe11cf68df0ab8e713e3bc738b3028f6bfcf967ce90c6e618",
+      "oldTransformUnchanged": true,
+      "normalBytes": 882564,
+      "normalSha256": "a75b93e35ee8c98fe11cf68df0ab8e713e3bc738b3028f6bfcf967ce90c6e618",
+      "compactBytes": 431292,
+      "compactSha256": "70a90de56813abf9d3298d2745930ef31786ba660ed55a2dcfffb716cc79c111",
+      "nodes": 23166,
+      "actions": 241,
+      "assertions": 2836
+    },
+    {
+      "name": "conflict-code.json",
+      "historicalPath": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-principal-cumulative-draft/source-author/derivatives/conflict-code.json",
+      "historicalSha256": "e604792fb99301217921af6213599f2ee6bf627ba726ae6759c93eb310467a56",
+      "sha256": "6cc901f2347d19fbef35a67e99e40cb08b291ef4964ca523ac926b4897eb883f",
+      "oldTransformUnchanged": true,
+      "normalBytes": 882553,
+      "normalSha256": "6cc901f2347d19fbef35a67e99e40cb08b291ef4964ca523ac926b4897eb883f",
+      "compactBytes": 431281,
+      "compactSha256": "644d1eb571e6041d7e6a2961c696cb1357b55958fec0f7e8d20729575da78871",
+      "nodes": 23166,
+      "actions": 241,
+      "assertions": 2836
+    },
+    {
+      "name": "set-poststate.json",
+      "historicalPath": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-principal-cumulative-draft/source-author/derivatives/set-poststate.json",
+      "historicalSha256": "568da932a04adab90dd07fdb1b338eeb4a09448d8709ab1f314a96ffac7bab46",
+      "sha256": "db73dcc0c7dfbee970ad1e2042effef1372f9098e7dc20da1468c94e86229952",
+      "oldTransformUnchanged": true,
+      "normalBytes": 882563,
+      "normalSha256": "db73dcc0c7dfbee970ad1e2042effef1372f9098e7dc20da1468c94e86229952",
+      "compactBytes": 431291,
+      "compactSha256": "ee864d77d5032c064436e8e21d6f6252c4a0d6bc3af3c2982579bf639df32096",
+      "nodes": 23166,
+      "actions": 241,
+      "assertions": 2836
+    },
+    {
+      "name": "conflict-current-record.json",
+      "historicalPath": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-principal-cumulative-draft/source-author/derivatives/conflict-current-record.json",
+      "historicalSha256": "dd1066412e3950df70f9567c2b58bbf15cbb44d081b350ea5733c4f1d145823b",
+      "sha256": "b0626df5b27f7eb06e27ea6521c5a418f84ca1a728d5e58e9fb113a139c7c7fd",
+      "oldTransformUnchanged": true,
+      "normalBytes": 882556,
+      "normalSha256": "b0626df5b27f7eb06e27ea6521c5a418f84ca1a728d5e58e9fb113a139c7c7fd",
+      "compactBytes": 431284,
+      "compactSha256": "ad9ca6b09bd0e9e54a9d65176c495462fd9c62b00a41e775d2098827597ece1b",
+      "nodes": 23166,
+      "actions": 241,
+      "assertions": 2836
+    },
+    {
+      "name": "effects-no-effect.json",
+      "historicalPath": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-principal-cumulative-draft/source-author/derivatives/effects-no-effect.json",
+      "historicalSha256": "b788be26cc026925be9ed8676c68bff51f8b9882eaa51ec349ebd410957aa35f",
+      "sha256": "5d9d2a75771ebd8fe0a47dc2dda1a03dd31846d89b126371f7f17b6d238c047b",
+      "oldTransformUnchanged": true,
+      "normalBytes": 882555,
+      "normalSha256": "5d9d2a75771ebd8fe0a47dc2dda1a03dd31846d89b126371f7f17b6d238c047b",
+      "compactBytes": 431283,
+      "compactSha256": "d1b321b87b669f7f508482f0eb4152ce9801d34e3ce53446a1973c5c1676aa9d",
+      "nodes": 23166,
+      "actions": 241,
+      "assertions": 2836
+    },
+    {
+      "name": "deletion-outgoing-order.json",
+      "historicalPath": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-principal-cumulative-draft/source-author/derivatives/deletion-outgoing-order.json",
+      "historicalSha256": "92fc9d5b2c01789fc546c12ed2f3a9eeb9cb86b78143f6b321aee0a4d40b1b56",
+      "sha256": "6bf056bd38a58fdc235cc46fd91bb9c480ce74943c398d3cdc8e55600ad5925f",
+      "oldTransformUnchanged": true,
+      "normalBytes": 888674,
+      "normalSha256": "6bf056bd38a58fdc235cc46fd91bb9c480ce74943c398d3cdc8e55600ad5925f",
+      "compactBytes": 434472,
+      "compactSha256": "ced874ff08c1766591e8fb16e29214b9d770c2f71affeb9737608e3177e360c7",
+      "nodes": 23322,
+      "actions": 241,
+      "assertions": 2859
+    },
+    {
+      "name": "forbidden-receipt-use.json",
+      "historicalPath": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-principal-cumulative-draft/source-author/derivatives/forbidden-receipt-use.json",
+      "historicalSha256": "d027d4393e14fcf2341c2ac8d51bcee234996c39b9b862811cda9a3e32977fc1",
+      "sha256": "53e39cf3de13f1323948b2b386d4eb37f73ab0150cfccb42659db480d0d98b9d",
+      "oldTransformUnchanged": true,
+      "normalBytes": 883266,
+      "normalSha256": "53e39cf3de13f1323948b2b386d4eb37f73ab0150cfccb42659db480d0d98b9d",
+      "compactBytes": 431628,
+      "compactSha256": "ba4aa9e2f71d5bd0cec447092d8b8f0a4950f8475eb7f44ba5299e281f70b6b7",
+      "nodes": 23186,
+      "actions": 242,
+      "assertions": 2837
+    },
+    {
+      "name": "pagination-terminal-next.json",
+      "historicalPath": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-principal-cumulative-draft/source-author/derivatives/pagination-terminal-next.json",
+      "historicalSha256": "f145e8f8f3ff25ebcda91adf98801f07d218c92795c8a2a940fd5fdaecad2a5c",
+      "sha256": "a648f694ce8cf6c120fab1aa52f14eb76cd4b1ee60cbec7717fb89a4f8f085ce",
+      "oldTransformUnchanged": true,
+      "normalBytes": 882610,
+      "normalSha256": "a648f694ce8cf6c120fab1aa52f14eb76cd4b1ee60cbec7717fb89a4f8f085ce",
+      "compactBytes": 431338,
+      "compactSha256": "628d3f28762953fa212501b8469cc17bf90ced0d82f6b9124c9329029c993788",
+      "nodes": 23166,
+      "actions": 241,
+      "assertions": 2836
+    },
+    {
+      "name": "deletion-committed-prefix-state.json",
+      "historicalPath": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-principal-cumulative-draft/source-author/derivatives/deletion-committed-prefix-state.json",
+      "historicalSha256": "0f33c0244113d8a384b347a095f4e6597c51c99919e33c29f6318d6fe4031538",
+      "sha256": "f7e2d023d567fb35cca662c5ccf5753dbcfd48149a620fbd3518a6ce64cdf8d3",
+      "oldTransformUnchanged": true,
+      "normalBytes": 885660,
+      "normalSha256": "f7e2d023d567fb35cca662c5ccf5753dbcfd48149a620fbd3518a6ce64cdf8d3",
+      "compactBytes": 432909,
+      "compactSha256": "47adfd6b0eaaac9f55bb0add53ff89d49f13c5658043042dbee462469c7dcf64",
+      "nodes": 23243,
+      "actions": 241,
+      "assertions": 2847
+    },
+    {
+      "name": "cross-batch-semantic-conflict.json",
+      "historicalPath": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-principal-cumulative-draft/source-author/derivatives/cross-batch-semantic-conflict.json",
+      "historicalSha256": "160fee8489631aa20b90ea376a6a6b758e6b28c8086c465d38c954a8ad20c6ab",
+      "sha256": "f642bfc2c01e14e4d7c483e95a8d13bcba826f47f0d56b2a3fb1eb5395861cb2",
+      "oldTransformUnchanged": true,
+      "normalBytes": 883897,
+      "normalSha256": "f642bfc2c01e14e4d7c483e95a8d13bcba826f47f0d56b2a3fb1eb5395861cb2",
+      "compactBytes": 431963,
+      "compactSha256": "384f9e21780d79c0becfffe3e59567cb3854deaa62f96ec1cfd89058386cc67c",
+      "nodes": 23203,
+      "actions": 241,
+      "assertions": 2843
+    },
+    {
+      "name": "pagination-page-member.json",
+      "historicalPath": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-principal-cumulative-draft/source-author/derivatives/pagination-page-member.json",
+      "historicalSha256": "a1a0d7487185fd823a42aba81a4f5c9886d8f1ec513a6b9112dec8854eec0ee5",
+      "sha256": "b1543ef1c79c1224734b071df3af646dcb081405e8b82a1f7774e7ca7b7ce138",
+      "oldTransformUnchanged": true,
+      "normalBytes": 882556,
+      "normalSha256": "b1543ef1c79c1224734b071df3af646dcb081405e8b82a1f7774e7ca7b7ce138",
+      "compactBytes": 431284,
+      "compactSha256": "d341f1f115377e1e22ad61c82406b628014b89a6d028e4cd3d61c340c8f98fde",
+      "nodes": 23166,
+      "actions": 241,
+      "assertions": 2836
+    },
+    {
+      "name": "receipt-binding.json",
+      "historicalPath": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-principal-cumulative-draft/source-author/derivatives/receipt-binding.json",
+      "historicalSha256": "3a85d784b9d858cc5a4434c927a91c61fe4b5033b9828e66c008b033f4face9c",
+      "sha256": "3a12e4d502b35de4b129e9286935d0b13a90a6d7a1645c66e4966eb05540e628",
+      "oldTransformUnchanged": true,
+      "normalBytes": 882549,
+      "normalSha256": "3a12e4d502b35de4b129e9286935d0b13a90a6d7a1645c66e4966eb05540e628",
+      "compactBytes": 431277,
+      "compactSha256": "7b6ba11fe4e18fabbc86e8e6502d17394c085673c009939b3d27ad41ae16b95b",
+      "nodes": 23166,
+      "actions": 241,
+      "assertions": 2836
+    },
+    {
+      "name": "minimum-batch-body-conflict.json",
+      "historicalPath": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-principal-cumulative-draft/source-author/derivatives/minimum-batch-body-conflict.json",
+      "historicalSha256": "2a6a6dc6641aa0fa4023f6b09e0169293ba50d53dd42899715caa1bce16c0f6e",
+      "sha256": "ada9606921ad3cc18e0735773eba6d96722756fb70ed7ff18f25e54c41b55520",
+      "oldTransformUnchanged": true,
+      "normalBytes": 882563,
+      "normalSha256": "ada9606921ad3cc18e0735773eba6d96722756fb70ed7ff18f25e54c41b55520",
+      "compactBytes": 431291,
+      "compactSha256": "2b97a0137fdfdbc89208facc8820991a10e853eb81e975df7c8319e9f5c88207",
+      "nodes": 23166,
+      "actions": 241,
+      "assertions": 2836
+    },
+    {
+      "name": "effects-changed-poststate.json",
+      "historicalPath": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-principal-cumulative-draft/source-author/derivatives/effects-changed-poststate.json",
+      "historicalSha256": "c09b461f405b080bdc1e324a935aa168355562b7cead773ebac91a21fe383b09",
+      "sha256": "415962d52deba76b76880da8f92fd939e30b96e3815d1692fe88d7b4085b18ed",
+      "oldTransformUnchanged": true,
+      "normalBytes": 882563,
+      "normalSha256": "415962d52deba76b76880da8f92fd939e30b96e3815d1692fe88d7b4085b18ed",
+      "compactBytes": 431291,
+      "compactSha256": "7548b7563e8d2de79e51166594e84fa9edab869ed5942c55f05ca62d2baf0eb3",
+      "nodes": 23166,
+      "actions": 241,
+      "assertions": 2836
+    },
+    {
+      "name": "set-matched.json",
+      "historicalPath": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-principal-cumulative-draft/source-author/derivatives/set-matched.json",
+      "historicalSha256": "23809caa2e590f2c7ca05fb2b265a4f4a4a37ea4f1e6ee172d850d4c91582226",
+      "sha256": "93dcb83b83be0e98131b901babfa8ae2cd9a4fff36a91713795dd2b79c38d1f6",
+      "oldTransformUnchanged": true,
+      "normalBytes": 882556,
+      "normalSha256": "93dcb83b83be0e98131b901babfa8ae2cd9a4fff36a91713795dd2b79c38d1f6",
+      "compactBytes": 431284,
+      "compactSha256": "8f4dd13fae2dc14d271db2d98b4b801f083363271a6c51a979c421ceef30a14d",
+      "nodes": 23166,
+      "actions": 241,
+      "assertions": 2836
+    },
+    {
+      "name": "noop-link-metadata.json",
+      "historicalPath": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-principal-cumulative-draft/source-author/derivatives/noop-link-metadata.json",
+      "historicalSha256": "0bcf309dd7adc35ac74feee69ccc1ebb790516561ad8eaab87c35409466ddd89",
+      "sha256": "c235826bb5269ceeadfa63b061ea2d0abe734e095c98380b8fcc8d2a0bcc0448",
+      "oldTransformUnchanged": true,
+      "normalBytes": 882577,
+      "normalSha256": "c235826bb5269ceeadfa63b061ea2d0abe734e095c98380b8fcc8d2a0bcc0448",
+      "compactBytes": 431305,
+      "compactSha256": "af3e26a8dc8c10db76e241e4f71e9ea0c083c800808c99e59505197a2e465fbb",
+      "nodes": 23166,
+      "actions": 241,
+      "assertions": 2836
+    },
+    {
+      "name": "effects-zero-events.json",
+      "historicalPath": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-principal-cumulative-draft/source-author/derivatives/effects-zero-events.json",
+      "historicalSha256": "2de54fe76f21817df3c874ebbcc216ed2c83e08ce0335e8aa810b411c263cd4f",
+      "sha256": "3074a04ccce56af7d0527bcec7b7e7e8c84235aba4a49b59f476b7f41d737ab4",
+      "oldTransformUnchanged": true,
+      "normalBytes": 882702,
+      "normalSha256": "3074a04ccce56af7d0527bcec7b7e7e8c84235aba4a49b59f476b7f41d737ab4",
+      "compactBytes": 431339,
+      "compactSha256": "5cd0b657b9853a250de76aaf2aaa030eec005cf71be141bfb30855b9511890ac",
+      "nodes": 23170,
+      "actions": 241,
+      "assertions": 2836
+    },
+    {
+      "name": "conflict-retained-body.json",
+      "historicalPath": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-principal-cumulative-draft/source-author/derivatives/conflict-retained-body.json",
+      "historicalSha256": "7984ff8dd6952d11de6dfc93084a4a5b7d7d6f141e07edf257096bc8714403de",
+      "sha256": "bcd942f10666ed4e4202f136026c2523be08c1bc18e7f78f0d516afb8c98ff11",
+      "oldTransformUnchanged": true,
+      "normalBytes": 882543,
+      "normalSha256": "bcd942f10666ed4e4202f136026c2523be08c1bc18e7f78f0d516afb8c98ff11",
+      "compactBytes": 431271,
+      "compactSha256": "63e326ed425d02f1c37c8a6f939e79c0c61305bedffdb2ee171a8ce98938947f",
+      "nodes": 23166,
+      "actions": 241,
+      "assertions": 2836
+    },
+    {
+      "name": "minimum-readonly-credential.json",
+      "historicalPath": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-principal-cumulative-draft/source-author/derivatives/minimum-readonly-credential.json",
+      "historicalSha256": "055596aa93abcb8186c0fbeac8230017b44ef480f2826e47f072243737a8529b",
+      "sha256": "8ac8204ecf33a5ea949592dc5a1909446126a2a6f9b0bd7b572ecef90a7797cc",
+      "oldTransformUnchanged": true,
+      "normalBytes": 882554,
+      "normalSha256": "8ac8204ecf33a5ea949592dc5a1909446126a2a6f9b0bd7b572ecef90a7797cc",
+      "compactBytes": 431282,
+      "compactSha256": "55c5dfe2db3576d31465f94da27854cc94d64810cc5abc440d041b47b681960c",
+      "nodes": 23166,
+      "actions": 241,
+      "assertions": 2836
+    },
+    {
+      "name": "effects-receipt-order.json",
+      "historicalPath": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-principal-cumulative-draft/source-author/derivatives/effects-receipt-order.json",
+      "historicalSha256": "bff6d493c2f5472c3447d3ac796a5dccd692c8ac7a285b34f85fdb673f192b43",
+      "sha256": "847cc31f97c7d2bac31d8e58fdada60bdf2a631a41a2e3f3208756aa033a525c",
+      "oldTransformUnchanged": true,
+      "normalBytes": 882556,
+      "normalSha256": "847cc31f97c7d2bac31d8e58fdada60bdf2a631a41a2e3f3208756aa033a525c",
+      "compactBytes": 431284,
+      "compactSha256": "606e955c233c6afea21f106039302229ea103cc3bf618c57d8a964a3571742be",
+      "nodes": 23166,
+      "actions": 241,
+      "assertions": 2836
+    },
+    {
+      "name": "noop-group-inventory-and-head.json",
+      "historicalPath": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-principal-cumulative-draft/source-author/derivatives/noop-group-inventory-and-head.json",
+      "historicalSha256": "210e85e9a05026f0e328a25c7e797c5687676a24a80f16c28b58bbf242d61cba",
+      "sha256": "2ce431dcde0e6fa73a8ddbe75feb2f05c15dabc2ad17695767f36c1937a07aa4",
+      "oldTransformUnchanged": true,
+      "normalBytes": 882619,
+      "normalSha256": "2ce431dcde0e6fa73a8ddbe75feb2f05c15dabc2ad17695767f36c1937a07aa4",
+      "compactBytes": 431294,
+      "compactSha256": "dcf726917fb7728ccd71e2eb793dbb9a566ed2be0fcd6e76a3d1ab2e4a5476f3",
+      "nodes": 23168,
+      "actions": 241,
+      "assertions": 2836
+    },
+    {
+      "name": "pagination-inline-boundary.json",
+      "historicalPath": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-principal-cumulative-draft/source-author/derivatives/pagination-inline-boundary.json",
+      "historicalSha256": "4f67d52e23020d79831862fc16d7ff8389acdb67f0ca0a8e53bddd4ddf2a291f",
+      "sha256": "f6a7e11ed67feeae91773b2e704e50f9f56b6e5177fa5e06fe0d9a4a651c8b59",
+      "oldTransformUnchanged": true,
+      "normalBytes": 882556,
+      "normalSha256": "f6a7e11ed67feeae91773b2e704e50f9f56b6e5177fa5e06fe0d9a4a651c8b59",
+      "compactBytes": 431284,
+      "compactSha256": "a241b5cd52bd1bffedc20d9f299ed0f11be3bf03f049b323bcd344f6b00ce3dd",
+      "nodes": 23166,
+      "actions": 241,
+      "assertions": 2836
+    },
+    {
+      "name": "receipt-method.json",
+      "historicalPath": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-principal-cumulative-draft/source-author/derivatives/receipt-method.json",
+      "historicalSha256": "dec0cbb99ff51f22c0bf821fdf27e85f5406cbefcecf16201b1bd37a2c02a202",
+      "sha256": "89e0cc7ae7ba9a53f3fc902285b5370d394440f1f019dc85464592aeae2ff6a7",
+      "oldTransformUnchanged": true,
+      "normalBytes": 882557,
+      "normalSha256": "89e0cc7ae7ba9a53f3fc902285b5370d394440f1f019dc85464592aeae2ff6a7",
+      "compactBytes": 431285,
+      "compactSha256": "f2e8a4914e048e79251cc83a108c7d4d36b4501b56f774314d88324610b8b4db",
+      "nodes": 23166,
+      "actions": 241,
+      "assertions": 2836
+    },
+    {
+      "name": "sequence-member-successful-delete.json",
+      "historicalPath": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-principal-cumulative-draft/source-author/derivatives/sequence-member-successful-delete.json",
+      "historicalSha256": "9ddd6b3bc305546ac4cd1d6dda4aeabf28f0c6c177d14c0495b92228aac7d690",
+      "sha256": "a24cfe4ef2efa2cab57b3c53d06e02a1a4cb7ec02b65956609a6c24a7e1d87ac",
+      "oldTransformUnchanged": true,
+      "normalBytes": 882550,
+      "normalSha256": "a24cfe4ef2efa2cab57b3c53d06e02a1a4cb7ec02b65956609a6c24a7e1d87ac",
+      "compactBytes": 431278,
+      "compactSha256": "4ff88cb09ac9eae131f5053780ca7091130d63897b372b419f59cdf23fafe2cf",
+      "nodes": 23166,
+      "actions": 241,
+      "assertions": 2836
+    },
+    {
+      "name": "conditional-nonmatching-if-none-match.json",
+      "sha256": "fae142c288c173933420338aab41927c64ed4d312e5e397f9d80f54c26672dc8",
+      "soleMutation": "transactional.http.conditional-reads/conditional-get raw if-none-match * -> quoted conditional-no-match",
+      "expectedFailureIds": [
+        "conditional-get:status",
+        "conditional-get:body-absent"
+      ],
+      "expectedHttp": 4,
+      "diagnosticMaximumHttp": 14,
+      "normalBytes": 882579,
+      "normalSha256": "fae142c288c173933420338aab41927c64ed4d312e5e397f9d80f54c26672dc8",
+      "compactBytes": 431307,
+      "compactSha256": "42d30ba9639b91daaba5efbfc1cbf530ef2e6eda4e934e787cf87b7661fa1a6e",
+      "nodes": 23166,
+      "actions": 241,
+      "assertions": 2836
+    }
+  ],
+  "maxDerivativeNormalBytes": 888674,
+  "maxDerivativeNodes": 23322,
+  "proposedGuards": {
+    "canonicalDisk": 873360,
+    "canonicalDiskDeltaFrom488280": 385080,
+    "canonicalNormal": 886652,
+    "canonicalNodes": 23230,
+    "canonicalNodesDeltaFrom13019": 10211,
+    "coverageDiskAndNormal": 134592,
+    "coverageDeltaFrom70662": 63930,
+    "derivativeNormal": 892770,
+    "derivativeNodes": 23386
+  },
+  "guardsAmended": "proposed constants pending independent root acceptance",
+  "productExecuted": false,
+  "historicalMeasurement": {
+    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-principal-cumulative-draft/source-author/measurements.json",
+    "sha256": "8f0b66cfee76c8af45883764383224f91d73ed3639b168edabb3fee7da8ebfa8"
+  }
+}

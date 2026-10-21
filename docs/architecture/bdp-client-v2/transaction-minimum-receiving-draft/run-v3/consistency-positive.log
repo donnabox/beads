@@ -1,0 +1,13 @@
+
+ RUN  v4.1.10 /Users/dbox/repos/wt/vickie/vickie-minimum-receiving
+
+ ✓ packages/server/src/transaction-consistency.test.ts > private minimum-read subset > snapshots canonical supported tuples without getters or opaque-token guesses 8ms
+ ✓ packages/server/src/transaction-consistency.test.ts > private minimum-read subset > only turns actual behind observations into timeout after the original finite deadline 1ms
+ ✓ packages/server/src/transaction-consistency.test.ts > distinguishes closed minimum receiving syntax from supported position identities 1ms
+
+ Test Files  1 passed (1)
+      Tests  3 passed (3)
+   Start at  15:55:29
+   Duration  145ms (transform 56ms, setup 16ms, import 63ms, tests 10ms, environment 0ms)
+
+JSON report written to /Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-minimum-receiving-draft/run-v3/consistency-positive.results.json

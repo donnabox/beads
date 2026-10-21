@@ -1,0 +1,57 @@
+{
+  "state": "CLOSED DESIGN ONLY; executable UNWRITTEN",
+  "clockOrigin": "first monotonic statement before remaining imports/setup; same earlier origin for all nested tasks",
+  "unit": {
+    "outer": 120,
+    "TERM": 115,
+    "KILL": 119
+  },
+  "realHost": {
+    "outer": 150,
+    "TERM": 145,
+    "KILL": 149
+  },
+  "workerAdmission": 10,
+  "deadlineEquality": "refuse",
+  "potentiallyBlockingOperations": "owned worker, never supervising loop",
+  "stdio": "owned nonblocking bounded full-byte writers, actual EOF and terminal receipts",
+  "ownership": {
+    "directHandles": "immediately register before fallible inventory; retain unreaped through group quiet",
+    "nestedGroups": "live pre-execution bootstrap handshake + fresh PID/start/PPID/PGID/comm authentication before peer role ack",
+    "allKnownPGIDs": "fresh full census including reaped leader groups; zombie not absence",
+    "identityChange": "sticky UNKNOWN, no historical numeric signal",
+    "groupResurrection": "UNKNOWN",
+    "censusSeconds": 0.2,
+    "censusBytes": 262144,
+    "censusStderrBytes": 4096
+  },
+  "publication": "owned publisher and postchecks under same clock; tentative record not root terminal receipt",
+  "externalHardLimiter": "UNRESOLVED, must actually enforce120/150, not Python elapsed claim",
+  "executablePath": null,
+  "evaluated": false,
+  "acceptanceReady": false,
+  "productReleased": false,
+  "requiredReceiptFields": [
+    "harnessImplementationSha256",
+    "subjectImplementationSha256",
+    "rootReleaseSha256",
+    "session",
+    "case",
+    "variant",
+    "wholeClockOrigin",
+    "actualWholeElapsedSeconds",
+    "rawExit",
+    "directCreationRecords",
+    "authenticatedIdentities",
+    "knownPGIDs",
+    "freshPostReapCensus",
+    "actualSignalReceipts",
+    "forcedCleanup",
+    "rawStdioByteHashes",
+    "stdioEOF",
+    "controlResultSha256OrMissing",
+    "missingOutputs",
+    "ownershipUnknown",
+    "clockUnknown"
+  ]
+}

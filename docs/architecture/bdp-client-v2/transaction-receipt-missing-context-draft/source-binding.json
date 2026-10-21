@@ -1,0 +1,41 @@
+{
+  "workspace": "/Users/dbox/repos/wt/vickie/vickie-sequence-member-evidence",
+  "branch": "codex/vickie-receipt-missing-context",
+  "head": "015cac1aa4fa827cc4a2c647dff08454c6c8e6f8",
+  "tree": "2e16329e195eb8214836de20340a5887236d78f0",
+  "diffSha256": "837bacdc192bcf0401171ecc9a8312ae034beabed7b69620b6a3beaef0cb9de7",
+  "files": {
+    "packages/server/src/transaction-store.ts": {
+      "sha256": "eec0f4723c8fcfb2245d2e80d77b2de014235cdb208101d523c0ab83fde78eed",
+      "new": false
+    },
+    "packages/server/src/transaction-service.ts": {
+      "sha256": "53f655faf494209996aac2e0f93a4c2c785e471f66aac6af9ea41f92c9cfbe00",
+      "new": false
+    },
+    "packages/server/src/transaction-http.ts": {
+      "sha256": "0e42f034c3aada6fd0a7696897200b336d2b0c547d69497e46500f6da4c2267a",
+      "new": false
+    },
+    "packages/server/src/transaction-receipt-pages.test.ts": {
+      "sha256": "e944bd61590f78a510b427b0f5d6eb7856f6b3715f9f0e5dc590bf8d4724c6a1",
+      "new": false
+    },
+    "packages/server/src/transaction-service.test.ts": {
+      "sha256": "c61ba7254ab1cf39abf85e6020e4f846ffb684740076de39f43fe12d509093b9",
+      "new": false
+    },
+    "packages/server/src/transaction-http.test.ts": {
+      "sha256": "3fc5c6750a00968021d2ecc78049535ebbe9a3d2d7684108f2807e8b2276e899",
+      "new": false
+    },
+    "apps/bdptest/src/transactional-receipt-missing-context-installed.test.ts": {
+      "sha256": "eaf1289ed0a8318ce949704ba4cd983755c6f5fd20ffe9d61712869894cb5064",
+      "new": true
+    },
+    "docs/design/transaction-implementation-progress.md": {
+      "sha256": "28b30246931ccf39588a0dd654715aa7f00eda95893a9b5ed8ec10ffe7fdf6fc",
+      "new": false
+    }
+  }
+}

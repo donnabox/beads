@@ -1,0 +1,67 @@
+{
+  "utc": "2026-10-18T13:42:27.254702+00:00",
+  "durableReleaseCommit": "eefa95a6195af5202641b2f8bd22e9b29d799f60",
+  "rootReleaseSha256": "366ba695b8445991b9dbd8a8d2c5b4986d0a5028421bd92e9393ea47fdba55e1",
+  "gateSha256": "56bfd065715879f72fb75015270d946b716f47208f14c40b9e60cadfd91fcdbc",
+  "stages": [
+    "focused-source",
+    "audit-focused-source",
+    "legacy-changefeed-source",
+    "audit-legacy-changefeed-source",
+    "legacy-installed-contracts-source",
+    "audit-legacy-installed-contracts-source",
+    "schema-confinement-source",
+    "audit-schema-confinement-source"
+  ],
+  "actualRootArgv": [
+    [
+      "/opt/homebrew/opt/python@3.14/bin/python3.14",
+      "/Users/dbox/repos/wt/vickie/bdp-integration-logs/tx-discovery-validation-preparation-8/run.py",
+      "final",
+      "focused-source"
+    ],
+    [
+      "/opt/homebrew/opt/python@3.14/bin/python3.14",
+      "/Users/dbox/repos/wt/vickie/bdp-integration-logs/tx-discovery-validation-preparation-8/run.py",
+      "final",
+      "audit-focused-source"
+    ],
+    [
+      "/opt/homebrew/opt/python@3.14/bin/python3.14",
+      "/Users/dbox/repos/wt/vickie/bdp-integration-logs/tx-discovery-validation-preparation-8/run.py",
+      "final",
+      "legacy-changefeed-source"
+    ],
+    [
+      "/opt/homebrew/opt/python@3.14/bin/python3.14",
+      "/Users/dbox/repos/wt/vickie/bdp-integration-logs/tx-discovery-validation-preparation-8/run.py",
+      "final",
+      "audit-legacy-changefeed-source"
+    ],
+    [
+      "/opt/homebrew/opt/python@3.14/bin/python3.14",
+      "/Users/dbox/repos/wt/vickie/bdp-integration-logs/tx-discovery-validation-preparation-8/run.py",
+      "final",
+      "legacy-installed-contracts-source"
+    ],
+    [
+      "/opt/homebrew/opt/python@3.14/bin/python3.14",
+      "/Users/dbox/repos/wt/vickie/bdp-integration-logs/tx-discovery-validation-preparation-8/run.py",
+      "final",
+      "audit-legacy-installed-contracts-source"
+    ],
+    [
+      "/opt/homebrew/opt/python@3.14/bin/python3.14",
+      "/Users/dbox/repos/wt/vickie/bdp-integration-logs/tx-discovery-validation-preparation-8/run.py",
+      "final",
+      "schema-confinement-source"
+    ],
+    [
+      "/opt/homebrew/opt/python@3.14/bin/python3.14",
+      "/Users/dbox/repos/wt/vickie/bdp-integration-logs/tx-discovery-validation-preparation-8/run.py",
+      "final",
+      "audit-schema-confinement-source"
+    ]
+  ],
+  "freshAttemptNoRetry": true
+}

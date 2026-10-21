@@ -1,0 +1,24 @@
+--- a/control.json
++++ b/control.json
+@@ -1,8 +1,8 @@
+ {
+-  "rootLaunchReleased": false,
+-  "packet": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-trusted-startup-code-review-1/claude-code-review",
++  "rootLaunchReleased": true,
++  "packet": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/current-changefeed-code-review-1/claude-code-review",
+   "expectedSession": "2026-10-18T02:16:24Z-549f",
+-  "sourceRoot": "/Users/dbox/repos/wt/vickie/vickie-trusted-startup-configuration",
++  "sourceRoot": "/Users/dbox/repos/wt/vickie/vickie-current-changefeed-minimum",
+   "reviewerArgv": [
+     "/opt/homebrew/bin/claude",
+     "--safe-mode",
+@@ -25,7 +25,7 @@
+   "termAtSeconds": 1790,
+   "killAtSeconds": 1798,
+   "noRetry": true,
+-  "authority": "CLOSED FIRST trusted-startup CODE review; exact author2 + root native/source/index acceptance bound. One default-model read-only attempt only after independent mechanics/root release. No startup PLAN retry.",
+-  "predecessorIndexSha256": "9d0b52499d578df13ab5ead3626eb4b73737432b476729325ee380218f04b93c",
++  "authority": "CLOSED current-changefeed CODE scaffold; final authored source/root static acceptance, final supervision indexes and independent mechanics acceptance UNRESOLVED. One fresh CODE attempt only; no D1 PLAN retry.",
++  "predecessorIndexSha256": "c0c08fb25496dad113a6dab2a5cdf1009a6704c04d9eebc6584460a0ee1860d2",
+   "genericSupervision4IndexSha256": "7cd5029dc67647cc9020b15e8335938e6f7b9a05791593ef75ebf9378f1c2e89"
+ }

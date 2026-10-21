@@ -1,0 +1,132 @@
+{
+  "accepted": true,
+  "createdAt": "2026-10-15T19:31:09.814739+00:00",
+  "sourceBindingSha256": "ad840a73fe10f830e58959dcc7642b35ec91f0a2cea4db4f4fb9912f940df0d0",
+  "rootReleaseSha256": "075a07f4c861e96e51a73b83239be0523f8a9a70f2429e2810b21b0bb57edfe0",
+  "stages": [
+    {
+      "stage": "setup",
+      "resultSha256": "a3735d88f7522798b10e57bbd311368c7716b97d53d21877c11096fcc85f9faf",
+      "logSha256": "ebb1da887c32e7513a5f1e4c72cec74d0ff145a7cd74fd8832c6e167b0d98472",
+      "elapsedSeconds": 1.0244913748465478,
+      "retainedTempEntries": [
+        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-same-key-overlap-draft/execution-preparation/run/setup.tmp/node-compile-cache"
+      ]
+    },
+    {
+      "stage": "typecheck",
+      "resultSha256": "92e238b285ca99030a61cde498187ed6085703381a57dae067787b003608bc64",
+      "logSha256": "91d54ffbee73a3ac72294d090e58d77745f8b93edbf94b862807698273a6505a",
+      "elapsedSeconds": 2.0062215831130743,
+      "retainedTempEntries": [
+        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-same-key-overlap-draft/execution-preparation/run/typecheck.tmp/node-compile-cache"
+      ]
+    },
+    {
+      "stage": "build",
+      "resultSha256": "2f31eada4cd20eafbdfa90988222ceda0a82526a0f5b17a6402ea08bda3e5016",
+      "logSha256": "232dac5e840e45b3bb06e6e04249b5241f2e1b4f6c797a22c046d916302ac208",
+      "elapsedSeconds": 1.4623713330365717,
+      "retainedTempEntries": [
+        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-same-key-overlap-draft/execution-preparation/run/build.tmp/node-compile-cache"
+      ]
+    },
+    {
+      "stage": "format-check",
+      "resultSha256": "c67f7a322b12eb64e8bbdc851a8c3df0a16b594e66b6ace9fb6206b314fd63a1",
+      "logSha256": "26b77af25b3259e12d0313a4a0162aff14894be61a8fff26c8d3c74e78469c04",
+      "elapsedSeconds": 1.9406800828874111,
+      "retainedTempEntries": [
+        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-same-key-overlap-draft/execution-preparation/run/format-check.tmp/node-compile-cache"
+      ]
+    },
+    {
+      "stage": "lint",
+      "resultSha256": "dc64e0d9e513766123e3860d83e10bbe49d921751dab34e91426c174fe2ed5f9",
+      "logSha256": "5fd3d20b9476ac0c070aced992c8bc88048959aab4adcce0f8c912edb2f35968",
+      "elapsedSeconds": 1.0230954999569803,
+      "retainedTempEntries": [
+        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-same-key-overlap-draft/execution-preparation/run/lint.tmp/node-compile-cache"
+      ]
+    },
+    {
+      "stage": "boundaries",
+      "resultSha256": "4c2a7a5e5c8e6677c6c4f906a8ff7c22af580cd030808dd989127c2c611af4d9",
+      "logSha256": "53f4cd856bde25513486a59799c5a05e0650fbb756bf1580fb07e56c2fdeeef3",
+      "elapsedSeconds": 1.1085569998249412,
+      "retainedTempEntries": [
+        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-same-key-overlap-draft/execution-preparation/run/boundaries.tmp/node-compile-cache"
+      ]
+    },
+    {
+      "stage": "read-seal",
+      "resultSha256": "2aaf5e6d472d956896f531025c0c6359f783a0835a705cd9547c66a979b53cb0",
+      "logSha256": "79749014f712bd5d838b93088c70fef4cca1ae63d7738a613716ab37fa1295ba",
+      "elapsedSeconds": 0.9122815420851111,
+      "retainedTempEntries": [
+        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-same-key-overlap-draft/execution-preparation/run/read-seal.tmp/node-compile-cache"
+      ]
+    },
+    {
+      "stage": "build-inventory",
+      "resultSha256": "50c1e6f2cb3898bbb03244aa325568e27f145b7ce3d99b06dcea563948d53bd2",
+      "logSha256": "5e5bae8dcb5f24aea791bfb533525b213d08931e5240f06dab36a04d1c68cc21",
+      "elapsedSeconds": 0.6188578330911696,
+      "retainedTempEntries": []
+    }
+  ],
+  "buildInventorySha256": "7ad9c4ea84f900c395b22664927295b81e252d280e6ad0fc11c1ad7c15cd156f",
+  "counts": {
+    "inputFiles": 671,
+    "files": 312,
+    "emittedFiles": 440
+  },
+  "sampledPids": [
+    44235,
+    44237,
+    44243,
+    44299,
+    44301,
+    44308,
+    44331,
+    44544,
+    44546,
+    44559,
+    44582,
+    44583,
+    44618,
+    44619,
+    44673,
+    44675,
+    44680,
+    44705,
+    44709,
+    44710,
+    44712,
+    44714,
+    44737,
+    44739,
+    44744,
+    44768,
+    44774,
+    44791,
+    44793,
+    44797,
+    44821,
+    44839,
+    44841,
+    44846,
+    44869,
+    44940,
+    44942,
+    44947,
+    44951
+  ],
+  "sampledPidsIndependentlyAbsent": true,
+  "warnings": "format one existing 3.5MiB matrix exceeds size limit; lint exits0 with828warnings/52infos, truncated diagnostics retained as actual log. No claim zero diagnostics.",
+  "sourceAttribution": "Actual dirty98c600 build remains dirty98c600, not later candidate; bridge required if committed unchanged.",
+  "productCallbacks": 0,
+  "http": 0,
+  "productChildren": 0,
+  "councilPending": true
+}

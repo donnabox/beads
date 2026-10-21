@@ -1,0 +1,58 @@
+apps/bdptest/src/transactional-alias-installed.test.ts format ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+  × Formatter would have printed the following content:
+  
+    723 723 │         accept: "text/plain",
+    724 724 │       };
+    725     │ - ····const·get·=·await·exchange(
+    726     │ - ······"GET",
+    727     │ - ······"alias/work",
+    728     │ - ······503,
+    729     │ - ······opaque,
+    730     │ - ······undefined,
+    731     │ - ······"transactionalProblem",
+    732     │ - ····);
+    733     │ - ····expect(get.value).toMatchObject({·code:·"catch-up-timeout",·status:·503,·retry:·"after-delay"·});
+        725 │ + ····const·get·=·await·exchange("GET",·"alias/work",·503,·opaque,·undefined,·"transactionalProblem");
+        726 │ + ····expect(get.value).toMatchObject({
+        727 │ + ······code:·"catch-up-timeout",
+        728 │ + ······status:·503,
+        729 │ + ······retry:·"after-delay",
+        730 │ + ····});
+    734 731 │       assertContext(get.response);
+    735 732 │       expect(get.response.bodyOctets).toBeGreaterThan(0);
+  
+
+packages/server/src/transaction-http.test.ts format ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+  × Formatter would have printed the following content:
+  
+    3139 3139 │       target = `${f.runtime.scope}alias/work`;
+    3140 3140 │     const put = await observe("POST", f.runtime.targets.putAlias, () =>
+    3141      │ - ····f.post(
+    3142      │ - ······JSON.stringify({·alias:·"alias/work",·target:·"beads/a"·}),
+    3143      │ - ······"alias-min-put",
+    3144      │ - ······"putAlias",
+    3145      │ - ····),
+         3141 │ + ····f.post(JSON.stringify({·alias:·"alias/work",·target:·"beads/a"·}),·"alias-min-put",·"putAlias"),
+    3146 3142 │     );
+    3147 3143 │     expect(put.status).toBe(200);
+    ········· │ 
+    3239 3235 │     }
+    3240 3236 │     // Unsupported private foreign-opaque gaps, not qualified foreign-view/expiry results.
+    3241      │ - ··for·(const·patch·of·[
+    3242      │ - ····{·"bdp-scope-epoch":·"foreign"·},
+    3243      │ - ····{·"bdp-authorization-view":·"foreign"·},
+    3244      │ - ··])·{
+         3237 │ + ··for·(const·patch·of·[{·"bdp-scope-epoch":·"foreign"·},·{·"bdp-authorization-view":·"foreign"·}])·{
+    3245 3238 │       for (const method of ["GET", "HEAD"] as const) {
+    3246 3239 │         const response = await get(target, {
+  
+
+Checked 4 files in 24ms. No fixes applied.
+Found 2 errors.
+format ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+  × Some errors were emitted while running checks.
+  
+

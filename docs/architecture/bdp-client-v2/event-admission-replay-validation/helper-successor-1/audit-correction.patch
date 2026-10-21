@@ -1,0 +1,13 @@
+--- /Users/dbox/repos/wt/vickie/bdp-integration-logs/event-admission-replay-validation/format-successor-1/audit.py
++++ /Users/dbox/repos/wt/vickie/bdp-integration-logs/event-admission-replay-validation/helper-successor-1/audit.py
+@@ -131,7 +131,9 @@
+   for key in ['installedPayloadDigest','installedContractsDigest','policyDigest','authenticationDigest']:fingerprint(served[key])
+   fingerprint(binding['runtimeConfigurationIdentity']);fixture=W/'packages/conformance/test-support/transactional/fixture-v1.json';fj=read(fixture)
+   require(served['fixtureDigest']==sha(fixture.read_bytes()) and served['fixtureId']==fj['id'] and served['capabilities']==sorted(fj['capabilities']),'Fixture binding');require(binding['operationTargets']=={n:scope+'operations/'+v for n,v in ex['operationTargets'].items()},'Operation target binding')
+-  proof=verify_consumer(g);require(o['entryLiteral']==proof['entryRealpath'] and Path(o['entry']).resolve(strict=True)==Path(proof['entryRealpath']) and o['entrySha256']==proof['entrySha256'] and served['installedPayloadDigest']==proof['payloadIdentity'],'External entry/payload')
++  proof=verify_consumer(g)
++  require(Path(o['entry']).resolve(strict=True)==Path(proof['entryRealpath']) and o['entrySha256']==proof['entrySha256'] and served['installedPayloadDigest']==proof['payloadIdentity'],'External entry/payload')
++  if not history:require(o['entryLiteral']==proof['entryRealpath'],'External entry literal')
+   operations=[{'operation':'createBead','id':'beads/'+id,'type':scope+'types/task','properties':{'n':0}} for id in ['a','b']]
+   if not history:operations.append({'operation':'createLink','id':'links/l','type':scope+'types/link','source':'beads/a','target':'beads/b','properties':{'n':0}})
+   seed=json.dumps({'operations':operations},separators=(',',':')).encode();scalars(o,{'seedKey':'event-restart-two-created-v1' if history else 'event-replay-minimum-three-operations-v1','seedBodyBytes':len(seed),'seedBodySha256':sha(seed)})

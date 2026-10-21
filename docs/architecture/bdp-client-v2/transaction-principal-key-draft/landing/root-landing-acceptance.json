@@ -1,0 +1,51 @@
+{
+  "decision": "accepted for exact-head landing checks",
+  "at": "2026-10-15T19:11:13.551842+00:00",
+  "head": "09bcaab75800cae89cf738ea88f012168ff733fc",
+  "tree": "fde859381752d15c8caabcbc946d3c2e384b9cf6",
+  "base": "f5511718371a6935614eae6756e796cef71570c2",
+  "testedMerge": "10a684d8089fa76e9c4a8ccaa3759965ad5bc412",
+  "orderedParents": [
+    "f5511718371a6935614eae6756e796cef71570c2",
+    "09bcaab75800cae89cf738ea88f012168ff733fc"
+  ],
+  "run": 38789264246,
+  "job": 116609269611,
+  "allStepsPassed": 27,
+  "testsPassed": 9310,
+  "testsSkipped": 1,
+  "testFilesPassed": 179,
+  "suiteSeconds": 764.88,
+  "scope": [
+    "apps/bdptest/src/transactional-principal-key-installed.test.ts",
+    "docs/design/transaction-implementation-progress.md"
+  ],
+  "evidence": {
+    "root-final-council.json": {
+      "sha256": "c13498fa6d66402130d23aeb9d6f4e6a09d8807b9cdc775ed5e07112a2a9a7f0"
+    },
+    "execution-preparation-v2/root-source-acceptance.json": {
+      "sha256": "b44f12a611a2f0c0eea7ff28fd68a94e1a02b0c38d8a8b902659f34a78363dda"
+    },
+    "execution-preparation-v2/root-installed-acceptance.json": {
+      "sha256": "9395874097fe2f0b17f1221d7533ddd7313d193bfa5830f0b08f50344b843a99"
+    },
+    "execution-preparation-v2/native-installed-audit.md": {
+      "sha256": "241a98a99c80ef8923142e42bc53061af0eee9c98cc773901d37d7c2b480431d"
+    },
+    "landing/final-source.json": {
+      "sha256": "39ba2bc5cd749f4eab699abcb00e3bb9b4873cd3331d15d5c3ad39f9ba8664b8"
+    },
+    "landing/ci-final/raw-job-direct.log": {
+      "sha256": "286c87bebbeb4a989ad235f9fac8d82ef33573414e5a2c70d7d49ce600d8f09b"
+    },
+    "landing/ci-final/run.json": {
+      "sha256": "365f5421026548578f5415cd8622e37dfeddd830d77dcf6180e5833af4eadb99"
+    },
+    "landing/ci-final/job.json": {
+      "sha256": "8ed253ccc25bc0e8e8d6b637e75eefc0f8ba9795477ea81d86b07ee8ee82ce45"
+    }
+  },
+  "rootRead": "Complete code council dispositions, actual installed audit, full source scope and direct raw CI checkout/summary verified. Historical evidence attribution preserved.",
+  "profileQualification": false
+}

@@ -1,0 +1,28 @@
+{
+  "accepted": true,
+  "sourceCommit": "c02ccc3706f2e258d380805162a8c47dbb73f4e1",
+  "attemptedHttp": 192,
+  "childLaunches": 21,
+  "closedChildren": 21,
+  "elapsedMs": 4717.2486659999995,
+  "selectedRowsPassed": [
+    "transactional.batch.atomic-commit",
+    "transactional.batch.rollback",
+    "transactional.batch.deletion-safety",
+    "transactional.batch.no-op-entries",
+    "transactional.set.mutation",
+    "transactional.set.zero-match",
+    "transactional.set.cardinality",
+    "transactional.set.singleton-targets",
+    "transactional.receipt.readable",
+    "transactional.receipt.pagination",
+    "transactional.idempotency.conflict",
+    "transactional.idempotency.cross-carrier",
+    "transactional.idempotency.failed-retained"
+  ],
+  "reportSha256": "9db7c708c7c6fb84e22104373cdcf525f9a2702a700871d1b45bcf75a33c70d1",
+  "provenanceSha256": "bd51cc4444d5cfe3e58110e9632cafacca187f83a1b49eeda4f92e0a133ff8c6",
+  "claimEligible": false,
+  "cleanup": "No owned processes/runtime roots; Node cache retained.",
+  "basis": "Root checked genuine report rows/assertions/wire counts, exact source/entry/payload/session/config bindings and exact one-case success. Unredacted hard hook assertions and literal oracles ran in reviewed test; redacted report is not a substitute for wire values."
+}

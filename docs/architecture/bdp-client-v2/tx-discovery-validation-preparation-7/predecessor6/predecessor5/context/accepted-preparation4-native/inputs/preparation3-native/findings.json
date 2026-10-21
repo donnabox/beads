@@ -1,0 +1,30 @@
+{
+  "accepted": false,
+  "annotationAccepted": true,
+  "findings": [
+    {
+      "id": "N1",
+      "priority": "Medium",
+      "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/tx-discovery-validation-preparation-3/implementation-hashes.json",
+      "line": 15,
+      "relatedPath": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/tx-discovery-validation-preparation-3/gate.py",
+      "relatedLine": 101,
+      "title": "Implementation file record objects are incompatible with unchanged gate",
+      "evidence": "Preparation2 files values are SHA256 strings. Preparation3 all486 values are objects {sha256,bytes}. load_gate directly compares sha((P/f).read_bytes()) == h, which is always false for a dictionary. The first record README.md would be refused before a subprocess attempt. This is a static type/shape inference, not an observed helper failure.",
+      "requestedCorrection": "Freeze a separate DATA-only successor whose implementation files values remain SHA strings, as required by accepted gate; keep byte counts in complete physical preparation index. Rehash every dependent control/index pin and genuine forward/inverse adaptation. Preserve all five helper bytes and all original packets.",
+      "executionObserved": false
+    },
+    {
+      "id": "N2",
+      "priority": "Low",
+      "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/tx-discovery-validation-preparation-3/source-audit-contract.json",
+      "line": 5,
+      "relatedPath": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/tx-discovery-validation-preparation-3/release-gates.md",
+      "relatedLine": 3,
+      "title": "Two current-source labels retain predecessor binary identity",
+      "evidence": "sourceBinaryDiffSha256 still6458c66715de3b6d2e86ae9c0d10efd1b7c146d81ba53da8028037ca9d0e4e89 and release-gates says binary6458, while source-binding/root actual binary is6eea8983e577d393efe2c663bedd3d2becaeac3b4258a49ab7d3f89740174fe1. Executable source_check uses the correct source-binding, so this does not bypass its check.",
+      "requestedCorrection": "Rebind these two active descriptive source labels in the separate successor to6eea; preserve all semantic report/selection contracts and historical6458 evidence.",
+      "executionObserved": false
+    }
+  ]
+}

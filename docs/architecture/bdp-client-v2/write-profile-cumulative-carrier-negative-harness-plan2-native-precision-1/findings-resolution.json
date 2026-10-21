@@ -1,0 +1,24 @@
+{
+  "CNH-N1": {
+    "actualControlExecuted": false,
+    "baselineReachesLaterGuardBoundaryWithoutExecutingIt": true,
+    "baselineSha256": "71420a62c4a8843ff69a3c097e2b307f85c9484a7d57946abba4a91baa00d44e",
+    "mutantSha256": "ad057918888303ad35d035e3843bdafa3bef77a5bb7c2caa4d8caf1e6b09bdae",
+    "noInjectedRefusal": true,
+    "onlyEarlierIOFacade": true,
+    "originalDocumentReadShaRequirePreserved": true,
+    "originalTarget": "gate.load_gate verify-installed-consumer177-179",
+    "staticallyClosed": true
+  },
+  "CNH-N2": {
+    "actualBoundary": "subjectBegin+120",
+    "coverageWaived": false,
+    "earlierErrorNotSubstitute": true,
+    "mayDispatch": false,
+    "mayNormallyMatch": false,
+    "normalBoundary": "ROOTorigin+115 strict, ROOTorigin<=subjectBegin",
+    "requiredSelector": "C16/IO-publication-after-cutoff",
+    "rootRemainingCoverageDispositionRequired": true,
+    "staticallyClosedAsExplicitBlockedCoverage": true
+  }
+}

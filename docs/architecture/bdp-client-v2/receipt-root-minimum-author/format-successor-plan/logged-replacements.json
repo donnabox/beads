@@ -1,0 +1,22 @@
+[
+  {
+    "file": "apps/bdptest/src/transactional-minimum-receiving-installed.test.ts",
+    "before": "      if (child && !cleanupExceeded && child.child.exitCode === 0 && child.child.signalCode === null)\n",
+    "after": "      if (\n        child &&\n        !cleanupExceeded &&\n        child.child.exitCode === 0 &&\n        child.child.signalCode === null\n      )\n"
+  },
+  {
+    "file": "packages/server/src/transaction-service.test.ts",
+    "before": "      await service.receiptAtMinimum(\n        { kind: \"authenticated\", principal },\n        id,\n        { ...supplied, minimumPosition: \"unknown\" },\n      ),\n",
+    "after": "      await service.receiptAtMinimum({ kind: \"authenticated\", principal }, id, {\n        ...supplied,\n        minimumPosition: \"unknown\",\n      }),\n"
+  },
+  {
+    "file": "packages/server/src/transaction-service.test.ts",
+    "before": "  expect({ roots, waits, tick, submits }).toStrictEqual({ roots: 10, waits: 4, tick: 11, submits: 2 });\n",
+    "after": "  expect({ roots, waits, tick, submits }).toStrictEqual({\n    roots: 10,\n    waits: 4,\n    tick: 11,\n    submits: 2,\n  });\n"
+  },
+  {
+    "file": "packages/server/src/transaction-service.test.ts",
+    "before": "    await expect(read).rejects.toMatchObject({ reason: \"catch-up-timeout\", context: first.context });\n",
+    "after": "    await expect(read).rejects.toMatchObject({\n      reason: \"catch-up-timeout\",\n      context: first.context,\n    });\n"
+  }
+]

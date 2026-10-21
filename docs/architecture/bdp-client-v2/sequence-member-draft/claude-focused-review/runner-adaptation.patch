@@ -1,0 +1,28 @@
+--- original/run.py
++++ focused/run.py
+@@ -1,7 +1,7 @@
+ from pathlib import Path
+ import subprocess,json,hashlib,datetime,time,os,signal
+ W=Path("/Users/dbox/repos/wt/vickie/vickie-sequence-member-evidence")
+-E=Path("/Users/dbox/repos/wt/vickie/bdp-integration-logs/sequence-member-draft/claude-preparation")
++E=Path("/Users/dbox/repos/wt/vickie/bdp-integration-logs/sequence-member-draft/claude-focused-review")
+ P=E;T=P/"tmp"
+ sha=lambda b:hashlib.sha256(b).hexdigest()
+ def git(*a):return subprocess.check_output(["git",*a],cwd=W)
+@@ -29,11 +29,14 @@
+ assert release["head"] == binding["head"]
+ assert git("rev-parse","HEAD").decode().strip() == binding["head"]
+ assert git("rev-parse","HEAD^{tree}").decode().strip() == binding["tree"]
+-# Dirty source is expected; pin it instead of requiring clean HEAD.
++# Clean ordinary candidate; original dirty-build attribution remains historical.
++assert binding["statusPorcelain"] == ""
++assert git("show","-s","--format=%P",binding["head"]).decode().strip() == binding["base"]
++assert sha(git("diff","--binary",binding["base"],binding["head"],"--")) == binding["fullPatchSha256"]
+ assert git("status","--porcelain=v1","--untracked-files=all").decode() == binding["statusPorcelain"]
+ assert sha(git("diff","--binary","HEAD","--")) == binding["trackedDiffSha256"]
+ assert git("ls-files","--others","--exclude-standard").decode().splitlines() == binding["untrackedFiles"]
+-changed=git("diff","--name-only","HEAD","--").decode().splitlines()
++changed=git("diff","--name-only",binding["base"],binding["head"],"--").decode().splitlines()
+ assert set(changed) | set(binding["untrackedFiles"]) == set(binding["ownedPaths"])
+ assert not (E/"process.json").exists() and not (E/"exit.json").exists()
+ before=snap()

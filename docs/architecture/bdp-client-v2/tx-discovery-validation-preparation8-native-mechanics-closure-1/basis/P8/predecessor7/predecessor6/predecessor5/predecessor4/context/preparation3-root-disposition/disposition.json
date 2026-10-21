@@ -1,0 +1,26 @@
+{
+  "utc": "2026-10-18T09:56:22.918277+00:00",
+  "accepted": false,
+  "annotationPrecisionAccepted": true,
+  "annotationClosureSha256": "0132cf6454374afc98cca0f7163f090562b664ca040e0278df195bf020d65a6c",
+  "nativeMechanicsClosureSha256": "dcdbf8c4188db52a37b2efa7fa4362c6ba74397c5166804a8ee290efee9a3b99",
+  "nativePhysicalVerified": 91,
+  "rootIndependentEvidence": "Read FULL native report/findings and actual unchanged gate load_gate101; confirms direct SHA string equality cannot accept dict. Original actual compiler failure preserved; threeannotation values erase and actual maps unchanged. Current active labels6458 stale versus root6eea. No helper executed.",
+  "acceptedFindings": [
+    "N1",
+    "N2"
+  ],
+  "sourceUnchangedIdentity": "5964d40af0ced41634e47df86cda7ac01b86768c51970e557b60ffbfc9739907",
+  "dataOnlySuccessorRelease": {
+    "author": "/root/changefeed_review_successor",
+    "packet": "tx-discovery-validation-preparation-4",
+    "priority": "BEFORE carrier-source-authoring-2, then resume carrier release82a88361",
+    "changes": "Restore implementation-hashes.files values to SHA strings consumed by gate, bytes only complete preparation index. Correct exactly two active source diff labels to6eea. Minimal explicit namespace/current acceptance/references/path rebind; preserve all historical packets and failures.",
+    "helpers": "All5 BYTEIDENTICAL acceptedprep2/prep3, no executable changes/import/evaluation. Same52stages16auditpairs/schema/selection/caps/requests/deadlines.",
+    "provenance": "Bind acceptedannotation0132 +rootcurrent source6eea +prior originalactualCODE/fullcorrectednative/root. Do not attribute laterbytes toactualreview. Freshgates literalfalse/approvedStages[] and newunattemptednamespace; no resultreuse or futurehashguess.",
+    "preserve": "P3index495 exact complete plus separate native91, accepted original2 and actualtypecheckfailure unchanged; genuine forward/inverse DATA pairs and exact fullphysical/implementation/origin/mirror inventories, only explicitcontrol exclusions.",
+    "execution": "No helpers/compiler/tests/format/Git/runtime/reviewer/flags. Independent native4/root review and newly durable release before anyfreshstage."
+  },
+  "dataAuthoringReleasedAfterDurablePush": true,
+  "productValidationReleased": false
+}

@@ -1,0 +1,55 @@
+{
+  "name": "format-check",
+  "argv": [
+    "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+    "/Users/dbox/repos/wt/vickie/vickie-authorization-transition/node_modules/@biomejs/biome/bin/biome",
+    "format",
+    "packages/server/src/transaction-read.test.ts",
+    "packages/server/src/transaction-snapshot.test.ts"
+  ],
+  "guardedArgv": [
+    "/opt/homebrew/opt/python@3.14/bin/python3.14",
+    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/guarded-action.py",
+    "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+    "/Users/dbox/repos/wt/vickie/vickie-authorization-transition/node_modules/@biomejs/biome/bin/biome",
+    "format",
+    "packages/server/src/transaction-read.test.ts",
+    "packages/server/src/transaction-snapshot.test.ts"
+  ],
+  "cwd": "/Users/dbox/repos/wt/vickie/vickie-authorization-transition",
+  "started": "2026-10-16T02:25:05.339544+00:00",
+  "adjudication": {
+    "kind": "command-only"
+  },
+  "elapsedSeconds": 0.5861744999419898,
+  "exit": 0,
+  "supervisorExit": 0,
+  "timeout": false,
+  "forcedCleanup": false,
+  "errors": [],
+  "processGroup": 32297,
+  "remainingBeforeCleanup": [],
+  "remainingAfterCleanup": [],
+  "sampledPids": [
+    32297,
+    32299
+  ],
+  "sampledPidsStillPresent": {},
+  "sampledTempEntries": [],
+  "tempEntriesAfter": [],
+  "remainingTempEntriesForClassification": [],
+  "runtimeDirectoriesStillPresent": [],
+  "unclassifiedTempEntriesStillPresent": [],
+  "sourceUnchanged": true,
+  "sourceSha256After": {
+    "packages/server/src/transaction-read.test.ts": "f60c5a4e98813d806466eb3b105f3a83c38b59465ce041ff7240dfe80dce2500",
+    "packages/server/src/transaction-snapshot.test.ts": "0fbdd2594147041689d81ddb7734532d01c1f4956ea0a975d10ef8c0f3458f2d"
+  },
+  "samplingSeconds": 0.05,
+  "commandWindowSeconds": 115,
+  "groupHardDeadlineSeconds": 120,
+  "cleanupBound": "TERM at115s, KILL no later than120s; wait/reap after kill adds no product execution allowance",
+  "samplingLimitation": "Short-lived or detached descendants may evade group sampling; helper counts and independent final checks remain separate.",
+  "tempClassification": "Only the selected fixture prefixes under this attempt TMPDIR are owned runtime roots; all other entries are preserved for review, not deleted or called leaks.",
+  "resultLimitation": "Exit0 is command completion, not independent oracle/claim/provenance adjudication."
+}

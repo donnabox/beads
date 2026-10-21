@@ -1,0 +1,169 @@
+{
+  "recordedCommandPids": [
+    {
+      "name": "boundaries",
+      "pid": 92835,
+      "absent": true
+    },
+    {
+      "name": "build-final",
+      "pid": 92712,
+      "absent": true
+    },
+    {
+      "name": "build",
+      "pid": 91937,
+      "absent": true
+    },
+    {
+      "name": "control-closed-guard-1",
+      "pid": 92232,
+      "absent": true
+    },
+    {
+      "name": "control-closed-guard-2",
+      "pid": 92243,
+      "absent": true
+    },
+    {
+      "name": "control-closed-guard-build",
+      "pid": 92146,
+      "absent": true
+    },
+    {
+      "name": "control-install",
+      "pid": 92124,
+      "absent": true
+    },
+    {
+      "name": "control-old-service-shape-1",
+      "pid": 92295,
+      "absent": true
+    },
+    {
+      "name": "control-old-service-shape-build",
+      "pid": 92253,
+      "absent": true
+    },
+    {
+      "name": "control-service-final-build",
+      "pid": 92946,
+      "absent": true
+    },
+    {
+      "name": "control-service-final",
+      "pid": 92989,
+      "absent": true
+    },
+    {
+      "name": "format-final",
+      "pid": 92792,
+      "absent": true
+    },
+    {
+      "name": "format",
+      "pid": 92143,
+      "absent": true
+    },
+    {
+      "name": "install",
+      "pid": 91909,
+      "absent": true
+    },
+    {
+      "name": "lint-diagnosis",
+      "pid": 92421,
+      "absent": true
+    },
+    {
+      "name": "lint-final",
+      "pid": 92811,
+      "absent": true
+    },
+    {
+      "name": "lint",
+      "pid": 92205,
+      "absent": true
+    },
+    {
+      "name": "positive-1",
+      "pid": 92006,
+      "absent": true
+    },
+    {
+      "name": "positive-2",
+      "pid": 92018,
+      "absent": true
+    },
+    {
+      "name": "positive-3",
+      "pid": 92027,
+      "absent": true
+    },
+    {
+      "name": "read-seal",
+      "pid": 92861,
+      "absent": true
+    },
+    {
+      "name": "service-positive-final",
+      "pid": 92783,
+      "absent": true
+    },
+    {
+      "name": "typecheck-final",
+      "pid": 92692,
+      "absent": true
+    },
+    {
+      "name": "typecheck",
+      "pid": 91918,
+      "absent": true
+    }
+  ],
+  "allRecordedCommandPidsAbsent": true,
+  "positiveServiceOriginal": {
+    "passed": true,
+    "actual": {
+      "kind": "comparison-service-deadline-cleanup",
+      "drained": true,
+      "closed": true,
+      "cleanupTurns": 0,
+      "pendingCallbacks": 0
+    },
+    "expected": {
+      "kind": "comparison-service-deadline-cleanup",
+      "drained": true,
+      "closed": true,
+      "cleanupTurns": 0,
+      "pendingCallbacks": 0
+    }
+  },
+  "positiveServiceFinal": {
+    "passed": true,
+    "actual": {
+      "kind": "comparison-service-deadline-cleanup",
+      "drained": true,
+      "closed": true,
+      "cleanupTurns": 0,
+      "pendingCallbacks": 0
+    }
+  },
+  "controlServiceOriginal": {
+    "kind": "comparison-service-deadline-cleanup",
+    "drained": true,
+    "closed": true,
+    "cleanupTurns": 2,
+    "pendingCallbacks": 0
+  },
+  "controlServiceFinal": {
+    "kind": "comparison-service-deadline-cleanup",
+    "drained": true,
+    "closed": true,
+    "cleanupTurns": 2,
+    "pendingCallbacks": 0
+  },
+  "directoryRemovalEvidence": "Existing fixture afterEach completed for all selected cases; directory paths were not externally retained for independent filesystem checks.",
+  "installedChildren": 0,
+  "listeners": 0
+}

@@ -1,0 +1,11 @@
+--- a/packages/server/src/transaction-http.ts
++++ b/packages/server/src/transaction-http.ts
+@@ -356,7 +356,7 @@
+         const response = problem(readProblem(result.code));
+         if (result.reason === "owner-stopped") return response;
+         if (!result.context) throw new Error("comparison deadline lost same-entry context");
+-        return context(response, result.context);
++        return response;
+       }
+       if (result.kind === "not-acceptable") {
+         if (!result.context) throw new Error("negotiation refusal lost same-entry context");

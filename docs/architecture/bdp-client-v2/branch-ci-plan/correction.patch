@@ -1,0 +1,11 @@
+--- a/.github/workflows/ci.yml
++++ b/.github/workflows/ci.yml
+@@ -4,7 +4,7 @@
+   pull_request:
+     branches: [main]
+   push:
+-    branches: [main]
++    branches: [main, "codex/vickie-*"]
+ 
+ concurrency:
+   group: ci-${{ github.workflow }}-${{ github.ref }}

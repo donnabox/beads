@@ -1,0 +1,4469 @@
+--- preparation2/report-schemas.json
++++ preparation1/report-schemas.json
+@@ -1,5 +1,4 @@
+ {
+-  "canonicalScope": "https://reference.invalid/acme/",
+   "countsProspectiveUntilActual": true,
+   "failureGrammar": {
+     "installedLocalRaw": {
+@@ -53,14 +52,6 @@
+     },
+     "legacy": "original source report shapes preserved; failed/raw logs preserved exactly, no callback replay",
+     "source": "observations array may be partial on failure; failureCount/cleanupKnown/workSettled/directory state actual, no fill-in; only completed raw responses emit source raw record"
+-  },
+-  "fixtureExpected": {
+-    "capabilities": [
+-      "installed-transactional-http",
+-      "transactional-receipt-observation"
+-    ],
+-    "fixtureDigest": "3a7899ced771d4880066d98b0000c53f801ece53458502cc4f3bc641146c9a85",
+-    "fixtureId": "reference-transactional-v1"
+   },
+   "installedD3Required": [
+     "observation",
+@@ -84,2544 +75,6 @@
+     "outcome",
+     "claimEligible"
+   ],
+-  "installedExpected": {
+-    "installed-02": [
+-      {
+-        "credential": "writer",
+-        "fieldOccurrences": [],
+-        "id": "N1",
+-        "method": "GET",
+-        "position": "pos-0",
+-        "status": 204,
+-        "transport": "public-exact",
+-        "url": "https://reference.invalid/acme/"
+-      },
+-      {
+-        "credential": "writer",
+-        "fieldOccurrences": [],
+-        "id": "N2",
+-        "method": "GET",
+-        "position": "pos-0",
+-        "status": 200,
+-        "transport": "public-exact",
+-        "url": "https://reference.invalid/acme/bdp.json"
+-      },
+-      {
+-        "credential": "writer",
+-        "fieldOccurrences": [],
+-        "id": "N3",
+-        "method": "GET",
+-        "position": "pos-0",
+-        "status": 200,
+-        "transport": "public-exact",
+-        "url": "https://reference.invalid/acme/operations/"
+-      },
+-      {
+-        "credential": "writer",
+-        "fieldOccurrences": [],
+-        "id": "T1",
+-        "method": "GET",
+-        "position": "pos-0",
+-        "status": 200,
+-        "transport": "public-exact",
+-        "url": "https://reference.invalid/acme/types/"
+-      },
+-      {
+-        "credential": "writer",
+-        "fieldOccurrences": [],
+-        "id": "T2",
+-        "method": "GET",
+-        "position": "pos-0",
+-        "status": 200,
+-        "transport": "public-exact",
+-        "url": "https://reference.invalid/acme/types/bead"
+-      },
+-      {
+-        "credential": "writer",
+-        "fieldOccurrences": [],
+-        "id": "T3",
+-        "method": "GET",
+-        "position": "pos-0",
+-        "status": 200,
+-        "transport": "public-exact",
+-        "url": "https://reference.invalid/acme/types/link"
+-      },
+-      {
+-        "credential": "writer",
+-        "fieldOccurrences": [],
+-        "id": "resource-alias-create-a",
+-        "method": "POST",
+-        "position": "pos-1",
+-        "status": 200,
+-        "transport": "public-exact",
+-        "url": "https://reference.invalid/acme/operations/create-bead"
+-      },
+-      {
+-        "credential": "writer",
+-        "fieldOccurrences": [],
+-        "id": "resource-alias-create-a-receipt",
+-        "method": "GET",
+-        "position": "pos-1",
+-        "status": 200,
+-        "transport": "public-exact",
+-        "url": {
+-          "receiptUnder": "https://reference.invalid/acme/receipts/"
+-        }
+-      },
+-      {
+-        "credential": "writer",
+-        "fieldOccurrences": [],
+-        "id": "create-a-after",
+-        "method": "GET",
+-        "position": "pos-1",
+-        "status": 200,
+-        "transport": "public-exact",
+-        "url": "https://reference.invalid/acme/beads/a"
+-      },
+-      {
+-        "credential": "writer",
+-        "fieldOccurrences": [],
+-        "id": "resource-alias-create-b",
+-        "method": "POST",
+-        "position": "pos-2",
+-        "status": 200,
+-        "transport": "public-exact",
+-        "url": "https://reference.invalid/acme/operations/create-bead"
+-      },
+-      {
+-        "credential": "writer",
+-        "fieldOccurrences": [],
+-        "id": "resource-alias-create-b-receipt",
+-        "method": "GET",
+-        "position": "pos-2",
+-        "status": 200,
+-        "transport": "public-exact",
+-        "url": {
+-          "receiptUnder": "https://reference.invalid/acme/receipts/"
+-        }
+-      },
+-      {
+-        "credential": "writer",
+-        "fieldOccurrences": [],
+-        "id": "create-b-after",
+-        "method": "GET",
+-        "position": "pos-2",
+-        "status": 200,
+-        "transport": "public-exact",
+-        "url": "https://reference.invalid/acme/beads/b"
+-      },
+-      {
+-        "credential": "writer",
+-        "fieldOccurrences": [],
+-        "id": "resource-alias-update-a",
+-        "method": "POST",
+-        "position": "pos-3",
+-        "status": 200,
+-        "transport": "public-exact",
+-        "url": "https://reference.invalid/acme/operations/update-bead"
+-      },
+-      {
+-        "credential": "writer",
+-        "fieldOccurrences": [],
+-        "id": "resource-alias-update-a-receipt",
+-        "method": "GET",
+-        "position": "pos-3",
+-        "status": 200,
+-        "transport": "public-exact",
+-        "url": {
+-          "receiptUnder": "https://reference.invalid/acme/receipts/"
+-        }
+-      },
+-      {
+-        "credential": "writer",
+-        "fieldOccurrences": [],
+-        "id": "update-a-after",
+-        "method": "GET",
+-        "position": "pos-3",
+-        "status": 200,
+-        "transport": "public-exact",
+-        "url": "https://reference.invalid/acme/beads/a"
+-      },
+-      {
+-        "credential": "writer",
+-        "fieldOccurrences": [],
+-        "id": "resource-alias-create-l",
+-        "method": "POST",
+-        "position": "pos-4",
+-        "status": 200,
+-        "transport": "public-exact",
+-        "url": "https://reference.invalid/acme/operations/create-link"
+-      },
+-      {
+-        "credential": "writer",
+-        "fieldOccurrences": [],
+-        "id": "resource-alias-create-l-receipt",
+-        "method": "GET",
+-        "position": "pos-4",
+-        "status": 200,
+-        "transport": "public-exact",
+-        "url": {
+-          "receiptUnder": "https://reference.invalid/acme/receipts/"
+-        }
+-      },
+-      {
+-        "credential": "writer",
+-        "fieldOccurrences": [],
+-        "id": "create-l-after",
+-        "method": "GET",
+-        "position": "pos-4",
+-        "status": 200,
+-        "transport": "public-exact",
+-        "url": "https://reference.invalid/acme/links/l"
+-      },
+-      {
+-        "credential": "writer",
+-        "fieldOccurrences": [],
+-        "id": "resource-alias-update-l",
+-        "method": "POST",
+-        "position": "pos-5",
+-        "status": 200,
+-        "transport": "public-exact",
+-        "url": "https://reference.invalid/acme/operations/update-link"
+-      },
+-      {
+-        "credential": "writer",
+-        "fieldOccurrences": [],
+-        "id": "resource-alias-update-l-receipt",
+-        "method": "GET",
+-        "position": "pos-5",
+-        "status": 200,
+-        "transport": "public-exact",
+-        "url": {
+-          "receiptUnder": "https://reference.invalid/acme/receipts/"
+-        }
+-      },
+-      {
+-        "credential": "writer",
+-        "fieldOccurrences": [],
+-        "id": "update-l-after",
+-        "method": "GET",
+-        "position": "pos-5",
+-        "status": 200,
+-        "transport": "public-exact",
+-        "url": "https://reference.invalid/acme/links/l"
+-      },
+-      {
+-        "credential": "writer",
+-        "fieldOccurrences": [],
+-        "id": "resource-alias-put-alias",
+-        "method": "POST",
+-        "position": "pos-5",
+-        "status": 200,
+-        "transport": "public-exact",
+-        "url": "https://reference.invalid/acme/operations/put-alias"
+-      },
+-      {
+-        "credential": "writer",
+-        "fieldOccurrences": [],
+-        "id": "resource-alias-put-alias-receipt",
+-        "method": "GET",
+-        "position": "pos-5",
+-        "status": 200,
+-        "transport": "public-exact",
+-        "url": {
+-          "receiptUnder": "https://reference.invalid/acme/receipts/"
+-        }
+-      },
+-      {
+-        "credential": "writer",
+-        "fieldOccurrences": [],
+-        "id": "alias-after",
+-        "method": "GET",
+-        "position": "pos-5",
+-        "status": 307,
+-        "transport": "public-exact",
+-        "url": "https://reference.invalid/acme/alias/work"
+-      },
+-      {
+-        "credential": "writer",
+-        "fieldOccurrences": [],
+-        "id": "alias-follow",
+-        "method": "GET",
+-        "position": "pos-5",
+-        "status": 200,
+-        "transport": "public-exact",
+-        "url": "https://reference.invalid/acme/beads/a"
+-      },
+-      {
+-        "credential": "writer",
+-        "fieldOccurrences": [],
+-        "id": "resource-alias-delete-alias",
+-        "method": "POST",
+-        "position": "pos-5",
+-        "status": 200,
+-        "transport": "public-exact",
+-        "url": "https://reference.invalid/acme/operations/delete-alias"
+-      },
+-      {
+-        "credential": "writer",
+-        "fieldOccurrences": [],
+-        "id": "resource-alias-delete-alias-receipt",
+-        "method": "GET",
+-        "position": "pos-5",
+-        "status": 200,
+-        "transport": "public-exact",
+-        "url": {
+-          "receiptUnder": "https://reference.invalid/acme/receipts/"
+-        }
+-      },
+-      {
+-        "credential": "writer",
+-        "fieldOccurrences": [],
+-        "id": "alias-missing",
+-        "method": "GET",
+-        "position": "pos-5",
+-        "status": 404,
+-        "transport": "public-exact",
+-        "url": "https://reference.invalid/acme/alias/work"
+-      },
+-      {
+-        "credential": "writer",
+-        "fieldOccurrences": [],
+-        "id": "resource-alias-delete-l",
+-        "method": "POST",
+-        "position": "pos-6",
+-        "status": 200,
+-        "transport": "public-exact",
+-        "url": "https://reference.invalid/acme/operations/delete-link"
+-      },
+-      {
+-        "credential": "writer",
+-        "fieldOccurrences": [],
+-        "id": "resource-alias-delete-l-receipt",
+-        "method": "GET",
+-        "position": "pos-6",
+-        "status": 200,
+-        "transport": "public-exact",
+-        "url": {
+-          "receiptUnder": "https://reference.invalid/acme/receipts/"
+-        }
+-      },
+-      {
+-        "credential": "writer",
+-        "fieldOccurrences": [],
+-        "id": "delete-l-after",
+-        "method": "GET",
+-        "position": "pos-6",
+-        "status": 404,
+-        "transport": "public-exact",
+-        "url": "https://reference.invalid/acme/links/l"
+-      },
+-      {
+-        "credential": "writer",
+-        "fieldOccurrences": [],
+-        "id": "resource-alias-delete-b",
+-        "method": "POST",
+-        "position": "pos-7",
+-        "status": 200,
+-        "transport": "public-exact",
+-        "url": "https://reference.invalid/acme/operations/delete-bead"
+-      },
+-      {
+-        "credential": "writer",
+-        "fieldOccurrences": [],
+-        "id": "resource-alias-delete-b-receipt",
+-        "method": "GET",
+-        "position": "pos-7",
+-        "status": 200,
+-        "transport": "public-exact",
+-        "url": {
+-          "receiptUnder": "https://reference.invalid/acme/receipts/"
+-        }
+-      },
+-      {
+-        "credential": "writer",
+-        "fieldOccurrences": [],
+-        "id": "delete-b-after",
+-        "method": "GET",
+-        "position": "pos-7",
+-        "status": 404,
+-        "transport": "public-exact",
+-        "url": "https://reference.invalid/acme/beads/b"
+-      },
+-      {
+-        "credential": "writer",
+-        "fieldOccurrences": [],
+-        "id": "resource-alias-delete-a",
+-        "method": "POST",
+-        "position": "pos-8",
+-        "status": 200,
+-        "transport": "public-exact",
+-        "url": "https://reference.invalid/acme/operations/delete-bead"
+-      },
+-      {
+-        "credential": "writer",
+-        "fieldOccurrences": [],
+-        "id": "resource-alias-delete-a-receipt",
+-        "method": "GET",
+-        "position": "pos-8",
+-        "status": 200,
+-        "transport": "public-exact",
+-        "url": {
+-          "receiptUnder": "https://reference.invalid/acme/receipts/"
+-        }
+-      },
+-      {
+-        "credential": "writer",
+-        "fieldOccurrences": [],
+-        "id": "delete-a-after",
+-        "method": "GET",
+-        "position": "pos-8",
+-        "status": 404,
+-        "transport": "public-exact",
+-        "url": "https://reference.invalid/acme/beads/a"
+-      },
+-      {
+-        "credential": "writer",
+-        "fieldOccurrences": [],
+-        "id": "replay-create",
+-        "method": "POST",
+-        "position": "pos-8",
+-        "status": 200,
+-        "transport": "public-exact",
+-        "url": "https://reference.invalid/acme/operations/create-bead"
+-      },
+-      {
+-        "credential": "writer",
+-        "fieldOccurrences": [],
+-        "id": "replay-after-a",
+-        "method": "GET",
+-        "position": "pos-8",
+-        "status": 404,
+-        "transport": "public-exact",
+-        "url": "https://reference.invalid/acme/beads/a"
+-      },
+-      {
+-        "credential": "writer",
+-        "fieldOccurrences": [],
+-        "id": "refresh-descriptor",
+-        "method": "GET",
+-        "position": "pos-8",
+-        "status": 200,
+-        "transport": "public-exact",
+-        "url": "https://reference.invalid/acme/bdp.json"
+-      },
+-      {
+-        "credential": "writer",
+-        "fieldOccurrences": [],
+-        "id": "head-descriptor",
+-        "method": "HEAD",
+-        "position": "pos-8",
+-        "status": 200,
+-        "transport": "public-exact",
+-        "url": "https://reference.invalid/acme/bdp.json"
+-      },
+-      {
+-        "credential": "writer",
+-        "fieldOccurrences": [],
+-        "id": "head-directory",
+-        "method": "HEAD",
+-        "position": "pos-8",
+-        "status": 200,
+-        "transport": "public-exact",
+-        "url": "https://reference.invalid/acme/operations/"
+-      },
+-      {
+-        "credential": "writer",
+-        "fieldOccurrences": [],
+-        "id": "head-scope",
+-        "method": "HEAD",
+-        "position": "pos-8",
+-        "status": 204,
+-        "transport": "public-exact",
+-        "url": "https://reference.invalid/acme/"
+-      }
+-    ],
+-    "installed-03": [
+-      {
+-        "credential": "writer",
+-        "fieldOccurrences": [],
+-        "id": "N1",
+-        "method": "GET",
+-        "position": "pos-0",
+-        "status": 204,
+-        "transport": "public-exact",
+-        "url": "https://reference.invalid/acme/"
+-      },
+-      {
+-        "credential": "writer",
+-        "fieldOccurrences": [],
+-        "id": "N2",
+-        "method": "GET",
+-        "position": "pos-0",
+-        "status": 200,
+-        "transport": "public-exact",
+-        "url": "https://reference.invalid/acme/bdp.json"
+-      },
+-      {
+-        "credential": "writer",
+-        "fieldOccurrences": [],
+-        "id": "N3",
+-        "method": "GET",
+-        "position": "pos-0",
+-        "status": 200,
+-        "transport": "public-exact",
+-        "url": "https://reference.invalid/acme/operations/"
+-      },
+-      {
+-        "credential": "writer",
+-        "fieldOccurrences": [],
+-        "id": "T1",
+-        "method": "GET",
+-        "position": "pos-0",
+-        "status": 200,
+-        "transport": "public-exact",
+-        "url": "https://reference.invalid/acme/types/"
+-      },
+-      {
+-        "credential": "writer",
+-        "fieldOccurrences": [],
+-        "id": "T2",
+-        "method": "GET",
+-        "position": "pos-0",
+-        "status": 200,
+-        "transport": "public-exact",
+-        "url": "https://reference.invalid/acme/types/bead"
+-      },
+-      {
+-        "credential": "writer",
+-        "fieldOccurrences": [],
+-        "id": "T3",
+-        "method": "GET",
+-        "position": "pos-0",
+-        "status": 200,
+-        "transport": "public-exact",
+-        "url": "https://reference.invalid/acme/types/link"
+-      },
+-      {
+-        "credential": "writer",
+-        "fieldOccurrences": [],
+-        "id": "transactional-carriers-batch-seed",
+-        "method": "POST",
+-        "position": "pos-1",
+-        "status": 200,
+-        "transport": "public-exact",
+-        "url": "https://reference.invalid/acme/operations/batch"
+-      },
+-      {
+-        "credential": "writer",
+-        "fieldOccurrences": [],
+-        "id": "transactional-carriers-batch-seed-receipt",
+-        "method": "GET",
+-        "position": "pos-1",
+-        "status": 200,
+-        "transport": "public-exact",
+-        "url": {
+-          "receiptUnder": "https://reference.invalid/acme/receipts/"
+-        }
+-      },
+-      {
+-        "credential": "writer",
+-        "fieldOccurrences": [],
+-        "id": "batch-after",
+-        "method": "GET",
+-        "position": "pos-1",
+-        "status": 200,
+-        "transport": "public-exact",
+-        "url": "https://reference.invalid/acme/beads/?limit=32"
+-      },
+-      {
+-        "credential": "writer",
+-        "fieldOccurrences": [],
+-        "id": "sequence-turns",
+-        "method": "POST",
+-        "position": "pos-3",
+-        "status": 200,
+-        "transport": "public-exact",
+-        "url": "https://reference.invalid/acme/operations/sequence"
+-      },
+-      {
+-        "credential": "writer",
+-        "fieldOccurrences": [],
+-        "id": "sequence-after-d",
+-        "method": "GET",
+-        "position": "pos-3",
+-        "status": 200,
+-        "transport": "public-exact",
+-        "url": "https://reference.invalid/acme/beads/d"
+-      },
+-      {
+-        "credential": "writer",
+-        "fieldOccurrences": [],
+-        "id": "sequence-after-missing",
+-        "method": "GET",
+-        "position": "pos-3",
+-        "status": 404,
+-        "transport": "public-exact",
+-        "url": "https://reference.invalid/acme/beads/missing"
+-      },
+-      {
+-        "credential": "writer",
+-        "fieldOccurrences": [],
+-        "id": "transactional-carriers-set-update",
+-        "method": "POST",
+-        "position": "pos-4",
+-        "status": 200,
+-        "transport": "public-exact",
+-        "url": "https://reference.invalid/acme/operations/update-where"
+-      },
+-      {
+-        "credential": "writer",
+-        "fieldOccurrences": [],
+-        "id": "transactional-carriers-set-update-receipt",
+-        "method": "GET",
+-        "position": "pos-4",
+-        "status": 200,
+-        "transport": "public-exact",
+-        "url": {
+-          "receiptUnder": "https://reference.invalid/acme/receipts/"
+-        }
+-      },
+-      {
+-        "credential": "writer",
+-        "fieldOccurrences": [],
+-        "id": "set-update-after",
+-        "method": "GET",
+-        "position": "pos-4",
+-        "status": 200,
+-        "transport": "public-exact",
+-        "url": "https://reference.invalid/acme/beads/?limit=32"
+-      },
+-      {
+-        "credential": "writer",
+-        "fieldOccurrences": [],
+-        "id": "transactional-carriers-set-delete",
+-        "method": "POST",
+-        "position": "pos-5",
+-        "status": 200,
+-        "transport": "public-exact",
+-        "url": "https://reference.invalid/acme/operations/delete-where"
+-      },
+-      {
+-        "credential": "writer",
+-        "fieldOccurrences": [],
+-        "id": "transactional-carriers-set-delete-receipt",
+-        "method": "GET",
+-        "position": "pos-5",
+-        "status": 200,
+-        "transport": "public-exact",
+-        "url": {
+-          "receiptUnder": "https://reference.invalid/acme/receipts/"
+-        }
+-      },
+-      {
+-        "credential": "writer",
+-        "fieldOccurrences": [],
+-        "id": "set-delete-after",
+-        "method": "GET",
+-        "position": "pos-5",
+-        "status": 404,
+-        "transport": "public-exact",
+-        "url": "https://reference.invalid/acme/beads/b"
+-      },
+-      {
+-        "credential": "writer",
+-        "fieldOccurrences": [],
+-        "id": "replay-batch",
+-        "method": "POST",
+-        "position": "pos-5",
+-        "status": 200,
+-        "transport": "public-exact",
+-        "url": "https://reference.invalid/acme/operations/batch"
+-      },
+-      {
+-        "credential": "writer",
+-        "fieldOccurrences": [],
+-        "id": "replay-after-b",
+-        "method": "GET",
+-        "position": "pos-5",
+-        "status": 404,
+-        "transport": "public-exact",
+-        "url": "https://reference.invalid/acme/beads/b"
+-      },
+-      {
+-        "credential": "writer",
+-        "fieldOccurrences": [],
+-        "id": "final-state",
+-        "method": "GET",
+-        "position": "pos-5",
+-        "status": 200,
+-        "transport": "public-exact",
+-        "url": "https://reference.invalid/acme/beads/?limit=32"
+-      },
+-      {
+-        "credential": "writer",
+-        "fieldOccurrences": [],
+-        "id": "refresh-descriptor",
+-        "method": "GET",
+-        "position": "pos-5",
+-        "status": 200,
+-        "transport": "public-exact",
+-        "url": "https://reference.invalid/acme/bdp.json"
+-      },
+-      {
+-        "credential": "writer",
+-        "fieldOccurrences": [],
+-        "id": "head-descriptor",
+-        "method": "HEAD",
+-        "position": "pos-5",
+-        "status": 200,
+-        "transport": "public-exact",
+-        "url": "https://reference.invalid/acme/bdp.json"
+-      },
+-      {
+-        "credential": "writer",
+-        "fieldOccurrences": [],
+-        "id": "head-directory",
+-        "method": "HEAD",
+-        "position": "pos-5",
+-        "status": 200,
+-        "transport": "public-exact",
+-        "url": "https://reference.invalid/acme/operations/"
+-      },
+-      {
+-        "credential": "writer",
+-        "fieldOccurrences": [],
+-        "id": "head-scope",
+-        "method": "HEAD",
+-        "position": "pos-5",
+-        "status": 204,
+-        "transport": "public-exact",
+-        "url": "https://reference.invalid/acme/"
+-      },
+-      {
+-        "credential": "writer",
+-        "fieldOccurrences": [],
+-        "id": "snapshot-root",
+-        "method": "GET",
+-        "position": "pos-5",
+-        "status": 200,
+-        "transport": "public-exact",
+-        "url": "https://reference.invalid/acme/snapshot"
+-      },
+-      {
+-        "credential": "writer",
+-        "fieldOccurrences": [],
+-        "id": "changes-root",
+-        "method": "GET",
+-        "position": "pos-5",
+-        "status": 200,
+-        "transport": "public-exact",
+-        "url": "https://reference.invalid/acme/changes/?start=now"
+-      },
+-      {
+-        "credential": "writer",
+-        "fieldOccurrences": [],
+-        "id": "events-root",
+-        "method": "GET",
+-        "position": "pos-5",
+-        "status": 200,
+-        "transport": "public-exact",
+-        "url": "https://reference.invalid/acme/events/"
+-      }
+-    ],
+-    "installed-04": [
+-      {
+-        "credential": "writer",
+-        "fieldOccurrences": [],
+-        "id": "N1",
+-        "method": "GET",
+-        "position": "pos-0",
+-        "status": 204,
+-        "transport": "public-exact",
+-        "url": "https://reference.invalid/acme/"
+-      },
+-      {
+-        "credential": "writer",
+-        "fieldOccurrences": [],
+-        "id": "N2",
+-        "method": "GET",
+-        "position": "pos-0",
+-        "status": 200,
+-        "transport": "public-exact",
+-        "url": "https://reference.invalid/acme/bdp.json"
+-      },
+-      {
+-        "credential": "writer",
+-        "fieldOccurrences": [],
+-        "id": "N3",
+-        "method": "GET",
+-        "position": "pos-0",
+-        "status": 200,
+-        "transport": "public-exact",
+-        "url": "https://reference.invalid/acme/operations/"
+-      },
+-      {
+-        "credential": "writer",
+-        "fieldOccurrences": [
+-          {
+-            "name": "bdp-minimum-scope-position",
+-            "value": "pos-0"
+-          },
+-          {
+-            "name": "bdp-scope-epoch",
+-            "value": "$epoch"
+-          },
+-          {
+-            "name": "bdp-authorization-view",
+-            "value": "$view"
+-          },
+-          {
+-            "name": "bdp-minimum-scope-position",
+-            "value": "pos-0"
+-          }
+-        ],
+-        "id": "scope-duplicate-bdp-minimum-scope-position",
+-        "method": "GET",
+-        "position": null,
+-        "status": 400,
+-        "transport": "public-exact",
+-        "url": "https://reference.invalid/acme/"
+-      },
+-      {
+-        "credential": "writer",
+-        "fieldOccurrences": [
+-          {
+-            "name": "bdp-minimum-scope-position",
+-            "value": "pos-0"
+-          },
+-          {
+-            "name": "bdp-scope-epoch",
+-            "value": "$epoch"
+-          },
+-          {
+-            "name": "bdp-authorization-view",
+-            "value": "$view"
+-          },
+-          {
+-            "name": "bdp-scope-epoch",
+-            "value": "$epoch"
+-          }
+-        ],
+-        "id": "scope-duplicate-bdp-scope-epoch",
+-        "method": "GET",
+-        "position": null,
+-        "status": 400,
+-        "transport": "public-exact",
+-        "url": "https://reference.invalid/acme/"
+-      },
+-      {
+-        "credential": "writer",
+-        "fieldOccurrences": [
+-          {
+-            "name": "bdp-minimum-scope-position",
+-            "value": "pos-0"
+-          },
+-          {
+-            "name": "bdp-scope-epoch",
+-            "value": "$epoch"
+-          },
+-          {
+-            "name": "bdp-authorization-view",
+-            "value": "$view"
+-          },
+-          {
+-            "name": "bdp-authorization-view",
+-            "value": "$view"
+-          }
+-        ],
+-        "id": "scope-duplicate-bdp-authorization-view",
+-        "method": "GET",
+-        "position": null,
+-        "status": 400,
+-        "transport": "public-exact",
+-        "url": "https://reference.invalid/acme/"
+-      },
+-      {
+-        "credential": "writer",
+-        "fieldOccurrences": [
+-          {
+-            "name": "bdp-minimum-scope-position",
+-            "value": "pos-0"
+-          }
+-        ],
+-        "id": "scope-partial",
+-        "method": "GET",
+-        "position": null,
+-        "status": 400,
+-        "transport": "public-exact",
+-        "url": "https://reference.invalid/acme/"
+-      },
+-      {
+-        "credential": "writer",
+-        "fieldOccurrences": [
+-          {
+-            "name": "bdp-minimum-scope-position",
+-            "value": "pos-0"
+-          }
+-        ],
+-        "id": "scope-head-partial",
+-        "method": "HEAD",
+-        "position": null,
+-        "status": 400,
+-        "transport": "public-exact",
+-        "url": "https://reference.invalid/acme/"
+-      },
+-      {
+-        "credential": "writer",
+-        "fieldOccurrences": [
+-          {
+-            "name": "bdp-minimum-scope-position",
+-            "value": "pos-0, pos-0"
+-          },
+-          {
+-            "name": "bdp-scope-epoch",
+-            "value": "$epoch"
+-          },
+-          {
+-            "name": "bdp-authorization-view",
+-            "value": "$view"
+-          }
+-        ],
+-        "id": "scope-comma",
+-        "method": "GET",
+-        "position": null,
+-        "status": 400,
+-        "transport": "public-exact",
+-        "url": "https://reference.invalid/acme/"
+-      },
+-      {
+-        "credential": "writer",
+-        "fieldOccurrences": [
+-          {
+-            "name": "bdp-minimum-scope-position",
+-            "value": "pos-0"
+-          },
+-          {
+-            "name": "bdp-scope-epoch",
+-            "value": "$epoch"
+-          },
+-          {
+-            "name": "bdp-authorization-view",
+-            "value": "$view"
+-          },
+-          {
+-            "name": "bdp-minimum-scope-position",
+-            "value": "pos-0"
+-          }
+-        ],
+-        "id": "descriptor-duplicate-bdp-minimum-scope-position",
+-        "method": "GET",
+-        "position": null,
+-        "status": 400,
+-        "transport": "public-exact",
+-        "url": "https://reference.invalid/acme/bdp.json"
+-      },
+-      {
+-        "credential": "writer",
+-        "fieldOccurrences": [
+-          {
+-            "name": "bdp-minimum-scope-position",
+-            "value": "pos-0"
+-          },
+-          {
+-            "name": "bdp-scope-epoch",
+-            "value": "$epoch"
+-          },
+-          {
+-            "name": "bdp-authorization-view",
+-            "value": "$view"
+-          },
+-          {
+-            "name": "bdp-scope-epoch",
+-            "value": "$epoch"
+-          }
+-        ],
+-        "id": "descriptor-duplicate-bdp-scope-epoch",
+-        "method": "GET",
+-        "position": null,
+-        "status": 400,
+-        "transport": "public-exact",
+-        "url": "https://reference.invalid/acme/bdp.json"
+-      },
+-      {
+-        "credential": "writer",
+-        "fieldOccurrences": [
+-          {
+-            "name": "bdp-minimum-scope-position",
+-            "value": "pos-0"
+-          },
+-          {
+-            "name": "bdp-scope-epoch",
+-            "value": "$epoch"
+-          },
+-          {
+-            "name": "bdp-authorization-view",
+-            "value": "$view"
+-          },
+-          {
+-            "name": "bdp-authorization-view",
+-            "value": "$view"
+-          }
+-        ],
+-        "id": "descriptor-duplicate-bdp-authorization-view",
+-        "method": "GET",
+-        "position": null,
+-        "status": 400,
+-        "transport": "public-exact",
+-        "url": "https://reference.invalid/acme/bdp.json"
+-      },
+-      {
+-        "credential": "writer",
+-        "fieldOccurrences": [
+-          {
+-            "name": "bdp-minimum-scope-position",
+-            "value": "pos-0"
+-          }
+-        ],
+-        "id": "descriptor-partial",
+-        "method": "GET",
+-        "position": null,
+-        "status": 400,
+-        "transport": "public-exact",
+-        "url": "https://reference.invalid/acme/bdp.json"
+-      },
+-      {
+-        "credential": "writer",
+-        "fieldOccurrences": [
+-          {
+-            "name": "bdp-minimum-scope-position",
+-            "value": "pos-0"
+-          }
+-        ],
+-        "id": "descriptor-head-partial",
+-        "method": "HEAD",
+-        "position": null,
+-        "status": 400,
+-        "transport": "public-exact",
+-        "url": "https://reference.invalid/acme/bdp.json"
+-      },
+-      {
+-        "credential": "writer",
+-        "fieldOccurrences": [
+-          {
+-            "name": "bdp-minimum-scope-position",
+-            "value": "pos-0, pos-0"
+-          },
+-          {
+-            "name": "bdp-scope-epoch",
+-            "value": "$epoch"
+-          },
+-          {
+-            "name": "bdp-authorization-view",
+-            "value": "$view"
+-          }
+-        ],
+-        "id": "descriptor-comma",
+-        "method": "GET",
+-        "position": null,
+-        "status": 400,
+-        "transport": "public-exact",
+-        "url": "https://reference.invalid/acme/bdp.json"
+-      },
+-      {
+-        "credential": "writer",
+-        "fieldOccurrences": [
+-          {
+-            "name": "bdp-minimum-scope-position",
+-            "value": "pos-0"
+-          },
+-          {
+-            "name": "bdp-scope-epoch",
+-            "value": "$epoch"
+-          },
+-          {
+-            "name": "bdp-authorization-view",
+-            "value": "$view"
+-          },
+-          {
+-            "name": "bdp-minimum-scope-position",
+-            "value": "pos-0"
+-          }
+-        ],
+-        "id": "directory-duplicate-bdp-minimum-scope-position",
+-        "method": "GET",
+-        "position": null,
+-        "status": 400,
+-        "transport": "public-exact",
+-        "url": "https://reference.invalid/acme/operations/"
+-      },
+-      {
+-        "credential": "writer",
+-        "fieldOccurrences": [
+-          {
+-            "name": "bdp-minimum-scope-position",
+-            "value": "pos-0"
+-          },
+-          {
+-            "name": "bdp-scope-epoch",
+-            "value": "$epoch"
+-          },
+-          {
+-            "name": "bdp-authorization-view",
+-            "value": "$view"
+-          },
+-          {
+-            "name": "bdp-scope-epoch",
+-            "value": "$epoch"
+-          }
+-        ],
+-        "id": "directory-duplicate-bdp-scope-epoch",
+-        "method": "GET",
+-        "position": null,
+-        "status": 400,
+-        "transport": "public-exact",
+-        "url": "https://reference.invalid/acme/operations/"
+-      },
+-      {
+-        "credential": "writer",
+-        "fieldOccurrences": [
+-          {
+-            "name": "bdp-minimum-scope-position",
+-            "value": "pos-0"
+-          },
+-          {
+-            "name": "bdp-scope-epoch",
+-            "value": "$epoch"
+-          },
+-          {
+-            "name": "bdp-authorization-view",
+-            "value": "$view"
+-          },
+-          {
+-            "name": "bdp-authorization-view",
+-            "value": "$view"
+-          }
+-        ],
+-        "id": "directory-duplicate-bdp-authorization-view",
+-        "method": "GET",
+-        "position": null,
+-        "status": 400,
+-        "transport": "public-exact",
+-        "url": "https://reference.invalid/acme/operations/"
+-      },
+-      {
+-        "credential": "writer",
+-        "fieldOccurrences": [
+-          {
+-            "name": "bdp-minimum-scope-position",
+-            "value": "pos-0"
+-          }
+-        ],
+-        "id": "directory-partial",
+-        "method": "GET",
+-        "position": null,
+-        "status": 400,
+-        "transport": "public-exact",
+-        "url": "https://reference.invalid/acme/operations/"
+-      },
+-      {
+-        "credential": "writer",
+-        "fieldOccurrences": [
+-          {
+-            "name": "bdp-minimum-scope-position",
+-            "value": "pos-0"
+-          }
+-        ],
+-        "id": "directory-head-partial",
+-        "method": "HEAD",
+-        "position": null,
+-        "status": 400,
+-        "transport": "public-exact",
+-        "url": "https://reference.invalid/acme/operations/"
+-      },
+-      {
+-        "credential": "writer",
+-        "fieldOccurrences": [
+-          {
+-            "name": "bdp-minimum-scope-position",
+-            "value": "pos-0, pos-0"
+-          },
+-          {
+-            "name": "bdp-scope-epoch",
+-            "value": "$epoch"
+-          },
+-          {
+-            "name": "bdp-authorization-view",
+-            "value": "$view"
+-          }
+-        ],
+-        "id": "directory-comma",
+-        "method": "GET",
+-        "position": null,
+-        "status": 400,
+-        "transport": "public-exact",
+-        "url": "https://reference.invalid/acme/operations/"
+-      }
+-    ],
+-    "installed-05": [
+-      {
+-        "credential": "writer",
+-        "fieldOccurrences": [],
+-        "id": "N1",
+-        "method": "GET",
+-        "position": "pos-0",
+-        "status": 204,
+-        "transport": "public-exact",
+-        "url": "https://reference.invalid/acme/"
+-      },
+-      {
+-        "credential": "writer",
+-        "fieldOccurrences": [],
+-        "id": "N2",
+-        "method": "GET",
+-        "position": "pos-0",
+-        "status": 200,
+-        "transport": "public-exact",
+-        "url": "https://reference.invalid/acme/bdp.json"
+-      },
+-      {
+-        "credential": "writer",
+-        "fieldOccurrences": [],
+-        "id": "N3",
+-        "method": "GET",
+-        "position": "pos-0",
+-        "status": 200,
+-        "transport": "public-exact",
+-        "url": "https://reference.invalid/acme/operations/"
+-      },
+-      {
+-        "credential": "writer",
+-        "fieldOccurrences": [],
+-        "id": "scope-post",
+-        "method": "POST",
+-        "position": null,
+-        "status": 405,
+-        "transport": "public-exact",
+-        "url": "https://reference.invalid/acme/"
+-      },
+-      {
+-        "credential": "writer",
+-        "fieldOccurrences": [],
+-        "id": "descriptor-post",
+-        "method": "POST",
+-        "position": null,
+-        "status": 405,
+-        "transport": "public-exact",
+-        "url": "https://reference.invalid/acme/bdp.json"
+-      },
+-      {
+-        "credential": "writer",
+-        "fieldOccurrences": [],
+-        "id": "directory-post",
+-        "method": "POST",
+-        "position": null,
+-        "status": 405,
+-        "transport": "public-exact",
+-        "url": "https://reference.invalid/acme/operations/"
+-      },
+-      {
+-        "credential": "writer",
+-        "fieldOccurrences": [],
+-        "id": "known-GET",
+-        "method": "GET",
+-        "position": null,
+-        "status": 405,
+-        "transport": "public-exact",
+-        "url": "https://reference.invalid/acme/operations/create-bead"
+-      },
+-      {
+-        "credential": "writer",
+-        "fieldOccurrences": [],
+-        "id": "known-HEAD",
+-        "method": "HEAD",
+-        "position": null,
+-        "status": 405,
+-        "transport": "public-exact",
+-        "url": "https://reference.invalid/acme/operations/create-bead"
+-      },
+-      {
+-        "credential": "writer",
+-        "fieldOccurrences": [],
+-        "id": "known-PUT",
+-        "method": "PUT",
+-        "position": null,
+-        "status": 405,
+-        "transport": "public-exact",
+-        "url": "https://reference.invalid/acme/operations/create-bead"
+-      },
+-      {
+-        "credential": "anonymous",
+-        "fieldOccurrences": [],
+-        "id": "unknown",
+-        "method": "GET",
+-        "position": null,
+-        "status": 404,
+-        "transport": "public-exact",
+-        "url": "https://reference.invalid/acme/operations/unknown"
+-      },
+-      {
+-        "credential": "anonymous",
+-        "fieldOccurrences": [],
+-        "id": "encoded",
+-        "method": "GET",
+-        "position": null,
+-        "status": 404,
+-        "transport": "public-exact",
+-        "url": "https://reference.invalid/acme/operations/create-bead%2C"
+-      },
+-      {
+-        "credential": "anonymous",
+-        "fieldOccurrences": [],
+-        "id": "query",
+-        "method": "GET",
+-        "position": null,
+-        "status": 404,
+-        "transport": "public-exact",
+-        "url": "https://reference.invalid/acme/operations/create-bead?unexpected=1"
+-      },
+-      {
+-        "credential": "anonymous",
+-        "fieldOccurrences": [
+-          {
+-            "name": "bdp-minimum-scope-position",
+-            "value": "pos-0"
+-          }
+-        ],
+-        "id": "scope-anonymous-GET",
+-        "method": "GET",
+-        "position": null,
+-        "status": 401,
+-        "transport": "public-exact",
+-        "url": "https://reference.invalid/acme/"
+-      },
+-      {
+-        "credential": "anonymous",
+-        "fieldOccurrences": [],
+-        "id": "scope-anonymous-HEAD",
+-        "method": "HEAD",
+-        "position": null,
+-        "status": 401,
+-        "transport": "public-exact",
+-        "url": "https://reference.invalid/acme/"
+-      },
+-      {
+-        "credential": "anonymous",
+-        "fieldOccurrences": [
+-          {
+-            "name": "bdp-minimum-scope-position",
+-            "value": "pos-0"
+-          }
+-        ],
+-        "id": "descriptor-anonymous-GET",
+-        "method": "GET",
+-        "position": null,
+-        "status": 401,
+-        "transport": "public-exact",
+-        "url": "https://reference.invalid/acme/bdp.json"
+-      },
+-      {
+-        "credential": "anonymous",
+-        "fieldOccurrences": [],
+-        "id": "descriptor-anonymous-HEAD",
+-        "method": "HEAD",
+-        "position": null,
+-        "status": 401,
+-        "transport": "public-exact",
+-        "url": "https://reference.invalid/acme/bdp.json"
+-      },
+-      {
+-        "credential": "anonymous",
+-        "fieldOccurrences": [
+-          {
+-            "name": "bdp-minimum-scope-position",
+-            "value": "pos-0"
+-          }
+-        ],
+-        "id": "directory-anonymous-GET",
+-        "method": "GET",
+-        "position": null,
+-        "status": 401,
+-        "transport": "public-exact",
+-        "url": "https://reference.invalid/acme/operations/"
+-      },
+-      {
+-        "credential": "anonymous",
+-        "fieldOccurrences": [],
+-        "id": "directory-anonymous-HEAD",
+-        "method": "HEAD",
+-        "position": null,
+-        "status": 401,
+-        "transport": "public-exact",
+-        "url": "https://reference.invalid/acme/operations/"
+-      },
+-      {
+-        "credential": "reader",
+-        "fieldOccurrences": [],
+-        "id": "scope-reader-GET",
+-        "method": "GET",
+-        "position": "pos-0",
+-        "status": 204,
+-        "transport": "public-exact",
+-        "url": "https://reference.invalid/acme/"
+-      },
+-      {
+-        "credential": "reader",
+-        "fieldOccurrences": [],
+-        "id": "scope-reader-HEAD",
+-        "method": "HEAD",
+-        "position": "pos-0",
+-        "status": 204,
+-        "transport": "public-exact",
+-        "url": "https://reference.invalid/acme/"
+-      },
+-      {
+-        "credential": "reader",
+-        "fieldOccurrences": [],
+-        "id": "descriptor-reader-GET",
+-        "method": "GET",
+-        "position": "pos-0",
+-        "status": 200,
+-        "transport": "public-exact",
+-        "url": "https://reference.invalid/acme/bdp.json"
+-      },
+-      {
+-        "credential": "reader",
+-        "fieldOccurrences": [],
+-        "id": "descriptor-reader-HEAD",
+-        "method": "HEAD",
+-        "position": "pos-0",
+-        "status": 200,
+-        "transport": "public-exact",
+-        "url": "https://reference.invalid/acme/bdp.json"
+-      },
+-      {
+-        "credential": "reader",
+-        "fieldOccurrences": [],
+-        "id": "directory-reader-GET",
+-        "method": "GET",
+-        "position": "pos-0",
+-        "status": 200,
+-        "transport": "public-exact",
+-        "url": "https://reference.invalid/acme/operations/"
+-      },
+-      {
+-        "credential": "reader",
+-        "fieldOccurrences": [],
+-        "id": "directory-reader-HEAD",
+-        "method": "HEAD",
+-        "position": "pos-0",
+-        "status": 200,
+-        "transport": "public-exact",
+-        "url": "https://reference.invalid/acme/operations/"
+-      },
+-      {
+-        "credential": "anonymous",
+-        "fieldOccurrences": [],
+-        "id": "wrong-host",
+-        "method": "GET",
+-        "position": null,
+-        "status": 400,
+-        "transport": "callback-local-raw",
+-        "url": "https://reference.invalid/acme/bdp.json"
+-      },
+-      {
+-        "credential": "writer",
+-        "fieldOccurrences": [
+-          {
+-            "name": "origin",
+-            "value": "https://other.invalid"
+-          }
+-        ],
+-        "id": "origin",
+-        "method": "GET",
+-        "position": null,
+-        "status": 403,
+-        "transport": "public-exact",
+-        "url": "https://reference.invalid/acme/bdp.json"
+-      }
+-    ],
+-    "installed-06": [
+-      {
+-        "credential": "writer",
+-        "fieldOccurrences": [],
+-        "id": "N1",
+-        "method": "GET",
+-        "position": "pos-0",
+-        "status": 204,
+-        "transport": "public-exact",
+-        "url": "https://reference.invalid/acme/"
+-      },
+-      {
+-        "credential": "writer",
+-        "fieldOccurrences": [],
+-        "id": "N2",
+-        "method": "GET",
+-        "position": "pos-0",
+-        "status": 200,
+-        "transport": "public-exact",
+-        "url": "https://reference.invalid/acme/bdp.json"
+-      },
+-      {
+-        "credential": "writer",
+-        "fieldOccurrences": [],
+-        "id": "N3",
+-        "method": "GET",
+-        "position": "pos-0",
+-        "status": 200,
+-        "transport": "public-exact",
+-        "url": "https://reference.invalid/acme/operations/"
+-      },
+-      {
+-        "credential": "writer",
+-        "fieldOccurrences": [],
+-        "id": "minimum-seed",
+-        "method": "POST",
+-        "position": "pos-1",
+-        "status": 200,
+-        "transport": "public-exact",
+-        "url": "https://reference.invalid/acme/operations/create-bead"
+-      },
+-      {
+-        "credential": "writer",
+-        "fieldOccurrences": [],
+-        "id": "minimum-seed-receipt",
+-        "method": "GET",
+-        "position": "pos-1",
+-        "status": 200,
+-        "transport": "public-exact",
+-        "url": {
+-          "receiptUnder": "https://reference.invalid/acme/receipts/"
+-        }
+-      },
+-      {
+-        "credential": "writer",
+-        "fieldOccurrences": [
+-          {
+-            "name": "bdp-minimum-scope-position",
+-            "value": "pos-1"
+-          },
+-          {
+-            "name": "bdp-scope-epoch",
+-            "value": "$epoch"
+-          },
+-          {
+-            "name": "bdp-authorization-view",
+-            "value": "$view"
+-          }
+-        ],
+-        "id": "known-get",
+-        "method": "GET",
+-        "position": "pos-1",
+-        "status": 204,
+-        "transport": "public-exact",
+-        "url": "https://reference.invalid/acme/"
+-      },
+-      {
+-        "credential": "writer",
+-        "fieldOccurrences": [
+-          {
+-            "name": "bdp-minimum-scope-position",
+-            "value": "pos-1"
+-          },
+-          {
+-            "name": "bdp-scope-epoch",
+-            "value": "$epoch"
+-          },
+-          {
+-            "name": "bdp-authorization-view",
+-            "value": "$view"
+-          }
+-        ],
+-        "id": "known-head",
+-        "method": "HEAD",
+-        "position": "pos-1",
+-        "status": 204,
+-        "transport": "public-exact",
+-        "url": "https://reference.invalid/acme/"
+-      },
+-      {
+-        "credential": "writer",
+-        "fieldOccurrences": [
+-          {
+-            "name": "bdp-minimum-scope-position",
+-            "value": "pos-0"
+-          },
+-          {
+-            "name": "bdp-scope-epoch",
+-            "value": "$epoch"
+-          },
+-          {
+-            "name": "bdp-authorization-view",
+-            "value": "$view"
+-          }
+-        ],
+-        "id": "genesis",
+-        "method": "GET",
+-        "position": "pos-1",
+-        "status": 204,
+-        "transport": "public-exact",
+-        "url": "https://reference.invalid/acme/"
+-      },
+-      {
+-        "credential": "writer",
+-        "fieldOccurrences": [
+-          {
+-            "name": "bdp-minimum-scope-position",
+-            "value": "opaque-minimum"
+-          },
+-          {
+-            "name": "bdp-scope-epoch",
+-            "value": "foreign-epoch"
+-          },
+-          {
+-            "name": "bdp-authorization-view",
+-            "value": "$view"
+-          },
+-          {
+-            "name": "if-none-match",
+-            "value": "*"
+-          }
+-        ],
+-        "id": "epoch-first",
+-        "method": "GET",
+-        "position": "pos-1",
+-        "status": 410,
+-        "transport": "public-exact",
+-        "url": "https://reference.invalid/acme/"
+-      },
+-      {
+-        "credential": "writer",
+-        "fieldOccurrences": [
+-          {
+-            "name": "bdp-minimum-scope-position",
+-            "value": "opaque-minimum"
+-          },
+-          {
+-            "name": "bdp-scope-epoch",
+-            "value": "$epoch"
+-          },
+-          {
+-            "name": "bdp-authorization-view",
+-            "value": "foreign-view"
+-          },
+-          {
+-            "name": "accept",
+-            "value": "text/plain"
+-          }
+-        ],
+-        "id": "view-before-accept",
+-        "method": "GET",
+-        "position": "pos-1",
+-        "status": 409,
+-        "transport": "public-exact",
+-        "url": "https://reference.invalid/acme/"
+-      },
+-      {
+-        "credential": "writer",
+-        "fieldOccurrences": [
+-          {
+-            "name": "bdp-minimum-scope-position",
+-            "value": "opaque-minimum"
+-          },
+-          {
+-            "name": "bdp-scope-epoch",
+-            "value": "$epoch"
+-          },
+-          {
+-            "name": "bdp-authorization-view",
+-            "value": "foreign-view"
+-          },
+-          {
+-            "name": "if-match",
+-            "value": "\"absent\""
+-          }
+-        ],
+-        "id": "view-head",
+-        "method": "HEAD",
+-        "position": "pos-1",
+-        "status": 409,
+-        "transport": "public-exact",
+-        "url": "https://reference.invalid/acme/"
+-      },
+-      {
+-        "credential": "writer",
+-        "fieldOccurrences": [
+-          {
+-            "name": "bdp-minimum-scope-position",
+-            "value": "opaque-minimum"
+-          },
+-          {
+-            "name": "bdp-scope-epoch",
+-            "value": "$epoch"
+-          },
+-          {
+-            "name": "bdp-authorization-view",
+-            "value": "$view"
+-          },
+-          {
+-            "name": "accept",
+-            "value": "text/plain"
+-          }
+-        ],
+-        "id": "opaque-accept",
+-        "method": "GET",
+-        "position": "pos-1",
+-        "status": 503,
+-        "transport": "public-exact",
+-        "url": "https://reference.invalid/acme/"
+-      },
+-      {
+-        "credential": "writer",
+-        "fieldOccurrences": [
+-          {
+-            "name": "bdp-minimum-scope-position",
+-            "value": "opaque-minimum"
+-          },
+-          {
+-            "name": "bdp-scope-epoch",
+-            "value": "$epoch"
+-          },
+-          {
+-            "name": "bdp-authorization-view",
+-            "value": "$view"
+-          },
+-          {
+-            "name": "if-none-match",
+-            "value": "*"
+-          }
+-        ],
+-        "id": "opaque-conditional",
+-        "method": "GET",
+-        "position": "pos-1",
+-        "status": 503,
+-        "transport": "public-exact",
+-        "url": "https://reference.invalid/acme/"
+-      },
+-      {
+-        "credential": "writer",
+-        "fieldOccurrences": [
+-          {
+-            "name": "bdp-minimum-scope-position",
+-            "value": "opaque-minimum"
+-          },
+-          {
+-            "name": "bdp-scope-epoch",
+-            "value": "$epoch"
+-          },
+-          {
+-            "name": "bdp-authorization-view",
+-            "value": "$view"
+-          },
+-          {
+-            "name": "if-match",
+-            "value": "\"absent\""
+-          }
+-        ],
+-        "id": "opaque-head",
+-        "method": "HEAD",
+-        "position": "pos-1",
+-        "status": 503,
+-        "transport": "public-exact",
+-        "url": "https://reference.invalid/acme/"
+-      },
+-      {
+-        "credential": "writer",
+-        "fieldOccurrences": [
+-          {
+-            "name": "bdp-minimum-scope-position",
+-            "value": "pos-2"
+-          },
+-          {
+-            "name": "bdp-scope-epoch",
+-            "value": "$epoch"
+-          },
+-          {
+-            "name": "bdp-authorization-view",
+-            "value": "$view"
+-          }
+-        ],
+-        "id": "known-future",
+-        "method": "GET",
+-        "position": "pos-1",
+-        "status": 503,
+-        "transport": "public-exact",
+-        "url": "https://reference.invalid/acme/"
+-      }
+-    ],
+-    "installed-07": [
+-      {
+-        "credential": "writer",
+-        "fieldOccurrences": [],
+-        "id": "N1",
+-        "method": "GET",
+-        "position": "pos-0",
+-        "status": 204,
+-        "transport": "public-exact",
+-        "url": "https://reference.invalid/acme/"
+-      },
+-      {
+-        "credential": "writer",
+-        "fieldOccurrences": [],
+-        "id": "N2",
+-        "method": "GET",
+-        "position": "pos-0",
+-        "status": 200,
+-        "transport": "public-exact",
+-        "url": "https://reference.invalid/acme/bdp.json"
+-      },
+-      {
+-        "credential": "writer",
+-        "fieldOccurrences": [],
+-        "id": "N3",
+-        "method": "GET",
+-        "position": "pos-0",
+-        "status": 200,
+-        "transport": "public-exact",
+-        "url": "https://reference.invalid/acme/operations/"
+-      },
+-      {
+-        "credential": "writer",
+-        "fieldOccurrences": [],
+-        "id": "independent-descriptor",
+-        "method": "GET",
+-        "position": "pos-0",
+-        "status": 200,
+-        "transport": "public-exact",
+-        "url": "https://reference.invalid/acme/bdp.json"
+-      },
+-      {
+-        "credential": "writer",
+-        "fieldOccurrences": [],
+-        "id": "pending-minimum",
+-        "method": "GET",
+-        "position": null,
+-        "status": null,
+-        "transport": "callback-local-raw",
+-        "url": "https://reference.invalid/acme/"
+-      }
+-    ],
+-    "installed-08": [
+-      {
+-        "credential": "writer",
+-        "fieldOccurrences": [],
+-        "id": "N1",
+-        "method": "GET",
+-        "position": "pos-0",
+-        "status": 204,
+-        "transport": "public-exact",
+-        "url": "https://reference.invalid/acme/"
+-      },
+-      {
+-        "credential": "writer",
+-        "fieldOccurrences": [],
+-        "id": "N2",
+-        "method": "GET",
+-        "position": "pos-0",
+-        "status": 200,
+-        "transport": "public-exact",
+-        "url": "https://reference.invalid/acme/bdp.json"
+-      },
+-      {
+-        "credential": "writer",
+-        "fieldOccurrences": [],
+-        "id": "N3",
+-        "method": "GET",
+-        "position": "pos-0",
+-        "status": 200,
+-        "transport": "public-exact",
+-        "url": "https://reference.invalid/acme/operations/"
+-      },
+-      {
+-        "credential": "writer",
+-        "fieldOccurrences": [],
+-        "id": "minimum-seed",
+-        "method": "POST",
+-        "position": "pos-1",
+-        "status": 200,
+-        "transport": "public-exact",
+-        "url": "https://reference.invalid/acme/operations/create-bead"
+-      },
+-      {
+-        "credential": "writer",
+-        "fieldOccurrences": [],
+-        "id": "minimum-seed-receipt",
+-        "method": "GET",
+-        "position": "pos-1",
+-        "status": 200,
+-        "transport": "public-exact",
+-        "url": {
+-          "receiptUnder": "https://reference.invalid/acme/receipts/"
+-        }
+-      },
+-      {
+-        "credential": "writer",
+-        "fieldOccurrences": [
+-          {
+-            "name": "bdp-minimum-scope-position",
+-            "value": "pos-1"
+-          },
+-          {
+-            "name": "bdp-scope-epoch",
+-            "value": "$epoch"
+-          },
+-          {
+-            "name": "bdp-authorization-view",
+-            "value": "$view"
+-          }
+-        ],
+-        "id": "known-get",
+-        "method": "GET",
+-        "position": "pos-1",
+-        "status": 200,
+-        "transport": "public-exact",
+-        "url": "https://reference.invalid/acme/bdp.json"
+-      },
+-      {
+-        "credential": "writer",
+-        "fieldOccurrences": [
+-          {
+-            "name": "bdp-minimum-scope-position",
+-            "value": "pos-1"
+-          },
+-          {
+-            "name": "bdp-scope-epoch",
+-            "value": "$epoch"
+-          },
+-          {
+-            "name": "bdp-authorization-view",
+-            "value": "$view"
+-          }
+-        ],
+-        "id": "known-head",
+-        "method": "HEAD",
+-        "position": "pos-1",
+-        "status": 200,
+-        "transport": "public-exact",
+-        "url": "https://reference.invalid/acme/bdp.json"
+-      },
+-      {
+-        "credential": "writer",
+-        "fieldOccurrences": [
+-          {
+-            "name": "bdp-minimum-scope-position",
+-            "value": "pos-0"
+-          },
+-          {
+-            "name": "bdp-scope-epoch",
+-            "value": "$epoch"
+-          },
+-          {
+-            "name": "bdp-authorization-view",
+-            "value": "$view"
+-          }
+-        ],
+-        "id": "genesis",
+-        "method": "GET",
+-        "position": "pos-1",
+-        "status": 200,
+-        "transport": "public-exact",
+-        "url": "https://reference.invalid/acme/bdp.json"
+-      },
+-      {
+-        "credential": "writer",
+-        "fieldOccurrences": [
+-          {
+-            "name": "bdp-minimum-scope-position",
+-            "value": "opaque-minimum"
+-          },
+-          {
+-            "name": "bdp-scope-epoch",
+-            "value": "foreign-epoch"
+-          },
+-          {
+-            "name": "bdp-authorization-view",
+-            "value": "$view"
+-          },
+-          {
+-            "name": "if-none-match",
+-            "value": "*"
+-          }
+-        ],
+-        "id": "epoch-first",
+-        "method": "GET",
+-        "position": "pos-1",
+-        "status": 410,
+-        "transport": "public-exact",
+-        "url": "https://reference.invalid/acme/bdp.json"
+-      },
+-      {
+-        "credential": "writer",
+-        "fieldOccurrences": [
+-          {
+-            "name": "bdp-minimum-scope-position",
+-            "value": "opaque-minimum"
+-          },
+-          {
+-            "name": "bdp-scope-epoch",
+-            "value": "$epoch"
+-          },
+-          {
+-            "name": "bdp-authorization-view",
+-            "value": "foreign-view"
+-          },
+-          {
+-            "name": "accept",
+-            "value": "text/plain"
+-          }
+-        ],
+-        "id": "view-before-accept",
+-        "method": "GET",
+-        "position": "pos-1",
+-        "status": 409,
+-        "transport": "public-exact",
+-        "url": "https://reference.invalid/acme/bdp.json"
+-      },
+-      {
+-        "credential": "writer",
+-        "fieldOccurrences": [
+-          {
+-            "name": "bdp-minimum-scope-position",
+-            "value": "opaque-minimum"
+-          },
+-          {
+-            "name": "bdp-scope-epoch",
+-            "value": "$epoch"
+-          },
+-          {
+-            "name": "bdp-authorization-view",
+-            "value": "foreign-view"
+-          },
+-          {
+-            "name": "if-match",
+-            "value": "\"absent\""
+-          }
+-        ],
+-        "id": "view-head",
+-        "method": "HEAD",
+-        "position": "pos-1",
+-        "status": 409,
+-        "transport": "public-exact",
+-        "url": "https://reference.invalid/acme/bdp.json"
+-      },
+-      {
+-        "credential": "writer",
+-        "fieldOccurrences": [
+-          {
+-            "name": "bdp-minimum-scope-position",
+-            "value": "opaque-minimum"
+-          },
+-          {
+-            "name": "bdp-scope-epoch",
+-            "value": "$epoch"
+-          },
+-          {
+-            "name": "bdp-authorization-view",
+-            "value": "$view"
+-          },
+-          {
+-            "name": "accept",
+-            "value": "text/plain"
+-          }
+-        ],
+-        "id": "opaque-accept",
+-        "method": "GET",
+-        "position": "pos-1",
+-        "status": 503,
+-        "transport": "public-exact",
+-        "url": "https://reference.invalid/acme/bdp.json"
+-      },
+-      {
+-        "credential": "writer",
+-        "fieldOccurrences": [
+-          {
+-            "name": "bdp-minimum-scope-position",
+-            "value": "opaque-minimum"
+-          },
+-          {
+-            "name": "bdp-scope-epoch",
+-            "value": "$epoch"
+-          },
+-          {
+-            "name": "bdp-authorization-view",
+-            "value": "$view"
+-          },
+-          {
+-            "name": "if-none-match",
+-            "value": "*"
+-          }
+-        ],
+-        "id": "opaque-conditional",
+-        "method": "GET",
+-        "position": "pos-1",
+-        "status": 503,
+-        "transport": "public-exact",
+-        "url": "https://reference.invalid/acme/bdp.json"
+-      },
+-      {
+-        "credential": "writer",
+-        "fieldOccurrences": [
+-          {
+-            "name": "bdp-minimum-scope-position",
+-            "value": "opaque-minimum"
+-          },
+-          {
+-            "name": "bdp-scope-epoch",
+-            "value": "$epoch"
+-          },
+-          {
+-            "name": "bdp-authorization-view",
+-            "value": "$view"
+-          },
+-          {
+-            "name": "if-match",
+-            "value": "\"absent\""
+-          }
+-        ],
+-        "id": "opaque-head",
+-        "method": "HEAD",
+-        "position": "pos-1",
+-        "status": 503,
+-        "transport": "public-exact",
+-        "url": "https://reference.invalid/acme/bdp.json"
+-      },
+-      {
+-        "credential": "writer",
+-        "fieldOccurrences": [
+-          {
+-            "name": "bdp-minimum-scope-position",
+-            "value": "pos-2"
+-          },
+-          {
+-            "name": "bdp-scope-epoch",
+-            "value": "$epoch"
+-          },
+-          {
+-            "name": "bdp-authorization-view",
+-            "value": "$view"
+-          }
+-        ],
+-        "id": "known-future",
+-        "method": "GET",
+-        "position": "pos-1",
+-        "status": 503,
+-        "transport": "public-exact",
+-        "url": "https://reference.invalid/acme/bdp.json"
+-      }
+-    ],
+-    "installed-09": [
+-      {
+-        "credential": "writer",
+-        "fieldOccurrences": [],
+-        "id": "N1",
+-        "method": "GET",
+-        "position": "pos-0",
+-        "status": 204,
+-        "transport": "public-exact",
+-        "url": "https://reference.invalid/acme/"
+-      },
+-      {
+-        "credential": "writer",
+-        "fieldOccurrences": [],
+-        "id": "N2",
+-        "method": "GET",
+-        "position": "pos-0",
+-        "status": 200,
+-        "transport": "public-exact",
+-        "url": "https://reference.invalid/acme/bdp.json"
+-      },
+-      {
+-        "credential": "writer",
+-        "fieldOccurrences": [],
+-        "id": "N3",
+-        "method": "GET",
+-        "position": "pos-0",
+-        "status": 200,
+-        "transport": "public-exact",
+-        "url": "https://reference.invalid/acme/operations/"
+-      },
+-      {
+-        "credential": "writer",
+-        "fieldOccurrences": [],
+-        "id": "independent-descriptor",
+-        "method": "GET",
+-        "position": "pos-0",
+-        "status": 200,
+-        "transport": "public-exact",
+-        "url": "https://reference.invalid/acme/bdp.json"
+-      },
+-      {
+-        "credential": "writer",
+-        "fieldOccurrences": [],
+-        "id": "pending-minimum",
+-        "method": "GET",
+-        "position": null,
+-        "status": null,
+-        "transport": "callback-local-raw",
+-        "url": "https://reference.invalid/acme/bdp.json"
+-      }
+-    ],
+-    "installed-10": [
+-      {
+-        "credential": "writer",
+-        "fieldOccurrences": [],
+-        "id": "N1",
+-        "method": "GET",
+-        "position": "pos-0",
+-        "status": 204,
+-        "transport": "public-exact",
+-        "url": "https://reference.invalid/acme/"
+-      },
+-      {
+-        "credential": "writer",
+-        "fieldOccurrences": [],
+-        "id": "N2",
+-        "method": "GET",
+-        "position": "pos-0",
+-        "status": 200,
+-        "transport": "public-exact",
+-        "url": "https://reference.invalid/acme/bdp.json"
+-      },
+-      {
+-        "credential": "writer",
+-        "fieldOccurrences": [],
+-        "id": "N3",
+-        "method": "GET",
+-        "position": "pos-0",
+-        "status": 200,
+-        "transport": "public-exact",
+-        "url": "https://reference.invalid/acme/operations/"
+-      },
+-      {
+-        "credential": "writer",
+-        "fieldOccurrences": [],
+-        "id": "minimum-seed",
+-        "method": "POST",
+-        "position": "pos-1",
+-        "status": 200,
+-        "transport": "public-exact",
+-        "url": "https://reference.invalid/acme/operations/create-bead"
+-      },
+-      {
+-        "credential": "writer",
+-        "fieldOccurrences": [],
+-        "id": "minimum-seed-receipt",
+-        "method": "GET",
+-        "position": "pos-1",
+-        "status": 200,
+-        "transport": "public-exact",
+-        "url": {
+-          "receiptUnder": "https://reference.invalid/acme/receipts/"
+-        }
+-      },
+-      {
+-        "credential": "writer",
+-        "fieldOccurrences": [
+-          {
+-            "name": "bdp-minimum-scope-position",
+-            "value": "pos-1"
+-          },
+-          {
+-            "name": "bdp-scope-epoch",
+-            "value": "$epoch"
+-          },
+-          {
+-            "name": "bdp-authorization-view",
+-            "value": "$view"
+-          }
+-        ],
+-        "id": "known-get",
+-        "method": "GET",
+-        "position": "pos-1",
+-        "status": 200,
+-        "transport": "public-exact",
+-        "url": "https://reference.invalid/acme/operations/"
+-      },
+-      {
+-        "credential": "writer",
+-        "fieldOccurrences": [
+-          {
+-            "name": "bdp-minimum-scope-position",
+-            "value": "pos-1"
+-          },
+-          {
+-            "name": "bdp-scope-epoch",
+-            "value": "$epoch"
+-          },
+-          {
+-            "name": "bdp-authorization-view",
+-            "value": "$view"
+-          }
+-        ],
+-        "id": "known-head",
+-        "method": "HEAD",
+-        "position": "pos-1",
+-        "status": 200,
+-        "transport": "public-exact",
+-        "url": "https://reference.invalid/acme/operations/"
+-      },
+-      {
+-        "credential": "writer",
+-        "fieldOccurrences": [
+-          {
+-            "name": "bdp-minimum-scope-position",
+-            "value": "pos-0"
+-          },
+-          {
+-            "name": "bdp-scope-epoch",
+-            "value": "$epoch"
+-          },
+-          {
+-            "name": "bdp-authorization-view",
+-            "value": "$view"
+-          }
+-        ],
+-        "id": "genesis",
+-        "method": "GET",
+-        "position": "pos-1",
+-        "status": 200,
+-        "transport": "public-exact",
+-        "url": "https://reference.invalid/acme/operations/"
+-      },
+-      {
+-        "credential": "writer",
+-        "fieldOccurrences": [
+-          {
+-            "name": "bdp-minimum-scope-position",
+-            "value": "opaque-minimum"
+-          },
+-          {
+-            "name": "bdp-scope-epoch",
+-            "value": "foreign-epoch"
+-          },
+-          {
+-            "name": "bdp-authorization-view",
+-            "value": "$view"
+-          },
+-          {
+-            "name": "if-none-match",
+-            "value": "*"
+-          }
+-        ],
+-        "id": "epoch-first",
+-        "method": "GET",
+-        "position": "pos-1",
+-        "status": 410,
+-        "transport": "public-exact",
+-        "url": "https://reference.invalid/acme/operations/"
+-      },
+-      {
+-        "credential": "writer",
+-        "fieldOccurrences": [
+-          {
+-            "name": "bdp-minimum-scope-position",
+-            "value": "opaque-minimum"
+-          },
+-          {
+-            "name": "bdp-scope-epoch",
+-            "value": "$epoch"
+-          },
+-          {
+-            "name": "bdp-authorization-view",
+-            "value": "foreign-view"
+-          },
+-          {
+-            "name": "accept",
+-            "value": "text/plain"
+-          }
+-        ],
+-        "id": "view-before-accept",
+-        "method": "GET",
+-        "position": "pos-1",
+-        "status": 409,
+-        "transport": "public-exact",
+-        "url": "https://reference.invalid/acme/operations/"
+-      },
+-      {
+-        "credential": "writer",
+-        "fieldOccurrences": [
+-          {
+-            "name": "bdp-minimum-scope-position",
+-            "value": "opaque-minimum"
+-          },
+-          {
+-            "name": "bdp-scope-epoch",
+-            "value": "$epoch"
+-          },
+-          {
+-            "name": "bdp-authorization-view",
+-            "value": "foreign-view"
+-          },
+-          {
+-            "name": "if-match",
+-            "value": "\"absent\""
+-          }
+-        ],
+-        "id": "view-head",
+-        "method": "HEAD",
+-        "position": "pos-1",
+-        "status": 409,
+-        "transport": "public-exact",
+-        "url": "https://reference.invalid/acme/operations/"
+-      },
+-      {
+-        "credential": "writer",
+-        "fieldOccurrences": [
+-          {
+-            "name": "bdp-minimum-scope-position",
+-            "value": "opaque-minimum"
+-          },
+-          {
+-            "name": "bdp-scope-epoch",
+-            "value": "$epoch"
+-          },
+-          {
+-            "name": "bdp-authorization-view",
+-            "value": "$view"
+-          },
+-          {
+-            "name": "accept",
+-            "value": "text/plain"
+-          }
+-        ],
+-        "id": "opaque-accept",
+-        "method": "GET",
+-        "position": "pos-1",
+-        "status": 503,
+-        "transport": "public-exact",
+-        "url": "https://reference.invalid/acme/operations/"
+-      },
+-      {
+-        "credential": "writer",
+-        "fieldOccurrences": [
+-          {
+-            "name": "bdp-minimum-scope-position",
+-            "value": "opaque-minimum"
+-          },
+-          {
+-            "name": "bdp-scope-epoch",
+-            "value": "$epoch"
+-          },
+-          {
+-            "name": "bdp-authorization-view",
+-            "value": "$view"
+-          },
+-          {
+-            "name": "if-none-match",
+-            "value": "*"
+-          }
+-        ],
+-        "id": "opaque-conditional",
+-        "method": "GET",
+-        "position": "pos-1",
+-        "status": 503,
+-        "transport": "public-exact",
+-        "url": "https://reference.invalid/acme/operations/"
+-      },
+-      {
+-        "credential": "writer",
+-        "fieldOccurrences": [
+-          {
+-            "name": "bdp-minimum-scope-position",
+-            "value": "opaque-minimum"
+-          },
+-          {
+-            "name": "bdp-scope-epoch",
+-            "value": "$epoch"
+-          },
+-          {
+-            "name": "bdp-authorization-view",
+-            "value": "$view"
+-          },
+-          {
+-            "name": "if-match",
+-            "value": "\"absent\""
+-          }
+-        ],
+-        "id": "opaque-head",
+-        "method": "HEAD",
+-        "position": "pos-1",
+-        "status": 503,
+-        "transport": "public-exact",
+-        "url": "https://reference.invalid/acme/operations/"
+-      },
+-      {
+-        "credential": "writer",
+-        "fieldOccurrences": [
+-          {
+-            "name": "bdp-minimum-scope-position",
+-            "value": "pos-2"
+-          },
+-          {
+-            "name": "bdp-scope-epoch",
+-            "value": "$epoch"
+-          },
+-          {
+-            "name": "bdp-authorization-view",
+-            "value": "$view"
+-          }
+-        ],
+-        "id": "known-future",
+-        "method": "GET",
+-        "position": "pos-1",
+-        "status": 503,
+-        "transport": "public-exact",
+-        "url": "https://reference.invalid/acme/operations/"
+-      }
+-    ],
+-    "installed-11": [
+-      {
+-        "credential": "writer",
+-        "fieldOccurrences": [],
+-        "id": "N1",
+-        "method": "GET",
+-        "position": "pos-0",
+-        "status": 204,
+-        "transport": "public-exact",
+-        "url": "https://reference.invalid/acme/"
+-      },
+-      {
+-        "credential": "writer",
+-        "fieldOccurrences": [],
+-        "id": "N2",
+-        "method": "GET",
+-        "position": "pos-0",
+-        "status": 200,
+-        "transport": "public-exact",
+-        "url": "https://reference.invalid/acme/bdp.json"
+-      },
+-      {
+-        "credential": "writer",
+-        "fieldOccurrences": [],
+-        "id": "N3",
+-        "method": "GET",
+-        "position": "pos-0",
+-        "status": 200,
+-        "transport": "public-exact",
+-        "url": "https://reference.invalid/acme/operations/"
+-      },
+-      {
+-        "credential": "writer",
+-        "fieldOccurrences": [],
+-        "id": "independent-descriptor",
+-        "method": "GET",
+-        "position": "pos-0",
+-        "status": 200,
+-        "transport": "public-exact",
+-        "url": "https://reference.invalid/acme/bdp.json"
+-      },
+-      {
+-        "credential": "writer",
+-        "fieldOccurrences": [],
+-        "id": "pending-minimum",
+-        "method": "GET",
+-        "position": null,
+-        "status": null,
+-        "transport": "callback-local-raw",
+-        "url": "https://reference.invalid/acme/operations/"
+-      }
+-    ]
+-  },
+   "legacyChangefeedExpectedLabels": [
+     "private-source-changefeed-parameter-context",
+     "changefeed-opaque-capture",
+@@ -2818,68 +271,6 @@
+     "completedResponses",
+     "outcome",
+     "claimEligible"
+-  ],
+-  "legacyOwnerRows": [
+-    {
+-      "method": "GET",
+-      "status": 204,
+-      "url": "https://reference.invalid/acme/"
+-    },
+-    {
+-      "method": "GET",
+-      "status": 200,
+-      "url": "https://reference.invalid/acme/bdp.json"
+-    },
+-    {
+-      "method": "GET",
+-      "status": 200,
+-      "url": "https://reference.invalid/acme/operations/"
+-    },
+-    {
+-      "method": "HEAD",
+-      "status": 204,
+-      "url": "https://reference.invalid/acme/"
+-    },
+-    {
+-      "method": "HEAD",
+-      "status": 200,
+-      "url": "https://reference.invalid/acme/bdp.json"
+-    },
+-    {
+-      "method": "HEAD",
+-      "status": 200,
+-      "url": "https://reference.invalid/acme/operations/"
+-    },
+-    {
+-      "method": "GET",
+-      "status": 401,
+-      "url": "https://reference.invalid/acme/"
+-    },
+-    {
+-      "method": "GET",
+-      "status": 401,
+-      "url": "https://reference.invalid/acme/bdp.json"
+-    },
+-    {
+-      "method": "GET",
+-      "status": 401,
+-      "url": "https://reference.invalid/acme/operations/"
+-    },
+-    {
+-      "method": "POST",
+-      "status": 200,
+-      "url": "https://reference.invalid/acme/operations/batch"
+-    },
+-    {
+-      "method": "GET",
+-      "status": 200,
+-      "url": "https://reference.invalid/acme/beads/a"
+-    },
+-    {
+-      "method": "POST",
+-      "status": 200,
+-      "url": "https://reference.invalid/acme/operations/batch"
+-    }
+   ],
+   "legacySchemaRequired": [
+     "observation",
+@@ -2912,38 +303,6 @@
+     "runtimeConfigurationIdentity",
+     "authorityMode"
+   ],
+-  "operationTargets": {
+-    "batch": "https://reference.invalid/acme/operations/batch",
+-    "createBead": "https://reference.invalid/acme/operations/create-bead",
+-    "createLink": "https://reference.invalid/acme/operations/create-link",
+-    "deleteAlias": "https://reference.invalid/acme/operations/delete-alias",
+-    "deleteBead": "https://reference.invalid/acme/operations/delete-bead",
+-    "deleteLink": "https://reference.invalid/acme/operations/delete-link",
+-    "deleteWhere": "https://reference.invalid/acme/operations/delete-where",
+-    "putAlias": "https://reference.invalid/acme/operations/put-alias",
+-    "sequence": "https://reference.invalid/acme/operations/sequence",
+-    "updateBead": "https://reference.invalid/acme/operations/update-bead",
+-    "updateLink": "https://reference.invalid/acme/operations/update-link",
+-    "updateWhere": "https://reference.invalid/acme/operations/update-where"
+-  },
+-  "projectionLimitations": "Received opaque receipt URLs are constrained to exact captured canonical receipts root and safe one-segment URI grammar; hidden random credentials/epoch-dependent metadata digests are actual typed identities, not fabricated expected hashes. Retained fingerprints do not substitute for passing callback body/Problem/parser oracles.",
+-  "schemaArtifacts": [
+-    {
+-      "bytes": 174,
+-      "sha256": "b559e973c5ab7e0534e59064e8088442fee0d896d4399ed33e9924b19b800012",
+-      "uri": "https://reference.invalid/acme/schemas/root"
+-    },
+-    {
+-      "bytes": 118,
+-      "sha256": "a9eb6111f30bf9e672dd5dbca44667e1783b20d944a1fe29608d48d9df32add6",
+-      "uri": "https://reference.invalid/acme/schemas/value"
+-    }
+-  ],
+-  "schemaGrants": [
+-    "https://reference.invalid/acme/types/task",
+-    "https://reference.invalid/acme/schemas/root",
+-    "https://reference.invalid/acme/schemas/value"
+-  ],
+   "schemaLabels": [
+     "types",
+     "type",
+@@ -2960,132 +319,6 @@
+     "create",
+     "root-after"
+   ],
+-  "schemaRoutes": [
+-    {
+-      "method": "GET",
+-      "url": "https://reference.invalid/acme/types/?limit=32"
+-    },
+-    {
+-      "method": "HEAD",
+-      "url": "https://reference.invalid/acme/schemas/root"
+-    },
+-    {
+-      "method": "GET",
+-      "url": "https://reference.invalid/acme/schemas/unknown"
+-    },
+-    {
+-      "method": "POST",
+-      "url": "https://reference.invalid/acme/schemas/root"
+-    },
+-    {
+-      "method": "GET",
+-      "url": "https://reference.invalid/acme/"
+-    },
+-    {
+-      "method": "POST",
+-      "url": "https://reference.invalid/acme/operations/create-bead"
+-    }
+-  ],
+-  "schemaRows": [
+-    {
+-      "label": "types",
+-      "method": "GET",
+-      "position": "pos-0",
+-      "status": 200,
+-      "url": "https://reference.invalid/acme/types/?limit=32"
+-    },
+-    {
+-      "label": "type",
+-      "method": "GET",
+-      "position": "pos-0",
+-      "status": 200,
+-      "url": "https://reference.invalid/acme/types/task"
+-    },
+-    {
+-      "label": "root",
+-      "method": "GET",
+-      "position": "pos-0",
+-      "status": 200,
+-      "url": "https://reference.invalid/acme/schemas/root"
+-    },
+-    {
+-      "label": "referenced",
+-      "method": "GET",
+-      "position": "pos-0",
+-      "status": 200,
+-      "url": "https://reference.invalid/acme/schemas/value"
+-    },
+-    {
+-      "label": "head",
+-      "method": "HEAD",
+-      "position": "pos-0",
+-      "status": 200,
+-      "url": "https://reference.invalid/acme/schemas/root"
+-    },
+-    {
+-      "label": "unacceptable",
+-      "method": "GET",
+-      "position": "pos-0",
+-      "status": 406,
+-      "url": "https://reference.invalid/acme/schemas/root"
+-    },
+-    {
+-      "label": "not-modified",
+-      "method": "GET",
+-      "position": "pos-0",
+-      "status": 304,
+-      "url": "https://reference.invalid/acme/schemas/root"
+-    },
+-    {
+-      "label": "precondition",
+-      "method": "GET",
+-      "position": "pos-0",
+-      "status": 412,
+-      "url": "https://reference.invalid/acme/schemas/root"
+-    },
+-    {
+-      "label": "unknown",
+-      "method": "GET",
+-      "position": "pos-0",
+-      "status": 404,
+-      "url": "https://reference.invalid/acme/schemas/unknown"
+-    },
+-    {
+-      "label": "unauthenticated",
+-      "method": "GET",
+-      "position": null,
+-      "status": 401,
+-      "url": "https://reference.invalid/acme/schemas/root"
+-    },
+-    {
+-      "label": "method",
+-      "method": "POST",
+-      "position": null,
+-      "status": 405,
+-      "url": "https://reference.invalid/acme/schemas/root"
+-    },
+-    {
+-      "label": "discovery",
+-      "method": "GET",
+-      "position": "pos-0",
+-      "status": 204,
+-      "url": "https://reference.invalid/acme/"
+-    },
+-    {
+-      "label": "create",
+-      "method": "POST",
+-      "position": "pos-1",
+-      "status": 200,
+-      "url": "https://reference.invalid/acme/operations/create-bead"
+-    },
+-    {
+-      "label": "root-after",
+-      "method": "GET",
+-      "position": "pos-1",
+-      "status": 200,
+-      "url": "https://reference.invalid/acme/schemas/root"
+-    }
+-  ],
+   "sourceCounterfactuals": [
+     "missing-updateLink",
+     "wrong-version",
+@@ -3099,16 +332,6 @@
+   ],
+   "sourceExpected": {
+     "D3 source abort descriptor": {
+-      "baseline": {
+-        "assemblies": 0,
+-        "calls": [
+-          "readConfiguration",
+-          "readConfiguration",
+-          "readConfiguration"
+-        ],
+-        "entries": 0
+-      },
+-      "baselineCount": 1,
+       "clones": 0,
+       "counters": {
+         "assemblies": 0,
+@@ -3120,27 +343,10 @@
+         "waits": 1
+       },
+       "direct": 1,
+-      "observationKinds": [
+-        "baseline",
+-        "counters"
+-      ],
+-      "rawRows": [],
+-      "rawStatuses": [],
+-      "returned": [],
+-      "returnedCount": 0,
++      "rawStatuses": [],
+       "wire": 0
+     },
+     "D3 source abort directory": {
+-      "baseline": {
+-        "assemblies": 0,
+-        "calls": [
+-          "readConfiguration",
+-          "readConfiguration",
+-          "readConfiguration"
+-        ],
+-        "entries": 0
+-      },
+-      "baselineCount": 1,
+       "clones": 0,
+       "counters": {
+         "assemblies": 0,
+@@ -3152,27 +358,10 @@
+         "waits": 1
+       },
+       "direct": 1,
+-      "observationKinds": [
+-        "baseline",
+-        "counters"
+-      ],
+-      "rawRows": [],
+-      "rawStatuses": [],
+-      "returned": [],
+-      "returnedCount": 0,
++      "rawStatuses": [],
+       "wire": 0
+     },
+     "D3 source abort scope": {
+-      "baseline": {
+-        "assemblies": 0,
+-        "calls": [
+-          "readConfiguration",
+-          "readConfiguration",
+-          "readConfiguration"
+-        ],
+-        "entries": 0
+-      },
+-      "baselineCount": 1,
+       "clones": 0,
+       "counters": {
+         "assemblies": 0,
+@@ -3184,27 +373,10 @@
+         "waits": 1
+       },
+       "direct": 1,
+-      "observationKinds": [
+-        "baseline",
+-        "counters"
+-      ],
+-      "rawRows": [],
+-      "rawStatuses": [],
+-      "returned": [],
+-      "returnedCount": 0,
++      "rawStatuses": [],
+       "wire": 0
+     },
+     "D3 source catch-up descriptor": {
+-      "baseline": {
+-        "assemblies": 0,
+-        "calls": [
+-          "readConfiguration",
+-          "readConfiguration",
+-          "readConfiguration"
+-        ],
+-        "entries": 0
+-      },
+-      "baselineCount": 1,
+       "clones": 0,
+       "counters": {
+         "assemblies": 2,
+@@ -3216,36 +388,10 @@
+         "waits": 1
+       },
+       "direct": 2,
+-      "observationKinds": [
+-        "baseline",
+-        "counters"
+-      ],
+-      "rawRows": [],
+-      "rawStatuses": [],
+-      "returned": [
+-        {
+-          "body": "descriptor",
+-          "credential": "writer",
+-          "method": "GET",
+-          "position": "pos-0",
+-          "status": 200,
+-          "url": "https://reference.invalid/acme/bdp.json"
+-        }
+-      ],
+-      "returnedCount": 1,
++      "rawStatuses": [],
+       "wire": 0
+     },
+     "D3 source catch-up directory": {
+-      "baseline": {
+-        "assemblies": 0,
+-        "calls": [
+-          "readConfiguration",
+-          "readConfiguration",
+-          "readConfiguration"
+-        ],
+-        "entries": 0
+-      },
+-      "baselineCount": 1,
+       "clones": 0,
+       "counters": {
+         "assemblies": 2,
+@@ -3257,36 +403,10 @@
+         "waits": 1
+       },
+       "direct": 2,
+-      "observationKinds": [
+-        "baseline",
+-        "counters"
+-      ],
+-      "rawRows": [],
+-      "rawStatuses": [],
+-      "returned": [
+-        {
+-          "body": "directory",
+-          "credential": "writer",
+-          "method": "GET",
+-          "position": "pos-0",
+-          "status": 200,
+-          "url": "https://reference.invalid/acme/operations/"
+-        }
+-      ],
+-      "returnedCount": 1,
++      "rawStatuses": [],
+       "wire": 0
+     },
+     "D3 source catch-up scope": {
+-      "baseline": {
+-        "assemblies": 0,
+-        "calls": [
+-          "readConfiguration",
+-          "readConfiguration",
+-          "readConfiguration"
+-        ],
+-        "entries": 0
+-      },
+-      "baselineCount": 1,
+       "clones": 0,
+       "counters": {
+         "assemblies": 2,
+@@ -3298,36 +418,10 @@
+         "waits": 1
+       },
+       "direct": 2,
+-      "observationKinds": [
+-        "baseline",
+-        "counters"
+-      ],
+-      "rawRows": [],
+-      "rawStatuses": [],
+-      "returned": [
+-        {
+-          "body": "absent",
+-          "credential": "writer",
+-          "method": "GET",
+-          "position": "pos-0",
+-          "status": 204,
+-          "url": "https://reference.invalid/acme/"
+-        }
+-      ],
+-      "returnedCount": 1,
++      "rawStatuses": [],
+       "wire": 0
+     },
+     "D3 source close-drain descriptor": {
+-      "baseline": {
+-        "assemblies": 0,
+-        "calls": [
+-          "readConfiguration",
+-          "readConfiguration",
+-          "readConfiguration"
+-        ],
+-        "entries": 0
+-      },
+-      "baselineCount": 1,
+       "clones": 0,
+       "counters": {
+         "assemblies": 0,
+@@ -3339,36 +433,10 @@
+         "waits": 1
+       },
+       "direct": 1,
+-      "observationKinds": [
+-        "baseline",
+-        "counters"
+-      ],
+-      "rawRows": [],
+-      "rawStatuses": [],
+-      "returned": [
+-        {
+-          "body": "problem",
+-          "credential": "writer",
+-          "method": "GET",
+-          "position": "pos-0",
+-          "status": 503,
+-          "url": "https://reference.invalid/acme/bdp.json"
+-        }
+-      ],
+-      "returnedCount": 1,
++      "rawStatuses": [],
+       "wire": 0
+     },
+     "D3 source close-drain directory": {
+-      "baseline": {
+-        "assemblies": 0,
+-        "calls": [
+-          "readConfiguration",
+-          "readConfiguration",
+-          "readConfiguration"
+-        ],
+-        "entries": 0
+-      },
+-      "baselineCount": 1,
+       "clones": 0,
+       "counters": {
+         "assemblies": 0,
+@@ -3380,36 +448,10 @@
+         "waits": 1
+       },
+       "direct": 1,
+-      "observationKinds": [
+-        "baseline",
+-        "counters"
+-      ],
+-      "rawRows": [],
+-      "rawStatuses": [],
+-      "returned": [
+-        {
+-          "body": "problem",
+-          "credential": "writer",
+-          "method": "GET",
+-          "position": "pos-0",
+-          "status": 503,
+-          "url": "https://reference.invalid/acme/operations/"
+-        }
+-      ],
+-      "returnedCount": 1,
++      "rawStatuses": [],
+       "wire": 0
+     },
+     "D3 source close-drain scope": {
+-      "baseline": {
+-        "assemblies": 0,
+-        "calls": [
+-          "readConfiguration",
+-          "readConfiguration",
+-          "readConfiguration"
+-        ],
+-        "entries": 0
+-      },
+-      "baselineCount": 1,
+       "clones": 0,
+       "counters": {
+         "assemblies": 0,
+@@ -3421,36 +463,10 @@
+         "waits": 1
+       },
+       "direct": 1,
+-      "observationKinds": [
+-        "baseline",
+-        "counters"
+-      ],
+-      "rawRows": [],
+-      "rawStatuses": [],
+-      "returned": [
+-        {
+-          "body": "problem",
+-          "credential": "writer",
+-          "method": "GET",
+-          "position": "pos-0",
+-          "status": 503,
+-          "url": "https://reference.invalid/acme/"
+-        }
+-      ],
+-      "returnedCount": 1,
++      "rawStatuses": [],
+       "wire": 0
+     },
+     "D3 source cold oracle counterfactual": {
+-      "baseline": {
+-        "assemblies": 0,
+-        "calls": [
+-          "readConfiguration",
+-          "readConfiguration",
+-          "readConfiguration"
+-        ],
+-        "entries": 0
+-      },
+-      "baselineCount": 1,
+       "clones": 9,
+       "counters": {
+         "assemblies": 3,
+@@ -3462,61 +478,10 @@
+         "waits": 0
+       },
+       "direct": 3,
+-      "observationKinds": [
+-        "baseline",
+-        "clone",
+-        "clone",
+-        "clone",
+-        "clone",
+-        "clone",
+-        "clone",
+-        "clone",
+-        "clone",
+-        "clone",
+-        "counters"
+-      ],
+-      "rawRows": [],
+-      "rawStatuses": [],
+-      "returned": [
+-        {
+-          "body": "absent",
+-          "credential": "writer",
+-          "method": "GET",
+-          "position": "pos-0",
+-          "status": 204,
+-          "url": "https://reference.invalid/acme/"
+-        },
+-        {
+-          "body": "descriptor",
+-          "credential": "writer",
+-          "method": "GET",
+-          "position": "pos-0",
+-          "status": 200,
+-          "url": "https://reference.invalid/acme/bdp.json"
+-        },
+-        {
+-          "body": "directory",
+-          "credential": "writer",
+-          "method": "GET",
+-          "position": "pos-0",
+-          "status": 200,
+-          "url": "https://reference.invalid/acme/operations/"
+-        }
+-      ],
+-      "returnedCount": 3,
++      "rawStatuses": [],
+       "wire": 0
+     },
+     "D3 source minimum order descriptor": {
+-      "baseline": {
+-        "assemblies": 0,
+-        "calls": [
+-          "readConfiguration",
+-          "readConfiguration",
+-          "readConfiguration"
+-        ],
+-        "entries": 0
+-      },
+-      "baselineCount": 1,
+       "clones": 0,
+       "counters": {
+         "assemblies": 2,
+@@ -3528,100 +493,10 @@
+         "waits": 5
+       },
+       "direct": 9,
+-      "observationKinds": [
+-        "baseline",
+-        "counters"
+-      ],
+-      "rawRows": [],
+-      "rawStatuses": [],
+-      "returned": [
+-        {
+-          "body": "descriptor",
+-          "credential": "writer",
+-          "method": "GET",
+-          "position": "pos-1",
+-          "status": 200,
+-          "url": "https://reference.invalid/acme/bdp.json"
+-        },
+-        {
+-          "body": "descriptor",
+-          "credential": "writer",
+-          "method": "GET",
+-          "position": "pos-1",
+-          "status": 200,
+-          "url": "https://reference.invalid/acme/bdp.json"
+-        },
+-        {
+-          "body": "problem",
+-          "credential": "writer",
+-          "method": "GET",
+-          "position": "pos-1",
+-          "status": 503,
+-          "url": "https://reference.invalid/acme/bdp.json"
+-        },
+-        {
+-          "body": "problem",
+-          "credential": "writer",
+-          "method": "GET",
+-          "position": "pos-1",
+-          "status": 503,
+-          "url": "https://reference.invalid/acme/bdp.json"
+-        },
+-        {
+-          "body": "problem",
+-          "credential": "writer",
+-          "method": "GET",
+-          "position": "pos-1",
+-          "status": 410,
+-          "url": "https://reference.invalid/acme/bdp.json"
+-        },
+-        {
+-          "body": "problem",
+-          "credential": "writer",
+-          "method": "GET",
+-          "position": "pos-1",
+-          "status": 409,
+-          "url": "https://reference.invalid/acme/bdp.json"
+-        },
+-        {
+-          "body": "problem",
+-          "credential": "writer",
+-          "method": "GET",
+-          "position": "pos-1",
+-          "status": 503,
+-          "url": "https://reference.invalid/acme/bdp.json"
+-        },
+-        {
+-          "body": "problem",
+-          "credential": "writer",
+-          "method": "GET",
+-          "position": "pos-1",
+-          "status": 503,
+-          "url": "https://reference.invalid/acme/bdp.json"
+-        },
+-        {
+-          "body": "problem",
+-          "credential": "writer",
+-          "method": "GET",
+-          "position": "pos-1",
+-          "status": 503,
+-          "url": "https://reference.invalid/acme/bdp.json"
+-        }
+-      ],
+-      "returnedCount": 9,
++      "rawStatuses": [],
+       "wire": 0
+     },
+     "D3 source minimum order directory": {
+-      "baseline": {
+-        "assemblies": 0,
+-        "calls": [
+-          "readConfiguration",
+-          "readConfiguration",
+-          "readConfiguration"
+-        ],
+-        "entries": 0
+-      },
+-      "baselineCount": 1,
+       "clones": 0,
+       "counters": {
+         "assemblies": 2,
+@@ -3633,100 +508,10 @@
+         "waits": 5
+       },
+       "direct": 9,
+-      "observationKinds": [
+-        "baseline",
+-        "counters"
+-      ],
+-      "rawRows": [],
+-      "rawStatuses": [],
+-      "returned": [
+-        {
+-          "body": "directory",
+-          "credential": "writer",
+-          "method": "GET",
+-          "position": "pos-1",
+-          "status": 200,
+-          "url": "https://reference.invalid/acme/operations/"
+-        },
+-        {
+-          "body": "directory",
+-          "credential": "writer",
+-          "method": "GET",
+-          "position": "pos-1",
+-          "status": 200,
+-          "url": "https://reference.invalid/acme/operations/"
+-        },
+-        {
+-          "body": "problem",
+-          "credential": "writer",
+-          "method": "GET",
+-          "position": "pos-1",
+-          "status": 503,
+-          "url": "https://reference.invalid/acme/operations/"
+-        },
+-        {
+-          "body": "problem",
+-          "credential": "writer",
+-          "method": "GET",
+-          "position": "pos-1",
+-          "status": 503,
+-          "url": "https://reference.invalid/acme/operations/"
+-        },
+-        {
+-          "body": "problem",
+-          "credential": "writer",
+-          "method": "GET",
+-          "position": "pos-1",
+-          "status": 410,
+-          "url": "https://reference.invalid/acme/operations/"
+-        },
+-        {
+-          "body": "problem",
+-          "credential": "writer",
+-          "method": "GET",
+-          "position": "pos-1",
+-          "status": 409,
+-          "url": "https://reference.invalid/acme/operations/"
+-        },
+-        {
+-          "body": "problem",
+-          "credential": "writer",
+-          "method": "GET",
+-          "position": "pos-1",
+-          "status": 503,
+-          "url": "https://reference.invalid/acme/operations/"
+-        },
+-        {
+-          "body": "problem",
+-          "credential": "writer",
+-          "method": "GET",
+-          "position": "pos-1",
+-          "status": 503,
+-          "url": "https://reference.invalid/acme/operations/"
+-        },
+-        {
+-          "body": "problem",
+-          "credential": "writer",
+-          "method": "GET",
+-          "position": "pos-1",
+-          "status": 503,
+-          "url": "https://reference.invalid/acme/operations/"
+-        }
+-      ],
+-      "returnedCount": 9,
++      "rawStatuses": [],
+       "wire": 0
+     },
+     "D3 source minimum order scope": {
+-      "baseline": {
+-        "assemblies": 0,
+-        "calls": [
+-          "readConfiguration",
+-          "readConfiguration",
+-          "readConfiguration"
+-        ],
+-        "entries": 0
+-      },
+-      "baselineCount": 1,
+       "clones": 0,
+       "counters": {
+         "assemblies": 2,
+@@ -3738,108 +523,10 @@
+         "waits": 6
+       },
+       "direct": 10,
+-      "observationKinds": [
+-        "baseline",
+-        "counters"
+-      ],
+-      "rawRows": [],
+-      "rawStatuses": [],
+-      "returned": [
+-        {
+-          "body": "absent",
+-          "credential": "writer",
+-          "method": "GET",
+-          "position": "pos-1",
+-          "status": 204,
+-          "url": "https://reference.invalid/acme/"
+-        },
+-        {
+-          "body": "absent",
+-          "credential": "writer",
+-          "method": "GET",
+-          "position": "pos-1",
+-          "status": 204,
+-          "url": "https://reference.invalid/acme/"
+-        },
+-        {
+-          "body": "problem",
+-          "credential": "writer",
+-          "method": "GET",
+-          "position": "pos-1",
+-          "status": 503,
+-          "url": "https://reference.invalid/acme/"
+-        },
+-        {
+-          "body": "problem",
+-          "credential": "writer",
+-          "method": "GET",
+-          "position": "pos-1",
+-          "status": 503,
+-          "url": "https://reference.invalid/acme/"
+-        },
+-        {
+-          "body": "problem",
+-          "credential": "writer",
+-          "method": "GET",
+-          "position": "pos-1",
+-          "status": 410,
+-          "url": "https://reference.invalid/acme/"
+-        },
+-        {
+-          "body": "problem",
+-          "credential": "writer",
+-          "method": "GET",
+-          "position": "pos-1",
+-          "status": 409,
+-          "url": "https://reference.invalid/acme/"
+-        },
+-        {
+-          "body": "problem",
+-          "credential": "writer",
+-          "method": "GET",
+-          "position": "pos-1",
+-          "status": 503,
+-          "url": "https://reference.invalid/acme/"
+-        },
+-        {
+-          "body": "problem",
+-          "credential": "writer",
+-          "method": "GET",
+-          "position": "pos-1",
+-          "status": 503,
+-          "url": "https://reference.invalid/acme/"
+-        },
+-        {
+-          "body": "problem",
+-          "credential": "writer",
+-          "method": "GET",
+-          "position": "pos-1",
+-          "status": 503,
+-          "url": "https://reference.invalid/acme/"
+-        },
+-        {
+-          "body": "problem",
+-          "credential": "writer",
+-          "method": "GET",
+-          "position": "pos-1",
+-          "status": 503,
+-          "url": "https://reference.invalid/acme/?x=1"
+-        }
+-      ],
+-      "returnedCount": 10,
++      "rawStatuses": [],
+       "wire": 0
+     },
+     "D3 source projection descriptor": {
+-      "baseline": {
+-        "assemblies": 0,
+-        "calls": [
+-          "readConfiguration",
+-          "readConfiguration",
+-          "readConfiguration"
+-        ],
+-        "entries": 0
+-      },
+-      "baselineCount": 1,
+       "clones": 0,
+       "counters": {
+         "assemblies": 6,
+@@ -3851,76 +538,10 @@
+         "waits": 0
+       },
+       "direct": 6,
+-      "observationKinds": [
+-        "baseline",
+-        "counters"
+-      ],
+-      "rawRows": [],
+-      "rawStatuses": [],
+-      "returned": [
+-        {
+-          "body": "descriptor",
+-          "credential": "writer",
+-          "method": "GET",
+-          "position": "pos-0",
+-          "status": 200,
+-          "url": "https://reference.invalid/acme/bdp.json"
+-        },
+-        {
+-          "body": "absent",
+-          "credential": "writer",
+-          "method": "HEAD",
+-          "position": "pos-0",
+-          "status": 200,
+-          "url": "https://reference.invalid/acme/bdp.json"
+-        },
+-        {
+-          "body": "absent",
+-          "credential": "writer",
+-          "method": "GET",
+-          "position": "pos-0",
+-          "status": 406,
+-          "url": "https://reference.invalid/acme/bdp.json"
+-        },
+-        {
+-          "body": "absent",
+-          "credential": "writer",
+-          "method": "GET",
+-          "position": "pos-0",
+-          "status": 304,
+-          "url": "https://reference.invalid/acme/bdp.json"
+-        },
+-        {
+-          "body": "absent",
+-          "credential": "writer",
+-          "method": "GET",
+-          "position": "pos-0",
+-          "status": 412,
+-          "url": "https://reference.invalid/acme/bdp.json"
+-        },
+-        {
+-          "body": "descriptor",
+-          "credential": "writer",
+-          "method": "GET",
+-          "position": "pos-0",
+-          "status": 200,
+-          "url": "https://reference.invalid/acme/bdp.json"
+-        }
+-      ],
+-      "returnedCount": 6,
++      "rawStatuses": [],
+       "wire": 0
+     },
+     "D3 source projection directory": {
+-      "baseline": {
+-        "assemblies": 0,
+-        "calls": [
+-          "readConfiguration",
+-          "readConfiguration",
+-          "readConfiguration"
+-        ],
+-        "entries": 0
+-      },
+-      "baselineCount": 1,
+       "clones": 0,
+       "counters": {
+         "assemblies": 6,
+@@ -3932,76 +553,10 @@
+         "waits": 0
+       },
+       "direct": 6,
+-      "observationKinds": [
+-        "baseline",
+-        "counters"
+-      ],
+-      "rawRows": [],
+-      "rawStatuses": [],
+-      "returned": [
+-        {
+-          "body": "directory",
+-          "credential": "writer",
+-          "method": "GET",
+-          "position": "pos-0",
+-          "status": 200,
+-          "url": "https://reference.invalid/acme/operations/"
+-        },
+-        {
+-          "body": "absent",
+-          "credential": "writer",
+-          "method": "HEAD",
+-          "position": "pos-0",
+-          "status": 200,
+-          "url": "https://reference.invalid/acme/operations/"
+-        },
+-        {
+-          "body": "absent",
+-          "credential": "writer",
+-          "method": "GET",
+-          "position": "pos-0",
+-          "status": 406,
+-          "url": "https://reference.invalid/acme/operations/"
+-        },
+-        {
+-          "body": "absent",
+-          "credential": "writer",
+-          "method": "GET",
+-          "position": "pos-0",
+-          "status": 304,
+-          "url": "https://reference.invalid/acme/operations/"
+-        },
+-        {
+-          "body": "absent",
+-          "credential": "writer",
+-          "method": "GET",
+-          "position": "pos-0",
+-          "status": 412,
+-          "url": "https://reference.invalid/acme/operations/"
+-        },
+-        {
+-          "body": "directory",
+-          "credential": "writer",
+-          "method": "GET",
+-          "position": "pos-0",
+-          "status": 200,
+-          "url": "https://reference.invalid/acme/operations/"
+-        }
+-      ],
+-      "returnedCount": 6,
++      "rawStatuses": [],
+       "wire": 0
+     },
+     "D3 source projection scope": {
+-      "baseline": {
+-        "assemblies": 0,
+-        "calls": [
+-          "readConfiguration",
+-          "readConfiguration",
+-          "readConfiguration"
+-        ],
+-        "entries": 0
+-      },
+-      "baselineCount": 1,
+       "clones": 0,
+       "counters": {
+         "assemblies": 7,
+@@ -4013,84 +568,10 @@
+         "waits": 0
+       },
+       "direct": 7,
+-      "observationKinds": [
+-        "baseline",
+-        "counters"
+-      ],
+-      "rawRows": [],
+-      "rawStatuses": [],
+-      "returned": [
+-        {
+-          "body": "absent",
+-          "credential": "writer",
+-          "method": "GET",
+-          "position": "pos-0",
+-          "status": 204,
+-          "url": "https://reference.invalid/acme/"
+-        },
+-        {
+-          "body": "absent",
+-          "credential": "writer",
+-          "method": "HEAD",
+-          "position": "pos-0",
+-          "status": 204,
+-          "url": "https://reference.invalid/acme/"
+-        },
+-        {
+-          "body": "absent",
+-          "credential": "writer",
+-          "method": "GET",
+-          "position": "pos-0",
+-          "status": 204,
+-          "url": "https://reference.invalid/acme/"
+-        },
+-        {
+-          "body": "absent",
+-          "credential": "writer",
+-          "method": "GET",
+-          "position": "pos-0",
+-          "status": 304,
+-          "url": "https://reference.invalid/acme/"
+-        },
+-        {
+-          "body": "absent",
+-          "credential": "writer",
+-          "method": "GET",
+-          "position": "pos-0",
+-          "status": 412,
+-          "url": "https://reference.invalid/acme/"
+-        },
+-        {
+-          "body": "absent",
+-          "credential": "writer",
+-          "method": "GET",
+-          "position": "pos-0",
+-          "status": 204,
+-          "url": "https://reference.invalid/acme/"
+-        },
+-        {
+-          "body": "absent",
+-          "credential": "writer",
+-          "method": "GET",
+-          "position": "pos-0",
+-          "status": 204,
+-          "url": "https://reference.invalid/acme/?x=1"
+-        }
+-      ],
+-      "returnedCount": 7,
++      "rawStatuses": [],
+       "wire": 0
+     },
+     "D3 source raw receiving": {
+-      "baseline": {
+-        "assemblies": 0,
+-        "calls": [
+-          "readConfiguration",
+-          "readConfiguration",
+-          "readConfiguration"
+-        ],
+-        "entries": 0
+-      },
+-      "baselineCount": 0,
+       "clones": 0,
+       "counters": {
+         "assemblies": 0,
+@@ -4102,274 +583,6 @@
+         "waits": 0
+       },
+       "direct": 0,
+-      "observationKinds": [
+-        "raw",
+-        "raw",
+-        "raw",
+-        "raw",
+-        "raw",
+-        "raw",
+-        "raw",
+-        "raw",
+-        "raw",
+-        "raw",
+-        "raw",
+-        "raw"
+-      ],
+-      "rawRows": [
+-        {
+-          "credential": "writer",
+-          "fieldOccurrences": [
+-            [
+-              "bdp-minimum-scope-position",
+-              "genesis"
+-            ],
+-            [
+-              "bdp-scope-epoch",
+-              "epoch"
+-            ],
+-            [
+-              "bdp-authorization-view",
+-              "view"
+-            ],
+-            [
+-              "bdp-minimum-scope-position",
+-              "genesis"
+-            ]
+-          ],
+-          "method": "GET",
+-          "status": 400,
+-          "target": "https://reference.invalid/acme/"
+-        },
+-        {
+-          "credential": "writer",
+-          "fieldOccurrences": [
+-            [
+-              "bdp-minimum-scope-position",
+-              "genesis"
+-            ],
+-            [
+-              "bdp-scope-epoch",
+-              "epoch"
+-            ],
+-            [
+-              "bdp-authorization-view",
+-              "view"
+-            ],
+-            [
+-              "bdp-scope-epoch",
+-              "epoch"
+-            ]
+-          ],
+-          "method": "GET",
+-          "status": 400,
+-          "target": "https://reference.invalid/acme/"
+-        },
+-        {
+-          "credential": "writer",
+-          "fieldOccurrences": [
+-            [
+-              "bdp-minimum-scope-position",
+-              "genesis"
+-            ],
+-            [
+-              "bdp-scope-epoch",
+-              "epoch"
+-            ],
+-            [
+-              "bdp-authorization-view",
+-              "view"
+-            ],
+-            [
+-              "bdp-authorization-view",
+-              "view"
+-            ]
+-          ],
+-          "method": "GET",
+-          "status": 400,
+-          "target": "https://reference.invalid/acme/"
+-        },
+-        {
+-          "credential": "writer",
+-          "fieldOccurrences": [
+-            [
+-              "bdp-minimum-scope-position",
+-              "genesis"
+-            ]
+-          ],
+-          "method": "HEAD",
+-          "status": 400,
+-          "target": "https://reference.invalid/acme/"
+-        },
+-        {
+-          "credential": "writer",
+-          "fieldOccurrences": [
+-            [
+-              "bdp-minimum-scope-position",
+-              "genesis"
+-            ],
+-            [
+-              "bdp-scope-epoch",
+-              "epoch"
+-            ],
+-            [
+-              "bdp-authorization-view",
+-              "view"
+-            ],
+-            [
+-              "bdp-minimum-scope-position",
+-              "genesis"
+-            ]
+-          ],
+-          "method": "GET",
+-          "status": 400,
+-          "target": "https://reference.invalid/acme/bdp.json"
+-        },
+-        {
+-          "credential": "writer",
+-          "fieldOccurrences": [
+-            [
+-              "bdp-minimum-scope-position",
+-              "genesis"
+-            ],
+-            [
+-              "bdp-scope-epoch",
+-              "epoch"
+-            ],
+-            [
+-              "bdp-authorization-view",
+-              "view"
+-            ],
+-            [
+-              "bdp-scope-epoch",
+-              "epoch"
+-            ]
+-          ],
+-          "method": "GET",
+-          "status": 400,
+-          "target": "https://reference.invalid/acme/bdp.json"
+-        },
+-        {
+-          "credential": "writer",
+-          "fieldOccurrences": [
+-            [
+-              "bdp-minimum-scope-position",
+-              "genesis"
+-            ],
+-            [
+-              "bdp-scope-epoch",
+-              "epoch"
+-            ],
+-            [
+-              "bdp-authorization-view",
+-              "view"
+-            ],
+-            [
+-              "bdp-authorization-view",
+-              "view"
+-            ]
+-          ],
+-          "method": "GET",
+-          "status": 400,
+-          "target": "https://reference.invalid/acme/bdp.json"
+-        },
+-        {
+-          "credential": "writer",
+-          "fieldOccurrences": [
+-            [
+-              "bdp-minimum-scope-position",
+-              "genesis"
+-            ]
+-          ],
+-          "method": "HEAD",
+-          "status": 400,
+-          "target": "https://reference.invalid/acme/bdp.json"
+-        },
+-        {
+-          "credential": "writer",
+-          "fieldOccurrences": [
+-            [
+-              "bdp-minimum-scope-position",
+-              "genesis"
+-            ],
+-            [
+-              "bdp-scope-epoch",
+-              "epoch"
+-            ],
+-            [
+-              "bdp-authorization-view",
+-              "view"
+-            ],
+-            [
+-              "bdp-minimum-scope-position",
+-              "genesis"
+-            ]
+-          ],
+-          "method": "GET",
+-          "status": 400,
+-          "target": "https://reference.invalid/acme/operations/"
+-        },
+-        {
+-          "credential": "writer",
+-          "fieldOccurrences": [
+-            [
+-              "bdp-minimum-scope-position",
+-              "genesis"
+-            ],
+-            [
+-              "bdp-scope-epoch",
+-              "epoch"
+-            ],
+-            [
+-              "bdp-authorization-view",
+-              "view"
+-            ],
+-            [
+-              "bdp-scope-epoch",
+-              "epoch"
+-            ]
+-          ],
+-          "method": "GET",
+-          "status": 400,
+-          "target": "https://reference.invalid/acme/operations/"
+-        },
+-        {
+-          "credential": "writer",
+-          "fieldOccurrences": [
+-            [
+-              "bdp-minimum-scope-position",
+-              "genesis"
+-            ],
+-            [
+-              "bdp-scope-epoch",
+-              "epoch"
+-            ],
+-            [
+-              "bdp-authorization-view",
+-              "view"
+-            ],
+-            [
+-              "bdp-authorization-view",
+-              "view"
+-            ]
+-          ],
+-          "method": "GET",
+-          "status": 400,
+-          "target": "https://reference.invalid/acme/operations/"
+-        },
+-        {
+-          "credential": "writer",
+-          "fieldOccurrences": [
+-            [
+-              "bdp-minimum-scope-position",
+-              "genesis"
+-            ]
+-          ],
+-          "method": "HEAD",
+-          "status": 400,
+-          "target": "https://reference.invalid/acme/operations/"
+-        }
+-      ],
+       "rawStatuses": [
+         400,
+         400,
+@@ -4384,21 +597,9 @@
+         400,
+         400
+       ],
+-      "returned": [],
+-      "returnedCount": 0,
+       "wire": 12
+     },
+     "D3 source receiving descriptor": {
+-      "baseline": {
+-        "assemblies": 0,
+-        "calls": [
+-          "readConfiguration",
+-          "readConfiguration",
+-          "readConfiguration"
+-        ],
+-        "entries": 0
+-      },
+-      "baselineCount": 1,
+       "clones": 0,
+       "counters": {
+         "assemblies": 1,
+@@ -4410,92 +611,10 @@
+         "waits": 0
+       },
+       "direct": 8,
+-      "observationKinds": [
+-        "baseline",
+-        "counters"
+-      ],
+-      "rawRows": [],
+-      "rawStatuses": [],
+-      "returned": [
+-        {
+-          "body": "problem",
+-          "credential": "anonymous",
+-          "method": "GET",
+-          "position": null,
+-          "status": 401,
+-          "url": "https://reference.invalid/acme/bdp.json"
+-        },
+-        {
+-          "body": "descriptor",
+-          "credential": "reader",
+-          "method": "GET",
+-          "position": "pos-0",
+-          "status": 200,
+-          "url": "https://reference.invalid/acme/bdp.json"
+-        },
+-        {
+-          "body": "problem",
+-          "credential": "writer",
+-          "method": "GET",
+-          "position": null,
+-          "status": 400,
+-          "url": "https://reference.invalid/acme/bdp.json"
+-        },
+-        {
+-          "body": "problem",
+-          "credential": "writer",
+-          "method": "GET",
+-          "position": null,
+-          "status": 400,
+-          "url": "https://reference.invalid/acme/bdp.json"
+-        },
+-        {
+-          "body": "problem",
+-          "credential": "writer",
+-          "method": "GET",
+-          "position": null,
+-          "status": 400,
+-          "url": "https://reference.invalid/acme/bdp.json"
+-        },
+-        {
+-          "body": "problem",
+-          "credential": "writer",
+-          "method": "GET",
+-          "position": null,
+-          "status": 400,
+-          "url": "https://reference.invalid/acme/bdp.json"
+-        },
+-        {
+-          "body": "problem",
+-          "credential": "writer",
+-          "method": "GET",
+-          "position": null,
+-          "status": 400,
+-          "url": "https://reference.invalid/acme/bdp.json"
+-        },
+-        {
+-          "body": "absent",
+-          "credential": "writer",
+-          "method": "HEAD",
+-          "position": null,
+-          "status": 400,
+-          "url": "https://reference.invalid/acme/bdp.json"
+-        }
+-      ],
+-      "returnedCount": 8,
++      "rawStatuses": [],
+       "wire": 0
+     },
+     "D3 source receiving directory": {
+-      "baseline": {
+-        "assemblies": 0,
+-        "calls": [
+-          "readConfiguration",
+-          "readConfiguration",
+-          "readConfiguration"
+-        ],
+-        "entries": 0
+-      },
+-      "baselineCount": 1,
+       "clones": 0,
+       "counters": {
+         "assemblies": 1,
+@@ -4507,92 +626,10 @@
+         "waits": 0
+       },
+       "direct": 8,
+-      "observationKinds": [
+-        "baseline",
+-        "counters"
+-      ],
+-      "rawRows": [],
+-      "rawStatuses": [],
+-      "returned": [
+-        {
+-          "body": "problem",
+-          "credential": "anonymous",
+-          "method": "GET",
+-          "position": null,
+-          "status": 401,
+-          "url": "https://reference.invalid/acme/operations/"
+-        },
+-        {
+-          "body": "directory",
+-          "credential": "reader",
+-          "method": "GET",
+-          "position": "pos-0",
+-          "status": 200,
+-          "url": "https://reference.invalid/acme/operations/"
+-        },
+-        {
+-          "body": "problem",
+-          "credential": "writer",
+-          "method": "GET",
+-          "position": null,
+-          "status": 400,
+-          "url": "https://reference.invalid/acme/operations/"
+-        },
+-        {
+-          "body": "problem",
+-          "credential": "writer",
+-          "method": "GET",
+-          "position": null,
+-          "status": 400,
+-          "url": "https://reference.invalid/acme/operations/"
+-        },
+-        {
+-          "body": "problem",
+-          "credential": "writer",
+-          "method": "GET",
+-          "position": null,
+-          "status": 400,
+-          "url": "https://reference.invalid/acme/operations/"
+-        },
+-        {
+-          "body": "problem",
+-          "credential": "writer",
+-          "method": "GET",
+-          "position": null,
+-          "status": 400,
+-          "url": "https://reference.invalid/acme/operations/"
+-        },
+-        {
+-          "body": "problem",
+-          "credential": "writer",
+-          "method": "GET",
+-          "position": null,
+-          "status": 400,
+-          "url": "https://reference.invalid/acme/operations/"
+-        },
+-        {
+-          "body": "absent",
+-          "credential": "writer",
+-          "method": "HEAD",
+-          "position": null,
+-          "status": 400,
+-          "url": "https://reference.invalid/acme/operations/"
+-        }
+-      ],
+-      "returnedCount": 8,
++      "rawStatuses": [],
+       "wire": 0
+     },
+     "D3 source receiving scope": {
+-      "baseline": {
+-        "assemblies": 0,
+-        "calls": [
+-          "readConfiguration",
+-          "readConfiguration",
+-          "readConfiguration"
+-        ],
+-        "entries": 0
+-      },
+-      "baselineCount": 1,
+       "clones": 0,
+       "counters": {
+         "assemblies": 1,
+@@ -4604,92 +641,10 @@
+         "waits": 0
+       },
+       "direct": 8,
+-      "observationKinds": [
+-        "baseline",
+-        "counters"
+-      ],
+-      "rawRows": [],
+-      "rawStatuses": [],
+-      "returned": [
+-        {
+-          "body": "problem",
+-          "credential": "anonymous",
+-          "method": "GET",
+-          "position": null,
+-          "status": 401,
+-          "url": "https://reference.invalid/acme/"
+-        },
+-        {
+-          "body": "absent",
+-          "credential": "reader",
+-          "method": "GET",
+-          "position": "pos-0",
+-          "status": 204,
+-          "url": "https://reference.invalid/acme/"
+-        },
+-        {
+-          "body": "problem",
+-          "credential": "writer",
+-          "method": "GET",
+-          "position": null,
+-          "status": 400,
+-          "url": "https://reference.invalid/acme/"
+-        },
+-        {
+-          "body": "problem",
+-          "credential": "writer",
+-          "method": "GET",
+-          "position": null,
+-          "status": 400,
+-          "url": "https://reference.invalid/acme/"
+-        },
+-        {
+-          "body": "problem",
+-          "credential": "writer",
+-          "method": "GET",
+-          "position": null,
+-          "status": 400,
+-          "url": "https://reference.invalid/acme/"
+-        },
+-        {
+-          "body": "problem",
+-          "credential": "writer",
+-          "method": "GET",
+-          "position": null,
+-          "status": 400,
+-          "url": "https://reference.invalid/acme/"
+-        },
+-        {
+-          "body": "problem",
+-          "credential": "writer",
+-          "method": "GET",
+-          "position": null,
+-          "status": 400,
+-          "url": "https://reference.invalid/acme/"
+-        },
+-        {
+-          "body": "absent",
+-          "credential": "writer",
+-          "method": "HEAD",
+-          "position": null,
+-          "status": 400,
+-          "url": "https://reference.invalid/acme/"
+-        }
+-      ],
+-      "returnedCount": 8,
++      "rawStatuses": [],
+       "wire": 0
+     },
+     "D3 source target transport boundary": {
+-      "baseline": {
+-        "assemblies": 0,
+-        "calls": [
+-          "readConfiguration",
+-          "readConfiguration",
+-          "readConfiguration"
+-        ],
+-        "entries": 0
+-      },
+-      "baselineCount": 1,
+       "clones": 0,
+       "counters": {
+         "assemblies": 0,
+@@ -4701,129 +656,12 @@
+         "waits": 0
+       },
+       "direct": 10,
+-      "observationKinds": [
+-        "baseline",
+-        "raw",
+-        "raw",
+-        "counters"
+-      ],
+-      "rawRows": [
+-        {
+-          "credential": "anonymous",
+-          "fieldOccurrences": [],
+-          "method": "GET",
+-          "status": 400,
+-          "target": "https://reference.invalid/acme/"
+-        },
+-        {
+-          "credential": "writer",
+-          "fieldOccurrences": [
+-            [
+-              "Origin",
+-              "https://browser.invalid"
+-            ]
+-          ],
+-          "method": "GET",
+-          "status": 403,
+-          "target": "https://reference.invalid/acme/"
+-        }
+-      ],
+       "rawStatuses": [
+         400,
+         403
+       ],
+-      "returned": [
+-        {
+-          "body": "absent",
+-          "credential": "writer",
+-          "method": "POST",
+-          "position": null,
+-          "status": 405,
+-          "url": "https://reference.invalid/acme/"
+-        },
+-        {
+-          "body": "absent",
+-          "credential": "writer",
+-          "method": "POST",
+-          "position": null,
+-          "status": 405,
+-          "url": "https://reference.invalid/acme/bdp.json"
+-        },
+-        {
+-          "body": "absent",
+-          "credential": "writer",
+-          "method": "POST",
+-          "position": null,
+-          "status": 405,
+-          "url": "https://reference.invalid/acme/operations/"
+-        },
+-        {
+-          "body": "absent",
+-          "credential": "writer",
+-          "method": "GET",
+-          "position": null,
+-          "status": 405,
+-          "url": "https://reference.invalid/acme/operations/create-bead"
+-        },
+-        {
+-          "body": "absent",
+-          "credential": "writer",
+-          "method": "HEAD",
+-          "position": null,
+-          "status": 405,
+-          "url": "https://reference.invalid/acme/operations/create-bead"
+-        },
+-        {
+-          "body": "absent",
+-          "credential": "writer",
+-          "method": "PUT",
+-          "position": null,
+-          "status": 405,
+-          "url": "https://reference.invalid/acme/operations/create-bead"
+-        },
+-        {
+-          "body": "problem",
+-          "credential": "writer",
+-          "method": "GET",
+-          "position": null,
+-          "status": 404,
+-          "url": "https://reference.invalid/acme/operations/unknown"
+-        },
+-        {
+-          "body": "problem",
+-          "credential": "writer",
+-          "method": "GET",
+-          "position": null,
+-          "status": 404,
+-          "url": "https://reference.invalid/acme/operations/create%2Dbead"
+-        },
+-        {
+-          "body": "problem",
+-          "credential": "writer",
+-          "method": "GET",
+-          "position": null,
+-          "status": 404,
+-          "url": "https://reference.invalid/acme/operations/create-bead?x=1"
+-        },
+-        {
+-          "body": "problem",
+-          "credential": "writer",
+-          "method": "GET",
+-          "position": null,
+-          "status": 404,
+-          "url": "https://reference.invalid/acme/bdp.json?x=1"
+-        }
+-      ],
+-      "returnedCount": 10,
+       "wire": 2
+     }
+-  },
+-  "sourceReturnedCensus": {
+-    "baselineRecords": 20,
+-    "explanation": "three catch-up manually-started pending direct responses are asserted in callbacks but never added to f.call records; three aborted starts return no response. All close-drain calls actually return503 and are recorded. No synthesized response.",
+-    "retainedReturnedDirect": 90,
+-    "startedDirect": 96,
+-    "wire": 14
+   },
+   "sourceVsWire": "Direct source HttpResponse records/counters are separate from14 raw wire source exchanges; installed exact186 vs raw4; legacy14 superseded exchanges separately already existed; source report source phases never misclassified as installed wire",
+   "state": "Source-bound grammar; success acceptance uses strict missing/extra-key and typed actual fields. Raw failures remain evidence, never accepted or reconstructed."

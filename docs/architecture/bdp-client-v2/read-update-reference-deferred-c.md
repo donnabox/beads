@@ -1,0 +1,7 @@
+# Deferred C complete draft
+
+Root explicitly deferred all of read-update.alias.unknown-subject after the three-row draft hit the100000-node cap and only400 nodes remained after approved fixture compression. The separate admission comparator needs1500 nodes. C contributes3154 compressed nodes; A+B final matrix should leave3554. This preserved uncommitted draft is not final committed matrix qualification.
+
+Full four draft files, generator, independent literal precompression expected rows, compression equivalence, exact hashes, actual three-row positive report and17-focused-pass report are retained here. Source hashes bind the four files; base8e is exact. Type-only test repair occurred after that17test run (unknown observation annotation and removal of any), not separately checked on this draft before the split; final A+B will be checked separately.
+
+Reuse after a separately reviewed artifact segmentation design: take ONLY the C scenario, its coverage row/assertion list, reference.*rc* fixed bindings, every /oracles/referenceEvidence/* value it names (some are shared with A/B), and C app controls for retained-delete, tail GET and alias Location. Resolve any oracle-name collision by identity-preserving renaming. Do not overwrite newer manifest/configuration/old scenarios, and do not treat the draft test evidence as proof on a future source. C remains omitted/empty bindings in final A+B and gets no credit.

@@ -1,0 +1,111 @@
+## Review: materialization `0762018` vs `c0d6738`, and owned-evidence `4d13f41` vs `c0d6738`
+
+No files written; no builds or tests run against either frozen checkout. All reads were `git diff`/`git show`, source inspection, and the two evidence directories.
+
+**What I verified as sound** (so the findings below are read in context): the proof arithmetic reproduces exactly — I recomputed all six table cells from `Group <= min(E*(2.5R+N+S)+K*A+H, K*(max(9R+4S,5R+2N+2S)+A)+H)` and `Receipt <= K*(2R+Q+A)+32*128+S+H` and matched the report, the doc, and `transaction-materialization-revised-proof.log` to the byte. The per-unit `9R+4S` coefficient is correct, not loose-by-one: the plan's disjointness argument (`subject`/`subjectType`/`data` draw disjoint fields of one ≤R serialization) is what saves the extra R, and it holds against `transaction-batch.ts:584-757`. `K=M+32=96` matches the observed `resultCount` in all three stress logs (96/160/288). R enforcement covers both `after` and `sourceAfter` at `resource-evaluator.ts:1047-1058`, with the only `evaluateTransaction` call site at `transaction-store.ts:1010`. The configuration refusal at `transaction-store.ts:465` sits inside the same `atomic()` as pending retraction and `sweep()`, after `PRAGMA journal_mode` recovery and before `setInterval` maintenance at `:1142` — ordering claim confirmed. Failed-execution atomicity is real via `SAVEPOINT effects` plus the pending-reservation retraction at `transaction-store.ts:1100-1114`. `snapshotReadUpdateRuntimeLimits` destructures only the four RU fields, so generic RU optionality is genuinely untouched. The 16-file regression scope was adequate: of the 118 unrun test files, **zero** reference `TRANSACTION_RUNTIME_LIMITS`, `TRANSACTION_MAXIMUM_OPERATIONS`, `openTransactionStore`, `evaluateTransaction`, or `prepareTransaction`. No committed `.sqlite` fixture exists, so the breaking installation-identity change has no in-repo fallout.
+
+---
+
+### Contract / premise failures
+
+**1. MEDIUM — Runtime bound guard covers 2 of the 4 proof-relevant limit fields**
+`packages/server/src/transaction-batch.ts:555-559`
+
+The new guard validates `propertiesBytes` and `representationBytes` against the tuple, but not `diagnosticBytes` / `diagnosticCount`. The receipt proof's failed branch is explicitly premised on them: "diagnostics<=524288 plus name<=Q and Scope<=S, inside the separate H allowance" — 524288+65536+65536 = 655,360 against H = 1,048,576. A caller passing `{...TRANSACTION_RUNTIME_LIMITS, diagnosticBytes: 50_000_000}` is accepted by `evaluateTransaction`, flows to `collectDiagnostics` (`resource-evaluator.ts:180-219`), and lands in the stored failed receipt at `transaction-store.ts:1048`, exceeding H without refusal. The report's "runtime refusal of missing/nonfinite/nonpositive/fractional/raised bounds" is accurate only for the two fields it names.
+
+*Impact:* the guard's stated purpose — making proof premises load-bearing at runtime rather than by convention — is half-delivered; the H allowance has no runtime defence.
+*Fix:* extend the loop to `["propertiesBytes","representationBytes","diagnosticBytes","diagnosticCount"]` (all four are present in the tuple with the same `≥1 && ≤ tuple` shape), and add the two values to the `it.each` negative matrix in `transaction-materialization.test.ts`.
+
+**2. MEDIUM — The dense measurement is 1.6–2× below the achievable worst case for the selected tuple, which undercuts the M64-over-M128 rationale**
+`bdp-integration-logs/transaction-materialization/stress.mjs:24` and `:36`
+
+Dense mode grows only the **source Beads** to exactly 262144 (`:25-27`); the Links are created with `properties:{n:0}` at `:24` and never grown, and the patch is a ~49,999-byte transient array at `:35-36`, not a maximum-size 65,536-byte one. Both are reachable within the same tuple:
+
+- Pre-growing each owned Link to exact R doubles the per-member `changes` cost from ~262 KB (one R postimage) to ~524 KB (two).
+- Raising the raw patch from ~50,000 to ~65,500 bytes scales both per-member Event copies by ~1.3× (measured normalization ratio ~4.4×, consistent with the probe's 5.25 worst case).
+
+Measured group was 45,059,033 bytes = 704,047 per member; the achievable figure is ~1.1–1.4 MB per member, i.e. ~70–92 MB. Against the within-run baseline (45 MB group ↔ 557,584 KiB high-water, ~265 MB of which is seeded baseline), that projects to roughly 0.72–0.86 GiB — the same band as the 975,216 KiB M128 dense run the report rejected for "insufficient comfortable headroom." The qualitative ranking of M64 < M128 < M256 survives, but "comfortable headroom" for M64 is not established by the run that was performed.
+
+*Impact:* the selection rationale compares each tuple at an arbitrary sub-maximal load rather than at its own achievable maximum; the report's "Remaining boundaries" discloses non-universality but never says the selected tuple's own achievable worst case was not measured.
+*Fix:* add a dense variant that (a) grows each Link to exact R by the same metadata-chunking loop already used for Beads at `:25-27`, and (b) uses a patch sized to `65536 - envelope`. Re-measure at M64; if the high-water lands above ~0.85 GiB, the honest conclusion is that M64 was selected on margin comparable to the rejected M128 and either M or R must drop further. Also state in `report.md` §"Result and scope" — not only in §"Remaining boundaries" — that no workload approached the tuple's achievable maximum.
+
+**3. MEDIUM — No discriminating test for two of the three places the proof forbids preimage bodies**
+`packages/server/src/transaction-batch.ts:664-668` (upsert wrapper); receipt result entries
+
+The plan is categorical: "Adding a preimage body to ANY Event/change/result invalidates this proof." Event shapes are now pinned exactly (`transaction-owned.test.ts` additions at 219-240 — this is the genuinely load-bearing part of that change). The other two are not:
+
+- The string `"upsert"` appears nowhere in any test file in the repo. The closest assertions are `transaction-owned.test.ts:339` and the owned-evidence addition `expect(change.resource).toEqual(f.record(...))`, which pin `change.resource` exactly but would still pass if a `previous: <full preimage>` sibling were added to the wrapper. `transaction-store.test.ts:650` has an exact `toEqual` for **tombstone** wrappers only.
+- Exact `toEqual` on a result entry exists only for `matched` summaries (`transaction-set.test.ts:466,669,895`; `transaction-owned.test.ts:529,605`) and alias results (`transaction-store.test.ts:1291`). No test pins the shape of a create/update/delete result entry — the very entry that carries the ≤2R body dominating the receipt bound.
+
+*Impact:* the two largest contributors to the group and receipt bounds can gain a preimage field without any test failing; only the Event dimension is actually guarded.
+*Fix:* one exact `toEqual` on an upsert wrapper `{operation:"upsert", resourceKind, resource}` (natural home: the owned-evidence `changes` loop, or next to `transaction-store.test.ts:650`), and one exact `toEqual` on a successful Resource result entry including the conditional `source`/`sourceRevision` fields.
+
+**4. MEDIUM — The N = 7Q constant has no in-repo artifact or test**
+proof premise; evidenced only by `bdp-integration-logs/transaction-materialization-revised-proof.log`
+
+R, Q, S, M, E and O are all enforced in code and pinned by permanent tests. N — the normalized combined patch bound, which contributes `E*N` = 117 MB to the Event-limited branch and `2N` per owned-update unit to the invocation-limited branch — rests on a token argument in the plan plus six sampled ratios in a log directory outside the repo. (The sampling looks right: `1e20` → 21 bytes at ratio 5.25 is in fact the maximum for the number grammar, since V8 switches to exponential at ≥1e21, so 7 carries ~33% margin.) But `transaction-owned.test.ts` compares Event `change` against the test's own **raw** request patch, so it passes only for values where normalization is the identity — it cannot detect an expansion-factor change.
+
+*Impact:* a future number-serialization change silently invalidates the group bound with no failing test.
+*Fix:* port the probe's number cases into a permanent test asserting `normalizedBytes/rawBytes <= 7` over the extremal admitted tokens (`1e20`, `-9e20`, `9e9`, `-0.0000010000000000000002`), next to `stringifyJsonValue`'s own tests.
+
+**5. MEDIUM — The two frozen commits conflict on merge, and one of them makes a claim the other falsifies**
+`docs/design/transaction-implementation-progress.md`; `packages/server/src/transaction-owned.test.ts`
+
+Both commits' final doc hunk is an insertion anchored on the identical three EOF context lines (`@@ -982,3 +984,55 @@` vs `@@ -982,3 +987,19 @@`), so a 3-way merge will conflict there. (I determined this from the hunk anchors; the two checkouts have separate object stores, so I could not run a real `merge-tree` without fetching, which I did not do.) All other doc hunks are disjoint (433/752/792/803/848 vs 732/867/882/896/957), and the `transaction-owned.test.ts` edits are disjoint too (insertion at old 460 vs edits at 219-225 and 715-753) — that file merges cleanly.
+
+The substantive problem is semantic. Owned-evidence `docs/design/transaction-implementation-progress.md:1003` asserts "The earlier 4,096-Event boundary is preserved as historical evidence, not relabeled for a later materialization configuration," and its `report.md` says "The 4096 boundary source test and historical evidence remain unchanged." The materialization commit renames and rescales that exact test to `"observes the real 256-Event boundary..."` with 65 owners and 256/257 Events. Post-merge there is no 4,096-Event test, so the sentence reads false; the owned-evidence run inventory ("17/17 … existing real 4096 boundary (2.08s)") also goes stale.
+
+*Impact:* whichever slice lands second ships a doc statement contradicted by the code in the same commit range, plus a hand-resolved conflict in the one file both slices use as the authority record.
+*Fix:* at merge, reword `:1003` to "The earlier 4,096-Event observation is retained as a dated historical record; the current boundary test uses the measured 256-Event tuple," order the two appended `###` sections deliberately rather than by conflict-resolution accident, and re-run `transaction-owned.test.ts` after the merge — neither report states that the other slice's test file changes require a re-run.
+
+**6. LOW-MEDIUM — The RSS table silently mixes two different metrics, and the decision metric is shown only for the rejected row**
+`bdp-integration-logs/transaction-materialization/report.md:45-51`
+
+The "Child high-water KiB" column reports the child's self-logged `process.resourceUsage().maxRSS` for every passing row (802800, 975216, 480000, 557584 — all traceable to the final `verified` line of each `stress-*.log`), but the supervisor's `ps` sample for the aborted row (1154256). The `.summary.json` files show the supervisor samples are systematically lower for the passing runs: 685744, 929808, 439776, 537328. The 1 GiB abort gate fires on the supervisor sample, so the one number that is comparable to the gate is absent from five of six rows.
+
+The conclusion survives either way (supervisor-metric sequence 1154256 → 685744 → 439776 is monotone), and the report is honest about the M256 replay being inconclusive. But as written a reader cannot tell which number the gate would have compared.
+
+*Fix:* give the table two columns — "child self-reported maxRSS" and "supervisor sampled peak (gate metric)" — and state that the M256 abort is a supervisor-sample event while the child's last logged self-report (743840) predates its peak because it was SIGKILLed.
+
+---
+
+### Proposals (not contract failures)
+
+**7. LOW — Passing the whole frozen tuple as the evaluator `limits` is a latent key-collision hazard, and the new test locks it in**
+`packages/server/src/transaction-store.ts:1026`; `transaction-materialization.test.ts` (`expect(...limits).toBe(batch.TRANSACTION_RUNTIME_LIMITS)`)
+
+I confirmed there is no collision today: `ResourceEvaluationOptions["limits"]` (`resource-evaluator.ts:100-108`) and `AliasEvaluationOptions["limits"]` (`alias-evaluator.ts:40`) declare no key matching `maximumOperations`/`inducedEvents`/`matchedResources`/`scopeSourceBytes`/`requestBodyBytes`, and nothing reads those keys off a limits object. But the diff replaced an explicit four-field projection with the whole tuple, so if the evaluator limits type ever gains a colliding name (`requestBodyBytes` is the obvious candidate), a TX count would be silently reinterpreted as an RU byte limit — TypeScript applies no excess-property check through a variable. The identity assertion `toBe(TRANSACTION_RUNTIME_LIMITS)` makes the projection unfixable without also editing the test.
+
+*Fix:* pass an explicit `{propertiesBytes, representationBytes, diagnosticBytes, diagnosticCount}` projection derived from the tuple with a `satisfies` exactness check, and change the test to `toEqual` on the projection plus a separate equality assertion against the tuple's corresponding fields. This preserves exactly what the test is trying to prove (the owner passes the installation-bound values, unaltered) without requiring reference identity.
+
+**8. LOW — `TRANSACTION_MAXIMUM_OPERATIONS` lost its literal type**
+`packages/server/src/transaction-batch.ts:71`
+
+`export const TRANSACTION_MAXIMUM_OPERATIONS: number = ...` widens the public type from `32` to `number` (the explicit annotation is what the report records as "a derived literal's default-parameter inference" being fixed). Any consumer narrowing on the literal breaks. *Fix:* add `as const` to the frozen tuple and drop the `: number` annotation, or `satisfies number`.
+
+**9. LOW — The receipt bound charges the Scope once but a completed receipt serializes it at least twice**
+proof statement vs `transaction-store.ts:888` (`id: \`${scope}receipts/${uuid}\``) and `:587` (`next: \`${receipt}/pages/${token}\``)
+
+`Receipt <= ... + S + H` charges one S, while `id` is ≈S+39 bytes and `next` ≈S+80. The plan assigns "fixed receipt URI suffix/page envelope" to H, and the slack holds (524288 diagnostics + 65536 + ~65700 < H = 1,048,576), so the bound is not violated. *Fix:* state the second Scope charge explicitly in the H accounting so a later increase to `diagnosticBytes` or the page-token grammar is visibly constrained rather than accidentally safe.
+
+**10. LOW — No self-consistency assertion on the tuple, and no runtime check that a serialized group fits the proof bound**
+`packages/server/src/transaction-batch.ts:60-72`
+
+`E ≥ 4M` (256 = 4×64) is load-bearing for a full-M owned `deleteWhere` to complete rather than always refusing; it is currently guarded only indirectly, by the 256/257 boundary test happening to pin both constants together. Nothing anywhere ties the actual serialized group to the 253,493,248 figure. *Fix:* add a module-load assertion beside the existing `snapshotReadUpdateRuntimeLimits(TRANSACTION_RUNTIME_LIMITS)` call for the inter-field relations the proof assumes, and consider a debug-only assertion on `Buffer.byteLength(json(group))` at `transaction-store.ts:1068` so a future shape change that breaks the per-unit decomposition surfaces as a failure rather than as a quietly invalid document.
+
+**11. LOW — The owned-evidence package records no exit codes**
+`bdp-integration-logs/transaction-owned-evidence/`
+
+The materialization package captures 19 `.exit` files and the report touts "explicit exit files"; the owned-evidence directory has none. Its `tests-final.log` (17/17), `check-boundaries.log`, `lint-final.log`, `format-check-final.log` and `evidence-verify-final.log` all print self-evidencing summaries, but `build-final.log` and `typecheck-final.log` contain only the echoed command lines — so those two "pass" claims rest on inferring success from empty output. (I did confirm the single format warning is the pre-existing 1.7 MiB `packages/conformance/matrices/read-update-v1.json` size notice, unrelated to the change, so "format check pass" is fair.) *Fix:* capture `.exit` for every command, matching the sibling package's discipline.
+
+**12. TRIVIAL — Vestigial index arithmetic left by the rescale**
+`packages/server/src/transaction-set.test.ts:790`
+
+`for (let group = 0; group < 1; group++)` now runs once, leaving `n${group * 32 + i}` as dead arithmetic. *Fix:* inline the single `f.run` and drop the loop.
+
+---
+
+### Two claims I checked and found accurate, against expectation
+
+- The Scope boundary test's `${base}/events/` stand-in at `transaction-materialization.test.ts` looks like a double-slash typo, but the accounting is exact: `base + "/events/"` is precisely the non-padding part of the final URI, and the test asserts `Buffer.byteLength(JSON.stringify(\`${exact}events/\`)) === 65536` before using it. Correct, and the overflow case is exactly +1 byte.
+- The "legacy"/"changed" tuple tests are discriminating, not accidental: `stringifyJsonValue` preserves `Object.keys` insertion order and delegates primitive escaping to `JSON.stringify`, so the tests' `JSON.parse`→`JSON.stringify` round-trip is byte-identical to the stored configuration except for the field they mutate. The `inducedEvents: 128` variant therefore proves the count bound really is part of installation identity.

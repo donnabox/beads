@@ -1,0 +1,3 @@
+# G09 code correction plan2 — exact full-name metadata only
+
+This overlay accepts the eight proposedFullName prefix omissions and corrects only those eight string fields to the existing exact `G09-S0N …` full names. Complete plan1 and every other effective file remain immutable in place, bound by composition.json and effective-files.json. The original 26 direct calls, eight callbacks, nine source-wire requests, installed14+16 exchanges, three-test-path footprint, capture/abort/close controls, preservation and deadlines are unchanged. No source or runtime action is authorized. FULL independent precision and root durable source-only release remain required. No second actual CODE or PLAN.

@@ -1,0 +1,1 @@
+Existing root-prepared landing-successor directory/script retained. Initial mkdir-only preparation stopped because directory existed; premature capture invocation then stopped before any API read because target was absent. No CI action or capture files occurred. Reused verified byte-identical capture script and initialized target after inspection; no remote rerun.

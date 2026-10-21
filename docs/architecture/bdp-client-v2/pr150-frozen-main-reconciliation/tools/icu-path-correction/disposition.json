@@ -1,0 +1,15 @@
+{
+  "prior": "../bd-install.log",
+  "priorExit": 1,
+  "diagnosis": "go-icu-regex uses raw cgo link directives, not pkg-config; ICU headers need explicit include path on macOS",
+  "fix": {
+    "CGO_CPPFLAGS": "-I/opt/homebrew/opt/icu4c@78/include",
+    "CGO_LDFLAGS": "-L/opt/homebrew/opt/icu4c@78/lib -Wl,-rpath,/opt/homebrew/opt/icu4c@78/lib"
+  },
+  "command": [
+    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/pr150-frozen-main-reconciliation/tools/go/bin/go",
+    "install",
+    "github.com/steveyegge/beads/cmd/bd@v1.0.5"
+  ],
+  "limitSeconds": 1800
+}

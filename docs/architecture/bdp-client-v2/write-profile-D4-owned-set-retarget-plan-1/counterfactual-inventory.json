@@ -1,0 +1,87 @@
+{
+  "preservedFiveLocalOracles": [
+    {
+      "id": "O1",
+      "lines": [
+        253,
+        264
+      ],
+      "mutant": "omit last receipt result",
+      "failure": "exact ordered 33-entry oracle"
+    },
+    {
+      "id": "O2",
+      "lines": [
+        273,
+        276
+      ],
+      "mutant": "omit first delete Event",
+      "failure": "exact96fact sequence"
+    },
+    {
+      "id": "O3",
+      "lines": [
+        277,
+        283
+      ],
+      "mutant": "swap first two complete 3-Event Link groups",
+      "failure": "exact canonical Link fact order"
+    },
+    {
+      "id": "O4",
+      "lines": [
+        355,
+        369
+      ],
+      "mutant": "mutually consistent actual n0 prestate, stale receipt/source/live Link",
+      "failure": "labeled requested owned Link properties literal n1 assertion"
+    },
+    {
+      "id": "O5",
+      "lines": [
+        370,
+        372
+      ],
+      "mutant": "wrong sourceRevision",
+      "failure": "sourceRevision equals actual live owner revision"
+    }
+  ],
+  "mechanicsStaticReviewCases": [
+    {
+      "id": "M1",
+      "counterfactual": "non200 or wrong200 header response",
+      "must": "actual response is recorded before assertion; callback fails with actual received count, not synthetic missing response"
+    },
+    {
+      "id": "M2",
+      "counterfactual": "execute rejects/aborts before response",
+      "must": "attempted1/settled1/received0 with unavailable response fields, pending0 when settled; no fabricated bytes/body/status/completewrite"
+    },
+    {
+      "id": "M3",
+      "counterfactual": "close promise resolves on exit before stdio close",
+      "must": "no reopen/removal until separate actual close; exit is not close"
+    },
+    {
+      "id": "M4",
+      "counterfactual": "first child shutdown unknown or nonzero",
+      "must": "second launch forbidden, store retained, failure report survives"
+    },
+    {
+      "id": "M5",
+      "counterfactual": "launch rejects before handle returns",
+      "must": "attempt true/acquisition unknown/closure unknown, not two acquired children or clean owner; preserve directory; root audit required"
+    },
+    {
+      "id": "M6",
+      "counterfactual": "cleanup wait timeout or removal throws",
+      "must": "fixed stage failure aggregates; pending/unresolved truth retained; no success log/clean claim"
+    },
+    {
+      "id": "M7",
+      "counterfactual": "cached source/diff/entry metadata capture unavailable",
+      "must": "fixed nullReason + failure before launch; no invented hashes, no throwing subprocess in finally"
+    }
+  ],
+  "execution": "none; these are finite review predicates, no additional product requests/tests/mutant runtime authorized"
+}

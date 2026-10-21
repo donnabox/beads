@@ -1,0 +1,3 @@
+# CLOSED proposed P10 source prefix17
+
+Root accepts independently audited actual first9 and current exact476-file build/source/tool/process proof. Candidate changes only approved prefix, root disposition, and rootBuildAcceptance versus actual6143 gate. Next8 are21focused/32legacy/9contracts/1schema source callbacks, each immediately strictly audited. Selections/grammars/request and cleanup bounds fixed. FULL independent all26keys/59predicates/source/prior9/build476/artifact-source equalities precision, durable publication/readback, then root byteexactactivation/readback required before any source callback. Lint policy exit0 with warnings/infos remains raw actual history. No archives/consumer/installed/wholeWrite credit.

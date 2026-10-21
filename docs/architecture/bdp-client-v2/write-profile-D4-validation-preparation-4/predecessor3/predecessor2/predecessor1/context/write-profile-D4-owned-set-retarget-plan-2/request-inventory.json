@@ -1,0 +1,485 @@
+{
+  "state": "finite prospective success inventory",
+  "rows": [
+    {
+      "ordinal": 1,
+      "childGeneration": 1,
+      "method": "POST",
+      "target": "operations/batch",
+      "payloadOrDependency": "create a,b,owner; n0/stable metadata; owner uses Owner Type",
+      "expectedStatus": 200,
+      "observableOracle": "three Beads seed actual resource IDs",
+      "sourceLines": [
+        194,
+        203
+      ],
+      "classification": "PROSPECTIVE, NOT EXECUTED"
+    },
+    {
+      "ordinal": 2,
+      "childGeneration": 1,
+      "method": "POST",
+      "target": "operations/batch",
+      "payloadOrDependency": "32 createLink l00..l31; ordinary Link Type; source a,target b,n0",
+      "expectedStatus": 200,
+      "observableOracle": "32 links seed deletion set; these are unowned Links",
+      "sourceLines": [
+        204,
+        217
+      ],
+      "classification": "PROSPECTIVE, NOT EXECUTED"
+    },
+    {
+      "ordinal": 3,
+      "childGeneration": 1,
+      "method": "GET",
+      "target": "events/ then actual next",
+      "payloadOrDependency": "seed Events actual returned next only; expected pages [32,32,32,3]",
+      "expectedStatus": 200,
+      "observableOracle": "99 seed Events derived from 3 Bead creations + 32*3 Link facts; capture actual final id",
+      "sourceLines": [
+        218,
+        236
+      ],
+      "classification": "PROSPECTIVE, NOT EXECUTED"
+    },
+    {
+      "ordinal": 4,
+      "childGeneration": 1,
+      "method": "GET",
+      "target": "events/ then actual next",
+      "payloadOrDependency": "seed Events actual returned next only; expected pages [32,32,32,3]",
+      "expectedStatus": 200,
+      "observableOracle": "99 seed Events derived from 3 Bead creations + 32*3 Link facts; capture actual final id",
+      "sourceLines": [
+        218,
+        236
+      ],
+      "classification": "PROSPECTIVE, NOT EXECUTED"
+    },
+    {
+      "ordinal": 5,
+      "childGeneration": 1,
+      "method": "GET",
+      "target": "events/ then actual next",
+      "payloadOrDependency": "seed Events actual returned next only; expected pages [32,32,32,3]",
+      "expectedStatus": 200,
+      "observableOracle": "99 seed Events derived from 3 Bead creations + 32*3 Link facts; capture actual final id",
+      "sourceLines": [
+        218,
+        236
+      ],
+      "classification": "PROSPECTIVE, NOT EXECUTED"
+    },
+    {
+      "ordinal": 6,
+      "childGeneration": 1,
+      "method": "GET",
+      "target": "events/ then actual next",
+      "payloadOrDependency": "seed Events actual returned next only; expected pages [32,32,32,3]",
+      "expectedStatus": 200,
+      "observableOracle": "99 seed Events derived from 3 Bead creations + 32*3 Link facts; capture actual final id",
+      "sourceLines": [
+        218,
+        236
+      ],
+      "classification": "PROSPECTIVE, NOT EXECUTED"
+    },
+    {
+      "ordinal": 7,
+      "childGeneration": 1,
+      "method": "GET",
+      "target": "changes/?start=now",
+      "payloadOrDependency": "none",
+      "expectedStatus": 200,
+      "observableOracle": "groups[] and actual after cursor",
+      "sourceLines": [
+        237,
+        238
+      ],
+      "classification": "PROSPECTIVE, NOT EXECUTED"
+    },
+    {
+      "ordinal": 8,
+      "childGeneration": 1,
+      "method": "POST",
+      "target": "operations/delete-where",
+      "payloadOrDependency": "collection links; exact Link Type selector; cardinality min32/max32; key delete32",
+      "expectedStatus": 200,
+      "observableOracle": "completed receipt; first 32 entries; actual next",
+      "sourceLines": [
+        239,
+        247
+      ],
+      "classification": "PROSPECTIVE, NOT EXECUTED"
+    },
+    {
+      "ordinal": 9,
+      "childGeneration": 1,
+      "method": "GET",
+      "target": "actual receipt.next from row8",
+      "payloadOrDependency": "no fabricated page URL",
+      "expectedStatus": 200,
+      "observableOracle": "last entry; next null; combined 33 = matched32 + ordered 32 deleted IDs",
+      "sourceLines": [
+        248,
+        264
+      ],
+      "classification": "PROSPECTIVE, NOT EXECUTED"
+    },
+    {
+      "ordinal": 10,
+      "childGeneration": 1,
+      "method": "GET",
+      "target": "events/?after=actual row6 last id, then actual next",
+      "payloadOrDependency": "encoded actual Event id; three pages",
+      "expectedStatus": 200,
+      "observableOracle": "[32,32,32]; exactly 96 ordered facts deleted/unlinked/unlinked per sorted Link",
+      "sourceLines": [
+        265,
+        283
+      ],
+      "classification": "PROSPECTIVE, NOT EXECUTED"
+    },
+    {
+      "ordinal": 11,
+      "childGeneration": 1,
+      "method": "GET",
+      "target": "events/?after=actual row6 last id, then actual next",
+      "payloadOrDependency": "encoded actual Event id; three pages",
+      "expectedStatus": 200,
+      "observableOracle": "[32,32,32]; exactly 96 ordered facts deleted/unlinked/unlinked per sorted Link",
+      "sourceLines": [
+        265,
+        283
+      ],
+      "classification": "PROSPECTIVE, NOT EXECUTED"
+    },
+    {
+      "ordinal": 12,
+      "childGeneration": 1,
+      "method": "GET",
+      "target": "events/?after=actual row6 last id, then actual next",
+      "payloadOrDependency": "encoded actual Event id; three pages",
+      "expectedStatus": 200,
+      "observableOracle": "[32,32,32]; exactly 96 ordered facts deleted/unlinked/unlinked per sorted Link",
+      "sourceLines": [
+        265,
+        283
+      ],
+      "classification": "PROSPECTIVE, NOT EXECUTED"
+    },
+    {
+      "ordinal": 13,
+      "childGeneration": 1,
+      "method": "GET",
+      "target": "changes/?after=actual row7 after",
+      "payloadOrDependency": "actual returned cursor",
+      "expectedStatus": 200,
+      "observableOracle": "one schema-valid complete group; 96 Events, 32 ordered tombstones; next null",
+      "sourceLines": [
+        284,
+        292
+      ],
+      "classification": "PROSPECTIVE, NOT EXECUTED"
+    },
+    {
+      "ordinal": 14,
+      "childGeneration": 1,
+      "method": "GET",
+      "target": "actual first deleted Link id",
+      "payloadOrDependency": "none",
+      "expectedStatus": 404,
+      "observableOracle": "deleted Link is absent",
+      "sourceLines": [
+        293,
+        293
+      ],
+      "classification": "PROSPECTIVE, NOT EXECUTED"
+    },
+    {
+      "ordinal": 15,
+      "childGeneration": 1,
+      "method": "POST",
+      "target": "operations/batch",
+      "payloadOrDependency": "create later ordinary Link a→b,n0",
+      "expectedStatus": 200,
+      "observableOracle": "new population exists after original deletion",
+      "sourceLines": [
+        294,
+        304
+      ],
+      "classification": "PROSPECTIVE, NOT EXECUTED"
+    },
+    {
+      "ordinal": 16,
+      "childGeneration": 1,
+      "method": "POST",
+      "target": "operations/batch",
+      "payloadOrDependency": "same deleteWhere input and delete32 key",
+      "expectedStatus": 200,
+      "observableOracle": "exact original receipt; later population not selected",
+      "sourceLines": [
+        305,
+        305
+      ],
+      "classification": "PROSPECTIVE, NOT EXECUTED"
+    },
+    {
+      "ordinal": 17,
+      "childGeneration": 1,
+      "method": "GET",
+      "target": "links/later",
+      "payloadOrDependency": "none",
+      "expectedStatus": 200,
+      "observableOracle": "later Link still exists",
+      "sourceLines": [
+        306,
+        306
+      ],
+      "classification": "PROSPECTIVE, NOT EXECUTED"
+    },
+    {
+      "ordinal": 18,
+      "childGeneration": 1,
+      "method": "POST",
+      "target": "operations/batch",
+      "payloadOrDependency": "create owned Link owner→b,n0 using owned Type",
+      "expectedStatus": 200,
+      "observableOracle": "actual creation receipt/requiredPosition anchors next transition",
+      "sourceLines": [
+        307,
+        316
+      ],
+      "classification": "PROSPECTIVE, NOT EXECUTED"
+    },
+    {
+      "ordinal": 19,
+      "childGeneration": 1,
+      "method": "GET",
+      "target": "beads/owner",
+      "payloadOrDependency": "none",
+      "expectedStatus": 200,
+      "observableOracle": "capture actual owner prestate/revision",
+      "sourceLines": [
+        322,
+        326
+      ],
+      "classification": "PROSPECTIVE, NOT EXECUTED"
+    },
+    {
+      "ordinal": 20,
+      "childGeneration": 1,
+      "method": "GET",
+      "target": "links/owned",
+      "payloadOrDependency": "none",
+      "expectedStatus": 200,
+      "observableOracle": "actual n0 Link prestate/revision",
+      "sourceLines": [
+        322,
+        326
+      ],
+      "classification": "PROSPECTIVE, NOT EXECUTED"
+    },
+    {
+      "ordinal": 21,
+      "childGeneration": 1,
+      "method": "POST",
+      "target": "operations/update-where",
+      "payloadOrDependency": "links selector exact owned id; replace /n with1; key owned_update",
+      "expectedStatus": 200,
+      "observableOracle": "actual n1; Link/source revisions fresh; effect string differs from row18 required; required=effect; receipt sourceRevision/live owner, result/live Link and inline Link all agree; metadata/source properties unchanged",
+      "sourceLines": [
+        317,
+        372
+      ],
+      "classification": "PROSPECTIVE, NOT EXECUTED"
+    },
+    {
+      "ordinal": 22,
+      "childGeneration": 1,
+      "method": "GET",
+      "target": "beads/owner",
+      "payloadOrDependency": "none",
+      "expectedStatus": 200,
+      "observableOracle": "actual updated source poststate for row21 oracle",
+      "sourceLines": [
+        328,
+        353
+      ],
+      "classification": "PROSPECTIVE, NOT EXECUTED"
+    },
+    {
+      "ordinal": 23,
+      "childGeneration": 1,
+      "method": "GET",
+      "target": "links/owned",
+      "payloadOrDependency": "none",
+      "expectedStatus": 200,
+      "observableOracle": "actual updated Link poststate, literal n1 for row21 oracle",
+      "sourceLines": [
+        328,
+        353
+      ],
+      "classification": "PROSPECTIVE, NOT EXECUTED"
+    },
+    {
+      "ordinal": 24,
+      "childGeneration": 1,
+      "method": "POST",
+      "target": "operations/update-where",
+      "payloadOrDependency": "same owned update with new generated key",
+      "expectedStatus": 200,
+      "observableOracle": "no effectPosition; same updated result entry",
+      "sourceLines": [
+        373,
+        375
+      ],
+      "classification": "PROSPECTIVE, NOT EXECUTED"
+    },
+    {
+      "ordinal": 25,
+      "childGeneration": 1,
+      "method": "POST",
+      "target": "operations/batch",
+      "payloadOrDependency": "create tentative then owned update /n invalid string; key compiled_fail",
+      "expectedStatus": 200,
+      "observableOracle": "failed validation-failed; operationIndex1 pointer /operations/1/change",
+      "sourceLines": [
+        376,
+        390
+      ],
+      "classification": "PROSPECTIVE, NOT EXECUTED"
+    },
+    {
+      "ordinal": 26,
+      "childGeneration": 1,
+      "method": "GET",
+      "target": "beads/owner",
+      "payloadOrDependency": "none",
+      "expectedStatus": 200,
+      "observableOracle": "exact row22 source unchanged by failure",
+      "sourceLines": [
+        391,
+        391
+      ],
+      "classification": "PROSPECTIVE, NOT EXECUTED"
+    },
+    {
+      "ordinal": 27,
+      "childGeneration": 1,
+      "method": "GET",
+      "target": "links/owned",
+      "payloadOrDependency": "none",
+      "expectedStatus": 200,
+      "observableOracle": "exact row23 Link unchanged by failure",
+      "sourceLines": [
+        392,
+        392
+      ],
+      "classification": "PROSPECTIVE, NOT EXECUTED"
+    },
+    {
+      "ordinal": 28,
+      "childGeneration": 1,
+      "method": "GET",
+      "target": "beads/tentative",
+      "payloadOrDependency": "none",
+      "expectedStatus": 404,
+      "observableOracle": "tentative first operation rolled back atomically",
+      "sourceLines": [
+        393,
+        393
+      ],
+      "classification": "PROSPECTIVE, NOT EXECUTED"
+    },
+    {
+      "ordinal": 29,
+      "childGeneration": 2,
+      "method": "GET",
+      "target": "actual original row8 receipt.id",
+      "payloadOrDependency": "after true first-child close and same directory/createfalse reopen",
+      "expectedStatus": 200,
+      "observableOracle": "exact original successful receipt",
+      "sourceLines": [
+        394,
+        402
+      ],
+      "classification": "PROSPECTIVE, NOT EXECUTED"
+    },
+    {
+      "ordinal": 30,
+      "childGeneration": 2,
+      "method": "GET",
+      "target": "actual original row8 receipt.next",
+      "payloadOrDependency": "same reopened store",
+      "expectedStatus": 200,
+      "observableOracle": "exact original retained page row9",
+      "sourceLines": [
+        403,
+        403
+      ],
+      "classification": "PROSPECTIVE, NOT EXECUTED"
+    },
+    {
+      "ordinal": 31,
+      "childGeneration": 2,
+      "method": "POST",
+      "target": "operations/batch",
+      "payloadOrDependency": "same deleteWhere/delete32",
+      "expectedStatus": 200,
+      "observableOracle": "exact original successful receipt on same captured config",
+      "sourceLines": [
+        404,
+        404
+      ],
+      "classification": "PROSPECTIVE, NOT EXECUTED"
+    },
+    {
+      "ordinal": 32,
+      "childGeneration": 2,
+      "method": "POST",
+      "target": "operations/batch",
+      "payloadOrDependency": "exact row25 operations/compiled_fail",
+      "expectedStatus": 200,
+      "observableOracle": "exact original failed receipt; no reselection/reexecution",
+      "sourceLines": [
+        405,
+        417
+      ],
+      "classification": "PROSPECTIVE, NOT EXECUTED"
+    }
+  ],
+  "counts": {
+    "callbacks": 1,
+    "requests": 32,
+    "POST": 11,
+    "GET": 21,
+    "status200": 30,
+    "status404": 2,
+    "childrenAcquiredOnSuccess": 2,
+    "beforeRestart": 28,
+    "afterRestart": 4,
+    "receiptEntries": 33,
+    "receiptPageSizes": [
+      32,
+      1
+    ],
+    "seedEventPages": [
+      32,
+      32,
+      32,
+      3
+    ],
+    "seedEvents": 99,
+    "deleteEventPages": [
+      32,
+      32,
+      32
+    ],
+    "deleteEvents": 96,
+    "deleteGroups": 1,
+    "negativeOracles": 5
+  },
+  "warning": "Expected counts do not imply attempted, transmitted, received, passed or closed counts; counters derive actual observed rows only."
+}

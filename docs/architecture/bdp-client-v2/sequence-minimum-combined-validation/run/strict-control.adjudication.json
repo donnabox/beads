@@ -1,0 +1,65 @@
+{
+  "accepted": true,
+  "actualRawExit": 1,
+  "actualHTTP": 2,
+  "observation": {
+    "observation": "private-source-sequence-depth",
+    "outcome": "failed",
+    "attempts": 2,
+    "completedResponses": [
+      {
+        "ordinal": 1,
+        "label": "seed",
+        "method": "POST",
+        "url": "http://127.0.0.1:49705/acme/operations/create-bead",
+        "credential": "operator",
+        "accept": "application/json",
+        "requestBodyBytes": 110,
+        "requestBodySha256": "aabacf6097b464c93dd32450577afa104a99d494622a12982a06cc712d517179",
+        "status": 200,
+        "responseBodyBytes": 668,
+        "responseBodySha256": "4bd1ce15e3014ac6a38c12bcb9af7be812637fa5f1406b9b3b24ad60bfdb5551",
+        "headers": {
+          "bdp-scope-epoch": "5d762589-fd12-45cd-a949-63833105c0aa",
+          "bdp-authorization-view": "development-all-visible",
+          "bdp-scope-position": "pos-1",
+          "x-bdp-development": "non-attesting",
+          "x-bdp-development-limit": null,
+          "content-type": "application/json",
+          "content-length": "668"
+        }
+      },
+      {
+        "ordinal": 2,
+        "label": "retained-deep",
+        "method": "POST",
+        "url": "http://127.0.0.1:49705/acme/operations/sequence",
+        "credential": "operator",
+        "accept": "application/json",
+        "requestBodyBytes": 661,
+        "requestBodySha256": "ceda96248db93c3cb51b7984c68bdf635a4390b4d9ea882873a2a888c7237ea0",
+        "status": 500,
+        "responseBodyBytes": 0,
+        "responseBodySha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "headers": {
+          "bdp-scope-epoch": null,
+          "bdp-authorization-view": null,
+          "bdp-scope-position": null,
+          "x-bdp-development": "non-attesting",
+          "x-bdp-development-limit": null,
+          "content-type": null,
+          "content-length": "0"
+        }
+      }
+    ],
+    "deadlineExceeded": false,
+    "cleanupExceeded": false,
+    "cleanupCompleted": true,
+    "failureCount": 1,
+    "claimEligible": false,
+    "retention": "safe response headers/fingerprints; full schema/body equality in memory; no authorization retained"
+  },
+  "resultSha256": "874ed405a463872db5319efebed3de0dd335bc908da4dae879d967696944a513",
+  "logSha256": "210d2cc726dd4dcd8ee3b38fce69e5d63db1501c638a4ebee6f5cabc9bdb0021",
+  "limitations": "Exactly one expected source counterfactual, not passing positive execution or product qualification."
+}

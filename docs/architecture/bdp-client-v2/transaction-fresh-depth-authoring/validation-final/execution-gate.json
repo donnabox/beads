@@ -1,0 +1,105 @@
+{
+  "released": true,
+  "session": "2026-10-08T20:26:35Z-81e5",
+  "finalHead": "1ba65f2f192cc84e44eb09ef89b9693ec6cdaf05",
+  "finalTree": "773614c5ebc6c97d90c4c629c7c7a02ed51bc2ef",
+  "rootAcceptance": {
+    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-fresh-depth-authoring/validation-final/root-release.json",
+    "sha256": "64b4375ca2aed811d1c5c1f1a119447a6e0b0f030eb727a7217fe238fe06167c"
+  },
+  "sourceBinding": {
+    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-fresh-depth-authoring/validation-final/final-source.json",
+    "sha256": "3a9e025734a6104effdbb53c3c42e95cfea967692fb053c1c7f647837d9dee56"
+  },
+  "inputBinding": {
+    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-fresh-depth-authoring/validation-final/input-binding.json",
+    "sha256": "5bbffef901f3496f08be66ee937acc6f61d7a63d32147d8af804da6be9eb2a47"
+  },
+  "approvedCommandIds": [
+    "typecheck",
+    "fresh-build",
+    "format-check",
+    "lint",
+    "boundaries",
+    "read-seal",
+    "transaction-set-positive",
+    "transaction-submission-positive",
+    "transaction-sequence-positive",
+    "transaction-http-positive",
+    "transaction-snapshot-positive",
+    "resource-evaluator-positive",
+    "review-source-measurements",
+    "build-inventory",
+    "prepare-control",
+    "strict-control",
+    "review-control",
+    "node-version",
+    "package-directory",
+    "pack-protocol",
+    "pack-server",
+    "verify-tar",
+    "prepare-consumer",
+    "consumer-install",
+    "verify-installed",
+    "direct-installed",
+    "review-direct-installed",
+    "sequence-installed",
+    "review-sequence-installed",
+    "fresh-installed",
+    "review-fresh-installed"
+  ],
+  "phaseRelease": {
+    "source": true,
+    "control": true,
+    "package": true,
+    "installed": true,
+    "adjudication": true
+  },
+  "preparationSha256": {
+    "adaptation.patch": "181db9b0630dc460ae6b6e40d0ffef5a5f9b3a0a09074c47ad04f97831c91820",
+    "commands.json": "8be0e4d671ed52acc7b3888f9c8aeca24464534005ad4b7a9d88d6eef95e2ad7",
+    "control-execute.py": "069272bd3a4349628eb4df485059e5466ef80ac77ffd114154ba331b8786c71f",
+    "control-reporter-sources.json": "804838be6efa8a94d3fcb3e1e925cc63233489261143b85ba3321f22b717c9cd",
+    "control.py": "8cf93c47a942bffcdcdf945abda46f55591b49e4c82b979db54ee3abc55950e8",
+    "gate.py": "bb1c9c250a3ba03dd77b60380e3f337e8ffc6bcec5cab66f3e1803da14ef999b",
+    "installed-oracles.json": "d7de5e85e705b65f7b996dba4eaa395d7e6d80ee4ed7e523f5791dd86f7fd9fd",
+    "inventory.py": "b9ac353ee250d66552e96bc67bc0d22c9168d1c8fc563d6da5517c6bd765486d",
+    "packages.py": "5b447ecaa6334bee7bddbcf7c477677ec400c6bbeb38e4c630863369b8dc1c62",
+    "prepared-source.json": "e6e1ac2e9faa6f84aa506302275174f6c54e2fb31d8927bf49ac30a0a13c5a34",
+    "recovery-inputs.json": "03e4cd30099ebb0819702abfc448f642f6a85df3abadcb5140ff47600fc10e24",
+    "report.md": "6992c1dd44dcfb5c4eb3a36da6376057b06968f3bd6cc2c7ed95a12afed751e5",
+    "review-installed.py": "1be391e9a6f86ceca05ef6a1a04659a9d4c5175efc45efc8f49b6ff786d58c89",
+    "review-source.py": "3ef7855bf8b946337449cb0567eb7c4d17e47c1920bd5e8e1a620a7703993aff",
+    "source-body-measurements.json": "ee531532781baa0aa82a619adbe5fd89c3a5b6385247e20e4ddb5cd7de29c7dc",
+    "source-selection.json": "557549bc671db1e2c8d6b33375ea2a0fdb34a59c934921ac7a9d2fcd4209a49e",
+    "supervise.py": "c9b524743c8b71c4487e55f5719713985a1665b6e61ec32d2d99534796ff9194"
+  },
+  "guardSha256": "fd81ba029cd4e7c7e60623df89e8292af91141d311d9ce789ed19e2152375e84",
+  "toolHashes": {
+    "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node": "1ee75375e33b94fc34b3b19aede049e11dae90efb63b374dc96d6bdace70c4b8",
+    "/Users/dbox/.cache/node/corepack/v1/pnpm/11.20.0/bin/pnpm.cjs": "67b035e322203961795e8e34ca63a08c37a4386eda94107fb3d28f3246d882ad",
+    "/Users/dbox/repos/wt/vickie/vickie-fresh-depth-serving/node_modules/vitest/vitest.mjs": "39db22f579acf5639bbb17a261408debbde03f4692c0c439e77e7f13aeba74d6",
+    "/Users/dbox/repos/wt/vickie/vickie-fresh-depth-serving/node_modules/@biomejs/biome/bin/biome": "7ffb4d217e5ddefcc19ca6afe76bb982f5eb36c9a124448105195fbcfc84bd77",
+    "/opt/homebrew/opt/python@3.14/bin/python3.14": "2477b47fa3ae65b9574eb18a15edb364e96948eaa1875ad3f1c80d780efc9c12"
+  },
+  "sourceLockSha256": "4150d8821c96dbc2cfec0b2762ff76b58318079f65fa4f5c8858ef2dd61f8d6d",
+  "consumerLockSha256": "7a3288d4e94fbb4b7f9239db3b3d256994fbcf1d4b17abd06bed4c7e892ac622",
+  "installedProvenanceSha256": "c03ce6c33c82dd606cb6a0607f0b6c382bf07352b6555ca9e44cd857d7de2e07",
+  "expectedProductionVersions": {
+    "@bdp/protocol": "0.0.0",
+    "@bdp/server": "0.0.0",
+    "ajv": "8.17.1",
+    "ajv-formats": "3.0.1",
+    "fast-deep-equal": "3.1.3",
+    "fast-uri": "3.1.5",
+    "json-schema-traverse": "1.0.0",
+    "require-from-string": "2.0.2"
+  },
+  "note": "CLOSED. Actual18 hashes/head/tree/parents bound; root must supply full tracked input binding and source-prefix release. Other phases require full council and provenance.",
+  "consumerInventorySha256": "27bcbed2548610c2862e647006d513dbc9520cceb5d4c9e10fdbc3a5db8ef30f",
+  "councilAccepted": true,
+  "authorizationRequirements": {
+    "source": "rootAcceptance.sourceValidationAuthorized=true and sourceCouncilAccepted=true; exact clean source and explicit prefix still mandatory",
+    "allOtherPhases": "councilAccepted=true plus independent phase/prefix/provenance prerequisites"
+  }
+}

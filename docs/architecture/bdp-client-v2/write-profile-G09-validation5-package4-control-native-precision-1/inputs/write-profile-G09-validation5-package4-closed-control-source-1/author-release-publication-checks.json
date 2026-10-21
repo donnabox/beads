@@ -1,0 +1,65 @@
+{
+  "authorityScope": "CLOSED package4 DATA SOURCE authoring only; no runtime/live write/provider/source mutation",
+  "historicalSolePlans": [
+    {
+      "currentEqualityClaimed": false,
+      "memberPath": "docs/architecture/bdp-client-v2/design.md",
+      "metadata": {
+        "bytes": 462892,
+        "mode": "0o644",
+        "sha256": "4dc90f7bbd9c068889d9af9970abf645174cf84aca2603ffc34ab75f9a83d347"
+      },
+      "publicationCommit": "f87ff29463fa5c4fc561d57bc3a224c25deeb601",
+      "publicationManifest": {
+        "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/root-G09-validation5-source-pairs-final-and-package4-authoring-release-publication-1.manifest.json",
+        "sha256": "a184d2847d8e46f7233cd0a3e7801693d6d3d1c2e42ea06fdcabf1a2c4e82a4e"
+      }
+    },
+    {
+      "currentEqualityClaimed": false,
+      "memberPath": "docs/architecture/bdp-client-v2/design.md",
+      "metadata": {
+        "bytes": 455128,
+        "mode": "0o644",
+        "sha256": "1737548a806a0ded2069cece0eb4d96d59cd15072da0ff104cf81518184bf8b3"
+      },
+      "publicationCommit": "c6a2c133e0b123d82343f902361d87d00b35719e",
+      "publicationManifest": {
+        "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/root-G09-validation5-later17-binding-inventory-publication-1.manifest.json",
+        "sha256": "6142137c1e2e2692eae42207ecf25afd0bcdb5654be4eac77da03c7268ae5d56"
+      }
+    }
+  ],
+  "retainedDataOnlyInventory64": {
+    "commit": "c6a2c133e0b123d82343f902361d87d00b35719e",
+    "criticalBodiesMatched": 2,
+    "currentStaticMembersMatched": 63,
+    "freshRemoteReplayByAuthor": false,
+    "fullRawGitModesRootAttributed": true,
+    "manifest": {
+      "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/root-G09-validation5-later17-binding-inventory-publication-1.manifest.json",
+      "sha256": "6142137c1e2e2692eae42207ecf25afd0bcdb5654be4eac77da03c7268ae5d56"
+    },
+    "receipt": {
+      "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/root-G09-validation5-later17-binding-inventory-publication-1.remote-readback.json",
+      "sha256": "b1b6123264afabc3d5a7881bd20c82e60acb802eae96775865bf1804c1906044"
+    },
+    "selectedMembers": 64
+  },
+  "sourceOnly105Release": {
+    "commit": "f87ff29463fa5c4fc561d57bc3a224c25deeb601",
+    "criticalBodiesMatched": 3,
+    "currentStaticMembersMatched": 104,
+    "freshRemoteReplayByAuthor": false,
+    "fullRawGitModesRootAttributed": true,
+    "manifest": {
+      "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/root-G09-validation5-source-pairs-final-and-package4-authoring-release-publication-1.manifest.json",
+      "sha256": "a184d2847d8e46f7233cd0a3e7801693d6d3d1c2e42ea06fdcabf1a2c4e82a4e"
+    },
+    "receipt": {
+      "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/root-G09-validation5-source-pairs-final-and-package4-authoring-release-publication-1.remote-readback.json",
+      "sha256": "b7ed482aeb60e59bcba0736b6926561d69283adb4bd5507a0018921596075717"
+    },
+    "selectedMembers": 105
+  }
+}

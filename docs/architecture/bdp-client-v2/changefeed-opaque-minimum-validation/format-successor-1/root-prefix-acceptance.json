@@ -1,0 +1,23 @@
+{
+  "acceptedFreshStages": [
+    "typecheck",
+    "format-check",
+    "lint",
+    "fresh-build",
+    "bind-fresh-build",
+    "focused-source",
+    "review-focused-source",
+    "node-version",
+    "prepare-package-directory",
+    "pack-protocol",
+    "pack-server",
+    "verify-archives",
+    "prepare-consumer",
+    "consumer-install"
+  ],
+  "verifiedSourceFiles": 679,
+  "buildFiles": 476,
+  "actualConsumerLockSha256": "069789be74ba39ddd848acb49935f3738901d5564f9d24cb8ef32656afb83982",
+  "sourceBindingSha256": "71a70bf7150f43fbcc4b0a29ea7647eb5c17347132e59bc710d6833312790d3b",
+  "limit": "Only verify-installed-consumer now released; actual external proof must be accepted before callbacks. Original bootstrap attributed separately."
+}

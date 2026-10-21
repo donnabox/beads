@@ -1,0 +1,77 @@
+{
+  "actualResultAvailable": false,
+  "allIntegersBooleansTypedExactly": true,
+  "eligibleResultExactKeys": [
+    "classification",
+    "actualAttempted",
+    "positiveCredit",
+    "claimEligible",
+    "path"
+  ],
+  "eligibleResultExactValues": {
+    "actualAttempted": 1,
+    "claimEligible": false,
+    "classification": "CONFORMING_FAILED_PARTIAL_NO_CREDIT",
+    "path": "supported finite source assignments only; final Event boundary unsupported/refused; each actual-next loop<=12, dispatch<=32; not success32 prefix",
+    "positiveCredit": false
+  },
+  "nonEmitted29CallResults": "No fabricated extra rows; sourceidentity/actualcontrolnormalcompletion and source oracle coverage only.",
+  "receiptDeclared20StateSubcases": 20,
+  "receiptExactKeys": [
+    "stateControls",
+    "declared20StateSubcases",
+    "scope"
+  ],
+  "receiptScopeExact": "remaining semantic checks still required; failure classifications never positive",
+  "refusalReasonRules": "Exact source-state truth table and category/write reason in case-source-contract; RuntimeError is caught supertype, not concrete emitted label. No old prospective RuntimeError expectation.",
+  "refusalResultClass": "Refusal",
+  "refusalResultExactKeys": [
+    "refused",
+    "exceptionType",
+    "reason"
+  ],
+  "rowCount": 20,
+  "rowExactKeysets": [
+    [
+      "state",
+      "result"
+    ],
+    [
+      "pendingCategory",
+      "result"
+    ],
+    [
+      "pendingWriteState",
+      "result"
+    ]
+  ],
+  "rowOrder": "8 source triad rows then9 source category rows then3 source write-state rows",
+  "scopeExact": "immutable actual callable; authored UNIT stimuli, host observations separately labeled",
+  "state": "EXPECTED_FUTURE_GRAMMAR_NOT_AN_ACTUAL_RESULT",
+  "topExactKeys": [
+    "case",
+    "variant",
+    "status",
+    "executed",
+    "productCalls",
+    "scope",
+    "receipt",
+    "unresolved",
+    "subjectImplementationSha256",
+    "hostContainmentCredit",
+    "profileCredit",
+    "syntheticAcceptance"
+  ],
+  "topExactValues": {
+    "case": "D03",
+    "executed": true,
+    "hostContainmentCredit": false,
+    "productCalls": 0,
+    "profileCredit": false,
+    "status": "UNIT_CONTROL_PASSED",
+    "subjectImplementationSha256": "6cc0f6e04d12877439f26ebec5d9b65fa543894a7789dea143fef156efdb771e",
+    "syntheticAcceptance": false,
+    "unresolved": [],
+    "variant": "unit"
+  }
+}

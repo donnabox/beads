@@ -1,0 +1,212 @@
+{
+  "allMembersRead": true,
+  "archiveBytes": 973410,
+  "archivePath": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/tx-discovery-fe57-ci-1/raw-actions-logs.zip",
+  "archiveSha256": "fb277e175020e59c557238786cb4d7a7b77c32310357a12d96637d44003f27d9",
+  "crcErrorMember": null,
+  "members": [
+    {
+      "bytes": 4199153,
+      "compressedBytes": 482084,
+      "crc32": "1768484e",
+      "member": "0_verify.txt",
+      "sha256": "4dbdde42c475636d7860b113d5d38f95aed116d0d8407bc51408b9870ffd9923"
+    },
+    {
+      "bytes": 594,
+      "compressedBytes": 294,
+      "crc32": "3b2eea2f",
+      "member": "verify/system.txt",
+      "sha256": "de1aa586d9ede1df7fb6101d6b9d76d4e03cb651cbf71354652e2f1f4ecd7e26"
+    },
+    {
+      "bytes": 2423,
+      "compressedBytes": 900,
+      "crc32": "402993f3",
+      "member": "verify/1_Set up job.txt",
+      "sha256": "9eace9cd3f1882e1ebafcf7a14c0ff8e488e125039198d604c2d435dbaaa3926"
+    },
+    {
+      "bytes": 54441,
+      "compressedBytes": 7868,
+      "crc32": "17b2aaa0",
+      "member": "verify/2_Run actions_checkout@11d5960a326750d5838078e36cf38b85af677262.txt",
+      "sha256": "28871cc202e7fe681d2378cb8d949cd18ee697ce5bf4d78f8ca1f6d0e646c3c5"
+    },
+    {
+      "bytes": 1528,
+      "compressedBytes": 687,
+      "crc32": "194d448c",
+      "member": "verify/3_Run pnpm_action-setup@b906affcce14559ad1aafd4ab0e942779e9f58b1.txt",
+      "sha256": "8b51e9ab761d41f5673a0e8ef1b7d35907aa7ba16166e2897f51b3d8757758d1"
+    },
+    {
+      "bytes": 2773,
+      "compressedBytes": 1216,
+      "crc32": "279409df",
+      "member": "verify/4_Run actions_setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020.txt",
+      "sha256": "94946bdd31a5be6a9f944dd9f682ddd5d496e1ef787ff90258a79fbf092ef316"
+    },
+    {
+      "bytes": 4055,
+      "compressedBytes": 1428,
+      "crc32": "e2d1baab",
+      "member": "verify/5_Run actions_setup-go@924ae3a1cded613372ab5595356fb5720e22ba16.txt",
+      "sha256": "8a917e72b0d990b562f805597fcacba28814aa5b8aae64c35f72eece10ffb6c1"
+    },
+    {
+      "bytes": 428,
+      "compressedBytes": 246,
+      "crc32": "5a019c86",
+      "member": "verify/6_Run test $(node --version) = v24.16.0.txt",
+      "sha256": "f9a82102458648c01afd75b9fdae3f44cbfdda31ec8037598d2307b0b6f140df"
+    },
+    {
+      "bytes": 426,
+      "compressedBytes": 244,
+      "crc32": "84490cdb",
+      "member": "verify/7_Run test $(pnpm --version) = 11.20.0.txt",
+      "sha256": "4efff740c02fa339d739e994a8ab345ba0c255a4a4e6899d700fc5c690273a05"
+    },
+    {
+      "bytes": 2942,
+      "compressedBytes": 761,
+      "crc32": "5b6e7d56",
+      "member": "verify/8_Run sudo apt-get update.txt",
+      "sha256": "a9ce13f6f76a4543d6e3fba0df6d039e0f96cd50ffbb17fc6242a6304e3559f0"
+    },
+    {
+      "bytes": 779,
+      "compressedBytes": 399,
+      "crc32": "cbed71a0",
+      "member": "verify/9_Run sudo apt-get install --yes libicu-dev.txt",
+      "sha256": "3ef51b9aa6ba39be1fd25bf8b956b7a69fe3a38e60ad8d35ce71322ef1566019"
+    },
+    {
+      "bytes": 420,
+      "compressedBytes": 241,
+      "crc32": "e29b1cd8",
+      "member": "verify/10_Run mkdir -p $RUNNER_TEMP_bdp-tools.txt",
+      "sha256": "80de04a4b3777f916e77d667ea659c64bd6f161872b2aecc6a0c3c9da5c69c9a"
+    },
+    {
+      "bytes": 19579,
+      "compressedBytes": 5138,
+      "crc32": "153b57d6",
+      "member": "verify/11_Run go install github.com_steveyegge_beads_cmd_bd@v1.0.5.txt",
+      "sha256": "d288c7d326c5ad53bab6426050e3152a9a6c275445b728a3a98dbe1395fa9ef2"
+    },
+    {
+      "bytes": 1414,
+      "compressedBytes": 561,
+      "crc32": "c2d956b4",
+      "member": "verify/12_Verify the Go-installed source-build bd identity.txt",
+      "sha256": "5345f9fbe644a9f5a5ab9dad3f3dea84cc372da7bead3235b21a05a4f95de7b8"
+    },
+    {
+      "bytes": 1821,
+      "compressedBytes": 744,
+      "crc32": "94ed2373",
+      "member": "verify/13_Run pnpm install --frozen-lockfile.txt",
+      "sha256": "00ad73d4260c7cf417b9444b08a2ddc0bbc5bdbd1dae8e5360fcc70fb4cee7b9"
+    },
+    {
+      "bytes": 1153,
+      "compressedBytes": 519,
+      "crc32": "1134988f",
+      "member": "verify/14_Run pnpm formatcheck.txt",
+      "sha256": "29784eb117423ed7d9b23dec7659d235713582fd303a2907d3d992960330efa9"
+    },
+    {
+      "bytes": 34475,
+      "compressedBytes": 5391,
+      "crc32": "0d9f5a84",
+      "member": "verify/15_Run pnpm lint.txt",
+      "sha256": "7709426dcfb13596717b6e3e120398a2f748cf50b5567e49af3ea32a88d14943"
+    },
+    {
+      "bytes": 556,
+      "compressedBytes": 307,
+      "crc32": "a9c7f78f",
+      "member": "verify/16_Run pnpm checkboundaries.txt",
+      "sha256": "b9a9f10758e7134be82727c3ba6fe82c90a437819bfeb6f8c8ff33519f5f4f6e"
+    },
+    {
+      "bytes": 440,
+      "compressedBytes": 253,
+      "crc32": "afbfad97",
+      "member": "verify/17_Run pnpm typecheck.txt",
+      "sha256": "05ae9d70a2caa08be9e082bf8d25861d1d28729fe19eb489da79cf645af54425"
+    },
+    {
+      "bytes": 504,
+      "compressedBytes": 278,
+      "crc32": "708b7f15",
+      "member": "verify/18_Run pnpm build.txt",
+      "sha256": "fd8b44997b7e139c20b85c77912dc2b544b7cf4c6a86816ce36bbbe5278c040b"
+    },
+    {
+      "bytes": 4060297,
+      "compressedBytes": 454588,
+      "crc32": "cfd51623",
+      "member": "verify/19_Run pnpm test.txt",
+      "sha256": "5aa7853048f9be97d3dda12f902ebe5c7dfd66c651cddaa7b38b887e761a450e"
+    },
+    {
+      "bytes": 2576,
+      "compressedBytes": 915,
+      "crc32": "21fab71b",
+      "member": "verify/20_Run pnpm e2ereadypreflight.txt",
+      "sha256": "ff3062da7ec5036e6317d91ed5bbae64aa5d8ec84d0317701c90240db28ddafd"
+    },
+    {
+      "bytes": 2352,
+      "compressedBytes": 908,
+      "crc32": "c122f63c",
+      "member": "verify/21_Run pnpm smoke.txt",
+      "sha256": "620d0a37ecf6e5701680b8f5fe3ca8cd56d544d69e7db29acb065d21212ae0d3"
+    },
+    {
+      "bytes": 1005,
+      "compressedBytes": 556,
+      "crc32": "f4856714",
+      "member": "verify/22_Read-cohort evidence gate.txt",
+      "sha256": "79ff80e2ce47d330daf1b431b23aee027e53b1ec3ad6576f7822dc66a613b00a"
+    },
+    {
+      "bytes": 50,
+      "compressedBytes": 56,
+      "crc32": "ac9d7b5b",
+      "member": "verify/41_Post Run actions_setup-go@924ae3a1cded613372ab5595356fb5720e22ba16.txt",
+      "sha256": "b024c9b5524d59ebb926af0202f0aa88d6be0b7db439c20ae82f896bf9ab8c29"
+    },
+    {
+      "bytes": 483,
+      "compressedBytes": 325,
+      "crc32": "b130b32b",
+      "member": "verify/42_Post Run actions_setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020.txt",
+      "sha256": "33b6e5bd7a20715ee11b1917d0c3dc11220d2542f0810d718a552e3a19cdcd17"
+    },
+    {
+      "bytes": 103,
+      "compressedBytes": 92,
+      "crc32": "798c0c5b",
+      "member": "verify/43_Post Run pnpm_action-setup@b906affcce14559ad1aafd4ab0e942779e9f58b1.txt",
+      "sha256": "cc04579171d38d9ac2e04128517615f0b4779cecbace8f39245720d62f6e0d5b"
+    },
+    {
+      "bytes": 1701,
+      "compressedBytes": 553,
+      "crc32": "07e8a286",
+      "member": "verify/44_Post Run actions_checkout@11d5960a326750d5838078e36cf38b85af677262.txt",
+      "sha256": "a6568883a9d5450d57065e754fa12bccb81852dab9045aaf991b4d7521dbf9f7"
+    },
+    {
+      "bytes": 507,
+      "compressedBytes": 346,
+      "crc32": "8e88fbac",
+      "member": "verify/45_Complete job.txt",
+      "sha256": "d0906e04b89293ed88741b90d2ffc4e015feb0d77beee00603f25e03d6735676"
+    }
+  ]
+}

@@ -1,0 +1,52 @@
+{
+  "commands": [
+    {
+      "id": "typecheck",
+      "cwd": "/Users/dbox/repos/wt/vickie/vickie-authorization-transition",
+      "argv": [
+        "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+        "/Users/dbox/.cache/node/corepack/v1/pnpm/11.20.0/bin/pnpm.cjs",
+        "run",
+        "typecheck"
+      ],
+      "ownedTempPrefixes": []
+    },
+    {
+      "id": "format-check",
+      "cwd": "/Users/dbox/repos/wt/vickie/vickie-authorization-transition",
+      "argv": [
+        "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+        "/Users/dbox/repos/wt/vickie/vickie-authorization-transition/node_modules/@biomejs/biome/bin/biome",
+        "format",
+        "packages/server/src/transaction-read.test.ts",
+        "packages/server/src/transaction-snapshot.test.ts"
+      ],
+      "ownedTempPrefixes": []
+    },
+    {
+      "id": "affected-files",
+      "cwd": "/Users/dbox/repos/wt/vickie/vickie-authorization-transition",
+      "argv": [
+        "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+        "/Users/dbox/repos/wt/vickie/vickie-authorization-transition/node_modules/vitest/vitest.mjs",
+        "run",
+        "packages/server/src/transaction-read.test.ts",
+        "packages/server/src/transaction-snapshot.test.ts",
+        "--maxWorkers=1",
+        "--reporter=verbose",
+        "--reporter=json",
+        "--outputFile=/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-authorization-transition-draft/ci-fixture-repair/run/affected-files.results.json"
+      ],
+      "ownedTempPrefixes": [
+        "bdp-snapshot-",
+        "bdp-transaction-read-"
+      ],
+      "fullFiles": [
+        "packages/server/src/transaction-read.test.ts",
+        "packages/server/src/transaction-snapshot.test.ts"
+      ]
+    }
+  ],
+  "boundSeconds": 120,
+  "noRetry": true
+}

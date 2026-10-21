@@ -1,0 +1,20 @@
+{
+  "actualOutcome": "FAILED_OWNERSHIP_UNKNOWN",
+  "findings": [
+    {
+      "id": "D02-DIAG-N1",
+      "impact": "Persisted generic reasons omit the first PID/old+new row/predicate component, generation/time and signal errno/anchor facts. They cannot support a safe causal fix or justify weakening the live identity predicate.",
+      "kind": "Captured diagnosability gap; no demonstrated ownership-predicate defect",
+      "location": "outer_host.py:107,141,245; actual outer-owner-tentative.json",
+      "recommendation": "Root may separately authorize minimal first-failure telemetry from values already available, under unchanged clock/caps/unknown policy. No cause-dependent fix or rerun is authorized here.",
+      "severity": "Medium",
+      "trigger": "First identity mismatch and later signal PermissionError"
+    }
+  ],
+  "limitations": [
+    "Tentative file captures 15 probe receipts through2.173314s; source may launch further censuses while IO publication/termination completes through final outer2.965408s. No final complete probe registry is emitted. All 25 recorded task PIDs/20 groups are freshly absent; unrecorded post-snapshot probes are not independently enumerable from saved evidence. No global/all-transient containment claim."
+  ],
+  "nextRootDispositionRequired": true,
+  "provenHelperSemanticCause": null,
+  "subjectControlPredicate": "OBSERVED_TRUE_UNIT_ONLY"
+}

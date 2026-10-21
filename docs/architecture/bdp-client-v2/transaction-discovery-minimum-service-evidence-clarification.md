@@ -1,0 +1,3 @@
+# Discovery minimum service evidence clarification
+
+Root approved on 2026-10-14 before source2bd484367f63c7b8cc25e144baec983c5e579798 entered code review. Raw emitted ESM assembler exports cannot be spied on without rewriting bytes or introducing a loader/hook. Preserve emitted bytes. The direct emitted probe measures four owner entries, one synthetic wait, two candidates and two exact errors across four calls, with zero HTTP and one process. Separate source spies establish two assemblies and none on negative paths. Report this division explicitly; do not claim an emitted assembly counter or combine observations into installed qualification. No production behavior or acceptance requirement is relaxed.

@@ -1,0 +1,59 @@
+{
+  "mode": "collapse-principal-b-to-a",
+  "change": "Only principal-b token principal string becomes principal-a before bootstrap and every scenario launch; token/ref stays distinct.",
+  "manifestUnchanged": true,
+  "selected": [
+    "read-update.idempotency.principal-isolation"
+  ],
+  "actualStatuses": [
+    200,
+    409
+  ],
+  "expectedHttp": 2,
+  "conservativeMaxHttp": 7,
+  "children": 2,
+  "bodyBytes": 300,
+  "finalAction": "pk-b-create",
+  "failingAssertionIds": [
+    "http-status",
+    "schema",
+    "media",
+    "serving-position",
+    "disposition",
+    "detail",
+    "key",
+    "receipt-id",
+    "transaction",
+    "required-position",
+    "effect-position",
+    "no-next",
+    "result-indices",
+    "resource-id",
+    "resource-type",
+    "resource-revision",
+    "resource-properties",
+    "resource-metadata"
+  ],
+  "passingAssertionIds": [
+    "present-bdp-scope-epoch",
+    "present-bdp-authorization-view",
+    "present-bdp-scope-position",
+    "request-headers",
+    "request-body",
+    "no-owned-links",
+    "no-provenance"
+  ],
+  "actualProblem": {
+    "type": "https://github.com/gastownhall/bdp/problems/conflict",
+    "code": "idempotency-conflict",
+    "status": 409,
+    "retry": "never"
+  },
+  "actualContext": {
+    "epoch": "validated A epoch",
+    "view": "validated A view",
+    "position": "pos-1"
+  },
+  "laterActions": 0,
+  "claimEligible": false
+}

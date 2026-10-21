@@ -1,0 +1,10 @@
+{
+  "captureKinds": [
+    "response-url",
+    "header-link",
+    "json-pointer"
+  ],
+  "relativeDirectoryCapture": "unsupported: captureValue only accepts absolute HTTP(S) URLs",
+  "contextBodyHeaderAssertion": "unsupported as direct portable equality: captures are URL-only and scope cannot be shadowed",
+  "scopeBinding": "already seeded by runner; fixture shadow forbidden"
+}

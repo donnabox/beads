@@ -1,0 +1,1654 @@
+diff --git a/docs/design/startup-configuration.md b/docs/design/startup-configuration.md
+index 95792f9560fbc07d0f6516ecd7176dbd691549de..7d700a4e22fb183a46c1b28cb6d151f13366c6d2 100644
+--- a/docs/design/startup-configuration.md
++++ b/docs/design/startup-configuration.md
+@@ -641,3 +641,62 @@ that response. A mutation client can explicitly accept a complete Problem above
+ runner's separate 2,097,152-byte evidence ceiling needs its own reviewed design
+ before large complete raw responses can be claimed. No engine or HTTP/auth/profile
+ installation is provided by this component.
++
++### Trusted reference deployment preparation
++
++`bdptest.deploymentFile` (environment `BDP_BDPTEST_DEPLOYMENT_FILE`) is an optional,
++nonsecret absolute local file path. Environment overrides the config file; the
++field is absent by default. Its content is validated only for `bdptest` and the
++full no-role view, while unknown field names remain errors for every role. The
++path must be a nonempty well-formed string, without control characters, bounded
++to 16384 UTF8 bytes. Config stores the path and does not open it. Like
++`bd.workspace`, the resolved path appears in `startup.config`, so it must not
++contain secrets. Rejected values, file contents, credentials and parser causes
++never appear in deployment diagnostics. `bdptest.fixture` remains an identifier.
++No-serve startup continues to parse configuration without reading a deployment.
++
++The separate `@bdp/server/reference-configuration` data entry exposes
++`loadReferenceDeployment`. This pure preparation step opens no store or listener
++and grants no profile capability. It accepts an explicit shared Scope, intended
++listener, profile and Read limits plus the deployment path. It refuses Read or
++missing profile, fixture/fault conflicts, port0 and unsupported hosts. RU supports
++loopback `127.0.0.1`/`::1`; TX currently supports `127.0.0.1`. Shared Read settings
++must match the existing capture tuple: RU page20/100, selector4096/32/256,
++cursor60000ms; TX page2/32, selector4096/32/256, cursor1000ms. These differ from the
++ordinary shared Read defaults and must be configured explicitly. The returned
++`preflightReadLimits` proves a code/capture comparison only.
++
++The internal file has exact keys `format`, `profile`, `configuration`, with format
++`bdptest-reference-deployment-1` and profile matching shared intent. RU configuration
++has exact keys `directory`, `create`, `credentials` (token/principal), `policies`
++(principal to create/write/hidden/readOnly), `contracts` (descriptors/schemas), and
++`maximumEndpointMultiplicity`. TX has `directory`, `create`, `credentials`
++(token/principal/canMutate) and `artifacts` (descriptors/schemas). Artifact entries
++are exact retrievalUri/utf8 pairs. Existing installed captures own all inner
++validation and identities: RU empty descriptors select the shipped local closure;
++TX requires descriptors. Tokens must be unique; duplicate principals are allowed.
++No Scope/listener/limits override, code plugin, grant, evidence or wire installation
++operation is accepted in the envelope.
++
++One ordinary-file handle reads at most32MiB+1 and always closes. Fatal UTF8 and the
++existing strict lossless JSON decoder reject malformed text, duplicate decoded
++keys, BOM and unpaired surrogates. The32MiB encoded bound is the sole predecode
++bound on trusted operator input: full lossless-tree allocation/work occurs before
++iterative depth16/node100000 checks. Numbers remain atomic during those checks,
++then numeric admission uses one sanitized diagnostic. This accepted allocation
++risk is not a predecode structural/memory guarantee. Existing inner1MiB/artifact
++and16MiB total bounds remain independent; escaping/overhead can exceed the outer
++ceiling, so no full-inner-budget fit is guaranteed.
++
++The frozen public handle contains only inert summary data and provenance; secret
++inputs and RU/TX captures remain in a private identity registry. Replacing the
++file or mutating caller settings after capture cannot change that state. The
++private registry and runtime factories are unavailable through package exports.
++TX intended listener is retained separately from its existing private port0
++capture; no runtime wiring or live policy/view/runtime metadata is claimed.
++
++A later lifecycle slice must validate actual store existence/format and persisted
++receiptMaximumItems, snapshot limits/token policy, runtime limits, contract
++identity, Scope/Types and current policy/view/recovery **before listen**, closing
++any acquired owner on failure. Ordinary Write startup/admission remains separate;
++this loader is neither a public listener nor evidence of complete Write support.
+diff --git a/packages/config/src/index.test.ts b/packages/config/src/index.test.ts
+index 0a3e06f464d0ac99292c30cfbc36cd6f7312330e..7e7baeb32691a4c94c361d0973b4be61bddcc63c 100644
+--- a/packages/config/src/index.test.ts
++++ b/packages/config/src/index.test.ts
+@@ -1411,3 +1411,69 @@ describe("explicit reference ReadUpdate defaults", () => {
+     expect(resolveServerReadUpdateLimits()).not.toHaveProperty("diagnosticCount");
+   });
+ });
++
++describe("bdptest.deploymentFile", () => {
++  it("stores a nonsecret absolute path without opening it and preserves precedence", () => {
++    expect(load({}).bdptest).not.toHaveProperty("deploymentFile");
++    const file = {
++      path: "/config.json",
++      contents: JSON.stringify({ bdptest: { deploymentFile: "/file.json" } }),
++    };
++    expect(load({}, file).bdptest.deploymentFile).toBe("/file.json");
++    const resolved = load({ BDP_BDPTEST_DEPLOYMENT_FILE: "/not-opened/é.json" }, file);
++    expect(resolved.bdptest.deploymentFile).toBe("/not-opened/é.json");
++    expect(redactStartupConfig(resolved).bdptest.deploymentFile).toBe("/not-opened/é.json");
++    expect(
++      loadAsBdptest({ BDP_BDPTEST_DEPLOYMENT_FILE: "/deployment.json" }).bdptest.deploymentFile,
++    ).toBe("/deployment.json");
++  });
++  it.each([
++    "",
++    "relative.json",
++    "/sentinel-secret\u0000.json",
++    "/sentinel-secret\n.json",
++    "/\ud800",
++    `/${"é".repeat(8192)}`,
++  ])("refuses invalid path case %# with field/rule-only diagnostics", (value) => {
++    for (const role of [undefined, "bdptest"] as const) {
++      const env = { BDP_BDPTEST_DEPLOYMENT_FILE: value };
++      const result = issues(() =>
++        role === undefined
++          ? loadStartupConfig({ env })
++          : loadStartupConfig({ env, role: "bdptest" }),
++      );
++      expect(result).toHaveLength(1);
++      expect(result[0]?.path).toBe("bdptest.deploymentFile");
++      expect(JSON.stringify(result)).not.toContain("sentinel-secret");
++      expect(result[0]?.message).toContain("absolute well-formed path");
++    }
++  });
++  it("uses UTF8 bytes at the exact path bound", () => {
++    const value = `/${"é".repeat(8191)}a`;
++    expect(Buffer.byteLength(value)).toBe(16384);
++    expect(load({ BDP_BDPTEST_DEPLOYMENT_FILE: value }).bdptest.deploymentFile).toBe(value);
++  });
++  it.each(["bdp", "bdpbd", "conformance"] as const)(
++    "ignores content but preserves global vocabulary for %s",
++    (role) => {
++      const options = {
++        role,
++        env: { BDP_BDPTEST_DEPLOYMENT_FILE: "relative-invalid" },
++        configFile: "/shared.json",
++      };
++      const resolve = (contents: string) => {
++        const readFile = () => contents;
++        switch (role) {
++          case "bdp":
++            return loadStartupConfig({ ...options, role: "bdp", readFile });
++          case "bdpbd":
++            return loadStartupConfig({ ...options, role: "bdpbd", readFile });
++          case "conformance":
++            return loadStartupConfig({ ...options, role: "conformance", readFile });
++        }
++      };
++      expect(resolve('{"bdptest":{"deploymentFile":42}}')).not.toHaveProperty("bdptest");
++      expect(() => resolve('{"bdptest":{"deploymentFil":42}}')).toThrow(ConfigError);
++    },
++  );
++});
+diff --git a/packages/config/src/index.ts b/packages/config/src/index.ts
+index 40d3b49b4721b4ae3d3ce6a003f9fbcb79e252e0..36b1d0c5177bd06eb30c64bd44fa6731dad19e13 100644
+--- a/packages/config/src/index.ts
++++ b/packages/config/src/index.ts
+@@ -1,4 +1,5 @@
+ import { readFileSync } from "node:fs";
++import path from "node:path";
+ 
+ import {
+   isProtocolProfile,
+@@ -78,7 +79,7 @@ export interface StartupConfig {
+     readonly internalFaultResource?: string;
+   };
+   readonly bd: { readonly executable: string; readonly workspace?: string };
+-  readonly bdptest: { readonly fixture?: string };
++  readonly bdptest: { readonly fixture?: string; readonly deploymentFile?: string };
+   readonly conformance: {
+     readonly profile: ProtocolProfile;
+     readonly scenarioFilter?: string;
+@@ -192,6 +193,7 @@ const FIELDS = [
+   "bd.executable",
+   "bd.workspace",
+   "bdptest.fixture",
++  "bdptest.deploymentFile",
+   "conformance.profile",
+   "conformance.scenarioFilter",
+   "conformance.seed",
+@@ -218,6 +220,7 @@ const ENV_VARIABLE: Record<Field, string> = {
+   "bd.executable": "BDP_BD_EXECUTABLE",
+   "bd.workspace": "BDP_BD_WORKSPACE",
+   "bdptest.fixture": "BDP_BDPTEST_FIXTURE",
++  "bdptest.deploymentFile": "BDP_BDPTEST_DEPLOYMENT_FILE",
+   "conformance.profile": "BDP_CONFORMANCE_PROFILE",
+   "conformance.scenarioFilter": "BDP_CONFORMANCE_SCENARIO_FILTER",
+   "conformance.seed": "BDP_CONFORMANCE_SEED",
+@@ -460,6 +463,10 @@ export function loadStartupConfig(
+   const bdptestOwned = activeSections.has("bdptest");
+   const fixture = bdptestOwned ? readFixture(rawRead("bdptest.fixture").value, issues) : undefined;
+ 
++  const deploymentFile = bdptestOwned
++    ? readDeploymentFile(rawRead("bdptest.deploymentFile").value, issues)
++    : undefined;
++
+   const conformanceOwned = activeSections.has("conformance");
+   const conformanceProfile = conformanceOwned
+     ? readEnum<ProtocolProfile>(
+@@ -560,7 +567,10 @@ export function loadStartupConfig(
+     ...(internalFaultResource === undefined ? {} : { internalFaultResource }),
+   };
+   const bdSection = workspace === undefined ? { executable } : { executable, workspace };
+-  const bdptestSection = fixture === undefined ? {} : { fixture };
++  const bdptestSection = {
++    ...(fixture === undefined ? {} : { fixture }),
++    ...(deploymentFile === undefined ? {} : { deploymentFile }),
++  };
+   const conformanceSection = {
+     profile: conformanceProfile,
+     ...(scenarioFilter === undefined ? {} : { scenarioFilter }),
+@@ -1065,3 +1075,23 @@ export function formatConfigError(error: ConfigError, executable: string): strin
+     issues: error.issues,
+   })}\n`;
+ }
++
++/** Store the nonsecret path only. Reading deployment contents belongs to the loader. */
++function readDeploymentFile(value: unknown, issues: ConfigIssue[]): string | undefined {
++  if (value === undefined) return undefined;
++  if (
++    typeof value === "string" &&
++    value.length > 0 &&
++    value.isWellFormed() &&
++    path.isAbsolute(value) &&
++    !/[\u0000-\u001f\u007f-\u009f]/u.test(value) &&
++    Buffer.byteLength(value) <= 16384
++  )
++    return value;
++  issues.push({
++    path: "bdptest.deploymentFile",
++    message:
++      "bdptest.deploymentFile must be a nonempty absolute well-formed path without control characters, at most 16384 UTF8 bytes",
++  });
++  return undefined;
++}
+diff --git a/packages/server/package.json b/packages/server/package.json
+index 2e155291cf3e03efb3ee1a45255da62b766d25eb..bb82ffbc872b438aca8f712c06491ce003248572 100644
+--- a/packages/server/package.json
++++ b/packages/server/package.json
+@@ -15,6 +15,10 @@
+     "./development": {
+       "types": "./dist/development.d.ts",
+       "default": "./dist/development.js"
++    },
++    "./reference-configuration": {
++      "types": "./dist/reference-deployment.d.ts",
++      "default": "./dist/reference-deployment.js"
+     }
+   },
+   "dependencies": {
+diff --git a/packages/server/src/read-sequence-lifecycle.test.ts b/packages/server/src/read-sequence-lifecycle.test.ts
+index 6c4bb9788b71600c8919133d3eac8b26444dcb26..520363bdfaee3b5bc39cabc176de9ca9a4865c78 100644
+--- a/packages/server/src/read-sequence-lifecycle.test.ts
++++ b/packages/server/src/read-sequence-lifecycle.test.ts
+@@ -1548,6 +1548,10 @@ describe("G11 source qualification and private containment", () => {
+     expect(manifest.exports).toEqual({
+       ".": { types: "./dist/index.d.ts", default: "./dist/index.js" },
+       "./development": { types: "./dist/development.d.ts", default: "./dist/development.js" },
++      "./reference-configuration": {
++        types: "./dist/reference-deployment.d.ts",
++        default: "./dist/reference-deployment.js",
++      },
+     });
+   });
+ });
+diff --git a/packages/server/src/transaction-snapshot.test.ts b/packages/server/src/transaction-snapshot.test.ts
+index ec9215ed89e3b8de745abfeb408088598e32eaa4..4869e070a7a7a35dda62242fb62a4a4b2f4748ef 100644
+--- a/packages/server/src/transaction-snapshot.test.ts
++++ b/packages/server/src/transaction-snapshot.test.ts
+@@ -674,8 +674,12 @@ it("independent expected inventory rejects coherent omissions and early terminat
+ });
+ it("new private Snapshot entry points do not escape package public exports", () => {
+   const manifest = JSON.parse(readFileSync(new URL("../package.json", import.meta.url), "utf8"));
+-  expect(Object.keys(manifest.exports).sort()).toEqual([".", "./development"]);
+-  for (const file of ["index.ts", "development.ts"])
++  expect(Object.keys(manifest.exports).sort()).toEqual([
++    ".",
++    "./development",
++    "./reference-configuration",
++  ]);
++  for (const file of ["index.ts", "development.ts", "reference-deployment.ts"])
+     for (const privateModule of ["transaction-snapshot", "json-value-equality"])
+       expect(readFileSync(new URL(file, import.meta.url), "utf8")).not.toContain(privateModule);
+ });
+diff --git a/scripts/smoke-executables.mjs b/scripts/smoke-executables.mjs
+index 993c64b7cc6f07bd51594695ac1cac730deb6430..90919c942f53b6d86c7ba96e343955f601bd5709 100644
+--- a/scripts/smoke-executables.mjs
++++ b/scripts/smoke-executables.mjs
+@@ -2,6 +2,7 @@ import { observeInstalledReference } from "./installed-reference-observation.mjs
+ import { createRequire } from "node:module";
+ import { assertServerExports, isolatedWorkspace } from "./smoke-safety.mjs";
+ import { spawn } from "node:child_process";
++import { createServer } from "node:net";
+ import { mkdir, mkdtemp, readFile, readdir, realpath, rm, writeFile } from "node:fs/promises";
+ import { tmpdir } from "node:os";
+ import path from "node:path";
+@@ -373,6 +374,14 @@ async function installPackedWorkspace() {
+       "read-pagination.d.ts.map",
+       "read-pagination.js",
+       "read-pagination.js.map",
++      "reference-deployment.d.ts",
++      "reference-deployment.d.ts.map",
++      "reference-deployment.js",
++      "reference-deployment.js.map",
++      "reference-deployment-state.d.ts",
++      "reference-deployment-state.d.ts.map",
++      "reference-deployment-state.js",
++      "reference-deployment-state.js.map",
+       "read-request.d.ts",
+       "read-request.d.ts.map",
+       "read-request.js",
+@@ -420,6 +429,36 @@ async function installPackedWorkspace() {
+       (await realpath(path.join(installedServerRoot, "dist", "development.js")))
+     )
+       throw new Error("packed development facade does not resolve to its explicit entry");
++    const deploymentEntry = consumer.resolve("@bdp/server/reference-configuration");
++    if (
++      (await realpath(deploymentEntry)) !==
++      (await realpath(path.join(installedServerRoot, "dist", "reference-deployment.js")))
++    )
++      throw new Error("packed deployment loader does not resolve to its approved entry");
++    const deployment = await import(pathToFileURL(deploymentEntry).href);
++    if (
++      Object.keys(deployment).sort().join(",") !==
++      "ReferenceDeploymentError,loadReferenceDeployment"
++    )
++      throw new Error("packed deployment entry exposes unexpected capabilities");
++    const publicDeclaration = await readFile(
++      path.join(installedServerRoot, "dist", "reference-deployment.d.ts"),
++      "utf8",
++    );
++    for (const name of [
++      "reference-deployment-state",
++      "installed-reference-configuration",
++      "transaction-runtime",
++      "TransactionRuntime",
++      "credentials",
++      "projectedInput",
++      "authenticate",
++      "metadata(",
++      "readOptions(",
++    ])
++      if (publicDeclaration.includes(name))
++        throw new Error("packed deployment declaration exposes private capture types");
++    await observePackedDeploymentLoader(deployment, temporaryRoot);
+     const protocol = await import(pathToFileURL(consumer.resolve("@bdp/protocol")).href);
+     const transactionFixture = JSON.parse(
+       await readFile(path.join(workspaceRoot, "fixtures/transactional/discovery.json"), "utf8"),
+@@ -456,6 +495,12 @@ async function installPackedWorkspace() {
+       "prepareSetCore" in publicServer
+     )
+       throw new Error("packed root exposes private transaction service");
++    if (
++      "loadReferenceDeployment" in publicServer ||
++      "referenceDeploymentState" in publicServer ||
++      "registerReferenceDeployment" in publicServer
++    )
++      throw new Error("packed root exposes deployment preparation or private registry");
+     if ("createContextualReadPagination" in publicServer)
+       throw new Error("packed root exposes private contextual pagination factory");
+     const pagination = publicServer.createReadPagination({
+@@ -522,6 +567,10 @@ async function installPackedWorkspace() {
+     for (const specifier of [
+       "@bdp/conformance/transactional-observation",
+       "@bdp/conformance/dist/transactional-observation.js",
++      "@bdp/server/reference-deployment",
++      "@bdp/server/dist/reference-deployment.js",
++      "@bdp/server/reference-deployment-state",
++      "@bdp/server/dist/reference-deployment-state.js",
+       "@bdp/server/development-composition",
+       "@bdp/server/dist/development-composition.js",
+       "@bdp/server/installed-payload",
+@@ -959,6 +1008,9 @@ try {
+       fail(executable, "bdptest.fixture should be unset by default");
+     }
+ 
++    if (executable === "bdptest" && Object.hasOwn(startupConfig.bdptest, "deploymentFile"))
++      fail(executable, "bdptest.deploymentFile should be unset by default");
++
+     console.log(`${executable}: installed clean lifecycle passed`);
+   }
+ 
+@@ -969,15 +1021,27 @@ try {
+   const bdptestMapped = await runLifecycle("bdptest", installed.entry("bdptest"), true, {
+     BDP_SERVER_ADVERTISED_PROFILE: "read-update",
+     BDP_BDPTEST_FIXTURE: "smoke-fixture",
++    BDP_BDPTEST_DEPLOYMENT_FILE: path.join(
++      installed.temporaryRoot,
++      "must-not-open-deployment.json",
++    ),
+   });
+   const bdptestConfig = startupConfigFor(parseDiagnostics(bdptestMapped.stderr, "bdptest"));
+   if (
+     bdptestConfig?.server?.advertisedProfile !== "read-update" ||
+-    bdptestConfig?.bdptest?.fixture !== "smoke-fixture"
++    bdptestConfig?.bdptest?.fixture !== "smoke-fixture" ||
++    bdptestConfig?.bdptest?.deploymentFile !==
++      path.join(installed.temporaryRoot, "must-not-open-deployment.json") ||
++    bdptestMapped.code !== 0 ||
++    parseDiagnostics(bdptestMapped.stderr, "bdptest").some(
++      (entry) => entry.event === "server.started",
++    )
+   ) {
+-    fail("bdptest", "BDP_SERVER_ADVERTISED_PROFILE / BDP_BDPTEST_FIXTURE did not round-trip");
++    fail("bdptest", "profile/fixture/deployment path did not round-trip without serving");
+   }
+-  console.log("bdptest: server.advertisedProfile and bdptest.fixture round-trip through tarball");
++  console.log(
++    "bdptest: profile/fixture/deployment path round-trip without opening deployment or serving",
++  );
+ 
+   const bdpbdMapped = await runLifecycle("bdpbd", installed.entry("bdpbd"), true, {
+     BDP_SERVER_ADVERTISED_PROFILE: "read-update",
+@@ -1125,3 +1189,165 @@ try {
+ } finally {
+   await rm(installed.temporaryRoot, { recursive: true, force: true });
+ }
++
++/** Pure installed-loader witness; this guard owns the occupied intended port.
++ * Success excludes acquisition of that configured listener. Source forbidden-call
++ * instrumentation separately observes attempted startup calls. Store paths stay
++ * absent. This is not installed service evidence. */
++async function observePackedDeploymentLoader(deployment, temporaryRoot) {
++  const guard = createServer();
++  await new Promise((resolve, reject) => {
++    guard.once("error", reject);
++    guard.listen(0, "127.0.0.1", resolve);
++  });
++  try {
++    const address = guard.address();
++    if (address === null || typeof address === "string")
++      throw new Error("missing owned loader witness port");
++    const scope = "https://packed-deployment.test/s/",
++      token = "packed_deployment_secret_01234567890123456789";
++    const file = path.join(temporaryRoot, "pure-deployment.json");
++    const descriptor = `${scope}types/item`,
++      schema = `${scope}schemas/item`;
++    const artifacts = {
++      descriptors: [
++        {
++          retrievalUri: descriptor,
++          utf8: JSON.stringify({
++            id: descriptor,
++            name: "Item",
++            describes: "bead",
++            conformsTo: [],
++            propertiesSchema: schema,
++          }),
++        },
++      ],
++      schemas: [
++        {
++          retrievalUri: schema,
++          utf8: JSON.stringify({
++            $id: schema,
++            type: "object",
++            properties: { n: { type: "integer" } },
++            additionalProperties: false,
++          }),
++        },
++      ],
++    };
++    const inert = (value) => {
++      if (typeof value === "function") throw new Error("packed deployment returned a capability");
++      if (value !== null && typeof value === "object") {
++        if (!Object.isFrozen(value)) throw new Error("packed deployment returned mutable data");
++        for (const [key, child] of Object.entries(value)) {
++          if (
++            [
++              "credentials",
++              "token",
++              "authenticate",
++              "metadata",
++              "readOptions",
++              "projectedInput",
++              "installed",
++              "preflight",
++            ].includes(key)
++          )
++            throw new Error("packed deployment exposes private state");
++          inert(child);
++        }
++      }
++    };
++    for (const profile of ["read-update", "transactional"]) {
++      const directory = path.join(temporaryRoot, `absent-${profile}-store`);
++      const configuration =
++        profile === "read-update"
++          ? {
++              directory,
++              create: true,
++              credentials: [{ token, principal: "writer" }],
++              policies: { writer: { create: true, write: true, hidden: [], readOnly: [] } },
++              contracts: { descriptors: [], schemas: [] },
++              maximumEndpointMultiplicity: [],
++            }
++          : {
++              directory,
++              create: true,
++              credentials: [{ token, principal: "writer", canMutate: true }],
++              artifacts,
++            };
++      const input = {
++        deploymentFile: file,
++        scope: { url: scope },
++        server: {
++          host: "127.0.0.1",
++          port: address.port,
++          advertisedProfile: profile,
++          limits: {
++            page: {
++              defaultItems: profile === "read-update" ? 20 : 2,
++              maximumItems: profile === "read-update" ? 100 : 32,
++            },
++            selector: { bytes: 4096, depth: 32, nodes: 256 },
++            cursorTtlMilliseconds: profile === "read-update" ? 60000 : 1000,
++          },
++        },
++      };
++      const body = { format: "bdptest-reference-deployment-1", profile, configuration };
++      await writeFile(file, JSON.stringify(body));
++      const result = await deployment.loadReferenceDeployment(input);
++      inert(result);
++      if (
++        result.profile !== profile ||
++        result.canonicalScope !== scope ||
++        result.listener.port !== address.port ||
++        JSON.stringify(result).includes(token)
++      )
++        throw new Error("packed deployment returned incorrect or secret-bearing summary");
++      for (const candidate of [
++        { ...body, profile: profile === "read-update" ? "transactional" : "read-update" },
++        {
++          ...body,
++          configuration: {
++            ...configuration,
++            [profile === "read-update" ? "contracts" : "artifacts"]: {
++              descriptors: [{ retrievalUri: descriptor, utf8: "packed_payload_sentinel" }],
++              schemas: [],
++            },
++          },
++        },
++      ]) {
++        await writeFile(file, JSON.stringify(candidate));
++        let refused = false;
++        try {
++          await deployment.loadReferenceDeployment(input);
++        } catch (error) {
++          if (
++            !(error instanceof deployment.ReferenceDeploymentError) ||
++            error.code !== "contract" ||
++            "cause" in error ||
++            [token, "packed_payload_sentinel"].some((secret) =>
++              `${error} ${JSON.stringify(error)}`.includes(secret),
++            )
++          )
++            throw error;
++          refused = true;
++        }
++        if (!refused) throw new Error("packed deployment accepted an invalid contract");
++      }
++      try {
++        await realpath(directory);
++        throw new Error("packed loader created a store directory");
++      } catch (error) {
++        if (error.code !== "ENOENT") throw error;
++      }
++      if (!guard.listening || guard.address().port !== address.port)
++        throw new Error("packed loader disturbed the owned witness listener");
++    }
++    console.log(
++      "installed pure reference deployment loader: RU/TX, refusals and inert boundary passed",
++    );
++  } finally {
++    await new Promise((resolve, reject) =>
++      guard.close((error) => (error ? reject(error) : resolve())),
++    );
++  }
++}
+diff --git a/scripts/smoke-safety.mjs b/scripts/smoke-safety.mjs
+index bf62d226a3945ab32c47650db062b5f6326d8b2a..4cf4021a98a4ad82d9070cf2019702b8eb19f27b 100644
+--- a/scripts/smoke-safety.mjs
++++ b/scripts/smoke-safety.mjs
+@@ -6,6 +6,10 @@ export function assertServerExports(manifest) {
+   const expected = {
+     ".": { types: "./dist/index.d.ts", default: "./dist/index.js" },
+     "./development": { types: "./dist/development.d.ts", default: "./dist/development.js" },
++    "./reference-configuration": {
++      types: "./dist/reference-deployment.d.ts",
++      default: "./dist/reference-deployment.js",
++    },
+   };
+   if (!isDeepStrictEqual(manifest.exports, expected))
+     throw new Error(
+diff --git a/scripts/smoke-safety.test.mjs b/scripts/smoke-safety.test.mjs
+index 302bac8db9d94f7ae7eacc4fd95e5ae308ac41ba..7af4ac4c7f94949697c4fb8adc2dd56674d71d93 100644
+--- a/scripts/smoke-safety.test.mjs
++++ b/scripts/smoke-safety.test.mjs
+@@ -8,12 +8,23 @@ it("pins the root and explicit development facade and refuses missing or broad e
+   const exports = {
+     ".": { types: "./dist/index.d.ts", default: "./dist/index.js" },
+     "./development": { types: "./dist/development.d.ts", default: "./dist/development.js" },
++    "./reference-configuration": {
++      types: "./dist/reference-deployment.d.ts",
++      default: "./dist/reference-deployment.js",
++    },
+   };
+   expect(() => assertServerExports({ exports })).not.toThrow();
+   for (const candidate of [
+     undefined,
+     { ...exports, "./dist/*": "./dist/*" },
+     { ...exports, "./private": "./dist/installed-schema-evaluator.js" },
++    { ...exports, "./reference-configuration": exports["./development"] },
++    ...[
++      "installed-reference",
++      "transaction-runtime",
++      "profile-admission",
++      "reference-deployment-state",
++    ].map((name) => ({ ...exports, [`./${name}`]: `./dist/${name}.js` })),
+   ])
+     expect(() => assertServerExports({ exports: candidate })).toThrow(
+       "explicit development surface",
+diff --git a/packages/server/src/reference-deployment-state.ts b/packages/server/src/reference-deployment-state.ts
+new file mode 100644
+index 0000000000000000000000000000000000000000..eb43369e41a29391731034ff9a48a7fae777766c
+--- /dev/null
++++ b/packages/server/src/reference-deployment-state.ts
+@@ -0,0 +1,32 @@
++/** Private identity registry. Never exported by a package entry. */
++import type { PreparedReferenceDeployment } from "./reference-deployment.js";
++import type { captureInstalledReferenceConfiguration } from "./installed-reference-configuration.js";
++import type { captureInstalledTransactionConfiguration } from "./transaction-installed-configuration.js";
++import type { captureTransactionRuntimeConfiguration } from "./transaction-runtime-configuration.js";
++
++export type ReferenceDeploymentState =
++  | {
++      readonly profile: "read-update";
++      readonly projectedInput: Readonly<Record<string, unknown>>;
++      readonly installed: ReturnType<typeof captureInstalledReferenceConfiguration>;
++    }
++  | {
++      readonly profile: "transactional";
++      readonly projectedInput: Readonly<Record<string, unknown>>;
++      readonly installed: ReturnType<typeof captureInstalledTransactionConfiguration>;
++      readonly preflight: ReturnType<typeof captureTransactionRuntimeConfiguration>;
++    };
++
++const states = new WeakMap<object, ReferenceDeploymentState>();
++export function registerReferenceDeployment(
++  handle: PreparedReferenceDeployment,
++  state: ReferenceDeploymentState,
++): void {
++  if (states.has(handle)) throw new TypeError("reference deployment already registered");
++  states.set(handle, Object.freeze(state));
++}
++export function referenceDeploymentState(handle: unknown): ReferenceDeploymentState {
++  const state = handle !== null && typeof handle === "object" ? states.get(handle) : undefined;
++  if (state === undefined) throw new TypeError("registered reference deployment required");
++  return state;
++}
+diff --git a/packages/server/src/reference-deployment.test.ts b/packages/server/src/reference-deployment.test.ts
+new file mode 100644
+index 0000000000000000000000000000000000000000..0e242635c9580d59eb768bef5cf065842b780fd7
+--- /dev/null
++++ b/packages/server/src/reference-deployment.test.ts
+@@ -0,0 +1,649 @@
++import { createHash } from "node:crypto";
++import {
++  existsSync,
++  mkdirSync,
++  mkdtempSync,
++  readdirSync,
++  readFileSync,
++  rmSync,
++  writeFileSync,
++} from "node:fs";
++import { open, type FileHandle } from "node:fs/promises";
++import { tmpdir } from "node:os";
++import path from "node:path";
++import { afterEach, beforeEach, expect, it, vi } from "vitest";
++import { DEVELOPMENT_READ_LIMITS } from "./development-authority.js";
++import { captureInstalledReferenceConfiguration } from "./installed-reference-configuration.js";
++import { captureInstalledTransactionConfiguration } from "./transaction-installed-configuration.js";
++import {
++  captureTransactionRuntimeConfiguration,
++  TRANSACTION_RUNTIME_DEFAULTS,
++} from "./transaction-runtime-configuration.js";
++import { referenceDeploymentState } from "./reference-deployment-state.js";
++import * as publicEntry from "./reference-deployment.js";
++import {
++  loadReferenceDeployment,
++  ReferenceDeploymentError,
++  type ReferenceDeploymentInput,
++} from "./reference-deployment.js";
++
++const forbidden = vi.hoisted(() =>
++  vi.fn(() => {
++    throw new Error("loader attempted owner/listener startup");
++  }),
++);
++vi.mock("node:fs/promises", async (original) => {
++  const actual = await original<typeof import("node:fs/promises")>();
++  return { ...actual, open: vi.fn(actual.open) };
++});
++vi.mock("node:http", async (original) => ({
++  ...(await original<typeof import("node:http")>()),
++  createServer: forbidden,
++}));
++vi.mock("node:net", async (original) => ({
++  ...(await original<typeof import("node:net")>()),
++  createServer: forbidden,
++}));
++vi.mock("./recovery-store.js", async (original) => ({
++  ...(await original<typeof import("./recovery-store.js")>()),
++  openRecoveryStore: forbidden,
++}));
++vi.mock("./transaction-store.js", async (original) => ({
++  ...(await original<typeof import("./transaction-store.js")>()),
++  openTransactionStore: forbidden,
++}));
++vi.mock("./transaction-runtime.js", () => ({ startTransactionRuntime: forbidden }));
++vi.mock("./transaction-installed.js", () => ({ startInstalledTransactionCandidate: forbidden }));
++vi.mock("./installed-reference.js", () => ({ startInstalledReferenceCandidate: forbidden }));
++
++const scope = "https://deployment.test/acme/";
++const token = "deployment_writer_sentinel_01234567890123456789";
++const readToken = "deployment_reader_sentinel_01234567890123456789";
++const allow = { create: true, write: true, hidden: [], readOnly: [] };
++const roots: string[] = [];
++beforeEach(() => {
++  forbidden.mockClear();
++  vi.mocked(open).mockClear();
++});
++afterEach(() => {
++  try {
++    expect(forbidden).not.toHaveBeenCalled();
++  } finally {
++    vi.mocked(open).mockReset();
++    for (const root of roots.splice(0)) rmSync(root, { recursive: true, force: true });
++  }
++});
++// Reset only the mock history/one-shot implementations; the next test reinstalls
++// the real open so it exercises an actual ordinary-file handle by default.
++const realFs = await vi.importActual<typeof import("node:fs/promises")>("node:fs/promises");
++beforeEach(() => {
++  vi.mocked(open).mockImplementation(realFs.open);
++});
++function artifacts() {
++  const base = `${scope}types/base`,
++    owner = `${scope}types/owner`,
++    edge = `${scope}types/edge`,
++    schema = `${scope}schemas/item`;
++  return {
++    descriptors: [
++      {
++        retrievalUri: base,
++        utf8: JSON.stringify({
++          id: base,
++          name: "Base",
++          describes: "bead",
++          conformsTo: [],
++          propertiesSchema: schema,
++        }),
++      },
++      {
++        retrievalUri: owner,
++        utf8: JSON.stringify({
++          id: owner,
++          name: "Owner",
++          describes: "bead",
++          conformsTo: [base],
++          ownsOutgoing: { [edge]: { max: 2 } },
++        }),
++      },
++      {
++        retrievalUri: edge,
++        utf8: JSON.stringify({
++          id: edge,
++          name: "Edge",
++          describes: "link",
++          conformsTo: [],
++          source: { conformsTo: [base], external: "opaque" },
++          target: { conformsTo: [base], external: "opaque" },
++        }),
++      },
++    ],
++    schemas: [
++      {
++        retrievalUri: schema,
++        utf8: JSON.stringify({
++          $id: schema,
++          type: "object",
++          properties: { n: { type: "integer" } },
++          additionalProperties: false,
++        }),
++      },
++    ],
++  };
++}
++function ru(directory: string) {
++  return {
++    format: "bdptest-reference-deployment-1",
++    profile: "read-update",
++    configuration: {
++      directory,
++      create: true,
++      credentials: [
++        { token, principal: "writer" },
++        { token: readToken, principal: "reader" },
++      ],
++      policies: { writer: allow, reader: { ...allow, create: false, write: false } },
++      contracts: {
++        descriptors: [] as { retrievalUri: string; utf8: string }[],
++        schemas: [] as { retrievalUri: string; utf8: string }[],
++      },
++      maximumEndpointMultiplicity: [] as {
++        endpoint: string;
++        linkConformsTo: string;
++        max: number;
++      }[],
++    },
++  };
++}
++function tx(directory: string) {
++  return {
++    format: "bdptest-reference-deployment-1",
++    profile: "transactional",
++    configuration: {
++      directory,
++      create: true,
++      credentials: [
++        { token, principal: "same", canMutate: true },
++        { token: readToken, principal: "same", canMutate: false },
++      ],
++      artifacts: artifacts(),
++    },
++  };
++}
++function fixture(profile: "read-update" | "transactional" = "read-update") {
++  const root = mkdtempSync(path.join(tmpdir(), "bdp-deployment-"));
++  roots.push(root);
++  const directory = path.join(root, "absent-store"),
++    deploymentFile = path.join(root, "deployment.json");
++  const defaults = TRANSACTION_RUNTIME_DEFAULTS;
++  const limits =
++    profile === "read-update"
++      ? DEVELOPMENT_READ_LIMITS
++      : {
++          page: {
++            defaultItems: Math.min(defaults.readDefaultItems, defaults.receiptMaximumItems),
++            maximumItems: defaults.receiptMaximumItems,
++          },
++          selector: defaults.selector,
++          cursorTtlMilliseconds: defaults.pagination.cursorTtlMs,
++        };
++  const input = {
++    deploymentFile,
++    scope: { url: scope },
++    server: {
++      host: "127.0.0.1",
++      port: 43210,
++      advertisedProfile: profile,
++      limits: structuredClone(limits),
++    },
++  };
++  const write = (value: unknown) => writeFileSync(deploymentFile, JSON.stringify(value));
++  write(profile === "read-update" ? ru(directory) : tx(directory));
++  return { root, directory, input, write };
++}
++async function failure(input: ReferenceDeploymentInput, code: string) {
++  try {
++    await loadReferenceDeployment(input);
++  } catch (error) {
++    expect(error).toBeInstanceOf(ReferenceDeploymentError);
++    expect(error).toMatchObject({ code });
++    expect(error).not.toHaveProperty("cause");
++    const text = `${String(error)} ${JSON.stringify(error)}`;
++    for (const secret of [token, readToken, "payload_sentinel", "unsafe_key_sentinel"])
++      expect(text).not.toContain(secret);
++    return;
++  }
++  throw new Error("expected local preparation failure");
++}
++function inert(value: unknown) {
++  expect(typeof value).not.toBe("function");
++  if (value !== null && typeof value === "object") {
++    expect(Object.isFrozen(value)).toBe(true);
++    for (const [key, child] of Object.entries(value)) {
++      expect([
++        "credentials",
++        "token",
++        "authenticate",
++        "metadata",
++        "readOptions",
++        "installed",
++        "preflight",
++        "projectedInput",
++      ]).not.toContain(key);
++      inert(child);
++    }
++  }
++}
++it("captures the RU default closure through the existing capture and exposes only an inert handle", async () => {
++  const f = fixture(),
++    body = ru(f.directory);
++  const prepared = await loadReferenceDeployment(f.input);
++  const direct = captureInstalledReferenceConfiguration({
++    scope,
++    listener: { host: "127.0.0.1", port: 43210 },
++    ...body.configuration,
++  });
++  expect(prepared).toMatchObject({
++    profile: "read-update",
++    canonicalScope: scope,
++    listener: { host: "127.0.0.1", port: 43210 },
++    preflightReadLimits: DEVELOPMENT_READ_LIMITS,
++    artifactIdentity: direct.artifactIdentity,
++    configurationIdentity: direct.identity,
++    policyIdentity: direct.policyIdentity,
++    authenticationIdentity: direct.authenticationIdentity,
++    fileDigest: createHash("sha256").update(readFileSync(f.input.deploymentFile)).digest("hex"),
++  });
++  inert(prepared);
++  expect(JSON.stringify(prepared)).not.toContain(token);
++  const state = referenceDeploymentState(prepared);
++  expect(state.profile).toBe("read-update");
++  if (state.profile !== "read-update") throw new Error("wrong capture");
++  expect(state.installed.identity).toBe(direct.identity);
++  expect(state.installed.credentials).toEqual(direct.credentials);
++  expect(state.installed.configuration.contracts.identity).toBe(
++    direct.configuration.contracts.identity,
++  );
++  expect(state.installed.configuration.access.capture("reader").write).toBe(false);
++  expect(Object.isFrozen(state.projectedInput)).toBe(true);
++  expect(existsSync(f.directory)).toBe(false);
++  for (const fake of [{ ...prepared }, Object.freeze({}), null, "handle"])
++    expect(() => referenceDeploymentState(fake)).toThrow(
++      "registered reference deployment required",
++    );
++});
++it("delegates explicit RU schemas, ownership and endpoint multiplicity without an alternate compiler", async () => {
++  const f = fixture(),
++    body = ru(f.directory);
++  body.configuration.contracts = artifacts();
++  body.configuration.maximumEndpointMultiplicity = [
++    { endpoint: "target", linkConformsTo: `${scope}types/edge`, max: 1 },
++  ];
++  f.write(body);
++  const prepared = await loadReferenceDeployment(f.input),
++    state = referenceDeploymentState(prepared);
++  const direct = captureInstalledReferenceConfiguration({
++    scope,
++    listener: prepared.listener,
++    ...body.configuration,
++  });
++  expect(prepared.artifactIdentity).toBe(direct.artifactIdentity);
++  if (state.profile !== "read-update") throw new Error("wrong capture");
++  expect(state.installed.identity).toBe(direct.identity);
++  expect(state.installed.configuration.maximumEndpointMultiplicity).toEqual(
++    direct.configuration.maximumEndpointMultiplicity,
++  );
++  expect(existsSync(f.directory)).toBe(false);
++});
++it("keeps TX compilation, credentials and capabilities private and leaves live metadata unavailable", async () => {
++  const f = fixture("transactional"),
++    body = tx(f.directory);
++  const prepared = await loadReferenceDeployment(f.input),
++    state = referenceDeploymentState(prepared);
++  const installed = captureInstalledTransactionConfiguration({ scope, ...body.configuration });
++  const direct = captureTransactionRuntimeConfiguration(installed);
++  expect(prepared).toEqual({
++    format: body.format,
++    profile: "transactional",
++    canonicalScope: scope,
++    listener: { host: "127.0.0.1", port: 43210 },
++    preflightReadLimits: direct.readOptions(scope).advertisedLimits,
++    fileDigest: createHash("sha256").update(readFileSync(f.input.deploymentFile)).digest("hex"),
++    artifactIdentity: direct.contracts?.identity,
++  });
++  if (state.profile !== "transactional") throw new Error("wrong capture");
++  expect(state.installed).toEqual(installed);
++  expect(state.preflight.contracts?.identity).toBe(direct.contracts?.identity);
++  expect(state.preflight.settings).toEqual(direct.settings);
++  expect(state.preflight.readOptions(scope).advertisedLimits).toEqual(
++    direct.readOptions(scope).advertisedLimits,
++  );
++  expect(state.preflight.authenticate(Buffer.from(`Bearer ${readToken}`))).toEqual({
++    kind: "authenticated",
++    principal: "same",
++    canMutate: false,
++  });
++  expect(state.installed.port).toBe(0);
++  expect(prepared.listener.port).toBe(43210);
++  expect(prepared).not.toHaveProperty("policyIdentity");
++  expect(prepared).not.toHaveProperty("runtimeConfigurationIdentity");
++  inert(prepared);
++  expect(existsSync(f.directory)).toBe(false);
++});
++it("accepts duplicate RU principals with unique tokens, preserving existing semantics", async () => {
++  const f = fixture(),
++    body = ru(f.directory);
++  body.configuration.credentials[1]!.principal = "writer";
++  f.write(body);
++  expect((await loadReferenceDeployment(f.input)).profile).toBe("read-update");
++});
++it("snapshots caller settings before await and never rereads after file replacement", async () => {
++  const f = fixture("transactional");
++  const pending = loadReferenceDeployment(f.input);
++  f.input.scope.url = "https://changed.test/";
++  f.input.server.host = "other";
++  f.input.server.port = 1;
++  f.input.server.limits.page.maximumItems = 1;
++  const handle = await pending,
++    state = referenceDeploymentState(handle);
++  const reads = vi.mocked(open).mock.calls.length;
++  f.write({ payload_sentinel: token });
++  expect(referenceDeploymentState(handle)).toBe(state);
++  expect(handle.canonicalScope).toBe(scope);
++  expect(handle.listener.port).toBe(43210);
++  expect(vi.mocked(open)).toHaveBeenCalledTimes(reads);
++  expect(Object.isFrozen(state.projectedInput)).toBe(true);
++});
++it("does not create or alter a pre-existing read-only target store directory", async () => {
++  const f = fixture();
++  mkdirSync(f.directory);
++  const marker = path.join(f.directory, "store-marker");
++  writeFileSync(marker, "unchanged", { mode: 0o400 });
++  const body = ru(f.directory);
++  body.configuration.create = false;
++  f.write(body);
++  await loadReferenceDeployment(f.input);
++  expect(readFileSync(marker, "utf8")).toBe("unchanged");
++  expect(readdirSync(f.directory)).toEqual(["store-marker"]);
++  expect(existsSync(path.join(f.directory, "recovery.sqlite"))).toBe(false);
++  expect(existsSync(path.join(f.directory, "transaction.sqlite"))).toBe(false);
++});
++it.each(["read", undefined, "future"])(
++  "refuses unsupported profile %s before opening",
++  async (profile) => {
++    const f = fixture();
++    await failure(
++      {
++        ...f.input,
++        server: {
++          ...f.input.server,
++          ...(profile === undefined
++            ? { advertisedProfile: undefined }
++            : { advertisedProfile: profile }),
++        },
++      } as ReferenceDeploymentInput,
++      "configuration",
++    );
++    expect(open).not.toHaveBeenCalled();
++  },
++);
++it("refuses shared listener/limits/fixture/fault conflicts before opening and never invokes getters", async () => {
++  const f = fixture();
++  let getters = 0;
++  const invalid = [
++    { ...f.input, server: { ...f.input.server, port: 0 } },
++    { ...f.input, server: { ...f.input.server, host: "0.0.0.0" } },
++    {
++      ...f.input,
++      server: {
++        ...f.input.server,
++        limits: { ...f.input.server.limits, cursorTtlMilliseconds: 300000 },
++      },
++    },
++    { ...f.input, server: { ...f.input.server, internalFaultResource: `${scope}beads/fault` } },
++    { ...f.input, bdptest: { fixture: "minimal" } },
++    { ...f.input, deploymentFile: "relative" },
++    {
++      ...f.input,
++      get scope() {
++        getters++;
++        return { url: scope };
++      },
++    },
++    {
++      ...f.input,
++      server: new Proxy(f.input.server, {
++        ownKeys() {
++          getters++;
++          throw new Error("proxy trap");
++        },
++      }),
++    },
++  ];
++  for (const input of invalid) await failure(input, "configuration");
++  expect(getters).toBe(0);
++  expect(open).not.toHaveBeenCalled();
++  const txf = fixture("transactional");
++  await failure({ ...txf.input, server: { ...txf.input.server, host: "::1" } }, "configuration");
++});
++it("accepts the supported RU IPv6 intended listener", async () => {
++  const f = fixture();
++  expect(
++    (await loadReferenceDeployment({ ...f.input, server: { ...f.input.server, host: "::1" } }))
++      .listener.host,
++  ).toBe("::1");
++});
++it("refuses envelope extensions, wrong profile/format and Directory/descriptor wire shapes", async () => {
++  const f = fixture();
++  for (const body of [
++    { ...ru(f.directory), format: "other" },
++    { ...ru(f.directory), profile: "transactional" },
++    { profile: "read-update", configuration: ru(f.directory).configuration },
++    { ...ru(f.directory), scope },
++    { ...ru(f.directory), claimEligible: true },
++    { id: scope, resources: [] },
++    artifacts().descriptors[0],
++    {
++      ...ru(f.directory),
++      configuration: { ...ru(f.directory).configuration, listener: { host: "127.0.0.1", port: 1 } },
++    },
++  ]) {
++    f.write(body);
++    await failure(f.input, "contract");
++  }
++});
++it("delegates RU credential, policy, provisioning, artifact, locality and aggregate refusals", async () => {
++  const f = fixture(),
++    configuration = ru(f.directory).configuration;
++  for (const patch of [
++    { directory: "relative" },
++    { create: "true" },
++    { credentials: [] },
++    {
++      credentials: [
++        { token, principal: "writer" },
++        { token, principal: "reader" },
++      ],
++    },
++    { credentials: [{ token: "short", principal: "writer" }] },
++    { credentials: [{ token, principal: "writer", canMutate: true }] },
++    { policies: { writer: allow } },
++    { policies: { writer: { ...allow, unknown: true }, reader: allow } },
++    {
++      contracts: {
++        descriptors: [{ retrievalUri: `${scope}types/bad`, utf8: "payload_sentinel" }],
++        schemas: [],
++      },
++    },
++    {
++      contracts: {
++        descriptors: [],
++        schemas: [
++          { retrievalUri: `${scope}schemas/bad`, utf8: '{"$ref":"https://missing.test/schema"}' },
++        ],
++      },
++    },
++    {
++      contracts: {
++        descriptors: [
++          {
++            retrievalUri: "https://foreign.test/type",
++            utf8: JSON.stringify({
++              id: "https://foreign.test/type",
++              name: "Foreign",
++              describes: "bead",
++              conformsTo: [],
++            }),
++          },
++        ],
++        schemas: [],
++      },
++    },
++    {
++      maximumEndpointMultiplicity: [
++        { endpoint: "target", linkConformsTo: `${scope}types/absent`, max: 1 },
++      ],
++    },
++  ]) {
++    f.write({ ...ru(f.directory), configuration: { ...configuration, ...patch } });
++    await failure(f.input, "contract");
++  }
++  const invalid = artifacts();
++  invalid.descriptors[1]!.utf8 = JSON.stringify({
++    id: `${scope}types/owner`,
++    name: "Owner",
++    describes: "bead",
++    conformsTo: [],
++    ownsOutgoing: { [`${scope}types/missing`]: { max: 2 } },
++  });
++  f.write({ ...ru(f.directory), configuration: { ...configuration, contracts: invalid } });
++  await failure(f.input, "contract");
++});
++it("delegates TX exact credential and compiled closure refusals", async () => {
++  const f = fixture("transactional"),
++    body = tx(f.directory);
++  for (const patch of [
++    { policies: {} },
++    { directory: "relative" },
++    { create: 1 },
++    { credentials: [] },
++    {
++      credentials: [
++        { token, principal: "same", canMutate: true },
++        { token, principal: "same", canMutate: false },
++      ],
++    },
++    { credentials: [{ token, principal: "same", canMutate: "yes" }] },
++    { artifacts: { descriptors: [], schemas: [] } },
++    {
++      artifacts: {
++        ...artifacts(),
++        schemas: [{ retrievalUri: `${scope}schemas/item`, utf8: "payload_sentinel" }],
++      },
++    },
++    {
++      artifacts: {
++        descriptors: [
++          {
++            retrievalUri: `${scope}types/missing`,
++            utf8: JSON.stringify({
++              id: `${scope}types/missing`,
++              name: "Missing",
++              describes: "bead",
++              conformsTo: [`${scope}types/absent`],
++            }),
++          },
++        ],
++        schemas: [],
++      },
++    },
++  ]) {
++    f.write({ ...body, configuration: { ...body.configuration, ...patch } });
++    await failure(f.input, "contract");
++  }
++});
++it("rejects malformed UTF8, BOM, escaped duplicate names, lone surrogates and unsafe numbers without echo", async () => {
++  const f = fixture();
++  for (const text of [
++    Buffer.from([0xc3, 0x28]),
++    Buffer.from(`\ufeff${JSON.stringify(ru(f.directory))}`),
++    '{"format":1,"fo\\u0072mat":2}',
++    '{"payload_sentinel":"\\ud800"}',
++    '{"unsafe_key_sentinel":9007199254740993,"other":1e9999}',
++  ]) {
++    writeFileSync(f.input.deploymentFile, text);
++    await failure(f.input, "syntax");
++  }
++});
++it("bounds the lossless tree before numeric admission and treats number literals as atomic", async () => {
++  const f = fixture();
++  const nested = (count: number, leaf: string) => "[".repeat(count) + leaf + "]".repeat(count);
++  writeFileSync(f.input.deploymentFile, `{"extra":${nested(15, "1")}}`);
++  await failure(f.input, "contract"); // Number at depth16, not its private literal property at17.
++  writeFileSync(f.input.deploymentFile, `{"extra":${nested(16, "9007199254740993")}}`);
++  await failure(f.input, "bounds");
++  // Root object + child array + 99998 atomic values = exactly100000 nodes.
++  f.write({ extra: Array.from({ length: 99998 }, () => 1) });
++  await failure(f.input, "contract");
++  f.write({ extra: Array.from({ length: 99999 }, () => 1) });
++  await failure(f.input, "bounds");
++});
++it("isolates the outer byte ceiling with a valid small envelope and legal trailing whitespace", async () => {
++  const f = fixture(),
++    inner = JSON.stringify(ru(f.directory));
++  writeFileSync(
++    f.input.deploymentFile,
++    inner + " ".repeat(32 * 1024 * 1024 + 1 - Buffer.byteLength(inner)),
++  );
++  await failure(f.input, "bounds");
++  expect(existsSync(f.directory)).toBe(false);
++});
++it("closes the single real descriptor on success and syntax/contract failures", async () => {
++  const f = fixture();
++  for (const body of [ru(f.directory), "bad-json", { invalid: true }]) {
++    let closeCalls = 0;
++    vi.mocked(open).mockImplementationOnce(async (...args) => {
++      const handle = await realFs.open(...args),
++        close = handle.close.bind(handle);
++      vi.spyOn(handle, "close").mockImplementation(async () => {
++        closeCalls++;
++        await close();
++      });
++      return handle;
++    });
++    if (body === "bad-json") writeFileSync(f.input.deploymentFile, "bad-json");
++    else f.write(body);
++    if (typeof body === "string") await failure(f.input, "syntax");
++    else if ("invalid" in body) await failure(f.input, "contract");
++    else await loadReferenceDeployment(f.input);
++    expect(closeCalls).toBe(1);
++  }
++});
++it("bounds reads despite stale stat and closes handles on overflow/read failure/non-file", async () => {
++  const f = fixture();
++  for (const mode of ["growth", "read-error", "special"] as const) {
++    let total = 0;
++    const close = vi.fn(async () => {});
++    const read = vi.fn(async (_buffer: Buffer, _offset: number, length: number) => {
++      if (mode === "read-error") throw new Error(`payload_sentinel ${token}`);
++      total += length;
++      return { bytesRead: length };
++    });
++    vi.mocked(open).mockResolvedValueOnce({
++      stat: async () => ({ isFile: () => mode !== "special", size: 1 }),
++      read,
++      close,
++    } as unknown as FileHandle);
++    await failure(f.input, mode === "growth" ? "bounds" : "file");
++    expect(close).toHaveBeenCalledTimes(1);
++    if (mode === "growth") expect(total).toBe(32 * 1024 * 1024 + 1);
++    if (mode === "special") expect(read).not.toHaveBeenCalled();
++  }
++  await failure({ ...f.input, deploymentFile: path.join(f.root, "missing") }, "file");
++});
++it("exports only the loader and local error constructor from the public data entry", () => {
++  expect(Object.keys(publicEntry).sort()).toEqual([
++    "ReferenceDeploymentError",
++    "loadReferenceDeployment",
++  ]);
++});
+diff --git a/packages/server/src/reference-deployment.ts b/packages/server/src/reference-deployment.ts
+new file mode 100644
+index 0000000000000000000000000000000000000000..53861f100d0aa86805d2d8be301bafdaf5e63063
+--- /dev/null
++++ b/packages/server/src/reference-deployment.ts
+@@ -0,0 +1,345 @@
++/** Trusted local data preparation only. No store, listener or profile admission. */
++import { createHash } from "node:crypto";
++import { constants } from "node:fs";
++import { open } from "node:fs/promises";
++import path from "node:path";
++import { isDeepStrictEqual } from "node:util";
++import { isProxy } from "node:util/types";
++import {
++  admitJsonNumbers,
++  decodeJsonDocument,
++  JsonNumberLiteral,
++  parseCanonicalScope,
++  type LosslessJsonValue,
++} from "@bdp/protocol";
++import { administrativeData } from "./development-contracts.js";
++import { DEVELOPMENT_READ_LIMITS } from "./development-authority.js";
++import { captureInstalledReferenceConfiguration } from "./installed-reference-configuration.js";
++import { registerReferenceDeployment } from "./reference-deployment-state.js";
++import { captureInstalledTransactionConfiguration } from "./transaction-installed-configuration.js";
++import {
++  captureTransactionRuntimeConfiguration,
++  TRANSACTION_RUNTIME_DEFAULTS,
++} from "./transaction-runtime-configuration.js";
++
++export interface ReferenceDeploymentReadLimits {
++  readonly page: { readonly defaultItems: number; readonly maximumItems: number };
++  readonly selector: { readonly bytes: number; readonly depth: number; readonly nodes: number };
++  readonly cursorTtlMilliseconds: number;
++}
++export interface ReferenceDeploymentInput {
++  readonly deploymentFile: string;
++  readonly scope: { readonly url: string };
++  readonly server: {
++    readonly host: string;
++    readonly port: number;
++    readonly advertisedProfile?: string;
++    readonly limits: ReferenceDeploymentReadLimits;
++    readonly internalFaultResource?: string;
++  };
++  readonly bdptest?: { readonly fixture?: string };
++}
++interface PreparedSummary {
++  readonly format: "bdptest-reference-deployment-1";
++  readonly canonicalScope: string;
++  readonly listener: { readonly host: string; readonly port: number };
++  /** Code/capture comparison only; persisted owner readback remains mandatory. */
++  readonly preflightReadLimits: ReferenceDeploymentReadLimits;
++  readonly artifactIdentity: string;
++  readonly fileDigest: string;
++}
++export interface PreparedReadUpdateDeployment extends PreparedSummary {
++  readonly profile: "read-update";
++  readonly configurationIdentity: string;
++  readonly policyIdentity: string;
++  readonly authenticationIdentity: string;
++}
++export interface PreparedTransactionalDeployment extends PreparedSummary {
++  readonly profile: "transactional";
++}
++export type PreparedReferenceDeployment =
++  | PreparedReadUpdateDeployment
++  | PreparedTransactionalDeployment;
++export type ReferenceDeploymentErrorCode =
++  | "configuration"
++  | "file"
++  | "bounds"
++  | "syntax"
++  | "contract"
++  | "internal";
++const messages: Readonly<Record<ReferenceDeploymentErrorCode, string>> = Object.freeze({
++  configuration: "unsupported reference deployment startup configuration",
++  file: "reference deployment requires a readable ordinary file",
++  bounds: "reference deployment exceeds a preparation bound",
++  syntax: "reference deployment requires strict UTF8 JSON with supported numbers",
++  contract: "invalid reference deployment contract",
++  internal: "reference deployment preparation failed",
++});
++export class ReferenceDeploymentError extends Error {
++  readonly code: ReferenceDeploymentErrorCode;
++  constructor(code: ReferenceDeploymentErrorCode) {
++    super(messages[code]);
++    this.name = "ReferenceDeploymentError";
++    this.code = code;
++  }
++}
++function refuse(code: ReferenceDeploymentErrorCode): never {
++  throw new ReferenceDeploymentError(code);
++}
++/** Optional fields follow the same plain, own-data discipline as exact fields. */
++function fields(value: unknown, required: readonly string[], optional: readonly string[] = []) {
++  if (!value || typeof value !== "object" || isProxy(value)) refuse("configuration");
++  const keys = Reflect.ownKeys(value);
++  if (keys.some((key) => typeof key !== "string" || ![...required, ...optional].includes(key)))
++    refuse("configuration");
++  const data = administrativeData(value, keys as string[]);
++  if (required.some((key) => !Object.hasOwn(data, key))) refuse("configuration");
++  return data;
++}
++function filePath(value: unknown): string {
++  if (
++    typeof value !== "string" ||
++    !value.length ||
++    !value.isWellFormed() ||
++    !path.isAbsolute(value) ||
++    /[\u0000-\u001f\u007f-\u009f]/u.test(value) ||
++    Buffer.byteLength(value) > 16384
++  )
++    refuse("configuration");
++  return value;
++}
++function limitsSnapshot(value: unknown): ReferenceDeploymentReadLimits {
++  const own = administrativeData(value, ["page", "selector", "cursorTtlMilliseconds"]);
++  const page = administrativeData(own.page, ["defaultItems", "maximumItems"]);
++  const selector = administrativeData(own.selector, ["bytes", "depth", "nodes"]);
++  const values = [
++    page.defaultItems,
++    page.maximumItems,
++    selector.bytes,
++    selector.depth,
++    selector.nodes,
++    own.cursorTtlMilliseconds,
++  ];
++  if (values.some((v) => !Number.isSafeInteger(v) || (v as number) < 1)) refuse("configuration");
++  return Object.freeze({
++    page: Object.freeze({
++      defaultItems: page.defaultItems as number,
++      maximumItems: page.maximumItems as number,
++    }),
++    selector: Object.freeze({
++      bytes: selector.bytes as number,
++      depth: selector.depth as number,
++      nodes: selector.nodes as number,
++    }),
++    cursorTtlMilliseconds: own.cursorTtlMilliseconds as number,
++  });
++}
++function snapshot(input: unknown) {
++  const own = fields(input, ["deploymentFile", "scope", "server"], ["bdptest"]);
++  const scope = administrativeData(own.scope, ["url"]);
++  if (typeof scope.url !== "string") refuse("configuration");
++  const canonicalScope = parseCanonicalScope(scope.url);
++  const server = fields(
++    own.server,
++    ["host", "port", "limits"],
++    ["advertisedProfile", "internalFaultResource"],
++  );
++  const profile = server.advertisedProfile;
++  if (profile !== "read-update" && profile !== "transactional") refuse("configuration");
++  if (Object.hasOwn(server, "internalFaultResource")) refuse("configuration");
++  if (own.bdptest !== undefined && Object.hasOwn(fields(own.bdptest, [], ["fixture"]), "fixture"))
++    refuse("configuration");
++  if (
++    typeof server.host !== "string" ||
++    !(profile === "read-update" ? ["127.0.0.1", "::1"] : ["127.0.0.1"]).includes(server.host) ||
++    !Number.isSafeInteger(server.port) ||
++    (server.port as number) < 1 ||
++    (server.port as number) > 65535
++  )
++    refuse("configuration");
++  const limits = limitsSnapshot(server.limits);
++  const tx = TRANSACTION_RUNTIME_DEFAULTS;
++  const expected =
++    profile === "read-update"
++      ? DEVELOPMENT_READ_LIMITS
++      : {
++          page: {
++            defaultItems: Math.min(tx.readDefaultItems, tx.receiptMaximumItems),
++            maximumItems: tx.receiptMaximumItems,
++          },
++          selector: tx.selector,
++          cursorTtlMilliseconds: tx.pagination.cursorTtlMs,
++        };
++  if (!isDeepStrictEqual(limits, expected)) refuse("configuration");
++  return Object.freeze({
++    deploymentFile: filePath(own.deploymentFile),
++    canonicalScope,
++    profile,
++    listener: Object.freeze({ host: server.host, port: server.port as number }),
++    limits,
++  });
++}
++const MAXIMUM_FILE_BYTES = 32 * 1024 * 1024;
++async function readDeployment(file: string): Promise<Buffer> {
++  // Nonblocking open permits rejecting special files before any read can block.
++  const handle = await open(file, constants.O_RDONLY | constants.O_NONBLOCK);
++  try {
++    const stat = await handle.stat();
++    if (!stat.isFile()) refuse("file");
++    if (stat.size > MAXIMUM_FILE_BYTES) refuse("bounds");
++    const bytes = Buffer.alloc(MAXIMUM_FILE_BYTES + 1);
++    let length = 0;
++    while (length < bytes.length) {
++      const result = await handle.read(bytes, length, Math.min(65536, bytes.length - length), null);
++      if (result.bytesRead === 0) break;
++      length += result.bytesRead;
++    }
++    if (length > MAXIMUM_FILE_BYTES) refuse("bounds");
++    return bytes.subarray(0, length);
++  } finally {
++    await handle.close();
++  }
++}
++/** Iterate decoded children without constructing a sibling value/task array. */
++function* losslessChildren(
++  value: readonly LosslessJsonValue[] | { readonly [key: string]: LosslessJsonValue },
++): Generator<LosslessJsonValue> {
++  if (Array.isArray(value)) {
++    yield* value;
++    return;
++  }
++  for (const key in value) {
++    const child = (value as { readonly [key: string]: LosslessJsonValue })[key];
++    if (child === undefined) refuse("internal");
++    yield child;
++  }
++}
++function boundLossless(root: LosslessJsonValue): void {
++  const frames: { children: Iterator<LosslessJsonValue>; depth: number }[] = [];
++  let nodes = 0;
++  const discover = (value: LosslessJsonValue, depth: number): void => {
++    // Charge each discovered value before scheduling any of its children.
++    if (++nodes > 100000 || depth > 16) refuse("bounds");
++    if (value !== null && typeof value === "object" && !(value instanceof JsonNumberLiteral))
++      frames.push({ children: losslessChildren(value), depth });
++  };
++  discover(root, 0);
++  for (let frame = frames.at(-1); frame !== undefined; frame = frames.at(-1)) {
++    const child = frame.children.next();
++    if (child.done) frames.pop();
++    else discover(child.value, frame.depth + 1);
++  }
++}
++function immutable<T>(value: T): T {
++  if (value !== null && typeof value === "object") {
++    for (const child of Object.values(value)) immutable(child);
++    Object.freeze(value);
++  }
++  return value;
++}
++/** The byte ceiling is the sole predecode bound. The strict decoder allocates
++ * its lossless tree before the iterative depth/node checks below. Trusted local
++ * input accepts that bounded-byte allocation/work risk. */
++export async function loadReferenceDeployment(
++  input: ReferenceDeploymentInput,
++): Promise<PreparedReferenceDeployment> {
++  let phase: ReferenceDeploymentErrorCode = "configuration";
++  try {
++    const startup = snapshot(input);
++    phase = "file";
++    const bytes = await readDeployment(startup.deploymentFile);
++    phase = "syntax";
++    // Keep BOM visible to the existing strict JSON decoder.
++    const lossless = decodeJsonDocument(
++      new TextDecoder("utf-8", { fatal: true, ignoreBOM: true }).decode(bytes),
++    );
++    boundLossless(lossless);
++    const admitted = admitJsonNumbers(lossless, {
++      diagnostics: 1,
++      diagnostic: () => ({ message: "unsupported reference deployment number" }),
++    });
++    if (!admitted.ok) refuse("syntax");
++    phase = "contract";
++    const envelope = administrativeData(admitted.value, ["format", "profile", "configuration"]);
++    if (
++      envelope.format !== "bdptest-reference-deployment-1" ||
++      envelope.profile !== startup.profile
++    )
++      refuse("contract");
++    const fileDigest = createHash("sha256").update(bytes).digest("hex");
++    const summary = {
++      format: "bdptest-reference-deployment-1" as const,
++      canonicalScope: startup.canonicalScope,
++      listener: startup.listener,
++      preflightReadLimits: startup.limits,
++      fileDigest,
++    };
++    if (startup.profile === "read-update") {
++      const configuration = administrativeData(envelope.configuration, [
++        "directory",
++        "create",
++        "credentials",
++        "policies",
++        "contracts",
++        "maximumEndpointMultiplicity",
++      ]);
++      const projectedInput = immutable({
++        scope: startup.canonicalScope,
++        listener: startup.listener,
++        ...configuration,
++      });
++      const installed = captureInstalledReferenceConfiguration(projectedInput);
++      const handle: PreparedReadUpdateDeployment = Object.freeze({
++        ...summary,
++        profile: "read-update",
++        artifactIdentity: installed.artifactIdentity,
++        configurationIdentity: installed.identity,
++        policyIdentity: installed.policyIdentity,
++        authenticationIdentity: installed.authenticationIdentity,
++      });
++      phase = "internal";
++      registerReferenceDeployment(handle, { profile: "read-update", projectedInput, installed });
++      return handle;
++    }
++    const configuration = administrativeData(envelope.configuration, [
++      "directory",
++      "create",
++      "credentials",
++      "artifacts",
++    ]);
++    const projectedInput = immutable({ scope: startup.canonicalScope, ...configuration });
++    const installed = captureInstalledTransactionConfiguration(projectedInput);
++    const preflight = captureTransactionRuntimeConfiguration(installed);
++    if (
++      preflight.contracts === undefined ||
++      preflight.authorityMode !== "canonical" ||
++      preflight.configuredScope !== startup.canonicalScope ||
++      Object.keys(preflight.seams).length !== 0 ||
++      !preflight.liveStreamsAvailable ||
++      preflight.settings.changefeedStream.heartbeatMilliseconds >=
++        preflight.settings.transport.timeout ||
++      !isDeepStrictEqual(
++        preflight.readOptions(startup.canonicalScope).advertisedLimits,
++        startup.limits,
++      )
++    )
++      refuse("contract");
++    const handle: PreparedTransactionalDeployment = Object.freeze({
++      ...summary,
++      profile: "transactional",
++      artifactIdentity: preflight.contracts.identity,
++    });
++    phase = "internal";
++    registerReferenceDeployment(handle, {
++      profile: "transactional",
++      projectedInput,
++      installed,
++      preflight,
++    });
++    return handle;
++  } catch (error) {
++    if (error instanceof ReferenceDeploymentError) throw error;
++    // Neither causes nor parser/filesystem/compiler details cross this local boundary.
++    throw new ReferenceDeploymentError(phase);
++  }
++}

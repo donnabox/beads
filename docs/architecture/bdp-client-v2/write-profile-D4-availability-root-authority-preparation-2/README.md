@@ -1,0 +1,5 @@
+# CLOSED H5 availability caller2 / native authority preparation
+
+This is author-only caller2 under root releasefb88fb46/durable0eceaf19. capture.py is the149-line caller1 body with ONLY literal H4→H5 source root and FUTURE_RELEASE1→2 substitutions. No error/logging/clock/cap/stdio/ownership logic changes. The exact10-key native candidate pins accepted H5 native09f823 and static root155ccfa directly with implementation7e5ec687; no clock proof is invented.
+
+Both new attempt directories and future14-key external release2 are ABSENT. Control/product gates remain false. FULL OTHER-native/root caller+authority acceptance, durable publication and separately reviewed14-key actual root authority are required before ONE new H5 availability invocation. H4 is never retried/relabelled. Read report.md, source-body-proof.json, execution-release-schema.json, capture-contract.json, history-inplace.json and genuine deltas. All actual H5 clock/masks/signals/PIPE/timing/cleanup facts UNKNOWN. No evaluation occurred.

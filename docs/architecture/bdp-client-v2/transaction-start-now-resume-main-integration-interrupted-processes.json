@@ -1,0 +1,32 @@
+[
+  [
+    "93095",
+    "13216",
+    "01:26",
+    "/opt/homebrew/Cellar/python@3.14/3.14.5/Frameworks/Python.framework/Versions/3.14/Resources/Python.app/Contents/MacOS/Python /Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-start-now-resume-main-integration/validate.py"
+  ],
+  [
+    "93200",
+    "93095",
+    "01:25",
+    "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node /Users/dbox/.cache/node/corepack/v1/pnpm/11.20.0/bin/pnpm.cjs exec vitest run packages/server/src/transaction-sse.test.ts packages/server/src/transaction-changefeed.test.ts packages/server/src/transaction-http.test.ts packages/server/src/transaction-event-sse.test.ts packages/conformance/src/transactional-catalog.test.ts packages/conformance/src/profile-catalog-boundaries.test.ts packages/conformance/src/transactional-cumulative.test.ts packages/conformance/src/cumulative-artifact.test.ts apps/bdptest/src/transactional-matrix.test.ts --maxWorkers=2 --reporter=verbose --reporter=json --outputFile.json=/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-start-now-resume-main-integration/focused.json"
+  ],
+  [
+    "93201",
+    "93200",
+    "01:25",
+    "node ./node_modules/.bin/../vitest/vitest.mjs run packages/server/src/transaction-sse.test.ts packages/server/src/transaction-changefeed.test.ts packages/server/src/transaction-http.test.ts packages/server/src/transaction-event-sse.test.ts packages/conformance/src/transactional-catalog.test.ts packages/conformance/src/profile-catalog-boundaries.test.ts packages/conformance/src/transactional-cumulative.test.ts packages/conformance/src/cumulative-artifact.test.ts apps/bdptest/src/transactional-matrix.test.ts --maxWorkers=2 --reporter=verbose --reporter=json --outputFile.json=/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-start-now-resume-main-integration/focused.json"
+  ],
+  [
+    "93211",
+    "93201",
+    "01:24",
+    "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node --experimental-import-meta-resolve --require /Users/dbox/repos/wt/vickie/vickie-start-now-resume/node_modules/.pnpm/vitest@4.1.10_@types+node@24.13.3_vite@8.2.1_@types+node@24.13.3_/node_modules/vitest/suppress-warnings.cjs --conditions node --conditions development /Users/dbox/repos/wt/vickie/vickie-start-now-resume/node_modules/.pnpm/vitest@4.1.10_@types+node@24.13.3_vite@8.2.1_@types+node@24.13.3_/node_modules/vitest/dist/workers/forks.js"
+  ],
+  [
+    "93958",
+    "93211",
+    "00:00",
+    "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node /Users/dbox/repos/wt/vickie/vickie-start-now-resume/packages/server/dist/transaction-installed-process.js"
+  ]
+]

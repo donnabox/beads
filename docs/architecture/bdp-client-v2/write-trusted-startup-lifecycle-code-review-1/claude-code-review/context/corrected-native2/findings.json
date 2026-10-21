@@ -1,0 +1,47 @@
+{
+  "acceptedStaticNative": true,
+  "findings": [],
+  "originalFindingsClosed": [
+    {
+      "id": "N1",
+      "accepted": true,
+      "file": "apps/bdptest/src/reference-deployment-lifecycle-installed.test.ts",
+      "lines": [
+        1362,
+        1394
+      ],
+      "proof": "I20 explicit final3 and I21 explicit final1 now reach cohort guardChildren expected count; all four actual launches and original two public-refusal generations preserved."
+    },
+    {
+      "id": "N2",
+      "accepted": true,
+      "file": "apps/bdptest/src/reference-deployment-lifecycle-installed.test.ts",
+      "lines": [
+        180,
+        226,
+        395,
+        479,
+        753,
+        858,
+        1245,
+        1276
+      ],
+      "proof": "All7 returned parent acquisition expression sites immediately enter withParentOwner before body read/parse/write/await: RUprobe/RUinitialize/TXprobe/TXinitialize/raw-resource-read/raw-capture-edit/raw-capture-restore. Work uses observed finally close; original value.close called once through memoized promise; success/settlement distinct; primary plus cleanup error aggregate without raw diagnostic serialization. Timeout or rejection is sticky uncertainty. cleanupParents starts concurrently with child cleanup and shares existing absolute cleanupEnd, observing same close promises without renewed10s/retries. parentOwnershipKnown participates in directory-removal condition; unknown remains retained even if late close fulfills."
+    },
+    {
+      "id": "N3",
+      "accepted": true,
+      "file": "packages/server/src/reference-deployment-runtime.test.ts",
+      "lines": [
+        91,
+        110,
+        247,
+        278,
+        821,
+        821
+      ],
+      "proof": "sqlStart captured at each beforeEach; callbackSQLite slice used in both source observation records, current cleanup judgment and S10. Previous unresolved rows are separately serialized from prefix and not cleared; prior roots remain detached/retained independently. No historical unknown contaminates current cleanup."
+    }
+  ],
+  "runtimeClosureProven": false
+}

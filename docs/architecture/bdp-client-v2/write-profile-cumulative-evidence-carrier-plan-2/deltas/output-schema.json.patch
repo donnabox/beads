@@ -1,0 +1,46 @@
+--- plan1/output-schema.json
++++ plan2/output-schema.json
+@@ -38,5 +38,42 @@
+     "reported cleanup is not verified child/owner closure",
+     "final combined basis unbound; incoming startup/D3a not adopted"
+   ],
+-  "canonicalEncoding": "canonicalJson from existing module then UTF8, SHA256 raw serialized bytes; verify canonical bytes exactly and recompute every projection from independently supplied bound inputs/reports, rather than trust candidate counters/flags."
++  "canonicalEncoding": "canonicalJson from existing module then UTF8, SHA256 raw serialized bytes; verify canonical bytes exactly and recompute every projection from independently supplied bound inputs/reports, rather than trust candidate counters/flags.",
++  "unboundAttemptSchema": {
++    "kind": "private-profile-attempt-unbound",
++    "attemptVersion": 1,
++    "bindingStatus": "unbound",
++    "configuration": null,
++    "claimEligible": false,
++    "qualificationReady": false,
++    "closedKeys": [
++      "attemptVersion",
++      "kind",
++      "bindingStatus",
++      "claimEligible",
++      "qualificationReady",
++      "requestedProfile",
++      "declaredSourceCommit",
++      "artifactDigests",
++      "requiredIds",
++      "owners",
++      "observations",
++      "attempt",
++      "limitations"
++    ],
++    "requestedProfile": "read-update (requested canonical selection only, never claimed observed profile)",
++    "declaredSourceCommit": "existing writer sourceCommit, not a runtime-read source claim",
++    "artifactDigests": "existing branded RU set.digests only; no fabricated installed/auth/policy/runtime configuration digests",
++    "requiredIds": "complete canonical130 IDs from existing set, canonical order",
++    "owners": "existing set.requirements owner/null map",
++    "observations": "one null for every required ID; no fake rowIndex/report digest/pass or vacuous assertion credit",
++    "attempt": "existing safe owner run/cleanup/evidence/outcome/failure stages/timing only; attempted versus acquired remains honest",
++    "limitations": [
++      "no returned served configuration yet",
++      "not a bound carrier, target observation, admission or qualification"
++    ],
++    "transition": "first secret-safe genuine returned(index,report) with validated existing bound configuration permits BOUND ProfileEvidenceV1; pending/absent other reports stay null; every later report must match first binding. Until then failures remain unbound permanently, no successful summary."
++  },
++  "stoppedRows": "Actual stopped remainder is harness-error/not-run for every remaining selected ID, including absent plans/diagnostics. Reached missing plans are harness-error/not-implemented. Preserve category/index/order/empty exchanges; both no-credit and authoredAssertionsAllPassed:null, never every([])=true.",
++  "TXRawWrapperIdentity": "rawWrapperSha256 = SHA256 of the exact one UTF8 serialization owned by positive onObserved, including original indentation/newline/fields. canonicalResultSha256 remains separately named derived digest; neither minimal {result,sessions,baseline} nor guessed/reformatted file may be labelled raw wrapper."
+ }

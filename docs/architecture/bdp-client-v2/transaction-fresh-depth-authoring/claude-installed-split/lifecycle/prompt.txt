@@ -1,0 +1,986 @@
+Review only; do not write or modify any files. Output findings only in stdout. Use inline source first; Read/Glob/Grep are allowed solely for narrow missing dependencies. Do not run commands/tests, delegate, or reread entire large files. Return a complete concise standalone numbered list (severity, exact file/line, concrete defect, impact, minimal fix), or explicitly no actionable findings. Target under 1500 words, no praise, no omitted beginning, no general whole-project audit.
+
+This is a new focused review after an earlier whole-file review ended at its 895-second bound with no output; that earlier result is inconclusive, not approval. Two complementary review scopes run concurrently; do not duplicate the other's scope. Production removes a private JSON depth guard, adds iterative JSON equality/receipt freeze and replaces SQLite receipt JSON filtering with existing JS receipt parsing. Other reviewers cover production. This target is the one private installed witness below, currently unexecuted. Required expected request count13, one runtime child, work45s/cleanup10s/test60s, receive cap1MiB (not production-limit increase), request64KiB, no retries. Full file SHA/source dependency hashes are bound; Git HEAD may advance via root's ordinary integration/commit while these exact source bytes must remain unchanged.
+
+YOUR EXCLUSIVE SCOPE: Only Type/schema fixture compatibility, entry/provenance/setup/credentials, raw transport binding, deadlines and startup/close/temp cleanup, failure/report retention. Do not re-review the 13 semantic Resource/Event/receipt oracles; the complementary reviewer owns those. The witness is private/non-attesting; qualification requires a fresh external installed entry and declared source, while ordinary development fallback remains allowed.
+
+
+### apps/bdptest/src/transactional-fresh-depth-installed.test.ts, original lines 1-99
+```typescript
+1: /** Finite private deep-value observation; no public profile qualification. */
+2: import { execFileSync, type ChildProcess } from "node:child_process";
+3: import { createHash, randomBytes } from "node:crypto";
+4: import { existsSync, mkdtempSync, readFileSync, realpathSync, rmSync } from "node:fs";
+5: import { tmpdir } from "node:os";
+6: import path from "node:path";
+7: import { fileURLToPath } from "node:url";
+8: import { expect, it } from "vitest";
+9: import { Ajv2020 } from "ajv/dist/2020.js";
+10: import { isJsonSchemaDateTime, isJsonSchemaUri } from "@bdp/protocol";
+11: import { createRawHttpExchangeExecutor, type HttpMethod } from "@bdp/conformance";
+12: import { installedTransactionBinding } from "../test-support/transactional-execution-binding.js";
+13: 
+14: const root = fileURLToPath(new URL("../../../", import.meta.url));
+15: const { launchInstalledTransaction } = (await import(
+16:   new URL("../../../scripts/transaction-installed-observation.mjs", import.meta.url).href
+17: )) as {
+18:   launchInstalledTransaction(
+19:     entry: string,
+20:     configuration: unknown,
+21:     signal?: AbortSignal,
+22:   ): Promise<{
+23:     child: ChildProcess;
+24:     ready: Record<string, unknown>;
+25:     close(): Promise<void>;
+26:   }>;
+27: };
+28: const scope = "https://reference.invalid/acme/";
+29: const ownerType = `${scope}types/owner`;
+30: const linkType = `${scope}types/link`;
+31: const artifacts = {
+32:   descriptors: [
+33:     {
+34:       retrievalUri: "https://reference.invalid/acme/types/owner",
+35:       utf8: '{"id":"https://reference.invalid/acme/types/owner","name":"Owner","describes":"bead","conformsTo":[],"ownsOutgoing":{"https://reference.invalid/acme/types/link":{"max":4}},"propertiesSchema":"https://reference.invalid/acme/schemas/fresh-depth"}',
+36:     },
+37:     {
+38:       retrievalUri: "https://reference.invalid/acme/types/link",
+39:       utf8: '{"id":"https://reference.invalid/acme/types/link","name":"Link","describes":"link","conformsTo":[],"source":{"conformsTo":[],"external":"none"},"target":{"conformsTo":[],"external":"none"},"propertiesSchema":"https://reference.invalid/acme/schemas/fresh-depth"}',
+40:     },
+41:   ],
+42:   schemas: [
+43:     {
+44:       retrievalUri: "https://reference.invalid/acme/schemas/fresh-depth",
+45:       utf8: '{"$id":"https://reference.invalid/acme/schemas/fresh-depth","type":"object","properties":{"n":{"type":"number"},"deep":true},"additionalProperties":true}',
+46:     },
+47:   ],
+48: };
+49: const entry =
+50:   process.env.BDP_TRANSACTIONAL_INSTALLED_ENTRY ??
+51:   path.join(root, "packages/server/dist/transaction-installed-process.js");
+52: if (process.env.BDP_TRANSACTIONAL_INSTALLED_ENTRY && !process.env.BDP_TRANSACTIONAL_SOURCE_COMMIT)
+53:   throw new Error("installed fresh depth entry override requires declared source commit");
+54: const resolvedEntry = realpathSync(entry);
+55: const digest = (value: string | Uint8Array) => createHash("sha256").update(value).digest("hex");
+56: const entrySha256 = digest(readFileSync(resolvedEntry));
+57: const workspaceDirty =
+58:   execFileSync("git", ["status", "--porcelain"], { cwd: root, encoding: "utf8" }).length > 0;
+59: const sourceCommit =
+60:   process.env.BDP_TRANSACTIONAL_SOURCE_COMMIT ??
+61:   execFileSync("git", ["rev-parse", "HEAD"], { cwd: root, encoding: "utf8" }).trim();
+62: if (!/^[a-f0-9]{40}$/.test(sourceCommit)) throw new Error("invalid declared source commit");
+63: const fixture = {
+64:   bytes: readFileSync(
+65:     path.join(root, "packages/conformance/test-support/transactional/fixture-v1.json"),
+66:   ),
+67: };
+68: const ajv = new Ajv2020({ allErrors: true, strict: true });
+69: ajv.addFormat("uri", { type: "string", validate: isJsonSchemaUri });
+70: ajv.addFormat("date-time", { type: "string", validate: isJsonSchemaDateTime });
+71: const bundle = JSON.parse(readFileSync(path.join(root, "schemas/bdp-v0.schema.json"), "utf8"));
+72: ajv.addSchema(bundle);
+73: const validators = Object.fromEntries(
+74:   [
+75:     "mutationReceipt",
+76:     "transactionalSequenceResponse",
+77:     "linkRecord",
+78:     "eventPage",
+79:     "snapshotManifest",
+80:     "transactionalProblem",
+81:   ].map((name) => [name, ajv.compile({ $ref: `${bundle.$id}#/$defs/${name}` })]),
+82: );
+83: function record(value: unknown): Record<string, unknown> {
+84:   if (value === null || typeof value !== "object" || Array.isArray(value))
+85:     throw new Error("expected response record");
+86:   return value as Record<string, unknown>;
+87: }
+88: function records(value: unknown): Record<string, unknown>[] {
+89:   if (!Array.isArray(value)) throw new Error("expected response array");
+90:   return value.map(record);
+91: }
+92: function checked(text: string, schema: string) {
+93:   const value = record(JSON.parse(text)),
+94:     validate = validators[schema];
+95:   if (!validate) throw new Error("unbound response schema");
+96:   expect(validate(value), JSON.stringify(validate.errors)).toBe(true);
+97:   return value;
+98: }
+99: // Compare admitted JSON using an explicit worklist. Never pass deep values to a matcher.
+```
+
+### apps/bdptest/src/transactional-fresh-depth-installed.test.ts, original lines 349-542
+```typescript
+349: it("serves byte-bounded deep mutations receipts Events and owned-Link Snapshots over packed bytes", async () => {
+350:   const controller = new AbortController();
+351:   const deadlineReason = new Error("installed fresh depth work deadline");
+352:   let deadlineExceeded = false;
+353:   const deadline = setTimeout(() => {
+354:     deadlineExceeded = true;
+355:     controller.abort(deadlineReason);
+356:   }, 45000);
+357:   const failures: unknown[] = [];
+358:   let directory: string | undefined;
+359:   let child: Awaited<ReturnType<typeof launchInstalledTransaction>> | undefined;
+360:   let binding: ReturnType<typeof installedTransactionBinding> | undefined;
+361:   let closed = false;
+362:   let cleanupExceeded = false;
+363:   let attempted = 0;
+364:   let receiptTarget: string | undefined;
+365:   const responseSizes: number[] = [];
+366:   const prerequisites: string[] = [];
+367:   let expectedContext: readonly [string, string] | undefined;
+368:   const responses: {
+369:     ordinal: number;
+370:     label: string;
+371:     method: HttpMethod;
+372:     url: string;
+373:     targetBytes: number;
+374:     targetSha256: string;
+375:     accept: string;
+376:     key: string | null;
+377:     requestBodyBytes: number;
+378:     requestBodySha256: string;
+379:     status: number;
+380:     bodyOctets: number | undefined;
+381:     bodySha256: string;
+382:     wireSha256: string | null;
+383:     headers: Record<string, string | null>;
+384:   }[] = [];
+385:   const operator = randomBytes(32).toString("base64url");
+386:   const routeBindings: { method: HttpMethod; url: string }[] = [
+387:     ...new Map(
+388:       requests
+389:         .filter((row) => row.url !== null)
+390:         .map((row) => [`${row.method} ${row.url}`, { method: row.method, url: row.url as string }]),
+391:     ).values(),
+392:   ];
+393:   let launchAttempted = false;
+394:   try {
+395:     expect(requests).toHaveLength(13);
+396:     expect(requests.reduce((sum, row) => sum + row.bodyBytes, 0)).toBe(169821);
+397:     expect(Math.max(...requests.map((row) => row.bodyBytes))).toBe(48363);
+398:     for (const row of requests) {
+399:       const body = row.bodyRef === null ? "" : bodies[row.bodyRef];
+400:       expect(Buffer.byteLength(body), row.label).toBe(row.bodyBytes);
+401:       expect(digest(body), row.label).toBe(row.bodySha256);
+402:     }
+403:     sameJson(
+404:       { a: -0, b: deepValue },
+405:       { b: JSON.parse(deepText), a: 0 },
+406:       "independent deep oracle numeric and key-order equality",
+407:     );
+408:     // Qualification requires an explicit external executable; development fallback earns no such claim.
+409:     if (process.env.BDP_TRANSACTIONAL_INSTALLED_ENTRY) {
+410:       expect(workspaceDirty).toBe(false);
+411:       expect(path.relative(realpathSync(root), resolvedEntry).startsWith(`..${path.sep}`)).toBe(
+412:         true,
+413:       );
+414:     }
+415:     directory = mkdtempSync(path.join(tmpdir(), "bdp-fresh-depth-installed-"));
+416:     controller.signal.throwIfAborted();
+417:     launchAttempted = true;
+418:     child = await launchInstalledTransaction(
+419:       entry,
+420:       {
+421:         scope,
+422:         directory,
+423:         create: true,
+424:         artifacts,
+425:         credentials: [{ token: operator, principal: "writer", canMutate: true }],
+426:       },
+427:       controller.signal,
+428:     );
+429:     binding = installedTransactionBinding(child.ready, sourceCommit, fixture);
+430:     expect(child.ready.scope).toBe(scope);
+431:     expect(child.ready.claimEligible).toBe(false);
+432:     expect(child.ready.history).toBe(false);
+433:     expect(binding.operationTargets.sequence).toBe(`${scope}operations/sequence`);
+434:     expect(binding.operationTargets.createBead).toBe(`${scope}operations/create-bead`);
+435:     const address = new URL(child.ready.listenUrl as string);
+436:     const executor = (routes: { method: HttpMethod; url: string }[]) =>
+437:       createRawHttpExchangeExecutor(
+438:         { transport: "plain", host: address.hostname, port: Number(address.port) },
+439:         {
+440:           requestTimeoutMs: 5000,
+441:           maximumBodyBytes: 1048576,
+442:           maximumHeaderBytes: 65536,
+443:           exactMode: {
+444:             scope,
+445:             profile: "transactional",
+446:             routes,
+447:             maximumRequestHeaderBytes: 16384,
+448:             maximumRequestBodyBytes: 65536,
+449:             defaultCredentialRef: "operator",
+450:             credentialHandles: [{ id: "operator", headerNames: ["authorization"] }],
+451:             resolveCredentials: () => ({ authorization: `Bearer ${operator}` }),
+452:           },
+453:         },
+454:       );
+455:     async function exchange(index: number) {
+456:       const literal = requests[index - 1];
+457:       if (!literal) throw new Error("unbound fresh-depth request");
+458:       const url = literal.url ?? receiptTarget;
+459:       if (!url) throw new Error("validated receipt target unavailable");
+460:       const row = {
+461:         ...literal,
+462:         url,
+463:         body: literal.bodyRef === null ? null : bodies[literal.bodyRef],
+464:       };
+465:       if (!row) throw new Error("unbound installed fresh depth request");
+466:       controller.signal.throwIfAborted();
+467:       expect(attempted + 1, "installed fresh depth exact dispatch order").toBe(index);
+468:       expect(++attempted, "installed fresh depth dispatch bound").toBeLessThanOrEqual(13);
+469:       expect(Buffer.byteLength(row.url)).toBeLessThanOrEqual(8192);
+470:       if (index === 13) routeBindings.push({ method: "GET", url });
+471:       const response = await executor(routeBindings)({
+472:         method: row.method,
+473:         url: row.url,
+474:         signal: controller.signal,
+475:         credentialRef: "operator",
+476:         raw: {
+477:           headerLines: [
+478:             { name: "accept", value: row.accept },
+479:             ...(row.contentType === null ? [] : [{ name: "content-type", value: row.contentType }]),
+480:             ...(row.key === null ? [] : [{ name: "idempotency-key", value: row.key }]),
+481:           ],
+482:           ...(row.body === null ? {} : { bodyBytes: Buffer.from(row.body) }),
+483:         },
+484:       });
+485:       responseSizes.push(response.bodyOctets ?? -1);
+486:       // Safe response projection is retained before any status/schema assertion.
+487:       responses.push({
+488:         ordinal: attempted,
+489:         label: row.label,
+490:         method: row.method,
+491:         url: row.url,
+492:         targetBytes: Buffer.byteLength(row.url),
+493:         targetSha256: digest(row.url),
+494:         accept: row.accept,
+495:         key: row.key,
+496:         requestBodyBytes: row.bodyBytes,
+497:         requestBodySha256: row.bodySha256,
+498:         status: response.status,
+499:         bodyOctets: response.bodyOctets,
+500:         bodySha256: digest(response.bodyText),
+501:         wireSha256: response.wireResponseBytes ? digest(response.wireResponseBytes) : null,
+502:         headers: Object.fromEntries(
+503:           retainedHeaders.map((name) => [name, response.headers[name] ?? null]),
+504:         ),
+505:       });
+506:       expect(response.exactRequest?.source).toBe("raw-http1-serializer");
+507:       expect(response.exactRequest?.writeState).toBe("complete");
+508:       expect(response.url).toBe(row.url);
+509:       expect(response.exactRequest?.bodyPresent).toBe(row.body !== null);
+510:       expect(response.exactRequest?.bodyOctets).toBe(row.bodyBytes);
+511:       expect(response.exactRequest?.bodyDigest).toBe(
+512:         row.body === null ? undefined : row.bodySha256,
+513:       );
+514:       const headers = response.exactRequest?.headerLines ?? [];
+515:       const values = (name: string) =>
+516:         headers.filter((h) => h.name.toLowerCase() === name).map((h) => h.value);
+517:       expect(values("host")).toStrictEqual(["reference.invalid"]);
+518:       expect(values("accept")).toStrictEqual([row.accept]);
+519:       expect(values("content-type")).toStrictEqual(
+520:         row.contentType === null ? [] : [row.contentType],
+521:       );
+522:       expect(values("idempotency-key")).toStrictEqual(row.key === null ? [] : [row.key]);
+523:       expect(values("authorization").length).toBe(1);
+524:       expect(
+525:         values("authorization")[0] === `Bearer ${operator}`,
+526:         "exact credential serialization",
+527:       ).toBe(true);
+528:       expect(response.wireResponseBytes?.length).toBeGreaterThan(0);
+529:       expect(Number.isSafeInteger(response.bodyOctets)).toBe(true);
+530:       expect(response.bodyOctets).toBeGreaterThanOrEqual(0);
+531:       expect(response.bodyOctets).toBeLessThanOrEqual(1048576);
+532:       expect(Buffer.byteLength(response.bodyText)).toBe(response.bodyOctets);
+533:       expect(response.headers["x-bdp-development"]).toBe("non-attesting");
+534:       expect(response.headers["cache-control"]).toBe("private, no-store");
+535:       if (row.method === "POST") expect(response.headers.vary).toBe("Accept");
+536:       return response;
+537:     }
+538:     type Wire = Awaited<ReturnType<typeof exchange>>;
+539:     function status(response: Wire, expected: number, label: string) {
+540:       expect(response.status, `${label}:${JSON.stringify(responses.at(-1))}`).toBe(expected);
+541:     }
+542:     function context(response: Wire, position: string) {
+```
+
+### apps/bdptest/src/transactional-fresh-depth-installed.test.ts, original lines 879-991
+```typescript
+879:     expect(responses.map((row) => row.url)).toStrictEqual(
+880:       requests.map((row) => row.url ?? receiptTarget),
+881:     );
+882:     expect(responseSizes.every((bytes) => bytes >= 0 && bytes <= 1048576)).toBe(true);
+883:     controller.signal.throwIfAborted();
+884:   } catch (error) {
+885:     failures.push(error);
+886:   } finally {
+887:     controller.abort();
+888:     const cleanupReason = new Error("installed fresh depth cleanup deadline");
+889:     let cleanupReject: ((reason: Error) => void) | undefined;
+890:     const cleanupTimer = setTimeout(() => {
+891:       cleanupExceeded = true;
+892:       child?.child.kill("SIGKILL");
+893:       cleanupReject?.(cleanupReason);
+894:     }, 10000);
+895:     try {
+896:       if (child) {
+897:         await Promise.race([
+898:           child.close(),
+899:           new Promise<never>((_, reject) => {
+900:             // The cleanup timer also forces the owned child to stop on overrun.
+901:             cleanupReject = reject;
+902:           }),
+903:         ]);
+904:         closed = true;
+905:       }
+906:     } catch (error) {
+907:       failures.push(error);
+908:     } finally {
+909:       clearTimeout(cleanupTimer);
+910:     }
+911:     const stopped =
+912:       !launchAttempted ||
+913:       (child !== undefined && (child.child.exitCode !== null || child.child.signalCode !== null));
+914:     if (!stopped)
+915:       failures.push(
+916:         new Error(
+917:           child === undefined
+918:             ? "installed fresh depth child stop unproven"
+919:             : "installed fresh depth child remains active",
+920:         ),
+921:       );
+922:     if (child && stopped && (child.child.exitCode !== 0 || child.child.signalCode !== null))
+923:       failures.push(new Error("installed fresh depth child abnormal exit"));
+924:     try {
+925:       if (directory && stopped) rmSync(directory, { recursive: true, force: true });
+926:     } catch (error) {
+927:       failures.push(error);
+928:     }
+929:     const directoryAbsent = directory === undefined || !existsSync(directory);
+930:     if (stopped && !directoryAbsent)
+931:       failures.push(new Error("installed fresh depth directory remains"));
+932:     clearTimeout(deadline);
+933:     if (deadlineExceeded && !failures.includes(deadlineReason)) failures.push(deadlineReason);
+934:     try {
+935:       console.log(
+936:         JSON.stringify({
+937:           observation: "private-installed-fresh-depth",
+938:           outcome: failures.length === 0 ? "passed" : "failed",
+939:           // Supervisor attribution to archives/consumer, never child-attested Git provenance.
+940:           declaredSourceCommit: sourceCommit,
+941:           workspaceDirty,
+942:           entry: resolvedEntry,
+943:           entrySha256,
+944:           binding: binding
+945:             ? {
+946:                 served: binding.served,
+947:                 operationTargets: binding.operationTargets,
+948:                 authorityMode: binding.authorityMode,
+949:               }
+950:             : null,
+951:           routeBindings,
+952:           prerequisites,
+953:           responseBytesTotal: responseSizes.reduce((a, b) => a + b, 0),
+954:           responseBytesMaximum: Math.max(0, ...responseSizes),
+955:           qualifiedEntryRequested: Boolean(process.env.BDP_TRANSACTIONAL_INSTALLED_ENTRY),
+956:           artifactBytes:
+957:             artifacts.descriptors.reduce((n, d) => n + Buffer.byteLength(d.utf8), 0) +
+958:             artifacts.schemas.reduce((n, s) => n + Buffer.byteLength(s.utf8), 0),
+959:           attempted,
+960:           exchanges: responses.length,
+961:           completedResponses: responses,
+962:           deadlineExceeded,
+963:           cleanupExceeded,
+964:           closed,
+965:           launchAttempted,
+966:           startupCompleted: child !== undefined,
+967:           stopKnown: stopped,
+968:           childPid: child?.child.pid ?? null,
+969:           childExitCode: child?.child.exitCode ?? null,
+970:           childSignalCode: child?.child.signalCode ?? null,
+971:           directory: directory ?? null,
+972:           directoryAbsent,
+973:           failureCount: failures.length,
+974:           failureCategories: [
+975:             ...(deadlineExceeded ? ["work-deadline"] : []),
+976:             ...(cleanupExceeded ? ["cleanup-deadline"] : []),
+977:             ...(failures.length ? ["observation-or-cleanup"] : []),
+978:           ],
+979:           claimEligible: false,
+980:           retention:
+981:             "response fingerprints and selected safe headers; full receipt/resource equality assertions ran in memory; no raw Authorization retained",
+982:           startupLimitation:
+983:             "Before ready, no child handle is returned; startup cleanup is launcher-owned and independent supervisor process evidence remains required",
+984:         }),
+985:       );
+986:     } catch (error) {
+987:       failures.push(error);
+988:     }
+989:   }
+990:   if (failures.length === 1) throw failures[0];
+991:   if (failures.length > 1)
+```
+
+### apps/bdptest/test-support/transactional-execution-binding.ts, original lines 1-97
+```typescript
+1: import { isDeepStrictEqual } from "node:util";
+2: import { installedContractsDigest } from "./installed-contract-identity.js";
+3: /** Source-only installed binding. Runner retains sole receipt observation authority. */
+4: import { createHash } from "node:crypto";
+5: import {
+6:   createRawHttpScenarioTarget,
+7:   type ExactHttpModeOptions,
+8:   type ConformanceFixture,
+9:   type ExecutableScenario,
+10: } from "@bdp/conformance";
+11: import {
+12:   bindServedProfileConfiguration,
+13:   assertSameServedProfileConfiguration,
+14:   type TransactionalRunContext,
+15:   type TransactionalSession,
+16: } from "@bdp/conformance/testing";
+17: export interface InstalledTransactionChild {
+18:   readonly ready: Record<string, unknown>;
+19:   close(): Promise<unknown>;
+20: }
+21: export function installedTransactionBinding(
+22:   ready: Record<string, unknown>,
+23:   sourceCommit: string,
+24:   fixture: { bytes: Uint8Array },
+25: ) {
+26:   if (
+27:     ready.profile !== "transactional" ||
+28:     ready.history !== false ||
+29:     ready.claimEligible !== false ||
+30:     ready.authorityMode !== "canonical" ||
+31:     typeof ready.scope !== "string" ||
+32:     typeof ready.runtimeConfigurationIdentity !== "string" ||
+33:     !/^[a-f0-9]{64}$/.test(ready.runtimeConfigurationIdentity)
+34:   )
+35:     throw new Error("installed Transactional metadata unavailable");
+36:   if (typeof ready.listenUrl !== "string")
+37:     throw new Error("installed physical session unavailable");
+38:   const url = new URL(ready.listenUrl);
+39:   if (
+40:     url.protocol !== "http:" ||
+41:     url.hostname !== "127.0.0.1" ||
+42:     !url.port ||
+43:     url.username ||
+44:     url.password ||
+45:     url.pathname !== "/" ||
+46:     url.search ||
+47:     url.hash
+48:   )
+49:     throw new Error("invalid installed dial binding");
+50:   const targetNames = {
+51:     createBead: "create-bead",
+52:     updateBead: "update-bead",
+53:     deleteBead: "delete-bead",
+54:     createLink: "create-link",
+55:     updateLink: "update-link",
+56:     deleteLink: "delete-link",
+57:     putAlias: "put-alias",
+58:     deleteAlias: "delete-alias",
+59:     updateWhere: "update-where",
+60:     deleteWhere: "delete-where",
+61:     batch: "batch",
+62:     sequence: "sequence",
+63:   };
+64:   const operationTargets = Object.freeze(
+65:     Object.fromEntries(
+66:       Object.entries(targetNames).map(([name, suffix]) => [
+67:         name,
+68:         `${ready.scope}operations/${suffix}`,
+69:       ]),
+70:     ),
+71:   );
+72:   if (!isDeepStrictEqual(ready.targets, operationTargets))
+73:     throw new Error("installed operation target inventory mismatch");
+74:   const served = bindServedProfileConfiguration({
+75:     scope: ready.scope,
+76:     profile: "transactional",
+77:     history: false,
+78:     sourceCommit,
+79:     installedPayloadDigest: ready.payloadIdentity as string,
+80:     installedContractsDigest: installedContractsDigest(ready.artifactIdentity),
+81:     policyDigest: ready.policyIdentity as string,
+82:     authenticationDigest: ready.authenticationIdentity as string,
+83:     fixture,
+84:   });
+85:   return Object.freeze({
+86:     served,
+87:     operationTargets,
+88:     runtimeConfigurationIdentity: ready.runtimeConfigurationIdentity,
+89:     authorityMode: "canonical" as const,
+90:   });
+91: }
+92: export function createTransactionalExecutionBinding(options: {
+93:   readonly baseline: ReturnType<typeof installedTransactionBinding>;
+94:   readonly sourceCommit: string;
+95:   readonly fixtureSource: { bytes: Uint8Array };
+96:   readonly exactMode: ExactHttpModeOptions;
+97:   readonly launch: (
+```
+
+### scripts/transaction-installed-observation.mjs, original lines 1-97
+```typescript
+1: /** Bounded inherited-IPC launcher. No request or observation emulation. */
+2: import { spawn } from "node:child_process";
+3: import { mkdir } from "node:fs/promises";
+4: export async function launchInstalledTransaction(entry, configuration, signal) {
+5:   signal?.throwIfAborted();
+6:   // Explicit launcher-owned provisioning; reopen keeps the directory/create:false.
+7:   if (configuration.create) await mkdir(configuration.directory, { recursive: true, mode: 0o700 });
+8:   signal?.throwIfAborted();
+9:   const child = spawn(process.execPath, [entry], {
+10:     cwd: "/tmp",
+11:     stdio: ["ignore", "pipe", "pipe", "ipc"],
+12:   });
+13:   let bytes = 0;
+14:   for (const stream of [child.stdout, child.stderr])
+15:     stream.on("data", (chunk) => {
+16:       bytes += chunk.length;
+17:       if (bytes > 65536) child.kill("SIGKILL");
+18:     });
+19:   const exited = new Promise((resolve) =>
+20:     child.once("exit", (code, signal) => resolve({ code, signal })),
+21:   );
+22:   async function bounded(promise) {
+23:     let timer;
+24:     try {
+25:       return await Promise.race([
+26:         promise,
+27:         new Promise((_, reject) => {
+28:           timer = setTimeout(() => {
+29:             child.kill("SIGKILL");
+30:             reject(new Error("installed transaction process deadline"));
+31:           }, 10000);
+32:         }),
+33:       ]);
+34:     } finally {
+35:       clearTimeout(timer);
+36:     }
+37:   }
+38:   async function drainFailure(error) {
+39:     child.kill("SIGKILL");
+40:     try {
+41:       await bounded(exited);
+42:     } catch (cleanup) {
+43:       throw new AggregateError([error, cleanup], "installed transaction cleanup failed");
+44:     }
+45:     throw error;
+46:   }
+47:   let closing;
+48:   const close = () =>
+49:     (closing ??= (async () => {
+50:       try {
+51:         if (child.connected) child.send({ command: "close" });
+52:         const result = await bounded(exited);
+53:         if (result.code !== 0 || result.signal !== null)
+54:           throw new Error("installed transaction child did not close cleanly");
+55:       } catch (error) {
+56:         await drainFailure(error);
+57:       } finally {
+58:         signal?.removeEventListener("abort", onAbort);
+59:       }
+60:     })());
+61:   const onAbort = () => {
+62:     void close().catch(() => {});
+63:   };
+64:   signal?.addEventListener("abort", onAbort, { once: true });
+65:   if (signal?.aborted) onAbort();
+66:   let detachReadyAbort = () => {};
+67:   try {
+68:     const ready = await bounded(
+69:       new Promise((resolve, reject) => {
+70:         const abort = () => reject(signal.reason);
+71:         signal?.addEventListener("abort", abort, { once: true });
+72:         detachReadyAbort = () => signal?.removeEventListener("abort", abort);
+73:         if (signal?.aborted) {
+74:           abort();
+75:           return;
+76:         }
+77:         child.once("error", reject);
+78:         child.once("message", resolve);
+79:         void exited.then(() => reject(new Error("installed transaction exited before ready")));
+80:         child.send({ configuration });
+81:       }),
+82:     );
+83:     signal?.throwIfAborted();
+84:     if (!ready || ready.event !== "qualification.ready" || JSON.stringify(ready).length > 65536)
+85:       throw new Error("invalid installed ready message");
+86:     return { child, ready, close };
+87:   } catch (error) {
+88:     try {
+89:       await close();
+90:     } catch (cleanup) {
+91:       throw new AggregateError([error, cleanup], "installed transaction startup cleanup failed");
+92:     }
+93:     throw error;
+94:   } finally {
+95:     detachReadyAbort();
+96:   }
+97: }
+```
+
+### packages/conformance/src/http-executor.ts, original lines 55-78
+```typescript
+55: export interface ExactHttpModeOptions {
+56:   readonly scope: string;
+57:   readonly profile: "read" | "read-update" | "transactional";
+58:   readonly routes: readonly { readonly method: HttpMethod; readonly url: string }[];
+59:   readonly maximumRequestHeaderBytes: number;
+60:   readonly maximumRequestBodyBytes: number;
+61:   readonly defaultCredentialRef: string;
+62:   readonly credentialHandles: readonly {
+63:     readonly id: string;
+64:     /** Empty means a deliberately anonymous handle; names are lower-case. */
+65:     readonly headerNames: readonly string[];
+66:   }[];
+67:   /** Synchronous, trusted nonblocking lookup. Promises/thenables are rejected. */
+68:   readonly resolveCredentials: (
+69:     context: Readonly<{
+70:       scope: string;
+71:       url: string;
+72:       method: HttpMethod;
+73:       credentialRef: string;
+74:       signal: AbortSignal;
+75:     }>,
+76:   ) => Readonly<Record<string, string>>;
+77: }
+78: 
+```
+
+### packages/conformance/src/http-executor.ts, original lines 125-244
+```typescript
+125: export interface RawHttpExchangeExecutorOptions {
+126:   readonly exactMode?: ExactHttpModeOptions;
+127:   readonly authorize?: (request: HttpExchangeRequest) => Readonly<Record<string, string>>;
+128:   readonly maximumBodyBytes?: number;
+129:   readonly requestTimeoutMs?: number;
+130:   readonly maximumHeaderBytes?: number;
+131: }
+132: 
+133: export type HttpTransportErrorCategory =
+134:   | "abort"
+135:   | "configuration"
+136:   | "timeout"
+137:   | "disconnect"
+138:   | "header-limit"
+139:   | "body-limit"
+140:   | "invalid-body"
+141:   | "network";
+142: 
+143: export class HttpTransportError extends Error {
+144:   constructor(
+145:     readonly category: HttpTransportErrorCategory,
+146:     message: string,
+147:     options: ErrorOptions = {},
+148:     readonly requestWriteState?: RequestWriteState,
+149:   ) {
+150:     super(message, options);
+151:     this.name = "HttpTransportError";
+152:   }
+153: }
+154: 
+155: const MAX_TIMER_DELAY_MS = 2_147_483_647;
+156: const DEFAULT_MAXIMUM_HEADER_BYTES = 65_536;
+157: const MAXIMUM_RAW_REQUEST_TARGET_BYTES = 8_192;
+158: 
+159: /**
+160:  * Socket-level executor for evidence that a method-aware Fetch/HTTP client would erase.
+161:  * The semantic request URL remains canonical while the explicit route selects only the
+162:  * network peer used to observe it.
+163:  */
+164: export function createRawHttpExchangeExecutor(
+165:   dialRoute: RawHttpDialRoute,
+166:   options: RawHttpExchangeExecutorOptions = {},
+167: ): RawHttpExchangeExecutor {
+168:   const route = snapshotDialRoute(dialRoute);
+169:   const exactMode =
+170:     options.exactMode === undefined ? undefined : snapshotExactHttpMode(options.exactMode);
+171:   const {
+172:     authorize,
+173:     maximumBodyBytes = 1_048_576,
+174:     requestTimeoutMs = 30_000,
+175:     maximumHeaderBytes = DEFAULT_MAXIMUM_HEADER_BYTES,
+176:   } = Object.freeze({ ...options });
+177:   if (authorize !== undefined && typeof authorize !== "function")
+178:     throw new TypeError("authorize must be a function when present");
+179:   requirePositiveBound(maximumBodyBytes, "maximumBodyBytes");
+180:   requireTimerBound(requestTimeoutMs);
+181:   requirePositiveBound(maximumHeaderBytes, "maximumHeaderBytes");
+182:   return async (request) => {
+183:     if (isExactRequest(request))
+184:       return executeExact(
+185:         request,
+186:         route,
+187:         exactMode,
+188:         requestTimeoutMs,
+189:         maximumHeaderBytes,
+190:         maximumBodyBytes,
+191:       );
+192:     if (request.headers === undefined || request.credentialRef !== undefined)
+193:       throw new HttpTransportError("configuration", "ordinary HTTP request headers are required");
+194:     const ordinary = request;
+195:     const url = parseExecutorUrl(request.url);
+196:     const requestTarget = encodeRequestTarget(request.rawRequestTarget, url);
+197:     const headers = effectiveHeaders(ordinary, authorize);
+198:     headers.set("host", url.host);
+199:     headers.set("connection", "close");
+200:     const requestHead = Buffer.concat([
+201:       Buffer.from(`${request.method} `, "ascii"),
+202:       requestTarget,
+203:       Buffer.from(
+204:         ` HTTP/1.1\r\n${[...headers.entries()]
+205:           .map(([name, value]) => `${canonicalHeaderName(name)}: ${value}`)
+206:           .join("\r\n")}\r\n\r\n`,
+207:         "latin1",
+208:       ),
+209:     ]);
+210:     const rawResponse = await exchangeRawBytes(
+211:       route,
+212:       requestHead,
+213:       request.method,
+214:       request.signal,
+215:       requestTimeoutMs,
+216:       maximumHeaderBytes,
+217:       maximumBodyBytes,
+218:     );
+219:     const parsed = parseRawResponse(
+220:       rawResponse.bytes,
+221:       request.method,
+222:       maximumHeaderBytes,
+223:       maximumBodyBytes,
+224:     );
+225:     return {
+226:       url: request.url,
+227:       status: parsed.status,
+228:       headers: parsed.headers,
+229:       bodyText: parsed.bodyText,
+230:       bodyOctets: parsed.bodyOctets,
+231:       wireResponseBytes: Uint8Array.from(rawResponse.bytes),
+232:       effectiveRequest: {
+233:         url: request.url,
+234:         headers: Object.fromEntries(headers.entries()),
+235:         headersTransmitted: true,
+236:       },
+237:     };
+238:   };
+239: }
+240: 
+241: /**
+242:  * Fetch adapter for the conformance seam. It preserves status, headers, URL,
+243:  * and raw body text; the runner performs all semantic assertions independently.
+244:  */
+```
+
+### packages/conformance/src/http-executor.ts, original lines 879-1080
+```typescript
+879: function exchangeRawBytes(
+880:   route: RawHttpDialRoute,
+881:   requestHead: Uint8Array,
+882:   method: HttpMethod,
+883:   signal: AbortSignal,
+884:   requestTimeoutMs: number,
+885:   maximumHeaderBytes: number,
+886:   maximumBodyBytes: number,
+887:   requestBody?: Uint8Array,
+888:   observeWrite?: (state: RequestWriteState) => void,
+889: ): Promise<{ bytes: Buffer; writeState: RequestWriteState }> {
+890:   return new Promise((resolve, reject) => {
+891:     let socket: Socket | undefined;
+892:     let settled = false;
+893:     let earlyCleanup: ReturnType<typeof setImmediate> | undefined;
+894:     let connected = false;
+895:     let state: RequestWriteState = "not-started";
+896:     let completedWrites = 0;
+897:     const requiredWrites = requestBody === undefined ? 1 : 2;
+898:     const wireLimit = Math.min(Number.MAX_SAFE_INTEGER, maximumBodyBytes + maximumHeaderBytes * 2);
+899:     let buffered = Buffer.alloc(Math.min(8192, wireLimit));
+900:     let total = 0;
+901:     const raw = (): Buffer => buffered.subarray(0, total);
+902:     const recordState = (next: RequestWriteState): void => {
+903:       if (settled) return;
+904:       state = next;
+905:       observeWrite?.(next);
+906:     };
+907:     const finish = (error?: HttpTransportError): void => {
+908:       if (settled) return;
+909:       settled = true;
+910:       clearTimeout(timer);
+911:       if (earlyCleanup !== undefined) clearImmediate(earlyCleanup);
+912:       signal.removeEventListener("abort", onAbort);
+913:       if (socket !== undefined) {
+914:         socket.removeAllListeners();
+915:         socket.on("error", () => undefined);
+916:         socket.destroy();
+917:       }
+918:       if (error !== undefined) reject(error);
+919:       else resolve({ bytes: Buffer.from(raw()), writeState: state });
+920:       buffered = Buffer.alloc(0);
+921:     };
+922:     const completeResponse = (): boolean => {
+923:       try {
+924:         return isFramedResponseComplete(raw(), method, maximumHeaderBytes, maximumBodyBytes);
+925:       } catch {
+926:         return false;
+927:       }
+928:     };
+929:     const writeDone = (error?: Error | null): void => {
+930:       if (settled) return;
+931:       if (error !== undefined && error !== null) {
+932:         finish(
+933:           completeResponse()
+934:             ? undefined
+935:             : new HttpTransportError("disconnect", "HTTP request write disconnected"),
+936:         );
+937:         return;
+938:       }
+939:       completedWrites++;
+940:       if (completedWrites === requiredWrites) recordState("complete");
+941:     };
+942:     const onAbort = (): void =>
+943:       finish(new HttpTransportError("abort", "HTTP exchange was aborted"));
+944:     const timer = setTimeout(
+945:       () => finish(new HttpTransportError("timeout", "HTTP exchange timed out")),
+946:       requestTimeoutMs,
+947:     );
+948:     if (signal.aborted) {
+949:       onAbort();
+950:       return;
+951:     }
+952:     signal.addEventListener("abort", onAbort, { once: true });
+953:     try {
+954:       socket =
+955:         route.transport === "plain"
+956:           ? connectPlain({ host: route.host, port: route.port })
+957:           : connectTls({
+958:               host: route.host,
+959:               port: route.port,
+960:               ...(route.servername === undefined ? {} : { servername: route.servername }),
+961:               ...(route.ca === undefined ? {} : { ca: route.ca }),
+962:             });
+963:     } catch {
+964:       finish(new HttpTransportError("configuration", "HTTP dial route was invalid"));
+965:       return;
+966:     }
+967:     const peer = socket;
+968:     peer.once(route.transport === "plain" ? "connect" : "secureConnect", () => {
+969:       if (settled) return;
+970:       connected = true;
+971:       recordState("started-completion-unestablished");
+972:       try {
+973:         // Bounded owned buffers; two writes avoid copying a large entity again.
+974:         peer.write(requestHead, writeDone);
+975:         if (requestBody !== undefined) peer.write(requestBody, writeDone);
+976:       } catch {
+977:         finish(
+978:           completeResponse()
+979:             ? undefined
+980:             : new HttpTransportError("disconnect", "HTTP request write disconnected"),
+981:         );
+982:       }
+983:     });
+984:     peer.on("data", (chunk: Buffer) => {
+985:       if (settled) return;
+986:       if (chunk.length > wireLimit - total) {
+987:         finish(
+988:           new HttpTransportError("body-limit", "HTTP response exceeded the configured body limit"),
+989:         );
+990:         return;
+991:       }
+992:       const next = total + chunk.length;
+993:       if (next > buffered.length) {
+994:         const grown = Buffer.alloc(Math.min(wireLimit, Math.max(next, buffered.length * 2)));
+995:         buffered.copy(grown, 0, 0, total);
+996:         buffered = grown;
+997:       }
+998:       chunk.copy(buffered, total);
+999:       total = next;
+1000:       try {
+1001:         const head = locateFinalResponseHead(raw(), maximumHeaderBytes);
+1002:         if (head === undefined) return;
+1003:         if (total - head.headerEnd - 4 > maximumBodyBytes + maximumHeaderBytes)
+1004:           throw new HttpTransportError(
+1005:             "body-limit",
+1006:             "HTTP response exceeded the configured body limit",
+1007:           );
+1008:         if (isFramedResponseComplete(raw(), method, maximumHeaderBytes, maximumBodyBytes)) {
+1009:           if (observeWrite !== undefined && state === "started-completion-unestablished") {
+1010:             // A queued body cannot be drained through a peer that has already refused it.
+1011:             // Take one cleanup turn, validate all bytes received by then, and terminate this
+1012:             // exact early-response exchange; do not manufacture deadline-time success.
+1013:             earlyCleanup ??= setImmediate(() => {
+1014:               earlyCleanup = undefined;
+1015:               if (settled) return;
+1016:               try {
+1017:                 // Native write completion may arrive after cleanup was scheduled.
+1018:                 // Completed requests retain the FIN/trailing-byte observation path.
+1019:                 if (state === "complete") {
+1020:                   if (!peer.writableEnded) peer.end();
+1021:                   return;
+1022:                 }
+1023:                 parseRawResponse(raw(), method, maximumHeaderBytes, maximumBodyBytes);
+1024:                 finish();
+1025:               } catch (error) {
+1026:                 finish(
+1027:                   error instanceof HttpTransportError
+1028:                     ? error
+1029:                     : new HttpTransportError("invalid-body", "HTTP response framing was malformed"),
+1030:                 );
+1031:               }
+1032:             });
+1033:           } else if (state === "complete" && !peer.writableEnded) {
+1034:             // Ordinary and fully written requests retain FIN/trailing-byte observation.
+1035:             peer.end();
+1036:           }
+1037:         }
+1038:       } catch (error) {
+1039:         finish(
+1040:           error instanceof HttpTransportError
+1041:             ? error
+1042:             : new HttpTransportError("invalid-body", "HTTP response framing was malformed"),
+1043:         );
+1044:       }
+1045:     });
+1046:     peer.once("end", () => {
+1047:       try {
+1048:         parseRawResponse(raw(), method, maximumHeaderBytes, maximumBodyBytes);
+1049:         finish();
+1050:       } catch (error) {
+1051:         finish(
+1052:           error instanceof HttpTransportError
+1053:             ? error
+1054:             : new HttpTransportError("invalid-body", "HTTP response framing was malformed"),
+1055:         );
+1056:       }
+1057:     });
+1058:     peer.once("error", () =>
+1059:       finish(
+1060:         completeResponse()
+1061:           ? undefined
+1062:           : new HttpTransportError(
+1063:               connected ? "disconnect" : "network",
+1064:               connected ? "HTTP response disconnected" : "HTTP exchange failed",
+1065:             ),
+1066:       ),
+1067:     );
+1068:     peer.once("close", () => {
+1069:       if (!settled)
+1070:         finish(
+1071:           completeResponse()
+1072:             ? undefined
+1073:             : new HttpTransportError(
+1074:                 connected ? "disconnect" : "network",
+1075:                 connected ? "HTTP response disconnected" : "HTTP exchange failed",
+1076:               ),
+1077:         );
+1078:     });
+1079:   });
+1080: }
+```
+
+Narrow follow-up source if necessary: schemas/bdp-v0.schema.json response definitions; packages/server/src/transaction-runtime-configuration.ts artifact/credential acceptance; transaction-installed-process.ts launch configuration; transaction-snapshot.ts owned-Link comparison; resource-evaluator.ts receipt/Event semantics. Identify specific missing context rather than speculate.

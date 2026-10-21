@@ -1,0 +1,21 @@
+{
+  "cwd": "/Users/dbox/repos/wt/vickie/vickie-command-minimum-evidence",
+  "head": "453b6dab386746bb03aac2c0a293572b8a71c969",
+  "promptSha256": "8bcd22c883cfe6edebbb3d5169293a3fcd39ae0201d7c06ffdb746ac34cdea6d",
+  "promptBytes": 49478,
+  "targets": {
+    "transaction-command-minimum-evidence-draft/capture-correction-proposal.md": "5872a89315aa46c1cb6282ca7e3b1c42370bf69678cc7376eaf85cad3ecd703c",
+    "transaction-command-minimum-evidence-next-v5-correction-addendum.md": "82f415e5d95e727bc919dd8a7c7d09ce73f19fb983fcdf9d3c0d28807cab637f",
+    "transaction-command-minimum-evidence-capture-correction-native.md": "8074c328c51ec1555b82aaf7df167fdbf9868146eb34f9a1013395e40a47df1f"
+  },
+  "argv": [
+    "/opt/homebrew/bin/claude",
+    "--safe-mode",
+    "-p",
+    "--tools",
+    "",
+    "--no-session-persistence"
+  ],
+  "timeoutSeconds": 900,
+  "scope": "single focused supplied-context correction review"
+}

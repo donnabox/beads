@@ -1,0 +1,3 @@
+# Actual P5 format-check capture — pending independent audit
+
+ONE actual A/B/C functions3152 terminals894526/523458/2c2aff all0 after full actual typecheck disposition7a55be2f. Exact formatting log is retained in run/format-check.log; checked10 files/no fixes, innerexit0/source1eca unchanged4.285535833332688s/common9.313092125114053<115. Original actualsources/fullnormalizedtoolresults and12actualrecords retained; no retry/secondcensus. Full independent actualnative/ROOTdisposition/durability before lint. Provisionalfalse/pending/rawwiretoolreceiptsUNRETAINED retained; finite process domain only/scratchretained/no cleanup/globalclaim. No lint/test/build/profile/fullWrite pass.

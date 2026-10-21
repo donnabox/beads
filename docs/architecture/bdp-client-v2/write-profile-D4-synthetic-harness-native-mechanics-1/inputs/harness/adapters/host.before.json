@@ -1,0 +1,30 @@
+{
+  "callable": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-D4-validation-preparation-4/run.py:main",
+  "codeSha256": "2a60b483b696984633fd41f42b5de57b20674d58a7fd1f1c82fe0241a17ebadb",
+  "ORIGIN": "original first-script monotonic clock",
+  "sys.argv": [
+    "run.py",
+    "final",
+    "installed-owned-set"
+  ],
+  "PopenWorker": [
+    "/opt/homebrew/opt/python@3.14/bin/python3.14",
+    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-D4-validation-preparation-4/worker.py",
+    "FD",
+    "installed-owned-set",
+    "ORIGIN"
+  ],
+  "PopenPublisher": [
+    "/opt/homebrew/opt/python@3.14/bin/python3.14",
+    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-D4-validation-preparation-4/worker.py",
+    "publish",
+    "FD",
+    "installed-owned-set"
+  ],
+  "PopenCensus": [
+    "/bin/ps",
+    "-axo",
+    "pid=,ppid=,pgid=,stat=,lstart=,comm="
+  ],
+  "algorithms": "unchanged actual callable"
+}

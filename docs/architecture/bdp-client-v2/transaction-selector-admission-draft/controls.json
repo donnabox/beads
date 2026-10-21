@@ -1,0 +1,42 @@
+[
+  {
+    "id": "grammar-development",
+    "path": "packages/server/src/transaction-submission.ts",
+    "sourceBeforeSha256": "795b45d87b6ee7f727a3727ace64c0e6569d0cfa7ad941e46740e285d04df942",
+    "sourceAfterSha256": "fa333cfdbec5e9391c951bb57635ab56cf6e9cdb7d57e1ce780e370a64b57c34",
+    "proposalPatchSha256": "749ff6b9103e37648786bad163e4c1233af101fe487b28a30c1a1882c6882716",
+    "selectedTitle": "serves Selector syntax and prior-key precedence over capacity",
+    "expectedHttp": 1,
+    "maxHttp": 16,
+    "expectedStatus": 500,
+    "expectedDevelopmentLimit": "unsupported-transaction-composition",
+    "expectedFailure": "Selector receiving status",
+    "expectedInventoryHandles": 0,
+    "maxInventoryHandles": 1,
+    "owners": 1,
+    "listeners": 1,
+    "directories": 1,
+    "executed": false,
+    "gate": "Root approval of actual emitted before/after patch and module-resolution binding after clean positive build; source proposal is not an emitted artifact."
+  },
+  {
+    "id": "omit-fresh-capacity",
+    "path": "packages/server/src/transaction-store.ts",
+    "sourceBeforeSha256": "0cda4b6488f589258eda46d1a00612e0278228172fc102305d889fe3c4364ad1",
+    "sourceAfterSha256": "ffa84044ee0f9aaa518f1b269a2a93db75fd540bc98aeacf938b55fd31107c7d",
+    "proposalPatchSha256": "cd4703ba7861a85c20bedd414782a17cc45c84e72d5d6ad7b95371be65e9912d",
+    "selectedTitle": "serves exact fixed Selector boundaries and leaves refused keys unused",
+    "expectedHttp": 1,
+    "maxHttp": 36,
+    "expectedStatus": 500,
+    "expectedDevelopmentLimit": null,
+    "expectedFailure": "Selector receiving status",
+    "expectedInventoryHandles": 0,
+    "maxInventoryHandles": 1,
+    "owners": 1,
+    "listeners": 1,
+    "directories": 1,
+    "executed": false,
+    "gate": "Root approval of actual emitted before/after patch and module-resolution binding after clean positive build; source proposal is not an emitted artifact."
+  }
+]

@@ -1,0 +1,184 @@
+{
+  "completedFirst17NeverRepeat": [
+    "node-version",
+    "pnpm-version",
+    "workspace-install",
+    "bind-workspace-tools",
+    "typecheck",
+    "format-check",
+    "lint",
+    "fresh-build",
+    "bind-fresh-build",
+    "g09-service-source",
+    "audit-g09-service-source",
+    "g09-schema-source",
+    "audit-g09-schema-source",
+    "legacy-schema-source",
+    "audit-legacy-schema-source",
+    "schema-confinement-source",
+    "audit-schema-confinement-source"
+  ],
+  "later13Unreleased": [
+    "prepare-consumer",
+    "consumer-install",
+    "verify-installed-consumer",
+    "g09-installed-01",
+    "audit-g09-installed-01",
+    "g09-installed-02",
+    "audit-g09-installed-02",
+    "schema-installed-positive",
+    "audit-schema-installed-positive",
+    "required-check-boundaries",
+    "required-e2e-ready-preflight",
+    "required-smoke",
+    "required-evidence-verify"
+  ],
+  "newPackageRuntimeFit": "UNKNOWN",
+  "newProposedPackageStages": [
+    {
+      "actualAttemptExists": false,
+      "exactConfiguration": {
+        "acceptedRawExitCodes": [
+          0
+        ],
+        "argv": [
+          "/opt/homebrew/opt/python@3.14/bin/python3.14",
+          "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation-preparation-5/packages.py",
+          "directory"
+        ],
+        "automaticRetries": 0,
+        "contract": "Exclusively create new task-owned ${EXECUTION_ROOT}/run/packages; refuse existing contents, no deletion/reuse.",
+        "cwd": "/Users/dbox/repos/wt/vickie/vickie-schema-lint-correction-minimum",
+        "id": "prepare-package-directory",
+        "kind": "supervised-owned-preparation-helper",
+        "mustCompleteBeforeNextStage": true,
+        "outerSeconds": 120,
+        "termAtSeconds": 115
+      },
+      "ordinal": 18,
+      "rootOutputChild": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation5-root-first4-dispatch-1/prepare-package-directory",
+      "stage": "prepare-package-directory"
+    },
+    {
+      "actualAttemptExists": false,
+      "exactConfiguration": {
+        "acceptedRawExitCodes": [
+          0
+        ],
+        "argv": [
+          "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+          "/Users/dbox/.cache/node/corepack/v1/pnpm/11.20.0/bin/pnpm.cjs",
+          "--filter",
+          "@bdp/protocol",
+          "pack",
+          "--pack-destination",
+          "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation-preparation-5/run/packages"
+        ],
+        "automaticRetries": 0,
+        "configurationFinalized": true,
+        "cwd": "/Users/dbox/repos/wt/vickie/vickie-schema-lint-correction-minimum",
+        "id": "pack-protocol",
+        "kind": "supervised-command",
+        "outerSeconds": 120,
+        "termAtSeconds": 115
+      },
+      "ordinal": 19,
+      "rootOutputChild": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation5-root-first4-dispatch-1/pack-protocol",
+      "stage": "pack-protocol"
+    },
+    {
+      "actualAttemptExists": false,
+      "exactConfiguration": {
+        "acceptedRawExitCodes": [
+          0
+        ],
+        "argv": [
+          "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+          "/Users/dbox/.cache/node/corepack/v1/pnpm/11.20.0/bin/pnpm.cjs",
+          "--filter",
+          "@bdp/server",
+          "pack",
+          "--pack-destination",
+          "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation-preparation-5/run/packages"
+        ],
+        "automaticRetries": 0,
+        "configurationFinalized": true,
+        "cwd": "/Users/dbox/repos/wt/vickie/vickie-schema-lint-correction-minimum",
+        "id": "pack-server",
+        "kind": "supervised-command",
+        "outerSeconds": 120,
+        "termAtSeconds": 115
+      },
+      "ordinal": 20,
+      "rootOutputChild": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation5-root-first4-dispatch-1/pack-server",
+      "stage": "pack-server"
+    },
+    {
+      "actualAttemptExists": false,
+      "exactConfiguration": {
+        "acceptedRawExitCodes": [
+          0
+        ],
+        "argv": [
+          "/opt/homebrew/opt/python@3.14/bin/python3.14",
+          "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation-preparation-5/packages.py",
+          "tar"
+        ],
+        "automaticRetries": 0,
+        "contract": "Rehash actual archives and safe members; compare complete expected fresh dist/schema/license/package metadata maps to frozen source/build. Only expected workspace-protocol dependency rewrite is allowed; no extraction traversal/duplicates/symlinks. Archive names/digests/member counts UNRESOLVED until actual pack.",
+        "cwd": "/Users/dbox/repos/wt/vickie/vickie-schema-lint-correction-minimum",
+        "id": "verify-archives",
+        "kind": "supervised-readonly-helper",
+        "mustCompleteBeforeNextStage": true,
+        "outerSeconds": 120,
+        "termAtSeconds": 115
+      },
+      "ordinal": 21,
+      "rootOutputChild": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation5-root-first4-dispatch-1/verify-archives",
+      "stage": "verify-archives"
+    }
+  ],
+  "noArchiveHashPredicted": true,
+  "source4PairsPrivateAccepted": [
+    {
+      "claimEligible": false,
+      "proof": {
+        "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation-preparation-5/run/g09-service-source.accepted-observation.json",
+        "sha256": "b0b4098cd521d58490a29404c5405a35d574e07076dc5ebc997fcd3ec86cedbe"
+      },
+      "reportObjects": 3,
+      "selectedCallbacks": 3,
+      "stage": "g09-service-source"
+    },
+    {
+      "claimEligible": false,
+      "proof": {
+        "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation-preparation-5/run/g09-schema-source.accepted-observation.json",
+        "sha256": "ca4f192d726c65fd70e3fd44d26c98aebac9d65b4b4ab2e12e7a460c6628798d"
+      },
+      "reportObjects": 5,
+      "selectedCallbacks": 5,
+      "stage": "g09-schema-source"
+    },
+    {
+      "claimEligible": false,
+      "proof": {
+        "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation-preparation-5/run/legacy-schema-source.accepted-observation.json",
+        "sha256": "9838974a8fbaecdb2ddfe3cee9da3716987c8d152de735736469893220f2abd9"
+      },
+      "reportObjects": 0,
+      "selectedCallbacks": 2,
+      "stage": "legacy-schema-source"
+    },
+    {
+      "claimEligible": false,
+      "proof": {
+        "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation-preparation-5/run/schema-confinement-source.accepted-observation.json",
+        "sha256": "279fb23f574b71b48906032a2a922227c3f93719c479ba9dc1e5cadbf9b81489"
+      },
+      "reportObjects": 0,
+      "selectedCallbacks": 1,
+      "stage": "schema-confinement-source"
+    }
+  ]
+}

@@ -1,0 +1,50 @@
+{
+  "approvalInferred": false,
+  "observedUtc": "2026-10-18T19:00:28.384352+00:00",
+  "partialOrInvalidObservedLines": 0,
+  "processRecord": {
+    "argv": [
+      "/opt/homebrew/bin/claude",
+      "--safe-mode",
+      "-p",
+      "--tools",
+      "Read,Glob,Grep",
+      "--allowedTools",
+      "Read,Glob,Grep",
+      "--disable-slash-commands",
+      "--strict-mcp-config",
+      "--mcp-config",
+      "{\"mcpServers\":{}}",
+      "--no-session-persistence",
+      "--output-format",
+      "stream-json",
+      "--verbose",
+      "--include-partial-messages"
+    ],
+    "pgid": 46159,
+    "pid": 46159,
+    "started": "2026-10-18T18:59:42.543743+00:00",
+    "termAfterSeconds": 1790,
+    "timeoutSeconds": 1800
+  },
+  "psArgv": [
+    "ps",
+    "-p",
+    "46123,46131,46159",
+    "-o",
+    "pid=,ppid=,pgid=,stat=,lstart=,comm="
+  ],
+  "psRawExit": 0,
+  "psStderrBytes": 0,
+  "psStdoutSha256": "8209296eb7ebf887948f3493ce31d72537c40617da6c5f6ca9bd44b20403c159",
+  "resultRecords": 0,
+  "reviewerPid": 46159,
+  "session": "2026-10-18T02:16:24Z-549f",
+  "state": "LIVE_NOT_TERMINAL",
+  "streamObservedBytes": 190538,
+  "streamObservedSha256": "f26ae1fcdc6472b9dbdad20bb906b5cb2a5f099595090b04d3834ad685c296ff",
+  "supervisorPid": 46123,
+  "terminalInferred": false,
+  "validObservedRecords": 263,
+  "wrapperPid": 46131
+}

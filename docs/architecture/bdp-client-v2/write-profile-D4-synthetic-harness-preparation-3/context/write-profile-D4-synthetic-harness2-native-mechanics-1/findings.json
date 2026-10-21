@@ -1,0 +1,66 @@
+{
+  "findings": [
+    {
+      "evidence": "launch blocks TERM/INT while spawning the bootstrap and restores only the parent mask. Neither bootstrap nor outer_worker clears the inherited mask. The control worker runs original run.main in that state. Its old blocked mask is restored after original handler installation, so the real self-TERM queued by host-pending-term stays blocked instead of reaching interrupted. Direct IO/auth tasks also keep TERM blocked until a later reset/KILL. host_peer resets only its own role, not the control worker executing R.main.",
+      "futureControls": [
+        "P01 host-pending-term must record the actual original interrupted first refusal and fresh absence",
+        "P01 EOF/bootstrap-close still proves no peer exec on missing ACK",
+        "Owned IO/auth cleanup must retain actual TERM/KILL outcomes, no assumption of delivery"
+      ],
+      "id": "H2-N1",
+      "impact": "Named real pending-TERM control cannot establish its intended original predicate. Graceful outer cleanup attempts against the new workers may not be delivered. No actual result was run.",
+      "locations": [
+        "outer_host.py:41-47",
+        "bootstrap.py:15-34",
+        "outer_worker.py:4-43",
+        "host_controls.py:60-73",
+        "subject run.py:15-16,108-109"
+      ],
+      "minimumCorrection": "In a separately authorized successor, reset the child signal mask only after the owned bootstrap has received the authenticated ACK and before the bound outer_worker role begins, retaining the parent critical-region mask/registration order. Verify the exact previous mask semantics of original R.main and preserve the real pending-TERM injection and intended interrupted refusal; no scripted substitute.",
+      "severity": "Medium",
+      "status": "NEW concrete code finding",
+      "title": "Outer workers inherit blocked TERM/INT, defeating the pending-TERM host control"
+    },
+    {
+      "evidence": "The two stream records each permit268435456 bytes, so e.g.160MiB stdout plus160MiB stderr passes this local capacity check despite exceeding the original total raw-log256MiB policy. s.bytes is incremented and the refusal is raised before s.file.write(block), dropping the chunk already read from the pipe. The accepted source collector merges product stdout/stderr into one actual log, writes before scanning, and treats256MiB as acceptance threshold, not truncation/disk maximum.",
+      "futureControls": [
+        "Within J10 existing ID, aggregate below/equal/over256MiB with split stdout/stderr, each individually below256MiB",
+        "Crossing chunk retained exact; overflow remains failed/inconclusive; no fabricated full hash/EOF",
+        "Blocked drain/writer receives unchanged whole clock and ownership controls"
+      ],
+      "id": "H2-N2",
+      "impact": "Unreviewed per-stream widening and incomplete oversized raw-byte retention in the new outer collector. This does not change immutable scanner.py, but contradicts the claimed inherited evidence policy.",
+      "locations": [
+        "outer_worker.py:55-65",
+        "residuals.json:HOST-PIPE-SCOPE",
+        "predecessor outer-host-ownership-design.md:15",
+        "accepted proposal1 plan.md:13",
+        "accepted proposal2 plan.md:19-23",
+        "subject worker.py:40-50"
+      ],
+      "minimumCorrection": "Use one aggregate counter for actual stdout+stderr raw acceptance. Preserve the exact bytes already received (including crossing chunk) before marking overflow. Retain/drain actual pending bytes in an owned writer under the same clock while cleanup runs; if EOF or hashing cannot finish, mark them UNKNOWN and refuse acceptance. Never introduce truncation, postdeadline pass or a hard disk-output claim. Remove per-stream reinterpretation from DATA.",
+      "severity": "Medium",
+      "status": "NEW concrete code finding",
+      "title": "Outer IO doubles the accepted raw budget and discards the crossing chunk"
+    },
+    {
+      "evidence": "sourceDefinitionsAndBranches lists predecessor SHA/line maps for harness.py, host_controls.py, host_peer.py, report_controls.py, watchdog_controls.py without a historical label. Actual successor hashes differ. The appended successor2 prose and separate static-call-inventory carry new information, and the exact file inventories are correct; those do not make the old map current.",
+      "executionAcceptance": false,
+      "id": "H2-N3",
+      "impact": "A reviewer cannot use that branch map as exact active-source attribution. No source/hash integrity failure or executed coverage is inferred.",
+      "locations": [
+        "subcase-call-map.json:sourceDefinitionsAndBranches",
+        "static-call-inventory.json",
+        "adapter-relations.json"
+      ],
+      "minimumCorrection": "Label the old table explicitly predecessor-only and bind a separately regenerated active source-definition/call map to actual corrected SHA/lines in the successor. Preserve historical entries and all48 IDs/declared subcases.",
+      "severity": "Low",
+      "status": "NEW DATA attribution precision",
+      "title": "Current-looking branch map still pins five predecessor program versions"
+    }
+  ],
+  "knownHardIsolationAssessment": "ownership-fault-scope.json",
+  "mechanicsAccepted": false,
+  "reviewComplete": true,
+  "selfOrRuntimeAcceptance": false
+}

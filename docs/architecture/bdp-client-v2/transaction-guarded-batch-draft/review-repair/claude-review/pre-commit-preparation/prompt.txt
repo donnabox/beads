@@ -1,0 +1,1337 @@
+Review only this narrow guarded-batch test repair, not a new broad implementation. Do not write or modify any files. Output findings only in stdout. Tools are disabled; use supplied actual sources. Return a complete concise standalone numbered findings-first review (severity, location, concrete defect/impact/fix), or explicitly no findings. Do not assume omitted unrelated sources are defective. Keep answer under2500words.
+
+Target is F1 pair rejection accounting and F2 losing-request/replay fingerprint binding. One installed test changes; progress documentation and production remain identical. Original review completed and root accepted F1/F2; other dispositions below are context, not a demand for agreement. Identify any concrete remaining issue with changed paths or JSON-safe binding/mock closure. Do not invent wire sniffing: fingerprint fields derive from send-local immutable body passed to req.end. Concurrent client dispatch is the contract, not proof of server join or simultaneous physical work. No cross-group monotonic wall-clock assertion is required.
+
+Seven positive requests, three intentional control requests;45swork/5srequest/10scleanup/5sdrain/60stest/120ssupervisor remain unchanged. Both whole reports overflow-fail; no arbitrary Error serialization. Primary errors count unique identities; cleanup drain should not recount pair failures. Performed labels/report shape unchanged. Current preparation is dirty9e5, eventual review must run against a root-pinned clean ordinary repair child of9e5; candidate identity is separate launch binding, never fabricated here. Historical original source validation belongs to9e5, not this repair. The proposed extraction test is not execution evidence.
+
+The supplied actual binding factory retains parsed fixture privately in WeakMap; its returned served configuration contains primitive values and string capability array. Read admission mock is non-emitted Vitest setup; the factory does not grant capabilities or access that mock map. Launcher source shows packed child execution boundary. Check these claims from supplied source.
+
+## Exact repair patch
+diff --git a/apps/bdptest/src/transactional-guarded-batch-installed.test.ts b/apps/bdptest/src/transactional-guarded-batch-installed.test.ts
+index 382b571..3214512 100644
+--- a/apps/bdptest/src/transactional-guarded-batch-installed.test.ts
++++ b/apps/bdptest/src/transactional-guarded-batch-installed.test.ts
+@@ -752,8 +752,10 @@ it("preserves one guarded batch winner and rolls back the losing marker through
+     const pairErrors = pair.flatMap((result) =>
+       result.status === "rejected" ? [result.reason] : [],
+     );
+-    if (pairErrors.length)
+-      throw new AggregateError(pairErrors, "guarded-batch pair transport failed");
++    if (pairErrors.length) {
++      for (const error of pairErrors) addFailure(error);
++      throw pairErrors[0];
++    }
+     const aWire = (pair[0] as PromiseFulfilledResult<Wire>).value,
+       bWire = (pair[1] as PromiseFulfilledResult<Wire>).value;
+     await Promise.all(closing);
+@@ -813,16 +815,26 @@ it("preserves one guarded batch winner and rolls back the losing marker through
+     receiptUrl = loser.id;
+     replayBody = losingInput.body;
+     replayKey = losingInput.key;
++    const losingResponse = responses.find((response) => response.index === loserIndex + 2);
+     check("frozen-loser-replay-input", () => {
+-      expect(replayKey).toBe(loser.key);
+-      expect(replayBody).toBe(loserIndex === 0 ? aBody : bBody);
+-      expect(sha(replayBody!)).toBe(losingInput.hash);
+-      expect(Buffer.from(replayBody!)).toStrictEqual(Buffer.from(losingInput.body));
++      expect(losingResponse?.index).toBe((loserIndex === 0 ? aWire : bWire).index);
++      expect(losingResponse?.sentKey).toBe(loser.key);
++      expect(losingResponse?.sentKey).toBe(replayKey);
++      expect(losingResponse?.requestBodySha256).toBe(losingInput.hash);
++      expect(losingResponse?.requestBodySha256).toBe(sha(replayBody!));
++      expect(losingResponse?.requestBodyBytes).toBe(Buffer.byteLength(replayBody!));
+     });
+     const replayWire = await send(4);
+     await Promise.all(closing);
+     const replay = receipt(replayWire, loser.key, losingInput.side);
+-    check("retained-failure-full-equality", () => expect(replay.body).toStrictEqual(loser.body));
++    check("retained-failure-full-equality", () => {
++      const replayResponse = responses.find((response) => response.index === replayWire.index);
++      expect(replayResponse?.index).toBe(4);
++      expect(replayResponse?.sentKey).toBe(losingResponse?.sentKey);
++      expect(replayResponse?.requestBodySha256).toBe(losingResponse?.requestBodySha256);
++      expect(replayResponse?.requestBodyBytes).toBe(losingResponse?.requestBodyBytes);
++      expect(replay.body).toStrictEqual(loser.body);
++    });
+     const recoveredWire = await send(5);
+     await Promise.all(closing);
+     const recovered = receipt(recoveredWire, loser.key, losingInput.side);
+
+## Root dispositions
+{
+  "accepted": true,
+  "originalReview": {
+    "head": "9e5f040edab88be364f683098ead72f595f0ab55",
+    "stdoutSha256": "c5e385db679d546ed85ec64a2d42c8fc1cb431c566813ac049248f7d192fac8a",
+    "exit": 0,
+    "seconds": 504.91270458395593
+  },
+  "nativeAuditSha256": "f216467d5d6bb321693a3f2680ce9d4a3aa6f1f0bc8408d749232130e96b828a",
+  "findings": {
+    "F1": "Required accounting repair: preserve original pair error identities through catch/drain.",
+    "F2": "Accept explicit completed-request fingerprint assertions as narrow strengthening; do not claim independent wire sniffing or proven original false pass.",
+    "F3": "Defer dormant argv guard grammar; pinned Vitest worker argv empty and supervisor pins actual external reporter paths. No generic reporter containment claim.",
+    "F4": "No reachable defect: actual binding fixed JSON-safe primitives/arrays, fixture bytes in WeakMap. Include missing context in focused supplement.",
+    "F5": "Reject claimed false acceptance: adapter requires exact named label+oracle phase+prerequisites; optional presentation cleanup deferred.",
+    "F6": "Reject stronger physical overlap contract; accepted proof is concurrent client dispatch with maximum socket ceiling and separate observations.",
+    "F7": "Defer optional same-group-time assertion; reject unsupported monotonic wall-clock ordering."
+  },
+  "repairPaths": [
+    "apps/bdptest/src/transactional-guarded-batch-installed.test.ts"
+  ],
+  "validationRequired": true,
+  "finalCouncilAccepted": false
+}
+
+## Author repair report (not independent approval)
+# Guarded-batch F1/F2 successor — unvalidated
+
+Only the installed test changed on clean candidate9e5f040; the working tree now contains this uncommitted repair. Before bytes of both owned files and the complete original base-to-candidate patch are preserved under before/. Original source, code review, static and installed evidence remain attributed to the preceding frozen source.
+
+F1: register every pair rejection through the existing identity-deduplicating addFailure, then throw the original first rejection. The outer catch and later pending-request drain encounter the same original errors and cannot count a new AggregateError wrapper as an additional failure. Two distinct failures still count twice; the same Error shared by both requests counts once.
+
+F2: frozen-loser-replay-input now binds the selected completed contender's actual response index, sent key and request body byte/hash fields to the losing receipt and immutable replay inputs. After request4, the existing retained-failure-full-equality check additionally compares its actual completed-request key/body fingerprints to the losing completed request before full receipt equality. These fingerprints are produced from the send-local immutable body passed to req.end; they are not independent socket-byte attestation. This reduces self-comparisons without claiming a new transport guarantee.
+
+The two existing performed labels, report fields, seven/three schedules, all limits and documentation are unchanged. No F3–F7 changes, formatter, test, product import, build, service, package, commit or push was performed.
+
+Proposed targeted check (not executed): proposed-failure-dedupe-check.mjs pins the successor source hash, extracts the actual addFailure/pair-handler/drain statements, removes only the known TypeScript parameter annotation and evaluates those fragments with synthetic Error identities. One error, two distinct errors and one shared error must produce primary counts1/2/1 and cleanup increments0/0/0. This is a narrow accounting check, not transport/cleanup lifecycle execution or another product-test registration. Root must authorize execution; formatting/type and installed validation are separate gates. Source hash drift requires repinning rather than silently running different bytes.
+
+## Original actual review, preserved context
+## Numbered findings
+
+**1. Medium — pair transport rejections are counted twice and misattributed to cleanup.** `apps/bdptest/src/transactional-guarded-batch-installed.test.ts:755-756` wraps the pair reasons in a *new* `AggregateError` and throws it; the catch stores that wrapper (`primaryFailureCount` = 1). The drain at `:929-930` then re-collects the *member* reasons from `pending`, and `addFailure` (`:281-283`) dedupes by object identity only, so the members are not recognized as already-reported. Impact: a single contender transport fault yields `failureCount: 2` (or 3) with `cleanupFailureCount >= 1`, i.e. the evidence artifact reports a non-existent cleanup defect alongside the real transport fault, and the thrown `AggregateError` nests the same cause twice. Note the single-send paths (`:726`, `:822`, `:826`, `:832`, `:842`) are *not* affected, because the identical error object is both thrown and drained, so dedupe works there — which makes the pair path an inconsistency rather than a uniform convention. Minimal correction: `for (const reason of pairErrors) addFailure(reason);` before throwing, or throw `pairErrors[0]` when `length === 1` and otherwise record members individually so `includes` suppresses the drain copy.
+
+**2. Medium (oracle discrimination) — `frozen-loser-replay-input` is three-quarters tautological.** `:809-821`: `replayBody` is assigned `losingInput.body` at `:818`… the subsequent `expect(replayBody).toBe(loserIndex === 0 ? aBody : bBody)`, `expect(sha(replayBody!)).toBe(losingInput.hash)` and `expect(Buffer.from(replayBody!)).toStrictEqual(Buffer.from(losingInput.body))` all compare the same in-memory string (and a hash derived from it) against itself; only `expect(replayKey).toBe(loser.key)` can fail. Impact: the named check appears in `performed` as replay-input freeze evidence while proving nothing about the bytes that were actually dispatched for the losing key; a divergence between the in-memory `originals` entry and what request 2/3 actually wrote on the wire would not be detected. The test already retains the wire fact needed (`responses[].requestBodySha256`, captured at `:562-573` before any decode). Minimal correction: replace the three self-comparisons with `expect(sha(replayBody!)).toBe(responses.find((r) => r.index === (loserIndex === 0 ? 2 : 3))!.requestBodySha256)`, and (optionally, after `send(4)`) assert request 4's recorded `requestBodySha256` equals that same value.
+
+**3. Low — the `--outputFile` containment scan is bypassable and checks the wrong parent.** `:341-351` matches only `--outputFile` (separated) and `--outputFile=…`. Vitest also accepts the per-reporter form `--outputFile.json=<path>` / `--outputFile.junit=<path>`, which `argument.startsWith("--outputFile=")` does not match and which is skipped by the `else continue`. Additionally the resolved path is only checked `outside(…, directory)`, never `outside(…, root)`, although the stated invariant is exclusive output outside both the store and the worktree (the test's own evidence path *is* checked against `root` at `:122`). Impact: a reporter artifact can be directed inside the worktree, or — via the dotted form — inside the store directory that `rmSync` later deletes at `:970`, defeating the containment guard. Minimal correction: extend the predicate to `argument.startsWith("--outputFile.")` (taking the substring after the first `=`), and apply both `outside(resolved, directory)` and `outside(resolved, root)`.
+
+**4. Low/Medium — the report serializations in `finally` are unguarded, so a serialization fault discards every aggregated failure.** `:1063` and `:1075` call `JSON.stringify(observation())` outside any `try`. `observation()` embeds `binding` verbatim (`:992`), whose `served` sub-object is produced by an external helper; any non-serializable member (cycle, `BigInt`) makes the `finally` block throw. A throw from `finally` replaces the pending completion, so `:1092-1094` never runs and the real primary failure (plus `childPid`, `directoryAbsent`, cleanup flags) is lost; stdout gets nothing, not even the minimal record that `:1080-1089` exists to provide. `writeFileSync` is already protected at `:1068-1073`; the serializations are not. Minimal correction: wrap each `JSON.stringify(observation())` in `try/catch`, and on failure set a flag, `addFailure`, and fall through to the minimal `console.log` payload already defined at `:1081-1088`.
+
+**5. Low — `namedAssertion` can present a transport/setup label as a named oracle.** `:1026-1027` emits `failedAssertion` under both keys, but `currentAssertion` is also set to `guarded-batch:setup` (`:230`), `guarded-batch:launch` (`:375`), `guarded-batch:transport-N` (`:396`) and `guarded-batch:receipt-N` (`:617`). Impact: a supervisor filtering on `namedAssertion` to confirm the control's sole failure is the named `guarded-batch:one-retained-revision-failure` can be satisfied by a dial/transport abort instead; `failedPhase` disambiguates, but the two fields assert different things under identical values. Minimal correction: `namedAssertion: failedPhase === "oracle" ? failedAssertion : null`.
+
+**6. Low (oracle discrimination) — the pair-socket observation is only an upper bound.** `:772` and `:912` assert `maximumLiveSockets <= 2`, which also holds if the two contenders were never concurrently socketed (e.g. 1 at a time). Because both `ClientRequest`s are constructed synchronously at `:749-750` and each `socket` event (`:499-515`) fires before either response, `maximumLiveSockets` must be exactly 2 by the time `dispatch-discipline` runs. Impact: the recorded "two live pair sockets" claim is weaker than the facts the harness already has. Minimal correction: in `check("dispatch-discipline")` assert `expect(maximumLiveSockets).toBe(2)` and keep `<= 2` as the ceiling in `complete-fixed-schedule`.
+
+**7. Low (oracle discrimination) — intra-group Event `time` is wholly self-referential.** `:874`, `:886`, `:896` pin each event's `time` to `record(events[i]).time`, so the field is unconstrained beyond the schema's `date-time` format. Per `packages/server/src/transaction-batch.ts:705`, every event in one group is stamped from the single captured `now`, so `events[1].time === events[2].time` is a necessary consequence of the winner's two effects belonging to one transaction, and `events[0].time <= events[1].time` follows from group ordering. Impact: a projection that re-stamped per-event times, or mixed times across groups, would pass. Minimal correction: add `expect(record(events[1]).time).toBe(record(events[2]).time)` and an `events[0].time <= events[1].time` comparison inside `complete-rollback-event-linkage`.
+
+### Checked and found sound (not findings)
+
+Request-count/order ceiling and the 7/3 mode caps (`:393`); body/header/response/report byte ceilings; 45 s work + 5 s request + 10 s cleanup + 5 s drain nested inside the 60 s test; `milestones` worst case 24 < 32; loopback binding validated *before* the first dial (`:378` precedes `:385`); canonical `Host` vs dialed `127.0.0.1` matches `transaction-runtime.ts:131-132`; token never serialized, header allowlist excludes `www-authenticate`; `outside()` has no prefix-confusion flaw; `wx` + `mode 0o600` exclusivity; `rmSync` target is a validated `mkdtemp` path; failed-receipt strict shape matches `resource-evaluator.ts:145` + `transaction-batch.ts:749-757` (no `pointer` is emitted, so `toStrictEqual` is exact); `requiredPosition: "pos-2"` and `serving === 2` are forced because the revision guard makes the *second* executor the loser; collection order `guarded-seed` < `marker-*` matches `inCanonicalUriOrder`; event ids reproduce `transaction-events.ts:99` from the serving headers; requests 6–7 run *after* the replay and receipt GET, so position 2 / 3 events / `next: null` genuinely prove the retained failure did not re-execute; the control's `completed===2, failed===0, effects {2,3}, distinct seed revisions` discriminate guard omission before the named oracle fires exactly once.
+
+### Materially omitted context
+
+The shape of `bindServedProfileConfiguration`'s return value (`apps/bdptest/test-support/transactional-execution-binding.ts:74-84`) is not supplied, and it is passed `fixture` (`{bytes: Uint8Array}`). This is decisive for two properties I could not settle: (a) whether `binding` at `:992` keeps the report under the 65536 B ceiling — a retained `Uint8Array` serializes as an index-keyed object and would deterministically trip `:1064`, making every run fail; and (b) whether it stays inside the safe allowlist. Related: whether `bindServedProfileConfiguration` has any side effect on the `read-conformance-mock.ts` grant map, since a leaked grant would throw in that file's `afterAll` and add a second failure outside the single-named-failure contract. Both are resolvable only against the `@bdp/conformance/testing` source.
+
+## Proposed unexecuted source extraction accounting check
+// PROPOSED ONLY: not executed. Source-extracted JavaScript, no product module import.
+import { readFileSync } from 'node:fs';
+import { createHash } from 'node:crypto';
+import assert from 'node:assert/strict';
+const source = readFileSync(process.argv[2], 'utf8');
+assert.equal(createHash('sha256').update(source).digest('hex'),
+  '01e3ec2bf5f5af19dcd497fce5a37c8a9394723bca5760ceca53f8b8128626ab');
+const add = source.match(/  function addFailure\(error: unknown\) \{\n    if \(!failures.includes\(error\)\) failures.push\(error\);\n  \}/)?.[0];
+const pair = source.match(/    if \(pairErrors.length\) \{\n      for \(const error of pairErrors\) addFailure\(error\);\n      throw pairErrors\[0\];\n    \}/)?.[0];
+const drain = source.match(/for \(const result of results\) if \(result.status === "rejected"\) addFailure\(result.reason\);/)?.[0];
+assert.ok(add && pair && drain, 'exact source blocks must be present');
+// Remove only this known parameter annotation; the extracted control flow stays unchanged.
+const evaluate = new Function('pairErrors', 'results', `
+  const failures = [];
+  ${add.replace('error: unknown', 'error')}
+  try { ${pair} } catch (error) { addFailure(error); }
+  const primary = failures.length;
+  ${drain}
+  return { failures, primary, cleanup: failures.length - primary };
+`);
+const a = new Error('a'), b = new Error('b');
+for (const [name, errors, expected] of [
+  ['one rejection', [a], [a]],
+  ['two distinct rejections', [a, b], [a, b]],
+  ['same error on both requests', [a, a], [a]],
+]) {
+  const actual = evaluate(errors, errors.map(reason => ({ status: 'rejected', reason })));
+  assert.deepEqual(actual.failures, expected, name);
+  assert.equal(actual.primary, expected.length, name);
+  assert.equal(actual.cleanup, 0, name);
+}
+console.log(JSON.stringify({ cases: 3, productImports: 0, http: 0,
+  primaryCounts: [1, 2, 1], cleanupCounts: [0, 0, 0] }));
+
+## Actual source context
+
+## apps/bdptest/src/transactional-guarded-batch-installed.test.ts:1-35 (working repair)
+/** Private installed guarded-batch witness; no profile qualification or server-admission claim. */
+import { execFileSync, type ChildProcess } from "node:child_process";
+import { createHash, randomBytes } from "node:crypto";
+import {
+  existsSync,
+  mkdtempSync,
+  readFileSync,
+  realpathSync,
+  rmSync,
+  writeFileSync,
+} from "node:fs";
+import { request, type ClientRequest, type IncomingHttpHeaders } from "node:http";
+import type { Socket } from "node:net";
+import { tmpdir } from "node:os";
+import path from "node:path";
+import { fileURLToPath } from "node:url";
+import { Ajv2020 } from "ajv/dist/2020.js";
+import { isJsonSchemaDateTime, isJsonSchemaUri } from "@bdp/protocol";
+import { expect, it } from "vitest";
+import { installedTransactionBinding } from "../test-support/transactional-execution-binding.js";
+
+const root = realpathSync(fileURLToPath(new URL("../../../", import.meta.url)));
+const { launchInstalledTransaction } = (await import(
+  new URL("../../../scripts/transaction-installed-observation.mjs", import.meta.url).href
+)) as {
+  launchInstalledTransaction(
+    entry: string,
+    configuration: unknown,
+    signal?: AbortSignal,
+  ): Promise<{
+    child: ChildProcess;
+    ready: Record<string, unknown>;
+    close(): Promise<void>;
+  }>;
+};
+
+## apps/bdptest/src/transactional-guarded-batch-installed.test.ts:180-285 (working repair)
+type ResponseObservation = {
+  index: number;
+  method: string;
+  url: string;
+  sentKey: string | null;
+  requestBodyBytes: number;
+  requestBodySha256: string | null;
+  status: number;
+  bodyBytes: number;
+  bodySha256: string;
+  headers: Record<string, string | null>;
+};
+
+it("preserves one guarded batch winner and rolls back the losing marker through installed HTTP", async () => {
+  const started = performance.now(),
+    work = new AbortController();
+  const failures: unknown[] = [],
+    active = new Set<ClientRequest>();
+  const pending: Promise<Wire>[] = [],
+    closing: Promise<void>[] = [];
+  const responses: ResponseObservation[] = [],
+    milestones: Milestone[] = [];
+  const receiptObservations: {
+    index: number;
+    id: string;
+    transaction: string;
+    key: string;
+    status: string;
+    resources: { id: string; revision: string }[];
+    effectPosition: string | null;
+    requiredPosition: string;
+    servingPosition: string;
+    problem: Record<string, unknown> | null;
+  }[] = [];
+  const performed: string[] = [];
+  const requestSockets = new Map<number, number>();
+  const sockets = new Map<object, number>();
+  const liveSockets = new Set<Socket>();
+  let maximumLiveSockets = 0;
+  let milestoneOverflow = false,
+    deadlineExceeded = false,
+    cleanupExceeded = false,
+    drainExceeded = false;
+  let directory: string | undefined, temporaryRoot: string | undefined;
+  let child: Awaited<ReturnType<typeof launchInstalledTransaction>> | undefined;
+  let binding: ReturnType<typeof installedTransactionBinding> | undefined;
+  let projectionSha256: string | null = null;
+  let launchAttempted = false,
+    closed = false,
+    attempted = 0;
+  let currentAssertion = "guarded-batch:setup",
+    failedAssertion: string | null = null;
+  type Phase = "setup" | "launch" | "transport" | "oracle" | "inconclusive";
+  let phase: Phase = "setup",
+    failedPhase: Phase | null = null;
+  let reportWriteFailed = false,
+    reportOverflow = false;
+  let inconclusivePending = false;
+  const prerequisites = {
+    seedSchemaAndLiterals: false,
+    pairSchemasAndLiterals: false,
+    dispatchDiscipline: false,
+    controlTwoCompletedEffects: false,
+  };
+  let completedContenderCount: number | null = null,
+    failedContenderCount: number | null = null;
+  let selectedWinner: string | null = null,
+    selectedLoser: string | null = null;
+  let revisionEncodingBytes: number | null = null;
+  let bothConnectedBeforeFirstResponse = false,
+    bothWritesPrecededFirstResponse = false;
+  const deadline = setTimeout(() => {
+    deadlineExceeded = true;
+    work.abort(new Error("guarded-batch work deadline"));
+  }, 45000);
+  function destroyActive() {
+    for (const req of active) req.destroy();
+    for (const socket of liveSockets) socket.destroy();
+  }
+  work.signal.addEventListener("abort", destroyActive);
+  function mark(index: number, kind: string) {
+    if (index < 2 || index > 3 || milestones.some((m) => m.request === index && m.kind === kind))
+      return;
+    if (milestones.length >= 32) {
+      milestoneOverflow = true;
+      return;
+    }
+    milestones.push({
+      order: milestones.length,
+      request: index,
+      kind,
+      elapsedMs: performance.now() - started,
+      socket: requestSockets.get(index) ?? null,
+    });
+  }
+  function check(name: string, assertion: () => void) {
+    phase = "oracle";
+    currentAssertion = `guarded-batch:${name}`;
+    assertion();
+    performed.push(name);
+  }
+  function addFailure(error: unknown) {
+    if (!failures.includes(error)) failures.push(error);
+  }
+  try {
+    const ajv = new Ajv2020({ allErrors: true, strict: true });
+
+## apps/bdptest/src/transactional-guarded-batch-installed.test.ts:390-595 (working repair)
+    let aBody: string | undefined, bBody: string | undefined;
+    function send(index: number): Promise<Wire> {
+      work.signal.throwIfAborted();
+      if (attempted >= (mode === "positive" ? 7 : 3) || index !== attempted + 1)
+        throw new Error("guarded-batch dispatch ceiling/order");
+      phase = "transport";
+      currentAssertion = `guarded-batch:transport-${index}`;
+      const method = index <= 4 ? "POST" : "GET";
+      const literal =
+        index <= 4
+          ? `${scope}operations/batch`
+          : index === 5
+            ? receiptUrl
+            : index === 6
+              ? `${scope}beads/?limit=32`
+              : `${scope}events/`;
+      if (!literal) throw new Error("guarded-batch missing issued receipt root");
+      const url = new URL(literal);
+      if (
+        url.href !== literal ||
+        url.origin !== new URL(scope).origin ||
+        url.hash ||
+        url.username ||
+        url.password ||
+        (index === 6 ? url.search !== "?limit=32" : !!url.search)
+      )
+        throw new Error("guarded-batch route grant");
+      if (index === 5) ownedUrl(literal, "receipts");
+      const body =
+        index === 1
+          ? seedBody
+          : index === 2
+            ? aBody
+            : index === 3
+              ? bBody
+              : index === 4
+                ? replayBody
+                : undefined;
+      const sentKey =
+        index === 1
+          ? seedKey
+          : index === 2
+            ? "guarded-a"
+            : index === 3
+              ? "guarded-b"
+              : index === 4
+                ? replayKey
+                : undefined;
+      if (method === "POST" && (body === undefined || sentKey === undefined))
+        throw new Error("guarded-batch missing frozen request");
+      const headers: Record<string, string> = {
+        Host: url.host,
+        Authorization: `Bearer ${token}`,
+        Accept: "application/json",
+        Connection: "close",
+      };
+      if (body !== undefined) {
+        if (Buffer.byteLength(body) > 65536) throw new Error("guarded-batch request body ceiling");
+        headers["Content-Type"] = "application/json";
+        headers["Content-Length"] = String(Buffer.byteLength(body));
+        headers["Idempotency-Key"] = sentKey!;
+      }
+      if (
+        Buffer.byteLength(
+          Object.entries(headers)
+            .map(([name, value]) => `${name}: ${value}\r\n`)
+            .join("") + "\r\n",
+        ) > 16384
+      )
+        throw new Error("guarded-batch request header ceiling");
+      attempted++;
+      mark(index, "invoked");
+      const promise = new Promise<Wire>((resolve, reject) => {
+        let settled = false;
+        const req = request({
+          host: address.hostname,
+          port: Number(address.port),
+          method,
+          path: url.pathname + url.search,
+          headers,
+          agent: false,
+          maxHeaderSize: 16384,
+        });
+        active.add(req);
+        closing.push(
+          new Promise<void>((done) =>
+            req.once("close", () => {
+              active.delete(req);
+              mark(index, "request-close");
+              done();
+            }),
+          ),
+        );
+        const timeout = setTimeout(() => fail(new Error("guarded-batch request deadline")), 5000);
+        const onAbort = () => fail(new Error("guarded-batch request aborted"));
+        function finish(error: unknown, result?: Wire) {
+          if (settled) return;
+          settled = true;
+          clearTimeout(timeout);
+          work.signal.removeEventListener("abort", onAbort);
+          mark(index, "settled");
+          if (error !== undefined) reject(error);
+          else resolve(result!);
+        }
+        function fail(error: unknown) {
+          req.destroy();
+          finish(error);
+        }
+        work.signal.addEventListener("abort", onAbort, { once: true });
+        req.once("socket", (socket) => {
+          if (!sockets.has(socket)) sockets.set(socket, sockets.size + 1);
+          requestSockets.set(index, sockets.get(socket)!);
+          mark(index, "socket-assigned");
+          socket.once("connect", () => mark(index, "connected"));
+          liveSockets.add(socket);
+          maximumLiveSockets = Math.max(maximumLiveSockets, liveSockets.size);
+          closing.push(
+            new Promise<void>((done) =>
+              socket.once("close", () => {
+                liveSockets.delete(socket);
+                mark(index, "socket-close");
+                done();
+              }),
+            ),
+          );
+        });
+        req.once("finish", () => mark(index, "finish"));
+        req.once("error", (error) => {
+          mark(index, "error");
+          finish(error);
+        });
+        req.once("response", (response) => {
+          mark(index, "response-start");
+          const chunks: Buffer[] = [];
+          let bytes = 0,
+            ended = false;
+          response.on("data", (chunk: Buffer) => {
+            if (settled) return;
+            if (bytes + chunk.length > 32768) {
+              response.destroy();
+              fail(new Error("guarded-batch response body ceiling"));
+              return;
+            }
+            bytes += chunk.length;
+            chunks.push(chunk);
+          });
+          response.once("aborted", () => {
+            mark(index, "aborted");
+            fail(new Error("guarded-batch response aborted"));
+          });
+          response.once("error", (error) => fail(error));
+          response.once("close", () => {
+            mark(index, "response-close");
+            if (!ended) fail(new Error("guarded-batch incomplete response"));
+          });
+          response.once("end", () => {
+            ended = true;
+            mark(index, "response-end");
+            if (settled) return;
+            try {
+              if (!response.complete || !bytes)
+                throw new Error("guarded-batch empty or incomplete response");
+              const raw = Buffer.concat(chunks, bytes);
+              const safeHeaders = Object.fromEntries(
+                safeHeaderNames.map((name) => [
+                  name,
+                  typeof response.headers[name] === "string"
+                    ? (response.headers[name] as string)
+                    : null,
+                ]),
+              );
+              // Retain actual completed fingerprints before decoding or any oracle can fail.
+              responses.push({
+                index,
+                method,
+                url: literal,
+                sentKey: sentKey ?? null,
+                requestBodyBytes: body === undefined ? 0 : Buffer.byteLength(body),
+                requestBodySha256: body === undefined ? null : sha(body),
+                status: response.statusCode ?? 0,
+                bodyBytes: bytes,
+                bodySha256: sha(raw),
+                headers: safeHeaders,
+              });
+              const value: unknown = JSON.parse(
+                new TextDecoder("utf-8", { fatal: true }).decode(raw),
+              );
+              if (value === null) throw new Error("guarded-batch null response body");
+              finish(undefined, {
+                index,
+                status: response.statusCode ?? 0,
+                headers: response.headers,
+                body: value,
+              });
+            } catch (error) {
+              fail(error);
+            }
+          });
+        });
+        mark(index, "end-called");
+        req.end(body);
+      });
+      // The second dispatch is synchronous; neither rejection waits for allSettled registration.
+      void promise.catch(() => undefined);
+      pending.push(promise);
+      return promise;
+
+## apps/bdptest/src/transactional-guarded-batch-installed.test.ts:745-850 (working repair)
+    const originals = [
+      { side: "a", key: "guarded-a", body: aBody!, hash: sha(aBody!) },
+      { side: "b", key: "guarded-b", body: bBody!, hash: sha(bBody!) },
+    ] as const;
+    const aPromise = send(2),
+      bPromise = send(3);
+    const pair = await Promise.allSettled([aPromise, bPromise]);
+    const pairErrors = pair.flatMap((result) =>
+      result.status === "rejected" ? [result.reason] : [],
+    );
+    if (pairErrors.length) {
+      for (const error of pairErrors) addFailure(error);
+      throw pairErrors[0];
+    }
+    const aWire = (pair[0] as PromiseFulfilledResult<Wire>).value,
+      bWire = (pair[1] as PromiseFulfilledResult<Wire>).value;
+    await Promise.all(closing);
+    check("dispatch-discipline", () => {
+      expect(milestoneOverflow).toBe(false);
+      const firstSettled = milestones.find((m) => m.kind === "settled")!.order;
+      for (const index of [2, 3])
+        for (const kind of ["invoked", "end-called"])
+          expect(
+            milestones.find((m) => m.request === index && m.kind === kind)?.order,
+          ).toBeLessThan(firstSettled);
+      expect(requestSockets.get(2)).toBeDefined();
+      expect(requestSockets.get(3)).toBeDefined();
+      expect(requestSockets.get(2)).not.toBe(requestSockets.get(3));
+      expect(milestones.filter((m) => m.kind === "response-end")).toHaveLength(2);
+      expect(maximumLiveSockets).toBeLessThanOrEqual(2);
+      prerequisites.dispatchDiscipline = true;
+    });
+    const firstResponse = milestones.find((m) => m.kind === "response-start")!.order;
+    bothConnectedBeforeFirstResponse = [2, 3].every((i) =>
+      milestones.some((m) => m.request === i && m.kind === "connected" && m.order < firstResponse),
+    );
+    bothWritesPrecededFirstResponse = [2, 3].every((i) =>
+      milestones.some((m) => m.request === i && m.kind === "finish" && m.order < firstResponse),
+    );
+    const a = receipt(aWire, "guarded-a", "a"),
+      b = receipt(bWire, "guarded-b", "b");
+    completedContenderCount = [a, b].filter((r) => !r.failed).length;
+    failedContenderCount = [a, b].filter((r) => r.failed).length;
+    check("pair-identities", () => {
+      expect(a.id).not.toBe(b.id);
+      expect(a.transaction).not.toBe(b.transaction);
+      for (const r of [a, b]) expect([r.epoch, r.view]).toStrictEqual([seed.epoch, seed.view]);
+      prerequisites.pairSchemasAndLiterals = true;
+    });
+    if (mode === "unguarded-contenders")
+      check("control-prerequisites", () => {
+        expect(completedContenderCount).toBe(2);
+        expect(failedContenderCount).toBe(0);
+        expect([a.effect, b.effect].sort()).toStrictEqual([2, 3]);
+        expect(a.resources[1]!.revision).not.toBe(b.resources[1]!.revision);
+        expect(attempted).toBe(3);
+        expect(responses).toHaveLength(3);
+        expect(sockets.size).toBe(3);
+        prerequisites.controlTwoCompletedEffects = true;
+      });
+    check("one-retained-revision-failure", () =>
+      expect(failedContenderCount, "guarded-batch:one-retained-revision-failure").toBe(1),
+    );
+    const loserIndex = a.failed ? 0 : 1,
+      winner = a.failed ? b : a,
+      loser = a.failed ? a : b;
+    const losingInput = originals[loserIndex],
+      winningSide = originals[1 - loserIndex]!.side;
+    selectedWinner = winner.key;
+    selectedLoser = loser.key;
+    receiptUrl = loser.id;
+    replayBody = losingInput.body;
+    replayKey = losingInput.key;
+    const losingResponse = responses.find((response) => response.index === loserIndex + 2);
+    check("frozen-loser-replay-input", () => {
+      expect(losingResponse?.index).toBe((loserIndex === 0 ? aWire : bWire).index);
+      expect(losingResponse?.sentKey).toBe(loser.key);
+      expect(losingResponse?.sentKey).toBe(replayKey);
+      expect(losingResponse?.requestBodySha256).toBe(losingInput.hash);
+      expect(losingResponse?.requestBodySha256).toBe(sha(replayBody!));
+      expect(losingResponse?.requestBodyBytes).toBe(Buffer.byteLength(replayBody!));
+    });
+    const replayWire = await send(4);
+    await Promise.all(closing);
+    const replay = receipt(replayWire, loser.key, losingInput.side);
+    check("retained-failure-full-equality", () => {
+      const replayResponse = responses.find((response) => response.index === replayWire.index);
+      expect(replayResponse?.index).toBe(4);
+      expect(replayResponse?.sentKey).toBe(losingResponse?.sentKey);
+      expect(replayResponse?.requestBodySha256).toBe(losingResponse?.requestBodySha256);
+      expect(replayResponse?.requestBodyBytes).toBe(losingResponse?.requestBodyBytes);
+      expect(replay.body).toStrictEqual(loser.body);
+    });
+    const recoveredWire = await send(5);
+    await Promise.all(closing);
+    const recovered = receipt(recoveredWire, loser.key, losingInput.side);
+    check("issued-failure-full-equality", () => expect(recovered.body).toStrictEqual(loser.body));
+    const marker = winner.resources[0]!,
+      seedAfter = winner.resources[1]!;
+    const collectionWire = await send(6);
+    await Promise.all(closing);
+    check("complete-rollback-resource-collection", () => {
+      expect(collectionWire.status).toBe(200);
+      expect(current(collectionWire, seed.epoch, seed.view)).toBe(2);
+      expect(checked(collectionWire.body, "currentBeadCollection")).toStrictEqual({
+        items: [seedAfter, marker],
+
+## apps/bdptest/src/transactional-guarded-batch-installed.test.ts:928-1107 (working repair)
+    });
+  } catch (error) {
+    failedAssertion = currentAssertion;
+    failedPhase = phase;
+    addFailure(error);
+  } finally {
+    const primaryFailureCount = failures.length;
+    clearTimeout(deadline);
+    work.abort();
+    destroyActive();
+    let cleanupTimer: ReturnType<typeof setTimeout> | undefined;
+    let drainTimer: ReturnType<typeof setTimeout> | undefined;
+    const drain = Promise.race([
+      Promise.allSettled([...pending, ...closing]).then((results) => {
+        for (const result of results) if (result.status === "rejected") addFailure(result.reason);
+      }),
+      new Promise<void>((resolve) => {
+        drainTimer = setTimeout(() => {
+          drainExceeded = true;
+          addFailure(new Error("guarded-batch request cleanup deadline"));
+          resolve();
+        }, 5000);
+      }),
+    ]).finally(() => clearTimeout(drainTimer));
+    const stop =
+      child === undefined
+        ? Promise.resolve()
+        : child.close().then(() => {
+            closed = true;
+          }, addFailure);
+    await Promise.race([
+      Promise.allSettled([drain, stop]).then((results) => {
+        for (const result of results) if (result.status === "rejected") addFailure(result.reason);
+      }),
+      new Promise<void>((resolve) => {
+        cleanupTimer = setTimeout(() => {
+          cleanupExceeded = true;
+          addFailure(new Error("guarded-batch cleanup deadline"));
+          child?.child.kill("SIGKILL");
+          resolve();
+        }, 10000);
+      }),
+    ]);
+    clearTimeout(cleanupTimer);
+    work.signal.removeEventListener("abort", destroyActive);
+    const stopped =
+      !launchAttempted ||
+      (child !== undefined && (child.child.exitCode !== null || child.child.signalCode !== null));
+    if (child !== undefined && (child.child.exitCode !== 0 || child.child.signalCode !== null))
+      addFailure(new Error("guarded-batch child did not exit cleanly"));
+    if (launchAttempted && child === undefined)
+      addFailure(new Error("guarded-batch pre-ready child stop unknown"));
+    if (directory !== undefined && stopped) {
+      try {
+        rmSync(directory, { recursive: true, force: true });
+      } catch (error) {
+        addFailure(error);
+      }
+    }
+    if (directory !== undefined && existsSync(directory))
+      addFailure(new Error("guarded-batch owned directory retained"));
+    if (deadlineExceeded) addFailure(new Error("guarded-batch work deadline exceeded"));
+    if (milestoneOverflow) addFailure(new Error("guarded-batch milestone ceiling"));
+    if (liveSockets.size) addFailure(new Error("guarded-batch owned sockets remain"));
+    const cleanupFailureCount = failures.length - primaryFailureCount;
+    const ready = child?.ready;
+    // Explicit allowlist: never retain credentials, runtime configuration, arbitrary errors or raw requests.
+    const observation = () => ({
+      label: "private-installed-guarded-batch",
+      mode,
+      declaredSourceCommit,
+      sourceAttribution: "caller label; supervisor must verify source/package equality",
+      workspaceDirty,
+      entry,
+      entrySha256,
+      executionMode: entryOverride ? "external-installed" : "workspace-emitted",
+      binding: binding ?? null,
+      servedIdentities:
+        ready === undefined
+          ? null
+          : {
+              runtimeConfigurationIdentity: ready.runtimeConfigurationIdentity,
+              artifactIdentity: ready.artifactIdentity,
+              policyIdentity: ready.policyIdentity,
+              authenticationIdentity: ready.authenticationIdentity,
+              payloadIdentity: ready.payloadIdentity,
+            },
+      credentialFreeConfigurationProjectionSha256: projectionSha256,
+      artifacts,
+      attempts: attempted,
+      completedResponses: responses.length,
+      responses,
+      receiptObservations,
+      milestones,
+      milestoneOverflow,
+      socketCount: sockets.size,
+      maximumLiveSockets,
+      liveSocketsAfterCleanup: liveSockets.size,
+      requestSockets: [...requestSockets].map(([index, socket]) => ({ index, socket })),
+      clientDispatchDisciplinePassed: performed.includes("dispatch-discipline"),
+      bothConnectedBeforeFirstResponse,
+      bothWritesPrecededFirstResponse,
+      inconclusivePending,
+      prerequisites,
+      completedContenderCount,
+      failedContenderCount,
+      selectedWinner,
+      selectedLoser,
+      revisionEncodingBytes,
+      performed,
+      failedAssertion,
+      namedAssertion: failedAssertion,
+      failedPhase,
+      primaryFailureCount,
+      cleanupFailureCount,
+      reportWriteFailed,
+      reportOverflow,
+      failureCount: failures.length,
+      outcome: inconclusivePending ? "inconclusive-pending" : failures.length ? "failed" : "passed",
+      retention:
+        "Full parsed receipt/Resource/Event comparisons occur in memory; response fingerprints are not retained full-wire evidence.",
+      launchAttempted,
+      childPid: child?.child.pid ?? null,
+      childExitCode: child?.child.exitCode ?? null,
+      childSignalCode: child?.child.signalCode ?? null,
+      stopKnowledge: stopped ? "known-stopped-or-never-launched" : "unknown",
+      closed,
+      temporaryRoot: temporaryRoot ?? null,
+      directory: directory ?? null,
+      directoryAbsent: directory === undefined ? null : !existsSync(directory),
+      deadlineExceeded,
+      cleanupExceeded,
+      drainExceeded,
+      elapsedMs: performance.now() - started,
+      bounds: {
+        workMs: 45000,
+        requestMs: 5000,
+        cleanupMs: 10000,
+        requestDrainMs: 5000,
+        testMs: 60000,
+        maximumRequests: mode === "positive" ? 7 : 3,
+        responseBodyBytes: 32768,
+        responseHeaderBytes: 16384,
+        reportBytes: 65536,
+      },
+      claimEligible: false,
+    });
+    let serialized = JSON.stringify(observation());
+    if (Buffer.byteLength(serialized) + 1 > 65536) {
+      reportOverflow = true;
+      addFailure(new Error("guarded-batch report ceiling"));
+    } else if (reportPath !== undefined) {
+      try {
+        writeFileSync(reportPath, serialized + "\n", { flag: "wx", mode: 0o600 });
+      } catch (error) {
+        reportWriteFailed = true;
+        addFailure(error);
+      }
+    }
+    serialized = JSON.stringify(observation());
+    if (Buffer.byteLength(serialized) + 1 <= 65536) console.log(serialized);
+    else {
+      reportOverflow = true;
+      addFailure(new Error("guarded-batch report ceiling"));
+      console.log(
+        JSON.stringify({
+          label: "private-installed-guarded-batch",
+          mode,
+          outcome: "failed",
+          reportOverflow: true,
+          failureCount: failures.length,
+          claimEligible: false,
+        }),
+      );
+    }
+  }
+  if (failures.length === 1) throw failures[0];
+  if (failures.length)
+    throw new AggregateError(failures, "guarded-batch installed observation failed");
+}, 60000);
+
+## apps/bdptest/test-support/transactional-execution-binding.ts:1-97 (committed9e5 context)
+import { isDeepStrictEqual } from "node:util";
+import { installedContractsDigest } from "./installed-contract-identity.js";
+/** Source-only installed binding. Runner retains sole receipt observation authority. */
+import { createHash } from "node:crypto";
+import {
+  createRawHttpScenarioTarget,
+  type ExactHttpModeOptions,
+  type ConformanceFixture,
+  type ExecutableScenario,
+} from "@bdp/conformance";
+import {
+  bindServedProfileConfiguration,
+  assertSameServedProfileConfiguration,
+  type TransactionalRunContext,
+  type TransactionalSession,
+} from "@bdp/conformance/testing";
+export interface InstalledTransactionChild {
+  readonly ready: Record<string, unknown>;
+  close(): Promise<unknown>;
+}
+export function installedTransactionBinding(
+  ready: Record<string, unknown>,
+  sourceCommit: string,
+  fixture: { bytes: Uint8Array },
+) {
+  if (
+    ready.profile !== "transactional" ||
+    ready.history !== false ||
+    ready.claimEligible !== false ||
+    ready.authorityMode !== "canonical" ||
+    typeof ready.scope !== "string" ||
+    typeof ready.runtimeConfigurationIdentity !== "string" ||
+    !/^[a-f0-9]{64}$/.test(ready.runtimeConfigurationIdentity)
+  )
+    throw new Error("installed Transactional metadata unavailable");
+  if (typeof ready.listenUrl !== "string")
+    throw new Error("installed physical session unavailable");
+  const url = new URL(ready.listenUrl);
+  if (
+    url.protocol !== "http:" ||
+    url.hostname !== "127.0.0.1" ||
+    !url.port ||
+    url.username ||
+    url.password ||
+    url.pathname !== "/" ||
+    url.search ||
+    url.hash
+  )
+    throw new Error("invalid installed dial binding");
+  const targetNames = {
+    createBead: "create-bead",
+    updateBead: "update-bead",
+    deleteBead: "delete-bead",
+    createLink: "create-link",
+    updateLink: "update-link",
+    deleteLink: "delete-link",
+    putAlias: "put-alias",
+    deleteAlias: "delete-alias",
+    updateWhere: "update-where",
+    deleteWhere: "delete-where",
+    batch: "batch",
+    sequence: "sequence",
+  };
+  const operationTargets = Object.freeze(
+    Object.fromEntries(
+      Object.entries(targetNames).map(([name, suffix]) => [
+        name,
+        `${ready.scope}operations/${suffix}`,
+      ]),
+    ),
+  );
+  if (!isDeepStrictEqual(ready.targets, operationTargets))
+    throw new Error("installed operation target inventory mismatch");
+  const served = bindServedProfileConfiguration({
+    scope: ready.scope,
+    profile: "transactional",
+    history: false,
+    sourceCommit,
+    installedPayloadDigest: ready.payloadIdentity as string,
+    installedContractsDigest: installedContractsDigest(ready.artifactIdentity),
+    policyDigest: ready.policyIdentity as string,
+    authenticationDigest: ready.authenticationIdentity as string,
+    fixture,
+  });
+  return Object.freeze({
+    served,
+    operationTargets,
+    runtimeConfigurationIdentity: ready.runtimeConfigurationIdentity,
+    authorityMode: "canonical" as const,
+  });
+}
+export function createTransactionalExecutionBinding(options: {
+  readonly baseline: ReturnType<typeof installedTransactionBinding>;
+  readonly sourceCommit: string;
+  readonly fixtureSource: { bytes: Uint8Array };
+  readonly exactMode: ExactHttpModeOptions;
+  readonly launch: (
+
+## packages/conformance/test-support/profile-contract-plan.ts:1-173 (committed9e5 context)
+/** Source-only planning for future served runners. Never evidence or admission. */
+import { canonicalJson } from "../src/canonical-json.js";
+import { createHash } from "node:crypto";
+import { types } from "node:util";
+import { isProtocolProfile, type ProtocolProfile } from "@bdp/protocol";
+import {
+  type ConformanceArtifactSource,
+  type ConformanceFixture,
+  copySourceBytes,
+  CUMULATIVE_MANIFEST_MAX_BYTES,
+  parseBoundedJson,
+  parseFixtureJson,
+  validateFixtureOraclePointers,
+} from "../src/artifact-bundle.js";
+import { parseExecutableScenarioManifest } from "../src/executable-manifest.js";
+import { isCanonicalScope } from "../src/runner.js";
+import { profileIncludes } from "../src/selection.js";
+import {
+  assertCanonicalProfileContractSelection,
+  type ProfileContractSelection,
+} from "../src/profile-contract-selection.js";
+export {
+  loadProfileContractSelection,
+  inspectProfileContractSourcesForTest,
+  type ProfileContractSelection,
+} from "../src/profile-contract-selection.js";
+
+const configurations = new WeakMap<object, ConformanceFixture>();
+
+/**
+ * Non-secret identity inputs captured from ONE installed service/fixture by a
+ * trusted launcher. Digests follow existing SHA-256 artifact conventions.
+ * This validates equality/shape, not the truth of a supplied observation.
+ */
+export interface ServedProfileConfiguration {
+  readonly scope: string;
+  readonly profile: ProtocolProfile;
+  readonly history: boolean;
+  readonly sourceCommit: string;
+  readonly installedPayloadDigest: string;
+  /** Exact installed descriptors, schema closure and their pinned identities. */
+  readonly installedContractsDigest: string;
+  /** Includes aggregate/visibility/operation policy, without credentials. */
+  readonly policyDigest: string;
+  /** Non-secret trusted credential-to-principal configuration identity. */
+  readonly authenticationDigest: string;
+  /** Exact fixture bytes, as in ConformanceArtifactDigests.fixtureDigest. */
+  readonly fixtureDigest: string;
+  readonly fixtureId: string;
+  /** Fixture's declared capabilities, not a list of supposedly passing rows. */
+  readonly capabilities: readonly string[];
+}
+
+export type ServedProfileConfigurationInput = Omit<
+  ServedProfileConfiguration,
+  "fixtureDigest" | "fixtureId" | "capabilities"
+> & { readonly fixture: ConformanceArtifactSource };
+
+const configurationKeys = [
+  "scope",
+  "profile",
+  "history",
+  "sourceCommit",
+  "installedPayloadDigest",
+  "installedContractsDigest",
+  "policyDigest",
+  "authenticationDigest",
+  "fixture",
+] as const;
+
+/** Own data only. Callers never supply behavior through a binding or source. */
+export function ownData(
+  value: unknown,
+  allowed: readonly string[],
+  required = allowed,
+): Record<string, unknown> {
+  if (value === null || typeof value !== "object" || types.isProxy(value))
+    throw new Error("planning input must be a plain data record");
+  const prototype = Object.getPrototypeOf(value);
+  if (prototype !== Object.prototype && prototype !== null)
+    throw new Error("planning input must be a plain data record");
+  const descriptors = Object.getOwnPropertyDescriptors(value);
+  const captured: Record<string, unknown> = Object.create(null);
+  for (const key of Reflect.ownKeys(descriptors)) {
+    if (typeof key !== "string" || !allowed.includes(key))
+      throw new Error("planning input must contain exactly the allowed fields");
+    const descriptor = descriptors[key];
+    if (!descriptor || !("value" in descriptor) || !descriptor.enumerable)
+      throw new Error("planning input requires own enumerable data fields");
+    captured[key] = descriptor.value;
+  }
+  if (required.some((key) => !Object.hasOwn(captured, key)))
+    throw new Error("planning input is missing required fields");
+  return captured;
+}
+
+function primitiveString(value: unknown, field: string): string {
+  if (typeof value !== "string") throw new Error(`invalid ${field}: primitive string required`);
+  return value;
+}
+
+function snapshotSource(input: unknown, kind: "fixture" | "manifest", maximumBytes?: number) {
+  const source = ownData(input, ["bytes", "label"], ["bytes"]);
+  const label =
+    source.label === undefined ? undefined : primitiveString(source.label, "source label");
+  const bytes = copySourceBytes({ bytes: source.bytes as Uint8Array }, kind, maximumBytes);
+  return { bytes, label };
+}
+
+export function bindServedProfileConfiguration(
+  input: ServedProfileConfigurationInput,
+): ServedProfileConfiguration {
+  const captured = ownData(input, configurationKeys);
+  const scope = primitiveString(captured.scope, "scope");
+  const profile = captured.profile;
+  const history = captured.history;
+  const sourceCommit = primitiveString(captured.sourceCommit, "source commit");
+  const installedPayloadDigest = primitiveString(
+    captured.installedPayloadDigest,
+    "installedPayloadDigest",
+  );
+  const installedContractsDigest = primitiveString(
+    captured.installedContractsDigest,
+    "installedContractsDigest",
+  );
+  const policyDigest = primitiveString(captured.policyDigest, "policyDigest");
+  const authenticationDigest = primitiveString(
+    captured.authenticationDigest,
+    "authenticationDigest",
+  );
+  if (!isCanonicalScope(scope))
+    throw new Error("served configuration requires a canonical HTTP Scope");
+  if (!isProtocolProfile(profile) || typeof history !== "boolean")
+    throw new Error("served configuration requires profile and History selection");
+  if (!/^[0-9a-f]{40}$/.test(sourceCommit)) throw new Error("invalid source commit");
+  for (const [key, value] of Object.entries({
+    installedPayloadDigest,
+    installedContractsDigest,
+    policyDigest,
+    authenticationDigest,
+  }))
+    if (!/^[0-9a-f]{64}$/.test(value)) throw new Error(`invalid ${key}`);
+  const source = snapshotSource(captured.fixture, "fixture");
+  const fixture = parseFixtureJson(
+    parseBoundedJson(source.bytes, "fixture", source.label),
+    source.label,
+  );
+  const bound = freeze({
+    scope,
+    profile,
+    history,
+    sourceCommit,
+    installedPayloadDigest,
+    installedContractsDigest,
+    policyDigest,
+    authenticationDigest,
+    fixtureDigest: digest(source.bytes),
+    fixtureId: fixture.id,
+    capabilities: [...fixture.capabilities].sort(),
+  });
+  configurations.set(bound, fixture);
+  return bound;
+}
+
+function assertBoundConfiguration(value: ServedProfileConfiguration): ConformanceFixture {
+  const fixture = configurations.get(value);
+  if (!fixture) throw new Error("factory-bound served configuration required");
+  return fixture;
+}
+
+export function assertSameServedProfileConfiguration(
+  expected: ServedProfileConfiguration,
+  actual: ServedProfileConfiguration,
+
+## packages/conformance/test-support/profile-contract-plan.ts:373-382 (committed9e5 context)
+function digest(value: string | Uint8Array): string {
+  return createHash("sha256").update(value).digest("hex");
+}
+function freeze<T>(value: T): T {
+  if (value && typeof value === "object") {
+    for (const member of Object.values(value)) freeze(member);
+    Object.freeze(value);
+  }
+  return value;
+}
+
+## packages/conformance/test-support/testing.ts:1-16 (committed9e5 context)
+export {
+  createReadUpdateArtifactSet,
+  assertReadUpdateArtifactSet,
+  copyReadUpdateArtifactSetSources,
+  type ReadUpdateArtifactSet,
+} from "./read-update-artifact-set.js";
+export { runCumulativeTransactionalMatrix } from "../src/runner.js";
+export { createCumulativeTransactionalArtifactBundle } from "../src/artifact-bundle.js";
+export {
+  bindServedProfileConfiguration,
+  assertSameServedProfileConfiguration,
+  planProfileExecution,
+} from "./profile-contract-plan.js";
+export { createCumulativeReadUpdateArtifactBundle } from "../src/artifact-bundle.js";
+export { loadProfileContractSelection } from "../src/profile-contract-selection.js";
+export { createDevelopmentReadUpdateArtifactBundle } from "../src/artifact-bundle.js";
+
+## packages/server/test-support/read-conformance-mock.ts:1-37 (committed9e5 context)
+import { afterAll, vi } from "vitest";
+
+import type { ReadServerTarget } from "../src/read-conformance-capability.js";
+import {
+  type ReadConformanceMockState,
+  readConformanceMockStateSymbol,
+} from "./read-conformance-mock-state.js";
+
+/** Minimal global setup: install the non-emitted admission mock without loading @bdp/server. */
+const conformance = vi.hoisted(() => ({
+  grants: new Map<ReadServerTarget, number>(),
+  installedMock: undefined as ((target: ReadServerTarget) => boolean) | undefined,
+})) satisfies ReadConformanceMockState;
+
+Reflect.set(globalThis, readConformanceMockStateSymbol, conformance);
+
+vi.mock("../src/read-conformance-capability.js", async (importOriginal) => {
+  const original = await importOriginal<typeof import("../src/read-conformance-capability.js")>();
+  const installedMock = (target: ReadServerTarget): boolean =>
+    (conformance.grants.get(target) ?? 0) > 0 || original.hasReadConformanceEvidence(target);
+  conformance.installedMock = installedMock;
+  return {
+    ...original,
+    hasReadConformanceEvidence: installedMock,
+  };
+});
+
+afterAll(() => {
+  const leaked = [...conformance.grants.entries()].filter(([, count]) => count !== 0);
+  conformance.grants.clear();
+  if (leaked.length > 0)
+    throw new Error(
+      `test-only Read conformance grants leaked: ${leaked
+        .map(([target, count]) => `${target}=${count}`)
+        .join(", ")}`,
+    );
+});
+
+## packages/server/test-support/read-conformance-mock-state.ts:1-17 (committed9e5 context)
+import type { ReadServerTarget } from "../src/read-conformance-capability.js";
+
+export interface ReadConformanceMockState {
+  readonly grants: Map<ReadServerTarget, number>;
+  installedMock: ((target: ReadServerTarget) => boolean) | undefined;
+}
+
+export const readConformanceMockStateSymbol = Symbol.for("bdp.test.read-conformance-mock");
+
+export function readConformanceMockState(): ReadConformanceMockState {
+  const state = Reflect.get(globalThis, readConformanceMockStateSymbol) as
+    | ReadConformanceMockState
+    | undefined;
+  if (state === undefined)
+    throw new Error("test-support module loaded before the Read conformance mock setup");
+  return state;
+}
+
+## vitest.config.ts:1-72 (committed9e5 context)
+import { existsSync, readdirSync, readFileSync } from "node:fs";
+import path from "node:path";
+import { fileURLToPath } from "node:url";
+
+import { defineConfig } from "vitest/config";
+
+const workspaceRoot = path.dirname(fileURLToPath(import.meta.url));
+
+/**
+ * Aliases every `@bdp/*` library package to its TypeScript source so `pnpm
+ * test` works from a clean checkout without a prior build. A package may also
+ * own a source-only `test-support/testing.ts` subpath for cross-package integration tests;
+ * it is deliberately absent from package exports and installed consumers.
+ * Each package's production `exports` map still points at `dist/index.js`.
+ *
+ * Only `packages/*` are scanned: those are the export-bearing libraries that
+ * tests import as `@bdp/*`. `apps/*` are CLI binaries with no `exports` and a
+ * `src/main.ts` entrypoint, so aliasing them would register a target that
+ * does not exist and mask a misconfigured import. The manifest is read
+ * directly — a missing or malformed `package.json` fails the Vitest config
+ * with the offending path instead of being silently skipped.
+ */
+function collectWorkspaceSourceAliases(): Record<string, string> {
+  const aliases: Record<string, string> = {};
+  const packagesDir = path.join(workspaceRoot, "packages");
+  for (const entry of readdirSync(packagesDir, { withFileTypes: true })) {
+    if (!entry.isDirectory()) continue;
+    const packageDir = path.join(packagesDir, entry.name);
+    const manifestPath = path.join(packageDir, "package.json");
+    let manifest: unknown;
+    try {
+      manifest = JSON.parse(readFileSync(manifestPath, "utf8"));
+    } catch (error) {
+      throw new Error(`${manifestPath}: failed to read or parse package.json`, {
+        cause: error,
+      });
+    }
+    if (!isPlainObject(manifest) || typeof manifest.name !== "string") {
+      throw new Error(`${manifestPath}: package.json must define a string "name"`);
+    }
+    const name = manifest.name;
+    if (!name.startsWith("@bdp/")) continue;
+    const sourceEntry = path.join(packageDir, "src", "index.ts");
+    if (!existsSync(sourceEntry)) {
+      throw new Error(
+        `${manifestPath}: workspace package ${name} is missing its source entrypoint at ${sourceEntry}`,
+      );
+    }
+    const testingEntry = path.join(packageDir, "test-support", "testing.ts");
+    if (existsSync(testingEntry)) aliases[`${name}/testing`] = testingEntry;
+    if (name === "@bdp/server")
+      aliases[`${name}/development`] = path.join(packageDir, "src/development.ts");
+    aliases[name] = sourceEntry;
+  }
+  return aliases;
+}
+
+function isPlainObject(value: unknown): value is Record<string, unknown> {
+  return typeof value === "object" && value !== null && !Array.isArray(value);
+}
+
+export default defineConfig({
+  resolve: { alias: collectWorkspaceSourceAliases() },
+  test: {
+    coverage: { enabled: false },
+    include: ["packages/**/*.test.ts", "apps/**/*.test.ts", "scripts/**/*.test.mjs"],
+    passWithNoTests: false,
+    // Install the non-emitted admission mock before cross-package test modules
+    // can instantiate @bdp/server through an adapter dependency.
+    setupFiles: ["./packages/server/test-support/read-conformance-mock.ts"],
+  },
+});
+
+## scripts/transaction-installed-observation.mjs:1-97 (committed9e5 context)
+/** Bounded inherited-IPC launcher. No request or observation emulation. */
+import { spawn } from "node:child_process";
+import { mkdir } from "node:fs/promises";
+export async function launchInstalledTransaction(entry, configuration, signal) {
+  signal?.throwIfAborted();
+  // Explicit launcher-owned provisioning; reopen keeps the directory/create:false.
+  if (configuration.create) await mkdir(configuration.directory, { recursive: true, mode: 0o700 });
+  signal?.throwIfAborted();
+  const child = spawn(process.execPath, [entry], {
+    cwd: "/tmp",
+    stdio: ["ignore", "pipe", "pipe", "ipc"],
+  });
+  let bytes = 0;
+  for (const stream of [child.stdout, child.stderr])
+    stream.on("data", (chunk) => {
+      bytes += chunk.length;
+      if (bytes > 65536) child.kill("SIGKILL");
+    });
+  const exited = new Promise((resolve) =>
+    child.once("exit", (code, signal) => resolve({ code, signal })),
+  );
+  async function bounded(promise) {
+    let timer;
+    try {
+      return await Promise.race([
+        promise,
+        new Promise((_, reject) => {
+          timer = setTimeout(() => {
+            child.kill("SIGKILL");
+            reject(new Error("installed transaction process deadline"));
+          }, 10000);
+        }),
+      ]);
+    } finally {
+      clearTimeout(timer);
+    }
+  }
+  async function drainFailure(error) {
+    child.kill("SIGKILL");
+    try {
+      await bounded(exited);
+    } catch (cleanup) {
+      throw new AggregateError([error, cleanup], "installed transaction cleanup failed");
+    }
+    throw error;
+  }
+  let closing;
+  const close = () =>
+    (closing ??= (async () => {
+      try {
+        if (child.connected) child.send({ command: "close" });
+        const result = await bounded(exited);
+        if (result.code !== 0 || result.signal !== null)
+          throw new Error("installed transaction child did not close cleanly");
+      } catch (error) {
+        await drainFailure(error);
+      } finally {
+        signal?.removeEventListener("abort", onAbort);
+      }
+    })());
+  const onAbort = () => {
+    void close().catch(() => {});
+  };
+  signal?.addEventListener("abort", onAbort, { once: true });
+  if (signal?.aborted) onAbort();
+  let detachReadyAbort = () => {};
+  try {
+    const ready = await bounded(
+      new Promise((resolve, reject) => {
+        const abort = () => reject(signal.reason);
+        signal?.addEventListener("abort", abort, { once: true });
+        detachReadyAbort = () => signal?.removeEventListener("abort", abort);
+        if (signal?.aborted) {
+          abort();
+          return;
+        }
+        child.once("error", reject);
+        child.once("message", resolve);
+        void exited.then(() => reject(new Error("installed transaction exited before ready")));
+        child.send({ configuration });
+      }),
+    );
+    signal?.throwIfAborted();
+    if (!ready || ready.event !== "qualification.ready" || JSON.stringify(ready).length > 65536)
+      throw new Error("invalid installed ready message");
+    return { child, ready, close };
+  } catch (error) {
+    try {
+      await close();
+    } catch (cleanup) {
+      throw new AggregateError([error, cleanup], "installed transaction startup cleanup failed");
+    }
+    throw error;
+  } finally {
+    detachReadyAbort();
+  }
+}

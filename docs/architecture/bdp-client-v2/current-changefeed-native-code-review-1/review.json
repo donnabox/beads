@@ -1,0 +1,149 @@
+{
+  "reviewedAtUtc": "2026-10-18T03:55:20.096158+00:00",
+  "reviewer": "Independent native CODE reviewer; separate from source author and mechanics reviewer",
+  "verdict": "ACCEPT_BOUNDED_STATIC_CODE_REVIEW",
+  "findings": [],
+  "concreteBlockers": 0,
+  "source": {
+    "worktree": "/Users/dbox/repos/wt/vickie/vickie-current-changefeed-minimum",
+    "baseHead": "a56254d682cf4623cab22a552e3d2f695f691795",
+    "treeBase": "144f278c7f5a08516c4ac99ba553d4cc25bcf560",
+    "dirtyExpected": true,
+    "ownedFiles": [
+      "apps/bdptest/src/transactional-changefeed-refusal-context-installed.test.ts",
+      "packages/server/src/transaction-changefeed.test.ts",
+      "packages/server/src/transaction-http.ts",
+      "packages/server/src/transaction-service.ts",
+      "packages/server/src/transaction-sse.test.ts",
+      "packages/server/src/transaction-store.ts"
+    ],
+    "all679AfterMapSha256": "ed22425aea3f5bddc85f9581a07a8ac0c1d430c3d02f3afe3e06ddb7e19f7c9f",
+    "authorIndexSha256": "31bb0664e3174bdff460d3a8b876f328a7c04d8aa24be236603ce60217fb1072",
+    "authorBindingSha256": "6b349233d20cc2b7d676e9a6ce8a66c43606cda8d7519a238a5ab8f896ab4983",
+    "fullPatchSha256": "4ff4ef9448fb79a0c08b3665b7069fb019c9b1d311b898b5525bc888bcd2955c",
+    "exactGitStatus": " M apps/bdptest/src/transactional-changefeed-refusal-context-installed.test.ts\n M packages/server/src/transaction-changefeed.test.ts\n M packages/server/src/transaction-http.ts\n M packages/server/src/transaction-service.ts\n M packages/server/src/transaction-sse.test.ts\n M packages/server/src/transaction-store.ts\n",
+    "trackedFiles": 679,
+    "unchangedFiles": 673,
+    "allSourceHashesReverifiedAfterInspection": true
+  },
+  "authority": {
+    "acceptedPlan": {
+      "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/current-changefeed-plan-precision-successor-2/plan.md",
+      "sha256": "2a09d75d792bc98e3478c531ac3a5ee3fe4f6fc9904dc2da3e085c30e86ef71e"
+    },
+    "rootDisposition2Sha256": "465e4b40ff039193bba829e24350f782750bb04e0d67a6670850f1a2d4fe092c",
+    "rootCodeOnlyStaticInspectionSha256": "c6e247f6495af8fa6a937cdde8ed378bd8a23950538f23e60dee03019cd3f316",
+    "protocolSourceSha256": "67772742d7d08f48c12196e9789f1859ad2d0e19f133ea65e197b049361f84f8",
+    "selectedSourceCallbacks": 15,
+    "newSourceReports": 9,
+    "selectedHistoricalReports": 2,
+    "unselectedHistoricalReport": "private-source-changefeed-parameter-context"
+  },
+  "inspectedChecks": [
+    {
+      "area": "HTTP admission/current minimum ordering",
+      "file": "packages/server/src/transaction-http.ts",
+      "lines": [
+        468,
+        503
+      ],
+      "assessment": "Only canonical changes branch switches to lexical currentReadMinimumHeaders and explicit current-changefeed tag. Parser/media/raw SSE multiplicity/effective Last-Event-ID ordering and unsupported fence remain. Finite ignored headers and minimum-before-shortcut behavior are exercised by D/E."
+    },
+    {
+      "area": "Service immutable tuple/intent and anchor",
+      "file": "packages/server/src/transaction-service.ts",
+      "lines": [
+        466,
+        505
+      ],
+      "assessment": "New tag selects existing snapshotCurrentReadMinimum; caller intent/tuple copied synchronously, start anchor captured once inside run before waiter preflight, explicit after never captures. Old finite-start-now intent gate and default strict capture remain. Retry closure holds after/minimum/tag and invokes fresh owner read."
+    },
+    {
+      "area": "Owner cursor/minimum/corruption order",
+      "file": "packages/server/src/transaction-store.ts",
+      "lines": [
+        1848,
+        1918
+      ],
+      "assessment": "New tag extends only existing current-minimum branch; type/tuple-before-entry, unsupported-before-context, cursor epoch/view/future/retained-row before semantic minimum preserved. SQL row check remains legitimate and corruption remains ordinary Error. readConfiguration and pump untouched."
+    },
+    {
+      "area": "A owner table and actual records",
+      "file": "packages/server/src/transaction-changefeed.test.ts",
+      "lines": [
+        1909,
+        2024
+      ],
+      "assessment": "Actual two commits/two baseline reads establish CP1/CP2;16table rows retain explicit old-owner tag/sentinel/TypeError/corruption cases. Offline deletion closes raw SQLite before reopen; eligible whole pages/actual frozen current context compared.18actual records and four no-context cases match expected roles."
+    },
+    {
+      "area": "B/C/F local ownership and bounded observers",
+      "file": "packages/server/src/transaction-changefeed.test.ts",
+      "lines": [
+        2026,
+        2280
+      ],
+      "assessment": "Appended constructor does not register historical cleanup. Recording delegate precedes B baseline;4actualcalls each. B immutable retry/positive group and C deferred-close/abort order/raw/service probes align with waiter behavior. F independently attempts all four rows with actual state/error/cleanup aggregation. Immediate rejection observers, abort-before-release,1000ms timers cleared, verified close before removal; unknown drainage retains directory and fails."
+    },
+    {
+      "area": "D32 HTTP/SSE requests and source budgets",
+      "file": "packages/server/src/transaction-sse.test.ts",
+      "lines": [
+        911,
+        1159
+      ],
+      "assessment": "Exact32 request/status sequence with real two commits, CP1/CP2 and retained reconnect matches accepted table. Current/absent-context cases, typed Problems/retry/validators, HEAD body/content-length and exact group2 frame before/after drain checked. Fetch seeds retain null wire hashes; raw recorder hashes actual bytes.3swork/4scleanup-inclusive/default5s intact and failures preserve unknown cleanup."
+    },
+    {
+      "area": "E installed append and actual lifecycle",
+      "file": "apps/bdptest/src/transactional-changefeed-refusal-context-installed.test.ts",
+      "lines": [
+        856,
+        1098
+      ],
+      "assessment": "Historical prefix is unchanged. Callback-local testing import, one global10dispatch ceiling across phased exact executors+recorder,9finite/1stream and5refusals. Existing Task schema seeds validated. Exact finite group2/CP2 matches live and drained stream. Literal/resolved entry/source limitation/binding/ready/pending and exit+close evidence retained; one total10scleanup budget and late rejection observers prevent cleanup being fabricated.45swork/60scallback/5srequest unchanged."
+    },
+    {
+      "area": "Narrow legacy oracle amendment",
+      "file": "packages/server/src/transaction-changefeed.test.ts",
+      "lines": [
+        1819,
+        1857
+      ],
+      "assessment": "Only accepted two500->503 rows, contextual Problem/retry/development-limit assertions and ten-status vector changed. Titles/dispatches/old default/old tag behavior remain. Two selected legacy observation identities; third parameter-context owning callback is unselected."
+    }
+  ],
+  "inspectedOwnedSourceHashes": {
+    "apps/bdptest/src/transactional-changefeed-refusal-context-installed.test.ts": "55f9b0eb8b5b8686c16bc7ee006d80578597d0c8c20b727f8987f1696b97ce66",
+    "packages/server/src/transaction-changefeed.test.ts": "98f593d738c9d9e3e81d35c01eae869082ca433ac382e80c574cbdac083ea8da",
+    "packages/server/src/transaction-http.ts": "be9402cadf5d2888dd42a1904bbd8eeea0b32643bd7d7949f0ae34a8eefdd2e0",
+    "packages/server/src/transaction-service.ts": "25a993b33a49dc55bc3bb24619d7ea5ea73f8f3d030c4798b250f9ffa0583622",
+    "packages/server/src/transaction-sse.test.ts": "8ed09116f709d47573b394fdf9d6cc6eb4c90db858bfce9afa89097d0f305d9d",
+    "packages/server/src/transaction-store.ts": "2feff60d7064cf6a1f8b15c8360b98c1671a04762346d1d6bb3a9321ef69a2d5"
+  },
+  "relevantUnchangedSourceHashes": {
+    "packages/server/src/transaction-consistency.ts": "49cf5e1a7682b7fff570b3691b91d9de0816fc6fb93970847d5ece0992f21e9d",
+    "packages/server/test-support/raw-sse-recorder.ts": "09ff8343ac1a5dbad77eaf24fc2745cc28ea870ada6b05dc4ea1644c0ad5ef81",
+    "scripts/transaction-installed-observation.mjs": "6f772f3776d3c3effa788676d853cc2932a6ee59ad63ac3338ad1b487408914b",
+    "packages/server/src/transaction-installed-process.ts": "6bd16f940f1f751189fc76419e3a18ca26cd5f54da3cfa3946b30c3956a2f8b7",
+    "packages/server/src/transaction-sse.ts": "1a414cb252b1eb2b5c3695d16aecb59382cbd417876837351e1d80b91b45784c",
+    "docs/specs/bdp.md": "67772742d7d08f48c12196e9789f1859ad2d0e19f133ea65e197b049361f84f8"
+  },
+  "preservation": {
+    "originalPR167SourceNotEdited": true,
+    "sixFileScopeOnly": true,
+    "fullInstalledPrefixPreservedBytes": 33116,
+    "ssePrefixPreserved": true,
+    "pumpAndReadConfigurationOutsideOwnedSeamUnchanged": true,
+    "noMainAbsorptionOrProtocolChanges": true
+  },
+  "evidenceLimits": [
+    "Static inspection only: no formatter/compiler/test/build/install/service/CLI reviewer executed",
+    "Source syntax/style/runtime/deadline behavior remains unexecuted and must pass separately released exact-source validation",
+    "Authored report schemas/counts and HTTP/store inventories are prospective, not observed runtime/wire census",
+    "Private current-changefeed slice does not establish D3/D4/D5 or complete Write/RU/TX qualification",
+    "No source/packet/launch/design/git edits by this review; actual Claude CODE and findings disposition remain required",
+    "Prior PLAN supervisor failure stays failed; no PLAN retry or inferred review approval"
+  ],
+  "next": "Root may combine this native CODE finding-free result with separate mechanics acceptance to release one default-model read-only actual Claude CODE attempt. Root dispositions all actual findings before any validation release."
+}

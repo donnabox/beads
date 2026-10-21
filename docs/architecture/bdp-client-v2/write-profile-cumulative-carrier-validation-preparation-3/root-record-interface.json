@@ -1,0 +1,73 @@
+{
+  "common": {
+    "documentPin": [
+      "exact path/sha256 keys",
+      "absolute nonsymlink existing actual file with exact raw SHA"
+    ],
+    "nativeHelperDisposition": [
+      "accepted=true",
+      "implementationIndexSha256 exact; OTHER-native full mechanics, not author closure"
+    ],
+    "rootDisposition": [
+      "accepted=true",
+      "sourceBindingSha256 exact current external source binding",
+      "implementationIndexSha256 exact prepared implementation",
+      "freshPipelineRequired=true",
+      "originalActualCodeReviewDispositionAccepted=true",
+      "laterCorrectedSourceNativeAccepted=true",
+      "runtimeValidationAuthorized=true for evaluator stages"
+    ]
+  },
+  "downstream": {
+    "rootArchiveAcceptance": [
+      "accepted=true",
+      "sourceBindingSha256",
+      "TOP-LEVEL tarProvenanceSha256 actual run/tar-source-provenance.json"
+    ],
+    "rootBuildAcceptance": [
+      "accepted=true",
+      "sourceBindingSha256",
+      "buildMapSha256 actual run/build-artifacts.json"
+    ],
+    "rootConsumerLockAcceptance": [
+      "accepted=true",
+      "sourceBindingSha256",
+      "consumerLockSha256 actual new consumer lock and gate",
+      "consumerManifestSha256",
+      "consumerSettingsSha256"
+    ],
+    "rootConsumerProofAcceptance": [
+      "accepted=true",
+      "sourceBindingSha256",
+      "installedProvenance exact active-gate pin object",
+      "consumerInventory exact active-gate pin object"
+    ],
+    "rootPrivateEmitAcceptance": [
+      "accepted=true",
+      "sourceBindingSha256",
+      "privateEmitProof exact active-gate pin object"
+    ]
+  },
+  "everyPriorStageRootOuterReceipt": [
+    "accepted=true",
+    "rawExit=0",
+    "stage exact",
+    "attemptId exact",
+    "sourceBindingSha256 exact",
+    "stageExitSha256 actual",
+    "watchdogSha256 actual",
+    "wholeParentElapsedSeconds finite >=0 and STRICTLY<115, measured from before wrapper launch; successful inner record alone is insufficient",
+    "parentStdoutEOF=true AND parentStderrEOF=true actual settled root-captured tool pipes",
+    "censusProbeTerminal exact path/sha256 pin to complete actual parent TOOL stdout, <=1MiB, exactly one newline-terminated carrier-census-probe-terminal-v1 event; provisional until rawExit0+wholeelapsed<115",
+    "censusProbeClosure exact document pin: accepted=true, stage/attemptId/sourceBindingSha256, parentProbeTerminalSha256, exact complete probePids/probeGroups, taskPids/taskGroups, censusAfterActualParentExit=true, rawExit0/stdoutEOF/stderrEOF/stderrBytes0, censusRaw exact pin to ordinary bounded <=262144-byte raw ps table",
+    "fresh root ps census must cover ALL registry probe IDs/groups plus recorded task IDs/groups; no remaining row; no event-only, counts-only, last-probe-only or reconstructed receipt acceptance",
+    "Exact terminal key censusIoFailurePrefix is required and MUST be null for positive acceptance; a nonnull fixed-class ordinary I/O failure prefix is diagnostic FAILED evidence only. Historical first failurePrefix is still independently required null."
+  ],
+  "noAliasesOrOldPassReuse": true,
+  "publication": "Independently inspect full actual objects and file/provenance/process facts; freeze/index/mirror/publish/readback actual root acceptances BEFORE active gate references/prefix release. Field shape alone is never semantic or ownership acceptance.",
+  "state": "Existing concrete gate.py interface; future actual records remain UNRESOLVED; no execution",
+  "toolProbeTerminalContract": {
+    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-cumulative-carrier-validation-preparation-3/census-probe-contract.json",
+    "state": "CLOSED declaration; actual tool terminal/fresh root proof remain UNKNOWN"
+  }
+}

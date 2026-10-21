@@ -1,0 +1,176 @@
+{
+  "apps/bdptest/src/reference-deployment-lifecycle-installed.test.ts": {
+    "afterExists": true,
+    "afterSha256": "d045ecbafdd53db35842c08f38c754f0814f7de891cadb40303921fa4146bceb",
+    "beforeExists": false,
+    "beforeSha256": null
+  },
+  "apps/bdptest/src/transactional-changefeed-refusal-context-installed.test.ts": {
+    "afterExists": true,
+    "afterSha256": "813c7446abbd064fe14425b81ae4befad7a55f54e30a44172209b6a82950fa77",
+    "beforeExists": true,
+    "beforeSha256": "7beb2ef803aa2bf7befb21bc5bb427d7a40d18428ee69d1425140fa33de5153b"
+  },
+  "apps/bdptest/src/transactional-discovery-installed.test.ts": {
+    "afterExists": true,
+    "afterSha256": "5b2d59a9f959294a3e9899ec613b3d88073cbbc9da3b22bde069375695516f20",
+    "beforeExists": true,
+    "beforeSha256": "7cf8822108489f3fb2f9c5ca1d97c6d7b832acca95a2f7d891c3413404d90c49"
+  },
+  "apps/bdptest/src/transactional-schema-installed.test.ts": {
+    "afterExists": true,
+    "afterSha256": "f2ba22fb0824f405699e9157584d3ba700efae323d795783092266cf38bfcc18",
+    "beforeExists": true,
+    "beforeSha256": "18840119f1ca270d35414f3cb0d44dfe988a44ff9cb1edaa4a405b25b6da4759"
+  },
+  "docs/design/startup-configuration.md": {
+    "afterExists": true,
+    "afterSha256": "0ab47c709ffcb74decb6180675f886ca4182fc25934fb7d7bd2828ce2dc368d3",
+    "beforeExists": true,
+    "beforeSha256": "f957814cabb23136a6064b6ea2814bf6a5c454fe841666053bf1a01cae67d175"
+  },
+  "packages/config/src/index.test.ts": {
+    "afterExists": true,
+    "afterSha256": "075bfa623cf5f5b5cee97084b3f534a1649539afdc7d9f8539652c1678ef4a26",
+    "beforeExists": true,
+    "beforeSha256": "a966a2c223f263d2db5dd0b48082f7bc57aca66e346ca109c1a9d1eab53c2a0f"
+  },
+  "packages/config/src/index.ts": {
+    "afterExists": true,
+    "afterSha256": "cbcb0ecfce8a04b5a037c9923e2913079f03853d4015ba40e984d574f9f5ec47",
+    "beforeExists": true,
+    "beforeSha256": "356febdfe9e3818f471da4c2ddf8d62370ad91542404e4aa630d3734a61babe3"
+  },
+  "packages/server/package.json": {
+    "afterExists": true,
+    "afterSha256": "1419ae0988d25cc5d5f7caed5b52016de9ee6f6fdf6bfd5cfbc3d91bfdb42814",
+    "beforeExists": true,
+    "beforeSha256": "110e00c403c667d8c848c6280b2e98c47f98f134158a621967d889914d44632e"
+  },
+  "packages/server/src/development-authority.ts": {
+    "afterExists": true,
+    "afterSha256": "a7a32ca431d477654675550f394eb1d85f8be4f9830a0583de951aa40a6eeac5",
+    "beforeExists": true,
+    "beforeSha256": "d49f89da345234f7eaee83dd872a5c2d7a1a8d38ffc794e5e69d333976d22d49"
+  },
+  "packages/server/src/development-runtime.ts": {
+    "afterExists": true,
+    "afterSha256": "bb50d83f79b4f3aeb09080276a8cc4a72ffe0fd06eb1bbf4349d778aa060a8ef",
+    "beforeExists": true,
+    "beforeSha256": "37e222682645e9d8f2d5fcf62de208640fb6216c9e9f2f279ab6017e8b9d6ca9"
+  },
+  "packages/server/src/read-sequence-lifecycle.test.ts": {
+    "afterExists": true,
+    "afterSha256": "83f93562c4742d6a5f7f04ebd5772908a1cf716c99f794c3a2078d416046f497",
+    "beforeExists": true,
+    "beforeSha256": "264a629be30266f8932d09db39ce9cc4b532c54ef9f52a0689c753505eaf33fb"
+  },
+  "packages/server/src/reference-deployment-process.ts": {
+    "afterExists": true,
+    "afterSha256": "5abf5f72e271e40bc0024dbe4449e0d0d6265fcc5d0ee1f8afa0289dc25fd9d5",
+    "beforeExists": false,
+    "beforeSha256": null
+  },
+  "packages/server/src/reference-deployment-runtime.test.ts": {
+    "afterExists": true,
+    "afterSha256": "720cb5166521b6e02fec2dd7765e50303482cd54b755e6bc8f8d94b1afc338b5",
+    "beforeExists": false,
+    "beforeSha256": null
+  },
+  "packages/server/src/reference-deployment-runtime.ts": {
+    "afterExists": true,
+    "afterSha256": "a3386c680014ea9762739e315b3459fe82480d0a0717774ef2386ad8015eff8d",
+    "beforeExists": false,
+    "beforeSha256": null
+  },
+  "packages/server/src/reference-deployment-state.ts": {
+    "afterExists": true,
+    "afterSha256": "c95b91aec78da06796e4f1337db0ef90c1a412151e9e1d836358bd5b273af806",
+    "beforeExists": false,
+    "beforeSha256": null
+  },
+  "packages/server/src/reference-deployment.test.ts": {
+    "afterExists": true,
+    "afterSha256": "adfbf6b0132cc24b3b65bf482000de2da43bf242102020637ed894b2cdd0cee9",
+    "beforeExists": false,
+    "beforeSha256": null
+  },
+  "packages/server/src/reference-deployment.ts": {
+    "afterExists": true,
+    "afterSha256": "276868b4d6bbf2e5a4693b03ef73a96bb2294b76e94456597fd9584c0736c48b",
+    "beforeExists": false,
+    "beforeSha256": null
+  },
+  "packages/server/src/transaction-changefeed.test.ts": {
+    "afterExists": true,
+    "afterSha256": "e57a05adb613c7bfec646e19e282dcc536a20a3d8f0a5fd2858b734e60183da8",
+    "beforeExists": true,
+    "beforeSha256": "e3717ff2dfcc9af743e5c963de7f1c75778f827768765e9eb3aebe1545efd4d0"
+  },
+  "packages/server/src/transaction-http.test.ts": {
+    "afterExists": true,
+    "afterSha256": "57148d60bc0e6f2bb8767331b7f190db9f36cf619b243451fd2ab726d8199381",
+    "beforeExists": true,
+    "beforeSha256": "f972c417409302e750f0936c80be5c261de21556d5ca8a883bbe0f713f2049df"
+  },
+  "packages/server/src/transaction-http.ts": {
+    "afterExists": true,
+    "afterSha256": "4a59ac8079853c2931e39088949c49b9fdca67929fdc6fc86e89ad382ba7bb87",
+    "beforeExists": true,
+    "beforeSha256": "52a529218f3f999bbc1c86ec3b04b1198b22da7c5104e0d00e87761bb45f4967"
+  },
+  "packages/server/src/transaction-installed-contracts.test.ts": {
+    "afterExists": true,
+    "afterSha256": "3626cc98357a0eddd4c6629c98d551793a2026f3f86f259c8a1c05ad5911867e",
+    "beforeExists": true,
+    "beforeSha256": "f2dd0993c4fa61742435d3bedb101afb021ca0f1b5904147ab367ba243286bd1"
+  },
+  "packages/server/src/transaction-runtime.ts": {
+    "afterExists": true,
+    "afterSha256": "8d2185e75474ffadb5d17aa57ccf3fdf822292f9cf2c46640f6bc6ab81702694",
+    "beforeExists": true,
+    "beforeSha256": "48cb5411407c456d7b3f301a4b67970061be9f51c94201de832ba5deff6ea2d4"
+  },
+  "packages/server/src/transaction-service.ts": {
+    "afterExists": true,
+    "afterSha256": "d34b28787b70e5a14c38f1295a7cacc3bd2425768245ace46484f882987e9568",
+    "beforeExists": true,
+    "beforeSha256": "a382109d25d3c98ce9c38d33524ad71ba42190aff6a05eb4486cf01d7321a487"
+  },
+  "packages/server/src/transaction-snapshot.test.ts": {
+    "afterExists": true,
+    "afterSha256": "d4b338ec53db6a14d4a469a70a70dfb908eb0898cd1d4a2bb2797d62429ceb9e",
+    "beforeExists": true,
+    "beforeSha256": "57227357dccc13e6f47ec35aad06b238fba90743c4d0283361c4931ec1c5bad5"
+  },
+  "packages/server/src/transaction-sse.test.ts": {
+    "afterExists": true,
+    "afterSha256": "8f8678b9f8d84e36b7faef5279e70b3d9fa9e992ce3f8b2eb6a718ed92b31589",
+    "beforeExists": true,
+    "beforeSha256": "7c8f45a2456c33a90b61b43388cf33d67784c47d0f63b95505f204b4ea1cd9b0"
+  },
+  "packages/server/src/transaction-store.ts": {
+    "afterExists": true,
+    "afterSha256": "2feff60d7064cf6a1f8b15c8360b98c1671a04762346d1d6bb3a9321ef69a2d5",
+    "beforeExists": true,
+    "beforeSha256": "3f04b440b3cf78f9d8d14650f27c6bdd5e47e6f1a8bd2fddba62407b37d08002"
+  },
+  "scripts/smoke-executables.mjs": {
+    "afterExists": true,
+    "afterSha256": "806865aed9c3d3bca020655e9a708c794f7e68e60076afb430fae7d0d82707ea",
+    "beforeExists": true,
+    "beforeSha256": "adeaea6e334f8fb6f7af5d09f0cb7ee0b729864affc45cb6baf84a95f1d4d9ae"
+  },
+  "scripts/smoke-safety.mjs": {
+    "afterExists": true,
+    "afterSha256": "35bf1d65dbc5cc4b866438cd082feaa1287c2350ac6860e258a3b525a0e34967",
+    "beforeExists": true,
+    "beforeSha256": "8aa35543d3236187aa377ad01d2255ecc6abcab3a81665aa6498baff2bf73803"
+  },
+  "scripts/smoke-safety.test.mjs": {
+    "afterExists": true,
+    "afterSha256": "3fea7a011388bdcba9d5a4ab93f2395c9b5f85295bf847be44e66c6aca539b86",
+    "beforeExists": true,
+    "beforeSha256": "86891633028185961018b63b4aac4bddef8660790fbb467fbbdabdcae7a126fa"
+  }
+}

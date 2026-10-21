@@ -1,0 +1,11 @@
+--- a/packages/server/src/transaction-http.test.ts
++++ b/packages/server/src/transaction-http.test.ts
+@@ -1763,7 +1763,7 @@
+     headers: { ...headers, authorization: `Bearer ${otherToken}`, "bdp-scope-epoch": "foreign" },
+   });
+   expect(hidden.status).toBe(404);
+-  expect(hidden.headers.has("bdp-scope-position")).toBe(false);
++  expect(hidden.headers.get("bdp-scope-position")).toBe("pos-1");
+   for (const suffix of [
+     "links/?cursor=missing",
+     "",

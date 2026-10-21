@@ -1,0 +1,602 @@
+{
+  "candidateMatches": true,
+  "rootReviewRequired": true,
+  "actualCompletedResponses": 25,
+  "reportedChildren": 1,
+  "observation": {
+    "kind": "installed-selector-admission",
+    "sourceAttribution": "00d7fff3320eb10d4165718d23d86519cd3b7c5e",
+    "sourceAttributionKind": "supervisor-verified only when external frozen packaging audit supplies it; not child attestation",
+    "workspaceDirty": false,
+    "entry": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-selector-admission-review-repair/installed-preparation-v2/run/consumer/node_modules/.pnpm/@bdp+server@file+..+packages+bdp-server-0.0.0.tgz/node_modules/@bdp/server/dist/transaction-installed-process.js",
+    "entrySha256": "bcf153170f953f9e28c6c89f1153be907f64df289e64f3ad929cad4a4a54c47c",
+    "binding": {
+      "served": {
+        "scope": "https://reference.invalid/acme/",
+        "profile": "transactional",
+        "history": false,
+        "sourceCommit": "00d7fff3320eb10d4165718d23d86519cd3b7c5e",
+        "installedPayloadDigest": "144f8c506ad961b6be61f2e25cf19ac8a2a862b25df1ae4edbfd5bdff7b7db7f",
+        "installedContractsDigest": "184330942591336c6ad84ef3d32e2704f67006b8ff64882a300488ab4698608a",
+        "policyDigest": "c2a8456212047ffba1254d5aa254f947867e0d29d01fcfefd0b8adf1ac500f74",
+        "authenticationDigest": "980f7c9c93457f07392b191843fd65c68a9bc6451fbb21cdf127d6cdf5aab508",
+        "fixtureDigest": "3a7899ced771d4880066d98b0000c53f801ece53458502cc4f3bc641146c9a85",
+        "fixtureId": "reference-transactional-v1",
+        "capabilities": [
+          "installed-transactional-http",
+          "transactional-receipt-observation"
+        ]
+      },
+      "operationTargets": {
+        "createBead": "https://reference.invalid/acme/operations/create-bead",
+        "updateBead": "https://reference.invalid/acme/operations/update-bead",
+        "deleteBead": "https://reference.invalid/acme/operations/delete-bead",
+        "createLink": "https://reference.invalid/acme/operations/create-link",
+        "updateLink": "https://reference.invalid/acme/operations/update-link",
+        "deleteLink": "https://reference.invalid/acme/operations/delete-link",
+        "putAlias": "https://reference.invalid/acme/operations/put-alias",
+        "deleteAlias": "https://reference.invalid/acme/operations/delete-alias",
+        "updateWhere": "https://reference.invalid/acme/operations/update-where",
+        "deleteWhere": "https://reference.invalid/acme/operations/delete-where",
+        "batch": "https://reference.invalid/acme/operations/batch",
+        "sequence": "https://reference.invalid/acme/operations/sequence"
+      },
+      "runtimeConfigurationIdentity": "09224d1fca0ab16daac4d2485788ca208407a51768e4a43ac0fa836e4d2109d8",
+      "authorityMode": "canonical"
+    },
+    "claimEligible": false,
+    "initialRoutes": [
+      "POST https://reference.invalid/acme/operations/batch",
+      "POST https://reference.invalid/acme/operations/delete-where",
+      "POST https://reference.invalid/acme/operations/update-where",
+      "GET https://reference.invalid/acme/beads/late",
+      "GET https://reference.invalid/acme/beads/a",
+      "GET https://reference.invalid/acme/changes/?after=genesis",
+      "GET https://reference.invalid/acme/events/"
+    ],
+    "observations": [
+      {
+        "method": "POST",
+        "url": "https://reference.invalid/acme/operations/batch",
+        "key": "seed",
+        "requestBody": "{\"operations\":[{\"operation\":\"createBead\",\"id\":\"beads/a\",\"type\":\"https://reference.invalid/acme/types/bead\",\"properties\":{\"n\":0}}]}",
+        "status": 200,
+        "headers": {
+          "bdp-authorization-view": "development-all-visible",
+          "bdp-scope-epoch": "aa608d6f-4c8d-4c80-8b04-44bbe7429126",
+          "bdp-scope-position": "pos-1",
+          "cache-control": "private, no-store",
+          "content-length": "653",
+          "content-type": "application/json",
+          "vary": "Accept",
+          "x-bdp-development": "non-attesting",
+          "date": "Thu, 15 Oct 2026 03:43:22 GMT",
+          "connection": "close"
+        },
+        "body": "{\"id\":\"https://reference.invalid/acme/receipts/34d1b044-0845-4b3f-856d-95e886fbdbea\",\"status\":\"completed\",\"idempotencyKey\":\"seed\",\"scopeEpoch\":\"aa608d6f-4c8d-4c80-8b04-44bbe7429126\",\"authorizationView\":\"development-all-visible\",\"transaction\":\"0ff3f535-9d72-404b-a6bc-94dd6564340b\",\"detail\":\"available\",\"requiredPosition\":\"pos-1\",\"effectPosition\":\"pos-1\",\"results\":[{\"operationIndex\":0,\"outcome\":\"created\",\"resource\":{\"id\":\"https://reference.invalid/acme/beads/a\",\"type\":\"https://reference.invalid/acme/types/bead\",\"revision\":\"08d9f460-fa57-4ee9-8e26-a063f7b9f8d0\",\"properties\":{\"n\":0},\"metadata\":{}}}],\"next\":null,\"expiresAt\":\"2026-10-16T03:43:22.465Z\"}",
+        "wireResponseBase64": "SFRUUC8xLjEgMjAwIE9LDQpiZHAtYXV0aG9yaXphdGlvbi12aWV3OiBkZXZlbG9wbWVudC1hbGwtdmlzaWJsZQ0KYmRwLXNjb3BlLWVwb2NoOiBhYTYwOGQ2Zi00YzhkLTRjODAtOGIwNC00NGJiZTc0MjkxMjYNCmJkcC1zY29wZS1wb3NpdGlvbjogcG9zLTENCmNhY2hlLWNvbnRyb2w6IHByaXZhdGUsIG5vLXN0b3JlDQpjb250ZW50LWxlbmd0aDogNjUzDQpjb250ZW50LXR5cGU6IGFwcGxpY2F0aW9uL2pzb24NCnZhcnk6IEFjY2VwdA0KeC1iZHAtZGV2ZWxvcG1lbnQ6IG5vbi1hdHRlc3RpbmcNCkRhdGU6IFRodSwgMTUgT2N0IDIwMjYgMDM6NDM6MjIgR01UDQpDb25uZWN0aW9uOiBjbG9zZQ0KDQp7ImlkIjoiaHR0cHM6Ly9yZWZlcmVuY2UuaW52YWxpZC9hY21lL3JlY2VpcHRzLzM0ZDFiMDQ0LTA4NDUtNGIzZi04NTZkLTk1ZTg4NmZiZGJlYSIsInN0YXR1cyI6ImNvbXBsZXRlZCIsImlkZW1wb3RlbmN5S2V5Ijoic2VlZCIsInNjb3BlRXBvY2giOiJhYTYwOGQ2Zi00YzhkLTRjODAtOGIwNC00NGJiZTc0MjkxMjYiLCJhdXRob3JpemF0aW9uVmlldyI6ImRldmVsb3BtZW50LWFsbC12aXNpYmxlIiwidHJhbnNhY3Rpb24iOiIwZmYzZjUzNS05ZDcyLTQwNGItYTZiYy05NGRkNjU2NDM0MGIiLCJkZXRhaWwiOiJhdmFpbGFibGUiLCJyZXF1aXJlZFBvc2l0aW9uIjoicG9zLTEiLCJlZmZlY3RQb3NpdGlvbiI6InBvcy0xIiwicmVzdWx0cyI6W3sib3BlcmF0aW9uSW5kZXgiOjAsIm91dGNvbWUiOiJjcmVhdGVkIiwicmVzb3VyY2UiOnsiaWQiOiJodHRwczovL3JlZmVyZW5jZS5pbnZhbGlkL2FjbWUvYmVhZHMvYSIsInR5cGUiOiJodHRwczovL3JlZmVyZW5jZS5pbnZhbGlkL2FjbWUvdHlwZXMvYmVhZCIsInJldmlzaW9uIjoiMDhkOWY0NjAtZmE1Ny00ZWU5LThlMjYtYTA2M2Y3YjlmOGQwIiwicHJvcGVydGllcyI6eyJuIjowfSwibWV0YWRhdGEiOnt9fX1dLCJuZXh0IjpudWxsLCJleHBpcmVzQXQiOiIyMDI2LTEwLTE2VDAzOjQzOjIyLjQ2NVoifQ==",
+        "wireSha256": "cee9b3376a64eb687b51cdbb3b145fdf265597e62ef328d842c0e061c9653b71"
+      },
+      {
+        "method": "POST",
+        "url": "https://reference.invalid/acme/operations/delete-where",
+        "key": "bad-single",
+        "requestBody": "{\"collection\":\"beads\",\"selector\":\"$..*\"}",
+        "status": 400,
+        "headers": {
+          "cache-control": "private, no-store",
+          "content-length": "140",
+          "content-type": "application/problem+json",
+          "vary": "Accept",
+          "x-bdp-development": "non-attesting",
+          "date": "Thu, 15 Oct 2026 03:43:22 GMT",
+          "connection": "close"
+        },
+        "body": "{\"type\":\"https://github.com/gastownhall/bdp/problems/request\",\"code\":\"malformed-request\",\"retry\":\"never\",\"status\":400,\"pointer\":\"/selector\"}",
+        "wireResponseBase64": "SFRUUC8xLjEgNDAwIEJhZCBSZXF1ZXN0DQpjYWNoZS1jb250cm9sOiBwcml2YXRlLCBuby1zdG9yZQ0KY29udGVudC1sZW5ndGg6IDE0MA0KY29udGVudC10eXBlOiBhcHBsaWNhdGlvbi9wcm9ibGVtK2pzb24NCnZhcnk6IEFjY2VwdA0KeC1iZHAtZGV2ZWxvcG1lbnQ6IG5vbi1hdHRlc3RpbmcNCkRhdGU6IFRodSwgMTUgT2N0IDIwMjYgMDM6NDM6MjIgR01UDQpDb25uZWN0aW9uOiBjbG9zZQ0KDQp7InR5cGUiOiJodHRwczovL2dpdGh1Yi5jb20vZ2FzdG93bmhhbGwvYmRwL3Byb2JsZW1zL3JlcXVlc3QiLCJjb2RlIjoibWFsZm9ybWVkLXJlcXVlc3QiLCJyZXRyeSI6Im5ldmVyIiwic3RhdHVzIjo0MDAsInBvaW50ZXIiOiIvc2VsZWN0b3IifQ==",
+        "wireSha256": "b770936b55f5c1e0ee328d90805560695e6ad76d8488f25ea5345d7b8ce13aa3"
+      },
+      {
+        "method": "POST",
+        "url": "https://reference.invalid/acme/operations/delete-where",
+        "key": "bad-single",
+        "requestBody": "{\"collection\":\"beads\",\"selector\":\"$[?@.missing]\"}",
+        "status": 200,
+        "headers": {
+          "bdp-authorization-view": "development-all-visible",
+          "bdp-scope-epoch": "aa608d6f-4c8d-4c80-8b04-44bbe7429126",
+          "bdp-scope-position": "pos-1",
+          "cache-control": "private, no-store",
+          "content-length": "449",
+          "content-type": "application/json",
+          "vary": "Accept",
+          "x-bdp-development": "non-attesting",
+          "date": "Thu, 15 Oct 2026 03:43:22 GMT",
+          "connection": "close"
+        },
+        "body": "{\"id\":\"https://reference.invalid/acme/receipts/0370a87d-1329-4cc2-8a37-440f6d65fd53\",\"status\":\"completed\",\"idempotencyKey\":\"bad-single\",\"scopeEpoch\":\"aa608d6f-4c8d-4c80-8b04-44bbe7429126\",\"authorizationView\":\"development-all-visible\",\"transaction\":\"64c7bac6-a369-4a5c-8637-d57c1f36b73a\",\"detail\":\"available\",\"requiredPosition\":\"pos-1\",\"results\":[{\"operationIndex\":0,\"outcome\":\"matched\",\"count\":0}],\"next\":null,\"expiresAt\":\"2026-10-16T03:43:22.476Z\"}",
+        "wireResponseBase64": "SFRUUC8xLjEgMjAwIE9LDQpiZHAtYXV0aG9yaXphdGlvbi12aWV3OiBkZXZlbG9wbWVudC1hbGwtdmlzaWJsZQ0KYmRwLXNjb3BlLWVwb2NoOiBhYTYwOGQ2Zi00YzhkLTRjODAtOGIwNC00NGJiZTc0MjkxMjYNCmJkcC1zY29wZS1wb3NpdGlvbjogcG9zLTENCmNhY2hlLWNvbnRyb2w6IHByaXZhdGUsIG5vLXN0b3JlDQpjb250ZW50LWxlbmd0aDogNDQ5DQpjb250ZW50LXR5cGU6IGFwcGxpY2F0aW9uL2pzb24NCnZhcnk6IEFjY2VwdA0KeC1iZHAtZGV2ZWxvcG1lbnQ6IG5vbi1hdHRlc3RpbmcNCkRhdGU6IFRodSwgMTUgT2N0IDIwMjYgMDM6NDM6MjIgR01UDQpDb25uZWN0aW9uOiBjbG9zZQ0KDQp7ImlkIjoiaHR0cHM6Ly9yZWZlcmVuY2UuaW52YWxpZC9hY21lL3JlY2VpcHRzLzAzNzBhODdkLTEzMjktNGNjMi04YTM3LTQ0MGY2ZDY1ZmQ1MyIsInN0YXR1cyI6ImNvbXBsZXRlZCIsImlkZW1wb3RlbmN5S2V5IjoiYmFkLXNpbmdsZSIsInNjb3BlRXBvY2giOiJhYTYwOGQ2Zi00YzhkLTRjODAtOGIwNC00NGJiZTc0MjkxMjYiLCJhdXRob3JpemF0aW9uVmlldyI6ImRldmVsb3BtZW50LWFsbC12aXNpYmxlIiwidHJhbnNhY3Rpb24iOiI2NGM3YmFjNi1hMzY5LTRhNWMtODYzNy1kNTdjMWYzNmI3M2EiLCJkZXRhaWwiOiJhdmFpbGFibGUiLCJyZXF1aXJlZFBvc2l0aW9uIjoicG9zLTEiLCJyZXN1bHRzIjpbeyJvcGVyYXRpb25JbmRleCI6MCwib3V0Y29tZSI6Im1hdGNoZWQiLCJjb3VudCI6MH1dLCJuZXh0IjpudWxsLCJleHBpcmVzQXQiOiIyMDI2LTEwLTE2VDAzOjQzOjIyLjQ3NloifQ==",
+        "wireSha256": "484209413e67aad0ebc90fdbf3685310e3191bc9d8a5fd88b2006a10f24d1af4"
+      },
+      {
+        "method": "POST",
+        "url": "https://reference.invalid/acme/operations/batch",
+        "key": "bad-batch",
+        "requestBody": "{\"operations\":[{\"operation\":\"createBead\",\"id\":\"beads/late\",\"type\":\"https://reference.invalid/acme/types/bead\",\"properties\":{\"n\":0}},{\"operation\":\"updateWhere\",\"collection\":\"beads\",\"selector\":\"$..*\",\"change\":[{\"op\":\"replace\",\"path\":\"/n\",\"value\":1}]}]}",
+        "status": 400,
+        "headers": {
+          "cache-control": "private, no-store",
+          "content-length": "153",
+          "content-type": "application/problem+json",
+          "vary": "Accept",
+          "x-bdp-development": "non-attesting",
+          "date": "Thu, 15 Oct 2026 03:43:22 GMT",
+          "connection": "close"
+        },
+        "body": "{\"type\":\"https://github.com/gastownhall/bdp/problems/request\",\"code\":\"malformed-request\",\"retry\":\"never\",\"status\":400,\"pointer\":\"/operations/1/selector\"}",
+        "wireResponseBase64": "SFRUUC8xLjEgNDAwIEJhZCBSZXF1ZXN0DQpjYWNoZS1jb250cm9sOiBwcml2YXRlLCBuby1zdG9yZQ0KY29udGVudC1sZW5ndGg6IDE1Mw0KY29udGVudC10eXBlOiBhcHBsaWNhdGlvbi9wcm9ibGVtK2pzb24NCnZhcnk6IEFjY2VwdA0KeC1iZHAtZGV2ZWxvcG1lbnQ6IG5vbi1hdHRlc3RpbmcNCkRhdGU6IFRodSwgMTUgT2N0IDIwMjYgMDM6NDM6MjIgR01UDQpDb25uZWN0aW9uOiBjbG9zZQ0KDQp7InR5cGUiOiJodHRwczovL2dpdGh1Yi5jb20vZ2FzdG93bmhhbGwvYmRwL3Byb2JsZW1zL3JlcXVlc3QiLCJjb2RlIjoibWFsZm9ybWVkLXJlcXVlc3QiLCJyZXRyeSI6Im5ldmVyIiwic3RhdHVzIjo0MDAsInBvaW50ZXIiOiIvb3BlcmF0aW9ucy8xL3NlbGVjdG9yIn0=",
+        "wireSha256": "9aed2fa97c59faf49692a1222a9c4220a553ef6e31e820704fc5b05f95584750"
+      },
+      {
+        "method": "GET",
+        "url": "https://reference.invalid/acme/beads/late",
+        "status": 404,
+        "headers": {
+          "bdp-authorization-view": "development-all-visible",
+          "bdp-scope-epoch": "aa608d6f-4c8d-4c80-8b04-44bbe7429126",
+          "bdp-scope-position": "pos-1",
+          "cache-control": "private, no-store",
+          "content-length": "134",
+          "content-type": "application/problem+json",
+          "x-bdp-development": "non-attesting",
+          "date": "Thu, 15 Oct 2026 03:43:22 GMT",
+          "connection": "close"
+        },
+        "body": "{\"type\":\"https://github.com/gastownhall/bdp/problems/not-found\",\"code\":\"resource-not-found\",\"retry\":\"after-state-change\",\"status\":404}",
+        "wireResponseBase64": "SFRUUC8xLjEgNDA0IE5vdCBGb3VuZA0KYmRwLWF1dGhvcml6YXRpb24tdmlldzogZGV2ZWxvcG1lbnQtYWxsLXZpc2libGUNCmJkcC1zY29wZS1lcG9jaDogYWE2MDhkNmYtNGM4ZC00YzgwLThiMDQtNDRiYmU3NDI5MTI2DQpiZHAtc2NvcGUtcG9zaXRpb246IHBvcy0xDQpjYWNoZS1jb250cm9sOiBwcml2YXRlLCBuby1zdG9yZQ0KY29udGVudC1sZW5ndGg6IDEzNA0KY29udGVudC10eXBlOiBhcHBsaWNhdGlvbi9wcm9ibGVtK2pzb24NCngtYmRwLWRldmVsb3BtZW50OiBub24tYXR0ZXN0aW5nDQpEYXRlOiBUaHUsIDE1IE9jdCAyMDI2IDAzOjQzOjIyIEdNVA0KQ29ubmVjdGlvbjogY2xvc2UNCg0KeyJ0eXBlIjoiaHR0cHM6Ly9naXRodWIuY29tL2dhc3Rvd25oYWxsL2JkcC9wcm9ibGVtcy9ub3QtZm91bmQiLCJjb2RlIjoicmVzb3VyY2Utbm90LWZvdW5kIiwicmV0cnkiOiJhZnRlci1zdGF0ZS1jaGFuZ2UiLCJzdGF0dXMiOjQwNH0=",
+        "wireSha256": "e3e6037e9579be11e62d7584464be7b3e58fc8ba45a03344c90c097c8a62d186"
+      },
+      {
+        "method": "POST",
+        "url": "https://reference.invalid/acme/operations/batch",
+        "key": "bad-batch",
+        "requestBody": "{\"operations\":[{\"operation\":\"deleteWhere\",\"collection\":\"beads\",\"selector\":\"$[?@.missing]\"}]}",
+        "status": 200,
+        "headers": {
+          "bdp-authorization-view": "development-all-visible",
+          "bdp-scope-epoch": "aa608d6f-4c8d-4c80-8b04-44bbe7429126",
+          "bdp-scope-position": "pos-1",
+          "cache-control": "private, no-store",
+          "content-length": "448",
+          "content-type": "application/json",
+          "vary": "Accept",
+          "x-bdp-development": "non-attesting",
+          "date": "Thu, 15 Oct 2026 03:43:22 GMT",
+          "connection": "close"
+        },
+        "body": "{\"id\":\"https://reference.invalid/acme/receipts/dd51493d-5d48-4706-b380-22c40a56650d\",\"status\":\"completed\",\"idempotencyKey\":\"bad-batch\",\"scopeEpoch\":\"aa608d6f-4c8d-4c80-8b04-44bbe7429126\",\"authorizationView\":\"development-all-visible\",\"transaction\":\"c83ff988-dd2d-4da7-866f-38acbc453ec8\",\"detail\":\"available\",\"requiredPosition\":\"pos-1\",\"results\":[{\"operationIndex\":0,\"outcome\":\"matched\",\"count\":0}],\"next\":null,\"expiresAt\":\"2026-10-16T03:43:22.483Z\"}",
+        "wireResponseBase64": "SFRUUC8xLjEgMjAwIE9LDQpiZHAtYXV0aG9yaXphdGlvbi12aWV3OiBkZXZlbG9wbWVudC1hbGwtdmlzaWJsZQ0KYmRwLXNjb3BlLWVwb2NoOiBhYTYwOGQ2Zi00YzhkLTRjODAtOGIwNC00NGJiZTc0MjkxMjYNCmJkcC1zY29wZS1wb3NpdGlvbjogcG9zLTENCmNhY2hlLWNvbnRyb2w6IHByaXZhdGUsIG5vLXN0b3JlDQpjb250ZW50LWxlbmd0aDogNDQ4DQpjb250ZW50LXR5cGU6IGFwcGxpY2F0aW9uL2pzb24NCnZhcnk6IEFjY2VwdA0KeC1iZHAtZGV2ZWxvcG1lbnQ6IG5vbi1hdHRlc3RpbmcNCkRhdGU6IFRodSwgMTUgT2N0IDIwMjYgMDM6NDM6MjIgR01UDQpDb25uZWN0aW9uOiBjbG9zZQ0KDQp7ImlkIjoiaHR0cHM6Ly9yZWZlcmVuY2UuaW52YWxpZC9hY21lL3JlY2VpcHRzL2RkNTE0OTNkLTVkNDgtNDcwNi1iMzgwLTIyYzQwYTU2NjUwZCIsInN0YXR1cyI6ImNvbXBsZXRlZCIsImlkZW1wb3RlbmN5S2V5IjoiYmFkLWJhdGNoIiwic2NvcGVFcG9jaCI6ImFhNjA4ZDZmLTRjOGQtNGM4MC04YjA0LTQ0YmJlNzQyOTEyNiIsImF1dGhvcml6YXRpb25WaWV3IjoiZGV2ZWxvcG1lbnQtYWxsLXZpc2libGUiLCJ0cmFuc2FjdGlvbiI6ImM4M2ZmOTg4LWRkMmQtNGRhNy04NjZmLTM4YWNiYzQ1M2VjOCIsImRldGFpbCI6ImF2YWlsYWJsZSIsInJlcXVpcmVkUG9zaXRpb24iOiJwb3MtMSIsInJlc3VsdHMiOlt7Im9wZXJhdGlvbkluZGV4IjowLCJvdXRjb21lIjoibWF0Y2hlZCIsImNvdW50IjowfV0sIm5leHQiOm51bGwsImV4cGlyZXNBdCI6IjIwMjYtMTAtMTZUMDM6NDM6MjIuNDgzWiJ9",
+        "wireSha256": "2521be4c51aeabcf83e763d6b0a9851c469783df98b0b728f133357f21cf5b09"
+      },
+      {
+        "method": "POST",
+        "url": "https://reference.invalid/acme/operations/delete-where",
+        "key": "bytes",
+        "requestBody": "{\"collection\":\"beads\",\"selector\":\"$[?@.missing                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    ]\"}",
+        "status": 413,
+        "headers": {
+          "bdp-authorization-view": "development-all-visible",
+          "bdp-scope-epoch": "aa608d6f-4c8d-4c80-8b04-44bbe7429126",
+          "bdp-scope-position": "pos-1",
+          "cache-control": "private, no-store",
+          "content-length": "159",
+          "content-type": "application/problem+json",
+          "vary": "Accept",
+          "x-bdp-development": "non-attesting",
+          "date": "Thu, 15 Oct 2026 03:43:22 GMT",
+          "connection": "close"
+        },
+        "body": "{\"type\":\"https://github.com/gastownhall/bdp/problems/size\",\"code\":\"limit-exceeded\",\"retry\":\"never\",\"status\":413,\"limit\":\"selector.bytes\",\"pointer\":\"/selector\"}",
+        "wireResponseBase64": "SFRUUC8xLjEgNDEzIFBheWxvYWQgVG9vIExhcmdlDQpiZHAtYXV0aG9yaXphdGlvbi12aWV3OiBkZXZlbG9wbWVudC1hbGwtdmlzaWJsZQ0KYmRwLXNjb3BlLWVwb2NoOiBhYTYwOGQ2Zi00YzhkLTRjODAtOGIwNC00NGJiZTc0MjkxMjYNCmJkcC1zY29wZS1wb3NpdGlvbjogcG9zLTENCmNhY2hlLWNvbnRyb2w6IHByaXZhdGUsIG5vLXN0b3JlDQpjb250ZW50LWxlbmd0aDogMTU5DQpjb250ZW50LXR5cGU6IGFwcGxpY2F0aW9uL3Byb2JsZW0ranNvbg0KdmFyeTogQWNjZXB0DQp4LWJkcC1kZXZlbG9wbWVudDogbm9uLWF0dGVzdGluZw0KRGF0ZTogVGh1LCAxNSBPY3QgMjAyNiAwMzo0MzoyMiBHTVQNCkNvbm5lY3Rpb246IGNsb3NlDQoNCnsidHlwZSI6Imh0dHBzOi8vZ2l0aHViLmNvbS9nYXN0b3duaGFsbC9iZHAvcHJvYmxlbXMvc2l6ZSIsImNvZGUiOiJsaW1pdC1leGNlZWRlZCIsInJldHJ5IjoibmV2ZXIiLCJzdGF0dXMiOjQxMywibGltaXQiOiJzZWxlY3Rvci5ieXRlcyIsInBvaW50ZXIiOiIvc2VsZWN0b3IifQ==",
+        "wireSha256": "5e25d47ffe81299c3862c1b20c29f06ffa25061be042d1633875901dd9ef0604"
+      },
+      {
+        "method": "POST",
+        "url": "https://reference.invalid/acme/operations/delete-where",
+        "key": "bytes",
+        "requestBody": "{\"collection\":\"beads\",\"selector\":\"$[?@.missing]\"}",
+        "status": 200,
+        "headers": {
+          "bdp-authorization-view": "development-all-visible",
+          "bdp-scope-epoch": "aa608d6f-4c8d-4c80-8b04-44bbe7429126",
+          "bdp-scope-position": "pos-1",
+          "cache-control": "private, no-store",
+          "content-length": "444",
+          "content-type": "application/json",
+          "vary": "Accept",
+          "x-bdp-development": "non-attesting",
+          "date": "Thu, 15 Oct 2026 03:43:22 GMT",
+          "connection": "close"
+        },
+        "body": "{\"id\":\"https://reference.invalid/acme/receipts/4131acd0-da27-4e6d-9fdf-520ff35121f4\",\"status\":\"completed\",\"idempotencyKey\":\"bytes\",\"scopeEpoch\":\"aa608d6f-4c8d-4c80-8b04-44bbe7429126\",\"authorizationView\":\"development-all-visible\",\"transaction\":\"af04e5a1-342f-446b-ae7e-174ecc1e650f\",\"detail\":\"available\",\"requiredPosition\":\"pos-1\",\"results\":[{\"operationIndex\":0,\"outcome\":\"matched\",\"count\":0}],\"next\":null,\"expiresAt\":\"2026-10-16T03:43:22.485Z\"}",
+        "wireResponseBase64": "SFRUUC8xLjEgMjAwIE9LDQpiZHAtYXV0aG9yaXphdGlvbi12aWV3OiBkZXZlbG9wbWVudC1hbGwtdmlzaWJsZQ0KYmRwLXNjb3BlLWVwb2NoOiBhYTYwOGQ2Zi00YzhkLTRjODAtOGIwNC00NGJiZTc0MjkxMjYNCmJkcC1zY29wZS1wb3NpdGlvbjogcG9zLTENCmNhY2hlLWNvbnRyb2w6IHByaXZhdGUsIG5vLXN0b3JlDQpjb250ZW50LWxlbmd0aDogNDQ0DQpjb250ZW50LXR5cGU6IGFwcGxpY2F0aW9uL2pzb24NCnZhcnk6IEFjY2VwdA0KeC1iZHAtZGV2ZWxvcG1lbnQ6IG5vbi1hdHRlc3RpbmcNCkRhdGU6IFRodSwgMTUgT2N0IDIwMjYgMDM6NDM6MjIgR01UDQpDb25uZWN0aW9uOiBjbG9zZQ0KDQp7ImlkIjoiaHR0cHM6Ly9yZWZlcmVuY2UuaW52YWxpZC9hY21lL3JlY2VpcHRzLzQxMzFhY2QwLWRhMjctNGU2ZC05ZmRmLTUyMGZmMzUxMjFmNCIsInN0YXR1cyI6ImNvbXBsZXRlZCIsImlkZW1wb3RlbmN5S2V5IjoiYnl0ZXMiLCJzY29wZUVwb2NoIjoiYWE2MDhkNmYtNGM4ZC00YzgwLThiMDQtNDRiYmU3NDI5MTI2IiwiYXV0aG9yaXphdGlvblZpZXciOiJkZXZlbG9wbWVudC1hbGwtdmlzaWJsZSIsInRyYW5zYWN0aW9uIjoiYWYwNGU1YTEtMzQyZi00NDZiLWFlN2UtMTc0ZWNjMWU2NTBmIiwiZGV0YWlsIjoiYXZhaWxhYmxlIiwicmVxdWlyZWRQb3NpdGlvbiI6InBvcy0xIiwicmVzdWx0cyI6W3sib3BlcmF0aW9uSW5kZXgiOjAsIm91dGNvbWUiOiJtYXRjaGVkIiwiY291bnQiOjB9XSwibmV4dCI6bnVsbCwiZXhwaXJlc0F0IjoiMjAyNi0xMC0xNlQwMzo0MzoyMi40ODVaIn0=",
+        "wireSha256": "35053061a0350e5cee24df8bae0901ee1c370ced8fed3599ecdb29e7e6384cdb"
+      },
+      {
+        "method": "POST",
+        "url": "https://reference.invalid/acme/operations/update-where",
+        "key": "depth",
+        "requestBody": "{\"collection\":\"beads\",\"selector\":\"$[?(((((((((((((((((((((((((((((((@.missing)))))))))))))))))))))))))))))))]\",\"change\":[{\"op\":\"replace\",\"path\":\"/n\",\"value\":1}]}",
+        "status": 413,
+        "headers": {
+          "bdp-authorization-view": "development-all-visible",
+          "bdp-scope-epoch": "aa608d6f-4c8d-4c80-8b04-44bbe7429126",
+          "bdp-scope-position": "pos-1",
+          "cache-control": "private, no-store",
+          "content-length": "159",
+          "content-type": "application/problem+json",
+          "vary": "Accept",
+          "x-bdp-development": "non-attesting",
+          "date": "Thu, 15 Oct 2026 03:43:22 GMT",
+          "connection": "close"
+        },
+        "body": "{\"type\":\"https://github.com/gastownhall/bdp/problems/size\",\"code\":\"limit-exceeded\",\"retry\":\"never\",\"status\":413,\"limit\":\"selector.depth\",\"pointer\":\"/selector\"}",
+        "wireResponseBase64": "SFRUUC8xLjEgNDEzIFBheWxvYWQgVG9vIExhcmdlDQpiZHAtYXV0aG9yaXphdGlvbi12aWV3OiBkZXZlbG9wbWVudC1hbGwtdmlzaWJsZQ0KYmRwLXNjb3BlLWVwb2NoOiBhYTYwOGQ2Zi00YzhkLTRjODAtOGIwNC00NGJiZTc0MjkxMjYNCmJkcC1zY29wZS1wb3NpdGlvbjogcG9zLTENCmNhY2hlLWNvbnRyb2w6IHByaXZhdGUsIG5vLXN0b3JlDQpjb250ZW50LWxlbmd0aDogMTU5DQpjb250ZW50LXR5cGU6IGFwcGxpY2F0aW9uL3Byb2JsZW0ranNvbg0KdmFyeTogQWNjZXB0DQp4LWJkcC1kZXZlbG9wbWVudDogbm9uLWF0dGVzdGluZw0KRGF0ZTogVGh1LCAxNSBPY3QgMjAyNiAwMzo0MzoyMiBHTVQNCkNvbm5lY3Rpb246IGNsb3NlDQoNCnsidHlwZSI6Imh0dHBzOi8vZ2l0aHViLmNvbS9nYXN0b3duaGFsbC9iZHAvcHJvYmxlbXMvc2l6ZSIsImNvZGUiOiJsaW1pdC1leGNlZWRlZCIsInJldHJ5IjoibmV2ZXIiLCJzdGF0dXMiOjQxMywibGltaXQiOiJzZWxlY3Rvci5kZXB0aCIsInBvaW50ZXIiOiIvc2VsZWN0b3IifQ==",
+        "wireSha256": "ca856e53c12ed4f479a5541847a08a4b7ccf8a45c09c35ae2ef63d3c3a80b551"
+      },
+      {
+        "method": "POST",
+        "url": "https://reference.invalid/acme/operations/update-where",
+        "key": "depth",
+        "requestBody": "{\"collection\":\"beads\",\"selector\":\"$[?@.missing]\",\"change\":[{\"op\":\"replace\",\"path\":\"/n\",\"value\":1}]}",
+        "status": 200,
+        "headers": {
+          "bdp-authorization-view": "development-all-visible",
+          "bdp-scope-epoch": "aa608d6f-4c8d-4c80-8b04-44bbe7429126",
+          "bdp-scope-position": "pos-1",
+          "cache-control": "private, no-store",
+          "content-length": "444",
+          "content-type": "application/json",
+          "vary": "Accept",
+          "x-bdp-development": "non-attesting",
+          "date": "Thu, 15 Oct 2026 03:43:22 GMT",
+          "connection": "close"
+        },
+        "body": "{\"id\":\"https://reference.invalid/acme/receipts/59958f08-383b-46d3-86fa-d4876ef03092\",\"status\":\"completed\",\"idempotencyKey\":\"depth\",\"scopeEpoch\":\"aa608d6f-4c8d-4c80-8b04-44bbe7429126\",\"authorizationView\":\"development-all-visible\",\"transaction\":\"eaf19a39-ecc5-47d6-9dcc-a687fcc3da32\",\"detail\":\"available\",\"requiredPosition\":\"pos-1\",\"results\":[{\"operationIndex\":0,\"outcome\":\"matched\",\"count\":0}],\"next\":null,\"expiresAt\":\"2026-10-16T03:43:22.489Z\"}",
+        "wireResponseBase64": "SFRUUC8xLjEgMjAwIE9LDQpiZHAtYXV0aG9yaXphdGlvbi12aWV3OiBkZXZlbG9wbWVudC1hbGwtdmlzaWJsZQ0KYmRwLXNjb3BlLWVwb2NoOiBhYTYwOGQ2Zi00YzhkLTRjODAtOGIwNC00NGJiZTc0MjkxMjYNCmJkcC1zY29wZS1wb3NpdGlvbjogcG9zLTENCmNhY2hlLWNvbnRyb2w6IHByaXZhdGUsIG5vLXN0b3JlDQpjb250ZW50LWxlbmd0aDogNDQ0DQpjb250ZW50LXR5cGU6IGFwcGxpY2F0aW9uL2pzb24NCnZhcnk6IEFjY2VwdA0KeC1iZHAtZGV2ZWxvcG1lbnQ6IG5vbi1hdHRlc3RpbmcNCkRhdGU6IFRodSwgMTUgT2N0IDIwMjYgMDM6NDM6MjIgR01UDQpDb25uZWN0aW9uOiBjbG9zZQ0KDQp7ImlkIjoiaHR0cHM6Ly9yZWZlcmVuY2UuaW52YWxpZC9hY21lL3JlY2VpcHRzLzU5OTU4ZjA4LTM4M2ItNDZkMy04NmZhLWQ0ODc2ZWYwMzA5MiIsInN0YXR1cyI6ImNvbXBsZXRlZCIsImlkZW1wb3RlbmN5S2V5IjoiZGVwdGgiLCJzY29wZUVwb2NoIjoiYWE2MDhkNmYtNGM4ZC00YzgwLThiMDQtNDRiYmU3NDI5MTI2IiwiYXV0aG9yaXphdGlvblZpZXciOiJkZXZlbG9wbWVudC1hbGwtdmlzaWJsZSIsInRyYW5zYWN0aW9uIjoiZWFmMTlhMzktZWNjNS00N2Q2LTlkY2MtYTY4N2ZjYzNkYTMyIiwiZGV0YWlsIjoiYXZhaWxhYmxlIiwicmVxdWlyZWRQb3NpdGlvbiI6InBvcy0xIiwicmVzdWx0cyI6W3sib3BlcmF0aW9uSW5kZXgiOjAsIm91dGNvbWUiOiJtYXRjaGVkIiwiY291bnQiOjB9XSwibmV4dCI6bnVsbCwiZXhwaXJlc0F0IjoiMjAyNi0xMC0xNlQwMzo0MzoyMi40ODlaIn0=",
+        "wireSha256": "d7b01c5cff1dbd4d47cd41eb09e8b4052c5c41cc3ceb154882c7c01dea73b710"
+      },
+      {
+        "method": "POST",
+        "url": "https://reference.invalid/acme/operations/batch",
+        "key": "nodes",
+        "requestBody": "{\"operations\":[{\"operation\":\"deleteBead\",\"bead\":\"beads/missing\"},{\"operation\":\"deleteWhere\",\"collection\":\"beads\",\"selector\":\"$[?(((((((((@.missing||@.missing)||(@.missing||@.missing))||((@.missing||@.missing)||(@.missing||@.missing)))||(((@.missing||@.missing)||(@.missing||@.missing))||((@.missing||@.missing)||(@.missing||@.missing))))||((((@.missing||@.missing)||(@.missing||@.missing))||((@.missing||@.missing)||(@.missing||@.missing)))||(((@.missing||@.missing)||(@.missing||@.missing))||((@.missing||@.missing)||(@.missing||@.missing)))))||(((((@.missing||@.missing)||(@.missing||@.missing))||((@.missing||@.missing)||(@.missing||@.missing)))||(((@.missing||@.missing)||(@.missing||@.missing))||((@.missing||@.missing)||(@.missing||@.missing))))||((((@.missing||@.missing)||(@.missing||@.missing))||((@.missing||@.missing)||(@.missing||@.missing)))||(((@.missing||@.missing)||(@.missing||@.missing))||((@.missing||@.missing)||(@.missing||@.missing)))))))))]\"}]}",
+        "status": 413,
+        "headers": {
+          "bdp-authorization-view": "development-all-visible",
+          "bdp-scope-epoch": "aa608d6f-4c8d-4c80-8b04-44bbe7429126",
+          "bdp-scope-position": "pos-1",
+          "cache-control": "private, no-store",
+          "content-length": "172",
+          "content-type": "application/problem+json",
+          "vary": "Accept",
+          "x-bdp-development": "non-attesting",
+          "date": "Thu, 15 Oct 2026 03:43:22 GMT",
+          "connection": "close"
+        },
+        "body": "{\"type\":\"https://github.com/gastownhall/bdp/problems/size\",\"code\":\"limit-exceeded\",\"retry\":\"never\",\"status\":413,\"limit\":\"selector.nodes\",\"pointer\":\"/operations/1/selector\"}",
+        "wireResponseBase64": "SFRUUC8xLjEgNDEzIFBheWxvYWQgVG9vIExhcmdlDQpiZHAtYXV0aG9yaXphdGlvbi12aWV3OiBkZXZlbG9wbWVudC1hbGwtdmlzaWJsZQ0KYmRwLXNjb3BlLWVwb2NoOiBhYTYwOGQ2Zi00YzhkLTRjODAtOGIwNC00NGJiZTc0MjkxMjYNCmJkcC1zY29wZS1wb3NpdGlvbjogcG9zLTENCmNhY2hlLWNvbnRyb2w6IHByaXZhdGUsIG5vLXN0b3JlDQpjb250ZW50LWxlbmd0aDogMTcyDQpjb250ZW50LXR5cGU6IGFwcGxpY2F0aW9uL3Byb2JsZW0ranNvbg0KdmFyeTogQWNjZXB0DQp4LWJkcC1kZXZlbG9wbWVudDogbm9uLWF0dGVzdGluZw0KRGF0ZTogVGh1LCAxNSBPY3QgMjAyNiAwMzo0MzoyMiBHTVQNCkNvbm5lY3Rpb246IGNsb3NlDQoNCnsidHlwZSI6Imh0dHBzOi8vZ2l0aHViLmNvbS9nYXN0b3duaGFsbC9iZHAvcHJvYmxlbXMvc2l6ZSIsImNvZGUiOiJsaW1pdC1leGNlZWRlZCIsInJldHJ5IjoibmV2ZXIiLCJzdGF0dXMiOjQxMywibGltaXQiOiJzZWxlY3Rvci5ub2RlcyIsInBvaW50ZXIiOiIvb3BlcmF0aW9ucy8xL3NlbGVjdG9yIn0=",
+        "wireSha256": "db78d7e97a1b6639a35f604f29344c2d2c62f932b4229ed95f484b49810019ba"
+      },
+      {
+        "method": "POST",
+        "url": "https://reference.invalid/acme/operations/batch",
+        "key": "nodes",
+        "requestBody": "{\"operations\":[{\"operation\":\"deleteWhere\",\"collection\":\"beads\",\"selector\":\"$[?@.missing]\"}]}",
+        "status": 200,
+        "headers": {
+          "bdp-authorization-view": "development-all-visible",
+          "bdp-scope-epoch": "aa608d6f-4c8d-4c80-8b04-44bbe7429126",
+          "bdp-scope-position": "pos-1",
+          "cache-control": "private, no-store",
+          "content-length": "444",
+          "content-type": "application/json",
+          "vary": "Accept",
+          "x-bdp-development": "non-attesting",
+          "date": "Thu, 15 Oct 2026 03:43:22 GMT",
+          "connection": "close"
+        },
+        "body": "{\"id\":\"https://reference.invalid/acme/receipts/fe34f5c9-4275-4b3e-afaf-48f56f83bc9b\",\"status\":\"completed\",\"idempotencyKey\":\"nodes\",\"scopeEpoch\":\"aa608d6f-4c8d-4c80-8b04-44bbe7429126\",\"authorizationView\":\"development-all-visible\",\"transaction\":\"7692a284-d91e-407d-b445-1d7592909043\",\"detail\":\"available\",\"requiredPosition\":\"pos-1\",\"results\":[{\"operationIndex\":0,\"outcome\":\"matched\",\"count\":0}],\"next\":null,\"expiresAt\":\"2026-10-16T03:43:22.491Z\"}",
+        "wireResponseBase64": "SFRUUC8xLjEgMjAwIE9LDQpiZHAtYXV0aG9yaXphdGlvbi12aWV3OiBkZXZlbG9wbWVudC1hbGwtdmlzaWJsZQ0KYmRwLXNjb3BlLWVwb2NoOiBhYTYwOGQ2Zi00YzhkLTRjODAtOGIwNC00NGJiZTc0MjkxMjYNCmJkcC1zY29wZS1wb3NpdGlvbjogcG9zLTENCmNhY2hlLWNvbnRyb2w6IHByaXZhdGUsIG5vLXN0b3JlDQpjb250ZW50LWxlbmd0aDogNDQ0DQpjb250ZW50LXR5cGU6IGFwcGxpY2F0aW9uL2pzb24NCnZhcnk6IEFjY2VwdA0KeC1iZHAtZGV2ZWxvcG1lbnQ6IG5vbi1hdHRlc3RpbmcNCkRhdGU6IFRodSwgMTUgT2N0IDIwMjYgMDM6NDM6MjIgR01UDQpDb25uZWN0aW9uOiBjbG9zZQ0KDQp7ImlkIjoiaHR0cHM6Ly9yZWZlcmVuY2UuaW52YWxpZC9hY21lL3JlY2VpcHRzL2ZlMzRmNWM5LTQyNzUtNGIzZS1hZmFmLTQ4ZjU2ZjgzYmM5YiIsInN0YXR1cyI6ImNvbXBsZXRlZCIsImlkZW1wb3RlbmN5S2V5Ijoibm9kZXMiLCJzY29wZUVwb2NoIjoiYWE2MDhkNmYtNGM4ZC00YzgwLThiMDQtNDRiYmU3NDI5MTI2IiwiYXV0aG9yaXphdGlvblZpZXciOiJkZXZlbG9wbWVudC1hbGwtdmlzaWJsZSIsInRyYW5zYWN0aW9uIjoiNzY5MmEyODQtZDkxZS00MDdkLWI0NDUtMWQ3NTkyOTA5MDQzIiwiZGV0YWlsIjoiYXZhaWxhYmxlIiwicmVxdWlyZWRQb3NpdGlvbiI6InBvcy0xIiwicmVzdWx0cyI6W3sib3BlcmF0aW9uSW5kZXgiOjAsIm91dGNvbWUiOiJtYXRjaGVkIiwiY291bnQiOjB9XSwibmV4dCI6bnVsbCwiZXhwaXJlc0F0IjoiMjAyNi0xMC0xNlQwMzo0MzoyMi40OTFaIn0=",
+        "wireSha256": "0734dad110112a50e334fb8683a50eb40154109278347a3a2f38fa6a12874574"
+      },
+      {
+        "method": "POST",
+        "url": "https://reference.invalid/acme/operations/delete-where",
+        "key": "exact-bytes",
+        "requestBody": "{\"collection\":\"beads\",\"selector\":\"$[?@.missing                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                   ]\"}",
+        "status": 200,
+        "headers": {
+          "bdp-authorization-view": "development-all-visible",
+          "bdp-scope-epoch": "aa608d6f-4c8d-4c80-8b04-44bbe7429126",
+          "bdp-scope-position": "pos-1",
+          "cache-control": "private, no-store",
+          "content-length": "450",
+          "content-type": "application/json",
+          "vary": "Accept",
+          "x-bdp-development": "non-attesting",
+          "date": "Thu, 15 Oct 2026 03:43:22 GMT",
+          "connection": "close"
+        },
+        "body": "{\"id\":\"https://reference.invalid/acme/receipts/623e7001-aa27-4555-86bf-083bb5ee26d7\",\"status\":\"completed\",\"idempotencyKey\":\"exact-bytes\",\"scopeEpoch\":\"aa608d6f-4c8d-4c80-8b04-44bbe7429126\",\"authorizationView\":\"development-all-visible\",\"transaction\":\"4e6a5839-6f38-4792-b729-c5e61ea85028\",\"detail\":\"available\",\"requiredPosition\":\"pos-1\",\"results\":[{\"operationIndex\":0,\"outcome\":\"matched\",\"count\":0}],\"next\":null,\"expiresAt\":\"2026-10-16T03:43:22.493Z\"}",
+        "wireResponseBase64": "SFRUUC8xLjEgMjAwIE9LDQpiZHAtYXV0aG9yaXphdGlvbi12aWV3OiBkZXZlbG9wbWVudC1hbGwtdmlzaWJsZQ0KYmRwLXNjb3BlLWVwb2NoOiBhYTYwOGQ2Zi00YzhkLTRjODAtOGIwNC00NGJiZTc0MjkxMjYNCmJkcC1zY29wZS1wb3NpdGlvbjogcG9zLTENCmNhY2hlLWNvbnRyb2w6IHByaXZhdGUsIG5vLXN0b3JlDQpjb250ZW50LWxlbmd0aDogNDUwDQpjb250ZW50LXR5cGU6IGFwcGxpY2F0aW9uL2pzb24NCnZhcnk6IEFjY2VwdA0KeC1iZHAtZGV2ZWxvcG1lbnQ6IG5vbi1hdHRlc3RpbmcNCkRhdGU6IFRodSwgMTUgT2N0IDIwMjYgMDM6NDM6MjIgR01UDQpDb25uZWN0aW9uOiBjbG9zZQ0KDQp7ImlkIjoiaHR0cHM6Ly9yZWZlcmVuY2UuaW52YWxpZC9hY21lL3JlY2VpcHRzLzYyM2U3MDAxLWFhMjctNDU1NS04NmJmLTA4M2JiNWVlMjZkNyIsInN0YXR1cyI6ImNvbXBsZXRlZCIsImlkZW1wb3RlbmN5S2V5IjoiZXhhY3QtYnl0ZXMiLCJzY29wZUVwb2NoIjoiYWE2MDhkNmYtNGM4ZC00YzgwLThiMDQtNDRiYmU3NDI5MTI2IiwiYXV0aG9yaXphdGlvblZpZXciOiJkZXZlbG9wbWVudC1hbGwtdmlzaWJsZSIsInRyYW5zYWN0aW9uIjoiNGU2YTU4MzktNmYzOC00NzkyLWI3MjktYzVlNjFlYTg1MDI4IiwiZGV0YWlsIjoiYXZhaWxhYmxlIiwicmVxdWlyZWRQb3NpdGlvbiI6InBvcy0xIiwicmVzdWx0cyI6W3sib3BlcmF0aW9uSW5kZXgiOjAsIm91dGNvbWUiOiJtYXRjaGVkIiwiY291bnQiOjB9XSwibmV4dCI6bnVsbCwiZXhwaXJlc0F0IjoiMjAyNi0xMC0xNlQwMzo0MzoyMi40OTNaIn0=",
+        "wireSha256": "1bbe44f67e56cb52727c9d7a461add2fba077053bc7c46b9ac48d6b9931f7244"
+      },
+      {
+        "method": "POST",
+        "url": "https://reference.invalid/acme/operations/update-where",
+        "key": "exact-depth",
+        "requestBody": "{\"collection\":\"beads\",\"selector\":\"$[?((((((((((((((((((((((((((((((@.missing))))))))))))))))))))))))))))))]\",\"change\":[{\"op\":\"replace\",\"path\":\"/n\",\"value\":1}]}",
+        "status": 200,
+        "headers": {
+          "bdp-authorization-view": "development-all-visible",
+          "bdp-scope-epoch": "aa608d6f-4c8d-4c80-8b04-44bbe7429126",
+          "bdp-scope-position": "pos-1",
+          "cache-control": "private, no-store",
+          "content-length": "450",
+          "content-type": "application/json",
+          "vary": "Accept",
+          "x-bdp-development": "non-attesting",
+          "date": "Thu, 15 Oct 2026 03:43:22 GMT",
+          "connection": "close"
+        },
+        "body": "{\"id\":\"https://reference.invalid/acme/receipts/7c461c4a-b66e-4ce9-930e-f3c464ba4023\",\"status\":\"completed\",\"idempotencyKey\":\"exact-depth\",\"scopeEpoch\":\"aa608d6f-4c8d-4c80-8b04-44bbe7429126\",\"authorizationView\":\"development-all-visible\",\"transaction\":\"9395049d-0e3e-4cf7-9651-66e2c1ff2ad1\",\"detail\":\"available\",\"requiredPosition\":\"pos-1\",\"results\":[{\"operationIndex\":0,\"outcome\":\"matched\",\"count\":0}],\"next\":null,\"expiresAt\":\"2026-10-16T03:43:22.494Z\"}",
+        "wireResponseBase64": "SFRUUC8xLjEgMjAwIE9LDQpiZHAtYXV0aG9yaXphdGlvbi12aWV3OiBkZXZlbG9wbWVudC1hbGwtdmlzaWJsZQ0KYmRwLXNjb3BlLWVwb2NoOiBhYTYwOGQ2Zi00YzhkLTRjODAtOGIwNC00NGJiZTc0MjkxMjYNCmJkcC1zY29wZS1wb3NpdGlvbjogcG9zLTENCmNhY2hlLWNvbnRyb2w6IHByaXZhdGUsIG5vLXN0b3JlDQpjb250ZW50LWxlbmd0aDogNDUwDQpjb250ZW50LXR5cGU6IGFwcGxpY2F0aW9uL2pzb24NCnZhcnk6IEFjY2VwdA0KeC1iZHAtZGV2ZWxvcG1lbnQ6IG5vbi1hdHRlc3RpbmcNCkRhdGU6IFRodSwgMTUgT2N0IDIwMjYgMDM6NDM6MjIgR01UDQpDb25uZWN0aW9uOiBjbG9zZQ0KDQp7ImlkIjoiaHR0cHM6Ly9yZWZlcmVuY2UuaW52YWxpZC9hY21lL3JlY2VpcHRzLzdjNDYxYzRhLWI2NmUtNGNlOS05MzBlLWYzYzQ2NGJhNDAyMyIsInN0YXR1cyI6ImNvbXBsZXRlZCIsImlkZW1wb3RlbmN5S2V5IjoiZXhhY3QtZGVwdGgiLCJzY29wZUVwb2NoIjoiYWE2MDhkNmYtNGM4ZC00YzgwLThiMDQtNDRiYmU3NDI5MTI2IiwiYXV0aG9yaXphdGlvblZpZXciOiJkZXZlbG9wbWVudC1hbGwtdmlzaWJsZSIsInRyYW5zYWN0aW9uIjoiOTM5NTA0OWQtMGUzZS00Y2Y3LTk2NTEtNjZlMmMxZmYyYWQxIiwiZGV0YWlsIjoiYXZhaWxhYmxlIiwicmVxdWlyZWRQb3NpdGlvbiI6InBvcy0xIiwicmVzdWx0cyI6W3sib3BlcmF0aW9uSW5kZXgiOjAsIm91dGNvbWUiOiJtYXRjaGVkIiwiY291bnQiOjB9XSwibmV4dCI6bnVsbCwiZXhwaXJlc0F0IjoiMjAyNi0xMC0xNlQwMzo0MzoyMi40OTRaIn0=",
+        "wireSha256": "fe9319a9f571958b2d276dee891c29baec52a87d293fd30282d5a4649fb33adc"
+      },
+      {
+        "method": "POST",
+        "url": "https://reference.invalid/acme/operations/batch",
+        "key": "exact-nodes",
+        "requestBody": "{\"operations\":[{\"operation\":\"deleteWhere\",\"collection\":\"beads\",\"selector\":\"$[?((((((((@.missing||@.missing)||(@.missing||@.missing))||((@.missing||@.missing)||(@.missing||@.missing)))||(((@.missing||@.missing)||(@.missing||@.missing))||((@.missing||@.missing)||(@.missing||@.missing))))||((((@.missing||@.missing)||(@.missing||@.missing))||((@.missing||@.missing)||(@.missing||@.missing)))||(((@.missing||@.missing)||(@.missing||@.missing))||((@.missing||@.missing)||(@.missing||@.missing)))))||(((((@.missing||@.missing)||(@.missing||@.missing))||((@.missing||@.missing)||(@.missing||@.missing)))||(((@.missing||@.missing)||(@.missing||@.missing))||((@.missing||@.missing)||(@.missing||@.missing))))||((((@.missing||@.missing)||(@.missing||@.missing))||((@.missing||@.missing)||(@.missing||@.missing)))||(((@.missing||@.missing)||(@.missing||@.missing))||((@.missing||@.missing)||(@.missing||@.missing))))))))]\"}]}",
+        "status": 200,
+        "headers": {
+          "bdp-authorization-view": "development-all-visible",
+          "bdp-scope-epoch": "aa608d6f-4c8d-4c80-8b04-44bbe7429126",
+          "bdp-scope-position": "pos-1",
+          "cache-control": "private, no-store",
+          "content-length": "450",
+          "content-type": "application/json",
+          "vary": "Accept",
+          "x-bdp-development": "non-attesting",
+          "date": "Thu, 15 Oct 2026 03:43:22 GMT",
+          "connection": "close"
+        },
+        "body": "{\"id\":\"https://reference.invalid/acme/receipts/c01a43be-7693-4a2c-b31f-a505fcce1c0c\",\"status\":\"completed\",\"idempotencyKey\":\"exact-nodes\",\"scopeEpoch\":\"aa608d6f-4c8d-4c80-8b04-44bbe7429126\",\"authorizationView\":\"development-all-visible\",\"transaction\":\"ff745758-4b83-42f4-9d3c-b3dea55c3387\",\"detail\":\"available\",\"requiredPosition\":\"pos-1\",\"results\":[{\"operationIndex\":0,\"outcome\":\"matched\",\"count\":0}],\"next\":null,\"expiresAt\":\"2026-10-16T03:43:22.496Z\"}",
+        "wireResponseBase64": "SFRUUC8xLjEgMjAwIE9LDQpiZHAtYXV0aG9yaXphdGlvbi12aWV3OiBkZXZlbG9wbWVudC1hbGwtdmlzaWJsZQ0KYmRwLXNjb3BlLWVwb2NoOiBhYTYwOGQ2Zi00YzhkLTRjODAtOGIwNC00NGJiZTc0MjkxMjYNCmJkcC1zY29wZS1wb3NpdGlvbjogcG9zLTENCmNhY2hlLWNvbnRyb2w6IHByaXZhdGUsIG5vLXN0b3JlDQpjb250ZW50LWxlbmd0aDogNDUwDQpjb250ZW50LXR5cGU6IGFwcGxpY2F0aW9uL2pzb24NCnZhcnk6IEFjY2VwdA0KeC1iZHAtZGV2ZWxvcG1lbnQ6IG5vbi1hdHRlc3RpbmcNCkRhdGU6IFRodSwgMTUgT2N0IDIwMjYgMDM6NDM6MjIgR01UDQpDb25uZWN0aW9uOiBjbG9zZQ0KDQp7ImlkIjoiaHR0cHM6Ly9yZWZlcmVuY2UuaW52YWxpZC9hY21lL3JlY2VpcHRzL2MwMWE0M2JlLTc2OTMtNGEyYy1iMzFmLWE1MDVmY2NlMWMwYyIsInN0YXR1cyI6ImNvbXBsZXRlZCIsImlkZW1wb3RlbmN5S2V5IjoiZXhhY3Qtbm9kZXMiLCJzY29wZUVwb2NoIjoiYWE2MDhkNmYtNGM4ZC00YzgwLThiMDQtNDRiYmU3NDI5MTI2IiwiYXV0aG9yaXphdGlvblZpZXciOiJkZXZlbG9wbWVudC1hbGwtdmlzaWJsZSIsInRyYW5zYWN0aW9uIjoiZmY3NDU3NTgtNGI4My00MmY0LTlkM2MtYjNkZWE1NWMzMzg3IiwiZGV0YWlsIjoiYXZhaWxhYmxlIiwicmVxdWlyZWRQb3NpdGlvbiI6InBvcy0xIiwicmVzdWx0cyI6W3sib3BlcmF0aW9uSW5kZXgiOjAsIm91dGNvbWUiOiJtYXRjaGVkIiwiY291bnQiOjB9XSwibmV4dCI6bnVsbCwiZXhwaXJlc0F0IjoiMjAyNi0xMC0xNlQwMzo0MzoyMi40OTZaIn0=",
+        "wireSha256": "1a5c5e79e15bf47b549d027514a056aa8d3d543f72605395a16d18b1956fc44a"
+      },
+      {
+        "method": "POST",
+        "url": "https://reference.invalid/acme/operations/delete-where",
+        "key": "seed",
+        "requestBody": "{\"collection\":\"beads\",\"selector\":\"$[?((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((@.missing))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))] true\"}",
+        "status": 400,
+        "headers": {
+          "cache-control": "private, no-store",
+          "content-length": "140",
+          "content-type": "application/problem+json",
+          "vary": "Accept",
+          "x-bdp-development": "non-attesting",
+          "date": "Thu, 15 Oct 2026 03:43:22 GMT",
+          "connection": "close"
+        },
+        "body": "{\"type\":\"https://github.com/gastownhall/bdp/problems/request\",\"code\":\"malformed-request\",\"retry\":\"never\",\"status\":400,\"pointer\":\"/selector\"}",
+        "wireResponseBase64": "SFRUUC8xLjEgNDAwIEJhZCBSZXF1ZXN0DQpjYWNoZS1jb250cm9sOiBwcml2YXRlLCBuby1zdG9yZQ0KY29udGVudC1sZW5ndGg6IDE0MA0KY29udGVudC10eXBlOiBhcHBsaWNhdGlvbi9wcm9ibGVtK2pzb24NCnZhcnk6IEFjY2VwdA0KeC1iZHAtZGV2ZWxvcG1lbnQ6IG5vbi1hdHRlc3RpbmcNCkRhdGU6IFRodSwgMTUgT2N0IDIwMjYgMDM6NDM6MjIgR01UDQpDb25uZWN0aW9uOiBjbG9zZQ0KDQp7InR5cGUiOiJodHRwczovL2dpdGh1Yi5jb20vZ2FzdG93bmhhbGwvYmRwL3Byb2JsZW1zL3JlcXVlc3QiLCJjb2RlIjoibWFsZm9ybWVkLXJlcXVlc3QiLCJyZXRyeSI6Im5ldmVyIiwic3RhdHVzIjo0MDAsInBvaW50ZXIiOiIvc2VsZWN0b3IifQ==",
+        "wireSha256": "b770936b55f5c1e0ee328d90805560695e6ad76d8488f25ea5345d7b8ce13aa3"
+      },
+      {
+        "method": "POST",
+        "url": "https://reference.invalid/acme/operations/delete-where",
+        "key": "seed",
+        "requestBody": "{\"collection\":\"beads\",\"selector\":\"$[?@.missing                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    ]\"}",
+        "status": 409,
+        "headers": {
+          "bdp-authorization-view": "development-all-visible",
+          "bdp-scope-epoch": "aa608d6f-4c8d-4c80-8b04-44bbe7429126",
+          "bdp-scope-position": "pos-1",
+          "cache-control": "private, no-store",
+          "content-length": "122",
+          "content-type": "application/problem+json",
+          "vary": "Accept",
+          "x-bdp-development": "non-attesting",
+          "date": "Thu, 15 Oct 2026 03:43:22 GMT",
+          "connection": "close"
+        },
+        "body": "{\"type\":\"https://github.com/gastownhall/bdp/problems/conflict\",\"code\":\"idempotency-conflict\",\"status\":409,\"retry\":\"never\"}",
+        "wireResponseBase64": "SFRUUC8xLjEgNDA5IENvbmZsaWN0DQpiZHAtYXV0aG9yaXphdGlvbi12aWV3OiBkZXZlbG9wbWVudC1hbGwtdmlzaWJsZQ0KYmRwLXNjb3BlLWVwb2NoOiBhYTYwOGQ2Zi00YzhkLTRjODAtOGIwNC00NGJiZTc0MjkxMjYNCmJkcC1zY29wZS1wb3NpdGlvbjogcG9zLTENCmNhY2hlLWNvbnRyb2w6IHByaXZhdGUsIG5vLXN0b3JlDQpjb250ZW50LWxlbmd0aDogMTIyDQpjb250ZW50LXR5cGU6IGFwcGxpY2F0aW9uL3Byb2JsZW0ranNvbg0KdmFyeTogQWNjZXB0DQp4LWJkcC1kZXZlbG9wbWVudDogbm9uLWF0dGVzdGluZw0KRGF0ZTogVGh1LCAxNSBPY3QgMjAyNiAwMzo0MzoyMiBHTVQNCkNvbm5lY3Rpb246IGNsb3NlDQoNCnsidHlwZSI6Imh0dHBzOi8vZ2l0aHViLmNvbS9nYXN0b3duaGFsbC9iZHAvcHJvYmxlbXMvY29uZmxpY3QiLCJjb2RlIjoiaWRlbXBvdGVuY3ktY29uZmxpY3QiLCJzdGF0dXMiOjQwOSwicmV0cnkiOiJuZXZlciJ9",
+        "wireSha256": "1e50814feeab185e1fe4928a617dbf944444514130cfc2f328c44139bb6d2346"
+      },
+      {
+        "method": "POST",
+        "url": "https://reference.invalid/acme/operations/batch",
+        "key": "seed",
+        "requestBody": "{\"operations\":[{\"operation\":\"createBead\",\"id\":\"beads/a\",\"type\":\"https://reference.invalid/acme/types/bead\",\"properties\":{\"n\":0}}]}",
+        "status": 200,
+        "headers": {
+          "bdp-authorization-view": "development-all-visible",
+          "bdp-scope-epoch": "aa608d6f-4c8d-4c80-8b04-44bbe7429126",
+          "bdp-scope-position": "pos-1",
+          "cache-control": "private, no-store",
+          "content-length": "653",
+          "content-type": "application/json",
+          "vary": "Accept",
+          "x-bdp-development": "non-attesting",
+          "date": "Thu, 15 Oct 2026 03:43:22 GMT",
+          "connection": "close"
+        },
+        "body": "{\"id\":\"https://reference.invalid/acme/receipts/34d1b044-0845-4b3f-856d-95e886fbdbea\",\"status\":\"completed\",\"idempotencyKey\":\"seed\",\"scopeEpoch\":\"aa608d6f-4c8d-4c80-8b04-44bbe7429126\",\"authorizationView\":\"development-all-visible\",\"transaction\":\"0ff3f535-9d72-404b-a6bc-94dd6564340b\",\"detail\":\"available\",\"requiredPosition\":\"pos-1\",\"effectPosition\":\"pos-1\",\"results\":[{\"operationIndex\":0,\"outcome\":\"created\",\"resource\":{\"id\":\"https://reference.invalid/acme/beads/a\",\"type\":\"https://reference.invalid/acme/types/bead\",\"revision\":\"08d9f460-fa57-4ee9-8e26-a063f7b9f8d0\",\"properties\":{\"n\":0},\"metadata\":{}}}],\"next\":null,\"expiresAt\":\"2026-10-16T03:43:22.465Z\"}",
+        "wireResponseBase64": "SFRUUC8xLjEgMjAwIE9LDQpiZHAtYXV0aG9yaXphdGlvbi12aWV3OiBkZXZlbG9wbWVudC1hbGwtdmlzaWJsZQ0KYmRwLXNjb3BlLWVwb2NoOiBhYTYwOGQ2Zi00YzhkLTRjODAtOGIwNC00NGJiZTc0MjkxMjYNCmJkcC1zY29wZS1wb3NpdGlvbjogcG9zLTENCmNhY2hlLWNvbnRyb2w6IHByaXZhdGUsIG5vLXN0b3JlDQpjb250ZW50LWxlbmd0aDogNjUzDQpjb250ZW50LXR5cGU6IGFwcGxpY2F0aW9uL2pzb24NCnZhcnk6IEFjY2VwdA0KeC1iZHAtZGV2ZWxvcG1lbnQ6IG5vbi1hdHRlc3RpbmcNCkRhdGU6IFRodSwgMTUgT2N0IDIwMjYgMDM6NDM6MjIgR01UDQpDb25uZWN0aW9uOiBjbG9zZQ0KDQp7ImlkIjoiaHR0cHM6Ly9yZWZlcmVuY2UuaW52YWxpZC9hY21lL3JlY2VpcHRzLzM0ZDFiMDQ0LTA4NDUtNGIzZi04NTZkLTk1ZTg4NmZiZGJlYSIsInN0YXR1cyI6ImNvbXBsZXRlZCIsImlkZW1wb3RlbmN5S2V5Ijoic2VlZCIsInNjb3BlRXBvY2giOiJhYTYwOGQ2Zi00YzhkLTRjODAtOGIwNC00NGJiZTc0MjkxMjYiLCJhdXRob3JpemF0aW9uVmlldyI6ImRldmVsb3BtZW50LWFsbC12aXNpYmxlIiwidHJhbnNhY3Rpb24iOiIwZmYzZjUzNS05ZDcyLTQwNGItYTZiYy05NGRkNjU2NDM0MGIiLCJkZXRhaWwiOiJhdmFpbGFibGUiLCJyZXF1aXJlZFBvc2l0aW9uIjoicG9zLTEiLCJlZmZlY3RQb3NpdGlvbiI6InBvcy0xIiwicmVzdWx0cyI6W3sib3BlcmF0aW9uSW5kZXgiOjAsIm91dGNvbWUiOiJjcmVhdGVkIiwicmVzb3VyY2UiOnsiaWQiOiJodHRwczovL3JlZmVyZW5jZS5pbnZhbGlkL2FjbWUvYmVhZHMvYSIsInR5cGUiOiJodHRwczovL3JlZmVyZW5jZS5pbnZhbGlkL2FjbWUvdHlwZXMvYmVhZCIsInJldmlzaW9uIjoiMDhkOWY0NjAtZmE1Ny00ZWU5LThlMjYtYTA2M2Y3YjlmOGQwIiwicHJvcGVydGllcyI6eyJuIjowfSwibWV0YWRhdGEiOnt9fX1dLCJuZXh0IjpudWxsLCJleHBpcmVzQXQiOiIyMDI2LTEwLTE2VDAzOjQzOjIyLjQ2NVoifQ==",
+        "wireSha256": "cee9b3376a64eb687b51cdbb3b145fdf265597e62ef328d842c0e061c9653b71"
+      },
+      {
+        "method": "POST",
+        "url": "https://reference.invalid/acme/operations/update-where",
+        "key": "write",
+        "requestBody": "{\"collection\":\"beads\",\"selector\":\"$[?@.id == \\\"https://reference.invalid/acme/beads/a\\\"]\",\"change\":[{\"op\":\"replace\",\"path\":\"/n\",\"value\":1}]}",
+        "status": 200,
+        "headers": {
+          "bdp-authorization-view": "development-all-visible",
+          "bdp-scope-epoch": "aa608d6f-4c8d-4c80-8b04-44bbe7429126",
+          "bdp-scope-position": "pos-2",
+          "cache-control": "private, no-store",
+          "content-length": "705",
+          "content-type": "application/json",
+          "vary": "Accept",
+          "x-bdp-development": "non-attesting",
+          "date": "Thu, 15 Oct 2026 03:43:22 GMT",
+          "connection": "close"
+        },
+        "body": "{\"id\":\"https://reference.invalid/acme/receipts/d8e399ac-84aa-470f-ba8e-29f4eee5eaad\",\"status\":\"completed\",\"idempotencyKey\":\"write\",\"scopeEpoch\":\"aa608d6f-4c8d-4c80-8b04-44bbe7429126\",\"authorizationView\":\"development-all-visible\",\"transaction\":\"a6d405f6-f340-4ff2-acb0-2fb85b836a22\",\"detail\":\"available\",\"requiredPosition\":\"pos-2\",\"effectPosition\":\"pos-2\",\"results\":[{\"operationIndex\":0,\"outcome\":\"matched\",\"count\":1},{\"operationIndex\":0,\"outcome\":\"updated\",\"resource\":{\"id\":\"https://reference.invalid/acme/beads/a\",\"type\":\"https://reference.invalid/acme/types/bead\",\"revision\":\"4302a478-cb6b-45f7-bec7-c9577d376e75\",\"properties\":{\"n\":1},\"metadata\":{}}}],\"next\":null,\"expiresAt\":\"2026-10-16T03:43:22.503Z\"}",
+        "wireResponseBase64": "SFRUUC8xLjEgMjAwIE9LDQpiZHAtYXV0aG9yaXphdGlvbi12aWV3OiBkZXZlbG9wbWVudC1hbGwtdmlzaWJsZQ0KYmRwLXNjb3BlLWVwb2NoOiBhYTYwOGQ2Zi00YzhkLTRjODAtOGIwNC00NGJiZTc0MjkxMjYNCmJkcC1zY29wZS1wb3NpdGlvbjogcG9zLTINCmNhY2hlLWNvbnRyb2w6IHByaXZhdGUsIG5vLXN0b3JlDQpjb250ZW50LWxlbmd0aDogNzA1DQpjb250ZW50LXR5cGU6IGFwcGxpY2F0aW9uL2pzb24NCnZhcnk6IEFjY2VwdA0KeC1iZHAtZGV2ZWxvcG1lbnQ6IG5vbi1hdHRlc3RpbmcNCkRhdGU6IFRodSwgMTUgT2N0IDIwMjYgMDM6NDM6MjIgR01UDQpDb25uZWN0aW9uOiBjbG9zZQ0KDQp7ImlkIjoiaHR0cHM6Ly9yZWZlcmVuY2UuaW52YWxpZC9hY21lL3JlY2VpcHRzL2Q4ZTM5OWFjLTg0YWEtNDcwZi1iYThlLTI5ZjRlZWU1ZWFhZCIsInN0YXR1cyI6ImNvbXBsZXRlZCIsImlkZW1wb3RlbmN5S2V5Ijoid3JpdGUiLCJzY29wZUVwb2NoIjoiYWE2MDhkNmYtNGM4ZC00YzgwLThiMDQtNDRiYmU3NDI5MTI2IiwiYXV0aG9yaXphdGlvblZpZXciOiJkZXZlbG9wbWVudC1hbGwtdmlzaWJsZSIsInRyYW5zYWN0aW9uIjoiYTZkNDA1ZjYtZjM0MC00ZmYyLWFjYjAtMmZiODViODM2YTIyIiwiZGV0YWlsIjoiYXZhaWxhYmxlIiwicmVxdWlyZWRQb3NpdGlvbiI6InBvcy0yIiwiZWZmZWN0UG9zaXRpb24iOiJwb3MtMiIsInJlc3VsdHMiOlt7Im9wZXJhdGlvbkluZGV4IjowLCJvdXRjb21lIjoibWF0Y2hlZCIsImNvdW50IjoxfSx7Im9wZXJhdGlvbkluZGV4IjowLCJvdXRjb21lIjoidXBkYXRlZCIsInJlc291cmNlIjp7ImlkIjoiaHR0cHM6Ly9yZWZlcmVuY2UuaW52YWxpZC9hY21lL2JlYWRzL2EiLCJ0eXBlIjoiaHR0cHM6Ly9yZWZlcmVuY2UuaW52YWxpZC9hY21lL3R5cGVzL2JlYWQiLCJyZXZpc2lvbiI6IjQzMDJhNDc4LWNiNmItNDVmNy1iZWM3LWM5NTc3ZDM3NmU3NSIsInByb3BlcnRpZXMiOnsibiI6MX0sIm1ldGFkYXRhIjp7fX19XSwibmV4dCI6bnVsbCwiZXhwaXJlc0F0IjoiMjAyNi0xMC0xNlQwMzo0MzoyMi41MDNaIn0=",
+        "wireSha256": "aef006eb636ee106ac9c4f215953b7af86ad39d9f2f0e4240d16d053b22ff86c"
+      },
+      {
+        "method": "POST",
+        "url": "https://reference.invalid/acme/operations/update-where",
+        "key": "write",
+        "requestBody": "{\"collection\":\"beads\",\"selector\":\"$[?@.id == \\\"https://reference.invalid/acme/beads/a\\\"]\",\"change\":[{\"op\":\"replace\",\"path\":\"/n\",\"value\":1}]}",
+        "status": 200,
+        "headers": {
+          "bdp-authorization-view": "development-all-visible",
+          "bdp-scope-epoch": "aa608d6f-4c8d-4c80-8b04-44bbe7429126",
+          "bdp-scope-position": "pos-2",
+          "cache-control": "private, no-store",
+          "content-length": "705",
+          "content-type": "application/json",
+          "vary": "Accept",
+          "x-bdp-development": "non-attesting",
+          "date": "Thu, 15 Oct 2026 03:43:22 GMT",
+          "connection": "close"
+        },
+        "body": "{\"id\":\"https://reference.invalid/acme/receipts/d8e399ac-84aa-470f-ba8e-29f4eee5eaad\",\"status\":\"completed\",\"idempotencyKey\":\"write\",\"scopeEpoch\":\"aa608d6f-4c8d-4c80-8b04-44bbe7429126\",\"authorizationView\":\"development-all-visible\",\"transaction\":\"a6d405f6-f340-4ff2-acb0-2fb85b836a22\",\"detail\":\"available\",\"requiredPosition\":\"pos-2\",\"effectPosition\":\"pos-2\",\"results\":[{\"operationIndex\":0,\"outcome\":\"matched\",\"count\":1},{\"operationIndex\":0,\"outcome\":\"updated\",\"resource\":{\"id\":\"https://reference.invalid/acme/beads/a\",\"type\":\"https://reference.invalid/acme/types/bead\",\"revision\":\"4302a478-cb6b-45f7-bec7-c9577d376e75\",\"properties\":{\"n\":1},\"metadata\":{}}}],\"next\":null,\"expiresAt\":\"2026-10-16T03:43:22.503Z\"}",
+        "wireResponseBase64": "SFRUUC8xLjEgMjAwIE9LDQpiZHAtYXV0aG9yaXphdGlvbi12aWV3OiBkZXZlbG9wbWVudC1hbGwtdmlzaWJsZQ0KYmRwLXNjb3BlLWVwb2NoOiBhYTYwOGQ2Zi00YzhkLTRjODAtOGIwNC00NGJiZTc0MjkxMjYNCmJkcC1zY29wZS1wb3NpdGlvbjogcG9zLTINCmNhY2hlLWNvbnRyb2w6IHByaXZhdGUsIG5vLXN0b3JlDQpjb250ZW50LWxlbmd0aDogNzA1DQpjb250ZW50LXR5cGU6IGFwcGxpY2F0aW9uL2pzb24NCnZhcnk6IEFjY2VwdA0KeC1iZHAtZGV2ZWxvcG1lbnQ6IG5vbi1hdHRlc3RpbmcNCkRhdGU6IFRodSwgMTUgT2N0IDIwMjYgMDM6NDM6MjIgR01UDQpDb25uZWN0aW9uOiBjbG9zZQ0KDQp7ImlkIjoiaHR0cHM6Ly9yZWZlcmVuY2UuaW52YWxpZC9hY21lL3JlY2VpcHRzL2Q4ZTM5OWFjLTg0YWEtNDcwZi1iYThlLTI5ZjRlZWU1ZWFhZCIsInN0YXR1cyI6ImNvbXBsZXRlZCIsImlkZW1wb3RlbmN5S2V5Ijoid3JpdGUiLCJzY29wZUVwb2NoIjoiYWE2MDhkNmYtNGM4ZC00YzgwLThiMDQtNDRiYmU3NDI5MTI2IiwiYXV0aG9yaXphdGlvblZpZXciOiJkZXZlbG9wbWVudC1hbGwtdmlzaWJsZSIsInRyYW5zYWN0aW9uIjoiYTZkNDA1ZjYtZjM0MC00ZmYyLWFjYjAtMmZiODViODM2YTIyIiwiZGV0YWlsIjoiYXZhaWxhYmxlIiwicmVxdWlyZWRQb3NpdGlvbiI6InBvcy0yIiwiZWZmZWN0UG9zaXRpb24iOiJwb3MtMiIsInJlc3VsdHMiOlt7Im9wZXJhdGlvbkluZGV4IjowLCJvdXRjb21lIjoibWF0Y2hlZCIsImNvdW50IjoxfSx7Im9wZXJhdGlvbkluZGV4IjowLCJvdXRjb21lIjoidXBkYXRlZCIsInJlc291cmNlIjp7ImlkIjoiaHR0cHM6Ly9yZWZlcmVuY2UuaW52YWxpZC9hY21lL2JlYWRzL2EiLCJ0eXBlIjoiaHR0cHM6Ly9yZWZlcmVuY2UuaW52YWxpZC9hY21lL3R5cGVzL2JlYWQiLCJyZXZpc2lvbiI6IjQzMDJhNDc4LWNiNmItNDVmNy1iZWM3LWM5NTc3ZDM3NmU3NSIsInByb3BlcnRpZXMiOnsibiI6MX0sIm1ldGFkYXRhIjp7fX19XSwibmV4dCI6bnVsbCwiZXhwaXJlc0F0IjoiMjAyNi0xMC0xNlQwMzo0MzoyMi41MDNaIn0=",
+        "wireSha256": "aef006eb636ee106ac9c4f215953b7af86ad39d9f2f0e4240d16d053b22ff86c"
+      },
+      {
+        "method": "GET",
+        "url": "https://reference.invalid/acme/receipts/d8e399ac-84aa-470f-ba8e-29f4eee5eaad",
+        "status": 200,
+        "headers": {
+          "bdp-authorization-view": "development-all-visible",
+          "bdp-scope-epoch": "aa608d6f-4c8d-4c80-8b04-44bbe7429126",
+          "bdp-scope-position": "pos-2",
+          "cache-control": "private, no-store",
+          "content-length": "705",
+          "content-type": "application/json",
+          "vary": "Accept",
+          "x-bdp-development": "non-attesting",
+          "date": "Thu, 15 Oct 2026 03:43:22 GMT",
+          "connection": "close"
+        },
+        "body": "{\"id\":\"https://reference.invalid/acme/receipts/d8e399ac-84aa-470f-ba8e-29f4eee5eaad\",\"status\":\"completed\",\"idempotencyKey\":\"write\",\"scopeEpoch\":\"aa608d6f-4c8d-4c80-8b04-44bbe7429126\",\"authorizationView\":\"development-all-visible\",\"transaction\":\"a6d405f6-f340-4ff2-acb0-2fb85b836a22\",\"detail\":\"available\",\"requiredPosition\":\"pos-2\",\"effectPosition\":\"pos-2\",\"results\":[{\"operationIndex\":0,\"outcome\":\"matched\",\"count\":1},{\"operationIndex\":0,\"outcome\":\"updated\",\"resource\":{\"id\":\"https://reference.invalid/acme/beads/a\",\"type\":\"https://reference.invalid/acme/types/bead\",\"revision\":\"4302a478-cb6b-45f7-bec7-c9577d376e75\",\"properties\":{\"n\":1},\"metadata\":{}}}],\"next\":null,\"expiresAt\":\"2026-10-16T03:43:22.503Z\"}",
+        "wireResponseBase64": "SFRUUC8xLjEgMjAwIE9LDQpiZHAtYXV0aG9yaXphdGlvbi12aWV3OiBkZXZlbG9wbWVudC1hbGwtdmlzaWJsZQ0KYmRwLXNjb3BlLWVwb2NoOiBhYTYwOGQ2Zi00YzhkLTRjODAtOGIwNC00NGJiZTc0MjkxMjYNCmJkcC1zY29wZS1wb3NpdGlvbjogcG9zLTINCmNhY2hlLWNvbnRyb2w6IHByaXZhdGUsIG5vLXN0b3JlDQpjb250ZW50LWxlbmd0aDogNzA1DQpjb250ZW50LXR5cGU6IGFwcGxpY2F0aW9uL2pzb24NCnZhcnk6IEFjY2VwdA0KeC1iZHAtZGV2ZWxvcG1lbnQ6IG5vbi1hdHRlc3RpbmcNCkRhdGU6IFRodSwgMTUgT2N0IDIwMjYgMDM6NDM6MjIgR01UDQpDb25uZWN0aW9uOiBjbG9zZQ0KDQp7ImlkIjoiaHR0cHM6Ly9yZWZlcmVuY2UuaW52YWxpZC9hY21lL3JlY2VpcHRzL2Q4ZTM5OWFjLTg0YWEtNDcwZi1iYThlLTI5ZjRlZWU1ZWFhZCIsInN0YXR1cyI6ImNvbXBsZXRlZCIsImlkZW1wb3RlbmN5S2V5Ijoid3JpdGUiLCJzY29wZUVwb2NoIjoiYWE2MDhkNmYtNGM4ZC00YzgwLThiMDQtNDRiYmU3NDI5MTI2IiwiYXV0aG9yaXphdGlvblZpZXciOiJkZXZlbG9wbWVudC1hbGwtdmlzaWJsZSIsInRyYW5zYWN0aW9uIjoiYTZkNDA1ZjYtZjM0MC00ZmYyLWFjYjAtMmZiODViODM2YTIyIiwiZGV0YWlsIjoiYXZhaWxhYmxlIiwicmVxdWlyZWRQb3NpdGlvbiI6InBvcy0yIiwiZWZmZWN0UG9zaXRpb24iOiJwb3MtMiIsInJlc3VsdHMiOlt7Im9wZXJhdGlvbkluZGV4IjowLCJvdXRjb21lIjoibWF0Y2hlZCIsImNvdW50IjoxfSx7Im9wZXJhdGlvbkluZGV4IjowLCJvdXRjb21lIjoidXBkYXRlZCIsInJlc291cmNlIjp7ImlkIjoiaHR0cHM6Ly9yZWZlcmVuY2UuaW52YWxpZC9hY21lL2JlYWRzL2EiLCJ0eXBlIjoiaHR0cHM6Ly9yZWZlcmVuY2UuaW52YWxpZC9hY21lL3R5cGVzL2JlYWQiLCJyZXZpc2lvbiI6IjQzMDJhNDc4LWNiNmItNDVmNy1iZWM3LWM5NTc3ZDM3NmU3NSIsInByb3BlcnRpZXMiOnsibiI6MX0sIm1ldGFkYXRhIjp7fX19XSwibmV4dCI6bnVsbCwiZXhwaXJlc0F0IjoiMjAyNi0xMC0xNlQwMzo0MzoyMi41MDNaIn0=",
+        "wireSha256": "aef006eb636ee106ac9c4f215953b7af86ad39d9f2f0e4240d16d053b22ff86c"
+      },
+      {
+        "method": "GET",
+        "url": "https://reference.invalid/acme/beads/a",
+        "status": 200,
+        "headers": {
+          "bdp-authorization-view": "development-all-visible",
+          "bdp-scope-epoch": "aa608d6f-4c8d-4c80-8b04-44bbe7429126",
+          "bdp-scope-position": "pos-2",
+          "cache-control": "private, no-store",
+          "content-length": "183",
+          "content-type": "application/json",
+          "etag": "\"4302a478-cb6b-45f7-bec7-c9577d376e75\"",
+          "vary": "Accept",
+          "x-bdp-development": "non-attesting",
+          "date": "Thu, 15 Oct 2026 03:43:22 GMT",
+          "connection": "close"
+        },
+        "body": "{\"id\":\"https://reference.invalid/acme/beads/a\",\"type\":\"https://reference.invalid/acme/types/bead\",\"revision\":\"4302a478-cb6b-45f7-bec7-c9577d376e75\",\"properties\":{\"n\":1},\"metadata\":{}}",
+        "wireResponseBase64": "SFRUUC8xLjEgMjAwIE9LDQpiZHAtYXV0aG9yaXphdGlvbi12aWV3OiBkZXZlbG9wbWVudC1hbGwtdmlzaWJsZQ0KYmRwLXNjb3BlLWVwb2NoOiBhYTYwOGQ2Zi00YzhkLTRjODAtOGIwNC00NGJiZTc0MjkxMjYNCmJkcC1zY29wZS1wb3NpdGlvbjogcG9zLTINCmNhY2hlLWNvbnRyb2w6IHByaXZhdGUsIG5vLXN0b3JlDQpjb250ZW50LWxlbmd0aDogMTgzDQpjb250ZW50LXR5cGU6IGFwcGxpY2F0aW9uL2pzb24NCmV0YWc6ICI0MzAyYTQ3OC1jYjZiLTQ1ZjctYmVjNy1jOTU3N2QzNzZlNzUiDQp2YXJ5OiBBY2NlcHQNCngtYmRwLWRldmVsb3BtZW50OiBub24tYXR0ZXN0aW5nDQpEYXRlOiBUaHUsIDE1IE9jdCAyMDI2IDAzOjQzOjIyIEdNVA0KQ29ubmVjdGlvbjogY2xvc2UNCg0KeyJpZCI6Imh0dHBzOi8vcmVmZXJlbmNlLmludmFsaWQvYWNtZS9iZWFkcy9hIiwidHlwZSI6Imh0dHBzOi8vcmVmZXJlbmNlLmludmFsaWQvYWNtZS90eXBlcy9iZWFkIiwicmV2aXNpb24iOiI0MzAyYTQ3OC1jYjZiLTQ1ZjctYmVjNy1jOTU3N2QzNzZlNzUiLCJwcm9wZXJ0aWVzIjp7Im4iOjF9LCJtZXRhZGF0YSI6e319",
+        "wireSha256": "19f44cdf0fe747ee4f4811e8f71796e2a03ec5f58d6e7104c6ac95a1c4db7000"
+      },
+      {
+        "method": "GET",
+        "url": "https://reference.invalid/acme/changes/?after=genesis",
+        "status": 200,
+        "headers": {
+          "bdp-authorization-view": "development-all-visible",
+          "bdp-scope-epoch": "aa608d6f-4c8d-4c80-8b04-44bbe7429126",
+          "bdp-scope-position": "pos-2",
+          "cache-control": "private, no-store",
+          "content-length": "1495",
+          "content-type": "application/json",
+          "vary": "Accept",
+          "x-bdp-development": "non-attesting",
+          "date": "Thu, 15 Oct 2026 03:43:22 GMT",
+          "connection": "close"
+        },
+        "body": "{\"scope\":\"https://reference.invalid/acme/\",\"scopeEpoch\":\"aa608d6f-4c8d-4c80-8b04-44bbe7429126\",\"authorizationView\":\"development-all-visible\",\"after\":\"genesis\",\"observedHeadPosition\":\"pos-2\",\"groups\":[{\"scopeEpoch\":\"aa608d6f-4c8d-4c80-8b04-44bbe7429126\",\"authorizationView\":\"development-all-visible\",\"checkpoint\":\"cg_STP2dRCApw3wPybOyFQflyE08mH67KUU2jt8WJtbuWs_I5nG6wRTxStzACnI3Xc_3V6lkfUZ_8sR3ee9ZwiUhr0_1\",\"position\":\"pos-1\",\"previousPosition\":\"pos-0\",\"projectionAdvance\":false,\"transaction\":\"0ff3f535-9d72-404b-a6bc-94dd6564340b\",\"changes\":[{\"operation\":\"upsert\",\"resourceKind\":\"bead\",\"resource\":{\"id\":\"https://reference.invalid/acme/beads/a\",\"type\":\"https://reference.invalid/acme/types/bead\",\"revision\":\"08d9f460-fa57-4ee9-8e26-a063f7b9f8d0\",\"properties\":{\"n\":0},\"metadata\":{}}}],\"erasures\":[],\"eventCount\":1,\"events\":[{\"id\":\"ev_J0mUJxnEVYU33hIFoTZGddUXMB7bjoF1Rpk7w5xaNd0_bLUW9ljdXBysp41tfjGcabueApuHaoJDxyqyaQ2NBU4_2WXVispO6JHYwJi-mIXS3HyQCITqv2cC6A7yD05OAO0_pos-1_0\",\"ordinal\":0,\"type\":\"created\",\"source\":\"https://reference.invalid/acme/events/\",\"subject\":\"https://reference.invalid/acme/beads/a\",\"subjectType\":\"https://reference.invalid/acme/types/bead\",\"transaction\":\"0ff3f535-9d72-404b-a6bc-94dd6564340b\",\"time\":\"2026-10-15T03:43:22.462Z\",\"data\":{\"revision\":\"08d9f460-fa57-4ee9-8e26-a063f7b9f8d0\",\"properties\":{\"n\":0},\"metadata\":{}}}]}],\"next\":\"https://reference.invalid/acme/changes/?after=cg_STP2dRCApw3wPybOyFQflyE08mH67KUU2jt8WJtbuWs_I5nG6wRTxStzACnI3Xc_3V6lkfUZ_8sR3ee9ZwiUhr0_1\"}",
+        "wireResponseBase64": "SFRUUC8xLjEgMjAwIE9LDQpiZHAtYXV0aG9yaXphdGlvbi12aWV3OiBkZXZlbG9wbWVudC1hbGwtdmlzaWJsZQ0KYmRwLXNjb3BlLWVwb2NoOiBhYTYwOGQ2Zi00YzhkLTRjODAtOGIwNC00NGJiZTc0MjkxMjYNCmJkcC1zY29wZS1wb3NpdGlvbjogcG9zLTINCmNhY2hlLWNvbnRyb2w6IHByaXZhdGUsIG5vLXN0b3JlDQpjb250ZW50LWxlbmd0aDogMTQ5NQ0KY29udGVudC10eXBlOiBhcHBsaWNhdGlvbi9qc29uDQp2YXJ5OiBBY2NlcHQNCngtYmRwLWRldmVsb3BtZW50OiBub24tYXR0ZXN0aW5nDQpEYXRlOiBUaHUsIDE1IE9jdCAyMDI2IDAzOjQzOjIyIEdNVA0KQ29ubmVjdGlvbjogY2xvc2UNCg0KeyJzY29wZSI6Imh0dHBzOi8vcmVmZXJlbmNlLmludmFsaWQvYWNtZS8iLCJzY29wZUVwb2NoIjoiYWE2MDhkNmYtNGM4ZC00YzgwLThiMDQtNDRiYmU3NDI5MTI2IiwiYXV0aG9yaXphdGlvblZpZXciOiJkZXZlbG9wbWVudC1hbGwtdmlzaWJsZSIsImFmdGVyIjoiZ2VuZXNpcyIsIm9ic2VydmVkSGVhZFBvc2l0aW9uIjoicG9zLTIiLCJncm91cHMiOlt7InNjb3BlRXBvY2giOiJhYTYwOGQ2Zi00YzhkLTRjODAtOGIwNC00NGJiZTc0MjkxMjYiLCJhdXRob3JpemF0aW9uVmlldyI6ImRldmVsb3BtZW50LWFsbC12aXNpYmxlIiwiY2hlY2twb2ludCI6ImNnX1NUUDJkUkNBcHczd1B5Yk95RlFmbHlFMDhtSDY3S1VVMmp0OFdKdGJ1V3NfSTVuRzZ3UlR4U3R6QUNuSTNYY18zVjZsa2ZVWl84c1IzZWU5WndpVWhyMF8xIiwicG9zaXRpb24iOiJwb3MtMSIsInByZXZpb3VzUG9zaXRpb24iOiJwb3MtMCIsInByb2plY3Rpb25BZHZhbmNlIjpmYWxzZSwidHJhbnNhY3Rpb24iOiIwZmYzZjUzNS05ZDcyLTQwNGItYTZiYy05NGRkNjU2NDM0MGIiLCJjaGFuZ2VzIjpbeyJvcGVyYXRpb24iOiJ1cHNlcnQiLCJyZXNvdXJjZUtpbmQiOiJiZWFkIiwicmVzb3VyY2UiOnsiaWQiOiJodHRwczovL3JlZmVyZW5jZS5pbnZhbGlkL2FjbWUvYmVhZHMvYSIsInR5cGUiOiJodHRwczovL3JlZmVyZW5jZS5pbnZhbGlkL2FjbWUvdHlwZXMvYmVhZCIsInJldmlzaW9uIjoiMDhkOWY0NjAtZmE1Ny00ZWU5LThlMjYtYTA2M2Y3YjlmOGQwIiwicHJvcGVydGllcyI6eyJuIjowfSwibWV0YWRhdGEiOnt9fX1dLCJlcmFzdXJlcyI6W10sImV2ZW50Q291bnQiOjEsImV2ZW50cyI6W3siaWQiOiJldl9KMG1VSnhuRVZZVTMzaElGb1RaR2RkVVhNQjdiam9GMVJwazd3NXhhTmQwX2JMVVc5bGpkWEJ5c3A0MXRmakdjYWJ1ZUFwdUhhb0pEeHlxeWFRMk5CVTRfMldYVmlzcE82SkhZd0ppLW1JWFMzSHlRQ0lUcXYyY0M2QTd5RDA1T0FPMF9wb3MtMV8wIiwib3JkaW5hbCI6MCwidHlwZSI6ImNyZWF0ZWQiLCJzb3VyY2UiOiJodHRwczovL3JlZmVyZW5jZS5pbnZhbGlkL2FjbWUvZXZlbnRzLyIsInN1YmplY3QiOiJodHRwczovL3JlZmVyZW5jZS5pbnZhbGlkL2FjbWUvYmVhZHMvYSIsInN1YmplY3RUeXBlIjoiaHR0cHM6Ly9yZWZlcmVuY2UuaW52YWxpZC9hY21lL3R5cGVzL2JlYWQiLCJ0cmFuc2FjdGlvbiI6IjBmZjNmNTM1LTlkNzItNDA0Yi1hNmJjLTk0ZGQ2NTY0MzQwYiIsInRpbWUiOiIyMDI2LTEwLTE1VDAzOjQzOjIyLjQ2MloiLCJkYXRhIjp7InJldmlzaW9uIjoiMDhkOWY0NjAtZmE1Ny00ZWU5LThlMjYtYTA2M2Y3YjlmOGQwIiwicHJvcGVydGllcyI6eyJuIjowfSwibWV0YWRhdGEiOnt9fX1dfV0sIm5leHQiOiJodHRwczovL3JlZmVyZW5jZS5pbnZhbGlkL2FjbWUvY2hhbmdlcy8/YWZ0ZXI9Y2dfU1RQMmRSQ0FwdzN3UHliT3lGUWZseUUwOG1INjdLVVUyanQ4V0p0YnVXc19JNW5HNndSVHhTdHpBQ25JM1hjXzNWNmxrZlVaXzhzUjNlZTlad2lVaHIwXzEifQ==",
+        "wireSha256": "af2bfe4088831316bb93f377ec5175aca3fcc48a0c17d9e9fb9f8188bca862bd"
+      },
+      {
+        "method": "GET",
+        "url": "https://reference.invalid/acme/events/",
+        "status": 200,
+        "headers": {
+          "bdp-authorization-view": "development-all-visible",
+          "bdp-scope-epoch": "aa608d6f-4c8d-4c80-8b04-44bbe7429126",
+          "bdp-scope-position": "pos-2",
+          "cache-control": "private, no-store",
+          "content-length": "1189",
+          "content-type": "application/json",
+          "vary": "Accept",
+          "x-bdp-development": "non-attesting",
+          "date": "Thu, 15 Oct 2026 03:43:22 GMT",
+          "connection": "close"
+        },
+        "body": "{\"source\":\"https://reference.invalid/acme/events/\",\"events\":[{\"id\":\"ev_J0mUJxnEVYU33hIFoTZGddUXMB7bjoF1Rpk7w5xaNd0_bLUW9ljdXBysp41tfjGcabueApuHaoJDxyqyaQ2NBU4_2WXVispO6JHYwJi-mIXS3HyQCITqv2cC6A7yD05OAO0_pos-1_0\",\"ordinal\":0,\"type\":\"created\",\"source\":\"https://reference.invalid/acme/events/\",\"subject\":\"https://reference.invalid/acme/beads/a\",\"subjectType\":\"https://reference.invalid/acme/types/bead\",\"transaction\":\"0ff3f535-9d72-404b-a6bc-94dd6564340b\",\"time\":\"2026-10-15T03:43:22.462Z\",\"data\":{\"revision\":\"08d9f460-fa57-4ee9-8e26-a063f7b9f8d0\",\"properties\":{\"n\":0},\"metadata\":{}}},{\"id\":\"ev_J0mUJxnEVYU33hIFoTZGddUXMB7bjoF1Rpk7w5xaNd0_bLUW9ljdXBysp41tfjGcabueApuHaoJDxyqyaQ2NBU4_2WXVispO6JHYwJi-mIXS3HyQCITqv2cC6A7yD05OAO0_pos-2_0\",\"ordinal\":0,\"type\":\"updated\",\"source\":\"https://reference.invalid/acme/events/\",\"subject\":\"https://reference.invalid/acme/beads/a\",\"subjectType\":\"https://reference.invalid/acme/types/bead\",\"transaction\":\"a6d405f6-f340-4ff2-acb0-2fb85b836a22\",\"time\":\"2026-10-15T03:43:22.502Z\",\"data\":{\"previousRevision\":\"08d9f460-fa57-4ee9-8e26-a063f7b9f8d0\",\"revision\":\"4302a478-cb6b-45f7-bec7-c9577d376e75\",\"change\":[{\"op\":\"replace\",\"path\":\"/n\",\"value\":1}]}}],\"next\":null}",
+        "wireResponseBase64": "SFRUUC8xLjEgMjAwIE9LDQpiZHAtYXV0aG9yaXphdGlvbi12aWV3OiBkZXZlbG9wbWVudC1hbGwtdmlzaWJsZQ0KYmRwLXNjb3BlLWVwb2NoOiBhYTYwOGQ2Zi00YzhkLTRjODAtOGIwNC00NGJiZTc0MjkxMjYNCmJkcC1zY29wZS1wb3NpdGlvbjogcG9zLTINCmNhY2hlLWNvbnRyb2w6IHByaXZhdGUsIG5vLXN0b3JlDQpjb250ZW50LWxlbmd0aDogMTE4OQ0KY29udGVudC10eXBlOiBhcHBsaWNhdGlvbi9qc29uDQp2YXJ5OiBBY2NlcHQNCngtYmRwLWRldmVsb3BtZW50OiBub24tYXR0ZXN0aW5nDQpEYXRlOiBUaHUsIDE1IE9jdCAyMDI2IDAzOjQzOjIyIEdNVA0KQ29ubmVjdGlvbjogY2xvc2UNCg0KeyJzb3VyY2UiOiJodHRwczovL3JlZmVyZW5jZS5pbnZhbGlkL2FjbWUvZXZlbnRzLyIsImV2ZW50cyI6W3siaWQiOiJldl9KMG1VSnhuRVZZVTMzaElGb1RaR2RkVVhNQjdiam9GMVJwazd3NXhhTmQwX2JMVVc5bGpkWEJ5c3A0MXRmakdjYWJ1ZUFwdUhhb0pEeHlxeWFRMk5CVTRfMldYVmlzcE82SkhZd0ppLW1JWFMzSHlRQ0lUcXYyY0M2QTd5RDA1T0FPMF9wb3MtMV8wIiwib3JkaW5hbCI6MCwidHlwZSI6ImNyZWF0ZWQiLCJzb3VyY2UiOiJodHRwczovL3JlZmVyZW5jZS5pbnZhbGlkL2FjbWUvZXZlbnRzLyIsInN1YmplY3QiOiJodHRwczovL3JlZmVyZW5jZS5pbnZhbGlkL2FjbWUvYmVhZHMvYSIsInN1YmplY3RUeXBlIjoiaHR0cHM6Ly9yZWZlcmVuY2UuaW52YWxpZC9hY21lL3R5cGVzL2JlYWQiLCJ0cmFuc2FjdGlvbiI6IjBmZjNmNTM1LTlkNzItNDA0Yi1hNmJjLTk0ZGQ2NTY0MzQwYiIsInRpbWUiOiIyMDI2LTEwLTE1VDAzOjQzOjIyLjQ2MloiLCJkYXRhIjp7InJldmlzaW9uIjoiMDhkOWY0NjAtZmE1Ny00ZWU5LThlMjYtYTA2M2Y3YjlmOGQwIiwicHJvcGVydGllcyI6eyJuIjowfSwibWV0YWRhdGEiOnt9fX0seyJpZCI6ImV2X0owbVVKeG5FVllVMzNoSUZvVFpHZGRVWE1CN2Jqb0YxUnBrN3c1eGFOZDBfYkxVVzlsamRYQnlzcDQxdGZqR2NhYnVlQXB1SGFvSkR4eXF5YVEyTkJVNF8yV1hWaXNwTzZKSFl3SmktbUlYUzNIeVFDSVRxdjJjQzZBN3lEMDVPQU8wX3Bvcy0yXzAiLCJvcmRpbmFsIjowLCJ0eXBlIjoidXBkYXRlZCIsInNvdXJjZSI6Imh0dHBzOi8vcmVmZXJlbmNlLmludmFsaWQvYWNtZS9ldmVudHMvIiwic3ViamVjdCI6Imh0dHBzOi8vcmVmZXJlbmNlLmludmFsaWQvYWNtZS9iZWFkcy9hIiwic3ViamVjdFR5cGUiOiJodHRwczovL3JlZmVyZW5jZS5pbnZhbGlkL2FjbWUvdHlwZXMvYmVhZCIsInRyYW5zYWN0aW9uIjoiYTZkNDA1ZjYtZjM0MC00ZmYyLWFjYjAtMmZiODViODM2YTIyIiwidGltZSI6IjIwMjYtMTAtMTVUMDM6NDM6MjIuNTAyWiIsImRhdGEiOnsicHJldmlvdXNSZXZpc2lvbiI6IjA4ZDlmNDYwLWZhNTctNGVlOS04ZTI2LWEwNjNmN2I5ZjhkMCIsInJldmlzaW9uIjoiNDMwMmE0NzgtY2I2Yi00NWY3LWJlYzctYzk1NzdkMzc2ZTc1IiwiY2hhbmdlIjpbeyJvcCI6InJlcGxhY2UiLCJwYXRoIjoiL24iLCJ2YWx1ZSI6MX1dfX1dLCJuZXh0IjpudWxsfQ==",
+        "wireSha256": "96502902780fe55382c2756f2fb9965aba4fd1b4641d8fa64aff3024420f8709"
+      },
+      {
+        "method": "GET",
+        "url": "https://reference.invalid/acme/changes/?after=cg_STP2dRCApw3wPybOyFQflyE08mH67KUU2jt8WJtbuWs_I5nG6wRTxStzACnI3Xc_3V6lkfUZ_8sR3ee9ZwiUhr0_1",
+        "status": 200,
+        "headers": {
+          "bdp-authorization-view": "development-all-visible",
+          "bdp-scope-epoch": "aa608d6f-4c8d-4c80-8b04-44bbe7429126",
+          "bdp-scope-position": "pos-2",
+          "cache-control": "private, no-store",
+          "content-length": "1517",
+          "content-type": "application/json",
+          "vary": "Accept",
+          "x-bdp-development": "non-attesting",
+          "date": "Thu, 15 Oct 2026 03:43:22 GMT",
+          "connection": "close"
+        },
+        "body": "{\"scope\":\"https://reference.invalid/acme/\",\"scopeEpoch\":\"aa608d6f-4c8d-4c80-8b04-44bbe7429126\",\"authorizationView\":\"development-all-visible\",\"after\":\"cg_STP2dRCApw3wPybOyFQflyE08mH67KUU2jt8WJtbuWs_I5nG6wRTxStzACnI3Xc_3V6lkfUZ_8sR3ee9ZwiUhr0_1\",\"observedHeadPosition\":\"pos-2\",\"groups\":[{\"scopeEpoch\":\"aa608d6f-4c8d-4c80-8b04-44bbe7429126\",\"authorizationView\":\"development-all-visible\",\"checkpoint\":\"cg_STP2dRCApw3wPybOyFQflyE08mH67KUU2jt8WJtbuWs_I5nG6wRTxStzACnI3Xc_3V6lkfUZ_8sR3ee9ZwiUhr0_2\",\"position\":\"pos-2\",\"previousPosition\":\"pos-1\",\"projectionAdvance\":false,\"transaction\":\"a6d405f6-f340-4ff2-acb0-2fb85b836a22\",\"changes\":[{\"operation\":\"upsert\",\"resourceKind\":\"bead\",\"resource\":{\"id\":\"https://reference.invalid/acme/beads/a\",\"type\":\"https://reference.invalid/acme/types/bead\",\"revision\":\"4302a478-cb6b-45f7-bec7-c9577d376e75\",\"properties\":{\"n\":1},\"metadata\":{}}}],\"erasures\":[],\"eventCount\":1,\"events\":[{\"id\":\"ev_J0mUJxnEVYU33hIFoTZGddUXMB7bjoF1Rpk7w5xaNd0_bLUW9ljdXBysp41tfjGcabueApuHaoJDxyqyaQ2NBU4_2WXVispO6JHYwJi-mIXS3HyQCITqv2cC6A7yD05OAO0_pos-2_0\",\"ordinal\":0,\"type\":\"updated\",\"source\":\"https://reference.invalid/acme/events/\",\"subject\":\"https://reference.invalid/acme/beads/a\",\"subjectType\":\"https://reference.invalid/acme/types/bead\",\"transaction\":\"a6d405f6-f340-4ff2-acb0-2fb85b836a22\",\"time\":\"2026-10-15T03:43:22.502Z\",\"data\":{\"previousRevision\":\"08d9f460-fa57-4ee9-8e26-a063f7b9f8d0\",\"revision\":\"4302a478-cb6b-45f7-bec7-c9577d376e75\",\"change\":[{\"op\":\"replace\",\"path\":\"/n\",\"value\":1}]}}]}],\"next\":null}",
+        "wireResponseBase64": "SFRUUC8xLjEgMjAwIE9LDQpiZHAtYXV0aG9yaXphdGlvbi12aWV3OiBkZXZlbG9wbWVudC1hbGwtdmlzaWJsZQ0KYmRwLXNjb3BlLWVwb2NoOiBhYTYwOGQ2Zi00YzhkLTRjODAtOGIwNC00NGJiZTc0MjkxMjYNCmJkcC1zY29wZS1wb3NpdGlvbjogcG9zLTINCmNhY2hlLWNvbnRyb2w6IHByaXZhdGUsIG5vLXN0b3JlDQpjb250ZW50LWxlbmd0aDogMTUxNw0KY29udGVudC10eXBlOiBhcHBsaWNhdGlvbi9qc29uDQp2YXJ5OiBBY2NlcHQNCngtYmRwLWRldmVsb3BtZW50OiBub24tYXR0ZXN0aW5nDQpEYXRlOiBUaHUsIDE1IE9jdCAyMDI2IDAzOjQzOjIyIEdNVA0KQ29ubmVjdGlvbjogY2xvc2UNCg0KeyJzY29wZSI6Imh0dHBzOi8vcmVmZXJlbmNlLmludmFsaWQvYWNtZS8iLCJzY29wZUVwb2NoIjoiYWE2MDhkNmYtNGM4ZC00YzgwLThiMDQtNDRiYmU3NDI5MTI2IiwiYXV0aG9yaXphdGlvblZpZXciOiJkZXZlbG9wbWVudC1hbGwtdmlzaWJsZSIsImFmdGVyIjoiY2dfU1RQMmRSQ0FwdzN3UHliT3lGUWZseUUwOG1INjdLVVUyanQ4V0p0YnVXc19JNW5HNndSVHhTdHpBQ25JM1hjXzNWNmxrZlVaXzhzUjNlZTlad2lVaHIwXzEiLCJvYnNlcnZlZEhlYWRQb3NpdGlvbiI6InBvcy0yIiwiZ3JvdXBzIjpbeyJzY29wZUVwb2NoIjoiYWE2MDhkNmYtNGM4ZC00YzgwLThiMDQtNDRiYmU3NDI5MTI2IiwiYXV0aG9yaXphdGlvblZpZXciOiJkZXZlbG9wbWVudC1hbGwtdmlzaWJsZSIsImNoZWNrcG9pbnQiOiJjZ19TVFAyZFJDQXB3M3dQeWJPeUZRZmx5RTA4bUg2N0tVVTJqdDhXSnRidVdzX0k1bkc2d1JUeFN0ekFDbkkzWGNfM1Y2bGtmVVpfOHNSM2VlOVp3aVVocjBfMiIsInBvc2l0aW9uIjoicG9zLTIiLCJwcmV2aW91c1Bvc2l0aW9uIjoicG9zLTEiLCJwcm9qZWN0aW9uQWR2YW5jZSI6ZmFsc2UsInRyYW5zYWN0aW9uIjoiYTZkNDA1ZjYtZjM0MC00ZmYyLWFjYjAtMmZiODViODM2YTIyIiwiY2hhbmdlcyI6W3sib3BlcmF0aW9uIjoidXBzZXJ0IiwicmVzb3VyY2VLaW5kIjoiYmVhZCIsInJlc291cmNlIjp7ImlkIjoiaHR0cHM6Ly9yZWZlcmVuY2UuaW52YWxpZC9hY21lL2JlYWRzL2EiLCJ0eXBlIjoiaHR0cHM6Ly9yZWZlcmVuY2UuaW52YWxpZC9hY21lL3R5cGVzL2JlYWQiLCJyZXZpc2lvbiI6IjQzMDJhNDc4LWNiNmItNDVmNy1iZWM3LWM5NTc3ZDM3NmU3NSIsInByb3BlcnRpZXMiOnsibiI6MX0sIm1ldGFkYXRhIjp7fX19XSwiZXJhc3VyZXMiOltdLCJldmVudENvdW50IjoxLCJldmVudHMiOlt7ImlkIjoiZXZfSjBtVUp4bkVWWVUzM2hJRm9UWkdkZFVYTUI3YmpvRjFScGs3dzV4YU5kMF9iTFVXOWxqZFhCeXNwNDF0ZmpHY2FidWVBcHVIYW9KRHh5cXlhUTJOQlU0XzJXWFZpc3BPNkpIWXdKaS1tSVhTM0h5UUNJVHF2MmNDNkE3eUQwNU9BTzBfcG9zLTJfMCIsIm9yZGluYWwiOjAsInR5cGUiOiJ1cGRhdGVkIiwic291cmNlIjoiaHR0cHM6Ly9yZWZlcmVuY2UuaW52YWxpZC9hY21lL2V2ZW50cy8iLCJzdWJqZWN0IjoiaHR0cHM6Ly9yZWZlcmVuY2UuaW52YWxpZC9hY21lL2JlYWRzL2EiLCJzdWJqZWN0VHlwZSI6Imh0dHBzOi8vcmVmZXJlbmNlLmludmFsaWQvYWNtZS90eXBlcy9iZWFkIiwidHJhbnNhY3Rpb24iOiJhNmQ0MDVmNi1mMzQwLTRmZjItYWNiMC0yZmI4NWI4MzZhMjIiLCJ0aW1lIjoiMjAyNi0xMC0xNVQwMzo0MzoyMi41MDJaIiwiZGF0YSI6eyJwcmV2aW91c1JldmlzaW9uIjoiMDhkOWY0NjAtZmE1Ny00ZWU5LThlMjYtYTA2M2Y3YjlmOGQwIiwicmV2aXNpb24iOiI0MzAyYTQ3OC1jYjZiLTQ1ZjctYmVjNy1jOTU3N2QzNzZlNzUiLCJjaGFuZ2UiOlt7Im9wIjoicmVwbGFjZSIsInBhdGgiOiIvbiIsInZhbHVlIjoxfV19fV19XSwibmV4dCI6bnVsbH0=",
+        "wireSha256": "fc24e00d4eeff97c0a0d06093013cfeb7a278a4abebb1a3902256cca8566a640"
+      }
+    ],
+    "cleanup": {
+      "pid": 57000,
+      "exitCode": 0,
+      "signalCode": null,
+      "childAbsent": true,
+      "directoryAbsent": true
+    },
+    "failureCount": 0
+  },
+  "configurationDigest": "d708b47fb21ee089216049e34f4883c03a99c5328e03d3c61255682f5c3488fd",
+  "payloadIdentity": "144f8c506ad961b6be61f2e25cf19ac8a2a862b25df1ae4edbfd5bdff7b7db7f",
+  "logSha256": "0b66dcda703433ebe61912cabdc0d3ca3fe26366a01092ed113bc33d41385694",
+  "resultsSha256": "accf4d443eb968f8237583ae1f31a7fb6140467f1636667a6a8cca5381da1205",
+  "limitations": "Supervisor and archive/consumer source attribution, not child-attested Git. Full schema/Selector/final graph oracles remain in the frozen test. Retained raw wire permits root inspection. No public qualification or broader runtime/deployment identity."
+}

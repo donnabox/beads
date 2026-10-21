@@ -1,0 +1,31 @@
+{
+  "head": "8d23862a03e65fa378a246310d804f0408b73937",
+  "tree": "ea2c4dc704f50f7c6333ba962454cde28131999f",
+  "parents": [
+    "84e6b67b2d322362f1d8e44e76873584d025071c",
+    "0432d48db8f340016a000d633d799aebbd26db3f"
+  ],
+  "expectedMergeTree": "ea2c4dc704f50f7c6333ba962454cde28131999f",
+  "exactDonorFiles": {
+    "apps/bdptest/src/transactional-matrix.test.ts": {
+      "candidate": "e08f24d96f1f1ace6b950824d87ce56935839fb2",
+      "donor": "e08f24d96f1f1ace6b950824d87ce56935839fb2"
+    },
+    "packages/conformance/src/transactional-cumulative.test.ts": {
+      "candidate": "9e2ee0fb7cc4526a9727c56ce6200e218ac65c33",
+      "donor": "9e2ee0fb7cc4526a9727c56ce6200e218ac65c33"
+    },
+    "packages/conformance/test-support/transactional/coverage-v1.json": {
+      "candidate": "3fe58aae463c2c4e32cc34b4d8e2c558faacd7e4",
+      "donor": "3fe58aae463c2c4e32cc34b4d8e2c558faacd7e4"
+    },
+    "packages/conformance/test-support/transactional/manifest-v1.json": {
+      "candidate": "16650dd3c633a84b7fe9ce005d32246ac47850cc",
+      "donor": "16650dd3c633a84b7fe9ce005d32246ac47850cc"
+    }
+  },
+  "allOtherTrackedFilesMatchMain": true,
+  "main": "0432d48db8f340016a000d633d799aebbd26db3f",
+  "conflicts": false,
+  "authoredResolutions": false
+}

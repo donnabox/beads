@@ -1,0 +1,118 @@
+
+ RUN  v4.1.10 /Users/dbox/repos/wt/vickie/vickie-fresh-depth-serving
+
+stdout | packages/server/src/transaction-submission.test.ts > executes deep values through set and dependent sequence with durable receipt recovery
+{"witness":"fresh-depth-source-identities","measured":[{"label":"single","bodyBytes":24092,"identityBytes":144317},{"label":"seed","bodyBytes":24341,"identityBytes":144851},{"label":"patch","bodyBytes":24159,"identityBytes":144394},{"label":"noop","bodyBytes":48199,"identityBytes":288492},{"label":"set","bodyBytes":143,"identityBytes":298},{"label":"made","bodyBytes":48325,"identityBytes":144257},{"label":"linked","bodyBytes":48325,"identityBytes":144308},{"label":"linked-resolved","bodyBytes":48325,"identityBytes":144460},{"label":"failed","bodyBytes":222,"identityBytes":537},{"label":"failed","bodyBytes":222,"identityBytes":537},{"label":"seed","bodyBytes":24341,"identityBytes":144851},{"label":"failed","bodyBytes":121,"identityBytes":301}]}
+
+ ↓ packages/server/src/transaction-submission.test.ts > private direct Transactional receiving order > checks byte bounds, syntax, key and authentication before key access
+ ↓ packages/server/src/transaction-submission.test.ts > private direct Transactional receiving order > keeps invalid Selector grammar distinct from valid deep input
+ ↓ packages/server/src/transaction-submission.test.ts > private direct Transactional receiving order > compares conflict before negotiation and negotiates exact pending/terminal replay without changing it
+ ↓ packages/server/src/transaction-submission.test.ts > private direct Transactional receiving order > checks fresh capacity before negotiation and never captures a refused key
+ ↓ packages/server/src/transaction-submission.test.ts > private direct Transactional receiving order > separates a valid >32 operation carrier from the private default admission bound
+ ↓ packages/server/src/transaction-submission.test.ts > private direct Transactional receiving order > preserves failed and expired duplicate dispositions and does not renew detail
+ ↓ packages/server/src/transaction-submission.test.ts > private direct Transactional receiving order > shares singleton/batch exact numeric, default and context identity through restart
+ ↓ packages/server/src/transaction-submission.test.ts > private direct Transactional receiving order > joins overlapping calls through one pending receipt without second execution
+ ↓ packages/server/src/transaction-submission.test.ts > private direct Transactional receiving order > keeps unresolved comparison ahead of negotiation, then snapshots immutable controls
+ ↓ packages/server/src/transaction-submission.test.ts > private direct Transactional receiving order > returns a provable unresolved conflict immediately and times out possible equality without disclosing a receipt
+ ↓ packages/server/src/transaction-submission.test.ts > private direct Transactional receiving order > rechecks fresh negotiation after unresolved retraction without capturing a replacement key
+ ↓ packages/server/src/transaction-submission.test.ts > private direct Transactional receiving order > rejects invalid controls before waiting or consulting state
+ ↓ packages/server/src/transaction-submission.test.ts > private direct Transactional receiving order > retains original alias witnesses across repointing and canonical retry
+ ↓ packages/server/src/transaction-submission.test.ts > private direct Transactional receiving order > keeps a single comparison deadline across repeated owner replacement and stops at epoch change
+ ↓ packages/server/src/transaction-submission.test.ts > private direct Transactional receiving order > does not hide original and cleanup causes or retain a new disposition after injected admission failure
+ ↓ packages/server/src/transaction-submission.test.ts > valid private set admission > checks complete batch Selector grammar before principal while preserving key reuse
+ ↓ packages/server/src/transaction-submission.test.ts > valid private set admission > checks complete singleton Selector grammar before principal while preserving key reuse
+ ↓ packages/server/src/transaction-submission.test.ts > valid private set admission > separates cardinality syntax, numeric admission and guarded failure, preserving original pointers on replay/reopen
+ ↓ packages/server/src/transaction-submission.test.ts > valid private set admission > maps known numeric failure at the original outer index and rolls back staged work
+ ↓ packages/server/src/transaction-submission.test.ts > valid private set admission > accepts byte-bounded singleton and wrapped set content across the former depth boundary
+ ↓ packages/server/src/transaction-submission.test.ts > keeps Property Change locations in the original carrier (singleton=true)
+ ↓ packages/server/src/transaction-submission.test.ts > keeps Property Change locations in the original carrier (singleton=false)
+ ↓ packages/server/src/transaction-submission.test.ts > counts every outer set before negotiation while retained sets bypass fresh operation capacity
+ ↓ packages/server/src/transaction-submission.test.ts > charges actual singleton bytes rather than its synthetic batch wrapper
+ ↓ packages/server/src/transaction-submission.test.ts > finishes batch synthetic syntax before admission, including deeply nested received input
+ ↓ packages/server/src/transaction-submission.test.ts > finishes singleton synthetic syntax before admission, including deeply nested received input
+ ↓ packages/server/src/transaction-submission.test.ts > keeps raw singleton operation fields closed without letting a body discriminator replace the route
+ ↓ packages/server/src/transaction-submission.test.ts > keeps raw singleton name fields closed without letting a body discriminator replace the route
+ ↓ packages/server/src/transaction-submission.test.ts > keeps raw singleton idempotencyKey fields closed without letting a body discriminator replace the route
+ ↓ packages/server/src/transaction-submission.test.ts > keeps raw singleton extra fields closed without letting a body discriminator replace the route
+ ↓ packages/server/src/transaction-submission.test.ts > propagates observed direct refusal context without changing admission precedence or key reuse
+ ↓ packages/server/src/transaction-submission.test.ts > uses the final observed refusal entry after a dependency wait and an unrelated commit
+ ↓ packages/server/src/transaction-submission.test.ts > keeps observed provable dependency conflicts ahead of negotiation
+ ↓ packages/server/src/transaction-submission.test.ts > observed comparison deadline submission > captures current comparison context only at the observed deadline
+ ↓ packages/server/src/transaction-submission.test.ts > observed comparison deadline submission > distinguishes defensive comparison epoch stop before deadline observation
+ ↓ packages/server/src/transaction-submission.test.ts > observed comparison deadline submission > propagates closed maintenance faults before admission (observed=false)
+ ↓ packages/server/src/transaction-submission.test.ts > observed comparison deadline submission > propagates closed maintenance faults before admission (observed=true)
+ ↓ packages/server/src/transaction-submission.test.ts > observed comparison deadline submission > preserves normal closed submission shape (observed=false)
+ ↓ packages/server/src/transaction-submission.test.ts > observed comparison deadline submission > preserves normal closed submission shape (observed=true)
+ ↓ packages/server/src/transaction-submission.test.ts > observed comparison deadline submission > distinguishes a stopped final observation at the reached comparison deadline
+ ↓ packages/server/src/transaction-submission.test.ts > observed comparison deadline submission > keeps full-owner unobserved comparison exact and excludes a caller callback
+ ↓ packages/server/src/transaction-submission.test.ts > refuses invalid Selector grammar before every key state without owner admission
+ ↓ packages/server/src/transaction-submission.test.ts > applies fixed Selector capacity only to fresh valid carriers before execution and negotiation
+ ↓ packages/server/src/transaction-submission.test.ts > preserves genuine pending completed and failed receipts before Selector capacity
+ ↓ packages/server/src/transaction-submission.test.ts > compares retained direct keys before negotiation and admits valid fresh deep input
+ ↓ packages/server/src/transaction-submission.test.ts > compares deep metadata against genuine pending and dependent keys without changing saved outcomes
+ ✓ packages/server/src/transaction-submission.test.ts > preserves independent deep submission oracle equality and rejection 9ms
+ ✓ packages/server/src/transaction-submission.test.ts > executes deep values through set and dependent sequence with durable receipt recovery 1161ms
+ ↓ packages/server/src/transaction-set.test.ts > selects staged canonical Resources once, retains indices and expands in canonical order
+ ↓ packages/server/src/transaction-set.test.ts > keeps original Resource label positions across sets, without interpreting selector literals
+ ↓ packages/server/src/transaction-set.test.ts > zero matches and all-noop sets retain revisions/provenance without groups
+ ↓ packages/server/src/transaction-set.test.ts > fans out supplied provenance on changed versions and preserves metadata
+ ↓ packages/server/src/transaction-set.test.ts > cardinality is inclusive, rolls back the whole batch and retains original failed disposition
+ ↓ packages/server/src/transaction-set.test.ts > late selected patch failure rolls back earlier selected mutations and batch creation
+ ↓ packages/server/src/transaction-set.test.ts > Link sets preserve singleton endpoint/self-Link facts and deletion incidence
+ ↓ packages/server/src/transaction-set.test.ts > shares singleton/batch semantic identity, retains lossless numeric equality and original set selection
+ ↓ packages/server/src/transaction-set.test.ts > retains actual cardinality and patch literals without an invented safe-integer bound
+ ↓ packages/server/src/transaction-set.test.ts > retains original set facts through durable pages and same-version restart
+ ↓ packages/server/src/transaction-set.test.ts > expires the staged enumeration capability after its owner turn and freezes rows
+ ↓ packages/server/src/transaction-set.test.ts > enforces one total Event cap across ordinary and set facts, with atomic retained failure
+ ↓ packages/server/src/transaction-set.test.ts > rejects invalid set Selector grammar while valid carriers share preparation and sequence sets remain excluded
+ ↓ packages/server/src/transaction-set.test.ts > retracts transient set after-effects failures with no graph or page prefix
+ ↓ packages/server/src/transaction-set.test.ts > retracts transient set after-terminal failures with no graph or page prefix
+ ↓ packages/server/src/transaction-set.test.ts > recovers a committed set and its original page chain after uncertain COMMIT
+ ↓ packages/server/src/transaction-set.test.ts > retains ordinary writes followed by set reversal as ordered facts with final original values
+ ↓ packages/server/src/transaction-set.test.ts > keeps allocation binding indices when sets precede a named Resource creator
+ ↓ packages/server/src/transaction-set.test.ts > set Link updates share ordinary no-op and fact behavior without endpoint-linking facts
+ ↓ packages/server/src/transaction-set.test.ts > counts all outer set members before new-key admission without a filtered Resource count
+ ↓ packages/server/src/transaction-set.test.ts > checks updateWhere cardinality, collection and provenance shapes against the normative bundle
+ ↓ packages/server/src/transaction-set.test.ts > checks deleteWhere cardinality, collection and provenance shapes against the normative bundle
+ ↓ packages/server/src/transaction-set.test.ts > preserves outer witness/alias indices and result pages with a set before alias-referenced mutation
+ ↓ packages/server/src/transaction-set.test.ts > executes updateWhere beads with valid provenance without minting a deleted version
+ ↓ packages/server/src/transaction-set.test.ts > executes updateWhere links with valid provenance without minting a deleted version
+ ↓ packages/server/src/transaction-set.test.ts > executes deleteWhere beads with valid provenance without minting a deleted version
+ ↓ packages/server/src/transaction-set.test.ts > executes deleteWhere links with valid provenance without minting a deleted version
+ ↓ packages/server/src/transaction-set.test.ts > bounds total matched Resources across no-op sets and retains atomic failure after reopen
+ ↓ packages/server/src/transaction-set.test.ts > checks cardinality before charging the matched Resource budget
+ ↓ packages/server/src/transaction-set.test.ts > accepts 32 real no-op matches at the private default and durably refuses overflow
+ ↓ packages/server/src/transaction-set.test.ts > projects updateWhere Link matches through local endpoint visibility before cardinality
+ ↓ packages/server/src/transaction-set.test.ts > projects deleteWhere Link matches through local endpoint visibility before cardinality
+ ↓ packages/server/src/transaction-set.test.ts > refuses an invalid or raised induced Event bound 0
+ ↓ packages/server/src/transaction-set.test.ts > refuses an invalid or raised induced Event bound -1
+ ↓ packages/server/src/transaction-set.test.ts > refuses an invalid or raised induced Event bound 1.5
+ ↓ packages/server/src/transaction-set.test.ts > refuses an invalid or raised induced Event bound 257
+ ↓ packages/server/src/transaction-set.test.ts > refuses an invalid or raised induced Event bound Infinity
+ ↓ packages/server/src/transaction-set.test.ts > refuses an invalid or raised matched Resource bound 0
+ ↓ packages/server/src/transaction-set.test.ts > refuses an invalid or raised matched Resource bound -1
+ ↓ packages/server/src/transaction-set.test.ts > refuses an invalid or raised matched Resource bound 1.5
+ ↓ packages/server/src/transaction-set.test.ts > refuses an invalid or raised matched Resource bound 33
+ ↓ packages/server/src/transaction-set.test.ts > refuses an invalid or raised matched Resource bound Infinity
+ ↓ packages/server/src/transaction-set.test.ts > does not retain a malformed private evaluator failure type=undefined
+ ↓ packages/server/src/transaction-set.test.ts > does not retain a malformed private evaluator failure status=undefined
+ ↓ packages/server/src/transaction-set.test.ts > does not retain a malformed private evaluator failure retry=undefined
+ ↓ packages/server/src/transaction-set.test.ts > does not retain a malformed private evaluator failure code=undefined
+ ↓ packages/server/src/transaction-set.test.ts > does not retain a malformed private evaluator failure code=rate-limited
+ ↓ packages/server/src/transaction-set.test.ts > does not retain a malformed private evaluator failure code=not-a-code
+ ↓ packages/server/src/transaction-set.test.ts > does not retain a malformed private evaluator failure status=500
+ ↓ packages/server/src/transaction-set.test.ts > does not retain a malformed private evaluator failure status=200
+ ↓ packages/server/src/transaction-set.test.ts > does not retain a malformed private evaluator failure status=413.5
+ ↓ packages/server/src/transaction-set.test.ts > does not retain a malformed private evaluator failure status=404
+ ↓ packages/server/src/transaction-set.test.ts > requires operation indices except for enumerated whole-transaction limits at the type boundary
+ ↓ packages/server/src/transaction-set.test.ts > serializes byte-bounded deep syntax iteratively without changing number lexemes or key order
+ ✓ packages/server/src/transaction-set.test.ts > preserves literal Selector identity and original mixed-carrier diagnostic pointers 38ms
+ ↓ packages/server/src/transaction-set.test.ts > keeps receiving and legacy preparation branded while accepting byte-bounded deep input
+ ↓ packages/server/src/transaction-set.test.ts > prepares deep sequence members after complete carrier syntax with strict brands and frozen wrappers
+
+ Test Files  2 passed (2)
+      Tests  3 passed | 102 skipped (105)
+   Start at  11:40:33
+   Duration  1.73s (transform 205ms, setup 24ms, import 380ms, tests 1.21s, environment 0ms)
+
+JSON report written to /Users/dbox/repos/wt/vickie/bdp-integration-logs/pr147-ci-failure/validation/focused-three.results.json

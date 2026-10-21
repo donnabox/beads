@@ -1,0 +1,144 @@
+{
+  "started": "2026-10-15T03:29:45.073025+00:00",
+  "results": [
+    {
+      "id": "grammar-development",
+      "started": "2026-10-15T03:29:45.073355+00:00",
+      "argv": [
+        "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-selector-admission-review-repair/controls-preparation/grammar-development/workspace/node_modules/vitest/vitest.mjs",
+        "run",
+        "packages/server/src/transaction-http.test.ts",
+        "--maxWorkers=1",
+        "--reporter=verbose",
+        "--reporter=json",
+        "--outputFile.json=/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-selector-admission-review-repair/controls-preparation/run/grammar-development.json",
+        "-t",
+        "^serves\\ Selector\\ syntax\\ and\\ prior\\-key\\ precedence\\ over\\ capacity$"
+      ],
+      "cwd": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-selector-admission-review-repair/controls-preparation/grammar-development/workspace",
+      "timeout": false,
+      "errors": [],
+      "signals": [],
+      "tempBefore": [],
+      "pid": 49091,
+      "pgid": 49091,
+      "exitCode": 1,
+      "processesAfterCommand": [],
+      "processesAfterCleanup": [],
+      "allBindingsPreservedAfter": true,
+      "tempAfter": [],
+      "cacheResidualsRetained": [],
+      "otherResidualsRetained": [],
+      "adjudication": {
+        "accepted": true,
+        "runnerJsonSha256": "7facc186e654ddc74e106584e21100d0681e830601228156f30bb09b16c498ca",
+        "failedTitles": [
+          "serves Selector syntax and prior-key precedence over capacity"
+        ],
+        "passedTitles": [],
+        "unselectedSkippedCount": 75,
+        "actualFirstStatusDiagnostics": [
+          {
+            "oracle": "Selector receiving status",
+            "status": 500,
+            "developmentLimit": "unsupported-transaction-composition",
+            "contentLength": "0"
+          }
+        ],
+        "expectedDiagnostic": {
+          "oracle": "Selector receiving status",
+          "status": 500,
+          "developmentLimit": "unsupported-transaction-composition",
+          "contentLength": "0"
+        },
+        "expectedAssertionText": "expected 500 to be 400",
+        "failureMessages": "AssertionError: {\"oracle\":\"Selector receiving status\",\"status\":500,\"developmentLimit\":\"unsupported-transaction-composition\",\"contentLength\":\"0\"}: expected 500 to be 400 // Object.is equality\n    at selectorHttpProblem (/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-selector-admission-review-repair/controls-preparation/grammar-development/workspace/packages/server/src/transaction-http.test.ts:3622:5)\n    at /Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-selector-admission-review-repair/controls-preparation/grammar-development/workspace/packages/server/src/transaction-http.test.ts:3711:9\n    at processTicksAndRejections (node:internal/process/task_queues:104:5)\n    at file:///Users/dbox/repos/wt/vickie/vickie-selector-review-repair/node_modules/.pnpm/@vitest+runner@4.1.10/node_modules/@vitest/runner/dist/chunk-artifact.js:1903:20",
+        "actualHTTPDispatchCounter": null,
+        "requestCountInference": "Intended named first assertion follows the first sequential request; expected1, not an instrumented dispatch count.",
+        "staticMaximumHTTP": 16
+      },
+      "ended": "2026-10-15T03:29:46.380958+00:00",
+      "elapsedSeconds": 1.3076062500476837,
+      "accepted": true,
+      "logSha256": "006d62bb2e42337ac7506b47ea67718aed4159e03bc92a03888c361288d119dd"
+    },
+    {
+      "id": "omit-fresh-capacity",
+      "started": "2026-10-15T03:29:46.381237+00:00",
+      "argv": [
+        "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-selector-admission-review-repair/controls-preparation/omit-fresh-capacity/workspace/node_modules/vitest/vitest.mjs",
+        "run",
+        "packages/server/src/transaction-http.test.ts",
+        "--maxWorkers=1",
+        "--reporter=verbose",
+        "--reporter=json",
+        "--outputFile.json=/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-selector-admission-review-repair/controls-preparation/run/omit-fresh-capacity.json",
+        "-t",
+        "^serves\\ exact\\ fixed\\ Selector\\ boundaries\\ and\\ leaves\\ refused\\ keys\\ unused$"
+      ],
+      "cwd": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-selector-admission-review-repair/controls-preparation/omit-fresh-capacity/workspace",
+      "timeout": false,
+      "errors": [],
+      "signals": [],
+      "tempBefore": [],
+      "pid": 49113,
+      "pgid": 49113,
+      "exitCode": 1,
+      "processesAfterCommand": [],
+      "processesAfterCleanup": [],
+      "allBindingsPreservedAfter": true,
+      "tempAfter": [],
+      "cacheResidualsRetained": [],
+      "otherResidualsRetained": [],
+      "adjudication": {
+        "accepted": true,
+        "runnerJsonSha256": "b71ed53b1cb0dac6f9db871eb3dc73eb6290795dd9459faeb3290a28315567d5",
+        "failedTitles": [
+          "serves exact fixed Selector boundaries and leaves refused keys unused"
+        ],
+        "passedTitles": [],
+        "unselectedSkippedCount": 75,
+        "actualFirstStatusDiagnostics": [
+          {
+            "oracle": "Selector receiving status",
+            "status": 500,
+            "developmentLimit": null,
+            "contentLength": "0"
+          }
+        ],
+        "expectedDiagnostic": {
+          "oracle": "Selector receiving status",
+          "status": 500,
+          "developmentLimit": null,
+          "contentLength": "0"
+        },
+        "expectedAssertionText": "expected 500 to be 413",
+        "failureMessages": "AssertionError: {\"oracle\":\"Selector receiving status\",\"status\":500,\"developmentLimit\":null,\"contentLength\":\"0\"}: expected 500 to be 413 // Object.is equality\n    at selectorHttpProblem (/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-selector-admission-review-repair/controls-preparation/omit-fresh-capacity/workspace/packages/server/src/transaction-http.test.ts:3622:5)\n    at /Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-selector-admission-review-repair/controls-preparation/omit-fresh-capacity/workspace/packages/server/src/transaction-http.test.ts:3659:15\n    at processTicksAndRejections (node:internal/process/task_queues:104:5)\n    at file:///Users/dbox/repos/wt/vickie/vickie-selector-review-repair/node_modules/.pnpm/@vitest+runner@4.1.10/node_modules/@vitest/runner/dist/chunk-artifact.js:1903:20",
+        "actualHTTPDispatchCounter": null,
+        "requestCountInference": "Intended named first assertion follows the first sequential request; expected1, not an instrumented dispatch count.",
+        "staticMaximumHTTP": 36
+      },
+      "ended": "2026-10-15T03:29:47.686403+00:00",
+      "elapsedSeconds": 1.3051632079295814,
+      "accepted": true,
+      "logSha256": "9ce8da178034ef44c2cfead3c9a238e56d03ef4a7158ff35fe5935fe21b3acf3"
+    }
+  ],
+  "accepted": true,
+  "releaseSha256": "7fd13dccf4f3851f8c00a0af6a7856c441d0530e02cd7191cc877ec5e2604342",
+  "commandsSha256": "cda1c6825cbfd5a7bf14a2ec3f8df92d8197c659e67ec2b2bf94f8e5b8468c7d",
+  "notRun": [],
+  "staticBounds": {
+    "expectedHTTP": 2,
+    "maxHTTP": 52,
+    "owners": 2,
+    "listeners": 2,
+    "directories": 2,
+    "expectedReadonly": 0,
+    "maxReadonly": 2
+  },
+  "actualResourceCountersInstrumented": false,
+  "ended": "2026-10-15T03:29:47.686670+00:00"
+}

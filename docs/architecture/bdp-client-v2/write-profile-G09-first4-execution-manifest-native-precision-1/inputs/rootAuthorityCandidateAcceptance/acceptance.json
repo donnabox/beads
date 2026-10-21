@@ -1,0 +1,39 @@
+{
+  "acceptanceScope": "CONDITIONAL_STATIC_EXACT_FIRST4_ROOT_BRIDGES_AND_INACTIVE_GATE_ONLY",
+  "accepted": true,
+  "activeGateChanged": false,
+  "allLater30Unauthorized": true,
+  "approvedPrefixCandidate": [
+    "node-version",
+    "pnpm-version",
+    "workspace-install",
+    "bind-workspace-tools"
+  ],
+  "at": "2026-10-18T19:59:58.439726+00:00",
+  "executionReleased": false,
+  "gateSha256": "b931ef2c3f9cdee4c40f0bae3f26fd2747840a8f4111895ff77a140653ada12b",
+  "implementationIndexSha256": "57ecb824dec79722836e63b618e30e0557815142e796da988a80b65af2161413",
+  "nativeClosures": [
+    {
+      "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-first4-authority-native-precision-1/closure.json",
+      "sha256": "3c00d23a92524a5f49e6ca582a20ddf2fd7f54e470fc539d0f4ab81ae6918b6a"
+    },
+    {
+      "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-first4-root-authority2-native-precision-1/closure.json",
+      "sha256": "33a918cf76079006121dc47a93acbccfcf670a527e2c1d19f78d11be7f22d8e4"
+    }
+  ],
+  "nativePackets104AndOrigins80Verified": true,
+  "noRetryOrReviewRelaunch": true,
+  "originalA44NotActivatable": true,
+  "protocol2": "REQUIRED separately exact freeze/native/root acceptance, not yet bound",
+  "remainingBarriers": [
+    "Exact root execution acceptance binds concrete reviewed protocol and these authority bytes.",
+    "Publication/readback of that complete authority before any active gate write.",
+    "Separate byteexact root gate activation + publication/readback before ONE sequential first4 actual dispatch."
+  ],
+  "rootBridgeAdoptionBoundaryClosedStatically": true,
+  "rootCandidateIndexSha256": "3aec17f5aff3182f351ac447dc44d3eb3d036843af9aa82551c758b6fcc0a308",
+  "session": "2026-10-18T02:16:24Z-549f",
+  "sourceBindingSha256": "712c3c5a8e1543bf5005cbb54d321c6874b7443afb7e01805f393434fe5cd714"
+}

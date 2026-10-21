@@ -1,0 +1,37 @@
+{
+  "kind": "data-only byte comparison; not test execution",
+  "base": "9f89271e2563a105410789ca8ca1e77dfb4d0b9f",
+  "trackedFiles": 679,
+  "changedFiles": [
+    "apps/bdptest/src/transactional-event-sse-installed.test.ts",
+    "packages/server/src/transaction-event-sse.test.ts",
+    "packages/server/src/transaction-events.test.ts",
+    "packages/server/src/transaction-http.ts",
+    "packages/server/src/transaction-service.ts",
+    "packages/server/src/transaction-store.ts"
+  ],
+  "outsideOwnedUnchanged": 673,
+  "baselineMapSha256": "3f0e3910d30c9d2ee145ab73c4f5d2715e4f1169285d491b63a762ade31731a8",
+  "installedHistoricalPrefix": {
+    "bytes": 69775,
+    "sha256": "0d2c2ddf069a57e9a4533894da03589beb1645d7608537dac45c2995ee7c0a23",
+    "equal": true
+  },
+  "sseHistoricalPrefix": {
+    "originalBytes": 65710,
+    "originalSha256": "4345d1405e98820879fc84a5e88b4afee73bfe6ee07ae2bc01e084b225da73ad",
+    "currentTransformedBytes": 65702,
+    "currentTransformedSha256": "e9726dce10e0c51c2f6c32ef13d5d592a49fb41e655cbd16aba2c4f9ba64a730",
+    "equalAfterExactlySixStatusAndOneHistogramTransform": true,
+    "earlierPrefixBytes": 52386,
+    "earlierPrefixSha256": "02b32516a49d2ce3a1bfaee4328d550f77a2987761c7b12d73eae8699514db61"
+  },
+  "finiteEventFile": {
+    "exactElevenPairedSentinelConversions": 11,
+    "histogramAdjustments": 3,
+    "directlyObsoleteComments": 2,
+    "equalAfterEnumeratedTransforms": true
+  },
+  "progressDocUnchanged": true,
+  "defaultCallbacksAndHelpersPreservedExceptEnumeratedSentinels": true
+}

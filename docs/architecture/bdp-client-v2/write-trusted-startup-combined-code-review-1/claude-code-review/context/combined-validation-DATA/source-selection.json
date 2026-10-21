@@ -1,0 +1,523 @@
+{
+  "state": "PROSPECTIVE exact source-derived spelling, collection mismatch stops; no discovery retry",
+  "callbacks": [
+    {
+      "id": "S01-plain",
+      "fullName": "S01 registered handle refuses plain without traps",
+      "file": "packages/server/src/reference-deployment-runtime.test.ts",
+      "group": "S01",
+      "callbackMs": 5000,
+      "HTTP": 0,
+      "oracle": "Actual WeakMap lookup refuses forged value; traps0, returned0/listenAttempts0; genuine capture unchanged.",
+      "status": "PROSPECTIVE NOT COLLECTED/RUN"
+    },
+    {
+      "id": "S01-frozen",
+      "fullName": "S01 registered handle refuses frozen without traps",
+      "file": "packages/server/src/reference-deployment-runtime.test.ts",
+      "group": "S01",
+      "callbackMs": 5000,
+      "HTTP": 0,
+      "oracle": "Actual WeakMap lookup refuses forged value; traps0, returned0/listenAttempts0; genuine capture unchanged.",
+      "status": "PROSPECTIVE NOT COLLECTED/RUN"
+    },
+    {
+      "id": "S01-getter",
+      "fullName": "S01 registered handle refuses getter without traps",
+      "file": "packages/server/src/reference-deployment-runtime.test.ts",
+      "group": "S01",
+      "callbackMs": 5000,
+      "HTTP": 0,
+      "oracle": "Actual WeakMap lookup refuses forged value; traps0, returned0/listenAttempts0; genuine capture unchanged.",
+      "status": "PROSPECTIVE NOT COLLECTED/RUN"
+    },
+    {
+      "id": "S01-proxy",
+      "fullName": "S01 registered handle refuses proxy without traps",
+      "file": "packages/server/src/reference-deployment-runtime.test.ts",
+      "group": "S01",
+      "callbackMs": 5000,
+      "HTTP": 0,
+      "oracle": "Actual WeakMap lookup refuses forged value; traps0, returned0/listenAttempts0; genuine capture unchanged.",
+      "status": "PROSPECTIVE NOT COLLECTED/RUN"
+    },
+    {
+      "id": "S02-false",
+      "fullName": "S02 RU completes second principal before bind; reject=false",
+      "file": "packages/server/src/reference-deployment-runtime.test.ts",
+      "group": "S02",
+      "callbackMs": 5000,
+      "HTTP": 0,
+      "oracle": "Second principal preparation and exact four-tuple source-private assembly precede bind. true: primary refusal, ownerclose1/listen0; false: actual intended host/nonzero listener then close. No extra compiler/owner/HTTP.",
+      "status": "PROSPECTIVE NOT COLLECTED/RUN"
+    },
+    {
+      "id": "S02-true",
+      "fullName": "S02 RU completes second principal before bind; reject=true",
+      "file": "packages/server/src/reference-deployment-runtime.test.ts",
+      "group": "S02",
+      "callbackMs": 5000,
+      "HTTP": 0,
+      "oracle": "Second principal preparation and exact four-tuple source-private assembly precede bind. true: primary refusal, ownerclose1/listen0; false: actual intended host/nonzero listener then close. No extra compiler/owner/HTTP.",
+      "status": "PROSPECTIVE NOT COLLECTED/RUN"
+    },
+    {
+      "id": "S03",
+      "fullName": "S03 TX explicit preflight precedes constructor and intended bind; constructor throw owns direct close",
+      "file": "packages/server/src/reference-deployment-runtime.test.ts",
+      "group": "S03",
+      "callbackMs": 5000,
+      "HTTP": 0,
+      "oracle": "Two fresh finite phases inside one5s callback: successful readback before service/bind+close; second constructor-throw after explicit readback, direct ownerclose1/serviceclose0/listen0. Actual phaseA/phaseB counts.",
+      "status": "PROSPECTIVE NOT COLLECTED/RUN"
+    },
+    {
+      "id": "S04-read-update-scope",
+      "fullName": "S04 owner readback refuses read-update scope before construction/bind",
+      "file": "packages/server/src/reference-deployment-runtime.test.ts",
+      "group": "S04",
+      "callbackMs": 5000,
+      "HTTP": 0,
+      "oracle": "Real returned owner1/close1; service construction0/listen0; delegated readConfiguration corruption, no fabricated metadata.",
+      "status": "PROSPECTIVE NOT COLLECTED/RUN"
+    },
+    {
+      "id": "S04-read-update-readLimits",
+      "fullName": "S04 owner readback refuses read-update readLimits before construction/bind",
+      "file": "packages/server/src/reference-deployment-runtime.test.ts",
+      "group": "S04",
+      "callbackMs": 5000,
+      "HTTP": 0,
+      "oracle": "Real returned owner1/close1; service construction0/listen0; delegated readConfiguration corruption, no fabricated metadata.",
+      "status": "PROSPECTIVE NOT COLLECTED/RUN"
+    },
+    {
+      "id": "S04-read-update-installedTypes",
+      "fullName": "S04 owner readback refuses read-update installedTypes before construction/bind",
+      "file": "packages/server/src/reference-deployment-runtime.test.ts",
+      "group": "S04",
+      "callbackMs": 5000,
+      "HTTP": 0,
+      "oracle": "Real returned owner1/close1; service construction0/listen0; delegated readConfiguration corruption, no fabricated metadata.",
+      "status": "PROSPECTIVE NOT COLLECTED/RUN"
+    },
+    {
+      "id": "S04-transactional-receiptMaximumItems",
+      "fullName": "S04 owner readback refuses transactional receiptMaximumItems before construction/bind",
+      "file": "packages/server/src/reference-deployment-runtime.test.ts",
+      "group": "S04",
+      "callbackMs": 5000,
+      "HTTP": 0,
+      "oracle": "Real returned owner1/close1; service construction0/listen0; delegated readConfiguration corruption, no fabricated metadata.",
+      "status": "PROSPECTIVE NOT COLLECTED/RUN"
+    },
+    {
+      "id": "S04-transactional-scopeSnapshot",
+      "fullName": "S04 owner readback refuses transactional scopeSnapshot before construction/bind",
+      "file": "packages/server/src/reference-deployment-runtime.test.ts",
+      "group": "S04",
+      "callbackMs": 5000,
+      "HTTP": 0,
+      "oracle": "Real returned owner1/close1; service construction0/listen0; delegated readConfiguration corruption, no fabricated metadata.",
+      "status": "PROSPECTIVE NOT COLLECTED/RUN"
+    },
+    {
+      "id": "S04-transactional-authorizationView",
+      "fullName": "S04 owner readback refuses transactional authorizationView before construction/bind",
+      "file": "packages/server/src/reference-deployment-runtime.test.ts",
+      "group": "S04",
+      "callbackMs": 5000,
+      "HTTP": 0,
+      "oracle": "Real returned owner1/close1; service construction0/listen0; delegated readConfiguration corruption, no fabricated metadata.",
+      "status": "PROSPECTIVE NOT COLLECTED/RUN"
+    },
+    {
+      "id": "S04-transactional-installedTypes",
+      "fullName": "S04 owner readback refuses transactional installedTypes before construction/bind",
+      "file": "packages/server/src/reference-deployment-runtime.test.ts",
+      "group": "S04",
+      "callbackMs": 5000,
+      "HTTP": 0,
+      "oracle": "Real returned owner1/close1; service construction0/listen0; delegated readConfiguration corruption, no fabricated metadata.",
+      "status": "PROSPECTIVE NOT COLLECTED/RUN"
+    },
+    {
+      "id": "S05-read-update-format",
+      "fullName": "S05 persisted read-update format refuses with observed internal SQLite close",
+      "file": "packages/server/src/reference-deployment-runtime.test.ts",
+      "group": "S05",
+      "callbackMs": 5000,
+      "HTTP": 0,
+      "oracle": "Real seed/close, selected persisted mismatch/refusal; actual internal SQLite acquired+closed before returned owner0/listen0. Restore actual prior values and genuine create:false reopen+close. No byte-unchanged claim.",
+      "status": "PROSPECTIVE NOT COLLECTED/RUN"
+    },
+    {
+      "id": "S05-read-update-scope",
+      "fullName": "S05 persisted read-update scope refuses with observed internal SQLite close",
+      "file": "packages/server/src/reference-deployment-runtime.test.ts",
+      "group": "S05",
+      "callbackMs": 5000,
+      "HTTP": 0,
+      "oracle": "Real seed/close, selected persisted mismatch/refusal; actual internal SQLite acquired+closed before returned owner0/listen0. Restore actual prior values and genuine create:false reopen+close. No byte-unchanged claim.",
+      "status": "PROSPECTIVE NOT COLLECTED/RUN"
+    },
+    {
+      "id": "S05-read-update-installation",
+      "fullName": "S05 persisted read-update installation refuses with observed internal SQLite close",
+      "file": "packages/server/src/reference-deployment-runtime.test.ts",
+      "group": "S05",
+      "callbackMs": 5000,
+      "HTTP": 0,
+      "oracle": "Real seed/close, selected persisted mismatch/refusal; actual internal SQLite acquired+closed before returned owner0/listen0. Restore actual prior values and genuine create:false reopen+close. No byte-unchanged claim.",
+      "status": "PROSPECTIVE NOT COLLECTED/RUN"
+    },
+    {
+      "id": "S05-read-update-lineage",
+      "fullName": "S05 persisted read-update lineage refuses with observed internal SQLite close",
+      "file": "packages/server/src/reference-deployment-runtime.test.ts",
+      "group": "S05",
+      "callbackMs": 5000,
+      "HTTP": 0,
+      "oracle": "Real seed/close, selected persisted mismatch/refusal; actual internal SQLite acquired+closed before returned owner0/listen0. Restore actual prior values and genuine create:false reopen+close. No byte-unchanged claim.",
+      "status": "PROSPECTIVE NOT COLLECTED/RUN"
+    },
+    {
+      "id": "S05-read-update-contractCapture",
+      "fullName": "S05 persisted read-update contractCapture refuses with observed internal SQLite close",
+      "file": "packages/server/src/reference-deployment-runtime.test.ts",
+      "group": "S05",
+      "callbackMs": 5000,
+      "HTTP": 0,
+      "oracle": "Real seed/close, selected persisted mismatch/refusal; actual internal SQLite acquired+closed before returned owner0/listen0. Restore actual prior values and genuine create:false reopen+close. No byte-unchanged claim.",
+      "status": "PROSPECTIVE NOT COLLECTED/RUN"
+    },
+    {
+      "id": "S05-read-update-installed-types",
+      "fullName": "S05 persisted read-update installed-types refuses with observed internal SQLite close",
+      "file": "packages/server/src/reference-deployment-runtime.test.ts",
+      "group": "S05",
+      "callbackMs": 5000,
+      "HTTP": 0,
+      "oracle": "Real seed/close, selected persisted mismatch/refusal; actual internal SQLite acquired+closed before returned owner0/listen0. Restore actual prior values and genuine create:false reopen+close. No byte-unchanged claim.",
+      "status": "PROSPECTIVE NOT COLLECTED/RUN"
+    },
+    {
+      "id": "S05-read-update-resource-uninstalled-type",
+      "fullName": "S05 persisted read-update resource-uninstalled-type refuses with observed internal SQLite close",
+      "file": "packages/server/src/reference-deployment-runtime.test.ts",
+      "group": "S05",
+      "callbackMs": 5000,
+      "HTTP": 0,
+      "oracle": "Real seed/close, selected persisted mismatch/refusal; actual internal SQLite acquired+closed before returned owner0/listen0. Restore actual prior values and genuine create:false reopen+close. No byte-unchanged claim.",
+      "status": "PROSPECTIVE NOT COLLECTED/RUN"
+    },
+    {
+      "id": "S05-read-update-retained-runtime-compatibility",
+      "fullName": "S05 persisted read-update retained-runtime-compatibility refuses with observed internal SQLite close",
+      "file": "packages/server/src/reference-deployment-runtime.test.ts",
+      "group": "S05",
+      "callbackMs": 5000,
+      "HTTP": 0,
+      "oracle": "Real seed/close, selected persisted mismatch/refusal; actual internal SQLite acquired+closed before returned owner0/listen0. Restore actual prior values and genuine create:false reopen+close. No byte-unchanged claim.",
+      "status": "PROSPECTIVE NOT COLLECTED/RUN"
+    },
+    {
+      "id": "S05-transactional-format",
+      "fullName": "S05 persisted transactional format refuses with observed internal SQLite close",
+      "file": "packages/server/src/reference-deployment-runtime.test.ts",
+      "group": "S05",
+      "callbackMs": 5000,
+      "HTTP": 0,
+      "oracle": "Real seed/close, selected persisted mismatch/refusal; actual internal SQLite acquired+closed before returned owner0/listen0. Restore actual prior values and genuine create:false reopen+close. No byte-unchanged claim.",
+      "status": "PROSPECTIVE NOT COLLECTED/RUN"
+    },
+    {
+      "id": "S05-transactional-receiptMaximumItems",
+      "fullName": "S05 persisted transactional receiptMaximumItems refuses with observed internal SQLite close",
+      "file": "packages/server/src/reference-deployment-runtime.test.ts",
+      "group": "S05",
+      "callbackMs": 5000,
+      "HTTP": 0,
+      "oracle": "Real seed/close, selected persisted mismatch/refusal; actual internal SQLite acquired+closed before returned owner0/listen0. Restore actual prior values and genuine create:false reopen+close. No byte-unchanged claim.",
+      "status": "PROSPECTIVE NOT COLLECTED/RUN"
+    },
+    {
+      "id": "S05-transactional-snapshotLimits",
+      "fullName": "S05 persisted transactional snapshotLimits refuses with observed internal SQLite close",
+      "file": "packages/server/src/reference-deployment-runtime.test.ts",
+      "group": "S05",
+      "callbackMs": 5000,
+      "HTTP": 0,
+      "oracle": "Real seed/close, selected persisted mismatch/refusal; actual internal SQLite acquired+closed before returned owner0/listen0. Restore actual prior values and genuine create:false reopen+close. No byte-unchanged claim.",
+      "status": "PROSPECTIVE NOT COLLECTED/RUN"
+    },
+    {
+      "id": "S05-transactional-snapshotTokenPolicy",
+      "fullName": "S05 persisted transactional snapshotTokenPolicy refuses with observed internal SQLite close",
+      "file": "packages/server/src/reference-deployment-runtime.test.ts",
+      "group": "S05",
+      "callbackMs": 5000,
+      "HTTP": 0,
+      "oracle": "Real seed/close, selected persisted mismatch/refusal; actual internal SQLite acquired+closed before returned owner0/listen0. Restore actual prior values and genuine create:false reopen+close. No byte-unchanged claim.",
+      "status": "PROSPECTIVE NOT COLLECTED/RUN"
+    },
+    {
+      "id": "S05-transactional-initialAuthorizationView",
+      "fullName": "S05 persisted transactional initialAuthorizationView refuses with observed internal SQLite close",
+      "file": "packages/server/src/reference-deployment-runtime.test.ts",
+      "group": "S05",
+      "callbackMs": 5000,
+      "HTTP": 0,
+      "oracle": "Real seed/close, selected persisted mismatch/refusal; actual internal SQLite acquired+closed before returned owner0/listen0. Restore actual prior values and genuine create:false reopen+close. No byte-unchanged claim.",
+      "status": "PROSPECTIVE NOT COLLECTED/RUN"
+    },
+    {
+      "id": "S05-transactional-policyStorageRevision",
+      "fullName": "S05 persisted transactional policyStorageRevision refuses with observed internal SQLite close",
+      "file": "packages/server/src/reference-deployment-runtime.test.ts",
+      "group": "S05",
+      "callbackMs": 5000,
+      "HTTP": 0,
+      "oracle": "Real seed/close, selected persisted mismatch/refusal; actual internal SQLite acquired+closed before returned owner0/listen0. Restore actual prior values and genuine create:false reopen+close. No byte-unchanged claim.",
+      "status": "PROSPECTIVE NOT COLLECTED/RUN"
+    },
+    {
+      "id": "S05-transactional-identityPolicy",
+      "fullName": "S05 persisted transactional identityPolicy refuses with observed internal SQLite close",
+      "file": "packages/server/src/reference-deployment-runtime.test.ts",
+      "group": "S05",
+      "callbackMs": 5000,
+      "HTTP": 0,
+      "oracle": "Real seed/close, selected persisted mismatch/refusal; actual internal SQLite acquired+closed before returned owner0/listen0. Restore actual prior values and genuine create:false reopen+close. No byte-unchanged claim.",
+      "status": "PROSPECTIVE NOT COLLECTED/RUN"
+    },
+    {
+      "id": "S05-transactional-contractIdentity",
+      "fullName": "S05 persisted transactional contractIdentity refuses with observed internal SQLite close",
+      "file": "packages/server/src/reference-deployment-runtime.test.ts",
+      "group": "S05",
+      "callbackMs": 5000,
+      "HTTP": 0,
+      "oracle": "Real seed/close, selected persisted mismatch/refusal; actual internal SQLite acquired+closed before returned owner0/listen0. Restore actual prior values and genuine create:false reopen+close. No byte-unchanged claim.",
+      "status": "PROSPECTIVE NOT COLLECTED/RUN"
+    },
+    {
+      "id": "S05-transactional-runtimeLimits",
+      "fullName": "S05 persisted transactional runtimeLimits refuses with observed internal SQLite close",
+      "file": "packages/server/src/reference-deployment-runtime.test.ts",
+      "group": "S05",
+      "callbackMs": 5000,
+      "HTTP": 0,
+      "oracle": "Real seed/close, selected persisted mismatch/refusal; actual internal SQLite acquired+closed before returned owner0/listen0. Restore actual prior values and genuine create:false reopen+close. No byte-unchanged claim.",
+      "status": "PROSPECTIVE NOT COLLECTED/RUN"
+    },
+    {
+      "id": "S05-transactional-scope",
+      "fullName": "S05 persisted transactional scope refuses with observed internal SQLite close",
+      "file": "packages/server/src/reference-deployment-runtime.test.ts",
+      "group": "S05",
+      "callbackMs": 5000,
+      "HTTP": 0,
+      "oracle": "Real seed/close, selected persisted mismatch/refusal; actual internal SQLite acquired+closed before returned owner0/listen0. Restore actual prior values and genuine create:false reopen+close. No byte-unchanged claim.",
+      "status": "PROSPECTIVE NOT COLLECTED/RUN"
+    },
+    {
+      "id": "S05-transactional-types",
+      "fullName": "S05 persisted transactional types refuses with observed internal SQLite close",
+      "file": "packages/server/src/reference-deployment-runtime.test.ts",
+      "group": "S05",
+      "callbackMs": 5000,
+      "HTTP": 0,
+      "oracle": "Real seed/close, selected persisted mismatch/refusal; actual internal SQLite acquired+closed before returned owner0/listen0. Restore actual prior values and genuine create:false reopen+close. No byte-unchanged claim.",
+      "status": "PROSPECTIVE NOT COLLECTED/RUN"
+    },
+    {
+      "id": "S05-transactional-contractCapture",
+      "fullName": "S05 persisted transactional contractCapture refuses with observed internal SQLite close",
+      "file": "packages/server/src/reference-deployment-runtime.test.ts",
+      "group": "S05",
+      "callbackMs": 5000,
+      "HTTP": 0,
+      "oracle": "Real seed/close, selected persisted mismatch/refusal; actual internal SQLite acquired+closed before returned owner0/listen0. Restore actual prior values and genuine create:false reopen+close. No byte-unchanged claim.",
+      "status": "PROSPECTIVE NOT COLLECTED/RUN"
+    },
+    {
+      "id": "S05-transactional-authorizationPolicy",
+      "fullName": "S05 persisted transactional authorizationPolicy refuses with observed internal SQLite close",
+      "file": "packages/server/src/reference-deployment-runtime.test.ts",
+      "group": "S05",
+      "callbackMs": 5000,
+      "HTTP": 0,
+      "oracle": "Real seed/close, selected persisted mismatch/refusal; actual internal SQLite acquired+closed before returned owner0/listen0. Restore actual prior values and genuine create:false reopen+close. No byte-unchanged claim.",
+      "status": "PROSPECTIVE NOT COLLECTED/RUN"
+    },
+    {
+      "id": "S06-read-update",
+      "fullName": "S06 absent create:false read-update never acquires SQLite or listener",
+      "file": "packages/server/src/reference-deployment-runtime.test.ts",
+      "group": "S06",
+      "callbackMs": 5000,
+      "HTTP": 0,
+      "oracle": "No SQLite acquisition/returned owner/listen; no absent file provisioning, exact prior listing.",
+      "status": "PROSPECTIVE NOT COLLECTED/RUN"
+    },
+    {
+      "id": "S06-transactional",
+      "fullName": "S06 absent create:false transactional never acquires SQLite or listener",
+      "file": "packages/server/src/reference-deployment-runtime.test.ts",
+      "group": "S06",
+      "callbackMs": 5000,
+      "HTTP": 0,
+      "oracle": "No SQLite acquisition/returned owner/listen; no absent file provisioning, exact prior listing.",
+      "status": "PROSPECTIVE NOT COLLECTED/RUN"
+    },
+    {
+      "id": "S07-read-update",
+      "fullName": "S07 occupied intended port read-update closes owner without acquisition",
+      "file": "packages/server/src/reference-deployment-runtime.test.ts",
+      "group": "S07",
+      "callbackMs": 5000,
+      "HTTP": 0,
+      "oracle": "Blocker actually stays listening; one attempt/zero service-listener acquisitions/ownerclose1; store exists and blocker closes.",
+      "status": "PROSPECTIVE NOT COLLECTED/RUN"
+    },
+    {
+      "id": "S07-transactional",
+      "fullName": "S07 occupied intended port transactional closes owner without acquisition",
+      "file": "packages/server/src/reference-deployment-runtime.test.ts",
+      "group": "S07",
+      "callbackMs": 5000,
+      "HTTP": 0,
+      "oracle": "Blocker actually stays listening; one attempt/zero service-listener acquisitions/ownerclose1; store exists and blocker closes.",
+      "status": "PROSPECTIVE NOT COLLECTED/RUN"
+    },
+    {
+      "id": "S08-read-update",
+      "fullName": "S08 synchronous listen throw read-update keeps primary and closes owner",
+      "file": "packages/server/src/reference-deployment-runtime.test.ts",
+      "group": "S08",
+      "callbackMs": 5000,
+      "HTTP": 0,
+      "oracle": "Injected synchronous native listen error identity; attempt1/acquisition0/ownerclose1.",
+      "status": "PROSPECTIVE NOT COLLECTED/RUN"
+    },
+    {
+      "id": "S08-transactional",
+      "fullName": "S08 synchronous listen throw transactional keeps primary and closes owner",
+      "file": "packages/server/src/reference-deployment-runtime.test.ts",
+      "group": "S08",
+      "callbackMs": 5000,
+      "HTTP": 0,
+      "oracle": "Injected synchronous native listen error identity; attempt1/acquisition0/ownerclose1.",
+      "status": "PROSPECTIVE NOT COLLECTED/RUN"
+    },
+    {
+      "id": "S09-read-update",
+      "fullName": "S09 post-listening fault read-update suppresses result and closes acquired owner",
+      "file": "packages/server/src/reference-deployment-runtime.test.ts",
+      "group": "S09",
+      "callbackMs": 5000,
+      "HTTP": 0,
+      "oracle": "Error at first real listening event suppresses return; acquired1/ownerclose1/all servers not listening.",
+      "status": "PROSPECTIVE NOT COLLECTED/RUN"
+    },
+    {
+      "id": "S09-transactional",
+      "fullName": "S09 post-listening fault transactional suppresses result and closes acquired owner",
+      "file": "packages/server/src/reference-deployment-runtime.test.ts",
+      "group": "S09",
+      "callbackMs": 5000,
+      "HTTP": 0,
+      "oracle": "Error at first real listening event suppresses return; acquired1/ownerclose1/all servers not listening.",
+      "status": "PROSPECTIVE NOT COLLECTED/RUN"
+    },
+    {
+      "id": "S10-read-update",
+      "fullName": "S10 observed primary plus close failure read-update preserves both causes",
+      "file": "packages/server/src/reference-deployment-runtime.test.ts",
+      "group": "S10",
+      "callbackMs": 5000,
+      "HTTP": 0,
+      "oracle": "Aggregate preserves actual primary+cleanup identities; ownerclose1/all callback SQLite rows really closed despite delegated close failure.",
+      "status": "PROSPECTIVE NOT COLLECTED/RUN"
+    },
+    {
+      "id": "S10-transactional",
+      "fullName": "S10 observed primary plus close failure transactional preserves both causes",
+      "file": "packages/server/src/reference-deployment-runtime.test.ts",
+      "group": "S10",
+      "callbackMs": 5000,
+      "HTTP": 0,
+      "oracle": "Aggregate preserves actual primary+cleanup identities; ownerclose1/all callback SQLite rows really closed despite delegated close failure.",
+      "status": "PROSPECTIVE NOT COLLECTED/RUN"
+    },
+    {
+      "id": "S11-read-update",
+      "fullName": "S11 memoized trusted close and exact legacy shape read-update",
+      "file": "packages/server/src/reference-deployment-runtime.test.ts",
+      "group": "S11",
+      "callbackMs": 5000,
+      "HTTP": 0,
+      "oracle": "Same close Promise/completion pending then settled; trusted close1 plus one actual legacy start+close per profile (ownerclose2); exact old result keys/order and errorlistener0. Legacy port0 distinct.",
+      "status": "PROSPECTIVE NOT COLLECTED/RUN"
+    },
+    {
+      "id": "S11-transactional",
+      "fullName": "S11 memoized trusted close and exact legacy shape transactional",
+      "file": "packages/server/src/reference-deployment-runtime.test.ts",
+      "group": "S11",
+      "callbackMs": 5000,
+      "HTTP": 0,
+      "oracle": "Same close Promise/completion pending then settled; trusted close1 plus one actual legacy start+close per profile (ownerclose2); exact old result keys/order and errorlistener0. Legacy port0 distinct.",
+      "status": "PROSPECTIVE NOT COLLECTED/RUN"
+    },
+    {
+      "id": "S12-read-update",
+      "fullName": "S12 admitted mutation read-update drains after transport abort and persists",
+      "file": "packages/server/src/reference-deployment-runtime.test.ts",
+      "group": "S12",
+      "callbackMs": 5000,
+      "HTTP": 1,
+      "oracle": "One authenticated POST admitted/committed behind delegating gate; close waits during aborted transport; release/close then real persisted resource readback. No successful delivery invented.",
+      "status": "PROSPECTIVE NOT COLLECTED/RUN"
+    },
+    {
+      "id": "S12-transactional",
+      "fullName": "S12 admitted mutation transactional drains after transport abort and persists",
+      "file": "packages/server/src/reference-deployment-runtime.test.ts",
+      "group": "S12",
+      "callbackMs": 5000,
+      "HTTP": 1,
+      "oracle": "One authenticated POST admitted/committed behind delegating gate; close waits during aborted transport; release/close then real persisted resource readback. No successful delivery invented.",
+      "status": "PROSPECTIVE NOT COLLECTED/RUN"
+    },
+    {
+      "id": "S13-read-update",
+      "fullName": "S13 cancellation read-update observes preparation settlement and never late binds",
+      "file": "packages/server/src/reference-deployment-runtime.test.ts",
+      "group": "S13",
+      "callbackMs": 5000,
+      "HTTP": 0,
+      "oracle": "Already aborted entry owner0/listen0; actual in-flight preparation gate/abort/settlement, ownerclose1/listen0, no late bind.",
+      "status": "PROSPECTIVE NOT COLLECTED/RUN"
+    },
+    {
+      "id": "S13-transactional",
+      "fullName": "S13 cancellation transactional observes preparation settlement and never late binds",
+      "file": "packages/server/src/reference-deployment-runtime.test.ts",
+      "group": "S13",
+      "callbackMs": 5000,
+      "HTTP": 0,
+      "oracle": "Already aborted entry owner0/listen0; actual in-flight preparation gate/abort/settlement, ownerclose1/listen0, no late bind.",
+      "status": "PROSPECTIVE NOT COLLECTED/RUN"
+    }
+  ],
+  "count": 51,
+  "fileSha256": "720cb5166521b6e02fec2dd7765e50303482cd54b755e6bc8f8d94b1afc338b5",
+  "testNamePattern": "^(?:S01\\ registered\\ handle\\ refuses\\ plain\\ without\\ traps|S01\\ registered\\ handle\\ refuses\\ frozen\\ without\\ traps|S01\\ registered\\ handle\\ refuses\\ getter\\ without\\ traps|S01\\ registered\\ handle\\ refuses\\ proxy\\ without\\ traps|S02\\ RU\\ completes\\ second\\ principal\\ before\\ bind;\\ reject=false|S02\\ RU\\ completes\\ second\\ principal\\ before\\ bind;\\ reject=true|S03\\ TX\\ explicit\\ preflight\\ precedes\\ constructor\\ and\\ intended\\ bind;\\ constructor\\ throw\\ owns\\ direct\\ close|S04\\ owner\\ readback\\ refuses\\ read\\-update\\ scope\\ before\\ construction/bind|S04\\ owner\\ readback\\ refuses\\ read\\-update\\ readLimits\\ before\\ construction/bind|S04\\ owner\\ readback\\ refuses\\ read\\-update\\ installedTypes\\ before\\ construction/bind|S04\\ owner\\ readback\\ refuses\\ transactional\\ receiptMaximumItems\\ before\\ construction/bind|S04\\ owner\\ readback\\ refuses\\ transactional\\ scopeSnapshot\\ before\\ construction/bind|S04\\ owner\\ readback\\ refuses\\ transactional\\ authorizationView\\ before\\ construction/bind|S04\\ owner\\ readback\\ refuses\\ transactional\\ installedTypes\\ before\\ construction/bind|S05\\ persisted\\ read\\-update\\ format\\ refuses\\ with\\ observed\\ internal\\ SQLite\\ close|S05\\ persisted\\ read\\-update\\ scope\\ refuses\\ with\\ observed\\ internal\\ SQLite\\ close|S05\\ persisted\\ read\\-update\\ installation\\ refuses\\ with\\ observed\\ internal\\ SQLite\\ close|S05\\ persisted\\ read\\-update\\ lineage\\ refuses\\ with\\ observed\\ internal\\ SQLite\\ close|S05\\ persisted\\ read\\-update\\ contractCapture\\ refuses\\ with\\ observed\\ internal\\ SQLite\\ close|S05\\ persisted\\ read\\-update\\ installed\\-types\\ refuses\\ with\\ observed\\ internal\\ SQLite\\ close|S05\\ persisted\\ read\\-update\\ resource\\-uninstalled\\-type\\ refuses\\ with\\ observed\\ internal\\ SQLite\\ close|S05\\ persisted\\ read\\-update\\ retained\\-runtime\\-compatibility\\ refuses\\ with\\ observed\\ internal\\ SQLite\\ close|S05\\ persisted\\ transactional\\ format\\ refuses\\ with\\ observed\\ internal\\ SQLite\\ close|S05\\ persisted\\ transactional\\ receiptMaximumItems\\ refuses\\ with\\ observed\\ internal\\ SQLite\\ close|S05\\ persisted\\ transactional\\ snapshotLimits\\ refuses\\ with\\ observed\\ internal\\ SQLite\\ close|S05\\ persisted\\ transactional\\ snapshotTokenPolicy\\ refuses\\ with\\ observed\\ internal\\ SQLite\\ close|S05\\ persisted\\ transactional\\ initialAuthorizationView\\ refuses\\ with\\ observed\\ internal\\ SQLite\\ close|S05\\ persisted\\ transactional\\ policyStorageRevision\\ refuses\\ with\\ observed\\ internal\\ SQLite\\ close|S05\\ persisted\\ transactional\\ identityPolicy\\ refuses\\ with\\ observed\\ internal\\ SQLite\\ close|S05\\ persisted\\ transactional\\ contractIdentity\\ refuses\\ with\\ observed\\ internal\\ SQLite\\ close|S05\\ persisted\\ transactional\\ runtimeLimits\\ refuses\\ with\\ observed\\ internal\\ SQLite\\ close|S05\\ persisted\\ transactional\\ scope\\ refuses\\ with\\ observed\\ internal\\ SQLite\\ close|S05\\ persisted\\ transactional\\ types\\ refuses\\ with\\ observed\\ internal\\ SQLite\\ close|S05\\ persisted\\ transactional\\ contractCapture\\ refuses\\ with\\ observed\\ internal\\ SQLite\\ close|S05\\ persisted\\ transactional\\ authorizationPolicy\\ refuses\\ with\\ observed\\ internal\\ SQLite\\ close|S06\\ absent\\ create:false\\ read\\-update\\ never\\ acquires\\ SQLite\\ or\\ listener|S06\\ absent\\ create:false\\ transactional\\ never\\ acquires\\ SQLite\\ or\\ listener|S07\\ occupied\\ intended\\ port\\ read\\-update\\ closes\\ owner\\ without\\ acquisition|S07\\ occupied\\ intended\\ port\\ transactional\\ closes\\ owner\\ without\\ acquisition|S08\\ synchronous\\ listen\\ throw\\ read\\-update\\ keeps\\ primary\\ and\\ closes\\ owner|S08\\ synchronous\\ listen\\ throw\\ transactional\\ keeps\\ primary\\ and\\ closes\\ owner|S09\\ post\\-listening\\ fault\\ read\\-update\\ suppresses\\ result\\ and\\ closes\\ acquired\\ owner|S09\\ post\\-listening\\ fault\\ transactional\\ suppresses\\ result\\ and\\ closes\\ acquired\\ owner|S10\\ observed\\ primary\\ plus\\ close\\ failure\\ read\\-update\\ preserves\\ both\\ causes|S10\\ observed\\ primary\\ plus\\ close\\ failure\\ transactional\\ preserves\\ both\\ causes|S11\\ memoized\\ trusted\\ close\\ and\\ exact\\ legacy\\ shape\\ read\\-update|S11\\ memoized\\ trusted\\ close\\ and\\ exact\\ legacy\\ shape\\ transactional|S12\\ admitted\\ mutation\\ read\\-update\\ drains\\ after\\ transport\\ abort\\ and\\ persists|S12\\ admitted\\ mutation\\ transactional\\ drains\\ after\\ transport\\ abort\\ and\\ persists|S13\\ cancellation\\ read\\-update\\ observes\\ preparation\\ settlement\\ and\\ never\\ late\\ binds|S13\\ cancellation\\ transactional\\ observes\\ preparation\\ settlement\\ and\\ never\\ late\\ binds)$",
+  "defaultCallbackMs": 5000,
+  "beforeAndTerminalReports": 102,
+  "persistedSubset": 21,
+  "HTTPSubset": 2,
+  "subphaseAcquisitions": "S03 second fresh phase and S11 two additional legacy starts are inside original51 callbacks/5s budgets, not new callbacks or measured passes"
+}

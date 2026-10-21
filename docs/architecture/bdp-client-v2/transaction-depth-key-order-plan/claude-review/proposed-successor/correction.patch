@@ -1,0 +1,185 @@
+--- plan.md
++++ plan-v2.md
+@@ -1,10 +1,10 @@
+-# Direct retained-key comparison before private depth refusal
++# Direct retained-key comparison before private depth refusal — proposed v2
+ 
+-Plan only. Native/actual Claude review and root authoring release remain required. Reviewed candidate 1f9cb46c42fa69a09ac847f57e47bc96390aea6f is now merged as 0d63cf59d447eca2e7ff8b2e0e6a5f31513b9a3a, tree80a6fe0605698e18f9504432407e7943e1f665b4, ordered parents77f4b89+1f9cb46. The fetched merge object/tree was independently read; its source tree equals the reviewed candidate. Use actual merged0d63 as authoring parent. Future isolated author checkout: /Users/dbox/repos/wt/vickie/vickie-sequence-member-evidence, branch codex/vickie-depth-key-order at actual0d63; TX remains frozen1f9. No implementation, execution or public admission is released. ledger.json binds the eight proposed paths, unchanged references, exact selectors and request literals.
++Plan only. Incorporates root-directed dispositions of the completed actual Claude review; native successor closure and root authoring release remain required. Original plan/ledger/review are immutable. Reviewed candidate 1f9cb46c42fa69a09ac847f57e47bc96390aea6f is now merged as 0d63cf59d447eca2e7ff8b2e0e6a5f31513b9a3a, tree80a6fe0605698e18f9504432407e7943e1f665b4, ordered parents77f4b89+1f9cb46. The fetched merge object/tree was independently read; its source tree equals the reviewed candidate. Use actual merged0d63 as authoring parent. Future isolated author checkout: /Users/dbox/repos/wt/vickie/vickie-sequence-member-evidence, branch codex/vickie-depth-key-order at actual0d63; TX remains frozen1f9. No implementation, execution or public admission is released. ledger-v2.json binds the eight proposed paths, unchanged references, exact selectors and request literals.
+ 
+ ## Behavior and authority
+ 
+-A shallow direct create binds a key. A valid retry differing only by forty-deep metadata must reach authoritative comparison and return409 even with Accept:text/plain, leaving the original receipt, graph and position unchanged. Original equal replay keeps existing receipt negotiation. Fresh deep requests keep bodyless500/unsupported-transaction-composition and capture no key. This is neither a new depth policy nor arbitrary-depth execution support.
++A shallow direct create binds a key. A valid retry differing only by forty-one nested metadata objects must reach authoritative comparison and return409 even with Accept:text/plain, leaving the original receipt, graph and position unchanged. Original equal replay keeps existing receipt negotiation. Fresh deep requests keep bodyless500/unsupported-transaction-composition and capture no key. This is neither a new depth policy nor arbitrary-depth execution support.
+ 
+ Spec bdp.md4515–4565 orders syntax, principal, key equality/conflict, fresh controls, then negotiation. Metadata has no Type properties schema (2212–2217). Current batch175/212 throws private capacity after complete syntax; submission121 returns before comparison130; HTTP356 emits500. Owner1057–1085 already distinguishes retained conflict/existing correctly. The repair removes the pre-key obstruction, not the depth guard globally.
+ 
+@@ -16,9 +16,9 @@
+ 
+ 2. **transaction-store.ts:** extend TransactionReceivingAdmission only with the private result {kind:"development-limit",message:string}. Inside the existing owner/SQLite entry, retain lookup/expiry and the entire prior dependency-template branch. If and only if no prior row exists and the fact exists, return it before fresh normalization, controls, negotiation, receipt allocation or claims. This preserves old fresh-depth priority without extra fresh alias resolution. Retained ordinary keys still normalize against prior witnesses, then take the existing conflict/equal branches. No submission-side existence lookup or shortcut from key presence to equality.
+ 
+-   Preserve the legacy no-controls admit return type: throw TransactionDevelopmentLimitError for private depth, analogous to existing operation/Selector handling at1410–1413. Sequence's internal no-controls admitKey path must remain unable to admit a deep fresh request; strict sequence preparation already rejects it, and defensive propagation must not leak the new receiving variant into TransactionAdmission. The private depth result remains contextless as before; existing observed conflicts/receipts/negotiation keep their current same-entry tuple. No extra context read.
++   Preserve the legacy no-controls admit return type: throw TransactionDevelopmentLimitError for private depth, analogous to existing operation/Selector handling at1410–1413. Sequence's internal no-controls admitKey path must remain unable to admit a deep fresh request; strict sequence preparation already rejects it, and defensive propagation must not leak the new receiving variant into TransactionAdmission. The private depth result remains contextless as before; existing observed conflicts/receipts/negotiation keep their current same-entry tuple. No extra context read. Explicit placement: inside admitKey, when !prior and a recorded depth fact exists, return {kind:"development-limit",message} only when controls !== undefined; otherwise throw TransactionDevelopmentLimitError(message). The public admit wrapper always passes a receiving snapshot, so additionally translate that result back to the same exception when its original controls argument was undefined. Both throws reuse the exact captured message "development batch depth limit". This closes both internal no-controls sequence callsites without widening TransactionAdmission.
+ 
+-3. **transaction-submission.ts:** use receiving preparation, retaining byte bounds, complete syntax, key grammar and principal checks. Remove the pre-comparison depth return; map the new owner variant to the existing exact development-limit submission result. DirectComparison derives from TransactionReceivingAdmission (comparison.ts11–15), so its pass-through loop needs no edit. HTTP356–357 already maps the existing submission variant. Do not catch owner faults as capacity.
++3. **transaction-submission.ts:** use receiving preparation, retaining byte bounds, complete syntax, key grammar and principal checks. Remove the pre-comparison depth return; map the new owner variant to the existing exact development-limit submission result. DirectComparison derives from TransactionReceivingAdmission (comparison.ts11–15), so its pass-through loop needs no edit. HTTP356–357 already maps the existing submission variant. Do not catch owner faults as capacity. Remove the obsolete TransactionDevelopmentLimitError import, developmentLimit local, its catch arm and early return together. A development-limit exception unexpectedly escaping receiving preparation follows the existing throw path; the normal receiving development-limit result comes only from authoritative owner admission.
+ 
+ If actual typing requires another production path, stop and present the delta. No spec/protocol/config/package/public API change is expected.
+ 
+@@ -40,30 +40,30 @@
+ 
+ ## Source oracles and selectors
+ 
+-ledger.json lists17 expanded positive callbacks with exact full-title regexes. New callbacks must be top-level with the specified names.
++ledger-v2.json lists17 expanded positive callbacks with exact full-title regexes. New callbacks must be top-level with the specified names.
+ 
+-A, CPU/no store: strict legacy batch/set-core/singleton/sequence still throw original class/message; receiving batch/singleton carry capacity without identity alteration; shallow fact absent; forged/spread object rejected by brand accessor/assertion; malformed deep syntax still fails first. Existing20,000-level iterative serializer callback remains selected, with no deep mutation execution.
++A, CPU/no store: strict legacy batch/set-core/singleton/sequence still throw original class/message. Explicitly include a non-set createBead singleton with the planned41-object metadata through prepareTransactionSingleton and require TransactionDevelopmentLimitError("development batch depth limit"), not a parser TypeError; this positive case gates later installed rows7–12. Then verify receiving batch/singleton carry capacity without identity alteration; shallow fact absent; forged/spread object rejected by brand accessor/assertion; malformed deep syntax still fails first. Existing20,000-level iterative serializer callback remains selected, with no deep mutation execution.
+ 
+-B, one store: both direct carriers, six submissions each—shallow completed seed; deep mismatch with acceptsJson:false→409; exact replay→identical saved receipt; shallow equal acceptsJson:false→exact not-acceptable; fresh deep acceptsJson:false→exact development-limit; shallow fresh-key reuse→completed. Compare real owner state after every refusal and saved outcomes in full. Observed conflict tuples must come from the same entry; private refusal must have no extra fields. Additionally one no-controls store.admit on receiving-prepared fresh-deep input must throw the legacy class and create nothing. Twelve submit calls plus one direct admit, zero HTTP.
++B, one store: both direct carriers, six submissions each—shallow completed seed; deep mismatch with acceptsJson:false→409; exact replay→identical saved receipt; shallow equal acceptsJson:false→exact not-acceptable; fresh deep acceptsJson:false→exact development-limit; shallow fresh-key reuse→completed. Compare real owner state after every refusal and saved outcomes in full. Call every B submit as submitTransaction(store, request, {}, true). Strict observed409 results include the actual same-entry context; observed not-acceptable is {kind:"not-acceptable",context:expectedCurrentTuple}. Receipt results contain both receipt and current context, so compare their receipt field to the complete saved receipt and assert current context separately. The private result stays exactly {kind:"development-limit",message:"development batch depth limit"} with no context. Existing unobserved S3/S4 literals remain unchanged. Additionally one no-controls store.admit on receiving-prepared fresh-deep input must throw the legacy class and create nothing. Add a thirteenth submit using the original batch createBead operation, id/type and retained key, changing only metadata to {deep:<20,000 array brackets around raw1e+30>}. Reuse the nesting recipe, not the existing updateWhere operation: a changed operation must not short-circuit normalization. Construct the request as raw text (not recursive JSON.stringify), assert below64KiB, then require observed409 plus unchanged complete saved receipt and inspect state. Concrete source recipe uses the existing create("a") fields and batch retained key; exact body bytes/hash are in successor ledger. Thirteen submit calls plus one direct admit, zero HTTP. No new callback/owner/HTTP is added.
+ 
+ C, one store: create a genuine shallow direct pending claim with a distinct id; deep metadata mismatch→409/no wait; exact pending retry with unacceptable negotiation→not-acceptable; execute original and exact replay→saved completion. Then existing dependencies() creates a genuine unresolved createLink reservation; deep metadata mismatch→409/no wait/no changed reservation; resolve both turns and exact replay→saved receipt. Five submit calls; internal setup/turns are not HTTP. Finally retract/cancel any surviving claims/attempt on early failure, then close one owner.
+ 
+ Unchanged selected cases cover syntax/key/auth-before-owner, malformed Selector vs depth, negotiation, failed/expired reopen, unresolved waits/retraction, aliases across repointing, singleton/wrapped set depth, both20,000-deep syntax cases and whole-sequence refusal. Their real full titles/counts are in the ledger; no global timeout change.
+ 
+-H, one emitted-runtime listener/store: same13 requests as installed below, but actual fixture Scope/type. Use a bounded request helper local to this callback (abort, redirect:error, streaming128KiB response cap), not a shared fixture rewrite. Immediate second-response assertion label depth-key:batch:conflict-before-depth checks status before schema/context. Retain sanitized real observations before cleanup. No SQLite inspection/reopen. Existing selected sequence case separately adds4HTTP through its older fixture reader; do not claim it inherits the new per-request bounds.
++H, one emitted-runtime listener/store: same13 requests as installed below, including exactly41 nested metadata objects, but actual fixture Scope/type. Use a bounded request helper local to this callback (abort, redirect:error, streaming128KiB response cap), not a shared fixture rewrite. Immediate second-response assertion label depth-key:batch:conflict-before-depth checks status before schema/context. Retain sanitized real observations before cleanup. No SQLite inspection/reopen. Existing selected sequence case separately adds4HTTP through its older fixture reader; do not claim it inherits the new per-request bounds.
+ 
+ ## Installed thirteen-request proof
+ 
+ One ordinary child with existing launcher/execution binding. Fixed Scope https://reference.invalid/acme/, aligned task Type and properties schema requiring title:string; no extra properties. Bind configuration, actual12 operation targets, fixture, resolved entry and source declaration before dispatch. Authorization alone is a credential handle. Raw headers carry Accept, Content-Type and Idempotency-Key. No discovery activation.
+ 
+ For batch, then create-bead singleton, each with separate retained/fresh keys:
+-1 seed200; 2 same-key deep metadata409 with text/plain; 3 exact replay200; 4 fresh deep500 with text/plain; 5 shallow fresh-key reuse200; 6 point GET of original200. Then13 GET beads/?limit=32. Exact body text/hash/bytes and header/route ledger are in ledger.json:10POST/3GET, five distinct method/URL bindings.
++1 seed200; 2 same-key deep metadata409 with text/plain; 3 exact replay200; 4 fresh deep500 with text/plain; 5 shallow fresh-key reuse200; 6 point GET of original200. Then13 GET beads/?limit=32. Exact body text/hash/bytes and header/route ledger are in ledger-v2.json:10POST/3GET, five distinct method/URL bindings.
+ 
+ Require full existing409 Problem {type:"https://github.com/gastownhall/bdp/problems/conflict",code:"idempotency-conflict",status:409,retry:"never"} plus transactionalProblem validation and current tuples pos1/pos3. Private500 is bodyless with unchanged marker, no invented Problem/context. Receipts validate mutationReceipt, exact completed/available/requiredPosition/effectPosition/next:null and one created full Resource; capture actual revision then require its reuse. Replays equal complete saved bodies. Point GETs equal the seed receipt Resource at current pos2/pos4. Final schema-valid collection equals exactly the four complete created Resources in canonical order, next:null, pos4. No guessed receipt routes, raw-body capture inference, hidden retries or discovery calls.
+ 
+ ## Single negative and bounded work
+ 
+-After a clean accepted build/source run, copy verified emitted runtime/store graph plus test/config/setup. In emitted store only insert the same prepared-depth refusal before row lookup, restoring early-capacity ordering with unchanged test/input. Run only H once: expect actual second response500, exactly the named conflict-before-depth assertion failure and test exit1. Expected2HTTP, hard ceiling13. Import/build/timeout/cleanup/schema-before-status or no-dispatch failures do not qualify. No installed mutant. Use pinned Node directly to the bound Vitest CLI, avoiding pnpm-exec shim rewrites. Exact derivative patch/import resolution/body/source hashes are measured before root release.
++After a clean accepted build/source run, copy the complete source/package-manifest tree required by Vitest source aliases, current emitted package graph, test/config/setup and bound runner/tool dependency graph into an isolated mirror. Do not rely on dist-plus-test alone. Verify source aliases and relative ../dist runtime imports resolve inside that mirror, and no workspace-package/tool shim resolves through or mutates the positive workspace. Exactly one emitted product file changes: packages/server/dist/transaction-store.js; all source files and other emitted files stay byte-identical. In emitted store only insert the same prepared-depth refusal before row lookup, restoring early-capacity ordering with unchanged test/input. Run only H once: expect actual second response500, exactly the named conflict-before-depth assertion failure and test exit1. Expected2HTTP, hard ceiling13. Import/build/timeout/cleanup/schema-before-status or no-dispatch failures do not qualify. No installed mutant. Use pinned Node directly to the bound Vitest CLI, avoiding pnpm-exec shim rewrites. Exact derivative patch/import resolution/body/source hashes are measured before root release.
+ 
+ Fresh installed positive follows a clean ordinary commit and separate package gate: protocol/server archives, source/archive/consumer member equality, all eight production dependencies/full served payload, entry/config/fixture/declaration binding. One child and13requests; no parent run.
+ 
+@@ -78,3 +78,11 @@
+ Freeze/recount actual eight-path diff, expanded selection, body ledger and negative import graph before execution. Pinned Node24.16.0/pnpm11.20.0 offline frozen setup, typecheck, clean build, targeted format, lint, boundaries and unchanged Read seal precede source runs. HTTP tests import ../dist runtime; installed top-level schema/git/entry setup also requires the current build even under exact title selection. No install/import/build/test occurred while preparing this plan.
+ 
+ Native plus actual Claude plan/code review and exact-head full CI remain root gates. Actual0d63 parent is now known; any intervening merged-source drift must be reconciled before authoring. Tradeoff: private fact/result typing preserves one authoritative lookup and legacy behavior. Fresh/sequence500 remains explicitly private; a new public depth response or general deep execution would be separate work. Sequence v6 evidence remains subordinate, not cancelled.
++
++## Actual source clarifications from completed review
++
++Named union consumers are only transaction-store.ts (TransactionAdmission/TransactionReceivingAdmission declarations, internal/public overloads) and transaction-comparison.ts (import, derived DirectComparison and store parameter). Exact inventory is in ledger. Inferred production flow is comparison→submission→service→HTTP: service.submit514–532 already calls submitTransaction(...,true), and its result type47–49 derives from TransactionSubmissionResult; the development-limit submission arm already exists. Other typed tests remain covered by mandatory full typecheck; any additional required path triggers the scope stop, not a cast.
++
++Protocol prepareReadUpdateSingleton delegates to parseReadUpdateRequest (read-update-preflight40–55); read-update-values203–215 decodes and iteratively maps the lossless document before the structural schema. createBead metadata schema is an object without recursive shape constraints; protocol json-admission98+ and230+ use explicit frame/task stacks. This source supports the proposed syntax path, but A and B must execute it before installed release; it is not a claim of executed20k normalization yet. Server root/development exports do not re-export transaction-batch; the new internal exports must remain absent from package exports.
++
++Owner row419–421 performs the actual namespace lookup; expireRow430–500 keeps pending/compact rows, retains completed identity while compacting detail, and deletes an expired failed row before returning no row. The fresh fact applies to the resulting prior classification, not merely stored truthiness. observeReceipt805–836 captures/freezes the actual receipt/current context; inspect2100+ exposes graph/groups/identity IDs/position; retract1988+ and cancelSequence1335+ preserve existing owner cleanup. No new independent DB or context read is introduced. developmentGap139–143 delegates to empty(500)79–87, yielding zero content length plus marker.
+--- ledger.json
++++ ledger-v2.json
+@@ -1,5 +1,5 @@
+ {
+-  "status": "PLAN_ONLY_NOT_AUTHORIZED",
++  "status": "PROPOSED_V2_PENDING_NATIVE_ROOT_RELEASE",
+   "source": {
+     "reviewedCandidate": "1f9cb46c42fa69a09ac847f57e47bc96390aea6f",
+     "authoringParent": "0d63cf59d447eca2e7ff8b2e0e6a5f31513b9a3a",
+@@ -31,7 +31,12 @@
+       "docs/specs/bdp.md": "f036103ffdf5f89fa3a2033570e1e987c4cd203cd80b1c633cb44615123f892e",
+       "apps/bdptest/src/transactional-direct-refusal-installed.test.ts": "c817729792a8bd97473b4b7ebe06474d4a0c27bcd5122e58268b997aa03408b0",
+       "apps/bdptest/src/transactional-receipt-missing-context-installed.test.ts": "eaf1289ed0a8318ce949704ba4cd983755c6f5fd20ffe9d61712869894cb5064",
+-      "apps/bdptest/test-support/transactional-execution-binding.ts": "cde506c72a8710eafe58522900f6db70ed3701cf333560252dc8e7c5e706cf89"
++      "apps/bdptest/test-support/transactional-execution-binding.ts": "cde506c72a8710eafe58522900f6db70ed3701cf333560252dc8e7c5e706cf89",
++      "packages/server/src/transaction-service.ts": "53f655faf494209996aac2e0f93a4c2c785e471f66aac6af9ea41f92c9cfbe00",
++      "packages/server/src/index.ts": "34f9d9de8b48852c64919e69ce93f149e9cdae5142c15c75e4c35f08f15efc44",
++      "packages/server/src/development.ts": "a3f994bd610f17821c7d51189104308abef6196bb12b565b268a0ffc96b04f39",
++      "packages/protocol/src/read-update-values.ts": "d1fdbc660d5e2c009275c152bdcebda46031700920aa03bfea89f39564c89de2",
++      "schemas/bdp-v0.schema.json": "0baa5d5ef67144f8e6513b4cde31168effc8df6d52ef3141b0f144b87f8dc227"
+     }
+   },
+   "ownedPaths": [
+@@ -54,7 +59,13 @@
+       "ownerLifetimes": 0,
+       "storeDirectories": 0,
+       "http": 0,
+-      "titleRegex": "^keeps\\ receiving\\ depth\\ facts\\ private\\ while\\ legacy\\ preparation\\ still\\ throws$"
++      "titleRegex": "^keeps\\ receiving\\ depth\\ facts\\ private\\ while\\ legacy\\ preparation\\ still\\ throws$",
++      "explicitStrictSingleton": {
++        "operation": "createBead",
++        "nestedMetadataObjects": 41,
++        "exception": "TransactionDevelopmentLimitError",
++        "message": "development batch depth limit"
++      }
+     },
+     {
+       "id": "B",
+@@ -65,9 +76,24 @@
+       "ownerLifetimes": 1,
+       "storeDirectories": 1,
+       "http": 0,
+-      "plannedSubmitCalls": 12,
++      "plannedSubmitCalls": 13,
+       "additionalDirectAdmitCalls": 1,
+-      "titleRegex": "^compares\\ retained\\ direct\\ keys\\ before\\ private\\ carrier\\ depth\\ without\\ admitting\\ fresh\\ deep\\ input$"
++      "titleRegex": "^compares\\ retained\\ direct\\ keys\\ before\\ private\\ carrier\\ depth\\ without\\ admitting\\ fresh\\ deep\\ input$",
++      "observed": true,
++      "additionalRetainedComparison": {
++        "operation": "createBead",
++        "id": "beads/a",
++        "type": "https://example.test/bead",
++        "key": "reuse original batch seed key",
++        "changeOnly": "metadata.deep",
++        "rawNumericLiteral": "1e+30",
++        "arrayNesting": 20000,
++        "bodyBytes": 40119,
++        "bodySha256": "ddd7741aa0824790181015ee940057c7c497437d2ae998b023b61742ed61fe66",
++        "bodyArtifact": "B-retained-20000-body.txt",
++        "requiredResult": "observed idempotency-conflict with same-entry context; full saved receipt and inspect unchanged",
++        "serialization": "raw text; no recursive JSON.stringify; do not reuse updateWhere operation"
++      }
+     },
+     {
+       "id": "C",
+@@ -268,7 +294,9 @@
+       "cleanup",
+       "schema-before-status",
+       "missing-dispatch"
+-    ]
++    ],
++    "mirror": "full source/package manifests, emitted graph, config/setup, bound copied runner/tool graph; exactly one emitted store mutation",
++    "mutatedPath": "packages/server/dist/transaction-store.js"
+   },
+   "installed": {
+     "path": "apps/bdptest/src/transactional-depth-key-order-installed.test.ts",
+@@ -468,7 +496,8 @@
+     ],
+     "bodyBytesTotal": 3270,
+     "bodyBytesMaximum": 621,
+-    "routeCount": 5
++    "routeCount": 5,
++    "nestedMetadataObjects": 41
+   },
+   "aggregatePlanned": {
+     "callbacks": 19,
+@@ -501,5 +530,20 @@
+     "Historical sequence callback uses four existing HTTP calls and its older fetch/cleanup, not new reader; no claim all source requests have new bounds.",
+     "Worker/build/git/helper processes separate from one product child.",
+     "No installed negative or parent run; one source emitted derivative only."
+-  ]
++  ],
++  "review": {
++    "stdoutSha256": "ff032b1fd2f64decf1e8b80e58d9833c63f5b1195e5cfe39004a6e2f7ee59112",
++    "originalPlanSha256": "b830146c64cce2d57dd68d09cbc20cec41de957ce4b1a8e773bfa4c7414486d1",
++    "originalLedgerSha256": "93867b29a226635b38de21b9df84dd6c91166b8d69a652b01381dfd1c683e1a7"
++  },
++  "namedUnionConsumerInventory": {
++    "argv": [
++      "rg",
++      "-n",
++      "TransactionReceivingAdmission|TransactionAdmission|DirectComparison",
++      "packages/server/src"
++    ],
++    "output": "packages/server/src/transaction-store.ts:122:export type TransactionAdmission =\npackages/server/src/transaction-store.ts:136:export type TransactionReceivingAdmission =\npackages/server/src/transaction-store.ts:137:  | TransactionAdmission\npackages/server/src/transaction-store.ts:1038:  ): TransactionAdmission;\npackages/server/src/transaction-store.ts:1047:  ): TransactionReceivingAdmission;\npackages/server/src/transaction-store.ts:1056:  ): TransactionReceivingAdmission {\npackages/server/src/transaction-store.ts:1380:  function admit(principal: string, key: string, batch: PreparedTransaction): TransactionAdmission;\npackages/server/src/transaction-store.ts:1386:  ): TransactionReceivingAdmission;\npackages/server/src/transaction-store.ts:1393:  ): TransactionReceivingAdmission;\npackages/server/src/transaction-store.ts:1400:  ): TransactionReceivingAdmission {\npackages/server/src/transaction-comparison.ts:7:  type TransactionReceivingAdmission,\npackages/server/src/transaction-comparison.ts:11:export type DirectComparison =\npackages/server/src/transaction-comparison.ts:12:  | Exclude<TransactionReceivingAdmission, { kind: \"comparison-pending\" }>\npackages/server/src/transaction-comparison.ts:25:    ): TransactionReceivingAdmission;\npackages/server/src/transaction-comparison.ts:40:): Promise<DirectComparison> {\n"
++  },
++  "privateDepthMessage": "development batch depth limit"
+ }

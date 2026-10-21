@@ -1,0 +1,479 @@
+{
+  "count": 59,
+  "gateSourceSha256": "f3781357733810861cad42b92e667822e7d3ac60e1f214e39e7f22e1bb63bb8e",
+  "method": "Full source read and AST comparison only; no helper import/evaluation",
+  "predicates": [
+    {
+      "assessment": "PASS DATA precision: complete26 exact keys/typedflags/session/mode/source/CODE/156implementation/19388pins/final52/static+runtime/currentproof/unchanged argv+selectors; future lifecycle, results and terminal receipts remain actual runtime requirements",
+      "function": "document",
+      "helperEvaluated": false,
+      "line": 27,
+      "message": "'Unknown/missing document pin key'",
+      "predicate": "type(record) is dict and set(record) == {'path', 'sha256'}"
+    },
+    {
+      "assessment": "PASS DATA precision: complete26 exact keys/typedflags/session/mode/source/CODE/156implementation/19388pins/final52/static+runtime/currentproof/unchanged argv+selectors; future lifecycle, results and terminal receipts remain actual runtime requirements",
+      "function": "document",
+      "helperEvaluated": false,
+      "line": 28,
+      "message": "'Document absent/changed ' + str(p)",
+      "predicate": "p.is_absolute() and p.is_file() and (not p.is_symlink()) and (sha(p.read_bytes()) == record['sha256'])"
+    },
+    {
+      "assessment": "CURRENT679/six owned bytes verified; exact Git tuple/status/patch attributed to actual24/root inspection, no auditor Git",
+      "function": "source_check",
+      "helperEvaluated": false,
+      "line": 30,
+      "message": "'Wrong source binding'",
+      "predicate": "b['worktree'] == str(W) and b['head'] == INTEGRATION and (git('branch', '--show-current').decode().strip() == b['branch'])"
+    },
+    {
+      "assessment": "CURRENT679/six owned bytes verified; exact Git tuple/status/patch attributed to actual24/root inspection, no auditor Git",
+      "function": "source_check",
+      "helperEvaluated": false,
+      "line": 31,
+      "message": "'Git identity changed'",
+      "predicate": "git('rev-parse', 'HEAD').decode().strip() == b['head'] and git('rev-parse', 'HEAD^{tree}').decode().strip() == b['tree']"
+    },
+    {
+      "assessment": "CURRENT679/six owned bytes verified; exact Git tuple/status/patch attributed to actual24/root inspection, no auditor Git",
+      "function": "source_check",
+      "helperEvaluated": false,
+      "line": 33,
+      "message": "'Source files changed'",
+      "predicate": "actual == b['trackedSourceFiles']"
+    },
+    {
+      "assessment": "CURRENT679/six owned bytes verified; exact Git tuple/status/patch attributed to actual24/root inspection, no auditor Git",
+      "function": "source_check",
+      "helperEvaluated": false,
+      "line": 34,
+      "message": "'Source scope differs'",
+      "predicate": "sorted(git('diff', '--name-only', 'HEAD').decode().splitlines()) == b['dirtyPaths'] == sorted(b['ownedFiles']) and (not git('ls-files', '--others', '--exclude-standard').strip())"
+    },
+    {
+      "assessment": "CURRENT679/six owned bytes verified; exact Git tuple/status/patch attributed to actual24/root inspection, no auditor Git",
+      "function": "source_check",
+      "helperEvaluated": false,
+      "line": 35,
+      "message": "'Owned source binding differs'",
+      "predicate": "all((actual[p] == v['afterSha256'] and sha(git('show', 'HEAD:' + p)) == v['beforeSha256'] for p, v in b['ownedFiles'].items()))"
+    },
+    {
+      "assessment": "CURRENT679/six owned bytes verified; exact Git tuple/status/patch attributed to actual24/root inspection, no auditor Git",
+      "function": "source_check",
+      "helperEvaluated": false,
+      "line": 36,
+      "message": "'Staged source is forbidden'",
+      "predicate": "not git('diff', '--cached', '--binary').strip()"
+    },
+    {
+      "assessment": "CURRENT679/six owned bytes verified; exact Git tuple/status/patch attributed to actual24/root inspection, no auditor Git",
+      "function": "source_check",
+      "helperEvaluated": false,
+      "line": 37,
+      "message": "'Exact tracked/owned counts'",
+      "predicate": "len(actual) == 679 and len(b['ownedFiles']) == 6"
+    },
+    {
+      "assessment": "CURRENT679/six owned bytes verified; exact Git tuple/status/patch attributed to actual24/root inspection, no auditor Git",
+      "function": "source_check",
+      "helperEvaluated": false,
+      "line": 38,
+      "message": "'Source patch changed'",
+      "predicate": "sha(git('diff', '--binary', 'HEAD')) == b['binaryDiffSha256']"
+    },
+    {
+      "assessment": "CURRENT679/six owned bytes verified; exact Git tuple/status/patch attributed to actual24/root inspection, no auditor Git",
+      "function": "source_check",
+      "helperEvaluated": false,
+      "line": 39,
+      "message": "'Other tracked source differs from HEAD'",
+      "predicate": "all((sha(git('show', 'HEAD:' + f)) == v for f, v in actual.items() if f not in b['ownedFiles']))"
+    },
+    {
+      "assessment": "CURRENT exact11 workspace and3 base tool realpaths/bytes",
+      "function": "tools_check",
+      "helperEvaluated": false,
+      "line": 43,
+      "message": "'Tool changed ' + name",
+      "predicate": "str(p.resolve(strict=True)) == binding['realpath'] and sha(p.read_bytes()) == binding['sha256']"
+    },
+    {
+      "assessment": "APPLICABLE NOW: current full476 build inventory/source/start-exit-log and TOPLEVEL root4f1f barrier",
+      "function": "inventory",
+      "helperEvaluated": false,
+      "line": 49,
+      "message": "'Missing dist ' + str(dist)",
+      "predicate": "dist.is_dir()"
+    },
+    {
+      "assessment": "APPLICABLE NOW: current full476 build inventory/source/start-exit-log and TOPLEVEL root4f1f barrier",
+      "function": "inventory",
+      "helperEvaluated": false,
+      "line": 51,
+      "message": "'Linked build output'",
+      "predicate": "not p.is_symlink()"
+    },
+    {
+      "assessment": "APPLICABLE NOW: current full476 build inventory/source/start-exit-log and TOPLEVEL root4f1f barrier",
+      "function": "inventory",
+      "helperEvaluated": false,
+      "line": 54,
+      "message": "'Linked artifact'",
+      "predicate": "not p.is_symlink()"
+    },
+    {
+      "assessment": "APPLICABLE NOW: current full476 build inventory/source/start-exit-log and TOPLEVEL root4f1f barrier",
+      "function": "inventory",
+      "helperEvaluated": false,
+      "line": 56,
+      "message": "'Empty build inventory'",
+      "predicate": "result"
+    },
+    {
+      "assessment": "APPLICABLE NOW: exact actual870files17links/source-lock-archives/current entry and full root183f proof pins; prospective child/audit must repeat these immutable checks before each requiresConsumerProof stage, no future callback pass inferred",
+      "function": "consumer_inventory",
+      "helperEvaluated": false,
+      "line": 63,
+      "message": "'Consumer link escapes'",
+      "predicate": "q.is_relative_to(C.resolve())"
+    },
+    {
+      "assessment": "ACTUAL prior24 exact inner/raw/source and whole-wrapper receipts verified; each future prior installed/audit/required stage must produce normal sequential receipts; no replay/predicted pass",
+      "function": "complete",
+      "helperEvaluated": false,
+      "line": 68,
+      "message": "'Prior stage failed ' + name",
+      "predicate": "v['accepted'] and v['exit'] in read(P / 'commands.json')['commands'][name].get('acceptedRawExitCodes', [0]) and (not v['forcedCleanup']) and (not v['errors']) and (not v['remainingProcesses']) and (not v['runtimeDirectoriesStillPresent'])"
+    },
+    {
+      "assessment": "ACTUAL prior24 exact inner/raw/source and whole-wrapper receipts verified; each future prior installed/audit/required stage must produce normal sequential receipts; no replay/predicted pass",
+      "function": "complete",
+      "helperEvaluated": false,
+      "line": 69,
+      "message": "'Prior source differs ' + name",
+      "predicate": "v['sourceIdentity'] == g['_sourceIdentity'] and v['sourceUnchanged']"
+    },
+    {
+      "assessment": "ACTUAL prior24 exact inner/raw/source and whole-wrapper receipts verified; each future prior installed/audit/required stage must produce normal sequential receipts; no replay/predicted pass",
+      "function": "complete",
+      "helperEvaluated": false,
+      "line": 70,
+      "message": "'Prior log changed ' + name",
+      "predicate": "sha((E / (name + '.log')).read_bytes()) == v['logSha256']"
+    },
+    {
+      "assessment": "APPLICABLE NOW: current full476 build inventory/source/start-exit-log and TOPLEVEL root4f1f barrier",
+      "function": "verify_build",
+      "helperEvaluated": false,
+      "line": 74,
+      "message": "'Build source differs'",
+      "predicate": "b['head'] == g['finalHead'] and b['tree'] == g['finalTree'] and (b['sourceIdentity'] == g['_sourceIdentity'])"
+    },
+    {
+      "assessment": "APPLICABLE NOW: current full476 build inventory/source/start-exit-log and TOPLEVEL root4f1f barrier",
+      "function": "verify_build",
+      "helperEvaluated": false,
+      "line": 75,
+      "message": "'Build outputs changed'",
+      "predicate": "b['artifacts'] == inventory()"
+    },
+    {
+      "assessment": "APPLICABLE NOW: current full476 build inventory/source/start-exit-log and TOPLEVEL root4f1f barrier",
+      "function": "verify_build",
+      "helperEvaluated": false,
+      "line": 77,
+      "message": "'Build record changed'",
+      "predicate": "sha(Path(item['path']).read_bytes()) == item['sha256']"
+    },
+    {
+      "assessment": "APPLICABLE NOW: exact actual870files17links/source-lock-archives/current entry and full root183f proof pins; prospective child/audit must repeat these immutable checks before each requiresConsumerProof stage, no future callback pass inferred",
+      "function": "verify_consumer",
+      "helperEvaluated": false,
+      "line": 80,
+      "message": "'Consumer changed'",
+      "predicate": "expected == consumer_inventory()"
+    },
+    {
+      "assessment": "APPLICABLE NOW: exact actual870files17links/source-lock-archives/current entry and full root183f proof pins; prospective child/audit must repeat these immutable checks before each requiresConsumerProof stage, no future callback pass inferred",
+      "function": "verify_consumer",
+      "helperEvaluated": false,
+      "line": 81,
+      "message": "'Consumer source differs'",
+      "predicate": "proof['sourceCommit'] == g['finalHead'] and proof['sourceTree'] == g['finalTree'] and (proof['sourceIdentity'] == g['_sourceIdentity']) and (proof['sourceBindingSha256'] == g['sourceBinding']['sha256'])"
+    },
+    {
+      "assessment": "APPLICABLE NOW: exact actual870files17links/source-lock-archives/current entry and full root183f proof pins; prospective child/audit must repeat these immutable checks before each requiresConsumerProof stage, no future callback pass inferred",
+      "function": "verify_consumer",
+      "helperEvaluated": false,
+      "line": 82,
+      "message": "'Consumer lock changed'",
+      "predicate": "sha((E / 'consumer/pnpm-lock.yaml').read_bytes()) == g['consumerLockSha256'] == proof['consumerLockSha256']"
+    },
+    {
+      "assessment": "APPLICABLE NOW: exact actual870files17links/source-lock-archives/current entry and full root183f proof pins; prospective child/audit must repeat these immutable checks before each requiresConsumerProof stage, no future callback pass inferred",
+      "function": "verify_consumer",
+      "helperEvaluated": false,
+      "line": 83,
+      "message": "'Tar provenance changed'",
+      "predicate": "sha((E / 'tar-source-provenance.json').read_bytes()) == proof['tarProvenanceSha256']"
+    },
+    {
+      "assessment": "APPLICABLE NOW: exact actual870files17links/source-lock-archives/current entry and full root183f proof pins; prospective child/audit must repeat these immutable checks before each requiresConsumerProof stage, no future callback pass inferred",
+      "function": "verify_consumer",
+      "helperEvaluated": false,
+      "line": 84,
+      "message": "'Archive changed'",
+      "predicate": "sha(Path(data['archive']).read_bytes()) == proof['packages'][name]['archiveSha256']"
+    },
+    {
+      "assessment": "APPLICABLE NOW: exact actual870files17links/source-lock-archives/current entry and full root183f proof pins; prospective child/audit must repeat these immutable checks before each requiresConsumerProof stage, no future callback pass inferred",
+      "function": "verify_consumer",
+      "helperEvaluated": false,
+      "line": 85,
+      "message": "'External entry changed'",
+      "predicate": "entry.resolve(strict=True).is_relative_to((E / 'consumer').resolve()) and sha(entry.read_bytes()) == proof['entrySha256']"
+    },
+    {
+      "assessment": "PASS DATA precision: complete26 exact keys/typedflags/session/mode/source/CODE/156implementation/19388pins/final52/static+runtime/currentproof/unchanged argv+selectors; future lifecycle, results and terminal receipts remain actual runtime requirements",
+      "function": "load_gate",
+      "helperEvaluated": false,
+      "line": 88,
+      "message": "'Assertions required'",
+      "predicate": "__debug__"
+    },
+    {
+      "assessment": "PASS DATA precision: complete26 exact keys/typedflags/session/mode/source/CODE/156implementation/19388pins/final52/static+runtime/currentproof/unchanged argv+selectors; future lifecycle, results and terminal receipts remain actual runtime requirements",
+      "function": "load_gate",
+      "helperEvaluated": false,
+      "line": 90,
+      "message": "'Unknown/missing gate key'",
+      "predicate": "set(g) == {'rootExactSourceAccepted', 'session', 'rootArchiveAcceptance', 'knownOriginalActualCodeTerminal', 'consumerInventory', 'consumerLockSha256', 'workspaceTools', 'implementationIndexSha256', 'approvedStages', 'sourceBinding', 'actualClaudeReviewDisposed', 'installedProvenance', 'actualCodeDisposition', 'staticValidationAuthorized', 'released', 'baseTools', 'rootConsumerProofAcceptance', 'mode', 'bootstrapReuse', 'rootConsumerLockAcceptance', 'nativeCodeDisposition', 'rootPlanAccepted', 'rootDisposition', 'rootBuildAcceptance', 'knownCorrectedSourceFreeze', 'nativeCodeReviewDisposed'}"
+    },
+    {
+      "assessment": "PASS DATA precision: complete26 exact keys/typedflags/session/mode/source/CODE/156implementation/19388pins/final52/static+runtime/currentproof/unchanged argv+selectors; future lifecycle, results and terminal receipts remain actual runtime requirements",
+      "function": "load_gate",
+      "helperEvaluated": false,
+      "line": 91,
+      "message": "'Gate boolean type'",
+      "predicate": "all((type(g[k]) is bool for k in ['released', 'rootPlanAccepted', 'rootExactSourceAccepted', 'actualClaudeReviewDisposed', 'nativeCodeReviewDisposed', 'staticValidationAuthorized']))"
+    },
+    {
+      "assessment": "PASS DATA precision: complete26 exact keys/typedflags/session/mode/source/CODE/156implementation/19388pins/final52/static+runtime/currentproof/unchanged argv+selectors; future lifecycle, results and terminal receipts remain actual runtime requirements",
+      "function": "load_gate",
+      "helperEvaluated": false,
+      "line": 92,
+      "message": "'Authored current changefeed source/selection not finalized'",
+      "predicate": "read(P / 'commands.json').get('configurationFinalized') is True"
+    },
+    {
+      "assessment": "PASS DATA precision: complete26 exact keys/typedflags/session/mode/source/CODE/156implementation/19388pins/final52/static+runtime/currentproof/unchanged argv+selectors; future lifecycle, results and terminal receipts remain actual runtime requirements",
+      "function": "load_gate",
+      "helperEvaluated": false,
+      "line": 93,
+      "message": "'Actual current changefeed observation contracts not finalized'",
+      "predicate": "read(P / 'audit-expectations.json').get('finalized') is True"
+    },
+    {
+      "assessment": "PASS DATA precision: complete26 exact keys/typedflags/session/mode/source/CODE/156implementation/19388pins/final52/static+runtime/currentproof/unchanged argv+selectors; future lifecycle, results and terminal receipts remain actual runtime requirements",
+      "function": "load_gate",
+      "helperEvaluated": false,
+      "line": 94,
+      "message": "'Root release absent'",
+      "predicate": "g['released'] is True and g['rootPlanAccepted'] is True and (g['rootExactSourceAccepted'] is True) and (g['session'] == '2026-10-18T02:16:24Z-549f')"
+    },
+    {
+      "assessment": "PASS DATA precision: complete26 exact keys/typedflags/session/mode/source/CODE/156implementation/19388pins/final52/static+runtime/currentproof/unchanged argv+selectors; future lifecycle, results and terminal receipts remain actual runtime requirements",
+      "function": "load_gate",
+      "helperEvaluated": false,
+      "line": 95,
+      "message": "'Wrong phase'",
+      "predicate": "g['mode'] == MODE"
+    },
+    {
+      "assessment": "FUTURE exact child stage/start-record/supervised-attempt hash and unchanged actual gate required before each invocation",
+      "function": "load_gate",
+      "helperEvaluated": false,
+      "line": 98,
+      "message": "'Helper requires supervised attempt'",
+      "predicate": "os.environ.get('TX_DISCOVERY_VALIDATION_STAGE') == name and record.is_file() and (sha(record.read_bytes()) == os.environ.get('TX_DISCOVERY_VALIDATION_ATTEMPT'))"
+    },
+    {
+      "assessment": "FUTURE exact child stage/start-record/supervised-attempt hash and unchanged actual gate required before each invocation",
+      "function": "load_gate",
+      "helperEvaluated": false,
+      "line": 99,
+      "message": "'Gate changed during attempt'",
+      "predicate": "read(record)['rootGateSha256'] == sha((P / ('bootstrap-gate.json' if MODE == 'bootstrap' else 'execution-gate.json')).read_bytes())"
+    },
+    {
+      "assessment": "PASS DATA precision: complete26 exact keys/typedflags/session/mode/source/CODE/156implementation/19388pins/final52/static+runtime/currentproof/unchanged argv+selectors; future lifecycle, results and terminal receipts remain actual runtime requirements",
+      "function": "load_gate",
+      "helperEvaluated": false,
+      "line": 100,
+      "message": "'Implementation index changed'",
+      "predicate": "sha(idx.read_bytes()) == g['implementationIndexSha256']"
+    },
+    {
+      "assessment": "PASS DATA precision: complete26 exact keys/typedflags/session/mode/source/CODE/156implementation/19388pins/final52/static+runtime/currentproof/unchanged argv+selectors; future lifecycle, results and terminal receipts remain actual runtime requirements",
+      "function": "load_gate",
+      "helperEvaluated": false,
+      "line": 101,
+      "message": "'Implementation changed ' + f",
+      "predicate": "sha((P / f).read_bytes()) == h"
+    },
+    {
+      "assessment": "PASS DATA precision: complete26 exact keys/typedflags/session/mode/source/CODE/156implementation/19388pins/final52/static+runtime/currentproof/unchanged argv+selectors; future lifecycle, results and terminal receipts remain actual runtime requirements",
+      "function": "load_gate",
+      "helperEvaluated": false,
+      "line": 102,
+      "message": "'Reference changed ' + f",
+      "predicate": "sha(Path(f).read_bytes()) == h"
+    },
+    {
+      "assessment": "PASS DATA precision: complete26 exact keys/typedflags/session/mode/source/CODE/156implementation/19388pins/final52/static+runtime/currentproof/unchanged argv+selectors; future lifecycle, results and terminal receipts remain actual runtime requirements",
+      "function": "load_gate",
+      "helperEvaluated": false,
+      "line": 104,
+      "message": "'Root disposition differs'",
+      "predicate": "disposition['accepted'] is True and disposition['sourceBindingSha256'] == g['sourceBinding']['sha256']"
+    },
+    {
+      "assessment": "PASS DATA precision: complete26 exact keys/typedflags/session/mode/source/CODE/156implementation/19388pins/final52/static+runtime/currentproof/unchanged argv+selectors; future lifecycle, results and terminal receipts remain actual runtime requirements",
+      "function": "load_gate",
+      "helperEvaluated": false,
+      "line": 106,
+      "message": "'Approved stage list type'",
+      "predicate": "type(approved) is list and all((type(n) is str for n in approved))"
+    },
+    {
+      "assessment": "PASS DATA precision: complete26 exact keys/typedflags/session/mode/source/CODE/156implementation/19388pins/final52/static+runtime/currentproof/unchanged argv+selectors; future lifecycle, results and terminal receipts remain actual runtime requirements",
+      "function": "load_gate",
+      "helperEvaluated": false,
+      "line": 107,
+      "message": "'Stage not released'",
+      "predicate": "approved == order[:len(approved)] and name in approved"
+    },
+    {
+      "assessment": "PASS DATA precision: complete26 exact keys/typedflags/session/mode/source/CODE/156implementation/19388pins/final52/static+runtime/currentproof/unchanged argv+selectors; future lifecycle, results and terminal receipts remain actual runtime requirements",
+      "function": "load_gate",
+      "helperEvaluated": false,
+      "line": 108,
+      "message": "'Limits changed'",
+      "predicate": "spec['outerSeconds'] == 120 and spec.get('termAtSeconds') == 115 and (spec['automaticRetries'] == 0)"
+    },
+    {
+      "assessment": "PASS DATA precision: complete26 exact keys/typedflags/session/mode/source/CODE/156implementation/19388pins/final52/static+runtime/currentproof/unchanged argv+selectors; future lifecycle, results and terminal receipts remain actual runtime requirements",
+      "function": "load_gate",
+      "helperEvaluated": false,
+      "line": 109,
+      "message": "'Unbound command'",
+      "predicate": "not any(('UNRESOLVED' in arg or '$' + '{' in arg or 'PENDING_SUCCESSOR' in arg for arg in spec['argv']))"
+    },
+    {
+      "assessment": "PASS DATA precision: complete26 exact keys/typedflags/session/mode/source/CODE/156implementation/19388pins/final52/static+runtime/currentproof/unchanged argv+selectors; future lifecycle, results and terminal receipts remain actual runtime requirements",
+      "function": "load_gate",
+      "helperEvaluated": false,
+      "line": 110,
+      "message": "'Unbound callback selection/workload'",
+      "predicate": "isinstance(spec['selectedFullNames'], list) and len(spec['selectedFullNames']) > 0 and isinstance(spec['prospectiveWorkload'], dict)"
+    },
+    {
+      "assessment": "PASS DATA precision: complete26 exact keys/typedflags/session/mode/source/CODE/156implementation/19388pins/final52/static+runtime/currentproof/unchanged argv+selectors; future lifecycle, results and terminal receipts remain actual runtime requirements",
+      "function": "load_gate",
+      "helperEvaluated": false,
+      "line": 112,
+      "message": "'Base lock differs'",
+      "predicate": "base['sourceLockSha256'] == g['sourceLockSha256']"
+    },
+    {
+      "assessment": "PASS DATA precision: complete26 exact keys/typedflags/session/mode/source/CODE/156implementation/19388pins/final52/static+runtime/currentproof/unchanged argv+selectors; future lifecycle, results and terminal receipts remain actual runtime requirements",
+      "function": "load_gate",
+      "helperEvaluated": false,
+      "line": 115,
+      "message": "'Fresh workspace tool binding differs'",
+      "predicate": "workspace['sourceIdentity'] == g['_sourceIdentity'] and workspace['sourceLockSha256'] == g['sourceLockSha256']"
+    },
+    {
+      "assessment": "PASS DATA precision: complete26 exact keys/typedflags/session/mode/source/CODE/156implementation/19388pins/final52/static+runtime/currentproof/unchanged argv+selectors; future lifecycle, results and terminal receipts remain actual runtime requirements",
+      "function": "load_gate",
+      "helperEvaluated": false,
+      "line": 116,
+      "message": "'Only fresh pipeline is allowed'",
+      "predicate": "g.get('bootstrapReuse') == [] and disposition.get('freshPipelineRequired') is True"
+    },
+    {
+      "assessment": "PASS DATA precision: complete26 exact keys/typedflags/session/mode/source/CODE/156implementation/19388pins/final52/static+runtime/currentproof/unchanged argv+selectors; future lifecycle, results and terminal receipts remain actual runtime requirements",
+      "function": "load_gate",
+      "helperEvaluated": false,
+      "line": 117,
+      "message": "'Both CODE review dispositions remain required before validation'",
+      "predicate": "g['actualClaudeReviewDisposed'] is True and g['nativeCodeReviewDisposed'] is True"
+    },
+    {
+      "assessment": "PASS DATA precision: complete26 exact keys/typedflags/session/mode/source/CODE/156implementation/19388pins/final52/static+runtime/currentproof/unchanged argv+selectors; future lifecycle, results and terminal receipts remain actual runtime requirements",
+      "function": "load_gate",
+      "helperEvaluated": false,
+      "line": 119,
+      "message": "'CODE disposition differs ' + label",
+      "predicate": "d.get('accepted') is True and d.get('sourceBindingSha256') == g['sourceBinding']['sha256']"
+    },
+    {
+      "assessment": "PASS DATA precision: complete26 exact keys/typedflags/session/mode/source/CODE/156implementation/19388pins/final52/static+runtime/currentproof/unchanged argv+selectors; future lifecycle, results and terminal receipts remain actual runtime requirements",
+      "function": "load_gate",
+      "helperEvaluated": false,
+      "line": 120,
+      "message": "'Root disposition does not authorize this stage'",
+      "predicate": "disposition['staticValidationAuthorized'] is True if name in ['typecheck', 'format-check', 'lint'] else disposition['runtimeValidationAuthorized'] is True"
+    },
+    {
+      "assessment": "APPLICABLE NOW: current full476 build inventory/source/start-exit-log and TOPLEVEL root4f1f barrier",
+      "function": "load_gate",
+      "helperEvaluated": false,
+      "line": 124,
+      "message": "'Root actual build acceptance missing'",
+      "predicate": "accepted.get('accepted') is True and accepted.get('sourceBindingSha256') == g['sourceBinding']['sha256'] and (accepted.get('buildMapSha256') == sha((E / 'build-artifacts.json').read_bytes()))"
+    },
+    {
+      "assessment": "APPLICABLE NOW: accepted current rootarchive9f8c/source9bb/TOPLEVEL actualtare1a0; same321 members and archive bytes",
+      "function": "load_gate",
+      "helperEvaluated": false,
+      "line": 127,
+      "message": "'Root actual archive acceptance missing'",
+      "predicate": "accepted.get('accepted') is True and accepted.get('sourceBindingSha256') == g['sourceBinding']['sha256'] and (accepted.get('tarProvenanceSha256') == sha((E / 'tar-source-provenance.json').read_bytes()))"
+    },
+    {
+      "assessment": "CURRENT prior24 producer lock gate fulfilled: root0c7c/currentlockc1e5/manifest4429/settings727c; current consumer and all callback proof predicates retain the same bindings",
+      "function": "load_gate",
+      "helperEvaluated": false,
+      "line": 130,
+      "message": "'Root actual lock acceptance missing'",
+      "predicate": "lock.get('accepted') is True and lock.get('sourceBindingSha256') == g['sourceBinding']['sha256']"
+    },
+    {
+      "assessment": "CURRENT prior24 producer lock gate fulfilled: root0c7c/currentlockc1e5/manifest4429/settings727c; current consumer and all callback proof predicates retain the same bindings",
+      "function": "load_gate",
+      "helperEvaluated": false,
+      "line": 131,
+      "message": "'Consumer lock not root-pinned'",
+      "predicate": "isinstance(g.get('consumerLockSha256'), str) and sha((E / 'consumer/pnpm-lock.yaml').read_bytes()) == g['consumerLockSha256'] == lock['consumerLockSha256']"
+    },
+    {
+      "assessment": "CURRENT prior24 producer lock gate fulfilled: root0c7c/currentlockc1e5/manifest4429/settings727c; current consumer and all callback proof predicates retain the same bindings",
+      "function": "load_gate",
+      "helperEvaluated": false,
+      "line": 132,
+      "message": "'Root actual consumer manifest/settings acceptance missing'",
+      "predicate": "lock.get('consumerManifestSha256') == sha((E / 'consumer/package.json').read_bytes()) and lock.get('consumerSettingsSha256') == sha((E / 'consumer/pnpm-workspace.yaml').read_bytes())"
+    },
+    {
+      "assessment": "APPLICABLE NOW: exact actual870files17links/source-lock-archives/current entry and full root183f proof pins; prospective child/audit must repeat these immutable checks before each requiresConsumerProof stage, no future callback pass inferred",
+      "function": "load_gate",
+      "helperEvaluated": false,
+      "line": 135,
+      "message": "'Root actual proof acceptance missing'",
+      "predicate": "accepted.get('accepted') is True and accepted.get('sourceBindingSha256') == g['sourceBinding']['sha256'] and (accepted.get('installedProvenance') == g['installedProvenance']) and (accepted.get('consumerInventory') == g['consumerInventory'])"
+    }
+  ]
+}

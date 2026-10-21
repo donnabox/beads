@@ -1,0 +1,38 @@
+--- a/status.json
++++ b/status.json
+@@ -1,16 +1,16 @@
+ {
+-  "state": "CLOSED precision preparation complete",
+-  "preparedUtc": "2026-10-18T04:21:28.724934+00:00",
++  "state": "COMPLETE CLOSED published-D1 basis rebind; CI/mechanics/authoring pending",
++  "preparedUtc": "2026-10-18T05:16:46.457517+00:00",
+   "ownedFutureFiles": [
+     "packages/server/src/transaction-http.ts",
+     "packages/server/src/transaction-http.test.ts",
+     "apps/bdptest/src/transactional-discovery-installed.test.ts"
+   ],
+-  "predecessorPlanSha256": "5a335cdb5f0a5c31ad590948dc19a0ee9fa9fc9be5b9cd1c4e7bddc00ef3e952",
++  "predecessorPlanSha256": "52d086a1bcc94a582e10fcd104effa00356c67e2552c525e8fec3919f8337c39",
+   "originalInputsVerified": 31,
+   "additionalInputs": 14,
+   "sourceFilesPerBasis": 679,
+-  "futureAuthoringBasis": "UNRESOLVED pending D1 reviews/validation and root one-file serialization",
++  "futureAuthoringBasis": "CONDITIONAL published D1 commit; root exact CI/shared-file serialization and PLAN/mechanics acceptance pending",
+   "sourceCallbacks": 21,
+   "sourceDirectHandlerCalls": 94,
+   "sourceWireRequests": 14,
+@@ -30,5 +30,13 @@
+   "gitMutationCoordinationDesignLaunchEdits": false,
+   "authoringReleased": false,
+   "reviewLaunched": false,
+-  "publicActivationReleased": false
++  "publicActivationReleased": false,
++  "predecessorNativeIndexSha256": "f93e1fed24bf740744bddb48b6c56fa97869d4162aa9131575bf302ee4b7aa31",
++  "activeSourceCommit": "cce884ccea1db97cbc6fd7bff876d4d6091f9081",
++  "activeSourceTree": "6757829bd5b700faf28df39071190a272add90c9",
++  "parentArtifactCount": 34,
++  "plan2ActualInputs": 45,
++  "newNarrowD1Inputs": 2,
++  "activeInputCount": 47,
++  "actualCiAccepted": false
+ }

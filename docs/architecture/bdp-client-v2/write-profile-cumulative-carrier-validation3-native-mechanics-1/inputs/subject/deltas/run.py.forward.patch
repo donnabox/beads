@@ -1,0 +1,74 @@
+--- /Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-cumulative-carrier-validation-preparation-2/run.py
++++ /Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-cumulative-carrier-validation-preparation-3/run.py
+@@ -15,7 +15,7 @@
+  blocked=signal.pthread_sigmask(signal.SIG_BLOCK,{signal.SIGTERM,signal.SIGINT})
+  worker=subprocess.Popen([sys.executable,str(here/'worker.py'),str(child.fileno()),stage,str(begin)],pass_fds=[child.fileno()],start_new_session=True,stdin=subprocess.DEVNULL,stdout=subprocess.DEVNULL,stderr=subprocess.DEVNULL);child.close()
+  checks={};identity_observations={};last_census_at=None
+- census_handles=[];probe_receipts=[];probe_receipt=None;ps_eof=[False,False];last_complete_census=None;failure_prefix=None
++ census_handles=[];probe_receipts=[];probe_receipt=None;ps_eof=[False,False];last_complete_census=None;failure_prefix=None;census_io_failure_prefix=None
+  groups={worker.pid:{'leader':worker.pid,'direct':True,'gone':False,'expectedParent':os.getpid(),'createdEpoch':time.time(),'registeredAt':time.monotonic(),'observed':False}};identities={};seen=set();closed=set();uncertain=False;failure=None;pending=b'';received=b'';census=None;psout=b'';pserr=b'';psbegin=0;next_ps=begin;start=None;end=None;flush=None;attempt=None;source_binding=None;created=False;primary=None;leader_exit=False;need_quiet=False;verified=False;published=False;finalized=False;worker_reaped=False;term_sent=False;kill_sent=False;failure_at=None;last_rows=[];census_generation=0;quiet_generation=None;publisher=None;publish_socket=None;publish_bytes=b'';signal_receipts=[];last_term=begin;last_kill=begin
+  def refuse(reason):
+   nonlocal failure,failure_at
+@@ -33,7 +33,7 @@
+    failure_prefix={'probe':probe_receipt['sequence'],'stdoutBase64':base64.b64encode(psout).decode('ascii'),'stderrBase64':base64.b64encode(pserr).decode('ascii'),'stdoutEOF':ps_eof[0],'stderrEOF':ps_eof[1],'rawExitIfObserved':census.returncode,'atSeconds':time.monotonic()-begin,'availability':'exact received prefix at first refusal; unreceived suffix UNKNOWN, not a complete census'}
+  def finish(code):
+   # No more probes are spawned after this event: it includes post-publication probes.
+-  record={'event':'carrier-census-probe-terminal-v1','provisionalUntilActualOuterTerminal':True,'stage':stage,'attemptId':attempt,'sourceBindingSha256':source_binding,'watchdogPid':os.getpid(),'exitCodeCandidate':code,'elapsedSeconds':time.monotonic()-begin,'probes':probe_receipts,'lastCompleteCensus':last_complete_census,'failurePrefix':failure_prefix}
++  record={'event':'carrier-census-probe-terminal-v1','provisionalUntilActualOuterTerminal':True,'stage':stage,'attemptId':attempt,'sourceBindingSha256':source_binding,'watchdogPid':os.getpid(),'exitCodeCandidate':code,'elapsedSeconds':time.monotonic()-begin,'probes':probe_receipts,'lastCompleteCensus':last_complete_census,'failurePrefix':failure_prefix,'censusIoFailurePrefix':census_io_failure_prefix}
+   raw=(json.dumps(record,separators=(',',':'))+'\n').encode()
+   if len(raw)>1048576:refuse('probe-terminal-publication-capacity');return 1
+   os.set_blocking(1,False)
+@@ -42,6 +42,17 @@
+    except BlockingIOError:select.select([],[1],[],.02)
+    except OSError:refuse('probe-terminal-publication-unavailable');return 1
+   return code if not raw and not failure else 1
++ def census_io_failure():
++  nonlocal census_io_failure_prefix
++  # Fixed class only: never publish exception text, argv or environment.
++  refuse('census-io')
++  if probe_receipt is not None:
++   probe_receipt.update({'stdoutEOF':ps_eof[0],'stderrEOF':ps_eof[1],'stdout':raw_fact(psout),'stderr':raw_fact(pserr),'rawExit':census.returncode})
++   retain_prefix()
++  census_io_failure_prefix={'failureClass':'census-io','probe':None if probe_receipt is None else probe_receipt['sequence'],'stdoutBase64':base64.b64encode(psout).decode('ascii'),'stderrBase64':base64.b64encode(pserr).decode('ascii'),'stdoutEOF':ps_eof[0],'stderrEOF':ps_eof[1],'rawExitIfObserved':None if census is None else census.returncode,'atSeconds':time.monotonic()-begin,'availability':'exact current reset/acquired prefix; null probe means no acquired handle; unreceived suffix and unavailable terminal UNKNOWN, not a complete census'}
++  # Same original clock/cap, no further probe and no retry. Publication can fail.
++  try:return finish(1)
++  except (OSError,ValueError):return 1
+  def birth_epoch(row):
+   parts=row['birth'].split();hour,minute,second=map(int,parts[3].split(':'));month=['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'].index(parts[1])+1
+   return datetime.datetime(int(parts[4]),month,int(parts[2]),hour,minute,second,tzinfo=datetime.timezone.utc).timestamp()
+@@ -203,11 +214,14 @@
+    if census is None and now>=next_ps:
+     if len(probe_receipts)>=2048:refuse('census-receipt-capacity')
+     else:
+-     psbegin=time.monotonic()
+-     census=subprocess.Popen(['/bin/ps','-axo','pid=,ppid=,pgid=,stat=,lstart=,comm='],stdout=subprocess.PIPE,stderr=subprocess.PIPE,start_new_session=True,env={**os.environ,'LC_ALL':'C','TZ':'UTC'})
+-     # Retain the direct Popen/setsid ownership before any fallible pipe operation.
+-     census_handles.append(census);probe_receipt={'sequence':len(probe_receipts)+1,'pid':census.pid,'pgid':census.pid,'parentPid':os.getpid(),'registeredBy':'direct Popen start_new_session','createdAtSeconds':psbegin-begin,'rawExit':None,'stdoutEOF':False,'stderrEOF':False,'stdout':raw_fact(b''),'stderr':raw_fact(b''),'settledAtSeconds':None,'parsedAsWholeCensus':False};probe_receipts.append(probe_receipt)
+-     psout=b'';pserr=b'';ps_eof=[False,False];os.set_blocking(census.stdout.fileno(),False);os.set_blocking(census.stderr.fileno(),False)
++     # Reset BEFORE acquisition/setup: never reattribute prior probe bytes/receipt.
++     probe_receipt=None;psout=b'';pserr=b'';ps_eof=[False,False];psbegin=time.monotonic()
++     try:
++      census=subprocess.Popen(['/bin/ps','-axo','pid=,ppid=,pgid=,stat=,lstart=,comm='],stdout=subprocess.PIPE,stderr=subprocess.PIPE,start_new_session=True,env={**os.environ,'LC_ALL':'C','TZ':'UTC'})
++      # Retain the direct Popen/setsid ownership before any fallible pipe operation.
++      census_handles.append(census);probe_receipt={'sequence':len(probe_receipts)+1,'pid':census.pid,'pgid':census.pid,'parentPid':os.getpid(),'registeredBy':'direct Popen start_new_session','createdAtSeconds':psbegin-begin,'rawExit':None,'stdoutEOF':False,'stderrEOF':False,'stdout':raw_fact(b''),'stderr':raw_fact(b''),'settledAtSeconds':None,'parsedAsWholeCensus':False};probe_receipts.append(probe_receipt)
++      os.set_blocking(census.stdout.fileno(),False);os.set_blocking(census.stderr.fileno(),False)
++     except (OSError,ValueError):return census_io_failure()
+    if census is not None:
+     for index,stream in enumerate([census.stdout,census.stderr]):
+      if ps_eof[index]:continue
+@@ -220,11 +234,14 @@
+        if index:pserr+=block
+        else:psout+=block
+      except BlockingIOError:pass
++     except (OSError,ValueError):return census_io_failure()
+     probe_receipt.update({'stdoutEOF':ps_eof[0],'stderrEOF':ps_eof[1],'stdout':raw_fact(psout),'stderr':raw_fact(pserr)})
+     over_capacity=len(psout)>262144 or len(pserr)>4096
+     if over_capacity:refuse('census-capacity');retain_prefix()
+     # raw0 alone never makes an EAGAIN prefix a whole census; poll only after EOF.
+-    if all(ps_eof):probe_receipt['rawExit']=census.poll()
++    if all(ps_eof):
++     try:probe_receipt['rawExit']=census.poll()
++     except (OSError,ValueError):return census_io_failure()
+     complete=all(ps_eof)and census.returncode is not None
+     on_time=time.monotonic()-psbegin<.2
+     if not on_time or over_capacity:

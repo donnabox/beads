@@ -1,0 +1,105 @@
+{
+  "scope": "FULL effective plan1+plan2 semantic precision, not overlay-only",
+  "findings": [],
+  "reviewedRootFixes": [
+    {
+      "id": "F1",
+      "verdict": "accepted static",
+      "source": [
+        "transaction-changefeed.test.ts:622-692",
+        "transaction-installed-contracts.test.ts:378-501",
+        "transactional-schema-installed.test.ts:260-370"
+      ],
+      "reason": "Descriptor GET after actual mutations must parse200 and compare its own epoch/view/head context. Existing discoveryBoundary executes3routes\u00d7GET/HEAD twice; local phase tuple resets on each call, GET body length supplies corresponding HEAD expectation with no extra fetch and no guessed post-mutation/reopen position. Schema ScopeGET occurs before first mutation and has genuine previously captured epoch/view/pos0. Exact1+12+1 legacy exchanges remain; imports/phase bookkeeping are local to three newly owned tests. Surrounding write/sequence/rollback/schema/changefeed/reopen assertions stay."
+    },
+    {
+      "id": "F2",
+      "verdict": "accepted static",
+      "source": [
+        "http-executor.ts:402-431,530-570,594-605",
+        "transactional-discovery-installed.test.ts:645-704,1558-1572"
+      ],
+      "reason": "Uppercase%2C decodes comma, not unreserved/dot/slash/backslash/control, remains under same Scope/route allowlist. Existing send constructs one exact GET route for its actual supplied URL and anonymous credential handle; the unknown operation suffix has no exact server operation match and retains404. No raw target/Host/header fallback. This is a changed encoded-suffix witness, not equivalent spelling of a valid operation or observed successful dispatch."
+    },
+    {
+      "id": "F3",
+      "verdict": "accepted static",
+      "source": [
+        "transactional-discovery-installed.test.ts:740-744,1740-1743"
+      ],
+      "reason": "Explicit map return type[string,string] produces the mutable element tuples required by unchanged readonly outer-array parameter; same runtime strings/values, no parameter/API change. Compiler still unexecuted."
+    },
+    {
+      "id": "F4",
+      "nativeAlias": "N2",
+      "verdict": "accepted static",
+      "source": [
+        "transactional-discovery-installed.test.ts:930-934,1643-1729",
+        "transaction-http.ts:652-665"
+      ],
+      "reason": "All7error cases per route have current same-entry failure context supplied by existing mapper; unconditionally asserting nav epoch/view/currentpos1 before branch covers21 errors as well as success without changing status/problem/retry/HEAD-size/nondisclosure checks or15-call inventory per route."
+    },
+    {
+      "id": "F5",
+      "nativeAlias": "N1",
+      "verdict": "accepted static",
+      "source": [
+        "transactional-discovery-installed.test.ts:480-566,645-729,907-1129,1125-1473"
+      ],
+      "reason": "Both cold closures and navigation/Type/command/readback helpers consume only send and actual received status/headers/bodyText. Fresh frozen canonicalScope+closure-send runtime object and fresh explicit response projection remove full fixture and exactRequest.headerLines exposure rather than hiding them behind types. One existing send executes, observes real wire/write state and records trusted telemetry before projection; detached headers cannot alias trusted originals. Noncold lanes retain full fixture/lifecycle/metadata; same43+28 requests. Served response content is not universally secret-free, and source authoring must preserve compatibility of negative helper callers without passing full fixture into either positive closure."
+    },
+    {
+      "id": "F6",
+      "nativeAlias": "N3",
+      "verdict": "accepted static",
+      "source": [
+        "transactional-discovery-installed.test.ts:818-824",
+        "transaction-http.test.ts:7126-7132",
+        "http-executor.ts:1119-1123"
+      ],
+      "reason": "Complete header includes the four-byte terminator; split>=0&&split+4>16384 matches existing executor accounting. Unterminated bound/body131072/derivedwire163840/request caps remain; both new local helpers only, old2s rawMethod untouched."
+    },
+    {
+      "id": "F7",
+      "verdict": "accepted static local policy",
+      "source": [
+        "transaction-http.ts:587-608",
+        "read-http.ts:10-39"
+      ],
+      "reason": "Authenticated Scope204 owner-context branch may set private,no-store without changing exact Link or observer/route ordering. Shared semantics copies headers once, so same accepted status/media/conditional/HEAD behavior is retained. Source/installed existing Scope success assertions add no requests. This is root-approved local privacy, not a normative BDP requirement."
+    },
+    {
+      "id": "F8",
+      "verdict": "accepted static",
+      "source": [
+        "transaction-http.test.ts:7339-7369",
+        "transaction-discovery-values.ts:34-54,77-80",
+        "bdp-v0.schema.json:3483-3520"
+      ],
+      "reason": "Direct existing canonical Directory parser rejects mutated createBead against create-bead const; separate descriptor.operations foreign absolute URI remains schema-valid then fails confinement in general oracle. Same9clones/no new callback/no wire; assertion must precede retained general oracle, not substitute for it."
+    },
+    {
+      "id": "F9",
+      "verdict": "accepted static",
+      "source": [
+        "transactional-discovery-installed.test.ts:353-377,1281-1300,1341,1407,1428-1434",
+        "bdp-v0.schema.json:909-935"
+      ],
+      "reason": "Existing currentBeadCollection applies canonical envelope and currentBeadRecord items; compiling that already-defined name with current validator loop and d3Json schema argument covers all3 collection reads before existing exact item/state assertions. No schema/protocol edit, new request or weakened item check."
+    },
+    {
+      "id": "F10",
+      "verdict": "accepted static direct-response evidence",
+      "source": [
+        "transaction-http.test.ts:6825-6832,6887-6919"
+      ],
+      "reason": "Only reader success status<400 receives expectedpos0, invoking existing HttpResponse position/nonempty epoch/view assertions. All auth/receiving errors retain no-disclosure and undefined expected position. This is direct handler response evidence, not network-wire; existing14 real source wire requests remain separate."
+    }
+  ],
+  "nativeAliases": {
+    "N1": "F5",
+    "N2": "F4",
+    "N3": "F6"
+  },
+  "actualImplementationClaims": false
+}

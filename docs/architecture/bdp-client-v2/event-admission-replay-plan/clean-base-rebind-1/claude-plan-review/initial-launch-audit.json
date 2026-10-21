@@ -1,0 +1,94 @@
+{
+  "at": "2026-10-17T22:19:07.255966+00:00",
+  "scope": "One read-only initial launch snapshot, not terminal audit or verdict",
+  "rootSession": 3062,
+  "pid": 92109,
+  "pgid": 92109,
+  "started": "2026-10-17T22:18:27.018424+00:00",
+  "processGroupAtSnapshot": [
+    "92109 92097 92109       00:40 /opt/homebrew/bin/claude"
+  ],
+  "closedBindingSha256": "734ed24162db237a562756ea25a1d3bab6b1091cbbbdef88b34770c644ebcc8f",
+  "releasedBindingSha256": "e8f37ec60e39886999133871de63b427f38528f9218b65749e1af9684e0ed14f",
+  "releaseSha256": "72019d2f2c515ef3ddfd1ae34fc21d272f4b8247bcc8ccc1c98acf366fc758fc",
+  "authorizedOnlyChangedField": "rootLaunchReleased",
+  "verifiedIndexEntries": 29,
+  "verifiedCurrentSourceFiles": 679,
+  "verifiedContexts": 19,
+  "verifiedArtifacts": 11,
+  "sourceBeforeMatchesReleasedBinding": true,
+  "head": "9f89271e2563a105410789ca8ca1e77dfb4d0b9f",
+  "currentStatus": "clean",
+  "timeoutSeconds": 1800,
+  "termAfterSeconds": 1790,
+  "snapshotStreamBytes": 152781,
+  "snapshotStreamSha256": "0c110d6c4f32fcd5e30d5bfce095b80824c8c21e8780f8da0c7897e241a6f535",
+  "completeRecordsAtSnapshot": 226,
+  "trailingIncompleteBytes": 0,
+  "parseErrorsAtSnapshot": [],
+  "terminalResultsAtSnapshot": 0,
+  "toolResultErrorsAtSnapshot": [],
+  "actualToolUsesAtSnapshot": [
+    {
+      "name": "Read",
+      "input": {
+        "file_path": "/Users/dbox/repos/wt/vickie/vickie-current-observation-minimum/docs/specs/bdp.md",
+        "offset": 5780,
+        "limit": 120
+      }
+    },
+    {
+      "name": "Read",
+      "input": {
+        "file_path": "/Users/dbox/repos/wt/vickie/vickie-current-observation-minimum/docs/specs/bdp.md",
+        "offset": 6200,
+        "limit": 70
+      }
+    },
+    {
+      "name": "Read",
+      "input": {
+        "file_path": "/Users/dbox/repos/wt/vickie/vickie-current-observation-minimum/docs/specs/bdp.md",
+        "offset": 6320,
+        "limit": 50
+      }
+    },
+    {
+      "name": "Read",
+      "input": {
+        "file_path": "/Users/dbox/repos/wt/vickie/vickie-current-observation-minimum/packages/server/src/transaction-http.ts",
+        "offset": 460,
+        "limit": 140
+      }
+    },
+    {
+      "name": "Read",
+      "input": {
+        "file_path": "/Users/dbox/repos/wt/vickie/vickie-current-observation-minimum/packages/server/src/transaction-http.ts",
+        "offset": 1,
+        "limit": 200
+      }
+    },
+    {
+      "name": "Grep",
+      "input": {
+        "pattern": "lastEventIds|malformedTransactionMinimumHeaders|TransactionEventParameterError|TransactionMinimumUnsupported|TransactionMinimumFailure|TransactionMinimumVisibilityGap|TransactionEventProjectionGap",
+        "path": "/Users/dbox/repos/wt/vickie/vickie-current-observation-minimum/packages/server/src/transaction-http.ts",
+        "output_mode": "content",
+        "-n": true
+      }
+    },
+    {
+      "name": "Read",
+      "input": {
+        "file_path": "/Users/dbox/repos/wt/vickie/vickie-current-observation-minimum/packages/server/src/transaction-http.ts",
+        "offset": 270,
+        "limit": 150
+      }
+    }
+  ],
+  "exitExistsAtSnapshot": false,
+  "reviewComplete": false,
+  "approvalInferred": false,
+  "limitations": "Stream is live and this hash/count is only a snapshot; process absence and terminal provenance remain pending. No launch, retry, source or bound packet mutation performed."
+}

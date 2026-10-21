@@ -1,0 +1,372 @@
+--- /Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-D4-availability-root-authority-preparation-3/origins.json
++++ /Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-D4-availability-root-authority-preparation-2/origins.json
+@@ -1,226 +1,170 @@
+-[
+-  {
++{
++  "additional-tools.json": {
++    "bytes": 547,
++    "origin": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-D4-availability-root-authority-preparation-1/additional-tools.json",
++    "role": "exact immutable source/static/failure context; not fresh runtime output",
++    "sha256": "af59fab25881e3e98b3888fea6e3dce4ea40e592719eeae89d0892ca1ce6b2d5"
++  },
++  "context/write-profile-D4-availability-actual-native-audit-1/closure.json": {
++    "bytes": 1255,
++    "origin": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-D4-availability-actual-native-audit-1/closure.json",
++    "role": "exact immutable source/static/failure context; not fresh runtime output",
++    "sha256": "70b9f03ae4f06335bbd6ddce454bb1051d7621c86944e7aa852e218e4ca3c299"
++  },
++  "context/write-profile-D4-availability-actual-native-audit-1/failure-diagnosis.json": {
++    "bytes": 2438,
++    "origin": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-D4-availability-actual-native-audit-1/failure-diagnosis.json",
++    "role": "exact immutable source/static/failure context; not fresh runtime output",
++    "sha256": "f96b83bdf7eb63c7af0424d47cd962468fe454c33246407caa5699675f04e48f"
++  },
++  "context/write-profile-D4-availability-actual-native-audit-1/index.json": {
++    "bytes": 19775,
++    "origin": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-D4-availability-actual-native-audit-1/index.json",
++    "role": "exact immutable source/static/failure context; not fresh runtime output",
++    "sha256": "b6d899896ee97fea09616c3fdddc7efe17f23bff7adf25ab25b809b59ff8a5cd"
++  },
++  "context/write-profile-D4-availability-actual-native-audit-1/report.md": {
++    "bytes": 5606,
++    "origin": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-D4-availability-actual-native-audit-1/report.md",
++    "role": "exact immutable source/static/failure context; not fresh runtime output",
++    "sha256": "f88081c246a5db52cde8fd783c165193b6d2f93fa36ff1763b70990700b44417"
++  },
++  "context/write-profile-D4-harness5-root-static-acceptance-1/acceptance.json": {
++    "bytes": 1559,
++    "origin": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-D4-harness5-root-static-acceptance-1/acceptance.json",
++    "role": "exact immutable source/static/failure context; not fresh runtime output",
++    "sha256": "155ccfa06d96906ba395364936de7ad3dd8245f5116b396a51697bfb6c823aea"
++  },
++  "context/write-profile-D4-harness5-root-static-acceptance-1/index.json": {
++    "bytes": 289,
++    "origin": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-D4-harness5-root-static-acceptance-1/index.json",
++    "role": "exact immutable source/static/failure context; not fresh runtime output",
++    "sha256": "95d1553264994ee2c817591b310085f55a3c9922efee28857dd30f67d7022226"
++  },
++  "context/write-profile-D4-harness5-root-static-acceptance-1/release.json": {
++    "bytes": 2652,
++    "origin": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-D4-harness5-root-static-acceptance-1/release.json",
++    "role": "exact immutable source/static/failure context; not fresh runtime output",
++    "sha256": "fb88fb464b8cf3df3d22062b917cb76159b6554b20a70fb3ab558c4149ce454c"
++  },
++  "context/write-profile-D4-synthetic-harness-preparation-5/availability-command.json": {
++    "bytes": 2212,
++    "origin": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-D4-synthetic-harness-preparation-5/availability-command.json",
++    "role": "exact immutable source/static/failure context; not fresh runtime output",
++    "sha256": "10fad09ee26a8d76e39afff5dd0ae9fee3c0e1e65b9492e484e1625f48b9e9d1"
++  },
++  "context/write-profile-D4-synthetic-harness-preparation-5/availability-plan.md": {
++    "bytes": 2062,
++    "origin": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-D4-synthetic-harness-preparation-5/availability-plan.md",
++    "role": "exact immutable source/static/failure context; not fresh runtime output",
++    "sha256": "f7075292f7c2940a31a77fd15692962bd5f88ab9fbbbcfe1bf4256a49ba5b730"
++  },
++  "context/write-profile-D4-synthetic-harness-preparation-5/availability-release-schema.json": {
++    "bytes": 1531,
++    "origin": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-D4-synthetic-harness-preparation-5/availability-release-schema.json",
++    "role": "exact immutable source/static/failure context; not fresh runtime output",
++    "sha256": "93a810e3c8e17cbe5a1b1a9472ab73cefe1aefece9a99aaa3f899c6ab116dea5"
++  },
++  "context/write-profile-D4-synthetic-harness-preparation-5/availability_limit.pl": {
++    "bytes": 3463,
++    "origin": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-D4-synthetic-harness-preparation-5/availability_limit.pl",
++    "role": "exact immutable source/static/failure context; not fresh runtime output",
++    "sha256": "9b85dcfc35879341070ee0692cffd4bcfd8a8f2d1a0d9b505ce2be4e7f15bae1"
++  },
++  "context/write-profile-D4-synthetic-harness-preparation-5/availability_owner.py": {
+     "bytes": 14000,
+-    "copy": "context/write-profile-D4-synthetic-harness-preparation-6/availability_owner.py",
+-    "origin": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-D4-synthetic-harness-preparation-6/availability_owner.py",
+-    "relationship": "BYTE_EXACT_CONTEXT_COPY",
++    "origin": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-D4-synthetic-harness-preparation-5/availability_owner.py",
++    "role": "exact immutable source/static/failure context; not fresh runtime output",
+     "sha256": "c3615a87bd70256b383e585268a9d21d1c951f8f9618dfa0dd820101dd157fa7"
+   },
+-  {
++  "context/write-profile-D4-synthetic-harness-preparation-5/availability_peer.py": {
+     "bytes": 1126,
+-    "copy": "context/write-profile-D4-synthetic-harness-preparation-6/availability_peer.py",
+-    "origin": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-D4-synthetic-harness-preparation-6/availability_peer.py",
+-    "relationship": "BYTE_EXACT_CONTEXT_COPY",
++    "origin": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-D4-synthetic-harness-preparation-5/availability_peer.py",
++    "role": "exact immutable source/static/failure context; not fresh runtime output",
+     "sha256": "65c078a6d9739f4c4017433eef5d260084e9ee005622a7d5f08fdc89b0b05ec7"
+   },
+-  {
+-    "bytes": 3463,
+-    "copy": "context/write-profile-D4-synthetic-harness-preparation-6/availability_limit.pl",
+-    "origin": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-D4-synthetic-harness-preparation-6/availability_limit.pl",
+-    "relationship": "BYTE_EXACT_CONTEXT_COPY",
+-    "sha256": "03172f087834752b35d5c26fb45183869c5cae21c23e8bd28184c60abc521ea9"
+-  },
+-  {
++  "context/write-profile-D4-synthetic-harness-preparation-5/bootstrap.py": {
+     "bytes": 2114,
+-    "copy": "context/write-profile-D4-synthetic-harness-preparation-6/bootstrap.py",
+-    "origin": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-D4-synthetic-harness-preparation-6/bootstrap.py",
+-    "relationship": "BYTE_EXACT_CONTEXT_COPY",
++    "origin": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-D4-synthetic-harness-preparation-5/bootstrap.py",
++    "role": "exact immutable source/static/failure context; not fresh runtime output",
+     "sha256": "6e11b44e8e95458b35052c87a02a17cffdae32ad060a5dbd3de53e19f2f873cc"
+   },
+-  {
+-    "bytes": 2212,
+-    "copy": "context/write-profile-D4-synthetic-harness-preparation-6/availability-command.json",
+-    "origin": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-D4-synthetic-harness-preparation-6/availability-command.json",
+-    "relationship": "BYTE_EXACT_CONTEXT_COPY",
+-    "sha256": "f86ff8fb33ed9939c79e8e2f7774ff5abbeead51abfb18aaec7d533bbfc4302d"
++  "context/write-profile-D4-synthetic-harness-preparation-5/closure.json": {
++    "bytes": 2067,
++    "origin": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-D4-synthetic-harness-preparation-5/closure.json",
++    "role": "exact immutable source/static/failure context; not fresh runtime output",
++    "sha256": "bbb2396095f724239f110ef04a21a8423073735e004873e5d0b30047ea00684a"
+   },
+-  {
+-    "bytes": 1531,
+-    "copy": "context/write-profile-D4-synthetic-harness-preparation-6/availability-release-schema.json",
+-    "origin": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-D4-synthetic-harness-preparation-6/availability-release-schema.json",
+-    "relationship": "BYTE_EXACT_CONTEXT_COPY",
+-    "sha256": "93a810e3c8e17cbe5a1b1a9472ab73cefe1aefece9a99aaa3f899c6ab116dea5"
+-  },
+-  {
++  "context/write-profile-D4-synthetic-harness-preparation-5/execution-gate.closed.json": {
+     "bytes": 145,
+-    "copy": "context/write-profile-D4-synthetic-harness-preparation-6/execution-gate.json",
+-    "origin": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-D4-synthetic-harness-preparation-6/execution-gate.json",
+-    "relationship": "BYTE_EXACT_CONTEXT_COPY",
++    "origin": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-D4-synthetic-harness-preparation-5/execution-gate.closed.json",
++    "role": "exact immutable source/static/failure context; not fresh runtime output",
+     "sha256": "69f7eb67fa2ae35674192163791f8dc0a9006f383ba6a407501c138eaa3170f5"
+   },
+-  {
++  "context/write-profile-D4-synthetic-harness-preparation-5/execution-gate.json": {
+     "bytes": 145,
+-    "copy": "context/write-profile-D4-synthetic-harness-preparation-6/execution-gate.closed.json",
+-    "origin": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-D4-synthetic-harness-preparation-6/execution-gate.closed.json",
+-    "relationship": "BYTE_EXACT_CONTEXT_COPY",
++    "origin": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-D4-synthetic-harness-preparation-5/execution-gate.json",
++    "role": "exact immutable source/static/failure context; not fresh runtime output",
+     "sha256": "69f7eb67fa2ae35674192163791f8dc0a9006f383ba6a407501c138eaa3170f5"
+   },
+-  {
+-    "bytes": 16121,
+-    "copy": "context/write-profile-D4-synthetic-harness-preparation-6/implementation-hashes.json",
+-    "origin": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-D4-synthetic-harness-preparation-6/implementation-hashes.json",
+-    "relationship": "BYTE_EXACT_CONTEXT_COPY",
+-    "sha256": "5c82292252d96626f8a63977c845a67261ed04bb350a339d5fd389530e409eb1"
++  "context/write-profile-D4-synthetic-harness-preparation-5/hard-limiter-authority.md": {
++    "bytes": 3491,
++    "origin": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-D4-synthetic-harness-preparation-5/hard-limiter-authority.md",
++    "role": "exact immutable source/static/failure context; not fresh runtime output",
++    "sha256": "97bf4cc971c89d1344ca5ac1a9d38038319d754f9b4c8c985d2c80f05081586d"
+   },
+-  {
+-    "bytes": 24146,
+-    "copy": "context/write-profile-D4-synthetic-harness-preparation-6/preparation-index.json",
+-    "origin": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-D4-synthetic-harness-preparation-6/preparation-index.json",
+-    "relationship": "BYTE_EXACT_CONTEXT_COPY",
+-    "sha256": "c63d6905d768581b1147e9756162488348d07cacffd725280ca5752566b6054d"
++  "context/write-profile-D4-synthetic-harness-preparation-5/implementation-hashes.json": {
++    "bytes": 14873,
++    "origin": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-D4-synthetic-harness-preparation-5/implementation-hashes.json",
++    "role": "exact immutable source/static/failure context; not fresh runtime output",
++    "sha256": "7e5ec687e6c39447efc43d5ad905a20602510d9227db342b1fad01ba873ae5e8"
+   },
+-  {
+-    "bytes": 4514,
+-    "copy": "context/write-profile-D4-synthetic-harness-preparation-6/tool-identity-read.json",
+-    "origin": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-D4-synthetic-harness-preparation-6/tool-identity-read.json",
+-    "relationship": "BYTE_EXACT_CONTEXT_COPY",
+-    "sha256": "c15d845576c70d9ef0de73e53cc82de8ae1abb313eed3ada4ac508c0f518e5ff"
++  "context/write-profile-D4-synthetic-harness-preparation-5/ownership-fault-scope.json": {
++    "bytes": 1826,
++    "origin": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-D4-synthetic-harness-preparation-5/ownership-fault-scope.json",
++    "role": "exact immutable source/static/failure context; not fresh runtime output",
++    "sha256": "749cf3c12e46d731c7da6ee6fe242c25bbba8c8a8cff6d1a39f399bf94150765"
+   },
+-  {
++  "context/write-profile-D4-synthetic-harness-preparation-5/raw-retention-contract.json": {
++    "bytes": 2928,
++    "origin": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-D4-synthetic-harness-preparation-5/raw-retention-contract.json",
++    "role": "exact immutable source/static/failure context; not fresh runtime output",
++    "sha256": "979f396f653055c195554b44be9b15d6b8f0cbfe59de51b4b68be83fc185ceae"
++  },
++  "context/write-profile-D4-synthetic-harness-preparation-5/source-map.json": {
+     "bytes": 87874,
+-    "copy": "context/write-profile-D4-synthetic-harness-preparation-6/source-map.json",
+-    "origin": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-D4-synthetic-harness-preparation-6/source-map.json",
+-    "relationship": "BYTE_EXACT_CONTEXT_COPY",
++    "origin": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-D4-synthetic-harness-preparation-5/source-map.json",
++    "role": "exact immutable source/static/failure context; not fresh runtime output",
+     "sha256": "7fb84ed403b7be9dd587ed2b2980d0d8e5def7e260186c948abd1c4a1f997dda"
+   },
+-  {
+-    "bytes": 941,
+-    "copy": "context/write-profile-D4-harness6-availability-static-native-precision-1/closure.json",
+-    "origin": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-D4-harness6-availability-static-native-precision-1/closure.json",
+-    "relationship": "BYTE_EXACT_CONTEXT_COPY",
+-    "sha256": "5d3f83e551effa28c815569e16fa5a206ebd885e4b0693ad8373dd5a7c838eb7"
++  "context/write-profile-D4-synthetic-harness-preparation-5/tool-identity-read.json": {
++    "bytes": 4207,
++    "origin": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-D4-synthetic-harness-preparation-5/tool-identity-read.json",
++    "role": "exact immutable source/static/failure context; not fresh runtime output",
++    "sha256": "f61ec88a28f6c40eaf83be3a12784188ca069129704395ba178820b2796f282a"
+   },
+-  {
+-    "bytes": 3939,
+-    "copy": "context/write-profile-D4-harness6-availability-static-native-precision-1/report.md",
+-    "origin": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-D4-harness6-availability-static-native-precision-1/report.md",
+-    "relationship": "BYTE_EXACT_CONTEXT_COPY",
+-    "sha256": "0e6c869223573718c0941865e47f62865caa24071574444660c08b793399a2c3"
++  "context/write-profile-D4-synthetic-harness5-native-mechanics-1/closure.json": {
++    "bytes": 2152,
++    "origin": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-D4-synthetic-harness5-native-mechanics-1/closure.json",
++    "role": "exact immutable source/static/failure context; not fresh runtime output",
++    "sha256": "09f823deb3284a47cbc56ea00fb19f169f10d4ab6b6519699a4b560b4e264f76"
+   },
+-  {
+-    "bytes": 2701,
+-    "copy": "context/write-profile-D4-harness6-availability-static-native-precision-1/checks.json",
+-    "origin": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-D4-harness6-availability-static-native-precision-1/checks.json",
+-    "relationship": "BYTE_EXACT_CONTEXT_COPY",
+-    "sha256": "8aef7b950d233b389304f229651ff0298e3ebb5cd49b280b763484c7b51ee974"
++  "context/write-profile-D4-synthetic-harness5-native-mechanics-1/index.json": {
++    "bytes": 25577,
++    "origin": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-D4-synthetic-harness5-native-mechanics-1/index.json",
++    "role": "exact immutable source/static/failure context; not fresh runtime output",
++    "sha256": "a9c5a4dbe25de94bb5275b21f4ca689868cfe9818a5875f77bd926a2655e2d4e"
+   },
+-  {
+-    "bytes": 3835,
+-    "copy": "context/write-profile-D4-harness6-availability-static-native-precision-1/index.json",
+-    "origin": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-D4-harness6-availability-static-native-precision-1/index.json",
+-    "relationship": "BYTE_EXACT_CONTEXT_COPY",
+-    "sha256": "45a744b76644d9157f84134728d189df8bd578c5796447967e1f2b10faf3d287"
++  "context/write-profile-D4-synthetic-harness5-native-mechanics-1/report.md": {
++    "bytes": 8388,
++    "origin": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-D4-synthetic-harness5-native-mechanics-1/report.md",
++    "role": "exact immutable source/static/failure context; not fresh runtime output",
++    "sha256": "79fe60e66f42418641801d35b1a2ac68e2a612c693c205603751b393efc425fc"
+   },
+-  {
+-    "bytes": 2189,
+-    "copy": "context/write-profile-D4-harness6-availability-root-static-acceptance-1/acceptance.json",
+-    "origin": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-D4-harness6-availability-root-static-acceptance-1/acceptance.json",
+-    "relationship": "BYTE_EXACT_CONTEXT_COPY",
+-    "sha256": "acbf86259573c44f167bfac45e3e9b4a17ae2e42441b26c5f2515c86ca173337"
+-  },
+-  {
+-    "bytes": 111,
+-    "copy": "context/write-profile-D4-harness6-availability-root-static-acceptance-1/index.json",
+-    "origin": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-D4-harness6-availability-root-static-acceptance-1/index.json",
+-    "relationship": "BYTE_EXACT_CONTEXT_COPY",
+-    "sha256": "f8acc8e78b0aec3c9640643f44fdf5a44aff50d77dbf9dab43b1010a31d5052b"
+-  },
+-  {
+-    "bytes": 1180,
+-    "copy": "context/write-profile-D4-harness6-root-static-acceptance-1/acceptance.json",
+-    "origin": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-D4-harness6-root-static-acceptance-1/acceptance.json",
+-    "relationship": "BYTE_EXACT_CONTEXT_COPY",
+-    "sha256": "3cad88e6c776f5dc06d0d9881b33ca373d8fca85347899bff9159ba073a5706c"
+-  },
+-  {
+-    "bytes": 2701,
+-    "copy": "context/write-profile-D4-harness6-root-static-acceptance-1/release.json",
+-    "origin": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-D4-harness6-root-static-acceptance-1/release.json",
+-    "relationship": "BYTE_EXACT_CONTEXT_COPY",
+-    "sha256": "407801953e2eae2c0ea557efcf0e6ad4d10931986b8337d5e078d712fcdda357"
+-  },
+-  {
+-    "bytes": 199,
+-    "copy": "context/write-profile-D4-harness6-root-static-acceptance-1/index.json",
+-    "origin": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-D4-harness6-root-static-acceptance-1/index.json",
+-    "relationship": "BYTE_EXACT_CONTEXT_COPY",
+-    "sha256": "bec49e21c8655aeed4492d09c6dd706ffaf060a4e8219a23672a26d3bff4e018"
+-  },
+-  {
+-    "bytes": 719,
+-    "copy": "context/write-profile-D4-harness6-native-source-mechanics-1/closure.json",
+-    "origin": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-D4-harness6-native-source-mechanics-1/closure.json",
+-    "relationship": "BYTE_EXACT_CONTEXT_COPY",
+-    "sha256": "f2043ad0cffcadd3ef3b565184d890c0f8466dda9f1c061c75da716b49974808"
+-  },
+-  {
+-    "bytes": 4258,
+-    "copy": "context/write-profile-D4-harness6-native-source-mechanics-1/report.md",
+-    "origin": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-D4-harness6-native-source-mechanics-1/report.md",
+-    "relationship": "BYTE_EXACT_CONTEXT_COPY",
+-    "sha256": "7b87df2826c8f543cdf4c943c82ffc8ddac0714288f64dc6ffb943a530c9760d"
+-  },
+-  {
+-    "bytes": 28332,
+-    "copy": "context/write-profile-D4-harness6-native-source-mechanics-1/index.json",
+-    "origin": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-D4-harness6-native-source-mechanics-1/index.json",
+-    "relationship": "BYTE_EXACT_CONTEXT_COPY",
+-    "sha256": "73393259e2520c8ddd5f82b4a07e8d2c0f0fe6cd1f4b5718d7951c29a852ffdf"
+-  },
+-  {
+-    "bytes": 1853,
+-    "copy": "context/write-profile-D4-availability2-actual-native-audit-1/closure.json",
+-    "origin": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-D4-availability2-actual-native-audit-1/closure.json",
+-    "relationship": "BYTE_EXACT_CONTEXT_COPY",
+-    "sha256": "758ad43cfaee64bf77d2a72ad59448c8e1524e0305386b07cb1b9eefcf4a112b"
+-  },
+-  {
+-    "bytes": 7986,
+-    "copy": "context/write-profile-D4-availability2-actual-native-audit-1/report.md",
+-    "origin": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-D4-availability2-actual-native-audit-1/report.md",
+-    "relationship": "BYTE_EXACT_CONTEXT_COPY",
+-    "sha256": "e79905da4e410a9c1e53fa75d9b4599fe9e127c0992f87b8d9a71ee30b8b2dfe"
+-  },
+-  {
+-    "bytes": 16892,
+-    "copy": "context/write-profile-D4-availability2-actual-native-audit-1/index.json",
+-    "origin": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-D4-availability2-actual-native-audit-1/index.json",
+-    "relationship": "BYTE_EXACT_CONTEXT_COPY",
+-    "sha256": "0dd0f1f7c9c952ae420a2f4bc87bf5d5c0946076303ee5f27d5fde3e4cf9733d"
+-  },
+-  {
+-    "bytes": 2105,
+-    "copy": "context/write-profile-D4-availability2-root-measured-acceptance-1/acceptance.json",
+-    "origin": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-D4-availability2-root-measured-acceptance-1/acceptance.json",
+-    "relationship": "BYTE_EXACT_CONTEXT_COPY",
+-    "sha256": "56f7690d14498343b20f6e15b276fc44d5886ad9211374db42a341afd931415f"
+-  },
+-  {
+-    "bytes": 156,
+-    "copy": "context/write-profile-D4-availability2-root-measured-acceptance-1/index.json",
+-    "origin": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-D4-availability2-root-measured-acceptance-1/index.json",
+-    "relationship": "BYTE_EXACT_CONTEXT_COPY",
+-    "sha256": "0579648c7046ab69a2a2e6173c425ddfe1531819667b165b33b14c9ba8c91f3e"
+-  },
+-  {
+-    "bytes": 14115,
+-    "copy": "context/write-profile-D4-availability-root-authority-preparation-2/preparation-index.json",
+-    "origin": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-D4-availability-root-authority-preparation-2/preparation-index.json",
+-    "relationship": "BYTE_EXACT_CONTEXT_COPY",
+-    "sha256": "f835cd77a32f1ffac5bec28e38d486b8e3e4cd65075a7f06e6c843f0c623809f"
+-  },
+-  {
+-    "bytes": 12555,
+-    "copy": "context/write-profile-D4-availability-root-authority-preparation-2/capture.py",
+-    "origin": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-D4-availability-root-authority-preparation-2/capture.py",
+-    "relationship": "BYTE_EXACT_CONTEXT_COPY",
+-    "sha256": "3aa2ef7f41600604e0fab7844b70ae6e1277f56a99a6e175f3b7f8baecb046cb"
+-  },
+-  {
+-    "bytes": 865,
+-    "copy": "context/write-profile-D4-availability-root-authority-preparation-2/availability-release.proposed.json",
+-    "origin": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-D4-availability-root-authority-preparation-2/availability-release.proposed.json",
+-    "relationship": "BYTE_EXACT_CONTEXT_COPY",
+-    "sha256": "ca5fcb569b95fc186a9061f2aaa99ee59682be0f9a9fbdb01f37267ee5693c88"
++  "static-call-inventory.json": {
++    "bytes": 1636,
++    "origin": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-D4-availability-root-authority-preparation-1/static-call-inventory.json",
++    "role": "exact immutable source/static/failure context; not fresh runtime output",
++    "sha256": "e693f9eaf04d9969015008ee342a90f52d9189dd9e49f6f94710eab626eb3720"
+   }
+-]
++}

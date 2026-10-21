@@ -1,0 +1,13 @@
+{
+  "kind": "manual post-formatter static semantic correction; NO formatter retry or check",
+  "path": "apps/bdptest/src/reference-deployment-lifecycle-installed.test.ts",
+  "corrections": [
+    "Signal/disconnect witnesses require actual owned live child at control boundary; actual signal dispatch succeeds.",
+    "Cold request10 checks absent context/discovery headers; existing request11/12 compare actual GET/HEAD representation headers without extra dispatch.",
+    "Peer records actual destroyed/readableEnded/readyState and observed already-closed classification without any forced server destruction claim."
+  ],
+  "formatterInvocationsUsed": 1,
+  "formatterAfterMapIsHistoricalPreThisCorrection": true,
+  "finalBytesFormatChecked": false,
+  "countsOrBudgetsChanged": false
+}

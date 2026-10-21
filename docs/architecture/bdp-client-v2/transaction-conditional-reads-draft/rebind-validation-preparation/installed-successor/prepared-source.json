@@ -1,0 +1,26 @@
+{
+  "workspace": "/Users/dbox/repos/wt/vickie/vickie-transaction-conditional-reads",
+  "reviewBase": "2dfd2c6cc84a28b1dd336f4184c1a5f910ce8a96",
+  "finalBase": "2dfd2c6cc84a28b1dd336f4184c1a5f910ce8a96",
+  "finalHead": "8ee4d86cadc9a1c79a9656cc8b106f34712b3ade",
+  "finalTree": "fb0cc3ac06be798fe6fe8ab69a1ad78ac5964257",
+  "parents": [
+    "2dfd2c6cc84a28b1dd336f4184c1a5f910ce8a96"
+  ],
+  "diffSha256": "cf8e895dea0d37d0bbf504a584cf5f213ab811089d4cc9aa32cba5368b910423",
+  "files": {
+    "packages/conformance/test-support/transactional/manifest-v1.json": "bbb7def1bf11e1d14efbcb369e6a7fae6eb5aff01f483f8e99f7443ce9a6ee73",
+    "packages/conformance/test-support/transactional/coverage-v1.json": "a2c620ce489257f4cd425207195af89b4e2aac238333cf6e7d21ce629d98a238",
+    "packages/conformance/src/transactional-cumulative.test.ts": "5ecfa916baca16b24c9c57b5f52e6c2cb5fa771d8cc6b5ea412ba570ba796993",
+    "apps/bdptest/src/transactional-matrix.test.ts": "95e07ead41f9cb39087a155e87cad22998d92cd3967cb9c3c446568ff6139bc8"
+  },
+  "status": "Actual ordinary clean local candidate independently matches all reviewed four-file bytes/full patch and679tracked diagnostic inputs; execution remains closed",
+  "authorBinding": {
+    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-conditional-reads-draft/rebind-author/successor/source-binding.json",
+    "sha256": "2d43cf58a05eb60d247fdc122b7e17621e98bbb899b2dbffbb6d95e3c451b592"
+  },
+  "reviewedSourceBinding": {
+    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-conditional-reads-draft/rebind-author/successor/source-binding.json",
+    "sha256": "2d43cf58a05eb60d247fdc122b7e17621e98bbb899b2dbffbb6d95e3c451b592"
+  }
+}

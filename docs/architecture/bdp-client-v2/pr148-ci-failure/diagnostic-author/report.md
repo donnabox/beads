@@ -1,0 +1,5 @@
+# Diagnostic-only author report
+
+Added one bounded allowlisted projection to the existing three-way independent Read negative-control state assertion. It reports expected fixture IDs, installed session/seed/native-Read observation counts, cleanup completion, and up to two scenario states/categories with up to sixteen exchange summaries and failed assertion IDs each. It does not include bodies, headers, URLs, arbitrary error messages, child output or raw configuration. The two closed-fixture credential strings are additionally redacted.
+
+The projection is supplied only as the assertion message: the expected fail state and exact failed-assertion list remain unchanged. No request, fixture mutation, timeout, run selection, cleanup behavior or production code changed. Before and after bytes, patch and hashes are preserved here. No tests, formatting command, imports, build, service, commit or push executed. Native and Claude review plus root disposition remain required before diagnostic execution.

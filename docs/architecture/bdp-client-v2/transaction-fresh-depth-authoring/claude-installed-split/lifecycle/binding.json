@@ -1,0 +1,66 @@
+{
+  "workspace": "/Users/dbox/repos/wt/vickie/vickie-fresh-depth-serving",
+  "headAtPreparation": "f864c4dde1b679d674cefe68f9047dd5cb3d1abc",
+  "headFreezeRequired": false,
+  "sourceBytesMustRemainEqual": true,
+  "target": "apps/bdptest/src/transactional-fresh-depth-installed.test.ts",
+  "targetSha256": "d54acc614e6e372fa1e0dfd0a909ed8719d8a4afbd2d93b81116a47a0dba590c",
+  "scope": "lifecycle",
+  "files": {
+    "apps/bdptest/src/transactional-fresh-depth-installed.test.ts": "d54acc614e6e372fa1e0dfd0a909ed8719d8a4afbd2d93b81116a47a0dba590c",
+    "apps/bdptest/test-support/transactional-execution-binding.ts": "cde506c72a8710eafe58522900f6db70ed3701cf333560252dc8e7c5e706cf89",
+    "scripts/transaction-installed-observation.mjs": "6f772f3776d3c3effa788676d853cc2932a6ee59ad63ac3338ad1b487408914b",
+    "packages/conformance/src/http-executor.ts": "770a8405ae1532484b5a2658619c067832644947888f95e0c6575002376f1b5d",
+    "schemas/bdp-v0.schema.json": "0baa5d5ef67144f8e6513b4cde31168effc8df6d52ef3141b0f144b87f8dc227",
+    "packages/server/src/transaction-installed-process.ts": "6bd16f940f1f751189fc76419e3a18ca26cd5f54da3cfa3946b30c3956a2f8b7",
+    "packages/server/src/transaction-runtime-configuration.ts": "57cd5d38c7199011d05589bc2b8ac1a0e2a4a9dc7585d019f9de5801a0a4d808",
+    "packages/server/src/transaction-snapshot.ts": "dac7c2f121cfb6bae557b3917f5ec52e47a358ab39da4062f6a5c26f5b9fbd83",
+    "packages/server/src/resource-evaluator.ts": "6784629841a92baaeed648862cfa84d071356ef82e6d29250b254a9eddf793a2"
+  },
+  "excerpts": {
+    "apps/bdptest/src/transactional-fresh-depth-installed.test.ts": [
+      [
+        1,
+        99
+      ],
+      [
+        349,
+        542
+      ],
+      [
+        879,
+        991
+      ]
+    ],
+    "apps/bdptest/test-support/transactional-execution-binding.ts": [
+      [
+        1,
+        97
+      ]
+    ],
+    "scripts/transaction-installed-observation.mjs": [
+      [
+        1,
+        97
+      ]
+    ],
+    "packages/conformance/src/http-executor.ts": [
+      [
+        55,
+        78
+      ],
+      [
+        125,
+        244
+      ],
+      [
+        879,
+        1080
+      ]
+    ]
+  },
+  "promptSha256": "3c4121e5a8f4b161e1bdfeaa73a16b07cd178121ca46c3f2e890d64155980346",
+  "runnerSha256": "dd7cc46a3226c9a95631302b409a48725dd927de2dda2483fd624ea8e5701318",
+  "timeoutSeconds": 1500,
+  "earlierInconclusive": "../../claude-installed-new/exit.json"
+}

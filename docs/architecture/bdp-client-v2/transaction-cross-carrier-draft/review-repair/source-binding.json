@@ -1,0 +1,40 @@
+{
+  "parent": "eff171839fe4f37638284a4c3346428979d26b5d",
+  "parentTree": "5c14bcc20ec7a72118bc07d2ed5896703211a660",
+  "checkout": "/Users/dbox/repos/wt/vickie/vickie-cross-carrier-draft",
+  "branch": "codex/vickie-cross-carrier-draft",
+  "commitCreated": false,
+  "originalBindingSHA256": "6cb16804ef318023dcb764bbccd0f2c6534db2062658aefc9c86093acf50c686",
+  "files": [
+    {
+      "path": "packages/conformance/test-support/transactional/manifest-v1.json",
+      "bytes": 684206,
+      "sha256": "726fc623bbb115a0f39e0bb3aaa586ea37254522b254e55e555ea95587f14cb9"
+    },
+    {
+      "path": "packages/conformance/test-support/transactional/coverage-v1.json",
+      "bytes": 99245,
+      "sha256": "a3a15b5143c118b24965698ec10289821664c90e935820b51c8cf76c05bdb1df"
+    },
+    {
+      "path": "packages/conformance/src/transactional-cumulative.test.ts",
+      "bytes": 89418,
+      "sha256": "1c361acc6edc460f1a224331d1010da9555a3700066b1ace41f75842aadf7bc8"
+    },
+    {
+      "path": "apps/bdptest/src/transactional-matrix.test.ts",
+      "bytes": 84322,
+      "sha256": "5420e0bad74cc3906c72af02027b2de58c698e24c209e2fd9f67d013c5ca5ed2"
+    }
+  ],
+  "amendmentSHA256": "8727bf12f2cddb79029925eb36cd3e79d6a8b4d19d335e584d7d853ebe2a3111",
+  "finalPatchSHA256": "68cb0cbac92b770887a411cdd876dd9da84455bdc56dda67f4c61d2fc088d6a7",
+  "manifestCoverageUnchanged": true,
+  "measurementBasisSHA256": "a827bebbdab479c119d3425e16a079d3bcd9cea6da09c9ea30d95313e8d96c87",
+  "formatCommand": "/Users/dbox/repos/wt/vickie/vickie-comparison-fault-typing-repair/node_modules/@biomejs/biome/bin/biome format --write packages/conformance/src/transactional-cumulative.test.ts apps/bdptest/src/transactional-matrix.test.ts",
+  "formatterResult": "Initial two-file format: 26ms, 1 fixed. Narrow digest repair app-only format: 12ms, 1 fixed.",
+  "execution": "No tests/build/typecheck/lint/install/pack/service/commit/push. Formatter only; final source awaiting native closure.",
+  "previousRepairBindingSHA256": "b49dc8c2790e9aa645c46964503ec62828c4e74cec9908c4ce4e54fab433e6c9",
+  "canonicalDigestCorrectionSHA256": "1fa6dfe262f304d499947cc850a47d8d7ba1e19e0bbc99e2c68eb0af3df8a6e8",
+  "repairVersion": 2
+}

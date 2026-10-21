@@ -1,0 +1,1107 @@
+{
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "kind",
+    "reportVersion",
+    "source",
+    "workspaceDirty",
+    "entry",
+    "entrySha256",
+    "metadata",
+    "binding",
+    "claimEligible",
+    "initialReady",
+    "reopenedReady",
+    "outcome",
+    "failureStages",
+    "counts",
+    "observations",
+    "oracleOutcomes",
+    "eventTraversals",
+    "timing",
+    "lifecycle",
+    "limitations"
+  ],
+  "properties": {
+    "kind": {
+      "const": "installed-valid-set-observation"
+    },
+    "reportVersion": {
+      "const": 2
+    },
+    "source": {
+      "anyOf": [
+        {
+          "type": "string",
+          "pattern": "^[0-9a-f]{40}$"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "workspaceDirty": {
+      "type": [
+        "boolean",
+        "string",
+        "null"
+      ],
+      "enum": [
+        true,
+        false,
+        "not-applicable-externally-bound",
+        null
+      ]
+    },
+    "entry": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "entrySha256": {
+      "anyOf": [
+        {
+          "type": "string",
+          "pattern": "^[0-9a-f]{64}$"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "metadata": {
+      "$ref": "#/$defs/metadata"
+    },
+    "binding": {
+      "anyOf": [
+        {
+          "$ref": "#/$defs/binding"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "claimEligible": {
+      "const": false
+    },
+    "initialReady": {
+      "anyOf": [
+        {
+          "$ref": "#/$defs/ready"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "reopenedReady": {
+      "anyOf": [
+        {
+          "$ref": "#/$defs/ready"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "outcome": {
+      "enum": [
+        "observed",
+        "failed"
+      ]
+    },
+    "failureStages": {
+      "type": "array",
+      "uniqueItems": true,
+      "maxItems": 18,
+      "items": {
+        "enum": [
+          "metadata-capture-failed",
+          "launch-failed",
+          "binding-validation-failed",
+          "observation-failed",
+          "prelaunch-rejected",
+          "prelaunch-cleanup-unsettled",
+          "reopen-refused-pre-ready",
+          "dispatch-cap-exceeded",
+          "pending-unsettled",
+          "child-exit-failed",
+          "child-close-unobserved",
+          "cleanup-unsettled",
+          "directory-removal-failed",
+          "clone-oracle-failed",
+          "exchange-rejected",
+          "response-validation-failed",
+          "work-deadline",
+          "work-aborted"
+        ]
+      }
+    },
+    "counts": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "expected",
+        "observed"
+      ],
+      "properties": {
+        "expected": {
+          "const": {
+            "requests": 32,
+            "POST": 11,
+            "GET": 21,
+            "children": 2,
+            "receiptEntries": 33,
+            "receiptPages": [
+              32,
+              1
+            ],
+            "eventPages": [
+              32,
+              32,
+              32
+            ],
+            "events": 96,
+            "groups": 1,
+            "staticLocalOracleCount": 5
+          }
+        },
+        "observed": {
+          "$ref": "#/$defs/observedCounts"
+        }
+      }
+    },
+    "observations": {
+      "type": "array",
+      "maxItems": 32,
+      "items": {
+        "$ref": "#/$defs/observation"
+      }
+    },
+    "oracleOutcomes": {
+      "type": "array",
+      "minItems": 5,
+      "maxItems": 5,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "id",
+          "state"
+        ],
+        "properties": {
+          "id": {
+            "enum": [
+              "O1",
+              "O2",
+              "O3",
+              "O4",
+              "O5"
+            ]
+          },
+          "state": {
+            "enum": [
+              "unobserved",
+              "pass",
+              "failed"
+            ]
+          }
+        }
+      }
+    },
+    "eventTraversals": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "seed",
+        "deletion"
+      ],
+      "properties": {
+        "seed": {
+          "$ref": "#/$defs/traversal"
+        },
+        "deletion": {
+          "$ref": "#/$defs/traversal"
+        }
+      }
+    },
+    "timing": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "workMilliseconds",
+        "cleanupMilliseconds",
+        "workBudgetMilliseconds",
+        "cleanupBudgetMilliseconds"
+      ],
+      "properties": {
+        "workMilliseconds": {
+          "anyOf": [
+            {
+              "type": "number",
+              "minimum": 0
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "cleanupMilliseconds": {
+          "anyOf": [
+            {
+              "type": "number",
+              "minimum": 0
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "workBudgetMilliseconds": {
+          "const": 90000
+        },
+        "cleanupBudgetMilliseconds": {
+          "const": 10000
+        }
+      }
+    },
+    "lifecycle": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "pendingRequests",
+        "ownershipUnknown",
+        "children",
+        "directory",
+        "descendantOwnership"
+      ],
+      "properties": {
+        "pendingRequests": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 32
+        },
+        "ownershipUnknown": {
+          "type": "boolean"
+        },
+        "children": {
+          "type": "array",
+          "maxItems": 2,
+          "items": {
+            "$ref": "#/$defs/child"
+          }
+        },
+        "directory": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "path",
+            "disposition",
+            "storeFilePresence"
+          ],
+          "properties": {
+            "path": {
+              "type": [
+                "string",
+                "null"
+              ]
+            },
+            "disposition": {
+              "enum": [
+                "removed",
+                "retained",
+                "unknown"
+              ]
+            },
+            "storeFilePresence": {
+              "const": "unknown"
+            }
+          }
+        },
+        "descendantOwnership": {
+          "const": "root-terminal-audit-required"
+        }
+      }
+    },
+    "limitations": {
+      "const": [
+        "private installed slice; no cold/public/whole-Write credit",
+        "same-store graceful reopen is not crash or logical restore",
+        "external payload/archive/consumer/lock/proof requires independent root binding",
+        "future startup/flush/detached-drain/full-report collector gate remains CLOSED"
+      ]
+    }
+  },
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:bdp:private:d4-source3-report-audit-data:1",
+  "$comment": "DATA ONLY. Strict finite JSON parsing/resource limits and cross-field/semantic/source/provenance rules are mandatory outside this grammar. A malformed ready/report is retained and classified nonconforming-failed, never repaired or accepted positive. This schema is uncompiled/unexecuted.",
+  "$defs": {
+    "ready": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "event",
+        "authorityMode",
+        "runtimeConfigurationIdentity",
+        "artifactIdentity",
+        "policyIdentity",
+        "authenticationIdentity",
+        "scope",
+        "profile",
+        "history",
+        "claimEligible",
+        "listenUrl",
+        "targets",
+        "payloadIdentity"
+      ],
+      "properties": {
+        "event": {
+          "const": "qualification.ready"
+        },
+        "authorityMode": {
+          "const": "canonical"
+        },
+        "runtimeConfigurationIdentity": {
+          "type": "string",
+          "pattern": "^[0-9a-f]{64}$"
+        },
+        "artifactIdentity": {
+          "type": "string",
+          "pattern": "^development-schema5-[0-9a-f]{64}$"
+        },
+        "policyIdentity": {
+          "type": "string",
+          "pattern": "^[0-9a-f]{64}$"
+        },
+        "authenticationIdentity": {
+          "type": "string",
+          "pattern": "^[0-9a-f]{64}$"
+        },
+        "scope": {
+          "const": "https://reference.invalid/acme/"
+        },
+        "profile": {
+          "const": "transactional"
+        },
+        "history": {
+          "const": false
+        },
+        "claimEligible": {
+          "const": false
+        },
+        "listenUrl": {
+          "type": "string"
+        },
+        "targets": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "createBead",
+            "updateBead",
+            "deleteBead",
+            "createLink",
+            "updateLink",
+            "deleteLink",
+            "putAlias",
+            "deleteAlias",
+            "updateWhere",
+            "deleteWhere",
+            "batch",
+            "sequence"
+          ],
+          "properties": {
+            "createBead": {
+              "const": "https://reference.invalid/acme/operations/create-bead"
+            },
+            "updateBead": {
+              "const": "https://reference.invalid/acme/operations/update-bead"
+            },
+            "deleteBead": {
+              "const": "https://reference.invalid/acme/operations/delete-bead"
+            },
+            "createLink": {
+              "const": "https://reference.invalid/acme/operations/create-link"
+            },
+            "updateLink": {
+              "const": "https://reference.invalid/acme/operations/update-link"
+            },
+            "deleteLink": {
+              "const": "https://reference.invalid/acme/operations/delete-link"
+            },
+            "putAlias": {
+              "const": "https://reference.invalid/acme/operations/put-alias"
+            },
+            "deleteAlias": {
+              "const": "https://reference.invalid/acme/operations/delete-alias"
+            },
+            "updateWhere": {
+              "const": "https://reference.invalid/acme/operations/update-where"
+            },
+            "deleteWhere": {
+              "const": "https://reference.invalid/acme/operations/delete-where"
+            },
+            "batch": {
+              "const": "https://reference.invalid/acme/operations/batch"
+            },
+            "sequence": {
+              "const": "https://reference.invalid/acme/operations/sequence"
+            }
+          }
+        },
+        "payloadIdentity": {
+          "type": "string",
+          "pattern": "^[0-9a-f]{64}$"
+        }
+      }
+    },
+    "served": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "scope",
+        "profile",
+        "history",
+        "sourceCommit",
+        "installedPayloadDigest",
+        "installedContractsDigest",
+        "policyDigest",
+        "authenticationDigest",
+        "fixtureDigest",
+        "fixtureId",
+        "capabilities"
+      ],
+      "properties": {
+        "scope": {
+          "const": "https://reference.invalid/acme/"
+        },
+        "profile": {
+          "const": "transactional"
+        },
+        "history": {
+          "const": false
+        },
+        "sourceCommit": {
+          "type": "string",
+          "pattern": "^[0-9a-f]{40}$"
+        },
+        "installedPayloadDigest": {
+          "type": "string",
+          "pattern": "^[0-9a-f]{64}$"
+        },
+        "installedContractsDigest": {
+          "type": "string",
+          "pattern": "^[0-9a-f]{64}$"
+        },
+        "policyDigest": {
+          "type": "string",
+          "pattern": "^[0-9a-f]{64}$"
+        },
+        "authenticationDigest": {
+          "type": "string",
+          "pattern": "^[0-9a-f]{64}$"
+        },
+        "fixtureDigest": {
+          "type": "string",
+          "pattern": "^[0-9a-f]{64}$"
+        },
+        "fixtureId": {
+          "const": "reference-transactional-v1"
+        },
+        "capabilities": {
+          "const": [
+            "installed-transactional-http",
+            "transactional-receipt-observation"
+          ]
+        }
+      }
+    },
+    "binding": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "served",
+        "operationTargets",
+        "runtimeConfigurationIdentity",
+        "authorityMode"
+      ],
+      "properties": {
+        "served": {
+          "$ref": "#/$defs/served"
+        },
+        "operationTargets": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "createBead",
+            "updateBead",
+            "deleteBead",
+            "createLink",
+            "updateLink",
+            "deleteLink",
+            "putAlias",
+            "deleteAlias",
+            "updateWhere",
+            "deleteWhere",
+            "batch",
+            "sequence"
+          ],
+          "properties": {
+            "createBead": {
+              "const": "https://reference.invalid/acme/operations/create-bead"
+            },
+            "updateBead": {
+              "const": "https://reference.invalid/acme/operations/update-bead"
+            },
+            "deleteBead": {
+              "const": "https://reference.invalid/acme/operations/delete-bead"
+            },
+            "createLink": {
+              "const": "https://reference.invalid/acme/operations/create-link"
+            },
+            "updateLink": {
+              "const": "https://reference.invalid/acme/operations/update-link"
+            },
+            "deleteLink": {
+              "const": "https://reference.invalid/acme/operations/delete-link"
+            },
+            "putAlias": {
+              "const": "https://reference.invalid/acme/operations/put-alias"
+            },
+            "deleteAlias": {
+              "const": "https://reference.invalid/acme/operations/delete-alias"
+            },
+            "updateWhere": {
+              "const": "https://reference.invalid/acme/operations/update-where"
+            },
+            "deleteWhere": {
+              "const": "https://reference.invalid/acme/operations/delete-where"
+            },
+            "batch": {
+              "const": "https://reference.invalid/acme/operations/batch"
+            },
+            "sequence": {
+              "const": "https://reference.invalid/acme/operations/sequence"
+            }
+          }
+        },
+        "runtimeConfigurationIdentity": {
+          "type": "string",
+          "pattern": "^[0-9a-f]{64}$"
+        },
+        "authorityMode": {
+          "const": "canonical"
+        }
+      }
+    },
+    "end": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "code",
+        "signal"
+      ],
+      "properties": {
+        "code": {
+          "type": [
+            "integer",
+            "null"
+          ]
+        },
+        "signal": {
+          "type": [
+            "string",
+            "null"
+          ]
+        }
+      }
+    },
+    "metadata": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "mode",
+        "source",
+        "entry",
+        "entrySha256",
+        "fixtureSha256",
+        "workspaceDirty",
+        "diffSha256",
+        "disposition",
+        "nullReason"
+      ],
+      "properties": {
+        "mode": {
+          "enum": [
+            "workspace",
+            "external",
+            null
+          ]
+        },
+        "source": {
+          "anyOf": [
+            {
+              "type": "string",
+              "pattern": "^[0-9a-f]{40}$"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "entry": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "entrySha256": {
+          "anyOf": [
+            {
+              "type": "string",
+              "pattern": "^[0-9a-f]{64}$"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "fixtureSha256": {
+          "anyOf": [
+            {
+              "type": "string",
+              "pattern": "^[0-9a-f]{64}$"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "workspaceDirty": {
+          "type": [
+            "boolean",
+            "string",
+            "null"
+          ],
+          "enum": [
+            true,
+            false,
+            "not-applicable-externally-bound",
+            null
+          ]
+        },
+        "diffSha256": {
+          "anyOf": [
+            {
+              "type": "string",
+              "pattern": "^[0-9a-f]{64}$"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "disposition": {
+          "enum": [
+            "captured",
+            "not-applicable-externally-bound",
+            null
+          ]
+        },
+        "nullReason": {
+          "enum": [
+            "metadata-capture-failed",
+            null
+          ]
+        }
+      }
+    },
+    "observation": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "ordinal",
+        "generation",
+        "method",
+        "url",
+        "settled",
+        "received",
+        "validated",
+        "status",
+        "headers",
+        "body",
+        "wireResponseBase64",
+        "wireSha256",
+        "writeState",
+        "errorCategory"
+      ],
+      "properties": {
+        "ordinal": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 32
+        },
+        "generation": {
+          "type": "integer",
+          "enum": [
+            1,
+            2
+          ]
+        },
+        "method": {
+          "enum": [
+            "GET",
+            "POST"
+          ]
+        },
+        "url": {
+          "type": "string"
+        },
+        "requestBody": {
+          "type": "string"
+        },
+        "settled": {
+          "type": "boolean"
+        },
+        "received": {
+          "type": "boolean"
+        },
+        "validated": {
+          "type": "boolean"
+        },
+        "status": {
+          "type": [
+            "integer",
+            "null"
+          ],
+          "minimum": 100,
+          "maximum": 599
+        },
+        "headers": {
+          "anyOf": [
+            {
+              "type": "object",
+              "additionalProperties": {
+                "type": "string"
+              }
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "body": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "wireResponseBase64": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "wireSha256": {
+          "anyOf": [
+            {
+              "type": "string",
+              "pattern": "^[0-9a-f]{64}$"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "writeState": {
+          "enum": [
+            "not-started",
+            "started-completion-unestablished",
+            "complete",
+            null
+          ]
+        },
+        "errorCategory": {
+          "enum": [
+            "abort",
+            "configuration",
+            "timeout",
+            "disconnect",
+            "header-limit",
+            "body-limit",
+            "invalid-body",
+            "network",
+            "unavailable",
+            null
+          ]
+        }
+      },
+      "allOf": [
+        {
+          "if": {
+            "properties": {
+              "method": {
+                "const": "POST"
+              }
+            }
+          },
+          "then": {
+            "required": [
+              "requestBody"
+            ]
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "method": {
+                "const": "GET"
+              }
+            }
+          },
+          "then": {
+            "not": {
+              "required": [
+                "requestBody"
+              ]
+            }
+          }
+        }
+      ]
+    },
+    "observedCounts": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "attempted",
+        "settled",
+        "received",
+        "validated",
+        "returnedChildHandles",
+        "receiptEntries",
+        "receiptPages",
+        "receiptComplete",
+        "eventPages",
+        "events",
+        "eventTraversalComplete",
+        "groups"
+      ],
+      "properties": {
+        "attempted": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 32
+        },
+        "settled": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 32
+        },
+        "received": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 32
+        },
+        "validated": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 32
+        },
+        "returnedChildHandles": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 2
+        },
+        "receiptEntries": {
+          "type": [
+            "integer",
+            "null"
+          ],
+          "minimum": 0
+        },
+        "receiptPages": {
+          "type": "array",
+          "minItems": 2,
+          "maxItems": 2,
+          "items": {
+            "type": [
+              "integer",
+              "null"
+            ],
+            "minimum": 0
+          }
+        },
+        "receiptComplete": {
+          "type": "boolean"
+        },
+        "eventPages": {
+          "type": "array",
+          "maxItems": 12,
+          "items": {
+            "type": "integer",
+            "minimum": 0
+          }
+        },
+        "events": {
+          "type": [
+            "integer",
+            "null"
+          ],
+          "minimum": 0
+        },
+        "eventTraversalComplete": {
+          "type": "boolean"
+        },
+        "groups": {
+          "type": [
+            "integer",
+            "null"
+          ],
+          "minimum": 0
+        }
+      }
+    },
+    "traversal": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "pages",
+        "count",
+        "complete"
+      ],
+      "properties": {
+        "pages": {
+          "type": "array",
+          "maxItems": 12,
+          "items": {
+            "type": "integer",
+            "minimum": 0
+          }
+        },
+        "count": {
+          "type": [
+            "integer",
+            "null"
+          ],
+          "minimum": 0
+        },
+        "complete": {
+          "type": "boolean"
+        }
+      }
+    },
+    "child": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "generation",
+        "phase",
+        "launchAttempted",
+        "acquisition",
+        "refusal",
+        "pid",
+        "exitCodeSnapshot",
+        "signalCodeSnapshot",
+        "observedExit",
+        "observedClose",
+        "closeRequested",
+        "closePromiseSettled",
+        "closePromiseSucceeded",
+        "closure"
+      ],
+      "properties": {
+        "generation": {
+          "type": "integer",
+          "enum": [
+            1,
+            2
+          ]
+        },
+        "phase": {
+          "enum": [
+            "initial",
+            "reopen"
+          ]
+        },
+        "launchAttempted": {
+          "const": true
+        },
+        "acquisition": {
+          "enum": [
+            "unknown",
+            "acquired"
+          ]
+        },
+        "refusal": {
+          "enum": [
+            "prelaunch-rejected",
+            "prelaunch-cleanup-unsettled",
+            null
+          ]
+        },
+        "pid": {
+          "type": [
+            "integer",
+            "null"
+          ],
+          "minimum": 1
+        },
+        "exitCodeSnapshot": {
+          "type": [
+            "integer",
+            "null"
+          ]
+        },
+        "signalCodeSnapshot": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "observedExit": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/end"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "observedClose": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/end"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "closeRequested": {
+          "type": "boolean"
+        },
+        "closePromiseSettled": {
+          "type": [
+            "boolean",
+            "null"
+          ]
+        },
+        "closePromiseSucceeded": {
+          "type": [
+            "boolean",
+            "null"
+          ]
+        },
+        "closure": {
+          "enum": [
+            "observed-clean-exit-and-close",
+            "unknown-or-failed"
+          ]
+        }
+      }
+    }
+  }
+}

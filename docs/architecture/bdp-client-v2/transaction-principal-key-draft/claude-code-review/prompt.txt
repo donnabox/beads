@@ -1,0 +1,2355 @@
+Review this exact two-file CODE draft. Do not write or modify any files. Output findings only in stdout. Tools disabled; supplied context only, no model override. Give a complete standalone numbered findings-first review: severity, changed-file location, concrete issue/impact and smallest fix, or explicit no actionable findings. Do not drop findings or refer to missing prior output. Distinguish proven bugs from omitted context. No scope expansion, public semantics invention or broad test demand.
+
+Actual review parent is merged f5511718371a6935614eae6756e796cef71570c2/tree3cd1da66ba3a6cbd0bbdaa2442d10002939d826b with exactly these two dirty draft files. Root ordinary-fast-forwarded disjoint sequence main; original author binding3c227b20 remains historical18104, both draft hashes unchanged (test e6af6263/progress f0171ecc). No clean candidate/future commit is invented. Formatting only has run; tests/build/services/package gates remain closed.
+
+Accepted essentials: A/A-rotated principal-a, B principal-b, three distinct writable credentials. Seven fixed positive requests: A create-a, B same-key create-b, A-rotated replay, B replay, A same-key create-c409, A-credentialed complete collection and Events. No principal-scoped read claim. Exact initial schema/value baselines, full receipt replays, historical receipt pos-1/current headerpos-2, absolute Resource/type URLs and complete Event transaction linkage/private IDs remain required. A/B mutation views independent; both Event IDs use actual Event GET serving context. Absent mode=>positive; collapse-b-to-a changes only B principal and expects actual409 on request2 at unchanged named expected200 assertion. Positive7/1child, negative expected2/max7/1child, combined9expected/14max/twochildren, no retry/reopen/bootstrapHTTP. Each full schedule5POSTx150+2GET, maximum1500B bodies across both. No extra runtime/schema/helper path or unsupported credential.ref.
+
+Joint bounds45swork/10ready/5request/10cleanup/60test/120supervisor are not sum-of-max entitlement. Accepted decoded body32768; header65536; wire buffer163840; framed rejection threshold98304 after bounded copy; not heap bounds. Retained-field allowlist excludes runtime config/tokens/effectiveRequest/exactRequest.headerLines/request wire. Credential comparisons use booleans. Full response equality in memory, fingerprints retained except validated negative Problem. Root corrected pre-ready cleanup: attempted launch without returned child preserves store as unknown stop, external supervisor cleanup required. Inspect this, output/cleanup aggregation, exact negative specificity, TypeScript/API assumptions and safe report. Existing Vitest admission mock only affects harness, never the separately spawned packed child. Accepted runs require verified external consumer; ordinary CI retains existing workspace-dist fallback. No observed success/provenance claimed.
+
+Supplied schema selection contains complete direct definitions needed by new assertions plus all Event variants, references and provenance. The listed61-definition closure was inspected without imports and has only uri/date-time formats. Omitted unrelated schema variants are explicitly inventoried; do not pretend they were supplied. All source excerpts have exact file hashes/ranges in external binding. Use actual code below as authority, not author's assurances.
+
+## Complete two-file diff including full new test
+```diff
+diff --git a/docs/design/transaction-implementation-progress.md b/docs/design/transaction-implementation-progress.md
+index 64f4d0e..a8c77db 100644
+--- a/docs/design/transaction-implementation-progress.md
++++ b/docs/design/transaction-implementation-progress.md
+@@ -1921,3 +1921,19 @@ at this draft checkpoint. The proposed early-refusal control and fresh installed
+ witness remain separate gates; earlier evidence retains its original source
+ attribution. This changes neither public discovery eligibility nor the pending
+ Snapshot minimum or incident-Link Event membership rulings.
++
++
++### Private installed principal-key isolation draft
++
++The unexecuted draft adds one seven-request installed HTTP witness for two writable
++principals using the same key, same-principal credential rotation replay, exact
++retained receipts versus current context, and complete Resource/Event linkage. A
++separately selected configuration-collapse control expects refusal on its second
++request; it is sensitivity evidence, not a production mutation. A-credentialed
++reads observe the existing serving view and do not establish principal-scoped
++read semantics. No tests, builds, packages or installed runs have executed at this
++draft checkpoint. Earlier evidence retains its original source attribution.
++Authoring is based on18104; ordinary integration of actual sequence main and
++reviewed validation remain gates before final publication/readiness. This draft
++does not activate discovery, qualify a profile or settle the pending Snapshot or
++incident-Link metadata decisions.
+diff --git a/apps/bdptest/src/transactional-principal-key-installed.test.ts b/apps/bdptest/src/transactional-principal-key-installed.test.ts
+new file mode 100644
+index 0000000..20cb720
+--- /dev/null
++++ b/apps/bdptest/src/transactional-principal-key-installed.test.ts
+@@ -0,0 +1,785 @@
++/** Private installed principal-key observations; no profile qualification. */
++import { execFileSync, type ChildProcess } from "node:child_process";
++import { createHash, randomBytes } from "node:crypto";
++import {
++  existsSync,
++  mkdtempSync,
++  readFileSync,
++  realpathSync,
++  rmSync,
++  writeFileSync,
++} from "node:fs";
++import { tmpdir } from "node:os";
++import path from "node:path";
++import { fileURLToPath } from "node:url";
++import { expect, it } from "vitest";
++import { Ajv2020 } from "ajv/dist/2020.js";
++import { isJsonSchemaDateTime, isJsonSchemaUri } from "@bdp/protocol";
++import { createRawHttpExchangeExecutor, type HttpMethod } from "@bdp/conformance";
++import { installedTransactionBinding } from "../test-support/transactional-execution-binding.js";
++
++const root = fileURLToPath(new URL("../../../", import.meta.url));
++const { launchInstalledTransaction } = (await import(
++  new URL("../../../scripts/transaction-installed-observation.mjs", import.meta.url).href
++)) as {
++  launchInstalledTransaction(
++    entry: string,
++    configuration: unknown,
++    signal?: AbortSignal,
++  ): Promise<{
++    child: ChildProcess;
++    ready: Record<string, unknown>;
++    close(): Promise<void>;
++  }>;
++};
++const scope = "https://reference.invalid/acme/";
++const beadType = `${scope}types/task`;
++const schemaUri = `${scope}schemas/properties`;
++const artifacts = {
++  descriptors: [
++    {
++      retrievalUri: beadType,
++      utf8: JSON.stringify({
++        id: beadType,
++        name: "Task",
++        describes: "bead",
++        conformsTo: [],
++        propertiesSchema: schemaUri,
++      }),
++    },
++  ],
++  schemas: [
++    {
++      retrievalUri: schemaUri,
++      utf8: JSON.stringify({
++        $id: schemaUri,
++        type: "object",
++        properties: { title: { type: "string" } },
++        required: ["title"],
++        additionalProperties: false,
++      }),
++    },
++  ],
++};
++const entry =
++  process.env.BDP_TRANSACTIONAL_INSTALLED_ENTRY ??
++  path.join(root, "packages/server/dist/transaction-installed-process.js");
++if (process.env.BDP_TRANSACTIONAL_INSTALLED_ENTRY && !process.env.BDP_TRANSACTIONAL_SOURCE_COMMIT)
++  throw new Error("installed principal-key entry override requires declared source commit");
++const resolvedEntry = realpathSync(entry);
++const digest = (value: string | Uint8Array) => createHash("sha256").update(value).digest("hex");
++const entrySha256 = digest(readFileSync(resolvedEntry));
++const workspaceDirty =
++  execFileSync("git", ["status", "--porcelain"], { cwd: root, encoding: "utf8" }).length > 0;
++const sourceCommit =
++  process.env.BDP_TRANSACTIONAL_SOURCE_COMMIT ??
++  execFileSync("git", ["rev-parse", "HEAD"], { cwd: root, encoding: "utf8" }).trim();
++if (!/^[a-f0-9]{40}$/.test(sourceCommit)) throw new Error("invalid declared source commit");
++const fixture = {
++  bytes: readFileSync(
++    path.join(root, "packages/conformance/test-support/transactional/fixture-v1.json"),
++  ),
++};
++// The repository admission mock is harness-only; all state oracles use child HTTP.
++const mode = process.env.BDP_TRANSACTIONAL_PRINCIPAL_KEY_MODE ?? "positive";
++if (mode !== "positive" && mode !== "collapse-b-to-a")
++  throw new Error("invalid installed principal-key mode");
++const output = process.env.BDP_TRANSACTIONAL_PRINCIPAL_KEY_OUTPUT;
++if (output !== undefined && !path.isAbsolute(output))
++  throw new Error("principal-key output must be absolute");
++const contextNames = ["bdp-scope-epoch", "bdp-authorization-view", "bdp-scope-position"] as const;
++const routeBindings: { method: HttpMethod; url: string }[] = [
++  { method: "POST", url: `${scope}operations/batch` },
++  { method: "GET", url: `${scope}beads/?limit=32` },
++  { method: "GET", url: `${scope}events/` },
++];
++const routeSha256 = "40b5131d96ba76a7a77212c92b9336148142f8afb648caac0107f1dc9af3a837";
++// Independent reviewed literals; no dynamic extra receipt fetches or credential probes.
++const requests = [
++  {
++    index: 1,
++    label: "a-create",
++    method: "POST",
++    url: "https://reference.invalid/acme/operations/batch",
++    credentialRef: "a",
++    headerLines: [
++      {
++        name: "accept",
++        value: "application/json",
++      },
++      {
++        name: "content-type",
++        value: "application/json",
++      },
++      {
++        name: "idempotency-key",
++        value: "principal-shared",
++      },
++    ],
++    body: '{"operations":[{"operation":"createBead","id":"beads/a","type":"https://reference.invalid/acme/types/task","properties":{"title":"a"},"metadata":{}}]}',
++    bodyBytes: 150,
++    bodySha256: "54f0fefb0965a8210bb22cf09601c18296ef450489eff1aef5a8bea8b99d83b8",
++    status: 200,
++    currentPosition: "pos-1",
++  },
++  {
++    index: 2,
++    label: "b-independent-create",
++    method: "POST",
++    url: "https://reference.invalid/acme/operations/batch",
++    credentialRef: "b",
++    headerLines: [
++      {
++        name: "accept",
++        value: "application/json",
++      },
++      {
++        name: "content-type",
++        value: "application/json",
++      },
++      {
++        name: "idempotency-key",
++        value: "principal-shared",
++      },
++    ],
++    body: '{"operations":[{"operation":"createBead","id":"beads/b","type":"https://reference.invalid/acme/types/task","properties":{"title":"b"},"metadata":{}}]}',
++    bodyBytes: 150,
++    bodySha256: "b26bbe9a43f5cc9b54d7fe7778786b33e5e8d613bf30248de3af65f5eac0cdc8",
++    status: 200,
++    currentPosition: "pos-2",
++  },
++  {
++    index: 3,
++    label: "a-rotated-replay",
++    method: "POST",
++    url: "https://reference.invalid/acme/operations/batch",
++    credentialRef: "a-rotated",
++    headerLines: [
++      {
++        name: "accept",
++        value: "application/json",
++      },
++      {
++        name: "content-type",
++        value: "application/json",
++      },
++      {
++        name: "idempotency-key",
++        value: "principal-shared",
++      },
++    ],
++    body: '{"operations":[{"operation":"createBead","id":"beads/a","type":"https://reference.invalid/acme/types/task","properties":{"title":"a"},"metadata":{}}]}',
++    bodyBytes: 150,
++    bodySha256: "54f0fefb0965a8210bb22cf09601c18296ef450489eff1aef5a8bea8b99d83b8",
++    status: 200,
++    currentPosition: "pos-2",
++  },
++  {
++    index: 4,
++    label: "b-replay",
++    method: "POST",
++    url: "https://reference.invalid/acme/operations/batch",
++    credentialRef: "b",
++    headerLines: [
++      {
++        name: "accept",
++        value: "application/json",
++      },
++      {
++        name: "content-type",
++        value: "application/json",
++      },
++      {
++        name: "idempotency-key",
++        value: "principal-shared",
++      },
++    ],
++    body: '{"operations":[{"operation":"createBead","id":"beads/b","type":"https://reference.invalid/acme/types/task","properties":{"title":"b"},"metadata":{}}]}',
++    bodyBytes: 150,
++    bodySha256: "b26bbe9a43f5cc9b54d7fe7778786b33e5e8d613bf30248de3af65f5eac0cdc8",
++    status: 200,
++    currentPosition: "pos-2",
++  },
++  {
++    index: 5,
++    label: "a-conflict",
++    method: "POST",
++    url: "https://reference.invalid/acme/operations/batch",
++    credentialRef: "a",
++    headerLines: [
++      {
++        name: "accept",
++        value: "application/json",
++      },
++      {
++        name: "content-type",
++        value: "application/json",
++      },
++      {
++        name: "idempotency-key",
++        value: "principal-shared",
++      },
++    ],
++    body: '{"operations":[{"operation":"createBead","id":"beads/c","type":"https://reference.invalid/acme/types/task","properties":{"title":"c"},"metadata":{}}]}',
++    bodyBytes: 150,
++    bodySha256: "3de2f9bb5fb4b4b0537d252ba722b05a3385414129cf35fc6ab0355720f9ff62",
++    status: 409,
++    currentPosition: "pos-2",
++  },
++  {
++    index: 6,
++    label: "current-complete",
++    method: "GET",
++    url: "https://reference.invalid/acme/beads/?limit=32",
++    credentialRef: "a",
++    headerLines: [
++      {
++        name: "accept",
++        value: "application/json",
++      },
++    ],
++    body: null,
++    bodyBytes: 0,
++    bodySha256: null,
++    status: 200,
++    currentPosition: "pos-2",
++  },
++  {
++    index: 7,
++    label: "events-complete",
++    method: "GET",
++    url: "https://reference.invalid/acme/events/",
++    credentialRef: "a",
++    headerLines: [
++      {
++        name: "accept",
++        value: "application/json",
++      },
++    ],
++    body: null,
++    bodyBytes: 0,
++    bodySha256: null,
++    status: 200,
++    currentPosition: "pos-2",
++  },
++] as const;
++function record(value: unknown): Record<string, unknown> {
++  if (value === null || typeof value !== "object" || Array.isArray(value))
++    throw new Error("expected response record");
++  return value as Record<string, unknown>;
++}
++function records(value: unknown): Record<string, unknown>[] {
++  if (!Array.isArray(value)) throw new Error("expected response array");
++  return value.map(record);
++}
++function outsideStore(filename: string, directory: string) {
++  if (!path.isAbsolute(filename)) throw new Error("principal-key evidence path must be absolute");
++  const relative = path.relative(directory, path.resolve(filename));
++  if (
++    relative === "" ||
++    (!relative.startsWith(`..${path.sep}`) && relative !== ".." && !path.isAbsolute(relative))
++  )
++    throw new Error("principal-key evidence must remain outside store directory");
++}
++const conflictProblem = {
++  type: "https://github.com/gastownhall/bdp/problems/conflict",
++  code: "idempotency-conflict",
++  status: 409,
++  retry: "never",
++} as const;
++
++it("observes independent principal keys and same-principal credential rotation through installed HTTP", async () => {
++  const started = performance.now();
++  const controller = new AbortController();
++  const deadlineReason = new Error("installed principal-key work deadline");
++  let deadlineExceeded = false;
++  const deadline = setTimeout(() => {
++    deadlineExceeded = true;
++    controller.abort(deadlineReason);
++  }, 45000);
++  const failures: unknown[] = [];
++  let directory: string | undefined;
++  let child: Awaited<ReturnType<typeof launchInstalledTransaction>> | undefined;
++  let binding: ReturnType<typeof installedTransactionBinding> | undefined;
++  let closed = false;
++  let launchAttempted = false;
++  let cleanupExceeded = false;
++  let attempted = 0;
++  let currentAssertion = "principal-key:setup";
++  const passedAssertions: string[] = [];
++  const responses: {
++    index: number;
++    label: string;
++    method: HttpMethod;
++    url: string;
++    credentialRef: string;
++    requestBodyBytes: number;
++    requestBodySha256: string | null;
++    writeState: string | null;
++    status: number;
++    bodyOctets: number | null;
++    bodySha256: string;
++    responseWireSha256: string | null;
++    scopeEpoch: string | null;
++    authorizationView: string | null;
++    scopePosition: string | null;
++    contentType: string | null;
++    contentLength: string | null;
++    validatedNegativeProblem: typeof conflictProblem | null;
++  }[] = [];
++  const roles = {
++    a: { token: randomBytes(32).toString("base64url"), principal: "principal-a", canMutate: true },
++    "a-rotated": {
++      token: randomBytes(32).toString("base64url"),
++      principal: "principal-a",
++      canMutate: true,
++    },
++    b: { token: randomBytes(32).toString("base64url"), principal: "principal-b", canMutate: true },
++  };
++  type Role = keyof typeof roles;
++  const roleNames = ["a", "a-rotated", "b"] as const;
++  try {
++    const ajv = new Ajv2020({ allErrors: true, strict: true });
++    ajv.addFormat("uri", { type: "string", validate: isJsonSchemaUri });
++    ajv.addFormat("date-time", { type: "string", validate: isJsonSchemaDateTime });
++    const bundle = JSON.parse(readFileSync(path.join(root, "schemas/bdp-v0.schema.json"), "utf8"));
++    ajv.addSchema(bundle);
++    const validators = Object.fromEntries(
++      [
++        "mutationReceipt",
++        "transactionalProblem",
++        "beadRecord",
++        "currentBeadCollection",
++        "eventPage",
++      ].map((name) => [name, ajv.compile({ $ref: `${bundle.$id}#/$defs/${name}` })]),
++    );
++    function checked(text: string, schema: string) {
++      const value = record(JSON.parse(text)),
++        validate = validators[schema];
++      if (!validate) throw new Error("unbound response schema");
++      expect(validate(value), `principal-key:schema:${schema}`).toBe(true);
++      return value;
++    }
++    expect(requests).toHaveLength(7);
++    expect(requests.map((r) => r.method)).toStrictEqual([
++      "POST",
++      "POST",
++      "POST",
++      "POST",
++      "POST",
++      "GET",
++      "GET",
++    ]);
++    expect(requests.reduce((sum, r) => sum + r.bodyBytes, 0)).toBe(750);
++    expect(digest(JSON.stringify(routeBindings))).toBe(routeSha256);
++    for (const row of requests) {
++      expect(Buffer.byteLength(row.body ?? ""), row.label).toBe(row.bodyBytes);
++      expect(row.body === null ? null : digest(row.body), row.label).toBe(row.bodySha256);
++    }
++    expect(
++      artifacts.descriptors.map((a) => [Buffer.byteLength(a.utf8), digest(a.utf8)]),
++    ).toStrictEqual([[170, "f448e126550b2809d01dc6b24811d1796e82b2599c35b438550ed3bec65a2a22"]]);
++    expect(artifacts.schemas.map((a) => [Buffer.byteLength(a.utf8), digest(a.utf8)])).toStrictEqual(
++      [[166, "1ed8b24d90a8c278bc466fd48ba1e849afac01326c377e5c6985855e62373f95"]],
++    );
++    // Boolean checks avoid ever placing live tokens in assertion diffs.
++    expect(new Set(roleNames.map((r) => roles[r].token)).size, "distinct credential tokens").toBe(
++      3,
++    );
++    expect(
++      roleNames.every((r) => /^[A-Za-z0-9_-]{43}$/.test(roles[r].token)),
++      "credential token shape",
++    ).toBe(true);
++    expect(roleNames.map((r) => roles[r].principal)).toStrictEqual([
++      "principal-a",
++      "principal-a",
++      "principal-b",
++    ]);
++    expect(roleNames.every((r) => roles[r].canMutate)).toBe(true);
++    if (mode === "collapse-b-to-a") roles.b.principal = "principal-a";
++    directory = mkdtempSync(path.join(tmpdir(), "bdp-principal-key-installed-"));
++    if (output !== undefined) outsideStore(output, directory);
++    // Vitest owns result emission; keep its configured paths outside the removable store too.
++    for (let i = 0; i < process.argv.length; i++) {
++      const argument = process.argv[i]!;
++      if (argument === "--outputFile") outsideStore(process.argv[i + 1] ?? "", directory);
++      else if (argument.startsWith("--outputFile=")) outsideStore(argument.slice(13), directory);
++    }
++    controller.signal.throwIfAborted();
++    launchAttempted = true;
++    child = await launchInstalledTransaction(
++      entry,
++      {
++        scope,
++        directory,
++        create: true,
++        artifacts,
++        // No ref field is accepted by the closed runtime configuration parser.
++        credentials: roleNames.map((role) => ({ ...roles[role] })),
++      },
++      controller.signal,
++    );
++    binding = installedTransactionBinding(child.ready, sourceCommit, fixture);
++    expect(child.ready.scope).toBe(scope);
++    expect(child.ready.claimEligible).toBe(false);
++    expect(child.ready.history).toBe(false);
++    expect(binding.operationTargets.batch).toBe(`${scope}operations/batch`);
++    const address = new URL(child.ready.listenUrl as string);
++    const execute = createRawHttpExchangeExecutor(
++      { transport: "plain", host: address.hostname, port: Number(address.port) },
++      {
++        requestTimeoutMs: 5000,
++        // Accepted decoded body <=32KiB; raw wire buffer <=B+2H=160KiB.
++        // Receive framed-body rejection threshold B+H=96KiB is not a heap bound.
++        maximumBodyBytes: 32768,
++        maximumHeaderBytes: 65536,
++        exactMode: {
++          scope,
++          profile: "transactional",
++          routes: routeBindings,
++          maximumRequestHeaderBytes: 16384,
++          maximumRequestBodyBytes: 65536,
++          defaultCredentialRef: "a",
++          credentialHandles: roleNames.map((id) => ({ id, headerNames: ["authorization"] })),
++          resolveCredentials: ({ credentialRef }) => {
++            if (!roleNames.some((r) => r === credentialRef))
++              throw new Error("unknown principal-key credential role");
++            return { authorization: `Bearer ${roles[credentialRef as Role].token}` };
++          },
++        },
++      },
++    );
++    async function exchange(index: number) {
++      const row = requests[index - 1];
++      if (!row) throw new Error("unbound principal-key request");
++      currentAssertion = `principal-key:${row.label}:wire`;
++      controller.signal.throwIfAborted();
++      expect(attempted + 1, "principal-key exact dispatch order").toBe(index);
++      expect(++attempted, "principal-key dispatch bound").toBeLessThanOrEqual(7);
++      expect(Buffer.byteLength(row.url)).toBeLessThanOrEqual(8192);
++      const response = await execute({
++        method: row.method,
++        url: row.url,
++        signal: controller.signal,
++        credentialRef: row.credentialRef,
++        raw: {
++          headerLines: row.headerLines,
++          ...(row.body === null ? {} : { bodyBytes: Buffer.from(row.body) }),
++        },
++      });
++      // Explicit response-only allowlist, before assertions. Never retain whole exchange,
++      // effectiveRequest, exactRequest.headerLines, request wire, roles, or runtime config.
++      const observation = {
++        index,
++        label: row.label,
++        method: row.method,
++        url: row.url,
++        credentialRef: row.credentialRef,
++        requestBodyBytes: row.bodyBytes,
++        requestBodySha256: row.bodySha256,
++        writeState: response.exactRequest?.writeState ?? null,
++        status: response.status,
++        bodyOctets: response.bodyOctets ?? null,
++        bodySha256: digest(response.bodyText),
++        responseWireSha256: response.wireResponseBytes ? digest(response.wireResponseBytes) : null,
++        scopeEpoch: response.headers["bdp-scope-epoch"] ?? null,
++        authorizationView: response.headers["bdp-authorization-view"] ?? null,
++        scopePosition: response.headers["bdp-scope-position"] ?? null,
++        contentType: response.headers["content-type"] ?? null,
++        contentLength: response.headers["content-length"] ?? null,
++        validatedNegativeProblem: null as typeof conflictProblem | null,
++      };
++      responses.push(observation);
++      expect(response.exactRequest?.source).toBe("raw-http1-serializer");
++      expect(response.exactRequest?.writeState).toBe("complete");
++      expect(response.url).toBe(row.url);
++      expect(response.exactRequest?.bodyPresent).toBe(row.body !== null);
++      expect(response.exactRequest?.bodyOctets).toBe(row.bodyBytes);
++      expect(response.exactRequest?.bodyDigest).toBe(row.bodySha256 ?? undefined);
++      const headers = response.exactRequest?.headerLines ?? [];
++      const values = (name: string) =>
++        headers.filter((h) => h.name.toLowerCase() === name).map((h) => h.value);
++      expect(values("host")).toStrictEqual(["reference.invalid"]);
++      for (const name of ["accept", "content-type", "idempotency-key"]) {
++        expect(values(name)).toStrictEqual(
++          row.headerLines.filter((h) => h.name === name).map((h) => h.value),
++        );
++      }
++      expect(values("authorization").length, "one credential header").toBe(1);
++      expect(
++        values("authorization")[0] === `Bearer ${roles[row.credentialRef].token}`,
++        "exact credential serialization",
++      ).toBe(true);
++      expect(response.wireResponseBytes?.length).toBeGreaterThan(0);
++      expect(Number.isSafeInteger(response.bodyOctets)).toBe(true);
++      expect(response.bodyOctets).toBeGreaterThanOrEqual(0);
++      expect(response.bodyOctets).toBeLessThanOrEqual(32768);
++      expect(Buffer.byteLength(response.bodyText)).toBe(response.bodyOctets);
++      expect(response.headers["content-length"]).toBe(String(response.bodyOctets));
++      expect(response.headers["x-bdp-development"]).toBe("non-attesting");
++      expect(response.headers["x-bdp-development-limit"]).toBeUndefined();
++      for (const name of contextNames) {
++        expect(typeof response.headers[name], `principal-key:${row.label}:${name}`).toBe("string");
++        expect(response.headers[name]).not.toBe("");
++      }
++      if (row.method === "POST") {
++        expect(response.headers["cache-control"]).toBe("private, no-store");
++        expect(response.headers.vary).toBe("Accept");
++        for (const name of ["etag", "last-modified", "retry-after", "www-authenticate"])
++          expect(response.headers[name]).toBeUndefined();
++      }
++      if (response.status === 409) {
++        expect(response.headers["content-type"]).toBe("application/problem+json");
++        const problem = checked(response.bodyText, "transactionalProblem");
++        expect(problem).toStrictEqual(conflictProblem);
++        observation.validatedNegativeProblem = { ...conflictProblem };
++      }
++      return response;
++    }
++    type Wire = Awaited<ReturnType<typeof exchange>>;
++    function status(response: Wire, expected: number, label: string) {
++      currentAssertion = label;
++      expect(response.status, label).toBe(expected);
++      passedAssertions.push(label);
++    }
++    function context(response: Wire, epoch: unknown, view: unknown, position: string) {
++      expect(contextNames.map((name) => response.headers[name])).toStrictEqual([
++        epoch,
++        view,
++        position,
++      ]);
++    }
++    function completed(response: Wire, name: "a" | "b", position: string) {
++      status(
++        response,
++        200,
++        `principal-key:${name === "a" ? "a-create" : "b-independent-create"}:completed`,
++      );
++      expect(response.headers["content-type"]).toBe("application/json");
++      const receipt = checked(response.bodyText, "mutationReceipt");
++      expect(typeof receipt.scopeEpoch).toBe("string");
++      expect(receipt.scopeEpoch).not.toBe("");
++      expect(typeof receipt.authorizationView).toBe("string");
++      expect(receipt.authorizationView).not.toBe("");
++      context(response, receipt.scopeEpoch, receipt.authorizationView, position);
++      const results = records(receipt.results);
++      expect(results).toHaveLength(1);
++      const resource = record(results[0]!.resource);
++      expect(validators.beadRecord!(resource), "principal-key:resource-schema").toBe(true);
++      expect(typeof resource.revision).toBe("string");
++      expect(resource.revision).not.toBe("");
++      expect(resource).toStrictEqual({
++        id: `${scope}beads/${name}`,
++        type: beadType,
++        revision: resource.revision,
++        properties: { title: name },
++        metadata: {},
++      });
++      expect(results).toStrictEqual([{ operationIndex: 0, outcome: "created", resource }]);
++      expect(receipt).toStrictEqual({
++        id: receipt.id,
++        status: "completed",
++        detail: "available",
++        idempotencyKey: "principal-shared",
++        scopeEpoch: receipt.scopeEpoch,
++        authorizationView: receipt.authorizationView,
++        transaction: receipt.transaction,
++        requiredPosition: position,
++        effectPosition: position,
++        results,
++        next: null,
++        expiresAt: receipt.expiresAt,
++      });
++      expect(typeof receipt.id).toBe("string");
++      const id = receipt.id as string,
++        parsed = new URL(id),
++        prefix = `${scope}receipts/`;
++      expect(Buffer.byteLength(id)).toBeLessThanOrEqual(8192);
++      expect(parsed.href).toBe(id);
++      expect(parsed.username).toBe("");
++      expect(parsed.password).toBe("");
++      expect(parsed.search).toBe("");
++      expect(parsed.hash).toBe("");
++      expect(id.startsWith(prefix)).toBe(true);
++      expect(/^[A-Za-z0-9_-]+$/.test(id.slice(prefix.length))).toBe(true);
++      expect(typeof receipt.transaction).toBe("string");
++      expect(receipt.transaction).not.toBe("");
++      return { receipt, resource };
++    }
++    const a = completed(await exchange(1), "a", "pos-1");
++    const b = completed(await exchange(2), "b", "pos-2");
++    expect(b.receipt.scopeEpoch).toBe(a.receipt.scopeEpoch);
++    expect(b.receipt.id).not.toBe(a.receipt.id);
++    expect(b.receipt.transaction).not.toBe(a.receipt.transaction);
++    // No assumption that A and B views must differ or coincide.
++    const replayA = await exchange(3);
++    status(replayA, 200, "principal-key:a-rotated-replay:completed");
++    expect(replayA.headers["content-type"]).toBe("application/json");
++    context(replayA, a.receipt.scopeEpoch, a.receipt.authorizationView, "pos-2");
++    expect(checked(replayA.bodyText, "mutationReceipt")).toStrictEqual(a.receipt);
++    const replayB = await exchange(4);
++    status(replayB, 200, "principal-key:b-replay:completed");
++    expect(replayB.headers["content-type"]).toBe("application/json");
++    context(replayB, b.receipt.scopeEpoch, b.receipt.authorizationView, "pos-2");
++    expect(checked(replayB.bodyText, "mutationReceipt")).toStrictEqual(b.receipt);
++    const conflict = await exchange(5);
++    status(conflict, 409, "principal-key:a-conflict:refused");
++    context(conflict, a.receipt.scopeEpoch, a.receipt.authorizationView, "pos-2");
++    expect(checked(conflict.bodyText, "transactionalProblem")).toStrictEqual(conflictProblem);
++    const collectionWire = await exchange(6);
++    status(collectionWire, 200, "principal-key:current-complete");
++    expect(collectionWire.headers["content-type"]).toBe("application/json");
++    expect(collectionWire.headers["bdp-scope-epoch"]).toBe(a.receipt.scopeEpoch);
++    expect(collectionWire.headers["bdp-scope-position"]).toBe("pos-2");
++    // A-credentialed Read uses the fixed serving view, not principal-scoped filtering.
++    expect(checked(collectionWire.bodyText, "currentBeadCollection")).toStrictEqual({
++      items: [a.resource, b.resource],
++      next: null,
++    });
++    const eventsWire = await exchange(7);
++    status(eventsWire, 200, "principal-key:events-complete");
++    expect(eventsWire.headers["content-type"]).toBe("application/json");
++    expect(eventsWire.headers["bdp-scope-epoch"]).toBe(a.receipt.scopeEpoch);
++    expect(eventsWire.headers["bdp-scope-position"]).toBe("pos-2");
++    const page = checked(eventsWire.bodyText, "eventPage"),
++      events = records(page.events);
++    expect(events).toHaveLength(2);
++    const hash = (tag: string, value: string) =>
++      createHash("sha256")
++        .update(JSON.stringify([tag, value]))
++        .digest("base64url");
++    const eventSource = `${scope}events/`;
++    // Deliberately independent exact private projection, not a normative Event-ID format.
++    const expectedEvents = [a, b].map((saved, index) => ({
++      id: `ev_${hash("epoch", eventsWire.headers["bdp-scope-epoch"]!)}_${hash("view", eventsWire.headers["bdp-authorization-view"]!)}_${hash("source", eventSource)}_pos-${index + 1}_0`,
++      ordinal: 0,
++      type: "created",
++      source: eventSource,
++      subject: saved.resource.id,
++      subjectType: beadType,
++      transaction: saved.receipt.transaction,
++      time: events[index]!.time,
++      data: {
++        revision: saved.resource.revision,
++        properties: saved.resource.properties,
++        metadata: saved.resource.metadata,
++      },
++    }));
++    expect(page).toStrictEqual({ source: eventSource, events: expectedEvents, next: null });
++    expect(attempted).toBe(7);
++    expect(responses).toHaveLength(7);
++    expect(
++      responses.map(({ index, label, method, url, credentialRef, status: actual }) => ({
++        index,
++        label,
++        method,
++        url,
++        credentialRef,
++        status: actual,
++      })),
++    ).toStrictEqual(
++      requests.map(({ index, label, method, url, credentialRef, status: expected }) => ({
++        index,
++        label,
++        method,
++        url,
++        credentialRef,
++        status: expected,
++      })),
++    );
++    controller.signal.throwIfAborted();
++    currentAssertion = "principal-key:complete";
++  } catch (error) {
++    failures.push(error);
++  } finally {
++    clearTimeout(deadline);
++    controller.abort();
++    const cleanupReason = new Error("installed principal-key cleanup deadline");
++    const cleanupTimer = setTimeout(() => {
++      cleanupExceeded = true;
++      failures.push(cleanupReason);
++      child?.child.kill("SIGKILL");
++    }, 10000);
++    try {
++      if (child) {
++        await child.close();
++        closed = true;
++      }
++    } catch (error) {
++      failures.push(error);
++    } finally {
++      clearTimeout(cleanupTimer);
++    }
++    const stopped =
++      !launchAttempted ||
++      (child !== undefined && (child.child.exitCode !== null || child.child.signalCode !== null));
++    const stopState = !launchAttempted
++      ? "not-started"
++      : child === undefined
++        ? "unknown-pre-ready"
++        : stopped
++          ? "stopped"
++          : "active";
++    if (!stopped) failures.push(new Error("installed principal-key child stop is unproven"));
++    try {
++      if (directory && stopped) rmSync(directory, { recursive: true, force: true });
++    } catch (error) {
++      failures.push(error);
++    }
++    const directoryAbsent = directory === undefined || !existsSync(directory);
++    if (!directoryAbsent) failures.push(new Error("installed principal-key directory remains"));
++    clearTimeout(deadline);
++    if (deadlineExceeded && !failures.includes(deadlineReason)) failures.push(deadlineReason);
++    // Only this allowlisted projection persists: no credential-bearing config/roles/requests.
++    const report = () => ({
++      observation: "private-installed-principal-key",
++      mode,
++      outcome: failures.length === 0 ? "passed" : "failed",
++      declaredSourceCommit: sourceCommit,
++      workspaceDirty,
++      entry: resolvedEntry,
++      entrySha256,
++      binding: binding ?? null,
++      routeDigest: routeSha256,
++      descriptorSchemaUtf8: artifacts,
++      elapsedMs: performance.now() - started,
++      attempted,
++      exchanges: responses.length,
++      completedResponses: responses,
++      passedAssertions,
++      currentAssertion,
++      failureCount: failures.length,
++      deadlineExceeded,
++      cleanupExceeded,
++      closed,
++      launchAttempted,
++      stopState,
++      startupCompleted: child !== undefined,
++      childPid: child?.child.pid ?? null,
++      childExitCode: child?.child.exitCode ?? null,
++      childSignalCode: child?.child.signalCode ?? null,
++      directory: directory ?? null,
++      directoryAbsent,
++      claimEligible: false,
++      retention:
++        "response fingerprints/allowlisted fields and validated negative Problem; full receipt/Resource/Event equality in memory; no request wire or credential-bearing objects",
++      startupLimitation:
++        "Pre-ready PID unknown; independent supervisor owned-process evidence required",
++    });
++    if (output !== undefined) {
++      try {
++        writeFileSync(output, `${JSON.stringify(report(), null, 2)}\n`);
++      } catch (error) {
++        failures.push(error);
++      }
++    }
++    try {
++      console.log(JSON.stringify(report()));
++    } catch (error) {
++      failures.push(error);
++    }
++  }
++  if (failures.length === 1) throw failures[0];
++  if (failures.length > 1)
++    throw new AggregateError(failures, "installed principal-key observation and cleanup failed");
++}, 60000);
+
+```
+
+## Accepted exact selection/budget ledger
+```json
+{"registration":{"file":"apps/bdptest/src/transactional-principal-key-installed.test.ts","fullName":"observes independent principal keys and same-principal credential rotation through installed HTTP","registrations":1,"executions":2},"cohorts":[{"id":"positive","mode":"positive","expectedExit":0,"expectedHttp":7,"maxHttp":7,"children":1,"owners":1,"listeners":1,"directories":1},{"id":"principal-collapse","mode":"collapse-b-to-a","expectedExit":1,"expectedHttp":2,"maxHttp":7,"children":1,"owners":1,"listeners":1,"directories":1,"expectedFailure":"principal-key:b-independent-create:completed","actualExpectedStatus":409,"actualExpectedProblem":{"type":"https://github.com/gastownhall/bdp/problems/conflict","code":"idempotency-conflict","status":409,"retry":"never"},"actualExpectedCurrentPosition":"pos-1"}],"totals":{"expectedHttp":9,"maximumHttp":14,"children":2,"owners":2,"listeners":2,"directories":2,"reopens":0,"bootstrapHttp":0,"readonlyDatabaseHandles":0},"requestBodyTotals":{"positive":750,"negativeExpected":300,"combinedExpected":1050,"perBodyMaximum":150,"combinedMaximumAtSevenEach":1500,"maximumBasis":"two complete ordered schedules, each exactly five POST x150B plus two bodyless GET; guard next index/method/URL/role/body before every dispatch"},"limits":{"workMs":45000,"launcherReadyMs":10000,"cleanupMs":10000,"testMs":60000,"supervisorMs":120000,"requestMs":5000,"responseBodyBytes":32768,"responseHeaderBytes":65536,"requestHeaderBytes":16384,"requestBodyBytes":65536,"urlBytes":8192,"maximumPositiveResponseBodyOctets":229376,"maximumTwoCohortResponseBodyOctets":458752,"responseBodyInterpretation":"accepted decoded body limit, not receive or peak heap","receivedFramedBodyGuardBytes":98304,"wireBufferMaximumBytes":163840,"sevenExchangeFramedBodyGuardBytes":688128,"fourteenExchangeFramedBodyGuardBytes":1376256,"sevenExchangeWireBufferBytes":1146880,"fourteenExchangeWireBufferBytes":2293760,"heapPeakBound":null,"deadlineInterpretation":"aggregate work ceiling; no sum-of-individual-maxima completion guarantee"},"modeSelection":{"absent":"positive","positive":"positive","collapse-b-to-a":"collapse-b-to-a","other":"reject before child start"}}
+```
+
+## docs/specs/bdp.md:3905–3946
+```
+An idempotency key is the token defined under
+[Idempotency keys](#idempotency-keys): the `Idempotency-Key` HTTP field of
+a batch or singleton request and the `idempotencyKey` member of a sequence
+member carry the same case-sensitive `[A-Za-z0-9_-]{1,256}` token, bare,
+compared byte-exactly; a request whose key is absent, repeated, or outside
+the grammar is malformed. On a Transactional Scope the key's namespace is
+the canonical Scope URL, the Scope epoch, and the authenticated principal —
+the Read+Update namespace with the epoch it lacks — and every mutation
+carrier feeds that one namespace: a singleton request, a `batch`, and each
+member of a `sequence` is a Mutation Transaction with its own durable
+Mutation Receipt, and the carrier is delivery metadata that the semantic
+comparison excludes.
+
+The semantic identity of a Mutation Transaction is the sequence, in
+declaration order, of its operations' semantic identities under [Idempotency
+keys](#idempotency-keys): each is the operation kind plus its normalized
+record — durable references canonicalized, protocol defaults expanded, array
+order preserved, member order ignored, `name` and the carrier excluded,
+`expectedRevision` and `revisionProvenance` included, opaque URIs and pins
+compared byte-exactly, and the records compared under RFC 6902 Section 4.6.
+In a batch, a `@label` reference is normalized to the creating operation's
+zero-based index when that operation supplies no `id`, and to the supplied
+identity's canonical URL when it does — never to the label's spelling, so
+renaming a label is not a semantic change, and never to an allocated
+identity, which does not exist before commit. In a sequence, a `@name`
+reference is normalized to the identity its creating member bound, as in
+Read+Update. A one-operation batch, the equivalent singleton request, and the
+equivalent sequence member therefore present one semantic request, and any of
+them retrieves the receipt the others created.
+
+Concurrent identical requests join one execution and receive the same
+receipt identity, pending or terminal. Read+Update refuses a concurrent
+duplicate with `idempotency-in-progress` because it has no durable receipt
+to hand the duplicate; the Transactional profile joins the duplicate to
+the one execution and hands it the pending receipt, which is the same
+exactly-once promise made with the profile's own vehicle. A later identical
+request returns the retained receipt — with its detail available, expired,
+or withheld — and never executes again. A request with the same key and a
+different normalized request is refused before admission with `409`
+`idempotency-conflict` for as long as the key is bound: for the rest of
+the Scope epoch when the earlier transaction completed, whether or not its
+detail has expired, and for as long as its failed receipt is retained
+```
+
+## docs/specs/bdp.md:5115–5133
+```
+
+Every admitted mutation has one Mutation Receipt at an authority-allocated
+URL beneath the discovered `receipts` root — `receipts/{token}`, where the
+token is a checkpoint-profile token — and the receipt's `id` is that
+absolute URL. `GET` and `HEAD` of the receipt URL return the receipt's
+current representation with `200 OK`, `Cache-Control: private, no-store`,
+and the Transactional response fields. A receipt URL that does not exist,
+that belongs to another principal, that was retracted under
+[Mutation Transactions](#mutation-transactions), that named a failed
+receipt the authority has since forgotten under the same section, or that
+was allocated in another Scope epoch returns the uniform `404`
+`resource-not-found`: receipts are principal-bound, and they are not an
+enumeration oracle. The `receipts` root is a namespace prefix, not a
+Resource: it is discovered so that receipt URLs are recognizably the
+authority's and clients never construct them, BDP v0 defines no receipt
+listing and no lookup by key, and a `GET` of the root returns `404`
+`resource-not-found`. A client resolves a lost response by retrying the
+original request with its original key, which returns the receipt.
+
+```
+
+## scripts/transaction-installed-observation.mjs:1–97
+```
+/** Bounded inherited-IPC launcher. No request or observation emulation. */
+import { spawn } from "node:child_process";
+import { mkdir } from "node:fs/promises";
+export async function launchInstalledTransaction(entry, configuration, signal) {
+  signal?.throwIfAborted();
+  // Explicit launcher-owned provisioning; reopen keeps the directory/create:false.
+  if (configuration.create) await mkdir(configuration.directory, { recursive: true, mode: 0o700 });
+  signal?.throwIfAborted();
+  const child = spawn(process.execPath, [entry], {
+    cwd: "/tmp",
+    stdio: ["ignore", "pipe", "pipe", "ipc"],
+  });
+  let bytes = 0;
+  for (const stream of [child.stdout, child.stderr])
+    stream.on("data", (chunk) => {
+      bytes += chunk.length;
+      if (bytes > 65536) child.kill("SIGKILL");
+    });
+  const exited = new Promise((resolve) =>
+    child.once("exit", (code, signal) => resolve({ code, signal })),
+  );
+  async function bounded(promise) {
+    let timer;
+    try {
+      return await Promise.race([
+        promise,
+        new Promise((_, reject) => {
+          timer = setTimeout(() => {
+            child.kill("SIGKILL");
+            reject(new Error("installed transaction process deadline"));
+          }, 10000);
+        }),
+      ]);
+    } finally {
+      clearTimeout(timer);
+    }
+  }
+  async function drainFailure(error) {
+    child.kill("SIGKILL");
+    try {
+      await bounded(exited);
+    } catch (cleanup) {
+      throw new AggregateError([error, cleanup], "installed transaction cleanup failed");
+    }
+    throw error;
+  }
+  let closing;
+  const close = () =>
+    (closing ??= (async () => {
+      try {
+        if (child.connected) child.send({ command: "close" });
+        const result = await bounded(exited);
+        if (result.code !== 0 || result.signal !== null)
+          throw new Error("installed transaction child did not close cleanly");
+      } catch (error) {
+        await drainFailure(error);
+      } finally {
+        signal?.removeEventListener("abort", onAbort);
+      }
+    })());
+  const onAbort = () => {
+    void close().catch(() => {});
+  };
+  signal?.addEventListener("abort", onAbort, { once: true });
+  if (signal?.aborted) onAbort();
+  let detachReadyAbort = () => {};
+  try {
+    const ready = await bounded(
+      new Promise((resolve, reject) => {
+        const abort = () => reject(signal.reason);
+        signal?.addEventListener("abort", abort, { once: true });
+        detachReadyAbort = () => signal?.removeEventListener("abort", abort);
+        if (signal?.aborted) {
+          abort();
+          return;
+        }
+        child.once("error", reject);
+        child.once("message", resolve);
+        void exited.then(() => reject(new Error("installed transaction exited before ready")));
+        child.send({ configuration });
+      }),
+    );
+    signal?.throwIfAborted();
+    if (!ready || ready.event !== "qualification.ready" || JSON.stringify(ready).length > 65536)
+      throw new Error("invalid installed ready message");
+    return { child, ready, close };
+  } catch (error) {
+    try {
+      await close();
+    } catch (cleanup) {
+      throw new AggregateError([error, cleanup], "installed transaction startup cleanup failed");
+    }
+    throw error;
+  } finally {
+    detachReadyAbort();
+  }
+}
+```
+
+## packages/server/src/transaction-installed-configuration.ts:17–67
+```
+export function captureInstalledTransactionConfiguration(
+  input: unknown,
+): TransactionRuntimeOptions {
+  const own = administrativeData(input, [
+    "scope",
+    "directory",
+    "create",
+    "credentials",
+    "artifacts",
+  ]);
+  const scope = parseCanonicalScope(text(own.scope, 8192));
+  const directory = text(own.directory, 16384);
+  if (!path.isAbsolute(directory) || typeof own.create !== "boolean")
+    throw new TypeError("explicit provisioning required");
+  const credentials = administrativeArray(own.credentials, 32).map((v) => {
+    const c = administrativeData(v, ["token", "principal", "canMutate"]);
+    const token = text(c.token, 256),
+      principal = text(c.principal, 16384);
+    if (!/^[A-Za-z0-9_-]{32,256}$/.test(token) || typeof c.canMutate !== "boolean")
+      throw new TypeError("invalid installed credential");
+    return Object.freeze({ token, principal, canMutate: c.canMutate });
+  });
+  if (!credentials.length || new Set(credentials.map((c) => c.token)).size !== credentials.length)
+    throw new TypeError("unique credentials required");
+  const supplied = administrativeData(own.artifacts, ["descriptors", "schemas"]);
+  let total = 0;
+  const artifacts = (value: unknown) =>
+    Object.freeze(
+      administrativeArray(value, CONTRACT_ARTIFACT_CEILINGS.submittedArtifacts).map((v) => {
+        const a = administrativeData(v, ["retrievalUri", "utf8"]);
+        const retrievalUri = text(a.retrievalUri, 16384),
+          utf8 = text(a.utf8, CONTRACT_ARTIFACT_CEILINGS.artifactBytes);
+        total += Buffer.byteLength(retrievalUri) + Buffer.byteLength(utf8);
+        if (total > CONTRACT_ARTIFACT_CEILINGS.totalBytes)
+          throw new TypeError("installed artifact capture bound");
+        return Object.freeze({ retrievalUri, utf8 });
+      }),
+    );
+  const descriptors = artifacts(supplied.descriptors),
+    schemas = artifacts(supplied.schemas);
+  if (!descriptors.length) throw new TypeError("compiled descriptor closure required");
+  return Object.freeze({
+    scope,
+    directory,
+    create: own.create,
+    port: 0,
+    authorityMode: "canonical",
+    credentials: Object.freeze(credentials),
+    artifacts: Object.freeze({ descriptors, schemas, limits: CONTRACT_ARTIFACT_CEILINGS }),
+  });
+}
+```
+
+## packages/server/src/transaction-runtime-configuration.ts:95–96
+```
+  receiptMaximumItems: transactionReceiptMaximum(),
+  readDefaultItems: 2,
+```
+
+## packages/server/src/transaction-runtime-configuration.ts:110–110
+```
+  receiptDetailMs: TRANSACTION_RECEIPT_DETAIL_MS,
+```
+
+## packages/server/src/transaction-runtime-configuration.ts:227–248
+```
+    const entry = administrativeData(value, ["token", "principal", "canMutate"]);
+    const token = boundedString(entry.token, 256),
+      principal = boundedString(entry.principal, 16384);
+    if (!/^[A-Za-z0-9_-]{32,256}$/.test(token) || typeof entry.canMutate !== "boolean")
+      throw new TypeError("invalid private transaction credential");
+    return { token, principal, canMutate: entry.canMutate };
+  });
+  if (!credentials.length || new Set(credentials.map((c) => c.token)).size !== credentials.length)
+    throw new TypeError("unique private transaction credentials required");
+  const secrets = credentials.map(({ token, ...rest }) => ({
+    ...rest,
+    credential: Buffer.from(`Bearer ${token}`),
+  }));
+  const associations = freeze(
+    credentials
+      .map(({ token, ...rest }) => ({
+        // Domain separation binds this credential use; it does not prevent
+        // guessing low-entropy tokens. Metadata digests are not secrecy guarantees.
+        tokenDigest: transactionRuntimeDigest({ revision: "transaction-credential-1", token }),
+        ...rest,
+      }))
+      .sort((a, b) => (a.tokenDigest < b.tokenDigest ? -1 : a.tokenDigest > b.tokenDigest ? 1 : 0)),
+```
+
+## packages/server/src/transaction-runtime-configuration.ts:321–348
+```
+    authenticate(supplied: Buffer): TransactionHttpAuthorization {
+      const credential = secrets.find(
+        (c) => c.credential.length === supplied.length && timingSafeEqual(c.credential, supplied),
+      );
+      return credential
+        ? {
+            kind: "authenticated",
+            principal: credential.principal,
+            canMutate: credential.canMutate,
+          }
+        : { kind: "unauthenticated" };
+    },
+    readOptions(scope: string): TransactionReadOptions {
+      const defaultItems = Math.min(settings.readDefaultItems, settings.receiptMaximumItems);
+      return {
+        selectorLimits: settings.selector,
+        advertisedLimits: {
+          page: { defaultItems, maximumItems: settings.receiptMaximumItems },
+          selector: settings.selector,
+          cursorTtlMilliseconds: settings.pagination.cursorTtlMs,
+        },
+        pagination: {
+          ...settings.pagination,
+          scope,
+          defaultPageItems: defaultItems,
+          maxPageItems: settings.receiptMaximumItems,
+          clock,
+          generateOpaqueToken: () =>
+```
+
+## packages/server/src/transaction-runtime-configuration.ts:361–393
+```
+      if (
+        actual.authorizationView !== "development-all-visible" ||
+        actual.scopeConfiguration.policyIdentity !== actual.authorizationView ||
+        actual.scopeConfiguration.maximumEndpointMultiplicity.length !== 0
+      )
+        throw new Error("unexpected live transaction policy");
+      const sorted = (values: readonly unknown[]) =>
+        values.map((v) => stringifyJsonValue(v)).sort();
+      if (JSON.stringify(sorted(actual.installedTypes)) !== JSON.stringify(sorted(types)))
+        throw new Error("live transaction descriptor closure mismatch");
+      if (seamCapture.supplied || configuredScope === undefined || contracts === undefined)
+        return undefined;
+      const policyIdentity = transactionRuntimeDigest({
+        revision: "transaction-policy-1",
+        view: actual.authorizationView,
+        read: "all-visible",
+        aggregate: actual.scopeConfiguration.maximumEndpointMultiplicity,
+        associations,
+      });
+      const runtimeConfigurationIdentity = transactionRuntimeDigest({
+        revision: "transaction-runtime-1",
+        scope,
+        artifactIdentity: contracts.identity,
+        settings,
+        authorityMode,
+        policyIdentity,
+        authenticationIdentity,
+        profile: "transactional",
+        history: false,
+      });
+      return Object.freeze({
+        authorityMode,
+        runtimeConfigurationIdentity,
+```
+
+## packages/server/src/transaction-runtime.ts:86–96
+```
+}
+function deliver(response: ServerResponse, selected: HttpResponse, raw?: string): void {
+  if (response.destroyed) return;
+  const bytes =
+    raw ?? (selected.body === undefined ? undefined : stringifyJsonValue(selected.body));
+  selected.headers.set("x-bdp-development", "non-attesting");
+  if (bytes !== undefined) selected.headers.set("content-length", String(Buffer.byteLength(bytes)));
+  response.writeHead(selected.status, Object.fromEntries(selected.headers));
+  response.end(response.req.method === "HEAD" ? undefined : bytes);
+}
+export async function startTransactionRuntime(
+```
+
+## packages/server/src/transaction-runtime.ts:141–153
+```
+        methodFailure.headers.set("connection", "close");
+        deliver(response, methodFailure);
+        return;
+      }
+      const headers = new Headers();
+      for (let i = 0; i < request.rawHeaders.length; i += 2)
+        headers.append(request.rawHeaders[i] ?? "", request.rawHeaders[i + 1] ?? "");
+      const supplied = Buffer.from(headers.get("authorization") ?? "");
+      const authorization = captured.authenticate(supplied);
+      signal = createNodeHttpDisconnectSignal(request, response);
+      const input = new Request(url, { method: request.method ?? "GET", headers, signal });
+      const lastEventIds: string[] = [];
+      for (let i = 0; i < request.rawHeaders.length; i += 2)
+```
+
+## packages/server/src/transaction-http.ts:89–118
+```
+function problem(
+  value:
+    | ReadProblem
+    | ReturnType<typeof parseReadUpdateProblem>
+    | {
+        readonly type: string;
+        readonly code: "catch-up-timeout";
+        readonly status: 503;
+        readonly retry: "after-delay";
+      },
+): HttpResponse {
+  const response = jsonResponse(value);
+  response.headers.set("content-type", "application/problem+json");
+  if (value.code === "unauthenticated")
+    response.headers.set("www-authenticate", 'Bearer realm="bdp-transaction-development"');
+  if (value.retry === "after-delay") response.headers.set("retry-after", "1");
+  return { ...response, status: value.status ?? 500 };
+}
+export function transactionHttpProblem(
+  code: ReadProblemCode,
+  observation?: TransactionReadContext,
+): HttpResponse {
+  const response = problem(readProblem(code));
+  return observation ? context(response, observation) : response;
+}
+function context(response: HttpResponse, observation: TransactionReadContext): HttpResponse {
+  response.headers.set("bdp-scope-epoch", observation.scopeEpoch);
+  response.headers.set("bdp-authorization-view", observation.authorizationView);
+  response.headers.set("bdp-scope-position", observation.scopePosition);
+  return response;
+```
+
+## packages/server/src/transaction-http.ts:176–190
+```
+  function receiptResponse(
+    observed: {
+      readonly receipt: { readonly id: string; readonly status: string };
+      readonly context: TransactionReadContext;
+    },
+    mutation: boolean,
+  ): HttpResponse {
+    const response = context(jsonResponse(observed.receipt), observed.context);
+    if (mutation && observed.receipt.status === "pending") {
+      response.headers.set("location", observed.receipt.id);
+      response.headers.set("retry-after", "1");
+      return { ...response, status: 202 };
+    }
+    return response;
+  }
+```
+
+## packages/server/src/transaction-http.ts:218–223
+```
+    async perform(parsed, request) {
+      const minimum = transactionMinimumHeaders(request.headers);
+      const facet = minimum
+        ? service.readAtMinimum({ kind: "anonymous" }, minimum)
+        : service.readFor({ kind: "anonymous" });
+      const result = await facet.perform(parsed, { signal: request.signal });
+```
+
+## packages/server/src/transaction-http.ts:329–343
+```
+      const decision: TransactionSubmission["authorization"] =
+        authorization.kind === "unauthenticated"
+          ? authorization
+          : authorization.canMutate
+            ? { kind: "authorized", principal: authorization.principal }
+            : { kind: "forbidden" };
+      const result = await service.submit({
+        carrier:
+          operation === "batch"
+            ? { kind: "batch" }
+            : { kind: "singleton", operation: operation as TransactionSingletonOperation },
+        body: received.text,
+        key: request.headers.get("idempotency-key") ?? "",
+        authorization: decision,
+        receiving: { acceptsJson: acceptsJson(request.headers.get("accept")), maximumOperations },
+```
+
+## packages/server/src/transaction-http.ts:358–371
+```
+      if (result.code === "idempotency-conflict") {
+        if (!result.context) throw new Error("conflict refusal lost same-entry context");
+        return context(
+          problem(
+            parseReadUpdateProblem({
+              type: "https://github.com/gastownhall/bdp/problems/conflict",
+              code: result.code,
+              status: 409,
+              retry: "never",
+            }),
+          ),
+          result.context,
+        );
+      }
+```
+
+## packages/server/src/transaction-http.ts:389–394
+```
+    if (authorization.kind === "unauthenticated") return transactionHttpProblem("unauthenticated");
+    if (url.pathname === new URL("snapshot", scope).pathname) {
+      const fields = [...url.searchParams.keys()];
+      const id = url.searchParams.get("snapshot"),
+        stream = url.searchParams.get("stream"),
+        token = url.searchParams.get("page");
+```
+
+## packages/server/src/transaction-http.ts:491–514
+```
+      if (selectChangefeedMedia(request.headers.get("accept")) !== "sse") {
+        const observed = await service.events(
+          eventRequest.source.url,
+          eventRequest.after,
+          minimum,
+          request.signal,
+        );
+        if (observed.kind === "missing")
+          return transactionHttpProblem("resource-not-found", observed.context);
+        if (observed.kind === "unsupported") return developmentGap("minimum-position");
+        return context(jsonResponse(observed.page), observed.context);
+      }
+      const fields =
+        lastEventIds ??
+        (request.headers.has("last-event-id") ? [request.headers.get("last-event-id")!] : []);
+      const observed = await service.beginEvents(
+        eventRequest.source.url,
+        fields.length === 1 ? fields[0] : eventRequest.after,
+        minimum,
+        request.signal,
+        fields.length > 1,
+      );
+      if (observed.kind === "missing")
+        return transactionHttpProblem("resource-not-found", observed.context);
+```
+
+## packages/server/src/transaction-http.ts:613–634
+```
+        else if (error instanceof TransactionEventProjectionGap)
+          response = developmentGap(error.message);
+        else if (error instanceof TransactionMinimumVisibilityGap)
+          response = developmentGap("minimum-position-visibility");
+        else response = empty(500);
+      }
+      response.headers.set("x-bdp-development", "non-attesting");
+      if (request.method === "POST") response.headers.set("vary", "Accept");
+      if (
+        "kind" in response &&
+        (response.kind === "changefeed-stream" || response.kind === "event-stream")
+      )
+        return response;
+      return {
+        ...(request.method === "GET" || request.method === "HEAD"
+          ? applyReadHttpSemantics(request, response)
+          : response),
+        kind: "finite",
+      };
+    },
+  });
+}
+```
+
+## packages/server/src/read-http-routing.ts:44–53
+```
+export function jsonResponse(body: unknown): HttpResponse {
+  return {
+    status: 200,
+    headers: new Headers({
+      "content-type": "application/json",
+      "cache-control": "private, no-store",
+    }),
+    body,
+  };
+}
+```
+
+## packages/server/src/transaction-store.ts:207–218
+```
+const day = 86400000;
+export const TRANSACTION_RECEIPT_DETAIL_MS = day;
+const format = "bdp-private-transaction-snapshot-10";
+// Identity equality changed without changing the value codec. Retained keys
+// require both the current identity policy and the alias-aware store format.
+const identityPolicy = "transaction-revision-provenance-4";
+const schema = `
+CREATE TABLE metadata(name TEXT PRIMARY KEY, value TEXT NOT NULL) STRICT;
+CREATE TABLE resources(id TEXT PRIMARY KEY, body TEXT NOT NULL, kind TEXT NOT NULL, source TEXT, target TEXT) STRICT;
+CREATE TABLE identities(id TEXT PRIMARY KEY) STRICT;
+CREATE TABLE aliases(path TEXT PRIMARY KEY, target TEXT NOT NULL) STRICT;
+CREATE TABLE receipts(principal TEXT NOT NULL, key TEXT NOT NULL, identity TEXT NOT NULL, witnesses TEXT NOT NULL, owner TEXT, receipt TEXT NOT NULL, dependency TEXT, PRIMARY KEY(principal,key)) STRICT;
+```
+
+## packages/server/src/transaction-store.ts:226–230
+```
+export function transactionReceiptMaximum(value: number = TRANSACTION_MAXIMUM_OPERATIONS): number {
+  if (!Number.isSafeInteger(value) || value < 1)
+    throw new TypeError("positive receipt page maximum required");
+  return value;
+}
+```
+
+## packages/server/src/transaction-store.ts:245–252
+```
+/** Owns a single SQLite connection under persistent EXCLUSIVE locking. Admission
+ * is durable separately; graph/positions/group/terminal receipt are one commit.
+ * Startup retracts abandoned pending receipts instead of running requests itself.
+ * Fixed all-visible private policy only; this is not an authentication boundary. */
+export function openTransactionStore(options: TransactionStoreOptions) {
+  const scope = parseCanonicalScope(options.scope);
+  const view = "development-all-visible";
+  if (Buffer.byteLength(json(`${scope}events/`)) > TRANSACTION_RUNTIME_LIMITS.scopeSourceBytes)
+```
+
+## packages/server/src/transaction-store.ts:421–450
+```
+  function row(principal: string, key: string): Row | undefined {
+    return db.prepare("SELECT * FROM receipts WHERE principal=? AND key=?").get(principal, key) as
+      | Row
+      | undefined;
+  }
+  function parseReceipt(value: string): TransactionReceipt {
+    return JSON.parse(value) as TransactionReceipt;
+  }
+  /** Only terminal detail expires. A pending receipt is governed by ownership
+   * and recovery, not the detail-retention clock. Exact key identity stays bound
+   * for completed transactions, including committed no-op transactions. */
+  function expireRow(
+    stored: Row,
+    now: number,
+  ): { readonly row?: Row; readonly change?: "completedExpired" | "failedForgotten" } {
+    if (stored.owner !== null) return { row: stored };
+    const receipt = parseReceipt(stored.receipt);
+    if (receipt.detail === "expired") return { row: stored };
+    const expires = typeof receipt.expiresAt === "string" ? Date.parse(receipt.expiresAt) : NaN;
+    if (
+      receipt.detail !== "available" ||
+      !Number.isSafeInteger(expires) ||
+      (receipt.status !== "completed" && receipt.status !== "failed")
+    )
+      throw new Error("invalid terminal receipt retention state");
+    // expiresAt promises availability through its instant; disposal happens after.
+    if (now <= expires) return { row: stored };
+    if (receipt.status === "failed") {
+      db.prepare("DELETE FROM receipts WHERE principal=? AND key=? AND owner IS NULL").run(
+        stored.principal,
+```
+
+## packages/server/src/transaction-store.ts:592–600
+```
+  function readContext(): TransactionReadContext {
+    const position = metadata("position");
+    if (!/^(0|[1-9][0-9]*)$/.test(position) || !Number.isSafeInteger(Number(position)))
+      throw new Error("invalid transaction read position");
+    return Object.freeze({
+      scopeEpoch: epoch,
+      authorizationView: view,
+      scopePosition: `pos-${position}`,
+    });
+```
+
+## packages/server/src/transaction-store.ts:1051–1078
+```
+    principal: string,
+    key: string,
+    batch: PreparedTransaction,
+    pendingWins = false,
+    references?: ReferenceBindings,
+    template?: DependencyTemplate,
+    controls?: TransactionReceivingControls,
+  ): TransactionReceivingAdmission {
+    const stored = row(principal, key);
+    const prior = stored ? expireRow(stored, instant()).row : undefined;
+    if (pendingWins && prior?.owner !== null && prior !== undefined)
+      return { kind: "existing", receipt: parseReceipt(prior.receipt) };
+    if (prior?.dependency) {
+      const template = parseDependencyTemplate(prior.dependency, scope);
+      const comparison = compareDependencyTemplate(template, batch, resolveAlias, (index) => {
+        const stored = db
+          .prepare("SELECT fact FROM creator_facts WHERE attempt=? AND member=?")
+          .get(template.attempt, index);
+        if (!stored) throw new Error("unresolved receipt lost creator fact");
+        return typeof stored.fact === "string"
+          ? (JSON.parse(stored.fact) as CreatorFact)
+          : undefined;
+      });
+      return comparison === "conflict"
+        ? { kind: "conflict" }
+        : comparison === "equal"
+          ? { kind: "existing", receipt: parseReceipt(prior.receipt) }
+          : { kind: "comparison-pending" };
+```
+
+## packages/server/src/transaction-store.ts:1114–1132
+```
+      status: "pending",
+      idempotencyKey: key,
+      scopeEpoch: epoch,
+      authorizationView: view,
+      transaction: randomUUID(),
+    };
+    const owner = randomUUID(),
+      claim = Object.freeze({ receipt });
+    db.prepare("INSERT INTO receipts VALUES(?,?,?,?,?,?,?)").run(
+      principal,
+      key,
+      normalized?.identity ?? "",
+      normalized?.witnessesJson ?? "",
+      owner,
+      json(receipt),
+      template ? json(template) : null,
+    );
+    claims.set(claim, { principal, key, owner, normalized });
+    return { kind: "owned", claim };
+```
+
+## packages/server/src/transaction-store.ts:1234–1257
+```
+            try {
+              return evaluateTransaction(
+                normalized,
+                tx,
+                {
+                  scope,
+                  contracts: compiled?.registry ?? {
+                    get(id, bytes) {
+                      const descriptor = descriptors.find((d) => d.id === id);
+                      return descriptor && installed.get(id) === bytes ? { descriptor } : undefined;
+                    },
+                  },
+                  aliasPolicy: { canRead: () => true, canWriteBead: () => true },
+                  policy: { canRead: () => true, canCreate: () => true, canWrite: () => true },
+                  maximumEndpointMultiplicity: [],
+                  observeCommitTime: instant,
+                  recordChangeContext: false,
+                  limits: TRANSACTION_RUNTIME_LIMITS,
+                },
+                core.transaction,
+                position,
+                now,
+              );
+            } finally {
+```
+
+## packages/server/src/transaction-store.ts:1263–1267
+```
+          // admission or before Resource callbacks have consumed execution time.
+          const expiresAt = new Date(instant() + day).toISOString();
+          let receipt: TransactionReceipt;
+          if (!result.ok) {
+            db.exec("ROLLBACK TO effects; RELEASE effects");
+```
+
+## packages/server/src/transaction-store.ts:1280–1313
+```
+              authorizationView: view,
+              checkpoint: position,
+              position,
+              previousPosition: `pos-${previous}`,
+              projectionAdvance: false,
+              transaction: core.transaction,
+              changes: result.changes,
+              erasures: [],
+              eventCount: result.events.length,
+              events: result.events,
+            };
+            const effective = result.events.length > 0;
+            if (effective) {
+              db.prepare("INSERT INTO groups VALUES(?,?)").run(previous + 1, json(group));
+              db.prepare("UPDATE metadata SET value=? WHERE name='position'").run(
+                String(previous + 1),
+              );
+            }
+            receipt = {
+              ...core,
+              status: "completed",
+              detail: "available",
+              requiredPosition: effective ? position : `pos-${previous}`,
+              ...(effective ? { effectPosition: position } : {}),
+              results: result.results,
+              next: null,
+              expiresAt,
+            };
+          }
+          const changed = db
+            .prepare(
+              "UPDATE receipts SET receipt=?,owner=NULL WHERE principal=? AND key=? AND owner=?",
+            )
+            .run(json(receipt), owned.principal, owned.key, owned.owner);
+```
+
+## packages/server/src/transaction-store.ts:1610–1635
+```
+            if (start && p === start.position && event.ordinal <= start.ordinal) continue;
+            // Reserve the exact continuation even if this Event is currently last.
+            const { eventBytes: candidateBytes, pageBytes: bytes } = eventCandidateBytes(
+              envelopeBytes,
+              source.url,
+              event,
+              eventBytes,
+              events.length,
+            );
+            if (events.length + 1 > receiptMaximumItems || bytes > TRANSACTION_EVENT_PAGE_BYTES) {
+              const last = events.at(-1);
+              if (!last) throw new Error("finite Event page cannot hold first retained Event");
+              next = eventContinuation(source.url, last.id);
+              break;
+            }
+            events.push(event);
+            eventBytes = candidateBytes;
+          }
+          if (next !== null) break;
+          at = p + 1;
+        }
+        if (!cursorMatched) throw new TransactionEventParameterError(undefined, context);
+        return Object.freeze({
+          kind: "page" as const,
+          context,
+          page: freezeEventPage({ source: source.url, events, next }),
+```
+
+## packages/server/src/transaction-batch.ts:64–64
+```
+  maximumOperations: 32,
+```
+
+## packages/server/src/transaction-batch.ts:692–708
+```
+  function scopeEvent(subject: ResourceRecord, type: TransactionEvent["type"], data: unknown) {
+    if (events.length >= eventMaximum) throw new EventExpansionLimit();
+    const ordinal = events.length;
+    events.push({
+      id: `${position}-${ordinal}`,
+      ordinal,
+      type,
+      // These are authority Scope-group facts, not Resource-source projections.
+      // The latter rewrite source to `${resource.id}?view=events` on read.
+      source: `${options.scope}events/`,
+      subject: subject.id,
+      subjectType: subject.type,
+      transaction,
+      time: new Date(now).toISOString(),
+      data,
+    });
+  }
+```
+
+## packages/server/src/transaction-batch.ts:780–801
+```
+        !before ||
+        !outcome.deleted ||
+        before.id !== `${options.scope}${id}` ||
+        outcome.deleted.resource.id !== before.id ||
+        outcome.deleted.resource.type !== before.type ||
+        outcome.deleted.resource.revision !== before.revision
+      )
+        throw new Error("deleted Resource lacks matching previous identity");
+      changes.set(before.id, { operation: "tombstone", ...outcome.deleted });
+    }
+    if (outcome.outcome === "created") {
+      scopeEvent(subject, "created", {
+        revision: subject.revision,
+        properties: subject.properties,
+        metadata: subject.metadata ?? {},
+        ...(subject.revisionProvenance ? { revisionProvenance: subject.revisionProvenance } : {}),
+        ...("source" in subject ? { source: subject.source, target: subject.target } : {}),
+      });
+    } else if (outcome.outcome === "updated") {
+      if (!before) throw new Error("update lacks previous state");
+      scopeEvent(subject, "updated", {
+        previousRevision: before.revision,
+```
+
+## packages/server/src/transaction-events.ts:75–101
+```
+  /^ev_([A-Za-z0-9_-]{43})_([A-Za-z0-9_-]{43})_([A-Za-z0-9_-]{43})_(pos-(?:0|[1-9][0-9]*))_(0|[1-9][0-9]*)$/;
+const hash = (tag: string, value: string) =>
+  createHash("sha256")
+    .update(JSON.stringify([tag, value]))
+    .digest("base64url");
+
+/** Scope and Resource token spelling is deliberately private, not a fixture law. */
+export function renderTransactionEvent(
+  context: Pick<TransactionReadContext, "scopeEpoch" | "authorizationView">,
+  source: string,
+  checkpoint: string,
+  event: TransactionEvent,
+): TransactionEvent {
+  if (
+    !position.test(checkpoint) ||
+    !Number.isSafeInteger(Number(checkpoint.slice(4))) ||
+    Number(checkpoint.slice(4)) < 1 ||
+    !Number.isSafeInteger(event.ordinal) ||
+    event.ordinal < 0
+  )
+    throw new Error("invalid committed Event position");
+  return {
+    ...event,
+    source,
+    id: `ev_${hash("epoch", context.scopeEpoch)}_${hash("view", context.authorizationView)}_${hash("source", source)}_${checkpoint}_${event.ordinal}`,
+  };
+}
+```
+
+## packages/server/src/transaction-events.ts:237–250
+```
+  }
+  const result: TransactionEvent[] = [];
+  for (const [index, event] of group.events.entries()) {
+    if (
+      event.ordinal !== index ||
+      event.source !== `${scope}events/` ||
+      event.transaction !== group.transaction ||
+      !["created", "updated", "deleted", "linked", "unlinked"].includes(event.type)
+    )
+      throw new Error("invalid retained Event framing");
+    const data = event.data as Record<string, unknown>;
+    let include = source.kind === "scope";
+    if (source.kind !== "scope") {
+      include =
+```
+
+## packages/server/src/resource-evaluator.ts:897–906
+```
+  const ownedLinks = (
+    owner: VersionRecipe,
+    descriptor: BeadTypeDescriptor,
+    replacement?: VersionRecipe,
+    removed?: string,
+  ): VersionRecipe => {
+    if (descriptor.ownsOutgoing === undefined) return owner;
+    const entries: Record<string, PreparedLink[]> = Object.create(null) as Record<
+      string,
+      PreparedLink[]
+```
+
+## packages/server/src/resource-evaluator.ts:1135–1166
+```
+  const record = freeze({
+    id: recipe.id,
+    type: recipe.type,
+    revision: recipe.revision,
+    properties: recipe.properties,
+    metadata: recipe.commonMetadata,
+    ...(context === undefined && recipe.metadata.actor === undefined
+      ? {}
+      : {
+          revisionProvenance: {
+            ...context,
+            ...(recipe.metadata.actor === undefined ? {} : { actor: recipe.metadata.actor }),
+          },
+        }),
+    ...(recipe.endpoints ?? {}),
+    ...(recipe.ownedLinks === undefined
+      ? {}
+      : {
+          ownedLinks: Object.fromEntries(
+            Object.entries(recipe.ownedLinks).map(([type, links]) => [
+              type,
+              links.map((link) =>
+                link.kind === "existing"
+                  ? link.value
+                  : materializeVersion(link.value, nativeContext, materialized),
+              ),
+            ]),
+          ),
+        }),
+  }) as ResourceRecord;
+  materialized.set(recipe, record);
+  return record;
+```
+
+## packages/server/src/authority-read.ts:580–603
+```
+  const accept = (returned: StoredResource, expected?: string): CheckedRecord => {
+    synchronous(returned);
+    // All checks and the cache use this one capture of declared row primitives;
+    // this does not qualify arbitrary accessors or the coherence of unseen rows.
+    const row = Object.freeze({
+      id: returned.id,
+      kind: returned.kind,
+      bodyJson: returned.bodyJson,
+      source: returned.source,
+      target: returned.target,
+    }) as StoredResource;
+    if (expected !== undefined && row.id !== expected)
+      integrity("point row differs from requested identity");
+    if (row.kind !== "bead" && row.kind !== "link") integrity("unknown stored Resource kind");
+    let record: ResourceRecord;
+    try {
+      record = readStoredResource(row, scope);
+      if (row.kind === "bead") validateServerBead(record as BeadRecord, scope);
+      else {
+        const link = record as LinkRecord;
+        validateServerLink(link, scope);
+        if (row.source !== endpointIndex(link.source) || row.target !== endpointIndex(link.target))
+          integrity("Link endpoint index disagrees with its body");
+      }
+```
+
+## packages/server/src/authority-read.ts:823–838
+```
+  const items: ResourceRecord[] = [];
+  const seen = new Set<string>();
+  for (const row of rows) {
+    const record = graph.accept(row);
+    if (intent.kind === "bead-links" && !("source" in record))
+      throw new AuthorityReadError("integrity", "incident index returned a Bead");
+    if (
+      structural(record, intent, prepared.conformance) &&
+      graph.visible(record, policy) &&
+      !seen.has(record.id)
+    ) {
+      seen.add(record.id);
+      items.push(record);
+    }
+  }
+  return Object.freeze({ kind: "page", items: Object.freeze(items), observation });
+```
+
+## packages/server/src/read-request.ts:154–174
+```
+    const limit = parseOptionalLimit(parameter("limit"));
+    if (isReadProblem(limit)) return limit;
+    if (collection === "types") {
+      if (parameter("cursor") !== undefined)
+        return { kind: "collection", collection, continuation: url.href };
+      return {
+        kind: "collection",
+        collection,
+        ...(limit === undefined ? {} : { limit }),
+      };
+    }
+    const type = parseOptionalTypeParameter(parameter("type"), scope);
+    if (isReadProblem(type)) return type;
+    const conformsTo = parseOptionalTypeParameter(parameter("conformsTo"), scope);
+    if (isReadProblem(conformsTo)) return conformsTo;
+    const filters = {
+      ...(type === undefined ? {} : { type }),
+      ...(conformsTo === undefined ? {} : { conformsTo }),
+    };
+    const controls = {
+      ...(limit === undefined ? {} : { limit }),
+```
+
+## packages/server/src/read-request.ts:258–262
+```
+function parseOptionalLimit(value: string | undefined): number | undefined | ReadProblem {
+  if (value === undefined) return undefined;
+  if (!/^[1-9][0-9]*$/.test(value)) return invalidParameter();
+  const limit = Number(value);
+  return Number.isSafeInteger(limit) ? limit : invalidParameter();
+```
+
+## packages/server/src/read-request.ts:296–298
+```
+  beads: ["type", "conformsTo", "selector", "limit", "cursor"],
+  links: ["type", "conformsTo", "source", "target", "endpoint", "selector", "limit", "cursor"],
+  types: ["limit", "cursor"],
+```
+
+## packages/protocol/src/read-update-problems.ts:39–41
+```
+export function parseReadUpdateProblem(value: unknown): ReadUpdateProblem {
+  return parseReadUpdateShape(value, "problem") as unknown as ReadUpdateProblem;
+}
+```
+
+## packages/protocol/src/read-update-values.ts:160–165
+```
+export function parseReadUpdateShape(
+  value: unknown,
+  key: keyof typeof READ_UPDATE_VALUE_SCHEMA_REFS,
+): Readonly<Record<string, unknown>> {
+  const record = snapshotProtocolRecord(value, key);
+  const pending: unknown[] = [record];
+```
+
+## packages/protocol/src/read-update-values.ts:178–182
+```
+  }
+  validate(record, key);
+  return record;
+}
+const parsedOperations = new WeakSet<object>();
+```
+
+## apps/bdptest/test-support/transactional-execution-binding.ts:26–107
+```
+  if (
+    ready.profile !== "transactional" ||
+    ready.history !== false ||
+    ready.claimEligible !== false ||
+    ready.authorityMode !== "canonical" ||
+    typeof ready.scope !== "string" ||
+    typeof ready.runtimeConfigurationIdentity !== "string" ||
+    !/^[a-f0-9]{64}$/.test(ready.runtimeConfigurationIdentity)
+  )
+    throw new Error("installed Transactional metadata unavailable");
+  if (typeof ready.listenUrl !== "string")
+    throw new Error("installed physical session unavailable");
+  const url = new URL(ready.listenUrl);
+  if (
+    url.protocol !== "http:" ||
+    url.hostname !== "127.0.0.1" ||
+    !url.port ||
+    url.username ||
+    url.password ||
+    url.pathname !== "/" ||
+    url.search ||
+    url.hash
+  )
+    throw new Error("invalid installed dial binding");
+  const targetNames = {
+    createBead: "create-bead",
+    updateBead: "update-bead",
+    deleteBead: "delete-bead",
+    createLink: "create-link",
+    updateLink: "update-link",
+    deleteLink: "delete-link",
+    putAlias: "put-alias",
+    deleteAlias: "delete-alias",
+    updateWhere: "update-where",
+    deleteWhere: "delete-where",
+    batch: "batch",
+    sequence: "sequence",
+  };
+  const operationTargets = Object.freeze(
+    Object.fromEntries(
+      Object.entries(targetNames).map(([name, suffix]) => [
+        name,
+        `${ready.scope}operations/${suffix}`,
+      ]),
+    ),
+  );
+  if (!isDeepStrictEqual(ready.targets, operationTargets))
+    throw new Error("installed operation target inventory mismatch");
+  const served = bindServedProfileConfiguration({
+    scope: ready.scope,
+    profile: "transactional",
+    history: false,
+    sourceCommit,
+    installedPayloadDigest: ready.payloadIdentity as string,
+    installedContractsDigest: installedContractsDigest(ready.artifactIdentity),
+    policyDigest: ready.policyIdentity as string,
+    authenticationDigest: ready.authenticationIdentity as string,
+    fixture,
+  });
+  return Object.freeze({
+    served,
+    operationTargets,
+    runtimeConfigurationIdentity: ready.runtimeConfigurationIdentity,
+    authorityMode: "canonical" as const,
+  });
+}
+export function createTransactionalExecutionBinding(options: {
+  readonly baseline: ReturnType<typeof installedTransactionBinding>;
+  readonly sourceCommit: string;
+  readonly fixtureSource: { bytes: Uint8Array };
+  readonly exactMode: ExactHttpModeOptions;
+  readonly launch: (
+    scenario: string,
+    reopen: boolean,
+    signal: AbortSignal,
+  ) => Promise<InstalledTransactionChild>;
+}) {
+  let active:
+    | (TransactionalSession & { controller: AbortController; pending: Set<Promise<unknown>> })
+    | undefined;
+  let generation = 0;
+  let presentation:
+```
+
+## packages/conformance/src/http-executor.ts:20–108
+```
+}
+
+/** Explicit, socket-only authored bytes. No JSON or Headers normalization is applied. */
+export interface ExactHttpExchangeRequest {
+  readonly method: HttpMethod;
+  readonly url: string;
+  readonly signal: AbortSignal;
+  readonly headers?: never;
+  readonly rawRequestTarget?: Uint8Array;
+  readonly credentialRef?: string;
+  readonly raw: {
+    readonly headerLines: readonly RawHeaderLine[];
+    readonly bodyBytes?: Uint8Array;
+  };
+}
+
+export interface RawHeaderLine {
+  readonly name: string;
+  readonly value: string;
+}
+
+export type RequestWriteState = "not-started" | "started-completion-unestablished" | "complete";
+
+export interface ExactRequestObservation {
+  readonly source: "raw-http1-serializer";
+  /** Transient secret-bearing data, never safe to serialize directly into a report. */
+  readonly headerLines: readonly RawHeaderLine[];
+  /** Full authored entity metadata, not a claim about a transmitted prefix or server receipt. */
+  readonly bodyPresent: boolean;
+  readonly bodyOctets: number;
+  readonly bodyDigest?: string;
+  readonly writeState: RequestWriteState;
+}
+
+/** Trusted harness configuration, not portable scenario data or target-supplied authority. */
+export interface ExactHttpModeOptions {
+  readonly scope: string;
+  readonly profile: "read" | "read-update" | "transactional";
+  readonly routes: readonly { readonly method: HttpMethod; readonly url: string }[];
+  readonly maximumRequestHeaderBytes: number;
+  readonly maximumRequestBodyBytes: number;
+  readonly defaultCredentialRef: string;
+  readonly credentialHandles: readonly {
+    readonly id: string;
+    /** Empty means a deliberately anonymous handle; names are lower-case. */
+    readonly headerNames: readonly string[];
+  }[];
+  /** Synchronous, trusted nonblocking lookup. Promises/thenables are rejected. */
+  readonly resolveCredentials: (
+    context: Readonly<{
+      scope: string;
+      url: string;
+      method: HttpMethod;
+      credentialRef: string;
+      signal: AbortSignal;
+    }>,
+  ) => Readonly<Record<string, string>>;
+}
+
+export type RawHttpExchangeExecutor = (
+  request: HttpExchangeRequest | ExactHttpExchangeRequest,
+) => Promise<HttpExchangeResponse>;
+
+export interface HttpExchangeResponse {
+  readonly exactRequest?: ExactRequestObservation;
+  readonly url: string;
+  readonly status: number;
+  readonly headers: Readonly<Record<string, string>>;
+  readonly bodyText: string;
+  /** Decoded message-body octets observed below a method-aware HTTP client, when available. */
+  readonly bodyOctets?: number;
+  /**
+   * Exact bounded HTTP/1.x response bytes from status line through framed body.
+   * Only the socket-level executor can supply this pre-normalization evidence.
+   */
+  readonly wireResponseBytes?: Uint8Array;
+  /**
+   * Compatibility view after authorization/runtime decoration. In exact mode,
+   * repeated names retain their last value and this view has no wire-fidelity flag;
+   * only exactRequest.headerLines preserves authoritative ordered occurrences.
+   */
+  readonly effectiveRequest?: {
+    readonly url: string;
+    readonly headers: Readonly<Record<string, string>>;
+    /** Present only when the reported headers match bytes serialized onto the wire. */
+    readonly headersTransmitted?: true;
+  };
+}
+
+```
+
+## packages/conformance/src/http-executor.ts:164–195
+```
+export function createRawHttpExchangeExecutor(
+  dialRoute: RawHttpDialRoute,
+  options: RawHttpExchangeExecutorOptions = {},
+): RawHttpExchangeExecutor {
+  const route = snapshotDialRoute(dialRoute);
+  const exactMode =
+    options.exactMode === undefined ? undefined : snapshotExactHttpMode(options.exactMode);
+  const {
+    authorize,
+    maximumBodyBytes = 1_048_576,
+    requestTimeoutMs = 30_000,
+    maximumHeaderBytes = DEFAULT_MAXIMUM_HEADER_BYTES,
+  } = Object.freeze({ ...options });
+  if (authorize !== undefined && typeof authorize !== "function")
+    throw new TypeError("authorize must be a function when present");
+  requirePositiveBound(maximumBodyBytes, "maximumBodyBytes");
+  requireTimerBound(requestTimeoutMs);
+  requirePositiveBound(maximumHeaderBytes, "maximumHeaderBytes");
+  return async (request) => {
+    if (isExactRequest(request))
+      return executeExact(
+        request,
+        route,
+        exactMode,
+        requestTimeoutMs,
+        maximumHeaderBytes,
+        maximumBodyBytes,
+      );
+    if (request.headers === undefined || request.credentialRef !== undefined)
+      throw new HttpTransportError("configuration", "ordinary HTTP request headers are required");
+    const ordinary = request;
+    const url = parseExecutorUrl(request.url);
+```
+
+## packages/conformance/src/http-executor.ts:489–507
+```
+    typeof fields.defaultCredentialRef !== "string" ||
+    !handles.some(({ id }) => id === fields.defaultCredentialRef) ||
+    typeof fields.resolveCredentials !== "function"
+  )
+    return configuration();
+  // Keep the callback identity, not mutable caller configuration surrounding it.
+  const resolve = fields.resolveCredentials;
+  return Object.freeze({
+    scope: scope.href,
+    profile: fields.profile,
+    routes: Object.freeze(routes),
+    credentialHandles: Object.freeze(handles),
+    maximumRequestHeaderBytes: fields.maximumRequestHeaderBytes,
+    maximumRequestBodyBytes: fields.maximumRequestBodyBytes,
+    defaultCredentialRef: fields.defaultCredentialRef,
+    resolveCredentials: (context: Parameters<ExactHttpModeOptions["resolveCredentials"]>[0]) =>
+      resolve(context),
+  });
+}
+```
+
+## packages/conformance/src/http-executor.ts:680–715
+```
+    const ref = request.credentialRef ?? mode.defaultCredentialRef;
+    if (typeof ref !== "string" || !HANDLE_ID.test(ref) || ref.length > 128) return configuration();
+    const handle = mode.credentialHandles.find(({ id }) => id === ref);
+    if (
+      handle === undefined ||
+      (handle.headerNames.length > 0 && !safeCredentialTarget(target, url))
+    )
+      return configuration();
+    requestDeadline(signal, deadline);
+    const credentials = dataRecord(
+      mode.resolveCredentials(
+        Object.freeze({
+          scope: mode.scope,
+          url: url.href,
+          method: request.method,
+          credentialRef: ref,
+          signal,
+        }),
+      ),
+    );
+    requestDeadline(signal, deadline);
+    const seen = new Set<string>();
+    for (const [name, value] of Object.entries(credentials)) {
+      const normalized = name.toLowerCase();
+      if (
+        !handle.headerNames.includes(normalized) ||
+        seen.has(normalized) ||
+        typeof value !== "string" ||
+        !HTTP_FIELD_VALUE.test(value) ||
+        !HTTP_FIELD_NAME.test(name)
+      )
+        return configuration();
+      seen.add(normalized);
+      append(name, value);
+    }
+    if (seen.size !== handle.headerNames.length) return configuration();
+```
+
+## packages/conformance/src/http-executor.ts:746–779
+```
+      },
+    );
+    state = exchanged.writeState;
+    requestDeadline(signal, deadline);
+    const parsed = parseRawResponse(
+      exchanged.bytes,
+      request.method,
+      maximumHeaderBytes,
+      maximumBodyBytes,
+    );
+    const exactRequest = Object.freeze({
+      source: "raw-http1-serializer" as const,
+      headerLines: Object.freeze(lines),
+      bodyPresent: body !== undefined,
+      bodyOctets: body?.length ?? 0,
+      ...(body === undefined
+        ? {}
+        : { bodyDigest: createHash("sha256").update(body).digest("hex") }),
+      writeState: exchanged.writeState,
+    });
+    const response = {
+      url: url.href,
+      ...parsed,
+      wireResponseBytes: Uint8Array.from(exchanged.bytes),
+      exactRequest,
+      effectiveRequest: {
+        url: url.href,
+        // Deliberately lossy last-occurrence compatibility view, never exact wire evidence.
+        // Ordered exactRequest.headerLines is authoritative for every occurrence.
+        headers: Object.freeze(
+          Object.fromEntries(lines.map(({ name, value }) => [name.toLowerCase(), value])),
+        ),
+      },
+    };
+```
+
+## packages/conformance/src/http-executor.ts:886–908
+```
+  maximumBodyBytes: number,
+  requestBody?: Uint8Array,
+  observeWrite?: (state: RequestWriteState) => void,
+): Promise<{ bytes: Buffer; writeState: RequestWriteState }> {
+  return new Promise((resolve, reject) => {
+    let socket: Socket | undefined;
+    let settled = false;
+    let earlyCleanup: ReturnType<typeof setImmediate> | undefined;
+    let connected = false;
+    let state: RequestWriteState = "not-started";
+    let completedWrites = 0;
+    const requiredWrites = requestBody === undefined ? 1 : 2;
+    const wireLimit = Math.min(Number.MAX_SAFE_INTEGER, maximumBodyBytes + maximumHeaderBytes * 2);
+    let buffered = Buffer.alloc(Math.min(8192, wireLimit));
+    let total = 0;
+    const raw = (): Buffer => buffered.subarray(0, total);
+    const recordState = (next: RequestWriteState): void => {
+      if (settled) return;
+      state = next;
+      observeWrite?.(next);
+    };
+    const finish = (error?: HttpTransportError): void => {
+      if (settled) return;
+```
+
+## packages/conformance/src/http-executor.ts:980–1010
+```
+            : new HttpTransportError("disconnect", "HTTP request write disconnected"),
+        );
+      }
+    });
+    peer.on("data", (chunk: Buffer) => {
+      if (settled) return;
+      if (chunk.length > wireLimit - total) {
+        finish(
+          new HttpTransportError("body-limit", "HTTP response exceeded the configured body limit"),
+        );
+        return;
+      }
+      const next = total + chunk.length;
+      if (next > buffered.length) {
+        const grown = Buffer.alloc(Math.min(wireLimit, Math.max(next, buffered.length * 2)));
+        buffered.copy(grown, 0, 0, total);
+        buffered = grown;
+      }
+      chunk.copy(buffered, total);
+      total = next;
+      try {
+        const head = locateFinalResponseHead(raw(), maximumHeaderBytes);
+        if (head === undefined) return;
+        if (total - head.headerEnd - 4 > maximumBodyBytes + maximumHeaderBytes)
+          throw new HttpTransportError(
+            "body-limit",
+            "HTTP response exceeded the configured body limit",
+          );
+        if (isFramedResponseComplete(raw(), method, maximumHeaderBytes, maximumBodyBytes)) {
+          if (observeWrite !== undefined && state === "started-completion-unestablished") {
+            // A queued body cannot be drained through a peer that has already refused it.
+```
+
+## packages/conformance/src/http-executor.ts:1190–1234
+```
+  const body =
+    method === "HEAD" || status === 204 || status === 304
+      ? framed
+      : decodeResponseBody(framed, headers, maximumBodyBytes);
+  if (body.byteLength > maximumBodyBytes)
+    throw new HttpTransportError("body-limit", "HTTP response exceeded the configured body limit");
+  let bodyText: string;
+  try {
+    bodyText = new TextDecoder("utf-8", { fatal: true, ignoreBOM: true }).decode(body);
+  } catch (error) {
+    throw new HttpTransportError("invalid-body", "HTTP response was not valid UTF-8", {
+      cause: error,
+    });
+  }
+  return { status, headers, bodyText, bodyOctets: body.byteLength };
+}
+
+function decodeResponseBody(
+  framed: Buffer,
+  headers: Readonly<Record<string, string>>,
+  maximumBodyBytes: number,
+): Buffer {
+  const transferEncoding = headers["transfer-encoding"]?.toLowerCase();
+  const contentLength = headers["content-length"];
+  if (transferEncoding !== undefined && contentLength !== undefined)
+    throw new HttpTransportError("invalid-body", "HTTP response framing was ambiguous");
+  if (transferEncoding !== undefined) {
+    if (transferEncoding !== "chunked")
+      throw new HttpTransportError("invalid-body", "HTTP response transfer coding was unsupported");
+    return decodeChunkedBody(framed, maximumBodyBytes);
+  }
+  if (contentLength === undefined) return framed;
+  if (!/^(?:0|[1-9][0-9]*)$/.test(contentLength))
+    throw new HttpTransportError("invalid-body", "HTTP response Content-Length was malformed");
+  const expected = Number(contentLength);
+  if (!Number.isSafeInteger(expected))
+    throw new HttpTransportError("body-limit", "HTTP response Content-Length exceeded safe bounds");
+  if (expected > maximumBodyBytes)
+    throw new HttpTransportError("body-limit", "HTTP response exceeded the configured body limit");
+  if (framed.byteLength < expected)
+    throw new HttpTransportError(
+      "disconnect",
+      "HTTP response disconnected before its body was read",
+    );
+  if (framed.byteLength > expected)
+```
+
+## packages/conformance/src/http-executor.ts:1253–1268
+```
+    const size = Number.parseInt(sizeText, 16);
+    if (!Number.isSafeInteger(size))
+      throw new HttpTransportError("body-limit", "chunked HTTP response size exceeded safe bounds");
+    offset = lineEnd + 2;
+    if (size === 0) {
+      validateChunkedTrailers(framed.subarray(offset));
+      return Buffer.concat(chunks);
+    }
+    total += size;
+    if (total > maximumBodyBytes)
+      throw new HttpTransportError(
+        "body-limit",
+        "HTTP response exceeded the configured body limit",
+      );
+    const end = offset + size;
+    if (end + 2 > framed.byteLength)
+```
+
+## vitest.config.ts:60–72
+```
+}
+
+export default defineConfig({
+  resolve: { alias: collectWorkspaceSourceAliases() },
+  test: {
+    coverage: { enabled: false },
+    include: ["packages/**/*.test.ts", "apps/**/*.test.ts", "scripts/**/*.test.mjs"],
+    passWithNoTests: false,
+    // Install the non-emitted admission mock before cross-package test modules
+    // can instantiate @bdp/server through an adapter dependency.
+    setupFiles: ["./packages/server/test-support/read-conformance-mock.ts"],
+  },
+});
+```
+
+## Actual schema definitions (selected, not exhaustive closure)
+Full local closure of five roots is61 definitions with only uri/date-time formats, statically inspected. Omitted definitions: absoluteUri, aliasResultMembers, allocatedIdentity, beadCollection, contextMessage, contextString, contextTime, currentLinkCollection, currentLinkRecord, deletedIdentity, directProblemCode, historyMissing, historyMissingItem, jsonPointer, linkCollection, linkRecord, localName, mutationOutcome, ownedLinkChange, ownedLinkDelta, pinnedReference, propertyChange, readProblem, readProblemCode, readUpdateProblem, readUpdateProblemCode, receiptProblem, receiptProblemCode, typedLinkReference, validationDiagnostic, validationDiagnostics. No Ajv execution claimed.
+```json
+{"$schema":"https://json-schema.org/draft/2020-12/schema","$id":"https://github.com/gastownhall/bdp/schemas/bdp-v0.schema.json","$defs":{"mutationReceipt":{"title":"BDP Mutation Receipt","type":"object","allOf":[{"$ref":"#/$defs/receiptCore"}],"oneOf":[{"type":"object","required":["id","status","idempotencyKey","scopeEpoch","authorizationView","transaction"],"properties":{"id":true,"status":{"const":"pending"},"idempotencyKey":true,"scopeEpoch":true,"authorizationView":true,"transaction":true,"detail":false,"requiredPosition":false,"effectPosition":false,"results":false,"next":false,"allocated":false,"problem":false,"expiresAt":false}},{"type":"object","required":["id","status","detail","idempotencyKey","scopeEpoch","authorizationView","transaction","requiredPosition","results","next","expiresAt"],"properties":{"id":true,"status":{"const":"completed"},"detail":{"const":"available"},"idempotencyKey":true,"scopeEpoch":true,"authorizationView":true,"transaction":true,"requiredPosition":true,"effectPosition":true,"results":true,"next":true,"expiresAt":true,"allocated":false,"problem":false},"allOf":[{"if":{"properties":{"next":{"type":"null"}},"required":["next"]},"then":{"properties":{"results":{"type":"array","minItems":1}}}}]},{"type":"object","required":["id","status","detail","idempotencyKey","scopeEpoch","authorizationView","transaction","requiredPosition","problem","expiresAt"],"properties":{"id":true,"status":{"const":"failed"},"detail":{"const":"available"},"idempotencyKey":true,"scopeEpoch":true,"authorizationView":true,"transaction":true,"requiredPosition":true,"problem":true,"expiresAt":true,"effectPosition":false,"results":false,"next":false,"allocated":false}},{"type":"object","required":["id","status","detail","idempotencyKey","scopeEpoch","authorizationView","transaction","requiredPosition","allocated"],"properties":{"id":true,"status":{"const":"completed"},"detail":{"const":"expired"},"idempotencyKey":true,"scopeEpoch":true,"authorizationView":true,"transaction":true,"requiredPosition":true,"effectPosition":true,"allocated":true,"results":false,"next":false,"problem":false,"expiresAt":false}},{"type":"object","required":["id","status","detail","idempotencyKey","scopeEpoch","authorizationView","transaction","requiredPosition"],"properties":{"id":true,"status":{"const":"completed"},"detail":{"const":"withheld"},"idempotencyKey":true,"scopeEpoch":true,"authorizationView":true,"transaction":true,"requiredPosition":true,"effectPosition":true,"results":false,"next":false,"allocated":false,"problem":false,"expiresAt":false}}]},"receiptCore":{"type":"object","properties":{"id":{"$ref":"#/$defs/absoluteHttpUrl"},"status":{"$ref":"#/$defs/receiptStatus"},"detail":{"$ref":"#/$defs/receiptDetail"},"idempotencyKey":{"$ref":"#/$defs/idempotencyKey"},"scopeEpoch":{"$ref":"#/$defs/wireToken"},"authorizationView":{"$ref":"#/$defs/wireToken"},"transaction":{"$ref":"#/$defs/wireToken"},"requiredPosition":{"$ref":"#/$defs/wireToken"},"effectPosition":{"$ref":"#/$defs/wireToken"},"results":{"type":"array","items":{"$ref":"#/$defs/receiptResult"}},"next":{"oneOf":[{"$ref":"#/$defs/absoluteHttpUrl"},{"type":"null"}]},"allocated":{"type":"array","items":{"$ref":"#/$defs/allocatedIdentity"}},"problem":{"$ref":"#/$defs/receiptProblem"},"expiresAt":{"$ref":"#/$defs/dateTime"}},"allOf":[{"if":{"properties":{"status":{"const":"failed"}},"required":["status"]},"then":{"properties":{"effectPosition":false,"detail":{"const":"available"}}}}],"additionalProperties":false},"receiptResult":{"type":"object","required":["operationIndex","outcome"],"properties":{"operationIndex":{"type":"integer","minimum":0},"operationName":{"$ref":"#/$defs/localName"},"outcome":{"$ref":"#/$defs/receiptEntryOutcome"},"resource":{"oneOf":[{"allOf":[{"$ref":"#/$defs/beadRecord"},{"type":"object","properties":{"links":false}}]},{"$ref":"#/$defs/linkRecord"}]},"deleted":{"$ref":"#/$defs/deletedIdentity"},"erased":{"$ref":"#/$defs/resourceIdentity"},"source":{"$ref":"#/$defs/absoluteHttpUrl"},"sourceRevision":{"$ref":"#/$defs/revision"},"count":{"type":"integer","minimum":0},"alias":{"$ref":"#/$defs/absoluteHttpUrl"},"target":{"$ref":"#/$defs/absoluteHttpUrl"}},"allOf":[{"if":{"properties":{"outcome":{"enum":["created","updated"]}},"required":["outcome"],"not":{"properties":{"alias":true},"required":["alias"]}},"then":{"required":["resource"],"properties":{"resource":true,"deleted":false,"erased":false,"count":false}}},{"if":{"properties":{"outcome":{"const":"deleted"}},"required":["outcome"],"not":{"properties":{"alias":true},"required":["alias"]}},"then":{"required":["deleted"],"properties":{"deleted":true,"resource":false,"erased":false,"count":false}}},{"if":{"properties":{"outcome":{"const":"erased"}},"required":["outcome"]},"then":{"required":["erased"],"properties":{"erased":true,"resource":false,"deleted":false,"count":false}}},{"if":{"properties":{"outcome":{"const":"matched"}},"required":["outcome"]},"then":{"required":["count"],"properties":{"count":true,"operationName":false,"resource":false,"deleted":false,"erased":false,"source":false,"sourceRevision":false}}},{"if":{"properties":{"outcome":{"const":"withheld"}},"required":["outcome"]},"then":{"properties":{"resource":false,"deleted":false,"erased":false,"source":false,"sourceRevision":false,"count":false}}},{"if":{"required":["resource"],"properties":{"resource":{"$ref":"#/$defs/beadRecord"}}},"then":{"properties":{"source":false,"sourceRevision":false}}},{"if":{"required":["deleted"],"properties":{"deleted":{"type":"object","required":["resourceKind"],"properties":{"resourceKind":{"const":"bead"}}}}},"then":{"properties":{"source":false,"sourceRevision":false}}},{"if":{"required":["alias"]},"then":{"allOf":[{"$ref":"#/$defs/aliasResultMembers"}],"properties":{"operationIndex":{"const":0},"operationName":false,"resource":false,"deleted":false,"erased":false,"source":false,"sourceRevision":false,"count":false}},"else":{"properties":{"target":false}}}],"dependentRequired":{"source":["sourceRevision"],"sourceRevision":["source"]},"additionalProperties":false},"receiptStatus":{"enum":["pending","completed","failed"]},"receiptDetail":{"enum":["available","expired","withheld"]},"receiptEntryOutcome":{"enum":["created","updated","deleted","matched","withheld","erased"]},"transactionalProblem":{"title":"BDP Transactional Problem Details","type":"object","required":["type","code","retry"],"properties":{"type":{"$ref":"#/$defs/absoluteHttpUrl"},"title":{"type":"string"},"status":{"type":"integer","enum":[400,401,403,404,409,410,413,415,422,429,503]},"detail":{"type":"string"},"instance":{"$ref":"#/$defs/absoluteUri"},"code":{"$ref":"#/$defs/directProblemCode"},"retry":{"$ref":"#/$defs/retryDisposition"},"retryAfter":{"type":"integer","minimum":0},"pointer":{"$ref":"#/$defs/jsonPointer"},"limit":{"type":"string","pattern":"^[a-z]+\\.[A-Za-z]+$"},"archivedAt":{"$ref":"#/$defs/reference"}},"allOf":[{"if":{"properties":{"code":{"$ref":"#/$defs/readUpdateProblemCode"}},"required":["code"]},"then":{"$ref":"#/$defs/readUpdateProblem"}},{"if":{"properties":{"code":{"const":"event-history-expired"}},"required":["code"]},"then":{"properties":{"diagnostics":false,"diagnosticsTruncated":false,"type":{"const":"https://github.com/gastownhall/bdp/problems/gone"},"status":{"const":410},"retry":{"const":"never"}}}},{"if":{"properties":{"code":{"const":"catch-up-timeout"}},"required":["code"]},"then":{"properties":{"diagnostics":false,"diagnosticsTruncated":false,"type":{"const":"https://github.com/gastownhall/bdp/problems/unavailable"},"status":{"const":503},"retry":{"const":"after-delay"}}}},{"if":{"properties":{"code":{"const":"resource-erased"}},"required":["code"]},"then":{"properties":{"pointer":false}}},{"if":{"not":{"properties":{"code":{"const":"limit-exceeded"}},"required":["code"]}},"then":{"properties":{"limit":false}}},{"if":{"properties":{"retry":{"const":"after-delay"}},"required":["retry"]},"else":{"properties":{"retryAfter":false}}},{"if":{"not":{"properties":{"code":{"const":"revision-unretained"}},"required":["code"]}},"then":{"properties":{"missing":false}}}]},"beadRecord":{"type":"object","required":["id","type","revision","properties"],"properties":{"id":{"$ref":"#/$defs/absoluteHttpUrl"},"type":{"$ref":"#/$defs/absoluteHttpUrl"},"revision":{"type":"string","minLength":1},"properties":{"$ref":"#/$defs/properties"},"metadata":{"$ref":"#/$defs/metadata"},"links":{"$ref":"#/$defs/linkCollection"},"ownedLinks":{"type":"object","propertyNames":{"$ref":"#/$defs/absoluteHttpUrl"},"additionalProperties":{"type":"array","items":{"$ref":"#/$defs/linkRecord"}}},"revisionProvenance":{"$ref":"#/$defs/revisionProvenance"}},"additionalProperties":false},"currentBeadRecord":{"allOf":[{"$ref":"#/$defs/beadRecord"},{"type":"object","required":["metadata"],"properties":{"metadata":{"$ref":"#/$defs/metadata"},"links":{"$ref":"#/$defs/currentLinkCollection"},"ownedLinks":{"type":"object","additionalProperties":{"type":"array","items":{"$ref":"#/$defs/currentLinkRecord"}}}}}]},"currentBeadCollection":{"allOf":[{"$ref":"#/$defs/beadCollection"},{"type":"object","properties":{"items":{"type":"array","items":{"$ref":"#/$defs/currentBeadRecord"}}}}]},"eventPage":{"title":"BDP Event Source page","type":"object","required":["source","events","next"],"properties":{"source":{"$ref":"#/$defs/absoluteHttpUrl"},"events":{"type":"array","items":{"$ref":"#/$defs/event"}},"next":{"oneOf":[{"$ref":"#/$defs/absoluteHttpUrl"},{"type":"null"}]}},"additionalProperties":false},"event":{"title":"BDP Event","type":"object","required":["id","ordinal","type","source","subject","subjectType","transaction","time","data"],"properties":{"id":{"$ref":"#/$defs/wireToken"},"ordinal":{"type":"integer","minimum":0},"type":{"$ref":"#/$defs/eventType"},"source":{"$ref":"#/$defs/absoluteHttpUrl"},"subject":{"$ref":"#/$defs/absoluteHttpUrl"},"subjectType":{"$ref":"#/$defs/absoluteHttpUrl"},"transaction":{"$ref":"#/$defs/wireToken"},"time":{"$ref":"#/$defs/dateTime"},"data":{"type":"object"}},"allOf":[{"if":{"properties":{"type":{"const":"created"}},"required":["type"]},"then":{"properties":{"data":{"$ref":"#/$defs/createdData"}}}},{"if":{"properties":{"type":{"const":"updated"}},"required":["type"]},"then":{"properties":{"data":{"$ref":"#/$defs/updatedData"}}}},{"if":{"properties":{"type":{"const":"deleted"}},"required":["type"]},"then":{"properties":{"data":{"$ref":"#/$defs/deletedData"}}}},{"if":{"properties":{"type":{"enum":["linked","unlinked"]}},"required":["type"]},"then":{"properties":{"data":{"$ref":"#/$defs/linkDeltaData"}}}}],"additionalProperties":false},"eventType":{"enum":["created","updated","deleted","linked","unlinked"]},"createdData":{"type":"object","required":["revision","properties"],"properties":{"revision":{"$ref":"#/$defs/revision"},"properties":{"$ref":"#/$defs/properties"},"metadata":{"$ref":"#/$defs/metadata"},"source":{"$ref":"#/$defs/reference"},"target":{"$ref":"#/$defs/reference"},"revisionProvenance":{"$ref":"#/$defs/revisionProvenance"}},"dependentRequired":{"source":["target"],"target":["source"]},"additionalProperties":false},"updatedData":{"type":"object","required":["previousRevision","revision"],"properties":{"previousRevision":{"$ref":"#/$defs/revision"},"revision":{"$ref":"#/$defs/revision"},"change":{"$ref":"#/$defs/propertyChange"},"metadataChange":{"$ref":"#/$defs/propertyChange"},"ownedLink":{"$ref":"#/$defs/ownedLinkChange"},"revisionProvenance":{"$ref":"#/$defs/revisionProvenance"}},"oneOf":[{"type":"object","properties":{"change":true,"metadataChange":true,"ownedLink":false},"anyOf":[{"required":["change"],"properties":{"change":true}},{"required":["metadataChange"],"properties":{"metadataChange":true}}]},{"type":"object","required":["ownedLink"],"properties":{"ownedLink":true,"change":false,"metadataChange":false}}],"additionalProperties":false},"deletedData":{"type":"object","required":["revision"],"properties":{"revision":{"$ref":"#/$defs/revision"}},"additionalProperties":false},"linkDeltaData":{"type":"object","required":["endpoint","link","source","target"],"properties":{"endpoint":{"enum":["source","target"]},"link":{"$ref":"#/$defs/typedLinkReference"},"source":{"$ref":"#/$defs/reference"},"target":{"$ref":"#/$defs/reference"}},"additionalProperties":false},"wireToken":{"type":"string","pattern":"^[A-Za-z0-9_-]{1,256}$"},"revision":{"type":"string","minLength":1},"properties":{"type":"object","additionalProperties":true},"metadata":{"type":"object","additionalProperties":true},"absoluteHttpUrl":{"type":"string","format":"uri","pattern":"^https?://.+"},"dateTime":{"type":"string","format":"date-time"},"reference":{"oneOf":[{"$ref":"#/$defs/absoluteUri"},{"$ref":"#/$defs/pinnedReference"}]},"revisionProvenance":{"type":"object","minProperties":1,"properties":{"actor":{"$ref":"#/$defs/revisionActor"},"committedAt":{"$ref":"#/$defs/contextTime"},"agent":{"$ref":"#/$defs/contextString"},"message":{"$ref":"#/$defs/contextMessage"}},"additionalProperties":false,"dependentRequired":{"committedAt":["agent","message"],"agent":["committedAt","message"],"message":["committedAt","agent"]}},"revisionActor":{"type":"object","required":["id","basis"],"properties":{"basis":{"type":"string","enum":["writer-supplied","unknown"]},"id":{"type":"string","minLength":1}},"additionalProperties":false},"resourceIdentity":{"type":"object","required":["id","type","revision"],"properties":{"id":{"$ref":"#/$defs/absoluteHttpUrl"},"type":{"$ref":"#/$defs/absoluteHttpUrl"},"revision":{"type":"string","minLength":1}},"additionalProperties":false},"resourceKind":{"enum":["bead","link"]},"idempotencyKey":{"type":"string","pattern":"^[A-Za-z0-9_-]{1,256}$"},"retryDisposition":{"enum":["never","after-state-change","after-delay"]}}}
+```

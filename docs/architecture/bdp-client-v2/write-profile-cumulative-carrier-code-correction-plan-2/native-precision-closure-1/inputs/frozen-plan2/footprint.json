@@ -1,0 +1,25 @@
+{
+  "allowedFuturePaths": [
+    "packages/conformance/test-support/profile-evidence.ts",
+    "packages/conformance/test-support/profile-evidence.test.ts",
+    "apps/bdptest/test-support/read-update-artifact-execution.ts",
+    "apps/bdptest/src/transactional-matrix.test.ts"
+  ],
+  "newPaths": 0,
+  "noFactoryOrParserEdits": true,
+  "privateAdapterRefactor": "One production-used capturePrivateProfileHandoff function in existing RU app-private helper, source-private export shared with existing TX caller/data tests; no package/public/test-only API or factory seam",
+  "proposedChangedPaths": [
+    "packages/conformance/test-support/profile-evidence.ts",
+    "packages/conformance/test-support/profile-evidence.test.ts",
+    "apps/bdptest/test-support/read-update-artifact-execution.ts",
+    "apps/bdptest/src/transactional-matrix.test.ts"
+  ],
+  "protectedOutsideFour": 677,
+  "pureModuleExportsUnchanged": [
+    "assembleProfileEvidence",
+    "verifyProfileEvidence",
+    "serializeProfileEvidence"
+  ],
+  "sourceEditsNow": false,
+  "sourceTotal": 681
+}

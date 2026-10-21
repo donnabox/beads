@@ -1,0 +1,26 @@
+[
+  {
+    "line": 225,
+    "text": "  const observeValidationPhase = (phase: \"callback-start\" | \"callback-end\") => {"
+  },
+  {
+    "line": 227,
+    "text": "      const value = process.env.BDP_D4_VALIDATION_ATTEMPT_ID;"
+  },
+  {
+    "line": 245,
+    "text": "    observeValidationPhase(\"callback-start\");"
+  },
+  {
+    "line": 909,
+    "text": "  console.log(JSON.stringify(report));"
+  },
+  {
+    "line": 910,
+    "text": "  observeValidationPhase(\"callback-end\");"
+  },
+  {
+    "line": 912,
+    "text": "    throw new AggregateError(failures, \"installed set observation or cleanup failed\");"
+  }
+]

@@ -1,0 +1,23 @@
+{
+  "B": {
+    "chunk_id": "d88d85",
+    "exit_code": 0,
+    "original_token_count": 82,
+    "output": "{\"baselineSha256\": \"dd4ce929d59a406d5d0ae54a1d289493dbd278d313b2cc71b14bf83d0b7806c7\", \"actualSha256\": \"7bc8bfe3c7ccb5df4c4838324767a9bbe9541536e74dfd14b6b912ced694dce9\", \"normalizedSha256\": \"dd4ce929d59a406d5d0ae54a1d289493dbd278d313b2cc71b14bf83d0b7806c7\", \"count\": 1, \"fullInverse\": true, \"guardAndRawExitUnchanged\": true}\n",
+    "wall_time_seconds": 0.29101275
+  },
+  "C": {
+    "chunk_id": "b571f2",
+    "exit_code": 0,
+    "original_token_count": 82,
+    "output": "{\"baselineSha256\": \"62d3e74123be795714cd30339d904f913bcf76328fde97bcfe4361452eb73f4e\", \"actualSha256\": \"1bd10d7891a2e356d73f3e4b6ae249b1cb911b91f9c21ad0b38ac27e95748218\", \"normalizedSha256\": \"62d3e74123be795714cd30339d904f913bcf76328fde97bcfe4361452eb73f4e\", \"count\": 1, \"fullInverse\": true, \"guardAndRawExitUnchanged\": true}\n",
+    "wall_time_seconds": 0.209793458
+  },
+  "preflight": {
+    "chunk_id": "b5bc67",
+    "exit_code": 0,
+    "original_token_count": 265,
+    "output": "{\"preflight\": \"PASS\", \"source\": 679, \"implementation\": 121, \"references\": [2278, 2571], \"rendered\": 17, \"baseTools\": {\"at\": \"2026-10-18T12:05:35.183337+00:00\", \"sourceLockSha256\": \"4150d8821c96dbc2cfec0b2762ff76b58318079f65fa4f5c8858ef2dd61f8d6d\", \"state\": \"DATA7 static file/realpath candidates only; all actual versions/install/workspace tools still UNRESOLVED/fresh stages required\", \"tools\": {\"/Users/dbox/.cache/node/corepack/v1/pnpm/11.20.0/bin/pnpm.cjs\": {\"realpath\": \"/Users/dbox/.cache/node/corepack/v1/pnpm/11.20.0/bin/pnpm.cjs\", \"sha256\": \"67b035e322203961795e8e34ca63a08c37a4386eda94107fb3d28f3246d882ad\"}, \"/Users/dbox/.nvm/versions/node/v24.16.0/bin/node\": {\"realpath\": \"/Users/dbox/.nvm/versions/node/v24.16.0/bin/node\", \"sha256\": \"1ee75375e33b94fc34b3b19aede049e11dae90efb63b374dc96d6bdace70c4b8\"}, \"/opt/homebrew/opt/python@3.14/bin/python3.14\": {\"realpath\": \"/opt/homebrew/Cellar/python@3.14/3.14.5/Frameworks/Python.framework/Versions/3.14/bin/python3.14\", \"sha256\": \"2477b47fa3ae65b9574eb18a15edb364e96948eaa1875ad3f1c80d780efc9c12\"}}}}\n",
+    "wall_time_seconds": 0.390052333
+  }
+}

@@ -1,0 +1,1082 @@
+Review only the two-test-file CI fanout correction below. Do not write or modify any files. Output findings only in stdout. No tools are available. Give a complete standalone numbered findings-first review, or explicitly no findings. Keep output compact. Do not presume tests alone prove the repair; inspect capability/lifetime and durable configuration semantics. Do not expand into unrelated auth architecture.
+
+Actual PR139 CI at clean1647 failed3oldfixturecases: alias clone lost the new live-reader capability; two snapshot format tests expected removedconfiguration.authorizationView. Root authorized these exact fixture repairs without weakening production. Both completefiles now passed114cases, typecheck/formatpassed; fullCI remains failed pendingnewcandidate. No production/emitted changes. Current review target dirty1647 and exactpatch/sourcebytes, not a futurecandidate. Existing 15pathfeature council accepted separately; this supplement covers only twofiledelta.
+
+
+FULL TWO-FILE CORRECTION
+diff --git a/packages/server/src/transaction-read.test.ts b/packages/server/src/transaction-read.test.ts
+index a3c9e0e..7ea014b 100644
+--- a/packages/server/src/transaction-read.test.ts
++++ b/packages/server/src/transaction-read.test.ts
+@@ -1916,15 +1916,26 @@ describe("current alias minimum subset", () => {
+     const f = prepared(),
+       sentinel = new Error("alias provider failed");
+     let fault: "context" | "provider" | "target" | undefined = "context";
++    type Reader = Parameters<typeof f.store.captureReadAuthorization>[0];
++    const originalReaders = new WeakMap<Reader, Reader>();
+     const owner: typeof f.store = {
+       ...f.store,
++      captureReadAuthorization: (reader, principal) =>
++        f.store.captureReadAuthorization(originalReaders.get(reader) ?? reader, principal),
+       withRead: (callback) =>
+         f.store.withRead((reader, captured) => {
+           if (fault === "provider") throw sentinel;
+-          return callback(
+-            fault === "target" ? { ...reader, alias: () => "links/not-a-bead" } : reader,
+-            fault === "context" ? { ...captured, scopePosition: "pos-02" } : captured,
+-          );
++          const exposed =
++            fault === "target" ? { ...reader, alias: () => "links/not-a-bead" } : reader;
++          originalReaders.set(exposed, reader);
++          try {
++            return callback(
++              exposed,
++              fault === "context" ? { ...captured, scopePosition: "pos-02" } : captured,
++            );
++          } finally {
++            originalReaders.delete(exposed);
++          }
+         }),
+     };
+     const plane = createTransactionReadPlane(owner, f.readOptions);
+diff --git a/packages/server/src/transaction-snapshot.test.ts b/packages/server/src/transaction-snapshot.test.ts
+index ad72b54..93ccabc 100644
+--- a/packages/server/src/transaction-snapshot.test.ts
++++ b/packages/server/src/transaction-snapshot.test.ts
+@@ -904,14 +904,16 @@ it.each(["different-view", "prior-format-9"])(
+       db.prepare("SELECT value FROM metadata WHERE name='configuration'").get()?.value,
+     );
+     const config = JSON.parse(original);
+-    expect(config.authorizationView).toBe("development-all-visible");
++    expect(config.initialAuthorizationView).toBe("development-all-visible");
++    expect(config.policyStorageRevision).toBe(1);
+     const incompatible: Record<string, unknown> = {
+       ...config,
+-      authorizationView: "different-view",
++      initialAuthorizationView: "different-view",
+     };
+     if (fault === "prior-format-9") {
+       incompatible.format = "bdp-private-transaction-snapshot-9";
+-      delete incompatible.authorizationView;
++      delete incompatible.initialAuthorizationView;
++      delete incompatible.policyStorageRevision;
+     }
+     db.prepare("UPDATE metadata SET value=? WHERE name='configuration'").run(
+       JSON.stringify(incompatible),
+
+
+ACTUAL SOURCE packages/server/src/transaction-read.test.ts:1-100
+1: import { mkdtempSync, rmSync } from "node:fs";
+2: import { tmpdir } from "node:os";
+3: import path from "node:path";
+4: import { DatabaseSync } from "node:sqlite";
+5: import { afterEach, describe, expect, it, vi } from "vitest";
+6: import {
+7:   parseTypeDescriptor,
+8:   isReadProblem,
+9:   type AbsoluteHttpUrl,
+10:   type ReadRequest,
+11: } from "@bdp/protocol";
+12: import { prepareTransaction, prepareTransactionSingleton } from "./transaction-batch.js";
+13: import { openTransactionStore } from "./transaction-store.js";
+14: import {
+15:   createTransactionReadPlane,
+16:   transactionReadContexts,
+17:   TransactionMinimumVisibilityGap,
+18: } from "./transaction-read.js";
+19: import { createTransactionService } from "./transaction-service.js";
+20: import { createTransactionHttpHandler } from "./transaction-http.js";
+21: import {
+22:   AuthorityReadError,
+23:   type AuthorityReadDeliveryOptions,
+24:   type ReadObservation,
+25: } from "./authority-read.js";
+26: import { requestFromUrl } from "./read-request.js";
+27: 
+28: const scope = "https://example.test/transaction/";
+29: const bead = "https://example.test/types/bead",
+30:   link = "https://example.test/types/link";
+31: const types = [
+32:   { id: bead, name: "Bead", describes: "bead", conformsTo: [] },
+33:   {
+34:     id: link,
+35:     name: "Link",
+36:     describes: "link",
+37:     conformsTo: [],
+38:     source: { conformsTo: [bead], external: "none" },
+39:     target: { conformsTo: [bead], external: "opaque" },
+40:   },
+41: ].map((t) => parseTypeDescriptor(t));
+42: const cleanup: (() => void | Promise<void>)[] = [];
+43: afterEach(async () => {
+44:   vi.restoreAllMocks();
+45:   for (const fn of cleanup.splice(0).reverse()) await fn();
+46: });
+47: function fixture(extra: Partial<Parameters<typeof openTransactionStore>[0]> = {}) {
+48:   const directory = mkdtempSync(path.join(tmpdir(), "bdp-transaction-read-"));
+49:   cleanup.push(() => rmSync(directory, { recursive: true, force: true }));
+50:   const options = {
+51:     file: path.join(directory, "owner.sqlite"),
+52:     scope,
+53:     create: true,
+54:     types,
+55:     ...extra,
+56:   };
+57:   let store = openTransactionStore(options);
+58:   cleanup.push(() => store.close());
+59:   let tokens = 0;
+60:   const readOptions = {
+61:     selectorLimits: { bytes: 4096, depth: 32, nodes: 256 },
+62:     advertisedLimits: {
+63:       page: { defaultItems: 2, maximumItems: 10 },
+64:       selector: { bytes: 4096, depth: 32, nodes: 256 },
+65:       cursorTtlMilliseconds: 1000,
+66:     },
+67:     pagination: {
+68:       scope,
+69:       defaultPageItems: 2,
+70:       maxPageItems: 10,
+71:       cursorTtlMs: 1000,
+72:       retainedStateCapacity: 100,
+73:       maxRetainedCursorPositionsPerSnapshot: 20,
+74:       retainedSnapshotByteCapacity: 100_000,
+75:       retainedSnapshotNodeCapacity: 10_000,
+76:       maxOpaqueTokenLength: 64,
+77:       tokenGenerationAttempts: 3,
+78:       idleCleanup: "on-demand" as const,
+79:       clock: () => 1000,
+80:       generateOpaqueToken: () => `cursor_${++tokens}`,
+81:     },
+82:   };
+83:   function open(patch: Partial<typeof readOptions> = {}) {
+84:     const plane = createTransactionReadPlane(store, { ...readOptions, ...patch });
+85:     cleanup.push(() => plane.close());
+86:     return { plane, facet: plane.readFor({ kind: "anonymous" }) };
+87:   }
+88:   let keys = 0;
+89:   function write(operations: unknown[]) {
+90:     const admitted = store.admit(
+91:       "principal",
+92:       `key_${++keys}`,
+93:       prepareTransaction(scope, JSON.stringify({ operations })),
+94:     );
+95:     if (admitted.kind !== "owned") throw new Error("expected new admission");
+96:     return store.execute(admitted.claim);
+97:   }
+98:   function alias(operation: "putAlias" | "deleteAlias", body: unknown) {
+99:     const admitted = store.admit(
+100:       "principal",
+
+ACTUAL SOURCE packages/server/src/transaction-read.test.ts:1680-1765
+1680:         ].map((signal) => ({ signal })),
+1681:       ];
+1682:       for (const options of invalid) {
+1683:         let delivery: Promise<unknown> | undefined;
+1684:         expect(() => {
+1685:           delivery = call(options);
+1686:         }).not.toThrow();
+1687:         expect(delivery).toBeInstanceOf(Promise);
+1688:         await expect(delivery).rejects.toMatchObject({ reason: "invalid-input" });
+1689:       }
+1690:       expect(invoked).not.toHaveBeenCalled();
+1691:       expect(entries).toBe(0); // Every invalid fallback rejected; none performed an ordinary read.
+1692:       const aborted = Object.create(null);
+1693:       Object.defineProperties(aborted, {
+1694:         signal: { value: AbortSignal.abort() },
+1695:         sourceCondition: { value: revoked.proxy },
+1696:       });
+1697:       await expect(call(aborted)).rejects.toThrow("abort");
+1698:       expect(entries).toBe(0);
+1699:       const valid = Object.create(null);
+1700:       Object.defineProperties(valid, {
+1701:         signal: { value: new AbortController().signal },
+1702:         sourceCondition: { value: revoked.proxy },
+1703:       });
+1704:       await expect(call(valid)).resolves.toMatchObject({ kind: "target", target: url("beads/a") });
+1705:       expect(entries).toBe(1);
+1706:       // Caller conditions are opaque overridden data, not an alternative minimum.
+1707:       const future = service
+1708:         ? service.readAtMinimum(principal, f.minimum("pos-2"))
+1709:         : plane.minimumFor(principal, f.minimum("pos-2"));
+1710:       await expect(
+1711:         future.resolveAlias(url("alias/work"), {
+1712:           sourceCondition: f.minimum("pos-0"),
+1713:         }),
+1714:       ).rejects.toMatchObject({ reason: mode === "service" ? "catch-up-timeout" : "behind" });
+1715:       let nested: Promise<unknown> | undefined;
+1716:       nestedCall = () => {
+1717:         nested = call(proxy);
+1718:       };
+1719:       await expect(call(undefined)).resolves.toMatchObject({ kind: "target" });
+1720:       expect(nested).toBeInstanceOf(Promise);
+1721:       await expect(nested).rejects.toMatchObject({ reason: "reentrant" });
+1722:       expect(invoked).not.toHaveBeenCalled();
+1723:       if (service) {
+1724:         await service.close();
+1725:         expect(() => call(proxy)).toThrow("closing or closed"); // Existing service admission is synchronous.
+1726:       } else {
+1727:         await plane.close();
+1728:         let closed: Promise<unknown> | undefined;
+1729:         expect(() => {
+1730:           closed = call(proxy);
+1731:         }).not.toThrow();
+1732:         await expect(closed).rejects.toMatchObject({ code: "server-closed" });
+1733:       }
+1734:       expect(invoked).not.toHaveBeenCalled();
+1735:     },
+1736:   );
+1737:   it("conditions alias mapping and context in one entry without revising either target", async () => {
+1738:     const f = prepared(),
+1739:       { plane, facet } = f.open();
+1740:     const before = await Promise.all(
+1741:       ["a", "b"].map(async (id) => body(await facet.perform(resource(`beads/${id}`)))),
+1742:     );
+1743:     for (const position of ["pos-0", "pos-1"]) {
+1744:       const result = await plane
+1745:         .minimumFor(principal, f.minimum(position))
+1746:         .resolveAlias(url("alias/work"));
+1747:       expect(result).toMatchObject({ kind: "target", target: url("beads/a") });
+1748:       expect(contexts(result).current).toEqual({
+1749:         scopeEpoch: f.store.scopeEpoch,
+1750:         authorizationView: "development-all-visible",
+1751:         scopePosition: "pos-1",
+1752:       });
+1753:     }
+1754:     await expect(
+1755:       plane.minimumFor(principal, f.minimum("pos-2")).resolveAlias(url("alias/work")),
+1756:     ).rejects.toMatchObject({ reason: "behind" });
+1757:     expect(f.alias("putAlias", { alias: "alias/work", target: "beads/b" })).toMatchObject({
+1758:       status: "completed",
+1759:       requiredPosition: "pos-1",
+1760:     });
+1761:     const after = await plane.minimumFor(principal, f.minimum()).resolveAlias(url("alias/work"));
+1762:     expect(after).toMatchObject({ kind: "target", target: url("beads/b") });
+1763:     expect(contexts(after).current.scopePosition).toBe("pos-1");
+1764:     for (const [i, id] of ["a", "b"].entries())
+1765:       expect(body(await facet.perform(resource(`beads/${id}`)))).toEqual(before[i]);
+
+ACTUAL SOURCE packages/server/src/transaction-read.test.ts:1910-1970
+1910:     await rejected;
+1911:     await closing;
+1912:     expect(closed).toBe(true);
+1913:     expect(() => f.store.inspect()).toThrow("closed");
+1914:   });
+1915:   it("does not relabel alias provider or malformed context failures as missing", async () => {
+1916:     const f = prepared(),
+1917:       sentinel = new Error("alias provider failed");
+1918:     let fault: "context" | "provider" | "target" | undefined = "context";
+1919:     type Reader = Parameters<typeof f.store.captureReadAuthorization>[0];
+1920:     const originalReaders = new WeakMap<Reader, Reader>();
+1921:     const owner: typeof f.store = {
+1922:       ...f.store,
+1923:       captureReadAuthorization: (reader, principal) =>
+1924:         f.store.captureReadAuthorization(originalReaders.get(reader) ?? reader, principal),
+1925:       withRead: (callback) =>
+1926:         f.store.withRead((reader, captured) => {
+1927:           if (fault === "provider") throw sentinel;
+1928:           const exposed =
+1929:             fault === "target" ? { ...reader, alias: () => "links/not-a-bead" } : reader;
+1930:           originalReaders.set(exposed, reader);
+1931:           try {
+1932:             return callback(
+1933:               exposed,
+1934:               fault === "context" ? { ...captured, scopePosition: "pos-02" } : captured,
+1935:             );
+1936:           } finally {
+1937:             originalReaders.delete(exposed);
+1938:           }
+1939:         }),
+1940:     };
+1941:     const plane = createTransactionReadPlane(owner, f.readOptions);
+1942:     cleanup.push(() => plane.close());
+1943:     const read = plane.minimumFor(principal, f.minimum());
+1944:     await expect(read.resolveAlias(url("alias/work"))).rejects.toThrow(
+1945:       "invalid Transactional Read context",
+1946:     );
+1947:     fault = "provider";
+1948:     await expect(read.resolveAlias(url("alias/work"))).rejects.toBe(sentinel);
+1949:     fault = "target";
+1950:     await expect(read.resolveAlias(url("alias/work"))).rejects.toThrow(
+1951:       "invalid stored alias target",
+1952:     );
+1953:     fault = undefined;
+1954:     expect(await read.resolveAlias(url("alias/work"))).toMatchObject({
+1955:       kind: "target",
+1956:       target: url("beads/a"),
+1957:     });
+1958:   });
+1959: });
+1960: 
+1961: describe("current minimum perform receiving", () => {
+1962:   it("preserves a direct non-enumerable pre-aborted signal before owner entry", async () => {
+1963:     const f = fixture();
+1964:     expect(f.write(seed).status).toBe("completed");
+1965:     let entries = 0;
+1966:     const plane = createTransactionReadPlane(
+1967:       {
+1968:         ...f.store,
+1969:         withRead: (callback) => {
+1970:           entries++;
+
+ACTUAL SOURCE packages/server/src/transaction-snapshot.test.ts:1-121
+1: import { createHash, randomUUID } from "node:crypto";
+2: import { isDeepStrictEqual } from "node:util";
+3: import { mkdtempSync, readFileSync, rmSync } from "node:fs";
+4: import { tmpdir } from "node:os";
+5: import path from "node:path";
+6: import { DatabaseSync } from "node:sqlite";
+7: import { afterEach, expect, it, vi } from "vitest";
+8: import { Ajv2020 } from "ajv/dist/2020.js";
+9: import {
+10:   parseTypeDescriptor,
+11:   isJsonSchemaUri,
+12:   isJsonSchemaDateTime,
+13:   compareCanonicalIds,
+14:   stringifyJsonValue,
+15: } from "@bdp/protocol";
+16: import { openTransactionStore, type TransactionStoreOptions } from "./transaction-store.js";
+17: import { prepareTransactionSetCore } from "./transaction-batch.js";
+18: import {
+19:   TRANSACTION_SNAPSHOT_LIMITS as limits,
+20:   TransactionSnapshotFailure,
+21:   transactionSnapshotUrl,
+22:   transactionSnapshotStorage,
+23:   type TransactionSnapshotManifest,
+24:   type TransactionSnapshotPage,
+25: } from "./transaction-snapshot.js";
+26: const scope = "https://example.test/snapshot/",
+27:   beadType = `${scope}types/bead`,
+28:   linkType = `${scope}types/link`;
+29: const types = [
+30:   {
+31:     id: beadType,
+32:     name: "Owner",
+33:     describes: "bead",
+34:     conformsTo: [],
+35:     ownsOutgoing: { [linkType]: { max: 32 } },
+36:   },
+37:   {
+38:     id: linkType,
+39:     name: "Link",
+40:     describes: "link",
+41:     conformsTo: [],
+42:     source: { conformsTo: [], external: "none" },
+43:     target: { conformsTo: [], external: "none" },
+44:   },
+45: ].map((value) => parseTypeDescriptor(value));
+46: const cleanup: (() => void)[] = [];
+47: afterEach(() => {
+48:   vi.restoreAllMocks();
+49:   for (const fn of cleanup.splice(0).reverse()) fn();
+50: });
+51: const create = (id: string) => ({
+52:   operation: "createBead",
+53:   id: `beads/${id}`,
+54:   type: beadType,
+55:   properties: { n: 0, precise: 0.30000000000000004 },
+56: });
+57: const edge = (id: string, source = "a", target = "b") => ({
+58:   operation: "createLink",
+59:   id: `links/${id}`,
+60:   type: linkType,
+61:   source: `beads/${source}`,
+62:   target: `beads/${target}`,
+63:   properties: { n: 0 },
+64: });
+65: function fixture(fault?: TransactionStoreOptions["fault"]) {
+66:   const directory = mkdtempSync(path.join(tmpdir(), "bdp-snapshot-"));
+67:   let now = 1000000;
+68:   const options = {
+69:     file: path.join(directory, "store.sqlite"),
+70:     scope,
+71:     types,
+72:     create: true,
+73:     clock: () => now,
+74:     ...(fault ? { fault } : {}),
+75:   };
+76:   let owner = openTransactionStore(options),
+77:     key = 0;
+78:   cleanup.push(() => {
+79:     owner.close();
+80:     rmSync(directory, { recursive: true, force: true });
+81:   });
+82:   return {
+83:     options,
+84:     get owner() {
+85:       return owner;
+86:     },
+87:     setTime(value: number) {
+88:       now = value;
+89:     },
+90:     reopen() {
+91:       owner.close();
+92:       owner = openTransactionStore({ ...options, create: false });
+93:     },
+94:     offline(run: (db: DatabaseSync) => void) {
+95:       owner.close();
+96:       const db = new DatabaseSync(options.file);
+97:       try {
+98:         run(db);
+99:       } finally {
+100:         db.close();
+101:       }
+102:       owner = openTransactionStore({ ...options, create: false });
+103:     },
+104:     run(operations: unknown[]) {
+105:       const admitted = owner.admit(
+106:         "p",
+107:         `key_${key++}`,
+108:         prepareTransactionSetCore(scope, JSON.stringify({ operations })),
+109:       );
+110:       if (admitted.kind !== "owned") throw Error("admission");
+111:       const receipt = owner.execute(admitted.claim);
+112:       expect(receipt.status).toBe("completed");
+113:       return receipt;
+114:     },
+115:   };
+116: }
+117: const handle = (manifest: TransactionSnapshotManifest) =>
+118:   new URL(manifest.id).searchParams.get("snapshot")!;
+119: function collect(
+120:   f: ReturnType<typeof fixture>,
+121:   manifest: TransactionSnapshotManifest,
+
+ACTUAL SOURCE packages/server/src/transaction-snapshot.test.ts:891-939
+891: it.each(["different-view", "prior-format-9"])(
+892:   "persists the actual view and refuses %s before retracting a pending claim",
+893:   (fault) => {
+894:     const f = fixture();
+895:     const admission = f.owner.admit(
+896:       "p",
+897:       "pending-view",
+898:       prepareTransactionSetCore(scope, JSON.stringify({ operations: [create("a")] })),
+899:     );
+900:     expect(admission.kind).toBe("owned");
+901:     f.owner.close();
+902:     const db = new DatabaseSync(f.options.file);
+903:     const original = String(
+904:       db.prepare("SELECT value FROM metadata WHERE name='configuration'").get()?.value,
+905:     );
+906:     const config = JSON.parse(original);
+907:     expect(config.initialAuthorizationView).toBe("development-all-visible");
+908:     expect(config.policyStorageRevision).toBe(1);
+909:     const incompatible: Record<string, unknown> = {
+910:       ...config,
+911:       initialAuthorizationView: "different-view",
+912:     };
+913:     if (fault === "prior-format-9") {
+914:       incompatible.format = "bdp-private-transaction-snapshot-9";
+915:       delete incompatible.initialAuthorizationView;
+916:       delete incompatible.policyStorageRevision;
+917:     }
+918:     db.prepare("UPDATE metadata SET value=? WHERE name='configuration'").run(
+919:       JSON.stringify(incompatible),
+920:     );
+921:     db.close();
+922:     const before = readFileSync(f.options.file);
+923:     expect(() => openTransactionStore({ ...f.options, create: false })).toThrow(
+924:       "installation mismatch",
+925:     );
+926:     expect(readFileSync(f.options.file)).toEqual(before);
+927:     const restore = new DatabaseSync(f.options.file);
+928:     expect(
+929:       restore.prepare("SELECT count(*) AS n FROM receipts WHERE owner IS NOT NULL").get()?.n,
+930:     ).toBe(1);
+931:     restore.prepare("UPDATE metadata SET value=? WHERE name='configuration'").run(original);
+932:     restore.close();
+933:     f.reopen();
+934:     expect(f.owner.recoveredPending).toBe(1);
+935:   },
+936: );
+937: 
+938: it("startup sweep validates the same canonical position as reads and rolls back pending recovery on refusal", () => {
+939:   const f = fixture();
+
+ACTUAL SOURCE packages/server/src/transaction-read.ts:1-36
+1: /** Same-owner private Read composition with source conditions for canonical
+2:  * current points, Type inventory and initial Resource/incident-Link reads. The service owns finite
+3:  * waits; continuation minimums, receipt serving and replication Snapshots are
+4:  * separate contracts. */
+5: import {
+6:   checkTransactionMinimum,
+7:   TransactionMinimumFailure,
+8:   snapshotTransactionMinimum,
+9:   type TransactionMinimum,
+10: } from "./transaction-consistency.js";
+11: import { isProxy } from "node:util/types";
+12: import {
+13:   createAuthorityReadPlane,
+14:   AuthorityReadError,
+15:   type AuthorityReadDeliveryOptions,
+16:   type AuthorityReadOptions,
+17:   type AuthorityReadPlane,
+18:   type AuthorityReadFacet,
+19:   type AuthorityReadResult,
+20:   type AuthorityAliasResult,
+21:   type ReadObservation,
+22: } from "./authority-read.js";
+23: import type { ReadRequest } from "@bdp/protocol";
+24: import type { TransactionReadContext } from "./transaction-store.js";
+25: import type { openTransactionStore } from "./transaction-store.js";
+26: 
+27: export class TransactionMinimumVisibilityGap extends Error {}
+28: 
+29: /** Current private minimum subset; full request validation remains with Read. */
+30: export function isCurrentTransactionMinimumRead(request: ReadRequest, scope: string): boolean {
+31:   if (isProxy(request)) return false;
+32:   switch (request.kind) {
+33:     case "resource": {
+34:       if (request.resource !== "type")
+35:         return request.resource === "bead" || request.resource === "link";
+36:       // Locality is checked before Read captures the request. Do not execute
+
+ACTUAL SOURCE packages/server/src/transaction-read.ts:116-185
+116: export type TransactionReadOptions = Pick<
+117:   AuthorityReadOptions,
+118:   "selectorLimits" | "pagination" | "advertisedLimits"
+119: >;
+120: 
+121: /** The caller owns the store lifetime. Closing the plane invalidates its cursors
+122:  * but does not close or replace the mutation owner. Configuration is fixed for
+123:  * this private store's lifetime and is captured through its guarded entry. */
+124: export function createTransactionReadPlane(
+125:   owner: ReturnType<typeof openTransactionStore>,
+126:   options: TransactionReadOptions,
+127: ) {
+128:   const configuration = owner.readConfiguration();
+129:   const plane = createAuthorityReadPlane({
+130:     entry: owner,
+131:     scopeEpoch: configuration.scopeEpoch,
+132:     installedTypes: configuration.installedTypes,
+133:     scopeConfiguration: {
+134:       capture: (reader) => ({
+135:         ...configuration.scopeConfiguration,
+136:         policyIdentity: owner.captureReadAuthorization(reader, { kind: "anonymous" })
+137:           .authorizationView,
+138:       }),
+139:     },
+140:     selectorLimits: options.selectorLimits,
+141:     pagination: options.pagination,
+142:     advertisedLimits: options.advertisedLimits,
+143:     checkSourceCondition: (condition, observation, refusal) => {
+144:       // Preserve the initial collection's already-materialized request-control
+145:       // Problem. It is not a representation whose minimum can be satisfied.
+146:       if (refusal?.code === "invalid-parameter" || refusal?.code === "limit-exceeded") return;
+147:       const minimum = snapshotTransactionMinimum(condition);
+148:       const current = transactionReadContexts(observation).current;
+149:       if (refusal?.code === "resource-not-found") {
+150:         try {
+151:           checkTransactionMinimum(minimum, current);
+152:           return;
+153:         } catch (error) {
+154:           // Only simultaneous missing/consistency failures remain unqualified.
+155:           if (
+156:             error instanceof TransactionMinimumFailure &&
+157:             (error.reason === "behind" ||
+158:               error.reason === "foreign-view" ||
+159:               error.reason === "cursor-expired")
+160:           )
+161:             throw new TransactionMinimumVisibilityGap(
+162:               "minimum-position visibility ordering unqualified",
+163:             );
+164:           throw error;
+165:         }
+166:       }
+167:       checkTransactionMinimum(minimum, current);
+168:     },
+169:     captureReadAuthorization: (reader, principal) => {
+170:       const policy = owner.captureReadAuthorization(reader, principal);
+171:       return {
+172:         kind: "authorized",
+173:         authorization: {
+174:           scopeEpoch: configuration.scopeEpoch,
+175:           authorizationView: policy.authorizationView,
+176:           policy: { canRead: () => policy.readPolicy === "all-visible" },
+177:           canReadType: () => policy.readPolicy === "all-visible",
+178:         },
+179:       };
+180:     },
+181:   });
+182:   const checked = <Result extends AuthorityReadResult<ReadRequest> | AuthorityAliasResult>(
+183:     result: Result,
+184:   ): Result => {
+185:     if ("observation" in result) transactionReadContexts(result.observation);
+
+ACTUAL SOURCE packages/server/src/transaction-read.ts:270-310
+270: 
+271: /** Validated TX interpretation of the generic private Read observation. A
+272:  * continuation's snapshot is its original selected data; current is the new
+273:  * entry that checked whether that retained page can still be served. Neither
+274:  * is inferred from a mutation receipt, and this does not implement HTTP barriers. */
+275: export function transactionReadContexts(observation: ReadObservation): {
+276:   readonly current: TransactionReadContext;
+277:   readonly snapshot?: TransactionReadContext;
+278: } {
+279:   const parse = (value: ReadObservation["sourceContext"]): TransactionReadContext => {
+280:     if (
+281:       !value ||
+282:       typeof value !== "object" ||
+283:       isProxy(value) ||
+284:       Reflect.ownKeys(value).length !== 3 ||
+285:       Object.keys(value).sort().join(",") !== "authorizationView,scopeEpoch,scopePosition"
+286:     )
+287:       throw new Error("missing or invalid Transactional Read context");
+288:     const fields = Object.getOwnPropertyDescriptors(value);
+289:     if (Object.values(fields).some((field) => !("value" in field)))
+290:       throw new Error("invalid Transactional Read context fields");
+291:     const scopeEpoch: unknown = fields.scopeEpoch?.value;
+292:     const authorizationView: unknown = fields.authorizationView?.value;
+293:     const scopePosition: unknown = fields.scopePosition?.value;
+294:     if (
+295:       scopeEpoch !== observation.scopeEpoch ||
+296:       authorizationView !== observation.authorizationView ||
+297:       typeof scopeEpoch !== "string" ||
+298:       scopeEpoch.length === 0 ||
+299:       typeof authorizationView !== "string" ||
+300:       authorizationView.length === 0 ||
+301:       typeof scopePosition !== "string" ||
+302:       !/^pos-(0|[1-9][0-9]*)$/.test(scopePosition) ||
+303:       !Number.isSafeInteger(Number(scopePosition.slice(4)))
+304:     )
+305:       throw new Error("invalid Transactional Read context");
+306:     return Object.freeze({ scopeEpoch, authorizationView, scopePosition });
+307:   };
+308:   const current = parse(observation.sourceContext);
+309:   if (observation.snapshotSourceContext === undefined) return Object.freeze({ current });
+310:   const snapshot = parse(observation.snapshotSourceContext);
+
+ACTUAL SOURCE packages/server/src/transaction-store.ts:210-273
+210: }
+211: interface Row {
+212:   principal: string;
+213:   key: string;
+214:   identity: string;
+215:   witnesses: string;
+216:   owner: string | null;
+217:   receipt: string;
+218:   dependency: string | null;
+219: }
+220: const day = 86400000;
+221: export const TRANSACTION_RECEIPT_DETAIL_MS = day;
+222: const format = "bdp-private-transaction-snapshot-11";
+223: // Identity equality changed without changing the value codec. Retained keys
+224: // require both the current identity policy and the alias-aware store format.
+225: const identityPolicy = "transaction-revision-provenance-4";
+226: const schema = `
+227: CREATE TABLE metadata(name TEXT PRIMARY KEY, value TEXT NOT NULL) STRICT;
+228: CREATE TABLE resources(id TEXT PRIMARY KEY, body TEXT NOT NULL, kind TEXT NOT NULL, source TEXT, target TEXT) STRICT;
+229: CREATE TABLE identities(id TEXT PRIMARY KEY) STRICT;
+230: CREATE TABLE aliases(path TEXT PRIMARY KEY, target TEXT NOT NULL) STRICT;
+231: CREATE TABLE receipts(principal TEXT NOT NULL, key TEXT NOT NULL, identity TEXT NOT NULL, witnesses TEXT NOT NULL, owner TEXT, receipt TEXT NOT NULL, dependency TEXT, PRIMARY KEY(principal,key)) STRICT;
+232: CREATE TABLE receipt_pages(receipt TEXT PRIMARY KEY, principal TEXT NOT NULL, key TEXT NOT NULL, entries INTEGER NOT NULL, maximum INTEGER NOT NULL) STRICT;
+233: CREATE TABLE receipt_page_ranges(token TEXT PRIMARY KEY, receipt TEXT NOT NULL, start INTEGER NOT NULL, end INTEGER NOT NULL, UNIQUE(receipt,start)) STRICT;
+234: CREATE TABLE creator_facts(attempt TEXT NOT NULL, member INTEGER NOT NULL, fact TEXT, PRIMARY KEY(attempt,member)) STRICT;
+235: CREATE TABLE groups(position INTEGER PRIMARY KEY, body TEXT NOT NULL) STRICT;
+236: ${transactionSnapshotSchema}
+237: `;
+238: /** Shared private page bound, validated before provisioning or recovery. */
+239: export function transactionReceiptMaximum(value: number = TRANSACTION_MAXIMUM_OPERATIONS): number {
+240:   if (!Number.isSafeInteger(value) || value < 1)
+241:     throw new TypeError("positive receipt page maximum required");
+242:   return value;
+243: }
+244: export interface TransactionReceiptPage {
+245:   readonly receipt: string;
+246:   readonly results: readonly unknown[];
+247:   readonly next: string | null;
+248: }
+249: interface ReceiptPagePlan {
+250:   readonly entries: number;
+251:   readonly maximum: number;
+252:   readonly pages: readonly {
+253:     readonly token: string;
+254:     readonly start: number;
+255:     readonly end: number;
+256:   }[];
+257: }
+258: /** Owns a single SQLite connection under persistent EXCLUSIVE locking. Admission
+259:  * is durable separately; graph/positions/group/terminal receipt are one commit.
+260:  * Startup retracts abandoned pending receipts instead of running requests itself.
+261:  * Private Scope policy; this is not an authentication boundary. */
+262: export function openTransactionStore(options: TransactionStoreOptions) {
+263:   const scope = parseCanonicalScope(options.scope);
+264:   const view = INITIAL_TRANSACTION_VIEW;
+265:   let authorization: TransactionAuthorizationSnapshot = initialTransactionAuthorization();
+266:   const leases = new Set<AbortController>();
+267:   const readAuthorizations = new WeakMap<AuthorityReadReader, TransactionAuthorizationSnapshot>();
+268:   const activeSequences = new Set<TransactionSequenceAdmission>();
+269:   let mutationPause: object | undefined;
+270:   const revokeLeases = () => {
+271:     for (const lease of leases) lease.abort(new Error("authorization lease ended"));
+272:     leases.clear();
+273:   };
+
+ACTUAL SOURCE packages/server/src/transaction-store.ts:300-332
+300:     1024 * CONTRACT_ARTIFACT_CEILINGS.submittedArtifacts +
+301:     4096;
+302:   const capture = compiled ? json(compiled.capture) : "null";
+303:   if (Buffer.byteLength(capture) > captureMaximumBytes)
+304:     throw new TypeError("transaction contract capture exceeds private bound");
+305:   const receiptMaximumItems = transactionReceiptMaximum(options.receiptMaximumItems);
+306:   const configuration = json({
+307:     format,
+308:     receiptMaximumItems,
+309:     snapshotLimits: TRANSACTION_SNAPSHOT_LIMITS,
+310:     snapshotTokenPolicy: TRANSACTION_SNAPSHOT_TOKEN_POLICY,
+311:     initialAuthorizationView: view,
+312:     policyStorageRevision: 1,
+313:     identityPolicy,
+314:     contractIdentity: compiled?.identity ?? null,
+315:     runtimeLimits: TRANSACTION_RUNTIME_LIMITS,
+316:     scope,
+317:     types: [...installed].sort(([a], [b]) => (a < b ? -1 : a > b ? 1 : 0)),
+318:   });
+319:   // Preserve the exact format-10 property ordering, not a permissive JSON comparison.
+320:   const legacyObject = JSON.parse(configuration) as Record<string, unknown>;
+321:   const legacyEntries = Object.entries(legacyObject).flatMap(([key, value]) =>
+322:     key === "policyStorageRevision"
+323:       ? []
+324:       : [
+325:           [
+326:             key === "initialAuthorizationView" ? "authorizationView" : key,
+327:             key === "format" ? "bdp-private-transaction-snapshot-10" : value,
+328:           ],
+329:         ],
+330:   );
+331:   const legacyBytes = json(Object.fromEntries(legacyEntries));
+332:   const clock = options.clock ?? Date.now;
+
+ACTUAL SOURCE packages/server/src/transaction-store.ts:565-640
+565:   }
+566:   let recoveredPending: number;
+567:   // Assigned in the synchronous provisioning transaction before any context use.
+568:   let epoch!: string;
+569:   try {
+570:     db.exec(
+571:       "PRAGMA journal_mode=DELETE; PRAGMA synchronous=FULL; PRAGMA locking_mode=EXCLUSIVE; PRAGMA busy_timeout=0",
+572:     );
+573:     recoveredPending = atomic(() => {
+574:       if (options.create) {
+575:         db.exec(schema);
+576:         const put = db.prepare("INSERT INTO metadata VALUES(?,?)");
+577:         put.run("configuration", configuration);
+578:         put.run("contractCapture", capture);
+579:         put.run("epoch", randomUUID());
+580:         put.run("position", "0");
+581:         put.run("authorizationPolicy", json(authorization));
+582:       } else {
+583:         const storedConfiguration = metadata("configuration");
+584:         if (JSON.parse(storedConfiguration).identityPolicy !== identityPolicy)
+585:           throw new Error(
+586:             "transaction identity policy mismatch; explicit new-store provisioning required",
+587:           );
+588:         if (storedConfiguration !== configuration && storedConfiguration !== legacyBytes)
+589:           throw new Error("transaction installation mismatch");
+590:         // Exact bytes validate retained capture, including constant witnesses, even
+591:         // if the stored claimed identity was left unchanged by corruption.
+592:         const captureLength = db
+593:           .prepare(
+594:             "SELECT length(CAST(value AS BLOB)) AS bytes FROM metadata WHERE name='contractCapture'",
+595:           )
+596:           .get();
+597:         if (
+598:           !captureLength ||
+599:           Number(captureLength.bytes) > captureMaximumBytes ||
+600:           metadata("contractCapture") !== capture
+601:         )
+602:           throw new Error("transaction contract capture mismatch");
+603:         if (storedConfiguration === legacyBytes) {
+604:           if (db.prepare("SELECT 1 FROM metadata WHERE name='authorizationPolicy'").get())
+605:             throw new Error("unexpected legacy authorization policy");
+606:           db.prepare("INSERT INTO metadata VALUES('authorizationPolicy',?)").run(
+607:             json(authorization),
+608:           );
+609:           db.prepare("UPDATE metadata SET value=? WHERE name='configuration'").run(configuration);
+610:         }
+611:         const policyLength = db
+612:           .prepare(
+613:             "SELECT length(CAST(value AS BLOB)) AS bytes FROM metadata WHERE name='authorizationPolicy'",
+614:           )
+615:           .get();
+616:         if (!policyLength || Number(policyLength.bytes) > 4096)
+617:           throw new Error("invalid stored authorization policy");
+618:         authorization = parseTransactionAuthorization(metadata("authorizationPolicy"));
+619:       }
+620:       // Immutable for this exclusive owner; establish it before the first sweep.
+621:       epoch = metadata("epoch");
+622:       const retracted = Number(
+623:         db.prepare("DELETE FROM receipts WHERE owner IS NOT NULL").run().changes,
+624:       );
+625:       db.exec("DELETE FROM creator_facts");
+626:       sweep(instant());
+627:       return retracted;
+628:     });
+629:   } catch (error) {
+630:     db.close();
+631:     if (options.create) unlinkSync(options.file);
+632:     throw error;
+633:   }
+634:   // Immutable installation facts are the same ones used by mutation evaluation.
+635:   // Current authorization is captured separately inside each serialized entry.
+636:   const readConfiguration = Object.freeze({
+637:     scopeEpoch: epoch,
+638:     authorizationView: view,
+639:     receiptMaximumItems,
+640:     scopeSnapshot: Object.freeze({
+
+ACTUAL SOURCE packages/server/src/transaction-store.ts:973-1052
+973:   function withRead<T>(
+974:     callback: (reader: AuthorityReadReader, context: TransactionReadContext) => T,
+975:   ): OwnerReadEntryResult<T> {
+976:     if (busy)
+977:       return {
+978:         kind: "entry-refused",
+979:         reason: "reentrant",
+980:         cause: new Error("transaction store reentrant read"),
+981:       };
+982:     if (ownerFailure || maintenanceFailure || closed)
+983:       return {
+984:         kind: "entry-refused",
+985:         reason: "not-accepting",
+986:         cause:
+987:           ownerFailure ?? new Error("transaction store not accepting reads", maintenanceFailure),
+988:       };
+989:     return enter(() => {
+990:       let active = true;
+991:       const check = () => {
+992:         if (!active) throw new Error("expired transaction reader");
+993:       };
+994:       const immutableResource = (id: string) => {
+995:         const row = resource(id);
+996:         return row === undefined ? undefined : Object.freeze(row);
+997:       };
+998:       const reader: AuthorityReadReader = Object.freeze({
+999:         resource(id: string) {
+1000:           check();
+1001:           return immutableResource(id);
+1002:         },
+1003:         resources() {
+1004:           check();
+1005:           return Object.freeze(
+1006:             db
+1007:               .prepare("SELECT id FROM resources ORDER BY id")
+1008:               .all()
+1009:               .map((row) => Object.freeze(requiredResource(String(row.id)))),
+1010:           );
+1011:         },
+1012:         incidentLinks(id: string) {
+1013:           check();
+1014:           return Object.freeze(
+1015:             db
+1016:               .prepare(
+1017:                 "SELECT id FROM resources WHERE kind='link' AND (source=? OR target=?) ORDER BY id",
+1018:               )
+1019:               .all(id, id)
+1020:               .map((row) => Object.freeze(requiredResource(String(row.id)))),
+1021:           );
+1022:         },
+1023:         alias(path: string) {
+1024:           check();
+1025:           return alias(path);
+1026:         },
+1027:         policy(_name: string) {
+1028:           check();
+1029:           return undefined;
+1030:         },
+1031:       });
+1032:       readAuthorizations.set(reader, authorization);
+1033:       try {
+1034:         const value = callback(reader, readContext());
+1035:         if (
+1036:           value !== null &&
+1037:           (typeof value === "object" || typeof value === "function") &&
+1038:           "then" in value &&
+1039:           typeof value.then === "function"
+1040:         ) {
+1041:           // Observe forbidden asynchronous work; it cannot retain a live reader.
+1042:           void Promise.resolve(value).catch(() => {});
+1043:           throw new Error("transaction read callbacks must be synchronous");
+1044:         }
+1045:         return Object.freeze({ kind: "read", value });
+1046:       } finally {
+1047:         active = false;
+1048:         readAuthorizations.delete(reader);
+1049:       }
+1050:     });
+1051:   }
+1052:   function resource(id: string): EvaluatorStoredResource | undefined {
+
+ACTUAL SOURCE packages/server/src/transaction-store.ts:1853-1877
+1853:       });
+1854:     },
+1855:     readConfiguration: () =>
+1856:       enter(() =>
+1857:         Object.freeze({
+1858:           ...readConfiguration,
+1859:           authorizationView: authorization.authorizationView,
+1860:           authorization,
+1861:           scopeConfiguration: Object.freeze({
+1862:             ...readConfiguration.scopeConfiguration,
+1863:             policyIdentity: authorization.authorizationView,
+1864:           }),
+1865:         }),
+1866:       ),
+1867:     captureReadAuthorization(reader: AuthorityReadReader, principal: ReadPrincipal) {
+1868:       // The reader is a capability for this exact live serialized entry.
+1869:       const snapshot = readAuthorizations.get(reader);
+1870:       if (!snapshot || !principal || typeof principal !== "object")
+1871:         throw new Error("authorization capture outside owner entry");
+1872:       return snapshot;
+1873:     },
+1874:     authorizationSnapshot: () => enter(() => authorization),
+1875:     acquireAuthorizationLease(expected: TransactionReadContext): TransactionAuthorizationLease {
+1876:       return enter(() => {
+1877:         if (
+
+ACTUAL SOURCE packages/server/src/authority-read.ts:1-90
+1: import { isProxy } from "node:util/types";
+2: import {
+3:   type AbsoluteHttpUrl,
+4:   type BeadRecord,
+5:   type LinkRecord,
+6:   type MaximumEndpointMultiplicityPolicy,
+7:   type ReadBodyFor,
+8:   type ReadProblem,
+9:   type ReadRequest,
+10:   type Reference,
+11:   type ScopeReadOperation,
+12:   type TypeDescriptor,
+13:   type TypeSummary,
+14:   type TypeConformanceIndex,
+15:   ProtocolArtifactValidationError,
+16:   createTypeConformanceIndex,
+17:   isReadProblem,
+18:   parseCanonicalHttpUrl,
+19:   parseCanonicalScope,
+20:   parseReadProblem,
+21:   parseTypeDescriptor,
+22:   referenceUri,
+23: } from "@bdp/protocol";
+24: import type { ServerAdvertisedReadLimits } from "./index.js";
+25: import type { StablePrincipal } from "./member-executor.js";
+26: import type { StoreReader, StoredResource } from "./recovery-store.js";
+27: import {
+28:   type ResourceMutationPolicy,
+29:   type ResourceRecord,
+30:   isResourceVisible,
+31:   readStoredResource,
+32: } from "./resource-evaluator.js";
+33: import {
+34:   type ReadPaginationOptions,
+35:   type ReadSourceContext,
+36:   type ContextualReadPagination,
+37:   createContextualReadPagination,
+38:   ReadPaginationError,
+39: } from "./read-pagination.js";
+40: import {
+41:   type ReadSelectorLimits,
+42:   ReadSelectorError,
+43:   selectReadResources,
+44: } from "./read-selector.js";
+45: import {
+46:   type PageOperation,
+47:   classifyAliasPath,
+48:   continuationDetails,
+49:   continuationUrlFor,
+50:   inCanonicalUriOrder,
+51:   isPageOperation,
+52:   notFound,
+53:   readControlProblem,
+54:   resolveReadRequestVariant,
+55:   ScopeServerClosedError,
+56:   ScopeServerOperationAbortedError,
+57:   validateServerBead,
+58:   validateServerLink,
+59:   validateServerEndpoint,
+60:   validateServerLocalResourceId,
+61: } from "./read-request.js";
+62: 
+63: /** Resource/configuration reads only; receipt/key recovery belongs to the write owner. */
+64: export type AuthorityReadReader = Pick<
+65:   StoreReader,
+66:   "resource" | "resources" | "incidentLinks" | "alias" | "policy"
+67: >;
+68: 
+69: export type ReadPrincipal =
+70:   | { readonly kind: "authenticated"; readonly principal: StablePrincipal }
+71:   | { readonly kind: "anonymous" };
+72: export interface ScopeReadConfiguration {
+73:   readonly policyIdentity: string;
+74:   readonly configurationIdentity: string;
+75:   readonly maximumEndpointMultiplicity: readonly MaximumEndpointMultiplicityPolicy[];
+76: }
+77: export interface ScopeConfigurationSource {
+78:   capture(reader: AuthorityReadReader): ScopeReadConfiguration;
+79: }
+80: export interface CapturedReadAuthorization {
+81:   readonly authorizationView: string;
+82:   readonly scopeEpoch: string;
+83:   readonly policy: Pick<ResourceMutationPolicy, "canRead">;
+84:   readonly canReadType: (descriptor: TypeDescriptor) => boolean;
+85: }
+86: export type ReadIntent = ReadRequest | { readonly kind: "alias"; readonly url: string };
+87: export type ReadAuthorizationDecision =
+88:   | { readonly kind: "authorized"; readonly authorization: CapturedReadAuthorization }
+89:   | { readonly kind: "problem"; readonly problem: ReadProblem };
+90: 
+
+ACTUAL BOUNDED VALIDATION
+{
+  "at": "2026-10-16T02:26:58.331819+00:00",
+  "sourceBindingSha256": "61afa5ea5adbdaddece495c3983bbe20723c09d687f89f86f4804d55fef3ad1f",
+  "correctionSha256": "a7e62900feae145482227a89bad8366d8ebf4e374002411339fce9addea34d11",
+  "outcomes": {
+    "typecheck": {
+      "exit": 0,
+      "seconds": 1.4732504589483142,
+      "sha256": "625b33f76e015501305b60ec868e1340107f7aa64abb4490c4bc9b157e9424a3"
+    },
+    "format-check": {
+      "exit": 0,
+      "seconds": 0.5861744999419898,
+      "sha256": "6f06b6a7560f2e9339260b41568063124c2435a14c56d011b580838cf3c72708"
+    },
+    "affected-files": {
+      "exit": 0,
+      "seconds": 7.592720333021134,
+      "sha256": "9bcd8b97ad727132f9b94195964216a33eb3ae83d93a16ec159299f44eb2bc66"
+    }
+  },
+  "passed": 114,
+  "failed": 0,
+  "skipped": 0,
+  "fileCounts": {
+    "transaction-read.test.ts": 65,
+    "transaction-snapshot.test.ts": 49
+  },
+  "independentlyAbsentPids": [
+    32181,
+    32183,
+    32188,
+    32212,
+    32297,
+    32299,
+    32408,
+    32410,
+    32415,
+    32418,
+    32426
+  ],
+  "productionAndOtherTrackedUnchanged": 673,
+  "emittedUnchanged": 444,
+  "cleanup": {
+    "typecheck": [
+      "node-compile-cache"
+    ],
+    "format-check": [],
+    "affected-files": []
+  },
+  "preparationFailure": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-authorization-transition-draft/ci-fixture-repair/preparation-first-failure.json",
+  "priorCIRemainsFailed": true,
+  "buildInstalledNotRerun": true
+}

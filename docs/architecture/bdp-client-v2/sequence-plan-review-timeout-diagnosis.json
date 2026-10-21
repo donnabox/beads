@@ -1,0 +1,62 @@
+{
+  "at": "2026-10-15T09:19:03.422703+00:00",
+  "observations": [
+    "Two plan reviews each timed out near901s with emptystdout/stderr; no verdict. Sources unchanged and sampled groups absent.",
+    "No-tools READY probe exit0 in3.28s; exactREADY.",
+    "Read/Grep/Glob-only package.json probe exit0 in5.67s; exact@bdp/workspace."
+  ],
+  "hypotheses": [
+    {
+      "cause": "General CLI or credential outage",
+      "prediction": "Minimal prompt would fail or stall",
+      "status": "Not reproduced by current successfulprobe; intermittent failure notexcluded"
+    },
+    {
+      "cause": "Read-tool permission stall",
+      "prediction": "Actualsmallfile Read would stall or refuse",
+      "status": "Not reproduced by current successfulReadprobe"
+    },
+    {
+      "cause": "Large review workload or deliberation",
+      "prediction": "Smaller focused review targets complete",
+      "status": "Untested; splitpacketpreparation authorized only"
+    }
+  ],
+  "next": "Root review two bounded focused packets covering semantic oracles and observer/preservation/bounds; no third unchanged retry, no modeloverride, no authoring until review disposition.",
+  "files": [
+    {
+      "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-sequence-member-plan-v4-claude/exit.json",
+      "sha256": "0f615bf030c909ba012b569272fe7ad993656787e59e09825eb9584d58472966"
+    },
+    {
+      "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-sequence-member-plan-v4-claude/cleanup.json",
+      "sha256": "43d939266b703b4a76aa9cec19603ba943914f16db3f2c209116dce72f2c2e3d"
+    },
+    {
+      "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-sequence-member-plan-v4-claude-readonly/exit.json",
+      "sha256": "6de8ea9da65af5c03c9a947545c6c88757bb0912a53a619b894df88a8cdf4b3e"
+    },
+    {
+      "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-sequence-member-plan-v4-claude-readonly/cleanup.json",
+      "sha256": "a8b61036d7b453d5027cdedfcd477b70f768d1070ba641d5b6b20dc9f277097c"
+    },
+    {
+      "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/claude-responsiveness-20261015/result.json",
+      "sha256": "ef6097ca1a54be194b3517650b12da731f9c60a019c6ca816f838cc5a1e76a26"
+    },
+    {
+      "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/claude-responsiveness-20261015/stdout.txt",
+      "sha256": "3dfa3fb239f56c778a1e9b33eb31328349edd155a95806dac4378904e88527e5"
+    },
+    {
+      "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/claude-read-probe-20261015/result.json",
+      "sha256": "1745e4de6f73e6d76df7f7c58fddb12518e27a39801b52bde6ae1d180df33cbb"
+    },
+    {
+      "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/claude-read-probe-20261015/stdout.txt",
+      "sha256": "0f06c9ba27c72f3ff88d8139278521af020b52829e00e96baa39f1c6dda6a1dd"
+    }
+  ],
+  "rootCauseEstablished": false,
+  "authoringReleased": false
+}

@@ -1,0 +1,9 @@
+# Root assignment: measurement-only cross-carrier draft
+
+PR120 and PR121 are now merged with ordinary ancestry and exact tested-tree equality. Parent is actual main eff171839fe4f37638284a4c3346428979d26b5d, tree5c14bcc20ec7a72118bc07d2ed5896703211a660. PR120 CI completed9256passed/1skip/172files plus7preflight and final gates, job941s; PR121 completed9261passed/1skip/172files plus7preflight and final gates, job817s. The new20minute whole-job bound leaves259s/383s observed margins, not guarantees for a larger future candidate.
+
+The accepted v3 plan c021d366eb99b7e0f684a815a29e2ed7068dc12f07e33ea936bf0951fc80e072 and its preserved council/dispositions govern the four-file measurement draft. Root verified those four files unchanged c555→31e; author must reverify actualmain. Assigned cross_carrier_plan_v2_review to isolated ordinarymain-child vickie-cross-carrier-draft, branch codex/vickie-cross-carrier-draft.
+
+Authorize source draft and read-only measurements only. Preserve24 raw predecessor row objects, complete reconstructed parent documents, fixture/catalog/runtime/public API, all existing execution limits and existing authoring guards until measured acceptance. Require joint disk/stringify/node/assertion/action/coverage/derivative caps and exact route/capture/control inventories from v3. No build, tests, dependency install, child/service execution, guard increase, publication or qualification follows from this assignment. Root reviews the actual draft and selects bounded guards only after measurements fit. Exact future CI remains mandatory.
+
+Current questions remain unanswered: metadata-only Link Event membership, S1-Q1 retained-read comparison, Selector admission and command minimum-field applicability. Do not infer answers. This twelve-action cross-carrier row uses settled existing semantics and remains explicitly partial.

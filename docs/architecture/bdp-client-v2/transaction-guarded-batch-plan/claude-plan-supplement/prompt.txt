@@ -1,0 +1,509 @@
+Give a COMPLETE STANDALONE review of this proposed guarded-batch installed evidence plan. Supplied context only: no tools, writes or execution; output to stdout. Findings first: numbered severity/location/smallest fix, or explicit no actionable findings. Whole answer <=1800 words, including brief context limits/verdict. Include all findings in this answer; no references to omitted findings or deferred sections. Separate actual defects from missing-context uncertainty.
+
+Previous distinct review exited0 but stdout starts mid-sentence and omits referenced H1–H4/M1–M6/L1–L5: INCOMPLETE council, no clean verdict. Available L6–L11 and13 listed omissions were audited; count-neutral successor clarifications follow. Hard10s cleanup retained; L9 relaxation rejected. Do not reconstruct missing text. Prior raw claude-plan-review/stdout.txt SHA3a7ef758d2fcf598086d3c4046c5b7d474bfe7124c37b9d0389170ff67064ef0; native-findings-audit.md SHA2cd072658bef8d8a677fd7dbb65e2c1807e5b70301c487018d17a1a004f33e90.
+
+Review exact bodies/replay, zero-basedop1 staged rollback, no-op exclusion, historical receipt/current context, full Resource/Event equality, bounded transport/cleanup and safe reports. Guardless two-success prerequisites provide sensitivity, named failed-count oracle adjudicates; neither physical concurrency nor production mutation is claimed. Planning source committed98c600; future integrated execution source remains gated. Full successor plan+ledger follow, plus focused actual additions (not exhaustive source closure).
+
+Native successor review reference: proposed-successor/native-review.md SHA82381fd68be4dff72018935e8938c6f6d5a907ff751bd9bae6d0a9796247d1e7; no blockers, incomplete external council remains pending.
+
+FULL SUCCESSOR PLAN
+# Proposed private installed guarded-batch contest
+
+Proposed successor after the incomplete actual review; planning only. No implementation or validation is released. Complete standalone supplemental council and root acceptance remain pending. The sole Autonomous profile completion design remains authority; this is a bounded supporting evidence proposal, not a competing roadmap. Basis is actual committed main `98c600767e8e91a79e109cb741beb91e23b9bebe`, tree `fde859381752d15c8caabcbc946d3c2e384b9cf6`. At the original planning capture, the same-key draft was dirty, unmerged and unexecuted on that parent (binding ad840a73, test e6a52fa4); preserve that historical attribution. Root now reports clean candidate18f5428/PR134 with locally validated6+2 responses, still unmerged with council and CI pending. Those later results are transport precedent only, not evidence for this new guarded-batch plan. Reanchor to actual merged same-key main and its final reviewed bytes before this slice is authored or executed; no imaginary candidate or historical result relabeling.
+
+## Purpose, law and two-file scope
+
+No new serving defect was established. This is the strongest bounded missing installed evidence for a settled runtime distinction: two distinct-key atomic batches contend on one observed revision. The loser must retain a failed Mutation Receipt and leave neither its preceding marker creation nor its Event behind. Replaying the exact losing request must retain that failure. It supports narrow facts for `transactional.batch.revision-guard-race`, `transactional.batch.rollback` and `transactional.idempotency.failed-retained`; one scenario, not three registrations, catalog credit or whole-contract proof.
+
+Normative source at the pinned commit: spec2156–2160 requires the observed revision still to match and says omission applies to current state; 4173–4183 makes revision failure roll back the entire transaction; 3420 gives revision-mismatch conflict/409/after-state-change; 5263–5274 distinguishes current serving context from immutable receipt history; 5275 onward specifies embedded receipt Problem status/index; 5353–5356 requires a new key for after-state-change and forbids execution again under a retained failed key. Catalog264ff binds the guard-race requirement. Source store.test539–569 already establishes serialized guarded updates and retained failure, while671–694 establishes rollback of prior staged effects; this plan adds installed HTTP/complete visible-state evidence without claiming missing runtime behavior.
+
+Own exactly `apps/bdptest/src/transactional-guarded-batch-installed.test.ts` (new) and append a factual unexecuted/private-evidence paragraph in `docs/design/transaction-implementation-progress.md`, preserving then-current prose. No production/shared helper/fixture/catalog/manifest/coverage/spec changes, source fault seam, scheduler, concurrent DSL or public admission bypass. No Update rewrite, optional History/Types/provenance or pending Snapshot/incident-Link decision. Reusing a local transport pattern is permitted only after its final reviewed predecessor is read; do not import another test or create a new framework.
+
+## One fixture and exact seven-request positive
+
+`ledger.json` contains exact body construction, reference hashes, headers, configuration and formulas. One fresh external store, one operator principal writer with one ephemeral token, the existing Task descriptor170B/schema166B and exact five runtime configuration keys scope/directory/create/artifacts/credentials. No aliases, ownsOutgoing, provenance or custom testSeams. The adapter forces canonical authority/port0; no unsupported caller fields. Validate actual ready Scope/canonical mode/loopback URL/operation targets and actual served identities with installedTransactionBinding before any HTTP. Private ready targets are configured authority, not discovered links.
+
+1. POST actual/pinned `operations/batch`, key guarded-seed, one createBead with supplied id beads/guarded-seed, title guarded-seed, metadata{}. Independently schema-check HTTP200 completed/available receipt and its full Resource before capturing revision. Required/effect/current position pos-1.
+2–3. Dispatch two POST batches without awaiting either response, keys guarded-a and guarded-b. Each first creates its distinct supplied marker id beads/marker-a or beads/marker-b with matching title and metadata{}. Its second operation, updateBead at zero-based operationIndex1, uses the absolute seed id, the exact captured seed expectedRevision, and propertiesChange replace /title to winner-a or winner-b. Use actual captured opaque revision; no hard-coded fabricated revision is sent. Both promises get rejection handlers immediately, then Promise.allSettled preserves both results/errors.
+4. Repeat the *exact original losing body bytes and key*. Do not rebuild from current revision, remove its guard or select the winner's request. Assert full retained failed receipt equality.
+5. GET the actual validated losing receipt.id with the same operator. Validate exact canonical href under Scope receipts/, one legal nonempty suffix, no query/fragment/userinfo, <=8192 characters and UTF8 bytes. Assert full retained failed receipt equality again.
+6. GET exact Scope beads/?limit=32 and require complete current two-Resource collection, next:null.
+7. GET finite JSON Scope events/ and require exact complete three-Event page, next:null.
+
+No bootstrap, polling, authentication probe, separate point GET, page continuation, failed-marker reuse probe or reopen. Pair terminal responses are HTTP200 even for the loser: never copy RU's direct409 expectation. Unexpected202/pending is a failed/inconclusive selected healthy witness, retained honestly with no follow-up/polling and no universal protocol violation claim. Unexpected503/shape/transport failures are also nonpassing and stop dependent work; never relabel them as a successful control.
+
+Body arithmetic is explicit about dynamic data. Seed172B; unguarded control bodies323B each. Guarded contender/replay length =343+r, where r is UTF8 byte length of JSON.stringify(actual seed revision), including quotes. Require r<=128 before either contender dispatch; this private workload cap is not a revision-format rule. Store's current allocateRevision=randomUUID at1214–1215 gives a source-grounded reference r38, hence381B/reference body, positive1315B; the sample UUID in ledger is only an arithmetic specimen, never a supplied revision. Actual seed value and all final body hashes must be measured at run time. Hard positive total1585B and largest471B under r128; control818B; combined reference2133B/max2403B. This avoids pretending unknown future body hashes are fixed evidence. Existing runtime/body caps are unchanged.
+
+## Full independent oracles
+
+Compile actual bundled mutationReceipt, beadRecord, currentBeadCollection and eventPage schemas with existing Ajv2020 and protocol URI/date-time validators. Schema validation comes before literal checks or baseline extraction. No source-coupled generated expected Resource/receipt oracle.
+
+Seed receipt has one created result and exact Resource `{id:Scope+beads/guarded-seed,type:Task,revision:actual nonempty schema-valid string,properties:{title:guarded-seed},metadata:{}}`. No links/ownedLinks/revisionProvenance. Construct exact full receipt with its actual canonical receipt.id, transaction, recorded epoch/view and expiresAt, after independent schema/key/status/results/position checks. Do not impose freshness or UUID semantics.
+
+For the positive pair, require exactly one completed/available receipt and one failed/available receipt, both HTTP200, with distinct ids/transactions and their own sent keys. Which request wins is deliberately unordered. The winner's requiredPosition=effectPosition=pos-2 and two exact ordered results are `{operationIndex:0,outcome:created,resource:marker}` then `{operationIndex:1,outcome:updated,resource:seedAfter}`. Full Resources have five fields, exact fixed IDs/type/title/metadata, nonempty revisions; seedAfter.revision differs from captured seed revision. Complete receipt has next:null and no operationName/problem/allocated additions.
+
+The loser has requiredPosition pos-2 and exact embedded Problem `{type:https://github.com/gastownhall/bdp/problems/conflict,code:revision-mismatch,status:409,retry:after-state-change,operationIndex:1}`. No pointer, operationName, results, next, allocated or effectPosition. The earlier marker is actually staged: evaluator1091–1094 writes op0 after its checks, then batch1056–1062 evaluates op1 and returns its failure. This is source-grounded: evaluator139–159/1022–1027 makes the plain Problem; batch749–759 adds only operationIndex because inputs have no names; store1266–1275 rolls back effects and retains the failed receipt using the preceding position. It is not a top-level HTTP409 and after-state-change does not permit same-key reexecution. Full equality over replay and issued-root GET includes original expiresAt and all historical fields.
+
+Header oracles check only the named members, never exhaustive equality of the header set. Read semantics may add legitimate fields. All responses have actual nonempty epoch/view/current-position headers, content-type application/json, private,no-store and x-bdp-development non-attesting. POST Vary:Accept is checked. Seed current header pos-1; positive pair, replay and reads pos-2. Body epoch/view equal the serving tuple for this unchanged fixture, not as a general invariant across view rotation. No synthetic token values are expected.
+
+Collection6 is exactly `{items:[seedAfter,winningMarker],next:null}`; the actual canonical URI sorting in authority-read878–893 places guarded-seed before marker. Assert full Resources, length2 and no losing marker; never weaken to id-only equality. This observes rollback of the earlier staged marker. It does not prove identity reservation release, durability after crash, or hidden internal allocator counts.
+
+Event7 equals a closed page with source Scope events/, exactly three events in retained position/ordinal order and next:null. Event1 is seed created atpos-1 ordinal0 with seed transaction and full `{revision,properties,metadata}` data. Event2 is winning marker created atpos-2 ordinal0 with winner transaction and its full data. Event3 is seed updated atpos-2 ordinal1, same winner transaction, data exactly `{previousRevision:seedRevision,revision:seedAfter.revision,change:[{op:replace,path:/title,value:winner-title}]}`; no invented full properties/metadata snapshot or metadataChange in the updated Event. Every event has exact source, subject, subjectType, ordinal/type, actual schema-valid time, and a private ID independently computed from GET7's serving epoch/view/source and its position/ordinal using H(tag,value)=SHA256(JSON.stringify([tag,value])).digest(base64url) and id=`ev_${H(epoch,GET7epoch)}_${H(view,GET7view)}_${H(source,GET7source)}_${groupPosition}_${ordinal}` (tag arguments are literal strings). These opaque spellings are private fixture assertions, not normative public ID syntax. Source batch692–707/790–809 and events75–101 define them; store1580–1630 scans ascending groups and page bounds. Default receipt/event maximum32 comfortably holds2 receipt results/3 Events, and full next:null remains the actual completeness assertion. No Changes pagination claim or loser Event is allowed.
+
+## Order-independent control and named failure
+
+Use same fresh payload and fixture in mode unguarded-contenders; only omit expectedRevision from the updateBead at zero-based operationIndex1 of BOTH contender requests. All keys, operations, marker IDs, titles, metadata and seed remain fixed. Omitting only B's guard is not a reliable control: if B executes first, guarded A still fails. Removing both gives two successful state transitions regardless of arrival order. This is input sensitivity of the guard oracle, not a production mutant or evidence about removing transaction rollback machinery. The discriminating facts are the independently validated two successful guardless effects; the named assertion is their deterministic adjudication point, not a separate discriminator. guarded-seed, winner-a and winner-b are distinct literal titles, so neither order can turn a control update into a no-op.
+
+Control executes only rows1–3, hard maximum3. Before the intended named assertion, independently require valid seed pos-1 plus two HTTP200 completed/available receipts, each with its exact two-result full postimages, own key, distinct receipt/transaction IDs, required=effect and unordered effects {pos-2,pos-3}. Updated seed revisions differ from original and each other; each postimage title matches its own request. Serving context must be at least its own effect and at mostpos-3, without assigning a fixed order to A/B. Both dispatch/socket prerequisites must pass. Retain these facts and completed receipt fingerprints before setting named oracle `guarded-batch:one-retained-revision-failure` and asserting failed-contender count1 (actual0). Expect one named failure, no transport/schema/cleanup/report failure. Generic exit1, an earlier failure or missing successful prerequisites does not discriminate. No rows4–7 on control and no extra replacement run. Positive uses the same named one-failure oracle before selecting the loser, but not the control's two-success prerequisites.
+
+## Transport, lifetime, reports and finite cost
+
+Propose local Node http.request following final reviewed same-key/Update patterns: agent:false, Connection close, canonical Host reference.invalid while dialing validated loopback, exact pathname+search grant including only beads/?limit=32 and separately validated issued receipt root. Raw Node transport follows no redirects. Exact POST UTF8 Content-Length, application/json, Idempotency-Key and in-memory Bearer token; no token in argv/env/report. Request cap7 positive/3 control checked before dispatch; at most2 outstanding only for the pair, later sends sequential and prior socket closures drained. Preserve all pair errors with immediate rejection handlers.
+
+Record bounded unique pair milestones/socket identities and actual dispatch lifetimes. Require both calls invoked/end-called before first settled and distinct actual sockets with two completed responses; this establishes client dispatch discipline only. Record stronger connected/write-before-first-response facts without requiring them or claiming simultaneous server admission. No sleeps or internal pending-window manipulation. Finite response bodies reject before appending beyond32768B, maxHeaderSize16384, serialized request headers<=16384, UTF8 fatal decode only at complete end, empty/null/truncated/aborted/error fail closed. Runtime request body ceiling65536 retained. Combined ten maximum retained response bodies327680B is a retention sum, not a heap peak; parsed objects and concatenation coexist.
+
+One registration: `preserves one guarded batch winner and rolls back the losing marker through installed HTTP`. Default/absent BDP_TRANSACTIONAL_GUARDED_BATCH_MODE=positive; only positive/unguarded-contenders accepted. Standard installed entry/source env remains, explicit external report env BDP_TRANSACTIONAL_GUARDED_BATCH_OUTPUT. Ordinary fullCI adds only7HTTP/one child. Local validation selects this one callback twice: positive7 and control3, total10HTTP/2scheduled launch attempts/max2children, two owner/listener/store lifetimes, ten connections/max2live per cohort. No source runtime case or metadata-only test expansion.
+
+The single binding work deadline is45s including startup/schema/oracle work; subcaps are not separately spendable allowances. Per cohort retain45s work including startup, inherited10s ready,5s/exchange,10s overall cleanup with5s request/socket drain,60s test and120s command supervision. Nested deadlines are not additive spending entitlements. No runtime/global timeout/limit increases. Keep the hard local10s cleanup race: the inherited launcher can re-enter its10s drain after a close failure, so late completion must have rejection handlers, surfaced errors remain aggregated and a coincident deadline is nonpassing. Do not make cleanup merely observational or wait beyond the accepted bound. Temporary root is realpath(os.tmpdir()), outside repository; fresh prefix bdp-guarded-batch-installed-. Capture actual resolved store/output paths. On any failure, abort and destroy owned requests/sockets, drain all promises and returned-child close concurrently, aggregate original/surfaced cleanup/report errors. Track launchAttempted separately: a pre-ready failure with no returned child means PID/stop unknown, so retain directory for supervisor. Remove only before any launch or after actual known child exit. Explicit independent PID/group/store absence remains external gate, never inferred from null pid or no output.
+
+Report absolute/exclusive/outside worktree+store, optional ordinaryCI/required external, <=65536B including newline. Positive and control MUST receive different exclusive report paths and different Vitest result paths; preserve both. Never reuse a single output filename between cohorts. Retain allowlisted actual source/entry/package and validated served runtime/artifact/policy/authentication/payload identities, mode, exact dynamic request lengths/hashes and nonsecret keys/routes, completed response status/safe headers/byte fingerprints, validated receipt/result/Problem identity facts, selected winner/loser, full-equality flags, milestones and failure phases/counts plus cleanup facts. Optionally separate credential-free configuration projection; never replace actual served digests or persist token-bearing config. Nonsecret descriptor/schema bytes may be retained. No effectiveRequest/headerLines/Authorization/token map/arbitrary Error data or unbounded child stdout. Full parsed Resource/receipt/Event comparisons occur in memory; report fingerprints do not imply raw-body retention. Write even after failure; write/overflow failure is itself nonpassing. Unknown pending/transport/service outcomes are not protocol verdicts. claimEligible remainsfalse.
+
+## Gates and scope limits
+
+Root/native/actualClaude plan council must accept this proposal before source authoring. planningHead names the historical review basis only; runtime/report sourceCommit must name the eventual actual clean candidate independently verified against build/archive/installed bytes, never a hard-coded planning hash. Root chooses actual clean worktree/merged predecessor and confirms the two-path ownership; no current product changes. Measured normally formatted draft must pin actual expanded selector, full source diff, exact dynamic body construction/maxima and actual callback/control/report contract before validation. Static offline setup/type/build/format/lint/boundaries/Read seal then one fresh protocol/server pack and offline external consumer; direct pinned Node24.16.0/actualVitest.mjs/maxWorkers1 selection for two cohorts. No broad suite locally or new framework/scaffolding now. Full exact-headCI later includes default positive once.
+
+Package gate must verify source/build attribution, actual archive-to-installed member equality, full eight-package production closure and payload digest, consumer lock/entry identity, actual ready/config/artifact binding, and unchanged candidate between cohorts. The Vitest admission mock is harness-only and cannot attest packed-child admission. Do not use workspace fallback during external validation. Keep failed attempts and stop dependent work without retry. Ordinary integration and affected validation are required before final publication/readiness. This adds standalone private observations only, not executable catalog mapping, coverage-row credit, whole-profile qualification, discovery activation or decisions on Snapshot/Link metadata.
+
+## Count-neutral construction and safe readout clarifications
+
+Capture the seed revision only after its schema and exact Resource oracle pass. Construct and retain each contender body once with ordinary JSON.stringify of the closed two-operation literal, substituting that same captured revision into both updateBead operands. Before dispatch require both guard values equal that seed revision, encoded r<=128 and each actual body length=343+r; record actual hashes. Select the loser by its independently validated failed status, keep its original key/body string, and before request4 assert byte/string/hash/key equality to that retained original. No current-state reconstruction or example UUID substitution. Control construction removes precisely the two operationIndex1 expectedRevision properties; source data-only comparison must establish all other members/values unchanged.
+
+Fixture identity passed to installedTransactionBinding is `{bytes: readFileSync(packages/conformance/test-support/transactional/fixture-v1.json)}` with the existing exact fixture bytes, separate from runtime descriptor/schema artifacts. The binding snapshots fixtureDigest/id/capabilities; it neither executes fixture scenarios nor grants public qualification. Meaningful source pins now include that binding helper and read HTTP semantics.
+
+The measured implementation must retain safe structured fields: mode, namedAssertion, failedPhase (setup/launch/transport/oracle/inconclusive or null), failureCount and primary/cleanup/report failure counts or flags; prerequisite booleans for seedSchemaAndLiterals, pairSchemasAndLiterals, dispatchDiscipline, controlTwoCompletedEffects; completedContenderCount, failedContenderCount, actual attempts/completions; per-index status/sentKey/receiptId/transaction/resource IDs/revisions/required/effect/serving positions and equality flags; actual source/entry/served identity digests; bounded milestones, stronger timing observations and lifecycle/cleanup flags. Before the named control failure, retain completedContenderCount2, failedContenderCount0 and all prerequisite facts. External adjudication requires that exact oracle failure alone after3 completed200s, with no transport/schema/startup/deadline/cleanup/report failure. It must never accept generic exit1. No arbitrary errors, full credential-bearing configuration or request Authorization are serialized. Client dispatch discipline remains a procedural check, not an independent server-concurrency proof.
+
+The original actual review exited0 but its stdout began mid-sentence and omitted referenced H1–H4/M1–M6/L1–L5. Available L6–L11, explicit omission questions and exposed topic claims were audited; their count-neutral clarifications are integrated here. Missing findings are not reconstructed or marked resolved. A fresh complete standalone focused supplement is still required; no claim of completed external council.
+
+FULL SUCCESSOR LEDGER (JSON whitespace compacted only)
+{"status":"proposed successor; incomplete original external review preserved; full standalone supplemental council/root acceptance pending; authoring/execution closed","planningHead":"98c600767e8e91a79e109cb741beb91e23b9bebe","planningTree":"fde859381752d15c8caabcbc946d3c2e384b9cf6","pendingPredecessor":{"path":"/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-same-key-overlap-draft/source-binding.json","sha256":"ad840a73fe10f830e58959dcc7642b35ec91f0a2cea4db4f4fb9912f940df0d0","state":"Historical original planning capture: dirty, unmerged and unexecuted author draft on98c600; not guarded-batch runtime evidence","currentRootObservation":"Clean candidate18f5428/PR134 has locally validated6+2 responses; still unmerged, council and CI pending. Actual merged-parent reanchor remains required; no credit to this proposed slice."},"ownedPaths":["apps/bdptest/src/transactional-guarded-batch-installed.test.ts","docs/design/transaction-implementation-progress.md"],"registration":{"title":"preserves one guarded batch winner and rolls back the losing marker through installed HTTP","count":1,"defaultMode":"positive","modeEnvironment":"BDP_TRANSACTIONAL_GUARDED_BATCH_MODE","outputEnvironment":"BDP_TRANSACTIONAL_GUARDED_BATCH_OUTPUT","modes":["positive","unguarded-contenders"],"selectionRegex":"^preserves one guarded batch winner and rolls back the losing marker through installed HTTP$"},"requests":[{"index":1,"label":"seed","method":"POST","url":"https://reference.invalid/acme/operations/batch","key":"guarded-seed","bodySource":"seed","headers":{"Host":"reference.invalid","Accept":"application/json","Connection":"close","Authorization":"in-memory Bearer token; excluded from evidence","Content-Type":"application/json","Idempotency-Key":"guarded-seed","Content-Length":"actual UTF8 body byte length"}},{"index":2,"label":"contender-a","method":"POST","url":"https://reference.invalid/acme/operations/batch","key":"guarded-a","bodySource":"a(actualSeedRevision)","headers":{"Host":"reference.invalid","Accept":"application/json","Connection":"close","Authorization":"in-memory Bearer token; excluded from evidence","Content-Type":"application/json","Idempotency-Key":"guarded-a","Content-Length":"actual UTF8 body byte length"}},{"index":3,"label":"contender-b","method":"POST","url":"https://reference.invalid/acme/operations/batch","key":"guarded-b","bodySource":"b(actualSeedRevision)","headers":{"Host":"reference.invalid","Accept":"application/json","Connection":"close","Authorization":"in-memory Bearer token; excluded from evidence","Content-Type":"application/json","Idempotency-Key":"guarded-b","Content-Length":"actual UTF8 body byte length"}},{"index":4,"label":"loser-retained-replay","method":"POST","url":"https://reference.invalid/acme/operations/batch","key":"exact actual losing key","bodySource":"exact original losing body bytes","headers":{"Host":"reference.invalid","Accept":"application/json","Connection":"close","Authorization":"in-memory Bearer token; excluded from evidence","Content-Type":"application/json","Idempotency-Key":"exact actual losing key","Content-Length":"actual UTF8 body byte length"}},{"index":5,"label":"issued-loser-receipt","method":"GET","url":"validated actual losing receipt.id","key":null,"bodySource":null,"headers":{"Host":"reference.invalid","Accept":"application/json","Connection":"close","Authorization":"in-memory Bearer token; excluded from evidence"}},{"index":6,"label":"complete-current-beads","method":"GET","url":"https://reference.invalid/acme/beads/?limit=32","key":null,"bodySource":null,"headers":{"Host":"reference.invalid","Accept":"application/json","Connection":"close","Authorization":"in-memory Bearer token; excluded from evidence"}},{"index":7,"label":"complete-scope-events","method":"GET","url":"https://reference.invalid/acme/events/","key":null,"bodySource":null,"headers":{"Host":"reference.invalid","Accept":"application/json","Connection":"close","Authorization":"in-memory Bearer token; excluded from evidence"}}],"inputs":{"seed":{"body":"{\"operations\":[{\"operation\":\"createBead\",\"id\":\"beads/guarded-seed\",\"type\":\"https://reference.invalid/acme/types/task\",\"properties\":{\"title\":\"guarded-seed\"},\"metadata\":{}}]}","bytes":172,"sha256":"a1937453b366087694cc040cc81534d1d073fed0e0bcc09b0fc6de39304ef3f0"},"aReferenceGuard":{"body":"{\"operations\":[{\"operation\":\"createBead\",\"id\":\"beads/marker-a\",\"type\":\"https://reference.invalid/acme/types/task\",\"properties\":{\"title\":\"marker-a\"},\"metadata\":{}},{\"operation\":\"updateBead\",\"bead\":\"https://reference.invalid/acme/beads/guarded-seed\",\"expectedRevision\":\"00000000-0000-4000-8000-000000000000\",\"propertiesChange\":[{\"op\":\"replace\",\"path\":\"/title\",\"value\":\"winner-a\"}]}]}","bytes":381,"sha256":"386fc744c79e39fe4428c6a77c4d7b7b885dc18b41e2b90f1acdf0e0df5fb226"},"bReferenceGuard":{"body":"{\"operations\":[{\"operation\":\"createBead\",\"id\":\"beads/marker-b\",\"type\":\"https://reference.invalid/acme/types/task\",\"properties\":{\"title\":\"marker-b\"},\"metadata\":{}},{\"operation\":\"updateBead\",\"bead\":\"https://reference.invalid/acme/beads/guarded-seed\",\"expectedRevision\":\"00000000-0000-4000-8000-000000000000\",\"propertiesChange\":[{\"op\":\"replace\",\"path\":\"/title\",\"value\":\"winner-b\"}]}]}","bytes":381,"sha256":"59f91799860c3fa0957c4e93fe3bd57fd94621b992da4772b67307329bde0e70"},"aControl":{"body":"{\"operations\":[{\"operation\":\"createBead\",\"id\":\"beads/marker-a\",\"type\":\"https://reference.invalid/acme/types/task\",\"properties\":{\"title\":\"marker-a\"},\"metadata\":{}},{\"operation\":\"updateBead\",\"bead\":\"https://reference.invalid/acme/beads/guarded-seed\",\"propertiesChange\":[{\"op\":\"replace\",\"path\":\"/title\",\"value\":\"winner-a\"}]}]}","bytes":323,"sha256":"f707e87dc9ec95f6f564940d3fc097b6880aeeeda9ac493981d9a4344bb5a91d"},"bControl":{"body":"{\"operations\":[{\"operation\":\"createBead\",\"id\":\"beads/marker-b\",\"type\":\"https://reference.invalid/acme/types/task\",\"properties\":{\"title\":\"marker-b\"},\"metadata\":{}},{\"operation\":\"updateBead\",\"bead\":\"https://reference.invalid/acme/beads/guarded-seed\",\"propertiesChange\":[{\"op\":\"replace\",\"path\":\"/title\",\"value\":\"winner-b\"}]}]}","bytes":323,"sha256":"bbc04ffd826ba2519b86b4a22e47eff5566d2bb5ec90f45fe6ecb8779f6148a5"}},"dynamicRevision":{"referenceValue":"00000000-0000-4000-8000-000000000000","referenceIsNeverSent":"reference-only arithmetic specimen; actual r comes from independently validated seed receipt Resource","sourceExpectedJsonStringBytes":38,"hardJsonStringBytes":128,"positiveBodyFormula":"343 + r bytes per contender/replay where r=UTF8 bytes of JSON.stringify(actual seed revision)","maximumPositiveBodyBytes":471,"revisionSemantics":"opaque nonempty string; no normative UUID assumption; record exact captured encoding/body hashes at execution"},"bodyTotals":{"seedBytes":172,"referencePositiveContenderBytes":381,"fixedControlContenderBytes":323,"referencePositiveTotal":1315,"maximumPositiveTotal":1585,"fixedControlTotal":818,"referenceCombinedTotal":2133,"maximumCombinedTotal":2403},"runtimeConfiguration":{"scope":"https://reference.invalid/acme/","directory":"fresh resolved absolute external owned temporary directory","create":true,"artifacts":{"descriptors":[{"retrievalUri":"https://reference.invalid/acme/types/task","utf8":"{\"id\":\"https://reference.invalid/acme/types/task\",\"name\":\"Task\",\"describes\":\"bead\",\"conformsTo\":[],\"propertiesSchema\":\"https://reference.invalid/acme/schemas/properties\"}"}],"schemas":[{"retrievalUri":"https://reference.invalid/acme/schemas/properties","utf8":"{\"$id\":\"https://reference.invalid/acme/schemas/properties\",\"type\":\"object\",\"properties\":{\"title\":{\"type\":\"string\"}},\"required\":[\"title\"],\"additionalProperties\":false}"}]},"credentials":[{"token":"ephemeral32-characterbase64url; never retained","principal":"writer","canMutate":true}]},"artifactMeasures":{"descriptors":[{"bytes":170,"sha256":"f448e126550b2809d01dc6b24811d1796e82b2599c35b438550ed3bec65a2a22"}],"schemas":[{"bytes":166,"sha256":"1ed8b24d90a8c278bc466fd48ba1e849afac01326c377e5c6985855e62373f95"}]},"control":{"onlyInputChange":"omit expectedRevision from the updateBead at zero-based operationIndex1 of BOTH contender bodies; all other values unchanged","whyBoth":"Omitting only one guard can still yield one failure if that unguarded contender executes first; omitting both makes the counterfactual order-independent.","prefixRequests":[1,2,3],"expectedHttp":3,"maximumHttp":3,"expectedStatuses":[200,200,200],"preconditions":["seed completed pos-1","both contenders schema-valid completed/available with exact two results","distinct receipt and transaction IDs; marker ids fixed a/b","unordered contender effects {pos-2,pos-3}, own required=effect","both updated seed revisions differ from seed and each other; each title matches own input","response current context epoch/view consistent; own effect<=serving position<=pos-3","dispatch/socket prerequisites pass"],"namedFailure":"guarded-batch:one-retained-revision-failure","assertion":"actual failed contender count must equal1; observed0 after the control preconditions","expectedFailureCount":1,"notAccepted":"generic failure, pending/failed control receipt, schema/transport/cleanup/report failure, false dispatch observation; no fallback follow-ups","attribution":"prerequisite two-successful-effects evidence discriminates guard omission; named failed-count assertion is deterministic adjudication, not a production mutant detector","noOpExclusion":["guarded-seed","winner-a","winner-b"]},"workload":{"positiveHttp":7,"positiveMaximumHttp":7,"controlHttp":3,"controlMaximumHttp":3,"combinedExpectedHttp":10,"combinedMaximumHttp":10,"positivePost":4,"positiveGet":3,"controlPost":3,"controlGet":0,"registeredCallbacks":1,"externalCaseExecutions":2,"ordinaryFullCiAddedCallbacks":1,"ordinaryFullCiAddedHttp":7,"scheduledLaunchAttempts":2,"maximumProductChildren":2,"owners":2,"listeners":2,"storeDirectories":2,"expectedTcpConnections":10,"maximumTcpConnections":10,"maximumOutstandingRequestsPerCohort":2,"maximumLiveSocketsPerCohort":2,"sourceRuntimeCallbacks":0,"bootstrapRequests":0,"retry":0,"reopen":0,"continuationFetch":0,"retryMeaning":"automatic retries only","retainedReplay":1},"limits":{"workMs":45000,"readyMs":10000,"exchangeMs":5000,"cleanupMs":10000,"requestDrainMs":5000,"testMs":60000,"commandMs":120000,"requestBodyBytes":65536,"requestHeaderBytes":16384,"responseBodyRetainedBytes":32768,"responseHeaderBytes":16384,"reportBytesIncludingNewline":65536,"pairMilestones":32,"receiptUrlBytesAndCharacters":8192,"positiveRetainedBodySumCeiling":229376,"controlRetainedBodySumCeiling":98304,"combinedRetainedBodySumCeiling":327680,"workBudgetPolicy":"45000ms is sole binding aggregate work deadline; ready/exchange caps cannot all be spent independently","cleanupBudgetPolicy":"hard10000ms local race retained; inherited close may enter another drain after failure; late promises handled; deadline race is nonpassing; no increase"},"failedProblem":{"type":"https://github.com/gastownhall/bdp/problems/conflict","code":"revision-mismatch","status":409,"retry":"after-state-change","operationIndex":1},"executionAuthorized":false,"profileQualification":false,"planningProvenance":{"planningHead":"historical98c600 only","executionSourceCommit":"actual eventual clean candidate verified by supervisor against source/build/archive/installed payload; never hard-code planningHead","pendingPredecessor":"same-key draft unmerged at original planning capture; actual merge/dependency reanchor required"},"constructionAssertions":["capture revision from independently validated seed Resource","construct each closed body once via JSON.stringify with same captured revision","check both expectedRevision values exactly seed revision; encoded r<=128 and actual body length343+r","retain exact original body/key/hash per contender","replay selected loser exact original string/bytes/key/hash; no body reconstruction","control differs only by removing both operationIndex1.expectedRevision fields"],"headerOracle":"named presence/value checks only; never exhaustive header-set equality","reports":{"environment":"BDP_TRANSACTIONAL_GUARDED_BATCH_OUTPUT","cohortPaths":{"positive":"<external-run>/positive-observation.json","unguarded-contenders":"<external-run>/unguarded-observation.json"},"vitestPaths":{"positive":"<external-run>/positive-vitest.json","unguarded-contenders":"<external-run>/unguarded-vitest.json"},"exclusive":true,"absolute":true,"outsideWorktreeAndStore":true,"requiredSafeFields":["mode","namedAssertion","failedPhase","failureCount","primaryFailureCount","cleanupFailureCount","reportWriteFailed","prerequisites","completedContenderCount","failedContenderCount","attempts","completedResponses","validatedReceiptFacts","performedEqualities","sourceEntryAndServedIdentityDigests","boundedMilestones","cleanupFacts"],"negativeRequired":{"namedAssertion":"guarded-batch:one-retained-revision-failure","completedContenderCount":2,"failedContenderCount":0,"attempts":3,"completedResponses":3,"failureCount":1,"cleanupFailureCount":0,"reportWriteFailed":false,"prerequisites":"all independent successful fixture/control facts true before named throw"},"actualOutputPaths":"resolve and pin at measured execution gate; no file exists or run occurred now"},"fixtureBinding":{"path":"packages/conformance/test-support/transactional/fixture-v1.json","shape":"{bytes:Uint8Array}","meaning":"identity metadata only; never execute extra scenarios or imply qualification"}}
+FOCUSED ACTUAL CONTEXT
+Actual committed-source additions: leading indentation alone removed. Inclusive ranges and rendered hashes bound externally; noncontiguous ranges labeled.
+
+packages/protocol/src/read-update-values.ts:263-280
+if (reference.startsWith("@")) continue;
+if (/^[A-Za-z][A-Za-z0-9+.-]*:/.test(reference)) {
+if (!isJsonSchemaUri(reference))
+throw new ReadUpdateCarrierError(`malformed ${field} absolute reference`);
+if (field === "id") {
+try {
+parseCanonicalHttpUrl(reference, "creation id");
+} catch (cause) {
+throw new ReadUpdateCarrierError("malformed absolute creation id", { cause });
+}
+}
+} else {
+try {
+assertCanonicalPathSegments(reference, `${field} reference`);
+if (field === "id") {
+const [root, firstIdSegment] = reference.split("/");
+if (root !== (kind === "createBead" ? "beads" : "links") || firstIdSegment === undefined)
+throw new Error("creation id requires the correct fixed root and an id path");
+
+packages/server/src/resource-evaluator.ts:1022-1027
+if (
+"expectedRevision" in input &&
+input.expectedRevision !== undefined &&
+input.expectedRevision !== before?.revision
+)
+fail("revision-mismatch");
+
+packages/server/src/resource-evaluator.ts:1085-1098
+}
+: {
+outcome: creating ? "created" : "updated",
+resource: after as ResourceRecord,
+...(sourceAfter ? { source: sourceAfter.id, sourceRevision: sourceAfter.revision } : {}),
+};
+// No Resource write happens until every validation/policy/CAS/limit check passes.
+fault.check();
+for (const write of writes) tx.putResource(write);
+if (deleting) tx.deleteResource(id);
+return freeze({
+effect: "success",
+outcome,
+resolutions,
+
+packages/server/src/transaction-batch.ts:63-69
+export const TRANSACTION_RUNTIME_LIMITS = Object.freeze({
+maximumOperations: 32,
+inducedEvents: 256,
+matchedResources: 32,
+representationBytes: 256 * 1024,
+scopeSourceBytes: 64 * 1024,
+requestBodyBytes: 64 * 1024,
+
+packages/server/src/transaction-batch.ts:378-380
+function canonicalReference(scope: string, uri: string): string {
+return /^[A-Za-z][A-Za-z0-9+.-]*:/.test(uri) ? uri : `${scope}${uri}`;
+}
+
+packages/server/src/transaction-batch.ts:749-759
+if (result.effect === "failure")
+return {
+ok: false,
+problem: {
+...receiptProblem(result.outcome),
+operationIndex,
+...(op.name ? { operationName: op.name } : {}),
+},
+};
+const outcome = result.outcome;
+results.push({ operationIndex, ...(op.name ? { operationName: op.name } : {}), ...outcome });
+
+packages/server/src/transaction-batch.ts:1055-1062
+}
+const failure = applyResource(
+{ operation: op.operation as ResourceOperation, ...(op.name ? { name: op.name } : {}) },
+input,
+operationIndex,
+aliases,
+);
+if (failure) return failure;
+
+packages/server/src/transaction-store.ts:226-230
+export function transactionReceiptMaximum(value: number = TRANSACTION_MAXIMUM_OPERATIONS): number {
+if (!Number.isSafeInteger(value) || value < 1)
+throw new TypeError("positive receipt page maximum required");
+return value;
+}
+
+packages/server/src/transaction-store.ts:651-664
+function eventProjection(
+row: { position: number; value: unknown },
+context: TransactionReadContext,
+source: TransactionEventSource,
+cursor?: { position: number; ordinal: number; id: string },
+) {
+const projected = projectTransactionEventGroup(row.value, context, source, scope, row.position);
+if (
+cursor &&
+(row.position !== cursor.position ||
+!projected.some((event) => event.ordinal === cursor.ordinal && event.id === cursor.id))
+)
+throw new TransactionEventParameterError(undefined, context);
+return projected;
+
+packages/server/src/transaction-store.ts:820-837
+typeof value !== "string" ||
+!/^pos-(0|[1-9][0-9]*)$/.test(value) ||
+!Number.isSafeInteger(Number(value.slice(4))) ||
+Number(value.slice(4)) > Number(context.scopePosition.slice(4))
+)
+throw new Error("receipt position exceeds serving owner", {
+cause: { id: receipt.id, key: receipt.idempotencyKey, field },
+});
+}
+const freeze = (value: unknown): void => {
+if (value !== null && typeof value === "object") {
+for (const child of Object.values(value)) freeze(child);
+Object.freeze(value);
+}
+};
+const projected = receiptPrefix(receipt);
+freeze(projected);
+return Object.freeze({ receipt: projected, context });
+
+packages/server/src/transaction-store.ts:1054-1063
+pendingWins = false,
+references?: ReferenceBindings,
+template?: DependencyTemplate,
+controls?: TransactionReceivingControls,
+): TransactionReceivingAdmission {
+const stored = row(principal, key);
+const prior = stored ? expireRow(stored, instant()).row : undefined;
+if (pendingWins && prior?.owner !== null && prior !== undefined)
+return { kind: "existing", receipt: parseReceipt(prior.receipt) };
+if (prior?.dependency) {
+
+packages/server/src/transaction-store.ts:1214-1215
+return id;
+}
+
+packages/server/src/transaction-store.ts:1266-1275
+if (!result.ok) {
+db.exec("ROLLBACK TO effects; RELEASE effects");
+receipt = {
+...core,
+status: "failed",
+detail: "available",
+requiredPosition: `pos-${previous}`,
+problem: result.problem,
+expiresAt,
+};
+
+packages/server/src/transaction-store.ts:1424-1432
+return {
+kind: "not-acceptable" as const,
+...(observed ? { context: readContext() } : {}),
+};
+if (observed) return { kind: "existing" as const, ...observeReceipt(result.receipt) };
+}
+if (
+observed &&
+(result.kind === "conflict" ||
+
+packages/server/src/transaction-http.ts:176-190
+function receiptResponse(
+observed: {
+readonly receipt: { readonly id: string; readonly status: string };
+readonly context: TransactionReadContext;
+},
+mutation: boolean,
+): HttpResponse {
+const response = context(jsonResponse(observed.receipt), observed.context);
+if (mutation && observed.receipt.status === "pending") {
+response.headers.set("location", observed.receipt.id);
+response.headers.set("retry-after", "1");
+return { ...response, status: 202 };
+}
+return response;
+}
+
+packages/server/src/transaction-http.ts:488-505
+const minimum = hasMinimumControls(request)
+? (transactionMinimumHeaders(request.headers) ?? "unsupported")
+: undefined;
+if (selectChangefeedMedia(request.headers.get("accept")) !== "sse") {
+const observed = await service.events(
+eventRequest.source.url,
+eventRequest.after,
+minimum,
+request.signal,
+);
+if (observed.kind === "missing")
+return transactionHttpProblem("resource-not-found", observed.context);
+if (observed.kind === "unsupported") return developmentGap("minimum-position");
+return context(jsonResponse(observed.page), observed.context);
+}
+const fields =
+lastEventIds ??
+(request.headers.has("last-event-id") ? [request.headers.get("last-event-id")!] : []);
+
+packages/server/src/transaction-http.ts:626-629
+return {
+...(request.method === "GET" || request.method === "HEAD"
+? applyReadHttpSemantics(request, response)
+: response),
+
+packages/server/src/read-http.ts:41-47
+// defensive strip. HEAD has GET metadata, including the serialized length.
+if (request.method === "HEAD" && selected.body !== undefined) {
+const headers = new Headers(selected.headers);
+headers.set("content-length", String(Buffer.byteLength(stringifyJsonValue(selected.body))));
+return { status: selected.status, headers };
+}
+return selected;
+
+packages/server/src/authority-read.ts:821-838
+rows = synchronous(reader.incidentLinks(intent.bead.slice(scope.length)));
+} else rows = synchronous(reader.resources());
+const items: ResourceRecord[] = [];
+const seen = new Set<string>();
+for (const row of rows) {
+const record = graph.accept(row);
+if (intent.kind === "bead-links" && !("source" in record))
+throw new AuthorityReadError("integrity", "incident index returned a Bead");
+if (
+structural(record, intent, prepared.conformance) &&
+graph.visible(record, policy) &&
+!seen.has(record.id)
+) {
+seen.add(record.id);
+items.push(record);
+}
+}
+return Object.freeze({ kind: "page", items: Object.freeze(items), observation });
+
+packages/server/src/transaction-events.ts:18-18
+export const TRANSACTION_EVENT_PAGE_BYTES = 4 * 1024 * 1024;
+
+packages/server/src/transaction-events.ts:75-101
+/^ev_([A-Za-z0-9_-]{43})_([A-Za-z0-9_-]{43})_([A-Za-z0-9_-]{43})_(pos-(?:0|[1-9][0-9]*))_(0|[1-9][0-9]*)$/;
+const hash = (tag: string, value: string) =>
+createHash("sha256")
+.update(JSON.stringify([tag, value]))
+.digest("base64url");
+
+/** Scope and Resource token spelling is deliberately private, not a fixture law. */
+export function renderTransactionEvent(
+context: Pick<TransactionReadContext, "scopeEpoch" | "authorizationView">,
+source: string,
+checkpoint: string,
+event: TransactionEvent,
+): TransactionEvent {
+if (
+!position.test(checkpoint) ||
+!Number.isSafeInteger(Number(checkpoint.slice(4))) ||
+Number(checkpoint.slice(4)) < 1 ||
+!Number.isSafeInteger(event.ordinal) ||
+event.ordinal < 0
+)
+throw new Error("invalid committed Event position");
+return {
+...event,
+source,
+id: `ev_${hash("epoch", context.scopeEpoch)}_${hash("view", context.authorizationView)}_${hash("source", source)}_${checkpoint}_${event.ordinal}`,
+};
+}
+
+packages/server/src/transaction-events.ts:104-110
+context?: TransactionReadContext,
+): {
+position: number;
+ordinal: number;
+epoch: string;
+view: string;
+source: string;
+
+packages/server/src/transaction-events.ts:121-125
+ordinal: o,
+epoch: match[1] as string,
+view: match[2] as string,
+source: match[3] as string,
+};
+
+packages/server/src/transaction-events.ts:200-203
+group.scopeEpoch !== context.scopeEpoch ||
+group.authorizationView !== context.authorizationView ||
+group.position !== `pos-${expectedPosition}` ||
+group.checkpoint !== group.position ||
+
+packages/server/src/transaction-events.ts:262-270
+// decide metadata-only membership while the spec disposition is pending.
+if (include && data.change === undefined && data.metadataChange !== undefined)
+throw new TransactionEventProjectionGap("incident-link-metadata");
+}
+}
+if (include) result.push(renderTransactionEvent(context, source.url, group.checkpoint, event));
+}
+return result;
+}
+
+packages/server/src/transaction-runtime-configuration.ts:391-401
+return Object.freeze({
+authorityMode,
+runtimeConfigurationIdentity,
+artifactIdentity: contracts.identity,
+policyIdentity,
+authenticationIdentity,
+scope,
+profile: "transactional" as const,
+history: false as const,
+claimEligible: false as const,
+});
+
+packages/server/src/transaction-installed-process.ts:49-55
+send({
+event: "qualification.ready",
+...runtime.configurationMetadata,
+listenUrl: runtime.listenUrl,
+targets: runtime.targets,
+payloadIdentity: runtime.payloadIdentity,
+});
+
+apps/bdptest/test-support/transactional-execution-binding.ts:74-88
+const served = bindServedProfileConfiguration({
+scope: ready.scope,
+profile: "transactional",
+history: false,
+sourceCommit,
+installedPayloadDigest: ready.payloadIdentity as string,
+installedContractsDigest: installedContractsDigest(ready.artifactIdentity),
+policyDigest: ready.policyIdentity as string,
+authenticationDigest: ready.authenticationIdentity as string,
+fixture,
+});
+return Object.freeze({
+served,
+operationTargets,
+runtimeConfigurationIdentity: ready.runtimeConfigurationIdentity,
+
+packages/conformance/test-support/profile-contract-plan.ts:102-107
+function snapshotSource(input: unknown, kind: "fixture" | "manifest", maximumBytes?: number) {
+const source = ownData(input, ["bytes", "label"], ["bytes"]);
+const label =
+source.label === undefined ? undefined : primitiveString(source.label, "source label");
+const bytes = copySourceBytes({ bytes: source.bytes as Uint8Array }, kind, maximumBytes);
+return { bytes, label };
+
+packages/conformance/test-support/profile-contract-plan.ts:144-161
+const fixture = parseFixtureJson(
+parseBoundedJson(source.bytes, "fixture", source.label),
+source.label,
+);
+const bound = freeze({
+scope,
+profile,
+history,
+sourceCommit,
+installedPayloadDigest,
+installedContractsDigest,
+policyDigest,
+authenticationDigest,
+fixtureDigest: digest(source.bytes),
+fixtureId: fixture.id,
+capabilities: [...fixture.capabilities].sort(),
+});
+configurations.set(bound, fixture);
+
+scripts/transaction-installed-observation.mjs:38-65
+async function drainFailure(error) {
+child.kill("SIGKILL");
+try {
+await bounded(exited);
+} catch (cleanup) {
+throw new AggregateError([error, cleanup], "installed transaction cleanup failed");
+}
+throw error;
+}
+let closing;
+const close = () =>
+(closing ??= (async () => {
+try {
+if (child.connected) child.send({ command: "close" });
+const result = await bounded(exited);
+if (result.code !== 0 || result.signal !== null)
+throw new Error("installed transaction child did not close cleanly");
+} catch (error) {
+await drainFailure(error);
+} finally {
+signal?.removeEventListener("abort", onAbort);
+}
+})());
+const onAbort = () => {
+void close().catch(() => {});
+};
+signal?.addEventListener("abort", onAbort, { once: true });
+if (signal?.aborted) onAbort();
+
+packages/conformance/catalog/transactional-v1.json:264-280
+"id": "transactional.batch.revision-guard-race",
+"title": "Racing guarded updates serialize into one success and one revision-mismatch",
+"kind": "normative",
+"requiredProfile": "transactional",
+"requirements": [
+{
+"source": "docs/specs/bdp.md",
+"anchor": "#mutation-revisions-and-guards",
+"selectedText": "The authority applies the operation only if the Resource still has that revision. A mismatch fails the individual operation without changing state."
+},
+{
+"source": "docs/specs/bdp.md",
+"anchor": "#transactional-revision-visibility",
+"selectedText": "In an atomic batch, a revision mismatch fails the complete Mutation Transaction."
+}
+]
+},
+
+Exact schema subtrees keyed by JSON pointer, whitespace compacted; not full schema closure:
+{"/$defs/receiptProblem":{"title":"BDP Mutation Receipt problem","type":"object","required":["type","code","status","retry"],"properties":{"type":{"$ref":"#/$defs/absoluteHttpUrl"},"title":{"type":"string"},"status":{"type":"integer","enum":[400,403,404,409,413,422]},"detail":{"type":"string"},"instance":{"$ref":"#/$defs/absoluteUri"},"code":{"$ref":"#/$defs/receiptProblemCode"},"retry":{"$ref":"#/$defs/retryDisposition"},"operationIndex":{"type":"integer","minimum":0},"operationName":{"$ref":"#/$defs/localName"},"pointer":{"$ref":"#/$defs/jsonPointer"},"limit":{"type":"string","pattern":"^[a-z]+\\.[A-Za-z]+$"},"diagnostics":{"$ref":"#/$defs/validationDiagnostics"},"diagnosticsTruncated":{"type":"boolean"}},"allOf":[{"if":{"properties":{"code":{"$ref":"#/$defs/readUpdateProblemCode"}},"required":["code"]},"then":{"$ref":"#/$defs/readUpdateProblem"}},{"if":{"properties":{"code":{"const":"cardinality-violated"}},"required":["code"]},"then":{"properties":{"diagnostics":false,"diagnosticsTruncated":false,"type":{"const":"https://github.com/gastownhall/bdp/problems/conflict"},"status":{"const":409},"retry":{"const":"after-state-change"}}}},{"if":{"not":{"properties":{"code":{"enum":["limit-exceeded","aggregate-constraint-violation"]}},"required":["code"]}},"then":{"required":["operationIndex"],"properties":{"operationIndex":true}}},{"if":{"not":{"properties":{"code":{"const":"limit-exceeded"}},"required":["code"]}},"then":{"properties":{"limit":false}}},{"if":{"not":{"properties":{"code":{"const":"revision-unretained"}},"required":["code"]}},"then":{"properties":{"missing":false}}}],"dependentRequired":{"operationName":["operationIndex"]}},"/$defs/idempotencyKey":{"type":"string","pattern":"^[A-Za-z0-9_-]{1,256}$"},"/$defs/propertyChange":{"type":"array","minItems":1,"items":{"oneOf":[{"type":"object","required":["op","path","value"],"properties":{"op":{"enum":["add","replace"]},"path":{"$ref":"#/$defs/jsonPointer"},"value":true},"additionalProperties":false},{"type":"object","required":["op","path"],"properties":{"op":{"const":"remove"},"path":{"$ref":"#/$defs/jsonPointer"}},"additionalProperties":false}]}},"/$defs/revision":{"type":"string","minLength":1},"/$defs/expectedRevision":{"type":"string","minLength":1},"/$defs/createBeadMembers":{"type":"object","required":["type"],"properties":{"id":{"$ref":"#/$defs/durableResourceReference"},"type":{"$ref":"#/$defs/absoluteHttpUrl"},"properties":{"$ref":"#/$defs/properties"},"metadata":{"$ref":"#/$defs/metadata"},"revisionProvenance":{"$ref":"#/$defs/revisionProvenanceInput"}}},"/$defs/durableResourceReference":{"type":"string","minLength":1,"pattern":"^[^@]"},"/$defs/readUpdateProblem/allOf/7":{"if":{"properties":{"code":{"const":"revision-mismatch"}},"required":["code"]},"then":{"properties":{"type":{"const":"https://github.com/gastownhall/bdp/problems/conflict"},"status":{"const":409},"retry":{"const":"after-state-change"}}}},"/$defs/readUpdateProblem/allOf/15":{"if":{"not":{"properties":{"code":{"const":"validation-failed"}},"required":["code"]}},"then":{"properties":{"diagnostics":false,"diagnosticsTruncated":false}}},"/$defs/readUpdateProblem/allOf/17":{"if":{"properties":{"retry":{"const":"after-delay"}},"required":["retry"]},"else":{"properties":{"retryAfter":false}}}}

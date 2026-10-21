@@ -1,0 +1,47 @@
+{
+  "decision": "accepted targeted cancellation repair validation; actual Claude and exact-head CI still pending",
+  "at": "2026-10-15T13:30:49.920954+00:00",
+  "sourceSha256": "6c0c240afef61831d0573775ea35b0c04b116a55da1d3fb40127b9ede68e939c",
+  "nativeReview": {
+    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-receipt-missing-context-draft/ci-budget-repair-proposal/native-exact-patch-review.md",
+    "sha256": "eea4752f11842489c8a535c40a62ca358f844960713b484dbd259e09cf1dd67d"
+  },
+  "testCases": [
+    {
+      "fullName": "aborts the actual cohort budget after real wire and drains all installed children",
+      "duration": 553.8307080000001,
+      "status": "passed"
+    },
+    {
+      "fullName": "refuses a pre-aborted cohort before starting an installed child",
+      "duration": 0.9047080000000278,
+      "status": "passed"
+    }
+  ],
+  "sampledPidsIndependentlyAbsent": [
+    23419,
+    23425,
+    23451,
+    23521,
+    23627,
+    23629,
+    23638,
+    23744,
+    23746,
+    23750,
+    23753,
+    23767,
+    23770
+  ],
+  "resultFiles": {
+    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-receipt-missing-context-draft/ci-budget-repair/run/typecheck.exit.json": "2f29cb91563acbd6fbad0efebdb3cc08274feb8819bc04ddcee9be090cf95062",
+    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-receipt-missing-context-draft/ci-budget-repair/run/affected-cases.exit.json": "fa8ff06cc9325ed4510ef19a59cf8e163205a4d60bd040a7ee1fdc1c9a171e0c",
+    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-receipt-missing-context-draft/ci-budget-repair/run/format-check.exit.json": "9c11d526ba9db405efcc2e4f1b092c046f2008dbe3ec5564599c7d5babae48c3"
+  },
+  "jsonSha256": "647a06995ba75dfb7efaa004744d9b40709f83c4a52a898fc0d81dd8eed68cb5",
+  "buildReuseCheckSha256": "2517f5059feaf2001cc72f012b87073c4a5bebd6ba786ec8dc229a1b0b145678",
+  "limitations": [
+    "One HTTP and two installed children are source-derived counts, not a retained wire transcript.",
+    "Original CI failure remains failed; old installed proof remains on3968081."
+  ]
+}

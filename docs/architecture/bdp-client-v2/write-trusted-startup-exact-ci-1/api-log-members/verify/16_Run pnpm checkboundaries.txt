@@ -1,0 +1,9 @@
+﻿2026-10-18T07:01:17.6759994Z ##[group]Run pnpm check:boundaries
+2026-10-18T07:01:17.6760350Z [36;1mpnpm check:boundaries[0m
+2026-10-18T07:01:17.6822608Z shell: /usr/bin/bash -e {0}
+2026-10-18T07:01:17.6823146Z env:
+2026-10-18T07:01:17.6823412Z   PNPM_HOME: /home/runner/setup-pnpm/node_modules/.bin
+2026-10-18T07:01:17.6823737Z   GOTOOLCHAIN: local
+2026-10-18T07:01:17.6823953Z ##[endgroup]
+2026-10-18T07:01:18.1532441Z $ node scripts/check-dependency-boundaries.mjs
+2026-10-18T07:01:19.2456174Z Dependency boundaries valid for 11 workspace packages.

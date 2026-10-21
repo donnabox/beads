@@ -1,0 +1,56 @@
+{
+  "name": "format-check",
+  "argv": [
+    "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+    "/Users/dbox/.cache/node/corepack/v1/pnpm/11.20.0/bin/pnpm.cjs",
+    "format:check"
+  ],
+  "cwd": "/Users/dbox/repos/wt/vickie/vickie-command-minimum-catalog",
+  "started": "2026-10-15T04:51:23.277539+00:00",
+  "elapsedSeconds": 0.5697067908477038,
+  "exit": 0,
+  "supervisorExit": 0,
+  "timeout": false,
+  "forcedCleanup": false,
+  "errors": [],
+  "processGroup": 82449,
+  "remainingBeforeCleanup": [],
+  "remainingAfterCleanup": [],
+  "sampledPids": [
+    82449,
+    82463,
+    82469
+  ],
+  "sampledPidsStillPresent": {},
+  "sampledTempEntries": [
+    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-command-minimum-catalog-validation-v2/run/format-check.tmp/node-compile-cache"
+  ],
+  "tempEntriesAfter": [
+    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-command-minimum-catalog-validation-v2/run/format-check.tmp/node-compile-cache"
+  ],
+  "remainingTempEntriesForClassification": [
+    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-command-minimum-catalog-validation-v2/run/format-check.tmp/node-compile-cache"
+  ],
+  "runtimeDirectoriesStillPresent": [],
+  "unclassifiedTempEntriesStillPresent": [
+    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-command-minimum-catalog-validation-v2/run/format-check.tmp/node-compile-cache"
+  ],
+  "sourceUnchanged": true,
+  "sourceSha256After": {
+    "packages/conformance/catalog/read-update-v1.json": "73d215813df034a2be0cd15d0caff7cf2c8823a067f271b9140c9cbb90e859c3",
+    "docs/specs/bdp.md": "f036103ffdf5f89fa3a2033570e1e987c4cd203cd80b1c633cb44615123f892e",
+    "docs/design/profile-contract-planning.md": "0424f68424ad5c8f23aa76af25a92bf5d64282ce3a81ef220bc5d22139381fd3",
+    "packages/conformance/test-support/read-update-coverage-v1.json": "f8f0b001928f8488292403b57c973bd918cba224ef9e00fe0691482bf5cfac0c",
+    "packages/conformance/src/profile-contract-plan.test.ts": "585632596fcfa9a4451bffb94ce0b8f399ef2a2e4f45264cd23138619ba094d7",
+    "packages/conformance/src/transactional-cumulative.test.ts": "9e62920410aa463b1ab494e5f2d5d04cd1d10d1fe66bb0056829bb813e2ffb49",
+    "apps/bdptest/src/transactional-matrix.test.ts": "4c8e246f881c93178741bf4c263d615ddff8ec544dbd8aeb3141cf336c4444f9",
+    "apps/bdptest/src/read-update-matrix.test.ts": "3ba256dbcee025836eac04ec1122a484734748c0eb22ad203c49a0d95debb3e5",
+    "packages/conformance/development/read-update-coverage-v1.json": "221c06dba56142db37194f51e41c2dc71edf7f9926d94f0f7d18e63b33d73baf",
+    "packages/conformance/src/development-read-update.test.ts": "821d2ad5b388b7cc14f112c1c74d86baba4b57e0a03eb988d34452f89f409c1d",
+    "packages/conformance/development/README.md": "3540bd5fa9ab11a6dfa5c613bf714e666e8ba1d171334875eeef9da639329667"
+  },
+  "samplingSeconds": 0.05,
+  "samplingLimitation": "Short-lived or detached descendants may evade group sampling; helper counts and independent final checks remain separate.",
+  "tempClassification": "Only the selected fixture prefixes under this attempt TMPDIR are owned runtime roots; all other entries are preserved for review, not deleted or called leaks.",
+  "resultLimitation": "Exit0 is command completion, not independent oracle/claim/provenance adjudication."
+}

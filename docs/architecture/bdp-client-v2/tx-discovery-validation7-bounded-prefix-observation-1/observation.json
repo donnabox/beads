@@ -1,0 +1,293 @@
+{
+  "utc": "2026-10-18T12:54:37.504970+00:00",
+  "completedContiguousPrefix": [
+    {
+      "stage": "node-version",
+      "exit": 0,
+      "accepted": true,
+      "sha256": "993baa63f949f8f53f5f850637392c370ffb19f9cf32c049ea46b940062f4f7e"
+    },
+    {
+      "stage": "pnpm-version",
+      "exit": 0,
+      "accepted": true,
+      "sha256": "fac1b6ad4a4ccb208e87c891d796d2247c90b6cf99c0c57c934dd28d95e6addf"
+    },
+    {
+      "stage": "workspace-install",
+      "exit": 0,
+      "accepted": true,
+      "sha256": "731bf1a7c61a8b865587ed52da1a0708ab8fed64e1d6b53766e700b1cd6c5088"
+    },
+    {
+      "stage": "bind-workspace-tools",
+      "exit": 0,
+      "accepted": true,
+      "sha256": "768fdca606cd8307601adb1c84a03dfcacb8a58ca89e748da925cc9a40ab8061"
+    },
+    {
+      "stage": "typecheck",
+      "exit": 0,
+      "accepted": true,
+      "sha256": "99e184f790f9f74669367cf76ef128f723c365b4ffb9f673119c4bd39048f733"
+    },
+    {
+      "stage": "format-check",
+      "exit": 0,
+      "accepted": true,
+      "sha256": "d1666d336d5eb66a5b87ed19d5e0acffda7b020138ec7b3078e111cbc1f13cf5"
+    },
+    {
+      "stage": "lint",
+      "exit": 0,
+      "accepted": true,
+      "sha256": "cfd4c7811faefeef235fc56ecc5d944d9cff4e549f409474bdce23b7e8091ccd"
+    },
+    {
+      "stage": "fresh-build",
+      "exit": 0,
+      "accepted": true,
+      "sha256": "84b31581f48dcb0c9696f35d9e3d4dc6b164f75f43e3f2017af0dbefa58c4a5d"
+    },
+    {
+      "stage": "bind-fresh-build",
+      "exit": 0,
+      "accepted": true,
+      "sha256": "dca2a1be8972147a1e408e9407e3bc513c47f2b684433e0ed6205c3109846435"
+    },
+    {
+      "stage": "focused-source",
+      "exit": 0,
+      "accepted": true,
+      "sha256": "21b7d7816851ef8083807b2e93d2ee9ac59d5163a09b17723e152f373c725000"
+    },
+    {
+      "stage": "audit-focused-source",
+      "exit": 0,
+      "accepted": true,
+      "sha256": "7d730c1aa3c7e28d6ef1a2e607d90783bb6d232cfbe4212a359788e4e30705cd"
+    },
+    {
+      "stage": "legacy-changefeed-source",
+      "exit": 0,
+      "accepted": true,
+      "sha256": "df9f543a145bd2676581ef0bff96905288e9ca2434b54d7a3342b285f02eab47"
+    },
+    {
+      "stage": "audit-legacy-changefeed-source",
+      "exit": 0,
+      "accepted": true,
+      "sha256": "cdd72ad5e97d08035beaa82cac4b8041c425cfedd4e5a410494f94b3f5bcc253"
+    },
+    {
+      "stage": "legacy-installed-contracts-source",
+      "exit": 0,
+      "accepted": true,
+      "sha256": "bec45837be35767ca9976c0160d953bd03493a2af0c07a3e43577583f56adab6"
+    },
+    {
+      "stage": "audit-legacy-installed-contracts-source",
+      "exit": 0,
+      "accepted": true,
+      "sha256": "360e6261e5a17dd502093dac00dee607b2168b910cbafa13ed835a127d462904"
+    },
+    {
+      "stage": "schema-confinement-source",
+      "exit": 0,
+      "accepted": true,
+      "sha256": "ce5906bfe12e174572940833747e820c0fe7182834209a7a84071c64de71f706"
+    },
+    {
+      "stage": "audit-schema-confinement-source",
+      "exit": 0,
+      "accepted": true,
+      "sha256": "f77f6fe4f160ef6477aa4c434f6709b0c9e38d5e31b63f360298dc6c45818e08"
+    },
+    {
+      "stage": "prepare-package-directory",
+      "exit": 0,
+      "accepted": true,
+      "sha256": "b1d225463452562c259a769d1ef13bd68224faf6e370a3208ace7bf4356c31fe"
+    },
+    {
+      "stage": "pack-protocol",
+      "exit": 0,
+      "accepted": true,
+      "sha256": "7326758f67d661e033cfa4f8d8ccf03494b7870672d549a74708f2dfe6d8cc0e"
+    },
+    {
+      "stage": "pack-server",
+      "exit": 0,
+      "accepted": true,
+      "sha256": "72da2c6d5a06b5ebfae68b1d48218e5a36873ecd999edb51a24e0f7cb51fb9b8"
+    },
+    {
+      "stage": "verify-archives",
+      "exit": 0,
+      "accepted": true,
+      "sha256": "e85c788c05be0c541d5db02e6bdd4da4fde50f07c0d5017390731c61f3901c2f"
+    },
+    {
+      "stage": "prepare-consumer",
+      "exit": 0,
+      "accepted": true,
+      "sha256": "954e729f6f1ce8dddad4f0cb0371ef2cd22aa20a3dbc9c28baee7593cbbceff9"
+    },
+    {
+      "stage": "consumer-install",
+      "exit": 0,
+      "accepted": true,
+      "sha256": "b25bb15f857e05e4163ec10181c7f2a79cf872a4c8c3765bc351dc89e2e791d5"
+    },
+    {
+      "stage": "verify-installed-consumer",
+      "exit": 0,
+      "accepted": true,
+      "sha256": "9a2a56ba225ad4d5ad81f14a51361cbcde23bcc531a6333f3e81d1944bf133df"
+    },
+    {
+      "stage": "installed-01",
+      "exit": 0,
+      "accepted": true,
+      "sha256": "58aa4ad32e46389a9f7e65df06777200adc8883717db286d290049e7cdcfcf3b"
+    },
+    {
+      "stage": "audit-installed-01",
+      "exit": 0,
+      "accepted": true,
+      "sha256": "b2b0168ad9fb05f8f9bb91c2fe57f2aa16f49e51a74821128650470d7426b137"
+    },
+    {
+      "stage": "installed-02",
+      "exit": 0,
+      "accepted": true,
+      "sha256": "15fa4b1389f849d3c6340fad871cbb0089593ca0dadd7912c28852340a7f3bfe"
+    },
+    {
+      "stage": "audit-installed-02",
+      "exit": 0,
+      "accepted": true,
+      "sha256": "a09279d77dcec5e9405e685a77422777171f4a7e79e44815786b85ebb90f93dd"
+    },
+    {
+      "stage": "installed-03",
+      "exit": 0,
+      "accepted": true,
+      "sha256": "eea0d2ea3c3ca3c0615eacd061d3addd7764c761a1a0e6bffa1c30dc01ac0ff8"
+    },
+    {
+      "stage": "audit-installed-03",
+      "exit": 0,
+      "accepted": true,
+      "sha256": "6a1cc73aa283e3eee2b889c23e9b6acc7e3aa8722e2af2e1356fe5188776fd1d"
+    },
+    {
+      "stage": "installed-04",
+      "exit": 0,
+      "accepted": true,
+      "sha256": "e2baba702bcdf6666559e5da39f5c6cc879e44c9ebbb7e9068fdb2baf05d8227"
+    },
+    {
+      "stage": "audit-installed-04",
+      "exit": 0,
+      "accepted": true,
+      "sha256": "ba945c688d92664020cd8af6673d47c46f59dbfa18ee0a6b4ee78a377de40343"
+    },
+    {
+      "stage": "installed-05",
+      "exit": 0,
+      "accepted": true,
+      "sha256": "bdb6a7627d97fd59966ee05873c45dfbcc28a111faa9bc892b3ada48f8620d46"
+    },
+    {
+      "stage": "audit-installed-05",
+      "exit": 0,
+      "accepted": true,
+      "sha256": "ffd06ea158f09e719e1d067808583ac9174be8861a2da17babab274256ab2714"
+    },
+    {
+      "stage": "installed-06",
+      "exit": 0,
+      "accepted": true,
+      "sha256": "157f4d7acf11aee0a0e45e1ef0dc2845084cb5ae728d37f9a9bebcf39fb26471"
+    },
+    {
+      "stage": "audit-installed-06",
+      "exit": 0,
+      "accepted": true,
+      "sha256": "bf0932e11bbfaa49b9ff7b3e3bb4e7e653f649a30d2004e25ef2dee7a0a710e9"
+    },
+    {
+      "stage": "installed-07",
+      "exit": 0,
+      "accepted": true,
+      "sha256": "69cde94c0b068c0441c4f208003c9932dfcf5c356a7d4d89d15971ff42449721"
+    },
+    {
+      "stage": "audit-installed-07",
+      "exit": 0,
+      "accepted": true,
+      "sha256": "388027540ba0ca2205b0d8447f0a6e7c8d97c2f92d8d49c7b6a9e709a9d86c8c"
+    },
+    {
+      "stage": "installed-08",
+      "exit": 0,
+      "accepted": true,
+      "sha256": "dd7bec17d158ce75afd980ea5497b606d3ac1037a6d4aee90db44e2e69975468"
+    },
+    {
+      "stage": "audit-installed-08",
+      "exit": 0,
+      "accepted": true,
+      "sha256": "41767f07e36b56140ad923269ce47f934dce99991ec9b27bd6d53530a63fabd2"
+    },
+    {
+      "stage": "installed-09",
+      "exit": 0,
+      "accepted": true,
+      "sha256": "26f35e2bc5701796db279ce0155d3c7eae006e6d9018e5ffa41ee981b0adbc4f"
+    },
+    {
+      "stage": "audit-installed-09",
+      "exit": 0,
+      "accepted": true,
+      "sha256": "b375758e5dcd3d7d15b3c3ec81a36d108c9e1d044306cad25a7c9d693df750aa"
+    },
+    {
+      "stage": "installed-10",
+      "exit": 0,
+      "accepted": true,
+      "sha256": "2399e21861e87cf7eee484b6c6855ef5628958c630468f0f7dae4b9e3565e253"
+    },
+    {
+      "stage": "audit-installed-10",
+      "exit": 0,
+      "accepted": true,
+      "sha256": "ea3385bd788d4a7adfe200e8f373132d64c1b9272481eeea93deecc952cc29bb"
+    },
+    {
+      "stage": "installed-11",
+      "exit": 0,
+      "accepted": true,
+      "sha256": "267213dd7504ec7ece41245162cc22772a662b2dada7b7f26f4ac22448d426f4"
+    },
+    {
+      "stage": "audit-installed-11",
+      "exit": 0,
+      "accepted": true,
+      "sha256": "fd78463c843bf1b5f5dab27ac77e1ddc49e98d2499347d748f278764dc2753b4"
+    },
+    {
+      "stage": "schema-installed-positive",
+      "exit": 0,
+      "accepted": true,
+      "sha256": "a1e1fa0067dfb209f9e624d37ece334283a85d07ead3cff55ae792f68b484ee5"
+    }
+  ],
+  "runStillActive": true,
+  "finalTerminalAcceptance": false,
+  "sourceCommitPreserved": "cce884ccea1db97cbc6fd7bff876d4d6091f9081",
+  "sourceIdentity": "a61cd3fbf9fac68e3aad857a24a2456dd16b83048067eef85348d7091c0aa08e",
+  "laterStages": "UNKNOWN, inspect actual terminal; no inferred passes",
+  "noSourceCommitBeforeIndependentTerminalAudit": true
+}

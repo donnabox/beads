@@ -1,0 +1,133 @@
+No files written. No tests, services, or reviewers run — reads, greps, and arithmetic only.
+
+**Basis verified.** `read-update-after-r-next-plan-revised.md` SHA256 = `df80a835…ab9b7f3f7` as given. Head `b14b91b762f9d2e5f9eb3102fec70e02a0879d45`, tree `9e4c20413724218f0210db9f97a668cc34104e5a` = `e086732…` tree, clean worktree.
+
+---
+
+# Verdict
+
+**Four of the seven scoped items close cleanly; three do not.** The gap identification, the diagnostic path, every capture/control seam, and the eight-action arithmetic all reproduce exactly against source — including the 3302/3313/712308 chain to the byte. But the fence inventory is **incomplete by one fence that the plan actively asserts is unaffected**, the old-binding ledger split is mechanically unwritable, and the requested +2048 is sized just under what the repo's own `-corrected` assertion convention costs.
+
+---
+
+## 1. HIGH — A third inherited fence is violated, and the plan states it is not
+
+**Location.** Plan line 76 (R+N table row) and line 88 ("All other inherited fences remain unchanged"); completion gate line 112. Source: `apps/bdptest/src/read-update-matrix.test.ts:4336`.
+
+**Issue.** `:4336` is `expect(actions).toBeLessThanOrEqual(140)`, where `actions` is accumulated at `:4252` over exactly the two rows declared at `:4220–4249` — R (`toHaveLength(88)`) and N (`toHaveLength(52)`). Verified live: R = 88/619, N = 52/373, so `actions` sits at **140, exactly on its ceiling**. R → 96 makes it 148.
+
+The plan's table presents `140/992` as a *current value* in the "Accepted e086" column and fills the "Effective inherited ceiling / remaining" cell with only "N remains 52/373 byte-identical" — it never records that 140 *is* a `toBeLessThanOrEqual` ceiling. Line 88 then enumerates the surviving fences (901895/23546, 905650/23614, 995852/26286, 27158, 714717, 37247, 3626922/97116) and declares all of them unchanged. The 140 ceiling is absent from that inventory.
+
+**Impact.** The amendment set root and council are being asked to approve — "+2048 to exactly two overlapping coverage fences, all other fences unchanged" — is **insufficient to execute the plan**. Line 112's gate ("generated source passes **every** old/unamended and explicitly amended fence before execution") cannot be satisfied: `:4336` fails at 148 ≤ 140. This is discovered after approval, at the authoring gate, on a plan whose entire remaining decision is "bounded authoring-budget acceptance."
+
+**Concrete fix.** Add a third explicit amendment to the budget table and to line 88's inventory: `read-update-matrix.test.ts:4336` `toBeLessThanOrEqual(140)` → `toBeLessThanOrEqual(148)` (or `156`, matching the existing sibling cohort ceiling at `:3976`), stated as a test-authoring-growth change only. Also record in the same table that `:4337` (`assertions ≤ 1300`) survives at 1052, and that the three exact R observation pins at `:4082–4085` (41/47/32 → 43/53/36) and the count pins at `:4223`/`:5039` (88/619 → 96/679) are reconciled inside owned file 3.
+
+---
+
+## 2. MEDIUM — "Keep the old 98 binding-ID set/5460 bytes intact" is mechanically impossible
+
+**Location.** Plan line 86. Source: `read-update-matrix.test.ts:5028–5038`, `:4949–4968`.
+
+**Issue.** `additional` is **derived live**, not frozen:
+
+```
+const additional = row.actions!.filter(a => addedIds.includes(a.id))
+  .flatMap(a => a.assertions.map(q => a.id + "." + q.id));
+expect(additional).toHaveLength(98);
+expect(additional.reduce(…)).toBe(5460);          // exact equality, not a ceiling
+```
+
+`addedIds` is pinned at 16 entries (`:4967`) and **includes `nr-bead-schema-read` and `nr-link-schema-read`** (`:4961`, `:4965`) — consistent with plan line 102's "the converted four actions belong to the previous 16-added set." Adding the two `written` assertions to those actions therefore grows `additional` to **100 entries / 5546 bytes** automatically. Both literals break. There is no authoring choice that keeps 98/5460 while adding `written`, short of removing the two `-read` actions from `addedIds`, which would push them into `unchanged` and break the 48-action list and its `3378857a…` digest.
+
+Independently confirmed: the plan's own `3302` figure is the byte sum of **60** bindings including the two `written` (I reproduce 58 → 3216, +2 written → 86, total 3302), so the plan already counts them on the *new* side while line 86 also asserts they are excluded from a frozen old side that cannot exclude them.
+
+**Impact.** The 1708-byte reason-accounting remainder is still correct — 5460+3302 = 5546+3216 = 8762, so `712308 − 703415 − 8762 = 131` either way. But the prescription as written cannot be implemented, so the implementer either stalls or silently invents a different split than the one council approved.
+
+**Concrete fix.** Restate line 86 as the split the guard actually produces: old `addedIds` ledger becomes **100 bindings / 5546 bytes** (98/5460 plus the two `written`), new-action bindings are **58 / 3216 bytes**, total subtrahend 8762, remainder 131 ≤ 1708. Then say the `:5038` expression becomes `coverage.length - 703415 - 5546 - 3216`. Drop the "keep intact / account separately" framing entirely — the invariant is the 8762 total, not the split.
+
+---
+
+## 3. MEDIUM — `-patch-corrected` silently drops the four absence assertions every other R `-corrected` carries, and +2048 is undersized to restore them
+
+**Location.** Plan line 44 and table cell `9/11`; `read-update-after-r-schema-budget-candidate.json:38,67`; plan line 84 (323-byte remainder).
+
+**Issue.** Measured live, every existing R effectful-correction action carries the absence quartet:
+
+| Action | Assertions |
+| --- | --- |
+| `nr-bead-integer-patch-corrected` | **13** — …metadata, `no-owned-plane`, `no-provenance`, `no-source`, `no-source-revision` |
+| `nr-link-integer-patch-corrected` | **15** — same + both endpoints |
+| `nr-bead-schema-create-corrected` | **13** — same quartet |
+
+The proposed `nr-<kind>-schema-patch-corrected` is **9/11** — the quartet is gone. This is not a transcription slip: my independent reconstruction of the 60 binding IDs using 9/11 reproduces the plan's `newBindingBytes: 3302` and `coverageBytes: 712308` **exactly**, so 9/11 is the intended authoring.
+
+Restoring the quartet on both kinds costs 8 bindings / **484 coverage bytes** → coverage 712792. Against the requested newest fence 712631 that is **161 bytes over**; the older requested fence 712950 would still hold with 158 spare.
+
+**Impact.** The plan's own `-updated-read` actions *do* assert owned-plane/provenance absence, so the asymmetry is internal to the increment: the mutation *result* of the new correction is the one place in R where owned-plane/provenance/source leakage would go unobserved. More importantly it is a budget-driven weakening that directly contradicts dispositions item 4 ("Do not contort names, minify artifacts or **weaken current-state oracles** to fit the inherited authoring fence") and is nowhere disclosed — council is asked to approve a 2KiB figure that is only sufficient *because* the oracle was trimmed.
+
+**Concrete fix.** Pick one and say which:
+- **(a)** Restore the quartet on both `-patch-corrected` actions (→ 11/13, assertions 683, bindings 64 / 3700 bytes, coverage **712792**) and request **+2560** on the newest fence (`703415+9728=713143`, 351 spare) with +2048 on the older (`712950`, 158 spare); or
+- **(b)** Keep 9/11 and add an explicit sentence to §Exact observation sequence stating that the new corrections omit the owned-plane/provenance/source absence checks carried by every other R `-corrected`, on the ground that the following `-updated-read` covers owned-plane/provenance for the same resource — and note that `no-source`/`no-source-revision` are then unobserved for these two operations.
+
+---
+
+## 4. LOW/MEDIUM — The R source-span digest anchor cannot both be preserved and recalculated at `:4207`
+
+**Location.** Plan line 102 ("Preserve e086's raw R hash `12982a61…` as the reviewed-parent anchor, and calculate/pin the new entire R source-span hash after authoring… Do not remove the anchor just because R intentionally changes"). Source: `read-update-matrix.test.ts:4196–4215`.
+
+**Issue.** `:4196–4215` is a single `id → digest` loop asserting `sha256(numericScenarioSpan(text, id)) === digest` for four rows, with R's entry `12982a61faf2f6710ad165d69022ba2e8c9cc083e599118910a173c52fb9aa6c` at `:4207`. The structure admits exactly one digest per id. Once R's span changes, `:4207` **must** be replaced for the test to pass; keeping `12982a61…` in the live tuple is a guaranteed failure.
+
+**Impact.** "Preserve … and calculate/pin the new" reads as both-at-once in a structure that permits only one, so the instruction is unexecutable as stated and invites either a blind literal refresh (the thing line 104 warns against) or a stalled implementer.
+
+**Concrete fix.** Say explicitly: replace the `:4207` tuple value with the newly computed R span digest, and retain `12982a61…` as a **non-asserting** reviewed-parent comment adjacent to the loop (matching the existing precedent at `:4907`, `// Accepted b604320267dd… anchors, including all earlier fences.`). Name which of the two it is.
+
+---
+
+## 5. LOW — The 48-action `unchanged` digest survives only if the partition filter is changed, which the plan does not say
+
+**Location.** Plan line 102 ("The original 48 unchanged-R action digest must still hold"). Source: `read-update-matrix.test.ts:4969–4971`, `:5022–5024`.
+
+**Issue.** `unchanged = row.actions.filter(a => !changedIds.includes(a.id) && !addedIds.includes(a.id))` — 88 − 24 − 16 = 48, pinned to a literal id list and digest `3378857a…`. The eight new actions appear in neither `changedIds` nor `addedIds`, so with the filter untouched they **fall into `unchanged`**, making it 56 entries and breaking both the list and the digest.
+
+**Impact.** The plan's preservation claim is true only under an unstated code change, so a reviewer checking "48 digest holds" against a naive implementation sees a failure and cannot tell whether it is drift or intent.
+
+**Concrete fix.** Add to §Ownership: the eight new actions enter a third named ledger (e.g. `schemaPatchIds`, length 8, order-asserted like `:4968`), and the `:4970` filter gains `&& !schemaPatchIds.includes(a.id)` so the 48-entry list and `3378857a…` digest are preserved unchanged.
+
+---
+
+## 6. LOW — `resource-evaluator.ts:798–810` clips the one line the plan rests on
+
+**Location.** Plan line 29.
+
+**Issue.** The cited span covers the `properties`/`commonMetadata` patch computation (`:799–811`), but the call that makes the whole increment possible — `if (!deleting) validatePropertyContracts(effective, properties, options.limits, fault);` — is at **`:812`**, just outside. The companion cite `252–286` lands on the diagnostic emitter body but misses `:281` (`type: entry.descriptor.id`), which is what makes the expected `type: …/types/schema-<kind>-base` correct.
+
+**Impact.** A council member spot-checking the single most load-bearing source claim ("resulting-state validation runs on PropertyChange") reads the patch arithmetic and never reaches the validate call. The substance is right — I verified `:799–812` computes post-patch `properties` and then validates them, which is exactly why `instanceLocation` is the document-relative `/n` and not `/propertiesChange/0/value`.
+
+**Concrete fix.** Cite `packages/server/src/resource-evaluator.ts:250–296,798–812`, and add one clause: "`:812` validates the post-patch document; `:281` sets the diagnostic `type` to the declaring (base) Type."
+
+---
+
+## 7. LOW — The candidate JSON is not self-sufficient for the continuation projection
+
+**Location.** `read-update-after-r-schema-budget-candidate.json:18–19,20–79`.
+
+**Issue.** `"newBindings": 60` but the `ledger` assertion counts sum to **58** (27 bead + 31 link); the two converted-action `written` bindings — which *are* inside the 3302 — have no ledger entry. Likewise `ledger` node counts sum to **456** against a declared `continuationNodes` delta of **490**, and `rawBodyBytes` is the only byte field, so the **+19404** continuation byte delta has no per-action accounting at all. The 34-node and 19404-byte residues are the four converted actions (two captures, two family/input restructures, two `written` assertions), but nothing in the artifact says so.
+
+**Impact.** Coverage is fully reproducible from this artifact (I re-derived 3302 + 11 reason delta = 3313 → 712308 exactly). The continuation figures are not, so the two continuation fences (3943 bytes / 84 nodes spare — the tightest node margin in the plan) rest on an unauditable number.
+
+**Concrete fix.** Add a `convertedActions` block to the ledger with per-action node/byte deltas for the four conversions, and either rename `newBindings` to make the 58+2 composition explicit or split it into `newActionBindings: 58` / `convertedActionBindings: 2`. Per-action serialized byte counts for the eight additions would make `+19404` checkable before authoring rather than after.
+
+---
+
+# Closure assessment on the scoped items
+
+| Scoped item | Status |
+| --- | --- |
+| **Concrete schema PropertyChange gap** | **Closed.** Verified the gap is real (R's only schema witnesses are `nr-{bead,link}-schema-create-refused/absent/create-corrected/read`; no `-patch-*`) and that the behaviour exists to witness it: `resource-evaluator.ts:799–812` applies `propertiesChange` then validates the resulting document. Selected text reproduces exactly at `numeric-model-v1.json:38–68` (5 requirements), and `bdp.md:2648–2649` "validates **its resulting state** … It checks:" governs the list item at `2658–2659` verbatim. Rejecting the prior review's narrowing option is well-founded. |
+| **Independent full unchanged / corrected-state observations** | **Closed, with finding 3.** `-patch-unchanged` at 4 assertions matches `nr-bead-integer-meta-unchanged` exactly (`status/written/body-schema/postimage`); `-updated-read` at 9/11 matches `nr-link-integer-updated-read` exactly (all 11 IDs identical). The unchanged oracle is genuinely full-record including `revision` via `/body` `equalsBinding`. Only `-patch-corrected` deviates. |
+| **Configured diagnostic path** | **Closed.** `message: "Schema assertion failed: minimum"`, `type: …/types/schema-<kind>-base`, `schemaLocation: …/schemas/schema-<kind>-base#/properties/n/minimum`, `instanceLocation: "/n"` reproduce byte-for-byte against the existing `nr-{bead,link}-schema-create-refused` `complete-problem`. Cohort confirms `-1` satisfies `type:integer`, violates base `minimum:0`, satisfies child `enabled`/`detail` if/then (`installed-schema-cohort.ts:38–39,41–47`). Document-relative `/n` is correct, not the request pointer. |
+| **Existing capture/control seams** | **Closed.** `captureValue` (`runner.ts:2464–2491`) hard-rejects any capture that is not an absolute in-Scope HTTP URL, so `/resource/id` is genuinely a confined URL capture. Captures run only after assertions throw-gate, on **both** paths — `:1439–1445`→`:1466` (raw) and `:1115–1121`→`:1122` (client); the plan cites only the client one, which understates its own position. Client `targetBinding` resolves from the live bindings map (`:1048–1050` → `read-update-exact-client.ts:52`), so a capture-bound client GET works; route derivation is tolerant of it (`read-update-artifact-execution.ts:54`, `url === undefined ? []`), while raw targets would throw (`:38`) — the plan correctly keeps the new raw POSTs on `operations`. Capture names `nr-<kind>-schema.{url,before}` are legal under `ID_PATTERN` (`executable-manifest.ts:417`) and collide with no fixture binding (confirmed: no `nr.*schema*` binding exists, which is precisely why the capture is needed, since fixtures are outside ownership). `schema-location` mode is parameterized by `{scenario, action, operation}` (`:4711–4718`) and `RetryControl` is a generic `{scenario, action, path, value}` (`:147–153`) with proven twins at `:4050–4063` (`properties`, `postimage`). |
+| **Eight-action counts** | **Closed.** All reproduce: 88/619 → 96/679; 41 raw/47 client → 43/53 (two raw GETs convert out, four raw POSTs and four client GETs in); 32 → 36 raw POSTs; raw bodies **157** refused / **156** corrected for *both* kinds; 60 bindings = **3302** bytes; reason delta **+11**; coverage 708995 + 3313 = **712308**. The 20-entry comparator map is mechanically forced — `assertRRefusalPairs:4816` compares `pairs` against *every* raw POST ending `-refused`, so the two new entries are mandatory, and the proposed `"path":"/n","value":-1`→`…,"value":1` substitution satisfies all four guards (numbers-stripped equality, single contextual leaf, one-leaf replace, refusal-before-correction) with keys = action IDs as `:4838` requires. |
+| **All inherited artifact fences** | **Not closed — finding 1.** Every *byte/node* fence reproduces exactly: 901895/3943, 23546/**84**, 905650/7698, 23614/152, 995852/97900, 26286/2824, 27158, 714717/2409, 37247/7540, baseline 3626922/97116, both manifests under the 4194304 B / 100000-node parser limits, 1708 remainder 131. Route inventory genuinely survives: the 51-route list at `:1294–1348` is order-pinned and includes `GET beads/nr-schema` and `links/nr-schema` from the earlier `-absent` raw GETs, so dedup keeps first-occurrence position and `routeDigest 272c31e6…` / `exactConfigurationDigest 3224c31c…` hold. Three-file scope confirmed: `cumulative-artifact.test.ts:200–205` *derives* expected bindings from the manifest, and `numeric-model-catalog.test.ts` pins only row presence. But the R+N 140 action ceiling is missing and violated, and findings 2/5 are fence-adjacent ledger defects. |
+| **Two explicit 2KiB coverage increases** | **Correctly located and sized, but undersized — finding 3.** Both targets are real and are coverage-authoring-only: `:4919` `coverage.length − 703415 ≤ 7168` → `9216` (712631, 323 spare) and `:4574` `coverage − 698614 ≤ 12288` → `14336` (712950, 642 spare). Neither touches runtime, parser, server policy, resource limits, or deadlines — confirmed `requestTimeoutMs: 5000` (`:397`), 90000 aggregate (`:1103`), 120000 outer (`:1382`), 30000 focused all untouched, and no new sessions or routes. The 323-byte remainder is the problem, not the mechanism. |
+| **No automatic whole/public promotion** | **Confirmed.** `cumulative-artifact.test.ts:156–188` allowlist is 33 ids ending `…same-value-no-op`, `…nested-refusal`, with `claimEligible: false`; R stays `wholeContract: false`, so it needs no edit. Live coverage: 129 rows / 33 whole / 96 not-whole, matching `:1282–1283` (`reviewedWholeIds` 33, `omittedRequiredIds` 75) and both `uncoveredIds` pins of 96. Promotion to 34/95 is correctly deferred to a separate root decision and a fourth file. |

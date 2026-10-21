@@ -1,0 +1,154 @@
+## Findings
+
+Ordered by severity. "Proven" = established from the supplied excerpt alone; "Question" = needs material omitted from the packet.
+
+---
+
+### F1 — High (proven) · `fence()` stops the timer but never releases the connection; the maintenance path does
+**File/section:** `packages/server/src/transaction-store.ts:162-170` (`fence`), compared against `:646-660` (maintenance-timer handler), with the open-transaction case at `:183-190`.
+
+**Issue.** `fence()` does `clearInterval(maintenanceTimer)` and sets `ownerFailure`. It does not call `db.close()`. The pre-existing maintenance-failure path at `:646-660` does exactly the opposite and says so in its comment: "stop the timer and release the database instead of silently continuing." After an owner-path fence, the process keeps an open `DatabaseSync` handle on a store documented at `:87` as held "under persistent EXCLUSIVE locking," and in the rollback-failure branch it keeps an **open write transaction**: at `:183-190`, when `db.exec("ROLLBACK")` throws, `cause` becomes the `AggregateError`, `cleanRollback` stays `false`, and control reaches `throw fence(cause)` with the transaction still open. Nothing later rolls it back — `cleanupThenThrow` returns early on `ownerFailure` (diff, `cleanupThenThrow` body) and every entry point throws.
+
+**Trigger.** The delta's own test exercises it: *"preserves the execution and rollback causes, blocks tentative reads, and recovers on reopen"* (`transaction-store.test.ts`) injects a `ROLLBACK` failure, asserts exactly one `BEGIN IMMEDIATE`, then asserts `assertFenced`. At that point the transaction is open and the handle is live.
+
+**Impact.** A fenced owner holds the file lock (and possibly an uncommitted write transaction with a growing journal/WAL) for the life of the process. Any second opener gets `SQLITE_BUSY`. The error message instructs the caller to "reopen before use," but the delta supplies no code path that makes reopening possible.
+
+**Fix/next step.** Close the connection inside `fence()` (mirroring `:646-660`), or add an explicitly fence-exempt release path and assert it in `assertFenced`'s list.
+
+---
+
+### F2 — Medium (proven, with one question) · the fence is terminal in-process; recovery is performed only by the test fixture
+**File/section:** `transaction-store.ts:150-170` (`enter`/`fence`), `:605-616` (`execute` cleanup), `:780-785` region (`nextSequence`'s new `if (ownerFailure) throw error;`). Spec anchor supplied at `docs/specs/bdp.md:3903-3922`.
+
+**Issue.** By design the fence declines to compensate (`atomic`'s comment at `:199-200`: "Reopen determines its durable state; compensation must not guess at it"). That leaves a durable `pending` receipt behind — the tests assert `recoveredPending` of 1 and 3 — and simultaneously stops the maintenance timer and refuses `maintain()`, `inspect()`, `receipt()`, `admit*`, `execute`, `retract`, `nextSequence`, `cancelSequence`. Retraction therefore happens *only* on reopen. The only reopen in the packet is `f.reopen()` in the test fixture.
+
+**Trigger.** Any fenced path: injected COMMIT failure, rollback failure, cleanup `BEGIN` failure, engine-ended transaction — all five new tests reach it.
+
+**Impact.** `bdp.md:3916-3922` places pending-receipt retraction on "restart or failover … within a finite bound," and makes "a `pending` receipt older than the bound … a conformance failure." That bound is now owned entirely outside the store, by a supervisor the packet does not contain. Combined with F1, the fenced process also cannot be succeeded in-place.
+
+**Fix/next step.** Either close in `fence()` and document that the caller must construct a new store, or add a supervision/reopen seam and a test that drives it through the public surface rather than a fixture helper.
+
+**Question:** `openTransactionStore`'s returned object (including any `close`) is in the unsupplied region `:205-569` / `:661-end`. If `close()` routes through `enter`, a fenced store cannot be closed at all — `enter:151` checks `ownerFailure` before `closed || busy`. I cannot resolve this from the packet.
+
+---
+
+### F3 — Medium (proven behavior change) · `BEGIN IMMEDIATE` moved inside the `try`, so a never-started transaction now fences permanently
+**File/section:** `transaction-store.ts:174-175` vs. the removed baseline line (diff: `-    db.exec("BEGIN IMMEDIATE");` above the `try`), with the predicate at `:201`.
+
+**Issue.** If `BEGIN IMMEDIATE` itself throws, the catch runs with `db.isTransaction === false`, so the `if (db.isTransaction)` guard at `:184` skips ROLLBACK and `cleanRollback` remains `false`. `:201` then evaluates `!cleanRollback` as true and fences. Baseline executed `BEGIN IMMEDIATE` outside the `try`: the error propagated, nothing was fenced, and the store stayed usable.
+
+**Trigger.** Any failure to start a transaction — `SQLITE_BUSY`/`SQLITE_LOCKED` at first use against a file another process still holds, or `SQLITE_FULL`/`SQLITE_IOERR` on the journal write. The delta injects precisely this failure in *"preserves %s failure when compensating retraction also fails"* and *"preserves sequence admission and cleanup causes"*, where fencing is the intended outcome because an original failure preceded it; the standalone case has no such precondition.
+
+**Impact.** A transient, fully-known-state condition (no transaction opened, nothing uncertain, retry trivially safe) permanently disables the owner and requires a reopen. This is an availability regression relative to the base commit, in the conservative direction.
+
+**Fix/next step.** Hoist `db.exec("BEGIN IMMEDIATE")` back out of the `try`, or distinguish "transaction never started" from "transaction state unknown" before fencing.
+
+*Baseline note:* the same restructure strictly improves the rollback-failure case — baseline let a thrown `ROLLBACK` replace the original error and continued running un-fenced. F3 is about the newly-fenced BEGIN case only.
+
+---
+
+### F4 — Medium (proven) · new catalog rows cite requirement excerpts their bound actions cannot observe; one asserted outcome has no anchor
+**File/section:** `packages/conformance/development/read-update-catalog-v1.json`, the two rows added in hunk `@@ -1063,8 +1063,149 @@`.
+
+**`development.read-update.contextual-local-kind`** — 5 of its 11 `requirements` are unobservable by its 4 actions (`wrong-kind`, `prefix-absent`, `corrected-same-keys`, `corrected-live`):
+- `#sequence-request-envelope` / "`operations` is bounded by `sequence.operations` … rejected … with `limit-exceeded`" — no over-limit sequence is sent.
+- `#sequence-request-envelope` / "Two members of one sequence MUST NOT carry the same `idempotencyKey` … as is one whose `name` values repeat" — both members carry distinct keys and one name.
+- `#readupdate-sequence-target` / "a sequence request that carries the field is rejected before execution with `malformed-request`" — no request carries that field.
+- `#schema-validity-and-mutation-admission` / "the resolution of an alias spelling to a live alias, and, for an alias member, whether a put's `target` …" — neither scenario uses an alias.
+- `#sequence-problem-envelopes` / "Each failed member contains the same Problem Details shape with its would-be `status`, its zero-based `operationIndex` …" — **this row produces no member results at all** (`wrong-kind.no-results` asserts `/body/results` absent). This citation belongs on `contextual-durable-kind`, which asserts exactly that shape (`member-status`, `member-index`, `member-unnamed`) and does **not** cite it.
+
+**`development.read-update.contextual-durable-kind`** —
+- the alias excerpt is again cited with no alias action;
+- `#sequence-request-envelope` / "Re-keying a creating member changes the identity of every member that references its binding: a client that corrects a creator presents new keys for its dependents as well" is cited, but `corrected-fresh-key` is a singleton `development/update-bead` with a new key — there is no creator/dependent re-key anywhere in the scenario;
+- `#duplicate-keys-and-retained-dispositions` / "positioned with the present member's `operationIndex` and `operationName`" is cited, but the `retry` action re-sends a structurally identical carrier, so the retained entries land at the *same* indices with the *same* name as the original. Repositioning is asserted nowhere and is not discriminated;
+- `#readupdate-sequence-target` / "starts members strictly in declaration order and never runs them in parallel" is not established by a two-member sequence whose first member fails;
+- conversely, the `corrected-same-key` action asserts `409` / `idempotency-conflict` / `retry: "never"` — **no cited requirement anchors that disposition**.
+
+**Trigger/impact.** Any report that lists a diagnostic row's cited requirements alongside its passing assertions. The README's honesty posture ("development-only and non-attesting", "partial behavioral evidence, not passing normative rows") covers the *row-to-normative* direction; it does not cover a requirement citation inside a diagnostic row that the row's own actions cannot reach. The coverage `limits` disclose the forward/unknown-label and key/name-uniqueness gap for `contextual-local-kind` but not the `limit-exceeded`, sequence-target-field, alias, or misplaced-problem-envelope citations.
+
+**Fix/next step.** Prune each row's `requirements` to the excerpts its actions actually exercise; move the `#sequence-problem-envelopes` excerpt to `contextual-durable-kind`; add an anchor for the `idempotency-conflict` disposition or drop the assertion's coverage claim.
+
+**Question:** whether the shared runner surfaces catalog `requirements` as covered-requirement output is in the unsupplied runner code. If it only hashes bytes and reports assertion results, the impact is confined to a human reading the catalog.
+
+---
+
+### F5 — Medium (question) · correctness now depends on `db.isTransaction`, with no engines pin in the packet
+**File/section:** `transaction-store.ts:184-186`.
+
+**Issue.** `db.isTransaction` is a comparatively recent `node:sqlite` addition. If the getter is absent on the deployed runtime it evaluates `undefined` → falsy, so ROLLBACK is **never attempted**, `cleanRollback` is always `false`, and `:201` fences on every single `atomic` failure — including ordinary application errors — while leaving the write transaction open (F1's worst case becomes the default). This degrades silently: no exception, no log.
+
+**Trigger.** Running the built package on a Node without the getter.
+
+**Impact.** First application-level failure permanently fences the owner and parks an open transaction on the exclusively-locked file.
+
+**Why a question, not proven.** The new tests read the real getter (the spy covers only `exec`), and the `before`-COMMIT case asserts exactly one `ROLLBACK`, so CI implicitly pins a sufficient Node. `package.json` / `engines` / the CI matrix are not in the packet, so I cannot establish whether production and CI share that floor.
+
+**Fix/next step.** Add an `engines` floor, or assert `typeof db.isTransaction === "boolean"` once at open and fail provisioning otherwise.
+
+---
+
+### F6 — Low (proven code behavior; trigger not established) · non-constraint SQLite errors fence even after a proven clean rollback
+**File/section:** `transaction-store.ts:191-201`.
+
+**Issue.** The only non-fencing exit for a SQLite-coded error is `constraint` — `(errcode & 0xff) === 19`. Every other primary code fences at `:201` via `(sqlite && !constraint)` **even when `cleanRollback === true`**, i.e. when the durable state is known-unchanged. The mask is correct for extended codes (the test's `1555` → `19`; STRICT-table `SQLITE_CONSTRAINT_DATATYPE` `3091` → `19` likewise lands on the non-fencing path).
+
+**Impact/trigger.** For genuinely storage-level codes (`SQLITE_FULL` 13, `SQLITE_IOERR` 10) fencing is the intended and defensible choice. For deterministic non-constraint codes that *did* roll back cleanly (`SQLITE_ERROR` 1, `SQLITE_MISMATCH` 20, `SQLITE_TOOBIG` 18), the owner is permanently disabled despite known state. **I cannot name a concretely reachable trigger of that second class from the supplied excerpt** — the generation sites are in the unsupplied `:205-569` region.
+
+**Fix/next step.** If this breadth is deliberate, state it in a comment next to `:199-200`, which currently justifies only the uncertainty case. Otherwise narrow the fence to codes that actually imply storage uncertainty.
+
+---
+
+### F7 — Low (proven within the supplied test region) · two coverage gaps in the new fencing tests
+**File/section:** `packages/server/src/transaction-store.test.ts`, `describe("private transaction storage failure fencing")`.
+
+1. **No new test pins the non-fencing path for an ordinary (non-SQLite) error after a clean rollback.** All six new tests end in a fence except *"allows retry after an actual SQLite constraint with a proven clean rollback,"* which covers only the `errcode`-bearing constraint branch. The plain-`Error` + clean-rollback branch (`committing` false, `cleanRollback` true, `sqlite` false → `throw error`, no fence) — the one that keeps every pre-existing `fault("after-effects")` / `after-terminal` test working — is asserted by nothing in the delta.
+2. **The `after`-COMMIT branch verifies replay but never forward progress.** In *"fences an injected %s-COMMIT failure…"*, the `after` branch asserts `resources` 2, `groups` 1, `recoveredPending` 0, and an `existing`/`completed` replay, then stops. The `before` branch additionally asserts `reopened.execute(admit(reopened)).status === "completed"`. So for the durably-committed-then-fenced case, nothing checks that the reopened store can commit a *new* transaction — i.e. that the `groups` row and the `metadata` `position` written together at `:580-583` left the reopened store at a consistent next position.
+
+**Fix/next step.** Add the plain-error clean-rollback non-fencing assertion, and extend the `after` branch with one subsequent `execute` + `groups` length check.
+
+---
+
+### F8 — Low (question) · fake timers installed and not restored in the new sequence test
+**File/section:** `transaction-store.test.ts`, *"preserves sequence admission and cleanup causes and fences every carrier entry"* — `vi.useFakeTimers()` at the top, `expect(vi.getTimerCount()).toBe(0)` after the fence, no `vi.useRealTimers()` in the body.
+
+**Impact.** If the file-level `afterEach` (imported at `transaction-store.test.ts:8`, body in the unsupplied `:1-2034` region) does not restore real timers, the following test — *"allows retry after an actual SQLite constraint…"* — and anything after it run with the maintenance timer frozen. Harmless for that specific test, order-dependent in general.
+
+**Fix/next step.** Confirm `afterEach` restores timers; otherwise restore locally.
+
+---
+
+### F9 — Low (proven gap in the plan) · the README's load-bearing revision claim has no control for guard enforcement
+**File/section:** `README.md` new section — "A guarded no-op using the Link's originally captured revision establishes that the rejected operations did not advance its revision"; manifest `development.read-update.contextual-durable-kind`, actions `seed-link` (captures `original-link-revision`), `link-revision-unchanged` (`expectedRevisionBinding: "original-link-revision"`, expects `200` / `updated`), `link-still-unchanged`.
+
+**Issue.** The inference "revision did not advance" holds only if `expectedRevisionBinding` is actually enforced on `development/update-link`. This scenario contains no mismatched-revision control, so a receiver that silently ignored the binding on this target would satisfy every assertion and the README sentence would be false. Separately, `link-unchanged` asserts `id`/`source`/`target`/`type`/`properties`/`metadata` but **not** `revision`, and `link-still-unchanged` asserts no revision either — so nothing pins the Link's revision before or after the guarded no-op, and nothing pins whether a no-op `replace` of `/marker` to its existing value advances it.
+
+**Fix/next step.** Either cite the existing guard-enforcement scenario (the README mentions "A guard race dispatches two real requests with the same observed revision and distinct keys") in the binding's `limits`, or assert `/body/resource/revision` against `original-link-revision` directly in `link-unchanged`.
+
+---
+
+### F10 — Low (proven absence of anchor) · two asserted dispositions rest on rules the packet does not supply
+**File/section:** manifest `development.read-update.contextual-durable-kind`, `wrong-kind.member-retry` and `retry.member-retry` (`/body/results/0/retry` equals `"after-state-change"`); and `corrected-same-key` (409 `idempotency-conflict`).
+
+1. `retry: "after-state-change"` for a wrong-kind subject has no cited requirement, and in this fixture `links/original` can never become a Bead, so the classification is at least arguable. Both coverage bindings deliberately omit `member-retry` from their `assertions` lists while the manifest still asserts it — so the manifest pins a retry classification the coverage file declines to claim.
+2. `corrected-same-key`'s conflict (rather than a retained replay) depends on how a wrong-kind durable subject reference is canonicalized for semantic-identity comparison. The supplied `bdp.md:3172-3188` normalization text covers `@name` references whose creator failed (the "distinguished unbound marker") and says durable references are "resolve[d] and canonicaliz[ed]" — it does not say what canonicalization yields for a reference that names a Resource of another kind. No cited excerpt covers it.
+
+**Fix/next step.** Add anchors, or move both to the binding `limits` as uncited receiver observations.
+
+---
+
+## Items I could not establish — omitted context
+
+- **`transaction-store.ts:205-569` and `:661-end`** are not supplied. That hides: the returned store object (and whether `close()` is fence-exempt — see F2), `maintain()`, `retract()`, `inspect()`, `aliasTarget()`, `recoveredPending`, the open-time recovery that retracts abandoned pending receipts, where `fault("after-effects")` and `fault("after-sequence-reservation")` fire relative to `atomic`, and `nextSequence`'s full structure. The `nextSequence` hunk is truncated mid-`AggregateError`.
+- **`transaction-store.test.ts:1-2034`** is not supplied: `fixture()` (and critically what `f.reopen()` does to the previous connection — F1), `admit()`, `savedKey()`, `batch`, `bead`, `scope`, and the `afterEach` body (F8). I therefore **cannot** establish whether pre-existing fault-injection tests still pass under the widened fence predicate. My reading of the supplied code is that plain-`Error` faults at `after-admission`, `after-effects`, `after-terminal`, and `before-maintenance-commit` all still take the non-fencing `throw error` path, so I expect no baseline breakage — but that is inference, not verification.
+- **Spec anchors.** Only `bdp.md:2582-2608`, `:3141-3200`, and `:3900-3924` were supplied. Of the 25 `selectedText` excerpts added to the catalog, exactly one is verifiable against the supplied text: the `#idempotency-keys` excerpt matches `bdp.md:3168-3170` byte-for-byte. The anchors `#schema-validity-and-mutation-admission`, `#readupdate-problem-details`, `#sequence-request-envelope`, `#sequence-response-envelope`, `#sequence-problem-envelopes`, `#readupdate-sequence-target`, `#duplicate-keys-and-retained-dispositions`, and `#operation-directory-and-singleton-targets` are not in any supplied window, so the remaining 24 excerpts' fidelity and anchor correctness are unverified.
+- **Runner/executor.** No runner, executor, or fixture code is in the delta, consistent with the README's "no runtime, harness, schema, public profile or fixture policy changes are made." That makes the new scenarios depend on pre-existing executor features I cannot confirm: `input.key` for singleton idempotency keys, `input.expectedRevisionBinding`, `normalize: "scope-relative-url"`, object-valued `equals` on a `json-pointer` assertion, and `exists: false` on a nested pointer. If any is absent, the scenarios fail at run time rather than silently.
+- **Coverage/README baseline counts.** Unchanged coverage rows are omitted. I verified the delta's internal arithmetic — 2 new scenarios (25→27), 16 new actions (264→280, counted 4 + 12), one row flipped `omitted`→`bounded-observation` (54→55 bounded, 27→26 omitted, 55+26 = 81) — but I cannot verify the 81-row total or that the prior 54/27 figures were correct.
+- **No fresh execution evidence.** The packet contains no runner report, no run log, and no test output. Every statement above is static reading of the supplied text. I did not run anything, per the instructions.
+- **Fault seam.** As stated in the request: the injected `exec`/`fault` failures are source-private test seams, not evidence of physical disk failure, `SQLITE_FULL`, `SQLITE_IOERR`, or real crash/restart behavior. The `after`-COMMIT case in particular simulates an ambiguous commit by letting the real COMMIT run and then throwing; it does not demonstrate the kernel/filesystem condition it stands in for.
+
+## Known bounded exclusions relevant to this packet
+
+- Write-profile conformance claims remain disabled; the private Transactional owner is intentionally bounded and is not a public Transactional service. F1–F3 and F6 are about the supplied code's internal consistency, not about missing public-profile capability.
+- `read-update.sequence.contextual-validation` is explicitly flipped to `bounded-observation`, not to normative closure. The declared residue — owned results / `sourceRevision`, broader Scope containment, forward/unknown `@name` labels, key/name uniqueness, other Resource and reference kinds, full response-byte replay equality — is disclosed in both bindings' `limits` and is not a regression.
+- Installed-schema and owned-Link contracts, configurable authorization fixtures, discovery, Operation Directory, and public-profile admission remain gated per `README.md:191-196`; the fixed unowned Types and single all-visible local principal cannot establish them. F4 is not about this residue — it is about citations inside the new rows that the new actions cannot reach.
+- `openTransactionStore` accepts schema-free unowned Types only (`transaction-store.ts:98-104`); nothing in this delta changes that.

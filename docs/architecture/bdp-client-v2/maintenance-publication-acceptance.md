@@ -1,0 +1,3 @@
+# Root publication acceptance
+
+Source, old-guard sensitivity, healthy installed evidence, native and external Claude reviews are complete and dispositioned. Root read integration report and independently verified clean31e74290/tree5c14, plus merge-tree equality against both current main7e46 and reviewed PR120408. Authorize draft publication now so fresh CI can run concurrently with PR120. This changes scheduling only; merge stays held until actual PR120 main exists, its combination equals the tested5c14 tree, and all exact-head checks succeed. Preserve ordinary ancestors; no force push or relabeled installed execution. If main changes incompatibly, stop and reconcile with fresh validation.

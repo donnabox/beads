@@ -1,0 +1,53 @@
+{
+  "at": "2026-10-15T22:40:31.454521+00:00",
+  "head": "1f0cb9455361cef2cc793558793e4a190be6f4fe",
+  "tree": "22176e75848cfd6f0a54f799aeb1e62998206edb",
+  "reviews": {
+    "wire": {
+      "actualReview": {
+        "exitCode": 0,
+        "timeout": false,
+        "forcedTermination": false,
+        "elapsedSeconds": 507.42567204195075,
+        "sourceAndPlanUnchanged": true,
+        "stdoutSha256": "0302c9b2bff927f403730ba92b6f68b20e6a58ed3a349a587b0188fb0fee0195",
+        "stderrSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "cleanupSha256": "b3bca9af53f8a7ee4143e57e70e7d7c3aeffe05004258d65f8158d08ef9f3c1b",
+        "sourceAfterSha256": "74da44f09bd975919424a9192c44e4bdd22b93d172176e392381f52c4b5436b9"
+      },
+      "nativeAudit": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-principal-cumulative-draft/claude-code-preparation/wire/native-findings-audit.md",
+      "nativeAuditSha256": "35648d26505a3e687d1528e7fd8fe7335f8694d5ba6d90f1c16578928d428d71",
+      "rootReadFullOutputAndAudit": true
+    },
+    "composition": {
+      "actualReview": {
+        "exitCode": 0,
+        "timeout": false,
+        "forcedTermination": false,
+        "elapsedSeconds": 344.9672012079973,
+        "sourceAndPlanUnchanged": true,
+        "stdoutSha256": "7a42ad3764a2acf761f4773786ae85dc2d25ba45f1a5c11a81fdf60de789fed5",
+        "stderrSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "cleanupSha256": "0dfdcdae68ff00ba565e6dba37c05b7859504f2f8d4d5b2b35aca364b8b7184f",
+        "sourceAfterSha256": "ed9206bed5b24cd849cb2a85b31a76bac30406a53451068937bcc56b91856f28"
+      },
+      "nativeAudit": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-principal-cumulative-draft/claude-code-preparation/composition/native-findings-audit.md",
+      "nativeAuditSha256": "3e740ecee82d077d4d17a566d8a9668cedbe5917016e97e8fb88129adb6a6f7b",
+      "rootReadFullOutputAndAudit": true
+    }
+  },
+  "disposition": "accepted; no unresolved mandatory code finding",
+  "optionalDeferred": [
+    "additional diagnostic/static mirror assertions",
+    "nonexclusive predecessor and measurement comments",
+    "alternate broad-manual-invocation output naming"
+  ],
+  "specificRulings": {
+    "wireF2": "Event identity is rendered in GET serving view; writer substitution would be wrong",
+    "wireF5": "accepted plan49 and frozen report-contract explicitly permit opaque epoch/view context; credentials and full receipts are not persisted",
+    "wireF4": "each actual approved invocation selects one callback and a distinct output path"
+  },
+  "sourceChangedForDisposition": false,
+  "qualification": false,
+  "mergeGate": "exact-head terminal green CI and final scope/ancestry/tree checks remain required"
+}

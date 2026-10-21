@@ -1,0 +1,26 @@
+--- /Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-D4-synthetic-harness-preparation-3/availability-command.json
++++ availability-command.json
+@@ -17,12 +17,12 @@
+     "/usr/bin/perl5.34",
+     "-I/System/Library/Perl/5.34/darwin-thread-multi-2level",
+     "-I/System/Library/Perl/5.34",
+-    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-D4-synthetic-harness-preparation-3/availability_limit.pl",
++    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-D4-synthetic-harness-preparation-4/availability_limit.pl",
+     "AVAIL",
+     "availability",
+     "UNKNOWN_FUTURE_DURABLE_AVAILABILITY_ONLY_RELEASE_ABSOLUTE_PATH"
+   ],
+-  "cwd": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-D4-synthetic-harness-preparation-3",
++  "cwd": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-D4-synthetic-harness-preparation-4",
+   "rootGuardRequiredImmediatelyBeforeLaunch": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-D4-validation-preparation-4/guarded-action-session-20261018-021624-549f.py",
+   "approved": false,
+   "executed": false,
+@@ -30,7 +30,7 @@
+   "productCalls": 0,
+   "finiteControlCalls": 0,
+   "stdio": "root-owned concurrently drained stdout/stderr PIPE, bounded actual raw capture with EOF/hash and terminal receipts; never TTY/direct redirect",
+-  "exclusiveAttempt": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-D4-synthetic-harness-preparation-3/availability-attempt",
++  "exclusiveAttempt": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-D4-synthetic-harness-preparation-4/availability-attempt",
+   "clock": {
+     "whole": 120,
+     "TERM": 115,

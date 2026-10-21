@@ -1,0 +1,7 @@
+# Native root closure: PR97 fixture description
+
+Root independently verified clean frozen e517f6f9667e1087f864921bdce2b446c9bb8225, direct ordinary6d parent. Actual diff is solely five-byte removal of “four ” from fixture description. New fixture SHA2563a7899ced771d4880066d98b0000c53f801ece53458502cc4f3bc641146c9a85; all11 other TX/RU file blobs independently match the source report. Root read full author report and safe summaries. No executable or authority change, no new review finding. Original native9eb and external9eb code council remain applicable to unchanged code; this closes external LOW1 through explicit root scope acceptance and direct diff review.
+
+Fresh e517 installed observations bind the new fixture/configuration: set1/TX31/RU22, six partial TX rows2.623s and54 genuine RU rows22.796s, all owned children closed, all129 mapping/report checks pass.88 focused plus type/build/static/smokes/Read seal pass. Earlier6d green CI remains historical; new e517 CI is required before ready/merge. Root did not repeat tests for this one-line description change; reviewed actual source and author evidence. No public profile or release claim.
+
+A root report-read command first requested nonexistent summary.json and failed before writing this closure; actual report files are tx-safe-summary.json, ru-safe-summary.json and stages.json, subsequently read. No validation pass was inferred from that failed lookup.

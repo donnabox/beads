@@ -1,0 +1,140 @@
+{
+  "head": "bbab34f78864e7b3d2210ecc4527c9143e5e53ef",
+  "tree": "b45eb19f615d2ea12697ea1e15001d7301a2f927",
+  "parents": [
+    "131fb9874ae53f94ea7c15d5b77bd6caa4a704e9",
+    "2e7d454a616467122884306fcd8d1d853b0bf5c1"
+  ],
+  "remoteMainTree": "395a1d5b87775698c11fcdb65fedd5bb147279d6",
+  "clean": true,
+  "files": [
+    {
+      "file": "apps/bdptest/src/read-update-matrix.test.ts",
+      "differsFrom": "2e7d454a616467122884306fcd8d1d853b0bf5c1",
+      "expectedParent": "131fb9874ae53f94ea7c15d5b77bd6caa4a704e9",
+      "actualBlob": "71bb7856f582da7154a67438049d91b55ab6d947",
+      "expectedBlob": "71bb7856f582da7154a67438049d91b55ab6d947",
+      "equal": true
+    },
+    {
+      "file": "packages/conformance/fixtures/read-update-reference-v1.json",
+      "differsFrom": "2e7d454a616467122884306fcd8d1d853b0bf5c1",
+      "expectedParent": "131fb9874ae53f94ea7c15d5b77bd6caa4a704e9",
+      "actualBlob": "2a3eb1491506a8a0ae250851a1626b7f518ff877",
+      "expectedBlob": "2a3eb1491506a8a0ae250851a1626b7f518ff877",
+      "equal": true
+    },
+    {
+      "file": "packages/conformance/matrices/read-update-reference-continuation-v1.json",
+      "differsFrom": "2e7d454a616467122884306fcd8d1d853b0bf5c1",
+      "expectedParent": "131fb9874ae53f94ea7c15d5b77bd6caa4a704e9",
+      "actualBlob": "39c5ef30a65206aee65d642b849a5d9169149e78",
+      "expectedBlob": "39c5ef30a65206aee65d642b849a5d9169149e78",
+      "equal": true
+    },
+    {
+      "file": "packages/conformance/src/numeric-model-catalog.test.ts",
+      "differsFrom": "2e7d454a616467122884306fcd8d1d853b0bf5c1",
+      "expectedParent": "131fb9874ae53f94ea7c15d5b77bd6caa4a704e9",
+      "actualBlob": "6d38350bde9f5387dff9eca6c06e295d4163945d",
+      "expectedBlob": "6d38350bde9f5387dff9eca6c06e295d4163945d",
+      "equal": true
+    },
+    {
+      "file": "packages/conformance/test-support/read-update-coverage-v1.json",
+      "differsFrom": "2e7d454a616467122884306fcd8d1d853b0bf5c1",
+      "expectedParent": "131fb9874ae53f94ea7c15d5b77bd6caa4a704e9",
+      "actualBlob": "c57df1172d03c41f3b922a04fe999a163420c4f1",
+      "expectedBlob": "c57df1172d03c41f3b922a04fe999a163420c4f1",
+      "equal": true
+    },
+    {
+      "file": "apps/bdptest/src/transactional-binding.test.ts",
+      "differsFrom": "131fb9874ae53f94ea7c15d5b77bd6caa4a704e9",
+      "expectedParent": "2e7d454a616467122884306fcd8d1d853b0bf5c1",
+      "actualBlob": "e7182a78f3c8968c6558dfafcca3a7620e1bf8d2",
+      "expectedBlob": "e7182a78f3c8968c6558dfafcca3a7620e1bf8d2",
+      "equal": true
+    },
+    {
+      "file": "apps/bdptest/src/transactional-set-installed.test.ts",
+      "differsFrom": "131fb9874ae53f94ea7c15d5b77bd6caa4a704e9",
+      "expectedParent": "2e7d454a616467122884306fcd8d1d853b0bf5c1",
+      "actualBlob": "2661988920e1a1913f6643a5b2e5c6647a45767d",
+      "expectedBlob": "2661988920e1a1913f6643a5b2e5c6647a45767d",
+      "equal": true
+    },
+    {
+      "file": "apps/bdptest/test-support/transactional-execution-binding.ts",
+      "differsFrom": "131fb9874ae53f94ea7c15d5b77bd6caa4a704e9",
+      "expectedParent": "2e7d454a616467122884306fcd8d1d853b0bf5c1",
+      "actualBlob": "6f6d9826b21151d913edd970c5e1251d2a58cfc0",
+      "expectedBlob": "6f6d9826b21151d913edd970c5e1251d2a58cfc0",
+      "equal": true
+    },
+    {
+      "file": "docs/design/transaction-implementation-progress.md",
+      "differsFrom": "131fb9874ae53f94ea7c15d5b77bd6caa4a704e9",
+      "expectedParent": "2e7d454a616467122884306fcd8d1d853b0bf5c1",
+      "actualBlob": "762a068b88902fe511ab87e1117dba3a20e13edf",
+      "expectedBlob": "762a068b88902fe511ab87e1117dba3a20e13edf",
+      "equal": true
+    },
+    {
+      "file": "packages/server/src/transaction-batch.ts",
+      "differsFrom": "131fb9874ae53f94ea7c15d5b77bd6caa4a704e9",
+      "expectedParent": "2e7d454a616467122884306fcd8d1d853b0bf5c1",
+      "actualBlob": "70dd87fbf5bda3783d20111b875114c60f80f036",
+      "expectedBlob": "70dd87fbf5bda3783d20111b875114c60f80f036",
+      "equal": true
+    },
+    {
+      "file": "packages/server/src/transaction-http.test.ts",
+      "differsFrom": "131fb9874ae53f94ea7c15d5b77bd6caa4a704e9",
+      "expectedParent": "2e7d454a616467122884306fcd8d1d853b0bf5c1",
+      "actualBlob": "29c2411f5c542094b946ef93f5b9ef8e2caff63a",
+      "expectedBlob": "29c2411f5c542094b946ef93f5b9ef8e2caff63a",
+      "equal": true
+    },
+    {
+      "file": "packages/server/src/transaction-http.ts",
+      "differsFrom": "131fb9874ae53f94ea7c15d5b77bd6caa4a704e9",
+      "expectedParent": "2e7d454a616467122884306fcd8d1d853b0bf5c1",
+      "actualBlob": "efdb776a9f3e0f5321c7a292bdddea58f0712cae",
+      "expectedBlob": "efdb776a9f3e0f5321c7a292bdddea58f0712cae",
+      "equal": true
+    },
+    {
+      "file": "packages/server/src/transaction-set.test.ts",
+      "differsFrom": "131fb9874ae53f94ea7c15d5b77bd6caa4a704e9",
+      "expectedParent": "2e7d454a616467122884306fcd8d1d853b0bf5c1",
+      "actualBlob": "9afd591f81e725532c0bc41532ffa98d18d57e49",
+      "expectedBlob": "9afd591f81e725532c0bc41532ffa98d18d57e49",
+      "equal": true
+    },
+    {
+      "file": "packages/server/src/transaction-set.ts",
+      "differsFrom": "131fb9874ae53f94ea7c15d5b77bd6caa4a704e9",
+      "expectedParent": "2e7d454a616467122884306fcd8d1d853b0bf5c1",
+      "actualBlob": "09c976c3c29f45ebed8e7bc69a49165afa8e2c4e",
+      "expectedBlob": "09c976c3c29f45ebed8e7bc69a49165afa8e2c4e",
+      "equal": true
+    },
+    {
+      "file": "packages/server/src/transaction-submission.test.ts",
+      "differsFrom": "131fb9874ae53f94ea7c15d5b77bd6caa4a704e9",
+      "expectedParent": "2e7d454a616467122884306fcd8d1d853b0bf5c1",
+      "actualBlob": "76e0e24bdb09d168bc1413d041396290adcc8009",
+      "expectedBlob": "76e0e24bdb09d168bc1413d041396290adcc8009",
+      "equal": true
+    },
+    {
+      "file": "packages/server/src/transaction-submission.ts",
+      "differsFrom": "131fb9874ae53f94ea7c15d5b77bd6caa4a704e9",
+      "expectedParent": "2e7d454a616467122884306fcd8d1d853b0bf5c1",
+      "actualBlob": "1c4bb9e1cea9e6ac778060fb75516d3515937b19",
+      "expectedBlob": "1c4bb9e1cea9e6ac778060fb75516d3515937b19",
+      "equal": true
+    }
+  ]
+}

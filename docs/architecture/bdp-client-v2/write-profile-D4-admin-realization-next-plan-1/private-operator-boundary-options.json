@@ -1,0 +1,35 @@
+{
+  "currentSeamsNotAuthority": [
+    "replaceAuthorizationPolicy is only all-visible→empty revocation",
+    "load/installed configuration data does not itself grant an administrative capability",
+    "direct fileURL/test fault import and arbitrary SQL are not operator support",
+    "ordinary bdptest --serve still admits Read only"
+  ],
+  "integrationOptions": [
+    {
+      "choice": "Recommended design option",
+      "fit": "Reuse current service/owner lifetime and serialized transaction; actual trusted host support and authority still must be implemented/documented, not inferred from private methods.",
+      "id": "OWNER_FACET"
+    },
+    {
+      "choice": "Conditional alternative",
+      "fit": "A separate private operator composition can host the SAME owner and transport, or coordinate after fully closing it. It must not open a second live SQLite owner or expand the existing close-only qualification IPC by stealth.",
+      "id": "SEPARATE_PRIVATE_HOST"
+    }
+  ],
+  "operatorAct": [
+    "An explicitly authorized local operator selects the one actual deployment/Scope and invokes its documented private administrative entry; authority ownership must be established independently of knowing a Resource URL or a user bearer token.",
+    "The operator supplies the canonical subject/revision and desired historical-only or live correction/tombstone intent plus authority-owned concurrency guards. These are conceptual private inputs for future review, not a new serialized schema or method signature.",
+    "The owner resolves authoritative original version evidence, computes the digest, derives owned-containing closure and successor validity itself; caller may not supply trusted ledger rows, SQL, epoch/group/receipt bytes, fault callbacks, forced outcomes or claimed cleanup booleans.",
+    "The service closes admission/drains relevant work and blocks incompatible reads/publication under a finite reviewed lifecycle; waiting cancellation cannot imply undo of a durable administrative commit.",
+    "Authority commits/recovers the real admin group and per-view publication barrier. The operator receives only a local completion/uncertainty record tied to actual owner state; it is not a BDP MutationReceipt. Uncertain commit fences the owner until authoritative reopen, without guessed compensation.",
+    "An independent ordinary external consumer, not the private admin result, observes the resulting same-target state/ledger/token effects and its own durable cleanup/checkpoint facts."
+  ],
+  "recommendation": "Owner-held private administrative facet under the existing trusted deployment supervisor, using the same serialized owner and actual captured installation. No BDP route/Operation Directory member, public package export, ordinary credential-as-admin or caller boolean proof.",
+  "secrecy": [
+    "no credential retrieval/output, no serialized admin capability/capture/private registry",
+    "no authentication/policy secret-committing digest treated as safe diagnostics",
+    "erase/report failure text fixed class/allowlisted facts; never echo removed content or private operator input"
+  ],
+  "status": "OPTIONS_AND_RECOMMENDATION_NOT_ADOPTED_API_OR_COMMAND"
+}

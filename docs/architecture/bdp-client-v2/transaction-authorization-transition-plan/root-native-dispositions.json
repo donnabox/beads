@@ -1,0 +1,22 @@
+{
+  "state": "Plan council disposition complete; corrected successor accepted and bounded source authoring released",
+  "accepted": [
+    "N1 uncertain-commit fencing",
+    "N2 atomic expected-view lease acquisition",
+    "N3 receipt pages, sequence and admitted-work projection/execution fanout",
+    "N4 separate Snapshot integrity/maintenance from request-view fence",
+    "N5 two seedPOSTs within32-operation cap"
+  ],
+  "architecture": "Scope-wide immutable snapshot, explicit scope binding, principal-aware same-entry capture; quiescent mutation drain before committed publication; no principal registry or new protocol ruling",
+  "claudePid": 75177,
+  "claudeSession": 70595,
+  "noProductDecisionInferred": true,
+  "claudeOutcome": {
+    "exit": 0,
+    "elapsedSeconds": 287.6543557,
+    "stdoutSha256": "bcfbfc454e80350fc4f5a6a348241bc4e41522c4c97f128d2ea6e670b978271b",
+    "pidAbsent": true
+  },
+  "successorSha256": "8f74cee8992d8d5b7c0c46cd640fe30971acb7022ebf19611dece0565cd2a521",
+  "fullFindingDisposition": "native-claude-findings-audit.md; all14 findings source-audited and root-read, accepted concrete repairs incorporated"
+}

@@ -1,0 +1,8 @@
+{
+  "N5": {
+    "module": "safeData object branch now checks captured own-key count >10000 with same fixed capacity refusal before Object.entries map/child recursion",
+    "test": "Existing R24 only: supplied nested10000-key object reaches ordinary configuration-mismatch (intentionally not valid metadata);10001-key object ends with nested accessor tripwire and must refuse capacity before child traversal; zero getter invocations asserted",
+    "semantics": "No fake successful10000 transport configuration, new callback, new report fields, API or source framework",
+    "earlierFindings": "N1/N2/N4 addressed and N3 behavior-safety closure preserved; this adds missing object-container branch only"
+  }
+}

@@ -1,0 +1,43 @@
+{
+  "state": "DIAGNOSIS_ONLY_NO_AUTHORING_OR_EXECUTION_RELEASE",
+  "classification": "ONE strict source-derived DATA expectation defect; no demonstrated product source defect from this failure",
+  "firstMismatch": {
+    "path": "/schemaRows/8/position",
+    "label": "unknown",
+    "ordinal": 9,
+    "method": "GET",
+    "url": "https://reference.invalid/acme/schemas/unknown",
+    "status": 404,
+    "actualSerializedContext": {},
+    "currentExpected": "pos-0",
+    "proposedExpected": null
+  },
+  "sourceTrace": [
+    "test218\u2013222 captures actual headers; JSON.stringify435 omits undefined own members",
+    "transaction-schema-http.ts selects only exact captured schema retrieval identities; missing entry returns before observe",
+    "transaction-runtime.ts169\u2013179 falls through existing handler",
+    "read-http-routing39\u201340\u2192requestFromUrl255 parser notFound, never perform/owner observation"
+  ],
+  "contractBasis": [
+    "docs/design/transaction-implementation-progress.md1750\u20131769 explicitly binds selected exact identities/current owner observation and unknown fallthrough",
+    "spec677:1234\u20131245,2534\u20132584 pins validation artifacts and ordinary Web dereference, not an arbitrary schema namespace API",
+    "spec677:5804,5864 concerns transaction-consistent projected observations;5831 preserves earlier target/method refusal",
+    "spec677:5834\u20135839 unknown Bead/Link/properties/alias/initial-anchor 404 must carry actual context; those owner-backed resource semantics remain untouched"
+  ],
+  "notBasedOn": [
+    "mere same Scope URL prefix",
+    "making any404context optional",
+    "relaxing context keys/types/position equality",
+    "claiming source unknown assertion checked headers",
+    "inventing missing body/wire bytes"
+  ],
+  "preservedChecks": [
+    "strict empty context equality at audit328 for exact null expectation",
+    "11other contextual rows:8before+discoverypos0/create+rootafterpos1",
+    "401/405 already exact empty context",
+    "all14 label/method/URL/status/order/request-body/fingerprint/bodyless/artifact/source/binding/cleanup checks",
+    "all other schemaExpected data including prior8Snapshot and11installed02 occurrence fixes",
+    "source679/helpers5/52stages16pairs/selections/budgets/noRetry unchanged"
+  ],
+  "future": "Root disposition and separately frozen DATA8/native/root required; no current report/schema/helper change or retry authorized"
+}

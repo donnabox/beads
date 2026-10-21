@@ -1,0 +1,112 @@
+[
+  {
+    "duration_api_ms": 1330935,
+    "stop_reason": "end_turn",
+    "session_id": "2e2df680-4de1-41ac-a79e-3309f410f949",
+    "total_cost_usd": 7.067543499999999,
+    "usage": {
+      "input_tokens": 84,
+      "cache_creation_input_tokens": 222857,
+      "cache_read_input_tokens": 4465827,
+      "output_tokens": 104079,
+      "output_tokens_details": {
+        "thinking_tokens": 90015
+      },
+      "server_tool_use": {
+        "web_search_requests": 0,
+        "web_fetch_requests": 0
+      },
+      "service_tier": "standard",
+      "cache_creation": {
+        "ephemeral_1h_input_tokens": 222857,
+        "ephemeral_5m_input_tokens": 0
+      },
+      "inference_geo": "global",
+      "iterations": [
+        {
+          "input_tokens": 2,
+          "output_tokens": 13672,
+          "cache_read_input_tokens": 216517,
+          "cache_creation_input_tokens": 11086,
+          "cache_creation": {
+            "ephemeral_5m_input_tokens": 0,
+            "ephemeral_1h_input_tokens": 11086
+          },
+          "type": "message"
+        }
+      ],
+      "speed": "standard"
+    },
+    "modelUsage": {
+      "claude-haiku-4-5-20251001": {
+        "inputTokens": 3570,
+        "outputTokens": 19,
+        "cacheReadInputTokens": 0,
+        "cacheCreationInputTokens": 0,
+        "webSearchRequests": 0,
+        "costUSD": 0.003665,
+        "contextWindow": 200000,
+        "maxOutputTokens": 32000,
+        "thinkingTokens": 0,
+        "canonicalModel": "claude-haiku-4-5",
+        "provider": "firstParty",
+        "costBasis": "list"
+      },
+      "claude-opus-5[1m]": {
+        "inputTokens": 84,
+        "outputTokens": 104079,
+        "cacheReadInputTokens": 4465827,
+        "cacheCreationInputTokens": 222857,
+        "webSearchRequests": 0,
+        "costUSD": 7.0638784999999995,
+        "contextWindow": 1000000,
+        "maxOutputTokens": 64000,
+        "thinkingTokens": 90015,
+        "canonicalModel": "claude-opus-5",
+        "provider": "firstParty",
+        "costBasis": "list"
+      }
+    },
+    "permission_denials": [],
+    "terminal_reason": "completed",
+    "fast_mode_state": "off",
+    "fast_mode_disabled_reason": "sdk_opt_in_required",
+    "subagent_stats": {
+      "spawned": 0,
+      "requested": {
+        "background": 0,
+        "foreground": 0,
+        "unset": 0
+      },
+      "started_in_background": 0,
+      "max_depth": 0,
+      "spawned_by_subagents": 0,
+      "completed": 0,
+      "failed": 0,
+      "killed": {
+        "parent": 0,
+        "user": 0,
+        "system": 0
+      },
+      "refused": {
+        "depth_limit": 0,
+        "concurrency_limit": 0,
+        "budget": 0
+      },
+      "by_type": {}
+    },
+    "is_error": false,
+    "num_turns": 63,
+    "subtype": "success",
+    "api_error_status": null,
+    "result": "## D4 owned\u2011set CODE review \u2014 actual candidate at `apps/bdptest/src/transactional-set-installed.test.ts` (884 lines, SHA256 `65f754c0\u2026`)\n\nRead: the live working\u2011tree file (not the author's copy), frozen `before`/`after`/`source.patch`, `source-binding.json`, `findings-implementation-map.json`, `prospective-workload.json`, formatter evidence, `root-source-inspection/*`, whole `plan2/plan.md` + request/configuration/lifecycle/report/counterfactual/future\u2011footprint/importer/line\u2011map/preservation contracts and `findings-resolution.json` (12 labels), `plan2/context` prior actual PLAN material, whole `native-source-review/*`, plus the exact pinned dependencies: `scripts/transaction-installed-observation.mjs`, `apps/bdptest/test-support/transactional-execution-binding.ts`, `packages/conformance/src/http-executor.ts`, `packages/conformance/test-support/profile-contract-plan.ts`, `packages/server/src/transaction-installed-process.ts`, and pinned `docs/specs/bdp.md` anchors 409\u2011460 / 4252\u20114307 / 5178\u20115218 / 5256\u20115280. Identity taken as given per the root inspection; everything below is independent semantics/feasibility.\n\n### Concrete findings \u2014 3, all Low. No Medium or High findings.\n\n**F\u2011A (Low) \u2014 `clean()` omits PID, so a handle with `pid === null` can still be reported as clean closure and can still trigger store\u2011directory removal.**\n- Source: `clean()` lines 163\u2011175 (`acquisition === \"acquired\" && exit 0/null && closed 0/null && closeSettled && closeSucceeded`); `launch` line 339 `if (owned.pid === null) throw problem(\"child-close-unobserved\")` \u2014 this throw happens *after* `row.acquisition = \"acquired\"`/`row.owned = owned` (323\u2011324) and does **not** set `ownershipUncertain`; consumers of `clean()` are 692 (pre\u2011reopen gate), 764, 776 (removal guard), 850 (`ownershipUnknown`), 865 (`closure`).\n- Contract: `findings-resolution.json` F5 \"missingPID acquisition/closure UNKNOWN retained\"; `lifecycle-inventory.json` C2 (\"retain ChildProcess + exact PID + generation \u2026 already\u2011lost event \u21d2 unknown/failclosed\") and C8 (\"no unknown owner\"); `report-contract.json` successRequired \"two returned child acquisitions with **real PID**+generation\".\n- Impact: if a handle ever returns without a PID, the run fails (good) but the emitted report can simultaneously carry `pid: null`, `closure: \"observed-clean-exit-and-close\"`, `ownershipUnknown: false` and `directory.disposition: \"removed\"` \u2014 a fail\u2011open in the evidence model exactly where F5 requires UNKNOWN\u2011and\u2011retained. Practically unreachable on the frozen launcher (a failed spawn cannot produce the `qualification.ready` IPC handshake), so this is an evidence\u2011model defect rather than a live\u2011path bug.\n- Smallest contract\u2011preserving correction: add one conjunct `owned.pid !== null &&` inside `clean()` (line ~166). It propagates to the reopen gate, stage loop, `ownershipUnknown`, `closure` label and the removal guard with no new field, no new check and no success\u2011path change.\n\n**F\u2011B (Low) \u2014 workspace `diffSha256` digests a UTF\u20118\u2011decoded string, not the actual diff bytes.**\n- Source: `git` helper lines 229\u2011235 (`encoding: \"utf8\"`, `timeout: 2000`, `maxBuffer: 1048576`) reused at 258\u2011260 for `createHash(\"sha256\").update(git([\"diff\",\"--binary\",\"HEAD\"]))`.\n- Contract: `report-contract.json` successRequired \"workspace bounded Git with **actual diff SHA**\"; F4a constrains only the bounds (2 s / \u22641048576, no 8 MiB), not the encoding.\n- Impact: any tracked modified content that is not valid UTF\u20118 is transcoded to U+FFFD before hashing, so `diffSha256` is not the digest of the patch bytes and will not correspond to root's byte\u2011level patch identity (`bdd5eeaa\u2026`). For the current ASCII\u2011only one\u2011file delta the two coincide, so this is latent, not currently wrong.\n- Smallest correction: hash the diff from a Buffer while keeping the same single command and the same bounds, e.g. `createHash(\"sha256\").update(execFileSync(\"git\", [\"diff\",\"--binary\",\"HEAD\"], { cwd: root, timeout: 2000, maxBuffer: 1048576 }))`. Same Git command count, no widening, `status --porcelain` and `rev-parse` unchanged.\n\n**F\u2011C (Low) \u2014 two stage\u2011label attributions are imprecise (fixed labels, wrong cause).**\n- (i) Line 689\u2011690: `if (pending.size !== 0 || observations.filter(received).length !== 28) throw problem(\"pending-unsettled\")`. A received\u2011row shortfall/overrun (e.g. an installed Event page size that makes the seed traversal 3 or 5 pages instead of 4) is reported as request\u2011drain failure. Fails closed correctly, but C4 states two distinct predicates and F1/F9 require labels that identify the actual cause. Smallest fix: split into `if (pending.size !== 0) throw problem(\"pending-unsettled\");` then `if (\u2026length !== 28) throw problem(\"observation-failed\");` (both labels already in the authored inventory).\n- (ii) `phase` stays `\"metadata-capture-failed\"` (line 133) through lines 289\u2011299, i.e. `throwIfAborted`/`mkdtempSync`/`randomBytes`/configuration, while `metadata.nullReason` was already cleared to `null` at 288. A `mkdtempSync` failure therefore emits `failureStages: [\"metadata-capture-failed\"]` together with fully captured metadata and `nullReason: null` (`metadataModes.workspace` ties that stage to capture failure). Smallest fix: move the existing `phase = \"launch-failed\"` assignment (currently line 355) to immediately after line 288 \u2014 one line moved, no new label.\n\n### Per\u2011label verdict against the accepted corrections (all 12 labels, F1\u2013F11 incl. F4a/F4b)\n\n- **F1 \u2014 implemented, no findings.** `counts.expected` (811\u2011822: 32/11/21/2/33/[32,1]/[32,32,32]/96/1/`staticLocalOracleCount:5`) is disjoint from `counts.observed` (823\u2011836) whose body\u2011derived fields are nullable and captured before assertions: `receiptPages[0]` at 528 before `expect(receipt.status)` 529; `receiptPages[1]`/`receiptComplete` 533\u2011535 with `receiptEntries` derived **only** when complete; `eventTraversals.*.pages` pushed per page at 500 with `complete`/`count` only after loop exit 513\u2011514; `groups = array(feed.groups).length` at 574 before `expect(...).toHaveLength(1)` 575. Oracle outcomes default `\"unobserved\"` (102\u2011105) and are written only when reached (213\u2011223).\n- **F2 \u2014 implemented, no findings.** Launcher call site keeps the exact pinned signature `launchInstalledTransaction(entry, input, controller.signal)` (310) and the local structural type matches the `.mjs` return `{child, ready, close}`; `installedTransactionBinding(ready, sourceCommit, {bytes})` matches `transactional-execution-binding.ts:21-25` unchanged; one dirty tracked path per the root inspection.\n- **F3 \u2014 implemented, no findings.** Module scope now holds only static imports, pure constants (`descriptors`/`artifacts`) and pure `object`/`array`. All throwing work is inside the callback after cached state: `root` 226, mode 227\u2011228, entry `realpathSync` 238, source 242, fixture read 244, hashes 251\u2011252, dynamic launcher `import` 263, Ajv/bundle/validator compile 272\u2011282 \u2014 all before `launch(1)` at 356. Capture failure \u21d2 no launch \u21d2 cached partial report (796\u2011881).\n- **F4a \u2014 implemented, no findings.** Exactly `timeout: 2000` (within 1000\u20112000) and `maxBuffer: 1048576` on every Git capture; no 8 MiB widening. Over\u2011budget output raises ENOBUFS \u21d2 capture failure \u21d2 no launch (honest refusal, as root chose \"no widening\").\n- **F4b \u2014 implemented (see F\u2011B for the latent encoding issue).** External mode requires `BDP_TRANSACTIONAL_SOURCE_COMMIT` (236\u2011237) before any Git, `??` then never reaches `git([\"rev-parse\"])`, and 253\u2011255 caches the fixed `not-applicable-externally-bound` for both `workspaceDirty` and `disposition` \u2014 distinct from `null` capture failure (`nullReason` 120/288). Entry realpath+SHA and fixture SHA remain mandatory in both modes (251\u2011252). `finally` performs no Git/read/stat.\n- **F5 \u2014 implemented apart from F\u2011A.** Handle retained synchronously with PID/generation and **both** listeners attached before any further await (310\u2011338); snapshots kept separately as `exitCodeSnapshot`/`signalCodeSnapshot` (858\u2011859) and excluded from `clean()`; lost pre\u2011return exit resolves `null` leaving `owned.exit` null \u21d2 fail closed (330\u2011332). Barrier requires pending 0 **and** 28 actual response rows (689), then clean actual `exit 0/null` **and** distinct `close 0/null` plus a settled/succeeded cached close (195\u2011212, 691\u2011692) inside `min(started+90s, now+10s)`. Reopen uses the same directory/artifacts/credential with `create: false` (695) and compares full served + runtime identity (699\u2011702); per\u2011send binding equality is also asserted (371\u2011374). I verified the new `close`\u2011event predicate is actually reachable: with `stdio [\"ignore\",\"pipe\",\"pipe\",\"ipc\"]` Node counts the IPC channel toward `close`, and the installed process disconnects in its `finally` (`transaction-installed-process.ts:57-60`), so this is not a guaranteed 10 s stall; a genuinely lost `close` fails closed through the bounded window.\n- **F6 \u2014 honored as CLOSED, no findings.** 90 s work timer (93\u201196), 5 s `requestTimeoutMs` (381), 120 s callback (884), 10 s single shared cleanup window (742). No 45/10/60 transplant, no outer/TERM/KILL signaling, no retry/extension/new helper; budgets are reported as facts (841\u2011847) and `limitations` keeps the collector/startup/flush gate explicitly CLOSED (878).\n- **F7 \u2014 implemented, no findings.** Independent hard cap `if (observations.length >= 32) throw problem(\"dispatch-cap-exceeded\")` at 396 fires before dispatch 33 and before the row exists (so a refused dispatch inflates nothing); ordinal assigned at 398 before `execute` at 417; task registered 433 / deleted 468 with `row.settled`+`settled++` in `finally` on both outcomes; existing 12\u2011page guard preserved at 503. I recounted the sequence independently: 32 dispatches, 11 POST / 21 GET, 28 before reopen and 4 after \u2014 matching `request-inventory.json`.\n- **F8 \u2014 implemented, no findings.** Full `wireResponseBase64` + `wireSha256` for every returned row, captured before any assertion (436\u2011451); no truncation or hash\u2011only substitute; executor options unchanged (`maximumBodyBytes: 1048576`, default `maximumHeaderBytes` 65536), which reproduces exactly the pinned per\u2011response ceiling 1179648 via `http-executor.ts:898` (`body + header*2`). Body/headers/requestBody duplication retained as the contract requires; no cap widening and no guessed collector capacity.\n- **F9 \u2014 implemented, no findings.** Pre\u2011ready rejection keeps `acquisition: \"unknown\"`, sets sticky `ownershipUncertain`, and classifies only from the actual launcher shapes: `AggregateError` with message `\"installed transaction startup cleanup failed\"` (matches `.mjs:91`) \u21d2 `prelaunch-cleanup-unsettled`, else `prelaunch-rejected` (342\u2011351), plus `reopen-refused-pre-ready` for generation 2. No raw error/cause/PID invention, no kill, no reopen, no removal; post\u2011ready failures use the distinct `binding-validation-failed` phase.\n- **F10 \u2014 implemented, no findings.** Removal is gated on `directory !== null && !ownershipUncertain && acquisitions.every(clean) && pending.size === 0 && settled === observations.length` (773\u2011779); `rmSync` errors caught \u21d2 `disposition: \"unknown\"` + `directory-removal-failed` + aggregated error (780\u2011787); `storeFilePresence: \"unknown\"` is hardcoded (870) with no new `stat`/read/Git in `finally`.\n- **F11 \u2014 implemented, no findings.** A local pending registry now exists in the owned callback (100/433/468); the unrelated registry in `transactional-execution-binding.ts:130,156-163` is untouched; chronology is barrier \u2192 observed close \u2192 reopen (689\u2011695), and the report is emitted after `finally` and before the `AggregateError` (881\u2011883).\n\n### Other whole\u2011candidate checks performed, no findings\n- **Preservation:** operations, order, payloads, idempotency keys (`delete32`, `owned_update`, `compiled_fail`, generated `set_N`), literal owned `n:1`, revision advance, `sourceRevision`/inline/live equality, `effectPosition`/`requiredPosition`, no\u2011op, atomic compiled\u2011schema rollback, 404s, and original receipt/page/failure replay after reopen are byte\u2011for\u2011byte the pinned `before` semantics; the five clone\u2011only oracles are identical mutants with identical assertions (incl. the `/requested owned Link properties/` match) and add zero wire traffic. All of this matches pinned spec 5178\u20115213 (set receipt shape/ordering, no\u2011op `effectPosition` omission, page `next`), 5215\u20115219 (page URL survives ordinary restart), 5269\u20115275 (the three Transactional response headers) and 409\u2011463/4254\u20114278 (owned\u2011Link versioning, `change` leaves `metadata`).\n- **Interface/type/package feasibility (typecheck not run):** `tsconfig.check.json` does include `apps/*/src/**/*.ts`, so this file is typechecked. New imports all resolve \u2014 `HttpTransportError` (`conformance/src/index.ts:135`, with `category`/`requestWriteState` at `http-executor.ts:143-153`), `assertSameServedProfileConfiguration` (`conformance/test-support/testing.ts:11`), and type\u2011only `ValidateFunction` from the `ajv` root (workspace\u2011root devDependency `8.17.1`; erased under `verbatimModuleSyntax`). The annotated generic `until` (`Promise.race([promise, new Promise<never>\u2026])` returning `Promise<T>`) is structurally identical to two already\u2011pinned, CI\u2011typechecked occurrences (`apps/bdptest/test-support/development-process.ts:234`, `apps/bdptest/src/transactional-event-sse-installed.test.ts:460`); `closing ??=` mirrors the same file's line 432. `exactOptionalPropertyTypes`/`noUncheckedIndexedAccess` obligations are met (optional props omitted rather than set to `undefined`; `!` used at indexed accesses).\n- **No secret leakage:** the report serializes only digests and serving facts \u2014 `ready` carries `configurationMetadata` digests + `listenUrl`/`targets`/`payloadIdentity` (`transaction-installed-process.ts:48-55`), `served` carries scope/profile/history/commit/digests/`fixtureDigest`/`fixtureId`/capabilities only (`profile-contract-plan.ts:148-160`); the token, request header lines and `exactRequest.headerLines` are never recorded (only `writeState`); failures surface as fixed stage labels and `errorCategory`, never raw messages/causes/child stderr. `JSON.stringify(report)` has no cyclic or non\u2011serializable member (no `ChildProcess` is embedded).\n- **Report emission robustness:** every `finally` operation that can throw is individually caught, so no reachable failure path skips the report; nothing in the report path re\u2011enters Git/IO or back\u2011fills observed fields from `counts.expected`.\n\nExit/review completion here is **not** source, compiler, runtime or installed approval: no typecheck, format\u2011check, lint, test, build, install or execution was run, all counts remain prospective, F6 remains CLOSED, and the three findings above are offered for root adjudication and separately released correction.",
+    "ttft_ms": 1594,
+    "type": "result",
+    "duration_ms": 1348215,
+    "uuid": "7c4422cc-ceda-4617-a9e5-dd7afdfd654d",
+    "ttft_stream_ms": 964,
+    "time_to_request_ms": 11,
+    "first_content_frame_ms": 964,
+    "queued_turn_count": 0
+  }
+]

@@ -1,0 +1,43 @@
+{
+  "worktree": "/Users/dbox/repos/wt/vickie/vickie-schema-minimum",
+  "branch": "codex/vickie-schema-minimum",
+  "headAttributedToRoot": "cce884ccea1db97cbc6fd7bff876d4d6091f9081",
+  "basisInspectionSha256": "ec6d19c772611f14c80df26e5426653d34b7a1002f9cc84398e2dc01c079d1d1",
+  "beforeCanonical": "a61cd3fbf9fac68e3aad857a24a2456dd16b83048067eef85348d7091c0aa08e",
+  "beforeMap": {
+    "path": "source-before-map.json",
+    "sha256": "0f259127fcad3d5206d724de2b57ba31e14cda36a76daa46a4b79e50d8fb3caf"
+  },
+  "afterMap": {
+    "path": "source-after-map.json",
+    "sha256": "3e8ec6c710901ce2a7e0f5598a0f5aa594af127d2fcec3b1cc0604058ec9ba9f"
+  },
+  "afterCanonical": "eeb78c7d5c97f45b18f3c0465926d905915c302dae4da25a24f887e3e9247227",
+  "knownSourceFiles": 679,
+  "owned": [
+    "packages/server/src/transaction-service.ts",
+    "packages/server/src/transaction-schema-http.ts",
+    "packages/server/src/transaction-http.ts",
+    "packages/server/src/transaction-service.test.ts",
+    "packages/server/src/transaction-schema-http.test.ts",
+    "apps/bdptest/src/transactional-schema-installed.test.ts"
+  ],
+  "changed": [
+    "apps/bdptest/src/transactional-schema-installed.test.ts",
+    "packages/server/src/transaction-http.ts",
+    "packages/server/src/transaction-schema-http.test.ts",
+    "packages/server/src/transaction-schema-http.ts",
+    "packages/server/src/transaction-service.test.ts",
+    "packages/server/src/transaction-service.ts"
+  ],
+  "protected": 673,
+  "newSourceFiles": 0,
+  "expectedCumulativeDirtyAgainstCce": 10,
+  "actualGitObservations": "ROOT_OWNED_UNRUN_BY_AUTHOR",
+  "fullPatchSha256": "7775a65b61ee157da6b0d6f759d350121e949175dac503f8628d40c8e3f7e739",
+  "finalSourceFrozen": true,
+  "validationReleased": false,
+  "reviewLaunchReleased": false,
+  "claimEligible": false,
+  "canonicalIdentityEncoding": "SHA256(UTF8(json.dumps(pathToSha256, sort_keys=True))) with default separators, no trailing newline"
+}

@@ -1,0 +1,7 @@
+{
+  "action": "own pure-text test editing script",
+  "failure": "ValueError substring not found looking for V03 method after V02; actual declaration is async V03",
+  "partialSourceWrites": false,
+  "testFileUnchangedVerified": true,
+  "correction": "Use next async V03 marker; no product/helper executed or test result inferred"
+}

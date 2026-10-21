@@ -1,0 +1,99 @@
+{
+  "futureDataAuditCounterfactuals": [
+    {
+      "id": "A01",
+      "mutation": "selected callback missing",
+      "required": "Refuse positive; retain original bytes; no productcallback/wire added"
+    },
+    {
+      "id": "A02",
+      "mutation": "duplicate fullName",
+      "required": "Refuse positive; retain original bytes; no productcallback/wire added"
+    },
+    {
+      "id": "A03",
+      "mutation": "unexpected passed callback",
+      "required": "Refuse positive; retain original bytes; no productcallback/wire added"
+    },
+    {
+      "id": "A04",
+      "mutation": "wrong suite path",
+      "required": "Refuse positive; retain original bytes; no productcallback/wire added"
+    },
+    {
+      "id": "A05",
+      "mutation": "boolean failedcounter instead of integer0",
+      "required": "Refuse positive; retain original bytes; no productcallback/wire added"
+    },
+    {
+      "id": "A06",
+      "mutation": "missing source terminalhook",
+      "required": "Refuse positive; retain original bytes; no productcallback/wire added"
+    },
+    {
+      "id": "A07",
+      "mutation": "previous unresolved SQLite",
+      "required": "Refuse positive; retain original bytes; no productcallback/wire added"
+    },
+    {
+      "id": "A08",
+      "mutation": "attempt labelled acquisition",
+      "required": "Refuse positive; retain original bytes; no productcallback/wire added"
+    },
+    {
+      "id": "A09",
+      "mutation": "missing response/wire fact",
+      "required": "Refuse positive; retain original bytes; no productcallback/wire added"
+    },
+    {
+      "id": "A10",
+      "mutation": "replay bytes changed under200",
+      "required": "Refuse positive; retain original bytes; no productcallback/wire added"
+    },
+    {
+      "id": "A11",
+      "mutation": "child close missing with exit0",
+      "required": "Refuse positive; retain original bytes; no productcallback/wire added"
+    },
+    {
+      "id": "A12",
+      "mutation": "parent uncertain after late settlement",
+      "required": "Refuse positive; retain original bytes; no productcallback/wire added"
+    },
+    {
+      "id": "A13",
+      "mutation": "wrongconsumer entry/proof",
+      "required": "Refuse positive; retain original bytes; no productcallback/wire added"
+    },
+    {
+      "id": "A14",
+      "mutation": "secret in decodedwire",
+      "required": "Refuse positive; retain original bytes; no productcallback/wire added"
+    },
+    {
+      "id": "A15",
+      "mutation": "no-claim2 labelled Writepass",
+      "required": "Refuse positive; retain original bytes; no productcallback/wire added"
+    }
+  ],
+  "inherited": "44 exact selected config/capture/file/privacy sourcecallbacks plus pure nonlistening sixcalls2accepted4refused; no extra HTTP",
+  "installed": {
+    "I01-I02/I05": "reader403/anonymous401contextprivacy/current credential replacement/refused resource absent",
+    "I06-I11": "no-store/refusal/persisted capture mismatch/occupiedport",
+    "I20": "public RU refusal then inert-noIPC,inertIPC,missingIPC guards3",
+    "I21": "public TX refusal,invalidIPC guard,actualready invalidstop exit2+close2,source safe/regular+CONNECT secret controls"
+  },
+  "notInvented": "No administrative N/A, public admission, epoch grammar, arbitrary store rollback, extra host test framework or synthetic runtime control.",
+  "source": {
+    "S01x4": "forged/getter/proxy refusal before file/owner/listener/traps",
+    "S02true": "second principal failure exactprimary/oneclose/no bind",
+    "S03phaseB": "constructor throws after readback, direct close1/serviceclose0",
+    "S04x7": "readback mismatch closes owner before constructor/bind",
+    "S05x21": "RU8/TX13 persisted mismatch, internalSQLiteclose/genuine restoredprobe, no epoch-invention",
+    "S06x2": "absent createfalse no SQLite/file/listen",
+    "S07x2": "occupiedport attempt1/acquisition0,blocker retained",
+    "S08-S10x2": "sync throw/acquired error/primary+cleanup preserve realcauses",
+    "S13x2": "preabort/preparation settlement/no latebind"
+  },
+  "state": "Existing callbacks only; proposed auditor controls DATA, unexecuted"
+}

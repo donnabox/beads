@@ -1,0 +1,43 @@
+--- a/packages/server/src/transaction-http.test.ts
++++ b/packages/server/src/transaction-http.test.ts
+@@ -4488,7 +4488,8 @@
+     const handler = createTransactionHttpHandler(service, scope);
+     const setupEntries = [...entries];
+     entries.length = 0;
+-    let calls = 0;
++    let calls = 0,
++      directGetBytes = 0;
+     const authorization = { kind: "authenticated", principal: "p", canMutate: true } as const;
+     for (const suffix of [
+       "",
+@@ -4523,13 +4524,20 @@
+         calls++;
+         expect(response.kind, suffix).toBe("finite");
+         expect(response.status, `${method} ${suffix}`).toBe(400);
+-        if (method === "GET")
++        if (method === "GET") {
+           expect(checkedProblem(record(response.body))).toMatchObject({
+             code: "malformed-request",
+             status: 400,
+             retry: "never",
+           });
+-        else expect(response.body).toBeUndefined();
++          directGetBytes = Buffer.byteLength(JSON.stringify(response.body));
++          expect(directGetBytes).toBeGreaterThan(0);
++          // GET length is emitted later by the Node delivery boundary.
++          expect(response.headers.get("content-length")).toBeNull();
++        } else {
++          expect(response.body).toBeUndefined();
++          expect(Number(response.headers.get("content-length"))).toBe(directGetBytes);
++        }
+         for (const name of [
+           "bdp-scope-epoch",
+           "bdp-authorization-view",
+@@ -4540,7 +4548,6 @@
+           "x-bdp-development-limit",
+         ])
+           expect(response.headers.has(name), name).toBe(false);
+-        expect(Number(response.headers.get("content-length"))).toBeGreaterThan(0);
+       }
+     for (const [method, authenticated, minimum, status] of [
+       ["GET", false, true, 401],

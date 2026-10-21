@@ -1,0 +1,46 @@
+--- effective-plan3/output-schema.json
++++ plan4/output-schema.json
+@@ -73,8 +73,41 @@
+       "no returned served configuration yet",
+       "not a bound carrier, target observation, admission or qualification"
+     ],
+-    "transition": "first secret-safe genuine returned(index,report) with validated existing bound configuration permits BOUND ProfileEvidenceV1; pending/absent other reports stay null; every later report must match first binding. Until then failures remain unbound permanently, no successful summary."
++    "transition": "first secret-safe genuine returned(index,report) with validated existing bound configuration permits BOUND ProfileEvidenceV1; pending/absent other reports stay null; every later report must match first binding. Until then failures remain unbound permanently, no successful summary.",
++    "serializerEnforcement": "serializeProfileEvidence itself intrinsic-captures own data and checks EXACT closedKeys, no missing/extra keys including configuration, all listed fixedvalues, requestedProfile read-update, canonical130 requiredIds/owner map/artifact digest shape, observations.length===requiredIds.length with EVERY entry null, allowed finite attempt/limitations. Invalid-source on missing/extra/wrong values, never merely stringify a conventionally shaped object. assemble/verify reject unbound kind. No extra export."
+   },
+   "stoppedRows": "Actual stopped remainder is harness-error/not-run for every remaining selected ID, including absent plans/diagnostics. Reached missing plans are harness-error/not-implemented. Preserve category/index/order/empty exchanges; both no-credit and authoredAssertionsAllPassed:null, never every([])=true.",
+-  "TXRawWrapperIdentity": "rawWrapperSha256 = SHA256 of the exact one UTF8 serialization owned by positive onObserved, including original indentation/newline/fields. canonicalResultSha256 remains separately named derived digest; neither minimal {result,sessions,baseline} nor guessed/reformatted file may be labelled raw wrapper."
++  "TXRawWrapperIdentity": "rawWrapperSha256 = SHA256 of the exact one UTF8 serialization owned by positive onObserved, including original indentation/newline/fields. canonicalResultSha256 remains separately named derived digest; neither minimal {result,sessions,baseline} nor guessed/reformatted file may be labelled raw wrapper.",
++  "authoredOutcomeJoin": {
++    "state": "FULL active family-specific authored outcome join",
++    "authority": "exact manifest action.family + exact coverage action/assertion IDs, not report order or exchange presence",
++    "lanes": {
++      "http": "find exactly matching exchanges[] actionId then that exchange assertions[] assertionId",
++      "every non-http family": "find exactly matching actions[] actionId then that action assertions[] assertionId; ignore same-ID HTTP exchange assertions for this purpose"
++    },
++    "binding": "RU coverage action.assertion dot vs TX action:assertion colon retained. Resolve from canonical manifest IDs; reject duplicate action rows, duplicate assertion IDs/bindings, unknown authored IDs or incorrect family/lane. No exchange-first fallback. Report synthetic or installed attribution remains independent.",
++    "precedence": [
++      {
++        "when": "any authored ID resolves passed:false",
++        "authoredAssertionsAllPassed": false
++      },
++      {
++        "when": "no resolved false and at least one authored ID unresolved",
++        "authoredAssertionsAllPassed": null
++      },
++      {
++        "when": "every authored ID resolved passed:true",
++        "authoredAssertionsAllPassed": true
++      }
++    ],
++    "unexecuted": "Stopped/not-run/reached not-implemented/unexecuted rows retain null execution credit regardless of empty assertions. Validate full inventory before join; empty inventory/list adequacy/counts never establish semantic whole-clause credit.",
++    "wholeClauseQualification": "always unestablished, both global eligibility flags false",
++    "caseBindings": [
++      "V05",
++      "R22",
++      "V03",
++      "V04"
++    ]
++  },
++  "TXHandoffFailure": "Carrier-local failed/pending state with rawWrapperSha256:null, genuine result/session/baseline unchanged. No successful summary if acceptance/persistence unavailable; later validation checks actual artifact."
+ }

@@ -1,0 +1,31 @@
+{
+  "decision": "AUTHORING_RELEASED_MEASUREMENT_REQUIRED_BEFORE_TESTS",
+  "checkedAt": "2026-10-15T16:48:00.951972+00:00",
+  "parent": "18104a03b850553641f24fe83e7318493fa102ca",
+  "tree": "10810a8016a451e241ea974487681dcddd63c2e4",
+  "branch": "codex/vickie-sequence-member-transactions",
+  "pins": {
+    "transaction-sequence-member-plan-v8.md": "57c662f5e65fae5a4e1d103f1953a2754bbcf9a9d0e8ebb15f418805bab26f74",
+    "companion.json": "3853547b6baa1d50cc6309ad213806c8418a89fc36970c4744faafb35384fdeb",
+    "merged-source-binding.json": "4f267145e2a4e524570c910218d0e16cef05ad1ea79fb1f8d1fa9d56d1a841d5",
+    "plan.patch": "538423da004c959afd25d935e40cb96c6f1061fa901816f948466732060b61c1",
+    "companion.patch": "235340a682dd061a4b9e8f56f3f5e4928e3e7326524b03384010b921b393c371"
+  },
+  "scope": [
+    "packages/conformance/test-support/transactional/manifest-v1.json",
+    "packages/conformance/test-support/transactional/coverage-v1.json",
+    "packages/conformance/src/transactional-cumulative.test.ts",
+    "apps/bdptest/src/transactional-matrix.test.ts"
+  ],
+  "review": "Root read mechanical diffs and report, independently verified actual clean parent, four owned hashes and citation source bytes; semantic/body/header/workload fields unchanged from accepted plan council. All28objects and full parent preservation bound.",
+  "authoringReleased": true,
+  "executionReleased": false,
+  "guardAmendmentReleased": false,
+  "limits": {
+    "newManifestDiskAndNormalBytes": 80000,
+    "newNodes": 2200,
+    "newCoverageBytes": 15000,
+    "newAssertions": 260
+  },
+  "requirements": "Four paths only; preserve28oldrawobjects and exact parent reconstruction. Draft ten actions and bounded observer/control; measure before tests. No runtime/schema/fixture/public admission changes, no guard/timeout increases. Root approves measured source fences separately."
+}

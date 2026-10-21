@@ -1,0 +1,121 @@
+--- /Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-conditional-reads-draft/rebind-validation-preparation/source-preflight/gate.py
++++ /Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-conditional-reads-draft/rebind-validation-preparation/source-diagnostic/gate.py
+@@ -3,7 +3,7 @@
+ import hashlib,json,subprocess,os
+ P=Path(__file__).resolve().parent;D=P;L=Path('/Users/dbox/repos/wt/vickie/bdp-integration-logs')
+ W=Path('/Users/dbox/repos/wt/vickie/vickie-transaction-conditional-reads');E=P/'run';GUARD=L/'guarded-action.py';COMMANDS=P/'commands.json'
+-COMMANDS_SHA='1bdfdf0098730229117bcb9208fd46122819a0b8522cf297226c53d7a9756507'
++COMMANDS_SHA='3bd95f22807708ef117cc3d5321635d74764bc81857101a23486333924c8c510'
+ sha=lambda b:hashlib.sha256(b).hexdigest()
+ def re_full_sha(s):return len(s)==40 and all(c in "0123456789abcdef" for c in s)
+ def require(ok,message):
+@@ -71,7 +71,8 @@
+   require(isinstance(lock,str) and len(lock)==64 and actualLock.is_file() and sha(actualLock.read_bytes())==lock,'Root must accept generated consumer lock before releasing verify-installed')
+  spec=dict(cfg['commands'][name]);require(g['phaseRelease'][spec['phase']] is True,'Phase closed')
+  if spec['phase']=='source':
+-  require(a.get('sourceValidationAuthorized') is True and a.get('sourceCouncilAccepted') is True,'Diagnostic source authorization/council absent')
++  require(a.get('sourceValidationAuthorized') is True and a.get('nativeCodeReviewed') is True and a.get('externalReviewPending') is True and a.get('diagnosticOnly') is True,'Diagnostic native-review authorization absent')
++  require(g.get('councilAccepted') is False and a.get('sourceCouncilAccepted') is not True and a.get('councilAccepted') is not True,'Diagnostic execution must not claim complete council')
+  else:
+   require(g['councilAccepted'] is True,'Full council still pending for control/package/installed')
+  require(spec['phase']=='source' and a.get('reviewedDirtySourceOnly') is True,'Only reviewed dirty preflight permitted')
+--- /Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-conditional-reads-draft/rebind-validation-preparation/source-preflight/supervise.py
++++ /Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-conditional-reads-draft/rebind-validation-preparation/source-diagnostic/supervise.py
+@@ -47,7 +47,8 @@
+         "bdpOverrides": spec.get("validatedBdpOverrides", {}),
+         "guardedArgv": [sys.executable, str(GUARD), *spec["argv"]],
+         "nodePathPrefix": "/Users/dbox/.nvm/versions/node/v24.16.0/bin",
+-        "sourceAttribution": "Externally bound source snapshot or frozen package; not child-attested Git identity",
++        "sourceAttribution": "Frozen native-reviewed source diagnostic with external review pending; not integrated or installed evidence",
++        "diagnosticOnly": True, "nativeCodeReviewed": True, "externalReviewPending": True, "councilAccepted": False,
+         "plannedWorkload": spec.get("workload", {}),
+         "derivativeBinding": gate.get("controls", {}).get(spec.get("control")),
+     }
+@@ -176,6 +177,7 @@
+         ) else (0 if code == spec.get('rawExpectedExit',0) else (code if code > 0 else 1))
+         result = {
+             "name": name, "argv": spec["argv"], "guardedArgv": [sys.executable, str(GUARD), *spec["argv"]],
++            "diagnosticOnly": True, "nativeCodeReviewed": True, "externalReviewPending": True, "councilAccepted": False,
+             "cwd": spec["cwd"], "started": started, "adjudication": adjudication,
+             "elapsedSeconds": time.monotonic() - begin, "exit": code,
+             "supervisorExit": supervisor_exit, "timeout": timed, "forcedCleanup": forced,
+--- /Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-conditional-reads-draft/rebind-validation-preparation/source-preflight/commands.json
++++ /Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-conditional-reads-draft/rebind-validation-preparation/source-diagnostic/commands.json
+@@ -1,5 +1,5 @@
+ {
+-  "status": "CLOSED reviewed dirty source only",
++  "status": "CLOSED native-reviewed diagnostic source only; external code review pending",
+   "executionOrder": [
+     "typecheck",
+     "format-check",
+@@ -102,7 +102,7 @@
+         "--maxWorkers=1",
+         "--reporter=verbose",
+         "--reporter=json",
+-        "--outputFile=/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-conditional-reads-draft/rebind-validation-preparation/source-preflight/run/cumulative-full.results.json"
++        "--outputFile=/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-conditional-reads-draft/rebind-validation-preparation/source-diagnostic/run/cumulative-full.results.json"
+       ],
+       "selectedFullNames": [
+         "binds the canonical cumulative TX selection and exact source digests without qualification",
+@@ -172,7 +172,7 @@
+         "--maxWorkers=1",
+         "--reporter=verbose",
+         "--reporter=json",
+-        "--outputFile=/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-conditional-reads-draft/rebind-validation-preparation/source-preflight/run/binding-source.results.json",
++        "--outputFile=/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-conditional-reads-draft/rebind-validation-preparation/source-diagnostic/run/binding-source.results.json",
+         "--testNamePattern",
+         "^(?:aborts\\ and\\ drains\\ a\\ real\\ registered\\ dynamic\\ socket\\ via\\ close|aborts\\ and\\ drains\\ a\\ real\\ registered\\ dynamic\\ socket\\ via\\ cohort|rebinds\\ ordinary\\ raw\\ requests\\ to\\ the\\ new\\ validated\\ physical\\ session\\ while\\ base\\ mode\\ stays\\ fixed)$"
+       ],
+@@ -206,7 +206,7 @@
+         "--maxWorkers=1",
+         "--reporter=verbose",
+         "--reporter=json",
+-        "--outputFile=/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-conditional-reads-draft/rebind-validation-preparation/source-preflight/run/receipt-first-page.results.json",
++        "--outputFile=/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-conditional-reads-draft/rebind-validation-preparation/source-diagnostic/run/receipt-first-page.results.json",
+         "--testNamePattern",
+         "^(?:observes\\ private\\ first\\-page\\ authority\\ over\\ actual\\ HTTP:\\ id\\-first|observes\\ private\\ first\\-page\\ authority\\ over\\ actual\\ HTTP:\\ page\\-first|observes\\ private\\ first\\-page\\ authority\\ over\\ actual\\ HTTP:\\ wrong\\-parent|observes\\ private\\ first\\-page\\ authority\\ over\\ actual\\ HTTP:\\ empty\\-page|observes\\ private\\ first\\-page\\ authority\\ over\\ actual\\ HTTP:\\ changed\\-page|observes\\ private\\ first\\-page\\ authority\\ over\\ actual\\ HTTP:\\ cancel\\-page|observes\\ private\\ first\\-page\\ authority\\ over\\ actual\\ HTTP:\\ null\\-next|observes\\ private\\ first\\-page\\ authority\\ over\\ actual\\ HTTP:\\ absent\\-next)$"
+       ],
+@@ -252,7 +252,7 @@
+         "--maxWorkers=1",
+         "--reporter=verbose",
+         "--reporter=json",
+-        "--outputFile=/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-conditional-reads-draft/rebind-validation-preparation/source-preflight/run/app-static.results.json",
++        "--outputFile=/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-conditional-reads-draft/rebind-validation-preparation/source-diagnostic/run/app-static.results.json",
+         "--testNamePattern",
+         "^(?:pins\\ the\\ matching\\ no\\-op\\ installed\\ route\\ digest\\ and\\ fifteen\\-action\\ ledger|pins\\ deletion\\-safety\\ derivative\\ carriers,\\ complete\\ positives,\\ and\\ measured\\ source\\ bounds|pins\\ conditional\\ raw\\ literals,\\ request\\ order\\ and\\ the\\ sole\\ header\\ control)$"
+       ],
+--- /Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-conditional-reads-draft/rebind-validation-preparation/source-preflight/execution-gate.example.json
++++ /Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-conditional-reads-draft/rebind-validation-preparation/source-diagnostic/execution-gate.example.json
+@@ -4,15 +4,15 @@
+   "finalHead": "1ba65f2f192cc84e44eb09ef89b9693ec6cdaf05",
+   "finalTree": "773614c5ebc6c97d90c4c629c7c7a02ed51bc2ef",
+   "rootAcceptance": {
+-    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-conditional-reads-draft/rebind-validation-preparation/source-preflight/root-release.json",
++    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-conditional-reads-draft/rebind-validation-preparation/source-diagnostic/root-release.json",
+     "sha256": null
+   },
+   "sourceBinding": {
+-    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-conditional-reads-draft/rebind-validation-preparation/source-preflight/reviewed-source.json",
++    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-conditional-reads-draft/rebind-validation-preparation/source-diagnostic/reviewed-source.json",
+     "sha256": "1095d0093a729c9138c22c6419da528fefbece42be5707dd16db1238e91d61ee"
+   },
+   "inputBinding": {
+-    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-conditional-reads-draft/rebind-validation-preparation/source-preflight/input-binding.json",
++    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-conditional-reads-draft/rebind-validation-preparation/source-diagnostic/input-binding.json",
+     "sha256": "823b3918014af84284ce7da93e1ab0ec313f8ebe0bf6837484d4e9ace4125177"
+   },
+   "approvedCommandIds": [],
+@@ -35,11 +35,11 @@
+     "json-schema-traverse": "1.0.0",
+     "require-from-string": "2.0.2"
+   },
+-  "note": "CLOSED dirty reviewed-source preflight only; finalHead/finalTree here identify actual reviewed base, not a final integrated candidate. No installed/build phase exists.",
++  "note": "CLOSED diagnostic source prefix on frozen native-reviewed dirty draft while external code review is pending; no build, installed, integration or publication authorization.",
+   "consumerInventorySha256": null,
+   "councilAccepted": false,
+   "authorizationRequirements": {
+-    "source": "rootAcceptance accepted, sourceValidationAuthorized, sourceCouncilAccepted, reviewedDirtySourceOnly true; exact 56 source-case prefix, no build or product children"
++    "source": "rootAcceptance accepted, sourceValidationAuthorized, nativeCodeReviewed, externalReviewPending, diagnosticOnly, reviewedDirtySourceOnly true; councilAccepted false; exact 56 source-case prefix only"
+   },
+   "servingSuccessorCommit": null
+ }

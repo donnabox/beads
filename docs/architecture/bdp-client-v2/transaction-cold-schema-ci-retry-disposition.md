@@ -1,0 +1,5 @@
+# PR119 unchanged retry disposition
+
+Root fully read native diagnosis297b09092b520c5ec97192019feb0d56191202e7c5d083e44fdd96ca6ea597bb and independently inspected final run/job conclusions, annotations and frozen clean source. Exact c555 attempt1 is cancelled at the existing15-minute deadline. Main suite passed9245 tests/172 files/one skip, but preflight step is cancelled despite its seven passing lines; smoke/Read skipped. All required gates therefore have not passed.
+
+One unchanged c555 retry is authorized. The new12 tests total1.862s of reported case time, whereas same-test median durations rise1.579x and setup takes52s longer than green4aa. These data support a throughput/headroom retry, not an asserted CPU cause or proof excluding all source effects. Preserve the original failure and actual synthetic checkout9d015ff. No source, job timeout, test, request or cohort budget changes. A second timeout requires fresh full-log diagnosis and reviewed CI headroom disposition, not another automatic retry. Merge remains gated on complete exact-head success and actual tree verification. No qualification/release follows.

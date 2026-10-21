@@ -1,0 +1,1 @@
+The council successor typecheck passed; its format check failed solely on the new exact-error assertion line wrapping. The source now applies the formatter-proposed three-line layout. Original failed packet remains intact. No other semantic or source change; validation-final is a distinct corrected-source run.

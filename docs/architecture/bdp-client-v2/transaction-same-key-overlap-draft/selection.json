@@ -1,0 +1,28 @@
+{
+  "path": "apps/bdptest/src/transactional-same-key-overlap-installed.test.ts",
+  "title": "preserves one allocated effect and receipt across same-key singleton and batch requests dispatched without awaiting",
+  "count": 1,
+  "selectedExecutions": 2,
+  "regex": "^preserves one allocated effect and receipt across same-key singleton and batch requests dispatched without awaiting$",
+  "sourceCallbacks": 0,
+  "executed": false,
+  "defaultMode": "positive",
+  "modeEnvironment": "BDP_TRANSACTIONAL_SAME_KEY_OVERLAP_MODE",
+  "outputEnvironment": "BDP_TRANSACTIONAL_SAME_KEY_OVERLAP_OUTPUT",
+  "cohorts": [
+    {
+      "name": "positive",
+      "mode": "positive",
+      "expectedHttp": 6,
+      "maximumHttp": 6,
+      "children": 1
+    },
+    {
+      "name": "second-key-distinct",
+      "mode": "second-key-distinct",
+      "expectedHttp": 2,
+      "maximumHttp": 6,
+      "children": 1
+    }
+  ]
+}

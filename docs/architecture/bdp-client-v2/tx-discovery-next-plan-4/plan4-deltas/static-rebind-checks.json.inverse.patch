@@ -1,0 +1,68 @@
+--- plan4/static-rebind-checks.json
++++ plan3/static-rebind-checks.json
+@@ -1,36 +1,35 @@
+ {
+-  "state": "STATIC exact plan4 document/data checks; no product/reviewer/helper execution",
+-  "actualReviewCount": 1,
+-  "actualSupervisedFinalization": "FAILED; CLI exit UNKNOWN; missing4 outputs not reconstructed",
+-  "rootDispositionSha256": "367b3bea6a4ccb21b0faec463e526cf8fc0d155c89a4855ff91bdbbf38ebf126",
+-  "all13FindingIdsPresent": true,
+-  "same679SourceMap": true,
+-  "sourceBasisByteIdentical": true,
+-  "ownedFutureFileCount": 3,
+-  "actualSourceSpecInputCount": 50,
+-  "positiveRequestPayloadsOrderStatusesAndCountsUnchanged": true,
++  "activeHead": "cce884ccea1db97cbc6fd7bff876d4d6091f9081",
++  "sourceFilesRehashed": 679,
++  "sourceCleanAndUnchanged": true,
++  "originCopyPairs": 97,
++  "allOriginsAndCopiesMatch": true,
++  "parentArtifactsReverified": 34,
++  "nativeIndexSha256": "f93e1fed24bf740744bddb48b6c56fa97869d4162aa9131575bf302ee4b7aa31",
++  "nativeArtifactsReverified": 4,
++  "sixWitnessContractsByteIdentical": {
++    "cold-input-contract.json": "7a62b0eca649f19316b7d4346db2d9cbcda0a281df480f30f1e93d9ff0730245",
++    "cold-positive-requests.json": "ee4001be667ed8851c1330028da5fa20893c060446ac34fb432a49b694b157de",
++    "source-callbacks.json": "329ccfe8cd8cae2f828a720297398bee89822cb184328a2bf6d5f89130518d33",
++    "installed-callbacks.json": "b1e57845d067d64304adaf0efefbb281019a21838ba61db9d59d850ba176876e",
++    "counterfactuals.json": "af575aacce1b68f9d780dead626924083a367e436b2036af323e500e2f353087",
++    "observation-contract.json": "8194b07f75a0dc3cfb32075bd89edd09a834adea596d0c13aff46466d272a4fc"
++  },
+   "sourceCallbacks": 21,
+-  "newDirectHandlerCalls": 96,
+-  "newSourceWireRequests": 14,
+-  "scopeMinimum": {
+-    "calls": 10,
+-    "entries": 16,
+-    "waits": 6,
+-    "clocks": 22,
+-    "assemblies": 2
+-  },
+-  "counterfactuals": 9,
+-  "counterfactualWire": 0,
++  "sourceDirectCalls": 94,
++  "sourceWireRequests": 14,
++  "coldRows": [
++    43,
++    28
++  ],
++  "directoryNames": 12,
+   "installedCallbacks": 11,
+   "installedScheduled": 190,
+-  "installedCompletedResponses": 187,
++  "installedResponses": 187,
+   "installedExpectedAborts": 3,
+-  "installedPublicExact": 186,
+-  "installedLocalRaw": 4,
+-  "headerBudget": 16384,
+-  "derivedWireCap": 163840,
+-  "old2sHelperByteUnchanged": true,
+-  "allOriginalDeadlinesAndRetryRulesPreserved": true,
+-  "rootAuthoringRuntimeLaunchFlagsFalse": true,
+-  "countsAreProspective": true
++  "allCountsProspective": true,
++  "discoveryObservedBodyByteIdentical": true,
++  "genuineDeltaInversePairsVerified": 7,
++  "productExecution": false,
++  "helperOrReviewerInvoked": false
+ }

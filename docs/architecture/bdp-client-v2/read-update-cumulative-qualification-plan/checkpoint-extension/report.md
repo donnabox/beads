@@ -1,0 +1,11 @@
+# Additive checkpoint extension proposal
+
+NOT applied or executed. Current checkpoint-ledger.py SHA789156385daf1d5f8c361bea3d9c4b25b30a03b7ac6c1276d2e08fc4fe2edee2; proposed SHA49fc978e5d9fbc2d65fcfa7936f68057a039f295a3ee3b38e04efa7c241fdef6; correction.patch SHAc6790c1d9c7fcf6504da5fe4aab44b6739d76817a1b5c39847facbc8445d0bbd. Exactly one additive block before existing ledger mutation; all existing copy rules, terminal guards, Git/push/coordination operations remain byte-identical. Python AST parsed candidate only; neither copier imported/run. Session guard passed before writing this external proposal.
+
+Explicit shallow UP allowlist copies plan/history,literal scenario+coverage, requests/control/workload/routes/measurements, nativeclosure/sourcepins. Root loose initialplan/native-review preserved. Review preparation/launch metadata copied while running, but stdout/stderr/exit/cleanup/source-after/head-after/terminal report/findings/dispositions only with real exit.json. No tmp, processes.jsonl, caches, node_modules, consumers, mirrors, source snapshots or larger redundant unlaunched prompts. No recursive copy. Every selected file rejects symlinks.
+
+MD/landing/inspection copied only when actual run.json andjob.json are terminal and agree runID/head. Explicit rawmetadata, job.log, capture records/stderr andoutcome allowlist; no CI mutation/query. Current snapshots show completed run38822874330/job116723389941, headc18c71202c90fa2558f34107ad342befabf750fe. Completion is not inferred from fileexistence alone; failedterminal evidence would also be retained.
+
+Large proposed-manifest3670431B and proposed-coverage718275B omitted. Both were independently reconstructed byte-for-byte from committed73fc source + the retained parsed literal row using the exact whitespace insertion/replacement recipe in reconstruction.json. Expected result hashes and parent/literal hashes retained; restore must verify them. The archived artifact-hashes manifest may reference intentionally omitted reconstructable artifacts; this is explicit omission, not a claim complete filecopy.
+
+Root must verify current copier still matches beforeSHA, inspect patch, then apply/run under its own release. This report/recipe are copied by explicit names; patch itself remains local and unapplied. Active Claude packet/source untouched.

@@ -1,0 +1,112 @@
+{
+  "actualOrderAThenBThenC": true,
+  "actualToolRecords": {
+    "A": [
+      {
+        "chunk_id": "af270d",
+        "original_token_count": 0,
+        "output": "",
+        "session_id": 82036,
+        "wall_time_seconds": 1.002029334
+      },
+      {
+        "chunk_id": "f5baaf",
+        "original_token_count": 0,
+        "output": "",
+        "session_id": 82036,
+        "wall_time_seconds": 5.002142667
+      },
+      {
+        "chunk_id": "76dada",
+        "original_token_count": 0,
+        "output": "",
+        "session_id": 82036,
+        "wall_time_seconds": 5.002439167
+      },
+      {
+        "chunk_id": "8d3acd",
+        "exit_code": 0,
+        "original_token_count": 0,
+        "output": "",
+        "wall_time_seconds": 4.582765417
+      }
+    ],
+    "B": [
+      {
+        "chunk_id": "f4d73c",
+        "exit_code": 0,
+        "original_token_count": 0,
+        "output": "",
+        "wall_time_seconds": 0.336671125
+      }
+    ],
+    "C": [
+      {
+        "chunk_id": "0f9dcf",
+        "exit_code": 0,
+        "original_token_count": 0,
+        "output": "",
+        "wall_time_seconds": 0.223668458
+      }
+    ]
+  },
+  "actualToolTerminals": [
+    {
+      "actualExit": 0,
+      "actualTerminalToolId": "8d3acd",
+      "baselineSha256": "1d74c111960dca035939002dbcdcfc23246631b986b9b633c2ce3e28d9e844b9",
+      "issuedSha256": "1d74c111960dca035939002dbcdcfc23246631b986b9b633c2ce3e28d9e844b9",
+      "normalizedResultCount": 4,
+      "phase": "A",
+      "sourceRelation": "EXACT_A"
+    },
+    {
+      "actualExit": 0,
+      "actualTerminalToolId": "f4d73c",
+      "baselineSha256": "f80985409b127734dddf9266f13e3c3507ccaac2c697368e2cfa6727a60c7801",
+      "issuedSha256": "66fb1f381e057d9f031a066ca05679b96a97717df3b8cd411b1ab5d079f6096a",
+      "normalizedResultCount": 1,
+      "phase": "B",
+      "sourceRelation": "ONE_COMPLETE_LF_PRECEDING_ACTUAL_TERMINAL_ID_ONLY_FULL_INVERSE"
+    },
+    {
+      "actualExit": 0,
+      "actualTerminalToolId": "0f9dcf",
+      "baselineSha256": "ad0f8e6ba5d4484c6beb6a6b9139483cd1eadbdb177c7362d42281edab1a8c54",
+      "issuedSha256": "82b39673bf61388a410e62ca57df70e6b6e4d7deef9fee95658cbdbcc888453d",
+      "normalizedResultCount": 1,
+      "phase": "C",
+      "sourceRelation": "ONE_COMPLETE_LF_PRECEDING_ACTUAL_TERMINAL_ID_ONLY_FULL_INVERSE"
+    }
+  ],
+  "allFourAResultsRetained": true,
+  "noActualReceiptWireInvented": true,
+  "normalizedRootObservationsSourceAttributedOnly": true,
+  "oneSessionNoRetry": true,
+  "sourceRelations": [
+    {
+      "actualSha256": "1d74c111960dca035939002dbcdcfc23246631b986b9b633c2ce3e28d9e844b9",
+      "baseline": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation5-consumer2-closed-control-source-1/cells/prepare-consumer.A.txt",
+      "baselineSha256": "1d74c111960dca035939002dbcdcfc23246631b986b9b633c2ce3e28d9e844b9",
+      "exactAOrOneWholeLfAssignment": true,
+      "fullInverseSentinelAndTypedRawExit0Preserved": true,
+      "phase": "A"
+    },
+    {
+      "actualSha256": "66fb1f381e057d9f031a066ca05679b96a97717df3b8cd411b1ab5d079f6096a",
+      "baseline": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation5-consumer2-closed-control-source-1/cells/prepare-consumer.B.txt",
+      "baselineSha256": "f80985409b127734dddf9266f13e3c3507ccaac2c697368e2cfa6727a60c7801",
+      "exactAOrOneWholeLfAssignment": true,
+      "fullInverseSentinelAndTypedRawExit0Preserved": true,
+      "phase": "B"
+    },
+    {
+      "actualSha256": "82b39673bf61388a410e62ca57df70e6b6e4d7deef9fee95658cbdbcc888453d",
+      "baseline": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation5-consumer2-closed-control-source-1/cells/prepare-consumer.C.txt",
+      "baselineSha256": "ad0f8e6ba5d4484c6beb6a6b9139483cd1eadbdb177c7362d42281edab1a8c54",
+      "exactAOrOneWholeLfAssignment": true,
+      "fullInverseSentinelAndTypedRawExit0Preserved": true,
+      "phase": "C"
+    }
+  ]
+}

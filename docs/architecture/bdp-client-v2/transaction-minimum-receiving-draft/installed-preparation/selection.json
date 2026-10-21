@@ -1,0 +1,60 @@
+{
+  "status": "PLANNED_NOT_EXECUTED",
+  "sourceBindingSha256": "b7082c68869b1cecd715ed8d6e0ef88c6ba064a2e698beddf02844ed4dc252fb",
+  "originalSelection": {
+    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-minimum-receiving-draft/selection.json",
+    "sha256": "fffb9c32d4e78dc5d4f9dde2b46a273e47ab0052749063a6012582eaa96901b2"
+  },
+  "cases": [
+    {
+      "file": "apps/bdptest/src/transactional-minimum-receiving-installed.test.ts",
+      "fullName": "rejects malformed read minimum tuples before observation while preserving receipt nondisclosure",
+      "http": 22,
+      "owners": 1,
+      "listeners": 1,
+      "directories": 1,
+      "readonlyInventoryHandles": 0,
+      "otherInventoryHandles": 0,
+      "productChildren": 1,
+      "details": "new witness; two writes yield actual pos2 receipt.next at default32 cap",
+      "group": "installed"
+    },
+    {
+      "file": "apps/bdptest/src/transactional-snapshot-installed.test.ts",
+      "fullName": "observes nonallocating creation decisions through the actual eight-handle capacity boundary",
+      "http": 39,
+      "owners": 3,
+      "listeners": 3,
+      "directories": 2,
+      "readonlyInventoryHandles": 0,
+      "otherInventoryHandles": 0,
+      "productChildren": 3,
+      "details": "two directories:10/1 then29/2 including reopen",
+      "group": "installed"
+    },
+    {
+      "file": "apps/bdptest/src/transactional-snapshot-installed.test.ts",
+      "fullName": "observes fresh Snapshot minima with exact current context and retained gaps over packed bytes",
+      "http": 31,
+      "owners": 2,
+      "listeners": 2,
+      "directories": 1,
+      "readonlyInventoryHandles": 0,
+      "otherInventoryHandles": 0,
+      "productChildren": 2,
+      "details": "one directory, reopen; existing fixed31 source assertion",
+      "group": "installed"
+    }
+  ],
+  "totals": {
+    "http": 92,
+    "owners": 6,
+    "listeners": 6,
+    "directories": 4,
+    "readonlyInventoryHandles": 0,
+    "otherInventoryHandles": 0,
+    "productChildren": 6,
+    "cases": 3
+  },
+  "countMeaning": "92 scheduled source-derived requests, six child lifetimes; new witness has explicit22 dispatch guard; old Snapshot39/31 are scheduled exact counts, not newly added transport quotas."
+}

@@ -1,0 +1,103 @@
+# Review: current-Resource minimum precedence and unproved-position waiting (plan @ 6f5e607)
+
+Source-reading only; no implementation, test, or timing evidence was supplied. Line numbers inside supplied excerpts that I derived by counting are marked `~`.
+
+---
+
+## Findings
+
+**1. The plan enumerates three of six minimum-capture boundaries; the two that actually gate the authority are unnamed, and `checkTransactionMinimum` has a seventh hard gate.**
+- Severity: **High** (the plan's own necessity argument fails as written)
+- Location: plan §"Why narrowly routed implementation is necessary" ("HTTP must use this narrow capture in both its early route selection and readRoute perform/alias callbacks") vs. `transaction-service.ts:317`, `transaction-read.ts:~222`, `transaction-read.ts:~141`, `transaction-consistency.ts:84-85`
+- Proof: a lexically valid unknown tuple is re-validated at six sites — `transaction-http.ts:564`, `:202`, `:223`, `transaction-service.ts:317` (`read.minimumFor(principal, snapshotTransactionMinimum(minimum))`), `transaction-read.ts:~222` (`const minimum = snapshotTransactionMinimum(supplied)`), and `transaction-read.ts:~141` (`snapshotTransactionMinimum(condition)` inside `checkSourceCondition`). `snapshotTransactionMinimum` rejects it at `position(minimumPosition) === undefined` (`transaction-consistency.ts:53`). `service.readAtMinimum` throws **synchronously at :317, before `run()` and therefore before `waitForTransactionMinimum`**, so the failure lands in `handle`'s final `else response = empty(500)` — a bare 500, not the intended 503. Even past all six, `checkTransactionMinimum` throws plain `Error("invalid owner minimum position")` when `required === undefined` (`transaction-consistency.ts:84-85`), again `empty(500)`.
+- Smallest fix: list all six capture sites plus the `checkTransactionMinimum` position guard in the owned-change set, and state that `readAtMinimum`'s declared `TransactionMinimum` parameter type (whose `minimumPosition` is a plain `string`) gives no compile-time warning for this — the rejection is runtime-only.
+
+**2. The lenient early capture at `transaction-http.ts:564` silently changes routes the plan promises not to broaden.**
+- Severity: **High**
+- Location: `transaction-http.ts:564-572`; `transaction-read.ts:27-60` (`isCurrentTransactionMinimumRead`); plan §"Exact behavior" ("Existing alias unknown-position redirect, Type/collection/incident-Link minimums … are not broadened")
+- Proof: today `:566` returns `developmentGap("minimum-position")` for *every* route before any classification. `malformedTransactionMinimumHeaders` already consumed partial/invalid tuples at `:394`, so `:566` fires **only** for the unknown-position case — it is exactly the ruling-B gate, and removing it opens three other routes:
+  - `collection` (beads/links/types, no continuation) and `bead-links` are admitted by `isCurrentTransactionMinimumRead` (`transaction-read.ts:49-58`), so they pass `:568-572` and reach `checkTransactionMinimum` → plain `Error` → bare `empty(500)` (regression from a labeled gap); or, if the unproved reason is *not* route-gated, they instead wait 1 s and return 503 — the broadening the plan forbids.
+  - Routes `isCurrentTransactionMinimumRead` rejects flip label from `minimum-position` to `minimum-position-route` at `:572`.
+  - Alias **success** with an unknown token: `minimumFor.resolveAlias` (`transaction-read.ts:~243-254`) has no route guard at all, so the condition always reaches `checkSourceCondition` → `checkTransactionMinimum` → bare 500, contradicting "preserve existing alias unknown success refusal."
+- Smallest fix: classify the route *before* capturing leniently (capture leniently only for alias resolution and Bead/Link resource/properties), re-emit the existing `developmentGap("minimum-position")` for every other route, and state explicitly what alias + **current**-context unknown-token success returns — the plan currently only decides the *foreign*-context alias case.
+
+**3. Missing-first eligibility omits `bead-links` (`view=links`), which the spec groups with the other two.**
+- Severity: **Medium-High**
+- Location: plan §"Why narrowly routed implementation is necessary" ("missing-first applies to Bead/Link Resource/properties and alias resolution") vs. `docs/specs/bdp.md:1447-1450`
+- Proof: the spec text the plan preserves says "ordinary `GET`, `view=properties`, and, for a Bead, `view=links` return the same `404`." `isCurrentTransactionMinimumRead` already admits `kind:"bead-links"`, so `GET beads/missing?view=links` with a mismatching tuple keeps producing `developmentGap("minimum-position-visibility")` while the other two spec-grouped reads become 404 — one ruling, split behavior.
+- Smallest fix: include `kind:"bead-links"` in missing-first eligibility only (not in ruling-B waiting), and add one `read.test` case plus one ledger row.
+
+**4. The hidden half of ruling A rests on an unverified refusal boundary.**
+- Severity: **Medium-High** (contingent)
+- Location: `authority-read.ts:977-991`; plan §"Why narrowly routed implementation is necessary" (cites only `transaction-read.ts:146-166`); ledger rows 15-23
+- Proof: `checkSourceCondition` is invoked only inside `if (!isRefusal(context) && condition !== undefined)` — i.e. only when `captureContext` did **not** refuse and the refusal came from `materialize`. The plan's entire gap citation is the `materialize` `resource-not-found` path. If a policy-hidden read refuses at `captureContext` instead, the minimum is never checked, the hidden 404 already holds on 6f5, rows 15-23 assert pre-existing behavior, and neither counterfactual control covers the hidden half.
+- Smallest fix: name which boundary emits a policy-hidden refusal (evidence needed: `captureContext`, `materialize`, `isRefusal` in `authority-read.ts`), and make rows 15-23 plus a hidden-specific counterfactual conditional on that answer rather than on the materialize-path citation.
+
+**5. The ledger never compares a missing 404 against a hidden 404 in the same authorization state, so ruling A's central guarantee is untested.**
+- Severity: **Medium-High**
+- Location: `ledger.json` rows 2-10 (pre-publication, missing targets) vs. rows 15-23 (post-publication, existing-but-hidden targets); `publicationAfterRequest: 14`
+- Proof: the operator rule is "Preserve missing/hidden indistinguishability," but every post-publication row targets `beads/a` / `links/self` / `alias/work`. No missing target is re-requested after publication, so no two rows are ever comparable under one authorization view; rows 2-7's oracle ("current context") and rows 15-20's ("current policy context") are not even asserted to be the same shape.
+- Smallest fix: add one post-publication `GET beads/missing` row and assert full equality (status, problem body, context headers) against the hidden `GET beads/a` 404 from row 15. Cost: +1 expected HTTP, no additional wait.
+
+**6. Control 1 (`restore-missing-gap`) can be a vacuous pass, and both controls accept any 500.**
+- Severity: **Medium**
+- Location: `ledger.json` `controls[0]`; `transaction-read.ts:~143-146`
+- Proof: in `checkSourceCondition`'s `resource-not-found` branch, a **satisfied** recognized tuple calls `checkTransactionMinimum` and `return`s — the old code yields an ordinary 404. The control is specified only as "one real seed POST then one selected GET"; if the GET's tuple is satisfied, the expected-404 assertion *passes* on old code and the control proves nothing, while `expectedActualStatus: 500` silently does not hold. Separately, `expectedActualStatus: 500` alone cannot distinguish the intended `developmentGap("minimum-position-visibility")` from an incidental `empty(500)` — and finding 1/2 show incidental bare 500s are the likely failure mode of a partial implementation.
+- Smallest fix: pin control 1's exact tuple (actual epoch/view plus a recognized position strictly ahead of the position observed in the seed POST receipt), and require both controls to assert the exact development-gap label (`minimum-position-visibility` for control 1, `minimum-position` for control 2), that the seed POST succeeded, and that no earlier assertion failed.
+
+**7. The installed ledger contains no `view=properties` row and no `view=links` row.**
+- Severity: **Medium**
+- Location: `ledger.json` rows 2-23 (all plain resource/alias targets); plan §"Meaningful finite validation" ("Bead/Link Resource and properties"); plan §"Proposed owned paths" (updates HTTP.test 1895-1920 "missing point/**properties** collisions")
+- Proof: properties are in both rulings' scope and in the gap assertions slated for update, yet no row exercises them. Properties also carry an entity tag via `read-http-routing.ts:56-59` (`observedResourceRevision`), so they are the only rows that would actually exercise the plan's claim that a 404/503 bypasses the success-only branch of `applyReadHttpSemantics` (`read-http.ts:13-37`) while an eligible 200 still negotiates 406 before 304/412.
+- Smallest fix: add `GET beads/missing?view=properties` → 404, `GET beads/a?view=properties` + unknown token → 503, one post-publication hidden properties 404, and (per finding 3) `GET beads/missing?view=links` → 404; recount `expectedHTTP`. Cost: +4 expected HTTP, +1 real 1 s wait (four total), still inside the stated 5 s request / 30 s cohort limits.
+
+**8. The spec amendment is additive where the existing normative text is a closed list.**
+- Severity: **Medium**
+- Location: `docs/specs/bdp.md:5826-5829`; plan §"Exact behavior" ("Spec change is two short local normative paragraphs following Transactional HTTP receiving")
+- Proof: the committed sentence reads "The authority then does one of three things: it returns a representation at that position or later, it waits or routes …, or it returns the normative foreign-view, cursor-expired, or catch-up-timeout problem." A 404 that *precedes* the minimum check is a fourth outcome; appending a paragraph leaves a direct contradiction in the same subsection. `:5823-5825` ("Lexical validity does not establish that a position identity is known or supported; existing semantic consistency decisions remain") also still defers the case ruling B now decides.
+- Smallest fix: scope the three-outcome sentence to reads that resolve to an existing visible Resource, and have `:5824-5825` point at the new unknown-token paragraph instead of leaving it open. Both are edits, not additions.
+
+**9. The new private wait reason has no stated HTTP mapping, and the existing `reason` union is load-bearing for an exhaustive one.**
+- Severity: **Medium**
+- Location: `transaction-consistency.ts:68-75`; `transaction-http.ts:605-614`; plan §"Within the same owner observation" ("Extend the loop only to that deliberately emitted private reason")
+- Proof: `handle`'s catch narrows `TransactionMinimumFailure` to `reason !== "behind"`, handles `catch-up-timeout` by ternary, and passes everything else to `readProblem(error.reason)`. Adding a reason to the union widens that `else` to a non-`ReadProblemCode` value. This is compile-time visible, so the live risk is an author adding a *wrong* branch; the plan says nothing about the mapping.
+- Smallest fix: emit a distinct private error class carrying `TransactionReadContext` rather than a new `reason` literal, extend only `waitForTransactionMinimum`'s retry predicate (`transaction-consistency.ts:124`), and state that the class is unreachable from `handle` because every HTTP path to `minimumFor` goes through `readAtMinimum`'s wait wrapper (`transaction-service.ts:327-330`, `:344-348`), whose capture-failure branches drop the `sourceCondition` entirely.
+
+**10. Reobservation cadence for the unproved reason is unbounded in attempt count and, unlike "behind", cannot be resolved by the interpreter.**
+- Severity: **Low-Medium**
+- Location: `transaction-consistency.ts:130-131` (`await wait(Math.min(5, deadline - current))`); plan §"Meaningful finite validation" ("assert repeated fresh owner observations")
+- Proof: `position()` (`transaction-consistency.ts:26-31`) is a pure function of the token, so an uninterpretable position stays uninterpretable; the only thing a later attempt can change is the resource becoming missing/hidden (which the plan does cover). At a 5 ms cadence over the default 1000 ms budget that is ~200 synchronous owner entries per request, turning a zero-owner 500 into ~200 owner entries that any authenticated client triggers with one header. Three such rows are also in the positive ledger.
+- Smallest fix: state an attempt bound or backoff for the unproved reason (the existing "behind" cadence need not change) and assert the bound in the seamed source test, so "repeated fresh owner observations" does not freeze ~200 no-op entries as the contract.
+
+**11. Three installed oracles assert properties the installed surface cannot establish.**
+- Severity: **Low-Medium**
+- Location: `ledger.json` rows 8-10, 21-23 ("404 **without wait**"), rows 11-13 ("actual bounded catch-up-timeout/after-delay"); plan ("do not use latency alone"; "installed checks use the real default 1000 ms minimum budget, never a source override")
+- Proof: (a) "without wait" is not observable black-box except by latency, which the plan forbids as sole evidence; the no-wait/one-observation property belongs to the seamed source tests. (b) `problem()` at `transaction-http.ts:105-113` spreads `readProblem("temporarily-unavailable")` and overrides only `code`/`status`/`retry`, so `type` and `code` disagree; an oracle that does not pin the literal `type` cannot distinguish a correct mapping from the spread artifact. (c) The plan forbids a budget override but the ledger has no precondition row verifying the child was launched without `minimumReads` (captured at service construction per the supplied boundary note).
+- Smallest fix: restate rows 8-10/21-23 as status/body/context equality only; freeze the literal `type` string in rows 11-13; add one startup assertion that the child's effective minimum budget is the 1000 ms default.
+
+**12. Post-publication rows 21-23 have no stated source for their "actual current" epoch/view, and the failure is silent.**
+- Severity: **Low**
+- Location: `ledger.json` rows 21-23 (`minimum: "unknown-current-context"`, after `publicationAfterRequest: 14`)
+- Proof: publication changes the authorization view, so a tuple reused from row 14's pre-publication context is foreign, not current. Because ruling A puts the 404 ahead of the epoch/view check, these rows would still return 404 and still pass — while no longer exercising the ruling-B precondition shape they exist to distinguish from rows 15-20.
+- Smallest fix: require rows 21-23 to derive epoch/view from an observed post-publication response (row 15's context headers) and assert that derivation, not a cached pre-publication value.
+
+**13. The ledger is one indivisible 26-row run although 17 rows and both controls need no auth integration.**
+- Severity: **Low-Medium**
+- Location: `ledger.json` (`authIntegrationPending: true`, `children: 1`); plan §"Auth overlap and integration constraint" ("If root chooses parallel isolated authoring, hold hidden installed validation")
+- Proof: rows 1-14 and 24-26 and both counterfactuals depend only on 6f5 behavior; rows 15-23 depend on the unmerged publication runtime. As a single run with one child and one publication point, nothing is releasable before auth lands, which contradicts the parallel-authoring option the plan itself offers.
+- Smallest fix: split into two ordered segments with separate counts and children (pre-auth: 1-14 + 24-26 + both controls; post-auth: hidden rows), and state which segment gates release.
+
+---
+
+## Essential missing context
+
+1. `authority-read.ts` `captureContext`, `materialize`, `isRefusal`, `finish` — (a) which boundary emits a policy-hidden refusal (gates finding 4 and all hidden rows); (b) whether a `resource-not-found` problem result carries `observation`, since both `transaction-read.ts` `checked()` and `transaction-http.ts:218-220`/`:239-241` guard on `"observation" in result` and every 404 oracle in the ledger asserts current context.
+2. `transaction-http.ts:493-563` — whether receipt, `view=events`, or changefeed targets fall through to the `:564` minimum capture. If they do, a lenient capture there broadens exactly the recognized-only callers the plan promises to leave unchanged.
+3. The `readProblem` table and `developmentGap` — status/`type`/`code` for `resource-not-found`, `cursor-expired`, `foreign-view`, `temporarily-unavailable`, and the gap response's status/label shape. Needed to freeze the 503 oracle (finding 11) and the control labels (finding 6).
+4. The actual auth-transition commit: the post-integration `captureReadAuthorization` shape and the runtime publication API. Until it exists, rows 15-23 and the hidden half of ruling A have no executable basis; the plan's own `authIntegrationPending: true` is the honest status.
+5. `requestFromUrl` output for `view=properties` and `view=links`, and whether it is invoked three times per request (`transaction-http.ts:570`, `read-http-routing.ts:39`) with identical results — assumed pure here, unverified.
+6. Existing test bodies at `read.test:936-958`, `:1410ff`, `:1470ff`, `:1520-1550` and `HTTP.test:1895-1920`, `:3020-3034`, `:3100-3120` — needed to confirm which assertions actually encode the `minimum-position` vs. `minimum-position-route` vs. `minimum-position-visibility` labels I claim would flip under finding 2.
+7. Whether `readAtMinimum` / `TransactionMinimum` / `snapshotTransactionMinimum` are re-exported from the package entry, which the plan's "no package export … is needed" claim depends on.
+8. The installed harness: IPC adapter, canonical Host, and the frozen seed bodies (`literalBodiesPending: true`) — without these, the row counts and the "full actual bodies compared in memory" oracle cannot be checked for feasibility.
+
+No implementation, test result, or timing measurement was supplied; every finding above is derived from the committed excerpts and the plan text alone, and findings 4 and 11(a) are explicitly contingent on items 1-2.

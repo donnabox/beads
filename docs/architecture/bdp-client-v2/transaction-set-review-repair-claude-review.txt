@@ -1,0 +1,50 @@
+## Verdict
+
+All five original findings are substantively repaired in `3964b18` against `eb4939b`. I found **no runtime regression**. One **Low** residual of original finding #5 remains (docs only).
+
+---
+
+## Finding — Low — S2a supersession list omits the two sections carrying the most prominent stale set-refusal claims
+
+**Exact location:** `docs/design/transaction-implementation-progress.md:19` (primary) and `:359` (secondary), versus the new supersession sentence at `:1517-1523`.
+
+**Concrete failure:** The closure supersedes exactly three named sections — *"Private direct receiving and admission composition"* (`:369`, holds `:390`), *"the first private HTTP increment"* (= `### Private actual HTTP service and atomic receipt delivery`, `:542`, holds `:578`/`:583`), and *"Private valid-set core, with serving admission still closed"* (`:718`, holds `:722`). The file's opening definitional section `## Executable boundary` (`:8`) is not named, so `:19` still reads as current:
+
+> "Set operations and alias batch members are refused before key lookup or admission. The private limits are 64 KiB input, 32 operations and 32 JSON container levels."
+
+That sentence is now false and sits in the same paragraph as the 64 KiB / 32-operation / 32-level bounds this repair preserves — the paragraph a reader consults to learn the current `transaction-batch.ts` boundary. Sets are admitted at `packages/server/src/transaction-batch.ts:149-171` and `:200-205`, and exposed as canonical targets at `packages/server/src/transaction-http.ts:61-62`. Likewise `## Integration and remaining work` (`:344`) is unnamed, so `:359` ("Remaining requirements include set operations; …") still lists set operations as remaining work. The closure's hedge — "Lists in **those** historical increments that identify all set operations as remaining work are historical" — is scoped to the three named sections and does not reach either.
+
+Those same two unnamed sections also still say "eight singleton request kinds" (`:11`) and "All eight singleton preparation paths" (`:353`), while `TransactionSingletonOperation` is now ten (`transaction-batch.ts:76`) and `TRANSACTION_HTTP_OPERATIONS` is twelve (`transaction-http.ts:52-65`). That staleness predates `3964b18` (it arrived with the S2a integration), but it lands in the same two sections, so one edit closes it.
+
+**Fix:** extend the existing sentence at `:1517-1519` only — add **Executable boundary** and **Integration and remaining work** to the named list, in the form already used (e.g. "…and the set-refusal, singleton-count and remaining-work statements in **Executable boundary** and **Integration and remaining work**"). No historical text or test evidence is rewritten; this is the same remedy already accepted for `:390`/`:722`.
+
+---
+
+## Original findings — disposition
+
+1. **Eager depth refusal preempting determinate shapes — repaired, and the nested parser timing was actually inspected, not just moved.** `losslessText(root)` is gone from the head of `prepareMixedTransaction`; `assertTransactionInputDepth(root)` now sits at `transaction-batch.ts:169`, after root closed-shape (`:144`), per-member `object()` (`:148`), the whole `prepareResourceBatch` pass (`:106-122`: `assertResourceOperation`, the `idempotencyKey` rejection, then the full RU sequence parse) and every `prepareSetShape` call (`:165`). Crucially the depth bound was also removed from the *synthetic* serializer rather than only reordered, so the nested `prepareResourceBatch` (`:122`) and `prepareSetShape` (`transaction-set.ts:117`) parses no longer raise the gap from inside. Only `validateSetSelector` stays after it — gap-vs-gap, no new Selector law.
+   I verified the depth-accepted input set is **exactly** preserved, not loosened. Old effective bound was `min` over three walks; the root walk always dominated (`change` at root depth 3 ⇒ 29 levels below it, versus 31 from the synthetic-root walk at depth 1 and 31 from `{operations}` at depth 3). New single walk gives the same 29. The singleton convention is likewise identical: old `losslessText(input, 2)` put input fields at 3; the synthetic wrapper puts member fields at 3. The pre-existing 27/28 parity test (`transaction-submission.test.ts:681`) and the new HTTP parity pair (`transaction-http.test.ts:1738-1771`) both pin it on both carriers.
+   The new discriminating cases are genuinely red-to-green: `transaction-http.test.ts:1662-1699` (root `extra`, member `extra`, member `idempotencyKey`, bad set patch op, and a malformed *later* member behind an over-depth set member) and `transaction-submission.test.ts:819-856` (`"path":false` under a 20 000-level value). Each asserted 400 was a bodyless 500 under `eb4939b`.
+
+2. **Pointer disclosure — repaired.** `:1485-1489` now names what is unmet (ordinary non-set Resource receipts still omit `problem.pointer` for a missing Property Change path or an inadmissible property number) and that the shared RU/evaluator mapping needs separate scope. No global pointer contract is claimed.
+
+3. **Duplicate singleton parse — repaired, and the route guarantee is still complete.** `prepareSetShape` now has exactly one call site (`transaction-batch.ts:165`). The raw-body defense reduces to `Object.hasOwn(input, "operation")` (`:203`), which is sufficient: with `operation` rejected, `{operation, ...input}` minus `operation` is byte-for-byte the same record the single pass validates, and `prepareSetShape`'s closed-field list rejects `name`/`idempotencyKey`/anything else. Spread and rest both use CreateDataProperty, so a raw `__proto__` key stays an own property and is rejected as an unknown field. The discriminating override case is `transaction-http.test.ts:1731-1737` — without the guard, `{"operation":"deleteWhere",…}` posted to `update-where` would execute a `deleteWhere` and return 200. Per-request cost drops from 4 lossless walks + 2 full RU parses to 2 walks + 1 parse; the 64 KiB cap still measures the submitted body (`:1773-1788`, exact 65536 accepted, +1 byte and the batch-wrapped equivalent both 413).
+
+4. **Sequence set refusal — pinned.** `transaction-http.test.ts:1701-1727` posts `updateWhere`/`deleteWhere` as a sequence member behind a valid `createBead` and asserts 400 `malformed-request`, no receipt row for either member key, 404 for the would-be Bead, and later success on the released key. Behavior routes through `prepareReadUpdateSequence` at `transaction-http.ts:312`, whose `sequenceRequest` union excludes the set roots.
+
+5. **Supersession notes — added for `:390`, `:583`, `:722`**; see the finding above for `:19`/`:359`.
+
+---
+
+## Underlying semantics verified
+
+- **Iterative serializer equivalence.** I hand-traced the LIFO ordering for arrays, objects, nesting, and empties: output is byte-identical to the retired recursive version. Number lexemes come from `JsonNumberLiteral.literal`, keys from `Object.entries` (unchanged, so no reordering), strings from `JSON.stringify` — and the `{value}` boxing correctly disambiguates separator strings from JSON string payloads (a bare `""` payload still serializes as `""`, not as a separator). `transaction-set.test.ts:1024-1030` pins all of it exactly: `1e+30`, `9007199254740993`, `-0`, an escaped quote, and `z` before `a` (insertion, not sorted). The implementation mirrors the already-proven `stringifyJsonValue` in `packages/protocol/src/json-values.ts:101-140`.
+- **Deep inputs cannot reach a recursive frame.** With depth now checked last, 20 000-level bodies traverse `decodeJsonDocument` (iterative, `json-admission.ts:98-193`), `mapLosslessJson` (iterative incl. freeze, `:231-291`), the new serializer, `parseReadUpdateShape` (iterative, `read-update-values.ts:160-181`), and `snapshotJsonValue` (frame-based, `json-values.ts:41-91`). I checked Ajv's exposure directly: the bundle's 158 `$defs` contain **no** reference cycle, and `properties` is `{type:"object",additionalProperties:true}` while `propertyChange.items[].value` is `true` — so validator recursion is bounded by schema depth, never by data depth. No path can turn a deep body into an unlabeled 500.
+- **Depth coverage is complete.** All four prepare entries assert it: batch/`prepareTransactionSetCore` → `:169`; set singleton → the wrapper at `:169`; non-set singleton → `:208`; sequence → `:238`. The retired per-serializer bound is dominated in every case, and `transactionInputText` has no caller outside these three internal sites (no public re-export — `transaction-set.ts` is absent from `index.ts` and the package `exports`).
+- **Byte / 32-depth / auth / no-key invariants.** 64 KiB measured on the submitted body before any synthetic wrapper; `prepareResourceBatch`'s synthetic byte check (`:107`) stays unreachable because re-serialization is never larger than the source. `submitTransaction` still runs key grammar (`:87`) and 401/403 (`:90-93`) **before** returning the gap (`:100`), and prepare touches no store — every new test asserts empty `receiptRows`/unchanged `store.inspect()` plus later success on the same key. Pre-existing `transaction-submission.test.ts:138` (unsupported Selector, 40-level body) and `transaction-http.test.ts:451-457`/`:869` still hold under the new order.
+- **No new Selector semantics.** `validateSetSelector` is untouched and still the last check; `TRANSACTION_SELECTOR_LIMITS` unchanged.
+- Tree clean, direct parent confirmed `eb4939b`, exactly the six files.
+
+## Scope not covered
+
+Read-only: no build, typecheck, lint, test, server, probe, or credential use — I cannot confirm the suite passes, only that the new assertions are well-formed against the fixture helpers and discriminating against `eb4939b`. I did not re-verify the author's packed/installed evidence or the accepted `c934` native oracle closure, and did not re-audit the unchanged set execution, evaluator, identity, or store paths beyond the ordering change's reach. Q1/Q2 negative-Selector admission and the candidate-enumeration bound remain open by design.

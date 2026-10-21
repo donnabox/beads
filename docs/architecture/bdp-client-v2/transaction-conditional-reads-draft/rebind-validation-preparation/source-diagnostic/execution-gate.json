@@ -1,0 +1,71 @@
+{
+  "released": true,
+  "session": "2026-10-08T20:26:35Z-81e5",
+  "finalHead": "1ba65f2f192cc84e44eb09ef89b9693ec6cdaf05",
+  "finalTree": "773614c5ebc6c97d90c4c629c7c7a02ed51bc2ef",
+  "rootAcceptance": {
+    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-conditional-reads-draft/rebind-validation-preparation/source-diagnostic/root-release.json",
+    "sha256": "6361923f852b538368824d0f039b7e60f3c54366c19ddaa0be709c762c6ee43f"
+  },
+  "sourceBinding": {
+    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-conditional-reads-draft/rebind-validation-preparation/source-diagnostic/reviewed-source.json",
+    "sha256": "1095d0093a729c9138c22c6419da528fefbece42be5707dd16db1238e91d61ee"
+  },
+  "inputBinding": {
+    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-conditional-reads-draft/rebind-validation-preparation/source-diagnostic/input-binding.json",
+    "sha256": "823b3918014af84284ce7da93e1ab0ec313f8ebe0bf6837484d4e9ace4125177"
+  },
+  "approvedCommandIds": [
+    "typecheck",
+    "format-check",
+    "lint",
+    "boundaries",
+    "cumulative-full",
+    "binding-source",
+    "receipt-first-page",
+    "app-static"
+  ],
+  "phaseRelease": {
+    "source": true
+  },
+  "preparationSha256": {
+    "adaptation.patch": "d8909879db3268b4a8d86908a0212e571b27f1efcb02c363b60801ea8bea13a3",
+    "commands.json": "3bd95f22807708ef117cc3d5321635d74764bc81857101a23486333924c8c510",
+    "execution-gate.example.json": "e790aec8220ac81f95c567b7cb3097c27d123d5722eb6550b46968d6796f23cb",
+    "gate.py": "37200fe2e1ea44fbc396dc9747b740cc87357179651ba661e9e8009bd70613cb",
+    "input-binding.json": "823b3918014af84284ce7da93e1ab0ec313f8ebe0bf6837484d4e9ace4125177",
+    "predecessor-index.json": "3c64de88123d54f63154f16651682d0135d631d1500ed5681e9b8cac459b5aad",
+    "report.md": "a2dd7ef19c39a9c68707fa928100df52ec06f2defaf1d6872e46081ff0ff3f83",
+    "reviewed-source.json": "1095d0093a729c9138c22c6419da528fefbece42be5707dd16db1238e91d61ee",
+    "root-release.example.json": "076fd4e11d364a5dcce45063dc794842c48bb0ad0fd33f5648afef6461a8d542",
+    "supervise.py": "52ba9a5d35913b7b0c84793248481b877198098ffa490e86707e330e74322251"
+  },
+  "guardSha256": "fd81ba029cd4e7c7e60623df89e8292af91141d311d9ce789ed19e2152375e84",
+  "toolHashes": {
+    "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node": "1ee75375e33b94fc34b3b19aede049e11dae90efb63b374dc96d6bdace70c4b8",
+    "/Users/dbox/.cache/node/corepack/v1/pnpm/11.20.0/bin/pnpm.cjs": "67b035e322203961795e8e34ca63a08c37a4386eda94107fb3d28f3246d882ad",
+    "/Users/dbox/repos/wt/vickie/vickie-transaction-conditional-reads/node_modules/vitest/vitest.mjs": "39db22f579acf5639bbb17a261408debbde03f4692c0c439e77e7f13aeba74d6",
+    "/Users/dbox/repos/wt/vickie/vickie-transaction-conditional-reads/node_modules/@biomejs/biome/bin/biome": "7ffb4d217e5ddefcc19ca6afe76bb982f5eb36c9a124448105195fbcfc84bd77",
+    "/opt/homebrew/opt/python@3.14/bin/python3.14": "2477b47fa3ae65b9574eb18a15edb364e96948eaa1875ad3f1c80d780efc9c12"
+  },
+  "sourceLockSha256": "4150d8821c96dbc2cfec0b2762ff76b58318079f65fa4f5c8858ef2dd61f8d6d",
+  "consumerLockSha256": null,
+  "installedProvenanceSha256": null,
+  "expectedProductionVersions": {
+    "@bdp/protocol": "0.0.0",
+    "@bdp/server": "0.0.0",
+    "ajv": "8.17.1",
+    "ajv-formats": "3.0.1",
+    "fast-deep-equal": "3.1.3",
+    "fast-uri": "3.1.5",
+    "json-schema-traverse": "1.0.0",
+    "require-from-string": "2.0.2"
+  },
+  "note": "CLOSED diagnostic source prefix on frozen native-reviewed dirty draft while external code review is pending; no build, installed, integration or publication authorization.",
+  "consumerInventorySha256": null,
+  "councilAccepted": false,
+  "authorizationRequirements": {
+    "source": "rootAcceptance accepted, sourceValidationAuthorized, nativeCodeReviewed, externalReviewPending, diagnosticOnly, reviewedDirtySourceOnly true; councilAccepted false; exact 56 source-case prefix only"
+  },
+  "servingSuccessorCommit": null
+}

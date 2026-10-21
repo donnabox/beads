@@ -1,0 +1,91 @@
+{
+  "status": "PROPOSED_NOT_EXECUTED",
+  "head": "fc47fbfb5f1055766e2f680df40a1d729d39638d",
+  "artifactRoot": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-comparison-fault-typing-repair/fresh-healthy-installed",
+  "commands": [
+    {
+      "name": "fresh-build",
+      "cwd": "/Users/dbox/repos/wt/vickie/vickie-comparison-fault-typing-repair",
+      "argv": [
+        "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+        "/Users/dbox/.cache/node/corepack/v1/pnpm/11.20.0/bin/pnpm.cjs",
+        "build"
+      ]
+    },
+    {
+      "name": "pack-protocol",
+      "cwd": "/Users/dbox/repos/wt/vickie/vickie-comparison-fault-typing-repair",
+      "argv": [
+        "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+        "/Users/dbox/.cache/node/corepack/v1/pnpm/11.20.0/bin/pnpm.cjs",
+        "--dir",
+        "/Users/dbox/repos/wt/vickie/vickie-comparison-fault-typing-repair/packages/protocol",
+        "pack",
+        "--pack-destination",
+        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-comparison-fault-typing-repair/fresh-healthy-installed/packages"
+      ]
+    },
+    {
+      "name": "pack-server",
+      "cwd": "/Users/dbox/repos/wt/vickie/vickie-comparison-fault-typing-repair",
+      "argv": [
+        "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+        "/Users/dbox/.cache/node/corepack/v1/pnpm/11.20.0/bin/pnpm.cjs",
+        "--dir",
+        "/Users/dbox/repos/wt/vickie/vickie-comparison-fault-typing-repair/packages/server",
+        "pack",
+        "--pack-destination",
+        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-comparison-fault-typing-repair/fresh-healthy-installed/packages"
+      ]
+    },
+    {
+      "name": "install-consumer",
+      "cwd": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-comparison-fault-typing-repair/fresh-healthy-installed/consumer",
+      "argv": [
+        "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+        "/Users/dbox/.cache/node/corepack/v1/pnpm/11.20.0/bin/pnpm.cjs",
+        "install",
+        "--offline",
+        "--no-frozen-lockfile",
+        "--prod"
+      ],
+      "note": "fresh consumer has no preexisting lock; save generated lock and actual package graph; no registry fallback"
+    },
+    {
+      "name": "healthy-installed14",
+      "cwd": "/Users/dbox/repos/wt/vickie/vickie-comparison-fault-typing-repair",
+      "argv": [
+        "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+        "/Users/dbox/.cache/node/corepack/v1/pnpm/11.20.0/bin/pnpm.cjs",
+        "exec",
+        "vitest",
+        "run",
+        "apps/bdptest/src/transactional-direct-refusal-installed.test.ts",
+        "-t",
+        "observes current context on installed direct refusals within14requests$",
+        "--maxWorkers=1",
+        "--reporter=verbose",
+        "--reporter=json",
+        "--outputFile=/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-comparison-fault-typing-repair/fresh-healthy-installed/installed.results.json"
+      ],
+      "env": {
+        "BDP_TRANSACTIONAL_INSTALLED_ENTRY": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-comparison-fault-typing-repair/fresh-healthy-installed/consumer/node_modules/@bdp/server/dist/transaction-installed-process.js",
+        "BDP_TRANSACTIONAL_SOURCE_COMMIT": "fc47fbfb5f1055766e2f680df40a1d729d39638d"
+      },
+      "important": "current source supervisor strips all BDP_ environment variables; extend a separately saved installed-only supervisor to allow exactly these two validated overrides before using this command, or use root existing installed supervisor. Never silently fall back to workspace dist."
+    }
+  ],
+  "plannedConsumerManifest": {
+    "name": "vickie-maintenance-fault-healthy-installed-consumer",
+    "version": "0.0.0",
+    "private": true,
+    "type": "module",
+    "dependencies": {
+      "@bdp/protocol": "file:/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-comparison-fault-typing-repair/fresh-healthy-installed/packages/bdp-protocol-0.0.0.tgz",
+      "@bdp/server": "file:/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-comparison-fault-typing-repair/fresh-healthy-installed/packages/bdp-server-0.0.0.tgz"
+    }
+  },
+  "supervision": "120s each command; pinned Node24.16.0 PATH; CI=true; new external paths must not preexist; preserve all command stdout/stderr/exit/elapsed/PID",
+  "tarNameGate": "Validate actual tar paths produced by pack equal the two expected names before writing consumer manifest; otherwise stop, no guessed alternate payload",
+  "processLimit": "one actual installed child in existing14request test, no extra startup/probe"
+}

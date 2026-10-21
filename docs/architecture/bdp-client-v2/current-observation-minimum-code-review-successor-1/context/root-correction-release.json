@@ -1,0 +1,36 @@
+{
+  "at": "2026-10-17T20:07:14.999080+00:00",
+  "scope": "Source-only genuine correction successor; no unchanged-target review retry",
+  "planSha256": "736bd71ce2dd404244e48b1a8595e110c1cfa98b509e18d0fd7d56d28059ea43",
+  "nativeAuditSha256": "282aeca71f8ecaf27e1b0605e10a89641b495f2bf2fd50f9ad7b1074573b83fe",
+  "originalSourceBindingSha256": "d81b271b04b78af8da81b1f85bc84c9d2b2ff1856979d1a92c8d79215165843a",
+  "originalTimeoutPreserved": true,
+  "originalReviewComplete": false,
+  "worktree": "/Users/dbox/repos/wt/vickie/vickie-current-observation-minimum",
+  "files": [
+    "packages/server/src/transaction-events.test.ts",
+    "packages/server/src/transaction-receipt-pages.test.ts",
+    "packages/server/src/transaction-service.test.ts",
+    "packages/server/src/transaction-http.test.ts",
+    "packages/server/src/transaction-read.ts",
+    "docs/design/transaction-implementation-progress.md"
+  ],
+  "dispositions": {
+    "N1": "accept exact12\u21928",
+    "P1": "prediction only; manual scoped layout, no formatter execution",
+    "P2": "accept synchronous D observation/closure, own cleanup transfer, one postclose probe",
+    "P3": "accept C assertion aggregation before report",
+    "P4": "accept compatibility attribution only",
+    "P5": "comment existing invariant, no admission change",
+    "P6": "defer optional B13; preserve12 and state combined-case coverage limitation",
+    "P7": "accept A actual mutation assertion",
+    "P8": "bounded localclose dedup/removal reporting; reject unbounded globalcleanup",
+    "P9": "append invalidowner precedence detail",
+    "P10": "independently verified E/F receipt parity, partial Claude item remains truncated"
+  },
+  "successorEvidence": "New full679source map/fullpatch/correction-only diff, schemas/workload Dprobe additions, original selection unchanged, original evidence immutable",
+  "productExecutionReleased": false,
+  "reviewLaunchReleased": false,
+  "commitPushReleased": false,
+  "next": "Native closure and separately bound full CODE review for changed successor before staged validation"
+}

@@ -1,0 +1,85 @@
+## Scope and standing
+
+Supplied-context review only: no tools, no filesystem/test/build/network access, nothing written. I verified the patch, the law excerpt, the four fence excerpts, the measurements and the plan against each other by recomputation from the supplied bytes. I could not inspect any file outside these excerpts, could not recompute the base/tree/diff SHAs, and did not execute anything. Native/root broader source inspection is separate. The earlier timed-out CLI run is inconclusive; this review is not approval and assumes no future execution success and no public qualification.
+
+---
+
+# Required findings
+
+### 1. No digest pin is updated anywhere, yet the RU catalog changed and two selected cases pin catalog-derived digests
+**Severity:** high (blocking for the proposed 12-case run)
+**Location:** `packages/conformance/src/transactional-cumulative.test.ts` — the `expect(actual.digests.catalogDigest).toBe(` line survives as trailing hunk context, so its literal (next line, outside every hunk) is unchanged; `packages/conformance/src/cumulative-artifact.test.ts` (selected case 7, "pins cumulative source digest map, catalog order and every coverage binding") and `packages/conformance/src/read-update-catalog.test.ts` (selected cases 2–4) are absent from the eleven-path set; `apps/bdptest/src/read-update-matrix.test.ts:1265` `exactConfigurationDigest = "3224c3…"` is likewise unchanged context.
+**Issue:** `catalog/read-update-v1.json` grew 1066 bytes and both the RU and TX constructed selections gained a row (`actual.catalog` is compared to `selected.catalog` immediately above the pinned digest). The accepted plan concedes this directly: "newly constructed selections naturally have a new catalog digest." Nothing in the patch, report or measurements recomputes or updates any digest. Critically, the measurement program was restricted to file/JSON hashing "with no product code loading" — which is exactly the class of digest (over a constructed cumulative selection) that cannot be recomputed that way, so the risk was structurally outside what was measured.
+**Impact:** if `digests.catalogDigest` covers the constructed cumulative catalog rather than the TX source file alone, selected case 6 fails on first execution; case 7's "source digest map" and "every coverage binding" almost certainly moves regardless of that reading, since both changed JSON files feed it. The "eleven-file / 12-case" framing would then be wrong, not merely incomplete.
+**Bounded fix:** before freeze, enumerate every pinned sha256/byte-length literal that transitively covers `catalog/read-update-v1.json`, `test-support/read-update-coverage-v1.json`, `development/read-update-coverage-v1.json`, or any constructed RU/TX selection catalog; recompute and update them in scope (stating the new path count and reason), or supply measured evidence that each pin is over an unchanged source file only.
+
+### 2. The fence/bound inventory is asserted complete but only covers one of the three changed JSON files
+**Severity:** medium-high
+**Location:** frozen report ("All source-authoring fences remain intact", "Only the two exceeded fences need amendment"); `EXACT MEASUREMENTS.fences[]`.
+**Issue:** all four enumerated fences gate `test-support/read-update-coverage-v1.json`. No size/node/growth analysis is supplied for the RU catalog (+1066) or the development coverage file (+370), for the two changed docs, or for any report-size bound inside the unselected installed cases whose `uncoveredIds` now carries one more ID in five places.
+**Impact:** an unenumerated fifth bound would surface as a "new unexpected fence" during execution, which the plan says must stop for disposition — i.e. the measured stop would have to be repeated after root already acted on the 14579/9778 proposals.
+**Bounded fix:** supply the search basis (grep of `BYTES_BASE`/`toBeLessThanOrEqual`/`toHaveLength` over source-byte reads) and an explicit statement that the catalog and development coverage files are ungated, with their before/after sizes against any bound found.
+
+### 3. Both proposed allowances are zero-residual while format validation is explicitly still pending
+**Severity:** medium
+**Location:** proposals 14336→14579 (base 698614) and 9728→9778 (base 703415); report: "Draft formatting was authored directly; format validation is still pending."
+**Issue:** 698614+14579 = 703415+9778 = 713193 = the exact current file size. Any byte the formatter, lint fix or a reason-wording correction adds invalidates both approved numbers simultaneously. The amendment also leaves two fences with identical effective ceilings, so they stop being independently informative and both must be re-amended for every future coverage byte — including the next slice's own planned RU/TX coverage bindings under this same ID.
+**Impact:** root may approve two numbers that are stale before first execution; a third amendment cycle on these comment-laden historical fences is guaranteed by the accepted follow-on scope.
+**Bounded fix:** run format/type/lint validation and re-measure *before* submitting the two numbers, or ask root to approve a single stated margin (and say plainly that the minimal proposal is the highest-churn option, not the most conservative one).
+
+### 4. Eight edited assertions have no verification path in the 12-case selection
+**Severity:** medium
+**Location:** `apps/bdptest/src/read-update-matrix.test.ts` (five `uncoveredIds` 96→97 at 1266/1359/2021/2442/2872 plus `omittedRequiredIds` 75→76 at 1284); `apps/bdptest/src/transactional-matrix.test.ts` (251, 256); `packages/conformance/development/README.md` prose.
+**Issue:** every one of those cases needs installed HTTP/children and is therefore excluded by the 0-HTTP/0-children selection; cases 1/6/8/12 cover only the `transactional-cumulative`, `development-read-update` and new `profile-contract-plan` edits. The report's "Existing source-count assertions and omission membership were updated in the planned paths" does not say these edits are unverified. Separately, 130/251/97/76/238/256 are all *derived* by file arithmetic — `loadProfileContractSelection` was never invoked, by design — so the assumption that the selector is purely catalog-driven with the existing 1+12 retirements is itself unobserved.
+**Impact:** a wrong fanout number first surfaces in exact-head CI or an installed run, after root has already dispositioned the slice.
+**Bounded fix:** state in the report exactly which edited assertions the selection does not reach; and add to new case 1 the statically derivable coverage closure (130 rows total, 97 with `wholeContract:false`, 76 `status:"omitted"`, confirmed against the artifact-set loader's actual derivation), which gives the fanout numbers HTTP-free executable credit.
+
+### 5. Novel single-member `category: "command-minimum-fields"` with no supplied category vocabulary
+**Severity:** medium
+**Location:** `packages/conformance/development/read-update-coverage-v1.json`, new row.
+**Issue:** no supplied context shows whether `category` is enum-validated or free text (the adjacent omitted row's category is not in the diff context). The chosen value is the row's own ID suffix, so it groups nothing — which undercuts the README's "explicitly omitted with a category and reason" and is the one place the differing development shape carries real information.
+**Impact:** if `category` is validated, selected case 12 fails; if not, the development inventory gains a category that cannot classify anything.
+**Bounded fix:** supply the existing category list from the other 23 omitted rows and reuse the one that already means "no diagnostic scenario exists in this harness", or state that `category` is unvalidated free text and justify a new single-member value.
+
+### 6. Single-line `selectedText` against a hard-wrapped spec paragraph, with no precedent supplied for the citation binder
+**Severity:** medium
+**Location:** `packages/conformance/catalog/read-update-v1.json` new `requirements[0].selectedText`; selected case 2 ("binds every citation to the current specification text").
+**Issue:** the cited paragraph is wrapped across `docs/specs/bdp.md:3581–3588`; the citation is one collapsed line. I confirmed the collapse is faithful (see verification below), but the new static test itself needs `spec.replace(/\s+/g, " ")` to find it — evidence that raw containment fails. No existing catalog row's `selectedText` is supplied as precedent for how the binder handles wrapping.
+**Impact:** if the binder matches verbatim rather than whitespace-normalized, case 2 fails and the citation shape is wrong for the whole catalog convention.
+**Bounded fix:** quote one existing catalog row whose `selectedText` spans a wrapped spec paragraph, or the binder's normalization code, as proof.
+
+### 7. "Absent from both RU shards" is hardcoded to two manifest paths; shard count is not established
+**Severity:** low-medium
+**Location:** new case in `packages/conformance/src/profile-contract-plan.test.ts`, the three-path loop.
+**Issue:** the only supplied evidence of shard cardinality is `progress.shards[1]!` in the RU matrix test, which proves ≥2, not exactly 2. The no-executable-credit claim is the load-bearing honesty claim of this slice, and it is proved against a hardcoded list.
+**Impact:** a third shard would leave the central claim unproved while the test still passes.
+**Bounded fix:** enumerate manifests from the existing shard index rather than literals, and assert the enumerated count.
+
+---
+
+# Optional findings
+
+8. **Conformance-table wording names none of the three fields.** Every adjacent supplied spec cell names concrete fields/codes in backticks (`request.bodyBytes`, `Cache-Control: private, no-store`, `Idempotency-Key`); the new cell says only "the three read-consistency fields". `BDP-Authorization-View` is also not naturally a read-consistency field, and "preserving … read minima" narrows the law's "It does not change conditions on reads" to minima. Fix: name the three fields and say "conditions on reads", changing catalog title and spec cell in lockstep.
+9. **Catalog title is byte-identical to the spec cell**, unlike the neighbouring `read-update.http.request-too-large` pair (terse title, fuller spec cell). Harmless, but divergent from the adjacent convention.
+10. **Planning-doc audit cell** says "independent of field presence or values", dropping *absence* and *completeness* from the law's explicit four-way independence.
+11. **Label conflict on the five extra TX rows:** the untouched in-code comment calls them "five optional catalog rows" while the measurements key and planning doc call them diagnostics; a reader reconciling 251→256 gets two incompatible explanations.
+12. **Change-record paragraph placement** sits after the forward-looking "After council closure…" paragraph rather than with the snapshot it amends.
+
+---
+
+# Verified by recomputation (no findings)
+
+- **Insertion byte arithmetic is exact.** Test-support row = 6+55+27+30+255+21+7 = **401** (compact incl. separator **351** = the stated 525167→525518 stringify delta). Development row = 6+55+27+44+210+21+7 = **370** (compact **320** = 35508→35828). Catalog row = **1066** (compact **955** = 69233→70188). Node deltas 6/6/10 match object+values counting.
+- **Fence arithmetic is exact.** 713193−648157 = 65036 ≤ 66560; −698614 = 14579 (excess 243); −703415 = 9778 (excess 50); residual base 703415+5546+3700 = 712661, delta 532 ≤ 1708. Only metadata closure and R closure are exceeded; the two unexceeded bounds and all three historical bases are untouched. The plan's "remaining bytes" (1925/158/351/1577) also check out, and 401 > 351 confirms R closure was measured, not assumed.
+- **Count closure is consistent.** 44−1+82+5 = 130; 251−13 = 238 unplanned; 251+5 = 256; 130 = 54 authored + 76 omitted = 33 whole + 97 uncovered; 82 = 58 bounded + 24 omitted. Read occurrences 0, RU 1, TX 1 — inherited once, Read excluded, no retirement.
+- **Clause fidelity.** Collapsing `bdp.md:3581–3588` on whitespace yields exactly the 571-character literal used in both the catalog `selectedText` and the new test; no normative prose was touched — the spec diff is the table row only.
+- **Old-evidence preservation is demonstrated, not just attested.** All three JSON files are pure insertions in the supplied diff (no `-` lines, predecessor trailing comma untouched), so byte-identical retention of the 81/129/81 prior objects follows from the diff itself.
+- **Fence node gates target the manifest, not coverage** — confirmed in all three supplied excerpts (4198/4199, 4584, 4964). The report's refusal to call coverage node counts an existing gate is correct.
+- **Scope.** The diff contains exactly eleven file sections, matching the supplied `git status`; no product code, selector, runner, fixture, manifest or shard-index path is touched; the test-support row carries `wholeContract:false` and the development row correctly omits the key.
+- The supplied `request-too-large` pair proves selected case 4 cannot be a title-equality check, so the new row's title choice does not endanger it.
+
+---
+
+# Limits
+
+Nothing here was executed, built, formatted or hashed by me. The two fence amendments are **proposed and unapplied**, so the frozen draft as given would fail selected cases 10 and 11 by design; that is disclosed and is not a defect, but it also means no fence was observed passing. All claims about files outside the supplied excerpts — `cumulative-artifact.test.ts`, `read-update-catalog.test.ts`, the artifact-set loader, `profile-contract-selection.ts`, the shard index, the three manifest paths referenced by the new case, the development inventory's `category` schema, the `#mutation-command-preconditions` heading itself (the excerpt starts at the paragraph), and the unchanged-artifact/old-row/selection side files — rest on the report and plan, not on inspection. The base commit, tree and the eleven-file diff SHA are unverifiable from here. Findings 1, 2, 5 and 6 are proof gaps whose resolution could turn out either way; none of them should be read as a prediction that execution will succeed once addressed.

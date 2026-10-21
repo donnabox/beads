@@ -1,0 +1,94 @@
+--- host_controls.py
++++ /dev/null
+@@ -1,91 +0,0 @@
+-"""Real OS zero-product peers against unchanged run.main.
+-The ONLY subject namespace adaptations are ORIGIN bound to the earlier harness
+-parent clock, sys.argv to the original installed-owned-set stage, and Popen argv
+-for exact original worker/publisher (plus intentionally blocked ps in P07).
+-No source algorithm is extracted, copied, or replaced. No product gate is read
+-or released by these peers. All actual process observations remain separate from
+-mocked unit receipts. Actual output can fail/UNKNOWN; no scripted acceptance.
+-"""
+-import hashlib,json,os,signal,subprocess,sys,time
+-from pathlib import Path
+-from contextlib import ExitStack
+-from unittest.mock import patch
+-
+-def run(case,R,P,attempt,selected):
+- scenarios={'P01':['blocked-preflight','pending-term'],'P03':['late-start'],'P05':['normal'],'P06':['blocked-final'],'P07':['blocked-census'],'P08':['leader-exit-before-created','leader-exit-after-created'],'P12':['publisher-block','publisher-fail']}
+- if case not in scenarios or selected not in scenarios[case]:raise RuntimeError('host-scenario-not-declared')
+- origin=json.loads((attempt/'started.json').read_bytes())['clockOrigin'];real_popen=subprocess.Popen;records=[]
+- for name in [selected]:
+-  # The same whole parent clock covers every subcase; no per-subcase reset.
+-  if time.monotonic()>=origin+130:raise RuntimeError('host-control-no-remaining-budget')
+-  directory=attempt/('host-'+name);directory.mkdir();popen_receipts=[];owned_handles=[];refusals=[];blocked_once=False;peer=Path(__file__).parent/'host_peer.py'
+-  def popen(argv,**kwargs):
+-   nonlocal blocked_once
+-   adapted=list(argv);role=None
+-   if len(argv)>=3 and argv[0]==sys.executable and argv[1]==str(P/'worker.py'):
+-    role='publish'if argv[2]=='publish'else'worker';fd=argv[3]if role=='publish'else argv[2]
+-    adapted=[sys.executable,'-I','-B',str(peer),role,fd,str(directory),name,str(origin)]
+-   elif argv==['/bin/ps','-axo','pid=,ppid=,pgid=,stat=,lstart=,comm=']and name=='blocked-census'and not blocked_once:
+-    blocked_once=True;role='census-probe';adapted=[sys.executable,'-I','-B',str(peer),'census-block']
+-   if len(popen_receipts)>=4096:raise RuntimeError('host-direct-handle-capacity')
+-   handle=real_popen(adapted,**kwargs)
+-   owned_handles.append(handle)
+-   # Register the direct handle immediately. No file I/O/inventory/ps/hash
+-   # intervenes before returning it to original run.main registration.
+-   receipt={'pid':handle.pid,'role':role or'actual-ps','at':time.monotonic()-origin,'originalArgv':list(argv),'effectiveArgv':adapted}
+-   popen_receipts.append({**receipt,'handle':handle})
+-   if role=='worker'and name=='pending-term':
+-    # run.main blocks TERM around Popen/registry/handler installation. A real
+-    # pending TERM is delivered only when the ORIGINAL main unmasks it.
+-    os.kill(os.getpid(),signal.SIGTERM)
+-   return handle
+-  old_trace=sys.gettrace()
+-  def trace(frame,event,arg):
+-   if event=='call'and frame.f_code.co_filename==R.__file__ and frame.f_code.co_name=='refuse'and len(refusals)<64:refusals.append({'reason':frame.f_locals.get('reason'),'atSeconds':time.monotonic()-origin})
+-   return trace
+-  with ExitStack()as stack:
+-   stack.enter_context(patch.object(R,'ORIGIN',origin));stack.enter_context(patch.object(R.sys,'argv',['run.py','final','installed-owned-set']));stack.enter_context(patch.object(R.subprocess,'Popen',popen))
+-   sys.settrace(trace)
+-   try:raw=R.main()
+-   finally:
+-    sys.settrace(old_trace)
+-    # Local error/creation evidence only AFTER the original watchdog returns.
+-    # An abrupt harness death can omit it; external root cleanup is unresolved.
+-    with (directory/'direct-creation.jsonl').open('x')as journal:
+-     for item in popen_receipts:journal.write(json.dumps({k:v for k,v in item.items()if k!='handle'})+'\n')
+-  pids=[v['pid']for v in popen_receipts];watch=directory/'watchdog.json';value=json.loads(watch.read_bytes())if watch.is_file()else None
+-  # Fresh whole process inventory is an actual bounded observation, not a fake
+-  # row table. No signal is sent by this auditor using historical numeric PIDs.
+-  census=real_popen(['/bin/ps','-axo','pid=,ppid=,pgid=,stat=,lstart=,comm='],stdout=subprocess.PIPE,stderr=subprocess.PIPE,start_new_session=True,env={**os.environ,'LC_ALL':'C','TZ':'UTC'})
+-  try:stdout,stderr=census.communicate(timeout=.2)
+-  except subprocess.TimeoutExpired:
+-   census.kill();stdout,stderr=census.communicate(timeout=.2);raise RuntimeError('host-final-census-timeout')
+-  (directory/'fresh-ps.log').write_bytes(stdout);(directory/'fresh-ps.stderr').write_bytes(stderr)
+-  if census.returncode!=0 or stderr:raise RuntimeError('host-final-census-failed')
+-  rows=[]
+-  for line in stdout.decode('utf-8','strict').splitlines():
+-   parts=line.split(None,9)
+-   if len(parts)!=10:raise RuntimeError('host-final-census-malformed')
+-   rows.append({'pid':int(parts[0]),'ppid':int(parts[1]),'pgid':int(parts[2]),'state':parts[3],'birth':' '.join(parts[4:9]),'comm':parts[9]})
+-  owned=set(pids)
+-  if value:owned.update(value['ownedPids'])
+-  live=[row for row in rows if row['pid']in owned or row['pgid']in {v['pid']for v in popen_receipts if v['role']in ['worker','publish']}]
+-  receipts=[{k:v for k,v in item.items()if k!='handle'}for item in popen_receipts]
+-  record={'scenario':name,'rawExit':raw,'watchdog':value,'watchdogMissing':value is None,'actualSubjectRefusalCalls':refusals,'directCreationReceipts':receipts,'remainingObservedOwnedRows':live,'elapsedSeconds':time.monotonic()-origin,'scope':'ACTUAL zero-product OS/Popen/pipe/watchdog control; role-check peer is not AJV','productCalls':0}
+-  records.append(record)
+-  if live:raise RuntimeError('host-control-ownership-unresolved')
+-  if value is None and name!='publisher-block':raise RuntimeError('host-control-publication-unresolved')
+-  if name=='normal':
+-   assert raw==0 and value['accepted']is True and value['ownershipUnknown']is False and not value['signalReceipts']
+-   pipe=json.loads((directory/'pipe-close.json').read_bytes());assert pipe['stdoutEofObserved']and pipe['stderrEofObserved']and pipe['exit']==0
+-  else:
+-   assert raw==1
+-   if name not in ['publisher-fail','publisher-block']:assert value['accepted']is False
+-   expected={'blocked-preflight':{'start-missing'},'pending-term':{'interrupted'},'late-start':{'start-missing','start-late'},'blocked-final':{'flush-incomplete'},'blocked-census':{'census-deadline'},'leader-exit-before-created':{'owned-worker-failure'},'leader-exit-after-created':{'owned-worker-failure'},'publisher-block':{'drain-incomplete'}}.get(name)
+-   if expected:assert refusals and refusals[0]['reason']in expected,(name,refusals[:1])
+-   # publisher-fail may preserve a tentative accepted=true watchdog record;
+-   # original run.main final raw1 and missing root acceptance defeat credit.
+-   if name in ['leader-exit-before-created','leader-exit-after-created']:
+-    member=json.loads((directory/'member.json').read_bytes());assert member['pid']in value['ownedPids'];assert any(s['signal']==int(signal.SIGKILL)for s in value['signalReceipts'])
+-   if name=='blocked-census':assert value['failure']=='census-deadline'
+- return {'scope':'actual owned zero-product process/clock observations','cases':records,'productCalls':0,'profileCredit':False,'syntheticAcceptance':False}

@@ -1,0 +1,41 @@
+{
+  "createdUtc": "2026-10-18T03:26:26.758617+00:00",
+  "auditClassification": "usable_success_terminal_with_preserved_supervision_failure_pending_root_disposition",
+  "actualReviewResultAvailable": true,
+  "terminalRecordValid": true,
+  "supervisedExecutionPassed": false,
+  "runnerCompletionVerified": false,
+  "actualCliExitCode": null,
+  "supervisorFailurePreserved": true,
+  "sourceInvarianceAccepted": true,
+  "packetAndReleaseIdentityAccepted": true,
+  "observedProcessClosureAccepted": true,
+  "approvalInferred": false,
+  "sourceAuthoringReleased": false,
+  "rootDispositionRequired": true,
+  "findings": [
+    {
+      "id": "T1",
+      "severity": "P2",
+      "location": "new-session-launch-supervision-2/supervise.py:126",
+      "summary": "Previously bound reviewer zombie comm likely triggers live-executable identity failure and forced wrapper termination during terminal finalization",
+      "disposition": "Preserve actual failure; future mechanics correction separately scoped; no retry requested"
+    }
+  ],
+  "reviewFindingCount": 6,
+  "deadlineWideningSuggestionAccepted": false,
+  "rawStreamSha256": "3ac44ed5f7b3db948b335bf80c07bf3285298a01b8d809c7ae0e4be51462dd1e",
+  "rawStreamRecords": 4500,
+  "rawStreamBytes": 2356504,
+  "terminalResultSha256": "3b6f2dd1a41a37d27f3108824fb03a0230e7efacf782b181dd6fe03c57e9e3fb",
+  "reviewTextSha256": "10332b579afe50fbf1cefe535292a931cadf7feefc008d7e6ff8dae463dbfc3a",
+  "independentSourceAfterSha256": "39d341fe1a4d4e6c685a7dc7de984490d92b63ae64eb4434586f9c8591978f13",
+  "auditDataSha256": "5144a2885f2ee026d1a8ce58d394fda01099e212b16327b5334ac297f029318e",
+  "reportSha256": "cd9f7dee2c2adb3e35930932febabda89592e705369977d006a00fc6c6d5e9f9",
+  "limitations": "Actual current PID/group absence; finite samples cannot prove absence of never-observed detached descendants or sockets. Outer ownershipUnknown remains historical failure and is not relabeled.",
+  "remainingRootDuties": [
+    "Preserve failed supervised execution and missing runner outputs honestly",
+    "Explicitly disposition six substantive findings and complete-terminal gate acceptance",
+    "Keep source/runtime authoring gates closed until explicit root acceptance; no automatic retry"
+  ]
+}

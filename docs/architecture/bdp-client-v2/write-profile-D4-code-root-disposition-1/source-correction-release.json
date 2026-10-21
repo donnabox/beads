@@ -1,0 +1,56 @@
+{
+  "kind": "ROOT source-only four-local-correction release",
+  "session": "2026-10-18T02:16:24Z-549f",
+  "worktree": "/Users/dbox/repos/wt/vickie/vickie-owned-set-retarget-minimum",
+  "branch": "codex/vickie-owned-set-retarget-minimum",
+  "head": "cce884ccea1db97cbc6fd7bff876d4d6091f9081",
+  "sourceFiles": 679,
+  "ownedPaths": [
+    "apps/bdptest/src/transactional-set-installed.test.ts"
+  ],
+  "sourceBeforeSha256": "65f754c089f8735b592e09e1475ac2435776d18bf1ac8321aa41118c87cb1b4c",
+  "actualBeforeBinaryPatchSha256": "bdd5eeaa452a00f5efade09cd4a6ec1436c4a85a2cf3ab62f5e6cb9cf8ad2a44",
+  "protectedOtherFiles": 678,
+  "dispositionSha256": "9d81c2aeffad1acecea90e5a2a90fe7794c7a32824375e89c5bd75f06c3f45b4",
+  "allowedCorrections": [
+    {
+      "id": "F-A",
+      "decision": "accepted",
+      "correction": "Add owned.pid !== null to clean() after owned !== undefined. Missing PID keeps closure unknown and directory retained. No new success path/report field."
+    },
+    {
+      "id": "F-B",
+      "decision": "accepted",
+      "correction": "Hash execFileSync git diff --binary HEAD raw Buffer, same single command/cwd/timeout2000/maxBuffer1048576. Existing UTF8 helper remains only for textual status/rev-parse. No extra Git capture/widening."
+    },
+    {
+      "id": "F-C.i",
+      "decision": "accepted",
+      "correction": "Separate pending.size!==0 => pending-unsettled from received-count!==28 => observation-failed; existing labels only."
+    },
+    {
+      "id": "F-C.ii",
+      "decision": "accepted",
+      "correction": "Move existing phase=launch-failed from immediately before launch(1) to immediately after metadata.nullReason=null. No new label/operation."
+    }
+  ],
+  "formatter": {
+    "maximumInvocations": 1,
+    "path": "/Users/dbox/repos/wt/vickie/vickie-event-admission-replay-minimum/node_modules/.pnpm/@biomejs+cli-darwin-arm64@2.5.7/node_modules/@biomejs/cli-darwin-arm64/biome",
+    "sha256": "f71fe80909d2f70f1e051320f5ba9dfd553bc5ef3bacef5cdee1b00ee96a285c",
+    "argv": [
+      "format",
+      "--write",
+      "apps/bdptest/src/transactional-set-installed.test.ts"
+    ]
+  },
+  "prohibited": [
+    "Git commands/mutation",
+    "compiler/check/tests/build/install/runtime",
+    "reviewers",
+    "gates/flags",
+    "other source edits"
+  ],
+  "requiredFreeze": "write-profile-D4-source-authoring-2, exact correction delta/cumulative diff/before-after copy/679map/678protected/findings map/optional formatter. Root Git inspection then independent full native corrected CODE required.",
+  "runtimeValidationReleased": false
+}

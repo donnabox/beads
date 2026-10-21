@@ -1,0 +1,55 @@
+{
+  "trackedFiles": 679,
+  "changedExactlySix": [
+    "apps/bdptest/src/transactional-changefeed-refusal-context-installed.test.ts",
+    "packages/server/src/transaction-changefeed.test.ts",
+    "packages/server/src/transaction-http.ts",
+    "packages/server/src/transaction-service.ts",
+    "packages/server/src/transaction-sse.test.ts",
+    "packages/server/src/transaction-store.ts"
+  ],
+  "other673ByteIdentical": true,
+  "originalPR167SourceRoot": "/Users/dbox/repos/wt/vickie/vickie-event-admission-replay-minimum",
+  "originalAll679CleanAndByteIdentical": true,
+  "installedHistoricalPrefix": {
+    "bytes": 33116,
+    "sha256": "7beb2ef803aa2bf7befb21bc5bb427d7a40d18428ee69d1425140fa33de5153b",
+    "byteIdentical": true
+  },
+  "sseHistoricalPrefix": {
+    "bytes": 33419,
+    "sha256": "7c8f45a2456c33a90b61b43388cf33d67784c47d0f63b95505f204b4ea1cd9b0",
+    "byteIdentical": true
+  },
+  "changefeedLegacyPrefix": {
+    "onlyAuthorizedTwo500RowsAndVectorAssertionsChanged": true,
+    "afterPrefixBytes": 69993,
+    "afterPrefixSha256": "add473081ad403765ab20403162c395e2fb764d6817c44f13058582409aa291a",
+    "allOtherOldSourceByteIdentical": true
+  },
+  "productionSeams": {
+    "packages/server/src/transaction-http.ts": {
+      "outsideSeamByteIdentical": true,
+      "beforeSeamSha256": "c5d203915d8acc85379f3980f6be3b8ef258424691cfb7325ca4eb88bcec1799",
+      "afterSeamSha256": "01855eea5201cef37a095385ebec0009c4ce9a0e47ce11619743c0f4472bcc3c",
+      "afterLine": 468
+    },
+    "packages/server/src/transaction-service.ts": {
+      "outsideSeamByteIdentical": true,
+      "beforeSeamSha256": "89a8321a284143f49ff01ce819fc71890285cbe8a2dbfd1e9b9dc36e2e251a1c",
+      "afterSeamSha256": "5d5345eedaa02e0db9acc85b08a63e8def6813e8c947a67b3f10f86ff3916315",
+      "afterLine": 466
+    },
+    "packages/server/src/transaction-store.ts": {
+      "outsideSeamByteIdentical": true,
+      "beforeSeamSha256": "9c9e571ac62364e91328d143d2790239cde020fbc7feb124d559557d68df8b97",
+      "afterSeamSha256": "975d4e0cce6c2f185bbb69d2c6a79cea67581fa661f64544f9523bc9e54de3ac",
+      "afterLine": 1848
+    }
+  },
+  "pumpRuntimeAndReadConfigurationPreserved": true,
+  "defaultAndOldTagBehaviorPreservation": "Static branch inspection; execution unperformed",
+  "BCFNoGlobalCleanup": "Appended local owner/service factory never registers legacy afterEach; unknown drain retains directory",
+  "noSchemaProtocolMainPublicAdmissionChanges": true,
+  "gitStatus": " M apps/bdptest/src/transactional-changefeed-refusal-context-installed.test.ts\n M packages/server/src/transaction-changefeed.test.ts\n M packages/server/src/transaction-http.ts\n M packages/server/src/transaction-service.ts\n M packages/server/src/transaction-sse.test.ts\n M packages/server/src/transaction-store.ts\n"
+}

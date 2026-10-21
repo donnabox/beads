@@ -1,0 +1,61 @@
+## Inputs and frozen state
+
+`installed-marker-claude-review.txt` read at `bdp-integration-logs/installed-marker-claude-review.txt`. `review.md` is **not** at `installed-marker-complete/review.md` relative to this checkout — read at `bdp-integration-logs/installed-marker-complete/review.md`.
+
+`HEAD` = `3bc73d3001c91efe0bb8a714173a2adeccbb8d9f`, base `8611ebaa2fc4ab92c589cd77ee7ca2c647bea8d8`, tree clean at entry and exit. Diff confirmed: 4 files, 41 insertions, 2 deletions. No file written or modified; no scratch probe created anywhere. Static inspection only — no test, build, or smoke executed by me.
+
+## Closure verification of the three prior marker-class findings
+
+All three are **closed**, each verified against source rather than against the claim.
+
+**Prior 1 — ordinary alias 307.** Marker added at `development-runtime.ts:434`. Pinned by `development-server.test.ts:306` on the *ordinary* receiver (`start()` passes no composition, so `composedRead` is undefined and the request reaches `:401`→`:431`). `review.md` item 1 is precise where the prior fix step was loose: the **installed** alias 307 does not come from `:431` at all. With `composedRead` set, `:381` returns on every method, so `:401-:438` is unreachable in the installed configuration; the installed 307 is the composed-read response whose marker is forced unconditionally at `:393`, and `installed-reference-observation.mjs:251` asserts it there. Both branches covered, by the right witness each.
+
+**Prior 2 — installed raw CONNECT 405.** Marker added at `:490`. Registered only under `if (transport !== undefined)` (`:487`), i.e. exclusively the installed candidate. Now covered by the bounded socket probe at `scripts/installed-reference-observation.mjs:301-323`, which runs in the emitted path (`installed-reference.test.ts:94`) and the packed path (`smoke-executables.mjs:979`) — both call the same `observeInstalledReference`. The prior doc overclaim ("Bodyless method refusals from the shared receiver now carry the same non-attesting marker", `update-implementation-progress.md:575-576`) is resolved the right way: the sentence is now true of the code rather than narrowed.
+
+**Prior 3 — prefixed artifact identity.** `installed-reference-observation.mjs:65` asserts `/^development-schema5-[a-f0-9]{64}$/`. Traced: `installed-reference-configuration.ts:201` `artifactIdentity: contracts.identity` → `installed-reference.ts:88` → `installed-reference-process.ts:54` → `development-contracts.ts:128`, which is a literal `` `development-schema5-${createHash("sha256")…digest("hex")}` ``. The prefix is constant regardless of descriptor input (the observation runs with `descriptors: []`), and `digest("hex")` is always 64 lowercase hex. The regex is exact and cannot pass a structured or differently-prefixed value — which is the defect the prior note described.
+
+## Independent enumeration of receiver-written response paths
+
+Every `writeHead` / raw `socket.end` in the candidate's listener, with marker provenance:
+
+| # | Site | Marker source | Verified |
+|---|---|---|---|
+| 1 | `:88` `json`/Problem | `:92` in the `writeHead` object | ✓ |
+| 2 | `:113` `empty` | `:116`; the `allow` spread at `:117` is a different key and cannot clobber it | ✓ |
+| 3 | `:143` `readJson` | `:131` on the pre-semantics `Headers` | ✓ — `applyReadHttpSemantics` copies via `new Headers(response.headers)` (`read-http.ts:16`) and only deletes `content-type`/`etag`/`content-length`, so 200/304/406/412/HEAD all retain it |
+| 4 | `:361` hosted schema | `response.setHeader` at `:335` | ✓ — `selected.headers` is built fresh at `:352` without the name, so `writeHead` cannot displace it |
+| 5 | `:397` composed Read | `:393`, set on `selected` *after* semantics | ✓ unconditional, all statuses |
+| 6 | `:431` ordinary alias 307 | `:434` | ✓ new |
+| 7 | `:490` raw CONNECT 405 | literal `X-Bdp-Development` | ✓ new |
+
+No eighth path exists. `index.ts:532` is the **public attesting** `createNodeHttpServer` CONNECT refusal and correctly carries no marker; `installed-reference.ts:77` confirms the candidate uses only `startDevelopmentReferenceRuntime`'s own `createServer`, never that transport. `transaction-runtime.ts` is the separate private Transactional receiver and already marks both of its sites (`:66` in `deliver`, `:169`). No test asserts an exact header set on any 307 (`development-discovery.test.ts:181-183`, `development-server.test.ts:305-307`), so the added header cannot regress an enumeration.
+
+## Findings
+
+**1 — MEDIUM · `packages/server/src/development-runtime.ts:487-492` · pre-existing, now on the claimed-complete and newly-exercised path**
+The CONNECT socket gets no `error` listener before `socket.end(...)`. Node's HTTP server removes its own `socketOnError` from the socket before emitting `connect`, so the socket is handed over with zero `error` listeners; the sibling implementation at `index.ts:530` guards exactly this with `socket.on("error", () => undefined)`, and `transaction-runtime.ts:186` additionally guards the socket type. `installed-reference-process.ts` installs no `uncaughtException`/`unhandledRejection` handler (grep over `packages/server/src`, `apps/bdptest/src`, `scripts` finds process-level handlers only inside test files).
+Impact: a loopback client that sends `CONNECT` and immediately resets makes the server-side write fail (ECONNRESET/EPIPE) with no listener, which is an uncaught exception that terminates the installed candidate process. Secondary and more likely in practice: the new probe's own `bound` and `deadline` branches (`installed-reference-observation.mjs:312`, `:305`) destroy the client socket *with* an error, so a slow run sends an RST toward that unguarded server socket — the resulting child exit surfaces as a failure at `:358-359` (`exit code 0` / empty `stderr`) rather than as the socket assertion that actually timed out. That is a flake channel with a misleading failure mode, introduced by this commit's own test.
+Fix: `server.on("connect", (_request, socket) => { socket.on("error", () => undefined); socket.end("HTTP/1.1 405 …\r\n\r\n", () => socket.destroy()); })` — matching `index.ts:530-534`. The completion callback also removes the lingering-socket question, since `server.closeAllConnections()` at `:502` does not reach a CONNECT-detached socket.
+
+**2 — LOW · `scripts/installed-reference-observation.mjs:320-322` · assertion strength**
+The three raw-header assertions use `/i`, which makes the header **values** case-insensitive, not just the names. Header field names are case-insensitive so `/i` is right for `X-Bdp-Development`, `Allow`, `Content-Length`; the values are not. Every other marker assertion in the repo is case-exact (`:251`, `:297`, `development-server.test.ts:306` all use `assert.equal`/`toBe` against `"non-attesting"`), and HTTP method tokens in `Allow` are case-sensitive.
+Impact: a regression to `Allow: get, head` or `X-Bdp-Development: Non-Attesting` passes the only observation that covers this path, in both emitted and packed runs. The marker's value is a byte literal in source (`:490`), so there is nothing to tolerate.
+Fix: assert the value exactly while leaving the name tolerant, e.g. `assert.ok(connect.includes("\r\nX-Bdp-Development: non-attesting\r\n"))` and `assert.ok(connect.includes("\r\nAllow: GET, HEAD\r\n"))`, or keep `assert.match` with the name alternated and the value anchored case-sensitively. `Content-Length: 0` is already pinned by the `:323` terminator assertion.
+
+**3 — LOW · `docs/design/update-implementation-progress.md:587-596` and `review.md:11` · scope precision of the "seven paths" claim**
+The enumeration is a **union across two configurations** of one shared module, not seven paths of one receiver, and "These statements cover responses written by the candidate receiver" reads as a single exhaustive list. Statically: the installed candidate reaches five of the seven (`:88`, `:113`, `:361`, `:397`, `:490`) — `:143` and `:431` are both unreachable there because `composedRead` is always populated (`:533-546`) and `:381` returns on every method; the ordinary development receiver reaches four (`:88`, `:113`, `:143`, `:431`) — it has no schema artifacts (`schemaArtifacts` is `[]` without `transport`, `:203-206`), no composed read from the public facade, and no `connect` listener at all, so an ordinary-server CONNECT is destroyed by Node with no response written.
+Impact: an auditor checking the claim against the installed candidate alone finds five marked paths and two listed paths they cannot reach, and may read the discrepancy as a gap. The substance is correct; only the framing is.
+Fix: one clause — "across the ordinary and installed configurations of the shared receiver, the response paths are …", naming which configuration reaches which. No code change.
+
+**4 — INFO · `packages/server/src/development-runtime.ts:335` vs `:116`**
+Re-confirmed statically and carried forward unchanged from the prior review: the schema-route 405 (`:342`) and the schema-route Problem (`:338`) both run after `setHeader` at `:335` and then `writeHead` the same name, which Node collapses to one header. `:335` must stay — it is the sole marker source for the schema 200/HEAD/304 at `:361`. Recorded only so a later reader does not re-derive the earlier, incorrect "drop `:335`" step.
+
+## Closure scope
+
+**CLOSED — the receiver-written marker class.** All seven `writeHead`/raw-socket response sites in the candidate's listener carry `x-bdp-development: non-attesting`, each traced to its own marker source rather than inherited from a helper that might be bypassed. The ordinary 307 is pinned by a direct unit assertion on the branch that actually emits it; the installed 307 is pinned on the composed branch that actually emits it; the raw CONNECT 405 is pinned by a bounded real-socket observation in both the emitted and packed runs. The artifact-identity assertion is exact against its construction site. No prior finding remains open.
+
+**No regression found.** The source delta is two constant headers on an already non-attesting receiver. No exact-header-set assertion exists on any affected response, no header-enumeration site is reachable from these paths, and no assertion anywhere in the diff is loosened — `:65` and the five new assertions are all strictly additive. Admission, schema, store, evaluator, export and payload-traversal surfaces are untouched; the public attesting transport (`index.ts:515`) is correctly not marked.
+
+**NOT closed, and explicitly outside this review.** Finding 1 is a robustness defect on the newly completed path, not a marker gap — it predates `8611eba` and this commit changed only the response string on that line. Node-generated transport errors (parser 400, `maxHeaderSize` 431, `requestTimeout` 408, unhandled-upgrade socket destruction) are outside scope per the prompt and are correctly disclaimed in the doc at `:595-596`. No broad rerun, no cross-candidate marker claim, and no future-framework assertion was attempted.
+
+**Not verified by me — root's independent inspection and packed smoke.** Every runtime claim in `review.md:13-15` is outside a static pass: the 45-test/3-file focused run, boundaries/format/lint, the 89-row Read evidence, `git diff --check`, and specifically the final packed `payloadIdentity` `38f711ed…e2b3c8`. The CONNECT probe is the one new assertion whose behavior I can only reason about statically; the packed smoke is where finding 1's flake channel would appear, so it is worth watching for a child non-zero exit or non-empty `stderr` at `installed-reference-observation.mjs:358-359` rather than only the socket assertions at `:319-323`.

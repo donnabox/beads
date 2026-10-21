@@ -1,0 +1,68 @@
+{
+  "session": "2026-10-18T02:16:24Z-549f",
+  "preparationIndexSha256": "334f9b28c431c2cc7ce5e901f998396670a5c849f8e9900f0a2e7cb791b2db21",
+  "preparedIndexedFiles": 199,
+  "preparedPhysicalFiles": 200,
+  "onlyPreparedExceptions": [
+    "claude-plan-review/binding.json",
+    "launch-supervision/control.json"
+  ],
+  "twoFlagsOnly": true,
+  "rootReleaseSha256": "dad1745d706821fe29a97fe87b46f8fad4600906f7714872e1e6a2bd76f9b299",
+  "releasedBindingSha256": "6fd2608cf6ccb13f1b7ba110f8d6bf3a707e47d1a5db51aea7829ee516f03728",
+  "releasedControlSha256": "3db3f70f1fd5945b1bca272cb33a3119e32a0b3931400b7cbcf5313c42a1cdb3",
+  "sourceBeforeAfterEqual": true,
+  "sourceBeforeAfterStatus": "clean in actual runner snapshots; no auditor Git query",
+  "currentSourceFilesRehashed": 679,
+  "contextPinsRehashed": 162,
+  "artifactToolPinsRehashed": 30,
+  "frozenInnerPinsChecked": 173,
+  "originCopiesChecked": 176,
+  "currentOriginsExact": 175,
+  "oneHistoricalOriginWithApprovedLaunchTransition": [
+    {
+      "origin": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-cumulative-evidence-carrier-plan-review-1/claude-plan-review/binding.json",
+      "copy": "launch-supervision/closed-binding.json",
+      "sha256": "4e0052b66c4a49b5191757687f33ec87a5cb030894b819b4adb40e64a9c412a8",
+      "bytes": 137084,
+      "role": "closed false-flag inner binding; exact bytes preserved for future two-flag-only release check"
+    }
+  ],
+  "historicalOriginExplanation": "closed-binding retains original false-flag bytes matching root binding.closed; its origin pathname now points at only-flag-released binding. This is the explicitly released exception, not drift.",
+  "contextOriginsChecked": 162,
+  "toolsRemeasured": {
+    "/opt/homebrew/bin/claude": {
+      "realpath": "/opt/homebrew/Caskroom/claude-code@latest/2.1.263/claude",
+      "sha256": "ef5d2909c8af49f31ab6d5487e90316777bc2fac170adfe8160716caa8aaf4f9"
+    },
+    "/opt/homebrew/opt/python@3.14/bin/python3.14": {
+      "realpath": "/opt/homebrew/Cellar/python@3.14/3.14.5/Frameworks/Python.framework/Versions/3.14/bin/python3.14",
+      "sha256": "2477b47fa3ae65b9574eb18a15edb364e96948eaa1875ad3f1c80d780efc9c12"
+    },
+    "/opt/homebrew/bin/git": {
+      "realpath": "/opt/homebrew/Cellar/git/2.54.0/bin/git",
+      "sha256": "9b19807c702934b8c51fd2da8c2d38053bd7328536546e5a47eb3914dcc7bcde"
+    },
+    "/usr/bin/git": {
+      "realpath": "/usr/bin/git",
+      "sha256": "b8763cf250e607a778bb4603cecb5b90338814d0a3dfcba0d57b1de242f610e9"
+    },
+    "/bin/ps": {
+      "realpath": "/bin/ps",
+      "sha256": "3bbba882e30d91fc4ff6e6844ca7c59fef4351b9a3fea35dca55708d6d487d1c"
+    },
+    "/opt/homebrew/bin/gh": {
+      "realpath": "/opt/homebrew/Cellar/gh/2.93.0/bin/gh",
+      "sha256": "282ec2bb5c6abb6cee50cbfa5f8c04ac2fd6b8523693970a5cab331b121f5430"
+    },
+    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-cumulative-evidence-carrier-plan-review-1/claude-plan-review/guarded-action-session-20261018-021624-549f.py": {
+      "realpath": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-cumulative-evidence-carrier-plan-review-1/claude-plan-review/guarded-action-session-20261018-021624-549f.py",
+      "sha256": "b2d467920638e68d3b007ba9daa432e971636245eca988bfb29d7a99d6e3fb30"
+    }
+  },
+  "supervisorSha256": "791e5a566561798aa3352f19b021e6db9beeddb033ae5725c7d031d51716f95c",
+  "strictReadOnlyDefaultArgv": true,
+  "durabilityLimit": "Root-described884d5801 is root Git provenance. Auditor verifies saved complete byte/release/preflight closure, no Git query.",
+  "sourceAuthoringReleased": false,
+  "productExecutionReleased": false
+}

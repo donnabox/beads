@@ -1,0 +1,98 @@
+{
+  "banks": {
+    "completedCensusProbes": {
+      "max": 2048,
+      "order": "original complete probe receipts through LAST census",
+      "row": [
+        "pid",
+        "pgid",
+        "rawExit",
+        "stdoutEof",
+        "stderrEof"
+      ]
+    },
+    "knownGroups": {
+      "entry": "scalar pgid",
+      "max": 256,
+      "order": "numeric PGID"
+    },
+    "observedIdentities": {
+      "max": 4096,
+      "order": "numeric PID",
+      "row": [
+        "pid",
+        "pgid"
+      ]
+    },
+    "registrations": {
+      "max": 4096,
+      "order": "original; duplicates preserved",
+      "row": [
+        "pid",
+        "parent",
+        "pgid",
+        "roleCode",
+        "authenticated",
+        "direct"
+      ]
+    }
+  },
+  "encoding": {
+    "allow_nan": false,
+    "ascii": true,
+    "bankOuterBracketsAndNewlineWithinFixedReserve": true,
+    "diagnosticMismatchMaxBytes": 32768,
+    "diagnosticSignalMaxBytes": 65536,
+    "finiteClockRepresentationMax": 32,
+    "positiveIdsDecimalMax": 10,
+    "registryJsonlMaxBytes": 600832,
+    "signedRawExitMax": 11,
+    "totalProspectiveThreeEventCeiling": 618240
+  },
+  "event": "outer-owner-final-registry",
+  "eventExactKeys": [
+    "event",
+    "schemaVersion",
+    "case",
+    "variant",
+    "session",
+    "ownerPid",
+    "limiterPid",
+    "clockOrigin",
+    "freezeAt",
+    "lastCensusAt",
+    "lastCensusGeneration",
+    "registrations",
+    "observedIdentities",
+    "knownGroups",
+    "completedCensusProbes",
+    "firstMismatch",
+    "firstSignalError",
+    "syntheticAcceptance",
+    "productCalls"
+  ],
+  "finality": "existing settled all-groups-closed/census-None branch; no further registry-bearing operations; original finally/local getpgrp/descriptor cleanup preserved",
+  "firstMismatch": "null if never captured; available exact closed projected data or unavailable fixed capacity-or-projection marker; no exception text",
+  "firstSignalError": "same states; class+errno and held actual anchor booleans/live list; never fabricated chosen anchor",
+  "futureAuditRequired": [
+    "complete strict3event parsing",
+    "actual owner/native/root exits and BOTH root EOF",
+    "original clocks/source/tool/nonce/authority checks",
+    "fresh absence union of ALL final recorded IDs/groups plus root records",
+    "all original specific oracles/residual/UNKNOWN/no-credit conditions"
+  ],
+  "order": [
+    "outer-owner-final-registry",
+    "outer-owner-terminal",
+    "native-limiter-terminal"
+  ],
+  "ownerIdentity": "derived from two held direct io/control registration parents, exact agreement required; no ownerPgid field",
+  "roleCodes": {
+    "control": 1,
+    "io": 0,
+    "nested-zero-product": 2
+  },
+  "scope": "PRIVATE TOOL CONTRACT NOT PRODUCT REPORT SCHEMA; unexecuted and no caller prepared",
+  "version": 1,
+  "write": "ONE nonblocking exact-count registry os.write; short/EAGAIN/error returns failure, no loop/retry/flush/grace"
+}

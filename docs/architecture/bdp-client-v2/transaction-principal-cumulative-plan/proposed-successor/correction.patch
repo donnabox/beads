@@ -1,0 +1,44 @@
+--- original/plan.md
++++ proposed-successor/plan.md
+@@ -36,7 +36,9 @@
+ 
+ Use existing HttpExchangeResponse/exact request metadata, createJsonSchemaValidator(schema) and onObserved callback, with no new exported API. Schema-validate the actual parsed body and independently assert literal/context/absence facts before storing any baseline. Source reference is standalone principal test551–674, not its historical report. Raw captures only authorize confined HTTP URLs; do not invent raw-body, revision, transaction or credential captures. ObservedAction output is not a postrun recovery path for raw JSON.
+ 
+-Implement a local principal wire observer with an independently authored literal seven-request ledger. Match exact URL, writeState complete, authored ordered header prefix and raw body digest/bytes. Compare names-only prefix before values; do not expose generated Authorization values in failure diffs. Generated suffix must not supply protocol bdp-* fields; existing runner exact serialization remains the full framing/default oracle. Postrun bind all seven observed request IDs, methods, URLs and credentialRefs to the literal ledger: HttpExchangeResponse alone has no invented method/ref field. Request bodies are at most150B; use per-hook request<=2048B/response<=8192B checks, the existing cross-carrier margins, without altering executor caps.
++Implement a local principal wire observer with an independently authored literal seven-request ledger. Match exact URL, writeState complete, authored ordered header prefix and raw body digest/bytes. Compare names-only prefix before values; do not expose generated Authorization values in failure diffs. Generated suffix must not supply protocol bdp-* fields; existing runner exact serialization remains the full framing/default oracle. The genuine ExactHttpExchangeRequest passed to the existing local exactExecution.execute wrapper has method,url,credentialRef but NO action id (http-executor23–34; runner1212–1224). Before unchanged target.target.execute(request) delegation, an optional module-local observer callback records only a bounded ordinal and a frozen copy of actual method,url,credentialRef; it copies no raw headers, credential values, signal, body or arbitrary request object. The original request object is delegated unchanged. All seven new requests require their explicit literal ref; undefined cannot be treated as observed A. Pair each captured dispatch in fixed sequential order with the genuine returned response/write-complete evidence, and finish requires exactly7 positive or2 control dispatches and responses. Do not treat an attempted dispatch as a completed exchange if execution fails. Once this row finishes, allow ordinary old dispatches but reject any later principal-role dispatch/key impersonation; do not consume shared old batch/collection/Event URLs as new principal evidence.
++
++ObservedExchange.request has actual id,method,url but NO credentialRef (runner1170–1179). After run, join that actual row's exchanges to the bounded dispatch list by fixed order and independently require actual id/method/url to equal the literal ledger and captured method/url. The final safe joined record's id is copied from ObservedExchange.request.id; its method/url are checked against both sources; its credentialRef comes solely from the pre-delegation dispatch projection; ordinal is local ordering evidence. Explicitly label this provenance in the supplemental output. Neither a nonexistent execute-input id nor a nonexistent report credentialRef may be fabricated. No global runner/API/export or HTTP/request change is necessary; only the existing observe helper and new local principal observer in the owned app test gain this callback/projection. Callback failures retain ordinary failure/cleanup accounting. The complete row still has zero captures. Request bodies are at most150B; use per-hook request<=2048B/response<=8192B checks, the existing cross-carrier margins, without altering executor caps.
+ 
+ For initial A and B validate mutationReceipt, exact current headers, all known literal fields and complete result tuple, then strict full receipt equality against the expected structure with only actual validated id, transaction, expiresAt, scopeEpoch, authorizationView and revision as dynamic values. Validate receipt URLs are canonical, confined to scope receipts/, contain one legal nonempty token and no credentials/query/fragment. Validate nonempty transaction/revision/epoch/view. Strict Resource equality is exactly id,type,revision,properties,metadata; no invented links, provenance or extra fields. Require same epoch, distinct actual receipt IDs and transaction IDs between A and B. Do not assert cross-principal view equality.
+ 
+--- original/ledger.json
++++ proposed-successor/ledger.json
+@@ -159,5 +159,27 @@
+   "claimEligible": false,
+   "wholeContract": false,
+   "actualAuthoringParent": null,
+-  "executionReleased": false
++  "executionReleased": false,
++  "dispatchProof": {
++    "seam": "existing local observe exactExecution.execute before unchanged target.target.execute(request)",
++    "safeActualInputFields": [
++      "method",
++      "url",
++      "credentialRef"
++    ],
++    "localField": "ordinal",
++    "inputHasActionId": false,
++    "observedExchangeHasCredentialRef": false,
++    "actualPostrunFields": [
++      "id",
++      "method",
++      "url"
++    ],
++    "join": "fixed row exchange order; actual id/method/url equal independent ledger, actual method/url equal captured dispatch; response writeState complete",
++    "positiveDispatches": 7,
++    "controlDispatches": 2,
++    "noTokensOrHeaders": true,
++    "noRequestMutation": true,
++    "noExportedApiChange": true
++  }
+ }

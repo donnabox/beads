@@ -1,0 +1,23 @@
+{
+  "argv": [
+    "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+    "/Users/dbox/repos/wt/vickie/vickie-snapshot-opaque-minimum/node_modules/@biomejs/biome/bin/biome",
+    "lint",
+    "--config-path=/Users/dbox/repos/wt/vickie/vickie-snapshot-opaque-minimum/biome.json",
+    "packages/server/src/transaction-http.ts",
+    "packages/server/src/transaction-service.ts",
+    "packages/server/src/transaction-store.ts",
+    "packages/server/src/transaction-snapshot.test.ts",
+    "packages/server/src/transaction-service.test.ts",
+    "packages/server/src/transaction-http.test.ts",
+    "apps/bdptest/src/transactional-snapshot-installed.test.ts"
+  ],
+  "cwd": "/Users/dbox/repos/wt/vickie/vickie-snapshot-opaque-minimum",
+  "head": "0f215c05678f507dd8a39ee08e288f0901710135",
+  "tree": "03371e5c2e1ea756e1501e0e26cccb7aa2f5d04e",
+  "sourceIdentity": "70caea36ed38911ce11f7376de8c45d005e3b638074163eca54bc14b1819b78b",
+  "rootGateSha256": "ce6b9ffdb39cd6c78a45f4d3549ef81f18b031bc3e55fc82d683cd9383846eb1",
+  "outerSeconds": 120,
+  "automaticRetries": 0,
+  "overrides": {}
+}

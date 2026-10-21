@@ -1,0 +1,279 @@
+# Readiness review — BDP combined head `b7eefc9` vs base `486ad62`
+
+Packet-bounded. Everything below is derived only from the inline diff, the four full files, and the three `docs/specs/bdp.md` ranges supplied. Where the packet cannot settle a question I say so rather than inferring.
+
+---
+
+## A. Proven defects (establishable from the supplied packet alone)
+
+### A1 — Medium — All nine reopen assertions are non-falsifiable
+**Where:** `apps/bdptest/test-support/development-process-actions.ts:70-80` together with `packages/conformance/development/read-update-manifest-v1.json`, actions `before-expiry`, `at-expiry`, `durable-reopen` (appended block, new-file line ≈12326+).
+
+**Issue:** The action throws before returning unless `exit.code === 0 && exit.signal === null` (lines 74-75), and it returns `elapsedMs` as a verbatim echo of the manifest's own `input.elapsedMs` (line 70 → line 80). The manifest then asserts exactly those three facts per reopen (`/elapsedMs`, `/priorExit/code === 0`, `/priorExit/signal === null`). Reaching the assertion phase already implies all three.
+
+**Trigger:** Any run. A dirty child exit (e.g. `process.exit(2)` from the rejected-close path, `development-process.ts:64`) surfaces as `executionError: {category: "execution"}`, never as an assertion failure.
+
+**Impact:** The lifecycle clean-exit/deadline evidence the packet claims is harness self-attestation, not manifest-observed. 9 of the scenario's assertions contribute to the advertised "302 HTTP/lifecycle actions" surface while being incapable of failing.
+
+**Fix/next step:** Pick one oracle. Either drop the `exit.code/signal` throw at lines 74-75 and let the manifest assertion be the gate (preferred — it makes the dirty-exit case a reported assertion failure), or keep the throw and stop presenting those three as observational assertions.
+
+---
+
+### A2 — Medium — A spec-`MAY` behavior is asserted with no manifest-level gate
+**Where:** manifest actions `forgotten-failure-executes`, `retained-new-delete`, `subject-deleted`, `durable-retained-delete`, `durable-subject-absent`; scenario `applicability.requires: []`.
+
+**Issue:** `docs/specs/bdp.md:3324-3326` is permissive: "after the interval the authority **MAY** forget it entirely." The manifest asserts the forgetting branch as a required observation (`status 200`, `outcome "deleted"`). The "permitted, not required" qualifier exists only in prose — `README.md` ("Failure forgetting is this store's permitted behavior, not a requirement…") and `read-update-coverage-v1.json` row `read-update.idempotency.expired-failure` `limits`. Nothing in the manifest or fixture carries it. `applicability.requires` is empty, while `setup.requires` is used elsewhere in this very scenario to gate on `development-retention-process`, so the gating mechanism exists and is not used here.
+
+**Trigger:** Running this manifest against any authority that retains failed dispositions past the interval (spec-compliant) → spurious fail on `forgotten-failure-executes` and every downstream action.
+
+**Impact:** A permitted-behavior observation is indistinguishable from a required one at the artifact level. Today this is contained by the `kind: diagnostic` lane, but the containment is prose, not structure.
+
+**Fix/next step:** Gate it — e.g. an `applicability.requires` entry naming the forgetting behavior, backed by a fixture capability, mirroring the `development-retention-process` pattern already in `read-update-fixture-v1.json`. If you prefer not to add a capability token, state the permission inside the manifest action rather than only in README/coverage.
+
+---
+
+### A3 — Medium — Unvalidated injected clock reaches a durable destructive operation
+**Where:** `packages/server/src/development-authority.ts:74-80`, `:105`.
+
+**Issue:** `openDevelopmentAuthority` is exported and accepts `clock?: () => number` with no validation, then calls `store.expire(clock())` at line 105. All validation lives in three *test-side* layers: the action (`development-process-actions.ts:55-69`), the harness (`development-process.ts:107-113`), and the child program (`development-process.ts:23-25`). A direct importer bypasses all of them.
+
+**Trigger:** `openDevelopmentAuthority({ …, clock: () => Number.MAX_SAFE_INTEGER })`, or any non-monotonic / NaN clock. Also reachable one layer out via `startDevelopmentReferenceRuntime(options, undefined, clock)` (`development-runtime.ts:134`, `:285`), which validates `directory`, `port` and `token` but not `clock`.
+
+**Impact:** A single open discards every retained disposition the configured 24 h minimum (`:86`, `:130-131`) would otherwise protect, in a durable store, before `assertReadUpdateRuntimeCompatibility` even runs (`:106-107`). Whether tombstones survive that call is not establishable here (see Q2).
+
+**Baseline framing:** the `scheduler` seam at `:72-73` is the identical pattern and is pre-existing, so the *seam* is baseline. What is new is that the injected value now drives a destructive durable write rather than only reordering turns. "Private" is currently a doc comment (`:74`), not an enforced constraint.
+
+**Fix/next step:** Validate at the authority layer before line 105 — safe integer, non-negative, and non-decreasing across calls within one authority — or keep the symbol off the package's public `exports` map and assert that in `scripts/smoke-executables.mjs` alongside the dist-file list.
+
+---
+
+### A4 — Medium — README claim "exports remain unchanged" is inaccurate as written
+**Where:** `packages/conformance/development/README.md`, section "Controlled retention observations": "The public development options and exports remain unchanged."
+
+**Issue:** The diff adds `clock?: () => number` to the **exported** `DevelopmentAuthorityOptions` (`development-authority.ts:74-75`) and a third parameter to the **exported** `startDevelopmentReferenceRuntime` (`development-runtime.ts:134`). Both are non-breaking (optional), but neither is unchanged. The narrower in-source comments are accurate — "no scheduler enters public configuration" / "absent in public development configuration" (`:72-75`) — because `DevelopmentServerOptions` (`development-runtime.ts:21-27`) genuinely did not change. The README generalizes from options to exports.
+
+**Trigger:** Reading the README as the honesty record for this slice.
+
+**Impact:** Overstates surface stability in a document that is the stated basis for "no public claim or source-evidence reseal." The claim is only true if those two symbols are outside the published surface, which this packet does not show (see Q8).
+
+**Fix/next step:** Narrow to what is true: public development *configuration* (`DevelopmentServerOptions`) is unchanged; the private composition seam gained an optional clock on two already-exported symbols.
+
+---
+
+### A5 — Low — README mis-describes the reopen schedule
+**Where:** README, "Controlled retention observations", first sentence: "reopens the same disposable store and Scope at the initial time, 24 hours minus one millisecond, exactly 24 hours, and one millisecond later."
+
+**Issue:** There is no reopen at elapsed 0. The initial time is the first *start* (`development-process-actions.ts:19-26`, `retentionElapsed = 0`); the reopens are at 86399999, 86400000, 86400001 only. Four times are listed for three reopens.
+
+**Impact:** Reads as four reopen observations where there are three. Minor, but it is a count distinction in a packet whose stated discipline is preserving count distinctions.
+
+**Fix/next step:** "…starts at the initial time and reopens at 24 hours minus one millisecond, exactly 24 hours, and one millisecond later."
+
+---
+
+### A6 — Low — Reopen actions return `scope` but never assert it
+**Where:** `development-process-actions.ts:80` returns `{ elapsedMs, scope: active.scope, priorExit: exit }`; the three reopen actions assert only `/elapsedMs` and `/priorExit/*`.
+
+**Issue:** Scope/port stability across three restarts is load-bearing for every client action that follows a reopen, yet it is unasserted. A changed Scope would surface as a transport failure inside the *next* client action (`retained-create`, `expired-create`, `durable-expired-create`), or as "process action requires its active disposable fixture Scope" (`:42-47`) on the next lifecycle action — both confusing relative to the actual cause.
+
+**Impact:** A diagnosable condition is reported as an unrelated failure. The existing `development.process.reopen` returns `{scope}` for the same reason; whether the pre-existing scenarios assert it is outside this packet.
+
+**Fix/next step:** Add a `/scope` equality assertion (or a capture-then-compare) to each reopen action.
+
+---
+
+### A7 — Low — Coverage binding omits the assertions that most directly evidence the cited clause
+**Where:** `read-update-coverage-v1.json`, row `read-update.idempotency.expired` (hunk `@@ -1063,27 +1063,57 @@`, new lines ≈1074-1090).
+
+**Issue:** The catalog requirement cited for this scenario includes "…and never reports the discarded outcome" (`read-update-catalog-v1.json`, new row; spec `3320-3322`). The manifest has exactly the right assertion for that clause — `no-outcome` on both `expired-create` and `durable-expired-create` — and the binding list includes `expired-create.no-resource` but **not** either `no-outcome`.
+
+**Impact:** The row's binding list under-states the evidence actually captured for the clause it cites. Also means a regression that returned a discarded `outcome` would fail the manifest but not be traceable through the coverage binding.
+
+**Fix/next step:** Add `expired-create.no-outcome` and `durable-expired-create.no-outcome` to the binding.
+
+---
+
+### A8 — Low — One bound assertion evidences an uncited rule
+**Where:** same row; binding entry `retained-create.properties`.
+
+**Issue:** `retained-create` asserting `properties == {value: 1}` while the live Resource is `{value: 2}` is evidence for the retained-**postimage** rule (`docs/specs/bdp.md:3274-3277`: "a retained `resource` record is the postimage at the time of the mutation, not a fresh read"), which the new catalog row does not cite among its four requirements. Its role in the `expired` row is as a pre-boundary baseline, which is defensible, but the binding reads as expiry evidence.
+
+**Fix/next step:** Either cite `3274-3277` in the catalog row, or note in the row's `limits` that the pre-boundary bindings establish the baseline rather than the expiry rule.
+
+---
+
+### A9 — Low — The retention plan does not exercise the emitted executable
+**Where:** `development-process-actions.ts:25` and `:77` both pass `controlled = true`; contrast `:132` (`development.process.reopen`) which passes `controlled = false`.
+
+**Issue:** Retention mode always runs the inline `controlledProgram` (`development-process.ts:18-68`), which imports `packages/server/dist/development-runtime.js` directly. The existing reopen path runs `apps/bdptest/dist/development-main.js`. README says "supplies a private fixed retention clock to the real emitted receiver" — true of the receiver *module*, not of the shipped entry point.
+
+**Impact:** Retention observations carry one less layer of emitted-artifact coverage than the pre-existing reopen observations. Not a regression (the existing reopen still covers the executable), but the README phrasing invites the stronger reading.
+
+**Fix/next step:** Say "the real emitted receiver module" and note the executable is covered only by the ordinary process plans.
+
+---
+
+### A10 — Low — Mixed clocks inside one authority
+**Where:** `development-authority.ts:132` (member `clock`) and `:105` (`store.expire(clock())`) use the injected clock; `:171` (`pagination.clock`) stays `Date.now`.
+
+**Issue:** Under the fixture epoch `1_700_000_000_000` (`development-process-actions.ts:12`, Nov 2023) the retention clock is ~3 years behind the pagination clock. Not reachable in this plan — the scenario issues only single-Resource GETs, no cursored list reads — so there is no present defect.
+
+**Impact:** Any future retention scenario touching pagination would compare a 2023 retention clock against real-time cursor TTL (`:149`, `:165`). `maintenanceIntervalMs: 60_000` (`:112`) is also unaffected by the injected clock, so under a constant clock live maintenance is effectively inert — consistent with the README's "Live periodic maintenance … remain outside this slice," and worth keeping stated that way.
+
+**Fix/next step:** No change required for this slice. If retention scenarios grow, decide explicitly whether `pagination.clock` follows the seam.
+
+---
+
+### A11 — Low — Two guards are unreachable through the harness and untested
+**Where:** `development-process.ts:107-113` (`!controlled` branch of the retention-epoch guard) and `:23-25` (child-side `invalid private retention epoch`).
+
+**Issue:** No test exercises `start(store, port, false, false, epoch)`. The child-side epoch check is strictly downstream of `start`'s own validation, so it cannot fire via any harness path. The eight-case negative matrix in `development-matrix.test.ts` covers the *action-level* validator only.
+
+**Impact:** Two of three validation layers are unexercised; the child-side one is dead defensively.
+
+**Fix/next step:** Add a direct unit assertion that `start` rejects `retentionEpoch` with `controlled: false`, or drop the now-redundant child-side check.
+
+---
+
+### A12 — Low — Failed reopen leaves the fixture self-reporting as healthy
+**Where:** `development-process-actions.ts:77-78`.
+
+**Issue:** `active` is reassigned only on success. If `processes.start` rejects (child crashes before `development.ready`, port rebind failure), `active` still references the already-exited old child and `retentionElapsed` still holds the prior value. The entry guard at `:42-47` keys on `active !== undefined && active.scope === execution.scope`, so a subsequent lifecycle action passes the guard and calls `child.send("close")` (`:71`) on a disconnected child.
+
+**Trigger:** Only if the runner continues past an `executionError` for the same scenario — not established here (runner absent, see Q6).
+
+**Fix/next step:** Set `active = undefined` before awaiting `processes.start` at `:77`.
+
+---
+
+### A13 — Low — 3× restart amplification without visible bounds
+**Where:** `development-process-actions.ts:71-77` × three reopen actions.
+
+**Issue:** Each reopen serially costs up to `wait("closed")` 5 s + `boundedExit` 5 s + the new child's `wait("development.ready")` 5 s (`development-process.ts:176-199`, `:234-248`), plus three extra Node spawns and SQLite opens. The pre-existing plans do one reopen; this does three. The per-test timeout and the `port` value (fixed vs 0) live in `development-matrix.test.ts` outside the supplied hunks.
+
+**Impact:** Flake surface and wall-clock cost scale 3×, including listen-rebind exposure on the same port.
+
+**Fix/next step:** Confirm the test timeout covers worst-case 3× restart; confirm `port` is a stable non-zero allocation (if it is 0, each reopen mints a new Scope and A6 becomes a correctness issue, not a diagnostics one).
+
+---
+
+## B. Questions needing omitted context (not defects)
+
+### Q1 — High for the readiness conclusion — No fresh run evidence in the packet
+Nothing in this packet demonstrates that the new scenario executes green against the real receiver: no test output, no conformance report, no catalog/manifest/fixture byte digests, no `expired`/`expired-failure` observation record. The two coverage rows flipped from `omitted` to `bounded-observation` are therefore *claims* within this packet, not evidence. Same for "28 diagnostic scenarios and 302 HTTP/lifecycle actions." **I cannot certify readiness on this packet.** Supply the run report and the hashed artifact bytes.
+
+### Q2 — Medium — "Normal startup expiry performs the changes" is unverifiable
+`packages/server/src/recovery-store.ts` (`openRecoveryStore`, `expire`) and `sequence-executor.ts` (`createSequenceLifecycle`, the claim/lookup/retention path, `maintenanceIntervalMs` behavior) are absent. The packet cannot distinguish (a) expiry performed by `store.expire(clock())` at open from (b) lazy expiry decided at presentation time via the member `clock`. Both produce the observed 410s. The README sentence and the coverage `limits` phrase "through real startup expiry" assert (a) specifically. Also unverifiable: whether `store.expire` preserves the compact tombstones required by `3311-3318` or merely happens to retain enough fingerprint state for the 409.
+
+### Q3 — Medium — Boundary inclusivity at exactly 86 400 000 ms
+`3303-3305` says "retains … for **at least** `retention.idempotency` after the member's terminal outcome." The manifest asserts expiry has already occurred at elapsed exactly `86400000` (`at-expiry` → `expired-create` 410). Whether `store.expire`'s comparison is `<=` or `<` is not in the packet, so the manifest may be encoding the implementation's boundary rather than a spec-derived one. The stricter reading ("must still be retained at exactly t0+interval, discard only after") would make `at-expiry` a one-tick-early discard. Supply the comparison, or move the boundary assertion to 86400001 and keep 86400000 as a retained observation.
+
+### Q4 — Medium — Clock consistency across persisted timestamps
+Does every persisted retention timestamp originate from the injected `clock`, or does `recovery-store` stamp rows with its own `Date.now`? If mixed, the scenario's outcomes would be coincidental rather than evidential. Partial reassurance: a mixed-clock store would make `retained-create` return 410 instead of 200 at `before-expiry`, so a green run argues for consistency — but there is no green run in the packet (Q1).
+
+### Q5 — Medium — Coverage `category` vocabulary
+`read-update.sequence.expired-creator-binding` moved `retention-recovery-control` → `unbound-receiver-observation`, and `read-update.idempotency.retention-minimum` moved → `profile-admission`. Only 4 of 81 rows are visible, and no category definition list is supplied. Are both admitted values with the meanings used here? `unbound-receiver-observation` in particular reads as "the observation is unbound" where the new reason text means "no plan exercises it yet."
+Positively: the recategorizations are substantively accurate within what the packet shows. The old reason ("live development HTTP surface does not expose those controls") became false once a private fixture exists, so rewriting it is correct, not relabeling; `restore` correctly keeps `retention-recovery-control` with a sharpened reason; and `retention-minimum`'s new reason checks out — `advertisedLimits: readLimits` (`development-authority.ts:146-150`) carries `page`/`selector`/`cursorTtlMilliseconds` and **no** `retention` group, so the endpoint genuinely advertises no `retention.idempotency` (`2681-2683`).
+
+### Q6 — Medium — Runner contract
+Absent: `ScenarioActionExecution`, the assertion evaluator (`json-pointer`, `exists: false`, `normalize: "scope-relative-url"`, `expectedRevisionBinding`), capability validation (`setup.requires ⊆ fixture.capabilities`), the `afterAction` control, scope rebinding after a lifecycle action returns `scope`, and report hashing. Three things in this plan depend on them: whether `before-expiry`'s returned `scope` rebinds the runner's base URL for `retained-create`; whether the new `development-retention-process` fixture capability is actually enforced; and whether a scenario halts on the first `executionError` (bears on A12).
+
+### Q7 — Low — Problem-table `retry` values
+`idempotency-expired` → `"never"`, `idempotency-conflict` → `"never"`, `resource-not-found` → `"after-state-change"` are asserted throughout the new scenario. The spec's Read+Update problem table is outside the three supplied ranges, so these cannot be checked against normative text here.
+
+### Q8 — Medium — Transactional boundary is unreviewable in this packet
+The only Transactional-adjacent change is `scripts/smoke-executables.mjs` adding `transaction-comparison.{d.ts,d.ts.map,js,js.map}` and `transaction-dependencies.{…}` to the packed-dist expectation list (ordering is alphabetically consistent with the surrounding `transaction-batch` / `transaction-sequence` entries). Absent: both modules' sources, every `package.json` `exports` map, and the surrounding smoke-script logic (exact-set vs subset assertion). Consequences:
+- The packet cannot establish that no new *public* Transactional surface ships, nor that `retention.idempotency` exclusion on Transactional discovery (`3785-3791`) is respected by whatever these modules do.
+- The change is an expectation list, which is not behavioral evidence; it *does* create a new failure mode (smoke fails if the build stops emitting either module).
+- Nothing here supports or contradicts the Read → Read+Update → Transactional cumulative boundary. **I am treating the private Transactional implementation as outside this packet and making no claim about it**, per the brief.
+What the packet *does* show on the boundary: the development authority imports nothing Transactional and advertises no `transaction` group or `retention.*` members, consistent with `readUpdateAdvertisedLimits` (`3770-3777`).
+
+### Q9 — Low — Count-bearing documents outside this packet
+The README now states 28 / 302 / 57 / 24. Any other document carrying the prior 27 / 280 / 55 / 26 is outside the packet and may be stale.
+
+### Q10 — Low — Retention-scenario cleanup path
+The `development-matrix.test.ts` diff shows only the `prepare` dispatch (hunk at line ~184). The cleanup/dispose half of `runDevelopmentMatrix` is unread, yet five new tests assert `cleanupError` is `undefined`. The inference that retention scenarios reuse the same `processes.close()` path (`development-process-actions.ts:27-40`) is reasonable but unverified.
+
+---
+
+## C. Checks requested that came back clean on this packet
+
+Stated plainly, not as praise — these are the items the brief named, with the packet-bounded result.
+
+- **No weakening of production 24 h defaults.** `day = 86_400_000` (`development-authority.ts:35`), `openRecoveryStore({ minimumRetentionMs: day })` (`:86`), and member `retentionMs: day, minimumRetentionMs: day` (`:130-131`) are untouched by the diff. The only edits are `Date.now()` → `clock()` at `:105` and `clock: Date.now` → `clock: clock` at `:132`, both exactly equivalent when `options.clock` is absent (`:80`). The fixture compresses wall-clock time; it does not shorten the configured interval. Caveat: `minimumRetentionMs` is an authority-clock constraint, so injecting a clock means it is no longer a *wall-clock* guarantee — contained here only because the endpoint is non-attesting and advertises nothing (Q5), with no enforcement of that containment (A3).
+- **Durable write ownership across reopen.** Single-owner is correctly serialized: `server.close()` awaits `closeListener()` → pending requests → `authority?.close()` (`development-runtime.ts:294-304`), the `closed` message is emitted only after that resolves (`development-process.ts:59-63`), and the action additionally awaits full process exit before the next `start` (`development-process-actions.ts:72-77`). No window where two processes hold the SQLite store.
+- **Disposable retention fixture.** Per-scenario store directory, `create: true` on first start and `false` on every reopen, fresh temp support dir per start with `config.json` at mode `0o600` (`development-process.ts:114-118`), all dirs removed in `close()` (`:95-98`).
+- **Negative-control validation.** The eight-case matrix maps cleanly onto `development-process-actions.ts:55-69`: `null` / `{}` / `[]` / string `elapsedMs` / `-1` / `0.5` / `604800001` (> `7 * 86_400_000`) / extra key. Validation precedes any child restart, so a refusal leaves the fixture intact — consistent with the `executionError` + no-`cleanupError` assertions. Backward time is caught by `input.elapsedMs < retentionElapsed` (`:64`) against the value set at `:78`. Cross-mode refusal works both ways: `:50-51` blocks ordinary controls in retention mode, and `retentionElapsed === undefined` at `:56` blocks the reopen control in ordinary mode.
+- **Abort cleanup.** Both abort checks (`:76`, `:79`) leave a cleanable state — at `:76` the old child has exited and `processes.close()` skips the kill and awaits the recorded exit (`development-process.ts:90-93`); at `:79` the new child is live and gets killed. No leaked child on either path.
+- **Count arithmetic.** 27 + 1 = 28 scenarios. 280 + 22 = 302 actions (I counted the appended scenario's actions: `create`, `advance-live-state`, `failed-delete`, `make-subject-live`, `before-expiry`, `retained-create`, `retained-failure`, `subject-still-live`, `kept-still-current`, `at-expiry`, `expired-create`, `changed-expired-key`, `kept-revision-unchanged`, `forgotten-failure-executes`, `subject-deleted`, `retained-new-delete`, `durable-reopen`, `durable-expired-create`, `durable-expired-conflict`, `durable-retained-delete`, `durable-subject-absent`, `durable-kept-state` = 22). 55 + 2 = 57 bounded; 26 − 2 = 24 omitted; 57 + 24 = 81 unchanged.
+- **Binding integrity.** All 16 `scenario.action.assertion` references in the two newly-bounded coverage rows resolve to assertion ids that exist in the appended manifest scenario. No dangling references.
+- **Catalog quote fidelity.** All four `selectedText` values match the supplied spec range (`3320-3323`, `3324-3326`, `3311-3313`) and `anchor: "#outcome-retention"` matches the `#### Outcome retention` heading at `3301`. The fourth quote truncates at "compact tombstone", before the allocated-identity enumeration — which is the honest choice, since the scenario creates with an explicit `id` (`beads/kept`) and never observes an authority-allocated identity.
+- **Non-renewal claim is genuinely evidenced.** `retained-create` is presented at elapsed 86399999, and `expired-create` still expects 410 at 86400000. Had presentation renewed the interval, the key would be 1 ms old and return 200. The README's "Before-boundary retries do not renew the expiry interval" is supported by the plan's structure.
+- **Tombstone-fingerprint durability is genuinely evidenced.** `changed-expired-key` (409) is presented between the two same-identity presentations (`expired-create` 410 at `at-expiry`, `durable-expired-create` 410 after `durable-reopen`), so the 409 demonstrably does not overwrite the retained fingerprint — matching `3261-3263` ("the retained disposition is unchanged").
+- **Retained-vs-expired distinction is kept straight.** `durable-retained-delete` returns `200 deleted` because the new delete disposition is 1 ms old at `durable-reopen` (created at epoch + 86400000, observed at epoch + 86400001) — a live retained disposition, not a tombstone. The coverage `limits` correctly claim only the *creation* success tombstone as observed.
+- **No historical relabeling detected.** The README count edits are current-state; the three omitted-row reason rewrites describe present rationale, not past status; `read-update.sequence.retained-failure` is left at its existing `bounded-observation` and is *not* re-bound to this singleton scenario, preserving the singleton/sequence distinction.
+- **Write-profile and public-claim status.** Nothing in the packet enables a write-profile conformance claim, changes `kind: diagnostic`, or reseals source evidence. The `development.read-update.*` ID convention and the "development-only and non-attesting" framing are intact.
+
+---
+
+## D. Baseline vs. new regression
+
+Explicitly separated, since the brief asks:
+
+- **Baseline, amplified not introduced:** the private composition seam pattern (`scheduler` at `development-authority.ts:72-73` predates `clock`); `store.expire` at open and its position before `assertReadUpdateRuntimeCompatibility` (`:105-107`); listen-rebind on a reopened fixed port (pre-existing `development.process.reopen`, `:132`); `prepare` not resetting `submission`/`delivery`/`original`/`controller` (`:19-26` — unreachable in retention mode because `:50-51` refuses those controls).
+- **New in this packet:** A1, A2, A4, A5, A6, A7, A8, A9, A11, A12. A3 is a new *consequence* of a baseline pattern (first time an injected value drives a destructive durable write). A10 and A13 are new exposures of baseline shapes.
+- **Cannot be classified from this excerpt:** anything depending on `recovery-store.ts`, `sequence-executor.ts`, the conformance runner, or the unread 77 coverage rows / 27 manifest scenarios — i.e. Q2, Q3, Q4, Q5, Q6.
+
+---
+
+## E. Known bounded exclusions relevant to this packet
+
+Present and, as far as the packet shows, consistently disclosed across README prose, coverage `limits`, and omitted-row reasons:
+
+- Write-profile conformance claims remain disabled; catalog stays `kind: diagnostic`.
+- The private Transactional implementation is bounded and is not a public Transactional service — and is **not represented in this packet at all** beyond the smoke list (Q8).
+- `read-update.idempotency.retention-minimum` — omitted; no advertised `retention.idempotency` limit, so no client-known recovery window.
+- `read-update.idempotency.restore` — omitted; expiry/reopen is explicitly not a restore observation.
+- `read-update.sequence.expired-creator-binding` — omitted; no plan exercises an expired creator's allocated identity / Resource kind via a dependent local reference.
+- Live periodic maintenance; successful mutation categories other than creation; alias retry witnesses; internal tombstone fields; full-profile qualification.
+- Development diagnostics are not normative qualification; an empty `limits` array does not certify exhaustive coverage.
+
+One precision note on the disclosure, not a separate finding: the coverage `limits` phrase "after a fixed 24-hour fixture retention boundary through real startup expiry" bundles two different-strength claims — the *response* rule once expired (normative, `3320-3322`) and the *timing* of expiry (this store's unadvertised policy, permissive under `3306-3310`). Splitting those two sentences would make the row read exactly as strongly as it is.
+
+---
+
+## F. Files and ranges actually read
+
+**Read in full (as supplied inline):**
+- `apps/bdptest/test-support/development-process-actions.ts` — lines 1-174 (complete current file)
+- `apps/bdptest/test-support/development-process.ts` — lines 1-249 (complete current file)
+- `packages/server/src/development-authority.ts` — lines 1-222 (complete current file)
+- `packages/server/src/development-runtime.ts` — lines 1-306 (complete current file)
+
+**Read as diff hunks only (surrounding file content unread):**
+- `apps/bdptest/src/development-matrix.test.ts` — two hunks: ≈184-196 and ≈324-440
+- `packages/conformance/development/README.md` — two hunks: ≈3-25 and ≈213-247
+- `packages/conformance/development/read-update-catalog-v1.json` — appended row + tail of the preceding row, ≈1204-1236
+- `packages/conformance/development/read-update-coverage-v1.json` — four row fragments at hunks `@@ -713 @@`, `@@ -1063 @@`, `@@ -1156 @@`
+- `packages/conformance/development/read-update-fixture-v1.json` — capabilities hunk, ≈4-13
+- `packages/conformance/development/read-update-manifest-v1.json` — appended scenario only, new-file ≈12326-13198
+- `scripts/smoke-executables.mjs` — one hunk, ≈205-223
+
+**Spec ranges read:** `docs/specs/bdp.md` 2672-2697, 3234-3340, 3750-3792.
+
+**Truncated / unread / absent — no coverage claimed:**
+- `development-matrix.test.ts`: `runDevelopmentMatrix` definition, `port` allocation, `artifacts()`, `createDevelopmentReadUpdateArtifactBundle`, cleanup/dispose, per-test timeouts, all pre-existing tests.
+- `packages/conformance` runner: `ScenarioActionExecution`, assertion evaluator, capability validation, `afterAction`, scope rebinding, report hashing, `canonicalJson`.
+- `packages/server/src/recovery-store.ts`, `sequence-executor.ts`, `read-sequence-lifecycle.ts`, `read-update-runtime-limits.ts`, `resource-evaluator.ts`, `read-http.ts` — the modules that own the retention/expiry/tombstone semantics this packet asserts.
+- `read-update-coverage-v1.json`: 77 of 81 rows, plus any schema or `category` vocabulary.
+- `read-update-manifest-v1.json`: lines 1-12 322 (all 27 pre-existing scenarios).
+- `read-update-catalog-v1.json`: rows 1-80.
+- `packages/conformance/development/README.md`: ≈26-212.
+- `scripts/smoke-executables.mjs`: everything outside the one hunk — notably whether the dist list is an exact-set or subset assertion.
+- `packages/*/src/transaction-comparison.*` and `transaction-dependencies.*`: **absent entirely.**
+- All `package.json` files and their `exports` maps: absent.
+- `apps/bdptest/src/development-main.ts` and all `dist/` output: absent.
+- `docs/specs/bdp.md`: everything outside the three ranges — the Read+Update problem table, `#idempotency-keys`, `#scopes-and-identity`, `#duplicate-keys-and-retained-dispositions`, `#alias-targets`.
+- No test-run output, conformance report, artifact digest, or any other execution evidence anywhere in the packet.
+
+**Not whole-branch coverage.** Only the 11 files in the supplied diff were considered, with the read/unread split above.

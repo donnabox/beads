@@ -1,0 +1,34 @@
+# Command-minimum validation preparation — CLOSED, not executed
+
+No execution-gate.json exists. This packet author has not executed setup, compiler, tests, build, package, install or product process. Python source was only parsed using ast.parse, and JSON/counts read statically. Root must inspect/approve exact script hashes and actual final code council dispositions before creating any live gate. Five scripts plus commands.json reuse the already reviewed catalog supervisor and Selector fresh archive/consumer verification workflow; no new product seam or exported API.
+
+## Source/static stage
+
+Prepared-source.json records actual five final owned source hashes including approved source-authoring fences, N1 report-retention repair, and the narrow authored-header-prefix/replay-mode successor (app421eeff1; full diff fab20b65). The original packet and its native review remain under historical-pre-header-repair; the successor Claude supplement is pending and no execution is released. Parent453b6dab/tree40782d97 remains a dirty review workspace, not an installed source attribution. Gate checks exact five-file footprint/hashes, HEAD/tree/diff/lock and absent untracked files before each stage. Root may validate the dirty snapshot, then create an ordinary clean child and rebind sourceHead/sourceTree/sourceDiffSha256 plus finalHead/finalTree before packaging. Existing build start/source hashes must match all five final file bytes; fixed parent and exact five-path footprint constrain all remaining tracked inputs. Gate refuses packaging or installed work on the dirty parent. Do not relabel prior start records.
+
+Eight source commands: offline frozen setup; typecheck; fresh clean build; format; lint; dependency boundaries; unchanged Read seal; exact seven static callbacks. A ninth CPU-only build-inventory command checks exact seven passing fullName/path pairs,0failed/no unhandled, and snapshots fresh protocol/server outputs. Static imports evaluate actual conformance modules and app fixture/import setup; selected callbacks start no listeners/stores/product children. Worker/compiler processes remain real OS processes. Existing bound predicates may fail; no auto retries.
+
+Exact seven and their three module paths are in commands.json. Full regex is anchored alternation over escaped complete names; --maxWorkers=1 and verbose+JSON results. No complete test-file/runtime-suite selection. The seven remain the four accepted cumulative callbacks, two existing app static callbacks, and one inherited catalog mapping callback.
+
+## Fresh package/consumer stages
+
+After static outcomes/council/root acceptance, root commits ordinary source, updates gate to clean final child/tree and pins run/build-output-inventory.json. New package directory, two pnpm packs, complete tar-versus-source inventory, fresh external consumer with local protocol tar override and fast-uri3.1.5 workspace override, single offline production ignore-scripts install, then complete installed-versus-tar/source and actual eight-package dependency graph/payload validation. No registry fallback or repack. Packages.py is previous reviewed Selector v2 workflow with consumer name only changed. Source-lock versions are exact; pnpm11 overrides stay in pnpm-workspace.yaml.
+
+Root inspects/pins actual consumer pnpm-lock.yaml after consumer-install before verify-installed; then reads/pins actual installed-provenance.json before any child command. No guessed archive/member/payload fingerprints or prefilled success. Expected prior member count is313 but actual complete member inventory is the authority; no fixed count substitutes byte equality. Installed path must resolve exactly to the fresh consumer's @bdp/server/dist/transaction-installed-process.js, confined beneath consumer.
+
+## Three installed cohorts and accounting
+
+Each runs the existing app test file with one exact full-title selection and --maxWorkers=1:
+1. Fourteen-contract positive:203HTTP,22children (separate inert bootstrap+21scenario/reopen sessions),15distinct store directories including bootstrap.
+2. Selected batch-body conflict:4HTTP,2children/2directories.
+3. Selected readonly refusal:1HTTP,2children/2directories.
+
+Total208expectedHTTP/225conservative maximum/26children; no additional source-runtime cohort or speculative probe. Dynamic receipt GET counts in203; bootstrap/ready metadata are0HTTP. Existing source90scohort/120stest/5srequest/10sprepare+cleanup and positive63s elapsed guard remain unchanged. External supervisor is120s per command. Existing full CI still expands52old+2new observe calls; this local selection does not erase recurring454expected/473maximum incrementalHTTP or50maximum incrementalchildren. No profile qualification is claimed.
+
+Gate passes exactly the fresh installed entry, final source attribution, and one matching safe report-output path; inherited BDP_* and Node injection/debug overrides are removed by reused supervisor. No credential-bearing raw headers are retained. Each existing app callback writes genuine result/sessions/baseline plus safe supplemental fields before cleanup; failed cleanup remains a failed command. Runtime or supplemental failure stops dependent commands. Each successful cohort gets one read-only adjudication checking exact selected title/path, actual full report, partial claim, ordered IDs, intended control failures, performed comparison counts, serving/payload/source bindings, counts and retained summary. Reports cannot recover raw JSON omitted by runner projection; full equality remains in frozen app/private helper assertions. No child-attested Git claim.
+
+## Supervision, release and cleanup
+
+Run each accepted command only through guarded-action.py then this packet's supervise.py COMMAND_ID, in commands.json executionOrder. Root explicitly approves command IDs by phase. Do not create live gate from example without actual acceptance/document pins. No automatic driver or retry exists. Existing supervisor creates exclusive attempt markers; checks prerequisites; records exact argv/env overrides, PID/group/RSS samples and result; sends bounded TERM/KILL only to owned group; checks source hashes/diff afterward and owned bdp-tx-installed-* runtime roots. Retain compile caches/unclassified paths for root review. Short-lived/detached descendants can evade sampling; actual helper counts/closure assertions and independent final absence checks remain required. No empty process or child-attestation claims from a mere successful exit.
+
+Every unexpected outcome stops dependent stages and preserves original logs/start/results. Root owns reviewing actual output, source finalization, CI and publication. This preparation is not readiness evidence.

@@ -1,0 +1,3 @@
+# Actual P5 typecheck capture — pending independent audit
+
+ONE actual A/B/C functions3135 terminals6a4c7e/bc524a/ba7d1c all0 after complete432 authority05ea96bd and separate activation6 readback3ee616a8. Exact compiler log $ tsc -p tsconfig.check.json LF, innerexit0/source1eca unchanged5.0187878748402s, commoncompleted capture/census9.847113582771271<115. Original actualsources/fullnormalizedtoolresults and12actualrecords retained; no retry/secondcensus. Full independent actualnative/ROOTdisposition/durability before format-check. Provisionalfalse/pending/rawwiretoolreceiptsUNRETAINED remainhonest; finiteactuallyrecordedprocessdomain only, scratchretained/no cleanup/globalclaim. No lint/test/build/profile/fullWrite pass.

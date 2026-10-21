@@ -1,0 +1,17 @@
+FIRST actual D3c trusted intended-listener lifecycle PLAN packet — CLOSED.
+
+The complete immutable plan3 (102 original artifacts plus four native files), accepted root plan and twelve additive exact final CI artifacts bind clean fdd3d2a4f8753b9d7562dcdb7ba413a33be82a10/tree066da79d9b72f1c4aaf74c96c92be2551b9af71c/682 files/spec67772742. All73 plan origins and35 current source/spec copies verify. Earlier plan3 CI IN_PROGRESS snapshots remain unchanged; final accepted CI root99d404b7/nativeaa6de1dc is additive and qualifies only the pure loader increment, never future lifecycle/public activation. No main/spec/D1/D3a adoption.
+
+The proven CLEAN startup PLAN runner has exactly three named literal substitutions: source root, expected HEAD and guard path. Parser, safe default Read/Glob/Grep argv and current549f session guard are byte-identical. Supervisor5 EXACT791e5a566561798aa3352f19b021e6db9beeddb033ae5725c7d031d51716f95c includes accepted fixed first-identity-failure diagnostics; all22 predicates/ownership/query/session/signals/deadlines/no-retry mechanics remain unchanged. No framework change. Default model, no agents/model override/turn caps, strict empty MCP/slash commands disabled/no persistence/stdout-only review. Broader relevant pinned-repo/safe-context reads allowed.
+
+Both binding.json and control.json rootLaunchReleased:false. sourceBindingFinalized:true means immutable source/context closure only; closed-binding equals current binding. frozen-packet-index pins every inner file. No attempt directory or any of nine reviewer outputs. Packet independent native mechanics and root release remain unresolved; root may later authorize ONE exclusive actual PLAN attempt by changing only the two launch flags. Independent terminal audit/findings/root disposition precede separately released source authoring.
+
+Sole prepared invocation (DO NOT RUN NOW):
+
+    /opt/homebrew/opt/python@3.14/bin/python3.14 /Users/dbox/repos/wt/vickie/bdp-integration-logs/write-trusted-startup-lifecycle-plan-review-1/launch-supervision/supervise.py
+
+Reviewer total1800/TERM1790/KILL1798 unchanged. No alternate wrapper path/manual invocation/retry. Future product source5s/request5s; installed45swork10scleanup60scallback and per-callback120souter/TERM115 remain distinct. Nine future files (five existing/four absent),51 source callbacks/21 persisted cases/two source HTTP dispatches and21 installed callbacks/126 finiteHTTP+twoCONNECT/32 candidate generations remain prospective. N1–N4 acquired-owner distinctions, peer chronology, explicit prebind TX snapshot versus constructor read and known fixture Type versus operation target oracle remain intact.
+
+History preserves substantive startup CODE result with FAILED supervised finalization/CLI UNKNOWN/cause unproven; no second CODE/no relabel. Final CI historical Read89/stock-consumer lock UNKNOWN/masked invalid record limits retain exact meaning. Main remains Read-only; D3d admission/D5 public activation/admin erasure+restore and final combined source/config/payload/archive/consumer/lock/proof remain unresolved. TX cold positive depends on later accepted D3a receiver. No public capability, extra footprint or cumulative qualification is created.
+
+Only administrative guard and own pure-data hash/JSON/text/AST/delta checks occurred. No helper/reviewer/product/runtime/Git/compiler/formatter/test/build/install/flags/design/launch execution. Exact origins, complete closed indices, genuine runner/control adaptation and inverses plus exact docs mirror support independent mechanics inspection.

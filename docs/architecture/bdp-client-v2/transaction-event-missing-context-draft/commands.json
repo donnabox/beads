@@ -1,0 +1,210 @@
+{
+  "status": "CLOSED_PREPARATION_ONLY",
+  "commands": [
+    {
+      "id": "offline-setup",
+      "cwd": "/Users/dbox/repos/wt/vickie/vickie-sequence-member-evidence",
+      "argv": [
+        "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+        "/Users/dbox/.cache/node/corepack/v1/pnpm/11.20.0/bin/pnpm.cjs",
+        "install",
+        "--offline",
+        "--frozen-lockfile"
+      ],
+      "supervisorSeconds": 120
+    },
+    {
+      "id": "typecheck",
+      "cwd": "/Users/dbox/repos/wt/vickie/vickie-sequence-member-evidence",
+      "argv": [
+        "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+        "/Users/dbox/.cache/node/corepack/v1/pnpm/11.20.0/bin/pnpm.cjs",
+        "typecheck"
+      ],
+      "supervisorSeconds": 120
+    },
+    {
+      "id": "build",
+      "cwd": "/Users/dbox/repos/wt/vickie/vickie-sequence-member-evidence",
+      "argv": [
+        "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+        "/Users/dbox/.cache/node/corepack/v1/pnpm/11.20.0/bin/pnpm.cjs",
+        "build"
+      ],
+      "supervisorSeconds": 120
+    },
+    {
+      "id": "format-check",
+      "cwd": "/Users/dbox/repos/wt/vickie/vickie-sequence-member-evidence",
+      "argv": [
+        "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+        "/Users/dbox/.cache/node/corepack/v1/pnpm/11.20.0/bin/pnpm.cjs",
+        "exec",
+        "biome",
+        "format",
+        "packages/server/src/transaction-store.ts",
+        "packages/server/src/transaction-http.ts",
+        "packages/server/src/transaction-events.test.ts",
+        "apps/bdptest/src/transactional-event-missing-context-installed.test.ts",
+        "docs/design/transaction-implementation-progress.md",
+        "packages/server/src/transaction-event-sse.test.ts"
+      ],
+      "supervisorSeconds": 120
+    },
+    {
+      "id": "lint",
+      "cwd": "/Users/dbox/repos/wt/vickie/vickie-sequence-member-evidence",
+      "argv": [
+        "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+        "/Users/dbox/.cache/node/corepack/v1/pnpm/11.20.0/bin/pnpm.cjs",
+        "lint"
+      ],
+      "supervisorSeconds": 120
+    },
+    {
+      "id": "boundaries",
+      "cwd": "/Users/dbox/repos/wt/vickie/vickie-sequence-member-evidence",
+      "argv": [
+        "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+        "/Users/dbox/.cache/node/corepack/v1/pnpm/11.20.0/bin/pnpm.cjs",
+        "check:boundaries"
+      ],
+      "supervisorSeconds": 120
+    },
+    {
+      "id": "read-seal",
+      "cwd": "/Users/dbox/repos/wt/vickie/vickie-sequence-member-evidence",
+      "argv": [
+        "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+        "/Users/dbox/.cache/node/corepack/v1/pnpm/11.20.0/bin/pnpm.cjs",
+        "evidence:verify"
+      ],
+      "supervisorSeconds": 120
+    },
+    {
+      "id": "events-positive",
+      "cwd": "/Users/dbox/repos/wt/vickie/vickie-sequence-member-evidence",
+      "argv": [
+        "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+        "/Users/dbox/.cache/node/corepack/v1/pnpm/11.20.0/bin/pnpm.cjs",
+        "exec",
+        "vitest",
+        "run",
+        "packages/server/src/transaction-events.test.ts",
+        "--maxWorkers=1",
+        "--reporter=verbose",
+        "--reporter=json",
+        "--outputFile=/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-event-missing-context-draft/run/events-positive.json",
+        "-t",
+        "^(?:preserves\\ endpoint\\ pins,\\ omits\\ external\\ sources\\ and\\ does\\ not\\ mutate\\ Beads\\ for\\ incidence|keeps\\ unknown\\ sources\\ nondisclosing\\ before\\ minimum\\ and\\ refuses\\ older\\ success/fenced\\ owner|scan\\ initial\\ identity\\ and\\ minimum\\ precede\\ reconnect\\ validity;\\ contextual\\ errors\\ preserve\\ the\\ observed\\ entry|captures\\ immutable\\ current\\ context\\ for\\ missing\\ finite\\ Bead\\ Event\\ source|captures\\ immutable\\ current\\ context\\ for\\ missing\\ finite\\ Link\\ Event\\ source|captures\\ immutable\\ current\\ context\\ for\\ missing\\ SSE\\ Bead\\ Event\\ source|captures\\ immutable\\ current\\ context\\ for\\ missing\\ SSE\\ Link\\ Event\\ source|serves\\ contextual\\ missing\\ Event\\ responses\\ for\\ Bead\\ and\\ Link\\ JSON\\ and\\ SSE\\ GET\\ and\\ HEAD)$"
+      ],
+      "selectedFullNames": [
+        "preserves endpoint pins, omits external sources and does not mutate Beads for incidence",
+        "keeps unknown sources nondisclosing before minimum and refuses older success/fenced owner",
+        "scan initial identity and minimum precede reconnect validity; contextual errors preserve the observed entry",
+        "captures immutable current context for missing finite Bead Event source",
+        "captures immutable current context for missing finite Link Event source",
+        "captures immutable current context for missing SSE Bead Event source",
+        "captures immutable current context for missing SSE Link Event source",
+        "serves contextual missing Event responses for Bead and Link JSON and SSE GET and HEAD"
+      ],
+      "supervisorSeconds": 120,
+      "cases": 8,
+      "http": 11,
+      "owners": 8,
+      "directories": 8,
+      "listeners": 1,
+      "productChildren": 0
+    },
+    {
+      "id": "sse-regression",
+      "cwd": "/Users/dbox/repos/wt/vickie/vickie-sequence-member-evidence",
+      "argv": [
+        "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+        "/Users/dbox/.cache/node/corepack/v1/pnpm/11.20.0/bin/pnpm.cjs",
+        "exec",
+        "vitest",
+        "run",
+        "packages/server/src/transaction-event-sse.test.ts",
+        "--maxWorkers=1",
+        "--reporter=verbose",
+        "--reporter=json",
+        "--outputFile=/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-event-missing-context-draft/run/sse-regression.json",
+        "-t",
+        "^(?:Event\\ reconnect\\ syntax,\\ minimum\\ ordering\\ and\\ exact\\ context\\ codes\\ are\\ preserved\\ over\\ HTTP)$"
+      ],
+      "selectedFullNames": [
+        "Event reconnect syntax, minimum ordering and exact context codes are preserved over HTTP"
+      ],
+      "supervisorSeconds": 120,
+      "cases": 1,
+      "http": 28,
+      "owners": 1,
+      "directories": 1,
+      "listeners": 1,
+      "productChildren": 0
+    },
+    {
+      "id": "omit-context-control",
+      "cwd": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-event-missing-context-draft/control/copy",
+      "argv": [
+        "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+        "/Users/dbox/.cache/node/corepack/v1/pnpm/11.20.0/bin/pnpm.cjs",
+        "exec",
+        "vitest",
+        "run",
+        "packages/server/src/transaction-events.test.ts",
+        "--maxWorkers=1",
+        "--reporter=verbose",
+        "--reporter=json",
+        "--outputFile=/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-event-missing-context-draft/run/omit-context-control.json",
+        "-t",
+        "^(?:serves\\ contextual\\ missing\\ Event\\ responses\\ for\\ Bead\\ and\\ Link\\ JSON\\ and\\ SSE\\ GET\\ and\\ HEAD)$"
+      ],
+      "selectedFullNames": [
+        "serves contextual missing Event responses for Bead and Link JSON and SSE GET and HEAD"
+      ],
+      "supervisorSeconds": 120,
+      "cases": 1,
+      "expectedTestExit": 1,
+      "http": 11,
+      "owners": 1,
+      "directories": 1,
+      "listeners": 1,
+      "productChildren": 0,
+      "requires": "Frozen positive build graph copied/bound with exactly two emitted HTTP calls changed; not prepared or executed yet"
+    },
+    {
+      "id": "installed-positive",
+      "cwd": "/Users/dbox/repos/wt/vickie/vickie-sequence-member-evidence",
+      "argv": [
+        "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+        "/Users/dbox/.cache/node/corepack/v1/pnpm/11.20.0/bin/pnpm.cjs",
+        "exec",
+        "vitest",
+        "run",
+        "apps/bdptest/src/transactional-event-missing-context-installed.test.ts",
+        "--maxWorkers=1",
+        "--reporter=verbose",
+        "--reporter=json",
+        "--outputFile=/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-event-missing-context-draft/run/installed-positive.json",
+        "-t",
+        "^(?:observes\\ genuine\\ installed\\ missing\\ Event\\ context\\ across\\ Bead\\ and\\ Link\\ JSON\\ and\\ SSE\\ GET\\ and\\ HEAD)$"
+      ],
+      "selectedFullNames": [
+        "observes genuine installed missing Event context across Bead and Link JSON and SSE GET and HEAD"
+      ],
+      "supervisorSeconds": 120,
+      "cases": 1,
+      "http": 11,
+      "owners": 1,
+      "directories": 1,
+      "listeners": 1,
+      "productChildren": 1,
+      "requires": "Clean ordinary final source commit, fresh archive/consumer/entry/source bindings, actual separate root release"
+    }
+  ],
+  "sourceBinding": "83e5b7b63785abbb7986a14447a3ee21cc29d301e26ee85bb6fae9ff595b0f3a",
+  "noAutomaticRetry": true,
+  "fullSuiteSelected": false
+}

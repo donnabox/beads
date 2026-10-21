@@ -1,0 +1,23 @@
+## Verdict
+
+**No actionable defect remains.** The two-file correction is correct as applied; three residual items are limitations, not defects.
+
+## Confirmations against source
+
+**Finding 1 — full-header oracle (resolved, correctly).** `responseHeaderDigest` (`transactional-minimum-current-resource-installed.test.ts:60-71`) walks `rawHeaders` pairwise, lowercases names, drops only `date`, sorts by (name, value), and digests `JSON.stringify(pairs)`. Nested-array stringification is injective, so no `name+value` concatenation ambiguity. The assertion at `:742` compares row 29 (missing `beads/a`… strictly, missing `beads/missing`) against row 18 (hidden `beads/a`), which is exactly the disclosure oracle.
+
+Excluding only `date` — narrower than the originally suggested `date`/`connection`/`keep-alive` — is safe and strictly stronger: both rows send `Connection: close`, so Node echoes `connection: close` on both, and `Keep-Alive` is never emitted on a closing connection. No spurious-failure risk. `vary` is set only for POST (`transaction-http.ts:659`) or 200 JSON (`read-http.ts:16-23`), so neither 404 carries it. Context headers match because row 18 sets `current` from its own response and row 29 reuses `firstHiddenFields`. Duplicate names cannot actually reach the wire (`deliver` uses `Object.fromEntries(headers)`, `transaction-runtime.ts:94`), so preservation is defensive only.
+
+**Finding 2 — 401 challenge (resolved).** The literal at `:756-757` is byte-identical to `transaction-http.ts:111`. Reachability traced: anonymous GET `beads/a` → `route` returns `transactionHttpProblem("unauthenticated")` at `transaction-http.ts:406`, before any minimum handling, so no context headers (matching `expect(context(response)).toEqual([null,null,null])`). `applyReadHttpSemantics` is a no-op at 401 (not 200-JSON, not 204, body present but method is GET), and `deliver` writes all headers. The header is also already in `retainedHeaders`, so it lands in the report.
+
+**HEAD boundary — unchanged and still sound.** `applyReadHttpSemantics` sets `content-length` from `stringifyJsonValue(body)` and drops the body (`read-http.ts:42-46`); `deliver` leaves it alone since `selected.body === undefined`. Byte-length comparison is key-order independent.
+
+**Report-failure boundary.** `:855-856` remains fail-closed; root retained this deliberately. Confirmed the estimate stands — 32 records at ~700-900 B plus `binding` is ~30 KB against the 65536 ceiling, so it is conditional, not live.
+
+**Type/lint.** `readonly string[]` accepts `response.rawHeaders`; `responseHeaderDigest` is a hoisted declaration using `digest` from `:59`; the pairwise-with-`!` idiom matches `:487-488`. Biome does not format Markdown, so the doc hunk has no lint exposure.
+
+## Residual (non-blocking)
+
+1. **Report allowlist unchanged, by decision.** The digest is asserted in memory but never recorded, so `stdout.txt` still shows only the 15 named headers. The second half of finding 1 ("leave no trace") is therefore unaddressed: evidence readers must trust the test revision rather than see the comparison. Adding `headerDigest` to the `responses` record would be one line and disclosure-safe, but root scoped it out.
+2. **Oracle covers GET only.** Rows 3/5/7 (HEAD, missing, pre-publication) and 19/21/23 (HEAD, hidden, post-publication) have different context tuples, so no HEAD hidden/missing pair is comparable. A HEAD-only disclosing header would not be caught. Unfixable without a 33rd exchange, which the fixed 32-dispatch budget forbids.
+3. **Doc is silent on post-merge source re-validation.** Lines 2003-2007 bind "all 11 source-validation stages passed" to isolated candidate 1647c5d and then state main `df80f8cb` is integrated through `bf50e1e8`, declaring only *installed* validation pending. Given the paragraph's own honesty standard, it should say whether source validation was re-run on the merged tree `733728c`. Also, line 2007 breaks the paragraph's ~80-column wrap.

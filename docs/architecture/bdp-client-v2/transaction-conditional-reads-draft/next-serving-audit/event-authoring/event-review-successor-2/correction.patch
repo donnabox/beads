@@ -1,0 +1,151 @@
+--- successor-1/transactional-event-sse-installed.test.ts
++++ successor-2/transactional-event-sse-installed.test.ts
+@@ -333,13 +333,15 @@
+       throw new Error(
+         "Event restart installed overrides must be nonempty and source must be a commit",
+       );
+-    const installedRelative = path.relative(root, entry);
++    const installedRelative = path.relative(realpathSync(root), entry);
+     if (!installedRelative.startsWith(`..${path.sep}`) && !path.isAbsolute(installedRelative))
+       throw new Error("Event restart installed attribution requires an external entry");
+   }
+   const hash = (value: string | Uint8Array) => createHash("sha256").update(value).digest("hex");
+   const witnessPath = fileURLToPath(import.meta.url);
+   const witnessSource = {
++    fingerprintScope:
++      "witness file bytes and tracked working-tree diff only; excludes untracked inputs and installed payload provenance",
+     head: execFileSync("git", ["rev-parse", "HEAD"], { cwd: root, encoding: "utf8" }).trim(),
+     fileSha256: hash(readFileSync(witnessPath)),
+     diffSha256: hash(execFileSync("git", ["diff", "HEAD"], { cwd: root })),
+@@ -356,6 +358,12 @@
+     workEnd = started + 45000;
+   const directory = mkdtempSync(path.join(tmpdir(), "bdp-event-restart-installed-"));
+   const token = randomBytes(32).toString("base64url");
++  function safeFailureMessage(error: unknown): string {
++    return (error instanceof Error ? error.message : "non-Error failure").replaceAll(
++      token,
++      "[credential redacted]",
++    );
++  }
+   const configuration = {
+     scope,
+     directory,
+@@ -380,8 +388,8 @@
+     create: boolean;
+     state: "launching" | "owned" | "unknown-no-handle";
+     handle?: Handle;
+-    pid?: number;
+-    listenUrl?: string;
++    pid?: number | undefined;
++    listenUrl?: string | undefined;
+     binding?: ReturnType<typeof installedTransactionBinding>;
+     exit?: { code: number | null; signal: NodeJS.Signals | null };
+     closing?: Promise<void>;
+@@ -396,6 +404,7 @@
+   const responses: unknown[] = [];
+   let phase = "setup",
+     cleanupStarted = false,
++    abortedForCleanup = false,
+     removed = false;
+   let binding: ReturnType<typeof installedTransactionBinding> | undefined;
+   let epoch: string | undefined;
+@@ -521,7 +530,7 @@
+     ajv.addSchema(bundle);
+     const validators = Object.fromEntries(
+       ["mutationReceipt", "currentBeadRecord", "eventPage", "event", "transactionalProblem"].map(
+-        (name) => [name, ajv.compile({ $ref: `${bundle.$id}#/$defs/${name}` })],
++        (name) => [name, ajv.compile({ $ref: `${bundle.$id}#/$defs/${name}` })] as const,
+       ),
+     );
+     function validate(name: string, value: unknown) {
+@@ -695,7 +704,7 @@
+             "bdp-authorization-view",
+             "bdp-scope-position",
+             "x-bdp-development",
+-          ].map((name) => [name, response.headers[name]]),
++          ].map((name) => [name, response.headers[name]] as const),
+         ),
+       });
+       expect(response.exactRequest?.writeState).toBe("complete");
+@@ -851,7 +860,7 @@
+     expect(observedFrames).toHaveLength(1);
+     observedFrames.forEach((frame) => sameFrame(frame, e1));
+     expect(() => sameFrame(observedFrames[0]!, e0)).toThrow();
+-    localSensitivityControls.push("scope-prefix-frame");
++    localSensitivityControls.push("frame-event-identity");
+     sseEvidence = {
+       requestOrdinal: 4,
+       session: second.ordinal,
+@@ -865,7 +874,7 @@
+           "bdp-scope-epoch",
+           "bdp-authorization-view",
+           "bdp-scope-position",
+-        ].map((name) => [name, recorder.headers[name]]),
++        ].map((name) => [name, recorder.headers[name]] as const),
+       ),
+       completeObservedFrames: observedFrames,
+       beforeIntentionalCloseMs: beforeCloseMs,
+@@ -892,7 +901,7 @@
+       { ordinal: 5, session: 2, method: "GET" },
+     ]);
+     expect(responses).toHaveLength(4);
+-    expect(localSensitivityControls).toEqual(["restored-event-ordinal", "scope-prefix-frame"]);
++    expect(localSensitivityControls).toEqual(["restored-event-ordinal", "frame-event-identity"]);
+     controller.signal.throwIfAborted();
+     if (performance.now() >= workEnd) throw new Error("Event restart work exceeded budget");
+   } catch (error) {
+@@ -906,8 +915,10 @@
+     } catch (error) {
+       failures.push({ phase: "stream cleanup", error });
+     }
+-    if (failures.length && !controller.signal.aborted)
++    if (failures.length && !controller.signal.aborted) {
++      abortedForCleanup = true;
+       controller.abort(new Error("Event restart observation failed"));
++    }
+     for (const session of sessions) {
+       if (!session.handle) {
+         session.stopUnknown = true;
+@@ -924,7 +935,7 @@
+         failures.push({ phase: `child ${session.ordinal} cleanup`, error });
+       }
+     }
+-    if (controller.signal.aborted)
++    if (controller.signal.aborted && !abortedForCleanup)
+       failures.push({ phase: "work signal", error: controller.signal.reason });
+     try {
+       expect(sessions).toHaveLength(2);
+@@ -992,7 +1003,7 @@
+                   "bdp-scope-epoch",
+                   "bdp-authorization-view",
+                   "bdp-scope-position",
+-                ].map((name) => [name, stream.recorder.headers[name]]),
++                ].map((name) => [name, stream.recorder.headers[name]] as const),
+               ),
+               wireBytes: stream.recorder.wireBytes.length,
+               wireSha256: hash(stream.recorder.wireBytes),
+@@ -1017,11 +1028,11 @@
+         directoryRemoved: removed,
+         failures: failures.map(({ phase, error }) => ({
+           phase,
+-          name: error instanceof Error ? error.name : "non-Error",
+-          message:
++          name:
+             error instanceof Error
+-              ? error.message.replaceAll(token, "[credential redacted]")
+-              : "non-Error failure",
++              ? error.name.replaceAll(token, "[credential redacted]")
++              : "non-Error",
++          message: safeFailureMessage(error),
+         })),
+         diagnosticLimit:
+           "startup helper may expose only generic error and no returned handle; no private child trace claimed",
+@@ -1032,7 +1043,7 @@
+   }
+   if (failures.length)
+     throw new AggregateError(
+-      failures.map(({ error }) => error),
++      failures.map(({ phase, error }) => new Error(`${phase}: ${safeFailureMessage(error)}`)),
+       "Event restart observation or cleanup failed",
+     );
+ }, 60000);

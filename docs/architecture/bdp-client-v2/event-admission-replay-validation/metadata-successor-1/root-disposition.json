@@ -1,0 +1,21 @@
+{
+  "at": "2026-10-17T23:41:49.293440+00:00",
+  "accepted": true,
+  "sourceBindingSha256": "6837b28c3ec6c75bf9c085f002029932a65b3c32e7da482cf3497b3f7d8dd4c9",
+  "nativeCodeReviewSha256": "5bed5a9fa10a97446144c3819ead8d1f5d1dfdc9f099498c850cf4b9e2a7da59",
+  "actualReviewSha256": "a7ea40bcc37fd31667fe935764508334faec79757ec62c439229f929022d0c31",
+  "terminalAuditSha256": "96e2b8ff5509b318e99b4acb4e3525320408861ac279b3f8c63d8cd1a62c9c9d",
+  "findingsAuditSha256": "899a519d1adc7728537caf3466a740563450a7f4146c10195584e293363ce84b",
+  "preparationClosureSha256": "260d992ffb9eeed2593c9336347e7bb16cbe01dac63dc063ee5b87c22795258d",
+  "dependencyInstallAuthorized": true,
+  "staticValidationAuthorized": true,
+  "runtimeValidationAuthorized": false,
+  "findings": {
+    "F1": "Accept actual pinned format diagnostics; static prediction is not an observed failure. Measured formatting-only successor requires separate root release/native closure.",
+    "F2": "Retain reviewed current minimum before cursor/reconnect as implementation composition, not independently mandated protocol precedence; S1/G2 unchanged.",
+    "F3": "Retain compatibility tag and no-intent strict defaults.",
+    "F4": "Retain defensive fence without public reachability claims.",
+    "F5": "Retain default5s/D cleanup-inclusive<4000; stop/diagnose actual failure, no widening/retry.",
+    "F6": "Defer optional record-before-assert diagnostic improvement; partial/failed reports cannot pass auditor."
+  }
+}

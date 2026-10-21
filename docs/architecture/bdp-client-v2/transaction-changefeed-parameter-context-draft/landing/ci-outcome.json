@@ -1,0 +1,88 @@
+{
+  "pr": 130,
+  "run": 38755921518,
+  "job": 116494181912,
+  "base": "77f4b89c117e46f0e73476f69b4c8b377306452b",
+  "head": "1f9cb46c42fa69a09ac847f57e47bc96390aea6f",
+  "tree": "80a6fe0605698e18f9504432407e7943e1f665b4",
+  "synthetic": "0659712eb7449645c4a018fcfc436ec30e66d7ec",
+  "conclusion": "success",
+  "allStepsPassed": 27,
+  "failedOrSkippedSteps": [],
+  "testsPassed": 9303,
+  "testsSkipped": 1,
+  "testFilesPassed": 177,
+  "suiteSeconds": 475.31,
+  "jobSeconds": 630.0,
+  "preflightPassed": 7,
+  "smokePassed": true,
+  "readSealRows": 89,
+  "rawLogSha256": "e3c4607e9d7eed25050975c38c3d6402096291afde547c2d169e9dbf56fbc0c3",
+  "rawLogBytes": 3358114,
+  "syntheticOrderedParents": [
+    "77f4b89c117e46f0e73476f69b4c8b377306452b",
+    "1f9cb46c42fa69a09ac847f57e47bc96390aea6f"
+  ],
+  "syntheticTreeMatchesCandidate": true,
+  "sourceCallbackMs": 75,
+  "installedCallbackMs": 661,
+  "installedObservedHTTP": 10,
+  "installedChildPid": 25142,
+  "installedChildExitCode": 0,
+  "installedDirectoryReportedAbsent": true,
+  "installedContextTuples": [
+    [
+      "5d28d5f0-05cf-415e-808d-58b829045cea",
+      "development-all-visible",
+      "pos-1"
+    ],
+    [
+      "5d28d5f0-05cf-415e-808d-58b829045cea",
+      "development-all-visible",
+      "pos-1"
+    ],
+    [
+      "5d28d5f0-05cf-415e-808d-58b829045cea",
+      "development-all-visible",
+      "pos-1"
+    ],
+    [
+      "5d28d5f0-05cf-415e-808d-58b829045cea",
+      "development-all-visible",
+      "pos-1"
+    ],
+    [
+      "5d28d5f0-05cf-415e-808d-58b829045cea",
+      "development-all-visible",
+      "pos-1"
+    ],
+    [
+      "5d28d5f0-05cf-415e-808d-58b829045cea",
+      "development-all-visible",
+      "pos-1"
+    ],
+    [
+      "5d28d5f0-05cf-415e-808d-58b829045cea",
+      "development-all-visible",
+      "pos-1"
+    ],
+    [
+      "5d28d5f0-05cf-415e-808d-58b829045cea",
+      "development-all-visible",
+      "pos-1"
+    ],
+    [
+      null,
+      null,
+      null
+    ],
+    [
+      null,
+      null,
+      null
+    ]
+  ],
+  "maskingLimitation": "null denotes unavailable GitHub-masked challenge only in this projection; it does not denote an absent original HTTP field. No original challenge bytes reconstructed or independently verified from CI log. Local installed evidence has separate genuine header attribution.",
+  "claimEligible": false,
+  "remoteProcessCheckLimitation": "CI report proves reported child exit/directory absence; local ps cannot independently inspect the remote runner."
+}

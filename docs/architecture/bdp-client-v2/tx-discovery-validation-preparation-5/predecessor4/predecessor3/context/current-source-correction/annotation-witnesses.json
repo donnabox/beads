@@ -1,0 +1,23 @@
+{
+  "corrections": [
+    {
+      "line": 6757,
+      "before": "    headers: HeadersInit = {},",
+      "after": "    headers: Record<string, string> = {},"
+    },
+    {
+      "line": 6890,
+      "before": "      const rows: [string, HeadersInit, string, number][] = [",
+      "after": "      const rows: [string, Record<string, string>, string, number][] = ["
+    },
+    {
+      "line": 6904,
+      "before": "            ] as [string, HeadersInit, string, number],",
+      "after": "            ] as [string, Record<string, string>, string, number],"
+    }
+  ],
+  "exactReplacementOnly": true,
+  "allHeaderValuesRequestsAssertionsSelectionOrderDeadlinesUnchanged": true,
+  "noDOMLibImportOrDependencyAdded": true,
+  "noFormatOrCompilerRun": true
+}

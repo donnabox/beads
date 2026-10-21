@@ -1,0 +1,18 @@
+{
+  "descriptors": [
+    {
+      "retrievalUri": "https://reference.invalid/acme/types/task",
+      "utf8": "{\"id\":\"https://reference.invalid/acme/types/task\",\"name\":\"Task\",\"describes\":\"bead\",\"conformsTo\":[],\"propertiesSchema\":\"https://reference.invalid/acme/schemas/task\"}"
+    },
+    {
+      "retrievalUri": "https://reference.invalid/acme/types/link",
+      "utf8": "{\"id\":\"https://reference.invalid/acme/types/link\",\"name\":\"Link\",\"describes\":\"link\",\"conformsTo\":[],\"propertiesSchema\":\"https://reference.invalid/acme/schemas/task\",\"source\":{\"conformsTo\":[],\"external\":\"none\"},\"target\":{\"conformsTo\":[],\"external\":\"none\"}}"
+    }
+  ],
+  "schemas": [
+    {
+      "retrievalUri": "https://reference.invalid/acme/schemas/task",
+      "utf8": "{\"$id\":\"https://reference.invalid/acme/schemas/task\",\"type\":\"object\",\"properties\":{\"n\":{\"type\":\"number\"}},\"required\":[\"n\"],\"additionalProperties\":false}"
+    }
+  ]
+}

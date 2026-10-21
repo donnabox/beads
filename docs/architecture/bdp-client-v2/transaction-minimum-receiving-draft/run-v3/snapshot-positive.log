@@ -1,0 +1,25 @@
+
+ RUN  v4.1.10 /Users/dbox/repos/wt/vickie/vickie-minimum-receiving
+
+ ↓ packages/server/src/transaction-snapshot-http.test.ts > captures real complete owned streams, retains literal bodies across mutations/reopen, and resumes exclusive changefeed
+ ↓ packages/server/src/transaction-snapshot-http.test.ts > creation conditionals, negotiation, HEAD and transport refusals never issue an identity or consume live capacity
+ ↓ packages/server/src/transaction-snapshot-http.test.ts > retained HEAD uses UTF-8 bytes, conditional decisions carry current context, and expiry precedes shortcuts
+ ✓ packages/server/src/transaction-snapshot-http.test.ts > closed query syntax, unsupported controls and foreign creation context fail before capture or conditional success 50ms
+ ↓ packages/server/src/transaction-snapshot-http.test.ts > promised unexpired missing-record is bodyless500 even with a conditional shortcut
+ ↓ packages/server/src/transaction-snapshot-http.test.ts > promised unexpired bad-record is bodyless500 even with a conditional shortcut
+ ↓ packages/server/src/transaction-snapshot-http.test.ts > promised unexpired missing-page is bodyless500 even with a conditional shortcut
+ ↓ packages/server/src/transaction-snapshot-http.test.ts > actual HTTP413 from valid offline capacity preparation preserves prior live captures and graph state
+ ↓ packages/server/src/transaction-snapshot-http.test.ts > seamless compiled actual metadata survives Snapshot serving/restart, while clocked metadata stays absent
+ ↓ packages/server/src/transaction-snapshot-http.test.ts > tracks finite HTTP work through close and leaves no listener accepting afterwards
+ ↓ packages/server/src/transaction-snapshot-http.test.ts > raw unsupported methods and Host refusal preserve the no-allocation boundary
+ ↓ packages/server/src/transaction-snapshot-http.test.ts > current graph-integrity failure is observed by HEAD/preconditions before any issuance
+ ↓ packages/server/src/transaction-snapshot-http.test.ts > uses one authority body pass for successful GET and preserves full nonallocating decisions
+ ↓ packages/server/src/transaction-snapshot-http.test.ts > allows read-only principals to create and use a safe Snapshot
+ ↓ packages/server/src/transaction-snapshot-http.test.ts > measures repeated nonallocating full passes on a disclosed offline 4000-record fixture
+
+ Test Files  1 passed (1)
+      Tests  1 passed | 14 skipped (15)
+   Start at  15:55:33
+   Duration  565ms (transform 314ms, setup 16ms, import 448ms, tests 50ms, environment 0ms)
+
+JSON report written to /Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-minimum-receiving-draft/run-v3/snapshot-positive.results.json

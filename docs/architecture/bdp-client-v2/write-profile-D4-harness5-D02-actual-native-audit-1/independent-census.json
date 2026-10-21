@@ -1,0 +1,95 @@
+{
+  "utc": "2026-10-18T18:23:16.763693+00:00",
+  "session": "2026-10-18T02:16:24Z-549f",
+  "argv": [
+    "/bin/ps",
+    "-p",
+    "6115,6119,6124,6125,6126,6127,6128,6129,6130,6134,6136,6139,6140,6141,6142,6144,6146,6147,6148,6149,6151,6152,6154,6160,6161,9154",
+    "-g",
+    "6119,6124,6125,6126,6127,6128,6129,6130,6134,6136,6139,6140,6144,6146,6147,6151,6152,6154,6160,6161",
+    "-o",
+    "pid=,ppid=,pgid=,stat=,lstart=,comm="
+  ],
+  "queryScope": "ONLY 25 recorded task PIDs + 20 recorded groups (including root dispatcher), plus this audit observer PID to retain actual zero ps exit on an otherwise empty selection; no all-host inventory",
+  "recordedPids": [
+    6115,
+    6119,
+    6124,
+    6125,
+    6126,
+    6127,
+    6128,
+    6129,
+    6130,
+    6134,
+    6136,
+    6139,
+    6140,
+    6141,
+    6142,
+    6144,
+    6146,
+    6147,
+    6148,
+    6149,
+    6151,
+    6152,
+    6154,
+    6160,
+    6161
+  ],
+  "recordedGroups": [
+    6119,
+    6124,
+    6125,
+    6126,
+    6127,
+    6128,
+    6129,
+    6130,
+    6134,
+    6136,
+    6139,
+    6140,
+    6144,
+    6146,
+    6147,
+    6151,
+    6152,
+    6154,
+    6160,
+    6161
+  ],
+  "auditObserverPid": 9154,
+  "probePid": 9158,
+  "probePgid": 9158,
+  "directHandleImmediatelyRetained": true,
+  "actualRawExit": 0,
+  "stdoutEof": true,
+  "stderrEof": true,
+  "streams": {
+    "independent-census.stdout": {
+      "bytes": 177,
+      "sha256": "d72efdaa8e687ec167735a379062cd47fb73dcbb75a72ba85f97cbc4f616c41c"
+    },
+    "independent-census.stderr": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    }
+  },
+  "elapsedSeconds": 0.0051501658745110035,
+  "onlyReturnedRows": [
+    {
+      "pid": 9154,
+      "ppid": 66169,
+      "pgid": 9154,
+      "stat": "Ss",
+      "birth": "Sun Oct 18 18:23:16 2026",
+      "comm": "/opt/homebrew/Cellar/python@3.14/3.14.5/Frameworks/Python.framework/Versions/3.14/Resources/Python.app/Contents/MacOS/Python"
+    }
+  ],
+  "matchingRecordedTasks": [],
+  "allRecordedTaskPidsAndGroupsAbsent": true,
+  "probeDirectHandleReaped": true,
+  "limits": "Point-in-time selected census only; no all-transient/global containment claim; audit observer and its probe are new audit-owned processes, not original D02 tasks; absence does not clear sticky failure."
+}

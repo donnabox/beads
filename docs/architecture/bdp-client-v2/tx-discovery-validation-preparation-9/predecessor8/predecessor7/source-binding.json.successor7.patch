@@ -1,0 +1,124 @@
+--- predecessor6/source-binding.json
++++ source-binding.json
+@@ -1,6 +1,9 @@
+ {
+   "actualClaudeReadCorrectedBytes": false,
+-  "binaryDiffSha256": "4d57679e34192081ce3a300cfc88efa25abcadd4353891b63866c8e0223065dd",
++  "actualClaudeReadLintCorrection": false,
++  "actualClaudeReadSnapshotQueryCorrection": false,
++  "actualClaudeReadThreeAnnotationCorrection": false,
++  "binaryDiffSha256": "eed91e5f1abc48ef92f31d92690772c8a6489a48dd9e5e07af66de9c392712ab",
+   "branch": "codex/vickie-tx-discovery-minimum",
+   "dirtyPaths": [
+     "apps/bdptest/src/transactional-discovery-installed.test.ts",
+@@ -11,10 +14,34 @@
+     "packages/server/src/transaction-installed-contracts.test.ts"
+   ],
+   "head": "cce884ccea1db97cbc6fd7bff876d4d6091f9081",
++  "historicalActualCodeOnly": true,
++  "historicalSourceBinding6": {
++    "meaning": "complete exact old9b7 binding/annotation/lint snapshots preserved; not current679 equality",
++    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/tx-discovery-validation-preparation-7/predecessor6/source-binding.json",
++    "sha256": "b3547ec381d4e05121d3994d6550fe2f160a8ba266195a8724a6d5a851e268d4",
++    "sourceIdentity": "9b7d3a753bc22a3188f5dda7199fdb7321f65dfa0fa745cce082f3f82a837a9f"
++  },
++  "independentAnnotationPrecision": {
++    "accepted": true,
++    "basis": "Exact same679 source bytes, sourceIdentity5964d40a and binary6eea; only preparation metadata rebind. Static type annotation precision, no compiler pass.",
++    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/tx-discovery-validation-preparation-4/context/preparation3-native/annotation-closure.json",
++    "reviewedPreviousSourceBindingSha256": "00459b95b289ba42a4da948139516c3039bd81ea2a739b9dceb92c95208f7bfe",
++    "sha256": "0132cf6454374afc98cca0f7163f090562b664ca040e0278df195bf020d65a6c"
++  },
++  "independentLintCorrectionPrecision": {
++    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/tx-discovery-lint-native-precision-1/closure.json",
++    "scope": "historical9b7 lint delta, composed with later one-call current source precision; not new compiler/runtime result",
++    "sha256": "87db880d20ec65335f3f40e418d6978d7a4c095f7b4b3fd3a693b5d6320c4aeb"
++  },
++  "independentSnapshotQueryPrecision": {
++    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/tx-discovery-snapshot-query-native-precision-1/closure.json",
++    "scope": "one-call only +678protected, runtimeunrun; prose budgeterratum corrected by rootd310",
++    "sha256": "0f1eae0dd8b70cc1240122ba2ad368586b009f64d83fa83bd683bcabe86b4028"
++  },
+   "originalActualCodeOnly": true,
+   "ownedFiles": {
+     "apps/bdptest/src/transactional-discovery-installed.test.ts": {
+-      "afterSha256": "7120504ceaa804baf96ddc4e2c167c459b84fca0e0a9ad6e7255e49c061b3255",
++      "afterSha256": "5b2d59a9f959294a3e9899ec613b3d88073cbbc9da3b22bde069375695516f20",
+       "beforeSha256": "7cf8822108489f3fb2f9c5ca1d97c6d7b832acca95a2f7d891c3413404d90c49"
+     },
+     "apps/bdptest/src/transactional-schema-installed.test.ts": {
+@@ -38,16 +65,28 @@
+       "beforeSha256": "f2dd0993c4fa61742435d3bedb101afb021ca0f1b5904147ab367ba243286bd1"
+     }
+   },
++  "previousActualBinaryDiffSha256": "6eea8983e577d393efe2c663bedd3d2becaeac3b4258a49ab7d3f89740174fe1",
++  "previousIndependentCorrectedSourceNative": {
++    "closureSha256": "dec1b0a4cf9054e6eea6cac4e64b4c96f926fb394e53c5a653becde104768a65",
++    "indexSha256": "cea24b6f8dcf175aa4600c4f0a419b022610339cf8d3f218a5602867b5320776"
++  },
++  "previousRootExactSourceAcceptance": {
++    "scope": "static semantic closure only; no execution release",
++    "sha256": "765f42485308a5660f4cce69d3890de0a2b7c2ba34eec1770fcbc5b04e5e7614"
++  },
++  "previousRootGitInspectionSha256": "06cbef41fbdeddb67a7673876a639799c177aa8c5dd89370a57ddb1d51b053b0",
++  "previousSourceIdentity": "9b7d3a753bc22a3188f5dda7199fdb7321f65dfa0fa745cce082f3f82a837a9f",
+   "rootExactSourceAcceptance": {
+-    "scope": "Root current679/9b7d/actual4d576 Git/source identity only; independent lint correction/native mechanics and root execution disposition PENDING",
+-    "sha256": "f35d51be84bfa462cd84785154e64cd902322a647ee5dc312d628816fe661220"
+-  },
+-  "rootGitInspectionSha256": "f35d51be84bfa462cd84785154e64cd902322a647ee5dc312d628816fe661220",
+-  "rootGitStatusAndStagedObservation": "Root f35d51be observed679 exact/six unstaged/no staged or untracked/cceHEAD/tree675; author no Git",
+-  "sourceAuthorBindingSha256": "cdd011b47077fb9db4eb9ddccf0e103b009891dc74f8ace718b704e51b0ddcd1",
+-  "sourceAuthorFreezeSha256": "7b3c9dbb4965c688f9c2dc0cdca78d5e6b440dd45e75795bb03dc16ca5323193",
++    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/tx-discovery-snapshot-root-source-acceptance-1/acceptance.json",
++    "scope": "root semantic+exact current source acceptance ONLY; P7 mechanics/execution remain CLOSED",
++    "sha256": "d310d113e13758197b6f430eb7c7fda1c0985aac545e82225d675731cb64de97"
++  },
++  "rootGitInspectionSha256": "8e5814f79b3fe7da25b017bbdda1c7aae90e2d2de075a89538084db43b555182",
++  "rootGitStatusAndStagedObservation": "Root8e5814f7 observed same cceHEAD/tree675/sixdirty/no staged or untracked; P7 author no Git",
++  "sourceAuthorBindingSha256": "b8a17bd1e0dde1d35b888a20741ead70c1a231611856ba13b55db46748118a0c",
++  "sourceAuthorFreezeSha256": "268ee16e9388dec80a80728d2890df1cec5f45953eef9880860432d99904b6d7",
+   "sourceBindingFinalized": true,
+-  "sourceIdentity": "9b7d3a753bc22a3188f5dda7199fdb7321f65dfa0fa745cce082f3f82a837a9f",
++  "sourceIdentity": "a61cd3fbf9fac68e3aad857a24a2456dd16b83048067eef85348d7091c0aa08e",
+   "trackedSourceFiles": {
+     ".github/workflows/ci.yml": "268c9563e8d2f4fa4b7314492cb6c4994f7c76da9b26cda7a74c7e5b3c6f664a",
+     ".gitignore": "ed05d0a2ee67a19f6319d2e33ba49de701b30fb7d172ece3a909d0fbbbcc9e48",
+@@ -100,7 +139,7 @@
+     "apps/bdptest/src/transactional-collection-minimum-installed.test.ts": "bc9d19959df0249b5b7c195c2f24a2cde4462db56de3e0b816c7fdf01f5ab048",
+     "apps/bdptest/src/transactional-depth-key-order-installed.test.ts": "f4e19ef9b7aba1a12f3376540257b9680e27dcd00936048b066eb7667ebe19fe",
+     "apps/bdptest/src/transactional-direct-refusal-installed.test.ts": "c817729792a8bd97473b4b7ebe06474d4a0c27bcd5122e58268b997aa03408b0",
+-    "apps/bdptest/src/transactional-discovery-installed.test.ts": "7120504ceaa804baf96ddc4e2c167c459b84fca0e0a9ad6e7255e49c061b3255",
++    "apps/bdptest/src/transactional-discovery-installed.test.ts": "5b2d59a9f959294a3e9899ec613b3d88073cbbc9da3b22bde069375695516f20",
+     "apps/bdptest/src/transactional-event-missing-context-installed.test.ts": "25f1738d78064670997c9b50aff503bf978e18eed0d7b02555d072165b02bf81",
+     "apps/bdptest/src/transactional-event-sse-installed.test.ts": "5bc8fd664215c14de913e994b26a4792753d6b372317f21f028850021b9ac7c7",
+     "apps/bdptest/src/transactional-fresh-depth-installed.test.ts": "df4030346fc5ec402c0d77d5a5c9953542f341aa86e242d2a5e6cdcf9e09f991",
+@@ -730,27 +769,5 @@
+     "vitest.evidence.config.ts": "6b2fee31033acf4843bc923dd864ee5c65501ec658ce0fedc9ebc549e8870dda"
+   },
+   "tree": "6757829bd5b700faf28df39071190a272add90c9",
+-  "worktree": "/Users/dbox/repos/wt/vickie/vickie-tx-discovery-minimum",
+-  "previousSourceIdentity": "5964d40af0ced41634e47df86cda7ac01b86768c51970e557b60ffbfc9739907",
+-  "previousRootExactSourceAcceptance": {
+-    "scope": "static semantic closure only; no execution release",
+-    "sha256": "765f42485308a5660f4cce69d3890de0a2b7c2ba34eec1770fcbc5b04e5e7614"
+-  },
+-  "previousIndependentCorrectedSourceNative": {
+-    "closureSha256": "dec1b0a4cf9054e6eea6cac4e64b4c96f926fb394e53c5a653becde104768a65",
+-    "indexSha256": "cea24b6f8dcf175aa4600c4f0a419b022610339cf8d3f218a5602867b5320776"
+-  },
+-  "independentAnnotationPrecision": {
+-    "accepted": true,
+-    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/tx-discovery-validation-preparation-4/context/preparation3-native/annotation-closure.json",
+-    "sha256": "0132cf6454374afc98cca0f7163f090562b664ca040e0278df195bf020d65a6c",
+-    "reviewedPreviousSourceBindingSha256": "00459b95b289ba42a4da948139516c3039bd81ea2a739b9dceb92c95208f7bfe",
+-    "basis": "Exact same679 source bytes, sourceIdentity5964d40a and binary6eea; only preparation metadata rebind. Static type annotation precision, no compiler pass."
+-  },
+-  "actualClaudeReadThreeAnnotationCorrection": false,
+-  "historicalActualCodeOnly": true,
+-  "previousActualBinaryDiffSha256": "6eea8983e577d393efe2c663bedd3d2becaeac3b4258a49ab7d3f89740174fe1",
+-  "previousRootGitInspectionSha256": "06cbef41fbdeddb67a7673876a639799c177aa8c5dd89370a57ddb1d51b053b0",
+-  "independentLintCorrectionPrecision": "PENDING",
+-  "actualClaudeReadLintCorrection": false
++  "worktree": "/Users/dbox/repos/wt/vickie/vickie-tx-discovery-minimum"
+ }

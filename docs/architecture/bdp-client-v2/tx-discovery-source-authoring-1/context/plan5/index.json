@@ -1,0 +1,63 @@
+{
+  "state": "FROZEN CLOSED PLAN5 MINIMAL RECEIPT-RULE OVERLAY",
+  "basePlan4IndexSha256": "991e4ecd87aba8b08b6eda9f2ba7c0637a1ecdefe1f0aedddff5bbafe00a1083",
+  "compositionSha256": "28199eab6d3b99cab759e242854c0503f0f1c4b4da4f0fd3ac0e70922d96a3ea",
+  "sourceBindingSha256": "6730e80456f99be787e5409e111a175cc24fdd38a0ce5c50d6063c7613ce8e89",
+  "correctedColdPositiveSha256": "cd80851dda5be952c2a3f5c4c19b9ff047a7f14a6d801dff4b21a1f63625756f",
+  "rootDispositionSha256": "078a52144946e0080fae42067940707c78fe1775175a518c20abbb7104b23a57",
+  "nativePlan4ClosureSha256": "71a3dc3186b1589dc308c6bc5db26e9104e4f619c9908e552c8dfc31a9052143",
+  "fileCountExcludingIndex": 12,
+  "sourceAuthoringReleased": false,
+  "executionReleased": false,
+  "secondActualPlanAllowed": false,
+  "files": {
+    "closed-state.json": {
+      "sha256": "f12f967b62eafb352a895aa6e6195b95840c7da9046cf9caf2fd3e5508e44ab5",
+      "bytes": 541
+    },
+    "cold-positive-requests.json": {
+      "sha256": "cd80851dda5be952c2a3f5c4c19b9ff047a7f14a6d801dff4b21a1f63625756f",
+      "bytes": 24999
+    },
+    "composition.json": {
+      "sha256": "28199eab6d3b99cab759e242854c0503f0f1c4b4da4f0fd3ac0e70922d96a3ea",
+      "bytes": 78268
+    },
+    "context/native-plan4-closure.json": {
+      "sha256": "71a3dc3186b1589dc308c6bc5db26e9104e4f619c9908e552c8dfc31a9052143",
+      "bytes": 888
+    },
+    "context/native-plan4-findings.json": {
+      "sha256": "09c2f729d7edeb8ae51ef7e02915071d76e23d0db9f32cc8760936a93107a742",
+      "bytes": 1032
+    },
+    "context/root-plan4-disposition.json": {
+      "sha256": "078a52144946e0080fae42067940707c78fe1775175a518c20abbb7104b23a57",
+      "bytes": 789
+    },
+    "origins.json": {
+      "sha256": "4d14ea5db05384bf4d82170156a87193c0edf4a2fdaca19e059a1583ffe8b8d8",
+      "bytes": 1290
+    },
+    "plan.md": {
+      "sha256": "0a7383db49f450ee95d10dda30ed1d3838a582c85ef37afb8bc4f73781316a17",
+      "bytes": 2268
+    },
+    "receipt-rules.forward.patch": {
+      "sha256": "11e8f0e7f04d07cea5c3d6f39acf88c55de0c8f9d8ad912c6015890a67adafc3",
+      "bytes": 1299
+    },
+    "receipt-rules.inverse.patch": {
+      "sha256": "b71ba3e7953cb5c4588a36f80d03327e2d59456d700823ab62fff31c19ba5096",
+      "bytes": 1299
+    },
+    "source-binding.json": {
+      "sha256": "6730e80456f99be787e5409e111a175cc24fdd38a0ce5c50d6063c7613ce8e89",
+      "bytes": 1469
+    },
+    "verification.json": {
+      "sha256": "355bb846b0834e7bf67fa5edf0790ede490bc9234a3e3f9d6dbac7d42bafe08a",
+      "bytes": 1715
+    }
+  }
+}

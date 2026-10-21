@@ -1,0 +1,11 @@
+{
+  "N5": {
+    "closed": true,
+    "moduleWitness": "profile-evidence.ts:129-138, guard135",
+    "boundary": "safeData intrinsically captures plain record using existing Proxy/prototype/accessor refusal then rejects>10000 own keys with existing capacity before Object.entries/map/recursive safeData. At10000 permitted by container bound; separate100000nodes/depth128 preserved.",
+    "testWitness": "profile-evidence.test.ts:1259-1327, added1289-1319 inside existingR24",
+    "boundaryControls": "10000 null-valued scalar keys under supplemental traverse capture then correctly refuse malformed exact metadata with configuration-mismatch;10001keys includes final nested accessor, requires capacity before descendant record refusal; getter-invocation count remains0. These are assertions, not executed outcomes.",
+    "safety": "types.isProxy precedes Object.keys/prototype/descriptors; ownData captures data descriptors and never invokes getters; fixed errors and public/private eligibility unchanged."
+  },
+  "priorFullNativeN1N2N3BehaviorN4": "Prior complete source2 native report retained. Exact module delta one capacity guard and one R24-only test block preserve all other bytes; N3 capacity exception now statically closed. No new semantic/runtime acceptance is claimed."
+}

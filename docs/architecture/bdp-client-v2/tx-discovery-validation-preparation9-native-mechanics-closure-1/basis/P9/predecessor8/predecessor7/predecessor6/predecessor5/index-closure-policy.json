@@ -1,0 +1,18 @@
+{
+  "historicalIndicesIncluded": true,
+  "implementationExclusions": [
+    "implementation-hashes.json",
+    "preparation-index.json",
+    "execution-gate.json",
+    "execution-gate.closed.json",
+    "execution-gate.json.successor5.patch",
+    "execution-gate.json.successor5.inverse.patch",
+    "execution-gate.closed.json.successor5.patch",
+    "execution-gate.closed.json.successor5.inverse.patch",
+    "implementation-hashes.json.successor5.patch",
+    "implementation-hashes.json.successor5.inverse.patch",
+    "successor-delta.json"
+  ],
+  "reason": "Exact11 named controls/deltas/manifest containing implementation self SHA only. All other files including historical indices implementation-pinned as SHA STRINGS. Complete preparation index retains sizes and excludes only itself.",
+  "onlyReleaseMutationLater": "Root active execution-gate.json through explicit durable release; closed snapshots/history never mutate."
+}

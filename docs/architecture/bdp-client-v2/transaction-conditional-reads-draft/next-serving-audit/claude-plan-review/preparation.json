@@ -1,0 +1,25 @@
+{
+  "status": "prepared-not-launched",
+  "rootLaunchReleased": false,
+  "planOriginalUnchanged": "061a57d9db704af7ac8c8778ded998e4a64481f861eabaa79ec9a33c229313ec",
+  "baselineRunner": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/pr147-ci-failure/claude-code-review/run.py",
+  "baselineRunnerSha256": "a9cc60371fbc6716d6651919febb3be5e355f15bafd1bb126ab7eb58a9be9748",
+  "pinnedSourceFiles": 13,
+  "headIsChronologyOnly": true,
+  "adaptations": [
+    "Removed exact HEAD precondition and before/after HEAD equality from sourceInputsUnchanged; snapshots/result retain both HEADs.",
+    "Removed unrelated dirty-two-file condition.",
+    "Set headIsChronologyOnly true in process metadata and final result.",
+    "Preserved 900s/TERM895s process-group supervision, safe Read/Glob/Grep-only actual-Claude command, no model override, strict empty MCP, no session persistence, exclusive output/no retry checks, before/after source/artifact/prompt/runner hashes and remote session guard.",
+    "Closed binding must be explicitly released by root. No review executed."
+  ],
+  "hashes": {
+    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-conditional-reads-draft/next-serving-audit/plan.md": "061a57d9db704af7ac8c8778ded998e4a64481f861eabaa79ec9a33c229313ec",
+    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-conditional-reads-draft/next-serving-audit/plan-v2.md": "0f16ffaaf73e108e122fecf5a24b534811446a51333139a730f78329ae278367",
+    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-conditional-reads-draft/next-serving-audit/native-plan-review-complete.md": "8ed535ba441e45bec3e37fc2cc244da9e480b7fe7f04595ddb41e11274bae69c",
+    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-conditional-reads-draft/next-serving-audit/root-native-plan-disposition.md": "13f1dfea87575c3da43c53ffeacad69d7d24d661af84392fd133f35349e1eaf8",
+    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-conditional-reads-draft/next-serving-audit/claude-plan-review/prompt.txt": "a6d5c7edc4049241f899044403b89460f1bf6916b0ea00c7bc05a5f45588d1a2",
+    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-conditional-reads-draft/next-serving-audit/claude-plan-review/run.py": "30f0c752d4a542fb9f6a8c0671e8fd75a27146272c99b20d5371e81efd63576c",
+    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-conditional-reads-draft/next-serving-audit/claude-plan-review/binding.json": "7777e46bb293bd189ec2cc4f11f867c1b47dc39fb75beab2de9f7a5fd11aefe1"
+  }
+}

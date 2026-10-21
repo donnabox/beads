@@ -1,0 +1,161 @@
+{
+  "status": "Authored source-derived successful schedules, not runtime observations",
+  "sourceCallbacks": 17,
+  "newSourceCallbacks": 9,
+  "existingSourceCallbacks": 8,
+  "sourceHttp": {
+    "existingFinite": 15,
+    "existingKnownMinimum": 7,
+    "existingParameterContext": 12,
+    "newOpaque": 10,
+    "total": 44
+  },
+  "installedCallbacks": 2,
+  "installedHttp": [
+    10,
+    4
+  ],
+  "installedChildren": 2,
+  "totalHttp": 58,
+  "sourceDirectories": 17,
+  "installedDirectories": 2,
+  "totalDirectories": 19,
+  "sourceOwnerLifetimes": 19,
+  "installedOwnerLifetimes": 2,
+  "totalOwnerLifetimes": 21,
+  "newSourceDelegatedSubset": {
+    "callbacks": 8,
+    "stores": 8,
+    "note": "Individual A/B/C/X plan schedules govern; exclude HTTP-inferred owner work",
+    "commits": 10,
+    "captures": 11,
+    "readChangesInvocations": 14,
+    "waits": 3,
+    "minimumClockCalls": 15
+  },
+  "newSourceHttpStatuses": [
+    200,
+    200,
+    200,
+    503,
+    503,
+    503,
+    503,
+    500,
+    500,
+    400
+  ],
+  "newInstalledStatuses": [
+    200,
+    200,
+    503,
+    503
+  ],
+  "newDeadlines": {
+    "requestSeconds": 5,
+    "workSeconds": 45,
+    "totalCleanupSeconds": 10,
+    "callbackSeconds": 60,
+    "outerStageSeconds": 120,
+    "termSeconds": 115
+  },
+  "executionAuthorized": false,
+  "newSourceObservationCount": 9,
+  "actualInstrumentation": {
+    "A": {
+      "rows": [
+        "unknown",
+        "pos-01"
+      ],
+      "perRow": {
+        "commits": 2,
+        "captures": 2,
+        "readChanges": 4,
+        "waits": 1,
+        "minimumClocks": 4,
+        "ownerCloses": 1
+      },
+      "captureBreakdown": "one setup capture plus one service admission",
+      "argumentLogging": "field snapshot at real invocation plus actual frozen flag; old context retained separately"
+    },
+    "B": {
+      "commits": 1,
+      "captures": 1,
+      "liveReadChanges": 1,
+      "separateClosedOwnerProbe": 1,
+      "waits": 1,
+      "minimumClocks": 2,
+      "ownerCloses": 1
+    },
+    "C": {
+      "rows": [
+        "already-aborted",
+        "invalid-policy",
+        "throwing-clock",
+        "nonfinite-clock"
+      ],
+      "commitsPerRow": 1,
+      "capturesPerRow": 1,
+      "readChangesPerRow": 0,
+      "waitsPerRow": 0,
+      "minimumClocks": [
+        1,
+        0,
+        1,
+        1
+      ]
+    },
+    "X": {
+      "commits": 1,
+      "captures": 2,
+      "readChangesInvocations": 4,
+      "waits": 0,
+      "minimumClocks": 2,
+      "readDistinction": "default TypeError + unsupported live + foreign live + post-close; not four entered reads"
+    },
+    "D": {
+      "preDispatchMaximum": 10,
+      "expectedStatuses": [
+        200,
+        200,
+        200,
+        503,
+        503,
+        503,
+        503,
+        500,
+        500,
+        400
+      ],
+      "loopRows": [
+        "unknown",
+        "pos-01"
+      ],
+      "opaqueMinimumPolicyMs": 2
+    },
+    "E": {
+      "preDispatchMaximum": 4,
+      "expectedStatuses": [
+        200,
+        200,
+        503,
+        503
+      ],
+      "executorInstances": 1,
+      "routeGrants": 3,
+      "launcherCalls": 1,
+      "defaultMinimumBudgetMs": 1000,
+      "ownerRetryCountObserved": false
+    }
+  },
+  "reports": {
+    "changefeed-opaque-capture": 2,
+    "changefeed-opaque-abort": 1,
+    "changefeed-opaque-preflight": 4,
+    "changefeed-opaque-boundaries": 1,
+    "changefeed-opaque-http": 1,
+    "private-installed-changefeed-opaque-minimum": 1
+  },
+  "historicalInstrumentation": "Historical source and ten-request installed callbacks unchanged; their cleanup/body instrumentation is not relabeled.",
+  "implementedLifetime": "A/B observe outcomes immediately, race entry vs premature settlement, abort then release then drain; D/E retain5s/45s/10s/60s; E actual exit+close required, unknown ownership or cleanup deadline preserves store; socket census unavailable."
+}

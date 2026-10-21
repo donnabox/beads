@@ -1,0 +1,75 @@
+--- /Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-integration-preflight-4/input-readiness.json
++++ /Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-integration-preflight-3/input-readiness.json
+@@ -1,43 +1,51 @@
+ {
+-  "state": "CLOSED DATA; no private assembly authority",
++  "actualPrivateAssemblyAuthorized": false,
++  "allCurrentMapsByteVerified": true,
++  "finalFullPipelineOrSameTargetAccepted": false,
++  "historicalPreflight2": "109 exact files retained; its old D3a9b7/startupd181/carrier283 readiness is historical, not overwritten",
+   "lanes": [
+     {
++      "combinedProof": "UNKNOWN; old passes not reused",
+       "lane": "D1",
+-      "source": "Publishedcce/root/native/localCI accepted increment; no incomingmain"
++      "sourceStatus": "published accepted cce increment; own exact CI/local proof"
+     },
+     {
++      "combinedProof": "UNKNOWN; no ordinary Write activation",
+       "lane": "pureLoader",
+-      "source": "Acceptedfdd682 exact lifecycle ancestor; pure loader proof not runtime admission"
++      "sourceStatus": "published accepted fdd pureloader; explicit startup ancestor"
+     },
+     {
++      "finalValidation": "UNKNOWN/PENDING; no final D3 proof or same-configuration credit",
+       "lane": "D3a",
+-      "source": "Published root fe57ea2942615d5dbe770b9229d0da25f51bf1a7/tree6813c562dc4287bda697c4b7c1d6d94bec342ba4/soleparentcce; current679a61 equals P10 bytes",
+-      "localValidation": "Root/native accepted exactP10 all52 at cce+eed91/a61. Never relabel historical execution as new HEAD.",
+-      "publication": "DraftOPEN PR170 based exactPR168 branch per frozen remote-pr; exactnewcommit CI IN_PROGRESS in publication snapshot, later outcome UNKNOWN here"
++      "laterRootStatusSnapshot": "Root subsequently reports installed01\u201309 and all immediate audits PASS, later stages still RUNNING. This does not establish final D3 acceptance or combined candidate proof.",
++      "sourceStatus": "a61 one-call accepted on previous six-file current candidate, full earlier native/root/annotation/lint chronology pinned",
++      "validationSnapshot": "Root reports P7 first24 source/build/archive/consumer-proof PASS; installed01+audit and installed02 runtime PASS, audit02 in progress; final installed+audits RUNNING toolsession78072. This is received root status only, not independently observed here or final proof. Pinned installed-proof acceptance is a dated bounded receipt."
+     },
+     {
+       "lane": "startup",
+-      "source": "Accepted static corrected7/d181686/80f2,9 cumulative fdd paths;679 protected versus d181",
+-      "validation": "UNRUN combined source; all six TX cold require D3a in same future trusted installation"
++      "sourceStatus": "686/80f2 corrected seven-path successor over d181, full nine-path cumulative fdd source statically accepted by other-native/root; original reviewed checkout preserved",
++      "validation": "UNRUN for corrected combined source; all six TX cold callbacks need D3a routes in SAME installed lifecycle candidate"
+     },
+     {
+       "lane": "D4",
+-      "source": "Accepted static source oneowned4f4f/cce679; no overlap carrier",
+-      "validation": "Actual product callback/collector/negative controls and independent source-bound proof remain not established by this preflight"
++      "sourceStatus": "one cce-relative owned4f4f, source3 static marker/native/root accepted",
++      "validation": "helper4 other-native/root mechanics plus concrete zero-product harness/synthetic and actual source-bound callback/proofs remain UNKNOWN; no previous report credit"
+     },
+     {
+       "lane": "carrier",
+-      "source": "Accepted static corrected4/68178e1/four cce-relative deltas677 protected",
+-      "validation": "Validation/negative harness/positive sidecar/brand/lifecycle/capacity UNKNOWN; no old pass reuse"
+-    },
+-    {
+-      "lane": "G09",
+-      "source": "OPTIONAL_UNACCEPTED current679eeb/HEADcce10dirty, six a61-relative paths",
+-      "native": "One Low G09-CODE-N1; sourceAcceptedfalse",
+-      "actualCode": "ONE actual root30006/CLI53660 IN_PROGRESS per root task snapshot, no terminal/acceptance inferred; activation59a86/durableedd05a34/dispatch pinned",
+-      "allowedUse": "Mechanical prospective optional maps only, not needed by accepted minimum startup choice or adopted into source"
++      "sourceStatus": "681/78e1 corrected4 separate checkout, full other-native/root static source accepted; original clean28341515 preserved",
++      "validation": "F3 retained positive raw sidecar/auditor/lifecycle/capacity and fresh corrected validation UNKNOWN; no inferred CODE exit or future-byte review"
+     }
+   ],
+-  "combinedRuntimeProof": "UNKNOWN for all choices; separate lane/config evidence cannot be pooled",
+-  "sourceAssemblyReleased": false
++  "meaning": "Exact accepted source inputs are available for a future named scoped assembly; this is not final validation or assembly authority",
++  "newCurrentSourceUnknowns": "none for six exact source maps; future integration HEAD/tree/semantic acceptance/tool/build/archive/consumer/config/proof remain UNKNOWN",
++  "sourceIncrementIdentityReady": [
++    "D1",
++    "pureLoader",
++    "D3a-current-a61",
++    "startup-corrected80f2",
++    "D4-marker4f4f",
++    "carrier-corrected78e1"
++  ],
++  "state": "CLOSED preflight DATA; root chooses future private assembly after separate release"
+ }

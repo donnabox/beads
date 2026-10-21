@@ -1,0 +1,158 @@
+# PLAN COUNCIL REVIEW
+**Subject:** proposed installed same-key singleton/batch overlap witness
+**Basis:** `f5511718371a6935614eae6756e796cef71570c2` / tree `3cd1da66ba3a6cbd0bbdaa2442d10002939d826b`
+**Mode:** plan-only; no files read, written or executed. Dirty principal work excluded as an input.
+**Verdict:** the design is largely sound and unusually honest about its limits, but it is **not ready to freeze**. Two findings (D1, D2) invalidate load-bearing claims as written; D3–D5 would make the second-key control or the positive oracle fail for reasons other than the intended assertion.
+
+---
+
+## A. DEFECTS
+
+### D1 — The stated overlap predicate is vacuous, so "proves outstanding-client overlap" does not follow
+**Severity:** high
+**Location:** plan §"Real overlap and transport" ("Require both invoked/end-called before first settled response … Two terminal responses therefore prove outstanding-client overlap"); `ledger.registration.title`.
+**Impact:** `invoked` and `end-called` are both emitted **synchronously** inside `send()` (`read-update-guarded-overlap-installed.test.ts:203–374`: `mark(pair,"invoked")` near entry, `mark(pair,"end-called")` immediately before `req.end(body)`). Because A and B are dispatched before any `await`, both marks for both pairs necessarily precede any `settled` mark on the JS event loop. The predicate is satisfied by construction even if A connects, is written, is fully served and closed before B's socket is assigned — i.e. in the fully serialized case with zero overlap at the authority. "Different actual socket identities" is likewise forced by `agent:false` + two `request()` calls. So the asserted milestone oracle distinguishes nothing, and the "therefore" in the conclusion is unsupported. This matters more than usual here: given `store.execute`/`executeObserved` appear synchronous after admission (`transaction-submission.ts:196–207`), the single-threaded runtime will *normally* serialize A to terminal before parsing B, which is precisely the case the predicate cannot exclude.
+**Smallest correction:** replace the tautological conjunct with the one non-tautological, client-observable ordering already being recorded: require `ordinal(finish[A]) < ordinal(response-start[first])` **and** `ordinal(finish[B]) < ordinal(response-start[first])` as a named oracle. If that ordering is judged too timing-fragile to require, then delete the word "prove" and the overlap claim from the conclusion, keep it as a recorded `bothWritesPrecededFirstResponse` boolean, and retitle the registration (currently frozen by `ledger.registration.regex`) to something the evidence supports, e.g. `"… across same-key singleton and batch requests dispatched without awaiting"`. Do not keep the current predicate *and* the current conclusion.
+
+### D2 — Ledger `configuration` and `artifacts` do not match the installed adapter's exact allowlists
+**Severity:** high
+**Location:** `ledger.configuration` (10 keys), `ledger.artifacts` (top-level array of `{kind,retrievalUri,utf8,bytes,sha256}`) vs `transaction-installed-configuration.ts:18–57`.
+**Impact:** the adapter extracts `administrativeData(input,["scope","directory","create","credentials","artifacts"])`, then `administrativeData(own.artifacts,["descriptors","schemas"])`, then per entry `administrativeData(v,["retrievalUri","utf8"])`. The ledger's configuration carries five members outside that allowlist (`authorityMode`, `port`, `testSeams`, `history`, `claimEligible`) and its artifacts are a flat `kind`-discriminated array with three extra members each, not `{descriptors:[…],schemas:[…]}`. The plan prose is correct ("exactly the existing launcher scope/directory/create/artifacts/credentials fields"), but the **ledger is the frozen implementation contract** and contradicts it. If `administrativeData` rejects unknown members — which its defensive siblings in the same file strongly suggest — an implementer transcribing the ledger literally gets a startup `TypeError`, classified as `startup`, which the plan itself declares an unacceptable control outcome. `credentials[0]` is the one block that is already exactly right.
+**Smallest correction:** split the ledger into `wireConfiguration` containing exactly `{scope,directory,create,credentials,artifacts:{descriptors:[{retrievalUri,utf8}],schemas:[{retrievalUri,utf8}]}}` and a separate `evidence` block holding `bytes`/`sha256`/`kind` and the `derivedOrAbsent` notes (`port:0` and `authorityMode:"canonical"` are *adapter-forced*, not caller inputs — `transaction-installed-configuration.ts:61–62`). While there, add a cheap startup oracle: assert the candidate's `configurationMetadata.authorityMode === "canonical"` and `metadata.scope === captured.scope`, which `transaction-installed.ts:10–12` already computes.
+
+### D3 — The control's context-header rule will trip before the named assertion
+**Severity:** high
+**Location:** plan §"Exact second-key control" ("valid context") read against §"Receipt, Resource and Event oracles" ("Terminal positive responses and reads must have pos-1").
+**Impact:** in the distinct-key control there are two committing transactions at `pos-1` and `pos-2`. Per spec 5263–5277 the serving `BDP-Scope-Position` is "at or after `effectPosition` on a terminal receipt served synchronously" — so the response whose `effectPosition` is `pos-1` may legitimately serve `pos-1` **or** `pos-2`, nondeterministically, depending on which handler's response is composed after the other commits. If the control inherits the positive's strict "must have pos-1" rule, it fails on a context oracle *before* reaching `same-key-overlap:shared-receipt-id`. The plan's own adjudication rule ("No transport, deadline, startup, schema, report-write or cleanup failure is an acceptable control. Generic exit 1 is insufficient.") then disqualifies the control, and there is "no replacement run".
+**Smallest correction:** state the control's context rule separately and weakly: for each control response, require `pos-N` grammar, `header position >= that response's own effectPosition`, and `header position <= pos-2`; require epoch/view headers to equal the recorded tuple. Keep the strict `pos-1` rule scoped to the positive only.
+
+### D4 — The control's "independent per-response" position check is actually a joint check
+**Severity:** medium
+**Location:** plan §"Exact second-key control" ("known isolated positions pos-1/pos-2"), `ledger.control.facts` ("unordered required/effect positions pos-1,pos-2").
+**Impact:** which distinct-key transaction lands at `pos-1` is a race outcome. No *per-response* assertion can say "this one is pos-1"; only the set equality `{A.requiredPosition, B.requiredPosition} === {pos-1, pos-2}` is well-formed, and that is a joint comparison. As written the ordering requirement ("validate each pair response independently … then set named oracle") is ambiguous about where the joint step sits, inviting either a flaky per-response assertion or a joint assertion accidentally placed after the named one.
+**Smallest correction:** specify three ordered phases explicitly: (1) per-response — schema, `completed`/`available` shape, **its own sent key**, full created Resource facts, `requiredPosition === effectPosition` with `pos-N` grammar, context per D3; (2) joint pre-assertion — unordered `{pos-1,pos-2}`, distinct `transaction`, distinct allocated Resource id; (3) named oracle `same-key-overlap:shared-receipt-id`, `A.id === B.id`. Phase 2 is the last thing before the throw.
+
+### D5 — The closed field set for `R` and the "GET4 item equals R" equality straddle two schemas with different `metadata` requirements
+**Severity:** medium-high
+**Location:** plan §"Receipt, Resource and Event oracles" ("The terminal Resource R has exactly id/type/revision/properties/metadata"; "GET4's one complete Resource equals R"; "`data` exactly `{revision:R.revision,properties:R.properties,metadata:R.metadata}`") vs `#/$defs/beadRecord` (metadata **optional**) and `#/$defs/currentBeadRecord` (metadata **required**, `links`/`ownedLinks` permitted).
+**Impact:** the receipt's `results[0].resource` validates as `beadRecord ∧ {links:false}` where `metadata` is optional; GET4's item validates as `currentBeadRecord` where `metadata` is required. `transaction-batch.ts:790–798` writes `metadata: subject.metadata ?? {}` into the event payload — the `??` is direct evidence that a `ResourceRecord` can carry `metadata === undefined`. If the receipt's `R` omits `metadata` while the current-record read adds `{}`, then (a) the closed "exactly id/type/revision/properties/metadata" assertion fails, (b) `GET4 item === R` fails, and (c) the event-data expression becomes `{…, metadata: undefined}`, which `toStrictEqual` distinguishes from the actual `{}`. The same exposure exists for an empty `links` collection on the current record. The supplied `resource-evaluator.ts:608–661` excerpt stops before record assembly, so none of this is decidable from the frozen inputs.
+**Smallest correction:** (i) assert the Event's `data.metadata` as the literal `{}`, not as `R.metadata`; (ii) make the `R` field set an observe-then-pin item at the measured draft gate rather than a pre-pinned closed shape, naming `resource-evaluator.ts` record construction and `transaction-read.ts` current-record serialization as required pins; (iii) if `R` and the GET4 item legitimately differ by `metadata`/`links`, compare them under one named, explicitly stated normalization rather than raw strict equality.
+
+### D6 — `source-binding.json` does not pin files that the packet itself excerpts, nor the files those excerpts depend on
+**Severity:** medium
+**Location:** `source-binding.json.files` vs the supplied excerpt headers for `transaction-installed-configuration.ts` (`e15cb54266848fdd4aa08b19b37f1b2eb080f4599d9414fad8d85b6f33f35d99`) and `transaction-installed.ts` (`afddc6b0304fee4762c79e40ac6610a281ca8791928d8f779a900a7f6eac881a`).
+**Impact:** two files are quoted with full-file digests that appear nowhere in the binding, so the "frozen source basis" and the review packet disagree about what is pinned; neither digest can be rechecked at the integration gate. Three further load-bearing files are absent entirely: `development-contracts.ts` (decides D2's outcome), `installed-contract-artifact.ts` (`CONTRACT_ARTIFACT_CEILINGS`, bounds the 170/166-byte artifacts), and `installed-payload.ts` (`installedPayloadIdentity`, which the plan's "independently recomputed payload digest" gate rests on). The binding's `completeness` note ("meaningful review dependencies, not exhaustive runtime/build closure") covers breadth, not self-inconsistency about quoted files.
+**Smallest correction:** add those five paths with digests to `source-binding.json.files` before freeze. No other change.
+
+### D7 — Declared ownership of `transaction-implementation-progress.md` collides with the excluded concurrent work
+**Severity:** medium
+**Location:** `ledger.ownedPaths[1]`; `source-binding.json.files["docs/design/transaction-implementation-progress.md"]` = `4046f860…`; plan §"Purpose and scope" ("Own exactly two prospective files") and §"Validation and integration gates" ("isolated two-path ownership").
+**Impact:** that file is currently modified in the working tree by the concurrently reviewed principal draft. The binding pins the *committed* blob, which will not match the tree at write time. "Isolated two-path ownership" is therefore asserted but not achievable for that path without touching or racing the excluded work — exactly what the plan promises not to do ("the concurrently reviewed dirty principal draft is untouched"). I am not treating the dirty content as an input; the defect is in the ownership claim, which is a plan artifact.
+**Smallest correction:** move the progress-doc paragraph explicitly behind the existing `futureGate` ("integrate actual principal-main before final validation/publication"), leaving `apps/bdptest/src/transactional-same-key-overlap-installed.test.ts` as the only pre-integration owned path; and state the write rule as append-only at a named anchor, re-read from the tree at write time rather than from the pinned blob.
+
+### D8 — The sanctioned inconclusive outcomes are not reflected in the frozen counts, and the one-pending branch leaves requests 3–6 undefined
+**Severity:** medium
+**Location:** plan §"Fixed inputs and six-request positive" ("If both pair responses are pending … stop as an inconclusive bounded witness") vs `ledger.counts.positiveHttp:6`, `expectedTcpConnections:8`; plan §"Receipt, Resource and Event oracles" ("When one pending, compare all common identity fields").
+**Impact:** two gaps. (1) A sanctioned both-pending stop issues 2 HTTP requests, not 6; the ledger offers no minimum or inconclusive variant, and the copied precedent ends with an exact count assertion (`expect(attempted).toBe(10)`, `read-update-guarded-overlap-installed.test.ts:532–574`) — transcribed naively, the inconclusive path fails on an attempt-count assertion instead of reporting inconclusive. (2) The one-pending/one-terminal branch is never resolved: the plan does not say whether requests 3–6 run, which response supplies "the entire independently validated terminal baseline" for the GET3/POST6 equality, or what GET3 must accept if it returns `200` with a still-`pending` body.
+**Smallest correction:** add `positiveMinimumHttp: 2` (and matching minimum TCP) to `ledger.counts`; make the attempt-count assertion a per-outcome expectation keyed to the recorded outcome class; and state the one-pending rule in one sentence — baseline is the single terminal response, requests 3–6 proceed, GET3 must be `200`/terminal and equal that baseline, `pendingObserved:true` is recorded, and the cross-receipt comparison degrades to the common identity fields only.
+
+### D9 — Spec citation ranges are wrong for two load-bearing anchors
+**Severity:** medium (precision; these anchors are frozen and will be reused in the progress prose)
+**Location:** plan §"Purpose and scope": "The concurrent-join obligation is at spec3898–3901/3933–3940"; "Spec3910–3931 excludes carrier from identity and equates a singleton with its one-operation batch."
+**Impact:** against the supplied `docs/specs/bdp.md:3894–3940`, lines 3898–3901 carry the *unresolved-reservation*, *idempotency-conflict* and *post-admission-disconnection* rules — not the join obligation, which is 3894–3896 and 3935–3940. And the equivalence sentence the plan relies on ("A one-operation batch, the equivalent singleton request, and the equivalent sequence member therefore present one semantic request, and any of them retrieves the receipt the others created") begins at 3931 and ends at **3933**; `3910–3931` truncates it mid-sentence, dropping the exact clause the witness exists to exercise.
+**Smallest correction:** cite 3894–3896 + 3935–3940 for the concurrent-join obligation, and 3910–3933 for carrier exclusion plus singleton/one-operation-batch equivalence.
+
+### D10 — Spec-sanctioned `503 temporarily-unavailable` is classified as oracle failure, not bounded-inconclusive
+**Severity:** low-medium
+**Location:** plan §"Receipt, Resource and Event oracles" ("Each initial response must be 200/completed/available or 202/pending, never a failed receipt") vs spec 4553–4584 (transient abort → direct `503` to the original request *and every joined duplicate*) and `transaction-submission.ts:155–175` (`comparison-refusal` and `temporarily-unavailable` both reach `503`).
+**Impact:** low probability for this fixture (no dependency template, so `admitKey` returns `existing` immediately — `transaction-store.ts:1059–1091`), but if it occurs the run reports an oracle failure for a response the spec explicitly permits. That contradicts the plan's own stated restraint ("this plan does not impose that expectation on every conforming authority").
+**Smallest correction:** add `503`/`temporarily-unavailable` on a pair response to the same bounded-inconclusive class as both-pending — retain facts, record the class, stop, do not retry and do not call it a protocol violation.
+
+### D11 — Test cleanup bound equals the launcher's own internal bound, making failure attribution nondeterministic
+**Severity:** low
+**Location:** `ledger.bounds.cleanupMs: 10000` vs `scripts/transaction-installed-observation.mjs` `bounded()` (`setTimeout(…, 10000)` → `SIGKILL` + `"installed transaction process deadline"`).
+**Impact:** on a hung close, the launcher's deadline and the test's cleanup deadline fire at the same nominal instant; which error surfaces is a race, so the retained `failure class` for a cleanup hang is not reproducible.
+**Smallest correction:** raise `cleanupMs` to 12000 (still inside `testMs: 60000`, since `workMs 45000 + 12000 = 57000`) so the launcher's specific cause reliably surfaces first.
+
+### D12 — "config digest" as retained evidence is computed over credential-bearing configuration
+**Severity:** low
+**Location:** plan §"Lifecycle and retained evidence" ("Retain source/package/config/artifact/policy/auth identity digests" alongside "credential-bearing configuration may not [be preserved]").
+**Impact:** the digest domain is unspecified. Over the live object it includes an `ephemeral randomBytes(24)` token, so the value changes every run and is comparable to nothing — the evidence is inert — while sitting adjacent to an explicit no-credential rule. (The token itself remains safe in transit: `launchInstalledTransaction` passes configuration over the IPC channel, never argv or env, so it is not exposed via `ps`.)
+**Smallest correction:** define the configuration digest over a credential-free projection — `credentials[].token` replaced by its length and charset class, all other members verbatim — and say so in the ledger.
+
+### D13 — Store-directory root is unpinned, which makes the removal/absence evidence unauditable on darwin
+**Severity:** low
+**Location:** plan §"Lifecycle and retained evidence" ("prefix `bdp-same-key-overlap-installed-`"; "Remove directory only before any launch or after actual known exit"; "directory absence"); `ledger.configuration.directory`.
+**Impact:** no parent root is named, yet `transaction-installed-configuration.ts:29` requires `path.isAbsolute(directory)` and `launchInstalledTransaction` does `mkdir(…, {recursive:true, mode:0o700})`. On this platform `os.tmpdir()` resolves through a symlink (`/var` → `/private/var`), so an unresolved path recorded as evidence will not match a `realpath`-based absence check, and nothing in the plan establishes the directory is outside the repository worktree.
+**Smallest correction:** pin the root as `realpathSync(os.tmpdir())`, record the resolved absolute path, and assert it is not under the repository root.
+
+---
+
+## B. OMITTED-CONTEXT DEPENDENCIES
+*Load-bearing inputs the packet does not supply. Flagged, not invented.*
+
+### O1 — `packages/server/src/development-contracts.ts`
+`administrativeData` / `administrativeArray` semantics — strict rejection of unknown members vs. silent projection. Decides whether D2's worst case is a startup `TypeError` or merely an imprecise frozen contract. Not in `source-binding.json`.
+
+### O2 — `packages/server/src/transaction-installed-process.ts` (pinned at 2630 B, contents omitted)
+The `qualification.ready` message schema. The ledger asserts `"actual dial endpoint from ready.listenUrl"` and the plan asserts "safe ready allowlist" and "actual ready createBead target" — but nothing supplied shows whether ready carries `listenUrl`, whether it forwards `configurationMetadata` (needed for D2's proposed startup oracle), or whether it advertises any operation targets at all. If it does not, the two POST targets are **scope-constructed**, not ready-supplied, and the plan's wording should match the distinction it draws for request 3 ("an issued receipt root, not constructed discovery").
+
+### O3 — `packages/server/src/transaction-read.ts` (pinned, contents omitted)
+Two separate dependencies: (a) whether `?limit=32` is an accepted collection parameter, its bounds, and the treatment of unknown/invalid parameters — request 4 sends it and the plan requires a complete one-item page with `next:null`; (b) current-record serialization, which decides D5 (`metadata` presence, empty `links` emission) and the `eventPage.source` value. Note request 4's query serves only to exercise the `pathname+search` adaptation; if O3(a) cannot be pinned before freeze, dropping the query removes the dependency without losing the witness.
+
+### O4 — `applyReadHttpSemantics` (`transaction-http.ts:628–630`, body omitted)
+The plan asserts `private`/`no-store` and exact content-type on *every* response, but only GET/HEAD pass through `applyReadHttpSemantics`; POST responses take the other branch and additionally carry `vary: Accept` (`transaction-http.ts:620`). The per-target `Cache-Control` values are not supplied. Pin them or convert to observe-then-pin; and add `vary` to the retained safe-header set for POSTs or state it is deliberately unchecked.
+
+### O5 — `resource-evaluator.ts` record assembly
+The supplied excerpt (608–661) covers allocation and resolution but stops before the `ResourceRecord` is constructed. Directly load-bearing for D5.
+
+### O6 — `transaction-batch.ts` singleton normalization and `store.execute`/`executeObserved` result construction
+Because the receipt is shared, only one carrier actually executes, and which one is a race that the receipt body does not expose. The pinned `results[0]` shape is almost certainly carrier-invariant — `#/$defs/receiptResult` forces `operationIndex: 0` for a single operation, and neither carrier supplies a `name` so `operationName` is absent either way — but `prepareTransactionForReceiving` and the result builder are not supplied, so this is reasoned from schema rather than from source.
+
+### O7 — Spec ranges 2130–2147 and 4589–4596 / 4627 / 4632; catalog `transactional.idempotency.concurrent-join`
+Cited as authority for authority-allocated IDs, the mutation-200/202 and receipt-GET-200 distinction, and the obligation itself. The supplied spec window ends at 4584, mid-way through "The batch target's responses are:"; the catalogs are excluded wholesale. Unverifiable as cited.
+
+### O8 — `apps/bdptest/test-support/transactional-execution-binding.ts` (pinned, contents omitted)
+Whether a new top-level callback must be registered in a catalog/manifest to satisfy boundary or lint rules. The plan forbids catalog/manifest edits and declares "the extra control is not another registered case"; if the binding enforces registration, those two commitments conflict.
+
+### O9 — Runtime listener/request-target parsing (Host handling)
+The ledger pins `host: reference.invalid` on all six requests, but the one working committed precedent (`read-update-guarded-overlap-installed.test.ts:203–374`) sets **no** `host` header and lets Node generate `127.0.0.1:PORT`. Host appears cosmetic — receipt ids are built from the configured scope (`transaction-store.ts:1113`), not from Host — but whether the parser validates or rejects a Host/authority mismatch is omitted. Either pin it from `transaction-runtime.ts` or keep the precedent's behaviour.
+
+### O10 — `grant()` / allowlist canonicalization, and the precedent's hard-coded `attempted >= 10`
+Both sit in the copied `send()` pattern. The query-preserving adaptation (`path = pathname + search`) requires `granted`/`grant()` to canonicalize `?limit=32` identically; `grant()` is omitted. The `attempted >= 10` ceiling must become 6 for this witness. These are the same two call sites as the `Host` adaptation.
+
+### O11 — Schema `$defs` referenced but not supplied
+`absoluteHttpUrl`, `dateTime`, `wireToken`, `properties`, `metadata`, `localName`, and especially **`createdData`** — the last governs the Event payload and is the counterpart to D5's `metadata: subject.metadata ?? {}`. The plan already excludes these generically; flagging `createdData` specifically as load-bearing.
+
+### O12 — Build/package inventory
+"all eight production dependency package manifests", exact argv, tool paths, archive member lists. The plan correctly gates these at the measured draft gate; recorded here only so the count `8` is not mistaken for a verified figure.
+
+---
+
+## C. OPTIONAL POLISH
+
+1. **Name the two deliberate deviations from the copied pattern as a checklist** so they survive transcription: `path = target.pathname + target.search` (the precedent uses `pathname` only, which would silently drop `?limit=32`) and the explicit `host` header. Both are easy to lose; one is silent.
+2. **Cite the milestone helper.** The plan cites `read-update-guarded-overlap-installed.test.ts:200–518` for the transport pattern, but `mark()` — which produces all the evidence D1 turns on — spans roughly 181–200 and is cut off by that range. Cite ≈181–374.
+3. **Minor citation off-by-ones:** `transaction-submission.test.ts:299–315` includes the first line of the next `it(`; the test is 299–314. `transaction-batch.ts:790–798` includes the `else if` line; the created emitter is 790–797.
+4. **Cross-check the computed Event ID against observed values.** Compute `H('source', …)` from the GET5 page's own `source` field *and* assert that field equals `scope + 'events/'`; take epoch/view from GET5's own response headers. That makes the pinned literal and the self-consistent check agree, instead of relying on the literal alone (`transaction-events.ts:88–100`).
+5. **Enumerate `E.source` and `E.id` explicitly** in the Event oracle rather than leaving them to "exactly the schema's full fields".
+6. **Drop or justify `beadRecord` in `ledger.schemas`.** Nothing in the six requests validates a standalone bead record — the receipt's resource is reached through `mutationReceipt`, and GET4 through `currentBeadCollection`. Either remove it or state it is used for independent re-validation of the embedded resource.
+7. **Retained-replay is observed only through the batch carrier.** Request 6 replays the batch; the singleton's retained-replay path is never exercised, and in the one-pending branch the singleton may never observe a terminal receipt at all. Either add a seventh singleton replay (and update `positiveHttp`, TCP and body-byte counts accordingly) or state the limitation in the progress prose.
+8. **`ledger.counts.children: 2` should be "2 launch attempts, ≤2 children."** `launchInstalledTransaction` performs `mkdir` before `spawn`, so a provisioning failure yields an attempt with no child — which is precisely the `launchAttempted` case the plan already handles correctly elsewhere.
+9. **Rename `bounds.requestBodyBytes`.** At 65536 it mirrors the precedent's client-side send guard, not `TRANSACTION_RUNTIME_LIMITS.requestBodyBytes` (`transaction-submission.ts:84`). Label it `clientRequestBodyBytes` so the two are not read as one pinned constant.
+10. **Declare the runtime write surface in the ledger.** `ownedPaths` lists two repository files, but a run also creates the store directory and one report file per cohort. Add a `runtimeWrites` block (store root per D13; report paths from `BDP_TRANSACTIONAL_SAME_KEY_OVERLAP_OUTPUT`, exclusive-create, asserted outside the worktree) so the two-path ownership claim is unambiguous about runtime artifacts.
+11. **Record `expiresAt` against the observed response time.** The plan rightly refuses to invent a freshness interval, but request 6's "retained terminal receipt unchanged" silently depends on non-expiry (`expireRow` at `transaction-store.ts:1059` can rewrite a row to `detail:"expired"` with `allocated`). A single recorded assertion that `expiresAt` is after the observed terminal response time closes it without inventing a constant.
+12. **Credit the IPC-only credential path explicitly.** The token reaches the child via `child.send({configuration})` over the inherited IPC channel — never argv, never environment — so it is not exposed to other local users via the process table. Worth stating in the retained-evidence section as a positive property, alongside the existing diagnostics denylist.
+
+---
+
+## Noted as correct — do not weaken at revision
+
+- The 202 handling matches `transaction-http.ts:176–188` exactly (`location === receipt.id`, `retry-after: 1`), and labelling the `Location` assertion "private implementation coverage, not an added normative MUST" is the right call.
+- The pending-receipt shape (six core fields, no terminal fields) matches `#/$defs/mutationReceipt` `oneOf` branch 1 precisely, including the `false` members.
+- `requiredPosition === effectPosition === pos-1` is correct for a one-event commit per `transaction-store.ts:1294–1305` (`effective === true`).
+- All byte counts check out: singleton 108, batch 150, `positivePostBodyBytes` 408, `negativeExpectedPostBodyBytes` 258, `combinedExpected` 666, `combinedMaximumScheduled` 816, `retainedResponseBodiesMaximumBytes` 393216 = 12 × 32768, `launcherStdoutStderrCombinedBytes` 65536 matching the launcher's own kill threshold.
+- The timer nest is actually satisfiable, not merely declared: ready 10 s + pair 5 s + 4 sequential exchanges × 5 s = 35 s ≤ `workMs` 45 s, and 45 + cleanup ≤ `testMs` 60 s. The plan's disclaimer that maxima are not sequentially spendable is honest rather than evasive.
+- `randomBytes(24).toString('base64url')` yields 32 characters, exactly meeting `/^[A-Za-z0-9_-]{32,256}$/` in `transaction-installed-configuration.ts:35`.
+- The `launchAttempted` discipline — refusing to equate an undefined child with a proven stop, and preserving the directory for an external supervisor — is correct against the launcher's startup catch path, which kills and awaits the child but never returns a handle.
+- Refusing to poll, sleep, inject faults or open a pending-window seam; reporting `pendingObserved` only from an actual 202; and disclaiming server-side admission overlap are all the right restraints and are exactly what keeps D1 a fixable wording-and-predicate problem rather than a false claim.

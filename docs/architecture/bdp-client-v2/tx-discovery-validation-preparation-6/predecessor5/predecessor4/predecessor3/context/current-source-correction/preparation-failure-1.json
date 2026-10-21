@@ -1,0 +1,6 @@
+{
+  "utc": "2026-10-18T09:41:37.638736+00:00",
+  "stage": "metadata canonical identity encoding assertion",
+  "failure": "Assumed prior sourceIdentity was sha256 of map-only canonical encoding; assertion rejected it. Source mutation already complete exactly3annotations; all copies/maps/origins preserved; no compiler/runtime/helper/Git execution or source retry.",
+  "resolution": "Inspect actual source binding identity formula and retain previous identity as prior authoritative binding, do not silently equate it to pretty map hash."
+}

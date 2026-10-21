@@ -1,0 +1,25 @@
+{
+  "Ainitial": {
+    "chunk_id": "5ea19f",
+    "exit_code": 0,
+    "original_token_count": 0,
+    "output": "",
+    "wall_time_seconds": 9.199280958
+  },
+  "Aterminal": {
+    "chunk_id": "5ea19f",
+    "exit_code": 0,
+    "original_token_count": 0,
+    "output": "",
+    "wall_time_seconds": 9.199280958
+  },
+  "Bterminal": {
+    "chunk_id": "bb9332",
+    "exit_code": 1,
+    "original_token_count": 192,
+    "output": "Traceback (most recent call last):\n  File \"<stdin>\", line 11, in <module>\nAssertionError\nTraceback (most recent call last):\n  File \"/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-trusted-startup-validation-preparation-2/guarded-action-session-20261018-021624-549f.py\", line 20, in <module>\n    subprocess.run(sys.argv[1:], check=True)\n    ~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/opt/homebrew/Cellar/python@3.14/3.14.5/Frameworks/Python.framework/Versions/3.14/lib/python3.14/subprocess.py\", line 578, in run\n    raise CalledProcessError(retcode, process.args,\n                             output=stdout, stderr=stderr)\nsubprocess.CalledProcessError: Command '['/opt/homebrew/opt/python@3.14/bin/python3.14', '-']' returned non-zero exit status 1.\n",
+    "wall_time_seconds": 0.185259292
+  },
+  "C": "NOT_INVOKED",
+  "kind": "TRUSTED_ROOT_SOURCE_OBSERVATIONS_NOT_INDEPENDENTLY_DECODED_RAW_TOOL_RECEIPTS"
+}

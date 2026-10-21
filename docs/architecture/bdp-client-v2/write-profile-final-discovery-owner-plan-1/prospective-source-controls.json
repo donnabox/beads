@@ -1,0 +1,138 @@
+{
+  "state": "UNAUTHORED/UNEXECUTED",
+  "captureControls": [
+    {
+      "id": "C01",
+      "stimulus": "all12 prescribed relative directory segments resolve against actual directory URL",
+      "domain": "source unit data, no actual installed profile credit"
+    },
+    {
+      "id": "C02",
+      "stimulus": "non-string value",
+      "domain": "source unit data, no actual installed profile credit"
+    },
+    {
+      "id": "C03",
+      "stimulus": "empty string",
+      "domain": "source unit data, no actual installed profile credit"
+    },
+    {
+      "id": "C04",
+      "stimulus": "dot traversal ../x",
+      "domain": "source unit data, no actual installed profile credit"
+    },
+    {
+      "id": "C05",
+      "stimulus": "embedded slash a/b",
+      "domain": "source unit data, no actual installed profile credit"
+    },
+    {
+      "id": "C06",
+      "stimulus": "query x?y",
+      "domain": "source unit data, no actual installed profile credit"
+    },
+    {
+      "id": "C07",
+      "stimulus": "fragment x#y",
+      "domain": "source unit data, no actual installed profile credit"
+    },
+    {
+      "id": "C08",
+      "stimulus": "scheme x:y",
+      "domain": "source unit data, no actual installed profile credit"
+    },
+    {
+      "id": "C09",
+      "stimulus": "backslash",
+      "domain": "source unit data, no actual installed profile credit"
+    },
+    {
+      "id": "C10",
+      "stimulus": "encoded slash %2F",
+      "domain": "source unit data, no actual installed profile credit"
+    },
+    {
+      "id": "C11",
+      "stimulus": "foreign //authority",
+      "domain": "source unit data, no actual installed profile credit"
+    },
+    {
+      "id": "C12",
+      "stimulus": "unknown from key",
+      "domain": "source unit data, no actual installed profile credit"
+    }
+  ],
+  "contextAssertionControls": [
+    {
+      "id": "H01",
+      "stimulus": "equal scope epoch token",
+      "domain": "source unit data, no actual installed profile credit"
+    },
+    {
+      "id": "H02",
+      "stimulus": "equal authorization-view token",
+      "domain": "source unit data, no actual installed profile credit"
+    },
+    {
+      "id": "H03",
+      "stimulus": "equal scope-position token",
+      "domain": "source unit data, no actual installed profile credit"
+    },
+    {
+      "id": "H04",
+      "stimulus": "missing JSON field",
+      "domain": "source unit data, no actual installed profile credit"
+    },
+    {
+      "id": "H05",
+      "stimulus": "numeric JSON field",
+      "domain": "source unit data, no actual installed profile credit"
+    },
+    {
+      "id": "H06",
+      "stimulus": "missing header",
+      "domain": "source unit data, no actual installed profile credit"
+    },
+    {
+      "id": "H07",
+      "stimulus": "mismatched token",
+      "domain": "source unit data, no actual installed profile credit"
+    },
+    {
+      "id": "H08",
+      "stimulus": "upper-case authored header name",
+      "domain": "source unit data, no actual installed profile credit"
+    },
+    {
+      "id": "H09",
+      "stimulus": "secret header name",
+      "domain": "source unit data, no actual installed profile credit"
+    },
+    {
+      "id": "H10",
+      "stimulus": "bad JSON pointer syntax",
+      "domain": "source unit data, no actual installed profile credit"
+    },
+    {
+      "id": "H11",
+      "stimulus": "unknown assertion key",
+      "domain": "source unit data, no actual installed profile credit"
+    },
+    {
+      "id": "H12",
+      "stimulus": "non-JSON body",
+      "domain": "source unit data, no actual installed profile credit"
+    }
+  ],
+  "structuralControls": [
+    "valid omission of each truly optional group stays structurally valid",
+    "required TX fence/navigation member omission refuses",
+    "extra root/member/wrong profile refuses",
+    "retention.idempotency refuses even positive ISO duration",
+    "zero/boolean integer and malformed duration refuse",
+    "unadvertised operation dictionary key or wrong relative value refuses"
+  ],
+  "all24KnownPrimitivesMustKeepWholeBundleAuthority": true,
+  "sourceDefaultCallbackMs": 5000,
+  "wrongRefusalNeverSuccess": true
+}

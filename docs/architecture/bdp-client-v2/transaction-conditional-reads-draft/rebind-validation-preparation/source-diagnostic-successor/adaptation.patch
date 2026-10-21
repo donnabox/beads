@@ -1,0 +1,242 @@
+--- source-diagnostic/commands.json
++++ source-diagnostic-successor/commands.json
+@@ -1,5 +1,5 @@
+ {
+-  "status": "CLOSED native-reviewed diagnostic source only; external code review pending",
++  "status": "CLOSED diagnostic source successor; independent native review and external focused review pending",
+   "executionOrder": [
+     "typecheck",
+     "format-check",
+@@ -102,7 +102,7 @@
+         "--maxWorkers=1",
+         "--reporter=verbose",
+         "--reporter=json",
+-        "--outputFile=/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-conditional-reads-draft/rebind-validation-preparation/source-diagnostic/run/cumulative-full.results.json"
++        "--outputFile=/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-conditional-reads-draft/rebind-validation-preparation/source-diagnostic-successor/run/cumulative-full.results.json"
+       ],
+       "selectedFullNames": [
+         "binds the canonical cumulative TX selection and exact source digests without qualification",
+@@ -172,7 +172,7 @@
+         "--maxWorkers=1",
+         "--reporter=verbose",
+         "--reporter=json",
+-        "--outputFile=/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-conditional-reads-draft/rebind-validation-preparation/source-diagnostic/run/binding-source.results.json",
++        "--outputFile=/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-conditional-reads-draft/rebind-validation-preparation/source-diagnostic-successor/run/binding-source.results.json",
+         "--testNamePattern",
+         "^(?:aborts\\ and\\ drains\\ a\\ real\\ registered\\ dynamic\\ socket\\ via\\ close|aborts\\ and\\ drains\\ a\\ real\\ registered\\ dynamic\\ socket\\ via\\ cohort|rebinds\\ ordinary\\ raw\\ requests\\ to\\ the\\ new\\ validated\\ physical\\ session\\ while\\ base\\ mode\\ stays\\ fixed)$"
+       ],
+@@ -206,7 +206,7 @@
+         "--maxWorkers=1",
+         "--reporter=verbose",
+         "--reporter=json",
+-        "--outputFile=/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-conditional-reads-draft/rebind-validation-preparation/source-diagnostic/run/receipt-first-page.results.json",
++        "--outputFile=/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-conditional-reads-draft/rebind-validation-preparation/source-diagnostic-successor/run/receipt-first-page.results.json",
+         "--testNamePattern",
+         "^(?:observes\\ private\\ first\\-page\\ authority\\ over\\ actual\\ HTTP:\\ id\\-first|observes\\ private\\ first\\-page\\ authority\\ over\\ actual\\ HTTP:\\ page\\-first|observes\\ private\\ first\\-page\\ authority\\ over\\ actual\\ HTTP:\\ wrong\\-parent|observes\\ private\\ first\\-page\\ authority\\ over\\ actual\\ HTTP:\\ empty\\-page|observes\\ private\\ first\\-page\\ authority\\ over\\ actual\\ HTTP:\\ changed\\-page|observes\\ private\\ first\\-page\\ authority\\ over\\ actual\\ HTTP:\\ cancel\\-page|observes\\ private\\ first\\-page\\ authority\\ over\\ actual\\ HTTP:\\ null\\-next|observes\\ private\\ first\\-page\\ authority\\ over\\ actual\\ HTTP:\\ absent\\-next)$"
+       ],
+@@ -252,7 +252,7 @@
+         "--maxWorkers=1",
+         "--reporter=verbose",
+         "--reporter=json",
+-        "--outputFile=/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-conditional-reads-draft/rebind-validation-preparation/source-diagnostic/run/app-static.results.json",
++        "--outputFile=/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-conditional-reads-draft/rebind-validation-preparation/source-diagnostic-successor/run/app-static.results.json",
+         "--testNamePattern",
+         "^(?:pins\\ the\\ matching\\ no\\-op\\ installed\\ route\\ digest\\ and\\ fifteen\\-action\\ ledger|pins\\ deletion\\-safety\\ derivative\\ carriers,\\ complete\\ positives,\\ and\\ measured\\ source\\ bounds|pins\\ conditional\\ raw\\ literals,\\ request\\ order\\ and\\ the\\ sole\\ header\\ control)$"
+       ],
+--- source-diagnostic/gate.py
++++ source-diagnostic-successor/gate.py
+@@ -3,7 +3,7 @@
+ import hashlib,json,subprocess,os
+ P=Path(__file__).resolve().parent;D=P;L=Path('/Users/dbox/repos/wt/vickie/bdp-integration-logs')
+ W=Path('/Users/dbox/repos/wt/vickie/vickie-transaction-conditional-reads');E=P/'run';GUARD=L/'guarded-action.py';COMMANDS=P/'commands.json'
+-COMMANDS_SHA='3bd95f22807708ef117cc3d5321635d74764bc81857101a23486333924c8c510'
++COMMANDS_SHA='50d2f1782b17e6681cf06c233d3bfbd3b42e1b96d174179c3b598190f061e921'
+ sha=lambda b:hashlib.sha256(b).hexdigest()
+ def re_full_sha(s):return len(s)==40 and all(c in "0123456789abcdef" for c in s)
+ def require(ok,message):
+--- source-diagnostic/reviewed-source.json
++++ source-diagnostic-successor/reviewed-source.json
+@@ -1,30 +1,38 @@
+ {
+   "workspace": "/Users/dbox/repos/wt/vickie/vickie-transaction-conditional-reads",
+   "branch": "codex/vickie-transaction-conditional-reads",
+-  "head": "1ba65f2f192cc84e44eb09ef89b9693ec6cdaf05",
+-  "tree": "773614c5ebc6c97d90c4c629c7c7a02ed51bc2ef",
++  "head": "2dfd2c6cc84a28b1dd336f4184c1a5f910ce8a96",
++  "tree": "1823346779033dec6255bcab93f69d7149d33055",
+   "files": {
+     "packages/conformance/test-support/transactional/manifest-v1.json": {
+-      "sha256": "60c527f6a5673161eacf022c0015d09bea2743d153b8b0d0c86160b76fafeb68",
++      "sha256": "bbb7def1bf11e1d14efbcb369e6a7fae6eb5aff01f483f8e99f7443ce9a6ee73",
+       "new": false
+     },
+     "packages/conformance/test-support/transactional/coverage-v1.json": {
+-      "sha256": "33032fe07eb06d2a8968fcd8e5a3cf93cb4637c551868c22da9ea0c4edd587a3",
++      "sha256": "a2c620ce489257f4cd425207195af89b4e2aac238333cf6e7d21ce629d98a238",
+       "new": false
+     },
+     "packages/conformance/src/transactional-cumulative.test.ts": {
+-      "sha256": "9f70f8a24ea358b2cd613fd392be68057abd7b1552ec8cc6c4bc1a3241de69f6",
++      "sha256": "5ecfa916baca16b24c9c57b5f52e6c2cb5fa771d8cc6b5ea412ba570ba796993",
+       "new": false
+     },
+     "apps/bdptest/src/transactional-matrix.test.ts": {
+-      "sha256": "136de49e859546e081c39410f1d3ee6fc01e32faf1879084718ad67b553d62ec",
++      "sha256": "95e07ead41f9cb39087a155e87cad22998d92cd3967cb9c3c446568ff6139bc8",
+       "new": false
+     }
+   },
+-  "diffSha256": "bc7e620ea97a37933901ee4bf2e2d818685178bd974a262e88b025e513e2a60a",
++  "diffSha256": "cf8e895dea0d37d0bbf504a584cf5f213ab811089d4cc9aa32cba5368b910423",
+   "status": " M apps/bdptest/src/transactional-matrix.test.ts\n M packages/conformance/src/transactional-cumulative.test.ts\n M packages/conformance/test-support/transactional/coverage-v1.json\n M packages/conformance/test-support/transactional/manifest-v1.json\n",
+-  "scope": "one-app-line principal helper restoration from frozen four-file TX rebind draft; no execution",
+-  "predecessorBindingSha256": "bf626872ba83bfafab4b957632247684d1169e0b9e3fbf6c627f8c4a644413d6",
+-  "correctionSha256": "7e8b9f84f7d823921f020bffc3609fe75d118cdcc93ae14174a4f7cfba76a612",
+-  "principalHelperSha256": "970bbd24b01498f6704db56e358bb264b402cdb6fc214db3bb6ec96df47ce33b"
++  "scope": "four-file conditional portability successor on green integrated runtime2dfd; authoring/data measurement only; no tests/build/imports/services/commit/push",
++  "predecessorSourceBinding": {
++    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-conditional-reads-draft/rebind-correction/source-binding.json",
++    "sha256": "1095d0093a729c9138c22c6419da528fefbece42be5707dd16db1238e91d61ee"
++  },
++  "acceptedPlanSha256": "740147fdc6c31a8b99dace27c7c4bb73eddc4b0ba37bb7d44f903f16a1509f74",
++  "rootAcceptanceSha256": "fcc261bba7b3690f3755e73e2b8343c481f882a6dff21cb4937f3b9db3aa63dc",
++  "correctionSha256": "82b8040ca719db7e9da6335868adfe49ae742d1feee2207deff6fe32cbbe8d5e",
++  "specSha256": "67772742d7d08f48c12196e9789f1859ad2d0e19f133ea65e197b049361f84f8",
++  "productExecuted": false,
++  "testsExecuted": false,
++  "fullCouncilAccepted": false
+ }
+--- source-diagnostic/input-binding.json
++++ source-diagnostic-successor/input-binding.json
+@@ -55,7 +55,7 @@
+   "apps/bdptest/src/transactional-event-sse-installed.test.ts": "385bfa8fbe86b717450f89aec2f10ef5d2113170383c35236bd995fa285bda0a",
+   "apps/bdptest/src/transactional-fresh-depth-installed.test.ts": "df4030346fc5ec402c0d77d5a5c9953542f341aa86e242d2a5e6cdcf9e09f991",
+   "apps/bdptest/src/transactional-guarded-batch-installed.test.ts": "01e3ec2bf5f5af19dcd497fce5a37c8a9394723bca5760ceca53f8b8128626ab",
+-  "apps/bdptest/src/transactional-matrix.test.ts": "136de49e859546e081c39410f1d3ee6fc01e32faf1879084718ad67b553d62ec",
++  "apps/bdptest/src/transactional-matrix.test.ts": "95e07ead41f9cb39087a155e87cad22998d92cd3967cb9c3c446568ff6139bc8",
+   "apps/bdptest/src/transactional-minimum-current-resource-installed.test.ts": "21146871e6b5bfa3d9e96ff2db7c4897dd62fac026de538981832de295628f15",
+   "apps/bdptest/src/transactional-minimum-receiving-installed.test.ts": "cefde296b07d6be86a83d13892a603588c9054bdd54196048a855e74f9e9b7f9",
+   "apps/bdptest/src/transactional-principal-key-installed.test.ts": "0f941001445e001f96f8c432a7099a5eb29dc4b68bc4458d6d1dfae472a3ce20",
+@@ -285,7 +285,7 @@
+   "packages/conformance/src/selection.ts": "1799c9ec233f755b158c1787e8b1f9ab8523722f3dc25282e50f87c7294e780d",
+   "packages/conformance/src/symbolic-url.ts": "c90d64211d3348812463ab26f1026fe59be5e0f45ba2c4680bd099b768851adb",
+   "packages/conformance/src/transactional-catalog.test.ts": "b9f7b0c096554adb305e229af54495f4b6609f9ac50f413ca8478d7da8bf52ea",
+-  "packages/conformance/src/transactional-cumulative.test.ts": "9f70f8a24ea358b2cd613fd392be68057abd7b1552ec8cc6c4bc1a3241de69f6",
++  "packages/conformance/src/transactional-cumulative.test.ts": "5ecfa916baca16b24c9c57b5f52e6c2cb5fa771d8cc6b5ea412ba570ba796993",
+   "packages/conformance/src/transactional-digest-vectors.test.ts": "af754d4bac1dea143dbeeb7163ff843fdabbb0ae4342cc7a90f1319d90782622",
+   "packages/conformance/src/transactional-observation.test.ts": "9712e74a62879957e476402629e9789905d3eddc1b8c47d98fd7dcbce9e8572c",
+   "packages/conformance/src/transactional-observation.ts": "603fcc1240e43da3c477f42b8b942141c06c989a48a2a88099fd5d90e283159f",
+@@ -297,9 +297,9 @@
+   "packages/conformance/test-support/read-update-coverage-v1.json": "287c2a258afd04a95417f5de416c81bd8159c95762d71d568a64f0b402159f0f",
+   "packages/conformance/test-support/testing.test.ts": "c2da3c34015156cc154583652bd9eefc3338339cb92d3ba379950c3abe951c91",
+   "packages/conformance/test-support/testing.ts": "51ed6be461d2e8b67bba91c195939c1611f4956b003cc33d83bc47d1739b9e54",
+-  "packages/conformance/test-support/transactional/coverage-v1.json": "33032fe07eb06d2a8968fcd8e5a3cf93cb4637c551868c22da9ea0c4edd587a3",
++  "packages/conformance/test-support/transactional/coverage-v1.json": "a2c620ce489257f4cd425207195af89b4e2aac238333cf6e7d21ce629d98a238",
+   "packages/conformance/test-support/transactional/fixture-v1.json": "3a7899ced771d4880066d98b0000c53f801ece53458502cc4f3bc641146c9a85",
+-  "packages/conformance/test-support/transactional/manifest-v1.json": "60c527f6a5673161eacf022c0015d09bea2743d153b8b0d0c86160b76fafeb68",
++  "packages/conformance/test-support/transactional/manifest-v1.json": "bbb7def1bf11e1d14efbcb369e6a7fae6eb5aff01f483f8e99f7443ce9a6ee73",
+   "packages/conformance/tsconfig.json": "da054bc9239dfe20febb2fd9255e4263781627499af7eccc3c40a5c80526b1da",
+   "packages/protocol/package.json": "80e6aef5232de49581cc14ba75ab780b41145a54d5754596297dcf22d38ad5e2",
+   "packages/protocol/schemas/bdp-v0.schema.json": "0baa5d5ef67144f8e6513b4cde31168effc8df6d52ef3141b0f144b87f8dc227",
+@@ -456,9 +456,9 @@
+   "packages/server/src/transaction-sequence-alias.test.ts": "5e819d7746238003bcabd791d5c6c08abccfcd5db12bd256cc99781078795ff4",
+   "packages/server/src/transaction-sequence.test.ts": "31fba92ece191ad6be239b6c1edac8fe71ef63ce716597edc45d015e46730170",
+   "packages/server/src/transaction-sequence.ts": "019e02f2f392047d568d7464b1c5af0482d6d743ed09a6d0aa4edab151607cbe",
+-  "packages/server/src/transaction-service.test.ts": "8f5e3875f09522d3e0678a5cb55eb495d0a6aa2256fd1ef655c7b5edcdb506f3",
+-  "packages/server/src/transaction-service.ts": "c700d5719918b60c3239a336eef02c9dff6717faca698777aba01181ebdcd278",
+-  "packages/server/src/transaction-set.test.ts": "aec0ce27196f6ec4916cb2f35b8a3de7ee879ab35f14aab657e11416254860b8",
++  "packages/server/src/transaction-service.test.ts": "32010b6fb1107076534c544f2bbb93e62cc39c89cd0fbc3c482f0736cc28cfe2",
++  "packages/server/src/transaction-service.ts": "b6f9584d67992ddd3a08304a6b76563318252c316b09afd991e49a3304d3af05",
++  "packages/server/src/transaction-set.test.ts": "86642f122eb0ab8d0ba1b5c454d4bd76fb31a7b1c485e6bbe05284c4ccd9b85f",
+   "packages/server/src/transaction-set.ts": "3085632e897481b048d563cf0ba3ea66dc96a0662cebfde9f978ee00675519e5",
+   "packages/server/src/transaction-snapshot-http.test.ts": "61023b5f24396fe484c7820c706b560cb87abd7a3e16670f5a0944fbefd44d8a",
+   "packages/server/src/transaction-snapshot.test.ts": "b6c31d8b66650ec0668c85d1fb803dda1072ef463989299ed377dd18dcbfee98",
+@@ -467,7 +467,7 @@
+   "packages/server/src/transaction-sse.ts": "1a414cb252b1eb2b5c3695d16aecb59382cbd417876837351e1d80b91b45784c",
+   "packages/server/src/transaction-store.test.ts": "7cd155ddd959ec31a207adbe6f8eb0a26f0af968a144abb58915720436bf0774",
+   "packages/server/src/transaction-store.ts": "f7fe71da918c135eb43cb4659f186df6cd442aed9c42c2835e95cde05c782a9e",
+-  "packages/server/src/transaction-submission.test.ts": "026cf5ccc65026f0f6462deaba9e1e58cd7ab6c6ae341ef5ed3af0becbb0c182",
++  "packages/server/src/transaction-submission.test.ts": "22a6f8da462658b13fd1e7bd40a75ab39ba60103e4268b5f29d17efbca69d6b8",
+   "packages/server/src/transaction-submission.ts": "580a5f56075c3f7e2c041354eab75529dd304f86588337f725f4cb33429b33bf",
+   "packages/server/test-support/raw-sse-recorder.ts": "09ff8343ac1a5dbad77eaf24fc2745cc28ea870ada6b05dc4ea1644c0ad5ef81",
+   "packages/server/test-support/read-conformance-mock-state.ts": "17f2543765b9dd7c4184ec92bdeefafc82df25e86abfb29d3d8f633d0a62e966",
+@@ -669,7 +669,7 @@
+   "scripts/read-harness-bindings.ts": "3c85b84500d11b6e4ffbf987de556624dd5b1212106357e671a814fe689729b5",
+   "scripts/read-update-runtime-limits.test.mjs": "ccd47792dc3ac23ddbe327205cee074ba773d40c84f5e8400a7a92019a60bbce",
+   "scripts/smoke-development.mjs": "fd2af7fc96c822b0a3918a295bd96d0def3ad2502893d1a34ae8c77fb4f89b21",
+-  "scripts/smoke-executables.mjs": "96701a2e4a7535e44ad4490a109d8e4c93925b4702b5453f3c55abe689a88060",
++  "scripts/smoke-executables.mjs": "adeaea6e334f8fb6f7af5d09f0cb7ee0b729864affc45cb6baf84a95f1d4d9ae",
+   "scripts/smoke-safety.mjs": "8aa35543d3236187aa377ad01d2255ecc6abcab3a81665aa6498baff2bf73803",
+   "scripts/smoke-safety.test.mjs": "86891633028185961018b63b4aac4bddef8660790fbb467fbbdabdcae7a126fa",
+   "scripts/transaction-installed-observation.mjs": "6f772f3776d3c3effa788676d853cc2932a6ee59ad63ac3338ad1b487408914b",
+--- source-diagnostic/root-release.example.json
++++ source-diagnostic-successor/root-release.example.json
+@@ -1,11 +1,11 @@
+ {
+   "accepted": false,
+-  "head": "1ba65f2f192cc84e44eb09ef89b9693ec6cdaf05",
++  "head": "2dfd2c6cc84a28b1dd336f4184c1a5f910ce8a96",
+   "sourceValidationAuthorized": false,
+   "nativeCodeReviewed": false,
+   "externalReviewPending": true,
+   "diagnosticOnly": true,
+   "reviewedDirtySourceOnly": true,
+   "councilAccepted": false,
+-  "note": "Root must independently accept native review and release diagnostic source stages. No complete external/council review is asserted."
++  "note": "CLOSED. Independent native review active; root alone may accept it and release this diagnostic prefix. External focused review pending; no full council acceptance."
+ }
+--- source-diagnostic/execution-gate.example.json
++++ source-diagnostic-successor/execution-gate.example.json
+@@ -1,19 +1,19 @@
+ {
+   "released": false,
+   "session": "2026-10-08T20:26:35Z-81e5",
+-  "finalHead": "1ba65f2f192cc84e44eb09ef89b9693ec6cdaf05",
+-  "finalTree": "773614c5ebc6c97d90c4c629c7c7a02ed51bc2ef",
++  "finalHead": "2dfd2c6cc84a28b1dd336f4184c1a5f910ce8a96",
++  "finalTree": "1823346779033dec6255bcab93f69d7149d33055",
+   "rootAcceptance": {
+-    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-conditional-reads-draft/rebind-validation-preparation/source-diagnostic/root-release.json",
++    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-conditional-reads-draft/rebind-validation-preparation/source-diagnostic-successor/root-release.json",
+     "sha256": null
+   },
+   "sourceBinding": {
+-    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-conditional-reads-draft/rebind-validation-preparation/source-diagnostic/reviewed-source.json",
+-    "sha256": "1095d0093a729c9138c22c6419da528fefbece42be5707dd16db1238e91d61ee"
++    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-conditional-reads-draft/rebind-validation-preparation/source-diagnostic-successor/reviewed-source.json",
++    "sha256": "2d43cf58a05eb60d247fdc122b7e17621e98bbb899b2dbffbb6d95e3c451b592"
+   },
+   "inputBinding": {
+-    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-conditional-reads-draft/rebind-validation-preparation/source-diagnostic/input-binding.json",
+-    "sha256": "823b3918014af84284ce7da93e1ab0ec313f8ebe0bf6837484d4e9ace4125177"
++    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-conditional-reads-draft/rebind-validation-preparation/source-diagnostic-successor/input-binding.json",
++    "sha256": "f60a4db0976ab95045c85fa6bb04b9de47ddcbb321caa9b87401406da965683b"
+   },
+   "approvedCommandIds": [],
+   "phaseRelease": {
+@@ -21,8 +21,14 @@
+   },
+   "preparationSha256": {},
+   "guardSha256": "fd81ba029cd4e7c7e60623df89e8292af91141d311d9ce789ed19e2152375e84",
+-  "toolHashes": {},
+-  "sourceLockSha256": null,
++  "toolHashes": {
++    "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node": "1ee75375e33b94fc34b3b19aede049e11dae90efb63b374dc96d6bdace70c4b8",
++    "/Users/dbox/.cache/node/corepack/v1/pnpm/11.20.0/bin/pnpm.cjs": "67b035e322203961795e8e34ca63a08c37a4386eda94107fb3d28f3246d882ad",
++    "/Users/dbox/repos/wt/vickie/vickie-transaction-conditional-reads/node_modules/vitest/vitest.mjs": "39db22f579acf5639bbb17a261408debbde03f4692c0c439e77e7f13aeba74d6",
++    "/Users/dbox/repos/wt/vickie/vickie-transaction-conditional-reads/node_modules/@biomejs/biome/bin/biome": "7ffb4d217e5ddefcc19ca6afe76bb982f5eb36c9a124448105195fbcfc84bd77",
++    "/opt/homebrew/opt/python@3.14/bin/python3.14": "2477b47fa3ae65b9574eb18a15edb364e96948eaa1875ad3f1c80d780efc9c12"
++  },
++  "sourceLockSha256": "4150d8821c96dbc2cfec0b2762ff76b58318079f65fa4f5c8858ef2dd61f8d6d",
+   "consumerLockSha256": null,
+   "installedProvenanceSha256": null,
+   "expectedProductionVersions": {
+@@ -35,7 +41,7 @@
+     "json-schema-traverse": "1.0.0",
+     "require-from-string": "2.0.2"
+   },
+-  "note": "CLOSED diagnostic source prefix on frozen native-reviewed dirty draft while external code review is pending; no build, installed, integration or publication authorization.",
++  "note": "CLOSED successor on corrected186/2828 draft. Native review and external focused review pending. No build/installed/integration/publication authorization.",
+   "consumerInventorySha256": null,
+   "councilAccepted": false,
+   "authorizationRequirements": {

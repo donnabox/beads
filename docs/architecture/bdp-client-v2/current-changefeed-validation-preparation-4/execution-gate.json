@@ -1,0 +1,111 @@
+{
+  "released": true,
+  "rootPlanAccepted": true,
+  "rootExactSourceAccepted": true,
+  "session": "2026-10-18T02:16:24Z-549f",
+  "mode": "final",
+  "approvedStages": [
+    "node-version",
+    "pnpm-version",
+    "workspace-install",
+    "bind-workspace-tools",
+    "typecheck",
+    "format-check",
+    "lint",
+    "fresh-build",
+    "bind-fresh-build",
+    "focused-source",
+    "audit-focused-source",
+    "prepare-package-directory",
+    "pack-protocol",
+    "pack-server",
+    "verify-archives",
+    "prepare-consumer",
+    "consumer-install",
+    "verify-installed-consumer",
+    "historical-context-external",
+    "audit-historical-context-external",
+    "finite-start-now-external",
+    "audit-finite-start-now-external",
+    "current-changefeed-external",
+    "audit-current-changefeed-external",
+    "required-check-boundaries",
+    "required-e2e-ready-preflight",
+    "required-smoke",
+    "required-evidence-verify"
+  ],
+  "sourceBinding": {
+    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/current-changefeed-validation-preparation-4/source-binding.json",
+    "sha256": "f03a40dc7431b657bd862e40b45b4c7c81ff7115cce1faef7b1640a0d17a155f"
+  },
+  "rootDisposition": {
+    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/current-changefeed-tuple-source-root-release-1/root-disposition.json",
+    "sha256": "67eb674eb69b3db188dc6ebab8b94acfce70bcbfc206b0afcdb387b033f5c31f"
+  },
+  "nativeCodeDisposition": {
+    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/current-changefeed-tuple-source-root-release-1/native-code-disposition.json",
+    "sha256": "c5803b21289005d4f1b0d3043ec635e828d878e3d6d5a32896282e76d81a3b58"
+  },
+  "actualCodeDisposition": {
+    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/current-changefeed-tuple-source-root-release-1/actual-code-disposition.json",
+    "sha256": "fab025b66584b60deda6fb6bba1d6ee411bc2f2a52034d93e9bc652eb92003cb"
+  },
+  "baseTools": {
+    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/current-changefeed-validation-preparation-4/base-tools.candidate.json",
+    "sha256": "d85250c410ea613cb67374968565894fd1155100c118ae38f19a277ea3c22481"
+  },
+  "workspaceTools": {
+    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/current-changefeed-validation-preparation-4/run/workspace-tools.json",
+    "sha256": "c56d9d6c75b81ce9e2918ae817cb29d2c4328b68409d7f623a34de468840fca0"
+  },
+  "actualClaudeReviewDisposed": true,
+  "nativeCodeReviewDisposed": true,
+  "staticValidationAuthorized": true,
+  "bootstrapReuse": [],
+  "rootBuildAcceptance": {
+    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/current-changefeed-root-fresh-build-acceptance-1/acceptance.json",
+    "sha256": "7477e52b71a91b06cb8a2a5da2037b5fcb5675e68471d04f2b1b86b0e2fc9b39"
+  },
+  "rootArchiveAcceptance": {
+    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/current-changefeed-root-archive-acceptance-1/acceptance.json",
+    "sha256": "a4bfc881e2af0e4584fa493f8d5a5d1fde1ee21e5c859a6d88e512b50c7cd364"
+  },
+  "rootConsumerLockAcceptance": {
+    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/current-changefeed-root-consumer-lock-acceptance-1/acceptance.json",
+    "sha256": "938e661f48f33fef6ff5523bdb766fe0e0de327614678333bf4ee0e458ac4ba9"
+  },
+  "consumerLockSha256": "a9a71a54828eef3dd55bbe0217ad68b8df48758de2910d9a189a12f70494f0b7",
+  "installedProvenance": {
+    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/current-changefeed-validation-preparation-4/run/installed-provenance.json",
+    "sha256": "1b0231504526632a0e774da25c83aa82d98939448a9d18db44b387e480838935"
+  },
+  "consumerInventory": {
+    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/current-changefeed-validation-preparation-4/run/installed-consumer-inventory.json",
+    "sha256": "0aad3ad91fbeeeb1a6f1fb9653ce222a0d2827ab9e23450ddcc53b299a2209cd"
+  },
+  "rootConsumerProofAcceptance": {
+    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/current-changefeed-root-consumer-proof-acceptance-1/acceptance.json",
+    "sha256": "9f67cedcef026e8d7e4087bc4900ccc395c839e3784ee169d8a2caf138c11d12"
+  },
+  "implementationIndexSha256": "14a289879dd8c1528fdd7e1db4e17bd9874eb33012dc9c49383c3f31f64e55a4",
+  "knownOriginalActualCodeDisposition": {
+    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/current-changefeed-validation-preparation-4/context/actual-code-root-disposition-1.json",
+    "sha256": "1f6dce33f3927e320b1c5773ac86cd1361bc5f35629207d401490e4867fb6ce4"
+  },
+  "knownCorrectionFreeze": {
+    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/current-changefeed-validation-preparation-4/context/corrections-1/index.json",
+    "sha256": "cb1a558d165ce396246b22b697e2182d8356a51f26077fe6faf4ed1af40178bb"
+  },
+  "knownTypecheckCorrection": {
+    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/current-changefeed-validation-preparation-4/context/typecheck-correction-1/index.json",
+    "sha256": "5ac0d65bd5932b5c802fe470f8e3e7d444552788805152001e8d039ea85ed4ef"
+  },
+  "knownTypecheckFailure": {
+    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/current-changefeed-validation-preparation-4/context/typecheck-failure-1/diagnosis-and-release.json",
+    "sha256": "6049ee516a1634b1593554e76b227d6bf86aba09553ad7ee778dd71d79b2f846"
+  },
+  "knownTupleNativeClosure": {
+    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/current-changefeed-validation-preparation-4/context/typecheck-correction-1/native-precision-closure-1/index.json",
+    "sha256": "cb03830035659e4275016a4dbfbe143e0f8fbd6351d5511e9038ba265f3993d7"
+  }
+}

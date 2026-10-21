@@ -1,0 +1,20 @@
+--- /Users/dbox/repos/wt/vickie/bdp-integration-logs/current-changefeed-validation-preparation-1/installed-audit-contract.json
++++ /Users/dbox/repos/wt/vickie/bdp-integration-logs/current-changefeed-validation-preparation-2/installed-audit-contract.json
+@@ -1,5 +1,5 @@
+ {
+-  "state": "Expected audit contract; actual final schemas UNRESOLVED",
++  "state": "Current source/helper contract bound; actual runtime build/package/consumer outputs and root acceptances UNRESOLVED",
+   "threeSequentialPairs": [
+     {
+       "stage": "historical-context-external",
+@@ -66,5 +66,9 @@
+       "503": 5
+     }
+   },
+-  "prohibition": "No historical Event witness counts, no entryLiteral requirement on old historical callbacks, no whole-file selector represented as one callback."
++  "prohibition": "No historical Event witness counts, no entryLiteral requirement on old historical callbacks, no whole-file selector represented as one callback.",
++  "actualAuthoredReportBinding": {
++    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/current-changefeed-validation-preparation-2/report-schemas.json",
++    "sha256": "9a35ee47add02370d5980e2d937c5909645b9bdb049b2bcd7ad22d33d19f5346"
++  }
+ }

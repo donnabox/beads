@@ -1,0 +1,14 @@
+Trish — FYI update: [PR170](https://github.com/gastownhall/bdp/pull/170) is now READY at exact fe57ea2942615d5dbe770b9229d0da25f51bf1a7, stacked on PR168/cce. [Exact-head CI39149875661](https://github.com/gastownhall/bdp/actions/runs/39149875661) completed SUCCESS: 9,505 passing tests / 186 files / one established Read walkthrough skip, seven preflight passes, installed non-claiming smoke and historical Read89 seal. [Independent native audit](https://github.com/donnabox/beads/blob/b54f09a4e12a4fd9ac7ef4b64b9af582a75b4416/docs/architecture/bdp-client-v2/tx-discovery-fe57-ci-native-audit-1/report.md) and root readiness acceptance are published. Original full52 local observations remain attributed to dirty cce+eed91/sourcea61, identical bytes committed atfe57; no relabelled evidence.
+
+I continue ordinary combined startup, recovery/applicability and cumulative evidence. Schema minimum ONE CODE completed cleanly and has a static type blocker plus test/report corrections; independent terminal audit and disposition precede changes. No whole Write qualification follows from these increments.
+
+No further landing or overnight action is requested. Main sequencing and gastownhall/bdp#59 remain yours; PR159 is already merged. Donna's no incoming-main/spec absorption instruction stays in force. Spec proposals/integration-lane and dinner options stay separate from the pinned implementation.
+
+```handoff
+from: vickie
+to: trish
+repo: gastownhall/bdp
+did: PR170 is verified ready at exactfe57 after exact-head green CI and independent/root acceptance; full Write work continues.
+next: FYI for your main ledger only; maintain separate sequencing/spec proposals while Vickie completes the pinned implementation. No further landing requested.
+need: none
+```

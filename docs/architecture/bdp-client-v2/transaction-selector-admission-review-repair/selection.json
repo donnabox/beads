@@ -1,0 +1,913 @@
+{
+  "status": "PROPOSED_NOT_EXECUTED",
+  "method": "Parse-only Babel AST extraction; explicit accepted title filter; nested describe titles retained",
+  "sourceSelection": [
+    {
+      "file": "packages/server/src/read-selector.test.ts",
+      "registrations": [
+        {
+          "file": "packages/server/src/read-selector.test.ts",
+          "line": 51,
+          "title": "preserves candidate order and identities without mutating records",
+          "parents": [
+            "Read Selector"
+          ],
+          "tableSource": null,
+          "expandedTitles": [
+            "preserves candidate order and identities without mutating records"
+          ],
+          "fullTitles": [
+            "Read Selector preserves candidate order and identities without mutating records"
+          ]
+        },
+        {
+          "file": "packages/server/src/read-selector.test.ts",
+          "line": 67,
+          "title": "selects %s metadata independently of colliding properties",
+          "parents": [
+            "Read Selector"
+          ],
+          "tableSource": "[\"bead\", \"link\"] as const",
+          "expandedTitles": [
+            "selects bead metadata independently of colliding properties",
+            "selects link metadata independently of colliding properties"
+          ],
+          "fullTitles": [
+            "Read Selector selects bead metadata independently of colliding properties",
+            "Read Selector selects link metadata independently of colliding properties"
+          ]
+        },
+        {
+          "file": "packages/server/src/read-selector.test.ts",
+          "line": 112,
+          "title": "applies !, &&, ||, and parentheses with JSONPath precedence",
+          "parents": [
+            "Read Selector"
+          ],
+          "tableSource": null,
+          "expandedTitles": [
+            "applies !, &&, ||, and parentheses with JSONPath precedence"
+          ],
+          "fullTitles": [
+            "Read Selector applies !, &&, ||, and parentheses with JSONPath precedence"
+          ]
+        },
+        {
+          "file": "packages/server/src/read-selector.test.ts",
+          "line": 134,
+          "title": "supports the %s operator",
+          "parents": [
+            "Read Selector"
+          ],
+          "tableSource": "[\n    [\"==\", 2, true],\n    [\"!=\", 2, false],\n    [\"<\", 3, true],\n    [\"<=\", 2, true],\n    [\">\", 1, true],\n    [\">=\", 2, true],\n  ] as const",
+          "expandedTitles": [
+            "supports the == operator",
+            "supports the != operator",
+            "supports the < operator",
+            "supports the <= operator",
+            "supports the > operator",
+            "supports the >= operator"
+          ],
+          "fullTitles": [
+            "Read Selector supports the == operator",
+            "Read Selector supports the != operator",
+            "Read Selector supports the < operator",
+            "Read Selector supports the <= operator",
+            "Read Selector supports the > operator",
+            "Read Selector supports the >= operator"
+          ]
+        },
+        {
+          "file": "packages/server/src/read-selector.test.ts",
+          "line": 148,
+          "title": "supports string ordering and never coerces cross-type ordering or equality",
+          "parents": [
+            "Read Selector"
+          ],
+          "tableSource": null,
+          "expandedTitles": [
+            "supports string ordering and never coerces cross-type ordering or equality"
+          ],
+          "fullTitles": [
+            "Read Selector supports string ordering and never coerces cross-type ordering or equality"
+          ]
+        },
+        {
+          "file": "packages/server/src/read-selector.test.ts",
+          "line": 164,
+          "title": "treats own missing-path status as existence, including null and undefined values",
+          "parents": [
+            "Read Selector"
+          ],
+          "tableSource": null,
+          "expandedTitles": [
+            "treats own missing-path status as existence, including null and undefined values"
+          ],
+          "fullTitles": [
+            "Read Selector treats own missing-path status as existence, including null and undefined values"
+          ]
+        },
+        {
+          "file": "packages/server/src/read-selector.test.ts",
+          "line": 184,
+          "title": "selects Bead identity/type fields and Link endpoint IDs without normalization",
+          "parents": [
+            "Read Selector"
+          ],
+          "tableSource": null,
+          "expandedTitles": [
+            "selects Bead identity/type fields and Link endpoint IDs without normalization"
+          ],
+          "fullTitles": [
+            "Read Selector selects Bead identity/type fields and Link endpoint IDs without normalization"
+          ]
+        },
+        {
+          "file": "packages/server/src/read-selector.test.ts",
+          "line": 205,
+          "title": "projects response-only revision out of Selector candidates",
+          "parents": [
+            "Read Selector"
+          ],
+          "tableSource": null,
+          "expandedTitles": [
+            "projects response-only revision out of Selector candidates"
+          ],
+          "fullTitles": [
+            "Read Selector projects response-only revision out of Selector candidates"
+          ]
+        },
+        {
+          "file": "packages/server/src/read-selector.test.ts",
+          "line": 217,
+          "title": "parses escaped JSON strings and numeric, boolean, and null literals",
+          "parents": [
+            "Read Selector"
+          ],
+          "tableSource": null,
+          "expandedTitles": [
+            "parses escaped JSON strings and numeric, boolean, and null literals"
+          ],
+          "fullTitles": [
+            "Read Selector parses escaped JSON strings and numeric, boolean, and null literals"
+          ]
+        },
+        {
+          "file": "packages/server/src/read-selector.test.ts",
+          "line": 233,
+          "title": "supports RFC singular bracket names and canonical array indices",
+          "parents": [
+            "Read Selector"
+          ],
+          "tableSource": null,
+          "expandedTitles": [
+            "supports RFC singular bracket names and canonical array indices"
+          ],
+          "fullTitles": [
+            "Read Selector supports RFC singular bracket names and canonical array indices"
+          ]
+        },
+        {
+          "file": "packages/server/src/read-selector.test.ts",
+          "line": 257,
+          "title": "supports RFC single-quoted literals and quote-specific escapes",
+          "parents": [
+            "Read Selector"
+          ],
+          "tableSource": null,
+          "expandedTitles": [
+            "supports RFC single-quoted literals and quote-specific escapes"
+          ],
+          "fullTitles": [
+            "Read Selector supports RFC single-quoted literals and quote-specific escapes"
+          ]
+        },
+        {
+          "file": "packages/server/src/read-selector.test.ts",
+          "line": 279,
+          "title": "orders strings lexicographically by Unicode scalar value",
+          "parents": [
+            "Read Selector"
+          ],
+          "tableSource": null,
+          "expandedTitles": [
+            "orders strings lexicographically by Unicode scalar value"
+          ],
+          "fullTitles": [
+            "Read Selector orders strings lexicographically by Unicode scalar value"
+          ]
+        },
+        {
+          "file": "packages/server/src/read-selector.test.ts",
+          "line": 291,
+          "title": "rejects excluded feature %s",
+          "parents": [
+            "Read Selector"
+          ],
+          "tableSource": "[\n    '$[?@..properties.status == \"open\"]',\n    \"$[?@.*]\",\n    \"$[?length(@.properties) == 1]\",\n    '$[?@.properties.status =~ \"open\"]',\n    \"$[?@.properties[?@.status]]\",\n    \"$[?@.properties.left == @.properties.right]\",\n    \"$[?@.properties.a,@.properties.b]\",\n    \"$[?@.properties.value == [1]]\",\n    '$[?@.properties.value == {\"x\":1}]',\n    \"$[?@.properties.status].name\",\n    \"$[?$.properties.status]\",\n    \"$[?@.properties.rows[*]]\",\n    \"$[?@.properties.rows[0:2]]\",\n    \"$[?@.properties.rows[0,1]]\",\n  ]",
+          "expandedTitles": [
+            "rejects excluded feature $[?@..properties.status == \"open\"]",
+            "rejects excluded feature $[?@.*]",
+            "rejects excluded feature $[?length(@.properties) == 1]",
+            "rejects excluded feature $[?@.properties.status =~ \"open\"]",
+            "rejects excluded feature $[?@.properties[?@.status]]",
+            "rejects excluded feature $[?@.properties.left == @.properties.right]",
+            "rejects excluded feature $[?@.properties.a,@.properties.b]",
+            "rejects excluded feature $[?@.properties.value == [1]]",
+            "rejects excluded feature $[?@.properties.value == {\"x\":1}]",
+            "rejects excluded feature $[?@.properties.status].name",
+            "rejects excluded feature $[?$.properties.status]",
+            "rejects excluded feature $[?@.properties.rows[*]]",
+            "rejects excluded feature $[?@.properties.rows[0:2]]",
+            "rejects excluded feature $[?@.properties.rows[0,1]]"
+          ],
+          "fullTitles": [
+            "Read Selector rejects excluded feature $[?@..properties.status == \"open\"]",
+            "Read Selector rejects excluded feature $[?@.*]",
+            "Read Selector rejects excluded feature $[?length(@.properties) == 1]",
+            "Read Selector rejects excluded feature $[?@.properties.status =~ \"open\"]",
+            "Read Selector rejects excluded feature $[?@.properties[?@.status]]",
+            "Read Selector rejects excluded feature $[?@.properties.left == @.properties.right]",
+            "Read Selector rejects excluded feature $[?@.properties.a,@.properties.b]",
+            "Read Selector rejects excluded feature $[?@.properties.value == [1]]",
+            "Read Selector rejects excluded feature $[?@.properties.value == {\"x\":1}]",
+            "Read Selector rejects excluded feature $[?@.properties.status].name",
+            "Read Selector rejects excluded feature $[?$.properties.status]",
+            "Read Selector rejects excluded feature $[?@.properties.rows[*]]",
+            "Read Selector rejects excluded feature $[?@.properties.rows[0:2]]",
+            "Read Selector rejects excluded feature $[?@.properties.rows[0,1]]"
+          ]
+        },
+        {
+          "file": "packages/server/src/read-selector.test.ts",
+          "line": 310,
+          "title": "rejects malformed Selector %s",
+          "parents": [
+            "Read Selector"
+          ],
+          "tableSource": "[\n    \"\",\n    \"$\",\n    \"$[]\",\n    \"$[?]\",\n    \"$[?true]\",\n    \"$[?@.properties.value ==]\",\n    \"$[?== 1]\",\n    \"$[?@.properties.value = 1]\",\n    \"$[?@.properties.value &&]\",\n    \"$[?(@.properties.value]\",\n    \"$[?@.properties.value)]\",\n    '$[?@.properties.value == \"unterminated] ',\n    \"$[?@.properties.value == 01]\",\n    \"$[?@.properties.value == NaN]\",\n    \"$[?@.properties.value == true false]\",\n    \"$[?!@.properties.value == true]\",\n    \"$[?!!@.properties.value]\",\n    \"$[?! !@.properties.value]\",\n    \"$[?@.properties.rows[01]]\",\n    \"$[?@.properties.rows[-0]]\",\n    \"$[?@.properties.rows[-01]]\",\n    \"$[?@.properties.rows[9007199254740992]]\",\n    \"$[?@.properties.rows[-9007199254740992]]\",\n    '$[?@.properties.value == \"\\\\uD800\"]',\n    '$[?@.properties.value == \"\\\\uDC00\"]',\n    '$[?@.properties.value == \"\\\\uD800\\\\uD800\"]',\n  ]",
+          "expandedTitles": [
+            "rejects malformed Selector ",
+            "rejects malformed Selector $",
+            "rejects malformed Selector $[]",
+            "rejects malformed Selector $[?]",
+            "rejects malformed Selector $[?true]",
+            "rejects malformed Selector $[?@.properties.value ==]",
+            "rejects malformed Selector $[?== 1]",
+            "rejects malformed Selector $[?@.properties.value = 1]",
+            "rejects malformed Selector $[?@.properties.value &&]",
+            "rejects malformed Selector $[?(@.properties.value]",
+            "rejects malformed Selector $[?@.properties.value)]",
+            "rejects malformed Selector $[?@.properties.value == \"unterminated] ",
+            "rejects malformed Selector $[?@.properties.value == 01]",
+            "rejects malformed Selector $[?@.properties.value == NaN]",
+            "rejects malformed Selector $[?@.properties.value == true false]",
+            "rejects malformed Selector $[?!@.properties.value == true]",
+            "rejects malformed Selector $[?!!@.properties.value]",
+            "rejects malformed Selector $[?! !@.properties.value]",
+            "rejects malformed Selector $[?@.properties.rows[01]]",
+            "rejects malformed Selector $[?@.properties.rows[-0]]",
+            "rejects malformed Selector $[?@.properties.rows[-01]]",
+            "rejects malformed Selector $[?@.properties.rows[9007199254740992]]",
+            "rejects malformed Selector $[?@.properties.rows[-9007199254740992]]",
+            "rejects malformed Selector $[?@.properties.value == \"\\uD800\"]",
+            "rejects malformed Selector $[?@.properties.value == \"\\uDC00\"]",
+            "rejects malformed Selector $[?@.properties.value == \"\\uD800\\uD800\"]"
+          ],
+          "fullTitles": [
+            "Read Selector rejects malformed Selector ",
+            "Read Selector rejects malformed Selector $",
+            "Read Selector rejects malformed Selector $[]",
+            "Read Selector rejects malformed Selector $[?]",
+            "Read Selector rejects malformed Selector $[?true]",
+            "Read Selector rejects malformed Selector $[?@.properties.value ==]",
+            "Read Selector rejects malformed Selector $[?== 1]",
+            "Read Selector rejects malformed Selector $[?@.properties.value = 1]",
+            "Read Selector rejects malformed Selector $[?@.properties.value &&]",
+            "Read Selector rejects malformed Selector $[?(@.properties.value]",
+            "Read Selector rejects malformed Selector $[?@.properties.value)]",
+            "Read Selector rejects malformed Selector $[?@.properties.value == \"unterminated] ",
+            "Read Selector rejects malformed Selector $[?@.properties.value == 01]",
+            "Read Selector rejects malformed Selector $[?@.properties.value == NaN]",
+            "Read Selector rejects malformed Selector $[?@.properties.value == true false]",
+            "Read Selector rejects malformed Selector $[?!@.properties.value == true]",
+            "Read Selector rejects malformed Selector $[?!!@.properties.value]",
+            "Read Selector rejects malformed Selector $[?! !@.properties.value]",
+            "Read Selector rejects malformed Selector $[?@.properties.rows[01]]",
+            "Read Selector rejects malformed Selector $[?@.properties.rows[-0]]",
+            "Read Selector rejects malformed Selector $[?@.properties.rows[-01]]",
+            "Read Selector rejects malformed Selector $[?@.properties.rows[9007199254740992]]",
+            "Read Selector rejects malformed Selector $[?@.properties.rows[-9007199254740992]]",
+            "Read Selector rejects malformed Selector $[?@.properties.value == \"\\uD800\"]",
+            "Read Selector rejects malformed Selector $[?@.properties.value == \"\\uDC00\"]",
+            "Read Selector rejects malformed Selector $[?@.properties.value == \"\\uD800\\uD800\"]"
+          ]
+        },
+        {
+          "file": "packages/server/src/read-selector.test.ts",
+          "line": 341,
+          "title": "enforces exact UTF-8 source-byte boundaries, including Unicode",
+          "parents": [
+            "Read Selector"
+          ],
+          "tableSource": null,
+          "expandedTitles": [
+            "enforces exact UTF-8 source-byte boundaries, including Unicode"
+          ],
+          "fullTitles": [
+            "Read Selector enforces exact UTF-8 source-byte boundaries, including Unicode"
+          ]
+        },
+        {
+          "file": "packages/server/src/read-selector.test.ts",
+          "line": 358,
+          "title": "enforces exact AST depth and node boundaries without truncation",
+          "parents": [
+            "Read Selector"
+          ],
+          "tableSource": null,
+          "expandedTitles": [
+            "enforces exact AST depth and node boundaries without truncation"
+          ],
+          "fullTitles": [
+            "Read Selector enforces exact AST depth and node boundaries without truncation"
+          ]
+        },
+        {
+          "file": "packages/server/src/read-selector.test.ts",
+          "line": 377,
+          "title": "bounds pathological nesting, negation, and expression width with typed failures",
+          "parents": [
+            "Read Selector"
+          ],
+          "tableSource": null,
+          "expandedTitles": [
+            "bounds pathological nesting, negation, and expression width with typed failures"
+          ],
+          "fullTitles": [
+            "Read Selector bounds pathological nesting, negation, and expression width with typed failures"
+          ]
+        },
+        {
+          "file": "packages/server/src/read-selector.test.ts",
+          "line": 393,
+          "title": "ignores inherited and accessor members without invoking hostile getters",
+          "parents": [
+            "Read Selector"
+          ],
+          "tableSource": null,
+          "expandedTitles": [
+            "ignores inherited and accessor members without invoking hostile getters"
+          ],
+          "fullTitles": [
+            "Read Selector ignores inherited and accessor members without invoking hostile getters"
+          ]
+        },
+        {
+          "file": "packages/server/src/read-selector.test.ts",
+          "line": 438,
+          "title": "requires explicit positive safe-integer limits and a primitive string",
+          "parents": [
+            "Read Selector"
+          ],
+          "tableSource": null,
+          "expandedTitles": [
+            "requires explicit positive safe-integer limits and a primitive string"
+          ],
+          "fullTitles": [
+            "Read Selector requires explicit positive safe-integer limits and a primitive string"
+          ]
+        },
+        {
+          "file": "packages/server/src/read-selector.test.ts",
+          "line": 457,
+          "title": "analyzes complete Selector grammar with exact uncapped structural metrics",
+          "parents": [],
+          "tableSource": null,
+          "expandedTitles": [
+            "analyzes complete Selector grammar with exact uncapped structural metrics"
+          ],
+          "fullTitles": [
+            "analyzes complete Selector grammar with exact uncapped structural metrics"
+          ]
+        },
+        {
+          "file": "packages/server/src/read-selector.test.ts",
+          "line": 472,
+          "title": "does not hide invalid Selector suffixes behind operational capacity",
+          "parents": [],
+          "tableSource": null,
+          "expandedTitles": [
+            "does not hide invalid Selector suffixes behind operational capacity"
+          ],
+          "fullTitles": [
+            "does not hide invalid Selector suffixes behind operational capacity"
+          ]
+        },
+        {
+          "file": "packages/server/src/read-selector.test.ts",
+          "line": 482,
+          "title": "analyzes body-bounded deep Selectors without recursive traversal",
+          "parents": [],
+          "tableSource": null,
+          "expandedTitles": [
+            "analyzes body-bounded deep Selectors without recursive traversal"
+          ],
+          "fullTitles": [
+            "analyzes body-bounded deep Selectors without recursive traversal"
+          ]
+        },
+        {
+          "file": "packages/server/src/read-selector.test.ts",
+          "line": 491,
+          "title": "counts decoded Selector UTF-8 without URI decoding or identity rewriting",
+          "parents": [],
+          "tableSource": null,
+          "expandedTitles": [
+            "counts decoded Selector UTF-8 without URI decoding or identity rewriting"
+          ],
+          "fullTitles": [
+            "counts decoded Selector UTF-8 without URI decoding or identity rewriting"
+          ]
+        }
+      ],
+      "expandedTitles": [
+        "Read Selector preserves candidate order and identities without mutating records",
+        "Read Selector selects bead metadata independently of colliding properties",
+        "Read Selector selects link metadata independently of colliding properties",
+        "Read Selector applies !, &&, ||, and parentheses with JSONPath precedence",
+        "Read Selector supports the == operator",
+        "Read Selector supports the != operator",
+        "Read Selector supports the < operator",
+        "Read Selector supports the <= operator",
+        "Read Selector supports the > operator",
+        "Read Selector supports the >= operator",
+        "Read Selector supports string ordering and never coerces cross-type ordering or equality",
+        "Read Selector treats own missing-path status as existence, including null and undefined values",
+        "Read Selector selects Bead identity/type fields and Link endpoint IDs without normalization",
+        "Read Selector projects response-only revision out of Selector candidates",
+        "Read Selector parses escaped JSON strings and numeric, boolean, and null literals",
+        "Read Selector supports RFC singular bracket names and canonical array indices",
+        "Read Selector supports RFC single-quoted literals and quote-specific escapes",
+        "Read Selector orders strings lexicographically by Unicode scalar value",
+        "Read Selector rejects excluded feature $[?@..properties.status == \"open\"]",
+        "Read Selector rejects excluded feature $[?@.*]",
+        "Read Selector rejects excluded feature $[?length(@.properties) == 1]",
+        "Read Selector rejects excluded feature $[?@.properties.status =~ \"open\"]",
+        "Read Selector rejects excluded feature $[?@.properties[?@.status]]",
+        "Read Selector rejects excluded feature $[?@.properties.left == @.properties.right]",
+        "Read Selector rejects excluded feature $[?@.properties.a,@.properties.b]",
+        "Read Selector rejects excluded feature $[?@.properties.value == [1]]",
+        "Read Selector rejects excluded feature $[?@.properties.value == {\"x\":1}]",
+        "Read Selector rejects excluded feature $[?@.properties.status].name",
+        "Read Selector rejects excluded feature $[?$.properties.status]",
+        "Read Selector rejects excluded feature $[?@.properties.rows[*]]",
+        "Read Selector rejects excluded feature $[?@.properties.rows[0:2]]",
+        "Read Selector rejects excluded feature $[?@.properties.rows[0,1]]",
+        "Read Selector rejects malformed Selector ",
+        "Read Selector rejects malformed Selector $",
+        "Read Selector rejects malformed Selector $[]",
+        "Read Selector rejects malformed Selector $[?]",
+        "Read Selector rejects malformed Selector $[?true]",
+        "Read Selector rejects malformed Selector $[?@.properties.value ==]",
+        "Read Selector rejects malformed Selector $[?== 1]",
+        "Read Selector rejects malformed Selector $[?@.properties.value = 1]",
+        "Read Selector rejects malformed Selector $[?@.properties.value &&]",
+        "Read Selector rejects malformed Selector $[?(@.properties.value]",
+        "Read Selector rejects malformed Selector $[?@.properties.value)]",
+        "Read Selector rejects malformed Selector $[?@.properties.value == \"unterminated] ",
+        "Read Selector rejects malformed Selector $[?@.properties.value == 01]",
+        "Read Selector rejects malformed Selector $[?@.properties.value == NaN]",
+        "Read Selector rejects malformed Selector $[?@.properties.value == true false]",
+        "Read Selector rejects malformed Selector $[?!@.properties.value == true]",
+        "Read Selector rejects malformed Selector $[?!!@.properties.value]",
+        "Read Selector rejects malformed Selector $[?! !@.properties.value]",
+        "Read Selector rejects malformed Selector $[?@.properties.rows[01]]",
+        "Read Selector rejects malformed Selector $[?@.properties.rows[-0]]",
+        "Read Selector rejects malformed Selector $[?@.properties.rows[-01]]",
+        "Read Selector rejects malformed Selector $[?@.properties.rows[9007199254740992]]",
+        "Read Selector rejects malformed Selector $[?@.properties.rows[-9007199254740992]]",
+        "Read Selector rejects malformed Selector $[?@.properties.value == \"\\uD800\"]",
+        "Read Selector rejects malformed Selector $[?@.properties.value == \"\\uDC00\"]",
+        "Read Selector rejects malformed Selector $[?@.properties.value == \"\\uD800\\uD800\"]",
+        "Read Selector enforces exact UTF-8 source-byte boundaries, including Unicode",
+        "Read Selector enforces exact AST depth and node boundaries without truncation",
+        "Read Selector bounds pathological nesting, negation, and expression width with typed failures",
+        "Read Selector ignores inherited and accessor members without invoking hostile getters",
+        "Read Selector requires explicit positive safe-integer limits and a primitive string",
+        "analyzes complete Selector grammar with exact uncapped structural metrics",
+        "does not hide invalid Selector suffixes behind operational capacity",
+        "analyzes body-bounded deep Selectors without recursive traversal",
+        "counts decoded Selector UTF-8 without URI decoding or identity rewriting"
+      ]
+    },
+    {
+      "file": "packages/server/src/transaction-set.test.ts",
+      "registrations": [
+        {
+          "file": "packages/server/src/transaction-set.test.ts",
+          "line": 130,
+          "title": "selects staged canonical Resources once, retains indices and expands in canonical order",
+          "parents": [],
+          "tableSource": null,
+          "expandedTitles": [
+            "selects staged canonical Resources once, retains indices and expands in canonical order"
+          ],
+          "fullTitles": [
+            "selects staged canonical Resources once, retains indices and expands in canonical order"
+          ]
+        },
+        {
+          "file": "packages/server/src/transaction-set.test.ts",
+          "line": 201,
+          "title": "cardinality is inclusive, rolls back the whole batch and retains original failed disposition",
+          "parents": [],
+          "tableSource": null,
+          "expandedTitles": [
+            "cardinality is inclusive, rolls back the whole batch and retains original failed disposition"
+          ],
+          "fullTitles": [
+            "cardinality is inclusive, rolls back the whole batch and retains original failed disposition"
+          ]
+        },
+        {
+          "file": "packages/server/src/transaction-set.test.ts",
+          "line": 221,
+          "title": "late selected patch failure rolls back earlier selected mutations and batch creation",
+          "parents": [],
+          "tableSource": null,
+          "expandedTitles": [
+            "late selected patch failure rolls back earlier selected mutations and batch creation"
+          ],
+          "fullTitles": [
+            "late selected patch failure rolls back earlier selected mutations and batch creation"
+          ]
+        },
+        {
+          "file": "packages/server/src/transaction-set.test.ts",
+          "line": 379,
+          "title": "rejects invalid set Selector grammar while valid carriers share preparation and sequence sets remain excluded",
+          "parents": [],
+          "tableSource": null,
+          "expandedTitles": [
+            "rejects invalid set Selector grammar while valid carriers share preparation and sequence sets remain excluded"
+          ],
+          "fullTitles": [
+            "rejects invalid set Selector grammar while valid carriers share preparation and sequence sets remain excluded"
+          ]
+        },
+        {
+          "file": "packages/server/src/transaction-set.test.ts",
+          "line": 1029,
+          "title": "serializes byte-bounded deep syntax iteratively without changing number lexemes or key order",
+          "parents": [],
+          "tableSource": null,
+          "expandedTitles": [
+            "serializes byte-bounded deep syntax iteratively without changing number lexemes or key order"
+          ],
+          "fullTitles": [
+            "serializes byte-bounded deep syntax iteratively without changing number lexemes or key order"
+          ]
+        },
+        {
+          "file": "packages/server/src/transaction-set.test.ts",
+          "line": 1037,
+          "title": "preserves literal Selector identity and original mixed-carrier diagnostic pointers",
+          "parents": [],
+          "tableSource": null,
+          "expandedTitles": [
+            "preserves literal Selector identity and original mixed-carrier diagnostic pointers"
+          ],
+          "fullTitles": [
+            "preserves literal Selector identity and original mixed-carrier diagnostic pointers"
+          ]
+        }
+      ],
+      "expandedTitles": [
+        "selects staged canonical Resources once, retains indices and expands in canonical order",
+        "cardinality is inclusive, rolls back the whole batch and retains original failed disposition",
+        "late selected patch failure rolls back earlier selected mutations and batch creation",
+        "rejects invalid set Selector grammar while valid carriers share preparation and sequence sets remain excluded",
+        "serializes byte-bounded deep syntax iteratively without changing number lexemes or key order",
+        "preserves literal Selector identity and original mixed-carrier diagnostic pointers"
+      ]
+    },
+    {
+      "file": "packages/server/src/transaction-submission.test.ts",
+      "registrations": [
+        {
+          "file": "packages/server/src/transaction-submission.test.ts",
+          "line": 140,
+          "title": "keeps invalid Selector grammar distinct from excessive private depth",
+          "parents": [
+            "private direct Transactional receiving order"
+          ],
+          "tableSource": null,
+          "expandedTitles": [
+            "keeps invalid Selector grammar distinct from excessive private depth"
+          ],
+          "fullTitles": [
+            "private direct Transactional receiving order keeps invalid Selector grammar distinct from excessive private depth"
+          ]
+        },
+        {
+          "file": "packages/server/src/transaction-submission.test.ts",
+          "line": 161,
+          "title": "compares conflict before negotiation and negotiates exact pending/terminal replay without changing it",
+          "parents": [
+            "private direct Transactional receiving order"
+          ],
+          "tableSource": null,
+          "expandedTitles": [
+            "compares conflict before negotiation and negotiates exact pending/terminal replay without changing it"
+          ],
+          "fullTitles": [
+            "private direct Transactional receiving order compares conflict before negotiation and negotiates exact pending/terminal replay without changing it"
+          ]
+        },
+        {
+          "file": "packages/server/src/transaction-submission.test.ts",
+          "line": 176,
+          "title": "checks fresh capacity before negotiation and never captures a refused key",
+          "parents": [
+            "private direct Transactional receiving order"
+          ],
+          "tableSource": null,
+          "expandedTitles": [
+            "checks fresh capacity before negotiation and never captures a refused key"
+          ],
+          "fullTitles": [
+            "private direct Transactional receiving order checks fresh capacity before negotiation and never captures a refused key"
+          ]
+        },
+        {
+          "file": "packages/server/src/transaction-submission.test.ts",
+          "line": 293,
+          "title": "joins overlapping calls through one pending receipt without second execution",
+          "parents": [
+            "private direct Transactional receiving order"
+          ],
+          "tableSource": null,
+          "expandedTitles": [
+            "joins overlapping calls through one pending receipt without second execution"
+          ],
+          "fullTitles": [
+            "private direct Transactional receiving order joins overlapping calls through one pending receipt without second execution"
+          ]
+        },
+        {
+          "file": "packages/server/src/transaction-submission.test.ts",
+          "line": 550,
+          "title": "checks complete %s Selector grammar before principal while preserving key reuse",
+          "parents": [
+            "valid private set admission"
+          ],
+          "tableSource": "[\"batch\", \"singleton\"] as const",
+          "expandedTitles": [
+            "checks complete batch Selector grammar before principal while preserving key reuse",
+            "checks complete singleton Selector grammar before principal while preserving key reuse"
+          ],
+          "fullTitles": [
+            "valid private set admission checks complete batch Selector grammar before principal while preserving key reuse",
+            "valid private set admission checks complete singleton Selector grammar before principal while preserving key reuse"
+          ]
+        },
+        {
+          "file": "packages/server/src/transaction-submission.test.ts",
+          "line": 610,
+          "title": "separates cardinality syntax, numeric admission and guarded failure, preserving original pointers on replay/reopen",
+          "parents": [
+            "valid private set admission"
+          ],
+          "tableSource": null,
+          "expandedTitles": [
+            "separates cardinality syntax, numeric admission and guarded failure, preserving original pointers on replay/reopen"
+          ],
+          "fullTitles": [
+            "valid private set admission separates cardinality syntax, numeric admission and guarded failure, preserving original pointers on replay/reopen"
+          ]
+        },
+        {
+          "file": "packages/server/src/transaction-submission.test.ts",
+          "line": 679,
+          "title": "maps known numeric failure at the original outer index and rolls back staged work",
+          "parents": [
+            "valid private set admission"
+          ],
+          "tableSource": null,
+          "expandedTitles": [
+            "maps known numeric failure at the original outer index and rolls back staged work"
+          ],
+          "fullTitles": [
+            "valid private set admission maps known numeric failure at the original outer index and rolls back staged work"
+          ]
+        },
+        {
+          "file": "packages/server/src/transaction-submission.test.ts",
+          "line": 698,
+          "title": "uses the same depth boundary for singleton and wrapped set content",
+          "parents": [
+            "valid private set admission"
+          ],
+          "tableSource": null,
+          "expandedTitles": [
+            "uses the same depth boundary for singleton and wrapped set content"
+          ],
+          "fullTitles": [
+            "valid private set admission uses the same depth boundary for singleton and wrapped set content"
+          ]
+        },
+        {
+          "file": "packages/server/src/transaction-submission.test.ts",
+          "line": 763,
+          "title": "counts every outer set before negotiation while retained sets bypass fresh operation capacity",
+          "parents": [],
+          "tableSource": null,
+          "expandedTitles": [
+            "counts every outer set before negotiation while retained sets bypass fresh operation capacity"
+          ],
+          "fullTitles": [
+            "counts every outer set before negotiation while retained sets bypass fresh operation capacity"
+          ]
+        },
+        {
+          "file": "packages/server/src/transaction-submission.test.ts",
+          "line": 1315,
+          "title": "refuses invalid Selector grammar before every key state without owner admission",
+          "parents": [],
+          "tableSource": null,
+          "expandedTitles": [
+            "refuses invalid Selector grammar before every key state without owner admission"
+          ],
+          "fullTitles": [
+            "refuses invalid Selector grammar before every key state without owner admission"
+          ]
+        },
+        {
+          "file": "packages/server/src/transaction-submission.test.ts",
+          "line": 1381,
+          "title": "applies fixed Selector capacity only to fresh valid carriers before execution and negotiation",
+          "parents": [],
+          "tableSource": null,
+          "expandedTitles": [
+            "applies fixed Selector capacity only to fresh valid carriers before execution and negotiation"
+          ],
+          "fullTitles": [
+            "applies fixed Selector capacity only to fresh valid carriers before execution and negotiation"
+          ]
+        },
+        {
+          "file": "packages/server/src/transaction-submission.test.ts",
+          "line": 1495,
+          "title": "preserves genuine pending completed and failed receipts before Selector capacity",
+          "parents": [],
+          "tableSource": null,
+          "expandedTitles": [
+            "preserves genuine pending completed and failed receipts before Selector capacity"
+          ],
+          "fullTitles": [
+            "preserves genuine pending completed and failed receipts before Selector capacity"
+          ]
+        }
+      ],
+      "expandedTitles": [
+        "private direct Transactional receiving order keeps invalid Selector grammar distinct from excessive private depth",
+        "private direct Transactional receiving order compares conflict before negotiation and negotiates exact pending/terminal replay without changing it",
+        "private direct Transactional receiving order checks fresh capacity before negotiation and never captures a refused key",
+        "private direct Transactional receiving order joins overlapping calls through one pending receipt without second execution",
+        "valid private set admission checks complete batch Selector grammar before principal while preserving key reuse",
+        "valid private set admission checks complete singleton Selector grammar before principal while preserving key reuse",
+        "valid private set admission separates cardinality syntax, numeric admission and guarded failure, preserving original pointers on replay/reopen",
+        "valid private set admission maps known numeric failure at the original outer index and rolls back staged work",
+        "valid private set admission uses the same depth boundary for singleton and wrapped set content",
+        "counts every outer set before negotiation while retained sets bypass fresh operation capacity",
+        "refuses invalid Selector grammar before every key state without owner admission",
+        "applies fixed Selector capacity only to fresh valid carriers before execution and negotiation",
+        "preserves genuine pending completed and failed receipts before Selector capacity"
+      ]
+    },
+    {
+      "file": "packages/server/src/transaction-http.test.ts",
+      "registrations": [
+        {
+          "file": "packages/server/src/transaction-http.test.ts",
+          "line": 589,
+          "title": "rejects invalid set Selector grammar and preserves private depth refusal without key capture or partial effects",
+          "parents": [
+            "source-private actual Transactional HTTP"
+          ],
+          "tableSource": null,
+          "expandedTitles": [
+            "rejects invalid set Selector grammar and preserves private depth refusal without key capture or partial effects"
+          ],
+          "fullTitles": [
+            "source-private actual Transactional HTTP rejects invalid set Selector grammar and preserves private depth refusal without key capture or partial effects"
+          ]
+        },
+        {
+          "file": "packages/server/src/transaction-http.test.ts",
+          "line": 2214,
+          "title": "serves both set targets with method/auth/shape precedence and no unsupported-key capture",
+          "parents": [],
+          "tableSource": null,
+          "expandedTitles": [
+            "serves both set targets with method/auth/shape precedence and no unsupported-key capture"
+          ],
+          "fullTitles": [
+            "serves both set targets with method/auth/shape precedence and no unsupported-key capture"
+          ]
+        },
+        {
+          "file": "packages/server/src/transaction-http.test.ts",
+          "line": 3640,
+          "title": "serves exact fixed Selector boundaries and leaves refused keys unused",
+          "parents": [],
+          "tableSource": null,
+          "expandedTitles": [
+            "serves exact fixed Selector boundaries and leaves refused keys unused"
+          ],
+          "fullTitles": [
+            "serves exact fixed Selector boundaries and leaves refused keys unused"
+          ]
+        },
+        {
+          "file": "packages/server/src/transaction-http.test.ts",
+          "line": 3703,
+          "title": "serves Selector syntax and prior-key precedence over capacity",
+          "parents": [],
+          "tableSource": null,
+          "expandedTitles": [
+            "serves Selector syntax and prior-key precedence over capacity"
+          ],
+          "fullTitles": [
+            "serves Selector syntax and prior-key precedence over capacity"
+          ]
+        }
+      ],
+      "expandedTitles": [
+        "source-private actual Transactional HTTP rejects invalid set Selector grammar and preserves private depth refusal without key capture or partial effects",
+        "serves both set targets with method/auth/shape precedence and no unsupported-key capture",
+        "serves exact fixed Selector boundaries and leaves refused keys unused",
+        "serves Selector syntax and prior-key precedence over capacity"
+      ]
+    }
+  ],
+  "installed": {
+    "file": "apps/bdptest/src/transactional-selector-admission-installed.test.ts",
+    "line": 119,
+    "title": "installed Selector grammar and fresh capacity preserve keys receipts and complete effects",
+    "parents": [],
+    "tableSource": null,
+    "expandedTitles": [
+      "installed Selector grammar and fresh capacity preserve keys receipts and complete effects"
+    ],
+    "fullTitles": [
+      "installed Selector grammar and fresh capacity preserve keys receipts and complete effects"
+    ]
+  },
+  "counts": {
+    "sourcePositive": {
+      "cases": 90,
+      "http": 94,
+      "owners": 39,
+      "listeners": 19,
+      "directories": 20,
+      "readonlyInventoryHandles": 17,
+      "installedChildren": 0
+    },
+    "controls": {
+      "cases": 2,
+      "expectedHttp": 2,
+      "maximumHttp": 52,
+      "owners": 2,
+      "listeners": 2,
+      "directories": 2,
+      "expectedReadonly": 0,
+      "maximumReadonly": 2,
+      "installedChildren": 0
+    },
+    "combinedSource": {
+      "cases": 92,
+      "expectedHttp": 96,
+      "plannedMaximumHttp": 146,
+      "positiveCeilingPlusControlCeiling": 152,
+      "owners": 41,
+      "listeners": 21,
+      "directories": 22,
+      "expectedReadonly": 17,
+      "maximumReadonly": 19
+    },
+    "installed": {
+      "cases": 1,
+      "http": 25,
+      "post": 19,
+      "get": 6,
+      "children": 1,
+      "directories": 1,
+      "reopens": 0,
+      "urls": 9,
+      "readonlyInventoryHandles": 0
+    }
+  },
+  "newCIRegistrations": 11
+}

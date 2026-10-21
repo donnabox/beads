@@ -1,0 +1,116 @@
+## Findings
+
+---
+
+### 1 — MEDIUM‑HIGH · correctness (false pre‑admission refusal) · `packages/server/src/transaction-set.ts:69-83`
+
+**Every `deleteWhere` record carrying `revisionProvenance` is refused, although the normative bundle admits it.**
+
+`prepareSetCore` validates set syntax by projecting the record onto an RU singleton root, and picks that root from the *operation* only — never from `collection`:
+
+```ts
+prepareReadUpdateSingleton(
+  scope,
+  operation === "updateWhere" ? "updateBead" : "deleteBead",
+  transactionInputText({ bead: "beads/__set_syntax_only__", …,
+    ...(input.revisionProvenance === undefined ? {} : { revisionProvenance: input.revisionProvenance }) }),
+  "internal-set-syntax",
+);
+```
+
+`deleteBead` resolves to `#/$defs/deleteBeadRequest` (`read-update-values.ts:32`), whose `deleteBeadMembers` has only `bead` and `expectedRevision`, under `unevaluatedProperties: false`. But `deleteWhereMembers` *does* define `revisionProvenance`, and so does `deleteLinkMembers`.
+
+Confirmed against the frozen `dist` and the bundle:
+
+```
+REFUSE   deleteWhere beads + revisionProvenance -> ReadUpdateCarrierError: Malformed deleteBead carrier
+REFUSE   deleteWhere links + revisionProvenance -> ReadUpdateCarrierError: Malformed deleteBead carrier
+ACCEPT   updateWhere beads + revisionProvenance
+bundle deleteWhereOperation valid: true
+bundle deleteLinkRequest  +revisionProvenance -> true
+bundle deleteBeadRequest  +revisionProvenance -> false
+```
+
+I swept 2 × 32 variants (collection, cardinality shapes/spellings, provenance shapes, extra/absent fields, bad ops) comparing `prepareSetCore` acceptance against `updateWhereOperation`/`deleteWhereOperation`: **5 disagreements, all this one class** — `{}`, `{message}`, `{message: null}`, `{agent: null}`, `{actor}`. Every other case agrees, including the ones that should be refused.
+
+**Concrete failure:** `{"operation":"deleteWhere","collection":"links","selector":"$[?@.source == \"…/beads/task-42\"]","revisionProvenance":{"message":"cleanup"}}` — the spec's own composition idiom (§Set mutation, 4280 ff., where `DeleteWhere` provenance lands on owned-Link source versions) — throws `ReadUpdateCarrierError` at preparation. On the HTTP path this would be a pre‑admission 400 `malformed-request` for a bundle‑valid request.
+
+**This also falsifies the report's F4/F9 disposition.** The added corpus (`transaction-set.test.ts:525-553`) asserts exact agreement `expect(accepted).toBe(schema(member))` against both bundle roots, but varies **only `cardinality`**. Adding any `revisionProvenance` variant to that same loop fails today. The report's "canonical bundle cross-check corpus for both set operation roots" is narrower than the claim it is cited for.
+
+**Repair:** select the syntax root from `collection` as well as operation — `updateBead`/`updateLink`, `deleteBead`/`deleteLink` — which fixes `collection:"links"` for free; and for `deleteWhere` on `beads`, validate `revisionProvenance` directly against `#/$defs/revisionProvenanceInput` instead of routing it through `deleteBeadRequest`. The evaluator needs no change: with `deleting` true, `subjectRecipe` is `undefined` (`resource-evaluator.ts:886-895`), so the field is correctly inert and mints nothing, exactly as 4280 requires. Then extend the `it.each` corpus to cross-product `revisionProvenance` with `collection`, so the agreement assertion actually covers both roots.
+
+---
+
+### 2 — MEDIUM · unbounded durable materialization · `packages/server/src/transaction-batch.ts:556-560`, `:676`
+
+**The total induced‑Event bound does not bound set result materialization, because no‑op entries emit no Events.**
+
+`applyResource` pushes its result entry *before* the no-op early return:
+
+```ts
+results.push({ operationIndex, …, ...outcome });        // 556
+…
+if (result.changed.length === 0 && result.deleted.length === 0) return;   // 560 — before any scopeEvent
+```
+
+`scopeEvent` holds the only cap (`events.length >= eventMaximum`, line 499), so it is never reached for a no-op. Spec 5151-5155 requires a no-op to produce an `updated` entry with the full retained postimage, and `cardinality` is optional — so an `updateWhere` whose `change` is a semantic no-op for the matched set produces `N + 1` entries carrying complete Resource records and **zero** Events. `transaction.matchedResources` / `mutatedResources` are not enforced anywhere.
+
+**Concrete failure:** against a collection of 500 000 beads, one 200-byte `{"operation":"updateWhere","collection":"beads","selector":"$[?@.id]","change":[{"op":"replace","path":"/n","value":<current>}]}` completes, writes 500 001 result entries into the single `receipts.receipt` TEXT value, inserts ~250 000 `receipt_page_ranges` rows (`createPagePlan`, `transaction-store.ts:490-496`), and every later receipt read re-parses and recursively freezes the whole array (`observeReceipt`, `:585-592`). At the SQLite 1 GB value ceiling it degrades to `atomic()` abort → pending retraction, not corruption.
+
+Spec 4280-4282 only makes the *Event* maximum a MUST, so this is not a normative violation, and `docs/design/transaction-implementation-progress.md` does disclose "linear in collection/population size". The finding is that the document presents the 4 096 Event bound as *the* set-expansion protection, and it is not one: the mostly-no-op case escapes it entirely.
+
+**Repair:** count matched/expanded Resources against a second private module constant in the same `try` region (a `MatchExpansionLimit` sibling to `EventExpansionLimit`), emitting `limit: "transaction.matchedResources"` or `"transaction.mutatedResources"` — both already enumerated in 5252-5257 and 5317-5319 as transaction-wide `limit-exceeded` names that omit `operationIndex`, so no new code or receipt-union work is needed. Then state the real bound in the progress note instead of implying Events cover it.
+
+---
+
+### 3 — LOW‑MEDIUM · introduced visibility divergence · `packages/server/src/transaction-batch.ts:651-657`
+
+**Set candidates are filtered with bare `policy.canRead`, not the authority's shared visibility predicate.**
+
+```ts
+tx.resources(input.collection === "beads" ? "bead" : "link")
+  .map((row) => readStoredResource(row, options.scope))
+  .filter((record) => options.policy.canRead(record))
+```
+
+Spec 4909-4910: "The candidate collection contains only Resources visible in the request's Authorization View. Cardinality is measured over that projected match." Everywhere else in this codebase "visible" means `isResourceVisible` (`resource-evaluator.ts:573`) — transitive over a Bead's owned Links and each Link's local endpoint Beads — and the Read collection route uses exactly that (`authority-read.ts:831` → `graph.visible` → `:672`). The set path encodes the weaker per-record predicate. It also skips `validateServerBead`/`validateServerLink` and the Link body-vs-index endpoint agreement check that `graph.accept` applies on the Read route (`authority-read.ts:595-606`).
+
+**Concrete failure (latent):** install any policy where a Link is readable but its endpoint Bead is not. `GET links?selector=…` hides that Link; `deleteWhere` on `links` with the same Selector selects it, counts it in `cardinality`, deletes it, and discloses its identity in the receipt — a set mutation reaching, and reporting on, graph the Read route projects away.
+
+This is **unobservable today** (`transaction-store.ts:985` fixes `canRead/canCreate/canWrite` to `() => true`), which is the pre-existing all-visible limitation. But it is newly written code choosing the weaker predicate, and it is *not* one of the two exclusions F7 states (`attribution-fanout`, the nonwritable-match `forbidden` branch) — so the report's scope-honesty section does not cover it.
+
+**Repair:** filter with `isResourceVisible({ resource: tx.resource }, record, options.scope, options.policy)` — it is already exported and takes exactly the `Pick<ResourceTransaction,"resource">` the context provides — and record the deferral in the progress note alongside the other two policy exclusions rather than leaving the weaker predicate as the encoded semantics.
+
+---
+
+### 4 — LOW · type weakening outruns its justification · `packages/server/src/transaction-batch.ts:458-462`
+
+`BatchEvaluation`'s failure problem went from `operationIndex: number` to `operationIndex?: number` for **all** branches, to accommodate the one transaction-wide `transaction.inducedEvents` failure. Spec 5248-5257 requires `operationIndex` on every operation-local failure and permits its absence only for the enumerated transaction-wide set. Nine of the ten return sites still set it correctly, so there is no live defect — but a future branch that forgets it now type-checks, and the bundle's `receiptProblem` does not require the field either, so neither the compiler nor `receiptSchema` would catch it.
+
+**Repair:** make the union explicit — `{ problem: … & { operationIndex: number; operationName?: string } } | { problem: … & { code: "limit-exceeded"; limit: string } }` — so omission is only legal on the transaction-wide branch.
+
+---
+
+### 5 — LOW · readability · `packages/server/src/transaction-batch.ts:1-15`
+
+The new `./transaction-set.js` / `./read-selector.js` imports and three new top-level declarations were inserted *above* the file's module doc comment, so `/** Private first Transactional slice. No transport or profile admission. */` now sits at line 13 between `class EventExpansionLimit` and the `snapshotReadUpdateRuntimeLimits` import, where it reads as documentation for that import. Move the new imports into the existing block below the comment.
+
+---
+
+## Verified, not findings
+
+Things the brief asked about that hold up under inspection — listed so the negative results are on the record:
+
+- **Full outer counts and indices.** `carrier.operations` is the complete ordered union; `transaction-store.ts:847` compares `controls.maximumOperations` against it, before the `INSERT INTO receipts`, so no refusal binds a key or writes a receipt (test `:494`, plus the direct closed-database `SELECT * FROM receipts` assertion). F1 is closed without a redundant `operationCount`. Witness, alias (`captured`) and result arrays are all keyed to the outer index; `prior?.[index]` stays aligned across retry (test `:554`).
+- **Staged selection order.** `compareCanonicalIds` is `<`/`>` on strings — UTF‑16 code-unit order, which is literally what 5162-5165 and 5577-5584 require ("ascending code-unit order of their canonical `id`s"). The matched entry precedes the per-Resource entries; a zero match yields `matched`/`count: 0` and nothing else. Selection is re-queried per set operation, so it observes preceding effects.
+- **Post-admission Selector re-parse cannot fail.** `prepareSetCore` and the evaluator call `selectReadResources` with the identical string (`mapLosslessJson` preserves strings) and the identical frozen `TRANSACTION_SELECTOR_LIMITS`, and `evaluate`/`resolvePath`/`compare` (`read-selector.ts:764-877`) are total over candidate data — every miss returns `MISSING`, no throw. So the un-try/caught re-parse at line 648 cannot surface a `ReadSelectorError` as an owner fault. The `bytes: 4096` choice departs from the plan review's F3 advice (bytes > 64 KiB body bound) but introduces no phase-dependence, because the pre-parse makes both points agree.
+- **Cardinality shape.** `nonnegativeInteger`'s coefficient/fraction/exponent arithmetic is correct across `-0.0`, `0e-5`, `1.50e1`, `10e-1`, `100e-3`, `1.1`, `-1`; it is strictly stronger than the bundle only on literals like `1e-999`, which `isAdmissibleJsonNumber` would refuse anyway. Bounds are inclusive; `min > max` is admitted and fails at execution. The check precedes the syntax projection, so the `0`-placeholder hazard of F4 is genuinely avoided.
+- **Savepoint / receipt / Event rollback.** `SAVEPOINT effects` … `ROLLBACK TO effects` discards partial set expansion while the failed receipt is still written and retained; `effective = events.length > 0` means an all-no-op set commits with no group and no `effectPosition`. `cardinality-violated` is conflict/409/`after-state-change` and `limit-exceeded` is size/413/`never` with `limit: "transaction.inducedEvents"` and no `operationIndex` — all exactly matching 5287-5337 and 5252-5257, and every receipt in the suite validates against `mutationReceipt`.
+- **No-op facts and self-Link incidence.** Set members route through the same `applyResource` as ordinary members, so `updateWhere` on links emits only `updated`, and a self-Link delete emits `deleted` + two `unlinked` (one per endpoint) with the Link as subject — identical to the singleton. `deleteBead` still refuses on incident links, so the `"missing staged endpoint"` owner fault is unreachable from `deleteWhere`.
+- **Resource-path regression from the `applyResource` extraction.** The moved body consumes only `op.operation` and `op.name`; `continue` → `return undefined` → `if (failure) return failure` is behaviourally identical.
+- **Event seam.** `maximumInducedEvents` is a module constant, validated `1 ≤ n ≤ 4096`, never passed by the store, never in `configuration` — F10 as specified, with no provisioning option that would permanently refuse existing stores.
+- **Preparation remains closed.** `prepareTransactionSetCore` has no non-test caller. `prepareTransaction`/`prepareTransactionSingleton`/`prepareTransactionSequence` still refuse `updateWhere`/`deleteWhere`, surfacing `TransactionDevelopmentLimitError` → `{kind:"development-limit"}` (unchanged class, unchanged mapping). `TRANSACTION_HTTP_OPERATIONS` untouched; `refused.limit` still the single literal. Only `.` and `./development` are package exports, and the smoke list denies `prepareSetCore`/`prepareTransactionSetCore` on the packed root.
+- **No read-only preflight reintroduced.** The connection opens read-write at `:218` (letting SQLite recover a hot journal), and the byte-exact `configuration` compare at `:436-442` runs inside `atomic()` *before* pending retraction, `creator_facts` cleanup and `sweep` — the 270a121 ordering, intact.
+- **Shallow freezing of prepared `input`** matches the existing RU convention (`read-update-values.ts:347` is also a shallow `Object.freeze`), so it is not a new weakness.
+
+**One evidence/claim gap worth flagging, short of a finding:** the format‑7 protection claim is bidirectional, but `actual-format6-probe.mjs` only exercises **new‑opens‑old** (format‑7 owner refusing a format‑6 file with a pending receipt, bytes unchanged). The protective direction — an old format‑6 owner must never open a format‑7 database carrying `updateWhere`/`deleteWhere` witnesses — is sound by symmetry, since both owners embed their own `format` in the byte-compared `configuration`, but it is not what the probe demonstrates. A second probe in the reverse direction would close it.

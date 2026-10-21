@@ -1,0 +1,26 @@
+--- a/packages/server/src/transaction-service.test.ts
++++ b/packages/server/src/transaction-service.test.ts
+@@ -4264,16 +4264,13 @@
+       }
+       try {
+         const outcome = await currentObservationBound(close(), "current observation drain timeout");
+-        if (!outcome.ok) {
+-          failures.push(outcome.error);
+-        } else {
+-          postCloseProbes++;
+-          expect(f.owner.withRead(() => true)).toMatchObject({
+-            kind: "entry-refused",
+-            reason: "not-accepting",
+-          });
+-          directoryAbsent = f.remove();
+-        }
++        if (!outcome.ok) throw outcome.error;
++        postCloseProbes++;
++        expect(f.owner.withRead(() => true)).toMatchObject({
++          kind: "entry-refused",
++          reason: "not-accepting",
++        });
++        directoryAbsent = f.remove();
+       } catch (error) {
+         failures.push(error);
+       }

@@ -1,0 +1,106 @@
+{
+  "censusRows": 1425,
+  "limitations": "Fresh census establishes absence of recorded PIDs/groups at this instant. Sampling cannot prove that no unobserved transient descendant ever existed; no signals or PID probes performed. Existing npm-cache/temp roots are not represented as removed; only BDP runtime subdirectory absence checked.",
+  "matchingFreshRows": [],
+  "observedStageGroups": [
+    73119,
+    74573,
+    76085,
+    78361
+  ],
+  "observedStagePids": [
+    73119,
+    74573,
+    76085,
+    78361,
+    78393,
+    78411,
+    78425,
+    78443,
+    78459,
+    78477,
+    78510,
+    78527,
+    78542,
+    78558,
+    78575,
+    78593,
+    78610,
+    78627,
+    78644,
+    78663,
+    78683,
+    78700,
+    78718,
+    78736,
+    78751,
+    78769,
+    78784,
+    78795,
+    78811,
+    78834,
+    78850,
+    78870,
+    78884,
+    78914,
+    78941,
+    78955,
+    78969,
+    78992,
+    79005,
+    79016,
+    79032,
+    79047,
+    79064,
+    79079,
+    79103,
+    79123,
+    79154,
+    79167,
+    79192,
+    79208,
+    79221,
+    79235,
+    79249,
+    79310,
+    79325,
+    79340,
+    79341
+  ],
+  "psArgv": [
+    "ps",
+    "-axo",
+    "pid=,ppid=,pgid=,stat=,comm="
+  ],
+  "rawCensusSha256": "a58c34e34b2cf7ce0af49150c9e2097da053aa0e7436efa1276ec8e06ddf36d9",
+  "sampleRecords": 75,
+  "temporaryRoots": [
+    {
+      "bdpRuntimeDirectories": [],
+      "exists": true,
+      "path": "/private/tmp/vickie-tx-discovery-validation-node-version-aot0hpzb"
+    },
+    {
+      "bdpRuntimeDirectories": [],
+      "exists": true,
+      "path": "/private/tmp/vickie-tx-discovery-validation-pnpm-version-bc2g1dri"
+    },
+    {
+      "bdpRuntimeDirectories": [],
+      "exists": true,
+      "path": "/private/tmp/vickie-tx-discovery-validation-workspace-install-rz658if0"
+    },
+    {
+      "bdpRuntimeDirectories": [],
+      "exists": true,
+      "path": "/private/tmp/vickie-tx-discovery-validation-bind-workspace-tools-labdxkbx"
+    }
+  ],
+  "utc": "2026-10-18T15:14:47.106633+00:00",
+  "wrapperPids": [
+    72391,
+    73853,
+    75354,
+    76851
+  ]
+}

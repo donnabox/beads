@@ -1,0 +1,255 @@
+{
+  "status": "CLOSED_PREPARATION_ONLY",
+  "workspace": "/Users/dbox/repos/wt/vickie/vickie-sequence-member-evidence",
+  "ownedPaths": [
+    "packages/server/src/transaction-batch.ts",
+    "packages/server/src/transaction-store.ts",
+    "packages/server/src/transaction-submission.ts",
+    "packages/server/src/transaction-set.test.ts",
+    "packages/server/src/transaction-submission.test.ts",
+    "packages/server/src/transaction-http.test.ts",
+    "apps/bdptest/src/transactional-depth-key-order-installed.test.ts",
+    "docs/design/transaction-implementation-progress.md"
+  ],
+  "executionOrder": [
+    "node-version",
+    "package-directory",
+    "pack-protocol",
+    "pack-server",
+    "verify-tar",
+    "prepare-consumer",
+    "consumer-install",
+    "verify-installed",
+    "installed-positive",
+    "installed-review"
+  ],
+  "commands": {
+    "node-version": {
+      "phase": "package",
+      "cwd": "/Users/dbox/repos/wt/vickie/vickie-sequence-member-evidence",
+      "argv": [
+        "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+        "--version"
+      ],
+      "supervisorSeconds": 120,
+      "requires": [],
+      "ownedTempPrefixes": []
+    },
+    "package-directory": {
+      "phase": "package",
+      "cwd": "/Users/dbox/repos/wt/vickie/vickie-sequence-member-evidence",
+      "argv": [
+        "python3",
+        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-depth-key-order-draft/installed-preparation-v2/packages.py",
+        "directory"
+      ],
+      "supervisorSeconds": 120,
+      "requires": [
+        {
+          "id": "node-version",
+          "exit": 0
+        }
+      ],
+      "ownedTempPrefixes": []
+    },
+    "pack-protocol": {
+      "phase": "package",
+      "cwd": "/Users/dbox/repos/wt/vickie/vickie-sequence-member-evidence",
+      "argv": [
+        "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+        "/Users/dbox/.cache/node/corepack/v1/pnpm/11.20.0/bin/pnpm.cjs",
+        "--filter",
+        "@bdp/protocol",
+        "pack",
+        "--pack-destination",
+        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-depth-key-order-draft/installed-preparation-v2/run/packages"
+      ],
+      "supervisorSeconds": 120,
+      "requires": [
+        {
+          "id": "package-directory",
+          "exit": 0
+        }
+      ],
+      "ownedTempPrefixes": []
+    },
+    "pack-server": {
+      "phase": "package",
+      "cwd": "/Users/dbox/repos/wt/vickie/vickie-sequence-member-evidence",
+      "argv": [
+        "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+        "/Users/dbox/.cache/node/corepack/v1/pnpm/11.20.0/bin/pnpm.cjs",
+        "--filter",
+        "@bdp/server",
+        "pack",
+        "--pack-destination",
+        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-depth-key-order-draft/installed-preparation-v2/run/packages"
+      ],
+      "supervisorSeconds": 120,
+      "requires": [
+        {
+          "id": "pack-protocol",
+          "exit": 0
+        }
+      ],
+      "ownedTempPrefixes": []
+    },
+    "verify-tar": {
+      "phase": "package",
+      "cwd": "/Users/dbox/repos/wt/vickie/vickie-sequence-member-evidence",
+      "argv": [
+        "python3",
+        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-depth-key-order-draft/installed-preparation-v2/packages.py",
+        "tar"
+      ],
+      "supervisorSeconds": 120,
+      "requires": [
+        {
+          "id": "pack-server",
+          "exit": 0
+        }
+      ],
+      "ownedTempPrefixes": []
+    },
+    "prepare-consumer": {
+      "phase": "package",
+      "cwd": "/Users/dbox/repos/wt/vickie/vickie-sequence-member-evidence",
+      "argv": [
+        "python3",
+        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-depth-key-order-draft/installed-preparation-v2/packages.py",
+        "consumer"
+      ],
+      "supervisorSeconds": 120,
+      "requires": [
+        {
+          "id": "verify-tar",
+          "exit": 0
+        }
+      ],
+      "ownedTempPrefixes": []
+    },
+    "consumer-install": {
+      "phase": "package",
+      "cwd": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-depth-key-order-draft/installed-preparation-v2/run/consumer",
+      "argv": [
+        "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+        "/Users/dbox/.cache/node/corepack/v1/pnpm/11.20.0/bin/pnpm.cjs",
+        "install",
+        "--offline",
+        "--ignore-scripts",
+        "--no-frozen-lockfile",
+        "--prod"
+      ],
+      "supervisorSeconds": 120,
+      "requires": [
+        {
+          "id": "prepare-consumer",
+          "exit": 0
+        }
+      ],
+      "ownedTempPrefixes": []
+    },
+    "verify-installed": {
+      "phase": "package",
+      "cwd": "/Users/dbox/repos/wt/vickie/vickie-sequence-member-evidence",
+      "argv": [
+        "python3",
+        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-depth-key-order-draft/installed-preparation-v2/packages.py",
+        "installed"
+      ],
+      "supervisorSeconds": 120,
+      "requires": [
+        {
+          "id": "consumer-install",
+          "exit": 0
+        }
+      ],
+      "ownedTempPrefixes": []
+    },
+    "installed-positive": {
+      "cwd": "/Users/dbox/repos/wt/vickie/vickie-sequence-member-evidence",
+      "argv": [
+        "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+        "/Users/dbox/repos/wt/vickie/vickie-sequence-member-evidence/node_modules/.pnpm/vitest@4.1.10_@types+node@24.13.3_vite@8.2.1_@types+node@24.13.3_/node_modules/vitest/vitest.mjs",
+        "run",
+        "apps/bdptest/src/transactional-depth-key-order-installed.test.ts",
+        "--maxWorkers=1",
+        "--reporter=verbose",
+        "--reporter=json",
+        "--outputFile=/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-depth-key-order-draft/installed-preparation-v2/run/installed-positive.json",
+        "-t",
+        "^(?:observes\\ installed\\ retained\\ key\\ conflicts\\ before\\ private\\ carrier\\ depth)$"
+      ],
+      "selectedFullNames": [
+        "observes installed retained key conflicts before private carrier depth"
+      ],
+      "supervisorSeconds": 120,
+      "cases": 1,
+      "http": 13,
+      "owners": 1,
+      "directories": 1,
+      "listeners": 1,
+      "productChildren": 1,
+      "requires": [
+        {
+          "id": "verify-installed",
+          "exit": 0
+        }
+      ],
+      "phase": "installed",
+      "ownedTempPrefixes": [
+        "bdp-depth-key-installed-"
+      ],
+      "workload": {
+        "cases": 1,
+        "httpExpected": 13,
+        "httpMaximum": 13,
+        "children": 1,
+        "listeners": 1,
+        "owners": 1,
+        "directories": 1,
+        "requestTimeoutMs": 5000,
+        "cohortDeadlineMs": 45000,
+        "testTimeoutMs": 60000,
+        "startupMs": 10000,
+        "closeMs": 10000
+      }
+    },
+    "installed-review": {
+      "cwd": "/Users/dbox/repos/wt/vickie/vickie-sequence-member-evidence",
+      "argv": [
+        "python3",
+        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-depth-key-order-draft/installed-preparation-v2/review-installed.py"
+      ],
+      "supervisorSeconds": 120,
+      "requires": [
+        {
+          "id": "installed-positive",
+          "exit": 0
+        }
+      ],
+      "phase": "review",
+      "ownedTempPrefixes": []
+    }
+  },
+  "sourceBinding": {
+    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-depth-key-order-draft/lint-repair/source-binding.json",
+    "sha256": "5fbe5c9b0c57f2c253fb16d114675ccb4929a9e4e18b21a1efbf1ca18385d778"
+  },
+  "requests": {
+    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-depth-key-order-draft/installed-author/measurements.json",
+    "sha256": "0510ffab5865157dd4a0233e0d262028bd393ad5a423bc9a3abb5400a888a77b"
+  },
+  "limits": {
+    "installedCases": 1,
+    "httpExpected": 13,
+    "httpMaximum": 13,
+    "childrenMaximum": 1,
+    "noAutomaticRetry": true
+  },
+  "finalCommit": "PENDING_ROOT_ORDINARY_CLEAN_COMMIT",
+  "buildAttributionBridge": {
+    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-depth-key-order-draft/installed-preparation-v2/build-attribution-bridge.json",
+    "sha256": "724171236be784095ddd6a52e5aa485a29b607a383d2822c5c96dcd5fb64c74d"
+  }
+}

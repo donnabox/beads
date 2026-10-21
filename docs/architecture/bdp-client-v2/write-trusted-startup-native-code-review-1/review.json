@@ -1,0 +1,44 @@
+{
+  "reviewedAt": "2026-10-18T04:17:40.605733+00:00",
+  "reviewer": "Root native review, independent of source author",
+  "sourceAuthorIndexSha256": "c7820100b6a6a550ee0d0789f8c73ebc37fe6f418d8d5d177e9f042866e842d1",
+  "sourceBindingSha256": "681df52cc7255bd6ddb081dee0f558ec980b9dd9a95f527054d8322dc4d07320",
+  "fullPatchSha256": "ba1aad6016af3d8d171908c42678dde82a2adf4ecde57ce1969267b406cbf546",
+  "sourceMapSha256": "93f8a018a17501f8b3295dfee8589d6f0dd96faf41f8ec8e663f135577aababc",
+  "sourceFilesVerified": 682,
+  "all55IndexedArtifactsAndMirrorMatch": true,
+  "scope": "Full12file actual source including all3new modules/tests, config/source/packaging/privacy/docs changes, accepted plan3/contract3/disposition. No product execution.",
+  "findings": [
+    {
+      "id": "N1",
+      "severity": "Medium",
+      "file": "packages/server/src/reference-deployment.ts",
+      "line": 213,
+      "title": "Node refusal occurs after queuing every sibling",
+      "defect": "boundLossless checks ++nodes only after pop, but Object.values(...)/push schedules every child first. A wide within32MiB decoded array can allocate millions of additional worklist objects before the100000-node refusal. This is extra traversal allocation beyond the explicitly accepted decoder allocation risk.",
+      "smallestCorrection": "Enforce node/depth budget while scheduling/discovering children and iterate child values lazily, without allocating a complete siblings array/worklist before refusal. Preserve exact depth16/node100000 accepted boundary and JsonNumberLiteral atomic treatment. Add exact-at-limit/one-over regression alongside current depth/atomic controls."
+    },
+    {
+      "id": "N2",
+      "severity": "Low",
+      "file": "scripts/smoke-executables.mjs",
+      "line": 1194,
+      "title": "Occupied-port witness comment overstates attempted-bind visibility",
+      "defect": "Success while an intended port is occupied excludes acquisition of that configured listener; it alone does not observe every attempted bind. Source forbidden-call instrumentation is the distinct no-attempt witness.",
+      "smallestCorrection": "Clarify comment to distinguish successful configured-port acquisition from source-level no-attempt instrumentation. No workload/deadline/predicate changes."
+    }
+  ],
+  "rootDecision": "Preserve authorfreeze1 unchanged; release bounded native-review correction in existing12file worktree then freeze named authoring successor2. ActualCODE launch stays closed until correction reviewed and finalsource/index bindings.",
+  "sourceAuthoringCorrectionReleased": true,
+  "allowedCorrectionFiles": [
+    "packages/server/src/reference-deployment.ts",
+    "packages/server/src/reference-deployment.test.ts",
+    "scripts/smoke-executables.mjs"
+  ],
+  "originalSourceReleaseStillGoverns": true,
+  "allowedFormatter": "Same pinned2.5.7 format-only on named owned supported files, record all argv/exits",
+  "testsBuildInstallRuntimeActualReviewGitMutationReleased": false,
+  "planSemanticsAndFootprintUnchanged": true,
+  "inspectionSchemaCorrection": "Initial static check incorrectly expected flat digest strings; actual index uses sha256/bytes records. Correctly parsed independent check above passes. No product/helper execution occurred.",
+  "reviewLimits": "Static correctness/robustness review; no claimed test/FD/socket/declaration/build/runtime proof."
+}

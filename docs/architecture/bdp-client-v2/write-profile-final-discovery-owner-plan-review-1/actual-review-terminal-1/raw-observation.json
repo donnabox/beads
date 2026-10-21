@@ -1,0 +1,64 @@
+{
+  "CLIExit": "UNKNOWN",
+  "actualArgv": [
+    "/opt/homebrew/bin/claude",
+    "--safe-mode",
+    "-p",
+    "--tools",
+    "Read,Glob,Grep",
+    "--allowedTools",
+    "Read,Glob,Grep",
+    "--disable-slash-commands",
+    "--strict-mcp-config",
+    "--mcp-config",
+    "{\"mcpServers\":{}}",
+    "--no-session-persistence",
+    "--output-format",
+    "stream-json",
+    "--verbose",
+    "--include-partial-messages"
+  ],
+  "actualInit": {
+    "agents": [
+      "claude",
+      "Explore",
+      "general-purpose",
+      "Plan"
+    ],
+    "mcp_servers": [],
+    "model": "claude-opus-5[1m]",
+    "permissionMode": "default",
+    "session_id": "29e580a2-7386-4f32-bc77-bbb53662bfe6",
+    "tools": [
+      "Glob",
+      "Grep",
+      "Read"
+    ]
+  },
+  "actualToolUseCount": 61,
+  "assistantTextBlocks": 1,
+  "assistantTextBytes": 109,
+  "assistantTextMeaning": "Initial intention statement only, no substantive final findings",
+  "bytes": 2024570,
+  "completeFindingsAvailable": false,
+  "lastEventType": "content_block_delta",
+  "lastLineNewline": true,
+  "lastRecordType": "stream_event",
+  "notReconstructed": [
+    "source-after.json",
+    "exit.json",
+    "final-review.txt",
+    "terminal-results.json"
+  ],
+  "parseErrors": 0,
+  "records": 2415,
+  "sha256": "3821bde8b9dfa66b0f0fa59a7a334d15ffbaf662f98a4ed2304245776d5bec86",
+  "terminalResultCount": 0,
+  "toolNames": {
+    "Grep": 23,
+    "Read": 38
+  },
+  "toolResultBlocks": 61,
+  "toolResultErrors": 0,
+  "validObjects": 2415
+}

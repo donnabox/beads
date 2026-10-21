@@ -1,0 +1,90 @@
+Read-only inspection complete. Checkout verified: `c02ccc3706f2e258d380805162a8c47dbb73f4e1`, tree `088290751951c353797b984f690b7d9fd96deb80`; plan parent `1228005…` confirmed locally (tree identical, parents `eff1718…` + `c02ccc3…`). Both cited authority paths exist. No files written, nothing executed.
+
+# Findings
+
+## 1. CRITICAL — Production deletion breaks an unowned, ungated test file
+
+**Location:** `packages/server/src/transaction-service.test.ts:2040` (test `keeps excluded sequence responses unobserved and without refusal context`, ~2017–2072)
+
+**Issue:** That table row asserts exactly the behavior being deleted:
+`[valid, { "bdp-minimum-scope-position": "pos-1" }, authorized, 500, "minimum-position"]`, with `valid = {operations:[{...create(), idempotencyKey:"unused"}]}`, plus loop-wide `expect(observed).not.toHaveBeenCalled()`, context-header absence, and a closing `expect(f.owner.inspect().position).toBe("0")`.
+
+**Impact:** After deleting `transaction-http.ts:294–302`, that row becomes a real sequence execution. `acceptsJson(null)` is `true` (`read-http.ts:90–102`), the body is valid, the principal is authorized → **200** with context headers and `position === "1"`. At least four assertions fail, including the final shared position assertion that invalidates the whole test. The plan declares "Proposed ownership: six files", "No service/submission/comparison/store change", and "Six-file source inventory and production deletion are exact" — all false. Worse, the measured gate runs only `transaction-http.test.ts` and `installed-reference.test.ts` under name patterns and explicitly forbids a "broad workspace suite", so this lands in CI (`.github/workflows/ci.yml:66` runs `pnpm test` = full vitest).
+
+**Smallest correction:** Make it a seventh owned file. Delete only that one row from the excluded-sequence table (the five remaining rows keep carrier-key/syntax/401/403/415 coverage and the `position).toBe("0")` oracle stays valid), and add this file to the gated selection.
+
+## 2. HIGH — The reused singleton command bodies are invalid; rows A and D fail at their first oracle
+
+**Location:** plan rows A and D, reusing `packages/server/src/transaction-http.test.ts:1102–1105` and `1324–1327` (`carrier === "createBead" ? JSON.stringify(operation) : batch([...])`, where `create()` at line 69 emits `{operation:"createBead", id, type, properties}`)
+
+**Issue:** Singleton targets reject an `operation` member in the body. `prepareTransactionSingleton` (`transaction-batch.ts:207`) → `prepareReadUpdateSingleton` → `parseReadUpdateRequest` → `carrier()` (`read-update-values.ts:203–216`) validates against `createBeadRequest` = `allOf[createBeadMembers] + unevaluatedProperties:false` (`schemas/bdp-v0.schema.json`); `operation` is unevaluated → `ReadUpdateCarrierError` → `transaction-submission.ts:93–98` → **400 malformed-request**. Corroborated by `transaction-http.test.ts:2082–2087` ("without accepting a body operation override" → 400) and by the only passing singleton body in the file (`2646`, which omits `operation`). Today the `hasMinimumControls` short-circuit hides this at both 1091 and 1315.
+
+Compounding: the carrier parse at `transaction-submission.ts:84–100` runs **before** the key check (101) and the authorization check (103–107).
+
+**Impact:** D is a definite break — the plan says "retain existing auth test at 1320 … Keep ordinary auth/key scope and all assertions", but its two `createBead` cells return 400, not 401/403. A's three singleton cells return 400 instead of a completed receipt, so "successful command, full Resource GET, equal retry" never executes. The same trap applies to installed scenario step 12 ("POST singleton update a with wrong expectedRevision") and to the RU regression's singleton create.
+
+**Smallest correction:** In A, D, installed step 12 and the RU singleton pair, build singleton bodies without the `operation` member (`{id, type, properties}` / `{bead, expectedRevision, propertiesChange}`), keeping the batch/sequence member shape unchanged; state explicitly in the plan that the singleton column's body differs from the batch member shape.
+
+## 3. HIGH — Installed scenario steps 1 and 18 exceed the advertised page maximum
+
+**Location:** plan §Fresh installed TX wire scenario, steps 1 and 18 ("GET Beads with explicit limit100")
+
+**Issue:** The advertised `maximumItems` in this exact fixture is 32. The same file already asserts `["limit=33", 413, "limit-exceeded"]` (`apps/bdptest/src/transactional-collection-minimum-installed.test.ts:551`), and its successful collection reads use `?limit=32` (430, 588). `transaction-runtime-configuration.ts:95–96, 334–338` sets `maximumItems = receiptMaximumItems`.
+
+**Impact:** `limit=100` returns **413 `limit-exceeded`**, not a 200 collection. Step 1's genesis-empty read and step 18's whole-state oracle both fail. Step 18 is the scenario's strongest independent check and the only thing the plan claims "rejects the conflicting body's proposed extra identity" — it would never run.
+
+**Smallest correction:** Use `?limit=32` in steps 1 and 18, keeping "the explicit-limit collection URL" as one of the nine distinct URLs and the 18/one-child count unchanged.
+
+## 4. MEDIUM — Row B's final collection reads need an explicit limit
+
+**Location:** plan row B, "Three final reads: complete Beads (a,b,c,e, exact expected fields and next:null), Links (empty,next:null)"
+
+**Issue:** `readDefaultItems: 2` (`transaction-runtime-configuration.ts:96`). An unlimited `beads/` GET returns 2 of the 4 expected beads with a non-null `next`.
+
+**Impact:** The stated four-bead/`next:null` oracle fails. (The empty Links read is unaffected.)
+
+**Smallest correction:** Specify `beads/?limit=32` (and `links/?limit=32`), matching `transaction-http.test.ts:2705`. HTTP count stays 16.
+
+## 5. MEDIUM — The amendment puts Transactional-only vocabulary in a Read+Update-level section
+
+**Location:** plan §Exact contract amendment → `docs/specs/bdp.md:3565` "Mutation command preconditions"
+
+**Issue:** The three field names first appear at `bdp.md:5235` and `5771–5780`; they are defined only under "Transactional HTTP consistency" (5766). "Read+Update consistency" at 3557–3563 states RU "adds no exposed Scope epoch, Authorization View token or Scope position." A normative MUST naming those fields at 3565 is a ~1670-line forward reference into a profile the spec says has none of them.
+
+**Impact:** The paragraph defines behavior for vocabulary that does not exist at that profile level and sits directly against 3557–3563. The operator ruling requires the applicability rule, not its placement at RU level — "both write profiles" is the plan's own addition in its Done-when, not the ruling.
+
+**Smallest correction:** State the ignore rule where the fields are defined — "Transactional HTTP consistency" (5766) and/or "Transactional HTTP field support" (5816, which already inherits `#mutation-command-preconditions`) — and in "Mutation command preconditions" add at most one field-name-free sentence that higher-profile consistency request fields are read controls and impose no command precondition.
+
+## 6. MEDIUM — The 5766 edit can break a live catalog citation in an unowned, ungated file
+
+**Location:** `packages/conformance/catalog/transactional-v1.json:1179–1181` — `anchor: "#transactional-http-consistency"`, `selectedText: "It never reports success with an older position."` (spec line 5786, inside the paragraph the plan rewrites)
+
+**Issue:** `packages/conformance/src/transactional-catalog.test.ts:66` runs `validateCatalogCitations` against the real spec file; `packages/conformance/src/catalog.ts:164–180` requires whitespace-normalized substring containment inside the anchored section.
+
+**Impact:** Rewording that sentence while "scoping the minimum-visible-position paragraph to reads" fails `transactional-catalog.test.ts` in CI. The plan asserts "No … catalog … change" and its gate runs neither that file nor a full suite.
+
+**Smallest correction:** Preserve `It never reports success with an older position.` byte-identically inside that section; add the read-scoping and command cross-reference as adjacent sentences. Add the citation check to the measured gate.
+
+## 7. MEDIUM — Progress-doc supersession misses a second site
+
+**Location:** `docs/design/transaction-implementation-progress.md:660–661` — "Unsupported command controls still fail before mutation admission, after authentication/authorization." The plan names only "the retained-refusal inventory around 1727" (verified accurate: line 1727).
+
+**Issue/Impact:** After the deletion both halves of 660–661 are false: there is no command-side refusal, and "after authentication/authorization" described only the deleted block's own precedence — for singleton/batch the carrier parse precedes the auth decision (`transaction-submission.ts:84–107`). Leaving it unenumerated contradicts the plan's exactness claim for file 6.
+
+**Smallest correction:** Enumerate 660–661 alongside 1727 in file 6's scope and supersede both.
+
+## 8. LOW — The measured gate cannot see findings 1 and 6
+
+The execution list runs `transaction-http.test.ts` (name-filtered), two controls, `installed-reference.test.ts` (name-filtered), the installed TX case, plus `typecheck`/`build`/format/lint/boundaries — and forbids a broad workspace suite. Both CI-breaking regressions above are outside it. **Correction:** add `packages/server/src/transaction-service.test.ts` and `packages/conformance/src/transactional-catalog.test.ts` to the gated selection (both cheap), or require one full `pnpm test` before root acceptance. Pinned Node `v24.16.0` / pnpm `11.20.0` match CI (`ci.yml:37–38`) — no issue there.
+
+## 9. LOW — Citation drift and one pattern-anchoring precondition
+
+Verified-accurate anchors: `transaction-discovery.ts:8–21` (12 targets, 17 discovery members), `transaction-runtime.ts:110–147`, `bdp.md:3557–3563`, `3565–3578`, `5233–5244`, `5800`, the 80-exchange helper cap (per child, `transactional-collection-minimum-installed.test.ts:~318`), 90s/120s deadlines, 5s/16KiB/64KiB/32KiB bounds, the `bdp-authorization-view` resolver channel and credential-like-header firewall, `receiptRows` close/read-only/reopen (→ D's 7 owner opens, 6 handles), the RU 8-singletons-plus-sequence inventory, and every A–E / control / aggregate count (80, 83/113, 89/119, 5/7/8 directories, 11/13/14 instances) — all internally consistent and matching source. Default `minimumReadBudgetMs: 1000` makes the installed 503 steps feasible inside the 5s exchange timeout, and `retry-after: 1` is already observed at line 900.
+
+Drifted citations (no effect on the edit, but the plan trades on exactness): the deletable block is **294–302**, not "256–303" (257 starts `route`, 256 closes `methodResponse`); sequence branch **303–337**, not "304–335"; singleton/batch **338–392**, not "336–398"; receipt reads **523–551**, not "523–547"; "Transactional HTTP consistency" is **5766–5789**, not "5766–5788"; `development-runtime.ts` `maxHeaderSize` is at **482** with timeouts 495–499, not "483 onward".
+
+One precondition: the `^…$`-anchored `--testNamePattern` union works only if A–E are authored at module scope, as the existing 1091/1315 tests are — `describe("source-private actual Transactional HTTP")` opens at 185 and closes at 780. If authored inside that describe, the pattern must include the describe prefix.
+
+# Confirmed correct
+
+The core semantic reading is sound. `transaction-http.ts:294–302` is the only command-path consumer of the three fields; the raw listener appends them without filtering (`transaction-runtime.ts:145–147`) and the RU mutation path never reads them (`development-runtime.ts:440–474`), so "already compliant" is accurate. Idempotency identity derives from the normalized operation body, not request headers (`member-identity.ts`, corroborated by `transaction-http.test.ts:2644–2687`), so "does not affect command identity" and the equal-retry/full-receipt-equality oracles hold. Receipt-read enforcement is preserved and matches the ruling and `bdp.md:5238`; the 409-foreign-view / 410-cursor-expired / 503-catch-up-timeout orderings in row E match existing evidence at `transaction-http.test.ts:1278–1279`. Row C's "invalid direct key 400" works because the key check follows a successful parse. Plan row B's 12-target enumeration and the installed scenario's nine-URL decomposition both check out exactly.

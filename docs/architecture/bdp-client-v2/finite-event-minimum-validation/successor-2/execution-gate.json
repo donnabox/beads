@@ -1,0 +1,57 @@
+{
+  "released": true,
+  "rootPlanAccepted": true,
+  "rootExactSourceAccepted": true,
+  "session": "2026-10-08T20:26:35Z-81e5",
+  "mode": "final",
+  "approvedStages": [
+    "typecheck",
+    "format-check",
+    "lint",
+    "fresh-build",
+    "bind-fresh-build",
+    "focused-source",
+    "review-focused-source",
+    "node-version",
+    "prepare-package-directory",
+    "pack-protocol",
+    "pack-server",
+    "verify-archives",
+    "prepare-consumer",
+    "consumer-install",
+    "verify-installed-consumer",
+    "event-minimum-external",
+    "review-event-minimum-external",
+    "event-missing-context-external",
+    "review-event-missing-context-external"
+  ],
+  "staticValidationAuthorized": true,
+  "nativeCodeReviewDisposed": true,
+  "actualClaudeReviewDisposed": true,
+  "implementationIndexSha256": "3eb0fcab483812bdd3d80c10898857fb184de80c50457aca21e6fa71772bb719",
+  "sourceBinding": {
+    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/finite-event-minimum-validation/successor-2/source-binding.json",
+    "sha256": "03bca6f1cd55c14418dc5bb9924419c1c64fd249f14f18c78f781162500daaf8"
+  },
+  "baseTools": {
+    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/finite-event-minimum-validation/successor-2/base-tools.json",
+    "sha256": "640ab0908e15f93a877802401ede3532e9db446e49777833a1e12a55d0f389dd"
+  },
+  "workspaceTools": {
+    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/finite-event-minimum-validation/implementation/run/workspace-tools.json",
+    "sha256": "c59801cdde0c1e16242840e1c2a9aa29040d44e3dbc07c55d63c3b183b6b75f8"
+  },
+  "rootDisposition": {
+    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/finite-event-minimum-validation/successor-2/root-runtime-disposition.json",
+    "sha256": "00639c3b52e393a4dee71585f0c3f6fb78e6078a206771eff401d2a59516537a"
+  },
+  "consumerLockSha256": "f386c3a33405d1fa7886901e5d68aaba657f9634046f577cbaccd6bbb99a5b62",
+  "installedProvenance": {
+    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/finite-event-minimum-validation/successor-2/run/installed-provenance.json",
+    "sha256": "f9871cc1241948dccfe24ee4c0a8bc755f1a49de38cfae37fbc95dad9d3816a0"
+  },
+  "consumerInventory": {
+    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/finite-event-minimum-validation/successor-2/run/installed-consumer-inventory.json",
+    "sha256": "5e73b4e20821b856270e33a1061f1d17f18395640a6f7b37f66e0b700f665cd5"
+  }
+}

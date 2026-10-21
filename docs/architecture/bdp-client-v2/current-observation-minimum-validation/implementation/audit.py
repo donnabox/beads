@@ -1,0 +1,153 @@
+"""Closed Current-observation minimum proof auditor. Standard library only; no product imports.
+Actual Current-observation minimum report schemas reconciled; root release and final source binding required.
+"""
+import sys
+sys.dont_write_bytecode=True
+from gate import *
+import re,math
+from urllib.parse import urlsplit
+mode=sys.argv[1]
+stage={'source':'focused-source','history':'receiving-history-external','current':'current-observation-external'}.get(mode)
+g,_=load_gate({'tools':'bind-workspace-tools','build':'bind-fresh-build','source':'review-focused-source','history':'review-receiving-history-external','current':'review-current-observation-external'}[mode],child=True)
+if mode=='tools':
+ tools=dict(document(g['baseTools'])['tools'])
+ paths=[W/'node_modules'/n for n in ['@biomejs/biome/bin/biome','vitest/vitest.mjs','typescript/bin/tsc','typescript/lib/tsc.js','typescript/lib/getExePath.js','typescript/package.json']]
+ paths += [W/'node_modules/.pnpm/@biomejs+cli-darwin-arm64@2.5.7/node_modules/@biomejs/cli-darwin-arm64/biome',W/'node_modules/.pnpm/@typescript+typescript-darwin-arm64@7.0.2/node_modules/@typescript/typescript-darwin-arm64/lib/tsc']
+ for p in paths:tools[str(p)]={'realpath':str(p.resolve(strict=True)),'sha256':sha(p.read_bytes())}
+ versions={'@biomejs/biome':'2.5.7','vitest':'4.1.10','typescript':'7.0.2'}
+ for name,version in versions.items():require(read(W/'node_modules'/name/'package.json')['version']==version,'Installed tool version differs')
+ complete('workspace-install',g)
+ write('workspace-tools.json',{'tools':tools,'versions':versions,'head':g['finalHead'],'sourceIdentity':g['_sourceIdentity'],'sourceLockSha256':g['sourceLockSha256'],'installExitSha256':sha((E/'workspace-install.exit.json').read_bytes()),'installLogSha256':sha((E/'workspace-install.log').read_bytes())})
+elif mode=='build':
+ write('build-artifacts.json',{'head':g['finalHead'],'tree':g['finalTree'],'sourceIdentity':g['_sourceIdentity'],'artifacts':inventory(),**{key:{'path':str(E/('fresh-build.'+suffix)),'sha256':sha((E/('fresh-build.'+suffix)).read_bytes())} for key,suffix in [('start','started.json'),('exit','exit.json'),('log','log')]}})
+else:
+ from collections import Counter
+ config=read(P/'commands.json')['commands'][stage];result=read(E/(stage+'.results.json'));ex=read(P/'audit-expectations.json');contracts=read(P/'report-schemas.json')['contracts']
+ require(ex['finalized'] is True and sha((P/'report-schemas.json').read_bytes())==ex['reportSchemasSha256'],'Report contracts changed')
+ chosen=[]
+ for suite in result['testResults']:
+  for case in suite['assertionResults']:
+   if case['fullName'] in config['selectedFullNames']:
+    require(Path(suite['name']).resolve()==(W/config['selectedFilesByFullName'][case['fullName']]).resolve(),'Selected callback file differs');chosen.append(case)
+   else:require(case['status'] in ['pending','skipped','todo'],'Unexpected callback executed')
+ require(len(chosen)==len(config['selectedFullNames']) and sorted(x['fullName'] for x in chosen)==sorted(config['selectedFullNames']) and all(x['status']=='passed' for x in chosen) and result.get('success') is True,'Exact selected callbacks did not pass')
+ execution=complete(stage,g);observations=[]
+ for line in (E/(stage+'.log')).read_text().splitlines():
+  try:x=json.loads(line.strip())
+  except json.JSONDecodeError:continue
+  if isinstance(x,dict) and 'observation' in x:observations.append(x)
+ report={'sourceIdentity':g['_sourceIdentity'],'sourceBindingSha256':g['sourceBinding']['sha256'],'qualification':False,'selectedCallbacks':config['selectedFullNames'],'resultsSha256':sha((E/(stage+'.results.json')).read_bytes()),'logSha256':sha((E/(stage+'.log')).read_bytes())}
+ def scalars(o,expected):require(all(k in o and type(o[k]) is type(v) and o[k]==v for k,v in expected.items()),'Report scalar mismatch '+str(expected))
+ def rows(o,key,n):
+  value=o.get(key);require(isinstance(value,list) and len(value)==n,'Report array count '+key);return value
+ def fingerprint(x):require(isinstance(x,str) and re.fullmatch('[a-f0-9]{64}',x),'Invalid SHA256')
+ def counter(x):require(type(x) is int and x>=0,'Invalid counter')
+ def context(c):
+  require(isinstance(c,dict) and set(c)=={'scopeEpoch','authorizationView','scopePosition'},'Context shape')
+  require(all(isinstance(v,str) and re.fullmatch('[A-Za-z0-9_-]{1,256}',v) for v in c.values()),'Context tokens')
+ def directory_absent(directory,prefix):
+  p=Path(directory);tmp=Path(read(E/(stage+'.started.json'))['temporaryDirectory'])
+  require(p.is_absolute() and p.parent==tmp and p.name.startswith(prefix) and not p.exists(),'Owned directory remains or attribution differs')
+ def base_success(o):
+  for key in ['failureCount','activeRequests','pendingOperations']:
+   if key in o:scalars(o,{key:0})
+  for key in ['closed','directoryAbsent']:
+   if key in o:scalars(o,{key:True})
+  if 'outcome' in o:scalars(o,{'outcome':'passed'})
+  for key in ['deadlineExceeded','cleanupExceeded','cleanupDeadlineExceeded']:
+   if key in o:scalars(o,{key:False})
+ def authored_contract(o):
+  contract=contracts[o['observation']];require(set(o)==set(contract['schema']['required']),'Actual report field set differs')
+  expected={k:v for k,v in contract['successExpected'].items() if k in o}
+  scalars(o,expected)
+  for key,n in contract['successExpected'].items():
+   if key.endswith('Length'):rows(o,key[:-6],n)
+  if 'entries' in o:
+   for e in o['entries']:
+    require(set(e)=={'method','context','minimum'} and e['method'] in ['withRead','readReceiptPage'],'Entry row shape')
+    if e['context'] is not None:context(e['context'])
+  if 'elapsedMs' in o:require(type(o['elapsedMs']) in [int,float] and math.isfinite(o['elapsedMs']) and o['elapsedMs']>=0,'Elapsed report')
+ names=['bdp-scope-epoch','bdp-authorization-view','bdp-scope-position']
+ def wire_context(h):return [h.get(k) for k in names]
+ def wire37(o,installed):
+  rr=rows(o,'completedResponses' if installed else 'responses',37);scope='https://reference.invalid/acme/' if installed else 'https://current-observation.invalid/acme/'
+  methods=['POST']*3;labels=['seed','issue-page','link'];statuses=[200]*3;routes=['operations/batch','operations/update-where','operations/batch']
+  page=rr[24]['url'];u=urlsplit(page);require(u.scheme=='https' and u.netloc==urlsplit(scope).netloc and re.fullmatch('/acme/receipts/[A-Za-z0-9_-]+/pages/[A-Za-z0-9_-]+',u.path) and not u.query and not u.fragment,'Actual canonical page route')
+  for label,target in [('type','types/task'),('types','types/'),('incident','beads/r00?view=links'),('page',page[len(scope):])]:
+   labels.append(label+'-known');methods.append('GET');statuses.append(200);routes.append(target)
+   for part,status in [('opaque',503),('epoch',410),('view',409)]:
+    for method in ['GET','HEAD']:labels.append(label+'-'+part+'-'+method.lower());methods.append(method);statuses.append(status);routes.append(target)
+  labels+=['missing-type-get','missing-type-head','missing-incident','other-page','malformed-page','anonymous-page'];methods+=['GET','HEAD','GET','GET','GET','GET'];statuses+=[503,503,404,404,400,401];routes+=['types/missing','types/missing','beads/missing?view=links',page[len(scope):],page[len(scope):],page[len(scope):]]
+  require(len(labels)==37,'Bound37 matrix');current=wire_context(rr[2]['headers']);require(current[2]=='pos-3' and all(isinstance(x,str) and re.fullmatch('[A-Za-z0-9_-]{1,256}',x) for x in current),'Actual pos3 context')
+  for i,r in enumerate(rr):
+   scalars(r,{'label':labels[i],'method':methods[i],'status':statuses[i],'url':scope+routes[i]});h=r['headers'];size=r['bodyOctets'] if installed else r['bytes'];counter(size)
+   if installed:
+    scalars(r,{'ordinal':i+1});fingerprint(r['bodySha256']);counter(r['requestBodyBytes'])
+    if r['requestBodySha256'] is not None:fingerprint(r['requestBodySha256'])
+    require(r['credential']==('other' if labels[i]=='other-page' else 'anonymous' if labels[i]=='anonymous-page' else 'writer'),'Credential label');require(h['x-bdp-development']=='non-attesting','Non-attesting marker')
+   require(h.get('x-bdp-development-limit') is None,'Private gap marker on normative current response')
+   expected=current if i>=2 and statuses[i] not in [400,401] else [*current[:2],'pos-'+str(i+1)] if i<2 else [None]*3
+   require(wire_context(h)==expected,'Wire actual context')
+   if methods[i]=='HEAD':require(size==0,'HEAD body');
+   if statuses[i] in [503,410,409,404,400,401]:require(h['content-type']=='application/problem+json','Problem media')
+   if statuses[i]==503:require(h['retry-after']=='1' and h['cache-control']=='private, no-store','Timeout metadata')
+   if methods[i]=='HEAD':
+    prior=rr[i-1];ph=prior['headers'];require(prior['method']=='GET' and prior['status']==r['status'],'Paired GET')
+    for key in ['content-length','content-type','cache-control','retry-after',*names]:require(h.get(key)==ph.get(key),'GET/HEAD header parity')
+    require(ph['content-length']==str(prior['bodyOctets'] if installed else prior['bytes']),'Actual paired GET length')
+  require(dict(Counter(str(r['status']) for r in rr))==read(P/'workload.json')['newWireMatrix']['statuses'],'Status count')
+  require(dict(Counter(r['method'] for r in rr))=={'POST':3,'GET':21,'HEAD':13},'Method count')
+ if mode=='source':
+  expected={**ex['newSourceLabels'],**ex['legacyLabels']};require(dict(Counter(o['observation'] for o in observations))==expected,'New/legacy report inventory differs')
+  by={k:[o for o in observations if o['observation']==k] for k in expected}
+  for label in ex['newSourceLabels']:
+   for o in by[label]:authored_contract(o);base_success(o)
+  a=by['current-observation-service'][0];rr=rows(a,'rows',25)
+  expected_rows=[(surface,token,'success' if token=='known' else 'cursor-expired' if token=='epoch' else 'foreign-view' if token=='view' else 'catch-up-timeout') for surface in ['type','types','incident','page','discovery'] for token in ['opaque','pos-01','known','epoch','view']]
+  for r,(surface,token,outcome) in zip(rr,expected_rows):
+   scalars(r,{'surface':surface,'minimum':token,'outcome':outcome});context(r['context']);require(r['context']['scopePosition']=='pos-2','Actual progressed current context')
+  b=by['current-observation-nondisclosure'][0];require([r['label'] for r in b['rows']]==['missing-type-known','missing-type-opaque','missing-type-epoch','missing-type-view','missing-incident','foreign-page','unknown-page','anonymous-page','malformed-page','hidden-type-known','hidden-type-opaque','hidden-type-view'],'B labels')
+  require([r['outcome'] for r in b['rows']]==['missing','catch-up-timeout','cursor-expired','foreign-view','missing','missing','missing','unauthenticated','malformed','missing','catch-up-timeout','foreign-view'],'B outcomes')
+  require(sorted(o['surface'] for o in by['current-observation-drain'])==sorted(['type','types','incident','page','discovery']),'Five distinct drains')
+  d=by['current-observation-page-retention'][0];require([r['outcome'] for r in d['rows']]==['page','unproved','unproved','cursor-expired','foreign-view','missing','missing','unproved'],'D actual retained outcomes')
+  for r in d['rows']:context(r['context'])
+  e=by['current-observation-http'][0];wire37(e,False);directory_absent(e['directory'],'bdp-current-observation-http-')
+  for label in ex['legacyLabels']:
+   for o in by[label]:base_success(o)
+  scalar_legacy={'fresh-snapshot-opaque-owner':{'snapshotCalls':14,'preEntryExcludedCalls':4,'offlineInspections':2},'finite-event-minimum-owner':{'reads':8,'seedMutations':1},'finite-event-minimum-http':{'calls':32,'productChildren':0},'bead-event-minimum-owner':{'reads':12,'seedMutations':2,'policyReplacements':1,'groupReadsAfterHidden':0},'bead-event-minimum-http':{'calls':37,'productChildren':0},'link-event-minimum-owner':{'reads':11,'seedMutations':2,'policyReplacements':1,'groupReadsAfterHidden':0},'link-event-minimum-http':{'calls':35,'productChildren':0},'scope-event-sse-minimum-owner':{'reads':14,'seedCommits':1},'scope-event-sse-minimum-http':{'requests':31,'seedCommits':1},'alias-minimum-http':{'attempted':28,'waits':6},'fresh-snapshot-opaque-http':{'requests':27,'waits':8},'receipt-root-minimum-http':{'requests':10,'waits':3}}
+  for label,values in scalar_legacy.items():scalars(by[label][0],values)
+  for o in by['parser-refusal-source']:scalars(o,{'setupCalls':1,'refusedOwnerEntries':0,'refusedWaits':0,'refusedTokenAllocations':0,'owners':1,'httpRequests':0})
+  require(sorted(o['row'] for o in by['alias-minimum-capture'])==['pos-01','unknown'] and sorted(o['row'] for o in by['alias-minimum-missing'])==['absent','dangling','deleted','hidden'],'Legacy parameter rows')
+  require(by['fresh-snapshot-opaque-owner'][0]['baseline']==by['fresh-snapshot-opaque-owner'][0]['after'],'Legacy retained payload comparison')
+  for o in by['alias-minimum-capture']:scalars(o,{'apiCalls':3,'waits':2,'clockCalls':5,'writes':4});rows(o,'contexts',5);rows(o,'attempts',5);rows(o,'unproved',4)
+  for o in by['alias-minimum-missing']:scalars(o,{'apiCalls':3,'waits':0,'clockCalls':2,'writes':3 if o['row'] in ['deleted','dangling'] else 2});rows(o,'entries',3);rows(o,'mappings',3)
+  i=by['current-minimum-incident-wait'][0];scalars(i,{'performCalls':2,'aliasLookups':0,'waits':1,'clockCalls':4,'writes':2});rows(i,'entries',3)
+  require(by['fresh-snapshot-opaque-http'][0]['statusCounts']=={'200':5,'503':8,'500':4,'400':4,'401':2,'409':2,'410':2},'Fresh Snapshot updated context status counts')
+  require([r['status'] for r in by['receipt-root-minimum-http'][0]['responses']]==[200,503,503,503,410,409,400,404,404,401],'Receipt-root current context status sequence')
+  report.update(newObservations=[o for o in observations if o['observation'] in ex['newSourceLabels']],legacyObservations=[o for o in observations if o['observation'] in ex['legacyLabels']],newRecords=9,legacyRecords=28,attribution='97 exact passed source cases; semantic bodies checked by pinned callbacks. Separate new9 records and legacy28 runtime reports; no aggregate legacy traffic inference or historical relabeling.')
+ else:
+  require(len(observations)==1,'One title-filtered installed report');o=observations[0];history=mode=='history'
+  label='private-installed-minimum-receiving' if history else 'private-installed-current-observation-minimum';scalars(o,{'observation':label,'outcome':'passed','declaredSourceCommit':g['finalHead'],'workspaceDirty':True,'claimEligible':False,'attempted':22 if history else 37,'exchanges':22 if history else 37,'launchAttempted':True,'startupCompleted':True,'closed':True,'deadlineExceeded':False,'cleanupExceeded':False,'directoryAbsent':True,'failureCount':0,'childExitCode':0,'childSignalCode':None,'failureCategories':[]});base_success(o)
+  require(type(o['childPid']) is int and o['childPid'] in execution['sampledPids'],'Actual sampled child PID')
+  directory_absent(o['directory'],'bdp-minimum-receiving-installed-' if history else 'bdp-current-observation-minimum-installed-')
+  proof=verify_consumer(g);require(Path(o['entry']).resolve(strict=True)==Path(proof['entryRealpath']) and o['entrySha256']==proof['entrySha256'],'External entry')
+  binding=o['binding'];served=binding['served'];scope='https://reference.invalid/acme/'
+  require(served['sourceCommit']==g['finalHead'] and served['installedPayloadDigest']==proof['payloadIdentity'] and served['scope']==scope and served['profile']=='transactional' and served['history'] is False and binding['authorityMode']=='canonical','Actual child serving binding')
+  for key in ['installedPayloadDigest','installedContractsDigest','policyDigest','authenticationDigest']:fingerprint(served[key])
+  fingerprint(binding['runtimeConfigurationIdentity']);fixture=W/'packages/conformance/test-support/transactional/fixture-v1.json';fj=read(fixture)
+  require(served['fixtureDigest']==sha(fixture.read_bytes()) and served['fixtureId']==fj['id'] and served['capabilities']==sorted(fj['capabilities']),'Actual fixture identity')
+  require(binding['operationTargets']=={n:scope+'operations/'+s for n,s in ex['operationTargets'].items()},'Actual operation binding')
+  if not history:authored_contract(o);wire37(o,True)
+  else:
+   rr=rows(o,'completedResponses',22);labels=['seed-post-ignores-malformed-minimum','issue-real-page','all-absent','missing-two','head-missing-epoch','raw-duplicate-0','raw-duplicate-1','raw-duplicate-2','single-comma-value','malformed-receipt-writer','malformed-receipt-other','malformed-page-writer','malformed-page-other','foreign-unknown-receipt','foreign-unknown-page','own-unknown-receipt','own-unknown-page','compatible-missing','compatible-existing','same-view-ahead','anonymous-malformed','method-before-minimum'];statuses=[200,200,200]+[400]*10+[404,404,503,503,404,200,503,401,405]
+   require(len(statuses)==22,'Historical matrix');ctx=wire_context(rr[1]['headers']);require(ctx[2]=='pos-2','Historical current position')
+   for i,r in enumerate(rr):
+    scalars(r,{'ordinal':i+1,'label':labels[i],'status':statuses[i],'method':'POST' if i in [0,1,21] else 'HEAD' if i==4 else 'GET'});fingerprint(r['bodySha256']);counter(r['bodyOctets']);h=r['headers'];require(h['x-bdp-development']=='non-attesting','Historical marker')
+    u=urlsplit(r['url']);require(u.scheme=='https' and u.netloc=='reference.invalid' and u.path.startswith('/acme/') and not u.query and not u.fragment,'Historical canonical route')
+    require(wire_context(h)==([*ctx[:2],'pos-1'] if i==0 else [None]*3 if statuses[i] in [400,401,405] else ctx),'Historical context')
+    require(h['x-bdp-development-limit'] is None,'Historical development gap marker')
+    if statuses[i]==503:require(h['retry-after']=='1' and h['content-type']=='application/problem+json','Historical timeout metadata')
+    if i==4:require(r['bodyOctets']==0 and h['content-length']==rr[3]['headers']['content-length'],'Historical HEAD parity')
+   report['historicalLifecycleLimit']='Original22 callback reports clean child exit and directory removal; it does not emit new F active-request/pending or child close-event fields. No retrospective stdio-close census claimed.'
+  report.update(observation=o,attribution='Frozen dirty source -> fresh emitted build -> exact archives -> accepted isolated consumer -> actual reported child payload. Workspace fallback and external installed evidence are distinct; no public profile qualification.')
+ write(stage+'.accepted-observation.json',report)

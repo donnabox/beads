@@ -1,0 +1,69 @@
+{
+  "session": "2026-10-18T02:16:24Z-549f",
+  "accepted": true,
+  "scope": "HELPER_SOURCE_AUTHORING_ONLY_AFTER_THIS_RELEASE_IS_DURABLY_PUBLISHED_AND_READ_BACK",
+  "planDisposition": {
+    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-lint-error-observation-plan-root-disposition-1/disposition.json",
+    "sha256": "ef88ce2572785999ca1cb75e86a96a2ac3c2d93e56fdcc628ed998c648d084b7"
+  },
+  "planIndex": {
+    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-lint-error-observation-plan-1/index.json",
+    "sha256": "293d8493c035b95f337e247e67067691e31887ba271cb477da7c662cbf905b3f"
+  },
+  "nativePlanClosure": {
+    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-lint-error-observation-plan-native-precision-1/closure.json",
+    "sha256": "571663df7b836fe37165b20a454cfac5738128b3d9a545e8737a24e90195fdcb"
+  },
+  "outputPreparation": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-lint-error-observation-preparation-1",
+  "mirrorPreparation": "/Users/dbox/repos/wt/vickie/bdp-client-design/checkout/docs/architecture/bdp-client-v2/write-profile-G09-lint-error-observation-preparation-1",
+  "permittedPrograms": [
+    "run.py",
+    "gate.py",
+    "guarded-action-session-20261018-021624-549f.py"
+  ],
+  "guardByteExactFrom": {
+    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation-preparation-3/guarded-action-session-20261018-021624-549f.py",
+    "sha256": "b2d467920638e68d3b007ba9daa432e971636245eca988bfb29d7a99d6e3fb30"
+  },
+  "programDeltasMustExactlyImplement": {
+    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-lint-error-observation-plan-1/reuse-and-required-authoring-deltas.json",
+    "sha256": "8565ec221f8f554006779a699b7c8959b13bad89689f1b2cd62ee2d1731367f5"
+  },
+  "requiredReceiptsAndStatuses": {
+    "contract": {
+      "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-lint-error-observation-plan-1/input-output-contract.json",
+      "sha256": "ec6b9a9d6f703ac021b4caf583e9726d527b5d749e4441009a625342f77511cc"
+    },
+    "statuses": {
+      "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-lint-error-observation-plan-1/strict-stop-statuses.json",
+      "sha256": "788e69c6801bb852388deb7be35537adb39a86c3d55e8254e75e4cd485e136bf"
+    },
+    "cases": {
+      "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-lint-error-observation-plan-1/future-mechanics-validation-cases.json",
+      "sha256": "6b42a91e1a9765279f3bf78c626c5855beec9c259195b511514e7951215aebcf"
+    }
+  },
+  "allowedDataOnly": [
+    "one-command commands.json and unchanged source-binding.json",
+    "CLOSED execution-gate.json and immutable CLOSED snapshot with same26key shape/all6flagsfalse/approvedempty",
+    "implementation/reference/preparation exact hashes and inventory, strict local origin and INPLACE source/tool/history pins",
+    "exact source-only authoring-release copy, finite receipt expectations/preservation/static control-ordering report and closure",
+    "genuine complete before/after forward+inverse byte deltas and no unrelated program changes; minimal exact origin copies"
+  ],
+  "authoringRestrictions": [
+    "Adapt existing reviewed run/gate only for singleton lint-error-observation; no other executable program or new framework",
+    "Do not import/evaluate/compile/AST/help/run any subject/helper/provider/CLI/probe/test/build/tool; only ordinary DATA authoring/hash/text/copy",
+    "Do not create runtime output/run/dispatch/manifest/activation or capture A/B/C text in this authoring step",
+    "Do not alter product source, old helpers/gates/schema/selection/history/raw output or incoming main/spec",
+    "No retries, cap/rule/file/deadline/identity-policy weakening, cleanup or signals",
+    "Keep explicit oldactualCODEeeb vs correctedf6/native-root attribution truthful; no invented corrected-byte provider review",
+    "Freeze helper/data full index/mirror and stop for OTHER-native/root mechanics before further authoring or invocation"
+  ],
+  "helperSourceAuthoringAllowedAfterDurablePublication": true,
+  "captureTextAuthoringAllowed": false,
+  "productSourceAuthoringAllowed": false,
+  "executionAuthorized": false,
+  "automaticRetryAuthorized": false,
+  "originalP3RemainsClosed": true,
+  "qualityOrNextStageCredit": false
+}

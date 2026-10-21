@@ -1,0 +1,138 @@
+{
+  "absoluteMaps": {
+    "all": 88767,
+    "exactQualified": 6,
+    "strict": 88761
+  },
+  "accepted": true,
+  "actualArchiveRootAcceptance": {
+    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation5-verify-archives-root-final-disposition-1/disposition.json",
+    "sha256": "5f08d675179a7a93aa74d39e0723012db8c8045394e0dc188aa6d5ccb09f7508"
+  },
+  "actualRuntimeReleased": false,
+  "actualStagesRun": 0,
+  "candidate": {
+    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation5-consumer2-closed-control-source-1/execution-gate.proposed.json",
+    "sha256": "437edd25c7267d9595a15115db65d50051372f0cb4915f6981cf46aa04be65c6"
+  },
+  "completeCurrentPriorCompositeRawGitModesAndCriticalReadbackRequiredBeforeOnePathWrite": true,
+  "completeLFChanges": 26,
+  "conditionalBridge": {
+    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation5-consumer2-closed-control-source-1/root-disposition.proposed.json",
+    "sha256": "c76e31358da9d81d4ecfdc0c452db86f430b5e33ad4b3f8151b117a483cf8175"
+  },
+  "conditionalNewStages": [
+    "prepare-consumer",
+    "consumer-install"
+  ],
+  "consumerLockAndInstalledProofUnresolvedUnconsumedThrough23": true,
+  "currentLiveBeforeSha256": "34c333aa5b688d7abe944363b558e0bd431dd512ec84a24f8e0440d9d2bdf7ea",
+  "findingsDisposition": {
+    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation5-consumer2-root-final-acceptance-1/findings-disposition.json",
+    "sha256": "543a3a125ee820ab70b69d6f9033b240db34edfcc82f89051783ee248bec2283"
+  },
+  "first21NeverRepeat": [
+    "node-version",
+    "pnpm-version",
+    "workspace-install",
+    "bind-workspace-tools",
+    "typecheck",
+    "format-check",
+    "lint",
+    "fresh-build",
+    "bind-fresh-build",
+    "g09-service-source",
+    "audit-g09-service-source",
+    "g09-schema-source",
+    "audit-g09-schema-source",
+    "legacy-schema-source",
+    "audit-legacy-schema-source",
+    "schema-confinement-source",
+    "audit-schema-confinement-source",
+    "prepare-package-directory",
+    "pack-protocol",
+    "pack-server",
+    "verify-archives"
+  ],
+  "fullByteRawHashGraph": {
+    "acyclic": true,
+    "allBinaryTgzAndDuplicateTargetsIncluded": true,
+    "edges": 14428,
+    "inspection": {
+      "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation5-consumer2-root-final-acceptance-1/independent-raw-hash-graph-inspection.json",
+      "sha256": "d3920563f1a5e90151993fc34d328f04d2fce93a40eda30630dd1e5e2d5a1b0e"
+    },
+    "nodes": 501
+  },
+  "genuineForwardInverseNdiffPairs": 9,
+  "later11Closed": [
+    "verify-installed-consumer",
+    "g09-installed-01",
+    "audit-g09-installed-01",
+    "g09-installed-02",
+    "audit-g09-installed-02",
+    "schema-installed-positive",
+    "audit-schema-installed-positive",
+    "required-check-boundaries",
+    "required-e2e-ready-preflight",
+    "required-smoke",
+    "required-evidence-verify"
+  ],
+  "literalCells": 6,
+  "manifest": {
+    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation5-consumer2-closed-control-source-1/execution-manifest.json",
+    "sha256": "fa2f30c69d85e5d552ee2c461b5cd006d793a3998abc99b4a82b8b30194a99c2"
+  },
+  "nativeClosure": {
+    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation5-consumer2-control-native-precision-1/closure.json",
+    "sha256": "7e1da5be888a7bea43b095eb04d14b5ab4b49d13dca565a0a0ec60da531d549d"
+  },
+  "nativeCurrentLedgerVerified": 9479,
+  "nativeIndex": {
+    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation5-consumer2-control-native-precision-1/index.json",
+    "sha256": "dd0e102da6c0a3e6cc37be6cd49fdd399778adcbca42a9a3cd019a8f6498ab05"
+  },
+  "nativeOriginsVerified": 93,
+  "nativePhysicalFilesVerified": 108,
+  "nativeReport": {
+    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation5-consumer2-control-native-precision-1/report.md",
+    "sha256": "f84a34e939bd086ea7b45d0e3a31e01111260125d50f13ab43cc48561759befa"
+  },
+  "nativeSourcePublicationReplayScope": "Actual502ROOTremote readback before native review; native retained local Git/raw replay remains separately scoped in its report",
+  "onlyCandidateFields": [
+    "approvedStages",
+    "rootArchiveAcceptance",
+    "rootDisposition"
+  ],
+  "originalConsumerOfflineIgnoreScriptsNoFrozenGeneratedLockContract": true,
+  "other23FieldsExact": true,
+  "qualityPass": false,
+  "rawWireFullEnvUnretainedFiniteCensusScratchAndHistoricalFailureLimitsPreserved": true,
+  "rootSourceInspection": {
+    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation5-consumer2-root-final-acceptance-1/independent-source-inspection.json",
+    "sha256": "ea3dee8ade134a0318887fe7aa0df57878aaa3370edabf969e36b4fb15b2895e"
+  },
+  "scope": "FULL_CLOSED_TWO_CONSUMER_STAGE_CONTROL_PRECISION_CONDITIONAL_ON_COMPLETE_CURRENT_PRIOR_DURABILITY_AND_SEPARATE_ACTIVATION",
+  "separateActivationPublicationRequiredBeforeOnePrepareConsumer": true,
+  "session": "2026-10-18T02:16:24Z-549f",
+  "source679Impl105Other110Helper208Run97Build476Tools11GitInstallLockExact": true,
+  "sourceBinding": {
+    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation-preparation-5/source-binding.json",
+    "sha256": "e0252cb07ac1896fac0faab395e10e50ea58eac263b6d33ee224e378413c2d68"
+  },
+  "sourceCurrentReferencesVerified": 8472,
+  "sourceIndex": {
+    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation5-consumer2-closed-control-source-1/index.json",
+    "sha256": "702452a7d23ee796ec598ce770817965e6b6a234f40a7dc0739a7a7a98ee5433"
+  },
+  "sourceOriginsVerified": 439,
+  "sourcePhysicalFilesVerified": 501,
+  "stopBefore24ActualGeneratedLockManifestSettingsRootAcceptance": true,
+  "typedBindings": {
+    "all": 3392,
+    "exactQualified": 31,
+    "strict": 3361
+  },
+  "wholeElevenKey321MemberProofTypedAndFreshSourceBuildArchiveHashJoinsExact": true,
+  "wholeWriteCredit": false
+}

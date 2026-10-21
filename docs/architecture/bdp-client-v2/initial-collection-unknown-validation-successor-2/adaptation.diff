@@ -1,0 +1,229 @@
+--- successor1/run.py
++++ successor2/run.py
+@@ -62,7 +62,7 @@
+  except BaseException as e:errors.append('process verification:'+type(e).__name__)
+  try:
+   unchanged=source_check(g['_sourceBinding'])==g['_sourceIdentity']
+-  if MODE=='final' and name not in ['typecheck','format-check','lint','focused-source','review-focused-source','fresh-build','bind-fresh-build']:verify_build(g)
++  if MODE=='final' and name not in ['fresh-build','bind-fresh-build']:verify_build(g)
+   if name in ['collection-external','review-collection-external']:verify_consumer(g)
+  except BaseException as e:errors.append('final binding:'+str(e))
+  try:runtime=[str(x) for x in tmp.rglob('*') if x.is_dir() and x.name.startswith('bdp-')]
+--- successor1/gate.py
++++ successor2/gate.py
+@@ -74,6 +74,17 @@
+  for name,data in tar['packages'].items():require(sha(Path(data['archive']).read_bytes())==proof['packages'][name]['archiveSha256'],'Archive changed')
+  entry=Path(proof['entryRealpath']);require(entry.resolve(strict=True).is_relative_to((E/'consumer').resolve()) and sha(entry.read_bytes())==proof['entrySha256'],'External entry changed')
+  return proof
++def verify_reused_static(g):
++ reuse=read(P/'static-reuse-binding.json')
++ require(reuse['sourceIdentity']==g['_sourceIdentity'] and reuse['sourceBinding']==g['sourceBinding'] and reuse['tools']==g['workspaceTools'],'Static reuse identity differs')
++ for path,digest in reuse['records'].items():require(sha(Path(path).read_bytes())==digest,'Static predecessor record changed '+path)
++ cfg=read(P/'commands.json')
++ for name in reuse['stages']:
++  directory=Path(reuse['directory']);v=read(directory/(name+'.exit.json'));start=read(directory/(name+'.started.json'))
++  require(v['accepted'] and v['exit']==0 and v['sourceUnchanged'] and not v['forcedCleanup'] and not v['errors'] and not v['remainingProcesses'] and not v['runtimeDirectoriesStillPresent'],'Static predecessor failed '+name)
++  require(v['sourceIdentity']==start['sourceIdentity']==g['_sourceIdentity'] and start['head']==g['finalHead'] and start['tree']==g['finalTree'],'Static predecessor source differs')
++  require(start['argv']==cfg['commands'][name]['argv'] and start['cwd']==cfg['commands'][name]['cwd'],'Static command differs')
++  require(sha((directory/(name+'.log')).read_bytes())==v['logSha256'],'Static predecessor log changed')
+ def load_gate(name,child=False):
+  require(__debug__,'Assertions required')
+  g=read(P/'execution-gate.json')
+@@ -95,6 +106,8 @@
+  require(tools['sourceLockSha256']==g['sourceLockSha256'],'Tool source lock differs')
+  require(g['actualClaudeReviewDisposed'] is True or (name in ['typecheck','format-check','lint'] and g['staticValidationAuthorized'] is True),'Actual Claude review pending; only explicit static prefix may run')
+  require(disposition['staticValidationAuthorized'] is True if name in ['typecheck','format-check','lint'] else disposition['runtimeValidationAuthorized'] is True,'Root disposition does not authorize this stage')
++ require(disposition.get('staticEvidenceReuseAccepted') is True and disposition.get('staticReuseBinding')=={'path':str(P/'static-reuse-binding.json'),'sha256':sha((P/'static-reuse-binding.json').read_bytes())},'Root static reuse acceptance absent')
++ verify_reused_static(g)
+  for prior in order[:order.index(name)]:complete(prior,g)
+  if MODE=='final' and order.index(name)>order.index('bind-fresh-build'):verify_build(g)
+  if name=='verify-installed-consumer':require(isinstance(g.get('consumerLockSha256'),str) and sha((E/'consumer/pnpm-lock.yaml').read_bytes())==g['consumerLockSha256'],'Consumer lock not root-pinned')
+--- successor1/commands.json
++++ successor2/commands.json
+@@ -1,13 +1,10 @@
+ {
+   "bootstrapOrder": [],
+   "finalOrder": [
+-    "typecheck",
+-    "format-check",
+-    "lint",
++    "fresh-build",
++    "bind-fresh-build",
+     "focused-source",
+     "review-focused-source",
+-    "fresh-build",
+-    "bind-fresh-build",
+     "node-version",
+     "prepare-package-directory",
+     "pack-protocol",
+@@ -85,10 +82,10 @@
+       ]
+     },
+     "bind-fresh-build": {
+-      "cwd": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/initial-collection-unknown-validation-successor-1",
+-      "argv": [
+-        "/opt/homebrew/opt/python@3.14/bin/python3.14",
+-        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/initial-collection-unknown-validation-successor-1/audit.py",
++      "cwd": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/initial-collection-unknown-validation-successor-2",
++      "argv": [
++        "/opt/homebrew/opt/python@3.14/bin/python3.14",
++        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/initial-collection-unknown-validation-successor-2/audit.py",
+         "build"
+       ],
+       "outerSeconds": 120,
+@@ -110,10 +107,10 @@
+       ]
+     },
+     "prepare-package-directory": {
+-      "cwd": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/initial-collection-unknown-validation-successor-1",
+-      "argv": [
+-        "/opt/homebrew/opt/python@3.14/bin/python3.14",
+-        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/initial-collection-unknown-validation-successor-1/packages.py",
++      "cwd": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/initial-collection-unknown-validation-successor-2",
++      "argv": [
++        "/opt/homebrew/opt/python@3.14/bin/python3.14",
++        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/initial-collection-unknown-validation-successor-2/packages.py",
+         "directory"
+       ],
+       "outerSeconds": 120,
+@@ -131,7 +128,7 @@
+         "@bdp/protocol",
+         "pack",
+         "--pack-destination",
+-        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/initial-collection-unknown-validation-successor-1/run/packages"
++        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/initial-collection-unknown-validation-successor-2/run/packages"
+       ],
+       "outerSeconds": 120,
+       "automaticRetries": 0,
+@@ -148,7 +145,7 @@
+         "@bdp/server",
+         "pack",
+         "--pack-destination",
+-        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/initial-collection-unknown-validation-successor-1/run/packages"
++        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/initial-collection-unknown-validation-successor-2/run/packages"
+       ],
+       "outerSeconds": 120,
+       "automaticRetries": 0,
+@@ -157,10 +154,10 @@
+       ]
+     },
+     "verify-archives": {
+-      "cwd": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/initial-collection-unknown-validation-successor-1",
+-      "argv": [
+-        "/opt/homebrew/opt/python@3.14/bin/python3.14",
+-        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/initial-collection-unknown-validation-successor-1/packages.py",
++      "cwd": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/initial-collection-unknown-validation-successor-2",
++      "argv": [
++        "/opt/homebrew/opt/python@3.14/bin/python3.14",
++        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/initial-collection-unknown-validation-successor-2/packages.py",
+         "tar"
+       ],
+       "outerSeconds": 120,
+@@ -170,10 +167,10 @@
+       ]
+     },
+     "prepare-consumer": {
+-      "cwd": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/initial-collection-unknown-validation-successor-1",
+-      "argv": [
+-        "/opt/homebrew/opt/python@3.14/bin/python3.14",
+-        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/initial-collection-unknown-validation-successor-1/packages.py",
++      "cwd": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/initial-collection-unknown-validation-successor-2",
++      "argv": [
++        "/opt/homebrew/opt/python@3.14/bin/python3.14",
++        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/initial-collection-unknown-validation-successor-2/packages.py",
+         "consumer"
+       ],
+       "outerSeconds": 120,
+@@ -183,7 +180,7 @@
+       ]
+     },
+     "consumer-install": {
+-      "cwd": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/initial-collection-unknown-validation-successor-1/run/consumer",
++      "cwd": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/initial-collection-unknown-validation-successor-2/run/consumer",
+       "argv": [
+         "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+         "/Users/dbox/.cache/node/corepack/v1/pnpm/11.20.0/bin/pnpm.cjs",
+@@ -200,10 +197,10 @@
+       ]
+     },
+     "verify-installed-consumer": {
+-      "cwd": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/initial-collection-unknown-validation-successor-1",
+-      "argv": [
+-        "/opt/homebrew/opt/python@3.14/bin/python3.14",
+-        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/initial-collection-unknown-validation-successor-1/packages.py",
++      "cwd": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/initial-collection-unknown-validation-successor-2",
++      "argv": [
++        "/opt/homebrew/opt/python@3.14/bin/python3.14",
++        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/initial-collection-unknown-validation-successor-2/packages.py",
+         "installed"
+       ],
+       "outerSeconds": 120,
+@@ -222,7 +219,7 @@
+         "--maxWorkers=1",
+         "--reporter=verbose",
+         "--reporter=json",
+-        "--outputFile=/Users/dbox/repos/wt/vickie/bdp-integration-logs/initial-collection-unknown-validation-successor-1/run/collection-external.results.json",
++        "--outputFile=/Users/dbox/repos/wt/vickie/bdp-integration-logs/initial-collection-unknown-validation-successor-2/run/collection-external.results.json",
+         "--testNamePattern",
+         "^(?:observes\\ genuine\\ installed\\ initial\\ collection\\ minimums,\\ fixed\\-budget\\ failures,\\ conditionals\\ and\\ retained\\ rows)$"
+       ],
+@@ -253,10 +250,10 @@
+       }
+     },
+     "review-collection-external": {
+-      "cwd": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/initial-collection-unknown-validation-successor-1",
+-      "argv": [
+-        "/opt/homebrew/opt/python@3.14/bin/python3.14",
+-        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/initial-collection-unknown-validation-successor-1/audit.py",
++      "cwd": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/initial-collection-unknown-validation-successor-2",
++      "argv": [
++        "/opt/homebrew/opt/python@3.14/bin/python3.14",
++        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/initial-collection-unknown-validation-successor-2/audit.py",
+         "external"
+       ],
+       "outerSeconds": 120,
+@@ -276,7 +273,7 @@
+         "--maxWorkers=1",
+         "--reporter=verbose",
+         "--reporter=json",
+-        "--outputFile=/Users/dbox/repos/wt/vickie/bdp-integration-logs/initial-collection-unknown-validation-successor-1/run/focused-source.results.json",
++        "--outputFile=/Users/dbox/repos/wt/vickie/bdp-integration-logs/initial-collection-unknown-validation-successor-2/run/focused-source.results.json",
+         "--testNamePattern",
+         "^(?:initial\\ collection\\ minimums\\ bounds\\ unrecognized\\ initial\\ collection\\ minima\\ without\\ retaining\\ state\\ or\\ holding\\ the\\ owner|waits\\ for\\ current\\ Resources\\ and\\ initial\\ collections\\ with\\ unknown\\ minima\\ and\\ preserves\\ residual\\ refusals)$"
+       ],
+@@ -317,10 +314,10 @@
+       }
+     },
+     "review-focused-source": {
+-      "cwd": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/initial-collection-unknown-validation-successor-1",
+-      "argv": [
+-        "/opt/homebrew/opt/python@3.14/bin/python3.14",
+-        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/initial-collection-unknown-validation-successor-1/audit.py",
++      "cwd": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/initial-collection-unknown-validation-successor-2",
++      "argv": [
++        "/opt/homebrew/opt/python@3.14/bin/python3.14",
++        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/initial-collection-unknown-validation-successor-2/audit.py",
+         "source"
+       ],
+       "outerSeconds": 120,
+@@ -331,7 +328,7 @@
+     }
+   },
+   "rootCheckpoints": {
+-    "beforeExecution": "Root accepts this closed packet and exact source; explicit static-only release may precede council disposition. All callback/build/package/consumer stages require actual Claude disposition.",
++    "beforeExecution": "Root accepts corrected build-before-source packet, exact source and explicitly verified predecessor static evidence. All new stages require actual Claude disposition and runtime release. Static commands retained only for identity comparison, not scheduled.",
+     "beforeVerifyInstalledConsumer": "Root pins newly generated consumer lock; do not fabricate future pin.",
+     "beforeCollectionExternal": "Root accepts actual eight-package provenance and pins full consumer inventory; external runtime only after this checkpoint."
+   },
+@@ -344,5 +341,10 @@
+     "fast-uri": "3.1.5",
+     "json-schema-traverse": "1.0.0",
+     "require-from-string": "2.0.2"
+-  }
++  },
++  "reusedStaticStages": [
++    "typecheck",
++    "format-check",
++    "lint"
++  ]
+ }

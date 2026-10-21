@@ -1,0 +1,31 @@
+{
+  "state": "FAILED captured first selected source run; diagnosis pending",
+  "session": "2026-10-18T02:16:24Z-549f",
+  "sourceBindingSha256": "5ba54d754dc0512206f3eb9883970063f0acb07001c788aaaf0bfc17a92cca50",
+  "fullPatchSha256": "ecdc9d4ae144a4a8d24a60b4cba758decbffbe5362b3cc9a8afe9e9dc71ea38f",
+  "passed": 43,
+  "failed": 1,
+  "skipped": 389,
+  "failures": [
+    {
+      "file": "/Users/dbox/repos/wt/vickie/vickie-trusted-startup-configuration/packages/server/src/reference-deployment.test.ts",
+      "assertion": {
+        "ancestorTitles": [],
+        "fullName": "delegates RU credential, policy, provisioning, artifact, locality and aggregate refusals",
+        "status": "failed",
+        "title": "delegates RU credential, policy, provisioning, artifact, locality and aggregate refusals",
+        "duration": 19.37383299999999,
+        "failureMessages": [
+          "Error: expected local preparation failure\n    at failure (/Users/dbox/repos/wt/vickie/vickie-trusted-startup-configuration/packages/server/src/reference-deployment.test.ts:216:9)\n    at /Users/dbox/repos/wt/vickie/vickie-trusted-startup-configuration/packages/server/src/reference-deployment.test.ts:541:5\n    at file:///Users/dbox/repos/wt/vickie/vickie-trusted-startup-configuration/node_modules/.pnpm/@vitest+runner@4.1.10/node_modules/@vitest/runner/dist/chunk-artifact.js:1903:20"
+        ],
+        "meta": {},
+        "tags": []
+      }
+    }
+  ],
+  "firstNineStagesPassed": true,
+  "laterFifteenStages": "UNATTEMPTED",
+  "automaticRetries": 0,
+  "noSourceChange": true,
+  "qualification": false
+}

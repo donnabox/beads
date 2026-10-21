@@ -1,0 +1,299 @@
+packages/server/src/transaction-http.ts:475:50 lint/style/noNonNullAssertion ━━━━━━━━━━━━━━━━━━━━━━━
+
+  ! Forbidden non-null assertion.
+  
+    473 │       const fields =
+    474 │         lastEventIds ??
+  > 475 │         (request.headers.has("last-event-id") ? [request.headers.get("last-event-id")!] : []);
+        │                                                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    476 │       if (media === "sse" && fields.length > 1)
+    477 │         throw new TransactionChangefeedParameterError("repeated Last-Event-ID");
+  
+
+packages/server/src/transaction-http.ts:478:75 lint/style/noNonNullAssertion ━━━━━━━━━━━━━━━━━━━━━━━
+
+  ! Forbidden non-null assertion.
+  
+    476 │       if (media === "sse" && fields.length > 1)
+    477 │         throw new TransactionChangefeedParameterError("repeated Last-Event-ID");
+  > 478 │       const effective = media === "sse" && fields.length === 1 ? { after: fields[0]! } : changefeed;
+        │                                                                           ^^^^^^^^^^
+    479 │       // Canonical current changefeed admission preserves one lexical minimum
+    480 │       // across finite/reconnect attempts, before ordinary media negotiation.
+  
+
+packages/server/src/transaction-http.ts:514:50 lint/style/noNonNullAssertion ━━━━━━━━━━━━━━━━━━━━━━━
+
+  ! Forbidden non-null assertion.
+  
+    512 │       const fields =
+    513 │         lastEventIds ??
+  > 514 │         (request.headers.has("last-event-id") ? [request.headers.get("last-event-id")!] : []);
+        │                                                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    515 │       const minimum = hasMinimumControls(request)
+    516 │         ? (currentReadMinimumHeaders(request.headers) ?? "unsupported")
+  
+
+packages/server/src/transaction-sse.test.ts:131:14 lint/style/noNonNullAssertion ━━━━━━━━━━━━━━━━━━━
+
+  ! Forbidden non-null assertion.
+  
+    129 │ const groups = (r: ReturnType<typeof recordRawSse>) => r.frames.filter((f) => f.startsWith("id: "));
+    130 │ const group = (frame: string) =>
+  > 131 │   JSON.parse(frame.split("\ndata: ")[1]!) as TransactionChangefeedPage["groups"][number];
+        │              ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    132 │ it.each([
+    133 │   [null, "json"],
+  
+
+packages/server/src/transaction-sse.test.ts:171:39 lint/style/noNonNullAssertion  FIXABLE  ━━━━━━━━━━
+
+  ! Forbidden non-null assertion.
+  
+    169 │   const first = JSON.parse(firstBytes) as TransactionChangefeedPage;
+    170 │   const secondBytes = await (
+  > 171 │     await f.request(`changes/?after=${first.groups[0]!.checkpoint}`)
+        │                                       ^^^^^^^^^^^^^^^^
+    172 │   ).text();
+    173 │   const second = JSON.parse(secondBytes) as TransactionChangefeedPage;
+  
+  i Unsafe fix: Replace with optional chain operator ?. This operator includes runtime checks, so it is safer than the compile-only non-null assertion operator
+  
+     169  169 │     const first = JSON.parse(firstBytes) as TransactionChangefeedPage;
+     170  170 │     const secondBytes = await (
+     171      │ - ····await·f.request(`changes/?after=${first.groups[0]!.checkpoint}`)
+          171 │ + ····await·f.request(`changes/?after=${first.groups[0]?.checkpoint}`)
+     172  172 │     ).text();
+     173  173 │     const second = JSON.parse(secondBytes) as TransactionChangefeedPage;
+  
+
+packages/server/src/transaction-sse.test.ts:181:33 lint/style/noNonNullAssertion ━━━━━━━━━━━━━━━━━━━
+
+  ! Forbidden non-null assertion.
+  
+    179 │   expect([first.groups, second.groups].map((g) => g.length)).toEqual([1, 1]);
+    180 │   for (const [index, rawFinite] of [firstBytes, secondBytes].entries())
+  > 181 │     expect(rawFinite).toContain(groups(stream)[index]!.split("\ndata: ")[1]!);
+        │                                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    182 │   expect(groups(stream)[0]).toContain('"n":100');
+    183 │   expect(stream.headers).toMatchObject({
+  
+
+packages/server/src/transaction-sse.test.ts:181:33 lint/style/noNonNullAssertion  FIXABLE  ━━━━━━━━━━
+
+  ! Forbidden non-null assertion.
+  
+    179 │   expect([first.groups, second.groups].map((g) => g.length)).toEqual([1, 1]);
+    180 │   for (const [index, rawFinite] of [firstBytes, secondBytes].entries())
+  > 181 │     expect(rawFinite).toContain(groups(stream)[index]!.split("\ndata: ")[1]!);
+        │                                 ^^^^^^^^^^^^^^^^^^^^^^
+    182 │   expect(groups(stream)[0]).toContain('"n":100');
+    183 │   expect(stream.headers).toMatchObject({
+  
+  i Unsafe fix: Replace with optional chain operator ?. This operator includes runtime checks, so it is safer than the compile-only non-null assertion operator
+  
+     179  179 │     expect([first.groups, second.groups].map((g) => g.length)).toEqual([1, 1]);
+     180  180 │     for (const [index, rawFinite] of [firstBytes, secondBytes].entries())
+     181      │ - ····expect(rawFinite).toContain(groups(stream)[index]!.split("\ndata:·")[1]!);
+          181 │ + ····expect(rawFinite).toContain(groups(stream)[index]?.split("\ndata:·")[1]!);
+     182  182 │     expect(groups(stream)[0]).toContain('"n":100');
+     183  183 │     expect(stream.headers).toMatchObject({
+  
+
+packages/server/src/transaction-sse.test.ts:194:22 lint/style/noNonNullAssertion ━━━━━━━━━━━━━━━━━━━
+
+  ! Forbidden non-null assertion.
+  
+    192 │   await f.create("c");
+    193 │   await stream.until(() => groups(stream).length === 3);
+  > 194 │   const last = group(groups(stream)[2]!);
+        │                      ^^^^^^^^^^^^^^^^^^
+    195 │   const noop = await f.request("operations/batch", {
+    196 │     method: "POST",
+  
+
+packages/server/src/transaction-sse.test.ts:216:16 lint/style/noNonNullAssertion ━━━━━━━━━━━━━━━━━━━
+
+  ! Forbidden non-null assertion.
+  
+    214 │   await f.create("d");
+    215 │   await resumed.until(() => groups(resumed).length === 1);
+  > 216 │   expect(group(groups(resumed)[0]!).previousPosition).toBe(last.position);
+        │                ^^^^^^^^^^^^^^^^^^^
+    217 │   await resumed.close();
+    218 │   await f.reopen();
+  
+
+packages/server/src/transaction-sse.test.ts:221:16 lint/style/noNonNullAssertion ━━━━━━━━━━━━━━━━━━━
+
+  ! Forbidden non-null assertion.
+  
+    219 │   const restarted = f.stream(`changes/?after=${last.checkpoint}`);
+    220 │   await restarted.until(() => groups(restarted).length === 1);
+  > 221 │   expect(group(groups(restarted)[0]!).position).toBe("pos-4");
+        │                ^^^^^^^^^^^^^^^^^^^^^
+    222 │ });
+    223 │ it("HEAD and preconditions do not consume a slot; capacity/disconnect/shutdown preserve finite work", async () => {
+  
+
+packages/server/src/transaction-sse.test.ts:298:20 lint/style/noNonNullAssertion ━━━━━━━━━━━━━━━━━━━
+
+  ! Forbidden non-null assertion.
+  
+    296 │     if (target === "changes/?start=now" && status === 200) {
+    297 │       await r.until(() => groups(r).length === 1);
+  > 298 │       expect(group(groups(r)[0]!).position).toBe("pos-1");
+        │                    ^^^^^^^^^^^^^
+    299 │     }
+    300 │     if (target === "changes/?start=now" && status === 400) {
+  
+
+packages/server/src/transaction-sse.test.ts:413:16 lint/style/noNonNullAssertion ━━━━━━━━━━━━━━━━━━━
+
+  ! Forbidden non-null assertion.
+  
+    411 │   ]);
+    412 │   await r.until(() => groups(r).length === 1);
+  > 413 │   expect(group(groups(r)[0]!).position).toBe("pos-1");
+        │                ^^^^^^^^^^^^^
+    414 │ });
+    415 │ it("replica discards incomplete frames and failed publication, then replays owned agreement atomically", async () => {
+  
+
+packages/server/src/transaction-sse.test.ts:441:21 lint/style/noNonNullAssertion  FIXABLE  ━━━━━━━━━━
+
+  ! Forbidden non-null assertion.
+  
+    439 │     client = replica(
+    440 │       {
+  > 441 │         scopeEpoch: decoded[0]!.scopeEpoch,
+        │                     ^^^^^^^^^^^
+    442 │         authorizationView: decoded[0]!.authorizationView,
+    443 │         scopePosition: "pos-0",
+  
+  i Unsafe fix: Replace with optional chain operator ?. This operator includes runtime checks, so it is safer than the compile-only non-null assertion operator
+  
+     439  439 │       client = replica(
+     440  440 │         {
+     441      │ - ········scopeEpoch:·decoded[0]!.scopeEpoch,
+          441 │ + ········scopeEpoch:·decoded[0]?.scopeEpoch,
+     442  442 │           authorizationView: decoded[0]!.authorizationView,
+     443  443 │           scopePosition: "pos-0",
+  
+
+packages/server/src/transaction-sse.test.ts:442:28 lint/style/noNonNullAssertion  FIXABLE  ━━━━━━━━━━
+
+  ! Forbidden non-null assertion.
+  
+    440 │       {
+    441 │         scopeEpoch: decoded[0]!.scopeEpoch,
+  > 442 │         authorizationView: decoded[0]!.authorizationView,
+        │                            ^^^^^^^^^^^
+    443 │         scopePosition: "pos-0",
+    444 │       },
+  
+  i Unsafe fix: Replace with optional chain operator ?. This operator includes runtime checks, so it is safer than the compile-only non-null assertion operator
+  
+     440  440 │         {
+     441  441 │           scopeEpoch: decoded[0]!.scopeEpoch,
+     442      │ - ········authorizationView:·decoded[0]!.authorizationView,
+          442 │ + ········authorizationView:·decoded[0]?.authorizationView,
+     443  443 │           scopePosition: "pos-0",
+     444  444 │         },
+  
+
+packages/server/src/transaction-sse.test.ts:447:16 lint/style/noNonNullAssertion ━━━━━━━━━━━━━━━━━━━
+
+  ! Forbidden non-null assertion.
+  
+    445 │       linkType,
+    446 │     );
+  > 447 │   client.apply(decoded[0]!);
+        │                ^^^^^^^^^^^
+    448 │   client.apply(decoded[1]!);
+    449 │   // Disconnect after receiving only a deliberately cut frame prefix at the
+  
+
+packages/server/src/transaction-sse.test.ts:448:16 lint/style/noNonNullAssertion ━━━━━━━━━━━━━━━━━━━
+
+  ! Forbidden non-null assertion.
+  
+    446 │     );
+    447 │   client.apply(decoded[0]!);
+  > 448 │   client.apply(decoded[1]!);
+        │                ^^^^^^^^^^^
+    449 │   // Disconnect after receiving only a deliberately cut frame prefix at the
+    450 │   // client publication boundary. Neither a transport ID nor partial data is a commit.
+  
+
+packages/server/src/transaction-sse.test.ts:451:42 lint/style/noNonNullAssertion ━━━━━━━━━━━━━━━━━━━
+
+  ! Forbidden non-null assertion.
+  
+    449 │   // Disconnect after receiving only a deliberately cut frame prefix at the
+    450 │   // client publication boundary. Neither a transport ID nor partial data is a commit.
+  > 451 │   const partial = transactionChangeFrame(decoded[2]!).slice(0, -1);
+        │                                          ^^^^^^^^^^^
+    452 │   expect(partial.endsWith("\n\n")).toBe(false);
+    453 │   const prior = client.state();
+  
+
+packages/server/src/transaction-sse.test.ts:458:22 lint/style/noNonNullAssertion ━━━━━━━━━━━━━━━━━━━
+
+  ! Forbidden non-null assertion.
+  
+    456 │   const retry = f.stream(`changes/?after=${prior.checkpoint}`);
+    457 │   await retry.until(() => groups(retry).length === 1);
+  > 458 │   const full = group(groups(retry)[0]!);
+        │                      ^^^^^^^^^^^^^^^^^
+    459 │   expect(() => client.apply(full, true)).toThrow("publication failed");
+    460 │   expect(client.state()).toEqual(prior);
+  
+
+packages/server/src/transaction-sse.test.ts:467:15 lint/style/noNonNullAssertion  FIXABLE  ━━━━━━━━━━
+
+  ! Forbidden non-null assertion.
+  
+    465 │   if (!source || source.operation !== "upsert" || !("ownedLinks" in source.resource))
+    466 │     throw Error("owned source missing");
+  > 467 │   Reflect.set(source.resource.ownedLinks![linkType]![0]!, "revision", "contradiction");
+        │               ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    468 │   expect(() => client.apply(bad)).toThrow();
+    469 │   expect(client.state()).toEqual(prior);
+  
+  i Unsafe fix: Replace with optional chain operator ?. This operator includes runtime checks, so it is safer than the compile-only non-null assertion operator
+  
+     465  465 │     if (!source || source.operation !== "upsert" || !("ownedLinks" in source.resource))
+     466  466 │       throw Error("owned source missing");
+     467      │ - ··Reflect.set(source.resource.ownedLinks![linkType]![0]!,·"revision",·"contradiction");
+          467 │ + ··Reflect.set(source.resource.ownedLinks?.[linkType]![0]!,·"revision",·"contradiction");
+     468  468 │     expect(() => client.apply(bad)).toThrow();
+     469  469 │     expect(client.state()).toEqual(prior);
+  
+
+packages/server/src/transaction-sse.test.ts:467:15 lint/style/noNonNullAssertion  FIXABLE  ━━━━━━━━━━
+
+  ! Forbidden non-null assertion.
+  
+    465 │   if (!source || source.operation !== "upsert" || !("ownedLinks" in source.resource))
+    466 │     throw Error("owned source missing");
+  > 467 │   Reflect.set(source.resource.ownedLinks![linkType]![0]!, "revision", "contradiction");
+        │               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    468 │   expect(() => client.apply(bad)).toThrow();
+    469 │   expect(client.state()).toEqual(prior);
+  
+  i Unsafe fix: Replace with optional chain operator ?. This operator includes runtime checks, so it is safer than the compile-only non-null assertion operator
+  
+     465  465 │     if (!source || source.operation !== "upsert" || !("ownedLinks" in source.resource))
+     466  466 │       throw Error("owned source missing");
+     467      │ - ··Reflect.set(source.resource.ownedLinks![linkType]![0]!,·"revision",·"contradiction");
+          467 │ + ··Reflect.set(source.resource.ownedLinks![linkType]?.[0]!,·"revision",·"contradiction");
+     468  468 │     expect(() => client.apply(bad)).toThrow();
+     469  469 │     expect(client.state()).toEqual(prior);
+  
+
+The number of diagnostics exceeds the limit allowed. Use --max-diagnostics to increase it.
+Diagnostics not shown: 87.
+Checked 6 files in 41ms. No fixes applied.
+Found 66 warnings.
+Found 41 infos.

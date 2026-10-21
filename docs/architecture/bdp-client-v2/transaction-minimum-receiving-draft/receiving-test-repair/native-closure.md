@@ -1,0 +1,15 @@
+# Native direct-handler assertion closure
+
+No actionable finding in this exact test-only correction. The actual prior HTTP selection failed one direct-handler callback and passed seven; this was a test seam error, not evidence that the receiving gate failed. The original log/exit/results remain unchanged. The new receiving semantics and real raw6/oracle1 passed in that prior selection, with their existing wire-length assertions intact.
+
+transaction-runtime.ts:87–96 computes GET Content-Length during delivery; transaction-http.handle returns the earlier response. read-http.ts:40–46 computes the corresponding representation length when converting that response to HEAD. The correction retains a complete schema-checked400 GET Problem, derives its positive serialized JSON byte length, requires absent pre-delivery GET Content-Length and compares each following HEAD length to that actual GET. This fixed Problem contains ordinary JSON only, so JSON.stringify and the transport's JSON serialization have the same byte length here. Fifteen routes always execute GET immediately before HEAD; no stale cross-route baseline is accepted. Existing no-context/validator/marker and33-call/owner assertions remain intact.
+
+The first native review's broad positive-content-length statement was incorrect for the direct GET seam; this report explicitly corrects it rather than retrospectively relabeling the original clean review or failed run. I compared the exact correction against preserved before.ts, verified the remainder outside this single callback identical, and rehashed all eleven files. The other ten hashes, including both production modules and installed test, are unchanged. No source edits, compiler, test, service or product import were performed by this reviewer. This closure does not preclaim successor execution or complete council approval. Prior plan disposition authorship disclosed; implementation/repair author is another worker.
+
+Exact bindings:
+- /Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-minimum-receiving-draft/receiving-test-repair/source-binding.json: `b7082c68869b1cecd715ed8d6e0ef88c6ba064a2e698beddf02844ed4dc252fb`
+- /Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-minimum-receiving-draft/receiving-test-repair/draft.patch: `7a6cc4e63f72d3920f04e5e8e03ff3915ed7488cb93d324ea22374fecff0f375`
+- /Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-minimum-receiving-draft/receiving-test-repair/correction.patch: `6058650e1d18127e693aa1a6155895bb7cddcd054e4624009630515f8c5a4b08`
+- /Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-minimum-receiving-draft/run-v2/http-positive.log: `d152964d131eecf4b5f33333e2d99074934ff0672d03c03c82209794a852cff8`
+- /Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-minimum-receiving-draft/run-v2/http-positive.exit.json: `c870c97fdf2cf8696220f9fccf2a48cecd781640c2a26a27b362be0fde4c8f61`
+- /Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-minimum-receiving-draft/run-v2/http-positive.results.json: `38f53d5976e195088d0852518ba49f32501342338ab686c37645074aee91a429`

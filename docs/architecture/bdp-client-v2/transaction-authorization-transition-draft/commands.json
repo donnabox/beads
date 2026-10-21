@@ -1,0 +1,123 @@
+{
+  "released": false,
+  "runtimeExecuted": false,
+  "sourceBindingSha256": "2928d83d55f2496bb3687ac0c3e87b1a536bea45fa511cd0a7ff4f2aceb5bcac",
+  "commands": [
+    {
+      "id": "transport",
+      "cwd": "/Users/dbox/repos/wt/vickie/vickie-authorization-transition",
+      "argv": [
+        "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+        "/Users/dbox/repos/wt/vickie/vickie-authorization-transition/node_modules/vitest/vitest.mjs",
+        "run",
+        "packages/server/src/transaction-runtime.test.ts",
+        "--maxWorkers=1",
+        "--testNamePattern",
+        "^(?:narrows\\ current\\ Transactional\\ visibility\\ and\\ fences\\ issued\\ handles\\ after\\ policy\\ publication|cancels\\ an\\ active\\ Event\\ stream\\ after\\ policy\\ publication)$",
+        "--reporter=verbose",
+        "--reporter=json",
+        "--outputFile=/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-authorization-transition-draft/source-runtime/transport.results.json"
+      ],
+      "selectedFullNames": [
+        "narrows current Transactional visibility and fences issued handles after policy publication",
+        "cancels an active Event stream after policy publication"
+      ],
+      "expectedCases": 2,
+      "http": 21,
+      "owners": 2,
+      "directories": 2,
+      "listeners": 2,
+      "productChildren": 0,
+      "testTimeoutMs": 30000,
+      "supervisorSeconds": 120
+    },
+    {
+      "id": "queued-frame",
+      "cwd": "/Users/dbox/repos/wt/vickie/vickie-authorization-transition",
+      "argv": [
+        "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+        "/Users/dbox/repos/wt/vickie/vickie-authorization-transition/node_modules/vitest/vitest.mjs",
+        "run",
+        "packages/server/src/transaction-event-sse.test.ts",
+        "--maxWorkers=1",
+        "--testNamePattern",
+        "^(?:publication\\ cancels\\ a\\ queued\\ Event\\ frame\\ before\\ its\\ drain\\ permits\\ another\\ write)$",
+        "--reporter=verbose",
+        "--reporter=json",
+        "--outputFile=/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-authorization-transition-draft/source-runtime/queued-frame.results.json"
+      ],
+      "selectedFullNames": [
+        "publication cancels a queued Event frame before its drain permits another write"
+      ],
+      "expectedCases": 1,
+      "http": 0,
+      "owners": 1,
+      "directories": 1,
+      "listeners": 0,
+      "productChildren": 0,
+      "testTimeoutMs": 5000,
+      "supervisorSeconds": 120
+    },
+    {
+      "id": "stale-lease",
+      "cwd": "/Users/dbox/repos/wt/vickie/vickie-authorization-transition",
+      "argv": [
+        "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+        "/Users/dbox/repos/wt/vickie/vickie-authorization-transition/node_modules/vitest/vitest.mjs",
+        "run",
+        "packages/server/src/transaction-service.test.ts",
+        "--maxWorkers=1",
+        "--testNamePattern",
+        "^(?:rejects\\ an\\ old\\ selected\\ Event\\ packet\\ before\\ stream\\ registration\\ and\\ accepts\\ a\\ current\\ lease)$",
+        "--reporter=verbose",
+        "--reporter=json",
+        "--outputFile=/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-authorization-transition-draft/source-runtime/stale-lease.results.json"
+      ],
+      "selectedFullNames": [
+        "rejects an old selected Event packet before stream registration and accepts a current lease"
+      ],
+      "expectedCases": 1,
+      "http": 0,
+      "owners": 1,
+      "directories": 1,
+      "listeners": 0,
+      "productChildren": 0,
+      "testTimeoutMs": 5000,
+      "supervisorSeconds": 120
+    },
+    {
+      "id": "owner-policy",
+      "cwd": "/Users/dbox/repos/wt/vickie/vickie-authorization-transition",
+      "argv": [
+        "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+        "/Users/dbox/repos/wt/vickie/vickie-authorization-transition/node_modules/vitest/vitest.mjs",
+        "run",
+        "packages/server/src/transaction-authorization.test.ts",
+        "--maxWorkers=1",
+        "--testNamePattern",
+        "^(?:migrates\\ exact\\ legacy\\ authorization\\ facts\\ and\\ preserves\\ a\\ no\\-op\\ policy\\ across\\ reopen|preserves\\ policy\\ and\\ delivery\\ leases\\ after\\ confirmed\\ policy\\ rollback|fences\\ publication\\ failure\\ and\\ recovers\\ the\\ committed\\ empty\\ policy|separates\\ Snapshot\\ view\\ fences\\ from\\ durable\\ maintenance\\ and\\ actual\\ expiry|projects\\ receipt\\ records\\ and\\ allocations\\ without\\ changing\\ non\\-record\\ execution\\ facts|bounds\\ administrative\\ drain\\ without\\ cancelling\\ admitted\\ sequence\\ work|captures\\ one\\ Scope\\ policy\\ for\\ distinct\\ principals\\ and\\ renders\\ empty\\ historical\\ advances)$",
+        "--reporter=verbose",
+        "--reporter=json",
+        "--outputFile=/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-authorization-transition-draft/source-runtime/owner-policy.results.json"
+      ],
+      "selectedFullNames": [
+        "migrates exact legacy authorization facts and preserves a no-op policy across reopen",
+        "preserves policy and delivery leases after confirmed policy rollback",
+        "fences publication failure and recovers the committed empty policy",
+        "separates Snapshot view fences from durable maintenance and actual expiry",
+        "projects receipt records and allocations without changing non-record execution facts",
+        "bounds administrative drain without cancelling admitted sequence work",
+        "captures one Scope policy for distinct principals and renders empty historical advances"
+      ],
+      "expectedCases": 7,
+      "http": 0,
+      "owners": 10,
+      "directories": 7,
+      "rejectedOpenCopyDirectories": 4,
+      "listeners": 0,
+      "productChildren": 0,
+      "testTimeoutMs": 5000,
+      "supervisorSeconds": 120
+    }
+  ]
+}

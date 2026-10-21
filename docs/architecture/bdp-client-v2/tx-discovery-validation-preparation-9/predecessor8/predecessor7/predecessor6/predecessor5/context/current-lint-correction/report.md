@@ -1,0 +1,9 @@
+# D3 discovery lint correction1 — SOURCE ONLY
+
+Corrected exactly the two locally thrown/immediately caught cleanup Errors in apps/bdptest/src/transactional-discovery-installed.test.ts, under root source-only release3e4e931c. At missing childEvents, append the same Error directly and skip close through an explicit else; when present, retain the original close/cleanupKnowntrue branch. The session finally stays exact. At unresolved cleanupKnown, append the same Error directly as the same final local try statement. No lint suppression/rule/config/import change.
+
+All679 source files rehashed; only this file changes, all678 other candidate files and673 cce-base unowned paths are exact. All requests/assertions/status oracles/report fields/primary+cleanup error aggregation/unknown-retention/order/budgets are preserved. Complete before/after, correction/inverse, cumulative six-file patch/inverse and maps are supplied. Root Git/status/current binary receipt and independent native correction remain unresolved; historical6eea is the previous basis only.
+
+The failure packet preserves actual validation4 typecheck and format PASS and lint FAILED (two noUnsafeFinally errors,70warnings21infos), no forced cleanup/source drift, build/tests/packages/installed later stages unattempted. Those actual passes are historical and give no fresh validation5 credit. No same-attempt retry or second actual CODE.
+
+The exact pinned formatter hash was checked and FORMAT --write invoked once on this one path: actual exit0, No fixes applied; preformat/final bytes identical. No format-check/lint/compiler/test/build/install/helper/product runtime/Git/reviewer/flags ran. A separately named CLOSED validation5 must bind this source and later root/native receipts, keep five helpers/SHA-string interface/schemas/52stages16pairs/budgets unchanged, and require all fresh stages after independent mechanics/root release.

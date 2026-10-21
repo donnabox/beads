@@ -1,0 +1,5 @@
+# PR101 readiness
+
+Exact head 0359f1cae3f36f600b1b375ea276ec7d60bf689b; main 87a9b5511579b94f79b44aeffe36ec3f41de3cd2; fresh independent ordinary merge-tree 6a5337cf9548cfe340593a3858213593e4aca1d9 equals the tested candidate tree. CI38487153157/job115603691475 completed successfully on this exact head. Eight receipt files only; no runtime/schema/RU edits. Checkout clean. Native and Claude council, requested repairs, and actual validation are recorded in receipt-pagination-final-root-closure.md; external review scope was df51 and native/root closed its exact repairs on0359. No actionable finding remains.
+
+337 focused tests, static/build/Read seal and7 fresh installed TX tests pass; all255 mappings and artifact digests independently audited. Historical c872 TX/RU evidence remains bound to c872, never relabeled. AllTXwhole flags remain false and public admission closed. Operator authorized ready main merges; ordinary merge with exact-head match followed by actual tree/parent verification is required. No release or Preview2 promotion.

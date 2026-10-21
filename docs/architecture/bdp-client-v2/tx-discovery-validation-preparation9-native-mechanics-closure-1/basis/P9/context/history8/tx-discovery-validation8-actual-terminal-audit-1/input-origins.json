@@ -1,0 +1,1577 @@
+[
+  {
+    "copy": "inputs/actual-run/audit-focused-source.exit.json",
+    "origin": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/tx-discovery-validation-preparation-8/run/audit-focused-source.exit.json",
+    "sha256": "58572f9c51e7eeaaec9fc2160030428b9d9ea6902a2dae95e62044454bc9b22b",
+    "bytes": 1124,
+    "role": "actual P8 flat runtime output, unchanged byte copy; no reconstructed receipts"
+  },
+  {
+    "copy": "inputs/actual-run/audit-focused-source.log",
+    "origin": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/tx-discovery-validation-preparation-8/run/audit-focused-source.log",
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "bytes": 0,
+    "role": "actual P8 flat runtime output, unchanged byte copy; no reconstructed receipts"
+  },
+  {
+    "copy": "inputs/actual-run/audit-focused-source.processes.jsonl",
+    "origin": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/tx-discovery-validation-preparation-8/run/audit-focused-source.processes.jsonl",
+    "sha256": "868bd9733439f3c0f3711a9be9f22e25d4b9e50e9a07f03bb3b192ac7a25df46",
+    "bytes": 16262,
+    "role": "actual P8 flat runtime output, unchanged byte copy; no reconstructed receipts"
+  },
+  {
+    "copy": "inputs/actual-run/audit-focused-source.started.json",
+    "origin": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/tx-discovery-validation-preparation-8/run/audit-focused-source.started.json",
+    "sha256": "f7f9d39b76e517bb77b958ae7979b1e05afaa00be7ed7f1ea3c58315ec17d18b",
+    "bytes": 817,
+    "role": "actual P8 flat runtime output, unchanged byte copy; no reconstructed receipts"
+  },
+  {
+    "copy": "inputs/actual-run/audit-legacy-changefeed-source.exit.json",
+    "origin": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/tx-discovery-validation-preparation-8/run/audit-legacy-changefeed-source.exit.json",
+    "sha256": "241cf052f34c6fa459ff889b41eac5a007b364258d39e34c65e355a0a84942ef",
+    "bytes": 1013,
+    "role": "actual P8 flat runtime output, unchanged byte copy; no reconstructed receipts"
+  },
+  {
+    "copy": "inputs/actual-run/audit-legacy-changefeed-source.log",
+    "origin": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/tx-discovery-validation-preparation-8/run/audit-legacy-changefeed-source.log",
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "bytes": 0,
+    "role": "actual P8 flat runtime output, unchanged byte copy; no reconstructed receipts"
+  },
+  {
+    "copy": "inputs/actual-run/audit-legacy-changefeed-source.processes.jsonl",
+    "origin": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/tx-discovery-validation-preparation-8/run/audit-legacy-changefeed-source.processes.jsonl",
+    "sha256": "ce56cffdc66329db80572a51ea12285423756ee375f9a1707e3983fb9a1ec7c1",
+    "bytes": 14833,
+    "role": "actual P8 flat runtime output, unchanged byte copy; no reconstructed receipts"
+  },
+  {
+    "copy": "inputs/actual-run/audit-legacy-changefeed-source.started.json",
+    "origin": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/tx-discovery-validation-preparation-8/run/audit-legacy-changefeed-source.started.json",
+    "sha256": "60d49533836a38cc4733017564db7e69fd7c9eee0a7588de370121099f23d1a2",
+    "bytes": 847,
+    "role": "actual P8 flat runtime output, unchanged byte copy; no reconstructed receipts"
+  },
+  {
+    "copy": "inputs/actual-run/audit-legacy-installed-contracts-source.exit.json",
+    "origin": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/tx-discovery-validation-preparation-8/run/audit-legacy-installed-contracts-source.exit.json",
+    "sha256": "97eb61a890042eb9ae731fc076e941b5e6aca84cc6a77c22cb13b8c521f1c032",
+    "bytes": 1110,
+    "role": "actual P8 flat runtime output, unchanged byte copy; no reconstructed receipts"
+  },
+  {
+    "copy": "inputs/actual-run/audit-legacy-installed-contracts-source.log",
+    "origin": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/tx-discovery-validation-preparation-8/run/audit-legacy-installed-contracts-source.log",
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "bytes": 0,
+    "role": "actual P8 flat runtime output, unchanged byte copy; no reconstructed receipts"
+  },
+  {
+    "copy": "inputs/actual-run/audit-legacy-installed-contracts-source.processes.jsonl",
+    "origin": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/tx-discovery-validation-preparation-8/run/audit-legacy-installed-contracts-source.processes.jsonl",
+    "sha256": "3b7bb0f925cdf3d49a2d7491dc1481df2e66c98c10d451f33ed075816cdaa393",
+    "bytes": 14562,
+    "role": "actual P8 flat runtime output, unchanged byte copy; no reconstructed receipts"
+  },
+  {
+    "copy": "inputs/actual-run/audit-legacy-installed-contracts-source.started.json",
+    "origin": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/tx-discovery-validation-preparation-8/run/audit-legacy-installed-contracts-source.started.json",
+    "sha256": "8afa84b7ea93efb9ae07a941a5b18ba64575de9a364e7e62f65c35388b10d10f",
+    "bytes": 874,
+    "role": "actual P8 flat runtime output, unchanged byte copy; no reconstructed receipts"
+  },
+  {
+    "copy": "inputs/actual-run/audit-schema-confinement-source.exit.json",
+    "origin": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/tx-discovery-validation-preparation-8/run/audit-schema-confinement-source.exit.json",
+    "sha256": "b0eae08006aec64741a08bef031569882ad5764fd356f0b83129f42df967255a",
+    "bytes": 1003,
+    "role": "actual P8 flat runtime output, unchanged byte copy; no reconstructed receipts"
+  },
+  {
+    "copy": "inputs/actual-run/audit-schema-confinement-source.log",
+    "origin": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/tx-discovery-validation-preparation-8/run/audit-schema-confinement-source.log",
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "bytes": 0,
+    "role": "actual P8 flat runtime output, unchanged byte copy; no reconstructed receipts"
+  },
+  {
+    "copy": "inputs/actual-run/audit-schema-confinement-source.processes.jsonl",
+    "origin": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/tx-discovery-validation-preparation-8/run/audit-schema-confinement-source.processes.jsonl",
+    "sha256": "eedc0b2e341badad0f8d3c07bfef4826555da62bdb0ba7c1c80abd93d6716768",
+    "bytes": 13695,
+    "role": "actual P8 flat runtime output, unchanged byte copy; no reconstructed receipts"
+  },
+  {
+    "copy": "inputs/actual-run/audit-schema-confinement-source.started.json",
+    "origin": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/tx-discovery-validation-preparation-8/run/audit-schema-confinement-source.started.json",
+    "sha256": "5610f661899ad94c92c9b62ccdbffededd220ed18f4182e6aec33da05794b011",
+    "bytes": 850,
+    "role": "actual P8 flat runtime output, unchanged byte copy; no reconstructed receipts"
+  },
+  {
+    "copy": "inputs/actual-run/bind-fresh-build.exit.json",
+    "origin": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/tx-discovery-validation-preparation-8/run/bind-fresh-build.exit.json",
+    "sha256": "28bf33fcddeafbc03400fb05d2da44dde3b455c312397a097b191a73ccf56a3a",
+    "bytes": 1010,
+    "role": "actual P8 flat runtime output, unchanged byte copy; no reconstructed receipts"
+  },
+  {
+    "copy": "inputs/actual-run/bind-fresh-build.log",
+    "origin": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/tx-discovery-validation-preparation-8/run/bind-fresh-build.log",
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "bytes": 0,
+    "role": "actual P8 flat runtime output, unchanged byte copy; no reconstructed receipts"
+  },
+  {
+    "copy": "inputs/actual-run/bind-fresh-build.processes.jsonl",
+    "origin": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/tx-discovery-validation-preparation-8/run/bind-fresh-build.processes.jsonl",
+    "sha256": "824e36eb70f80d978e9c066b8bacfc3fa7751dff153cf70c2c3f1bf8a4c19440",
+    "bytes": 14074,
+    "role": "actual P8 flat runtime output, unchanged byte copy; no reconstructed receipts"
+  },
+  {
+    "copy": "inputs/actual-run/bind-fresh-build.started.json",
+    "origin": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/tx-discovery-validation-preparation-8/run/bind-fresh-build.started.json",
+    "sha256": "da6e3ac5d5c71842b319de5491e658e1be6f245547d94cec0caba79254fb3b69",
+    "bytes": 800,
+    "role": "actual P8 flat runtime output, unchanged byte copy; no reconstructed receipts"
+  },
+  {
+    "copy": "inputs/actual-run/bind-workspace-tools.exit.json",
+    "origin": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/tx-discovery-validation-preparation-8/run/bind-workspace-tools.exit.json",
+    "sha256": "d9451ba8ec14e38aaa8ed573c01ac38de47ee1f3535f715579cb7247d8d5043c",
+    "bytes": 1036,
+    "role": "actual P8 flat runtime output, unchanged byte copy; no reconstructed receipts"
+  },
+  {
+    "copy": "inputs/actual-run/bind-workspace-tools.log",
+    "origin": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/tx-discovery-validation-preparation-8/run/bind-workspace-tools.log",
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "bytes": 0,
+    "role": "actual P8 flat runtime output, unchanged byte copy; no reconstructed receipts"
+  },
+  {
+    "copy": "inputs/actual-run/bind-workspace-tools.processes.jsonl",
+    "origin": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/tx-discovery-validation-preparation-8/run/bind-workspace-tools.processes.jsonl",
+    "sha256": "bccace6ba8948c7532112db8c4cae2969a93bbb9a64b360a061756a420dc8b11",
+    "bytes": 13653,
+    "role": "actual P8 flat runtime output, unchanged byte copy; no reconstructed receipts"
+  },
+  {
+    "copy": "inputs/actual-run/bind-workspace-tools.started.json",
+    "origin": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/tx-discovery-validation-preparation-8/run/bind-workspace-tools.started.json",
+    "sha256": "16e40d110388dd715cf983d5502ddd1b4f80d41ca1ed726381de46e309ae7f20",
+    "bytes": 808,
+    "role": "actual P8 flat runtime output, unchanged byte copy; no reconstructed receipts"
+  },
+  {
+    "copy": "inputs/actual-run/build-artifacts.json",
+    "origin": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/tx-discovery-validation-preparation-8/run/build-artifacts.json",
+    "sha256": "5d5812b4e94ab6dc662b9e9830d9216335661efc57ee2681f1ef8c8c7f4925ed",
+    "bytes": 58552,
+    "role": "actual P8 flat runtime output, unchanged byte copy; no reconstructed receipts"
+  },
+  {
+    "copy": "inputs/actual-run/focused-source.accepted-observation.json",
+    "origin": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/tx-discovery-validation-preparation-8/run/focused-source.accepted-observation.json",
+    "sha256": "440452401f299a29469f166b85923fc3c4ec6dacca289c936b93dedb330928ed",
+    "bytes": 112362,
+    "role": "actual P8 flat runtime output, unchanged byte copy; no reconstructed receipts"
+  },
+  {
+    "copy": "inputs/actual-run/focused-source.exit.json",
+    "origin": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/tx-discovery-validation-preparation-8/run/focused-source.exit.json",
+    "sha256": "6cd5f8768392dd51d6bee152338e799f0027335465677db73aa0a02cc767b883",
+    "bytes": 523,
+    "role": "actual P8 flat runtime output, unchanged byte copy; no reconstructed receipts"
+  },
+  {
+    "copy": "inputs/actual-run/focused-source.log",
+    "origin": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/tx-discovery-validation-preparation-8/run/focused-source.log",
+    "sha256": "86cf4a5435b7c37437e795a8d634ea868c582040ad4aefeb9aed3cff472245fb",
+    "bytes": 82037,
+    "role": "actual P8 flat runtime output, unchanged byte copy; no reconstructed receipts"
+  },
+  {
+    "copy": "inputs/actual-run/focused-source.processes.jsonl",
+    "origin": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/tx-discovery-validation-preparation-8/run/focused-source.processes.jsonl",
+    "sha256": "e0a4803b48100ab90a6bb2fef944568cfab13fb8d2fed8d6698bdd58dccd7fb3",
+    "bytes": 2304,
+    "role": "actual P8 flat runtime output, unchanged byte copy; no reconstructed receipts"
+  },
+  {
+    "copy": "inputs/actual-run/focused-source.results.json",
+    "origin": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/tx-discovery-validation-preparation-8/run/focused-source.results.json",
+    "sha256": "dc2949d4f52ee2f26ea84df65c1a68ff81f35d67745adbf2accc61a03cd44cb7",
+    "bytes": 30564,
+    "role": "actual P8 flat runtime output, unchanged byte copy; no reconstructed receipts"
+  },
+  {
+    "copy": "inputs/actual-run/focused-source.started.json",
+    "origin": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/tx-discovery-validation-preparation-8/run/focused-source.started.json",
+    "sha256": "affabec8865bdb5c58fa0ec81bdfe309f3ae332d008bee517526616d92d3a4dc",
+    "bytes": 1867,
+    "role": "actual P8 flat runtime output, unchanged byte copy; no reconstructed receipts"
+  },
+  {
+    "copy": "inputs/actual-run/format-check.exit.json",
+    "origin": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/tx-discovery-validation-preparation-8/run/format-check.exit.json",
+    "sha256": "f2014f573c4ac95ee765cc9be3c31af6aae3cfc37691a8eaf7c38547b54f4211",
+    "bytes": 510,
+    "role": "actual P8 flat runtime output, unchanged byte copy; no reconstructed receipts"
+  },
+  {
+    "copy": "inputs/actual-run/format-check.log",
+    "origin": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/tx-discovery-validation-preparation-8/run/format-check.log",
+    "sha256": "e74ef629bcbb212fc0fb5e1cbdb1ab808d879956d036df46b4fd4e612f4c6a8c",
+    "bytes": 43,
+    "role": "actual P8 flat runtime output, unchanged byte copy; no reconstructed receipts"
+  },
+  {
+    "copy": "inputs/actual-run/format-check.processes.jsonl",
+    "origin": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/tx-discovery-validation-preparation-8/run/format-check.processes.jsonl",
+    "sha256": "c711f3fd6ef936045c6e6ef5efe0bfda367c9ddd65437c1feb1c5f0ff4eb432f",
+    "bytes": 211,
+    "role": "actual P8 flat runtime output, unchanged byte copy; no reconstructed receipts"
+  },
+  {
+    "copy": "inputs/actual-run/format-check.started.json",
+    "origin": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/tx-discovery-validation-preparation-8/run/format-check.started.json",
+    "sha256": "9dbc038a003076a417bb09608e941b9e2fd8a9bd80da3c17396d003c0781b4b8",
+    "bytes": 1236,
+    "role": "actual P8 flat runtime output, unchanged byte copy; no reconstructed receipts"
+  },
+  {
+    "copy": "inputs/actual-run/fresh-build.exit.json",
+    "origin": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/tx-discovery-validation-preparation-8/run/fresh-build.exit.json",
+    "sha256": "70bafef7831b522c6b3af3ce7194501ceb16830b10cd9e87c3d2844136fc826e",
+    "bytes": 565,
+    "role": "actual P8 flat runtime output, unchanged byte copy; no reconstructed receipts"
+  },
+  {
+    "copy": "inputs/actual-run/fresh-build.log",
+    "origin": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/tx-discovery-validation-preparation-8/run/fresh-build.log",
+    "sha256": "232dac5e840e45b3bb06e6e04249b5241f2e1b4f6c797a22c046d916302ac208",
+    "bytes": 72,
+    "role": "actual P8 flat runtime output, unchanged byte copy; no reconstructed receipts"
+  },
+  {
+    "copy": "inputs/actual-run/fresh-build.processes.jsonl",
+    "origin": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/tx-discovery-validation-preparation-8/run/fresh-build.processes.jsonl",
+    "sha256": "4b302112aebde646e52ff65d21410dfa210cdd3fd9599cd7023b001f02008e9c",
+    "bytes": 2651,
+    "role": "actual P8 flat runtime output, unchanged byte copy; no reconstructed receipts"
+  },
+  {
+    "copy": "inputs/actual-run/fresh-build.started.json",
+    "origin": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/tx-discovery-validation-preparation-8/run/fresh-build.started.json",
+    "sha256": "1472fc8d7d2191690dac594cc6516ae32d1a6f291ad8f431afcc56194fec938f",
+    "bytes": 771,
+    "role": "actual P8 flat runtime output, unchanged byte copy; no reconstructed receipts"
+  },
+  {
+    "copy": "inputs/actual-run/legacy-changefeed-source.accepted-observation.json",
+    "origin": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/tx-discovery-validation-preparation-8/run/legacy-changefeed-source.accepted-observation.json",
+    "sha256": "bd57ad77399f61262285f7c0eaafe318f0702dc22c1dc618e0a371e19f411068",
+    "bytes": 62761,
+    "role": "actual P8 flat runtime output, unchanged byte copy; no reconstructed receipts"
+  },
+  {
+    "copy": "inputs/actual-run/legacy-changefeed-source.exit.json",
+    "origin": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/tx-discovery-validation-preparation-8/run/legacy-changefeed-source.exit.json",
+    "sha256": "0c68a46681a9afc1cdd4926186a89e01963f20f1a6d33eaf22151f449ff57607",
+    "bytes": 533,
+    "role": "actual P8 flat runtime output, unchanged byte copy; no reconstructed receipts"
+  },
+  {
+    "copy": "inputs/actual-run/legacy-changefeed-source.log",
+    "origin": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/tx-discovery-validation-preparation-8/run/legacy-changefeed-source.log",
+    "sha256": "441237534e6194146545c66acf6c06b7264136ae4df4e173a9e4fd50ab112d2f",
+    "bytes": 48402,
+    "role": "actual P8 flat runtime output, unchanged byte copy; no reconstructed receipts"
+  },
+  {
+    "copy": "inputs/actual-run/legacy-changefeed-source.processes.jsonl",
+    "origin": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/tx-discovery-validation-preparation-8/run/legacy-changefeed-source.processes.jsonl",
+    "sha256": "eda8e70c85a785debe518071a600a5d6151056b89d3e925bd0bf41329606364d",
+    "bytes": 2626,
+    "role": "actual P8 flat runtime output, unchanged byte copy; no reconstructed receipts"
+  },
+  {
+    "copy": "inputs/actual-run/legacy-changefeed-source.results.json",
+    "origin": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/tx-discovery-validation-preparation-8/run/legacy-changefeed-source.results.json",
+    "sha256": "054ecc39e333bdab8458b3e2f9c7af3f00c7aada95ca225692e80b30d1d21015",
+    "bytes": 11765,
+    "role": "actual P8 flat runtime output, unchanged byte copy; no reconstructed receipts"
+  },
+  {
+    "copy": "inputs/actual-run/legacy-changefeed-source.started.json",
+    "origin": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/tx-discovery-validation-preparation-8/run/legacy-changefeed-source.started.json",
+    "sha256": "157fd6f1d5f59e03cb84d61bf5c7f665eb8c0ad1855816e594430a0f54462443",
+    "bytes": 4371,
+    "role": "actual P8 flat runtime output, unchanged byte copy; no reconstructed receipts"
+  },
+  {
+    "copy": "inputs/actual-run/legacy-installed-contracts-source.accepted-observation.json",
+    "origin": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/tx-discovery-validation-preparation-8/run/legacy-installed-contracts-source.accepted-observation.json",
+    "sha256": "f550acb3ca8f24f6775698cc300283ff6283d086d2464cbd1ef885a333472eac",
+    "bytes": 1522,
+    "role": "actual P8 flat runtime output, unchanged byte copy; no reconstructed receipts"
+  },
+  {
+    "copy": "inputs/actual-run/legacy-installed-contracts-source.exit.json",
+    "origin": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/tx-discovery-validation-preparation-8/run/legacy-installed-contracts-source.exit.json",
+    "sha256": "aa091a747c99ef48acc0df9a25b33eb1f4f8ac12a840abd1a88afbe4e1d1fc4f",
+    "bytes": 542,
+    "role": "actual P8 flat runtime output, unchanged byte copy; no reconstructed receipts"
+  },
+  {
+    "copy": "inputs/actual-run/legacy-installed-contracts-source.log",
+    "origin": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/tx-discovery-validation-preparation-8/run/legacy-installed-contracts-source.log",
+    "sha256": "2368f60daf3b52578ccb710f37f68c025fbed2f5119c2c4294d4e52d57c56250",
+    "bytes": 2444,
+    "role": "actual P8 flat runtime output, unchanged byte copy; no reconstructed receipts"
+  },
+  {
+    "copy": "inputs/actual-run/legacy-installed-contracts-source.processes.jsonl",
+    "origin": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/tx-discovery-validation-preparation-8/run/legacy-installed-contracts-source.processes.jsonl",
+    "sha256": "9b6c422a714d77fc775276ead640bb253ab09616778e89ff1bd96cdb402d76ec",
+    "bytes": 2954,
+    "role": "actual P8 flat runtime output, unchanged byte copy; no reconstructed receipts"
+  },
+  {
+    "copy": "inputs/actual-run/legacy-installed-contracts-source.results.json",
+    "origin": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/tx-discovery-validation-preparation-8/run/legacy-installed-contracts-source.results.json",
+    "sha256": "47ee790c6f5253c7a31d511fcdd9e41d3a64c9ba031a637eac433ac9b0cee857",
+    "bytes": 4562,
+    "role": "actual P8 flat runtime output, unchanged byte copy; no reconstructed receipts"
+  },
+  {
+    "copy": "inputs/actual-run/legacy-installed-contracts-source.started.json",
+    "origin": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/tx-discovery-validation-preparation-8/run/legacy-installed-contracts-source.started.json",
+    "sha256": "33171531dc872566a781d6f847cccfd6a1a73b7843fe9c0176c8a06cd0a8d490",
+    "bytes": 2208,
+    "role": "actual P8 flat runtime output, unchanged byte copy; no reconstructed receipts"
+  },
+  {
+    "copy": "inputs/actual-run/lint.exit.json",
+    "origin": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/tx-discovery-validation-preparation-8/run/lint.exit.json",
+    "sha256": "641e7ec4f56a0c2eafe7c888e97bf59a397b966eb0ab4d847a91599f2909660d",
+    "bytes": 513,
+    "role": "actual P8 flat runtime output, unchanged byte copy; no reconstructed receipts"
+  },
+  {
+    "copy": "inputs/actual-run/lint.log",
+    "origin": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/tx-discovery-validation-preparation-8/run/lint.log",
+    "sha256": "fdf64fe2e756a936000349c277c66d67d92de363371f418de4a4310ad70c87b5",
+    "bytes": 16852,
+    "role": "actual P8 flat runtime output, unchanged byte copy; no reconstructed receipts"
+  },
+  {
+    "copy": "inputs/actual-run/lint.processes.jsonl",
+    "origin": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/tx-discovery-validation-preparation-8/run/lint.processes.jsonl",
+    "sha256": "f1419f5d1557b9a1ac6ec90a5e0bd1ead6a8575218a8720d2a2a54e76167bfb6",
+    "bytes": 519,
+    "role": "actual P8 flat runtime output, unchanged byte copy; no reconstructed receipts"
+  },
+  {
+    "copy": "inputs/actual-run/lint.started.json",
+    "origin": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/tx-discovery-validation-preparation-8/run/lint.started.json",
+    "sha256": "6a109ef11139c874e9bc6f666372db49d8cdd0df2c1de51f8329ec4c956538cf",
+    "bytes": 1218,
+    "role": "actual P8 flat runtime output, unchanged byte copy; no reconstructed receipts"
+  },
+  {
+    "copy": "inputs/actual-run/node-version.exit.json",
+    "origin": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/tx-discovery-validation-preparation-8/run/node-version.exit.json",
+    "sha256": "b48cb36aa6f97dd07369ac8c12ea76efb7caf10a101ce8ec70ae6672131331f2",
+    "bytes": 510,
+    "role": "actual P8 flat runtime output, unchanged byte copy; no reconstructed receipts"
+  },
+  {
+    "copy": "inputs/actual-run/node-version.log",
+    "origin": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/tx-discovery-validation-preparation-8/run/node-version.log",
+    "sha256": "a8f8f7ba69d43285857a0ea34017ef8dadd3ba012404bb7dd188fc773cf63ee2",
+    "bytes": 9,
+    "role": "actual P8 flat runtime output, unchanged byte copy; no reconstructed receipts"
+  },
+  {
+    "copy": "inputs/actual-run/node-version.processes.jsonl",
+    "origin": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/tx-discovery-validation-preparation-8/run/node-version.processes.jsonl",
+    "sha256": "43d446ad0786709c2fa5b606668a0208a5237b08b536c0a8030f8f161018599e",
+    "bytes": 81,
+    "role": "actual P8 flat runtime output, unchanged byte copy; no reconstructed receipts"
+  },
+  {
+    "copy": "inputs/actual-run/node-version.started.json",
+    "origin": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/tx-discovery-validation-preparation-8/run/node-version.started.json",
+    "sha256": "123e22de3e9bf33d930a5dc524deb39b212e5d77d3854b5eb883b468e2a4dd9d",
+    "bytes": 697,
+    "role": "actual P8 flat runtime output, unchanged byte copy; no reconstructed receipts"
+  },
+  {
+    "copy": "inputs/actual-run/pack-protocol.exit.json",
+    "origin": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/tx-discovery-validation-preparation-8/run/pack-protocol.exit.json",
+    "sha256": "8e00a7fe634020a64a2d024fe00bde2d3ed25f3cc3f5c0e4ea659a7361125006",
+    "bytes": 511,
+    "role": "actual P8 flat runtime output, unchanged byte copy; no reconstructed receipts"
+  },
+  {
+    "copy": "inputs/actual-run/pack-protocol.log",
+    "origin": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/tx-discovery-validation-preparation-8/run/pack-protocol.log",
+    "sha256": "db4df55315b495939942fae6592a4cd2724b8dda09555b7e1412358c6d9a40c2",
+    "bytes": 1885,
+    "role": "actual P8 flat runtime output, unchanged byte copy; no reconstructed receipts"
+  },
+  {
+    "copy": "inputs/actual-run/pack-protocol.processes.jsonl",
+    "origin": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/tx-discovery-validation-preparation-8/run/pack-protocol.processes.jsonl",
+    "sha256": "72faffc5cc9ad52c398ffff646d5c9c065cebc52f46073c427918a665b1f4d1a",
+    "bytes": 455,
+    "role": "actual P8 flat runtime output, unchanged byte copy; no reconstructed receipts"
+  },
+  {
+    "copy": "inputs/actual-run/pack-protocol.started.json",
+    "origin": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/tx-discovery-validation-preparation-8/run/pack-protocol.started.json",
+    "sha256": "bc45b58b727de808941c4af7c9e7d8eada39092427d8b23c7562cea876411dc9",
+    "bytes": 933,
+    "role": "actual P8 flat runtime output, unchanged byte copy; no reconstructed receipts"
+  },
+  {
+    "copy": "inputs/actual-run/pack-server.exit.json",
+    "origin": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/tx-discovery-validation-preparation-8/run/pack-server.exit.json",
+    "sha256": "2aa71ab6674ce84b10452e53f416e16e55f53a3aa1fc1134be42bfd69db2dab9",
+    "bytes": 509,
+    "role": "actual P8 flat runtime output, unchanged byte copy; no reconstructed receipts"
+  },
+  {
+    "copy": "inputs/actual-run/pack-server.log",
+    "origin": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/tx-discovery-validation-preparation-8/run/pack-server.log",
+    "sha256": "ab21ca55583f3406925e962a247d73be108e14f940b56f3420dc05b35b156f28",
+    "bytes": 8446,
+    "role": "actual P8 flat runtime output, unchanged byte copy; no reconstructed receipts"
+  },
+  {
+    "copy": "inputs/actual-run/pack-server.processes.jsonl",
+    "origin": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/tx-discovery-validation-preparation-8/run/pack-server.processes.jsonl",
+    "sha256": "11c861577d3456ad2197ffb60fa0ee75ce322ce9c2d175f71d3a1847b45258e1",
+    "bytes": 579,
+    "role": "actual P8 flat runtime output, unchanged byte copy; no reconstructed receipts"
+  },
+  {
+    "copy": "inputs/actual-run/pack-server.started.json",
+    "origin": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/tx-discovery-validation-preparation-8/run/pack-server.started.json",
+    "sha256": "2425c932f9e8c534ad1a0111fad9673f88520c59935324d42d6231eaa787dd08",
+    "bytes": 927,
+    "role": "actual P8 flat runtime output, unchanged byte copy; no reconstructed receipts"
+  },
+  {
+    "copy": "inputs/actual-run/pnpm-version.exit.json",
+    "origin": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/tx-discovery-validation-preparation-8/run/pnpm-version.exit.json",
+    "sha256": "da214eb9038b7a6c67e0dcbc47db07e8832863946309a9a5589e5030e3a648a5",
+    "bytes": 510,
+    "role": "actual P8 flat runtime output, unchanged byte copy; no reconstructed receipts"
+  },
+  {
+    "copy": "inputs/actual-run/pnpm-version.log",
+    "origin": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/tx-discovery-validation-preparation-8/run/pnpm-version.log",
+    "sha256": "6784d6c924df1c8341f9f841f5b5b20c37255de3d34f923baebc0a557d5d5201",
+    "bytes": 8,
+    "role": "actual P8 flat runtime output, unchanged byte copy; no reconstructed receipts"
+  },
+  {
+    "copy": "inputs/actual-run/pnpm-version.processes.jsonl",
+    "origin": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/tx-discovery-validation-preparation-8/run/pnpm-version.processes.jsonl",
+    "sha256": "8805f821c6b7097db10895366b73acc79a2905fbd7a0bbf3d4b7a33a8d24f040",
+    "bytes": 456,
+    "role": "actual P8 flat runtime output, unchanged byte copy; no reconstructed receipts"
+  },
+  {
+    "copy": "inputs/actual-run/pnpm-version.started.json",
+    "origin": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/tx-discovery-validation-preparation-8/run/pnpm-version.started.json",
+    "sha256": "005dd71d376d5ba499c29f7288fae1eea1fefb80e6618280285ca47f7a77f24a",
+    "bytes": 766,
+    "role": "actual P8 flat runtime output, unchanged byte copy; no reconstructed receipts"
+  },
+  {
+    "copy": "inputs/actual-run/prepare-package-directory.exit.json",
+    "origin": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/tx-discovery-validation-preparation-8/run/prepare-package-directory.exit.json",
+    "sha256": "f374607c013f9fece9075d0048e48426cc600fa1384ffe349bc0f97b57da7970",
+    "bytes": 1052,
+    "role": "actual P8 flat runtime output, unchanged byte copy; no reconstructed receipts"
+  },
+  {
+    "copy": "inputs/actual-run/prepare-package-directory.log",
+    "origin": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/tx-discovery-validation-preparation-8/run/prepare-package-directory.log",
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "bytes": 0,
+    "role": "actual P8 flat runtime output, unchanged byte copy; no reconstructed receipts"
+  },
+  {
+    "copy": "inputs/actual-run/prepare-package-directory.processes.jsonl",
+    "origin": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/tx-discovery-validation-preparation-8/run/prepare-package-directory.processes.jsonl",
+    "sha256": "47dae766ca05b25073380e6eb69f4d1e043174ab705564f20b27a70d28880cab",
+    "bytes": 14587,
+    "role": "actual P8 flat runtime output, unchanged byte copy; no reconstructed receipts"
+  },
+  {
+    "copy": "inputs/actual-run/prepare-package-directory.started.json",
+    "origin": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/tx-discovery-validation-preparation-8/run/prepare-package-directory.started.json",
+    "sha256": "5ca975d4ad67bfbeacc6f1e14a3aa9251d1024c8e577d5d87418aa97cb3a957a",
+    "bytes": 825,
+    "role": "actual P8 flat runtime output, unchanged byte copy; no reconstructed receipts"
+  },
+  {
+    "copy": "inputs/actual-run/schema-confinement-source.accepted-observation.json",
+    "origin": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/tx-discovery-validation-preparation-8/run/schema-confinement-source.accepted-observation.json",
+    "sha256": "c905602d5a1cf77aa393442db81921563ef02bc52b73781971aa9df21a003986",
+    "bytes": 713,
+    "role": "actual P8 flat runtime output, unchanged byte copy; no reconstructed receipts"
+  },
+  {
+    "copy": "inputs/actual-run/schema-confinement-source.exit.json",
+    "origin": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/tx-discovery-validation-preparation-8/run/schema-confinement-source.exit.json",
+    "sha256": "31c98affca70f436b783045d97cc08f25ba85e727f7b989a002ca59c5dcf05b4",
+    "bytes": 534,
+    "role": "actual P8 flat runtime output, unchanged byte copy; no reconstructed receipts"
+  },
+  {
+    "copy": "inputs/actual-run/schema-confinement-source.log",
+    "origin": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/tx-discovery-validation-preparation-8/run/schema-confinement-source.log",
+    "sha256": "8a20a0836004c74f14f9abf40687b73639f4b652c0274e843dbba394d63d2a9e",
+    "bytes": 690,
+    "role": "actual P8 flat runtime output, unchanged byte copy; no reconstructed receipts"
+  },
+  {
+    "copy": "inputs/actual-run/schema-confinement-source.processes.jsonl",
+    "origin": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/tx-discovery-validation-preparation-8/run/schema-confinement-source.processes.jsonl",
+    "sha256": "b9f669bac37fc5af0022267fee0de291c59757daaf57191d8c809c52f4258db2",
+    "bytes": 983,
+    "role": "actual P8 flat runtime output, unchanged byte copy; no reconstructed receipts"
+  },
+  {
+    "copy": "inputs/actual-run/schema-confinement-source.results.json",
+    "origin": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/tx-discovery-validation-preparation-8/run/schema-confinement-source.results.json",
+    "sha256": "b2374a3a826e398fb7adcaa69cf2fdeb7a01eba517ea62de2a9bea4555d4d6d7",
+    "bytes": 1262,
+    "role": "actual P8 flat runtime output, unchanged byte copy; no reconstructed receipts"
+  },
+  {
+    "copy": "inputs/actual-run/schema-confinement-source.started.json",
+    "origin": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/tx-discovery-validation-preparation-8/run/schema-confinement-source.started.json",
+    "sha256": "6b4a71e945ffc546728f43d10f8162d4366280b0443d3dd279f520920655d6fd",
+    "bytes": 1235,
+    "role": "actual P8 flat runtime output, unchanged byte copy; no reconstructed receipts"
+  },
+  {
+    "copy": "inputs/actual-run/tar-source-provenance.json",
+    "origin": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/tx-discovery-validation-preparation-8/run/tar-source-provenance.json",
+    "sha256": "df49d4e5420657c2f615e3f43668e16af9558f6619a689d7136fa88bba49b631",
+    "bytes": 127490,
+    "role": "actual P8 flat runtime output, unchanged byte copy; no reconstructed receipts"
+  },
+  {
+    "copy": "inputs/actual-run/typecheck.exit.json",
+    "origin": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/tx-discovery-validation-preparation-8/run/typecheck.exit.json",
+    "sha256": "53df35f5deefb62c26d8f8ded5de19ef76abf9d639271ee64edec1ae1384b46c",
+    "bytes": 517,
+    "role": "actual P8 flat runtime output, unchanged byte copy; no reconstructed receipts"
+  },
+  {
+    "copy": "inputs/actual-run/typecheck.log",
+    "origin": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/tx-discovery-validation-preparation-8/run/typecheck.log",
+    "sha256": "91d54ffbee73a3ac72294d090e58d77745f8b93edbf94b862807698273a6505a",
+    "bytes": 29,
+    "role": "actual P8 flat runtime output, unchanged byte copy; no reconstructed receipts"
+  },
+  {
+    "copy": "inputs/actual-run/typecheck.processes.jsonl",
+    "origin": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/tx-discovery-validation-preparation-8/run/typecheck.processes.jsonl",
+    "sha256": "7d9c9be31e388efc822412bf86c48d286204f1da60d57eb88318dee5aa92d620",
+    "bytes": 3095,
+    "role": "actual P8 flat runtime output, unchanged byte copy; no reconstructed receipts"
+  },
+  {
+    "copy": "inputs/actual-run/typecheck.started.json",
+    "origin": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/tx-discovery-validation-preparation-8/run/typecheck.started.json",
+    "sha256": "bd30d49816315e603df7fcdf6e6ae77640603d5fda36d9446a3448b6801a3de3",
+    "bytes": 771,
+    "role": "actual P8 flat runtime output, unchanged byte copy; no reconstructed receipts"
+  },
+  {
+    "copy": "inputs/actual-run/verify-archives.exit.json",
+    "origin": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/tx-discovery-validation-preparation-8/run/verify-archives.exit.json",
+    "sha256": "a5ccae49a445abee33d67bc90238fdfc2d88a6a962cfaf10c1adff997df9f970",
+    "bytes": 1075,
+    "role": "actual P8 flat runtime output, unchanged byte copy; no reconstructed receipts"
+  },
+  {
+    "copy": "inputs/actual-run/verify-archives.log",
+    "origin": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/tx-discovery-validation-preparation-8/run/verify-archives.log",
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "bytes": 0,
+    "role": "actual P8 flat runtime output, unchanged byte copy; no reconstructed receipts"
+  },
+  {
+    "copy": "inputs/actual-run/verify-archives.processes.jsonl",
+    "origin": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/tx-discovery-validation-preparation-8/run/verify-archives.processes.jsonl",
+    "sha256": "4b1cd15f03cfbf1e0d9bd147b092297be0c30a98a4d1a21f4a39169ea512a655",
+    "bytes": 14348,
+    "role": "actual P8 flat runtime output, unchanged byte copy; no reconstructed receipts"
+  },
+  {
+    "copy": "inputs/actual-run/verify-archives.started.json",
+    "origin": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/tx-discovery-validation-preparation-8/run/verify-archives.started.json",
+    "sha256": "4a374c8fa19f9cd9054fffbe9846a30422a6276e832c8651cb7d87999d136958",
+    "bytes": 799,
+    "role": "actual P8 flat runtime output, unchanged byte copy; no reconstructed receipts"
+  },
+  {
+    "copy": "inputs/actual-run/workspace-install.exit.json",
+    "origin": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/tx-discovery-validation-preparation-8/run/workspace-install.exit.json",
+    "sha256": "26e6793d2999ff5e287151fb516401a770b0461ddc8533773713fed7d789eba4",
+    "bytes": 515,
+    "role": "actual P8 flat runtime output, unchanged byte copy; no reconstructed receipts"
+  },
+  {
+    "copy": "inputs/actual-run/workspace-install.log",
+    "origin": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/tx-discovery-validation-preparation-8/run/workspace-install.log",
+    "sha256": "c159b44fe5185aa822cc4bb6fb8445ee063cdc18d58adbf7e2f01cf04ed93627",
+    "bytes": 86,
+    "role": "actual P8 flat runtime output, unchanged byte copy; no reconstructed receipts"
+  },
+  {
+    "copy": "inputs/actual-run/workspace-install.processes.jsonl",
+    "origin": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/tx-discovery-validation-preparation-8/run/workspace-install.processes.jsonl",
+    "sha256": "38288af2d7b81438cbf0c8308851e7f0e08489238cba42efc6f8747465c51ddb",
+    "bytes": 457,
+    "role": "actual P8 flat runtime output, unchanged byte copy; no reconstructed receipts"
+  },
+  {
+    "copy": "inputs/actual-run/workspace-install.started.json",
+    "origin": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/tx-discovery-validation-preparation-8/run/workspace-install.started.json",
+    "sha256": "da6c34a9f146f20ca7d9182bed07d71fe8f3fcef735b8379acab23e7edc05901",
+    "bytes": 816,
+    "role": "actual P8 flat runtime output, unchanged byte copy; no reconstructed receipts"
+  },
+  {
+    "copy": "inputs/actual-run/workspace-tools.json",
+    "origin": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/tx-discovery-validation-preparation-8/run/workspace-tools.json",
+    "sha256": "cbd1e4be4cfff490027e4a111f3c6d99f9214a70cca1f70349f96154e11a8cb2",
+    "bytes": 4242,
+    "role": "actual P8 flat runtime output, unchanged byte copy; no reconstructed receipts"
+  },
+  {
+    "copy": "inputs/actual-run/packages/bdp-protocol-0.0.0.tgz",
+    "origin": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/tx-discovery-validation-preparation-8/run/packages/bdp-protocol-0.0.0.tgz",
+    "sha256": "4683cb6c6333c332a4bcb7efc3e28f32d1d8d06a7264913f65c31d3a826d4227",
+    "bytes": 68665,
+    "role": "actual fresh archive retained; no consumer created"
+  },
+  {
+    "copy": "inputs/actual-run/packages/bdp-server-0.0.0.tgz",
+    "origin": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/tx-discovery-validation-preparation-8/run/packages/bdp-server-0.0.0.tgz",
+    "sha256": "78f014af635f0903886be31f467447d45b72750ac8a7cbc7ba6cabe32cc7ee30",
+    "bytes": 444443,
+    "role": "actual fresh archive retained; no consumer created"
+  },
+  {
+    "copy": "inputs/root/tx-discovery-validation-root-release-8/actual-code-disposition.json",
+    "origin": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/tx-discovery-validation-root-release-8/actual-code-disposition.json",
+    "sha256": "c60dcb2420c18cedc63973781e3755a9b644e05b2f8bbd017e6131800cc75d80",
+    "bytes": 4107,
+    "role": "actual root authority/dispatch/terminal/closed-gate/error record; original scope preserved"
+  },
+  {
+    "copy": "inputs/root/tx-discovery-validation-root-release-8/disposition.json",
+    "origin": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/tx-discovery-validation-root-release-8/disposition.json",
+    "sha256": "c7b03bf1afec8e1b88792d3e25214763ec1987b5a05db1f4229a6ba8809b2cb9",
+    "bytes": 4822,
+    "role": "actual root authority/dispatch/terminal/closed-gate/error record; original scope preserved"
+  },
+  {
+    "copy": "inputs/root/tx-discovery-validation-root-release-8/execution-gate.after.json",
+    "origin": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/tx-discovery-validation-root-release-8/execution-gate.after.json",
+    "sha256": "e4c1666d292f0d51a5e839724e5089516ab9625f2a1fa092372b86a99840691c",
+    "bytes": 2900,
+    "role": "actual root authority/dispatch/terminal/closed-gate/error record; original scope preserved"
+  },
+  {
+    "copy": "inputs/root/tx-discovery-validation-root-release-8/execution-gate.before.json",
+    "origin": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/tx-discovery-validation-root-release-8/execution-gate.before.json",
+    "sha256": "ee9cefbf47ccbcbdac37e4415c8e6365319ad011cc39d2441c738c855d0c368b",
+    "bytes": 2343,
+    "role": "actual root authority/dispatch/terminal/closed-gate/error record; original scope preserved"
+  },
+  {
+    "copy": "inputs/root/tx-discovery-validation-root-release-8/index.json",
+    "origin": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/tx-discovery-validation-root-release-8/index.json",
+    "sha256": "9a5354112280182080c304c395b671ad36bf15f4f2ebed5d4f5665197f91157d",
+    "bytes": 582,
+    "role": "actual root authority/dispatch/terminal/closed-gate/error record; original scope preserved"
+  },
+  {
+    "copy": "inputs/root/tx-discovery-validation-root-release-8/native-code-disposition.json",
+    "origin": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/tx-discovery-validation-root-release-8/native-code-disposition.json",
+    "sha256": "0daa3047b68a5c52c55e19211a61f4b5a97bc67c6444ac3a40c2b603341c7260",
+    "bytes": 3992,
+    "role": "actual root authority/dispatch/terminal/closed-gate/error record; original scope preserved"
+  },
+  {
+    "copy": "inputs/root/tx-discovery-validation-root-release-8/release.json",
+    "origin": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/tx-discovery-validation-root-release-8/release.json",
+    "sha256": "337d6a0634b70dc7e15c08f74d232d91ebb415c0401f763d68714a47de4472ea",
+    "bytes": 1331,
+    "role": "actual root authority/dispatch/terminal/closed-gate/error record; original scope preserved"
+  },
+  {
+    "copy": "inputs/root/tx-discovery-validation8-tool-binding-root-release-1/acceptance.json",
+    "origin": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/tx-discovery-validation8-tool-binding-root-release-1/acceptance.json",
+    "sha256": "1d55107b055795e856e572485dabd2523b28ca539ae41e1e4c22af3b1436cf61",
+    "bytes": 4980,
+    "role": "actual root authority/dispatch/terminal/closed-gate/error record; original scope preserved"
+  },
+  {
+    "copy": "inputs/root/tx-discovery-validation8-tool-binding-root-release-1/execution-gate.after.json",
+    "origin": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/tx-discovery-validation8-tool-binding-root-release-1/execution-gate.after.json",
+    "sha256": "9147ca2eb89c10a5e7459365e6f538457098172696655366709d29935efc4db6",
+    "bytes": 3147,
+    "role": "actual root authority/dispatch/terminal/closed-gate/error record; original scope preserved"
+  },
+  {
+    "copy": "inputs/root/tx-discovery-validation8-tool-binding-root-release-1/execution-gate.before.json",
+    "origin": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/tx-discovery-validation8-tool-binding-root-release-1/execution-gate.before.json",
+    "sha256": "e4c1666d292f0d51a5e839724e5089516ab9625f2a1fa092372b86a99840691c",
+    "bytes": 2900,
+    "role": "actual root authority/dispatch/terminal/closed-gate/error record; original scope preserved"
+  },
+  {
+    "copy": "inputs/root/tx-discovery-validation8-tool-binding-root-release-1/fresh-process-census.txt",
+    "origin": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/tx-discovery-validation8-tool-binding-root-release-1/fresh-process-census.txt",
+    "sha256": "4970392a0c50abf88b65293b2755ca33072b0cd7a3822ba56a2dc6450ce76afb",
+    "bytes": 166672,
+    "role": "actual root authority/dispatch/terminal/closed-gate/error record; original scope preserved"
+  },
+  {
+    "copy": "inputs/root/tx-discovery-validation8-tool-binding-root-release-1/index.json",
+    "origin": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/tx-discovery-validation8-tool-binding-root-release-1/index.json",
+    "sha256": "2ca4965bdcbd48fcab833f4a03a366d43ed75f2dcabadeb08925bec88ac9f8c4",
+    "bytes": 571,
+    "role": "actual root authority/dispatch/terminal/closed-gate/error record; original scope preserved"
+  },
+  {
+    "copy": "inputs/root/tx-discovery-validation8-tool-binding-root-release-1/release.json",
+    "origin": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/tx-discovery-validation8-tool-binding-root-release-1/release.json",
+    "sha256": "85daa7a98fea281f2f479cf5b38b4d37fce5302a419db291145cc9d22a941a52",
+    "bytes": 747,
+    "role": "actual root authority/dispatch/terminal/closed-gate/error record; original scope preserved"
+  },
+  {
+    "copy": "inputs/root/tx-discovery-validation8-tool-binding-root-release-1/root-observation-1.txt",
+    "origin": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/tx-discovery-validation8-tool-binding-root-release-1/root-observation-1.txt",
+    "sha256": "f3b0b1be89c59d2590fbdd080c90362aa6c0a6c97046bb019d0bc2ec5c44f846",
+    "bytes": 474,
+    "role": "actual root authority/dispatch/terminal/closed-gate/error record; original scope preserved"
+  },
+  {
+    "copy": "inputs/root/tx-discovery-validation8-build-binding-root-release-1/acceptance.json",
+    "origin": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/tx-discovery-validation8-build-binding-root-release-1/acceptance.json",
+    "sha256": "2d6b75e5670ffcd60035ee3cb49e8c8f835032dfaddd331b87790e6c08123f02",
+    "bytes": 9023,
+    "role": "actual root authority/dispatch/terminal/closed-gate/error record; original scope preserved"
+  },
+  {
+    "copy": "inputs/root/tx-discovery-validation8-build-binding-root-release-1/execution-gate.after.json",
+    "origin": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/tx-discovery-validation8-build-binding-root-release-1/execution-gate.after.json",
+    "sha256": "56bfd065715879f72fb75015270d946b716f47208f14c40b9e60cadfd91fcdbc",
+    "bytes": 3589,
+    "role": "actual root authority/dispatch/terminal/closed-gate/error record; original scope preserved"
+  },
+  {
+    "copy": "inputs/root/tx-discovery-validation8-build-binding-root-release-1/execution-gate.before.json",
+    "origin": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/tx-discovery-validation8-build-binding-root-release-1/execution-gate.before.json",
+    "sha256": "9147ca2eb89c10a5e7459365e6f538457098172696655366709d29935efc4db6",
+    "bytes": 3147,
+    "role": "actual root authority/dispatch/terminal/closed-gate/error record; original scope preserved"
+  },
+  {
+    "copy": "inputs/root/tx-discovery-validation8-build-binding-root-release-1/fresh-process-census.txt",
+    "origin": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/tx-discovery-validation8-build-binding-root-release-1/fresh-process-census.txt",
+    "sha256": "0956ee012cb3a8ef56c690db7088eccdeb23425f3b3a199ee475ebdb624f780c",
+    "bytes": 167023,
+    "role": "actual root authority/dispatch/terminal/closed-gate/error record; original scope preserved"
+  },
+  {
+    "copy": "inputs/root/tx-discovery-validation8-build-binding-root-release-1/index.json",
+    "origin": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/tx-discovery-validation8-build-binding-root-release-1/index.json",
+    "sha256": "faaa2444f2271e6948be32c8e73f7ad45b8a3090be5f8a70845424d74658467b",
+    "bytes": 475,
+    "role": "actual root authority/dispatch/terminal/closed-gate/error record; original scope preserved"
+  },
+  {
+    "copy": "inputs/root/tx-discovery-validation8-build-binding-root-release-1/release.json",
+    "origin": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/tx-discovery-validation8-build-binding-root-release-1/release.json",
+    "sha256": "366ba695b8445991b9dbd8a8d2c5b4986d0a5028421bd92e9393ea47fdba55e1",
+    "bytes": 1397,
+    "role": "actual root authority/dispatch/terminal/closed-gate/error record; original scope preserved"
+  },
+  {
+    "copy": "inputs/root/tx-discovery-validation8-source-prefix-root-release-1/acceptance.json",
+    "origin": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/tx-discovery-validation8-source-prefix-root-release-1/acceptance.json",
+    "sha256": "ece5bf75c03734578081015bbcd019147d5bfecdb1a1e9133c0cc278ade9a9e9",
+    "bytes": 20278,
+    "role": "actual root authority/dispatch/terminal/closed-gate/error record; original scope preserved"
+  },
+  {
+    "copy": "inputs/root/tx-discovery-validation8-source-prefix-root-release-1/execution-gate.after.json",
+    "origin": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/tx-discovery-validation8-source-prefix-root-release-1/execution-gate.after.json",
+    "sha256": "d06b2444958c2c7546c1881e4d5cfcb8317b9f8b9b78d828af38f143f1c48fde",
+    "bytes": 3685,
+    "role": "actual root authority/dispatch/terminal/closed-gate/error record; original scope preserved"
+  },
+  {
+    "copy": "inputs/root/tx-discovery-validation8-source-prefix-root-release-1/execution-gate.before.json",
+    "origin": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/tx-discovery-validation8-source-prefix-root-release-1/execution-gate.before.json",
+    "sha256": "56bfd065715879f72fb75015270d946b716f47208f14c40b9e60cadfd91fcdbc",
+    "bytes": 3589,
+    "role": "actual root authority/dispatch/terminal/closed-gate/error record; original scope preserved"
+  },
+  {
+    "copy": "inputs/root/tx-discovery-validation8-source-prefix-root-release-1/fresh-process-census.txt",
+    "origin": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/tx-discovery-validation8-source-prefix-root-release-1/fresh-process-census.txt",
+    "sha256": "d7b531bac5d113181da6b39e0bbacb7a88d192379156c8b52f26e9aea8949aae",
+    "bytes": 167569,
+    "role": "actual root authority/dispatch/terminal/closed-gate/error record; original scope preserved"
+  },
+  {
+    "copy": "inputs/root/tx-discovery-validation8-source-prefix-root-release-1/index.json",
+    "origin": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/tx-discovery-validation8-source-prefix-root-release-1/index.json",
+    "sha256": "c30230a4ff3d89e3e5eb30d66d965f3231e59546c2b136a0c936ce9026d28488",
+    "bytes": 475,
+    "role": "actual root authority/dispatch/terminal/closed-gate/error record; original scope preserved"
+  },
+  {
+    "copy": "inputs/root/tx-discovery-validation8-source-prefix-root-release-1/release.json",
+    "origin": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/tx-discovery-validation8-source-prefix-root-release-1/release.json",
+    "sha256": "e549c540243f3c57ff3e7d7de01fb3405dca4c3e3447b4f8b75ec69c0664c839",
+    "bytes": 1309,
+    "role": "actual root authority/dispatch/terminal/closed-gate/error record; original scope preserved"
+  },
+  {
+    "copy": "inputs/root/tx-discovery-validation8-archive-root-release-1/acceptance.json",
+    "origin": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/tx-discovery-validation8-archive-root-release-1/acceptance.json",
+    "sha256": "7cf49f9798cc11ec2f020195b5db447d1534213a549a241f8454599044c30114",
+    "bytes": 24273,
+    "role": "actual root authority/dispatch/terminal/closed-gate/error record; original scope preserved"
+  },
+  {
+    "copy": "inputs/root/tx-discovery-validation8-archive-root-release-1/execution-gate.after.json",
+    "origin": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/tx-discovery-validation8-archive-root-release-1/execution-gate.after.json",
+    "sha256": "0a3d6874f74ea53cb30e0b62bcc623fec3c5d8b51d1931b3f7ba061870b26b34",
+    "bytes": 3889,
+    "role": "actual root authority/dispatch/terminal/closed-gate/error record; original scope preserved"
+  },
+  {
+    "copy": "inputs/root/tx-discovery-validation8-archive-root-release-1/execution-gate.before.json",
+    "origin": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/tx-discovery-validation8-archive-root-release-1/execution-gate.before.json",
+    "sha256": "d06b2444958c2c7546c1881e4d5cfcb8317b9f8b9b78d828af38f143f1c48fde",
+    "bytes": 3685,
+    "role": "actual root authority/dispatch/terminal/closed-gate/error record; original scope preserved"
+  },
+  {
+    "copy": "inputs/root/tx-discovery-validation8-archive-root-release-1/fresh-process-census.txt",
+    "origin": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/tx-discovery-validation8-archive-root-release-1/fresh-process-census.txt",
+    "sha256": "e86b0fb712b7ff8af80e3cd1d31e0aef376d47757a72356200ad71ead6043cf7",
+    "bytes": 171576,
+    "role": "actual root authority/dispatch/terminal/closed-gate/error record; original scope preserved"
+  },
+  {
+    "copy": "inputs/root/tx-discovery-validation8-archive-root-release-1/index.json",
+    "origin": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/tx-discovery-validation8-archive-root-release-1/index.json",
+    "sha256": "a0d4b179cbca651945664244c355b2fb4e7f4bf10f536681e0189aff28ffe25a",
+    "bytes": 475,
+    "role": "actual root authority/dispatch/terminal/closed-gate/error record; original scope preserved"
+  },
+  {
+    "copy": "inputs/root/tx-discovery-validation8-archive-root-release-1/release.json",
+    "origin": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/tx-discovery-validation8-archive-root-release-1/release.json",
+    "sha256": "67d330f1ed8f53236ace23955e24cb76eb2a6cba79f6ff9b888cad913721cd83",
+    "bytes": 1303,
+    "role": "actual root authority/dispatch/terminal/closed-gate/error record; original scope preserved"
+  },
+  {
+    "copy": "inputs/root/tx-discovery-root-archive-record-failure-1/execution-gate.after.json",
+    "origin": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/tx-discovery-root-archive-record-failure-1/execution-gate.after.json",
+    "sha256": "5dfcbd2a5a48d0ed43cc6f77d3398cb5fe1dd9d45c561ef29859efd1dba89dd8",
+    "bytes": 3891,
+    "role": "actual root authority/dispatch/terminal/closed-gate/error record; original scope preserved"
+  },
+  {
+    "copy": "inputs/root/tx-discovery-root-archive-record-failure-1/execution-gate.before.json",
+    "origin": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/tx-discovery-root-archive-record-failure-1/execution-gate.before.json",
+    "sha256": "0a3d6874f74ea53cb30e0b62bcc623fec3c5d8b51d1931b3f7ba061870b26b34",
+    "bytes": 3889,
+    "role": "actual root authority/dispatch/terminal/closed-gate/error record; original scope preserved"
+  },
+  {
+    "copy": "inputs/root/tx-discovery-root-archive-record-failure-1/failure.json",
+    "origin": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/tx-discovery-root-archive-record-failure-1/failure.json",
+    "sha256": "3bf07c2a2929f63f48f629348508ae5895bc3b1ec3422c04bd8832c1382689f3",
+    "bytes": 7693,
+    "role": "actual root authority/dispatch/terminal/closed-gate/error record; original scope preserved"
+  },
+  {
+    "copy": "inputs/root/tx-discovery-root-archive-record-failure-1/fresh-process-census.txt",
+    "origin": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/tx-discovery-root-archive-record-failure-1/fresh-process-census.txt",
+    "sha256": "aeb70ed467f0bb3c12db3181b524b6a5a96ac8af13bb157e9d9b64b799262826",
+    "bytes": 167843,
+    "role": "actual root authority/dispatch/terminal/closed-gate/error record; original scope preserved"
+  },
+  {
+    "copy": "inputs/root/tx-discovery-root-archive-record-failure-1/index.json",
+    "origin": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/tx-discovery-root-archive-record-failure-1/index.json",
+    "sha256": "eee564223c964014a4f650007ec18cf3b3693c27048beddb3d9c1f922cca93a4",
+    "bytes": 386,
+    "role": "actual root authority/dispatch/terminal/closed-gate/error record; original scope preserved"
+  },
+  {
+    "copy": "inputs/root/tx-discovery-validation8-run-dispatch-1/bind-workspace-tools.wrapper-exit.json",
+    "origin": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/tx-discovery-validation8-run-dispatch-1/bind-workspace-tools.wrapper-exit.json",
+    "sha256": "13aa01eb069ffbb148f025b8901c4c34050403ac2f1ad83f1440002e10b092b3",
+    "bytes": 143,
+    "role": "actual root authority/dispatch/terminal/closed-gate/error record; original scope preserved"
+  },
+  {
+    "copy": "inputs/root/tx-discovery-validation8-run-dispatch-1/bind-workspace-tools.wrapper-output.log",
+    "origin": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/tx-discovery-validation8-run-dispatch-1/bind-workspace-tools.wrapper-output.log",
+    "sha256": "923cad536c55edbd1ff044fb780f50a7177c262c53b7afdbb5fb4d2e41f1bef0",
+    "bytes": 814,
+    "role": "actual root authority/dispatch/terminal/closed-gate/error record; original scope preserved"
+  },
+  {
+    "copy": "inputs/root/tx-discovery-validation8-run-dispatch-1/dispatch.json",
+    "origin": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/tx-discovery-validation8-run-dispatch-1/dispatch.json",
+    "sha256": "d5b6a3b87ab43ecca41895be12561b2ad2083c4d7610ef154063a1715220e335",
+    "bytes": 1298,
+    "role": "actual root authority/dispatch/terminal/closed-gate/error record; original scope preserved"
+  },
+  {
+    "copy": "inputs/root/tx-discovery-validation8-run-dispatch-1/index.json",
+    "origin": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/tx-discovery-validation8-run-dispatch-1/index.json",
+    "sha256": "5fc71cc40cca43bcf2feee1fa256c47e23cb83f1338308fd7110f27ec3992813",
+    "bytes": 952,
+    "role": "actual root authority/dispatch/terminal/closed-gate/error record; original scope preserved"
+  },
+  {
+    "copy": "inputs/root/tx-discovery-validation8-run-dispatch-1/node-version.wrapper-exit.json",
+    "origin": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/tx-discovery-validation8-run-dispatch-1/node-version.wrapper-exit.json",
+    "sha256": "e343bb7a6f0df84ccb145753be145939aac5ea0e2e61586fc817e8fc5b060795",
+    "bytes": 135,
+    "role": "actual root authority/dispatch/terminal/closed-gate/error record; original scope preserved"
+  },
+  {
+    "copy": "inputs/root/tx-discovery-validation8-run-dispatch-1/node-version.wrapper-output.log",
+    "origin": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/tx-discovery-validation8-run-dispatch-1/node-version.wrapper-output.log",
+    "sha256": "ef49d4de7ecb74abd46b06f6618f57e1b91e7c12d94a92fa98c78ae41823ccaf",
+    "bytes": 476,
+    "role": "actual root authority/dispatch/terminal/closed-gate/error record; original scope preserved"
+  },
+  {
+    "copy": "inputs/root/tx-discovery-validation8-run-dispatch-1/pnpm-version.wrapper-exit.json",
+    "origin": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/tx-discovery-validation8-run-dispatch-1/pnpm-version.wrapper-exit.json",
+    "sha256": "3dfee1e0a9e9032c6a585361040a0db9a780b5b97c7297823d3cd6e91e095388",
+    "bytes": 133,
+    "role": "actual root authority/dispatch/terminal/closed-gate/error record; original scope preserved"
+  },
+  {
+    "copy": "inputs/root/tx-discovery-validation8-run-dispatch-1/pnpm-version.wrapper-output.log",
+    "origin": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/tx-discovery-validation8-run-dispatch-1/pnpm-version.wrapper-output.log",
+    "sha256": "6cf4fb878c3c63c5a0e4b1a869b01363e0e43226a70fec4f1ce4596aa462851e",
+    "bytes": 476,
+    "role": "actual root authority/dispatch/terminal/closed-gate/error record; original scope preserved"
+  },
+  {
+    "copy": "inputs/root/tx-discovery-validation8-run-dispatch-1/workspace-install.wrapper-exit.json",
+    "origin": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/tx-discovery-validation8-run-dispatch-1/workspace-install.wrapper-exit.json",
+    "sha256": "fe91272665242be9860fc4ed217de1f997395d064106a272b93cc35babf3978a",
+    "bytes": 140,
+    "role": "actual root authority/dispatch/terminal/closed-gate/error record; original scope preserved"
+  },
+  {
+    "copy": "inputs/root/tx-discovery-validation8-run-dispatch-1/workspace-install.wrapper-output.log",
+    "origin": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/tx-discovery-validation8-run-dispatch-1/workspace-install.wrapper-output.log",
+    "sha256": "d936f044f0293dc1b077cda8398703a97dc1c6ffa66ab48d353f0dcf4c2574d3",
+    "bytes": 481,
+    "role": "actual root authority/dispatch/terminal/closed-gate/error record; original scope preserved"
+  },
+  {
+    "copy": "inputs/root/tx-discovery-validation8-run-dispatch-2/bind-fresh-build.wrapper-exit.json",
+    "origin": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/tx-discovery-validation8-run-dispatch-2/bind-fresh-build.wrapper-exit.json",
+    "sha256": "c080dbf7603d5e90c80dbb1568f4fe8dd459dc78757a66bd740c6f2a6f41bb9e",
+    "bytes": 139,
+    "role": "actual root authority/dispatch/terminal/closed-gate/error record; original scope preserved"
+  },
+  {
+    "copy": "inputs/root/tx-discovery-validation8-run-dispatch-2/bind-fresh-build.wrapper-output.log",
+    "origin": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/tx-discovery-validation8-run-dispatch-2/bind-fresh-build.wrapper-output.log",
+    "sha256": "fd4c359092cea0cb0b730c800ea2d6b8dea6208a1edc513d32511f1ea05e9e4e",
+    "bytes": 796,
+    "role": "actual root authority/dispatch/terminal/closed-gate/error record; original scope preserved"
+  },
+  {
+    "copy": "inputs/root/tx-discovery-validation8-run-dispatch-2/dispatch.json",
+    "origin": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/tx-discovery-validation8-run-dispatch-2/dispatch.json",
+    "sha256": "28c1e5e6f952c0335e66d7ac359cc4bccafcd7929f68fb4b0fc684ac3c973439",
+    "bytes": 1482,
+    "role": "actual root authority/dispatch/terminal/closed-gate/error record; original scope preserved"
+  },
+  {
+    "copy": "inputs/root/tx-discovery-validation8-run-dispatch-2/format-check.wrapper-exit.json",
+    "origin": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/tx-discovery-validation8-run-dispatch-2/format-check.wrapper-exit.json",
+    "sha256": "7f1e02105aac3e9259fc2e049879f93afac7b1b4b37affd664875fc888a39de1",
+    "bytes": 135,
+    "role": "actual root authority/dispatch/terminal/closed-gate/error record; original scope preserved"
+  },
+  {
+    "copy": "inputs/root/tx-discovery-validation8-run-dispatch-2/format-check.wrapper-output.log",
+    "origin": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/tx-discovery-validation8-run-dispatch-2/format-check.wrapper-output.log",
+    "sha256": "f9daebc7b6de3a444ff8e2dc26e84cef872fe6a19302116f21af5070f0658fb2",
+    "bytes": 476,
+    "role": "actual root authority/dispatch/terminal/closed-gate/error record; original scope preserved"
+  },
+  {
+    "copy": "inputs/root/tx-discovery-validation8-run-dispatch-2/fresh-build.wrapper-exit.json",
+    "origin": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/tx-discovery-validation8-run-dispatch-2/fresh-build.wrapper-exit.json",
+    "sha256": "58a9949295614d9db313dd32d043f63326dedf471bd960e7d244a22c6208945e",
+    "bytes": 134,
+    "role": "actual root authority/dispatch/terminal/closed-gate/error record; original scope preserved"
+  },
+  {
+    "copy": "inputs/root/tx-discovery-validation8-run-dispatch-2/fresh-build.wrapper-output.log",
+    "origin": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/tx-discovery-validation8-run-dispatch-2/fresh-build.wrapper-output.log",
+    "sha256": "0337b49da321d3b2bc1b8994e32f9f3696339782940de765011da32c16705c70",
+    "bytes": 511,
+    "role": "actual root authority/dispatch/terminal/closed-gate/error record; original scope preserved"
+  },
+  {
+    "copy": "inputs/root/tx-discovery-validation8-run-dispatch-2/index.json",
+    "origin": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/tx-discovery-validation8-run-dispatch-2/index.json",
+    "sha256": "79db3a4adad7ab6d699c00d8937ca499a0b3d8a3a405e388de9986421a8b9c11",
+    "bytes": 1119,
+    "role": "actual root authority/dispatch/terminal/closed-gate/error record; original scope preserved"
+  },
+  {
+    "copy": "inputs/root/tx-discovery-validation8-run-dispatch-2/lint.wrapper-exit.json",
+    "origin": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/tx-discovery-validation8-run-dispatch-2/lint.wrapper-exit.json",
+    "sha256": "e53329df1ed53a986a6429348502679f5c44ea2a08ab233ad8bc0584fa8c4a46",
+    "bytes": 127,
+    "role": "actual root authority/dispatch/terminal/closed-gate/error record; original scope preserved"
+  },
+  {
+    "copy": "inputs/root/tx-discovery-validation8-run-dispatch-2/lint.wrapper-output.log",
+    "origin": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/tx-discovery-validation8-run-dispatch-2/lint.wrapper-output.log",
+    "sha256": "f072d4e1632100fe4de06a307035017fe9edafabcfa1944d8a284b7689b717ad",
+    "bytes": 475,
+    "role": "actual root authority/dispatch/terminal/closed-gate/error record; original scope preserved"
+  },
+  {
+    "copy": "inputs/root/tx-discovery-validation8-run-dispatch-2/typecheck.wrapper-exit.json",
+    "origin": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/tx-discovery-validation8-run-dispatch-2/typecheck.wrapper-exit.json",
+    "sha256": "047ba7fa723ebc3929c345f4ada8fdc1061dfef468fcac46018d92f20a028a4c",
+    "bytes": 132,
+    "role": "actual root authority/dispatch/terminal/closed-gate/error record; original scope preserved"
+  },
+  {
+    "copy": "inputs/root/tx-discovery-validation8-run-dispatch-2/typecheck.wrapper-output.log",
+    "origin": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/tx-discovery-validation8-run-dispatch-2/typecheck.wrapper-output.log",
+    "sha256": "0e9c8888df56ee5d6fd5256a9135827083dbc8fd93b57eb4e3cafebbbb19acb8",
+    "bytes": 479,
+    "role": "actual root authority/dispatch/terminal/closed-gate/error record; original scope preserved"
+  },
+  {
+    "copy": "inputs/root/tx-discovery-validation8-run-dispatch-3/audit-focused-source.wrapper-exit.json",
+    "origin": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/tx-discovery-validation8-run-dispatch-3/audit-focused-source.wrapper-exit.json",
+    "sha256": "b502c0c40abb06b637e53e31c9712922138e3ec901d14d7a056e7e11c6a59ec1",
+    "bytes": 142,
+    "role": "actual root authority/dispatch/terminal/closed-gate/error record; original scope preserved"
+  },
+  {
+    "copy": "inputs/root/tx-discovery-validation8-run-dispatch-3/audit-focused-source.wrapper-output.log",
+    "origin": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/tx-discovery-validation8-run-dispatch-3/audit-focused-source.wrapper-output.log",
+    "sha256": "b4042bd3e50048aab7eaf95eebd9e0f5dd5c066c6e6648b45423b65af4f9e236",
+    "bytes": 870,
+    "role": "actual root authority/dispatch/terminal/closed-gate/error record; original scope preserved"
+  },
+  {
+    "copy": "inputs/root/tx-discovery-validation8-run-dispatch-3/audit-legacy-changefeed-source.wrapper-exit.json",
+    "origin": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/tx-discovery-validation8-run-dispatch-3/audit-legacy-changefeed-source.wrapper-exit.json",
+    "sha256": "65259eda36f3dfdc7beeb9047aca4e4cddfcf3a0c1db6c4ead0d2e986d383c4f",
+    "bytes": 152,
+    "role": "actual root authority/dispatch/terminal/closed-gate/error record; original scope preserved"
+  },
+  {
+    "copy": "inputs/root/tx-discovery-validation8-run-dispatch-3/audit-legacy-changefeed-source.wrapper-output.log",
+    "origin": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/tx-discovery-validation8-run-dispatch-3/audit-legacy-changefeed-source.wrapper-output.log",
+    "sha256": "df1ae8ac56589e617d810efbb858b95c228a7546321e681a7aa7b41a0f377e3d",
+    "bytes": 803,
+    "role": "actual root authority/dispatch/terminal/closed-gate/error record; original scope preserved"
+  },
+  {
+    "copy": "inputs/root/tx-discovery-validation8-run-dispatch-3/audit-legacy-installed-contracts-source.wrapper-exit.json",
+    "origin": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/tx-discovery-validation8-run-dispatch-3/audit-legacy-installed-contracts-source.wrapper-exit.json",
+    "sha256": "a82c86c25ab4c6df96a8f5c028af99a07ed4ccfd4c947cf5fd8f65925df1d01e",
+    "bytes": 162,
+    "role": "actual root authority/dispatch/terminal/closed-gate/error record; original scope preserved"
+  },
+  {
+    "copy": "inputs/root/tx-discovery-validation8-run-dispatch-3/audit-legacy-installed-contracts-source.wrapper-output.log",
+    "origin": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/tx-discovery-validation8-run-dispatch-3/audit-legacy-installed-contracts-source.wrapper-output.log",
+    "sha256": "8ead8621eee17f4c7412c5a692d08917fc912c90d5fe9fdaf2fe9fd95a429309",
+    "bytes": 868,
+    "role": "actual root authority/dispatch/terminal/closed-gate/error record; original scope preserved"
+  },
+  {
+    "copy": "inputs/root/tx-discovery-validation8-run-dispatch-3/audit-schema-confinement-source.wrapper-exit.json",
+    "origin": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/tx-discovery-validation8-run-dispatch-3/audit-schema-confinement-source.wrapper-exit.json",
+    "sha256": "d25f47810935601ea334f2819a346174c6d08d9cd67a2a999135da4deb386333",
+    "bytes": 154,
+    "role": "actual root authority/dispatch/terminal/closed-gate/error record; original scope preserved"
+  },
+  {
+    "copy": "inputs/root/tx-discovery-validation8-run-dispatch-3/audit-schema-confinement-source.wrapper-output.log",
+    "origin": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/tx-discovery-validation8-run-dispatch-3/audit-schema-confinement-source.wrapper-output.log",
+    "sha256": "2d849d952153af7b20ec3ea01cf9ddbc07d4af65b2e6a9bf13aef237b74315ca",
+    "bytes": 797,
+    "role": "actual root authority/dispatch/terminal/closed-gate/error record; original scope preserved"
+  },
+  {
+    "copy": "inputs/root/tx-discovery-validation8-run-dispatch-3/dispatch.json",
+    "origin": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/tx-discovery-validation8-run-dispatch-3/dispatch.json",
+    "sha256": "d15569d8527a2c5f578a5ce9375b450cf1a784b7aca7f8fb311c8c1af46d9bec",
+    "bytes": 2416,
+    "role": "actual root authority/dispatch/terminal/closed-gate/error record; original scope preserved"
+  },
+  {
+    "copy": "inputs/root/tx-discovery-validation8-run-dispatch-3/focused-source.wrapper-exit.json",
+    "origin": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/tx-discovery-validation8-run-dispatch-3/focused-source.wrapper-exit.json",
+    "sha256": "1dd7f603ca219c092d9bf666042a3c8623a86a18dc7daff85fe81c6807e5d93b",
+    "bytes": 137,
+    "role": "actual root authority/dispatch/terminal/closed-gate/error record; original scope preserved"
+  },
+  {
+    "copy": "inputs/root/tx-discovery-validation8-run-dispatch-3/focused-source.wrapper-output.log",
+    "origin": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/tx-discovery-validation8-run-dispatch-3/focused-source.wrapper-output.log",
+    "sha256": "0b95b04ad0c6331497f5c3eacbb4a08dfbaae996e4e5c7a35d1d342b65168b00",
+    "bytes": 485,
+    "role": "actual root authority/dispatch/terminal/closed-gate/error record; original scope preserved"
+  },
+  {
+    "copy": "inputs/root/tx-discovery-validation8-run-dispatch-3/index.json",
+    "origin": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/tx-discovery-validation8-run-dispatch-3/index.json",
+    "sha256": "a6f381bcfe47ece4c0b760de0a00742991b19866d4b0ebc3a9106bb44cd15f10",
+    "bytes": 2002,
+    "role": "actual root authority/dispatch/terminal/closed-gate/error record; original scope preserved"
+  },
+  {
+    "copy": "inputs/root/tx-discovery-validation8-run-dispatch-3/legacy-changefeed-source.wrapper-exit.json",
+    "origin": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/tx-discovery-validation8-run-dispatch-3/legacy-changefeed-source.wrapper-exit.json",
+    "sha256": "777b99bc80a44793ee51af73dea3c2229f25d1f32e16406846907e46da82d396",
+    "bytes": 147,
+    "role": "actual root authority/dispatch/terminal/closed-gate/error record; original scope preserved"
+  },
+  {
+    "copy": "inputs/root/tx-discovery-validation8-run-dispatch-3/legacy-changefeed-source.wrapper-output.log",
+    "origin": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/tx-discovery-validation8-run-dispatch-3/legacy-changefeed-source.wrapper-output.log",
+    "sha256": "db095f3281d5570b706fbd3f8d7a36381f3ad47676f794389e1797a37ec9bc5b",
+    "bytes": 495,
+    "role": "actual root authority/dispatch/terminal/closed-gate/error record; original scope preserved"
+  },
+  {
+    "copy": "inputs/root/tx-discovery-validation8-run-dispatch-3/legacy-installed-contracts-source.wrapper-exit.json",
+    "origin": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/tx-discovery-validation8-run-dispatch-3/legacy-installed-contracts-source.wrapper-exit.json",
+    "sha256": "2abf6902081037ff6f8550d49aa863cd58616b226993c588b69903b1f9cd47cd",
+    "bytes": 156,
+    "role": "actual root authority/dispatch/terminal/closed-gate/error record; original scope preserved"
+  },
+  {
+    "copy": "inputs/root/tx-discovery-validation8-run-dispatch-3/legacy-installed-contracts-source.wrapper-output.log",
+    "origin": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/tx-discovery-validation8-run-dispatch-3/legacy-installed-contracts-source.wrapper-output.log",
+    "sha256": "0bba4ca7326d4e7c300131e646f6c810c1b4bc1316fe10d7c6dba5cd84c06bef",
+    "bytes": 504,
+    "role": "actual root authority/dispatch/terminal/closed-gate/error record; original scope preserved"
+  },
+  {
+    "copy": "inputs/root/tx-discovery-validation8-run-dispatch-3/schema-confinement-source.wrapper-exit.json",
+    "origin": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/tx-discovery-validation8-run-dispatch-3/schema-confinement-source.wrapper-exit.json",
+    "sha256": "3ff5b3c903c5a03abbf0de91d507c2bae45ca5b90ab748e58617bc36ab9a1649",
+    "bytes": 148,
+    "role": "actual root authority/dispatch/terminal/closed-gate/error record; original scope preserved"
+  },
+  {
+    "copy": "inputs/root/tx-discovery-validation8-run-dispatch-3/schema-confinement-source.wrapper-output.log",
+    "origin": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/tx-discovery-validation8-run-dispatch-3/schema-confinement-source.wrapper-output.log",
+    "sha256": "3c3ce3e339ed014bee8246603930c3eeb577b0a8dac582bfcc0cce5fda229bc1",
+    "bytes": 496,
+    "role": "actual root authority/dispatch/terminal/closed-gate/error record; original scope preserved"
+  },
+  {
+    "copy": "inputs/root/tx-discovery-validation8-run-dispatch-4/dispatch.json",
+    "origin": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/tx-discovery-validation8-run-dispatch-4/dispatch.json",
+    "sha256": "225c323ad588991b4f2568b6a7cb8efe6bdf907a7e5aa81bf55456558134b123",
+    "bytes": 1304,
+    "role": "actual root authority/dispatch/terminal/closed-gate/error record; original scope preserved"
+  },
+  {
+    "copy": "inputs/root/tx-discovery-validation8-run-dispatch-4/index.json",
+    "origin": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/tx-discovery-validation8-run-dispatch-4/index.json",
+    "sha256": "e7b1c7765269b0c7925d5beb0467db3fe4beb0e1d19886e56f35df7087fe0561",
+    "bytes": 958,
+    "role": "actual root authority/dispatch/terminal/closed-gate/error record; original scope preserved"
+  },
+  {
+    "copy": "inputs/root/tx-discovery-validation8-run-dispatch-4/pack-protocol.wrapper-exit.json",
+    "origin": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/tx-discovery-validation8-run-dispatch-4/pack-protocol.wrapper-exit.json",
+    "sha256": "d706d4adbdb58d254fcb4f59a32db77737b368bf79b7d09ab1eecbe4a22d7c31",
+    "bytes": 135,
+    "role": "actual root authority/dispatch/terminal/closed-gate/error record; original scope preserved"
+  },
+  {
+    "copy": "inputs/root/tx-discovery-validation8-run-dispatch-4/pack-protocol.wrapper-output.log",
+    "origin": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/tx-discovery-validation8-run-dispatch-4/pack-protocol.wrapper-output.log",
+    "sha256": "d3f152f38ab9b9e830e7ef4a46cb4fb02f666ca6170e42eb261626bf9e705b14",
+    "bytes": 477,
+    "role": "actual root authority/dispatch/terminal/closed-gate/error record; original scope preserved"
+  },
+  {
+    "copy": "inputs/root/tx-discovery-validation8-run-dispatch-4/pack-server.wrapper-exit.json",
+    "origin": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/tx-discovery-validation8-run-dispatch-4/pack-server.wrapper-exit.json",
+    "sha256": "44c738d46d556e8e75205272c88568f26110eac5a91f99275e6e523bb8e8e3ac",
+    "bytes": 134,
+    "role": "actual root authority/dispatch/terminal/closed-gate/error record; original scope preserved"
+  },
+  {
+    "copy": "inputs/root/tx-discovery-validation8-run-dispatch-4/pack-server.wrapper-output.log",
+    "origin": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/tx-discovery-validation8-run-dispatch-4/pack-server.wrapper-output.log",
+    "sha256": "cde820b9bc97150c134a0f7e5f7ba10f3918bcec711a4f8eab216c5fa41dae54",
+    "bytes": 475,
+    "role": "actual root authority/dispatch/terminal/closed-gate/error record; original scope preserved"
+  },
+  {
+    "copy": "inputs/root/tx-discovery-validation8-run-dispatch-4/prepare-package-directory.wrapper-exit.json",
+    "origin": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/tx-discovery-validation8-run-dispatch-4/prepare-package-directory.wrapper-exit.json",
+    "sha256": "532eb4651e426349d7935ce0dd060c85e1f3c806598bc0b639a4a51010886128",
+    "bytes": 148,
+    "role": "actual root authority/dispatch/terminal/closed-gate/error record; original scope preserved"
+  },
+  {
+    "copy": "inputs/root/tx-discovery-validation8-run-dispatch-4/prepare-package-directory.wrapper-output.log",
+    "origin": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/tx-discovery-validation8-run-dispatch-4/prepare-package-directory.wrapper-output.log",
+    "sha256": "a7b83c3f776b7644ff5781a5b1cfc2c644925ebc0249d50b503244dbcd89ed9e",
+    "bytes": 826,
+    "role": "actual root authority/dispatch/terminal/closed-gate/error record; original scope preserved"
+  },
+  {
+    "copy": "inputs/root/tx-discovery-validation8-run-dispatch-4/verify-archives.wrapper-exit.json",
+    "origin": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/tx-discovery-validation8-run-dispatch-4/verify-archives.wrapper-exit.json",
+    "sha256": "1cf0191edca83b5e0ca652608c19833505a9e901afb80e81314d54c8d62e6d6e",
+    "bytes": 138,
+    "role": "actual root authority/dispatch/terminal/closed-gate/error record; original scope preserved"
+  },
+  {
+    "copy": "inputs/root/tx-discovery-validation8-run-dispatch-4/verify-archives.wrapper-output.log",
+    "origin": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/tx-discovery-validation8-run-dispatch-4/verify-archives.wrapper-output.log",
+    "sha256": "df82a528e61e39dded2b36c559247791cf99a9ad6f30d72b61623d8acd04a75c",
+    "bytes": 837,
+    "role": "actual root authority/dispatch/terminal/closed-gate/error record; original scope preserved"
+  },
+  {
+    "copy": "inputs/root/tx-discovery-validation8-run-dispatch-5/dispatch.json",
+    "origin": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/tx-discovery-validation8-run-dispatch-5/dispatch.json",
+    "sha256": "3195d354d1697ec50030cbbf8d4f655d37b1f0652c00d1a44b3c310c193bc7a8",
+    "bytes": 836,
+    "role": "actual root authority/dispatch/terminal/closed-gate/error record; original scope preserved"
+  },
+  {
+    "copy": "inputs/root/tx-discovery-validation8-run-dispatch-5/index.json",
+    "origin": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/tx-discovery-validation8-run-dispatch-5/index.json",
+    "sha256": "909b3c4d0858b51f17df6bfb14e27fc6dba7eccdc30a947df8fdc9973495ad8b",
+    "bytes": 307,
+    "role": "actual root authority/dispatch/terminal/closed-gate/error record; original scope preserved"
+  },
+  {
+    "copy": "inputs/root/tx-discovery-validation8-run-dispatch-5/prepare-consumer.wrapper-exit.json",
+    "origin": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/tx-discovery-validation8-run-dispatch-5/prepare-consumer.wrapper-exit.json",
+    "sha256": "2f828a9bc07b4c88dd5e95832941d80f27c921404c4192d47c75ab0689146dd3",
+    "bytes": 138,
+    "role": "actual root authority/dispatch/terminal/closed-gate/error record; original scope preserved"
+  },
+  {
+    "copy": "inputs/root/tx-discovery-validation8-run-dispatch-5/prepare-consumer.wrapper-output.log",
+    "origin": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/tx-discovery-validation8-run-dispatch-5/prepare-consumer.wrapper-output.log",
+    "sha256": "2848301572e3224da0cc6f69879a0d316be4709945ee5dd59426d2095fe8cdc1",
+    "bytes": 1158,
+    "role": "actual root authority/dispatch/terminal/closed-gate/error record; original scope preserved"
+  },
+  {
+    "copy": "inputs/preparation/preparation-index.json",
+    "origin": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/tx-discovery-validation-preparation-8/preparation-index.json",
+    "sha256": "b12c7a5d9fb71aaf5e6a0c8970a914fad39ff580ab4bb2607b49b00ce13b7b59",
+    "bytes": 602598,
+    "role": "actual immutable P8 contract/helper as evidence only; current gate recorded with explicit original-prepared exception"
+  },
+  {
+    "copy": "inputs/preparation/implementation-hashes.json",
+    "origin": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/tx-discovery-validation-preparation-8/implementation-hashes.json",
+    "sha256": "bf701219a533bf998a875d4726a1dbcc6546fe1dbdc23b4e1b3bcdcbffa0b972",
+    "bytes": 474358,
+    "role": "actual immutable P8 contract/helper as evidence only; current gate recorded with explicit original-prepared exception"
+  },
+  {
+    "copy": "inputs/preparation/source-binding.json",
+    "origin": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/tx-discovery-validation-preparation-8/source-binding.json",
+    "sha256": "9bb16e9c984f7c259c6f4cb42ddad2886234771a90f4421c3fddec57c5079a41",
+    "bytes": 95100,
+    "role": "actual immutable P8 contract/helper as evidence only; current gate recorded with explicit original-prepared exception"
+  },
+  {
+    "copy": "inputs/preparation/commands.json",
+    "origin": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/tx-discovery-validation-preparation-8/commands.json",
+    "sha256": "e7c5299c032d500d766db3303d150533ea0535986e23f64e44546327af5155ca",
+    "bytes": 75730,
+    "role": "actual immutable P8 contract/helper as evidence only; current gate recorded with explicit original-prepared exception"
+  },
+  {
+    "copy": "inputs/preparation/selection.json",
+    "origin": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/tx-discovery-validation-preparation-8/selection.json",
+    "sha256": "5b9dc28dac151f7f50153f321a6abe21ddc6f6a69c7e463dc91ff9b7da867713",
+    "bytes": 16644,
+    "role": "actual immutable P8 contract/helper as evidence only; current gate recorded with explicit original-prepared exception"
+  },
+  {
+    "copy": "inputs/preparation/selection-capacity.json",
+    "origin": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/tx-discovery-validation-preparation-8/selection-capacity.json",
+    "sha256": "1dbae3ab6ab19040ba0ee5908c74fedf40131cfab619c4bec1f6a9b9aab5e98b",
+    "bytes": 1098,
+    "role": "actual immutable P8 contract/helper as evidence only; current gate recorded with explicit original-prepared exception"
+  },
+  {
+    "copy": "inputs/preparation/audit-expectations.json",
+    "origin": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/tx-discovery-validation-preparation-8/audit-expectations.json",
+    "sha256": "59fd0eacaf860f076c815ac30a3350110d00c67d2dea0bc9ce252b83013c7766",
+    "bytes": 777,
+    "role": "actual immutable P8 contract/helper as evidence only; current gate recorded with explicit original-prepared exception"
+  },
+  {
+    "copy": "inputs/preparation/report-schemas.json",
+    "origin": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/tx-discovery-validation-preparation-8/report-schemas.json",
+    "sha256": "9c87663651f6f8db5f9f7bba4c5dfc6b1374a7e976515713c78a4e47a4e9395e",
+    "bytes": 129494,
+    "role": "actual immutable P8 contract/helper as evidence only; current gate recorded with explicit original-prepared exception"
+  },
+  {
+    "copy": "inputs/preparation/source-audit-contract.json",
+    "origin": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/tx-discovery-validation-preparation-8/source-audit-contract.json",
+    "sha256": "ea588bafd5e9559fe4f069f06489216bfd7d2d8433b94baaf6dccde4ba7e5c26",
+    "bytes": 1487,
+    "role": "actual immutable P8 contract/helper as evidence only; current gate recorded with explicit original-prepared exception"
+  },
+  {
+    "copy": "inputs/preparation/installed-audit-contract.json",
+    "origin": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/tx-discovery-validation-preparation-8/installed-audit-contract.json",
+    "sha256": "5f5a13d52a95babcec81fb722e6d423219b78d214ce358177afdb602d28e98d2",
+    "bytes": 1711,
+    "role": "actual immutable P8 contract/helper as evidence only; current gate recorded with explicit original-prepared exception"
+  },
+  {
+    "copy": "inputs/preparation/package-consumer-contract.json",
+    "origin": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/tx-discovery-validation-preparation-8/package-consumer-contract.json",
+    "sha256": "ca4cc7dedcaae778102296fde4222435a37d8935da9f30f937104b235207b11c",
+    "bytes": 1022,
+    "role": "actual immutable P8 contract/helper as evidence only; current gate recorded with explicit original-prepared exception"
+  },
+  {
+    "copy": "inputs/preparation/current-source-chain.json",
+    "origin": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/tx-discovery-validation-preparation-8/current-source-chain.json",
+    "sha256": "97401438b358dd5da9f4c6af1cf63ad12b690b624a95b5ab33adee2dcf3f35ad",
+    "bytes": 943,
+    "role": "actual immutable P8 contract/helper as evidence only; current gate recorded with explicit original-prepared exception"
+  },
+  {
+    "copy": "inputs/preparation/historical-consumer-retention.json",
+    "origin": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/tx-discovery-validation-preparation-8/historical-consumer-retention.json",
+    "sha256": "b2718850d58412ccd2b3022411532cf3f4a7b6754a0808aa4b4935f9ef5aa1da",
+    "bytes": 786,
+    "role": "actual immutable P8 contract/helper as evidence only; current gate recorded with explicit original-prepared exception"
+  },
+  {
+    "copy": "inputs/preparation/predecessor-preservation.json",
+    "origin": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/tx-discovery-validation-preparation-8/predecessor-preservation.json",
+    "sha256": "87a72a1c8c3e68c3f6403a5a1b9f698f95c4e1d6a13082b26c3c93e378332e6e",
+    "bytes": 1199,
+    "role": "actual immutable P8 contract/helper as evidence only; current gate recorded with explicit original-prepared exception"
+  },
+  {
+    "copy": "inputs/preparation/reference-pins.json",
+    "origin": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/tx-discovery-validation-preparation-8/reference-pins.json",
+    "sha256": "e6fe2c305c01a34253fd55fce9ff315428071a5f6229466dcf4fa5eb6effee62",
+    "bytes": 2544539,
+    "role": "actual immutable P8 contract/helper as evidence only; current gate recorded with explicit original-prepared exception"
+  },
+  {
+    "copy": "inputs/preparation/run.py",
+    "origin": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/tx-discovery-validation-preparation-8/run.py",
+    "sha256": "16049341d6d810ea5c46a88220da30f9a04e436ee7fea0061cc26e58ba76ba70",
+    "bytes": 5357,
+    "role": "actual immutable P8 contract/helper as evidence only; current gate recorded with explicit original-prepared exception"
+  },
+  {
+    "copy": "inputs/preparation/gate.py",
+    "origin": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/tx-discovery-validation-preparation-8/gate.py",
+    "sha256": "f3781357733810861cad42b92e667822e7d3ac60e1f214e39e7f22e1bb63bb8e",
+    "bytes": 12588,
+    "role": "actual immutable P8 contract/helper as evidence only; current gate recorded with explicit original-prepared exception"
+  },
+  {
+    "copy": "inputs/preparation/audit.py",
+    "origin": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/tx-discovery-validation-preparation-8/audit.py",
+    "sha256": "1d2bf73e1a35d37b1d1032358ea81c4c5a97ea0fa6304603730f17af96438d2b",
+    "bytes": 34757,
+    "role": "actual immutable P8 contract/helper as evidence only; current gate recorded with explicit original-prepared exception"
+  },
+  {
+    "copy": "inputs/preparation/packages.py",
+    "origin": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/tx-discovery-validation-preparation-8/packages.py",
+    "sha256": "162e4f04ffe9aeffe886b194c7ed41241c6ce3cf37e9c93f92fec0969095aea9",
+    "bytes": 8760,
+    "role": "actual immutable P8 contract/helper as evidence only; current gate recorded with explicit original-prepared exception"
+  },
+  {
+    "copy": "inputs/preparation/guarded-action-session-20261018-021624-549f.py",
+    "origin": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/tx-discovery-validation-preparation-8/guarded-action-session-20261018-021624-549f.py",
+    "sha256": "b2d467920638e68d3b007ba9daa432e971636245eca988bfb29d7a99d6e3fb30",
+    "bytes": 946,
+    "role": "actual immutable P8 contract/helper as evidence only; current gate recorded with explicit original-prepared exception"
+  },
+  {
+    "copy": "inputs/preparation/execution-gate.json",
+    "origin": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/tx-discovery-validation-preparation-8/execution-gate.json",
+    "sha256": "5dfcbd2a5a48d0ed43cc6f77d3398cb5fe1dd9d45c561ef29859efd1dba89dd8",
+    "bytes": 3891,
+    "role": "actual immutable P8 contract/helper as evidence only; current gate recorded with explicit original-prepared exception"
+  },
+  {
+    "copy": "inputs/preparation/execution-gate.closed.json",
+    "origin": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/tx-discovery-validation-preparation-8/execution-gate.closed.json",
+    "sha256": "ee9cefbf47ccbcbdac37e4415c8e6365319ad011cc39d2441c738c855d0c368b",
+    "bytes": 2343,
+    "role": "actual immutable P8 contract/helper as evidence only; current gate recorded with explicit original-prepared exception"
+  },
+  {
+    "copy": "inputs/current-source/apps/bdptest/src/transactional-discovery-installed.test.ts",
+    "origin": "/Users/dbox/repos/wt/vickie/vickie-tx-discovery-minimum/apps/bdptest/src/transactional-discovery-installed.test.ts",
+    "sha256": "5b2d59a9f959294a3e9899ec613b3d88073cbbc9da3b22bde069375695516f20",
+    "bytes": 65414,
+    "role": "exact current six owned source bodies; no edit/execution"
+  },
+  {
+    "copy": "inputs/current-source/apps/bdptest/src/transactional-schema-installed.test.ts",
+    "origin": "/Users/dbox/repos/wt/vickie/vickie-tx-discovery-minimum/apps/bdptest/src/transactional-schema-installed.test.ts",
+    "sha256": "f2ba22fb0824f405699e9157584d3ba700efae323d795783092266cf38bfcc18",
+    "bytes": 18590,
+    "role": "exact current six owned source bodies; no edit/execution"
+  },
+  {
+    "copy": "inputs/current-source/packages/server/src/transaction-changefeed.test.ts",
+    "origin": "/Users/dbox/repos/wt/vickie/vickie-tx-discovery-minimum/packages/server/src/transaction-changefeed.test.ts",
+    "sha256": "e57a05adb613c7bfec646e19e282dcc536a20a3d8f0a5fd2858b734e60183da8",
+    "bytes": 96730,
+    "role": "exact current six owned source bodies; no edit/execution"
+  },
+  {
+    "copy": "inputs/current-source/packages/server/src/transaction-http.test.ts",
+    "origin": "/Users/dbox/repos/wt/vickie/vickie-tx-discovery-minimum/packages/server/src/transaction-http.test.ts",
+    "sha256": "57148d60bc0e6f2bb8767331b7f190db9f36cf619b243451fd2ab726d8199381",
+    "bytes": 278299,
+    "role": "exact current six owned source bodies; no edit/execution"
+  },
+  {
+    "copy": "inputs/current-source/packages/server/src/transaction-http.ts",
+    "origin": "/Users/dbox/repos/wt/vickie/vickie-tx-discovery-minimum/packages/server/src/transaction-http.ts",
+    "sha256": "4a59ac8079853c2931e39088949c49b9fdca67929fdc6fc86e89ad382ba7bb87",
+    "bytes": 29774,
+    "role": "exact current six owned source bodies; no edit/execution"
+  },
+  {
+    "copy": "inputs/current-source/packages/server/src/transaction-installed-contracts.test.ts",
+    "origin": "/Users/dbox/repos/wt/vickie/vickie-tx-discovery-minimum/packages/server/src/transaction-installed-contracts.test.ts",
+    "sha256": "3626cc98357a0eddd4c6629c98d551793a2026f3f86f259c8a1c05ad5911867e",
+    "bytes": 23301,
+    "role": "exact current six owned source bodies; no edit/execution"
+  },
+  {
+    "copy": "inputs/history-scope/tx-discovery-validation-preparation8-native-mechanics-closure-1/report.md",
+    "origin": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/tx-discovery-validation-preparation8-native-mechanics-closure-1/report.md",
+    "sha256": "db33b778e9383e46be0ebb0a6e9a26a09eb8a1d66e6b7e5b3de3d39608f3f62e",
+    "bytes": 5153,
+    "role": "prior P8 preparation/root correction scope only, not current stage pass"
+  },
+  {
+    "copy": "inputs/history-scope/tx-discovery-validation-preparation8-native-mechanics-closure-1/closure.json",
+    "origin": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/tx-discovery-validation-preparation8-native-mechanics-closure-1/closure.json",
+    "sha256": "9b3adea21b00cda989c49916743a54d8f39c85834f847438f7a7299ea7bedb9d",
+    "bytes": 1449,
+    "role": "prior P8 preparation/root correction scope only, not current stage pass"
+  },
+  {
+    "copy": "inputs/history-scope/tx-discovery-validation-preparation8-native-mechanics-closure-1/index.json",
+    "origin": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/tx-discovery-validation-preparation8-native-mechanics-closure-1/index.json",
+    "sha256": "35e39176523217bd3c18a912bf01428e572ede920ebd63bec10d78c737d0aa5c",
+    "bytes": 629860,
+    "role": "prior P8 preparation/root correction scope only, not current stage pass"
+  },
+  {
+    "copy": "inputs/history-scope/tx-discovery-schema-positive-root-data-correction-release-1/index.json",
+    "origin": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/tx-discovery-schema-positive-root-data-correction-release-1/index.json",
+    "sha256": "4a6ce1c1c5a26462f3e0220f54ce611812c33d2de3890b914db9d884686f3d9f",
+    "bytes": 89,
+    "role": "prior P8 preparation/root correction scope only, not current stage pass"
+  },
+  {
+    "copy": "inputs/history-scope/tx-discovery-schema-positive-root-data-correction-release-1/release.json",
+    "origin": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/tx-discovery-schema-positive-root-data-correction-release-1/release.json",
+    "sha256": "1cd898f279a6a77d985e91356fa4b75f7bcd8ad0b0e706e9070c6965802440d4",
+    "bytes": 3422,
+    "role": "prior P8 preparation/root correction scope only, not current stage pass"
+  },
+  {
+    "copy": "inputs/root-barrier-extraction/report.md",
+    "origin": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/tx-discovery-root-barrier-record-contract-1/report.md",
+    "sha256": "cb3accc3aa8e58f19ac0b8c6ee8d80e61577c8143146c5eefdcb7c6866b03b39",
+    "bytes": 1062,
+    "role": "root independent CLOSED four-file DATA extraction, compared to existing gate; no release"
+  },
+  {
+    "copy": "inputs/root-barrier-extraction/contracts.json",
+    "origin": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/tx-discovery-root-barrier-record-contract-1/contracts.json",
+    "sha256": "fafb19ac57e3a60d7c1003c254b1727fa0975d1135d359892096e727c1370267",
+    "bytes": 2948,
+    "role": "root independent CLOSED four-file DATA extraction, compared to existing gate; no release"
+  },
+  {
+    "copy": "inputs/root-barrier-extraction/gate.original.py.txt",
+    "origin": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/tx-discovery-root-barrier-record-contract-1/gate.original.py.txt",
+    "sha256": "f3781357733810861cad42b92e667822e7d3ac60e1f214e39e7f22e1bb63bb8e",
+    "bytes": 12588,
+    "role": "root independent CLOSED four-file DATA extraction, compared to existing gate; no release"
+  },
+  {
+    "copy": "inputs/root-barrier-extraction/index.json",
+    "origin": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/tx-discovery-root-barrier-record-contract-1/index.json",
+    "sha256": "7c556a300942e6a8eb4b649156b37e1a173e936282bd5de14c4ece25d6788040",
+    "bytes": 268,
+    "role": "root independent CLOSED four-file DATA extraction, compared to existing gate; no release"
+  }
+]

@@ -1,0 +1,124 @@
+{
+  "observedUtc": "2026-10-18T05:42:59.573072+00:00",
+  "session": "2026-10-18T02:16:24Z-549f",
+  "remoteClaimSha": "32036b3579c869353bd6914c2901d68668cc0d0f",
+  "state": "observed-live",
+  "actualProcess": {
+    "pid": 82360,
+    "pgid": 82360,
+    "started": "2026-10-18T05:40:16.396998+00:00",
+    "argv": [
+      "/opt/homebrew/bin/claude",
+      "--safe-mode",
+      "-p",
+      "--tools",
+      "Read,Glob,Grep",
+      "--allowedTools",
+      "Read,Glob,Grep",
+      "--disable-slash-commands",
+      "--strict-mcp-config",
+      "--mcp-config",
+      "{\"mcpServers\":{}}",
+      "--no-session-persistence",
+      "--output-format",
+      "stream-json",
+      "--verbose",
+      "--include-partial-messages"
+    ],
+    "timeoutSeconds": 1800,
+    "termAfterSeconds": 1790
+  },
+  "liveRows": [
+    {
+      "pid": 82327,
+      "ppid": 66169,
+      "pgid": 82327,
+      "state": "Ss",
+      "start": "Sat Oct 17 22:40:15 2026",
+      "comm": "/opt/homebrew/Cellar/python@3.14/3.14.5/Frameworks/Python.framework/Versions/3.14/Resources/Python.app/Contents/MacOS/Python"
+    },
+    {
+      "pid": 82335,
+      "ppid": 82327,
+      "pgid": 82335,
+      "state": "Ss",
+      "start": "Sat Oct 17 22:40:15 2026",
+      "comm": "/opt/homebrew/Cellar/python@3.14/3.14.5/Frameworks/Python.framework/Versions/3.14/Resources/Python.app/Contents/MacOS/Python"
+    },
+    {
+      "pid": 82360,
+      "ppid": 82335,
+      "pgid": 82360,
+      "state": "Ss",
+      "start": "Sat Oct 17 22:40:16 2026",
+      "comm": "/opt/homebrew/bin/claude"
+    },
+    {
+      "pid": 89819,
+      "ppid": 82327,
+      "pgid": 82327,
+      "state": "R",
+      "start": "Sat Oct 17 22:42:59 2026",
+      "comm": "ps"
+    }
+  ],
+  "lastOuterSample": {
+    "elapsedSeconds": 163.83728216728196,
+    "kind": "process_sample",
+    "owned": [
+      {
+        "pid": 82335,
+        "ppid": 82327,
+        "pgid": 82335,
+        "state": "Ss",
+        "start": "Sat Oct 17 22:40:15 2026",
+        "comm": "/opt/homebrew/Cellar/python@3.14/3.14.5/Frameworks/Python.framework/Versions/3.14/Resources/Python.app/Contents/MacOS/Python"
+      },
+      {
+        "pid": 82360,
+        "ppid": 82335,
+        "pgid": 82360,
+        "state": "Ss",
+        "start": "Sat Oct 17 22:40:16 2026",
+        "comm": "/opt/homebrew/bin/claude"
+      }
+    ]
+  },
+  "stream": {
+    "bytes": 784854,
+    "sha256": "c37c407dfeb72dc435a09f8bbb1e7fcb155fe46c3419cf89fa124e3b67b69a96",
+    "records": 624,
+    "invalidOrPartialRows": 0,
+    "terminalResults": 0,
+    "initialization": [
+      {
+        "model": "claude-opus-5[1m]",
+        "tools": [
+          "Glob",
+          "Grep",
+          "Read"
+        ],
+        "mcp_servers": [],
+        "permissionMode": "default",
+        "session_id": "1a43463b-3884-45d3-8c41-9286de8c878b"
+      }
+    ]
+  },
+  "inputHashes": {
+    "files": {
+      "count": 679,
+      "matches": true
+    },
+    "context": {
+      "count": 71,
+      "matches": true
+    },
+    "artifacts": {
+      "count": 26,
+      "matches": true
+    }
+  },
+  "outerExitExists": false,
+  "runnerExitExists": false,
+  "noLaunchOrSignalByAuditor": true
+}

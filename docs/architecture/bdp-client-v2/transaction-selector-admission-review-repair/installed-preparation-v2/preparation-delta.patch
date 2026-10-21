@@ -1,0 +1,208 @@
+--- original/gate.py
++++ v2/gate.py
+@@ -5,10 +5,13 @@
+ W=Path("/Users/dbox/repos/wt/vickie/vickie-selector-review-repair")
+ E=P/"run"
+ B=P.parent
+-PARENT="757aedc8008386745d59d5005498a9256d6ea76e"
+-FINAL_HEAD="22777eccc347b9c926de1da92409de9a924ba692"
+-FINAL_TREE="fe1867a19de19a824b3569a3b901269dddec221f"
+-BINDING_SHA="03a861851a195d5da505f311291bee6d3cd98f63866d4b6df756e2c3ae289afd"
++FOOTPRINT_BASE="757aedc8008386745d59d5005498a9256d6ea76e"
++PARENT="22777eccc347b9c926de1da92409de9a924ba692"
++REPAIRED_TEST="apps/bdptest/src/transactional-selector-admission-installed.test.ts"
++HISTORICAL_BINDING_SHA="03a861851a195d5da505f311291bee6d3cd98f63866d4b6df756e2c3ae289afd"
++FINAL_HEAD="00d7fff3320eb10d4165718d23d86519cd3b7c5e"
++FINAL_TREE="062c32778217aeb702b2f7798dc82b0d985e9c67"
++BINDING_SHA="b6f95c90e42c4218a4f7fffa732edf0b755725449f04a74005f7165e00d2f666"
+ sha=lambda b:hashlib.sha256(b).hexdigest()
+ def require(ok,message):
+     if not ok: raise RuntimeError(message)
+@@ -18,7 +21,7 @@
+     return json.loads(path.read_text())
+ def document(g,key):
+     r=g[key];return bound(Path(r["path"]),r["sha256"])
+-def binding():return bound(B/"source-binding.json",BINDING_SHA)
++def binding():return bound(P/"source-binding.json",BINDING_SHA)
+ def source_hashes():return {f["path"]:sha((W/f["path"]).read_bytes()) for f in binding()["files"]}
+ def completed(name,expected=0):
+     x=json.loads((E/(name+".exit.json")).read_text())
+@@ -41,7 +44,7 @@
+     exit_record=document(g,"staticExit")
+     release=document(g,"staticRelease")
+     require(exit_record=={"completed":7,"allPassed":True,"sourceUnchanged":True},"Static gates not complete")
+-    require(release["bindingSHA256"]==BINDING_SHA,"Static release source differs")
++    require(release["bindingSHA256"]==HISTORICAL_BINDING_SHA,"Static release source differs")
+     rows=[r for r in evidence if r["id"]=="build"]
+     require(len(rows)==1,"Build row absent or duplicated")
+     r=rows[0]
+@@ -49,8 +52,13 @@
+     require(r["argv"]==[g["node"],g["pnpm"],"build"],"Different build command")
+     require(sha((B/"build.log").read_bytes())==r["logSHA256"],"Build log changed")
+     inventory=document(g,"buildOutputInventory")
+-    require(inventory["sourceBindingSha256"]==BINDING_SHA and inventory["files"]==build_outputs(),"Accepted build-output inventory differs")
+-    # Attribution is root's reviewed prior build + same source bytes, not a synthesized process record.
++    require(inventory["sourceBindingSha256"]==HISTORICAL_BINDING_SHA and inventory["files"]==build_outputs(),"Accepted build-output inventory differs")
++    historical=bound(B/"source-binding.json",HISTORICAL_BINDING_SHA)
++    require(all(sha(git("show",PARENT+":"+f["path"]))==f["sha256"] for f in historical["files"]),"Historical build source does not match predecessor")
++    require(git("diff","--name-only",PARENT,"HEAD").decode().splitlines()==[REPAIRED_TEST],"Product or build input changed since prior build")
++    # Prior build/static records retain their original source binding. Reuse only:
++    # unchanged tracked product/build inputs plus exact retained output inventory.
++    # The sole changed installed test is excluded from the protocol/server archives.
+ def load_gate(name):
+     require(__debug__,"Python assertions must remain enabled")
+     g=json.loads((P/"execution-gate.json").read_text()) # intentionally absent in preparation
+@@ -65,13 +73,13 @@
+     require(len(expected)==12 and source_hashes()==expected==g["sourceSha256"],"Reviewed twelve source files differ")
+     require(g.get("finalHead")==FINAL_HEAD and g.get("finalTree")==FINAL_TREE,"Wrong final commit/tree")
+     final=document(g,"finalSource")
+-    require(final["commit"]==FINAL_HEAD and final["tree"]==FINAL_TREE and final["parent"]==PARENT and final["testedDraftBindingSha256"]==BINDING_SHA,"Final source record differs")
++    require(final["commit"]==FINAL_HEAD and final["tree"]==FINAL_TREE and final["parent"]==PARENT and final["reviewedSuccessorBindingSha256"]==BINDING_SHA and final["footprintBase"]==FOOTPRINT_BASE,"Final source record differs")
+     require({f["path"]:f["sha256"] for f in final["files"]}==expected,"Final source files differ")
+     require(git("rev-parse","HEAD").decode().strip()==g["sourceHead"]==g["finalHead"],"Wrong source HEAD")
+     require(git("rev-parse","HEAD^{tree}").decode().strip()==g["sourceTree"]==g["finalTree"],"Wrong source tree")
+     require(not git("status","--porcelain").strip(),"Final source must be clean")
+     require(git("show","-s","--format=%P","HEAD").decode().strip()==PARENT,"Final source must be an ordinary child")
+-    require(set(git("diff","--name-only",PARENT,"HEAD").decode().splitlines())==set(expected),"Final footprint changed")
++    require(set(git("diff","--name-only",FOOTPRINT_BASE,"HEAD").decode().splitlines())==set(expected),"Final footprint changed")
+     require(sha(git("diff","--binary","HEAD"))==g["sourceDiffSha256"],"Working diff changed")
+     require(sha((W/"pnpm-lock.yaml").read_bytes())==g["sourceLockSha256"],"Source lock changed")
+     require(g["node"]=="/Users/dbox/.nvm/versions/node/v24.16.0/bin/node" and g["pnpm"]=="/Users/dbox/.cache/node/corepack/v1/pnpm/11.20.0/bin/pnpm.cjs","Tool paths changed")
+--- original/commands.json
++++ v2/commands.json
+@@ -1,8 +1,8 @@
+ {
+   "status": "DRAFT_ONLY_CLOSED_NO_EXECUTION",
+   "checkout": "/Users/dbox/repos/wt/vickie/vickie-selector-review-repair",
+-  "evidence": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-selector-admission-review-repair/installed-preparation/run",
+-  "sourceBindingSha256": "03a861851a195d5da505f311291bee6d3cd98f63866d4b6df756e2c3ae289afd",
++  "evidence": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-selector-admission-review-repair/installed-preparation-v2/run",
++  "sourceBindingSha256": "b6f95c90e42c4218a4f7fffa732edf0b755725449f04a74005f7165e00d2f666",
+   "commands": {
+     "node-version": {
+       "phase": "package",
+@@ -20,7 +20,7 @@
+       "cwd": "/Users/dbox/repos/wt/vickie/vickie-selector-review-repair",
+       "argv": [
+         "python3",
+-        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-selector-admission-review-repair/installed-preparation/packages.py",
++        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-selector-admission-review-repair/installed-preparation-v2/packages.py",
+         "directory"
+       ],
+       "supervisorSeconds": 120,
+@@ -42,7 +42,7 @@
+         "@bdp/protocol",
+         "pack",
+         "--pack-destination",
+-        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-selector-admission-review-repair/installed-preparation/run/packages"
++        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-selector-admission-review-repair/installed-preparation-v2/run/packages"
+       ],
+       "supervisorSeconds": 120,
+       "requires": [
+@@ -63,7 +63,7 @@
+         "@bdp/server",
+         "pack",
+         "--pack-destination",
+-        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-selector-admission-review-repair/installed-preparation/run/packages"
++        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-selector-admission-review-repair/installed-preparation-v2/run/packages"
+       ],
+       "supervisorSeconds": 120,
+       "requires": [
+@@ -79,7 +79,7 @@
+       "cwd": "/Users/dbox/repos/wt/vickie/vickie-selector-review-repair",
+       "argv": [
+         "python3",
+-        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-selector-admission-review-repair/installed-preparation/packages.py",
++        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-selector-admission-review-repair/installed-preparation-v2/packages.py",
+         "tar"
+       ],
+       "supervisorSeconds": 120,
+@@ -100,7 +100,7 @@
+       "cwd": "/Users/dbox/repos/wt/vickie/vickie-selector-review-repair",
+       "argv": [
+         "python3",
+-        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-selector-admission-review-repair/installed-preparation/packages.py",
++        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-selector-admission-review-repair/installed-preparation-v2/packages.py",
+         "consumer"
+       ],
+       "supervisorSeconds": 120,
+@@ -114,7 +114,7 @@
+     },
+     "consumer-install": {
+       "phase": "package",
+-      "cwd": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-selector-admission-review-repair/installed-preparation/run/consumer",
++      "cwd": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-selector-admission-review-repair/installed-preparation-v2/run/consumer",
+       "argv": [
+         "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+         "/Users/dbox/.cache/node/corepack/v1/pnpm/11.20.0/bin/pnpm.cjs",
+@@ -138,7 +138,7 @@
+       "cwd": "/Users/dbox/repos/wt/vickie/vickie-selector-review-repair",
+       "argv": [
+         "python3",
+-        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-selector-admission-review-repair/installed-preparation/packages.py",
++        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-selector-admission-review-repair/installed-preparation-v2/packages.py",
+         "installed"
+       ],
+       "supervisorSeconds": 120,
+@@ -161,7 +161,7 @@
+         "--maxWorkers=1",
+         "--reporter=verbose",
+         "--reporter=json",
+-        "--outputFile.json=/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-selector-admission-review-repair/installed-preparation/run/installed-selector.results.json",
++        "--outputFile.json=/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-selector-admission-review-repair/installed-preparation-v2/run/installed-selector.results.json",
+         "-t",
+         "^installed Selector grammar and fresh capacity preserve keys receipts and complete effects$"
+       ],
+@@ -205,7 +205,7 @@
+       "cwd": "/Users/dbox/repos/wt/vickie/vickie-selector-review-repair",
+       "argv": [
+         "python3",
+-        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-selector-admission-review-repair/installed-preparation/adjudicate.py"
++        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-selector-admission-review-repair/installed-preparation-v2/adjudicate.py"
+       ],
+       "supervisorSeconds": 120,
+       "requires": [
+--- original/execution-gate.example.json
++++ v2/execution-gate.example.json
+@@ -14,13 +14,13 @@
+     "path": null,
+     "sha256": null
+   },
+-  "sourceHead": "22777eccc347b9c926de1da92409de9a924ba692",
+-  "sourceTree": "fe1867a19de19a824b3569a3b901269dddec221f",
+-  "finalHead": "22777eccc347b9c926de1da92409de9a924ba692",
+-  "finalTree": "fe1867a19de19a824b3569a3b901269dddec221f",
++  "sourceHead": "00d7fff3320eb10d4165718d23d86519cd3b7c5e",
++  "sourceTree": "062c32778217aeb702b2f7798dc82b0d985e9c67",
++  "finalHead": "00d7fff3320eb10d4165718d23d86519cd3b7c5e",
++  "finalTree": "062c32778217aeb702b2f7798dc82b0d985e9c67",
+   "finalSource": {
+-    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-selector-admission-review-repair/final-source.json",
+-    "sha256": "4da2f45dbd66825fe51b7cfa1dd076cdd214c154761ec990b12ebd9beb70ae9d"
++    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-selector-admission-review-repair/installed-preparation-v2/final-source.json",
++    "sha256": "e603249acba6a90554af86005ccc881fb5ba56c47d78f982086d74ff00914e84"
+   },
+   "sourceSha256": {
+     "packages/server/src/read-selector.ts": "5b50bd45211bbbaea1e8d8b257e2c9b6a53d4c848e8ef9b849eb228aa723b849",
+@@ -34,18 +34,18 @@
+     "packages/server/src/transaction-submission.test.ts": "24e7692bd99b2f5cea5d6fdc0b70e9165d99022dbbce1af6535e33615d1bb730",
+     "packages/server/src/transaction-http.test.ts": "45ba9da34887b4daac1ed34cd9a623d7468f2448b5e8a744f52bebe23f33ef2a",
+     "docs/specs/bdp.md": "13fae18c85e6ed240483fd1b7e1faaf8ec36e9383b017fa881ad3c2238797a6b",
+-    "apps/bdptest/src/transactional-selector-admission-installed.test.ts": "26b8dbc41cacccc7ad1f5157b1f65421e3eff6b3add65c0e122343a3db738e5b"
++    "apps/bdptest/src/transactional-selector-admission-installed.test.ts": "527baee6dec377680beaec1402f69039d044f45d2a36165f3b739e53a517b962"
+   },
+   "sourceDiffSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+   "sourceLockSha256": "4150d8821c96dbc2cfec0b2762ff76b58318079f65fa4f5c8858ef2dd61f8d6d",
+   "node": "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+   "pnpm": "/Users/dbox/.cache/node/corepack/v1/pnpm/11.20.0/bin/pnpm.cjs",
+   "preparationSha256": {
+-    "gate.py": "413f01ea2c61347139591b2ed2f79f0ed4fb87266c99fdf03554a9cf9f430960",
++    "gate.py": "2b4c5f15ac219adf1e7a85a76b3f41712657db5fcf43de0e567a0c415a9ac0d7",
+     "supervise.py": "e6d455170ce51d6b3fe83358035e8e7713d808f8f24813f578aba04e5dbaa084",
+     "packages.py": "6a3e97f9ee4e186ff2b33bfce4b3f7c675d8dca59a30ddf2ffc1b58d73624746",
+     "adjudicate.py": "09fe67962ae8fd7a2ff7c04c12052cb5595f61807198c955ed377ffc86f48c2f",
+-    "commands.json": "28d0b72c64788f583fcea92a7dbe573991a1e6476459869614cd4a98c3dcf24c"
++    "commands.json": "396c52738f579c315b1947fdb8155c4ad39b3ea95b7bf4d96ef72490e6cbb693"
+   },
+   "staticResults": {
+     "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-selector-admission-review-repair/static-results.json",

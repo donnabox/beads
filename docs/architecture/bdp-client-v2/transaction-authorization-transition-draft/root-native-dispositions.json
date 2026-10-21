@@ -1,0 +1,17 @@
+{
+  "originalSourceBindingSha256": "2928d83d55f2496bb3687ac0c3e87b1a536bea45fa511cd0a7ff4f2aceb5bcac",
+  "nativeReviewSha256": "71b12ad72efc08fef4256db2079ebada58141d1b026da8c4ff7c8243beaf6394",
+  "acceptedFindings": {
+    "N1": "Explicit string type before UUID regexp; fifth real durable rejected-open copy. Root independently identified/coercion traced.",
+    "N2": "Issued receipt page must contain genuine Resource before revocation and exact withheld entry after; preserve non-record prefix and allocation identities.",
+    "N3": "T4 stale selected stream must expect foreign-view, as owner lease acquisition emits; retain zero callbacks/writes/pulls. Author assembly audit found, root and native confirmed after original review."
+  },
+  "repairScope": [
+    "packages/server/src/transaction-authorization.ts",
+    "packages/server/src/transaction-authorization.test.ts",
+    "packages/server/src/transaction-service.test.ts"
+  ],
+  "runtimeReleased": false,
+  "claudeReleased": false,
+  "note": "Original six static passes retained. Final successor requires separate binding/native closure/source validation; no earlier evidence relabeled."
+}

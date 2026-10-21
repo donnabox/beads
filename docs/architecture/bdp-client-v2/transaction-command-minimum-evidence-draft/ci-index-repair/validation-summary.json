@@ -1,0 +1,41 @@
+{
+  "commands": [
+    {
+      "command": "typecheck",
+      "exit": 0,
+      "timeout": false,
+      "seconds": 1.7208873748313636,
+      "remainingGroup": [],
+      "sourceUnchanged": true,
+      "logSha256": "7f1bef8935c4de65a1de7dfe1f6daf7bf53bc2478626272695b94747345d2385"
+    },
+    {
+      "command": "format-check",
+      "exit": 0,
+      "timeout": false,
+      "seconds": 0.6046012500301003,
+      "remainingGroup": [],
+      "sourceUnchanged": true,
+      "logSha256": "c382e69cf000aaff2679304dca00249316daf1ccbb5176772dcd4a20055cb323"
+    },
+    {
+      "command": "four-static",
+      "exit": 0,
+      "timeout": false,
+      "seconds": 0.4440123338717967,
+      "remainingGroup": [],
+      "sourceUnchanged": true,
+      "logSha256": "1ee1951f87b993c94727c04f893eb86cc17ae87e15ea43162911c90942e96985"
+    }
+  ],
+  "passed": [
+    "binds the canonical cumulative TX selection and exact source digests without qualification",
+    "preserves every original TX scenario and coverage object while adding one bounded partial cross-carrier row",
+    "pins the one-page matched-plus-updated witness without advertised-limit or other-outcome credit",
+    "pins the inherited command-minimum manifest facts, read-header absence and all thirteen prior objects"
+  ],
+  "skipped": 36,
+  "source": "22a568820ab2abc187d37c27658fdcf6e5ad39e74e2172374e3658c180f7668e",
+  "installedRerun": false,
+  "fullCiPending": true
+}

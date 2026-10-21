@@ -1,0 +1,317 @@
+packages/server/src/transaction-read.test.ts:751:20 lint/style/useTemplate  FIXABLE  ━━━━━━━━━━━━━━━
+
+  i Template literals are preferred over string concatenation.
+  
+    749 │       [{ limit: 11 }, "limit-exceeded"],
+    750 │       [{ selector: "$[?" }, "invalid-parameter"],
+  > 751 │       [{ selector: "$[?@.properties.n == '" + "x".repeat(4100) + "']" }, "limit-exceeded"],
+        │                    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    752 │     ] as const) {
+    753 │       await expect(
+  
+  i Unsafe fix: Use a template literal.
+  
+     749  749 │         [{ limit: 11 }, "limit-exceeded"],
+     750  750 │         [{ selector: "$[?" }, "invalid-parameter"],
+     751      │ - ······[{·selector:·"$[?@.properties.n·==·'"·+·"x".repeat(4100)·+·"']"·},·"limit-exceeded"],
+          751 │ + ······[{·selector:·`$[?@.properties.n·==·'${"x".repeat(4100)}']`·},·"limit-exceeded"],
+     752  752 │       ] as const) {
+     753  753 │         await expect(
+  
+
+apps/bdptest/src/transactional-collection-minimum-installed.test.ts:804:18 lint/style/noNonNullAssertion ━━━━━━━━━━
+
+  ! Forbidden non-null assertion.
+  
+    802 │         if (++count > 20) throw new Error("Type/incident request ceiling exceeded");
+    803 │         const response = await f.exchange(...args);
+  > 804 │         urls.add(args[0]!);
+        │                  ^^^^^^^^
+    805 │         const expected = args[2]?.["bdp-authorization-view"];
+    806 │         if (expected !== undefined)
+  
+
+apps/bdptest/src/transactional-collection-minimum-installed.test.ts:865:22 lint/style/noNonNullAssertion ━━━━━━━━━━
+
+  ! Forbidden non-null assertion.
+  
+    863 │       const names = ["a", "b", "c", "l-ab", "l-ba"];
+    864 │       for (const [i, result] of receipt.results.entries()) {
+  > 865 │         const name = names[i]!;
+        │                      ^^^^^^^^^
+    866 │         expect(result.operationIndex).toBe(i);
+    867 │         expect(result.outcome).toBe("created");
+  
+
+apps/bdptest/src/transactional-collection-minimum-installed.test.ts:885:50 lint/style/noNonNullAssertion  FIXABLE  ━━━━━━━━━━
+
+  ! Forbidden non-null assertion.
+  
+    883 │           expect(result.source).toBe(`${scope}beads/${i === 3 ? "a" : "b"}`);
+    884 │           expect(result.sourceRevision).toEqual(expect.any(String));
+  > 885 │           expect(result.sourceRevision).not.toBe(receipt.results[i - 3]!.resource.revision);
+        │                                                  ^^^^^^^^^^^^^^^^^^^^^^^
+    886 │         }
+    887 │       }
+  
+  i Unsafe fix: Replace with optional chain operator ?. This operator includes runtime checks, so it is safer than the compile-only non-null assertion operator
+  
+     883  883 │             expect(result.source).toBe(`${scope}beads/${i === 3 ? "a" : "b"}`);
+     884  884 │             expect(result.sourceRevision).toEqual(expect.any(String));
+     885      │ - ··········expect(result.sourceRevision).not.toBe(receipt.results[i·-·3]!.resource.revision);
+          885 │ + ··········expect(result.sourceRevision).not.toBe(receipt.results[i·-·3]?.resource.revision);
+     886  886 │           }
+     887  887 │         }
+  
+
+apps/bdptest/src/transactional-collection-minimum-installed.test.ts:891:37 lint/style/noNonNullAssertion  FIXABLE  ━━━━━━━━━━
+
+  ! Forbidden non-null assertion.
+  
+    889 │       context(seeded, bound, "pos-1");
+    890 │       const links = receipt.results.slice(3).map((r) => r.resource);
+  > 891 │       const descriptor = JSON.parse(artifacts().descriptors[0]!.utf8);
+        │                                     ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    892 │       const targets = [`${scope}types/task`, `${scope}types/`, `${scope}beads/a?view=links`];
+    893 │       const expected = [
+  
+  i Unsafe fix: Replace with optional chain operator ?. This operator includes runtime checks, so it is safer than the compile-only non-null assertion operator
+  
+     889  889 │         context(seeded, bound, "pos-1");
+     890  890 │         const links = receipt.results.slice(3).map((r) => r.resource);
+     891      │ - ······const·descriptor·=·JSON.parse(artifacts().descriptors[0]!.utf8);
+          891 │ + ······const·descriptor·=·JSON.parse(artifacts().descriptors[0]?.utf8);
+     892  892 │         const targets = [`${scope}types/task`, `${scope}types/`, `${scope}beads/a?view=links`];
+     893  893 │         const expected = [
+  
+
+apps/bdptest/src/transactional-collection-minimum-installed.test.ts:919:41 lint/style/noNonNullAssertion ━━━━━━━━━━
+
+  ! Forbidden non-null assertion.
+  
+    917 │         [2, "GET", { "if-none-match": "*" }, 304],
+    918 │       ] as const) {
+  > 919 │         const response = await exchange(targets[index]!, method, { ...bound, ...header });
+        │                                         ^^^^^^^^^^^^^^^
+    920 │         expect(response.status).toBe(status);
+    921 │         expect(response.bodyText).toBe("");
+  
+
+apps/bdptest/src/transactional-collection-minimum-installed.test.ts:930:41 lint/style/noNonNullAssertion ━━━━━━━━━━
+
+  ! Forbidden non-null assertion.
+  
+    928 │         [2, "GET"],
+    929 │       ] as const) {
+  > 930 │         const response = await exchange(targets[index]!, method, {
+        │                                         ^^^^^^^^^^^^^^^
+    931 │           ...bound,
+    932 │           "bdp-minimum-scope-position": "pos-2",
+  
+
+apps/bdptest/src/transactional-collection-minimum-installed.test.ts:953:41 lint/style/noNonNullAssertion ━━━━━━━━━━
+
+  ! Forbidden non-null assertion.
+  
+    951 │         [2, "HEAD", "bdp-scope-epoch", 410, "cursor-expired"],
+    952 │       ] as const) {
+  > 953 │         const response = await exchange(targets[index]!, method, { ...bound, [field]: "foreign" });
+        │                                         ^^^^^^^^^^^^^^^
+    954 │         expect(response.status).toBe(status);
+    955 │         context(response, bound);
+  
+
+apps/bdptest/src/transactional-collection-minimum-installed.test.ts:971:40 lint/style/noNonNullAssertion ━━━━━━━━━━
+
+  ! Forbidden non-null assertion.
+  
+    969 │         context(response, bound);
+    970 │       }
+  > 971 │       const anonymous = await exchange(targets[1]!, "GET", bound, undefined, "anonymous");
+        │                                        ^^^^^^^^^^^
+    972 │       expect(anonymous.status).toBe(401);
+    973 │       expect(anonymous.bodyText).not.toContain("Relationship");
+  
+
+apps/bdptest/src/transactional-collection-minimum-installed.test.ts:1000:18 lint/style/noNonNullAssertion ━━━━━━━━━━
+
+  ! Forbidden non-null assertion.
+  
+     998 │         if (++count > 18) throw new Error("alias minimum request ceiling exceeded");
+     999 │         const response = await f.exchange(...args);
+  > 1000 │         urls.add(args[0]!);
+         │                  ^^^^^^^^
+    1001 │         const view = args[2]?.["bdp-authorization-view"];
+    1002 │         if (view !== undefined)
+  
+
+apps/bdptest/src/transactional-collection-minimum-installed.test.ts:1038:20 lint/style/noNonNullAssertion ━━━━━━━━━━
+
+  ! Forbidden non-null assertion.
+  
+    1036 │       expect(receipt.results).toHaveLength(2);
+    1037 │       for (const [i, result] of receipt.results.entries()) {
+  > 1038 │         const id = ["a", "b"][i]!;
+         │                    ^^^^^^^^^^^^^^
+    1039 │         expect(result.operationIndex).toBe(i);
+    1040 │         expect(result.outcome).toBe("created");
+  
+
+apps/bdptest/src/transactional-collection-minimum-installed.test.ts:1127:43 lint/style/noNonNullAssertion  FIXABLE  ━━━━━━━━━━
+
+  ! Forbidden non-null assertion.
+  
+    1125 │       ).toThrow();
+    1126 │       const followed = await exchange(`${scope}beads/b`, "GET", headers);
+  > 1127 │       expect(json<Row>(followed)).toEqual(receipt.results[1]!.resource);
+         │                                           ^^^^^^^^^^^^^^^^^^^
+    1128 │       // Resource ETag is a separate oracle; context() still forbids ETags on redirects/pages.
+    1129 │       expect(followed.headers["bdp-scope-epoch"]).toBe(headers["bdp-scope-epoch"]);
+  
+  i Unsafe fix: Replace with optional chain operator ?. This operator includes runtime checks, so it is safer than the compile-only non-null assertion operator
+  
+    1125 1125 │         ).toThrow();
+    1126 1126 │         const followed = await exchange(`${scope}beads/b`, "GET", headers);
+    1127      │ - ······expect(json<Row>(followed)).toEqual(receipt.results[1]!.resource);
+         1127 │ + ······expect(json<Row>(followed)).toEqual(receipt.results[1]?.resource);
+    1128 1128 │         // Resource ETag is a separate oracle; context() still forbids ETags on redirects/pages.
+    1129 1129 │         expect(followed.headers["bdp-scope-epoch"]).toBe(headers["bdp-scope-epoch"]);
+  
+
+apps/bdptest/src/transactional-collection-minimum-installed.test.ts:1132:46 lint/style/noNonNullAssertion  FIXABLE  ━━━━━━━━━━
+
+  ! Forbidden non-null assertion.
+  
+    1130 │       expect(followed.headers["bdp-authorization-view"]).toBe(headers["bdp-authorization-view"]);
+    1131 │       expect(followed.headers["bdp-scope-position"]).toBe("pos-1");
+  > 1132 │       expect(followed.headers.etag).toBe(`"${receipt.results[1]!.resource.revision}"`);
+         │                                              ^^^^^^^^^^^^^^^^^^^
+    1133 │       const future = { ...headers, "bdp-minimum-scope-position": "pos-2" };
+    1134 │       const behind = await exchange(`${scope}alias/work`, "GET", {
+  
+  i Unsafe fix: Replace with optional chain operator ?. This operator includes runtime checks, so it is safer than the compile-only non-null assertion operator
+  
+    1130 1130 │         expect(followed.headers["bdp-authorization-view"]).toBe(headers["bdp-authorization-view"]);
+    1131 1131 │         expect(followed.headers["bdp-scope-position"]).toBe("pos-1");
+    1132      │ - ······expect(followed.headers.etag).toBe(`"${receipt.results[1]!.resource.revision}"`);
+         1132 │ + ······expect(followed.headers.etag).toBe(`"${receipt.results[1]?.resource.revision}"`);
+    1133 1133 │         const future = { ...headers, "bdp-minimum-scope-position": "pos-2" };
+    1134 1134 │         const behind = await exchange(`${scope}alias/work`, "GET", {
+  
+
+apps/bdptest/src/transactional-collection-minimum-installed.test.ts:1305:30 lint/style/noNonNullAssertion  FIXABLE  ━━━━━━━━━━
+
+  ! Forbidden non-null assertion.
+  
+    1303 │         const entries = value.results as Record<string, unknown>[];
+    1304 │         expect(entries).toHaveLength(1);
+  > 1305 │         const row = resource(entries[0]!.resource, name);
+         │                              ^^^^^^^^^^^
+    1306 │         expect(entries).toEqual([{ operationIndex: 0, outcome: "created", resource: row }]);
+    1307 │         return row;
+  
+  i Unsafe fix: Replace with optional chain operator ?. This operator includes runtime checks, so it is safer than the compile-only non-null assertion operator
+  
+    1303 1303 │           const entries = value.results as Record<string, unknown>[];
+    1304 1304 │           expect(entries).toHaveLength(1);
+    1305      │ - ········const·row·=·resource(entries[0]!.resource,·name);
+         1305 │ + ········const·row·=·resource(entries[0]?.resource,·name);
+    1306 1306 │           expect(entries).toEqual([{ operationIndex: 0, outcome: "created", resource: row }]);
+    1307 1307 │           return row;
+  
+
+packages/server/src/transaction-read.test.ts:1310:20 lint/style/noNonNullAssertion ━━━━━━━━━━━━━━━━━
+
+  ! Forbidden non-null assertion.
+  
+    1308 │     expect(rows.map((r) => r.id)).toEqual(names.map((n) => url(`links/${n}`)));
+    1309 │     for (const row of rows) {
+  > 1310 │       const name = String(row.id).split("/").at(-1)!;
+         │                    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    1311 │       expect(row).toEqual({
+    1312 │         id: url(`links/${name}`),
+  
+
+packages/server/src/transaction-read.test.ts:1390:41 lint/style/noNonNullAssertion ━━━━━━━━━━━━━━━━━
+
+  ! Forbidden non-null assertion.
+  
+    1388 │       } else await expect(delivery).rejects.toThrow("outside supported subset");
+    1389 │       expect(invoked).not.toHaveBeenCalled();
+  > 1390 │       expect(body(await minimum.perform(requests[0]!))).toEqual(descriptor);
+         │                                         ^^^^^^^^^^^^
+    1391 │       const external = { kind: "resource", resource: "type", id: link } as ReadRequest;
+    1392 │       expect(body(await facet.perform(external))).toEqual(types[1]);
+  
+
+packages/server/src/transaction-read.test.ts:1405:37 lint/style/noNonNullAssertion ━━━━━━━━━━━━━━━━━
+
+  ! Forbidden non-null assertion.
+  
+    1403 │       { plane, facet } = f.open();
+    1404 │     const read = plane.minimumFor(principal, f.minimum());
+  > 1405 │     const type = await read.perform(requests[0]!);
+         │                                     ^^^^^^^^^^^^
+    1406 │     expect(body(type)).toEqual(descriptor);
+    1407 │     const inventory = await read.perform(requests[1]!);
+  
+
+packages/server/src/transaction-read.test.ts:1407:42 lint/style/noNonNullAssertion ━━━━━━━━━━━━━━━━━
+
+  ! Forbidden non-null assertion.
+  
+    1405 │     const type = await read.perform(requests[0]!);
+    1406 │     expect(body(type)).toEqual(descriptor);
+  > 1407 │     const inventory = await read.perform(requests[1]!);
+         │                                          ^^^^^^^^^^^^
+    1408 │     expect(body(inventory)).toEqual({
+    1409 │       items: [types[0], types[1], descriptor]
+  
+
+packages/server/src/transaction-read.test.ts:1410:28 lint/style/noNonNullAssertion  FIXABLE  ━━━━━━━━━━
+
+  ! Forbidden non-null assertion.
+  
+    1408 │     expect(body(inventory)).toEqual({
+    1409 │       items: [types[0], types[1], descriptor]
+  > 1410 │         .map((t) => ({ id: t!.id, name: t!.name, describes: t!.describes }))
+         │                            ^^
+    1411 │         .sort((a, b) => (a.id < b.id ? -1 : 1)),
+    1412 │       next: null,
+  
+  i Unsafe fix: Replace with optional chain operator ?. This operator includes runtime checks, so it is safer than the compile-only non-null assertion operator
+  
+    1408 1408 │       expect(body(inventory)).toEqual({
+    1409 1409 │         items: [types[0], types[1], descriptor]
+    1410      │ - ········.map((t)·=>·({·id:·t!.id,·name:·t!.name,·describes:·t!.describes·}))
+         1410 │ + ········.map((t)·=>·({·id:·t?.id,·name:·t!.name,·describes:·t!.describes·}))
+    1411 1411 │           .sort((a, b) => (a.id < b.id ? -1 : 1)),
+    1412 1412 │         next: null,
+  
+
+packages/server/src/transaction-read.test.ts:1410:41 lint/style/noNonNullAssertion  FIXABLE  ━━━━━━━━━━
+
+  ! Forbidden non-null assertion.
+  
+    1408 │     expect(body(inventory)).toEqual({
+    1409 │       items: [types[0], types[1], descriptor]
+  > 1410 │         .map((t) => ({ id: t!.id, name: t!.name, describes: t!.describes }))
+         │                                         ^^
+    1411 │         .sort((a, b) => (a.id < b.id ? -1 : 1)),
+    1412 │       next: null,
+  
+  i Unsafe fix: Replace with optional chain operator ?. This operator includes runtime checks, so it is safer than the compile-only non-null assertion operator
+  
+    1408 1408 │       expect(body(inventory)).toEqual({
+    1409 1409 │         items: [types[0], types[1], descriptor]
+    1410      │ - ········.map((t)·=>·({·id:·t!.id,·name:·t!.name,·describes:·t!.describes·}))
+         1410 │ + ········.map((t)·=>·({·id:·t!.id,·name:·t?.name,·describes:·t!.describes·}))
+    1411 1411 │           .sort((a, b) => (a.id < b.id ? -1 : 1)),
+    1412 1412 │         next: null,
+  
+
+The number of diagnostics exceeds the limit allowed. Use --max-diagnostics to increase it.
+Diagnostics not shown: 42.
+Checked 4 files in 82ms. No fixes applied.
+Found 56 warnings.
+Found 6 infos.

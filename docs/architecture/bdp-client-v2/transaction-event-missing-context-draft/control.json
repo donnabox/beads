@@ -1,0 +1,47 @@
+{
+  "status": "SPECIFIED_NOT_BUILT_NOT_EXECUTED",
+  "name": "omit-missing-event-http-context",
+  "mutationFile": "packages/server/dist/transaction-http.js",
+  "expectedReplacementCount": 2,
+  "old": "transactionHttpProblem(\"resource-not-found\", observed.context)",
+  "new": "transactionHttpProblem(\"resource-not-found\")",
+  "consumerSourceFile": "packages/server/src/transaction-events.test.ts",
+  "dynamicImport": "new URL(\"../dist/transaction-runtime.js\", import.meta.url).href",
+  "bindingGate": "Copy frozen source test/config and full positive emitted relative graph. Pin every copy hash and module edge, verify dynamic runtime and its relative HTTP import resolve in derivative. Workspace aliases do not replace this explicit emitted URL. Bare dependency resolutions must be recorded and byte-bound. No TypeScript mutant compilation.",
+  "selectedTitle": "serves contextual missing Event responses for Bead and Link JSON and SSE GET and HEAD",
+  "expectedNamedFailures": [
+    "missing-event-context:Bead:JSON:GET",
+    "missing-event-context:Bead:JSON:HEAD",
+    "missing-event-context:Bead:SSE:GET",
+    "missing-event-context:Bead:SSE:HEAD",
+    "missing-event-context:Link:JSON:GET",
+    "missing-event-context:Link:JSON:HEAD",
+    "missing-event-context:Link:SSE:GET",
+    "missing-event-context:Link:SSE:HEAD"
+  ],
+  "expectedHttp": 11,
+  "maxHttp": 11,
+  "expectedObservedStatuses": [
+    200,
+    200,
+    404,
+    404,
+    404,
+    404,
+    404,
+    404,
+    404,
+    404,
+    401
+  ],
+  "expectedMissingTuple": [
+    null,
+    null,
+    null
+  ],
+  "requiresOtherPrerequisitesPass": true,
+  "expectedActualResult": "One failed case with exactly eight named tuple assertion failures; no extra failures/unhandled errors or generic exit-only credit",
+  "reportLabel": "source-missing-event-context",
+  "verdictSource": "Final Vitest JSON; report says see-final-vitest-result and failureCount excludes soft assertions by design",
+  "cleanup": "Report closed=true,directoryAbsent=true,deadlineExceeded=false; independently check owned processes/temp/listener closure. Expected failure retained; no retry."
+}

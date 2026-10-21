@@ -1,0 +1,68 @@
+{
+  "name": "format-check",
+  "argv": [
+    "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+    "/Users/dbox/repos/wt/vickie/vickie-update-cold-directory/node_modules/@biomejs/biome/bin/biome",
+    "format",
+    "--config-path",
+    "/Users/dbox/repos/wt/vickie/vickie-update-cold-directory/biome.json",
+    "apps/bdptest/src/read-update-matrix.test.ts",
+    "packages/conformance/src/cumulative-artifact.test.ts",
+    "packages/conformance/src/profile-contract-plan.test.ts",
+    "packages/conformance/src/read-update-artifact-set.test.ts"
+  ],
+  "guardedArgv": [
+    "/opt/homebrew/opt/python@3.14/bin/python3.14",
+    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/guarded-action.py",
+    "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+    "/Users/dbox/repos/wt/vickie/vickie-update-cold-directory/node_modules/@biomejs/biome/bin/biome",
+    "format",
+    "--config-path",
+    "/Users/dbox/repos/wt/vickie/vickie-update-cold-directory/biome.json",
+    "apps/bdptest/src/read-update-matrix.test.ts",
+    "packages/conformance/src/cumulative-artifact.test.ts",
+    "packages/conformance/src/profile-contract-plan.test.ts",
+    "packages/conformance/src/read-update-artifact-set.test.ts"
+  ],
+  "cwd": "/Users/dbox/repos/wt/vickie/vickie-update-cold-directory",
+  "started": "2026-10-16T03:25:29.590038+00:00",
+  "adjudication": {
+    "kind": "command-only",
+    "testVerdict": "not-applicable"
+  },
+  "elapsedSeconds": 0.7049305830150843,
+  "exit": 0,
+  "supervisorExit": 0,
+  "timeout": false,
+  "forcedCleanup": false,
+  "errors": [],
+  "processGroup": 61900,
+  "remainingBeforeCleanup": [],
+  "remainingAfterCleanup": [],
+  "sampledPids": [
+    61900,
+    61902,
+    61906,
+    61907
+  ],
+  "sampledPidsStillPresent": {},
+  "sampledTempEntries": [],
+  "tempEntriesAfter": [],
+  "remainingTempEntriesForClassification": [],
+  "runtimeDirectoriesStillPresent": [],
+  "unclassifiedTempEntriesStillPresent": [],
+  "sourceUnchanged": true,
+  "sourceSha256After": {
+    "apps/bdptest/src/read-update-matrix.test.ts": "376709ecdcf356a98c5bf7770e6b0a637ab6e06cf9a9f7ed68c2e5c15da9dd36",
+    "packages/conformance/src/cumulative-artifact.test.ts": "d3e8a462694174cf34db94700df51f3de6943aa1072dbf4bd04de7560db9b523",
+    "packages/conformance/src/profile-contract-plan.test.ts": "3fec4ca8c6eee7a20bbcdd1aa53ef2a015989087ba2f8d6b37fd997dcae7dd64",
+    "packages/conformance/test-support/read-update-coverage-v1.json": "287c2a258afd04a95417f5de416c81bd8159c95762d71d568a64f0b402159f0f"
+  },
+  "samplingSeconds": 0.05,
+  "commandWindowSeconds": 115,
+  "groupHardDeadlineSeconds": 120,
+  "cleanupBound": "TERM at115s, KILL no later than120s; wait/reap after kill adds no product execution allowance",
+  "samplingLimitation": "Short-lived or detached descendants may evade group sampling; helper counts and independent final checks remain separate.",
+  "tempClassification": "Only the selected fixture prefixes under this attempt TMPDIR are owned runtime roots; all other entries are preserved for review, not deleted or called leaks.",
+  "resultLimitation": "Exit0 is command completion, not independent oracle/claim/provenance adjudication."
+}

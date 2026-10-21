@@ -1,0 +1,68 @@
+{
+  "checkedAt": "2026-10-15T13:31:39.516634+00:00",
+  "status": "three targeted stages passed; actual Claude supplement still pending",
+  "sourceBindingSha256": "4e2fc1f5e1c541a2469310196b506417ccd81185cfc4c389657db05afda1abfd",
+  "sourceFileSha256": "6c0c240afef61831d0573775ea35b0c04b116a55da1d3fb40127b9ede68e939c",
+  "fullDiffSha256": "3021c22f5f833643a80a0ad24dd42714427c20292fd766c33d4973870d501780",
+  "commands": {
+    "typecheck": {
+      "exit": 0,
+      "seconds": 1.4850262920372188,
+      "recordSha256": "2f29cb91563acbd6fbad0efebdb3cc08274feb8819bc04ddcee9be090cf95062"
+    },
+    "format-check": {
+      "exit": 0,
+      "seconds": 0.7628800410311669,
+      "recordSha256": "9c11d526ba9db405efcc2e4f1b092c046f2008dbe3ec5564599c7d5babae48c3"
+    },
+    "affected-cases": {
+      "exit": 0,
+      "seconds": 1.580501832999289,
+      "recordSha256": "fa8ff06cc9325ed4510ef19a59cf8e163205a4d60bd040a7ee1fdc1c9a171e0c"
+    }
+  },
+  "actualCases": [
+    {
+      "name": "aborts the actual cohort budget after real wire and drains all installed children",
+      "status": "passed",
+      "durationMs": 553.8307080000001
+    },
+    {
+      "name": "refuses a pre-aborted cohort before starting an installed child",
+      "status": "passed",
+      "durationMs": 0.9047080000000278
+    }
+  ],
+  "notSelected": 59,
+  "workloadLimitations": "Passing exact callback asserts actual nonempty wire and >=2 closed children; oneHTTP/twochildren is source-derived, not separately logged request/child ledger. Pre-aborted case asserts zero children. No extra counter or case added.",
+  "sampledPidsIndependentlyAbsent": [
+    23419,
+    23425,
+    23451,
+    23521,
+    23627,
+    23629,
+    23638,
+    23744,
+    23746,
+    23750,
+    23753,
+    23767,
+    23770
+  ],
+  "groupsIndependentlyAbsent": [
+    23419,
+    23627,
+    23744
+  ],
+  "remainingRows": [],
+  "retainedCompileCaches": [
+    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-receipt-missing-context-draft/ci-budget-repair/run/typecheck.tmp/node-compile-cache",
+    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-receipt-missing-context-draft/ci-budget-repair/run/format-check.tmp/node-compile-cache"
+  ],
+  "otherHistoricalFileHashesPreserved": 1104,
+  "includedHistoricalEmittedFilesPreserved": 440,
+  "noBuildOrInstall": true,
+  "ciStillRequired": true,
+  "preparationAuditNote": "First read-only report assembly treated emittedFiles count as map and stopped before output; corrected to count/filter files map. Product stages were not repeated."
+}

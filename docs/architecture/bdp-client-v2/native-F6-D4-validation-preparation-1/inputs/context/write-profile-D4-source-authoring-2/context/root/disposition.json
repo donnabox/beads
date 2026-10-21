@@ -1,0 +1,34 @@
+{
+  "state": "THREE actual CODE findings accepted; F-C has two subitems",
+  "accepted": true,
+  "sourceBeforeSha256": "65f754c089f8735b592e09e1475ac2435776d18bf1ac8321aa41118c87cb1b4c",
+  "actualReviewSha256": "484b0fba48b438a8f728b789e60d855b6f88455b6c75f017c1f84596b24cb3da",
+  "inspectionSha256": "bf735fee1d259b2829e63e2553b8506b56102ce66c4a1e4a7d3963f90a29d5dd",
+  "findings": [
+    {
+      "id": "F-A",
+      "decision": "accepted",
+      "correction": "Add owned.pid !== null to clean() after owned !== undefined. Missing PID keeps closure unknown and directory retained. No new success path/report field."
+    },
+    {
+      "id": "F-B",
+      "decision": "accepted",
+      "correction": "Hash execFileSync git diff --binary HEAD raw Buffer, same single command/cwd/timeout2000/maxBuffer1048576. Existing UTF8 helper remains only for textual status/rev-parse. No extra Git capture/widening."
+    },
+    {
+      "id": "F-C.i",
+      "decision": "accepted",
+      "correction": "Separate pending.size!==0 => pending-unsettled from received-count!==28 => observation-failed; existing labels only."
+    },
+    {
+      "id": "F-C.ii",
+      "decision": "accepted",
+      "correction": "Move existing phase=launch-failed from immediately before launch(1) to immediately after metadata.nullReason=null. No new label/operation."
+    }
+  ],
+  "runtimeValidationReleased": false,
+  "F6": "CLOSED; timing/resource mechanism unresolved",
+  "secondActualCodeOrPlanAllowed": false,
+  "originalActualReviewAndSourcePacketImmutable": true,
+  "contractAndBudgetsUnchanged": true
+}

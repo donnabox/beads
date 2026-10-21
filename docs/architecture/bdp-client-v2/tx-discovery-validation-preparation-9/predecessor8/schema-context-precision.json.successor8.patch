@@ -1,0 +1,21 @@
+--- /dev/null
++++ schema-context-precision.json
+@@ -0,0 +1,18 @@
++{
++  "after": null,
++  "afterSha256": "9c87663651f6f8db5f9f7bba4c5dfc6b1374a7e976515713c78a4e47a4e9395e",
++  "allOtherSchemaBytesAndPriorEightAndElevenArraysUnchanged": true,
++  "before": "pos-0",
++  "fullContractsAndActualFailure": "context/historical7/terminal-native/contract-applicability.json and report.md; failure remains failed, no accepted schema observation reconstructed",
++  "helperChange": false,
++  "inverseExactP7Sha256": "c247f1b13bb475c9e29fe5c2d0f8b466ef0c086545c364bfa712a563caede6c9",
++  "jsonPointer": "/schemaRows/8/position",
++  "label": "unknown",
++  "nativeDiagnosisSha256": "fce0dd3b4ee786a9600e53d35ac6ca7d77c44d84064d06f3808e432c2daab525",
++  "newValidationReleased": false,
++  "reason": "Not a captured schema retrieval identity or supported Bead/Link/alias/anchor owner lookup. Exact selector misses before observe, prior target/parser404 has no projected prefix. Existing null branch requires exact empty context; known-schema/owner-backed mandatory context unchanged.",
++  "rootDurableReadback": "763da5b2d0ca5f40e34d51a5314dc918122f9b81",
++  "rootReleaseSha256": "1cd898f279a6a77d985e91356fa4b75f7bcd8ad0b0e706e9070c6965802440d4",
++  "state": "CLOSED DATA-only one source-derived expected-position correction",
++  "status": 404
++}

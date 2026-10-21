@@ -1,0 +1,210 @@
+{
+  "status": "Explicit root-delegated execution; source stage pass verified; actual council separate.",
+  "executionOrder": [
+    "typecheck",
+    "format-check",
+    "verify-installed",
+    "positive",
+    "review-positive-corrected",
+    "prepare-restore-missing-gap",
+    "restore-missing-gap",
+    "review-restore-missing-gap",
+    "prepare-restore-unknown-gap",
+    "restore-unknown-gap",
+    "review-restore-unknown-gap"
+  ],
+  "commands": {
+    "verify-installed": {
+      "argv": [
+        "/usr/bin/python3",
+        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-minimum-next-serving-plan/authoring-draft/installed-preparation-v2/packages.py",
+        "installed"
+      ],
+      "cwd": "/Users/dbox/repos/wt/vickie/vickie-minimum-current-resource",
+      "phase": "package",
+      "released": true,
+      "supervisorSeconds": 120,
+      "automaticRetries": 0
+    },
+    "positive": {
+      "argv": [
+        "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+        "/Users/dbox/repos/wt/vickie/vickie-minimum-current-resource/node_modules/vitest/vitest.mjs",
+        "run",
+        "apps/bdptest/src/transactional-minimum-current-resource-installed.test.ts",
+        "--maxWorkers=1",
+        "--testNamePattern",
+        "^serves missing-first current Resources and bounds unproved minimum eligibility$",
+        "--reporter=verbose",
+        "--reporter=json",
+        "--outputFile",
+        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-minimum-next-serving-plan/authoring-draft/installed-preparation-v2/run/positive.results.json"
+      ],
+      "cwd": "/Users/dbox/repos/wt/vickie/vickie-minimum-current-resource",
+      "phase": "installed",
+      "released": true,
+      "supervisorSeconds": 120,
+      "automaticRetries": 0,
+      "expectedHTTP": 32,
+      "maxHTTP": 32,
+      "productChildren": 1,
+      "rawExpectedExit": 0,
+      "ownedTempPrefixes": [
+        "bdp-minimum-current-installed-"
+      ],
+      "mode": "positive"
+    },
+    "prepare-restore-missing-gap": {
+      "argv": [
+        "/usr/bin/python3",
+        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-minimum-next-serving-plan/authoring-draft/installed-preparation-v2/packages.py",
+        "restore-missing-gap"
+      ],
+      "cwd": "/Users/dbox/repos/wt/vickie/vickie-minimum-current-resource",
+      "phase": "control-copy",
+      "released": true,
+      "supervisorSeconds": 120,
+      "automaticRetries": 0
+    },
+    "restore-missing-gap": {
+      "argv": [
+        "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+        "/Users/dbox/repos/wt/vickie/vickie-minimum-current-resource/node_modules/vitest/vitest.mjs",
+        "run",
+        "apps/bdptest/src/transactional-minimum-current-resource-installed.test.ts",
+        "--maxWorkers=1",
+        "--testNamePattern",
+        "^serves missing-first current Resources and bounds unproved minimum eligibility$",
+        "--reporter=verbose",
+        "--reporter=json",
+        "--outputFile",
+        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-minimum-next-serving-plan/authoring-draft/installed-preparation-v2/run/restore-missing-gap.results.json"
+      ],
+      "cwd": "/Users/dbox/repos/wt/vickie/vickie-minimum-current-resource",
+      "phase": "installed",
+      "released": true,
+      "supervisorSeconds": 120,
+      "automaticRetries": 0,
+      "expectedHTTP": 2,
+      "maxHTTP": 32,
+      "productChildren": 1,
+      "rawExpectedExit": 1,
+      "ownedTempPrefixes": [
+        "bdp-minimum-current-installed-"
+      ],
+      "mode": "restore-missing-gap"
+    },
+    "review-restore-missing-gap": {
+      "argv": [
+        "/usr/bin/python3",
+        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-minimum-next-serving-plan/authoring-draft/installed-preparation-v2/review-installed.py",
+        "restore-missing-gap"
+      ],
+      "cwd": "/Users/dbox/repos/wt/vickie/vickie-minimum-current-resource",
+      "phase": "adjudication",
+      "released": true,
+      "supervisorSeconds": 120,
+      "automaticRetries": 0,
+      "rawExpectedExit": 0,
+      "mode": "restore-missing-gap"
+    },
+    "prepare-restore-unknown-gap": {
+      "argv": [
+        "/usr/bin/python3",
+        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-minimum-next-serving-plan/authoring-draft/installed-preparation-v2/packages.py",
+        "restore-unknown-gap"
+      ],
+      "cwd": "/Users/dbox/repos/wt/vickie/vickie-minimum-current-resource",
+      "phase": "control-copy",
+      "released": true,
+      "supervisorSeconds": 120,
+      "automaticRetries": 0
+    },
+    "restore-unknown-gap": {
+      "argv": [
+        "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+        "/Users/dbox/repos/wt/vickie/vickie-minimum-current-resource/node_modules/vitest/vitest.mjs",
+        "run",
+        "apps/bdptest/src/transactional-minimum-current-resource-installed.test.ts",
+        "--maxWorkers=1",
+        "--testNamePattern",
+        "^serves missing-first current Resources and bounds unproved minimum eligibility$",
+        "--reporter=verbose",
+        "--reporter=json",
+        "--outputFile",
+        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-minimum-next-serving-plan/authoring-draft/installed-preparation-v2/run/restore-unknown-gap.results.json"
+      ],
+      "cwd": "/Users/dbox/repos/wt/vickie/vickie-minimum-current-resource",
+      "phase": "installed",
+      "released": true,
+      "supervisorSeconds": 120,
+      "automaticRetries": 0,
+      "expectedHTTP": 2,
+      "maxHTTP": 32,
+      "productChildren": 1,
+      "rawExpectedExit": 1,
+      "ownedTempPrefixes": [
+        "bdp-minimum-current-installed-"
+      ],
+      "mode": "restore-unknown-gap"
+    },
+    "review-restore-unknown-gap": {
+      "argv": [
+        "/usr/bin/python3",
+        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-minimum-next-serving-plan/authoring-draft/installed-preparation-v2/review-installed.py",
+        "restore-unknown-gap"
+      ],
+      "cwd": "/Users/dbox/repos/wt/vickie/vickie-minimum-current-resource",
+      "phase": "adjudication",
+      "released": true,
+      "supervisorSeconds": 120,
+      "automaticRetries": 0,
+      "rawExpectedExit": 0,
+      "mode": "restore-unknown-gap"
+    },
+    "typecheck": {
+      "argv": [
+        "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+        "/Users/dbox/.cache/node/corepack/v1/pnpm/11.20.0/bin/pnpm.cjs",
+        "run",
+        "typecheck"
+      ],
+      "cwd": "/Users/dbox/repos/wt/vickie/vickie-minimum-current-resource",
+      "phase": "static",
+      "supervisorSeconds": 120,
+      "automaticRetries": 0,
+      "released": true
+    },
+    "format-check": {
+      "argv": [
+        "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+        "/Users/dbox/repos/wt/vickie/vickie-minimum-current-resource/node_modules/@biomejs/biome/bin/biome",
+        "format",
+        "--config-path",
+        "/Users/dbox/repos/wt/vickie/vickie-minimum-current-resource/biome.json",
+        "apps/bdptest/src/transactional-minimum-current-resource-installed.test.ts"
+      ],
+      "cwd": "/Users/dbox/repos/wt/vickie/vickie-minimum-current-resource",
+      "phase": "static",
+      "supervisorSeconds": 120,
+      "automaticRetries": 0,
+      "released": true
+    },
+    "review-positive-corrected": {
+      "argv": [
+        "/usr/bin/python3",
+        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-minimum-next-serving-plan/authoring-draft/installed-preparation-v2/review-installed.py",
+        "positive",
+        "review-positive-corrected"
+      ],
+      "cwd": "/Users/dbox/repos/wt/vickie/vickie-minimum-current-resource",
+      "phase": "adjudication",
+      "released": true,
+      "supervisorSeconds": 120,
+      "automaticRetries": 0,
+      "rawExpectedExit": 0,
+      "mode": "positive"
+    }
+  },
+  "envPolicy": "Clear inherited BDP_* and Node overrides; allow only the three pinned cohort variables above, explicit controlled PATH/TMPDIR/CI. Direct Node/Vitest avoids pnpm test shim rewrites."
+}

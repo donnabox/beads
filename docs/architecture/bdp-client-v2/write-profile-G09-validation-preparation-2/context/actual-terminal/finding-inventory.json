@@ -1,0 +1,56 @@
+[
+  {
+    "assessment": "Actual reviewer finding; root disposition pending; static, not compiler/runtime observation",
+    "heading": "BLOCKER (High) \u2014 TypeScript compile error: `minimumReads: policy` violates `exactOptionalPropertyTypes`",
+    "id": "F1",
+    "reviewerSeverity": "High"
+  },
+  {
+    "assessment": "Actual reviewer finding; root disposition pending; static, not compiler/runtime observation",
+    "heading": "Low \u2014 S01's \"caller mutation\" assertion cannot fail; it does not discriminate the synchronous capture it claims to prove",
+    "id": "F2",
+    "reviewerSeverity": "Low"
+  },
+  {
+    "assessment": "Actual reviewer finding; root disposition pending; static, not compiler/runtime observation",
+    "heading": "Low \u2014 No authored assertion covers abort propagation through a schema minimum wait",
+    "id": "F3",
+    "reviewerSeverity": "Low"
+  },
+  {
+    "assessment": "Actual reviewer finding; root disposition pending; static, not compiler/runtime observation",
+    "heading": "Low \u2014 Installed `ready` projection serializes absent allowlisted facts as omitted keys (corroborates native G09-CODE-N1)",
+    "id": "F4",
+    "reviewerSeverity": "Low"
+  },
+  {
+    "assessment": "Actual reviewer finding; root disposition pending; static, not compiler/runtime observation",
+    "heading": "Low \u2014 `repeated` names a comma-valued single header, contrary to the explicit plan exclusion",
+    "id": "F5",
+    "reviewerSeverity": "Low"
+  },
+  {
+    "assessment": "Actual reviewer finding; root disposition pending; static, not compiler/runtime observation",
+    "heading": "Low \u2014 S07/S08 allocate the full default 1 s minimum-read budget inside a 3 s work bound that also covers runtime startup",
+    "id": "F6",
+    "reviewerSeverity": "Low"
+  },
+  {
+    "assessment": "Actual reviewer finding; root disposition pending; static, not compiler/runtime observation",
+    "heading": "Informational \u2014 behavioural exposure change on the exact-schema route (correct per plan, worth recording)",
+    "id": "F7",
+    "reviewerSeverity": "Informational"
+  },
+  {
+    "assessment": "Actual reviewer finding; root disposition pending; static, not compiler/runtime observation",
+    "heading": "Informational \u2014 unreachable defensive throw",
+    "id": "F8",
+    "reviewerSeverity": "Informational"
+  },
+  {
+    "assessment": "Actual reviewer finding; root disposition pending; static, not compiler/runtime observation",
+    "heading": "Informational \u2014 redundant string escapes, inconsistent within the same files",
+    "id": "F9",
+    "reviewerSeverity": "Informational"
+  }
+]

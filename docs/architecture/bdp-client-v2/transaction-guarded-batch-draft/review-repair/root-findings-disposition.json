@@ -1,0 +1,24 @@
+{
+  "accepted": true,
+  "originalReview": {
+    "head": "9e5f040edab88be364f683098ead72f595f0ab55",
+    "stdoutSha256": "c5e385db679d546ed85ec64a2d42c8fc1cb431c566813ac049248f7d192fac8a",
+    "exit": 0,
+    "seconds": 504.91270458395593
+  },
+  "nativeAuditSha256": "f216467d5d6bb321693a3f2680ce9d4a3aa6f1f0bc8408d749232130e96b828a",
+  "findings": {
+    "F1": "Required accounting repair: preserve original pair error identities through catch/drain.",
+    "F2": "Accept explicit completed-request fingerprint assertions as narrow strengthening; do not claim independent wire sniffing or proven original false pass.",
+    "F3": "Defer dormant argv guard grammar; pinned Vitest worker argv empty and supervisor pins actual external reporter paths. No generic reporter containment claim.",
+    "F4": "No reachable defect: actual binding fixed JSON-safe primitives/arrays, fixture bytes in WeakMap. Include missing context in focused supplement.",
+    "F5": "Reject claimed false acceptance: adapter requires exact named label+oracle phase+prerequisites; optional presentation cleanup deferred.",
+    "F6": "Reject stronger physical overlap contract; accepted proof is concurrent client dispatch with maximum socket ceiling and separate observations.",
+    "F7": "Defer optional same-group-time assertion; reject unsupported monotonic wall-clock ordering."
+  },
+  "repairPaths": [
+    "apps/bdptest/src/transactional-guarded-batch-installed.test.ts"
+  ],
+  "validationRequired": true,
+  "finalCouncilAccepted": false
+}

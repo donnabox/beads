@@ -1,0 +1,8 @@
+{
+  "sourceCommit": "67a2842e3f1918e70978f745587cf11eaf0df5a8",
+  "recipe": "transaction-store.ts:284-297; snapshot limits, runtime limits and literal Type descriptor from same commit",
+  "utf8": "{\"format\":\"bdp-private-transaction-snapshot-10\",\"receiptMaximumItems\":32,\"snapshotLimits\":{\"lifetimeMs\":300000,\"resources\":4096,\"recordBytes\":33554432,\"liveHandles\":8,\"liveRecordBytes\":67108864,\"issuedHandles\":65536,\"dispositionBytes\":1024,\"snapshotPageItems\":32,\"pageBytes\":4194304,\"manifestBytes\":10485760},\"snapshotTokenPolicy\":\"hmac-sha256-ordinal-1\",\"authorizationView\":\"development-all-visible\",\"identityPolicy\":\"transaction-revision-provenance-4\",\"contractIdentity\":null,\"runtimeLimits\":{\"maximumOperations\":32,\"inducedEvents\":256,\"matchedResources\":32,\"representationBytes\":262144,\"scopeSourceBytes\":65536,\"requestBodyBytes\":65536,\"propertiesBytes\":65536,\"diagnosticBytes\":524288,\"diagnosticCount\":16},\"scope\":\"https://example.test/authorization/\",\"types\":[[\"https://example.test/authorization/types/bead\",\"{\\\"id\\\":\\\"https://example.test/authorization/types/bead\\\",\\\"name\\\":\\\"Bead\\\",\\\"describes\\\":\\\"bead\\\",\\\"conformsTo\\\":[]}\"]]}",
+  "bytes": 936,
+  "sha256": "93fdd1576006d112e9bea8b98903a66b45c5144e29f18ffa625b970fcb113c6e",
+  "execution": "data-only literal construction; no old binary or product import"
+}

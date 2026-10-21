@@ -1,0 +1,58 @@
+[
+  {
+    "id": "read-update.singleton.idempotency-key-required",
+    "actions": 244,
+    "raw": 151,
+    "client": 93,
+    "setup": 0,
+    "maximumLive": {
+      "beads": 37,
+      "links": 4
+    },
+    "successfulCreates": 42,
+    "assertions": 2036,
+    "postTargets": {
+      "create-bead": 34,
+      "create-link": 5,
+      "put-alias": 5,
+      "update-bead": 2,
+      "delete-bead": 2,
+      "update-link": 2,
+      "delete-link": 2,
+      "delete-alias": 2,
+      "sequence": 16
+    },
+    "maximumAuthoredBodyBytes": 661,
+    "manifestSetupCommands": 11,
+    "manifestSetupReadbacks": 11,
+    "outsideManifestSetup": 0
+  },
+  {
+    "id": "read-update.singleton.unsupported-media-type",
+    "actions": 116,
+    "raw": 73,
+    "client": 43,
+    "setup": 0,
+    "maximumLive": {
+      "beads": 11,
+      "links": 4
+    },
+    "successfulCreates": 16,
+    "assertions": 735,
+    "postTargets": {
+      "create-bead": 13,
+      "create-link": 5,
+      "put-alias": 5,
+      "update-bead": 2,
+      "delete-bead": 2,
+      "update-link": 2,
+      "delete-link": 2,
+      "delete-alias": 2,
+      "sequence": 2
+    },
+    "maximumAuthoredBodyBytes": 424,
+    "manifestSetupCommands": 11,
+    "manifestSetupReadbacks": 11,
+    "outsideManifestSetup": 0
+  }
+]

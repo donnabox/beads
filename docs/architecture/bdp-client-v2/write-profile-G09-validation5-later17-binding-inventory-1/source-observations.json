@@ -1,0 +1,224 @@
+{
+  "binaryDiffSha256": "f87d60ddc56b23737c46ed14e1675cc751c0062c7ab3466c33606398ae305df6",
+  "currentBuildMap": {
+    "artifactCount": 476,
+    "bytes": 58567,
+    "mode": "0o644",
+    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation-preparation-5/run/build-artifacts.json",
+    "sha256": "8a0241044612922b2801e6b5d1670919d37671d8191f567e5d36807a223ed56a"
+  },
+  "currentGate": {
+    "approvedPrefixCount": 17,
+    "bytes": 3601,
+    "later17Included": false,
+    "mode": "0o644",
+    "observedOnlyNotAProposal": true,
+    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation-preparation-5/execution-gate.json",
+    "sha256": "f16d895808b965918bade0cbe1e7552d828423b96930485ec34f74f051e884c8"
+  },
+  "currentToolsMap": {
+    "bytes": 4402,
+    "mode": "0o644",
+    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation-preparation-5/run/workspace-tools.json",
+    "sha256": "69713067eef866d61e8e9e3c49d695bd2d534d1cb7d0913c977da4f3f7d2cdb0",
+    "toolCount": 11
+  },
+  "expectedProductionVersions": {
+    "@bdp/protocol": "0.0.0",
+    "@bdp/server": "0.0.0",
+    "ajv": "8.17.1",
+    "ajv-formats": "3.0.1",
+    "fast-deep-equal": "3.1.3",
+    "fast-uri": "3.1.5",
+    "json-schema-traverse": "1.0.0",
+    "require-from-string": "2.0.2"
+  },
+  "gateLoader": "Actual gate.py load_gate and verify_consumer read as text; never imported.",
+  "gitExecutedForThisInventory": false,
+  "installedBinding": {
+    "entry": "P5/run/consumer/node_modules/@bdp/server/dist/transaction-installed-process.js realpath from actual proof, not workspace fallback",
+    "environmentInjectedByExistingGate": [
+      "BDP_TRANSACTIONAL_INSTALLED_ENTRY=proof.entryRealpath",
+      "BDP_TRANSACTIONAL_SOURCE_COMMIT=sourceBinding.head"
+    ],
+    "limitations": [
+      "G09 authentication identity not emitted; actual credential binding source-attested",
+      "G09 full returned wire/body retained; child stdout/stderr not retained",
+      "legacy schema response fingerprints/context only; full wire/body not retained",
+      "installed payload identity excludes Node and deployment/TLS"
+    ],
+    "preAndPostVerification": true,
+    "runtimeConfiguration": "Existing per-callback source configuration, ready runtimeConfigurationIdentity and payload identity must satisfy pinned report grammar. Fresh directory/token/port and digest are actual unresolved data; no one constant digest across unrelated fresh launches is invented.",
+    "sourceAttribution": "HEAD/tree plus reviewed dirty source1eca, build/archive/consumer/lock/tool linkage; no child source attestation"
+  },
+  "installedSelection": {
+    "g09-installed-01": {
+      "callbackMs": 60000,
+      "expectedObservation": "G09-I01",
+      "files": [
+        "apps/bdptest/src/transactional-schema-installed.test.ts"
+      ],
+      "fullNames": [
+        "G09-I01 installed exact schema current minimum"
+      ],
+      "kind": "G09-installed",
+      "names": 1,
+      "prospectiveWorkload": {
+        "callbacks": 1,
+        "children": 1,
+        "prospective": true,
+        "wire": 14
+      },
+      "reportIds": [
+        "G09-I01"
+      ],
+      "requestMs": 5000,
+      "requiresConsumerProof": true,
+      "sourceBindings": [
+        {
+          "fileSha256": "63b5892abebe9ef6e9688dd05eae5c4fbe18ede0698caad5b9f7ec2213c1bd7a",
+          "id": "G09-I01",
+          "kind": "installed",
+          "line": 808,
+          "name": "G09-I01 installed exact schema current minimum",
+          "observedExecution": false,
+          "path": "apps/bdptest/src/transactional-schema-installed.test.ts",
+          "sourceSelectionFrozen": true
+        }
+      ],
+      "totalCleanupMs": 10000,
+      "workMs": 45000
+    },
+    "g09-installed-02": {
+      "callbackMs": 60000,
+      "expectedObservation": "G09-I02",
+      "files": [
+        "apps/bdptest/src/transactional-schema-installed.test.ts"
+      ],
+      "fullNames": [
+        "G09-I02 installed receiving and exact retrieval membership"
+      ],
+      "kind": "G09-installed",
+      "names": 1,
+      "prospectiveWorkload": {
+        "callbacks": 1,
+        "children": 1,
+        "prospective": true,
+        "wire": 16
+      },
+      "reportIds": [
+        "G09-I02"
+      ],
+      "requestMs": 5000,
+      "requiresConsumerProof": true,
+      "sourceBindings": [
+        {
+          "fileSha256": "63b5892abebe9ef6e9688dd05eae5c4fbe18ede0698caad5b9f7ec2213c1bd7a",
+          "id": "G09-I02",
+          "kind": "installed",
+          "line": 899,
+          "name": "G09-I02 installed receiving and exact retrieval membership",
+          "observedExecution": false,
+          "path": "apps/bdptest/src/transactional-schema-installed.test.ts",
+          "sourceSelectionFrozen": true
+        }
+      ],
+      "totalCleanupMs": 10000,
+      "workMs": 45000
+    },
+    "schema-installed-positive": {
+      "callbackMs": 120000,
+      "expectedObservation": "private-installed-local-schemas",
+      "files": [
+        "apps/bdptest/src/transactional-schema-installed.test.ts"
+      ],
+      "fullNames": [
+        "traverses installed local schema bytes with current context within14requests"
+      ],
+      "inheritedBudgetException": "actual legacy source90swork/120scallback retained; outer120/TERM115 remains fail-closed, may stop before callback cap",
+      "kind": "legacy-schema-installed",
+      "names": 1,
+      "prospectiveWorkload": {
+        "callbacks": 1,
+        "children": 1,
+        "existingSupersededExchanges": 1,
+        "wire": 14
+      },
+      "requestMs": 5000,
+      "requiresConsumerProof": true,
+      "totalCleanupMs": "existing child.close launcher bound; no new aggregate bound inferred",
+      "workMs": 90000
+    }
+  },
+  "legacyExistingSupersededExchangeFact": 1,
+  "observedAt": "2026-10-19T03:56:02.531496+00:00",
+  "ownedSourceFiles": 10,
+  "packageModeEntryNames": "Actual packages.py modes directory/tar/consumer/installed; no fabricated verify_archives function is invoked.",
+  "productionVersionDerivationPrecision": "Existing packages.py literal8 expected versions must equal commands.expectedProductionVersions; helper hashes frozen source lock. It does not parse that lock to derive the dictionary. Future ROOT actual closure acceptance must retain exact original source-lock/expected-version correspondence, not invent a new resolver.",
+  "prospectiveScheduledRequests": 44,
+  "schemasAndSelectionUnchanged": true,
+  "solePlanSnapshot": {
+    "at": "2026-10-19T03:56:02.531496+00:00",
+    "bytes": 453114,
+    "mode": "0o644",
+    "path": "/Users/dbox/repos/wt/vickie/bdp-client-design/checkout/docs/architecture/bdp-client-v2/design.md",
+    "scope": "Snapshot of existing sole plan only; concurrent upstream stage12 work may later advance its status. This inventory does not adjudicate that work or become normative authority.",
+    "sha256": "34f08408227d1df86845fb44160a2256cf3ad303028488f6213a27469195da69"
+  },
+  "sourceBinding": {
+    "bytes": 94380,
+    "mode": "0o644",
+    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation-preparation-5/source-binding.json",
+    "sha256": "e0252cb07ac1896fac0faab395e10e50ea58eac263b6d33ee224e378413c2d68"
+  },
+  "sourceHead": "cce884ccea1db97cbc6fd7bff876d4d6091f9081",
+  "sourceIdentity": "1ecaf2e47369cc12cc26bc3ed693c5d4d3b9cffa4714b13dbe5567f9e46bfb15",
+  "sourceTree": "6757829bd5b700faf28df39071190a272add90c9",
+  "threeInstalledCallbackCount": 3,
+  "trackedSourceFiles": 679,
+  "wholeSourcePrecisionRepeated": false,
+  "workspaceVsConsumerInstall": {
+    "distinction": "Workspace uses offline --frozen-lockfile; external consumer uses offline --ignore-scripts --no-frozen-lockfile --prod and generates a fresh different lock.",
+    "externalConsumerStage23": {
+      "acceptedRawExitCodes": [
+        0
+      ],
+      "argv": [
+        "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+        "/Users/dbox/.cache/node/corepack/v1/pnpm/11.20.0/bin/pnpm.cjs",
+        "install",
+        "--offline",
+        "--ignore-scripts",
+        "--no-frozen-lockfile",
+        "--prod"
+      ],
+      "automaticRetries": 0,
+      "configurationFinalized": true,
+      "cwd": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation-preparation-5/run/consumer",
+      "id": "consumer-install",
+      "kind": "supervised-command",
+      "outerSeconds": 120,
+      "termAtSeconds": 115
+    },
+    "workspaceStage3": {
+      "acceptedRawExitCodes": [
+        0
+      ],
+      "argv": [
+        "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+        "/Users/dbox/.cache/node/corepack/v1/pnpm/11.20.0/bin/pnpm.cjs",
+        "install",
+        "--offline",
+        "--frozen-lockfile"
+      ],
+      "automaticRetries": 0,
+      "configurationFinalized": true,
+      "cwd": "/Users/dbox/repos/wt/vickie/vickie-schema-lint-correction-minimum",
+      "expectedSourceChange": "none; install outputs/tool maps separately measured",
+      "id": "workspace-install",
+      "kind": "supervised-command",
+      "outerSeconds": 120,
+      "termAtSeconds": 115
+    }
+  }
+}

@@ -1,0 +1,112 @@
+[
+  {
+    "duration_api_ms": 1379760,
+    "stop_reason": "end_turn",
+    "session_id": "f358381a-7d32-4112-987e-90311aec9327",
+    "total_cost_usd": 12.167161500000004,
+    "usage": {
+      "input_tokens": 160,
+      "cache_creation_input_tokens": 280515,
+      "cache_read_input_tokens": 13400025,
+      "output_tokens": 106349,
+      "output_tokens_details": {
+        "thinking_tokens": 86604
+      },
+      "server_tool_use": {
+        "web_search_requests": 0,
+        "web_fetch_requests": 0
+      },
+      "service_tier": "standard",
+      "cache_creation": {
+        "ephemeral_1h_input_tokens": 280515,
+        "ephemeral_5m_input_tokens": 0
+      },
+      "inference_geo": "global",
+      "iterations": [
+        {
+          "input_tokens": 2,
+          "output_tokens": 9304,
+          "cache_read_input_tokens": 272907,
+          "cache_creation_input_tokens": 12354,
+          "cache_creation": {
+            "ephemeral_5m_input_tokens": 0,
+            "ephemeral_1h_input_tokens": 12354
+          },
+          "type": "message"
+        }
+      ],
+      "speed": "standard"
+    },
+    "modelUsage": {
+      "claude-haiku-4-5-20251001": {
+        "inputTokens": 2379,
+        "outputTokens": 19,
+        "cacheReadInputTokens": 0,
+        "cacheCreationInputTokens": 0,
+        "webSearchRequests": 0,
+        "costUSD": 0.002474,
+        "contextWindow": 200000,
+        "maxOutputTokens": 32000,
+        "thinkingTokens": 0,
+        "canonicalModel": "claude-haiku-4-5",
+        "provider": "firstParty",
+        "costBasis": "list"
+      },
+      "claude-opus-5[1m]": {
+        "inputTokens": 160,
+        "outputTokens": 106349,
+        "cacheReadInputTokens": 13400025,
+        "cacheCreationInputTokens": 280515,
+        "webSearchRequests": 0,
+        "costUSD": 12.164687500000003,
+        "contextWindow": 1000000,
+        "maxOutputTokens": 64000,
+        "thinkingTokens": 86604,
+        "canonicalModel": "claude-opus-5",
+        "provider": "firstParty",
+        "costBasis": "list"
+      }
+    },
+    "permission_denials": [],
+    "terminal_reason": "completed",
+    "fast_mode_state": "off",
+    "fast_mode_disabled_reason": "sdk_opt_in_required",
+    "subagent_stats": {
+      "spawned": 0,
+      "requested": {
+        "background": 0,
+        "foreground": 0,
+        "unset": 0
+      },
+      "started_in_background": 0,
+      "max_depth": 0,
+      "spawned_by_subagents": 0,
+      "completed": 0,
+      "failed": 0,
+      "killed": {
+        "parent": 0,
+        "user": 0,
+        "system": 0
+      },
+      "refused": {
+        "depth_limit": 0,
+        "concurrency_limit": 0,
+        "budget": 0
+      },
+      "by_type": {}
+    },
+    "is_error": false,
+    "num_turns": 91,
+    "subtype": "success",
+    "api_error_status": null,
+    "result": "# Independent CODE review \u2014 fresh Snapshot opaque minimum (successor\u20111, seven\u2011file dirty draft on `0f215c0`)\n\n## Verdict\n\n**No integration-blocking defects found.** I traced the three production edits against the actual runtime paths (`transaction-consistency.ts`, `transaction-snapshot.ts` storage, store `enter`/`sweep`/`close`, service `run`/`check`/`close`, `read-http.ts`, `transaction-runtime.ts`, the conformance exact executor and the IPC launcher) and re-derived every new test's expected statuses, counts and orderings from source rather than from the plan. Everything below is optional or informational.\n\n---\n\n## Findings\n\n### Optional improvements (non-blocking)\n\n**O1 \u2014 Low \u2014 `packages/server/src/transaction-service.test.ts:3347-3349`: the \"abort does not interrupt the deferred wait\" claim is not discriminated.**\n`controller.abort(); release[0]!.resolve(); expect(await cancelled).toBeInstanceOf(ScopeServerOperationAbortedError);` releases the gate in the same synchronous block as the abort, so a hypothetical implementation that aborted the in-flight `wait()` would produce an identical observation (same error class, same `waits === 1`). The intended ordering property (`waitForTransactionMinimum` only checks `signal?.aborted` at `transaction-consistency.ts:161`, i.e. after the wait resolves) is therefore asserted by construction, not observed.\n*Smallest correction:* attach a `settled` flag in the `cancelled` chain, and between `controller.abort()` and `release[0]!.resolve()` insert `await Promise.resolve(); expect(settled).toBe(false);`.\n\n**O2 \u2014 Low \u2014 `packages/server/src/transaction-service.ts:444` and `packages/server/src/transaction-store.ts:1573`: bare `catch { throw captured.error; }` in the lexical arm.**\nA non-`TypeError` escaping `snapshotCurrentReadMinimum` would be replaced by the strict `TypeError`. This is currently **unreachable**: `snapshotTransactionMinimum` (`transaction-consistency.ts:57-62`) already ran the identical data-only capture on the same input with no intervening user code, so any non-`TypeError` would have escaped the first catch's `if (!(error instanceof TypeError)) throw error;`. The shape also matches the plan's \"lexical failure rethrows the original strict error\" wording, so this is a deliberate choice.\n*Smallest correction (only if defensive symmetry is wanted):* `catch (error) { if (!(error instanceof TypeError)) throw error; throw captured.error; }` in both files.\n\n**O3 \u2014 Low \u2014 `packages/server/src/transaction-http.test.ts:5734`: `expect(waits).toBe(8)` proves the aggregate, not per-request attribution.**\nThe eight 503 rows and the two known-minimum rows (2\u20133) share one counter; the test would still pass if, say, one 503 row waited twice and one known row waited zero/once incorrectly. The one-call-per-branch property is covered separately at `transaction-service.test.ts:1208-1226`.\n*Smallest correction:* record `waits` before/after each `get(...)` in the 503 loop and assert a delta of 1 (and 0 for rows 2\u20133).\n\n**O4 \u2014 Informational \u2014 `packages/server/src/transaction-snapshot.test.ts:1504`: `expect(after).toEqual(baseline)` is vacuous if neither callback ran** (both `undefined`). Mitigated by `expect(offlineInspections).toBe(2)` at line 1510, so no change is required.\n\n**O5 \u2014 Known, plan-deferred coverage gap \u2014 `packages/server/src/transaction-http.test.ts:2749-2803`.** The two emitted Snapshot GET/HEAD disconnect rows remain strict `pos-2` only; no selected callback exercises client disconnect on the new opaque wait (same waiter, `transaction-http.ts:636` rethrows `ScopeServerOperationAbortedError`, so the risk is low). Plan v3 \u00a7\"Exact selection totals\" defers this explicitly; it is a real residual gap, not a divergence.\n\n### Behavior-surface notes (intentional, but observable beyond the \"unknown token\" framing)\n\n**N1 \u2014 `packages/server/src/transaction-http.ts:423-425`.** Switching to `currentReadMinimumHeaders` changes the fresh-create response for *every* position token the strict helper rejects \u2014 not just opaque words. Non-canonical canonical-looking spellings (`pos-01`) and unsafe-integer positions (`pos-9007199254740992`) now take the bounded-wait path and answer 503 instead of the private 500 gap (`transaction-consistency.ts:26-31,122-130`). This is intended and pinned (`transaction-snapshot.test.ts:1487` uses `pos-01`), and it matches the already-shipped Resource behavior at `transaction-http.test.ts:4886`. Worth stating explicitly in any release note so it is not mistaken for accidental widening.\n\n**N2 \u2014 unknown + foreign epoch/view stays non-normative.** `checkCurrentReadMinimum(..., true)` raises `TransactionMinimumUnsupported` (`transaction-consistency.ts:122-128`) \u2192 `developmentGap(\"minimum-position\")` \u2192 private 500, rather than the 410/409 a known tuple gets. Byte-for-byte the same observable outcome as before the change (previously via `minimum === undefined`), so there is no regression, and plan v3 excludes the policy decision. Spec \u00a75841-5843 would want one of representation/wait/foreign-view/cursor-expired/catch-up-timeout here, so this remains a tracked non-conformance, unchanged by this draft.\n\n**N3 \u2014 `closed-malformed` ordering (`transaction-service.test.ts:3449,3468-3473`).** A closed service still performs synchronous tuple validation before `run()`'s `check()` (`transaction-service.ts:430-454` vs `140-141`), so the malformed `TypeError` wins over \"closing or closed\". That is the pre-existing Snapshot order and is now pinned; it is the opposite of what a lifecycle-first reading would predict.\n\n---\n\n## What I verified against source (not against the plan)\n\n**HTTP (`transaction-http.ts`).** One-line change only; `currentReadMinimumHeaders` already imported (line 17) and `transactionMinimumHeaders` still used (471/518/552/598), so no unused import. Order preserved: method/route (261-288) \u2192 operation POST block \u2192 401 (403) \u2192 malformed receiving (404, covers the position-only rows \u2192 400 with no invented context) \u2192 closed query grammar (407-420, covers `?unsupported=x` \u2192 400 `invalid-parameter`) \u2192 `minimum === undefined` fence (426, now defensively unreachable because 404 rejects partial tuples) \u2192 pure candidate (452-455) \u2192 exactly one terminal `service.snapshot` (456-466). `applyReadHttpSemantics` (`read-http.ts:10-39`) only rewrites 200-JSON/204, so the 503 cannot be downgraded to 304/412/406 and HEAD bodies are stripped at 42-45; `problem()`+`jsonResponse` supply `retry-after: 1` and `private, no-store` (112, `read-http-routing.ts:44-53`); `context()` stamps the three fields (122-126). Retained/foreign/receiving/query/auth outcomes remain distinct.\n\n**Service (`transaction-service.ts:430-465`).** Strict-first, `TypeError`-only capture; lexical revalidation in its own try; `request.kind` read once, outside both catches; retained/invalid kinds rethrow the *original* strict `TypeError` (message identical to pre-patch); known path byte-equivalent to the old `const minimum = \u2026, kind = \u2026`; `minimum` + pre-existing `copied = Object.freeze({ kind })` (457) are frozen before `run()`, so no recapture or deadline reset across attempts, and the mutation probes in B prove it. Definite-assignment and `in`-narrowing both have baseline precedents (`transaction-http.ts:314-320`, `transaction-store.ts:577-584`); the `NonNullable<\u2026[\"minimumReads\"]>` helper mirrors `transaction-service.test.ts:1470`.\n\n**Owner (`transaction-store.ts:1558-1633`).** Independent re-classification (service capture not trusted); `checkCurrentReadMinimum` imported at 44-47 already; `enter \u2192 readContext() \u2192 instant()` order unchanged; the minimum check precedes `snapshots.expire`, `preflight`/`capture` and all `INSERT`s (`transaction-snapshot.ts:694-701,748-758,781`), and sits outside the `TransactionSnapshotFailure \u2192 problem` conversion (1623-1631), so `Unproved`/`Unsupported` can never become a 503 `temporarily-unavailable` body. Known tuples keep `checkTransactionMinimum`, preserving its epoch\u2192view\u2192position error order. `observedRequest` narrowing inside the `enter` closure resolves from the declared type, so `.id/.stream/.token` remain well-typed.\n\n**Tests.** I re-derived: A = 14 owner calls / 4 pre-entry refusals / 2 inspections and confirmed the baseline `snapshots 1, records 1, pages 2` from the `do\u2026while` page loop (`transaction-snapshot.ts:711-761`), that `close()` runs no sweep (2338-2346) while *open* does (637) \u2014 which is exactly why the measured comparison precedes the final reopen; the two replaced assertions at 1241-1248 keep the 35-call/zero-row oracle intact. B: 2 service / 4 owner / 2 waits / 1 real commit, terminal context `pos-1`, with `requiredPosition`/`effectPosition` semantics confirmed at `transaction-store.ts:1385-1386`. C: 4 service / 5 delegated owner / 3 waits, close pending across two waits, synchronous \"closing or closed\" refusal, and the post-close real-owner probe genuinely reaches `enter()` (402) so `.toThrow(\"closed\")` is meaningful. F: all seven rows re-derived, including `clockCalls === 1` only for `unknown-preaborted` (`transaction-consistency.ts:155-161`). D: all 27 requests re-traced to 200\u00d75/503\u00d78/500\u00d78/400\u00d74/401\u00d72 with 8 waits under `budgetMs: 2` + `tick++`; retained literal-byte equality holds because `manifestValue` is `now`-independent (`transaction-snapshot.ts:594-615`) and the fixture clock is constant; `runtime.close()` is memoized (375-378), so the try+finally+cleanup triple close is safe. E: exact-mode config passes `snapshotExactHttpMode`/`snapshotExactRoutes`; `bodyDigest` is genuinely absent for bodyless requests (`http-executor.ts:756-765`), `Host` is `reference.invalid` (724), authored `accept`/`content-type`/`idempotency-key`/`bdp-*` are all admissible (337-345, 675), and the two 503s each consume ~1 s of the installed default `minimumReadBudgetMs: 1000` \u2014 inside `requestTimeoutMs: 5000` and the unchanged 45 s/60 s bounds. The cleanup closure preserves the directory on ownership/close/deadline failure, reports real PID/exit/signal and real `existsSync`, and `finishObservation` aggregates rather than overriding the primary error. Exchange 19 is the only changed expectation in the 31-exchange callback.\n\n**No out-of-scope regression.** I checked every other site that sends minimum controls to a Snapshot URL: `transaction-snapshot-http.test.ts:397-435` uses `pos-0` (strict-valid \u2192 unchanged 410/500), `transaction-http.test.ts:2805-2877` uses `pos-1`/`pos-2`, `:4518-4564` sends position-only (400), and the installed collection/receiving/current-resource suites never touch the `snapshot` route. The 2749-2803 disconnect rows are untouched.\n\n---\n\n## Material limitations\n\n1. **Nothing was executed.** No typecheck, lint, build, or test run \u2014 per instructions. All type reasoning above is by inspection plus baseline precedent; the constructs most worth a real `tsc` pass are `transaction-store.ts:1578` (`Object.freeze({ kind })` \u2192 `TransactionSnapshotRequest`, identical to pre-existing `transaction-service.ts:457`), the `\"error\" in captured` narrowing, and the definite assignment of `minimum` in the service's error arm.\n2. **`transaction-http.test.ts` imports `../dist/transaction-runtime.js` (line 16-18).** D's 503 expectations and the extended handler loop test *stale emitted code* unless `packages/server/dist` is rebuilt after these three production edits; the same applies to `packages/server/dist/transaction-installed-process.js` for E. A stale build would surface as 500/`minimum-position` instead of 503 \u2014 the single most likely source of a confusing validation failure.\n3. **All counts remain prospective.** I cross-checked the arithmetic (13 new source callbacks \u2192 22; 18+27 = 45 emitted; 15 handler; 31+3 = 34 installed; 3 sequential children) against the actual code, but matching counts are not evidence of passing; I did not infer approval from plan acceptance or count agreement.\n4. **Review bounded to this implementation.** I did not evaluate retained-continuation (S1), G2, unknown-plus-foreign policy, profile qualification, or public discovery/admission \u2014 all excluded by plan v3 and unchanged here. I read `design.md`-adjacent normative spec lines only as cited; no mutable workstream plans or historical validation paperwork were consulted.\n5. **Dirty-tree caveat.** The seven-file draft is uncommitted on `0f215c0`; I verified on-disk content matches `full.patch` in all seven changed regions, but I could not run `git` to confirm no eighth file differs.",
+    "ttft_ms": 1497,
+    "type": "result",
+    "duration_ms": 1379736,
+    "uuid": "82ebdf5c-e9db-4de5-9d8f-c24520286636",
+    "ttft_stream_ms": 926,
+    "time_to_request_ms": 13,
+    "first_content_frame_ms": 927,
+    "queued_turn_count": 0
+  }
+]

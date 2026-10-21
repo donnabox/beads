@@ -1,0 +1,39 @@
+--- a/apps/bdptest/src/transactional-set-installed.test.ts
++++ b/apps/bdptest/src/transactional-set-installed.test.ts
+@@ -222,7 +222,28 @@
+       throw error;
+     }
+   };
++  const observeValidationPhase = (phase: "callback-start" | "callback-end") => {
++    try {
++      const value = process.env.BDP_D4_VALIDATION_ATTEMPT_ID;
++      const attemptId =
++        typeof value === "string" && /^[0-9a-f]{32}$/.test(value) ? value : null;
++      const sourceElapsedMilliseconds = performance.now() - started;
++      if (!Number.isFinite(sourceElapsedMilliseconds) || sourceElapsedMilliseconds < 0) return;
++      const line =
++        JSON.stringify({
++          observation: "transactional-set-validation-phase",
++          version: 1,
++          attemptId,
++          phase,
++          sourceElapsedMilliseconds,
++        }) + "\n";
++      if (Buffer.byteLength(line, "utf8") <= 4096) process.stdout.write(line);
++    } catch {
++      // Only marker observation is optional; the collector refuses missing evidence.
++    }
++  };
+   try {
++    observeValidationPhase("callback-start");
+     // Owned throwing I/O and validator preparation must fail inside this callback.
+     const root = fileURLToPath(new URL("../../../", import.meta.url));
+     metadata.mode =
+@@ -887,6 +908,7 @@
+     ],
+   };
+   console.log(JSON.stringify(report));
++  observeValidationPhase("callback-end");
+   if (failures.length)
+     throw new AggregateError(failures, "installed set observation or cleanup failed");
+ }, 120000);

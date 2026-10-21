@@ -1,0 +1,66 @@
+--- before/packages/server/src/reference-deployment-runtime.test.ts
++++ after/packages/server/src/reference-deployment-runtime.test.ts
+@@ -1,6 +1,7 @@
+ /** Genuine owner/listener witnesses. Counts are prospective until this exact source runs. */
+ import { afterEach, beforeEach, expect, it, vi } from "vitest";
+ import * as http from "node:http";
++import * as fsPromises from "node:fs/promises";
+ import { isDeepStrictEqual } from "node:util";
+ import { createServer as createPortReservation } from "node:net";
+ import { DatabaseSync } from "node:sqlite";
+@@ -36,6 +37,8 @@
+ const openRU = authority.openDevelopmentAuthority, openTX = stores.openTransactionStore,
+   construct = services.createTransactionService, compose = compositions.createDevelopmentComposition,
+   createHTTP = http.createServer;
++const pendingStarts = new Set<Promise<Awaited<ReturnType<typeof startPreparedReferenceDeployment>>>>();
++const preparationControllers: AbortController[] = [];
+ const roots: string[] = [], active: { close(): Promise<unknown> }[] = [], servers: http.Server[] = [];
+ const token = "lifecycle_writer_" + "a".repeat(32), reader = "lifecycle_reader_" + "b".repeat(32);
+ const allow = { create: true, write: true, hidden: [], readOnly: [] };
+@@ -125,7 +128,9 @@
+   });
+ });
+ afterEach(async () => {
++  for (const controller of preparationControllers.splice(0)) controller.abort();
+   secondPrincipal?.release.resolve(); mutation?.release.resolve();
++  await Promise.allSettled([...pendingStarts]);
+   const cleanup = await Promise.allSettled(active.splice(0).map((runtime) => runtime.close()));
+   vi.restoreAllMocks();
+   await Promise.all(servers.splice(0).map((server) => new Promise<void>((resolve) => {
+@@ -170,14 +175,24 @@
+ }
+ function counts() { return { returned, ownerCloses, serviceCloses, serviceAttempts, configurationReads, listenAttempts: listenArgs.length, listeningAcquisitions: acquired, trace: [...trace] }; }
+ function emit(id: string, extra: unknown = null) { console.log(JSON.stringify({ observation: "reference-lifecycle-source", id, counts: counts(), extra, claimEligible: false })); }
+-async function start(handle: PreparedReferenceDeployment, signal?: AbortSignal) { const runtime = await startPreparedReferenceDeployment(handle, signal); active.push(runtime); return runtime; }
++function start(handle: PreparedReferenceDeployment, signal?: AbortSignal) {
++  const controller = new AbortController(); preparationControllers.push(controller);
++  const pending = startPreparedReferenceDeployment(handle, signal ? AbortSignal.any([signal, controller.signal]) : controller.signal)
++    .then((runtime) => { active.push(runtime); return runtime; });
++  pendingStarts.add(pending);
++  void pending.then(() => pendingStarts.delete(pending), () => pendingStarts.delete(pending));
++  return pending;
++}
+ 
+ it.each(["plain", "frozen", "getter", "proxy"] as const)("S01 registered handle refuses %s without traps", async (kind) => {
++  const f = await fixture("read-update"), genuine = await f.prepare();
+   let traps = 0;
+-  const object = kind === "getter" ? { get profile() { traps++; throw Error("trap"); } } : {};
+-  const forged = kind === "proxy" ? new Proxy(object, { get() { traps++; throw Error("trap"); }, ownKeys() { traps++; throw Error("trap"); } }) : kind === "frozen" ? Object.freeze(object) : object;
++  const object = { ...genuine };
++  if (kind === "getter") Object.defineProperty(object, "profile", { enumerable: true, get() { traps++; throw Error("trap"); } });
++  const forged = kind === "proxy" ? new Proxy(genuine, { get() { traps++; throw Error("trap"); }, ownKeys() { traps++; throw Error("trap"); } }) : kind === "frozen" ? Object.freeze(object) : object;
++  const fileOpen = vi.spyOn(fsPromises, "open");
+   await expect(startPreparedReferenceDeployment(forged as PreparedReferenceDeployment)).rejects.toThrow("registered reference deployment required");
+-  expect(traps).toBe(0); expect(returned).toBe(0); expect(listenArgs).toHaveLength(0); emit("S01-" + kind);
++  expect(fileOpen).not.toHaveBeenCalled(); expect(traps).toBe(0); expect(returned).toBe(0); expect(listenArgs).toHaveLength(0); emit("S01-" + kind);
+ });
+ it.each([false, true])("S02 RU completes second principal before bind; reject=%s", async (fail) => {
+   const f = await fixture("read-update"), handle = await f.prepare(); primary = new Error("principal sentinel");
+@@ -295,6 +310,7 @@
+ });
+ it.each(["read-update", "transactional"] as const)("S11 memoized trusted close and exact legacy shape %s", async (profile) => {
+   const f = await fixture(profile), runtime = await start(await f.prepare());
++  let completed = false; void runtime.completion.then(() => { completed = true; }, () => { completed = true; }); await Promise.resolve(); expect(completed).toBe(false);
+   const first = runtime.close(); expect(runtime.close()).toBe(first); await Promise.all([first, runtime.close(), runtime.completion]); expect(ownerCloses).toBe(1);
+   const trusted = counts(), next = await fixture(profile), handle = await next.prepare(), state = referenceDeploymentState(handle);
+   const old = state.profile === "read-update" ? await startDevelopmentReferenceRuntime(

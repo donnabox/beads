@@ -1,0 +1,124 @@
+Verification complete. No files written; all checks were reads plus two throwaway in-memory `node -e` experiments against the built `packages/conformance/dist` and a replica of the `development-runtime` admission order.
+
+---
+
+# Findings — `read-update-required-next-plan.md` vs `4a8607a`
+
+## 1. HIGH — "consumes all request bytes before admission" is false, and it inverts the plan's own evidence model
+
+**Location:** plan line 20 → `packages/server/src/development-runtime.ts:443–466`
+
+**Concrete:** `const text = await body(request)` is line **454**, *after* the content-type refusal (448), the content-encoding refusal (450), and the missing/stray-key refusal (453). For every probe in section B (all media refusals) and for A.2 (missing key × 8 targets) and A.4 (repeated / mixed-case), the authority **never reads or parses the body**.
+
+A second consequence inside A.3: `header()` returns `""` for an empty field value, and `"" !== undefined`, so the **empty** key passes the HTTP gate, the body *is* read, and the rejection comes from `prepareReadUpdateSingleton`'s grammar. Verified over the real raw transport: `400`, `observedKey: ""`, `occurrences: 1`. The plan presents the whole A.3 corpus as one family on one path.
+
+**Impact:** A.2's stated strengthening — "Prepared updates/deletes/alias changes must be real effects if executed; creates use distinct absent IDs" — is evidentially **inert** for exactly those probes. The authority never sees the operation record, so "no accidental mutation" is unfalsifiable by body content; the state proof degenerates to "a request that was never parsed changed nothing." The plan markets A.2 as the substantive no-accidental-mutation proof.
+
+**Fix:** restate line 20 as "refuses media, multiplicity and presence before reading any body bytes; only a *present-but-malformed* key reaches `body()` and then `prepareReadUpdateSingleton`." Rebase A.2's discipline onto what actually discriminates (A.4's recovery witnesses, the line-45 controls), and call out empty-key as the single A.3 member that traverses the carrier path.
+
+## 2. HIGH — the four-file scope cannot execute the plan's own promotion path
+
+**Location:** plan lines 16, 52–59 → `packages/conformance/src/cumulative-artifact.test.ts:146–189`, `apps/bdptest/src/read-update-matrix.test.ts:919, 1559`
+
+**Concrete:**
+- `cumulative-artifact.test.ts:147–172` pins the **exact 26-ID whole-contract list** with `toEqual`. Setting either new row to `wholeContract:true` fails that test until that list is edited — a **fifth file**, outside "Expected owned files only."
+- `expect(report.uncoveredIds).toHaveLength(103)` appears **twice** (919 in the 120 s aggregate test, 1559 in the 30 s retry-rows test). The plan says "both" explicitly only for the route digest pins; the 103→101 pins are folded into a vague "count/route pins."
+- `cumulative-artifact.test.ts:184–189` further requires `row.bindings[0].assertions` to equal **every** `${action.id}.${assertion.id}` of the row's scenario, in order — several hundred exact strings per row at the proposed corpus size.
+
+**Impact:** line 16's "even two accepted promotions leave 101 required IDs uncovered" describes an outcome unreachable inside the declared scope. A reviewer holding the plan to "Expected owned files only" must reject the required edit as scope creep.
+
+**Fix:** list `cumulative-artifact.test.ts` as a promotion-only owned file; name both `uncoveredIds` pins beside both digest pins; or state plainly that this slice lands `bounded-observation`/`wholeContract:false` and promotion is a separate change.
+
+## 3. MEDIUM — there is no alias collection; line 23 asserts one
+
+**Location:** plan line 23, A.1, A.2 → `packages/server/src/read-request.ts:941–951`, `development-runtime.ts:430–436`
+
+**Concrete:** the alias root is redirect-only. `classifyAliasPath` returns `notFound()` for the empty path, so `GET ${scope}alias/` is a **404**; individual alias paths resolve as **307**. There is no `aliases` entry in the harness's `knownReadBindings` (`read-update-matrix.test.ts:173–185`).
+
+**Impact:** A.1's "complete collections" and A.2's "equals its prior full value" have **no alias oracle** for the `put-alias` / `delete-alias` targets. An implementer following line 23 hits a 404 and will either widen scope or silently drop alias afterstate from two of the eight targets.
+
+**Fix:** drop "alias" from the collections sentence and name the real oracle — proposed-alias absence as an exact 404 Problem, retained alias as 307 with `{kind:"header", name:"location", equalsBinding:<target>}`. Both are expressible: the `header` assertion permits any lowercase field name (the `STABLE_RESPONSE_METADATA_HEADERS` restriction applies only to `response-metadata-equals`).
+
+## 4. MEDIUM — the cited spec range is wider than the catalog selectedText and imports two clauses the row cannot or will not prove
+
+**Location:** plan line 13 → `catalog/read-update-v1.json:426–437`, `docs/specs/bdp.md:3172–3180`
+
+**Concrete:** the catalog selectedText spans only **3175–3178** ("A key outside the profile … rather than choosing an occurrence."). The plan's `3171–3179` additionally covers:
+- **3174–3175** "without quoting, padding, or whitespace" — surrounding whitespace is **unobservable at this transport**. Verified over the real raw lane: `Idempotency-Key: " k1"` and `"k1 "` both arrive as `"k1"` and **succeed with 200**. Plan line 30 correctly warns about OWS trimming but never connects it to the credit disposition.
+- **3179** "the authority never allocates, normalizes, or case-folds them" — which line 32 explicitly declines to prove.
+
+**Impact:** the row claims whole-contract over a range containing one unobservable clause and one disclaimed clause. The citation audit the plan itself requests should refuse whole credit on the plan's own stated basis.
+
+**Fix:** narrow the citation to **3175–3178** to match the catalog selectedText, noting 3172–3174 as the *definition* of "the profile" rather than a separate obligation.
+
+## 5. MEDIUM — every `malformed-request` body is byte-identical, so most of A.3 has no control attributing the refusal to the key
+
+**Location:** plan A.3, A.6, line 45 → `development-runtime.ts:96–110`, `packages/protocol/src/index.ts:534–547`
+
+**Concrete:** `refused()` calls `readProblem(code)` with **no `detail`**, emitting exactly `{type, code, retry, status}`. A bad body, a bad route, a bad key and a repeated field all produce an identical 400. The declared controls cover only two corpus members (duplicate-key→single-key, 257→256). Nothing discriminates quoted token, internal space, internal tab, comma-combined, Latin-1, or empty.
+
+**Impact:** A.6's "full deterministic fixture Problem equality" reads as a strong oracle but is the weakest available one here — it is satisfied by any unrelated 400. An implementation refusing at the wrong layer passes most of A.3, which directly undercuts the whole-contract claim.
+
+**Fix:** generalize A.5's positive-boundary idea from the length boundary to **every** corpus member: pair each refusal with a same-row retry that changes *only* the key to a valid spelling and requires 200 plus the exact postimage.
+
+## 6. MEDIUM — catalog ordering forces mid-matrix insertion at indices 30 and 32; the plan reads as append-only
+
+**Location:** plan line 48 → `cumulative-artifact.test.ts:113–116`
+
+**Concrete:** matrix order must equal `catalogOrder.filter(...)`. Computed: `…idempotency-key-required` is required index 63 → insert **after** `read-update.singleton.expected-revision` (matrix index 30); `…unsupported-media-type` is index 67 → **after** `read-update.singleton.idempotency-conflict` (matrix index 32).
+
+**Impact:** insertion position determines which scenario *first* contributes each POST route to `readRoutes`, and `uniqueRoutes` keeps the first occurrence — so the ordered `exactConfigurationDigest` depends on **where** the rows land, not only on the new actions. The plan rightly says to update both pins but never states the positions, so a misplacement yields a self-consistent yet reviewer-unverifiable digest. `read-update-matrix.test.ts:804`'s "45 isolated authorities" comment also goes stale at 47.
+
+**Fix:** state both insertion positions, then recompute both `exactConfigurationDigest` pins after placement.
+
+## 7. LOW — the budget baseline cites only the fastest environment, omitting the datum that set the current ceiling
+
+**Location:** plan line 66 → `read-update-matrix.test.ts:804–807, 367, 925`
+
+**Concrete:** the budgets themselves are accurate — `requestTimeoutMs: 5000` (367), 90 000 ms cooperative abort (807), 120 000 ms outer (925). But the in-repo comment records *"One aggregate job starts 45 isolated authorities; **Linux CI previously exceeded 30s**"* — the reason that ceiling exists. The plan anchors only on a899's local **12.751 s**.
+
+**Impact:** sections A.1–A.6 and B.1–B.5 imply well over 100 new exchanges across two rows (today's largest row, `sequence.carrier-rejection`, has 25 raw actions) plus two more authority launches. Judging "approaching them" against a 12.751 s local figure will read safe while the constraining environment runs ~2.5× slower.
+
+**Fix:** cite the Linux CI figure alongside the local one and record each row's exchange count so the aggregate projection is checkable rather than asserted.
+
+## 8. LOW — the 17 per-target probes exercise one shared branch each
+
+**Location:** plan A.2, B.2 → `development-runtime.ts:444–453` vs `367–370`
+
+**Concrete:** the media gate (444–450) and the key-presence gate (451–453) are each a *single* branch reached by all nine mutation routes; only `targetRoot`/`operations` routing differs per target.
+
+**Impact:** eight missing-key plus nine missing-media probes buy **route-wiring** coverage, not gate coverage. Unlabelled, they read as redundant repetition and are the first thing a reviewer will ask to trim — while also being the largest single contributor to finding 7.
+
+**Fix:** label A.2/B.2 explicitly as route-wiring evidence, so the per-target count is defended on its actual grounds.
+
+## 9. LOW — "app harness bytes are unchanged" is not literally true for the a899→4a8607a delta
+
+**Location:** plan line 3
+
+**Concrete:** `git diff a899872 4a8607a` touches `packages/conformance/test-support/profile-contract-plan.ts` (lines 201, 364: `transportAdmission: "pending"` → `"pending-h1b"`). That module supplies `loadProfileContractSelection` / `bindServedProfileConfiguration` / `planProfileExecution` to the RU app harness.
+
+**Impact:** behaviorally inert here — both sites are guarded by `bound.profile === "transactional"` — but the plan's whole premise is byte-exact source binding, so a flat "unchanged" invites a reviewer to re-derive the delta.
+
+**Fix:** "changed only under the `transactional` profile guard; no read-update-reachable behavior."
+
+---
+
+## Verified correct (claims I tried to break and could not)
+
+- **Inventory, exactly.** 129 coverage rows (81 read-update + 43 read + 5 numeric-model/owned-wildcard), 45 `bounded-observation`, 26 `wholeContract`, 19 partial, 84 omitted, 103 uncovered, `claimEligible:false`, 45 matrix scenarios, `manifestVersion: 2`.
+- **All line citations land.** `development-runtime.ts:78–83` is `header()`; `443–466` is the media/key/mutate block; `read-update-preflight.ts:39–54` is `prepareReadUpdateSingleton`; `executable-manifest.ts:48–80` is the raw/credentialRef/body types and `917–985` the raw parse branch; `read-update-matrix.test.ts:172–250` is route assembly; `:1331` is exactly the ad-hoc missing-key injection, which indeed asserts 400/`malformed-request`/schema without binding the required ID.
+- **All three spec citations are verbatim** (3432–3434 and the catalog selectedText match exactly; 3587–3592 is the negotiation distinction).
+- **Eight singletons + sequence = nine POST routes**, all allowlisted.
+- **Raw transport grammar, empirically.** Over the real executor against a faithful admission replica, all of A.2/A.3/A.4 returned **400** and all of A.5 returned **200**. Latin-1 `0xFF` survives as a **single byte 255** (`Buffer.from(…, "latin1")`) and is accepted by Node's parser, reaching the grammar check — line 30's claim holds. Mixed-case repeated field names collide correctly via `rawHeaders[i].toLowerCase()`. The OWS warning is correct and load-bearing.
+- **`content-type` is authorable and omittable.** It is in neither `EXACT_RESERVED_FIELDS` nor `SECRET_HEADER_PATTERN`, and the executor's defaults are only Accept / Accept-Language / Accept-Encoding / User-Agent / Host / Connection / Content-Length — never Content-Type. An existing 415 precedent already works (`sequence.carrier-rejection/media`).
+- **Line 46's controls exist.** `retryControl` does positional client-action selection with `expect(clientAction.input).toEqual(execution.input)` — the "executed-input deep-equality guard" — plus an application counter.
+- **"Ordered route digest" is literally true.** `sortJsonValue` maps arrays without sorting them, so `routes` order is hashed; there are exactly two `exactConfigurationDigest` pins (916, 1233), and the progress doc records a prior pin move for the same reason.
+- **Pagination `next:null` is reachable.** Each scenario launches a **fresh** installed child with its own store dir and the fixture `seed` is empty, so a new row starts at zero beads/links against `defaultItems: 20` / `maximumItems: 100`.
+- **"Equals its prior full value" is expressible** — `readJsonPointer` accepts `""`, and `json-pointer` + `equalsBinding` does a `deepEqual` against a cloned capture of arbitrary JSON, so whole-body equality including target-minted revisions works. (`json-equals` has no `equalsBinding`, so this is the only route — worth knowing, not a defect.)
+- **B.4's decoder argument is sound.** `body()` decodes with `new TextDecoder("utf-8", {fatal:true})` unconditionally, so `charset=iso-8859-1` over UTF-8 bytes genuinely proves parameters are ignored rather than merely tolerated.
+- **B.3's noncapture oracle is genuinely discriminating,** because `read-update.singleton.idempotency-conflict` is already whole-contract: a same-key retry with a changed body would surface `idempotency-conflict` if the 415 had claimed the key.
+- **"Before execution" holds for malformed keys.** `mutate` calls `prepareReadUpdateSingleton` first, and the grammar check precedes `parseReadUpdateRequest`, so nothing reaches `lifecycle.submit`.
+- **Problem shape matches the spec.** `refused()` emits `415` / `retry:"never"`, matching `bdp.md:3412`.
+- **Budgets, toolchain, and the "closest subsequent candidates" coverage statuses all check out** (148 test files confirmed; `engines.node 24.16.0` / `pnpm@11.20.0` with `engine-strict=true` — note this worktree's ambient Node is 26.0.0, so the frozen toolchain must be activated before any measurement, including re-running my experiments).
+
+I did not run the 8451-test suite or a packed run; those are the user-supplied baseline and the plan correctly defers them to root.

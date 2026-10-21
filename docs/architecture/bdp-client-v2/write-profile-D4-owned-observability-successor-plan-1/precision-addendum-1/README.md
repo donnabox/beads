@@ -1,0 +1,1 @@
+Apply the two exact DATA qualifications in erratum.json to the unchanged parent plan. No owner PGID query is proposed; identifier digits are bounded per field. Original index and41 files are preserved. No source/executable/runtime authority.

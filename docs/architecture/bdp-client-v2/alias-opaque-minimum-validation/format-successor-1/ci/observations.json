@@ -1,0 +1,1805 @@
+[
+  {
+    "line": 1690,
+    "value": {
+      "observation": "alias-minimum-http",
+      "attempted": 28,
+      "responses": [
+        {
+          "method": "POST",
+          "route": "operations/batch",
+          "status": 200,
+          "bodyOctets": 870,
+          "context": {
+            "bdp-scope-epoch": "d493fe03-8603-4e74-84bc-4255a4e3e0fd",
+            "bdp-authorization-view": "development-all-visible",
+            "bdp-scope-position": "pos-1"
+          },
+          "headers": {
+            "location": null,
+            "etag": null,
+            "content-length": "870",
+            "cache-control": "private, no-store",
+            "retry-after": null,
+            "x-bdp-development-limit": null
+          }
+        },
+        {
+          "method": "POST",
+          "route": "operations/put-alias",
+          "status": 200,
+          "bodyOctets": 535,
+          "context": {
+            "bdp-scope-epoch": "d493fe03-8603-4e74-84bc-4255a4e3e0fd",
+            "bdp-authorization-view": "development-all-visible",
+            "bdp-scope-position": "pos-1"
+          },
+          "headers": {
+            "location": null,
+            "etag": null,
+            "content-length": "535",
+            "cache-control": "private, no-store",
+            "retry-after": null,
+            "x-bdp-development-limit": null
+          }
+        },
+        {
+          "method": "GET",
+          "route": "alias/work",
+          "status": 307,
+          "bodyOctets": 0,
+          "context": {
+            "bdp-scope-epoch": "d493fe03-8603-4e74-84bc-4255a4e3e0fd",
+            "bdp-authorization-view": "development-all-visible",
+            "bdp-scope-position": "pos-1"
+          },
+          "headers": {
+            "location": "http://127.0.0.1:37461/acme/beads/a",
+            "etag": null,
+            "content-length": "0",
+            "cache-control": "private, no-store",
+            "retry-after": null,
+            "x-bdp-development-limit": null
+          }
+        },
+        {
+          "method": "GET",
+          "route": "alias/work",
+          "status": 307,
+          "bodyOctets": 0,
+          "context": {
+            "bdp-scope-epoch": "d493fe03-8603-4e74-84bc-4255a4e3e0fd",
+            "bdp-authorization-view": "development-all-visible",
+            "bdp-scope-position": "pos-1"
+          },
+          "headers": {
+            "location": "http://127.0.0.1:37461/acme/beads/a",
+            "etag": null,
+            "content-length": "0",
+            "cache-control": "private, no-store",
+            "retry-after": null,
+            "x-bdp-development-limit": null
+          }
+        },
+        {
+          "method": "HEAD",
+          "route": "alias/work",
+          "status": 307,
+          "bodyOctets": 0,
+          "context": {
+            "bdp-scope-epoch": "d493fe03-8603-4e74-84bc-4255a4e3e0fd",
+            "bdp-authorization-view": "development-all-visible",
+            "bdp-scope-position": "pos-1"
+          },
+          "headers": {
+            "location": "http://127.0.0.1:37461/acme/beads/a",
+            "etag": null,
+            "content-length": "0",
+            "cache-control": "private, no-store",
+            "retry-after": null,
+            "x-bdp-development-limit": null
+          }
+        },
+        {
+          "method": "HEAD",
+          "route": "alias/work",
+          "status": 307,
+          "bodyOctets": 0,
+          "context": {
+            "bdp-scope-epoch": "d493fe03-8603-4e74-84bc-4255a4e3e0fd",
+            "bdp-authorization-view": "development-all-visible",
+            "bdp-scope-position": "pos-1"
+          },
+          "headers": {
+            "location": "http://127.0.0.1:37461/acme/beads/a",
+            "etag": null,
+            "content-length": "0",
+            "cache-control": "private, no-store",
+            "retry-after": null,
+            "x-bdp-development-limit": null
+          }
+        },
+        {
+          "method": "GET",
+          "route": "alias/work",
+          "status": 503,
+          "bodyOctets": 127,
+          "context": {
+            "bdp-scope-epoch": "d493fe03-8603-4e74-84bc-4255a4e3e0fd",
+            "bdp-authorization-view": "development-all-visible",
+            "bdp-scope-position": "pos-1"
+          },
+          "headers": {
+            "location": null,
+            "etag": null,
+            "content-length": "127",
+            "cache-control": "private, no-store",
+            "retry-after": "1",
+            "x-bdp-development-limit": null
+          }
+        },
+        {
+          "method": "HEAD",
+          "route": "alias/work",
+          "status": 503,
+          "bodyOctets": 0,
+          "context": {
+            "bdp-scope-epoch": "d493fe03-8603-4e74-84bc-4255a4e3e0fd",
+            "bdp-authorization-view": "development-all-visible",
+            "bdp-scope-position": "pos-1"
+          },
+          "headers": {
+            "location": null,
+            "etag": null,
+            "content-length": "127",
+            "cache-control": "private, no-store",
+            "retry-after": "1",
+            "x-bdp-development-limit": null
+          }
+        },
+        {
+          "method": "GET",
+          "route": "alias/work",
+          "status": 409,
+          "bodyOctets": 127,
+          "context": {
+            "bdp-scope-epoch": "d493fe03-8603-4e74-84bc-4255a4e3e0fd",
+            "bdp-authorization-view": "development-all-visible",
+            "bdp-scope-position": "pos-1"
+          },
+          "headers": {
+            "location": null,
+            "etag": null,
+            "content-length": "127",
+            "cache-control": "private, no-store",
+            "retry-after": null,
+            "x-bdp-development-limit": null
+          }
+        },
+        {
+          "method": "HEAD",
+          "route": "alias/work",
+          "status": 409,
+          "bodyOctets": 0,
+          "context": {
+            "bdp-scope-epoch": "d493fe03-8603-4e74-84bc-4255a4e3e0fd",
+            "bdp-authorization-view": "development-all-visible",
+            "bdp-scope-position": "pos-1"
+          },
+          "headers": {
+            "location": null,
+            "etag": null,
+            "content-length": "127",
+            "cache-control": "private, no-store",
+            "retry-after": null,
+            "x-bdp-development-limit": null
+          }
+        },
+        {
+          "method": "GET",
+          "route": "alias/work",
+          "status": 410,
+          "bodyOctets": 125,
+          "context": {
+            "bdp-scope-epoch": "d493fe03-8603-4e74-84bc-4255a4e3e0fd",
+            "bdp-authorization-view": "development-all-visible",
+            "bdp-scope-position": "pos-1"
+          },
+          "headers": {
+            "location": null,
+            "etag": null,
+            "content-length": "125",
+            "cache-control": "private, no-store",
+            "retry-after": null,
+            "x-bdp-development-limit": null
+          }
+        },
+        {
+          "method": "HEAD",
+          "route": "alias/work",
+          "status": 410,
+          "bodyOctets": 0,
+          "context": {
+            "bdp-scope-epoch": "d493fe03-8603-4e74-84bc-4255a4e3e0fd",
+            "bdp-authorization-view": "development-all-visible",
+            "bdp-scope-position": "pos-1"
+          },
+          "headers": {
+            "location": null,
+            "etag": null,
+            "content-length": "125",
+            "cache-control": "private, no-store",
+            "retry-after": null,
+            "x-bdp-development-limit": null
+          }
+        },
+        {
+          "method": "GET",
+          "route": "alias/work",
+          "status": 503,
+          "bodyOctets": 127,
+          "context": {
+            "bdp-scope-epoch": "d493fe03-8603-4e74-84bc-4255a4e3e0fd",
+            "bdp-authorization-view": "development-all-visible",
+            "bdp-scope-position": "pos-1"
+          },
+          "headers": {
+            "location": null,
+            "etag": null,
+            "content-length": "127",
+            "cache-control": "private, no-store",
+            "retry-after": "1",
+            "x-bdp-development-limit": null
+          }
+        },
+        {
+          "method": "HEAD",
+          "route": "alias/work",
+          "status": 503,
+          "bodyOctets": 0,
+          "context": {
+            "bdp-scope-epoch": "d493fe03-8603-4e74-84bc-4255a4e3e0fd",
+            "bdp-authorization-view": "development-all-visible",
+            "bdp-scope-position": "pos-1"
+          },
+          "headers": {
+            "location": null,
+            "etag": null,
+            "content-length": "127",
+            "cache-control": "private, no-store",
+            "retry-after": "1",
+            "x-bdp-development-limit": null
+          }
+        },
+        {
+          "method": "GET",
+          "route": "alias/work",
+          "status": 503,
+          "bodyOctets": 127,
+          "context": {
+            "bdp-scope-epoch": "d493fe03-8603-4e74-84bc-4255a4e3e0fd",
+            "bdp-authorization-view": "development-all-visible",
+            "bdp-scope-position": "pos-1"
+          },
+          "headers": {
+            "location": null,
+            "etag": null,
+            "content-length": "127",
+            "cache-control": "private, no-store",
+            "retry-after": "1",
+            "x-bdp-development-limit": null
+          }
+        },
+        {
+          "method": "HEAD",
+          "route": "alias/work",
+          "status": 503,
+          "bodyOctets": 0,
+          "context": {
+            "bdp-scope-epoch": "d493fe03-8603-4e74-84bc-4255a4e3e0fd",
+            "bdp-authorization-view": "development-all-visible",
+            "bdp-scope-position": "pos-1"
+          },
+          "headers": {
+            "location": null,
+            "etag": null,
+            "content-length": "127",
+            "cache-control": "private, no-store",
+            "retry-after": "1",
+            "x-bdp-development-limit": null
+          }
+        },
+        {
+          "method": "GET",
+          "route": "alias/missing",
+          "status": 404,
+          "bodyOctets": 134,
+          "context": {
+            "bdp-scope-epoch": "d493fe03-8603-4e74-84bc-4255a4e3e0fd",
+            "bdp-authorization-view": "development-all-visible",
+            "bdp-scope-position": "pos-1"
+          },
+          "headers": {
+            "location": null,
+            "etag": null,
+            "content-length": "134",
+            "cache-control": "private, no-store",
+            "retry-after": null,
+            "x-bdp-development-limit": null
+          }
+        },
+        {
+          "method": "GET",
+          "route": "alias/missing",
+          "status": 404,
+          "bodyOctets": 134,
+          "context": {
+            "bdp-scope-epoch": "d493fe03-8603-4e74-84bc-4255a4e3e0fd",
+            "bdp-authorization-view": "development-all-visible",
+            "bdp-scope-position": "pos-1"
+          },
+          "headers": {
+            "location": null,
+            "etag": null,
+            "content-length": "134",
+            "cache-control": "private, no-store",
+            "retry-after": null,
+            "x-bdp-development-limit": null
+          }
+        },
+        {
+          "method": "GET",
+          "route": "alias/work?invalid=1",
+          "status": 404,
+          "bodyOctets": 134,
+          "context": {
+            "bdp-scope-epoch": null,
+            "bdp-authorization-view": null,
+            "bdp-scope-position": null
+          },
+          "headers": {
+            "location": null,
+            "etag": null,
+            "content-length": "134",
+            "cache-control": "private, no-store",
+            "retry-after": null,
+            "x-bdp-development-limit": null
+          }
+        },
+        {
+          "method": "GET",
+          "route": "alias/work",
+          "status": 400,
+          "bodyOctets": 118,
+          "context": {
+            "bdp-scope-epoch": null,
+            "bdp-authorization-view": null,
+            "bdp-scope-position": null
+          },
+          "headers": {
+            "location": null,
+            "etag": null,
+            "content-length": "118",
+            "cache-control": "private, no-store",
+            "retry-after": null,
+            "x-bdp-development-limit": null
+          }
+        },
+        {
+          "method": "GET",
+          "route": "alias/missing",
+          "status": 404,
+          "bodyOctets": 134,
+          "context": {
+            "bdp-scope-epoch": "d493fe03-8603-4e74-84bc-4255a4e3e0fd",
+            "bdp-authorization-view": "development-all-visible",
+            "bdp-scope-position": "pos-1"
+          },
+          "headers": {
+            "location": null,
+            "etag": null,
+            "content-length": "134",
+            "cache-control": "private, no-store",
+            "retry-after": null,
+            "x-bdp-development-limit": null
+          }
+        },
+        {
+          "method": "GET",
+          "route": "alias/work?invalid=1",
+          "status": 404,
+          "bodyOctets": 134,
+          "context": {
+            "bdp-scope-epoch": null,
+            "bdp-authorization-view": null,
+            "bdp-scope-position": null
+          },
+          "headers": {
+            "location": null,
+            "etag": null,
+            "content-length": "134",
+            "cache-control": "private, no-store",
+            "retry-after": null,
+            "x-bdp-development-limit": null
+          }
+        },
+        {
+          "method": "GET",
+          "route": "alias/work",
+          "status": 500,
+          "bodyOctets": 0,
+          "context": {
+            "bdp-scope-epoch": null,
+            "bdp-authorization-view": null,
+            "bdp-scope-position": null
+          },
+          "headers": {
+            "location": null,
+            "etag": null,
+            "content-length": "0",
+            "cache-control": "private, no-store",
+            "retry-after": null,
+            "x-bdp-development-limit": "minimum-position"
+          }
+        },
+        {
+          "method": "HEAD",
+          "route": "alias/work",
+          "status": 500,
+          "bodyOctets": 0,
+          "context": {
+            "bdp-scope-epoch": null,
+            "bdp-authorization-view": null,
+            "bdp-scope-position": null
+          },
+          "headers": {
+            "location": null,
+            "etag": null,
+            "content-length": "0",
+            "cache-control": "private, no-store",
+            "retry-after": null,
+            "x-bdp-development-limit": "minimum-position"
+          }
+        },
+        {
+          "method": "GET",
+          "route": "alias/work",
+          "status": 500,
+          "bodyOctets": 0,
+          "context": {
+            "bdp-scope-epoch": null,
+            "bdp-authorization-view": null,
+            "bdp-scope-position": null
+          },
+          "headers": {
+            "location": null,
+            "etag": null,
+            "content-length": "0",
+            "cache-control": "private, no-store",
+            "retry-after": null,
+            "x-bdp-development-limit": "minimum-position"
+          }
+        },
+        {
+          "method": "HEAD",
+          "route": "alias/work",
+          "status": 500,
+          "bodyOctets": 0,
+          "context": {
+            "bdp-scope-epoch": null,
+            "bdp-authorization-view": null,
+            "bdp-scope-position": null
+          },
+          "headers": {
+            "location": null,
+            "etag": null,
+            "content-length": "0",
+            "cache-control": "private, no-store",
+            "retry-after": null,
+            "x-bdp-development-limit": "minimum-position"
+          }
+        },
+        {
+          "method": "GET",
+          "route": "alias/work",
+          "status": 401,
+          "bodyOctets": 136,
+          "context": {
+            "bdp-scope-epoch": null,
+            "bdp-authorization-view": null,
+            "bdp-scope-position": null
+          },
+          "headers": {
+            "location": null,
+            "etag": null,
+            "content-length": "136",
+            "cache-control": "private, no-store",
+            "retry-after": null,
+            "x-bdp-development-limit": null
+          }
+        },
+        {
+          "method": "DELETE",
+          "route": "alias/work",
+          "status": 405,
+          "bodyOctets": 0,
+          "context": {
+            "bdp-scope-epoch": null,
+            "bdp-authorization-view": null,
+            "bdp-scope-position": null
+          },
+          "headers": {
+            "location": null,
+            "etag": null,
+            "content-length": "0",
+            "cache-control": "private, no-store",
+            "retry-after": null,
+            "x-bdp-development-limit": null
+          }
+        }
+      ],
+      "waits": 6,
+      "outcome": "passed"
+    }
+  },
+  {
+    "line": 2618,
+    "value": {
+      "observation": "alias-minimum-capture",
+      "row": "unknown",
+      "apiCalls": 3,
+      "attempts": [
+        {
+          "target": "beads/a",
+          "context": {
+            "scopeEpoch": "adf2f89b-b7a8-4182-8cf9-b4bbf0af814f",
+            "authorizationView": "development-all-visible",
+            "scopePosition": "pos-1"
+          }
+        },
+        {
+          "target": "beads/a",
+          "context": {
+            "scopeEpoch": "adf2f89b-b7a8-4182-8cf9-b4bbf0af814f",
+            "authorizationView": "development-all-visible",
+            "scopePosition": "pos-1"
+          }
+        },
+        {
+          "target": "beads/b",
+          "context": {
+            "scopeEpoch": "adf2f89b-b7a8-4182-8cf9-b4bbf0af814f",
+            "authorizationView": "development-all-visible",
+            "scopePosition": "pos-1"
+          }
+        },
+        {
+          "target": "beads/b",
+          "context": {
+            "scopeEpoch": "adf2f89b-b7a8-4182-8cf9-b4bbf0af814f",
+            "authorizationView": "development-all-visible",
+            "scopePosition": "pos-2"
+          }
+        },
+        {
+          "target": "beads/b",
+          "context": {
+            "scopeEpoch": "adf2f89b-b7a8-4182-8cf9-b4bbf0af814f",
+            "authorizationView": "development-all-visible",
+            "scopePosition": "pos-2"
+          }
+        }
+      ],
+      "contexts": [
+        {
+          "scopeEpoch": "adf2f89b-b7a8-4182-8cf9-b4bbf0af814f",
+          "authorizationView": "development-all-visible",
+          "scopePosition": "pos-1"
+        },
+        {
+          "scopeEpoch": "adf2f89b-b7a8-4182-8cf9-b4bbf0af814f",
+          "authorizationView": "development-all-visible",
+          "scopePosition": "pos-1"
+        },
+        {
+          "scopeEpoch": "adf2f89b-b7a8-4182-8cf9-b4bbf0af814f",
+          "authorizationView": "development-all-visible",
+          "scopePosition": "pos-1"
+        },
+        {
+          "scopeEpoch": "adf2f89b-b7a8-4182-8cf9-b4bbf0af814f",
+          "authorizationView": "development-all-visible",
+          "scopePosition": "pos-2"
+        },
+        {
+          "scopeEpoch": "adf2f89b-b7a8-4182-8cf9-b4bbf0af814f",
+          "authorizationView": "development-all-visible",
+          "scopePosition": "pos-2"
+        }
+      ],
+      "unproved": [
+        {
+          "scopeEpoch": "adf2f89b-b7a8-4182-8cf9-b4bbf0af814f",
+          "authorizationView": "development-all-visible",
+          "scopePosition": "pos-1"
+        },
+        {
+          "scopeEpoch": "adf2f89b-b7a8-4182-8cf9-b4bbf0af814f",
+          "authorizationView": "development-all-visible",
+          "scopePosition": "pos-1"
+        },
+        {
+          "scopeEpoch": "adf2f89b-b7a8-4182-8cf9-b4bbf0af814f",
+          "authorizationView": "development-all-visible",
+          "scopePosition": "pos-1"
+        },
+        {
+          "scopeEpoch": "adf2f89b-b7a8-4182-8cf9-b4bbf0af814f",
+          "authorizationView": "development-all-visible",
+          "scopePosition": "pos-2"
+        }
+      ],
+      "directContext": {
+        "scopeEpoch": "adf2f89b-b7a8-4182-8cf9-b4bbf0af814f",
+        "authorizationView": "development-all-visible",
+        "scopePosition": "pos-1"
+      },
+      "timeoutContext": {
+        "scopeEpoch": "adf2f89b-b7a8-4182-8cf9-b4bbf0af814f",
+        "authorizationView": "development-all-visible",
+        "scopePosition": "pos-2"
+      },
+      "positiveContext": {
+        "scopeEpoch": "adf2f89b-b7a8-4182-8cf9-b4bbf0af814f",
+        "authorizationView": "development-all-visible",
+        "scopePosition": "pos-2"
+      },
+      "waits": 2,
+      "clockCalls": 5,
+      "writes": 4,
+      "outcome": "passed"
+    }
+  },
+  {
+    "line": 2626,
+    "value": {
+      "observation": "alias-minimum-capture",
+      "row": "pos-01",
+      "apiCalls": 3,
+      "attempts": [
+        {
+          "target": "beads/a",
+          "context": {
+            "scopeEpoch": "0037389f-4cf0-4f4b-bce3-5182e16dbf13",
+            "authorizationView": "development-all-visible",
+            "scopePosition": "pos-1"
+          }
+        },
+        {
+          "target": "beads/a",
+          "context": {
+            "scopeEpoch": "0037389f-4cf0-4f4b-bce3-5182e16dbf13",
+            "authorizationView": "development-all-visible",
+            "scopePosition": "pos-1"
+          }
+        },
+        {
+          "target": "beads/b",
+          "context": {
+            "scopeEpoch": "0037389f-4cf0-4f4b-bce3-5182e16dbf13",
+            "authorizationView": "development-all-visible",
+            "scopePosition": "pos-1"
+          }
+        },
+        {
+          "target": "beads/b",
+          "context": {
+            "scopeEpoch": "0037389f-4cf0-4f4b-bce3-5182e16dbf13",
+            "authorizationView": "development-all-visible",
+            "scopePosition": "pos-2"
+          }
+        },
+        {
+          "target": "beads/b",
+          "context": {
+            "scopeEpoch": "0037389f-4cf0-4f4b-bce3-5182e16dbf13",
+            "authorizationView": "development-all-visible",
+            "scopePosition": "pos-2"
+          }
+        }
+      ],
+      "contexts": [
+        {
+          "scopeEpoch": "0037389f-4cf0-4f4b-bce3-5182e16dbf13",
+          "authorizationView": "development-all-visible",
+          "scopePosition": "pos-1"
+        },
+        {
+          "scopeEpoch": "0037389f-4cf0-4f4b-bce3-5182e16dbf13",
+          "authorizationView": "development-all-visible",
+          "scopePosition": "pos-1"
+        },
+        {
+          "scopeEpoch": "0037389f-4cf0-4f4b-bce3-5182e16dbf13",
+          "authorizationView": "development-all-visible",
+          "scopePosition": "pos-1"
+        },
+        {
+          "scopeEpoch": "0037389f-4cf0-4f4b-bce3-5182e16dbf13",
+          "authorizationView": "development-all-visible",
+          "scopePosition": "pos-2"
+        },
+        {
+          "scopeEpoch": "0037389f-4cf0-4f4b-bce3-5182e16dbf13",
+          "authorizationView": "development-all-visible",
+          "scopePosition": "pos-2"
+        }
+      ],
+      "unproved": [
+        {
+          "scopeEpoch": "0037389f-4cf0-4f4b-bce3-5182e16dbf13",
+          "authorizationView": "development-all-visible",
+          "scopePosition": "pos-1"
+        },
+        {
+          "scopeEpoch": "0037389f-4cf0-4f4b-bce3-5182e16dbf13",
+          "authorizationView": "development-all-visible",
+          "scopePosition": "pos-1"
+        },
+        {
+          "scopeEpoch": "0037389f-4cf0-4f4b-bce3-5182e16dbf13",
+          "authorizationView": "development-all-visible",
+          "scopePosition": "pos-1"
+        },
+        {
+          "scopeEpoch": "0037389f-4cf0-4f4b-bce3-5182e16dbf13",
+          "authorizationView": "development-all-visible",
+          "scopePosition": "pos-2"
+        }
+      ],
+      "directContext": {
+        "scopeEpoch": "0037389f-4cf0-4f4b-bce3-5182e16dbf13",
+        "authorizationView": "development-all-visible",
+        "scopePosition": "pos-1"
+      },
+      "timeoutContext": {
+        "scopeEpoch": "0037389f-4cf0-4f4b-bce3-5182e16dbf13",
+        "authorizationView": "development-all-visible",
+        "scopePosition": "pos-2"
+      },
+      "positiveContext": {
+        "scopeEpoch": "0037389f-4cf0-4f4b-bce3-5182e16dbf13",
+        "authorizationView": "development-all-visible",
+        "scopePosition": "pos-2"
+      },
+      "waits": 2,
+      "clockCalls": 5,
+      "writes": 4,
+      "outcome": "passed"
+    }
+  },
+  {
+    "line": 2629,
+    "value": {
+      "observation": "alias-minimum-missing",
+      "row": "absent",
+      "apiCalls": 3,
+      "probeCalls": 1,
+      "conditionedCalls": 2,
+      "entries": [
+        {
+          "scopeEpoch": "aa18f3e1-5109-4444-97c0-88a6de5658c8",
+          "authorizationView": "development-all-visible",
+          "scopePosition": "pos-1"
+        },
+        {
+          "scopeEpoch": "aa18f3e1-5109-4444-97c0-88a6de5658c8",
+          "authorizationView": "development-all-visible",
+          "scopePosition": "pos-1"
+        },
+        {
+          "scopeEpoch": "aa18f3e1-5109-4444-97c0-88a6de5658c8",
+          "authorizationView": "development-all-visible",
+          "scopePosition": "pos-1"
+        }
+      ],
+      "mappings": [
+        {
+          "context": {
+            "scopeEpoch": "aa18f3e1-5109-4444-97c0-88a6de5658c8",
+            "authorizationView": "development-all-visible",
+            "scopePosition": "pos-1"
+          }
+        },
+        {
+          "context": {
+            "scopeEpoch": "aa18f3e1-5109-4444-97c0-88a6de5658c8",
+            "authorizationView": "development-all-visible",
+            "scopePosition": "pos-1"
+          }
+        },
+        {
+          "context": {
+            "scopeEpoch": "aa18f3e1-5109-4444-97c0-88a6de5658c8",
+            "authorizationView": "development-all-visible",
+            "scopePosition": "pos-1"
+          }
+        }
+      ],
+      "ordinaryContext": {
+        "scopeEpoch": "aa18f3e1-5109-4444-97c0-88a6de5658c8",
+        "authorizationView": "development-all-visible",
+        "scopePosition": "pos-1"
+      },
+      "conditionedContexts": [
+        {
+          "scopeEpoch": "aa18f3e1-5109-4444-97c0-88a6de5658c8",
+          "authorizationView": "development-all-visible",
+          "scopePosition": "pos-1"
+        },
+        {
+          "scopeEpoch": "aa18f3e1-5109-4444-97c0-88a6de5658c8",
+          "authorizationView": "development-all-visible",
+          "scopePosition": "pos-1"
+        }
+      ],
+      "waits": 0,
+      "clockCalls": 2,
+      "writes": 2,
+      "policyReplacements": 0,
+      "outcome": "passed"
+    }
+  },
+  {
+    "line": 2632,
+    "value": {
+      "observation": "alias-minimum-missing",
+      "row": "deleted",
+      "apiCalls": 3,
+      "probeCalls": 1,
+      "conditionedCalls": 2,
+      "entries": [
+        {
+          "scopeEpoch": "350b4ddf-cfdb-483b-86a3-f0fbd500a775",
+          "authorizationView": "development-all-visible",
+          "scopePosition": "pos-1"
+        },
+        {
+          "scopeEpoch": "350b4ddf-cfdb-483b-86a3-f0fbd500a775",
+          "authorizationView": "development-all-visible",
+          "scopePosition": "pos-1"
+        },
+        {
+          "scopeEpoch": "350b4ddf-cfdb-483b-86a3-f0fbd500a775",
+          "authorizationView": "development-all-visible",
+          "scopePosition": "pos-1"
+        }
+      ],
+      "mappings": [
+        {
+          "context": {
+            "scopeEpoch": "350b4ddf-cfdb-483b-86a3-f0fbd500a775",
+            "authorizationView": "development-all-visible",
+            "scopePosition": "pos-1"
+          }
+        },
+        {
+          "context": {
+            "scopeEpoch": "350b4ddf-cfdb-483b-86a3-f0fbd500a775",
+            "authorizationView": "development-all-visible",
+            "scopePosition": "pos-1"
+          }
+        },
+        {
+          "context": {
+            "scopeEpoch": "350b4ddf-cfdb-483b-86a3-f0fbd500a775",
+            "authorizationView": "development-all-visible",
+            "scopePosition": "pos-1"
+          }
+        }
+      ],
+      "ordinaryContext": {
+        "scopeEpoch": "350b4ddf-cfdb-483b-86a3-f0fbd500a775",
+        "authorizationView": "development-all-visible",
+        "scopePosition": "pos-1"
+      },
+      "conditionedContexts": [
+        {
+          "scopeEpoch": "350b4ddf-cfdb-483b-86a3-f0fbd500a775",
+          "authorizationView": "development-all-visible",
+          "scopePosition": "pos-1"
+        },
+        {
+          "scopeEpoch": "350b4ddf-cfdb-483b-86a3-f0fbd500a775",
+          "authorizationView": "development-all-visible",
+          "scopePosition": "pos-1"
+        }
+      ],
+      "waits": 0,
+      "clockCalls": 2,
+      "writes": 3,
+      "policyReplacements": 0,
+      "outcome": "passed"
+    }
+  },
+  {
+    "line": 2635,
+    "value": {
+      "observation": "alias-minimum-missing",
+      "row": "dangling",
+      "apiCalls": 3,
+      "probeCalls": 1,
+      "conditionedCalls": 2,
+      "entries": [
+        {
+          "scopeEpoch": "01e1e921-b68a-4e5d-aa3f-c062a7f50ad7",
+          "authorizationView": "development-all-visible",
+          "scopePosition": "pos-2"
+        },
+        {
+          "scopeEpoch": "01e1e921-b68a-4e5d-aa3f-c062a7f50ad7",
+          "authorizationView": "development-all-visible",
+          "scopePosition": "pos-2"
+        },
+        {
+          "scopeEpoch": "01e1e921-b68a-4e5d-aa3f-c062a7f50ad7",
+          "authorizationView": "development-all-visible",
+          "scopePosition": "pos-2"
+        }
+      ],
+      "mappings": [
+        {
+          "target": "beads/a",
+          "context": {
+            "scopeEpoch": "01e1e921-b68a-4e5d-aa3f-c062a7f50ad7",
+            "authorizationView": "development-all-visible",
+            "scopePosition": "pos-2"
+          }
+        },
+        {
+          "target": "beads/a",
+          "context": {
+            "scopeEpoch": "01e1e921-b68a-4e5d-aa3f-c062a7f50ad7",
+            "authorizationView": "development-all-visible",
+            "scopePosition": "pos-2"
+          }
+        },
+        {
+          "target": "beads/a",
+          "context": {
+            "scopeEpoch": "01e1e921-b68a-4e5d-aa3f-c062a7f50ad7",
+            "authorizationView": "development-all-visible",
+            "scopePosition": "pos-2"
+          }
+        }
+      ],
+      "ordinaryContext": {
+        "scopeEpoch": "01e1e921-b68a-4e5d-aa3f-c062a7f50ad7",
+        "authorizationView": "development-all-visible",
+        "scopePosition": "pos-2"
+      },
+      "conditionedContexts": [
+        {
+          "scopeEpoch": "01e1e921-b68a-4e5d-aa3f-c062a7f50ad7",
+          "authorizationView": "development-all-visible",
+          "scopePosition": "pos-2"
+        },
+        {
+          "scopeEpoch": "01e1e921-b68a-4e5d-aa3f-c062a7f50ad7",
+          "authorizationView": "development-all-visible",
+          "scopePosition": "pos-2"
+        }
+      ],
+      "waits": 0,
+      "clockCalls": 2,
+      "writes": 3,
+      "policyReplacements": 0,
+      "outcome": "passed"
+    }
+  },
+  {
+    "line": 2638,
+    "value": {
+      "observation": "alias-minimum-missing",
+      "row": "hidden",
+      "apiCalls": 3,
+      "probeCalls": 1,
+      "conditionedCalls": 2,
+      "entries": [
+        {
+          "scopeEpoch": "7ebd78e0-5647-4602-a2bf-53331e21477b",
+          "authorizationView": "640cd900-3465-4bfe-81d6-6a38c5baada8",
+          "scopePosition": "pos-1"
+        },
+        {
+          "scopeEpoch": "7ebd78e0-5647-4602-a2bf-53331e21477b",
+          "authorizationView": "640cd900-3465-4bfe-81d6-6a38c5baada8",
+          "scopePosition": "pos-1"
+        },
+        {
+          "scopeEpoch": "7ebd78e0-5647-4602-a2bf-53331e21477b",
+          "authorizationView": "640cd900-3465-4bfe-81d6-6a38c5baada8",
+          "scopePosition": "pos-1"
+        }
+      ],
+      "mappings": [
+        {
+          "target": "beads/a",
+          "context": {
+            "scopeEpoch": "7ebd78e0-5647-4602-a2bf-53331e21477b",
+            "authorizationView": "640cd900-3465-4bfe-81d6-6a38c5baada8",
+            "scopePosition": "pos-1"
+          }
+        },
+        {
+          "target": "beads/a",
+          "context": {
+            "scopeEpoch": "7ebd78e0-5647-4602-a2bf-53331e21477b",
+            "authorizationView": "640cd900-3465-4bfe-81d6-6a38c5baada8",
+            "scopePosition": "pos-1"
+          }
+        },
+        {
+          "target": "beads/a",
+          "context": {
+            "scopeEpoch": "7ebd78e0-5647-4602-a2bf-53331e21477b",
+            "authorizationView": "640cd900-3465-4bfe-81d6-6a38c5baada8",
+            "scopePosition": "pos-1"
+          }
+        }
+      ],
+      "ordinaryContext": {
+        "scopeEpoch": "7ebd78e0-5647-4602-a2bf-53331e21477b",
+        "authorizationView": "640cd900-3465-4bfe-81d6-6a38c5baada8",
+        "scopePosition": "pos-1"
+      },
+      "conditionedContexts": [
+        {
+          "scopeEpoch": "7ebd78e0-5647-4602-a2bf-53331e21477b",
+          "authorizationView": "640cd900-3465-4bfe-81d6-6a38c5baada8",
+          "scopePosition": "pos-1"
+        },
+        {
+          "scopeEpoch": "7ebd78e0-5647-4602-a2bf-53331e21477b",
+          "authorizationView": "640cd900-3465-4bfe-81d6-6a38c5baada8",
+          "scopePosition": "pos-1"
+        }
+      ],
+      "waits": 0,
+      "clockCalls": 2,
+      "writes": 2,
+      "policyReplacements": 1,
+      "outcome": "passed"
+    }
+  },
+  {
+    "line": 2646,
+    "value": {
+      "observation": "alias-minimum-transition",
+      "apiCalls": 1,
+      "attempts": [
+        {
+          "target": "beads/a",
+          "context": {
+            "scopeEpoch": "fe573352-b472-41e8-a3cf-543720a37681",
+            "authorizationView": "development-all-visible",
+            "scopePosition": "pos-1"
+          }
+        },
+        {
+          "context": {
+            "scopeEpoch": "fe573352-b472-41e8-a3cf-543720a37681",
+            "authorizationView": "development-all-visible",
+            "scopePosition": "pos-1"
+          }
+        }
+      ],
+      "contexts": [
+        {
+          "scopeEpoch": "fe573352-b472-41e8-a3cf-543720a37681",
+          "authorizationView": "development-all-visible",
+          "scopePosition": "pos-1"
+        },
+        {
+          "scopeEpoch": "fe573352-b472-41e8-a3cf-543720a37681",
+          "authorizationView": "development-all-visible",
+          "scopePosition": "pos-1"
+        }
+      ],
+      "unproved": [
+        {
+          "scopeEpoch": "fe573352-b472-41e8-a3cf-543720a37681",
+          "authorizationView": "development-all-visible",
+          "scopePosition": "pos-1"
+        }
+      ],
+      "resultContext": {
+        "scopeEpoch": "fe573352-b472-41e8-a3cf-543720a37681",
+        "authorizationView": "development-all-visible",
+        "scopePosition": "pos-1"
+      },
+      "terminalStatus": 404,
+      "waits": 1,
+      "clockCalls": 2,
+      "writes": 3,
+      "outcome": "passed"
+    }
+  },
+  {
+    "line": 2649,
+    "value": {
+      "observation": "alias-minimum-drain",
+      "apiCalls": 2,
+      "handlerRequests": 1,
+      "entries": [
+        {
+          "scopeEpoch": "1da670f4-7f54-4c76-b214-c9f6da962a2b",
+          "authorizationView": "development-all-visible",
+          "scopePosition": "pos-1"
+        }
+      ],
+      "mappings": [
+        {
+          "target": "beads/a",
+          "context": {
+            "scopeEpoch": "1da670f4-7f54-4c76-b214-c9f6da962a2b",
+            "authorizationView": "development-all-visible",
+            "scopePosition": "pos-1"
+          }
+        }
+      ],
+      "waits": 1,
+      "clockCalls": 3,
+      "writes": 2,
+      "closed": true,
+      "postCloseProbes": 1,
+      "outcome": "passed"
+    }
+  },
+  {
+    "line": 2652,
+    "value": {
+      "observation": "alias-minimum-incident-fence",
+      "performCalls": 2,
+      "entries": [
+        {
+          "scopeEpoch": "d618f3e9-268d-4cce-9e17-4ca17beb188e",
+          "authorizationView": "development-all-visible",
+          "scopePosition": "pos-1"
+        },
+        {
+          "scopeEpoch": "d618f3e9-268d-4cce-9e17-4ca17beb188e",
+          "authorizationView": "development-all-visible",
+          "scopePosition": "pos-1"
+        }
+      ],
+      "aliasLookups": 0,
+      "waits": 0,
+      "clockCalls": 2,
+      "writes": 2,
+      "missingContext": {
+        "scopeEpoch": "d618f3e9-268d-4cce-9e17-4ca17beb188e",
+        "authorizationView": "development-all-visible",
+        "scopePosition": "pos-1"
+      },
+      "outcome": "passed"
+    }
+  },
+  {
+    "line": 5512,
+    "value": {
+      "observation": "private-installed-sequence-alias",
+      "declaredSourceCommit": "5ceb213b632e17f28714684efc5e35a62b282bf6",
+      "workspaceDirty": false,
+      "entry": "/home/runner/work/bdp/bdp/packages/server/dist/transaction-installed-process.js",
+      "entrySha256": "bcf153170f953f9e28c6c89f1153be907f64df289e64f3ad929cad4a4a54c47c",
+      "binding": {
+        "served": {
+          "scope": "https://reference.invalid/acme/",
+          "profile": "transactional",
+          "history": false,
+          "sourceCommit": "5ceb213b632e17f28714684efc5e35a62b282bf6",
+          "installedPayloadDigest": "4ac94e4228a58054c3f13c0a85eec7d762c26816434abf99b918b681d0e31389",
+          "installedContractsDigest": "80c3cc6befaa53f7949b91e00ef00c2658442de1ffc24dfdaf6a16cdc9235992",
+          "policyDigest": "00d05cb11d3629d47aff6a9f1baebe0b4f1cafa761f68316e6d65bd2beaeb670",
+          "authenticationDigest": "d65d40b8a2b8ecdcc85d1b3c5b06f2e3f5ddd62a45ff8f04be4c133a09994f69",
+          "fixtureDigest": "3a7899ced771d4880066d98b0000c53f801ece53458502cc4f3bc641146c9a85",
+          "fixtureId": "reference-transactional-v1",
+          "capabilities": [
+            "installed-transactional-http",
+            "transactional-receipt-observation"
+          ]
+        },
+        "operationTargets": {
+          "createBead": "https://reference.invalid/acme/operations/create-bead",
+          "updateBead": "https://reference.invalid/acme/operations/update-bead",
+          "deleteBead": "https://reference.invalid/acme/operations/delete-bead",
+          "createLink": "https://reference.invalid/acme/operations/create-link",
+          "updateLink": "https://reference.invalid/acme/operations/update-link",
+          "deleteLink": "https://reference.invalid/acme/operations/delete-link",
+          "putAlias": "https://reference.invalid/acme/operations/put-alias",
+          "deleteAlias": "https://reference.invalid/acme/operations/delete-alias",
+          "updateWhere": "https://reference.invalid/acme/operations/update-where",
+          "deleteWhere": "https://reference.invalid/acme/operations/delete-where",
+          "batch": "https://reference.invalid/acme/operations/batch",
+          "sequence": "https://reference.invalid/acme/operations/sequence"
+        },
+        "runtimeConfigurationIdentity": "977c3d1e73cf35a56680585bb39dbf5822d3651176a7aa344c0230edaf7bcf1b",
+        "authorityMode": "canonical"
+      },
+      "sessions": [
+        {
+          "pid": 22561,
+          "exit": 0
+        },
+        {
+          "pid": 22597,
+          "exit": 0
+        }
+      ],
+      "exchanges": 36,
+      "completedResponses": [
+        {
+          "method": "POST",
+          "url": "https://reference.invalid/acme/operations/batch",
+          "status": 200,
+          "bodyOctets": 889,
+          "scopePosition": "pos-1",
+          "bodySha256": "7fa0d041e34e306af81612f3717715b9fbf75e49c99405ee26779cb1b5659b15",
+          "wireSha256": "30901a083a0bcd6af50a36baf5c6df9af3afc244cf28099568453ac1d8ae5044"
+        },
+        {
+          "method": "POST",
+          "url": "https://reference.invalid/acme/operations/put-alias",
+          "status": 200,
+          "bodyOctets": 541,
+          "scopePosition": "pos-1",
+          "bodySha256": "0799ff8134c10dbea55f3e09b8cb92e130467dda3bf1e60951f5b776fc2fdb9c",
+          "wireSha256": "b1011123d9d9a998e2a7d269c20ceb844176e79684aea6260b058bd50ea2acd0"
+        },
+        {
+          "method": "GET",
+          "url": "https://reference.invalid/acme/alias/work",
+          "status": 307,
+          "bodyOctets": 0,
+          "scopePosition": "pos-1",
+          "bodySha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "wireSha256": "aa6f8ffc6ed35c75e00415c6fb07ac5e4e96714fe1fa69c9586648cf33a0d343"
+        },
+        {
+          "method": "POST",
+          "url": "https://reference.invalid/acme/operations/sequence",
+          "status": 200,
+          "bodyOctets": 763,
+          "scopePosition": "pos-3",
+          "bodySha256": "0917bd44e9b417f0972a24a47a0f3b4ed507530dd990555d53bce79ff749ca31",
+          "wireSha256": "42832f297dbeace5324373dea512305f1dfe0988628d362512a6adb1074833d6"
+        },
+        {
+          "method": "GET",
+          "url": "https://reference.invalid/acme/beads/a",
+          "status": 200,
+          "bodyOctets": 183,
+          "scopePosition": "pos-3",
+          "bodySha256": "5e9f09c6d3abd7c57b7439d3f98a10e98066c9c36690bd42d1552c73eed141d0",
+          "wireSha256": "671e87019a31e269f7b10bd4f0ca4512f62747d8415293b78a2e3035304b4ea7"
+        },
+        {
+          "method": "GET",
+          "url": "https://reference.invalid/acme/beads/b",
+          "status": 200,
+          "bodyOctets": 183,
+          "scopePosition": "pos-3",
+          "bodySha256": "e99b0408a092d2a6d89668e588a4c3b908600044cc4d6237821f8c442f77f19b",
+          "wireSha256": "fa42d2d342406c29d1baf8032abfcd12d1258ca9f8065304ea36c76e63e25fb2"
+        },
+        {
+          "method": "GET",
+          "url": "https://reference.invalid/acme/links/edge",
+          "status": 200,
+          "bodyOctets": 318,
+          "scopePosition": "pos-3",
+          "bodySha256": "705d145fc10ac7ff8682f0510c1554fa47970376d35caa04e888bc23f001163b",
+          "wireSha256": "90fda8f8b5d230e0cc524c51087321dbdde198ce8506655d2d1c133bd1d9b78a"
+        },
+        {
+          "method": "POST",
+          "url": "https://reference.invalid/acme/operations/put-alias",
+          "status": 200,
+          "bodyOctets": 538,
+          "scopePosition": "pos-3",
+          "bodySha256": "d3e7f11ce019c834cc0e00e5a1730648a2e7d0332b8efdee232a5840063e18cd",
+          "wireSha256": "f0d315b1a9e49218871d5d63e0374ab46ee868c2f18f8fc8426081571089f45f"
+        },
+        {
+          "method": "GET",
+          "url": "https://reference.invalid/acme/alias/work",
+          "status": 307,
+          "bodyOctets": 0,
+          "scopePosition": "pos-3",
+          "bodySha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "wireSha256": "561b245923785a50f50c2de4756c6e7d02c0590e6c2c234ad72830a17479300e"
+        },
+        {
+          "method": "POST",
+          "url": "https://reference.invalid/acme/operations/sequence",
+          "status": 200,
+          "bodyOctets": 763,
+          "scopePosition": "pos-3",
+          "bodySha256": "0917bd44e9b417f0972a24a47a0f3b4ed507530dd990555d53bce79ff749ca31",
+          "wireSha256": "42832f297dbeace5324373dea512305f1dfe0988628d362512a6adb1074833d6"
+        },
+        {
+          "method": "GET",
+          "url": "https://reference.invalid/acme/alias/work",
+          "status": 307,
+          "bodyOctets": 0,
+          "scopePosition": "pos-3",
+          "bodySha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "wireSha256": "561b245923785a50f50c2de4756c6e7d02c0590e6c2c234ad72830a17479300e"
+        },
+        {
+          "method": "POST",
+          "url": "https://reference.invalid/acme/operations/update-bead",
+          "status": 200,
+          "bodyOctets": 660,
+          "scopePosition": "pos-3",
+          "bodySha256": "21f0393440cddecba526b6d4afb81d3000c57fc2690952248ef666d77b6035ba",
+          "wireSha256": "ac211962a235dba994d929d6113a9d3a1b5ea3a7dfd3d6fb92707130d3f2ecb4"
+        },
+        {
+          "method": "POST",
+          "url": "https://reference.invalid/acme/operations/put-alias",
+          "status": 200,
+          "bodyOctets": 541,
+          "scopePosition": "pos-3",
+          "bodySha256": "aa1c96c9f9d414665d41bacff223465238a46f245e429b00e75976d10b194f6c",
+          "wireSha256": "2ebf998565ce0af7895a29781ed0855eaefa1dd71d6c8e5e2b089be743d73032"
+        },
+        {
+          "method": "GET",
+          "url": "https://reference.invalid/acme/alias/fresh",
+          "status": 307,
+          "bodyOctets": 0,
+          "scopePosition": "pos-3",
+          "bodySha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "wireSha256": "fc62a512f70c8e30db46c4f20a7cbcf1bf224613fff6b573bb7f2bffb1a277f6"
+        },
+        {
+          "method": "POST",
+          "url": "https://reference.invalid/acme/operations/update-bead",
+          "status": 200,
+          "bodyOctets": 660,
+          "scopePosition": "pos-3",
+          "bodySha256": "21f0393440cddecba526b6d4afb81d3000c57fc2690952248ef666d77b6035ba",
+          "wireSha256": "ac211962a235dba994d929d6113a9d3a1b5ea3a7dfd3d6fb92707130d3f2ecb4"
+        },
+        {
+          "method": "POST",
+          "url": "https://reference.invalid/acme/operations/put-alias",
+          "status": 200,
+          "bodyOctets": 545,
+          "scopePosition": "pos-3",
+          "bodySha256": "ef6c6b2c4864c80057e707184526fead7cb7ee8f036aaa1e12296b4768c5972f",
+          "wireSha256": "7b71a1321e10080d8b09919f345019dce9dc199ffd38e407dae4013b9e35c0aa"
+        },
+        {
+          "method": "GET",
+          "url": "https://reference.invalid/acme/alias/fresh",
+          "status": 307,
+          "bodyOctets": 0,
+          "scopePosition": "pos-3",
+          "bodySha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "wireSha256": "561b245923785a50f50c2de4756c6e7d02c0590e6c2c234ad72830a17479300e"
+        },
+        {
+          "method": "POST",
+          "url": "https://reference.invalid/acme/operations/update-bead",
+          "status": 409,
+          "bodyOctets": 122,
+          "scopePosition": "pos-3",
+          "bodySha256": "6659f511cbef9350ede5c7ed10ed8d17f0a713a0c938e35ff4ab844e06b42b96",
+          "wireSha256": "735201a9605e9c1c07fa4b7e2dbd5704b36b0f54fb0df1af57f8a6b10b9cb3d9"
+        },
+        {
+          "method": "GET",
+          "url": "https://reference.invalid/acme/beads/a",
+          "status": 200,
+          "bodyOctets": 183,
+          "scopePosition": "pos-3",
+          "bodySha256": "5e9f09c6d3abd7c57b7439d3f98a10e98066c9c36690bd42d1552c73eed141d0",
+          "wireSha256": "671e87019a31e269f7b10bd4f0ca4512f62747d8415293b78a2e3035304b4ea7"
+        },
+        {
+          "method": "POST",
+          "url": "https://reference.invalid/acme/operations/sequence",
+          "status": 200,
+          "bodyOctets": 499,
+          "scopePosition": "pos-4",
+          "bodySha256": "bff76b63977da0ccb683129a6d954981f4e2da9dfbb88f4b82efbe108df1877b",
+          "wireSha256": "81dd2432d34fc6dcb854d96952c11d61f02a6fbe3e3b9c84e697949bd870bd05"
+        },
+        {
+          "method": "GET",
+          "url": "https://reference.invalid/acme/alias/work",
+          "status": 404,
+          "bodyOctets": 134,
+          "scopePosition": "pos-4",
+          "bodySha256": "6eb3ea2339cd9acd8b41edf491f4cebb381ce54504bab8215d4a421f32d68ce1",
+          "wireSha256": "b75e109e19d4ca29381d994eab1a16508c30ae6ef50489585ac4bdb2734c333b"
+        },
+        {
+          "method": "GET",
+          "url": "https://reference.invalid/acme/beads/tail",
+          "status": 200,
+          "bodyOctets": 186,
+          "scopePosition": "pos-4",
+          "bodySha256": "355c63eaa8916c0db4153a90e93919853f6da0b0f7d56b59ad2e410b56318b3c",
+          "wireSha256": "73c150c69b9558ab6c9fd322742a96121ccbd53249c495c8ad28ea9f0d410c67"
+        },
+        {
+          "method": "POST",
+          "url": "https://reference.invalid/acme/operations/put-alias",
+          "status": 200,
+          "bodyOctets": 538,
+          "scopePosition": "pos-4",
+          "bodySha256": "4967be06a11932d048974b677785b5a9b0f68a84e5c7f5c5944a9187a32d04fb",
+          "wireSha256": "0451762a85cf59092217e1f41ee91c9fd08420af023e9ffd124fb2c208fe17c7"
+        },
+        {
+          "method": "GET",
+          "url": "https://reference.invalid/acme/alias/work",
+          "status": 307,
+          "bodyOctets": 0,
+          "scopePosition": "pos-4",
+          "bodySha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "wireSha256": "8af6ac2fe0d7732add6e50662ac6a50adcd59070d6f154d545de16ff1bd5a4f3"
+        },
+        {
+          "method": "POST",
+          "url": "https://reference.invalid/acme/operations/sequence",
+          "status": 200,
+          "bodyOctets": 499,
+          "scopePosition": "pos-4",
+          "bodySha256": "bff76b63977da0ccb683129a6d954981f4e2da9dfbb88f4b82efbe108df1877b",
+          "wireSha256": "81dd2432d34fc6dcb854d96952c11d61f02a6fbe3e3b9c84e697949bd870bd05"
+        },
+        {
+          "method": "POST",
+          "url": "https://reference.invalid/acme/operations/update-bead",
+          "status": 200,
+          "bodyOctets": 661,
+          "scopePosition": "pos-5",
+          "bodySha256": "75f9ab4991a1570ff7b2581f8a029f6e0f287e2c81aa7e3331a0a55313dd8be5",
+          "wireSha256": "73f01018240e11f4393f236cbb748c3b4545311fae0da51473ee48129f3b2f3d"
+        },
+        {
+          "method": "GET",
+          "url": "https://reference.invalid/acme/beads/b",
+          "status": 200,
+          "bodyOctets": 183,
+          "scopePosition": "pos-5",
+          "bodySha256": "8a503297497e200d859a65e6335649d57fe5027434b3c11c6450b217132447b4",
+          "wireSha256": "56d81bc05eed2d95f78c2eff908a9c6e3aa096bc3b8340c508baef5d4b5d0c20"
+        },
+        {
+          "method": "POST",
+          "url": "https://reference.invalid/acme/operations/update-bead",
+          "status": 200,
+          "bodyOctets": 660,
+          "scopePosition": "pos-5",
+          "bodySha256": "21f0393440cddecba526b6d4afb81d3000c57fc2690952248ef666d77b6035ba",
+          "wireSha256": "f236e34827eca1d4ec5cb78cb4b430722876358d1c9f6b1d9df2c4a2f2bb0eb3"
+        },
+        {
+          "method": "POST",
+          "url": "https://reference.invalid/acme/operations/sequence",
+          "status": 200,
+          "bodyOctets": 763,
+          "scopePosition": "pos-5",
+          "bodySha256": "0917bd44e9b417f0972a24a47a0f3b4ed507530dd990555d53bce79ff749ca31",
+          "wireSha256": "1b0db095ef86877d80fec3aa06d6121e3ef344644f5e52542b5be4e73d6c02f0"
+        },
+        {
+          "method": "POST",
+          "url": "https://reference.invalid/acme/operations/sequence",
+          "status": 200,
+          "bodyOctets": 499,
+          "scopePosition": "pos-5",
+          "bodySha256": "bff76b63977da0ccb683129a6d954981f4e2da9dfbb88f4b82efbe108df1877b",
+          "wireSha256": "53c0a82346176b21abdb38e69e9c7686312a6fccc4f17ebabbabd2f35cb46e5c"
+        },
+        {
+          "method": "POST",
+          "url": "https://reference.invalid/acme/operations/update-bead",
+          "status": 200,
+          "bodyOctets": 660,
+          "scopePosition": "pos-5",
+          "bodySha256": "21f0393440cddecba526b6d4afb81d3000c57fc2690952248ef666d77b6035ba",
+          "wireSha256": "54a99bb0946b43b8179fcb479fc3a4d1c242e4ac7b5f4b1a554c1bcc73f1491a"
+        },
+        {
+          "method": "GET",
+          "url": "https://reference.invalid/acme/alias/work",
+          "status": 307,
+          "bodyOctets": 0,
+          "scopePosition": "pos-5",
+          "bodySha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "wireSha256": "d6ee7b618f5cbc72dba3fbc47cd2702e7daa48b4ee17acebe7bf1623d63a4195"
+        },
+        {
+          "method": "GET",
+          "url": "https://reference.invalid/acme/beads/b",
+          "status": 200,
+          "bodyOctets": 183,
+          "scopePosition": "pos-5",
+          "bodySha256": "8a503297497e200d859a65e6335649d57fe5027434b3c11c6450b217132447b4",
+          "wireSha256": "974ec6264d2bfa16bcf377172880816dde7664536773943a27a5d90dd94a0a2f"
+        },
+        {
+          "method": "GET",
+          "url": "https://reference.invalid/acme/beads/a",
+          "status": 200,
+          "bodyOctets": 183,
+          "scopePosition": "pos-5",
+          "bodySha256": "5e9f09c6d3abd7c57b7439d3f98a10e98066c9c36690bd42d1552c73eed141d0",
+          "wireSha256": "95636a2bfa2e421cd90ec2bc2f05fea05e17a4b58531dce59f341721c666c5c1"
+        },
+        {
+          "method": "GET",
+          "url": "https://reference.invalid/acme/links/edge",
+          "status": 200,
+          "bodyOctets": 318,
+          "scopePosition": "pos-5",
+          "bodySha256": "705d145fc10ac7ff8682f0510c1554fa47970376d35caa04e888bc23f001163b",
+          "wireSha256": "9e709d21efe291c240d7278e2778c691bb4225684876684da57cdb18f44e7d26"
+        },
+        {
+          "method": "GET",
+          "url": "https://reference.invalid/acme/beads/tail",
+          "status": 200,
+          "bodyOctets": 186,
+          "scopePosition": "pos-5",
+          "bodySha256": "355c63eaa8916c0db4153a90e93919853f6da0b0f7d56b59ad2e410b56318b3c",
+          "wireSha256": "f5ae5458d6ea25005415a6a3627aa0f01da5a08c25ff4a7e7bf5213833dace92"
+        }
+      ],
+      "localSensitivityControls": [
+        "admission-target",
+        "stale-postimage"
+      ],
+      "outcome": "passed",
+      "claimEligible": false
+    }
+  },
+  {
+    "line": 5518,
+    "value": {
+      "observation": "private-installed-alias-opaque-minimum",
+      "declaredSourceCommit": "5ceb213b632e17f28714684efc5e35a62b282bf6",
+      "workspaceDirty": false,
+      "entry": "/home/runner/work/bdp/bdp/packages/server/dist/transaction-installed-process.js",
+      "entrySha256": "bcf153170f953f9e28c6c89f1153be907f64df289e64f3ad929cad4a4a54c47c",
+      "artifactSha256": "a07636a172c6064adef69dac524f109665f7656dcd85a94ddecf82e786cb8d14",
+      "binding": {
+        "served": {
+          "scope": "https://reference.invalid/acme/",
+          "profile": "transactional",
+          "history": false,
+          "sourceCommit": "5ceb213b632e17f28714684efc5e35a62b282bf6",
+          "installedPayloadDigest": "4ac94e4228a58054c3f13c0a85eec7d762c26816434abf99b918b681d0e31389",
+          "installedContractsDigest": "80c3cc6befaa53f7949b91e00ef00c2658442de1ffc24dfdaf6a16cdc9235992",
+          "policyDigest": "78d150ecde5d88e31c2559196c3a305328c5d6ab831fad02b9457785823101f5",
+          "authenticationDigest": "4826352be5d55bb9f29dfcf72117dd8cbe12c658b7105e8085b4d24c2985fbcd",
+          "fixtureDigest": "3a7899ced771d4880066d98b0000c53f801ece53458502cc4f3bc641146c9a85",
+          "fixtureId": "reference-transactional-v1",
+          "capabilities": [
+            "installed-transactional-http",
+            "transactional-receipt-observation"
+          ]
+        },
+        "operationTargets": {
+          "createBead": "https://reference.invalid/acme/operations/create-bead",
+          "updateBead": "https://reference.invalid/acme/operations/update-bead",
+          "deleteBead": "https://reference.invalid/acme/operations/delete-bead",
+          "createLink": "https://reference.invalid/acme/operations/create-link",
+          "updateLink": "https://reference.invalid/acme/operations/update-link",
+          "deleteLink": "https://reference.invalid/acme/operations/delete-link",
+          "putAlias": "https://reference.invalid/acme/operations/put-alias",
+          "deleteAlias": "https://reference.invalid/acme/operations/delete-alias",
+          "updateWhere": "https://reference.invalid/acme/operations/update-where",
+          "deleteWhere": "https://reference.invalid/acme/operations/delete-where",
+          "batch": "https://reference.invalid/acme/operations/batch",
+          "sequence": "https://reference.invalid/acme/operations/sequence"
+        },
+        "runtimeConfigurationIdentity": "731fb8cdb00269a9e13d2b50f2c16eae1d7c8c3c947cdef5bb01beb43f3153da",
+        "authorityMode": "canonical"
+      },
+      "attempted": 6,
+      "exchanges": 6,
+      "completedResponses": [
+        {
+          "method": "POST",
+          "url": "https://reference.invalid/acme/operations/batch",
+          "status": 200,
+          "bodyOctets": 666,
+          "bodySha256": "79b875eed39afe12793e9dec3dc19e539a6dcaffa8d97b688b04dbf5e23b1472",
+          "wireSha256": "b046c728952a083dd019b695584e45f9e6e5972a2920c8a4c562676d18547f90",
+          "headers": {
+            "bdp-scope-epoch": "f083f67e-997d-4178-a7b5-de4c9adfe3be",
+            "bdp-authorization-view": "development-all-visible",
+            "bdp-scope-position": "pos-1",
+            "content-length": "666",
+            "content-type": "application/json",
+            "cache-control": "private, no-store",
+            "retry-after": null,
+            "location": null,
+            "etag": null,
+            "x-bdp-development": "non-attesting"
+          }
+        },
+        {
+          "method": "POST",
+          "url": "https://reference.invalid/acme/operations/put-alias",
+          "status": 200,
+          "bodyOctets": 547,
+          "bodySha256": "bded00de0ed58b8d7bba895c5dce5172190b64a14d3a9658b709e03e41441834",
+          "wireSha256": "82472a7af278e5703fa1605d61d534cec9d8930dbd4d0f38af8b5dc8fb14b974",
+          "headers": {
+            "bdp-scope-epoch": "f083f67e-997d-4178-a7b5-de4c9adfe3be",
+            "bdp-authorization-view": "development-all-visible",
+            "bdp-scope-position": "pos-1",
+            "content-length": "547",
+            "content-type": "application/json",
+            "cache-control": "private, no-store",
+            "retry-after": null,
+            "location": null,
+            "etag": null,
+            "x-bdp-development": "non-attesting"
+          }
+        },
+        {
+          "method": "GET",
+          "url": "https://reference.invalid/acme/alias/work",
+          "status": 307,
+          "bodyOctets": 0,
+          "bodySha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "wireSha256": "4ba2a22ea5ee4da6b06fdbbb1e363778a31ba7fb4b8c8697df925cb04d8d3213",
+          "headers": {
+            "bdp-scope-epoch": "f083f67e-997d-4178-a7b5-de4c9adfe3be",
+            "bdp-authorization-view": "development-all-visible",
+            "bdp-scope-position": "pos-1",
+            "content-length": "0",
+            "content-type": null,
+            "cache-control": "private, no-store",
+            "retry-after": null,
+            "location": "https://reference.invalid/acme/beads/a",
+            "etag": null,
+            "x-bdp-development": "non-attesting"
+          }
+        },
+        {
+          "method": "GET",
+          "url": "https://reference.invalid/acme/alias/work",
+          "status": 503,
+          "bodyOctets": 127,
+          "bodySha256": "5e7c50923b5ef2e22379c96cbec4f9197175e38d9a81970f7db4f81ae46255b0",
+          "wireSha256": "1f2d437647760bc45b6d28006661c9b7fad43ade47233bb63a56d8d45d61b6a6",
+          "headers": {
+            "bdp-scope-epoch": "f083f67e-997d-4178-a7b5-de4c9adfe3be",
+            "bdp-authorization-view": "development-all-visible",
+            "bdp-scope-position": "pos-1",
+            "content-length": "127",
+            "content-type": "application/problem+json",
+            "cache-control": "private, no-store",
+            "retry-after": "1",
+            "location": null,
+            "etag": null,
+            "x-bdp-development": "non-attesting"
+          }
+        },
+        {
+          "method": "HEAD",
+          "url": "https://reference.invalid/acme/alias/work",
+          "status": 503,
+          "bodyOctets": 0,
+          "bodySha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "wireSha256": "b3784955c3be49a594371e3f1ba1ece5143a0ea064f792cf0e2ad910c111c5b2",
+          "headers": {
+            "bdp-scope-epoch": "f083f67e-997d-4178-a7b5-de4c9adfe3be",
+            "bdp-authorization-view": "development-all-visible",
+            "bdp-scope-position": "pos-1",
+            "content-length": "127",
+            "content-type": "application/problem+json",
+            "cache-control": "private, no-store",
+            "retry-after": "1",
+            "location": null,
+            "etag": null,
+            "x-bdp-development": "non-attesting"
+          }
+        },
+        {
+          "method": "GET",
+          "url": "https://reference.invalid/acme/alias/missing",
+          "status": 404,
+          "bodyOctets": 134,
+          "bodySha256": "6eb3ea2339cd9acd8b41edf491f4cebb381ce54504bab8215d4a421f32d68ce1",
+          "wireSha256": "623f99bbc7a62fbaa5781388a8b0354dd9bcbb2c045b705c3dff1fb346d6c3b6",
+          "headers": {
+            "bdp-scope-epoch": "f083f67e-997d-4178-a7b5-de4c9adfe3be",
+            "bdp-authorization-view": "development-all-visible",
+            "bdp-scope-position": "pos-1",
+            "content-length": "134",
+            "content-type": "application/problem+json",
+            "cache-control": "private, no-store",
+            "retry-after": null,
+            "location": null,
+            "etag": null,
+            "x-bdp-development": "non-attesting"
+          }
+        }
+      ],
+      "assertionsCompleted": true,
+      "deadlineFired": false,
+      "lifecycleAtReport": {
+        "launchAttempted": true,
+        "returnedChild": true,
+        "pid": 22631,
+        "exitCode": 0,
+        "signalCode": null,
+        "observedExit": {
+          "code": 0,
+          "signal": null
+        },
+        "observedClose": {
+          "code": 0,
+          "signal": null
+        },
+        "childStdioDrainObserved": true,
+        "closure": "clean",
+        "cleanClose": true,
+        "cleanupDeadlineExceeded": false,
+        "pendingExchanges": 0,
+        "pendingDrained": true,
+        "settledExchanges": 6,
+        "socketCloseCensusAvailable": false,
+        "transportSettlementContract": "executor destroys socket before exchange settles",
+        "lateCleanupRejectionObserved": false,
+        "directory": "/tmp/bdp-alias-opaque-installed-fGoDdF",
+        "directoryRemoved": true,
+        "directoryPresent": false
+      },
+      "failureCategories": [],
+      "outcome": "passed",
+      "claimEligible": false
+    }
+  },
+  {
+    "line": 11576,
+    "value": {
+      "event": "installed.reference.observed",
+      "claimEligible": false,
+      "configurationIdentity": "f0b225cd420028757c612408b4731886dbe2cefb4f14eed6d4dcc71abe1e4d6b",
+      "payloadIdentity": "3bcccdbcf7abd2ba9282c2412d43ddc60cb5c1da65e9b069438c66a6caf087ed",
+      "artifactIdentity": "development-schema5-e1dff401b5caafb04a4d935775d67eeefeae7bcf306d5d100b979a64eef148e7",
+      "allNineTargets": true,
+      "stableScope": "https://reference.invalid/acme/"
+    }
+  },
+  {
+    "line": 11586,
+    "value": {
+      "level": "info",
+      "event": "evidence.verified",
+      "executable": "read-cohort-evidence",
+      "artifact": "docs/design/evidence/read-cohort/read-v1.json",
+      "constant": "674982be2123b9b7aae630bf79c3f774122900cd",
+      "runHead": "e5f7d0c43c151426350ceededdc77fe7e372db9b",
+      "evidenceCommit": "dbaf63a24219e1ea3f80394746853598b0d4464a",
+      "schemaReadProjection": "bd7da0fc3f8082e0bfb6f4969c04409f2a610e12408dbc6a0bd14b4b351127cc",
+      "schemaReadProjectionDefinitions": 47,
+      "schemaReadProjectionReachable": 46,
+      "rows": 89
+    }
+  }
+]

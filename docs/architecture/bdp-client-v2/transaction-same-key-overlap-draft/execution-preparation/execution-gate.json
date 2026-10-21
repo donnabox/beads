@@ -1,0 +1,98 @@
+{
+  "released": true,
+  "session": "2026-10-08T20:26:35Z-81e5",
+  "approvedCommandIds": [
+    "setup",
+    "typecheck",
+    "build",
+    "format-check",
+    "lint",
+    "boundaries",
+    "read-seal",
+    "build-inventory",
+    "node-version",
+    "package-directory",
+    "pack-protocol",
+    "pack-server",
+    "verify-tar",
+    "prepare-consumer",
+    "consumer-install",
+    "verify-installed",
+    "installed-positive",
+    "review-positive",
+    "installed-second-key-distinct",
+    "review-second-key-distinct"
+  ],
+  "node": "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+  "pnpm": "/Users/dbox/.cache/node/corepack/v1/pnpm/11.20.0/bin/pnpm.cjs",
+  "preparationSha256": {
+    "commands.json": "b90d0ba721198e7de4834b7e34e7227d36b013b2d60df17d75817b968076edd4",
+    "gate.py": "41cde9944c74d6703db523e26e8f9957be7f8e07fa6c40288bc3b81ac2dfc058",
+    "supervise.py": "da74971257c3cc804b404dbc2d72759e301431e04d2474c692a658ed43b18f9a",
+    "packages.py": "3d7f1e3b8b7d74a41d672f9c1bf4297a6031fd2f79d2226873a874dbb711f38e",
+    "inventory.py": "f01a170801c8e259ea52696eb3c53402cc0e92ade8da797d5cec9e3f4c78127d",
+    "review-cohort.py": "b06628e1adb111ceed4604615b54db4227b0977ce6cfb625db3e05f78fed48e5"
+  },
+  "guardSha256": "fd81ba029cd4e7c7e60623df89e8292af91141d311d9ce789ed19e2152375e84",
+  "sourceHead": "18f5428686dd84fb139c9dbbcbe39d5958012323",
+  "sourceTree": "9c78087e1036dd26ca908e1d8feaa91263513717",
+  "sourceStatus": "",
+  "sourceDiffSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+  "sourceBinding": {
+    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-same-key-overlap-draft/source-binding.json",
+    "sha256": "ad840a73fe10f830e58959dcc7642b35ec91f0a2cea4db4f4fb9912f940df0d0"
+  },
+  "rootAcceptance": {
+    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-same-key-overlap-draft/execution-preparation/root-local-validation-release.json",
+    "sha256": "81ee776371f924f500553ca49cc304d439d6ae2fa67226089c48004fa7bf28a3"
+  },
+  "finalHead": "18f5428686dd84fb139c9dbbcbe39d5958012323",
+  "finalTree": "9c78087e1036dd26ca908e1d8feaa91263513717",
+  "finalBase": "98c600767e8e91a79e109cb741beb91e23b9bebe",
+  "sourceLockSha256": "4150d8821c96dbc2cfec0b2762ff76b58318079f65fa4f5c8858ef2dd61f8d6d",
+  "finalSource": {
+    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-same-key-overlap-draft/landing/final-source.json",
+    "sha256": "f3e6fbef9e2a950a12dd34264bf91a1a7a27e9a30259ba1c7e796a89d415f522"
+  },
+  "finalIntegrationAcceptance": {
+    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-same-key-overlap-draft/landing/root-integration-acceptance.json",
+    "sha256": "f3e6fbef9e2a950a12dd34264bf91a1a7a27e9a30259ba1c7e796a89d415f522"
+  },
+  "buildOutputInventory": {
+    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-same-key-overlap-draft/execution-preparation/run/build-output-inventory.json",
+    "sha256": "7ad9c4ea84f900c395b22664927295b81e252d280e6ad0fc11c1ad7c15cd156f"
+  },
+  "buildBridge": {
+    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-same-key-overlap-draft/execution-preparation/root-build-bridge.json",
+    "sha256": "d82d6a94e17591e360b3e22f1500d4237de862c0f134b5327ba502ce583aea34"
+  },
+  "codeReviewState": {
+    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-same-key-overlap-draft/execution-preparation/local-code-review-state.json",
+    "sha256": "a50434567b5e723b6bfad3b8004c83204ab4c1d6e2a764247cafff792cdec18b"
+  },
+  "reportContract": {
+    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-same-key-overlap-draft/execution-preparation/report-adapter-binding.json",
+    "sha256": "077ca6f9e79554e69a77507fdd878ad1d457c4af8100fdad64581bfc01ba39c3"
+  },
+  "installedTestTool": {
+    "path": "/Users/dbox/repos/wt/vickie/vickie-same-key-dispatch/node_modules/.pnpm/vitest@4.1.10_@types+node@24.13.3_vite@8.2.1_@types+node@24.13.3_/node_modules/vitest/vitest.mjs",
+    "sha256": "39db22f579acf5639bbb17a261408debbde03f4692c0c439e77e7f13aeba74d6",
+    "realpath": "/Users/dbox/repos/wt/vickie/vickie-same-key-dispatch/node_modules/.pnpm/vitest@4.1.10_@types+node@24.13.3_vite@8.2.1_@types+node@24.13.3_/node_modules/vitest/vitest.mjs",
+    "measurement": "Read-only post-root-setup inventory; no invocation by preparer"
+  },
+  "expectedProductionVersions": {
+    "@bdp/protocol": "0.0.0",
+    "@bdp/server": "0.0.0",
+    "ajv": "8.17.1",
+    "ajv-formats": "3.0.1",
+    "fast-deep-equal": "3.1.3",
+    "fast-uri": "3.1.5",
+    "json-schema-traverse": "1.0.0",
+    "require-from-string": "2.0.2"
+  },
+  "consumerLockSha256": "f334e1cc232a3026bce514d3c6afdceff98a551934c70e6b42207ffe8cc5874d",
+  "installedProvenance": {
+    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-same-key-overlap-draft/execution-preparation/run/installed-provenance.json",
+    "sha256": "f017b438df13d2b8bfe594aaa31b674b00e58b2008179b4afc79f2c57f6404c8"
+  }
+}

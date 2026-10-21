@@ -1,0 +1,22 @@
+--- /Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-conditional-reads-draft/rebind-validation-preparation/source-diagnostic-successor/supervise.py
++++ /Users/dbox/repos/wt/vickie/bdp-integration-logs/pr148-ci-failure/diagnostic-validation/supervise.py
+@@ -47,8 +47,8 @@
+         "bdpOverrides": spec.get("validatedBdpOverrides", {}),
+         "guardedArgv": [sys.executable, str(GUARD), *spec["argv"]],
+         "nodePathPrefix": "/Users/dbox/.nvm/versions/node/v24.16.0/bin",
+-        "sourceAttribution": "Frozen native-reviewed source diagnostic with external review pending; not integrated or installed evidence",
+-        "diagnosticOnly": True, "nativeCodeReviewed": True, "externalReviewPending": True, "councilAccepted": False,
++        "sourceAttribution": "Frozen independently reviewed diagnostic test; emitted production verified unchanged; not a root-cause fix or profile qualification",
++        "diagnosticOnly": True, "nativeCodeReviewed": True, "externalReviewPending": False, "councilAccepted": True,
+         "plannedWorkload": spec.get("workload", {}),
+         "derivativeBinding": gate.get("controls", {}).get(spec.get("control")),
+     }
+@@ -177,7 +177,7 @@
+         ) else (0 if code == spec.get('rawExpectedExit',0) else (code if code > 0 else 1))
+         result = {
+             "name": name, "argv": spec["argv"], "guardedArgv": [sys.executable, str(GUARD), *spec["argv"]],
+-            "diagnosticOnly": True, "nativeCodeReviewed": True, "externalReviewPending": True, "councilAccepted": False,
++            "diagnosticOnly": True, "nativeCodeReviewed": True, "externalReviewPending": False, "councilAccepted": True,
+             "cwd": spec["cwd"], "started": started, "adjudication": adjudication,
+             "elapsedSeconds": time.monotonic() - begin, "exit": code,
+             "supervisorExit": supervisor_exit, "timeout": timed, "forcedCleanup": forced,

@@ -1,0 +1,58 @@
+{
+  "observedUtc": "2026-10-18T03:42:01.265934+00:00",
+  "liveProcessInventory": [
+    "55986 66169 55986   2.8   0:01.58 Sat Oct 17 20:41:08 2026     /opt/homebrew/Cellar/python@3.14/3.14.5/Frameworks/Python.framework/Versions/3.14/Resources/Python.app/Contents/MacOS/Python",
+    "55994 55986 55994   0.0   0:00.18 Sat Oct 17 20:41:09 2026     /opt/homebrew/Cellar/python@3.14/3.14.5/Frameworks/Python.framework/Versions/3.14/Resources/Python.app/Contents/MacOS/Python",
+    "56019 55994 56019   0.0   0:00.91 Sat Oct 17 20:41:10 2026     /opt/homebrew/bin/claude"
+  ],
+  "reviewProcess": {
+    "pid": 56019,
+    "pgid": 56019,
+    "started": "2026-10-18T03:41:10.119645+00:00",
+    "argv": [
+      "/opt/homebrew/bin/claude",
+      "--safe-mode",
+      "-p",
+      "--tools",
+      "Read,Glob,Grep",
+      "--allowedTools",
+      "Read,Glob,Grep",
+      "--disable-slash-commands",
+      "--strict-mcp-config",
+      "--mcp-config",
+      "{\"mcpServers\":{}}",
+      "--no-session-persistence",
+      "--output-format",
+      "stream-json",
+      "--verbose",
+      "--include-partial-messages"
+    ],
+    "timeoutSeconds": 1800,
+    "termAfterSeconds": 1790
+  },
+  "actualInitialization": [
+    {
+      "model": "claude-opus-5[1m]",
+      "tools": [
+        "Glob",
+        "Grep",
+        "Read"
+      ],
+      "mcp_servers": [],
+      "permissionMode": "default"
+    }
+  ],
+  "streamBytes": 443547,
+  "terminalExists": false,
+  "bothLiteralFlagOnlyReleasesVerified": true,
+  "allFrozenPacket52AndAdapter9InputsMatchExceptExplicitFlags": true,
+  "allSource679Context39Artifact15BindingsMatch": true,
+  "runnerBeforeSnapshotMatchesBinding": true,
+  "releaseRecordSha256": "d97e38d31684c851f71fdeff94b449d0ee3e222c9bf2e253ca850275562a98b8",
+  "explicitIndexExceptions": {
+    "packet": "binding.json false\u2192true plus execution output files outside historical52",
+    "adapter": "control.json false\u2192true plus attempt/ outside historical9",
+    "parent": "original index remains historical66-input CLOSED index; new separately indexed adapter/release/native audit are outside original index"
+  },
+  "approvalInferred": false
+}

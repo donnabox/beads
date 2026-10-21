@@ -1,0 +1,54 @@
+{
+  "accepted": true,
+  "utc": "2026-10-18T08:24:27.862084+00:00",
+  "session": "2026-10-18T02:16:24Z-549f",
+  "scope": "Corrected-source static semantic acceptance only; no execution release or claim actual first reviewer read future bytes",
+  "sourceAuthorIndexSha256": "460702742fd52af5be7bb6e6b55fd58726d452c9ea424665449d4c5066ad35f0",
+  "sourceBindingSha256": "f4319c067c761f45c70ce59f6eb8b38b37b58afdea4e536e335c850faee642d7",
+  "nativeCorrectedClosureSha256": "dec1b0a4cf9054e6eea6cac4e64b4c96f926fb394e53c5a653becde104768a65",
+  "nativeCorrectedIndexSha256": "cea24b6f8dcf175aa4600c4f0a419b022610339cf8d3f218a5602867b5320776",
+  "rootExactGitInspectionSha256": "787ba9624bc82aa30641c15cb683ac0289fd44eaac351be23ce6f3a216153727",
+  "rootReadEntireCorrectionDeltaEffectivePlanAllTenFindingsNativeReport": true,
+  "sourceFiles": 679,
+  "ownedPaths": 6,
+  "unownedUnchanged": 673,
+  "allTenFixesAndThreeNativeAliasesClosedStatically": true,
+  "findings": [],
+  "sourceBinaryPatchSha256": "6458c66715de3b6d2e86ae9c0d10efd1b7c146d81ba53da8028037ca9d0e4e89",
+  "originalActualCodeResultAndFailureHistoryPreserved": true,
+  "firstActualCodeReadCorrectedBytes": false,
+  "secondActualCodeAllowed": false,
+  "secondActualPlanAllowed": false,
+  "nextPacket": "tx-discovery-validation-preparation-1",
+  "packetMechanicsIndependentAndRootBeforeExecution": true,
+  "staticValidationReleased": false,
+  "productExecutionReleased": false,
+  "buildArchiveConsumerLockProof": "UNRESOLVED",
+  "source21": {
+    "directCalls": 96,
+    "wireRequests": 14,
+    "cloneApplications": 9,
+    "clonesWire": 0
+  },
+  "installed11": {
+    "scheduled": 190,
+    "completedResponses": 187,
+    "expectedAborts": 3,
+    "exact": 186,
+    "localRaw": 4,
+    "workMs": 45000,
+    "callbackMs": 60000
+  },
+  "legacyExchangesSeparate": {
+    "changefeed": 1,
+    "installedContracts": 12,
+    "schema": 1
+  },
+  "legacySchemaBudgetPreserved": {
+    "workMs": 90000,
+    "callbackMs": 120000,
+    "notD3FortyFiveSixty": true
+  },
+  "mainLandingReleased": false,
+  "fullWriteComplete": false
+}

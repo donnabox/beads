@@ -1,0 +1,248 @@
+{
+  "method": "Python text extraction, exact accepted ledger equality, no product imports",
+  "rows": [
+    {
+      "index": 1,
+      "label": "batch-seed",
+      "method": "POST",
+      "url": "https://reference.invalid/acme/operations/batch",
+      "key": "depth-b-retained",
+      "accept": "application/json",
+      "contentType": "application/json",
+      "body": "{\"operations\":[{\"operation\":\"createBead\",\"id\":\"beads/depth-b-a\",\"type\":\"https://reference.invalid/acme/types/task\",\"properties\":{\"title\":\"depth-b-a\"},\"metadata\":{}}]}",
+      "bodyBytes": 166,
+      "bodySha256": "b7be4a13a3dfe2ac7507f07248e4469d3e0bf8d13cc5bdd509c6ef375c043c54",
+      "status": 200,
+      "contextPosition": "pos-1"
+    },
+    {
+      "index": 2,
+      "label": "batch-deep-conflict",
+      "method": "POST",
+      "url": "https://reference.invalid/acme/operations/batch",
+      "key": "depth-b-retained",
+      "accept": "text/plain",
+      "contentType": "application/json",
+      "body": "{\"operations\":[{\"operation\":\"createBead\",\"id\":\"beads/depth-b-a\",\"type\":\"https://reference.invalid/acme/types/task\",\"properties\":{\"title\":\"depth-b-a\"},\"metadata\":{\"nested\":{\"nested\":{\"nested\":{\"nested\":{\"nested\":{\"nested\":{\"nested\":{\"nested\":{\"nested\":{\"nested\":{\"nested\":{\"nested\":{\"nested\":{\"nested\":{\"nested\":{\"nested\":{\"nested\":{\"nested\":{\"nested\":{\"nested\":{\"nested\":{\"nested\":{\"nested\":{\"nested\":{\"nested\":{\"nested\":{\"nested\":{\"nested\":{\"nested\":{\"nested\":{\"nested\":{\"nested\":{\"nested\":{\"nested\":{\"nested\":{\"nested\":{\"nested\":{\"nested\":{\"nested\":{\"nested\":{\"nested\":\"leaf\"}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}]}",
+      "bodyBytes": 621,
+      "bodySha256": "6195d74e5bafdc5a9e30d5571f0d98d7711462541e1879aea37b8c20fb42db62",
+      "status": 409,
+      "contextPosition": "pos-1"
+    },
+    {
+      "index": 3,
+      "label": "batch-equal-replay",
+      "method": "POST",
+      "url": "https://reference.invalid/acme/operations/batch",
+      "key": "depth-b-retained",
+      "accept": "application/json",
+      "contentType": "application/json",
+      "body": "{\"operations\":[{\"operation\":\"createBead\",\"id\":\"beads/depth-b-a\",\"type\":\"https://reference.invalid/acme/types/task\",\"properties\":{\"title\":\"depth-b-a\"},\"metadata\":{}}]}",
+      "bodyBytes": 166,
+      "bodySha256": "b7be4a13a3dfe2ac7507f07248e4469d3e0bf8d13cc5bdd509c6ef375c043c54",
+      "status": 200,
+      "contextPosition": "pos-1"
+    },
+    {
+      "index": 4,
+      "label": "batch-fresh-depth",
+      "method": "POST",
+      "url": "https://reference.invalid/acme/operations/batch",
+      "key": "depth-b-fresh",
+      "accept": "text/plain",
+      "contentType": "application/json",
+      "body": "{\"operations\":[{\"operation\":\"createBead\",\"id\":\"beads/depth-b-b\",\"type\":\"https://reference.invalid/acme/types/task\",\"properties\":{\"title\":\"depth-b-b\"},\"metadata\":{\"nested\":{\"nested\":{\"nested\":{\"nested\":{\"nested\":{\"nested\":{\"nested\":{\"nested\":{\"nested\":{\"nested\":{\"nested\":{\"nested\":{\"nested\":{\"nested\":{\"nested\":{\"nested\":{\"nested\":{\"nested\":{\"nested\":{\"nested\":{\"nested\":{\"nested\":{\"nested\":{\"nested\":{\"nested\":{\"nested\":{\"nested\":{\"nested\":{\"nested\":{\"nested\":{\"nested\":{\"nested\":{\"nested\":{\"nested\":{\"nested\":{\"nested\":{\"nested\":{\"nested\":{\"nested\":{\"nested\":{\"nested\":\"leaf\"}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}]}",
+      "bodyBytes": 621,
+      "bodySha256": "a6116425a627b6949f395c388ec39aacf778683fc99f4118d0fd78e4d49c7f12",
+      "status": 500,
+      "contextPosition": null
+    },
+    {
+      "index": 5,
+      "label": "batch-fresh-reuse",
+      "method": "POST",
+      "url": "https://reference.invalid/acme/operations/batch",
+      "key": "depth-b-fresh",
+      "accept": "application/json",
+      "contentType": "application/json",
+      "body": "{\"operations\":[{\"operation\":\"createBead\",\"id\":\"beads/depth-b-b\",\"type\":\"https://reference.invalid/acme/types/task\",\"properties\":{\"title\":\"depth-b-b\"},\"metadata\":{}}]}",
+      "bodyBytes": 166,
+      "bodySha256": "ae6c62f1c4ae74a2fb9ce1332d9c3d261bcf6cb0a53791579f2d6a6112a0db01",
+      "status": 200,
+      "contextPosition": "pos-2"
+    },
+    {
+      "index": 6,
+      "label": "batch-point-unchanged",
+      "method": "GET",
+      "url": "https://reference.invalid/acme/beads/depth-b-a",
+      "key": null,
+      "accept": "application/json",
+      "contentType": null,
+      "body": null,
+      "bodyBytes": 0,
+      "bodySha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "status": 200,
+      "contextPosition": "pos-2"
+    },
+    {
+      "index": 7,
+      "label": "singleton-seed",
+      "method": "POST",
+      "url": "https://reference.invalid/acme/operations/create-bead",
+      "key": "depth-s-retained",
+      "accept": "application/json",
+      "contentType": "application/json",
+      "body": "{\"id\":\"beads/depth-s-a\",\"type\":\"https://reference.invalid/acme/types/task\",\"properties\":{\"title\":\"depth-s-a\"},\"metadata\":{}}",
+      "bodyBytes": 124,
+      "bodySha256": "eeb6c0a0aea472198f3727781f249b29d4c84889c9ffceee594d7150376fe41f",
+      "status": 200,
+      "contextPosition": "pos-3"
+    },
+    {
+      "index": 8,
+      "label": "singleton-deep-conflict",
+      "method": "POST",
+      "url": "https://reference.invalid/acme/operations/create-bead",
+      "key": "depth-s-retained",
+      "accept": "text/plain",
+      "contentType": "application/json",
+      "body": "{\"id\":\"beads/depth-s-a\",\"type\":\"https://reference.invalid/acme/types/task\",\"properties\":{\"title\":\"depth-s-a\"},\"metadata\":{\"nested\":{\"nested\":{\"nested\":{\"nested\":{\"nested\":{\"nested\":{\"nested\":{\"nested\":{\"nested\":{\"nested\":{\"nested\":{\"nested\":{\"nested\":{\"nested\":{\"nested\":{\"nested\":{\"nested\":{\"nested\":{\"nested\":{\"nested\":{\"nested\":{\"nested\":{\"nested\":{\"nested\":{\"nested\":{\"nested\":{\"nested\":{\"nested\":{\"nested\":{\"nested\":{\"nested\":{\"nested\":{\"nested\":{\"nested\":{\"nested\":{\"nested\":{\"nested\":{\"nested\":{\"nested\":{\"nested\":{\"nested\":\"leaf\"}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}",
+      "bodyBytes": 579,
+      "bodySha256": "614b03a62ce2d2107e5f1c391f9ebdcd7a7be349ad9e74b0f6a44763fb7bfb8b",
+      "status": 409,
+      "contextPosition": "pos-3"
+    },
+    {
+      "index": 9,
+      "label": "singleton-equal-replay",
+      "method": "POST",
+      "url": "https://reference.invalid/acme/operations/create-bead",
+      "key": "depth-s-retained",
+      "accept": "application/json",
+      "contentType": "application/json",
+      "body": "{\"id\":\"beads/depth-s-a\",\"type\":\"https://reference.invalid/acme/types/task\",\"properties\":{\"title\":\"depth-s-a\"},\"metadata\":{}}",
+      "bodyBytes": 124,
+      "bodySha256": "eeb6c0a0aea472198f3727781f249b29d4c84889c9ffceee594d7150376fe41f",
+      "status": 200,
+      "contextPosition": "pos-3"
+    },
+    {
+      "index": 10,
+      "label": "singleton-fresh-depth",
+      "method": "POST",
+      "url": "https://reference.invalid/acme/operations/create-bead",
+      "key": "depth-s-fresh",
+      "accept": "text/plain",
+      "contentType": "application/json",
+      "body": "{\"id\":\"beads/depth-s-b\",\"type\":\"https://reference.invalid/acme/types/task\",\"properties\":{\"title\":\"depth-s-b\"},\"metadata\":{\"nested\":{\"nested\":{\"nested\":{\"nested\":{\"nested\":{\"nested\":{\"nested\":{\"nested\":{\"nested\":{\"nested\":{\"nested\":{\"nested\":{\"nested\":{\"nested\":{\"nested\":{\"nested\":{\"nested\":{\"nested\":{\"nested\":{\"nested\":{\"nested\":{\"nested\":{\"nested\":{\"nested\":{\"nested\":{\"nested\":{\"nested\":{\"nested\":{\"nested\":{\"nested\":{\"nested\":{\"nested\":{\"nested\":{\"nested\":{\"nested\":{\"nested\":{\"nested\":{\"nested\":{\"nested\":{\"nested\":{\"nested\":\"leaf\"}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}",
+      "bodyBytes": 579,
+      "bodySha256": "6d0e2cfadf5a0b4b5463aea20839d1b5b0346e1dd92470bc785a006c80082086",
+      "status": 500,
+      "contextPosition": null
+    },
+    {
+      "index": 11,
+      "label": "singleton-fresh-reuse",
+      "method": "POST",
+      "url": "https://reference.invalid/acme/operations/create-bead",
+      "key": "depth-s-fresh",
+      "accept": "application/json",
+      "contentType": "application/json",
+      "body": "{\"id\":\"beads/depth-s-b\",\"type\":\"https://reference.invalid/acme/types/task\",\"properties\":{\"title\":\"depth-s-b\"},\"metadata\":{}}",
+      "bodyBytes": 124,
+      "bodySha256": "a1c0118b2e89a4f3697bdffae475794ea95ead3f7a5d67feb03ec19dd793e976",
+      "status": 200,
+      "contextPosition": "pos-4"
+    },
+    {
+      "index": 12,
+      "label": "singleton-point-unchanged",
+      "method": "GET",
+      "url": "https://reference.invalid/acme/beads/depth-s-a",
+      "key": null,
+      "accept": "application/json",
+      "contentType": null,
+      "body": null,
+      "bodyBytes": 0,
+      "bodySha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "status": 200,
+      "contextPosition": "pos-4"
+    },
+    {
+      "index": 13,
+      "label": "final-complete-collection",
+      "method": "GET",
+      "url": "https://reference.invalid/acme/beads/?limit=32",
+      "key": null,
+      "accept": "application/json",
+      "contentType": null,
+      "body": null,
+      "bodyBytes": 0,
+      "bodySha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "status": 200,
+      "contextPosition": "pos-4"
+    }
+  ],
+  "requests": 13,
+  "methodCounts": {
+    "POST": 10,
+    "GET": 3
+  },
+  "routes": [
+    "POST https://reference.invalid/acme/operations/batch",
+    "GET https://reference.invalid/acme/beads/depth-b-a",
+    "POST https://reference.invalid/acme/operations/create-bead",
+    "GET https://reference.invalid/acme/beads/depth-s-a",
+    "GET https://reference.invalid/acme/beads/?limit=32"
+  ],
+  "totalBodyBytes": 3270,
+  "maximumBodyBytes": 621,
+  "deepLiterals": [
+    {
+      "index": 2,
+      "nestedObjects": 41
+    },
+    {
+      "index": 4,
+      "nestedObjects": 41
+    },
+    {
+      "index": 8,
+      "nestedObjects": 41
+    },
+    {
+      "index": 10,
+      "nestedObjects": 41
+    }
+  ],
+  "artifactBytes": 336,
+  "artifacts": [
+    {
+      "bytes": 170,
+      "sha256": "f448e126550b2809d01dc6b24811d1796e82b2599c35b438550ed3bec65a2a22"
+    },
+    {
+      "bytes": 166,
+      "sha256": "1ed8b24d90a8c278bc466fd48ba1e849afac01326c377e5c6985855e62373f95"
+    }
+  ],
+  "caseTitle": "observes installed retained key conflicts before private carrier depth",
+  "caseCount": 1,
+  "productChildren": 1,
+  "ownerLifetimes": 1,
+  "directories": 1,
+  "listeners": 1,
+  "bounds": {
+    "workMs": 45000,
+    "cleanupMs": 10000,
+    "testMs": 60000,
+    "requestMs": 5000,
+    "requestBodyBytes": 65536,
+    "requestHeaderBytes": 16384,
+    "responseBodyBytes": 131072,
+    "responseHeaderBytes": 65536,
+    "targetBytes": 8192
+  },
+  "executed": false
+}

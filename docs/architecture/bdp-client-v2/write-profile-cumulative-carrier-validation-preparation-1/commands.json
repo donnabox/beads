@@ -1,0 +1,735 @@
+{
+  "bootstrapReuse": [],
+  "closedPreparation": true,
+  "commands": {
+    "IMMEDIATE-positive-carrier-audit": {
+      "acceptedRawExitCodes": [
+        0
+      ],
+      "argv": [
+        "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-cumulative-carrier-validation-preparation-1/carrier-audit.mjs",
+        "--contract",
+        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-cumulative-carrier-validation-preparation-1/auditor-control.json"
+      ],
+      "automaticRetries": 0,
+      "cleanupInclusiveSeconds": 10,
+      "cwd": "/Users/dbox/repos/wt/vickie/vickie-cumulative-evidence-carrier-correction-minimum",
+      "evaluatesSourceOrProduct": true,
+      "id": "IMMEDIATE-positive-carrier-audit",
+      "killAtSeconds": 119,
+      "outerSeconds": 120,
+      "requiresConsumerProof": true,
+      "requiresPrivateEmitProof": true,
+      "termAtSeconds": 115,
+      "workCutoffSeconds": 105,
+      "zeroProductExecutions": true
+    },
+    "audit-source-data-48": {
+      "acceptedRawExitCodes": [
+        0
+      ],
+      "argv": [
+        "/opt/homebrew/opt/python@3.14/bin/python3.14",
+        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-cumulative-carrier-validation-preparation-1/audit.py",
+        "source-data-48"
+      ],
+      "automaticRetries": 0,
+      "cleanupInclusiveSeconds": 10,
+      "cwd": "/Users/dbox/repos/wt/vickie/vickie-cumulative-evidence-carrier-correction-minimum",
+      "id": "audit-source-data-48",
+      "killAtSeconds": 119,
+      "outerSeconds": 120,
+      "termAtSeconds": 115,
+      "workCutoffSeconds": 105
+    },
+    "bind-fresh-build": {
+      "acceptedRawExitCodes": [
+        0
+      ],
+      "argv": [
+        "/opt/homebrew/opt/python@3.14/bin/python3.14",
+        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-cumulative-carrier-validation-preparation-1/audit.py",
+        "build"
+      ],
+      "automaticRetries": 0,
+      "cleanupInclusiveSeconds": 10,
+      "cwd": "/Users/dbox/repos/wt/vickie/vickie-cumulative-evidence-carrier-correction-minimum",
+      "id": "bind-fresh-build",
+      "killAtSeconds": 119,
+      "outerSeconds": 120,
+      "termAtSeconds": 115,
+      "workCutoffSeconds": 105
+    },
+    "bind-workspace-tools": {
+      "acceptedRawExitCodes": [
+        0
+      ],
+      "argv": [
+        "/opt/homebrew/opt/python@3.14/bin/python3.14",
+        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-cumulative-carrier-validation-preparation-1/audit.py",
+        "tools"
+      ],
+      "automaticRetries": 0,
+      "cleanupInclusiveSeconds": 10,
+      "cwd": "/Users/dbox/repos/wt/vickie/vickie-cumulative-evidence-carrier-correction-minimum",
+      "id": "bind-workspace-tools",
+      "killAtSeconds": 119,
+      "outerSeconds": 120,
+      "termAtSeconds": 115,
+      "workCutoffSeconds": 105
+    },
+    "consumer-install": {
+      "acceptedRawExitCodes": [
+        0
+      ],
+      "argv": [
+        "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+        "/Users/dbox/.cache/node/corepack/v1/pnpm/11.20.0/bin/pnpm.cjs",
+        "install",
+        "--offline",
+        "--ignore-scripts",
+        "--no-frozen-lockfile",
+        "--prod"
+      ],
+      "automaticRetries": 0,
+      "cleanupInclusiveSeconds": 10,
+      "cwd": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-cumulative-carrier-validation-preparation-1/run/consumer",
+      "id": "consumer-install",
+      "killAtSeconds": 119,
+      "outerSeconds": 120,
+      "termAtSeconds": 115,
+      "workCutoffSeconds": 105
+    },
+    "format-check": {
+      "acceptedRawExitCodes": [
+        0
+      ],
+      "argv": [
+        "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+        "/Users/dbox/repos/wt/vickie/vickie-cumulative-evidence-carrier-correction-minimum/node_modules/@biomejs/biome/bin/biome",
+        "format",
+        "--config-path=/Users/dbox/repos/wt/vickie/vickie-cumulative-evidence-carrier-correction-minimum/biome.json",
+        "apps/bdptest/src/transactional-matrix.test.ts",
+        "apps/bdptest/test-support/read-update-artifact-execution.ts",
+        "packages/conformance/test-support/profile-evidence.test.ts",
+        "packages/conformance/test-support/profile-evidence.ts"
+      ],
+      "automaticRetries": 0,
+      "cleanupInclusiveSeconds": 10,
+      "cwd": "/Users/dbox/repos/wt/vickie/vickie-cumulative-evidence-carrier-correction-minimum",
+      "id": "format-check",
+      "killAtSeconds": 119,
+      "outerSeconds": 120,
+      "termAtSeconds": 115,
+      "workCutoffSeconds": 105
+    },
+    "fresh-build": {
+      "acceptedRawExitCodes": [
+        0
+      ],
+      "argv": [
+        "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+        "/Users/dbox/.cache/node/corepack/v1/pnpm/11.20.0/bin/pnpm.cjs",
+        "run",
+        "build"
+      ],
+      "automaticRetries": 0,
+      "cleanupInclusiveSeconds": 10,
+      "cwd": "/Users/dbox/repos/wt/vickie/vickie-cumulative-evidence-carrier-correction-minimum",
+      "id": "fresh-build",
+      "killAtSeconds": 119,
+      "outerSeconds": 120,
+      "termAtSeconds": 115,
+      "workCutoffSeconds": 105
+    },
+    "lint": {
+      "acceptedRawExitCodes": [
+        0
+      ],
+      "argv": [
+        "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+        "/Users/dbox/repos/wt/vickie/vickie-cumulative-evidence-carrier-correction-minimum/node_modules/@biomejs/biome/bin/biome",
+        "lint",
+        "--config-path=/Users/dbox/repos/wt/vickie/vickie-cumulative-evidence-carrier-correction-minimum/biome.json",
+        "apps/bdptest/src/transactional-matrix.test.ts",
+        "apps/bdptest/test-support/read-update-artifact-execution.ts",
+        "packages/conformance/test-support/profile-evidence.test.ts",
+        "packages/conformance/test-support/profile-evidence.ts"
+      ],
+      "automaticRetries": 0,
+      "cleanupInclusiveSeconds": 10,
+      "cwd": "/Users/dbox/repos/wt/vickie/vickie-cumulative-evidence-carrier-correction-minimum",
+      "id": "lint",
+      "killAtSeconds": 119,
+      "outerSeconds": 120,
+      "termAtSeconds": 115,
+      "workCutoffSeconds": 105
+    },
+    "node-version": {
+      "acceptedRawExitCodes": [
+        0
+      ],
+      "argv": [
+        "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+        "--version"
+      ],
+      "automaticRetries": 0,
+      "cleanupInclusiveSeconds": 10,
+      "cwd": "/Users/dbox/repos/wt/vickie/vickie-cumulative-evidence-carrier-correction-minimum",
+      "expectedStdout": "v24.16.0",
+      "id": "node-version",
+      "killAtSeconds": 119,
+      "outerSeconds": 120,
+      "termAtSeconds": 115,
+      "workCutoffSeconds": 105
+    },
+    "pack-protocol": {
+      "acceptedRawExitCodes": [
+        0
+      ],
+      "argv": [
+        "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+        "/Users/dbox/.cache/node/corepack/v1/pnpm/11.20.0/bin/pnpm.cjs",
+        "--filter",
+        "@bdp/protocol",
+        "pack",
+        "--pack-destination",
+        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-cumulative-carrier-validation-preparation-1/run/packages"
+      ],
+      "automaticRetries": 0,
+      "cleanupInclusiveSeconds": 10,
+      "cwd": "/Users/dbox/repos/wt/vickie/vickie-cumulative-evidence-carrier-correction-minimum",
+      "id": "pack-protocol",
+      "killAtSeconds": 119,
+      "outerSeconds": 120,
+      "termAtSeconds": 115,
+      "workCutoffSeconds": 105
+    },
+    "pack-server": {
+      "acceptedRawExitCodes": [
+        0
+      ],
+      "argv": [
+        "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+        "/Users/dbox/.cache/node/corepack/v1/pnpm/11.20.0/bin/pnpm.cjs",
+        "--filter",
+        "@bdp/server",
+        "pack",
+        "--pack-destination",
+        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-cumulative-carrier-validation-preparation-1/run/packages"
+      ],
+      "automaticRetries": 0,
+      "cleanupInclusiveSeconds": 10,
+      "cwd": "/Users/dbox/repos/wt/vickie/vickie-cumulative-evidence-carrier-correction-minimum",
+      "id": "pack-server",
+      "killAtSeconds": 119,
+      "outerSeconds": 120,
+      "termAtSeconds": 115,
+      "workCutoffSeconds": 105
+    },
+    "pnpm-version": {
+      "acceptedRawExitCodes": [
+        0
+      ],
+      "argv": [
+        "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+        "/Users/dbox/.cache/node/corepack/v1/pnpm/11.20.0/bin/pnpm.cjs",
+        "--version"
+      ],
+      "automaticRetries": 0,
+      "cleanupInclusiveSeconds": 10,
+      "cwd": "/Users/dbox/repos/wt/vickie/vickie-cumulative-evidence-carrier-correction-minimum",
+      "expectedStdout": "11.20.0",
+      "id": "pnpm-version",
+      "killAtSeconds": 119,
+      "outerSeconds": 120,
+      "termAtSeconds": 115,
+      "workCutoffSeconds": 105
+    },
+    "prepare-consumer": {
+      "acceptedRawExitCodes": [
+        0
+      ],
+      "argv": [
+        "/opt/homebrew/opt/python@3.14/bin/python3.14",
+        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-cumulative-carrier-validation-preparation-1/packages.py",
+        "consumer"
+      ],
+      "automaticRetries": 0,
+      "cleanupInclusiveSeconds": 10,
+      "cwd": "/Users/dbox/repos/wt/vickie/vickie-cumulative-evidence-carrier-correction-minimum",
+      "id": "prepare-consumer",
+      "killAtSeconds": 119,
+      "outerSeconds": 120,
+      "termAtSeconds": 115,
+      "workCutoffSeconds": 105
+    },
+    "prepare-package-directory": {
+      "acceptedRawExitCodes": [
+        0
+      ],
+      "argv": [
+        "/opt/homebrew/opt/python@3.14/bin/python3.14",
+        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-cumulative-carrier-validation-preparation-1/packages.py",
+        "directory"
+      ],
+      "automaticRetries": 0,
+      "cleanupInclusiveSeconds": 10,
+      "cwd": "/Users/dbox/repos/wt/vickie/vickie-cumulative-evidence-carrier-correction-minimum",
+      "id": "prepare-package-directory",
+      "killAtSeconds": 119,
+      "outerSeconds": 120,
+      "termAtSeconds": 115,
+      "workCutoffSeconds": 105
+    },
+    "private-verifier-emit": {
+      "acceptedRawExitCodes": [
+        0
+      ],
+      "argv": [
+        "/Users/dbox/repos/wt/vickie/vickie-cumulative-evidence-carrier-correction-minimum/node_modules/.pnpm/@typescript+typescript-darwin-arm64@7.0.2/node_modules/@typescript/typescript-darwin-arm64/lib/tsc",
+        "--project",
+        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-cumulative-carrier-validation-preparation-1/run/attempt-private-verifier-emit/compiler-project.json",
+        "--pretty",
+        "false",
+        "--listEmittedFiles"
+      ],
+      "automaticRetries": 0,
+      "cleanupInclusiveSeconds": 10,
+      "cwd": "/Users/dbox/repos/wt/vickie/vickie-cumulative-evidence-carrier-correction-minimum",
+      "id": "private-verifier-emit",
+      "killAtSeconds": 119,
+      "logBytesMax": 16777216,
+      "outerSeconds": 120,
+      "termAtSeconds": 115,
+      "workCutoffSeconds": 105
+    },
+    "prove-private-graph": {
+      "acceptedRawExitCodes": [
+        0
+      ],
+      "argv": [
+        "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-cumulative-carrier-validation-preparation-1/private-graph.mjs",
+        "--contract",
+        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-cumulative-carrier-validation-preparation-1/private-emit-control.json"
+      ],
+      "automaticRetries": 0,
+      "cleanupInclusiveSeconds": 10,
+      "cwd": "/Users/dbox/repos/wt/vickie/vickie-cumulative-evidence-carrier-correction-minimum",
+      "evaluatesSourceOrProduct": true,
+      "id": "prove-private-graph",
+      "killAtSeconds": 119,
+      "outerSeconds": 120,
+      "requiresConsumerProof": true,
+      "termAtSeconds": 115,
+      "workCutoffSeconds": 105
+    },
+    "required-check-boundaries": {
+      "acceptedRawExitCodes": [
+        0
+      ],
+      "argv": [
+        "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+        "/Users/dbox/.cache/node/corepack/v1/pnpm/11.20.0/bin/pnpm.cjs",
+        "run",
+        "check:boundaries"
+      ],
+      "automaticRetries": 0,
+      "cleanupInclusiveSeconds": 10,
+      "cwd": "/Users/dbox/repos/wt/vickie/vickie-cumulative-evidence-carrier-correction-minimum",
+      "evaluatesSourceOrProduct": true,
+      "id": "required-check-boundaries",
+      "killAtSeconds": 119,
+      "outerSeconds": 120,
+      "termAtSeconds": 115,
+      "workCutoffSeconds": 105
+    },
+    "required-e2e-ready-preflight": {
+      "acceptedRawExitCodes": [
+        0
+      ],
+      "argv": [
+        "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+        "/Users/dbox/.cache/node/corepack/v1/pnpm/11.20.0/bin/pnpm.cjs",
+        "run",
+        "e2e:ready:preflight"
+      ],
+      "automaticRetries": 0,
+      "cleanupInclusiveSeconds": 10,
+      "cwd": "/Users/dbox/repos/wt/vickie/vickie-cumulative-evidence-carrier-correction-minimum",
+      "evaluatesSourceOrProduct": true,
+      "id": "required-e2e-ready-preflight",
+      "killAtSeconds": 119,
+      "outerSeconds": 120,
+      "scope": "Unchanged required repository preflight; distinct from private carrier evidence",
+      "termAtSeconds": 115,
+      "workCutoffSeconds": 105
+    },
+    "required-evidence-verify": {
+      "acceptedRawExitCodes": [
+        0,
+        2
+      ],
+      "argv": [
+        "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+        "/Users/dbox/.cache/node/corepack/v1/pnpm/11.20.0/bin/pnpm.cjs",
+        "run",
+        "evidence:verify"
+      ],
+      "automaticRetries": 0,
+      "cleanupInclusiveSeconds": 10,
+      "cwd": "/Users/dbox/repos/wt/vickie/vickie-cumulative-evidence-carrier-correction-minimum",
+      "evaluatesSourceOrProduct": true,
+      "id": "required-evidence-verify",
+      "killAtSeconds": 119,
+      "outerSeconds": 120,
+      "rawExitMeaning": {
+        "0": "Existing separately bound claimed Read evidence verified only for that claim",
+        "1": "Failure",
+        "2": "Explicit no-claim, never Write/RU/TX qualification",
+        "3": "Inspection/stale build failure"
+      },
+      "termAtSeconds": 115,
+      "workCutoffSeconds": 105
+    },
+    "required-smoke": {
+      "acceptedRawExitCodes": [
+        0
+      ],
+      "argv": [
+        "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+        "/Users/dbox/.cache/node/corepack/v1/pnpm/11.20.0/bin/pnpm.cjs",
+        "run",
+        "smoke"
+      ],
+      "automaticRetries": 0,
+      "cleanupInclusiveSeconds": 10,
+      "cwd": "/Users/dbox/repos/wt/vickie/vickie-cumulative-evidence-carrier-correction-minimum",
+      "evaluatesSourceOrProduct": true,
+      "id": "required-smoke",
+      "killAtSeconds": 119,
+      "outerSeconds": 120,
+      "scope": "Unchanged stock smoke may own its own consumer; never a root-bound carrier consumer proof",
+      "termAtSeconds": 115,
+      "workCutoffSeconds": 105
+    },
+    "single-installed-positive17": {
+      "acceptedRawExitCodes": [
+        0
+      ],
+      "argv": [
+        "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+        "/Users/dbox/repos/wt/vickie/vickie-cumulative-evidence-carrier-correction-minimum/node_modules/vitest/vitest.mjs",
+        "run",
+        "apps/bdptest/src/transactional-matrix.test.ts",
+        "--maxWorkers=1",
+        "--reporter=verbose",
+        "--reporter=json",
+        "--outputFile.json=/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-cumulative-carrier-validation-preparation-1/run/single-installed-positive17.results.json",
+        "--testNamePattern",
+        "^observes seventeen partial Transactional contracts through packed-capable actual installed HTTP$"
+      ],
+      "automaticRetries": 0,
+      "callbackMs": 120000,
+      "childUmask": 63,
+      "cleanupInclusiveSeconds": 10,
+      "cwd": "/Users/dbox/repos/wt/vickie/vickie-cumulative-evidence-carrier-correction-minimum",
+      "evaluatesSourceOrProduct": true,
+      "expectedResultSuites": 1,
+      "id": "single-installed-positive17",
+      "killAtSeconds": 119,
+      "outerSeconds": 120,
+      "prospectiveWorkload": {
+        "actions": "17 fixed selected scenario owners plus unchanged supplemental assertions",
+        "callbacks": 1,
+        "cleanupMs": 10000,
+        "elapsedAssertionMs": 63000,
+        "exchanges": 234,
+        "missingRequired": 234,
+        "partialRequired": 17,
+        "productChildren": 25,
+        "requestMs": 5000,
+        "rows": 256,
+        "sessions": 24,
+        "wholeClauseEstablished": 0,
+        "workMs": 90000
+      },
+      "requiresConsumerProof": true,
+      "requiresPrivateEmitProof": true,
+      "selectedFilesByFullName": {
+        "observes seventeen partial Transactional contracts through packed-capable actual installed HTTP": "apps/bdptest/src/transactional-matrix.test.ts"
+      },
+      "selectedFullNames": [
+        "observes seventeen partial Transactional contracts through packed-capable actual installed HTTP"
+      ],
+      "termAtSeconds": 115,
+      "workCutoffSeconds": 105
+    },
+    "source-data-48": {
+      "acceptedRawExitCodes": [
+        0
+      ],
+      "argv": [
+        "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+        "/Users/dbox/repos/wt/vickie/vickie-cumulative-evidence-carrier-correction-minimum/node_modules/vitest/vitest.mjs",
+        "run",
+        "packages/conformance/test-support/profile-evidence.test.ts",
+        "--maxWorkers=2",
+        "--reporter=verbose",
+        "--reporter=json",
+        "--outputFile.json=/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-cumulative-carrier-validation-preparation-1/run/source-data-48.results.json",
+        "--testNamePattern",
+        "^private profile data (?:V0[1-6]|R(?:0[1-9]|1[0-9]|2[0-4])|S0[1-8]|L(?:0[1-9]|10))$"
+      ],
+      "automaticRetries": 0,
+      "callbackMs": 5000,
+      "cleanupInclusiveSeconds": 10,
+      "cwd": "/Users/dbox/repos/wt/vickie/vickie-cumulative-evidence-carrier-correction-minimum",
+      "evaluatesSourceOrProduct": true,
+      "expectedResultSuites": 1,
+      "id": "source-data-48",
+      "killAtSeconds": 119,
+      "outerSeconds": 120,
+      "prospectiveWorkload": {
+        "callbacks": 48,
+        "knownControls": "V01\u2013V06,R01\u2013R24,S01\u2013S08,L01\u2013L10, with all existing finite subcontrols",
+        "productHTTP": 0,
+        "productServiceChildren": 0
+      },
+      "selectedFilesByFullName": {
+        "private profile data L01": "packages/conformance/test-support/profile-evidence.test.ts",
+        "private profile data L02": "packages/conformance/test-support/profile-evidence.test.ts",
+        "private profile data L03": "packages/conformance/test-support/profile-evidence.test.ts",
+        "private profile data L04": "packages/conformance/test-support/profile-evidence.test.ts",
+        "private profile data L05": "packages/conformance/test-support/profile-evidence.test.ts",
+        "private profile data L06": "packages/conformance/test-support/profile-evidence.test.ts",
+        "private profile data L07": "packages/conformance/test-support/profile-evidence.test.ts",
+        "private profile data L08": "packages/conformance/test-support/profile-evidence.test.ts",
+        "private profile data L09": "packages/conformance/test-support/profile-evidence.test.ts",
+        "private profile data L10": "packages/conformance/test-support/profile-evidence.test.ts",
+        "private profile data R01": "packages/conformance/test-support/profile-evidence.test.ts",
+        "private profile data R02": "packages/conformance/test-support/profile-evidence.test.ts",
+        "private profile data R03": "packages/conformance/test-support/profile-evidence.test.ts",
+        "private profile data R04": "packages/conformance/test-support/profile-evidence.test.ts",
+        "private profile data R05": "packages/conformance/test-support/profile-evidence.test.ts",
+        "private profile data R06": "packages/conformance/test-support/profile-evidence.test.ts",
+        "private profile data R07": "packages/conformance/test-support/profile-evidence.test.ts",
+        "private profile data R08": "packages/conformance/test-support/profile-evidence.test.ts",
+        "private profile data R09": "packages/conformance/test-support/profile-evidence.test.ts",
+        "private profile data R10": "packages/conformance/test-support/profile-evidence.test.ts",
+        "private profile data R11": "packages/conformance/test-support/profile-evidence.test.ts",
+        "private profile data R12": "packages/conformance/test-support/profile-evidence.test.ts",
+        "private profile data R13": "packages/conformance/test-support/profile-evidence.test.ts",
+        "private profile data R14": "packages/conformance/test-support/profile-evidence.test.ts",
+        "private profile data R15": "packages/conformance/test-support/profile-evidence.test.ts",
+        "private profile data R16": "packages/conformance/test-support/profile-evidence.test.ts",
+        "private profile data R17": "packages/conformance/test-support/profile-evidence.test.ts",
+        "private profile data R18": "packages/conformance/test-support/profile-evidence.test.ts",
+        "private profile data R19": "packages/conformance/test-support/profile-evidence.test.ts",
+        "private profile data R20": "packages/conformance/test-support/profile-evidence.test.ts",
+        "private profile data R21": "packages/conformance/test-support/profile-evidence.test.ts",
+        "private profile data R22": "packages/conformance/test-support/profile-evidence.test.ts",
+        "private profile data R23": "packages/conformance/test-support/profile-evidence.test.ts",
+        "private profile data R24": "packages/conformance/test-support/profile-evidence.test.ts",
+        "private profile data S01": "packages/conformance/test-support/profile-evidence.test.ts",
+        "private profile data S02": "packages/conformance/test-support/profile-evidence.test.ts",
+        "private profile data S03": "packages/conformance/test-support/profile-evidence.test.ts",
+        "private profile data S04": "packages/conformance/test-support/profile-evidence.test.ts",
+        "private profile data S05": "packages/conformance/test-support/profile-evidence.test.ts",
+        "private profile data S06": "packages/conformance/test-support/profile-evidence.test.ts",
+        "private profile data S07": "packages/conformance/test-support/profile-evidence.test.ts",
+        "private profile data S08": "packages/conformance/test-support/profile-evidence.test.ts",
+        "private profile data V01": "packages/conformance/test-support/profile-evidence.test.ts",
+        "private profile data V02": "packages/conformance/test-support/profile-evidence.test.ts",
+        "private profile data V03": "packages/conformance/test-support/profile-evidence.test.ts",
+        "private profile data V04": "packages/conformance/test-support/profile-evidence.test.ts",
+        "private profile data V05": "packages/conformance/test-support/profile-evidence.test.ts",
+        "private profile data V06": "packages/conformance/test-support/profile-evidence.test.ts"
+      },
+      "selectedFullNames": [
+        "private profile data L01",
+        "private profile data L02",
+        "private profile data L03",
+        "private profile data L04",
+        "private profile data L05",
+        "private profile data L06",
+        "private profile data L07",
+        "private profile data L08",
+        "private profile data L09",
+        "private profile data L10",
+        "private profile data R01",
+        "private profile data R02",
+        "private profile data R03",
+        "private profile data R04",
+        "private profile data R05",
+        "private profile data R06",
+        "private profile data R07",
+        "private profile data R08",
+        "private profile data R09",
+        "private profile data R10",
+        "private profile data R11",
+        "private profile data R12",
+        "private profile data R13",
+        "private profile data R14",
+        "private profile data R15",
+        "private profile data R16",
+        "private profile data R17",
+        "private profile data R18",
+        "private profile data R19",
+        "private profile data R20",
+        "private profile data R21",
+        "private profile data R22",
+        "private profile data R23",
+        "private profile data R24",
+        "private profile data S01",
+        "private profile data S02",
+        "private profile data S03",
+        "private profile data S04",
+        "private profile data S05",
+        "private profile data S06",
+        "private profile data S07",
+        "private profile data S08",
+        "private profile data V01",
+        "private profile data V02",
+        "private profile data V03",
+        "private profile data V04",
+        "private profile data V05",
+        "private profile data V06"
+      ],
+      "termAtSeconds": 115,
+      "workCutoffSeconds": 105
+    },
+    "typecheck": {
+      "acceptedRawExitCodes": [
+        0
+      ],
+      "argv": [
+        "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+        "/Users/dbox/.cache/node/corepack/v1/pnpm/11.20.0/bin/pnpm.cjs",
+        "run",
+        "typecheck"
+      ],
+      "automaticRetries": 0,
+      "cleanupInclusiveSeconds": 10,
+      "cwd": "/Users/dbox/repos/wt/vickie/vickie-cumulative-evidence-carrier-correction-minimum",
+      "id": "typecheck",
+      "killAtSeconds": 119,
+      "outerSeconds": 120,
+      "termAtSeconds": 115,
+      "workCutoffSeconds": 105
+    },
+    "verify-archives": {
+      "acceptedRawExitCodes": [
+        0
+      ],
+      "argv": [
+        "/opt/homebrew/opt/python@3.14/bin/python3.14",
+        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-cumulative-carrier-validation-preparation-1/packages.py",
+        "tar"
+      ],
+      "automaticRetries": 0,
+      "cleanupInclusiveSeconds": 10,
+      "cwd": "/Users/dbox/repos/wt/vickie/vickie-cumulative-evidence-carrier-correction-minimum",
+      "id": "verify-archives",
+      "killAtSeconds": 119,
+      "outerSeconds": 120,
+      "termAtSeconds": 115,
+      "workCutoffSeconds": 105
+    },
+    "verify-installed-consumer": {
+      "acceptedRawExitCodes": [
+        0
+      ],
+      "argv": [
+        "/opt/homebrew/opt/python@3.14/bin/python3.14",
+        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-cumulative-carrier-validation-preparation-1/packages.py",
+        "installed"
+      ],
+      "automaticRetries": 0,
+      "cleanupInclusiveSeconds": 10,
+      "cwd": "/Users/dbox/repos/wt/vickie/vickie-cumulative-evidence-carrier-correction-minimum",
+      "id": "verify-installed-consumer",
+      "killAtSeconds": 119,
+      "outerSeconds": 120,
+      "termAtSeconds": 115,
+      "workCutoffSeconds": 105
+    },
+    "workspace-install": {
+      "acceptedRawExitCodes": [
+        0
+      ],
+      "argv": [
+        "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+        "/Users/dbox/.cache/node/corepack/v1/pnpm/11.20.0/bin/pnpm.cjs",
+        "install",
+        "--offline",
+        "--frozen-lockfile"
+      ],
+      "automaticRetries": 0,
+      "cleanupInclusiveSeconds": 10,
+      "cwd": "/Users/dbox/repos/wt/vickie/vickie-cumulative-evidence-carrier-correction-minimum",
+      "id": "workspace-install",
+      "killAtSeconds": 119,
+      "outerSeconds": 120,
+      "termAtSeconds": 115,
+      "workCutoffSeconds": 105
+    }
+  },
+  "configurationFinalized": true,
+  "executionReleased": false,
+  "executionRoot": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-cumulative-carrier-validation-preparation-1",
+  "expectedProductionVersions": {
+    "@bdp/protocol": "0.0.0",
+    "@bdp/server": "0.0.0",
+    "ajv": "8.17.1",
+    "ajv-formats": "3.0.1",
+    "fast-deep-equal": "3.1.3",
+    "fast-uri": "3.1.5",
+    "json-schema-traverse": "1.0.0",
+    "require-from-string": "2.0.2"
+  },
+  "finalOrder": [
+    "node-version",
+    "pnpm-version",
+    "workspace-install",
+    "bind-workspace-tools",
+    "typecheck",
+    "format-check",
+    "lint",
+    "required-check-boundaries",
+    "fresh-build",
+    "bind-fresh-build",
+    "source-data-48",
+    "audit-source-data-48",
+    "prepare-package-directory",
+    "pack-protocol",
+    "pack-server",
+    "verify-archives",
+    "prepare-consumer",
+    "consumer-install",
+    "verify-installed-consumer",
+    "private-verifier-emit",
+    "prove-private-graph",
+    "single-installed-positive17",
+    "IMMEDIATE-positive-carrier-audit",
+    "required-e2e-ready-preflight",
+    "required-smoke",
+    "required-evidence-verify"
+  ],
+  "freshPipeline": true,
+  "selectedSourceCallbacks": 48,
+  "singlePositiveInvocationsMax": 1,
+  "sourceRoot": "/Users/dbox/repos/wt/vickie/vickie-cumulative-evidence-carrier-correction-minimum",
+  "state": "WIP CLOSED draft, not yet frozen/reviewed",
+  "wholeStage": {
+    "KILL": 119,
+    "TERM": 115,
+    "capacity": "unmeasured, honest refusal; no automatic retry or widening",
+    "cleanupInclusive": 10,
+    "origin": "before all imports after time, gate/session/setup/hash/proof/parse/launch/finalization",
+    "outer": 120,
+    "work": 105
+  }
+}

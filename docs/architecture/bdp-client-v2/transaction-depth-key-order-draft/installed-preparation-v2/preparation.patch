@@ -1,0 +1,281 @@
+--- v1/gate.py
++++ v2/gate.py
+@@ -8,15 +8,13 @@
+ L=D.parent
+ GUARD=L/"guarded-action.py"
+ PARENT="0d63cf59d447eca2e7ff8b2e0e6a5f31513b9a3a"
+-BINDING=D/"source-binding.json"
++BINDING=D/"lint-repair/source-binding.json"
+ INSTALLED_TEST="apps/bdptest/src/transactional-depth-key-order-installed.test.ts"
+ INSTALLED_TEST_SHA="48c6a84c84e470c7ce79f4d978bb09e2099daa5df4b4a6ef8629e1b7bf1b1700"
+-def binding_sha():
+-    value=json.loads((P/"execution-gate.json").read_text())["sourceBindingSha256"]
+-    require(re.fullmatch("[0-9a-f]{64}",value or "") is not None,"Combined source binding pending")
+-    return value
++BINDING_SHA="5fbe5c9b0c57f2c253fb16d114675ccb4929a9e4e18b21a1efbf1ca18385d778"
++def binding_sha():return BINDING_SHA
+ COMMANDS=P/"commands.json"
+-COMMANDS_SHA="78f947111e7d6d282045af8b813353ac5a1d6bd189d6a47c52fd8e527e4c0bf4"
++COMMANDS_SHA="3eec6efd6b989fb14ccf8e3442ebedf31b131ae921139b04c8e6de7017bb236e"
+ GUARD_SHA="fd81ba029cd4e7c7e60623df89e8292af91141d311d9ce789ed19e2152375e84"
+ sha=lambda b:hashlib.sha256(b).hexdigest()
+ def require(ok,message):
+@@ -54,28 +52,35 @@
+ def input_files():
+     return {n:sha((W/n).read_bytes()) for n in git("ls-files").decode().splitlines()}
+ def emitted_files():
+-    return {p.relative_to(W).as_posix():sha(p.read_bytes()) for root in (W/"packages").iterdir() if root.is_dir() for p in (root/"dist").rglob("*") if p.is_file()}
++    return {p.relative_to(W).as_posix():sha(p.read_bytes()) for parent in ("packages","apps") for root in (W/parent).iterdir() if root.is_dir() for p in (root/"dist").rglob("*") if p.is_file()}
+ def verify_build(g):
+     inventory=document(g,"buildOutputInventory")
+-    require(Path(g["buildOutputInventory"]["path"])==E/"build-output-inventory.json","Wrong fresh inventory path")
+-    require(inventory["sourceCommit"]==g["finalHead"] and inventory["sourceTree"]==g["finalTree"] and inventory["sourceSha256"]==source_hashes(),"Fresh build identity differs")
+-    for key in ("buildStart","buildExit","buildLog"):
+-        x=inventory[key];require(sha(Path(x["path"]).read_bytes())==x["sha256"],"Build evidence changed: "+key)
+-    require(Path(inventory["buildExit"]["path"])==E/"fresh-build.exit.json","Wrong build outcome")
+-    result=completed("fresh-build")
+-    start=json.loads((E/"fresh-build.started.json").read_text())
+-    require(start["head"]==g["finalHead"] and start["workspaceDirty"] is False and start["sourceSha256"]==source_hashes(),"Build attribution changed")
+-    require(start["argv"]==[g["node"],g["pnpm"],"build"] and start["cwd"]==str(W),"Wrong build command")
+-    require(start["buildInputFiles"]==inventory["inputFiles"]==input_files(),"Build inputs changed")
+-    require(inventory["files"]==build_outputs() and len(inventory["files"])==312,"Build output footprint changed")
+-    require(inventory["emittedFiles"]==emitted_files(),"Emitted graph differs")
++    require(Path(g["buildOutputInventory"]["path"])==P/"build-attribution-bridge.json","Wrong reuse inventory")
++    require(inventory["status"]=="ACTUAL_SUCCESSFUL_DIRTY_SOURCE_BUILD_PRESERVED_CANDIDATE_PENDING","Historical attribution changed")
++    for key in ("sourceBinding","buildStart","buildExit","buildLog","controlBuildManifest","controlCopyManifest","rootControlAcceptance"):
++        d=inventory[key];require(sha(Path(d["path"]).read_bytes())==d["sha256"],"Historical evidence changed: "+key)
++    require(inventory["sourceBinding"]["path"]==str(BINDING) and inventory["sourceBinding"]["sha256"]==BINDING_SHA,"Wrong historical source")
++    start=json.loads(Path(inventory["buildStart"]["path"]).read_text())
++    result=json.loads(Path(inventory["buildExit"]["path"]).read_text())
++    require(start["head"]==PARENT and start["workspaceDirty"] is True and start["sourceSha256"]==inventory["sourceSha256"]==source_hashes(),"Build source attribution differs")
++    require(start["argv"]==[g["node"],g["pnpm"],"build"] and start["cwd"]==str(W),"Wrong historical build")
++    require(result["exit"]==result["supervisorExit"]==0 and result["sourceUnchanged"] and result["sourceSha256After"]==inventory["sourceSha256"],"Historical build failed/changed")
++    for key in ("timeout","forcedCleanup","errors","remainingAfterCleanup","sampledPidsStillPresent","runtimeDirectoriesStillPresent"):require(not result[key],"Unclean historical build")
++    require(inventory["inputFiles"]==input_files(),"Candidate tracked build inputs differ")
++    require(inventory["packageFiles"]==build_outputs() and len(inventory["packageFiles"])==312,"Package outputs changed")
++    require(inventory["emittedFiles"]==emitted_files() and len(inventory["emittedFiles"])==464,"Emitted outputs changed")
++    bm=json.loads(Path(inventory["controlBuildManifest"]["path"]).read_text());cm=json.loads(Path(inventory["controlCopyManifest"]["path"]).read_text())
++    require(bm["files"]==inventory["emittedFiles"] and bm["buildExit"]["sha256"]==inventory["buildExit"]["sha256"],"Build manifest mismatch")
++    require(cm["sourceBindingSha256"]==BINDING_SHA and cm["buildManifestSha256"]==inventory["controlBuildManifest"]["sha256"],"Copy manifest basis mismatch")
++    allfiles={**inventory["inputFiles"],**inventory["emittedFiles"]}
++    require(set(allfiles)==set(cm["files"]) and all(cm["files"][n]["positiveSha256"]==cm["files"][n]["copySha256"]==h for n,h in allfiles.items()),"Post-build copy/source equality differs")
+ def load_gate(name):
+     require(__debug__,"Python assertions required")
+     g=json.loads((P/"execution-gate.json").read_text())
+     require(g.get("released") is True and g["session"]=="2026-10-08T20:26:35Z-81e5","Root gate closed")
+     for key in ("rootAcceptance","councilAcceptance","controlAcceptance","finalSource"):
+         document(g,key)
+-    names={"gate.py","supervise.py","packages.py","review-installed.py","commands.json","inventory.py"}
++    names={"gate.py","supervise.py","packages.py","review-installed.py","commands.json"}
+     require(set(g["preparationSha256"])==names,"Incomplete preparation pins")
+     for n,h in g["preparationSha256"].items():require(sha((P/n).read_bytes())==h,"Preparation changed: "+n)
+     require(sha(COMMANDS.read_bytes())==COMMANDS_SHA and sha(GUARD.read_bytes())==GUARD_SHA,"Commands/guard changed")
+@@ -94,7 +99,7 @@
+     require(set(git("diff","--name-only",g["finalBase"],"HEAD").decode().splitlines())==set(source),"Eight-file scope differs")
+     require(sha((W/"pnpm-lock.yaml").read_bytes())==g["sourceLockSha256"],"Source lock differs")
+     require(g["node"]=="/Users/dbox/.nvm/versions/node/v24.16.0/bin/node" and g["pnpm"]=="/Users/dbox/.cache/node/corepack/v1/pnpm/11.20.0/bin/pnpm.cjs","Tool paths changed")
+-    if name not in ("fresh-build","build-inventory"):verify_build(g)
++    verify_build(g)
+     spec=dict(cfg["commands"][name]);require(spec["supervisorSeconds"]==120,"Wrong time bound")
+     for prior in order[:order.index(name)]:completed(prior)
+     if spec["phase"] in ("installed","review"):
+--- v1/commands.json
++++ v2/commands.json
+@@ -12,8 +12,6 @@
+     "docs/design/transaction-implementation-progress.md"
+   ],
+   "executionOrder": [
+-    "fresh-build",
+-    "build-inventory",
+     "node-version",
+     "package-directory",
+     "pack-protocol",
+@@ -34,12 +32,7 @@
+         "--version"
+       ],
+       "supervisorSeconds": 120,
+-      "requires": [
+-        {
+-          "id": "build-inventory",
+-          "exit": 0
+-        }
+-      ],
++      "requires": [],
+       "ownedTempPrefixes": []
+     },
+     "package-directory": {
+@@ -47,7 +40,7 @@
+       "cwd": "/Users/dbox/repos/wt/vickie/vickie-sequence-member-evidence",
+       "argv": [
+         "python3",
+-        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-depth-key-order-draft/installed-preparation/packages.py",
++        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-depth-key-order-draft/installed-preparation-v2/packages.py",
+         "directory"
+       ],
+       "supervisorSeconds": 120,
+@@ -69,7 +62,7 @@
+         "@bdp/protocol",
+         "pack",
+         "--pack-destination",
+-        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-depth-key-order-draft/installed-preparation/run/packages"
++        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-depth-key-order-draft/installed-preparation-v2/run/packages"
+       ],
+       "supervisorSeconds": 120,
+       "requires": [
+@@ -90,7 +83,7 @@
+         "@bdp/server",
+         "pack",
+         "--pack-destination",
+-        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-depth-key-order-draft/installed-preparation/run/packages"
++        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-depth-key-order-draft/installed-preparation-v2/run/packages"
+       ],
+       "supervisorSeconds": 120,
+       "requires": [
+@@ -106,7 +99,7 @@
+       "cwd": "/Users/dbox/repos/wt/vickie/vickie-sequence-member-evidence",
+       "argv": [
+         "python3",
+-        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-depth-key-order-draft/installed-preparation/packages.py",
++        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-depth-key-order-draft/installed-preparation-v2/packages.py",
+         "tar"
+       ],
+       "supervisorSeconds": 120,
+@@ -123,7 +116,7 @@
+       "cwd": "/Users/dbox/repos/wt/vickie/vickie-sequence-member-evidence",
+       "argv": [
+         "python3",
+-        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-depth-key-order-draft/installed-preparation/packages.py",
++        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-depth-key-order-draft/installed-preparation-v2/packages.py",
+         "consumer"
+       ],
+       "supervisorSeconds": 120,
+@@ -137,7 +130,7 @@
+     },
+     "consumer-install": {
+       "phase": "package",
+-      "cwd": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-depth-key-order-draft/installed-preparation/run/consumer",
++      "cwd": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-depth-key-order-draft/installed-preparation-v2/run/consumer",
+       "argv": [
+         "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+         "/Users/dbox/.cache/node/corepack/v1/pnpm/11.20.0/bin/pnpm.cjs",
+@@ -161,7 +154,7 @@
+       "cwd": "/Users/dbox/repos/wt/vickie/vickie-sequence-member-evidence",
+       "argv": [
+         "python3",
+-        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-depth-key-order-draft/installed-preparation/packages.py",
++        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-depth-key-order-draft/installed-preparation-v2/packages.py",
+         "installed"
+       ],
+       "supervisorSeconds": 120,
+@@ -183,7 +176,7 @@
+         "--maxWorkers=1",
+         "--reporter=verbose",
+         "--reporter=json",
+-        "--outputFile=/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-depth-key-order-draft/installed-preparation/run/installed-positive.json",
++        "--outputFile=/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-depth-key-order-draft/installed-preparation-v2/run/installed-positive.json",
+         "-t",
+         "^(?:observes\\ installed\\ retained\\ key\\ conflicts\\ before\\ private\\ carrier\\ depth)$"
+       ],
+@@ -226,7 +219,7 @@
+       "cwd": "/Users/dbox/repos/wt/vickie/vickie-sequence-member-evidence",
+       "argv": [
+         "python3",
+-        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-depth-key-order-draft/installed-preparation/review-installed.py"
++        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-depth-key-order-draft/installed-preparation-v2/review-installed.py"
+       ],
+       "supervisorSeconds": 120,
+       "requires": [
+@@ -237,39 +230,11 @@
+       ],
+       "phase": "review",
+       "ownedTempPrefixes": []
+-    },
+-    "fresh-build": {
+-      "phase": "build",
+-      "cwd": "/Users/dbox/repos/wt/vickie/vickie-sequence-member-evidence",
+-      "argv": [
+-        "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+-        "/Users/dbox/.cache/node/corepack/v1/pnpm/11.20.0/bin/pnpm.cjs",
+-        "build"
+-      ],
+-      "supervisorSeconds": 120,
+-      "requires": [],
+-      "ownedTempPrefixes": []
+-    },
+-    "build-inventory": {
+-      "phase": "inventory",
+-      "cwd": "/Users/dbox/repos/wt/vickie/vickie-sequence-member-evidence",
+-      "argv": [
+-        "python3",
+-        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-depth-key-order-draft/installed-preparation/inventory.py"
+-      ],
+-      "supervisorSeconds": 120,
+-      "requires": [
+-        {
+-          "id": "fresh-build",
+-          "exit": 0
+-        }
+-      ],
+-      "ownedTempPrefixes": []
+     }
+   },
+   "sourceBinding": {
+-    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-depth-key-order-draft/source-binding.json",
+-    "sha256": "PENDING_ROOT_COMBINED_EIGHT_PATH_BINDING"
++    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-depth-key-order-draft/lint-repair/source-binding.json",
++    "sha256": "5fbe5c9b0c57f2c253fb16d114675ccb4929a9e4e18b21a1efbf1ca18385d778"
+   },
+   "requests": {
+     "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-depth-key-order-draft/installed-author/measurements.json",
+@@ -282,5 +247,9 @@
+     "childrenMaximum": 1,
+     "noAutomaticRetry": true
+   },
+-  "finalCommit": "PENDING_ROOT_ORDINARY_CLEAN_COMMIT"
++  "finalCommit": "PENDING_ROOT_ORDINARY_CLEAN_COMMIT",
++  "buildAttributionBridge": {
++    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-depth-key-order-draft/installed-preparation-v2/build-attribution-bridge.json",
++    "sha256": "ae4a2c98226d9e7f3ef196dd046ec835b5458dc709ac727904c78ebd13b86f86"
++  }
+ }
+--- v1/execution-gate.example.json
++++ v2/execution-gate.example.json
+@@ -8,16 +8,15 @@
+   "pnpm": "/Users/dbox/.cache/node/corepack/v1/pnpm/11.20.0/bin/pnpm.cjs",
+   "sourceLockSha256": "4150d8821c96dbc2cfec0b2762ff76b58318079f65fa4f5c8858ef2dd61f8d6d",
+   "buildOutputInventory": {
+-    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-depth-key-order-draft/installed-preparation/run/build-output-inventory.json",
+-    "sha256": "PENDING_AFTER_ACTUAL_FRESH_BUILD_AND_INVENTORY"
++    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-depth-key-order-draft/installed-preparation-v2/build-attribution-bridge.json",
++    "sha256": "ae4a2c98226d9e7f3ef196dd046ec835b5458dc709ac727904c78ebd13b86f86"
+   },
+   "preparationSha256": {
+-    "gate.py": "68e9017c30b2c6545f8373c11efa842c0b014d12f7f0641fe6cb1dd3f24a1a58",
++    "gate.py": "0e13dbe8fadf428a545f1489fc9a8174d6cd59f46369ec0c536c7966ca4bca3b",
+     "supervise.py": "1764ff4ec582f9ffc8d71b084745383feba2e965006d64ab20fb3c988a180c4a",
+     "packages.py": "40fba4f17352258adaa4a2b0e26ac1adedcce36d979ed733c47e63834f15c61f",
+     "review-installed.py": "557066a6548f4410abfe706bb4f1ea91b72b256821b50141527692a971025392",
+-    "commands.json": "78f947111e7d6d282045af8b813353ac5a1d6bd189d6a47c52fd8e527e4c0bf4",
+-    "inventory.py": "7e1dfd2f5b47057fd71595f29e43f456b746de87a237576bf0615fd17ab5c0e5"
++    "commands.json": "3eec6efd6b989fb14ccf8e3442ebedf31b131ae921139b04c8e6de7017bb236e"
+   },
+   "expectedProductionVersions": {
+     "@bdp/protocol": "0.0.0",
+@@ -39,8 +38,8 @@
+     "sha256": "PENDING"
+   },
+   "controlAcceptance": {
+-    "path": "PENDING_ROOT_controlAcceptance",
+-    "sha256": "PENDING"
++    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-depth-key-order-draft/root-control-acceptance.json",
++    "sha256": "f05bbba3c7930711be29783d3dc125fbb2eef46203ed392229e369be9069bf0d"
+   },
+   "finalSource": {
+     "path": "PENDING_ROOT_finalSource",
+@@ -52,5 +51,5 @@
+   },
+   "finalBase": "0d63cf59d447eca2e7ff8b2e0e6a5f31513b9a3a",
+   "finalParents": [],
+-  "sourceBindingSha256": "PENDING_ROOT_COMBINED_EIGHT_PATH_BINDING"
++  "sourceBindingSha256": "5fbe5c9b0c57f2c253fb16d114675ccb4929a9e4e18b21a1efbf1ca18385d778"
+ }

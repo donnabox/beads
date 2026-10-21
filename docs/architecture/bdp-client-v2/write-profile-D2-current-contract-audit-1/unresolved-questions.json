@@ -1,0 +1,40 @@
+[
+  {
+    "id": "S1-Q1",
+    "state": "UNRESOLVED normative interpretation; prior question preserved, no re-ask",
+    "question": "For a valid authorized unexpired retained manifest or actual stream continuation captured at A, with current serving head H and a complete same-epoch/view minimum M where A < M <= H, is eligibility checked against H while retaining body/anchor A, or against immutable A? If A, which existing permitted disposition applies when that handle can never advance?",
+    "references": [
+      "docs/specs/bdp.md:5841-5851",
+      "docs/specs/bdp.md:5970-6006",
+      "context/transaction-snapshot-plan.md:78-80",
+      "context/transaction-snapshot-plan.md:129-138"
+    ],
+    "unsettledCollisionScope": "The ordinary missing Resource 404-first rule and unrecognized current-Resource waiting do not establish retained Snapshot/continuation precedence. Unknown/expired/foreign retained target plus minimum collisions require an explicit scoped disposition; do not infer from receipts or current reads.",
+    "notUnsettled": [
+      "lexical closed tuple400 before owner lookup",
+      "fixed captured body/anchor/checkpoint/expiry without minimum",
+      "fresh creation minimum waiting",
+      "same-entry current context headers"
+    ]
+  },
+  {
+    "id": "G2",
+    "state": "UNRESOLVED normative membership; preserved pending question is not an inclusion ruling",
+    "question": "Does an incident Link updated fact caused solely by common metadata belong in each in-Scope endpoint Bead Event Source, or is membership restricted to actual properties changes?",
+    "references": [
+      "docs/specs/bdp.md:5583-5590",
+      "docs/specs/bdp.md:5438-5455",
+      "docs/specs/bdp.md:5644-5649",
+      "context/transaction-metadata-event-question-pending.md:1-5",
+      "context/transaction-metadata-event-assessment.md:28-48"
+    ],
+    "unsettledCollisionScope": "If exclusion is chosen, define actual properties-change membership for effectful metadata with a supplied but equal properties patch; change member presence is not proof of changed properties.",
+    "notUnsettled": [
+      "one committed metadata transition/revision/updated fact",
+      "Scope and Link lifecycle source membership",
+      "owning Bead distinct ownedLink fact",
+      "metadata no-op emits no updated fact",
+      "source-local stable IDs and authority-group ordinals"
+    ]
+  }
+]

@@ -1,0 +1,31 @@
+{
+  "rootLaunchReleased": true,
+  "packet": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/current-changefeed-code-review-1/claude-code-review",
+  "expectedSession": "2026-10-18T02:16:24Z-549f",
+  "sourceRoot": "/Users/dbox/repos/wt/vickie/vickie-current-changefeed-minimum",
+  "reviewerArgv": [
+    "/opt/homebrew/bin/claude",
+    "--safe-mode",
+    "-p",
+    "--tools",
+    "Read,Glob,Grep",
+    "--allowedTools",
+    "Read,Glob,Grep",
+    "--disable-slash-commands",
+    "--strict-mcp-config",
+    "--mcp-config",
+    "{\"mcpServers\":{}}",
+    "--no-session-persistence",
+    "--output-format",
+    "stream-json",
+    "--verbose",
+    "--include-partial-messages"
+  ],
+  "outerTotalSeconds": 1800,
+  "termAtSeconds": 1790,
+  "killAtSeconds": 1798,
+  "noRetry": true,
+  "authority": "CLOSED current-changefeed CODE scaffold; final authored source/root static acceptance, final supervision indexes and independent mechanics acceptance UNRESOLVED. One fresh CODE attempt only; no D1 PLAN retry.",
+  "predecessorIndexSha256": "c0c08fb25496dad113a6dab2a5cdf1009a6704c04d9eebc6584460a0ee1860d2",
+  "genericSupervision4IndexSha256": "7cd5029dc67647cc9020b15e8335938e6f7b9a05791593ef75ebf9378f1c2e89"
+}

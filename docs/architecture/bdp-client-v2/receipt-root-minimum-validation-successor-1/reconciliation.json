@@ -1,0 +1,32 @@
+{
+  "sourceBinding": {
+    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/receipt-root-minimum-validation-successor-1/source-binding.json",
+    "sha256": "db20a737d5f68364208c2b5670f8e38a01ee5666a3d7c94cccef955b49b8257f"
+  },
+  "originalSourceIdentity": "bc513ee5ce385ee501df49f6fb068646e1180d5a54cd2d679e4483a17f46c46d",
+  "successorSourceIdentity": "10489259dc7c06650b596eba32513acc3e31cdde0cd615b83b1a4b32fcf86da9",
+  "sourceFilesVerified": 679,
+  "changedOnly": [
+    "apps/bdptest/src/transactional-minimum-receiving-installed.test.ts",
+    "packages/server/src/transaction-service.test.ts"
+  ],
+  "unchangedOthers": 677,
+  "dependencyInputsVerified": 17,
+  "toolsRehashed": 11,
+  "reusedPrerequisites": 2,
+  "freshStages": 19,
+  "sourceCallbacks": 12,
+  "sourceObservationRecords": 3,
+  "installedRequests": [
+    22,
+    5
+  ],
+  "helpersUnchanged": [
+    "run.py",
+    "packages.py",
+    "audit.py"
+  ],
+  "gatesClosed": true,
+  "execution": false,
+  "originalValidationDirectoryPreserved": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/receipt-root-minimum-validation"
+}

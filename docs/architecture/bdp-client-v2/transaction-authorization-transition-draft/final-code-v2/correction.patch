@@ -1,0 +1,118 @@
+--- a/packages/server/src/transaction-authorization.test.ts
++++ b/packages/server/src/transaction-authorization.test.ts
+@@ -266,6 +266,13 @@
+         .run('{"revision":1}'),
+     "authorization policy",
+   );
++  rejected(
++    (db) =>
++      db
++        .prepare("UPDATE metadata SET value=? WHERE name='authorizationPolicy'")
++        .run(JSON.stringify({ ...next, authorizationView: [next.authorizationView] })),
++    "authorization policy",
++  );
+   f.reopen();
+   expect(f.owner.authorizationSnapshot()).toEqual(next);
+   expect(context(f.owner)).toEqual({ ...original, authorizationView: next.authorizationView });
+@@ -364,7 +371,7 @@
+ it("projects receipt records and allocations without changing non-record execution facts", () => {
+   const f = fixture({ receiptMaximumItems: 2 });
+   const mixed = f.execute(
+-    [create("a"), create("b"), { operation: "deleteBead", bead: "beads/b" }],
++    [create("a"), { operation: "deleteBead", bead: "beads/a" }, create("b")],
+     "mixed",
+   );
+   const failed = f.execute([{ operation: "deleteBead", bead: "beads/missing" }], "failed");
+@@ -375,22 +382,32 @@
+   if (!before || typeof before.next !== "string") throw new Error("real issued receipt page");
+   const firstPage = f.owner.readReceiptPage("p", before.next);
+   if (firstPage.kind !== "page") throw new Error("issued page unavailable");
++  expect(full[2]).toMatchObject({
++    operationIndex: 2,
++    outcome: "created",
++    resource: { id: scope + "beads/b", type },
++  });
++  expect(firstPage.page.results).toEqual([full[2]]);
+   const old = context(f.owner);
+   f.owner.replaceAuthorizationPolicy();
+   const observed = f.owner.readReceipt("p", mixed.id);
+   expect(observed.receipt).toEqual({
+     ...before,
+-    results: [
+-      { operationIndex: 0, outcome: "withheld" },
+-      { operationIndex: 1, outcome: "withheld" },
+-    ],
++    results: [{ operationIndex: 0, outcome: "withheld" }, full[1]],
+   });
+   expect(observed.context).toEqual({
+     ...old,
+     authorizationView: f.owner.authorizationSnapshot().authorizationView,
+   });
+   const afterPage = f.owner.readReceiptPage("p", before.next);
+-  expect(afterPage).toEqual({ ...firstPage, context: observed.context });
++  expect(afterPage).toEqual({
++    ...firstPage,
++    page: {
++      ...firstPage.page,
++      results: [{ operationIndex: 2, outcome: "withheld" }],
++    },
++    context: observed.context,
++  });
+   expect(f.owner.readReceipt("p", failed.id).receipt).toEqual(failed);
+   // Exercise real compact allocations after ordinary retention, not fabricated receipts.
+   f.setTime(1001 + 86400000);
+@@ -400,7 +417,7 @@
+     detail: "expired",
+     allocated: [
+       { operationIndex: 0, withheld: true },
+-      { operationIndex: 1, withheld: true },
++      { operationIndex: 2, withheld: true },
+     ],
+   });
+   // Empty/non-record results must not be promoted by vacuous every().
+--- a/packages/server/src/transaction-authorization.ts
++++ b/packages/server/src/transaction-authorization.ts
+@@ -56,6 +56,7 @@
+         p.readPolicy === "all-visible" &&
+         p.canMutate === true) ||
+       (p.generation === 1 &&
++        typeof p.authorizationView === "string" &&
+         /^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/.test(
+           p.authorizationView,
+         ) &&
+--- a/packages/server/src/transaction-runtime.test.ts
++++ b/packages/server/src/transaction-runtime.test.ts
+@@ -611,11 +611,11 @@
+       first.resources[0],
+     );
+     const collection = authorizationChecked(
+-      await f.request("beads/?limit=1"),
++      await f.request("beads/?limit=2"),
+       200,
+       "currentBeadCollection",
+     );
+-    expect(collection.items).toEqual([first.resources[0]]);
++    expect(collection.items).toEqual(first.resources.slice(0, 2));
+     const collectionNext = authorizationText(collection.next);
+     const snapshot = authorizationChecked(await f.request("snapshot"), 200, "snapshotManifest");
+     expect(snapshot).toMatchObject({
+@@ -664,7 +664,7 @@
+       return value;
+     };
+     await problem("beads/b00", 404, "resource-not-found");
+-    const empty = await f.request("beads/?limit=1");
++    const empty = await f.request("beads/?limit=2");
+     expect(authorizationChecked(empty, 200, "currentBeadCollection")).toEqual({
+       items: [],
+       next: null,
+--- a/packages/server/src/transaction-service.test.ts
++++ b/packages/server/src/transaction-service.test.ts
+@@ -2343,7 +2343,7 @@
+       () => ({ accepted: true }),
+       (error: unknown) => error,
+     );
+-    expect(staleResult).toMatchObject({ code: "forbidden" });
++    expect(staleResult).toMatchObject({ code: "foreign-view" });
+     expect([callbacks, writes, pulls]).toEqual([0, 0, 0]);
+     const current = f.owner.beginEventScan(`${scope}events/`);
+     if (current.kind !== "packet") throw Error("actual current packet required");

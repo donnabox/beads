@@ -1,0 +1,61 @@
+{
+  "placeholder": {
+    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-lint-error-observation-fixed-protocol-preparation-1/proposals/lint-error-observation.capture.txt",
+    "sha256": "9b4c8f7b9e3b6f74c4ce8e94ddf311107486c7179582d31959c61b5d7f427162"
+  },
+  "whole": {
+    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-lint-error-observation-root-instantiated-source-1/templates/lint-error-observation.capture.txt",
+    "sha256": "182842dd1e4f4eb7f2223b3057d3006b2902e577b405c6e3cd1b36a931ee4120"
+  },
+  "wholeLFBindings": [
+    {
+      "beforeLine": "APPROVED_GATE_SHA256 = 'UNRESOLVED_FUTURE_ROOT_ACTIVATED_GATE_SHA256'\n",
+      "afterLine": "APPROVED_GATE_SHA256 = 'c127ce33601f47b6f15e0e0ad76fe812403c3edffc99a7663da71b5eac02fbe2'\n",
+      "count": 1
+    },
+    {
+      "beforeLine": "APPROVED_EXECUTION_ACCEPTANCE_SHA256 = 'UNRESOLVED_FUTURE_ROOT_EXECUTION_ACCEPTANCE_SHA256'\n",
+      "afterLine": "APPROVED_EXECUTION_ACCEPTANCE_SHA256 = '1018563f6f4514e3d2918c2a852e64b0d9f0cd0fe00f9fd81c5c6288d16ae0f0'\n",
+      "count": 1
+    }
+  ],
+  "eachOldAndNewLineCountOne": true,
+  "allOtherWholeBytesExact": true,
+  "completeInverseReturns9b4": true,
+  "cells": {
+    "A": {
+      "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-lint-error-observation-root-instantiated-source-1/cells/lint-error-observation.A.txt",
+      "sha256": "3f7d88d3b51105dc09fa7d331adab77ad29599de38dfe006498057b08aff36fa",
+      "bytes": 16175,
+      "startByte": 0,
+      "endByteExclusive": 16175,
+      "placeholderSectionSha256": "d98c4fff4655a907eb46adf5d153b468d943219b4755076f23c7a47680279d0b"
+    },
+    "B": {
+      "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-lint-error-observation-root-instantiated-source-1/cells/lint-error-observation.B.txt",
+      "sha256": "28bbf0853275a32afe4dc3f269941d80809bbcc22f1756aa26c9083790159ea8",
+      "bytes": 6929,
+      "startByte": 18988,
+      "endByteExclusive": 25917,
+      "placeholderSectionSha256": "28bbf0853275a32afe4dc3f269941d80809bbcc22f1756aa26c9083790159ea8"
+    },
+    "C": {
+      "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-lint-error-observation-root-instantiated-source-1/cells/lint-error-observation.C.txt",
+      "sha256": "7361d347affea2a965f44653fcc39c0698a16b8f7f21865ed6cdc495372838da",
+      "bytes": 2010,
+      "startByte": 27792,
+      "endByteExclusive": 29802,
+      "placeholderSectionSha256": "7361d347affea2a965f44653fcc39c0698a16b8f7f21865ed6cdc495372838da"
+    }
+  },
+  "cellByteSlicesMatchExactly": true,
+  "AEndIsExactPHASEBDelimiter": true,
+  "BStartEndExactFixedImportAndNarrativeBoundary": true,
+  "CStartEndExactFixedImportAndNarrativeBoundary": true,
+  "BAndCByteExactPlaceholderSections": true,
+  "actualToolAssignmentsUnresolvedCountOne": true,
+  "protectiveSentinelComparisonsUnchanged": true,
+  "prepublishedRawExit0Unchanged": true,
+  "lateBindingsOnlyAfterActualPrecedingTool0": "Whole LF assignment/count1/fullinverse only; global replacement forbidden; no IDs bound now.",
+  "noSourceEvaluation": true
+}

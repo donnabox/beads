@@ -1,0 +1,29 @@
+{
+  "accepted": true,
+  "scope": "Three selected installed callbacks only; no full profile qualification",
+  "head": "c18c71202c90fa2558f34107ad342befabf750fe",
+  "stages": 14,
+  "passedCases": 3,
+  "observations": 4,
+  "httpResponses": 92,
+  "closedChildren": 6,
+  "rootIndependentChecks": "Read all exit statuses, response vectors and contextless 400 fields; checked retained log/results hashes; all59sampledPIDs absent and runtime directories removed",
+  "nativeSource": {
+    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-minimum-receiving-draft/native-final-code-review.md",
+    "sha256": "72ccffd63ba90a2def7ccef36d986b76678a0193f9019c8a87053a43dda99949"
+  },
+  "nativeInstalled": {
+    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-minimum-receiving-draft/installed-preparation/native-installed-outcome.md",
+    "sha256": "8419fd0ee91f71ff729020230d8b27f0abdaf0e1b8cf1ed986e98693b37b662d"
+  },
+  "installedProvenance": {
+    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-minimum-receiving-draft/installed-preparation/run/installed-provenance.json",
+    "sha256": "2833e8fa34748dcd8500885717c3b2ca3b4ba99409036fb9b6fe57e387af80a3"
+  },
+  "limitations": [
+    "Original dirty source validation remains separately attributed",
+    "Snapshot body oracles reside in source tests; retained hashes cannot reconstruct bodies",
+    "Preparation-author overlap disclosed",
+    "Final Claude and CI remain pending"
+  ]
+}

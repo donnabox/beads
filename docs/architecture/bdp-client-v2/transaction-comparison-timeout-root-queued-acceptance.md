@@ -1,0 +1,7 @@
+# Comparison-timeout plan — root acceptance for queued work
+
+2026-10-14T16:46Z. Root has read the complete native/external review, v2 plan, dispositions and independent correction closure. Accept plan SHA256 941f350fb4634a77000f3bc0108f3ea80c94ee5701aef94bdc456c66a28ad4e6 with dispositions 994e5fa3195a2515db8fcb9b8bfd6f7ad30f8ba5557909230408e29a0a4155db and independent closure b2a637e8f4d951a6fb0166198822ee8fe55a3a7687ca6690b3c059da7ab17d2c. All ten external comments and native N1 are closed or explicitly dispositioned; no new finding remains.
+
+This is accepted queued work after local schema serving. No parent, writer or execution is assigned. Preserve the eight-file scope and explicit observed-only result discriminator; capture current context synchronously inside one owner entry and existing atomic boundary. Keep unobserved results unchanged. No new packed timeout cohort; existing emitted real HTTP tests supply sensitivity. Additional regression counts and source-test cost must be measured before execution.
+
+The maintenance-fault early-closed masking behavior remains a separate known residual. Default installed timeout sensitivity remains unobserved. An injected defensive epoch transition is not evidence of a supported live owner transition. General Scope-response authority supports this selected refusal context; no new protocol ruling is inferred or required. Public profile claims and unresolved minimum/Event decisions remain held.

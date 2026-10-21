@@ -1,0 +1,14 @@
+{
+  "readOnlyLookupFailures": [
+    "guessed packages/protocol/src/read.ts absent; actual index.ts414 located",
+    "guessed read-route.ts absent; actual read-http-routing.ts21 located",
+    "guessed transaction-current-observation.test.ts absent; actual relevant current tests in transaction-read.test.ts and transaction-http.test.ts",
+    "guessed separate Event/changefeed parameter filenames absent; actual functions transaction-events.ts144 and transaction-changefeed.ts108 read"
+  ],
+  "truncatedDisplays": [
+    "initial broad rg file list truncated; narrowed to exact directories",
+    "binding whole679 map display truncated; map parsed and every source hash remeasured; actual relevant tests reread separately"
+  ],
+  "notValidationFailures": true,
+  "sourceOrHelperExecution": false
+}

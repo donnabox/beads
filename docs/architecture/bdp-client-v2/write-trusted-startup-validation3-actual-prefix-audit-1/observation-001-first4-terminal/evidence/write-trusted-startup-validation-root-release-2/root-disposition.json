@@ -1,0 +1,28 @@
+{
+  "accepted": true,
+  "acceptedAt": "2026-10-18T05:45:17.500214+00:00",
+  "session": "2026-10-18T02:16:24Z-549f",
+  "sourceBindingSha256": "c13b8c6b8003cd60542e64ce8158523881397326e8ca73c4bfa67ba3ab48ac62",
+  "sourcePatchSha256": "e577d453fd7819c6feb88e0a87e0d710725b70cc331d36be438d61ad7b7719a3",
+  "freshPipelineRequired": true,
+  "staticValidationAuthorized": true,
+  "runtimeValidationAuthorized": true,
+  "rootSourceCorrection": {
+    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-trusted-startup-typecheck-correction-1/correction.json",
+    "sha256": "64f782bbb475c55798f0394407d577e995efc5a9ba3b932c58bdc55e71c67cf7"
+  },
+  "nativeSourceCorrection": {
+    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-trusted-startup-typecheck-correction-1/native-precision-closure-1/closure.json",
+    "sha256": "398b99f855e98eecf260362ccb94378e82e580765c0d807b0ed3b2faad855ecb"
+  },
+  "rootHelperInspection": {
+    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-trusted-startup-validation-root-helper-inspection-3/inspection.json",
+    "sha256": "022ec29610b9f8d9ec873121dfdeff9cab024c6ec553a1cf4050dfea7ef2ccc2"
+  },
+  "nativeHelperAcceptance": {
+    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-trusted-startup-validation-preparation-3/native-mechanics-closure-1/closure.json",
+    "sha256": "e9f4593707a1b65c5f568babc351aba836c152762e87fe609025ef99c717679b"
+  },
+  "scope": "Fresh exact corrected-source validation only. All25 stages start fresh, no old install/build/stage reuse; measured tool/build/archive/consumerlock/proof barriers remain. No ordinary service/public/cumulative Write activation.",
+  "noMainLandingAuthority": true
+}

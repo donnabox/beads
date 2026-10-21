@@ -1,0 +1,44 @@
+{
+  "base": "1647c5df37a82e1364d281ac46beb60a94ab6c76",
+  "sourceBinding": {
+    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-minimum-next-serving-plan/authoring-draft/report-ceiling-repair/source-binding.json",
+    "sha256": "855e81418b223d62f19b0b5d9ce38a6ea2bb56b8612b6f6e81e4285141632d0f"
+  },
+  "patchSha256": "e5cdabf3acf912d0cef684c2263e5a20b9d5c144d51f13ab2083621683ae186a",
+  "scopes": {
+    "production": [
+      "packages/server/src/transaction-consistency.ts",
+      "packages/server/src/transaction-read.ts",
+      "packages/server/src/transaction-service.ts",
+      "packages/server/src/transaction-http.ts",
+      "docs/specs/bdp.md"
+    ],
+    "source-tests": [
+      "packages/server/src/transaction-consistency.test.ts",
+      "packages/server/src/transaction-read.test.ts",
+      "packages/server/src/transaction-http.test.ts"
+    ],
+    "installed": [
+      "apps/bdptest/src/transactional-minimum-current-resource-installed.test.ts",
+      "docs/design/transaction-implementation-progress.md"
+    ]
+  },
+  "allOwnedPaths": [
+    "packages/server/src/transaction-consistency.ts",
+    "packages/server/src/transaction-read.ts",
+    "packages/server/src/transaction-service.ts",
+    "packages/server/src/transaction-http.ts",
+    "packages/server/src/transaction-consistency.test.ts",
+    "packages/server/src/transaction-read.test.ts",
+    "packages/server/src/transaction-http.test.ts",
+    "apps/bdptest/src/transactional-minimum-current-resource-installed.test.ts",
+    "docs/specs/bdp.md",
+    "docs/design/transaction-implementation-progress.md"
+  ],
+  "fullChangedHunksPresent": true,
+  "completeUnion": true,
+  "disjointAssignments": true,
+  "sharedContext": "Only exact labelled excerpts overlap; no scope is a fabricated whole-code verdict.",
+  "schema": "Installed includes exact selected shape definitions, not a full closure. Complete schema is hash-bound.",
+  "history": "Prior large and pre-report-repair closed packets preserved; no review launched."
+}

@@ -1,0 +1,22 @@
+{
+  "utc": "2026-10-18T12:26:19.107903+00:00",
+  "rootToolAcceptance": {
+    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/tx-discovery-validation7-tool-binding-root-release-1/acceptance.json",
+    "sha256": "0de8aa63e1304968580a34224a6a550dd3a0f6b992caa9e9269b986ef2c3be23"
+  },
+  "approvedPrefix": [
+    "node-version",
+    "pnpm-version",
+    "workspace-install",
+    "bind-workspace-tools",
+    "typecheck",
+    "format-check",
+    "lint",
+    "fresh-build",
+    "bind-fresh-build"
+  ],
+  "sourceBindingSha256": "9bb16e9c984f7c259c6f4cb42ddad2886234771a90f4421c3fddec57c5079a41",
+  "gateSha256": "a2c14837d6e9352dd7c96eccdc054e0918557b8333a8fc559b19abb42d5bf23c",
+  "durablePushRequiredBeforeNextStages": true,
+  "noRetry": true
+}

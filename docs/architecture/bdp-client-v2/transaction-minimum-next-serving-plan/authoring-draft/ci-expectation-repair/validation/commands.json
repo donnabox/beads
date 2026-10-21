@@ -1,0 +1,164 @@
+{
+  "executionOrder": [
+    "typecheck",
+    "format-check",
+    "lint",
+    "type-shapes",
+    "missing-installed",
+    "alias-installed"
+  ],
+  "commands": {
+    "typecheck": {
+      "argv": [
+        "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+        "/Users/dbox/.cache/node/corepack/v1/pnpm/11.20.0/bin/pnpm.cjs",
+        "run",
+        "typecheck"
+      ],
+      "cwd": "/Users/dbox/repos/wt/vickie/vickie-minimum-current-resource",
+      "supervisorSeconds": 120,
+      "automaticRetries": 0
+    },
+    "format-check": {
+      "argv": [
+        "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+        "/Users/dbox/.cache/node/corepack/v1/pnpm/11.20.0/bin/pnpm.cjs",
+        "exec",
+        "biome",
+        "format",
+        "--config-path",
+        "/Users/dbox/repos/wt/vickie/vickie-minimum-current-resource/biome.json",
+        "apps/bdptest/src/transactional-collection-minimum-installed.test.ts",
+        "packages/server/src/transaction-read.test.ts"
+      ],
+      "cwd": "/Users/dbox/repos/wt/vickie/vickie-minimum-current-resource",
+      "supervisorSeconds": 120,
+      "automaticRetries": 0
+    },
+    "lint": {
+      "argv": [
+        "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+        "/Users/dbox/.cache/node/corepack/v1/pnpm/11.20.0/bin/pnpm.cjs",
+        "exec",
+        "biome",
+        "lint",
+        "--config-path",
+        "/Users/dbox/repos/wt/vickie/vickie-minimum-current-resource/biome.json",
+        "apps/bdptest/src/transactional-collection-minimum-installed.test.ts",
+        "packages/server/src/transaction-read.test.ts"
+      ],
+      "cwd": "/Users/dbox/repos/wt/vickie/vickie-minimum-current-resource",
+      "supervisorSeconds": 120,
+      "automaticRetries": 0
+    },
+    "type-shapes": {
+      "argv": [
+        "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+        "/Users/dbox/repos/wt/vickie/vickie-minimum-current-resource/node_modules/vitest/vitest.mjs",
+        "run",
+        "packages/server/src/transaction-read.test.ts",
+        "--maxWorkers=1",
+        "--testNamePattern",
+        "^(?:current\\ Type\\ and\\ incident\\-Link\\ minimums\\ rejects\\ malformed\\ Type\\ ID\\ omitted\\ through\\ a\\ Promise\\ without\\ invoking\\ caller\\ data|current\\ Type\\ and\\ incident\\-Link\\ minimums\\ rejects\\ malformed\\ Type\\ ID\\ undefined\\ through\\ a\\ Promise\\ without\\ invoking\\ caller\\ data|current\\ Type\\ and\\ incident\\-Link\\ minimums\\ rejects\\ malformed\\ Type\\ ID\\ null\\ through\\ a\\ Promise\\ without\\ invoking\\ caller\\ data|current\\ Type\\ and\\ incident\\-Link\\ minimums\\ rejects\\ malformed\\ Type\\ ID\\ number\\ through\\ a\\ Promise\\ without\\ invoking\\ caller\\ data|current\\ Type\\ and\\ incident\\-Link\\ minimums\\ rejects\\ malformed\\ Type\\ ID\\ false\\ through\\ a\\ Promise\\ without\\ invoking\\ caller\\ data|current\\ Type\\ and\\ incident\\-Link\\ minimums\\ rejects\\ malformed\\ Type\\ ID\\ empty\\ through\\ a\\ Promise\\ without\\ invoking\\ caller\\ data|current\\ Type\\ and\\ incident\\-Link\\ minimums\\ rejects\\ malformed\\ Type\\ ID\\ method\\ through\\ a\\ Promise\\ without\\ invoking\\ caller\\ data|current\\ Type\\ and\\ incident\\-Link\\ minimums\\ rejects\\ malformed\\ Type\\ ID\\ accessor\\ through\\ a\\ Promise\\ without\\ invoking\\ caller\\ data|current\\ Type\\ and\\ incident\\-Link\\ minimums\\ rejects\\ malformed\\ Type\\ ID\\ inherited\\ through\\ a\\ Promise\\ without\\ invoking\\ caller\\ data|current\\ Type\\ and\\ incident\\-Link\\ minimums\\ rejects\\ malformed\\ Type\\ ID\\ proxy\\ through\\ a\\ Promise\\ without\\ invoking\\ caller\\ data|current\\ Type\\ and\\ incident\\-Link\\ minimums\\ rejects\\ malformed\\ Type\\ ID\\ revoked\\ through\\ a\\ Promise\\ without\\ invoking\\ caller\\ data)$",
+        "--reporter=verbose",
+        "--reporter=json",
+        "--outputFile=/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-minimum-next-serving-plan/authoring-draft/ci-expectation-repair/validation/run/type-shapes.results.json"
+      ],
+      "cwd": "/Users/dbox/repos/wt/vickie/vickie-minimum-current-resource",
+      "selectedFullNames": [
+        "current Type and incident-Link minimums rejects malformed Type ID omitted through a Promise without invoking caller data",
+        "current Type and incident-Link minimums rejects malformed Type ID undefined through a Promise without invoking caller data",
+        "current Type and incident-Link minimums rejects malformed Type ID null through a Promise without invoking caller data",
+        "current Type and incident-Link minimums rejects malformed Type ID number through a Promise without invoking caller data",
+        "current Type and incident-Link minimums rejects malformed Type ID false through a Promise without invoking caller data",
+        "current Type and incident-Link minimums rejects malformed Type ID empty through a Promise without invoking caller data",
+        "current Type and incident-Link minimums rejects malformed Type ID method through a Promise without invoking caller data",
+        "current Type and incident-Link minimums rejects malformed Type ID accessor through a Promise without invoking caller data",
+        "current Type and incident-Link minimums rejects malformed Type ID inherited through a Promise without invoking caller data",
+        "current Type and incident-Link minimums rejects malformed Type ID proxy through a Promise without invoking caller data",
+        "current Type and incident-Link minimums rejects malformed Type ID revoked through a Promise without invoking caller data"
+      ],
+      "supervisorSeconds": 120,
+      "automaticRetries": 0,
+      "validatedBdpOverrides": {},
+      "ownedTempPrefixes": [
+        "bdp-transaction-read-"
+      ],
+      "workload": {
+        "selectedCount": 11,
+        "httpExpectedAndMaximum": 0,
+        "productChildren": 0,
+        "storeLifetimes": 11,
+        "temporaryDirectories": 11
+      }
+    },
+    "missing-installed": {
+      "argv": [
+        "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+        "/Users/dbox/repos/wt/vickie/vickie-minimum-current-resource/node_modules/vitest/vitest.mjs",
+        "run",
+        "apps/bdptest/src/transactional-collection-minimum-installed.test.ts",
+        "--maxWorkers=1",
+        "--testNamePattern",
+        "^(?:observes\\ genuine\\ installed\\ compatible\\ and\\ ahead\\ missing\\ minimum404)$",
+        "--reporter=verbose",
+        "--reporter=json",
+        "--outputFile=/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-minimum-next-serving-plan/authoring-draft/ci-expectation-repair/validation/run/missing-installed.results.json"
+      ],
+      "cwd": "/Users/dbox/repos/wt/vickie/vickie-minimum-current-resource",
+      "selectedFullNames": [
+        "observes genuine installed compatible and ahead missing minimum404"
+      ],
+      "supervisorSeconds": 120,
+      "automaticRetries": 0,
+      "validatedBdpOverrides": {
+        "BDP_TRANSACTIONAL_INSTALLED_ENTRY": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-minimum-next-serving-plan/authoring-draft/installed-preparation/run/consumer/node_modules/.pnpm/@bdp+server@file+..+packages+bdp-server-0.0.0.tgz/node_modules/@bdp/server/dist/transaction-installed-process.js",
+        "BDP_TRANSACTIONAL_SOURCE_COMMIT": "733728cf40fc2f57407000251673bd5d3218acd4"
+      },
+      "ownedTempPrefixes": [
+        "bdp-collection-minimum-installed-"
+      ],
+      "workload": {
+        "selectedCount": 1,
+        "httpExpectedAndMaximum": 10,
+        "productChildren": 1,
+        "storeLifetimes": 1,
+        "temporaryDirectories": 1
+      }
+    },
+    "alias-installed": {
+      "argv": [
+        "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+        "/Users/dbox/repos/wt/vickie/vickie-minimum-current-resource/node_modules/vitest/vitest.mjs",
+        "run",
+        "apps/bdptest/src/transactional-collection-minimum-installed.test.ts",
+        "--maxWorkers=1",
+        "--testNamePattern",
+        "^(?:observes\\ genuine\\ installed\\ current\\ alias\\ minimums\\ within18requests)$",
+        "--reporter=verbose",
+        "--reporter=json",
+        "--outputFile=/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-minimum-next-serving-plan/authoring-draft/ci-expectation-repair/validation/run/alias-installed.results.json"
+      ],
+      "cwd": "/Users/dbox/repos/wt/vickie/vickie-minimum-current-resource",
+      "selectedFullNames": [
+        "observes genuine installed current alias minimums within18requests"
+      ],
+      "supervisorSeconds": 120,
+      "automaticRetries": 0,
+      "validatedBdpOverrides": {
+        "BDP_TRANSACTIONAL_INSTALLED_ENTRY": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-minimum-next-serving-plan/authoring-draft/installed-preparation/run/consumer/node_modules/.pnpm/@bdp+server@file+..+packages+bdp-server-0.0.0.tgz/node_modules/@bdp/server/dist/transaction-installed-process.js",
+        "BDP_TRANSACTIONAL_SOURCE_COMMIT": "733728cf40fc2f57407000251673bd5d3218acd4"
+      },
+      "ownedTempPrefixes": [
+        "bdp-collection-minimum-installed-"
+      ],
+      "workload": {
+        "selectedCount": 1,
+        "httpExpectedAndMaximum": 18,
+        "productChildren": 1,
+        "storeLifetimes": 1,
+        "temporaryDirectories": 1
+      }
+    }
+  }
+}

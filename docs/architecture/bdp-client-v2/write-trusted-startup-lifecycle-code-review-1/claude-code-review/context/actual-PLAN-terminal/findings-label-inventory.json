@@ -1,0 +1,62 @@
+{
+  "actualLabeledFindings": 10,
+  "labels": [
+    {
+      "id": "F1",
+      "severityAsWritten": "HIGH",
+      "title": "TX prepared path: the reused frozen preflight carries `port: 0`, and the existing core line binds `captured.port`"
+    },
+    {
+      "id": "F2",
+      "severityAsWritten": "MEDIUM",
+      "title": "One factored core is asked to satisfy two mutually exclusive listener-error contracts"
+    },
+    {
+      "id": "F3",
+      "severityAsWritten": "MEDIUM",
+      "title": "The TX pre-bind snapshot's position relative to `createTransactionService` is load-bearing and left ambiguous"
+    },
+    {
+      "id": "F4",
+      "severityAsWritten": "MEDIUM-LOW",
+      "title": "Duplicate RU installed-candidate assembly is unaddressed"
+    },
+    {
+      "id": "F5",
+      "severityAsWritten": "MEDIUM",
+      "title": "The new private entrypoint has no inert-import / missing-IPC witness, and the 21-callback table is closed"
+    },
+    {
+      "id": "F6",
+      "severityAsWritten": "MEDIUM-LOW",
+      "title": "Installed TX store-directory provisioning is unassigned"
+    },
+    {
+      "id": "F7",
+      "severityAsWritten": "LOW",
+      "title": "RU `epoch` is presented alongside genuine readback facts but is minted per process"
+    },
+    {
+      "id": "F8",
+      "severityAsWritten": "LOW",
+      "title": "`history:false` is required in `ready` but absent from the internal result field list"
+    },
+    {
+      "id": "F9",
+      "severityAsWritten": "LOW",
+      "title": "`persisted-cases.json`'s 21 rows are not stated to be complete against the actual metadata tables"
+    },
+    {
+      "id": "F10",
+      "severityAsWritten": "LOW",
+      "title": "Nothing binds the canonical Scope's authority to the intended listener"
+    }
+  ],
+  "severityCountsAsWritten": {
+    "HIGH": 1,
+    "MEDIUM": 3,
+    "MEDIUM-LOW": 2,
+    "LOW": 4
+  },
+  "rootDisposition": "PENDING; substantive result complete but no finding acceptance/approval/source release inferred"
+}

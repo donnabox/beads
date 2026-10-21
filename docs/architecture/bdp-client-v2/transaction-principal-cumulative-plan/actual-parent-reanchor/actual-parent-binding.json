@@ -1,0 +1,436 @@
+{
+  "status": "MECHANICAL_ACTUAL_PARENT_REANCHOR_ONLY",
+  "observedAt": "2026-10-15T21:43:39.241549+00:00",
+  "sourceRead": "git show committed immutable blobs only; no product imports or working-tree mutation",
+  "actualParent": "5d7fa3f049fa0b4db3aa8dae20e20d8e47fb3854",
+  "actualTree": "057f879132074166f2c0f643a8b45bbd9dd47c6f",
+  "orderedParents": [
+    "9bf601bfb570adae97ce8cdc99caf2cc7a2b34c1",
+    "8833c9242b7788e843e9eb97a2c99b2277fe75ef"
+  ],
+  "historicalPlanningParent": "9bf601bfb570adae97ce8cdc99caf2cc7a2b34c1",
+  "historicalSourceBinding": {
+    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-principal-cumulative-plan/source-binding.json",
+    "sha256": "ba150784a510bd182f3e42e06d9089cc4cd9fb6a11a9ffe35e0dd7e0cd45d25a"
+  },
+  "currentReviewedSourceBinding": {
+    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-principal-cumulative-plan/proposed-successor/source-binding.json",
+    "sha256": "ba150784a510bd182f3e42e06d9089cc4cd9fb6a11a9ffe35e0dd7e0cd45d25a"
+  },
+  "currentReviewedPlan": {
+    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-principal-cumulative-plan/proposed-successor/plan.md",
+    "sha256": "4c62dc5071de924492976ae77d4083b28b5b681350016e816d4296c5030f9427"
+  },
+  "currentReviewedLedger": {
+    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-principal-cumulative-plan/proposed-successor/ledger.json",
+    "sha256": "bc65536cd8e8b7fdd9eb12ae5b466c39a5ae19352b858ef1eb3812de14d6397e"
+  },
+  "historicalPreservation": {
+    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-principal-cumulative-plan/parent-preservation.json",
+    "sha256": "ba77c1e2130961088b9294a607199e2087f9066b988c4b2d3356043a0333e019"
+  },
+  "paths": [
+    {
+      "path": "packages/conformance/test-support/transactional/manifest-v1.json",
+      "bytes": 790009,
+      "sha256": "a11a79f6d0f9ffa5933a680a3e4fed87987789c3deca50a38cda8563132d242e",
+      "oldGitObject": "29a21ef1ca3605b89a25a3cabef621e51db71d2b",
+      "newGitObject": "29a21ef1ca3605b89a25a3cabef621e51db71d2b",
+      "unchanged": true,
+      "owned": true
+    },
+    {
+      "path": "packages/conformance/test-support/transactional/coverage-v1.json",
+      "bytes": 117702,
+      "sha256": "346e1edaa22af789f89017fdc2fef6bb01b7564ed72a65344e9fe5635887c74f",
+      "oldGitObject": "ad80f6a0e8f8289865eda07fd14cb0cd780220cc",
+      "newGitObject": "ad80f6a0e8f8289865eda07fd14cb0cd780220cc",
+      "unchanged": true,
+      "owned": true
+    },
+    {
+      "path": "packages/conformance/src/transactional-cumulative.test.ts",
+      "bytes": 109530,
+      "sha256": "313e6a947b33a3893565ea5db2d9d4a962b46c2e926900598e9285e657a31bf2",
+      "oldGitObject": "4b6d35ebb2856010cde5f50b189ee3c96be250d4",
+      "newGitObject": "4b6d35ebb2856010cde5f50b189ee3c96be250d4",
+      "unchanged": true,
+      "owned": true
+    },
+    {
+      "path": "apps/bdptest/src/transactional-matrix.test.ts",
+      "bytes": 131746,
+      "sha256": "dcf0161723a6b77dd4235111a83a6aa1ce0cbb6a1a5d79e362f992742bc503de",
+      "oldGitObject": "fa834828a1ac1ad4c4115b03e859aabe681d40a4",
+      "newGitObject": "fa834828a1ac1ad4c4115b03e859aabe681d40a4",
+      "unchanged": true,
+      "owned": true
+    },
+    {
+      "path": "packages/conformance/test-support/transactional/fixture-v1.json",
+      "bytes": 716,
+      "sha256": "3a7899ced771d4880066d98b0000c53f801ece53458502cc4f3bc641146c9a85",
+      "oldGitObject": "dbe2e21fcdebdd8360753aa9f8b8ed1ba67de3b3",
+      "newGitObject": "dbe2e21fcdebdd8360753aa9f8b8ed1ba67de3b3",
+      "unchanged": true,
+      "owned": false
+    },
+    {
+      "path": "apps/bdptest/src/transactional-principal-key-installed.test.ts",
+      "bytes": 30958,
+      "sha256": "0f941001445e001f96f8c432a7099a5eb29dc4b68bc4458d6d1dfae472a3ce20",
+      "oldGitObject": "3a9f722a2b0c2b59ba9d3c07230dfb82c64d6cea",
+      "newGitObject": "3a9f722a2b0c2b59ba9d3c07230dfb82c64d6cea",
+      "unchanged": true,
+      "owned": false
+    },
+    {
+      "path": "apps/bdptest/test-support/transactional-execution-binding.ts",
+      "bytes": 7378,
+      "sha256": "cde506c72a8710eafe58522900f6db70ed3701cf333560252dc8e7c5e706cf89",
+      "oldGitObject": "6f6d9826b21151d913edd970c5e1251d2a58cfc0",
+      "newGitObject": "6f6d9826b21151d913edd970c5e1251d2a58cfc0",
+      "unchanged": true,
+      "owned": false
+    },
+    {
+      "path": "packages/conformance/src/profile-contract-selection.ts",
+      "bytes": 5113,
+      "sha256": "5b1caf61688bfa6a5465b5f8dc817b84f02be76bfc5bdd886a19e749b6441543",
+      "oldGitObject": "e91b034461c81b8d778144756affa170a7f9f3d0",
+      "newGitObject": "e91b034461c81b8d778144756affa170a7f9f3d0",
+      "unchanged": true,
+      "owned": false
+    },
+    {
+      "path": "packages/conformance/src/artifact-bundle.ts",
+      "bytes": 21853,
+      "sha256": "bbf54915eb792433ae492fd73a5334717e74e0942c485a72daa5105928546dd6",
+      "oldGitObject": "20b74a00944f3f646ec78b2579f646306fbaa19e",
+      "newGitObject": "20b74a00944f3f646ec78b2579f646306fbaa19e",
+      "unchanged": true,
+      "owned": false
+    },
+    {
+      "path": "packages/conformance/src/runner.ts",
+      "bytes": 133683,
+      "sha256": "ac20c7fbfe15a5e42a6559e89cd3467562efe9bc74d462478414414ed3efede1",
+      "oldGitObject": "fa6d9c5676b2a53c53e4be143a15517e39f150a0",
+      "newGitObject": "fa6d9c5676b2a53c53e4be143a15517e39f150a0",
+      "unchanged": true,
+      "owned": false
+    },
+    {
+      "path": "packages/conformance/src/executable-manifest.ts",
+      "bytes": 96906,
+      "sha256": "65af0451cd046d57c10b0666e54efbaaecc2225551d3accc5cc1d032322913fa",
+      "oldGitObject": "f2b80bb73b48c7c1b1c9405f9b84d92a4e694e4d",
+      "newGitObject": "f2b80bb73b48c7c1b1c9405f9b84d92a4e694e4d",
+      "unchanged": true,
+      "owned": false
+    },
+    {
+      "path": "packages/conformance/src/http-executor.ts",
+      "bytes": 50611,
+      "sha256": "770a8405ae1532484b5a2658619c067832644947888f95e0c6575002376f1b5d",
+      "oldGitObject": "3a55bf6f371ef50f9f737c93dcaeb1057156414e",
+      "newGitObject": "3a55bf6f371ef50f9f737c93dcaeb1057156414e",
+      "unchanged": true,
+      "owned": false
+    },
+    {
+      "path": "packages/conformance/test-support/profile-contract-plan.ts",
+      "bytes": 15083,
+      "sha256": "18c953443e6695cfa48f89677231fecffc349df02bd080f107a5c739db10b728",
+      "oldGitObject": "1c7dda2a09fc260c6c65de5a29d1d4e36473437a",
+      "newGitObject": "1c7dda2a09fc260c6c65de5a29d1d4e36473437a",
+      "unchanged": true,
+      "owned": false
+    },
+    {
+      "path": "packages/conformance/catalog/read-update-v1.json",
+      "bytes": 85899,
+      "sha256": "73d215813df034a2be0cd15d0caff7cf2c8823a067f271b9140c9cbb90e859c3",
+      "oldGitObject": "b2ffcd4f350459fd45e31da4e2727ad0f108ef81",
+      "newGitObject": "b2ffcd4f350459fd45e31da4e2727ad0f108ef81",
+      "unchanged": true,
+      "owned": false
+    },
+    {
+      "path": "packages/conformance/catalog/transactional-v1.json",
+      "bytes": 94826,
+      "sha256": "c9125f914129c71f01cefc5c54b32db80637d37b57e321571c96e81936c31eb4",
+      "oldGitObject": "48050fef4848af511f9ff3c3226f522cfdd0393d",
+      "newGitObject": "48050fef4848af511f9ff3c3226f522cfdd0393d",
+      "unchanged": true,
+      "owned": false
+    },
+    {
+      "path": "packages/protocol/schemas/bdp-v0.schema.json",
+      "bytes": 133208,
+      "sha256": "0baa5d5ef67144f8e6513b4cde31168effc8df6d52ef3141b0f144b87f8dc227",
+      "oldGitObject": "a106b40871ed67e712f334575d025f4cdbefb28d",
+      "newGitObject": "a106b40871ed67e712f334575d025f4cdbefb28d",
+      "unchanged": true,
+      "owned": false
+    },
+    {
+      "path": "packages/server/src/transaction-installed-process.ts",
+      "bytes": 2630,
+      "sha256": "6bd16f940f1f751189fc76419e3a18ca26cd5f54da3cfa3946b30c3956a2f8b7",
+      "oldGitObject": "3be5057c87161c08f01b4e4ae3cea191b7553882",
+      "newGitObject": "3be5057c87161c08f01b4e4ae3cea191b7553882",
+      "unchanged": true,
+      "owned": false
+    },
+    {
+      "path": "packages/server/src/transaction-runtime.ts",
+      "bytes": 16173,
+      "sha256": "77954f0a85029d76443feac54cd53cda4339ffc126660ace5a9f5af92466c573",
+      "oldGitObject": "c400ffdb71f38cdd858554a63b1ad2f07183478c",
+      "newGitObject": "c400ffdb71f38cdd858554a63b1ad2f07183478c",
+      "unchanged": true,
+      "owned": false
+    },
+    {
+      "path": "packages/server/src/transaction-runtime-configuration.ts",
+      "bytes": 16165,
+      "sha256": "e594e930f845255cafc7e2f5b5b28149b7e95fe8a09052b187a492c96328f7ca",
+      "oldGitObject": "84910491211b87a15eb807ed20a195362554e117",
+      "newGitObject": "84910491211b87a15eb807ed20a195362554e117",
+      "unchanged": true,
+      "owned": false
+    },
+    {
+      "path": "packages/server/src/transaction-http.ts",
+      "bytes": 27155,
+      "sha256": "b51d02801e5924190aba77c377e538db0b8619149d6184e19cb56d440f40c2cf",
+      "oldGitObject": "f0acc6636def2ce873cf0efacdb3d282519a0111",
+      "newGitObject": "f0acc6636def2ce873cf0efacdb3d282519a0111",
+      "unchanged": true,
+      "owned": false
+    },
+    {
+      "path": "packages/server/src/transaction-store.ts",
+      "bytes": 87238,
+      "sha256": "fcd6882b29e538db45867c894c06dfbaa6ca588db0c2e403ef1b7abb14f6c706",
+      "oldGitObject": "0c7a94dee640318fc91ebd7817ed4aa675000949",
+      "newGitObject": "0c7a94dee640318fc91ebd7817ed4aa675000949",
+      "unchanged": true,
+      "owned": false
+    },
+    {
+      "path": "packages/server/src/transaction-service.ts",
+      "bytes": 25130,
+      "sha256": "53f655faf494209996aac2e0f93a4c2c785e471f66aac6af9ea41f92c9cfbe00",
+      "oldGitObject": "00c3048be0f72e3704f6c5786e3746046837c89d",
+      "newGitObject": "00c3048be0f72e3704f6c5786e3746046837c89d",
+      "unchanged": true,
+      "owned": false
+    },
+    {
+      "path": "packages/server/src/index.ts",
+      "bytes": 55615,
+      "sha256": "34f9d9de8b48852c64919e69ce93f149e9cdae5142c15c75e4c35f08f15efc44",
+      "oldGitObject": "1d01f2c96c919baf438e8259f6d6ea0755b06a6b",
+      "newGitObject": "1d01f2c96c919baf438e8259f6d6ea0755b06a6b",
+      "unchanged": true,
+      "owned": false
+    },
+    {
+      "path": "docs/specs/bdp.md",
+      "bytes": 394427,
+      "sha256": "f036103ffdf5f89fa3a2033570e1e987c4cd203cd80b1c633cb44615123f892e",
+      "oldGitObject": "bf7d6ecaa6f2ae85efec8464827d256b4016b1f8",
+      "newGitObject": "bf7d6ecaa6f2ae85efec8464827d256b4016b1f8",
+      "unchanged": true,
+      "owned": false
+    }
+  ],
+  "ownedPaths": [
+    "packages/conformance/test-support/transactional/manifest-v1.json",
+    "packages/conformance/test-support/transactional/coverage-v1.json",
+    "packages/conformance/src/transactional-cumulative.test.ts",
+    "apps/bdptest/src/transactional-matrix.test.ts"
+  ],
+  "rawObjectCount": 30,
+  "parentObjects": [
+    {
+      "path": "packages/conformance/test-support/transactional/manifest-v1.json",
+      "fullParentSha256": "a11a79f6d0f9ffa5933a680a3e4fed87987789c3deca50a38cda8563132d242e",
+      "bytes": 790009,
+      "rawObjects": [
+        {
+          "id": "read-update.http.command-minimum-fields",
+          "sha256": "f04c001617ccad14ef67a82586ea5f61ec918bc2545bb041fafc21dee07b5d7e",
+          "bytes": 54412
+        },
+        {
+          "id": "transactional.batch.atomic-commit",
+          "sha256": "0dfd3b9ed02d01f76ecac08c00b009b4bb9f03e57f7e15a2266eed82fc144747",
+          "bytes": 14936
+        },
+        {
+          "id": "transactional.batch.rollback",
+          "sha256": "be24067358af7b5acf7bc1beae2eb6534cbc0effa6f65406ab61b139310bfc37",
+          "bytes": 16319
+        },
+        {
+          "id": "transactional.batch.deletion-safety",
+          "sha256": "3e66e7c95aec963cc80e076249a5870b952765b2e98c1023ea148f8f628e6aeb",
+          "bytes": 131808
+        },
+        {
+          "id": "transactional.batch.no-op-entries",
+          "sha256": "9307b230eb053131e9127cbbb5e6285305b79d6794edd22f5432a07fc74d9faa",
+          "bytes": 81047
+        },
+        {
+          "id": "transactional.set.mutation",
+          "sha256": "6e7280a9ebbbc3faa1da989015cc802f82cd51b17a9cea11e7cc91392bef49d6",
+          "bytes": 71739
+        },
+        {
+          "id": "transactional.set.zero-match",
+          "sha256": "35aa23bd32539869ea3db41e1c9f3e81a3217e2eb983e764e860a6e00c9eb2c9",
+          "bytes": 36055
+        },
+        {
+          "id": "transactional.set.cardinality",
+          "sha256": "205af1c54d62efb09c9eadf20147a1730909e788c0d4763ce9718b8648f24ede",
+          "bytes": 28546
+        },
+        {
+          "id": "transactional.set.singleton-targets",
+          "sha256": "561b8ebc21106628918111332a9ab7b47be7350935925ed1e76a6cb5bed576b9",
+          "bytes": 40018
+        },
+        {
+          "id": "transactional.receipt.readable",
+          "sha256": "ddb97e450e233b941f7d905d49f48648d9965ed1b361dcdc5dee6f810038a1e0",
+          "bytes": 12545
+        },
+        {
+          "id": "transactional.receipt.pagination",
+          "sha256": "c531c260349347cdc3e54ba68282f1a266a5fa207d3775660615f836a4768782",
+          "bytes": 138750
+        },
+        {
+          "id": "transactional.idempotency.conflict",
+          "sha256": "ba93aea884ae462533d02695642f03a2ca854f5adabeb41867254216dabb2106",
+          "bytes": 29772
+        },
+        {
+          "id": "transactional.idempotency.cross-carrier",
+          "sha256": "4ad8c05fe5fbb4682809d4481c93e2684fe30fbbb8962b4da498590637f8f35b",
+          "bytes": 64106
+        },
+        {
+          "id": "transactional.idempotency.failed-retained",
+          "sha256": "a867694406dde07da71ac70197c60c478dd0fb3344cf2c8160795d1aa62d3378",
+          "bytes": 18404
+        },
+        {
+          "id": "transactional.sequence.member-transactions",
+          "sha256": "c46b34914118dd34ea1e5f12304124550b9d3c4bfcd9671b99995d6af44a2e1b",
+          "bytes": 51379
+        }
+      ],
+      "completeFileByteIdentical": true
+    },
+    {
+      "path": "packages/conformance/test-support/transactional/coverage-v1.json",
+      "fullParentSha256": "346e1edaa22af789f89017fdc2fef6bb01b7564ed72a65344e9fe5635887c74f",
+      "bytes": 117702,
+      "rawObjects": [
+        {
+          "id": "read-update.http.command-minimum-fields",
+          "sha256": "47914ed67c7b06e721e74134e0c633f3e1a7d461cb50ea200ff1874686885c2a",
+          "bytes": 8888
+        },
+        {
+          "id": "transactional.batch.atomic-commit",
+          "sha256": "ffd77a9d34ac41a6e1f960671bea6880eb5b2ab7b11b3af4ccf0177363d7f4d7",
+          "bytes": 2383
+        },
+        {
+          "id": "transactional.batch.rollback",
+          "sha256": "9e4f5cdb45f0133f1c6d23caa402701981db2e6f4198e23c667579622ace6769",
+          "bytes": 2857
+        },
+        {
+          "id": "transactional.batch.deletion-safety",
+          "sha256": "ac27a329a1cc013e6a0e24e0f5cad6b5b4af6c128ad65302d030422a3c7e3c0a",
+          "bytes": 17375
+        },
+        {
+          "id": "transactional.batch.no-op-entries",
+          "sha256": "383de4e0cb9b3bad310b9db7ff9009cb59fac55966f0309bc71c5d007bea6c1c",
+          "bytes": 10587
+        },
+        {
+          "id": "transactional.set.mutation",
+          "sha256": "058147f8194f091ee5a7ef3d4fd378f0324f6570049df777f993acb5f967d540",
+          "bytes": 11676
+        },
+        {
+          "id": "transactional.set.zero-match",
+          "sha256": "4e79e18a5e4c2735b5c686b9ad610dedc890386bfb06584f98268a421bbb832b",
+          "bytes": 6520
+        },
+        {
+          "id": "transactional.set.cardinality",
+          "sha256": "2a255ed4d364c435c9f985d7a770386bc7b20b2865887b9c8cc2d6cc5f0dd116",
+          "bytes": 5800
+        },
+        {
+          "id": "transactional.set.singleton-targets",
+          "sha256": "0c9008bac3e2c047d9aa8d47d343b7ed936c9c9352bb140c6422127c71b156b1",
+          "bytes": 7314
+        },
+        {
+          "id": "transactional.receipt.readable",
+          "sha256": "684eba200912ccb0932c0a8286e350a6e545262a205b3ea3df47a12fc6dd18ec",
+          "bytes": 2142
+        },
+        {
+          "id": "transactional.receipt.pagination",
+          "sha256": "0735edbca2fbf384f9f8147140a353dc084d9ad85facaddf2f5073f56a7256ee",
+          "bytes": 13057
+        },
+        {
+          "id": "transactional.idempotency.conflict",
+          "sha256": "de9b758f8ac4df7db5597b1eb2b402a116720becc30a41e7198f78f244358ec0",
+          "bytes": 5188
+        },
+        {
+          "id": "transactional.idempotency.cross-carrier",
+          "sha256": "c5e6076a2104c06f88fac88c77214522cab457faf925fe03881dff9778c35245",
+          "bytes": 11196
+        },
+        {
+          "id": "transactional.idempotency.failed-retained",
+          "sha256": "63918cbb495a504fd2043f52b60e7cd8ef1518b8022a96edb0d02660c7df1a8e",
+          "bytes": 2917
+        },
+        {
+          "id": "transactional.sequence.member-transactions",
+          "sha256": "aea606d1456549f6dd9dc1903e42568282154a61a9fbef50dab3526202eb4045",
+          "bytes": 9557
+        }
+      ],
+      "completeFileByteIdentical": true
+    }
+  ],
+  "actualMergeChangesOutsideOwnedScope": [
+    "A\tapps/bdptest/src/transactional-guarded-batch-installed.test.ts",
+    "M\tdocs/design/transaction-implementation-progress.md"
+  ],
+  "all24PinsUnchanged": true,
+  "all4OwnedFilesUnchanged": true,
+  "all30RawObjectsUnchanged": true,
+  "authoringReleased": false,
+  "executionReleased": false,
+  "actualSplitCouncilDispositionPending": true,
+  "semanticReReviewRequiredByReanchor": false
+}

@@ -1,0 +1,44 @@
+{
+  "observedAt": "2026-10-18T03:56:33.788421+00:00",
+  "reviewerProcess": {
+    "pid": 73969,
+    "pgid": 73969,
+    "started": "2026-10-18T03:53:25.525190+00:00",
+    "argv": [
+      "/opt/homebrew/bin/claude",
+      "--safe-mode",
+      "-p",
+      "--tools",
+      "Read,Glob,Grep",
+      "--allowedTools",
+      "Read,Glob,Grep",
+      "--disable-slash-commands",
+      "--strict-mcp-config",
+      "--mcp-config",
+      "{\"mcpServers\":{}}",
+      "--no-session-persistence",
+      "--output-format",
+      "stream-json",
+      "--verbose",
+      "--include-partial-messages"
+    ],
+    "timeoutSeconds": 1800,
+    "termAfterSeconds": 1790
+  },
+  "actualInit": {
+    "model": "claude-opus-5[1m]",
+    "tools": [
+      "Glob",
+      "Grep",
+      "Read"
+    ],
+    "mcp_servers": [],
+    "permissionMode": "default"
+  },
+  "streamBytes": 882749,
+  "completeRecordsAtRead": 863,
+  "processSample": "73969 73969 /opt/homebrew/bin/claude\n",
+  "terminalAvailable": false,
+  "approvalInferred": false,
+  "sourceMutationReleased": false
+}

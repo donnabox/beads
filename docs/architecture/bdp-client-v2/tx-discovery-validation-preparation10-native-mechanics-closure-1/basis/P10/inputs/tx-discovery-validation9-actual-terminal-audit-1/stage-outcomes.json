@@ -1,0 +1,327 @@
+{
+  "all52StageExecutions": "UNEXECUTED",
+  "noRetry": true,
+  "passReuse": false,
+  "productChildRuns": 0,
+  "rootFailure": "malformed root authorization gate, before any stage start",
+  "rootWrapperAttempts": 1,
+  "rootWrapperExit": 1,
+  "rows": [
+    {
+      "ordinal": 1,
+      "reason": "node-version root wrapper refused before stage start",
+      "stage": "node-version",
+      "status": "UNEXECUTED"
+    },
+    {
+      "ordinal": 2,
+      "reason": "dispatch stopped after root wrapper refusal; no stage invocation",
+      "stage": "pnpm-version",
+      "status": "UNEXECUTED"
+    },
+    {
+      "ordinal": 3,
+      "reason": "dispatch stopped after root wrapper refusal; no stage invocation",
+      "stage": "workspace-install",
+      "status": "UNEXECUTED"
+    },
+    {
+      "ordinal": 4,
+      "reason": "dispatch stopped after root wrapper refusal; no stage invocation",
+      "stage": "bind-workspace-tools",
+      "status": "UNEXECUTED"
+    },
+    {
+      "ordinal": 5,
+      "reason": "dispatch stopped after root wrapper refusal; no stage invocation",
+      "stage": "typecheck",
+      "status": "UNEXECUTED"
+    },
+    {
+      "ordinal": 6,
+      "reason": "dispatch stopped after root wrapper refusal; no stage invocation",
+      "stage": "format-check",
+      "status": "UNEXECUTED"
+    },
+    {
+      "ordinal": 7,
+      "reason": "dispatch stopped after root wrapper refusal; no stage invocation",
+      "stage": "lint",
+      "status": "UNEXECUTED"
+    },
+    {
+      "ordinal": 8,
+      "reason": "dispatch stopped after root wrapper refusal; no stage invocation",
+      "stage": "fresh-build",
+      "status": "UNEXECUTED"
+    },
+    {
+      "ordinal": 9,
+      "reason": "dispatch stopped after root wrapper refusal; no stage invocation",
+      "stage": "bind-fresh-build",
+      "status": "UNEXECUTED"
+    },
+    {
+      "ordinal": 10,
+      "reason": "dispatch stopped after root wrapper refusal; no stage invocation",
+      "stage": "focused-source",
+      "status": "UNEXECUTED"
+    },
+    {
+      "ordinal": 11,
+      "reason": "dispatch stopped after root wrapper refusal; no stage invocation",
+      "stage": "audit-focused-source",
+      "status": "UNEXECUTED"
+    },
+    {
+      "ordinal": 12,
+      "reason": "dispatch stopped after root wrapper refusal; no stage invocation",
+      "stage": "legacy-changefeed-source",
+      "status": "UNEXECUTED"
+    },
+    {
+      "ordinal": 13,
+      "reason": "dispatch stopped after root wrapper refusal; no stage invocation",
+      "stage": "audit-legacy-changefeed-source",
+      "status": "UNEXECUTED"
+    },
+    {
+      "ordinal": 14,
+      "reason": "dispatch stopped after root wrapper refusal; no stage invocation",
+      "stage": "legacy-installed-contracts-source",
+      "status": "UNEXECUTED"
+    },
+    {
+      "ordinal": 15,
+      "reason": "dispatch stopped after root wrapper refusal; no stage invocation",
+      "stage": "audit-legacy-installed-contracts-source",
+      "status": "UNEXECUTED"
+    },
+    {
+      "ordinal": 16,
+      "reason": "dispatch stopped after root wrapper refusal; no stage invocation",
+      "stage": "schema-confinement-source",
+      "status": "UNEXECUTED"
+    },
+    {
+      "ordinal": 17,
+      "reason": "dispatch stopped after root wrapper refusal; no stage invocation",
+      "stage": "audit-schema-confinement-source",
+      "status": "UNEXECUTED"
+    },
+    {
+      "ordinal": 18,
+      "reason": "dispatch stopped after root wrapper refusal; no stage invocation",
+      "stage": "prepare-package-directory",
+      "status": "UNEXECUTED"
+    },
+    {
+      "ordinal": 19,
+      "reason": "dispatch stopped after root wrapper refusal; no stage invocation",
+      "stage": "pack-protocol",
+      "status": "UNEXECUTED"
+    },
+    {
+      "ordinal": 20,
+      "reason": "dispatch stopped after root wrapper refusal; no stage invocation",
+      "stage": "pack-server",
+      "status": "UNEXECUTED"
+    },
+    {
+      "ordinal": 21,
+      "reason": "dispatch stopped after root wrapper refusal; no stage invocation",
+      "stage": "verify-archives",
+      "status": "UNEXECUTED"
+    },
+    {
+      "ordinal": 22,
+      "reason": "dispatch stopped after root wrapper refusal; no stage invocation",
+      "stage": "prepare-consumer",
+      "status": "UNEXECUTED"
+    },
+    {
+      "ordinal": 23,
+      "reason": "dispatch stopped after root wrapper refusal; no stage invocation",
+      "stage": "consumer-install",
+      "status": "UNEXECUTED"
+    },
+    {
+      "ordinal": 24,
+      "reason": "dispatch stopped after root wrapper refusal; no stage invocation",
+      "stage": "verify-installed-consumer",
+      "status": "UNEXECUTED"
+    },
+    {
+      "ordinal": 25,
+      "reason": "dispatch stopped after root wrapper refusal; no stage invocation",
+      "stage": "installed-01",
+      "status": "UNEXECUTED"
+    },
+    {
+      "ordinal": 26,
+      "reason": "dispatch stopped after root wrapper refusal; no stage invocation",
+      "stage": "audit-installed-01",
+      "status": "UNEXECUTED"
+    },
+    {
+      "ordinal": 27,
+      "reason": "dispatch stopped after root wrapper refusal; no stage invocation",
+      "stage": "installed-02",
+      "status": "UNEXECUTED"
+    },
+    {
+      "ordinal": 28,
+      "reason": "dispatch stopped after root wrapper refusal; no stage invocation",
+      "stage": "audit-installed-02",
+      "status": "UNEXECUTED"
+    },
+    {
+      "ordinal": 29,
+      "reason": "dispatch stopped after root wrapper refusal; no stage invocation",
+      "stage": "installed-03",
+      "status": "UNEXECUTED"
+    },
+    {
+      "ordinal": 30,
+      "reason": "dispatch stopped after root wrapper refusal; no stage invocation",
+      "stage": "audit-installed-03",
+      "status": "UNEXECUTED"
+    },
+    {
+      "ordinal": 31,
+      "reason": "dispatch stopped after root wrapper refusal; no stage invocation",
+      "stage": "installed-04",
+      "status": "UNEXECUTED"
+    },
+    {
+      "ordinal": 32,
+      "reason": "dispatch stopped after root wrapper refusal; no stage invocation",
+      "stage": "audit-installed-04",
+      "status": "UNEXECUTED"
+    },
+    {
+      "ordinal": 33,
+      "reason": "dispatch stopped after root wrapper refusal; no stage invocation",
+      "stage": "installed-05",
+      "status": "UNEXECUTED"
+    },
+    {
+      "ordinal": 34,
+      "reason": "dispatch stopped after root wrapper refusal; no stage invocation",
+      "stage": "audit-installed-05",
+      "status": "UNEXECUTED"
+    },
+    {
+      "ordinal": 35,
+      "reason": "dispatch stopped after root wrapper refusal; no stage invocation",
+      "stage": "installed-06",
+      "status": "UNEXECUTED"
+    },
+    {
+      "ordinal": 36,
+      "reason": "dispatch stopped after root wrapper refusal; no stage invocation",
+      "stage": "audit-installed-06",
+      "status": "UNEXECUTED"
+    },
+    {
+      "ordinal": 37,
+      "reason": "dispatch stopped after root wrapper refusal; no stage invocation",
+      "stage": "installed-07",
+      "status": "UNEXECUTED"
+    },
+    {
+      "ordinal": 38,
+      "reason": "dispatch stopped after root wrapper refusal; no stage invocation",
+      "stage": "audit-installed-07",
+      "status": "UNEXECUTED"
+    },
+    {
+      "ordinal": 39,
+      "reason": "dispatch stopped after root wrapper refusal; no stage invocation",
+      "stage": "installed-08",
+      "status": "UNEXECUTED"
+    },
+    {
+      "ordinal": 40,
+      "reason": "dispatch stopped after root wrapper refusal; no stage invocation",
+      "stage": "audit-installed-08",
+      "status": "UNEXECUTED"
+    },
+    {
+      "ordinal": 41,
+      "reason": "dispatch stopped after root wrapper refusal; no stage invocation",
+      "stage": "installed-09",
+      "status": "UNEXECUTED"
+    },
+    {
+      "ordinal": 42,
+      "reason": "dispatch stopped after root wrapper refusal; no stage invocation",
+      "stage": "audit-installed-09",
+      "status": "UNEXECUTED"
+    },
+    {
+      "ordinal": 43,
+      "reason": "dispatch stopped after root wrapper refusal; no stage invocation",
+      "stage": "installed-10",
+      "status": "UNEXECUTED"
+    },
+    {
+      "ordinal": 44,
+      "reason": "dispatch stopped after root wrapper refusal; no stage invocation",
+      "stage": "audit-installed-10",
+      "status": "UNEXECUTED"
+    },
+    {
+      "ordinal": 45,
+      "reason": "dispatch stopped after root wrapper refusal; no stage invocation",
+      "stage": "installed-11",
+      "status": "UNEXECUTED"
+    },
+    {
+      "ordinal": 46,
+      "reason": "dispatch stopped after root wrapper refusal; no stage invocation",
+      "stage": "audit-installed-11",
+      "status": "UNEXECUTED"
+    },
+    {
+      "ordinal": 47,
+      "reason": "dispatch stopped after root wrapper refusal; no stage invocation",
+      "stage": "schema-installed-positive",
+      "status": "UNEXECUTED"
+    },
+    {
+      "ordinal": 48,
+      "reason": "dispatch stopped after root wrapper refusal; no stage invocation",
+      "stage": "audit-schema-installed-positive",
+      "status": "UNEXECUTED"
+    },
+    {
+      "ordinal": 49,
+      "reason": "dispatch stopped after root wrapper refusal; no stage invocation",
+      "stage": "required-check-boundaries",
+      "status": "UNEXECUTED"
+    },
+    {
+      "ordinal": 50,
+      "reason": "dispatch stopped after root wrapper refusal; no stage invocation",
+      "stage": "required-e2e-ready-preflight",
+      "status": "UNEXECUTED"
+    },
+    {
+      "ordinal": 51,
+      "reason": "dispatch stopped after root wrapper refusal; no stage invocation",
+      "stage": "required-smoke",
+      "status": "UNEXECUTED"
+    },
+    {
+      "ordinal": 52,
+      "reason": "dispatch stopped after root wrapper refusal; no stage invocation",
+      "stage": "required-evidence-verify",
+      "status": "UNEXECUTED"
+    }
+  ],
+  "stageAttempts": 0,
+  "stageFailures": 0,
+  "stagePasses": 0,
+  "testCallbackRuns": 0
+}

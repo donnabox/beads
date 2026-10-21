@@ -1,0 +1,34 @@
+--- a/packages/server/src/transaction-store.ts
++++ b/packages/server/src/transaction-store.ts
+@@ -1384,7 +1384,7 @@
+     return enter(() => {
+       assertPreparedTransaction(batch, scope);
+       checkPrincipalKey(principal, key);
+-      const admission = atomic(() => {
++      let admission: TransactionReceivingAdmission = atomic(() => {
+         const result = admitKey(principal, key, batch, false, undefined, undefined, receiving);
+         if (result.kind === "operation-limit" && controls === undefined)
+           throw new TransactionDevelopmentLimitError("development transaction operation limit");
+@@ -1392,19 +1392,14 @@
+           if (!receiving.acceptsJson)
+             return {
+               kind: "not-acceptable" as const,
+-              ...(observed ? { context: readContext() } : {}),
++              
+             };
+           if (observed) return { kind: "existing" as const, ...observeReceipt(result.receipt) };
+         }
+-        if (
+-          observed &&
+-          (result.kind === "conflict" ||
+-            result.kind === "operation-limit" ||
+-            result.kind === "not-acceptable")
+-        )
+-          return { ...result, context: readContext() };
+         return result;
+       });
++      if (observed && (admission.kind === "conflict" || admission.kind === "operation-limit" || admission.kind === "not-acceptable"))
++        admission = { ...admission, context: readContext() };
+       if (admission.kind === "owned") {
+         try {
+           options.fault?.("after-admission");

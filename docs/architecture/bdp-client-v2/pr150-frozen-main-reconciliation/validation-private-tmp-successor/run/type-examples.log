@@ -1,0 +1,8 @@
+Traceback (most recent call last):
+  File "/Users/dbox/repos/wt/vickie/vickie-pr150-main-reconciliation/scripts/check_type_examples.py", line 207, in <module>
+    check(issue_name, altered(issue_instance, **{key: value}), valid, "Issue " + key)
+    ~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/dbox/repos/wt/vickie/vickie-pr150-main-reconciliation/scripts/check_type_examples.py", line 47, in check
+    assert (not errors) == expected, (label, [e.message for e in errors])
+           ^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: ('Issue due_at', [])

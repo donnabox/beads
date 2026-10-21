@@ -1,0 +1,110 @@
+{
+  "scope": "Static draft corrections, no compiler/test/runtime failures or retries. Every saved prior byte preserved.",
+  "corrections": [
+    {
+      "directory": "post-formatter-static-correction-1",
+      "record": {
+        "sha256": "850e7999fee66e550cf81befc98dab507190847677f372399446d6fc244b3f25",
+        "bytes": 785
+      },
+      "forward": null,
+      "inverse": null
+    },
+    {
+      "directory": "post-formatter-static-correction-2",
+      "record": {
+        "sha256": "dd3b7e245c51d01725055ff62f5a35ee96b629ae0d15b79dd938c12c066cf05f",
+        "bytes": 838
+      },
+      "forward": {
+        "sha256": "a746750737b4cd2af7a4e1cb021460476e093fc7bf822d9b1f0c1a932e640721",
+        "bytes": 1230
+      },
+      "inverse": {
+        "sha256": "cc719670d57a2fd5d03b99ad53a347c6f348560cb86a194b70ba0261122e7e6f",
+        "bytes": 1230
+      }
+    },
+    {
+      "directory": "post-formatter-static-correction-3",
+      "record": {
+        "sha256": "e08682e91c160fbe93f130ac326748b260b130a4a1da4b8cbdaa29ec4e0c59e1",
+        "bytes": 905
+      },
+      "forward": {
+        "sha256": "3d6b823368cb012536c928dfeec919cbeca799402a8d6beb74eae034bffc7aa9",
+        "bytes": 1717
+      },
+      "inverse": {
+        "sha256": "b6e1718621a6f06eb875c9cc6e27250837ce832a745791a6fd249189ee5b514c",
+        "bytes": 1717
+      }
+    },
+    {
+      "directory": "post-formatter-static-correction-4",
+      "record": {
+        "sha256": "0ee865e42b3fe0983a880280ec93e0393f396584cc09c3006a04a0e8cf151e5d",
+        "bytes": 608
+      },
+      "forward": {
+        "sha256": "257f03af3bb263f9f6f338f6b32a0fbd5214e701b3662fb1dccc207f97e476b4",
+        "bytes": 367
+      },
+      "inverse": {
+        "sha256": "ac8ea9df0edf5d7d78f7b25289d28d3cd63a299568988d82c89d29b8a5e5d019",
+        "bytes": 367
+      }
+    },
+    {
+      "directory": "static-corrections-1",
+      "record": {
+        "sha256": "973670cfdfd30867a531d10ceeeaf0be5c67bab3ec70f4b23fa57a763d0640c7",
+        "bytes": 733
+      },
+      "forward": null,
+      "inverse": null
+    },
+    {
+      "directory": "static-corrections-2",
+      "record": {
+        "sha256": "8f0386e344697d4cd30644fa7818c5bf1113f4ab2184fd3d84f13f290f9051f6",
+        "bytes": 813
+      },
+      "forward": null,
+      "inverse": null
+    },
+    {
+      "directory": "static-corrections-3",
+      "record": {
+        "sha256": "60792073fa8b6e973d2fec7182008b13710df5c75f19fe6f0319e764b1fb297c",
+        "bytes": 566
+      },
+      "forward": null,
+      "inverse": null
+    },
+    {
+      "directory": "static-corrections-4",
+      "record": {
+        "sha256": "6c75ec5376f038d290416ae2f1282ad6462e4884d8fc92c3de8c091d299784e4",
+        "bytes": 681
+      },
+      "forward": null,
+      "inverse": null
+    },
+    {
+      "directory": "static-corrections-5",
+      "record": {
+        "sha256": "3049c777282c8730d7f2e9e862dd61a31f0b1067036ace45b8cd5d99b1cb297b",
+        "bytes": 425
+      },
+      "forward": null,
+      "inverse": null
+    }
+  ],
+  "formatterResultSha256": "95a3a56df705a27e409caf8f7ffef0b01f437d12db98d215094318e106b3f522",
+  "formatInvocationCount": 1,
+  "formatExit": 0,
+  "postFormatterManualCorrections": 4,
+  "finalBytesFormatChecked": false,
+  "formatterRetryAllowed": false
+}

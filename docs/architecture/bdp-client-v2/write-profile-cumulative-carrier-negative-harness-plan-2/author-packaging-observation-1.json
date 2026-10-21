@@ -1,0 +1,7 @@
+{
+  "state": "Preserved author DATA-packaging error before final handoff; not subject/runtime failure",
+  "action": "PROVISIONAL history index validation",
+  "error": "FileNotFoundError from assumed H5 index.json; actual immutable filename is preparation-index.json",
+  "effect": "Stopped before any output write in that invocation; no subject/helper evaluation",
+  "correction": "Read actual filenames, verified original preparation-index.json records and literal actual additions; original packets unchanged"
+}

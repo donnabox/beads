@@ -1,0 +1,95 @@
+{
+  "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/current-observation-minimum-code-review/partial-final-output.txt",
+  "sha256": "0de92c4904366b611f9b8535c3d0711d3e6809376158c97e8bcbd284f089bd30",
+  "bytes": 11259,
+  "source": "Exact concatenation of text content_block_start/text_delta in second text block only; no thinking/reasoning blocks extracted",
+  "firstRecord": 5355,
+  "lastRecord": 6251,
+  "blockStopped": false,
+  "completedAssistantFinalMessage": false,
+  "structurallyCompleteNumberedSections": 9,
+  "truncatedSection": 10,
+  "sections": [
+    {
+      "number": 1,
+      "title": "Formatter gate will fail: the new test code is not Biome\u2011formatted.",
+      "startCharacter": 654,
+      "endCharacter": 2885,
+      "state": "fully emitted section bounded by next numbered heading; not a completed review finding",
+      "textSha256": "8a168225eaef494895d71bdaa39609e4bde927cef0facb9e99d26d1d85ad370b"
+    },
+    {
+      "number": 2,
+      "title": "D self\u2011reports two hardcoded fields and never asserts closure; it also emits no record on failure.",
+      "startCharacter": 2885,
+      "endCharacter": 4116,
+      "state": "fully emitted section bounded by next numbered heading; not a completed review finding",
+      "textSha256": "723e1343989dc19aac7f9e9dc973c4c7e2eda99775f0e5a7145ba6372aff82b8"
+    },
+    {
+      "number": 3,
+      "title": "C's count comparison sits outside the failure aggregation, so it can mask the real cause.",
+      "startCharacter": 4116,
+      "endCharacter": 4823,
+      "state": "fully emitted section bounded by next numbered heading; not a completed review finding",
+      "textSha256": "b0279cb97a09f53cc1b211c9e92d41b5d9ea9b9826e076755753a33933ebf467"
+    },
+    {
+      "number": 4,
+      "title": "`TransactionMinimumVisibilityGap` becomes unreachable *and* loses all coverage while its HTTP translation is retained.",
+      "startCharacter": 4823,
+      "endCharacter": 6017,
+      "state": "fully emitted section bounded by next numbered heading; not a completed review finding",
+      "textSha256": "c7e098d8c61ae040231a800d7e3e4a9e6e36444bc6e9af53aae205cdadbdb1f1"
+    },
+    {
+      "number": 5,
+      "title": "`initial-types` on a not\u2011found refusal still takes the strict path, inconsistent with its own successful lane.",
+      "startCharacter": 6017,
+      "endCharacter": 6814,
+      "state": "fully emitted section bounded by next numbered heading; not a completed review finding",
+      "textSha256": "fcf671e3f08a4853797ac647893cf696e7e7217279a31ae643e96ed678409588"
+    },
+    {
+      "number": 6,
+      "title": "B does not discriminate \"unauthenticated refusal before lexical capture\" for `receiptPage`.",
+      "startCharacter": 6814,
+      "endCharacter": 7825,
+      "state": "fully emitted section bounded by next numbered heading; not a completed review finding",
+      "textSha256": "4cb3dcaa4df7f5002d5bc544f0a77f75b0e6016c752e4d1da7cb8c90fd023239"
+    },
+    {
+      "number": 7,
+      "title": "A mutates the caller's tuple but never asserts the mutation landed.",
+      "startCharacter": 7825,
+      "endCharacter": 8451,
+      "state": "fully emitted section bounded by next numbered heading; not a completed review finding",
+      "textSha256": "6b7dbffbc0ffc9608ed0b3b6ed90c9392c5bdca42e0420447b9c8fc2b69f106b"
+    },
+    {
+      "number": 8,
+      "title": "E does not register its runtime with the file's `cleanup`, and can double\u2011record one close error.",
+      "startCharacter": 8451,
+      "endCharacter": 9446,
+      "state": "fully emitted section bounded by next numbered heading; not a completed review finding",
+      "textSha256": "ea4c510244a7fb8d77e2730af3f5fa748a8a0a4cd4a211fdd2dacbb3073aaa53"
+    },
+    {
+      "number": 9,
+      "title": "The progress append omits the one ordering change it makes to the former strict discovery checker.",
+      "startCharacter": 9446,
+      "endCharacter": 10558,
+      "state": "fully emitted section bounded by next numbered heading; not a completed review finding",
+      "textSha256": "a3a9e7d33e97abad4f504ac4e04760d84ad1c2bbb124c9063c96aad8d960cff2"
+    },
+    {
+      "number": 10,
+      "title": "E/F receipt oracles are not at parity.",
+      "startCharacter": 10558,
+      "endCharacter": 11163,
+      "state": "truncated final section; stream ends mid-prescription",
+      "textSha256": "d8252f94c171aafaadae2c7e470110cb44e940aa3668e16e23e319021eec70df"
+    }
+  ],
+  "limitations": "No terminal verdict exists. Fully emitted sections are provisional streamed claims for separate native assessment, not completed/accepted findings. No-source-blocker prose inside this unfinished block is not approval. The stated Verified section was never emitted."
+}

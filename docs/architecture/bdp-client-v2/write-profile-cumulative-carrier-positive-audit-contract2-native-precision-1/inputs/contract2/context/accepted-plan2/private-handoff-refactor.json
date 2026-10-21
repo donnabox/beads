@@ -1,0 +1,46 @@
+{
+  "L03": {
+    "assertions": "Hook invocation count exactly1; original callback received ===actual observed; returned genuine !==observed and actual prehook fields remain original. Existing credential-check failed/null/no-readiness checks for missing/bad handoff retained with honest module attribution.",
+    "calls": 6,
+    "setup": "Take existing observation(context(transactional)) source-unit wrapper. Retain its actual parsed result/sessions/baseline as observed triple, and use its fixed sourceCommit and synthetic-unit-data-not-installed entry. Hook constructs the EXACT closed nine-key wrapper expected by the extracted existing TX block: sourceCommit, entry, result, sessions, baseline, supplemental:{}, sequenceMemberSupplemental:{}, principalSupplemental:{}, conditionalSupplemental:{}. The four supplementary placeholders are explicitly synthetic data, never installed observations. Serialize once per source-data hook call, with matching exact byte SHA; use this accepted actual handoff bytes for the valid assembler check rather than the old five-key unit report source. No product callback import or runtime.",
+    "subcases": [
+      "valid original handoff: refusedfalse, bytes equal original exact bytes but detached; genuine equals actual prehook triple; assembly accepts source-data projection",
+      "missing handoff: refusedtrue, no wrapper bytes; genuine actual clone retained and original observed unchanged",
+      "same original bad bytes/hash handoff: refusedtrue, no accepted bytes; original observed unchanged",
+      "hook mutates result and returns mutated wrapper: compare actual prehook result and refuse mismatch",
+      "hook mutates sessions and returns mutated wrapper: same actual prehook mismatch refusal",
+      "hook mutates baseline and returns mutated wrapper: same actual prehook mismatch refusal"
+    ]
+  },
+  "L05": {
+    "calls": 2,
+    "retained": "Existing genuine assembler cleanup-failed and assertion-after-reported-complete controls remain; this helper test is hook-boundary identity proof, not installed cleanup execution proof.",
+    "subcases": [
+      "original Error sentinel thrown by actual hook: caught ===sentinel; hook called1; helper does not catch/reclassify",
+      "original AggregateError sentinel with two original causes: caught===aggregate and causes retain exact references; hook called1"
+    ]
+  },
+  "callSites": [
+    "apps/bdptest/src/transactional-matrix.test.ts existing observe onObserved site, opt-in carrierPath only",
+    "existing profile-evidence.test.ts L03/L05 source-data callbacks via app-private relative import"
+  ],
+  "callbacksAdded": 0,
+  "imports": "Move exact existing copySourceBytes/parseBoundedJson and ownData imports/check block from TX file into existing app helper using packages/conformance private relative internals; app->package direction only. canonicalJson already available. Remove TX imports only when no other current references remain.",
+  "legacySerialization": "Positive closure remains sole one JSON.stringify(wrapper,null,2)+newline/UTF8 owner. No helper serialization of full wrapper, file read or guessed path. Representation projection still uses existing three explicit field projections; these are comparison only, not raw-wrapper serialization. Original field order/layout and legacy-only/carrier-only/both/neither branches unchanged.",
+  "noNewInputAuthority": true,
+  "owner": "apps/bdptest/test-support/read-update-artifact-execution.ts",
+  "packageExportsAdded": 0,
+  "privateExport": "capturePrivateProfileHandoff",
+  "pureCarrierModuleExports": 3,
+  "realServicesOrChildren": 0,
+  "runnerCallsAdded": 0,
+  "signature": "<T extends { result: unknown; sessions: unknown; baseline: unknown }>(observed: T, onObserved: ((value: T) => unknown) | undefined, identity: { sourceCommit: string; entry: string }) => { genuine: T | undefined; wrapperBytes: Uint8Array | undefined; refused: boolean }",
+  "state": "PROPOSED production-used private refactor within existing app helper only; no source written",
+  "steps": [
+    "TRY only new structuredClone(observed) before hook; capture refusal sticky if clone fails.",
+    "Call original onObserved(observed) exactly once OUTSIDE every new-carrier catch, even if new clone already refused. Original hook exceptions escape with exact object identity into original observe catch/finally/cleanup aggregation.",
+    "TRY only new handoff own-data/source copy<=4194304/raw digest/bounded parse/private-profile-report/sourceCommit+entry and explicit JSON-representation checks for result/sessions/baseline. On any new refusal return refused:true/wrapperBytes:undefined with genuine clone retained if available; no error text/cause echo.",
+    "Return only detached genuine clone plus accepted detached raw bytes and refusal state, never substitute the observed object or runner result.",
+    "TX opt-in consumes result at same precleanup position and reuses existing publishCarrier lifecycle/cache. Disabled branch invokes original hook directly and does no helper clone/parse/IO."
+  ]
+}

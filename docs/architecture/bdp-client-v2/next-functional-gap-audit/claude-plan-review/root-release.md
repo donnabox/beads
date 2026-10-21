@@ -1,0 +1,1 @@
+Root inspected full bounded plan, audit, core spec clauses and classifier/HTTP/source-condition code, plus prompt and runner adaptation. All actual source/context/artifact hashes verified. Sole design context is a frozen copy of plan8a0a16e; live checkpoints can continue. Release one actual Claude read-only plan review; no authoring or test release.

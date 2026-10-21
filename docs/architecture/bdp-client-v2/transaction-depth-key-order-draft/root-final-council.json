@@ -1,0 +1,39 @@
+{
+  "status": "accepted-native-and-actual-claude-code-council",
+  "checkedAt": "2026-10-15T16:19:56.003173+00:00",
+  "sourceBindingSha256": "5fbe5c9b0c57f2c253fb16d114675ccb4929a9e4e18b21a1efbf1ca18385d778",
+  "fullPatchSha256": "b404308f83bc8faf8fc94be8883daed0454c051f86353a97f903dcf3597e83df",
+  "sourceUnchanged": true,
+  "claudeExit": {
+    "exitCode": 0,
+    "timeout": false,
+    "forcedTermination": false,
+    "elapsedSeconds": 711.8365836250596,
+    "sourceAndPlanUnchanged": true,
+    "stdoutSha256": "d0ca412ec71bc03160af98fbaefcd7e426ce5e268cee1cf954c4e9b7a5566dd7",
+    "stderrSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "cleanupSha256": "a071dc877acb3176c71e5346315d3af42b60da5a3f2f5acf5cece5526f4f5fe2",
+    "sourceAfterSha256": "2027b5c2f0128a552221cca03bdf37796de135eee67b5962753216eb1acbf6a4"
+  },
+  "dispositions": {
+    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-depth-key-order-draft/claude-code-preparation/source-dispositions.md",
+    "sha256": "b2bf7d3a448a7c71d29f565b6531c558ceeafa2b63aefdf9330498068fcd2e93"
+  },
+  "native": [
+    {
+      "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-depth-key-order-draft/root-native-code-review.json",
+      "sha256": "91968ddc47a317089aa0a106ae939039fd2973bf4c01ab730e648f13f83a16aa"
+    },
+    {
+      "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-depth-key-order-draft/lint-repair/root-repair-acceptance.json",
+      "sha256": "9db79780d636afe4e19cbb20c722775c6d24dcf1ba6ec6239dc27daf81168994"
+    }
+  ],
+  "rootReadback": "Complete actual output plus actual schema/current-resource equality, global decorators, executor body binding, sequence brand construction, exported surface and cancel contract independently checked. No unresolved blocking findings.",
+  "remaining": [
+    "fresh installed archive/consumer witness",
+    "exact-head CI",
+    "scope/ordinary ancestry/actual merged-tree verification"
+  ],
+  "publicQualification": false
+}

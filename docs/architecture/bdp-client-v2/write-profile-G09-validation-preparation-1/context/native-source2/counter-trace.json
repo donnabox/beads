@@ -1,0 +1,59 @@
+{
+  "S01": {
+    "counterfactual": "Deferred capture sees mutated foreign input before its first owner observation; retry recapture sees it after real store advance. Either fails required genuinepos1 result. No mutant executed.",
+    "final": {
+      "calls": 4,
+      "clockCalls": 4,
+      "contexts": [
+        "pos-0",
+        "pos-0",
+        "pos-0",
+        "pos-0",
+        "pos-1"
+      ],
+      "entries": 5,
+      "ownedAdmissionExecutionInspectEach": 1,
+      "realReleaseProbesNew": 1,
+      "waits": 1
+    },
+    "newPending": "start2, first actualpos0 entry throwsbehind, clock3<deadline4, real released-entry probe then yield and real p-owned admission/execute toposition1, successful retry no further clock",
+    "originalNoMinimum": "one synchronous entry/no clock despite pre-abort",
+    "satisfiedGenesis": "clock1, one entry",
+    "satisfiedPos0": "clock0, one entry"
+  },
+  "S03": {
+    "final": {
+      "calls": 3,
+      "clockCalls": 8,
+      "closeCalls": 1,
+      "closed": true,
+      "entries": 5,
+      "probes": 3,
+      "waits": 3
+    },
+    "newAbort": "start6/behindclock7/wait3/probe3/yield/abort+cachedclose/unclosed during same pending wait/secondyield/return; next loop abort check precedes any next entry or clock",
+    "oldTimeout1": "start0/behindclock1/wait1/retrybehindclock2 reachesdeadline2",
+    "oldTimeout2": "start3/behindclock4/wait2/retrybehindclock5 reachesdeadline5",
+    "prefix": {
+      "calls": 2,
+      "clockCalls": 6,
+      "entries": 4,
+      "probes": 2,
+      "waits": 2
+    }
+  },
+  "S05": {
+    "actualCanonicalAbortErrorIdentityAndClassExpected": true,
+    "additionalSelector": 1,
+    "allOriginalTupleAndSignalAssertionsPreserved": true,
+    "compileCapture": 1,
+    "computedAddedKeys": [
+      "abortCalls",
+      "abortPropagated",
+      "abortSignalForwarded"
+    ],
+    "notInstalledTransportOrOwnerProof": true,
+    "originalTable": 8
+  },
+  "kind": "Native source-derived reasoning only, no evaluation"
+}

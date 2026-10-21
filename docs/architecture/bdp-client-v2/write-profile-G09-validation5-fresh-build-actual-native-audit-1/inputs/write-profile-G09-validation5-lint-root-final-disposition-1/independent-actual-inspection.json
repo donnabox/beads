@@ -1,0 +1,91 @@
+{
+  "actualIssuedSourceAssignmentOnlyWholeInverse": true,
+  "actualPhaseToolIds": {
+    "A": "c135ca",
+    "B": "89853b",
+    "C": "8eeb45"
+  },
+  "actualProbeDirectReaped": true,
+  "actualPsRowsFullyInspected": 1380,
+  "actualRootCommonClockSeconds": 8.261916249990463,
+  "all3ActualOrdinaryTerminalsZero": true,
+  "all9EvidencePlus12RawMirrorsAndMetadata": true,
+  "allRootAndCensusStreamFacts": [
+    {
+      "actualRecordedDescriptor600EOFFullCountsClose": true,
+      "bytes": 475,
+      "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation5-root-first4-dispatch-1/lint/lint.stdout",
+      "sha256": "339ed05838f749ccaafaad0b0f72a148ee26bf24e34ecac1f73cc47e94e820eb"
+    },
+    {
+      "actualRecordedDescriptor600EOFFullCountsClose": true,
+      "bytes": 0,
+      "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation5-root-first4-dispatch-1/lint/lint.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "actualRecordedDescriptor600EOFFullCountsClose": true,
+      "bytes": 205143,
+      "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation5-root-first4-dispatch-1/lint/postterminal-census.stdout",
+      "sha256": "71230ae4f3a0cd29ec09a33a11da2fc0922731153503fcf870cd1d7a927187d9"
+    },
+    {
+      "actualRecordedDescriptor600EOFFullCountsClose": true,
+      "bytes": 0,
+      "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation5-root-first4-dispatch-1/lint/postterminal-census.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    }
+  ],
+  "currentNext5Source2314RefsOnlyOneExplicitLiveProjection": true,
+  "fresh11ToolMapAndInstallLockSourceJoinsExact": true,
+  "innerElapsedSeconds": 3.669198540970683,
+  "innerRows": 4,
+  "innerSamples": 3,
+  "knownPgids": [
+    19334,
+    19347,
+    20075
+  ],
+  "knownPids": [
+    19346,
+    19347,
+    20075,
+    20077
+  ],
+  "matchingRows": [],
+  "nativeAudit": "PENDING",
+  "nextStageReleased": false,
+  "observedLintLog": "Actual typed terminal0, 96 warnings/30 infos/106 unprinted diagnostics; unchanged configured rules/default20 output cap, not diagnostic-free",
+  "observerSelfAbsenceOrUnseenGlobalContainmentClaim": false,
+  "qualityPass": false,
+  "referenceTables": {
+    "write-profile-G09-validation-preparation-5": {
+      "oneExplicitLiveProjection": 0,
+      "records": 1857
+    },
+    "write-profile-G09-validation5-fixed-text-proof-correction-1": {
+      "oneExplicitLiveProjection": 1,
+      "records": 2207
+    },
+    "write-profile-G09-validation5-root-fixed-protocol-preparation-1": {
+      "oneExplicitLiveProjection": 1,
+      "records": 2082
+    },
+    "write-profile-G09-validation5-root-proposed-authority-1": {
+      "oneExplicitLiveProjection": 1,
+      "records": 2206
+    }
+  },
+  "rootFinalAccepted": false,
+  "scope": "ONE actual lint capture only; no fresh-build/test/profile/fullWrite claim",
+  "scratchRetained": {
+    "entriesAtStaticRead": [],
+    "existsAtStaticRead": true,
+    "noCleanupPerformed": true,
+    "notGlobalOrRuntimeDescendantCleanupProof": true,
+    "path": "/private/tmp/vickie-tx-discovery-validation-lint-f4pyydyp"
+  },
+  "source679Helper105Other110Exact": true,
+  "stage": "lint",
+  "toolTerminals": "Trusted-root normalized actual tool result attribution; independently decoded raw tool receipts UNRETAINED"
+}

@@ -1,0 +1,3 @@
+Eight production paths are frozen for scoped code review. Existing iterative equality is extracted without changing its admitted JSON domain; Snapshot compares full owned Links through it. Receipt sweep selects owner-null rows and filters parsed detail in JavaScript. Only the private JSON-depth seam is removed; receiving, key ordering, Selector depth and other limits remain.
+
+Author-time formatting: guarded pinned Node24.16 Biome format --write on exactly these eight paths, exit0, no fixes. Author-time static check: pinned Node24.16 node_modules/typescript/bin/tsc -p tsconfig.check.json, exit0. No build, tests, runtime or product imports executed. This static check does not validate the unfinished source witnesses.

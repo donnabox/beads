@@ -1,0 +1,48 @@
+{
+  "accepted": false,
+  "findings": [
+    {
+      "currentTargets": [
+        "docs/design/startup-configuration.md",
+        "packages/config/src/index.test.ts",
+        "packages/config/src/index.ts",
+        "packages/server/package.json",
+        "packages/server/src/read-sequence-lifecycle.test.ts",
+        "packages/server/src/reference-deployment-state.ts",
+        "packages/server/src/reference-deployment.test.ts",
+        "packages/server/src/reference-deployment.ts",
+        "packages/server/src/transaction-snapshot.test.ts",
+        "scripts/smoke-executables.mjs",
+        "scripts/smoke-safety.mjs",
+        "scripts/smoke-safety.test.mjs"
+      ],
+      "id": "CVP1-N1",
+      "impact": "These two stages can succeed without format/lint checking the new lifecycle runtime/process/source and installed tests or changed D1/D3a implementation files. Earlier standalone passes are explicitly unavailable as combined validation credit; generic mandatoryRebind prose does not define the missing concrete target list.",
+      "location": "prospective-stages.json:108-173 (format-check and lint argv; IDs lines130 and161)",
+      "missingCombinedDeltaPaths": [
+        "apps/bdptest/src/reference-deployment-lifecycle-installed.test.ts",
+        "apps/bdptest/src/transactional-changefeed-refusal-context-installed.test.ts",
+        "apps/bdptest/src/transactional-discovery-installed.test.ts",
+        "apps/bdptest/src/transactional-schema-installed.test.ts",
+        "packages/server/src/development-authority.ts",
+        "packages/server/src/development-runtime.ts",
+        "packages/server/src/reference-deployment-process.ts",
+        "packages/server/src/reference-deployment-runtime.test.ts",
+        "packages/server/src/reference-deployment-runtime.ts",
+        "packages/server/src/transaction-changefeed.test.ts",
+        "packages/server/src/transaction-http.test.ts",
+        "packages/server/src/transaction-http.ts",
+        "packages/server/src/transaction-installed-contracts.test.ts",
+        "packages/server/src/transaction-runtime.ts",
+        "packages/server/src/transaction-service.ts",
+        "packages/server/src/transaction-sse.test.ts",
+        "packages/server/src/transaction-store.ts"
+      ],
+      "problem": "Inherited loader-only12-path format/lint lists omit17 of the29 changed combined paths.",
+      "severity": "Medium",
+      "smallestCorrection": "Separately named immutable DATA successor updates these same two argv target sets to cover the actual combined changed Biome-supported files (or existing whole-project nonwriting format:check/lint scripts), with explicit Markdown/manual policy. Preserve69stages,25pairs,selected callbacks/workloads/deadlines; no source edit/format-write or execution authorized.",
+      "trigger": "Prepare/run the concrete69-stage sequence exactly as declared against the combined686-source target."
+    }
+  ],
+  "revisionsRequired": true
+}

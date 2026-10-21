@@ -1,0 +1,34 @@
+{
+  "state": "PROPOSED ONLY; exact release later",
+  "existing": [
+    "packages/conformance/src/executable-manifest.ts",
+    "packages/conformance/src/runner.ts",
+    "packages/conformance/src/executable-manifest.test.ts",
+    "packages/conformance/src/runner.test.ts",
+    "packages/protocol/src/transaction-discovery-values.test.ts",
+    "packages/conformance/test-support/transactional/manifest-v1.json",
+    "packages/conformance/test-support/transactional/coverage-v1.json",
+    "apps/bdptest/src/transactional-matrix.test.ts"
+  ],
+  "newFiles": [],
+  "sourceBeforePins": {
+    "packages/conformance/src/executable-manifest.ts": "65af0451cd046d57c10b0666e54efbaaecc2225551d3accc5cc1d032322913fa",
+    "packages/conformance/src/runner.ts": "ac20c7fbfe15a5e42a6559e89cd3467562efe9bc74d462478414414ed3efede1",
+    "packages/conformance/src/executable-manifest.test.ts": "ca570192d8763610b39a750d376df899b3f0f01a06b3c928e95bf3d83fd538af",
+    "packages/conformance/src/runner.test.ts": "ad7e756bad1f70ecc6285e19830bc001ebec01899ed868af3fb4b08e888aba86",
+    "packages/protocol/src/transaction-discovery-values.test.ts": "3e70bb5dd7418bff73cc536af8c5882a0f9f341b6dd1de4ce713a9133759a0f3",
+    "packages/conformance/test-support/transactional/manifest-v1.json": "bbb7def1bf11e1d14efbcb369e6a7fae6eb5aff01f483f8e99f7443ce9a6ee73",
+    "packages/conformance/test-support/transactional/coverage-v1.json": "a2c620ce489257f4cd425207195af89b4e2aac238333cf6e7d21ce629d98a238",
+    "apps/bdptest/src/transactional-matrix.test.ts": "95e07ead41f9cb39087a155e87cad22998d92cd3967cb9c3c446568ff6139bc8"
+  },
+  "fixtureUnchanged": "packages/conformance/test-support/transactional/fixture-v1.json",
+  "sameTypes": [
+    "https://reference.invalid/acme/types/task",
+    "https://reference.invalid/acme/types/relationship"
+  ],
+  "noNewScopeBinding": true,
+  "noPublicExportOrPackageMapChange": true,
+  "noProductionServerOrProtocolSemanticsChange": true,
+  "other671SourcePathsProtected": true,
+  "finalCombinedSource": "UNKNOWN"
+}

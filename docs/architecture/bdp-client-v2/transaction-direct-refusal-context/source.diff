@@ -1,0 +1,982 @@
+--- a/packages/server/src/transaction-store.ts
++++ b/packages/server/src/transaction-store.ts
+@@ -125,7 +125,7 @@
+       readonly receipt: TransactionReceipt;
+       readonly context?: TransactionReadContext;
+     }
+-  | { readonly kind: "conflict" }
++  | { readonly kind: "conflict"; readonly context?: TransactionReadContext }
+   | { readonly kind: "comparison-pending" };
+ /** Values supplied by the private receiving boundary, never callbacks in SQLite. */
+ export interface TransactionReceivingControls {
+@@ -134,8 +134,8 @@
+ }
+ export type TransactionReceivingAdmission =
+   | TransactionAdmission
+-  | { readonly kind: "not-acceptable" }
+-  | { readonly kind: "operation-limit" };
++  | { readonly kind: "not-acceptable"; readonly context?: TransactionReadContext }
++  | { readonly kind: "operation-limit"; readonly context?: TransactionReadContext };
+ export function snapshotTransactionReceivingControls(
+   controls: TransactionReceivingControls,
+ ): TransactionReceivingControls {
+@@ -1389,9 +1389,20 @@
+         if (result.kind === "operation-limit" && controls === undefined)
+           throw new TransactionDevelopmentLimitError("development transaction operation limit");
+         if (result.kind === "existing") {
+-          if (!receiving.acceptsJson) return { kind: "not-acceptable" as const };
++          if (!receiving.acceptsJson)
++            return {
++              kind: "not-acceptable" as const,
++              ...(observed ? { context: readContext() } : {}),
++            };
+           if (observed) return { kind: "existing" as const, ...observeReceipt(result.receipt) };
+         }
++        if (
++          observed &&
++          (result.kind === "conflict" ||
++            result.kind === "operation-limit" ||
++            result.kind === "not-acceptable")
++        )
++          return { ...result, context: readContext() };
+         return result;
+       });
+       if (admission.kind === "owned") {
+--- a/packages/server/src/transaction-submission.ts
++++ b/packages/server/src/transaction-submission.ts
+@@ -36,7 +36,7 @@
+       readonly receipt: TransactionReceipt;
+       readonly context?: TransactionReadContext;
+     }
+-  | { readonly kind: "not-acceptable" }
++  | { readonly kind: "not-acceptable"; readonly context?: TransactionReadContext }
+   | { readonly kind: "development-limit"; readonly message: string }
+   | {
+       readonly kind: "refused";
+@@ -51,6 +51,7 @@
+         | "temporarily-unavailable";
+       readonly limit?: "transaction.operations";
+       readonly retry?: "after-delay";
++      readonly context?: TransactionReadContext;
+     };
+ 
+ /** These are typed internal receiving results, not emitted HTTP Problem bodies.
+@@ -116,15 +117,29 @@
+       receiving,
+     },
+   );
++  if (
++    observed &&
++    (result.kind === "conflict" ||
++      result.kind === "operation-limit" ||
++      result.kind === "not-acceptable") &&
++    !result.context
++  )
++    throw new Error("admission refusal lost same-entry context");
+   switch (result.kind) {
+     case "conflict":
+-      return { kind: "refused", status: 409, code: "idempotency-conflict" };
++      return {
++        kind: "refused",
++        status: 409,
++        code: "idempotency-conflict",
++        ...(result.context ? { context: result.context } : {}),
++      };
+     case "operation-limit":
+       return {
+         kind: "refused",
+         status: 413,
+         code: "limit-exceeded",
+         limit: "transaction.operations",
++        ...(result.context ? { context: result.context } : {}),
+       };
+     case "not-acceptable":
+       return result;
+--- a/packages/server/src/transaction-http.ts
++++ b/packages/server/src/transaction-http.ts
+@@ -344,18 +344,33 @@
+         receiving: { acceptsJson: acceptsJson(request.headers.get("accept")), maximumOperations },
+       });
+       if (result.kind === "receipt") return receiptResponse(result, true);
+-      if (result.kind === "not-acceptable") return empty(406);
++      if (result.kind === "not-acceptable") {
++        if (!result.context) throw new Error("negotiation refusal lost same-entry context");
++        return context(empty(406), result.context);
++      }
+       if (result.kind === "development-limit")
+         return developmentGap("unsupported-transaction-composition");
+-      if (result.code === "idempotency-conflict")
+-        return problem(
+-          parseReadUpdateProblem({
+-            type: "https://github.com/gastownhall/bdp/problems/conflict",
+-            code: result.code,
+-            status: 409,
+-            retry: "never",
+-          }),
++      if (result.code === "idempotency-conflict") {
++        if (!result.context) throw new Error("conflict refusal lost same-entry context");
++        return context(
++          problem(
++            parseReadUpdateProblem({
++              type: "https://github.com/gastownhall/bdp/problems/conflict",
++              code: result.code,
++              status: 409,
++              retry: "never",
++            }),
++          ),
++          result.context,
+         );
++      }
++      if (result.code === "limit-exceeded" && result.limit === "transaction.operations") {
++        if (!result.context) throw new Error("operation-limit refusal lost same-entry context");
++        return context(
++          problem({ ...readProblem(result.code), limit: result.limit }),
++          result.context,
++        );
++      }
+       return problem({
+         ...readProblem(result.code),
+         ...(result.limit ? { limit: result.limit } : {}),
+--- a/packages/server/src/transaction-store.test.ts
++++ b/packages/server/src/transaction-store.test.ts
+@@ -3056,3 +3056,147 @@
+     spy.mockRestore();
+   }
+ });
++
++it("captures selected observed refusals inside the owner transaction without changing unobserved admissions", () => {
++  const f = fixture({ clock: () => 1000 });
++  const createOne = (id: string) => ({
++    operations: [{ operation: "createBead", id: `beads/${id}`, type: bead }],
++  });
++  const original = createOne("a");
++  const pendingInput = createOne("pending");
++  const pendingClaim = admit(f.store, pendingInput, "pending-direct");
++  const retained = f.store.execute(admit(f.store, original, "retained"));
++  f.store.execute(admit(f.store, createOne("b"), "advance"));
++  const expected = {
++    scopeEpoch: retained.scopeEpoch,
++    authorizationView: retained.authorizationView,
++    scopePosition: "pos-2",
++  };
++  const pending = f.store.admitSequence(
++    "principal",
++    prepareTransactionSequence(
++      scope,
++      JSON.stringify({
++        operations: [
++          { operation: "createBead", type: bead, name: "creator", idempotencyKey: "creator" },
++          {
++            operation: "createLink",
++            type: link,
++            source: "@creator",
++            target: "@creator",
++            idempotencyKey: "dependent",
++          },
++        ],
++      }),
++    ),
++  );
++  const prepared = (value: unknown) => prepareTransaction(scope, JSON.stringify(value));
++  const cases = [
++    {
++      key: "retained",
++      input: createOne("changed"),
++      controls: { acceptsJson: false, maximumOperations: 1 },
++      kind: "conflict",
++    },
++    {
++      key: "dependent",
++      input: {
++        operations: [{ operation: "createLink", type: link, source: "beads/a", target: "beads/b" }],
++      },
++      controls: { acceptsJson: false, maximumOperations: 1 },
++      kind: "conflict",
++    },
++    {
++      key: "capacity",
++      input: { operations: [...createOne("c").operations, ...createOne("d").operations] },
++      controls: { acceptsJson: false, maximumOperations: 1 },
++      kind: "operation-limit",
++    },
++    {
++      key: "fresh-no-json",
++      input: createOne("e"),
++      controls: { acceptsJson: false, maximumOperations: 1 },
++      kind: "not-acceptable",
++    },
++    {
++      key: "retained",
++      input: original,
++      controls: { acceptsJson: false, maximumOperations: 1 },
++      kind: "not-acceptable",
++    },
++    {
++      key: "pending-direct",
++      input: pendingInput,
++      controls: { acceptsJson: false, maximumOperations: 1 },
++      kind: "not-acceptable",
++    },
++  ];
++  const before = f.store.inspect();
++  const prepare = DatabaseSync.prototype.prepare;
++  let positionReads = 0;
++  const contexts: unknown[] = [];
++  const spy = vi.spyOn(DatabaseSync.prototype, "prepare").mockImplementation(function (
++    this: DatabaseSync,
++    sql: string,
++  ) {
++    const statement = prepare.call(this, sql);
++    if (sql === "SELECT value FROM metadata WHERE name=?") {
++      const owner = this;
++      const get = statement.get.bind(statement);
++      vi.spyOn(statement, "get").mockImplementation((...args) => {
++        if (args[0] === "position") {
++          expect(
++            owner.isTransaction,
++            "refusal position read must remain inside owner transaction",
++          ).toBe(true);
++          positionReads++;
++        }
++        return get(...args);
++      });
++    }
++    return statement;
++  });
++  try {
++    for (const entry of cases) {
++      const result = f.store.admitObserved(
++        "principal",
++        entry.key,
++        prepared(entry.input),
++        entry.controls,
++      );
++      expect(result).toEqual({ kind: entry.kind, context: expected });
++      if (!("context" in result)) throw new Error("missing observed refusal context");
++      expect(Object.isFrozen(result.context)).toBe(true);
++      contexts.push(result.context);
++    }
++    expect(positionReads).toBe(cases.length);
++    for (const entry of cases)
++      expect(f.store.admit("principal", entry.key, prepared(entry.input), entry.controls)).toEqual({
++        kind: entry.kind,
++      });
++    expect(positionReads, "unobserved refusal adds no position observation").toBe(cases.length);
++    const owned = f.store.admitObserved("principal", "probe-owned", prepared(createOne("owned")));
++    expect(owned.kind).toBe("owned");
++    expect(positionReads, "owned admission adds no position observation").toBe(cases.length);
++    if (owned.kind !== "owned") throw new Error("missing owned claim");
++    f.store.retract(owned.claim);
++  } finally {
++    spy.mockRestore();
++    vi.restoreAllMocks();
++  }
++  expect(f.store.inspect()).toEqual(before);
++  expect(f.store.receipt("principal", retained.id)).toEqual(retained);
++  f.store.cancelSequence(pending);
++  f.store.retract(pendingClaim);
++  f.store.execute(admit(f.store, createOne("later"), "later"));
++  expect(contexts).toEqual(cases.map(() => expected));
++  for (const [key, input] of [
++    ["capacity", createOne("c")],
++    ["fresh-no-json", createOne("e")],
++  ] as const) {
++    const retry = f.store.admit("principal", key, prepared(input));
++    expect(retry.kind).toBe("owned");
++    if (retry.kind !== "owned") throw new Error("refused key was captured");
++    f.store.retract(retry.claim);
++  }
++});
+--- a/packages/server/src/transaction-submission.test.ts
++++ b/packages/server/src/transaction-submission.test.ts
+@@ -880,3 +880,140 @@
+     }
+   },
+ );
++
++it("propagates observed direct refusal context without changing admission precedence or key reuse", async () => {
++  const f = fixture({ clock: () => 1000 });
++  const original = submission();
++  const first = await submitTransaction(f.store, original, {}, true);
++  if (first.kind !== "receipt") throw new Error("missing seed receipt");
++  await submitTransaction(f.store, submission([create("b")], "advance"));
++  const context = {
++    scopeEpoch: first.receipt.scopeEpoch,
++    authorizationView: first.receipt.authorizationView,
++    scopePosition: "pos-2",
++  };
++  const before = f.store.inspect();
++  const conflict = await submitTransaction(
++    f.store,
++    { ...submission([create("other")]), receiving: { acceptsJson: false, maximumOperations: 1 } },
++    {},
++    true,
++  );
++  expect(conflict).toEqual({ kind: "refused", status: 409, code: "idempotency-conflict", context });
++  const capacityRequest = submission([create("c"), create("d")], "fresh-capacity");
++  expect(
++    await submitTransaction(
++      f.store,
++      { ...capacityRequest, receiving: { acceptsJson: false, maximumOperations: 1 } },
++      {},
++      true,
++    ),
++  ).toEqual({
++    kind: "refused",
++    status: 413,
++    code: "limit-exceeded",
++    limit: "transaction.operations",
++    context,
++  });
++  const fresh = submission([create("e")], "fresh-negotiation");
++  for (const request of [fresh, original]) {
++    const refusal = await submitTransaction(
++      f.store,
++      { ...request, receiving: { acceptsJson: false, maximumOperations: 1 } },
++      {},
++      true,
++    );
++    expect(refusal).toEqual({ kind: "not-acceptable", context });
++    if (refusal.kind !== "not-acceptable") throw new Error("missing negotiation refusal");
++    expect(Object.isFrozen(refusal.context)).toBe(true);
++  }
++  expect(f.store.inspect()).toEqual(before);
++  expect(f.store.receipt("p", first.receipt.id)).toEqual(first.receipt);
++  // Equal replay ignores fresh capacity, and neither fresh refusal bound its key.
++  const large = submission([create("x"), create("y")], "large");
++  const completed = await submitTransaction(f.store, large, {}, true);
++  const replay = await submitTransaction(
++    f.store,
++    { ...large, receiving: { acceptsJson: true, maximumOperations: 1 } },
++    {},
++    true,
++  );
++  expect(replay).toEqual(completed);
++  expect(await submitTransaction(f.store, capacityRequest, {}, true)).toMatchObject({
++    kind: "receipt",
++    receipt: { status: "completed" },
++  });
++  expect(await submitTransaction(f.store, fresh, {}, true)).toMatchObject({
++    kind: "receipt",
++    receipt: { status: "completed" },
++  });
++});
++
++it("uses the final observed refusal entry after a dependency wait and an unrelated commit", async () => {
++  const f = fixture({ clock: () => 1000 });
++  const attempt = dependencies(f.store);
++  let now = 0,
++    waits = 0;
++  const result = await submitTransaction(
++    f.store,
++    { ...dependent(), receiving: { acceptsJson: false, maximumOperations: 1 } },
++    {
++      budgetMs: 5,
++      now: () => now,
++      wait: async () => {
++        waits++;
++        now++;
++        f.store.nextSequence(attempt);
++        f.store.execute(own(f.store, submission([create("unrelated")], "unrelated")));
++      },
++    },
++    true,
++  );
++  expect(waits).toBe(1);
++  expect(result).toEqual({
++    kind: "not-acceptable",
++    context: {
++      scopeEpoch: f.store.scopeEpoch,
++      authorizationView: f.store.readConfiguration().authorizationView,
++      scopePosition: "pos-2",
++    },
++  });
++  expect(f.store.nextSequence(attempt).result).toMatchObject({
++    kind: "receipt",
++    receipt: { status: "completed" },
++  });
++});
++
++it("keeps observed provable dependency conflicts ahead of negotiation", async () => {
++  const f = fixture({ clock: () => 1000 });
++  const seed = f.store.execute(own(f.store, submission([create("seed")], "seed")));
++  f.store.execute(own(f.store, submission([create("advance")], "advance")));
++  const attempt = dependencies(f.store);
++  const request = dependent();
++  expect(
++    await submitTransaction(
++      f.store,
++      {
++        ...request,
++        body: request.body.replace('"type":', '"metadata":{"extra":1},"type":'),
++        receiving: { acceptsJson: false, maximumOperations: 1 },
++      },
++      {
++        wait: async () => {
++          throw new Error("provable conflict must not wait");
++        },
++      },
++      true,
++    ),
++  ).toEqual({
++    kind: "refused",
++    status: 409,
++    code: "idempotency-conflict",
++    context: {
++      scopeEpoch: seed.scopeEpoch,
++      authorizationView: seed.authorizationView,
++      scopePosition: "pos-2",
++    },
++  });
++  f.store.cancelSequence(attempt);
++});
+--- a/packages/server/src/transaction-http.test.ts
++++ b/packages/server/src/transaction-http.test.ts
+@@ -2501,3 +2501,81 @@
+   expect(method.status).toBe(405);
+   expect(method.headers.get("allow")).toBe("GET, HEAD");
+ });
++
++it("carries current owner context on direct conflict, operation-limit and both negotiation refusals", async () => {
++  const f = await fixture();
++  const singleton = JSON.stringify({ id: "beads/a", type: bead, properties: { title: "a" } });
++  const seedResponse = await f.post(singleton, "retained", "createBead");
++  expect(seedResponse.status).toBe(200);
++  const seed = await body(seedResponse);
++  expect(seed.effectPosition).toBe("pos-1");
++  const advanced = await f.post(batch([create("b")]), "advance");
++  expect(advanced.status).toBe(200);
++  expect((await body(advanced)).effectPosition).toBe("pos-2");
++  const expected = {
++    "bdp-scope-epoch": seed.scopeEpoch,
++    "bdp-authorization-view": seed.authorizationView,
++    "bdp-scope-position": "pos-2",
++  };
++  function current(response: Response) {
++    for (const [name, value] of Object.entries(expected)) {
++      expect(response.headers.has(name), `direct refusal context presence: ${name}`).toBe(true);
++      expect(response.headers.get(name), `direct refusal current context: ${name}`).toBe(value);
++    }
++    expect(response.headers.get("vary")).toBe("Accept");
++  }
++  for (const response of [
++    await f.post(JSON.stringify({ id: "beads/x", type: bead }), "retained", "createBead"),
++    await f.post(batch([create("x")]), "retained", "batch", { accept: "text/plain" }),
++  ]) {
++    expect(response.status).toBe(409);
++    current(response);
++    expect(checkedProblem(await body(response))).toMatchObject({
++      code: "idempotency-conflict",
++      status: 409,
++      retry: "never",
++    });
++  }
++  const fresh = JSON.stringify({ id: "beads/c", type: bead, properties: { title: "c" } });
++  for (const response of [
++    await f.post(singleton, "retained", "createBead", { accept: "text/plain" }),
++    await f.post(fresh, "fresh-negotiation", "createBead", { accept: "text/plain" }),
++  ]) {
++    expect(response.status).toBe(406);
++    current(response);
++    expect(await response.text()).toBe("");
++    expect(response.headers.has("content-type")).toBe(false);
++  }
++  const capacity = await f.post(
++    batch(Array.from({ length: 33 }, (_, i) => create(`oversized-${i}`))),
++    "fresh-capacity",
++    "batch",
++    { accept: "text/plain" },
++  );
++  expect(capacity.status).toBe(413);
++  current(capacity);
++  expect(checkedProblem(await body(capacity))).toMatchObject({
++    code: "limit-exceeded",
++    status: 413,
++    limit: "transaction.operations",
++  });
++  const retained = await f.get(id(seed));
++  expect(retained.status).toBe(200);
++  expect(retained.headers.get("bdp-scope-position")).toBe("pos-2");
++  expect(await body(retained)).toEqual(seed);
++  const collection = await body(await f.get(`${f.runtime.scope}beads/?limit=32`));
++  expect((collection.items as Record<string, unknown>[]).map((r) => [r.id, r.properties])).toEqual([
++    [`${f.runtime.scope}beads/a`, { title: "a" }],
++    [`${f.runtime.scope}beads/b`, { title: "b" }],
++  ]);
++  expect(collection.next).toBeNull();
++  const events = await body(await f.get(`${f.runtime.scope}events/`));
++  expect(events.events).toHaveLength(2);
++  expect(events.next).toBeNull();
++  expect((await body(await f.post(fresh, "fresh-negotiation", "createBead"))).effectPosition).toBe(
++    "pos-3",
++  );
++  expect((await body(await f.post(batch([create("d")]), "fresh-capacity"))).effectPosition).toBe(
++    "pos-4",
++  );
++});
+--- a/apps/bdptest/src/transactional-direct-refusal-installed.test.ts
++++ b/apps/bdptest/src/transactional-direct-refusal-installed.test.ts
+@@ -0,0 +1,463 @@
++/** Private installed refusal observations; no discovery or profile qualification. */
++import { execFileSync } from "node:child_process";
++import { createHash, randomBytes } from "node:crypto";
++import { existsSync, mkdtempSync, readFileSync, realpathSync, rmSync } from "node:fs";
++import { tmpdir } from "node:os";
++import path from "node:path";
++import { fileURLToPath } from "node:url";
++import { expect, it } from "vitest";
++import { Ajv2020 } from "ajv/dist/2020.js";
++import { isJsonSchemaDateTime, isJsonSchemaUri } from "@bdp/protocol";
++import { createRawHttpExchangeExecutor } from "@bdp/conformance";
++import { installedTransactionBinding } from "../test-support/transactional-execution-binding.js";
++const root = fileURLToPath(new URL("../../../", import.meta.url));
++const { launchInstalledTransaction } = (await import(
++  new URL("../../../scripts/transaction-installed-observation.mjs", import.meta.url).href
++)) as {
++  launchInstalledTransaction(
++    entry: string,
++    configuration: unknown,
++    signal: AbortSignal,
++  ): Promise<{
++    child: import("node:child_process").ChildProcess;
++    ready: Record<string, unknown>;
++    close(): Promise<void>;
++  }>;
++};
++const entry = realpathSync(
++  process.env.BDP_TRANSACTIONAL_INSTALLED_ENTRY ??
++    path.join(root, "packages/server/dist/transaction-installed-process.js"),
++);
++if (process.env.BDP_TRANSACTIONAL_INSTALLED_ENTRY && !process.env.BDP_TRANSACTIONAL_SOURCE_COMMIT)
++  throw new Error("installed refusal override requires explicit source commit");
++const declaredSourceCommit =
++  process.env.BDP_TRANSACTIONAL_SOURCE_COMMIT ??
++  execFileSync("git", ["rev-parse", "HEAD"], { cwd: root, encoding: "utf8" }).trim();
++if (!/^[a-f0-9]{40}$/.test(declaredSourceCommit)) throw new Error("invalid declared source commit");
++const workspaceDirty =
++  execFileSync("git", ["status", "--porcelain"], { cwd: root, encoding: "utf8" }).length > 0;
++const hash = (value: string | Uint8Array) => createHash("sha256").update(value).digest("hex");
++const entrySha256 = hash(readFileSync(entry));
++const scope = "https://reference.invalid/acme/",
++  task = `${scope}types/task`,
++  propertiesSchema = `${scope}schemas/title`;
++const fixture = {
++  bytes: readFileSync(
++    path.join(root, "packages/conformance/test-support/transactional/fixture-v1.json"),
++  ),
++};
++const artifacts = {
++  descriptors: [
++    {
++      retrievalUri: task,
++      utf8: JSON.stringify({
++        id: task,
++        name: "Task",
++        describes: "bead",
++        conformsTo: [],
++        propertiesSchema,
++      }),
++    },
++  ],
++  schemas: [
++    {
++      retrievalUri: propertiesSchema,
++      utf8: JSON.stringify({
++        $id: propertiesSchema,
++        type: "object",
++        properties: { title: { type: "string" } },
++        required: ["title"],
++        additionalProperties: false,
++      }),
++    },
++  ],
++};
++const ajv = new Ajv2020({ allErrors: true, strict: true });
++ajv.addFormat("uri", { type: "string", validate: isJsonSchemaUri });
++ajv.addFormat("date-time", { type: "string", validate: isJsonSchemaDateTime });
++const schema = JSON.parse(readFileSync(path.join(root, "schemas/bdp-v0.schema.json"), "utf8"));
++ajv.addSchema(schema);
++const validators = Object.fromEntries(
++  ["mutationReceipt", "transactionalProblem", "currentBeadCollection", "eventPage"].map((name) => [
++    name,
++    ajv.compile({ $ref: `${schema.$id}#/$defs/${name}` }),
++  ]),
++);
++function record(value: unknown): Record<string, unknown> {
++  if (!value || typeof value !== "object" || Array.isArray(value))
++    throw new Error("expected record");
++  return value as Record<string, unknown>;
++}
++function records(value: unknown): Record<string, unknown>[] {
++  if (!Array.isArray(value)) throw new Error("expected array");
++  return value.map(record);
++}
++function checked(text: string, name: string) {
++  const value = record(JSON.parse(text)),
++    validate = validators[name];
++  if (!validate) throw new Error("unbound response schema");
++  expect(validate(value), JSON.stringify(validate.errors)).toBe(true);
++  return value;
++}
++const create = (id: string) => ({ id: `beads/${id}`, type: task, properties: { title: id } });
++const batch = (ids: string[]) => ({
++  operations: ids.map((id) => ({ operation: "createBead", ...create(id) })),
++});
++
++it("observes current context on installed direct refusals within14requests", async () => {
++  const controller = new AbortController();
++  const timer = setTimeout(
++    () => controller.abort(new Error("installed refusal cohort deadline")),
++    90000,
++  );
++  const directory = mkdtempSync(path.join(tmpdir(), "bdp-refusal-installed-"));
++  const token = randomBytes(32).toString("base64url");
++  const configuration = {
++    scope,
++    directory,
++    create: true,
++    artifacts,
++    credentials: [{ token, principal: "writer", canMutate: true }],
++  };
++  let child: Awaited<ReturnType<typeof launchInstalledTransaction>> | undefined;
++  let binding: ReturnType<typeof installedTransactionBinding> | undefined;
++  const failures: unknown[] = [];
++  const observations: Record<string, unknown>[] = [];
++  const sessions: { pid: number | undefined; exit: number | null; signal: string | null }[] = [];
++  const routes = [
++    { method: "POST", url: `${scope}operations/create-bead` },
++    { method: "POST", url: `${scope}operations/batch` },
++    { method: "GET", url: `${scope}beads/?limit=32` },
++    { method: "GET", url: `${scope}events/` },
++  ];
++  let receiptUrl: string | undefined;
++  let expectedContext: Record<string, string> | undefined;
++  let requests = 0;
++  async function exchange(
++    label: string,
++    url: string,
++    input?: unknown,
++    key?: string,
++    accept?: string,
++  ) {
++    if (!child) throw new Error("installed child missing");
++    const method = input === undefined ? ("GET" as const) : ("POST" as const);
++    if (
++      !routes.some((r) => r.method === method && r.url === url) &&
++      !(method === "GET" && url === receiptUrl)
++    )
++      throw new Error("unbound installed refusal route");
++    if (++requests > 14) throw new Error("installed refusal request ceiling");
++    const address = new URL(child.ready.listenUrl as string);
++    const execute = createRawHttpExchangeExecutor(
++      { transport: "plain", host: address.hostname, port: Number(address.port) },
++      {
++        requestTimeoutMs: 5000,
++        maximumBodyBytes: 131072,
++        exactMode: {
++          scope,
++          profile: "transactional",
++          routes: [{ method, url }],
++          maximumRequestHeaderBytes: 16384,
++          maximumRequestBodyBytes: 65536,
++          defaultCredentialRef: "writer",
++          credentialHandles: [{ id: "writer", headerNames: ["authorization"] }],
++          resolveCredentials: () => ({ authorization: `Bearer ${token}` }),
++        },
++      },
++    );
++    const bodyBytes = input === undefined ? undefined : Buffer.from(JSON.stringify(input));
++    if (bodyBytes) expect(bodyBytes.byteLength).toBeLessThanOrEqual(65536);
++    const response = await execute({
++      method,
++      url,
++      signal: controller.signal,
++      credentialRef: "writer",
++      raw: {
++        headerLines: [
++          ...(input === undefined ? [] : [{ name: "content-type", value: "application/json" }]),
++          ...(key === undefined ? [] : [{ name: "idempotency-key", value: key }]),
++          ...(accept === undefined ? [] : [{ name: "accept", value: accept }]),
++        ],
++        ...(bodyBytes ? { bodyBytes } : {}),
++      },
++    });
++    expect(response.exactRequest?.writeState).toBe("complete");
++    expect(
++      response.exactRequest?.headerLines.find((h) => h.name.toLowerCase() === "host")?.value,
++    ).toBe("reference.invalid");
++    if (!response.wireResponseBytes?.length) throw new Error("missing real response wire");
++    if (
++      !Number.isSafeInteger(response.bodyOctets) ||
++      response.bodyOctets === undefined ||
++      response.bodyOctets < 0
++    )
++      throw new Error("missing actual body octets");
++    observations.push({
++      label,
++      method,
++      url,
++      status: response.status,
++      requestBodyBytes: bodyBytes?.byteLength ?? 0,
++      requestBodySha256: hash(bodyBytes ?? new Uint8Array()),
++      responseBodyBytes: response.bodyOctets,
++      responseBodySha256: hash(response.bodyText),
++      wireSha256: hash(response.wireResponseBytes),
++      context: {
++        epoch: response.headers["bdp-scope-epoch"],
++        view: response.headers["bdp-authorization-view"],
++        position: response.headers["bdp-scope-position"],
++      },
++    });
++    expect(response.headers["x-bdp-development"]).toBe("non-attesting");
++    if (method === "POST") expect(response.headers.vary).toBe("Accept");
++    return response;
++  }
++  type Wire = Awaited<ReturnType<typeof exchange>>;
++  function context(response: Wire, position: string) {
++    if (!expectedContext) throw new Error("seed context unavailable");
++    for (const [name, value] of Object.entries({
++      ...expectedContext,
++      "bdp-scope-position": position,
++    })) {
++      expect(
++        response.headers[name]?.length,
++        `direct refusal context presence: ${name}`,
++      ).toBeGreaterThan(0);
++      expect(response.headers[name], `direct refusal current context: ${name}`).toBe(value);
++    }
++  }
++  function completed(response: Wire, name: string, position: string) {
++    expect(response.status).toBe(200);
++    const value = checked(response.bodyText, "mutationReceipt");
++    expect(value).toMatchObject({
++      status: "completed",
++      detail: "available",
++      requiredPosition: position,
++      effectPosition: position,
++      next: null,
++    });
++    const result = records(value.results);
++    expect(result).toHaveLength(1);
++    expect(result[0]).toMatchObject({ operationIndex: 0, outcome: "created" });
++    const resource = record(result[0]!.resource);
++    expect(resource.id).toBe(`${scope}beads/${name}`);
++    expect(resource.type).toBe(task);
++    expect(resource.properties).toEqual({ title: name });
++    expect(resource.metadata).toEqual({});
++    expect(typeof resource.revision).toBe("string");
++    expect(resource.revision).not.toBe("");
++    return value;
++  }
++  const receipts: Record<string, unknown>[] = [];
++  function collection(response: Wire, names: string[], position: string) {
++    expect(response.status).toBe(200);
++    context(response, position);
++    const value = checked(response.bodyText, "currentBeadCollection");
++    expect(value.next).toBeNull();
++    const items = records(value.items);
++    expect(items.map((r) => r.id)).toEqual(names.map((name) => `${scope}beads/${name}`));
++    expect(items).toEqual(receipts.map((receipt) => records(receipt.results)[0]!.resource));
++  }
++  function events(response: Wire, names: string[], position: string) {
++    expect(response.status).toBe(200);
++    context(response, position);
++    const value = checked(response.bodyText, "eventPage");
++    expect(value.next).toBeNull();
++    const rows = records(value.events);
++    expect(rows).toHaveLength(names.length);
++    for (const [i, event] of rows.entries()) {
++      expect(event).toMatchObject({
++        type: "created",
++        subject: `${scope}beads/${names[i]}`,
++        source: `${scope}events/`,
++        ordinal: 0,
++        transaction: receipts[i]!.transaction,
++      });
++      const resource = record(records(receipts[i]!.results)[0]!.resource);
++      expect(event.subjectType).toBe(task);
++      expect(event.data).toEqual({
++        revision: resource.revision,
++        properties: { title: names[i] },
++        metadata: {},
++        ...(resource.revisionProvenance ? { revisionProvenance: resource.revisionProvenance } : {}),
++      });
++      expect(typeof event.id).toBe("string");
++      expect(event.id).not.toBe("");
++    }
++  }
++  try {
++    child = await launchInstalledTransaction(entry, configuration, controller.signal);
++    binding = installedTransactionBinding(child.ready, declaredSourceCommit, fixture);
++    expect(child.ready.claimEligible).toBe(false);
++    const seedResponse = await exchange("seed-a", routes[0]!.url, create("a"), "retained");
++    const seed = completed(seedResponse, "a", "pos-1");
++    expectedContext = {
++      "bdp-scope-epoch": seed.scopeEpoch as string,
++      "bdp-authorization-view": seed.authorizationView as string,
++    };
++    context(seedResponse, "pos-1");
++    receipts.push(seed);
++    if (
++      typeof seed.id !== "string" ||
++      !seed.id.startsWith(`${scope}receipts/`) ||
++      new URL(seed.id).origin !== new URL(scope).origin
++    )
++      throw new Error("invalid observed receipt URL");
++    receiptUrl = seed.id;
++    const second = await exchange("seed-b", routes[1]!.url, batch(["b"]), "advance");
++    receipts.push(completed(second, "b", "pos-2"));
++    context(second, "pos-2");
++    const singletonConflict = await exchange(
++      "singleton-conflict",
++      routes[0]!.url,
++      create("changed"),
++      "retained",
++    );
++    expect(singletonConflict.status).toBe(409);
++    context(singletonConflict, "pos-2");
++    expect(checked(singletonConflict.bodyText, "transactionalProblem")).toMatchObject({
++      code: "idempotency-conflict",
++      status: 409,
++      retry: "never",
++    });
++    const conflict = await exchange(
++      "batch-conflict",
++      routes[1]!.url,
++      batch(["changed"]),
++      "retained",
++      "text/plain",
++    );
++    expect(conflict.status).toBe(409);
++    context(conflict, "pos-2");
++    expect(checked(conflict.bodyText, "transactionalProblem")).toMatchObject({
++      code: "idempotency-conflict",
++      status: 409,
++      retry: "never",
++    });
++    for (const [label, name, key] of [
++      ["retained-negotiation", "a", "retained"],
++      ["fresh-negotiation", "c", "fresh-negotiation"],
++    ] as const) {
++      const response = await exchange(label, routes[0]!.url, create(name), key, "text/plain");
++      expect(response.status).toBe(406);
++      context(response, "pos-2");
++      expect(response.bodyText).toBe("");
++      expect(response.bodyOctets).toBe(0);
++      expect(response.headers["content-type"]).toBeUndefined();
++    }
++    const capacity = await exchange(
++      "fresh-capacity",
++      routes[1]!.url,
++      batch(Array.from({ length: 33 }, (_, i) => `overflow-${i}`)),
++      "fresh-capacity",
++      "text/plain",
++    );
++    expect(capacity.status).toBe(413);
++    context(capacity, "pos-2");
++    expect(checked(capacity.bodyText, "transactionalProblem")).toMatchObject({
++      code: "limit-exceeded",
++      status: 413,
++      limit: "transaction.operations",
++    });
++    const rootResponse = await exchange("retained-root", receiptUrl);
++    expect(rootResponse.status).toBe(200);
++    context(rootResponse, "pos-2");
++    expect(checked(rootResponse.bodyText, "mutationReceipt")).toEqual(seed);
++    collection(await exchange("unchanged-beads", routes[2]!.url), ["a", "b"], "pos-2");
++    events(await exchange("unchanged-events", routes[3]!.url), ["a", "b"], "pos-2");
++    const admittedC = await exchange(
++      "retry-negotiation-key",
++      routes[0]!.url,
++      create("c"),
++      "fresh-negotiation",
++    );
++    receipts.push(completed(admittedC, "c", "pos-3"));
++    context(admittedC, "pos-3");
++    const admittedD = await exchange(
++      "retry-capacity-key",
++      routes[1]!.url,
++      batch(["d"]),
++      "fresh-capacity",
++    );
++    receipts.push(completed(admittedD, "d", "pos-4"));
++    context(admittedD, "pos-4");
++    collection(await exchange("final-beads", routes[2]!.url), ["a", "b", "c", "d"], "pos-4");
++    events(await exchange("final-events", routes[3]!.url), ["a", "b", "c", "d"], "pos-4");
++    expect(requests).toBe(14);
++    expect(observations.map((o) => o.label)).toEqual([
++      "seed-a",
++      "seed-b",
++      "singleton-conflict",
++      "batch-conflict",
++      "retained-negotiation",
++      "fresh-negotiation",
++      "fresh-capacity",
++      "retained-root",
++      "unchanged-beads",
++      "unchanged-events",
++      "retry-negotiation-key",
++      "retry-capacity-key",
++      "final-beads",
++      "final-events",
++    ]);
++    expect(new Set(observations.map((o) => `${o.method} ${o.url}`))).toEqual(
++      new Set([...routes.map((r) => `${r.method} ${r.url}`), `GET ${receiptUrl}`]),
++    );
++    controller.signal.throwIfAborted();
++  } catch (error) {
++    failures.push(error);
++  } finally {
++    if (child) {
++      try {
++        await child.close();
++      } catch (error) {
++        failures.push(error);
++      }
++      sessions.push({
++        pid: child.child.pid,
++        exit: child.child.exitCode,
++        signal: child.child.signalCode,
++      });
++      if (child.child.exitCode === null && child.child.signalCode === null)
++        failures.push(new Error("installed refusal child remains active"));
++    }
++    clearTimeout(timer);
++    let directoryAbsent: boolean | undefined;
++    try {
++      rmSync(directory, { recursive: true, force: true });
++    } catch (error) {
++      failures.push(error);
++    }
++    try {
++      directoryAbsent = !existsSync(directory);
++      if (!directoryAbsent) failures.push(new Error("installed refusal directory remains"));
++    } catch (error) {
++      failures.push(error);
++    }
++    if (controller.signal.aborted && !failures.includes(controller.signal.reason))
++      failures.push(controller.signal.reason);
++    console.log(
++      JSON.stringify({
++        observation: "private-installed-direct-refusal-context",
++        declaredSourceCommit,
++        workspaceDirty,
++        entry,
++        entrySha256,
++        directoryAbsent,
++        evidenceRetention:
++          "Response fingerprints and context only; complete wire and body bytes are not retained",
++        binding,
++        routes,
++        sessions,
++        attemptedRequests: requests,
++        completedResponses: observations,
++        outcome: failures.length ? "failed" : "passed",
++        claimEligible: false,
++      }),
++    );
++  }
++  if (failures.length === 1) throw failures[0];
++  if (failures.length)
++    throw new AggregateError(failures, "installed refusal observation or cleanup failed");
++}, 120000);

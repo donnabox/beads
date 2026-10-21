@@ -1,0 +1,837 @@
+--- initial-pending/audit.py
++++ source-bound/audit.py
+@@ -1,5 +1,5 @@
+ """Closed Snapshot proof auditor. Standard library only; no product imports.
+-Report contracts are pending until reconciled against frozen authored source.
++Actual Snapshot report schemas reconciled; root release and final source binding required.
+ """
+ import sys
+ sys.dont_write_bytecode=True
+@@ -55,6 +55,8 @@
+   for expected in ex['sourceExactRecords']:
+    o=one(expected['selector']);require(o==expected['record'],'Snapshot exact counter/order record differs');used.append(o)
+   owner=one({'observation':'fresh-snapshot-opaque-owner'});contract(owner,ex['ownerContract']);used.append(owner)
++  require(set(owner['baseline'])=={'snapshots','records','pages','disposition'},'Owner baseline shape differs')
++  require(isinstance(owner['baseline']['disposition'],str) and json.loads(owner['baseline']['disposition'])['expired'] is False,'Owner preserved disposition expired')
+   http=one({'observation':'fresh-snapshot-opaque-http'});contract(http,ex['httpContract']['record']);used.append(http)
+   responses=at(http,ex['httpContract']['responsesPath']);wanted=ex['httpContract']['orderedResponses'];require(len(responses)==len(wanted)==27,'New Snapshot HTTP response count differs')
+   handle=None
+@@ -73,7 +75,7 @@
+   report.update({'actualInstrumentedObservations':observations,'plannedWorkload':config['prospectiveWorkload'],'attribution':'22 exact selected Snapshot callbacks;13 new callback records only. Historical18 network and15 handler counts remain source-derived unless explicitly reported; no inferred measured total45/60. A offline reopen counts are owner connections, not stores/children. B/C/F semantic assertions remain in pinned callbacks.'})
+  else:
+   require(len(observations)==1,'Unexpected installed Snapshot report count');o=observations[0]
+-  require(o['observation']==config['expectedObservation'] and o['outcome']=='passed' and o['claimEligible'] is False,'Installed Snapshot outcome differs')
++  require(o['observation']==config['expectedObservation'] and (o.get('outcome')=='passed' if mode=='history' else o.get('ok') is True) and o['claimEligible'] is False,'Installed Snapshot outcome differs')
+   require(o['workspaceDirty'] is True and o['declaredSourceCommit']==g['finalHead'],'Installed Snapshot source attribution differs')
+   b=o['binding'];served=b['served'];require(served['sourceCommit']==g['finalHead'] and served['profile']=='transactional' and served['history'] is False and served['scope']=='https://reference.invalid/acme/' and b['authorityMode']=='canonical','Snapshot runtime binding differs')
+   for f in ['installedPayloadDigest','installedContractsDigest','policyDigest','authenticationDigest']:fingerprint(served[f])
+@@ -82,6 +84,7 @@
+   require(served['fixtureDigest']==sha(fixture.read_bytes()) and served['fixtureId']==fj['id'] and served['capabilities']==sorted(fj['capabilities']),'Snapshot fixture binding differs')
+   proof=verify_consumer(g);entry=Path(proof['entryRealpath']);require(Path(o['entry']).resolve(strict=True)==entry and o['entrySha256']==proof['entrySha256'] and served['installedPayloadDigest']==proof['payloadIdentity'],'Snapshot child differs from verified external consumer')
+   if mode=='history':
++   require(set(o)==set(ex['historicalInstalledReportKeys']),'Historical Snapshot report shape differs')
+    require(o['aborted'] is False and o['exchanges']==31 and len(o['completedResponses'])==31,'Historical Snapshot deadline/count differs')
+    children=o['children'];require(len(children)==2 and len({x['pid'] for x in children})==2,'Historical Snapshot reopen child count differs')
+    for child in children:require(type(child['pid']) is int and child['pid'] in execution['sampledPids'] and child['exitCode']==0 and child['signalCode'] is None,'Historical child clean exit/census absent')
+@@ -103,13 +106,16 @@
+    responses=o[c['responsesField']];require(len(responses)==3,'New Snapshot response count differs')
+    require([{k:r[k] for k in ['method','url','status']} for r in responses]==c['orderedResponses'],'New Snapshot request order differs')
+    for r in responses:
++    require(set(r)==set(c['responseKeys']),'New Snapshot response shape differs')
+     require(type(r[c['bodyOctetsField']]) is int and r[c['bodyOctetsField']]>=0,'New Snapshot octet count invalid')
+     for field in c['responseDigestFields']:fingerprint(r[field])
+-   seed,get,head=responses;contextNames=['bdp-scope-epoch','bdp-authorization-view','bdp-scope-position'];context=[seed['headers'][k] for k in contextNames];require(all(context) and context[2]=='pos-1','Genuine Snapshot seed context absent')
+-   for r in [get,head]:
+-    h=r['headers'];require([h[k] for k in contextNames]==context and h['cache-control']=='private, no-store' and h['retry-after']=='1' and h['x-bdp-development']=='non-attesting' and h['x-bdp-development-limit'] is None,'Snapshot timeout required metadata differs')
+-   require(get[c['bodyOctetsField']]>0 and head[c['bodyOctetsField']]==0,'New Snapshot GET/HEAD body lengths differ');require(get['headers']['content-type'].split(';',1)[0]=='application/problem+json','GET problem media absent')
+-   # Snapshot HEAD optional media is deliberately not asserted.
++    finite(r['elapsedSeconds']);require(r['elapsedSeconds']<=o['elapsedSeconds'],'Request elapsed exceeds total')
++   require(sum(r['elapsedSeconds'] for r in responses)<=o['elapsedSeconds'],'Sequential request elapsed exceeds total')
++   seed,get,head=responses
++   require(seed[c['bodyOctetsField']]>0 and get[c['bodyOctetsField']]>0 and head[c['bodyOctetsField']]==0,'New Snapshot seed/GET/HEAD body lengths differ')
++   # Headers, body/receipt schemas, exact request/body digest, required context,
++   # and HEAD metadata are assertions in the pinned callback, not report fields.
++   # There is deliberately no optional HEAD media assertion or invented digest.
+    report['cleanupAttribution']='Callback-local timely clean close, actual owned directory absent, sampled child exit and supervisor group/census/store checks. Failure/unknown/late-close is never accepted.'
+   report.update({'observation':o,'attribution':'Base HEAD plus independently pinned dirty authored source, fresh build/archive/consumer proof; not child-attested source or full profile qualification','limits':'Only retained response fields are audited here. Exact requests/seed body/receipt/problem schema/body and omitted validators remain passing pinned callback assertions. No invented report data, no elapsed-derived waiter counts, no historical evidence relabeling.'})
+  write(stage+'.accepted-observation.json',report)
+--- initial-pending/audit-expectations.json
++++ source-bound/audit-expectations.json
+@@ -1,6 +1,6 @@
+ {
+-  "finalized": false,
+-  "state": "PENDING_AUTHOR_FREEZE: exact source/new installed JSON field contracts must be independently reconciled before changing false",
++  "finalized": true,
++  "state": "Reconciled to exact frozen Snapshot successor-1 report statements and callback assertions",
+   "sourceCallbacks": 22,
+   "sourceNetworkRequests": 45,
+   "sourceHandlerRequests": 15,
+@@ -12,10 +12,590 @@
+   "historicalInstalledChildren": 2,
+   "newInstalledExchanges": 3,
+   "newInstalledChildren": 1,
+-  "sourceExactRecords": null,
+-  "ownerContract": null,
+-  "httpContract": null,
+-  "newInstalledContract": null,
++  "sourceExactRecords": [
++    {
++      "selector": {
++        "observation": "fresh-snapshot-opaque-capture",
++        "kind": "create"
++      },
++      "record": {
++        "observation": "fresh-snapshot-opaque-capture",
++        "kind": "create",
++        "serviceSnapshotCalls": 2,
++        "ownerSnapshotCalls": 4,
++        "waits": 2,
++        "probes": 2,
++        "transactions": 1,
++        "finalPosition": "pos-1"
++      }
++    },
++    {
++      "selector": {
++        "observation": "fresh-snapshot-opaque-lifecycle",
++        "kind": "create"
++      },
++      "record": {
++        "observation": "fresh-snapshot-opaque-lifecycle",
++        "kind": "create",
++        "serviceSnapshotCalls": 4,
++        "delegatedOwnerCalls": 5,
++        "waits": 3,
++        "probes": 3,
++        "postCloseOwnerRefusals": 1
++      }
++    },
++    {
++      "selector": {
++        "observation": "fresh-snapshot-opaque-capture",
++        "kind": "preflight"
++      },
++      "record": {
++        "observation": "fresh-snapshot-opaque-capture",
++        "kind": "preflight",
++        "serviceSnapshotCalls": 2,
++        "ownerSnapshotCalls": 4,
++        "waits": 2,
++        "probes": 2,
++        "transactions": 1,
++        "finalPosition": "pos-1"
++      }
++    },
++    {
++      "selector": {
++        "observation": "fresh-snapshot-opaque-lifecycle",
++        "kind": "preflight"
++      },
++      "record": {
++        "observation": "fresh-snapshot-opaque-lifecycle",
++        "kind": "preflight",
++        "serviceSnapshotCalls": 4,
++        "delegatedOwnerCalls": 5,
++        "waits": 3,
++        "probes": 3,
++        "postCloseOwnerRefusals": 1
++      }
++    },
++    {
++      "selector": {
++        "observation": "fresh-snapshot-opaque-order",
++        "label": "malformed-aborted"
++      },
++      "record": {
++        "observation": "fresh-snapshot-opaque-order",
++        "label": "malformed-aborted",
++        "serviceSnapshotCalls": 2,
++        "setupOwnerCalls": 1,
++        "checkedOwnerCalls": 0,
++        "clockCalls": 0,
++        "waits": 0
++      }
++    },
++    {
++      "selector": {
++        "observation": "fresh-snapshot-opaque-order",
++        "label": "malformed-invalid-kind"
++      },
++      "record": {
++        "observation": "fresh-snapshot-opaque-order",
++        "label": "malformed-invalid-kind",
++        "serviceSnapshotCalls": 2,
++        "setupOwnerCalls": 1,
++        "checkedOwnerCalls": 0,
++        "clockCalls": 0,
++        "waits": 0
++      }
++    },
++    {
++      "selector": {
++        "observation": "fresh-snapshot-opaque-order",
++        "label": "retained-unknown"
++      },
++      "record": {
++        "observation": "fresh-snapshot-opaque-order",
++        "label": "retained-unknown",
++        "serviceSnapshotCalls": 2,
++        "setupOwnerCalls": 1,
++        "checkedOwnerCalls": 0,
++        "clockCalls": 0,
++        "waits": 0
++      }
++    },
++    {
++      "selector": {
++        "observation": "fresh-snapshot-opaque-order",
++        "label": "retained-known"
++      },
++      "record": {
++        "observation": "fresh-snapshot-opaque-order",
++        "label": "retained-known",
++        "serviceSnapshotCalls": 2,
++        "setupOwnerCalls": 1,
++        "checkedOwnerCalls": 0,
++        "clockCalls": 0,
++        "waits": 0
++      }
++    },
++    {
++      "selector": {
++        "observation": "fresh-snapshot-opaque-order",
++        "label": "closed-malformed"
++      },
++      "record": {
++        "observation": "fresh-snapshot-opaque-order",
++        "label": "closed-malformed",
++        "serviceSnapshotCalls": 2,
++        "setupOwnerCalls": 1,
++        "checkedOwnerCalls": 0,
++        "clockCalls": 0,
++        "waits": 0
++      }
++    },
++    {
++      "selector": {
++        "observation": "fresh-snapshot-opaque-order",
++        "label": "closed-unknown-fresh"
++      },
++      "record": {
++        "observation": "fresh-snapshot-opaque-order",
++        "label": "closed-unknown-fresh",
++        "serviceSnapshotCalls": 2,
++        "setupOwnerCalls": 1,
++        "checkedOwnerCalls": 0,
++        "clockCalls": 0,
++        "waits": 0
++      }
++    },
++    {
++      "selector": {
++        "observation": "fresh-snapshot-opaque-order",
++        "label": "unknown-preaborted"
++      },
++      "record": {
++        "observation": "fresh-snapshot-opaque-order",
++        "label": "unknown-preaborted",
++        "serviceSnapshotCalls": 2,
++        "setupOwnerCalls": 1,
++        "checkedOwnerCalls": 0,
++        "clockCalls": 1,
++        "waits": 0
++      }
++    }
++  ],
++  "ownerContract": {
++    "keys": [
++      "observation",
++      "snapshotCalls",
++      "preEntryExcludedCalls",
++      "offlineInspections",
++      "baseline",
++      "after"
++    ],
++    "equals": [
++      {
++        "path": [
++          "observation"
++        ],
++        "value": "fresh-snapshot-opaque-owner"
++      },
++      {
++        "path": [
++          "snapshotCalls"
++        ],
++        "value": 14
++      },
++      {
++        "path": [
++          "preEntryExcludedCalls"
++        ],
++        "value": 4
++      },
++      {
++        "path": [
++          "offlineInspections"
++        ],
++        "value": 2
++      },
++      {
++        "path": [
++          "baseline",
++          "snapshots"
++        ],
++        "value": 1
++      },
++      {
++        "path": [
++          "baseline",
++          "records"
++        ],
++        "value": 1
++      },
++      {
++        "path": [
++          "baseline",
++          "pages"
++        ],
++        "value": 2
++      }
++    ],
++    "same": [
++      [
++        [
++          "baseline"
++        ],
++        [
++          "after"
++        ]
++      ]
++    ]
++  },
++  "httpContract": {
++    "record": {
++      "keys": [
++        "observation",
++        "requests",
++        "responses",
++        "statusCounts",
++        "waits"
++      ],
++      "equals": [
++        {
++          "path": [
++            "observation"
++          ],
++          "value": "fresh-snapshot-opaque-http"
++        },
++        {
++          "path": [
++            "requests"
++          ],
++          "value": 27
++        },
++        {
++          "path": [
++            "statusCounts"
++          ],
++          "value": {
++            "200": 5,
++            "503": 8,
++            "500": 8,
++            "400": 4,
++            "401": 2
++          }
++        },
++        {
++          "path": [
++            "waits"
++          ],
++          "value": 8
++        }
++      ]
++    },
++    "responsesPath": [
++      "responses"
++    ],
++    "orderedResponses": [
++      {
++        "method": "POST",
++        "route": "/acme/operations/batch",
++        "status": 200
++      },
++      {
++        "method": "GET",
++        "route": "/acme/snapshot",
++        "status": 200
++      },
++      {
++        "method": "HEAD",
++        "route": "/acme/snapshot",
++        "status": 200
++      },
++      {
++        "method": "GET",
++        "route": "/acme/snapshot",
++        "status": 503
++      },
++      {
++        "method": "GET",
++        "route": "/acme/snapshot",
++        "status": 503
++      },
++      {
++        "method": "GET",
++        "route": "/acme/snapshot",
++        "status": 503
++      },
++      {
++        "method": "GET",
++        "route": "/acme/snapshot",
++        "status": 503
++      },
++      {
++        "method": "HEAD",
++        "route": "/acme/snapshot",
++        "status": 503
++      },
++      {
++        "method": "HEAD",
++        "route": "/acme/snapshot",
++        "status": 503
++      },
++      {
++        "method": "HEAD",
++        "route": "/acme/snapshot",
++        "status": 503
++      },
++      {
++        "method": "HEAD",
++        "route": "/acme/snapshot",
++        "status": 503
++      },
++      {
++        "method": "GET",
++        "route": "/acme/snapshot",
++        "status": 500
++      },
++      {
++        "method": "HEAD",
++        "route": "/acme/snapshot",
++        "status": 500
++      },
++      {
++        "method": "GET",
++        "route": "/acme/snapshot",
++        "status": 500
++      },
++      {
++        "method": "HEAD",
++        "route": "/acme/snapshot",
++        "status": 500
++      },
++      {
++        "method": "GET",
++        "route": "/acme/snapshot",
++        "status": 400
++      },
++      {
++        "method": "HEAD",
++        "route": "/acme/snapshot",
++        "status": 400
++      },
++      {
++        "method": "GET",
++        "route": "__MANIFEST__",
++        "status": 500
++      },
++      {
++        "method": "HEAD",
++        "route": "__MANIFEST__",
++        "status": 500
++      },
++      {
++        "method": "GET",
++        "route": "__PAGE__",
++        "status": 500
++      },
++      {
++        "method": "HEAD",
++        "route": "__PAGE__",
++        "status": 500
++      },
++      {
++        "method": "GET",
++        "route": "__MANIFEST__",
++        "status": 200
++      },
++      {
++        "method": "HEAD",
++        "route": "__MANIFEST__",
++        "status": 200
++      },
++      {
++        "method": "GET",
++        "route": "/acme/snapshot?unsupported=x",
++        "status": 400
++      },
++      {
++        "method": "HEAD",
++        "route": "/acme/snapshot?unsupported=x",
++        "status": 400
++      },
++      {
++        "method": "GET",
++        "route": "/acme/snapshot",
++        "status": 401
++      },
++      {
++        "method": "HEAD",
++        "route": "/acme/snapshot",
++        "status": 401
++      }
++    ],
++    "responseKeys": [
++      "method",
++      "path",
++      "status"
++    ],
++    "routeField": "path",
++    "snapshotPath": "/acme/snapshot",
++    "limits": "waits8 is reported; no inferred owner-attempt/allocation/expiry measurement."
++  },
++  "newInstalledContract": {
++    "record": {
++      "keys": [
++        "observation",
++        "ok",
++        "declaredSourceCommit",
++        "workspaceDirty",
++        "entry",
++        "entrySha256",
++        "binding",
++        "attempted",
++        "exchanges",
++        "responses",
++        "launchStarted",
++        "startupCompleted",
++        "closeAttempted",
++        "closed",
++        "childPid",
++        "childExitCode",
++        "childSignalCode",
++        "ownership",
++        "directory",
++        "directoryAbsent",
++        "aborted",
++        "elapsedSeconds",
++        "claimEligible"
++      ],
++      "equals": [
++        {
++          "path": [
++            "observation"
++          ],
++          "value": "private-installed-snapshot-opaque-minimum"
++        },
++        {
++          "path": [
++            "ok"
++          ],
++          "value": true
++        },
++        {
++          "path": [
++            "attempted"
++          ],
++          "value": 3
++        },
++        {
++          "path": [
++            "exchanges"
++          ],
++          "value": 3
++        },
++        {
++          "path": [
++            "launchStarted"
++          ],
++          "value": true
++        },
++        {
++          "path": [
++            "startupCompleted"
++          ],
++          "value": true
++        },
++        {
++          "path": [
++            "closeAttempted"
++          ],
++          "value": true
++        },
++        {
++          "path": [
++            "closed"
++          ],
++          "value": true
++        },
++        {
++          "path": [
++            "childExitCode"
++          ],
++          "value": 0
++        },
++        {
++          "path": [
++            "childSignalCode"
++          ],
++          "value": null
++        },
++        {
++          "path": [
++            "ownership"
++          ],
++          "value": "returned"
++        },
++        {
++          "path": [
++            "directoryAbsent"
++          ],
++          "value": true
++        },
++        {
++          "path": [
++            "aborted"
++          ],
++          "value": false
++        },
++        {
++          "path": [
++            "claimEligible"
++          ],
++          "value": false
++        }
++      ],
++      "finite": [
++        {
++          "path": [
++            "elapsedSeconds"
++          ],
++          "minimum": 0,
++          "maximumExclusive": 60
++        }
++      ]
++    },
++    "pidField": "childPid",
++    "directoryField": "directory",
++    "responsesField": "responses",
++    "bodyOctetsField": "responseBytes",
++    "responseDigestFields": [
++      "wireSha256"
++    ],
++    "responseKeys": [
++      "method",
++      "url",
++      "status",
++      "responseBytes",
++      "wireSha256",
++      "elapsedSeconds"
++    ],
++    "orderedResponses": [
++      {
++        "method": "POST",
++        "url": "https://reference.invalid/acme/operations/batch",
++        "status": 200
++      },
++      {
++        "method": "GET",
++        "url": "https://reference.invalid/acme/snapshot",
++        "status": 503
++      },
++      {
++        "method": "HEAD",
++        "url": "https://reference.invalid/acme/snapshot",
++        "status": 503
++      }
++    ],
++    "limits": "No response headers, context, body digests or raw requests retained; those assertions remain in pinned E callback. elapsedSeconds is measured, not waiter proof. Actual request/owned/callback bounds remain5/45/60 seconds;60-second report cap does not enlarge the45-second abort gate."
++  },
+   "historicalInstalledStatusSequence": [
+     200,
+     401,
+@@ -49,5 +629,21 @@
+     503,
+     200
+   ],
+-  "limits": "Only known authored prospective Snapshot counts. New observation13 corresponds A1+B2+C2+D1+F7. Historical selected source counters remain pinned callback assertions unless source actually emits them; no inherited Event record counts."
++  "limits": "Only known authored prospective Snapshot counts. New observation13 corresponds A1+B2+C2+D1+F7. Historical selected source counters remain pinned callback assertions unless source actually emits them; no inherited Event record counts.",
++  "historicalInstalledReportKeys": [
++    "observation",
++    "outcome",
++    "aborted",
++    "declaredSourceCommit",
++    "workspaceDirty",
++    "entry",
++    "entrySha256",
++    "binding",
++    "children",
++    "exchanges",
++    "completedResponses",
++    "claimEligible"
++  ],
++  "sourceBindingSha256": "ad2b24e1daaa2eef818eecddee1f82a4bc6b18166a2a1a88844d11d890181c99",
++  "actualSchemasSha256": "6e95f1093724bd2d843e21d20612405873c75f8e09a49ebcd8a53bd4bbc4921b"
+ }
+--- initial-pending/commands.json
++++ source-bound/commands.json
+@@ -1,6 +1,6 @@
+ {
+-  "configurationFinalized": false,
+-  "state": "CLOSED pending actual authored source and report-contract reconciliation; selection is accepted plan only",
++  "configurationFinalized": true,
++  "state": "Source-bound CLOSED Snapshot successor-1 preparation; root/native review and explicit execution releases required",
+   "finalOrder": [
+     "workspace-install",
+     "bind-workspace-tools",
+@@ -481,14 +481,13 @@
+     "require-from-string": "2.0.2"
+   },
+   "pending": [
+-    "frozen seven-file authored source/patch/preservation",
+-    "all679 actual byte rehash",
+-    "actual report schema and request order reconciliation",
+-    "code council dispositions",
+-    "root release"
++    "actual full-code council dispositions",
++    "root bootstrap/static/runtime releases",
++    "fresh measured workspace tools/build/archive/consumer/actual lock proofs"
+   ],
+   "freshBootstrapStages": 2,
+   "postBootstrapStages": 19,
+   "totalStages": 21,
+-  "reusedEvidence": []
++  "reusedEvidence": [],
++  "sourceBindingSha256": "ad2b24e1daaa2eef818eecddee1f82a4bc6b18166a2a1a88844d11d890181c99"
+ }
+--- initial-pending/prerequisite-binding.json
++++ source-bound/prerequisite-binding.json
+@@ -1,8 +1,8 @@
+ {
+-  "state": "PENDING_AUTHOR_FREEZE: committed-base dependencies only; rehash actual final workspace before release",
++  "state": "Exact frozen successor dependency inputs verified; fresh offline bootstrap/tools required",
+   "baseHead": "0f215c05678f507dd8a39ee08e288f0901710135",
+-  "sourceIdentity": null,
+-  "sourceBindingSha256": null,
++  "sourceIdentity": "70caea36ed38911ce11f7376de8c45d005e3b638074163eca54bc14b1819b78b",
++  "sourceBindingSha256": "ad2b24e1daaa2eef818eecddee1f82a4bc6b18166a2a1a88844d11d890181c99",
+   "dependencyInputs": {
+     ".node-version": "2722b61f414f07f08be7f1f1316012813818f26f1c40d6a24a748686cec7d2ff",
+     ".npmrc": "7151cf397def0c2cb0ab65643701d27d335a72c90f775675b5f826bc7005818a",
+@@ -24,7 +24,7 @@
+   },
+   "baseTools": {
+     "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/snapshot-opaque-minimum-validation/base-tools.json",
+-    "sha256": "2a50c4ea9fe349528c487b90e1f71b040eed324cd666089c38843c69032054c5"
++    "sha256": "d4ffaa20eac07b6f3c0225f229e7ecee98d2c77d7db4e4f1a3d0342f6e0f45a0"
+   },
+   "workspaceNodeModulesAbsentAtPreparation": true,
+   "freshBootstrapRequired": true,
+--- initial-pending/preparation.md
++++ source-bound/preparation.md
+@@ -1,29 +1,29 @@
+-# Snapshot opaque minimum validation — CLOSED preparation
++# Snapshot opaque minimum validation — finalized CLOSED preparation
+ 
+-This packet adapts the successful Link validation process architecture to the accepted Snapshot plan-v3. It grants no execution authority. `commands.json.configurationFinalized=false`, `audit-expectations.json.finalized=false`, every root release/disposition boolean false, no approved stages, and no source-binding.json. Actual source is still being authored. The pending binding deliberately contains no moving-source hash or alleged final identity.
++The actual seven-file Snapshot successor-1 is now frozen and independently bound. `configurationFinalized` and report-contract `finalized` are true; these mean preparation readiness only. Every root execution/disposition flag remains false, approvedStages is empty, and no validation was executed. The entire earlier index2513 pending packet, including its native review, remains byte-identical in `initial-closed-preparation/`. Historical pending files are explicitly superseded by source-binding.json and source-reconciliation.json.
+ 
+-## Concrete stages and workload
++## Exact scope and stages
+ 
+-There are21 stages:2 fresh offline workspace prerequisites and19 post-bootstrap validation stages. In order: workspace-install, bind-workspace-tools; typecheck, format-check, lint; fresh-build, bind-fresh-build; focused-source, review-focused-source; node-version, prepare-package-directory, pack-protocol, pack-server, verify-archives, prepare-consumer, consumer-install, verify-installed-consumer; snapshot-history-external, review-snapshot-history-external; snapshot-opaque-external, review-snapshot-opaque-external.
++Actual checkout `/Users/dbox/repos/wt/vickie/vickie-snapshot-opaque-minimum` remains dirty on base0f215, tree03371e5. All679 tracked bytes, seven-file diff32395d9d and672 unchanged files were independently checked against successor bindingd3c60986 and committed baseline. Only N1 NonNullable, N2 exact Retry-After1 and observed layout/trailing-comma formatting distinguish this successor from the original draft. Production bytes are unchanged from the original reviewed draft. Full historical test prefixes reconstruct using only the accepted imports/oracle/loop amendments; shared installed helpers, excluded disconnect rows and preceding Event/parser behavior remain preserved. Context contains immutable original and successor author packets, actual seven files, accepted plan/selection/preservation and completed original native findings/disposition; mutable ongoing Claude result files are not pinned.
+ 
+-Selection is exactly22 source callbacks (9 existing +13 new) across three server test files, then two independently selected installed callbacks. The accepted plan distinguishes45 emitted network exchanges from15 direct handler requests. A has14 Snapshot calls, two offline inspections/reopens (three owner opens), one store. Existing installed history31 uses two sequential children in one store; new E3 uses one child/one store. Thus installed34 requests/three sequential children/two stores. These are prospective authored counts, not observed results or completion percentages. Old selected source18-network and15-handler counts remain source/assertion-derived unless new source actually reports them. Source13 new observation records are provisional until author reconciliation.
++Exactly21 stages:2 fresh prerequisites (workspace-install, bind-workspace-tools) and19 post-bootstrap stages: typecheck; format-check; lint; fresh-build; bind-fresh-build; focused-source; review-focused-source; node-version; prepare-package-directory; pack-protocol; pack-server; verify-archives; prepare-consumer; consumer-install; verify-installed-consumer; snapshot-history-external; review-snapshot-history-external; snapshot-opaque-external; review-snapshot-opaque-external.
+ 
+-Source callback5000ms, deterministic budget2ms; installed request5000ms/owned45000ms/callback60000ms; unchanged outer120s supervisor with115s deadline trigger and bounded TERM/KILL/reap. No retry, timeout widening, manufactured cleanup, hidden helper execution or borrowed old passes.
++The selection is exactly22 source callbacks (9 existing+13 new).45 source network exchanges remain distinct from15 direct handler requests. A has14 Snapshot calls/two offline inspections (three owner opens)/one store. Installed history31 uses two sequential children/one store; new E3 uses one child/one store. No totals are reported as actual execution or qualification. Historical18 network and15 handler counts are source-derived, not newly instrumented.13 actual new JSON record schemas are A1/B2/C2/D1/F7.
+ 
+-## Implementation changes
++## Actual observation contracts
+ 
+-`gate.py` has actual isolated Snapshot checkout/base0f215 and separate Snapshot environment names. It preserves source679/exact diff/no-untracked checks, frozen implementation/reference/tool pins, root-approved prefix only, actual code-council disposition before runtime (explicit static prefix may precede it), fresh build prerequisites, actual consumer-lock acceptance and whole archive/consumer/inventory verification before/after external callbacks. Two closed flags additionally prevent incomplete source/report schemas from running.
++A checks14/4/2 counters, baseline snapshots1/records1/pages2, exact baseline/after disposition string and expired=false. The comparison ends before the final offline helper reopen can maintain the advanced-clock store; three owner opens are source-derived, not an invented reported field. B/C/F exact schemas/counters are reconciled to source. D reports27 ordered method/path/status entries at `/acme/snapshot` and waits8. Auditor compares exact routes and one real retained query handle, counts/statuses, and rejects extras. D emits no allocation/expiry or measured owner-attempt count. No Event predicates remain.
+ 
+-`run.py` preserves process-group ownership, periodic process samples, bounded cleanup, exclusive attempt creation, source/build/consumer rechecks and actual remaining process/store checks; only namespace and exact Snapshot external pair list change. Unknown or forced cleanup is failed evidence, even if a late child later exits.
++Historical installed helper reports outcome/aborted, two child PIDs/exits/signals,31 ordered responses with URL/method/status/responseBytes/wireSha256. Audit checks the changed19th status503, all other statuses/order, one retained handle, and both child PIDs in the corresponding supervisor census. It does not invent directory fields absent from the preserved report; actual store absence comes from the supervisor. Unconditional historical removal is not independently sufficient proof of process exit.
+ 
+-`packages.py` preserves the full archive-to-built-source-to-consumer membership/bytes/manifest comparison, exact8 dependency versions, recursive resolved dependency closure, path-sensitive payload identity and complete files/symlinks inventory. Only Snapshot labeling changes. Source/base attribution remains explicitly dirty draft rather than an attested committed source. Root must accept measured lock before verification and independently pin provenance/inventory before installed stages.
++New E actually reports `ok`, `aborted`, ownership `returned`, actual-or-null PID/exit/signal, directoryAbsent/closed and cleanup-inclusive elapsedSeconds. Responses retain only method/url/status/responseBytes/wireSha256/elapsedSeconds. Audit checks exact three routes200/503/503, three attempts/exchanges, complete lifecycle fields, clean sampled child, actual stage-owned directory absence, valid response fingerprints/octet counts and finite elapsed values within total callback time. Seed body/receipt schema, current context, problem body/schema, exact request serialization/minimum headers, Retry-After1 and HEAD required metadata are assertions in the pinned callback, not invented report fields. No optional HEAD media assertion is added. Elapsed reports do not substitute for deterministic wait tests.
+ 
+-`audit.py` removes all Event predicates. It enforces exact selected callback identity with no unexpected execution, immediately audits Snapshot report records, and preserves counter/header/route distinctions. Historical31 checks exact status/method/order/retained-handle URLs and both clean child reports with supervisor census; it does not invent directory metadata absent from that preserved helper. New E checks actual child/runtime/entry/source/consumer binding, three real routes, seed context, 503 required metadata and HEAD empty body without optional HEAD media assertions. Actual schema-specific record contracts remain explicitly pending and fail closed; A baseline/disposition comparison, B/C/F counters, D27 routes and new E actual fields must be reconciled to frozen source before finalization. No inferred D clock-based count will be presented as directly measured owner calls. Exact semantic/body/schema assertions not logged remain pinned callback evidence.
++## Preserved execution and provenance architecture
+ 
+-## Required finalization and release
++Source callback5s/deterministic budget2ms; installed request5s/owned45s/callback60s; outer120s supervisor with115s deadline trigger and bounded TERM/KILL/reap. No retry, timeout expansion, synthetic responses or process/store cleanup assumptions. The new report's60s callback ceiling does not enlarge its existing45s owned abort deadline or5s raw request limit. Unknown, forced or late cleanup always fails.
+ 
+-Preserve this entire pending packet as historical preparation before replacing fields. Once the author freezes, independently verify actual checkout/head/seven allowed files, all679 actual bytes, exact patch and old-region preservation; snapshot immutable author/council artifacts and reconcile exact callback/report schemas and all routes/counts. Populate final source/prerequisite bindings and declarative audit expectations, then create a fresh implementation index/diff/reconciliation report. Readiness flags may become finalized only after this reconciliation; root execution/disposition flags remain false until root inspection and explicit release.
++`gate.py` retains exact source/diff/no-untracked checks, immutable implementation/reference/tool pins, root-prefix authorization, explicit separately authorized static-before-code-review allowance, fresh build binding before source HTTP module collection, measured consumer lock acceptance and whole consumer proof before external stages. `run.py` retains exclusive attempt files, actual process-group samples, bounded cleanup and final source/build/consumer/store checks. `packages.py` retains archive/source/consumer byte/membership/manifest equivalence, eight exact production versions, recursive actual dependency payload hashing and entire consumer files/symlinks inventory. Fresh offline workspace install and measured tools are mandatory;17 dependency inputs and three base executable bytes/realpaths were rechecked without invocation. No previous validation result is reused.
+ 
+-Fresh offline install and measured workspace tools are separate prerequisites, not reused Link evidence. Base executable hashes were read without invocation;17 dependency inputs are exact committed-base reads and must be rechecked against frozen authored source. The build must complete and bind before any HTTP test module collection because transaction-http.test.ts dynamically imports emitted runtime. Every callback stage must be followed immediately by its audit, and every failure stops the prefix. Root owns commit/publication only after all source/installed/lifecycle evidence and the dirty-to-commit679-byte mapping.
++Every callback stage has an immediate audit prerequisite before progression. Root must separately release bootstrap, pin measured tools, dispose native/actual-Claude findings, release runtime, inspect actual lock, pin installed proof/inventory, then release external stages. Every failure preserves its attempt and stops. Build must precede HTTP test module collection because of emitted-runtime dynamic imports. No commit/publication until all validation/lifecycle audits and dirty-to-commit mapping are accepted by root.
+ 
+-No run directory or attempted execution evidence was created/copied. Link baseline reports/helpers are explicitly historical architecture references. No main, source, tests, builds, installs, services or Claude review were run by this preparation.
++The preparation performed only data reads/hashes, AST syntax parsing and report writes. No helper imports/invocation, product tests/builds/install/services or review launches. No source or root gate changes outside this owned CLOSED packet.
+--- initial-pending/report.md
++++ source-bound/report.md
+@@ -1 +1 @@
+-CLOSED initial Snapshot packet,21 stages (2 fresh prerequisites+19 validation), pending actual authored source and report schemas. See preparation.md for contracts, chronology and limits. All execution gates remain false. No source-binding.json exists. This is not a finalized or executable validation release.
++Finalized CLOSED Snapshot validation preparation.21 stages:2 fresh prerequisites+19 validation. Exact frozen successor source679/seven files/selection22/new report13 reconciled; installed historical31 plus new3 with immediate audits. All root execution flags false and approvedStages empty. Source bindingad2b24e1; source identity70caea36. See preparation.md and source-reconciliation.json for provenance and limits. No validation execution.
+--- initial-pending/base-tools.json
++++ source-bound/base-tools.json
+@@ -1,5 +1,5 @@
+ {
+-  "state": "Actual executable byte/realpath identities read only. Lock is committed base dependency input, not final authored source binding. Fresh workspace tools capture required.",
++  "state": "Actual executable identities rehashed without invocation; dependency lock verified against frozen Snapshot successor; fresh workspace-tool capture required",
+   "sourceLockSha256": "4150d8821c96dbc2cfec0b2762ff76b58318079f65fa4f5c8858ef2dd61f8d6d",
+   "tools": {
+     "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node": {
+--- initial-pending/structural-check.json
++++ source-bound/structural-check.json
+@@ -1,14 +1,24 @@
+ {
+-  "method": "Python AST parse and JSON/data-only consistency checks; no helper imports/invocation or product execution",
++  "method": "Data-only exact source/hash/selection/contract checks and Python AST parse; no helper invocation/import",
+   "fourHelperSyntaxParsed": true,
++  "trackedSourceFiles": 679,
++  "ownedFiles": 7,
++  "sourceCallbacks": 22,
++  "sourceNewObservationRecords": 13,
+   "stages": 21,
+-  "freshBootstrap": 2,
+-  "postBootstrap": 19,
+-  "sourceCallbacks": 22,
++  "bootstrapStages": 2,
++  "postBootstrapStages": 19,
++  "buildBeforeSource": true,
+   "installedCallbacks": 2,
+-  "buildBeforeSource": true,
+-  "executionReleased": false,
+-  "sourceBindingPending": true,
+-  "reportContractPending": true,
+-  "allAttemptsAbsent": true
++  "installedExchanges": [
++    31,
++    3
++  ],
++  "installedChildren": [
++    2,
++    1
++  ],
++  "allAttemptsAbsent": true,
++  "configurationFinalized": true,
++  "executionReleased": false
+ }

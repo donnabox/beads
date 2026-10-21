@@ -1,0 +1,63 @@
+{
+  "name": "receipt-service-positive",
+  "argv": [
+    "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+    "/Users/dbox/.cache/node/corepack/v1/pnpm/11.20.0/bin/pnpm.cjs",
+    "exec",
+    "vitest",
+    "run",
+    "packages/server/src/transaction-service.test.ts",
+    "--maxWorkers=1",
+    "--reporter=verbose",
+    "--reporter=json",
+    "--outputFile=/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-receipt-missing-context-draft/run/receipt-service-positive.json",
+    "-t",
+    "^(?:private\\ same\\-owner\\ Transactional\\ service\\ authenticates\\ before\\ lookup\\ and\\ uniformly\\ hides\\ other\\ principals,\\ roots\\ and\\ unknown\\ URLs|private\\ same\\-owner\\ Transactional\\ service\\ retains\\ completed\\ identity,\\ forgets\\ expired\\ failed\\ detail\\ and\\ preserves\\ current\\ observation\\ across\\ reopen|private\\ minimum\\-read\\ owner/lifecycle\\ checks\\ minimum\\ before\\ read\\-triggered\\ expiry\\ but\\ honors\\ independently\\ forgotten\\ receipts\\ \\(false\\)|private\\ minimum\\-read\\ owner/lifecycle\\ checks\\ minimum\\ before\\ read\\-triggered\\ expiry\\ but\\ honors\\ independently\\ forgotten\\ receipts\\ \\(true\\)|preserves\\ current\\ receipt\\ absence\\ context\\ across\\ ordinary\\ and\\ minimum\\ service\\ entrypoints)$"
+  ],
+  "cwd": "/Users/dbox/repos/wt/vickie/vickie-sequence-member-evidence",
+  "started": "2026-10-15T12:32:22.972386+00:00",
+  "head": "015cac1aa4fa827cc4a2c647dff08454c6c8e6f8",
+  "workspaceDirty": true,
+  "sourceSha256": {
+    "packages/server/src/transaction-store.ts": "eec0f4723c8fcfb2245d2e80d77b2de014235cdb208101d523c0ab83fde78eed",
+    "packages/server/src/transaction-service.ts": "53f655faf494209996aac2e0f93a4c2c785e471f66aac6af9ea41f92c9cfbe00",
+    "packages/server/src/transaction-http.ts": "0e42f034c3aada6fd0a7696897200b336d2b0c547d69497e46500f6da4c2267a",
+    "packages/server/src/transaction-receipt-pages.test.ts": "e944bd61590f78a510b427b0f5d6eb7856f6b3715f9f0e5dc590bf8d4724c6a1",
+    "packages/server/src/transaction-service.test.ts": "c61ba7254ab1cf39abf85e6020e4f846ffb684740076de39f43fe12d509093b9",
+    "packages/server/src/transaction-http.test.ts": "3fc5c6750a00968021d2ecc78049535ebbe9a3d2d7684108f2807e8b2276e899",
+    "apps/bdptest/src/transactional-receipt-missing-context-installed.test.ts": "eaf1289ed0a8318ce949704ba4cd983755c6f5fd20ffe9d61712869894cb5064",
+    "docs/design/transaction-implementation-progress.md": "28b30246931ccf39588a0dd654715aa7f00eda95893a9b5ed8ec10ffe7fdf6fc"
+  },
+  "sourceDiffSha256": "837bacdc192bcf0401171ecc9a8312ae034beabed7b69620b6a3beaef0cb9de7",
+  "rootAcceptanceSha256": "d67edb2b5f57164b32832a60beb9388a2983a412c41955b9b20006ef56e4a795",
+  "preparationSha256": "f6758bd5b94232b1d2c6186835b5271d156ab665a0f2681269e550f9527b2ac8",
+  "bdpOverrides": {},
+  "guardedArgv": [
+    "/opt/homebrew/opt/python@3.14/bin/python3.14",
+    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/guarded-action.py",
+    "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+    "/Users/dbox/.cache/node/corepack/v1/pnpm/11.20.0/bin/pnpm.cjs",
+    "exec",
+    "vitest",
+    "run",
+    "packages/server/src/transaction-service.test.ts",
+    "--maxWorkers=1",
+    "--reporter=verbose",
+    "--reporter=json",
+    "--outputFile=/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-receipt-missing-context-draft/run/receipt-service-positive.json",
+    "-t",
+    "^(?:private\\ same\\-owner\\ Transactional\\ service\\ authenticates\\ before\\ lookup\\ and\\ uniformly\\ hides\\ other\\ principals,\\ roots\\ and\\ unknown\\ URLs|private\\ same\\-owner\\ Transactional\\ service\\ retains\\ completed\\ identity,\\ forgets\\ expired\\ failed\\ detail\\ and\\ preserves\\ current\\ observation\\ across\\ reopen|private\\ minimum\\-read\\ owner/lifecycle\\ checks\\ minimum\\ before\\ read\\-triggered\\ expiry\\ but\\ honors\\ independently\\ forgotten\\ receipts\\ \\(false\\)|private\\ minimum\\-read\\ owner/lifecycle\\ checks\\ minimum\\ before\\ read\\-triggered\\ expiry\\ but\\ honors\\ independently\\ forgotten\\ receipts\\ \\(true\\)|preserves\\ current\\ receipt\\ absence\\ context\\ across\\ ordinary\\ and\\ minimum\\ service\\ entrypoints)$"
+  ],
+  "nodePathPrefix": "/Users/dbox/.nvm/versions/node/v24.16.0/bin",
+  "sourceAttribution": "Externally bound source snapshot or frozen package; not child-attested Git identity",
+  "plannedWorkload": {
+    "cases": 5,
+    "http": 0,
+    "owners": 6,
+    "directories": 5,
+    "listeners": 0,
+    "productChildren": 0,
+    "readonlyInventoryHandles": 0
+  },
+  "derivativeBinding": null
+}

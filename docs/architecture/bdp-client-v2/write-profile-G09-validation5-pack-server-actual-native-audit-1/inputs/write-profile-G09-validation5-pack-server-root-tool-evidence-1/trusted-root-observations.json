@@ -1,0 +1,81 @@
+{
+  "accepted": false,
+  "actualArchiveConsumerInstalledProofStillUnresolved": true,
+  "actualLog": {
+    "bytes": 8451,
+    "mode": "0o644",
+    "sha256": "ad530958d40584a2399b70e6fae07a0caf0c963c61d4a7122ee4b56435d94d6f"
+  },
+  "actualTaskPGIDs": [
+    19840,
+    19847,
+    20559
+  ],
+  "actualTaskPIDs": [
+    19846,
+    19847,
+    20559
+  ],
+  "actualTerminalTools": [
+    {
+      "actualExit": 0,
+      "actualTerminalToolId": "769d24",
+      "baselineSha256": "9c68f91b3bfcf2f1790e30e266bb564beb73a2402c70dfbc11c06a38a9b7e680",
+      "issuedSha256": "9c68f91b3bfcf2f1790e30e266bb564beb73a2402c70dfbc11c06a38a9b7e680",
+      "normalizedResultCount": 1,
+      "phase": "A",
+      "sourceRelation": "EXACT_A"
+    },
+    {
+      "actualExit": 0,
+      "actualTerminalToolId": "6c5f04",
+      "baselineSha256": "e8d0941a2f7a6fa9ace28b3c9d3edd7147afb0d3134759c693c69e6e09b400f8",
+      "issuedSha256": "9d14f959fa26ca3008836a31c58fb752198adf2f7c02c972b0b9744b539a89cc",
+      "normalizedResultCount": 1,
+      "phase": "B",
+      "sourceRelation": "ONE_COMPLETE_LF_PRECEDING_ACTUAL_TERMINAL_ID_ONLY_FULL_INVERSE"
+    },
+    {
+      "actualExit": 0,
+      "actualTerminalToolId": "d5949d",
+      "baselineSha256": "76be62d56c61b5a74e27b6bc53748a0666ffe3241fec6a3d78a01ee00fb7a05e",
+      "issuedSha256": "e36bc2689f839e3bd5f8d2405d5ad5b5de7863a456b565599bdb63a36fee9695",
+      "normalizedResultCount": 1,
+      "phase": "C",
+      "sourceRelation": "ONE_COMPLETE_LF_PRECEDING_ACTUAL_TERMINAL_ID_ONLY_FULL_INVERSE"
+    }
+  ],
+  "censusRawStreamBytes": [
+    206613,
+    0
+  ],
+  "cleanupPerformedByStaticPacket": false,
+  "completedInvocationAndObservationUpperBoundSeconds": 9.733994458802044,
+  "fullIndependentAudit": "PENDING",
+  "globalOrObserverSelfAbsenceClaim": false,
+  "innerAccepted": true,
+  "innerElapsedSeconds": 4.289953457657248,
+  "innerExit": 0,
+  "matchingTaskRows": [],
+  "nextStageReleased": false,
+  "outputDirectory": {
+    "entries": [
+      "bdp-server-0.0.0.tgz",
+      "bdp-protocol-0.0.0.tgz"
+    ],
+    "mode": "0o755",
+    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation-preparation-5/run/packages"
+  },
+  "probeDirectReaped": true,
+  "qualityPass": false,
+  "rawWireAndFullEnvironment": "UNRETAINED",
+  "rootRawStreamBytes": [
+    475,
+    0
+  ],
+  "sourceIdentity": "1ecaf2e47369cc12cc26bc3ed693c5d4d3b9cffa4714b13dbe5567f9e46bfb15",
+  "sourceUnchanged": true,
+  "stage": "pack-server",
+  "strictUnder115": true,
+  "temporaryDirectory": "/private/tmp/vickie-tx-discovery-validation-pack-server-3u6_knap"
+}

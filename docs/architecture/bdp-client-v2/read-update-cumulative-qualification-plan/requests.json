@@ -1,0 +1,504 @@
+{
+  "requests": [
+    {
+      "ordinal": 1,
+      "id": "scope",
+      "family": "http",
+      "method": "GET",
+      "url": "https://reference.invalid/acme/",
+      "body": null,
+      "expectedStatus": 204,
+      "assertionIds": [
+        "status",
+        "empty"
+      ]
+    },
+    {
+      "ordinal": 2,
+      "id": "discovery",
+      "family": "http",
+      "method": "GET",
+      "url": "https://reference.invalid/acme/bdp.json",
+      "body": null,
+      "expectedStatus": 200,
+      "assertionIds": [
+        "status",
+        "schema",
+        "profile",
+        "no-tx"
+      ]
+    },
+    {
+      "ordinal": 3,
+      "id": "directory",
+      "family": "http",
+      "method": "GET",
+      "url": "https://reference.invalid/acme/operations/",
+      "body": null,
+      "expectedStatus": 200,
+      "assertionIds": [
+        "status",
+        "schema"
+      ]
+    },
+    {
+      "ordinal": 4,
+      "id": "directory-captures",
+      "family": "client",
+      "method": "GET",
+      "url": "https://reference.invalid/acme/operations/",
+      "body": null,
+      "expectedStatus": 200,
+      "assertionIds": [
+        "status",
+        "directory-members",
+        "written"
+      ]
+    },
+    {
+      "ordinal": 5,
+      "id": "task",
+      "family": "http",
+      "method": "GET",
+      "url": "https://reference.invalid/acme/types/task",
+      "body": null,
+      "expectedStatus": 200,
+      "assertionIds": [
+        "status",
+        "schema"
+      ]
+    },
+    {
+      "ordinal": 6,
+      "id": "relates",
+      "family": "http",
+      "method": "GET",
+      "url": "https://reference.invalid/acme/types/relates",
+      "body": null,
+      "expectedStatus": 200,
+      "assertionIds": [
+        "status",
+        "schema"
+      ]
+    },
+    {
+      "ordinal": 7,
+      "id": "create-a",
+      "family": "client",
+      "method": "POST",
+      "url": "https://reference.invalid/acme/operations/create-bead",
+      "body": {
+        "id": "beads/w1-a",
+        "properties": {
+          "n": 1
+        },
+        "metadata": {
+          "tag": "a"
+        },
+        "type": "https://reference.invalid/acme/types/task"
+      },
+      "expectedStatus": 200,
+      "assertionIds": [
+        "status",
+        "written",
+        "body-schema",
+        "no-etag",
+        "no-location",
+        "outcome",
+        "id",
+        "type",
+        "properties",
+        "metadata"
+      ],
+      "bodyOctets": 114,
+      "bodySha256": "08ac2b7760e7af138452df82bb0da8db38f6dc6cd0cdd255d8dedbd68d2c931c"
+    },
+    {
+      "ordinal": 8,
+      "id": "create-b",
+      "family": "client",
+      "method": "POST",
+      "url": "https://reference.invalid/acme/operations/create-bead",
+      "body": {
+        "id": "beads/w1-b",
+        "properties": {
+          "n": 1
+        },
+        "metadata": {
+          "tag": "b"
+        },
+        "type": "https://reference.invalid/acme/types/task"
+      },
+      "expectedStatus": 200,
+      "assertionIds": [
+        "status",
+        "written",
+        "body-schema",
+        "no-etag",
+        "no-location",
+        "outcome",
+        "id",
+        "type",
+        "properties",
+        "metadata"
+      ],
+      "bodyOctets": 114,
+      "bodySha256": "9c054ea1e6e4e37fd0851a3fc23ebedcac18806fa663cd48b56007366f2cea5b"
+    },
+    {
+      "ordinal": 9,
+      "id": "update-bead",
+      "family": "client",
+      "method": "POST",
+      "url": "https://reference.invalid/acme/operations/update-bead",
+      "body": {
+        "propertiesChange": [
+          {
+            "op": "replace",
+            "path": "/n",
+            "value": 2
+          }
+        ],
+        "bead": "https://reference.invalid/acme/beads/w1-a",
+        "expectedRevision": "<ACTUAL:a-rev>"
+      },
+      "expectedStatus": 200,
+      "assertionIds": [
+        "status",
+        "written",
+        "body-schema",
+        "no-etag",
+        "no-location",
+        "outcome",
+        "id",
+        "type",
+        "properties",
+        "metadata"
+      ],
+      "bodyOctetsFormula": {
+        "fixedWithEmptyDynamicStrings": 134,
+        "plusActualJsonEscapedStringContentBytes": [
+          {
+            "field": "expectedRevision",
+            "binding": "a-rev"
+          }
+        ]
+      }
+    },
+    {
+      "ordinal": 10,
+      "id": "create-link",
+      "family": "client",
+      "method": "POST",
+      "url": "https://reference.invalid/acme/operations/create-link",
+      "body": {
+        "id": "links/w1-l",
+        "properties": {
+          "edge": 1
+        },
+        "metadata": {
+          "tag": "link"
+        },
+        "type": "https://reference.invalid/acme/types/relates",
+        "source": "https://reference.invalid/acme/beads/w1-a",
+        "target": "https://reference.invalid/acme/beads/w1-b"
+      },
+      "expectedStatus": 200,
+      "assertionIds": [
+        "status",
+        "written",
+        "body-schema",
+        "no-etag",
+        "no-location",
+        "outcome",
+        "id",
+        "type",
+        "properties",
+        "metadata",
+        "source",
+        "target",
+        "unowned-source",
+        "unowned-source-revision"
+      ],
+      "bodyOctets": 229,
+      "bodySha256": "4704bd4112ac839324383621c15835e4868b789836304d43293ebc8560b66d34"
+    },
+    {
+      "ordinal": 11,
+      "id": "update-link",
+      "family": "client",
+      "method": "POST",
+      "url": "https://reference.invalid/acme/operations/update-link",
+      "body": {
+        "propertiesChange": [
+          {
+            "op": "replace",
+            "path": "/edge",
+            "value": 2
+          }
+        ],
+        "metadataChange": [
+          {
+            "op": "replace",
+            "path": "/tag",
+            "value": "updated"
+          }
+        ],
+        "link": "https://reference.invalid/acme/links/w1-l",
+        "expectedRevision": "<ACTUAL:initial-link-revision>"
+      },
+      "expectedStatus": 200,
+      "assertionIds": [
+        "status",
+        "written",
+        "body-schema",
+        "no-etag",
+        "no-location",
+        "outcome",
+        "id",
+        "type",
+        "properties",
+        "metadata",
+        "source",
+        "target"
+      ],
+      "bodyOctetsFormula": {
+        "fixedWithEmptyDynamicStrings": 205,
+        "plusActualJsonEscapedStringContentBytes": [
+          {
+            "field": "expectedRevision",
+            "binding": "initial-link-revision"
+          }
+        ]
+      }
+    },
+    {
+      "ordinal": 12,
+      "id": "put-alias",
+      "family": "client",
+      "method": "POST",
+      "url": "https://reference.invalid/acme/operations/put-alias",
+      "body": {
+        "alias": "alias/w1-locator",
+        "target": "https://reference.invalid/acme/beads/w1-a"
+      },
+      "expectedStatus": 200,
+      "assertionIds": [
+        "status",
+        "written",
+        "body-schema",
+        "no-etag",
+        "no-location",
+        "alias-result"
+      ],
+      "bodyOctets": 81,
+      "bodySha256": "9b92da72d8848b50a3b5e3bba109354048b9630325dde415b963ba3e024edd6e"
+    },
+    {
+      "ordinal": 13,
+      "id": "put-alias-get",
+      "family": "http",
+      "method": "GET",
+      "url": "https://reference.invalid/acme/alias/w1-locator",
+      "body": null,
+      "expectedStatus": 307,
+      "assertionIds": [
+        "status",
+        "location",
+        "empty"
+      ]
+    },
+    {
+      "ordinal": 14,
+      "id": "delete-alias",
+      "family": "client",
+      "method": "POST",
+      "url": "https://reference.invalid/acme/operations/delete-alias",
+      "body": {
+        "alias": "alias/w1-locator"
+      },
+      "expectedStatus": 200,
+      "assertionIds": [
+        "status",
+        "written",
+        "body-schema",
+        "no-etag",
+        "no-location",
+        "alias-result"
+      ],
+      "bodyOctets": 28,
+      "bodySha256": "d6604db6eca90a5c19b2875be4d146b6919a99ee4b6c35780c3a5a832ce26ecd"
+    },
+    {
+      "ordinal": 15,
+      "id": "read-deleted-alias",
+      "family": "http",
+      "method": "GET",
+      "url": "https://reference.invalid/acme/alias/w1-locator",
+      "body": null,
+      "expectedStatus": 404,
+      "assertionIds": [
+        "status",
+        "schema",
+        "problem"
+      ]
+    },
+    {
+      "ordinal": 16,
+      "id": "delete-link",
+      "family": "client",
+      "method": "POST",
+      "url": "https://reference.invalid/acme/operations/delete-link",
+      "body": {
+        "link": "https://reference.invalid/acme/links/w1-l",
+        "expectedRevision": "<ACTUAL:final-link-revision>"
+      },
+      "expectedStatus": 200,
+      "assertionIds": [
+        "status",
+        "written",
+        "body-schema",
+        "no-etag",
+        "no-location",
+        "outcome",
+        "deleted-kind",
+        "deleted-id",
+        "deleted-type",
+        "final-revision",
+        "no-postimage",
+        "unowned-source",
+        "unowned-source-revision",
+        "deleted-preimage"
+      ],
+      "bodyOctetsFormula": {
+        "fixedWithEmptyDynamicStrings": 74,
+        "plusActualJsonEscapedStringContentBytes": [
+          {
+            "field": "expectedRevision",
+            "binding": "final-link-revision"
+          }
+        ]
+      }
+    },
+    {
+      "ordinal": 17,
+      "id": "deleted-link",
+      "family": "http",
+      "method": "GET",
+      "url": "https://reference.invalid/acme/links/w1-l",
+      "body": null,
+      "expectedStatus": 404,
+      "assertionIds": [
+        "status",
+        "schema",
+        "problem",
+        "retry"
+      ]
+    },
+    {
+      "ordinal": 18,
+      "id": "delete-bead",
+      "family": "client",
+      "method": "POST",
+      "url": "https://reference.invalid/acme/operations/delete-bead",
+      "body": {
+        "bead": "https://reference.invalid/acme/beads/w1-a",
+        "expectedRevision": "<ACTUAL:a-updated-rev>"
+      },
+      "expectedStatus": 200,
+      "assertionIds": [
+        "status",
+        "written",
+        "body-schema",
+        "no-etag",
+        "no-location",
+        "outcome",
+        "deleted-kind",
+        "deleted-preimage",
+        "no-postimage"
+      ],
+      "bodyOctetsFormula": {
+        "fixedWithEmptyDynamicStrings": 74,
+        "plusActualJsonEscapedStringContentBytes": [
+          {
+            "field": "expectedRevision",
+            "binding": "a-updated-rev"
+          }
+        ]
+      }
+    },
+    {
+      "ordinal": 19,
+      "id": "deleted-bead",
+      "family": "http",
+      "method": "GET",
+      "url": "https://reference.invalid/acme/beads/w1-a",
+      "body": null,
+      "expectedStatus": 404,
+      "assertionIds": [
+        "status",
+        "schema",
+        "problem",
+        "retry"
+      ]
+    },
+    {
+      "ordinal": 20,
+      "id": "sequence",
+      "family": "client",
+      "method": "POST",
+      "url": "https://reference.invalid/acme/operations/sequence",
+      "body": {
+        "operations": [
+          {
+            "operation": "updateBead",
+            "idempotencyKey": "directory-sequence-b",
+            "bead": "beads/w1-b",
+            "propertiesChange": [
+              {
+                "op": "replace",
+                "path": "/n",
+                "value": 3
+              }
+            ]
+          }
+        ]
+      },
+      "expectedStatus": 200,
+      "assertionIds": [
+        "status",
+        "written",
+        "schema",
+        "index",
+        "outcome",
+        "id",
+        "type",
+        "properties",
+        "metadata",
+        "no-extra-result"
+      ],
+      "bodyOctets": 163,
+      "bodySha256": "b201c811aabbd90059906997d5f9756a86021dec19f257b61580538b481fdd94"
+    },
+    {
+      "ordinal": 21,
+      "id": "final-b",
+      "family": "http",
+      "method": "GET",
+      "url": "https://reference.invalid/acme/beads/w1-b",
+      "body": null,
+      "expectedStatus": 200,
+      "assertionIds": [
+        "status",
+        "schema",
+        "postimage"
+      ]
+    }
+  ],
+  "newRowHttp": 21,
+  "newRowPost": 10,
+  "automaticRetries": 0,
+  "redirects": 0,
+  "bodyBudget": "Proposed new-row measured observation.bodyOctets <=4096, lower than unchanged executor131072/authority65536. Dynamic expectedRevision bytes remain symbolic until actual captures.",
+  "responseBudget": "Existing executor response limits unchanged; no increase. Full synthetic returned Resource bodies compared in memory."
+}

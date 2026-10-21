@@ -1,0 +1,75 @@
+Reviewed `bdp-integration-logs/read-update-document-patch-plan.md` against `0b34fe7` in `/Users/dbox/repos/wt/vickie/vickie-read-update-sequence`. No files written or modified.
+
+**Claim-verification pass (all accurate):** `scripts/installed-reference-observation.mjs:100` empty descriptors/schemas; `packages/server/src/installed-reference-configuration.ts:134-135` shipped-closure substitution; `:123-159` pinned local schema capture; `packages/protocol/src/reference-domain.ts:29` — no `propertiesSchema` on any of the 13 descriptors; `apps/bdptest/src/installed-reference.test.ts:197` real-HTTP schema seam in a *separate* configuration; 129 required / 40 authored / 28 whole / 101 uncovered (matches coverage JSON, `cumulative-artifact.test.ts:147-176`, `read-update-matrix.test.ts:662`, progress doc line 17); manifest = 1,680,148 bytes. "No Link execution in `document-patch-merge-replace`" confirmed — all 19 actions are Bead GETs plus `create-bead`/`update-bead`. Task appears in no `ownsOutgoing` (only Decision and Feature), so Task→Task Relates is genuinely unowned. All four non-object root shapes reach `validation-failed`/422/`validation`/`never` with one diagnostic carrying `message` + `instanceLocation: ""`, `document` only for metadata (`resource-evaluator.ts:313-328`, `472-476`, `522-529`), matching `bdp.md:3442-3467` including "omission means `properties`".
+
+---
+
+## S1 — High — Demotion fallback is unexecutable within the declared ownership
+
+**File:** `packages/conformance/src/cumulative-artifact.test.ts:147-176`; `apps/bdptest/src/read-update-matrix.test.ts:662`; plan lines 53-61
+**Impact:** The 28 whole-contract IDs are hard-pinned as a literal list including `read-update.singleton.document-patch-merge-replace`, and `uncoveredIds` length is pinned at 101. The plan's explicit branch — "If the Link extension is not completed, demote the existing flag" — requires editing both, plus the progress doc's "Twenty-eight… 101 remain uncovered" sentence. Neither pin file is in the authored-files list, so the done predicate's clean test gate fails on that branch.
+**Fix:** Add `packages/conformance/src/cumulative-artifact.test.ts` and the `:662` count to the ownership list with the branch condition stated: Link-complete ⇒ neither changes; demotion ⇒ both change (101→102) plus `docs/design/read-update-executable-progress.md:17`.
+
+## S2 — High — New fixture bindings break two pinned exact-configuration digests; Link GETs need pre-registered routes
+
+**File:** `apps/bdptest/src/read-update-matrix.test.ts:660` and `:977` (same digest pinned twice), route derivation `:160-168`; `packages/conformance/src/runner.ts:1362-1379`; `apps/bdptest/test-support/read-update-exact-client.ts:71-94`; plan line 25
+**Impact:** `exactConfigurationDigest` = sha256(scope, profile, **routes**, limits), and `routes` is built from manifest GET actions resolved through fixture bindings. The plan promises "New finite fixture IDs and exact routes" — any new binding used as a GET target moves both pins (and `:967` is a dedicated test that an *unused* binding must **not** move it). Separately, the no-route escape hatch at `read-update-exact-client.ts:74` is **Bead-only** (`/^beads\/[^/]+$/`), so a Link afterstate GET is impossible without a pre-registered route; fixture-bound GETs always require a route because `target` is relative and `url.href` absolute.
+**Fix:** Reuse already-routed bindings instead of minting names: `w1b.unowned-source` → `w1b.target` via `types/relates` and `w1b.unowned-link` is the existing unowned Task→Task Relates triple (all three already GET-routed by `update-link`), with `w1.a`/`w1.b` for Beads. Per-scenario `resetFixture: true` and a fresh child server make reuse safe. Zero new routes ⇒ both digest pins and the discipline at progress doc line 81 hold. If new names are unavoidable, list both digest pins as recomputed artifacts.
+
+## S3 — Medium-High — "Row-local full-clause map" and "missing clauses" have no artifact or check
+
+**File:** `packages/conformance/test-support/read-update-coverage-v1.json` (rows carry only `id`/`status`/`wholeContract`/`reason`/`bindings`); `packages/conformance/src/cumulative-artifact.test.ts:178-192`; plan lines 57, 63
+**Impact:** `bindings[0].assertions` is forced to equal the *complete* mechanical `${action.id}.${assertion.id}` flattening of the scenario, and `status` is forced to `planned ? "bounded-observation" : "omitted"`. So bindings are not curatable "row-local" selections, and "missing clauses" can only live as unvalidated prose in `reason`. The done predicate "every admitted claim has a row-local full-clause map" is unverifiable as written, and the plan never says whether the map is against catalog `requirements` selectedText or the spec prose it tells reviewers to read in full (they differ — S5).
+**Fix:** State that the clause map is a reviewer artifact in `docs/design/read-update-executable-progress.md`, name its one authority, and stop describing coverage `bindings` as curated — they regenerate mechanically.
+
+## S4 — Medium — "Message names the cause" has no instrument under the plan's own constraints
+
+**File:** plan line 29; `packages/conformance/src/executable-manifest.ts:185-254`; `apps/bdptest/test-support/installed-body-schema.ts` (excluded from ownership); `docs/specs/bdp.md:3459-3463`
+**Impact:** Assertion kinds are `json-pointer` (exists/equals/equalsBinding/fixturePointer), `json-array-set`, `json-array-tuples`, `json-schema` — no substring or pattern matcher. With "no new assertion language" and no schema-wrapper edit, the plan's "avoid one implementation-specific diagnostic message **but** require the cause and metadata designation" leaves only exact-equals (which it forbids) or `exists: true` (which proves nothing about the cause). The spec's "its message names metadata" conjunct is unprovable here.
+**Fix:** Assert only what is expressible: `/body/diagnostics/0/document` equals `"metadata"` for metadata failures and `exists: false` for properties failures (spec 3461-3462 makes omission mean properties); `type` and `schemaLocation` both `exists: false`; `instanceLocation` equals `""`; nonempty list and `message` minLength via `harnessInstalled_readUpdateProblem`, which already requires `diagnostics` on `validation-failed`. Record "message names the cause" as an explicitly unobserved conjunct.
+
+## S5 — Medium — Law column exceeds the catalog citations the plan declares canonical and unchanged
+
+**File:** plan lines 17-21, 27-28; `packages/conformance/catalog/read-update-v1.json`; `docs/specs/bdp.md:6724-6726`
+**Impact:** Atomicity's "one changed result is one Resource transition" comes from the normative table (6725 "under one revision"), not from the row's three cited requirement texts. Merge-replace step 1 adds array `replace`/`remove` and `~0`/`~1` escaping, neither cited by that row (its citations are pointer-relativity, `add` semantics, root `{}` clear). Both rows' coverage `reason` currently says "scoped to the cited row clauses" and both are pinned `wholeContract: true`, so foreign-law assertions inflate what "whole" means — and selection cannot be widened.
+**Fix:** Name one authority for the clause map, and mark any assertion outside it as non-crediting breadth in the row `reason`.
+
+## S6 — Medium — Smallest-sufficient-case overreach: only merge-replace's law is per-kind
+
+**File:** `docs/specs/bdp.md:6724-6726`; plan lines 18-19, 28-29
+**Impact:** Only 6724 says "On both Beads and Links". 6725 and 6726 carry no per-kind obligation, and the repo already splits per-kind law into separate IDs (`update-bead` / `update-link`). The plan nonetheless mirrors the entire Bead arm onto a Link in atomicity and demands both Resource kinds × both documents × 4 shapes in validation (≈16 refusals + 16 afterstate GETs) — in a row that stays `wholeContract: false` regardless. It also duplicates `read-update.singleton.expected-revision` (already whole) by adding a stale-guard/`revision-mismatch` probe to atomicity.
+**Fix:** Link evidence mandatory in merge-replace only. Atomicity: keep the Bead core, add at most one unowned-Link combined-effect and one reordered-key no-op, labeled non-crediting; drop the stale-guard probe or label it `expected-revision` law. Validation: ~6 probes suffice — properties root→null and metadata root→array on a Bead, properties root→scalar and metadata root-`remove` on the unowned Link, each paired with an effectful opposite-document change, plus the positive arbitrary-metadata control and one omitted-document control.
+
+## S7 — Medium — Asymmetric merge-replace evidence under a clause that says "both"
+
+**File:** plan line 27; `packages/conformance/matrices/read-update-v1.json` merge-replace actions 6-18
+**Impact:** The plan preserves the Bead arm unchanged while giving the Link arm richer probes (null-then-remove to separate presence from absence, pointer escaping, array replace/remove). Row 6724 is symmetric; a richer Link arm over a thinner Bead arm does not establish the same clause set on both kinds, yet the plan then conditions whole credit on "all clauses observed for both kinds".
+**Fix:** Make the arms clause-symmetric — mirror exactly the existing Bead clause set (object `add`, array insert/append, null assign, root replace, root clear, missing replace/remove), and either add the extras to both or neither.
+
+## S8 — Low-Medium — Size gate names the wrong binding constraint
+
+**File:** plan line 32; `packages/conformance/src/artifact-bundle.ts:17-22`, `:134`, `:413-440`
+**Impact:** The manifest is also bounded by `ARTIFACT_MAX_JSON_NODES = 100_000` (depth 128, container 10,000). At the current formatted density (1,680,148 B / 44,563 nodes ≈ 37.7 B/node, depth 11, max container 228) the node budget is exhausted near **2.09 MB** — nodes bind well before the 4 MiB ceiling the plan says to measure against.
+**Fix:** State the gate as nodes-first with both numbers. Actual risk is low: mirrored Link arms run ~51-56 nodes/action, so the plan's full proposal is ≈ +5,000 nodes / +190 KB formatted (→ ~1.87 MB, ~49,600 nodes); the reduced S6 scope is ≈ +2,500 nodes. Both are comfortably inside every bound, so "stop for review rather than increase it" should not be needed.
+
+## S9 — Low — Sensitivity controls must be body-schema-valid to test what the plan claims
+
+**File:** plan line 40; `schemas/bdp-v0.schema.json` — `validationDiagnostic.dependentRequired` (type↔schemaLocation), `readUpdateProblem` (validation-failed ⇒ `diagnostics` required; otherwise `diagnostics: false`)
+**Impact:** The plan requires each control to trip its specific refusal/diagnostic/state assertion "rather than depend solely on canonical body-schema rejection", but injecting only `type` (or only `schemaLocation`) is caught by `dependentRequired`, and swapping the Problem code alone is caught by the code-conditional `type`/`status`/`retry`/`diagnostics` branches.
+**Fix:** Specify that the Type/schemaLocation control injects **both** members, and that the wrong-code control substitutes a complete, internally consistent alternative problem envelope.
+
+## S10 — Low — Cross-document failure ordering limits one validation-row claim
+
+**File:** `packages/server/src/resource-evaluator.ts:798-812`; plan line 29
+**Impact:** `propertiesChange` is applied before `metadataChange` and a shape failure throws immediately, so for a properties-root failure the paired "genuinely effectful valid change to the other" document is never evaluated. The pairing is an unchanged-state oracle, not evidence of joint evaluation and joint refusal.
+**Fix:** Label it as an unchanged-state oracle; keep the both-directions claim (the metadata-failure direction does establish evaluation of both) without claiming joint evaluation.
+
+## S11 — Low — Later-cohort fixture detail that is easy to get wrong
+
+**File:** plan line 45; `packages/server/src/installed-reference-configuration.ts:136-146`, `:149-158`
+**Impact:** A nonempty `contracts.descriptors` array **replaces** the shipped closure (no merge). "Preserve every shipped descriptor byte" therefore means re-supplying all 13 descriptors as the Scope-remapped bytes `referenceTypeArtifacts(scope)` + `stringifyJsonValue` produce — not the `REFERENCE_TYPE_DESCRIPTORS` source constants — and schemas must be hosted under `${scope}schemas/`.
+**Fix:** Say "re-emit the full remapped closure via the exported `referenceTypeArtifacts(scope)`, then append the new Type IDs", so the fixture is not written from the source constants.
+
+---
+
+**Correct as written, do not re-litigate:** keeping `read-update.validation.diagnostics` omitted is right — the authority advertises `validation.diagnostics = 32` (`development-authority.ts:46`) and generic shape failures emit exactly one diagnostic, so truncation is unobservable without installed schemas. "Do not award `update-bead` from the new validation scenario" is already mechanically enforced (`cumulative-artifact.test.ts:186` requires `bindings[0].scenario === row.id`). No-stitching is mechanically enforced by `assertSameServedProfileConfiguration` plus per-scenario `configurationIdentity`/`payloadIdentity` equality (`read-update-matrix.test.ts:286-293`). The new validation scenario must be inserted at catalog index 8, between atomicity and `delete-bead` (`cumulative-artifact.test.ts:114-116` checks manifest order against catalog order). `harnessInstalled_currentLinkRecord` already exists, so Link afterstate assertions need no schema-wrapper edit.

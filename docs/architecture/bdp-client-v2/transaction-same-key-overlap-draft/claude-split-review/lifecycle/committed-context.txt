@@ -1,0 +1,417 @@
+
+### scripts/transaction-installed-observation.mjs:1–97 (98c600767e8e91a79e109cb741beb91e23b9bebe; full-file SHA256 6f772f3776d3c3effa788676d853cc2932a6ee59ad63ac3338ad1b487408914b)
+```
+/** Bounded inherited-IPC launcher. No request or observation emulation. */
+import { spawn } from "node:child_process";
+import { mkdir } from "node:fs/promises";
+export async function launchInstalledTransaction(entry, configuration, signal) {
+  signal?.throwIfAborted();
+  // Explicit launcher-owned provisioning; reopen keeps the directory/create:false.
+  if (configuration.create) await mkdir(configuration.directory, { recursive: true, mode: 0o700 });
+  signal?.throwIfAborted();
+  const child = spawn(process.execPath, [entry], {
+    cwd: "/tmp",
+    stdio: ["ignore", "pipe", "pipe", "ipc"],
+  });
+  let bytes = 0;
+  for (const stream of [child.stdout, child.stderr])
+    stream.on("data", (chunk) => {
+      bytes += chunk.length;
+      if (bytes > 65536) child.kill("SIGKILL");
+    });
+  const exited = new Promise((resolve) =>
+    child.once("exit", (code, signal) => resolve({ code, signal })),
+  );
+  async function bounded(promise) {
+    let timer;
+    try {
+      return await Promise.race([
+        promise,
+        new Promise((_, reject) => {
+          timer = setTimeout(() => {
+            child.kill("SIGKILL");
+            reject(new Error("installed transaction process deadline"));
+          }, 10000);
+        }),
+      ]);
+    } finally {
+      clearTimeout(timer);
+    }
+  }
+  async function drainFailure(error) {
+    child.kill("SIGKILL");
+    try {
+      await bounded(exited);
+    } catch (cleanup) {
+      throw new AggregateError([error, cleanup], "installed transaction cleanup failed");
+    }
+    throw error;
+  }
+  let closing;
+  const close = () =>
+    (closing ??= (async () => {
+      try {
+        if (child.connected) child.send({ command: "close" });
+        const result = await bounded(exited);
+        if (result.code !== 0 || result.signal !== null)
+          throw new Error("installed transaction child did not close cleanly");
+      } catch (error) {
+        await drainFailure(error);
+      } finally {
+        signal?.removeEventListener("abort", onAbort);
+      }
+    })());
+  const onAbort = () => {
+    void close().catch(() => {});
+  };
+  signal?.addEventListener("abort", onAbort, { once: true });
+  if (signal?.aborted) onAbort();
+  let detachReadyAbort = () => {};
+  try {
+    const ready = await bounded(
+      new Promise((resolve, reject) => {
+        const abort = () => reject(signal.reason);
+        signal?.addEventListener("abort", abort, { once: true });
+        detachReadyAbort = () => signal?.removeEventListener("abort", abort);
+        if (signal?.aborted) {
+          abort();
+          return;
+        }
+        child.once("error", reject);
+        child.once("message", resolve);
+        void exited.then(() => reject(new Error("installed transaction exited before ready")));
+        child.send({ configuration });
+      }),
+    );
+    signal?.throwIfAborted();
+    if (!ready || ready.event !== "qualification.ready" || JSON.stringify(ready).length > 65536)
+      throw new Error("invalid installed ready message");
+    return { child, ready, close };
+  } catch (error) {
+    try {
+      await close();
+    } catch (cleanup) {
+      throw new AggregateError([error, cleanup], "installed transaction startup cleanup failed");
+    }
+    throw error;
+  } finally {
+    detachReadyAbort();
+  }
+}
+```
+
+### packages/server/src/transaction-installed-configuration.ts:1–67 (98c600767e8e91a79e109cb741beb91e23b9bebe; full-file SHA256 e15cb54266848fdd4aa08b19b37f1b2eb080f4599d9414fad8d85b6f33f35d99)
+```
+/** Private bounded launch data; compilation remains in the one runtime factory. */
+import path from "node:path";
+import { parseCanonicalScope } from "@bdp/protocol";
+import { administrativeArray, administrativeData } from "./development-contracts.js";
+import { CONTRACT_ARTIFACT_CEILINGS } from "./installed-contract-artifact.js";
+import type { TransactionRuntimeOptions } from "./transaction-runtime.js";
+function text(value: unknown, maximum: number): string {
+  if (
+    typeof value !== "string" ||
+    !value.length ||
+    !value.isWellFormed() ||
+    Buffer.byteLength(value) > maximum
+  )
+    throw new TypeError("bounded installed transaction string required");
+  return value;
+}
+export function captureInstalledTransactionConfiguration(
+  input: unknown,
+): TransactionRuntimeOptions {
+  const own = administrativeData(input, [
+    "scope",
+    "directory",
+    "create",
+    "credentials",
+    "artifacts",
+  ]);
+  const scope = parseCanonicalScope(text(own.scope, 8192));
+  const directory = text(own.directory, 16384);
+  if (!path.isAbsolute(directory) || typeof own.create !== "boolean")
+    throw new TypeError("explicit provisioning required");
+  const credentials = administrativeArray(own.credentials, 32).map((v) => {
+    const c = administrativeData(v, ["token", "principal", "canMutate"]);
+    const token = text(c.token, 256),
+      principal = text(c.principal, 16384);
+    if (!/^[A-Za-z0-9_-]{32,256}$/.test(token) || typeof c.canMutate !== "boolean")
+      throw new TypeError("invalid installed credential");
+    return Object.freeze({ token, principal, canMutate: c.canMutate });
+  });
+  if (!credentials.length || new Set(credentials.map((c) => c.token)).size !== credentials.length)
+    throw new TypeError("unique credentials required");
+  const supplied = administrativeData(own.artifacts, ["descriptors", "schemas"]);
+  let total = 0;
+  const artifacts = (value: unknown) =>
+    Object.freeze(
+      administrativeArray(value, CONTRACT_ARTIFACT_CEILINGS.submittedArtifacts).map((v) => {
+        const a = administrativeData(v, ["retrievalUri", "utf8"]);
+        const retrievalUri = text(a.retrievalUri, 16384),
+          utf8 = text(a.utf8, CONTRACT_ARTIFACT_CEILINGS.artifactBytes);
+        total += Buffer.byteLength(retrievalUri) + Buffer.byteLength(utf8);
+        if (total > CONTRACT_ARTIFACT_CEILINGS.totalBytes)
+          throw new TypeError("installed artifact capture bound");
+        return Object.freeze({ retrievalUri, utf8 });
+      }),
+    );
+  const descriptors = artifacts(supplied.descriptors),
+    schemas = artifacts(supplied.schemas);
+  if (!descriptors.length) throw new TypeError("compiled descriptor closure required");
+  return Object.freeze({
+    scope,
+    directory,
+    create: own.create,
+    port: 0,
+    authorityMode: "canonical",
+    credentials: Object.freeze(credentials),
+    artifacts: Object.freeze({ descriptors, schemas, limits: CONTRACT_ARTIFACT_CEILINGS }),
+  });
+}
+```
+
+### packages/server/src/transaction-installed.ts:1–22 (98c600767e8e91a79e109cb741beb91e23b9bebe; full-file SHA256 afddc6b0304fee4762c79e40ac6610a281ca8791928d8f779a900a7f6eac881a)
+```
+/** Private installed Transactional candidate; never a profile admission API. */
+import { captureInstalledTransactionConfiguration } from "./transaction-installed-configuration.js";
+import { installedPayloadIdentity } from "./installed-payload.js";
+import { startTransactionRuntime } from "./transaction-runtime.js";
+export async function startInstalledTransactionCandidate(input: unknown) {
+  const captured = captureInstalledTransactionConfiguration(input);
+  const payloadIdentity = await installedPayloadIdentity();
+  const runtime = await startTransactionRuntime(captured);
+  try {
+    const metadata = runtime.configurationMetadata;
+    if (!metadata || metadata.authorityMode !== "canonical" || metadata.scope !== captured.scope)
+      throw new TypeError("installed transaction metadata unavailable");
+    return Object.freeze({ ...runtime, configurationMetadata: metadata, payloadIdentity });
+  } catch (error) {
+    try {
+      await runtime.close();
+    } catch (cleanup) {
+      throw new AggregateError([error, cleanup], "installed transaction startup cleanup failed");
+    }
+    throw error;
+  }
+}
+```
+
+### packages/server/src/transaction-installed-process.ts:1–77 (98c600767e8e91a79e109cb741beb91e23b9bebe; full-file SHA256 6bd16f940f1f751189fc76419e3a18ca26cd5f54da3cfa3946b30c3956a2f8b7)
+```
+/** Private installed qualification bootstrap. No package export, bin or CLI flag.
+ * No clock/store/outcome control. Configuration arrives only through inherited IPC.
+ */
+import process from "node:process";
+import { realpathSync } from "node:fs";
+import { fileURLToPath } from "node:url";
+import { administrativeData } from "./development-contracts.js";
+import { startInstalledTransactionCandidate } from "./transaction-installed.js";
+
+async function main() {
+  if (!process.send || process.argv.length !== 2) throw new TypeError("inherited IPC required");
+  const send = process.send.bind(process);
+  const input = await new Promise<unknown>((resolve, reject) => {
+    const timer = setTimeout(() => reject(new Error("configuration deadline")), 10000);
+    process.once("disconnect", () => {
+      clearTimeout(timer);
+      reject(new Error("configuration disconnected"));
+    });
+    process.once("message", (message) => {
+      clearTimeout(timer);
+      resolve(message);
+    });
+  });
+  const { configuration } = administrativeData(input, ["configuration"]);
+  let stop!: () => void;
+  let stopping = false;
+  const stopped = new Promise<void>((resolve) => {
+    stop = () => {
+      stopping = true;
+      resolve();
+    };
+  });
+  process.once("SIGTERM", () => stop());
+  process.once("SIGINT", () => stop());
+  process.once("disconnect", () => stop());
+  process.on("message", (message) => {
+    try {
+      const value = administrativeData(message, ["command"]);
+      if (value.command !== "close") throw new TypeError("unsupported control");
+    } catch {
+      process.exitCode = 2;
+    }
+    stop();
+  });
+  if (!process.connected) stop();
+  const runtime = await startInstalledTransactionCandidate(configuration);
+  try {
+    if (process.connected && !stopping)
+      send({
+        event: "qualification.ready",
+        ...runtime.configurationMetadata,
+        listenUrl: runtime.listenUrl,
+        targets: runtime.targets,
+        payloadIdentity: runtime.payloadIdentity,
+      });
+    await stopped;
+  } finally {
+    await runtime.close();
+    if (process.connected) process.disconnect();
+  }
+}
+function isEntrypoint(): boolean {
+  const entry = process.argv[1];
+  if (entry === undefined) return false;
+  try {
+    return realpathSync(entry) === realpathSync(fileURLToPath(import.meta.url));
+  } catch {
+    return false;
+  }
+}
+if (isEntrypoint())
+  void main().catch(() => {
+    // Never echo credentials, input configuration or callback exceptions.
+    process.stderr.write("installed transaction qualification failed\n");
+    process.exitCode = 2;
+    if (process.connected) process.disconnect();
+  });
+```
+
+### apps/bdptest/test-support/transactional-execution-binding.ts:1–91 (98c600767e8e91a79e109cb741beb91e23b9bebe; full-file SHA256 cde506c72a8710eafe58522900f6db70ed3701cf333560252dc8e7c5e706cf89)
+```
+import { isDeepStrictEqual } from "node:util";
+import { installedContractsDigest } from "./installed-contract-identity.js";
+/** Source-only installed binding. Runner retains sole receipt observation authority. */
+import { createHash } from "node:crypto";
+import {
+  createRawHttpScenarioTarget,
+  type ExactHttpModeOptions,
+  type ConformanceFixture,
+  type ExecutableScenario,
+} from "@bdp/conformance";
+import {
+  bindServedProfileConfiguration,
+  assertSameServedProfileConfiguration,
+  type TransactionalRunContext,
+  type TransactionalSession,
+} from "@bdp/conformance/testing";
+export interface InstalledTransactionChild {
+  readonly ready: Record<string, unknown>;
+  close(): Promise<unknown>;
+}
+export function installedTransactionBinding(
+  ready: Record<string, unknown>,
+  sourceCommit: string,
+  fixture: { bytes: Uint8Array },
+) {
+  if (
+    ready.profile !== "transactional" ||
+    ready.history !== false ||
+    ready.claimEligible !== false ||
+    ready.authorityMode !== "canonical" ||
+    typeof ready.scope !== "string" ||
+    typeof ready.runtimeConfigurationIdentity !== "string" ||
+    !/^[a-f0-9]{64}$/.test(ready.runtimeConfigurationIdentity)
+  )
+    throw new Error("installed Transactional metadata unavailable");
+  if (typeof ready.listenUrl !== "string")
+    throw new Error("installed physical session unavailable");
+  const url = new URL(ready.listenUrl);
+  if (
+    url.protocol !== "http:" ||
+    url.hostname !== "127.0.0.1" ||
+    !url.port ||
+    url.username ||
+    url.password ||
+    url.pathname !== "/" ||
+    url.search ||
+    url.hash
+  )
+    throw new Error("invalid installed dial binding");
+  const targetNames = {
+    createBead: "create-bead",
+    updateBead: "update-bead",
+    deleteBead: "delete-bead",
+    createLink: "create-link",
+    updateLink: "update-link",
+    deleteLink: "delete-link",
+    putAlias: "put-alias",
+    deleteAlias: "delete-alias",
+    updateWhere: "update-where",
+    deleteWhere: "delete-where",
+    batch: "batch",
+    sequence: "sequence",
+  };
+  const operationTargets = Object.freeze(
+    Object.fromEntries(
+      Object.entries(targetNames).map(([name, suffix]) => [
+        name,
+        `${ready.scope}operations/${suffix}`,
+      ]),
+    ),
+  );
+  if (!isDeepStrictEqual(ready.targets, operationTargets))
+    throw new Error("installed operation target inventory mismatch");
+  const served = bindServedProfileConfiguration({
+    scope: ready.scope,
+    profile: "transactional",
+    history: false,
+    sourceCommit,
+    installedPayloadDigest: ready.payloadIdentity as string,
+    installedContractsDigest: installedContractsDigest(ready.artifactIdentity),
+    policyDigest: ready.policyIdentity as string,
+    authenticationDigest: ready.authenticationIdentity as string,
+    fixture,
+  });
+  return Object.freeze({
+    served,
+    operationTargets,
+    runtimeConfigurationIdentity: ready.runtimeConfigurationIdentity,
+    authorityMode: "canonical" as const,
+  });
+}
+```
+
+### packages/server/src/transaction-runtime.ts:104–142 (98c600767e8e91a79e109cb741beb91e23b9bebe; full-file SHA256 77954f0a85029d76443feac54cd53cda4339ffc126660ace5a9f5af92466c573)
+```
+  let handler: ReturnType<typeof createTransactionHttpHandler> | undefined;
+  let schemas: ReturnType<typeof createTransactionSchemaHttp> | undefined;
+  let configurationMetadata: ReturnType<typeof captured.metadata>;
+  let listenUrl = "";
+  let scope = "",
+    closing = false;
+  const pending = new Set<Promise<void>>();
+  // Retain only the first unexpected live fault. Wire cancellation remains
+  // silent; close surfaces the original cause through existing aggregation.
+  let firstStreamFault: { readonly cause: unknown } | undefined;
+  const handle = async (request: IncomingMessage, response: ServerResponse): Promise<void> => {
+    let signal: AbortSignal | undefined;
+    let streamContext: TransactionReadContext | undefined;
+    try {
+      if (closing || !handler) {
+        deliver(response, transactionHttpProblem("temporarily-unavailable"));
+        return;
+      }
+      const raw = request.url ?? "";
+      if (request.method === "POST" && Buffer.byteLength(raw) > TRANSACTION_HTTP_TARGET_BYTES) {
+        deliver(response, transactionHttpProblem("request-too-large"));
+        return;
+      }
+      if (
+        normalizationSafeRawRequestPath(raw) === undefined ||
+        !raw.startsWith("/") ||
+        raw.startsWith("//") ||
+        request.headers.host !==
+          new URL(captured.authorityMode === "canonical" ? scope : listenUrl).host
+      ) {
+        deliver(response, transactionHttpProblem("malformed-request"));
+        return;
+      }
+      const url = new URL(raw, scope);
+      const methodFailure = handler.methodResponse(url, request.method ?? "GET");
+      if (methodFailure) {
+        // Refused bodies are not consumed and cannot keep this connection alive.
+        methodFailure.headers.set("connection", "close");
+        deliver(response, methodFailure);
+```

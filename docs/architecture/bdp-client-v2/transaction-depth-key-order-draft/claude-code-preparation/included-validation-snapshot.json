@@ -1,0 +1,57 @@
+{
+  "sourceBindingSha256": "5fbe5c9b0c57f2c253fb16d114675ccb4929a9e4e18b21a1efbf1ca18385d778",
+  "static": "Seven V2 static stages passed on exact same successor source.",
+  "source": "Corrected exact17-case selection passed; actual13 new H responses.",
+  "rootAcceptancePath": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-depth-key-order-draft/root-source-acceptance.json",
+  "rootAcceptanceSha256": "32a3df157395c2b4d84783c19f6338389ec7e621c3c310522e509f9379181e38",
+  "sourceExitPath": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-depth-key-order-draft/source-selection-repair/run/source-positive.exit.json",
+  "sourceExitSha256": "5786597a0cb15aa529df47e66029d0cdd5a38cc8e4d660e31494942db8cb8b49",
+  "actualStatuses": [
+    200,
+    409,
+    200,
+    500,
+    200,
+    200,
+    200,
+    409,
+    200,
+    500,
+    200,
+    200,
+    200
+  ],
+  "actualSourceBodyBytes": [
+    150,
+    605,
+    150,
+    605,
+    150,
+    0,
+    108,
+    563,
+    108,
+    563,
+    108,
+    0,
+    0
+  ],
+  "primaryFailureCount": 0,
+  "cleanup": {
+    "cleanupActions": 2,
+    "cleanupActionsCompleted": 2,
+    "cleanupCompleted": true,
+    "primaryOrCleanupFailureCount": 0
+  },
+  "independentlyAbsentSampledPidCount": 65,
+  "preservedFailures": [
+    "original lint failure",
+    "V2 source16passed but failed17-selection adjudication"
+  ],
+  "limitations": [
+    "selected old sequence adds4 HTTP without new response records",
+    "Full body/schema assertions ran in memory; retained projection fingerprints are not full body captures",
+    "control/installed/council/exactCI pending",
+    "not public profile qualification"
+  ]
+}

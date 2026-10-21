@@ -1,0 +1,37 @@
+[
+  {
+    "path": "packages/server/src/development-runtime.ts",
+    "kind": "modify-existing",
+    "purpose": "F2 symmetric pending settlement; F3 prepared facts inside cleanup try; F6 genuine handle host with legacy fallback"
+  },
+  {
+    "path": "packages/server/src/transaction-runtime.ts",
+    "kind": "modify-existing",
+    "purpose": "F3 prepared metadata/ownerFacts/targets capture before publish; inert final return"
+  },
+  {
+    "path": "packages/server/src/reference-deployment-runtime.ts",
+    "kind": "modify-existing",
+    "purpose": "F3 scope string check and primary+cleanup aggregation on invalid result"
+  },
+  {
+    "path": "packages/server/src/reference-deployment-runtime.test.ts",
+    "kind": "modify-existing",
+    "purpose": "F6 same S02 successful bind args, no new callbacks"
+  },
+  {
+    "path": "apps/bdptest/src/reference-deployment-lifecycle-installed.test.ts",
+    "kind": "modify-existing",
+    "purpose": "F1 one additional I21 ordinary ready generation; F4 exact raw-wire screening and finite pure controls"
+  },
+  {
+    "path": "scripts/smoke-executables.mjs",
+    "kind": "modify-existing",
+    "purpose": "F5 one deep private development-authority refusal"
+  },
+  {
+    "path": "docs/design/startup-configuration.md",
+    "kind": "modify-existing",
+    "purpose": "F1 invalid-control behavior and37children; F7 optional workspace-dist overrides"
+  }
+]

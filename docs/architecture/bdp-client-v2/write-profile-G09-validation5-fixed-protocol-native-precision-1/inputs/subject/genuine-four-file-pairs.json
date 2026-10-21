@@ -1,0 +1,82 @@
+[
+  {
+    "after": {
+      "bytes": 28545,
+      "mode": "0o644",
+      "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation5-root-fixed-protocol-preparation-1/proposals/node-version.capture.txt",
+      "sha256": "cc0c3c78ae39c959ecbb10b4b52fb5dd22bf49ff525ef5f5aa39d4a573fc678e"
+    },
+    "before": {
+      "bytes": 28529,
+      "mode": "0o644",
+      "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation3-root-fixed-protocol-preparation-1/proposals/node-version.capture.txt",
+      "sha256": "9622a32504d70deae15cab955c34ac4f79cddc0e55d8e4ed46652c5bedeb532f"
+    },
+    "completeBothRestorations": true,
+    "eightLiteralClassesFourteenOccurrencesOnly": true,
+    "forward": "deltas/node-version.forward.patch",
+    "inverse": "deltas/node-version.inverse.patch",
+    "ndiff": "deltas/node-version.reversible.ndiff",
+    "stage": "node-version"
+  },
+  {
+    "after": {
+      "bytes": 28545,
+      "mode": "0o644",
+      "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation5-root-fixed-protocol-preparation-1/proposals/pnpm-version.capture.txt",
+      "sha256": "b894ab79dff2dfff4ceed6becf91b6f9c166831e605d190f2a7e6488f9103bb5"
+    },
+    "before": {
+      "bytes": 28529,
+      "mode": "0o644",
+      "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation3-root-fixed-protocol-preparation-1/proposals/pnpm-version.capture.txt",
+      "sha256": "05f370d55248a2f0d017aacbf1e645b6003b97fc925327dd62664b7b5b6b2cfe"
+    },
+    "completeBothRestorations": true,
+    "eightLiteralClassesFourteenOccurrencesOnly": true,
+    "forward": "deltas/pnpm-version.forward.patch",
+    "inverse": "deltas/pnpm-version.inverse.patch",
+    "ndiff": "deltas/pnpm-version.reversible.ndiff",
+    "stage": "pnpm-version"
+  },
+  {
+    "after": {
+      "bytes": 28590,
+      "mode": "0o644",
+      "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation5-root-fixed-protocol-preparation-1/proposals/workspace-install.capture.txt",
+      "sha256": "10663951af5e6a1906a542865a3f8940a7f8e3da479788f3c27a963470e66c2a"
+    },
+    "before": {
+      "bytes": 28574,
+      "mode": "0o644",
+      "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation3-root-fixed-protocol-preparation-1/proposals/workspace-install.capture.txt",
+      "sha256": "ec6b8f14b5054311f3cb984c8f00a0a37ee3e5b7d9e6ba6fd4cf04024533cef9"
+    },
+    "completeBothRestorations": true,
+    "eightLiteralClassesFourteenOccurrencesOnly": true,
+    "forward": "deltas/workspace-install.forward.patch",
+    "inverse": "deltas/workspace-install.inverse.patch",
+    "ndiff": "deltas/workspace-install.reversible.ndiff",
+    "stage": "workspace-install"
+  },
+  {
+    "after": {
+      "bytes": 28617,
+      "mode": "0o644",
+      "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation5-root-fixed-protocol-preparation-1/proposals/bind-workspace-tools.capture.txt",
+      "sha256": "f57dc8a03018f5668cc03d670f7e410ed6331385850c5a241038c389856d1c12"
+    },
+    "before": {
+      "bytes": 28601,
+      "mode": "0o644",
+      "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation3-root-fixed-protocol-preparation-1/proposals/bind-workspace-tools.capture.txt",
+      "sha256": "4c2434393c537f142fb14e36b951644bb75dbb4e2ef2079d648487b454277440"
+    },
+    "completeBothRestorations": true,
+    "eightLiteralClassesFourteenOccurrencesOnly": true,
+    "forward": "deltas/bind-workspace-tools.forward.patch",
+    "inverse": "deltas/bind-workspace-tools.inverse.patch",
+    "ndiff": "deltas/bind-workspace-tools.reversible.ndiff",
+    "stage": "bind-workspace-tools"
+  }
+]

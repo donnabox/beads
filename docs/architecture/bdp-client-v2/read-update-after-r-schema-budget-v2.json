@@ -1,0 +1,205 @@
+{
+  "source": "e08673227362119dfafe7a8eabe38a0a11125104",
+  "projectionOnly": true,
+  "reason": "Partial pending council: packages/conformance/catalog/numeric-model-v1.json:38-68; row-local whole/change numeric, metadata and inherited-schema refusals, full unchanged preimages, one-leaf corrections and independent current-state GETs. Configured Read+Update finite partitions; raw correction response-to-GET revision linkage unobserved; public admission closed.",
+  "current": {
+    "continuationBytes": 878548,
+    "continuationNodes": 22972,
+    "coverageBytes": 708995
+  },
+  "proposed": {
+    "continuationBytes": 899400,
+    "continuationNodes": 23502,
+    "coverageBytes": 712792,
+    "actions": 96,
+    "raw": 43,
+    "client": 53,
+    "assertions": 687,
+    "newBindings": 68,
+    "newBindingBytes": 3786,
+    "ledger": [
+      {
+        "kind": "bead",
+        "newActions": [
+          {
+            "id": "nr-bead-schema-patch-refused",
+            "assertions": 5,
+            "nodes": 51,
+            "rawBodyBytes": 157
+          },
+          {
+            "id": "nr-bead-schema-patch-unchanged",
+            "assertions": 4,
+            "nodes": 32,
+            "rawBodyBytes": 0
+          },
+          {
+            "id": "nr-bead-schema-patch-corrected",
+            "assertions": 13,
+            "nodes": 89,
+            "rawBodyBytes": 156
+          },
+          {
+            "id": "nr-bead-schema-updated-read",
+            "assertions": 9,
+            "nodes": 64,
+            "rawBodyBytes": 0
+          }
+        ]
+      },
+      {
+        "kind": "link",
+        "newActions": [
+          {
+            "id": "nr-link-schema-patch-refused",
+            "assertions": 5,
+            "nodes": 51,
+            "rawBodyBytes": 157
+          },
+          {
+            "id": "nr-link-schema-patch-unchanged",
+            "assertions": 4,
+            "nodes": 32,
+            "rawBodyBytes": 0
+          },
+          {
+            "id": "nr-link-schema-patch-corrected",
+            "assertions": 15,
+            "nodes": 101,
+            "rawBodyBytes": 156
+          },
+          {
+            "id": "nr-link-schema-updated-read",
+            "assertions": 11,
+            "nodes": 76,
+            "rawBodyBytes": 0
+          }
+        ]
+      }
+    ]
+  },
+  "remaining": {
+    "continuationBytes": 2495,
+    "continuationNodes": 44,
+    "coverageBytes": -2209
+  },
+  "audit": {
+    "convertedActions": [
+      {
+        "id": "nr-bead-schema-create-corrected",
+        "oldBytes": 3409,
+        "newBytes": 3617,
+        "byteDelta": 208,
+        "oldNodes": 89,
+        "newNodes": 94,
+        "nodeDelta": 5
+      },
+      {
+        "id": "nr-bead-schema-read",
+        "oldBytes": 1983,
+        "newBytes": 2533,
+        "byteDelta": 550,
+        "oldNodes": 57,
+        "newNodes": 69,
+        "nodeDelta": 12
+      },
+      {
+        "id": "nr-link-schema-create-corrected",
+        "oldBytes": 3979,
+        "newBytes": 4187,
+        "byteDelta": 208,
+        "oldNodes": 101,
+        "newNodes": 106,
+        "nodeDelta": 5
+      },
+      {
+        "id": "nr-link-schema-read",
+        "oldBytes": 2473,
+        "newBytes": 3033,
+        "byteDelta": 560,
+        "oldNodes": 69,
+        "newNodes": 81,
+        "nodeDelta": 12
+      }
+    ],
+    "insertedActions": [
+      {
+        "id": "nr-bead-schema-patch-refused",
+        "objectBytes": 2229,
+        "separatorBytes": 10,
+        "insertedBytes": 2239,
+        "nodes": 51,
+        "assertions": 5
+      },
+      {
+        "id": "nr-bead-schema-patch-unchanged",
+        "objectBytes": 1153,
+        "separatorBytes": 10,
+        "insertedBytes": 1163,
+        "nodes": 32,
+        "assertions": 4
+      },
+      {
+        "id": "nr-bead-schema-patch-corrected",
+        "objectBytes": 3400,
+        "separatorBytes": 10,
+        "insertedBytes": 3410,
+        "nodes": 89,
+        "assertions": 13
+      },
+      {
+        "id": "nr-bead-schema-updated-read",
+        "objectBytes": 2337,
+        "separatorBytes": 10,
+        "insertedBytes": 2347,
+        "nodes": 64,
+        "assertions": 9
+      },
+      {
+        "id": "nr-link-schema-patch-refused",
+        "objectBytes": 2229,
+        "separatorBytes": 10,
+        "insertedBytes": 2239,
+        "nodes": 51,
+        "assertions": 5
+      },
+      {
+        "id": "nr-link-schema-patch-unchanged",
+        "objectBytes": 1153,
+        "separatorBytes": 10,
+        "insertedBytes": 1163,
+        "nodes": 32,
+        "assertions": 4
+      },
+      {
+        "id": "nr-link-schema-patch-corrected",
+        "objectBytes": 3908,
+        "separatorBytes": 10,
+        "insertedBytes": 3918,
+        "nodes": 101,
+        "assertions": 15
+      },
+      {
+        "id": "nr-link-schema-updated-read",
+        "objectBytes": 2837,
+        "separatorBytes": 10,
+        "insertedBytes": 2847,
+        "nodes": 76,
+        "assertions": 11
+      }
+    ],
+    "byteDeltaSum": 20852,
+    "nodeDeltaSum": 530,
+    "newActionBindings": 66,
+    "newActionBindingBytes": 3700,
+    "convertedBindings": [
+      "nr-bead-schema-read.written",
+      "nr-link-schema-read.written"
+    ],
+    "convertedBindingBytes": 86,
+    "oldAddedIdsCount": 16,
+    "oldAddedBindingsNow": 100,
+    "oldAddedBindingBytesNow": 5546,
+    "reasonByteDelta": 11
+  }
+}

@@ -1,0 +1,3 @@
+# Root-authorized frozen production dependency closure
+
+Consumer-v3's local protocol binding worked, but AJV^3.0.1 selected uncached fast-uri3.1.8 and stopped offline. Root approved consumer-v4 with exact fast-uri3.1.5 override, matching fc47's server exact dependency and frozen AJV lock resolution. Keep the same protocol tar override, root two tar dependencies and unmodified archives/source. Required entire closure: ajv8.17.1, ajv-formats3.0.1, fast-deep-equal3.1.3, fast-uri3.1.5, json-schema-traverse1.0.0, require-from-string2.0.2. Compare installed graph before still-unconsumed single14/1 test. Preserve all three earlier failed consumers; each had zero installed test children/HTTP requests. No repack/network fallback. One offline v4 install; stop unexpected outcomes.

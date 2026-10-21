@@ -1,0 +1,420 @@
+Actual committed-source additions: leading indentation alone removed. Inclusive ranges and rendered hashes bound externally; noncontiguous ranges labeled.
+
+packages/protocol/src/read-update-values.ts:263-280
+if (reference.startsWith("@")) continue;
+if (/^[A-Za-z][A-Za-z0-9+.-]*:/.test(reference)) {
+if (!isJsonSchemaUri(reference))
+throw new ReadUpdateCarrierError(`malformed ${field} absolute reference`);
+if (field === "id") {
+try {
+parseCanonicalHttpUrl(reference, "creation id");
+} catch (cause) {
+throw new ReadUpdateCarrierError("malformed absolute creation id", { cause });
+}
+}
+} else {
+try {
+assertCanonicalPathSegments(reference, `${field} reference`);
+if (field === "id") {
+const [root, firstIdSegment] = reference.split("/");
+if (root !== (kind === "createBead" ? "beads" : "links") || firstIdSegment === undefined)
+throw new Error("creation id requires the correct fixed root and an id path");
+
+packages/server/src/resource-evaluator.ts:1022-1027
+if (
+"expectedRevision" in input &&
+input.expectedRevision !== undefined &&
+input.expectedRevision !== before?.revision
+)
+fail("revision-mismatch");
+
+packages/server/src/resource-evaluator.ts:1085-1098
+}
+: {
+outcome: creating ? "created" : "updated",
+resource: after as ResourceRecord,
+...(sourceAfter ? { source: sourceAfter.id, sourceRevision: sourceAfter.revision } : {}),
+};
+// No Resource write happens until every validation/policy/CAS/limit check passes.
+fault.check();
+for (const write of writes) tx.putResource(write);
+if (deleting) tx.deleteResource(id);
+return freeze({
+effect: "success",
+outcome,
+resolutions,
+
+packages/server/src/transaction-batch.ts:63-69
+export const TRANSACTION_RUNTIME_LIMITS = Object.freeze({
+maximumOperations: 32,
+inducedEvents: 256,
+matchedResources: 32,
+representationBytes: 256 * 1024,
+scopeSourceBytes: 64 * 1024,
+requestBodyBytes: 64 * 1024,
+
+packages/server/src/transaction-batch.ts:378-380
+function canonicalReference(scope: string, uri: string): string {
+return /^[A-Za-z][A-Za-z0-9+.-]*:/.test(uri) ? uri : `${scope}${uri}`;
+}
+
+packages/server/src/transaction-batch.ts:749-759
+if (result.effect === "failure")
+return {
+ok: false,
+problem: {
+...receiptProblem(result.outcome),
+operationIndex,
+...(op.name ? { operationName: op.name } : {}),
+},
+};
+const outcome = result.outcome;
+results.push({ operationIndex, ...(op.name ? { operationName: op.name } : {}), ...outcome });
+
+packages/server/src/transaction-batch.ts:1055-1062
+}
+const failure = applyResource(
+{ operation: op.operation as ResourceOperation, ...(op.name ? { name: op.name } : {}) },
+input,
+operationIndex,
+aliases,
+);
+if (failure) return failure;
+
+packages/server/src/transaction-store.ts:226-230
+export function transactionReceiptMaximum(value: number = TRANSACTION_MAXIMUM_OPERATIONS): number {
+if (!Number.isSafeInteger(value) || value < 1)
+throw new TypeError("positive receipt page maximum required");
+return value;
+}
+
+packages/server/src/transaction-store.ts:651-664
+function eventProjection(
+row: { position: number; value: unknown },
+context: TransactionReadContext,
+source: TransactionEventSource,
+cursor?: { position: number; ordinal: number; id: string },
+) {
+const projected = projectTransactionEventGroup(row.value, context, source, scope, row.position);
+if (
+cursor &&
+(row.position !== cursor.position ||
+!projected.some((event) => event.ordinal === cursor.ordinal && event.id === cursor.id))
+)
+throw new TransactionEventParameterError(undefined, context);
+return projected;
+
+packages/server/src/transaction-store.ts:820-837
+typeof value !== "string" ||
+!/^pos-(0|[1-9][0-9]*)$/.test(value) ||
+!Number.isSafeInteger(Number(value.slice(4))) ||
+Number(value.slice(4)) > Number(context.scopePosition.slice(4))
+)
+throw new Error("receipt position exceeds serving owner", {
+cause: { id: receipt.id, key: receipt.idempotencyKey, field },
+});
+}
+const freeze = (value: unknown): void => {
+if (value !== null && typeof value === "object") {
+for (const child of Object.values(value)) freeze(child);
+Object.freeze(value);
+}
+};
+const projected = receiptPrefix(receipt);
+freeze(projected);
+return Object.freeze({ receipt: projected, context });
+
+packages/server/src/transaction-store.ts:1054-1063
+pendingWins = false,
+references?: ReferenceBindings,
+template?: DependencyTemplate,
+controls?: TransactionReceivingControls,
+): TransactionReceivingAdmission {
+const stored = row(principal, key);
+const prior = stored ? expireRow(stored, instant()).row : undefined;
+if (pendingWins && prior?.owner !== null && prior !== undefined)
+return { kind: "existing", receipt: parseReceipt(prior.receipt) };
+if (prior?.dependency) {
+
+packages/server/src/transaction-store.ts:1214-1215
+return id;
+}
+
+packages/server/src/transaction-store.ts:1266-1275
+if (!result.ok) {
+db.exec("ROLLBACK TO effects; RELEASE effects");
+receipt = {
+...core,
+status: "failed",
+detail: "available",
+requiredPosition: `pos-${previous}`,
+problem: result.problem,
+expiresAt,
+};
+
+packages/server/src/transaction-store.ts:1424-1432
+return {
+kind: "not-acceptable" as const,
+...(observed ? { context: readContext() } : {}),
+};
+if (observed) return { kind: "existing" as const, ...observeReceipt(result.receipt) };
+}
+if (
+observed &&
+(result.kind === "conflict" ||
+
+packages/server/src/transaction-http.ts:176-190
+function receiptResponse(
+observed: {
+readonly receipt: { readonly id: string; readonly status: string };
+readonly context: TransactionReadContext;
+},
+mutation: boolean,
+): HttpResponse {
+const response = context(jsonResponse(observed.receipt), observed.context);
+if (mutation && observed.receipt.status === "pending") {
+response.headers.set("location", observed.receipt.id);
+response.headers.set("retry-after", "1");
+return { ...response, status: 202 };
+}
+return response;
+}
+
+packages/server/src/transaction-http.ts:488-505
+const minimum = hasMinimumControls(request)
+? (transactionMinimumHeaders(request.headers) ?? "unsupported")
+: undefined;
+if (selectChangefeedMedia(request.headers.get("accept")) !== "sse") {
+const observed = await service.events(
+eventRequest.source.url,
+eventRequest.after,
+minimum,
+request.signal,
+);
+if (observed.kind === "missing")
+return transactionHttpProblem("resource-not-found", observed.context);
+if (observed.kind === "unsupported") return developmentGap("minimum-position");
+return context(jsonResponse(observed.page), observed.context);
+}
+const fields =
+lastEventIds ??
+(request.headers.has("last-event-id") ? [request.headers.get("last-event-id")!] : []);
+
+packages/server/src/transaction-http.ts:626-629
+return {
+...(request.method === "GET" || request.method === "HEAD"
+? applyReadHttpSemantics(request, response)
+: response),
+
+packages/server/src/read-http.ts:41-47
+// defensive strip. HEAD has GET metadata, including the serialized length.
+if (request.method === "HEAD" && selected.body !== undefined) {
+const headers = new Headers(selected.headers);
+headers.set("content-length", String(Buffer.byteLength(stringifyJsonValue(selected.body))));
+return { status: selected.status, headers };
+}
+return selected;
+
+packages/server/src/authority-read.ts:821-838
+rows = synchronous(reader.incidentLinks(intent.bead.slice(scope.length)));
+} else rows = synchronous(reader.resources());
+const items: ResourceRecord[] = [];
+const seen = new Set<string>();
+for (const row of rows) {
+const record = graph.accept(row);
+if (intent.kind === "bead-links" && !("source" in record))
+throw new AuthorityReadError("integrity", "incident index returned a Bead");
+if (
+structural(record, intent, prepared.conformance) &&
+graph.visible(record, policy) &&
+!seen.has(record.id)
+) {
+seen.add(record.id);
+items.push(record);
+}
+}
+return Object.freeze({ kind: "page", items: Object.freeze(items), observation });
+
+packages/server/src/transaction-events.ts:18-18
+export const TRANSACTION_EVENT_PAGE_BYTES = 4 * 1024 * 1024;
+
+packages/server/src/transaction-events.ts:75-101
+/^ev_([A-Za-z0-9_-]{43})_([A-Za-z0-9_-]{43})_([A-Za-z0-9_-]{43})_(pos-(?:0|[1-9][0-9]*))_(0|[1-9][0-9]*)$/;
+const hash = (tag: string, value: string) =>
+createHash("sha256")
+.update(JSON.stringify([tag, value]))
+.digest("base64url");
+
+/** Scope and Resource token spelling is deliberately private, not a fixture law. */
+export function renderTransactionEvent(
+context: Pick<TransactionReadContext, "scopeEpoch" | "authorizationView">,
+source: string,
+checkpoint: string,
+event: TransactionEvent,
+): TransactionEvent {
+if (
+!position.test(checkpoint) ||
+!Number.isSafeInteger(Number(checkpoint.slice(4))) ||
+Number(checkpoint.slice(4)) < 1 ||
+!Number.isSafeInteger(event.ordinal) ||
+event.ordinal < 0
+)
+throw new Error("invalid committed Event position");
+return {
+...event,
+source,
+id: `ev_${hash("epoch", context.scopeEpoch)}_${hash("view", context.authorizationView)}_${hash("source", source)}_${checkpoint}_${event.ordinal}`,
+};
+}
+
+packages/server/src/transaction-events.ts:104-110
+context?: TransactionReadContext,
+): {
+position: number;
+ordinal: number;
+epoch: string;
+view: string;
+source: string;
+
+packages/server/src/transaction-events.ts:121-125
+ordinal: o,
+epoch: match[1] as string,
+view: match[2] as string,
+source: match[3] as string,
+};
+
+packages/server/src/transaction-events.ts:200-203
+group.scopeEpoch !== context.scopeEpoch ||
+group.authorizationView !== context.authorizationView ||
+group.position !== `pos-${expectedPosition}` ||
+group.checkpoint !== group.position ||
+
+packages/server/src/transaction-events.ts:262-270
+// decide metadata-only membership while the spec disposition is pending.
+if (include && data.change === undefined && data.metadataChange !== undefined)
+throw new TransactionEventProjectionGap("incident-link-metadata");
+}
+}
+if (include) result.push(renderTransactionEvent(context, source.url, group.checkpoint, event));
+}
+return result;
+}
+
+packages/server/src/transaction-runtime-configuration.ts:391-401
+return Object.freeze({
+authorityMode,
+runtimeConfigurationIdentity,
+artifactIdentity: contracts.identity,
+policyIdentity,
+authenticationIdentity,
+scope,
+profile: "transactional" as const,
+history: false as const,
+claimEligible: false as const,
+});
+
+packages/server/src/transaction-installed-process.ts:49-55
+send({
+event: "qualification.ready",
+...runtime.configurationMetadata,
+listenUrl: runtime.listenUrl,
+targets: runtime.targets,
+payloadIdentity: runtime.payloadIdentity,
+});
+
+apps/bdptest/test-support/transactional-execution-binding.ts:74-88
+const served = bindServedProfileConfiguration({
+scope: ready.scope,
+profile: "transactional",
+history: false,
+sourceCommit,
+installedPayloadDigest: ready.payloadIdentity as string,
+installedContractsDigest: installedContractsDigest(ready.artifactIdentity),
+policyDigest: ready.policyIdentity as string,
+authenticationDigest: ready.authenticationIdentity as string,
+fixture,
+});
+return Object.freeze({
+served,
+operationTargets,
+runtimeConfigurationIdentity: ready.runtimeConfigurationIdentity,
+
+packages/conformance/test-support/profile-contract-plan.ts:102-107
+function snapshotSource(input: unknown, kind: "fixture" | "manifest", maximumBytes?: number) {
+const source = ownData(input, ["bytes", "label"], ["bytes"]);
+const label =
+source.label === undefined ? undefined : primitiveString(source.label, "source label");
+const bytes = copySourceBytes({ bytes: source.bytes as Uint8Array }, kind, maximumBytes);
+return { bytes, label };
+
+packages/conformance/test-support/profile-contract-plan.ts:144-161
+const fixture = parseFixtureJson(
+parseBoundedJson(source.bytes, "fixture", source.label),
+source.label,
+);
+const bound = freeze({
+scope,
+profile,
+history,
+sourceCommit,
+installedPayloadDigest,
+installedContractsDigest,
+policyDigest,
+authenticationDigest,
+fixtureDigest: digest(source.bytes),
+fixtureId: fixture.id,
+capabilities: [...fixture.capabilities].sort(),
+});
+configurations.set(bound, fixture);
+
+scripts/transaction-installed-observation.mjs:38-65
+async function drainFailure(error) {
+child.kill("SIGKILL");
+try {
+await bounded(exited);
+} catch (cleanup) {
+throw new AggregateError([error, cleanup], "installed transaction cleanup failed");
+}
+throw error;
+}
+let closing;
+const close = () =>
+(closing ??= (async () => {
+try {
+if (child.connected) child.send({ command: "close" });
+const result = await bounded(exited);
+if (result.code !== 0 || result.signal !== null)
+throw new Error("installed transaction child did not close cleanly");
+} catch (error) {
+await drainFailure(error);
+} finally {
+signal?.removeEventListener("abort", onAbort);
+}
+})());
+const onAbort = () => {
+void close().catch(() => {});
+};
+signal?.addEventListener("abort", onAbort, { once: true });
+if (signal?.aborted) onAbort();
+
+packages/conformance/catalog/transactional-v1.json:264-280
+"id": "transactional.batch.revision-guard-race",
+"title": "Racing guarded updates serialize into one success and one revision-mismatch",
+"kind": "normative",
+"requiredProfile": "transactional",
+"requirements": [
+{
+"source": "docs/specs/bdp.md",
+"anchor": "#mutation-revisions-and-guards",
+"selectedText": "The authority applies the operation only if the Resource still has that revision. A mismatch fails the individual operation without changing state."
+},
+{
+"source": "docs/specs/bdp.md",
+"anchor": "#transactional-revision-visibility",
+"selectedText": "In an atomic batch, a revision mismatch fails the complete Mutation Transaction."
+}
+]
+},
+
+Exact schema subtrees keyed by JSON pointer, whitespace compacted; not full schema closure:
+{"/$defs/receiptProblem":{"title":"BDP Mutation Receipt problem","type":"object","required":["type","code","status","retry"],"properties":{"type":{"$ref":"#/$defs/absoluteHttpUrl"},"title":{"type":"string"},"status":{"type":"integer","enum":[400,403,404,409,413,422]},"detail":{"type":"string"},"instance":{"$ref":"#/$defs/absoluteUri"},"code":{"$ref":"#/$defs/receiptProblemCode"},"retry":{"$ref":"#/$defs/retryDisposition"},"operationIndex":{"type":"integer","minimum":0},"operationName":{"$ref":"#/$defs/localName"},"pointer":{"$ref":"#/$defs/jsonPointer"},"limit":{"type":"string","pattern":"^[a-z]+\\.[A-Za-z]+$"},"diagnostics":{"$ref":"#/$defs/validationDiagnostics"},"diagnosticsTruncated":{"type":"boolean"}},"allOf":[{"if":{"properties":{"code":{"$ref":"#/$defs/readUpdateProblemCode"}},"required":["code"]},"then":{"$ref":"#/$defs/readUpdateProblem"}},{"if":{"properties":{"code":{"const":"cardinality-violated"}},"required":["code"]},"then":{"properties":{"diagnostics":false,"diagnosticsTruncated":false,"type":{"const":"https://github.com/gastownhall/bdp/problems/conflict"},"status":{"const":409},"retry":{"const":"after-state-change"}}}},{"if":{"not":{"properties":{"code":{"enum":["limit-exceeded","aggregate-constraint-violation"]}},"required":["code"]}},"then":{"required":["operationIndex"],"properties":{"operationIndex":true}}},{"if":{"not":{"properties":{"code":{"const":"limit-exceeded"}},"required":["code"]}},"then":{"properties":{"limit":false}}},{"if":{"not":{"properties":{"code":{"const":"revision-unretained"}},"required":["code"]}},"then":{"properties":{"missing":false}}}],"dependentRequired":{"operationName":["operationIndex"]}},"/$defs/idempotencyKey":{"type":"string","pattern":"^[A-Za-z0-9_-]{1,256}$"},"/$defs/propertyChange":{"type":"array","minItems":1,"items":{"oneOf":[{"type":"object","required":["op","path","value"],"properties":{"op":{"enum":["add","replace"]},"path":{"$ref":"#/$defs/jsonPointer"},"value":true},"additionalProperties":false},{"type":"object","required":["op","path"],"properties":{"op":{"const":"remove"},"path":{"$ref":"#/$defs/jsonPointer"}},"additionalProperties":false}]}},"/$defs/revision":{"type":"string","minLength":1},"/$defs/expectedRevision":{"type":"string","minLength":1},"/$defs/createBeadMembers":{"type":"object","required":["type"],"properties":{"id":{"$ref":"#/$defs/durableResourceReference"},"type":{"$ref":"#/$defs/absoluteHttpUrl"},"properties":{"$ref":"#/$defs/properties"},"metadata":{"$ref":"#/$defs/metadata"},"revisionProvenance":{"$ref":"#/$defs/revisionProvenanceInput"}}},"/$defs/durableResourceReference":{"type":"string","minLength":1,"pattern":"^[^@]"},"/$defs/readUpdateProblem/allOf/7":{"if":{"properties":{"code":{"const":"revision-mismatch"}},"required":["code"]},"then":{"properties":{"type":{"const":"https://github.com/gastownhall/bdp/problems/conflict"},"status":{"const":409},"retry":{"const":"after-state-change"}}}},"/$defs/readUpdateProblem/allOf/15":{"if":{"not":{"properties":{"code":{"const":"validation-failed"}},"required":["code"]}},"then":{"properties":{"diagnostics":false,"diagnosticsTruncated":false}}},"/$defs/readUpdateProblem/allOf/17":{"if":{"properties":{"retry":{"const":"after-delay"}},"required":["retry"]},"else":{"properties":{"retryAfter":false}}}}

@@ -1,0 +1,109 @@
+{
+  "sourcePacket": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-D4-validation-preparation-2",
+  "preparationIndexSha256": "724ad9bda80077a5c5b548a3b518dc4ee762b30ee4b5b8538aadb1626f860cdb",
+  "preparationBindingSha256": "f5893a35ab5ff025bafba86ca3b47187c986325f15c205f0612e8a3d0eb17a87",
+  "implementationIndexSha256": "799ce13676c794c4d508e47233ae6cac1aa590ee977beb953a5fffb59f46ec3e",
+  "physicalFiles": 296,
+  "indexEntries": 295,
+  "implementationEntries": 290,
+  "explicitExclusions": [
+    "implementation-hashes.json",
+    "preparation-index.json",
+    "execution-gate.json",
+    "execution-gate.closed.json",
+    "preparation-binding.json",
+    "closure.json"
+  ],
+  "originCopiesVerified": 216,
+  "referencePinsVerified": 1188,
+  "predecessorFilesPreserved": 130,
+  "sourceFilesVerified": 679,
+  "owned": 1,
+  "protected": 678,
+  "ownedSha256": "4f4f942f876222521765b9830a941f2b6e0dfa01a3a66979beaa1237c4638c85",
+  "genuineDeltaPairs": [
+    {
+      "path": "commands.json",
+      "forwardSha256": "5a4f86ff7dfbbf6b70391daab750cbce2f6658edbc5b49083838b1873ce8ecd9",
+      "inverseSha256": "43961352e62c20eb6fd763b1cbe7e89b1b252004564367432dcb8f664b1b9126",
+      "genuineRecomputed": true
+    },
+    {
+      "path": "run.py",
+      "forwardSha256": "f197fe11fbf19d16757b7d23edc056289720f152ddbfbef0b44f3e23767e96ba",
+      "inverseSha256": "321cd2537474eadd1043f98fe58dcc2e1a074ad1b86cdcb2c39faffaae652cc6",
+      "genuineRecomputed": true
+    },
+    {
+      "path": "worker.py",
+      "forwardSha256": "ff1658f5aa4545f424899e89df13a7dee5c20c8dee3bb2c96152b45de5b998ae",
+      "inverseSha256": "8b3011239c0a4d0c5b36d7dd5119cdb9b68506959a9fd4e6a1d0c0cec6ce415b",
+      "genuineRecomputed": true
+    },
+    {
+      "path": "audit.py",
+      "forwardSha256": "d8757cad618b598e866b858515560405cf663940f0efd6a1ff28544b848dc5de",
+      "inverseSha256": "593838aca3ea0b94b3c1065b9953eac255598046c737a48ca99cc940d1320dac",
+      "genuineRecomputed": true
+    },
+    {
+      "path": "README.md",
+      "forwardSha256": "f9c0ae731239fd6ea5ce65ad24d60cee97746194b9c67c88fb9a41707c1bba33",
+      "inverseSha256": "3e1689612fc0d7e192969e4d28b796a872234933fbfdebc325618572889f1434",
+      "genuineRecomputed": true
+    },
+    {
+      "path": "report.md",
+      "forwardSha256": "1beb6566939553a34444761e918f5a41c946e0b039115608380b9242abc9b3ac",
+      "inverseSha256": "7926c1901927ae7d9ebd11b655c7ff9cbd18956ef0cf2601f114df88973832aa",
+      "genuineRecomputed": true
+    },
+    {
+      "path": "report-schemas.json",
+      "forwardSha256": "58dbe487868aab1bb28945d731ef77925f1df5ca76a0e2f467a12bea9eaaa60d",
+      "inverseSha256": "abd0f1df47ab1119f58bdd05c54b922d14e6929cd5607358c736881dc3e2c8d8",
+      "genuineRecomputed": true
+    },
+    {
+      "path": "ownership-and-clock-contract.json",
+      "forwardSha256": "54a8ed05dba445ed4383255ebbab5876a13c3262ce695ac0c9c68b404d28562e",
+      "inverseSha256": "df398b725cdcf4011917a103e9764c50cef39bf2a64245e5cb74b8531774e371",
+      "genuineRecomputed": true
+    },
+    {
+      "path": "reconciliation.json",
+      "forwardSha256": "b140b807fe0dccaa16cf1f68f08bc2e592781325fd991711f88ed474a3b02c3a",
+      "inverseSha256": "1e1be05393efbd7071664137a2d6c490b7010e1c84185f86c4b0c277c7841051",
+      "genuineRecomputed": true
+    },
+    {
+      "path": "synthetic-controls-plan.json",
+      "forwardSha256": "0f2ddccd73480bfd52f087707c2700316fb311648b503e875c544f0fc04a21ff",
+      "inverseSha256": "cf127c0c50de5f67ee06aaad37bb8d0eddf16d5b5ad91cfe0acb99c052ee6f84",
+      "genuineRecomputed": true
+    },
+    {
+      "path": "static-inspection.json",
+      "forwardSha256": "0fc90473cb06e883fc64f361c8808e6ec331da72159214d7359bcae3cd86597a",
+      "inverseSha256": "582857b7575c7ed217cd72de39a57a7df4f7ead23d84c41937746b3e96e0725e",
+      "genuineRecomputed": true
+    }
+  ],
+  "allPythonHelpersParsedAsDataOnly": [
+    "run.py",
+    "worker.py",
+    "audit.py",
+    "gate.py",
+    "scanner.py",
+    "packages.py",
+    "guarded-action-session-20261018-021624-549f.py"
+  ],
+  "schemaMjsReadOnly": true,
+  "full48ControlsAreProspectiveDataNotExecutedRunner": true,
+  "stages": 21,
+  "gateClosed": true,
+  "noRunDirectory": true,
+  "sourceAndFrozenPacketMirrorExact": true,
+  "noHelpersImportedOrEvaluated": true,
+  "gitInvoked": false
+}

@@ -1,0 +1,20 @@
+--- predecessor2/preparation-status.json
++++ current3/preparation-status.json
+@@ -1,11 +1,13 @@
+ {
++  "state": "FROZEN CLOSED preparation3 after exact three-annotation source correction; independent native/root mechanics and annotation acceptance required",
+   "accepted": false,
+   "approvedStages": [],
+   "executionReleased": false,
++  "sourceBindingFinalized": true,
+   "originalActualCodeReadCorrectedSource": false,
++  "runExists": false,
+   "productValidation": "UNRESOLVED; no helper import or execution",
+-  "runExists": false,
+-  "sourceBindingByteIdenticalTo1": true,
+-  "sourceBindingFinalized": true,
+-  "state": "CLOSED successor2 N1/N2/N3 authoring complete; independent full native/root mechanics review required"
++  "annotationPrecision": "PENDING",
++  "sameAttemptRetry": false,
++  "allPriorAttemptsPreserved": true
+ }

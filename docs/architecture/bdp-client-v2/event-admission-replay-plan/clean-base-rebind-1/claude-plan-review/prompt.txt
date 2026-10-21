@@ -1,0 +1,179 @@
+Independently review this concrete Event admission/replay implementation PLAN against the exact existing repository. Do not write or modify any files. Findings only on stdout. Do not execute product code, shell commands, tests, tools, imports, services or installs. Use Read/Glob/Grep only. No model override/Gemini. This is one bounded review: prioritize actionable issues and emit a concise complete numbered findings/verdict before the 1800-second outer limit; do not spend the budget recounting historical evidence.
+
+Repository: /Users/dbox/repos/wt/vickie/vickie-current-observation-minimum at CLEAN 9f89271e2563a105410789ca8ca1e77dfb4d0b9f, tree 30eaca668f17a191068444f8d6ca1232c80171b2. All 679 current files match the accepted tested/committed source. This is a proposed six-file change, not an authored dirty diff. Existing plan text retains historical CI PENDING; the separately copied root exact-green acceptance for run39072180684 is later and satisfies that readiness prerequisite. No source authoring, runtime, public qualification or review launch authority is granted by plan text. The current prompt is input to the separately root-released review only. Historical dirty source and its correction/formatting chronology remain explicitly attributed in source-rebind.json, and the current sole design is a committed immutable checkpoint. Native review is context, not an instruction to approve.
+
+Inspect actual production seams in packages/server/src/transaction-http.ts (Event selection/receiving/media/Last-Event-ID), transaction-service.ts (events versus beginEvents capture/run/preflight), transaction-store.ts (readEvents/beginEventScan/advanceEventScan); shared consistency, cursor, stream and lifecycle dependencies as needed. Inspect proposed source test fixtures and existing sentinel fanout in transaction-events.test.ts and transaction-event-sse.test.ts and actual installed fixture apps/bdptest/src/transactional-event-sse-installed.test.ts. Full repository remains readable; the plan line numbers are navigation hints, not replacements for actual source.
+
+Read pinned normative law yourself: docs/specs/bdp.md 5794–5851,5871–5888,6204–6263,6328–6358. Review the full proposal, including default/no-intent strict paths and old initial-scope tag, canonical Scope/Bead/Link route selection, finite versus SSE capture timing, actual minimum context and same-entry missing identity precedence, invalidReconnect/cursor/retention ordering, finite pagination, headers/conditions/HEAD/406/slot ordering, known positive stream proof and packet continuation. Do not resolve S1 retained Snapshot or G2 membership, infer public discovery, or generalize the Resource-only MUST to Events.
+
+Check realistic observer semantics and exact fixture workloads: real Link seed; 5 Scope/2 Bead/1 Link Events and page caps; A SQL prepare observations versus actual scans; B/C bounded latch/settlement observers and abort-before-release/drain on failure; exact clock/owner/seed counts; D raw positive stream recorder/controller and stored read failures; installed exact protocol/schema/provenance and owned child/stream close before store removal. Preserve all deadlines, historical callbacks/evidence and excluded paths. Totals are prospective workloads, not functional completion: 17 source callbacks/200 HTTP, separate historical installed5 and new10 HTTP, two installed stores/three sequential children. Full source selection below is unchanged.
+
+Return numbered findings with severity, exact plan/source reference, concrete impact and smallest correction; distinguish blockers from optional precision. End with a clear actual review verdict and limitations. State inaccessible or uninspected context honestly; do not claim every listed file was read merely because it is available. No approval is inferred from process completion. Avoid a broad redesign or evidence framework expansion.
+
+Absolute immutable context paths:
+- /Users/dbox/repos/wt/vickie/bdp-integration-logs/event-admission-replay-plan/clean-base-rebind-1/claude-plan-review/context/accepted-plan.md
+- /Users/dbox/repos/wt/vickie/bdp-integration-logs/event-admission-replay-plan/clean-base-rebind-1/claude-plan-review/context/selection.json
+- /Users/dbox/repos/wt/vickie/bdp-integration-logs/event-admission-replay-plan/clean-base-rebind-1/claude-plan-review/context/clean-source-binding.json
+- /Users/dbox/repos/wt/vickie/bdp-integration-logs/event-admission-replay-plan/clean-base-rebind-1/claude-plan-review/context/source-rebind.json
+- /Users/dbox/repos/wt/vickie/bdp-integration-logs/event-admission-replay-plan/clean-base-rebind-1/claude-plan-review/context/plan-rebind.patch
+- /Users/dbox/repos/wt/vickie/bdp-integration-logs/event-admission-replay-plan/clean-base-rebind-1/claude-plan-review/context/native-rebind-closure.md
+- /Users/dbox/repos/wt/vickie/bdp-integration-logs/event-admission-replay-plan/clean-base-rebind-1/claude-plan-review/context/root-rebind-acceptance.json
+- /Users/dbox/repos/wt/vickie/bdp-integration-logs/event-admission-replay-plan/clean-base-rebind-1/claude-plan-review/context/ci-pending-observation.json
+- /Users/dbox/repos/wt/vickie/bdp-integration-logs/event-admission-replay-plan/clean-base-rebind-1/claude-plan-review/context/original-plan.md
+- /Users/dbox/repos/wt/vickie/bdp-integration-logs/event-admission-replay-plan/clean-base-rebind-1/claude-plan-review/context/original-native-plan-review.md
+- /Users/dbox/repos/wt/vickie/bdp-integration-logs/event-admission-replay-plan/clean-base-rebind-1/claude-plan-review/context/original-source-binding.json
+- /Users/dbox/repos/wt/vickie/bdp-integration-logs/event-admission-replay-plan/clean-base-rebind-1/claude-plan-review/context/original-root-plan-acceptance.json
+- /Users/dbox/repos/wt/vickie/bdp-integration-logs/event-admission-replay-plan/clean-base-rebind-1/claude-plan-review/context/root-exact-green-acceptance.json
+- /Users/dbox/repos/wt/vickie/bdp-integration-logs/event-admission-replay-plan/clean-base-rebind-1/claude-plan-review/context/native-exact-green-audit.md
+- /Users/dbox/repos/wt/vickie/bdp-integration-logs/event-admission-replay-plan/clean-base-rebind-1/claude-plan-review/context/exact-green-run.json
+- /Users/dbox/repos/wt/vickie/bdp-integration-logs/event-admission-replay-plan/clean-base-rebind-1/claude-plan-review/context/spec.md
+- /Users/dbox/repos/wt/vickie/bdp-integration-logs/event-admission-replay-plan/clean-base-rebind-1/claude-plan-review/context/design-historical-snapshot.md
+- /Users/dbox/repos/wt/vickie/bdp-integration-logs/event-admission-replay-plan/clean-base-rebind-1/claude-plan-review/context/ledger-current-snapshot.md
+- /Users/dbox/repos/wt/vickie/bdp-integration-logs/event-admission-replay-plan/clean-base-rebind-1/claude-plan-review/context/design-current-checkpoint.md
+- /Users/dbox/repos/wt/vickie/bdp-integration-logs/event-admission-replay-plan/clean-base-rebind-1/claude-plan-review/source-reanchor.json
+- /Users/dbox/repos/wt/vickie/bdp-integration-logs/event-admission-replay-plan/clean-base-rebind-1/claude-plan-review/context-provenance.json
+
+FULL EXISTING ACCEPTED PLAN (historical pending header preserved; later green acceptance above):
+# Event admission and replay minimum closure — bounded plan for review
+
+Supporting rebind preparation only. No source authoring, actual review launch, runtime, or qualification is authorized. This existing plan is rebound to clean PR166 commit9f89271e2563a105410789ca8ca1e77dfb4d0b9f/tree30eaca668f17a191068444f8d6ca1232c80171b2, sole parentd9c3eb9e61b1982b9bd56aa77e4cdc114384e886. All679 committed/current bytes equal the tested current-observation map. Exact-head CI39072180684 acceptance is PENDING (observed in progress); native/root rebind closure and exact-green acceptance remain required before final actual PLAN packet/launch or any writer. Original plan7b1a80e7/nativec5fad74b retain their historical unqualified dirty basis. The predecessor Link aggregate, source lifecycle/oracles and measured formatting corrections are accounted for in rebind.json; no Event workload or feature scope changes here. No newer main is used.
+
+The accepted D1 audit recommends closing Event admission across sources rather than reconstructing replay. Current source already supplies exclusive source-bound cursors, retained deleted identities, finite pagination, Last-Event-ID override, packet pumping, backpressure and restart. The remaining selector refuses lexical opaque minima on Resource SSE, finite after, and SSE reconnect. Use the current-observation checker's epoch-first/view-next/unknown-current behavior; do not implement another context policy.
+
+## Authority and scope
+
+Pinned monolithic spec: minimum receiving/nondisclosure/remaining-read law at 5794–5851; minimum before conditionals and HEAD semantics at 5871–5888; Event source identity and finite replay at 6204–6263; SSE Event equivalence and exclusive Last-Event-ID override at 6328–6358. The broad remaining-read law is the basis. Do not call this an extension of the narrower Resource-only unknown-position MUST. Event replay is a current source projection, not a frozen Snapshot; S1 is unaffected. G2 metadata-only incident-Link membership remains an explicit separate limitation. No new visibility, deletion, pruning, cursor corruption, foreign-context priority, or discovery policy is invented.
+
+Exactly six proposed files (three production, three tests):
+1. packages/server/src/transaction-http.ts
+2. packages/server/src/transaction-service.ts
+3. packages/server/src/transaction-store.ts
+4. packages/server/src/transaction-events.test.ts
+5. packages/server/src/transaction-event-sse.test.ts
+6. apps/bdptest/src/transactional-event-sse-installed.test.ts
+
+No consistency/parser/pump/runtime/launcher changes or progress-document rewrite. Historical source prefixes are preserved except the enumerated HTTP sentinel expectations and comments that describe precisely the closed exclusions. Installed file is append-only; existing helpers, callbacks and evidence remain byte-identical. The old initial-scope private admission tag remains supported.
+
+## Three production seams
+
+HTTP Event route (currently 509–565): after existing receiving/auth/transactionEventRequest URL grammar, use currentReadMinimumHeaders for every selected Event route, with hasMinimumControls and undefined-to-unsupported fence intact. Preserve media selection including unsupported Accept. Non-SSE branch uses service.events and ignores Last-Event-ID entirely, including repeated malformed raw fields. SSE derives raw fields once, uses a sole field as effective after overriding URL after, and conveys repeated fields via invalidReconnect. A malformed URL after remains a receiving error before a valid header can override it. Minimum eligibility still precedes 406/304/412/HEAD success or stream-slot registration. Pass explicit private `current-event` admission to beginEvents; no cursor-token spelling inference.
+
+Service finite events (496–538): retain run/lifecycle and waiter policy/clock/abort preflight before first-attempt tuple capture. Classify canonical Scope/Bead/Link Event source irrespective of after, capture lexical tuple exactly once, and pass `current-event` provenance to owner.readEvents. Only classification errors are caught by the classification fallback; tuple errors must not be swallowed. Owner read context is fresh per attempt, original tuple is frozen, after is unchanged. Invalid source behavior and explicit unsupported sentinel remain unchanged.
+
+Service beginEvents (539–575): extend existing admission union to `initial-scope-sse | current-event`; new intent admits lexical controls for canonical Scope/Bead/Link sources including effective after and invalidReconnect. Capture synchronously before run, as today. Preserve no-intent strict behavior and the old tag's exact initial canonical Scope-only selection. Do not accidentally move finite events' capture to this earlier ordering.
+
+Owner readEvents (1670–1758): add optional fourth `current-event` admission. Existing no-after canonical lexical behavior remains. Explicit current-event enables lexical after-bearing calls; direct after calls without intent remain strict. Owner beginEventScan (1766–1815) similarly extends the private intent union without changing old tag/default semantics. Keep type/source validation and tuple capture before guarded entry. Inside entry preserve known/deleted source lookup, missing404 before semantic minimum, explicit unsupported outcome, actual current context, minimum check, then invalidReconnect/cursor parse/epoch/view/source binding/retained membership and packet construction. No packet or retained group read on failed eligibility. Successful packet delivery and advanceEventScan do not reapply the original admission barrier. Source lookup itself is permitted before minimum; do not mislabel its reads as scan allocation.
+
+## Fixtures and source selection
+
+Use the existing SSE test's src owner/service/error graph for A–C; D and all selected HTTP legacy callbacks use freshly emitted runtime. A–C use a callback-local spread delegate preserving all owner methods including close/readConfiguration, with close wrapped only for observation. Never spy on a frozen owner or alter a shared fixture. Real Link descriptor and ordinary create a/create b/create Link l seed (one commit, three operations) produce five Scope Events, two Bead-a Events, one Link Event. No metadata-only mutation. Owner fixtures may use page maximum1; baselines need only the first issued source cursor, not the whole history. HTTP runtime fixture maximum2 yields Scope pages2+2+1, Bead2, Link1. Installed defaults remain unchanged and contain each of these small source histories in one page; assert next=null before proceeding, not a guessed limit parameter.
+
+A: parameterized title `gates current Event replay minima before cursor validation: %s`, labels scope/bead/link, three callbacks/stores, one seed each. Each obtains one real first-page cursor for its source and one for a different source (two baseline owner calls). Then run the following ten rows through BOTH readEvents and beginEventScan, each once: initial opaque→Unproved; issued-after opaque→Unproved; stale-epoch-cursor opaque→Unproved; both foreign epoch/view opaque plus stale cursor→typed cursor-expired; foreign view opaque→typed foreign-view; satisfied issued-after→page/packet; satisfied wrong-source issued cursor→EventParameter; no-intent after opaque→original strict TypeError; malformed tuple→TypeError; missing Resource source plus opaque/invalid cursor→missing with current context. Scope's missing row targets missing Bead, other rows stay at its source. Total22 owner calls each,66 overall, zero waits, three commits/stores. Record method, intent, captured tuple, outcome class/reason and actual context. Missing is not a minimum failure. Assert zero retained group preparations on failed eligibility using a callback-local observer installed before measured rows; label preparations, not executions or comprehensive allocation census. Baselines are explicitly unobserved. Positive packets/pages establish successful retained access; do not require a brittle exact SQL count.
+
+B: title `captures current Event replay minimum once across owner entries: %s`, six labels scope-json/bead-json/link-json/scope-sse/bead-sse/link-sse. Six independent stores. Each seeds once, obtains one direct baseline cursor, starts one service call with supplied opaque tuple and that after, installs outcome observer immediately, and waits via bounded entered-versus-premature-settlement race. On entered: mutate supplied tuple to known/foreign values, commit create c using receiving maximumOperations1, advance injected minimum clock0→2 and release held wait. Expected two owner attempts, one wait, three clock calls, timeout carrying pos-2; original tuple/after/intent identical across attempts, contexts pos-1 then pos-2. Six service calls,12 owner attempts plus6 baseline owner calls,6 waits,18 clock calls,12 commits. No automatic new positive call needed: A and wire witnesses cover success.
+
+C: title `drains current Event replay admission before owner close: %s`, labels json/sse, two Link-source callbacks/stores. Each one seed, one baseline cursor, one service call and one entered wait. Observe operation immediately; race latch against observed settlement and finite timer. Begin service.close with immediate settlement observer; its synchronous unsettled flag is only a synchronous observation. Abort supplied signal, release wait, observe operation abort, then actual successful close, then one raw owner.withRead probe returning entry-refused/not-accepting. Expected one owner attempt, one wait, two clock calls per callback; two service calls, two attempts plus two baseline and two post-close probes, two commits. Do not assert a thrown error for returned withRead refusal.
+
+B/C every path: callback-local AbortController, finite1s latch and drain guards; finally abort supplied signal BEFORE release, advance clock2 as additional escape, then observe operation and service-close settlement. Preserve primary plus cleanup failures. Clear timers/listeners. Constant injected clock and bare latch awaits cannot rely on Vitest timeout to clean up. No new deadlines: default5s source callbacks, no sleeps needed.
+
+D: title `serves current Event replay minima across media and reconnect selection`, one fresh runtime/store/listener. Exactly37 network requests: seed POST1; finite baselines Scope3 +Bead1 +Link1 =5 GETs; for each source six requests =18 (finite after opaque503, SSE URLafter opaque503, SSE Last-Event-ID opaque503, SSE opaque foreign epoch410, SSE opaque foreign view409, satisfied issued-after SSE HEAD200). Add two initial Resource SSE opaque GET503. Add eleven explicit requests: malformed URLafter with valid header400/no context; missing Resource with malformed repeated headers and opaque404/context; existing repeated header+opaque503; existing repeated header+satisfied400; JSON repeated malformed headers+opaque503; unsupported Accept+opaque503; unsupported Accept+satisfied406; SSE If-None-Match:*+opaque503; SSE If-Match wrong+opaque503; positive Bead SSE valid first-cursor header overrides a lexically valid foreign URLafter200/one remaining frame; positive initial Link SSE200/one frame. All additional rows are GET, no hidden discovery or polling. Use raw recorder for raw-header semantics. Assert exact ordered method/target/status table; Problem schema/code, current context, Retry-After1/private-no-store on503, no context on receiving400, no accidental streaming bytes for terminal failures. Three HEAD rows have zero body. Existing paired tests below retain length parity.
+
+Positive recorder: callback-owned signal; ready/status200/media/context/frame identity and `!signal.aborted && !stream.destroyed` immediately before intentional close; exact complete frames after drain. recordRawSse.close alone does not surface stored failure. Race readiness/work against observed premature close; preserve abort cause. All D requests have5s bound, existing25ms minimum budget unchanged. Require elapsed<4000ms as validation stop margin under default5s callback; no claimed retry cardinality. Callback-local bounded cleanup aggregates errors and preserves store on unknown closure.
+
+## Existing affected cases and preservation
+
+Select and narrowly update these four existing HTTP callbacks, preserving request dispatches, instrumentation, setup, final cleanup and counts:
+- transaction-events.test.ts `serves initial finite Scope Event opaque minima through bounded waiting`:32 requests; three after/Last-Event-ID/non-SSE negotiation pairs now contextual503 instead of private500.
+- same file `serves initial finite Bead Event opaque minima with retained identity and route fences`:37 requests; four ResourceSSE/after/Last-Event-ID/negotiation pairs become contextual503.
+- same file `serves initial finite Link Event opaque minima with retained identity and route fences`:35 requests; same four pairs become contextual503, total503 becomes16 and500 becomes0. The predecessor stale12 aggregate was independently corrected to8 and locally validated before this clean commit; exact-green acceptance is still pending. Its original failure remains historical, not a result of this Event plan.
+- transaction-event-sse.test.ts `serves initial Scope Event SSE opaque minima before conditional admission`:31 requests; six after/raw-header/ResourceSSE500 rows become contextual503; tally becomes200:6,503:16,400:3,404:1,401:1,304:1,412:1,409:1,410:1. Preserve malformed URLafter400, auth, conditions and all other assertions. Update only directly obsolete exclusion comments.
+
+Retain unchanged selected `Event reconnect syntax, minimum ordering and exact context codes are preserved over HTTP`:28 requests (seed1,finite1,HEAD1,ten paired rows20,overrideHEAD3,JSON repeated header1,unauthHEAD1). It proves recognized/no-minimum cursor/refusal precedence independently of the new opaque matrix.
+
+These five legacy callbacks add163 requests and5 stores/listeners. Total selected source17 callbacks (A3+B6+C2+D1+legacy5),200 HTTP requests,17 stores and6 listeners; A–C have no HTTP. New A–C observation records11 plus D1 =12, legacy reporting remains four existing reports, reconnect has no added report. Source counters are prospective, not measurements or functionality percentages.
+
+Unselected original direct strict after/old initial-scope-tag sentinels remain valid under default-strict design and must remain byte-identical. Existing deleted-source stream and G2 initial/later gap callbacks remain unchanged and run in normal full CI; do not silently alter their500 expectations. A selective local run is not an assertion that every historical case ran.
+
+## Genuine installed witness and historical separation
+
+Append `observes installed current Event replay minimum admission across sources` with unique report `private-installed-event-admission-replay-minimum`. One child/store, unchanged genuine installed process entry and callback-local configured Bead+Link artifacts. Exact10 HTTP requests: one seed POST (a,b,l), three finite source GETs (Scope5,Bead2,Link1, all next=null under unchanged installed defaults), two initial Resource SSE opaque GET503, Scope finite issued-after opaque GET503, Link effective Last-Event-ID opaque SSE GET503, Bead finite JSON repeated malformed Last-Event-ID opaque GET503, and positive Bead SSE valid first-cursor header overriding a lexically valid foreign URLafter GET200 with exactly one remaining Event. Thus five503, five200; no retries or auxiliary discovery. Full default1000ms budget per opaque admission; no timing assertion on exact waits. Known source and source-bound cursor come from actual earlier finite responses, never fabricated discovery.
+
+Retain and separately select unchanged `installed Event cursors survive restart with Last-Event-ID precedence and source binding`:5 requests/two sequential children/one store. Its restart/provenance is historical code rerun on the candidate, not rewritten or relabeled evidence. Installed selected total15 HTTP/three sequential children/two stores. Whole selection19 callbacks/215 HTTP/19 stores; source stores and child lifetimes are distinct dimensions. Other installed callbacks remain byte-identical and are full-CI coverage only.
+
+New callback retains45s work,5s request,10s total owned cleanup,60s callback and120s outer/TERM115 supervision. Attach child exit/close and operation rejection observers immediately, including late launcher settlement. Ready/status/media/context/live-before-close plus exact frame after drain as D. Abort streams/requests, observe child close and drain, remove directory only on verified clean ownership; deadline expiry means unknown closure with directory preserved, not a fabricated clean flag. Observe late rejection/SIGKILL outcome without awaiting an unbounded second launcher drain. Actual pre/post pending-exchange counters are not socket-close measurements. Report literal/real entry, source binding, payload/proof hashes from independently accepted preparation, request sequence, frames, PID/close/drain/errors and directory disposition. Development fallback still runs in ordinary full suite and is explicitly not external-installed attribution.
+
+## Validation and handoff gates
+
+This rebind compares all679 historical planning bytes with clean9f89271e:668 match and11 changed through the recorded predecessor correction/formatting chain; of these six proposed Event files, only two test inputs changed. Native/root rebind closure and explicit exact-head green acceptance are still pending before final actual PLAN preparation/launch, and authoring remains separately closed. Root/native/actualClaude PLAN before six-file source release; then frozen CODE reviews and staged validation. Fresh bootstrap/tool proof when a new worktree needs it; type/format/lint, fresh emitted build+binding BEFORE module collection; exact17 source callbacks with immediate12new/fourlegacy report audit; fresh packed archives/consumer lock and inventory accepted before installed runs. Run historical5/audit then new10/audit separately. Required repository boundary/preflight/smoke/historical Read evidence remain distinct. Exact-head full CI is required before completion; no source/council/CI claim in this plan. All generated runtime/consumer/tool pins remain pending rather than invented.
+
+Reports bind canonical source URLs, actual tuples/contexts, per-method counters and exact wire identities; no diagnostics-as-completion score. A–C local control failures must remain distinguishable from production behavior. If fixture pagination, actual emitted imports or setup event multiplicity differ from these specified premises, stop for bounded plan correction before execution—do not compensate with extra hidden requests or relaxed oracles. No full Transactional public advertisement, release or Preview2 promotion follows from this slice.
+
+
+FULL UNCHANGED SELECTION/WORKLOAD:
+{
+  "newSource": {
+    "file": "packages/server/src/transaction-event-sse.test.ts",
+    "rows": [
+      {
+        "title": "gates current Event replay minima before cursor validation: %s",
+        "labels": [
+          "scope",
+          "bead",
+          "link"
+        ]
+      },
+      {
+        "title": "captures current Event replay minimum once across owner entries: %s",
+        "labels": [
+          "scope-json",
+          "bead-json",
+          "link-json",
+          "scope-sse",
+          "bead-sse",
+          "link-sse"
+        ]
+      },
+      {
+        "title": "drains current Event replay admission before owner close: %s",
+        "labels": [
+          "json",
+          "sse"
+        ]
+      },
+      {
+        "title": "serves current Event replay minima across media and reconnect selection",
+        "labels": null
+      }
+    ]
+  },
+  "legacySource": {
+    "packages/server/src/transaction-events.test.ts": [
+      "serves initial finite Scope Event opaque minima through bounded waiting",
+      "serves initial finite Bead Event opaque minima with retained identity and route fences",
+      "serves initial finite Link Event opaque minima with retained identity and route fences"
+    ],
+    "packages/server/src/transaction-event-sse.test.ts": [
+      "serves initial Scope Event SSE opaque minima before conditional admission",
+      "Event reconnect syntax, minimum ordering and exact context codes are preserved over HTTP"
+    ]
+  },
+  "installed": {
+    "file": "apps/bdptest/src/transactional-event-sse-installed.test.ts",
+    "historical": "installed Event cursors survive restart with Last-Event-ID precedence and source binding",
+    "new": "observes installed current Event replay minimum admission across sources"
+  },
+  "counts": {
+    "sourceCallbacks": 17,
+    "installedCallbacks": 2,
+    "sourceHttp": 200,
+    "installedHistoricalHttp": 5,
+    "installedNewHttp": 10,
+    "sourceStores": 17,
+    "installedStores": 2,
+    "installedSequentialChildren": 3,
+    "sourceListeners": 6,
+    "newSourceReports": 12,
+    "existingSourceReports": 4
+  },
+  "executionAuthorized": false
+}

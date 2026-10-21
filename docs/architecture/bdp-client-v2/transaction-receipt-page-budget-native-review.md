@@ -1,0 +1,7 @@
+# Native review: receipt-page authoring size correction
+
+Reviewed amendment147b9341b81ee228cb60edcd520ab2eafb1e757aae558be7e5a6daf0cd0d1f2b and standard-format candidatecd5f574659a803f1fce306b2f473f1307025cfcf8a1fbe277b61fa7760e6a7d1 against original accepted scope. Independent root script measured366621 bytes,9843 JSON nodes and139 total actions; all eight predecessor scenario objects compare exactly to b604. The new row contains18 actions as accepted. Raw request bodies are5104/157/152 bytes, each below the unchanged16KiB bound.
+
+No actionable finding on the proposed static authoring correction. The additional bytes represent authored literal seed/current/postimage inventories and ordered receipt-prefix results; the before/change/later observations have distinct purposes. No generic selector/DSL change or weaker oracle is being used to save text. Raising only manifest growth to131072 bytes and total368640 bytes leaves bounded3144/2019 headroom; the existing10000-node bound independently limits complexity. Coverage growth16KiB, all action/session counts, actual raw/decoded-body/wire caps and all deadlines remain unchanged. Those execution limits must still be measured on the final run, not inferred from source fit.
+
+This review concerns only this authoring-budget amendment. It does not approve code correctness, actual serving, final runtime measurements, whole-contract qualification or merge. External review and root disposition remain required before applying the amendment.

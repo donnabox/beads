@@ -1,0 +1,21 @@
+--- preparation-status.json
++++ /Users/dbox/repos/wt/vickie/bdp-integration-logs/tx-discovery-validation-preparation-9/preparation-status.json
+@@ -1,13 +1,13 @@
+ {
+   "activeRunExists": false,
+-  "actualP10Results": "NONE",
++  "actualP9Results": "NONE",
+   "allFreshStages": 52,
+   "approvedStages": [],
+   "bootstrapReuse": [],
++  "consumerBodyCopiedOrReused": false,
+   "executionReleased": false,
+-  "historicalP9Results": "One root wrapper refused before stage start; all52 inner stages UNEXECUTED",
+-  "rootProposedGateAndDisposition": "NOT AUTHORED here; independent complete DATA precision required before any activation",
++  "freshRuntimeOrHelpersExecuted": false,
++  "historicalP8Results": "21 accepted stages; wrapper refused before prepare-consumer stage/child creation; 30 later undispatched",
+   "sourceBindingFinalized": true,
+-  "sourceHelperSchemaEvaluated": false,
+-  "state": "CLOSED fresh P10 author preparation; no independent or root execution acceptance"
++  "state": "CLOSED P9 author preparation; independent other-native and root mechanics pending"
+ }

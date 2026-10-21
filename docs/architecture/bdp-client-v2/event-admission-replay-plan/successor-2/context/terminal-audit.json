@@ -1,0 +1,938 @@
+{
+  "at": "2026-10-17T22:38:09.829553+00:00",
+  "scope": "Independent terminal provenance and actual tool-access audit only; no findings disposition or approval",
+  "classification": "review_complete",
+  "exitCode": 0,
+  "elapsedSeconds": 1091.7686196248978,
+  "head": "9f89271e2563a105410789ca8ca1e77dfb4d0b9f",
+  "verifiedIndexEntries": 29,
+  "verifiedCurrentSourceFiles": 679,
+  "verifiedContexts": 19,
+  "verifiedArtifacts": 11,
+  "sourceBeforeEqualsAfter": true,
+  "currentPinsMatch": true,
+  "bindingTransition": {
+    "onlyChangedField": "rootLaunchReleased",
+    "closedSha256": "734ed24162db237a562756ea25a1d3bab6b1091cbbbdef88b34770c644ebcc8f",
+    "releasedSha256": "e8f37ec60e39886999133871de63b427f38528f9218b65749e1af9684e0ed14f",
+    "rootReleaseSha256": "72019d2f2c515ef3ddfd1ae34fc21d272f4b8247bcc8ccc1c98acf366fc758fc"
+  },
+  "streamRecords": 4409,
+  "streamBytes": 2406613,
+  "streamSha256": "ecd9959dd2664372430c005cb378f9cd51964e1b4803292787a5cb0bc6582810",
+  "terminalResultCount": 1,
+  "terminalSubtype": "success",
+  "finalExactlyEqualsTerminalResult": true,
+  "finalSha256": "62e71bf378ef230ce32181bd02f219bf7869c8e41e0c6790064ff1109daf260c",
+  "terminalResultsSha256": "d61f7ad0de72a98aac67e9cbd29ffebbdce2856ffb8db8a46887a3ebdf09c201",
+  "exitSha256": "090f9f7985af509aaae474280aad5d79865d53e50b786aaec1f075bad3ad8bf2",
+  "sourceBeforeSha256": "7e0332442488d2a1504d1837416862221b3aedc5986a2f1b6109926935ef224c",
+  "sourceAfterSha256": "7e0332442488d2a1504d1837416862221b3aedc5986a2f1b6109926935ef224c",
+  "stderrBytes": 0,
+  "parseErrors": 0,
+  "wrapperError": null,
+  "toolCounts": {
+    "Read": 40,
+    "Grep": 27,
+    "Glob": 1
+  },
+  "toolResultErrorCount": 0,
+  "toolResultErrors": [],
+  "unmatchedToolIds": [],
+  "successfulReadPaths": [
+    "/Users/dbox/repos/wt/vickie/vickie-current-observation-minimum/apps/bdptest/src/transactional-event-sse-installed.test.ts",
+    "/Users/dbox/repos/wt/vickie/vickie-current-observation-minimum/docs/specs/bdp.md",
+    "/Users/dbox/repos/wt/vickie/vickie-current-observation-minimum/packages/server/src/read-http.ts",
+    "/Users/dbox/repos/wt/vickie/vickie-current-observation-minimum/packages/server/src/transaction-consistency.ts",
+    "/Users/dbox/repos/wt/vickie/vickie-current-observation-minimum/packages/server/src/transaction-event-sse.test.ts",
+    "/Users/dbox/repos/wt/vickie/vickie-current-observation-minimum/packages/server/src/transaction-events.test.ts",
+    "/Users/dbox/repos/wt/vickie/vickie-current-observation-minimum/packages/server/src/transaction-events.ts",
+    "/Users/dbox/repos/wt/vickie/vickie-current-observation-minimum/packages/server/src/transaction-http.test.ts",
+    "/Users/dbox/repos/wt/vickie/vickie-current-observation-minimum/packages/server/src/transaction-http.ts",
+    "/Users/dbox/repos/wt/vickie/vickie-current-observation-minimum/packages/server/src/transaction-runtime.ts",
+    "/Users/dbox/repos/wt/vickie/vickie-current-observation-minimum/packages/server/src/transaction-service.test.ts",
+    "/Users/dbox/repos/wt/vickie/vickie-current-observation-minimum/packages/server/src/transaction-service.ts",
+    "/Users/dbox/repos/wt/vickie/vickie-current-observation-minimum/packages/server/src/transaction-store.ts",
+    "/Users/dbox/repos/wt/vickie/vickie-current-observation-minimum/packages/server/test-support/raw-sse-recorder.ts",
+    "/Users/dbox/repos/wt/vickie/vickie-current-observation-minimum/vitest.config.ts"
+  ],
+  "successfulReadContextPaths": [],
+  "toolAccessObservations": [
+    {
+      "id": "toolu_01R3Qy4rjFsaxPTNdxyEmFPz",
+      "name": "Read",
+      "input": {
+        "file_path": "/Users/dbox/repos/wt/vickie/vickie-current-observation-minimum/docs/specs/bdp.md",
+        "offset": 5780,
+        "limit": 120
+      },
+      "resultCount": 1,
+      "successfulResult": true,
+      "errorMarkedResultCount": 0
+    },
+    {
+      "id": "toolu_015sYuGxzEidd3r4sDRTCzWQ",
+      "name": "Read",
+      "input": {
+        "file_path": "/Users/dbox/repos/wt/vickie/vickie-current-observation-minimum/docs/specs/bdp.md",
+        "offset": 6200,
+        "limit": 70
+      },
+      "resultCount": 1,
+      "successfulResult": true,
+      "errorMarkedResultCount": 0
+    },
+    {
+      "id": "toolu_01F7BAWSMtz8Uc6JaFeitGe9",
+      "name": "Read",
+      "input": {
+        "file_path": "/Users/dbox/repos/wt/vickie/vickie-current-observation-minimum/docs/specs/bdp.md",
+        "offset": 6320,
+        "limit": 50
+      },
+      "resultCount": 1,
+      "successfulResult": true,
+      "errorMarkedResultCount": 0
+    },
+    {
+      "id": "toolu_01FUDGdNeKQhbugxww3NTnmk",
+      "name": "Read",
+      "input": {
+        "file_path": "/Users/dbox/repos/wt/vickie/vickie-current-observation-minimum/packages/server/src/transaction-http.ts",
+        "offset": 460,
+        "limit": 140
+      },
+      "resultCount": 1,
+      "successfulResult": true,
+      "errorMarkedResultCount": 0
+    },
+    {
+      "id": "toolu_01PzWDaBEchJmaSioqXnvT1H",
+      "name": "Read",
+      "input": {
+        "file_path": "/Users/dbox/repos/wt/vickie/vickie-current-observation-minimum/packages/server/src/transaction-http.ts",
+        "offset": 1,
+        "limit": 200
+      },
+      "resultCount": 1,
+      "successfulResult": true,
+      "errorMarkedResultCount": 0
+    },
+    {
+      "id": "toolu_01L9VgbFYrF9ynsvQfMWMu2k",
+      "name": "Grep",
+      "input": {
+        "pattern": "lastEventIds|malformedTransactionMinimumHeaders|TransactionEventParameterError|TransactionMinimumUnsupported|TransactionMinimumFailure|TransactionMinimumVisibilityGap|TransactionEventProjectionGap",
+        "path": "/Users/dbox/repos/wt/vickie/vickie-current-observation-minimum/packages/server/src/transaction-http.ts",
+        "output_mode": "content",
+        "-n": true
+      },
+      "resultCount": 1,
+      "successfulResult": true,
+      "errorMarkedResultCount": 0
+    },
+    {
+      "id": "toolu_01SihBRvaVvrLiyW7bZpTFMQ",
+      "name": "Read",
+      "input": {
+        "file_path": "/Users/dbox/repos/wt/vickie/vickie-current-observation-minimum/packages/server/src/transaction-http.ts",
+        "offset": 270,
+        "limit": 150
+      },
+      "resultCount": 1,
+      "successfulResult": true,
+      "errorMarkedResultCount": 0
+    },
+    {
+      "id": "toolu_01HDBYCKe7DE5qW65MFpm3He",
+      "name": "Read",
+      "input": {
+        "file_path": "/Users/dbox/repos/wt/vickie/vickie-current-observation-minimum/packages/server/src/transaction-service.ts",
+        "offset": 400,
+        "limit": 220
+      },
+      "resultCount": 1,
+      "successfulResult": true,
+      "errorMarkedResultCount": 0
+    },
+    {
+      "id": "toolu_01LgJnCFJwQbMespeZfpfrdJ",
+      "name": "Read",
+      "input": {
+        "file_path": "/Users/dbox/repos/wt/vickie/vickie-current-observation-minimum/packages/server/src/transaction-consistency.ts"
+      },
+      "resultCount": 1,
+      "successfulResult": true,
+      "errorMarkedResultCount": 0
+    },
+    {
+      "id": "toolu_01FbZp2SpNHbi1D4PwURjhQC",
+      "name": "Read",
+      "input": {
+        "file_path": "/Users/dbox/repos/wt/vickie/vickie-current-observation-minimum/packages/server/src/transaction-store.ts",
+        "offset": 1620,
+        "limit": 260
+      },
+      "resultCount": 1,
+      "successfulResult": true,
+      "errorMarkedResultCount": 0
+    },
+    {
+      "id": "toolu_01SaMQNdcQVTjXnKWbPoNZUn",
+      "name": "Grep",
+      "input": {
+        "pattern": "function eventSource|function eventSourceKnown|function retainedGroupReader|const retainedGroupReader|function eventPacket|const eventPacket|function eventProjection|parseTransactionEventCursor|checkTransactionEventCursor|function eventContinuation",
+        "path": "/Users/dbox/repos/wt/vickie/vickie-current-observation-minimum/packages/server/src",
+        "output_mode": "content",
+        "-n": true
+      },
+      "resultCount": 1,
+      "successfulResult": true,
+      "errorMarkedResultCount": 0
+    },
+    {
+      "id": "toolu_013iYGKbHG6fgXVvGhhyX8wT",
+      "name": "Read",
+      "input": {
+        "file_path": "/Users/dbox/repos/wt/vickie/vickie-current-observation-minimum/packages/server/src/transaction-store.ts",
+        "offset": 660,
+        "limit": 130
+      },
+      "resultCount": 1,
+      "successfulResult": true,
+      "errorMarkedResultCount": 0
+    },
+    {
+      "id": "toolu_014zG81L42XhbhkuBUyUTk6q",
+      "name": "Read",
+      "input": {
+        "file_path": "/Users/dbox/repos/wt/vickie/vickie-current-observation-minimum/packages/server/src/transaction-events.ts",
+        "offset": 90,
+        "limit": 120
+      },
+      "resultCount": 1,
+      "successfulResult": true,
+      "errorMarkedResultCount": 0
+    },
+    {
+      "id": "toolu_017RBmvFGbkVG1YCT9fN74iY",
+      "name": "Read",
+      "input": {
+        "file_path": "/Users/dbox/repos/wt/vickie/vickie-current-observation-minimum/packages/server/src/transaction-http.ts",
+        "offset": 630,
+        "limit": 90
+      },
+      "resultCount": 1,
+      "successfulResult": true,
+      "errorMarkedResultCount": 0
+    },
+    {
+      "id": "toolu_01G4JvWMCyW4tcZ8Kmm9uwAW",
+      "name": "Read",
+      "input": {
+        "file_path": "/Users/dbox/repos/wt/vickie/vickie-current-observation-minimum/packages/server/src/read-http.ts"
+      },
+      "resultCount": 1,
+      "successfulResult": true,
+      "errorMarkedResultCount": 0
+    },
+    {
+      "id": "toolu_01YSUngyc4f3K87nQQHmS8kW",
+      "name": "Read",
+      "input": {
+        "file_path": "/Users/dbox/repos/wt/vickie/vickie-current-observation-minimum/packages/server/src/transaction-store.ts",
+        "offset": 789,
+        "limit": 70
+      },
+      "resultCount": 1,
+      "successfulResult": true,
+      "errorMarkedResultCount": 0
+    },
+    {
+      "id": "toolu_01QtAYZowGBeaWkZSNQa8EnH",
+      "name": "Grep",
+      "input": {
+        "pattern": "receiptMaximumItems|maximumItems|receiptMaximum",
+        "path": "/Users/dbox/repos/wt/vickie/vickie-current-observation-minimum/packages/server/src",
+        "output_mode": "content",
+        "-n": true,
+        "head_limit": 40
+      },
+      "resultCount": 1,
+      "successfulResult": true,
+      "errorMarkedResultCount": 0
+    },
+    {
+      "id": "toolu_01H4U12QubbqNdboUTnjyDY4",
+      "name": "Grep",
+      "input": {
+        "pattern": "function transactionReceiptMaximum",
+        "path": "/Users/dbox/repos/wt/vickie/vickie-current-observation-minimum/packages/server/src",
+        "output_mode": "content",
+        "-n": true,
+        "-A": 12
+      },
+      "resultCount": 1,
+      "successfulResult": true,
+      "errorMarkedResultCount": 0
+    },
+    {
+      "id": "toolu_01VHxSMjqAWppNqYcvx94pkT",
+      "name": "Grep",
+      "input": {
+        "pattern": "^(import|const|let|function|async function|describe|it|test|  it\\(|afterEach|beforeEach)",
+        "path": "/Users/dbox/repos/wt/vickie/vickie-current-observation-minimum/packages/server/src/transaction-event-sse.test.ts",
+        "output_mode": "content",
+        "-n": true,
+        "head_limit": 120
+      },
+      "resultCount": 1,
+      "successfulResult": true,
+      "errorMarkedResultCount": 0
+    },
+    {
+      "id": "toolu_01CeFRznyKaTbTw4UFqXbqPM",
+      "name": "Read",
+      "input": {
+        "file_path": "/Users/dbox/repos/wt/vickie/vickie-current-observation-minimum/packages/server/src/transaction-event-sse.test.ts",
+        "offset": 995,
+        "limit": 250
+      },
+      "resultCount": 1,
+      "successfulResult": true,
+      "errorMarkedResultCount": 0
+    },
+    {
+      "id": "toolu_01TyhsGfpSDL4gCUYZAYmvAo",
+      "name": "Read",
+      "input": {
+        "file_path": "/Users/dbox/repos/wt/vickie/vickie-current-observation-minimum/packages/server/src/transaction-event-sse.test.ts",
+        "offset": 19,
+        "limit": 82
+      },
+      "resultCount": 1,
+      "successfulResult": true,
+      "errorMarkedResultCount": 0
+    },
+    {
+      "id": "toolu_0119LYVPvFdXgqiUoAXvgys7",
+      "name": "Read",
+      "input": {
+        "file_path": "/Users/dbox/repos/wt/vickie/vickie-current-observation-minimum/packages/server/src/transaction-event-sse.test.ts",
+        "offset": 1244,
+        "limit": 160
+      },
+      "resultCount": 1,
+      "successfulResult": true,
+      "errorMarkedResultCount": 0
+    },
+    {
+      "id": "toolu_01C2j7Vxv6squtrdcJtcDWEH",
+      "name": "Read",
+      "input": {
+        "file_path": "/Users/dbox/repos/wt/vickie/vickie-current-observation-minimum/packages/server/src/transaction-event-sse.test.ts",
+        "offset": 1403,
+        "limit": 125
+      },
+      "resultCount": 1,
+      "successfulResult": true,
+      "errorMarkedResultCount": 0
+    },
+    {
+      "id": "toolu_01JPpND1ivHkAtovZU5Nn2pm",
+      "name": "Grep",
+      "input": {
+        "pattern": "withRead|not-accepting|entry-refused|closing or closed",
+        "path": "/Users/dbox/repos/wt/vickie/vickie-current-observation-minimum/packages/server/src",
+        "output_mode": "content",
+        "-n": true,
+        "head_limit": 60
+      },
+      "resultCount": 1,
+      "successfulResult": true,
+      "errorMarkedResultCount": 0
+    },
+    {
+      "id": "toolu_01GCthMyJ6KtMmfSjjFyhMVp",
+      "name": "Read",
+      "input": {
+        "file_path": "/Users/dbox/repos/wt/vickie/vickie-current-observation-minimum/packages/server/src/transaction-event-sse.test.ts",
+        "offset": 1521,
+        "limit": 200
+      },
+      "resultCount": 1,
+      "successfulResult": true,
+      "errorMarkedResultCount": 0
+    },
+    {
+      "id": "toolu_01AmHUEzkmkoAzxdCxFNzvkL",
+      "name": "Read",
+      "input": {
+        "file_path": "/Users/dbox/repos/wt/vickie/vickie-current-observation-minimum/packages/server/src/transaction-event-sse.test.ts",
+        "offset": 1720,
+        "limit": 230
+      },
+      "resultCount": 1,
+      "successfulResult": true,
+      "errorMarkedResultCount": 0
+    },
+    {
+      "id": "toolu_017QLSvbCp1TPWjqPKBbXst7",
+      "name": "Read",
+      "input": {
+        "file_path": "/Users/dbox/repos/wt/vickie/vickie-current-observation-minimum/packages/server/src/transaction-event-sse.test.ts",
+        "offset": 186,
+        "limit": 105
+      },
+      "resultCount": 1,
+      "successfulResult": true,
+      "errorMarkedResultCount": 0
+    },
+    {
+      "id": "toolu_01W3WANundQgu45sUwDESzNW",
+      "name": "Read",
+      "input": {
+        "file_path": "/Users/dbox/repos/wt/vickie/vickie-current-observation-minimum/packages/server/src/transaction-event-sse.test.ts",
+        "offset": 289,
+        "limit": 160
+      },
+      "resultCount": 1,
+      "successfulResult": true,
+      "errorMarkedResultCount": 0
+    },
+    {
+      "id": "toolu_012qztVNhBGRzykKMAVqqgPi",
+      "name": "Read",
+      "input": {
+        "file_path": "/Users/dbox/repos/wt/vickie/vickie-current-observation-minimum/packages/server/src/transaction-events.ts",
+        "offset": 190,
+        "limit": 90
+      },
+      "resultCount": 1,
+      "successfulResult": true,
+      "errorMarkedResultCount": 0
+    },
+    {
+      "id": "toolu_01RP9AXiSfgp6ocfbgkSEbQv",
+      "name": "Grep",
+      "input": {
+        "pattern": "serves initial finite (Scope|Bead|Link) Event opaque minima",
+        "path": "/Users/dbox/repos/wt/vickie/vickie-current-observation-minimum/packages/server/src/transaction-events.test.ts",
+        "output_mode": "content",
+        "-n": true
+      },
+      "resultCount": 1,
+      "successfulResult": true,
+      "errorMarkedResultCount": 0
+    },
+    {
+      "id": "toolu_017EXpDpEApe8PcFh9JfcFP1",
+      "name": "Read",
+      "input": {
+        "file_path": "/Users/dbox/repos/wt/vickie/vickie-current-observation-minimum/packages/server/src/transaction-events.test.ts",
+        "offset": 1400,
+        "limit": 160
+      },
+      "resultCount": 1,
+      "successfulResult": true,
+      "errorMarkedResultCount": 0
+    },
+    {
+      "id": "toolu_01EfTqVhji3Dms3yzvxW7mAY",
+      "name": "Read",
+      "input": {
+        "file_path": "/Users/dbox/repos/wt/vickie/vickie-current-observation-minimum/packages/server/src/transaction-events.test.ts",
+        "offset": 2053,
+        "limit": 230
+      },
+      "resultCount": 1,
+      "successfulResult": true,
+      "errorMarkedResultCount": 0
+    },
+    {
+      "id": "toolu_015rKkw1vgFnXpMf1XhkZAK7",
+      "name": "Grep",
+      "input": {
+        "pattern": "minimum-position",
+        "path": "/Users/dbox/repos/wt/vickie/vickie-current-observation-minimum",
+        "output_mode": "files_with_matches"
+      },
+      "resultCount": 1,
+      "successfulResult": true,
+      "errorMarkedResultCount": 0
+    },
+    {
+      "id": "toolu_01EjEwdrMXgWNGGrLUzTuHrA",
+      "name": "Grep",
+      "input": {
+        "pattern": "readEvents\\(|beginEventScan\\(|service\\.events\\(|beginEvents\\(",
+        "path": "/Users/dbox/repos/wt/vickie/vickie-current-observation-minimum",
+        "output_mode": "count"
+      },
+      "resultCount": 1,
+      "successfulResult": true,
+      "errorMarkedResultCount": 0
+    },
+    {
+      "id": "toolu_01RP7RYbpyfe62ByW6ARyLXW",
+      "name": "Grep",
+      "input": {
+        "pattern": "minimum-position|x-bdp-development-limit",
+        "path": "/Users/dbox/repos/wt/vickie/vickie-current-observation-minimum/packages/server/src/transaction-http.test.ts",
+        "output_mode": "content",
+        "-n": true,
+        "-B": 6,
+        "head_limit": 80
+      },
+      "resultCount": 1,
+      "successfulResult": true,
+      "errorMarkedResultCount": 0
+    },
+    {
+      "id": "toolu_01Cav82mr4SowfRg9LXBh9pU",
+      "name": "Read",
+      "input": {
+        "file_path": "/Users/dbox/repos/wt/vickie/vickie-current-observation-minimum/packages/server/src/transaction-http.test.ts",
+        "offset": 1740,
+        "limit": 90
+      },
+      "resultCount": 1,
+      "successfulResult": true,
+      "errorMarkedResultCount": 0
+    },
+    {
+      "id": "toolu_01NLV6wZ26BcjFv4dhMnSh3L",
+      "name": "Grep",
+      "input": {
+        "pattern": "\\.events\\(|beginEvents\\(",
+        "path": "/Users/dbox/repos/wt/vickie/vickie-current-observation-minimum/packages/server/src/transaction-service.test.ts",
+        "output_mode": "content",
+        "-n": true,
+        "-B": 3,
+        "-A": 8
+      },
+      "resultCount": 1,
+      "successfulResult": true,
+      "errorMarkedResultCount": 0
+    },
+    {
+      "id": "toolu_0158ZM8g1oqw5UX2CthWBSA8",
+      "name": "Grep",
+      "input": {
+        "pattern": "readEvents\\(",
+        "path": "/Users/dbox/repos/wt/vickie/vickie-current-observation-minimum/packages/server/src/transaction-events.test.ts",
+        "output_mode": "content",
+        "-n": true,
+        "-A": 6,
+        "head_limit": 150
+      },
+      "resultCount": 1,
+      "successfulResult": true,
+      "errorMarkedResultCount": 0
+    },
+    {
+      "id": "toolu_01GEehAEM87TRkHfMwp1LCxd",
+      "name": "Grep",
+      "input": {
+        "pattern": "unsupported minimum tuple",
+        "path": "/Users/dbox/repos/wt/vickie/vickie-current-observation-minimum/packages/server/src",
+        "output_mode": "content",
+        "-n": true,
+        "-B": 14,
+        "head_limit": 120
+      },
+      "resultCount": 1,
+      "successfulResult": true,
+      "errorMarkedResultCount": 0
+    },
+    {
+      "id": "toolu_017U3P6qHLxbjrUEQALMBfj5",
+      "name": "Grep",
+      "input": {
+        "pattern": "initial-scope-sse|finite-start-now",
+        "path": "/Users/dbox/repos/wt/vickie/vickie-current-observation-minimum",
+        "output_mode": "content",
+        "-n": true,
+        "head_limit": 60
+      },
+      "resultCount": 1,
+      "successfulResult": true,
+      "errorMarkedResultCount": 0
+    },
+    {
+      "id": "toolu_01CdnREh364gLzQ4WuBhBZ1b",
+      "name": "Grep",
+      "input": {
+        "pattern": "\\.(events|readEvents|beginEventScan|beginEvents)\\([^)]*\\n?[^)]*(minimum|tuple|supplied)",
+        "path": "/Users/dbox/repos/wt/vickie/vickie-current-observation-minimum/packages/server/src/transaction-events.test.ts",
+        "output_mode": "content",
+        "-n": true,
+        "multiline": true,
+        "head_limit": 60
+      },
+      "resultCount": 1,
+      "successfulResult": true,
+      "errorMarkedResultCount": 0
+    },
+    {
+      "id": "toolu_01JHeJVezUGZtnT9MPBrp97X",
+      "name": "Read",
+      "input": {
+        "file_path": "/Users/dbox/repos/wt/vickie/vickie-current-observation-minimum/packages/server/src/transaction-events.test.ts",
+        "offset": 895,
+        "limit": 80
+      },
+      "resultCount": 1,
+      "successfulResult": true,
+      "errorMarkedResultCount": 0
+    },
+    {
+      "id": "toolu_01Wbc3RDJ1fgS66qRDeE7vFD",
+      "name": "Read",
+      "input": {
+        "file_path": "/Users/dbox/repos/wt/vickie/vickie-current-observation-minimum/packages/server/src/transaction-events.test.ts",
+        "offset": 1030,
+        "limit": 90
+      },
+      "resultCount": 1,
+      "successfulResult": true,
+      "errorMarkedResultCount": 0
+    },
+    {
+      "id": "toolu_01W44hdmuYpc6u1yqN8RUZC7",
+      "name": "Grep",
+      "input": {
+        "pattern": "^(import|const|let|function|async function|it\\(|  )?it\\(|^function |^const |^async function ",
+        "path": "/Users/dbox/repos/wt/vickie/vickie-current-observation-minimum/apps/bdptest/src/transactional-event-sse-installed.test.ts",
+        "output_mode": "content",
+        "-n": true,
+        "head_limit": 60
+      },
+      "resultCount": 1,
+      "successfulResult": true,
+      "errorMarkedResultCount": 0
+    },
+    {
+      "id": "toolu_01HDB6JjpbW3CgBQSN22sEbt",
+      "name": "Read",
+      "input": {
+        "file_path": "/Users/dbox/repos/wt/vickie/vickie-current-observation-minimum/apps/bdptest/src/transactional-event-sse-installed.test.ts",
+        "offset": 1,
+        "limit": 80
+      },
+      "resultCount": 1,
+      "successfulResult": true,
+      "errorMarkedResultCount": 0
+    },
+    {
+      "id": "toolu_01GGPd5RRLnbmrkCTRgEf5iJ",
+      "name": "Read",
+      "input": {
+        "file_path": "/Users/dbox/repos/wt/vickie/vickie-current-observation-minimum/apps/bdptest/src/transactional-event-sse-installed.test.ts",
+        "offset": 1056,
+        "limit": 230
+      },
+      "resultCount": 1,
+      "successfulResult": true,
+      "errorMarkedResultCount": 0
+    },
+    {
+      "id": "toolu_01D8592z5CwhkyVjRhre3ANV",
+      "name": "Grep",
+      "input": {
+        "pattern": "TRANSACTION_MAXIMUM_OPERATIONS = |maximumOperations: number|TRANSACTION_EVENT_PAGE_BYTES =",
+        "path": "/Users/dbox/repos/wt/vickie/vickie-current-observation-minimum/packages/server/src",
+        "output_mode": "content",
+        "-n": true
+      },
+      "resultCount": 1,
+      "successfulResult": true,
+      "errorMarkedResultCount": 0
+    },
+    {
+      "id": "toolu_015UynBT41gvpr3qJGDWz2J8",
+      "name": "Grep",
+      "input": {
+        "pattern": "TRANSACTION_MAXIMUM_OPERATIONS",
+        "path": "/Users/dbox/repos/wt/vickie/vickie-current-observation-minimum/packages/server/src/transaction-batch.ts",
+        "output_mode": "content",
+        "-n": true,
+        "head_limit": 10
+      },
+      "resultCount": 1,
+      "successfulResult": true,
+      "errorMarkedResultCount": 0
+    },
+    {
+      "id": "toolu_01Fw4h25uvgKgfJukz7XgDey",
+      "name": "Grep",
+      "input": {
+        "pattern": "TRANSACTION_RUNTIME_LIMITS = |maximumOperations:|readDefaultItems",
+        "path": "/Users/dbox/repos/wt/vickie/vickie-current-observation-minimum/packages/server/src",
+        "output_mode": "content",
+        "-n": true,
+        "-A": 8,
+        "head_limit": 40
+      },
+      "resultCount": 1,
+      "successfulResult": true,
+      "errorMarkedResultCount": 0
+    },
+    {
+      "id": "toolu_019Y8vX3Rfh4bigQASKG574D",
+      "name": "Grep",
+      "input": {
+        "pattern": "TRANSACTION_RUNTIME_LIMITS",
+        "path": "/Users/dbox/repos/wt/vickie/vickie-current-observation-minimum/packages/server/src/transaction-batch.ts",
+        "output_mode": "content",
+        "-n": true,
+        "-B": 2,
+        "-A": 14,
+        "head_limit": 30
+      },
+      "resultCount": 1,
+      "successfulResult": true,
+      "errorMarkedResultCount": 0
+    },
+    {
+      "id": "toolu_01Ji4ZpNnLgnyBCUxcSV6cGR",
+      "name": "Grep",
+      "input": {
+        "pattern": "createRawHttpExchangeExecutor",
+        "path": "/Users/dbox/repos/wt/vickie/vickie-current-observation-minimum/packages/conformance/src",
+        "output_mode": "content",
+        "-n": true,
+        "-A": 40,
+        "head_limit": 60
+      },
+      "resultCount": 1,
+      "successfulResult": true,
+      "errorMarkedResultCount": 0
+    },
+    {
+      "id": "toolu_01DRrbwrJeVU3HTnixFQ5zGd",
+      "name": "Grep",
+      "input": {
+        "pattern": "headers",
+        "path": "/Users/dbox/repos/wt/vickie/vickie-current-observation-minimum/packages/conformance/src/http-executor.ts",
+        "output_mode": "content",
+        "-n": true,
+        "head_limit": 40
+      },
+      "resultCount": 1,
+      "successfulResult": true,
+      "errorMarkedResultCount": 0
+    },
+    {
+      "id": "toolu_01Db6HEKUybrKNA8FqjVjyum",
+      "name": "Read",
+      "input": {
+        "file_path": "/Users/dbox/repos/wt/vickie/vickie-current-observation-minimum/packages/server/test-support/raw-sse-recorder.ts"
+      },
+      "resultCount": 1,
+      "successfulResult": true,
+      "errorMarkedResultCount": 0
+    },
+    {
+      "id": "toolu_01QrXTMXiF61Raeausriud7k",
+      "name": "Read",
+      "input": {
+        "file_path": "/Users/dbox/repos/wt/vickie/vickie-current-observation-minimum/packages/server/src/transaction-events.test.ts",
+        "offset": 1559,
+        "limit": 40
+      },
+      "resultCount": 1,
+      "successfulResult": true,
+      "errorMarkedResultCount": 0
+    },
+    {
+      "id": "toolu_019hmL2itECeCt9gHVqW9FZT",
+      "name": "Glob",
+      "input": {
+        "pattern": "**/vitest.config.*"
+      },
+      "resultCount": 1,
+      "successfulResult": true,
+      "errorMarkedResultCount": 0
+    },
+    {
+      "id": "toolu_017FmMNzGwaagmv3SGc8UzS6",
+      "name": "Read",
+      "input": {
+        "file_path": "/Users/dbox/repos/wt/vickie/vickie-current-observation-minimum/vitest.config.ts"
+      },
+      "resultCount": 1,
+      "successfulResult": true,
+      "errorMarkedResultCount": 0
+    },
+    {
+      "id": "toolu_0179Lmeu41S9fmjdVDapVHBR",
+      "name": "Read",
+      "input": {
+        "file_path": "/Users/dbox/repos/wt/vickie/vickie-current-observation-minimum/packages/server/src/transaction-events.test.ts",
+        "offset": 1598,
+        "limit": 105
+      },
+      "resultCount": 1,
+      "successfulResult": true,
+      "errorMarkedResultCount": 0
+    },
+    {
+      "id": "toolu_01XeMg5xpwXpRK7KUo7PqL3f",
+      "name": "Read",
+      "input": {
+        "file_path": "/Users/dbox/repos/wt/vickie/vickie-current-observation-minimum/packages/server/src/transaction-events.test.ts",
+        "offset": 1830,
+        "limit": 120
+      },
+      "resultCount": 1,
+      "successfulResult": true,
+      "errorMarkedResultCount": 0
+    },
+    {
+      "id": "toolu_016MvmTs4qLKTD5T9SkHZNoW",
+      "name": "Grep",
+      "input": {
+        "pattern": "requests\\.length|sessions\\.length|toBeLessThan\\(|expect\\(requests|children|restart",
+        "path": "/Users/dbox/repos/wt/vickie/vickie-current-observation-minimum/apps/bdptest/src/transactional-event-sse-installed.test.ts",
+        "output_mode": "content",
+        "-n": true,
+        "head_limit": 60
+      },
+      "resultCount": 1,
+      "successfulResult": true,
+      "errorMarkedResultCount": 0
+    },
+    {
+      "id": "toolu_013eLukKLE7FfvpPd5DBmmRG",
+      "name": "Grep",
+      "input": {
+        "pattern": "beginEvents|nextEvents|service\\.events|readEvents|beginEventScan|advanceEventScan",
+        "path": "/Users/dbox/repos/wt/vickie/vickie-current-observation-minimum/packages/server/src",
+        "glob": "!*.test.ts",
+        "output_mode": "content",
+        "-n": true
+      },
+      "resultCount": 1,
+      "successfulResult": true,
+      "errorMarkedResultCount": 0
+    },
+    {
+      "id": "toolu_014wzWk58UoTCYVrxNNxgCxp",
+      "name": "Read",
+      "input": {
+        "file_path": "/Users/dbox/repos/wt/vickie/vickie-current-observation-minimum/packages/server/src/transaction-runtime.ts",
+        "offset": 150,
+        "limit": 110
+      },
+      "resultCount": 1,
+      "successfulResult": true,
+      "errorMarkedResultCount": 0
+    },
+    {
+      "id": "toolu_01PwwqARCjniSPZjqYLAXReF",
+      "name": "Read",
+      "input": {
+        "file_path": "/Users/dbox/repos/wt/vickie/vickie-current-observation-minimum/packages/server/src/transaction-service.test.ts",
+        "offset": 3100,
+        "limit": 110
+      },
+      "resultCount": 1,
+      "successfulResult": true,
+      "errorMarkedResultCount": 0
+    },
+    {
+      "id": "toolu_015e6Xt6NqKMSa88s3xKyate",
+      "name": "Grep",
+      "input": {
+        "pattern": "beginEvents",
+        "path": "/Users/dbox/repos/wt/vickie/vickie-current-observation-minimum/packages",
+        "output_mode": "content",
+        "-n": true,
+        "-B": 2,
+        "-A": 6,
+        "head_limit": 80
+      },
+      "resultCount": 1,
+      "successfulResult": true,
+      "errorMarkedResultCount": 0
+    },
+    {
+      "id": "toolu_01CcZKmh74PzxzsfzrcmuzN1",
+      "name": "Read",
+      "input": {
+        "file_path": "/Users/dbox/repos/wt/vickie/vickie-current-observation-minimum/packages/server/src/transaction-event-sse.test.ts",
+        "offset": 609,
+        "limit": 70
+      },
+      "resultCount": 1,
+      "successfulResult": true,
+      "errorMarkedResultCount": 0
+    },
+    {
+      "id": "toolu_01H6MU1GrJQiVrnCndojKnec",
+      "name": "Grep",
+      "input": {
+        "pattern": "TransactionStreamCapacityError|liveStreams|streamCapacity|maxStreams|activeStreams",
+        "path": "/Users/dbox/repos/wt/vickie/vickie-current-observation-minimum/packages/server/src",
+        "output_mode": "content",
+        "-n": true,
+        "head_limit": 40
+      },
+      "resultCount": 1,
+      "successfulResult": true,
+      "errorMarkedResultCount": 0
+    },
+    {
+      "id": "toolu_0176HVWnhXGu2woy1myNdB8z",
+      "name": "Read",
+      "input": {
+        "file_path": "/Users/dbox/repos/wt/vickie/vickie-current-observation-minimum/packages/server/src/transaction-service.ts",
+        "offset": 285,
+        "limit": 60
+      },
+      "resultCount": 1,
+      "successfulResult": true,
+      "errorMarkedResultCount": 0
+    },
+    {
+      "id": "toolu_01Rwv4rLaFW9emvffiQ2HXy3",
+      "name": "Grep",
+      "input": {
+        "pattern": "maximumStreams",
+        "path": "/Users/dbox/repos/wt/vickie/vickie-current-observation-minimum/packages/server/src",
+        "output_mode": "content",
+        "-n": true,
+        "-B": 3,
+        "-A": 5
+      },
+      "resultCount": 1,
+      "successfulResult": true,
+      "errorMarkedResultCount": 0
+    },
+    {
+      "id": "toolu_019QLcxUPV3o4wzbwgky9osG",
+      "name": "Read",
+      "input": {
+        "file_path": "/Users/dbox/repos/wt/vickie/vickie-current-observation-minimum/packages/server/src/transaction-event-sse.test.ts",
+        "offset": 443,
+        "limit": 60
+      },
+      "resultCount": 1,
+      "successfulResult": true,
+      "errorMarkedResultCount": 0
+    }
+  ],
+  "sampledPids": [
+    92109
+  ],
+  "processGroup": 92109,
+  "survivorsAtIndependentAudit": [],
+  "cleanupRequiredByRunner": false,
+  "approvalInferred": false,
+  "limitations": [
+    "Copied contexts were not successfully Read by Claude; plan/selection were inline. Context availability/hash verification is separate from reviewer access.",
+    "Read success establishes requested ranges only, not complete-file coverage. Grep/Glob search activity does not prove all matched files read.",
+    "Actual final review explicitly limits inspected material; root owns semantic findings disposition. No product execution or source edits by this audit."
+  ]
+}

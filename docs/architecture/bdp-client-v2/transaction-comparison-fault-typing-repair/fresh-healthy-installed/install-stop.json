@@ -1,0 +1,118 @@
+{
+  "status": "STOPPED_AT_OFFLINE_CONSUMER_INSTALL",
+  "source": "fc47fbfb5f1055766e2f680df40a1d729d39638d",
+  "sourceClean": true,
+  "commands": {
+    "fresh-build": {
+      "name": "fresh-build",
+      "command": [
+        "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+        "/Users/dbox/.cache/node/corepack/v1/pnpm/11.20.0/bin/pnpm.cjs",
+        "build"
+      ],
+      "cwd": "/Users/dbox/repos/wt/vickie/vickie-comparison-fault-typing-repair",
+      "validatedBdpOverrides": {},
+      "started": "2026-10-14T19:24:39.034216+00:00",
+      "elapsedSeconds": 1.061582875205204,
+      "exit": 0,
+      "timeout": false,
+      "processGroup": 26208,
+      "remainingProcessGroup": [],
+      "sampledTempEntries": [
+        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-comparison-fault-typing-repair/fresh-healthy-installed/fresh-build.tmp/node-compile-cache"
+      ],
+      "tempEntriesAfter": [
+        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-comparison-fault-typing-repair/fresh-healthy-installed/fresh-build.tmp/node-compile-cache"
+      ],
+      "samplingSeconds": 0.05
+    },
+    "pack-protocol": {
+      "name": "pack-protocol",
+      "command": [
+        "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+        "/Users/dbox/.cache/node/corepack/v1/pnpm/11.20.0/bin/pnpm.cjs",
+        "--dir",
+        "/Users/dbox/repos/wt/vickie/vickie-comparison-fault-typing-repair/packages/protocol",
+        "pack",
+        "--pack-destination",
+        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-comparison-fault-typing-repair/fresh-healthy-installed/packages"
+      ],
+      "cwd": "/Users/dbox/repos/wt/vickie/vickie-comparison-fault-typing-repair",
+      "validatedBdpOverrides": {},
+      "started": "2026-10-14T19:24:40.394160+00:00",
+      "elapsedSeconds": 0.35755133302882314,
+      "exit": 0,
+      "timeout": false,
+      "processGroup": 26264,
+      "remainingProcessGroup": [],
+      "sampledTempEntries": [
+        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-comparison-fault-typing-repair/fresh-healthy-installed/pack-protocol.tmp/node-compile-cache"
+      ],
+      "tempEntriesAfter": [
+        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-comparison-fault-typing-repair/fresh-healthy-installed/pack-protocol.tmp/node-compile-cache"
+      ],
+      "samplingSeconds": 0.05
+    },
+    "pack-server": {
+      "name": "pack-server",
+      "command": [
+        "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+        "/Users/dbox/.cache/node/corepack/v1/pnpm/11.20.0/bin/pnpm.cjs",
+        "--dir",
+        "/Users/dbox/repos/wt/vickie/vickie-comparison-fault-typing-repair/packages/server",
+        "pack",
+        "--pack-destination",
+        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-comparison-fault-typing-repair/fresh-healthy-installed/packages"
+      ],
+      "cwd": "/Users/dbox/repos/wt/vickie/vickie-comparison-fault-typing-repair",
+      "validatedBdpOverrides": {},
+      "started": "2026-10-14T19:24:41.060356+00:00",
+      "elapsedSeconds": 0.4355749578680843,
+      "exit": 0,
+      "timeout": false,
+      "processGroup": 26273,
+      "remainingProcessGroup": [],
+      "sampledTempEntries": [
+        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-comparison-fault-typing-repair/fresh-healthy-installed/pack-server.tmp/node-compile-cache"
+      ],
+      "tempEntriesAfter": [
+        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-comparison-fault-typing-repair/fresh-healthy-installed/pack-server.tmp/node-compile-cache"
+      ],
+      "samplingSeconds": 0.05
+    },
+    "install-consumer": {
+      "name": "install-consumer",
+      "command": [
+        "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+        "/Users/dbox/.cache/node/corepack/v1/pnpm/11.20.0/bin/pnpm.cjs",
+        "install",
+        "--offline",
+        "--no-frozen-lockfile",
+        "--prod"
+      ],
+      "cwd": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-comparison-fault-typing-repair/fresh-healthy-installed/consumer",
+      "validatedBdpOverrides": {},
+      "started": "2026-10-14T19:25:16.531831+00:00",
+      "elapsedSeconds": 0.5438018329441547,
+      "exit": 1,
+      "timeout": false,
+      "processGroup": 26351,
+      "remainingProcessGroup": [],
+      "sampledTempEntries": [
+        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-comparison-fault-typing-repair/fresh-healthy-installed/install-consumer.tmp/node-compile-cache"
+      ],
+      "tempEntriesAfter": [
+        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-comparison-fault-typing-repair/fresh-healthy-installed/install-consumer.tmp/node-compile-cache"
+      ],
+      "samplingSeconds": 0.05
+    }
+  },
+  "diagnostic": "ERR_PNPM_NO_OFFLINE_META: server transitive @bdp/protocol@0.0.0 not redirected to explicit root file tarball",
+  "tarSourceProvenanceSha256": "e5a3cef40938baeb49a5df58b0423f1b5994c4d0c08349f627193505167696f0",
+  "remainingProcessRows": [],
+  "installedChildren": 0,
+  "httpRequests": 0,
+  "retryPerformed": false,
+  "sourceModified": false,
+  "rootNotified": true
+}

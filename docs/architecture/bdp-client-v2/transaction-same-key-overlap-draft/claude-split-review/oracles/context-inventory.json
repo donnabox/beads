@@ -1,0 +1,156 @@
+{
+  "candidate": "18f5428686dd84fb139c9dbbcbe39d5958012323",
+  "parent": "98c600767e8e91a79e109cb741beb91e23b9bebe",
+  "testRanges": [
+    [
+      1,
+      172
+    ],
+    [
+      232,
+      287
+    ],
+    [
+      333,
+      406
+    ],
+    [
+      495,
+      787
+    ],
+    [
+      879,
+      910
+    ]
+  ],
+  "context": {
+    "packages/server/src/transaction-http.ts": {
+      "sha256": "b51d02801e5924190aba77c377e538db0b8619149d6184e19cb56d440f40c2cf",
+      "ranges": [
+        [
+          111,
+          116
+        ],
+        [
+          175,
+          188
+        ],
+        [
+          613,
+          634
+        ]
+      ],
+      "bytes": 27155
+    },
+    "packages/server/src/read-http-routing.ts": {
+      "sha256": "d9344b87838f8c71381ccf9efe28b4f023df45503570beb8fb4293d553caca42",
+      "ranges": [
+        [
+          44,
+          54
+        ]
+      ],
+      "bytes": 2967
+    },
+    "packages/server/src/transaction-events.ts": {
+      "sha256": "c6052433662fcb2d0a202ad4e408a24d4c43f980313fa89659501b4475790db5",
+      "ranges": [
+        [
+          75,
+          101
+        ]
+      ],
+      "bytes": 11755
+    },
+    "packages/server/src/resource-evaluator.ts": {
+      "sha256": "89606787e455f4ed555b807d91c5331a376431807a9a581de1f94e538fcab4ff",
+      "ranges": [
+        [
+          805,
+          811
+        ],
+        [
+          867,
+          903
+        ],
+        [
+          1135,
+          1164
+        ]
+      ],
+      "bytes": 46773
+    },
+    "docs/specs/bdp.md": {
+      "sha256": "f036103ffdf5f89fa3a2033570e1e987c4cd203cd80b1c633cb44615123f892e",
+      "ranges": [
+        [
+          3894,
+          3940
+        ],
+        [
+          5263,
+          5277
+        ]
+      ],
+      "bytes": 394427
+    },
+    "schemas/bdp-v0.schema.json": {
+      "sha256": "0baa5d5ef67144f8e6513b4cde31168effc8df6d52ef3141b0f144b87f8dc227",
+      "definitions": [
+        "mutationReceipt",
+        "receiptCore",
+        "receiptResult",
+        "beadRecord",
+        "currentBeadRecord",
+        "beadCollection",
+        "currentBeadCollection",
+        "eventPage",
+        "event",
+        "createdData",
+        "absoluteHttpUrl",
+        "dateTime",
+        "wireToken",
+        "properties",
+        "metadata",
+        "localName"
+      ],
+      "representation": "Complete selected definition objects compactly reserialized; original full-file hash bound",
+      "omittedReferencedDefinitions": [
+        "aliasResultMembers",
+        "allocatedIdentity",
+        "currentLinkCollection",
+        "currentLinkRecord",
+        "deletedData",
+        "deletedIdentity",
+        "eventType",
+        "idempotencyKey",
+        "linkCollection",
+        "linkDeltaData",
+        "linkRecord",
+        "receiptDetail",
+        "receiptEntryOutcome",
+        "receiptProblem",
+        "receiptStatus",
+        "reference",
+        "resourceIdentity",
+        "revision",
+        "revisionProvenance",
+        "updatedData"
+      ]
+    }
+  },
+  "omitted": "Production modules outside supplied excerpts, full auxiliary schema-reference closure, unrelated tests/dependencies, package-install implementation, prior historical plans and runtime outcomes. Existing native full-source review is separate; no missing supplied context constitutes proof of a defect.",
+  "counterpart": {
+    "testRanges": [
+      [
+        1,
+        530
+      ],
+      [
+        788,
+        958
+      ]
+    ],
+    "responsibility": "Configuration, entry/provenance labels, filesystem confinement, transport/event ordering machinery, request and response byte limits, all deadlines, failure/report retention and cleanup. Inspect shared call sequence as part of lifecycle safety."
+  }
+}

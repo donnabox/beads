@@ -1,0 +1,24 @@
+{
+  "released": true,
+  "head": "9e5f040edab88be364f683098ead72f595f0ab55",
+  "tree": "81c6786a3075f1869f54460880cac1234c27fb77",
+  "basis": [
+    {
+      "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-guarded-batch-draft/execution-preparation/run/installed-provenance.json",
+      "sha256": "a9b121004c2e26f2e49b968e8d9870c4ac3dff6608ad7ca0b7afb0c2b5aa9464"
+    },
+    {
+      "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-guarded-batch-draft/root-static-acceptance.json",
+      "sha256": "1097620c17e5d8631b1e461e55bd23b7112c1b4138a4830ca125b960fb604ce8"
+    },
+    {
+      "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-guarded-batch-draft/execution-preparation/run/root-build-bridge.json",
+      "sha256": "710ebd803c9ccc38ec6b27aaa094bfe0509c6f40af6a54de9e31f87a99b539b3"
+    }
+  ],
+  "approvedNext": [
+    "installed-positive",
+    "review-positive"
+  ],
+  "note": "Root inspected full adjudicator and package helper. Source/build/member/eight-dependency closure verified. Positive only: exactly seven HTTP, one service child; control awaits actual positive result. Code review remains running; no publication/merge authorization."
+}

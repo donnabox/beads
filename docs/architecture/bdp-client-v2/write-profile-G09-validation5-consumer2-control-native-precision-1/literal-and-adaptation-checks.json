@@ -1,0 +1,97 @@
+{
+  "all26PermittedCompleteLfLinesIndependentlyReconstructed": true,
+  "all9ForwardInverseUnifiedNdiffRegeneratedBothRestores": true,
+  "allOtherWholeBytesInvariant": true,
+  "literals": [
+    {
+      "allOtherBytesInvariant": true,
+      "changedLfLines": 7,
+      "fullInverse": true,
+      "phase": "A",
+      "stage": "prepare-consumer"
+    },
+    {
+      "allOtherBytesInvariant": true,
+      "changedLfLines": 3,
+      "fullInverse": true,
+      "phase": "B",
+      "stage": "prepare-consumer"
+    },
+    {
+      "allOtherBytesInvariant": true,
+      "changedLfLines": 3,
+      "fullInverse": true,
+      "phase": "C",
+      "stage": "prepare-consumer"
+    },
+    {
+      "allOtherBytesInvariant": true,
+      "changedLfLines": 7,
+      "fullInverse": true,
+      "phase": "A",
+      "stage": "consumer-install"
+    },
+    {
+      "allOtherBytesInvariant": true,
+      "changedLfLines": 3,
+      "fullInverse": true,
+      "phase": "B",
+      "stage": "consumer-install"
+    },
+    {
+      "allOtherBytesInvariant": true,
+      "changedLfLines": 3,
+      "fullInverse": true,
+      "phase": "C",
+      "stage": "consumer-install"
+    }
+  ],
+  "pairs": [
+    {
+      "bothRestoresExact": true,
+      "fullForwardInverseAndNdiffRegenerated": true,
+      "label": "prepare-consumer.A"
+    },
+    {
+      "bothRestoresExact": true,
+      "fullForwardInverseAndNdiffRegenerated": true,
+      "label": "prepare-consumer.B"
+    },
+    {
+      "bothRestoresExact": true,
+      "fullForwardInverseAndNdiffRegenerated": true,
+      "label": "prepare-consumer.C"
+    },
+    {
+      "bothRestoresExact": true,
+      "fullForwardInverseAndNdiffRegenerated": true,
+      "label": "consumer-install.A"
+    },
+    {
+      "bothRestoresExact": true,
+      "fullForwardInverseAndNdiffRegenerated": true,
+      "label": "consumer-install.B"
+    },
+    {
+      "bothRestoresExact": true,
+      "fullForwardInverseAndNdiffRegenerated": true,
+      "label": "consumer-install.C"
+    },
+    {
+      "bothRestoresExact": true,
+      "fullForwardInverseAndNdiffRegenerated": true,
+      "label": "gate"
+    },
+    {
+      "bothRestoresExact": true,
+      "fullForwardInverseAndNdiffRegenerated": true,
+      "label": "bridge"
+    },
+    {
+      "bothRestoresExact": true,
+      "fullForwardInverseAndNdiffRegenerated": true,
+      "label": "manifest"
+    }
+  ],
+  "wholeActualIdSentinelsRawExitAndClockOwnershipBodiesPreserved": true
+}

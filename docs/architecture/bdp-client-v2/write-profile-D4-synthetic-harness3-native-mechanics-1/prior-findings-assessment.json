@@ -1,0 +1,20 @@
+{
+  "H2-N1": {
+    "evidence": "bootstrap.py30-37 authenticates nonce/PID ACK, then SIG_UNBLOCK only TERM/INT before actual exec. Parent critical regions and original run.main handler/mask order unchanged. Availability peers also inherit a deliberately blocked mask and check actual unblocked state; no observed result yet.",
+    "status": "STATIC CLOSED, runtime UNKNOWN"
+  },
+  "H2-N2": {
+    "evidence": "outer_worker RAW_TOTAL is one fixed256MiB aggregate. Actual IO and existing J10 use the same retain_block: write/flush/hash/count before overflow. IO handlers retain TERM/INT while draining on same clock; incomplete streams explicitly prefix-only/full UNKNOWN. J10 real shared-primitive below/equal/over controls retain exact saved hashes and each stream remains individually under total cap; fullroughly1GiB scratch work must fit115 or fail, no measured fit claimed.",
+    "status": "STATIC CLOSED, actual pipe scheduling/drain UNKNOWN"
+  },
+  "H2-N3": {
+    "evidence": "Old definitions explicitly historical. All13 active Python source SHA/definition/call line maps independently checked against actual AST. No runtime branch coverage inferred.",
+    "status": "STATIC CLOSED"
+  },
+  "conditionalFaultScope": {
+    "evidence": "All48 IDs/60 invocations and mandatory inner faults retained. Both outer_host/native limiter intact. Unexpected loss remains FAILED/UNKNOWN with known missing nested-group authority; no intentional last-owner-fault control, no global guarantee or infinite regress.",
+    "rootDispositionSha256": "fe170710c36904089b0e64a5d2bf3d75b3b3119fbd3179a1d5a99301b5f3b069",
+    "status": "ROOT-ADOPTED limited fault domain, no new waiver"
+  },
+  "originalSHN1N2N3": "Prior full H2 assessment remains true on unchanged host/report controls; EOF refusal, same-case full baselines/exact predicates, explicit source/AJV/late-receipt/console/payload/equality residuals unchanged."
+}

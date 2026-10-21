@@ -1,0 +1,24 @@
+{
+  "at": "2026-10-15T08:04:55.930233+00:00",
+  "sourceHead": "a912c23fbd80e70ead382a27e700a70123bf3f21",
+  "provenance": {
+    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-command-minimum-evidence-validation-v3/run/installed-provenance.json",
+    "sha256": "3405dbb4c377fac6b5a706456964d9b4c7a05e6450b0a3317c12a9ee78cba1fc"
+  },
+  "approvedCommandIds": [
+    "installed-compatible-minimum",
+    "installed-compatible-minimum-review",
+    "installed-snapshot-wait",
+    "installed-snapshot-wait-review",
+    "installed-positive",
+    "installed-positive-review",
+    "installed-batch-control",
+    "installed-batch-control-review",
+    "installed-reader-control",
+    "installed-reader-control-review"
+  ],
+  "bounds": "220 expected / 237 maximum HTTP;28 children; sequential inspection, stop on failure, no retries",
+  "reviewedStages": "All8 package stages exit0, fresh archives313members, actual8package closure/payload and consumer lock read and pinned",
+  "installedExecuted": false,
+  "profileQualification": false
+}

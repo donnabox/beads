@@ -1,0 +1,641 @@
+{
+  "id": "transactional.changefeed.catch-up-timeout",
+  "requiredProfile": "transactional",
+  "setup": {
+    "fixture": "reference-transactional-v1",
+    "requires": [
+      "installed-transactional-http"
+    ]
+  },
+  "applicability": {
+    "requires": []
+  },
+  "cleanup": {
+    "resetFixture": true
+  },
+  "actions": [
+    {
+      "id": "cm-seed",
+      "family": "http",
+      "method": "POST",
+      "target": {
+        "binding": "batch"
+      },
+      "credentialRef": "operator",
+      "raw": {
+        "headerLines": [
+          {
+            "name": "accept",
+            "value": "application/json"
+          },
+          {
+            "name": "content-type",
+            "value": "application/json"
+          },
+          {
+            "name": "idempotency-key",
+            "value": "current-minimum-seed"
+          }
+        ],
+        "body": {
+          "encoding": "utf8",
+          "value": "{\"operations\":[{\"operation\":\"createBead\",\"id\":\"beads/a\",\"type\":\"https://reference.invalid/acme/types/task\",\"properties\":{\"title\":\"a\"},\"metadata\":{}}]}"
+        }
+      },
+      "captures": [],
+      "assertions": [
+        {
+          "id": "http-status",
+          "kind": "status",
+          "equals": 200
+        },
+        {
+          "id": "schema",
+          "kind": "json-schema",
+          "schema": "#/$defs/mutationReceipt"
+        },
+        {
+          "id": "media",
+          "kind": "header",
+          "name": "content-type",
+          "equals": "application/json"
+        },
+        {
+          "id": "present-bdp-scope-epoch",
+          "kind": "header",
+          "name": "bdp-scope-epoch",
+          "absent": false
+        },
+        {
+          "id": "present-bdp-authorization-view",
+          "kind": "header",
+          "name": "bdp-authorization-view",
+          "absent": false
+        },
+        {
+          "id": "present-bdp-scope-position",
+          "kind": "header",
+          "name": "bdp-scope-position",
+          "absent": false
+        },
+        {
+          "id": "serving-position",
+          "kind": "header",
+          "name": "bdp-scope-position",
+          "equals": "pos-1"
+        },
+        {
+          "id": "request-headers",
+          "kind": "request-authored-headers"
+        },
+        {
+          "id": "request-body",
+          "kind": "request-authored-body"
+        },
+        {
+          "id": "disposition",
+          "kind": "json-pointer",
+          "pointer": "/status",
+          "exists": true,
+          "equals": "completed"
+        },
+        {
+          "id": "detail",
+          "kind": "json-pointer",
+          "pointer": "/detail",
+          "exists": true,
+          "equals": "available"
+        },
+        {
+          "id": "key",
+          "kind": "json-pointer",
+          "pointer": "/idempotencyKey",
+          "exists": true,
+          "equals": "current-minimum-seed"
+        },
+        {
+          "id": "receipt-id",
+          "kind": "json-pointer",
+          "pointer": "/id",
+          "exists": true
+        },
+        {
+          "id": "transaction",
+          "kind": "json-pointer",
+          "pointer": "/transaction",
+          "exists": true
+        },
+        {
+          "id": "required-position",
+          "kind": "json-pointer",
+          "pointer": "/requiredPosition",
+          "exists": true,
+          "equals": "pos-1"
+        },
+        {
+          "id": "effect-position",
+          "kind": "json-pointer",
+          "pointer": "/effectPosition",
+          "exists": true,
+          "equals": "pos-1"
+        },
+        {
+          "id": "no-next",
+          "kind": "json-pointer",
+          "pointer": "/next",
+          "exists": true,
+          "equals": null
+        },
+        {
+          "id": "result-indices",
+          "kind": "json-array-tuples",
+          "pointer": "/results",
+          "ordered": true,
+          "projections": [
+            {
+              "pointer": "/operationIndex"
+            },
+            {
+              "pointer": "/outcome"
+            }
+          ],
+          "equals": [
+            [
+              0,
+              "created"
+            ]
+          ]
+        },
+        {
+          "id": "resource-id",
+          "kind": "json-pointer",
+          "pointer": "/results/0/resource/id",
+          "exists": true,
+          "equals": "https://reference.invalid/acme/beads/a"
+        },
+        {
+          "id": "resource-type",
+          "kind": "json-pointer",
+          "pointer": "/results/0/resource/type",
+          "exists": true,
+          "equals": "https://reference.invalid/acme/types/task"
+        },
+        {
+          "id": "resource-revision",
+          "kind": "json-pointer",
+          "pointer": "/results/0/resource/revision",
+          "exists": true
+        },
+        {
+          "id": "resource-properties",
+          "kind": "json-pointer",
+          "pointer": "/results/0/resource/properties",
+          "exists": true,
+          "equals": {
+            "title": "a"
+          }
+        },
+        {
+          "id": "resource-metadata",
+          "kind": "json-pointer",
+          "pointer": "/results/0/resource/metadata",
+          "exists": true,
+          "equals": {}
+        },
+        {
+          "id": "no-owned-links",
+          "kind": "json-pointer",
+          "pointer": "/results/0/resource/ownedLinks",
+          "exists": false
+        },
+        {
+          "id": "no-provenance",
+          "kind": "json-pointer",
+          "pointer": "/results/0/resource/revisionProvenance",
+          "exists": false
+        },
+        {
+          "id": "write-complete",
+          "kind": "request-write-state",
+          "equals": "complete"
+        }
+      ]
+    },
+    {
+      "id": "cm-at-minimum",
+      "family": "http",
+      "method": "GET",
+      "target": {
+        "binding": "scope",
+        "path": "beads/a"
+      },
+      "credentialRef": "operator",
+      "raw": {
+        "headerLines": [
+          {
+            "name": "accept",
+            "value": "application/json"
+          },
+          {
+            "name": "bdp-scope-epoch",
+            "value": {
+              "responseHeaderFrom": "cm-seed"
+            }
+          },
+          {
+            "name": "bdp-authorization-view",
+            "value": {
+              "responseHeaderFrom": "cm-seed"
+            }
+          },
+          {
+            "name": "bdp-minimum-scope-position",
+            "value": {
+              "responseHeaderFrom": "cm-seed"
+            }
+          }
+        ]
+      },
+      "captures": [],
+      "assertions": [
+        {
+          "id": "http-status",
+          "kind": "status",
+          "equals": 200
+        },
+        {
+          "id": "schema",
+          "kind": "json-schema",
+          "schema": "#/$defs/currentBeadRecord"
+        },
+        {
+          "id": "media",
+          "kind": "header",
+          "name": "content-type",
+          "equals": "application/json"
+        },
+        {
+          "id": "present-bdp-scope-epoch",
+          "kind": "header",
+          "name": "bdp-scope-epoch",
+          "absent": false
+        },
+        {
+          "id": "same-bdp-scope-epoch",
+          "kind": "header",
+          "name": "bdp-scope-epoch",
+          "equalsResponse": "cm-seed"
+        },
+        {
+          "id": "present-bdp-authorization-view",
+          "kind": "header",
+          "name": "bdp-authorization-view",
+          "absent": false
+        },
+        {
+          "id": "same-bdp-authorization-view",
+          "kind": "header",
+          "name": "bdp-authorization-view",
+          "equalsResponse": "cm-seed"
+        },
+        {
+          "id": "present-bdp-scope-position",
+          "kind": "header",
+          "name": "bdp-scope-position",
+          "absent": false
+        },
+        {
+          "id": "same-bdp-scope-position",
+          "kind": "header",
+          "name": "bdp-scope-position",
+          "equalsResponse": "cm-seed"
+        },
+        {
+          "id": "serving-position",
+          "kind": "header",
+          "name": "bdp-scope-position",
+          "equals": "pos-1"
+        },
+        {
+          "id": "request-headers",
+          "kind": "request-authored-headers"
+        },
+        {
+          "id": "request-body",
+          "kind": "request-authored-body"
+        },
+        {
+          "id": "write-complete",
+          "kind": "request-write-state",
+          "equals": "complete"
+        },
+        {
+          "id": "resource-id",
+          "kind": "json-pointer",
+          "pointer": "/id",
+          "exists": true,
+          "equals": "https://reference.invalid/acme/beads/a"
+        },
+        {
+          "id": "resource-type",
+          "kind": "json-pointer",
+          "pointer": "/type",
+          "exists": true,
+          "equals": "https://reference.invalid/acme/types/task"
+        },
+        {
+          "id": "resource-revision",
+          "kind": "json-pointer",
+          "pointer": "/revision",
+          "exists": true
+        },
+        {
+          "id": "resource-properties",
+          "kind": "json-pointer",
+          "pointer": "/properties",
+          "exists": true,
+          "equals": {
+            "title": "a"
+          }
+        },
+        {
+          "id": "resource-metadata",
+          "kind": "json-pointer",
+          "pointer": "/metadata",
+          "exists": true,
+          "equals": {}
+        },
+        {
+          "id": "no-ownedLinks",
+          "kind": "json-pointer",
+          "pointer": "/ownedLinks",
+          "exists": false
+        },
+        {
+          "id": "no-revisionProvenance",
+          "kind": "json-pointer",
+          "pointer": "/revisionProvenance",
+          "exists": false
+        }
+      ]
+    },
+    {
+      "id": "cm-unknown",
+      "family": "http",
+      "method": "GET",
+      "target": {
+        "binding": "scope",
+        "path": "beads/a"
+      },
+      "credentialRef": "operator",
+      "raw": {
+        "headerLines": [
+          {
+            "name": "accept",
+            "value": "application/json"
+          },
+          {
+            "name": "bdp-scope-epoch",
+            "value": {
+              "responseHeaderFrom": "cm-seed"
+            }
+          },
+          {
+            "name": "bdp-authorization-view",
+            "value": {
+              "responseHeaderFrom": "cm-seed"
+            }
+          },
+          {
+            "name": "bdp-minimum-scope-position",
+            "value": "unissued-current-minimum"
+          }
+        ]
+      },
+      "captures": [],
+      "assertions": [
+        {
+          "id": "http-status",
+          "kind": "status",
+          "equals": 503
+        },
+        {
+          "id": "schema",
+          "kind": "json-schema",
+          "schema": "#/$defs/transactionalProblem"
+        },
+        {
+          "id": "media",
+          "kind": "header",
+          "name": "content-type",
+          "equals": "application/problem+json"
+        },
+        {
+          "id": "present-bdp-scope-epoch",
+          "kind": "header",
+          "name": "bdp-scope-epoch",
+          "absent": false
+        },
+        {
+          "id": "same-bdp-scope-epoch",
+          "kind": "header",
+          "name": "bdp-scope-epoch",
+          "equalsResponse": "cm-seed"
+        },
+        {
+          "id": "present-bdp-authorization-view",
+          "kind": "header",
+          "name": "bdp-authorization-view",
+          "absent": false
+        },
+        {
+          "id": "same-bdp-authorization-view",
+          "kind": "header",
+          "name": "bdp-authorization-view",
+          "equalsResponse": "cm-seed"
+        },
+        {
+          "id": "present-bdp-scope-position",
+          "kind": "header",
+          "name": "bdp-scope-position",
+          "absent": false
+        },
+        {
+          "id": "same-bdp-scope-position",
+          "kind": "header",
+          "name": "bdp-scope-position",
+          "equalsResponse": "cm-seed"
+        },
+        {
+          "id": "serving-position",
+          "kind": "header",
+          "name": "bdp-scope-position",
+          "equals": "pos-1"
+        },
+        {
+          "id": "request-headers",
+          "kind": "request-authored-headers"
+        },
+        {
+          "id": "request-body",
+          "kind": "request-authored-body"
+        },
+        {
+          "id": "write-complete",
+          "kind": "request-write-state",
+          "equals": "complete"
+        },
+        {
+          "id": "exact-problem",
+          "kind": "json-equals",
+          "value": {
+            "type": "https://github.com/gastownhall/bdp/problems/unavailable",
+            "code": "catch-up-timeout",
+            "retry": "after-delay",
+            "status": 503
+          }
+        }
+      ]
+    },
+    {
+      "id": "cm-after",
+      "family": "http",
+      "method": "GET",
+      "target": {
+        "binding": "scope",
+        "path": "beads/a"
+      },
+      "credentialRef": "operator",
+      "raw": {
+        "headerLines": [
+          {
+            "name": "accept",
+            "value": "application/json"
+          }
+        ]
+      },
+      "captures": [],
+      "assertions": [
+        {
+          "id": "http-status",
+          "kind": "status",
+          "equals": 200
+        },
+        {
+          "id": "schema",
+          "kind": "json-schema",
+          "schema": "#/$defs/currentBeadRecord"
+        },
+        {
+          "id": "media",
+          "kind": "header",
+          "name": "content-type",
+          "equals": "application/json"
+        },
+        {
+          "id": "present-bdp-scope-epoch",
+          "kind": "header",
+          "name": "bdp-scope-epoch",
+          "absent": false
+        },
+        {
+          "id": "same-bdp-scope-epoch",
+          "kind": "header",
+          "name": "bdp-scope-epoch",
+          "equalsResponse": "cm-seed"
+        },
+        {
+          "id": "present-bdp-authorization-view",
+          "kind": "header",
+          "name": "bdp-authorization-view",
+          "absent": false
+        },
+        {
+          "id": "same-bdp-authorization-view",
+          "kind": "header",
+          "name": "bdp-authorization-view",
+          "equalsResponse": "cm-seed"
+        },
+        {
+          "id": "present-bdp-scope-position",
+          "kind": "header",
+          "name": "bdp-scope-position",
+          "absent": false
+        },
+        {
+          "id": "same-bdp-scope-position",
+          "kind": "header",
+          "name": "bdp-scope-position",
+          "equalsResponse": "cm-seed"
+        },
+        {
+          "id": "serving-position",
+          "kind": "header",
+          "name": "bdp-scope-position",
+          "equals": "pos-1"
+        },
+        {
+          "id": "request-headers",
+          "kind": "request-authored-headers"
+        },
+        {
+          "id": "request-body",
+          "kind": "request-authored-body"
+        },
+        {
+          "id": "write-complete",
+          "kind": "request-write-state",
+          "equals": "complete"
+        },
+        {
+          "id": "resource-id",
+          "kind": "json-pointer",
+          "pointer": "/id",
+          "exists": true,
+          "equals": "https://reference.invalid/acme/beads/a"
+        },
+        {
+          "id": "resource-type",
+          "kind": "json-pointer",
+          "pointer": "/type",
+          "exists": true,
+          "equals": "https://reference.invalid/acme/types/task"
+        },
+        {
+          "id": "resource-revision",
+          "kind": "json-pointer",
+          "pointer": "/revision",
+          "exists": true
+        },
+        {
+          "id": "resource-properties",
+          "kind": "json-pointer",
+          "pointer": "/properties",
+          "exists": true,
+          "equals": {
+            "title": "a"
+          }
+        },
+        {
+          "id": "resource-metadata",
+          "kind": "json-pointer",
+          "pointer": "/metadata",
+          "exists": true,
+          "equals": {}
+        },
+        {
+          "id": "no-ownedLinks",
+          "kind": "json-pointer",
+          "pointer": "/ownedLinks",
+          "exists": false
+        },
+        {
+          "id": "no-revisionProvenance",
+          "kind": "json-pointer",
+          "pointer": "/revisionProvenance",
+          "exists": false
+        }
+      ]
+    }
+  ]
+}

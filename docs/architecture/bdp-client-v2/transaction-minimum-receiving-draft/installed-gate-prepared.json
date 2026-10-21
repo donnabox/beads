@@ -1,0 +1,79 @@
+{
+  "released": true,
+  "session": "2026-10-08T20:26:35Z-81e5",
+  "finalHead": "c18c71202c90fa2558f34107ad342befabf750fe",
+  "finalTree": "596abe870220fb61ce606f8382a9da52d554d063",
+  "finalSource": {
+    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-minimum-receiving-draft/installed-final-identity.json",
+    "sha256": "e8b35e4227f9e88f4200538ddad454964042b48a7dd0e7e1dbf60a116f328559"
+  },
+  "integrationAcceptance": {
+    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-minimum-receiving-draft/installed-integration-acceptance.json",
+    "sha256": "b60bf92e2b3b2ac4f1d5c7d7c3f3838aca393ffb9afdee921ab63632e7576cd3"
+  },
+  "rootAcceptance": {
+    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-minimum-receiving-draft/root-installed-validation-release.json",
+    "sha256": "f976fc9f771f6795702624b67673a854abc2927ef56bc6f5a8c38399ecc9f359"
+  },
+  "sourceValidationAcceptance": {
+    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-minimum-receiving-draft/source-validation-acceptance-successor.json",
+    "sha256": "9c061b69596a570bc626976d89aa4d49b564f4185d19678150b6463dc6075335"
+  },
+  "councilState": {
+    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-minimum-receiving-draft/council-pending.json",
+    "sha256": "479c79ed6ebe0c2316ae9ace0820afb763cb311993ac483a6e44c53b7ca8446d"
+  },
+  "rootBuildAcceptance": {
+    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-minimum-receiving-draft/root-final-build-acceptance.json",
+    "sha256": "f44592a2d707e0a7c986eb7b12b76ef762cf53146847eb6040156496829ab69d"
+  },
+  "sourceLockSha256": "4150d8821c96dbc2cfec0b2762ff76b58318079f65fa4f5c8858ef2dd61f8d6d",
+  "consumerLockSha256": null,
+  "preparationSha256": {
+    "gate.py": "fe0c8646599a490ad53edaf0f0a732be7d7c2445ef430c63888e841c9f61b8e8",
+    "supervise.py": "1764ff4ec582f9ffc8d71b084745383feba2e965006d64ab20fb3c988a180c4a",
+    "packages.py": "47d5f2137a1e1a93eb7d13cc7d9588bd2df9b37f7c84e8a67026ab804b96bae6",
+    "review-installed.py": "238eb85ed497689e0f10fe86fdcdf847af1b8f3ea5a341ab3629c2eecb0440cc",
+    "commands.json": "bf50119dbcac214f268f09a4abe2422c30c7c40abad5d2981f4067da16c5b2bb",
+    "prepared-source.json": "273b5d230ddbac111b106463a5af351db14d77082d77e9c090b4802d96c0d923",
+    "requests.json": "4f2c549238e06b0a6f1e0c6c63d11380b5b4ce216711a47b475abdcf4233c67e",
+    "observation-contract.json": "771cefc94c0ba68435a8d131e5b3aa9fa7de0b7fc65d0d530210ea76d30979f8",
+    "selection.json": "7dbf64ecadddf3a18d451a55ab16572fe0aba4b7784e52ae0dd30c161deaa092"
+  },
+  "note": "Closed example with actual clean integrated identity. Root integrationAcceptance must bind authorCandidate 3cf662e8ccd75c9bd0fdb95953fdd676f1771aec; all acceptance/build/release fields remain pending. Actual b708 source validation remains historical.",
+  "approvedCommandIds": [
+    "node-version",
+    "package-directory",
+    "pack-protocol",
+    "pack-server",
+    "verify-tar",
+    "prepare-consumer",
+    "consumer-install"
+  ],
+  "finalBase": "73fc0daed2e5fa6843e581de9bf7a46e519562ab",
+  "finalParents": [
+    "3cf662e8ccd75c9bd0fdb95953fdd676f1771aec",
+    "73fc0daed2e5fa6843e581de9bf7a46e519562ab"
+  ],
+  "sourceBinding": {
+    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-minimum-receiving-draft/final-source.json",
+    "sha256": "273b5d230ddbac111b106463a5af351db14d77082d77e9c090b4802d96c0d923"
+  },
+  "buildOutputInventory": {
+    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-minimum-receiving-draft/final-build-preparation/run/build-output-inventory.json",
+    "sha256": "40b93065c4accc56de2618ab65899c72205c01cdea07edff11a335e3cbe6824b"
+  },
+  "node": "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+  "pnpm": "/Users/dbox/.cache/node/corepack/v1/pnpm/11.20.0/bin/pnpm.cjs",
+  "installedProvenance": null,
+  "expectedProductionVersions": {
+    "@bdp/protocol": "0.0.0",
+    "@bdp/server": "0.0.0",
+    "ajv": "8.17.1",
+    "ajv-formats": "3.0.1",
+    "fast-deep-equal": "3.1.3",
+    "fast-uri": "3.1.5",
+    "json-schema-traverse": "1.0.0",
+    "require-from-string": "2.0.2"
+  }
+}

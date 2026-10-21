@@ -1,0 +1,42 @@
+{
+  "all52InnerStages": "UNEXECUTED",
+  "cleanupSignalAttempts": 0,
+  "currentP9BuildArchivesConsumerLockEntryPayloadProof": "UNATTEMPTED/UNKNOWN; existing workspace or older consumer artifacts never fresh P9 evidence",
+  "currentRunDirectoryExists": false,
+  "first4Remaining3": "UNdispatched after wrapper1 failure",
+  "knownStagePGIDs": [],
+  "knownStagePIDs": [],
+  "noProcessContainmentOverclaim": true,
+  "pathEvidence": {
+    "beforeInHelperGuard": true,
+    "beforePopenLine47": true,
+    "beforeRunMkdir": true,
+    "beforeRunProcessCensus": true,
+    "beforeStartedReceiptLine21": true,
+    "beforeTempCreationLine18": true,
+    "gateFailureLine": 94,
+    "runLine": 9
+  },
+  "priorP8History": "Immutable in place; P8 stages21 never transfer",
+  "rootFreshCensus": {
+    "fields": [
+      "pid",
+      "ppid",
+      "pgid",
+      "state",
+      "comm"
+    ],
+    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/tx-discovery-root-release-flags-failure-1/fresh-process-census.txt",
+    "rows": 1405,
+    "scope": "Root supplied actual postfailure whole-host snapshot; no known P9 stage child identities to look up. Snapshot lacks birth/argv, cannot authenticate a hypothetical transient wrapper by broad Python comm. No fresh ps invoked by reviewer.",
+    "sha256": "2528b0f0608752f5cadc57de16426e12c97a5b162d51d300f74a5893e93a6ebf"
+  },
+  "rootWrapper": {
+    "elapsedSeconds": 0.06531066726893187,
+    "receipt": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/tx-discovery-validation9-run-dispatch-1/node-version.wrapper-exit.json",
+    "rootToolSessionOrWrapperPID": "NOT recorded in supplied bounded disk receipt; no invented identity",
+    "wrapperExit": 1
+  },
+  "stageAndProductChildrenCreated": 0,
+  "stageStartedExitLogProcessTempRecords": "MISSING because initialization never reached; never reconstructed"
+}

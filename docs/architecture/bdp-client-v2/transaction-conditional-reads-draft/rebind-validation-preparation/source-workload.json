@@ -1,0 +1,201 @@
+{
+  "sourceDerivedOnly": true,
+  "firstPage": {
+    "source": "/Users/dbox/repos/wt/vickie/vickie-transaction-conditional-reads/packages/conformance/src/runner.test.ts",
+    "sha256": "ad7e756bad1f70ecc6285e19830bc001ebec01899ed868af3fb4b08e888aba86",
+    "cases": [
+      {
+        "case": "id-first",
+        "attempts": 5,
+        "methodRouteOrder": [
+          "POST operations/batch",
+          "GET receipts/r1",
+          "HEAD receipts/r1/pages/p1",
+          "GET receipts/r1/pages/p1",
+          "GET receipts/r1/pages/p1 after logical reopen"
+        ],
+        "lastRequestAborted": false,
+        "logicalReopens": 1,
+        "listeners": 1,
+        "productChildren": 0,
+        "ownerStores": 0,
+        "expectedOutcome": "pass with stable first-page authority"
+      },
+      {
+        "case": "page-first",
+        "attempts": 5,
+        "methodRouteOrder": [
+          "POST operations/batch",
+          "GET receipts/r1",
+          "HEAD receipts/r1/pages/p1",
+          "GET receipts/r1/pages/p1",
+          "GET receipts/r1/pages/p1 after logical reopen"
+        ],
+        "lastRequestAborted": false,
+        "logicalReopens": 1,
+        "listeners": 1,
+        "productChildren": 0,
+        "ownerStores": 0,
+        "expectedOutcome": "pass with stable first-page authority"
+      },
+      {
+        "case": "wrong-parent",
+        "attempts": 4,
+        "methodRouteOrder": [
+          "POST operations/batch",
+          "GET receipts/r1",
+          "HEAD receipts/r1/pages/p1",
+          "GET receipts/r1/pages/p1"
+        ],
+        "lastRequestAborted": false,
+        "logicalReopens": 0,
+        "listeners": 1,
+        "productChildren": 0,
+        "ownerStores": 0,
+        "expectedOutcome": "specific fixture rejection/cancellation checked by callback"
+      },
+      {
+        "case": "empty-page",
+        "attempts": 4,
+        "methodRouteOrder": [
+          "POST operations/batch",
+          "GET receipts/r1",
+          "HEAD receipts/r1/pages/p1",
+          "GET receipts/r1/pages/p1"
+        ],
+        "lastRequestAborted": false,
+        "logicalReopens": 0,
+        "listeners": 1,
+        "productChildren": 0,
+        "ownerStores": 0,
+        "expectedOutcome": "specific fixture rejection/cancellation checked by callback"
+      },
+      {
+        "case": "changed-page",
+        "attempts": 5,
+        "methodRouteOrder": [
+          "POST operations/batch",
+          "GET receipts/r1",
+          "HEAD receipts/r1/pages/p1",
+          "GET receipts/r1/pages/p1",
+          "GET receipts/r1/pages/p1 after logical reopen"
+        ],
+        "lastRequestAborted": false,
+        "logicalReopens": 1,
+        "listeners": 1,
+        "productChildren": 0,
+        "ownerStores": 0,
+        "expectedOutcome": "specific fixture rejection/cancellation checked by callback"
+      },
+      {
+        "case": "cancel-page",
+        "attempts": 4,
+        "methodRouteOrder": [
+          "POST operations/batch",
+          "GET receipts/r1",
+          "HEAD receipts/r1/pages/p1",
+          "GET receipts/r1/pages/p1"
+        ],
+        "lastRequestAborted": true,
+        "logicalReopens": 0,
+        "listeners": 1,
+        "productChildren": 0,
+        "ownerStores": 0,
+        "expectedOutcome": "specific fixture rejection/cancellation checked by callback"
+      },
+      {
+        "case": "null-next",
+        "attempts": 1,
+        "methodRouteOrder": [
+          "POST operations/batch"
+        ],
+        "lastRequestAborted": false,
+        "logicalReopens": 0,
+        "listeners": 1,
+        "productChildren": 0,
+        "ownerStores": 0,
+        "expectedOutcome": "specific fixture rejection/cancellation checked by callback"
+      },
+      {
+        "case": "absent-next",
+        "attempts": 1,
+        "methodRouteOrder": [
+          "POST operations/batch"
+        ],
+        "lastRequestAborted": false,
+        "logicalReopens": 0,
+        "listeners": 1,
+        "productChildren": 0,
+        "ownerStores": 0,
+        "expectedOutcome": "specific fixture rejection/cancellation checked by callback"
+      }
+    ],
+    "attempts": 29,
+    "diagnosticCeiling": 40,
+    "listeners": 8,
+    "canceled": 1,
+    "maximumBodySent": 16,
+    "bodyExplanation": "Eight two-byte {} seed POSTs; receipt GET/HEAD have no request body. No wire-body success claimed for deliberate canceled response.",
+    "cleanup": "finally closeAllConnections and await server.close; no store/product process"
+  },
+  "binding": {
+    "source": "/Users/dbox/repos/wt/vickie/vickie-transaction-conditional-reads/apps/bdptest/src/transactional-binding.test.ts",
+    "sha256": "957212ef227905f2b8b9ae3403fab9d6d0659ed308395696aef1baad112815d8",
+    "cases": [
+      {
+        "name": "aborts and drains a real registered dynamic socket via close",
+        "attempts": 1,
+        "listeners": 1,
+        "canceled": 1
+      },
+      {
+        "name": "aborts and drains a real registered dynamic socket via cohort",
+        "attempts": 1,
+        "listeners": 1,
+        "canceled": 1
+      },
+      {
+        "name": "rebinds ordinary raw requests to the new validated physical session while base mode stays fixed",
+        "attempts": 2,
+        "listeners": 2,
+        "canceled": 0
+      }
+    ],
+    "attempts": 4,
+    "listeners": 4,
+    "canceled": 2,
+    "productChildren": 0,
+    "ownerStores": 0,
+    "cleanup": "registered promise drains before target close; finally listener sockets destroyed and listener close awaited"
+  },
+  "cumulative": {
+    "cases": 42,
+    "syntheticAttempts": 14,
+    "listeners": 12,
+    "productChildren": 0,
+    "wholeFile": true
+  },
+  "totalSource": {
+    "sourceCases": 56,
+    "sourceSyntheticHTTPAttempts": 47,
+    "sourceMaximumDiagnosticHTTPAttempts": 58,
+    "sourceDeliberatelyCanceledHTTP": 3,
+    "sourceListeners": 24,
+    "sourceProductChildren": 0,
+    "installedCases": 7,
+    "installedExpectedHTTP": 712,
+    "installedMaxHTTP": 727,
+    "installedChildren": 83,
+    "totalExpectedHTTPAttempts": 759,
+    "totalDiagnosticMaxHTTPAttempts": 785,
+    "automaticRetries": 0,
+    "limitation": "Prospective source-derived counts; three deliberate aborts include two binding requests and one first-page request. Not observed completed traffic."
+  },
+  "note": "Both initial dirty-source preflight and final-source set include three app static cases; their module only constructs the dist entry path and these callbacks do not launch it. read-seal imports built dist and is reserved for the final packet after fresh-build.",
+  "appStatic": {
+    "cases": 3,
+    "syntheticAttempts": 0,
+    "listeners": 0,
+    "productChildren": 0
+  }
+}

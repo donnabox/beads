@@ -1,0 +1,38 @@
+{
+  "utc": "2026-10-18T16:11:34.982337+00:00",
+  "state": "CLOSED proposed authority DATA only, active17 unchanged",
+  "priorGate": {
+    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/tx-discovery-validation-preparation-10/execution-gate.json",
+    "sha256": "0f5cdeb46a8098d00242fa61801ecc57e7f5ea41205090341ef400d4c31c08e7"
+  },
+  "candidateGate": {
+    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/tx-discovery-validation10-prefix21-proposed-authority-1/execution-gate.proposed.json",
+    "sha256": "f539663c6ae2bffacbd38e2ded28328843d66e234fa884e4ec23d029aaa4c429"
+  },
+  "candidateDisposition": {
+    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/tx-discovery-validation10-prefix21-proposed-authority-1/disposition.json",
+    "sha256": "7a1575c97023ea90937c509f051013b764eebd05f313830a0a0e8a704924d5d8"
+  },
+  "changedKeys": [
+    "approvedStages",
+    "rootDisposition"
+  ],
+  "rootActual17Acceptance": {
+    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/tx-discovery-validation10-root-prefix17-native-acceptance-1/acceptance.json",
+    "sha256": "316b782128699b785c3f52aaa3faf7ad7c4f0a6c139d15f9687546f5ee391d55"
+  },
+  "next4": [
+    "prepare-package-directory",
+    "pack-protocol",
+    "pack-server",
+    "verify-archives"
+  ],
+  "unchangedAll26GateKeys": true,
+  "unchangedAll59RequirePredicates": true,
+  "rootBuildAcceptanceTopLevelCurrent": true,
+  "rootArchiveAcceptanceStillUnresolvedOutside21": true,
+  "noRetry": true,
+  "independentFullDataPrecisionBeforeActivation": true,
+  "durablePublishReadbackBeforeActivationAndDispatch": true,
+  "executionAuthorized": false
+}

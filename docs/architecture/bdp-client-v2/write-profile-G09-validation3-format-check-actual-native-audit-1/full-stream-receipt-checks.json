@@ -1,0 +1,141 @@
+{
+  "actualFixed10OwnedPathsOnly": [
+    "apps/bdptest/src/transactional-discovery-installed.test.ts",
+    "apps/bdptest/src/transactional-schema-installed.test.ts",
+    "packages/server/src/transaction-changefeed.test.ts",
+    "packages/server/src/transaction-http.test.ts",
+    "packages/server/src/transaction-http.ts",
+    "packages/server/src/transaction-installed-contracts.test.ts",
+    "packages/server/src/transaction-schema-http.test.ts",
+    "packages/server/src/transaction-schema-http.ts",
+    "packages/server/src/transaction-service.test.ts",
+    "packages/server/src/transaction-service.ts"
+  ],
+  "actualStdoutEntireJSONEqualsInnerExit": true,
+  "all21OriginalsAndMirrorsExact": true,
+  "exactLog": "Checked 10 files in 32ms. No fixes applied.\n",
+  "innerExit": {
+    "accepted": true,
+    "elapsedSeconds": 4.786675458773971,
+    "errors": [],
+    "exit": 0,
+    "forcedCleanup": false,
+    "logSha256": "288451f050081a3f4b9a0c4cf096bc42bf5d2bec4480deebf8b211ea73dc10e9",
+    "remainingProcesses": [],
+    "runtimeDirectoriesStillPresent": [],
+    "sampledPids": [
+      40977,
+      40979
+    ],
+    "sourceIdentity": "f6baa7922feea80b9ae9641abc08ed79c339ff719769cc95162fe87ddc70bc65",
+    "sourceUnchanged": true,
+    "temporaryDirectory": "/private/tmp/vickie-tx-discovery-validation-format-check-jci14kc4"
+  },
+  "innerReceiptHashJoinsExact": true,
+  "log": {
+    "bytes": 44,
+    "mode": "0o644",
+    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation-preparation-3/run/format-check.log",
+    "sha256": "288451f050081a3f4b9a0c4cf096bc42bf5d2bec4480deebf8b211ea73dc10e9"
+  },
+  "originProvisionalCensusWitnessJoinsExact": true,
+  "scope": "Formatting check only for fixed ten owned files; no wholeworkspace/test/product qualification.",
+  "started": {
+    "argv": [
+      "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+      "/Users/dbox/repos/wt/vickie/vickie-schema-minimum/node_modules/@biomejs/biome/bin/biome",
+      "format",
+      "--config-path=/Users/dbox/repos/wt/vickie/vickie-schema-minimum/biome.json",
+      "apps/bdptest/src/transactional-discovery-installed.test.ts",
+      "apps/bdptest/src/transactional-schema-installed.test.ts",
+      "packages/server/src/transaction-changefeed.test.ts",
+      "packages/server/src/transaction-http.test.ts",
+      "packages/server/src/transaction-http.ts",
+      "packages/server/src/transaction-installed-contracts.test.ts",
+      "packages/server/src/transaction-schema-http.test.ts",
+      "packages/server/src/transaction-schema-http.ts",
+      "packages/server/src/transaction-service.test.ts",
+      "packages/server/src/transaction-service.ts"
+    ],
+    "automaticRetries": 0,
+    "cwd": "/Users/dbox/repos/wt/vickie/vickie-schema-minimum",
+    "head": "cce884ccea1db97cbc6fd7bff876d4d6091f9081",
+    "npmCache": "/private/tmp/vickie-tx-discovery-validation-format-check-jci14kc4/npm-cache",
+    "outerSeconds": 120,
+    "overrides": {},
+    "rootGateSha256": "779d31312b8333304fdae310ecaf4d4ca0f23f9f05307fb5be4534428adcdafc",
+    "sourceIdentity": "f6baa7922feea80b9ae9641abc08ed79c339ff719769cc95162fe87ddc70bc65",
+    "temporaryDirectory": "/private/tmp/vickie-tx-discovery-validation-format-check-jci14kc4",
+    "tree": "6757829bd5b700faf28df39071190a272add90c9"
+  },
+  "streams": [
+    {
+      "actualFileIdentity": {
+        "bytes": 483,
+        "device": 16777232,
+        "inode": 96079862,
+        "mode": 33152,
+        "uid": 501
+      },
+      "file": {
+        "bytes": 483,
+        "mode": "0o600",
+        "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation3-root-next5-dispatch-1/format-check/format-check.stdout",
+        "sha256": "5b3337d426ca2ebc021d2ed0261ea44ef878c36dacfc5c8a5e9eb59a8761deb3"
+      },
+      "receivedSavedHashedFstatExact": true,
+      "sourceReceiptActualEOFAndRawClose": true
+    },
+    {
+      "actualFileIdentity": {
+        "bytes": 0,
+        "device": 16777232,
+        "inode": 96079863,
+        "mode": 33152,
+        "uid": 501
+      },
+      "file": {
+        "bytes": 0,
+        "mode": "0o600",
+        "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation3-root-next5-dispatch-1/format-check/format-check.stderr",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "receivedSavedHashedFstatExact": true,
+      "sourceReceiptActualEOFAndRawClose": true
+    },
+    {
+      "actualFileIdentity": {
+        "bytes": 205248,
+        "device": 16777232,
+        "inode": 96079886,
+        "mode": 33152,
+        "uid": 501
+      },
+      "file": {
+        "bytes": 205248,
+        "mode": "0o600",
+        "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation3-root-next5-dispatch-1/format-check/postterminal-census.stdout",
+        "sha256": "3353cfea3b47f480e2751f426174368c55fe857b3c40326da3497ab9b7769aee"
+      },
+      "receivedSavedHashedFstatExact": true,
+      "sourceReceiptActualEOFAndRawClose": true
+    },
+    {
+      "actualFileIdentity": {
+        "bytes": 0,
+        "device": 16777232,
+        "inode": 96079887,
+        "mode": 33152,
+        "uid": 501
+      },
+      "file": {
+        "bytes": 0,
+        "mode": "0o600",
+        "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation3-root-next5-dispatch-1/format-check/postterminal-census.stderr",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "receivedSavedHashedFstatExact": true,
+      "sourceReceiptActualEOFAndRawClose": true
+    }
+  ]
+}

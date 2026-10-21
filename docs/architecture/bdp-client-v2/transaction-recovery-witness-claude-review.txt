@@ -1,0 +1,42 @@
+Read: the full `5e7041b..992ccb1` diff, `transaction-recovery.test.ts` (whole file), `transaction-runtime.test.ts` (whole file), `transaction-store.ts` (150–270, 415–474), `transaction-http.ts` (55–100, 310–350), the doc paragraph at `745–780`, this cohort's `report.md` plus all 12 `.exit` files and every `.log`/`.json` artifact, and the prior `transaction-recovery-low/claude-review.txt`. I ran no tests and wrote no files. Worktree is clean at `992ccb1bc3174a0e277ce5e861213c5292e8f668`.
+
+## Requested verifications
+
+**1. Copied hot journal witnesses incompatible recovery without consuming the original valid-open image — VERIFIED.**
+`cpSync` copies both `owner.sqlite` and `owner.sqlite-journal` to `refused.sqlite`/`refused.sqlite-journal` (`transaction-recovery.test.ts:72–73`) after `child.signal === "SIGKILL"` is asserted, so there is no concurrent writer and no torn copy. The refused open is redirected with `file: refusedFile` placed after the `...options` spread, as are `create: false`, `receiptMaximumItems: 3` and the expiry-eligible clock — override order is correct, and `create: false` remains load-bearing (a true `create` would reach `unlinkSync` at `transaction-store.ts:453`).
+
+The evidence is not weakened by the copy: `configuration` (`transaction-store.ts:191–197`) is `{format, receiptMaximumItems, identityPolicy, scope, types}` and contains **no file path**, so the throw at `441–442` can only be driven by `receiptMaximumItems: 3` vs the stored `2`, and reaching it still requires `metadata("configuration")` to have been read out of a rolled-back image. `journal_mode=DELETE` (`426`) makes `expect(existsSync(\`${refusedFile}-journal\`)).toBe(false)` (`86`) a direct witness of consumption, and `db.close()` in the catch at `452` releases the EXCLUSIVE lock before the reopen loop. The original is then independently re-asserted hot at `89–91` before any compatible open, and `reopenFiles` is ordered `[file, refusedFile]`, so the untouched crash image is opened **first**, while still hot. This is exactly the second half of prior finding 1's offered fix.
+
+**2. Both branches pending/receipt retention tested — VERIFIED.**
+The loop at `94–122` runs the full witness per branch: `recoveredPending === 1`, 60 groups / 180 Resources, and all 60 chains asserted `detail:"available"` with their page bodies (`n`, `i:2`, 18 000-byte pad) at `clock: () => 1000`. Original branch = direct valid-open recovery out of a hot journal with a pending admission (the witness prior finding 1 said had been lost). Copied branch = the no-cleanup/no-retention witness, correct by ordering: the throw at `441` precedes `DELETE FROM receipts WHERE owner IS NOT NULL` (`445`), `DELETE FROM creator_facts` (`447`) and `sweep(instant())` (`448`) in one `atomic`, the plain `Error` takes the clean-rollback branch, and the pending row plus all chains survive a clock (`86401001`) that would have made them sweep-eligible. `before-maintenance-commit` keeps its own separate original-hot path at `recoveredPending === 0`. Both opens use `finally { owner.close() }`; the existing `afterEach` `rmSync(directory, {recursive:true})` reclaims the sibling.
+
+Red is genuine and matches the report: `red.log` fails only `after-terminal` at the pre-added line-82 assertion with `ENOENT … owner.sqlite-journal`, `before-maintenance-commit` passes, `red.exit` = 1.
+
+**3. Changed-port/pages runtime regression selected, and command exits captured — SELECTED and CAPTURED; see the finding for witness strength.**
+`regressions.log` is 6 files / 217 passed / 4.02 s with no skips, and `transaction-runtime.test.ts` is now in it for both `durable pages=false/true`. The `pages=true` variant does use scope `https://example.test/stable/pages/` (`:23`), reopens on port `0` and asserts the listener URL changed (`:97–98`). All twelve report-table steps have an `.exit` file (`install, build, red, format-write, typecheck, build-final, regressions, boundaries, format-check, lint, diff-check, commit`), all `0` except the intended `red` = 1 — prior finding 2 is closed, including `typecheck.exit` = 0 standing in for the one-line `typecheck.log`. `boundaries.log` (11 packages), scoped `lint`/`format-check` (1 file each) and `commit.log` match the table.
+
+**4. No runtime/store/protocol change — VERIFIED.** Two files, 50/27 lines, test plus one doc paragraph. The doc at `772–779` is accurate against the test, including the ordering framing ("refusal precedes … cleanup and retention") rather than a sweep-survival claim.
+
+## Findings
+
+**1 — Low (regression strength, inherited; not introduced by this diff). The newly selected runtime page read is self-referential, so it cannot witness the "successful page read" the selection was added for.**
+File: `packages/server/src/transaction-runtime.test.ts:87–93` and `107–115` (unchanged by `992ccb1`), against `bdp-integration-logs/transaction-recovery-witness/report.md:61–64`.
+The page read's only assertion is `expect(await (…).json()).toEqual(page)`, where `page` is itself the first run's page body. No status is pinned on either fetch, and no page shape (`receipt`/`results`/`next`) is pinned. Problem bodies are static: `transactionHttpProblem` → `problem(readProblem(code))` (`transaction-http.ts:61–80`) embeds no URL, port or instance, so a 404 in both runs produces byte-identical JSON and the comparison passes vacuously. Concretely: if the `parentId` prefix guard at `transaction-store.ts:1457` ever over-rejected a minted id under a `/pages/`-containing scope, both reads would return the same `resource-not-found` document and this test would stay green — the `receipt.next` branch would also silently skip entirely if `next` were ever `null`. The surrounding assertions do not cover the gap: `read.json()).toEqual(receipt)` (`:106`) pins the *receipt* route, which `transaction-http.ts:321` routes away from the page branch.
+No live defect: the prior review's prefix-containment argument shows the guard cannot reject a minted id, and `transaction-receipt-pages.test.ts` carries positive store-level page coverage under a `/pages/` scope. The effect is that prior F3 closes as **selection and exit capture, not as the 200-level HTTP page witness it asked for**, and the report's "successful page reads" overstates what the selected file pins.
+Fix (two lines, no new fixture): capture the page responses instead of their bodies and assert `status === 200` on both, plus `expect(page).toMatchObject({ receipt: receipt.id, results: expect.any(Array) })` on the first; optionally `expect(receipt.next).not.toBeNull()` inside the `pages` branch so the page assertions cannot skip.
+
+## Notes (not defects)
+
+- For `before-maintenance-commit`, the journal-magic assertion at `89–91` is an exact duplicate of `66–68` with nothing between them. Harmless; it is load-bearing only for `after-terminal`.
+- No artifact records the Node version the report pins at 24.16.0 (`install.log` confirms pnpm 11.20.0 only). Prior finding 2 asked for exit codes, which are now complete, so this is an observation rather than a reopening.
+
+## Prior-finding dispositions
+
+- **F1 (nonexistent-page retention) — remains CLOSED.** Untouched by this diff.
+- **F2 (refused open consumed the hot journal; neither horn asserted) — CLOSED.** Both horns are now asserted on separate images: the copy's journal is required absent, and the original is required still hot immediately before the valid open. The directed fix was implemented as offered.
+- **F3 (runtime regression selection) — CLOSED as selection and exit capture; qualified by finding 1** for the positive HTTP page witness.
+- **F4–F6 — informational, not broadened, per instruction.** Store core, service and HTTP not re-reviewed.
+
+## Bounded closure
+
+For the frozen test/doc-only range `5e7041b..992ccb1`, the two directed repairs land correctly and the verification record is complete with explicit exits. **No substantive defect in the changed code or the changed doc paragraph.** The single finding above is Low, concerns an unchanged file pulled into the selected run, and is evidence strength only — nothing here alters shipped behaviour, durability claims or profile readiness, and the process-crash-not-power-loss qualification in both the report and the doc is accurate.

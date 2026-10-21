@@ -1,0 +1,27 @@
+{
+  "observedUtc": "2026-10-18T06:17:47.165029+00:00",
+  "session": "2026-10-18T02:16:24Z-549f",
+  "remoteClaimSha": "7a3ce079581e9fcd12d246fb374974bdadb0adc2",
+  "baseIndexSha256": "991e4ecd87aba8b08b6eda9f2ba7c0637a1ecdefe1f0aedddff5bbafe00a1083",
+  "baseIndexedCount": 210,
+  "baseMirroredIncludingIndex": 211,
+  "allBaseIndexedBytesAndPathsUnchanged": true,
+  "correctedJsonSha256": "cd80851dda5be952c2a3f5c4c19b9ff047a7f14a6d801dff4b21a1f63625756f",
+  "originalJsonSha256": "9d835d8d7e2e06edd7cd2ba8534ac318762ce995441f84344f8c943b684bd483",
+  "onlyDifference": "one literal non-sequence to non-sequence, non-replay inside receiptRules",
+  "allOtherJsonFieldsEqual": true,
+  "beforeReceiptRules": "Every non-sequence command validates mutationReceipt and follows actual receipt.id. Sequence validates transactionalSequenceResponse with per-member keys and no outer header; follows actual created/updated Resource refs. Canonical schema validations and exact actual afterstate, not hashes alone.",
+  "afterReceiptRules": "Every non-sequence, non-replay command validates mutationReceipt and follows actual receipt.id. Sequence validates transactionalSequenceResponse with per-member keys and no outer header; follows actual created/updated Resource refs. Canonical schema validations and exact actual afterstate, not hashes alone.",
+  "coldRequestCounts": [
+    43,
+    28
+  ],
+  "coldRowsExactExceptReceiptRule": true,
+  "source679AllHashesMatch": true,
+  "specUnchanged": true,
+  "originalCountAndBudgetsUnchanged": true,
+  "executionPerformed": false,
+  "gitCommands": false,
+  "sourceOrGateOrLaunchChanges": false,
+  "compositionSha256": "28199eab6d3b99cab759e242854c0503f0f1c4b4da4f0fd3ac0e70922d96a3ea"
+}

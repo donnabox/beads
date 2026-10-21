@@ -1,0 +1,56 @@
+## Findings
+
+Verification basis: I read the four packet files, the prior PR131 plan, and the cited code/spec/test regions in this checkout (`transaction-batch.ts`, `transaction-set.ts`, `read-update-preflight.ts`/`read-update-values.ts`, `transaction-store.ts`, `transaction-sequence.ts`, `transaction-service.ts`, `transaction-http.ts`, `transaction-runtime*.ts`, the three test files, the installed test + launcher + binding, `schemas/bdp-v0.schema.json`, and spec 1944‑1962 / 2837‑2884 / 3256‑3325 / 4057‑4116 / 4505‑4560 / 4610‑4652). No files were modified; nothing was executed.
+
+**1. MEDIUM — the control's expected private marker is unreachable under the planned HTTP hunk.**
+*Location:* `ledger.json` `control.expectedMarker: "unsupported-transaction-composition"`; `plan.md` §Control ("record actual second response500/private marker/empty body").
+*Issue:* The plan removes the catch at the preparation call site (`transaction-http.ts:329‑335`) and forbids a broad catch around receiving errors. The control restores strict behaviour inside `prepareTransactionSequenceForReceiving`, so the mutated build throws `TransactionDevelopmentLimitError` out of `route()`; the listener's generic fault path (`transaction-runtime.ts:260‑267`) answers bodyless 500 with only `content-length: 0`, `cache-control`, `x-bdp-development` — no `x-bdp-development-limit`, no context.
+*Impact:* The control's recorded observation contradicts its stated prerequisite, making "fail solely `sequence-depth:retained-member-conflict`" ambiguous, and tempts an author to re-add a preparation-site catch purely to satisfy the control.
+*Fix:* Set `expectedMarker: null` and restate the control's second response as "bodyless 500, no development-limit marker, no context"; require the named oracle to assert status before headers/schema.
+
+**2. MEDIUM — the selection omits the three existing regressions most exposed by this refactor.**
+*Location:* `ledger.json` `sourceSelections` (11 sequence titles, 2 HTTP titles).
+*Issue:* The change moves the depth assert from one pre-loop whole-carrier call (`transaction-batch.ts:268`) into per-member construction inside the label/dependency loop (`:270‑322`), and moves the HTTP depth refusal after negotiation. The direct guards for those exact properties are unselected: `transaction-sequence.test.ts:439` "rejects duplicate keys and invalid dependency edges before any key effects", `:269` "projects mixed retained, conflicting, failed and unknown keys in declaration order" (the shallow retained-conflict-at-turn projection the new case extends), and `transaction-http.test.ts:443` "rejects sequence carrier syntax/keys/negotiation before claiming any member" (shallow 406 before any claim — the ordering the new design now depends on).
+*Impact:* The plan's load-bearing claims ("all syntax/labels/duplicates finish before capacity can be deferred", "ordinary negotiation then one authoritative admission") have no selected shallow regression.
+*Fix:* Add those three titles and recount (≈18 callbacks, ≈21 source HTTP, 15 owners/directories, 3 listeners), or state explicitly why they need not run.
+
+**3. LOW‑MEDIUM — strict preparation's error precedence changes for deep + label-broken carriers.**
+*Location:* `plan.md` §1 ("requires every member's depth" after construction) vs `transaction-batch.ts:268` today.
+*Issue:* Today the depth class is thrown before the member loop; afterwards a carrier that is both deep and label-broken would surface `TypeError("unknown sequence creator")` (`:284`) instead. That site looks unreachable because `read-update-values.ts:332‑341` already rejects forward/unknown/wrong-kind bindings, but `transaction-http.ts:154‑156`/`314‑317` only map `JsonSyntaxError`/`ReadUpdateCarrierError` to 400, so any reachability would yield a markerless 500.
+*Impact:* Silent class/status change on a defensive path; the plan asserts syntax-before-capacity without an oracle for it.
+*Fix:* Keep the requirement immediately after the member map (as planned) and add one assertion to the new preparation case that a deep carrier with a duplicate key / wrong-kind `@name` still fails with the parser error, not the depth class.
+
+**4. LOW — pin the offset‑2 boundary explicitly; `op.input` is a trap.**
+*Location:* `plan.md` §1 ("prepareDepthCarrier(existing singleton carrier, original raw operation, 2)").
+*Issue:* The claim is correct — `assertTransactionInputDepth` (`transaction-set.ts:52‑62`) seeds the node itself at the given depth, so raw-member@2 reproduces root0/array1/member2 exactly, matching the existing synthetic-wrapper convention (`transaction-batch.ts:179‑187`, `:234`). Using the parser's `op.input` instead would under-count one level and admit a 33-deep member.
+*Impact:* A one-token authoring slip widens the private capacity boundary with no failing test.
+*Fix:* Require the new preparation case to assert flip parity against the existing direct boundary at `transaction-http.test.ts:2581‑2584` (same content: depth N passes / N+1 refuses, in a sequence member and in a batch member), plus "shallow sibling carries no fact" and brand/clone rejection as in `transaction-set.test.ts:1149‑1161`.
+
+**5. LOW — drop the unexercised reader credential from the installed child.**
+*Location:* `plan.md` §Eight-request installed witness ("two credentials … Only operator is exercised by installed rows").
+*Issue:* The source fixture already supplies a read-only token (`transaction-http.test.ts:90‑95`), where rows 9–10 actually run. A second installed credential only perturbs `authenticationIdentity`/`runtimeConfigurationIdentity` (`transaction-runtime-configuration.ts:226‑254`) and adds a second live secret in the child.
+*Fix:* Launch with operator only (as `transactional-depth-key-order-installed.test.ts:371` does); keep 401/403 source-only.
+
+**6. LOW — the progress append must say the private 500 can now follow a committed prefix.**
+*Location:* `plan.md` §Control ("must retain fresh-depth/partial-policy/discovery limits").
+*Issue:* With the refusal reachable at a later turn (retained-failed row expiring between admission and its turn), the bodyless 500 can be returned after a durably committed, retained prefix — previously a post-admission sequence 500 meant an internal fault only.
+*Fix:* State this explicitly in the append, alongside the unchanged fresh-depth and discovery limits.
+
+**7. INFO — citation nit.** §Behavior says "Current batch257–267 checks whole-carrier depth first"; the assert is at `transaction-batch.ts:268`.
+
+## Load-bearing claims I verified as sound (no action)
+
+- **Strict vs receiving wrapper / unforgeable facts:** `depthRefusals` is a module-private `WeakMap` keyed by branded `PreparedTransaction`; `transactionDepthRefusal` brand-checks and there is no setter (`:339‑362`). Annotating `member.request` is exactly what `admitKey` reads (`transaction-store.ts:1163`). The no-controls overload cannot return `development-limit` (`:1116‑1141`) — it throws, so the receiving variant cannot leak into `TransactionAdmission`.
+- **Retained before refusal:** `admitKey` gates the fact on `!prior` *after* `expireRow`, `pendingWins` and the dependency-template branch (`:1142‑1167`); `admitSequence` skips unexpired retained rows entirely (`:1977‑1979`), and `nextSequence` classifies them at their turn (`:2103‑2124`). A completed row has `owner === null`, so `pendingWins` does not short-circuit it. Deep comparison is feasible: `encodeSemanticValue` is iterative with no nesting limit (`semantic-identity.ts:53‑144`), `normalizeTransaction` is shallow over operations (`transaction-batch.ts:460‑535`), and dependency comparison compares identity strings only (`transaction-dependencies.ts:173‑217`).
+- **Atomic rollback and turn recheck:** the fresh-deep throw happens inside the single `atomic()` claim step, so SQLite rolls back receipts and `creator_facts` with no fence (`:408‑441`), the `catch`/`finally` clears this attempt's in-memory claims (`:1999‑2019`), and the stepper is constructed outside `executeSequence`'s try (`transaction-service.ts:237`), so admission-stage refusals never become `AggregateError`. On the later-turn path `cancelSequence` is reached up to three times (store `:2160`, stepper `:106`, `abort()` `:114`) but is idempotent (`:1429`) and `state.busy` is cleared first (`:2159`), so the typed error survives to HTTP.
+- **Intentional 406-before-500 change:** spec 1949‑1957 plus the exhaustive table's shared‑406/"500 anywhere" exceptions (4618‑4628) permit either order; the sequence row carries no direct `409`, so a retained-member conflict must ride inside the 200 envelope, and the direct step‑4 rule (4533‑4539) is specific to the direct carrier. Existing `transaction-http.test.ts:1625‑1652` sends no `Accept` (`acceptsJson(null) === true`, `read-http.ts:90‑92`) and still reaches the 500 under the new order.
+- **Oracles/counts:** the sequence root schema is closed to `operations` (`schemas/bdp-v0.schema.json:1778‑1792`), so per-member checking leaves no uncovered depth surface; `sequenceMemberProblem` permits `operationName` (`:2579‑2592`); the 41-object metadata claim matches the existing fixture construction (`transaction-set.test.ts:1123‑1125`) and the existing installed 41-iteration oracle (`…installed.test.ts:354‑359`); ledger request bytes are internally consistent (677/674/680/219/126, total 3179, max 680); installed bounds (5 s, 64 KiB request, 16 KiB request headers, 128 KiB response, 64 KiB response headers) match the existing direct executor wiring (`…installed.test.ts:382‑399`); all eight "unchanged" sequence titles and both HTTP titles exist verbatim and are top-level/`describe`-prefixed consistently with the anchored regexes; the crash-spawning case (`:454`) is correctly unselected.
+
+## Material context gaps
+
+- Request/file `sha256` values and the 128 KiB/derivative byte measurements cannot be computed with the permitted tools; byte counts were checked only arithmetically.
+- The control's "all `@bdp`/Vitest imports resolve inside the derivative closure" claim is unverifiable from source alone.
+- Pins target `df80f8c`; the root-owned reanchor after the minimum-receiving slice may shift the `transaction-http.ts` hunk and all line citations.
+- The three new owner callbacks will need a test-only import of the source-private receiving entry into `transaction-sequence.test.ts` (its local `sequence()` helper uses the strict entry and cannot build deep input); the plan implies but never states this.
+
+**Readiness:** Directionally sound and well grounded in the actual code and spec — approve for authoring once the control's marker expectation is corrected (1) and the selection/oracle gaps (2–4) are closed; the remaining items are small corrections, and root retains disposition, authoring and execution release.

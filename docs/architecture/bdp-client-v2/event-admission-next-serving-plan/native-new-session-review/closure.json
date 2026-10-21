@@ -1,0 +1,50 @@
+{
+  "createdUtc": "2026-10-18T02:56:47.222770+00:00",
+  "reviewer": "native-new-session-review",
+  "session": "2026-10-18T02:16:24Z-549f",
+  "sourceHead": "a56254d682cf4623cab22a552e3d2f695f691795",
+  "sourceTree": "144f278c7f5a08516c4ac99ba553d4cc25bcf560",
+  "checkedHashes": {
+    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/event-admission-next-serving-plan/clean-candidate-rebind-1/claude-plan-review-session-20261018-021624-1/preparation-index.json": "480a0dc8a130699726012244795cf024a47e0195ddcafb8d972a7846e515e076",
+    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/event-admission-next-serving-plan/clean-candidate-rebind-1/claude-plan-review-session-20261018-021624-1/binding.json": "8b8ad44b410387dd80e46f55d1c853dded7fba8aee0b609c2865b3854dc66677",
+    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/event-admission-next-serving-plan/clean-candidate-rebind-1/claude-plan-review-session-20261018-021624-1/run.py": "3f38d1ed135fed4dcc9ea7d211769bc255bf27d962f92a65635b7bd50b06885a",
+    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/event-admission-next-serving-plan/clean-candidate-rebind-1/claude-plan-review-session-20261018-021624-1/parse-stream.py": "77466c44356f316a66ccd093bb64b6cd053fb2efde207916858062c878ed4ac6",
+    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/event-admission-next-serving-plan/clean-candidate-rebind-1/claude-plan-review-session-20261018-021624-1/arguments.json": "c7a06e44f911e415839ce4638c3ca20330b0ae204fe1f846632d367638090ede",
+    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/event-admission-next-serving-plan/clean-candidate-rebind-1/claude-plan-review-session-20261018-021624-1/guarded-action-session-20261018-021624-549f.py": "b2d467920638e68d3b007ba9daa432e971636245eca988bfb29d7a99d6e3fb30",
+    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/event-admission-next-serving-plan/clean-candidate-rebind-1/plan.md": "99128481d9665f7ae25f0cc8bf96c07ae270bf2d1660e37b1b1deb92d11ccd34",
+    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/event-admission-next-serving-plan/clean-candidate-rebind-1/selection.json": "d6662e99711769723ff3dfaf7a72c7017ad3d2e4e0a12dc1ec59304588619d8f",
+    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/event-admission-next-serving-plan/clean-candidate-rebind-1/workload.json": "8657dae2ac0dc2eb58810894075d8eb7735d2d4c633e867791b211d98add270d",
+    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/event-admission-next-serving-plan/clean-candidate-rebind-1/claude-plan-review-session-20261018-021624-1/context/spec.md": "67772742d7d08f48c12196e9789f1859ad2d0e19f133ea65e197b049361f84f8",
+    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/event-admission-next-serving-plan/clean-candidate-rebind-1/claude-plan-review/preparation-index.json": "ca6c1a1ee86b976b461189711dbe3ca18a079c33c3bcfaf3b3decf9ff9864519",
+    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/guarded-action.py": "fd81ba029cd4e7c7e60623df89e8292af91141d311d9ce789ed19e2152375e84"
+  },
+  "planSemanticsAccepted": true,
+  "sessionRebindAccepted": true,
+  "mechanicsAcceptedForLaunch": false,
+  "rootLaunchReleased": false,
+  "findings": [
+    {
+      "id": "N2",
+      "severity": "P2",
+      "location": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/event-admission-next-serving-plan/clean-candidate-rebind-1/claude-plan-review-session-20261018-021624-1/run.py:79",
+      "summary": "No independently enforced1800s outer deadline or ownership-aware outer kill for separate reviewer session",
+      "launchGate": true,
+      "disposition": "open; separately indexed supervisor required"
+    }
+  ],
+  "closureChecks": {
+    "indexedEntries": 43,
+    "sourceFiles": 679,
+    "contextInputs": 24,
+    "artifactInputs": 12,
+    "allHashesMatched": true,
+    "originalPacketAndGuardPreserved": true,
+    "allPatchDeltasRegenerated": true,
+    "promptPathOnlyRelocation": true,
+    "noExecutionOutputs": true
+  },
+  "actualReviewLaunched": false,
+  "testsOrRuntimeLaunched": false,
+  "sourceAuthoringReleased": false,
+  "reportSha256": "d7cb5c67cbc7db9100cf55ee97d74c0d779702f00a05fe56fe1b258fca91fc51"
+}

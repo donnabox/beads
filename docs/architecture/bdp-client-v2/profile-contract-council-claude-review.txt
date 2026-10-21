@@ -1,0 +1,140 @@
+# Review — frozen conformance successor `28b5da2` vs `9ea4089`
+
+**Checkout** `/Users/dbox/repos/wt/vickie/vickie-profile-contract-council-repairs`, HEAD `28b5da2092e57cac53fd67fab38ab9e95b64df28`, clean tree before and after (verified twice), origin `https://github.com/gastownhall/bdp.git`. Delta = 9 files, +744/−436: `docs/design/profile-contract-planning.md`, `docs/specs/bdp.md`, `catalog/read-update-v1.json`, `catalog/transactional-v1.json`, `src/artifact-bundle.ts`, `src/runner.ts`, `src/read-update-catalog.test.ts`, `src/profile-contract-plan.test.ts`, `test-support/profile-contract-plan.ts`. No writes, no pushes, no network, no outward actions; no source mutation (only gitignored `dist/` was rebuilt).
+
+## Independent verification performed (Node 24.16.0 / pnpm 11.20.0, both pinned)
+
+| Check | Result |
+|---|---|
+| `pnpm install --frozen-lockfile`, `pnpm build` | pass |
+| `pnpm typecheck` (`tsconfig.check.json`, which **does** cover `packages/*/test-support/**`) | pass |
+| conformance package + `apps/bdptest/src/read-matrix.test.ts`, `--maxWorkers=1` | **25 files / 816 tests pass**, 15.5s — matches report exactly (same file set as the authored JSON) |
+| planner file alone | **53 tests pass** — matches report |
+| **full workspace suite** (report declined to run this) | **118 files / 7938 passed, 1 skipped, exit 0** — no fallout outside the declared scope |
+| `pnpm check:boundaries` | "Dependency boundaries valid for 11 workspace packages" |
+| `pnpm format:check` / `pnpm lint` | format clean; 3 warnings + 1 info, all in files untouched by this delta (protocol/client/server) |
+| `pnpm evidence:verify` | 89 rows, constant `674982be2123b9b7aae630bf79c3f774122900cd`, unchanged; no evidence/artifact/constant file in the delta |
+| Counts recomputed from catalog JSON | 49 Read rows / 44 normative, 81 RU, 133 TX, 5 new companion RU rows → **44 Read / 129 RU / 250 TX cumulative**; RU retires exactly 1, TX declares 12, TX cumulative retired = 13 |
+| Audit table parsed from the doc | 81 rows, 12 `Retired`, order **identical** to RU catalog order |
+| Prerequisite dependents on `read.discovery.document` in `matrices/read-v1.json` | **9**, exactly the nine the original review named |
+| Public surface | planner absent from `dist/`; `isCanonicalScope`/`copySourceBytes`/`parseBoundedJson`/`parseFixtureJson`/`validateFixtureOraclePointers` appear 0 times in `dist/index.d.ts`; `package.json` `exports` unchanged with no wildcard subpath; only importer of the planner is its own test |
+| Planner executed directly (in-memory resolve hook, no files written) | original finding-1 bypasses, carrier classification, prerequisite classification, traversal cost — see below |
+
+Process note from the original review is resolved: HEAD now **is** the commit the report calls frozen, and its parent matches.
+
+---
+
+# Dispositions — all 11 findings
+
+## 1. HIGH — served-configuration mismatch binding bypassable → **CLOSED**
+`test-support/profile-contract-plan.ts:170-194` (`ownData`), `:196-199` (`primitiveString`), `:264-278`, `:320-334`.
+The fix spans both commits; `28b5da2` completes it by deleting the re-bind that made the hole reachable. `assertSameServedProfileConfiguration` no longer calls `bindServedProfileConfiguration` on its arguments — it requires both to be factory-branded (`configurations` WeakMap) and compares already-detached frozen records; `planProfileExecution` uses the branded object itself (`:322-323`) instead of re-binding.
+**Verified by execution** against current source: `policyDigest: Object.create({toString(){…}})` → `invalid policyDigest: primitive string required` for both values; validate-then-reread enumerable getter → `planning input requires own enumerable data fields` with **0 getter invocations**; boxed `sourceCommit` → rejected; `assertSame(bound, {...bound})` → `factory-bound served configuration required`. Every A/B/C bypass is gone, and the "two different targets canonicalize to `{}`" class is structurally impossible (nothing non-primitive reaches `canonicalJson`).
+
+## 2. HIGH — RU retirement had no normative spec basis → **CLOSED**
+`docs/specs/bdp.md:6706-6714` (new normative declaration under `#### Read+Update conformance rows`, same bullet form as the TX list, plus the TX-inheritance sentence); `:6808-6811` (TX prose amended); mirror guard `src/read-update-catalog.test.ts:53-71`.
+The guard is bidirectional (`expect(declared).toEqual([[…]])` **and** `expect(actual).toEqual(declared)`), so neither the spec bullet nor the catalog `retires` member can move alone; it also pins the TX-inheritance sentence. The TX test's pinned string `"retires the twelve\nRead+Update rows"` (`transactional-catalog.test.ts:225`) survives the prose edit — confirmed intact and passing. The erosion asymmetry the finding named (RU test asserting nothing about `retires`) is gone. The report's old "No spec change required" claim is no longer made.
+
+## 3. HIGH — retirement dropped the "omitted `order` means `canonical-uri`" binding → **CLOSED**
+`catalog/read-update-v1.json:14-24`, `catalog/transactional-v1.json:24-34` (both surviving clauses re-cited at both replacement profiles); counterfactual guard `profile-contract-plan.test.ts:190-222`.
+`validateCatalogCitations` (`src/catalog.ts:164-180`) enforces whitespace-normalized containment **within the anchored section**, and I confirmed both strings verbatim in `### Scope discovery and human documentation` (`bdp.md:949-955`).
+**Independent sentence-level survival analysis** of the retired row at RU: of its five distinct sentences, the three surviving clauses (optional members, `aliases` conditionality, omitted `order`) are all bound by selected rows; the only two unbound are precisely the ones the retirement intends to contradict ("The Read discovery document requires `bdpVersion`…" and "These are the only members admitted by the closed `readDiscovery` definition"). No deliberately-contradicted closed-shape citation was reintroduced.
+**Residual (does not reopen):** the finding's recommended *general* guard was not added, and I verified it is not implementable as stated — I ran it, and it flags 24 "orphan" citations at TX, every one a legitimate contradiction. The targeted clause guard is the defensible substitute. What remains unmechanized is survival analysis for *future* retirement edges; that is now a review obligation, not a test. See finding 11.
+
+## 4. MEDIUM — `ready-unexecuted` for combinations the runner refuses → **CLOSED** (new finding **N2** on the replacement's accuracy)
+`test-support/profile-contract-plan.ts:287`, `:299`, `:346-349`, `:407-417`; tests `:268-311`.
+The planner now reads `catalogId`/`manifestVersion`, adds `carrier-unsupported` readiness plus a plan-level `carrierBlocker` reason, and the previously-pinned wrong assertion is inverted (`:276-279` now expects `carrier-unsupported` for the exact v1/read-v1/read-update case the finding measured). Nothing false folds into `ready`. Row-level validation (`retired` / `not a selected requirement` / `fixture mismatch`) still throws even when the carrier is unsupported — confirmed by code path order.
+
+## 5. MEDIUM — readiness ignored `prerequisiteScenario`; nine inherited rows unsatisfiable at RU/TX → **CLOSED** (residuals **N1**, **N3**)
+`test-support/profile-contract-plan.ts:366-401`; test `:332-397`.
+`dependencyReady` rejects a prerequisite that is unselected/retired (`!required.has`), unplanned, capability-short, out of catalog order, or cyclic. The order rule is not invented: it mirrors the runner's own option validation, `runner.ts:2607-2616` ("prerequisite … must appear earlier in catalog order"), and the unselected case mirrors `prerequisiteResultBeforeRun`'s `"prerequisite was not selected or did not run"` (`runner.ts:2744-2781`). I recomputed the nine dependents from the real manifest and they are genuinely blocked independent of the carrier flag (their prerequisite is retired at RU, so `required.has` fails regardless).
+
+## 6. MEDIUM — `readSource` seam defeated "no smaller requirement list"; `catalogDigests` unverified → **CLOSED**
+`test-support/profile-contract-plan.ts:45-58` vs `:61-75`.
+The ordinary loader takes `(profile, history)` only, reads the real `catalog/` directory, and is the **only** place the `selections` WeakSet brand is applied. The injection seam is renamed `inspectProfileContractSourcesForTest` and its result cannot enter planning — test `:100-124` builds the same trimmed TX catalog the finding exploited, shows the shrunken required count, and asserts `planProfileExecution` throws `factory-loaded`. Digests are now computed from the exact on-disk bytes (`:120-122` pins `read-v1.json`'s sha256).
+**Residual (accepted):** digests are still not compared against pinned constants; detection of an unreviewed catalog edit now rests on the catalog/lockstep tests. Reasonable, since no caller-supplied source path remains.
+
+## 7. MEDIUM — "one requirement set" was a hardcoded filename list → **CLOSED**
+`test-support/profile-contract-plan.ts:54`, `:67-75`; test `:85-99` (real inventory, extra file, missing file, duplicate entry). Verified the directory holds exactly the six classified files.
+**Residual (minor, not blocking):** only `*.json` is scanned, and classification is one combined set rather than three labeled buckets (the error message names them). A catalog added under another extension would still be invisible.
+
+## 8. MEDIUM-LOW — fixture identity/capabilities were unverified caller claims → **CLOSED**
+`test-support/profile-contract-plan.ts:153-156`, `:242-261`, `:342`.
+Input now carries `fixture: ConformanceArtifactSource`; `fixtureId`/`capabilities`/`fixtureDigest` are **derived** through the package's own path (`copySourceBytes` → `parseBoundedJson` → `parseFixtureJson`), with `digest()` byte-identical in algorithm to `artifact-bundle.ts:484-486`'s `sha256`. Independent claims are rejected (`planning input must contain exactly the allowed fields` — executed). `validateFixtureOraclePointers` is reused, and the pre-existing `row.setup.fixture !== bound.fixtureId` check (`:361`) covers the manifest↔fixture identity binding that `createBoundArtifactBundle` enforces. Executed: derived id/capabilities/digest match the real fixture; zeroing the caller's buffer afterwards does not change the binding.
+
+## 9. LOW — scope validation diverged from the runner predicate; ids skipped repo patterns → **CLOSED**
+`runner.ts:3100-3111` (exported `isCanonicalScope`), used at `test-support/profile-contract-plan.ts:230`.
+I read the predicate chain and it is **strictly stronger** than the deleted inline checks: `isHttpUrl` (protocol, no credentials) + `href === value` + empty `search`/`hash` + trailing `/` + `isCanonicalUrlPath` (rejects `%2f`/`%5c`, empty segments, lowercase/needless percent-encoding of unreserved characters, dot segments, control characters). Tests pin the three measured bypasses plus a credentialed URL. `fixtureId`/`capabilities` now pass through `ARTIFACT_ID_PATTERN` + length + uniqueness inside `parseFixtureJson`, and the untrimmed `" reference-read-v1 "` case is pinned (`:499-508`).
+
+## 10. LOW — manifest bytes bypassed the hardened source boundary → **CLOSED**
+`test-support/profile-contract-plan.ts:201-207`, `:333`, `:339`.
+`Uint8Array.from(...)` is gone. Both sources go through `copySourceBytes` (intrinsic `Symbol.toStringTag`/`byteLength` getters, `ARTIFACT_MAX_BYTES`, intrinsic `set`) and `parseBoundedJson` (1 MiB, depth/node/entry bounds, fatal UTF-8). Wrappers are captured as own data *before* the helper call. Tests pin `Uint16Array`, `[300,44]`, array-like, `Proxy`, oversized/invalid-UTF-8/deep inputs, and that an overridden `Symbol.iterator` is never invoked (`calls === 0`) with the digest unaffected by later caller mutation. The `freeze` cycle gap persists but remains unreachable — all `freeze` inputs are module-derived detached data (same status the original finding gave it).
+
+## 11. LOW — 81-row table had no lockstep test; citation sets unguarded → **CLOSED** on the table, residual on citations
+`profile-contract-plan.test.ts:224-264`: parses the table and requires exact ID-order equality with the RU catalog, `Retired`/`Inherited` agreement with the real TX retirement map, and a matching ``Replaced by `…` `` claim per retirement. I independently reproduced 81/81, 12 Retired, exact order. No additional TX retirement was invented (TX `retires` still 12).
+**Residual:** the general "a citation cannot vanish without a signal" guard still does not exist; coverage is the two targeted clause counterfactuals plus the one pinned removal. Tracked with finding 3's residual — one shared gap, not two reopenings.
+
+**Scoreboard: 11 closed, 0 reopened.** Three residual gaps are explicitly accepted above (3/11 citation guard, 6 digest pinning, 7 extension scan); three new defects follow.
+
+---
+
+# New findings in this delta
+
+## N1. LOW — an unsupported carrier fabricates `blockedPrerequisites` entries
+**Location** `packages/conformance/test-support/profile-contract-plan.ts:391` (`|| carrierBlocker` inside `dependencyReady`), consumed at `:399-401`.
+**Repro (executed)** Plan profile `read-update` with the real `matrices/read-v1.json` restricted to RU-selected rows — the exact scenario the repair's own test `:332-349` uses:
+```
+carrierBlocker: current normative artifact/runner carrier does not support read-v1 version 1 on read-update
+read.discovery.canonical-navigation => carrier-unsupported blockedPrerequisites: ["read.discovery.scope-service-desc"]
+read.discovery.optional-limits      => carrier-unsupported blockedPrerequisites: ["read.discovery.scope-service-desc"]
+rows with nonempty blockedPrerequisites: 11
+control at profile read (no blocker): same two rows => ready-unexecuted, blockedPrerequisites: []
+```
+11 rows are reported blocked; 9 are genuine (retired `read.discovery.document`), 2 name `read.discovery.scope-service-desc`, which is selected, planned and otherwise ready.
+**Impact** The record attributes dependency failures that do not exist, inverting the doc's claim that "A carrier reason is also recorded at plan level, so unsupported carriers do not hide dependency failures" (`docs/design/profile-contract-planning.md`) and weakening report claim 5's "blocked prerequisite IDs remain visible". At a cumulative RU/TX plan every row with a prerequisite would carry a non-empty list, making the field useless exactly where it was added to be informative.
+**Fix** Drop `|| carrierBlocker` from `dependencyReady`; readiness precedence at `:407-417` already surfaces `carrier-unsupported` first. The nine genuine blocks survive (they fail `required.has`), so the existing `toHaveLength(9)` assertion still passes.
+
+## N2. LOW — the carrier rule over-blocks `manifestVersion 2` at Read+Update, which is the next declared slice
+**Location** `packages/conformance/test-support/profile-contract-plan.ts:346-349`.
+**Repro (executed)** `catalogId: "read-v1"`, `manifestVersion: 2`, profile `read-update`:
+```
+carrierBlocker: current normative artifact/runner carrier does not support read-v1 version 2 on read-update
+histogram: {"carrier-unsupported":43,"unplanned":86}
+```
+But the real gates admit that combination today: `createConformanceArtifactBundle` requires `manifest.catalogId === \`read-v${catalog.catalogVersion}\`` (`artifact-bundle.ts:115-117`) and `catalogVersion` **must equal 1** (`catalog.ts:110-111`), so every ordinary normative bundle is `read-v1`; the factory applies no `manifestVersion` gate (1 or 2 both parse, `executable-manifest.ts:465-467`); and `validateRunOptions` blocks only v1-at-non-Read and v2-at-Transactional — it explicitly admits **v2 at `read-update`** with a matching exact configuration (`runner.ts:2560-2586`).
+**Impact** The emitted reason is factually wrong about the runner, and report claim 4's "support is limited to read-v1 on Read" is inaccurate as a statement about the runner (it is accurate only about the absence of a cumulative RU *catalog/manifest* artifact). Because any future cumulative RU bundle is forced to `catalogId: "read-v1"` by the rules above, the planner will mark the entire next slice `carrier-unsupported`, and since carrier takes display precedence, every real `applicability-unresolved` / `setup-unavailable` / genuine prerequisite verdict is masked (and N1 fabricates blocks on top). Direction is fail-closed, so nothing false is claimed ready.
+**Fix** Mirror the actual gates: treat `catalogId === "read-v1"` as supported when `profile === "read"`, or when `manifestVersion === 2 && profile === "read-update"`; or key the blocker on the factory's `expectedCatalogId` rule and the runner's two explicit refusals rather than on profile alone. Reword the reason to name what is actually missing (no normative cumulative RU artifact) instead of asserting a runner refusal.
+
+## N3. LOW — `dependencyReady` is unmemoized, so prerequisite traversal is exponential in caller-supplied manifest bytes
+**Location** `packages/conformance/test-support/profile-contract-plan.ts:388-401` (recursion with a fresh `ancestors` set per call site, no result cache).
+**Repro (executed)** Manifest where row *k* has one prerequisite action per earlier row (valid: prerequisite actions precede the owned action, prerequisites earlier in catalog order), built from real Read rows:
+```
+n=12 actions=78  elapsed=4.6ms
+n=16 actions=136 elapsed=14.0ms
+n=20 actions=210 elapsed=197.1ms
+n=22 actions=253 elapsed=843.4ms
+n=24 actions=300 elapsed=3759.0ms      (~4.4x per +2 rows)
+```
+Extrapolating, n≈30 is minutes and n≈36 is hours. A 44-row dense chain (~990 actions, ~150 KB) sits well inside `parseBoundedJson`'s 1 MiB / depth-128 / 100k-node / 10k-entry bounds.
+**Impact** Unbounded CPU / an effectively hung planner on a hostile or merely dense manifest — inconsistent with the rest of this module, which goes to considerable length to bound exactly this input (intrinsic byte copies, JSON complexity limits, iterator-free capture). Confined to source-private test support: a CI/test hang, not a service DoS.
+**Fix** Three-colour DFS with a per-id memo: cache the boolean once computed, and treat a node already on the gray (in-progress) stack as the cycle sentinel. O(V+E), and it preserves every current verdict including the cyclic case pinned at `:392-397`.
+
+---
+
+# Report-claim accuracy
+
+Everything in the report's Verification section reproduced exactly (816/25, 53 planner tests, 11 packages, format/lint, evidence 89 rows + constant, `git diff --check`, counts 44/129/250, `claimEligible:false`, no public export or exports-map change, no artifact/evidence/constant edits, no admission behavior enabled). Two dispositions are overstated:
+
+- **Claim 4** — "Current ordinary normative artifact/runner support is limited to read-v1 on Read": inaccurate about the runner (N2). The honest form is "no normative cumulative RU/TX catalog+manifest artifact exists; the planner conservatively refuses every non-Read carrier."
+- **Claim 5** — "blocked prerequisite IDs remain visible": true but misleading (N1); under an unsupported carrier the list includes prerequisites that are not blocked.
+
+The remaining claims (1, 2, 3, 6, 7, 8, 9, 10, 11) are supported by what I verified. The authoring note about the fixture that initially violated manifest rules is consistent with the parser rules I hit myself (`must include at least one action owned by the scenario`, `prerequisite actions must precede this scenario's own actions`) — no server-side rule was loosened to accommodate it.
+
+# Exact scope and verification limits
+
+- Reviewed `9ea4089..28b5da2` in full, plus current-state behavior of the touched modules. Finding 1 necessarily spans `abdd1d4..9ea4089` as well, since its fix originated there; I re-ran its repros against current source rather than taking the prior report's word.
+- Planner executions used `node --experimental-transform-types` with an in-memory `.js`→`.ts` resolve hook registered from a `data:` URL — no files written. Results reflect the TS sources as vitest consumes them.
+- No served, credentialed, RU or TX execution; no network; no evidence generated or bound; no admission path exercised. All plans observed carry `claimEligible:false`, and I make no qualification claim for any profile.
+- I did not re-audit all 81 RU rows against the TX spec text for a 13th retirement candidate; the original review did, and nothing in this delta changes that input (TX row set, `retires` members and the 12 spec bullets are untouched). I re-verified only the discovery rows plus the full citation-survival analysis.
+- Forward-looking divergence, unverifiable today: the planner's prerequisite-order check uses the *merged* cumulative catalog order (`read-v1` → `read-update-v1` → `transactional-v1` → companions), while `runner.ts:2607-2616` uses the *bound bundle catalog's* order. Identical for Read rows now; if a future cumulative catalog file orders rows differently (e.g. grouped by subject), the two verdicts can disagree. Worth pinning when that artifact lands.
+- Readiness precedence places `prerequisite-blocked` above `applicability-unresolved`; `missingApplicability` stays visible in the record and the doc states the order, so this is a presentation choice, not a defect.

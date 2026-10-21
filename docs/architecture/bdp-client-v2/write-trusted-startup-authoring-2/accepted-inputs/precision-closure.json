@@ -1,0 +1,176 @@
+{
+  "reviewedUtc": "2026-10-18T04:01:25.269222+00:00",
+  "reviewer": "Independent native precision closure; not successor-plan author",
+  "verdict": "ACCEPT_EXACT_STARTUP_PLAN3_PRECISION",
+  "findings": [],
+  "rootDispositionSha256": "9e19c044a0aebf2ee219d20bd2e27495b691ed7167aa8fa8d5c0dc40098ed326",
+  "successfulActualAuditIndexSha256": "607a1759fbebf81e849425d2a56f3d05a7a1a6926e99457bcdfb99db48c06dbe",
+  "successfulActualReviewTextSha256": "1450385fcf727eaa8dde9718ab0c714f0b79ef7731be64a4740b5ec6464352d9",
+  "exactPlanSha256": "11f2c34a4eec98d3613e5ebb8b313cd9dbebff81e660a39aa23d8fc61bf2f67f",
+  "exactContractSha256": "4dec8c01117abfd80aecf8da81510ef40b8290550d6a647c3be483d3dfd50012",
+  "originalPlan3IndexSha256": "f92dedc9d07d9a6d7afca27b900d097c2cc903358bda719d7c84ec4cb098fe16",
+  "bindingSha256": "2abb9c65970c1daa74dec6b984198b6e55e1a8b0594063c7ab36940a7d6c13ce",
+  "genuineDeltaSha256": "474bb3666dd634d91c05824a161b4ed7d30312359878b8d5e2c0680ec96e31c0",
+  "inverseSha256": "aa0dd4af9c1a17aabaefa6f38d9f729bd151fa453533bc95cff4d5f81196b074",
+  "resolutionSha256": "2850b589d249f9914ef31d0b793440e0b4977d466f79c4d8d2f20004de8ef132",
+  "findingClosures": [
+    {
+      "id": "F1",
+      "verdict": "CLOSED",
+      "planLines": [
+        41,
+        49,
+        52,
+        62,
+        79,
+        85
+      ],
+      "contractLines": [
+        76,
+        78,
+        82
+      ],
+      "evidence": "Public load API/result/error types are explicit and inert. Exact immutable captures/projected credentials/TX authenticate, metadata and readOptions remain only in private reference-deployment-state WeakMap; identity-only internal accessor rejects forged/foreign handles and is not package/public-entry exported. Public declarations cannot expose private capture types/functions. Explicit12file footprint includes private registry and8emitted loader+registry files."
+    },
+    {
+      "id": "F2",
+      "verdict": "CLOSED",
+      "planLines": [
+        46,
+        47,
+        81
+      ],
+      "contractLines": [
+        74
+      ],
+      "evidence": "32MiB remains sole predecode byte bound with trusted decoder allocation/work risk explicitly accepted. Existing decoder produces lossless tree; finite depth16/node100000 walk runs before numeric materialization; JsonNumberLiteral treated atomic. Numeric admission retains diagnostics1 with fixed sanitized formatter; refusal pointer/literal/cause discarded. No extra scanner or predecode structural/memory guarantee."
+    },
+    {
+      "id": "F3",
+      "verdict": "CLOSED",
+      "planLines": [
+        31,
+        48,
+        49,
+        94
+      ],
+      "contractLines": [
+        62,
+        74,
+        84
+      ],
+      "evidence": "Public name preflightReadLimits consistently labels code/capture comparison only. Later owner-before-listen explicitly checks persisted receiptMaximumItems, snapshot limits/token policy, runtime limits, contract identity, Scope/Types and policy/view/recovery. Pure loader opens no owner and claims no live metadata or persisted proof."
+    },
+    {
+      "id": "F4",
+      "verdict": "CLOSED",
+      "planLines": [
+        48,
+        65,
+        67,
+        68,
+        85
+      ],
+      "contractLines": [
+        78
+      ],
+      "evidence": "Bare/deep loader and private registry refusal tests required, exact export map stays narrow, Snapshot/json-equality scan includes new public reference-deployment entry. Compatible stream checks use captured settings/liveStreamsAvailable, not direct private stream/Snapshot imports. Registry emits privately without adding an export."
+    },
+    {
+      "id": "F5",
+      "verdict": "CLOSED",
+      "planLines": [
+        21,
+        58,
+        59,
+        77
+      ],
+      "contractLines": [
+        58
+      ],
+      "evidence": "Fixed field/rule-only deploymentFile validation messages and rejected sentinel non-echo test; resolved nonsecret path emitted like bd.workspace explicitly documented. No contents/tokens/payload/credential-bearing cause logged."
+    },
+    {
+      "id": "F6",
+      "verdict": "CLOSED",
+      "planLines": [
+        46,
+        81
+      ],
+      "contractLines": [
+        74
+      ],
+      "evidence": "32MiB encoded-envelope and16MiB inner budgets independently retained. Escaping can refuse inner-admissible data without a universal half ratio/full-budget fit claim. Overflow test uses valid small-inner envelope plus legal whitespace to isolate transport limit; no widening."
+    },
+    {
+      "id": "F7",
+      "verdict": "CLOSED",
+      "planLines": [
+        14,
+        15,
+        79,
+        81
+      ],
+      "contractLines": [
+        54
+      ],
+      "evidence": "Token uniqueness only; duplicate principals remain accepted with unique-token positive and duplicate-token negative. RU85\u2013203/TX17\u201367 citations corrected. No new IAM rule."
+    },
+    {
+      "id": "F8",
+      "verdict": "CLOSED",
+      "planLines": [
+        65,
+        77
+      ],
+      "contractLines": [],
+      "evidence": "Default deploymentFile unset assertion added beside fixture in already owned smoke file. Only startup configuration documentation owned; unrelated progress-doc expansion remains deferred."
+    }
+  ],
+  "footprint": {
+    "files": [
+      "packages/config/src/index.ts",
+      "packages/config/src/index.test.ts",
+      "docs/design/startup-configuration.md",
+      "packages/server/src/reference-deployment.ts",
+      "packages/server/src/reference-deployment-state.ts",
+      "packages/server/src/reference-deployment.test.ts",
+      "packages/server/package.json",
+      "scripts/smoke-executables.mjs",
+      "scripts/smoke-safety.mjs",
+      "scripts/smoke-safety.test.mjs",
+      "packages/server/src/transaction-snapshot.test.ts",
+      "packages/server/src/read-sequence-lifecycle.test.ts"
+    ],
+    "count": 12,
+    "onlyAdditionToPrior11": "packages/server/src/reference-deployment-state.ts",
+    "newEmittedFiles": 8,
+    "newPublicPackageSubpaths": [
+      "./reference-configuration"
+    ],
+    "privateStatePackageExportAllowed": false,
+    "noPublicCaptureOrCredentialCapability": true
+  },
+  "independentVerification": {
+    "originalIndexEntries": 20,
+    "indexClosureExactBeforeThisSeparatelyIndexedReport": true,
+    "allTenContextsMatchOriginsAndHashes": true,
+    "all207PredecessorFilesPreserved": true,
+    "forwardDeltaRegeneratedExactly": true,
+    "inverseDeltaRegeneratedExactly": true,
+    "sourceBase": "a56254d682cf4623cab22a552e3d2f695f691795",
+    "sourceTree": "144f278c7f5a08516c4ac99ba553d4cc25bcf560",
+    "all679OriginalSourceHashesMatch": true,
+    "originalSourceClean": true,
+    "preReviewMirrorBytesMatch": true,
+    "allPlanSourceRuntimeActivationFlagsRemainFalse": true
+  },
+  "scopeLimits": [
+    "Precision review of exact adopted F1\u2013F8 corrections and genuine plan/contract delta only; no second actual PLAN review",
+    "No implementation/source authoring, tests/compiler/build/install/CLI/service/runtime/commit/push/launch action occurred",
+    "No incoming BDP semantics/main/spec adoption, extra API or new product decision/gate",
+    "Future implementation/declarations/package exports/reader behavior still require native+actual CODE review and exact-source validation",
+    "This closure does not release source authoring, runtime validation or public activation; root owns already planned source-only release"
+  ],
+  "next": "Root may accept this exact precision closure and make the already planned bounded12file source-only authoring release. No actual PLAN retry or additional external PLAN gate is required."
+}

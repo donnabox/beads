@@ -1,0 +1,1282 @@
+Review only; do not write or modify any files. Output findings only in stdout. Use inline source first; Read/Glob/Grep are allowed solely for narrow missing dependencies. Do not run commands/tests, delegate, or reread entire large files. Return a complete concise standalone numbered list (severity, exact file/line, concrete defect, impact, minimal fix), or explicitly no actionable findings. Target under 1500 words, no praise, no omitted beginning, no general whole-project audit.
+
+This is a new focused review after an earlier whole-file review ended at its 895-second bound with no output; that earlier result is inconclusive, not approval. Two complementary review scopes run concurrently; do not duplicate the other's scope. Production removes a private JSON depth guard, adds iterative JSON equality/receipt freeze and replaces SQLite receipt JSON filtering with existing JS receipt parsing. Other reviewers cover production. This target is the one private installed witness below, currently unexecuted. Required expected request count13, one runtime child, work45s/cleanup10s/test60s, receive cap1MiB (not production-limit increase), request64KiB, no retries. Full file SHA/source dependency hashes are bound; Git HEAD may advance via root's ordinary integration/commit while these exact source bytes must remain unchanged.
+
+YOUR EXCLUSIVE SCOPE: Only the 13-request scenario, request bytes/URLs and statuses, Resource/receipt/replay/no-op/rollback/sequence/Event/Snapshot oracles and deep-value comparison/schema correctness. Do not review launcher/process cleanup or Type-installation policy, which the complementary reviewer owns. Verify actual semantics with narrow read-only source reads only if inline context is insufficient.
+
+
+### apps/bdptest/src/transactional-fresh-depth-installed.test.ts, original lines 1-349
+```typescript
+1: /** Finite private deep-value observation; no public profile qualification. */
+2: import { execFileSync, type ChildProcess } from "node:child_process";
+3: import { createHash, randomBytes } from "node:crypto";
+4: import { existsSync, mkdtempSync, readFileSync, realpathSync, rmSync } from "node:fs";
+5: import { tmpdir } from "node:os";
+6: import path from "node:path";
+7: import { fileURLToPath } from "node:url";
+8: import { expect, it } from "vitest";
+9: import { Ajv2020 } from "ajv/dist/2020.js";
+10: import { isJsonSchemaDateTime, isJsonSchemaUri } from "@bdp/protocol";
+11: import { createRawHttpExchangeExecutor, type HttpMethod } from "@bdp/conformance";
+12: import { installedTransactionBinding } from "../test-support/transactional-execution-binding.js";
+13: 
+14: const root = fileURLToPath(new URL("../../../", import.meta.url));
+15: const { launchInstalledTransaction } = (await import(
+16:   new URL("../../../scripts/transaction-installed-observation.mjs", import.meta.url).href
+17: )) as {
+18:   launchInstalledTransaction(
+19:     entry: string,
+20:     configuration: unknown,
+21:     signal?: AbortSignal,
+22:   ): Promise<{
+23:     child: ChildProcess;
+24:     ready: Record<string, unknown>;
+25:     close(): Promise<void>;
+26:   }>;
+27: };
+28: const scope = "https://reference.invalid/acme/";
+29: const ownerType = `${scope}types/owner`;
+30: const linkType = `${scope}types/link`;
+31: const artifacts = {
+32:   descriptors: [
+33:     {
+34:       retrievalUri: "https://reference.invalid/acme/types/owner",
+35:       utf8: '{"id":"https://reference.invalid/acme/types/owner","name":"Owner","describes":"bead","conformsTo":[],"ownsOutgoing":{"https://reference.invalid/acme/types/link":{"max":4}},"propertiesSchema":"https://reference.invalid/acme/schemas/fresh-depth"}',
+36:     },
+37:     {
+38:       retrievalUri: "https://reference.invalid/acme/types/link",
+39:       utf8: '{"id":"https://reference.invalid/acme/types/link","name":"Link","describes":"link","conformsTo":[],"source":{"conformsTo":[],"external":"none"},"target":{"conformsTo":[],"external":"none"},"propertiesSchema":"https://reference.invalid/acme/schemas/fresh-depth"}',
+40:     },
+41:   ],
+42:   schemas: [
+43:     {
+44:       retrievalUri: "https://reference.invalid/acme/schemas/fresh-depth",
+45:       utf8: '{"$id":"https://reference.invalid/acme/schemas/fresh-depth","type":"object","properties":{"n":{"type":"number"},"deep":true},"additionalProperties":true}',
+46:     },
+47:   ],
+48: };
+49: const entry =
+50:   process.env.BDP_TRANSACTIONAL_INSTALLED_ENTRY ??
+51:   path.join(root, "packages/server/dist/transaction-installed-process.js");
+52: if (process.env.BDP_TRANSACTIONAL_INSTALLED_ENTRY && !process.env.BDP_TRANSACTIONAL_SOURCE_COMMIT)
+53:   throw new Error("installed fresh depth entry override requires declared source commit");
+54: const resolvedEntry = realpathSync(entry);
+55: const digest = (value: string | Uint8Array) => createHash("sha256").update(value).digest("hex");
+56: const entrySha256 = digest(readFileSync(resolvedEntry));
+57: const workspaceDirty =
+58:   execFileSync("git", ["status", "--porcelain"], { cwd: root, encoding: "utf8" }).length > 0;
+59: const sourceCommit =
+60:   process.env.BDP_TRANSACTIONAL_SOURCE_COMMIT ??
+61:   execFileSync("git", ["rev-parse", "HEAD"], { cwd: root, encoding: "utf8" }).trim();
+62: if (!/^[a-f0-9]{40}$/.test(sourceCommit)) throw new Error("invalid declared source commit");
+63: const fixture = {
+64:   bytes: readFileSync(
+65:     path.join(root, "packages/conformance/test-support/transactional/fixture-v1.json"),
+66:   ),
+67: };
+68: const ajv = new Ajv2020({ allErrors: true, strict: true });
+69: ajv.addFormat("uri", { type: "string", validate: isJsonSchemaUri });
+70: ajv.addFormat("date-time", { type: "string", validate: isJsonSchemaDateTime });
+71: const bundle = JSON.parse(readFileSync(path.join(root, "schemas/bdp-v0.schema.json"), "utf8"));
+72: ajv.addSchema(bundle);
+73: const validators = Object.fromEntries(
+74:   [
+75:     "mutationReceipt",
+76:     "transactionalSequenceResponse",
+77:     "linkRecord",
+78:     "eventPage",
+79:     "snapshotManifest",
+80:     "transactionalProblem",
+81:   ].map((name) => [name, ajv.compile({ $ref: `${bundle.$id}#/$defs/${name}` })]),
+82: );
+83: function record(value: unknown): Record<string, unknown> {
+84:   if (value === null || typeof value !== "object" || Array.isArray(value))
+85:     throw new Error("expected response record");
+86:   return value as Record<string, unknown>;
+87: }
+88: function records(value: unknown): Record<string, unknown>[] {
+89:   if (!Array.isArray(value)) throw new Error("expected response array");
+90:   return value.map(record);
+91: }
+92: function checked(text: string, schema: string) {
+93:   const value = record(JSON.parse(text)),
+94:     validate = validators[schema];
+95:   if (!validate) throw new Error("unbound response schema");
+96:   expect(validate(value), JSON.stringify(validate.errors)).toBe(true);
+97:   return value;
+98: }
+99: // Compare admitted JSON using an explicit worklist. Never pass deep values to a matcher.
+100: function sameJson(actual: unknown, expected: unknown, label: string): void {
+101:   const pending: [unknown, unknown][] = [[actual, expected]];
+102:   let valid = true;
+103:   while (pending.length && valid) {
+104:     const pair = pending.pop();
+105:     if (!pair) throw new Error("oracle worklist invariant");
+106:     const [left, right] = pair;
+107:     if (left === right) continue; // JSON numeric equality includes -0/0.
+108:     if (left === null || right === null || typeof left !== "object" || typeof right !== "object") {
+109:       valid = false;
+110:       break;
+111:     }
+112:     if (Array.isArray(left) !== Array.isArray(right)) {
+113:       valid = false;
+114:       break;
+115:     }
+116:     const l = left as Record<string, unknown>,
+117:       r = right as Record<string, unknown>;
+118:     const keys = Object.keys(r);
+119:     if (
+120:       Object.keys(l).length !== keys.length ||
+121:       (Array.isArray(left) && left.length !== (right as unknown[]).length)
+122:     ) {
+123:       valid = false;
+124:       break;
+125:     }
+126:     for (const key of keys) {
+127:       if (!Object.hasOwn(l, key)) {
+128:         valid = false;
+129:         break;
+130:       }
+131:       pending.push([l[key], r[key]]);
+132:     }
+133:   }
+134:   expect(valid, label).toBe(true);
+135: }
+136: const deepText = "[".repeat(12000) + "1" + "]".repeat(12000);
+137: const deepValue: unknown = JSON.parse(deepText);
+138: const contextNames = ["bdp-scope-epoch", "bdp-authorization-view", "bdp-scope-position"] as const;
+139: const retainedHeaders = [
+140:   ...contextNames,
+141:   "content-type",
+142:   "content-length",
+143:   "cache-control",
+144:   "vary",
+145:   "retry-after",
+146:   "www-authenticate",
+147:   "x-bdp-development",
+148:   "x-bdp-development-limit",
+149: ];
+150: const bodies = {
+151:   seed:
+152:     '{"operations":[{"operation":"createBead","id":"beads/a","type":"https://reference.invalid/acme/types/owner","properties":{}},{"operation":"createBead","id":"beads/b","type":"https://reference.invalid/acme/types/owner","properties":{}},{"operation":"createLink","id":"links/l","type":"https://reference.invalid/acme/types/link","source":"beads/a","target":"beads/b","properties":{"n":-0,"deep":' +
+153:     deepText +
+154:     '},"metadata":{"tag":"initial"}}]}',
+155:   update:
+156:     '{"link":"links/l","metadataChange":[{"op":"replace","path":"","value":{"tag":"updated","deep":' +
+157:     deepText +
+158:     "}}]}",
+159:   noop:
+160:     '{"link":"links/l","propertiesChange":[{"op":"replace","path":"/n","value":0}],"metadataChange":[{"op":"replace","path":"","value":{"deep":' +
+161:     deepText +
+162:     ',"tag":"updated"}}]}',
+163:   conflict:
+164:     '{"link":"links/l","metadataChange":[{"op":"replace","path":"","value":{"tag":"different","deep":' +
+165:     deepText +
+166:     "}}]}",
+167:   set: '{"collection":"links","selector":"$[?@.properties.n == 0]","cardinality":{"min":1,"max":1},"change":[{"op":"replace","path":"/n","value":1}]}',
+168:   sequence:
+169:     '{"operations":[{"operation":"createBead","id":"beads/c","type":"https://reference.invalid/acme/types/owner","properties":{"deep":' +
+170:     deepText +
+171:     '},"idempotencyKey":"fresh-c","name":"created"},{"operation":"createLink","id":"links/l2","type":"https://reference.invalid/acme/types/link","source":"beads/a","target":"@created","properties":{"deep":' +
+172:     deepText +
+173:     '},"idempotencyKey":"fresh-l2"}]}',
+174:   "late-failure":
+175:     '{"operations":[{"operation":"updateLink","link":"links/l","propertiesChange":[{"op":"replace","path":"/n","value":2}]},{"operation":"updateLink","link":"links/l","metadataChange":[{"op":"remove","path":"/absent"}]}]}',
+176: } as const;
+177: const requests = [
+178:   {
+179:     index: 1,
+180:     label: "seed",
+181:     method: "POST",
+182:     url: "https://reference.invalid/acme/operations/batch",
+183:     key: "fresh-seed",
+184:     accept: "application/json",
+185:     contentType: "application/json",
+186:     bodyRef: "seed",
+187:     bodyBytes: 24427,
+188:     bodySha256: "c2b9b50eac523660681ed4c0832da33849555e7d0afa0a913545b2803651b8a7",
+189:     status: 200,
+190:   },
+191:   {
+192:     index: 2,
+193:     label: "update",
+194:     method: "POST",
+195:     url: "https://reference.invalid/acme/operations/update-link",
+196:     key: "fresh-update",
+197:     accept: "application/json",
+198:     contentType: "application/json",
+199:     bodyRef: "update",
+200:     bodyBytes: 24099,
+201:     bodySha256: "916905c2080f92583db1097ed6c2b813a2b68b9fd760aff3cb93b176db884506",
+202:     status: 200,
+203:   },
+204:   {
+205:     index: 3,
+206:     label: "no-op",
+207:     method: "POST",
+208:     url: "https://reference.invalid/acme/operations/update-link",
+209:     key: "fresh-noop",
+210:     accept: "application/json",
+211:     contentType: "application/json",
+212:     bodyRef: "noop",
+213:     bodyBytes: 24159,
+214:     bodySha256: "322f89d2c4e8133819775293e5423a7c2e23f4e869ff79e652c7a3bb17f26dfc",
+215:     status: 200,
+216:   },
+217:   {
+218:     index: 4,
+219:     label: "replay",
+220:     method: "POST",
+221:     url: "https://reference.invalid/acme/operations/update-link",
+222:     key: "fresh-update",
+223:     accept: "application/json",
+224:     contentType: "application/json",
+225:     bodyRef: "update",
+226:     bodyBytes: 24099,
+227:     bodySha256: "916905c2080f92583db1097ed6c2b813a2b68b9fd760aff3cb93b176db884506",
+228:     status: 200,
+229:   },
+230:   {
+231:     index: 5,
+232:     label: "conflict",
+233:     method: "POST",
+234:     url: "https://reference.invalid/acme/operations/update-link",
+235:     key: "fresh-update",
+236:     accept: "application/json",
+237:     contentType: "application/json",
+238:     bodyRef: "conflict",
+239:     bodyBytes: 24101,
+240:     bodySha256: "6b45a53165bd6a92344eaa8d49c3543a365485591db84b71baa5d569924f04ed",
+241:     status: 409,
+242:   },
+243:   {
+244:     index: 6,
+245:     label: "set",
+246:     method: "POST",
+247:     url: "https://reference.invalid/acme/operations/update-where",
+248:     key: "fresh-set",
+249:     accept: "application/json",
+250:     contentType: "application/json",
+251:     bodyRef: "set",
+252:     bodyBytes: 141,
+253:     bodySha256: "08fb068040f562d9dfa692a0eb506867aacafdde63b2f1525de6d01a6eb79719",
+254:     status: 200,
+255:   },
+256:   {
+257:     index: 7,
+258:     label: "dependent-sequence",
+259:     method: "POST",
+260:     url: "https://reference.invalid/acme/operations/sequence",
+261:     key: null,
+262:     accept: "application/json",
+263:     contentType: "application/json",
+264:     bodyRef: "sequence",
+265:     bodyBytes: 48363,
+266:     bodySha256: "c20b577e95a267d41bac22686fd89044c16138d1cc377126129b7da23a09662d",
+267:     status: 200,
+268:   },
+269:   {
+270:     index: 8,
+271:     label: "late-failure",
+272:     method: "POST",
+273:     url: "https://reference.invalid/acme/operations/batch",
+274:     key: "fresh-failed",
+275:     accept: "application/json",
+276:     contentType: "application/json",
+277:     bodyRef: "late-failure",
+278:     bodyBytes: 216,
+279:     bodySha256: "9508f3e784eb06f621f31d8a63d03282594bc386a10a62ad8dad3406b17a3d18",
+280:     status: 200,
+281:   },
+282:   {
+283:     index: 9,
+284:     label: "failed-replay",
+285:     method: "POST",
+286:     url: "https://reference.invalid/acme/operations/batch",
+287:     key: "fresh-failed",
+288:     accept: "application/json",
+289:     contentType: "application/json",
+290:     bodyRef: "late-failure",
+291:     bodyBytes: 216,
+292:     bodySha256: "9508f3e784eb06f621f31d8a63d03282594bc386a10a62ad8dad3406b17a3d18",
+293:     status: 200,
+294:   },
+295:   {
+296:     index: 10,
+297:     label: "current-link",
+298:     method: "GET",
+299:     url: "https://reference.invalid/acme/links/l",
+300:     key: null,
+301:     accept: "application/json",
+302:     contentType: null,
+303:     bodyRef: null,
+304:     bodyBytes: 0,
+305:     bodySha256: "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+306:     status: 200,
+307:   },
+308:   {
+309:     index: 11,
+310:     label: "link-events",
+311:     method: "GET",
+312:     url: "https://reference.invalid/acme/links/l?view=events",
+313:     key: null,
+314:     accept: "application/json",
+315:     contentType: null,
+316:     bodyRef: null,
+317:     bodyBytes: 0,
+318:     bodySha256: "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+319:     status: 200,
+320:   },
+321:   {
+322:     index: 12,
+323:     label: "snapshot",
+324:     method: "GET",
+325:     url: "https://reference.invalid/acme/snapshot",
+326:     key: null,
+327:     accept: "application/json",
+328:     contentType: null,
+329:     bodyRef: null,
+330:     bodyBytes: 0,
+331:     bodySha256: "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+332:     status: 200,
+333:   },
+334:   {
+335:     index: 13,
+336:     label: "receipt",
+337:     method: "GET",
+338:     url: null,
+339:     key: null,
+340:     accept: "application/json",
+341:     contentType: null,
+342:     bodyRef: null,
+343:     bodyBytes: 0,
+344:     bodySha256: "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+345:     status: 200,
+346:   },
+347: ] as const;
+348: 
+349: it("serves byte-bounded deep mutations receipts Events and owned-Link Snapshots over packed bytes", async () => {
+```
+
+### apps/bdptest/src/transactional-fresh-depth-installed.test.ts, original lines 441-878
+```typescript
+441:           maximumBodyBytes: 1048576,
+442:           maximumHeaderBytes: 65536,
+443:           exactMode: {
+444:             scope,
+445:             profile: "transactional",
+446:             routes,
+447:             maximumRequestHeaderBytes: 16384,
+448:             maximumRequestBodyBytes: 65536,
+449:             defaultCredentialRef: "operator",
+450:             credentialHandles: [{ id: "operator", headerNames: ["authorization"] }],
+451:             resolveCredentials: () => ({ authorization: `Bearer ${operator}` }),
+452:           },
+453:         },
+454:       );
+455:     async function exchange(index: number) {
+456:       const literal = requests[index - 1];
+457:       if (!literal) throw new Error("unbound fresh-depth request");
+458:       const url = literal.url ?? receiptTarget;
+459:       if (!url) throw new Error("validated receipt target unavailable");
+460:       const row = {
+461:         ...literal,
+462:         url,
+463:         body: literal.bodyRef === null ? null : bodies[literal.bodyRef],
+464:       };
+465:       if (!row) throw new Error("unbound installed fresh depth request");
+466:       controller.signal.throwIfAborted();
+467:       expect(attempted + 1, "installed fresh depth exact dispatch order").toBe(index);
+468:       expect(++attempted, "installed fresh depth dispatch bound").toBeLessThanOrEqual(13);
+469:       expect(Buffer.byteLength(row.url)).toBeLessThanOrEqual(8192);
+470:       if (index === 13) routeBindings.push({ method: "GET", url });
+471:       const response = await executor(routeBindings)({
+472:         method: row.method,
+473:         url: row.url,
+474:         signal: controller.signal,
+475:         credentialRef: "operator",
+476:         raw: {
+477:           headerLines: [
+478:             { name: "accept", value: row.accept },
+479:             ...(row.contentType === null ? [] : [{ name: "content-type", value: row.contentType }]),
+480:             ...(row.key === null ? [] : [{ name: "idempotency-key", value: row.key }]),
+481:           ],
+482:           ...(row.body === null ? {} : { bodyBytes: Buffer.from(row.body) }),
+483:         },
+484:       });
+485:       responseSizes.push(response.bodyOctets ?? -1);
+486:       // Safe response projection is retained before any status/schema assertion.
+487:       responses.push({
+488:         ordinal: attempted,
+489:         label: row.label,
+490:         method: row.method,
+491:         url: row.url,
+492:         targetBytes: Buffer.byteLength(row.url),
+493:         targetSha256: digest(row.url),
+494:         accept: row.accept,
+495:         key: row.key,
+496:         requestBodyBytes: row.bodyBytes,
+497:         requestBodySha256: row.bodySha256,
+498:         status: response.status,
+499:         bodyOctets: response.bodyOctets,
+500:         bodySha256: digest(response.bodyText),
+501:         wireSha256: response.wireResponseBytes ? digest(response.wireResponseBytes) : null,
+502:         headers: Object.fromEntries(
+503:           retainedHeaders.map((name) => [name, response.headers[name] ?? null]),
+504:         ),
+505:       });
+506:       expect(response.exactRequest?.source).toBe("raw-http1-serializer");
+507:       expect(response.exactRequest?.writeState).toBe("complete");
+508:       expect(response.url).toBe(row.url);
+509:       expect(response.exactRequest?.bodyPresent).toBe(row.body !== null);
+510:       expect(response.exactRequest?.bodyOctets).toBe(row.bodyBytes);
+511:       expect(response.exactRequest?.bodyDigest).toBe(
+512:         row.body === null ? undefined : row.bodySha256,
+513:       );
+514:       const headers = response.exactRequest?.headerLines ?? [];
+515:       const values = (name: string) =>
+516:         headers.filter((h) => h.name.toLowerCase() === name).map((h) => h.value);
+517:       expect(values("host")).toStrictEqual(["reference.invalid"]);
+518:       expect(values("accept")).toStrictEqual([row.accept]);
+519:       expect(values("content-type")).toStrictEqual(
+520:         row.contentType === null ? [] : [row.contentType],
+521:       );
+522:       expect(values("idempotency-key")).toStrictEqual(row.key === null ? [] : [row.key]);
+523:       expect(values("authorization").length).toBe(1);
+524:       expect(
+525:         values("authorization")[0] === `Bearer ${operator}`,
+526:         "exact credential serialization",
+527:       ).toBe(true);
+528:       expect(response.wireResponseBytes?.length).toBeGreaterThan(0);
+529:       expect(Number.isSafeInteger(response.bodyOctets)).toBe(true);
+530:       expect(response.bodyOctets).toBeGreaterThanOrEqual(0);
+531:       expect(response.bodyOctets).toBeLessThanOrEqual(1048576);
+532:       expect(Buffer.byteLength(response.bodyText)).toBe(response.bodyOctets);
+533:       expect(response.headers["x-bdp-development"]).toBe("non-attesting");
+534:       expect(response.headers["cache-control"]).toBe("private, no-store");
+535:       if (row.method === "POST") expect(response.headers.vary).toBe("Accept");
+536:       return response;
+537:     }
+538:     type Wire = Awaited<ReturnType<typeof exchange>>;
+539:     function status(response: Wire, expected: number, label: string) {
+540:       expect(response.status, `${label}:${JSON.stringify(responses.at(-1))}`).toBe(expected);
+541:     }
+542:     function context(response: Wire, position: string) {
+543:       if (!expectedContext) throw new Error("missing seed context");
+544:       expect(contextNames.map((name) => response.headers[name])).toStrictEqual([
+545:         ...expectedContext,
+546:         position,
+547:       ]);
+548:     }
+549:     const uuid = /^[a-f0-9]{8}-[a-f0-9]{4}-4[a-f0-9]{3}-[89ab][a-f0-9]{3}-[a-f0-9]{12}$/;
+550:     const receiptIds = new Set<string>(),
+551:       transactions = new Set<string>();
+552:     function receipt(response: Wire, key: string, position: string) {
+553:       status(response, 200, `fresh-depth:${key}:receipt`);
+554:       expect(response.headers["content-type"]).toBe("application/json");
+555:       expect(response.headers["x-bdp-development-limit"]).toBeUndefined();
+556:       const value = checked(response.bodyText, "mutationReceipt");
+557:       if (!expectedContext)
+558:         expectedContext = [String(value.scopeEpoch), String(value.authorizationView)];
+559:       context(response, position);
+560:       expect(value.scopeEpoch).toBe(expectedContext[0]);
+561:       expect(value.authorizationView).toBe(expectedContext[1]);
+562:       expect(typeof value.id).toBe("string");
+563:       const id = String(value.id);
+564:       expect(id.startsWith(`${scope}receipts/`)).toBe(true);
+565:       expect(uuid.test(id.slice(`${scope}receipts/`.length))).toBe(true);
+566:       expect(uuid.test(String(value.transaction))).toBe(true);
+567:       expect(receiptIds.has(id)).toBe(false);
+568:       expect(transactions.has(String(value.transaction))).toBe(false);
+569:       receiptIds.add(id);
+570:       transactions.add(String(value.transaction));
+571:       expect(value.idempotencyKey).toBe(key);
+572:       expect(value.requiredPosition).toBe(position);
+573:       expect(value.detail).toBe("available");
+574:       expect(Number.isFinite(Date.parse(String(value.expiresAt)))).toBe(true);
+575:       return value;
+576:     }
+577:     function fullReceipt(
+578:       value: Record<string, unknown>,
+579:       key: string,
+580:       position: string,
+581:       results: unknown[],
+582:       effect = true,
+583:     ) {
+584:       sameJson(
+585:         value,
+586:         {
+587:           id: value.id,
+588:           status: "completed",
+589:           detail: "available",
+590:           idempotencyKey: key,
+591:           scopeEpoch: expectedContext?.[0],
+592:           authorizationView: expectedContext?.[1],
+593:           transaction: value.transaction,
+594:           requiredPosition: position,
+595:           ...(effect ? { effectPosition: position } : {}),
+596:           results,
+597:           next: null,
+598:           expiresAt: value.expiresAt,
+599:         },
+600:         `fresh-depth:${key}:full-receipt`,
+601:       );
+602:     }
+603:     function revision(resource: Record<string, unknown>): string {
+604:       expect(typeof resource.revision).toBe("string");
+605:       expect(resource.revision).not.toBe("");
+606:       return String(resource.revision);
+607:     }
+608:     function owner(name: string, rev: unknown, properties: unknown, links: unknown[]) {
+609:       return {
+610:         id: `${scope}beads/${name}`,
+611:         type: ownerType,
+612:         revision: rev,
+613:         properties,
+614:         metadata: {},
+615:         ownedLinks: { [linkType]: links },
+616:       };
+617:     }
+618:     function link(
+619:       name: string,
+620:       rev: unknown,
+621:       source: string,
+622:       n: number | undefined,
+623:       metadata: unknown,
+624:       target = "b",
+625:     ) {
+626:       return {
+627:         id: `${scope}links/${name}`,
+628:         type: linkType,
+629:         revision: rev,
+630:         source: `${scope}beads/${source}`,
+631:         target: `${scope}beads/${target}`,
+632:         properties: { ...(n === undefined ? {} : { n }), deep: deepValue },
+633:         metadata,
+634:       };
+635:     }
+636:     function ownedResult(
+637:       value: Record<string, unknown>,
+638:       resource: unknown,
+639:       source: string,
+640:       operationIndex: number,
+641:       outcome: string,
+642:     ) {
+643:       expect(typeof value.sourceRevision).toBe("string");
+644:       expect(value.sourceRevision).not.toBe("");
+645:       return {
+646:         operationIndex,
+647:         outcome,
+648:         resource,
+649:         source: `${scope}beads/${source}`,
+650:         sourceRevision: value.sourceRevision,
+651:       };
+652:     }
+653:     const seed = receipt(await exchange(1), "fresh-seed", "pos-1"),
+654:       seedResults = records(seed.results);
+655:     expect(seedResults).toHaveLength(3);
+656:     const a = record(seedResults[0]!.resource),
+657:       b = record(seedResults[1]!.resource),
+658:       l0 = record(seedResults[2]!.resource);
+659:     const expectedL0 = link("l", revision(l0), "a", 0, { tag: "initial" });
+660:     fullReceipt(seed, "fresh-seed", "pos-1", [
+661:       { operationIndex: 0, outcome: "created", resource: owner("a", revision(a), {}, []) },
+662:       { operationIndex: 1, outcome: "created", resource: owner("b", revision(b), {}, []) },
+663:       ownedResult(seedResults[2]!, expectedL0, "a", 2, "created"),
+664:     ]);
+665:     prerequisites.push("genuine-deep-owned-link-created");
+666:     const update = receipt(await exchange(2), "fresh-update", "pos-2"),
+667:       updateResult = records(update.results)[0]!;
+668:     const l1 = record(updateResult.resource),
+669:       expectedL1 = link("l", revision(l1), "a", 0, { tag: "updated", deep: deepValue });
+670:     expect(l1.revision).not.toBe(l0.revision);
+671:     expect(updateResult.sourceRevision).not.toBe(seedResults[2]!.sourceRevision);
+672:     fullReceipt(update, "fresh-update", "pos-2", [
+673:       ownedResult(updateResult, expectedL1, "a", 0, "updated"),
+674:     ]);
+675:     receiptTarget = String(update.id); // validated canonical Scope receipts/UUID above, never a fabricated target.
+676:     const noop = receipt(await exchange(3), "fresh-noop", "pos-2");
+677:     fullReceipt(
+678:       noop,
+679:       "fresh-noop",
+680:       "pos-2",
+681:       [ownedResult(updateResult, expectedL1, "a", 0, "updated")],
+682:       false,
+683:     );
+684:     const replay = await exchange(4);
+685:     status(replay, 200, "fresh-depth:exact-update-replay");
+686:     context(replay, "pos-2");
+687:     sameJson(checked(replay.bodyText, "mutationReceipt"), update, "fresh-depth:full-update-replay");
+688:     const conflict = await exchange(5);
+689:     status(conflict, 409, "fresh-depth:changed-body-conflict");
+690:     context(conflict, "pos-2");
+691:     expect(conflict.headers["content-type"]).toBe("application/problem+json");
+692:     sameJson(
+693:       checked(conflict.bodyText, "transactionalProblem"),
+694:       {
+695:         type: "https://github.com/gastownhall/bdp/problems/conflict",
+696:         code: "idempotency-conflict",
+697:         status: 409,
+698:         retry: "never",
+699:       },
+700:       "fresh-depth:full-conflict",
+701:     );
+702:     const set = receipt(await exchange(6), "fresh-set", "pos-3"),
+703:       setResults = records(set.results);
+704:     expect(setResults).toHaveLength(2);
+705:     const setResult = setResults[1]!,
+706:       l2 = record(setResult.resource),
+707:       expectedL2 = link("l", revision(l2), "a", 1, { tag: "updated", deep: deepValue });
+708:     expect(l2.revision).not.toBe(l1.revision);
+709:     expect(setResult.sourceRevision).not.toBe(updateResult.sourceRevision);
+710:     fullReceipt(set, "fresh-set", "pos-3", [
+711:       { operationIndex: 0, outcome: "matched", count: 1 },
+712:       ownedResult(setResult, expectedL2, "a", 0, "updated"),
+713:     ]);
+714:     const sequenceWire = await exchange(7);
+715:     status(sequenceWire, 200, "fresh-depth:dependent-sequence");
+716:     context(sequenceWire, "pos-5");
+717:     const sequence = checked(sequenceWire.bodyText, "transactionalSequenceResponse"),
+718:       sequenceResults = records(sequence.results);
+719:     expect(sequenceResults).toHaveLength(2);
+720:     const c = record(sequenceResults[0]!.resource),
+721:       secondLink = record(sequenceResults[1]!.resource);
+722:     const expectedSecond = link("l2", revision(secondLink), "a", undefined, {}, "c");
+723:     sameJson(
+724:       sequence,
+725:       {
+726:         results: [
+727:           {
+728:             operationIndex: 0,
+729:             operationName: "created",
+730:             outcome: "created",
+731:             resource: owner("c", revision(c), { deep: deepValue }, []),
+732:           },
+733:           ownedResult(sequenceResults[1]!, expectedSecond, "a", 1, "created"),
+734:         ],
+735:       },
+736:       "fresh-depth:full-dependent-sequence",
+737:     );
+738:     const failed = receipt(await exchange(8), "fresh-failed", "pos-5");
+739:     sameJson(
+740:       failed,
+741:       {
+742:         id: failed.id,
+743:         status: "failed",
+744:         detail: "available",
+745:         idempotencyKey: "fresh-failed",
+746:         scopeEpoch: expectedContext?.[0],
+747:         authorizationView: expectedContext?.[1],
+748:         transaction: failed.transaction,
+749:         requiredPosition: "pos-5",
+750:         expiresAt: failed.expiresAt,
+751:         problem: {
+752:           type: "https://github.com/gastownhall/bdp/problems/validation",
+753:           code: "validation-failed",
+754:           status: 422,
+755:           retry: "never",
+756:           operationIndex: 1,
+757:           diagnostics: [
+758:             {
+759:               message: "metadata: Property Change target does not exist",
+760:               instanceLocation: "/absent",
+761:               document: "metadata",
+762:             },
+763:           ],
+764:         },
+765:       },
+766:       "fresh-depth:full-late-failure",
+767:     );
+768:     const failedReplay = await exchange(9);
+769:     status(failedReplay, 200, "fresh-depth:failed-replay");
+770:     context(failedReplay, "pos-5");
+771:     sameJson(
+772:       checked(failedReplay.bodyText, "mutationReceipt"),
+773:       failed,
+774:       "fresh-depth:full-failed-replay",
+775:     );
+776:     const current = await exchange(10);
+777:     status(current, 200, "fresh-depth:rollback-current-link");
+778:     context(current, "pos-5");
+779:     sameJson(checked(current.bodyText, "linkRecord"), expectedL2, "fresh-depth:full-rollback-link");
+780:     const eventsWire = await exchange(11);
+781:     status(eventsWire, 200, "fresh-depth:Events");
+782:     context(eventsWire, "pos-5");
+783:     const page = checked(eventsWire.bodyText, "eventPage"),
+784:       events = records(page.events);
+785:     expect(events).toHaveLength(3);
+786:     const eventSource = `${scope}links/l?view=events`;
+787:     const tag = (kind: string, value: string) =>
+788:       createHash("sha256")
+789:         .update(JSON.stringify([kind, value]))
+790:         .digest("base64url");
+791:     const eventData = [
+792:       {
+793:         revision: l0.revision,
+794:         properties: { n: 0, deep: deepValue },
+795:         metadata: { tag: "initial" },
+796:         source: `${scope}beads/a`,
+797:         target: `${scope}beads/b`,
+798:       },
+799:       {
+800:         previousRevision: l0.revision,
+801:         revision: l1.revision,
+802:         metadataChange: [{ op: "replace", path: "", value: { tag: "updated", deep: deepValue } }],
+803:       },
+804:       {
+805:         previousRevision: l1.revision,
+806:         revision: l2.revision,
+807:         change: [{ op: "replace", path: "/n", value: 1 }],
+808:       },
+809:     ];
+810:     sameJson(
+811:       page,
+812:       {
+813:         source: eventSource,
+814:         next: null,
+815:         events: events.map((event, i) => {
+816:           expect(Number.isFinite(Date.parse(String(event.time)))).toBe(true);
+817:           const ordinal = i === 0 ? 2 : 0;
+818:           // Private fixed-fixture projection spelling, not a normative token format.
+819:           return {
+820:             id: `ev_${tag("epoch", expectedContext![0])}_${tag("view", expectedContext![1])}_${tag("source", eventSource)}_pos-${i + 1}_${ordinal}`,
+821:             ordinal,
+822:             type: i === 0 ? "created" : "updated",
+823:             source: eventSource,
+824:             subject: `${scope}links/l`,
+825:             subjectType: linkType,
+826:             transaction: [seed, update, set][i]!.transaction,
+827:             time: event.time,
+828:             data: eventData[i],
+829:           };
+830:         }),
+831:       },
+832:       "fresh-depth:full-Events-no-noop-or-rollback-event",
+833:     );
+834:     const snapshotWire = await exchange(12);
+835:     status(snapshotWire, 200, "fresh-depth:snapshot-capture");
+836:     context(snapshotWire, "pos-5");
+837:     const snapshot = checked(snapshotWire.bodyText, "snapshotManifest");
+838:     expect(String(snapshot.id).startsWith(`${scope}snapshot?`)).toBe(true);
+839:     expect(snapshot.checkpoint).not.toBe("genesis");
+840:     expect(Number.isFinite(Date.parse(String(snapshot.expiresAt)))).toBe(true);
+841:     sameJson(
+842:       snapshot,
+843:       {
+844:         id: snapshot.id,
+845:         scope,
+846:         scopeEpoch: expectedContext?.[0],
+847:         authorizationView: expectedContext?.[1],
+848:         scopePosition: "pos-5",
+849:         checkpoint: snapshot.checkpoint,
+850:         expiresAt: snapshot.expiresAt,
+851:         erasures: [],
+852:         beads: {
+853:           items: [
+854:             owner("a", sequenceResults[1]!.sourceRevision, {}, [expectedL2, expectedSecond]),
+855:             owner("b", b.revision, {}, []),
+856:             owner("c", c.revision, { deep: deepValue }, []),
+857:           ],
+858:           next: null,
+859:         },
+860:         links: { items: [expectedL2, expectedSecond], next: null },
+861:       },
+862:       "fresh-depth:complete-Snapshot-and-owned-copies",
+863:     );
+864:     const retained = await exchange(13);
+865:     status(retained, 200, "fresh-depth:actual-receipt-id");
+866:     context(retained, "pos-5");
+867:     sameJson(
+868:       checked(retained.bodyText, "mutationReceipt"),
+869:       update,
+870:       "fresh-depth:original-receipt-current-context",
+871:     );
+872:     prerequisites.push(
+873:       "full-receipt-resource-Event-Snapshot-oracles",
+874:       "no-op-replay-rollback-position-stability",
+875:     );
+876:     expect(attempted).toBe(13);
+877:     expect(responses).toHaveLength(13);
+878:     expect(responses.map((row) => row.status)).toStrictEqual(requests.map((row) => row.status));
+```
+
+### packages/conformance/src/http-executor.ts, original lines 23-108
+```typescript
+23: export interface ExactHttpExchangeRequest {
+24:   readonly method: HttpMethod;
+25:   readonly url: string;
+26:   readonly signal: AbortSignal;
+27:   readonly headers?: never;
+28:   readonly rawRequestTarget?: Uint8Array;
+29:   readonly credentialRef?: string;
+30:   readonly raw: {
+31:     readonly headerLines: readonly RawHeaderLine[];
+32:     readonly bodyBytes?: Uint8Array;
+33:   };
+34: }
+35: 
+36: export interface RawHeaderLine {
+37:   readonly name: string;
+38:   readonly value: string;
+39: }
+40: 
+41: export type RequestWriteState = "not-started" | "started-completion-unestablished" | "complete";
+42: 
+43: export interface ExactRequestObservation {
+44:   readonly source: "raw-http1-serializer";
+45:   /** Transient secret-bearing data, never safe to serialize directly into a report. */
+46:   readonly headerLines: readonly RawHeaderLine[];
+47:   /** Full authored entity metadata, not a claim about a transmitted prefix or server receipt. */
+48:   readonly bodyPresent: boolean;
+49:   readonly bodyOctets: number;
+50:   readonly bodyDigest?: string;
+51:   readonly writeState: RequestWriteState;
+52: }
+53: 
+54: /** Trusted harness configuration, not portable scenario data or target-supplied authority. */
+55: export interface ExactHttpModeOptions {
+56:   readonly scope: string;
+57:   readonly profile: "read" | "read-update" | "transactional";
+58:   readonly routes: readonly { readonly method: HttpMethod; readonly url: string }[];
+59:   readonly maximumRequestHeaderBytes: number;
+60:   readonly maximumRequestBodyBytes: number;
+61:   readonly defaultCredentialRef: string;
+62:   readonly credentialHandles: readonly {
+63:     readonly id: string;
+64:     /** Empty means a deliberately anonymous handle; names are lower-case. */
+65:     readonly headerNames: readonly string[];
+66:   }[];
+67:   /** Synchronous, trusted nonblocking lookup. Promises/thenables are rejected. */
+68:   readonly resolveCredentials: (
+69:     context: Readonly<{
+70:       scope: string;
+71:       url: string;
+72:       method: HttpMethod;
+73:       credentialRef: string;
+74:       signal: AbortSignal;
+75:     }>,
+76:   ) => Readonly<Record<string, string>>;
+77: }
+78: 
+79: export type RawHttpExchangeExecutor = (
+80:   request: HttpExchangeRequest | ExactHttpExchangeRequest,
+81: ) => Promise<HttpExchangeResponse>;
+82: 
+83: export interface HttpExchangeResponse {
+84:   readonly exactRequest?: ExactRequestObservation;
+85:   readonly url: string;
+86:   readonly status: number;
+87:   readonly headers: Readonly<Record<string, string>>;
+88:   readonly bodyText: string;
+89:   /** Decoded message-body octets observed below a method-aware HTTP client, when available. */
+90:   readonly bodyOctets?: number;
+91:   /**
+92:    * Exact bounded HTTP/1.x response bytes from status line through framed body.
+93:    * Only the socket-level executor can supply this pre-normalization evidence.
+94:    */
+95:   readonly wireResponseBytes?: Uint8Array;
+96:   /**
+97:    * Compatibility view after authorization/runtime decoration. In exact mode,
+98:    * repeated names retain their last value and this view has no wire-fidelity flag;
+99:    * only exactRequest.headerLines preserves authoritative ordered occurrences.
+100:    */
+101:   readonly effectiveRequest?: {
+102:     readonly url: string;
+103:     readonly headers: Readonly<Record<string, string>>;
+104:     /** Present only when the reported headers match bytes serialized onto the wire. */
+105:     readonly headersTransmitted?: true;
+106:   };
+107: }
+108: 
+```
+
+### packages/conformance/src/http-executor.ts, original lines 611-793
+```typescript
+611: async function executeExact(
+612:   input: ExactHttpExchangeRequest,
+613:   route: RawHttpDialRoute,
+614:   mode: ExactHttpModeOptions | undefined,
+615:   timeoutMs: number,
+616:   maximumHeaderBytes: number,
+617:   maximumBodyBytes: number,
+618: ): Promise<HttpExchangeResponse> {
+619:   const deadline = performance.now() + timeoutMs;
+620:   let state: RequestWriteState = "not-started";
+621:   try {
+622:     if (mode === undefined) return configuration();
+623:     const request = dataRecord(input, [
+624:       "method",
+625:       "url",
+626:       "signal",
+627:       "rawRequestTarget",
+628:       "credentialRef",
+629:       "raw",
+630:     ]);
+631:     if (!isHttpMethod(request.method) || !(request.signal instanceof AbortSignal))
+632:       return configuration();
+633:     const signal = request.signal;
+634:     requestDeadline(signal, deadline);
+635:     const url = canonicalHttpUrl(request.url);
+636:     const raw = dataRecord(request.raw, ["headerLines", "bodyBytes"]);
+637:     if (
+638:       request.rawRequestTarget === undefined &&
+639:       url.pathname.length + url.search.length > mode.maximumRequestHeaderBytes
+640:     )
+641:       return configuration();
+642:     const target =
+643:       request.rawRequestTarget === undefined
+644:         ? encodeRequestTarget(undefined, url)
+645:         : encodeRequestTarget(
+646:             copyBoundedBytes(
+647:               request.rawRequestTarget,
+648:               Math.min(MAXIMUM_RAW_REQUEST_TARGET_BYTES, mode.maximumRequestHeaderBytes),
+649:             ),
+650:             url,
+651:           );
+652:     const body =
+653:       raw.bodyBytes === undefined
+654:         ? undefined
+655:         : copyBoundedBytes(raw.bodyBytes, mode.maximumRequestBodyBytes);
+656:     if (mode.profile === "read" && body !== undefined) return configuration();
+657:     const lines: RawHeaderLine[] = [];
+658:     let headBytes = Buffer.byteLength(`${request.method} `) + target.length + 13;
+659:     const append = (name: string, value: string): void => {
+660:       headBytes += name.length + value.length + 4;
+661:       if (headBytes > mode.maximumRequestHeaderBytes) configuration();
+662:       lines.push(Object.freeze({ name, value }));
+663:     };
+664:     const sourceLines = arrayItems(raw.headerLines);
+665:     for (let i = 0; i < sourceLines.length; i++) {
+666:       const entry = dataRecord(arrayItem(sourceLines, i), ["name", "value"]);
+667:       if (
+668:         typeof entry.name !== "string" ||
+669:         typeof entry.value !== "string" ||
+670:         !HTTP_FIELD_NAME.test(entry.name) ||
+671:         !HTTP_FIELD_VALUE.test(entry.value)
+672:       )
+673:         return configuration();
+674:       const name = entry.name.toLowerCase();
+675:       if (isSecretHeaderName(name) || RESERVED_FIELDS.has(name)) return configuration();
+676:       append(entry.name, entry.value);
+677:     }
+678:     if (headBytes > mode.maximumRequestHeaderBytes) return configuration();
+679:     validateExactRunConfiguration(mode, url.href, request.method);
+680:     const ref = request.credentialRef ?? mode.defaultCredentialRef;
+681:     if (typeof ref !== "string" || !HANDLE_ID.test(ref) || ref.length > 128) return configuration();
+682:     const handle = mode.credentialHandles.find(({ id }) => id === ref);
+683:     if (
+684:       handle === undefined ||
+685:       (handle.headerNames.length > 0 && !safeCredentialTarget(target, url))
+686:     )
+687:       return configuration();
+688:     requestDeadline(signal, deadline);
+689:     const credentials = dataRecord(
+690:       mode.resolveCredentials(
+691:         Object.freeze({
+692:           scope: mode.scope,
+693:           url: url.href,
+694:           method: request.method,
+695:           credentialRef: ref,
+696:           signal,
+697:         }),
+698:       ),
+699:     );
+700:     requestDeadline(signal, deadline);
+701:     const seen = new Set<string>();
+702:     for (const [name, value] of Object.entries(credentials)) {
+703:       const normalized = name.toLowerCase();
+704:       if (
+705:         !handle.headerNames.includes(normalized) ||
+706:         seen.has(normalized) ||
+707:         typeof value !== "string" ||
+708:         !HTTP_FIELD_VALUE.test(value) ||
+709:         !HTTP_FIELD_NAME.test(name)
+710:       )
+711:         return configuration();
+712:       seen.add(normalized);
+713:       append(name, value);
+714:     }
+715:     if (seen.size !== handle.headerNames.length) return configuration();
+716:     for (const [name, value] of [
+717:       ["Accept", "*/*"],
+718:       ["Accept-Language", "*"],
+719:       ["Accept-Encoding", "identity"],
+720:       ["User-Agent", "bdp-conformance/0"],
+721:     ] as const)
+722:       if (!lines.some((line) => line.name.toLowerCase() === name.toLowerCase()))
+723:         append(name, value);
+724:     append("Host", url.host);
+725:     append("Connection", "close");
+726:     if (body !== undefined) append("Content-Length", String(body.length));
+727:     const head = Buffer.concat([
+728:       Buffer.from(`${request.method} `, "ascii"),
+729:       target,
+730:       Buffer.from(
+731:         ` HTTP/1.1\r\n${lines.map(({ name, value }) => `${name}: ${value}`).join("\r\n")}\r\n\r\n`,
+732:         "latin1",
+733:       ),
+734:     ]);
+735:     const exchanged = await exchangeRawBytes(
+736:       route,
+737:       head,
+738:       request.method,
+739:       signal,
+740:       requestDeadline(signal, deadline),
+741:       maximumHeaderBytes,
+742:       maximumBodyBytes,
+743:       body,
+744:       (next) => {
+745:         state = next;
+746:       },
+747:     );
+748:     state = exchanged.writeState;
+749:     requestDeadline(signal, deadline);
+750:     const parsed = parseRawResponse(
+751:       exchanged.bytes,
+752:       request.method,
+753:       maximumHeaderBytes,
+754:       maximumBodyBytes,
+755:     );
+756:     const exactRequest = Object.freeze({
+757:       source: "raw-http1-serializer" as const,
+758:       headerLines: Object.freeze(lines),
+759:       bodyPresent: body !== undefined,
+760:       bodyOctets: body?.length ?? 0,
+761:       ...(body === undefined
+762:         ? {}
+763:         : { bodyDigest: createHash("sha256").update(body).digest("hex") }),
+764:       writeState: exchanged.writeState,
+765:     });
+766:     const response = {
+767:       url: url.href,
+768:       ...parsed,
+769:       wireResponseBytes: Uint8Array.from(exchanged.bytes),
+770:       exactRequest,
+771:       effectiveRequest: {
+772:         url: url.href,
+773:         // Deliberately lossy last-occurrence compatibility view, never exact wire evidence.
+774:         // Ordered exactRequest.headerLines is authoritative for every occurrence.
+775:         headers: Object.freeze(
+776:           Object.fromEntries(lines.map(({ name, value }) => [name.toLowerCase(), value])),
+777:         ),
+778:       },
+779:     };
+780:     requestDeadline(signal, deadline);
+781:     return response;
+782:   } catch (error) {
+783:     if (error instanceof HttpTransportError)
+784:       throw new HttpTransportError(error.category, error.message, {}, state);
+785:     throw new HttpTransportError(
+786:       "configuration",
+787:       "exact HTTP request configuration is invalid",
+788:       {},
+789:       state,
+790:     );
+791:   }
+792: }
+793: 
+```
+
+### apps/bdptest/test-support/transactional-execution-binding.ts, original lines 1-97
+```typescript
+1: import { isDeepStrictEqual } from "node:util";
+2: import { installedContractsDigest } from "./installed-contract-identity.js";
+3: /** Source-only installed binding. Runner retains sole receipt observation authority. */
+4: import { createHash } from "node:crypto";
+5: import {
+6:   createRawHttpScenarioTarget,
+7:   type ExactHttpModeOptions,
+8:   type ConformanceFixture,
+9:   type ExecutableScenario,
+10: } from "@bdp/conformance";
+11: import {
+12:   bindServedProfileConfiguration,
+13:   assertSameServedProfileConfiguration,
+14:   type TransactionalRunContext,
+15:   type TransactionalSession,
+16: } from "@bdp/conformance/testing";
+17: export interface InstalledTransactionChild {
+18:   readonly ready: Record<string, unknown>;
+19:   close(): Promise<unknown>;
+20: }
+21: export function installedTransactionBinding(
+22:   ready: Record<string, unknown>,
+23:   sourceCommit: string,
+24:   fixture: { bytes: Uint8Array },
+25: ) {
+26:   if (
+27:     ready.profile !== "transactional" ||
+28:     ready.history !== false ||
+29:     ready.claimEligible !== false ||
+30:     ready.authorityMode !== "canonical" ||
+31:     typeof ready.scope !== "string" ||
+32:     typeof ready.runtimeConfigurationIdentity !== "string" ||
+33:     !/^[a-f0-9]{64}$/.test(ready.runtimeConfigurationIdentity)
+34:   )
+35:     throw new Error("installed Transactional metadata unavailable");
+36:   if (typeof ready.listenUrl !== "string")
+37:     throw new Error("installed physical session unavailable");
+38:   const url = new URL(ready.listenUrl);
+39:   if (
+40:     url.protocol !== "http:" ||
+41:     url.hostname !== "127.0.0.1" ||
+42:     !url.port ||
+43:     url.username ||
+44:     url.password ||
+45:     url.pathname !== "/" ||
+46:     url.search ||
+47:     url.hash
+48:   )
+49:     throw new Error("invalid installed dial binding");
+50:   const targetNames = {
+51:     createBead: "create-bead",
+52:     updateBead: "update-bead",
+53:     deleteBead: "delete-bead",
+54:     createLink: "create-link",
+55:     updateLink: "update-link",
+56:     deleteLink: "delete-link",
+57:     putAlias: "put-alias",
+58:     deleteAlias: "delete-alias",
+59:     updateWhere: "update-where",
+60:     deleteWhere: "delete-where",
+61:     batch: "batch",
+62:     sequence: "sequence",
+63:   };
+64:   const operationTargets = Object.freeze(
+65:     Object.fromEntries(
+66:       Object.entries(targetNames).map(([name, suffix]) => [
+67:         name,
+68:         `${ready.scope}operations/${suffix}`,
+69:       ]),
+70:     ),
+71:   );
+72:   if (!isDeepStrictEqual(ready.targets, operationTargets))
+73:     throw new Error("installed operation target inventory mismatch");
+74:   const served = bindServedProfileConfiguration({
+75:     scope: ready.scope,
+76:     profile: "transactional",
+77:     history: false,
+78:     sourceCommit,
+79:     installedPayloadDigest: ready.payloadIdentity as string,
+80:     installedContractsDigest: installedContractsDigest(ready.artifactIdentity),
+81:     policyDigest: ready.policyIdentity as string,
+82:     authenticationDigest: ready.authenticationIdentity as string,
+83:     fixture,
+84:   });
+85:   return Object.freeze({
+86:     served,
+87:     operationTargets,
+88:     runtimeConfigurationIdentity: ready.runtimeConfigurationIdentity,
+89:     authorityMode: "canonical" as const,
+90:   });
+91: }
+92: export function createTransactionalExecutionBinding(options: {
+93:   readonly baseline: ReturnType<typeof installedTransactionBinding>;
+94:   readonly sourceCommit: string;
+95:   readonly fixtureSource: { bytes: Uint8Array };
+96:   readonly exactMode: ExactHttpModeOptions;
+97:   readonly launch: (
+```
+
+### scripts/transaction-installed-observation.mjs, original lines 1-97
+```typescript
+1: /** Bounded inherited-IPC launcher. No request or observation emulation. */
+2: import { spawn } from "node:child_process";
+3: import { mkdir } from "node:fs/promises";
+4: export async function launchInstalledTransaction(entry, configuration, signal) {
+5:   signal?.throwIfAborted();
+6:   // Explicit launcher-owned provisioning; reopen keeps the directory/create:false.
+7:   if (configuration.create) await mkdir(configuration.directory, { recursive: true, mode: 0o700 });
+8:   signal?.throwIfAborted();
+9:   const child = spawn(process.execPath, [entry], {
+10:     cwd: "/tmp",
+11:     stdio: ["ignore", "pipe", "pipe", "ipc"],
+12:   });
+13:   let bytes = 0;
+14:   for (const stream of [child.stdout, child.stderr])
+15:     stream.on("data", (chunk) => {
+16:       bytes += chunk.length;
+17:       if (bytes > 65536) child.kill("SIGKILL");
+18:     });
+19:   const exited = new Promise((resolve) =>
+20:     child.once("exit", (code, signal) => resolve({ code, signal })),
+21:   );
+22:   async function bounded(promise) {
+23:     let timer;
+24:     try {
+25:       return await Promise.race([
+26:         promise,
+27:         new Promise((_, reject) => {
+28:           timer = setTimeout(() => {
+29:             child.kill("SIGKILL");
+30:             reject(new Error("installed transaction process deadline"));
+31:           }, 10000);
+32:         }),
+33:       ]);
+34:     } finally {
+35:       clearTimeout(timer);
+36:     }
+37:   }
+38:   async function drainFailure(error) {
+39:     child.kill("SIGKILL");
+40:     try {
+41:       await bounded(exited);
+42:     } catch (cleanup) {
+43:       throw new AggregateError([error, cleanup], "installed transaction cleanup failed");
+44:     }
+45:     throw error;
+46:   }
+47:   let closing;
+48:   const close = () =>
+49:     (closing ??= (async () => {
+50:       try {
+51:         if (child.connected) child.send({ command: "close" });
+52:         const result = await bounded(exited);
+53:         if (result.code !== 0 || result.signal !== null)
+54:           throw new Error("installed transaction child did not close cleanly");
+55:       } catch (error) {
+56:         await drainFailure(error);
+57:       } finally {
+58:         signal?.removeEventListener("abort", onAbort);
+59:       }
+60:     })());
+61:   const onAbort = () => {
+62:     void close().catch(() => {});
+63:   };
+64:   signal?.addEventListener("abort", onAbort, { once: true });
+65:   if (signal?.aborted) onAbort();
+66:   let detachReadyAbort = () => {};
+67:   try {
+68:     const ready = await bounded(
+69:       new Promise((resolve, reject) => {
+70:         const abort = () => reject(signal.reason);
+71:         signal?.addEventListener("abort", abort, { once: true });
+72:         detachReadyAbort = () => signal?.removeEventListener("abort", abort);
+73:         if (signal?.aborted) {
+74:           abort();
+75:           return;
+76:         }
+77:         child.once("error", reject);
+78:         child.once("message", resolve);
+79:         void exited.then(() => reject(new Error("installed transaction exited before ready")));
+80:         child.send({ configuration });
+81:       }),
+82:     );
+83:     signal?.throwIfAborted();
+84:     if (!ready || ready.event !== "qualification.ready" || JSON.stringify(ready).length > 65536)
+85:       throw new Error("invalid installed ready message");
+86:     return { child, ready, close };
+87:   } catch (error) {
+88:     try {
+89:       await close();
+90:     } catch (cleanup) {
+91:       throw new AggregateError([error, cleanup], "installed transaction startup cleanup failed");
+92:     }
+93:     throw error;
+94:   } finally {
+95:     detachReadyAbort();
+96:   }
+97: }
+```
+
+Narrow follow-up source if necessary: schemas/bdp-v0.schema.json response definitions; packages/server/src/transaction-runtime-configuration.ts artifact/credential acceptance; transaction-installed-process.ts launch configuration; transaction-snapshot.ts owned-Link comparison; resource-evaluator.ts receipt/Event semantics. Identify specific missing context rather than speculate.

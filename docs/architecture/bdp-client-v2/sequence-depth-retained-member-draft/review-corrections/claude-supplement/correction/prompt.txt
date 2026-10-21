@@ -1,0 +1,1163 @@
+# Focused sequence correction code review
+
+## Scope and root dispositions
+Focused actual Claude CODE review of an applied three-path correction. Do not write or modify any files. Output findings only in stdout. Tools are disabled; the complete affected functions/test callback and dependencies are supplied below. Do not issue textual tool calls or stop with a request to inspect files. If a necessary fact is absent, identify it precisely and complete the rest of the review.
+
+Review only carrier/arrays freezing and its existing-callback immutability assertions; installed cleanup deadline deduplication, truthful unknown-stop handling, and deliberate directory retention accounting. Prior two actual complete scope reviews are included as historical context, not instructions or approvals. Do not reopen unchanged recipes, full-profile capability, or optional selection expansion absent a concrete regression caused by this correction. Request/HTTP/time budgets are unchanged. Return concise numbered findings (severity, actual path/line, trigger, impact, minimal fix), followed by explicit completion and any genuine unresolved context. Aim <=700 words.
+
+Root accepted: P1 nested op/input was already deeply frozen, but replaceable carrier fields/arrays could detach the depth fact; freeze these containers. P2 keep strict receipt equality (actual pass); P3 limit direct executed claim to key release plus inspect-visible state, with creator-fact cleanup source evidence, no extra SQL; P4 no extra callback. E1/E2 fix duplicate cleanup count and misclassified deliberate retention. E3 dead selector and E4 title are optional untouched. P5/E5 external provenance corrected only by addendum. Root alone decides council acceptance.
+
+Operator now requires branch-only work: no main prerequisite/chasing/merges. Current source remains dirty df80; future ordinary minimum-working-branch integration is separate. Neither code review nor historical18-case validation is final fresh installed proof. Source author did not prepare this review; preparer independently reviewed original draft and recommended correction. No model override, no product execution, one900-second maximum actual review only after root release.
+
+## Complete applied correction diff
+--- a/packages/server/src/transaction-batch.ts
++++ b/packages/server/src/transaction-batch.ts
+@@ -319,12 +319,12 @@
+     // Original raw member depth2 equals root0 / operations array1 / member2.
+     // The complete carrier parser already validated every label and reference.
+     const request = prepareDepthCarrier(
+-      {
++      Object.freeze({
+         kind: "singleton",
+         scope: carrier.scope,
+-        operations: [op],
+-        keys: [key],
+-      },
++        operations: Object.freeze([op]),
++        keys: Object.freeze([key]),
++      }),
+       object(raw[index]),
+       2,
+     );
+--- a/packages/server/src/transaction-set.test.ts
++++ b/packages/server/src/transaction-set.test.ts
+@@ -1235,6 +1235,13 @@
+     }
+     expect(Object.isFrozen(received)).toBe(true);
+     expect(Object.isFrozen(member.request)).toBe(true);
++    const memberCarrier = member.request.carrier;
++    expect(Object.isFrozen(memberCarrier)).toBe(true);
++    expect(Object.isFrozen(memberCarrier.operations)).toBe(true);
++    expect(Object.isFrozen(memberCarrier.keys)).toBe(true);
++    expect(Reflect.set(memberCarrier, "operations", [])).toBe(false);
++    expect(Reflect.set(memberCarrier.operations, "0", memberCarrier.operations[0])).toBe(false);
++    expect(Reflect.set(memberCarrier.keys, "0", memberCarrier.keys[0])).toBe(false);
+     expect(Object.keys(member.request)).toStrictEqual(["carrier"]);
+     expect(() => batch.transactionDepthRefusal({ ...member.request })).toThrow(TypeError);
+     expect(() => batch.assertPreparedTransaction({ ...member.request }, scope)).toThrow(TypeError);
+--- a/apps/bdptest/src/transactional-sequence-depth-installed.test.ts
++++ b/apps/bdptest/src/transactional-sequence-depth-installed.test.ts
+@@ -542,7 +542,6 @@
+     let cleanupReject: ((reason: Error) => void) | undefined;
+     const cleanupTimer = setTimeout(() => {
+       cleanupExceeded = true;
+-      failures.push(cleanupReason);
+       child?.child.kill("SIGKILL");
+       cleanupReject?.(cleanupReason);
+     }, 10000);
+@@ -565,14 +564,22 @@
+     const stopped =
+       !launchAttempted ||
+       (child !== undefined && (child.child.exitCode !== null || child.child.signalCode !== null));
+-    if (!stopped) failures.push(new Error("installed sequence depth child remains active"));
++    if (!stopped)
++      failures.push(
++        new Error(
++          child === undefined
++            ? "installed sequence depth child stop unproven"
++            : "installed sequence depth child remains active",
++        ),
++      );
+     try {
+       if (directory && stopped) rmSync(directory, { recursive: true, force: true });
+     } catch (error) {
+       failures.push(error);
+     }
+     const directoryAbsent = directory === undefined || !existsSync(directory);
+-    if (!directoryAbsent) failures.push(new Error("installed sequence depth directory remains"));
++    if (stopped && !directoryAbsent)
++      failures.push(new Error("installed sequence depth directory remains"));
+     clearTimeout(deadline);
+     if (deadlineExceeded && !failures.includes(deadlineReason)) failures.push(deadlineReason);
+     try {
+
+## Complete sequence preparation and branding functions
+export interface PreparedTransactionSequence {
+  readonly scope: string;
+  readonly members: readonly {
+    readonly key: string;
+    readonly operation: ReadUpdateOperation;
+    readonly name?: string;
+    readonly request: PreparedTransaction;
+    readonly aliasOperands: readonly { readonly field: string; readonly locator: string }[];
+    readonly deferred: boolean;
+    readonly dependencies: readonly {
+      field: string;
+      creator: number;
+      resourceKind: "bead" | "link";
+      suppliedId?: string;
+    }[];
+  }[];
+}
+const sequences = new WeakSet<object>();
+/** First private sequence boundary. Full syntax/Scope checks precede all key
+ * effects; creator and alias operands retain deferred turn-time reservations. */
+export function prepareTransactionSequence(
+  scope: string,
+  text: string,
+): PreparedTransactionSequence {
+  const sequence = prepareSequence(scope, text);
+  for (const member of sequence.members) requireTransactionDepth(member.request);
+  return sequence;
+}
+/** Private receiving syntax; retained member identity precedes fresh capacity. */
+export function prepareTransactionSequenceForReceiving(
+  scope: string,
+  text: string,
+): PreparedTransactionSequence {
+  return prepareSequence(scope, text);
+}
+function prepareSequence(scope: string, text: string): PreparedTransactionSequence {
+  if (Buffer.byteLength(text) > TRANSACTION_RUNTIME_LIMITS.requestBodyBytes)
+    throw new RangeError("development sequence byte limit");
+  const carrier = prepareReadUpdateSequence(scope, text);
+  if (carrier.operations.length > TRANSACTION_MAXIMUM_OPERATIONS)
+    throw new RangeError("development sequence member limit");
+  const raw = object(decodeJsonDocument(text)).operations;
+  if (!Array.isArray(raw)) throw new Error("parsed sequence lost operations");
+  const labels = new Map<string, number>();
+  const members = carrier.operations.map((op, index) => {
+    const aliasOperands: { readonly field: string; readonly locator: string }[] = [];
+    const dependencies: {
+      field: string;
+      creator: number;
+      resourceKind: "bead" | "link";
+      suppliedId?: string;
+    }[] = [];
+    for (const field of ["bead", "link", "source", "target"]) {
+      const ref = op.input[field];
+      if (ref === undefined) continue;
+      const uri = typeof ref === "string" ? ref : (ref as { uri: string }).uri;
+      if (uri.startsWith("@")) {
+        const creator = labels.get(uri.slice(1));
+        if (creator === undefined) throw new TypeError("unknown sequence creator");
+        const creation = carrier.operations[creator];
+        if (!creation) throw new Error("prepared sequence lost creator");
+        const supplied = creation.input.id as string | undefined;
+        dependencies.push({
+          field,
+          creator,
+          resourceKind: creation.operation === "createBead" ? "bead" : "link",
+          ...(supplied === undefined ? {} : { suppliedId: canonicalReference(scope, supplied) }),
+        });
+      }
+      if (
+        transactionAliasFields(op.operation).includes(field) &&
+        canonicalReference(scope, uri).startsWith(`${scope}alias/`)
+      )
+        aliasOperands.push(Object.freeze({ field, locator: canonicalReference(scope, uri) }));
+    }
+    // The whole carrier already validated backward labels and Resource kinds.
+    // Preserve its branded numeric operation without reparsing as a singleton,
+    // whose syntax correctly rejects @name outside a sequence.
+    const key = carrier.keys[index];
+    if (key === undefined) throw new Error("prepared sequence lost member key");
+    // Original raw member depth2 equals root0 / operations array1 / member2.
+    // The complete carrier parser already validated every label and reference.
+    const request = prepareDepthCarrier(
+      Object.freeze({
+        kind: "singleton",
+        scope: carrier.scope,
+        operations: Object.freeze([op]),
+        keys: Object.freeze([key]),
+      }),
+      object(raw[index]),
+      2,
+    );
+    if (op.name) labels.set(op.name, index);
+    return Object.freeze({
+      key,
+      operation: op.operation,
+      ...(op.name === undefined ? {} : { name: op.name }),
+      request,
+      dependencies: Object.freeze(dependencies.map((dependency) => Object.freeze(dependency))),
+      aliasOperands: Object.freeze(aliasOperands),
+      deferred: dependencies.length > 0 || aliasOperands.length > 0,
+    });
+  });
+  const result = Object.freeze({ scope: carrier.scope, members: Object.freeze(members) });
+  sequences.add(result);
+  return result;
+}
+export function assertPreparedTransactionSequence(
+  sequence: PreparedTransactionSequence,
+  scope: string,
+): void {
+  if (!sequences.has(sequence) || sequence.scope !== scope)
+    throw new TypeError("expected prepared transaction sequence for this Scope");
+}
+function prepareCarrier(carrier: PreparedTransaction["carrier"]): PreparedTransaction {
+  const result = Object.freeze({ carrier });
+  prepared.add(result);
+  return result;
+}
+function prepareDepthCarrier(
+  carrier: PreparedTransaction["carrier"],
+  input: LosslessJsonValue,
+  depth = 0,
+): PreparedTransaction {
+  const result = prepareCarrier(carrier);
+  try {
+    assertTransactionInputDepth(input, depth);
+  } catch (error) {
+    if (!(error instanceof TransactionDevelopmentLimitError)) throw error;
+    depthRefusals.set(result, error.message);
+  }
+  return result;
+}
+/** Source-private, read-only fact; only this module can create or annotate its brand. */
+export function transactionDepthRefusal(batch: PreparedTransaction): string | undefined {
+  if (!prepared.has(batch)) throw new TypeError("expected prepared transaction");
+  return depthRefusals.get(batch);
+}
+function requireTransactionDepth(batch: PreparedTransaction): PreparedTransaction {
+  const message = transactionDepthRefusal(batch);
+  if (message !== undefined) throw new TransactionDevelopmentLimitError(message);
+  return batch;
+}
+export function assertPreparedTransaction(batch: PreparedTransaction, scope: string): void {
+  if (!prepared.has(batch) || batch.carrier.scope !== scope)
+    throw new TypeError("expected prepared transaction for this Scope");
+}
+/** Source-private permitted alias slots shared by preparation and pending validation. */
+export function transactionAliasFields(operation: string): readonly string[] {
+  if (operation === "createLink") return ["source", "target"];
+  if (operation === "updateBead" || operation === "deleteBead") return ["bead"];
+  return [];
+}
+
+## Complete affected preparation test callback
+it("annotates only deep sequence members after complete carrier syntax while strict preparation stays strict", () => {
+  const input = (wraps: number) => {
+    let value: unknown = 0;
+    for (let i = 0; i < wraps; i++) value = { nested: value };
+    return { id: "beads/depth", type, metadata: { nested: value } };
+  };
+  for (const [wraps, refused] of [
+    [28, false],
+    [29, true],
+  ] as const) {
+    const operation = { operation: "createBead", ...input(wraps) };
+    const direct = JSON.stringify({ operations: [operation] });
+    const sequence = JSON.stringify({ operations: [{ ...operation, idempotencyKey: "deep" }] });
+    const received = batch.prepareTransactionSequenceForReceiving(scope, sequence);
+    const member = received.members[0]!;
+    const directReceived = batch.prepareTransactionForReceiving(scope, { kind: "batch" }, direct);
+    const message = refused ? "development batch depth limit" : undefined;
+    expect(batch.transactionDepthRefusal(member.request)).toBe(message);
+    expect(batch.transactionDepthRefusal(directReceived)).toBe(message);
+    expect(batch.normalizeTransaction(member.request, () => undefined).identity).toBe(
+      batch.normalizeTransaction(directReceived, () => undefined).identity,
+    );
+    for (const prepare of [
+      () => batch.prepareTransaction(scope, direct),
+      () => batch.prepareTransactionSequence(scope, sequence),
+    ]) {
+      if (refused) {
+        expect(prepare).toThrow(batch.TransactionDevelopmentLimitError);
+        expect(prepare).toThrow("development batch depth limit");
+      } else expect(prepare).not.toThrow();
+    }
+    expect(Object.isFrozen(received)).toBe(true);
+    expect(Object.isFrozen(member.request)).toBe(true);
+    const memberCarrier = member.request.carrier;
+    expect(Object.isFrozen(memberCarrier)).toBe(true);
+    expect(Object.isFrozen(memberCarrier.operations)).toBe(true);
+    expect(Object.isFrozen(memberCarrier.keys)).toBe(true);
+    expect(Reflect.set(memberCarrier, "operations", [])).toBe(false);
+    expect(Reflect.set(memberCarrier.operations, "0", memberCarrier.operations[0])).toBe(false);
+    expect(Reflect.set(memberCarrier.keys, "0", memberCarrier.keys[0])).toBe(false);
+    expect(Object.keys(member.request)).toStrictEqual(["carrier"]);
+    expect(() => batch.transactionDepthRefusal({ ...member.request })).toThrow(TypeError);
+    expect(() => batch.assertPreparedTransaction({ ...member.request }, scope)).toThrow(TypeError);
+    expect(() => batch.assertPreparedTransactionSequence({ ...received }, scope)).toThrow(
+      TypeError,
+    );
+  }
+  const deep = { operation: "createBead", ...input(40), idempotencyKey: "deep", name: "creator" };
+  const shallow = { operation: "createBead", id: "beads/shallow", type, idempotencyKey: "shallow" };
+  const mixed = batch.prepareTransactionSequenceForReceiving(
+    scope,
+    JSON.stringify({ operations: [shallow, deep] }),
+  );
+  expect(batch.transactionDepthRefusal(mixed.members[0]!.request)).toBeUndefined();
+  expect(batch.transactionDepthRefusal(mixed.members[1]!.request)).toBe(
+    "development batch depth limit",
+  );
+  const invalid = [
+    [deep, { ...shallow, idempotencyKey: "deep" }],
+    [deep, { operation: "deleteLink", link: "@creator", idempotencyKey: "wrong-kind" }],
+  ];
+  for (const operations of invalid) {
+    for (const prepare of [
+      batch.prepareTransactionSequence,
+      batch.prepareTransactionSequenceForReceiving,
+    ]) {
+      let caught: unknown;
+      try {
+        prepare(scope, JSON.stringify({ operations }));
+      } catch (error) {
+        caught = error;
+      }
+      expect(caught).toBeInstanceOf(ReadUpdateCarrierError);
+      expect(caught).not.toBeInstanceOf(batch.TransactionDevelopmentLimitError);
+    }
+  }
+});
+
+## Unchanged installed declaration context
+The complete installed test callback below includes all local lifetime state, inner exchange/body assertions, launch/catch/finally/report/throw. Unchanged file-level constants supply canonical reference.invalid Scope, Task descriptor/schema artifacts, eight literal requests and helpers for schema/object/digest checks; those are not changed by this cleanup correction and were read in the full evidence review included below. Node fs imports supply existsSync/rmSync; launchInstalledTransaction returns child/ready/close and its full actual implementation is supplied. No timeout, request, schema, report-field or positive oracle was changed.
+
+## Complete installed test callback with corrected cleanup
+it("observes retained sequence member conflict before private depth refusal over packed bytes", async () => {
+  const controller = new AbortController();
+  const deadlineReason = new Error("installed sequence depth work deadline");
+  let deadlineExceeded = false;
+  const deadline = setTimeout(() => {
+    deadlineExceeded = true;
+    controller.abort(deadlineReason);
+  }, 45000);
+  const failures: unknown[] = [];
+  let directory: string | undefined;
+  let child: Awaited<ReturnType<typeof launchInstalledTransaction>> | undefined;
+  let binding: ReturnType<typeof installedTransactionBinding> | undefined;
+  let closed = false;
+  let cleanupExceeded = false;
+  let attempted = 0;
+  let expectedContext: readonly [string, string] | undefined;
+  const responses: {
+    ordinal: number;
+    label: string;
+    method: HttpMethod;
+    url: string;
+    accept: string;
+    key: string | null;
+    requestBodyBytes: number;
+    requestBodySha256: string;
+    status: number;
+    bodyOctets: number | undefined;
+    bodySha256: string;
+    wireSha256: string | null;
+    headers: Record<string, string | null>;
+  }[] = [];
+  const operator = randomBytes(32).toString("base64url");
+  const routeBindings: { method: HttpMethod; url: string }[] = [
+    { method: "POST", url: `${scope}operations/create-bead` },
+    { method: "POST", url: `${scope}operations/sequence` },
+    { method: "GET", url: `${scope}beads/sequence-a` },
+  ];
+  let launchAttempted = false;
+  try {
+    expect(requests).toHaveLength(8);
+    expect(requests.reduce((sum, row) => sum + row.bodyBytes, 0)).toBe(3179);
+    expect(Math.max(...requests.map((row) => row.bodyBytes))).toBe(680);
+    for (const row of requests) {
+      expect(Buffer.byteLength(row.body ?? ""), row.label).toBe(row.bodyBytes);
+      expect(digest(row.body ?? ""), row.label).toBe(row.bodySha256);
+      if (row.label.includes("deep") || row.label.endsWith("fresh-depth")) {
+        const parsed = record(JSON.parse(row.body!));
+        const input = "operations" in parsed ? records(parsed.operations)[0]! : parsed;
+        let value: unknown = input.metadata;
+        for (let i = 0; i < 41; i++) {
+          const object = record(value);
+          expect(Object.keys(object), row.label).toStrictEqual(["nested"]);
+          value = object.nested;
+        }
+        expect(value, row.label).toBe("leaf");
+      }
+    }
+    directory = mkdtempSync(path.join(tmpdir(), "bdp-sequence-depth-installed-"));
+    controller.signal.throwIfAborted();
+    launchAttempted = true;
+    child = await launchInstalledTransaction(
+      entry,
+      {
+        scope,
+        directory,
+        create: true,
+        artifacts,
+        credentials: [{ token: operator, principal: "writer", canMutate: true }],
+      },
+      controller.signal,
+    );
+    binding = installedTransactionBinding(child.ready, sourceCommit, fixture);
+    expect(child.ready.scope).toBe(scope);
+    expect(child.ready.claimEligible).toBe(false);
+    expect(child.ready.history).toBe(false);
+    expect(binding.operationTargets.sequence).toBe(`${scope}operations/sequence`);
+    expect(binding.operationTargets.createBead).toBe(`${scope}operations/create-bead`);
+    const address = new URL(child.ready.listenUrl as string);
+    const execute = createRawHttpExchangeExecutor(
+      { transport: "plain", host: address.hostname, port: Number(address.port) },
+      {
+        requestTimeoutMs: 5000,
+        maximumBodyBytes: 131072,
+        maximumHeaderBytes: 65536,
+        exactMode: {
+          scope,
+          profile: "transactional",
+          routes: routeBindings,
+          maximumRequestHeaderBytes: 16384,
+          maximumRequestBodyBytes: 65536,
+          defaultCredentialRef: "operator",
+          credentialHandles: [{ id: "operator", headerNames: ["authorization"] }],
+          resolveCredentials: () => ({ authorization: `Bearer ${operator}` }),
+        },
+      },
+    );
+    async function exchange(index: number) {
+      const row = requests[index - 1];
+      if (!row) throw new Error("unbound installed sequence depth request");
+      controller.signal.throwIfAborted();
+      expect(attempted + 1, "installed sequence depth exact dispatch order").toBe(index);
+      expect(++attempted, "installed sequence depth dispatch bound").toBeLessThanOrEqual(8);
+      expect(Buffer.byteLength(row.url)).toBeLessThanOrEqual(8192);
+      const response = await execute({
+        method: row.method,
+        url: row.url,
+        signal: controller.signal,
+        credentialRef: "operator",
+        raw: {
+          headerLines: [
+            { name: "accept", value: row.accept },
+            ...(row.contentType === null ? [] : [{ name: "content-type", value: row.contentType }]),
+            ...(row.key === null ? [] : [{ name: "idempotency-key", value: row.key }]),
+          ],
+          ...(row.body === null ? {} : { bodyBytes: Buffer.from(row.body) }),
+        },
+      });
+      // Safe response projection is retained before any status/schema assertion.
+      responses.push({
+        ordinal: attempted,
+        label: row.label,
+        method: row.method,
+        url: row.url,
+        accept: row.accept,
+        key: row.key,
+        requestBodyBytes: row.bodyBytes,
+        requestBodySha256: row.bodySha256,
+        status: response.status,
+        bodyOctets: response.bodyOctets,
+        bodySha256: digest(response.bodyText),
+        wireSha256: response.wireResponseBytes ? digest(response.wireResponseBytes) : null,
+        headers: Object.fromEntries(
+          retainedHeaders.map((name) => [name, response.headers[name] ?? null]),
+        ),
+      });
+      expect(response.exactRequest?.source).toBe("raw-http1-serializer");
+      expect(response.exactRequest?.writeState).toBe("complete");
+      expect(response.url).toBe(row.url);
+      expect(response.exactRequest?.bodyPresent).toBe(row.body !== null);
+      expect(response.exactRequest?.bodyOctets).toBe(row.bodyBytes);
+      expect(response.exactRequest?.bodyDigest).toBe(
+        row.body === null ? undefined : row.bodySha256,
+      );
+      const headers = response.exactRequest?.headerLines ?? [];
+      const values = (name: string) =>
+        headers.filter((h) => h.name.toLowerCase() === name).map((h) => h.value);
+      expect(values("host")).toStrictEqual(["reference.invalid"]);
+      expect(values("accept")).toStrictEqual([row.accept]);
+      expect(values("content-type")).toStrictEqual(
+        row.contentType === null ? [] : [row.contentType],
+      );
+      expect(values("idempotency-key")).toStrictEqual(row.key === null ? [] : [row.key]);
+      expect(values("authorization").length).toBe(1);
+      expect(
+        values("authorization")[0] === `Bearer ${operator}`,
+        "exact credential serialization",
+      ).toBe(true);
+      expect(response.wireResponseBytes?.length).toBeGreaterThan(0);
+      expect(Number.isSafeInteger(response.bodyOctets)).toBe(true);
+      expect(response.bodyOctets).toBeGreaterThanOrEqual(0);
+      expect(response.bodyOctets).toBeLessThanOrEqual(131072);
+      expect(Buffer.byteLength(response.bodyText)).toBe(response.bodyOctets);
+      expect(response.headers["x-bdp-development"]).toBe("non-attesting");
+      expect(response.headers["cache-control"]).toBe("private, no-store");
+      if (row.method === "POST") expect(response.headers.vary).toBe("Accept");
+      return response;
+    }
+    type Wire = Awaited<ReturnType<typeof exchange>>;
+    function status(response: Wire, expected: number, label: string) {
+      expect(response.status, `${label}:${JSON.stringify(responses.at(-1))}`).toBe(expected);
+    }
+    function context(response: Wire, position: string) {
+      if (!expectedContext) throw new Error("missing seed context");
+      expect(contextNames.map((name) => response.headers[name])).toStrictEqual([
+        ...expectedContext,
+        position,
+      ]);
+    }
+    function completed(response: Wire, name: string, key: string, position: string) {
+      status(response, 200, `depth-key:${name}:completed`);
+      expect(response.headers["content-type"]).toBe("application/json");
+      expect(response.headers["x-bdp-development-limit"]).toBeUndefined();
+      const receipt = checked(response.bodyText, "mutationReceipt");
+      expect(typeof receipt.scopeEpoch).toBe("string");
+      expect(receipt.scopeEpoch).not.toBe("");
+      expect(typeof receipt.authorizationView).toBe("string");
+      expect(receipt.authorizationView).not.toBe("");
+      if (!expectedContext)
+        expectedContext = [receipt.scopeEpoch as string, receipt.authorizationView as string];
+      context(response, position);
+      const results = records(receipt.results);
+      expect(results).toHaveLength(1);
+      const resource = record(results[0]!.resource);
+      expect(typeof resource.revision).toBe("string");
+      expect(resource.revision).not.toBe("");
+      expect(resource).toStrictEqual({
+        id: `${scope}beads/${name}`,
+        type: beadType,
+        revision: resource.revision,
+        properties: { title: name },
+        metadata: {},
+      });
+      expect(results).toStrictEqual([{ operationIndex: 0, outcome: "created", resource }]);
+      expect(receipt).toStrictEqual({
+        id: receipt.id,
+        status: "completed",
+        detail: "available",
+        idempotencyKey: key,
+        scopeEpoch: expectedContext[0],
+        authorizationView: expectedContext[1],
+        transaction: receipt.transaction,
+        requiredPosition: position,
+        effectPosition: position,
+        results,
+        next: null,
+        expiresAt: receipt.expiresAt,
+      });
+      expect(typeof receipt.id).toBe("string");
+      expect(typeof receipt.transaction).toBe("string");
+
+      return { receipt, resource };
+    }
+    const seed = completed(await exchange(1), "sequence-a", "sequence-retained", "pos-1");
+    const conflict = await exchange(2);
+    status(conflict, 200, "sequence-depth:retained-member-conflict");
+    expect(conflict.headers["content-type"]).toBe("application/json");
+    expect(conflict.headers["x-bdp-development-limit"]).toBeUndefined();
+    context(conflict, "pos-1");
+    expect(checked(conflict.bodyText, "transactionalSequenceResponse")).toStrictEqual({
+      results: [
+        {
+          type: "https://github.com/gastownhall/bdp/problems/conflict",
+          code: "idempotency-conflict",
+          status: 409,
+          retry: "never",
+          operationIndex: 0,
+          operationName: "present",
+        },
+      ],
+    });
+    const replay = await exchange(3);
+    status(replay, 200, "sequence-depth:original-replay");
+    expect(checked(replay.bodyText, "mutationReceipt")).toStrictEqual(seed.receipt);
+    context(replay, "pos-1");
+    const point = await exchange(4);
+    status(point, 200, "sequence-depth:original-resource");
+    expect(checked(point.bodyText, "beadRecord")).toStrictEqual(seed.resource);
+    context(point, "pos-1");
+    const fresh = await exchange(5);
+    status(fresh, 500, "sequence-depth:fresh-refusal");
+    expect(fresh.bodyText).toBe("");
+    expect(fresh.bodyOctets).toBe(0);
+    expect(fresh.headers["content-length"]).toBe("0");
+    expect(fresh.headers["x-bdp-development-limit"]).toBe("unsupported-transaction-composition");
+    expect(fresh.headers["content-type"]).toBeUndefined();
+    expect(contextNames.map((name) => fresh.headers[name])).toStrictEqual([
+      undefined,
+      undefined,
+      undefined,
+    ]);
+    const reuse = await exchange(6);
+    status(reuse, 200, "sequence-depth:fresh-key-reuse");
+    const created = checked(reuse.bodyText, "transactionalSequenceResponse");
+    const resource = record(records(created.results)[0]!.resource);
+    expect(typeof resource.revision).toBe("string");
+    expect(resource.revision).not.toBe("");
+    expect(resource).toStrictEqual({
+      id: `${scope}beads/sequence-b`,
+      type: beadType,
+      revision: resource.revision,
+      properties: { title: "sequence-b" },
+      metadata: {},
+    });
+    expect(created).toStrictEqual({
+      results: [{ operationIndex: 0, operationName: "present", outcome: "created", resource }],
+    });
+    context(reuse, "pos-2");
+    for (const index of [7, 8]) {
+      const refused = await exchange(index);
+      status(refused, 406, `sequence-depth:negotiation-${index}`);
+      expect(refused.bodyText).toBe("");
+      expect(refused.bodyOctets).toBe(0);
+      expect(refused.headers["content-length"]).toBe("0");
+      expect(refused.headers["content-type"]).toBeUndefined();
+      expect(refused.headers["x-bdp-development-limit"]).toBeUndefined();
+      context(refused, "pos-2");
+    }
+    expect(attempted).toBe(8);
+    expect(responses).toHaveLength(8);
+    expect(
+      responses.map(({ ordinal, label, method, url, accept, key, status: actual }) => ({
+        ordinal,
+        label,
+        method,
+        url,
+        accept,
+        key,
+        status: actual,
+      })),
+    ).toStrictEqual(
+      requests.map(({ index, label, method, url, accept, key, status: expected }) => ({
+        ordinal: index,
+        label,
+        method,
+        url,
+        accept,
+        key,
+        status: expected,
+      })),
+    );
+    expect(new Set(responses.map(({ method, url }) => `${method} ${url}`))).toStrictEqual(
+      new Set(routeBindings.map(({ method, url }) => `${method} ${url}`)),
+    );
+    controller.signal.throwIfAborted();
+  } catch (error) {
+    failures.push(error);
+  } finally {
+    controller.abort();
+    const cleanupReason = new Error("installed sequence depth cleanup deadline");
+    let cleanupReject: ((reason: Error) => void) | undefined;
+    const cleanupTimer = setTimeout(() => {
+      cleanupExceeded = true;
+      child?.child.kill("SIGKILL");
+      cleanupReject?.(cleanupReason);
+    }, 10000);
+    try {
+      if (child) {
+        await Promise.race([
+          child.close(),
+          new Promise<never>((_, reject) => {
+            // The cleanup timer also forces the owned child to stop on overrun.
+            cleanupReject = reject;
+          }),
+        ]);
+        closed = true;
+      }
+    } catch (error) {
+      failures.push(error);
+    } finally {
+      clearTimeout(cleanupTimer);
+    }
+    const stopped =
+      !launchAttempted ||
+      (child !== undefined && (child.child.exitCode !== null || child.child.signalCode !== null));
+    if (!stopped)
+      failures.push(
+        new Error(
+          child === undefined
+            ? "installed sequence depth child stop unproven"
+            : "installed sequence depth child remains active",
+        ),
+      );
+    try {
+      if (directory && stopped) rmSync(directory, { recursive: true, force: true });
+    } catch (error) {
+      failures.push(error);
+    }
+    const directoryAbsent = directory === undefined || !existsSync(directory);
+    if (stopped && !directoryAbsent)
+      failures.push(new Error("installed sequence depth directory remains"));
+    clearTimeout(deadline);
+    if (deadlineExceeded && !failures.includes(deadlineReason)) failures.push(deadlineReason);
+    try {
+      console.log(
+        JSON.stringify({
+          observation: "private-installed-sequence-depth",
+          outcome: failures.length === 0 ? "passed" : "failed",
+          // Supervisor attribution to archives/consumer, never child-attested Git provenance.
+          declaredSourceCommit: sourceCommit,
+          workspaceDirty,
+          entry: resolvedEntry,
+          entrySha256,
+          binding: binding ?? null,
+          routeBindings,
+          artifactBytes:
+            artifacts.descriptors.reduce((n, d) => n + Buffer.byteLength(d.utf8), 0) +
+            artifacts.schemas.reduce((n, s) => n + Buffer.byteLength(s.utf8), 0),
+          attempted,
+          exchanges: responses.length,
+          completedResponses: responses,
+          deadlineExceeded,
+          cleanupExceeded,
+          closed,
+          launchAttempted,
+          startupCompleted: child !== undefined,
+          stopKnown: stopped,
+          childPid: child?.child.pid ?? null,
+          childExitCode: child?.child.exitCode ?? null,
+          childSignalCode: child?.child.signalCode ?? null,
+          directory: directory ?? null,
+          directoryAbsent,
+          failureCount: failures.length,
+          claimEligible: false,
+          retention:
+            "response fingerprints and selected safe headers; full receipt/resource equality assertions ran in memory; no raw Authorization retained",
+          startupLimitation:
+            "Before ready, no child handle is returned; startup cleanup is launcher-owned and independent supervisor process evidence remains required",
+        }),
+      );
+    } catch (error) {
+      failures.push(error);
+    }
+  }
+  if (failures.length === 1) throw failures[0];
+  if (failures.length > 1)
+    throw new AggregateError(failures, "installed sequence depth observation and cleanup failed");
+}, 60000);
+
+## Parser container freeze and complete JSON decoder
+export function decodeJsonDocument(text: string): LosslessJsonValue {
+  if (typeof text !== "string") throw new TypeError("JSON input must be text");
+  let at = 0;
+  const frames: Frame[] = [];
+  const whitespace = (): void => {
+    while (at < text.length && /[\x20\t\r\n]/.test(text[at] ?? "")) at++;
+  };
+  const fail = (message: string): never => {
+    throw new JsonSyntaxError(message, at);
+  };
+  const string = (): string => {
+    const start = at++;
+    let escaped = false;
+    while (at < text.length) {
+      const char = text[at++];
+      if (char === '"' && !escaped) {
+        let value: string;
+        try {
+          value = JSON.parse(text.slice(start, at)) as string;
+        } catch {
+          return fail("invalid JSON string");
+        }
+        if (!isUnicodeScalarString(value)) fail("unpaired surrogate");
+        return value;
+      }
+      if (char === "\\" && !escaped) escaped = true;
+      else escaped = false;
+    }
+    return fail("unterminated JSON string");
+  };
+  const value = (): LosslessJsonValue => {
+    whitespace();
+    const char = text[at];
+    if (char === '"') return string();
+    if (char === "{" || char === "[") {
+      at++;
+      const object = char === "{";
+      const result: MutableContainer = object
+        ? (Object.create(null) as Record<string, LosslessJsonValue>)
+        : [];
+      frames.push({ value: result, object, state: "first", keys: new Set() });
+      return result;
+    }
+    for (const [token, literal] of [
+      ["true", true],
+      ["false", false],
+      ["null", null],
+    ] as const) {
+      if (text.startsWith(token, at)) {
+        at += token.length;
+        return literal;
+      }
+    }
+    NUMBER_PREFIX.lastIndex = at;
+    const matched = NUMBER_PREFIX.exec(text);
+    if (matched) {
+      at = NUMBER_PREFIX.lastIndex;
+      return new JsonNumberLiteral(matched[0]);
+    }
+    return fail("expected JSON value");
+  };
+  const root = value();
+  while (frames.length) {
+    const frame = frames[frames.length - 1];
+    if (!frame) throw new Error("missing JSON frame");
+    whitespace();
+    const close = frame.object ? "}" : "]";
+    if (text[at] === close && frame.state !== "next") {
+      at++;
+      Object.freeze(frame.value);
+      frames.pop();
+      continue;
+    }
+    if (frame.state === "after") {
+      if (text[at++] !== ",") fail("expected comma or closing delimiter");
+      frame.state = "next";
+      continue;
+    }
+    let key: string | undefined;
+    if (frame.object) {
+      if (text[at] !== '"') fail("expected object member name");
+      key = string();
+      if (frame.keys.has(key)) fail("duplicate decoded object member name");
+      frame.keys.add(key);
+      whitespace();
+      if (text[at++] !== ":") fail("expected colon");
+    }
+    frame.state = "after";
+    const child = value();
+    if (Array.isArray(frame.value)) frame.value.push(child);
+    else if (key !== undefined) frame.value[key] = child;
+  }
+  whitespace();
+  if (at !== text.length) fail("trailing JSON input");
+  return root;
+}
+
+## Operation freeze and carrier parser
+const parsedOperations = new WeakSet<object>();
+function operation<K extends ReadUpdateOperation>(
+  kind: K,
+  input: Readonly<Record<string, LosslessJsonValue>>,
+  key?: string,
+  name?: string,
+): UnadmittedReadUpdateOperation<K> {
+  const value = Object.freeze({
+    operation: kind,
+    input,
+    ...(key === undefined ? {} : { idempotencyKey: key }),
+    ...(name === undefined ? {} : { name }),
+  });
+  parsedOperations.add(value);
+  return value;
+}
+function record(value: LosslessJsonValue): Readonly<Record<string, LosslessJsonValue>> {
+  if (!value || typeof value !== "object" || Array.isArray(value))
+    throw new ReadUpdateCarrierError("operation record must be an object");
+  return value as Readonly<Record<string, LosslessJsonValue>>;
+}
+function carrier(
+  text: string,
+  key: keyof typeof READ_UPDATE_VALUE_SCHEMA_REFS,
+): Readonly<Record<string, LosslessJsonValue>> {
+  const root = decodeJsonDocument(text);
+  // Numbers are only structural placeholders here, private and discarded.
+  // The reachable-root invariant in read-update-numeric-schema.test.ts guards
+  // that placeholders cannot turn valid property literals into syntax errors.
+  const structural = mapLosslessJson(root, () => 0);
+  // Schema loading/validator failures are internal faults, never blamed on input.
+  const check = validator(key);
+  if (!check(structural)) throw new ReadUpdateCarrierError(`Malformed ${key} carrier`);
+  return record(root);
+}
+
+## Complete sequence syntax and operation-input capture
+export function parseReadUpdateSequenceRequest(text: string): ReadUpdateSequenceRequest {
+  const root = carrier(text, "sequenceRequest");
+  const operations = root.operations as readonly LosslessJsonValue[];
+  const keys = new Set<string>();
+  const names = new Map<string, "bead" | "link">();
+  const parsed: UnadmittedReadUpdateOperation[] = [];
+  for (const member of operations) {
+    const fields = record(member);
+    const kind = fields.operation as ReadUpdateOperation;
+    validateReferenceSyntax(kind, fields);
+    validateAliasSyntax(kind, fields);
+    const key = fields.idempotencyKey as string;
+    const name = fields.name as string | undefined;
+    if (keys.has(key)) throw new ReadUpdateCarrierError("duplicate sequence idempotencyKey");
+    keys.add(key);
+    const expected: Readonly<Record<string, "bead" | "link">> =
+      kind === "createLink"
+        ? { source: "bead", target: "bead" }
+        : kind === "putAlias"
+          ? { target: "bead" }
+          : kind === "updateBead" || kind === "deleteBead"
+            ? { bead: "bead" }
+            : kind === "updateLink" || kind === "deleteLink"
+              ? { link: "link" }
+              : {};
+    for (const [field, resourceKind] of Object.entries(expected)) {
+      const reference = fields[field];
+      const uri = typeof reference === "string" ? reference : record(reference ?? null).uri;
+      if (
+        typeof uri === "string" &&
+        uri.startsWith("@") &&
+        names.get(uri.slice(1)) !== resourceKind
+      )
+        throw new ReadUpdateCarrierError("forward, unknown or wrong-kind sequence binding");
+    }
+    // Register only after references: a creator cannot reference its own name.
+    if (name !== undefined) {
+      if (names.has(name)) throw new ReadUpdateCarrierError("duplicate sequence name");
+      names.set(name, kind === "createBead" ? "bead" : "link");
+    }
+    const input = Object.freeze(
+      Object.fromEntries(
+        Object.entries(fields).filter(
+          ([key]) => key !== "operation" && key !== "idempotencyKey" && key !== "name",
+        ),
+      ),
+    );
+    parsed.push(operation(kind, input, key, name));
+  }
+  return Object.freeze({ operations: Object.freeze(parsed) });
+
+## Protocol prepared carrier immutable arrays
+function prepare(
+  scope: AbsoluteHttpUrl,
+  kind: PreparedReadUpdateCarrier["kind"],
+  operations: readonly UnadmittedReadUpdateOperation[],
+  keys: readonly string[],
+): PreparedReadUpdateCarrier {
+  const base = new URL(scope);
+  for (const operation of operations) preflightOperation(base, operation);
+  const carrier = Object.freeze({
+    kind,
+    scope,
+    operations: Object.freeze([...operations]),
+    keys: Object.freeze([...keys]),
+  });
+  preparedCarriers.add(carrier);
+  return carrier;
+}
+
+## Complete installed launcher lifecycle
+/** Bounded inherited-IPC launcher. No request or observation emulation. */
+import { spawn } from "node:child_process";
+import { mkdir } from "node:fs/promises";
+export async function launchInstalledTransaction(entry, configuration, signal) {
+  signal?.throwIfAborted();
+  // Explicit launcher-owned provisioning; reopen keeps the directory/create:false.
+  if (configuration.create) await mkdir(configuration.directory, { recursive: true, mode: 0o700 });
+  signal?.throwIfAborted();
+  const child = spawn(process.execPath, [entry], {
+    cwd: "/tmp",
+    stdio: ["ignore", "pipe", "pipe", "ipc"],
+  });
+  let bytes = 0;
+  for (const stream of [child.stdout, child.stderr])
+    stream.on("data", (chunk) => {
+      bytes += chunk.length;
+      if (bytes > 65536) child.kill("SIGKILL");
+    });
+  const exited = new Promise((resolve) =>
+    child.once("exit", (code, signal) => resolve({ code, signal })),
+  );
+  async function bounded(promise) {
+    let timer;
+    try {
+      return await Promise.race([
+        promise,
+        new Promise((_, reject) => {
+          timer = setTimeout(() => {
+            child.kill("SIGKILL");
+            reject(new Error("installed transaction process deadline"));
+          }, 10000);
+        }),
+      ]);
+    } finally {
+      clearTimeout(timer);
+    }
+  }
+  async function drainFailure(error) {
+    child.kill("SIGKILL");
+    try {
+      await bounded(exited);
+    } catch (cleanup) {
+      throw new AggregateError([error, cleanup], "installed transaction cleanup failed");
+    }
+    throw error;
+  }
+  let closing;
+  const close = () =>
+    (closing ??= (async () => {
+      try {
+        if (child.connected) child.send({ command: "close" });
+        const result = await bounded(exited);
+        if (result.code !== 0 || result.signal !== null)
+          throw new Error("installed transaction child did not close cleanly");
+      } catch (error) {
+        await drainFailure(error);
+      } finally {
+        signal?.removeEventListener("abort", onAbort);
+      }
+    })());
+  const onAbort = () => {
+    void close().catch(() => {});
+  };
+  signal?.addEventListener("abort", onAbort, { once: true });
+  if (signal?.aborted) onAbort();
+  let detachReadyAbort = () => {};
+  try {
+    const ready = await bounded(
+      new Promise((resolve, reject) => {
+        const abort = () => reject(signal.reason);
+        signal?.addEventListener("abort", abort, { once: true });
+        detachReadyAbort = () => signal?.removeEventListener("abort", abort);
+        if (signal?.aborted) {
+          abort();
+          return;
+        }
+        child.once("error", reject);
+        child.once("message", resolve);
+        void exited.then(() => reject(new Error("installed transaction exited before ready")));
+        child.send({ configuration });
+      }),
+    );
+    signal?.throwIfAborted();
+    if (!ready || ready.event !== "qualification.ready" || JSON.stringify(ready).length > 65536)
+      throw new Error("invalid installed ready message");
+    return { child, ready, close };
+  } catch (error) {
+    try {
+      await close();
+    } catch (cleanup) {
+      throw new AggregateError([error, cleanup], "installed transaction startup cleanup failed");
+    }
+    throw error;
+  } finally {
+    detachReadyAbort();
+  }
+}
+
+## Actual original production review output
+## Findings
+
+**1. Low — `packages/server/src/transaction-batch.ts:321‑330`.** The member carrier passed to `prepareDepthCarrier` is a bare object literal (`{kind:"singleton", scope, operations:[op], keys:[key]}`); neither it nor its arrays are frozen, unlike `prepareMixedTransaction` (`transaction-batch.ts:180‑185`) and the protocol-frozen singleton carrier (`read-update-preflight.ts:82‑89`). The literal shape is pre-existing, but this patch makes it load-bearing: the depth fact is now recorded against the wrapper only (`depthRefusals`, line 85) while the owner trusts it for fresh-key refusal (`transaction-store.ts:1163‑1167`). Mutating `member.request.carrier.operations[0].input` after preparation would admit a deep member under a stale "shallow" fact. All holders are source-private, hence Low. *Smallest fix:* `Object.freeze({kind:"singleton", scope: carrier.scope, operations: Object.freeze([op]), keys: Object.freeze([key])})`.
+
+**2. Low — `packages/server/src/transaction-sequence.test.ts:576`.** `expect(f.store.receipt("p", original.id)).toStrictEqual(original)` compares a JSON round-trip (`retainedReceipt`→`parseReceipt`, `transaction-store.ts:931‑934`, identity-projected because the default policy is `all-visible`) against the in-memory object returned by `executeClaim` (`transaction-store.ts:1381‑1406`). Every pre-existing instance of this exact comparison uses `toEqual` (`transaction-submission.test.ts:1644`, `transaction-dependencies.test.ts:263`). `toStrictEqual` additionally fails on any explicitly-`undefined` key or non-plain prototype inside `results` entries (built at `transaction-batch.ts:778`). I could not rule that out statically and nothing has executed this file. *Smallest fix:* use `toEqual`, matching precedent; the receipt-unchanged claim does not need the stricter matcher.
+
+**3. Low (evidence) — `transaction-sequence.test.ts:625‑668`.** The oracle's "no claim/creator fact survives" is only indirectly evidenced. `inspect()` (`transaction-store.ts:2290‑2306`) exposes resources/groups/identities/position only — not `receipts` or `creator_facts` — so `toStrictEqual(before)` cannot see them, and residual `creator_facts` rows keyed by the aborted attempt UUID are invisible to all later behavior. The three `created` outcomes in `reused` do genuinely prove key release (a surviving reservation would project `idempotency-in-progress` via `admitSequence:1979` + `admitKey:1144`). *Smallest fix:* either read `creator_facts` directly through the already-imported `DatabaseSync`, or narrow the stated claim to key release.
+
+**4. Low (selection) — ledger `sourceSelections` for `transaction-sequence.test.ts`.** The ten retained titles omit `"preserves committed prefix and another owner while retracting this attempt's tail on an internal fault"` (`transaction-sequence.test.ts:419`), the closest pre-existing regression to this packet's central new claim (a private 500 after a durably committed prefix). New case 3 covers the same ground, so impact is evidential only. *Smallest fix:* add that title to the sequence regex.
+
+**5. Informational, cross-scope gap.** `plan.md:67` attributes the restore-depth control's markerless 500 to `transaction-runtime.ts:260‑267`. In the implemented code, a strict-preparation throw at `transaction-http.ts:328` is caught by this handler's own `route` catch (`transaction-http.ts:615`, falling to `empty(500)` at 642), which then sets `x-bdp-development: non-attesting` and, for POST, `vary: Accept`. The planned observation (500, empty body, no `x-bdp-development-limit`, no context) still holds, but a control oracle asserting runtime provenance or the absence of those two headers would misfire. The control/provenance oracles belong to the other scope — flagged, not reviewed.
+
+No higher-severity defect found in the four files in scope.
+
+## Verified correct (substantiated against real source)
+
+- **Depth parity.** `assertTransactionInputDepth` refuses `depth > 32` (`transaction-set.ts:52‑62`). Member offset 2 reproduces root0/array1/member2 exactly; `sequenceRequest` is `additionalProperties:false` (`schemas/bdp-v0.schema.json:1778‑1792`), so the removed whole-root scan covered nothing outside members. `input(28)` → leaf 32 (pass), `input(29)` → 33 (refuse); the sequence fixture's `depthMetadata()` → 44. Direct-batch (`prepareDepthCarrier(carrier, root)`, depth 0) and singleton (`…, input, 2`) measure the identical slice.
+- **Syntax before private facts.** `parseReadUpdateSequenceRequest` (`read-update-values.ts:307‑356`) performs schema, duplicate-key (320), duplicate-name (344) and wrong-kind `@name` (340) checks, all `ReadUpdateCarrierError`, before any annotation; `operations`/`keys` are strictly 1:1 and ordered, so `raw[index]` alignment and the defensive `Array.isArray`/`object()` guards are sound and unreachable. `input` excludes `operation`/`idempotencyKey`/`name` (347‑352), so the test's member-vs-batch identity equality is valid (`normalizeTransaction` identity is `[{operation,input}]` only, `transaction-batch.ts:537/552`).
+- **Retained precedence.** `admitKey` orders pending-wins (1144) → dependency comparison (1146) → depth (1163, gated on `!prior`) → identity. Retained and foreign-pending members therefore never consult capacity; `project` re-positions with the present label and never treats it as identity (`transaction-sequence.ts:65‑73`). This matches `docs/specs/bdp.md:3285‑3302` (outcome 2) and the `200` envelope row at 4628.
+- **Atomicity / no foreign retraction.** Fresh deep refusal throws inside `admitSequence`'s `atomic` (1973‑1997); cleanup deletes only rows matching its own owner UUID (2008‑2012) plus its own `creator_facts`, and the attempt is never registered (2021‑2031) — so case 2's construction-time throw and `inspect()` equality are correct. Case 3's expiry rollback is real: `expireRow`'s DELETE (486‑489) runs inside the turn's `atomic` (2104‑2106); the subsequent `store.receipt` read performs retention itself, exactly as the in-test comment states. `cancelSequence` (1425‑1450) releases only the tail (committed rows have `owner IS NULL`), and the second cancel from the stepper returns 0.
+- **HTTP branch.** Order (media/body → carrier syntax → auth → canMutate → member count → preparation → Accept → owner) is preserved; the 406 path still admits nothing because preparation is pure. The catch wraps only the awaited `sequenceObserved`; `run`/`mutate` (`transaction-service.ts:137‑161`) and `executeSequence` (233‑258) preserve error identity, and a cleanup failure surfaces as `AggregateError` → generic 500, so expected errors cannot hide cleanup faults. Depth is the sole `TransactionDevelopmentLimitError` reachable without `controls` (the operation/Selector variants at 1505‑1510 are on the `admit` path only). The now-uncaught preparation call cannot regress 400/413/limit handling: every throwable precondition is already checked upstream with the same constants and text.
+- **No new recursion surface.** Retained deep members now reach `normalizeTransaction`/`compareDependencyTemplate`; `encodeSemanticValue` (`semantic-identity.ts:59‑63`) and `transactionInputText` are explicitly iterative, so no stack-depth exposure is introduced.
+- **Strictness and privacy.** `prepareTransactionSequence` still throws the legacy class/message (now per member, same message); `prepareTransactionSetCore`/`prepareTransactionSingleton` unchanged; `packages/server/src/index.ts` contains no `transaction-batch` re-export, so the receiving entry point stays source-private. The new `withDepthFixture` accumulates failures and throws *after* `finally`, so it does not reintroduce the `noUnsafeFinally` pattern that failed lint in the HTTP test.
+
+## Context gaps
+
+- Read-only review: nothing was executed. The lint-repair successor is unvalidated, and the two `noUnsafeFinally` errors were in `transaction-http.test.ts` (other scope) — I cannot confirm lint now passes.
+- Not reviewed (other scope): `transaction-http.test.ts`, `apps/bdptest/src/transactional-sequence-depth-installed.test.ts`, the progress append, and all transport/cleanup/report/provenance oracles. Finding 5 is the only interface touchpoint I surfaced.
+- Test assertions were assessed for logical soundness only; nothing here establishes that any case passes, nor network concurrency or schema capacity.
+- Minimum-main integration and final validation remain outstanding gates; the parent is the dirty author HEAD `df80f8c`/tree `25e9d4a`.
+
+## Verdict (scoped)
+
+Within this scope — production semantics in `transaction-batch.ts` and `transaction-http.ts` plus the preparation and owner selections — the change is faithful to the accepted design and to the cited spec clauses, and I found no correctness defect: the four findings are one Low hardening item in production and three Low test/selection evidence items. This is **not** a code approval: the four files are logically sound but entirely unvalidated, three of the seven paths were out of scope, and the earlier full review remains inconclusive.
+
+## Actual original evidence review output
+## Findings
+
+**1. Low — `apps/bdptest/src/transactional-sequence-depth-installed.test.ts:543-561` — cleanup-overrun error is recorded twice.**
+The 10 s cleanup timer does `failures.push(cleanupReason)` (545) *and* `cleanupReject?.(cleanupReason)` (547); the rejection is caught at 560-561 and pushed again. On overrun the `AggregateError` carries the identical `Error` instance twice and the safe report's `failureCount` is inflated by one. The timer can only fire while the race is pending (if `child` is undefined the `finally` clears it immediately), so the rejection path always records it. Smallest fix: delete line 545. (Compare the deliberate dedup used for the work deadline at 577.)
+
+**2. Low — same file, `565-575` — mandated directory retention is itself reported as a failure.**
+`stopped` is correctly made conservative for a pre-ready launch failure (`!launchAttempted || (child !== undefined && …)`), so the directory is deliberately kept — which then trips `if (!directoryAbsent) failures.push(new Error("…directory remains"))` at 575, plus "child remains active" at 568. A deliberate retention is recorded as a defect, contradicting the stated `startupLimitation`. Smallest fix: `if (stopped && !directoryAbsent) failures.push(…)`. (The sibling `transactional-depth-key-order-installed.test.ts:640-649` does not hit this because its `stopped` treats a missing child as stopped; the new, stricter rule is the right one — only the oracle needs to follow it.)
+
+**3. Low — same file, `268` — dead disjunct in the depth gate.**
+`row.label.endsWith("fresh-depth")` matches no row (labels are `seed`, `retained-deep`, `original-replay`, `original-resource`, `fresh-deep`, `fresh-key-reuse`, `retained-deep-negotiation`, `fresh-deep-negotiation`). `includes("deep")` already covers all four deep bodies, so the 41-object oracle is complete today, but the dead clause implies a selector that does not exist and would silently let a renamed row skip the depth check. Smallest fix: drop the second disjunct.
+
+**4. Low — same file, `223` — title claims "over packed bytes" while the default entry is the workspace build.**
+`entry` defaults to `packages/server/dist/transaction-installed-process.js` (57-59), i.e. a diagnostic workspace artifact, not a fresh pack; only `BDP_TRANSACTIONAL_INSTALLED_ENTRY` (with a declared commit) binds an external consumer. The phrasing matches an existing house idiom (`transactional-snapshot-installed.test.ts:422,796,959`) and the report stays honest via `entry`/`entrySha256`/`workspaceDirty`/`claimEligible:false`, so this is naming, not an oracle defect. Smallest fix (optional): "over the installed entry", leaving packed attribution to the separately bound consumer.
+
+**5. Low (adjudication note, no code change) — control header shape.**
+`source-dispositions.md` §1 attributes the control's generic 500 to `transaction-runtime.ts:260-267`. In the real code the strict-preparation throw at `transaction-http.ts:328` is caught first by `handle`'s catch (`:642 empty(500)`), which then sets `x-bdp-development` and, for POST, `vary: Accept` (`:646-647`) — the runtime fallback sets no `vary`. `selection.json` already states this correctly in `markerMeaning`, and the named oracle only requires 500/empty/no marker/no context, so no oracle breaks; an adjudicator comparing an exact header set should expect `vary: Accept` present.
+
+No actionable finding against the docs paragraph (`docs/design/transaction-implementation-progress.md:1996`) beyond style: it is a single unwrapped line with a double blank separator in an 80-col hard-wrapped document, which Biome does not format (`package.json:18-19`, Markdown unformatted), so `format:check` passing is consistent.
+
+## Verified against real source (no defect found)
+
+- **Lint successor.** `transaction-http.test.ts:5135-5164` matches `lint-repair/correction.patch` byte-for-byte and is semantically identical to the pre-correction throws: `!f` → directory retained and callbacks never run; close-missing → recorded; otherwise bounded close, reverse removes, `cleanupCompleted`. No `throw`/`return`/`break`/`continue` lexically inside any `finally` in the new test or `exchange`, so the two `noUnsafeFinally` errors are resolved; narrowing of `close` in the final `else` typechecks.
+- **Request recipes.** Source: 11 dispatches (seed, retained-deep, replay, point, fresh-deep, reuse, 2×406, 401, 403, duplicate-key) with `attempts === 11`; installed: 8, order-pinned (`:744`) and compared to the declared table (`:933-956`). Aggregate reconciles to 31 expected / 40 max (21 source incl. 4+6 existing + 8 installed + 2 control).
+- **Installed literals.** All four deep bodies contain exactly 41 `{"nested":` levels closed by exactly 41 `}` (regex-confirmed); byte arithmetic independently reproduces 126/677/126/0/674/219/677/680, sum 3179, max 680, matching `:263-264` and `measurements.json`.
+- **Negative controls.** Request 2's first failing oracle under strict preparation is the status-first `"sequence-depth:retained-member-conflict"` label (`:5006`-equivalent, patch line 228); `exchange` runs only generic bounds before it, and `parse` (which would throw on an empty body) comes after.
+- **Production interfaces.** Order at `transaction-http.ts:308-340` is key-header → carrier syntax (400) → auth (401/403) → limit → receiving preparation → Accept (406, with context) → execution (marker 500 only from `TransactionDevelopmentLimitError`). Context headers present on 200/406 and absent on 400/401/403/500 exactly as asserted. `empty()`/`jsonResponse()` supply `cache-control: private, no-store`, and `handle` adds `x-bdp-development`/`vary` for every response — all installed per-exchange header oracles hold. 401/403 problem types resolve to `…/authentication` / `…/authorization` with `after-state-change` (`packages/protocol/src/index.ts:497-498`).
+- **Executor.** `exactRequest.bodyOctets = body?.length ?? 0` and `bodyDigest` omitted when absent (`http-executor.ts:759-763`), so the GET row's `0`/`undefined` expectations are correct; canonical `Host: reference.invalid` over the 127.0.0.1 route (`:724`); single `accept` (no `*/*` default duplication, `:716-723`); route/scope gate at `:552-571`; response headers lower-cased null-prototype record (`:1162`), making `toBeUndefined()` correct. Ceilings 5 s / 131072 / 65536 / 16384 / 65536 wired as configured.
+- **Schema.** `mutationReceipt` completed branch permits the exact 12-key set asserted (`effectPosition` optional, matching the sibling at `transactional-depth-key-order-installed.test.ts:516`); `sequenceMemberProblem` requires `status`+`operationIndex` and allows `operationName`, forbidding `outcome` — so the conflict entry resolves unambiguously in the `oneOf`.
+- **Harness.** `apps/**/*.test.ts` is collected and `apps/*/src/**/*.ts` typechecked; the source setup mock intercepts a *source* module and is irrelevant to both the dist-imported runtime and the child process, so no source interception substitutes for the emitted dependency.
+- **Report safety.** Both reports carry only status, allowlisted headers, fingerprints and lifecycle booleans; `binding.served` is digests + capabilities only (`profile-contract-plan.ts:148-160`); no Authorization, token or configuration leaks; primary and cleanup failures are both preserved and surfaced via `AggregateError`.
+
+## Context gaps
+
+- No execution of any kind on this successor: the eight `bodySha256` literals, the `requests`↔`responses` equality, every status/context oracle and the 41-level runtime walk are unverified by running code. The digests cannot be checked statically.
+- Production sequence semantics (retained-member comparison, rollback, key non-consumption, `transaction-batch.ts`) are the other scope's; I relied on them only where an oracle depends on an observable HTTP shape.
+- `sequenceMemberResult`/`readUpdateProblem` bodies were read only to the depth needed for the `oneOf` discrimination.
+- The source test's 25 s work + 5 s cleanup exactly equals its 30 s timeout (accepted bound), so a full cleanup overrun can be truncated before the aggregate/report is emitted; the installed pair (45+10/60) keeps 5 s slack.
+
+## Verdict
+
+Scoped to the three evidence deltas only: the cleanup-only successor is correct and lint-clean for the rule it targets, the request recipes, literal bodies, credentials, schema/receipt/Resource/context oracles, no-key-consumption and replay comparisons are internally consistent and consistent with the real handler/executor/schema interfaces, and the control's first-failing oracle is where the plan says it is. Findings 1-4 are low-severity test-hygiene defects, none of which changes a pass/fail outcome on a healthy run. **No code approval**: nothing here substitutes for lint/typecheck/format on the successor, the selected test runs, the control run, or the mandatory minimum-main integration, and no runtime/installed/council pass is claimed.
+
+## Actual original18-case validation outcome
+# Preliminary source successor outcome
+
+All7released stages passed once: targeted format/lint, boundaries, historical Read seal,2preparation+13owner+3HTTP exact cases. No unexpected executed case/unhandled error. Targeted lint retained30warnings/4infos,0errors; not a repository-wide rerun. Historical Read seal verified89rows.
+
+New witness recorded11responses with statuses200,200,200,200,500,200,406,406,401,403,400; full schema/body checks were in memory. Two existing HTTP callbacks passed (10requests by source accounting, no new per-wire trace). Total21source-derived HTTP. Cleanup completed without deadline/failure; 29sampledPIDs independently absent and 8sampled owned runtime dirs absent. Tooling caches retained.
+
+All33source inputs/fullpatch and468emitted files remain exact. Original actualbuild reused with first-post-build-inventory limitation; no rebuild/control/installed execution. Original lint failure and inconclusive emptytimeout review preserved. Final actualmain integration and fresh installed evidence remain required.
+
+## Actual new correction validation outcome
+{
+  "passedStages": 4,
+  "passedCases": [
+    "keeps receiving depth facts private while legacy preparation still throws",
+    "annotates only deep sequence members after complete carrier syntax while strict preparation stays strict"
+  ],
+  "HTTP": 0,
+  "productChildren": 0,
+  "runtimeOwners": 0,
+  "sourceBindingSha256": "b937a736c8b4b16c10346b0f8d998640fe31415a6ee79a10188945cb4324c81a",
+  "temporaryEntries": [
+    "node-compile-cache",
+    "node-compile-cache/v24.16.0-arm64-cf738c9d-501",
+    "node-compile-cache/v24.16.0-arm64-cf738c9d-501/42483939",
+    "node-compile-cache/v24.16.0-arm64-cf738c9d-501/87e3d896",
+    "node-compile-cache/v24.16.0-arm64-cf738c9d-501/355809c5",
+    "node-compile-cache/v24.16.0-arm64-cf738c9d-501/e0ed69ce",
+    "node-compile-cache/v24.16.0-arm64-cf738c9d-501/21949e48",
+    "node-compile-cache/v24.16.0-arm64-cf738c9d-501/3088bb2c",
+    "node-compile-cache/v24.16.0-arm64-cf738c9d-501/836e5827",
+    "node-compile-cache/v24.16.0-arm64-cf738c9d-501/99ccc123",
+    "node-compile-cache/v24.16.0-arm64-cf738c9d-501/63382e8b"
+  ],
+  "limitation": "Focused correction source checks only; no fresh build, HTTP or installed test. Combined branch validation remains required."
+}
+
+## Historical provenance correction addendum
+# Control provenance correction addendum
+
+This corrects the explanation in the retained original plan67 and source-dispositions F1; it does not rewrite those reviewed historical files.
+
+The restored strict preparation call throws inside createTransactionHttpHandler.handle's encompassing try. Its own catch (frozen source transaction-http.ts615–642) selects empty500. The handler then adds x-bdp-development:non-attesting and, for POST, vary:Accept at646–647. The runtime delivers the response; its generic fallback did not originate this control result.
+
+Keep exactly the current negative oracle: request2 status500, empty body, no x-bdp-development-limit, no Scope context and sole named sequence-depth:retained-member-conflict assertion failure, with healthy prerequisites/cleanup. No claim that Vary or non-attesting is absent. selection.json already records the correct markerMeaning.
+
+The creator-fact rollback is source-established by the atomic admission and attempt-specific cleanup. Existing test assertions directly prove released keys, preserved foreign claim and unchanged inspect-visible state; they do not enumerate raw creator_facts. No extra SQL connection or callback is added.
+
+Operator branch-only direction supersedes historical main-integration prerequisites: integrate the exact reviewed minimum working branch into sequence with ordinary ancestry and validate the combined source. No main chasing, main merge, public activation or qualification is authorized here.
+
+proposed-provenance.patch is retained as an unapplied historical proposal; this addendum is the operative correction. Root chose minimal correction validation: typecheck, format/lint three paths and existing two preparation callbacks; full sourceHTTP/installed proof remains the combined-branch gate.

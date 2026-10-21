@@ -1,0 +1,42 @@
+{
+  "futureOwnedFiles": [
+    "packages/conformance/test-support/profile-evidence.ts",
+    "packages/conformance/test-support/profile-evidence.test.ts",
+    "apps/bdptest/test-support/read-update-artifact-execution.ts",
+    "apps/bdptest/src/transactional-matrix.test.ts"
+  ],
+  "fileCount": 4,
+  "newFiles": [
+    "packages/conformance/test-support/profile-evidence.ts",
+    "packages/conformance/test-support/profile-evidence.test.ts"
+  ],
+  "existingEdits": [
+    "apps/bdptest/test-support/read-update-artifact-execution.ts",
+    "apps/bdptest/src/transactional-matrix.test.ts"
+  ],
+  "importDecision": {
+    "appWriterAndTXTest": "../../../packages/conformance/test-support/profile-evidence.js",
+    "newUnitFile": "./profile-evidence.js",
+    "reason": "both app importers are source-only tests/test-support under dependency-boundary-rules83–101; TypeScript check root includes test support; no production package export/alias/barrel change necessary"
+  },
+  "privateModuleImports": [
+    "./profile-contract-plan.js",
+    "./read-update-artifact-set.js",
+    "../src/profile-contract-selection.js",
+    "../src/artifact-bundle.js",
+    "../src/selection.js",
+    "../src/canonical-json.js",
+    "../src/runner.js (types only for reports)"
+  ],
+  "unchanged": [
+    "packages/conformance/test-support/testing.ts",
+    "production package exports/tsconfig/alias files",
+    "all catalog/manifest/fixture/coverage sources",
+    "public Read verifier/cohort/constant/admission",
+    "runtime/store/policy/compiler/transport and launchers",
+    "RU matrix test/callbacks and TX product workload/control oracles"
+  ],
+  "newProductTests": 0,
+  "newPureDataUnitCases": 48,
+  "sourceAuthoringReleased": false
+}

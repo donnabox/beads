@@ -1,0 +1,285 @@
+[
+  {
+    "acceptedObservationSha256": "7a68a0e3de5c5d98fde2f944b9f72ee88ce2bcd7dfb3c0e0504a028c2fdb7ad7",
+    "immediateAudit": "audit-focused-source",
+    "passed": 21,
+    "pending": 89,
+    "rawLogSha256": "68d2cba69d0bda01fe2296a0c1d30158b3010d11c648178348bfc25d470573ec",
+    "reports": 21,
+    "resultsSha256": "7429ffe4e5fbb5a2d108d91b950f2be99a06a3769d3fa4c04c06f1a77aa24a7c",
+    "selected": [
+      "D3 source projection scope",
+      "D3 source receiving scope",
+      "D3 source minimum order scope",
+      "D3 source catch-up scope",
+      "D3 source abort scope",
+      "D3 source close-drain scope",
+      "D3 source projection descriptor",
+      "D3 source receiving descriptor",
+      "D3 source minimum order descriptor",
+      "D3 source catch-up descriptor",
+      "D3 source abort descriptor",
+      "D3 source close-drain descriptor",
+      "D3 source projection directory",
+      "D3 source receiving directory",
+      "D3 source minimum order directory",
+      "D3 source catch-up directory",
+      "D3 source abort directory",
+      "D3 source close-drain directory",
+      "D3 source raw receiving",
+      "D3 source target transport boundary",
+      "D3 source cold oracle counterfactual"
+    ],
+    "stage": "focused-source",
+    "total": 110
+  },
+  {
+    "acceptedObservationSha256": "d74af4ea318d45089e596c571c8557ba8115e04f878080a294e6c472d1249124",
+    "immediateAudit": "audit-legacy-changefeed-source",
+    "passed": 32,
+    "pending": 6,
+    "rawLogSha256": "1ec82d2a2635846defe24140904ea07ff576fa9104c2814a901be04574d09ad1",
+    "reports": 18,
+    "resultsSha256": "7e3ae9c9951b2080b14ba8277bc45a2fcfe5e9c51906b15814db505de05ce2d4",
+    "selected": [
+      "serves normalized whole groups and identical Scope facts for atomic replica reconstruction",
+      "replica refuses partial publication, gaps, conflicts and owned upsert/tombstone disagreement",
+      "keeps genesis checkpoint distinct from zero position and resumes after an empty caught-up page",
+      "uses bounded context-fenced checkpoints, never Event IDs/raw positions/future rows",
+      "fails closed on corrupt stored framing without renumbering or changing graph state",
+      "does not classify a missing previously committed cursor row as never issued or skip its gap",
+      "serves128 Events from32 selected owned Links as one group despite a two-item receipt page setting",
+      "captures feed body and serving context inside one fenced owner entry",
+      "serves representative large postimages whole without importing the Event page byte cap",
+      "refuses feed reads after uncertain commit fencing and recovers the committed group on reopen",
+      "bounds rendered Scope/next overhead with a long installed Scope and no long cursor",
+      "keeps start=now's original admission anchor through a minimum wait and drains on close",
+      "serves actual HTTP finite GET/HEAD, absolute navigation, native conditions and restart",
+      "decides actual HTTP minimum refusal before conditional shortcuts with final context",
+      "preserves current context on owner-observed changefeed parameter refusals over HTTP",
+      "waits for fresh finite changefeed opaque minimum without recapturing admission: unknown",
+      "waits for fresh finite changefeed opaque minimum without recapturing admission: pos-01",
+      "aborts fresh finite changefeed opaque waiting before close drains",
+      "preserves fresh finite changefeed admission before wait preflight: already-aborted",
+      "preserves fresh finite changefeed admission before wait preflight: invalid-policy",
+      "preserves fresh finite changefeed admission before wait preflight: throwing-clock",
+      "preserves fresh finite changefeed admission before wait preflight: nonfinite-clock",
+      "keeps direct and excluded changefeed minimum paths strict",
+      "serves finite start-now opaque minima before HTTP shortcuts",
+      "preserves changefeed cursor precedence under current-admission opaque minima",
+      "captures current changefeed admission once across owner entries: start-now-unknown",
+      "captures current changefeed admission once across owner entries: genesis-unknown",
+      "captures current changefeed admission once across owner entries: retained-unknown",
+      "captures current changefeed admission once across owner entries: retained-pos-01",
+      "drains current changefeed admission before owner close: start-now",
+      "drains current changefeed admission before owner close: retained",
+      "preserves current changefeed anchor capture before waiter preflight"
+    ],
+    "stage": "legacy-changefeed-source",
+    "total": 38
+  },
+  {
+    "acceptedObservationSha256": "908d27d501da39417096e63a05c80da51b7e175d3bd5930463601b49b5206b56",
+    "immediateAudit": "audit-legacy-installed-contracts-source",
+    "passed": 9,
+    "pending": 4,
+    "rawLogSha256": "43f083fb9513478ca238a7724285172b6ee327e3ac07cb26a3c9cf495ed54fbd",
+    "reports": 0,
+    "resultsSha256": "50f1e918d1eaea9fbdf1eca92160f41984559d92ab7c0bec078b2f4e09f380df",
+    "selected": [
+      "exposes detached frozen exact capture without changing compiler identity and reconstructs offline",
+      "uses inherited schema for writes, atomic late failures and staged sets, retaining replay after graph changes",
+      "retains capture through deletion, receipt expiry and startup cleanup and reads the same installation",
+      "refuses changed artifact identity, artifact limits and schema-free fallback on a compiled installation",
+      "refuses forged, cross-module, mismatched and nonlocal authorities before provisioning",
+      "installs a complete compiled owning descriptor bundle in its own store",
+      "compiles plain runtime artifacts in emitted module and serves same-owner Types, writes, sequence and restart",
+      "bounds runtime artifact input and requires explicit Scope before provisioning",
+      "rolls back earlier selected postimages when a later effective contract fails"
+    ],
+    "stage": "legacy-installed-contracts-source",
+    "total": 13
+  },
+  {
+    "acceptedObservationSha256": "a62c1e6ce35587d3cd36ef564dea7540e3ce17bbbe444f3f41f475cf93ef273f",
+    "immediateAudit": "audit-schema-confinement-source",
+    "passed": 1,
+    "pending": 1,
+    "rawLogSha256": "18b247d4ae9bbb50b9d71aeeeeeaa76f7f6c22086f45b233097ec42d6bac2ec4",
+    "reports": 0,
+    "resultsSha256": "fcc874bd2a2fa114ace79cc98585ce676467ac10bb4a1538c63ebe1a8c760019",
+    "selected": [
+      "confines observed Type and schema traversal to exact administrative identities"
+    ],
+    "stage": "schema-confinement-source",
+    "total": 2
+  },
+  {
+    "acceptedObservationSha256": "569ca5877d236c6e31fed3a7675638542d550f22f8e423779609f30e64d8dc45",
+    "immediateAudit": "audit-installed-01",
+    "passed": 1,
+    "pending": 10,
+    "rawLogSha256": "568414b020850560011cb365bd69dcb2bee015c60594aa3766418cd845d4aa0a",
+    "reports": 1,
+    "resultsSha256": "c3c860539b3238ab81d523bbec91a8d9cf31b69370cd75faf9a2e8af2fc92e93",
+    "selected": [
+      "private installed discovery owner regression successor"
+    ],
+    "stage": "installed-01",
+    "total": 11
+  },
+  {
+    "acceptedObservationSha256": "f97d04d96b6dd474b5e3c804737260eac29423fe8aac0cbdcd861acd0055abb9",
+    "immediateAudit": "audit-installed-02",
+    "passed": 1,
+    "pending": 10,
+    "rawLogSha256": "7f974a94ba77803ffba31cf3ee8b4492da4a24af1232b57dd73c5f30e0023d8e",
+    "reports": 1,
+    "resultsSha256": "01f8d03d4826c0ad7e18e24ebb8bb33990dda8ee86cb4df96faa90abbfdb91d4",
+    "selected": [
+      "private installed cold resource-alias"
+    ],
+    "stage": "installed-02",
+    "total": 11
+  },
+  {
+    "acceptedObservationSha256": "2306c35591aec45d1f2eb937847fbe7cbced9499c17cae348da731c99f88cc73",
+    "immediateAudit": "audit-installed-03",
+    "passed": 1,
+    "pending": 10,
+    "rawLogSha256": "0b78c744c1f58e7b025b3f23130bbc9adfbaa39e7585d6c8fafd5ee5c6e575d8",
+    "reports": 1,
+    "resultsSha256": "e524fe7bc339b47f0b1f09fec59e8e9526561ca5165f51d5c41197be0012476c",
+    "selected": [
+      "private installed cold transactional-carriers"
+    ],
+    "stage": "installed-03",
+    "total": 11
+  },
+  {
+    "acceptedObservationSha256": "e533e1587e00d064ccbd2c8728d89260ee99a5de9efd4444f4719df456beb1f8",
+    "immediateAudit": "audit-installed-04",
+    "passed": 1,
+    "pending": 10,
+    "rawLogSha256": "6bb09f55164ac4ecc400bf9359cdb725ff56ac2ece01094471d29de1e735dabe",
+    "reports": 1,
+    "resultsSha256": "35ae764cdb0a8388542c6e1d6e0a0119ae02ce0be916fcd06522f4cc92a6b8de",
+    "selected": [
+      "private installed raw receiving and minimum syntax"
+    ],
+    "stage": "installed-04",
+    "total": 11
+  },
+  {
+    "acceptedObservationSha256": "b29ad1452dcdab33e917e5b03490ccbd1267b15eac4d1e4fa80592a151b6a3a5",
+    "immediateAudit": "audit-installed-05",
+    "passed": 1,
+    "pending": 10,
+    "rawLogSha256": "cd39c8cc15ee58f886b3fada4966257e90ca58dcb594d5e3cbcc898d82d1ebad",
+    "reports": 1,
+    "resultsSha256": "e04429fcf7ee86f82e2be180513d11044137f8895344b758d70096a343efd08e",
+    "selected": [
+      "private installed discovery methods auth and transport"
+    ],
+    "stage": "installed-05",
+    "total": 11
+  },
+  {
+    "acceptedObservationSha256": "d1b6c88047e9d02b9585ca8484da8052e7cf7ada58d5867a29717b75cca17dcb",
+    "immediateAudit": "audit-installed-06",
+    "passed": 1,
+    "pending": 10,
+    "rawLogSha256": "83a41930571cb2f87913d48844b6cc594c5473951572d4aa3ed7187643d4b421",
+    "reports": 1,
+    "resultsSha256": "177e44c3abfc44221baf0bc5e0a03b4562a89aaa0eb7d39c98841704e550c229",
+    "selected": [
+      "private installed discovery minimum ordering scope"
+    ],
+    "stage": "installed-06",
+    "total": 11
+  },
+  {
+    "acceptedObservationSha256": "90f516f1fcba478dac4c1b0577fc3ff7f4f9205836f39c7a76306d44761c4bee",
+    "immediateAudit": "audit-installed-07",
+    "passed": 1,
+    "pending": 10,
+    "rawLogSha256": "09fbd0a999b033903b0cda7bab3a7abc04a2c88316a45eca3182c267c2203551",
+    "reports": 1,
+    "resultsSha256": "a073c097253f084b2fdf695255aa8a9969e653ba9f15c2945ae92817273666a6",
+    "selected": [
+      "private installed discovery close pending scope"
+    ],
+    "stage": "installed-07",
+    "total": 11
+  },
+  {
+    "acceptedObservationSha256": "2d93d7b34a549f895acf6a10104bda78fe3fba602a09ad0419d1fefd68ecb456",
+    "immediateAudit": "audit-installed-08",
+    "passed": 1,
+    "pending": 10,
+    "rawLogSha256": "68fdbabdf3f6ffac6946d99c6a92d2aca4b68d49d90fd7717a38488dc90a9130",
+    "reports": 1,
+    "resultsSha256": "758bbd538b060905caf2f8eb7027b8f64e8823b9bcdad47b64f170f88a633fa5",
+    "selected": [
+      "private installed discovery minimum ordering descriptor"
+    ],
+    "stage": "installed-08",
+    "total": 11
+  },
+  {
+    "acceptedObservationSha256": "e7dcabcabb41108105a33fccb0f7541459bc0006d74a13907a498a2b24da56dd",
+    "immediateAudit": "audit-installed-09",
+    "passed": 1,
+    "pending": 10,
+    "rawLogSha256": "fe598987061bc0ca0b51542991640dfa0fd3c8619e2257535147792a205109f0",
+    "reports": 1,
+    "resultsSha256": "f780119646910cffaa25e9d18ca30f59dc0fbdaf670c79623b951a0b1c976ab0",
+    "selected": [
+      "private installed discovery close pending descriptor"
+    ],
+    "stage": "installed-09",
+    "total": 11
+  },
+  {
+    "acceptedObservationSha256": "ee392fc232141b1e544a8d770b81fdb469bd8569b39b9bd0645bd5e79c0b3324",
+    "immediateAudit": "audit-installed-10",
+    "passed": 1,
+    "pending": 10,
+    "rawLogSha256": "af4716ce64e8c5d37db5a2fe2739656b6d9283dc533d3454d0be4646139e5c54",
+    "reports": 1,
+    "resultsSha256": "b0311c6117a05c6e5cfd3ccf13cb9bc9995ac83e29bb8056fe786ea14db4ca2f",
+    "selected": [
+      "private installed discovery minimum ordering directory"
+    ],
+    "stage": "installed-10",
+    "total": 11
+  },
+  {
+    "acceptedObservationSha256": "b2ac85bb6443ce020598280b23850df67d8dfce44fcf42506868a8330bf6fd96",
+    "immediateAudit": "audit-installed-11",
+    "passed": 1,
+    "pending": 10,
+    "rawLogSha256": "c5f5440d89982dff43d4c53caace12a4224065b2d99fe3a3322e92ea2bd547d4",
+    "reports": 1,
+    "resultsSha256": "eb6da2d4cb9919581da67779f6eecf1b732ef73c98cfb26c867da0585ef3a6f5",
+    "selected": [
+      "private installed discovery close pending directory"
+    ],
+    "stage": "installed-11",
+    "total": 11
+  },
+  {
+    "acceptedObservationSha256": "7e9b8f68908c2b15968b47845b086863f6f7012f3fe282123538ea6f7da036ea",
+    "immediateAudit": "audit-schema-installed-positive",
+    "passed": 1,
+    "pending": 1,
+    "rawLogSha256": "421852a12365bff1ab18966023de3ebb84c7957504c4e16e99ddfdea671b4e3d",
+    "reports": 1,
+    "resultsSha256": "4e85a3343aae7ed4fcbb7622f94e76861a8335d6077ab8d078915db0ee180eb2",
+    "selected": [
+      "traverses installed local schema bytes with current context within14requests"
+    ],
+    "stage": "schema-installed-positive",
+    "total": 2
+  }
+]

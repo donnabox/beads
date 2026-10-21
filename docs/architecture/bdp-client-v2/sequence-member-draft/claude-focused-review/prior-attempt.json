@@ -1,0 +1,32 @@
+{
+  "at": "2026-10-15T17:33:09.638926+00:00",
+  "exitPath": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/sequence-member-draft/claude-preparation/exit.json",
+  "exitSha256": "b0239a486ca505a58b20d468fa8911fcd5822ad37d1e8ff64425a09ca587b754",
+  "cleanupPath": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/sequence-member-draft/claude-preparation/cleanup.json",
+  "cleanupSha256": "8d072af900e0d6e8c2bccb800effe1a298e80447e5d3ffe1534487882e9f2939",
+  "actual": {
+    "exitCode": 143,
+    "timeout": true,
+    "forcedTermination": true,
+    "elapsedSeconds": 895.6053094582167,
+    "sourceAndPlanUnchanged": true,
+    "stdoutSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "stderrSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "cleanupSha256": "8d072af900e0d6e8c2bccb800effe1a298e80447e5d3ffe1534487882e9f2939",
+    "sourceAfterSha256": "5506e697cc7698cb7c77db234ce3ebe28e62e22c9a82f853c56aa1d325b9b49f"
+  },
+  "cleanup": {
+    "checkedAt": "2026-10-15T17:28:04.187679+00:00",
+    "pid": 98568,
+    "remainingGroup": [],
+    "sampledPids": [
+      98568
+    ],
+    "sampledPidsStillPresent": {},
+    "sampledTemporaryEntries": [],
+    "temporaryEntriesAfter": [],
+    "limitation": "One-second process-group/temp samples can miss short-lived or detached descendants. Temporary contents are retained without reading or printing their content; no product runtime/store is launched."
+  },
+  "independentPidGroupAbsentDuringPreparation": 98568,
+  "judgment": "Inconclusive timeout, empty output, not approval; no failure cause inferred. All original files preserved."
+}

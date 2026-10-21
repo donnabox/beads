@@ -1,0 +1,47 @@
+--- /Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-minimum-receiving-draft/final-build-preparation/run-build.py
++++ /Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-authorization-transition-draft/final-build-preparation/run-build.py
+@@ -1,16 +1,18 @@
+ """Closed single clean-candidate build. No setup, tests, pack/install or release.
+-Adaptation reuses the reviewed v3 process-group supervisor, not product code.
++Adaptation reuses the reviewed authorization v4 process-group supervisor, not product code.
+ """
+ import hashlib, importlib.util, json, re, subprocess, sys
+ from pathlib import Path
+ P=Path(__file__).resolve().parent
+ D=P.parent
+ L=D.parent
+-W=Path("/Users/dbox/repos/wt/vickie/vickie-minimum-receiving")
+-BASE=D/"execution-preparation-v3/run-source.py"
+-BASE_SHA='468e6f32d9f7c2aa70ff1e769ae313d61782b83ee43443baed268b91d0b2c2b3'
++W=Path("/Users/dbox/repos/wt/vickie/vickie-authorization-transition")
++BASE=Path("/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-authorization-transition-plan/source-validation-v4/run-source.py")
++BASE_SHA='9bcb323adbca9743126a94223cfd0c71dbdf5fd5f52dcf545e259cdd7423c5f4'
+ COMMANDS=P/"commands.json"
+-COMMANDS_SHA='004e61e0e390e52d509f41870994fc0d86f0c181ad9c1ad4250f72660eee807f'
++COMMANDS_SHA='d34d04ce5b49e0a92e3f557d67053a052f8794d41738f2a730b6c0f7dbf4e4eb'
++SOURCE_AUTHORITY=Path("/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-authorization-transition-draft/evidence-repair/source-binding.json")
++SOURCE_AUTHORITY_SHA='06ef3656296d8288cc5d00be9c988d4ccc7d817a67f2ea6ce6b31c42068ad873'
+ SESSION="2026-10-08T20:26:35Z-81e5"
+ E=P/"run"
+ def require(ok,message):
+@@ -51,7 +53,10 @@
+     require(g["supervisorSha256"]==sha(Path(__file__)) and g["baseSupervisorSha256"]==BASE_SHA and g["commandsSha256"]==COMMANDS_SHA,"Gate/preparation mismatch")
+     acceptance=document(g,"rootAcceptance");require(acceptance.get("accepted") is True,"Root acceptance absent")
+     b=document(g,"sourceBinding")
+-    require(len(b["files"])==11 and set(b["files"])==set(read(D/"receiving-test-repair/source-binding.json")["files"]),"Eleven owned paths required")
++    require(sha(SOURCE_AUTHORITY)==SOURCE_AUTHORITY_SHA,"Reviewed fifteen-source authority changed")
++    frozen=read(SOURCE_AUTHORITY)
++    require(len(b["files"])==15 and set(b["files"])==set(frozen["files"]),"Fifteen owned paths required")
++    require({n:v["sha256"] for n,v in b["files"].items()}=={n:v["sha256"] for n,v in frozen["files"].items()},"Final candidate differs from reviewed fifteen source bytes")
+     require(b["workspace"]==str(W),"Wrong source workspace")
+     for key in ("expectedHead","expectedTree","featureBase"):
+         require(re.fullmatch(r"[0-9a-f]{40}",g.get(key) or "") is not None,"Actual final identity pending: "+key)
+@@ -72,7 +77,7 @@
+     before=inventory(source,g);write(E/"build-inventory-before.json",before)
+     spec=importlib.util.spec_from_file_location("reviewed_clean_build_supervisor",BASE)
+     module=importlib.util.module_from_spec(spec);spec.loader.exec_module(module)
+-    module.E=E;module.COMMANDS=COMMANDS;module.COMMANDS_SHA=COMMANDS_SHA
++    module.E=E;module.COMMANDS=COMMANDS;module.COMMANDS_SHA='d34d04ce5b49e0a92e3f557d67053a052f8794d41738f2a730b6c0f7dbf4e4eb'
+     module.source_hashes=source_hashes
+     module.source_patch_hash=lambda:hashlib.sha256(git("diff","--binary","HEAD")).hexdigest()
+     def load(name):

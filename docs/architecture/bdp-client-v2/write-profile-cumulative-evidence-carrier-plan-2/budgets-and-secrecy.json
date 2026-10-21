@@ -1,0 +1,33 @@
+{
+  "existingBudgetsUnchanged": {
+    "ordinaryCatalogFixtureBytes": 1048576,
+    "privateRUManifestBytes": 4194304,
+    "TXManifestBytes": 1048576,
+    "jsonNodes": 100000,
+    "jsonDepth": 128,
+    "jsonContainerEntries": 10000,
+    "RUAndTXAffectedCallbackMs": 120000,
+    "RUAggregateTwoShardWorkMs": 90000,
+    "TXDefaultWorkMs": 90000,
+    "TXPrepareMs": 10000,
+    "TXCleanupMs": 10000,
+    "HTTPMs": 5000
+  },
+  "newPrivateCarrierBoundsRecommended": {
+    "summaryBytes": 1048576,
+    "eachExistingReportWrapperSourceBytes": 4194304,
+    "owners": 2,
+    "reportSources": 2,
+    "nodeDepthContainer": "reuse existing parseBoundedJson fixed100000/128/10000, no raise",
+    "classification": "new offline evidence input/output bounds only, not a change to manifest/fixture/wire/runtime/time budgets. Actual report may exceed and must fail preserving originals; never autoexpand."
+  },
+  "historicalSizing": "2c10 raw wrapper2936736 bytes/74378nodes/depth11; result compact671094 bytes. Merely evidence sizing, not a cce capacity proof. Current/future actual bytes must be measured before later execution release; no full-profile capacity claim.",
+  "unitDataBudget": "new48 bounded source unit cases under default5s each/maxWorkers2; zero product network/child launches. Small temporary directories only for writer collision/failure data tests; actual package execution separately released.",
+  "secrecy": {
+    "safeProjection": "new carrier omits all arbitrary free text/raw bodies/raw headers/exactRequest.headerLines/child stderr/exception strings/resolvers; known source IDs, fixed enums, booleans/counts and protected identity digests only",
+    "credentialGuard": "literal known tokens and URI/base64/base64url/hex/JSON-unicode forms plus bounded two-layer URI↔base64 compositions checked in strings AND keys before new serialization. No new encoded credential output path. Beyond these transformations no universal secrecy claim; absence of arbitrary data in projection is primary control. Any detected secret rejects entire new sidecar, retaining only fixed failed/withheld stage metadata.",
+    "commitments": "authentication/file/artifact digests may commit secret-bearing contents; required binding digests stay exact in private0600 evidence, are not printed as safe diagnostics or publicly activated. Never salt/normalize/change existing identities.",
+    "errors": "fixed ProfileEvidenceError.code only, no raw offending string/path/body/schema validator text/cause/secret. Existing original error aggregates retained separately in legacy paths without new echo."
+  },
+  "reviewAndRuntime": "All future helper/reviewer/source/runtime flags closed. No new outer supervisor or signal/deadline rules. Root must review any later actual execution packet; no borrowing startup45/10/60 or D4outer150/145/149 into this slice."
+}

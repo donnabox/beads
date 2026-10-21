@@ -1,0 +1,11 @@
+--- assignment-only-DATA-expectation
++++ actual-failed-B
+@@ -8,7 +8,7 @@
+ # These root-source observations must come from the actual ordinary-tool result,
+ # never from collector-provisional.json. Independently decoded raw tool receipt
+ # remains null/UNRETAINED if the tool did not supply a retained one.
+-assert ACTUAL_A_TOOL_ID != 'UNRESOLVED_ACTUAL_TOOL_ID'
++assert ACTUAL_A_TOOL_ID != 'exec_command/terminal-chunk:5ea19f'
+ origin_raw=(ROOT/'origin.json').read_bytes()
+ provisional_raw=(ROOT/'collector-provisional.json').read_bytes()
+ origin=json.loads(origin_raw); provisional=json.loads(provisional_raw)

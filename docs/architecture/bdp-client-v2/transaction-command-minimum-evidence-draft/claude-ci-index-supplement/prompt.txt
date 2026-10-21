@@ -1,0 +1,266 @@
+Review ONLY a one-line static-test correction after actual CI failed. Do not write or modify files. Output findings only in stdout. Tools disabled. Identify concrete blocking defects only; no broad refactor, follow-on work, or renewed whole-profile review. If none, state no blocking finding with short reasoning. Scope is intentionally small.
+
+PR126 candidate a912c23fbd80e70ead382a27e700a70123bf3f21/tree501791c6 added an inherited command-minimum evidence row first in canonical order. Its previous existing13 row objects are preserved exactly; receipt.pagination moves from index9 to10 without content changes. CI38702665285 had only this static assertion failure, expected10 tobe9 at transactional-cumulative.test.ts1011;9289passed/1failed/1skipped. Root changes only integer9→10, retaining exact positional assertion,18actions and all semantic checks. No parser/serving behavior, manifest/coverage, request, fixture, deadline or limit change. Actual prior installed220HTTP28children belongs to prior source, not falsely rerun on this repair. Root is separately running four static callbacks; do not assume their outcome or CI success. Native audit found sole stale index pin. The new row is legitimate, not an evasion of an old test.
+
+EXACT PATCH:
+diff --git a/packages/conformance/src/transactional-cumulative.test.ts b/packages/conformance/src/transactional-cumulative.test.ts
+index 7d75be5..cbab6c0 100644
+--- a/packages/conformance/src/transactional-cumulative.test.ts
++++ b/packages/conformance/src/transactional-cumulative.test.ts
+@@ -1008,7 +1008,7 @@ it("pins the one-page matched-plus-updated witness without advertised-limit or o
+   const row = manifest.scenarios.find(
+     (r: { id: string }) => r.id === "transactional.receipt.pagination",
+   );
+-  expect(manifest.scenarios.indexOf(row)).toBe(9);
++  expect(manifest.scenarios.indexOf(row)).toBe(10);
+   expect(row.actions).toHaveLength(18);
+   const later = row.actions.find((a: { id: string }) => a.id === "p-later-state");
+   expect(later.captures).toEqual([]); // HTTP capture is URL-only; no unimplemented array capture.
+
+CURRENT CANONICAL ORDER (parsed directly from unchanged manifest):
+[
+  "read-update.http.command-minimum-fields",
+  "transactional.batch.atomic-commit",
+  "transactional.batch.rollback",
+  "transactional.batch.deletion-safety",
+  "transactional.batch.no-op-entries",
+  "transactional.set.mutation",
+  "transactional.set.zero-match",
+  "transactional.set.cardinality",
+  "transactional.set.singleton-targets",
+  "transactional.receipt.readable",
+  "transactional.receipt.pagination",
+  "transactional.idempotency.conflict",
+  "transactional.idempotency.cross-carrier",
+  "transactional.idempotency.failed-retained"
+]
+
+FULL RELEVANT SOURCE packages/conformance/src/transactional-cumulative.test.ts:1-35
+1: import { createServer } from "node:http";
+2: import { createRawHttpExchangeExecutor } from "./http-executor.js";
+3: import { createJsonSchemaValidator } from "./schema-validator.js";
+4: import schema from "../../../schemas/bdp-v0.schema.json" with { type: "json" };
+5: import { createTransactionalObservations } from "./transactional-observation.js";
+6: import { createHash } from "node:crypto";
+7: import { readFileSync } from "node:fs";
+8: import { expect, it, vi } from "vitest";
+9: import {
+10:   createConformanceArtifactBundle,
+11:   createDevelopmentReadUpdateArtifactBundle,
+12:   createCumulativeReadUpdateArtifactBundle,
+13:   createCumulativeTransactionalArtifactBundle,
+14:   isCumulativeTransactionalArtifactBundle,
+15: } from "./artifact-bundle.js";
+16: import { canonicalJson } from "./canonical-json.js";
+17: import { selectApplicableScenariosForProfile } from "./selection.js";
+18: import { snapshotExactHttpMode } from "./http-executor.js";
+19: import { loadProfileContractSelection } from "./profile-contract-selection.js";
+20: import {
+21:   bindServedProfileConfiguration,
+22:   planProfileExecution,
+23: } from "../test-support/profile-contract-plan.js";
+24: import {
+25:   runConformanceMatrix,
+26:   runCumulativeTransactionalMatrix,
+27:   type ScenarioRunOptions,
+28: } from "./runner.js";
+29: 
+30: const read = (name: string) =>
+31:   readFileSync(new URL(`../test-support/transactional/${name}-v1.json`, import.meta.url));
+32: const source = (value: unknown) => ({ bytes: Buffer.from(JSON.stringify(value)) });
+33: const manifest = JSON.parse(read("manifest").toString());
+34: const atomicCommit = manifest.scenarios.find(
+35:   (row: { id: string }) => row.id === "transactional.batch.atomic-commit",
+
+FULL RELEVANT SOURCE packages/conformance/src/transactional-cumulative.test.ts:836-905
+836: it("preserves every original TX scenario and coverage object while adding one bounded partial cross-carrier row", () => {
+837:   assertCrossCarrierObservation(manifest);
+838:   for (const kind of ["retained-body", "presentation", "old-record"] as const) {
+839:     const weak = structuredClone(manifest);
+840:     const row = weak.scenarios.find(
+841:       (r: { id: string }) => r.id === "transactional.idempotency.cross-carrier",
+842:     )!;
+843:     if (kind === "retained-body")
+844:       row.actions[2].assertions = row.actions[2].assertions.filter(
+845:         (a: { id: string }) => a.id !== "retained-body",
+846:       );
+847:     if (kind === "presentation")
+848:       row.actions[6].assertions.find((a: { id: string }) => a.id === "present-name").equals =
+849:         "first";
+850:     if (kind === "old-record")
+851:       row.actions[6].assertions.find(
+852:         (a: { id: string }) => a.id === "created-record",
+853:       ).equalsBinding = "x-updated-record";
+854:     expect(() => assertCrossCarrierObservation(weak)).toThrow(kind);
+855:   }
+856:   for (const name of ["manifest", "coverage"] as const) {
+857:     const text = withoutMinimumRow(read(name).toString(), name);
+858:     const raw = objectSlices(text, name === "manifest" ? "scenarios" : "rows").get(
+859:       "transactional.idempotency.cross-carrier",
+860:     )!;
+861:     const reconstructed = text.replace(`    ${raw},\n`, "");
+862:     expect(reconstructed).not.toBe(text);
+863:     expect(createHash("sha256").update(reconstructed).digest("hex")).toBe(
+864:       name === "manifest"
+865:         ? "56318c56ee99bb981336e3f17560e7b079e88f2f85ef463874c1d556a066b2b2"
+866:         : "dafedd035ca20f684559c739ebf2e6155f8446ce8062c3fa60ff86967b259bbd",
+867:     );
+868:   }
+869:   for (const name of ["manifest", "coverage"] as const)
+870:     assertOriginalObjects(read(name).toString(), name);
+871:   const changed = read("manifest").toString().replace('"equals": 401', '"equals": 402');
+872:   expect(() => assertOriginalObjects(changed, "manifest")).toThrow(
+873:     "transactional.batch.atomic-commit",
+874:   );
+875:   expect(manifest.scenarios.map((r: { id: string }) => r.id)).toEqual([
+876:     "read-update.http.command-minimum-fields",
+877:     "transactional.batch.atomic-commit",
+878:     "transactional.batch.rollback",
+879:     "transactional.batch.deletion-safety",
+880:     "transactional.batch.no-op-entries",
+881:     "transactional.set.mutation",
+882:     "transactional.set.zero-match",
+883:     "transactional.set.cardinality",
+884:     "transactional.set.singleton-targets",
+885:     "transactional.receipt.readable",
+886:     "transactional.receipt.pagination",
+887:     "transactional.idempotency.conflict",
+888:     "transactional.idempotency.cross-carrier",
+889:     "transactional.idempotency.failed-retained",
+890:   ]);
+891:   const counts = new Map<string, number>();
+892:   for (const [id, expected] of [
+893:     ["transactional.set.cardinality", 16],
+894:     ["transactional.set.singleton-targets", 22],
+895:     ["transactional.set.mutation", 30],
+896:     ["transactional.set.zero-match", 17],
+897:     ["transactional.receipt.pagination", 18],
+898:     ["transactional.idempotency.conflict", 12],
+899:     ["transactional.idempotency.cross-carrier", 12],
+900:     ["transactional.batch.no-op-entries", 15],
+901:     ["transactional.batch.deletion-safety", 21],
+902:   ] as const) {
+903:     const rows = manifest.scenarios.filter((r: { id: string }) => r.id === id);
+904:     expect(rows, id).toHaveLength(1);
+905:     expect(rows[0].actions, id).toHaveLength(expected);
+
+FULL RELEVANT SOURCE packages/conformance/src/transactional-cumulative.test.ts:1007-1102
+1007: it("pins the one-page matched-plus-updated witness without advertised-limit or other-outcome credit", () => {
+1008:   const row = manifest.scenarios.find(
+1009:     (r: { id: string }) => r.id === "transactional.receipt.pagination",
+1010:   );
+1011:   expect(manifest.scenarios.indexOf(row)).toBe(10);
+1012:   expect(row.actions).toHaveLength(18);
+1013:   const later = row.actions.find((a: { id: string }) => a.id === "p-later-state");
+1014:   expect(later.captures).toEqual([]); // HTTP capture is URL-only; no unimplemented array capture.
+1015:   const final = row.actions.at(-1);
+1016:   expect(final.id).toBe("p-final");
+1017:   for (const [action, assertionId] of [
+1018:     [later, "ordered-state"],
+1019:     [final, "exact-later-items"],
+1020:   ] as const) {
+1021:     const tuple = action.assertions.find((a: { id: string }) => a.id === assertionId);
+1022:     expect(tuple).toMatchObject({ kind: "json-array-tuples", pointer: "/items", ordered: true });
+1023:     expect(tuple.projections).toEqual(
+1024:       ["/id", "/type", "/properties", "/metadata"].map((pointer) => ({ pointer })),
+1025:     );
+1026:     expect(tuple.equals).toEqual(
+1027:       Array.from({ length: 32 }, (_, index) => [
+1028:         `https://reference.invalid/acme/beads/p${String(index).padStart(2, "0")}`,
+1029:         "https://reference.invalid/acme/types/task",
+1030:         { title: index === 31 ? "later" : "changed" },
+1031:         { tag: "pagination" },
+1032:       ]),
+1033:     );
+1034:   }
+1035:   const update = row.actions.find((a: { id: string }) => a.id === "p-update");
+1036:   const page = row.actions.find((a: { id: string }) => a.id === "p-page-read");
+1037:   const assertion = (action: typeof update, id: string) =>
+1038:     action.assertions.find((a: { id: string }) => a.id === id);
+1039:   expect(assertion(update, "matched")).toMatchObject({
+1040:     kind: "json-pointer",
+1041:     pointer: "/results/0",
+1042:     exists: true,
+1043:     equals: { operationIndex: 0, outcome: "matched", count: 32 },
+1044:   });
+1045:   expect(assertion(update, "outcomes")).toMatchObject({
+1046:     kind: "json-array-tuples",
+1047:     pointer: "/results",
+1048:     ordered: true,
+1049:     projections: [{ pointer: "/operationIndex" }, { pointer: "/outcome" }],
+1050:     equals: [[0, "matched"], ...Array.from({ length: 31 }, () => [0, "updated"])],
+1051:   });
+1052:   expect(assertion(update, "no-extra")).toMatchObject({ pointer: "/results/32", exists: false });
+1053:   expect(assertion(update, "next-page")).toMatchObject({ pointer: "/next", exists: true });
+1054:   const root = row.actions.find((a: { id: string }) => a.id === "p-root-read");
+1055:   expect(assertion(root, "next-page")).toMatchObject({
+1056:     pointer: "/body/next",
+1057:     exists: true,
+1058:     equalsBinding: "p-page",
+1059:   });
+1060:   expect(page.assertions).toContainEqual(
+1061:     expect.objectContaining({ pointer: "/body/results/1", exists: false }),
+1062:   );
+1063:   for (const [pointer, equals] of [
+1064:     ["/body/results/0/resource/id", "https://reference.invalid/acme/beads/p31"],
+1065:     ["/body/results/0/resource/type", "https://reference.invalid/acme/types/task"],
+1066:     ["/body/results/0/resource/properties", { title: "changed" }],
+1067:     ["/body/results/0/resource/metadata", { tag: "pagination" }],
+1068:   ])
+1069:     expect(page.assertions).toContainEqual(
+1070:       expect.objectContaining({ pointer, exists: true, equals }),
+1071:     );
+1072:   // Semantic final state is literal; opaque current envelopes are not captured.
+1073:   // Exact recorded root/page whole-body retention remains a separate client oracle.
+1074:   expect(
+1075:     row.actions.filter((a: { operation?: string }) => a.operation === "transactional.reopen"),
+1076:   ).toHaveLength(1);
+1077:   const coverage = JSON.parse(read("coverage").toString()).rows.find(
+1078:     (r: { id: string }) => r.id === row.id,
+1079:   );
+1080:   expect(coverage.reason).toContain("Matched consumes one entry slot");
+1081:   expect(coverage.reason).toContain("only matched+updated");
+1082:   expect(coverage.reason).toContain("advertised page.maximumItems");
+1083:   for (const action of row.actions) {
+1084:     if (action.family !== "client" || action.operation !== "transactional.receipt-read") continue;
+1085:     for (const name of ["bdp-scope-epoch", "bdp-authorization-view", "bdp-scope-position"])
+1086:       expect(action.assertions).toContainEqual(
+1087:         expect.objectContaining({
+1088:           kind: "json-pointer",
+1089:           pointer: `/headers/${name}`,
+1090:           exists: true,
+1091:         }),
+1092:       );
+1093:     expect(action.assertions).toContainEqual(
+1094:       expect.objectContaining({ pointer: "/headers/cache-control", equals: "private, no-store" }),
+1095:     );
+1096:     for (const name of ["etag", "last-modified"])
+1097:       expect(action.assertions).toContainEqual(
+1098:         expect.objectContaining({ pointer: `/headers/${name}`, exists: false }),
+1099:       );
+1100:   }
+1101: });
+1102: 
+
+FULL RELEVANT SOURCE packages/conformance/src/transactional-cumulative.test.ts:2724-2742
+2724: it("pins the inherited command-minimum manifest facts, read-header absence and all thirteen prior objects", () => {
+2725:   assertMinimumObservation(manifest);
+2726:   expect(
+2727:     selectApplicableScenariosForProfile(selected.catalog, "transactional").map((r) => r.id),
+2728:   ).toContain(minimumId);
+2729:   expect(bundle().manifest.scenarios[0]?.id).toBe(minimumId);
+2730:   for (const name of ["manifest", "coverage"] as const) {
+2731:     const original = withoutMinimumRow(read(name).toString(), name);
+2732:     expect(createHash("sha256").update(original).digest("hex")).toBe(
+2733:       name === "manifest"
+2734:         ? "726fc623bbb115a0f39e0bb3aaa586ea37254522b254e55e555ea95587f14cb9"
+2735:         : "a3a15b5143c118b24965698ec10289821664c90e935820b51c8cf76c05bdb1df",
+2736:     );
+2737:     const before = objectSlices(original, name === "manifest" ? "scenarios" : "rows"),
+2738:       after = objectSlices(read(name).toString(), name === "manifest" ? "scenarios" : "rows");
+2739:     expect(before.size).toBe(13);
+2740:     for (const [id, raw] of before) expect(after.get(id), id).toBe(raw);
+2741:   }
+2742:   const empty = structuredClone(manifest);
+
+Preservation context: minimum callback removes only new first row and hashes reconstructed parent manifest726fc623bbb115a0f39e0bb3aaa586ea37254522b254e55e555ea95587f14cb9 and coveragea3a15b5143c118b24965698ec10289821664c90e935820b51c8cf76c05bdb1df; compares all13raw objects byte-for-byte. The older cross-carrier callback also pins complete14-row order as supplied, and preserves its older hash layers. This one-line repair neither relaxes those checks nor changes any row. No need to replace the intentional positional assertion with a lookup-only assertion. The callback was omitted from prior30 focused selection; future row-insertion validation will include this existing callback. Only concrete issue in this correction can block; missing fullsuite completion remains an external gate, not source-review defect.

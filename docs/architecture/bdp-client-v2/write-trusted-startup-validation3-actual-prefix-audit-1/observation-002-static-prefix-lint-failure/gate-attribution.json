@@ -1,0 +1,17 @@
+{
+  "firstFourStartedGateSha256": "b624d976d571ca78387f3a4d331fd481ceb1facb3631d2105bcd8fde97793866",
+  "equalsRelease2AfterAndTools2Before": true,
+  "firstFourStageCount": 4,
+  "nextFiveReleasedGateSha256": "029bef323fd5c96eeb612f578c6ddf08f46d9ad9d90d9cf4ab64add90827713e",
+  "nextFiveStageCount": 9,
+  "observation001SnapshotSha256": "9115324cf669ade604f522913f663b145ac60aee893c7e16b61199bafd53d03c",
+  "observation001SnapshotReleased": false,
+  "observation001SnapshotStageCount": 9,
+  "onlyDifferenceFromTools2After": [
+    "released"
+  ],
+  "currentClosedSnapshotSha256": "9115324cf669ade604f522913f663b145ac60aee893c7e16b61199bafd53d03c",
+  "allActualStartsMatchCorrectRelease": true,
+  "rootClosedGateReason": "Actual lint failure; root diagnosis preserved",
+  "messageErratum": "Worker message incorrectly called observation001 snapshot first4, then suggested exact equality with later released9 gate. Exact stored snapshot is closed9, differing solely in released:false from released9. Original artifacts unchanged."
+}

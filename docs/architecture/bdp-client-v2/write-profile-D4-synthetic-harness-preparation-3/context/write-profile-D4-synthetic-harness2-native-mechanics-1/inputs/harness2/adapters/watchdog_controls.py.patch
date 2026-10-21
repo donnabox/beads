@@ -1,0 +1,12 @@
+--- /Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-D4-synthetic-harness-preparation-1/watchdog_controls.py
++++ /Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-D4-synthetic-harness-preparation-2/watchdog_controls.py
+@@ -168,7 +168,8 @@
+   refused=refusal(lambda:G.load_gate('installed-owned-set'),'Root release absent')
+   return {'closedGate':refused,'model':[scenario(R,'blocked-preflight','start-missing'),scenario(R,'pending-term','interrupted')],'unresolved':['prospectiveWorkload missing-vs-present beyond a fully root-released original gate is not evaluated; current gate stays CLOSED']}
+  if case=='P02':return scenario(R,'preflight-equality','start-missing')
+- if case=='P03':return scenario(R,'late-start')
++ if case=='P03':
++  got=scenario(R,'late-start');calls=got['actualSubjectRefusalCalls'];assert calls and calls[0]['reason']in ['start-missing','start-late'];got['exactReachedPredicate']=calls[0]['reason'];got['scope']='model scheduling; a scheduled late marker is not evidence the late receipt branch was reached';return got
+  if case=='P04':return scenario(R,'late-end')
+  if case=='P05':return scenario(R,'delayed-artifacts','flush-incomplete')
+  if case=='P06':return {'model':scenario(R,'late-flush','flush-incomplete'),'unresolved':['mock blocked final work models absent verified receipt, not actual blocking hash or OS I/O']}

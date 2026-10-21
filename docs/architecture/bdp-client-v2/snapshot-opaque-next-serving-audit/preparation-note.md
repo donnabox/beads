@@ -1,0 +1,1 @@
+A first data-only report-construction command failed Python parsing before any statements or file writes (mismatched list bracket). The corrected construction writes the planned selection only. No product execution, source change or test retry occurred.

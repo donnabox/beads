@@ -1,0 +1,51 @@
+{
+  "externalRawFiles": 13,
+  "files": {
+    "actual-A.txt": {
+      "bytes": 15380,
+      "mode": "0o644",
+      "sha256": "d0d7baa68859b9bce239a2b0e4094d025fc69a9763f8b4cee3fd14f9a1269247"
+    },
+    "actual-B.txt": {
+      "bytes": 6688,
+      "mode": "0o644",
+      "sha256": "44c870e56e304a678e55ed4ba3e5cdc20324545526ba227ba157e222be49cb12"
+    },
+    "actual-C.txt": {
+      "bytes": 1767,
+      "mode": "0o644",
+      "sha256": "c25ec940cecb1adef930c51f064f30705b39ac973248eb47947cbeb408535e64"
+    },
+    "binding.json": {
+      "bytes": 20034,
+      "mode": "0o644",
+      "sha256": "8e5866b33f5990977eb319902f43946c8109c8cf58c4d4b352cee8d87ca29e20"
+    },
+    "dispatch-state.json": {
+      "bytes": 25561,
+      "mode": "0o644",
+      "sha256": "d03f600f637ec409b9d1a4c5372516b41d99a71cb7ada8621f057822f4fcc96b"
+    },
+    "issued-source-relations.json": {
+      "bytes": 1400,
+      "mode": "0o644",
+      "sha256": "4865b3625e243561137b019eef2e054944b1880444a2d5edb7769bb08376388b"
+    },
+    "report.md": {
+      "bytes": 770,
+      "mode": "0o644",
+      "sha256": "1c704e2eaec2b1bc225402056a3363e6f0596a722a502eb1859d006f3b3c955a"
+    },
+    "trusted-root-observations.json": {
+      "bytes": 2549,
+      "mode": "0o644",
+      "sha256": "c6523671d572d7924079ede5bbfda48ce56df110f4eb02f3f9fd9be765fda523"
+    }
+  },
+  "indexedFiles": 8,
+  "nextStageReleased": false,
+  "physicalFiles": 9,
+  "qualityPass": false,
+  "selfExcluded": "index.json",
+  "stage": "pack-protocol"
+}

@@ -1,0 +1,5 @@
+# Focused actual repair review — CLOSED
+
+Prompt 65069B, context 45288B. One900s bound direct safe-mode -p invocation, tools empty, no session persistence or model override; runner mechanically changes only W/E paths from reviewed same-key repair runner. It retains source/head before/after, process-group/temp samples, actual stdout/stderr/exit and cleanup. No launch/release files exist. Root must supply actual clean child9e5 head/tree, verify exact parent-to-child patch and all source/context pins, create final-launch-binding and matching root-release. Unknown candidate remains null.
+
+Full F1/F2 patch and affected lifecycle/transport/replay/report context supplied, plus actual omitted bindServedProfileConfiguration factory/helpers/exports and Read mock/config/launcher closure. Context inventory pins full source and excerpts. Unchanged full Resource/Event/schema oracles and broad runtime implementation are not repeated; original complete review remains independently retained. This is narrow repair review, not a replacement broad council or assertion of validation. All product files untouched by this preparation.

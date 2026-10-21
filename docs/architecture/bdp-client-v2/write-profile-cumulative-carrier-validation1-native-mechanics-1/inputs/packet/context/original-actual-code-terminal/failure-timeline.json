@@ -1,0 +1,70 @@
+{
+  "outerStarted": "2026-10-18T11:02:25.776274+00:00",
+  "reviewerStarted": "2026-10-18T11:02:27.063131+00:00",
+  "reviewerPid": 6236,
+  "wrapperPid": 6211,
+  "supervisorPid": 6203,
+  "innerResultRecordedElapsed": 1258.2567430832423,
+  "innerTimerOrigin": "Runner progress timer; distinct from outer timer, do not subtract directly",
+  "outerIdentityFailure": {
+    "elapsedSeconds": 1259.6374900410883,
+    "stage": "row_executable",
+    "row": {
+      "pid": 6236,
+      "ppid": 6211,
+      "pgid": 6236,
+      "state": "Ss",
+      "start": "Sun Oct 18 04:02:27 2026",
+      "comm": "(claude)"
+    },
+    "exceptionType": "RuntimeError"
+  },
+  "outerSignalEvents": [
+    {
+      "elapsedSeconds": 1259.7205106252804,
+      "kind": "signal",
+      "pgid": 6211,
+      "signal": 15
+    },
+    {
+      "elapsedSeconds": 1259.7205495410599,
+      "kind": "signal_pass",
+      "signal": 15,
+      "complete": true,
+      "signaledGroups": [
+        6211
+      ]
+    },
+    {
+      "elapsedSeconds": 1260.8183292909525,
+      "kind": "signal_pass",
+      "signal": 17,
+      "complete": true,
+      "signaledGroups": []
+    },
+    {
+      "elapsedSeconds": 1260.859445916023,
+      "kind": "signal_pass",
+      "signal": 9,
+      "complete": true,
+      "signaledGroups": []
+    },
+    {
+      "elapsedSeconds": 1260.9020532080904,
+      "kind": "outer_terminal",
+      "classification": "process_ownership_or_cleanup_failure",
+      "remainingOwned": []
+    }
+  ],
+  "outerElapsed": 1260.9016870833002,
+  "outerClassification": "process_ownership_or_cleanup_failure",
+  "wrapperExit": -15,
+  "finalRoleVerified": false,
+  "roleChecks": 82,
+  "allRecordedRoleChecksExit0": true,
+  "ownershipUnknown": true,
+  "cliExitCode": null,
+  "causeScope": "Frozen supervisor147 rejects literal Path(comm).name != claude on recorded live Ss (claude). Prior live authentication exists, but no claim of PID reuse or underlying OS cause. Later zombie samples cannot cause the earlier live row_executable rejection.",
+  "timeout": false,
+  "noRetry": true
+}

@@ -1,0 +1,13 @@
+# Native startup plan3 precision closure — accepted
+
+**Accepted with no additional findings** for exact plan11f2c34a4eec98d3613e5ebb8b313cd9dbebff81e660a39aa23d8fc61bf2f67f and contract4dec8c01117abfd80aecf8da81510ef40b8290550d6a647c3be483d3dfd50012. This closes the adopted F1–F8 corrections against root disposition9e19c044 and the completed actual startup PLAN audit607a1759; it is not another PLAN attempt or source release.
+
+F1 is resolved by the explicit inert public handle/types and private WeakMap registry/internal accessor: no captured credentials, runtime functions or private capture types escape through public values/declarations. The explicit footprint is exactly12files, adding only the private registry to the prior11. Loader+registry contribute8emitted files; package exports add only the narrow public data subpath. Forged/foreign handles fail private identity lookup.
+
+F2 truthfully keeps32MiB as the only predecode bound on trusted operator input and explicitly accepts decoder allocation/work risk. Lossless depth16/node100000 limits precede numeric materialization, JsonNumberLiteral is atomic, and diagnostics1/fixed sanitized formatter bounds retained numeric diagnostics without a second scanner. F3 consistently calls the public tuple preflightReadLimits and reserves all persisted receipt/snapshot/token/runtime/contract/Scope/Type/policy/recovery checks for the later owner-before-bind lifecycle.
+
+F4 adds bare/deep loader+registry refusals and the new public-entry Snapshot/json-equality scan, deriving stream compatibility from captured settings. F5 fixes field/rule-only path errors/non-echo while documenting resolved path diagnostics. F6 independently preserves outer/inner ceilings and isolates transport overflow without universal capacity claims. F7 preserves unique-token/duplicate-principal behavior and corrected ranges. F8 adds only the already-owned default-unset smoke assertion; unrelated progress documentation stays deferred.
+
+Independent static verification matched all20original indexed entries,10context origins and207preserved predecessor files. Genuine forward and inverse plan+contract deltas regenerate exactly. All679original source bytes still match clean a562/tree144f278c, and the complete pre-review mirror matched. Original plan3/binding/index/contexts remain unchanged; this closure is separately indexed.
+
+No new semantics, extra public API, human ruling or external PLAN gate is introduced. No implementation, tests/compiler/build/install/runtime/CLI reviewer/git/launch action occurred. Root may now make the already planned12file source-only release; later native+actual CODE review and exact-source validation remain required. This report itself releases neither source nor runtime/public activation.

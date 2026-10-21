@@ -1,0 +1,38 @@
+{
+  "bounds": {
+    "derivedWire": 163840,
+    "requestBody": 65536,
+    "requestHeader": 16384,
+    "responseBody": 131072,
+    "responseHeaderIncludingTerminator": 16384
+  },
+  "execution": "NOT RUN; existing finite request inventories remain prospective",
+  "installedBudget": "request5s/work45s/cleanup10s/callback60s/outer120s/TERM115; no retry",
+  "legacyExisting": {
+    "changefeed": 1,
+    "installedContracts": 12,
+    "schemaInstalled": 1,
+    "total": 14
+  },
+  "newInstalled": {
+    "callbacks": 11,
+    "cold": [
+      43,
+      28
+    ],
+    "completed": 187,
+    "exact": 186,
+    "expectedAborts": 3,
+    "raw": 4,
+    "scheduled": 190
+  },
+  "newSource": {
+    "callbacks": 21,
+    "cloneWire": 0,
+    "clones": 9,
+    "direct": 96,
+    "wire": 14
+  },
+  "realMinimumWaitsMs": 1000,
+  "sourceBudget": "default5s; D3work3s+cleanup1s inside4s; old raw2s; parent remaining wins"
+}

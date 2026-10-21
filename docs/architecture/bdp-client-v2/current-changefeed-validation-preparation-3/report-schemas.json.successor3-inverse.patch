@@ -1,0 +1,203 @@
+--- preparation-3/report-schemas.json
++++ preparation-2/report-schemas.json
+@@ -1,5 +1,5 @@
+ {
+-  "state": "AUTHORED correction successor1 schemas, candidate data for named validation preparation3 only; no callbacks executed",
++  "state": "AUTHORED prospective output schemas; no callbacks executed",
+   "common": {
+     "claimEligible": false,
+     "outcome": "actual failure aggregation",
+@@ -88,8 +88,8 @@
+         "ownerLifetimes",
+         "offlineDeletes"
+       ],
+-      "fileSha256": "834d13d108cb0577cfbf0f7d32b7072a62deeb9db70a5bd72e960d5cfc42b9e3",
+-      "reportLine": 2070,
++      "fileSha256": "98f593d738c9d9e3e81d35c01eae869082ca433ac382e80c574cbdac083ea8da",
++      "reportLine": 2019,
+       "sharedFields": [
+         "outcome",
+         "failureCount",
+@@ -119,8 +119,8 @@
+         "positiveGroup",
+         "cleanupState"
+       ],
+-      "fileSha256": "834d13d108cb0577cfbf0f7d32b7072a62deeb9db70a5bd72e960d5cfc42b9e3",
+-      "reportLine": 2364,
++      "fileSha256": "98f593d738c9d9e3e81d35c01eae869082ca433ac382e80c574cbdac083ea8da",
++      "reportLine": 2167,
+       "sharedFields": [
+         "outcome",
+         "failureCount",
+@@ -154,8 +154,8 @@
+         "closeSettled",
+         "cleanupState"
+       ],
+-      "fileSha256": "834d13d108cb0577cfbf0f7d32b7072a62deeb9db70a5bd72e960d5cfc42b9e3",
+-      "reportLine": 2496,
++      "fileSha256": "98f593d738c9d9e3e81d35c01eae869082ca433ac382e80c574cbdac083ea8da",
++      "reportLine": 2221,
+       "sharedFields": [
+         "outcome",
+         "failureCount",
+@@ -190,8 +190,8 @@
+         "failureCount"
+       ],
+       "note": "Separate per-row try/catch/finally; no synthesized aggregate calls/closures.",
+-      "fileSha256": "834d13d108cb0577cfbf0f7d32b7072a62deeb9db70a5bd72e960d5cfc42b9e3",
+-      "reportLine": 2622,
++      "fileSha256": "98f593d738c9d9e3e81d35c01eae869082ca433ac382e80c574cbdac083ea8da",
++      "reportLine": 2277,
+       "sharedFields": [
+         "outcome",
+         "failureCount",
+@@ -205,12 +205,10 @@
+         "attempted": 32,
+         "completed": 32,
+         "runtimeClosed": true,
+-        "directoryAbsent": true,
+-        "observedResponses": 32
++        "directoryAbsent": true
+       },
+       "fields": [
+         "attempted",
+-        "observedResponses",
+         "completed",
+         "records",
+         "stream",
+@@ -222,73 +220,14 @@
+         "directory",
+         "directoryAbsent"
+       ],
+-      "note": "Record ready snapshots before status assertion (also live), refresh same ordinal on actual finite/intentional-live drain, seed body chunks before seed assertions; seed socket census unavailable. Same32 dispatches/32 successes required and every original oracle/deadline retained.",
+-      "fileSha256": "87f360387a20635b58a73886806c6c4ad975d27257781aee086cfb87ca92fffd",
+-      "reportLine": 1553,
+-      "sharedFields": [
+-        "outcome",
+-        "failureCount",
+-        "claimEligible"
+-      ],
+-      "recordFields": [
+-        "ordinal",
+-        "method",
+-        "url",
+-        "status",
+-        "bodyOctets",
+-        "bodySha256",
+-        "wireSha256",
+-        "requestHeaders",
+-        "headers",
+-        "readyObserved",
+-        "drained",
+-        "transportClosedObserved",
+-        "drainKind",
+-        "availability",
+-        "bodyState"
+-      ],
+-      "successRecordRules": {
+-        "all32": {
+-          "readyObserved": true,
+-          "drained": true,
+-          "bodyState": "drained",
+-          "availability": {
+-            "status": true,
+-            "headers": true,
+-            "body": true
+-          }
+-        },
+-        "seed1and2": {
+-          "transportClosedObserved": null,
+-          "drainKind": "seed-body",
+-          "wireSha256": null,
+-          "availability.wire": false
+-        },
+-        "raw3to32": {
+-          "transportClosedObserved": true,
+-          "wireSha256": "actual nonempty wire SHA256",
+-          "availability.wire": true
+-        },
+-        "rawFiniteExcept30": {
+-          "drainKind": "finite-body"
+-        },
+-        "rawLive30": {
+-          "drainKind": "intentional-live"
+-        }
+-      },
+-      "failureRecordRules": {
+-        "sameOrdinalUpsert": true,
+-        "unavailableStatusBody": null,
+-        "bodyState": [
+-          "unavailable",
+-          "partial",
+-          "drained"
+-        ],
+-        "actualWireHashOnlyWhenObserved": true,
+-        "completed": "count records with actual drainedtrue, independently of status/assertion success",
+-        "observedResponses": "count readyObservedtrue",
+-        "cleanup": "refresh actual recorder snapshots after bounded cleanup even on failure; cleanup-close alone does not complete a partial live observation"
+-      }
++      "note": "Fetch seed wire hashes null; actual raw recorder wire hashes for GET/HEAD/stream. Source 3s work/4s absolute cleanup-inclusive bounds.",
++      "fileSha256": "8ed09116f709d47573b394fdf9d6cc6eb4c90db858bfce9afa89097d0f305d9d",
++      "reportLine": 1153,
++      "sharedFields": [
++        "outcome",
++        "failureCount",
++        "claimEligible"
++      ]
+     },
+     "E": {
+       "name": "private-installed-current-changefeed-minimum",
+@@ -299,8 +238,7 @@
+         "cleanClose": true,
+         "closed": true,
+         "pendingOperationsAtReport": 0,
+-        "directoryRemoved": true,
+-        "trackedDiffUnavailableReason": null
++        "directoryRemoved": true
+       },
+       "fields": [
+         "attempted",
+@@ -311,7 +249,6 @@
+         "workspaceDirty",
+         "witnessSourceSha256",
+         "trackedDiffSha256",
+-        "trackedDiffUnavailableReason",
+         "sourceLimitation",
+         "entryLiteral",
+         "entry",
+@@ -335,28 +272,13 @@
+         "deadlineFired",
+         "failureCategories"
+       ],
+-      "fileSha256": "813c7446abbd064fe14425b81ae4befad7a55f54e30a44172209b6a82950fa77",
+-      "reportLine": 1300,
+-      "sharedFields": [
+-        "outcome",
+-        "failureCount",
+-        "claimEligible"
+-      ],
+-      "metadataCapture": {
+-        "phase": "inside existing45s work, before launch",
+-        "timeoutMs": "integer1000..1500 or fail without subprocess",
+-        "maxBufferBytes": 8388608,
+-        "stderr": "ignored, never echoed",
+-        "onFailure": {
+-          "trackedDiffSha256": null,
+-          "trackedDiffUnavailableReason": "bounded tracked diff capture unavailable",
+-          "failureCategory": "tracked-diff-metadata",
+-          "aggregated": true,
+-          "launchAttempted": false
+-        },
+-        "finally": "cached metadata only; no subprocess",
+-        "success": "actual trackedDiffSha256 must match final bound raw .patch SHA"
+-      }
++      "fileSha256": "55f9b0eb8b5b8686c16bc7ee006d80578597d0c8c20b727f8987f1696b97ce66",
++      "reportLine": 1084,
++      "sharedFields": [
++        "outcome",
++        "failureCount",
++        "claimEligible"
++      ]
+     }
+   },
+   "selectionSha256": "d6662e99711769723ff3dfaf7a72c7017ad3d2e4e0a12dc1ec59304588619d8f",

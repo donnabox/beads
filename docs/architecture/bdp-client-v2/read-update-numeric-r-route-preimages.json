@@ -1,0 +1,424 @@
+{
+  "parent": {
+    "preimage": {
+      "scope": "https://reference.invalid/acme/",
+      "profile": "read-update",
+      "routes": [
+        {
+          "method": "GET",
+          "url": "https://reference.invalid/acme/operations/"
+        },
+        {
+          "method": "GET",
+          "url": "https://reference.invalid/acme/beads/att-subject"
+        },
+        {
+          "method": "GET",
+          "url": "https://reference.invalid/acme/beads/att-owner"
+        },
+        {
+          "method": "GET",
+          "url": "https://reference.invalid/acme/beads/att-target"
+        },
+        {
+          "method": "GET",
+          "url": "https://reference.invalid/acme/links/att-unowned"
+        },
+        {
+          "method": "GET",
+          "url": "https://reference.invalid/acme/links/att-owned"
+        },
+        {
+          "method": "GET",
+          "url": "https://reference.invalid/acme/beads/rc-source"
+        },
+        {
+          "method": "GET",
+          "url": "https://reference.invalid/acme/beads/rc-target"
+        },
+        {
+          "method": "GET",
+          "url": "https://reference.invalid/acme/links/rc-live"
+        },
+        {
+          "method": "GET",
+          "url": "https://reference.invalid/acme/beads/rc-rc-sequence-wrong-tail"
+        },
+        {
+          "method": "GET",
+          "url": "https://reference.invalid/acme/beads/rc-missing"
+        },
+        {
+          "method": "GET",
+          "url": "https://reference.invalid/acme/beads/num-subject"
+        },
+        {
+          "method": "GET",
+          "url": "https://reference.invalid/acme/beads/num-target"
+        },
+        {
+          "method": "GET",
+          "url": "https://reference.invalid/acme/links/num-link"
+        },
+        {
+          "method": "GET",
+          "url": "https://reference.invalid/acme/beads/nr-source"
+        },
+        {
+          "method": "GET",
+          "url": "https://reference.invalid/acme/beads/nr-target"
+        },
+        {
+          "method": "GET",
+          "url": "https://reference.invalid/acme/beads/nr-bead-integer"
+        },
+        {
+          "method": "GET",
+          "url": "https://reference.invalid/acme/beads/nr-bead-precision"
+        },
+        {
+          "method": "GET",
+          "url": "https://reference.invalid/acme/beads/nr-bead-overflow"
+        },
+        {
+          "method": "GET",
+          "url": "https://reference.invalid/acme/links/nr-link-integer"
+        },
+        {
+          "method": "GET",
+          "url": "https://reference.invalid/acme/links/nr-link-precision"
+        },
+        {
+          "method": "GET",
+          "url": "https://reference.invalid/acme/links/nr-link-overflow"
+        },
+        {
+          "method": "GET",
+          "url": "https://reference.invalid/acme/beads/nn-source"
+        },
+        {
+          "method": "GET",
+          "url": "https://reference.invalid/acme/beads/nn-target"
+        },
+        {
+          "method": "GET",
+          "url": "https://reference.invalid/acme/beads/nn-bead-properties"
+        },
+        {
+          "method": "GET",
+          "url": "https://reference.invalid/acme/beads/nn-bead-metadata"
+        },
+        {
+          "method": "GET",
+          "url": "https://reference.invalid/acme/links/nn-link-properties"
+        },
+        {
+          "method": "GET",
+          "url": "https://reference.invalid/acme/links/nn-link-metadata"
+        },
+        {
+          "method": "GET",
+          "url": "https://reference.invalid/acme/"
+        },
+        {
+          "method": "GET",
+          "url": "https://reference.invalid/acme/bdp.json"
+        },
+        {
+          "method": "GET",
+          "url": "https://reference.invalid/acme/types/task"
+        },
+        {
+          "method": "GET",
+          "url": "https://reference.invalid/acme/types/relates"
+        },
+        {
+          "method": "GET",
+          "url": "https://reference.invalid/acme/types/decision"
+        },
+        {
+          "method": "GET",
+          "url": "https://reference.invalid/acme/alias/rc-locator-live"
+        },
+        {
+          "method": "GET",
+          "url": "https://reference.invalid/acme/beads/?limit=100"
+        },
+        {
+          "method": "GET",
+          "url": "https://reference.invalid/acme/links/?limit=100"
+        },
+        {
+          "method": "GET",
+          "url": "https://reference.invalid/acme/alias/rc-locator-put-local"
+        },
+        {
+          "method": "GET",
+          "url": "https://reference.invalid/acme/alias/rc-locator-put-absolute"
+        },
+        {
+          "method": "GET",
+          "url": "https://reference.invalid/acme/alias/rc-locator-missing"
+        },
+        {
+          "method": "GET",
+          "url": "https://reference.invalid/acme/alias/rc-locator-missing-absolute"
+        },
+        {
+          "method": "POST",
+          "url": "https://reference.invalid/acme/operations/update-bead"
+        },
+        {
+          "method": "POST",
+          "url": "https://reference.invalid/acme/operations/update-link"
+        },
+        {
+          "method": "POST",
+          "url": "https://reference.invalid/acme/operations/create-bead"
+        },
+        {
+          "method": "POST",
+          "url": "https://reference.invalid/acme/operations/create-link"
+        },
+        {
+          "method": "POST",
+          "url": "https://reference.invalid/acme/operations/sequence"
+        },
+        {
+          "method": "POST",
+          "url": "https://reference.invalid/acme/operations/delete-bead"
+        },
+        {
+          "method": "POST",
+          "url": "https://reference.invalid/acme/operations/delete-link"
+        },
+        {
+          "method": "POST",
+          "url": "https://reference.invalid/acme/operations/put-alias"
+        },
+        {
+          "method": "POST",
+          "url": "https://reference.invalid/acme/operations/delete-alias"
+        }
+      ],
+      "maximumRequestHeaderBytes": 16384,
+      "maximumRequestBodyBytes": 131072
+    },
+    "digest": "24b63b02859bd1caa9bd477a8121a43e3255b4e3942773e29f514677b4f0cbab"
+  },
+  "candidate": {
+    "preimage": {
+      "scope": "https://reference.invalid/acme/",
+      "profile": "read-update",
+      "routes": [
+        {
+          "method": "GET",
+          "url": "https://reference.invalid/acme/operations/"
+        },
+        {
+          "method": "GET",
+          "url": "https://reference.invalid/acme/beads/att-subject"
+        },
+        {
+          "method": "GET",
+          "url": "https://reference.invalid/acme/beads/att-owner"
+        },
+        {
+          "method": "GET",
+          "url": "https://reference.invalid/acme/beads/att-target"
+        },
+        {
+          "method": "GET",
+          "url": "https://reference.invalid/acme/links/att-unowned"
+        },
+        {
+          "method": "GET",
+          "url": "https://reference.invalid/acme/links/att-owned"
+        },
+        {
+          "method": "GET",
+          "url": "https://reference.invalid/acme/beads/rc-source"
+        },
+        {
+          "method": "GET",
+          "url": "https://reference.invalid/acme/beads/rc-target"
+        },
+        {
+          "method": "GET",
+          "url": "https://reference.invalid/acme/links/rc-live"
+        },
+        {
+          "method": "GET",
+          "url": "https://reference.invalid/acme/beads/rc-rc-sequence-wrong-tail"
+        },
+        {
+          "method": "GET",
+          "url": "https://reference.invalid/acme/beads/rc-missing"
+        },
+        {
+          "method": "GET",
+          "url": "https://reference.invalid/acme/beads/num-subject"
+        },
+        {
+          "method": "GET",
+          "url": "https://reference.invalid/acme/beads/num-target"
+        },
+        {
+          "method": "GET",
+          "url": "https://reference.invalid/acme/links/num-link"
+        },
+        {
+          "method": "GET",
+          "url": "https://reference.invalid/acme/beads/nr-source"
+        },
+        {
+          "method": "GET",
+          "url": "https://reference.invalid/acme/beads/nr-target"
+        },
+        {
+          "method": "GET",
+          "url": "https://reference.invalid/acme/beads/nr-bead-integer"
+        },
+        {
+          "method": "GET",
+          "url": "https://reference.invalid/acme/beads/nr-bead-precision"
+        },
+        {
+          "method": "GET",
+          "url": "https://reference.invalid/acme/beads/nr-bead-overflow"
+        },
+        {
+          "method": "GET",
+          "url": "https://reference.invalid/acme/links/nr-link-integer"
+        },
+        {
+          "method": "GET",
+          "url": "https://reference.invalid/acme/links/nr-link-precision"
+        },
+        {
+          "method": "GET",
+          "url": "https://reference.invalid/acme/links/nr-link-overflow"
+        },
+        {
+          "method": "GET",
+          "url": "https://reference.invalid/acme/beads/nn-source"
+        },
+        {
+          "method": "GET",
+          "url": "https://reference.invalid/acme/beads/nn-target"
+        },
+        {
+          "method": "GET",
+          "url": "https://reference.invalid/acme/beads/nn-bead-properties"
+        },
+        {
+          "method": "GET",
+          "url": "https://reference.invalid/acme/beads/nn-bead-metadata"
+        },
+        {
+          "method": "GET",
+          "url": "https://reference.invalid/acme/links/nn-link-properties"
+        },
+        {
+          "method": "GET",
+          "url": "https://reference.invalid/acme/links/nn-link-metadata"
+        },
+        {
+          "method": "GET",
+          "url": "https://reference.invalid/acme/"
+        },
+        {
+          "method": "GET",
+          "url": "https://reference.invalid/acme/bdp.json"
+        },
+        {
+          "method": "GET",
+          "url": "https://reference.invalid/acme/types/task"
+        },
+        {
+          "method": "GET",
+          "url": "https://reference.invalid/acme/types/relates"
+        },
+        {
+          "method": "GET",
+          "url": "https://reference.invalid/acme/types/decision"
+        },
+        {
+          "method": "GET",
+          "url": "https://reference.invalid/acme/alias/rc-locator-live"
+        },
+        {
+          "method": "GET",
+          "url": "https://reference.invalid/acme/beads/?limit=100"
+        },
+        {
+          "method": "GET",
+          "url": "https://reference.invalid/acme/links/?limit=100"
+        },
+        {
+          "method": "GET",
+          "url": "https://reference.invalid/acme/alias/rc-locator-put-local"
+        },
+        {
+          "method": "GET",
+          "url": "https://reference.invalid/acme/alias/rc-locator-put-absolute"
+        },
+        {
+          "method": "GET",
+          "url": "https://reference.invalid/acme/alias/rc-locator-missing"
+        },
+        {
+          "method": "GET",
+          "url": "https://reference.invalid/acme/alias/rc-locator-missing-absolute"
+        },
+        {
+          "method": "POST",
+          "url": "https://reference.invalid/acme/operations/update-bead"
+        },
+        {
+          "method": "POST",
+          "url": "https://reference.invalid/acme/operations/update-link"
+        },
+        {
+          "method": "POST",
+          "url": "https://reference.invalid/acme/operations/create-bead"
+        },
+        {
+          "method": "POST",
+          "url": "https://reference.invalid/acme/operations/create-link"
+        },
+        {
+          "method": "GET",
+          "url": "https://reference.invalid/acme/beads/nr-schema"
+        },
+        {
+          "method": "GET",
+          "url": "https://reference.invalid/acme/links/nr-schema"
+        },
+        {
+          "method": "POST",
+          "url": "https://reference.invalid/acme/operations/sequence"
+        },
+        {
+          "method": "POST",
+          "url": "https://reference.invalid/acme/operations/delete-bead"
+        },
+        {
+          "method": "POST",
+          "url": "https://reference.invalid/acme/operations/delete-link"
+        },
+        {
+          "method": "POST",
+          "url": "https://reference.invalid/acme/operations/put-alias"
+        },
+        {
+          "method": "POST",
+          "url": "https://reference.invalid/acme/operations/delete-alias"
+        }
+      ],
+      "maximumRequestHeaderBytes": 16384,
+      "maximumRequestBodyBytes": 131072
+    },
+    "digest": "272c31e6bdf474d3889042e3bc636f4f144b58ea1e87a8f8176c772a1a026110"
+  }
+}

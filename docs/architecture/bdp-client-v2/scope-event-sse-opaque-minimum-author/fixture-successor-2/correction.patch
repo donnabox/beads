@@ -1,0 +1,11 @@
+--- a/packages/server/src/transaction-event-sse.test.ts
++++ b/packages/server/src/transaction-event-sse.test.ts
+@@ -1360,7 +1360,7 @@
+         body: JSON.stringify({ operations: [create("b")] }),
+         key: "scope-sse-advance",
+         authorization: { kind: "authorized", principal: "p" },
+-        receiving: { acceptsJson: true, maximumOperations: 100 },
++        receiving: { acceptsJson: true, maximumOperations: 1 },
+       });
+       expect(result).toMatchObject({
+         kind: "receipt",

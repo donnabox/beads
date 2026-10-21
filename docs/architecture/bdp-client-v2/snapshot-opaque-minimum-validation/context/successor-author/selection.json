@@ -1,0 +1,347 @@
+{
+  "state": "Authored frozen source selection; no execution results",
+  "sourceBase": "0f215c05678f507dd8a39ee08e288f0901710135",
+  "ownedFiles": [
+    "packages/server/src/transaction-http.ts",
+    "packages/server/src/transaction-service.ts",
+    "packages/server/src/transaction-store.ts",
+    "packages/server/src/transaction-snapshot.test.ts",
+    "packages/server/src/transaction-service.test.ts",
+    "packages/server/src/transaction-http.test.ts",
+    "apps/bdptest/src/transactional-snapshot-installed.test.ts"
+  ],
+  "existingSource": [
+    {
+      "file": "packages/server/src/transaction-snapshot.test.ts",
+      "name": "checks each fresh Snapshot minimum before any handle, record, page or expiry work",
+      "anchoredNamePattern": "^checks\\ each\\ fresh\\ Snapshot\\ minimum\\ before\\ any\\ handle,\\ record,\\ page\\ or\\ expiry\\ work$",
+      "stores": 1,
+      "ownerSnapshotCalls": 35,
+      "seedTransactions": 1,
+      "http": 0,
+      "amendment": "two unknown TypeError oracles become Unproved with actual context"
+    },
+    {
+      "file": "packages/server/src/transaction-snapshot.test.ts",
+      "name": "does not expire retained Snapshot details on an ineligible fresh attempt",
+      "anchoredNamePattern": "^does\\ not\\ expire\\ retained\\ Snapshot\\ details\\ on\\ an\\ ineligible\\ fresh\\ attempt$",
+      "stores": 1,
+      "ownerSnapshotCalls": 3,
+      "seedTransactions": 1,
+      "http": 0
+    },
+    {
+      "file": "packages/server/src/transaction-service.test.ts",
+      "name": "fresh Snapshot minimum service freezes create controls and retries after a real independent commit",
+      "anchoredNamePattern": "^fresh\\ Snapshot\\ minimum\\ service\\ freezes\\ create\\ controls\\ and\\ retries\\ after\\ a\\ real\\ independent\\ commit$",
+      "stores": 1,
+      "seedTransactions": 1,
+      "http": 0
+    },
+    {
+      "file": "packages/server/src/transaction-service.test.ts",
+      "name": "fresh Snapshot minimum service keeps create timeout and pre-abort distinct from owner work",
+      "anchoredNamePattern": "^fresh\\ Snapshot\\ minimum\\ service\\ keeps\\ create\\ timeout\\ and\\ pre\\-abort\\ distinct\\ from\\ owner\\ work$",
+      "stores": 1,
+      "http": 0
+    },
+    {
+      "file": "packages/server/src/transaction-service.test.ts",
+      "name": "fresh Snapshot minimum service freezes preflight controls and retries after a real independent commit",
+      "anchoredNamePattern": "^fresh\\ Snapshot\\ minimum\\ service\\ freezes\\ preflight\\ controls\\ and\\ retries\\ after\\ a\\ real\\ independent\\ commit$",
+      "stores": 1,
+      "seedTransactions": 1,
+      "http": 0
+    },
+    {
+      "file": "packages/server/src/transaction-service.test.ts",
+      "name": "fresh Snapshot minimum service keeps preflight timeout and pre-abort distinct from owner work",
+      "anchoredNamePattern": "^fresh\\ Snapshot\\ minimum\\ service\\ keeps\\ preflight\\ timeout\\ and\\ pre\\-abort\\ distinct\\ from\\ owner\\ work$",
+      "stores": 1,
+      "http": 0
+    },
+    {
+      "file": "packages/server/src/transaction-service.test.ts",
+      "name": "fresh Snapshot minimum service uses one service call for each fresh HTTP branch, with terminal preflight",
+      "anchoredNamePattern": "^fresh\\ Snapshot\\ minimum\\ service\\ uses\\ one\\ service\\ call\\ for\\ each\\ fresh\\ HTTP\\ branch,\\ with\\ terminal\\ preflight$",
+      "stores": 1,
+      "handlerRequests": 15,
+      "handlerRequestsBefore": 10,
+      "http": 0,
+      "amendment": "add unknown to existing two-value minimum loop; same five branches and one service call each"
+    },
+    {
+      "file": "packages/server/src/transaction-service.test.ts",
+      "name": "drains admitted finite Snapshot observation and refuses new work while closing",
+      "anchoredNamePattern": "^drains\\ admitted\\ finite\\ Snapshot\\ observation\\ and\\ refuses\\ new\\ work\\ while\\ closing$",
+      "stores": 1,
+      "http": 0
+    },
+    {
+      "file": "packages/server/src/transaction-http.test.ts",
+      "name": "serves complete fresh Snapshot minima with exact timeout, foreign and conditional context",
+      "anchoredNamePattern": "^serves\\ complete\\ fresh\\ Snapshot\\ minima\\ with\\ exact\\ timeout,\\ foreign\\ and\\ conditional\\ context$",
+      "stores": 1,
+      "http": 18,
+      "listeners": 1
+    }
+  ],
+  "newSource": [
+    {
+      "file": "packages/server/src/transaction-snapshot.test.ts",
+      "name": "gates fresh Snapshot opaque minima before allocation and expiry",
+      "anchoredNamePattern": "^gates\\ fresh\\ Snapshot\\ opaque\\ minima\\ before\\ allocation\\ and\\ expiry$",
+      "label": "A",
+      "stores": 1,
+      "ownerSnapshotCalls": 14,
+      "preEntryExcludedCalls": 4,
+      "seedTransactions": 1,
+      "http": 0,
+      "matchedNearMissPosition": "pos-01",
+      "nearMissOwnerCalls": 1,
+      "offlineInspections": 2,
+      "ownerOpensIncludingOfflineReopens": 3,
+      "baselineExpectedCounts": {
+        "snapshots": 1,
+        "snapshot_records": 1,
+        "snapshot_pages": 2
+      },
+      "synchronousOnly": true
+    },
+    {
+      "file": "packages/server/src/transaction-service.test.ts",
+      "name": "captures fresh Snapshot create opaque controls across independent commits",
+      "anchoredNamePattern": "^captures\\ fresh\\ Snapshot\\ create\\ opaque\\ controls\\ across\\ independent\\ commits$",
+      "label": "B",
+      "stores": 1,
+      "serviceSnapshotCalls": 2,
+      "delegatedOwnerCalls": 4,
+      "waits": 2,
+      "readProbes": 2,
+      "seedTransactions": 1,
+      "http": 0
+    },
+    {
+      "file": "packages/server/src/transaction-service.test.ts",
+      "name": "cancels and drains fresh Snapshot create opaque waits",
+      "anchoredNamePattern": "^cancels\\ and\\ drains\\ fresh\\ Snapshot\\ create\\ opaque\\ waits$",
+      "label": "C",
+      "stores": 1,
+      "serviceSnapshotCalls": 4,
+      "delegatedOwnerCallsBeforePostCloseProbe": 5,
+      "postCloseOwnerRefusals": 1,
+      "waits": 3,
+      "readProbes": 3,
+      "http": 0,
+      "postCloseProbeTarget": "real f.owner.observeSnapshot, not counting delegate"
+    },
+    {
+      "file": "packages/server/src/transaction-service.test.ts",
+      "name": "captures fresh Snapshot preflight opaque controls across independent commits",
+      "anchoredNamePattern": "^captures\\ fresh\\ Snapshot\\ preflight\\ opaque\\ controls\\ across\\ independent\\ commits$",
+      "label": "B",
+      "stores": 1,
+      "serviceSnapshotCalls": 2,
+      "delegatedOwnerCalls": 4,
+      "waits": 2,
+      "readProbes": 2,
+      "seedTransactions": 1,
+      "http": 0
+    },
+    {
+      "file": "packages/server/src/transaction-service.test.ts",
+      "name": "cancels and drains fresh Snapshot preflight opaque waits",
+      "anchoredNamePattern": "^cancels\\ and\\ drains\\ fresh\\ Snapshot\\ preflight\\ opaque\\ waits$",
+      "label": "C",
+      "stores": 1,
+      "serviceSnapshotCalls": 4,
+      "delegatedOwnerCallsBeforePostCloseProbe": 5,
+      "postCloseOwnerRefusals": 1,
+      "waits": 3,
+      "readProbes": 3,
+      "http": 0,
+      "postCloseProbeTarget": "real f.owner.observeSnapshot, not counting delegate"
+    },
+    {
+      "file": "packages/server/src/transaction-http.test.ts",
+      "name": "serves fresh Snapshot opaque minima with terminal preflight and retained fences",
+      "anchoredNamePattern": "^serves\\ fresh\\ Snapshot\\ opaque\\ minima\\ with\\ terminal\\ preflight\\ and\\ retained\\ fences$",
+      "label": "D",
+      "stores": 1,
+      "http": 27,
+      "listeners": 1,
+      "seedTransactions": 1,
+      "waitRequests": 8,
+      "statusCounts": {
+        "200": 5,
+        "503": 8,
+        "500": 8,
+        "400": 4,
+        "401": 2
+      }
+    },
+    {
+      "file": "packages/server/src/transaction-service.test.ts",
+      "name": "preserves fresh Snapshot capture and refusal order: malformed-aborted",
+      "anchoredNamePattern": "^preserves\\ fresh\\ Snapshot\\ capture\\ and\\ refusal\\ order:\\ malformed\\-aborted$",
+      "label": "F",
+      "stores": 1,
+      "serviceSnapshotCalls": 2,
+      "setupDelegatedOwnerCalls": 1,
+      "checkedCallOwnerAttempts": 0,
+      "checkedCallWaits": 0,
+      "checkedCallClockCalls": 0,
+      "http": 0
+    },
+    {
+      "file": "packages/server/src/transaction-service.test.ts",
+      "name": "preserves fresh Snapshot capture and refusal order: malformed-invalid-kind",
+      "anchoredNamePattern": "^preserves\\ fresh\\ Snapshot\\ capture\\ and\\ refusal\\ order:\\ malformed\\-invalid\\-kind$",
+      "label": "F",
+      "stores": 1,
+      "serviceSnapshotCalls": 2,
+      "setupDelegatedOwnerCalls": 1,
+      "checkedCallOwnerAttempts": 0,
+      "checkedCallWaits": 0,
+      "checkedCallClockCalls": 0,
+      "http": 0
+    },
+    {
+      "file": "packages/server/src/transaction-service.test.ts",
+      "name": "preserves fresh Snapshot capture and refusal order: retained-unknown",
+      "anchoredNamePattern": "^preserves\\ fresh\\ Snapshot\\ capture\\ and\\ refusal\\ order:\\ retained\\-unknown$",
+      "label": "F",
+      "stores": 1,
+      "serviceSnapshotCalls": 2,
+      "setupDelegatedOwnerCalls": 1,
+      "checkedCallOwnerAttempts": 0,
+      "checkedCallWaits": 0,
+      "checkedCallClockCalls": 0,
+      "http": 0
+    },
+    {
+      "file": "packages/server/src/transaction-service.test.ts",
+      "name": "preserves fresh Snapshot capture and refusal order: retained-known",
+      "anchoredNamePattern": "^preserves\\ fresh\\ Snapshot\\ capture\\ and\\ refusal\\ order:\\ retained\\-known$",
+      "label": "F",
+      "stores": 1,
+      "serviceSnapshotCalls": 2,
+      "setupDelegatedOwnerCalls": 1,
+      "checkedCallOwnerAttempts": 0,
+      "checkedCallWaits": 0,
+      "checkedCallClockCalls": 0,
+      "http": 0
+    },
+    {
+      "file": "packages/server/src/transaction-service.test.ts",
+      "name": "preserves fresh Snapshot capture and refusal order: closed-malformed",
+      "anchoredNamePattern": "^preserves\\ fresh\\ Snapshot\\ capture\\ and\\ refusal\\ order:\\ closed\\-malformed$",
+      "label": "F",
+      "stores": 1,
+      "serviceSnapshotCalls": 2,
+      "setupDelegatedOwnerCalls": 1,
+      "checkedCallOwnerAttempts": 0,
+      "checkedCallWaits": 0,
+      "checkedCallClockCalls": 0,
+      "http": 0
+    },
+    {
+      "file": "packages/server/src/transaction-service.test.ts",
+      "name": "preserves fresh Snapshot capture and refusal order: closed-unknown-fresh",
+      "anchoredNamePattern": "^preserves\\ fresh\\ Snapshot\\ capture\\ and\\ refusal\\ order:\\ closed\\-unknown\\-fresh$",
+      "label": "F",
+      "stores": 1,
+      "serviceSnapshotCalls": 2,
+      "setupDelegatedOwnerCalls": 1,
+      "checkedCallOwnerAttempts": 0,
+      "checkedCallWaits": 0,
+      "checkedCallClockCalls": 0,
+      "http": 0
+    },
+    {
+      "file": "packages/server/src/transaction-service.test.ts",
+      "name": "preserves fresh Snapshot capture and refusal order: unknown-preaborted",
+      "anchoredNamePattern": "^preserves\\ fresh\\ Snapshot\\ capture\\ and\\ refusal\\ order:\\ unknown\\-preaborted$",
+      "label": "F",
+      "stores": 1,
+      "serviceSnapshotCalls": 2,
+      "setupDelegatedOwnerCalls": 1,
+      "checkedCallOwnerAttempts": 0,
+      "checkedCallWaits": 0,
+      "checkedCallClockCalls": 1,
+      "http": 0
+    }
+  ],
+  "installed": [
+    {
+      "file": "apps/bdptest/src/transactional-snapshot-installed.test.ts",
+      "name": "observes fresh Snapshot minima with exact current context and retained gaps over packed bytes",
+      "anchoredNamePattern": "^observes\\ fresh\\ Snapshot\\ minima\\ with\\ exact\\ current\\ context\\ and\\ retained\\ gaps\\ over\\ packed\\ bytes$",
+      "stores": 1,
+      "sequentialChildren": 2,
+      "http": 31,
+      "amendment": "exchange19 unknown fresh minimum 500 becomes exact contextual503; all other30 exchanges preserved"
+    },
+    {
+      "file": "apps/bdptest/src/transactional-snapshot-installed.test.ts",
+      "name": "observes installed fresh Snapshot opaque minimum timeout",
+      "anchoredNamePattern": "^observes\\ installed\\ fresh\\ Snapshot\\ opaque\\ minimum\\ timeout$",
+      "label": "E",
+      "stores": 1,
+      "sequentialChildren": 1,
+      "http": 3,
+      "seedTransactions": 1,
+      "seedOperations": 1,
+      "statusSequence": [
+        200,
+        503,
+        503
+      ],
+      "executorInstances": 1,
+      "dispatchCounterMaximum": 3,
+      "dispatchCounterFinal": 3,
+      "mutationReceiptValidator": "callback-local existing snapshotAjv compile",
+      "lifecycleReuse": [
+        "withDeadline",
+        "finishObservation"
+      ]
+    }
+  ],
+  "totals": {
+    "existingSourceCallbacks": 9,
+    "newSourceCallbacks": 13,
+    "sourceCallbacks": 22,
+    "sourceStores": 22,
+    "sourceListeners": 2,
+    "sourceEmittedHttp": 45,
+    "sourceInProcessHandlerRequests": 15,
+    "installedCallbacks": 2,
+    "installedStores": 2,
+    "installedSequentialChildren": 3,
+    "installedHttp": 34,
+    "allStores": 24,
+    "allNetworkHttp": 79,
+    "allRequestsIncludingHandler": 94
+  },
+  "bounds": {
+    "sourceCallbackMs": 5000,
+    "deterministicSourceMinimumBudgetMs": 2,
+    "installedRequestMs": 5000,
+    "installedOwnedMs": 45000,
+    "installedCallbackMs": 60000,
+    "stageSupervisorMs": 120000,
+    "reviewSeconds": 3600,
+    "reviewTermAfterSeconds": 3595
+  },
+  "notes": [
+    "Existing timing-dependent callbacks retain original clocks; no invented attempt counts.",
+    "Source handler requests are explicitly not emitted network HTTP.",
+    "Two installed callbacks get separate execution and immediate audit stages.",
+    "No inherited Event stage count asserted; exact validation commands require separate root-approved preparation.",
+    "A only:13\u219214 owner Snapshot calls; one actual-context pos-01 create. All callback/HTTP/store/child totals unchanged.",
+    "Two known-pos2 emitted Snapshot disconnect rows remain unselected and byte-identical; no included-coverage claim.",
+    "D HEAD observations do not establish internal allocation/expiry invariance."
+  ],
+  "actualWorktree": "/Users/dbox/repos/wt/vickie/vickie-snapshot-opaque-minimum",
+  "planSha256": "e2df7de56582fb376eb36c4a385df0d3923e2b3dddeee15223edf698c0302811"
+}

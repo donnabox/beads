@@ -1,0 +1,22 @@
+{
+  "at": "2026-10-17T11:48:17.149626+00:00",
+  "reportSha256": "cfaa78caac8853eb9b4e8697975292fcb2563323ff1f891fb3ba492b2e6ea415",
+  "exitSha256": "a399af6e44b43867e18b924e975737eff8cb96886377b8bc9cd7bd3aeba0ba06",
+  "nativeReviewSha256": "72e777725df6b7d254595c3217943378f737907f65cfc72dc19d71aa137d3ed2",
+  "planSha256": "4f0968449d722702f57f9062ec2ff7f9e6962c2cf32884259dfa651717693958",
+  "interpretation": "Findings1/3 substantially restate required plan intent; treated as concrete enforcement requirements, not demonstrated product bugs. F2 adds explicit seeding. All11 accepted. No new product policy.",
+  "findings": {
+    "1": "Accept concrete enforcement: indexed prefix-origin.json pins started/exit/log/process records for exactly11 names plus build-artifacts. Resolve only explicit names; validate every pin before reading.",
+    "2": "Seed rootResultsAccepted exactly [full-test] with indexed original root-full-suite-acceptance path/hash and explicit prior-run attribution. New packed acceptances remain root-owned.",
+    "3": "Fully pin all installed distributions and wheel SHA256 values; use --require-hashes; assert exact resulting set, preserve old venv unchanged.",
+    "4": "Bind literal argv new venv path, pyvenv.cfg and entire new environment file map as well as interpreter realpath/hash. Preserve old tools pins for reuse.",
+    "5": "Explicitly hash started/exit/log/process in origin resolver; started/process are integrity inputs, no claim previous complete() read them.",
+    "6": "Provisioning/probe are separate exclusive-output bounded helper runs outside25stage chain, never stage passes.",
+    "7": "Verify current emitted477file inventory and workspace673tool files before release and each new stage; no blind rebuild.",
+    "8": "Replace copied freshness notes with explicit11reused+14new attribution; no copied or fabricated prior stage outcomes.",
+    "9": "Probe bare FormatChecker(), registered date-time, actual provider path/version, positive and negative direct+schema outcomes.",
+    "10": "Pin pip26.1.1; record ensurepip bootstrap version separately; no silent pip-version drift.",
+    "11": "Keep120s provisioning cap and preserve any partial failure with no retry; offline wheel staging allowed separately bounded and hash-verified."
+  },
+  "release": "Author closed mechanics and isolated tool provisioning preparation only. Root inspects native closure before running provisioning/probe/stages. No additional all-product review or suite rerun required."
+}

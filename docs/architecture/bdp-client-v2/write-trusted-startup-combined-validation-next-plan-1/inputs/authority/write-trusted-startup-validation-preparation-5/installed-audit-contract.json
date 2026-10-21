@@ -1,0 +1,65 @@
+{
+  "mode": "PURE NONLISTENING LOADER",
+  "consumerRoot": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-trusted-startup-validation-preparation-5/run/consumer",
+  "entrySpecifier": "@bdp/server/reference-configuration",
+  "actualEntryPath": "UNRESOLVED until root accepted fresh installed proof",
+  "program": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-trusted-startup-validation-preparation-5/bound-consumer-loader.mjs",
+  "origin": {
+    "script": "/Users/dbox/repos/wt/vickie/vickie-trusted-startup-configuration/scripts/smoke-executables.mjs",
+    "scriptSha256": "80c1ecf1d55939fbb0a0fe94aad46bcede1c9d7841dbc3793e00e4493440ddb3",
+    "sections": [
+      "133\u2013461 exact emitted inventory/public entries/declarations",
+      "483\u2013505 root-private values",
+      "554\u2013616 private resolution; omit only two absent @bdp/conformance specifiers",
+      "1193\u20131353 actual RU/TX loader function"
+    ]
+  },
+  "profiles": [
+    "read-update",
+    "transactional"
+  ],
+  "actualDynamicCountersExpected": {
+    "loaderCalls": 6,
+    "accepted": 2,
+    "contractRefusals": 4,
+    "privateSpecifierCount": 71
+  },
+  "fullBodies": "Copied actual closed configuration envelopes and descriptor/schema UTF8 documents; wrong-profile and invalid descriptor-body negatives for each profile. No schema/body truncation or hash-only replacement.",
+  "publicExports": [
+    "ReferenceDeploymentError",
+    "loadReferenceDeployment"
+  ],
+  "emittedInventory": {
+    "count": 264,
+    "newModuleFiles": [
+      "reference-deployment.d.ts",
+      "reference-deployment.d.ts.map",
+      "reference-deployment.js",
+      "reference-deployment.js.map",
+      "reference-deployment-state.d.ts",
+      "reference-deployment-state.d.ts.map",
+      "reference-deployment-state.js",
+      "reference-deployment-state.js.map"
+    ],
+    "exactNames": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-trusted-startup-validation-preparation-5/packaging-inventory.json",
+    "actualBytes": "UNRESOLVED fresh build/archive/consumer"
+  },
+  "privacy": "exact shared export checker, public root values absent, loader public d.ts private capture-name scan, bare/deep loader+registry+Snapshot and every copied private module path must produce ERR_PACKAGE_PATH_NOT_EXPORTED",
+  "limits": {
+    "workMs": 45000,
+    "singleCleanupMs": 10000,
+    "processGuardMs": 60000,
+    "outerStageMs": 120000,
+    "termAtMs": 115000,
+    "retries": 0
+  },
+  "boundaries": {
+    "intendedPort": "Owned net guard occupies intended configured port through loader calls; success excludes acquisition of that configured listener. It does not instrument attempted binds.",
+    "FD": "Installed function uses actual loader; no per-FD census/close spy. Source FD witnesses are separate.",
+    "owner": "Actual owned store directory absence after both profiles; no store opened",
+    "protocol": "No ordinary HTTP exchanges, receipts, Snapshots or service/public profile claims",
+    "payload": "Independent recursive installed graph digest is provenance only; pure loader does not attest it"
+  },
+  "failure": "Fixed non-echo failure outcome; one45s work deadline includes metadata/entry/file setup, one shared remaining10s cleanup window,60s fail guard, outer120/TERM115. Pending work/unknown guard closure preserves owned directory and fails; late result never upgrades accepted outcome.",
+  "stockSmoke": "Additional complete existing smoke is separately supervised; its own repacks/npm consumer are not the root-pinned external consumer. Retained internal archive/lock/proof UNKNOWN unless actually captured; never inherit staged proof."
+}

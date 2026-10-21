@@ -1,0 +1,37 @@
+{
+  "name": "boundaries",
+  "argv": [
+    "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+    "/Users/dbox/.cache/node/corepack/v1/pnpm/11.20.0/bin/pnpm.cjs",
+    "run",
+    "check:boundaries"
+  ],
+  "cwd": "/Users/dbox/repos/wt/vickie/vickie-same-key-dispatch",
+  "started": "2026-10-15T20:21:31.734966+00:00",
+  "head": "18f5428686dd84fb139c9dbbcbe39d5958012323",
+  "workspaceDirty": true,
+  "sourceSha256": {
+    "apps/bdptest/src/transactional-same-key-overlap-installed.test.ts": "b13688d6b02c5901e68251620ab6d7e00f9f675af4025319817f9e8cc6c9bca3",
+    "docs/design/transaction-implementation-progress.md": "21069d8d8eb5d5048a1dbcb38871ea0f8e72b463e9456633b12b4860e024a728"
+  },
+  "sourceDiffSha256": "18651f9db0489fb1ba60ce3f61433e3d7e6ca822d68c1ae45957f6fd0aa0b996",
+  "rootAcceptanceSha256": "9ecf2d77bcf385ec42694fea7d934277786dce6c1d1b2d16fd319867047091b4",
+  "preparationSha256": "da74971257c3cc804b404dbc2d72759e301431e04d2474c692a658ed43b18f9a",
+  "bdpOverrides": {},
+  "guardedArgv": [
+    "/opt/homebrew/opt/python@3.14/bin/python3.14",
+    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/guarded-action.py",
+    "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+    "/Users/dbox/.cache/node/corepack/v1/pnpm/11.20.0/bin/pnpm.cjs",
+    "run",
+    "check:boundaries"
+  ],
+  "nodePathPrefix": "/Users/dbox/.nvm/versions/node/v24.16.0/bin",
+  "sourceAttribution": "Externally bound source snapshot or frozen package; not child-attested Git identity",
+  "plannedWorkload": {
+    "productChildren": 0,
+    "http": 0,
+    "sourceCases": 0
+  },
+  "derivativeBinding": null
+}

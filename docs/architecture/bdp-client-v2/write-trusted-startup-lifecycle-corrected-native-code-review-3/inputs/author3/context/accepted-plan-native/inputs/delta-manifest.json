@@ -1,0 +1,20 @@
+{
+  "source-witnesses.json": {
+    "beforeSha256": "cba40eee5b18744d033e21967e16d35139b889b8a726774a898d1828696e2c42",
+    "afterSha256": "55e89dc49226142f07a82bc5bce457ae665cd86598ea0b6e09a468b36e54bb3a",
+    "forward": "deltas/source-witnesses.json.patch",
+    "inverse": "deltas/source-witnesses.json.inverse.patch"
+  },
+  "installed-witnesses.json": {
+    "beforeSha256": "10f47bc0f23c2406da901c0de23f7f03a4a8a2e8a3e91d32f92ed19f5a709d24",
+    "afterSha256": "b966e46629cf5f46e87dc63ad1e0a961428c976ae1620d30bb1bb7ff27f5ee83",
+    "forward": "deltas/installed-witnesses.json.patch",
+    "inverse": "deltas/installed-witnesses.json.inverse.patch"
+  },
+  "request-table.md": {
+    "beforeSha256": "f4245ab589cff948d0cf79dec1888bd4f5d2aaa739173393483a04c48b9ed585",
+    "afterSha256": "285a80c6b1c4b44f727afc5e1e71f8e60dbee43b6e2038ede689666ea903d744",
+    "forward": "deltas/request-table.md.patch",
+    "inverse": "deltas/request-table.md.inverse.patch"
+  }
+}

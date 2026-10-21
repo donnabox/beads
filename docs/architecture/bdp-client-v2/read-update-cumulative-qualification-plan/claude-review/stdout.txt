@@ -1,0 +1,69 @@
+## Verdict
+
+The arithmetic in this revision is sound — I independently recomputed every number I could and found no errors. The remaining exposure is almost entirely **unresolved external dependencies that determine whether the plan's central claim (`wholeContract:true` on nine-target cold dispatch) is reachable at all**, plus one oracle gap. Two items (M1, M2) could change the plan's scope rather than its details.
+
+---
+
+## Mandatory — resolve before authoring
+
+**M1 · High · `coverage-row.json` (`wholeContract:true`) + path 6 (`cumulative-artifact.test.ts:155` `reviewedWholeIds`)**
+The whole-contract claim is asserted against "the cited clause," but the catalog requirement row for `read-update.discovery.operation-directory` is not supplied. The normative section you did supply binds obligations the row never asserts: directory `405` + `Allow: GET, HEAD`; mutation-target `405` + `Allow: POST`; `Cache-Control: private, no-store` on mutation responses; `HEAD` on the directory; `@name` rejection with `malformed-request`; failed-singleton/retained-key direct-problem equivalence. `cumulative-artifact.test.ts:155` states in its own comment that changing that list "requires a clause-level coverage audit" — the plan proposes the change without producing it.
+*Impact:* if the catalog clause is section-scoped rather than membership-scoped, `wholeContract:true` is overclaimed and path 6 does not belong in the plan.
+*Minimal correction:* quote the catalog row and either (a) show it is membership-scoped, or (b) fall back to `wholeContract:false`. Fallback (b) is strictly smaller and still consistent with `cumulative-artifact.test.ts:196` (`status:"bounded-observation"` is required for any planned row regardless): 55 authored / 33 whole / 22 partial / 75 omitted, uncovered **stays 97**, path 6 drops entirely, `profile-contract-plan.test.ts:270–275` needs only 76→75, and lines 1267/2024/2446/2877 stay unchanged.
+
+**M2 · High · `scenario.json` action 20 (`sequence`)**
+The sequence member is `{"operation":"updateBead","idempotencyKey":"directory-sequence-b","bead":"beads/w1-b","propertiesChange":[…]}` — no `expectedRevision`, and no top-level `Idempotency-Key` header. `updateBeadRequest` is not in the supplied schema slice, and the normative excerpt scopes the required `Idempotency-Key` field to *singleton* targets only. The plan's own rule ("installed client supports only top-level `bodyBindings`. No invented nested interpolation") makes a server-generated revision unreachable inside a nested member — and the unused `b-rev` capture suggests this wall was already hit.
+*Impact:* if `expectedRevision` is required (or the sequence target requires the header), action 20 fails with `malformed-request`, the ninth target is never dispatched, and the nine-target claim cannot close in this row.
+*Minimal correction:* pin `updateBeadRequest` and the sequence target's header requirement from the committed bundle. If `expectedRevision` is required, restructure action 20 to a fully literal member (`createBead` with a literal id) or move the sequence dispatch to its own row — do not add nested interpolation.
+
+**M3 · Medium · plan §"App oracle and control"**
+The oracle requires "exactly 21 requests in fixed action order … and no extra traffic," but names only `report` + **client** observations as inputs. `createInstalledExactClient` builds its own `createRawHttpExchangeExecutor(dialRoute, …)` internally, so client exchanges bypass `executeExact`; conversely the 10 raw exchanges produce no client observation, and `nativeReadObservations` is fed by `exactNativeReadAdapter(target.execute, …)`, i.e. the non-raw `execute` path.
+*Impact:* only 11 of 21 requests have a stated observation source; the request tally and "no extra traffic" are unverifiable as written.
+*Minimal correction:* add a module-local raw counter/array inside `executeExact` (same shape as the existing `counterfactualApplications` increment at line ~451) and assert `raw + clientObservations.length === 21`, or name the report field that carries resolved raw request URLs.
+
+**M4 · Medium · `scenario.json` `final-b.postimage`, `delete-link.deleted-preimage`, `delete-bead.deleted-preimage`, `create-link.unowned-*`, `put-alias`/`delete-alias` `alias-result`**
+Four whole-document oracles compare documents produced by different response shapes, across schema boundaries the supplied definitions permit to diverge: `currentBeadRecord` **requires** `metadata` and permits `links` (`currentLinkCollection`) / `ownedLinks`, while the sequence resource is a plain `beadRecord` whose `links` is `linkCollection` and whose `metadata` is optional; `deletedIdentity`, `aliasResultMembers` and `#/$defs/reference` are not supplied at all (the latter decides whether `linkRecord.source` is a bare URL — actions 10/11 assume a string). The `unowned-source`/`unowned-source-revision` and `delete-bead.deleted-preimage` chain additionally assumes the fixture's `relates`/`task` types declare no `ownsOutgoing`, so that link create/update/delete never advances `w1-a`'s revision.
+*Impact:* a conformant server in correct state can fail these assertions.
+*Minimal correction:* ground each against an existing authored row that already performs the same cross-shape equality; where none exists, decompose into member-wise equality plus explicit `/links`, `/ownedLinks`, `/revisionProvenance` `exists:false` pins. Note the cascade: any assertion-count change invalidates 133, the coverage bindings, all three fence deltas and the manifest node/byte figures.
+
+**M5 · Medium · `read-update-artifact-execution.ts:20–40` (`known`) vs `scenario.json` actions 2/4/7–12/14/16/18/20**
+The exact-mode allowlist is computed statically from hardcoded `known` entries (`operations: ${scope}operations/`, `types: ${scope}types/`), while every runtime dispatch resolves `new URL(relativeTarget, bindings["operations"])` from the *advertised* value. `readUpdateDiscovery` constrains `operations` only to `absoluteHttpUrl`. The trailing slash is load-bearing: against `${scope}operations` (no slash), all nine POSTs resolve to `${scope}create-bead` etc. and fail as "mutation route was not installed." Two companions: (i) `routeSetUnchanged:true` / `count:284` requires GET `${scope}operations/` to already be in the baseline set — your row's action 3 is the first `http` action targeting that binding, so this is only true if an existing row already supplies it; (ii) `w1.alias` must resolve to exactly the `alias/w1-locator` written in actions 12/14, or action 13 returns 404 instead of 307.
+*Minimal correction:* pin `/operations` and `/types` as `discovery` assertions (explicit, loudly-labelled failure instead of an opaque allowlist refusal), or record the verification against the committed discovery fixture; confirm the baseline 284-route set contains GET `operations/`; confirm the `w1.alias` binding value.
+
+**M6 · Low-Medium · `scenario.json` `directory-captures.written`**
+`/observation/writeState === "complete"` is asserted for a bodyless GET; `writeState` semantics are not in the supplied excerpts, and `observation.bodyPresent` will be `false`. The `clients` block in `artifactRoutes` implies a client-GET precedent exists.
+*Minimal correction:* copy the value from the nearest existing client-GET row, or assert `bodyPresent:false` plus the actually observed `writeState`.
+
+---
+
+## Optional improvements
+
+- **O1 · Seven unused bindings.** `beads`, `links`, `aliases` (discovery) and `a-created`, `b-created`, `b-rev`, `link-created` are captured and never consumed. Either drop them (node/byte relief against a 1,677-node headroom), or consume them by retargeting actions 17/19/21 to `{"binding":"beads","path":"w1-b"}` / `{"binding":"links","path":"w1-l"}` — `known` already carries both, this removes the M5(ii) fixture-locator dependency and genuinely strengthens the cold-navigation claim. The alias case is the exception: the row writes `alias/w1-locator` while discovery advertises `aliases`, so the namespace question (M5) must be settled first.
+- **O2 · Negative control is near-redundant and structurally capped.** Because the client builds its own raw executor, `directoryControl` can *only* intercept action 3; no counterfactual can touch action 4's response. So second-response identity and capture load-bearingness rest on `const`-closed schema + full-body equality + reading `createInstalledExactClient`, not on a control. Say that in the honest claim; as written the control only re-tests JSON-Schema required-member detection.
+- **O3 · `read-deleted-alias`** omits the `retry` assertion both other 404s carry. Justify the asymmetry or add it.
+- **O4 · Idempotency-key convention.** Singletons use bare `create-a`…`delete-bead`; the sequence member uses the prefixed `directory-sequence-b`. Prefix uniformly — keys are header-only for singletons, so body-octet figures are unaffected.
+- **O5 · Node headroom** falls to 1,677 (1.7%), and the worst derivative specimen sits at 98,358 (margin 1,642). Promote the shard-split trigger from a contingency to a named preflight gate with the measured margin.
+- **O6 · Timeouts.** 21 actions × 5,000 ms = 105 s theoretical worst case exceeds both the reused 30,000 ms per-selected-row convention and the 90 s aggregate. Supply measured per-action latency rather than inheriting the convention.
+- **O7** No assertion distinguishes `initial-link-revision` from `final-link-revision`, or `a-rev` from `a-updated-rev` — a no-op server would pass. Out of scope for the cited directory clause (which keeps the narrow claim honest), but worth one line in the plan so it isn't read as a gap.
+
+---
+
+## Material omitted context
+
+Not defects — but the plan cannot be fully adjudicated without them: the catalog requirement row and canonical position for this ID (drives M1 and the order constraints at `cumulative-artifact.test.ts:119–123`/`155`); the `reference-read-update-schema-v1` fixture (`bindings`, `readSeedScenarios`, type `ownsOutgoing`); schema defs `updateBeadRequest`, `deletedIdentity`, `aliasResultMembers`, `reference`, `linkCollection`/`currentLinkCollection`, `readProblem`, and the idempotency-key format; `evaluateAssertion` (`equalsBinding`, `exists`+`equals`, `body-absent`, `header`) and `writeState`; whether rebinding fixture names (`beads`, `links`, `types`, `operations`, `service-desc`) is permitted; **the baseline measured aggregate wall time** — "retain 90 s, no automatic extension" is unsubstantiated for 2,303 HTTP / 57 children without it, and the instrumentation at lines 1099–1141 already produces the figure; and any literal manifest/coverage digest pins beyond the route-projection digest at line 1263 (the plan names only that one).
+
+---
+
+## Independently verified correct — do not re-derive
+
+- **Counts:** 133 assertions / 21 actions; `coverage-row.json` bindings are 133 in exact action/assertion order, satisfying `cumulative-artifact.test.ts:200–205`.
+- **Fences (all three exact):** baseline 713,193 sits precisely at the zero-slack ceilings of 4592 (698,614+14,579) and 4972 (703,415+9,778); proposed 718,275 ⇒ **19,661**, **14,860**, and 5115 ⇒ **5,614** (+3,906 after consuming the 1,176 slack: 712,661+1,708 → 714,369 ≥ 713,193). `coverageDelta` 5,082 = 718,275 − 713,193.
+- **Manifest deltas:** 1,207 nodes; 1,902,999 − 1,881,832 = 21,167 = 21,166 row bytes + the one separating comma; 98,323 < 100,000 and 1,902,999 < 4,194,304.
+- **All ten body-octet figures recomputed byte-by-byte and exact:** 134 / 205 / 74 / 74 fixed-with-empty-dynamic, and 114 / 114 / 229 / 81 / 28 / 163 literal — including the client's key-insertion order (literal body keys, then `bodyBindings` in `Object.entries` order).
+- **Workload:** 2,238 + 21 + 44 = 2,303; 2+55 = 57 children; 2,327 / 2,345 / 61; +45 / +63 / +5; 10 body-bearing + 11 GET = 21; 11 client observations (10 POST + 1 GET); `observations.length > 30` and `bodyOctets ≤ 65536` (max 229 + revision) both already satisfied.
+- **Count pins:** 54→55 / 33→34 / 76→75 / 97→96 are mutually consistent across `profile-contract-plan.test.ts:270–275`, line 1267 and the `progress` pins; 130 unchanged; `smallExecutionSet()` filters by id so neither it nor its route digest is affected.
+- **Runner feasibility (the plan's most important correctness call):** client-action assertions correctly avoid the synthetic `{status:200, headers:{}}` passed at runner:1105 by using `/status` and `/headers/*` pointers, and correctly use `harnessInstalled_*` wrappers — no nonexistent `harnessInstalled_readUpdateOperationDirectory` is referenced. The two-fetch design is **necessary**: `captureValue` (runner:2468–2497) rejects relative strings, client captures use the permissive `jsonPointer` path (runner:1125), and eliminating action 3 would require a new wrapper def in the shared `installed-body-schema.ts`. Assertions-before-captures (runner:1099–1126) makes the negative control's `expectedPassed:["status"]` / `expectedFailed:["schema"]` and `expectedHttp:3` reachable with zero mutation writes.
+- **Digest reasoning:** the inserted client GET lands early in `clients`, so dedup-keep-first reorders the array; `exactConfigurationDigest` (runner:1580–1597) `sortJsonValue`s object keys but preserves array order, so `orderUnchanged:false` with an identical set correctly implies a digest change — and reproducing `3224c31c…` from source is reasonable evidence the translation is faithful. Route lookups are `.some()`-based, so the reorder is behaviorally inert.
+- **Qualification honesty:** `claimEligible:false` is hardcoded in `installed-reference.ts` and untouched; line 1260 unchanged; 34+21=55, 130−55=75, 130−34=96 all consistent.
+
+I ran no tools, builds or tests; everything above is derived from the committed excerpts you supplied.

@@ -1,0 +1,84 @@
+{
+  "released": true,
+  "session": "2026-10-08T20:26:35Z-81e5",
+  "finalHead": "b89554c6004edf99d3278518bee1b150dce3fa98",
+  "finalTree": "b3cd7f40d0ff40cc45c570a2468c38e96eccb7d7",
+  "finalSource": {
+    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/read-update-command-minimum-draft/installed-preparation/candidate-source.json",
+    "sha256": "59bfa69fff801be463a4c809c8056371b71dff5cf9bb2758933f4c6cf6003f54"
+  },
+  "integrationAcceptance": {
+    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/read-update-command-minimum-draft/installed-preparation/integration-acceptance.json",
+    "sha256": "59fe0ee5f143cdd1f8c0d6c170b0fc010bc50da1b76b08049335e5d62ea58cb1"
+  },
+  "rootAcceptance": {
+    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/read-update-command-minimum-draft/installed-preparation/root-validation-release.json",
+    "sha256": "d60e1771a4f1d72ae05acb20a7ab7bb7ba0abdad7dbf2d30174678fbcc083ff3"
+  },
+  "sourceValidationAcceptance": {
+    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/read-update-command-minimum-draft/root-source-validation.json",
+    "sha256": "345c57c24cb6b3ed0e770cfcf45f3fe10afc2c609e2a9795f7d28e670fafb0d4"
+  },
+  "councilState": {
+    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/read-update-command-minimum-draft/installed-preparation/council-pending.json",
+    "sha256": "a830176b9188f47286eaed71e3464c02c7708b70b82404ed194990c15f4330c6"
+  },
+  "rootBuildAcceptance": {
+    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/read-update-command-minimum-draft/installed-preparation/root-build-acceptance.json",
+    "sha256": "703e0927167176556e3ba367773193e5bc1b3c084de0208ad52fc978c9c0b2a5"
+  },
+  "sourceLockSha256": "4150d8821c96dbc2cfec0b2762ff76b58318079f65fa4f5c8858ef2dd61f8d6d",
+  "consumerLockSha256": "4bd4018c3587c46808a14ad4f91a19e8e479aaad76f62f9db3965498423a3af2",
+  "preparationSha256": {
+    "gate.py": "eb2a7881db5d9548295d7f942c41095a735bb7683dcf814512c6eb4e78f138bf",
+    "supervise.py": "c7379208470579df06925671bbde5b611711104d9484eede8870e47c1bb9afb3",
+    "packages.py": "83cd0e9b03d8c86c9089b04c7e5f413c8c7619ccde137daf61058a55d123d425",
+    "commands.json": "1c048a1320124964fe22ca7b5b68864ed3c58e9b2e7f2b0800ae57da66b0ae2c",
+    "prepared-source.json": "cf670a46fd94495ea550878ef3e26d4d6e9e3487b04f058da2cdd2b58540114c",
+    "report-contract.json": "b0c5a2871878d3d745db3a3230f3e08789021ae27f02c0dc6f639104a3835890",
+    "selection.json": "c1115afc345b959e1aa2726d96045fe679afd954f755ac5ad83b3e249ff36515"
+  },
+  "note": "Root releases only fresh build on current actual main child b895; council remains pending. No final qualification claim.",
+  "approvedCommandIds": [
+    "fresh-build",
+    "node-version",
+    "package-directory",
+    "pack-protocol",
+    "pack-server",
+    "verify-tar",
+    "prepare-consumer",
+    "consumer-install",
+    "verify-installed",
+    "selected-positive",
+    "selected-minimum-control",
+    "full-aggregate"
+  ],
+  "finalBase": "6f5e607bf338dd166820bfa3f9f480f7cd54c5f1",
+  "finalParents": [
+    "6f5e607bf338dd166820bfa3f9f480f7cd54c5f1"
+  ],
+  "sourceBinding": {
+    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/read-update-command-minimum-draft/literal-order-repair/source-binding.json",
+    "sha256": "cf670a46fd94495ea550878ef3e26d4d6e9e3487b04f058da2cdd2b58540114c"
+  },
+  "buildOutputInventory": {
+    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/read-update-command-minimum-draft/installed-preparation/run/build-inventory.json",
+    "sha256": "38096f2266e9a5fb3c032873a715b10c1a00da8ea7b78a1bf1a44f225f4ea125"
+  },
+  "node": "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+  "pnpm": "/Users/dbox/.cache/node/corepack/v1/pnpm/11.20.0/bin/pnpm.cjs",
+  "installedProvenance": {
+    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/read-update-command-minimum-draft/installed-preparation/run/installed-provenance.json",
+    "sha256": "72aa30f544e1e10798f9156195d755ff2afdd761697e3a3fcab0953403b1ac25"
+  },
+  "expectedProductionVersions": {
+    "@bdp/protocol": "0.0.0",
+    "@bdp/server": "0.0.0",
+    "ajv": "8.17.1",
+    "ajv-formats": "3.0.1",
+    "fast-deep-equal": "3.1.3",
+    "fast-uri": "3.1.5",
+    "json-schema-traverse": "1.0.0",
+    "require-from-string": "2.0.2"
+  }
+}

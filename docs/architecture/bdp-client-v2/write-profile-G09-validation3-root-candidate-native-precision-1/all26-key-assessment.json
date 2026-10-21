@@ -1,0 +1,247 @@
+[
+  {
+    "assessment": "Candidate typed true is proposed external authority DATA only; actual live value remains false.",
+    "candidate": true,
+    "currentLive": false,
+    "key": "actualClaudeReviewDisposed"
+  },
+  {
+    "assessment": "Exact path/SHA actual ROOT-owned evidence disposition; accepted/sourceBinding/currentP3/fresh prefix checked; not a new native/provider review.",
+    "candidate": {
+      "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation3-root-proposed-authority-1/actual-code-disposition.json",
+      "sha256": "7efd6023295c82b84ec63114f48796dbf340f28a7d5fe1337024c78fd9fe4aa4"
+    },
+    "currentLive": {
+      "path": "UNRESOLVED",
+      "sha256": "UNRESOLVED"
+    },
+    "key": "actualCodeDisposition"
+  },
+  {
+    "assessment": "Exact fresh ordered first4 prefix; live empty; later30 are not authorized.",
+    "candidate": [
+      "node-version",
+      "pnpm-version",
+      "workspace-install",
+      "bind-workspace-tools"
+    ],
+    "currentLive": [],
+    "key": "approvedStages"
+  },
+  {
+    "assessment": "P3 path with unchanged candidatec055; three actual binary realpaths/hashes and full source lock agree; fresh version/install execution remains unattempted.",
+    "candidate": {
+      "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation-preparation-3/base-tools.candidate.json",
+      "sha256": "c05588f1210d14a4716a67ee0ee1dc727b5cb150e6e81727fbddbc17c424066a"
+    },
+    "currentLive": {
+      "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation-preparation-3/base-tools.candidate.json",
+      "sha256": "c05588f1210d14a4716a67ee0ee1dc727b5cb150e6e81727fbddbc17c424066a"
+    },
+    "key": "baseTools"
+  },
+  {
+    "assessment": "Exactly empty; no old stage/pass/consumer reuse.",
+    "candidate": [],
+    "currentLive": [],
+    "key": "bootstrapReuse"
+  },
+  {
+    "assessment": "Unresolved downstream identity is preserved; actual conditional gate checks do not need it within this first4 prefix, and later stages remain closed.",
+    "candidate": {
+      "path": "UNRESOLVED",
+      "sha256": "UNRESOLVED"
+    },
+    "currentLive": {
+      "path": "UNRESOLVED",
+      "sha256": "UNRESOLVED"
+    },
+    "key": "consumerInventory"
+  },
+  {
+    "assessment": "Unresolved downstream identity is preserved; actual conditional gate checks do not need it within this first4 prefix, and later stages remain closed.",
+    "candidate": "UNRESOLVED",
+    "currentLive": "UNRESOLVED",
+    "key": "consumerLockSha256"
+  },
+  {
+    "assessment": "Exact current8ad44 implementation map121; all records rehashed, live/closed controls excluded as declared.",
+    "candidate": "8ad44a93c1215bfe0b9777df4135385f72e82dd8873287a6988da2f1fb7615c6",
+    "currentLive": "8ad44a93c1215bfe0b9777df4135385f72e82dd8873287a6988da2f1fb7615c6",
+    "key": "implementationIndexSha256"
+  },
+  {
+    "assessment": "Unresolved downstream identity is preserved; actual conditional gate checks do not need it within this first4 prefix, and later stages remain closed.",
+    "candidate": {
+      "path": "UNRESOLVED",
+      "sha256": "UNRESOLVED"
+    },
+    "currentLive": {
+      "path": "UNRESOLVED",
+      "sha256": "UNRESOLVED"
+    },
+    "key": "installedProvenance"
+  },
+  {
+    "assessment": "Corrected f6 authoring freeze; actual pinned index784402dc; later native55c/roota9cf evidence retained separately from original provider review.",
+    "candidate": {
+      "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-source-correction-authoring-2/index.json",
+      "sha256": "784402dcfdd70603886928b49fb56f9ccc9134aa7a3229d29c0923dcc48edc14"
+    },
+    "currentLive": {
+      "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-source-correction-authoring-2/index.json",
+      "sha256": "784402dcfdd70603886928b49fb56f9ccc9134aa7a3229d29c0923dcc48edc14"
+    },
+    "key": "knownCorrectedSourceFreeze"
+  },
+  {
+    "assessment": "Immutable actual eeb terminal440e only; complete9 findings and scope omissions retained; reviewer did not read f6.",
+    "candidate": {
+      "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-code-review-1/actual-review-terminal-1/closure.json",
+      "sha256": "440e88bd386604b67f6a27ce83f54d03d5b090e3262b11d6488161b45a6b6057"
+    },
+    "currentLive": {
+      "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-code-review-1/actual-review-terminal-1/closure.json",
+      "sha256": "440e88bd386604b67f6a27ce83f54d03d5b090e3262b11d6488161b45a6b6057"
+    },
+    "key": "knownOriginalActualCodeTerminal"
+  },
+  {
+    "assessment": "Exactly final; no bootstrap alternative.",
+    "candidate": "final",
+    "currentLive": "final",
+    "key": "mode"
+  },
+  {
+    "assessment": "Exact path/SHA actual ROOT-owned evidence disposition; accepted/sourceBinding/currentP3/fresh prefix checked; not a new native/provider review.",
+    "candidate": {
+      "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation3-root-proposed-authority-1/native-code-disposition.json",
+      "sha256": "09898f77cedf52190ec16271c9bb12705d50b1227f690d4a4c0c8abb02ad3f0c"
+    },
+    "currentLive": {
+      "path": "UNRESOLVED",
+      "sha256": "UNRESOLVED"
+    },
+    "key": "nativeCodeDisposition"
+  },
+  {
+    "assessment": "Candidate typed true is proposed external authority DATA only; actual live value remains false.",
+    "candidate": true,
+    "currentLive": false,
+    "key": "nativeCodeReviewDisposed"
+  },
+  {
+    "assessment": "Candidate typed true is proposed external authority DATA only; actual live value remains false.",
+    "candidate": true,
+    "currentLive": false,
+    "key": "released"
+  },
+  {
+    "assessment": "Unresolved downstream identity is preserved; actual conditional gate checks do not need it within this first4 prefix, and later stages remain closed.",
+    "candidate": {
+      "path": "UNRESOLVED",
+      "sha256": "UNRESOLVED"
+    },
+    "currentLive": {
+      "path": "UNRESOLVED",
+      "sha256": "UNRESOLVED"
+    },
+    "key": "rootArchiveAcceptance"
+  },
+  {
+    "assessment": "Unresolved downstream identity is preserved; actual conditional gate checks do not need it within this first4 prefix, and later stages remain closed.",
+    "candidate": {
+      "path": "UNRESOLVED",
+      "sha256": "UNRESOLVED"
+    },
+    "currentLive": {
+      "path": "UNRESOLVED",
+      "sha256": "UNRESOLVED"
+    },
+    "key": "rootBuildAcceptance"
+  },
+  {
+    "assessment": "Unresolved downstream identity is preserved; actual conditional gate checks do not need it within this first4 prefix, and later stages remain closed.",
+    "candidate": {
+      "path": "UNRESOLVED",
+      "sha256": "UNRESOLVED"
+    },
+    "currentLive": {
+      "path": "UNRESOLVED",
+      "sha256": "UNRESOLVED"
+    },
+    "key": "rootConsumerLockAcceptance"
+  },
+  {
+    "assessment": "Unresolved downstream identity is preserved; actual conditional gate checks do not need it within this first4 prefix, and later stages remain closed.",
+    "candidate": {
+      "path": "UNRESOLVED",
+      "sha256": "UNRESOLVED"
+    },
+    "currentLive": {
+      "path": "UNRESOLVED",
+      "sha256": "UNRESOLVED"
+    },
+    "key": "rootConsumerProofAcceptance"
+  },
+  {
+    "assessment": "Exact path/SHA actual ROOT-owned evidence disposition; accepted/sourceBinding/currentP3/fresh prefix checked; not a new native/provider review.",
+    "candidate": {
+      "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation3-root-proposed-authority-1/root-disposition.json",
+      "sha256": "8ca2417110927f97a4b505945b44e005ad9a808da024da9639f0c7d5d04ccf57"
+    },
+    "currentLive": {
+      "path": "UNRESOLVED",
+      "sha256": "UNRESOLVED"
+    },
+    "key": "rootDisposition"
+  },
+  {
+    "assessment": "Candidate typed true is proposed external authority DATA only; actual live value remains false.",
+    "candidate": true,
+    "currentLive": false,
+    "key": "rootExactSourceAccepted"
+  },
+  {
+    "assessment": "Candidate typed true is proposed external authority DATA only; actual live value remains false.",
+    "candidate": true,
+    "currentLive": false,
+    "key": "rootPlanAccepted"
+  },
+  {
+    "assessment": "Exact549f; current remote guard checked at every action.",
+    "candidate": "2026-10-18T02:16:24Z-549f",
+    "currentLive": "2026-10-18T02:16:24Z-549f",
+    "key": "session"
+  },
+  {
+    "assessment": "Exact P3 absolute binding712c; all679 actual files match f6; Git identity claims are attributed to pinned root observation; no Git run by this reviewer.",
+    "candidate": {
+      "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation-preparation-3/source-binding.json",
+      "sha256": "712c3c5a8e1543bf5005cbb54d321c6874b7443afb7e01805f393434fe5cd714"
+    },
+    "currentLive": {
+      "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation-preparation-3/source-binding.json",
+      "sha256": "712c3c5a8e1543bf5005cbb54d321c6874b7443afb7e01805f393434fe5cd714"
+    },
+    "key": "sourceBinding"
+  },
+  {
+    "assessment": "Candidate typed true is proposed external authority DATA only; actual live value remains false.",
+    "candidate": true,
+    "currentLive": false,
+    "key": "staticValidationAuthorized"
+  },
+  {
+    "assessment": "Unresolved downstream identity is preserved; actual conditional gate checks do not need it within this first4 prefix, and later stages remain closed.",
+    "candidate": {
+      "path": "UNRESOLVED",
+      "sha256": "UNRESOLVED"
+    },
+    "currentLive": {
+      "path": "UNRESOLVED",
+      "sha256": "UNRESOLVED"
+    },
+    "key": "workspaceTools"
+  }
+]

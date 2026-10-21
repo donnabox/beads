@@ -1,0 +1,26 @@
+{
+  "pid": 55219,
+  "pgid": 55219,
+  "started": "2026-10-16T21:17:30.371917+00:00",
+  "argv": [
+    "/opt/homebrew/bin/claude",
+    "--safe-mode",
+    "-p",
+    "--output-format",
+    "stream-json",
+    "--verbose",
+    "--include-partial-messages",
+    "--tools",
+    "Read,Glob,Grep",
+    "--allowedTools",
+    "Read,Glob,Grep",
+    "--disable-slash-commands",
+    "--strict-mcp-config",
+    "--mcp-config",
+    "{\"mcpServers\":{}}",
+    "--no-session-persistence"
+  ],
+  "timeoutSeconds": 3600,
+  "termAfterSeconds": 3595,
+  "headIsChronologyOnly": false
+}

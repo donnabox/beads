@@ -1,0 +1,42 @@
+{
+  "observedUtc": "2026-10-18T04:00:18.614998+00:00",
+  "currentExactSession": "2026-10-18T02:16:24Z-549f",
+  "actualProcess": {
+    "pid": 73969,
+    "pgid": 73969,
+    "started": "2026-10-18T03:53:25.525190+00:00",
+    "argv": [
+      "/opt/homebrew/bin/claude",
+      "--safe-mode",
+      "-p",
+      "--tools",
+      "Read,Glob,Grep",
+      "--allowedTools",
+      "Read,Glob,Grep",
+      "--disable-slash-commands",
+      "--strict-mcp-config",
+      "--mcp-config",
+      "{\"mcpServers\":{}}",
+      "--no-session-persistence",
+      "--output-format",
+      "stream-json",
+      "--verbose",
+      "--include-partial-messages"
+    ],
+    "timeoutSeconds": 1800,
+    "termAfterSeconds": 1790
+  },
+  "actualLiveProcessInventory": [
+    "73942 73932 73942   0.0   0:00.30 Sat Oct 17 20:53:24 2026     /opt/homebrew/Cellar/python@3.14/3.14.5/Frameworks/Python.framework/Versions/3.14/Resources/Python.app/Contents/MacOS/Python",
+    "73969 73942 73969   0.1   0:03.77 Sat Oct 17 20:53:25 2026     /opt/homebrew/bin/claude"
+  ],
+  "sourcePatchSha256": "4ff4ef9448fb79a0c08b3665b7069fb019c9b1d311b898b5525bc888bcd2955c",
+  "source679Context29Artifact9Match": true,
+  "twoLiteralFlagOnlyReleasesVerified": true,
+  "sourceBindingFinalized": true,
+  "streamBytes": 1393150,
+  "runnerTerminal": false,
+  "outerTerminal": false,
+  "releaseRecordSha256": "01e30e6a4b3e57954465d3abd63bb0db3b2016a140494e84fd8da4c405c4158a",
+  "approvalInferred": false
+}

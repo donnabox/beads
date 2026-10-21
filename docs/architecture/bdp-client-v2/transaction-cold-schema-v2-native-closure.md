@@ -1,0 +1,39 @@
+# Native correction closure: local schema serving plan v2
+
+## Findings
+
+**No remaining actionable correction blocker found.** The coherent v2 incorporates all six root dispositions and closes the native dispatch-gate finding without a new startup incompatibility, third routing field list or public claim. The declared limitations are real residual work, not silently satisfied cold-traversal requirements. This is bounded plan correction closure only; root acceptance, final parent assignment and authoring release remain required.
+
+## Exact review basis
+
+- Plan `transaction-cold-schema-serving-plan-v2.md`, SHA256 `c464ddba0b7dddc695bf27fe9f8615f4bc21aa7358ab8ef121b8b66929aa075c`.
+- Dispositions `transaction-cold-schema-v2-dispositions.md`, SHA256 `72d3a92bffb312ac9c4180d47f82cb1ff0c7d2c6b01288710f7d5d9046c476f2`.
+- Root dispositions and full completed external report `transaction-cold-schema-claude-plan-review.txt`, SHA256 `d2cc36f10f3cfcc9456a80a79c624da7468bab66fef7f54f28d5f1bd2860656e`.
+- Original audit SHA256 `e00fa92025a26e131420476fb948b4dcc3f5146776775724a8597c8da8bb2cd4` and native review SHA256 `60aa08ecde1ce7715d94cb0c66d4f76e5da44c025f8a5c3b2f998a138ca1a926` remain unchanged.
+- New source anchors checked against Git object `90cc834c3672b02840c68dcd7abb35794f038887`, tree `97db367180fb49a20e831fba859e0ac09482966b`, using the read-only repair checkout. Its successor `4aa2d0be950f157f3f0617278dd37c40f41ec035` changes only the service test and progress document, so the cited production source is identical. No merge/main or CI completion is inferred.
+
+No tests, builds, installs, services, network actions or product edits were performed. Read-only source/hash checks and this report are the entire review activity; no new executable evidence is claimed.
+
+## Disposition closure
+
+1. **Retrieval identity versus `$id` — closed as an explicitly bounded subset.** V2 does not adopt the external suggestion to reject startup. It retains accepted differing-identity configurations and offline validation, serves only exact eligible retrieval identities and requires source cases demonstrating successful startup/retrieval alongside an unserved otherwise-unrouted canonical alias. The differing reference-base and embedded-ID gaps are named. Actual `installed-schema-graph.ts:326–336,498–517` registers retrieval/canonical identities and resolves references against canonical IDs, so this distinction is necessary. The positive fixture independently aligns root `$id` with retrieval URI and resolves the actual returned relative `$ref` against that actual `$id` to the independently expected captured transitive identity. It does not impose that alignment on all installations.
+
+2. **Namespace completeness — closed without compatibility changes.** The query/fragment-free schemas/ manifest is expressly a supported retrieval-identity subset, not hosting every local closure. Outside-namespace and query-bearing accepted artifacts keep startup, offline validation and existing handler outcomes. Source cases must prove exclusion and non-shadowing of genuine Resource routes. No broader URI grant or new configuration refusal is hidden in adapter construction. Remaining cold-client deployment cases are deferred explicitly rather than declared normative exemptions.
+
+3. **Shared guard and original native gate — closed.** V2 specifies interception immediately before existing handler dispatch and only after runtime raw authority/method/closing/Origin checks, for authenticated GET/HEAD, exact manifest hits and no minimum-header presence. Otherwise it returns not-handled without owner observation and invokes the unchanged handler. It never executes the handler then overrides its refusal. The existing `hasMinimumControls` at HTTP144–148 is exported only within source and reused unchanged, superseding my original seven-file/no-export suggestion under root's explicit eight-file decision. No package export or third field list appears. Empty/partial/malformed controls, conditional shortcuts and unauthenticated Accept/conditional interactions receive meaningful source checks; they remain outside the installed ledger. Actual nonmutation auth at387 and minimum routing at546–557 support this placement.
+
+4. **Context authority — closed with precise implementation scope.** V2 correctly preserves the general response wording at spec5768 while avoiding a universal classification of all static/external schemas. It chooses an actual owner observation for these authenticated local routes as the conservative local contract. A narrow schemaObserved operation follows the verified sequenceRefusalObserved run/withRead pattern at service527–536, without invoking sequence/discovery/Resource operations or creating another context authority. The existing sequence method stays unchanged. Current tuple, immutable earlier tuple, one entry, fault/lifetime and no-effect assertions remain required; there is no unobserved-byte-only split or implied minimum support.
+
+5. **Raw delivery — closed.** The plan extends existing private deliver with optional exact representation bytes/string while retaining destroyed guard, marker and HEAD suppression in that sender. The adapter keeps raw bytes outside public HttpResponse and supplies them only for selected 200. Successful HEAD length uses captured byte length after selection; 304/406/412 retain selector metadata and receive no raw body. The selected-status marker and disconnect/HEAD tests guard the precise facilities that a parallel writer would have bypassed. Current shared selector semantics support the listed no-ETag conditions without new validators.
+
+6. **Citation/provenance drift — closed.** V2 repins nonmutation auth387, minimum546–557, withheld discovery560–565 and Read fallthrough566 to actual90cc, and names the earlier ed359 reviews as historical. Its service527–536 observation reference is verified in that Git object. It does not relabel the original source or assume candidate90cc merged. The source release remains gated on PR118's reviewed successor.
+
+## Scope and budget consistency
+
+The eight-file inventory is internally consistent: adapter and adapter test; runtime; service and service test; installed test; progress document; HTTP solely for exporting the unchanged helper. This keeps service tests and avoids a generalized routing or consistency abstraction. No runtime configuration, compiler, store, normative schema/catalog, launcher or public admission expansion is proposed.
+
+The installed table still contains exactly 14 requests in one child: two Type reads, two schema GETs, HEAD, three selection refusals, three routing/auth/method cases, withheld discovery, one mutation and a final schema GET. The one-Type/two-document fixture avoids hidden pagination and reference fetches. It deliberately starts with an administrative inventory URL, not manufactured discovery. Every followed URI is independently confined to the exact manifest before a transport grant; byte/content oracles are independent fixture data.
+
+Predecessor negative reaches request 3 only after two successful Type reads and must preserve the named status/bytes failure on actual missing-schema response. Thus positive14/one plus negative3/one gives17 expected requests/two children;28/two is the unchanged maximum if the predecessor unexpectedly completes the scenario. Source compatibility cases and five named sensitivities are separately measured source work, not extra installed cohorts. Existing exchange/aggregate/outer/close and body/header/response/target limits remain unchanged. No measurements or passing tests are asserted by this review; concrete author preflight and root release are still required.
+
+The plan is ready for root's bounded acceptance decision. It is not an implementation authorization, completed cold-discovery result, universal schema hosting claim or cumulative profile qualification.

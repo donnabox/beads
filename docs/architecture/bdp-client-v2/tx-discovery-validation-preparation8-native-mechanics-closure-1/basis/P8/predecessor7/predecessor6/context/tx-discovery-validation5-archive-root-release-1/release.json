@@ -1,0 +1,36 @@
+{
+  "utc": "2026-10-18T10:49:27.713424+00:00",
+  "rootArchiveAcceptance": {
+    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/tx-discovery-validation5-archive-root-release-1/acceptance.json",
+    "sha256": "b338491b537ef2f582838326c29ac7a09c4b183609878160e21e776268c012fc"
+  },
+  "approvedPrefix": [
+    "node-version",
+    "pnpm-version",
+    "workspace-install",
+    "bind-workspace-tools",
+    "typecheck",
+    "format-check",
+    "lint",
+    "fresh-build",
+    "bind-fresh-build",
+    "focused-source",
+    "audit-focused-source",
+    "legacy-changefeed-source",
+    "audit-legacy-changefeed-source",
+    "legacy-installed-contracts-source",
+    "audit-legacy-installed-contracts-source",
+    "schema-confinement-source",
+    "audit-schema-confinement-source",
+    "prepare-package-directory",
+    "pack-protocol",
+    "pack-server",
+    "verify-archives",
+    "prepare-consumer",
+    "consumer-install"
+  ],
+  "gateSha256": "509ee2985cd32d166a5025d2848bf34bb3897cbb6841b4e1c966bd66c2f97a55",
+  "durablePushRequiredBeforeNextStages": true,
+  "nextScope": "Prepare external consumer and fresh install only. verify-installed-consumer needs root actual generated lock/manifest/settings binding.",
+  "noRetry": true
+}

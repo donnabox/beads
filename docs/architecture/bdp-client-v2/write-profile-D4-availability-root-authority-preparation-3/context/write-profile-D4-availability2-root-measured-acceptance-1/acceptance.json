@@ -1,0 +1,42 @@
+{
+  "utc": "2026-10-18T17:33:50.277553+00:00",
+  "session": "2026-10-18T02:16:24Z-549f",
+  "accepted": true,
+  "availabilityOnly": true,
+  "clockDomainVerified": true,
+  "ownershipBootstrapAccepted": true,
+  "nativeLimiterTerminalVerified": true,
+  "freshAllObservedProcessesAbsent": true,
+  "bothTerminalBefore115": true,
+  "samePinnedTools": true,
+  "syntheticReleased": false,
+  "productReleased": false,
+  "harnessImplementationSha256": "7e5ec687e6c39447efc43d5ad905a20602510d9227db342b1fad01ba873ae5e8",
+  "nativeActualAudit": {
+    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-D4-availability2-actual-native-audit-1/closure.json",
+    "sha256": "758ad43cfaee64bf77d2a72ad59448c8e1524e0305386b07cb1b9eefcf4a112b"
+  },
+  "nativeActualIndex": {
+    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-D4-availability2-actual-native-audit-1/index.json",
+    "sha256": "0dd0f1f7c9c952ae420a2f4bc87bf5d5c0946076303ee5f27d5fde3e4cf9733d"
+  },
+  "rootActualTerminal": {
+    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-D4-availability-actual-root-dispatch-2/caller-exit.json",
+    "sha256": "baa392e1d16f4bbfc04b50ed145a4e3034f05671b93cf3cb2763f5cb6773e8c4"
+  },
+  "rootFreshAbsence": {
+    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-D4-availability2-root-fresh-absence-1/absence.json",
+    "sha256": "55454f9bfc0f80a5e30a344e756defeee104e549350d1e21134d89b2683fb989"
+  },
+  "scope": "Observed availability/common clock compatibility for ONE exact H5 source/tools/bootstrap PIPE path. Native/owner and actualcaller strictly<115, complete normal closure. Eligibility input only for separate finite-control authority.",
+  "actualCallerWholeSeconds": 0.7951565417461097,
+  "nativeElapsedSeconds": 0.133292417041957,
+  "pythonClockResolution": 4.166666666666666e-08,
+  "nativeForced115119Coverage": false,
+  "globalContainmentGuarantee": false,
+  "hardRealTimeGuarantee": false,
+  "futureRuntimeFit": "UNKNOWN",
+  "priorH4FailurePreserved": true,
+  "all60ControlsStillUnattempted": true,
+  "noRetry": true
+}

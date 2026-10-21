@@ -1,0 +1,272 @@
+apps/bdptest/src/read-update-matrix.test.ts:1629:34 lint/style/noNonNullAssertion ━━━━━━━━━━━━━━━━━━
+
+  ! Forbidden non-null assertion.
+  
+    1627 │       if (admissionControl.mode === "request-number") return actual;
+    1628 │       expect(actual.status).toBe(422);
+  > 1629 │       const changed = JSON.parse(actual.bodyText!) as { diagnostics: Record<string, unknown>[] };
+         │                                  ^^^^^^^^^^^^^^^^
+    1630 │       expect(changed.diagnostics.length).toBeGreaterThan(0);
+    1631 │       switch (admissionControl.mode) {
+  
+
+apps/bdptest/src/read-update-matrix.test.ts:1633:11 lint/style/noNonNullAssertion ━━━━━━━━━━━━━━━━━━
+
+  ! Forbidden non-null assertion.
+  
+    1631 │       switch (admissionControl.mode) {
+    1632 │         case "pointer":
+  > 1633 │           changed.diagnostics[0]!.instanceLocation = "/wrong";
+         │           ^^^^^^^^^^^^^^^^^^^^^^^
+    1634 │           break;
+    1635 │         case "document-prefix":
+  
+
+apps/bdptest/src/read-update-matrix.test.ts:1636:11 lint/style/noNonNullAssertion ━━━━━━━━━━━━━━━━━━
+
+  ! Forbidden non-null assertion.
+  
+    1634 │           break;
+    1635 │         case "document-prefix":
+  > 1636 │           changed.diagnostics[0]!.instanceLocation = "/properties/shallow";
+         │           ^^^^^^^^^^^^^^^^^^^^^^^
+    1637 │           break;
+    1638 │         case "patch-location":
+  
+
+apps/bdptest/src/read-update-matrix.test.ts:1639:11 lint/style/noNonNullAssertion ━━━━━━━━━━━━━━━━━━
+
+  ! Forbidden non-null assertion.
+  
+    1637 │           break;
+    1638 │         case "patch-location":
+  > 1639 │           changed.diagnostics[0]!.instanceLocation = "/propertiesChange/0/value";
+         │           ^^^^^^^^^^^^^^^^^^^^^^^
+    1640 │           break;
+    1641 │         case "metadata-label":
+  
+
+apps/bdptest/src/read-update-matrix.test.ts:1642:18 lint/style/noNonNullAssertion  FIXABLE  ━━━━━━━━━━
+
+  ! Forbidden non-null assertion.
+  
+    1640 │           break;
+    1641 │         case "metadata-label":
+  > 1642 │           delete changed.diagnostics[0]!.document;
+         │                  ^^^^^^^^^^^^^^^^^^^^^^^
+    1643 │           break;
+    1644 │         case "schema-location":
+  
+  i Unsafe fix: Replace with optional chain operator ?. This operator includes runtime checks, so it is safer than the compile-only non-null assertion operator
+  
+    1640 1640 │             break;
+    1641 1641 │           case "metadata-label":
+    1642      │ - ··········delete·changed.diagnostics[0]!.document;
+         1642 │ + ··········delete·changed.diagnostics[0]?.document;
+    1643 1643 │             break;
+    1644 1644 │           case "schema-location":
+  
+
+apps/bdptest/src/read-update-matrix.test.ts:1645:11 lint/style/noNonNullAssertion ━━━━━━━━━━━━━━━━━━
+
+  ! Forbidden non-null assertion.
+  
+    1643 │           break;
+    1644 │         case "schema-location":
+  > 1645 │           changed.diagnostics[0]!.schemaLocation =
+         │           ^^^^^^^^^^^^^^^^^^^^^^^
+    1646 │             `${scope}schemas/schema-bead-child#/properties/n/minimum`;
+    1647 │           break;
+  
+
+apps/bdptest/src/read-update-matrix.test.ts:1841:13 lint/style/noNonNullAssertion ━━━━━━━━━━━━━━━━━━
+
+  ! Forbidden non-null assertion.
+  
+    1839 │           }
+    1840 │           if (patchControl === "schema-type")
+  > 1841 │             changed.body.diagnostics[0]!.type = `${scope}types/schema-bead-child`;
+         │             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    1842 │           if (patchControl === "schema-keyword")
+    1843 │             changed.body.diagnostics[0]!.schemaLocation = `${scope}schemas/schema-bead-base#/type`;
+  
+
+apps/bdptest/src/read-update-matrix.test.ts:1843:13 lint/style/noNonNullAssertion ━━━━━━━━━━━━━━━━━━
+
+  ! Forbidden non-null assertion.
+  
+    1841 │             changed.body.diagnostics[0]!.type = `${scope}types/schema-bead-child`;
+    1842 │           if (patchControl === "schema-keyword")
+  > 1843 │             changed.body.diagnostics[0]!.schemaLocation = `${scope}schemas/schema-bead-base#/type`;
+         │             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    1844 │           if (patchControl === "schema-pointer")
+    1845 │             changed.body.diagnostics[0]!.instanceLocation = "/propertiesChange/0/value";
+  
+
+apps/bdptest/src/read-update-matrix.test.ts:1845:13 lint/style/noNonNullAssertion ━━━━━━━━━━━━━━━━━━
+
+  ! Forbidden non-null assertion.
+  
+    1843 │             changed.body.diagnostics[0]!.schemaLocation = `${scope}schemas/schema-bead-base#/type`;
+    1844 │           if (patchControl === "schema-pointer")
+  > 1845 │             changed.body.diagnostics[0]!.instanceLocation = "/propertiesChange/0/value";
+         │             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    1846 │           if (patchControl === "schema-afterstate") changed.body.properties.n = 9;
+    1847 │           if (patchControl === "schema-metadata") changed.body.resource.metadata.n = 999;
+  
+
+apps/bdptest/src/read-update-matrix.test.ts:1856:13 lint/style/noNonNullAssertion ━━━━━━━━━━━━━━━━━━
+
+  ! Forbidden non-null assertion.
+  
+    1854 │           if (patchControl === "refusal-get") changed.body.properties.n = 9;
+    1855 │           if (patchControl === "diagnostic-document")
+  > 1856 │             changed.body.diagnostics[0]!.document = "properties";
+         │             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    1857 │           if (patchControl === "diagnostic-type")
+    1858 │             Object.assign(changed.body.diagnostics[0]!, {
+  
+
+apps/bdptest/src/read-update-matrix.test.ts:1858:27 lint/style/noNonNullAssertion ━━━━━━━━━━━━━━━━━━
+
+  ! Forbidden non-null assertion.
+  
+    1856 │             changed.body.diagnostics[0]!.document = "properties";
+    1857 │           if (patchControl === "diagnostic-type")
+  > 1858 │             Object.assign(changed.body.diagnostics[0]!, {
+         │                           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    1859 │               type: `${scope}types/task`,
+    1860 │               schemaLocation: `${scope}schemas/artificial#/type`,
+  
+
+apps/bdptest/src/read-update-matrix.test.ts:1920:56 lint/style/noNonNullAssertion  FIXABLE  ━━━━━━━━━━
+
+  ! Forbidden non-null assertion.
+  
+    1918 │           counterfactualApplications++;
+    1919 │           const results = changed.body.results;
+  > 1920 │           if (w2Counterfactual === "link-name") delete results[4]!.operationName;
+         │                                                        ^^^^^^^^^^^
+    1921 │           if (w2Counterfactual === "alias-index") results[5]!.operationIndex = 4;
+    1922 │           if (w2Counterfactual === "index") results[1]!.operationIndex = 9;
+  
+  i Unsafe fix: Replace with optional chain operator ?. This operator includes runtime checks, so it is safer than the compile-only non-null assertion operator
+  
+    1918 1918 │             counterfactualApplications++;
+    1919 1919 │             const results = changed.body.results;
+    1920      │ - ··········if·(w2Counterfactual·===·"link-name")·delete·results[4]!.operationName;
+         1920 │ + ··········if·(w2Counterfactual·===·"link-name")·delete·results[4]?.operationName;
+    1921 1921 │             if (w2Counterfactual === "alias-index") results[5]!.operationIndex = 4;
+    1922 1922 │             if (w2Counterfactual === "index") results[1]!.operationIndex = 9;
+  
+
+apps/bdptest/src/read-update-matrix.test.ts:1921:51 lint/style/noNonNullAssertion ━━━━━━━━━━━━━━━━━━
+
+  ! Forbidden non-null assertion.
+  
+    1919 │           const results = changed.body.results;
+    1920 │           if (w2Counterfactual === "link-name") delete results[4]!.operationName;
+  > 1921 │           if (w2Counterfactual === "alias-index") results[5]!.operationIndex = 4;
+         │                                                   ^^^^^^^^^^^
+    1922 │           if (w2Counterfactual === "index") results[1]!.operationIndex = 9;
+    1923 │           if (w2Counterfactual === "missing-name") delete results[1]!.operationName;
+  
+
+apps/bdptest/src/read-update-matrix.test.ts:1922:45 lint/style/noNonNullAssertion ━━━━━━━━━━━━━━━━━━
+
+  ! Forbidden non-null assertion.
+  
+    1920 │           if (w2Counterfactual === "link-name") delete results[4]!.operationName;
+    1921 │           if (w2Counterfactual === "alias-index") results[5]!.operationIndex = 4;
+  > 1922 │           if (w2Counterfactual === "index") results[1]!.operationIndex = 9;
+         │                                             ^^^^^^^^^^^
+    1923 │           if (w2Counterfactual === "missing-name") delete results[1]!.operationName;
+    1924 │           if (w2Counterfactual === "extra-name") results[2]!.operationName = "invented";
+  
+
+apps/bdptest/src/read-update-matrix.test.ts:1923:59 lint/style/noNonNullAssertion  FIXABLE  ━━━━━━━━━━
+
+  ! Forbidden non-null assertion.
+  
+    1921 │           if (w2Counterfactual === "alias-index") results[5]!.operationIndex = 4;
+    1922 │           if (w2Counterfactual === "index") results[1]!.operationIndex = 9;
+  > 1923 │           if (w2Counterfactual === "missing-name") delete results[1]!.operationName;
+         │                                                           ^^^^^^^^^^^
+    1924 │           if (w2Counterfactual === "extra-name") results[2]!.operationName = "invented";
+    1925 │           if (w2Counterfactual === "wrong-name") results[0]!.operationName = "wrong";
+  
+  i Unsafe fix: Replace with optional chain operator ?. This operator includes runtime checks, so it is safer than the compile-only non-null assertion operator
+  
+    1921 1921 │             if (w2Counterfactual === "alias-index") results[5]!.operationIndex = 4;
+    1922 1922 │             if (w2Counterfactual === "index") results[1]!.operationIndex = 9;
+    1923      │ - ··········if·(w2Counterfactual·===·"missing-name")·delete·results[1]!.operationName;
+         1923 │ + ··········if·(w2Counterfactual·===·"missing-name")·delete·results[1]?.operationName;
+    1924 1924 │             if (w2Counterfactual === "extra-name") results[2]!.operationName = "invented";
+    1925 1925 │             if (w2Counterfactual === "wrong-name") results[0]!.operationName = "wrong";
+  
+
+apps/bdptest/src/read-update-matrix.test.ts:1924:50 lint/style/noNonNullAssertion ━━━━━━━━━━━━━━━━━━
+
+  ! Forbidden non-null assertion.
+  
+    1922 │           if (w2Counterfactual === "index") results[1]!.operationIndex = 9;
+    1923 │           if (w2Counterfactual === "missing-name") delete results[1]!.operationName;
+  > 1924 │           if (w2Counterfactual === "extra-name") results[2]!.operationName = "invented";
+         │                                                  ^^^^^^^^^^^
+    1925 │           if (w2Counterfactual === "wrong-name") results[0]!.operationName = "wrong";
+    1926 │           if (w2Counterfactual === "problem")
+  
+
+apps/bdptest/src/read-update-matrix.test.ts:1925:50 lint/style/noNonNullAssertion ━━━━━━━━━━━━━━━━━━
+
+  ! Forbidden non-null assertion.
+  
+    1923 │           if (w2Counterfactual === "missing-name") delete results[1]!.operationName;
+    1924 │           if (w2Counterfactual === "extra-name") results[2]!.operationName = "invented";
+  > 1925 │           if (w2Counterfactual === "wrong-name") results[0]!.operationName = "wrong";
+         │                                                  ^^^^^^^^^^^
+    1926 │           if (w2Counterfactual === "problem")
+    1927 │             Object.assign(results[1]!, {
+  
+
+apps/bdptest/src/read-update-matrix.test.ts:1927:27 lint/style/noNonNullAssertion ━━━━━━━━━━━━━━━━━━
+
+  ! Forbidden non-null assertion.
+  
+    1925 │           if (w2Counterfactual === "wrong-name") results[0]!.operationName = "wrong";
+    1926 │           if (w2Counterfactual === "problem")
+  > 1927 │             Object.assign(results[1]!, {
+         │                           ^^^^^^^^^^^
+    1928 │               status: 404,
+    1929 │               type: "https://github.com/gastownhall/bdp/problems/not-found",
+  
+
+apps/bdptest/src/read-update-matrix.test.ts:1933:72 lint/style/noNonNullAssertion ━━━━━━━━━━━━━━━━━━
+
+  ! Forbidden non-null assertion.
+  
+    1931 │               retry: "after-state-change",
+    1932 │             });
+  > 1933 │           if (w2Counterfactual === "swap") [results[0], results[3]] = [results[3]!, results[0]!];
+         │                                                                        ^^^^^^^^^^^
+    1934 │           if (w2Counterfactual === "binding-id")
+    1935 │             results[1]!.resource!.id = `${scope}beads/wrong-dependent`;
+  
+
+apps/bdptest/src/read-update-matrix.test.ts:1933:85 lint/style/noNonNullAssertion ━━━━━━━━━━━━━━━━━━
+
+  ! Forbidden non-null assertion.
+  
+    1931 │               retry: "after-state-change",
+    1932 │             });
+  > 1933 │           if (w2Counterfactual === "swap") [results[0], results[3]] = [results[3]!, results[0]!];
+         │                                                                                     ^^^^^^^^^^^
+    1934 │           if (w2Counterfactual === "binding-id")
+    1935 │             results[1]!.resource!.id = `${scope}beads/wrong-dependent`;
+  
+
+The number of diagnostics exceeds the limit allowed. Use --max-diagnostics to increase it.
+Diagnostics not shown: 214.
+Checked 1 file in 103ms. No fixes applied.
+Found 226 warnings.
+Found 8 infos.

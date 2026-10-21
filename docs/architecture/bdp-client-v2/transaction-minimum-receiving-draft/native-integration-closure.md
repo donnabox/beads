@@ -1,0 +1,9 @@
+# Native integrated-source closure
+
+No discrepancy found. Read-only Git object, working-file and hash checks independently confirm clean HEAD `c18c71202c90fa2558f34107ad342befabf750fe`, tree `596abe870220fb61ce606f8382a9da52d554d063`, with ordered parents [`3cf662e8ccd75c9bd0fdb95953fdd676f1771aec`, `73fc0daed2e5fa6843e581de9bf7a46e519562ab`]. The author commit is a direct ordinary child of `5d7fa3f049fa0b4db3aa8dae20e20d8e47fb3854`. Working status is empty.
+
+All eleven final-source file hashes match both actual HEAD blobs and working files. The ten non-progress-document paths are byte-identical to the validated receiving-test-repair binding `b7082c68869b1cecd715ed8d6e0ef88c6ba064a2e698beddf02844ed4dc252fb`. Reconstructing the progress-document delta from its original snapshot produces exactly documentation-proposal/correction.patch `0bccadd84c1b6feeae9069c73b11d7450ca028564f02d62d70643352b4491668`; final progress SHA is `9aa001e2da6e37f0e12aa15fd124a489bc951519064370afbb76c9aee9aad185`.
+
+The actual main-to-integration diff contains exactly the eleven declared receiving paths. The four principal-cumulative files changed by main since the original author base are each byte-identical to actual main: apps/bdptest/src/transactional-matrix.test.ts, packages/conformance/src/transactional-cumulative.test.ts, and transactional manifest-v1.json/coverage-v1.json. No conflict resolution altered either slice.
+
+Binding: final-source.json SHA `273b5d230ddbac111b106463a5af351db14d77082d77e9c090b4802d96c0d923`. Original source positives and emitted negative control retain their original dirty-base attribution. This closure verifies integration identity and preservation only; it neither claims the fresh integrated build/installed cohorts/CI passed nor treats the timed-out full Claude review as a verdict. No product execution or source mutation performed.

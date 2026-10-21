@@ -1,0 +1,47 @@
+[
+  {
+    "path": "packages/server/src/development-authority.ts",
+    "kind": "modify",
+    "purpose": "Add private owner readConfiguration using store.scope, actual visitInstalledTypes, the same epoch/readLimits/bounds/capturedConfiguration already used by the lifecycle; no second metadata compiler or persisted authpolicy equality."
+  },
+  {
+    "path": "packages/server/src/development-runtime.ts",
+    "kind": "modify",
+    "purpose": "Factor internal core; add startPreparedDevelopmentReferenceRuntime(handle), strict registered RU handle, all owner/principal/read-route preparation before intended bind; old entry order/return/close semantics remain."
+  },
+  {
+    "path": "packages/server/src/transaction-runtime.ts",
+    "kind": "modify",
+    "purpose": "Factor capture-taking core; add startPreparedTransactionRuntime(handle), reuse registered preflight, validate owner readConfiguration and existing metadata before intended bind; preserve old entry and seams."
+  },
+  {
+    "path": "packages/server/src/reference-deployment-runtime.ts",
+    "kind": "new",
+    "purpose": "Private startPreparedReferenceDeployment(handle) dispatches only after WeakMap lookup; no caller admission bool/options, no package export; returns non-attesting lifecycle handle, private checked facts and completion."
+  },
+  {
+    "path": "packages/server/src/reference-deployment-runtime.test.ts",
+    "kind": "new",
+    "purpose": "Finite source-only real-store/delegating-mock ordering and failure callbacks from source-witnesses.json."
+  },
+  {
+    "path": "packages/server/src/reference-deployment-process.ts",
+    "kind": "new",
+    "purpose": "Private installed inherited-IPC bootstrap loads real file in same process, then prepared runtime, bounded stop/disconnect and fixed safe failures; no targets or secret-committing digests in ready/diagnostics."
+  },
+  {
+    "path": "apps/bdptest/src/reference-deployment-lifecycle-installed.test.ts",
+    "kind": "new",
+    "purpose": "Finite installed callbacks in installed-witnesses.json; real emitted private process and credentialed cold HTTP/reopen/cleanup; does not import source to impersonate installed entry."
+  },
+  {
+    "path": "scripts/smoke-executables.mjs",
+    "kind": "modify",
+    "purpose": "Closed emitted inventory adds exactly two new non-test module families (8 emitted files); refuse subpath/dist imports of both new private modules."
+  },
+  {
+    "path": "docs/design/startup-configuration.md",
+    "kind": "modify",
+    "purpose": "Document private intended-listener ordering, actual owner facts, errors/cleanup and absence of public activation; retain deployment bounds and redaction rules."
+  }
+]

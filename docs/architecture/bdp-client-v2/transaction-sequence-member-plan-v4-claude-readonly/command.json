@@ -1,0 +1,22 @@
+{
+  "argv": [
+    "/opt/homebrew/bin/claude",
+    "--safe-mode",
+    "-p",
+    "--tools",
+    "Read,Grep,Glob",
+    "--allowedTools",
+    "Read,Grep,Glob",
+    "--disallowedTools",
+    "Bash,Edit,Write",
+    "--permission-prompts",
+    "none",
+    "--no-session-persistence",
+    "--add-dir",
+    "/Users/dbox/repos/wt/vickie/bdp-integration-logs"
+  ],
+  "cwd": "/Users/dbox/repos/wt/vickie/vickie-command-minimum-evidence",
+  "stdin": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-sequence-member-plan-v4-claude-readonly/prompt.txt",
+  "timeoutSeconds": 900,
+  "launchStatus": "PREPARED_NOT_LAUNCHED"
+}

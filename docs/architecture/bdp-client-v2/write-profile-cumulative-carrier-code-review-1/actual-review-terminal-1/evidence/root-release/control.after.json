@@ -1,0 +1,31 @@
+{
+  "rootLaunchReleased": true,
+  "packet": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-cumulative-carrier-code-review-1/claude-code-review",
+  "expectedSession": "2026-10-18T02:16:24Z-549f",
+  "sourceRoot": "/Users/dbox/repos/wt/vickie/vickie-cumulative-evidence-carrier-minimum",
+  "reviewerArgv": [
+    "/opt/homebrew/bin/claude",
+    "--safe-mode",
+    "-p",
+    "--tools",
+    "Read,Glob,Grep",
+    "--allowedTools",
+    "Read,Glob,Grep",
+    "--disable-slash-commands",
+    "--strict-mcp-config",
+    "--mcp-config",
+    "{\"mcpServers\":{}}",
+    "--no-session-persistence",
+    "--output-format",
+    "stream-json",
+    "--verbose",
+    "--include-partial-messages"
+  ],
+  "outerTotalSeconds": 1800,
+  "termAtSeconds": 1790,
+  "killAtSeconds": 1798,
+  "noRetry": true,
+  "authority": "FINAL CLOSED FIRST carrier CODE exact clean2834/source3/map5e22, native/root static accepted. Packet mechanics then durable twoflag root launch release required; no product execution.",
+  "predecessorIndexSha256": "334f9b28c431c2cc7ce5e901f998396670a5c849f8e9900f0a2e7cb791b2db21",
+  "rootDispositionSha256": "1aef1ebb62ada08897d0118b1271001333055f4b78c6fe64b2f4b326db829d41"
+}

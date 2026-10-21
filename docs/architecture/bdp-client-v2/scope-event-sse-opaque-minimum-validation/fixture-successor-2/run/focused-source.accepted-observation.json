@@ -1,0 +1,737 @@
+{
+  "sourceIdentity": "bed43347256ca5a8b68883a42971a3c8e69a7f541e351d94e607f0ebc449a3b1",
+  "sourceBindingSha256": "74cba5a75d6e43858e1ef09f719d1a967052bc9de0ec614e0bf6b397ca597c03",
+  "qualification": false,
+  "selectedCallbacks": [
+    "gates initial Scope Event SSE opaque minima before scan packets",
+    "captures initial Scope Event SSE minima once and recaptures context on retry",
+    "drains an aborted initial Scope Event SSE minimum wait before owner close",
+    "serves initial Scope Event SSE opaque minima before conditional admission",
+    "Event reconnect syntax, minimum ordering and exact context codes are preserved over HTTP",
+    "conditions, HEAD,406 and shared cross-kind capacity preserve initial context without a stream slot",
+    "disconnect during an Event minimum wait releases the request without capturing a stream slot",
+    "serves initial finite Scope Event opaque minima through bounded waiting"
+  ],
+  "resultsSha256": "dace1f6d87ce7a5ef2d493137e86478dbd73f9ab544a4cfa0c40b49fcf5b2bb7",
+  "logSha256": "03263973497ef0badd2454afa456907b8a0e801b03030d4ab03f93c5cf1f716a",
+  "actualInstrumentedObservations": [
+    {
+      "observation": "scope-event-sse-minimum-owner",
+      "reads": 14,
+      "seedCommits": 1,
+      "cases": [
+        {
+          "label": "setup",
+          "outcome": "packet",
+          "groupObserverActive": false,
+          "groupPrepareCalls": null,
+          "context": {
+            "scopeEpoch": "e242875f-0782-4ae9-8438-915e8ed8ba37",
+            "authorizationView": "development-all-visible",
+            "scopePosition": "pos-1"
+          }
+        },
+        {
+          "label": "unknown",
+          "outcome": "TransactionMinimumUnproved",
+          "groupObserverActive": true,
+          "groupPrepareCalls": 0,
+          "context": {
+            "scopeEpoch": "e242875f-0782-4ae9-8438-915e8ed8ba37",
+            "authorizationView": "development-all-visible",
+            "scopePosition": "pos-1"
+          }
+        },
+        {
+          "label": "pos-01",
+          "outcome": "TransactionMinimumUnproved",
+          "groupObserverActive": true,
+          "groupPrepareCalls": 0,
+          "context": {
+            "scopeEpoch": "e242875f-0782-4ae9-8438-915e8ed8ba37",
+            "authorizationView": "development-all-visible",
+            "scopePosition": "pos-1"
+          }
+        },
+        {
+          "label": "future",
+          "outcome": "TransactionMinimumFailure",
+          "groupObserverActive": true,
+          "groupPrepareCalls": 0,
+          "context": {
+            "scopeEpoch": "e242875f-0782-4ae9-8438-915e8ed8ba37",
+            "authorizationView": "development-all-visible",
+            "scopePosition": "pos-1"
+          }
+        },
+        {
+          "label": "foreign",
+          "outcome": "TransactionMinimumUnsupported",
+          "groupObserverActive": true,
+          "groupPrepareCalls": 0
+        },
+        {
+          "label": "foreign",
+          "outcome": "TransactionMinimumUnsupported",
+          "groupObserverActive": true,
+          "groupPrepareCalls": 0
+        },
+        {
+          "label": "default",
+          "outcome": "TypeError",
+          "groupObserverActive": true,
+          "groupPrepareCalls": 0
+        },
+        {
+          "label": "after",
+          "outcome": "TypeError",
+          "groupObserverActive": true,
+          "groupPrepareCalls": 0
+        },
+        {
+          "label": "invalid-reconnect",
+          "outcome": "TypeError",
+          "groupObserverActive": true,
+          "groupPrepareCalls": 0
+        },
+        {
+          "label": "bead",
+          "outcome": "TypeError",
+          "groupObserverActive": true,
+          "groupPrepareCalls": 0
+        },
+        {
+          "label": "link",
+          "outcome": "TypeError",
+          "groupObserverActive": true,
+          "groupPrepareCalls": 0
+        },
+        {
+          "label": "missing",
+          "outcome": "missing",
+          "groupObserverActive": true,
+          "groupPrepareCalls": 0,
+          "context": {
+            "scopeEpoch": "e242875f-0782-4ae9-8438-915e8ed8ba37",
+            "authorizationView": "development-all-visible",
+            "scopePosition": "pos-1"
+          }
+        },
+        {
+          "label": "malformed",
+          "outcome": "TypeError",
+          "groupObserverActive": true,
+          "groupPrepareCalls": 0
+        },
+        {
+          "label": "known",
+          "outcome": "packet",
+          "groupObserverActive": true,
+          "groupPrepareCalls": 2,
+          "context": {
+            "scopeEpoch": "e242875f-0782-4ae9-8438-915e8ed8ba37",
+            "authorizationView": "development-all-visible",
+            "scopePosition": "pos-1"
+          }
+        }
+      ]
+    },
+    {
+      "observation": "scope-event-sse-minimum-capture",
+      "seedCommits": 1,
+      "interveningCommits": 1,
+      "serviceCalls": 5,
+      "ownerAttempts": 3,
+      "waits": 1,
+      "clockCalls": 4,
+      "ownerCloseCalls": 1,
+      "attempts": [
+        {
+          "minimum": {
+            "scopeEpoch": "a10fe601-b01c-4494-8f27-fe0bb9fac08a",
+            "authorizationView": "development-all-visible",
+            "minimumPosition": "unknown"
+          },
+          "outcome": "TransactionMinimumUnproved",
+          "context": {
+            "scopeEpoch": "a10fe601-b01c-4494-8f27-fe0bb9fac08a",
+            "authorizationView": "development-all-visible",
+            "scopePosition": "pos-1"
+          }
+        },
+        {
+          "minimum": {
+            "scopeEpoch": "a10fe601-b01c-4494-8f27-fe0bb9fac08a",
+            "authorizationView": "development-all-visible",
+            "minimumPosition": "unknown"
+          },
+          "outcome": "TransactionMinimumUnproved",
+          "context": {
+            "scopeEpoch": "a10fe601-b01c-4494-8f27-fe0bb9fac08a",
+            "authorizationView": "development-all-visible",
+            "scopePosition": "pos-2"
+          }
+        },
+        {
+          "minimum": {
+            "scopeEpoch": "a10fe601-b01c-4494-8f27-fe0bb9fac08a",
+            "authorizationView": "development-all-visible",
+            "minimumPosition": "pos-2"
+          },
+          "outcome": "packet",
+          "context": {
+            "scopeEpoch": "a10fe601-b01c-4494-8f27-fe0bb9fac08a",
+            "authorizationView": "development-all-visible",
+            "scopePosition": "pos-2"
+          }
+        }
+      ],
+      "probes": [
+        {
+          "call": 1,
+          "outcome": "TypeError"
+        },
+        {
+          "call": 2,
+          "outcome": "promise-returned"
+        },
+        {
+          "call": 3,
+          "outcome": "promise-returned"
+        },
+        {
+          "call": 4,
+          "outcome": "TypeError"
+        },
+        {
+          "call": 5,
+          "outcome": "Error"
+        }
+      ],
+      "finalContext": {
+        "scopeEpoch": "a10fe601-b01c-4494-8f27-fe0bb9fac08a",
+        "authorizationView": "development-all-visible",
+        "scopePosition": "pos-2"
+      },
+      "closed": true,
+      "failureCount": 0
+    },
+    {
+      "observation": "scope-event-sse-minimum-abort",
+      "seedCommits": 1,
+      "interveningCommits": 0,
+      "serviceCalls": 2,
+      "ownerAttempts": 1,
+      "waits": 1,
+      "clockCalls": 2,
+      "ownerCloseCalls": 1,
+      "rawPostCloseProbes": 1,
+      "probes": [
+        {
+          "call": 1,
+          "outcome": "promise-returned"
+        },
+        {
+          "call": 2,
+          "outcome": "Error"
+        }
+      ],
+      "operationOutcome": "aborted",
+      "synchronouslyUnsettled": true,
+      "closed": true,
+      "failureCount": 0
+    },
+    {
+      "observation": "scope-event-sse-minimum-http",
+      "requests": 31,
+      "records": [
+        {
+          "ordinal": 1,
+          "method": "POST",
+          "target": "operations/batch",
+          "status": 200,
+          "bodyBytes": 1024,
+          "context": {
+            "bdp-scope-epoch": "1a28204d-863c-4cba-9d23-9221789e85d8",
+            "bdp-authorization-view": "development-all-visible",
+            "bdp-scope-position": "pos-1"
+          }
+        },
+        {
+          "ordinal": 2,
+          "method": "GET",
+          "target": "events/",
+          "status": 200,
+          "bodyBytes": 1301,
+          "context": {
+            "bdp-scope-epoch": "1a28204d-863c-4cba-9d23-9221789e85d8",
+            "bdp-authorization-view": "development-all-visible",
+            "bdp-scope-position": "pos-1"
+          }
+        },
+        {
+          "ordinal": 3,
+          "method": "GET",
+          "target": "events/?after=ev_QMeMvEM1CC_rj-PZjzzCmBo4tQ2rDVz-5_YJcV3e198_bLUW9ljdXBysp41tfjGcabueApuHaoJDxyqyaQ2NBU4_RgIUXrU0P6WM7j6wYd02OFPUOAPbSxfmIxxMOjxonVU_pos-1_1",
+          "status": 200,
+          "bodyBytes": 1541,
+          "context": {
+            "bdp-scope-epoch": "1a28204d-863c-4cba-9d23-9221789e85d8",
+            "bdp-authorization-view": "development-all-visible",
+            "bdp-scope-position": "pos-1"
+          }
+        },
+        {
+          "ordinal": 4,
+          "method": "GET",
+          "target": "events/?after=ev_QMeMvEM1CC_rj-PZjzzCmBo4tQ2rDVz-5_YJcV3e198_bLUW9ljdXBysp41tfjGcabueApuHaoJDxyqyaQ2NBU4_RgIUXrU0P6WM7j6wYd02OFPUOAPbSxfmIxxMOjxonVU_pos-1_3",
+          "status": 200,
+          "bodyBytes": 735,
+          "context": {
+            "bdp-scope-epoch": "1a28204d-863c-4cba-9d23-9221789e85d8",
+            "bdp-authorization-view": "development-all-visible",
+            "bdp-scope-position": "pos-1"
+          }
+        },
+        {
+          "ordinal": 5,
+          "method": "HEAD",
+          "target": "events/",
+          "status": 200,
+          "bodyBytes": 0,
+          "context": {
+            "bdp-scope-epoch": "1a28204d-863c-4cba-9d23-9221789e85d8",
+            "bdp-authorization-view": "development-all-visible",
+            "bdp-scope-position": "pos-1"
+          }
+        },
+        {
+          "ordinal": 6,
+          "method": "GET",
+          "target": "events/",
+          "status": 503,
+          "bodyBytes": 127,
+          "context": {
+            "bdp-scope-epoch": "1a28204d-863c-4cba-9d23-9221789e85d8",
+            "bdp-authorization-view": "development-all-visible",
+            "bdp-scope-position": "pos-1"
+          }
+        },
+        {
+          "ordinal": 7,
+          "method": "HEAD",
+          "target": "events/",
+          "status": 503,
+          "bodyBytes": 0,
+          "context": {
+            "bdp-scope-epoch": "1a28204d-863c-4cba-9d23-9221789e85d8",
+            "bdp-authorization-view": "development-all-visible",
+            "bdp-scope-position": "pos-1"
+          }
+        },
+        {
+          "ordinal": 8,
+          "method": "GET",
+          "target": "events/",
+          "status": 503,
+          "bodyBytes": 127,
+          "context": {
+            "bdp-scope-epoch": "1a28204d-863c-4cba-9d23-9221789e85d8",
+            "bdp-authorization-view": "development-all-visible",
+            "bdp-scope-position": "pos-1"
+          }
+        },
+        {
+          "ordinal": 9,
+          "method": "HEAD",
+          "target": "events/",
+          "status": 503,
+          "bodyBytes": 0,
+          "context": {
+            "bdp-scope-epoch": "1a28204d-863c-4cba-9d23-9221789e85d8",
+            "bdp-authorization-view": "development-all-visible",
+            "bdp-scope-position": "pos-1"
+          }
+        },
+        {
+          "ordinal": 10,
+          "method": "GET",
+          "target": "events/",
+          "status": 503,
+          "bodyBytes": 127,
+          "context": {
+            "bdp-scope-epoch": "1a28204d-863c-4cba-9d23-9221789e85d8",
+            "bdp-authorization-view": "development-all-visible",
+            "bdp-scope-position": "pos-1"
+          }
+        },
+        {
+          "ordinal": 11,
+          "method": "HEAD",
+          "target": "events/",
+          "status": 503,
+          "bodyBytes": 0,
+          "context": {
+            "bdp-scope-epoch": "1a28204d-863c-4cba-9d23-9221789e85d8",
+            "bdp-authorization-view": "development-all-visible",
+            "bdp-scope-position": "pos-1"
+          }
+        },
+        {
+          "ordinal": 12,
+          "method": "GET",
+          "target": "events/",
+          "status": 503,
+          "bodyBytes": 127,
+          "context": {
+            "bdp-scope-epoch": "1a28204d-863c-4cba-9d23-9221789e85d8",
+            "bdp-authorization-view": "development-all-visible",
+            "bdp-scope-position": "pos-1"
+          }
+        },
+        {
+          "ordinal": 13,
+          "method": "HEAD",
+          "target": "events/",
+          "status": 503,
+          "bodyBytes": 0,
+          "context": {
+            "bdp-scope-epoch": "1a28204d-863c-4cba-9d23-9221789e85d8",
+            "bdp-authorization-view": "development-all-visible",
+            "bdp-scope-position": "pos-1"
+          }
+        },
+        {
+          "ordinal": 14,
+          "method": "GET",
+          "target": "events/",
+          "status": 400,
+          "bodyBytes": 118,
+          "context": {}
+        },
+        {
+          "ordinal": 15,
+          "method": "HEAD",
+          "target": "events/",
+          "status": 400,
+          "bodyBytes": 0,
+          "context": {}
+        },
+        {
+          "ordinal": 16,
+          "method": "GET",
+          "target": "events/",
+          "status": 503,
+          "bodyBytes": 127,
+          "context": {
+            "bdp-scope-epoch": "1a28204d-863c-4cba-9d23-9221789e85d8",
+            "bdp-authorization-view": "development-all-visible",
+            "bdp-scope-position": "pos-1"
+          }
+        },
+        {
+          "ordinal": 17,
+          "method": "HEAD",
+          "target": "events/",
+          "status": 503,
+          "bodyBytes": 0,
+          "context": {
+            "bdp-scope-epoch": "1a28204d-863c-4cba-9d23-9221789e85d8",
+            "bdp-authorization-view": "development-all-visible",
+            "bdp-scope-position": "pos-1"
+          }
+        },
+        {
+          "ordinal": 18,
+          "method": "GET",
+          "target": "events/",
+          "status": 500,
+          "bodyBytes": 0,
+          "context": {}
+        },
+        {
+          "ordinal": 19,
+          "method": "GET",
+          "target": "events/",
+          "status": 500,
+          "bodyBytes": 0,
+          "context": {}
+        },
+        {
+          "ordinal": 20,
+          "method": "GET",
+          "target": "events/?after=ev_QMeMvEM1CC_rj-PZjzzCmBo4tQ2rDVz-5_YJcV3e198_bLUW9ljdXBysp41tfjGcabueApuHaoJDxyqyaQ2NBU4_RgIUXrU0P6WM7j6wYd02OFPUOAPbSxfmIxxMOjxonVU_pos-1_0",
+          "status": 500,
+          "bodyBytes": 0,
+          "context": {}
+        },
+        {
+          "ordinal": 21,
+          "method": "GET",
+          "target": "events/?after=",
+          "status": 400,
+          "bodyBytes": 118,
+          "context": {}
+        },
+        {
+          "ordinal": 22,
+          "method": "GET",
+          "target": "events/",
+          "status": 500,
+          "bodyBytes": 0,
+          "context": {}
+        },
+        {
+          "ordinal": 23,
+          "method": "GET",
+          "target": "events/",
+          "status": 500,
+          "bodyBytes": 0,
+          "context": {}
+        },
+        {
+          "ordinal": 24,
+          "method": "GET",
+          "target": "events/",
+          "status": 500,
+          "bodyBytes": 0,
+          "context": {}
+        },
+        {
+          "ordinal": 25,
+          "method": "GET",
+          "target": "beads/a?view=events",
+          "status": 500,
+          "bodyBytes": 0,
+          "context": {}
+        },
+        {
+          "ordinal": 26,
+          "method": "GET",
+          "target": "links/l?view=events",
+          "status": 500,
+          "bodyBytes": 0,
+          "context": {}
+        },
+        {
+          "ordinal": 27,
+          "method": "GET",
+          "target": "beads/missing?view=events",
+          "status": 404,
+          "bodyBytes": 134,
+          "context": {
+            "bdp-scope-epoch": "1a28204d-863c-4cba-9d23-9221789e85d8",
+            "bdp-authorization-view": "development-all-visible",
+            "bdp-scope-position": "pos-1"
+          }
+        },
+        {
+          "ordinal": 28,
+          "method": "GET",
+          "target": "events/",
+          "status": 401,
+          "bodyBytes": 136,
+          "context": {}
+        },
+        {
+          "ordinal": 29,
+          "method": "HEAD",
+          "target": "events/",
+          "status": 304,
+          "bodyBytes": 0,
+          "context": {
+            "bdp-scope-epoch": "1a28204d-863c-4cba-9d23-9221789e85d8",
+            "bdp-authorization-view": "development-all-visible",
+            "bdp-scope-position": "pos-1"
+          }
+        },
+        {
+          "ordinal": 30,
+          "method": "HEAD",
+          "target": "events/",
+          "status": 412,
+          "bodyBytes": 0,
+          "context": {
+            "bdp-scope-epoch": "1a28204d-863c-4cba-9d23-9221789e85d8",
+            "bdp-authorization-view": "development-all-visible",
+            "bdp-scope-position": "pos-1"
+          }
+        },
+        {
+          "ordinal": 31,
+          "method": "GET",
+          "target": "events/",
+          "status": 200,
+          "bodyBytes": 3828,
+          "context": {
+            "bdp-scope-epoch": "1a28204d-863c-4cba-9d23-9221789e85d8",
+            "bdp-authorization-view": "development-all-visible",
+            "bdp-scope-position": "pos-1"
+          }
+        }
+      ],
+      "seedCommits": 1,
+      "elapsedMs": 294.83191599999986,
+      "baselinePages": [
+        {
+          "target": "events/",
+          "eventCount": 2,
+          "next": "https://event-sse.invalid/acme/events/?after=ev_QMeMvEM1CC_rj-PZjzzCmBo4tQ2rDVz-5_YJcV3e198_bLUW9ljdXBysp41tfjGcabueApuHaoJDxyqyaQ2NBU4_RgIUXrU0P6WM7j6wYd02OFPUOAPbSxfmIxxMOjxonVU_pos-1_1",
+          "context": {
+            "bdp-scope-epoch": "1a28204d-863c-4cba-9d23-9221789e85d8",
+            "bdp-authorization-view": "development-all-visible",
+            "bdp-scope-position": "pos-1"
+          }
+        },
+        {
+          "target": "events/?after=ev_QMeMvEM1CC_rj-PZjzzCmBo4tQ2rDVz-5_YJcV3e198_bLUW9ljdXBysp41tfjGcabueApuHaoJDxyqyaQ2NBU4_RgIUXrU0P6WM7j6wYd02OFPUOAPbSxfmIxxMOjxonVU_pos-1_1",
+          "eventCount": 2,
+          "next": "https://event-sse.invalid/acme/events/?after=ev_QMeMvEM1CC_rj-PZjzzCmBo4tQ2rDVz-5_YJcV3e198_bLUW9ljdXBysp41tfjGcabueApuHaoJDxyqyaQ2NBU4_RgIUXrU0P6WM7j6wYd02OFPUOAPbSxfmIxxMOjxonVU_pos-1_3",
+          "context": {
+            "bdp-scope-epoch": "1a28204d-863c-4cba-9d23-9221789e85d8",
+            "bdp-authorization-view": "development-all-visible",
+            "bdp-scope-position": "pos-1"
+          }
+        },
+        {
+          "target": "events/?after=ev_QMeMvEM1CC_rj-PZjzzCmBo4tQ2rDVz-5_YJcV3e198_bLUW9ljdXBysp41tfjGcabueApuHaoJDxyqyaQ2NBU4_RgIUXrU0P6WM7j6wYd02OFPUOAPbSxfmIxxMOjxonVU_pos-1_3",
+          "eventCount": 1,
+          "next": null,
+          "context": {
+            "bdp-scope-epoch": "1a28204d-863c-4cba-9d23-9221789e85d8",
+            "bdp-authorization-view": "development-all-visible",
+            "bdp-scope-position": "pos-1"
+          }
+        }
+      ],
+      "positive": {
+        "ready": true,
+        "status": 200,
+        "headers": {
+          "bdp-authorization-view": "development-all-visible",
+          "bdp-scope-epoch": "1a28204d-863c-4cba-9d23-9221789e85d8",
+          "bdp-scope-position": "pos-1",
+          "cache-control": "no-store, no-transform",
+          "content-type": "text/event-stream",
+          "vary": "Accept",
+          "x-bdp-development": "non-attesting",
+          "date": "Sat, 17 Oct 2026 17:58:48 GMT",
+          "connection": "close",
+          "transfer-encoding": "chunked"
+        },
+        "framesBeforeClose": [
+          "id: ev_QMeMvEM1CC_rj-PZjzzCmBo4tQ2rDVz-5_YJcV3e198_bLUW9ljdXBysp41tfjGcabueApuHaoJDxyqyaQ2NBU4_RgIUXrU0P6WM7j6wYd02OFPUOAPbSxfmIxxMOjxonVU_pos-1_0\nevent: created\ndata: {\"id\":\"ev_QMeMvEM1CC_rj-PZjzzCmBo4tQ2rDVz-5_YJcV3e198_bLUW9ljdXBysp41tfjGcabueApuHaoJDxyqyaQ2NBU4_RgIUXrU0P6WM7j6wYd02OFPUOAPbSxfmIxxMOjxonVU_pos-1_0\",\"ordinal\":0,\"type\":\"created\",\"source\":\"https://event-sse.invalid/acme/events/\",\"subject\":\"https://event-sse.invalid/acme/beads/a\",\"subjectType\":\"https://event-sse.invalid/acme/types/task\",\"transaction\":\"04554c6a-4b21-4821-a2a6-0ea33f4df9a0\",\"time\":\"2026-10-17T17:58:47.861Z\",\"data\":{\"revision\":\"de3653e1-171a-46a3-a758-3c86db700c6c\",\"properties\":{\"n\":0},\"metadata\":{}}}",
+          "id: ev_QMeMvEM1CC_rj-PZjzzCmBo4tQ2rDVz-5_YJcV3e198_bLUW9ljdXBysp41tfjGcabueApuHaoJDxyqyaQ2NBU4_RgIUXrU0P6WM7j6wYd02OFPUOAPbSxfmIxxMOjxonVU_pos-1_1\nevent: created\ndata: {\"id\":\"ev_QMeMvEM1CC_rj-PZjzzCmBo4tQ2rDVz-5_YJcV3e198_bLUW9ljdXBysp41tfjGcabueApuHaoJDxyqyaQ2NBU4_RgIUXrU0P6WM7j6wYd02OFPUOAPbSxfmIxxMOjxonVU_pos-1_1\",\"ordinal\":1,\"type\":\"created\",\"source\":\"https://event-sse.invalid/acme/events/\",\"subject\":\"https://event-sse.invalid/acme/beads/b\",\"subjectType\":\"https://event-sse.invalid/acme/types/task\",\"transaction\":\"04554c6a-4b21-4821-a2a6-0ea33f4df9a0\",\"time\":\"2026-10-17T17:58:47.861Z\",\"data\":{\"revision\":\"6d0af67b-fdb2-4575-b0fb-b46fc98042ca\",\"properties\":{\"n\":0},\"metadata\":{}}}",
+          "id: ev_QMeMvEM1CC_rj-PZjzzCmBo4tQ2rDVz-5_YJcV3e198_bLUW9ljdXBysp41tfjGcabueApuHaoJDxyqyaQ2NBU4_RgIUXrU0P6WM7j6wYd02OFPUOAPbSxfmIxxMOjxonVU_pos-1_2\nevent: created\ndata: {\"id\":\"ev_QMeMvEM1CC_rj-PZjzzCmBo4tQ2rDVz-5_YJcV3e198_bLUW9ljdXBysp41tfjGcabueApuHaoJDxyqyaQ2NBU4_RgIUXrU0P6WM7j6wYd02OFPUOAPbSxfmIxxMOjxonVU_pos-1_2\",\"ordinal\":2,\"type\":\"created\",\"source\":\"https://event-sse.invalid/acme/events/\",\"subject\":\"https://event-sse.invalid/acme/links/l\",\"subjectType\":\"https://event-sse.invalid/acme/types/link\",\"transaction\":\"04554c6a-4b21-4821-a2a6-0ea33f4df9a0\",\"time\":\"2026-10-17T17:58:47.861Z\",\"data\":{\"revision\":\"ea7ad20f-3059-4502-88ee-70a0e9021af7\",\"properties\":{\"n\":0},\"metadata\":{},\"source\":\"https://event-sse.invalid/acme/beads/a\",\"target\":\"https://event-sse.invalid/acme/beads/b\"}}",
+          "id: ev_QMeMvEM1CC_rj-PZjzzCmBo4tQ2rDVz-5_YJcV3e198_bLUW9ljdXBysp41tfjGcabueApuHaoJDxyqyaQ2NBU4_RgIUXrU0P6WM7j6wYd02OFPUOAPbSxfmIxxMOjxonVU_pos-1_3\nevent: linked\ndata: {\"id\":\"ev_QMeMvEM1CC_rj-PZjzzCmBo4tQ2rDVz-5_YJcV3e198_bLUW9ljdXBysp41tfjGcabueApuHaoJDxyqyaQ2NBU4_RgIUXrU0P6WM7j6wYd02OFPUOAPbSxfmIxxMOjxonVU_pos-1_3\",\"ordinal\":3,\"type\":\"linked\",\"source\":\"https://event-sse.invalid/acme/events/\",\"subject\":\"https://event-sse.invalid/acme/links/l\",\"subjectType\":\"https://event-sse.invalid/acme/types/link\",\"transaction\":\"04554c6a-4b21-4821-a2a6-0ea33f4df9a0\",\"time\":\"2026-10-17T17:58:47.861Z\",\"data\":{\"endpoint\":\"source\",\"link\":{\"id\":\"https://event-sse.invalid/acme/links/l\",\"type\":\"https://event-sse.invalid/acme/types/link\"},\"source\":\"https://event-sse.invalid/acme/beads/a\",\"target\":\"https://event-sse.invalid/acme/beads/b\"}}",
+          "id: ev_QMeMvEM1CC_rj-PZjzzCmBo4tQ2rDVz-5_YJcV3e198_bLUW9ljdXBysp41tfjGcabueApuHaoJDxyqyaQ2NBU4_RgIUXrU0P6WM7j6wYd02OFPUOAPbSxfmIxxMOjxonVU_pos-1_4\nevent: linked\ndata: {\"id\":\"ev_QMeMvEM1CC_rj-PZjzzCmBo4tQ2rDVz-5_YJcV3e198_bLUW9ljdXBysp41tfjGcabueApuHaoJDxyqyaQ2NBU4_RgIUXrU0P6WM7j6wYd02OFPUOAPbSxfmIxxMOjxonVU_pos-1_4\",\"ordinal\":4,\"type\":\"linked\",\"source\":\"https://event-sse.invalid/acme/events/\",\"subject\":\"https://event-sse.invalid/acme/links/l\",\"subjectType\":\"https://event-sse.invalid/acme/types/link\",\"transaction\":\"04554c6a-4b21-4821-a2a6-0ea33f4df9a0\",\"time\":\"2026-10-17T17:58:47.861Z\",\"data\":{\"endpoint\":\"target\",\"link\":{\"id\":\"https://event-sse.invalid/acme/links/l\",\"type\":\"https://event-sse.invalid/acme/types/link\"},\"source\":\"https://event-sse.invalid/acme/beads/a\",\"target\":\"https://event-sse.invalid/acme/beads/b\"}}"
+        ],
+        "framesAfterDrain": [
+          "id: ev_QMeMvEM1CC_rj-PZjzzCmBo4tQ2rDVz-5_YJcV3e198_bLUW9ljdXBysp41tfjGcabueApuHaoJDxyqyaQ2NBU4_RgIUXrU0P6WM7j6wYd02OFPUOAPbSxfmIxxMOjxonVU_pos-1_0\nevent: created\ndata: {\"id\":\"ev_QMeMvEM1CC_rj-PZjzzCmBo4tQ2rDVz-5_YJcV3e198_bLUW9ljdXBysp41tfjGcabueApuHaoJDxyqyaQ2NBU4_RgIUXrU0P6WM7j6wYd02OFPUOAPbSxfmIxxMOjxonVU_pos-1_0\",\"ordinal\":0,\"type\":\"created\",\"source\":\"https://event-sse.invalid/acme/events/\",\"subject\":\"https://event-sse.invalid/acme/beads/a\",\"subjectType\":\"https://event-sse.invalid/acme/types/task\",\"transaction\":\"04554c6a-4b21-4821-a2a6-0ea33f4df9a0\",\"time\":\"2026-10-17T17:58:47.861Z\",\"data\":{\"revision\":\"de3653e1-171a-46a3-a758-3c86db700c6c\",\"properties\":{\"n\":0},\"metadata\":{}}}",
+          "id: ev_QMeMvEM1CC_rj-PZjzzCmBo4tQ2rDVz-5_YJcV3e198_bLUW9ljdXBysp41tfjGcabueApuHaoJDxyqyaQ2NBU4_RgIUXrU0P6WM7j6wYd02OFPUOAPbSxfmIxxMOjxonVU_pos-1_1\nevent: created\ndata: {\"id\":\"ev_QMeMvEM1CC_rj-PZjzzCmBo4tQ2rDVz-5_YJcV3e198_bLUW9ljdXBysp41tfjGcabueApuHaoJDxyqyaQ2NBU4_RgIUXrU0P6WM7j6wYd02OFPUOAPbSxfmIxxMOjxonVU_pos-1_1\",\"ordinal\":1,\"type\":\"created\",\"source\":\"https://event-sse.invalid/acme/events/\",\"subject\":\"https://event-sse.invalid/acme/beads/b\",\"subjectType\":\"https://event-sse.invalid/acme/types/task\",\"transaction\":\"04554c6a-4b21-4821-a2a6-0ea33f4df9a0\",\"time\":\"2026-10-17T17:58:47.861Z\",\"data\":{\"revision\":\"6d0af67b-fdb2-4575-b0fb-b46fc98042ca\",\"properties\":{\"n\":0},\"metadata\":{}}}",
+          "id: ev_QMeMvEM1CC_rj-PZjzzCmBo4tQ2rDVz-5_YJcV3e198_bLUW9ljdXBysp41tfjGcabueApuHaoJDxyqyaQ2NBU4_RgIUXrU0P6WM7j6wYd02OFPUOAPbSxfmIxxMOjxonVU_pos-1_2\nevent: created\ndata: {\"id\":\"ev_QMeMvEM1CC_rj-PZjzzCmBo4tQ2rDVz-5_YJcV3e198_bLUW9ljdXBysp41tfjGcabueApuHaoJDxyqyaQ2NBU4_RgIUXrU0P6WM7j6wYd02OFPUOAPbSxfmIxxMOjxonVU_pos-1_2\",\"ordinal\":2,\"type\":\"created\",\"source\":\"https://event-sse.invalid/acme/events/\",\"subject\":\"https://event-sse.invalid/acme/links/l\",\"subjectType\":\"https://event-sse.invalid/acme/types/link\",\"transaction\":\"04554c6a-4b21-4821-a2a6-0ea33f4df9a0\",\"time\":\"2026-10-17T17:58:47.861Z\",\"data\":{\"revision\":\"ea7ad20f-3059-4502-88ee-70a0e9021af7\",\"properties\":{\"n\":0},\"metadata\":{},\"source\":\"https://event-sse.invalid/acme/beads/a\",\"target\":\"https://event-sse.invalid/acme/beads/b\"}}",
+          "id: ev_QMeMvEM1CC_rj-PZjzzCmBo4tQ2rDVz-5_YJcV3e198_bLUW9ljdXBysp41tfjGcabueApuHaoJDxyqyaQ2NBU4_RgIUXrU0P6WM7j6wYd02OFPUOAPbSxfmIxxMOjxonVU_pos-1_3\nevent: linked\ndata: {\"id\":\"ev_QMeMvEM1CC_rj-PZjzzCmBo4tQ2rDVz-5_YJcV3e198_bLUW9ljdXBysp41tfjGcabueApuHaoJDxyqyaQ2NBU4_RgIUXrU0P6WM7j6wYd02OFPUOAPbSxfmIxxMOjxonVU_pos-1_3\",\"ordinal\":3,\"type\":\"linked\",\"source\":\"https://event-sse.invalid/acme/events/\",\"subject\":\"https://event-sse.invalid/acme/links/l\",\"subjectType\":\"https://event-sse.invalid/acme/types/link\",\"transaction\":\"04554c6a-4b21-4821-a2a6-0ea33f4df9a0\",\"time\":\"2026-10-17T17:58:47.861Z\",\"data\":{\"endpoint\":\"source\",\"link\":{\"id\":\"https://event-sse.invalid/acme/links/l\",\"type\":\"https://event-sse.invalid/acme/types/link\"},\"source\":\"https://event-sse.invalid/acme/beads/a\",\"target\":\"https://event-sse.invalid/acme/beads/b\"}}",
+          "id: ev_QMeMvEM1CC_rj-PZjzzCmBo4tQ2rDVz-5_YJcV3e198_bLUW9ljdXBysp41tfjGcabueApuHaoJDxyqyaQ2NBU4_RgIUXrU0P6WM7j6wYd02OFPUOAPbSxfmIxxMOjxonVU_pos-1_4\nevent: linked\ndata: {\"id\":\"ev_QMeMvEM1CC_rj-PZjzzCmBo4tQ2rDVz-5_YJcV3e198_bLUW9ljdXBysp41tfjGcabueApuHaoJDxyqyaQ2NBU4_RgIUXrU0P6WM7j6wYd02OFPUOAPbSxfmIxxMOjxonVU_pos-1_4\",\"ordinal\":4,\"type\":\"linked\",\"source\":\"https://event-sse.invalid/acme/events/\",\"subject\":\"https://event-sse.invalid/acme/links/l\",\"subjectType\":\"https://event-sse.invalid/acme/types/link\",\"transaction\":\"04554c6a-4b21-4821-a2a6-0ea33f4df9a0\",\"time\":\"2026-10-17T17:58:47.861Z\",\"data\":{\"endpoint\":\"target\",\"link\":{\"id\":\"https://event-sse.invalid/acme/links/l\",\"type\":\"https://event-sse.invalid/acme/types/link\"},\"source\":\"https://event-sse.invalid/acme/beads/a\",\"target\":\"https://event-sse.invalid/acme/beads/b\"}}"
+        ],
+        "liveBeforeClose": {
+          "aborted": false,
+          "destroyed": false,
+          "elapsedMs": 2.998832999999877
+        },
+        "drained": true
+      },
+      "failureCount": 0
+    },
+    {
+      "observation": "finite-event-minimum-http",
+      "calls": 32,
+      "productChildren": 0,
+      "directoryAbsent": true,
+      "failureCount": 0
+    }
+  ],
+  "newObservationRecords": 4,
+  "historicalObservationRecords": 1,
+  "prospectiveWorkload": {
+    "prospectiveOnly": true,
+    "source": {
+      "callbacks": 8,
+      "newCallbacks": 4,
+      "legacyCallbacks": 4,
+      "http": 108,
+      "newHttp": 31,
+      "legacyHttp": [
+        28,
+        13,
+        4,
+        32
+      ],
+      "stores": 8,
+      "listeners": 5,
+      "ownerLifetimes": 8,
+      "newReports": 4,
+      "existingReports": 1,
+      "commits": 9
+    },
+    "installed": {
+      "callbacks": 2,
+      "http": 11,
+      "historicalHttp": 5,
+      "newHttp": 6,
+      "children": 3,
+      "stores": 2
+    },
+    "combined": {
+      "callbacks": 10,
+      "http": 119,
+      "stores": 10,
+      "ownerLifetimes": 11,
+      "commits": 11
+    },
+    "newOwnerServiceSubsetOnly": {
+      "liveOwnerBeginCalls": 18,
+      "rawClosedOwnerProbes": 1,
+      "serviceBeginCalls": 7,
+      "waits": 2,
+      "minimumClockCalls": 6,
+      "commits": 4,
+      "stores": 3
+    },
+    "newHttpStatuses": {
+      "200": 6,
+      "503": 10,
+      "500": 8,
+      "400": 3,
+      "404": 1,
+      "401": 1,
+      "304": 1,
+      "412": 1
+    },
+    "deadlinesMs": {
+      "newSourceCallbackUnchanged": 5000,
+      "heldEnteredGuard": 1000,
+      "newInstalledWork": 45000,
+      "newInstalledRequestAndRecorder": 5000,
+      "newInstalledTotalCleanup": 10000,
+      "newInstalledCallback": 60000,
+      "outerSupervisor": 120000,
+      "outerTERM": 115000
+    },
+    "runtimeAttempts": "Unmeasured; do not infer retry counts from deadlines or request counts.",
+    "corrections": {
+      "N1": "Historical successor1 assumed three Events; replaced by F1 five-Event accounting",
+      "N2": "D final positive uses callback-owned recorder/controller; no helper edit",
+      "N3": "A row1 preparations unobserved false/null; rows2-14 actual prepare-call counts, not executions/allocation",
+      "F1": "Seed preserved;five Events/three pages2+2+1, D31",
+      "F2": "Additional legacy32 callback, one commit, one store/listener; pair-only exception"
+    },
+    "amendedLegacyStatuses": {
+      "200": 6,
+      "503": 10,
+      "500": 10,
+      "400": 4,
+      "404": 2
+    }
+  },
+  "limitations": "Eight passed callbacks; only four new and one existing report are counted as runtime instrumentation. Remaining legacy request/commit counts are source-derived. SQL preparations are not executions/allocation counts; row1 is explicitly unobserved. Reported frames are complete Event identities; baseline full-body/schema/conditional/capacity assertions remain in pinned callbacks. Immediate closed-promise flag is only a synchronous observation; completed close/drain is separately required."
+}

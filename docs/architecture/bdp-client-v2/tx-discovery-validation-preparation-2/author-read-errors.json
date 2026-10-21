@@ -1,0 +1,36 @@
+{
+  "effect": "Read-only path discovery/printing only; no candidate/source/helper/runtime execution or changes",
+  "records": [
+    {
+      "action": "combined rg with guessed read-route.ts",
+      "cause": "File absent; readRoute is local transaction-http.ts208",
+      "exit": 2,
+      "id": 1,
+      "preservedIn": "author summary; source actual read corrected"
+    },
+    {
+      "action": "combined rg with guessed packages/conformance/src/profile-contract-plan.ts",
+      "cause": "File absent; actual test-support/profile-contract-plan.ts read",
+      "exit": 2,
+      "id": 2
+    },
+    {
+      "action": "combined rg guessed transaction-receipts.ts followed by successful reads",
+      "error": "rg reported absent guessed file; command overall0 due following read; actual transaction-store1196 inspected",
+      "exit": 0,
+      "id": 3
+    },
+    {
+      "action": "printing guessed predecessor/implementation-index.json followed by sed",
+      "error": "FileNotFoundError preserved in tool output; actual implementation-hashes.json discovered/read; no writes in failing read",
+      "exit": 0,
+      "id": 4
+    },
+    {
+      "action": "combined rg guessed transaction-receipt-read.ts followed by successful reads",
+      "error": "rg absent path; overall0 due later sed; transaction-store1196 randomUUID receipt identity read",
+      "exit": 0,
+      "id": 5
+    }
+  ]
+}

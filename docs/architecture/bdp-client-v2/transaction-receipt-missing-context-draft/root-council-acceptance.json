@@ -1,0 +1,52 @@
+{
+  "at": "2026-10-15T13:01:42.129075+00:00",
+  "decision": "accepted for ordinary eight-path commit and gated fresh installed validation",
+  "evidence": {
+    "originalSource": {
+      "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-receipt-missing-context-draft/source-binding.json",
+      "sha256": "edc5c98c8e5c82f2073e1bf35aa84098efe9552c7dbc74537784de75788cca5a"
+    },
+    "successorSource": {
+      "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-receipt-missing-context-draft/stale-assertion-repair/source-binding.json",
+      "sha256": "e96f012c8502285454eb3867f8b7b35c82c483ae3ceb3f7fc21eaa31127d0cf3"
+    },
+    "nativeCode": {
+      "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-receipt-missing-context-draft/native-code-review.md",
+      "sha256": "eab2936928c979c66b77fa5cb2afd0bd66c6e1215dc373d543da33aa11643c57"
+    },
+    "claudeCode": {
+      "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-receipt-missing-context-code-claude/stdout.txt",
+      "sha256": "96959814652b5360d014a6f67b162a1ff774aec8730cefe0da642371ddafb094"
+    },
+    "claudeCodeExit": {
+      "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-receipt-missing-context-code-claude/exit.json",
+      "sha256": "b00bd1a21ad587a7e06ee7b568dd985540ed3c6750d48e37bbed0a431a671c3a"
+    },
+    "sourceDispositions": {
+      "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-receipt-missing-context-draft/claude-code-source-dispositions.md",
+      "sha256": "0133f3c50a74c77656189d863633e6dc794cb5d263710de4a08bee0a6192775e"
+    },
+    "sourceAcceptance": {
+      "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-receipt-missing-context-draft/root-source-positive-acceptance.json",
+      "sha256": "2ca51c6b6c6fb41e38fd25b07cd569a6c79496e73ce7d1b55f433985cd04d9f6"
+    },
+    "controlAcceptance": {
+      "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-receipt-missing-context-draft/root-control-acceptance.json",
+      "sha256": "5dc8cb5b7ae9bb9841fcf030b8bcfb21963e653ee14fc1acc919467218fb9edb"
+    },
+    "staleCorrectionAcceptance": {
+      "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-receipt-missing-context-draft/root-stale-assertion-acceptance.json",
+      "sha256": "4fd63e9b5b283bcee55ed133e160c030abb7b8ad7acaf10abc89e0e9b892066b"
+    },
+    "supplement": {
+      "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-receipt-missing-context-draft/claude-stale-assertion-supplement/stdout.txt",
+      "sha256": "39decf262a2eef8ec689eebc65d0dfbc0384fd1c407f998c4a224471d41b44f1"
+    },
+    "supplementExit": {
+      "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-receipt-missing-context-draft/claude-stale-assertion-supplement/exit.json",
+      "sha256": "fa54e8b3e50dc167ccf34d072ccd1328e914df65f192e891d3150463c8460674"
+    }
+  },
+  "dispositions": "Root read complete original Claude output and all eight source dispositions. F1 corrected single stale assertion; root independently verified correction and targeted pass. F2 preserves historical draft checkpoint; F3/F4/F5/F8 resolved by actual source; F6/F7 optional with current behavior/evidence honest. Root read actual supplement; no blocking findings. Optional epoch equality and pre-existing body assertion are not required for this narrow correction; new focused source/installed witnesses separately check whole tuples. Supplement historical execution caveat preserved; later targeted execution is recorded separately.",
+  "boundaries": "Original control wrapper remains failed; separate audited acceptance does not relabel it. Original14 source cases and allbuild outputs remain attributed to original draft; successor adds one14-request existing callback. Fresh installed and exact-head full CI remain required, no public profile/release claim."
+}

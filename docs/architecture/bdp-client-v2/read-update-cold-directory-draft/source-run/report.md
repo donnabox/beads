@@ -1,0 +1,3 @@
+Fresh pinned build passed (exit0,1.934s). Exact seven selected CPU callbacks ran once: six passed, one failed,334 unselected skipped. No service or installed run.
+
+Sole failure: numeric admission historical coverage growth allowance at app4991 expects <=66560; actual718307−648157=70150. Proposed smallest correction is70150, preserving648157 historic base and all parser/runtime/time limits. This is a missed fourth source-data allowance. Source six hashes and patch remained exact. Both groups and all16 sampled PIDs were absent; CPU temp empty, build retained only node-compile-cache. No forced cleanup or timeout. Original logs and machine results retained; no rerun or source repair performed.

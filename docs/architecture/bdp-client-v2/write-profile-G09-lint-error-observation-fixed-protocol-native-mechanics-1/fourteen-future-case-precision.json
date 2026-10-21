@@ -1,0 +1,94 @@
+{
+  "all14ManuallyReviewedAgainstFullA_B_CAndAcceptedHelper": true,
+  "cases": [
+    {
+      "id": "D01",
+      "runtimeOutcome": "UNOBSERVED",
+      "stimulus": "child1 + actual retained actionable error + complete independent facts",
+      "textEvidence": "A typed child1/local observationComplete predicate; every root receipt remains pending classification/nonquality"
+    },
+    {
+      "id": "D02",
+      "runtimeOutcome": "UNOBSERVED",
+      "stimulus": "child1 without printable detail",
+      "textEvidence": "UNKNOWN_PENDING_ROOT_RAW_REVIEW remains fixed; no heuristic parser; root may only classify after actual raw"
+    },
+    {
+      "id": "D03",
+      "runtimeOutcome": "UNOBSERVED",
+      "stimulus": "child0",
+      "textEvidence": "A inner requires typed1; unchanged wrapper0 alone cannot satisfy inner predicate"
+    },
+    {
+      "id": "D04",
+      "runtimeOutcome": "UNOBSERVED",
+      "stimulus": "child2/negative/null or fatal/gate/parse failure",
+      "textEvidence": "A requires typed1 plus no errors; complete raw still needs root infrastructure classification; no final acceptance here"
+    },
+    {
+      "id": "D05",
+      "runtimeOutcome": "UNOBSERVED",
+      "stimulus": "filtered warnings/infos report zero",
+      "textEvidence": "manifest qualityAcceptancefalse and all root qualityPassfalse; no quality credit"
+    },
+    {
+      "id": "D06",
+      "runtimeOutcome": "UNOBSERVED",
+      "stimulus": "source/config/one of ten changes",
+      "textEvidence": "same712c/sourcef6 helper checks+pin, unchanged A source binding expectation"
+    },
+    {
+      "id": "D07",
+      "runtimeOutcome": "UNOBSERVED",
+      "stimulus": "tool bytes/realpath changes",
+      "textEvidence": "immutable helper gate/workspace30468 tools checks preserved; before/final rehash only authored here"
+    },
+    {
+      "id": "D08",
+      "runtimeOutcome": "UNOBSERVED",
+      "stimulus": "unbound external gate/manifest",
+      "textEvidence": "two whole-LF UNRESOLVED assignments; manifest must hash to bound64hex before outputs/spawn"
+    },
+    {
+      "id": "D09",
+      "runtimeOutcome": "UNOBSERVED",
+      "stimulus": "old P3 namespace supplied",
+      "textEvidence": "fixed singleton helper/dispatch/manifest literals; originalP3f672 staysclosed; no arbitrary argv"
+    },
+    {
+      "id": "D10",
+      "runtimeOutcome": "UNOBSERVED",
+      "stimulus": "old/new attempt path exists",
+      "textEvidence": "exclusive parent/stage/raw creation; helperE existsfalse; no retry"
+    },
+    {
+      "id": "D11",
+      "runtimeOutcome": "UNOBSERVED",
+      "stimulus": "partial stream/write/hash/close failure",
+      "textEvidence": "exact inherited full/prefix UNKNOWN retention; received/saved/hashed/fstat/EOF/close conjunction unchanged"
+    },
+    {
+      "id": "D12",
+      "runtimeOutcome": "UNOBSERVED",
+      "stimulus": "missing actualA/Bterminal or clockwitness",
+      "textEvidence": "actual preceding tool IDs still UNRESOLVED/guarded; RAW_EXIT0 protects normal route; C origin<115"
+    },
+    {
+      "id": "D13",
+      "runtimeOutcome": "UNOBSERVED",
+      "stimulus": "matching PID/PGID zombie/reused/present",
+      "textEvidence": "exact literal census/selection/directhandle/reap/matching[] checks retained; no unsafe historical signal"
+    },
+    {
+      "id": "D14",
+      "runtimeOutcome": "UNOBSERVED",
+      "stimulus": ">=115 normal/120 outer or forced cleanup",
+      "textEvidence": "all inherited comparisons and UNKNOWN/error paths unchanged; no normal completion or retry"
+    }
+  ],
+  "everyRuntimeOutcomeUnobserved": true,
+  "fatalInfrastructureRaw1NotSufficientForFinalCompleteErrorStatus": true,
+  "rootClassifiesActualFullSeverityFilteredRawOnlyAfterCompleteEvidence": true,
+  "sourceCorrectionsQualityNextStageNeverGranted": true,
+  "testsOrProgramsExecuted": 0
+}

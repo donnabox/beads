@@ -1,0 +1,39 @@
+{
+  "activationStaticPathsExact": 5,
+  "compositeAuthorityPaths": 340,
+  "currentStaticCompositePathsExact": 339,
+  "firstAuthorityCommit": "e6bc417149fee3c2e7e22410ee499d970b70c5a6",
+  "historicalSolePlanSnapshots": [
+    {
+      "current": {
+        "bytes": 426665,
+        "mode": "0o644",
+        "sha256": "46bcca9885b2c8151e5053c0a1386b51e6fdcc9b95005f51b1818e1ea53e234c"
+      },
+      "historicalPublication": {
+        "bytes": 424432,
+        "mode": "0o644",
+        "sha256": "56dc3f2c223e7c0dece66f3b3b9679dde5be957c8e1f2d27bcc403184c579704"
+      },
+      "meaning": "Historical sole-plan version, subsequently advanced by root; not claimed current-equal or source execution drift",
+      "path": "/Users/dbox/repos/wt/vickie/bdp-client-design/checkout/docs/architecture/bdp-client-v2/design.md"
+    },
+    {
+      "current": {
+        "bytes": 426665,
+        "mode": "0o644",
+        "sha256": "46bcca9885b2c8151e5053c0a1386b51e6fdcc9b95005f51b1818e1ea53e234c"
+      },
+      "historicalActivation": {
+        "bytes": 425649,
+        "mode": "0o644",
+        "sha256": "051180d75b1efcf762795e7ef64a0f5286333e7ff2a7d673428b7c60d703f316"
+      },
+      "meaning": "Later sole-plan advancement preserved; raw receipt historical",
+      "path": "/Users/dbox/repos/wt/vickie/bdp-client-design/checkout/docs/architecture/bdp-client-v2/design.md"
+    }
+  ],
+  "preparedDocLiveGateRemainsHistoricalClosed": true,
+  "publicationBeforeActivationBeforeActual": "Retained source-attributed root receipts/dispatch order, not fresh Git/wire observation",
+  "secondActivationCommit": "4b225a5f77609d0815e6aa70bfe35bd57c3890ce"
+}

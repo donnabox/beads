@@ -1,0 +1,303 @@
+{
+  "status": "prospective only; no commands executed",
+  "sourceBindingSha256": "cf5d2cd13a57d4a01220f931bdd308a71c8709f5d185592b2f6a08347631c24e",
+  "titles": {
+    "A": "ignores partial and malformed copied read controls on each mutation carrier",
+    "B": "ignores complete copied tuples on every Transactional mutation target",
+    "C": "copied read controls preserve key revision and negotiation admission",
+    "D": "preserves authentication on commands carrying copied read controls without reserving keys",
+    "E": "keeps receipt minimum enforcement after commands ignore copied controls",
+    "RU": "ignores copied read minimum fields on Update singleton and sequence commands",
+    "S": "nonexecuting sequence refusal observation keeps excluded sequence responses unobserved and without refusal context",
+    "Q": "draft Transactional catalog strictly parses and binds every citation to the current specification text",
+    "TX18": "ignores command read controls while enforcing a later installed receipt minimum"
+  },
+  "commands": [
+    {
+      "name": "source-http",
+      "ids": [
+        "A",
+        "B",
+        "C",
+        "D",
+        "E"
+      ],
+      "cwd": "/Users/dbox/repos/wt/vickie/vickie-command-minimum",
+      "argv": [
+        "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+        "/Users/dbox/.cache/node/corepack/v1/pnpm/11.20.0/bin/pnpm.cjs",
+        "exec",
+        "vitest",
+        "run",
+        "packages/server/src/transaction-http.test.ts",
+        "--testNamePattern",
+        "^(?:ignores\\ partial\\ and\\ malformed\\ copied\\ read\\ controls\\ on\\ each\\ mutation\\ carrier|ignores\\ complete\\ copied\\ tuples\\ on\\ every\\ Transactional\\ mutation\\ target|copied\\ read\\ controls\\ preserve\\ key\\ revision\\ and\\ negotiation\\ admission|preserves\\ authentication\\ on\\ commands\\ carrying\\ copied\\ read\\ controls\\ without\\ reserving\\ keys|keeps\\ receipt\\ minimum\\ enforcement\\ after\\ commands\\ ignore\\ copied\\ controls)$",
+        "--maxWorkers=1",
+        "--reporter=verbose",
+        "--reporter=json",
+        "--outputFile=/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-command-minimum-draft/execution/source-http.json"
+      ],
+      "expectedCases": 5,
+      "supervisorSeconds": 120,
+      "executed": false
+    },
+    {
+      "name": "service-exclusions",
+      "ids": [
+        "S"
+      ],
+      "cwd": "/Users/dbox/repos/wt/vickie/vickie-command-minimum",
+      "argv": [
+        "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+        "/Users/dbox/.cache/node/corepack/v1/pnpm/11.20.0/bin/pnpm.cjs",
+        "exec",
+        "vitest",
+        "run",
+        "packages/server/src/transaction-service.test.ts",
+        "--testNamePattern",
+        "^(?:nonexecuting\\ sequence\\ refusal\\ observation\\ keeps\\ excluded\\ sequence\\ responses\\ unobserved\\ and\\ without\\ refusal\\ context)$",
+        "--maxWorkers=1",
+        "--reporter=verbose",
+        "--reporter=json",
+        "--outputFile=/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-command-minimum-draft/execution/service-exclusions.json"
+      ],
+      "expectedCases": 1,
+      "supervisorSeconds": 120,
+      "executed": false
+    },
+    {
+      "name": "catalog-citations",
+      "ids": [
+        "Q"
+      ],
+      "cwd": "/Users/dbox/repos/wt/vickie/vickie-command-minimum",
+      "argv": [
+        "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+        "/Users/dbox/.cache/node/corepack/v1/pnpm/11.20.0/bin/pnpm.cjs",
+        "exec",
+        "vitest",
+        "run",
+        "packages/conformance/src/transactional-catalog.test.ts",
+        "--testNamePattern",
+        "^(?:draft\\ Transactional\\ catalog\\ strictly\\ parses\\ and\\ binds\\ every\\ citation\\ to\\ the\\ current\\ specification\\ text)$",
+        "--maxWorkers=1",
+        "--reporter=verbose",
+        "--reporter=json",
+        "--outputFile=/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-command-minimum-draft/execution/catalog-citations.json"
+      ],
+      "expectedCases": 1,
+      "supervisorSeconds": 120,
+      "executed": false
+    },
+    {
+      "name": "ru-emitted",
+      "ids": [
+        "RU"
+      ],
+      "cwd": "/Users/dbox/repos/wt/vickie/vickie-command-minimum",
+      "argv": [
+        "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+        "/Users/dbox/.cache/node/corepack/v1/pnpm/11.20.0/bin/pnpm.cjs",
+        "exec",
+        "vitest",
+        "run",
+        "apps/bdptest/src/installed-reference.test.ts",
+        "--testNamePattern",
+        "^(?:ignores\\ copied\\ read\\ minimum\\ fields\\ on\\ Update\\ singleton\\ and\\ sequence\\ commands)$",
+        "--maxWorkers=1",
+        "--reporter=verbose",
+        "--reporter=json",
+        "--outputFile=/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-command-minimum-draft/execution/ru-emitted.json"
+      ],
+      "expectedCases": 1,
+      "supervisorSeconds": 120,
+      "executed": false
+    },
+    {
+      "name": "fresh-tx18",
+      "ids": [
+        "TX18"
+      ],
+      "cwd": "/Users/dbox/repos/wt/vickie/vickie-command-minimum",
+      "argv": [
+        "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+        "/Users/dbox/.cache/node/corepack/v1/pnpm/11.20.0/bin/pnpm.cjs",
+        "exec",
+        "vitest",
+        "run",
+        "apps/bdptest/src/transactional-collection-minimum-installed.test.ts",
+        "--testNamePattern",
+        "^(?:ignores\\ command\\ read\\ controls\\ while\\ enforcing\\ a\\ later\\ installed\\ receipt\\ minimum)$",
+        "--maxWorkers=1",
+        "--reporter=verbose",
+        "--reporter=json",
+        "--outputFile=/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-command-minimum-draft/execution/fresh-tx18.json"
+      ],
+      "expectedCases": 1,
+      "supervisorSeconds": 120,
+      "executed": false,
+      "requiredEnv": {
+        "BDP_TRANSACTIONAL_INSTALLED_ENTRY": "REQUIRED exact fresh installed private entry",
+        "BDP_TRANSACTIONAL_SOURCE_COMMIT": "REQUIRED future clean frozen source commit (not parent draft)"
+      },
+      "hardGate": "Root measured release, prior source/control checks pass, clean signed source freeze, fresh source/tar/consumer/dependency/payload audit"
+    }
+  ],
+  "controls": [
+    {
+      "name": "restore-command-refusal",
+      "ids": [
+        "A"
+      ],
+      "cwd": "REQUIRED disposable isolated derivative workspace",
+      "argv": [
+        "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+        "/Users/dbox/.cache/node/corepack/v1/pnpm/11.20.0/bin/pnpm.cjs",
+        "exec",
+        "vitest",
+        "run",
+        "packages/server/src/transaction-http.test.ts",
+        "--testNamePattern",
+        "^(?:ignores\\ partial\\ and\\ malformed\\ copied\\ read\\ controls\\ on\\ each\\ mutation\\ carrier)$",
+        "--maxWorkers=1",
+        "--reporter=verbose",
+        "--reporter=json",
+        "--outputFile=/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-command-minimum-draft/execution/restore-command-refusal.json"
+      ],
+      "expectedCases": 1,
+      "supervisorSeconds": 120,
+      "executed": false,
+      "mustBuildBeforeSelectedTest": true,
+      "expectedExit": 1,
+      "expectedHttp": 1,
+      "maximumHttp": 27,
+      "patchSha256": "a161069337888b3605f453ed67af8c1eb50abb6b6f3f9d3758c8787668d1bb58",
+      "patch": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-command-minimum-draft/restore-command-refusal.patch",
+      "mustRetainNamedInnerAssertion": true
+    },
+    {
+      "name": "bypass-receipt-root-minimum",
+      "ids": [
+        "E"
+      ],
+      "cwd": "REQUIRED disposable isolated derivative workspace",
+      "argv": [
+        "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+        "/Users/dbox/.cache/node/corepack/v1/pnpm/11.20.0/bin/pnpm.cjs",
+        "exec",
+        "vitest",
+        "run",
+        "packages/server/src/transaction-http.test.ts",
+        "--testNamePattern",
+        "^(?:keeps\\ receipt\\ minimum\\ enforcement\\ after\\ commands\\ ignore\\ copied\\ controls)$",
+        "--maxWorkers=1",
+        "--reporter=verbose",
+        "--reporter=json",
+        "--outputFile=/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-command-minimum-draft/execution/bypass-receipt-root-minimum.json"
+      ],
+      "expectedCases": 1,
+      "supervisorSeconds": 120,
+      "executed": false,
+      "mustBuildBeforeSelectedTest": true,
+      "expectedExit": 1,
+      "expectedHttp": 2,
+      "maximumHttp": 6,
+      "patchSha256": "ef665809f6821f8af08b61d00f821dcd5d1f9de1f50cb5cd95213fb120d40b0a",
+      "patch": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-command-minimum-draft/bypass-receipt-root-minimum.patch",
+      "mustRetainNamedInnerAssertion": true
+    }
+  ],
+  "sourceTotals": {
+    "positiveCases": 8,
+    "controlledCases": 2,
+    "expectedHttp": 89,
+    "maximumHttp": 119,
+    "directories": 9,
+    "ownerOpens": 15,
+    "listenerLifetimes": 15,
+    "readonlyInventoryHandles": 6,
+    "installedChildren": 1,
+    "directHandleCallsNotHttp": 6,
+    "expectedMethods": {
+      "POST": 60,
+      "GET": 28,
+      "HEAD": 1
+    },
+    "maximumMethods": {
+      "POST": 77,
+      "GET": 40,
+      "HEAD": 2
+    }
+  },
+  "freshInstalledTotals": {
+    "cases": 1,
+    "expectedAndMaximumHttp": 18,
+    "installedChildren": 1,
+    "directories": 1,
+    "owners": 1,
+    "listeners": 1,
+    "urls": 9,
+    "methods": {
+      "POST": 8,
+      "GET": 9,
+      "HEAD": 1
+    }
+  },
+  "combinedExpectedHttp": 107,
+  "combinedMaximumHttp": 137,
+  "combinedChildren": 2,
+  "notPermissionToTransferAllowanceBetweenCases": true,
+  "routineChecksAfterRootRelease": [
+    [
+      "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+      "/Users/dbox/.cache/node/corepack/v1/pnpm/11.20.0/bin/pnpm.cjs",
+      "install",
+      "--offline",
+      "--frozen-lockfile"
+    ],
+    [
+      "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+      "/Users/dbox/.cache/node/corepack/v1/pnpm/11.20.0/bin/pnpm.cjs",
+      "typecheck"
+    ],
+    [
+      "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+      "/Users/dbox/.cache/node/corepack/v1/pnpm/11.20.0/bin/pnpm.cjs",
+      "build"
+    ],
+    [
+      "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+      "/Users/dbox/.cache/node/corepack/v1/pnpm/11.20.0/bin/pnpm.cjs",
+      "exec",
+      "biome",
+      "format",
+      "apps/bdptest/src/installed-reference.test.ts",
+      "apps/bdptest/src/transactional-collection-minimum-installed.test.ts",
+      "packages/server/src/transaction-http.test.ts",
+      "packages/server/src/transaction-http.ts",
+      "packages/server/src/transaction-service.test.ts"
+    ],
+    [
+      "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+      "/Users/dbox/.cache/node/corepack/v1/pnpm/11.20.0/bin/pnpm.cjs",
+      "exec",
+      "biome",
+      "lint",
+      "apps/bdptest/src/installed-reference.test.ts",
+      "apps/bdptest/src/transactional-collection-minimum-installed.test.ts",
+      "packages/server/src/transaction-http.test.ts",
+      "packages/server/src/transaction-http.ts",
+      "packages/server/src/transaction-service.test.ts"
+    ],
+    [
+      "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+      "/Users/dbox/.cache/node/corepack/v1/pnpm/11.20.0/bin/pnpm.cjs",
+      "check:boundaries"
+    ],
+    [
+      "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+      "/Users/dbox/.cache/node/corepack/v1/pnpm/11.20.0/bin/pnpm.cjs",
+      "evidence:verify"
+    ]
+  ]
+}

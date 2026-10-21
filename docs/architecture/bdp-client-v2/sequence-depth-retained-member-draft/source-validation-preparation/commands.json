@@ -1,0 +1,264 @@
+{
+  "status": "CLOSED command plan; no execution gate or runtime; reanchor/release required",
+  "authorSourceBindingSha256": "987f61764ca09df676f77ab5b99a8886809f4ce7908342bc8c27fd462fddcc81",
+  "selectionSha256": "940f2785f5212b454652860672799d83fb62bc013ef043ddf44ced7fe84187b2",
+  "finalIntegratedHead": null,
+  "finalIntegratedTree": null,
+  "rootRelease": null,
+  "commands": [
+    {
+      "id": "offline-setup",
+      "cwd": "/Users/dbox/repos/wt/vickie/vickie-sequence-depth-retained",
+      "argv": [
+        "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+        "/Users/dbox/.cache/node/corepack/v1/pnpm/11.20.0/bin/pnpm.cjs",
+        "install",
+        "--offline",
+        "--frozen-lockfile",
+        "--ignore-scripts"
+      ],
+      "supervisorSeconds": 120,
+      "cases": 0,
+      "http": 0,
+      "owners": 0,
+      "listeners": 0,
+      "directories": 0,
+      "productChildren": 0,
+      "ownedTempPrefixes": []
+    },
+    {
+      "id": "typecheck",
+      "cwd": "/Users/dbox/repos/wt/vickie/vickie-sequence-depth-retained",
+      "argv": [
+        "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+        "/Users/dbox/.cache/node/corepack/v1/pnpm/11.20.0/bin/pnpm.cjs",
+        "run",
+        "typecheck"
+      ],
+      "supervisorSeconds": 120,
+      "cases": 0,
+      "http": 0,
+      "owners": 0,
+      "listeners": 0,
+      "directories": 0,
+      "productChildren": 0,
+      "ownedTempPrefixes": []
+    },
+    {
+      "id": "build",
+      "cwd": "/Users/dbox/repos/wt/vickie/vickie-sequence-depth-retained",
+      "argv": [
+        "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+        "/Users/dbox/.cache/node/corepack/v1/pnpm/11.20.0/bin/pnpm.cjs",
+        "run",
+        "build"
+      ],
+      "supervisorSeconds": 120,
+      "cases": 0,
+      "http": 0,
+      "owners": 0,
+      "listeners": 0,
+      "directories": 0,
+      "productChildren": 0,
+      "ownedTempPrefixes": []
+    },
+    {
+      "id": "format-check",
+      "cwd": "/Users/dbox/repos/wt/vickie/vickie-sequence-depth-retained",
+      "argv": [
+        "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+        "/Users/dbox/.cache/node/corepack/v1/pnpm/11.20.0/bin/pnpm.cjs",
+        "run",
+        "format:check"
+      ],
+      "supervisorSeconds": 120,
+      "cases": 0,
+      "http": 0,
+      "owners": 0,
+      "listeners": 0,
+      "directories": 0,
+      "productChildren": 0,
+      "ownedTempPrefixes": []
+    },
+    {
+      "id": "lint",
+      "cwd": "/Users/dbox/repos/wt/vickie/vickie-sequence-depth-retained",
+      "argv": [
+        "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+        "/Users/dbox/.cache/node/corepack/v1/pnpm/11.20.0/bin/pnpm.cjs",
+        "run",
+        "lint"
+      ],
+      "supervisorSeconds": 120,
+      "cases": 0,
+      "http": 0,
+      "owners": 0,
+      "listeners": 0,
+      "directories": 0,
+      "productChildren": 0,
+      "ownedTempPrefixes": []
+    },
+    {
+      "id": "boundaries",
+      "cwd": "/Users/dbox/repos/wt/vickie/vickie-sequence-depth-retained",
+      "argv": [
+        "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+        "/Users/dbox/.cache/node/corepack/v1/pnpm/11.20.0/bin/pnpm.cjs",
+        "run",
+        "check:boundaries"
+      ],
+      "supervisorSeconds": 120,
+      "cases": 0,
+      "http": 0,
+      "owners": 0,
+      "listeners": 0,
+      "directories": 0,
+      "productChildren": 0,
+      "ownedTempPrefixes": []
+    },
+    {
+      "id": "read-seal",
+      "cwd": "/Users/dbox/repos/wt/vickie/vickie-sequence-depth-retained",
+      "argv": [
+        "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+        "/Users/dbox/.cache/node/corepack/v1/pnpm/11.20.0/bin/pnpm.cjs",
+        "run",
+        "evidence:verify"
+      ],
+      "supervisorSeconds": 120,
+      "cases": 0,
+      "http": 0,
+      "owners": 0,
+      "listeners": 0,
+      "directories": 0,
+      "productChildren": 0,
+      "ownedTempPrefixes": []
+    },
+    {
+      "id": "preparation-positive",
+      "cwd": "/Users/dbox/repos/wt/vickie/vickie-sequence-depth-retained",
+      "argv": [
+        "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+        "/Users/dbox/repos/wt/vickie/vickie-sequence-depth-retained/node_modules/.pnpm/vitest@4.1.10_@types+node@24.13.3_vite@8.2.1_@types+node@24.13.3_/node_modules/vitest/vitest.mjs",
+        "run",
+        "packages/server/src/transaction-set.test.ts",
+        "-t",
+        "^(?:keeps\\ receiving\\ depth\\ facts\\ private\\ while\\ legacy\\ preparation\\ still\\ throws|annotates\\ only\\ deep\\ sequence\\ members\\ after\\ complete\\ carrier\\ syntax\\ while\\ strict\\ preparation\\ stays\\ strict)$",
+        "--maxWorkers=1",
+        "--reporter=verbose",
+        "--reporter=json",
+        "--outputFile=/Users/dbox/repos/wt/vickie/bdp-integration-logs/sequence-depth-retained-member-draft/source-validation-preparation/run/preparation-positive.vitest.json"
+      ],
+      "supervisorSeconds": 120,
+      "cases": 2,
+      "selectedFullNames": [
+        "keeps receiving depth facts private while legacy preparation still throws",
+        "annotates only deep sequence members after complete carrier syntax while strict preparation stays strict"
+      ],
+      "http": 0,
+      "owners": 0,
+      "directories": 0,
+      "listeners": 0,
+      "productChildren": 0,
+      "ownedTempPrefixes": []
+    },
+    {
+      "id": "sequence-positive",
+      "cwd": "/Users/dbox/repos/wt/vickie/vickie-sequence-depth-retained",
+      "argv": [
+        "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+        "/Users/dbox/repos/wt/vickie/vickie-sequence-depth-retained/node_modules/.pnpm/vitest@4.1.10_@types+node@24.13.3_vite@8.2.1_@types+node@24.13.3_/node_modules/vitest/vitest.mjs",
+        "run",
+        "packages/server/src/transaction-sequence.test.ts",
+        "-t",
+        "^(?:private\\ Transactional\\ sequence\\ slice\\ runs\\ all\\ eight\\ explicit\\ operation\\ kinds\\ as\\ separate\\ commits\\ with\\ locator\\-only\\ aliases|private\\ Transactional\\ sequence\\ slice\\ reserves\\ all\\ unknown\\ keys\\ together,\\ commits\\ a\\ prefix,\\ continues\\ past\\ failure\\ and\\ permits\\ interleaving|private\\ Transactional\\ sequence\\ slice\\ joins\\ overlapping\\ presentations\\ without\\ running\\ a\\ completed\\ member\\ twice\\ and\\ projects\\ current\\ labels|private\\ Transactional\\ sequence\\ slice\\ projects\\ another\\ owner's\\ pending\\ receipt\\ before\\ immutable\\ mismatch\\ and\\ never\\ retracts\\ that\\ owner|private\\ Transactional\\ sequence\\ slice\\ shares\\ singleton\\ and\\ one\\-operation\\ batch\\ identity,\\ preserving\\ exact\\ numbers\\ and\\ creation\\ defaults|private\\ Transactional\\ sequence\\ slice\\ leaves\\ no\\ partial\\ bulk\\ admission\\ on\\ after\\-sequence\\-reservation\\ failure|private\\ Transactional\\ sequence\\ slice\\ leaves\\ no\\ partial\\ bulk\\ admission\\ on\\ after\\-sequence\\-admission\\ failure|private\\ Transactional\\ sequence\\ slice\\ classifies\\ foreign\\ key\\ state\\ at\\ its\\ turn\\ after\\ failed\\ detail\\ is\\ forgotten|private\\ Transactional\\ sequence\\ slice\\ compares\\ retained\\ deep\\ sequence\\ members\\ without\\ executing\\ them\\ or\\ replacing\\ their\\ receipts|private\\ Transactional\\ sequence\\ slice\\ rolls\\ back\\ every\\ new\\ reservation\\ when\\ a\\ fresh\\ deep\\ sequence\\ member\\ is\\ refused|private\\ Transactional\\ sequence\\ slice\\ refuses\\ fresh\\ depth\\ after\\ a\\ retained\\ failed\\ member\\ expires\\ between\\ sequence\\ turns|private\\ Transactional\\ sequence\\ slice\\ rejects\\ duplicate\\ keys\\ and\\ invalid\\ dependency\\ edges\\ before\\ any\\ key\\ effects|private\\ Transactional\\ sequence\\ slice\\ projects\\ mixed\\ retained,\\ conflicting,\\ failed\\ and\\ unknown\\ keys\\ in\\ declaration\\ order)$",
+        "--maxWorkers=1",
+        "--reporter=verbose",
+        "--reporter=json",
+        "--outputFile=/Users/dbox/repos/wt/vickie/bdp-integration-logs/sequence-depth-retained-member-draft/source-validation-preparation/run/sequence-positive.vitest.json"
+      ],
+      "supervisorSeconds": 120,
+      "cases": 13,
+      "selectedFullNames": [
+        "private Transactional sequence slice runs all eight explicit operation kinds as separate commits with locator-only aliases",
+        "private Transactional sequence slice reserves all unknown keys together, commits a prefix, continues past failure and permits interleaving",
+        "private Transactional sequence slice joins overlapping presentations without running a completed member twice and projects current labels",
+        "private Transactional sequence slice projects another owner's pending receipt before immutable mismatch and never retracts that owner",
+        "private Transactional sequence slice shares singleton and one-operation batch identity, preserving exact numbers and creation defaults",
+        "private Transactional sequence slice leaves no partial bulk admission on after-sequence-reservation failure",
+        "private Transactional sequence slice leaves no partial bulk admission on after-sequence-admission failure",
+        "private Transactional sequence slice classifies foreign key state at its turn after failed detail is forgotten",
+        "private Transactional sequence slice compares retained deep sequence members without executing them or replacing their receipts",
+        "private Transactional sequence slice rolls back every new reservation when a fresh deep sequence member is refused",
+        "private Transactional sequence slice refuses fresh depth after a retained failed member expires between sequence turns",
+        "private Transactional sequence slice rejects duplicate keys and invalid dependency edges before any key effects",
+        "private Transactional sequence slice projects mixed retained, conflicting, failed and unknown keys in declaration order"
+      ],
+      "http": 0,
+      "owners": 13,
+      "directories": 13,
+      "listeners": 0,
+      "productChildren": 0,
+      "ownedTempPrefixes": [
+        "bdp-transaction-sequence-"
+      ]
+    },
+    {
+      "id": "http-positive",
+      "cwd": "/Users/dbox/repos/wt/vickie/vickie-sequence-depth-retained",
+      "argv": [
+        "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+        "/Users/dbox/repos/wt/vickie/vickie-sequence-depth-retained/node_modules/.pnpm/vitest@4.1.10_@types+node@24.13.3_vite@8.2.1_@types+node@24.13.3_/node_modules/vitest/vitest.mjs",
+        "run",
+        "packages/server/src/transaction-http.test.ts",
+        "-t",
+        "^(?:labels\\ sequence\\ depth\\ gaps\\ honestly\\ and\\ keeps\\ sequence\\ capacity\\ distinct\\ from\\ direct\\ transaction\\ capacity|compares\\ retained\\ sequence\\ members\\ before\\ private\\ depth\\ refusal\\ and\\ preserves\\ receiving\\ failures|source\\-private\\ actual\\ Transactional\\ HTTP\\ rejects\\ sequence\\ carrier\\ syntax/keys/negotiation\\ before\\ claiming\\ any\\ member)$",
+        "--maxWorkers=1",
+        "--reporter=verbose",
+        "--reporter=json",
+        "--outputFile=/Users/dbox/repos/wt/vickie/bdp-integration-logs/sequence-depth-retained-member-draft/source-validation-preparation/run/http-positive.vitest.json"
+      ],
+      "supervisorSeconds": 120,
+      "cases": 3,
+      "selectedFullNames": [
+        "labels sequence depth gaps honestly and keeps sequence capacity distinct from direct transaction capacity",
+        "compares retained sequence members before private depth refusal and preserves receiving failures",
+        "source-private actual Transactional HTTP rejects sequence carrier syntax/keys/negotiation before claiming any member"
+      ],
+      "http": 21,
+      "owners": 3,
+      "directories": 3,
+      "listeners": 3,
+      "productChildren": 0,
+      "ownedTempPrefixes": [
+        "bdp-tx-http-"
+      ]
+    }
+  ],
+  "environment": {
+    "PATHPrefix": "/Users/dbox/.nvm/versions/node/v24.16.0/bin",
+    "TMPDIR": "exclusive stage directory under run/tmp; no inherited user state",
+    "BDPVariables": "strip inherited BDP_* except separately root-authorized exact installed vars; none for source"
+  },
+  "toolBinding": {
+    "node": "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+    "nodeSha256": "1ee75375e33b94fc34b3b19aede049e11dae90efb63b374dc96d6bdace70c4b8",
+    "pnpm": "/Users/dbox/.cache/node/corepack/v1/pnpm/11.20.0/bin/pnpm.cjs",
+    "pnpmSha256": "67b035e322203961795e8e34ca63a08c37a4386eda94107fb3d28f3246d882ad",
+    "expectedVitest": "/Users/dbox/repos/wt/vickie/vickie-sequence-depth-retained/node_modules/.pnpm/vitest@4.1.10_@types+node@24.13.3_vite@8.2.1_@types+node@24.13.3_/node_modules/vitest/vitest.mjs",
+    "expectedVitestSha256": "39db22f579acf5639bbb17a261408debbde03f4692c0c439e77e7f13aeba74d6",
+    "note": "Checkout node_modules absent at preparation. Path derived from same pinned lock/version in existing authorization checkout; after released offline setup verify actual realpath/hash before first test. No fallback to another checkout."
+  },
+  "supervision": {
+    "perStageSeconds": 120,
+    "TERMSeconds": 115,
+    "KILLSeconds": 120,
+    "automaticRetries": 0,
+    "required": "one stage at a time, source/fullpatch before+after, exact prior exits, exclusive rawlog/exit/process/temp evidence, selected passed titles/count from real JSON, reject unexpected executed cases/unhandled errors and retained stores; no cleanup that hides primary failure"
+  },
+  "imports": "Vitest setup source admission mock and eight-package source aliases; HTTP module imports emitted runtime dynamically at collection. Build must precede tests. Entire modules collect unselected callbacks; skipped are not executed credit.",
+  "separateGates": {
+    "emittedControl": "closed, separate full mirror/sole mutation/root release",
+    "installed": "closed, fresh clean integrated build/archive/eight-package/consumer/member proof and external entry; no workspace fallback qualification"
+  }
+}

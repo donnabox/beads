@@ -1,0 +1,161 @@
+--- effective-plan3/findings-resolution.json
++++ plan4/findings-resolution.json
+@@ -1,54 +1,106 @@
+ {
+-  "state": "CLOSED author precision resolution, native/root review pending",
+-  "rootDispositionSha256": "710297a3b6a04dc186b0f40315f827460d934e70e5ed145b8f20cd24eff02dcf",
+-  "N1": {
+-    "paths": [
+-      "input-schema.json",
+-      "output-schema.json",
+-      "lifecycle-and-adapters.json",
+-      "verification-order.json",
+-      "source-data-cases.json",
+-      "actual-interface-map.json",
+-      "plan.md"
+-    ],
+-    "decision": "distinct UnboundRUAttemptV1 configurationnull/all observationsnull until first genuine safe returned live bound configuration; no RU caller/signature/fake-binding change",
+-    "cases": [
+-      "L01",
+-      "L02",
+-      "L06"
+-    ]
+-  },
+-  "N2": {
+-    "paths": [
+-      "input-schema.json",
+-      "output-schema.json",
+-      "lifecycle-and-adapters.json",
+-      "source-data-cases.json",
+-      "actual-interface-map.json",
+-      "plan.md"
+-    ],
+-    "decision": "positive onObserved one exact legacy serialization, optional same-byte/digest return; genuine pre-hook comparison; carrier-only in-memory, no guessed file dependency/new raw copy/no default behavior-layout change",
+-    "cases": [
+-      "V06",
+-      "R20"
+-    ]
+-  },
+-  "N3": {
+-    "paths": [
+-      "output-schema.json",
+-      "verification-order.json",
+-      "source-data-cases.json",
+-      "plan.md"
+-    ],
+-    "decision": "reachedmissingplan not-implemented vs actual stopped remainder not-run; preserve indices/order/empty exchanges; unexecuted assertioncreditnull",
+-    "cases": [
+-      "V03",
+-      "V04"
+-    ]
+-  },
+-  "futureSourceFiles": 4,
+-  "dataCases": 48,
+-  "sourceAuthoringReleased": false,
+-  "reviewLaunchReleased": false,
+-  "runtimeReleased": false
++  "state": "COMPLETE ACTIVE all8 disposition map; independent precision/root pending",
++  "actualFindings": 8,
++  "sourcePaths": 4,
++  "dataCallbacks": 48,
++  "secondActualPlanAllowed": false,
++  "findings": [
++    {
++      "id": "F1",
++      "severity": "Medium",
++      "rootRequiredCorrection": "Mandatory distinct destinations from existing opt-in base: RU .read-update.profile.attempt.json/.read-update.profile.json, TX .transactional.profile.attempt.json/.transactional.profile.json. Refuse any exact existing destination before new output. FIRST creation of each path exclusive wx0600, never rename overwrite; later atomic replacement ONLY own previously created output, never preexisting/other attempt. Preserve legacy paths/default behavior. L10 covers both profiles/stale/collision inside existing callback. Exists-only check cannot authorize TOCTOU overwrite.",
++      "activeContracts": [
++        "plan.md",
++        "io-contract.json",
++        "lifecycle-and-adapters.json",
++        "source-data-cases.json:L10"
++      ],
++      "status": "planned; not implemented or executed"
++    },
++    {
++      "id": "F2",
++      "severity": "Medium",
++      "rootRequiredCorrection": "Join authored outcomes by manifest action.family: http uses exchanges[].assertions, every non-http uses actions[].assertions. Exact action/assertion ID binding and duplicates checked; no exchange-first fallback. Boolean precedence: false if any resolved passed:false, else null if any unresolved, else true only all authored IDs resolved passed:true. Counts/empty inventory/list adequacy never grants whole credit. Preserve RUdot/TXcolon conventions.",
++      "activeContracts": [
++        "plan.md",
++        "outcome-join-contract.json",
++        "verification-order.json",
++        "source-data-cases.json:V05/R22"
++      ],
++      "status": "planned; not implemented or executed"
++    },
++    {
++      "id": "F3",
++      "severity": "Medium",
++      "rootRequiredCorrection": "New carrier handoff refusal/missing/invalid never escapes observe or replaces genuine result/sessions/baseline: fixed failed/pending carrier with rawWrapperSha256:null, existing product assertions continue. Preserve ORIGINAL legacy hook serialization/write failures and cleanup aggregation. Isolate new acceptance from original hook exceptions. Sidecar IO failure confers no carrier success; exact validation checks missing/invalid evidence. No secret diagnostics or fabricated digest.",
++      "activeContracts": [
++        "plan.md",
++        "handoff-contract.json",
++        "lifecycle-and-adapters.json",
++        "error-contract.json",
++        "source-data-cases.json:L03/L05/R20/L10"
++      ],
++      "status": "planned; not implemented or executed"
++    },
++    {
++      "id": "F4",
++      "severity": "Low",
++      "rootRequiredCorrection": "Compare explicit JSON projections of genuine detached pre-hook result/sessions/baseline: existing canonicalJson(JSON.parse(JSON.stringify(preHookField))) versus canonicalJson(parsed actual field). This compares JSON representation ONLY; do not normalize rawWrapperSha256/source/config/package identity or replace once-serialized exact legacy wrapper. Refused/missing projection -> fixed evidence failure.",
++      "activeContracts": [
++        "plan.md",
++        "handoff-contract.json",
++        "input-schema.json",
++        "source-data-cases.json:V06/R20"
++      ],
++      "status": "planned; not implemented or executed"
++    },
++    {
++      "id": "F5",
++      "severity": "Low",
++      "rootRequiredCorrection": "Reuse unchanged copySourceBytes(source,manifest,4194304) and parseBoundedJson(bytes,manifest,constant private-profile-report label). No fifth file/newkind. Catch ConformanceArtifactBundleError -> fixed ProfileEvidenceError capacity for known byte/node/depth/container limits, invalid-source otherwise; no original message/cause/input echo. Classify exact safe helper error shapes or independent bounded facts, not arbitrary input substring. Preserve4MiB/100000nodes/128depth/10000container limits.",
++      "activeContracts": [
++        "plan.md",
++        "error-contract.json",
++        "input-schema.json",
++        "actual-interface-map.json",
++        "source-data-cases.json:R24"
++      ],
++      "status": "planned; not implemented or executed"
++    },
++    {
++      "id": "F6",
++      "severity": "Low",
++      "rootRequiredCorrection": "maxWorkers2 means explicit --maxWorkers=2 on source-validation CLI, not existing default. Callback default5s/configfile untouched; samefourpaths.",
++      "activeContracts": [
++        "plan.md",
++        "budgets-and-secrecy.json",
++        "validation-plan.json",
++        "source-data-cases.json"
++      ],
++      "status": "planned; not implemented or executed"
++    },
++    {
++      "id": "F7",
++      "severity": "Low",
++      "rootRequiredCorrection": "Serializer validates unbound exact closedKeys including configuration:null, fixedvalues, observations.length===requiredIds.length and allnull. Refuse missing/extra/wrongvalues invalid-source; exactly3exports/130RU/null and falseeligibility remain.",
++      "activeContracts": [
++        "plan.md",
++        "output-schema.json",
++        "verification-order.json",
++        "source-data-cases.json:L01/L02/L06"
++      ],
++      "status": "planned; not implemented or executed"
++    },
++    {
++      "id": "F8",
++      "severity": "Low",
++      "rootRequiredCorrection": "Footprint importDecision declares txTestToRUHelper ../test-support/read-update-artifact-execution.js; admissible existing test-source edge, no export/dependency/config/footprint expansion.",
++      "activeContracts": [
++        "plan.md",
++        "footprint.json",
++        "actual-interface-map.json"
++      ],
++      "status": "planned; not implemented or executed"
++    }
++  ]
+ }

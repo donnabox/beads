@@ -1,0 +1,330 @@
+--- /Users/dbox/repos/wt/vickie/bdp-integration-logs/event-admission-replay-validation/implementation/adaptation-report.md
++++ /Users/dbox/repos/wt/vickie/bdp-integration-logs/event-admission-replay-validation/metadata-successor-1/adaptation-report.md
+@@ -2,7 +2,7 @@
+ 
+ Actual author27 entries/source679/exact six dirty files are bound; source673 outside scope is preserved. Source identity is dirty draft on clean9f base, not a committed implementation. Exact source17 titles,12new/fourlegacy observations and separate installed5/new10 are derived from the frozen authored selection/schema/workload. No observations have run.
+ 
+-Main run/gate/archive mechanics copy the reviewed fresh-bootstrap current-observation correction-successor2: only worktree/base/namespace/stage names and human-readable identity are adapted. Archive/consumer graph and payload algorithm are unchanged; private consumer package name is inherited incidental metadata. There are21 ordered stages (fresh2bootstrap+19main), plus separate4 required checks. Consumer-install cwd retains run/consumer. No bootstrap/test/build evidence is reused. All releases/CODE dispositions false; base/workspace tools, root disposition, build/consumer evidence are null until measured/accepted. Exact eventual tool paths are commands/measurement targets, not asserted installed hashes.
++Main run/gate/archive mechanics copy the reviewed fresh-bootstrap current-observation correction-successor2: only worktree/base/namespace/stage names and human-readable identity are adapted. Archive/consumer graph and payload algorithm are unchanged; private consumer package name is renamed to current-event-admission-replay-external-consumer as a namespace-only change. There are21 ordered stages (fresh2bootstrap+19main), plus separate4 required checks. Consumer-install cwd retains run/consumer. No bootstrap/test/build evidence is reused. All releases/CODE dispositions false; base/workspace tools, root disposition, build/consumer evidence are null until measured/accepted. Exact eventual tool paths are commands/measurement targets, not asserted installed hashes.
+ 
+ The auditor reuses proven tool/build, exact Vitest result-name/file, report extraction, context/frame, archive and runtime identity primitives. Event-specific predicates replace prior current-observation/Scope-only assumptions: A3/B6/C2/D37, preparations-only baselines, captured tuple/context retry, returned post-close refusal attribution,37 ordered routes/status/context/HEAD/empty406 and sequential exact positive Event frames, four legacy actual report shapes. Historical reconnect28 has no extra report; its network count is source-derived, not reconstructed. Installed reports are exact historical5/restart2children and new10/onechild, nine completed terminal response records plus tenth SSE. Real source/payload/proof and child exit/closeEvent/owned directory absence are separate checks; historical reports do not gain a new closeEvent claim. Problem/full-body/schema and cursor sensitivity assertions remain in pinned passing callbacks; auditor does not invent hidden recorder error visibility or absent body data.
+ 
+--- /Users/dbox/repos/wt/vickie/bdp-integration-logs/event-admission-replay-validation/implementation/commands.json
++++ /Users/dbox/repos/wt/vickie/bdp-integration-logs/event-admission-replay-validation/metadata-successor-1/commands.json
+@@ -43,10 +43,10 @@
+       "termAfterSeconds": 115
+     },
+     "bind-workspace-tools": {
+-      "cwd": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/event-admission-replay-validation/implementation",
+-      "argv": [
+-        "/opt/homebrew/opt/python@3.14/bin/python3.14",
+-        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/event-admission-replay-validation/implementation/audit.py",
++      "cwd": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/event-admission-replay-validation/metadata-successor-1",
++      "argv": [
++        "/opt/homebrew/opt/python@3.14/bin/python3.14",
++        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/event-admission-replay-validation/metadata-successor-1/audit.py",
+         "tools"
+       ],
+       "outerSeconds": 120,
+@@ -129,10 +129,10 @@
+       "termAfterSeconds": 115
+     },
+     "bind-fresh-build": {
+-      "cwd": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/event-admission-replay-validation/implementation",
+-      "argv": [
+-        "/opt/homebrew/opt/python@3.14/bin/python3.14",
+-        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/event-admission-replay-validation/implementation/audit.py",
++      "cwd": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/event-admission-replay-validation/metadata-successor-1",
++      "argv": [
++        "/opt/homebrew/opt/python@3.14/bin/python3.14",
++        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/event-admission-replay-validation/metadata-successor-1/audit.py",
+         "build"
+       ],
+       "outerSeconds": 120,
+@@ -153,7 +153,7 @@
+         "--maxWorkers=1",
+         "--reporter=verbose",
+         "--reporter=json",
+-        "--outputFile.json=/Users/dbox/repos/wt/vickie/bdp-integration-logs/event-admission-replay-validation/implementation/run/focused-source.results.json",
++        "--outputFile.json=/Users/dbox/repos/wt/vickie/bdp-integration-logs/event-admission-replay-validation/metadata-successor-1/run/focused-source.results.json",
+         "--testNamePattern",
+         "^(?:gates\\ current\\ Event\\ replay\\ minima\\ before\\ cursor\\ validation:\\ scope|gates\\ current\\ Event\\ replay\\ minima\\ before\\ cursor\\ validation:\\ bead|gates\\ current\\ Event\\ replay\\ minima\\ before\\ cursor\\ validation:\\ link|captures\\ current\\ Event\\ replay\\ minimum\\ once\\ across\\ owner\\ entries:\\ scope\\-json|captures\\ current\\ Event\\ replay\\ minimum\\ once\\ across\\ owner\\ entries:\\ bead\\-json|captures\\ current\\ Event\\ replay\\ minimum\\ once\\ across\\ owner\\ entries:\\ link\\-json|captures\\ current\\ Event\\ replay\\ minimum\\ once\\ across\\ owner\\ entries:\\ scope\\-sse|captures\\ current\\ Event\\ replay\\ minimum\\ once\\ across\\ owner\\ entries:\\ bead\\-sse|captures\\ current\\ Event\\ replay\\ minimum\\ once\\ across\\ owner\\ entries:\\ link\\-sse|drains\\ current\\ Event\\ replay\\ admission\\ before\\ owner\\ close:\\ json|drains\\ current\\ Event\\ replay\\ admission\\ before\\ owner\\ close:\\ sse|serves\\ current\\ Event\\ replay\\ minima\\ across\\ media\\ and\\ reconnect\\ selection|serves\\ initial\\ finite\\ Scope\\ Event\\ opaque\\ minima\\ through\\ bounded\\ waiting|serves\\ initial\\ finite\\ Bead\\ Event\\ opaque\\ minima\\ with\\ retained\\ identity\\ and\\ route\\ fences|serves\\ initial\\ finite\\ Link\\ Event\\ opaque\\ minima\\ with\\ retained\\ identity\\ and\\ route\\ fences|serves\\ initial\\ Scope\\ Event\\ SSE\\ opaque\\ minima\\ before\\ conditional\\ admission|Event\\ reconnect\\ syntax,\\ minimum\\ ordering\\ and\\ exact\\ context\\ codes\\ are\\ preserved\\ over\\ HTTP)$"
+       ],
+@@ -216,10 +216,10 @@
+       }
+     },
+     "review-focused-source": {
+-      "cwd": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/event-admission-replay-validation/implementation",
+-      "argv": [
+-        "/opt/homebrew/opt/python@3.14/bin/python3.14",
+-        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/event-admission-replay-validation/implementation/audit.py",
++      "cwd": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/event-admission-replay-validation/metadata-successor-1",
++      "argv": [
++        "/opt/homebrew/opt/python@3.14/bin/python3.14",
++        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/event-admission-replay-validation/metadata-successor-1/audit.py",
+         "source"
+       ],
+       "outerSeconds": 120,
+@@ -243,10 +243,10 @@
+       "termAfterSeconds": 115
+     },
+     "prepare-package-directory": {
+-      "cwd": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/event-admission-replay-validation/implementation",
+-      "argv": [
+-        "/opt/homebrew/opt/python@3.14/bin/python3.14",
+-        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/event-admission-replay-validation/implementation/packages.py",
++      "cwd": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/event-admission-replay-validation/metadata-successor-1",
++      "argv": [
++        "/opt/homebrew/opt/python@3.14/bin/python3.14",
++        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/event-admission-replay-validation/metadata-successor-1/packages.py",
+         "directory"
+       ],
+       "outerSeconds": 120,
+@@ -265,7 +265,7 @@
+         "@bdp/protocol",
+         "pack",
+         "--pack-destination",
+-        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/event-admission-replay-validation/implementation/run/packages"
++        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/event-admission-replay-validation/metadata-successor-1/run/packages"
+       ],
+       "outerSeconds": 120,
+       "automaticRetries": 0,
+@@ -283,7 +283,7 @@
+         "@bdp/server",
+         "pack",
+         "--pack-destination",
+-        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/event-admission-replay-validation/implementation/run/packages"
++        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/event-admission-replay-validation/metadata-successor-1/run/packages"
+       ],
+       "outerSeconds": 120,
+       "automaticRetries": 0,
+@@ -293,10 +293,10 @@
+       "termAfterSeconds": 115
+     },
+     "verify-archives": {
+-      "cwd": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/event-admission-replay-validation/implementation",
+-      "argv": [
+-        "/opt/homebrew/opt/python@3.14/bin/python3.14",
+-        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/event-admission-replay-validation/implementation/packages.py",
++      "cwd": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/event-admission-replay-validation/metadata-successor-1",
++      "argv": [
++        "/opt/homebrew/opt/python@3.14/bin/python3.14",
++        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/event-admission-replay-validation/metadata-successor-1/packages.py",
+         "tar"
+       ],
+       "outerSeconds": 120,
+@@ -307,10 +307,10 @@
+       "termAfterSeconds": 115
+     },
+     "prepare-consumer": {
+-      "cwd": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/event-admission-replay-validation/implementation",
+-      "argv": [
+-        "/opt/homebrew/opt/python@3.14/bin/python3.14",
+-        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/event-admission-replay-validation/implementation/packages.py",
++      "cwd": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/event-admission-replay-validation/metadata-successor-1",
++      "argv": [
++        "/opt/homebrew/opt/python@3.14/bin/python3.14",
++        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/event-admission-replay-validation/metadata-successor-1/packages.py",
+         "consumer"
+       ],
+       "outerSeconds": 120,
+@@ -321,7 +321,7 @@
+       "termAfterSeconds": 115
+     },
+     "consumer-install": {
+-      "cwd": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/event-admission-replay-validation/implementation/run/consumer",
++      "cwd": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/event-admission-replay-validation/metadata-successor-1/run/consumer",
+       "argv": [
+         "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+         "/Users/dbox/.cache/node/corepack/v1/pnpm/11.20.0/bin/pnpm.cjs",
+@@ -339,10 +339,10 @@
+       "termAfterSeconds": 115
+     },
+     "verify-installed-consumer": {
+-      "cwd": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/event-admission-replay-validation/implementation",
+-      "argv": [
+-        "/opt/homebrew/opt/python@3.14/bin/python3.14",
+-        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/event-admission-replay-validation/implementation/packages.py",
++      "cwd": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/event-admission-replay-validation/metadata-successor-1",
++      "argv": [
++        "/opt/homebrew/opt/python@3.14/bin/python3.14",
++        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/event-admission-replay-validation/metadata-successor-1/packages.py",
+         "installed"
+       ],
+       "outerSeconds": 120,
+@@ -362,7 +362,7 @@
+         "--maxWorkers=1",
+         "--reporter=verbose",
+         "--reporter=json",
+-        "--outputFile.json=/Users/dbox/repos/wt/vickie/bdp-integration-logs/event-admission-replay-validation/implementation/run/historical-event-restart-external.results.json",
++        "--outputFile.json=/Users/dbox/repos/wt/vickie/bdp-integration-logs/event-admission-replay-validation/metadata-successor-1/run/historical-event-restart-external.results.json",
+         "--testNamePattern",
+         "^installed\\ Event\\ cursors\\ survive\\ restart\\ with\\ Last\\-Event\\-ID\\ precedence\\ and\\ source\\ binding$"
+       ],
+@@ -393,10 +393,10 @@
+       "expectedChildren": 2
+     },
+     "review-historical-event-restart-external": {
+-      "cwd": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/event-admission-replay-validation/implementation",
+-      "argv": [
+-        "/opt/homebrew/opt/python@3.14/bin/python3.14",
+-        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/event-admission-replay-validation/implementation/audit.py",
++      "cwd": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/event-admission-replay-validation/metadata-successor-1",
++      "argv": [
++        "/opt/homebrew/opt/python@3.14/bin/python3.14",
++        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/event-admission-replay-validation/metadata-successor-1/audit.py",
+         "history"
+       ],
+       "outerSeconds": 120,
+@@ -416,7 +416,7 @@
+         "--maxWorkers=1",
+         "--reporter=verbose",
+         "--reporter=json",
+-        "--outputFile.json=/Users/dbox/repos/wt/vickie/bdp-integration-logs/event-admission-replay-validation/implementation/run/current-event-admission-replay-external.results.json",
++        "--outputFile.json=/Users/dbox/repos/wt/vickie/bdp-integration-logs/event-admission-replay-validation/metadata-successor-1/run/current-event-admission-replay-external.results.json",
+         "--testNamePattern",
+         "^observes\\ installed\\ current\\ Event\\ replay\\ minimum\\ admission\\ across\\ sources$"
+       ],
+@@ -447,10 +447,10 @@
+       "expectedChildren": 1
+     },
+     "review-current-event-admission-replay-external": {
+-      "cwd": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/event-admission-replay-validation/implementation",
+-      "argv": [
+-        "/opt/homebrew/opt/python@3.14/bin/python3.14",
+-        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/event-admission-replay-validation/implementation/audit.py",
++      "cwd": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/event-admission-replay-validation/metadata-successor-1",
++      "argv": [
++        "/opt/homebrew/opt/python@3.14/bin/python3.14",
++        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/event-admission-replay-validation/metadata-successor-1/audit.py",
+         "replay"
+       ],
+       "outerSeconds": 120,
+@@ -480,7 +480,7 @@
+   "postBootstrapStages": 19,
+   "totalStages": 21,
+   "reusedEvidence": [],
+-  "sourceBindingSha256": "18b462abd5920fd09ee1a3eaede84c8c7d5b2025000ee66fa98e295890642f55",
++  "sourceBindingSha256": "6837b28c3ec6c75bf9c085f002029932a65b3c32e7da482cf3497b3f7d8dd4c9",
+   "helperImplementationFinalized": true,
+   "runtimeTempPolicy": {
+     "root": "/private/tmp",
+--- /Users/dbox/repos/wt/vickie/bdp-integration-logs/event-admission-replay-validation/implementation/execution-gate.json
++++ /Users/dbox/repos/wt/vickie/bdp-integration-logs/event-admission-replay-validation/metadata-successor-1/execution-gate.json
+@@ -8,9 +8,9 @@
+   "staticValidationAuthorized": false,
+   "nativeCodeReviewDisposed": false,
+   "actualClaudeReviewDisposed": false,
+-  "implementationIndexSha256": "0d93a4ca72085344477896df0a84c00d1ab7c9960763a62496423b273f4c6639",
++  "implementationIndexSha256": "0fd67fd942f4da9d9045832450a2ac62f2dc8aa4063e1f0b7adda250ffe45184",
+   "sourceBinding": {
+-    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/event-admission-replay-validation/implementation/source-binding.json",
++    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/event-admission-replay-validation/metadata-successor-1/source-binding.json",
+     "sha256": "6837b28c3ec6c75bf9c085f002029932a65b3c32e7da482cf3497b3f7d8dd4c9"
+   },
+   "baseTools": null,
+--- /Users/dbox/repos/wt/vickie/bdp-integration-logs/event-admission-replay-validation/implementation/implementation-hashes.json
++++ /Users/dbox/repos/wt/vickie/bdp-integration-logs/event-admission-replay-validation/metadata-successor-1/implementation-hashes.json
+@@ -4,15 +4,15 @@
+     "gate.py": "c3baf741b512160bbde95e9b14f92d3c86d5eed5da339754a6b6e9fa4ae0ea10",
+     "packages.py": "6364a727f70971e068d4fd75926734b331252703dd542a13e3ba1dd0acc4f44a",
+     "audit.py": "05bc4007e04bce0a438eee2f88f714c2a952c7a0f3b2f8d0a5704d6775018c03",
+-    "commands.json": "6a9dcd66e0c5caad97b87fe3b714c1a1512f80348560ab3087d843745c16c804",
++    "commands.json": "be119ee83850a2d0b9fda13da9b2055c6243c2afc0b774b6d2f260892acabbc7",
+     "source-binding.json": "6837b28c3ec6c75bf9c085f002029932a65b3c32e7da482cf3497b3f7d8dd4c9",
+     "selection.json": "b4587e00c2a3012e1c698905dddb5ff4dc66c4fe5e8e3166116b1acf469aa519",
+     "report-schemas.json": "596e3393642c75b13767a14aacdefe912a97070644c472bd2005dedc87cb56d6",
+     "workload.json": "9f9e09a91697ed8aafa52d3a4fc1003241cf3720ef8a84cdad61b0047dcc1aba",
+     "preservation.json": "c8854e93fab317787a7fa88d7e3ae6f428248dd5216640333aaed532d22e3df3",
+     "audit-expectations.json": "084b4519946f8b3b02fba2e95272f0f51c4c6cf00480c7bf0e650d13876c6860",
+-    "reference-pins.json": "fe27a6ae3e06ce364e2b475e6ff7b082f43fcd636ed92f7c3eef81f786952db9",
+-    "adaptation-report.md": "fe52127993ee0dcb073df6d5798ccf675576703cc9e9fff1f4ea4c9f6bdb8259",
++    "reference-pins.json": "4931cc4a3ec8f5303bd7531efb8c06a92fd98ab3481e13845a56a1b2a9d0ea9b",
++    "adaptation-report.md": "a950fbf2963614dc41b46908a63d64f88903662bb6494c96c9504af8be8bdda0",
+     "run.py.adaptation.patch": "1c1f178b23cc793a25caa0fa375734000f658523743ce45f80da0a9535bd0373",
+     "gate.py.adaptation.patch": "f1ee2d95623c029e1202159b8cde53b9f3f4d651cbcc70265de6825cbcc68ad1",
+     "packages.py.adaptation.patch": "0e08365a8c17c0758a44f6d48f720d4afcd432358789409bbb9d67f681ae3fef"
+--- /Users/dbox/repos/wt/vickie/bdp-integration-logs/event-admission-replay-validation/implementation/reference-pins.json
++++ /Users/dbox/repos/wt/vickie/bdp-integration-logs/event-admission-replay-validation/metadata-successor-1/reference-pins.json
+@@ -21,5 +21,9 @@
+   "/Users/dbox/repos/wt/vickie/bdp-integration-logs/current-observation-minimum-validation/correction-successor-2/gate.py": "8d9551bc10bdfab1c880761e5bc62a99ae3f393a2be7117e254d88d232c9f71c",
+   "/Users/dbox/repos/wt/vickie/bdp-integration-logs/current-observation-minimum-validation/correction-successor-2/packages.py": "e3f21d21914084dcefd1b278ee0365518bd341697cf104f474b0e502de377bb0",
+   "/Users/dbox/repos/wt/vickie/bdp-integration-logs/current-observation-minimum-validation/correction-successor-2/commands.json": "eb5dd36c1db1d67eb0e8aab6c2de4da6fe052d6b3a41698acd99a5e1b501dd0a",
+-  "/Users/dbox/repos/wt/vickie/bdp-integration-logs/current-observation-minimum-validation/correction-successor-2/audit.py": "7aa52ee6eaaefa31fede0cdf90ee5a84731ede964e5360fbd09caf0e73e68c19"
++  "/Users/dbox/repos/wt/vickie/bdp-integration-logs/current-observation-minimum-validation/correction-successor-2/audit.py": "7aa52ee6eaaefa31fede0cdf90ee5a84731ede964e5360fbd09caf0e73e68c19",
++  "/Users/dbox/repos/wt/vickie/bdp-integration-logs/event-admission-replay-validation/implementation/preparation-index.json": "b4a977020106e8db3ffca1bc26ce29b1d2c7a4053d37bbf344020b880141bef0",
++  "/Users/dbox/repos/wt/vickie/bdp-integration-logs/event-admission-replay-validation/required-checks/preparation-index.json": "33e9838cfc34266c03f2c4244296ff4b7bbee1b1a2163caf94c7d228f8206225",
++  "/Users/dbox/repos/wt/vickie/bdp-integration-logs/event-admission-replay-validation/implementation/root-metadata-correction.json": "28cb317e364b090f9d58250fd8c2b7785cb18ab8a5d759087422f531d8491393",
++  "/Users/dbox/repos/wt/vickie/bdp-integration-logs/event-admission-replay-validation/implementation/native-preparation-review.md": "34055dac10075a01fb873e94990770fea3392e5c7dd8fe86be55debead56f45b"
+ }
+--- /Users/dbox/repos/wt/vickie/bdp-integration-logs/event-admission-replay-validation/required-checks/commands.json
++++ /Users/dbox/repos/wt/vickie/bdp-integration-logs/event-admission-replay-validation/required-checks-metadata-successor-1/commands.json
+@@ -28,7 +28,7 @@
+         "scripts/e2e-ready.test.mjs",
+         "--reporter=verbose",
+         "--reporter=json",
+-        "--outputFile.json=/Users/dbox/repos/wt/vickie/bdp-integration-logs/event-admission-replay-validation/required-checks/run/preflight.results.json"
++        "--outputFile.json=/Users/dbox/repos/wt/vickie/bdp-integration-logs/event-admission-replay-validation/required-checks-metadata-successor-1/run/preflight.results.json"
+       ],
+       "outerSeconds": 120,
+       "termAfterSeconds": 115,
+--- /Users/dbox/repos/wt/vickie/bdp-integration-logs/event-admission-replay-validation/required-checks/execution-gate.json
++++ /Users/dbox/repos/wt/vickie/bdp-integration-logs/event-admission-replay-validation/required-checks-metadata-successor-1/execution-gate.json
+@@ -6,19 +6,19 @@
+   "nativeCodeReviewDisposed": false,
+   "freshBuild": null,
+   "sourceBinding": {
+-    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/event-admission-replay-validation/required-checks/source-binding.json",
++    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/event-admission-replay-validation/required-checks-metadata-successor-1/source-binding.json",
+     "sha256": "6837b28c3ec6c75bf9c085f002029932a65b3c32e7da482cf3497b3f7d8dd4c9"
+   },
+   "baseTools": null,
+   "workspaceTools": null,
+   "preparedArtifacts": {
+-    "commands.json": "3f065a4c0106e7a158d50b8227fea1a7730aa10a8c23a7c1f588f99caf6e872a",
++    "commands.json": "d09f4cefa9ffd041526a546f11c9680e57153350bffca0e1dce06eaa9b8e2a17",
+     "expectations.json": "0d084d8f8fbae1bb87f2c2c5ab4bfc1058490bca9d5f7ffebb59f2d4d127e7a9",
+-    "gate.py": "108e06c51fa90acbad82e5cc9411a8c232d0ffee467b1ae6700c82e8056a6b91",
++    "gate.py": "25e477366056ced666e146e26701c83000bcdf1146e2f804f5cef0ee5fa9dd79",
+     "gate.py.adaptation.patch": "10d8e857274302c9ae62f3cb95fe63a1318578177ef823d6257b5b97a4b5b021",
+     "historical-evidence-binding.json": "02d6acad9c0b9626691f3947ecb5dd394f2751419de31c406ee1457a23f63b2f",
+     "preparation-report.md": "73a585a6efad6a3bde18300039e9706c492639543a4404d664d21086c6b9cf89",
+-    "references.json": "b7a5de12ed2ebf03ee857f618a70b4f8b480161ea2bc08bd94df0594bb2483de",
++    "references.json": "8ab5d821310a0eaea0c82473819f83061f9706998017619fb33f553fa536c70a",
+     "run.py": "705ad2719439e04f349dd1bf140179692233c322561e5557ac2ab305f95de9fa",
+     "run.py.adaptation.patch": "b0ffb67977fde079b4ddc74177c81d8c7dd4a830081390c78960ecc772d17494",
+     "source-binding.json": "6837b28c3ec6c75bf9c085f002029932a65b3c32e7da482cf3497b3f7d8dd4c9"
+--- /Users/dbox/repos/wt/vickie/bdp-integration-logs/event-admission-replay-validation/required-checks/gate.py
++++ /Users/dbox/repos/wt/vickie/bdp-integration-logs/event-admission-replay-validation/required-checks-metadata-successor-1/gate.py
+@@ -1,7 +1,7 @@
+ from pathlib import Path
+ import json,hashlib,subprocess,os,importlib.util
+ P=Path(__file__).resolve().parent
+-V=Path("/Users/dbox/repos/wt/vickie/bdp-integration-logs/event-admission-replay-validation/implementation")
++V=Path("/Users/dbox/repos/wt/vickie/bdp-integration-logs/event-admission-replay-validation/metadata-successor-1")
+ W=Path("/Users/dbox/repos/wt/vickie/vickie-event-admission-replay-minimum")
+ E=P/'run';MODE='final'
+ sha=lambda b:hashlib.sha256(b).hexdigest()
+--- /Users/dbox/repos/wt/vickie/bdp-integration-logs/event-admission-replay-validation/required-checks/references.json
++++ /Users/dbox/repos/wt/vickie/bdp-integration-logs/event-admission-replay-validation/required-checks-metadata-successor-1/references.json
+@@ -1,12 +1,15 @@
+ {
+   "files": {
+-    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/event-admission-replay-validation/implementation/gate.py": "c3baf741b512160bbde95e9b14f92d3c86d5eed5da339754a6b6e9fa4ae0ea10",
+-    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/event-admission-replay-validation/implementation/source-binding.json": "6837b28c3ec6c75bf9c085f002029932a65b3c32e7da482cf3497b3f7d8dd4c9",
+-    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/event-admission-replay-validation/implementation/commands.json": "6a9dcd66e0c5caad97b87fe3b714c1a1512f80348560ab3087d843745c16c804",
+-    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/event-admission-replay-validation/implementation/implementation-hashes.json": "0d93a4ca72085344477896df0a84c00d1ab7c9960763a62496423b273f4c6639",
++    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/event-admission-replay-validation/metadata-successor-1/gate.py": "c3baf741b512160bbde95e9b14f92d3c86d5eed5da339754a6b6e9fa4ae0ea10",
++    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/event-admission-replay-validation/metadata-successor-1/source-binding.json": "6837b28c3ec6c75bf9c085f002029932a65b3c32e7da482cf3497b3f7d8dd4c9",
++    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/event-admission-replay-validation/metadata-successor-1/commands.json": "be119ee83850a2d0b9fda13da9b2055c6243c2afc0b774b6d2f260892acabbc7",
++    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/event-admission-replay-validation/metadata-successor-1/implementation-hashes.json": "0fd67fd942f4da9d9045832450a2ac62f2dc8aa4063e1f0b7adda250ffe45184",
+     "/Users/dbox/repos/wt/vickie/bdp-integration-logs/event-admission-replay-validation/successor-2/plan.md": "ae6c10ff60e68dc236e2b207a793b2eb273f34c32a2a6d6b26c7f38efb302b93",
+     "/Users/dbox/repos/wt/vickie/bdp-integration-logs/event-admission-replay-validation/successor-2/native-plan-review.md": "c9dd0c896ef1cff35f1a48673e0d09e395878329a61eac6a45ac08fb46ada21b",
+     "/Users/dbox/repos/wt/vickie/bdp-integration-logs/event-admission-replay-author/preparation-index.json": "e94a2ce59c1ddab279adc2e29c4512ce65556cb2bd92f838a9e6e37363112fe9",
+-    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/guarded-action.py": "fd81ba029cd4e7c7e60623df89e8292af91141d311d9ce789ed19e2152375e84"
++    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/guarded-action.py": "fd81ba029cd4e7c7e60623df89e8292af91141d311d9ce789ed19e2152375e84",
++    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/event-admission-replay-validation/implementation/root-metadata-correction.json": "28cb317e364b090f9d58250fd8c2b7785cb18ab8a5d759087422f531d8491393",
++    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/event-admission-replay-validation/implementation/native-preparation-review.md": "34055dac10075a01fb873e94990770fea3392e5c7dd8fe86be55debead56f45b",
++    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/event-admission-replay-validation/required-checks/preparation-index.json": "33e9838cfc34266c03f2c4244296ff4b7bbee1b1a2163caf94c7d228f8206225"
+   }
+ }

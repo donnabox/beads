@@ -1,0 +1,53 @@
+--- /Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-first4-root-proposed-authority-2/actual-code-disposition.json
++++ /Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation3-root-proposed-authority-1/actual-code-disposition.json
+@@ -30,21 +30,24 @@
+     "workspace-install",
+     "bind-workspace-tools"
+   ],
+-  "authoritySourceDraft": {
+-    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-first4-proposed-authority-1/actual-code-disposition.proposed.json",
+-    "sha256": "376cfc90ca44d8e4a94243b57e967872a0dc52992f8c93504e5deb47a1b7e3ed"
+-  },
+   "bootstrapReuse": [],
++  "currentRootCandidateNeverActivated": true,
+   "dispositionMeaning": "Original complete eeb nine-finding review is disposed by existing8c782; later f6 corrective tests are separately native138/roota9cf static accepted. Source continuity binds current712c; no assertion Claude readf6 or all contexts/spec.",
+   "executionAuthorityRequiresExternalActivation": true,
++  "freshP3Only": true,
+   "freshPipelineRequired": true,
+-  "helper2RootStaticAcceptance": {
+-    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation2-root-static-acceptance-1/acceptance.json",
+-    "sha256": "bf55f088e036446eaa039644fbc981d50dcf8e009ab605afa0930a59c579774e"
++  "helper3ImplementationSha256": "8ad44a93c1215bfe0b9777df4135385f72e82dd8873287a6988da2f1fb7615c6",
++  "helper3PreparationIndex": {
++    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation-preparation-3/preparation-index.json",
++    "sha256": "bf105b842dffc26d8083850d53fc4df6902335ed8301ee48eff611042ee8632a"
+   },
+-  "helper2StaticNative": {
+-    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation2-native-mechanics-1/closure.json",
+-    "sha256": "b98034f7ed46d67c89d7724b909b5f37f69114191a8bdc2d6f68528ede516bec"
++  "helper3RootStaticAcceptance": {
++    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation3-root-static-acceptance-1/acceptance.json",
++    "sha256": "2381755eec2437e5d8f81bfb3c7e2728f897288d33fc93a1c882b8adff802aa2"
++  },
++  "helper3StaticNative": {
++    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation3-native-mechanics-1/closure.json",
++    "sha256": "c6c364831d70c6caa05c6008ab3ef69ed4de35129245fbf81377f9d8c947abea"
+   },
+   "laterCorrectedSource": {
+     "actualCurrentFiles": 679,
+@@ -81,6 +84,15 @@
+   "noRetry": true,
+   "noSecondReviewOrRetry": true,
+   "originalScopeOmissions": "Spec, several plans/cases/grammars/maps/diffs/root-native-final-owner contexts not read by original reviewer; no full read-all or wholeWrite approval inferred",
++  "predecessorRootCandidate": {
++    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-first4-root-proposed-authority-2/actual-code-disposition.json",
++    "sha256": "a5e5d44e46e16af38ae19ed1bed0366c678b20f7b49036c821e17af64657b910"
++  },
++  "priorAttemptRemainsFailedStopped": true,
++  "priorFailedAttemptDisposition": {
++    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-first4-root-failed-disposition-1/disposition.json",
++    "sha256": "ed89eca81b2fc467f4eb5fa3f142eeac5aa47bbcf1231ed75b0bdbff5d9b9756"
++  },
+   "publicProfileOrWholeWriteCredit": false,
+   "reviewerDidNotReadCorrectedBytes": true,
+   "role": "ROOT disposition of original actual CODE and separately corrected-source continuity; not a new actual review",

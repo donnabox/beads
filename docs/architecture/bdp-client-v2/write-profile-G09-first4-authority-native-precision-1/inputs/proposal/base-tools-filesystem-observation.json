@@ -1,0 +1,45 @@
+{
+  "actualRuntimeVersions": "UNKNOWN/first4 future observations required",
+  "actualSourceLockSha256": "4150d8821c96dbc2cfec0b2762ff76b58318079f65fa4f5c8858ef2dd61f8d6d",
+  "at": "2026-10-18T19:50:47.567430+00:00",
+  "baseCandidate": {
+    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation-preparation-2/base-tools.candidate.json",
+    "sha256": "c05588f1210d14a4716a67ee0ee1dc727b5cb150e6e81727fbddbc17c424066a"
+  },
+  "futureInstallFit": "UNKNOWN",
+  "method": "read bytes/realpaths only; no --version or invocation",
+  "pnpmCjs105ByteEntrypoint": "Exact candidate path bytes pinned; no claim this alone measures its executed dependency graph/version.",
+  "sourceLockPath": "/Users/dbox/repos/wt/vickie/vickie-schema-minimum/pnpm-lock.yaml",
+  "tools": [
+    {
+      "bytes": 105,
+      "expected": {
+        "realpath": "/Users/dbox/.cache/node/corepack/v1/pnpm/11.20.0/bin/pnpm.cjs",
+        "sha256": "67b035e322203961795e8e34ca63a08c37a4386eda94107fb3d28f3246d882ad"
+      },
+      "path": "/Users/dbox/.cache/node/corepack/v1/pnpm/11.20.0/bin/pnpm.cjs",
+      "realpath": "/Users/dbox/.cache/node/corepack/v1/pnpm/11.20.0/bin/pnpm.cjs",
+      "sha256": "67b035e322203961795e8e34ca63a08c37a4386eda94107fb3d28f3246d882ad"
+    },
+    {
+      "bytes": 120573328,
+      "expected": {
+        "realpath": "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+        "sha256": "1ee75375e33b94fc34b3b19aede049e11dae90efb63b374dc96d6bdace70c4b8"
+      },
+      "path": "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+      "realpath": "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+      "sha256": "1ee75375e33b94fc34b3b19aede049e11dae90efb63b374dc96d6bdace70c4b8"
+    },
+    {
+      "bytes": 52448,
+      "expected": {
+        "realpath": "/opt/homebrew/Cellar/python@3.14/3.14.5/Frameworks/Python.framework/Versions/3.14/bin/python3.14",
+        "sha256": "2477b47fa3ae65b9574eb18a15edb364e96948eaa1875ad3f1c80d780efc9c12"
+      },
+      "path": "/opt/homebrew/opt/python@3.14/bin/python3.14",
+      "realpath": "/opt/homebrew/Cellar/python@3.14/3.14.5/Frameworks/Python.framework/Versions/3.14/bin/python3.14",
+      "sha256": "2477b47fa3ae65b9574eb18a15edb364e96948eaa1875ad3f1c80d780efc9c12"
+    }
+  ]
+}

@@ -1,0 +1,3287 @@
+diff --git a/apps/bdptest/src/transactional-matrix.test.ts b/apps/bdptest/src/transactional-matrix.test.ts
+index 345735c..addf4ed 100644
+--- a/apps/bdptest/src/transactional-matrix.test.ts
++++ b/apps/bdptest/src/transactional-matrix.test.ts
+@@ -194,6 +194,9 @@ async function observe(control?: {
+       { method: "GET", url: `${scope}beads/c` },
+       { method: "POST", url: `${scope}operations/update-where` },
+       { method: "POST", url: `${scope}operations/delete-where` },
++      { method: "POST", url: `${scope}operations/create-bead` },
++      { method: "POST", url: `${scope}operations/sequence` },
++      { method: "POST", url: `${scope}operations/update-bead` },
+     ]);
+     const omitted = control?.omitRoute;
+     if (omitted) {
+@@ -328,24 +331,25 @@ async function observe(control?: {
+   if (!observed) throw new Error("missing installed observation");
+   return observed;
+ }
+-it("observes twelve partial Transactional contracts through packed-capable actual installed HTTP", async () => {
++it("observes thirteen partial Transactional contracts through packed-capable actual installed HTTP", async () => {
+   const started = performance.now(),
+     children: ChildProcess[] = [];
+-  const observed = await observe({ children });
++  const crossWire = crossCarrierWire();
++  const observed = await observe({ children, afterExchange: crossWire.afterExchange });
+   const implemented = new Set(bundle.manifest.scenarios.map((s) => s.id));
+   expect(loadProfileContractSelection("transactional").required).toHaveLength(250);
+   expect(observed.result.scenarios).toHaveLength(255); // Includes five optional catalog rows.
+   for (const row of observed.result.scenarios.filter((s) => implemented.has(s.id)))
+     expect(row, JSON.stringify(row, null, 2)).toMatchObject({ state: "pass" });
+-  expect(observed.result.scenarios.filter((s) => s.state === "pass")).toHaveLength(12);
++  expect(observed.result.scenarios.filter((s) => s.state === "pass")).toHaveLength(13);
+   expect(observed.result.claimEligible).toBe(false);
+-  expect(observed.sessions).toHaveLength(19);
+-  expect(children).toHaveLength(20); // Nineteen scenario/reopen sessions plus separate bootstrap.
++  expect(observed.sessions).toHaveLength(20);
++  expect(children).toHaveLength(21); // Twenty scenario/reopen sessions plus separate bootstrap.
+   expect(children.every((child) => child.exitCode !== null || child.signalCode !== null)).toBe(
+     true,
+   );
+   expect(observed.result.declarations).toMatchObject({
+-    exactConfigurationDigest: "1ba7cbbffc4fb40df2c3f12640bc636e70076cfa25bdd6952b83ec1bb1fe0035",
++    exactConfigurationDigest: "a9a17908b6fa87674d5f573b584f4a1ce1d41d7909fadf48b65e9b05397ddfd4",
+   });
+   const dynamic = observed.result.scenarios
+     .flatMap((s) => s.exchanges)
+@@ -507,11 +511,39 @@ it("observes twelve partial Transactional contracts through packed-capable actua
+   }
+   expect(deletion.state).toBe("pass");
+   expect(deletion.exchanges.at(-1)!.request.id).toBe("d-final-groups");
+-  expect(observed.result.scenarios.reduce((n, row) => n + row.exchanges.length, 0)).toBe(180);
++  const cross = observed.result.scenarios.find((r) => r.id === crossCarrierId)!;
++  expect(cross.exchanges.map((e) => e.request.id)).toEqual(crossCarrierActionIds);
++  expect(cross.exchanges.map((e) => e.request.method)).toEqual([
++    "POST",
++    "GET",
++    "POST",
++    "POST",
++    "POST",
++    "GET",
++    "POST",
++    "POST",
++    "POST",
++    "POST",
++    "GET",
++    "GET",
++  ]);
++  expect(cross.actions!.map((a) => a.action.id)).toEqual(["x-created-facts", "x-updated-facts"]);
++  for (const exchange of cross.exchanges) {
++    expect(exchange.assertions.every((a) => a.passed)).toBe(true);
++    if (exchange.request.method === "POST")
++      expect(exchange.request.exact!.bodyOctets).toBeLessThanOrEqual(2048);
++    expect(exchange.response!.decodedBodyBytes).toBeLessThanOrEqual(8192);
++  }
++  for (const action of cross.actions!) expect(action.assertions.every((a) => a.passed)).toBe(true);
++  expect(cross.state).toBe("pass");
++  expect(cross.exchanges.at(-1)!.request.id).toBe("x-events");
++  crossWire.finish();
++  expect(observed.result.scenarios.reduce((n, row) => n + row.exchanges.length, 0)).toBe(192);
+   expect(performance.now() - started).toBeLessThanOrEqual(63000);
+   console.log(
+     JSON.stringify({
+-      kind: "installed-tx-twelve-partial-summary",
++      // Predecessor logs retain installed-tx-twelve-partial-summary.
++      kind: "installed-tx-thirteen-partial-summary",
+       sourceCommit,
+       elapsedMs: performance.now() - started,
+       actions: bundle.manifest.scenarios.reduce((n, s) => n + (s.actions?.length ?? 0), 0),
+@@ -1248,6 +1280,7 @@ it.each([
+ );
+ 
+ it("pins the matching no-op installed route digest and fifteen-action ledger", () => {
++  // Previous twelve-route digest: 1ba7cbbffc4fb40df2c3f12640bc636e70076cfa25bdd6952b83ec1bb1fe0035.
+   // Canonical exact-mode preimage authored from the approved route inventory;
+   // only these five fields enter the runner digest, not credentials or ports.
+   const preimage = JSON.stringify({
+@@ -1267,11 +1300,14 @@ it("pins the matching no-op installed route digest and fifteen-action ledger", (
+       { method: "GET", url: `${scope}beads/c` },
+       { method: "POST", url: `${scope}operations/update-where` },
+       { method: "POST", url: `${scope}operations/delete-where` },
++      { method: "POST", url: `${scope}operations/create-bead` },
++      { method: "POST", url: `${scope}operations/sequence` },
++      { method: "POST", url: `${scope}operations/update-bead` },
+     ],
+     scope,
+   });
+   expect(createHash("sha256").update(preimage).digest("hex")).toBe(
+-    "1ba7cbbffc4fb40df2c3f12640bc636e70076cfa25bdd6952b83ec1bb1fe0035",
++    "a9a17908b6fa87674d5f573b584f4a1ce1d41d7909fadf48b65e9b05397ddfd4",
+   );
+   const row = bundle.manifest.scenarios.find((r) => r.id === "transactional.batch.no-op-entries")!;
+   expect(row.actions!.map((a) => a.id)).toEqual([
+@@ -1347,9 +1383,13 @@ it.each(["bead-property", "link-metadata", "group-inventory-and-head"] as const)
+       expect([...failed].sort()).toEqual([...intended].sort());
+     expect(row.exchanges.at(-1)!.request.id).toBe(actionId);
+     expect(children.every((c) => c.exitCode !== null || c.signalCode !== null)).toBe(true);
+-    expect(children.length).toBeLessThanOrEqual(20);
++    expect(children.length).toBeLessThanOrEqual(21);
+     const exchanges = observed.result.scenarios.reduce((n, r) => n + r.exchanges.length, 0);
+-    expect(exchanges).toBeLessThanOrEqual(180);
++    expect(exchanges).toBeLessThanOrEqual(control === "group-inventory-and-head" ? 186 : 181);
++    for (const later of observed.result.scenarios.filter(
++      (r) => bundle.manifest.scenarios.some((p) => p.id === r.id) && r.id !== row.id,
++    ))
++      expect(later.state).toBe("pass");
+     console.log(
+       JSON.stringify({
+         kind: "installed-tx-matching-noop-control",
+@@ -1495,6 +1535,7 @@ function applyDeletionControl(
+ }
+ 
+ it("pins deletion-safety derivative carriers, complete positives, and measured source bounds", () => {
++  assertCrossCarrierControls();
+   const canonical = JSON.parse(manifestSource.bytes.toString());
+   const canonicalCount = canonical.scenarios.flatMap(
+     (r: { actions: { assertions: unknown[] }[] }) => r.actions.flatMap((a) => a.assertions),
+@@ -1590,8 +1631,9 @@ it("pins deletion-safety derivative carriers, complete positives, and measured s
+       nodes++;
+       if (value && typeof value === "object") pending.push(...Object.values(value));
+     }
+-    expect(Buffer.byteLength(normal)).toBeLessThanOrEqual(650386);
+-    expect(nodes).toBeLessThanOrEqual(17275);
++    // Root-accepted derivative maximum701716B/18263nodes plus4096B/64nodes.
++    expect(Buffer.byteLength(normal)).toBeLessThanOrEqual(705812);
++    expect(nodes).toBeLessThanOrEqual(18327);
+     const loaded = createCumulativeTransactionalArtifactBundle(
+       loadProfileContractSelection("transactional"),
+       { fixture: fixtureSource, manifest: { bytes: Buffer.from(wire) } },
+@@ -1674,9 +1716,15 @@ it.each(deletionControlNames)(
+       );
+     }
+     expect(children.every((c) => c.exitCode !== null || c.signalCode !== null)).toBe(true);
+-    expect(children.length).toBeLessThanOrEqual(20);
++    expect(children.length).toBeLessThanOrEqual(21);
+     const exchanges = observed.result.scenarios.reduce((n, r) => n + r.exchanges.length, 0);
+-    expect(exchanges).toBeLessThanOrEqual(180);
++    expect(exchanges).toBeLessThanOrEqual(
++      control === "incoming-order" ? 176 : control === "outgoing-order" ? 181 : 177,
++    );
++    for (const later of observed.result.scenarios.filter(
++      (r) => bundle.manifest.scenarios.some((p) => p.id === r.id) && r.id !== row.id,
++    ))
++      expect(later.state).toBe("pass");
+     console.log(
+       JSON.stringify({
+         kind: "installed-tx-deletion-control",
+@@ -1705,3 +1753,399 @@ it.each(deletionControlNames)(
+   },
+   120000,
+ );
++
++const crossCarrierId = "transactional.idempotency.cross-carrier";
++const crossCarrierActionIds = [
++  "x-create",
++  "x-created-facts",
++  "x-create-batch",
++  "x-create-sequence",
++  "x-update",
++  "x-updated-facts",
++  "x-two-sequence",
++  "x-update-singleton",
++  "x-create-singleton-retry",
++  "x-create-batch-retry",
++  "x-current",
++  "x-events",
++];
++const crossCarrierControls = ["batch-semantic-conflict", "sequence-fresh-key"] as const;
++type CrossCarrierControl = (typeof crossCarrierControls)[number];
++type CrossCarrierManifest = { scenarios: { id: string; actions: Record<string, unknown>[] }[] };
++const crossCreate = () => ({
++  id: "beads/a",
++  type: `${scope}types/task`,
++  properties: { title: "carrier-original" },
++});
++const crossUpdate = () => ({
++  bead: "beads/a",
++  propertiesChange: [{ op: "replace", path: "/title", value: "carrier-current" }],
++});
++function crossCarrierRequests(control?: CrossCarrierControl) {
++  const create = crossCreate(),
++    update = crossUpdate();
++  return [
++    ["create-bead", create, "carrier-create"],
++    [
++      "batch",
++      {
++        operations: [
++          {
++            operation: "createBead",
++            ...create,
++            ...(control === "batch-semantic-conflict"
++              ? { properties: { title: "carrier-conflict" } }
++              : {}),
++          },
++        ],
++      },
++      "carrier-create",
++    ],
++    [
++      "sequence",
++      {
++        operations: [
++          {
++            operation: "createBead",
++            ...create,
++            idempotencyKey:
++              control === "sequence-fresh-key" ? "carrier-create-new" : "carrier-create",
++            name: "first",
++          },
++        ],
++      },
++      undefined,
++    ],
++    ["batch", { operations: [{ operation: "updateBead", ...update }] }, "carrier-update"],
++    [
++      "sequence",
++      {
++        operations: [
++          { operation: "createBead", ...create, idempotencyKey: "carrier-create", name: "again" },
++          { operation: "updateBead", ...update, idempotencyKey: "carrier-update" },
++        ],
++      },
++      undefined,
++    ],
++    ["update-bead", update, "carrier-update"],
++    ["create-bead", create, "carrier-create"],
++    ["batch", { operations: [{ operation: "createBead", ...create }] }, "carrier-create"],
++    ["beads/?limit=32", undefined, undefined],
++    ["events/", undefined, undefined],
++  ] as const;
++}
++/** Existing afterExchange observes only ordinary wire; client receipt GETs are
++ * validated by the manifest. No report redaction is used as a value source. */
++function crossCarrierWire(control?: CrossCarrierControl) {
++  const requests = crossCarrierRequests(control);
++  const maximum =
++    control === "batch-semantic-conflict" ? 2 : control === "sequence-fresh-key" ? 3 : 10;
++  const facts: { epoch: string; view: string; revision?: string }[] = [];
++  let active = false;
++  return {
++    async afterExchange(response: HttpExchangeResponse) {
++      const request = response.exactRequest;
++      const key = request?.headerLines.find(
++        (h) => h.name.toLowerCase() === "idempotency-key",
++      )?.value;
++      if (!active) {
++        if (response.url !== `${scope}operations/create-bead` || key !== "carrier-create") return;
++        active = true;
++      }
++      if (facts.length === maximum) {
++        expect(key === "carrier-create" || key === "carrier-update").toBe(false);
++        expect(
++          ["create-bead", "sequence", "update-bead"].map((route) => `${scope}operations/${route}`),
++        ).not.toContain(response.url);
++        return;
++      }
++      const index = facts.length;
++      const [route, body, expectedKey] = requests[index]!;
++      expect(response.url).toBe(`${scope}${body === undefined ? "" : "operations/"}${route}`);
++      expect(request).toBeDefined();
++      expect(request!.writeState).toBe("complete");
++      expect(key).toBe(expectedKey);
++      expect(request!.bodyPresent).toBe(body !== undefined);
++      if (body !== undefined)
++        expect(request!.bodyDigest).toBe(
++          createHash("sha256").update(JSON.stringify(body)).digest("hex"),
++        );
++      expect(response.status).toBe(
++        control === "batch-semantic-conflict" && index === 1 ? 409 : 200,
++      );
++      const epoch = response.headers["bdp-scope-epoch"],
++        view = response.headers["bdp-authorization-view"];
++      expect(typeof epoch).toBe("string");
++      expect(epoch?.length).toBeGreaterThan(0);
++      expect(typeof view).toBe("string");
++      expect(view?.length).toBeGreaterThan(0);
++      expect(response.headers["bdp-scope-position"]).toBe(index < 3 ? "pos-1" : "pos-2");
++      if (facts.length) {
++        expect(epoch).toBe(facts[0]!.epoch);
++        expect(view).toBe(facts[0]!.view);
++      }
++      let revision: string | undefined;
++      if (index === 0 || index === 3) {
++        const observed = JSON.parse(response.bodyText);
++        expect(observed.idempotencyKey).toBe(index === 0 ? "carrier-create" : "carrier-update");
++        expect(observed.status).toBe("completed");
++        expect(observed.results).toHaveLength(1);
++        expect(observed.results[0].resource).toMatchObject({
++          id: `${scope}beads/a`,
++          type: `${scope}types/task`,
++          properties: { title: index === 0 ? "carrier-original" : "carrier-current" },
++          metadata: {},
++        });
++        revision = observed.results[0].resource.revision;
++        expect(typeof revision).toBe("string");
++        expect(revision?.length).toBeGreaterThan(0);
++      }
++      facts.push({ epoch: epoch!, view: view!, ...(revision === undefined ? {} : { revision }) });
++    },
++    finish() {
++      expect(active).toBe(true);
++      expect(facts).toHaveLength(maximum);
++      if (control === undefined) expect(facts[3]!.revision).not.toBe(facts[0]!.revision);
++    },
++  };
++}
++function applyCrossCarrierControl(value: CrossCarrierManifest, control: CrossCarrierControl) {
++  const row = value.scenarios.find((r) => r.id === crossCarrierId)!;
++  const actionId = control === "batch-semantic-conflict" ? "x-create-batch" : "x-create-sequence";
++  const action = row.actions.find((a) => a.id === actionId)!;
++  const raw = action.raw as { body: { value: string } };
++  raw.body.value = JSON.stringify(
++    crossCarrierRequests(control)[control === "batch-semantic-conflict" ? 1 : 2]![1],
++  );
++  const assertions = action.assertions as Record<string, unknown>[];
++  const positive: Record<string, unknown>[] =
++    control === "batch-semantic-conflict"
++      ? [
++          { id: "control-status", kind: "status", equals: 409 },
++          { id: "control-schema", kind: "json-schema", schema: "#/$defs/transactionalProblem" },
++          {
++            id: "control-media",
++            kind: "header",
++            name: "content-type",
++            equals: "application/problem+json",
++          },
++          ...(
++            [
++              ["type", "https://github.com/gastownhall/bdp/problems/conflict"],
++              ["code", "idempotency-conflict"],
++              ["status", 409],
++              ["retry", "never"],
++            ] as const
++          ).map(([name, equals]) => ({
++            id: `control-${name === "status" ? "problem-status" : name}`,
++            kind: "json-pointer",
++            pointer: `/${name}`,
++            exists: true,
++            equals,
++          })),
++        ]
++      : [
++          {
++            id: "control-member",
++            kind: "json-array-tuples",
++            pointer: "/results",
++            ordered: true,
++            projections: [
++              "/operationIndex",
++              "/operationName",
++              "/type",
++              "/code",
++              "/status",
++              "/retry",
++            ].map((pointer) => ({ pointer })),
++            equals: [
++              [
++                0,
++                "first",
++                "https://github.com/gastownhall/bdp/problems/conflict",
++                "identity-taken",
++                409,
++                "never",
++              ],
++            ],
++          },
++          {
++            id: "control-no-resource",
++            kind: "json-pointer",
++            pointer: "/results/0/resource",
++            exists: false,
++          },
++          {
++            id: "control-no-outcome",
++            kind: "json-pointer",
++            pointer: "/results/0/outcome",
++            exists: false,
++          },
++        ];
++  const retained = assertions.map((a) => a.id as string);
++  assertions.push(...positive);
++  return {
++    actionId,
++    retained,
++    removed: [] as string[],
++    positiveIds: positive.map((a) => a.id as string),
++    failingIds:
++      control === "batch-semantic-conflict"
++        ? [
++            "http-status",
++            "schema",
++            "media",
++            "serving-context",
++            "disposition",
++            "detail",
++            "key",
++            "no-next",
++            "required-position",
++            "effect-position",
++            "literal-result",
++            "retained-root",
++            "retained-body",
++          ]
++        : ["presentation", "created-record"],
++  };
++}
++function assertCrossCarrierControls() {
++  const canonical = JSON.parse(manifestSource.bytes.toString());
++  const canonicalExecutionDigest = createHash("sha256")
++    .update(JSON.stringify(canonical))
++    .digest("hex");
++  const descriptions = [];
++  const validator = createJsonSchemaValidator(schema);
++  for (const control of crossCarrierControls) {
++    const changed = structuredClone(canonical);
++    const description = applyCrossCarrierControl(changed, control);
++    const row = changed.scenarios.find((r: { id: string }) => r.id === crossCarrierId)!;
++    expect(row.actions.map((a: { id: string }) => a.id)).toEqual(crossCarrierActionIds);
++    const action = row.actions.find((a: { id: string }) => a.id === description.actionId)!;
++    expect(action.assertions.map((a: { id: string }) => a.id)).toEqual([
++      ...description.retained,
++      ...description.positiveIds,
++    ]);
++    expect(description.removed).toEqual([]);
++    for (const id of description.failingIds) expect(description.retained).toContain(id);
++    expect(action.assertions.find((a: { id: string }) => a.id === "request-body")).toEqual({
++      id: "request-body",
++      kind: "request-authored-body",
++    });
++    const normal = JSON.stringify(changed, null, 2) + "\n";
++    let nodes = 0;
++    const pending: unknown[] = [changed];
++    while (pending.length) {
++      const value = pending.pop();
++      nodes++;
++      if (value && typeof value === "object") pending.push(...Object.values(value));
++    }
++    // Historical measurement-only derivative guards were650386B/17275nodes.
++    // Root-accepted derivative maximum701716B/18263nodes plus4096B/64nodes.
++    expect(Buffer.byteLength(normal)).toBeLessThanOrEqual(705812);
++    expect(nodes).toBeLessThanOrEqual(18327);
++    const loaded = createCumulativeTransactionalArtifactBundle(
++      loadProfileContractSelection("transactional"),
++      { fixture: fixtureSource, manifest: { bytes: Buffer.from(JSON.stringify(changed)) } },
++    );
++    for (const scenario of loaded.manifest.scenarios)
++      for (const action of scenario.actions ?? [])
++        for (const assertion of action.assertions)
++          if (assertion.kind === "json-schema") validator.resolve(assertion.schema);
++    expect(loaded.digests.manifestDigest).not.toBe(canonicalExecutionDigest);
++    descriptions.push({
++      control,
++      ...description,
++      normalBytes: Buffer.byteLength(normal),
++      nodes,
++      executionManifestDigest: loaded.digests.manifestDigest,
++    });
++  }
++  expect(new Set(descriptions.map((d) => d.executionManifestDigest)).size).toBe(2);
++  expect(descriptions.map((d) => d.positiveIds)).toEqual([
++    [
++      "control-status",
++      "control-schema",
++      "control-media",
++      "control-type",
++      "control-code",
++      "control-problem-status",
++      "control-retry",
++    ],
++    ["control-member", "control-no-resource", "control-no-outcome"],
++  ]);
++}
++it.each(crossCarrierControls)(
++  "discriminates retained cross-carrier evidence against %s",
++  async (control) => {
++    const children: ChildProcess[] = [],
++      wire = crossCarrierWire(control);
++    let description: ReturnType<typeof applyCrossCarrierControl> | undefined;
++    const observed = await observe({
++      children,
++      afterExchange: wire.afterExchange,
++      manifest(value) {
++        description = applyCrossCarrierControl(value, control);
++      },
++    });
++    expect(description).toBeDefined();
++    const row = observed.result.scenarios.find((r) => r.id === crossCarrierId)!;
++    expect(row.state).toBe("fail");
++    expect(observed.result.claimEligible).toBe(false);
++    const prefix = control === "batch-semantic-conflict" ? 3 : 4;
++    expect(row.exchanges.map((e) => e.request.id)).toEqual(crossCarrierActionIds.slice(0, prefix));
++    expect(row.actions!.map((a) => a.action.id)).toEqual(["x-created-facts"]);
++    expect(row.actions!.every((a) => a.assertions.every((x) => x.passed))).toBe(true);
++    for (const exchange of row.exchanges.slice(0, -1))
++      expect(exchange.assertions.every((a) => a.passed)).toBe(true);
++    const final = row.exchanges.at(-1)!;
++    expect(final.request.id).toBe(description!.actionId);
++    expect(final.request.exact?.writeState).toBe("complete");
++    expect(final.response?.status).toBe(control === "batch-semantic-conflict" ? 409 : 200);
++    expect(final.assertions.filter((a) => !a.passed).map((a) => a.id)).toEqual(
++      description!.failingIds,
++    );
++    for (const id of [
++      ...description!.positiveIds,
++      "request-headers",
++      "request-body",
++      "present-bdp-scope-epoch",
++      "present-bdp-authorization-view",
++      "present-bdp-scope-position",
++      "serving-position",
++    ])
++      expect(final.assertions.find((a) => a.id === id)?.passed).toBe(true);
++    for (const later of observed.result.scenarios.filter(
++      (r) => bundle.manifest.scenarios.some((p) => p.id === r.id) && r.id !== row.id,
++    ))
++      expect(later.state).toBe("pass");
++    wire.finish();
++    expect(children).toHaveLength(21);
++    expect(children.every((c) => c.exitCode !== null || c.signalCode !== null)).toBe(true);
++    const exchanges = observed.result.scenarios.reduce((n, r) => n + r.exchanges.length, 0);
++    expect(exchanges).toBe(control === "batch-semantic-conflict" ? 183 : 184);
++    console.log(
++      JSON.stringify({
++        kind: "installed-tx-cross-carrier-control",
++        control,
++        sourceCommit,
++        ...description,
++        observedStatus: final.response!.status,
++        writeState: final.request.exact!.writeState,
++        failures: final.assertions.filter((a) => !a.passed).map((a) => a.id),
++        exchanges,
++        childLaunches: children.length,
++        closedChildren: children.filter((c) => c.exitCode !== null || c.signalCode !== null).length,
++        artifacts: observed.result.artifacts,
++        declarations: observed.result.declarations,
++        claimEligible: false,
++      }),
++    );
++    if (process.env.BDP_TRANSACTIONAL_CROSS_CARRIER_CONTROL_OUTPUT)
++      writeFileSync(
++        `${process.env.BDP_TRANSACTIONAL_CROSS_CARRIER_CONTROL_OUTPUT}-${control}.json`,
++        JSON.stringify({ sourceCommit, entry, ...observed }, null, 2) + "\n",
++      );
++  },
++  120000,
++);
+diff --git a/packages/conformance/src/transactional-cumulative.test.ts b/packages/conformance/src/transactional-cumulative.test.ts
+index 520c573..7f01ad7 100644
+--- a/packages/conformance/src/transactional-cumulative.test.ts
++++ b/packages/conformance/src/transactional-cumulative.test.ts
+@@ -186,7 +186,7 @@ it("copies source bytes before binding and exposes all missing obligations witho
+   expect(
+     plan.requirements.filter((r) => r.readiness === "ready-unexecuted").map((r) => r.id),
+   ).toEqual(actual.manifest.scenarios.map((r) => r.id));
+-  expect(plan.requirements.filter((r) => r.readiness === "unplanned")).toHaveLength(238);
++  expect(plan.requirements.filter((r) => r.readiness === "unplanned")).toHaveLength(237);
+   expect(plan.unobservedIds).toEqual(selected.required.map((r) => r.id));
+   expect(plan.manifestDigest).toBe(actual.digests.manifestDigest);
+   expect(() => planProfileExecution(selected, configuration("read-update"))).toThrow("disagree");
+@@ -690,6 +690,11 @@ function objectSlices(text: string, key: "scenarios" | "rows") {
+ }
+ const originalObjectPins = {
+   manifest: [
++    [
++      "transactional.batch.deletion-safety",
++      "3e66e7c95aec963cc80e076249a5870b952765b2e98c1023ea148f8f628e6aeb",
++      131808,
++    ],
+     [
+       "transactional.idempotency.conflict",
+       "ba93aea884ae462533d02695642f03a2ca854f5adabeb41867254216dabb2106",
+@@ -747,6 +752,11 @@ const originalObjectPins = {
+     ],
+   ],
+   coverage: [
++    [
++      "transactional.batch.deletion-safety",
++      "ac27a329a1cc013e6a0e24e0f5cad6b5b4af6c128ad65302d030422a3c7e3c0a",
++      17375,
++    ],
+     [
+       "transactional.idempotency.conflict",
+       "de9b758f8ac4df7db5597b1eb2b402a116720becc30a41e7198f78f244358ec0",
+@@ -812,7 +822,39 @@ function assertOriginalObjects(text: string, name: keyof typeof originalObjectPi
+     expect(createHash("sha256").update(raw).digest("hex"), id).toBe(hash);
+   }
+ }
+-it("preserves every original TX scenario and coverage object while adding one bounded partial deletion-safety row", () => {
++it("preserves every original TX scenario and coverage object while adding one bounded partial cross-carrier row", () => {
++  assertCrossCarrierObservation(manifest);
++  for (const kind of ["retained-body", "presentation", "old-record"] as const) {
++    const weak = structuredClone(manifest);
++    const row = weak.scenarios.find(
++      (r: { id: string }) => r.id === "transactional.idempotency.cross-carrier",
++    )!;
++    if (kind === "retained-body")
++      row.actions[2].assertions = row.actions[2].assertions.filter(
++        (a: { id: string }) => a.id !== "retained-body",
++      );
++    if (kind === "presentation")
++      row.actions[6].assertions.find((a: { id: string }) => a.id === "present-name").equals =
++        "first";
++    if (kind === "old-record")
++      row.actions[6].assertions.find(
++        (a: { id: string }) => a.id === "created-record",
++      ).equalsBinding = "x-updated-record";
++    expect(() => assertCrossCarrierObservation(weak)).toThrow(kind);
++  }
++  for (const name of ["manifest", "coverage"] as const) {
++    const text = read(name).toString();
++    const raw = objectSlices(text, name === "manifest" ? "scenarios" : "rows").get(
++      "transactional.idempotency.cross-carrier",
++    )!;
++    const reconstructed = text.replace(`    ${raw},\n`, "");
++    expect(reconstructed).not.toBe(text);
++    expect(createHash("sha256").update(reconstructed).digest("hex")).toBe(
++      name === "manifest"
++        ? "56318c56ee99bb981336e3f17560e7b079e88f2f85ef463874c1d556a066b2b2"
++        : "dafedd035ca20f684559c739ebf2e6155f8446ce8062c3fa60ff86967b259bbd",
++    );
++  }
+   for (const name of ["manifest", "coverage"] as const)
+     assertOriginalObjects(read(name).toString(), name);
+   const changed = read("manifest").toString().replace('"equals": 401', '"equals": 402');
+@@ -831,6 +873,7 @@ it("preserves every original TX scenario and coverage object while adding one bo
+     "transactional.receipt.readable",
+     "transactional.receipt.pagination",
+     "transactional.idempotency.conflict",
++    "transactional.idempotency.cross-carrier",
+     "transactional.idempotency.failed-retained",
+   ]);
+   const counts = new Map<string, number>();
+@@ -841,6 +884,7 @@ it("preserves every original TX scenario and coverage object while adding one bo
+     ["transactional.set.zero-match", 17],
+     ["transactional.receipt.pagination", 18],
+     ["transactional.idempotency.conflict", 12],
++    ["transactional.idempotency.cross-carrier", 12],
+     ["transactional.batch.no-op-entries", 15],
+     ["transactional.batch.deletion-safety", 21],
+   ] as const) {
+@@ -856,19 +900,27 @@ it("preserves every original TX scenario and coverage object while adding one bo
+   expect(
+     counts.get("transactional.set.mutation")! + counts.get("transactional.set.zero-match")!,
+   ).toBe(47);
+-  expect(manifest.scenarios.flatMap((r: { actions: unknown[] }) => r.actions)).toHaveLength(187);
+-  // Root-accepted deletion-safety measurement: M620094/N16373/C88043/A333.
++  expect(manifest.scenarios.flatMap((r: { actions: unknown[] }) => r.actions)).toHaveLength(199);
++  // Historical root-accepted deletion-safety measurement: M620094/N16373/C88043/A333.
+   // Schema-name repair uses4B of the accepted margin:4092B/64nodes/1024B.
+-  // Delta guards bind here; absolute planning envelopes remain unchanged.
+-  expect(read("manifest").byteLength - 488280).toBeLessThanOrEqual(135906);
+-  expect(read("manifest").byteLength).toBeLessThanOrEqual(650386);
+-  expect(read("coverage").byteLength - 70662).toBeLessThanOrEqual(18405);
+-  expect(read("coverage").byteLength).toBeLessThanOrEqual(91848);
++  // Historical measurement-only draft retained the smaller guards pending root acceptance.
++  // Root-accepted cross-carrier: disk684206/normal695598/nodes18107/coverage99245.
++  // Disk and normal-form fences are separate; margins are4096B/64nodes/1024B.
++  // Historical deletion guards: manifest135906delta/650386absolute,
++  // coverage18405delta/91848absolute, nodes3418delta/17275absolute.
++  expect(read("manifest").byteLength - 488280).toBeLessThanOrEqual(200022);
++  expect(read("manifest").byteLength).toBeLessThanOrEqual(688302);
++  expect(Buffer.byteLength(JSON.stringify(manifest, null, 2) + "\n")).toBeLessThanOrEqual(699694);
++  expect(read("coverage").byteLength - 70662).toBeLessThanOrEqual(29607);
++  expect(read("coverage").byteLength).toBeLessThanOrEqual(100269);
++  expect(
++    Buffer.byteLength(JSON.stringify(JSON.parse(read("coverage").toString()), null, 2) + "\n"),
++  ).toBeLessThanOrEqual(100269);
+   expect(
+     manifest.scenarios.flatMap((r: { actions: { assertions: unknown[] }[] }) =>
+       r.actions.flatMap((a) => a.assertions),
+     ),
+-  ).toHaveLength(1872);
++  ).toHaveLength(2102);
+   expect(read("fixture").byteLength).toBe(716);
+   expect(createHash("sha256").update(read("fixture")).digest("hex")).toBe(
+     "3a7899ced771d4880066d98b0000c53f801ece53458502cc4f3bc641146c9a85",
+@@ -880,8 +932,8 @@ it("preserves every original TX scenario and coverage object while adding one bo
+     nodes++;
+     if (value && typeof value === "object") pending.push(...Object.values(value));
+   }
+-  expect(nodes - 13019).toBeLessThanOrEqual(3418);
+-  expect(nodes).toBeLessThanOrEqual(17275);
++  expect(nodes - 13019).toBeLessThanOrEqual(5152);
++  expect(nodes).toBeLessThanOrEqual(18171);
+   // Clause ownership is independent from the exhaustive mechanical assertion mirror.
+   const clauseMap = {
+     "transactional.receipt.pagination": [
+@@ -899,10 +951,14 @@ it("preserves every original TX scenario and coverage object while adding one bo
+     ).toEqual(anchors);
+ });
+ 
+-it("pins required context presence before equality in both new set rows", () => {
++it("pins required context presence before equality in set and cross-carrier rows", () => {
+   const headers = ["bdp-scope-epoch", "bdp-authorization-view", "bdp-scope-position"];
+   for (const row of manifest.scenarios.filter((r: { id: string }) =>
+-    ["transactional.set.mutation", "transactional.set.zero-match"].includes(r.id),
++    [
++      "transactional.set.mutation",
++      "transactional.set.zero-match",
++      "transactional.idempotency.cross-carrier",
++    ].includes(r.id),
+   )) {
+     for (const action of row.actions) {
+       if (action.family === "client" && action.operation === "transactional.receipt-read") {
+@@ -1324,7 +1380,7 @@ it("pins the completed-key conflict law, five presentations, and semantic reques
+     row.actions[0].raw.body.value;
+   expect(() => assertCompletedConflictRequests(changed)).toThrow("c-conflict");
+   for (const name of ["manifest", "coverage"] as const) {
+-    expect(originalObjectPins[name]).toHaveLength(11);
++    expect(originalObjectPins[name]).toHaveLength(12);
+     const text = read(name).toString();
+     const raw = objectSlices(text, name === "manifest" ? "scenarios" : "rows").get(
+       "transactional.receipt.pagination",
+@@ -2193,3 +2249,142 @@ it("resolves every authored TX schema and rejects the undefined deleted-point re
+     "unknown schema reference '#/$defs/problem'",
+   );
+ });
++
++/** Independent literal request/capture/presentation guard; the final hash also
++ * pins every authored assertion, so a weaker substitute cannot satisfy it. */
++function assertCrossCarrierObservation(candidate: typeof manifest) {
++  const row = candidate.scenarios.find(
++    (r: { id: string }) => r.id === "transactional.idempotency.cross-carrier",
++  );
++  expect(row).toBeDefined();
++  expect(row.actions.map((a: { id: string }) => a.id)).toEqual([
++    "x-create",
++    "x-created-facts",
++    "x-create-batch",
++    "x-create-sequence",
++    "x-update",
++    "x-updated-facts",
++    "x-two-sequence",
++    "x-update-singleton",
++    "x-create-singleton-retry",
++    "x-create-batch-retry",
++    "x-current",
++    "x-events",
++  ]);
++  const assertion = (index: number, id: string) =>
++    row.actions[index].assertions.find((a: { id: string }) => a.id === id);
++  expect(assertion(2, "retained-body"), "retained-body").toEqual({
++    id: "retained-body",
++    kind: "json-pointer",
++    pointer: "",
++    exists: true,
++    equalsBinding: "x-created-body",
++  });
++  expect(assertion(6, "present-name"), "presentation").toEqual({
++    id: "present-name",
++    kind: "json-pointer",
++    pointer: "/results/0/operationName",
++    exists: true,
++    equals: "again",
++  });
++  expect(assertion(6, "presentation"), "presentation").toEqual({
++    id: "presentation",
++    kind: "json-array-tuples",
++    pointer: "/results",
++    ordered: true,
++    projections: [{ pointer: "/operationIndex" }, { pointer: "/outcome" }],
++    equals: [
++      [0, "created"],
++      [1, "updated"],
++    ],
++  });
++  expect(assertion(6, "created-record"), "old-record").toEqual({
++    id: "created-record",
++    kind: "json-pointer",
++    pointer: "/results/0/resource",
++    exists: true,
++    equalsBinding: "x-created-record",
++  });
++  const create = {
++    id: "beads/a",
++    type: "https://reference.invalid/acme/types/task",
++    properties: { title: "carrier-original" },
++  };
++  const update = {
++    bead: "beads/a",
++    propertiesChange: [{ op: "replace", path: "/title", value: "carrier-current" }],
++  };
++  const bodies = [
++    create,
++    undefined,
++    { operations: [{ operation: "createBead", ...create }] },
++    {
++      operations: [
++        { operation: "createBead", ...create, idempotencyKey: "carrier-create", name: "first" },
++      ],
++    },
++    { operations: [{ operation: "updateBead", ...update }] },
++    undefined,
++    {
++      operations: [
++        { operation: "createBead", ...create, idempotencyKey: "carrier-create", name: "again" },
++        { operation: "updateBead", ...update, idempotencyKey: "carrier-update" },
++      ],
++    },
++    update,
++    create,
++    { operations: [{ operation: "createBead", ...create }] },
++    undefined,
++    undefined,
++  ];
++  for (const [index, action] of row.actions.entries()) {
++    const body = bodies[index];
++    if (action.family === "http") {
++      expect(action.raw.body?.value, action.id).toBe(
++        body === undefined ? undefined : JSON.stringify(body),
++      );
++      for (const id of [
++        "http-status",
++        "schema",
++        "media",
++        "present-bdp-scope-epoch",
++        "present-bdp-authorization-view",
++        "present-bdp-scope-position",
++        "serving-position",
++        "request-headers",
++        "request-body",
++      ])
++        expect(assertion(index, id), `${action.id}:${id}`).toBeDefined();
++      expect(assertion(index, "serving-position").equals).toBe(index < 4 ? "pos-1" : "pos-2");
++    }
++  }
++  for (const [index, stem] of [
++    [0, "x-created"],
++    [4, "x-updated"],
++  ] as const)
++    expect(row.actions[index].captures).toEqual([
++      { binding: `${stem}-root`, from: { kind: "json-pointer", pointer: "/id" } },
++    ]);
++  for (const [index, stem] of [
++    [1, "x-created"],
++    [5, "x-updated"],
++  ] as const) {
++    expect(row.actions[index].input).toEqual({ binding: `${stem}-root`, method: "GET" });
++    expect(row.actions[index].captures).toEqual(
++      [
++        ["body", "/body"],
++        ["record", "/body/results/0/resource"],
++        ["revision", "/body/results/0/resource/revision"],
++        ["transaction", "/body/transaction"],
++      ].map(([suffix, pointer]) => ({
++        binding: `${stem}-${suffix}`,
++        from: { kind: "json-pointer", pointer },
++      })),
++    );
++  }
++  expect(row.actions.flatMap((a: { assertions: unknown[] }) => a.assertions)).toHaveLength(230);
++  expect(
++    createHash("sha256").update(JSON.stringify(row)).digest("hex"),
++    "complete cross-carrier authored row",
++  ).toBe("9edceed3f23528cff25103143dc27aeac69be409420f0ed54c5a4f992c89ba73");
++}
+diff --git a/packages/conformance/test-support/transactional/coverage-v1.json b/packages/conformance/test-support/transactional/coverage-v1.json
+index eacf8ba..63264b8 100644
+--- a/packages/conformance/test-support/transactional/coverage-v1.json
++++ b/packages/conformance/test-support/transactional/coverage-v1.json
+@@ -1944,6 +1944,248 @@
+         }
+       ]
+     },
++    {
++      "id": "transactional.idempotency.cross-carrier",
++      "wholeContract": false,
++      "reason": "Bounded retained replay from singleton-created and batch-updated Bead receipts through equivalent singleton, batch and current sequence presentations, with independent current-state and Event facts. Whole contract remains unqualified: sequence-origin admission, full operation/carrier cross-product, concurrent/pending execution, failed/expired/withheld detail, allocated identity, alias/local binding, epoch/view/principal transitions, restart and erasure are not observed. Negative same-key semantic sensitivity is observed only for batch and fresh-key discrimination only for sequence; singleton replay is positive-only.",
++      "bindings": [
++        {
++          "scenario": "transactional.idempotency.cross-carrier",
++          "assertions": [
++            "x-create:http-status",
++            "x-create:schema",
++            "x-create:media",
++            "x-create:present-bdp-scope-epoch",
++            "x-create:present-bdp-authorization-view",
++            "x-create:present-bdp-scope-position",
++            "x-create:serving-position",
++            "x-create:request-headers",
++            "x-create:request-body",
++            "x-create:disposition",
++            "x-create:detail",
++            "x-create:key",
++            "x-create:no-next",
++            "x-create:required-position",
++            "x-create:effect-position",
++            "x-create:literal-result",
++            "x-create:no-name",
++            "x-create:no-source",
++            "x-created-facts:status",
++            "x-created-facts:body-present",
++            "x-created-facts:media",
++            "x-created-facts:present-bdp-scope-epoch",
++            "x-created-facts:present-bdp-authorization-view",
++            "x-created-facts:present-bdp-scope-position",
++            "x-created-facts:serving-position",
++            "x-created-facts:private-cache",
++            "x-created-facts:no-etag",
++            "x-created-facts:no-last-modified",
++            "x-created-facts:disposition",
++            "x-created-facts:detail",
++            "x-created-facts:key",
++            "x-created-facts:no-next",
++            "x-created-facts:required-position",
++            "x-created-facts:effect-position",
++            "x-created-facts:literal-result",
++            "x-created-facts:no-name",
++            "x-created-facts:no-source",
++            "x-created-facts:root",
++            "x-create-batch:http-status",
++            "x-create-batch:schema",
++            "x-create-batch:media",
++            "x-create-batch:present-bdp-scope-epoch",
++            "x-create-batch:present-bdp-authorization-view",
++            "x-create-batch:present-bdp-scope-position",
++            "x-create-batch:serving-position",
++            "x-create-batch:serving-context",
++            "x-create-batch:request-headers",
++            "x-create-batch:request-body",
++            "x-create-batch:disposition",
++            "x-create-batch:detail",
++            "x-create-batch:key",
++            "x-create-batch:no-next",
++            "x-create-batch:required-position",
++            "x-create-batch:effect-position",
++            "x-create-batch:literal-result",
++            "x-create-batch:no-name",
++            "x-create-batch:no-source",
++            "x-create-batch:retained-root",
++            "x-create-batch:retained-body",
++            "x-create-sequence:http-status",
++            "x-create-sequence:schema",
++            "x-create-sequence:media",
++            "x-create-sequence:present-bdp-scope-epoch",
++            "x-create-sequence:present-bdp-authorization-view",
++            "x-create-sequence:present-bdp-scope-position",
++            "x-create-sequence:serving-position",
++            "x-create-sequence:serving-context",
++            "x-create-sequence:request-headers",
++            "x-create-sequence:request-body",
++            "x-create-sequence:presentation",
++            "x-create-sequence:present-name",
++            "x-create-sequence:created-record",
++            "x-create-sequence:no-receipt",
++            "x-create-sequence:no-root",
++            "x-create-sequence:no-problem",
++            "x-update:http-status",
++            "x-update:schema",
++            "x-update:media",
++            "x-update:present-bdp-scope-epoch",
++            "x-update:present-bdp-authorization-view",
++            "x-update:present-bdp-scope-position",
++            "x-update:serving-position",
++            "x-update:request-headers",
++            "x-update:request-body",
++            "x-update:disposition",
++            "x-update:detail",
++            "x-update:key",
++            "x-update:no-next",
++            "x-update:required-position",
++            "x-update:effect-position",
++            "x-update:literal-result",
++            "x-update:no-name",
++            "x-update:no-source",
++            "x-updated-facts:status",
++            "x-updated-facts:body-present",
++            "x-updated-facts:media",
++            "x-updated-facts:present-bdp-scope-epoch",
++            "x-updated-facts:present-bdp-authorization-view",
++            "x-updated-facts:present-bdp-scope-position",
++            "x-updated-facts:serving-position",
++            "x-updated-facts:private-cache",
++            "x-updated-facts:no-etag",
++            "x-updated-facts:no-last-modified",
++            "x-updated-facts:disposition",
++            "x-updated-facts:detail",
++            "x-updated-facts:key",
++            "x-updated-facts:no-next",
++            "x-updated-facts:required-position",
++            "x-updated-facts:effect-position",
++            "x-updated-facts:literal-result",
++            "x-updated-facts:no-name",
++            "x-updated-facts:no-source",
++            "x-updated-facts:root",
++            "x-two-sequence:http-status",
++            "x-two-sequence:schema",
++            "x-two-sequence:media",
++            "x-two-sequence:present-bdp-scope-epoch",
++            "x-two-sequence:present-bdp-authorization-view",
++            "x-two-sequence:present-bdp-scope-position",
++            "x-two-sequence:serving-position",
++            "x-two-sequence:serving-context",
++            "x-two-sequence:request-headers",
++            "x-two-sequence:request-body",
++            "x-two-sequence:presentation",
++            "x-two-sequence:present-name",
++            "x-two-sequence:created-record",
++            "x-two-sequence:no-receipt",
++            "x-two-sequence:no-root",
++            "x-two-sequence:no-problem",
++            "x-two-sequence:no-update-name",
++            "x-two-sequence:updated-record",
++            "x-two-sequence:no-update-problem",
++            "x-update-singleton:http-status",
++            "x-update-singleton:schema",
++            "x-update-singleton:media",
++            "x-update-singleton:present-bdp-scope-epoch",
++            "x-update-singleton:present-bdp-authorization-view",
++            "x-update-singleton:present-bdp-scope-position",
++            "x-update-singleton:serving-position",
++            "x-update-singleton:serving-context",
++            "x-update-singleton:request-headers",
++            "x-update-singleton:request-body",
++            "x-update-singleton:disposition",
++            "x-update-singleton:detail",
++            "x-update-singleton:key",
++            "x-update-singleton:no-next",
++            "x-update-singleton:required-position",
++            "x-update-singleton:effect-position",
++            "x-update-singleton:literal-result",
++            "x-update-singleton:no-name",
++            "x-update-singleton:no-source",
++            "x-update-singleton:retained-root",
++            "x-update-singleton:retained-body",
++            "x-create-singleton-retry:http-status",
++            "x-create-singleton-retry:schema",
++            "x-create-singleton-retry:media",
++            "x-create-singleton-retry:present-bdp-scope-epoch",
++            "x-create-singleton-retry:present-bdp-authorization-view",
++            "x-create-singleton-retry:present-bdp-scope-position",
++            "x-create-singleton-retry:serving-position",
++            "x-create-singleton-retry:serving-context",
++            "x-create-singleton-retry:request-headers",
++            "x-create-singleton-retry:request-body",
++            "x-create-singleton-retry:disposition",
++            "x-create-singleton-retry:detail",
++            "x-create-singleton-retry:key",
++            "x-create-singleton-retry:no-next",
++            "x-create-singleton-retry:required-position",
++            "x-create-singleton-retry:effect-position",
++            "x-create-singleton-retry:literal-result",
++            "x-create-singleton-retry:no-name",
++            "x-create-singleton-retry:no-source",
++            "x-create-singleton-retry:retained-root",
++            "x-create-singleton-retry:retained-body",
++            "x-create-batch-retry:http-status",
++            "x-create-batch-retry:schema",
++            "x-create-batch-retry:media",
++            "x-create-batch-retry:present-bdp-scope-epoch",
++            "x-create-batch-retry:present-bdp-authorization-view",
++            "x-create-batch-retry:present-bdp-scope-position",
++            "x-create-batch-retry:serving-position",
++            "x-create-batch-retry:serving-context",
++            "x-create-batch-retry:request-headers",
++            "x-create-batch-retry:request-body",
++            "x-create-batch-retry:disposition",
++            "x-create-batch-retry:detail",
++            "x-create-batch-retry:key",
++            "x-create-batch-retry:no-next",
++            "x-create-batch-retry:required-position",
++            "x-create-batch-retry:effect-position",
++            "x-create-batch-retry:literal-result",
++            "x-create-batch-retry:no-name",
++            "x-create-batch-retry:no-source",
++            "x-create-batch-retry:retained-root",
++            "x-create-batch-retry:retained-body",
++            "x-current:http-status",
++            "x-current:schema",
++            "x-current:media",
++            "x-current:present-bdp-scope-epoch",
++            "x-current:present-bdp-authorization-view",
++            "x-current:present-bdp-scope-position",
++            "x-current:serving-position",
++            "x-current:serving-context",
++            "x-current:request-headers",
++            "x-current:request-body",
++            "x-current:no-next",
++            "x-current:literal-state",
++            "x-current:updated-record",
++            "x-events:http-status",
++            "x-events:schema",
++            "x-events:media",
++            "x-events:present-bdp-scope-epoch",
++            "x-events:present-bdp-authorization-view",
++            "x-events:present-bdp-scope-position",
++            "x-events:serving-position",
++            "x-events:serving-context",
++            "x-events:request-headers",
++            "x-events:request-body",
++            "x-events:no-next",
++            "x-events:ordered-events",
++            "x-events:created-type",
++            "x-events:created-properties",
++            "x-events:created-metadata",
++            "x-events:created-revision",
++            "x-events:updated-previous",
++            "x-events:updated-revision",
++            "x-events:updated-change",
++            "x-events:no-metadata-change",
++            "x-events:created-transaction",
++            "x-events:updated-transaction"
++          ]
++        }
++      ]
++    },
+     {
+       "id": "transactional.idempotency.failed-retained",
+       "wholeContract": false,
+diff --git a/packages/conformance/test-support/transactional/manifest-v1.json b/packages/conformance/test-support/transactional/manifest-v1.json
+index b72678c..9cbc6de 100644
+--- a/packages/conformance/test-support/transactional/manifest-v1.json
++++ b/packages/conformance/test-support/transactional/manifest-v1.json
+@@ -19717,6 +19717,2153 @@
+         }
+       ]
+     },
++    {
++      "id": "transactional.idempotency.cross-carrier",
++      "requiredProfile": "transactional",
++      "setup": {
++        "fixture": "reference-transactional-v1",
++        "requires": ["installed-transactional-http", "transactional-receipt-observation"]
++      },
++      "applicability": {
++        "requires": []
++      },
++      "cleanup": {
++        "resetFixture": true
++      },
++      "actions": [
++        {
++          "id": "x-create",
++          "family": "http",
++          "method": "POST",
++          "target": {
++            "binding": "scope",
++            "path": "operations/create-bead"
++          },
++          "credentialRef": "operator",
++          "raw": {
++            "headerLines": [
++              {
++                "name": "content-type",
++                "value": "application/json"
++              },
++              {
++                "name": "idempotency-key",
++                "value": "carrier-create"
++              },
++              {
++                "name": "accept",
++                "value": "application/json"
++              }
++            ],
++            "body": {
++              "encoding": "utf8",
++              "value": "{\"id\":\"beads/a\",\"type\":\"https://reference.invalid/acme/types/task\",\"properties\":{\"title\":\"carrier-original\"}}"
++            }
++          },
++          "captures": [
++            {
++              "binding": "x-created-root",
++              "from": {
++                "kind": "json-pointer",
++                "pointer": "/id"
++              }
++            }
++          ],
++          "assertions": [
++            {
++              "id": "http-status",
++              "kind": "status",
++              "equals": 200
++            },
++            {
++              "id": "schema",
++              "kind": "json-schema",
++              "schema": "#/$defs/mutationReceipt"
++            },
++            {
++              "id": "media",
++              "kind": "header",
++              "name": "content-type",
++              "equals": "application/json"
++            },
++            {
++              "id": "present-bdp-scope-epoch",
++              "kind": "header",
++              "name": "bdp-scope-epoch",
++              "absent": false
++            },
++            {
++              "id": "present-bdp-authorization-view",
++              "kind": "header",
++              "name": "bdp-authorization-view",
++              "absent": false
++            },
++            {
++              "id": "present-bdp-scope-position",
++              "kind": "header",
++              "name": "bdp-scope-position",
++              "absent": false
++            },
++            {
++              "id": "serving-position",
++              "kind": "header",
++              "name": "bdp-scope-position",
++              "equals": "pos-1"
++            },
++            {
++              "id": "request-headers",
++              "kind": "request-authored-headers"
++            },
++            {
++              "id": "request-body",
++              "kind": "request-authored-body"
++            },
++            {
++              "id": "disposition",
++              "kind": "json-pointer",
++              "pointer": "/status",
++              "exists": true,
++              "equals": "completed"
++            },
++            {
++              "id": "detail",
++              "kind": "json-pointer",
++              "pointer": "/detail",
++              "exists": true,
++              "equals": "available"
++            },
++            {
++              "id": "key",
++              "kind": "json-pointer",
++              "pointer": "/idempotencyKey",
++              "exists": true,
++              "equals": "carrier-create"
++            },
++            {
++              "id": "no-next",
++              "kind": "json-pointer",
++              "pointer": "/next",
++              "exists": true,
++              "equals": null
++            },
++            {
++              "id": "required-position",
++              "kind": "json-pointer",
++              "pointer": "/requiredPosition",
++              "exists": true,
++              "equals": "pos-1"
++            },
++            {
++              "id": "effect-position",
++              "kind": "json-pointer",
++              "pointer": "/effectPosition",
++              "exists": true,
++              "equals": "pos-1"
++            },
++            {
++              "id": "literal-result",
++              "kind": "json-array-tuples",
++              "pointer": "/results",
++              "ordered": true,
++              "projections": [
++                {
++                  "pointer": "/operationIndex"
++                },
++                {
++                  "pointer": "/outcome"
++                },
++                {
++                  "pointer": "/resource/id"
++                },
++                {
++                  "pointer": "/resource/type"
++                },
++                {
++                  "pointer": "/resource/properties"
++                },
++                {
++                  "pointer": "/resource/metadata"
++                }
++              ],
++              "equals": [
++                [
++                  0,
++                  "created",
++                  "https://reference.invalid/acme/beads/a",
++                  "https://reference.invalid/acme/types/task",
++                  {
++                    "title": "carrier-original"
++                  },
++                  {}
++                ]
++              ]
++            },
++            {
++              "id": "no-name",
++              "kind": "json-pointer",
++              "pointer": "/results/0/operationName",
++              "exists": false
++            },
++            {
++              "id": "no-source",
++              "kind": "json-pointer",
++              "pointer": "/results/0/source",
++              "exists": false
++            }
++          ]
++        },
++        {
++          "id": "x-created-facts",
++          "family": "client",
++          "operation": "transactional.receipt-read",
++          "input": {
++            "binding": "x-created-root",
++            "method": "GET"
++          },
++          "captures": [
++            {
++              "binding": "x-created-body",
++              "from": {
++                "kind": "json-pointer",
++                "pointer": "/body"
++              }
++            },
++            {
++              "binding": "x-created-record",
++              "from": {
++                "kind": "json-pointer",
++                "pointer": "/body/results/0/resource"
++              }
++            },
++            {
++              "binding": "x-created-revision",
++              "from": {
++                "kind": "json-pointer",
++                "pointer": "/body/results/0/resource/revision"
++              }
++            },
++            {
++              "binding": "x-created-transaction",
++              "from": {
++                "kind": "json-pointer",
++                "pointer": "/body/transaction"
++              }
++            }
++          ],
++          "assertions": [
++            {
++              "id": "status",
++              "kind": "json-pointer",
++              "pointer": "/status",
++              "exists": true,
++              "equals": 200
++            },
++            {
++              "id": "body-present",
++              "kind": "json-pointer",
++              "pointer": "/bodyPresent",
++              "exists": true,
++              "equals": true
++            },
++            {
++              "id": "media",
++              "kind": "json-pointer",
++              "pointer": "/headers/content-type",
++              "exists": true,
++              "equals": "application/json"
++            },
++            {
++              "id": "present-bdp-scope-epoch",
++              "kind": "json-pointer",
++              "pointer": "/headers/bdp-scope-epoch",
++              "exists": true
++            },
++            {
++              "id": "present-bdp-authorization-view",
++              "kind": "json-pointer",
++              "pointer": "/headers/bdp-authorization-view",
++              "exists": true
++            },
++            {
++              "id": "present-bdp-scope-position",
++              "kind": "json-pointer",
++              "pointer": "/headers/bdp-scope-position",
++              "exists": true
++            },
++            {
++              "id": "serving-position",
++              "kind": "json-pointer",
++              "pointer": "/headers/bdp-scope-position",
++              "exists": true,
++              "equals": "pos-1"
++            },
++            {
++              "id": "private-cache",
++              "kind": "json-pointer",
++              "pointer": "/headers/cache-control",
++              "exists": true,
++              "equals": "private, no-store"
++            },
++            {
++              "id": "no-etag",
++              "kind": "json-pointer",
++              "pointer": "/headers/etag",
++              "exists": false
++            },
++            {
++              "id": "no-last-modified",
++              "kind": "json-pointer",
++              "pointer": "/headers/last-modified",
++              "exists": false
++            },
++            {
++              "id": "disposition",
++              "kind": "json-pointer",
++              "pointer": "/body/status",
++              "exists": true,
++              "equals": "completed"
++            },
++            {
++              "id": "detail",
++              "kind": "json-pointer",
++              "pointer": "/body/detail",
++              "exists": true,
++              "equals": "available"
++            },
++            {
++              "id": "key",
++              "kind": "json-pointer",
++              "pointer": "/body/idempotencyKey",
++              "exists": true,
++              "equals": "carrier-create"
++            },
++            {
++              "id": "no-next",
++              "kind": "json-pointer",
++              "pointer": "/body/next",
++              "exists": true,
++              "equals": null
++            },
++            {
++              "id": "required-position",
++              "kind": "json-pointer",
++              "pointer": "/body/requiredPosition",
++              "exists": true,
++              "equals": "pos-1"
++            },
++            {
++              "id": "effect-position",
++              "kind": "json-pointer",
++              "pointer": "/body/effectPosition",
++              "exists": true,
++              "equals": "pos-1"
++            },
++            {
++              "id": "literal-result",
++              "kind": "json-array-tuples",
++              "pointer": "/body/results",
++              "ordered": true,
++              "projections": [
++                {
++                  "pointer": "/operationIndex"
++                },
++                {
++                  "pointer": "/outcome"
++                },
++                {
++                  "pointer": "/resource/id"
++                },
++                {
++                  "pointer": "/resource/type"
++                },
++                {
++                  "pointer": "/resource/properties"
++                },
++                {
++                  "pointer": "/resource/metadata"
++                }
++              ],
++              "equals": [
++                [
++                  0,
++                  "created",
++                  "https://reference.invalid/acme/beads/a",
++                  "https://reference.invalid/acme/types/task",
++                  {
++                    "title": "carrier-original"
++                  },
++                  {}
++                ]
++              ]
++            },
++            {
++              "id": "no-name",
++              "kind": "json-pointer",
++              "pointer": "/body/results/0/operationName",
++              "exists": false
++            },
++            {
++              "id": "no-source",
++              "kind": "json-pointer",
++              "pointer": "/body/results/0/source",
++              "exists": false
++            },
++            {
++              "id": "root",
++              "kind": "json-pointer",
++              "pointer": "/body/id",
++              "exists": true,
++              "equalsBinding": "x-created-root"
++            }
++          ]
++        },
++        {
++          "id": "x-create-batch",
++          "family": "http",
++          "method": "POST",
++          "target": {
++            "binding": "scope",
++            "path": "operations/batch"
++          },
++          "credentialRef": "operator",
++          "raw": {
++            "headerLines": [
++              {
++                "name": "content-type",
++                "value": "application/json"
++              },
++              {
++                "name": "idempotency-key",
++                "value": "carrier-create"
++              },
++              {
++                "name": "accept",
++                "value": "application/json"
++              }
++            ],
++            "body": {
++              "encoding": "utf8",
++              "value": "{\"operations\":[{\"operation\":\"createBead\",\"id\":\"beads/a\",\"type\":\"https://reference.invalid/acme/types/task\",\"properties\":{\"title\":\"carrier-original\"}}]}"
++            }
++          },
++          "captures": [],
++          "assertions": [
++            {
++              "id": "http-status",
++              "kind": "status",
++              "equals": 200
++            },
++            {
++              "id": "schema",
++              "kind": "json-schema",
++              "schema": "#/$defs/mutationReceipt"
++            },
++            {
++              "id": "media",
++              "kind": "header",
++              "name": "content-type",
++              "equals": "application/json"
++            },
++            {
++              "id": "present-bdp-scope-epoch",
++              "kind": "header",
++              "name": "bdp-scope-epoch",
++              "absent": false
++            },
++            {
++              "id": "present-bdp-authorization-view",
++              "kind": "header",
++              "name": "bdp-authorization-view",
++              "absent": false
++            },
++            {
++              "id": "present-bdp-scope-position",
++              "kind": "header",
++              "name": "bdp-scope-position",
++              "absent": false
++            },
++            {
++              "id": "serving-position",
++              "kind": "header",
++              "name": "bdp-scope-position",
++              "equals": "pos-1"
++            },
++            {
++              "id": "serving-context",
++              "kind": "response-metadata-equals",
++              "request": "x-create",
++              "headers": ["bdp-scope-epoch", "bdp-authorization-view", "bdp-scope-position"]
++            },
++            {
++              "id": "request-headers",
++              "kind": "request-authored-headers"
++            },
++            {
++              "id": "request-body",
++              "kind": "request-authored-body"
++            },
++            {
++              "id": "disposition",
++              "kind": "json-pointer",
++              "pointer": "/status",
++              "exists": true,
++              "equals": "completed"
++            },
++            {
++              "id": "detail",
++              "kind": "json-pointer",
++              "pointer": "/detail",
++              "exists": true,
++              "equals": "available"
++            },
++            {
++              "id": "key",
++              "kind": "json-pointer",
++              "pointer": "/idempotencyKey",
++              "exists": true,
++              "equals": "carrier-create"
++            },
++            {
++              "id": "no-next",
++              "kind": "json-pointer",
++              "pointer": "/next",
++              "exists": true,
++              "equals": null
++            },
++            {
++              "id": "required-position",
++              "kind": "json-pointer",
++              "pointer": "/requiredPosition",
++              "exists": true,
++              "equals": "pos-1"
++            },
++            {
++              "id": "effect-position",
++              "kind": "json-pointer",
++              "pointer": "/effectPosition",
++              "exists": true,
++              "equals": "pos-1"
++            },
++            {
++              "id": "literal-result",
++              "kind": "json-array-tuples",
++              "pointer": "/results",
++              "ordered": true,
++              "projections": [
++                {
++                  "pointer": "/operationIndex"
++                },
++                {
++                  "pointer": "/outcome"
++                },
++                {
++                  "pointer": "/resource/id"
++                },
++                {
++                  "pointer": "/resource/type"
++                },
++                {
++                  "pointer": "/resource/properties"
++                },
++                {
++                  "pointer": "/resource/metadata"
++                }
++              ],
++              "equals": [
++                [
++                  0,
++                  "created",
++                  "https://reference.invalid/acme/beads/a",
++                  "https://reference.invalid/acme/types/task",
++                  {
++                    "title": "carrier-original"
++                  },
++                  {}
++                ]
++              ]
++            },
++            {
++              "id": "no-name",
++              "kind": "json-pointer",
++              "pointer": "/results/0/operationName",
++              "exists": false
++            },
++            {
++              "id": "no-source",
++              "kind": "json-pointer",
++              "pointer": "/results/0/source",
++              "exists": false
++            },
++            {
++              "id": "retained-root",
++              "kind": "json-pointer",
++              "pointer": "/id",
++              "exists": true,
++              "equalsBinding": "x-created-root"
++            },
++            {
++              "id": "retained-body",
++              "kind": "json-pointer",
++              "pointer": "",
++              "exists": true,
++              "equalsBinding": "x-created-body"
++            }
++          ]
++        },
++        {
++          "id": "x-create-sequence",
++          "family": "http",
++          "method": "POST",
++          "target": {
++            "binding": "scope",
++            "path": "operations/sequence"
++          },
++          "credentialRef": "operator",
++          "raw": {
++            "headerLines": [
++              {
++                "name": "content-type",
++                "value": "application/json"
++              },
++              {
++                "name": "accept",
++                "value": "application/json"
++              }
++            ],
++            "body": {
++              "encoding": "utf8",
++              "value": "{\"operations\":[{\"operation\":\"createBead\",\"id\":\"beads/a\",\"type\":\"https://reference.invalid/acme/types/task\",\"properties\":{\"title\":\"carrier-original\"},\"idempotencyKey\":\"carrier-create\",\"name\":\"first\"}]}"
++            }
++          },
++          "captures": [],
++          "assertions": [
++            {
++              "id": "http-status",
++              "kind": "status",
++              "equals": 200
++            },
++            {
++              "id": "schema",
++              "kind": "json-schema",
++              "schema": "#/$defs/transactionalSequenceResponse"
++            },
++            {
++              "id": "media",
++              "kind": "header",
++              "name": "content-type",
++              "equals": "application/json"
++            },
++            {
++              "id": "present-bdp-scope-epoch",
++              "kind": "header",
++              "name": "bdp-scope-epoch",
++              "absent": false
++            },
++            {
++              "id": "present-bdp-authorization-view",
++              "kind": "header",
++              "name": "bdp-authorization-view",
++              "absent": false
++            },
++            {
++              "id": "present-bdp-scope-position",
++              "kind": "header",
++              "name": "bdp-scope-position",
++              "absent": false
++            },
++            {
++              "id": "serving-position",
++              "kind": "header",
++              "name": "bdp-scope-position",
++              "equals": "pos-1"
++            },
++            {
++              "id": "serving-context",
++              "kind": "response-metadata-equals",
++              "request": "x-create",
++              "headers": ["bdp-scope-epoch", "bdp-authorization-view", "bdp-scope-position"]
++            },
++            {
++              "id": "request-headers",
++              "kind": "request-authored-headers"
++            },
++            {
++              "id": "request-body",
++              "kind": "request-authored-body"
++            },
++            {
++              "id": "presentation",
++              "kind": "json-array-tuples",
++              "pointer": "/results",
++              "ordered": true,
++              "projections": [
++                {
++                  "pointer": "/operationIndex"
++                },
++                {
++                  "pointer": "/outcome"
++                }
++              ],
++              "equals": [[0, "created"]]
++            },
++            {
++              "id": "present-name",
++              "kind": "json-pointer",
++              "pointer": "/results/0/operationName",
++              "exists": true,
++              "equals": "first"
++            },
++            {
++              "id": "created-record",
++              "kind": "json-pointer",
++              "pointer": "/results/0/resource",
++              "exists": true,
++              "equalsBinding": "x-created-record"
++            },
++            {
++              "id": "no-receipt",
++              "kind": "json-pointer",
++              "pointer": "/receipt",
++              "exists": false
++            },
++            {
++              "id": "no-root",
++              "kind": "json-pointer",
++              "pointer": "/id",
++              "exists": false
++            },
++            {
++              "id": "no-problem",
++              "kind": "json-pointer",
++              "pointer": "/results/0/problem",
++              "exists": false
++            }
++          ]
++        },
++        {
++          "id": "x-update",
++          "family": "http",
++          "method": "POST",
++          "target": {
++            "binding": "scope",
++            "path": "operations/batch"
++          },
++          "credentialRef": "operator",
++          "raw": {
++            "headerLines": [
++              {
++                "name": "content-type",
++                "value": "application/json"
++              },
++              {
++                "name": "idempotency-key",
++                "value": "carrier-update"
++              },
++              {
++                "name": "accept",
++                "value": "application/json"
++              }
++            ],
++            "body": {
++              "encoding": "utf8",
++              "value": "{\"operations\":[{\"operation\":\"updateBead\",\"bead\":\"beads/a\",\"propertiesChange\":[{\"op\":\"replace\",\"path\":\"/title\",\"value\":\"carrier-current\"}]}]}"
++            }
++          },
++          "captures": [
++            {
++              "binding": "x-updated-root",
++              "from": {
++                "kind": "json-pointer",
++                "pointer": "/id"
++              }
++            }
++          ],
++          "assertions": [
++            {
++              "id": "http-status",
++              "kind": "status",
++              "equals": 200
++            },
++            {
++              "id": "schema",
++              "kind": "json-schema",
++              "schema": "#/$defs/mutationReceipt"
++            },
++            {
++              "id": "media",
++              "kind": "header",
++              "name": "content-type",
++              "equals": "application/json"
++            },
++            {
++              "id": "present-bdp-scope-epoch",
++              "kind": "header",
++              "name": "bdp-scope-epoch",
++              "absent": false
++            },
++            {
++              "id": "present-bdp-authorization-view",
++              "kind": "header",
++              "name": "bdp-authorization-view",
++              "absent": false
++            },
++            {
++              "id": "present-bdp-scope-position",
++              "kind": "header",
++              "name": "bdp-scope-position",
++              "absent": false
++            },
++            {
++              "id": "serving-position",
++              "kind": "header",
++              "name": "bdp-scope-position",
++              "equals": "pos-2"
++            },
++            {
++              "id": "request-headers",
++              "kind": "request-authored-headers"
++            },
++            {
++              "id": "request-body",
++              "kind": "request-authored-body"
++            },
++            {
++              "id": "disposition",
++              "kind": "json-pointer",
++              "pointer": "/status",
++              "exists": true,
++              "equals": "completed"
++            },
++            {
++              "id": "detail",
++              "kind": "json-pointer",
++              "pointer": "/detail",
++              "exists": true,
++              "equals": "available"
++            },
++            {
++              "id": "key",
++              "kind": "json-pointer",
++              "pointer": "/idempotencyKey",
++              "exists": true,
++              "equals": "carrier-update"
++            },
++            {
++              "id": "no-next",
++              "kind": "json-pointer",
++              "pointer": "/next",
++              "exists": true,
++              "equals": null
++            },
++            {
++              "id": "required-position",
++              "kind": "json-pointer",
++              "pointer": "/requiredPosition",
++              "exists": true,
++              "equals": "pos-2"
++            },
++            {
++              "id": "effect-position",
++              "kind": "json-pointer",
++              "pointer": "/effectPosition",
++              "exists": true,
++              "equals": "pos-2"
++            },
++            {
++              "id": "literal-result",
++              "kind": "json-array-tuples",
++              "pointer": "/results",
++              "ordered": true,
++              "projections": [
++                {
++                  "pointer": "/operationIndex"
++                },
++                {
++                  "pointer": "/outcome"
++                },
++                {
++                  "pointer": "/resource/id"
++                },
++                {
++                  "pointer": "/resource/type"
++                },
++                {
++                  "pointer": "/resource/properties"
++                },
++                {
++                  "pointer": "/resource/metadata"
++                }
++              ],
++              "equals": [
++                [
++                  0,
++                  "updated",
++                  "https://reference.invalid/acme/beads/a",
++                  "https://reference.invalid/acme/types/task",
++                  {
++                    "title": "carrier-current"
++                  },
++                  {}
++                ]
++              ]
++            },
++            {
++              "id": "no-name",
++              "kind": "json-pointer",
++              "pointer": "/results/0/operationName",
++              "exists": false
++            },
++            {
++              "id": "no-source",
++              "kind": "json-pointer",
++              "pointer": "/results/0/source",
++              "exists": false
++            }
++          ]
++        },
++        {
++          "id": "x-updated-facts",
++          "family": "client",
++          "operation": "transactional.receipt-read",
++          "input": {
++            "binding": "x-updated-root",
++            "method": "GET"
++          },
++          "captures": [
++            {
++              "binding": "x-updated-body",
++              "from": {
++                "kind": "json-pointer",
++                "pointer": "/body"
++              }
++            },
++            {
++              "binding": "x-updated-record",
++              "from": {
++                "kind": "json-pointer",
++                "pointer": "/body/results/0/resource"
++              }
++            },
++            {
++              "binding": "x-updated-revision",
++              "from": {
++                "kind": "json-pointer",
++                "pointer": "/body/results/0/resource/revision"
++              }
++            },
++            {
++              "binding": "x-updated-transaction",
++              "from": {
++                "kind": "json-pointer",
++                "pointer": "/body/transaction"
++              }
++            }
++          ],
++          "assertions": [
++            {
++              "id": "status",
++              "kind": "json-pointer",
++              "pointer": "/status",
++              "exists": true,
++              "equals": 200
++            },
++            {
++              "id": "body-present",
++              "kind": "json-pointer",
++              "pointer": "/bodyPresent",
++              "exists": true,
++              "equals": true
++            },
++            {
++              "id": "media",
++              "kind": "json-pointer",
++              "pointer": "/headers/content-type",
++              "exists": true,
++              "equals": "application/json"
++            },
++            {
++              "id": "present-bdp-scope-epoch",
++              "kind": "json-pointer",
++              "pointer": "/headers/bdp-scope-epoch",
++              "exists": true
++            },
++            {
++              "id": "present-bdp-authorization-view",
++              "kind": "json-pointer",
++              "pointer": "/headers/bdp-authorization-view",
++              "exists": true
++            },
++            {
++              "id": "present-bdp-scope-position",
++              "kind": "json-pointer",
++              "pointer": "/headers/bdp-scope-position",
++              "exists": true
++            },
++            {
++              "id": "serving-position",
++              "kind": "json-pointer",
++              "pointer": "/headers/bdp-scope-position",
++              "exists": true,
++              "equals": "pos-2"
++            },
++            {
++              "id": "private-cache",
++              "kind": "json-pointer",
++              "pointer": "/headers/cache-control",
++              "exists": true,
++              "equals": "private, no-store"
++            },
++            {
++              "id": "no-etag",
++              "kind": "json-pointer",
++              "pointer": "/headers/etag",
++              "exists": false
++            },
++            {
++              "id": "no-last-modified",
++              "kind": "json-pointer",
++              "pointer": "/headers/last-modified",
++              "exists": false
++            },
++            {
++              "id": "disposition",
++              "kind": "json-pointer",
++              "pointer": "/body/status",
++              "exists": true,
++              "equals": "completed"
++            },
++            {
++              "id": "detail",
++              "kind": "json-pointer",
++              "pointer": "/body/detail",
++              "exists": true,
++              "equals": "available"
++            },
++            {
++              "id": "key",
++              "kind": "json-pointer",
++              "pointer": "/body/idempotencyKey",
++              "exists": true,
++              "equals": "carrier-update"
++            },
++            {
++              "id": "no-next",
++              "kind": "json-pointer",
++              "pointer": "/body/next",
++              "exists": true,
++              "equals": null
++            },
++            {
++              "id": "required-position",
++              "kind": "json-pointer",
++              "pointer": "/body/requiredPosition",
++              "exists": true,
++              "equals": "pos-2"
++            },
++            {
++              "id": "effect-position",
++              "kind": "json-pointer",
++              "pointer": "/body/effectPosition",
++              "exists": true,
++              "equals": "pos-2"
++            },
++            {
++              "id": "literal-result",
++              "kind": "json-array-tuples",
++              "pointer": "/body/results",
++              "ordered": true,
++              "projections": [
++                {
++                  "pointer": "/operationIndex"
++                },
++                {
++                  "pointer": "/outcome"
++                },
++                {
++                  "pointer": "/resource/id"
++                },
++                {
++                  "pointer": "/resource/type"
++                },
++                {
++                  "pointer": "/resource/properties"
++                },
++                {
++                  "pointer": "/resource/metadata"
++                }
++              ],
++              "equals": [
++                [
++                  0,
++                  "updated",
++                  "https://reference.invalid/acme/beads/a",
++                  "https://reference.invalid/acme/types/task",
++                  {
++                    "title": "carrier-current"
++                  },
++                  {}
++                ]
++              ]
++            },
++            {
++              "id": "no-name",
++              "kind": "json-pointer",
++              "pointer": "/body/results/0/operationName",
++              "exists": false
++            },
++            {
++              "id": "no-source",
++              "kind": "json-pointer",
++              "pointer": "/body/results/0/source",
++              "exists": false
++            },
++            {
++              "id": "root",
++              "kind": "json-pointer",
++              "pointer": "/body/id",
++              "exists": true,
++              "equalsBinding": "x-updated-root"
++            }
++          ]
++        },
++        {
++          "id": "x-two-sequence",
++          "family": "http",
++          "method": "POST",
++          "target": {
++            "binding": "scope",
++            "path": "operations/sequence"
++          },
++          "credentialRef": "operator",
++          "raw": {
++            "headerLines": [
++              {
++                "name": "content-type",
++                "value": "application/json"
++              },
++              {
++                "name": "accept",
++                "value": "application/json"
++              }
++            ],
++            "body": {
++              "encoding": "utf8",
++              "value": "{\"operations\":[{\"operation\":\"createBead\",\"id\":\"beads/a\",\"type\":\"https://reference.invalid/acme/types/task\",\"properties\":{\"title\":\"carrier-original\"},\"idempotencyKey\":\"carrier-create\",\"name\":\"again\"},{\"operation\":\"updateBead\",\"bead\":\"beads/a\",\"propertiesChange\":[{\"op\":\"replace\",\"path\":\"/title\",\"value\":\"carrier-current\"}],\"idempotencyKey\":\"carrier-update\"}]}"
++            }
++          },
++          "captures": [],
++          "assertions": [
++            {
++              "id": "http-status",
++              "kind": "status",
++              "equals": 200
++            },
++            {
++              "id": "schema",
++              "kind": "json-schema",
++              "schema": "#/$defs/transactionalSequenceResponse"
++            },
++            {
++              "id": "media",
++              "kind": "header",
++              "name": "content-type",
++              "equals": "application/json"
++            },
++            {
++              "id": "present-bdp-scope-epoch",
++              "kind": "header",
++              "name": "bdp-scope-epoch",
++              "absent": false
++            },
++            {
++              "id": "present-bdp-authorization-view",
++              "kind": "header",
++              "name": "bdp-authorization-view",
++              "absent": false
++            },
++            {
++              "id": "present-bdp-scope-position",
++              "kind": "header",
++              "name": "bdp-scope-position",
++              "absent": false
++            },
++            {
++              "id": "serving-position",
++              "kind": "header",
++              "name": "bdp-scope-position",
++              "equals": "pos-2"
++            },
++            {
++              "id": "serving-context",
++              "kind": "response-metadata-equals",
++              "request": "x-update",
++              "headers": ["bdp-scope-epoch", "bdp-authorization-view", "bdp-scope-position"]
++            },
++            {
++              "id": "request-headers",
++              "kind": "request-authored-headers"
++            },
++            {
++              "id": "request-body",
++              "kind": "request-authored-body"
++            },
++            {
++              "id": "presentation",
++              "kind": "json-array-tuples",
++              "pointer": "/results",
++              "ordered": true,
++              "projections": [
++                {
++                  "pointer": "/operationIndex"
++                },
++                {
++                  "pointer": "/outcome"
++                }
++              ],
++              "equals": [[0, "created"], [1, "updated"]]
++            },
++            {
++              "id": "present-name",
++              "kind": "json-pointer",
++              "pointer": "/results/0/operationName",
++              "exists": true,
++              "equals": "again"
++            },
++            {
++              "id": "created-record",
++              "kind": "json-pointer",
++              "pointer": "/results/0/resource",
++              "exists": true,
++              "equalsBinding": "x-created-record"
++            },
++            {
++              "id": "no-receipt",
++              "kind": "json-pointer",
++              "pointer": "/receipt",
++              "exists": false
++            },
++            {
++              "id": "no-root",
++              "kind": "json-pointer",
++              "pointer": "/id",
++              "exists": false
++            },
++            {
++              "id": "no-problem",
++              "kind": "json-pointer",
++              "pointer": "/results/0/problem",
++              "exists": false
++            },
++            {
++              "id": "no-update-name",
++              "kind": "json-pointer",
++              "pointer": "/results/1/operationName",
++              "exists": false
++            },
++            {
++              "id": "updated-record",
++              "kind": "json-pointer",
++              "pointer": "/results/1/resource",
++              "exists": true,
++              "equalsBinding": "x-updated-record"
++            },
++            {
++              "id": "no-update-problem",
++              "kind": "json-pointer",
++              "pointer": "/results/1/problem",
++              "exists": false
++            }
++          ]
++        },
++        {
++          "id": "x-update-singleton",
++          "family": "http",
++          "method": "POST",
++          "target": {
++            "binding": "scope",
++            "path": "operations/update-bead"
++          },
++          "credentialRef": "operator",
++          "raw": {
++            "headerLines": [
++              {
++                "name": "content-type",
++                "value": "application/json"
++              },
++              {
++                "name": "idempotency-key",
++                "value": "carrier-update"
++              },
++              {
++                "name": "accept",
++                "value": "application/json"
++              }
++            ],
++            "body": {
++              "encoding": "utf8",
++              "value": "{\"bead\":\"beads/a\",\"propertiesChange\":[{\"op\":\"replace\",\"path\":\"/title\",\"value\":\"carrier-current\"}]}"
++            }
++          },
++          "captures": [],
++          "assertions": [
++            {
++              "id": "http-status",
++              "kind": "status",
++              "equals": 200
++            },
++            {
++              "id": "schema",
++              "kind": "json-schema",
++              "schema": "#/$defs/mutationReceipt"
++            },
++            {
++              "id": "media",
++              "kind": "header",
++              "name": "content-type",
++              "equals": "application/json"
++            },
++            {
++              "id": "present-bdp-scope-epoch",
++              "kind": "header",
++              "name": "bdp-scope-epoch",
++              "absent": false
++            },
++            {
++              "id": "present-bdp-authorization-view",
++              "kind": "header",
++              "name": "bdp-authorization-view",
++              "absent": false
++            },
++            {
++              "id": "present-bdp-scope-position",
++              "kind": "header",
++              "name": "bdp-scope-position",
++              "absent": false
++            },
++            {
++              "id": "serving-position",
++              "kind": "header",
++              "name": "bdp-scope-position",
++              "equals": "pos-2"
++            },
++            {
++              "id": "serving-context",
++              "kind": "response-metadata-equals",
++              "request": "x-update",
++              "headers": ["bdp-scope-epoch", "bdp-authorization-view", "bdp-scope-position"]
++            },
++            {
++              "id": "request-headers",
++              "kind": "request-authored-headers"
++            },
++            {
++              "id": "request-body",
++              "kind": "request-authored-body"
++            },
++            {
++              "id": "disposition",
++              "kind": "json-pointer",
++              "pointer": "/status",
++              "exists": true,
++              "equals": "completed"
++            },
++            {
++              "id": "detail",
++              "kind": "json-pointer",
++              "pointer": "/detail",
++              "exists": true,
++              "equals": "available"
++            },
++            {
++              "id": "key",
++              "kind": "json-pointer",
++              "pointer": "/idempotencyKey",
++              "exists": true,
++              "equals": "carrier-update"
++            },
++            {
++              "id": "no-next",
++              "kind": "json-pointer",
++              "pointer": "/next",
++              "exists": true,
++              "equals": null
++            },
++            {
++              "id": "required-position",
++              "kind": "json-pointer",
++              "pointer": "/requiredPosition",
++              "exists": true,
++              "equals": "pos-2"
++            },
++            {
++              "id": "effect-position",
++              "kind": "json-pointer",
++              "pointer": "/effectPosition",
++              "exists": true,
++              "equals": "pos-2"
++            },
++            {
++              "id": "literal-result",
++              "kind": "json-array-tuples",
++              "pointer": "/results",
++              "ordered": true,
++              "projections": [
++                {
++                  "pointer": "/operationIndex"
++                },
++                {
++                  "pointer": "/outcome"
++                },
++                {
++                  "pointer": "/resource/id"
++                },
++                {
++                  "pointer": "/resource/type"
++                },
++                {
++                  "pointer": "/resource/properties"
++                },
++                {
++                  "pointer": "/resource/metadata"
++                }
++              ],
++              "equals": [
++                [
++                  0,
++                  "updated",
++                  "https://reference.invalid/acme/beads/a",
++                  "https://reference.invalid/acme/types/task",
++                  {
++                    "title": "carrier-current"
++                  },
++                  {}
++                ]
++              ]
++            },
++            {
++              "id": "no-name",
++              "kind": "json-pointer",
++              "pointer": "/results/0/operationName",
++              "exists": false
++            },
++            {
++              "id": "no-source",
++              "kind": "json-pointer",
++              "pointer": "/results/0/source",
++              "exists": false
++            },
++            {
++              "id": "retained-root",
++              "kind": "json-pointer",
++              "pointer": "/id",
++              "exists": true,
++              "equalsBinding": "x-updated-root"
++            },
++            {
++              "id": "retained-body",
++              "kind": "json-pointer",
++              "pointer": "",
++              "exists": true,
++              "equalsBinding": "x-updated-body"
++            }
++          ]
++        },
++        {
++          "id": "x-create-singleton-retry",
++          "family": "http",
++          "method": "POST",
++          "target": {
++            "binding": "scope",
++            "path": "operations/create-bead"
++          },
++          "credentialRef": "operator",
++          "raw": {
++            "headerLines": [
++              {
++                "name": "content-type",
++                "value": "application/json"
++              },
++              {
++                "name": "idempotency-key",
++                "value": "carrier-create"
++              },
++              {
++                "name": "accept",
++                "value": "application/json"
++              }
++            ],
++            "body": {
++              "encoding": "utf8",
++              "value": "{\"id\":\"beads/a\",\"type\":\"https://reference.invalid/acme/types/task\",\"properties\":{\"title\":\"carrier-original\"}}"
++            }
++          },
++          "captures": [],
++          "assertions": [
++            {
++              "id": "http-status",
++              "kind": "status",
++              "equals": 200
++            },
++            {
++              "id": "schema",
++              "kind": "json-schema",
++              "schema": "#/$defs/mutationReceipt"
++            },
++            {
++              "id": "media",
++              "kind": "header",
++              "name": "content-type",
++              "equals": "application/json"
++            },
++            {
++              "id": "present-bdp-scope-epoch",
++              "kind": "header",
++              "name": "bdp-scope-epoch",
++              "absent": false
++            },
++            {
++              "id": "present-bdp-authorization-view",
++              "kind": "header",
++              "name": "bdp-authorization-view",
++              "absent": false
++            },
++            {
++              "id": "present-bdp-scope-position",
++              "kind": "header",
++              "name": "bdp-scope-position",
++              "absent": false
++            },
++            {
++              "id": "serving-position",
++              "kind": "header",
++              "name": "bdp-scope-position",
++              "equals": "pos-2"
++            },
++            {
++              "id": "serving-context",
++              "kind": "response-metadata-equals",
++              "request": "x-update",
++              "headers": ["bdp-scope-epoch", "bdp-authorization-view", "bdp-scope-position"]
++            },
++            {
++              "id": "request-headers",
++              "kind": "request-authored-headers"
++            },
++            {
++              "id": "request-body",
++              "kind": "request-authored-body"
++            },
++            {
++              "id": "disposition",
++              "kind": "json-pointer",
++              "pointer": "/status",
++              "exists": true,
++              "equals": "completed"
++            },
++            {
++              "id": "detail",
++              "kind": "json-pointer",
++              "pointer": "/detail",
++              "exists": true,
++              "equals": "available"
++            },
++            {
++              "id": "key",
++              "kind": "json-pointer",
++              "pointer": "/idempotencyKey",
++              "exists": true,
++              "equals": "carrier-create"
++            },
++            {
++              "id": "no-next",
++              "kind": "json-pointer",
++              "pointer": "/next",
++              "exists": true,
++              "equals": null
++            },
++            {
++              "id": "required-position",
++              "kind": "json-pointer",
++              "pointer": "/requiredPosition",
++              "exists": true,
++              "equals": "pos-1"
++            },
++            {
++              "id": "effect-position",
++              "kind": "json-pointer",
++              "pointer": "/effectPosition",
++              "exists": true,
++              "equals": "pos-1"
++            },
++            {
++              "id": "literal-result",
++              "kind": "json-array-tuples",
++              "pointer": "/results",
++              "ordered": true,
++              "projections": [
++                {
++                  "pointer": "/operationIndex"
++                },
++                {
++                  "pointer": "/outcome"
++                },
++                {
++                  "pointer": "/resource/id"
++                },
++                {
++                  "pointer": "/resource/type"
++                },
++                {
++                  "pointer": "/resource/properties"
++                },
++                {
++                  "pointer": "/resource/metadata"
++                }
++              ],
++              "equals": [
++                [
++                  0,
++                  "created",
++                  "https://reference.invalid/acme/beads/a",
++                  "https://reference.invalid/acme/types/task",
++                  {
++                    "title": "carrier-original"
++                  },
++                  {}
++                ]
++              ]
++            },
++            {
++              "id": "no-name",
++              "kind": "json-pointer",
++              "pointer": "/results/0/operationName",
++              "exists": false
++            },
++            {
++              "id": "no-source",
++              "kind": "json-pointer",
++              "pointer": "/results/0/source",
++              "exists": false
++            },
++            {
++              "id": "retained-root",
++              "kind": "json-pointer",
++              "pointer": "/id",
++              "exists": true,
++              "equalsBinding": "x-created-root"
++            },
++            {
++              "id": "retained-body",
++              "kind": "json-pointer",
++              "pointer": "",
++              "exists": true,
++              "equalsBinding": "x-created-body"
++            }
++          ]
++        },
++        {
++          "id": "x-create-batch-retry",
++          "family": "http",
++          "method": "POST",
++          "target": {
++            "binding": "scope",
++            "path": "operations/batch"
++          },
++          "credentialRef": "operator",
++          "raw": {
++            "headerLines": [
++              {
++                "name": "content-type",
++                "value": "application/json"
++              },
++              {
++                "name": "idempotency-key",
++                "value": "carrier-create"
++              },
++              {
++                "name": "accept",
++                "value": "application/json"
++              }
++            ],
++            "body": {
++              "encoding": "utf8",
++              "value": "{\"operations\":[{\"operation\":\"createBead\",\"id\":\"beads/a\",\"type\":\"https://reference.invalid/acme/types/task\",\"properties\":{\"title\":\"carrier-original\"}}]}"
++            }
++          },
++          "captures": [],
++          "assertions": [
++            {
++              "id": "http-status",
++              "kind": "status",
++              "equals": 200
++            },
++            {
++              "id": "schema",
++              "kind": "json-schema",
++              "schema": "#/$defs/mutationReceipt"
++            },
++            {
++              "id": "media",
++              "kind": "header",
++              "name": "content-type",
++              "equals": "application/json"
++            },
++            {
++              "id": "present-bdp-scope-epoch",
++              "kind": "header",
++              "name": "bdp-scope-epoch",
++              "absent": false
++            },
++            {
++              "id": "present-bdp-authorization-view",
++              "kind": "header",
++              "name": "bdp-authorization-view",
++              "absent": false
++            },
++            {
++              "id": "present-bdp-scope-position",
++              "kind": "header",
++              "name": "bdp-scope-position",
++              "absent": false
++            },
++            {
++              "id": "serving-position",
++              "kind": "header",
++              "name": "bdp-scope-position",
++              "equals": "pos-2"
++            },
++            {
++              "id": "serving-context",
++              "kind": "response-metadata-equals",
++              "request": "x-update",
++              "headers": ["bdp-scope-epoch", "bdp-authorization-view", "bdp-scope-position"]
++            },
++            {
++              "id": "request-headers",
++              "kind": "request-authored-headers"
++            },
++            {
++              "id": "request-body",
++              "kind": "request-authored-body"
++            },
++            {
++              "id": "disposition",
++              "kind": "json-pointer",
++              "pointer": "/status",
++              "exists": true,
++              "equals": "completed"
++            },
++            {
++              "id": "detail",
++              "kind": "json-pointer",
++              "pointer": "/detail",
++              "exists": true,
++              "equals": "available"
++            },
++            {
++              "id": "key",
++              "kind": "json-pointer",
++              "pointer": "/idempotencyKey",
++              "exists": true,
++              "equals": "carrier-create"
++            },
++            {
++              "id": "no-next",
++              "kind": "json-pointer",
++              "pointer": "/next",
++              "exists": true,
++              "equals": null
++            },
++            {
++              "id": "required-position",
++              "kind": "json-pointer",
++              "pointer": "/requiredPosition",
++              "exists": true,
++              "equals": "pos-1"
++            },
++            {
++              "id": "effect-position",
++              "kind": "json-pointer",
++              "pointer": "/effectPosition",
++              "exists": true,
++              "equals": "pos-1"
++            },
++            {
++              "id": "literal-result",
++              "kind": "json-array-tuples",
++              "pointer": "/results",
++              "ordered": true,
++              "projections": [
++                {
++                  "pointer": "/operationIndex"
++                },
++                {
++                  "pointer": "/outcome"
++                },
++                {
++                  "pointer": "/resource/id"
++                },
++                {
++                  "pointer": "/resource/type"
++                },
++                {
++                  "pointer": "/resource/properties"
++                },
++                {
++                  "pointer": "/resource/metadata"
++                }
++              ],
++              "equals": [
++                [
++                  0,
++                  "created",
++                  "https://reference.invalid/acme/beads/a",
++                  "https://reference.invalid/acme/types/task",
++                  {
++                    "title": "carrier-original"
++                  },
++                  {}
++                ]
++              ]
++            },
++            {
++              "id": "no-name",
++              "kind": "json-pointer",
++              "pointer": "/results/0/operationName",
++              "exists": false
++            },
++            {
++              "id": "no-source",
++              "kind": "json-pointer",
++              "pointer": "/results/0/source",
++              "exists": false
++            },
++            {
++              "id": "retained-root",
++              "kind": "json-pointer",
++              "pointer": "/id",
++              "exists": true,
++              "equalsBinding": "x-created-root"
++            },
++            {
++              "id": "retained-body",
++              "kind": "json-pointer",
++              "pointer": "",
++              "exists": true,
++              "equalsBinding": "x-created-body"
++            }
++          ]
++        },
++        {
++          "id": "x-current",
++          "family": "http",
++          "method": "GET",
++          "target": {
++            "binding": "scope",
++            "path": "beads/",
++            "query": { "limit": "32" }
++          },
++          "credentialRef": "operator",
++          "raw": {
++            "headerLines": []
++          },
++          "captures": [],
++          "assertions": [
++            {
++              "id": "http-status",
++              "kind": "status",
++              "equals": 200
++            },
++            {
++              "id": "schema",
++              "kind": "json-schema",
++              "schema": "#/$defs/currentBeadCollection"
++            },
++            {
++              "id": "media",
++              "kind": "header",
++              "name": "content-type",
++              "equals": "application/json"
++            },
++            {
++              "id": "present-bdp-scope-epoch",
++              "kind": "header",
++              "name": "bdp-scope-epoch",
++              "absent": false
++            },
++            {
++              "id": "present-bdp-authorization-view",
++              "kind": "header",
++              "name": "bdp-authorization-view",
++              "absent": false
++            },
++            {
++              "id": "present-bdp-scope-position",
++              "kind": "header",
++              "name": "bdp-scope-position",
++              "absent": false
++            },
++            {
++              "id": "serving-position",
++              "kind": "header",
++              "name": "bdp-scope-position",
++              "equals": "pos-2"
++            },
++            {
++              "id": "serving-context",
++              "kind": "response-metadata-equals",
++              "request": "x-update",
++              "headers": ["bdp-scope-epoch", "bdp-authorization-view", "bdp-scope-position"]
++            },
++            {
++              "id": "request-headers",
++              "kind": "request-authored-headers"
++            },
++            {
++              "id": "request-body",
++              "kind": "request-authored-body"
++            },
++            {
++              "id": "no-next",
++              "kind": "json-pointer",
++              "pointer": "/next",
++              "exists": true,
++              "equals": null
++            },
++            {
++              "id": "literal-state",
++              "kind": "json-array-tuples",
++              "pointer": "/items",
++              "ordered": true,
++              "projections": [
++                {
++                  "pointer": "/id"
++                },
++                {
++                  "pointer": "/type"
++                },
++                {
++                  "pointer": "/properties"
++                },
++                {
++                  "pointer": "/metadata"
++                }
++              ],
++              "equals": [
++                [
++                  "https://reference.invalid/acme/beads/a",
++                  "https://reference.invalid/acme/types/task",
++                  {
++                    "title": "carrier-current"
++                  },
++                  {}
++                ]
++              ]
++            },
++            {
++              "id": "updated-record",
++              "kind": "json-pointer",
++              "pointer": "/items/0",
++              "exists": true,
++              "equalsBinding": "x-updated-record"
++            }
++          ]
++        },
++        {
++          "id": "x-events",
++          "family": "http",
++          "method": "GET",
++          "target": {
++            "binding": "scope",
++            "path": "events/"
++          },
++          "credentialRef": "operator",
++          "raw": {
++            "headerLines": []
++          },
++          "captures": [],
++          "assertions": [
++            {
++              "id": "http-status",
++              "kind": "status",
++              "equals": 200
++            },
++            {
++              "id": "schema",
++              "kind": "json-schema",
++              "schema": "#/$defs/eventPage"
++            },
++            {
++              "id": "media",
++              "kind": "header",
++              "name": "content-type",
++              "equals": "application/json"
++            },
++            {
++              "id": "present-bdp-scope-epoch",
++              "kind": "header",
++              "name": "bdp-scope-epoch",
++              "absent": false
++            },
++            {
++              "id": "present-bdp-authorization-view",
++              "kind": "header",
++              "name": "bdp-authorization-view",
++              "absent": false
++            },
++            {
++              "id": "present-bdp-scope-position",
++              "kind": "header",
++              "name": "bdp-scope-position",
++              "absent": false
++            },
++            {
++              "id": "serving-position",
++              "kind": "header",
++              "name": "bdp-scope-position",
++              "equals": "pos-2"
++            },
++            {
++              "id": "serving-context",
++              "kind": "response-metadata-equals",
++              "request": "x-update",
++              "headers": ["bdp-scope-epoch", "bdp-authorization-view", "bdp-scope-position"]
++            },
++            {
++              "id": "request-headers",
++              "kind": "request-authored-headers"
++            },
++            {
++              "id": "request-body",
++              "kind": "request-authored-body"
++            },
++            {
++              "id": "no-next",
++              "kind": "json-pointer",
++              "pointer": "/next",
++              "exists": true,
++              "equals": null
++            },
++            {
++              "id": "ordered-events",
++              "kind": "json-array-tuples",
++              "pointer": "/events",
++              "ordered": true,
++              "projections": [
++                {
++                  "pointer": "/source"
++                },
++                {
++                  "pointer": "/type"
++                },
++                {
++                  "pointer": "/subject"
++                },
++                {
++                  "pointer": "/subjectType"
++                },
++                {
++                  "pointer": "/ordinal"
++                }
++              ],
++              "equals": [
++                [
++                  "https://reference.invalid/acme/events/",
++                  "created",
++                  "https://reference.invalid/acme/beads/a",
++                  "https://reference.invalid/acme/types/task",
++                  0
++                ],
++                [
++                  "https://reference.invalid/acme/events/",
++                  "updated",
++                  "https://reference.invalid/acme/beads/a",
++                  "https://reference.invalid/acme/types/task",
++                  0
++                ]
++              ]
++            },
++            {
++              "id": "created-type",
++              "kind": "json-pointer",
++              "pointer": "/events/0/subjectType",
++              "exists": true,
++              "equals": "https://reference.invalid/acme/types/task"
++            },
++            {
++              "id": "created-properties",
++              "kind": "json-pointer",
++              "pointer": "/events/0/data/properties",
++              "exists": true,
++              "equals": {
++                "title": "carrier-original"
++              }
++            },
++            {
++              "id": "created-metadata",
++              "kind": "json-pointer",
++              "pointer": "/events/0/data/metadata",
++              "exists": true,
++              "equals": {}
++            },
++            {
++              "id": "created-revision",
++              "kind": "json-pointer",
++              "pointer": "/events/0/data/revision",
++              "exists": true,
++              "equalsBinding": "x-created-revision"
++            },
++            {
++              "id": "updated-previous",
++              "kind": "json-pointer",
++              "pointer": "/events/1/data/previousRevision",
++              "exists": true,
++              "equalsBinding": "x-created-revision"
++            },
++            {
++              "id": "updated-revision",
++              "kind": "json-pointer",
++              "pointer": "/events/1/data/revision",
++              "exists": true,
++              "equalsBinding": "x-updated-revision"
++            },
++            {
++              "id": "updated-change",
++              "kind": "json-pointer",
++              "pointer": "/events/1/data/change",
++              "exists": true,
++              "equals": [
++                {
++                  "op": "replace",
++                  "path": "/title",
++                  "value": "carrier-current"
++                }
++              ]
++            },
++            {
++              "id": "no-metadata-change",
++              "kind": "json-pointer",
++              "pointer": "/events/1/data/metadataChange",
++              "exists": false
++            },
++            {
++              "id": "created-transaction",
++              "kind": "json-pointer",
++              "pointer": "/events/0/transaction",
++              "exists": true,
++              "equalsBinding": "x-created-transaction"
++            },
++            {
++              "id": "updated-transaction",
++              "kind": "json-pointer",
++              "pointer": "/events/1/transaction",
++              "exists": true,
++              "equalsBinding": "x-updated-transaction"
++            }
++          ]
++        }
++      ]
++    },
+     {
+       "id": "transactional.idempotency.failed-retained",
+       "requiredProfile": "transactional",

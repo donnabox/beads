@@ -1,0 +1,68 @@
+{
+  "checkedAt": "2026-10-16T20:11:28.800516+00:00",
+  "stages": [
+    {
+      "stage": "typecheck",
+      "cases": 0,
+      "exit": 0,
+      "supervisorExit": 0,
+      "seconds": 2.459102167049423
+    },
+    {
+      "stage": "format-check",
+      "cases": 0,
+      "exit": 0,
+      "supervisorExit": 0,
+      "seconds": 1.0881167501211166
+    },
+    {
+      "stage": "lint",
+      "cases": 0,
+      "exit": 0,
+      "supervisorExit": 0,
+      "seconds": 0.9865228328853846
+    },
+    {
+      "stage": "boundaries",
+      "cases": 0,
+      "exit": 0,
+      "supervisorExit": 0,
+      "seconds": 1.0694094998762012
+    },
+    {
+      "stage": "cumulative-full",
+      "cases": 42,
+      "exit": 0,
+      "supervisorExit": 0,
+      "seconds": 2.2565585419069976
+    },
+    {
+      "stage": "binding-source",
+      "cases": 3,
+      "exit": 0,
+      "supervisorExit": 0,
+      "seconds": 0.8687937499489635
+    },
+    {
+      "stage": "receipt-first-page",
+      "cases": 8,
+      "exit": 0,
+      "supervisorExit": 0,
+      "seconds": 1.1859784168191254
+    },
+    {
+      "stage": "app-static",
+      "cases": 3,
+      "exit": 0,
+      "supervisorExit": 0,
+      "seconds": 1.1860890830866992
+    }
+  ],
+  "selectedPassed": 56,
+  "sourceUnchanged": true,
+  "sampledPidsAbsent": 35,
+  "diagnosticOnly": true,
+  "externalReviewPending": true,
+  "councilAccepted": false,
+  "limitation": "Source diagnostic on frozen dirty1ba draft, not integrated/installed proof. Filtered-out tests are not claimed passed. Planned HTTP quotas are not independently observed request counts."
+}

@@ -1,0 +1,45 @@
+{
+  "state": "EXACT marker-only semantic delta plus one preserved format-only wrap",
+  "strippingPrivateMarkerHelperAndTwoCallsEquals085aByteForByte": true,
+  "baselineOwnedSha256": "085a2e8e481a7cdbc8a705723939808b8120dca4518183c4e26a70de69f7382a",
+  "finalOwnedSha256": "4f4f942f876222521765b9830a941f2b6e0dfa01a3a66979beaa1237c4638c85",
+  "baseKnownFiles": 679,
+  "afterKnownFiles": 679,
+  "ownedFiles": 1,
+  "protectedOtherKnownFilesExact": 678,
+  "sameWorkload": {
+    "HTTP": 32,
+    "POST": 11,
+    "GET": 21,
+    "children": 2,
+    "receiptEntries": 33,
+    "events": 96,
+    "localCounterfactuals": 5,
+    "Types": 4
+  },
+  "sameBudgetsMs": {
+    "work": 90000,
+    "callback": 120000,
+    "request": 5000,
+    "cleanup": 10000
+  },
+  "unchangedReportSchemaAssertionsCleanupAndFinalThrow": true,
+  "markerClosedKeys": [
+    "observation",
+    "version",
+    "attemptId",
+    "phase",
+    "sourceElapsedMilliseconds"
+  ],
+  "markerCounts": 2,
+  "ordinaryMissingInvalidEnvironment": "null diagnostic only; no outcome check added",
+  "currentValidationAcceptance": "requires independently current fresh nonnull32lowerhex on both markers; no fallback",
+  "noDrainingOrFlushClaim": true,
+  "sourceElapsedEnd": "actual performance.now()-started sampled after console.log(JSON.stringify(report)) returned",
+  "originalActualCodeDidNotReviewTheseNewBytes": true,
+  "secondActualCodeOrPlan": false,
+  "rootGitReadback": "UNRESOLVED; root owns after freeze",
+  "formatterInvocations": 1,
+  "postFormatterEdits": 0,
+  "compilerTestsRuntimeHelpersExecuted": false
+}

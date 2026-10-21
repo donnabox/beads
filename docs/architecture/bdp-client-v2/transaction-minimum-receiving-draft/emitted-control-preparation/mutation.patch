@@ -1,0 +1,11 @@
+--- positive/packages/server/dist/transaction-http.js
++++ negative/packages/server/dist/transaction-http.js
+@@ -269,8 +269,6 @@
+         }
+         if (authorization.kind === "unauthenticated")
+             return transactionHttpProblem("unauthenticated");
+-        if (malformedTransactionMinimumHeaders(request.headers))
+-            return transactionHttpProblem("malformed-request");
+         if (url.pathname === new URL("snapshot", scope).pathname) {
+             const fields = [...url.searchParams.keys()];
+             const id = url.searchParams.get("snapshot"), stream = url.searchParams.get("stream"), token = url.searchParams.get("page");

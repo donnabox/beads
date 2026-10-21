@@ -1,0 +1,80 @@
+{
+  "observedUtc": "2026-10-18T04:54:03.855911+00:00",
+  "completedStages": [
+    "node-version",
+    "pnpm-version",
+    "workspace-install"
+  ],
+  "records": [
+    {
+      "stage": "node-version",
+      "exit": {
+        "exit": 0,
+        "accepted": true,
+        "sourceIdentity": "096b4f8e59ad1c6e4b10105eacb3691c60a66334b015d8c43756c8b3aeb7995b",
+        "sourceUnchanged": true,
+        "elapsedSeconds": 3.727497166953981,
+        "forcedCleanup": false,
+        "errors": [],
+        "sampledPids": [
+          94298
+        ],
+        "remainingProcesses": [],
+        "runtimeDirectoriesStillPresent": [],
+        "temporaryDirectory": "/private/tmp/vickie-current-changefeed-validation-node-version-d2jgnk22",
+        "logSha256": "a8f8f7ba69d43285857a0ea34017ef8dadd3ba012404bb7dd188fc773cf63ee2"
+      },
+      "startSha256": "2c27bdd27c021d0b51169062ee66e3146f6cf7e3038d9191363253e951573d94"
+    },
+    {
+      "stage": "pnpm-version",
+      "exit": {
+        "exit": 0,
+        "accepted": true,
+        "sourceIdentity": "096b4f8e59ad1c6e4b10105eacb3691c60a66334b015d8c43756c8b3aeb7995b",
+        "sourceUnchanged": true,
+        "elapsedSeconds": 3.990912541281432,
+        "forcedCleanup": false,
+        "errors": [],
+        "sampledPids": [
+          95775
+        ],
+        "remainingProcesses": [],
+        "runtimeDirectoriesStillPresent": [],
+        "temporaryDirectory": "/private/tmp/vickie-current-changefeed-validation-pnpm-version-snj516xf",
+        "logSha256": "6784d6c924df1c8341f9f841f5b5b20c37255de3d34f923baebc0a557d5d5201"
+      },
+      "startSha256": "6c53899c9dae07b38ffcb56f25ffb0154b9067a465493878ee984f934f211339"
+    },
+    {
+      "stage": "workspace-install",
+      "exit": {
+        "exit": 0,
+        "accepted": true,
+        "sourceIdentity": "096b4f8e59ad1c6e4b10105eacb3691c60a66334b015d8c43756c8b3aeb7995b",
+        "sourceUnchanged": true,
+        "elapsedSeconds": 4.0432759169489145,
+        "forcedCleanup": false,
+        "errors": [],
+        "sampledPids": [
+          97216
+        ],
+        "remainingProcesses": [],
+        "runtimeDirectoriesStillPresent": [],
+        "temporaryDirectory": "/private/tmp/vickie-current-changefeed-validation-workspace-install-jwp9y1eq",
+        "logSha256": "7e64af59999bdd1f3ff1db6e6e88778cf96141b6fb45cd6d6eecf79860e1a84f"
+      },
+      "startSha256": "7a3ebb62fdc611e073cfe2b40dd355c2271a59ad18b1fa7d7c0d0af721dd0716"
+    }
+  ],
+  "all679SourceHashesMatch": true,
+  "independentlyAbsentPids": [
+    94298,
+    95775,
+    97216
+  ],
+  "sourceIdentity": "096b4f8e59ad1c6e4b10105eacb3691c60a66334b015d8c43756c8b3aeb7995b",
+  "firstPrefixOnly": true,
+  "validationCommandsExecutedByObserver": false,
+  "qualification": false
+}

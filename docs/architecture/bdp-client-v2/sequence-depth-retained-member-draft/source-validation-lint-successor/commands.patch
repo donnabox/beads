@@ -1,0 +1,147 @@
+--- /Users/dbox/repos/wt/vickie/bdp-integration-logs/sequence-depth-retained-member-draft/source-validation-initial/commands.json
++++ /Users/dbox/repos/wt/vickie/bdp-integration-logs/sequence-depth-retained-member-draft/source-validation-lint-successor/commands.json
+@@ -1,75 +1,19 @@
+ {
+-  "status": "ROOT AUTHORIZED preliminary isolated dirtydf80 only; final integration/installed remain held",
++  "status": "CLOSED preliminary isolated dirtydf80 successor; no root release",
+   "authorSourceBindingSha256": "987f61764ca09df676f77ab5b99a8886809f4ce7908342bc8c27fd462fddcc81",
+   "selectionSha256": "940f2785f5212b454652860672799d83fb62bc013ef043ddf44ced7fe84187b2",
+   "finalIntegratedHead": null,
+   "finalIntegratedTree": null,
+-  "rootRelease": "direct root instruction; root-execution-authorization.json",
++  "rootRelease": null,
+   "commands": [
+     {
+-      "id": "offline-setup",
+-      "cwd": "/Users/dbox/repos/wt/vickie/vickie-sequence-depth-retained",
+-      "argv": [
+-        "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+-        "/Users/dbox/.cache/node/corepack/v1/pnpm/11.20.0/bin/pnpm.cjs",
+-        "install",
+-        "--offline",
+-        "--frozen-lockfile",
+-        "--ignore-scripts"
+-      ],
+-      "supervisorSeconds": 120,
+-      "cases": 0,
+-      "http": 0,
+-      "owners": 0,
+-      "listeners": 0,
+-      "directories": 0,
+-      "productChildren": 0,
+-      "ownedTempPrefixes": []
+-    },
+-    {
+-      "id": "typecheck",
+-      "cwd": "/Users/dbox/repos/wt/vickie/vickie-sequence-depth-retained",
+-      "argv": [
+-        "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+-        "/Users/dbox/.cache/node/corepack/v1/pnpm/11.20.0/bin/pnpm.cjs",
+-        "run",
+-        "typecheck"
+-      ],
+-      "supervisorSeconds": 120,
+-      "cases": 0,
+-      "http": 0,
+-      "owners": 0,
+-      "listeners": 0,
+-      "directories": 0,
+-      "productChildren": 0,
+-      "ownedTempPrefixes": []
+-    },
+-    {
+-      "id": "build",
+-      "cwd": "/Users/dbox/repos/wt/vickie/vickie-sequence-depth-retained",
+-      "argv": [
+-        "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+-        "/Users/dbox/.cache/node/corepack/v1/pnpm/11.20.0/bin/pnpm.cjs",
+-        "run",
+-        "build"
+-      ],
+-      "supervisorSeconds": 120,
+-      "cases": 0,
+-      "http": 0,
+-      "owners": 0,
+-      "listeners": 0,
+-      "directories": 0,
+-      "productChildren": 0,
+-      "ownedTempPrefixes": []
+-    },
+-    {
+       "id": "format-check",
+       "cwd": "/Users/dbox/repos/wt/vickie/vickie-sequence-depth-retained",
+       "argv": [
+         "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+-        "/Users/dbox/.cache/node/corepack/v1/pnpm/11.20.0/bin/pnpm.cjs",
+-        "run",
+-        "format:check"
++        "/Users/dbox/repos/wt/vickie/vickie-sequence-depth-retained/node_modules/.pnpm/@biomejs+biome@2.5.7/node_modules/@biomejs/biome/bin/biome",
++        "format",
++        "packages/server/src/transaction-http.test.ts"
+       ],
+       "supervisorSeconds": 120,
+       "cases": 0,
+@@ -85,9 +29,9 @@
+       "cwd": "/Users/dbox/repos/wt/vickie/vickie-sequence-depth-retained",
+       "argv": [
+         "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+-        "/Users/dbox/.cache/node/corepack/v1/pnpm/11.20.0/bin/pnpm.cjs",
+-        "run",
+-        "lint"
++        "/Users/dbox/repos/wt/vickie/vickie-sequence-depth-retained/node_modules/.pnpm/@biomejs+biome@2.5.7/node_modules/@biomejs/biome/bin/biome",
++        "lint",
++        "packages/server/src/transaction-http.test.ts"
+       ],
+       "supervisorSeconds": 120,
+       "cases": 0,
+@@ -147,7 +91,7 @@
+         "--maxWorkers=1",
+         "--reporter=verbose",
+         "--reporter=json",
+-        "--outputFile=/Users/dbox/repos/wt/vickie/bdp-integration-logs/sequence-depth-retained-member-draft/source-validation-initial/run/preparation-positive.vitest.json"
++        "--outputFile=/Users/dbox/repos/wt/vickie/bdp-integration-logs/sequence-depth-retained-member-draft/source-validation-lint-successor/run/preparation-positive.vitest.json"
+       ],
+       "supervisorSeconds": 120,
+       "cases": 2,
+@@ -175,7 +119,7 @@
+         "--maxWorkers=1",
+         "--reporter=verbose",
+         "--reporter=json",
+-        "--outputFile=/Users/dbox/repos/wt/vickie/bdp-integration-logs/sequence-depth-retained-member-draft/source-validation-initial/run/sequence-positive.vitest.json"
++        "--outputFile=/Users/dbox/repos/wt/vickie/bdp-integration-logs/sequence-depth-retained-member-draft/source-validation-lint-successor/run/sequence-positive.vitest.json"
+       ],
+       "supervisorSeconds": 120,
+       "cases": 13,
+@@ -216,7 +160,7 @@
+         "--maxWorkers=1",
+         "--reporter=verbose",
+         "--reporter=json",
+-        "--outputFile=/Users/dbox/repos/wt/vickie/bdp-integration-logs/sequence-depth-retained-member-draft/source-validation-initial/run/http-positive.vitest.json"
++        "--outputFile=/Users/dbox/repos/wt/vickie/bdp-integration-logs/sequence-depth-retained-member-draft/source-validation-lint-successor/run/http-positive.vitest.json"
+       ],
+       "supervisorSeconds": 120,
+       "cases": 3,
+@@ -247,7 +191,9 @@
+     "pnpmSha256": "67b035e322203961795e8e34ca63a08c37a4386eda94107fb3d28f3246d882ad",
+     "expectedVitest": "/Users/dbox/repos/wt/vickie/vickie-sequence-depth-retained/node_modules/.pnpm/vitest@4.1.10_@types+node@24.13.3_vite@8.2.1_@types+node@24.13.3_/node_modules/vitest/vitest.mjs",
+     "expectedVitestSha256": "39db22f579acf5639bbb17a261408debbde03f4692c0c439e77e7f13aeba74d6",
+-    "note": "Checkout node_modules absent at preparation. Path derived from same pinned lock/version in existing authorization checkout; after released offline setup verify actual realpath/hash before first test. No fallback to another checkout."
++    "note": "Pinned existing local tools; no setup/rebuild in successor. Historical build bridge is mandatory.",
++    "biome": "/Users/dbox/repos/wt/vickie/vickie-sequence-depth-retained/node_modules/.pnpm/@biomejs+biome@2.5.7/node_modules/@biomejs/biome/bin/biome",
++    "biomeSha256": "7ffb4d217e5ddefcc19ca6afe76bb982f5eb36c9a124448105195fbcfc84bd77"
+   },
+   "supervision": {
+     "perStageSeconds": 120,
+@@ -256,10 +202,10 @@
+     "automaticRetries": 0,
+     "required": "one stage at a time, source/fullpatch before+after, exact prior exits, exclusive rawlog/exit/process/temp evidence, selected passed titles/count from real JSON, reject unexpected executed cases/unhandled errors and retained stores; no cleanup that hides primary failure"
+   },
+-  "imports": "Vitest setup source admission mock and eight-package source aliases; HTTP module imports emitted runtime dynamically at collection. Build must precede tests. Entire modules collect unselected callbacks; skipped are not executed credit.",
++  "imports": "Entire test modules/setup collect; source aliases plus relative emitted runtime. Reuse historical actual successful initial build through explicit bridge; fresh final integrated build remains mandatory.",
+   "separateGates": {
+     "emittedControl": "closed, separate full mirror/sole mutation/root release",
+     "installed": "closed, fresh clean integrated build/archive/eight-package/consumer/member proof and external entry; no workspace fallback qualification"
+   },
+-  "sourceBindingSha256": "987f61764ca09df676f77ab5b99a8886809f4ce7908342bc8c27fd462fddcc81"
++  "sourceBindingSha256": "9eb076e7fee0b300010a4edac01f55fecd7ab6f1d27955931e7791556d2080ec"
+ }

@@ -1,0 +1,29 @@
+{
+  "baseline679": true,
+  "existingChanged": [
+    "docs/design/startup-configuration.md",
+    "packages/config/src/index.test.ts",
+    "packages/config/src/index.ts",
+    "packages/server/package.json",
+    "packages/server/src/read-sequence-lifecycle.test.ts",
+    "packages/server/src/transaction-snapshot.test.ts",
+    "scripts/smoke-executables.mjs",
+    "scripts/smoke-safety.mjs",
+    "scripts/smoke-safety.test.mjs"
+  ],
+  "existingPreservedCount": 670,
+  "newFiles": [
+    "packages/server/src/reference-deployment.ts",
+    "packages/server/src/reference-deployment-state.ts",
+    "packages/server/src/reference-deployment.test.ts"
+  ],
+  "newCount": 3,
+  "noOtherSourceChanges": true,
+  "originalPR167All679ExactBase": true,
+  "originalPR167Path": "/Users/dbox/repos/wt/vickie/vickie-event-admission-replay-minimum",
+  "D1All679MatchFrozenAuthorMap": true,
+  "D1AuthorMapSha256": "3fd5db0a85b07dcc69eb319802b877b15de166312373f3cca7789bd5bb20bf38",
+  "gitIndexHasNoStagedChanges": true,
+  "launchDesignMainAndOtherWorktreesNotEdited": true,
+  "verification": "Read-only source byte hashing and git diff/status only; no product execution"
+}

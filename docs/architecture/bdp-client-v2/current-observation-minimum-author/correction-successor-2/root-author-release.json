@@ -1,0 +1,29 @@
+{
+  "at": "2026-10-17T20:49:47.361673+00:00",
+  "session": "2026-10-08T20:26:35Z-81e5",
+  "scope": "Exactly two prescribed test fixes after completed actual CODE review",
+  "worktree": "/Users/dbox/repos/wt/vickie/vickie-current-observation-minimum",
+  "predecessorSourceBindingSha256": "9c75bdd9409a3930ae75aaa539f08e0bd74904da6fed618f9b8c0206b4757310",
+  "evidence": {
+    "completion-audit.md": "b9d390377915ffe9678753ba7de92f479d7f81f24eb51606f090f0e75515a1c1",
+    "completion-audit.json": "fff1ffcca5687fd378f806dd094455b68e8a1e0ae31ee05bd50b46120c518417",
+    "final-review.txt": "961041fd918ddb781d8fca9fd3cf735627b17aa525b71371901ca1bae737ef15",
+    "findings-audit.md": "23e54214d1aaa788329e4487f6f6c0437dfc465ed7b214e072ceee1894bdd78d",
+    "two-test-correction-plan.md": "24c831b405b8e02d491b6e6a9ba67f23658ff0d1eb2d82e1bf0106cfd4cd0114"
+  },
+  "files": [
+    "packages/server/src/transaction-service.test.ts",
+    "packages/server/src/transaction-http.test.ts"
+  ],
+  "dispositions": {
+    "F1": "Accept: only readAtMinimum principal becomes {id:principal}; receiptPage unchanged",
+    "F2": "Accept: only source E expected inventory becomes Task,Relation; installed F unchanged",
+    "F3": "Defer title rename; historical callback title/current observation identity explicitly attributed in native audit",
+    "F4": "Defer equivalent installed branch cleanup; preserve installed bytes",
+    "F5": "Defer comment relocation; no behavioral effect"
+  },
+  "sourceAuthoringReleased": true,
+  "productExecutionReleased": false,
+  "commitPushReleased": false,
+  "next": "Freeze exact two-file delta and all679 map; native closure then closed validation rebind and root staged release; completed council applicable to exact prescribed fixes, no repeat required"
+}

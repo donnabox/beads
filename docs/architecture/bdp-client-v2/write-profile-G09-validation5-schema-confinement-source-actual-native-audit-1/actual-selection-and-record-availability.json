@@ -1,0 +1,46 @@
+{
+  "actualResultPath": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation-preparation-5/run/schema-confinement-source.results.json",
+  "confinementSourceOnly": true,
+  "newG09DirectCredit": 0,
+  "newG09WireCredit": 0,
+  "numTestSuitesCountersNotInterpretedAsPhysicalFileCount": true,
+  "officialReportAuditStage": "audit-schema-confinement-source NOT_ATTEMPTED",
+  "officialSemanticPairAccepted": false,
+  "physicalResultFileSuites": 1,
+  "rawObservationRecords": [],
+  "reportObjectsExpectedAndActual": 0,
+  "reportedTopLevelCounters": {
+    "numFailedTestSuites": 0,
+    "numFailedTests": 0,
+    "numPassedTestSuites": 1,
+    "numPassedTests": 1,
+    "numPendingTestSuites": 0,
+    "numPendingTests": 3,
+    "numTodoTests": 0,
+    "numTotalTestSuites": 1,
+    "numTotalTests": 4,
+    "startTime": 1792382983436,
+    "success": true
+  },
+  "selectedExactlyOnce": [
+    {
+      "assertion": {
+        "ancestorTitles": [],
+        "duration": 1.0812919999999622,
+        "failureMessages": [],
+        "fullName": "confines observed Type and schema traversal to exact administrative identities",
+        "meta": {},
+        "status": "passed",
+        "tags": [],
+        "title": "confines observed Type and schema traversal to exact administrative identities"
+      },
+      "file": "/Users/dbox/repos/wt/vickie/vickie-schema-lint-correction-minimum/apps/bdptest/src/transactional-schema-installed.test.ts"
+    }
+  ],
+  "sha256": "3be25c238eae81df84594719627a62e4d0d35051ecb0c196f004c040bd33cfa1",
+  "unselectedSkippedFullNames": [
+    "traverses installed local schema bytes with current context within14requests",
+    "G09-I01 installed exact schema current minimum",
+    "G09-I02 installed receiving and exact retrieval membership"
+  ]
+}

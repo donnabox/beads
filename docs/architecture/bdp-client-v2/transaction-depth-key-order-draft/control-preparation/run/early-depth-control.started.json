@@ -1,0 +1,68 @@
+{
+  "name": "early-depth-control",
+  "argv": [
+    "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-depth-key-order-draft/control-preparation/mirror/node_modules/.pnpm/vitest@4.1.10_@types+node@24.13.3_vite@8.2.1_@types+node@24.13.3_/node_modules/vitest/vitest.mjs",
+    "run",
+    "packages/server/src/transaction-http.test.ts",
+    "--maxWorkers=1",
+    "--reporter=verbose",
+    "--reporter=json",
+    "--outputFile=/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-depth-key-order-draft/control-preparation/run/control.results.json",
+    "-t",
+    "^serves\\ retained\\ direct\\ key\\ conflicts\\ before\\ private\\ depth\\ and\\ preserves\\ fresh\\ refusal$"
+  ],
+  "cwd": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-depth-key-order-draft/control-preparation/mirror",
+  "started": "2026-10-15T16:06:58.842859+00:00",
+  "head": "0d63cf59d447eca2e7ff8b2e0e6a5f31513b9a3a",
+  "workspaceDirty": true,
+  "sourceSha256": {
+    "packages/server/src/transaction-batch.ts": "70d941d416979edd54e250d51318cfb7e5d4ddb315ea6131de7ca5f56e98a014",
+    "packages/server/src/transaction-store.ts": "fcd6882b29e538db45867c894c06dfbaa6ca588db0c2e403ef1b7abb14f6c706",
+    "packages/server/src/transaction-submission.ts": "4336e45d7b4f90eec685b70c7ba059219954bb20271aa2c942ee9e140f0743af",
+    "packages/server/src/transaction-set.test.ts": "fdd29d8e8064ddc12848946fabf8347e2939e963294912c139bc8d8f5617f2e8",
+    "packages/server/src/transaction-submission.test.ts": "86342bc18126965f380d0e09218481eceac4a8396afb4543dd7e11d464fd1976",
+    "packages/server/src/transaction-http.test.ts": "1c9cd7c7c85a5f6a58253f4178e40453a2443a218408eeba9abfddde4bf7948d",
+    "docs/design/transaction-implementation-progress.md": "4046f8603ae260e14b62cdc17c7084a0e47194a7bd44f0aad93666209a4ba555",
+    "apps/bdptest/src/transactional-depth-key-order-installed.test.ts": "48c6a84c84e470c7ce79f4d978bb09e2099daa5df4b4a6ef8629e1b7bf1b1700"
+  },
+  "sourceDiffSha256": "b404308f83bc8faf8fc94be8883daed0454c051f86353a97f903dcf3597e83df",
+  "rootAcceptanceSha256": "f9fee1106ed6763718198cde3f824753552eb99530da5957bccf04cf1cc7d67a",
+  "preparationSha256": "8b73429a3851dbbdf7e32dd127e0fc1151d349c8107664859e73ffbc120f92a6",
+  "bdpOverrides": {},
+  "guardedArgv": [
+    "/opt/homebrew/opt/python@3.14/bin/python3.14",
+    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/guarded-action.py",
+    "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-depth-key-order-draft/control-preparation/mirror/node_modules/.pnpm/vitest@4.1.10_@types+node@24.13.3_vite@8.2.1_@types+node@24.13.3_/node_modules/vitest/vitest.mjs",
+    "run",
+    "packages/server/src/transaction-http.test.ts",
+    "--maxWorkers=1",
+    "--reporter=verbose",
+    "--reporter=json",
+    "--outputFile=/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-depth-key-order-draft/control-preparation/run/control.results.json",
+    "-t",
+    "^serves\\ retained\\ direct\\ key\\ conflicts\\ before\\ private\\ depth\\ and\\ preserves\\ fresh\\ refusal$"
+  ],
+  "nodePathPrefix": "/Users/dbox/.nvm/versions/node/v24.16.0/bin",
+  "sourceAttribution": "Externally bound source snapshot or frozen package; not child-attested Git identity",
+  "plannedWorkload": {
+    "cases": 1,
+    "http": 13,
+    "owners": 1,
+    "directories": 1,
+    "listeners": 1,
+    "productChildren": 0
+  },
+  "derivativeBinding": {
+    "status": "PREPARED_NOT_EXECUTED",
+    "path": "packages/server/dist/transaction-store.js",
+    "positiveSha256": "bf399d40b42f20583ce6ce9c9106ee92e320eb5c777cea4ba03e5a788e9f229c",
+    "derivativeSha256": "cb6fe59d56d8e4ffad63a5f4d2cf05eb587d41260bcc7605ea121245e72790ad",
+    "patchSha256": "798775cffa60cc5509c1c9ab7e8283ee81ecb8aa1e3b9ad52aebc38514a21614",
+    "exactBeforeText": "    function admitKey(principal, key, batch, pendingWins = false, references, template, controls) {\n        const stored = row(principal, key);",
+    "exactAfterText": "    function admitKey(principal, key, batch, pendingWins = false, references, template, controls) {\n        const earlyDepthRefusal = transactionDepthRefusal(batch);\n        if (earlyDepthRefusal !== undefined) {\n            if (controls === undefined)\n                throw new TransactionDevelopmentLimitError(earlyDepthRefusal);\n            return { kind: \"development-limit\", message: earlyDepthRefusal };\n        }\n        const stored = row(principal, key);",
+    "occurrencesRequired": 1,
+    "purpose": "Move private depth refusal ahead of retained row lookup for negative sensitivity only; unchanged source H should fail expected409 on actual500 at request2."
+  }
+}

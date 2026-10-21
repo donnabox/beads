@@ -1,0 +1,19 @@
+{
+  "method": "Exact unique accepted new-to-old text substitution, compared byte-for-byte against frozen predecessor snapshots; no source compiler/formatter executed.",
+  "files": {
+    "packages/server/src/transaction-events.test.ts": {
+      "beforeSha256": "d6dd08a07355bca304c50909bce61b1744ae22cec8b1bba56c2638442439f36f",
+      "afterSha256": "c627c3103b49af98df4c9d32e40456989da5deb7d5a3eec4ade539de7b24e44a",
+      "reversedSha256": "d6dd08a07355bca304c50909bce61b1744ae22cec8b1bba56c2638442439f36f",
+      "exactOriginalBytesRecovered": true
+    },
+    "packages/server/src/transaction-service.test.ts": {
+      "beforeSha256": "1296229ecaad736390882d64b120b433fc8d84d40f022f46803a8574c99ac828",
+      "afterSha256": "45f2444071c5cbbd3651449f878feb1e70d9e51c3c57cdcc243395b7735b25a7",
+      "reversedSha256": "1296229ecaad736390882d64b120b433fc8d84d40f022f46803a8574c99ac828",
+      "exactOriginalBytesRecovered": true
+    }
+  },
+  "otherTrackedFilesByteIdentical": 677,
+  "noSemanticChanges": "Only whitespace/layout and optional final call-argument comma per accepted replacements."
+}

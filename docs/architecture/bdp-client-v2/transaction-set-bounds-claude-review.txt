@@ -1,0 +1,104 @@
+I did not read `native-review.md`. No files written or modified.
+
+---
+
+# Review — `064db8a` ("Require complete set failure receipts and prioritize cardinality guards") vs `8d64fcf`
+
+Checkout `/Users/dbox/repos/wt/vickie/vickie-transaction-set-bounds`, clean at `064db8a9962912…`, parent `8d64fcf7fdaa…` — both confirmed by `git rev-parse`/`git log -1 --format=%H%n%P` and `git status --porcelain` (empty). Diff is exactly the three claimed files: `packages/server/src/transaction-batch.ts` (+42/-11), `packages/server/src/transaction-set.test.ts` (+138), `docs/design/transaction-implementation-progress.md` (+40/-2). No protocol, store, HTTP, schema, profile, configuration or artifact file touched.
+
+Prior review context: `transaction-set-bounds/claude-review.txt` is 0 bytes (this review's own output slot); the prior review is `transaction-set-repair/claude-review.txt`, whose findings 1/2/5/7 are this commit's F1/F2/F5/F7, with 3 deferred-by-design and 4/6 documented-only.
+
+## Verification of the four claimed dispositions
+
+**F1 — required receipt Problem shape + local conversion: CONFIRMED for `type`/`status`/`retry`; incomplete for `code`.**
+`BatchProblem` (`transaction-batch.ts:455-462`) is an interface with explicit `type: string`, `status: number`, `retry: ReadUpdateProblem["retry"]`, typed `diagnostics`, plus `[key: string]: unknown`. That is the right construction: an interface's declared members survive an index signature, where `Omit` over one collapsed them. Keeping the index signature is correct, not sloppy — RFC 9457 problems are open and `$defs/readUpdateProblem` has no `additionalProperties`/`unevaluatedProperties`, so extension members cannot invalidate a receipt. `type` widens `AbsoluteHttpUrl`, but that is `export type AbsoluteHttpUrl = string` (`packages/protocol/src/index.ts:66`) — no brand lost. `ReadUpdateProblem` does redeclare `type` as required and keeps `status?: number` optional (`read-update-problems.ts:30-38`), so the required-`status` narrowing is real and the local runtime check is genuinely necessary.
+
+Coverage of failure sites is complete: all `ok:false` returns are at `:593, 663, 682, 713, 770, 800, 832`; the two evaluator-sourced ones (`:595` resource, `:800` alias) now pass through `receiptProblem`, and the five inline ones write `type`/`status`/`retry` literally. No valid problem is altered — `{ ...problem, type: problem.type, status: problem.status }` reassigns identical values to already-present keys, so values, key order and JSON bytes are unchanged. Every evaluator failure is built by `parseReadUpdateProblem` over closed tables (`resource-evaluator.ts:139-160`, `alias-evaluator.ts:51-66`, plus three `validation-failed`/422 sites); all 11 codes are in `receiptProblemCode` and all statuses in the receipt enum, so **no valid wire change and no reachable malformed retained receipt**. The residual is finding 1.
+
+Compiler negatives are meaningful and discriminating. `type-red.log` shows exactly five `TS2344` errors with `Actual: literal boolean: true` at columns 84/86/85/107/109 — arithmetically those are the `Omit<Valid,"type">`, `"status"`, `"retry"`, bad-`retry` and `status: string` negatives, and `true` is precisely what the old `Omit` branch yielded. `typecheck-final` passes. (The line-number offset vs. the final file is just pre-`format` wrapping; `red.log`'s own trace shows the same compaction.)
+
+**F2 — cardinality before matched budget: CONFIRMED.**
+`transaction-batch.ts:707-723`: the `cardinality` min/max comparison and its 409/`cardinality-violated`/`after-state-change`/`operationIndex` return now precede `matchedResources += selected.length; if (… > matchMaximum) throw`. The charge still precedes `results.push`, so no-ops and repeat matches are still counted and a 413 still carries no partial results. `red.log` is the exact discriminating witness: `-409/cardinality-violated/after-state-change` vs `+413/limit-exceeded/never`. No limit bypass — selection and the visibility filter already ran before both checks, the transaction returns on the first violation, and an operation without `cardinality` or with a satisfied one still charges. The pre-existing visibility probes (`transaction-set.test.ts:832-891`, `maximumMatchedResources: 1` **and** `cardinality:{min:1,max:1}`) still discriminate after the reorder — a visibility regression now fails them via 409 instead of 413, and their `completed`/`count: 1` assertions are unaffected. Spec has no precedence rule here (`docs/specs/bdp.md:5251-5262` only fixes who may omit `operationIndex`), so this is a free and better choice.
+
+**F5 — deletion provenance prose: CONFIRMED.** `docs/design/transaction-implementation-progress.md:791-793` now says deletion mints no version for either supported collection (Beads and unowned Links) and that owned-Link transitions remain unsupported — exactly the prior review's doc-level ask. The code-level half (converting `transaction-batch.ts:601`'s bare `Error` into a refusal Problem) was explicitly out of slice and is untouched.
+
+**F7 — real 4096 default: CONFIRMED, pinned from both sides, no seam.**
+`transaction-set.test.ts:788-830` uses no `vi.spyOn` and no exported constant: 4×32 real creates → 128 Beads; 32 no-op `updateWhere` ops → 4096 matches accepted, 4128 result entries (32 `matched` + 4096 per-Resource), `effectPosition` undefined, afterstate unchanged; a 129th Bead → 4128 > 4096 → atomic 413 with no `operationIndex` and no `results`; both dispositions replay after `reopen()`. `default-mutant.log` is a clean one-way discriminator: 4096→4095 yields exactly one failure, `expected 'failed' to be 'completed'`. The upper side is pinned too — raising the constant breaks both the overflow assertion and the `4097` invalid-bound case — so the pair fixes the default in `[4096, 4127]` ∩ `(≤4096)` = 4096.
+
+**F3 — explicitly unresolved, no byte budget disguised as a count: CONFIRMED.** `matchedResources` accumulates `selected.length` only; nothing byte-derived feeds it. The note states "This is a count bound, not a receipt-byte, candidate-scan or authority-lock-duration bound" and "No byte condition is relabeled as `transaction.matchedResources` or `transaction.mutatedResources`; those remain counts." The materialization arithmetic checks out exactly against `receipt-size-probe.log`: 32 × 262196 + 2095 = 8,392,367; 4096 × 262144 = 1,073,741,824; 4096 × 262196 = 1,073,954,816; against `materialization-limits.log`'s SQLite `MAX_LENGTH=1000000000` and V8 `536870888`. The docs cite the conservative postimage-only figure and label it a projection. See finding 6 for what the note omits.
+
+**F4/F6 — deferred honestly.** `:835-839` records whole-collection candidate scanning, repeated uncached local-endpoint visibility reads, and that the shared predicate does not supply Read's `checkedGraph` body/index integrity validation; no caching or corrupt-read redesign is attempted and no whole-projection equivalence is claimed. Nothing in the diff touches either path.
+
+**Scope discipline.** No runtime or protocol redesign; 42 changed lines in one evaluator file, one of them a pure statement move. HTTP set admission remains closed (no transport file touched; `smoke` and `smoke:development` pass with the same denial behaviour). Verification exits are all as reported (`red`/`type-red`/`green`/`default-mutant` = 1 by design, everything else 0); `green-corrected` 41/41, `regressions` 554/554 across 14 files with no skips.
+
+Two notes on the evidence set, neither a defect: `report.md` (01:58) predates the `native-*` artifacts in the same directory (01:59–02:01), so it does not account for them — that is the parallel native track, which I did not read. And the regression file list swapped `read-selector.test.ts` (63 tests) for `alias-evaluator.test.ts` (52) versus the prior slice, which fully explains 558 → 554 alongside the +5 set tests; the swap is well-aimed at the new alias `receiptProblem` call site, and the report claims no full-suite run.
+
+---
+
+## Findings
+
+### 1 — LOW · incomplete guard · `packages/server/src/transaction-batch.ts:463-475`
+
+**`receiptProblem` hardens three of the four required receipt fields: `code` is unchecked at runtime and typed as the Read+Update superset, and `status` is range-checked where the receipt form is enumerated.**
+
+`$defs/receiptProblem` requires `[type, code, status, retry]`, restricts `status` to `[400,403,404,409,413,422]`, and restricts `code` to the 13-member `receiptProblemCode`. The guard checks `type`/`retry` for presence and admits any integer `status` in 100–599 — 594 values, 6 of them legal — and never looks at `code`. Statically, branch 1 types `code` as `ReadUpdateProblem["code"] | "cardinality-violated"`, i.e. the 31-member `readUpdateProblemCode`, so 18 codes that are illegal in a receipt (`rate-limited`, `revision-unknown`, `idempotency-conflict`, `resource-pruned`, …) type-check. There is no schema validation on the write path: `transaction-store.ts:1016` puts `problem: result.problem` straight into `json(receipt)`.
+
+**Failure scenario:** an evaluator edit returns a failure with `status: 500`, or with `code: "rate-limited"`, or with `code` absent. All three pass `receiptProblem`, and the terminal receipt is persisted schema-invalid under the idempotency key and replayed from there — the exact outcome the guard exists to prevent. Unreachable through any present path (both evaluators route every failure through `parseReadUpdateProblem` over closed tables), which is why this is LOW — but that is equally true of the three fields the guard *does* check, so the asymmetry has no justification. The progress note's "refuses missing required receipt fields" is literally false for `code`.
+
+**Fix:** add `code` to the guard (membership in the receipt code set) and replace `100 ≤ status ≤ 599` with the six-value enum; narrow branch 1's `code` to the receipt subset so a new return site cannot name a Read-only code either. Extend the probe family from `["type","status","retry"]` to include `code`.
+
+### 2 — LOW · test masks the behaviour it appears to prove · `packages/server/src/transaction-set.test.ts:928-929`
+
+**The malformed-output probes reopen the store before reusing the key, so they cannot distinguish live retraction from startup sweep — and the report attributes the retraction to the reopen.**
+
+The integrity `Error` is a clean non-SQLite rollback, so `atomic` does not fence (`transaction-store.ts:281-303`: `committing` false, `cleanRollback` true, `sqlite` false → plain rethrow) and the `catch` at `:1068-1079` deletes this execution's pending reservation in-process. The key is immediately reusable; `f.reopen()` at `:929` is dead weight. Report F1's "successful valid failure execution with the same key after reopen retracts the interrupted pending claim" misattributes the cause. Separately, `f.owner.inspect()` (`transaction-store.ts:1518-1534`) returns resources/groups/identities/position and no receipts, so `:927` proves only that no graph effect survived; the "no invalid terminal receipt" property rests entirely on the later re-admission succeeding.
+
+**Failure scenario:** a regression that drops the `cleanupThenThrow` delete — stranding the idempotency key until the next process start, i.e. an indefinite `idempotency-in-progress` for that key — passes all three probes unchanged, because the reopen performs the retraction the live path should have.
+
+**Fix:** before reopening, assert the same key is immediately re-admittable (`f.admit(operations)` returns `kind: "owned"`, or run the valid failure directly); keep the reopen afterwards as a separate durable-replay assertion.
+
+### 3 — LOW · evidence gap · F1 runtime guard
+
+**The runtime half of F1 has no red witness, though the harness would have produced one for free.**
+
+`red.log` is 38 tests — the F2 guard test and the F7 default test, no malformed probes; those three first appear in `green.log`'s 41. So F1's red evidence is compiler-only (`type-red.log`, which is strong). Nothing demonstrates that without `receiptProblem` a malformed outcome actually produced a retained schema-invalid receipt. That is cheap to show here: `fixture().run` already validates every receipt against `$defs/mutationReceipt` with Ajv (`transaction-set.test.ts:37, 72`), so running the probes against the parent's `transaction-batch.ts` would fail on receipt validation rather than on the new throw. The report does not overclaim — it reports only compiler red — but the asserted property ("leaves no invalid terminal receipt") is the one with no before/after measurement.
+
+**Fix:** run the three probes against `8d64fcf`'s `transaction-batch.ts` and record the Ajv receipt-validation failure as the red witness, alongside the existing compiler red.
+
+### 4 — LOW · test coverage · `packages/server/src/transaction-batch.ts:55, 524-530`
+
+**F7's pattern was built and then not applied to the identical sibling seam: the real `maximumInducedEvents` default is still unpinned, and its bound validator has no test at all.**
+
+The only test touching it lowers it to 2 (`transaction-set.test.ts:352`); `throw new TypeError("invalid evaluator Event bound")` (`:530`) is referenced nowhere in any test, where its matched-Resource twin now has a five-case `it.each` (`:898-904`) *and* a real-default test. The prior review's finding 7 named this sibling explicitly.
+
+**Failure scenario:** mutating `const maximumInducedEvents = 4096` (`:55`) to `10`, or breaking the `eventMaximum` validation so a caller can raise the cap above the private authority bound, passes the entire 554-test regression set.
+
+**Fix:** mirror both new tests — an `it.each([0, -1, 1.5, 4097, Infinity])` asserting `"invalid evaluator Event bound"`, and one real-default test. The event cap can be isolated below the match cap with a single `deleteWhere` over links (3 events per Link: delete + 2 `unlinked`), so 1366 links → 4098 events refused vs 1365 → 4095 accepted, at 1366/1365 matches — far under 4096.
+
+### 5 — LOW · claim wider than the probe · `docs/design/transaction-implementation-progress.md:813-814` (and report F1)
+
+**"Compiler probes require type, status and typed retry on both failure branches" — the five negatives probe only the operation-local branch.**
+
+All five derive from `type Valid` (`transaction-set.test.ts:954-960`), which carries `code: "revision-mismatch"` and `operationIndex: number`, so only branch 1 is a candidate. The property does hold for the limit branch by construction, since both branches now intersect `BatchProblem` — but note branch 2 previously used `ReadUpdateProblem` directly, which already required `type` and `retry`; its one genuinely new constraint is required `status` (it was `status?: number`), and that is precisely what nothing probes.
+
+**Failure scenario:** an edit that reverts branch 2 to `ReadUpdateProblem & {…}` re-admits a `limit-exceeded` problem with no `status`, which `$defs/receiptProblem` requires, with no compiler or runtime objection and a green suite.
+
+**Fix:** add `Omit<WholeLimit, "status"> extends Failure ? … : …` (plus `"type"`/`"retry"`) negatives, or narrow the sentence to "probed on the operation-local branch."
+
+### 6 — LOW · materialization note omits the first reachable ceiling · `docs/design/transaction-implementation-progress.md:826-831`
+
+**The honest gap note states the projection *at* the cap but not the point at which materialization first becomes impossible — which is half the cap, and lives only in the log directory.**
+
+The note gives 4096 × 262,144 = 1,073,741,824 bytes against an unstated SQLite ceiling (a 7% overshoot). It does not mention that `stringifyJsonValue` → `transactionStorageText` → the single `receipts.receipt` string hits V8's `MAX_STRING_LENGTH` of 536,870,888 code units first: 2048 × 262,144 = 536,870,912 already exceeds it, and with the measured 262,196-byte entry overhead the real threshold is below 2048 matches. Both numbers exist in `materialization-limits.log` and `report.md`, neither in the repo.
+
+**Failure scenario:** a future reader sizing against the note treats 4096 as the operative bound and the GiB figure as the ceiling, when a ~2048-match set already throws `RangeError: Invalid string length` inside `atomic` — clean rollback, pending reservation deleted, caller gets an internal error with no receipt and no refusal Problem, repeatably. That is the single most useful number for the separate bounded-delivery design the note defers to.
+
+**Fix:** one sentence in the note recording the V8 string ceiling and the ~2048-maximum-sized-match threshold next to the 4096, i.e. the prior review's "state the reachable receipt ceiling" asked for the *first* ceiling, not the one at the cap.
+
+### 7 — NIT · formatting · `docs/design/transaction-implementation-progress.md:793`
+
+The F5 insertion left a 106-character line in a file that otherwise wraps at ≤85 (the whole surrounding region measures 81-85). `format` checked 2 files — the two `.ts` files — so Markdown is not covered. **Fix:** rewrap the paragraph.
+
+---
+
+**Nothing to report on:** the `receiptProblem` call-site coverage is complete and value-preserving; the F2 reorder introduces no limit bypass, no new scan amplification and no spec-precedence conflict; the F7 test uses no seam and its mutant is a genuine two-sided discriminator; the compiler negatives are real and fail for the right reason on the parent; the 413 still omits `operationIndex` on both the reorder path and the real-default path; `BatchProblem` being unexported is harmless (it emits into `dist/transaction-batch.d.ts` and `evaluateTransaction` is not a package export); F3's count-vs-byte separation is clean in both code and prose; and F4/F6 are deferred with their limitations written down rather than papered over.

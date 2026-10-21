@@ -1,0 +1,378 @@
+{
+  "stage": "draft-unexecuted",
+  "base": "c555fe01df5cd20454fb0d663431df816c1270aa",
+  "tree": "062a3ab7e24236417bd915b373a4b44ba9908647",
+  "branch": "codex/vickie-comparison-timeout-context",
+  "files": [
+    {
+      "path": "packages/server/src/transaction-comparison.ts",
+      "bytes": 3210,
+      "sha256": "0cebcd9bb1de5e23cf68d31335db0e924d8ab0c7da52e319689bdedebe8ff746",
+      "baseSha256": "c54a351ce6aa61e25f56851a57acf1ea97781c1ad655aa7a1bdb99f874faff0c"
+    },
+    {
+      "path": "packages/server/src/transaction-store.ts",
+      "bytes": 85323,
+      "sha256": "ff25fdb35772b48c230bfbe65f1f3cb7805df4a585965fdc6bd150a432c7e8ed",
+      "baseSha256": "92f06ec2844a5c343a8e3d8233682929fdb6eccadda3bc603b94689cf8f23636"
+    },
+    {
+      "path": "packages/server/src/transaction-submission.ts",
+      "bytes": 7246,
+      "sha256": "242839f8014eb6083d6f9d544c1461618561f8c511a53086eb45cd0fd3b75a37",
+      "baseSha256": "68f4bf7c8288ad0eb1d743bab07889c94ad39f283983924762ec93192e522c1f"
+    },
+    {
+      "path": "packages/server/src/transaction-http.ts",
+      "bytes": 27342,
+      "sha256": "f262e3cc623e3557758cfed39e929404e3d96d77f4cc80f394b5c3fcbbcf440b",
+      "baseSha256": "e771744e51440c6043dbe35fe490058bd8102ff1ad92fba3efa4738929f1429c"
+    },
+    {
+      "path": "packages/server/src/transaction-store.test.ts",
+      "bytes": 136467,
+      "sha256": "1aa048c36ef7cb412c7ed8c4a286e8c36627312a6ac8b736dddbe93886fd57b3",
+      "baseSha256": "d198a7dde70ef1179230c871faf4f61d88722a9d13dc1570df52cc08b762222a"
+    },
+    {
+      "path": "packages/server/src/transaction-submission.test.ts",
+      "bytes": 41895,
+      "sha256": "6a030b27ad4eae12e8502b409155b8f1e5ac9d4fda987b5817b7aedce198a07e",
+      "baseSha256": "61178770397281640dc07f97326683d939c15b9ee072ae4e6d31c9b92387eb41"
+    },
+    {
+      "path": "packages/server/src/transaction-http.test.ts",
+      "bytes": 117951,
+      "sha256": "685e23477a635ccae2fda2df45c7358d107442f8cfdbad22c1c9b0490fde0978",
+      "baseSha256": "0b9886ff0c7b5f411a59886ddc14b912b1ce4ed9700f538d454270c54e0bedc0"
+    },
+    {
+      "path": "docs/design/transaction-implementation-progress.md",
+      "bytes": 120189,
+      "sha256": "df46c4694460dffeb3afbced7f1114126557bfb2a8a14614fc08d77e2589f8ca",
+      "baseSha256": "77452fe5804fd4ed19d0905d5346656f5d0f49307e32fa0b0be1b328a128f8bc"
+    }
+  ],
+  "diffSha256": "27fc1610da057443639bbd49012e73ec2e9f951f4fdfc20d8801435922809cbe",
+  "diffStat": "docs/design/transaction-implementation-progress.md |  29 +++\n packages/server/src/transaction-comparison.ts      |  21 +-\n packages/server/src/transaction-http.test.ts       | 234 ++++++++++++++++++---\n packages/server/src/transaction-http.ts            |   6 +\n packages/server/src/transaction-store.test.ts      | 125 +++++++++++\n packages/server/src/transaction-store.ts           |  16 ++\n packages/server/src/transaction-submission.test.ts | 120 +++++++++++\n packages/server/src/transaction-submission.ts      |  34 ++-\n 8 files changed, 550 insertions(+), 35 deletions(-)",
+  "sourceSelection": [
+    {
+      "file": "packages/server/src/transaction-store.test.ts",
+      "expectedCases": 6,
+      "parameterExpansion": "Each selected literal title belongs to exactly one direct it call; no it.each or generation loop.",
+      "titles": [
+        "captures comparison deadline context in one metadata-only atomic entry",
+        "rejects a defensive final comparison epoch mismatch without a tuple",
+        "returns a stopped comparison observation for a normally closed owner",
+        "rejects reentrant comparison observation without entering an atomic read",
+        "preserves a fenced owner's comparison observation failure",
+        "propagates comparison metadata failure and releases the atomic owner"
+      ],
+      "args": [
+        "exec",
+        "vitest",
+        "run",
+        "packages/server/src/transaction-store.test.ts",
+        "-t",
+        "captures\\ comparison\\ deadline\\ context\\ in\\ one\\ metadata\\-only\\ atomic\\ entry|rejects\\ a\\ defensive\\ final\\ comparison\\ epoch\\ mismatch\\ without\\ a\\ tuple|returns\\ a\\ stopped\\ comparison\\ observation\\ for\\ a\\ normally\\ closed\\ owner|rejects\\ reentrant\\ comparison\\ observation\\ without\\ entering\\ an\\ atomic\\ read|preserves\\ a\\ fenced\\ owner's\\ comparison\\ observation\\ failure|propagates\\ comparison\\ metadata\\ failure\\ and\\ releases\\ the\\ atomic\\ owner",
+        "--maxWorkers=2",
+        "--reporter=verbose",
+        "--reporter=json"
+      ]
+    },
+    {
+      "file": "packages/server/src/transaction-submission.test.ts",
+      "expectedCases": 5,
+      "parameterExpansion": "Each selected literal title belongs to exactly one direct it call; no it.each or generation loop.",
+      "titles": [
+        "captures current comparison context only at the observed deadline",
+        "distinguishes defensive comparison epoch stop before deadline observation",
+        "keeps full-owner unobserved comparison exact and excludes a caller callback",
+        "returns a provable unresolved conflict immediately and times out possible equality without disclosing a receipt",
+        "keeps a single comparison deadline across repeated owner replacement and stops at epoch change"
+      ],
+      "args": [
+        "exec",
+        "vitest",
+        "run",
+        "packages/server/src/transaction-submission.test.ts",
+        "-t",
+        "captures\\ current\\ comparison\\ context\\ only\\ at\\ the\\ observed\\ deadline|distinguishes\\ defensive\\ comparison\\ epoch\\ stop\\ before\\ deadline\\ observation|keeps\\ full\\-owner\\ unobserved\\ comparison\\ exact\\ and\\ excludes\\ a\\ caller\\ callback|returns\\ a\\ provable\\ unresolved\\ conflict\\ immediately\\ and\\ times\\ out\\ possible\\ equality\\ without\\ disclosing\\ a\\ receipt|keeps\\ a\\ single\\ comparison\\ deadline\\ across\\ repeated\\ owner\\ replacement\\ and\\ stops\\ at\\ epoch\\ change",
+        "--maxWorkers=2",
+        "--reporter=verbose",
+        "--reporter=json"
+      ]
+    },
+    {
+      "file": "packages/server/src/transaction-http.test.ts",
+      "expectedCases": 2,
+      "parameterExpansion": "Each selected literal title belongs to exactly one direct it call; no it.each or generation loop.",
+      "titles": [
+        "serves current comparison deadline context without timeout effects or receipt disclosure",
+        "maps a finite unresolved comparison to temporary refusal without disclosing or executing it"
+      ],
+      "args": [
+        "exec",
+        "vitest",
+        "run",
+        "packages/server/src/transaction-http.test.ts",
+        "-t",
+        "serves\\ current\\ comparison\\ deadline\\ context\\ without\\ timeout\\ effects\\ or\\ receipt\\ disclosure|maps\\ a\\ finite\\ unresolved\\ comparison\\ to\\ temporary\\ refusal\\ without\\ disclosing\\ or\\ executing\\ it",
+        "--maxWorkers=2",
+        "--reporter=verbose",
+        "--reporter=json"
+      ]
+    },
+    {
+      "file": "packages/server/src/transaction-dependencies.test.ts",
+      "expectedCases": 3,
+      "parameterExpansion": "Each selected literal title belongs to exactly one direct it call; no it.each or generation loop.",
+      "titles": [
+        "waits without a DB lock then joins the canonical direct/batch identity",
+        "proves static mismatch immediately, retains no timeout outcome and keeps the owner",
+        "competes freshly after retraction with the same comparison deadline"
+      ],
+      "args": [
+        "exec",
+        "vitest",
+        "run",
+        "packages/server/src/transaction-dependencies.test.ts",
+        "-t",
+        "waits\\ without\\ a\\ DB\\ lock\\ then\\ joins\\ the\\ canonical\\ direct/batch\\ identity|proves\\ static\\ mismatch\\ immediately,\\ retains\\ no\\ timeout\\ outcome\\ and\\ keeps\\ the\\ owner|competes\\ freshly\\ after\\ retraction\\ with\\ the\\ same\\ comparison\\ deadline",
+        "--maxWorkers=2",
+        "--reporter=verbose",
+        "--reporter=json"
+      ]
+    },
+    {
+      "file": "packages/server/src/transaction-sequence-alias.test.ts",
+      "expectedCases": 2,
+      "parameterExpansion": "Each selected literal title belongs to exactly one direct it call; no it.each or generation loop.",
+      "titles": [
+        "uses one bounded comparison deadline and leaves the owner's reservation intact",
+        "waits for a fixed A candidate then conflicts with the owner's actual B witness"
+      ],
+      "args": [
+        "exec",
+        "vitest",
+        "run",
+        "packages/server/src/transaction-sequence-alias.test.ts",
+        "-t",
+        "uses\\ one\\ bounded\\ comparison\\ deadline\\ and\\ leaves\\ the\\ owner's\\ reservation\\ intact|waits\\ for\\ a\\ fixed\\ A\\ candidate\\ then\\ conflicts\\ with\\ the\\ owner's\\ actual\\ B\\ witness",
+        "--maxWorkers=2",
+        "--reporter=verbose",
+        "--reporter=json"
+      ]
+    }
+  ],
+  "selectedCases": 18,
+  "newCases": 9,
+  "replacedCases": 1,
+  "sourceHttp": {
+    "newScenario": 12,
+    "preservedBasicTimeout": 4,
+    "total": 16,
+    "listeners": 2,
+    "installedChildren": 0,
+    "newScenarioWaits": 1,
+    "newScenarioSchedulerDeliveries": 2,
+    "preservedBasicSchedulerDeliveries": 2
+  },
+  "requestLedger": [
+    {
+      "dispatchIndex": 1,
+      "method": "GET",
+      "scopeRelativeTarget": "events/",
+      "body": "",
+      "bodyBytes": 0,
+      "bodySha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "dispatchIndex": 2,
+      "method": "POST",
+      "scopeRelativeTarget": "operations/sequence",
+      "body": "{\"operations\":[{\"operation\":\"createBead\",\"id\":\"beads/a\",\"type\":\"https://example.test/bead\",\"properties\":{\"title\":\"a\"},\"name\":\"a\",\"idempotencyKey\":\"creator\"},{\"operation\":\"createLink\",\"type\":\"https://example.test/link\",\"source\":\"@a\",\"target\":\"@a\",\"idempotencyKey\":\"dependent\"}]}",
+      "bodyBytes": 277,
+      "bodySha256": "81f77f2687e6afe4ac2edf57c2cf38129f3d49be63b01032552efcfb1c90dda7"
+    },
+    {
+      "dispatchIndex": 3,
+      "method": "POST",
+      "scopeRelativeTarget": "operations/batch",
+      "body": "{\"operations\":[{\"operation\":\"createLink\",\"type\":\"https://example.test/link\",\"source\":\"beads/a\",\"target\":\"beads/a\"}]}",
+      "bodyBytes": 116,
+      "bodySha256": "bfed46e989eddb65071945e84284714060326e8dc002446f175672797059fc07"
+    },
+    {
+      "dispatchIndex": 4,
+      "method": "POST",
+      "scopeRelativeTarget": "operations/batch",
+      "body": "{\"operations\":[{\"operation\":\"createBead\",\"id\":\"beads/b\",\"type\":\"https://example.test/bead\",\"properties\":{\"title\":\"b\"}}]}",
+      "bodyBytes": 120,
+      "bodySha256": "dfc592c80eb0159e3ed0258151978a8ed456609e39886ed2364590099c7f2e17"
+    },
+    {
+      "dispatchIndex": 5,
+      "method": "GET",
+      "scopeRelativeTarget": "beads/?limit=32",
+      "body": "",
+      "bodyBytes": 0,
+      "bodySha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "dispatchIndex": 6,
+      "method": "GET",
+      "scopeRelativeTarget": "links/?limit=32",
+      "body": "",
+      "bodyBytes": 0,
+      "bodySha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "dispatchIndex": 7,
+      "method": "GET",
+      "scopeRelativeTarget": "events/",
+      "body": "",
+      "bodyBytes": 0,
+      "bodySha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "dispatchIndex": 8,
+      "method": "GET",
+      "scopeRelativeTarget": "beads/a",
+      "body": "",
+      "bodyBytes": 0,
+      "bodySha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "dispatchIndex": 9,
+      "method": "POST",
+      "scopeRelativeTarget": "operations/batch",
+      "body": "{\"operations\":[{\"operation\":\"createLink\",\"type\":\"https://example.test/link\",\"source\":\"beads/a\",\"target\":\"beads/a\"}]}",
+      "bodyBytes": 116,
+      "bodySha256": "bfed46e989eddb65071945e84284714060326e8dc002446f175672797059fc07"
+    },
+    {
+      "dispatchIndex": 10,
+      "method": "GET",
+      "scopeRelativeTarget": "beads/?limit=32",
+      "body": "",
+      "bodyBytes": 0,
+      "bodySha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "dispatchIndex": 11,
+      "method": "GET",
+      "scopeRelativeTarget": "links/?limit=32",
+      "body": "",
+      "bodyBytes": 0,
+      "bodySha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "dispatchIndex": 12,
+      "method": "GET",
+      "scopeRelativeTarget": "events/",
+      "body": "",
+      "bodyBytes": 0,
+      "bodySha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    }
+  ],
+  "maxRequestBody": 277,
+  "totalRequestBody": 629,
+  "responseEstimate": {
+    "largestPlannedBodyEstimate": 39936,
+    "totalNewScenarioResponseEstimate": 479232,
+    "basis": "Conservative small-fixture envelope estimate: at most5 facts, fixed UUID/loopback/cursor scalars <512B, each tested empty/single-title data <2048B,4096B envelope. Not an enforced response cap or executed measurement; source fetch fixture retains existing behavior.",
+    "fixedSourceMaximumEventItems": 5,
+    "configuredPageMaximumItems": 32
+  },
+  "controls": [
+    {
+      "name": "remove-deadline-wrapper",
+      "path": "packages/server/src/transaction-http.ts",
+      "patchSha256": "c532c1d89135425b7449d9fbbb997daa4cf76f5a1368c30e87caace28ea48c52",
+      "mutantSha256": "79b0386ba503e1ee2148ba5cf4b2ca4605065319ee7c85a1c6c48cb818610885",
+      "testFile": "packages/server/src/transaction-http.test.ts",
+      "title": "serves current comparison deadline context without timeout effects or receipt disclosure",
+      "expectedFailure": "deadline context presence bdp-scope-epoch",
+      "plannedHttpUntilFailure": 4,
+      "plannedMaxHttp": 12,
+      "installedChildren": 0,
+      "executed": false
+    },
+    {
+      "name": "stale-deadline-position",
+      "path": "packages/server/src/transaction-comparison.ts",
+      "patchSha256": "9481439137d8340108a5bec0d8621959d18f1939d308c60e136d3c790fe270d3",
+      "mutantSha256": "a393e8fd1c9d29a1b4e5bb88600624986586f885502232957f0bd2345feccfdc",
+      "testFile": "packages/server/src/transaction-http.test.ts",
+      "title": "serves current comparison deadline context without timeout effects or receipt disclosure",
+      "expectedFailure": "deadline current position",
+      "plannedHttpUntilFailure": 4,
+      "plannedMaxHttp": 12,
+      "installedChildren": 0,
+      "executed": false
+    },
+    {
+      "name": "lose-required-tuple",
+      "path": "packages/server/src/transaction-comparison.ts",
+      "patchSha256": "ccd47be00a1caacf698e6bc52f5910abf5aad452bdab82901e884bbb67a3e47e",
+      "mutantSha256": "1e65692c3e1abe69f724e1d3fadf872d33979f4c56492989159c7681030466ee",
+      "testFile": "packages/server/src/transaction-http.test.ts",
+      "title": "serves current comparison deadline context without timeout effects or receipt disclosure",
+      "expectedFailure": "healthy deadline response",
+      "plannedHttpUntilFailure": 4,
+      "plannedMaxHttp": 12,
+      "installedChildren": 0,
+      "executed": false
+    },
+    {
+      "name": "leak-unobserved-fields",
+      "path": "packages/server/src/transaction-comparison.ts",
+      "patchSha256": "b9eaedf8dcd25f8fbc2dcecf3e28b196f34f18fa67dda705ebc8aae7e811ff7a",
+      "mutantSha256": "14a4633a8f9b256f7c154d2df054e7fba08ec0d6d84271d11094ebda863c53ab",
+      "testFile": "packages/server/src/transaction-submission.test.ts",
+      "title": "keeps full-owner unobserved comparison exact and excludes a caller callback",
+      "expectedFailure": "legacy comparison result exact",
+      "plannedHttpUntilFailure": 0,
+      "plannedMaxHttp": 0,
+      "installedChildren": 0,
+      "executed": false
+    },
+    {
+      "name": "omit-final-epoch-check",
+      "path": "packages/server/src/transaction-store.ts",
+      "patchSha256": "17e9ddc44241b334d337f3672c75053c7da9b9035acb4bf891887eed730af5f9",
+      "mutantSha256": "a904d11d3ad076ba22360a0f1b64a0955995a5d8b767a61505ab4428f00d1de3",
+      "testFile": "packages/server/src/transaction-store.test.ts",
+      "title": "rejects a defensive final comparison epoch mismatch without a tuple",
+      "expectedFailure": "final deadline epoch check",
+      "plannedHttpUntilFailure": 0,
+      "plannedMaxHttp": 0,
+      "installedChildren": 0,
+      "executed": false
+    }
+  ],
+  "controlTotals": {
+    "plannedHttp": 12,
+    "maxHttp": 36,
+    "listeners": 3,
+    "installedChildren": 0,
+    "selectedRuns": 5
+  },
+  "installedProposal": {
+    "directRequests": 14,
+    "sequenceRequests": 13,
+    "totalRequests": 27,
+    "children": 2,
+    "newTimeoutScenario": false,
+    "requestBytes": 65536,
+    "headerBytes": 16384,
+    "responseBytes": 131072,
+    "targetBytes": 8192,
+    "exchangeMs": 5000,
+    "scenarioMs": 90000,
+    "outerMs": 120000,
+    "closeMs": 10000
+  },
+  "executionOccurred": false
+}

@@ -1,0 +1,21 @@
+{
+  "utc": "2026-10-18T16:18:24.244268+00:00",
+  "state": "CLOSED proposal; final release path absent and no invocation",
+  "proposedRelease": {
+    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-D4-availability-root-execution-proposed-authority-1/release.proposed.json",
+    "sha256": "8f0d8cdda1fb64173ff604d4f950c5669aaba04b5df4ccbd8377293e29c62263"
+  },
+  "callerNativeStaticRootAcceptance": {
+    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-D4-availability-caller-root-static-acceptance-1/acceptance.json",
+    "sha256": "4aadfee44d28d2aabbaf52e8b13ebdf821417cceda75b94c4db5c5178793ed1c"
+  },
+  "futureFinalRelease": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-D4-availability-root-execution-release-1/release.json",
+  "foundationPublicationReadback": "25d0a0d18b5f83645f09d772322054969df26479",
+  "publicationMeaning": "14-key field attributes already-published caller/native/root foundation; it does not assert the self-referential future release is present in that parent commit. Root separately publishes/readbacks exact reviewed release BEFORE actual caller invocation and records actual release publication commit in outer dispatch receipt.",
+  "independentFull14KeySourcePredicatePrecisionRequired": true,
+  "exactActivationAndPublicationBeforeInvocation": true,
+  "noRetry": true,
+  "wholeActualCallerStrictBelow115": true,
+  "actualCallerRawTerminalBothPipeEOFRequired": true,
+  "afterActual": "FULL independent native/owner/peer/journals/clock/source/tool/fresh ALL PIDPGID audit before measured root availability disposition. No controls/product authority."
+}

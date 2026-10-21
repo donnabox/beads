@@ -1,0 +1,24 @@
+--- preparation1/audit-expectations.json
++++ preparation2/audit-expectations.json
+@@ -1,6 +1,7 @@
+ {
+   "countsSource21": 96,
+   "finalized": true,
++  "historicalChangefeedReports": 18,
+   "installed11": {
+     "aborts": 3,
+     "completed": 187,
+@@ -15,10 +16,12 @@
+     "schemaPureCallbacks": 1,
+     "serverChangefeedFullSuiteCallbacks": 32
+   },
+-  "reportSchemasSha256": "4d063ef81f13705ed1844474afe987607af4cfca472c2436789c7d6e0fedca36",
++  "reportSchemasSha256": "86a967838236828cb9318660556c0e92c74cd34e0abf3085061d99cd1a154cad",
+   "rootExecutionRelease": false,
+   "runtimeResults": "UNRESOLVED",
+   "selectionSha256": "5b9dc28dac151f7f50153f321a6abe21ddc6f6a69c7e463dc91ff9b7da867713",
++  "sourceBaselineRecords": 20,
+   "sourceNativeContextCopied": true,
++  "sourceRetainedReturned": 90,
+   "sourceWire14": 14
+ }

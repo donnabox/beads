@@ -1,0 +1,13 @@
+# Closed PR137 landing inspection
+
+Root-invoked `landing-check.py` performs only local Git/file reads and GitHub GETs; it never fetches, executes product code, marks ready or merges. No execution or network capture occurred while preparing it. Inputs bind candidate c18c712, tree596abe, integrated base73fc, ordinary ordered parents3cf+73fc, eleven source files and complete feature diff, unchanged workflow, PR137/run38822874330/job116723389941. No future CI result or suite count is inferred.
+
+Root must first provide an actual final council document and a separate inspection release. The final council must explicitly accept the exact head/tree/source-binding hash; an empty/timed-out review cannot satisfy it. Current wire and installed review outcomes/dispositions belong in that root acceptance. The example release is closed.
+
+One inspection captures PR/main/run/job; incomplete CI stops before log retrieval. After terminal it retains the full raw job log and derives the actual checkout SHA from checkout output. GitHub commit readback must show the exact tested tree and ordered synthetic parents[73fc,c18c]. Every workflow step and current-head check must be successful, with the required source/test/build/preflight/smoke/Read steps present. Workflow bytes at the synthetic commit must match the local pinned workflow. The script checks the final clean candidate/ordinary ancestry/eleven-file scope again and re-reads current PR/main before recording its point-in-time outcome. Unexpected base/head/attempt changes stop, requiring root disposition; there is no retry or polling loop.
+
+Root still reads the complete log for actual test/file/skip counts, the new installed callback, preflight, smoke, Read gate outcome, warnings and elapsed headroom. Summary lines are aids only; no hardcoded test total is accepted. CI job limit remains20minutes, all inner limits unchanged. Remote process absence is not claimable from a green job.
+
+Immediately before any separately authorized ready/merge operation root must refresh exact head/base/all checks and final council evidence under the session guard. Merge must use exact expected head, ordinary ancestry, and actual readback parents[73fc,c18c]/tree596abe. If main changes, this packet stops; explicitly establish/test the actual combined tree and reanchor before proceeding. No readiness/merge authorization follows merely from the inspection result.
+
+The script adapts the prior guarded-batch terminal-capture shape and PR136 actual synthetic-identity verification; no broad new gate framework. Read-only commands have40-second metadata/90-second log timeouts, one attempt, exclusive output directory; all failures remain retained. Root owns invocation and integration.

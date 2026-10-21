@@ -1,0 +1,78 @@
+No files were written and nothing was executed. Frozen state verified: `HEAD 70ac666002708202d2f93195eed90dfe8541300d`, tree `1353e8f4fb0b1149b3f4ff158335804bf3f1cecc`; plan SHA256 `ce2cd4b7…4af0` and linked audit SHA256 `1e16ad91…5c02f` both match the plan's own claims. Working tree clean.
+
+# Plan review — transaction-comparison-fault-shortcut-plan.md
+
+## Core premise: verified correct
+
+The plan's defect, guard, and reachability claims survive inspection, including the two places they could most easily have been wrong:
+
+- **`transaction-store.ts:1724`** is exactly as described: `comparisonEpoch: () => (closed ? undefined : enter(() => metadata("epoch")))`. The mirror it proposes to copy is real at `:1731` (`closed && !ownerFailure && !maintenanceFailure`).
+- **The shortcut really is the first fault-suppressing point.** `scopeEpoch` (`:1434`) is a plain data property on the frozen object, not a getter, so `transaction-comparison.ts:50` and the adapter construction at `transaction-submission.ts:118–120` do *not* throw earlier. Had `scopeEpoch` entered the owner, the whole premise would collapse. It does not.
+- **`comparisonEpoch` is an arrow closing over locals**, so the unbound extraction at `transaction-submission.ts:119` keeps the new guard in force on the observed path as well as the unobserved one.
+- **The guard is race-free**: the interval handler assigns `maintenanceFailure` (`:1346`) strictly before `closed = true` (`:1355`), synchronously. There is no window where `closed` is true without a retained fault term — which is what makes the minimal predicate sufficient rather than merely usually-right.
+- **Fault classification is right.** `maintain()` = `enter(() => atomic(() => sweep(instant())))` (`:512–513`). A clock throw inside `atomic` leaves `committing=false`, rolls back cleanly, is not SQLite-coded → no `fence()` → raw rethrow → caught at `:1343` as `maintenanceFailure`, not `ownerFailure`. Store test `:3344–3345` already pins that wrapper message and cause.
+- **Binding law confirmed verbatim**: `bdp.md:1956–1960` ("MUST respond … body-less 500, MUST NOT include a BDP Problem body, MUST keep internal fault details off the wire") and `:4588–4592` (the bodyless 500 "an unexpected internal fault produces anywhere", with row statuses otherwise exhaustive). `:3994–4026` is conditioned on unresolved reservation / deadline / epoch change; `:4517–4520` sits inside the unknown-key admission-controls list beside rate limiting. Neither reaches a retained internal exception.
+- **Caller/name claims all check out**: exactly one production invocation (`transaction-comparison.ts:52`); cross-callers are exactly `transaction-dependencies.test.ts` + `transaction-sequence-alias.test.ts`; all eight cited existing test titles exist verbatim; `transaction-implementation-progress.md:1781–1784` already records the residual; the installed `14/1` fixture exists at frozen HEAD at `apps/bdptest/src/transactional-direct-refusal-installed.test.ts:107`.
+- **Fake-time assumptions hold on the production side.** The *only* global `setInterval` in `packages/server/src` is the store's maintenance timer (`:1340`); every other timer user imports from `node:timers`/`node:timers/promises` and is therefore untouched by vi's globalThis-scoped fakes. `transaction-store.test.ts:3332` already proves the store interval is intercepted and that `maintenanceTimer.unref()` (`:1359`) survives fake timers. `vi.getTimerCount()` 1→0 is a valid cancellation assertion precisely because nothing else registers a global interval.
+- **Close/drain is safe after the fault**, which I expected to be the plan's weak point and is not: `owner.close()` skips `db.close()` because `closed` is already true (`:2088`), and `read.close()` → `plane.close()` only closes pagination state (`authority-read.ts:1142–1154`) and never touches the owner db. So `service.close()` and `runtime.close()` resolve, step 4's `retainedReceiptInventory()` is reachable, and the file-global `afterEach` (which awaits cleanup without a guard, `transaction-http.test.ts:52–55`) will not abort and leak the temp directory.
+- **The five-file bound genuinely holds**: no fixture change is needed, because `maintenanceIntervalMs` and `clock` are already seams (`transaction-runtime.ts:60,53`) threaded into `openTransactionStore` (`:326–327`), and the HTTP fixture already spreads caller seams over its default clock (`transaction-http.test.ts:91`).
+- **Counts are internally consistent**: 14 = 3+4+2+1+1+1+1+1; 5 HTTP requests / 3 listeners (new 2/1 + existing fencing 3/2, confirmed at `transaction-http.test.ts:867–890`); control 2/1; combined 7/4.
+- **The control is sound**: with the old unconditional shortcut, `comparisonEpoch()` → undefined → `comparison.ts:52` → `observeDeadline` set (`service.ts:506` passes `observed=true`) → `comparison-owner-stopped` → `submission.ts:170–177` → `http.ts:355–357` returns the Problem+`Retry-After: 1` 503 directly. The named-503 predicate is reachable and discriminating.
+
+## Findings
+
+**1 — Medium — "Spy only on existing admission functions" is not implementable as written.**
+*Location:* plan line 43, against `packages/server/src/transaction-store.ts:1432` (`return Object.freeze({`).
+*Issue:* the owner is frozen, so `vi.spyOn(f.store, "admit")` / `"admitObserved"` throws `TypeError` (defineProperty on a non-configurable property).
+*Impact:* an author following the step literally hits a wall the plan classifies as a "preflight obstacle," risking either a needless escalation or an improvised injection seam the plan forbids.
+*Correction:* name the established spread-adapter precedent instead — `{ ...f.store, admit: vi.fn(f.store.admit), admitObserved: vi.fn(f.store.admitObserved) }`, exactly as `transaction-submission.test.ts:1071–1078`, `:1111–1116` and `:1148–1163` already do. These still delegate to real owner closures, so the "real owner" requirement is preserved.
+
+**2 — Medium — the served 500 is deterministically `http.ts:614`; the "or runtime fallback" disjunction is under-determined and the assertion inventory omits `vary: Accept`.**
+*Location:* plan line 35.
+*Issue:* the throw originates at `transaction-http.ts:344` inside `handle`'s try (`:584`), so it is caught at `:586` and becomes `empty(500)` at `:614`, then gains `x-bdp-development` (`:616`) and `vary: Accept` for POST (`:617`). The runtime fallback at `transaction-runtime.ts:253–260` is reachable only if `handler.handle` itself throws, and `schemas?.()` returns `undefined` immediately for POST (`transaction-schema-http.ts:42–47`). The two paths differ: only the handler path carries `vary`.
+*Impact:* an "exact sanitized 500 properties" assertion written against the disjunction either fails on the unlisted `vary` header or is loose enough to accept a 500 produced by an unintended path — which would pass even if the guard were wrong.
+*Correction:* pin the path. Assert `500`, empty body, `content-length: 0`, `cache-control: private, no-store`, `x-bdp-development: non-attesting`, **`vary: Accept`**, plus the stated negatives (no `application/problem+json`, no `Retry-After`, no `Location`, no development-limit, none of the three BDP context headers). Drop the disjunction or record the runtime fallback as explicitly excluded.
+
+**3 — Low/Medium — the new submission fault case must not inherit its neighbours' `dependencies()`/`cancelSequence()` scaffolding.**
+*Location:* plan line 43, against `transaction-submission.test.ts:1105–1143` and `:1144–1177`, which both end in `expect(f.store.cancelSequence(attempt)).toBe(2)` — one inside a `finally`.
+*Issue:* `cancelSequence` enters the owner, so it throws the retained fault once `maintenanceFailure` is set (`transaction-store.ts:342–344`). In a `finally` it would overwrite the primary assertion failure.
+*Impact:* the fault case fails for the wrong reason, or masks its real result.
+*Correction:* state explicitly that the fault case opens a plain owner with `maintenanceIntervalMs`/`fault` and **no** sequence reservation — consistent with the plan's own line 13 ("needs neither an unresolved reservation nor deadline timing") — and that its only teardown is the fixture store close, which is safe per `:2088`.
+
+**4 — Low — wrong fixture anchor.**
+*Location:* plan line 49, "`transaction-http.test.ts:84–193`".
+*Issue:* the fixture is `async function fixture(seams…)` at **76–175**. Line 84 is `types,` inside its options literal; line 193 is inside the body of the first `it(...)` (which opens at `:186`), so the cited range straddles a test boundary.
+*Impact:* the one fixture the HTTP slice depends on is mis-anchored in a plan that stakes its authority on re-anchorable anchors. The `-pre-citation-fix` sibling differs from the current plan *only* in the audit SHA, so source anchors were never re-verified in that pass.
+*Correction:* cite 76–175; separately cite `:91` for the `{ clock: () => time, ...seams }` spread and `:109–124` for `retainedReceiptInventory`.
+
+**5 — Low — three off-by-one anchors.** `transaction-runtime.ts:51–66` → seams interface is 51–65 (`:66` is `async function receive`); `transaction-store.ts:1726–1741` → `observeComparisonDeadline` is 1726–1740 (`:1741` is `maintain,`); `transaction-comparison.ts:52–56` → the benign-stop block is 52–55 (`:56` begins the separate deadline check). Same re-anchoring concern as Finding 4; tighten to 51–65, 1726–1740, 52–55.
+
+**6 — Low — a test-supplied clock silently disables `f.setTime` and must restate the fixture's literal time.**
+*Location:* plan line 51, against `transaction-http.test.ts:79` (`let time = 1000`), `:91`, `:139–141`.
+*Issue:* caller seams are spread *after* the default clock, so a test-supplied `clock` replaces the fixture's; the fixture's internal `time` and its `setTime` accessor become inert for that test, and "the normal fixture value" must be restated as a literal `1000`.
+*Impact:* no failure today, but a silent coupling — if the fixture default changes, the new case's "exact expected seed facts" drift from its siblings with no compile error.
+*Correction:* say so explicitly: the case supplies its own clock returning 1000, does not use `setTime`, and derives its retained-receipt expectation from the seed POST's parsed 200 body rather than a literal receipt — the precedent at `:2978–2981` (`{ principal: "p", key: …, receipt: <response body> }`).
+
+**7 — Low (residual risk, already self-limited) — undici's timer usage is the one assumption static reading cannot settle.**
+*Location:* plan lines 51 and 56.
+*Issue:* the production side is fully verified (see above), but whether Node's bundled undici (`fetch`) touches the global `setInterval` is not determinable from this repo, and `transaction-http.test.ts` installs no fake timers today, so there is no in-file precedent. The closest precedent is selective `toFake: ["setTimeout","clearTimeout"]` at `read-sequence-lifecycle.test.ts:745,1186`.
+*Impact:* bounded — if undici does use it, `fetch` stalls and the plan's own stop-clause applies correctly.
+*Correction:* no logic change. Have the draft preflight record this as the named go/no-go check (one faked-interval `fetch` round trip) so the "actual obstacle" returned is this specific one rather than a generic timeout.
+
+**8 — Low — the 24-store ceiling is already statically measurable (~15–16).**
+*Location:* plan line 72.
+*Issue:* each selected case opens one store per `fixture()` (`transaction-store.test.ts:63–73`, `transaction-submission.test.ts:17`, `transaction-http.test.ts:77`), except the existing HTTP fencing case, which reopens once within one directory (`:888`).
+*Impact:* none to correctness — the bound holds with wide margin — but it defers to preflight a number available now, which is the figure the governing instruction wants measured.
+*Correction:* replace "at most 24" with the measured count, and state whether "temporary stores" means store opens or directories; the fencing reopen makes them differ (2 opens, 1 directory).
+
+## Binding law vs optional
+
+**Binding, and the plan reads it correctly.** `bdp.md:1956–1960` + `:4588–4592` compel the sanitized bodyless 500; `:3994–4026` and `:4517–4520` do not reclassify a retained internal exception. The one arguable edge is `:4517–4520`'s "an authority that cannot admit is 503" — but it is enumerated under unknown-key admission controls beside rate limiting, and `:4588–4592` makes the bodyless 500 an exception to otherwise-exhaustive row statuses, so 500 governs. No ruling, error code, context requirement or schema change is needed, as the plan says.
+
+**Binding existing behavior, preserved.** Normal closure still returns `undefined`, so the existing benign stopped-503 path and the two normal-close pin cases are correct as designed (I traced both: unobserved → `refused/503` matching `:1168–1173`; observed → `comparison-refusal/owner-stopped` matching `:1131–1136`, no context, no wait or callback). No existing test asserts `comparisonEpoch()` on a closed owner — the only three occurrences are stub overrides (`transaction-dependencies.test.ts:642`, `transaction-submission.test.ts:467`, `:1075`) — so the guard breaks no current assertion.
+
+**Optional/hygiene:** Findings 4, 5, 6, 8. **Execution-blocking if followed literally, but semantics-neutral:** Findings 1, 2, 3. None of the findings require broadening scope, a new installed fault seam, a cumulative profile claim, or optional History/Types work.
+
+## Scope limitations
+
+Static only, per instruction: no tests, build, install, service, network, production execution, git mutation, or file writes; no benchmark or dynamic execution. I read `packages/server/dist/transaction-store.js` solely to confirm the emitted module uses the global `setInterval` (`dist:979`, `:1001`) — I did not verify dist/src parity otherwise, so the plan's "Build before emitted-runtime tests" (line 78) remains necessary given the fixture imports dist at `:12–14`. Undici/Node-internal timer behavior is outside static reach (Finding 7). I verified the installed `14/1` fixture's existence, title and line but not its internal request count; I did not re-audit the original comparison-timeout dispositions beyond the citations the audit relies on and the ledger lines defining the `14/1` regression and the prior 18/five and 34/four evidence, and I did not verify the "27/two" figure. This is plan review only — no implementation authorization is implied or taken.

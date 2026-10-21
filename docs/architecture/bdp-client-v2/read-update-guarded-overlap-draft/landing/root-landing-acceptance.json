@@ -1,0 +1,47 @@
+{
+  "at": "2026-10-15T14:39:42.598439+00:00",
+  "head": "be0cc70d8a3174760c4877e8969728dbdec4ead5",
+  "tree": "93b2ea89d6db05512d4c0bc5bb3cf6083560e8da",
+  "base": "9a42a4531def99e12fa9a1fba02e70558d643265",
+  "decision": "accepted for exact-head landing checks",
+  "evidence": {
+    "finalSourceBinding": {
+      "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/read-update-guarded-overlap-draft/landing/final-source.json",
+      "sha256": "c5ef01c4052d33ce248631c35177dc51e55f2225ff601e86ff29acdd55c55059"
+    },
+    "native": {
+      "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/read-update-guarded-overlap-draft/lint-repair/native-review.md",
+      "sha256": "3407ace5317fb2deac9064842a2ebd243c652314a3f08831f233e97be9622c14"
+    },
+    "claudeExit": {
+      "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/read-update-guarded-overlap-draft/lint-repair/claude-supplement/exit.json",
+      "sha256": "8b1691ec8a270738cd0d6ff57a3fd777c2a734c6a31fc543c764d0f6240a7eb6"
+    },
+    "claudeStdout": {
+      "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/read-update-guarded-overlap-draft/lint-repair/claude-supplement/stdout.txt",
+      "sha256": "1753f84c89dcf472302e81601dcf5d41d31074728afd30f99e52ed21290e2345"
+    },
+    "rootCouncil": {
+      "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/read-update-guarded-overlap-draft/execution-preparation-v3/root-final-council.json",
+      "sha256": "a7efb23e528ed42e93f1358bc65633ff57065700770c9d1ae62d999724b0a6a7"
+    },
+    "installedAcceptance": {
+      "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/read-update-guarded-overlap-draft/execution-preparation-v3/root-installed-acceptance.json",
+      "sha256": "ef9da5fc75fb89742876bbdb1b6d63aad04d29eb5a3756dfd1f5567745f2506c"
+    }
+  },
+  "ci": {
+    "run": 38750269222,
+    "job": 116474544354,
+    "logSha256": "0b51a7c1cbb3333e2c8447b221a815eff0ece96270ec618e0432a362ba2bbf94",
+    "testsPassed": 9301,
+    "testsSkipped": 1,
+    "filesPassed": 176,
+    "suiteSeconds": 691.57,
+    "preflightPassed": 7,
+    "readEvidenceRows": 89,
+    "allRequiredJobSteps": "success"
+  },
+  "scope": "Exactly installed ordinary Update overlap witness plus progress document; no production runtime change",
+  "limitations": "Client outstanding overlap; not simultaneous owner admission/fairness. No public profile qualification. Original lint failure and earlier source bindings retained."
+}

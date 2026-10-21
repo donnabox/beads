@@ -1,0 +1,7 @@
+# Closed fixture-successor validation
+
+The sole source delta from the failed formatting successor is advance() maximumOperations100 to1. All678 other files and all workload/schema/oracle/lifecycle bytes remain unchanged. Only original implementation workspace-install and bind-workspace-tools records are reused as prerequisites, with their original source identity preserved. The cumulative original-bootstrap mapping consists of the prior six formatting sites and this one fixture correction in two test files; all17 dependency inputs and11 actual tools were rehashed unchanged.
+
+All19 subsequent stages are fresh, including typecheck, format, lint, clean build/binding and source callback collection. No prior static/build/source result is reused; the failed attempt and closed gate are untouched. Commands change only output/helper paths. run/audit/packages are identical; gate changes only an error-message label to describe the cumulative source mapping accurately. Build still precedes emitted imports; actual consumer lock and proof require later root acceptance. All execution flags false, consumer pins null.
+
+Same eight source callbacks/five observations and separate historical5/new6 installed requests; same120s/TERM115/no retries and private temporary directory. No validation/helper imports or executions occurred while preparing this packet. Required checks have their own closed sibling and four fresh attempts; historical Read evidence remains historical, with no profile qualification claim.

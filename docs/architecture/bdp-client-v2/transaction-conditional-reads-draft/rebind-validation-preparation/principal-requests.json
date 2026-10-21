@@ -1,0 +1,175 @@
+{
+  "requests": [
+    {
+      "action": "pk-a-create",
+      "method": "POST",
+      "url": "https://reference.invalid/acme/operations/batch",
+      "credentialRef": "principal-a",
+      "headerLines": [
+        {
+          "name": "accept",
+          "value": "application/json"
+        },
+        {
+          "name": "content-type",
+          "value": "application/json"
+        },
+        {
+          "name": "idempotency-key",
+          "value": "principal-shared"
+        }
+      ],
+      "body": "{\"operations\":[{\"operation\":\"createBead\",\"id\":\"beads/a\",\"type\":\"https://reference.invalid/acme/types/task\",\"properties\":{\"title\":\"a\"},\"metadata\":{}}]}",
+      "bodyBytes": 150,
+      "bodySha256": "54f0fefb0965a8210bb22cf09601c18296ef450489eff1aef5a8bea8b99d83b8",
+      "status": 200,
+      "dispatchUrl": "https://reference.invalid/acme/operations/batch",
+      "reportedUrl": "https://reference.invalid/acme/operations/batch"
+    },
+    {
+      "action": "pk-b-create",
+      "method": "POST",
+      "url": "https://reference.invalid/acme/operations/batch",
+      "credentialRef": "principal-b",
+      "headerLines": [
+        {
+          "name": "accept",
+          "value": "application/json"
+        },
+        {
+          "name": "content-type",
+          "value": "application/json"
+        },
+        {
+          "name": "idempotency-key",
+          "value": "principal-shared"
+        }
+      ],
+      "body": "{\"operations\":[{\"operation\":\"createBead\",\"id\":\"beads/b\",\"type\":\"https://reference.invalid/acme/types/task\",\"properties\":{\"title\":\"b\"},\"metadata\":{}}]}",
+      "bodyBytes": 150,
+      "bodySha256": "b26bbe9a43f5cc9b54d7fe7778786b33e5e8d613bf30248de3af65f5eac0cdc8",
+      "status": 200,
+      "dispatchUrl": "https://reference.invalid/acme/operations/batch",
+      "reportedUrl": "https://reference.invalid/acme/operations/batch"
+    },
+    {
+      "action": "pk-a-rotated",
+      "method": "POST",
+      "url": "https://reference.invalid/acme/operations/batch",
+      "credentialRef": "principal-a-rotated",
+      "headerLines": [
+        {
+          "name": "accept",
+          "value": "application/json"
+        },
+        {
+          "name": "content-type",
+          "value": "application/json"
+        },
+        {
+          "name": "idempotency-key",
+          "value": "principal-shared"
+        }
+      ],
+      "body": "{\"operations\":[{\"operation\":\"createBead\",\"id\":\"beads/a\",\"type\":\"https://reference.invalid/acme/types/task\",\"properties\":{\"title\":\"a\"},\"metadata\":{}}]}",
+      "bodyBytes": 150,
+      "bodySha256": "54f0fefb0965a8210bb22cf09601c18296ef450489eff1aef5a8bea8b99d83b8",
+      "status": 200,
+      "dispatchUrl": "https://reference.invalid/acme/operations/batch",
+      "reportedUrl": "https://reference.invalid/acme/operations/batch"
+    },
+    {
+      "action": "pk-b-replay",
+      "method": "POST",
+      "url": "https://reference.invalid/acme/operations/batch",
+      "credentialRef": "principal-b",
+      "headerLines": [
+        {
+          "name": "accept",
+          "value": "application/json"
+        },
+        {
+          "name": "content-type",
+          "value": "application/json"
+        },
+        {
+          "name": "idempotency-key",
+          "value": "principal-shared"
+        }
+      ],
+      "body": "{\"operations\":[{\"operation\":\"createBead\",\"id\":\"beads/b\",\"type\":\"https://reference.invalid/acme/types/task\",\"properties\":{\"title\":\"b\"},\"metadata\":{}}]}",
+      "bodyBytes": 150,
+      "bodySha256": "b26bbe9a43f5cc9b54d7fe7778786b33e5e8d613bf30248de3af65f5eac0cdc8",
+      "status": 200,
+      "dispatchUrl": "https://reference.invalid/acme/operations/batch",
+      "reportedUrl": "https://reference.invalid/acme/operations/batch"
+    },
+    {
+      "action": "pk-a-conflict",
+      "method": "POST",
+      "url": "https://reference.invalid/acme/operations/batch",
+      "credentialRef": "principal-a",
+      "headerLines": [
+        {
+          "name": "accept",
+          "value": "application/json"
+        },
+        {
+          "name": "content-type",
+          "value": "application/json"
+        },
+        {
+          "name": "idempotency-key",
+          "value": "principal-shared"
+        }
+      ],
+      "body": "{\"operations\":[{\"operation\":\"createBead\",\"id\":\"beads/c\",\"type\":\"https://reference.invalid/acme/types/task\",\"properties\":{\"title\":\"c\"},\"metadata\":{}}]}",
+      "bodyBytes": 150,
+      "bodySha256": "3de2f9bb5fb4b4b0537d252ba722b05a3385414129cf35fc6ab0355720f9ff62",
+      "status": 409,
+      "dispatchUrl": "https://reference.invalid/acme/operations/batch",
+      "reportedUrl": "https://reference.invalid/acme/operations/batch"
+    },
+    {
+      "action": "pk-current",
+      "method": "GET",
+      "url": "https://reference.invalid/acme/beads/?limit=32",
+      "credentialRef": "principal-a",
+      "headerLines": [
+        {
+          "name": "accept",
+          "value": "application/json"
+        }
+      ],
+      "body": null,
+      "bodyBytes": 0,
+      "bodySha256": null,
+      "status": 200,
+      "dispatchUrl": "https://reference.invalid/acme/beads/?limit=32",
+      "reportedUrl": "https://reference.invalid/acme/beads/?<redacted>"
+    },
+    {
+      "action": "pk-events",
+      "method": "GET",
+      "url": "https://reference.invalid/acme/events/",
+      "credentialRef": "principal-a",
+      "headerLines": [
+        {
+          "name": "accept",
+          "value": "application/json"
+        }
+      ],
+      "body": null,
+      "bodyBytes": 0,
+      "bodySha256": null,
+      "status": 200,
+      "dispatchUrl": "https://reference.invalid/acme/events/",
+      "reportedUrl": "https://reference.invalid/acme/events/"
+    }
+  ],
+  "totalBodyBytes": 750,
+  "maximumBodyBytes": 150,
+  "automaticRetries": 0,
+  "retainedReplayRequests": 2,
+  "urlFieldMeaning": "url is unchanged actual routing literal and equals dispatchUrl; reportedUrl is independent exact expected redacted report spelling"
+}

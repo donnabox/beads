@@ -1,0 +1,5 @@
+# Successor1 preparation
+
+Closes only native N1/N2 and their fixture-specific precisions. Original17 indexed artifacts and closed Claude mechanics remain byte-identical. Plan delta contains provenance correction, exact gated-operation settlement/entry/cleanup schedule, callback-local Type-ID caution and explicit offline retention close/reopen caution. Selection and workload files are byte-identical. No added service operation, probe, wait, HTTP exchange, store, child, changed product budget or callback deadline.1000ms observation guards make existing bounded-cleanup requirements concrete inside5s callbacks; no source implementation or timer was executed.
+
+All29 current inspected pins match original candidate and fixture successor author map. Production5 snapshots match. No all679 verification claim. Final Claude inputs must include new fixture chronology plus native/root disposition; existing mechanics remain closed and no prompt finalized. Root/native closure required before next release. No product edits or execution.

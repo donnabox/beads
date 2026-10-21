@@ -1,0 +1,38 @@
+{
+  "state": "PROSPECTIVE S05 SUBSET, not additional tests",
+  "rows": {
+    "read-update": [
+      "format",
+      "scope",
+      "installation",
+      "lineage",
+      "contractCapture",
+      "installed-types",
+      "resource-uninstalled-type",
+      "retained-runtime-compatibility"
+    ],
+    "transactional": [
+      "format",
+      "receiptMaximumItems",
+      "snapshotLimits",
+      "snapshotTokenPolicy",
+      "initialAuthorizationView",
+      "policyStorageRevision",
+      "identityPolicy",
+      "contractIdentity",
+      "runtimeLimits",
+      "scope",
+      "types",
+      "contractCapture",
+      "authorizationPolicy"
+    ]
+  },
+  "count": 21,
+  "sourceFile": "packages/server/src/reference-deployment-runtime.test.ts",
+  "rules": [
+    "Existing validators/capture/compiler only; no new epoch grammar or installation equality.",
+    "RU policy/auth current capture; RU epoch process-generated, TX epoch persisted opaque.",
+    "Internal SQLite close and returned-owner count distinct; restore selected actual values before reopen.",
+    "Unsupported metadata/allocation/crash/restore cases not claimed covered."
+  ]
+}

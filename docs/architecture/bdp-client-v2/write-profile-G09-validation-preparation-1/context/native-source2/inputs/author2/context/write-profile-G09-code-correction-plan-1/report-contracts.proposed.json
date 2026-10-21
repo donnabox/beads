@@ -1,0 +1,273 @@
+{
+  "bounds": "New installed exact executor retains existing 16KiB request headers/64KiB request body/128KiB response body and existing response-header/default wire derivation; no maxWire option or cap widening",
+  "budget": {
+    "futureOuterMs": 120000,
+    "futureTERMms": 115000,
+    "installedCallbackMs": 60000,
+    "installedCleanupMs": 10000,
+    "installedRequestMs": 5000,
+    "installedWorkMs": 45000,
+    "retries": 0,
+    "sourceCallbackMs": 5000,
+    "sourceCleanupMs": 1000,
+    "sourceRequestCeilingMs": 5000,
+    "sourceWorkMs": 3000
+  },
+  "failurePolicy": "Exact keysets finite counts/actual contexts; no missing/extra/invalid report accepted as positive. SourceService always attempts final report after actual close; S04/S05 may have no observation on failed assertion. Failure report partial counts are actual, never filled with proposed positives. Future auditor must reject malformed/missing/null positive facts without relabeling primary/cleanup failure.",
+  "installed": {
+    "actualExitAndCloseRequiredForRemoval": {
+      "close": {
+        "code": 0,
+        "signal": null
+      },
+      "closePromiseSettled": true,
+      "closeSucceeded": true,
+      "exit": {
+        "code": 0,
+        "signal": null
+      },
+      "pending": 0
+    },
+    "claimEligible": false,
+    "counts": [
+      14,
+      16
+    ],
+    "ids": [
+      "G09-I01",
+      "G09-I02"
+    ],
+    "parentProcessLimitation": "Child object only available after launcher ready; startup failure without returned handle remains unknown. Full external parent/descendant absence and actual archive/consumer proof belong to later independent validation, not fabricated here.",
+    "readyKeys": [
+      "scope",
+      "profile",
+      "history",
+      "authorityMode",
+      "claimEligible",
+      "payloadIdentity",
+      "runtimeConfigurationIdentity",
+      "listenUrl"
+    ],
+    "readyProjection": "child absent -> null. Child present -> exactly8 declared own keys, each actualvalue ?? null; absent/undefined/null -> null; false/0/emptystring/wrongprofile/invalid actual present JSON value preserved, no coercion/fallback. readyValidated=false and failed outcome retain no credit. A positive report still requires independently correct values and same actual binding.",
+    "rowKeys": [
+      "ordinal",
+      "label",
+      "method",
+      "url",
+      "settled",
+      "received",
+      "validated",
+      "status",
+      "responseHeaders",
+      "requestBodyBytes",
+      "requestBodySha256",
+      "bodyText",
+      "bodyOctets",
+      "wireBase64",
+      "wireSha256",
+      "writeState",
+      "errorCategory"
+    ],
+    "secrecy": "No credential/token/header or authentication digest emitted by new cohorts; runtime identity is observed metadata, not independently regenerated authentication proof. IPC configuration and credential binding are source-attested. Actual raw response wire/body may contain only fixture/public response data; child stdout/stderr bytes not retained.",
+    "sessionKeys": [
+      "pid",
+      "exit",
+      "close",
+      "closePromiseSettled",
+      "closeSucceeded",
+      "stdoutEnded",
+      "stderrEnded"
+    ],
+    "stateMachine": {
+      "assertionsComplete": "all row.validated=true only after whole work callback and count assertion; subsequent deadline/cleanup failure still outcome failed",
+      "completedResponses": "number of actual returned settled responses without exchange rejection, independent of validation; never expected count substituted",
+      "executorReject": "settled=true/received=false/validated=false,errorCategory=exchange-failed; unavailable wire evidence null",
+      "executorReturn": "settled=true/received=true, actual response copied before every assertion; writeState may null on bad returned evidence",
+      "initial": "settled=false/received=false/validated=false, returned evidence null"
+    },
+    "topKeys": [
+      "observation",
+      "declaredSourceCommit",
+      "workspaceDirty",
+      "entry",
+      "entrySha256",
+      "ready",
+      "readyValidated",
+      "authenticationIdentityRetention",
+      "artifactBytes",
+      "rows",
+      "attemptedRequests",
+      "completedResponses",
+      "pending",
+      "session",
+      "directoryAbsent",
+      "elapsedMs",
+      "outcome",
+      "failureCount",
+      "claimEligible",
+      "evidenceRetention"
+    ]
+  },
+  "kind": "CLOSED PROPOSED corrected grammar; source/executable audit not authored or evaluated",
+  "positiveRequires": "Fresh exact source/package/install/consumer/proof and independent strict observation validation later, not only callback status/count. Full wire matches actual returned status/headers/body; all runtime fit UNKNOWN now.",
+  "sourceBindingSha256": "UNKNOWN final corrected source; basis8839fea94add33ec60b46f6aa3ae38da4958b431fbdc68d2959c401328765b2c",
+  "sourceSelector": {
+    "G09-S04": {
+      "calls": 8,
+      "keys": [
+        "observation",
+        "calls",
+        "urlReads",
+        "observations"
+      ],
+      "observations": 0,
+      "urlReads": 0
+    },
+    "G09-S05": {
+      "abortCalls": 1,
+      "abortPropagated": true,
+      "abortSignalForwarded": true,
+      "calls": 8,
+      "extraAbortDirectInvocations": 1,
+      "forwardedTupleSignalAssertion": true,
+      "keys": [
+        "observation",
+        "calls",
+        "rows",
+        "abortCalls",
+        "abortPropagated",
+        "abortSignalForwarded"
+      ],
+      "statuses": [
+        200,
+        200,
+        304,
+        412,
+        406,
+        410,
+        409,
+        503
+      ],
+      "totalDirectCalls": 9
+    },
+    "failureReportLimit": "S04/S05 console observation is reached only after assertions; a failed callback may have no observation, never positive credit"
+  },
+  "sourceService": {
+    "clockAndWaitAssertions": {
+      "G09-S01": {
+        "actualOwnedAdmissions": 1,
+        "actualOwnedExecutions": 1,
+        "actualStorePositionAfter": "1",
+        "clockCalls": 4,
+        "newOwnerReleaseProbes": 1,
+        "observedRetryPosition": "pos-1",
+        "waits": 1
+      },
+      "G09-S02": {
+        "waits": 0
+      },
+      "G09-S03": {
+        "final": {
+          "abortErrorClass": "ScopeServerOperationAbortedError",
+          "calls": 3,
+          "clockCalls": 8,
+          "closeCalls": 1,
+          "closed": true,
+          "entries": 5,
+          "releasedEntryProbes": 3,
+          "waits": 3
+        },
+        "preservedTimeoutPrefix": {
+          "calls": 2,
+          "clockCalls": 6,
+          "entries": 4,
+          "releasedEntryProbes": 2,
+          "waits": 2
+        }
+      }
+    },
+    "keys": [
+      "observation",
+      "calls",
+      "entries",
+      "contexts",
+      "closeCalls",
+      "closed",
+      "removed",
+      "failureCount"
+    ],
+    "observations": [
+      "G09-S01",
+      "G09-S02",
+      "G09-S03"
+    ],
+    "positiveCounts": {
+      "G09-S01": {
+        "calls": 4,
+        "entries": 5
+      },
+      "G09-S02": {
+        "calls": 2,
+        "entries": 2
+      },
+      "G09-S03": {
+        "calls": 3,
+        "entries": 5
+      }
+    },
+    "probesOutsideDirectCallCount": "Original initial context probes3; originalS03 release probes2 + newS03 release probe1 + newS01 release probe1; newS01 owner.admit/execute/inspect exactlyone each. Direct-call inventory counts schemaObserved and selector invocations only; lifecycle close/read probes and trusted owner actions are separately enumerated.",
+    "unknownCleanup": "close failure retains directory; primary and cleanup failures aggregated"
+  },
+  "sourceWire": {
+    "counts": [
+      5,
+      2,
+      2
+    ],
+    "ids": [
+      "G09-S06",
+      "G09-S07",
+      "G09-S08"
+    ],
+    "partial": "received can precede settlement at actual node response callback; partial text retained on data; received=false leaves status/headers/text null; final report after cleanup snapshots actual rows; failed/unknown never positive",
+    "rowKeys": [
+      "ordinal",
+      "method",
+      "url",
+      "settled",
+      "received",
+      "validated",
+      "status",
+      "headers",
+      "text",
+      "errorCategory"
+    ],
+    "statuses": [
+      [
+        200,
+        200,
+        200,
+        410,
+        409
+      ],
+      [
+        200,
+        503
+      ],
+      [
+        200,
+        503
+      ]
+    ],
+    "topKeys": [
+      "observation",
+      "rows",
+      "attempted",
+      "completed",
+      "pending",
+      "closed",
+      "removed",
+      "failureCount"
+    ]
+  }
+}

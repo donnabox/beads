@@ -1,0 +1,236 @@
+--- predecessor/commands.json
++++ successor-1/commands.json
+@@ -85,10 +85,10 @@
+       ]
+     },
+     "bind-fresh-build": {
+-      "cwd": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/initial-collection-unknown-validation",
+-      "argv": [
+-        "/opt/homebrew/opt/python@3.14/bin/python3.14",
+-        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/initial-collection-unknown-validation/audit.py",
++      "cwd": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/initial-collection-unknown-validation-successor-1",
++      "argv": [
++        "/opt/homebrew/opt/python@3.14/bin/python3.14",
++        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/initial-collection-unknown-validation-successor-1/audit.py",
+         "build"
+       ],
+       "outerSeconds": 120,
+@@ -110,10 +110,10 @@
+       ]
+     },
+     "prepare-package-directory": {
+-      "cwd": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/initial-collection-unknown-validation",
+-      "argv": [
+-        "/opt/homebrew/opt/python@3.14/bin/python3.14",
+-        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/initial-collection-unknown-validation/packages.py",
++      "cwd": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/initial-collection-unknown-validation-successor-1",
++      "argv": [
++        "/opt/homebrew/opt/python@3.14/bin/python3.14",
++        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/initial-collection-unknown-validation-successor-1/packages.py",
+         "directory"
+       ],
+       "outerSeconds": 120,
+@@ -131,7 +131,7 @@
+         "@bdp/protocol",
+         "pack",
+         "--pack-destination",
+-        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/initial-collection-unknown-validation/run/packages"
++        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/initial-collection-unknown-validation-successor-1/run/packages"
+       ],
+       "outerSeconds": 120,
+       "automaticRetries": 0,
+@@ -148,7 +148,7 @@
+         "@bdp/server",
+         "pack",
+         "--pack-destination",
+-        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/initial-collection-unknown-validation/run/packages"
++        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/initial-collection-unknown-validation-successor-1/run/packages"
+       ],
+       "outerSeconds": 120,
+       "automaticRetries": 0,
+@@ -157,10 +157,10 @@
+       ]
+     },
+     "verify-archives": {
+-      "cwd": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/initial-collection-unknown-validation",
+-      "argv": [
+-        "/opt/homebrew/opt/python@3.14/bin/python3.14",
+-        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/initial-collection-unknown-validation/packages.py",
++      "cwd": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/initial-collection-unknown-validation-successor-1",
++      "argv": [
++        "/opt/homebrew/opt/python@3.14/bin/python3.14",
++        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/initial-collection-unknown-validation-successor-1/packages.py",
+         "tar"
+       ],
+       "outerSeconds": 120,
+@@ -170,10 +170,10 @@
+       ]
+     },
+     "prepare-consumer": {
+-      "cwd": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/initial-collection-unknown-validation",
+-      "argv": [
+-        "/opt/homebrew/opt/python@3.14/bin/python3.14",
+-        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/initial-collection-unknown-validation/packages.py",
++      "cwd": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/initial-collection-unknown-validation-successor-1",
++      "argv": [
++        "/opt/homebrew/opt/python@3.14/bin/python3.14",
++        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/initial-collection-unknown-validation-successor-1/packages.py",
+         "consumer"
+       ],
+       "outerSeconds": 120,
+@@ -183,7 +183,7 @@
+       ]
+     },
+     "consumer-install": {
+-      "cwd": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/initial-collection-unknown-validation/run/consumer",
++      "cwd": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/initial-collection-unknown-validation-successor-1/run/consumer",
+       "argv": [
+         "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+         "/Users/dbox/.cache/node/corepack/v1/pnpm/11.20.0/bin/pnpm.cjs",
+@@ -200,10 +200,10 @@
+       ]
+     },
+     "verify-installed-consumer": {
+-      "cwd": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/initial-collection-unknown-validation",
+-      "argv": [
+-        "/opt/homebrew/opt/python@3.14/bin/python3.14",
+-        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/initial-collection-unknown-validation/packages.py",
++      "cwd": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/initial-collection-unknown-validation-successor-1",
++      "argv": [
++        "/opt/homebrew/opt/python@3.14/bin/python3.14",
++        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/initial-collection-unknown-validation-successor-1/packages.py",
+         "installed"
+       ],
+       "outerSeconds": 120,
+@@ -222,7 +222,7 @@
+         "--maxWorkers=1",
+         "--reporter=verbose",
+         "--reporter=json",
+-        "--outputFile=/Users/dbox/repos/wt/vickie/bdp-integration-logs/initial-collection-unknown-validation/run/collection-external.results.json",
++        "--outputFile=/Users/dbox/repos/wt/vickie/bdp-integration-logs/initial-collection-unknown-validation-successor-1/run/collection-external.results.json",
+         "--testNamePattern",
+         "^(?:observes\\ genuine\\ installed\\ initial\\ collection\\ minimums,\\ fixed\\-budget\\ failures,\\ conditionals\\ and\\ retained\\ rows)$"
+       ],
+@@ -253,10 +253,10 @@
+       }
+     },
+     "review-collection-external": {
+-      "cwd": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/initial-collection-unknown-validation",
+-      "argv": [
+-        "/opt/homebrew/opt/python@3.14/bin/python3.14",
+-        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/initial-collection-unknown-validation/audit.py",
++      "cwd": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/initial-collection-unknown-validation-successor-1",
++      "argv": [
++        "/opt/homebrew/opt/python@3.14/bin/python3.14",
++        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/initial-collection-unknown-validation-successor-1/audit.py",
+         "external"
+       ],
+       "outerSeconds": 120,
+@@ -276,7 +276,7 @@
+         "--maxWorkers=1",
+         "--reporter=verbose",
+         "--reporter=json",
+-        "--outputFile=/Users/dbox/repos/wt/vickie/bdp-integration-logs/initial-collection-unknown-validation/run/focused-source.results.json",
++        "--outputFile=/Users/dbox/repos/wt/vickie/bdp-integration-logs/initial-collection-unknown-validation-successor-1/run/focused-source.results.json",
+         "--testNamePattern",
+         "^(?:initial\\ collection\\ minimums\\ bounds\\ unrecognized\\ initial\\ collection\\ minima\\ without\\ retaining\\ state\\ or\\ holding\\ the\\ owner|waits\\ for\\ current\\ Resources\\ and\\ initial\\ collections\\ with\\ unknown\\ minima\\ and\\ preserves\\ residual\\ refusals)$"
+       ],
+@@ -317,10 +317,10 @@
+       }
+     },
+     "review-focused-source": {
+-      "cwd": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/initial-collection-unknown-validation",
+-      "argv": [
+-        "/opt/homebrew/opt/python@3.14/bin/python3.14",
+-        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/initial-collection-unknown-validation/audit.py",
++      "cwd": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/initial-collection-unknown-validation-successor-1",
++      "argv": [
++        "/opt/homebrew/opt/python@3.14/bin/python3.14",
++        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/initial-collection-unknown-validation-successor-1/audit.py",
+         "source"
+       ],
+       "outerSeconds": 120,
+--- predecessor/source-binding.json
++++ successor-1/source-binding.json
+@@ -1,5 +1,5 @@
+ {
+-  "status": "FROZEN_UNVALIDATED_DRAFT",
++  "status": "FROZEN_SUCCESSOR_UNVALIDATED",
+   "worktree": "/Users/dbox/repos/wt/vickie/vickie-fresh-depth-serving",
+   "branch": "codex/vickie-initial-collection-unknown",
+   "head": "2dfd2c6cc84a28b1dd336f4184c1a5f910ce8a96",
+@@ -12,11 +12,11 @@
+     },
+     "packages/server/src/transaction-http.test.ts": {
+       "beforeSha256": "9eb452b8e9d80b53f28cd61b40385886c3a61a992aadb1c9c201d9a188081cce",
+-      "afterSha256": "78583951db5d5d9f51b8aa03585da38f89082f6f2269306b4d5befa2c75b1958"
++      "afterSha256": "b0aaddb7e8b0d42bc2bc4f83478088c03978c12e04ec36cc897c32bbcb716a4f"
+     },
+     "packages/server/src/transaction-read.test.ts": {
+       "beforeSha256": "58e745c2ade0804bf0ab0230c34ff5e522c28725fa77ecb9303dbe972162e0f2",
+-      "afterSha256": "10b690850b9fefd3ec4770e02d1baecbcac410de841e185614d1684cfa9897d0"
++      "afterSha256": "c5f444fac8ffcf3c37ba73adc91abde5c7c5c2e3349886b78539d2fd22b2e291"
+     },
+     "packages/server/src/transaction-read.ts": {
+       "beforeSha256": "7e2cc29b668bb80a3ba2948e90511518a98a7ff798b1dbfb8c6f51f0c0bd2a6f",
+@@ -459,7 +459,7 @@
+     "packages/server/src/transaction-event-sse.test.ts": "de14cbbbe935205c5ec43ef6cf6a055d3f1ca2b9632ee684c4c13fbfe9eed042",
+     "packages/server/src/transaction-events.test.ts": "0152561cdf096a48b0b01ec0e0d8bc81208a905bb5bf71dad411694387b58b27",
+     "packages/server/src/transaction-events.ts": "6c5ab4482f0b00110a71a96b16d44ca5fe713cb5f397ff78778cc6646f632a3a",
+-    "packages/server/src/transaction-http.test.ts": "78583951db5d5d9f51b8aa03585da38f89082f6f2269306b4d5befa2c75b1958",
++    "packages/server/src/transaction-http.test.ts": "b0aaddb7e8b0d42bc2bc4f83478088c03978c12e04ec36cc897c32bbcb716a4f",
+     "packages/server/src/transaction-http.ts": "81c130dd18f604ab1d13c03a2f52a98e11a6988f45d62af98b4b8c7499d14529",
+     "packages/server/src/transaction-installed-configuration.ts": "e15cb54266848fdd4aa08b19b37f1b2eb080f4599d9414fad8d85b6f33f35d99",
+     "packages/server/src/transaction-installed-contracts.test.ts": "f2dd0993c4fa61742435d3bedb101afb021ca0f1b5904147ab367ba243286bd1",
+@@ -468,7 +468,7 @@
+     "packages/server/src/transaction-installed.ts": "afddc6b0304fee4762c79e40ac6610a281ca8791928d8f779a900a7f6eac881a",
+     "packages/server/src/transaction-materialization.test.ts": "9a2ce6b1a3a461fbede11ece36566368b1e5f1c034c550a2593ac93a3ef79096",
+     "packages/server/src/transaction-owned.test.ts": "48ada80b0868ef95f5bb1cf5f7489bafca4c3aab37883feb1a2bbe7067d3e58b",
+-    "packages/server/src/transaction-read.test.ts": "10b690850b9fefd3ec4770e02d1baecbcac410de841e185614d1684cfa9897d0",
++    "packages/server/src/transaction-read.test.ts": "c5f444fac8ffcf3c37ba73adc91abde5c7c5c2e3349886b78539d2fd22b2e291",
+     "packages/server/src/transaction-read.ts": "e76595b1da4530c4178a668b72e8bdf91ded7cdea5a6052219a2b10ebffedcb2",
+     "packages/server/src/transaction-receipt-pages.test.ts": "e944bd61590f78a510b427b0f5d6eb7856f6b3715f9f0e5dc590bf8d4724c6a1",
+     "packages/server/src/transaction-recovery.test.ts": "7267388d138d5c8ec0c223d545c641ea5fec9d9f9cea97b68550fdb698866303",
+@@ -704,7 +704,7 @@
+     "vitest.config.ts": "a84575ea9ef0b6e75b6484024a627fa89422aea2fdbeb26127e09714dba0641f",
+     "vitest.evidence.config.ts": "6b2fee31033acf4843bc923dd864ee5c65501ec658ce0fedc9ebc549e8870dda"
+   },
+-  "binaryDiffSha256": "7ab49b685ea70c22d1e87c7ca58c5a7fff4e92a87507798cb82708dc9b432201",
++  "binaryDiffSha256": "87aad01808d6ea8e4bda0754b2e2dc419274309647aefdb7830fafedcb1dd161",
+   "authorityArtifacts": {
+     "/Users/dbox/repos/wt/vickie/bdp-integration-logs/next-functional-gap-audit/binding.json": "c621a4f827bc2dedbfcb5898086fd1c1af4257b01b933d65b7c65d0f4cf63261",
+     "/Users/dbox/repos/wt/vickie/bdp-integration-logs/next-functional-gap-audit/plan-v2.md": "ff51d39c6e9bdf537b785d8a562f68bf72cf7240ce1fbfdc62a701d51701c0d8",
+@@ -713,6 +713,15 @@
+   },
+   "noSourceExecution": true,
+   "unownedTrackedInputsUnchanged": true,
++  "predecessorBinding": {
++    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/initial-collection-unknown-author/source-binding.json",
++    "sha256": "271aa8f79cf3b8bdf1d2d2939a81ce06d793323d658ee739f365a8a56717ac13"
++  },
++  "rootDisposition": {
++    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/initial-collection-unknown-review/root-disposition.md",
++    "sha256": "6757a57dfa1e05a817d9e5a6e50197f1e069ef398642323c99705fe57f9b5d45"
++  },
++  "correctionPatchSha256": "ec9df624c8a53c52c7c595d9089841f1d99401ba5b97309db43b0cb93b1d2262",
+   "dirtyPaths": [
+     "apps/bdptest/src/transactional-collection-minimum-installed.test.ts",
+     "packages/server/src/transaction-http.test.ts",
+--- predecessor/root-disposition.template.json
++++ successor-1/root-disposition.template.json
+@@ -1,8 +1,12 @@
+ {
+   "accepted": false,
+-  "sourceBindingSha256": "2e58c0c8cc28cde80f91b890b22624d235e8a63c21e9621389d6c67d825709c1",
++  "sourceBindingSha256": "295488943bcd070fa5a6e3abfabfdf0d19230821dd438049310564cbcc953de3",
+   "staticValidationAuthorized": false,
+   "runtimeValidationAuthorized": false,
+-  "actualClaudeReviewDisposition": null,
+-  "note": "Root must write a new accepted disposition after inspection; no execution authorized by template."
++  "actualClaudeReviewDisposition": {
++    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/initial-collection-unknown-review/root-disposition.md",
++    "sha256": "6757a57dfa1e05a817d9e5a6e50197f1e069ef398642323c99705fe57f9b5d45"
++  },
++  "nativeSuccessorClosure": null,
++  "note": "Root acceptance and execution release remain required; no execution authorized by template."
+ }

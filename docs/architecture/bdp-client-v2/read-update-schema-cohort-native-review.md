@@ -1,0 +1,13 @@
+# Native review: configured effective-schema cohort
+
+Reviewed frozen2c10d19ee73f61d5c3af451d91d8f8b2129c45d8 vs c3f90e0. Source is test helper, fixture, manifest, coverage and prose only. No actionable defect found in this bounded evidence addition. This is not a completed-profile audit.
+
+Structural JSON comparison after coherent fixture-ID rebinding confirms precisely three existing changed scenarios (read.types.descriptor, singleton.update-bead, singleton.document-patch-validation) plus the new type-contract and diagnostics scenarios. Manifest bytes2,036,656 remain below the unchanged4MiB limit. The large textual diff includes repeated JSON alignment; source scope is not inferred from line counts.
+
+The helper preserves the thirteen shipped descriptor serializations and adds four fresh parent/child descriptors with exact schema retrieval/$id/propertiesSchema equality. Fixture tests check both canonical inventory oracles, interleaving and17<=20 complete-page premise. Four descriptor GETs live in their inherited row; semantic rows read the schema documents through the actual server.
+
+Both-kind mutation probes declare child Types. Negative n and wrong enabled discriminate parent and child validation, removing detail while enabled stays true requires whole-postimage validation, and simultaneous disable/remove succeeds. Literal initial/final documents and independent GET equality prevent successful status alone from counting as semantics. Refusals pair an effectful metadata proposal with unchanged full postimage and, for Links, unchanged endpoint records. Metadata accepts otherwise rejected values without changing properties. Six counterfactuals alter actual observed assertion inputs and pin intended failed assertions; they are not used to author success evidence.
+
+Every scenario launch uses the same schema cohort wrapper, including bootstrap and installed Read sensitivity tests. Exact route digest changes for new schema/descriptor paths and the diagnostic-limit discovery observation. Contract/configuration/fixture identities are freshly captured; historical schema-free output is not relabeled. New/expanded write rows remain partial,26/129 whole-credit bound and103 uncovered persist. Diagnostic message meaning/truncation/no-implicit-network/other full-section branches remain unproven.
+
+Author893 regressions and102 fresh packed tests inspected in the execution report. Root did not repeat those suites for this source review; ordinary integration requires its own exact combined validation. Claude review51160 remains active. Public gates, protocol schemas, catalogs and sealed Read evidence are unchanged.

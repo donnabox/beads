@@ -1,0 +1,94 @@
+--- /Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-receipt-missing-context-draft/installed-preparation/commands.json
++++ /Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-receipt-missing-context-draft/installed-preparation-successor/commands.json
+@@ -40,7 +40,7 @@
+       "cwd": "/Users/dbox/repos/wt/vickie/vickie-sequence-member-evidence",
+       "argv": [
+         "python3",
+-        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-receipt-missing-context-draft/installed-preparation/packages.py",
++        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-receipt-missing-context-draft/installed-preparation-successor/packages.py",
+         "directory"
+       ],
+       "supervisorSeconds": 120,
+@@ -62,7 +62,7 @@
+         "@bdp/protocol",
+         "pack",
+         "--pack-destination",
+-        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-receipt-missing-context-draft/installed-preparation/run/packages"
++        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-receipt-missing-context-draft/installed-preparation-successor/run/packages"
+       ],
+       "supervisorSeconds": 120,
+       "requires": [
+@@ -83,7 +83,7 @@
+         "@bdp/server",
+         "pack",
+         "--pack-destination",
+-        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-receipt-missing-context-draft/installed-preparation/run/packages"
++        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-receipt-missing-context-draft/installed-preparation-successor/run/packages"
+       ],
+       "supervisorSeconds": 120,
+       "requires": [
+@@ -99,7 +99,7 @@
+       "cwd": "/Users/dbox/repos/wt/vickie/vickie-sequence-member-evidence",
+       "argv": [
+         "python3",
+-        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-receipt-missing-context-draft/installed-preparation/packages.py",
++        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-receipt-missing-context-draft/installed-preparation-successor/packages.py",
+         "tar"
+       ],
+       "supervisorSeconds": 120,
+@@ -116,7 +116,7 @@
+       "cwd": "/Users/dbox/repos/wt/vickie/vickie-sequence-member-evidence",
+       "argv": [
+         "python3",
+-        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-receipt-missing-context-draft/installed-preparation/packages.py",
++        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-receipt-missing-context-draft/installed-preparation-successor/packages.py",
+         "consumer"
+       ],
+       "supervisorSeconds": 120,
+@@ -130,7 +130,7 @@
+     },
+     "consumer-install": {
+       "phase": "package",
+-      "cwd": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-receipt-missing-context-draft/installed-preparation/run/consumer",
++      "cwd": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-receipt-missing-context-draft/installed-preparation-successor/run/consumer",
+       "argv": [
+         "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+         "/Users/dbox/.cache/node/corepack/v1/pnpm/11.20.0/bin/pnpm.cjs",
+@@ -154,7 +154,7 @@
+       "cwd": "/Users/dbox/repos/wt/vickie/vickie-sequence-member-evidence",
+       "argv": [
+         "python3",
+-        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-receipt-missing-context-draft/installed-preparation/packages.py",
++        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-receipt-missing-context-draft/installed-preparation-successor/packages.py",
+         "installed"
+       ],
+       "supervisorSeconds": 120,
+@@ -178,7 +178,7 @@
+         "--maxWorkers=1",
+         "--reporter=verbose",
+         "--reporter=json",
+-        "--outputFile=/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-receipt-missing-context-draft/installed-preparation/run/installed-positive.json",
++        "--outputFile=/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-receipt-missing-context-draft/installed-preparation-successor/run/installed-positive.json",
+         "-t",
+         "^(?:observes\\ genuine\\ installed\\ receipt\\ root\\ and\\ page\\ absence\\ context\\ at\\ current\\ heads)$"
+       ],
+@@ -221,7 +221,7 @@
+       "cwd": "/Users/dbox/repos/wt/vickie/vickie-sequence-member-evidence",
+       "argv": [
+         "python3",
+-        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-receipt-missing-context-draft/installed-preparation/review-installed.py"
++        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-receipt-missing-context-draft/installed-preparation-successor/review-installed.py"
+       ],
+       "supervisorSeconds": 120,
+       "requires": [
+@@ -235,8 +235,8 @@
+     }
+   },
+   "sourceBinding": {
+-    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-receipt-missing-context-draft/source-binding.json",
+-    "sha256": "edc5c98c8e5c82f2073e1bf35aa84098efe9552c7dbc74537784de75788cca5a"
++    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-receipt-missing-context-draft/stale-assertion-repair/source-binding.json",
++    "sha256": "e96f012c8502285454eb3867f8b7b35c82c483ae3ceb3f7fc21eaa31127d0cf3"
+   },
+   "requests": {
+     "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-receipt-missing-context-draft/requests.json",

@@ -1,0 +1,64 @@
+{
+  "parent": "8873facfe0d2e530c51953275eb2643ace4e12b7",
+  "files": [
+    "apps/bdptest/src/read-update-matrix.test.ts"
+  ],
+  "preserved": [
+    {
+      "path": "packages/conformance/matrices/read-update-v1.json",
+      "sha256": "c86b33535f25a1d117ce021a3bb70164f5635bdaee50758e3428c130ccc3227f",
+      "bytes": 3626922,
+      "byteEqual": true
+    },
+    {
+      "path": "packages/conformance/matrices/read-update-reference-continuation-v1.json",
+      "sha256": "d6ad2f7abf0556227a20c786bd88d30c2c6f67a5d922c6fc3fc5168678fceec5",
+      "bytes": 844551,
+      "byteEqual": true
+    },
+    {
+      "path": "packages/conformance/test-support/read-update-coverage-v1.json",
+      "sha256": "8274385bff08618e15ccbdb863127f5a472606970c14c735f4d9805f9ff01954",
+      "bytes": 703415,
+      "byteEqual": true
+    },
+    {
+      "path": "packages/conformance/test-support/read-update-artifact-set-v1.json",
+      "sha256": "7277980894dd0955a8fcd22ba5d2845b0a6801b7e7e13a937018e11d3a65de37",
+      "bytes": 242,
+      "byteEqual": true
+    },
+    {
+      "path": "packages/conformance/fixtures/read-update-reference-v1.json",
+      "sha256": "f89932d68e3bf5867d79eb3de680af4bc67b761b3c3bce5da127f6ca75e27765",
+      "bytes": 29707,
+      "byteEqual": true
+    },
+    {
+      "path": "packages/conformance/src/numeric-model-catalog.test.ts",
+      "sha256": "9c024e335d717f80908b6d74ebc91ed0fa892c8a2d973511aac6bc4c90a4cceb",
+      "bytes": 6335,
+      "byteEqual": true
+    }
+  ],
+  "crossShardKeyAudit": {
+    "newKeys": [
+      "num-subject-metadata-closure-refused",
+      "num-subject-metadata-closure-corrected",
+      "num-link-metadata-closure-refused",
+      "num-link-metadata-closure-corrected"
+    ],
+    "continuationPriorOccurrences": 125,
+    "baselineOccurrences": 416,
+    "collision": false
+  },
+  "historicalCompletedEvidence": {
+    "head": "4d19a6a8a749b8f21cf96070a66e1c85f1528f1b",
+    "start": "2026-10-13T22:13:53.369000+00:00",
+    "lastFileEnd": "2026-10-13T22:16:27.018790+00:00",
+    "passed": 204,
+    "report": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/read-update-numeric-metadata-closure/report.md",
+    "summary": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/read-update-numeric-metadata-closure/summary.json",
+    "reportMtimeUTC": "2026-10-13T22:17:25.113349+00:00"
+  }
+}

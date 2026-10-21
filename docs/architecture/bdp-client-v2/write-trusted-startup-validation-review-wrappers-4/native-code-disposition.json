@@ -1,0 +1,46 @@
+{
+  "accepted": true,
+  "session": "2026-10-18T02:16:24Z-549f",
+  "acceptedAt": "2026-10-18T06:28:07.551162+00:00",
+  "sourceBindingSha256": "0572475970aee5a5466530ad68c4e84b5725947a0d7f3740da9321b6a23f75de",
+  "sourcePatchSha256": "515e11937c2a89c5e22a696a11a0c01a547a532a02fd645a8994ef12d6d27343",
+  "sourceFiles": 682,
+  "productExecutionReleased": false,
+  "scope": "Independent native code findings and corrected-source precision closure accepted by root; no unresolved source finding. Static review only. Includes one independently closed test-fixture type correction; no additional actual CODE review and no assertion/workload/production change. Also includes two independently closed path-regex spelling changes with recorded exhaustive pinned-runtime equivalence, no rule suppression/predicate change or new actual review. Also includes one independently closed negative fixture correction: existing artifacts() makes the intended dangling schema reference reachable; unchanged callback/assertion/selection/budgets and all production bytes, no second actual CODE review. Failed validation4 stays failed; actual row ordinal unlogged/static row10 inference.",
+  "nativePrecision": {
+    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-trusted-startup-code-corrections-1/native-precision-closure-1/closure.json",
+    "sha256": "c0423feca0955787ade78039c7ee8fd7960939a907da8a3ae5cd1d99567b6b28"
+  },
+  "rootExactCorrectionAcceptance": {
+    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-trusted-startup-root-code-correction-acceptance-1/acceptance.json",
+    "sha256": "d24825b83a0cd599d0bba435d1fe6b7e6bea50a453ab56c155500c5c1dfb0d01"
+  },
+  "rootMinimalTypeCorrection": {
+    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-trusted-startup-typecheck-correction-1/correction.json",
+    "sha256": "64f782bbb475c55798f0394407d577e995efc5a9ba3b932c58bdc55e71c67cf7"
+  },
+  "nativeFixturePrecision": {
+    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-trusted-startup-typecheck-correction-1/native-precision-closure-1/closure.json",
+    "sha256": "398b99f855e98eecf260362ccb94378e82e580765c0d807b0ed3b2faad855ecb"
+  },
+  "rootHelperInspection": {
+    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-trusted-startup-validation-root-helper-inspection-5/inspection.json",
+    "sha256": "2ea369c71153b2c99c11347d79d842ef777f5d8557a8775833afaf39b0ef7892"
+  },
+  "rootRegexCorrection": {
+    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-trusted-startup-lint-correction-1/correction.json",
+    "sha256": "2c333baf1e9619b93f1bb696ed68325e2b7919bbca40f733305b56886b421341"
+  },
+  "nativeRegexPrecision": {
+    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-trusted-startup-lint-correction-1/native-precision-closure-1/closure.json",
+    "sha256": "d840ae8f52008049a4d267d68f20bf98561cc2b12a676be191185d26148cf92d"
+  },
+  "rootReachedSchemaFixtureCorrection": {
+    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-trusted-startup-focused-source-correction-1/correction.json",
+    "sha256": "4bcb24ce38d93156a876c8db63f86ee88e8843ba225684ec0f2d7a8b93a19f4f"
+  },
+  "nativeAppliedReachedSchemaFixturePrecision": {
+    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-trusted-startup-focused-source-correction-1/native-precision-closure-1/closure.json",
+    "sha256": "6052ffc66a3e53be0eb2265a8ef8d52f74597c5137c9a3e1c0eb22cc277b34f5"
+  }
+}

@@ -1,0 +1,52 @@
+{
+  "state": "CLOSED",
+  "argv": [
+    "/usr/bin/env",
+    "-u",
+    "PERL5OPT",
+    "-u",
+    "PERL5LIB",
+    "-u",
+    "PERLLIB",
+    "-u",
+    "PERL5DB",
+    "-u",
+    "PERL_SIGNALS",
+    "LC_ALL=C",
+    "TZ=UTC",
+    "/usr/bin/perl5.34",
+    "-I/System/Library/Perl/5.34/darwin-thread-multi-2level",
+    "-I/System/Library/Perl/5.34",
+    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-D4-synthetic-harness-preparation-5/availability_limit.pl",
+    "AVAIL",
+    "availability",
+    "UNKNOWN_FUTURE_DURABLE_AVAILABILITY_ONLY_RELEASE_ABSOLUTE_PATH"
+  ],
+  "cwd": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-D4-synthetic-harness-preparation-5",
+  "rootGuardRequiredImmediatelyBeforeLaunch": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-D4-validation-preparation-4/guarded-action-session-20261018-021624-549f.py",
+  "approved": false,
+  "executed": false,
+  "noRetry": true,
+  "productCalls": 0,
+  "finiteControlCalls": 0,
+  "stdio": "root-owned concurrently drained stdout/stderr PIPE, bounded actual raw capture with EOF/hash and terminal receipts; never TTY/direct redirect",
+  "exclusiveAttempt": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-D4-synthetic-harness-preparation-5/availability-attempt",
+  "clock": {
+    "whole": 120,
+    "TERM": 115,
+    "KILL": 119,
+    "bothNormalTerminalsStrictBefore": 115,
+    "authBootstrapBefore": 10
+  },
+  "authoritySequence": [
+    "FULL OTHER-native H5 mechanics and root static acceptance",
+    "Separately named CLOSED exact H5 caller and native10-key authority; independent caller/native authority precision",
+    "Separate independent full14-key root proposed execution authority review and durable exact release/readback",
+    "ONE new exact-H5 availability attempt with actual PIPE/EOF/raw/whole-clock/fresh-process audit; H4 never retry/relabel",
+    "Only separately measured root availability acceptance may establish clockDomainVerified; finite controls/product remain separately CLOSED"
+  ],
+  "actualToolClockResolution": "UNRESOLVED",
+  "actualClockEpochCompatibility": "UNRESOLVED",
+  "actualSignalBootstrapPipeAvailability": "UNRESOLVED",
+  "rootFreshAbsence": "UNRESOLVED"
+}

@@ -1,0 +1,75 @@
+--- plan2/lifecycle-inventory.json
++++ plan1/lifecycle-inventory.json
+@@ -3,13 +3,13 @@
+   "rows": [
+     {
+       "id": "C0",
+-      "phase": "Inside callback before any launch",
+-      "requirement": "Module scope retains ordinary static dependency imports, pure constants/data and helper definitions only. Move owned throwing/IO source/entry/fixture/schema/diff capture, dynamic launcher load and dependent existing validator preparation inside callback under existing90s before launch, with cached partial-report state initialized first. Workspace mode: source fallback/status/diff Git gets explicit1000–2000ms timeout and maxBuffer<=1048576. Explicit BDP_TRANSACTIONAL_INSTALLED_ENTRY retarget mode requires BDP_TRANSACTIONAL_SOURCE_COMMIT and NO Git; cache not-applicable-externally-bound disposition. Actual entry/fixture/source proof remains mandatory. Failure yields fixed nullReason/stage and no launch. Finally cached values only."
++      "phase": "Before work",
++      "requirement": "Module entry/source fallback currently precedes callback; candidate source and installed entry must be explicitly externally bound before import. Cache bounded metadata within 90s before launch. No Git/readfile subprocess in finally."
+     },
+     {
+       "id": "C1",
+       "phase": "Launch attempt1",
+-      "requirement": "Record attempt before await. No handle/PID is acquired. Rejection fixed prelaunch-rejected or prelaunch-cleanup-unsettled from actually recognized original versus startup-cleanup AggregateError shape, never raw error/cause. Both keep readiness unavailable/acquisition UNKNOWN/closure UNKNOWN and owned directory retained. Root owns exact descendant inventory/cleanup; no speculative kill."
++      "requirement": "Record attempt before await. No handle/PID is yet acquired. On rejection record ready unavailable/acquisition unknown; preserve store; root owns actual descendant inventory/cleanup."
+     },
+     {
+       "id": "C2",
+@@ -19,17 +19,17 @@
+     {
+       "id": "C3",
+       "phase": "Requests1–28",
+-      "requirement": "Assign ordinal before execute invocation; enforce independent hardcap32 with fixed dispatch-cap-exceeded BEFORE dispatch33, separate from expected count and existing12-page guards. Track actual Promise until resolve/reject, increment settled either way. Record all returned status/headers/body/full wire/hash/writeState BEFORE assertions; rejected executor exposes fixed category/writeState only, response bytes unavailable. Increment body-derived counts only from actual captured data, not expected inventory."
++      "requirement": "Assign ordinal before execute invocation. Track actual Promise in pending, increment settled on either resolution/rejection, remove in both branches. Record returned status/headers/body/wire/writeState before assertions. Reject row records fixed error category/writeState if exposed; no partial response bytes invented by a throw-only executor."
+     },
+     {
+       "id": "C4",
+       "phase": "Pre-reopen barrier",
+-      "requirement": "Require pending0 and28 actual completed response rows. Within remaining90s work and local maximum10s await cached child.close() and actual exit0/signalnull (shutdown/SQLite lock release), plus distinct actual close0/signalnull event (stdio/IPC drain). BOTH predicates required before reopen/removal; exit is not close, close evidence is not the lock-release mechanism. Unknown/nonzero/missing event forbids launch2 and directory removal. Reopen rejection before ready gets fixed reopen-refused-pre-ready phase; no handle means acquisition/closure UNKNOWN, not a guessed installation-mismatch cause."
++      "requirement": "Require pending0 and actual 28 completed response rows, await existing child.close() AND separate actual close-event drain under remaining 90s work, at most10s. Require exit and close code0/signalnull for same owned child. Unknown/failed first closure forbids launch2/store removal."
+     },
+     {
+       "id": "C5",
+       "phase": "Launch attempt2 / acquire2",
+-      "requirement": "Only after C4 BOTH clean exit and actual close evidence plus pending0. Same canonicalScope, exact directory/transaction.sqlite, actual artifacts and SAME actual credential; createfalse. Attach lifecycle records immediately on handle return. OS may reuse physical port. Compare full served/runtime binding. A pre-ready failure is reopen-refused-pre-ready with UNKNOWN handle/closure, retained directory and root audit required."
++      "requirement": "Only after C4. Same canonicalScope, exact directory/transaction.sqlite, actual artifacts and actual credential; createfalse. Attach same lifecycle records before further await. Do not require a new physical port; OS may reuse one. Compare full served/config identity."
+     },
+     {
+       "id": "C6",
+@@ -44,7 +44,7 @@
+     {
+       "id": "C8",
+       "phase": "Store/report barrier",
+-      "requirement": "Remove owned directory only if every attempt has known acquisition disposition, each acquired child clean actual exit+close, every request/cached-close Promise settled and no unknown owner. Catch removal error; report directory removed/retained/unknown after finally before AggregateError. Retained means DIRECTORY only, not guaranteed transaction.sqlite presence (failed provisioning may unlink it); file presence UNKNOWN unless actually observed. No added finally stat/Git/readfile requirement. Success/failure cached counts split expected vs nullable actual body-derived observations; staticLocalOracleCount5 is not a wire pass count. Removal success never proves owner closure."
++      "requirement": "Remove directory only if every attempt has known acquisition disposition, every acquired child has observed clean exit+close, every request/close promise settled, and no unknown owner remains. Catch removal error and emit removed/retained/unknown truthfully; rm success does not prove owner close. Serialize cached success/failure report after finally before AggregateError."
+     },
+     {
+       "id": "C9",
+@@ -55,7 +55,7 @@
+   "currentFacts": {
+     "launcher": "10s ready/exit wait; timeout SIGKILL then failure drain may wait another10s; close cached, resolves on clean exit only, not stdio close; startup error does not return child handle",
+     "runtimeClose": "listener close+closeAllConnections → pending HTTP settled → service close → streams/active drained → read close → owner.close/db.close; installed process awaits runtime.close before disconnect/main completion",
+-    "currentTest": "first cached close call395, relaunch397–401; final close443; report constructed418 before finally; current literal counts429–436 and unconditional rm449; success console only453. No explicit pending registry in this OWNED CALLBACK; unrelated existing registry transactional-execution-binding.ts130/156–163 is outside footprint unchanged.",
++    "currentTest": "first close at395 then reopen397; final close443; report constructed418 before cleanup; unconditional rm449; success console only453",
+     "notDirectOwnerTelemetry": "Graceful child exit0 plus observed close and inspected bootstrap/runtime/service/store control flow support shutdown; no fabricated direct SQLite-close receipt or socket-close count."
+   },
+   "budgets": {
+@@ -69,14 +69,7 @@
+     "rootOuterProposalMs": 150000,
+     "rootTermProposalMs": 145000,
+     "rootKillProposalMs": 149000,
+-    "proposalStatus": "CLOSED unchanged150s outer/TERM145/KILL149. No current product/reviewer deadline or runtime release. Future exact mechanics must establish bounded runner startup S and report-flush F, account callback120s and possible additional10s detached launcher drain, and prove S+120s+F+10s<=145s before proposedTERM. No claimed maximum from a single sample; if complete bound cannot be established/refit without widening, refuse execution. No automatic extension/retry/new runtime helper. Callback timeout alone never proves finally/drain/report settled."
++    "proposalStatus": "CLOSED, requires root mechanical acceptance; 120s callback + reporting/owned-descendant audit allowance. Do not reuse startup120/TERM115; never autoextend/retry. Native callback timeout itself does not guarantee async finally completion."
+   },
+-  "ownershipUnknownPolicy": "No speculative kill, no invented acquisition count, no rm when unknown; root exact-owned-identity supervisor cleanup required before another attempt.",
+-  "futureOuterMechanicsGate": {
+-    "status": "CLOSED / exact later packet required",
+-    "boundEquationMilliseconds": "S_bound + 120000 + F_bound + 10000 <= 145000",
+-    "startupAndFlush": "UNRESOLVED. Bind exact existing runner/tool/collector identities and actual bounded startup/flush mechanism plus observations. A single elapsed sample is not a maximum or a worst-case guarantee.",
+-    "detachedDrain": "Include possible additional10000ms launcher failure-drain beyond local wait and callback; no double use of presumed free slack.",
+-    "stop": "If fit under unchanged150000/145000/149000 proposal is unproved or report flush could be preempted, no execution release. No estimate-based widening, new runtime helper, retry or supervisor signal authorization. Reviewer1800/1790/1798 contract unchanged."
+-  }
++  "ownershipUnknownPolicy": "No speculative kill, no invented acquisition count, no rm when unknown; root exact-owned-identity supervisor cleanup required before another attempt."
+ }

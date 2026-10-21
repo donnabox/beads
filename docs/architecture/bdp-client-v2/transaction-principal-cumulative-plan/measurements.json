@@ -1,0 +1,46 @@
+{
+  "status": "PLAN_DATA_ONLY_NOT_EXECUTED",
+  "row": {
+    "normalBytes": 30599,
+    "compactBytes": 17424,
+    "nodes": 952,
+    "normalSha256": "76f4c0321f8a0cbf5b0b6e0063c16f3de66efa0426a7b37bcd255c1326fc8d94",
+    "compactSha256": "097a27abcff4db5d788f3c9a37889f1590cbcbc011a77e2b8a97d17a260973ff"
+  },
+  "rowActions": 7,
+  "rowAssertions": 139,
+  "coverageRow": {
+    "normalBytes": 6230,
+    "compactBytes": 4925,
+    "nodes": 147,
+    "normalSha256": "f983e2f5d317bb38b051f5e12d72592d8ec5d93dff64eb85b3fe2f540d32382a",
+    "compactSha256": "0dd0c5680504a7a96af5a7e090bba8e6c009c043ad2626e802e3798712c7c407"
+  },
+  "canonical": {
+    "diskBytes": 825413,
+    "normalBytes": 837765,
+    "compactBytes": 409725,
+    "nodes": 21908,
+    "normalSha256": "7a7db6b1654655db8c245da68cb9d98e3bc2ca0bb592922fdafd9a84f9043990",
+    "compactSha256": "5deb96a0f511d1b5a180eaa9ce7e9c1e85365ed5db8752f98a7e537093fef784",
+    "actions": 227,
+    "assertions": 2642
+  },
+  "coverage": {
+    "diskBytes": 124537,
+    "normalBytes": 124537,
+    "compactBytes": 88534,
+    "nodes": 2776,
+    "normalSha256": "0c991feb128a50625397e337464badcb17d22a0c31e1d57a6b66fa1032a92a51",
+    "compactSha256": "3cdc71e5272e118b5562fd3ad3b4a4b2a362aadeda934a9efa8a07f5a9feb4bb"
+  },
+  "growth": {
+    "disk": 35404,
+    "normal": 35404,
+    "nodes": 952,
+    "coverage": 6835
+  },
+  "derivativeMaximumNormalBytes": 843883,
+  "derivativeMaximumNodes": 22064,
+  "guardsNotChanged": true
+}

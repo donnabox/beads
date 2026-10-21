@@ -1,0 +1,14 @@
+{
+  "status": "native-test-only-lint-repair-accepted",
+  "checkedAt": "2026-10-15T15:59:19.289772+00:00",
+  "originalSourceBinding": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-depth-key-order-draft/source-binding.json",
+  "originalFailedLint": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-depth-key-order-plan/execution-preparation/run/lint.exit.json",
+  "diagnostic": "Biome noUnsafeFinally transaction-http.test.ts4385; explicit deadline throw inside finally",
+  "change": "Accumulate identical deadline Error and break cleanup loop directly; original nested catch had identical accumulation/break. No runtime changes.",
+  "scope": [
+    "packages/server/src/transaction-http.test.ts"
+  ],
+  "sourceBindingSha256": "5fbe5c9b0c57f2c253fb16d114675ccb4929a9e4e18b21a1efbf1ca18385d778",
+  "fullPatchSha256": "b404308f83bc8faf8fc94be8883daed0454c051f86353a97f903dcf3597e83df",
+  "remaining": "all static/source and actual Claude code review; original passing static evidence retains original attribution"
+}

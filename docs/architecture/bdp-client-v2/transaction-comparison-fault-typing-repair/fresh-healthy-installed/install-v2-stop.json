@@ -1,0 +1,35 @@
+{
+  "status": "STOPPED_CONSUMER_V2_IGNORED_CONFIG",
+  "diagnostic": "pnpm11 ignores package.json pnpm.overrides; explicit warning plus ERR_PNPM_NO_OFFLINE_META",
+  "commands": {
+    "name": "install-consumer-v2",
+    "command": [
+      "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+      "/Users/dbox/.cache/node/corepack/v1/pnpm/11.20.0/bin/pnpm.cjs",
+      "install",
+      "--offline",
+      "--no-frozen-lockfile",
+      "--prod"
+    ],
+    "cwd": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-comparison-fault-typing-repair/fresh-healthy-installed/consumer-v2",
+    "validatedBdpOverrides": {},
+    "started": "2026-10-14T19:26:14.291069+00:00",
+    "elapsedSeconds": 0.43047474999912083,
+    "exit": 1,
+    "timeout": false,
+    "processGroup": 26585,
+    "remainingProcessGroup": [],
+    "sampledTempEntries": [
+      "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-comparison-fault-typing-repair/fresh-healthy-installed/install-consumer-v2.tmp/node-compile-cache"
+    ],
+    "tempEntriesAfter": [
+      "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-comparison-fault-typing-repair/fresh-healthy-installed/install-consumer-v2.tmp/node-compile-cache"
+    ],
+    "samplingSeconds": 0.05
+  },
+  "installedChildren": 0,
+  "httpRequests": 0,
+  "sourceClean": true,
+  "rootNotified": true,
+  "retryPerformed": false
+}

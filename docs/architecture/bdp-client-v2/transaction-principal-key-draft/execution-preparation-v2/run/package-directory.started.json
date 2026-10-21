@@ -1,0 +1,31 @@
+{
+  "name": "package-directory",
+  "argv": [
+    "python3",
+    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-principal-key-draft/execution-preparation-v2/packages.py",
+    "directory"
+  ],
+  "cwd": "/Users/dbox/repos/wt/vickie/vickie-principal-key-isolation",
+  "started": "2026-10-15T18:51:31.384590+00:00",
+  "head": "09bcaab75800cae89cf738ea88f012168ff733fc",
+  "workspaceDirty": false,
+  "sourceSha256": {
+    "apps/bdptest/src/transactional-principal-key-installed.test.ts": "0f941001445e001f96f8c432a7099a5eb29dc4b68bc4458d6d1dfae472a3ce20",
+    "docs/design/transaction-implementation-progress.md": "fd69135a88ee2802eb9ce55d2c2f3771d4a16228c0e306202c9a8778f0bdcb3f"
+  },
+  "sourceDiffSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+  "rootAcceptanceSha256": "b7ad8b60d6794812b2081f6b024820965a0da32b4b234b885db47ecdeb90ea12",
+  "preparationSha256": "da74971257c3cc804b404dbc2d72759e301431e04d2474c692a658ed43b18f9a",
+  "bdpOverrides": {},
+  "guardedArgv": [
+    "/opt/homebrew/opt/python@3.14/bin/python3.14",
+    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/guarded-action.py",
+    "python3",
+    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-principal-key-draft/execution-preparation-v2/packages.py",
+    "directory"
+  ],
+  "nodePathPrefix": "/Users/dbox/.nvm/versions/node/v24.16.0/bin",
+  "sourceAttribution": "Externally bound source snapshot or frozen package; not child-attested Git identity",
+  "plannedWorkload": {},
+  "derivativeBinding": null
+}

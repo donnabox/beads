@@ -1,0 +1,80 @@
+{
+  "accepted": false,
+  "actualFunctionsCellId": "3306",
+  "actualInnerElapsedSeconds": 5.123241415712982,
+  "actualInnerExit": 0,
+  "actualLog": {
+    "bytes": 2055,
+    "mode": "0o644",
+    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation-preparation-5/run/legacy-schema-source.log",
+    "sha256": "8309b3750bea55589bfa2805c5827b53b97503a62ba2ba801005a102277ca7e5"
+  },
+  "actualPhaseTerminalObservations": [
+    {
+      "actualRawExit": 0,
+      "actualTerminalToolId": "d29e2a",
+      "phase": "A"
+    },
+    {
+      "actualRawExit": 0,
+      "actualTerminalToolId": "1a3874",
+      "phase": "B"
+    },
+    {
+      "actualRawExit": 0,
+      "actualTerminalToolId": "e97b62",
+      "phase": "C"
+    }
+  ],
+  "actualVitestResult": {
+    "bytes": 3855,
+    "mode": "0o644",
+    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation-preparation-5/run/legacy-schema-source.results.json",
+    "sha256": "bff798f0ff9bd6dec3407466e4efc601ec6dddc1705e23e7eff9c71acec3af36"
+  },
+  "censusRawStreamBytes": [
+    203858,
+    0
+  ],
+  "cleanupPerformedByStaticPacket": false,
+  "completedInvocationAndObservationUpperBoundSeconds": 10.64101366698742,
+  "firstPostBTerminalWitnessMonotonic": 2268258.169294125,
+  "fullIndependentConjunctionAudit": "PENDING",
+  "matchingTaskRows": [],
+  "nextStageReleased": false,
+  "observerSelfAbsenceOrGlobalContainmentClaim": false,
+  "ordinaryToolRecords": {
+    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation5-legacy-schema-source-root-tool-evidence-1/dispatch-state.json",
+    "sha256": "49051ed4ec4b4af190760914beeeaf4eb727717976e5b5bdd12fb69c4d8ac11e"
+  },
+  "probeDirectReaped": true,
+  "qualityPass": false,
+  "rawWireToolReceipts": "UNRETAINED_SOURCE_ATTRIBUTED_NORMALIZED_RESULTS",
+  "recordedTaskPGIDs": [
+    33742,
+    33746,
+    34440
+  ],
+  "recordedTaskPIDs": [
+    33745,
+    33746,
+    34440,
+    34491
+  ],
+  "reportedFailedTests": 0,
+  "reportedPassedFullNames": [
+    "serves exact captured root and transitive bytes without retaining mutable input",
+    "preserves receiving refusals and foreign schema minima before conditionals"
+  ],
+  "reportedSelectedPasses": 2,
+  "reportedSuccess": true,
+  "rootOriginMonotonic": 2268247.528280458,
+  "rootRawStreamBytes": [
+    491,
+    0
+  ],
+  "stage": "legacy-schema-source",
+  "strictReportAuditStage": "audit-legacy-schema-source_NOT_ATTEMPTED",
+  "strictUnder115": true,
+  "temporaryDirectory": "/private/tmp/vickie-tx-discovery-validation-legacy-schema-source-qjgmj2dd"
+}

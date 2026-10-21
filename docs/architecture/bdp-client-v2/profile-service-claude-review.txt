@@ -1,0 +1,135 @@
+## Findings
+
+Severity scale: **Medium** = real containment/contract defect reachable today; **Low** = narrow, dev‑only, or latent; **Info** = tidiness/test gap.
+
+---
+
+### 1. [Medium] Source‑private pagination context was placed on the *public* `ReadPagination` surface
+
+**Location:** `packages/server/src/read-pagination.ts:44` (`ReadFirstPageInput.sourceContext`), `:122` (`ReadPagination.sourceContext(page)`) at `b225fe5`; escapes via `packages/server/src/index.ts:175-180` and `:1515`.
+
+**Evidence (verified):** at `b225fe5`, `index.ts:175` `createReadPagination` returns the engine object *unwrapped* (`return pagination`), and `index.ts:1515` re‑exports `type ReadPagination`. So `createReadPagination` — "the only pagination engine admitted by ServerReadControls" — hands an installed `@bdp/server` consumer both the `sourceContext?: ReadSourceContext` first‑page input and the `sourceContext(page)` accessor. The commit's own doc text (`docs/design/transaction-implementation-progress.md`, "Private Transactional Read source context") says "Basic Read and Read+Update gain no required Scope‑history field or wire member" and calls the data "source‑private" — but the *capability* sat on the admitted public control surface, and the package‑surface tripwire in `scripts/smoke-executables.mjs` did not cover it.
+
+**Impact:** an authority‑coupled concept (epoch/view/Scope position) became part of the public Read server's pagination contract. A public composition could populate and read it back, and the retained byte/node budget it consumes (`read-pagination.ts:348-370`) became publicly chargeable. This is a containment break, not a wire break — no response body changes.
+
+**Fix:** already applied one commit *after* the reviewed range, in `1949f25` ("Keep pagination source context behind the private authority facade"): `createReadPagination` now returns a narrowed frozen facade, and `createContextualReadPagination`/`firstPageWithContext` is the package‑private companion, plus new `read-pagination-public.test.ts` and 55 lines of smoke assertions. **Not live at branch head `7ab03d1`** — reported because it is a defect inside `caf5ca7..b225fe5` and because it is the one place where the slice's "source‑only / no public surface" claim did not hold.
+
+---
+
+### 2. [Low] The `AuthorityReadReader` capability narrowing is type‑only at the pre‑existing owner seam
+
+**Location:** `packages/server/src/authority-read.ts:63-67` vs `packages/server/src/sequence-executor.ts:546`.
+
+**Evidence:** the new type is documented "Resource/configuration reads only; receipt/key recovery belongs to the write owner." Only the new Transactional owner enforces it at runtime: `transaction-store.ts:453` builds a frozen five‑method object, and `transaction-store.test.ts` asserts `Object.keys(reader).sort()` is exactly `["alias","incidentLinks","policy","resource","resources"]`. The existing seam does not: `sequence-executor.ts:546` still passes the full `StoreReader` (its own comment says "Unfiltered, expiring StoreReader capability"), which includes `key(principal, key)`, `identityWasCommitted(id)`, `outgoingLinks(source)`, `installedType(id)`. That object flows to caller‑supplied `scopeConfiguration.capture` and `captureReadAuthorization` (`read-sequence-lifecycle.ts:191,195`), which are composition inputs, not in‑package code.
+
+**Reproduction:** a `captureReadAuthorization` supplied to `createSequenceLifecycle` can do `(reader as unknown as StoreReader).key(principal, "k")` inside a Read entry and derive authorization from idempotency‑key state. Nothing fails; no test asserts the reader's key set on this path (contrast the Transactional test above).
+
+**Impact:** the stated boundary — and the slice's claim that required read context "may not derive from receipts" — is enforced for T1's owner but unenforced for the existing public‑adapter owner. Latent, since both current implementations ignore the reader (`development-authority.ts:158,177` return fixed values).
+
+**Fix:** project the reader at `sequence-executor.ts:546` (or `read-sequence-lifecycle.ts:185`) through the same frozen five‑method wrapper, and add the `Object.keys(reader)` assertion to the lifecycle fixture in `read-sequence-lifecycle.test.ts`.
+
+---
+
+### 3. [Low] `createTransactionReadPlane` never observes owner closure — `plane.closed` cannot settle from the owner side
+
+**Location:** `packages/server/src/transaction-read.ts:58` (`closed: plane.closed`), module comment at `:21-23`.
+
+**Evidence:** `closed` is a fixed promise resolved only inside `AuthorityReadPlane.close()` (`authority-read.ts:1108-1120`); nothing links `openTransactionStore(...).close()` to it. `transaction-read.test.ts` only pins the opposite direction ("Closing a Read plane never closes the owner").
+
+**Reproduction:** `const { plane, facet } = f.open(); f.store.close(); await plane.closed` — never settles. `facet.perform(...)` then rejects with `ScopeServerClosedError` (owner `entry-refused: not-accepting`, `transaction-store.ts:436-443`), so the surface is dead but unobservable through the documented signal.
+
+**Impact:** an integrator that awaits `plane.closed` to drain the read surface on owner‑initiated shutdown hangs. The module comment documents only plane→owner independence, not this asymmetry.
+
+**Fix:** smallest correct change is to state the one‑way contract in the comment and add a test pinning it. Better: settle `closed` on the first `not-accepting` entry refusal, or accept the owner's `closed` promise and chain `plane.close()`.
+
+---
+
+### 4. [Low] Startup failure path can still leak the opened authority
+
+**Location:** `packages/server/src/development-runtime.ts:366-369`.
+
+```
+if (server.listening) await closeListener();
+await authority?.close();
+```
+
+**Evidence:** the `await authority?.close()` added by this slice is a real improvement (it is what makes `development-discovery.test.ts:684-691`'s "invalid private Read route" case leak‑free), but it is sequenced *after* an awaited `closeListener()`. If `server.close()` reports an error, `authority.close()` is skipped.
+
+**Impact:** the SQLite handle and the `reference.sqlite` provisioning lock stay held; a later `create: true` start on the same directory fails with "already exists". Narrow (requires `closeListener` to reject) and dev‑only.
+
+**Fix:** `await Promise.allSettled([closeListener‑if‑listening, authority?.close()])`, or close the authority in a `finally`.
+
+---
+
+### 5. [Low] `view=properties` ETag now exists only on the private path; the admitted public adapter still omits it
+
+**Location:** `packages/server/src/read-http-routing.ts:58-64` (new `observedResourceRevision` branch) vs `packages/server/src/index.ts:731` (`scopeDataResponse(parsed, result)` — two arguments, no revision).
+
+**Evidence:** `docs/specs/bdp.md:1354-1369` shows `ETag: "opaque-task-revision"` on `GET {resource}?view=properties` and states "Its entity tag represents the same Resource revision returned in the complete record." The private composition supplies it (`apps/bdptest/test-support/development-discovery.ts` passes `result.observation.resourceRevision`) and `development-discovery.test.ts:393-406` proves the properties ETag equals the full‑record ETag and that `If-None-Match` yields 304. The public `createHttpHandler` passes no revision, so public `?view=properties` responses carry no validator.
+
+**Impact:** pre‑existing public gap, **not introduced here** — the old `scopeDataResponse` had the same `kind === "resource"` condition. But the slice adds the capability and wires it only privately, so the two surfaces now diverge on a spec‑illustrated field with nothing pinning the public omission. No catalog row currently contradicts either side (`read-update.singleton.result-headers` at `docs/specs/bdp.md:6735` is about mutation results, not views), so this would not be caught by the conformance gate.
+
+**Fix:** out of scope to change public behavior in this slice. Add a test pinning the current public omission so the divergence is explicit, and thread the observed revision through `ReadServer.perform`'s observation when that becomes available.
+
+---
+
+### 6. [Low] `observe()` permanently swallows the slice's only integrity enforcement
+
+**Location:** `packages/server/src/transaction-read.ts:53-56`, applied at `:64` and `:66`.
+
+```
+const observe = <T>(promise: Promise<T>): Promise<T> => { void promise.catch(() => {}); return promise; };
+```
+
+**Evidence:** `checked()` (`:47-51`) calling `transactionReadContexts` is the only thing that enforces that every delivered observation carries a valid epoch/view/position (and that a snapshot is not ahead of its serving entry). `observe` attaches a permanent no‑op handler to the *same* promise that is returned, so a `checked()` throw produces no unhandled rejection.
+
+**Reproduction:** `void facet.perform(resource("beads/a"))` with a context‑shape violation — the integrity error vanishes entirely: no rejection surfaces, no log, no process warning.
+
+**Impact:** a silent‑failure surface on an integrity check. The comparable suppressions in `authority-read.ts:952` and `:1010` carry explaining comments; this one has none.
+
+**Fix:** suppress only on a derived promise used for bookkeeping, or escalate (log/`process.emitWarning`); at minimum add the comment stating the intent.
+
+---
+
+### 7. [Info / test gap] The private canonical composition is exercised only against `packages/server/dist`
+
+**Location:** `apps/bdptest/test-support/development-discovery.ts:14-19` (top‑level `await import` of `../../../packages/server/dist/development-runtime.js` and `dist/read-http-routing.js`).
+
+**Evidence:** `vitest.config.ts` documents that aliasing exists so "`pnpm test` works from a clean checkout without a prior build." This fixture breaks that for its suite, and — worse — silently validates **stale** output when source changed without `pnpm build`. `read-http-routing.ts` has no direct unit test; its only direct coverage is this dist‑loaded fixture plus indirect coverage through the existing public‑adapter tests. Pre‑existing pattern (`apps/bdptest/test-support/development-process.ts:7-11`) extended here, but that one only embeds dist paths into a spawned child rather than importing dist into the test process.
+
+**Fix:** import the source modules through the vitest alias for the in‑process fixture (keep dist only for the spawned‑process harness), or add a build‑freshness assertion.
+
+---
+
+### 8. [Info] Dead duplicated predicate in the composition guard
+
+**Location:** `packages/server/src/development-runtime.ts:173` repeats `typeof composition.createReadRoute !== "function"`, already rejected at `:164`. Harmless; it obscures that the second block's job is scope‑path validation.
+
+---
+
+## Things I checked that are **correct** (no finding)
+
+- **Admission is not bypassed.** `read-http-routing` and `development-runtime` are absent from `packages/server/package.json` `exports`, and `scripts/smoke-executables.mjs:336-351` asserts both specifiers fail with `ERR_PACKAGE_PATH_NOT_EXPORTED`. `development.ts:8-10` forwards only `options`, so the public facade cannot carry the fourth‑argument capability — pinned by `development-discovery.test.ts:684-708`. The shipped `bdptest` executable uses the facade (`apps/bdptest/src/development-main.ts:4`). `admitReadServerProfile` (`index.ts:295-317`) still admits only `"read"` with evidence, and the private composition never touches `createReadServer`.
+- **Read‑route extraction is behavior‑preserving.** Ordering (method → origin → probe → alias classify → scope‑root 204 → service‑desc → `requestFromUrl`) matches the pre‑extraction code exactly, including probe‑before‑alias‑classify and alias‑before‑every‑representation‑bearing route. `applyReadHttpSemantics` is applied exactly once on each path (`index.ts:741` and `development-runtime.ts:231`). The `ScopeServerLocalError` → `temporarily-unavailable` mapping and the `operation-aborted` rethrow are unchanged.
+- **`classifyAliasPath` substitution in `development-authority.ts:220` is behavior‑identical for scope `/`** (query/hash and invalid‑segment cases return a `ReadProblem`, which is `!== undefined`, so they still reach `resolveAlias` exactly as `startsWith("/alias/")` did).
+- **Alias commits deliberately do not advance `scopePosition`** — this matches normative text: `docs/specs/bdp.md:4201` ("Alias mutations occupy no Scope position, induce no Event…") and catalog row `transactional.alias.locator-only` (`:6946`). The test at `transaction-read.test.ts` asserting `pos-1` after an alias put is correct, not a gap.
+- **Source context never reaches the wire.** `sourceContext`/`snapshotSourceContext` live only on `ReadObservation`; page bodies are asserted to be exactly `{items, next}`, and the private HTTP composition reads only `result.body` and `result.observation.resourceRevision`.
+- **Context capture is atomic with the rows and not receipt‑derived.** `transaction-store.ts:428-511`: position is read from committed `metadata("position")` *before* the callback, inside the same `enter()` guard that blocks reentrant writes, under `PRAGMA locking_mode=EXCLUSIVE` (`:384`). No receipt `effectPosition`/`requiredPosition` is consulted. Reader methods expire in `finally`; thenable callbacks are rejected after being observed.
+- **A Read‑plane validation throw does not fence the write owner.** `enter()` (`transaction-store.ts:208-219`) only toggles `busy`; fencing is confined to `atomic()`/`fence()`.
+- **`maintenanceFailure` cause chaining is correct** — it is declared as `{ readonly cause: unknown }` (`:180`), so `new Error(msg, maintenanceFailure)` at `:442` does propagate the cause.
+- **`closed: plane.closed`** is a fixed `Promise`, not a getter, so the delegation in `transaction-read.ts:58` is not a stale‑snapshot bug.
+- **Read‑side `incidentLinks` matches the existing mutation‑side query** (`transaction-store.ts:472` vs `:690`), differing only by `ORDER BY id`.
+- **Proxy/accessor hardening works as claimed.** `transactionReadContexts` short‑circuits on `isProxy` before `Reflect.ownKeys`, and inspects data descriptors only — the tests proving the `ownKeys` trap and the getter are never invoked are genuine.
+- **Context storage is charged to the existing retained budget** without double counting (`read-pagination.ts:348-370`), and terminal first pages correctly retain nothing.
+
+## Verification performed (read‑only)
+
+- `pnpm typecheck` (`tsc -p tsconfig.check.json`, `--noEmit`): clean.
+- `pnpm lint`: 3 warnings + 1 info, **all pre‑existing** — `read-sequence-lifecycle.test.ts:25` `useImportType` is present verbatim at `caf5ca7`. No new lint findings.
+- `node scripts/check-dependency-boundaries.mjs`: "Dependency boundaries valid for 11 workspace packages."
+- Focused suite on pinned Node `v24.16.0` (`~/.nvm/versions/node/v24.16.0`): `transaction-read`, `transaction-store`, `read-pagination`, `authority-read`, `read-sequence-lifecycle`, `development-discovery` — **388 passed / 0 failed**.
+- Full suite on pinned Node: **119 files, 7925 passed, 1 skipped, exit 0**.
+
+**Caveat on that evidence:** the branch moved during this review. `HEAD` was `b225fe5` at session start and is now `7ab03d1`, which adds `1949f25` ("Keep pagination source context behind the private authority facade") — the fix for finding 1. My static review is of `caf5ca7..b225fe5` from `git diff`/`git show`, which is authoritative; the test/typecheck/lint runs were against the working tree and so may reflect `7ab03d1` rather than `b225fe5`. I did not re‑run at `b225fe5` because that needs a checkout or worktree, i.e. repo mutation. No files were written or modified.
+
+**On the author reports:** `bdp-integration-logs/update-served/review.md` and `transaction-served/report.md` are outside this checkout and were not read; nothing above relies on them. The scope disclaimers in `docs/design/transaction-implementation-progress.md` — no Transactional serving surface, no minimum‑position barriers, no receipt reads, no replication Snapshot/changefeed, no public profile advertisement, injected COMMIT failures are not power‑loss qualification — are consistent with the code I read, and I found no overclaim in them. Findings 3, 5 and 6 are *not* covered by those disclaimers; findings 1 and 2 bear directly on the "source‑private / no public surface" claim.

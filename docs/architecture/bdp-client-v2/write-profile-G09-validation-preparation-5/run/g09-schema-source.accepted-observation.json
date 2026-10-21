@@ -1,0 +1,311 @@
+{
+  "sourceIdentity": "1ecaf2e47369cc12cc26bc3ed693c5d4d3b9cffa4714b13dbe5567f9e46bfb15",
+  "sourceBindingSha256": "e0252cb07ac1896fac0faab395e10e50ea58eac263b6d33ee224e378413c2d68",
+  "resultsSha256": "a2d7e81baff5c8fa75e85bb7aeaeffd1c99cfca62bfbd2d78cdaf59f205d103d",
+  "logSha256": "7de64bbbdd467cbb9d2d30e9b24b892d4ddcd4ceb59804532a0f5b29a563c028",
+  "selectedFullNames": [
+    "G09-S04 schema selector receiving and exact identity",
+    "G09-S05 schema selector HTTP/min failure order",
+    "G09-S06 schema runtime satisfied and context errors",
+    "G09-S07 schema runtime ahead before conditional",
+    "G09-S08 schema runtime unknown before HEAD/media"
+  ],
+  "reports": [
+    {
+      "observation": "G09-S04",
+      "calls": 8,
+      "urlReads": 0,
+      "observations": 0
+    },
+    {
+      "observation": "G09-S05",
+      "calls": 8,
+      "rows": [
+        {
+          "method": "GET",
+          "status": 200
+        },
+        {
+          "method": "HEAD",
+          "status": 200
+        },
+        {
+          "method": "GET",
+          "status": 304
+        },
+        {
+          "method": "HEAD",
+          "status": 412
+        },
+        {
+          "method": "GET",
+          "status": 406
+        },
+        {
+          "method": "GET",
+          "status": 410
+        },
+        {
+          "method": "HEAD",
+          "status": 409
+        },
+        {
+          "method": "GET",
+          "status": 503
+        }
+      ],
+      "abortCalls": 1,
+      "abortPropagated": true,
+      "abortSignalForwarded": true
+    },
+    {
+      "observation": "G09-S06",
+      "rows": [
+        {
+          "ordinal": 1,
+          "method": "GET",
+          "url": "https://schema.invalid/acme/schemas/root",
+          "settled": true,
+          "received": true,
+          "validated": true,
+          "status": 200,
+          "headers": {
+            "bdp-authorization-view": "development-all-visible",
+            "bdp-scope-epoch": "aa27b85f-39c4-4ed9-98e8-74fd35edd544",
+            "bdp-scope-position": "pos-0",
+            "cache-control": "private, no-store",
+            "content-length": "171",
+            "content-type": "application/json",
+            "vary": "Accept",
+            "x-bdp-development": "non-attesting",
+            "date": "Mon, 19 Oct 2026 03:49:03 GMT",
+            "connection": "keep-alive",
+            "keep-alive": "timeout=1"
+          },
+          "text": "{\n \"$id\": \"https://schema.invalid/acme/schemas/root\", \"type\": \"object\", \"properties\": {\"title\": {\"$ref\": \"value\"}}, \"required\": [\"title\"], \"additionalProperties\": false\n}\n",
+          "errorCategory": null
+        },
+        {
+          "ordinal": 2,
+          "method": "GET",
+          "url": "https://schema.invalid/acme/schemas/root",
+          "settled": true,
+          "received": true,
+          "validated": true,
+          "status": 200,
+          "headers": {
+            "bdp-authorization-view": "development-all-visible",
+            "bdp-scope-epoch": "aa27b85f-39c4-4ed9-98e8-74fd35edd544",
+            "bdp-scope-position": "pos-0",
+            "cache-control": "private, no-store",
+            "content-length": "171",
+            "content-type": "application/json",
+            "vary": "Accept",
+            "x-bdp-development": "non-attesting",
+            "date": "Mon, 19 Oct 2026 03:49:03 GMT",
+            "connection": "keep-alive",
+            "keep-alive": "timeout=1"
+          },
+          "text": "{\n \"$id\": \"https://schema.invalid/acme/schemas/root\", \"type\": \"object\", \"properties\": {\"title\": {\"$ref\": \"value\"}}, \"required\": [\"title\"], \"additionalProperties\": false\n}\n",
+          "errorCategory": null
+        },
+        {
+          "ordinal": 3,
+          "method": "HEAD",
+          "url": "https://schema.invalid/acme/schemas/root",
+          "settled": true,
+          "received": true,
+          "validated": true,
+          "status": 200,
+          "headers": {
+            "bdp-authorization-view": "development-all-visible",
+            "bdp-scope-epoch": "aa27b85f-39c4-4ed9-98e8-74fd35edd544",
+            "bdp-scope-position": "pos-0",
+            "cache-control": "private, no-store",
+            "content-length": "171",
+            "content-type": "application/json",
+            "vary": "Accept",
+            "x-bdp-development": "non-attesting",
+            "date": "Mon, 19 Oct 2026 03:49:03 GMT",
+            "connection": "keep-alive",
+            "keep-alive": "timeout=1"
+          },
+          "text": "",
+          "errorCategory": null
+        },
+        {
+          "ordinal": 4,
+          "method": "GET",
+          "url": "https://schema.invalid/acme/schemas/root",
+          "settled": true,
+          "received": true,
+          "validated": true,
+          "status": 410,
+          "headers": {
+            "bdp-authorization-view": "development-all-visible",
+            "bdp-scope-epoch": "aa27b85f-39c4-4ed9-98e8-74fd35edd544",
+            "bdp-scope-position": "pos-0",
+            "cache-control": "private, no-store",
+            "content-length": "125",
+            "content-type": "application/problem+json",
+            "x-bdp-development": "non-attesting",
+            "date": "Mon, 19 Oct 2026 03:49:03 GMT",
+            "connection": "keep-alive",
+            "keep-alive": "timeout=1"
+          },
+          "text": "{\"type\":\"https://github.com/gastownhall/bdp/problems/gone\",\"code\":\"cursor-expired\",\"retry\":\"after-state-change\",\"status\":410}",
+          "errorCategory": null
+        },
+        {
+          "ordinal": 5,
+          "method": "HEAD",
+          "url": "https://schema.invalid/acme/schemas/root",
+          "settled": true,
+          "received": true,
+          "validated": true,
+          "status": 409,
+          "headers": {
+            "bdp-authorization-view": "development-all-visible",
+            "bdp-scope-epoch": "aa27b85f-39c4-4ed9-98e8-74fd35edd544",
+            "bdp-scope-position": "pos-0",
+            "cache-control": "private, no-store",
+            "content-length": "127",
+            "content-type": "application/problem+json",
+            "x-bdp-development": "non-attesting",
+            "date": "Mon, 19 Oct 2026 03:49:03 GMT",
+            "connection": "keep-alive",
+            "keep-alive": "timeout=1"
+          },
+          "text": "",
+          "errorCategory": null
+        }
+      ],
+      "attempted": 5,
+      "completed": 5,
+      "pending": 0,
+      "closed": true,
+      "removed": true,
+      "failureCount": 0
+    },
+    {
+      "observation": "G09-S07",
+      "rows": [
+        {
+          "ordinal": 1,
+          "method": "GET",
+          "url": "https://schema.invalid/acme/schemas/root",
+          "settled": true,
+          "received": true,
+          "validated": true,
+          "status": 200,
+          "headers": {
+            "bdp-authorization-view": "development-all-visible",
+            "bdp-scope-epoch": "7d2a02ae-df7f-455e-8cb0-62aba9d2f588",
+            "bdp-scope-position": "pos-0",
+            "cache-control": "private, no-store",
+            "content-length": "171",
+            "content-type": "application/json",
+            "vary": "Accept",
+            "x-bdp-development": "non-attesting",
+            "date": "Mon, 19 Oct 2026 03:49:03 GMT",
+            "connection": "keep-alive",
+            "keep-alive": "timeout=1"
+          },
+          "text": "{\n \"$id\": \"https://schema.invalid/acme/schemas/root\", \"type\": \"object\", \"properties\": {\"title\": {\"$ref\": \"value\"}}, \"required\": [\"title\"], \"additionalProperties\": false\n}\n",
+          "errorCategory": null
+        },
+        {
+          "ordinal": 2,
+          "method": "GET",
+          "url": "https://schema.invalid/acme/schemas/root",
+          "settled": true,
+          "received": true,
+          "validated": true,
+          "status": 503,
+          "headers": {
+            "bdp-authorization-view": "development-all-visible",
+            "bdp-scope-epoch": "7d2a02ae-df7f-455e-8cb0-62aba9d2f588",
+            "bdp-scope-position": "pos-0",
+            "cache-control": "private, no-store",
+            "content-length": "127",
+            "content-type": "application/problem+json",
+            "retry-after": "1",
+            "x-bdp-development": "non-attesting",
+            "date": "Mon, 19 Oct 2026 03:49:04 GMT",
+            "connection": "keep-alive",
+            "keep-alive": "timeout=1"
+          },
+          "text": "{\"type\":\"https://github.com/gastownhall/bdp/problems/unavailable\",\"code\":\"catch-up-timeout\",\"retry\":\"after-delay\",\"status\":503}",
+          "errorCategory": null
+        }
+      ],
+      "attempted": 2,
+      "completed": 2,
+      "pending": 0,
+      "closed": true,
+      "removed": true,
+      "failureCount": 0
+    },
+    {
+      "observation": "G09-S08",
+      "rows": [
+        {
+          "ordinal": 1,
+          "method": "GET",
+          "url": "https://schema.invalid/acme/schemas/root",
+          "settled": true,
+          "received": true,
+          "validated": true,
+          "status": 200,
+          "headers": {
+            "bdp-authorization-view": "development-all-visible",
+            "bdp-scope-epoch": "2b6ef000-8114-4dda-b8c5-42f6d4d045cd",
+            "bdp-scope-position": "pos-0",
+            "cache-control": "private, no-store",
+            "content-length": "171",
+            "content-type": "application/json",
+            "vary": "Accept",
+            "x-bdp-development": "non-attesting",
+            "date": "Mon, 19 Oct 2026 03:49:04 GMT",
+            "connection": "keep-alive",
+            "keep-alive": "timeout=1"
+          },
+          "text": "{\n \"$id\": \"https://schema.invalid/acme/schemas/root\", \"type\": \"object\", \"properties\": {\"title\": {\"$ref\": \"value\"}}, \"required\": [\"title\"], \"additionalProperties\": false\n}\n",
+          "errorCategory": null
+        },
+        {
+          "ordinal": 2,
+          "method": "HEAD",
+          "url": "https://schema.invalid/acme/schemas/root",
+          "settled": true,
+          "received": true,
+          "validated": true,
+          "status": 503,
+          "headers": {
+            "bdp-authorization-view": "development-all-visible",
+            "bdp-scope-epoch": "2b6ef000-8114-4dda-b8c5-42f6d4d045cd",
+            "bdp-scope-position": "pos-0",
+            "cache-control": "private, no-store",
+            "content-length": "127",
+            "content-type": "application/problem+json",
+            "retry-after": "1",
+            "x-bdp-development": "non-attesting",
+            "date": "Mon, 19 Oct 2026 03:49:05 GMT",
+            "connection": "keep-alive",
+            "keep-alive": "timeout=1"
+          },
+          "text": "",
+          "errorCategory": null
+        }
+      ],
+      "attempted": 2,
+      "completed": 2,
+      "pending": 0,
+      "closed": true,
+      "removed": true,
+      "failureCount": 0
+    }
+  ],
+  "claimEligible": false,
+  "limitations": "Private exact source/build/archive/consumer only. Historical lanes distinct. Failure/partial records remain raw, never reconstructed; no public Write qualification/admission claim."
+}

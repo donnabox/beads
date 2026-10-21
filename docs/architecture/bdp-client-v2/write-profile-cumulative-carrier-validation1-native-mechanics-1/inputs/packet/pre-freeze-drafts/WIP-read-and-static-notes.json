@@ -1,0 +1,55 @@
+{
+  "actualReceiptWorkCutoff": {
+    "before": "pre-freeze-drafts/run-before-receipt-cutoff.py",
+    "fixed": "Parent verified event must be received strictly before origin+105, independent of worker earlier time check. Original120/115/119 and work105 preserved; this strengthens exact accepted wholeclock implementation before freeze."
+  },
+  "derivedToolOutputExactBytesCap": {
+    "before": "pre-freeze-drafts/audit-common-before-output-byte-cap.mjs",
+    "fixed": "Exact final indented UTF8 output <=4MiB checked before tool-owned output creation, not only preliminary compact length. Raw source outputs remain untouched and retained."
+  },
+  "evaluation": "No reviewed helper/product/Node module evaluated; Python AST parse is data-only for authored Python drafts",
+  "observations": [
+    {
+      "issue": "Read of tool parser under new uninstalled carrier correction WT was absent",
+      "meaning": "Expected unresolved fresh tools; inspected existing pinned TX installation only as candidate documentation, not a fresh carrier proof"
+    },
+    {
+      "issue": "Initial locator list script had an unmatched parenthesis and failed before file access",
+      "meaning": "Author-only diagnostic typo; no helper/source execution or subject effect"
+    },
+    {
+      "correction": "Removed nonexistent explicit Node flag during manual draft review; Python retains its real os.O_CLOEXEC. Node auditor opens and closes all descriptors in finally, with no subprocess launch.",
+      "issue": "Node fs typings expose O_NOFOLLOW but not O_CLOEXEC"
+    },
+    {
+      "issue": "Whole original report selectedIds/resultIds are256, not the17manifest-owner rows",
+      "resolution": "Auditor checks256actual result rows/fullselectedIds identity;17partial owners+234missing required+5nonrequired stays distinct. Summary actions independently derive241 from17manifest scenarios."
+    },
+    {
+      "issue": "Inherited worker originally treated child0 alone as sufficient tool output",
+      "resolution": "Draft now also requires actual emitted-graph/auditor JSON output bound to current source, with full verifier/no-credit booleans, before publishing tentative inner acceptance. Root actual outer receipt remains mandatory."
+    },
+    {
+      "issue": "Positive scanner needed unhandled-diagnostic refusal across chunk boundaries",
+      "resolution": "Added bounded64-byte rolling diagnostic tail and strict finish refusal; no raw diagnostic content copied to metadata."
+    },
+    {
+      "meaning": "A transient unknown executable identity or OS census failure causes honest sticky refusal. No promise every possible process launch fits/observes cleanly; no automatic retry or unsafe signal relaxation.",
+      "risk": "Strict inherited live comm/PID-birth/PGID ownership has no guessed exec-transition exception"
+    }
+  ],
+  "ownFinalStaticCwdAssumption": {
+    "correction": "Exact command-specific cwd check: sourceRoot for25 commands, actual owned future consumer cwd for consumer-install. No helper/source correction or evaluation.",
+    "error": "Own broad all-argv-cwd==sourceRoot assertion stopped before index creation; consumer-install correctly uses the separately owned external run/consumer cwd."
+  },
+  "preFreezeRuntimeClassification": {
+    "before": "pre-freeze-drafts/commands-before-runtime-classification.json",
+    "fixed": "Explicit runtime authorization required also for all four existing required source/ready/smoke/evidence-script callbacks. Exact argv/selection/budgets unchanged; no execution."
+  },
+  "remainingJSsyntaxStatus": "Manually reviewed only; no Node syntax/evaluation check claimed",
+  "suiteCounts": {
+    "before": "pre-freeze-drafts/audit-before-suite-count-precision.py",
+    "fixed": "Exact one-file/no-describe source witnesses make total/passed suites1 and pending0 explicit; do not confuse this with arbitrary Vitest suites (historical focused source has2 suites within1file). Both carrier selected files contain no describe declaration.",
+    "formatWitnessReadOnly": "Historical P8 focused source has2suite counts; historical P7 installed schema has1. These are format-only history, never carrier run credit."
+  }
+}

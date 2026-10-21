@@ -1,0 +1,45 @@
+{
+  "utc": "2026-10-18T11:19:39.850877+00:00",
+  "worktree": "/Users/dbox/repos/wt/vickie/vickie-trusted-startup-lifecycle-correction-minimum",
+  "head": "d181d9167fdf71d64ceb1d8dc73a86557ba8f032",
+  "tree": "06993ca26f0dd4fd586706b1c764782e72276339",
+  "source3Index": {
+    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-trusted-startup-lifecycle-source-authoring-3/index.json",
+    "sha256": "1cb3933ec44789b2cf5ee693f518517f2f4d7a4bf6fa2bee4ce7b0cf83460d78"
+  },
+  "source3Binding": {
+    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-trusted-startup-lifecycle-source-authoring-3/source-binding.json",
+    "sha256": "8a5af388607a2e0e57d5807a0ce77493c3118c65b438bafba05a40e45b552214"
+  },
+  "sourceMap": {
+    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-trusted-startup-lifecycle-source-authoring-3/source-after-map.json",
+    "sha256": "601d8f8534250b34773aea56666f9040df82d3cda8ca0945d99cbce967f44d91"
+  },
+  "all770PacketAndMirrorFilesVerified": true,
+  "originsVerified": 736,
+  "all686CurrentSourceBytesExact": true,
+  "onlySevenChangedPaths": [
+    "apps/bdptest/src/reference-deployment-lifecycle-installed.test.ts",
+    "docs/design/startup-configuration.md",
+    "packages/server/src/development-runtime.ts",
+    "packages/server/src/reference-deployment-runtime.test.ts",
+    "packages/server/src/reference-deployment-runtime.ts",
+    "packages/server/src/transaction-runtime.ts",
+    "scripts/smoke-executables.mjs"
+  ],
+  "other679CandidateProtected": true,
+  "originalReview686Unchanged": true,
+  "originalNineFootprint677Protected": true,
+  "actualSevenBinaryPatch": {
+    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-trusted-startup-lifecycle-root-source-inspection-3/seven-correction.binary.patch",
+    "sha256": "3be147c15d2ec45f99e2844b97dd01fa609a562761bbb08c7c04c1ceaa08958c"
+  },
+  "actualNineBinaryPatch": {
+    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-trusted-startup-lifecycle-root-source-inspection-3/nine-cumulative-fdd.binary.patch",
+    "sha256": "37cb84d5000a8cdfa853cb4be19d0299d5a18681056adb0df245bbc5ac16597a"
+  },
+  "rootFullCorrectionReportAndAllSevenActualDiffsRead": true,
+  "nativeCorrectedFullSourceReview": "PENDING",
+  "productValidationReleased": false,
+  "formatterClaim": "Oneformat6code0/fixed3; honestpreservedwhitespace-onlystaticassertion correction. No compiler/check/test result."
+}

@@ -1,0 +1,80 @@
+{
+  "released": false,
+  "session": "2026-10-08T20:26:35Z-81e5",
+  "approvedCommandIds": [],
+  "note": "CLOSED observation-only successor. Root must accept resolution repair; exact original package graph retained. No automatic retry authorization.",
+  "node": "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+  "pnpm": "/Users/dbox/.cache/node/corepack/v1/pnpm/11.20.0/bin/pnpm.cjs",
+  "finalHead": "1647c5df37a82e1364d281ac46beb60a94ab6c76",
+  "finalTree": "a070420a4c17aa67a821c742d363ff9e82e872a6",
+  "finalParents": [
+    "dae39d526ea543112da68bdb483a8af7e90972fd",
+    "6f5e607bf338dd166820bfa3f9f480f7cd54c5f1"
+  ],
+  "finalBase": "6f5e607bf338dd166820bfa3f9f480f7cd54c5f1",
+  "sourceBinding": {
+    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-authorization-transition-draft/evidence-repair/source-binding.json",
+    "sha256": "06ef3656296d8288cc5d00be9c988d4ccc7d817a67f2ea6ce6b31c42068ad873"
+  },
+  "sourceLockSha256": "4150d8821c96dbc2cfec0b2762ff76b58318079f65fa4f5c8858ef2dd61f8d6d",
+  "preparationSha256": {
+    "gate.py": "640d99e160cea8084d3d2f024821720b86d333b90bdf7dd43d69e0c92d285235",
+    "supervise.py": "1764ff4ec582f9ffc8d71b084745383feba2e965006d64ab20fb3c988a180c4a",
+    "packages.py": "bcacb87718b4e498c5c3134c5d4c2df4b3460a71b4e7e42673ca8468349f89ea",
+    "review-installed.py": "bd58b308d13951d202bfa8ecacd4159ea89ca8b2e9b3d43b27ca342bff34f5f9",
+    "prepared-source.json": "06ef3656296d8288cc5d00be9c988d4ccc7d817a67f2ea6ce6b31c42068ad873",
+    "ledger.json": "9fb4559f5f3718981a2f85dc99f3716310acc2ed7a85c62a06e0b93d90f9ba41",
+    "authorization-bootstrap.mjs": "e8cadb6229566412fcdab563216d0db082b663fa88a4976319332d915cae972b",
+    "observe-installed.ts": "d0efcf6a3875d629554cb4f25dc9ff4f2489f0592b7851da79646a7c8d38e2c1",
+    "launcher.mjs": "6f772f3776d3c3effa788676d853cc2932a6ee59ad63ac3338ad1b487408914b",
+    "raw-sse-recorder.ts": "09ff8343ac1a5dbad77eaf24fc2745cc28ea870ada6b05dc4ea1644c0ad5ef81",
+    "commands.json": "09031df5764d886026e0e4afc72ef3065f4ff5ccd0a0b096e506236dbb9251c2"
+  },
+  "expectedProductionVersions": {
+    "@bdp/protocol": "0.0.0",
+    "@bdp/server": "0.0.0",
+    "ajv": "8.17.1",
+    "ajv-formats": "3.0.1",
+    "fast-deep-equal": "3.1.3",
+    "fast-uri": "3.1.5",
+    "json-schema-traverse": "1.0.0",
+    "require-from-string": "2.0.2"
+  },
+  "consumerLockSha256": "e3ed4e850fd086be96c5c0f05ef4f5bd4d74705ee1edb99785fabb0b72d6ef32",
+  "rootAcceptance": {
+    "path": null,
+    "sha256": null
+  },
+  "councilState": {
+    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-authorization-transition-draft/root-final-council.json",
+    "sha256": "c378ae6c23d95d74309d7e2a8c606f7a29d41ca6180afa8d0ce1325fc984a8f7"
+  },
+  "sourceValidationAcceptance": {
+    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-authorization-transition-plan/source-validation-evidence-repair/root-actual-acceptance.json",
+    "sha256": "671503678782219bf054e3576cb6efb39f8fb53858654619e9087c7186cf2737"
+  },
+  "finalSource": {
+    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-authorization-transition-draft/final-source.json",
+    "sha256": "45495ef3b365c0b9a512efe3d280d3e541f8cd4be51396394a60c3fefc9c0eb0"
+  },
+  "integrationAcceptance": {
+    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-authorization-transition-draft/root-integration-acceptance.json",
+    "sha256": "8f38aaf8e4aacaaf1c9312d05d502c4687a34ba79355206acd69f08bbda2e025"
+  },
+  "buildOutputInventory": {
+    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-authorization-transition-draft/final-build-preparation/run/build-output-inventory.json",
+    "sha256": "ba9fbe9b511a2a477b515e6f799e044a73904604011ef9b503c12f38f47c9aee"
+  },
+  "rootBuildAcceptance": {
+    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-authorization-transition-draft/root-build-acceptance.json",
+    "sha256": "29c75d57493d7c14ed9309515e1eefe52887a97230ac5ed5213cd05294c8d64e"
+  },
+  "installedProvenance": {
+    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-authorization-transition-draft/installed-validation-plan/run/installed-provenance.json",
+    "sha256": "3d0670ee88860acd8b0e9245cef7e1d45b7deec7e918de370f74618daf369f10"
+  },
+  "packagePrefixEvidence": {
+    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-authorization-transition-draft/installed-observation-v2/package-prefix-evidence.json",
+    "sha256": "c4ee4bae10c4517a38871a4bb525c228f25c2dcad3eee22286594202f92551d2"
+  }
+}

@@ -1,0 +1,300 @@
+{
+  "all21IntersectionsRecomputed": true,
+  "allVirtualMapsEqualIndependentReplay": true,
+  "canonicalIdentities": {
+    "D1": "096b4f8e59ad1c6e4b10105eacb3691c60a66334b015d8c43756c8b3aeb7995b",
+    "D3a": "a61cd3fbf9fac68e3aad857a24a2456dd16b83048067eef85348d7091c0aa08e",
+    "D4": "1499aa6cf9a02c7b6dc07a3a70bffcf935c9d6fcba60ce57ddcf5e214b32cd92",
+    "G09": "eeb78c7d5c97f45b18f3c0465926d905915c302dae4da25a24f887e3e9247227",
+    "base": "10928ef28513fb178c3310c6610c689e7b6a39c4262d8363da3082598fd6ddbb",
+    "carrier": "78e11962df1a744c685c9911d13c0bff3fa42fcdec9310b75ec8f83a17996c7f",
+    "pureLoader": "0c53a6bb33d57133c8fbb43b8787d9251ca4276abcdb18b2a9f434279bfe364b",
+    "startup": "80f2d46a5a480e76eaafd0ac160ff08323c8485f782c56a37305698b2435831e"
+  },
+  "computedChoices": {
+    "full-accepted-static": {
+      "added": 9,
+      "distinctBaseDeltaPaths": 34,
+      "existingChanged": 25,
+      "literalTestFilenames": 190,
+      "sourceFiles": 688,
+      "unchangedBase": 654
+    },
+    "full-optional-G09": {
+      "added": 9,
+      "distinctBaseDeltaPaths": 37,
+      "existingChanged": 28,
+      "literalTestFilenames": 190,
+      "sourceFiles": 688,
+      "unchangedBase": 651
+    },
+    "minimum-startup-accepted-static": {
+      "added": 7,
+      "distinctBaseDeltaPaths": 29,
+      "existingChanged": 22,
+      "literalTestFilenames": 189,
+      "sourceFiles": 686,
+      "unchangedBase": 657
+    },
+    "minimum-startup-optional-G09": {
+      "added": 7,
+      "distinctBaseDeltaPaths": 32,
+      "existingChanged": 25,
+      "literalTestFilenames": 189,
+      "sourceFiles": 686,
+      "unchangedBase": 654
+    }
+  },
+  "correctedLifecycleSevenRelativePaths": [
+    "apps/bdptest/src/reference-deployment-lifecycle-installed.test.ts",
+    "docs/design/startup-configuration.md",
+    "packages/server/src/development-runtime.ts",
+    "packages/server/src/reference-deployment-runtime.test.ts",
+    "packages/server/src/reference-deployment-runtime.ts",
+    "packages/server/src/transaction-runtime.ts",
+    "scripts/smoke-executables.mjs"
+  ],
+  "fullTwelveDeltaPairsRegenerated": [
+    {
+      "genuineForwardInverseExact": true,
+      "path": "report.md"
+    },
+    {
+      "genuineForwardInverseExact": true,
+      "path": "input-readiness.json"
+    },
+    {
+      "genuineForwardInverseExact": true,
+      "path": "source-map-verification.json"
+    },
+    {
+      "genuineForwardInverseExact": true,
+      "path": "prospective-counts.json"
+    },
+    {
+      "genuineForwardInverseExact": true,
+      "path": "owned-deltas.json"
+    },
+    {
+      "genuineForwardInverseExact": true,
+      "path": "ancestor-and-overlap-order.json"
+    },
+    {
+      "genuineForwardInverseExact": true,
+      "path": "overlay-stages.json"
+    },
+    {
+      "genuineForwardInverseExact": true,
+      "path": "source-acceptance-pins.json"
+    },
+    {
+      "genuineForwardInverseExact": true,
+      "path": "publication-boundary.json"
+    },
+    {
+      "genuineForwardInverseExact": true,
+      "path": "same-configuration-requirements.json"
+    },
+    {
+      "genuineForwardInverseExact": true,
+      "path": "affected-packages-and-validation.json"
+    },
+    {
+      "genuineForwardInverseExact": true,
+      "path": "startup-combined-dependency.json"
+    }
+  ],
+  "independentSequentialChecks": {
+    "full-accepted-static": [
+      {
+        "beforeBytesVerified": 6,
+        "filesAfter": 679,
+        "lane": "D1"
+      },
+      {
+        "beforeBytesVerified": 12,
+        "filesAfter": 682,
+        "lane": "pureLoader"
+      },
+      {
+        "beforeBytesVerified": 6,
+        "filesAfter": 682,
+        "lane": "D3a"
+      },
+      {
+        "beforeBytesVerified": 9,
+        "filesAfter": 686,
+        "lane": "startup"
+      },
+      {
+        "beforeBytesVerified": 1,
+        "filesAfter": 686,
+        "lane": "D4"
+      },
+      {
+        "beforeBytesVerified": 4,
+        "filesAfter": 688,
+        "lane": "carrier"
+      }
+    ],
+    "full-optional-G09": [
+      {
+        "beforeBytesVerified": 6,
+        "filesAfter": 679,
+        "lane": "D1"
+      },
+      {
+        "beforeBytesVerified": 12,
+        "filesAfter": 682,
+        "lane": "pureLoader"
+      },
+      {
+        "beforeBytesVerified": 6,
+        "filesAfter": 682,
+        "lane": "D3a"
+      },
+      {
+        "beforeBytesVerified": 9,
+        "filesAfter": 686,
+        "lane": "startup"
+      },
+      {
+        "beforeBytesVerified": 1,
+        "filesAfter": 686,
+        "lane": "D4"
+      },
+      {
+        "beforeBytesVerified": 4,
+        "filesAfter": 688,
+        "lane": "carrier"
+      },
+      {
+        "beforeBytesVerified": 6,
+        "filesAfter": 688,
+        "lane": "G09"
+      }
+    ],
+    "minimum-startup-accepted-static": [
+      {
+        "beforeBytesVerified": 6,
+        "filesAfter": 679,
+        "lane": "D1"
+      },
+      {
+        "beforeBytesVerified": 12,
+        "filesAfter": 682,
+        "lane": "pureLoader"
+      },
+      {
+        "beforeBytesVerified": 6,
+        "filesAfter": 682,
+        "lane": "D3a"
+      },
+      {
+        "beforeBytesVerified": 9,
+        "filesAfter": 686,
+        "lane": "startup"
+      }
+    ],
+    "minimum-startup-optional-G09": [
+      {
+        "beforeBytesVerified": 6,
+        "filesAfter": 679,
+        "lane": "D1"
+      },
+      {
+        "beforeBytesVerified": 12,
+        "filesAfter": 682,
+        "lane": "pureLoader"
+      },
+      {
+        "beforeBytesVerified": 6,
+        "filesAfter": 682,
+        "lane": "D3a"
+      },
+      {
+        "beforeBytesVerified": 9,
+        "filesAfter": 686,
+        "lane": "startup"
+      },
+      {
+        "beforeBytesVerified": 6,
+        "filesAfter": 686,
+        "lane": "G09"
+      }
+    ]
+  },
+  "onlyNonDirectSharedPath": "D1 transaction-http.ts to G09 is explicitly D3a-intervened; all actual sequential before bytes exact",
+  "ownedRelativePaths": {
+    "D1": [
+      "apps/bdptest/src/transactional-changefeed-refusal-context-installed.test.ts",
+      "packages/server/src/transaction-changefeed.test.ts",
+      "packages/server/src/transaction-http.ts",
+      "packages/server/src/transaction-service.ts",
+      "packages/server/src/transaction-sse.test.ts",
+      "packages/server/src/transaction-store.ts"
+    ],
+    "D3a": [
+      "apps/bdptest/src/transactional-discovery-installed.test.ts",
+      "apps/bdptest/src/transactional-schema-installed.test.ts",
+      "packages/server/src/transaction-changefeed.test.ts",
+      "packages/server/src/transaction-http.test.ts",
+      "packages/server/src/transaction-http.ts",
+      "packages/server/src/transaction-installed-contracts.test.ts"
+    ],
+    "D4": [
+      "apps/bdptest/src/transactional-set-installed.test.ts"
+    ],
+    "G09": [
+      "apps/bdptest/src/transactional-schema-installed.test.ts",
+      "packages/server/src/transaction-http.ts",
+      "packages/server/src/transaction-schema-http.test.ts",
+      "packages/server/src/transaction-schema-http.ts",
+      "packages/server/src/transaction-service.test.ts",
+      "packages/server/src/transaction-service.ts"
+    ],
+    "carrier": [
+      "apps/bdptest/src/transactional-matrix.test.ts",
+      "apps/bdptest/test-support/read-update-artifact-execution.ts",
+      "packages/conformance/test-support/profile-evidence.test.ts",
+      "packages/conformance/test-support/profile-evidence.ts"
+    ],
+    "pureLoader": [
+      "docs/design/startup-configuration.md",
+      "packages/config/src/index.test.ts",
+      "packages/config/src/index.ts",
+      "packages/server/package.json",
+      "packages/server/src/read-sequence-lifecycle.test.ts",
+      "packages/server/src/reference-deployment-state.ts",
+      "packages/server/src/reference-deployment.test.ts",
+      "packages/server/src/reference-deployment.ts",
+      "packages/server/src/transaction-snapshot.test.ts",
+      "scripts/smoke-executables.mjs",
+      "scripts/smoke-safety.mjs",
+      "scripts/smoke-safety.test.mjs"
+    ],
+    "startup": [
+      "apps/bdptest/src/reference-deployment-lifecycle-installed.test.ts",
+      "docs/design/startup-configuration.md",
+      "packages/server/src/development-authority.ts",
+      "packages/server/src/development-runtime.ts",
+      "packages/server/src/reference-deployment-process.ts",
+      "packages/server/src/reference-deployment-runtime.test.ts",
+      "packages/server/src/reference-deployment-runtime.ts",
+      "packages/server/src/transaction-runtime.ts",
+      "scripts/smoke-executables.mjs"
+    ]
+  },
+  "scope": "In-memory DATA only; no source overlay applied or adopted",
+  "sourceHashesRecomputed": 5444,
+  "sourceMapCounts": {
+    "D1": 679,
+    "D3a": 679,
+    "D4": 679,
+    "G09": 679,
+    "base": 679,
+    "carrier": 681,
+    "pureLoader": 682,
+    "startup": 686
+  }
+}

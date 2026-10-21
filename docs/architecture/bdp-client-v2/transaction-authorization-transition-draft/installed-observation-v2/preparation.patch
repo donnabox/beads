@@ -1,0 +1,293 @@
+--- /Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-authorization-transition-draft/installed-validation-plan/gate.py
++++ /Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-authorization-transition-draft/installed-observation-v2/gate.py
+@@ -4,7 +4,7 @@
+ P=Path(__file__).resolve().parent;D=P.parent;L=D.parent
+ W=Path('/Users/dbox/repos/wt/vickie/vickie-authorization-transition')
+ E=P/'run';GUARD=L/'guarded-action.py';COMMANDS=P/'commands.json'
+-COMMANDS_SHA='4bb4bb7451719eb09843c6907834ca100bcadb3bd6cfaf171c032456bec1861e'
++COMMANDS_SHA='09031df5764d886026e0e4afc72ef3065f4ff5ccd0a0b096e506236dbb9251c2'
+ GUARD_SHA='fd81ba029cd4e7c7e60623df89e8292af91141d311d9ce789ed19e2152375e84'
+ sha=lambda b:hashlib.sha256(b).hexdigest()
+ def require(ok,message):
+@@ -81,13 +81,27 @@
+  require(sha((W/'pnpm-lock.yaml').read_bytes())==g['sourceLockSha256'],'Source lock differs')
+  require(g['node']=='/Users/dbox/.nvm/versions/node/v24.16.0/bin/node' and g['pnpm']=='/Users/dbox/.cache/node/corepack/v1/pnpm/11.20.0/bin/pnpm.cjs','Tool paths differ')
+  verify_build(g)
++ prefix=document(g,'packagePrefixEvidence')
++ require(prefix['sourceCommit']==g['finalHead'] and prefix['sourceTree']==g['finalTree'],'Prior package source differs')
++ require(list(prefix['stages'])==['node-version','package-directory','pack-protocol','pack-server','verify-tar','prepare-consumer','consumer-install','verify-installed'],'Exact prior package prefix required')
++ for stage,records in prefix['stages'].items():
++  for record in records.values():require(sha(Path(record['path']).read_bytes())==record['sha256'],'Prior package evidence changed')
++  prior=json.loads(Path(records['exit.json']['path']).read_text())
++  require(prior['exit']==prior['supervisorExit']==0 and prior['sourceUnchanged'] and prior['sourceSha256After']==source,'Prior package stage failed or source differs')
++  for key in ['timeout','forcedCleanup','errors','remainingAfterCleanup','sampledPidsStillPresent','runtimeDirectoriesStillPresent']:require(not prior[key],'Prior package stage unclean')
++  started=json.loads(Path(records['started.json']['path']).read_text())
++  require(started['head']==g['finalHead'] and started['workspaceDirty']is False,'Prior package chronology differs')
++ for key in ['started.json','exit.json','log']:
++  record=prefix['failure'][key];require(sha(Path(record['path']).read_bytes())==record['sha256'],'Original failure changed')
++ require(prefix['installedProvenance']==g['installedProvenance'],'Reused provenance binding differs')
+  spec=dict(cfg['commands'][name]);require(spec['supervisorSeconds']==120 and spec['automaticRetries']==0,'Bound differs')
+  for prior in order[:order.index(name)]:completed(prior)
+  if spec['phase'] in ['installed','review']:
+   proof=document(g,'installedProvenance')
+   require(proof==json.loads((E/'installed-provenance.json').read_text()),'Provenance file differs')
+   require(proof['sourceCommit']==g['finalHead'] and proof['sourceTree']==g['finalTree'],'Installed source differs')
+-  consumer=(E/'consumer').resolve(strict=True);entry=Path(proof['entryRealpath']).resolve(strict=True)
++  consumer=(D/'installed-validation-plan/run/consumer').resolve(strict=True);entry=Path(proof['entryRealpath']).resolve(strict=True)
++  require(Path(proof['consumer']).resolve(strict=True)==consumer,'Reused consumer differs')
+   require(entry==(consumer/'node_modules/@bdp/server/dist/transaction-installed.js').resolve(strict=True) and entry.is_relative_to(consumer),'Installed entry differs')
+   require(sha(entry.read_bytes())==proof['entrySha256'] and proof['consumerLockSha256']==g['consumerLockSha256']==sha((consumer/'pnpm-lock.yaml').read_bytes()),'Installed entry/lock changed')
+  return {**g,'sourceSha256':source,'sourceDiffSha256':source_patch_hash(),'preparationSha256':sha((P/'supervise.py').read_bytes())},spec
+--- /Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-authorization-transition-draft/installed-validation-plan/commands.json
++++ /Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-authorization-transition-draft/installed-observation-v2/commands.json
+@@ -1,199 +1,28 @@
+ {
+-  "status": "CLOSED_OPERATIVE_PENDING_FINAL_SOURCE_AND_ROOT_RELEASE",
+-  "note": "Concrete scripts prepared, not executed. Final candidate/build/consumer/source/council root bindings remain pending; no execution-gate.json exists.",
++  "status": "CLOSED_OBSERVATION_ONLY_SUCCESSOR",
++  "note": "No repack/reinstall/rebuild. Reuse exact original consumer/provenance; original pre-child module-resolution failure preserved. Root release pending.",
+   "node": "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+   "pnpm": "/Users/dbox/.cache/node/corepack/v1/pnpm/11.20.0/bin/pnpm.cjs",
+   "executionOrder": [
+-    "node-version",
+-    "package-directory",
+-    "pack-protocol",
+-    "pack-server",
+-    "verify-tar",
+-    "prepare-consumer",
+-    "consumer-install",
+-    "verify-installed",
+     "visibility-handles",
+     "review-visibility-handles",
+     "active-event",
+     "review-active-event"
+   ],
+   "commands": {
+-    "node-version": {
+-      "phase": "package",
+-      "argv": [
+-        "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+-        "--version"
+-      ],
+-      "cwd": "/Users/dbox/repos/wt/vickie/vickie-authorization-transition",
+-      "supervisorSeconds": 120,
+-      "automaticRetries": 0,
+-      "requires": [],
+-      "released": false,
+-      "ownedTempPrefixes": []
+-    },
+-    "package-directory": {
+-      "phase": "package",
+-      "argv": [
+-        "python3",
+-        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-authorization-transition-draft/installed-validation-plan/packages.py",
+-        "directory"
+-      ],
+-      "cwd": "/Users/dbox/repos/wt/vickie/vickie-authorization-transition",
+-      "supervisorSeconds": 120,
+-      "automaticRetries": 0,
+-      "requires": [
+-        {
+-          "id": "node-version",
+-          "supervisorExit": 0
+-        }
+-      ],
+-      "released": false,
+-      "ownedTempPrefixes": []
+-    },
+-    "pack-protocol": {
+-      "phase": "package",
+-      "argv": [
+-        "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+-        "/Users/dbox/.cache/node/corepack/v1/pnpm/11.20.0/bin/pnpm.cjs",
+-        "--filter",
+-        "@bdp/protocol",
+-        "pack",
+-        "--pack-destination",
+-        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-authorization-transition-draft/installed-validation-plan/run/packages"
+-      ],
+-      "cwd": "/Users/dbox/repos/wt/vickie/vickie-authorization-transition",
+-      "supervisorSeconds": 120,
+-      "automaticRetries": 0,
+-      "requires": [
+-        {
+-          "id": "package-directory",
+-          "supervisorExit": 0
+-        }
+-      ],
+-      "released": false,
+-      "ownedTempPrefixes": []
+-    },
+-    "pack-server": {
+-      "phase": "package",
+-      "argv": [
+-        "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+-        "/Users/dbox/.cache/node/corepack/v1/pnpm/11.20.0/bin/pnpm.cjs",
+-        "--filter",
+-        "@bdp/server",
+-        "pack",
+-        "--pack-destination",
+-        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-authorization-transition-draft/installed-validation-plan/run/packages"
+-      ],
+-      "cwd": "/Users/dbox/repos/wt/vickie/vickie-authorization-transition",
+-      "supervisorSeconds": 120,
+-      "automaticRetries": 0,
+-      "requires": [
+-        {
+-          "id": "pack-protocol",
+-          "supervisorExit": 0
+-        }
+-      ],
+-      "released": false,
+-      "ownedTempPrefixes": []
+-    },
+-    "verify-tar": {
+-      "phase": "package",
+-      "argv": [
+-        "python3",
+-        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-authorization-transition-draft/installed-validation-plan/packages.py",
+-        "tar"
+-      ],
+-      "cwd": "/Users/dbox/repos/wt/vickie/vickie-authorization-transition",
+-      "supervisorSeconds": 120,
+-      "automaticRetries": 0,
+-      "requires": [
+-        {
+-          "id": "pack-server",
+-          "supervisorExit": 0
+-        }
+-      ],
+-      "released": false,
+-      "ownedTempPrefixes": []
+-    },
+-    "prepare-consumer": {
+-      "phase": "package",
+-      "argv": [
+-        "python3",
+-        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-authorization-transition-draft/installed-validation-plan/packages.py",
+-        "consumer"
+-      ],
+-      "cwd": "/Users/dbox/repos/wt/vickie/vickie-authorization-transition",
+-      "supervisorSeconds": 120,
+-      "automaticRetries": 0,
+-      "requires": [
+-        {
+-          "id": "verify-tar",
+-          "supervisorExit": 0
+-        }
+-      ],
+-      "released": false,
+-      "ownedTempPrefixes": []
+-    },
+-    "consumer-install": {
+-      "phase": "package",
+-      "argv": [
+-        "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+-        "/Users/dbox/.cache/node/corepack/v1/pnpm/11.20.0/bin/pnpm.cjs",
+-        "install",
+-        "--offline",
+-        "--ignore-scripts",
+-        "--no-frozen-lockfile",
+-        "--prod"
+-      ],
+-      "cwd": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-authorization-transition-draft/installed-validation-plan/run/consumer",
+-      "supervisorSeconds": 120,
+-      "automaticRetries": 0,
+-      "requires": [
+-        {
+-          "id": "prepare-consumer",
+-          "supervisorExit": 0
+-        }
+-      ],
+-      "released": false,
+-      "ownedTempPrefixes": []
+-    },
+-    "verify-installed": {
+-      "phase": "package",
+-      "argv": [
+-        "python3",
+-        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-authorization-transition-draft/installed-validation-plan/packages.py",
+-        "installed"
+-      ],
+-      "cwd": "/Users/dbox/repos/wt/vickie/vickie-authorization-transition",
+-      "supervisorSeconds": 120,
+-      "automaticRetries": 0,
+-      "requires": [
+-        {
+-          "id": "consumer-install",
+-          "supervisorExit": 0
+-        }
+-      ],
+-      "released": false,
+-      "ownedTempPrefixes": []
+-    },
+     "visibility-handles": {
+       "phase": "installed",
+       "argv": [
+         "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+         "--experimental-strip-types",
+-        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-authorization-transition-draft/installed-validation-plan/observe-installed.ts",
++        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-authorization-transition-draft/installed-observation-v2/observe-installed.ts",
+         "visibility-handles",
+-        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-authorization-transition-draft/installed-validation-plan/run/visibility-handles.json"
++        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-authorization-transition-draft/installed-observation-v2/run/visibility-handles.json"
+       ],
+       "cwd": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-authorization-transition-draft/installed-validation-plan/run/consumer",
+       "supervisorSeconds": 120,
+       "automaticRetries": 0,
+-      "requires": [
+-        {
+-          "id": "verify-installed",
+-          "supervisorExit": 0
+-        }
+-      ],
++      "requires": [],
+       "released": false,
+       "ownedTempPrefixes": [
+         "bdp-authorization-installed-"
+@@ -210,7 +39,7 @@
+       "phase": "review",
+       "argv": [
+         "python3",
+-        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-authorization-transition-draft/installed-validation-plan/review-installed.py",
++        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-authorization-transition-draft/installed-observation-v2/review-installed.py",
+         "visibility-handles"
+       ],
+       "cwd": "/Users/dbox/repos/wt/vickie/vickie-authorization-transition",
+@@ -230,9 +59,9 @@
+       "argv": [
+         "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+         "--experimental-strip-types",
+-        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-authorization-transition-draft/installed-validation-plan/observe-installed.ts",
++        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-authorization-transition-draft/installed-observation-v2/observe-installed.ts",
+         "active-event",
+-        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-authorization-transition-draft/installed-validation-plan/run/active-event.json"
++        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-authorization-transition-draft/installed-observation-v2/run/active-event.json"
+       ],
+       "cwd": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-authorization-transition-draft/installed-validation-plan/run/consumer",
+       "supervisorSeconds": 120,
+@@ -259,7 +88,7 @@
+       "phase": "review",
+       "argv": [
+         "python3",
+-        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-authorization-transition-draft/installed-validation-plan/review-installed.py",
++        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-authorization-transition-draft/installed-observation-v2/review-installed.py",
+         "active-event"
+       ],
+       "cwd": "/Users/dbox/repos/wt/vickie/vickie-authorization-transition",
+--- /Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-authorization-transition-draft/installed-validation-plan/observe-installed.ts
++++ /Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-authorization-transition-draft/installed-observation-v2/observe-installed.ts
+@@ -21,8 +21,12 @@
+ const hash=(bytes:Uint8Array|string)=>createHash('sha256').update(bytes).digest('hex');
+ if(hash(readFileSync(entry))!==provenance.entrySha256)throw Error('installed entry hash');
+ const installedRequire=createRequire(path.join(consumer,'package.json'));
++const protocolManifest=realpathSync(path.join(consumer,'node_modules/@bdp/protocol/package.json'));
++if(!protocolManifest.startsWith(consumer+path.sep))throw Error('installed protocol containment');
++const protocolRequire=createRequire(protocolManifest);
+ function installedModule(name:string){
+- const p=realpathSync(installedRequire.resolve(name));
++ const resolver=name==='@bdp/protocol'?installedRequire:protocolRequire;
++ const p=realpathSync(resolver.resolve(name));
+  if(!p.startsWith(consumer+path.sep))throw Error('installed dependency escape');
+  return pathToFileURL(p).href;
+ }

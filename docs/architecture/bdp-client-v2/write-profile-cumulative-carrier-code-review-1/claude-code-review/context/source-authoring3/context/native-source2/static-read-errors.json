@@ -1,0 +1,8 @@
+[
+  {
+    "stage": "independent cumulative patch reconstruction",
+    "classification": "reviewer assertion only, no source/helper execution",
+    "cause": "First reconstruction used a/path new-file header; frozen cumulative format correctly uses /dev/null for absent cce source.",
+    "resolution": "Reconstructed correct existence-aware forward/inverse headers; both exact. No packet/source mutation."
+  }
+]

@@ -1,0 +1,3 @@
+# Root-authorized local dependency binding correction
+
+First consumer and install-stop.json remain frozen: ERR_PNPM_NO_OFFLINE_META, zero installed children/requests. Root approved a distinct consumer-v2 with unchanged root file dependencies and exactly one pnpm override: @bdp/protocol resolves to the same verified absolute protocol tarball. Archives and frozen source are unchanged; no registry fallback. One offline install, full313member/source/tar/consumer checks and actualrealpath/source overrides precede the still-unconsumed single14/1 case. New unexpected outcomes stop without retry. supervise-v2.py changes only validated installed-entry confinement from consumer to consumer-v2.

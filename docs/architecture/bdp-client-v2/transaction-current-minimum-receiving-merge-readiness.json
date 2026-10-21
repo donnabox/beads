@@ -1,0 +1,35 @@
+{
+  "checkedAt": "2026-10-14T12:28:13.852933+00:00",
+  "head": "c534fcab840ef2e3753ab179feae10d3ce6431e5",
+  "tree": "48537438975a4c56ee1a5bb6056013bbddd38e03",
+  "mainBefore": "d968d0ee7df4b9510944fb1cbf76f8355d4e1a5c",
+  "pullRequest": {
+    "baseRefName": "main",
+    "headRefOid": "c534fcab840ef2e3753ab179feae10d3ce6431e5",
+    "isDraft": true,
+    "mergeable": "MERGEABLE",
+    "state": "OPEN",
+    "statusCheckRollup": [
+      {
+        "__typename": "CheckRun",
+        "completedAt": "2026-10-14T12:24:13Z",
+        "conclusion": "SUCCESS",
+        "detailsUrl": "https://github.com/gastownhall/bdp/actions/runs/38561881669/job/115844706216",
+        "name": "verify",
+        "startedAt": "2026-10-14T12:10:49Z",
+        "status": "COMPLETED",
+        "workflowName": "CI"
+      }
+    ]
+  },
+  "reviewHashes": {
+    "transaction-current-minimum-receiving-claude-code-review.txt": "eaf444cc517fac977a0177ff4f5d4a4008df2ede2d7aacdb3f0f950a81298328",
+    "transaction-current-minimum-receiving-native-code-review.md": "a423b5a1423f24483c9c62044cfd4ba37f77014482131695800f4e9dd9527755",
+    "transaction-current-minimum-receiving-root-code-dispositions.md": "fd2c9debff9d57f3b4ae8d99b7ee98281e78acab4871a0ff8c670a13d0c5ba31",
+    "transaction-current-minimum-receiving-root-source-review.md": "797afdddd22cbbcb92901bfcf2f536741f1bc7d59ceb2984d6405fd9e154f684",
+    "transaction-current-minimum-receiving-repair-native-closure.md": "16b5d2c5173a4e88ef3a8d1269e9dafe5e8b3855979bd4c5f7407d45711badd3"
+  },
+  "scope": "Current minimum Resource read receiving and cancellation; no public advertisement or release",
+  "ordinaryMergeTree": "48537438975a4c56ee1a5bb6056013bbddd38e03",
+  "actionableFindings": "closed or explicitly deferred in reviewed root dispositions"
+}

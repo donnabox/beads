@@ -1,0 +1,31 @@
+{
+  "state": "CLOSED pending actual authored Link source; no execution",
+  "files": {
+    "adaptation.patch": "5e36fe6815fe2ef5b79f03dd082dcec3308ffa517eaa859e75c1fd71da9d3876",
+    "audit-expectations.json": "96cdb9ec001e00fa44ac17c97dc43436f3e7a118fc8134aac5afe2fa620cfcd1",
+    "audit.py": "e8f761d0c522d3bc7a3e56f69d0267b1e7d263be2bff47af1c418d048b2f873c",
+    "base-tools.json": "bdfce575087c4af516ff51324af376497ad203285de029b36323b593557f00a1",
+    "baseline/audit-expectations.json": "6cddb10b3988a289eb01ba2f297686780d2da254b56f57da896fbbf91ae36ee8",
+    "baseline/audit.py": "8a94cbbbad4bf1991f34b83124cf5a5739ee08b313e7bf9567375ff8bcc2665d",
+    "baseline/commands.json": "f39f8a2d219f58f0bc0c29b88356849b66f5c7ec75538bd86d6d06c51ba320b1",
+    "baseline/fresh-bootstrap-gate.py": "3aabf65df44ddf824adf15c4e6482f7b23f12890cadb7e057733506df37ca0d9",
+    "baseline/gate.py": "0b48d38c51594e6c53d36537caefd6208bea631073981365ef22f5937a36c61b",
+    "baseline/packages.py": "31fe98c55703428b060f0f8b949a588f62b2522530898cdee89f8d6e2296ff12",
+    "baseline/run.py": "05b7d2dd29a7b17157dfeff42f23819580e9e84ab6394d9103817718e3920e76",
+    "commands.json": "85773d2fe241fc89617df0a07fbece91e304a3a9deaa3a62cbeb250468d52e9d",
+    "context/design.md": "475504737af4f3486e263da721da0c4a8b637bd87e57b8a62a9ad348b4f88a8d",
+    "context/plan-v3.md": "a11df61cf1a932368737c62556548f5b2554f135e1fcf604e06872a38d278e70",
+    "context/root-plan-dispositions.json": "4b1eb8a3fbdc6843d1758d0ad2ae9a1b78dd17b5f1d14ddb7f29d3d246df9ae8",
+    "context/selection-v2.json": "101661631b273734e4c252c990449e610de107224d5521314b9d96855dd525e6",
+    "gate.py": "820e2922e4f3a40f48ac21214922bdcd0efd93d72fd8704921e0c85d8501c573",
+    "packages.py": "31fe98c55703428b060f0f8b949a588f62b2522530898cdee89f8d6e2296ff12",
+    "preparation.md": "ba008bb139d3adea93e5ee35cece09219b9d4056dd70fe3dac440f99913b8f3b",
+    "reference-pins.json": "64938d3120f4bf1b2ca1ea3a1009a847267a25e582d09751e48945e3777abc02",
+    "report.md": "d306a713e8b2071a36810523e84c29afeccb1911d9ffec84c433ac5778101cc4",
+    "root-disposition.template.json": "a9b93fc6226bd24306853428fe1de13ca5b94881a1873943069489a54a36b52b",
+    "run.py": "b91d789815327ffba861eb5971a5c7840130450b4c59e3d72a7ee1498f839f24",
+    "source-binding.pending.json": "facd43429c4dba59a35c8c0f9d68a58743175aaff7ae5e677cb8b9c0ef8400e8",
+    "structural-check.json": "ff01d4e3a8ca24b7c319257c091b1c257c3365ec7b6d1ed927bee5a183099bed"
+  },
+  "requiredFinalization": "author source binding, report contracts, code council/root dispositions; regenerate index; no automatic release"
+}

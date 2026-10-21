@@ -1,0 +1,168 @@
+# Readiness review — frozen delta `59915ea…` → `3a8f9d5…` (14 files, text-only)
+
+No tools, commands, tests, file reads, or delegation were used. Everything below is derived from the supplied diff plus the four supplied current-file excerpts. Source text was treated as data.
+
+---
+
+## A. Proven defects (establishable from the supplied text alone)
+
+### A1 — High — Evidence volume is internally contradictory and cannot come from one run
+`docs/design/update-implementation-progress.md`, new section “## Pending-key and interleaving process observations”, paragraph 3 (“The inventory has 54 bounded rows and 27 omissions, with 25 plans, 253 actions and 797 assertions.”) vs `packages/conformance/development/README.md` line ~11 (“25 diagnostic scenarios and 264 HTTP/lifecycle actions”).
+
+Both documents describe the same manifest in the same delta and disagree on actions (253 vs 264). Counting the manifest insertions in this diff:
+
+- alias/pinned state witnesses added: `repoint-state`, `delete-original-state`, `fresh-repoint-state`, `delete-fresh-state`, `fresh-restored-state`, `original-reassigned-state`, `assign-state`, `unassign-state`, `reassign-state`, `repoint-state` (pinned), `delete-alias-state` = **11 actions / 29 assertions**
+- `development.read-update.process-pending` = **20 actions / 62 assertions**
+- `development.read-update.process-interleaving` = **12 actions / 30 assertions**
+- `allocate.canonical` → `url-serialization-stable` + `differs-from-reserved-alias` = **+1 assertion**
+
+Against the stated baseline in the same file (“23 passing plans, 221 actions and 705 passing assertions”): actions = 221+43 = **264** (README correct, progress doc under by exactly the 11 alias actions); assertions = 705+29+62+30+1 = **827** (797 = 705+29+62+1, i.e. it excludes the interleaving plan’s 30 assertions entirely).
+
+Trigger/impact: the doc also asserts “The saved non-attesting report records all 797 assertions passing.” 253 actions cannot produce 797 assertions that include the alias-witness assertions whose actions are excluded — the pair is self-contradictory regardless of whether my totals are right, so the stated report figures do not describe any single run. This is exactly the “honest bounded development diagnostics” property under review, and no test in the delta enforces these numbers (coverage flipped 48→54 bounded rows with no corresponding expectation change anywhere in the 14 files, so the totals are unenforced prose).
+Fix: regenerate the report, take the counts from the artifact, and reconcile both documents; or add an inventory expectation so the figures are machine-checked.
+
+### A2 — Medium — “matrix test budget unchanged” is false in this same delta
+`docs/design/update-implementation-progress.md` (“The runtime, scheduler, public configuration and matrix test budget are unchanged.”) and `packages/conformance/development/README.md` (“The scheduler, runtime, matrix test budget and public configuration remain unchanged.”) vs `apps/bdptest/src/development-matrix.test.ts` hunk `@@ -215,9 +230,9 @@`: `-  });` → `+  }, 30_000);`.
+
+The matrix test’s aggregate budget changed from the suite default to 30 s. The added comment at new lines ~215–216 argues the aggregate budget is “separate from unchanged action, HTTP, IPC and cleanup deadlines” — that defense is not what the two documents say.
+Fix: state “the per-action/HTTP/IPC/cleanup deadlines are unchanged; the matrix test’s aggregate wrapper was raised to 30 s,” or drop the 30 s cap.
+
+### A3 — Medium — New normative discovery member has no stated value domain, and the paragraph’s own prohibition sentence is left unqualified
+`docs/specs/bdp.md` 3731–3733 and table row 3745.
+
+`historicalResolution` is declared optional in every profile and said to “advertise [Historical resolution]”, but the paragraph never says what the member *contains* (boolean? URL? template?), unlike the adjacent `order` member (“names the collection order”). Separately, line 3719–3720 still reads “The history, receipt, snapshot, changefeed, and Event members are required only in Transactional and prohibited in both lower profiles.” The new clause tries to patch this (“distinct from the Transactional Scope-history fence members”), but the prohibition sentence keeps “history” as a bare category label, so a Read authority advertising `historicalResolution` is readable as violating it.
+Trigger: any Read or Read+Update authority that wants to advertise the member; any schema/conformance implementer reading 3715–3745 as the membership authority.
+Fix: give the member a value domain in the same paragraph and rewrite 3719–3720 to name the four fence members explicitly rather than “history”.
+
+### A4 — Medium — Tombstone boundedness claim reversed with no replacement bound at the site
+`docs/specs/bdp.md` hunk `@@ -3314,12 +3314,11 @@` (new text ≈3318–3320).
+
+Removed: “tombstone storage is therefore bounded by the committed effects, as identity tombstones already are, and no principal can grow it with requests that commit nothing.” Added: “Distinct successful keys, including semantic no-ops, can therefore grow tombstone storage without adding Resource revisions.”
+
+The surrounding retained text mandates retention “for the lifetime of the logical Scope”. The edit is internally coherent and more honest than what it replaced, but it converts a claimed bound into an *admitted* permanent-storage growth path reachable by any authenticated principal minting distinct keys over semantic no-ops, with no mitigation, cap, `limits` hook, or MAY-reject clause at that site. Note the retained-failure sentence immediately after still gives failures an expiry interval, so successes are the unbounded case.
+Fix: pair the admission with a normative mitigation or an explicit cross-reference to whatever permits throttling/capping; if the intent is “unbounded by design”, say so as a deliberate, recorded decision rather than as a bare consequence.
+
+### A5 — Low/Medium — `/development/*` 404 reorder makes prior read-path handling unreachable and changes non-POST outcomes
+`packages/server/src/development-runtime.ts`: added `if (rawUrl.startsWith("/development/") && !mutationTarget) throw new ReceivingError("resource-not-found");` (first hunk, new ~166–167); removed `if (!operation && name !== "sequence") throw new ReceivingError("resource-not-found");` (second hunk, after the `405 "GET, HEAD"` branch).
+
+The removed line proves the baseline order: unknown `/development/*` first traversed the elided read path (old ~168–208) and then the `405 "GET, HEAD"` branch, so a baseline `PUT /development/not-an-operation` answered **405**; it now answers **404** (as the new `development-server.test.ts` test asserts). Any read-path handling that existed for `/development/*` non-operation URLs is now unreachable.
+Trigger: non-POST requests and any `/development/...` URL carrying a query string (`name` is derived from `rawUrl.slice(13)`, so `create-bead?x=1` is now a 404 rather than reaching the later branches).
+Impact: a deliberate status/precedence change in the development authority, justified only by the one test in this packet. I cannot establish from the packet that nothing else expected 405 or served a readable `/development/*` URL.
+Fix: state the precedence decision in the packet notes, and confirm no other suite or manifest action depends on 405 / on a readable `/development/*` path.
+
+### A6 — Low — `no-body` witnesses prove “no JSON body”, not “no body”
+`packages/conformance/development/read-update-manifest-v1.json`: all six 307 witnesses (`repoint-state`, `fresh-repoint-state`, `fresh-restored-state`, `original-reassigned-state`, `assign-state`, `reassign-state`, pinned `repoint-state`) use `pointer: "/body", exists: false`; README (“Alias and pinned-reference observations”, new paragraph) says “307 with the canonical Location and no body.”
+
+The one observation builder supplied (`apps/bdptest/test-support/development-process-actions.ts:129–135`) only populates `body` when `response.kind === "json"`. Under that rule a 307 carrying a non-JSON body also satisfies `exists: false`.
+Fix: assert an explicit emptiness/length witness, or soften the README to “no JSON body observed”.
+
+### A7 — Low — `differs-from-reserved-alias` compares a Bead path and is named for an alias segment
+`read-update-manifest-v1.json` `allocate` input `"excludedIdentity": "beads/reserved"`; `development-matrix.test.ts` new identity field `differsFromExcludedIdentity: identity !== new URL(string(input.excludedIdentity), execution.scope).href`; `read-update-coverage-v1.json` limits (“differ from the live reserved alias segment”); README (“differs from the live reserved alias segment”).
+
+The witness compares the allocated identity against `${scope}beads/reserved` — a reserved Bead path, not an alias segment. An allocated Bead identity could never equal an `alias/...` URL, so the “alias segment” phrasing misdescribes what is observed and invites a later reader to treat alias-namespace collision as exercised.
+Fix: rename the assertion/limits to “differs from the reserved Bead identity”.
+
+### A8 — Low — `get === undefined` reports the wrong missing capability
+`development-matrix.test.ts`, new lines in the first hunk: `const get = input.resolveAlias === true ? transport.resolveAlias : transport.get; if (get === undefined) throw new Error("transport lacks alias resolution");`
+
+When `resolveAlias` is not set and the transport has no `get`, the thrown diagnostic still says “transport lacks alias resolution”. Also note the method is now detached from `transport` for every GET action, which is only safe if the transport’s members are closures (its declaration is not in the packet — see Q7).
+Fix: check the two cases separately with distinct messages.
+
+### A9 — Low — `development.process.release` still hardcodes a 4-turn barrier
+`apps/bdptest/test-support/development-process-actions.ts:67–69` (`child.wait("turn-completed", 4)`).
+
+`submit` accepts an arbitrary `operations` array, and `development.read-update.process-interleaving` is the first submission with **3** members. Both new plans use `release-response`, so nothing breaks today, but the legacy operation is now a latent hang for any non-4-member submission.
+Fix: derive the count from the submitted member count, or reject a `release` whose submission is not 4 members.
+
+### A10 — Low — Duplicate-suffix uniqueness diverges from the slugger it claims to model
+`packages/conformance/src/markdown.ts:25–28` (`while (used.has(slug)) slug = \`${base}-${++suffix}\``) and `packages/conformance/src/catalog.test.ts` new test “avoids duplicate suffix collisions with literal numbered headings”.
+
+For `## A / ## A / ## A-1 / ## A` the implementation yields `a, a-1, a-1-1, a-2`; GitHub’s slugger (per-base counters, no global uniqueness check) yields `a, a-1, a-1, a-1`. The describe block is titled “rendered citation anchors” and the sibling test comment claims GitHub fidelity, so the deliberate divergence is undocumented. Consequence: for such headings the validator blesses anchors (`#a-1-1`, `#a-2`) that do not exist in the rendered document.
+Trigger: a spec heading literally spelled `<base>-<n>` relative to a duplicated heading.
+Fix: comment the divergence as intentional fail-closed behavior (ambiguity throws elsewhere), and note that validated anchors are not guaranteed to resolve on GitHub in the duplicate case.
+
+### A11 — Low — Tabs in headings are now dropped instead of becoming `-`
+`markdown.ts:20–24` — the allowed-character class `[^\p{L}\p{N} _-]` strips tabs, then only `" "` is mapped to `-`. The replaced baseline (`catalog.ts`, deleted `markdownAnchor`) mapped `[ \t]+` to `-`. A heading `A\tB` now slugs to `ab`; GitHub produces `a-b`. Low reachability, but it is a new divergence introduced by the repair.
+Fix: map all stripped whitespace to `-` per character.
+
+### A12 — Low — `markdownSection` rebuilds the full anchor index per citation; two O(n²) passes
+`markdown.ts:67–70` (`markdownAnchors(markdown).find(...)` per call), `markdown.ts:37–40` (`headings.slice(index+1).find(...)` per heading), `profile-catalog-boundaries.test.ts` (`anchors.find(...)` per anchor plus a `sharedText` slice).
+Every citation in every catalog now re-masks fences, re-slugs every heading, rebuilds explicit anchors, sorts and re-derives section ends.
+Fix: index once per source document and pass the index into `validateCatalogCitations`.
+
+### A13 — Low — Minor
+- `packages/conformance/src/catalog.ts:1` places the relative `./markdown.js` import above the `@bdp/protocol` package import (import-order; lint config not in the packet).
+- `development-process-actions.ts:57`: `delivered: response !== undefined` now conflates “resolved with `undefined`” with rejection; previously any fulfilment meant `delivered: true`.
+- `development-process-actions.ts:70–80`: `release-response` has no once-only guard; a second invocation would push a second digest and break the `equal` expectations (`replayObservations: 2`). Unreachable in the two supplied plans.
+- `markdown.ts:43` (`^ *<a …`) accepts arbitrarily indented anchor lines, and indented (4-space) code blocks are not masked, so an anchor inside one is treated as real.
+
+---
+
+## B. Questions requiring omitted context (not scored as defects)
+
+- **Q1 (ties to A2/A4 risk).** `development-matrix.test.ts` 30 s cap vs cleanup ownership: a Vitest timeout fails the test but cannot cancel the in-flight `runDevelopmentMatrix` promise, and the test body does not pass a test-context signal. With two additional child-process plans inside one aggregate budget, a timeout plausibly leaves an orphaned parked child and a continuing promise. `runDevelopmentMatrix`’s signature, signal handling, and `finally`/cleanup are not supplied. Needed: `runDevelopmentMatrix` and `createDevelopmentProcessHarness`.
+- **Q2.** The progress note’s validation list (“diagnostic matrix/inventory, original HTTP/process suites, normative metadata guard and existing sequence lifecycle”; “No full repository suite was run for this slice”) does not clearly name the conformance catalog/citation/profile-boundary suites — the most invasive part of this delta (new `markdown.ts`, rewritten `profile-catalog-boundaries.test.ts`, plus two `bdp.md` text edits that feed `selectedText` containment). If those suites were not run, the delta’s highest-risk claim (whole-spec anchor indexing and citation ownership against the real `bdp.md`) is unverified. Needed: the exact suites executed.
+- **Q3.** Slug-rule blast radius. The new rule maps each space to `-`, so any heading with space-delimited punctuation changes anchor (`#part-i-read` → `#part-i--read`; the new boundary test asserts `owners.has("#part-i-read") === false`). No catalog anchor string was changed anywhere in this delta, and `packages/conformance/catalog/*.json` is not supplied. Needed: confirmation that no existing citation anchor in the unchanged normative catalogs corresponds to a heading containing a space-surrounded punctuation mark.
+- **Q4.** `read-update-catalog-v1.json` cites only “A member whose `@name` reference names a creating member of the same request whose disposition was transient is transient by the same rule”, which establishes *transience*, not a code. The manifest asserts `fresh-dependent.dependent-code === "idempotency-in-progress"` with `retry: "after-delay"` for a **fresh** key. If the spec names a different transient code for dependency-derived transience, the bounded observation encodes an implementation detail while reporting a pass. Needed: the full `#duplicate-keys-and-retained-dispositions` text (only 3234–3273 was supplied, which covers the four outcomes, not this rule).
+- **Q5.** `excludedIdentity: "beads/reserved"` is only meaningful if `beads/reserved` is the live reserved path in the `alias-allocation` plan. The plan’s earlier actions are outside the hunks. If the literal ever diverges, `differsFromExcludedIdentity` becomes vacuously `true` while still reporting `differs-from-reserved-alias`. Needed: the complete `development.read-update.alias-allocation` action list.
+- **Q6.** Alias-witness exhaustiveness. The diff shows 11 witnesses inserted immediately after the alias mutations visible in hunk context, but the complete action lists for the retained-reference, recorded-miss and pinned plans are not supplied, so I cannot confirm that *every* remaining status-only alias precondition now has a direct state witness. Note also that the five absence witnesses (`…-state` 404 / `resource-not-found`) would pass identically without `resolveAlias`, so only the six 307 witnesses actually depend on redirect-disabled resolution.
+- **Q7.** `developmentActions`’ parameter list and the `transport` type are elided (the hunk starts mid-body at line 62). Whether `resolveAlias` exists on both the SDK and raw transports, whether `get` is optional, and whether detaching the method is safe cannot be established. The new negative test never reaches the transport (the guard throws first), so it does not cover this.
+- **Q8.** `historicalResolution` and the normative schema. The packet states no schema changes are present and no schema file is among the 14. `bdp.md` 3747–3750 (“### Profile schema inventory … They include every”) is truncated mid-sentence. If the discovery schema is closed and does not already define the member, the table at 3745 and the schema bundle now contradict each other (→ would raise A3 to High). Also unverified: that `#historical-resolution` exists as an anchor (intra-spec links are not covered by citation validation) and that the section it names sits in a part compatible with “in every profile”. Needed: the discovery schema and the `#historical-resolution` section.
+- **Q9.** Whether the deleted tombstone-boundedness sentence is quoted as `selectedText` by any unchanged catalog (would fail `validateCatalogCitations`), and whether the same claim is repeated elsewhere in `bdp.md` or the design docs. Only the diff hunk for that paragraph was supplied.
+- **Q10.** Credential-admission ordering for the new early 404: `development-runtime.ts` lines 1–162 are not supplied, and the new test always sends `Bearer ${token}`. If credential admission is downstream of the new throw, unauthenticated probes can now distinguish unknown (`404`) from known (`405`) development operations. Bounded by this being a non-attesting dev authority with a fixed credential.
+- **Q11.** Report-counting convention: “actions”/“assertions” totals in A1 assume the baseline 221/705 convention (one count per action object / per assertion entry), which is what makes the baseline README and progress-doc figures agree. The saved report is not supplied.
+
+---
+
+## C. Did these exact repairs close the prior council’s gaps?
+
+- **Owner-zero — closed.** The deleted baseline used `let owner = 0` with `expect(owner).toBeLessThanOrEqual(rank[...])`, so owner `0` (preface/shared/end matter) satisfied **every** profile. The replacement uses `number | undefined`, an exhaustive `sections` title map, and `assertProfileCitation` throwing on `profile === undefined`. Residual: the three `sharedAnchors` ranks and the classification of “Status and conformance” and “The uniformity principle” as Read are hardcoded, and only the three shared anchors carry a `sharedText` excerpt bound — so a Read scenario citing a higher-profile statement nested under those two blanket-Read sections would still pass (Medium-grade residual; I cannot check whether such content exists, since the spec body is not supplied).
+- **Slug parsing — closed for the Part headings** (`#part-i--read` accepted, `#part-i-read` rejected, asserted both in `catalog.test.ts` and against the real spec in the boundary test). Residuals A10, A11, Q3.
+- **Alias status-only preconditions — partially closed.** 11 direct witnesses now sit before the retained-replay assertions, and `resolveAlias` is fenced to GET under `${scope}alias/` with a dedicated negative test. Weakened by A6 (`no-body`), A7 (naming), and unverifiable exhaustiveness (Q6).
+- **Pending race fencing — closed for “which request completed.”** `release-response` awaits the original Fetch promise rather than `wait("turn-completed", n)`, so a competing request cannot be mistaken for the original’s completion. Rejection is consumed at submit time (`development-process-actions.ts:51–57`), and `close()` aborts → the chain resolves `undefined` → `delivery` settles, so no hang or unhandled rejection on mid-plan failure. Residual: A9, and the comment’s “existing Fetch transport bounds the complete response wait” rests on `development-process.ts`, which is not in the packet.
+- **Unknown / shared / duplicate / fenced anchors.** Unknown anchors fail closed; explicit/generated and explicit/explicit collisions now throw and are surfaced as a citation issue via the new `try/catch` in `catalog.ts`; fence masking is preserved **and** the alias decision correctly slices the *unmasked* markdown (`markdown.ts:49`), so a fenced block between an anchor and the next heading no longer lets the anchor swallow that heading’s section. Interior anchors are bounded to anchor→next heading. Shared ownership is handled only for the three hardcoded matrix anchors.
+- **Preserved catalog obligations / schema semantics.** The six flipped rows keep their original ids and inventory order, each carries a limits string, `claim-atomicity` and the expiry/fault rows stay omitted, collision-skipping stays unqualified, and 48+33 → 54+27 still sums to 81. All newly referenced `action.assertion` pairs in `read-update-coverage-v1.json` resolve to assertion ids present in the manifest (checked individually). Not inventoried anywhere: `outside-retry.retained-outside` / `retained-original-absent`, which are the strongest retained-postimage evidence in the delta. Also undisclosed in the limits strings: the post-release presentation of the reserved `tail` key with the differing identity (`beads/wrong` → expected `idempotency-conflict`) is never observed, so the reservation row’s “release into a retained claim” half rests only on the same-identity sequence replay.
+
+---
+
+## D. Files and ranges actually read
+
+Read in full as supplied:
+- The complete 14-file unified diff (changed hunks only; unchanged regions explicitly not supplied).
+- `apps/bdptest/test-support/development-process-actions.ts` 1–139 (complete current file).
+- `packages/conformance/src/markdown.ts` 1–116 (complete current file).
+- `docs/specs/bdp.md` 3234–3273 and 3714–3750 (current excerpts).
+
+**Truncated / unread — no coverage claimed for any of this:**
+- `apps/bdptest/src/development-matrix.test.ts`: everything outside the four hunks, including `developmentActions`’ signature and the `transport` type, the elided target construction (~62–70), `createDevelopmentReadUpdateArtifactBundle`, `runDevelopmentMatrix`, and the elided assertions between the two later hunks (~216–229).
+- `apps/bdptest/src/development-server.test.ts`: `start()`, `h.post/h.get`, `parseReadUpdateProblem`, `resource`, `jsonBody`, and all other tests.
+- `apps/bdptest/test-support/development-process.ts`: not supplied at all — park/dispatch semantics, `child.sequence/wait/get/send`, and any Fetch timeout.
+- `packages/server/src/development-runtime.ts`: 1–162, the elided read path (~168–208), and everything after the second hunk; `empty()`, `ReceivingError` status mapping, and credential admission.
+- `packages/conformance/src/catalog.ts`: all non-hunk regions; `CatalogValidationError`, issue aggregation, `parseScenarioCatalog`.
+- `packages/conformance/src/catalog.test.ts`: `catalogWithCitation`, `expectCitationIssue`, all pre-existing tests.
+- `packages/conformance/src/profile-catalog-boundaries.test.ts`: only the diff.
+- `read-update-manifest-v1.json`: only inserted/changed hunks — the complete alias/pinned/allocation plans, the `development.request` executor contract, `normalize: "scope-relative-url"` semantics, and fixture/setup definitions.
+- `read-update-coverage-v1.json` / `read-update-catalog-v1.json`: only changed hunks; the other 75 rows and all other diagnostic citations.
+- `docs/specs/bdp.md`: everything outside the two excerpts and two hunks — the full `#idempotency-keys` section, `#historical-resolution` (existence unverified), `### Profile schema inventory` past 3750, the complete heading inventory, and the three shared matrix anchors’ contents.
+- `packages/conformance/catalog/*.json` (normative catalogs) and the discovery schema bundle: not supplied.
+- The saved development report artifact: not supplied, so the 253/797 figures could not be cross-checked against an artifact.
+- No commands, tests, or repository scans were run; coverage is limited to the packet.
+
+---
+
+## E. Known bounded exclusions relevant to this packet (not regressions)
+
+- Write-profile conformance claims remain disabled; the development lane is non-attesting (`claimEligible: false`, `kind: diagnostic`, `development.read-update.*` ids).
+- The private Transactional implementation is intentionally bounded; Transactional discovery members remain prohibited in the lower profiles.
+- Still omitted by design and consistent with the new limits strings: `claim-atomicity` (the linearizable-claims paragraph at `bdp.md` 3243–3248 is unobserved), expired-creator-binding and all expiry/retention/restoration rows, rate-limited / temporarily-unavailable transients, distributed or multiple writers, authorization-change and policy-change variants, installed-schema and owned-Link contracts, internal storage faults, and admission-midpoint atomicity.
+- Deterministic allocation collision-skipping remains an unqualified obligation on the allocation row; the single non-collision observation (A7) is explicitly not evidence for it.
+- Historical revision resolution and external pinned-reference fetch behavior remain outside the alias/pinned observations.
+- Discovery, Operation Directory and public profile claims remain gated.
+
+---
+
+## F. Bottom line
+
+Actionable now, in order: **A1** (evidence counts cannot describe one run, and the figures are unenforced), **A2** (a stated invariant contradicted by the same diff), **A3/Q8** (new normative discovery member without a value domain, a schema, or a conformance row), **A4** (storage-bound claim reversed with no mitigation at the site), **Q2** (the suites that actually guard the riskiest change are not named in the validation claim), **Q3** (slug-rule blast radius on unchanged catalog anchors), **Q1** (30 s cap vs non-cancellable child-process ownership).
+
+The four repairs the delta is named for do appear substantively closed rather than merely test-passing: owner-zero (`0` no longer satisfies every profile), Part-anchor slugging, original-response fencing in place of a dispatch count, and direct alias state witnesses before retained-replay. Their residuals are A6/A7/A9/A10 plus the hardcoded shared-ownership classification. I could not establish baseline-vs-regression for the `/development/*` read path (A5) or for alias-witness exhaustiveness (Q6) from the supplied excerpt.

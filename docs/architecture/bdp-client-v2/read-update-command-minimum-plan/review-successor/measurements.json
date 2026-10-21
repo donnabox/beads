@@ -1,0 +1,149 @@
+{
+  "candidateBase": "6f5e607bf338dd166820bfa3f9f480f7cd54c5f1",
+  "actualMergedParent": "6f5e607bf338dd166820bfa3f9f480f7cd54c5f1",
+  "draftFormatting": "JSON indent2 new span only; final formatter must remeasure",
+  "actions": 11,
+  "assertions": 47,
+  "oldBaselineObjects": 50,
+  "oldContinuationObjects": 5,
+  "otherCoverageObjects": 129,
+  "manifest": {
+    "diskBytes": 3689484,
+    "compactBytes": 1912593,
+    "nodes": 98833,
+    "growthCompact": 9413,
+    "growthNodes": 504,
+    "compactSha256": "f6a536cfbf757a0e4f6dec90ac893de0b28c9b3a1f2d77a9b13cd0f5fad49515",
+    "diskSha256": "10a7c6f97a280cf88e58d3aa2039fe580904b74bfffcebda4747fc3c1a34b583"
+  },
+  "coverage": {
+    "diskBytes": 720627,
+    "growth": 2320,
+    "nodes": 14819,
+    "diskSha256": "4120abfe2f724fe34b3868bd3533b181e18479768d5de752b5098c6288dbb395"
+  },
+  "oldDerivativeEnvelope": {
+    "bytes": 1904291,
+    "nodes": 98364
+  },
+  "proposedDerivativeEnvelope": {
+    "bytes": 1913704,
+    "nodes": 98868,
+    "basis": "Same disjoint append-only row for all36 old transformations; new response-only control changes no manifest. Old row recipes and order unchanged."
+  },
+  "proposedHistoricalDataAllowances": [
+    72470,
+    22013,
+    17212,
+    7966
+  ],
+  "reconstruction": {
+    "parentManifestSha256": "80f74625b6074892b707365859572f8bc0b8c10478d36ac307370ef6027f5fc3",
+    "parentCoverageSha256": "85b717f1817d8ea295d0a7c51f8914bdfb942d1786d414924d3d5f80be7cd10a",
+    "manifestWholeParentExact": true,
+    "coverageWholeParentExact": true,
+    "oldRawScenarioSpansExact": true,
+    "coverageOnlyReplacedId": "read-update.http.command-minimum-fields"
+  },
+  "wire": {
+    "positive": {
+      "http": 11,
+      "children": 2
+    },
+    "negative": {
+      "expectedHttp": 2,
+      "maximumHttp": 11,
+      "children": 2
+    },
+    "aggregate": {
+      "http": 2314,
+      "children": 58,
+      "authoredHttp": 2270,
+      "setupHttp": 44
+    },
+    "combined": {
+      "expectedHttp": 2327,
+      "maximumHttp": 2336,
+      "children": 62
+    },
+    "incrementalFullCi": {
+      "expectedHttp": 24,
+      "children": 5,
+      "basis": "Full aggregate grows11HTTP/1child; two selected callbacks add11+2HTTP/4children. Existing selections name old IDs; smallExecutionSet is a closed include-list excluding new row."
+    }
+  },
+  "headroom": {
+    "manifestDiskTo4MiB": 504820,
+    "maxDerivativeNodesTo100000": 1132,
+    "coverageTo1MiB": 327949
+  },
+  "routes": {
+    "orderedCount": 284,
+    "unchanged": true,
+    "orderedCompactSha256": "664c7550f9fa5eb97b01f83da9cafbf1c2d9a4573869801e6a581d1daff7331c",
+    "existingExactConfigurationDigest": "26da5a286d9887bebbb0fcf73a92c5d09aa7b7fcfdcc9ed91f767f4db1578c69",
+    "basis": "stdlib translation of artifactRoutes; unchanged ordered routes plus unchanged all remaining config inputs preserves existing configuration digest; authoring must verify existing exact assertion",
+    "firstOccurrenceProof": [
+      {
+        "routeIndex": 2,
+        "method": "GET",
+        "url": "https://reference.invalid/acme/beads/w1-a",
+        "firstScenario": "read-update.singleton.document-patch-merge-replace",
+        "firstAction": "read-patched"
+      },
+      {
+        "routeIndex": 3,
+        "method": "GET",
+        "url": "https://reference.invalid/acme/beads/w1-b",
+        "firstScenario": "read-update.singleton.document-patch-merge-replace",
+        "firstAction": "link-target-before"
+      },
+      {
+        "routeIndex": 258,
+        "method": "POST",
+        "url": "https://reference.invalid/acme/operations/create-bead",
+        "firstScenario": "read-update.singleton.idempotency-key-required",
+        "firstAction": "key-route-create-bead"
+      },
+      {
+        "routeIndex": 259,
+        "method": "POST",
+        "url": "https://reference.invalid/acme/operations/update-bead",
+        "firstScenario": "read-update.singleton.idempotency-key-required",
+        "firstAction": "key-route-update-bead"
+      },
+      {
+        "routeIndex": 266,
+        "method": "POST",
+        "url": "https://reference.invalid/acme/operations/sequence",
+        "firstScenario": "read-update.singleton.idempotency-key-required",
+        "firstAction": "sequence-key-empty"
+      }
+    ]
+  },
+  "bodyBytes": {
+    "postCount": 9,
+    "sum": 1112,
+    "max": 190,
+    "getBodyCount": 0
+  },
+  "coverageCounts": {
+    "required": 130,
+    "before": {
+      "bounded-observation": 55,
+      "omitted": 75,
+      "wholeContract": 34,
+      "uncovered": 96
+    },
+    "after": {
+      "bounded-observation": 56,
+      "omitted": 74,
+      "wholeContract": 35,
+      "uncovered": 95
+    }
+  },
+  "catalogPosition": {
+    "newIndex": 78,
+    "maxExistingExecutableRuIndex": 75
+  }
+}

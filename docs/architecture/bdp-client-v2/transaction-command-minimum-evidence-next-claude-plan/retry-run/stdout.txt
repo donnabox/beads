@@ -1,0 +1,80 @@
+Review of frozen PLAN v3 — no tools run, no files read or written. All judgments below are derived from the plan text and the ten supplied source excerpts only; where the excerpts don't cover a dependency I say so rather than calling it a defect.
+
+---
+
+## F1 — requiredProfile `read-update` admissibility under a `transactional` run is unverified (highest impact)
+
+- **Severity:** High impact / **unverified** (missing evidence, not a confirmed defect)
+- **Location:** §"Source and dependency" ("requiredProfile `read-update` … in the private Transactional manifest"; "neither public admission nor the runner needs widening") vs `runner.ts:367-376` (`applicable` built from `metadata`), config `profile: "transactional"` at `transactional-matrix.test.ts:213,257`
+- **Contradiction/gap:** The only cited support is `artifact-bundle.ts:214-227`, which the plan describes as comparing a row's declared requiredProfile against the *canonical* requirement — a bundle-validation check, not the runner's applicability filter. Nothing in the supplied excerpts shows the runner admits a `read-update`-requirement row when the run profile is `transactional`. Per the plan's own wording ("ahead of the TX-only rows"), this would be the first non-TX-requirement row in the TX manifest, so there is no in-file precedent.
+- **Impact:** If applicability is exact-match rather than profile-satisfaction: the row is silently skipped in the positive cohort (no +11 wire, no first-occurrence change, route digest unchanged → the entire route/digest/count/CI arithmetic is void), and both controls throw at `runner.ts:370-373` ("unknown or inapplicable") before any wire.
+- **Fix:** Add a static case pinning the predicate that builds `metadata`/`applicable` for a lower-profile requiredProfile under `profile: transactional`, and in the positive cohort pin that the new ID appears in `result.selectedScenarioIds` for the unfiltered run. Resolve this before spending the measurement amendment.
+
+## F2 — "+11 per ordinary traversal / old-row assertions stay intact" is not established for order-sensitive gates
+
+- **Severity:** Medium
+- **Location:** §"Recurring CI amplification", group 1 (40 invocations, "Normally +11 exchanges/+1 row child each") vs `observe` signature `transactional-matrix.test.ts:103-104` and the wrapper call at `:284`
+- **Contradiction:** The plan itself states "The app's existing afterExchange hook has no action ID," yet it demonstrates row-order reasoning for only three of five groups (global invalid receipt credentials → +9; the abort pair → "first request changes from old anonymous GET to new POST"; manifest-mutation targets → retargeted by ID at app line 605). The new row is now first and uses 6 of the 15 declared routes — POST create-bead/batch/sequence/update-bead, GET beads/?limit=32, GET events/ — precisely the method/URL pairs an order-sensitive gate would match first.
+- **Impact:** Any gate keyed on method+URL or on "first matching exchange" now fires on the new row, which can halt it early (so ≠ +11), satisfy or divert the existing control before its intended old-row exchange, and invalidate 454 / 473 / 50.
+- **Fix:** Before freeze, inventory all 52 gate predicates against the new row's six routes plus its internal receipt GET; for each order-sensitive gate add row/session/ordinal scoping (or exclude the new row via the new `scenarioSelection` pass-through) and re-derive per-group deltas.
+- **Evidence note:** Gate bodies are not in the supplied excerpts; `line 103`'s "never a response replacement" and the receipt-keyed `deniedReceiptUrls.add` at `:282` reduce but do not close this. This is an unclosed inventory obligation, not an observed failure.
+
+## F3 — Path 5's premise and all source pins are stale against clean `102e140`
+
+- **Severity:** Medium
+- **Location:** §"Source and dependency" (HEAD `bd2178dd`, tree `062c3277`, source-binding `755192fe…`, "explicitly dirty, frozen catalog draft", "Do not treat this working draft as merged"); §"Five source paths" item 5 ("currently proposed mapping test explicitly asserts absence in all three manifests"; "without executable credit" title)
+- **Contradiction:** Per the stated session state, the catalog source is now clean at `102e140` ("fix(conformance): catalog mutation command minimum-field rule") with `bd2178dd` as its parent — so the draft is committed and the plan's pins plus its "not merged" framing describe a state that no longer exists. Path 5's exact assertions sit in the area that commit touched.
+- **Impact:** Authoring from the stale description risks editing a mapping test whose semantics/line sites moved, or leaving the plan's own "known stale test" unfixed. §Measurement survives, since TX artifacts are stated unchanged.
+- **Fix:** At reanchor, replace HEAD/tree/source-binding pins with `102e140`'s values, re-read the mapping test as committed, and restate path 5's TX-presence / RU-omission / Read-exclusion / selectedText / title claims from that file before editing. (This is the gate the request already names; scoped here to the exact stale sentences.)
+
+## F4 — Header sets for actions 10–11 (and action 9's raw evidence) are unspecified
+
+- **Severity:** Low
+- **Location:** Row table entries 9/10/11 vs §"Smallest useful row" ("Every raw action requires exact authored header/body observations") and §Authority (`5818-5822` preserves read/receipt minima)
+- **Contradiction:** M/F/P/Z/O are assigned only to actions 1–8. Action 9 says "No minimum headers sent"; actions 10–11 say nothing, even though any of the three fields on a GET engages read-minimum enforcement and would change the expected 200 / count-3 / `next:null` outcomes.
+- **Impact:** Two of the ten raw actions have an underdetermined authored-request oracle; a later author could add minima and hit an unexpected refusal, or quietly weaken the header pin.
+- **Fix:** State O (all three absent) explicitly for actions 10 and 11, name O for action 9's raw evidence, and cover that absence in the named ledger weakening guard.
+
+## F5 — The 473 "conservative maximum" omits a group whose semantics the plan defers
+
+- **Severity:** Low
+- **Location:** §CI table group 3 ("zero new wire; inspect failure continuation semantics … before freezing child count") vs "conservative row wire maximum across the 41 ordinary/full traversals plus two new controls is 41×11+22=473"
+- **Contradiction:** Continuation semantics are deferred for the child count of the five ready-metadata attempts but asserted as zero wire for the same five in the maximum.
+- **Impact:** 473 is not a hard bound if a mutated-ready session can still dispatch; the ceiling could be exceeded without the amendment the plan requires.
+- **Fix:** Either make "ready-metadata attempts dispatch zero exchanges" an explicit pre-freeze check, or state the ceiling as 473 + 5×11 pending that inspection.
+
+## F6 — The 208/225 HTTP totals presume zero bootstrap-child wire
+
+- **Severity:** Low
+- **Location:** §"Measurement and execution gates" ("Existing baseline is 192 HTTP/21 children … expected total 208 HTTP/26 sequential child launches … including each bootstrap")
+- **Contradiction:** 192 and 203 each contain one bootstrap; the two controls add two more bootstraps (26 = 22+2+2 counts them) while the HTTP total adds only their row exchanges (4 and 1).
+- **Impact:** If bootstrap dispatch is B > 0, the true totals are 208+2B expected / 225+2B maximum, and a cohort trips "no replacement attempt" on an accounting artifact.
+- **Fix:** Pin measured bootstrap dispatch as B = 0 in the preflight freeze, or carry 2B in both figures.
+
+## F7 — `unobservedIds` delta is the one unquantified counter
+
+- **Severity:** Low
+- **Location:** Path 3 ("Unplanned 238→237; before execution the new row remains in unobservedIds")
+- **Contradiction:** Every other counter has an exact before→after (13→14, 238→237, 251/256 unchanged, 20→21, 21→22); "remains" holds only if `unobservedIds` is derived from catalog-required IDs, not from authored rows.
+- **Impact:** If authored-derived, an exact unobserved-count literal shifts by +1 and fails unexamined — against "Inventory and update every affected literal … assertion".
+- **Fix:** State the derivation and the exact before→after value in the same freeze.
+
+## F8 — Two control preconditions outside the supplied evidence
+
+- **Severity:** Low (verification items)
+- **Location:** (a) `runner.ts:378-379` `preflightExactPlans(selected…)` vs `configuration.routes` still declaring all 15 at `:214`; (b) `resolveCredentials` at `:225` (body truncated)
+- **Gap:** (a) The plan asserts no filtered one-row artifact is needed, but the excerpts show only the converse direction is tested (the existing "omitted-route preflight" proves a *missing used* route fails); nothing shows preflight tolerates declared-but-unused routes for a one-row selection. (b) The readonly control's "actual 403 at exactly 1 exchange" requires the resolver to issue the `reader` handle for POST operations/create-bead; the existing "set credential-denied 2" invocations make this likely but cover different routes.
+- **Impact:** (a) both controls could fail preflight with zero wire; (b) the readonly cohort yields a harness error and 0 exchanges instead of the planned 1/2, and stops distinguishing refusal from read-control bypass.
+- **Fix:** Pin both in the preflight static cases before freezing 4/2 and 1/2.
+
+---
+
+## Checked and found consistent (no finding)
+
+- **Route first-occurrence order is correct.** Re-deriving from the new row's six `family: "http"` routes (create-bead, batch, sequence, update-bead, beads/?limit=32, events/) prepended to the old `:184-200` order minus repeats yields exactly the plan's 15-entry array; old and new method/URL **sets are equal** — no route added, dropped, or needing a new grant, which is what makes "membership unchanged, order changed" hold.
+- **Preimage shape and length.** The five-field set matches `runner.ts:1584-1594`, with `approvedSyntheticManifestDigest` absent from this file's binding (`:263-289` shows only `execute` and `configuration`); the plan's field sequence is correct alphabetical order for `sortJsonValue`, as is `method`/`url` within each route. I recomputed the serialized preimage length by hand: **1228 bytes**, matching for both orders. The two hash values themselves are **unverified** (no execution).
+- **Array-order retention** in `sortJsonValue` is adequately corroborated by the plan reproducing the *existing* hash from the existing interleaved, non-sorted array at `:184-200`.
+- **Ledger arithmetic is internally consistent:** 251−13=238 and 251−14=237; 192+11=203; 203+4+1=208; 203+11+11=225; 22+2+2=26; group sums 40 and 52; 40×11+9+5=454; 41×11+22=473; 40+1+5+4=50; headroom 4096/4096/64/1024; 1 client + 10 raw = 11 exchanges and 199+11=210 actions.
+- **The v3 Low fix is right:** `result.scenarioSelection` / `result.selectedScenarioIds` match `runner.ts:407-413` (top level of `common`, not under `declarations`), and catalog-order preservation matches `:376`.
+- **Position/effect ledger holds** across the row: pos-1/2/3, the stale update not advancing position, 409s producing no effect, 3 events and 3 collection items at pos-3.
+- **The positional hazard at app line 605** (`value.scenarios[0]` → retarget by ID `transactional.batch.atomic-commit`) is correctly identified, and the warning that the line-141 misprofile control must keep targeting a TX-owned row is coherent with the bundle-side requiredProfile comparison.

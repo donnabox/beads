@@ -1,0 +1,392 @@
+[
+  {
+    "afterSha256": "6d1e09a60095e8b964c3c459d4d8353cfef1775aa5ef84132838db849b04b07b",
+    "beforeCopy": "before/node-version.capture.txt",
+    "beforeOrigin": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation3-root-fixed-protocol-preparation-1/proposals/node-version.capture.txt",
+    "beforeSha256": "9622a32504d70deae15cab955c34ac4f79cddc0e55d8e4ed46652c5bedeb532f",
+    "forward": "deltas/typecheck.capture.txt.patch",
+    "inverse": "deltas/typecheck.capture.txt.inverse.patch",
+    "inverseWholeBytesExact": true,
+    "literalChanges": [
+      {
+        "after": "STAGE = 'typecheck'\n",
+        "before": "STAGE = 'node-version'\n",
+        "class": "fixed STAGE target",
+        "occurrences": 1
+      },
+      {
+        "after": "ARGV = ['/opt/homebrew/opt/python@3.14/bin/python3.14', '/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation-preparation-3/run.py', 'final', 'typecheck']\n",
+        "before": "ARGV = ['/opt/homebrew/opt/python@3.14/bin/python3.14', '/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation-preparation-3/run.py', 'final', 'node-version']\n",
+        "class": "fixed run.py ARGV stage",
+        "occurrences": 1
+      },
+      {
+        "after": "OWNED_ROOT_OUTPUT = '/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation3-root-next5-dispatch-1/typecheck'\n",
+        "before": "OWNED_ROOT_OUTPUT = '/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation3-root-first4-dispatch-1/node-version'\n",
+        "class": "exclusive output stage and fresh prefix",
+        "occurrences": 1
+      },
+      {
+        "after": "ROOT = Path('/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation3-root-next5-dispatch-1/typecheck')\n",
+        "before": "ROOT = Path('/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation3-root-first4-dispatch-1/node-version')\n",
+        "class": "B/C output receipt path stage and fresh prefix",
+        "occurrences": 2
+      },
+      {
+        "after": "assert provisional['stage']=='typecheck' and provisional['accepted'] is False\n",
+        "before": "assert provisional['stage']=='node-version' and provisional['accepted'] is False\n",
+        "class": "B expected provisional receipt stage",
+        "occurrences": 1
+      },
+      {
+        "after": "    value={'stage':'typecheck','phaseAToolId':ACTUAL_A_TOOL_ID,'phaseAToolRawExit':ACTUAL_A_TOOL_RAW_EXIT,'phaseAToolReceiptAttribution':'trusted root actual ordinary-tool observation; independently decoded raw tool receipt UNRETAINED unless separately actually supplied','originReceiptSha256':hashlib.sha256(origin_raw).hexdigest(),'provisionalReceiptSha256':hashlib.sha256(provisional_raw).hexdigest(),'rootOriginMonotonic':ORIGIN,'observerPid':os.getpid(),'observerPgid':os.getpgrp(),'probePid':p.pid if p is not None else None,'probeCreationPgid':p.pid if p is not None else None,'probeRawExit':p.returncode if p is not None else None,'probeBothEOF':complete,'probeDirectReaped':complete and p is not None and p.returncode is not None,'streams':facts,'taskPIDs':known_pids,'taskPGIDs':known_groups,'selectionOrigins':provisional['knownTaskRegistry']['origins'],'matchingTaskRows':matching if complete else None,'censusEndMonotonic':time.monotonic(),'failure':failure,'accepted':False,'actualObserverToolTerminal':None,'finalClockWitness':None}\n",
+        "before": "    value={'stage':'node-version','phaseAToolId':ACTUAL_A_TOOL_ID,'phaseAToolRawExit':ACTUAL_A_TOOL_RAW_EXIT,'phaseAToolReceiptAttribution':'trusted root actual ordinary-tool observation; independently decoded raw tool receipt UNRETAINED unless separately actually supplied','originReceiptSha256':hashlib.sha256(origin_raw).hexdigest(),'provisionalReceiptSha256':hashlib.sha256(provisional_raw).hexdigest(),'rootOriginMonotonic':ORIGIN,'observerPid':os.getpid(),'observerPgid':os.getpgrp(),'probePid':p.pid if p is not None else None,'probeCreationPgid':p.pid if p is not None else None,'probeRawExit':p.returncode if p is not None else None,'probeBothEOF':complete,'probeDirectReaped':complete and p is not None and p.returncode is not None,'streams':facts,'taskPIDs':known_pids,'taskPGIDs':known_groups,'selectionOrigins':provisional['knownTaskRegistry']['origins'],'matchingTaskRows':matching if complete else None,'censusEndMonotonic':time.monotonic(),'failure':failure,'accepted':False,'actualObserverToolTerminal':None,'finalClockWitness':None}\n",
+        "class": "B published receipt stage",
+        "occurrences": 1
+      },
+      {
+        "after": "assert census['stage']=='typecheck' and census['accepted'] is False\n",
+        "before": "assert census['stage']=='node-version' and census['accepted'] is False\n",
+        "class": "C expected census receipt stage",
+        "occurrences": 1
+      },
+      {
+        "after": "witness={'stage':'typecheck','rootOriginMonotonic':origin['originMonotonic'],'postTerminalWitnessMonotonic':POST_TERMINAL_WITNESS,'completedInvocationAndObservationUpperBoundSeconds':elapsed,'strictUnder115':True,'phaseBActualToolId':ACTUAL_B_TOOL_ID,'phaseBActualToolRawExit':ACTUAL_B_TOOL_RAW_EXIT,'phaseBToolTerminalAttribution':'trusted root actual ordinary-tool observation; raw tool receipt UNRETAINED unless actually separately supplied','originReceiptSha256':hashlib.sha256(origin_raw).hexdigest(),'censusReceiptSha256':hashlib.sha256(census_raw).hexdigest(),'accepted':False,'requiresIndependentRootFullConjunction':True,'noNewRuntimeChildOrProbe':True,'laterStaticAuditAndGitExcludedFromRuntime':True}\n",
+        "before": "witness={'stage':'node-version','rootOriginMonotonic':origin['originMonotonic'],'postTerminalWitnessMonotonic':POST_TERMINAL_WITNESS,'completedInvocationAndObservationUpperBoundSeconds':elapsed,'strictUnder115':True,'phaseBActualToolId':ACTUAL_B_TOOL_ID,'phaseBActualToolRawExit':ACTUAL_B_TOOL_RAW_EXIT,'phaseBToolTerminalAttribution':'trusted root actual ordinary-tool observation; raw tool receipt UNRETAINED unless actually separately supplied','originReceiptSha256':hashlib.sha256(origin_raw).hexdigest(),'censusReceiptSha256':hashlib.sha256(census_raw).hexdigest(),'accepted':False,'requiresIndependentRootFullConjunction':True,'noNewRuntimeChildOrProbe':True,'laterStaticAuditAndGitExcludedFromRuntime':True}\n",
+        "class": "C published witness stage",
+        "occurrences": 1
+      },
+      {
+        "after": "EXECUTION_ACCEPTANCE_PATH = Path('/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation3-next5-root-execution-acceptance-1/acceptance.json')\n",
+        "before": "EXECUTION_ACCEPTANCE_PATH = Path('/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation3-root-execution-acceptance-1/acceptance.json')\n",
+        "class": "exact future next5 manifest path",
+        "occurrences": 1
+      },
+      {
+        "after": "assert type(execution_acceptance['approvedStages']) is list and execution_acceptance['approvedStages'] == ['node-version','pnpm-version','workspace-install','bind-workspace-tools','typecheck','format-check','lint','fresh-build','bind-fresh-build']\n",
+        "before": "assert type(execution_acceptance['approvedStages']) is list and execution_acceptance['approvedStages'] == ['node-version','pnpm-version','workspace-install','bind-workspace-tools']\n",
+        "class": "explicit scope assertion full first4 to full first9",
+        "occurrences": 1
+      },
+      {
+        "after": "    if STAGE == 'typecheck': root.parent.mkdir(mode=0o700, exist_ok=False)\n",
+        "before": "    if STAGE == 'node-version': root.parent.mkdir(mode=0o700, exist_ok=False)\n",
+        "class": "exclusive first-parent discriminator typecheck for ALL five",
+        "occurrences": 1
+      }
+    ],
+    "path": "proposals/typecheck.capture.txt"
+  },
+  {
+    "afterSha256": "690c9ed622baaa18cb58e02b0ecdd6e96eb74e34256f76fae980f522b4a03038",
+    "beforeCopy": "before/node-version.capture.txt",
+    "beforeOrigin": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation3-root-fixed-protocol-preparation-1/proposals/node-version.capture.txt",
+    "beforeSha256": "9622a32504d70deae15cab955c34ac4f79cddc0e55d8e4ed46652c5bedeb532f",
+    "forward": "deltas/format-check.capture.txt.patch",
+    "inverse": "deltas/format-check.capture.txt.inverse.patch",
+    "inverseWholeBytesExact": true,
+    "literalChanges": [
+      {
+        "after": "STAGE = 'format-check'\n",
+        "before": "STAGE = 'node-version'\n",
+        "class": "fixed STAGE target",
+        "occurrences": 1
+      },
+      {
+        "after": "ARGV = ['/opt/homebrew/opt/python@3.14/bin/python3.14', '/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation-preparation-3/run.py', 'final', 'format-check']\n",
+        "before": "ARGV = ['/opt/homebrew/opt/python@3.14/bin/python3.14', '/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation-preparation-3/run.py', 'final', 'node-version']\n",
+        "class": "fixed run.py ARGV stage",
+        "occurrences": 1
+      },
+      {
+        "after": "OWNED_ROOT_OUTPUT = '/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation3-root-next5-dispatch-1/format-check'\n",
+        "before": "OWNED_ROOT_OUTPUT = '/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation3-root-first4-dispatch-1/node-version'\n",
+        "class": "exclusive output stage and fresh prefix",
+        "occurrences": 1
+      },
+      {
+        "after": "ROOT = Path('/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation3-root-next5-dispatch-1/format-check')\n",
+        "before": "ROOT = Path('/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation3-root-first4-dispatch-1/node-version')\n",
+        "class": "B/C output receipt path stage and fresh prefix",
+        "occurrences": 2
+      },
+      {
+        "after": "assert provisional['stage']=='format-check' and provisional['accepted'] is False\n",
+        "before": "assert provisional['stage']=='node-version' and provisional['accepted'] is False\n",
+        "class": "B expected provisional receipt stage",
+        "occurrences": 1
+      },
+      {
+        "after": "    value={'stage':'format-check','phaseAToolId':ACTUAL_A_TOOL_ID,'phaseAToolRawExit':ACTUAL_A_TOOL_RAW_EXIT,'phaseAToolReceiptAttribution':'trusted root actual ordinary-tool observation; independently decoded raw tool receipt UNRETAINED unless separately actually supplied','originReceiptSha256':hashlib.sha256(origin_raw).hexdigest(),'provisionalReceiptSha256':hashlib.sha256(provisional_raw).hexdigest(),'rootOriginMonotonic':ORIGIN,'observerPid':os.getpid(),'observerPgid':os.getpgrp(),'probePid':p.pid if p is not None else None,'probeCreationPgid':p.pid if p is not None else None,'probeRawExit':p.returncode if p is not None else None,'probeBothEOF':complete,'probeDirectReaped':complete and p is not None and p.returncode is not None,'streams':facts,'taskPIDs':known_pids,'taskPGIDs':known_groups,'selectionOrigins':provisional['knownTaskRegistry']['origins'],'matchingTaskRows':matching if complete else None,'censusEndMonotonic':time.monotonic(),'failure':failure,'accepted':False,'actualObserverToolTerminal':None,'finalClockWitness':None}\n",
+        "before": "    value={'stage':'node-version','phaseAToolId':ACTUAL_A_TOOL_ID,'phaseAToolRawExit':ACTUAL_A_TOOL_RAW_EXIT,'phaseAToolReceiptAttribution':'trusted root actual ordinary-tool observation; independently decoded raw tool receipt UNRETAINED unless separately actually supplied','originReceiptSha256':hashlib.sha256(origin_raw).hexdigest(),'provisionalReceiptSha256':hashlib.sha256(provisional_raw).hexdigest(),'rootOriginMonotonic':ORIGIN,'observerPid':os.getpid(),'observerPgid':os.getpgrp(),'probePid':p.pid if p is not None else None,'probeCreationPgid':p.pid if p is not None else None,'probeRawExit':p.returncode if p is not None else None,'probeBothEOF':complete,'probeDirectReaped':complete and p is not None and p.returncode is not None,'streams':facts,'taskPIDs':known_pids,'taskPGIDs':known_groups,'selectionOrigins':provisional['knownTaskRegistry']['origins'],'matchingTaskRows':matching if complete else None,'censusEndMonotonic':time.monotonic(),'failure':failure,'accepted':False,'actualObserverToolTerminal':None,'finalClockWitness':None}\n",
+        "class": "B published receipt stage",
+        "occurrences": 1
+      },
+      {
+        "after": "assert census['stage']=='format-check' and census['accepted'] is False\n",
+        "before": "assert census['stage']=='node-version' and census['accepted'] is False\n",
+        "class": "C expected census receipt stage",
+        "occurrences": 1
+      },
+      {
+        "after": "witness={'stage':'format-check','rootOriginMonotonic':origin['originMonotonic'],'postTerminalWitnessMonotonic':POST_TERMINAL_WITNESS,'completedInvocationAndObservationUpperBoundSeconds':elapsed,'strictUnder115':True,'phaseBActualToolId':ACTUAL_B_TOOL_ID,'phaseBActualToolRawExit':ACTUAL_B_TOOL_RAW_EXIT,'phaseBToolTerminalAttribution':'trusted root actual ordinary-tool observation; raw tool receipt UNRETAINED unless actually separately supplied','originReceiptSha256':hashlib.sha256(origin_raw).hexdigest(),'censusReceiptSha256':hashlib.sha256(census_raw).hexdigest(),'accepted':False,'requiresIndependentRootFullConjunction':True,'noNewRuntimeChildOrProbe':True,'laterStaticAuditAndGitExcludedFromRuntime':True}\n",
+        "before": "witness={'stage':'node-version','rootOriginMonotonic':origin['originMonotonic'],'postTerminalWitnessMonotonic':POST_TERMINAL_WITNESS,'completedInvocationAndObservationUpperBoundSeconds':elapsed,'strictUnder115':True,'phaseBActualToolId':ACTUAL_B_TOOL_ID,'phaseBActualToolRawExit':ACTUAL_B_TOOL_RAW_EXIT,'phaseBToolTerminalAttribution':'trusted root actual ordinary-tool observation; raw tool receipt UNRETAINED unless actually separately supplied','originReceiptSha256':hashlib.sha256(origin_raw).hexdigest(),'censusReceiptSha256':hashlib.sha256(census_raw).hexdigest(),'accepted':False,'requiresIndependentRootFullConjunction':True,'noNewRuntimeChildOrProbe':True,'laterStaticAuditAndGitExcludedFromRuntime':True}\n",
+        "class": "C published witness stage",
+        "occurrences": 1
+      },
+      {
+        "after": "EXECUTION_ACCEPTANCE_PATH = Path('/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation3-next5-root-execution-acceptance-1/acceptance.json')\n",
+        "before": "EXECUTION_ACCEPTANCE_PATH = Path('/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation3-root-execution-acceptance-1/acceptance.json')\n",
+        "class": "exact future next5 manifest path",
+        "occurrences": 1
+      },
+      {
+        "after": "assert type(execution_acceptance['approvedStages']) is list and execution_acceptance['approvedStages'] == ['node-version','pnpm-version','workspace-install','bind-workspace-tools','typecheck','format-check','lint','fresh-build','bind-fresh-build']\n",
+        "before": "assert type(execution_acceptance['approvedStages']) is list and execution_acceptance['approvedStages'] == ['node-version','pnpm-version','workspace-install','bind-workspace-tools']\n",
+        "class": "explicit scope assertion full first4 to full first9",
+        "occurrences": 1
+      },
+      {
+        "after": "    if STAGE == 'typecheck': root.parent.mkdir(mode=0o700, exist_ok=False)\n",
+        "before": "    if STAGE == 'node-version': root.parent.mkdir(mode=0o700, exist_ok=False)\n",
+        "class": "exclusive first-parent discriminator typecheck for ALL five",
+        "occurrences": 1
+      }
+    ],
+    "path": "proposals/format-check.capture.txt"
+  },
+  {
+    "afterSha256": "815af1db1afa389933d756f82556470c2597e1c3eb341bff1a95c57274b2e787",
+    "beforeCopy": "before/node-version.capture.txt",
+    "beforeOrigin": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation3-root-fixed-protocol-preparation-1/proposals/node-version.capture.txt",
+    "beforeSha256": "9622a32504d70deae15cab955c34ac4f79cddc0e55d8e4ed46652c5bedeb532f",
+    "forward": "deltas/lint.capture.txt.patch",
+    "inverse": "deltas/lint.capture.txt.inverse.patch",
+    "inverseWholeBytesExact": true,
+    "literalChanges": [
+      {
+        "after": "STAGE = 'lint'\n",
+        "before": "STAGE = 'node-version'\n",
+        "class": "fixed STAGE target",
+        "occurrences": 1
+      },
+      {
+        "after": "ARGV = ['/opt/homebrew/opt/python@3.14/bin/python3.14', '/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation-preparation-3/run.py', 'final', 'lint']\n",
+        "before": "ARGV = ['/opt/homebrew/opt/python@3.14/bin/python3.14', '/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation-preparation-3/run.py', 'final', 'node-version']\n",
+        "class": "fixed run.py ARGV stage",
+        "occurrences": 1
+      },
+      {
+        "after": "OWNED_ROOT_OUTPUT = '/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation3-root-next5-dispatch-1/lint'\n",
+        "before": "OWNED_ROOT_OUTPUT = '/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation3-root-first4-dispatch-1/node-version'\n",
+        "class": "exclusive output stage and fresh prefix",
+        "occurrences": 1
+      },
+      {
+        "after": "ROOT = Path('/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation3-root-next5-dispatch-1/lint')\n",
+        "before": "ROOT = Path('/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation3-root-first4-dispatch-1/node-version')\n",
+        "class": "B/C output receipt path stage and fresh prefix",
+        "occurrences": 2
+      },
+      {
+        "after": "assert provisional['stage']=='lint' and provisional['accepted'] is False\n",
+        "before": "assert provisional['stage']=='node-version' and provisional['accepted'] is False\n",
+        "class": "B expected provisional receipt stage",
+        "occurrences": 1
+      },
+      {
+        "after": "    value={'stage':'lint','phaseAToolId':ACTUAL_A_TOOL_ID,'phaseAToolRawExit':ACTUAL_A_TOOL_RAW_EXIT,'phaseAToolReceiptAttribution':'trusted root actual ordinary-tool observation; independently decoded raw tool receipt UNRETAINED unless separately actually supplied','originReceiptSha256':hashlib.sha256(origin_raw).hexdigest(),'provisionalReceiptSha256':hashlib.sha256(provisional_raw).hexdigest(),'rootOriginMonotonic':ORIGIN,'observerPid':os.getpid(),'observerPgid':os.getpgrp(),'probePid':p.pid if p is not None else None,'probeCreationPgid':p.pid if p is not None else None,'probeRawExit':p.returncode if p is not None else None,'probeBothEOF':complete,'probeDirectReaped':complete and p is not None and p.returncode is not None,'streams':facts,'taskPIDs':known_pids,'taskPGIDs':known_groups,'selectionOrigins':provisional['knownTaskRegistry']['origins'],'matchingTaskRows':matching if complete else None,'censusEndMonotonic':time.monotonic(),'failure':failure,'accepted':False,'actualObserverToolTerminal':None,'finalClockWitness':None}\n",
+        "before": "    value={'stage':'node-version','phaseAToolId':ACTUAL_A_TOOL_ID,'phaseAToolRawExit':ACTUAL_A_TOOL_RAW_EXIT,'phaseAToolReceiptAttribution':'trusted root actual ordinary-tool observation; independently decoded raw tool receipt UNRETAINED unless separately actually supplied','originReceiptSha256':hashlib.sha256(origin_raw).hexdigest(),'provisionalReceiptSha256':hashlib.sha256(provisional_raw).hexdigest(),'rootOriginMonotonic':ORIGIN,'observerPid':os.getpid(),'observerPgid':os.getpgrp(),'probePid':p.pid if p is not None else None,'probeCreationPgid':p.pid if p is not None else None,'probeRawExit':p.returncode if p is not None else None,'probeBothEOF':complete,'probeDirectReaped':complete and p is not None and p.returncode is not None,'streams':facts,'taskPIDs':known_pids,'taskPGIDs':known_groups,'selectionOrigins':provisional['knownTaskRegistry']['origins'],'matchingTaskRows':matching if complete else None,'censusEndMonotonic':time.monotonic(),'failure':failure,'accepted':False,'actualObserverToolTerminal':None,'finalClockWitness':None}\n",
+        "class": "B published receipt stage",
+        "occurrences": 1
+      },
+      {
+        "after": "assert census['stage']=='lint' and census['accepted'] is False\n",
+        "before": "assert census['stage']=='node-version' and census['accepted'] is False\n",
+        "class": "C expected census receipt stage",
+        "occurrences": 1
+      },
+      {
+        "after": "witness={'stage':'lint','rootOriginMonotonic':origin['originMonotonic'],'postTerminalWitnessMonotonic':POST_TERMINAL_WITNESS,'completedInvocationAndObservationUpperBoundSeconds':elapsed,'strictUnder115':True,'phaseBActualToolId':ACTUAL_B_TOOL_ID,'phaseBActualToolRawExit':ACTUAL_B_TOOL_RAW_EXIT,'phaseBToolTerminalAttribution':'trusted root actual ordinary-tool observation; raw tool receipt UNRETAINED unless actually separately supplied','originReceiptSha256':hashlib.sha256(origin_raw).hexdigest(),'censusReceiptSha256':hashlib.sha256(census_raw).hexdigest(),'accepted':False,'requiresIndependentRootFullConjunction':True,'noNewRuntimeChildOrProbe':True,'laterStaticAuditAndGitExcludedFromRuntime':True}\n",
+        "before": "witness={'stage':'node-version','rootOriginMonotonic':origin['originMonotonic'],'postTerminalWitnessMonotonic':POST_TERMINAL_WITNESS,'completedInvocationAndObservationUpperBoundSeconds':elapsed,'strictUnder115':True,'phaseBActualToolId':ACTUAL_B_TOOL_ID,'phaseBActualToolRawExit':ACTUAL_B_TOOL_RAW_EXIT,'phaseBToolTerminalAttribution':'trusted root actual ordinary-tool observation; raw tool receipt UNRETAINED unless actually separately supplied','originReceiptSha256':hashlib.sha256(origin_raw).hexdigest(),'censusReceiptSha256':hashlib.sha256(census_raw).hexdigest(),'accepted':False,'requiresIndependentRootFullConjunction':True,'noNewRuntimeChildOrProbe':True,'laterStaticAuditAndGitExcludedFromRuntime':True}\n",
+        "class": "C published witness stage",
+        "occurrences": 1
+      },
+      {
+        "after": "EXECUTION_ACCEPTANCE_PATH = Path('/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation3-next5-root-execution-acceptance-1/acceptance.json')\n",
+        "before": "EXECUTION_ACCEPTANCE_PATH = Path('/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation3-root-execution-acceptance-1/acceptance.json')\n",
+        "class": "exact future next5 manifest path",
+        "occurrences": 1
+      },
+      {
+        "after": "assert type(execution_acceptance['approvedStages']) is list and execution_acceptance['approvedStages'] == ['node-version','pnpm-version','workspace-install','bind-workspace-tools','typecheck','format-check','lint','fresh-build','bind-fresh-build']\n",
+        "before": "assert type(execution_acceptance['approvedStages']) is list and execution_acceptance['approvedStages'] == ['node-version','pnpm-version','workspace-install','bind-workspace-tools']\n",
+        "class": "explicit scope assertion full first4 to full first9",
+        "occurrences": 1
+      },
+      {
+        "after": "    if STAGE == 'typecheck': root.parent.mkdir(mode=0o700, exist_ok=False)\n",
+        "before": "    if STAGE == 'node-version': root.parent.mkdir(mode=0o700, exist_ok=False)\n",
+        "class": "exclusive first-parent discriminator typecheck for ALL five",
+        "occurrences": 1
+      }
+    ],
+    "path": "proposals/lint.capture.txt"
+  },
+  {
+    "afterSha256": "c25f4bd4e2e187c60e8ce4dc6436c4d53a5fe60d04b4f6e000991769a02d941f",
+    "beforeCopy": "before/node-version.capture.txt",
+    "beforeOrigin": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation3-root-fixed-protocol-preparation-1/proposals/node-version.capture.txt",
+    "beforeSha256": "9622a32504d70deae15cab955c34ac4f79cddc0e55d8e4ed46652c5bedeb532f",
+    "forward": "deltas/fresh-build.capture.txt.patch",
+    "inverse": "deltas/fresh-build.capture.txt.inverse.patch",
+    "inverseWholeBytesExact": true,
+    "literalChanges": [
+      {
+        "after": "STAGE = 'fresh-build'\n",
+        "before": "STAGE = 'node-version'\n",
+        "class": "fixed STAGE target",
+        "occurrences": 1
+      },
+      {
+        "after": "ARGV = ['/opt/homebrew/opt/python@3.14/bin/python3.14', '/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation-preparation-3/run.py', 'final', 'fresh-build']\n",
+        "before": "ARGV = ['/opt/homebrew/opt/python@3.14/bin/python3.14', '/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation-preparation-3/run.py', 'final', 'node-version']\n",
+        "class": "fixed run.py ARGV stage",
+        "occurrences": 1
+      },
+      {
+        "after": "OWNED_ROOT_OUTPUT = '/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation3-root-next5-dispatch-1/fresh-build'\n",
+        "before": "OWNED_ROOT_OUTPUT = '/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation3-root-first4-dispatch-1/node-version'\n",
+        "class": "exclusive output stage and fresh prefix",
+        "occurrences": 1
+      },
+      {
+        "after": "ROOT = Path('/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation3-root-next5-dispatch-1/fresh-build')\n",
+        "before": "ROOT = Path('/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation3-root-first4-dispatch-1/node-version')\n",
+        "class": "B/C output receipt path stage and fresh prefix",
+        "occurrences": 2
+      },
+      {
+        "after": "assert provisional['stage']=='fresh-build' and provisional['accepted'] is False\n",
+        "before": "assert provisional['stage']=='node-version' and provisional['accepted'] is False\n",
+        "class": "B expected provisional receipt stage",
+        "occurrences": 1
+      },
+      {
+        "after": "    value={'stage':'fresh-build','phaseAToolId':ACTUAL_A_TOOL_ID,'phaseAToolRawExit':ACTUAL_A_TOOL_RAW_EXIT,'phaseAToolReceiptAttribution':'trusted root actual ordinary-tool observation; independently decoded raw tool receipt UNRETAINED unless separately actually supplied','originReceiptSha256':hashlib.sha256(origin_raw).hexdigest(),'provisionalReceiptSha256':hashlib.sha256(provisional_raw).hexdigest(),'rootOriginMonotonic':ORIGIN,'observerPid':os.getpid(),'observerPgid':os.getpgrp(),'probePid':p.pid if p is not None else None,'probeCreationPgid':p.pid if p is not None else None,'probeRawExit':p.returncode if p is not None else None,'probeBothEOF':complete,'probeDirectReaped':complete and p is not None and p.returncode is not None,'streams':facts,'taskPIDs':known_pids,'taskPGIDs':known_groups,'selectionOrigins':provisional['knownTaskRegistry']['origins'],'matchingTaskRows':matching if complete else None,'censusEndMonotonic':time.monotonic(),'failure':failure,'accepted':False,'actualObserverToolTerminal':None,'finalClockWitness':None}\n",
+        "before": "    value={'stage':'node-version','phaseAToolId':ACTUAL_A_TOOL_ID,'phaseAToolRawExit':ACTUAL_A_TOOL_RAW_EXIT,'phaseAToolReceiptAttribution':'trusted root actual ordinary-tool observation; independently decoded raw tool receipt UNRETAINED unless separately actually supplied','originReceiptSha256':hashlib.sha256(origin_raw).hexdigest(),'provisionalReceiptSha256':hashlib.sha256(provisional_raw).hexdigest(),'rootOriginMonotonic':ORIGIN,'observerPid':os.getpid(),'observerPgid':os.getpgrp(),'probePid':p.pid if p is not None else None,'probeCreationPgid':p.pid if p is not None else None,'probeRawExit':p.returncode if p is not None else None,'probeBothEOF':complete,'probeDirectReaped':complete and p is not None and p.returncode is not None,'streams':facts,'taskPIDs':known_pids,'taskPGIDs':known_groups,'selectionOrigins':provisional['knownTaskRegistry']['origins'],'matchingTaskRows':matching if complete else None,'censusEndMonotonic':time.monotonic(),'failure':failure,'accepted':False,'actualObserverToolTerminal':None,'finalClockWitness':None}\n",
+        "class": "B published receipt stage",
+        "occurrences": 1
+      },
+      {
+        "after": "assert census['stage']=='fresh-build' and census['accepted'] is False\n",
+        "before": "assert census['stage']=='node-version' and census['accepted'] is False\n",
+        "class": "C expected census receipt stage",
+        "occurrences": 1
+      },
+      {
+        "after": "witness={'stage':'fresh-build','rootOriginMonotonic':origin['originMonotonic'],'postTerminalWitnessMonotonic':POST_TERMINAL_WITNESS,'completedInvocationAndObservationUpperBoundSeconds':elapsed,'strictUnder115':True,'phaseBActualToolId':ACTUAL_B_TOOL_ID,'phaseBActualToolRawExit':ACTUAL_B_TOOL_RAW_EXIT,'phaseBToolTerminalAttribution':'trusted root actual ordinary-tool observation; raw tool receipt UNRETAINED unless actually separately supplied','originReceiptSha256':hashlib.sha256(origin_raw).hexdigest(),'censusReceiptSha256':hashlib.sha256(census_raw).hexdigest(),'accepted':False,'requiresIndependentRootFullConjunction':True,'noNewRuntimeChildOrProbe':True,'laterStaticAuditAndGitExcludedFromRuntime':True}\n",
+        "before": "witness={'stage':'node-version','rootOriginMonotonic':origin['originMonotonic'],'postTerminalWitnessMonotonic':POST_TERMINAL_WITNESS,'completedInvocationAndObservationUpperBoundSeconds':elapsed,'strictUnder115':True,'phaseBActualToolId':ACTUAL_B_TOOL_ID,'phaseBActualToolRawExit':ACTUAL_B_TOOL_RAW_EXIT,'phaseBToolTerminalAttribution':'trusted root actual ordinary-tool observation; raw tool receipt UNRETAINED unless actually separately supplied','originReceiptSha256':hashlib.sha256(origin_raw).hexdigest(),'censusReceiptSha256':hashlib.sha256(census_raw).hexdigest(),'accepted':False,'requiresIndependentRootFullConjunction':True,'noNewRuntimeChildOrProbe':True,'laterStaticAuditAndGitExcludedFromRuntime':True}\n",
+        "class": "C published witness stage",
+        "occurrences": 1
+      },
+      {
+        "after": "EXECUTION_ACCEPTANCE_PATH = Path('/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation3-next5-root-execution-acceptance-1/acceptance.json')\n",
+        "before": "EXECUTION_ACCEPTANCE_PATH = Path('/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation3-root-execution-acceptance-1/acceptance.json')\n",
+        "class": "exact future next5 manifest path",
+        "occurrences": 1
+      },
+      {
+        "after": "assert type(execution_acceptance['approvedStages']) is list and execution_acceptance['approvedStages'] == ['node-version','pnpm-version','workspace-install','bind-workspace-tools','typecheck','format-check','lint','fresh-build','bind-fresh-build']\n",
+        "before": "assert type(execution_acceptance['approvedStages']) is list and execution_acceptance['approvedStages'] == ['node-version','pnpm-version','workspace-install','bind-workspace-tools']\n",
+        "class": "explicit scope assertion full first4 to full first9",
+        "occurrences": 1
+      },
+      {
+        "after": "    if STAGE == 'typecheck': root.parent.mkdir(mode=0o700, exist_ok=False)\n",
+        "before": "    if STAGE == 'node-version': root.parent.mkdir(mode=0o700, exist_ok=False)\n",
+        "class": "exclusive first-parent discriminator typecheck for ALL five",
+        "occurrences": 1
+      }
+    ],
+    "path": "proposals/fresh-build.capture.txt"
+  },
+  {
+    "afterSha256": "ee0bf4fd7b89b532e7cb5828a0cdf94bcff4b2e8debb3d09df6560691f5d4cf0",
+    "beforeCopy": "before/node-version.capture.txt",
+    "beforeOrigin": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation3-root-fixed-protocol-preparation-1/proposals/node-version.capture.txt",
+    "beforeSha256": "9622a32504d70deae15cab955c34ac4f79cddc0e55d8e4ed46652c5bedeb532f",
+    "forward": "deltas/bind-fresh-build.capture.txt.patch",
+    "inverse": "deltas/bind-fresh-build.capture.txt.inverse.patch",
+    "inverseWholeBytesExact": true,
+    "literalChanges": [
+      {
+        "after": "STAGE = 'bind-fresh-build'\n",
+        "before": "STAGE = 'node-version'\n",
+        "class": "fixed STAGE target",
+        "occurrences": 1
+      },
+      {
+        "after": "ARGV = ['/opt/homebrew/opt/python@3.14/bin/python3.14', '/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation-preparation-3/run.py', 'final', 'bind-fresh-build']\n",
+        "before": "ARGV = ['/opt/homebrew/opt/python@3.14/bin/python3.14', '/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation-preparation-3/run.py', 'final', 'node-version']\n",
+        "class": "fixed run.py ARGV stage",
+        "occurrences": 1
+      },
+      {
+        "after": "OWNED_ROOT_OUTPUT = '/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation3-root-next5-dispatch-1/bind-fresh-build'\n",
+        "before": "OWNED_ROOT_OUTPUT = '/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation3-root-first4-dispatch-1/node-version'\n",
+        "class": "exclusive output stage and fresh prefix",
+        "occurrences": 1
+      },
+      {
+        "after": "ROOT = Path('/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation3-root-next5-dispatch-1/bind-fresh-build')\n",
+        "before": "ROOT = Path('/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation3-root-first4-dispatch-1/node-version')\n",
+        "class": "B/C output receipt path stage and fresh prefix",
+        "occurrences": 2
+      },
+      {
+        "after": "assert provisional['stage']=='bind-fresh-build' and provisional['accepted'] is False\n",
+        "before": "assert provisional['stage']=='node-version' and provisional['accepted'] is False\n",
+        "class": "B expected provisional receipt stage",
+        "occurrences": 1
+      },
+      {
+        "after": "    value={'stage':'bind-fresh-build','phaseAToolId':ACTUAL_A_TOOL_ID,'phaseAToolRawExit':ACTUAL_A_TOOL_RAW_EXIT,'phaseAToolReceiptAttribution':'trusted root actual ordinary-tool observation; independently decoded raw tool receipt UNRETAINED unless separately actually supplied','originReceiptSha256':hashlib.sha256(origin_raw).hexdigest(),'provisionalReceiptSha256':hashlib.sha256(provisional_raw).hexdigest(),'rootOriginMonotonic':ORIGIN,'observerPid':os.getpid(),'observerPgid':os.getpgrp(),'probePid':p.pid if p is not None else None,'probeCreationPgid':p.pid if p is not None else None,'probeRawExit':p.returncode if p is not None else None,'probeBothEOF':complete,'probeDirectReaped':complete and p is not None and p.returncode is not None,'streams':facts,'taskPIDs':known_pids,'taskPGIDs':known_groups,'selectionOrigins':provisional['knownTaskRegistry']['origins'],'matchingTaskRows':matching if complete else None,'censusEndMonotonic':time.monotonic(),'failure':failure,'accepted':False,'actualObserverToolTerminal':None,'finalClockWitness':None}\n",
+        "before": "    value={'stage':'node-version','phaseAToolId':ACTUAL_A_TOOL_ID,'phaseAToolRawExit':ACTUAL_A_TOOL_RAW_EXIT,'phaseAToolReceiptAttribution':'trusted root actual ordinary-tool observation; independently decoded raw tool receipt UNRETAINED unless separately actually supplied','originReceiptSha256':hashlib.sha256(origin_raw).hexdigest(),'provisionalReceiptSha256':hashlib.sha256(provisional_raw).hexdigest(),'rootOriginMonotonic':ORIGIN,'observerPid':os.getpid(),'observerPgid':os.getpgrp(),'probePid':p.pid if p is not None else None,'probeCreationPgid':p.pid if p is not None else None,'probeRawExit':p.returncode if p is not None else None,'probeBothEOF':complete,'probeDirectReaped':complete and p is not None and p.returncode is not None,'streams':facts,'taskPIDs':known_pids,'taskPGIDs':known_groups,'selectionOrigins':provisional['knownTaskRegistry']['origins'],'matchingTaskRows':matching if complete else None,'censusEndMonotonic':time.monotonic(),'failure':failure,'accepted':False,'actualObserverToolTerminal':None,'finalClockWitness':None}\n",
+        "class": "B published receipt stage",
+        "occurrences": 1
+      },
+      {
+        "after": "assert census['stage']=='bind-fresh-build' and census['accepted'] is False\n",
+        "before": "assert census['stage']=='node-version' and census['accepted'] is False\n",
+        "class": "C expected census receipt stage",
+        "occurrences": 1
+      },
+      {
+        "after": "witness={'stage':'bind-fresh-build','rootOriginMonotonic':origin['originMonotonic'],'postTerminalWitnessMonotonic':POST_TERMINAL_WITNESS,'completedInvocationAndObservationUpperBoundSeconds':elapsed,'strictUnder115':True,'phaseBActualToolId':ACTUAL_B_TOOL_ID,'phaseBActualToolRawExit':ACTUAL_B_TOOL_RAW_EXIT,'phaseBToolTerminalAttribution':'trusted root actual ordinary-tool observation; raw tool receipt UNRETAINED unless actually separately supplied','originReceiptSha256':hashlib.sha256(origin_raw).hexdigest(),'censusReceiptSha256':hashlib.sha256(census_raw).hexdigest(),'accepted':False,'requiresIndependentRootFullConjunction':True,'noNewRuntimeChildOrProbe':True,'laterStaticAuditAndGitExcludedFromRuntime':True}\n",
+        "before": "witness={'stage':'node-version','rootOriginMonotonic':origin['originMonotonic'],'postTerminalWitnessMonotonic':POST_TERMINAL_WITNESS,'completedInvocationAndObservationUpperBoundSeconds':elapsed,'strictUnder115':True,'phaseBActualToolId':ACTUAL_B_TOOL_ID,'phaseBActualToolRawExit':ACTUAL_B_TOOL_RAW_EXIT,'phaseBToolTerminalAttribution':'trusted root actual ordinary-tool observation; raw tool receipt UNRETAINED unless actually separately supplied','originReceiptSha256':hashlib.sha256(origin_raw).hexdigest(),'censusReceiptSha256':hashlib.sha256(census_raw).hexdigest(),'accepted':False,'requiresIndependentRootFullConjunction':True,'noNewRuntimeChildOrProbe':True,'laterStaticAuditAndGitExcludedFromRuntime':True}\n",
+        "class": "C published witness stage",
+        "occurrences": 1
+      },
+      {
+        "after": "EXECUTION_ACCEPTANCE_PATH = Path('/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation3-next5-root-execution-acceptance-1/acceptance.json')\n",
+        "before": "EXECUTION_ACCEPTANCE_PATH = Path('/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation3-root-execution-acceptance-1/acceptance.json')\n",
+        "class": "exact future next5 manifest path",
+        "occurrences": 1
+      },
+      {
+        "after": "assert type(execution_acceptance['approvedStages']) is list and execution_acceptance['approvedStages'] == ['node-version','pnpm-version','workspace-install','bind-workspace-tools','typecheck','format-check','lint','fresh-build','bind-fresh-build']\n",
+        "before": "assert type(execution_acceptance['approvedStages']) is list and execution_acceptance['approvedStages'] == ['node-version','pnpm-version','workspace-install','bind-workspace-tools']\n",
+        "class": "explicit scope assertion full first4 to full first9",
+        "occurrences": 1
+      },
+      {
+        "after": "    if STAGE == 'typecheck': root.parent.mkdir(mode=0o700, exist_ok=False)\n",
+        "before": "    if STAGE == 'node-version': root.parent.mkdir(mode=0o700, exist_ok=False)\n",
+        "class": "exclusive first-parent discriminator typecheck for ALL five",
+        "occurrences": 1
+      }
+    ],
+    "path": "proposals/bind-fresh-build.capture.txt"
+  }
+]

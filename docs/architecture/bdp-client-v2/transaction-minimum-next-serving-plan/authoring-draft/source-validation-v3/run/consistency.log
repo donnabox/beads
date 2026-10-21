@@ -1,0 +1,15 @@
+
+ RUN  v4.1.10 /Users/dbox/repos/wt/vickie/vickie-minimum-current-resource
+
+ ✓ packages/server/src/transaction-consistency.test.ts > private minimum-read subset > snapshots canonical supported tuples without getters or opaque-token guesses 14ms
+ ✓ packages/server/src/transaction-consistency.test.ts > private minimum-read subset > only turns actual behind observations into timeout after the original finite deadline 1ms
+ ✓ packages/server/src/transaction-consistency.test.ts > distinguishes closed minimum receiving syntax from supported position identities 2ms
+ ✓ packages/server/src/transaction-consistency.test.ts > captures lexical current minimums without widening strict consumers or invoking accessors 1ms
+ ✓ packages/server/src/transaction-consistency.test.ts > waits for unproved current eligibility with one deadline and preserves terminal failures 1ms
+
+ Test Files  1 passed (1)
+      Tests  5 passed (5)
+   Start at  20:10:14
+   Duration  186ms (transform 70ms, setup 19ms, import 82ms, tests 20ms, environment 0ms)
+
+JSON report written to /Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-minimum-next-serving-plan/authoring-draft/source-validation-v3/run/consistency.results.json

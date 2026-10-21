@@ -1,0 +1,29 @@
+{
+  "kind": "root-D3a-fixed-D1-basis-and-shared-HTTP-serialization-acceptance",
+  "accepted": true,
+  "session": "2026-10-18T02:16:24Z-549f",
+  "acceptedUtc": "2026-10-18T05:35:10.498340+00:00",
+  "head": "cce884ccea1db97cbc6fd7bff876d4d6091f9081",
+  "tree": "6757829bd5b700faf28df39071190a272add90c9",
+  "soleParent": "a56254d682cf4623cab22a552e3d2f695f691795",
+  "sourceFiles": 679,
+  "pinnedSpecSha256": "67772742d7d08f48c12196e9789f1859ad2d0e19f133ea65e197b049361f84f8",
+  "exactCI": {
+    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/current-changefeed-exact-ci-1/root-final-acceptance-1/acceptance.json",
+    "sha256": "0c550825a6da468344d3bb4c3cae4d24c30bc27099a68fcea5e361ea52e2fc92"
+  },
+  "plan3Sha256": "e3ac1d6f17f698e367ab7db6b2884efef0e40f2724eae81247edd640ba5144b3",
+  "nativePlan3": {
+    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/tx-discovery-next-plan-3/native-precision-review-1/review.json",
+    "sha256": "89f66628bb834b816524f6412685c77c3872d009202db12e55558f7f19e79186"
+  },
+  "serialization": "D1 current-changefeed writer is finished/published/frozen. Future D3a three-file authoring may use separate descendant worktree of exactcce only after actual PLAN audit/disposition and independent CODE/validation. No concurrent writer may alter transaction-http.ts; preserve every D1 specialized branch/tag/cursor/start/pump. No merge of incoming main or unreviewed startup source.",
+  "actualPlanReviewPreparationAccepted": true,
+  "requiresBeforeActualPlanLaunch": [
+    "Independent exact packet mechanics closure",
+    "Root actual two-flag release with accepted generic supervisor5"
+  ],
+  "sourceAuthoringReleased": false,
+  "runtimeReleased": false,
+  "mainLandingAuthorized": false
+}

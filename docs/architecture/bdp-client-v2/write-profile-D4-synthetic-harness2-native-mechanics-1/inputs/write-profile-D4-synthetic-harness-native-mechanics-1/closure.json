@@ -1,0 +1,46 @@
+{
+  "state": "FROZEN FULL independent static review; CLOSED partial candidate with three findings",
+  "utc": "2026-10-18T13:35:05.027626+00:00",
+  "accepted": false,
+  "acceptedForExecution": false,
+  "executionReady": false,
+  "reviewComplete": true,
+  "candidateIndexSha256": "bdc40c720d0fe18147e684cc8ef7677b2ebfb79f17485e47a0192d3070b873f9",
+  "candidateImplementationSha256": "59ca378061fe6ce8d7952e52be25b26077dfc3ca5a2fae4ef4739fd11f7191d6",
+  "subjectImplementationSha256": "6cc0f6e04d12877439f26ebec5d9b65fa543894a7789dea143fef156efdb771e",
+  "reportSha256": "fb63a4a02ad469ff7b5d096a0aff8d385157e4b54fb6490206e8da20081308e3",
+  "findingsSha256": "e08cc52e01f6497e8897ccd3fc907fc00e4d1410939d1dcc40c417d162d28fd6",
+  "staticVerificationSha256": "40fe0b7b5439c0eed5893c6aaa62618200b58dac49d319732a63f5bdfacf5507",
+  "reviewedInputInventorySha256": "d824151e400d052119958fa9a6a62e16bd0cbc42d03bfe5df59974f854453dd1",
+  "inputOriginsSha256": "2b671c8e2b2ac3221bd36ec92711592779d91a763138298a253906495c3f6522",
+  "reviewedPhysicalCandidateFiles": 1595,
+  "candidateImplementationFiles": 1592,
+  "candidateCopyOrigins": 1546,
+  "externalPins": 3047,
+  "helper4Files": 863,
+  "sourceFiles": 679,
+  "protected678": true,
+  "ownExactCopiedInputs": 99,
+  "caseIds": 48,
+  "commandVariants": 58,
+  "hostVariants": 10,
+  "declaredD03States": 20,
+  "findings": {
+    "Medium": [
+      "SH-N1",
+      "SH-N2"
+    ],
+    "Low": [
+      "SH-N3"
+    ]
+  },
+  "knownBlockingOwnerExecutableAbsent": true,
+  "syntheticControlsEvaluated": 0,
+  "observedPasses": 0,
+  "syntheticReleased": false,
+  "productReleased": false,
+  "sourceAndHelpersUnchanged": true,
+  "rootDisposition": "REQUIRED",
+  "noAuthoringRelease": true,
+  "combinedStartupData": "PAUSED INCOMPLETE UNINDEXED; resume only if root asks"
+}

@@ -1,0 +1,36 @@
+{
+  "accepted": false,
+  "findings": [
+    {
+      "correction": "A separately frozen proposal must start the single clock before all attempt preflight, bound/charge gate and final source/build/consumer/hash/parse checks to explicit existing phase deadlines, and ensure monitoring/census cannot block past remaining time. Preserve original proposal and all limits; no runtime release.",
+      "counterexample": "Pure hypothetical:8s preflight +5s startup +120s callback +5s flush +10s drain =148s whole attempt, although the proposed child-relative phase sum140s would fit. This is a logical timing counterexample, not a measured run or prediction.",
+      "evidence": [
+        "Copied runner.py calls load_gate before start=time.monotonic; gate.load_gate performs all reference/tool/source/build/consumer checks, including source_check673 unchanged HEAD lookups. Current source-check10s per Git is not one aggregate bound.",
+        "Copied runner.py finally performs source_check/verify_build/verify_consumer after the child loop before final elapsed acceptance. Those operations are not charged explicitly to the proposed5s flush phase or a bounded preflight/postflight reserve.",
+        "A2s blocking census is explicitly rejected by proposal1 but no concrete remaining-time bounded census/supervised check implementation is supplied. Deadline enforcement must remain responsive while these checks run."
+      ],
+      "id": "F6-N1",
+      "impact": "Proposal1 cannot yet establish whole-parent150/TERM145/KILL149 phase admission; a late failure classification after blocking checks does not enforce the absolute termination boundary.",
+      "proposalLocator": "plan.md paragraph beginning Root wrapper uses its own monotonic start immediately before Popen",
+      "severity": "Medium",
+      "title": "Whole attempt clock excludes preflight and leaves final binding work unpartitioned"
+    },
+    {
+      "correction": "Specify a finite result-file acceptance limit and strict bounded JSON parse/extraction policy (for example separately root-disposed same64MiB byte ceiling plus finite structural limits), refuse overflow/malformed/duplicate/nonfinite data without truncation, retain actual original bytes, and include result processing in the existing clock. This is evidence-resource policy, not a product body cap or claim all valid failures fit.",
+      "evidence": [
+        "Explicit64MiB policy applies to selected source report line;256MiB applies to raw stdout/stderr log. The separate --outputFile JSON result is a distinct file with no stated byte/depth/node/container or retained-candidate acceptance policy.",
+        "Pinned JsonReporter3522ff builds failureMessages from test errors and file messages, then serializes/writes an independent result at3613/3620-3627; conservative source-report bound explicitly excludes these diagnostics.",
+        "Existing copied audit.py still uses unbounded read for results plus full log read_text/splitlines. Proposal forbids that design, but must specify the replacement result-file limits and charge strict parse/hash/binding work to the same flush/whole clock."
+      ],
+      "id": "F6-N2",
+      "impact": "A valid selected report/raw log under their limits does not bound memory or parsing time for the separate result file; copying the old results reader would violate the proposal own bounded collector requirement.",
+      "proposalLocator": "plan.md capacity paragraph and flush includes actual complete selected report, Vitest JSON result, process terminal and all resulting IO",
+      "severity": "Medium",
+      "title": "Bound the separate Vitest results JSON acceptance and parser work"
+    }
+  ],
+  "helperOrSourceAuthoringReleased": false,
+  "revisionsRequired": true,
+  "runtimeReleased": false,
+  "sourceChangeRequiredByThisReview": false
+}

@@ -1,0 +1,520 @@
+{
+  "method": "Own bounded pure JSON comparison; reviewed helper never imported/evaluated/rerun",
+  "reportCount": 1,
+  "actualRows": 43,
+  "firstMismatch": {
+    "ordinal": 7,
+    "id": "resource-alias-create-a",
+    "method": "POST",
+    "expected": [],
+    "actual": [
+      {
+        "name": "content-type",
+        "value": "application/json"
+      },
+      {
+        "name": "idempotency-key",
+        "value": "cold-resource-alias-create-a"
+      }
+    ]
+  },
+  "allOccurrenceMismatches": [
+    {
+      "ordinal": 7,
+      "id": "resource-alias-create-a",
+      "method": "POST",
+      "expected": [],
+      "actual": [
+        {
+          "name": "content-type",
+          "value": "application/json"
+        },
+        {
+          "name": "idempotency-key",
+          "value": "cold-resource-alias-create-a"
+        }
+      ]
+    },
+    {
+      "ordinal": 10,
+      "id": "resource-alias-create-b",
+      "method": "POST",
+      "expected": [],
+      "actual": [
+        {
+          "name": "content-type",
+          "value": "application/json"
+        },
+        {
+          "name": "idempotency-key",
+          "value": "cold-resource-alias-create-b"
+        }
+      ]
+    },
+    {
+      "ordinal": 13,
+      "id": "resource-alias-update-a",
+      "method": "POST",
+      "expected": [],
+      "actual": [
+        {
+          "name": "content-type",
+          "value": "application/json"
+        },
+        {
+          "name": "idempotency-key",
+          "value": "cold-resource-alias-update-a"
+        }
+      ]
+    },
+    {
+      "ordinal": 16,
+      "id": "resource-alias-create-l",
+      "method": "POST",
+      "expected": [],
+      "actual": [
+        {
+          "name": "content-type",
+          "value": "application/json"
+        },
+        {
+          "name": "idempotency-key",
+          "value": "cold-resource-alias-create-l"
+        }
+      ]
+    },
+    {
+      "ordinal": 19,
+      "id": "resource-alias-update-l",
+      "method": "POST",
+      "expected": [],
+      "actual": [
+        {
+          "name": "content-type",
+          "value": "application/json"
+        },
+        {
+          "name": "idempotency-key",
+          "value": "cold-resource-alias-update-l"
+        }
+      ]
+    },
+    {
+      "ordinal": 22,
+      "id": "resource-alias-put-alias",
+      "method": "POST",
+      "expected": [],
+      "actual": [
+        {
+          "name": "content-type",
+          "value": "application/json"
+        },
+        {
+          "name": "idempotency-key",
+          "value": "cold-resource-alias-put-alias"
+        }
+      ]
+    },
+    {
+      "ordinal": 26,
+      "id": "resource-alias-delete-alias",
+      "method": "POST",
+      "expected": [],
+      "actual": [
+        {
+          "name": "content-type",
+          "value": "application/json"
+        },
+        {
+          "name": "idempotency-key",
+          "value": "cold-resource-alias-delete-alias"
+        }
+      ]
+    },
+    {
+      "ordinal": 29,
+      "id": "resource-alias-delete-l",
+      "method": "POST",
+      "expected": [],
+      "actual": [
+        {
+          "name": "content-type",
+          "value": "application/json"
+        },
+        {
+          "name": "idempotency-key",
+          "value": "cold-resource-alias-delete-l"
+        }
+      ]
+    },
+    {
+      "ordinal": 32,
+      "id": "resource-alias-delete-b",
+      "method": "POST",
+      "expected": [],
+      "actual": [
+        {
+          "name": "content-type",
+          "value": "application/json"
+        },
+        {
+          "name": "idempotency-key",
+          "value": "cold-resource-alias-delete-b"
+        }
+      ]
+    },
+    {
+      "ordinal": 35,
+      "id": "resource-alias-delete-a",
+      "method": "POST",
+      "expected": [],
+      "actual": [
+        {
+          "name": "content-type",
+          "value": "application/json"
+        },
+        {
+          "name": "idempotency-key",
+          "value": "cold-resource-alias-delete-a"
+        }
+      ]
+    },
+    {
+      "ordinal": 38,
+      "id": "replay-create",
+      "method": "POST",
+      "expected": [],
+      "actual": [
+        {
+          "name": "content-type",
+          "value": "application/json"
+        },
+        {
+          "name": "idempotency-key",
+          "value": "cold-resource-alias-create-a"
+        }
+      ]
+    }
+  ],
+  "otherOrderedScalarURLPositionMismatches": [],
+  "uniqueResponseEpochViewTuples": 1,
+  "stableSubstitutionIsNotCause": true,
+  "sourceDerivedExpectedRows": [
+    {
+      "ordinal": 1,
+      "id": "N1",
+      "sourceDerivedFieldOccurrences": []
+    },
+    {
+      "ordinal": 2,
+      "id": "N2",
+      "sourceDerivedFieldOccurrences": []
+    },
+    {
+      "ordinal": 3,
+      "id": "N3",
+      "sourceDerivedFieldOccurrences": []
+    },
+    {
+      "ordinal": 4,
+      "id": "T1",
+      "sourceDerivedFieldOccurrences": []
+    },
+    {
+      "ordinal": 5,
+      "id": "T2",
+      "sourceDerivedFieldOccurrences": []
+    },
+    {
+      "ordinal": 6,
+      "id": "T3",
+      "sourceDerivedFieldOccurrences": []
+    },
+    {
+      "ordinal": 7,
+      "id": "resource-alias-create-a",
+      "sourceDerivedFieldOccurrences": [
+        {
+          "name": "content-type",
+          "value": "application/json"
+        },
+        {
+          "name": "idempotency-key",
+          "value": "cold-resource-alias-create-a"
+        }
+      ]
+    },
+    {
+      "ordinal": 8,
+      "id": "resource-alias-create-a-receipt",
+      "sourceDerivedFieldOccurrences": []
+    },
+    {
+      "ordinal": 9,
+      "id": "create-a-after",
+      "sourceDerivedFieldOccurrences": []
+    },
+    {
+      "ordinal": 10,
+      "id": "resource-alias-create-b",
+      "sourceDerivedFieldOccurrences": [
+        {
+          "name": "content-type",
+          "value": "application/json"
+        },
+        {
+          "name": "idempotency-key",
+          "value": "cold-resource-alias-create-b"
+        }
+      ]
+    },
+    {
+      "ordinal": 11,
+      "id": "resource-alias-create-b-receipt",
+      "sourceDerivedFieldOccurrences": []
+    },
+    {
+      "ordinal": 12,
+      "id": "create-b-after",
+      "sourceDerivedFieldOccurrences": []
+    },
+    {
+      "ordinal": 13,
+      "id": "resource-alias-update-a",
+      "sourceDerivedFieldOccurrences": [
+        {
+          "name": "content-type",
+          "value": "application/json"
+        },
+        {
+          "name": "idempotency-key",
+          "value": "cold-resource-alias-update-a"
+        }
+      ]
+    },
+    {
+      "ordinal": 14,
+      "id": "resource-alias-update-a-receipt",
+      "sourceDerivedFieldOccurrences": []
+    },
+    {
+      "ordinal": 15,
+      "id": "update-a-after",
+      "sourceDerivedFieldOccurrences": []
+    },
+    {
+      "ordinal": 16,
+      "id": "resource-alias-create-l",
+      "sourceDerivedFieldOccurrences": [
+        {
+          "name": "content-type",
+          "value": "application/json"
+        },
+        {
+          "name": "idempotency-key",
+          "value": "cold-resource-alias-create-l"
+        }
+      ]
+    },
+    {
+      "ordinal": 17,
+      "id": "resource-alias-create-l-receipt",
+      "sourceDerivedFieldOccurrences": []
+    },
+    {
+      "ordinal": 18,
+      "id": "create-l-after",
+      "sourceDerivedFieldOccurrences": []
+    },
+    {
+      "ordinal": 19,
+      "id": "resource-alias-update-l",
+      "sourceDerivedFieldOccurrences": [
+        {
+          "name": "content-type",
+          "value": "application/json"
+        },
+        {
+          "name": "idempotency-key",
+          "value": "cold-resource-alias-update-l"
+        }
+      ]
+    },
+    {
+      "ordinal": 20,
+      "id": "resource-alias-update-l-receipt",
+      "sourceDerivedFieldOccurrences": []
+    },
+    {
+      "ordinal": 21,
+      "id": "update-l-after",
+      "sourceDerivedFieldOccurrences": []
+    },
+    {
+      "ordinal": 22,
+      "id": "resource-alias-put-alias",
+      "sourceDerivedFieldOccurrences": [
+        {
+          "name": "content-type",
+          "value": "application/json"
+        },
+        {
+          "name": "idempotency-key",
+          "value": "cold-resource-alias-put-alias"
+        }
+      ]
+    },
+    {
+      "ordinal": 23,
+      "id": "resource-alias-put-alias-receipt",
+      "sourceDerivedFieldOccurrences": []
+    },
+    {
+      "ordinal": 24,
+      "id": "alias-after",
+      "sourceDerivedFieldOccurrences": []
+    },
+    {
+      "ordinal": 25,
+      "id": "alias-follow",
+      "sourceDerivedFieldOccurrences": []
+    },
+    {
+      "ordinal": 26,
+      "id": "resource-alias-delete-alias",
+      "sourceDerivedFieldOccurrences": [
+        {
+          "name": "content-type",
+          "value": "application/json"
+        },
+        {
+          "name": "idempotency-key",
+          "value": "cold-resource-alias-delete-alias"
+        }
+      ]
+    },
+    {
+      "ordinal": 27,
+      "id": "resource-alias-delete-alias-receipt",
+      "sourceDerivedFieldOccurrences": []
+    },
+    {
+      "ordinal": 28,
+      "id": "alias-missing",
+      "sourceDerivedFieldOccurrences": []
+    },
+    {
+      "ordinal": 29,
+      "id": "resource-alias-delete-l",
+      "sourceDerivedFieldOccurrences": [
+        {
+          "name": "content-type",
+          "value": "application/json"
+        },
+        {
+          "name": "idempotency-key",
+          "value": "cold-resource-alias-delete-l"
+        }
+      ]
+    },
+    {
+      "ordinal": 30,
+      "id": "resource-alias-delete-l-receipt",
+      "sourceDerivedFieldOccurrences": []
+    },
+    {
+      "ordinal": 31,
+      "id": "delete-l-after",
+      "sourceDerivedFieldOccurrences": []
+    },
+    {
+      "ordinal": 32,
+      "id": "resource-alias-delete-b",
+      "sourceDerivedFieldOccurrences": [
+        {
+          "name": "content-type",
+          "value": "application/json"
+        },
+        {
+          "name": "idempotency-key",
+          "value": "cold-resource-alias-delete-b"
+        }
+      ]
+    },
+    {
+      "ordinal": 33,
+      "id": "resource-alias-delete-b-receipt",
+      "sourceDerivedFieldOccurrences": []
+    },
+    {
+      "ordinal": 34,
+      "id": "delete-b-after",
+      "sourceDerivedFieldOccurrences": []
+    },
+    {
+      "ordinal": 35,
+      "id": "resource-alias-delete-a",
+      "sourceDerivedFieldOccurrences": [
+        {
+          "name": "content-type",
+          "value": "application/json"
+        },
+        {
+          "name": "idempotency-key",
+          "value": "cold-resource-alias-delete-a"
+        }
+      ]
+    },
+    {
+      "ordinal": 36,
+      "id": "resource-alias-delete-a-receipt",
+      "sourceDerivedFieldOccurrences": []
+    },
+    {
+      "ordinal": 37,
+      "id": "delete-a-after",
+      "sourceDerivedFieldOccurrences": []
+    },
+    {
+      "ordinal": 38,
+      "id": "replay-create",
+      "sourceDerivedFieldOccurrences": [
+        {
+          "name": "content-type",
+          "value": "application/json"
+        },
+        {
+          "name": "idempotency-key",
+          "value": "cold-resource-alias-create-a"
+        }
+      ]
+    },
+    {
+      "ordinal": 39,
+      "id": "replay-after-a",
+      "sourceDerivedFieldOccurrences": []
+    },
+    {
+      "ordinal": 40,
+      "id": "refresh-descriptor",
+      "sourceDerivedFieldOccurrences": []
+    },
+    {
+      "ordinal": 41,
+      "id": "head-descriptor",
+      "sourceDerivedFieldOccurrences": []
+    },
+    {
+      "ordinal": 42,
+      "id": "head-directory",
+      "sourceDerivedFieldOccurrences": []
+    },
+    {
+      "ordinal": 43,
+      "id": "head-scope",
+      "sourceDerivedFieldOccurrences": []
+    }
+  ],
+  "doesNotPassFailedAudit": true,
+  "noFreshExecution": true
+}

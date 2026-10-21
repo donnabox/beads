@@ -1,0 +1,277 @@
+Review complete. Diff reviewed in full (27 files), plus the surrounding runner/executor/report/server code and both plan documents. No files written.
+
+```
+================================================================================
+H1b installed Transactional review — dfcf1a9 vs 80d9ef0
+================================================================================
+
+Verdict: the core mechanism holds. Receipt authority is registered only from a
+schema-valid `/id` captured alongside complete exact request evidence and
+validated 200 wire bytes (runner.ts:1456-1486 → transactional-observation.ts:
+106-147); every dynamic read goes through createRawHttpExchangeExecutor on the
+validated current session with its own single-route exact mode; the base
+exactConfigurationDigest is untouched; `options.execute` is a refusing stub;
+reserved `transactional.*` client operations are refused for ordinary runners
+before setup or any callback (runner.ts:2825-2832); legacy v3 types, runtime
+assertion and serializer all exclude the four new fields; private modules stay
+unexported and deep-import-denied; CSPRNG tokens, canonical authority and
+metadata validation at bootstrap/prepare/reopen are real. I found no path that
+credits an observation without a real recorded exchange, and no public
+Transactional admission. Findings below are evidence-labeling and
+evidence-completeness issues plus robustness, in severity order.
+
+--------------------------------------------------------------------------------
+1. MEDIUM — Private-session and ledger refusals are reported as a target
+   failure, and their reason is erased from the report
+--------------------------------------------------------------------------------
+Location: packages/conformance/src/runner.ts:868-984 (privateExecute body),
+          packages/conformance/src/runner.ts:1064-1079 (runProgrammaticAction
+          catch), packages/conformance/src/runner.ts:695 (runScenario mapping)
+
+Impact: every refusal raised inside `privateExecute` is a plain `Error` (or a
+`ConformanceRunnerError`) thrown through `execute(execution)`, and
+runProgrammaticAction's catch rewrites *everything except* ScenarioDeadlineError
+into `new ScenarioActionExecutionFailure("action execution failed", {cause})`.
+runScenario:695 maps that to `state: "fail"`. So these all surface as the
+installed target failing a Transactional contract:
+
+  - "receipt not authorized by original wire observation"  (unobserved URL,
+    cross-binding, substituted receipt)
+  - "transaction session unavailable"  (action before prepare / after close)
+  - "unvalidated physical session transition"  (endpoint change without reopen)
+  - "invalid reopened session", "source receipt observation changed"
+  - "receipt session logical identity changed"
+  - "exact transport required", "missing actual receipt observation"
+  - "invalid private receipt input" / "unsupported private transaction action"
+
+This directly contradicts the reviewed plan's receipt-authority item 7
+("Unknown/mismatched ledger data is harness error, not server outcome") — a
+harness/manifest defect is published as negative target evidence. Worse, both
+`ScenarioRunResult.reason` and `ObservedAction.executionError.message` become the
+literal string "action execution failed"; the cause is dropped. The report
+therefore cannot show that a countercontrol "failed for the intended reason",
+and the tests reflect that: transactional-matrix.test.ts:285-288 only asserts
+`state !== "pass"` and an exchange count.
+
+Note the asymmetry: register-time refusals thrown from runRequest's capture loop
+(runner.ts:1476) *do* reach runScenario as unclassified errors and become
+`harness-error`. Only the client receipt lane is mislabeled.
+
+Fix: classify these as harness errors. Either (a) perform
+`transactional.resolve(...)` / session validation in runScenarioAction before
+calling runProgrammaticAction so the `ConformanceRunnerError` propagates
+unchanged, or (b) let runProgrammaticAction rethrow `ConformanceRunnerError`
+(and a new `TransactionalHarnessError`) verbatim the way it already passes
+ScenarioDeadlineError through, and record `failure.cause` message in
+`executionError.message`. Then pin each countercontrol test to its expected
+refusal reason rather than `not.toBe("pass")`.
+
+--------------------------------------------------------------------------------
+2. MEDIUM — A failed receipt read leaves a dynamically dialed exchange in the
+   v4 report with no dynamic-configuration binding
+--------------------------------------------------------------------------------
+Location: packages/conformance/src/runner.ts:959-968 (fields attached only after
+          runRequest resolves); runner.ts:1313, 1352, 1439 (exchange recorded on
+          every failure path before that)
+
+Impact: `dynamicExactConfiguration`, `dynamicExactConfigurationDigest`,
+`sourceReceiptObservation` and `servedSession` are written to `exchanges[offset]`
+*after* the inner `runRequest` returns. Any inner failure — receipt GET/HEAD
+returning non-200, `request-authored-headers`/`-body` mismatch, a transport
+error against a just-reopened endpoint, or the `observe` wire/identity/retention
+check throwing — still leaves the pushed exchange in the scenario's array, with
+the receipt URL in `request.url` and `request.exact` evidence that was validated
+against the *dynamic* configuration, but with none of the four linkage fields.
+
+Concrete scenario: receipt GET after reopen returns 404. Report contains an
+exchange for `https://reference.invalid/acme/receipts/<uuid>` whose only declared
+exact configuration is `declarations.exactConfigurationDigest`, which covers the
+base route table and does not include any receipt route. A verifier reading that
+report sees a recorded exact request outside the declared route table with
+nothing naming the mode it was checked against — contradicting the plan's "every
+dynamic exchange names its distinct bound mode" and "Base digest stays unchanged
+while every dynamic exchange names its distinct bound mode".
+
+No test covers this: the `body-assertion` countercontrol
+(transactional-matrix.test.ts:258-295) fails in the *outer* programmatic lane, so
+the fields were already attached — which is why that case expects 1 and the
+others expect 0.
+
+Fix: thread the dynamic metadata into `runRequest` so the `ObservedExchange`
+carries it from the moment it is pushed (the same way `served` is handled at
+runner.ts:1138/1490), and add a countercontrol whose inner receipt request fails
+(forced non-200) asserting the recorded exchange still names its dynamic
+configuration and source observation.
+
+--------------------------------------------------------------------------------
+3. LOW/MEDIUM — The three newly whitelisted bdp-* headers contribute no evidence
+   in three of the four rows: response-metadata-equals passes when the header is
+   absent from both responses
+--------------------------------------------------------------------------------
+Location: packages/conformance/src/runner.ts:2177-2184 (headersMatch),
+          packages/conformance/src/executable-manifest.ts:424-426 (new entries),
+          test-support/transactional/manifest-v1.json:451, 684, 897
+          (`serving-context`), runner.ts:3264-3296 (report allowlists)
+
+Impact: `current === prior` is true when both are `undefined`. runner.test.ts's
+`mutuallyAbsent → pass` case documents this as intended. The root-approved
+whitelist extension is consumed only by the three `serving-context` assertions,
+and in `transactional.batch.atomic-commit`, `transactional.batch.rollback` and
+`transactional.idempotency.failed-retained` nothing asserts that
+`bdp-scope-epoch` / `bdp-authorization-view` / `bdp-scope-position` are actually
+present on either the Events GET or the referenced commit/seed POST. The three
+names are also absent from `EXACT_REPORT_HEADER_NAMES`, so the exported exchange
+evidence does not show they were observed. If the runtime stopped emitting them
+(transaction-http.ts:91-95 `context()`), those rows would keep reporting
+`serving-context: passed` with zero information. Only the receipt-read
+projections (`/headers/bdp-*`, `exists: true`) prove presence, and those are a
+different response on a different route.
+
+This is the whole stated justification for the extension ("compare actual current
+context with a preceding observed commit/seed"), so it is worth closing rather
+than leaving to the fact that the current server happens to emit them.
+
+Fix: add presence assertions on the Events GETs —
+`{kind:"header", name:"bdp-scope-epoch", absent:false}` (and the other two),
+which the parser already accepts for `header` assertions — or make
+`response-metadata-equals` require presence for names not listed in
+`optionalHeaders`.
+
+--------------------------------------------------------------------------------
+4. LOW — The "internal source-response digest mismatch" countercontrol has no
+   reachable failure mode
+--------------------------------------------------------------------------------
+Location: packages/conformance/src/transactional-observation.ts:140, 145, 153
+
+Impact: `responseDigest` is sha256 of `response.wireResponseBytes` at
+registration; `entry.wire` is a `Buffer.from(...)` copy of the same bytes held in
+a closed Map that nothing else can reach. `resolve()` then re-hashes that private
+copy and compares it to the digest derived from it — the branch is a tautology
+and can never fire. The reviewed plan lists "internal body or source-response
+digest mismatch" as a mandatory countercontrol; the observation test's
+`["body","octets","status","headers","wire","absent"]` cases all exercise
+*registration-time* inconsistency (transactional-observation.test.ts:141-161),
+none exercise post-registration tampering.
+
+Fix: either drop the branch as dead defensive code, or make it meaningful — e.g.
+digest the bytes that the subsequent read actually re-derives, and add a test
+that injects a differing stored copy.
+
+--------------------------------------------------------------------------------
+5. LOW — Recorded `responseLimits` are decorative; executor bounds are hardcoded
+   in three independent places, and the dynamic socket timeout ignores
+   `requestTimeoutMs`
+--------------------------------------------------------------------------------
+Location: packages/conformance/src/transactional-observation.ts:18
+          (`responseLimits` literal type),
+          packages/conformance/src/runner.ts:899-901,
+          apps/bdptest/test-support/transactional-execution-binding.ts:134-138,
+          187-189
+
+Impact: `TransactionalSessionBinding.responseLimits` is published as the
+session's response bounds and recorded in `servedSession` /
+`sourceReceiptObservation.session`, but the runner never reads it — it hardcodes
+the same 65536 / 1048576 / 5000 constants for the dynamic executor, and the
+binding hardcodes them a third time for ordinary traffic. The literal types make
+drift invisible to TypeScript, so a future change to one copy silently makes the
+recorded evidence inaccurate. Separately, `requestTimeoutMs: 5000` on the dynamic
+executor ignores `options.requestTimeoutMs`: a caller configuring a tighter
+budget gets it enforced only by the outer abort signal, and a looser budget is
+silently capped.
+
+Fix: derive the dynamic executor options from `active.binding.responseLimits` and
+from `options.requestTimeoutMs` instead of literals.
+
+--------------------------------------------------------------------------------
+6. LOW — Reopen performs a full child shutdown + relaunch inside the per-action
+   request deadline rather than a preparation deadline
+--------------------------------------------------------------------------------
+Location: packages/conformance/src/runner.ts:870-874 (`transactional.reopen`
+          uses `execution.signal`), runner.ts:650 (`options.requestTimeoutMs ??
+          30_000`), apps/bdptest/test-support/transactional-execution-binding.ts:
+          198-209, raw-http-scenario-target.ts:61 (cleanup bound =
+          requestTimeoutMs)
+
+Impact: in `transactional.receipt.readable`, the `reopen` action must close the
+old child and start a new one — spawn, full `installedPayloadIdentity()` hash of
+the installed dependency closure (~3 MB of @bdp/server + @bdp/protocol dist +
+schemas + ajv), SQLite open, contract compile — within the matrix's
+`requestTimeoutMs: 5000`, shared with the bounded close. An ordinary scenario
+preparation gets `prepareTimeoutMs: 10000`. Under CI load this shows up as a
+`deadline` harness error on the one row that exercises reopen, i.e. as flaky
+negative evidence rather than a stable observation.
+
+Fix: give the reopen lifecycle its own bound (reuse `prepareTimeoutMs`, or an
+explicit lifecycle timeout) instead of inheriting the request timeout.
+
+--------------------------------------------------------------------------------
+7. LOW — `artifactIdentity` mismatch countercontrol exercises only the format
+   guard, never the digest comparison
+--------------------------------------------------------------------------------
+Location: apps/bdptest/src/transactional-matrix.test.ts:231-250,
+          apps/bdptest/test-support/installed-contract-identity.ts:3
+
+Impact: the injected `"f".repeat(64)` fails
+`/^development-schema5-[a-f0-9]{64}$/` in `installedContractsDigest`, so refusal
+comes from identity *decoding*, not from
+`assertSameServedProfileConfiguration`'s `installedContractsDigest` comparison.
+A child reporting a well-formed but different `development-schema5-<other hex>`
+— the realistic drift case — is never tested, even though the other four fields
+in the same `it.each` do exercise the comparison path.
+
+Fix: use `development-schema5-${"f".repeat(64)}` for the `artifactIdentity` case
+(keep a separate malformed-identity case if the format guard is also worth
+pinning).
+
+--------------------------------------------------------------------------------
+Checked and clean
+--------------------------------------------------------------------------------
+- installed-payload.ts extraction is byte-identical traversal; root still
+  derives from the helper's own `new URL("../", import.meta.url)` and resolves to
+  the same `@bdp/server` package root in both src and dist. No pinned payload
+  digest exists anywhere in-repo, so Read/RU evidence does not need relabeling
+  (only runtime-computed self-comparisons at installed-reference.test.ts:465 and
+  installed-reference-observation.mjs:381).
+- transaction-installed-configuration.ts is closed own-data: exact-key
+  `administrativeData` rejects `{port}`, `{clock}`, `{types}`, accessors are
+  refused before invocation, artifacts/credentials are deep-frozen copies,
+  `port: 0` / `authorityMode: "canonical"` are forced, no clock/scheduler/
+  receipt/page seams reach `startTransactionRuntime` (so
+  `captured.metadata(...)` cannot return undefined via `seamCapture.supplied`).
+- transaction-installed.ts closes the runtime on metadata refusal and preserves
+  both causes via AggregateError.
+- transaction-installed-process.ts: inert on import (realpath entrypoint check),
+  inherited-IPC only, argv length pinned, one configuration then close-only
+  (any other control sets exitCode 2 and stops), no ready after
+  disconnect/close/stopping, never echoes credentials or configuration.
+  Launcher caps ready at 64 KiB, kills on >64 KiB of child output, and treats
+  nonzero exit / signal as failure.
+- Drain ordering is correct: target close aborts + drains ordinary pending, then
+  the session close aborts the dynamic controller, drains the dynamic pending set
+  and only then closes the child (verified by transactional-binding.test.ts:98).
+- Receipt URL grammar: canonical href equality, exact `{scope}receipts/` prefix,
+  single `[A-Za-z0-9_-]+` segment, no userinfo/query/fragment/traversal; `../`
+  and `?x=1` both rejected by href normalization.
+- Provenance immutability across reopen: `sourceReceiptObservation` is the frozen
+  original (old generation, old listenUrl); `resolve` compares only logical
+  identity (runtimeConfigurationIdentity + configurationDigest) and requires a
+  strictly greater generation on validated reopen; any unvalidated binding change
+  (port, generation, scenario, runtime identity) is refused by deep equality.
+- No request bodyDigest leaks on positive runs (projectExactObservation:1798
+  requires approvedSyntheticManifestDigest, which the dynamic execution never
+  sets); projection headers/body are not serialized into the report (only
+  `output: {kind:"json"}` is recorded).
+- Public surface: `createTransactionalObservations` and `assertLegacyScenario`
+  are absent from index.ts; exports map has no wildcard; smoke denies both
+  `@bdp/conformance/transactional-observation` forms and all four new
+  `@bdp/server` modules, while asserting the packed `.js/.js.map/.d.ts/
+  .d.ts.map` inventory (needed because `ObservedExchange` now references
+  `transactional-observation.d.ts` types).
+- Markers retired coherently: no `pending-h1b`, `authored-unexecuted` or
+  "transport admission pending" remains anywhere; coverage rows keep
+  `wholeContract:false`, 250 canonical obligations and honest missing clauses;
+  binding lists are derived from the manifest, not copied.
+- Permission swap is real (two tokens, one principal, 200/403 flip, all three
+  identities differ, contracts digest equal, cross-pairing refused).
+- No Snapshot work in this diff.
+```

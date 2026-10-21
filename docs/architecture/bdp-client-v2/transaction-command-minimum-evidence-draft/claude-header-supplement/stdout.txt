@@ -1,0 +1,45 @@
+## Verdict
+
+The F1 repair is directionally correct and does close the High. With authored lines first (runner.ts:1827‑1828), credentials next (http-executor.ts:698‑710), then the conditional defaults (712‑719) and `Host`/`Connection`/`Content-Length` (720‑722), the three unmatched defaults on the POST rows (`accept` authored ⇒ `Accept` suppressed at 718) and four on the two GET rows can no longer reach the authored comparison. Four actionable findings remain, one of which defeats the repair's own stated privacy objective. Nothing below is execution evidence; all of it is read off the supplied excerpts.
+
+---
+
+**1. Prefix length is taken from the test-local mirror, so a framing mismatch prints credential values — the exact outcome the repair was meant to prevent.** 
+Severity: Medium 
+Location: `apps/bdptest/src/transactional-matrix.test.ts:2364` (comment at 2362‑2363) 
+Impact: `slice(0, expected.headers.length)` bounds the compared window by the *expected* count, not by a verified authored count. Because credentials are appended immediately after authored lines, any case where actual authored lines are fewer than the mirror's shifts credential lines into the compared slice, and Vitest prints both arrays in the `toEqual` diff — i.e. the bearer/credential value lands in CI output. This is not hypothetical for this fixture: rows 0 and 3 author empty‑valued `bdp-*` fields (`M[1]` is `""`; `Z` is three empty values), and the supplied excerpt only shows `HTTP_FIELD_VALUE` guarding *credential* values (http-executor.ts:704) — whether the authored‑append path emits empty‑valued fields is not established here. If it drops them, actual is short by one to three lines and the diff leaks. The guarantee asserted in the comment therefore holds only when the assertion passes.
+Fix: compare names first, then values — `expect(prefix.map(h => h.name.toLowerCase())).toEqual(expected.headers.map(h => h.name.toLowerCase()))`, then compare values at matching indices. Once names match, the compared window provably contains no credential line, and a name‑only diff discloses no secret value.
+
+**2. The `bdp-` suffix assertion is tautological on the eight POST rows, so the repair keeps no in‑hook guard against unexpected extra headers.** 
+Severity: Low 
+Location: 2365‑2369 
+Impact: Given http-executor.ts:712‑722 and the suffix order the runner enforces at 1845‑1867, the region after the authored prefix can contain only credential header names plus `Accept*`, `User-Agent`, `Host`, `Connection`, `Content-Length` — none can match `bdp-`. The old (broken) full‑list comparison at least rejected *any* unexpected extra line; the replacement rejects a case the serializer cannot produce. The only non‑vacuous use is the two GET rows, where the empty prefix makes the scan cover the whole list. Conversely, if any credential handle ever uses a `bdp-`‑prefixed field name, this becomes a spurious failure.
+Fix: keep the scan (it earns its place on the reads) and add a value‑free total‑count assertion — `expect(request!.headerLines.length).toBe(expected.headers.length + credentialHeaderCount + defaultsAppended + framingCount)` — which restores the lost "no extra line" property without serializing anything.
+
+**3. Zero‑length expectations make the prefix assertion vacuous for the two read rows.** 
+Severity: Low 
+Location: 2303‑2304 (`headers: O`) with 2364 
+Impact: For `m-current` and the event page, `expect([]).toEqual([])` asserts nothing, so a divergence between the mirror and the catalog's authored read headers is invisible in‑hook. A catalog‑side authored `accept` on a GET is also invisible to a count check, since it suppresses the `Accept` default and leaves the total unchanged (718).
+Fix: for the read rows, assert the first actual line is the credential field, or assert the expected default/framing suffix names explicitly (names only).
+
+**4. Name/value casing is now hard‑coupled to the catalog.** 
+Severity: Low 
+Location: 2257, 2273‑2278, 2364 
+Impact: The mirror is all‑lowercase and `toEqual` is case‑sensitive, while the runner treats the catalog's authored casing as truth (1827‑1828, exact‑case compare). Any capitalized authored field in the catalog fails all ten rows in both cohorts, with a diff that is confusing and — per finding 1 — possibly leaking.
+Fix: lowercase names on both sides when comparing (the case‑insensitive name comparison in finding 1 covers this).
+
+---
+
+## Dispositions
+
+**F1 — Accept confirmed.** The defect count in the root audit checks out against 712‑719 and the old filter list. The repair's structure is right; see findings 1‑4 for the residual defects in it.
+
+**F2 — Outcome right, stated premise over‑broad.** Non‑vacuity holds for the two comparisons actually made: `mutationReceipt` requires `transaction` for `completed` (3936‑3948) as `wireToken` (2823‑2826, 3836‑3838), and `event` requires `transaction` as `wireToken` (3085, 3109‑3111), both validated at 2390 before baselines are cloned at 2470. But the claim that the schema requires it "on both receipts and Events" does not cover the `c` row: 2457‑2458 assert the sequence response has no `id`/`receipt`, which is why correlation is gated on `i < 2` (2522‑2523). Event `c`'s transaction is schema‑checked and uncorrelated, and the three transactions are never asserted distinct. Retaining unchanged is fine; the reasoning should not be carried forward as covering all three.
+
+**F3 — Reject‑weakening is right on scope; the cited evidence does not reach the equality.** `event.data` is well supported: `subject` is the same `outcome.resource` object that feeds the receipt (transaction-batch.ts:711‑717), so 2440‑2441 and 2517‑2521 are mutually consistent, and `createdData` is closed (2848‑2876). `expect(body.items).toEqual(resources)` is different in kind — left side is the collection read projection (authority-read.ts:822‑838 → `inCanonicalUriOrder` → `firstPageWithContext` at 884‑895), right side a clone of the mutation‑receipt projection. The cited lines establish *which records* back the page, not that the two wire projections emit identical field sets. Two further unverified premises ride on it: array‑order equality depends on canonical URI order coinciding with creation order (true only because the fixture is `a`/`b`/`c`), and `toHaveLength(3)` depends on per‑scenario scope isolation, which the excerpts do not show. Keep the strict equality, but triage a first‑run failure here as a projection‑shape question, not grounds to weaken.
+
+**F4 — Harmless, but it is unreachable, not hardening.** `assertMinimumReplayLedger` (2234‑2244, called at 2310) pins all three triples by JSON string equality, so `pair[2]` can only be `"whole-json"`; the guard at 2463 adds no coverage. It is also never evaluated under `minimum-batch-body-conflict`, where `m-replay-b` takes the `conflict` branch (2377‑2379, 2418) before the pair lookup. It reuses the message `minimum-replay-comparison-ledger` verbatim, so a surfaced failure is ambiguous between 2243 and 2463 — give the second site a distinct suffix. Do not count it as validation.
+
+**F5 — Affirmed.** Nothing in the supplied source bears on elapsed time, so there is no basis to widen 63000 ms. Note that a 63 s assertion nested in 90 s cohort / 120 s test budgets is a performance gate, not a correctness bound; the right follow‑up is the measured positive value plus an explicit headroom rationale, with a first breach triaged (loaded runner vs. regression) rather than bumped.
+
+Standing caveat: both delta lines are unexecuted, the positive and two negative cohorts remain unrun, and the ordering premise behind finding 1 comes from runner.ts:1817‑1867 rather than from the authored‑append site, which is outside the supplied excerpt.

@@ -1,0 +1,75 @@
+{
+  "utc": "2026-10-18T12:42:15.226288+00:00",
+  "accepted": true,
+  "sourceBindingSha256": "9bb16e9c984f7c259c6f4cb42ddad2886234771a90f4421c3fddec57c5079a41",
+  "consumerLockSha256": "1532d15c60db968a31bb0e84ce0adbdc79bfa5ef2dc78c9dd6fcf4361453b6e1",
+  "consumerManifestSha256": "4173da0e53cac1aa27eec628775774932fbd411e224a11b2573236dad38d8a8b",
+  "consumerSettingsSha256": "85aed09590f1958a91c27dd255e7622a9a4728c665bae3a608aa6dc6b0fa0211",
+  "tarProvenanceSha256": "136836ffedeadfe19df33c1f99bc2f181cdeb0ec61f9148baa60a12ff5017561",
+  "bothTarSHA512IntegritiesInActualLock": true,
+  "actualEightManifestVersions": {
+    "ajv-formats": "3.0.1",
+    "ajv": "8.17.1",
+    "json-schema-traverse": "1.0.0",
+    "fast-uri": "3.1.5",
+    "fast-deep-equal": "3.1.3",
+    "require-from-string": "2.0.2",
+    "@bdp/protocol": "0.0.0",
+    "@bdp/server": "0.0.0"
+  },
+  "actualStages": {
+    "prepare-consumer": {
+      "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/tx-discovery-validation-preparation-7/run/prepare-consumer.exit.json",
+      "sha256": "954e729f6f1ce8dddad4f0cb0371ef2cd22aa20a3dbc9c28baee7593cbbceff9"
+    },
+    "consumer-install": {
+      "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/tx-discovery-validation-preparation-7/run/consumer-install.exit.json",
+      "sha256": "b25bb15f857e05e4163ec10181c7f2a79cf872a4c8c3765bc351dc89e2e791d5"
+    }
+  },
+  "freshTwoStagePidsAbsent": [
+    11182,
+    11197,
+    11212,
+    11229,
+    11247,
+    11263,
+    11284,
+    11320,
+    11340,
+    11360,
+    11378,
+    11398,
+    11417,
+    11454,
+    11474,
+    11492,
+    11512,
+    11531,
+    11551,
+    11572,
+    11593,
+    11630,
+    11651,
+    11670,
+    11690,
+    11710,
+    11731,
+    11769,
+    11789,
+    11807,
+    11825,
+    11844,
+    11862,
+    11882,
+    11902,
+    11916,
+    11918,
+    13340
+  ],
+  "freshTwoStageGroupsAbsent": [
+    11182,
+    13340
+  ],
+  "fullInstalledPayloadInventoryProofStillUnattempted": true
+}

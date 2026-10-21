@@ -1,0 +1,16 @@
+Review the exact diagnostic-only change in apps/bdptest/src/read-update-matrix.test.ts in this checkout. Do not write or modify any files. Output findings only in stdout. Do not execute code, tests, imports, builds, services or shell commands. Read/Glob/Grep only. No model override is requested.
+
+This is an actual code review, not a request to diagnose the old CI failure by guessing or to implement a runtime fix. The sole patch is /Users/dbox/repos/wt/vickie/bdp-integration-logs/pr148-ci-failure/diagnostic-author/source.patch. Read it in full. The current file is pinned at SHA-256 37558e78d79d665363528fb2bf4f81de4f4334cd8438a099030cac7a68e0637b, HEAD 8ee4d86cadc9a1c79a9656cc8b106f34712b3ade. This patch adds a bounded JSON assertion message in the existing three-case independent Read negative-control callback, without changing expected failure criteria, request content, selection, cleanup or deadlines.
+
+Start with these precise sources:
+- apps/bdptest/src/read-update-matrix.test.ts:2950–3030 (changed callback), 3685–3780 (existing safe diagnostic pattern; reanchor retainedRetryDiagnostic), 1227–1265 (run input), 1460–1540 (scenario setup), 2120–2265 (report construction and cleanup).
+- packages/conformance/src/runner.ts:150–240 (exchange/result types), 525–620 (preparation), 660–830 (failure classification and cleanup).
+- /Users/dbox/repos/wt/vickie/bdp-integration-logs/pr148-ci-failure/diagnostic-author/report.md.
+- /Users/dbox/repos/wt/vickie/bdp-integration-logs/pr148-ci-failure/diagnosis.md for the observed failure and explicit limits of evidence; no need to read the full multi-megabyte CI log.
+Broader repository reads are permitted if needed to verify this narrow change. Do not audit unrelated runtime or historical validation paperwork. There is no live plan dependency.
+
+Review security/privacy of the allowlisted projection, actual property/type compatibility, bounded output, preservation of exact negative-control discrimination, and whether this message can distinguish setup, execution and cleanup failures without exposing raw bodies, headers, URLs, credentials, raw configuration, arbitrary error messages or child output. Credential redaction is defense in depth. Identify any diagnostics that are misleading or would themselves throw and obscure the original assertion. Do not require broad telemetry redesign or a new product rule.
+
+Original CI had one failure: expected 'fail', got 'harness-error', no reason/category retained. The relevant Read+Update test and runtime source was unchanged from a green base. The cause is unknown. A future isolated pass would not explain the CI failure, establish a fix or replace exact-head full green CI. No tests have run on this diagnostic patch; this review does not authorize execution or integration.
+
+Return numbered findings first, each with severity, current file/line, concrete issue, impact and smallest correction. If none, explicitly state no actionable findings. Separate blockers from optional observations. Give a concise verdict on this one diagnostic patch; do not infer approval from test counts or claim that the original failure is fixed.

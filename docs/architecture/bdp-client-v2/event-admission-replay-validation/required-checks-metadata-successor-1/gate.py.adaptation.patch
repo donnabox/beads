@@ -1,0 +1,13 @@
+--- /Users/dbox/repos/wt/vickie/bdp-integration-logs/current-observation-minimum-validation/required-checks-correction-successor-2/gate.py
++++ /Users/dbox/repos/wt/vickie/bdp-integration-logs/event-admission-replay-validation/required-checks/gate.py
+@@ -1,8 +1,8 @@
+ from pathlib import Path
+ import json,hashlib,subprocess,os,importlib.util
+ P=Path(__file__).resolve().parent
+-V=Path("/Users/dbox/repos/wt/vickie/bdp-integration-logs/current-observation-minimum-validation/correction-successor-2")
+-W=Path("/Users/dbox/repos/wt/vickie/vickie-current-observation-minimum")
++V=Path("/Users/dbox/repos/wt/vickie/bdp-integration-logs/event-admission-replay-validation/implementation")
++W=Path("/Users/dbox/repos/wt/vickie/vickie-event-admission-replay-minimum")
+ E=P/'run';MODE='final'
+ sha=lambda b:hashlib.sha256(b).hexdigest()
+ def require(ok,message):

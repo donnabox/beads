@@ -1,0 +1,33 @@
+--- /Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-cumulative-carrier-validation-preparation-1/preparation-status.json
++++ /Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-cumulative-carrier-validation-preparation-2/preparation-status.json
+@@ -1,21 +1,24 @@
+ {
++  "actualExecutionSourceTupleAndFutureProofs": "UNRESOLVED",
+   "allGatesFalse": true,
+   "approvedStages": [],
+   "bootstrapReuse": [],
+-  "configurationFinalized": true,
+   "executionAuthorized": false,
+-  "newProductCalls": 0,
+   "otherNativeAccepted": "UNKNOWN/PENDING",
+   "preparationComplete": true,
+-  "priorDrafts": "Historical incomplete/unindexed WIP records under pre-freeze-drafts, not current controls.",
++  "rootAuthorOnlyReleaseSha256": "5a336ac2280d2ec76c552055fd93d4673e804d69e9008291a6b9ce4132c9afcd",
++  "rootClarificationSha256": "0173cce3ef6a41c24492382bd60009ad9bd00cfdb2cdd17237f6662750cad4f7",
+   "runExists": false,
+   "singlePositiveCallbacks": 1,
+   "sourceCallbacks": 48,
+   "sourceFiles": 681,
+   "sourceIdentity": "78e11962df1a744c685c9911d13c0bff3fa42fcdec9310b75ec8f83a17996c7f",
+   "stageCount": 26,
+-  "state": "CLOSED FIRST carrier validation preparation; author-only, independent mechanics and root release pending",
++  "state": "FROZEN CLOSED successor2 author preparation; FULL OTHER-native/root pending",
+   "syntheticHarness": "UNPREPARED/UNAPPROVED/UNEXECUTED",
+-  "utc": "2026-10-18T14:35:55.427929+00:00",
+-  "validationPredecessor": null
++  "utc": "2026-10-18T15:26:57.600232+00:00",
++  "validationPredecessor": {
++    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-cumulative-carrier-validation-preparation-1/preparation-index.json",
++    "sha256": "a0209213c5a568a62182d61d2deabf558a3461145af09fb0cf62c178fc36740a"
++  }
+ }

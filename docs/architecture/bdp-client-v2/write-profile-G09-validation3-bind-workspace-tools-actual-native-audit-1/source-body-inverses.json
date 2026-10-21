@@ -1,0 +1,40 @@
+{
+  "AExactPrepublishedCell": true,
+  "AExactlyThreeWholeAssignmentsVsNode": true,
+  "BAndC": {
+    "B": {
+      "actual": {
+        "bytes": 6709,
+        "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation3-bind-workspace-tools-root-tool-evidence-1/actual-B.txt",
+        "sha256": "36520eb760e284067fb4f3b90eab9231f0baa419333b418937333d1f3b93a18f"
+      },
+      "baseline": {
+        "bytes": 6728,
+        "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation3-root-instantiated-source-1/cells/bind-workspace-tools.B.txt",
+        "sha256": "c43388e4c5a4c000d6bd4483a2adeeece71a4db4661056ec77e58f5a3c8af35e"
+      },
+      "fullInverse": true,
+      "guardAndRawExitUnchanged": true,
+      "precedingActualToolId": "e94720",
+      "wholeAssignmentCount": 1
+    },
+    "C": {
+      "actual": {
+        "bytes": 1788,
+        "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation3-bind-workspace-tools-root-tool-evidence-1/actual-C.txt",
+        "sha256": "6980d577b5fdba63e47d6c321e767d5cb27579fa49abe1e198192e89df34470a"
+      },
+      "baseline": {
+        "bytes": 1809,
+        "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation3-root-instantiated-source-1/cells/bind-workspace-tools.C.txt",
+        "sha256": "933e9799700d2463a0e66acd95f0687a7b0ee891036a04354fe568b85d02bb5b"
+      },
+      "fullInverse": true,
+      "guardAndRawExitUnchanged": true,
+      "precedingActualToolId": "34c296",
+      "wholeAssignmentCount": 1
+    }
+  },
+  "approvedStagesUnchanged": true,
+  "noEvaluation": true
+}

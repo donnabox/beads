@@ -1,0 +1,93 @@
+# Retained ROOT one-off DATA authoring source, attributed to tool12024c.
+# Historical text only; never execute this artifact. It authored the frozen46 packet.
+from pathlib import Path
+import json,hashlib,stat,difflib,shutil
+L=Path('/Users/dbox/repos/wt/vickie/bdp-integration-logs');D=Path('/Users/dbox/repos/wt/vickie/bdp-client-design/checkout/docs/architecture/bdp-client-v2');P=L/'write-profile-G09-validation-preparation-5';B=L/'write-profile-G09-validation3-root-fixed-protocol-preparation-1';A=L/'write-profile-G09-validation5-fixed-protocol-authoring-release-1';T=L/'write-profile-G09-validation5-root-fixed-protocol-preparation-1'
+def j(p):return json.loads(p.read_text())
+def h(p):return hashlib.sha256(p.read_bytes()).hexdigest()
+def meta(p):return {'path':str(p),'sha256':h(p),'bytes':p.stat().st_size,'mode':oct(stat.S_IMODE(p.stat().st_mode))}
+def small(p):return {k:v for k,v in meta(p).items() if k!='path'}
+def pin(p):return {'path':str(p),'sha256':h(p)}
+def write(p,v):p.parent.mkdir(parents=True,exist_ok=True);p.write_text(json.dumps(v,indent=2,sort_keys=True)+'\n');p.chmod(0o644)
+def put(p,s):p.parent.mkdir(parents=True,exist_ok=True);p.write_text(s);p.chmod(0o644)
+pub=L/'root-G09-validation5-helper-acceptance-fixed-text-release-publication-1.remote-readback.json'
+assert j(pub)['all47RawGitModesVerified'] and j(pub)['P5FixedCaptureTextOnlyAuthoringReleasedAfterThisReadback']
+assert h(A/'release.json')=='96a5cbc2abac86f5de875ddb5dfd11c96a38de74d4caf0481f2fc6485ce299e6'
+assert not T.exists() and not (D/T.name).exists();T.mkdir()
+inv=j(A/'finite-binding-inventory.json');mapping=inv['finiteMappings'];stages=['node-version','pnpm-version','workspace-install','bind-workspace-tools'];oldInventory={x['stage']:x for x in j(B/'literal-cell-inventory.json')}
+pairs=[];templates=[];cases=[];origins=[]
+def copy(src,rel):
+ dst=T/rel;dst.parent.mkdir(parents=True,exist_ok=True);shutil.copy2(src,dst);origins.append({'origin':str(src),'copy':rel,**small(src)})
+def sections(s,record):
+ raw=s.encode();a=raw[:record['sections']['A']['bytes']]
+ bs=s.index('import time\nOBSERVER_FIRST = time.monotonic()\n');br=s[bs:].encode()[:record['sections']['B']['bytes']]
+ cs=s.index('import time\nPOST_TERMINAL_WITNESS = time.monotonic() # FIRST');cr=s[cs:].encode()[:record['sections']['C']['bytes']]
+ got={'A':a,'B':br,'C':cr}
+ for name,value in got.items():assert hashlib.sha256(value).hexdigest()==record['sections'][name]['sha256']
+ return {k:v.decode() for k,v in got.items()}
+def adapt(s):
+ for row in mapping:s=s.replace(row['before'],row['after'])
+ return s
+def unadapt(s):
+ for row in reversed(mapping):s=s.replace(row['after'],row['before'])
+ return s
+for stage in stages:
+ before=B/'proposals'/(stage+'.capture.txt');raw=before.read_text();record=oldInventory[stage];assert h(before)==record['templateSha256']
+ copy(before,'before/'+before.name)
+ new=adapt(raw);assert unadapt(new)==raw
+ assert all(raw.count(x['before'])==next(y['occurrences'] for y in inv['wholeTemplateLedger'][stages.index(stage)]['finiteBindingSites'] if y['kind']==x['kind']) for x in mapping)
+ path=T/'proposals'/before.name;put(path,new)
+ oldsections=sections(raw,record);newsections={k:adapt(v) for k,v in oldsections.items()}
+ for key,value in newsections.items():assert value in new and unadapt(value)==oldsections[key]
+ assert new.count("if STAGE == 'node-version': root.parent.mkdir(mode=0o700, exist_ok=False)")==1
+ assert new.count('else: assert root.parent.is_dir() and not root.parent.is_symlink()')==1
+ assert new.count("APPROVED_GATE_SHA256 = 'UNRESOLVED_FUTURE_ROOT_ACTIVATED_GATE_SHA256'\n")==1
+ assert new.count("APPROVED_EXECUTION_ACCEPTANCE_SHA256 = 'UNRESOLVED_FUTURE_ROOT_EXECUTION_ACCEPTANCE_SHA256'\n")==1
+ aa=raw.splitlines(keepends=True);zz=new.splitlines(keepends=True);nd=list(difflib.ndiff(aa,zz));fp='deltas/'+stage+'.forward.patch';ip='deltas/'+stage+'.inverse.patch';np='deltas/'+stage+'.reversible.ndiff'
+ put(T/fp,''.join(difflib.unified_diff(aa,zz,fromfile=str(before),tofile=str(path))));put(T/ip,''.join(difflib.unified_diff(zz,aa,fromfile=str(path),tofile=str(before))));put(T/np,''.join(nd))
+ assert ''.join(difflib.restore(nd,1))==raw and ''.join(difflib.restore(nd,2))==new
+ pairs.append({'stage':stage,'before':meta(before),'after':meta(path),'forward':fp,'inverse':ip,'ndiff':np,'completeBothRestorations':True,'eightLiteralClassesFourteenOccurrencesOnly':True})
+ templates.append({'stage':stage,'template':'proposals/'+before.name,'templateSha256':h(path),'templateBytes':path.stat().st_size,'sections':{k:{'sha256':hashlib.sha256(v.encode()).hexdigest(),'bytes':len(v.encode())} for k,v in newsections.items()},'futureOutput':str(L/'write-profile-G09-validation5-root-first4-dispatch-1'/stage),'rootArgv':['/opt/homebrew/opt/python@3.14/bin/python3.14',str(P/'run.py'),'final',stage],'allOtherBytesExactAfterFiniteInverse':True})
+ for phase,var,sentinel in [('B','ACTUAL_A_TOOL_ID','UNRESOLVED_ACTUAL_TOOL_ID'),('C','ACTUAL_B_TOOL_ID','UNRESOLVED_ACTUAL_B_TOOL_ID')]:
+  body=newsections[phase];assignment=var+" = '"+sentinel+"'\n";replacement=var+" = 'DATA_ONLY_RELATION_ID'\n";assert body.count(assignment)==1
+  def predicate(v):
+   return v.count(replacement)==1 and v.count(assignment)==0 and v.replace(replacement,assignment)==body
+  variants={'missing':body.replace(assignment,''),'duplicate':body.replace(assignment,replacement+replacement),'already-substituted':body,'assignment-only':body.replace(assignment,replacement),'global-replacement':body.replace(sentinel,'DATA_ONLY_RELATION_ID')}
+  for name,value in variants.items():
+   got=predicate(value);assert got==(name=='assignment-only');cases.append({'stage':stage,'phase':phase,'relation':name,'predicate':got,'expected':name=='assignment-only','evaluatedSubject':False})
+write(T/'genuine-four-file-pairs.json',pairs);write(T/'literal-cell-inventory.json',templates)
+copy(A/'release.json','inputs/author-release.json');copy(A/'finite-binding-inventory.json','inputs/finite-binding-inventory.json');copy(pub,'inputs/author-publication.json')
+for f in ['preparation-index.json','implementation-hashes.json','source-binding.json','commands.json','execution-gate.closed.json']:copy(P/f,'inputs/P5/'+f)
+for src,rel in [(L/'write-profile-G09-validation5-closed-helper-root-acceptance-1/acceptance.json','inputs/helper-root-acceptance.json'),(L/'write-profile-G09-validation5-closed-helper-native-precision-1/closure.json','inputs/helper-native-closure.json'),(B/'substitution-contract.json','inputs/original-substitution-contract.json'),(B/'authority-and-clock-protocol.json','inputs/original-authority-and-clock-protocol.json')]:copy(src,rel)
+write(T/'static-DATA-text-relations.json',{'cases':cases,'caseCount':len(cases),'actualFutureToolIds':'UNRESOLVED_NOT_INVENTED','dataToyId':'DATA_ONLY_RELATION_ID (text relation only; no runtime cell or tool identity)','noEvaluation':True,'safeActualToolIdRule':'No quote/backslash/LF/CR; refuse rather than escape or guess'})
+contract=j(B/'substitution-contract.json')
+for key,filename in [('commands','commands.json'),('implementationIndex','implementation-hashes.json'),('preparationIndex','preparation-index.json'),('sourceBinding','source-binding.json')]:contract[key]=meta(P/filename)
+contract.update({'sourceIdentity':j(P/'source-binding.json')['sourceIdentity'],'futureGatePath':str(P/'execution-gate.json'),'futureManifestPath':str(L/'write-profile-G09-validation5-root-execution-acceptance-1/acceptance.json'),'finiteBeforeInverse':'Exactly8 literal classes/14 occurrences per whole stage, all others bytes exact originalP3. Proofs retain real before/after patches+ndiff.','noCurrentAuthority':True})
+write(T/'substitution-contract.json',contract)
+clock=j(B/'authority-and-clock-protocol.json')
+clock['beforeAnyA']=['FULL OTHER-native/root accepts exact P5 fourtext source/control and finite inverse.','Separate ROOT exactsource/review disposition wrappers/candidate26key gate preparation; original eeb provider/f6native/current1ecanative-root history truthful, no providerread1eca.','Acyclic root external manifest pins exact P5/template hashes/rules, not ownSHA or own-containing rendered source.','Complete reviewed authority/manifest/template/disposition durability/readback before exact livewrite; separate activation durability/readback before actual.','Actual A checks manifest rawhash/strictduplicate-nonfiniteJSON/accepted/session549f/modefinal/sourcee025/implc2a7/commandsef7d/exactfourprefix and membership/exact activeGate before output/child spawn.']
+write(T/'authority-and-clock-protocol.json',clock)
+write(T/'prepared-snapshot-and-live-control.json',{'P5Prepared':meta(P/'preparation-index.json'),'oneFutureMutableControlException':{'path':str(P/'execution-gate.json'),'preparedSha256':h(P/'execution-gate.json'),'closedCopyImmutable':str(P/'execution-gate.closed.json'),'implementationStillExact':h(P/'implementation-hashes.json'),'authority':'NONE NOW. Only future independently reviewed and fully published exact candidate/bridges/manifest then exact livewrite and separate activation durability/readback. Never silently repair preparation-index/reference snapshot; expected one-path projection checked explicitly.'},'allP5Other110FilesRemainImmutable':True,'futureRunOutputs':'ABSENT, separately retained actual outputs, never absorbed in prepared index','oldP3P4FailuresImmutable':True})
+write(T/'binding.json',{'session':'2026-10-18T02:16:24Z-549f','kind':'CLOSED_FIXED_P5_FIRST4_TEXT_DATA_ONLY','P5':meta(P/'preparation-index.json'),'implementation':pin(P/'implementation-hashes.json'),'commands':pin(P/'commands.json'),'sourceBinding':pin(P/'source-binding.json'),'sourceIdentity':j(P/'source-binding.json')['sourceIdentity'],'helperNative':pin(L/'write-profile-G09-validation5-closed-helper-native-precision-1/closure.json'),'helperRoot':pin(L/'write-profile-G09-validation5-closed-helper-root-acceptance-1/acceptance.json'),'authorOnlyRelease':pin(A/'release.json'),'durableBeforeAuthor':pin(pub),'futureGateAndManifestSha256':'UNRESOLVED','actualOutputsCreated':False,'executionReleased':False,'rootLaunchReleased':False,'approvedStages':[],'newExecutableHelpers':0,'subjectEvaluations':0})
+write(T/'input-origins.json',origins)
+refs=j(P/'reference-pins.json')
+for f in P.rglob('*'):
+ if f.is_file():refs[str(f)]=h(f)
+for root in [B,A,L/'write-profile-G09-validation5-closed-helper-native-precision-1',L/'write-profile-G09-validation5-closed-helper-root-acceptance-1']:
+ for f in root.rglob('*'):
+  if f.is_file():refs[str(f)]=h(f)
+for row in origins:refs[row['origin']]=row['sha256']
+for f,value in refs.items():assert h(Path(f))==value and not Path(f).is_relative_to(T)
+write(T/'reference-pins.json',refs)
+write(T/'history-INPLACE.json',{'referencePins':len(refs),'originalP3Text':pin(B/'index.json'),'originalFailedP3Runtime':'Retained FAILED lint/STOPPED later27; no oldpasses borrowed','failedP4Snapshot':pin(L/'write-profile-G09-validation4-helper-partial-authoring-stop-1/index.json'),'failedP4BackendIdentityCleanup':'UNKNOWN; original untouched, no repeated worker/model call','preparedP5':pin(P/'preparation-index.json'),'providerCoverage':'Actual originaleeb only+preserved omissions, f6native55c/a9,current1ecanative22f/cd63; no repeated actual review/currentprovidercoverage','historicalNativeErratum':pin(L/'write-profile-G09-validation5-closed-helper-native-precision-1/additive-prior-native-erratum.json'),'noRecursiveHistoryCopy':True})
+write(T/'checks.json',{'fourExactWholeTemplates':True,'eightLiteralClassesFourteenOccurrencesEach':True,'allFourFullInverseAndNdiff':True,'allOtherSourceBodiesGuardsRawExit0ClockAndSharedParentExact':True,'unresolvedGateAndManifestAssignments':True,'pureTextRelations':len(cases),'actualFutureToolIds':'UNRESOLVED','P5LiveGateStillClosed':h(P/'execution-gate.json')==h(P/'execution-gate.closed.json'),'noNewWorkspaceMapBeforeStage4':True,'futureOutputsRunCandidatesManifestRenderedCellsAbsent':True,'allOriginsReferencesExact':True,'evaluationImportsASTCompilationRuntime':False})
+report='''# CLOSED P5 first-four fixed capture text\n\nFour complete narrative .capture.txt DATA proposals derive from the original P3 proposals after durable author-only release. Exactly eight literal classes and14 occurrences per stage bind P5 helper/output/future-manifest namespaces, the same isolated1eca source worktree and its actual implementation/commands/source-binding/source digests. All other bytes, source bodies, guards, RAW_EXIT0 expectations, labels, blank lines and final LF are preserved. Full before copies, forward/inverse patches and reversible ndiff restorations are genuine. No program or cell was evaluated or authored as an executable helper.\n\nGate and manifest assignments remain unresolved placeholders. The future authority must pin these frozen template hashes and exact allowed substitutions without a self-containing manifest hash cycle. Later reviewed rendering may bind only exact gate/manifest assignment lines; only after actual preceding tool0 may a safe actual tool-ID assignment be bound once, with full inverse and every protective unresolved guard/RAW_EXIT0 unchanged. Forty pure text relations accept only assignment-only and refuse missing/duplicate/already-substituted/global changes; toy relation IDs are DATA, never actual tools or future runtime source.\n\nSame earliest root clock before imports/setup/hash/child, strict115/outer120, full actual direct terminal/BOTH PIPE EOF/raw0600 count/hash/fstat/close, finite recorded PID+PGID census/direct probe reap/actual observer terminal/first same-clock witness conjunction. Internal mergedlog/child clock cannot substitute for root facts. No new cap, grace, safe historical signal, global containment, observer self-absence or runtime-fit claim. Source-attributed trusted-root terminals remain narrower than independently decoded raw tool receipts. First node exclusively acquires shared parent; later stages require accepted existing non-symlink parent, each child exclusive.\n\nP5 helper111/index2e171752/implementationc2a7/commandsef7d/sourcebindinge025 and closed4a87 are frozen. Its26-key live gate remains sixfalse/approved[]/reuse[]; preparation snapshot's single future live-control exception is explicit, never silently repaired. New workspace/tools/versions/build/archive/external generated consumer lock/manifest/settings/inventory/graph/payload/entry proof and all34fresh results remain UNRESOLVED. No old30468 workspace map is pinned before fresh install+bind. Original P3 failed attempt and P4 failed capacity/UNKNOWN backend identity+cleanup remain intact; no retries, provider re-review, incoming semantics or new product actions.\n\nFull OTHER-native/root exact text/source-control precision and findings disposition remain required. Only afterward may ROOT separately prepare concrete source/review wrappers, candidate/manifest/rendering for full final precision and authority durability; then exact livewrite and separately durable activation precede any actual. No root candidate, execution wrapper, manifest, rendered cell, runtime output, activation, product source change/commit/push/PR/landing/release or quality pass exists here. Full Write OPEN.\n'''
+put(T/'report.md',report)
+write(T/'closure.json',{'session':'2026-10-18T02:16:24Z-549f','state':'FROZEN_CLOSED_FIXED_P5_FIRST4_TEXT_DATA_ONLY','preparationComplete':True,'accepted':False,'selfApproval':False,'nativePrecision':'UNRESOLVED','rootPrecision':'UNRESOLVED','fourLiteralTemplates':4,'genuinePairs':4,'pureTextRelations':len(cases),'templateHashes':{r['stage']:r['templateSha256'] for r in templates},'sourceIdentity':j(P/'source-binding.json')['sourceIdentity'],'sourceBindingSha256':h(P/'source-binding.json'),'reportSha256':h(T/'report.md'),'bindingSha256':h(T/'binding.json'),'substitutionContractSha256':h(T/'substitution-contract.json'),'futureGateAndManifestSHAs':'UNRESOLVED','futureManifestCreated':False,'futureOutputCreated':False,'rootCaptureInvocations':0,'newExecutableHelpers':0,'subjectEvaluations':0,'executionReleased':False,'rootLaunchReleased':False,'approvedStages':[],'runtimeFit':'UNKNOWN','oldAttemptRetryAuthorized':False,'wholeWriteOrPublicAdmissionCredit':False})
+allfiles={str(f.relative_to(T)):small(f) for f in sorted(T.rglob('*')) if f.is_file()};write(T/'index.json',{'status':'FROZEN_CLOSED_FIXED_P5_FIRST4_TEXT_DATA_ONLY','files':allfiles,'selfExcluded':['index.json'],'physicalFiles':len(allfiles)+1,'indexedFiles':len(allfiles),'origins':len(origins),'referencePins':len(refs)})
+assert not (P/'run').exists() and not (L/'write-profile-G09-validation5-root-first4-dispatch-1').exists() and not (L/'write-profile-G09-validation5-root-execution-acceptance-1').exists()
+for row in origins:assert (T/row['copy']).read_bytes()==Path(row['origin']).read_bytes()
+for rel,value in allfiles.items():assert small(T/rel)==value
+shutil.copytree(T,D/T.name)
+print(json.dumps({'target':str(T),'physical':len(allfiles)+1,'indexed':len(allfiles),'origins':len(origins),'references':len(refs),'index':h(T/'index.json'),'closure':h(T/'closure.json'),'fourWholeTemplates':{r['stage']:r['templateSha256'] for r in templates},'runtime':False}))
+

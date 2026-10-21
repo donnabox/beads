@@ -1,0 +1,29 @@
+{
+  "kind": "two genuine DOCUMENT/DATA precision pairs; no source patch",
+  "pairs": [
+    {
+      "after": "effective-plan.md",
+      "beforeName": "plan.md",
+      "beforeCopy": "before/plan1.md",
+      "beforeSha256": "98c8d80e9a4d233b89ab3a78c40be29f3c2abcbd7914150a303a850e392607a0",
+      "afterSha256": "352e7d67f02ce7f1df8e816177579119958bf29ef909dfcd5896b6a767a48488",
+      "forward": "deltas/effective-plan.md.patch",
+      "inverse": "deltas/effective-plan.md.inverse.patch"
+    },
+    {
+      "after": "effective-correction-matrix.json",
+      "beforeName": "correction-matrix.json",
+      "beforeCopy": "before/correction-matrix.json",
+      "beforeSha256": "d2ee4bb297e6b584fbd0b06eec437cdb84f82bd193576af2976264bc9e7fc997",
+      "afterSha256": "4ab0147ece245b0ae257b775ab1039f11a4dcfb5ff7387108c4d68825c7bfde9",
+      "forward": "deltas/effective-correction-matrix.json.patch",
+      "inverse": "deltas/effective-correction-matrix.json.inverse.patch"
+    }
+  ],
+  "genuinePairs": 2,
+  "onlySemanticOverrides": [
+    "F5actualcold sendresponse projection removes injected-request credential return mechanism; no universal served-content secrecy claim",
+    "F10directHttpResponsemetadata classification notwire"
+  ],
+  "allOtherPlan1BytesAndSemanticsPreserved": true
+}

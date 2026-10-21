@@ -1,0 +1,32 @@
+{
+  "sourceIdentity": "1a3caa86808b72da3488c1a9fe34f05ca7b7ce244b75d7d537137b37fe5594ae",
+  "sourceBindingSha256": "5fecd704d54e08b0de899505decf8da1ae80f6ad64fdcbc90608e8a516f715db",
+  "qualification": false,
+  "selectedCallbacks": [
+    "rejects collection parser errors before unknown minimum support checks",
+    "preserves parser refusal parity on noncollection and excluded query routes",
+    "preserves receiving and HTTP error precedence for parser refusals",
+    "waits for current Resources and initial collections with unknown minima and preserves residual refusals",
+    "preserves concrete query syntax failures and accepts the reserved genesis minimum",
+    "serves canonical current Type and incident minimums with truthful context and parser boundaries",
+    "rejects malformed minimum tuples across read routes without entering the actual owner"
+  ],
+  "resultsSha256": "96102517ec242bbc7631c5f5ee498506510adb52d7a94e6cd7a9483206fd4dff",
+  "logSha256": "1fd339cabbb22d36bff8858ba358eed81fbe9efb7e71e9f82347f7b0c0920f42",
+  "attribution": "Four source-handler callbacks and three emitted-runtime fixture callbacks on one freshly bound candidate",
+  "plannedWorkload": {
+    "newSourceCallbacks": 3,
+    "newSourceHandlerInvocations": 67,
+    "newSourceSetupGETs": 3,
+    "newSourceStores": 3,
+    "sourceSelectionCallbacks": 7,
+    "sourceSelectionHandlerInvocations": 100,
+    "sourceSelectionHTTPExchanges": 91,
+    "sourceSelectionStores": 7,
+    "sourceSelectionProductChildren": 0,
+    "newInstalledCallbacks": 1,
+    "newInstalledHTTPExchanges": 25,
+    "installedPreservationHTTPExchanges": 42
+  },
+  "limits": "100 handler invocations (67 new+33 existing),91 emitted HTTP exchanges and7 stores are source-derived planned workload, not fabricated observations. Exact refusal/no-owner/wait/token and regression semantics are assertions of the pinned passing callbacks."
+}

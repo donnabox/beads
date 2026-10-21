@@ -1,0 +1,142 @@
+--- /Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-D4-synthetic-harness-preparation-5/outer_host.py
++++ /Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-D4-synthetic-harness-preparation-6/outer_host.py
+@@ -24,6 +24,92 @@
+  bus,childbus=socket.socketpair(socket.AF_UNIX,socket.SOCK_DGRAM);bus.setblocking(False)
+  nonce=os.urandom(16).hex();env={**os.environ,'D4_OUTER_FD':str(childbus.fileno()),'D4_OUTER_NONCE':nonce,'D4_OUTER_ORIGIN':str(origin),'D4_OUTER_TERM':str(term),'PYTHONDONTWRITEBYTECODE':'1'}
+  direct={};groups={};identities={};closed=set();registrations=[];acks=[];signals=[];events=[];unknown=[];failure=None;failure_at=None;last_rows=[];last_at=None;generation=0;probe_receipts=[];census=None;census_at=0;psout=b'';pserr=b'';pseof=[False,False];next_ps=origin;pending=[];control=None;io=None;stdout=None;stderr=None;authorized=False;io_ready=False;io_done=False;published=False;control_raw=None;publication_sent=False;stdio=None
++ # OBSERVABILITY-BEGIN definitions
++ # These projections read held records only. They never authorize ownership.
++ first_mismatch=None
++ first_signal_error=None
++ def observed_integer(value,positive=False):
++  if type(value)is not int or (positive and value<=0):raise ValueError('diagnostic-integer')
++  if len(str(value))>(10 if positive else 11):raise ValueError('diagnostic-integer-capacity')
++  return value
++ def observed_bool(value):
++  if type(value)is not bool:raise ValueError('diagnostic-boolean')
++  return value
++ def observed_text(value,maximum):
++  if type(value)is not str or len(value.encode('utf-8'))>maximum:raise ValueError('diagnostic-text-capacity')
++  return value
++ def observed_clock(value):
++  if value is None:return None
++  if type(value)not in [int,float]or value!=value or abs(value)==float('inf')or len(json.dumps(value,allow_nan=False))>32:raise ValueError('diagnostic-clock')
++  return value
++ def observed_bytes(value,maximum):
++  data=(json.dumps(value,separators=(',',':'),ensure_ascii=True,allow_nan=False)+'\n').encode('ascii')
++  if len(data)>maximum:raise ValueError('diagnostic-encoded-capacity')
++  return data
++ def observed_handle(handle):
++  if handle is None:return None
++  return {'pid':observed_integer(handle.pid,True),'storedReturncode':None if handle.returncode is None else observed_integer(handle.returncode)}
++ def capture_mismatch(row,old):
++  nonlocal first_mismatch
++  if first_mismatch is not None:return
++  try:
++   allowed=sorted(old['permittedComm'])
++   if len(allowed)>2:raise ValueError('diagnostic-comm-cardinality')
++   birth_equal=old['birth']==row['birth'];pgid_equal=old['pgid']==row['pgid']
++   zombie=row['state'].startswith('Z');terminal=observed_bool(old['terminalSeen'])
++   permitted=row['comm']in old['permittedComm']
++   registration=None
++   for index,item in enumerate(registrations):
++    if item['pid']==row['pid']:
++     registration={'index':observed_integer(index),'roleCode':{'io':0,'control':1,'nested-zero-product':2}[item['kind']],'authenticated':observed_bool(item['authenticated']),'direct':observed_bool(item['direct'])}
++     break
++   value={'status':'available','pid':observed_integer(row['pid'],True),'ppid':observed_integer(row['ppid'],True),
++    'old':{'birth':observed_text(old['birth'],64),'pgid':observed_integer(old['pgid'],True),'permittedComm':[observed_text(v,1024)for v in allowed],'terminalSeen':terminal},
++    'current':{'birth':observed_text(row['birth'],64),'pgid':observed_integer(row['pgid'],True),'comm':observed_text(row['comm'],1024),'state':observed_text(row['state'],16)},
++    'subpredicates':{'birthEqual':birth_equal,'pgidEqual':pgid_equal,'rowIsZombie':zombie,'oldTerminalSeen':terminal,'commPermitted':permitted,'rejectedBranch':'birth-or-pgid'if not(birth_equal and pgid_equal)else'terminal-seen'if terminal else'comm-not-permitted'},
++    'generation':observed_integer(generation),'lastAt':observed_clock(last_at),'censusAt':observed_clock(census_at),'failureAt':observed_clock(failure_at),'clockOrigin':observed_clock(origin),
++    'directHandle':observed_handle(direct.get(row['pid'])),'firstMatchingRegistration':registration}
++   observed_bytes(value,32768)
++   first_mismatch=value
++  except Exception:
++   first_mismatch={'status':'unavailable','reason':'diagnostic-capacity-or-projection'}
++ def capture_signal_error(exc,record,direct_anchor,current,fresh_anchor,live,handle,state):
++  nonlocal first_signal_error
++  if first_signal_error is not None:return
++  try:
++   if len(live)>4096:raise ValueError('diagnostic-live-cardinality')
++   value={'status':'available','exceptionClass':observed_text(type(exc).__name__,128),'errno':None if exc.errno is None else observed_integer(exc.errno),
++    'pgid':observed_integer(record['pgid'],True),'signal':observed_integer(record['signal']),'at':observed_clock(record['at']),'attempted':observed_bool(record['attempted']),'successful':observed_bool(record['successful']),
++    'directAnchor':observed_bool(direct_anchor),'currentCensus':observed_bool(current),'freshAnchor':observed_bool(fresh_anchor),'livePids':[observed_integer(r['pid'],True)for r in live],
++    'lastAt':observed_clock(last_at),'generation':observed_integer(generation),'failureAt':observed_clock(failure_at),'clockOrigin':observed_clock(origin),
++    'directHandle':observed_handle(handle),'groupObserved':observed_bool(state['observed']),'groupClosed':record['pgid']in closed}
++   observed_bytes(value,65536)
++   first_signal_error=value
++  except Exception:
++   first_signal_error={'status':'unavailable','reason':'diagnostic-capacity-or-projection'}
++ def final_registry_bytes():
++  # This branch has no active census, all groups closed, and actual IO settled.
++  # All banks are projections of existing records, including already-reaped roles.
++  if len(registrations)>4096 or len(identities)>4096 or len(groups)>256 or len(probe_receipts)>2048:raise ValueError('registry-cardinality')
++  direct_roles=[r for r in registrations if r['kind']in ['io','control']and r['direct']is True]
++  if len(direct_roles)!=2 or {r['kind']for r in direct_roles}!={'io','control'}:raise ValueError('registry-owner-parents')
++  owner=observed_integer(direct_roles[0]['parent'],True)
++  if any(observed_integer(r['parent'],True)!=owner for r in direct_roles):raise ValueError('registry-owner-agreement')
++  roles={'io':0,'control':1,'nested-zero-product':2}
++  registered_rows=[[observed_integer(r['pid'],True),observed_integer(r['parent'],True),observed_integer(r['pgid'],True),roles[r['kind']],observed_bool(r['authenticated']),observed_bool(r['direct'])]for r in registrations]
++  identity_rows=[[observed_integer(pid,True),observed_integer(item['pgid'],True)]for pid,item in sorted(identities.items())]
++  group_rows=[observed_integer(gid,True)for gid in sorted(groups)]
++  probe_rows=[[observed_integer(r['pid'],True),observed_integer(r['pgid'],True),observed_integer(r['rawExit']),observed_bool(r['stdoutEof']),observed_bool(r['stderrEof'])]for r in probe_receipts]
++  value={'event':'outer-owner-final-registry','schemaVersion':1,'case':case,'variant':variant,'session':'2026-10-18T02:16:24Z-549f',
++   'ownerPid':owner,'limiterPid':observed_integer(limiter_pid,True),'clockOrigin':observed_clock(origin),'freezeAt':observed_clock(time.monotonic()),'lastCensusAt':observed_clock(last_at),'lastCensusGeneration':observed_integer(generation),
++   'registrations':registered_rows,'observedIdentities':identity_rows,'knownGroups':group_rows,'completedCensusProbes':probe_rows,'firstMismatch':first_mismatch,'firstSignalError':first_signal_error,'syntheticAcceptance':False,'productCalls':0}
++  # Each bank and diagnostic slot has a conjunctive exact encoded bound.
++  # Bank brackets and the helper's newline consume the fixed envelope reserve.
++  for rows,budget in [(registered_rows,262144),(identity_rows,98304),(group_rows,2816),(probe_rows,131072)]:observed_bytes(rows,budget+3)
++  if first_mismatch is not None:observed_bytes(first_mismatch,32768)
++  if first_signal_error is not None:observed_bytes(first_signal_error,65536)
++  return observed_bytes(value,600832)
++ # OBSERVABILITY-END definitions
+  def fail(reason):
+   nonlocal failure,failure_at
+   if failure is None:failure=reason;failure_at=time.monotonic()
+@@ -104,7 +190,12 @@
+   for row in rows:
+    if row['pid']not in owned:continue
+    old=identities.get(row['pid'])
+-   if old is not None and not matches(row,old):uncertain('owned-pid-start-group-executable-changed');continue
++   if old is not None and not matches(row,old):
++    uncertain('owned-pid-start-group-executable-changed')
++    # OBSERVABILITY-BEGIN mismatch-hook
++    capture_mismatch(row,old)
++    # OBSERVABILITY-END mismatch-hook
++    continue
+    if old is None:identities[row['pid']]={'birth':row['birth'],'pgid':row['pgid'],'permittedComm':{row['comm']},'terminalSeen':row['state'].startswith('Z')}
+    elif row['state'].startswith('Z'):old['terminalSeen']=True
+    if row['pgid']not in groups:
+@@ -138,7 +229,11 @@
+      try:h.send_signal(sig);record['successfulDirectFallback']=True
+      except ProcessLookupError:pass
+      except OSError:uncertain('direct-fallback-error')
+-   except OSError as exc:record['error']=type(exc).__name__;uncertain('signal-error')
++   except OSError as exc:
++    record['error']=type(exc).__name__;uncertain('signal-error')
++    # OBSERVABILITY-BEGIN signal-hook
++    capture_signal_error(exc,record,direct_anchor,current,fresh_anchor,live,h,state)
++    # OBSERVABILITY-END signal-hook
+  def ingest():
+   nonlocal io_ready,io_done,authorized,published,control_raw,stdio
+   for _ in range(8):
+@@ -248,6 +343,19 @@
+     else:pending.append({'kind':'publication','socket':io_channel,'bytes':data});publication_sent=True
+    if published and io.returncode is not None and all(gid in closed for gid in groups)and census is None:
+     clean=not failure and not unknown and control is not None and control.returncode in [0,2]and control_raw==control.returncode and io.returncode==0 and elapsed()<term and stdio and all(v['eof']for v in stdio.values())
++    # OBSERVABILITY-BEGIN final-registry
++    # Irreversible finalization: no further registry-bearing work is entered.
++    # Original finally/local self-group query and descriptor cleanup stay intact.
++    if elapsed()>=term:return 1
++    try:registry_data=final_registry_bytes()
++    except Exception:return 1
++    if elapsed()>=term:return 1
++    os.set_blocking(1,False)
++    try:
++     if os.write(1,registry_data)!=len(registry_data):return 1
++    except (BlockingIOError,OSError):return 1
++    if elapsed()>=term:return 1
++    # OBSERVABILITY-END final-registry
+     # Small nonblocking console receipt; no file IO/hash/publication on loop.
+     receipt={'event':'outer-owner-terminal','case':case,'variant':variant,'rawControlExit':control_raw,'ownerSettled':bool(clean),'elapsedSeconds':elapsed(),'allKnownGroupsAbsent':True,'ownershipUnknown':unknown,'ownerFailure':failure,'requiresLimiterExitAndRootAudit':True,'syntheticAcceptance':False,'productCalls':0}
+     os.set_blocking(1,False);data=(json.dumps(receipt,separators=(',',':'))+'\n').encode()

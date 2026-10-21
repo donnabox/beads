@@ -1,0 +1,90 @@
+{
+  "released": true,
+  "session": "2026-10-08T20:26:35Z-81e5",
+  "finalHead": "3bb2f2449ce345e118d04c07eadd777363add544",
+  "finalTree": "69497d4ffc2089ce56790a9a257ecdff2eb0b47b",
+  "finalSource": {
+    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/read-update-command-minimum-draft/integration-validation/final-source.json",
+    "sha256": "79180b9f51821e6689e32a40d6deb38b9a41643846357c20ca214d95ec5c539b"
+  },
+  "integrationAcceptance": {
+    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/read-update-command-minimum-draft/integration-validation/delegated-integration-verification.json",
+    "sha256": "c955c52b1e966c521182cc119aa6d816c77508460ca12c2aaefb2388deaec492"
+  },
+  "rootAcceptance": {
+    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/read-update-command-minimum-draft/partial-credit-repair/root-final-council-and-integration-release.json",
+    "sha256": "fb0c01631971c8203b9463667534f6490881529743ec2cc94c5a0ebebb447705"
+  },
+  "sourceValidationAcceptance": {
+    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/read-update-command-minimum-draft/integration-validation/source-validation-basis.json",
+    "sha256": "b2c6698bc122f00b658231356ba70a580ea255c0d1a9e86781486e64fa7f96d0"
+  },
+  "councilState": {
+    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/read-update-command-minimum-draft/integration-validation/council-state.json",
+    "sha256": "6dd83ebe71192089015ce57696ce51e1eaa44a5ef57163188bf4ffce9eb420b0"
+  },
+  "rootBuildAcceptance": {
+    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/read-update-command-minimum-draft/integration-validation/delegated-build-verification.json",
+    "sha256": "26f4481f607da85ace55168d0d0cd87cbe3b5951e7a46d69bde93a76b4a4a72d"
+  },
+  "sourceLockSha256": "4150d8821c96dbc2cfec0b2762ff76b58318079f65fa4f5c8858ef2dd61f8d6d",
+  "consumerLockSha256": "e1af0e548f497526bcc4991baa5d94536f7838ed0e05774b434d5ef1c7c6fd69",
+  "preparationSha256": {
+    "gate.py": "b07c80c6c9ffd47577706524390fb40ee4dfa6a937a7d78973bd7271aced3582",
+    "supervise.py": "c7379208470579df06925671bbde5b611711104d9484eede8870e47c1bb9afb3",
+    "packages.py": "83cd0e9b03d8c86c9089b04c7e5f413c8c7619ccde137daf61058a55d123d425",
+    "commands.json": "1005d8bb8e66de78cc6f1b9d5c69f031dd4167d2890dfe191c1cc8df33991663",
+    "prepared-source.json": "b308da4f7b4a62d53fe57a11acd26ab359427a20ce0fb1ba5e5da47372764fa1",
+    "report-contract.json": "e1af3072cb024816a4fa61725775cb6010cb72e66247aefa1bb41292b36f574d",
+    "selection.json": "79e5fe613f66add2cc5457140985202a83819302815ed73fec8a00ccb195e381"
+  },
+  "note": "Explicit root-delegated local integration execution. Worker may pin actual build/consumer/provenance after successful stages; no invented independent root verification. No full aggregate/commit/push/main merge release.",
+  "approvedCommandIds": [
+    "fresh-build",
+    "typecheck",
+    "format-check",
+    "boundaries",
+    "lint",
+    "read-evidence",
+    "cpu-eight",
+    "node-version",
+    "package-directory",
+    "pack-protocol",
+    "pack-server",
+    "verify-tar",
+    "prepare-consumer",
+    "consumer-install",
+    "verify-installed",
+    "selected-positive",
+    "selected-minimum-control"
+  ],
+  "finalBase": "df80f8cb86b7763bc7bb005492e43d8840527045",
+  "finalParents": [
+    "e35708f8c534a47d82f95e4abb5f1d3f0f6f0954",
+    "df80f8cb86b7763bc7bb005492e43d8840527045"
+  ],
+  "sourceBinding": {
+    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/read-update-command-minimum-draft/integration-validation/prepared-source.json",
+    "sha256": "b308da4f7b4a62d53fe57a11acd26ab359427a20ce0fb1ba5e5da47372764fa1"
+  },
+  "buildOutputInventory": {
+    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/read-update-command-minimum-draft/integration-validation/run/build-inventory.json",
+    "sha256": "f9b501030b6adb07ff4daff1b4ff3e336edbe3a64a65171b494f7fc54f3963d4"
+  },
+  "node": "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+  "pnpm": "/Users/dbox/.cache/node/corepack/v1/pnpm/11.20.0/bin/pnpm.cjs",
+  "installedProvenance": {
+    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/read-update-command-minimum-draft/integration-validation/run/installed-provenance.json",
+    "sha256": "dc19dc13396abe216948924db2dd07212bf047b763dc8df41dec95b397b2e3ba"
+  },
+  "expectedProductionVersions": {
+    "@bdp/protocol": "0.0.0",
+    "@bdp/server": "0.0.0",
+    "ajv": "8.17.1",
+    "ajv-formats": "3.0.1",
+    "fast-deep-equal": "3.1.3",
+    "fast-uri": "3.1.5",
+    "json-schema-traverse": "1.0.0",
+    "require-from-string": "2.0.2"
+  }
+}

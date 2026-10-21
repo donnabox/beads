@@ -1,0 +1,60 @@
+{
+  "state": "STATIC byte/hash checks only; no runtime validation",
+  "sourceIdentity": "7e856365e701e96ddf233e13d6883c6d74464dd755c0ff59f1b185c37c7b19db",
+  "sourceFiles": 682,
+  "unchangedSourceFiles": 680,
+  "onlyChangedSourcePaths": [
+    "packages/config/src/index.ts",
+    "packages/server/src/reference-deployment.ts"
+  ],
+  "helperChecks": {
+    "run.py": {
+      "beforeSha256": "6af15172dc1dd2bbb70fca451bbb27bb2c34ee003849b6d48620caffcce33235",
+      "afterSha256": "6af15172dc1dd2bbb70fca451bbb27bb2c34ee003849b6d48620caffcce33235",
+      "delta": "byte-identical"
+    },
+    "gate.py": {
+      "beforeSha256": "79ebbbb9697807bb6fabe98d168800fc84ff83c0206629fda98602a67564da4a",
+      "afterSha256": "79ebbbb9697807bb6fabe98d168800fc84ff83c0206629fda98602a67564da4a",
+      "delta": "byte-identical"
+    },
+    "audit.py": {
+      "beforeSha256": "e775d1e4f2ab226d1f5cbd89989738fb4de376c1186e5a3ad927976cf399acfd",
+      "afterSha256": "e775d1e4f2ab226d1f5cbd89989738fb4de376c1186e5a3ad927976cf399acfd",
+      "delta": "byte-identical"
+    },
+    "packages.py": {
+      "beforeSha256": "4e779f7d95dffec9534f258dec1fe3102f5e0d7419559bd8cb8c97631b529449",
+      "afterSha256": "4e779f7d95dffec9534f258dec1fe3102f5e0d7419559bd8cb8c97631b529449",
+      "delta": "byte-identical"
+    },
+    "guarded-action-session-20261018-021624-549f.py": {
+      "beforeSha256": "b2d467920638e68d3b007ba9daa432e971636245eca988bfb29d7a99d6e3fb30",
+      "afterSha256": "b2d467920638e68d3b007ba9daa432e971636245eca988bfb29d7a99d6e3fb30",
+      "delta": "byte-identical"
+    },
+    "bound-consumer-loader.mjs": {
+      "beforeSha256": "eaf74ee1512bf40475546509f6797d5c3d40ed44283902d424eb39440af8258f",
+      "afterSha256": "5c6572df8216188bf58a563f224cc1b968798a900f701de609cdab169c51b137",
+      "delta": "one executionRoot literal"
+    }
+  },
+  "unchangedSchemasAndInventories": {
+    "selection.json": "b3d1ad1f764748a32454ab35ba96b01936753ed624155ec0fd5b6b129773074b",
+    "report-schemas.json": "2743d8e1fcb2c73e2527e4f030e4007f7227fd29246773c89605b7560c3602fd",
+    "audit-expectations.json": "2285c43b42993f9bf46e118e6cc3853ebe316d05c4f80e90d187c9e65379ad52",
+    "packaging-inventory.json": "816b0cf72d732ce80921507738d6a0add32fa5061abcb9cb21e0d37dbec082aa",
+    "base-tools.required.json": "b75f63d22691c526eafecc3e1ac391709ba8bfd1ea6a7254b56953a78c8a67a9"
+  },
+  "selectedCallbacks": 44,
+  "selectedNamesFilesRegexAndHashesUnchanged": true,
+  "stages": 25,
+  "commandsOnlyPathRebound": true,
+  "privateSpecifierCount": 71,
+  "loaderCalls": 6,
+  "predecessorRunFiles": 30,
+  "predecessorRunUnchanged": true,
+  "newRunAbsent": true,
+  "executionReleased": false,
+  "compiledOrRuntimeVerified": false
+}

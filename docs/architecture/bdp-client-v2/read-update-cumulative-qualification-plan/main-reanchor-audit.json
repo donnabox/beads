@@ -1,0 +1,348 @@
+{
+  "checkedAt": "2026-10-15T23:46:16.614624+00:00",
+  "kind": "read-only source reanchor audit; frozen review inputs preserved",
+  "sourceRepository": "/Users/dbox/repos/wt/vickie/vickie-minimum-receiving",
+  "oldHead": "73fc0daed2e5fa6843e581de9bf7a46e519562ab",
+  "newHead": "67a2842e3f1918e70978f745587cf11eaf0df5a8",
+  "newTree": "596abe870220fb61ce606f8382a9da52d554d063",
+  "orderedParents": [
+    "73fc0daed2e5fa6843e581de9bf7a46e519562ab",
+    "c18c71202c90fa2558f34107ad342befabf750fe"
+  ],
+  "pins": {
+    "packages/conformance/matrices/read-update-v1.json": {
+      "beforeSha256": "c86b33535f25a1d117ce021a3bb70164f5635bdaee50758e3428c130ccc3227f",
+      "afterSha256": "c86b33535f25a1d117ce021a3bb70164f5635bdaee50758e3428c130ccc3227f",
+      "beforeBytes": 3626922,
+      "afterBytes": 3626922,
+      "byteIdentical": true,
+      "proposedOwnedPath": true
+    },
+    "packages/conformance/matrices/read-update-reference-continuation-v1.json": {
+      "beforeSha256": "24d754618b51f255b5885d83c53ccf9a06593031e1812739a4f2b504c4a1df8d",
+      "afterSha256": "24d754618b51f255b5885d83c53ccf9a06593031e1812739a4f2b504c4a1df8d",
+      "beforeBytes": 899400,
+      "afterBytes": 899400,
+      "byteIdentical": true,
+      "proposedOwnedPath": false
+    },
+    "packages/conformance/test-support/read-update-coverage-v1.json": {
+      "beforeSha256": "f8f0b001928f8488292403b57c973bd918cba224ef9e00fe0691482bf5cfac0c",
+      "afterSha256": "f8f0b001928f8488292403b57c973bd918cba224ef9e00fe0691482bf5cfac0c",
+      "beforeBytes": 713193,
+      "afterBytes": 713193,
+      "byteIdentical": true,
+      "proposedOwnedPath": true
+    },
+    "packages/conformance/fixtures/read-update-reference-v1.json": {
+      "beforeSha256": "f89932d68e3bf5867d79eb3de680af4bc67b761b3c3bce5da127f6ca75e27765",
+      "afterSha256": "f89932d68e3bf5867d79eb3de680af4bc67b761b3c3bce5da127f6ca75e27765",
+      "beforeBytes": 29707,
+      "afterBytes": 29707,
+      "byteIdentical": true,
+      "proposedOwnedPath": false
+    },
+    "packages/conformance/test-support/read-update-artifact-set-v1.json": {
+      "beforeSha256": "7277980894dd0955a8fcd22ba5d2845b0a6801b7e7e13a937018e11d3a65de37",
+      "afterSha256": "7277980894dd0955a8fcd22ba5d2845b0a6801b7e7e13a937018e11d3a65de37",
+      "beforeBytes": 242,
+      "afterBytes": 242,
+      "byteIdentical": true,
+      "proposedOwnedPath": false
+    },
+    "packages/conformance/src/read-update-artifact-set.test.ts": {
+      "beforeSha256": "d5ed7006af35a59db371a6e59d103cec9a4c3ce32e1354715639cf281b9d5ed1",
+      "afterSha256": "d5ed7006af35a59db371a6e59d103cec9a4c3ce32e1354715639cf281b9d5ed1",
+      "beforeBytes": 26180,
+      "afterBytes": 26180,
+      "byteIdentical": true,
+      "proposedOwnedPath": true
+    },
+    "packages/conformance/src/cumulative-artifact.test.ts": {
+      "beforeSha256": "863535a75697ce5cb8fbf07c8096a0e00ae88bc42549be117e74e776490dff5c",
+      "afterSha256": "863535a75697ce5cb8fbf07c8096a0e00ae88bc42549be117e74e776490dff5c",
+      "beforeBytes": 13533,
+      "afterBytes": 13533,
+      "byteIdentical": true,
+      "proposedOwnedPath": true
+    },
+    "packages/conformance/src/profile-contract-plan.test.ts": {
+      "beforeSha256": "e5be4864e456431db74bd325ec64d785bf3c5301a6be5b230bfcc7351ade4fc4",
+      "afterSha256": "e5be4864e456431db74bd325ec64d785bf3c5301a6be5b230bfcc7351ade4fc4",
+      "beforeBytes": 36334,
+      "afterBytes": 36334,
+      "byteIdentical": true,
+      "proposedOwnedPath": true
+    },
+    "apps/bdptest/src/read-update-matrix.test.ts": {
+      "beforeSha256": "3ba256dbcee025836eac04ec1122a484734748c0eb22ad203c49a0d95debb3e5",
+      "afterSha256": "3ba256dbcee025836eac04ec1122a484734748c0eb22ad203c49a0d95debb3e5",
+      "beforeBytes": 204462,
+      "afterBytes": 204462,
+      "byteIdentical": true,
+      "proposedOwnedPath": true
+    },
+    "apps/bdptest/test-support/read-update-exact-client.ts": {
+      "beforeSha256": "fe7568b3fe7e443873f29c4d38b2115d3763190092f0b084671e39d0e97dbf8d",
+      "afterSha256": "fe7568b3fe7e443873f29c4d38b2115d3763190092f0b084671e39d0e97dbf8d",
+      "beforeBytes": 6212,
+      "afterBytes": 6212,
+      "byteIdentical": true,
+      "proposedOwnedPath": false
+    },
+    "apps/bdptest/test-support/read-update-artifact-execution.ts": {
+      "beforeSha256": "764ff0a4e5310ec35e59d6042e579b7e1f003772a7c09777e3f4d5675a3156d1",
+      "afterSha256": "764ff0a4e5310ec35e59d6042e579b7e1f003772a7c09777e3f4d5675a3156d1",
+      "beforeBytes": 22135,
+      "afterBytes": 22135,
+      "byteIdentical": true,
+      "proposedOwnedPath": false
+    },
+    "apps/bdptest/test-support/installed-body-schema.ts": {
+      "beforeSha256": "f06b0a8d041cc125dad92821dae9c5aab133c686ef224ff8e16c7dc101ef1cdb",
+      "afterSha256": "f06b0a8d041cc125dad92821dae9c5aab133c686ef224ff8e16c7dc101ef1cdb",
+      "beforeBytes": 821,
+      "afterBytes": 821,
+      "byteIdentical": true,
+      "proposedOwnedPath": false
+    },
+    "packages/conformance/src/runner.ts": {
+      "beforeSha256": "ac20c7fbfe15a5e42a6559e89cd3467562efe9bc74d462478414414ed3efede1",
+      "afterSha256": "ac20c7fbfe15a5e42a6559e89cd3467562efe9bc74d462478414414ed3efede1",
+      "beforeBytes": 133683,
+      "afterBytes": 133683,
+      "byteIdentical": true,
+      "proposedOwnedPath": false
+    },
+    "packages/conformance/src/http-executor.ts": {
+      "beforeSha256": "770a8405ae1532484b5a2658619c067832644947888f95e0c6575002376f1b5d",
+      "afterSha256": "770a8405ae1532484b5a2658619c067832644947888f95e0c6575002376f1b5d",
+      "beforeBytes": 50611,
+      "afterBytes": 50611,
+      "byteIdentical": true,
+      "proposedOwnedPath": false
+    },
+    "packages/conformance/src/executable-manifest.ts": {
+      "beforeSha256": "65af0451cd046d57c10b0666e54efbaaecc2225551d3accc5cc1d032322913fa",
+      "afterSha256": "65af0451cd046d57c10b0666e54efbaaecc2225551d3accc5cc1d032322913fa",
+      "beforeBytes": 96906,
+      "afterBytes": 96906,
+      "byteIdentical": true,
+      "proposedOwnedPath": false
+    },
+    "packages/conformance/test-support/read-update-artifact-set.ts": {
+      "beforeSha256": "8c1e3d17d7bc5823ab69ddaac6ee0a443800f0348d4f14d969c22f1384aea2a3",
+      "afterSha256": "8c1e3d17d7bc5823ab69ddaac6ee0a443800f0348d4f14d969c22f1384aea2a3",
+      "beforeBytes": 12580,
+      "afterBytes": 12580,
+      "byteIdentical": true,
+      "proposedOwnedPath": false
+    },
+    "packages/conformance/test-support/profile-contract-plan.ts": {
+      "beforeSha256": "18c953443e6695cfa48f89677231fecffc349df02bd080f107a5c739db10b728",
+      "afterSha256": "18c953443e6695cfa48f89677231fecffc349df02bd080f107a5c739db10b728",
+      "beforeBytes": 15083,
+      "afterBytes": 15083,
+      "byteIdentical": true,
+      "proposedOwnedPath": false
+    },
+    "packages/protocol/schemas/bdp-v0.schema.json": {
+      "beforeSha256": "0baa5d5ef67144f8e6513b4cde31168effc8df6d52ef3141b0f144b87f8dc227",
+      "afterSha256": "0baa5d5ef67144f8e6513b4cde31168effc8df6d52ef3141b0f144b87f8dc227",
+      "beforeBytes": 133208,
+      "afterBytes": 133208,
+      "byteIdentical": true,
+      "proposedOwnedPath": false
+    },
+    "packages/server/src/installed-reference.ts": {
+      "beforeSha256": "c311a724d5d81710264b443da6800e960f49402f10383889de59714949b9eec7",
+      "afterSha256": "c311a724d5d81710264b443da6800e960f49402f10383889de59714949b9eec7",
+      "beforeBytes": 1585,
+      "afterBytes": 1585,
+      "byteIdentical": true,
+      "proposedOwnedPath": false
+    },
+    "packages/server/src/development-composition.ts": {
+      "beforeSha256": "a7113a8a3164dc6f4b1f6b5bdcbf74cee811e5b8a0474d241ac30706997ee54f",
+      "afterSha256": "a7113a8a3164dc6f4b1f6b5bdcbf74cee811e5b8a0474d241ac30706997ee54f",
+      "beforeBytes": 3484,
+      "afterBytes": 3484,
+      "byteIdentical": true,
+      "proposedOwnedPath": false
+    },
+    "packages/server/src/index.ts": {
+      "beforeSha256": "34f9d9de8b48852c64919e69ce93f149e9cdae5142c15c75e4c35f08f15efc44",
+      "afterSha256": "34f9d9de8b48852c64919e69ce93f149e9cdae5142c15c75e4c35f08f15efc44",
+      "beforeBytes": 55615,
+      "afterBytes": 55615,
+      "byteIdentical": true,
+      "proposedOwnedPath": false
+    },
+    "packages/server/src/read-conformance-capability.ts": {
+      "beforeSha256": "58d4529dc40bbf646f02bda4c7fa3fad9b83d21f3080152cc04867dbe3fa6f60",
+      "afterSha256": "58d4529dc40bbf646f02bda4c7fa3fad9b83d21f3080152cc04867dbe3fa6f60",
+      "beforeBytes": 2970,
+      "afterBytes": 2970,
+      "byteIdentical": true,
+      "proposedOwnedPath": false
+    },
+    "docs/specs/bdp.md": {
+      "beforeSha256": "f036103ffdf5f89fa3a2033570e1e987c4cd203cd80b1c633cb44615123f892e",
+      "afterSha256": "63e93be562334c84c1e967da2fce212e8ef515aa3c9448924c5f9a272ea7b80b",
+      "beforeBytes": 394427,
+      "afterBytes": 396081,
+      "byteIdentical": false,
+      "proposedOwnedPath": false
+    }
+  },
+  "counts": {
+    "pinned": 23,
+    "unchanged": 22,
+    "changed": 1,
+    "proposedOwnedPaths": 6,
+    "ownedPathsUnchanged": 6
+  },
+  "allChangedPaths": [
+    "apps/bdptest/src/transactional-minimum-receiving-installed.test.ts",
+    "apps/bdptest/src/transactional-snapshot-installed.test.ts",
+    "docs/design/transaction-implementation-progress.md",
+    "docs/specs/bdp.md",
+    "packages/server/src/transaction-changefeed.test.ts",
+    "packages/server/src/transaction-consistency.test.ts",
+    "packages/server/src/transaction-consistency.ts",
+    "packages/server/src/transaction-http.test.ts",
+    "packages/server/src/transaction-http.ts",
+    "packages/server/src/transaction-schema-http.test.ts",
+    "packages/server/src/transaction-snapshot-http.test.ts"
+  ],
+  "specDiff": "diff --git a/docs/specs/bdp.md b/docs/specs/bdp.md\nindex bf7d6ec..4cf679c 100644\n--- a/docs/specs/bdp.md\n+++ b/docs/specs/bdp.md\n@@ -4627,12 +4627,12 @@ and do not add BDP problem codes.\n | `batch`, the six Resource singleton targets, the two set targets, and the two alias targets | `POST` | `200` terminal receipt; `202` pending receipt; direct `400`, `401`, `403`, `409`, `413`, `415`, `429`, `503` |\n | `sequence` | `POST` | `200` envelope of [Sequence response envelope](#sequence-response-envelope), pending members included as problems; direct `400`, `401`, `403`, `413`, `415`, `429`, `503`, plus only the pre-admission `409` `revision-allocation-unsafe` exception below; never a sequence-level `202` receipt |\n | the same targets | any other method | `405`, `Allow: POST` \u2014 plus `OPTIONS` when cross-origin access is enabled, in which case `OPTIONS` is answered by the CORS rules rather than `405` \u2014 and no BDP Problem body |\n-| `operations/` | `GET`, `HEAD` | `200` Operation Directory; `401`, `403`, `429`, `503` |\n+| `operations/` | `GET`, `HEAD` | `200` Operation Directory; `400` `malformed-request` for malformed minimum fields; `401`, `403`, `429`, `503` |\n | `operations/` | any other method | `405`, `Allow: GET, HEAD` (`OPTIONS` as above) |\n-| a receipt URL `receipts/{token}` | `GET`, `HEAD` | `200` receipt in its current representation; `401`; `404` for an unknown token, another principal's receipt, a retracted receipt, a forgotten failed receipt, or a prior epoch's receipt; `409` `foreign-view` or `410` `cursor-expired` for incompatible minimum-position context; `429`, `503` |\n-| a receipt page URL | `GET`, `HEAD` | `200` page; `401`; `404` under the same non-disclosure rule; `409` `foreign-view` or `410` `cursor-expired` for incompatible minimum-position context; `410` `cursor-expired` after the receipt's detail expired; `429`, `503` |\n+| a receipt URL `receipts/{token}` | `GET`, `HEAD` | `200` receipt in its current representation; `400` `malformed-request` for malformed minimum fields; `401`; `404` for an unknown token, another principal's receipt, a retracted receipt, a forgotten failed receipt, or a prior epoch's receipt; `409` `foreign-view` or `410` `cursor-expired` for incompatible minimum-position context; `429`, `503` |\n+| a receipt page URL | `GET`, `HEAD` | `200` page; `400` `malformed-request` for malformed minimum fields; `401`; `404` under the same non-disclosure rule; `409` `foreign-view` or `410` `cursor-expired` for incompatible minimum-position context; `410` `cursor-expired` after the receipt's detail expired; `429`, `503` |\n | a receipt or page URL | any other method | `405`, `Allow: GET, HEAD` (`OPTIONS` as above) |\n-| the `receipts` root | any method | `404` `resource-not-found` for `GET` and `HEAD`, `405` with `Allow: GET, HEAD` otherwise |\n+| the `receipts` root | any method | `400` `malformed-request` for `GET` and `HEAD` with malformed minimum fields, otherwise `404` `resource-not-found` for those methods; `405` with `Allow: GET, HEAD` otherwise |\n \n The sequence's direct `409` exception applies only when an actual, positively\n established persistent, repair-required allocation failure is known before\n@@ -4645,6 +4645,12 @@ the member problem, not a direct `409`. Pending-key and dependent-member\n nonwaiting precedence remains unchanged. Transient inability to establish\n allocation safety remains `503`, not this persistent-conflict exception.\n \n+Normal HTTP receiving checks, including the closed minimum-field syntax under\n+[Transactional HTTP consistency](#transactional-http-consistency), precede receipt\n+or page lookup. An authenticated malformed minimum tuple receives the same\n+`400 malformed-request` whether the receipt or page exists or is disclosable.\n+Once those receiving checks pass, the following non-disclosure ordering applies.\n+\n On a receipt or page read, authentication is decided first, then the\n principal and epoch non-disclosure rule, then the request's minimum-position\n context and consistency wait, then page expiry, then the representation.\n@@ -5810,6 +5816,21 @@ same epoch and view fields plus:\n BDP-Minimum-Scope-Position: opaque-position-42\n ```\n \n+If any of these three request fields is present on a read, the request MUST\n+contain exactly one nonempty value for each field, using the\n+[Event-ID and checkpoint character profile](#event-id-and-checkpoint-character-profile). Missing,\n+repeated, or lexically invalid values MUST return `400 malformed-request`\n+after ordinary transport, target/method, and authentication/authorization checks,\n+but before any owner read or target-existence lookup. All three absent means\n+no minimum is requested. Lexical validity does not establish that a position\n+identity is known or supported; existing semantic consistency decisions remain.\n+\n+This receiving refusal observes no projected prefix and MUST NOT report\n+`BDP-Scope-Epoch`, `BDP-Authorization-View`, or `BDP-Scope-Position`. It MUST NOT\n+become a conditional `304` or `412`, a negotiation `406`, or an SSE stream.\n+Earlier ordinary target/method and Origin-policy refusals remain unchanged.\n+HEAD retains the corresponding GET response metadata and sends no body.\n+\n The authority then does one of three things: it returns a representation at\n that position or later, it waits or routes to an eligible replica, or it\n returns the normative foreign-view, cursor-expired, or catch-up-timeout\n",
+  "specDiffSha256": "6ba276742825ac8612336d670de8814ebce388c8d8958551877255576c7c0db1",
+  "planSha256": "116b2350049f30ddab90248152691256b2608aba61f34f27a205ebe018633ecb",
+  "originalSourceBindingSha256": "e6c49c1d689d7dc3b57cb1b4d602c0cd3a6a50e5ac5385a07f19461a62a66499",
+  "nativeClosureSha256": "1df153e3685256a5b0db7790d9ba64df3514e228a6e9de365c83dbf2ccf0b33d",
+  "scenarioSha256": "a0d2a1e56a254ab6bfa13f9cb36ce3b30cb53efcd1fd6aa9c6caa35a68e66a20",
+  "scenarioHeaderInspection": [
+    {
+      "id": "scope",
+      "family": "http",
+      "method": "GET",
+      "headerLines": []
+    },
+    {
+      "id": "discovery",
+      "family": "http",
+      "method": "GET",
+      "headerLines": []
+    },
+    {
+      "id": "directory",
+      "family": "http",
+      "method": "GET",
+      "headerLines": []
+    },
+    {
+      "id": "directory-captures",
+      "family": "client",
+      "clientHeaderConstruction": "unchanged read-update-exact-client.ts:129-143; empty GET or content-type/idempotency-key POST"
+    },
+    {
+      "id": "task",
+      "family": "http",
+      "method": "GET",
+      "headerLines": []
+    },
+    {
+      "id": "relates",
+      "family": "http",
+      "method": "GET",
+      "headerLines": []
+    },
+    {
+      "id": "create-a",
+      "family": "client",
+      "clientHeaderConstruction": "unchanged read-update-exact-client.ts:129-143; empty GET or content-type/idempotency-key POST"
+    },
+    {
+      "id": "create-b",
+      "family": "client",
+      "clientHeaderConstruction": "unchanged read-update-exact-client.ts:129-143; empty GET or content-type/idempotency-key POST"
+    },
+    {
+      "id": "update-bead",
+      "family": "client",
+      "clientHeaderConstruction": "unchanged read-update-exact-client.ts:129-143; empty GET or content-type/idempotency-key POST"
+    },
+    {
+      "id": "create-link",
+      "family": "client",
+      "clientHeaderConstruction": "unchanged read-update-exact-client.ts:129-143; empty GET or content-type/idempotency-key POST"
+    },
+    {
+      "id": "update-link",
+      "family": "client",
+      "clientHeaderConstruction": "unchanged read-update-exact-client.ts:129-143; empty GET or content-type/idempotency-key POST"
+    },
+    {
+      "id": "put-alias",
+      "family": "client",
+      "clientHeaderConstruction": "unchanged read-update-exact-client.ts:129-143; empty GET or content-type/idempotency-key POST"
+    },
+    {
+      "id": "put-alias-get",
+      "family": "http",
+      "method": "GET",
+      "headerLines": []
+    },
+    {
+      "id": "delete-alias",
+      "family": "client",
+      "clientHeaderConstruction": "unchanged read-update-exact-client.ts:129-143; empty GET or content-type/idempotency-key POST"
+    },
+    {
+      "id": "read-deleted-alias",
+      "family": "http",
+      "method": "GET",
+      "headerLines": []
+    },
+    {
+      "id": "delete-link",
+      "family": "client",
+      "clientHeaderConstruction": "unchanged read-update-exact-client.ts:129-143; empty GET or content-type/idempotency-key POST"
+    },
+    {
+      "id": "deleted-link",
+      "family": "http",
+      "method": "GET",
+      "headerLines": []
+    },
+    {
+      "id": "delete-bead",
+      "family": "client",
+      "clientHeaderConstruction": "unchanged read-update-exact-client.ts:129-143; empty GET or content-type/idempotency-key POST"
+    },
+    {
+      "id": "deleted-bead",
+      "family": "http",
+      "method": "GET",
+      "headerLines": []
+    },
+    {
+      "id": "sequence",
+      "family": "client",
+      "clientHeaderConstruction": "unchanged read-update-exact-client.ts:129-143; empty GET or content-type/idempotency-key POST"
+    },
+    {
+      "id": "final-b",
+      "family": "http",
+      "method": "GET",
+      "headerLines": []
+    }
+  ],
+  "retainedPostmergeEvidence": {
+    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-minimum-receiving-draft/landing/native-postmerge-verification.json",
+    "sha256": "640385cefc8addcc1673fed22d0226e96aba007f701213bcd25e74d83cdf7a0b",
+    "attribution": "Root/other worker actual API and fetched Git verification; this audit independently reads fetched commit object, no new API query/fetch"
+  },
+  "result": "No source or semantic reanchor blocker. Update final authoring binding to actual merged parent and only the changed spec hash after current review disposition; do not silently replace frozen review artifacts.",
+  "limits": "No product edits/imports/tests/builds/services/fetch/review launch. Data and Git object reads only; guard performs required session check before these two artifact writes."
+}

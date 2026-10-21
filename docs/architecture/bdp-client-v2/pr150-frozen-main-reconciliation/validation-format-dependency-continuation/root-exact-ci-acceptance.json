@@ -1,0 +1,23 @@
+{
+  "accepted": true,
+  "head": "d7197e97a29bff8f075028419afad05388e2e655",
+  "records": {
+    "39030688462": {
+      "sha256": "3bde805cf6cc6e4eda51bc71513639281ccfcc2a11ec5f9b66e60cc6a6cd8a93",
+      "url": "https://github.com/gastownhall/bdp/actions/runs/39030688462",
+      "event": "push"
+    },
+    "39030713743": {
+      "sha256": "122d0158ebadbcd59e072dfbc5ddbd2928602cd6aed0a3c9e6e19fd588668085",
+      "url": "https://github.com/gastownhall/bdp/actions/runs/39030713743",
+      "event": "pull_request"
+    }
+  },
+  "basis": "Push workflow actually executed exact d719. PR workflow metadata head is d719 but actual checkout is synthetic merge835e with same tree; separate merge-ref coverage. Both raw logs verify9375pass/1skip/187files, requiredCLI,7preflight,smoke and historical evidence.",
+  "mainLandingAuthorized": false,
+  "executionAttribution": {
+    "push": "d7197e97a29bff8f075028419afad05388e2e655",
+    "pull_request": "835e75b78c83eee252cb513d142cc51e0efd5261",
+    "bothTrees": "630a94d0ca1545f898cb8a8b614d4b7d2dd6d454"
+  }
+}

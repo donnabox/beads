@@ -1,0 +1,1129 @@
+
+### docs/specs/bdp.md:1885-1908 (committed 5d7fa3f049fa0b4db3aa8dae20e20d8e47fb3854)
+```
+1885: 
+1886: ### Problem details
+1887: 
+1888: Except for the `405` method rejections and unexpected internal `500`
+1889: responses defined below, every unsuccessful BDP response uses RFC 9457
+1890: Problem Details. BDP defines a small set of stable problem-type families. The
+1891: required `code` member identifies the exact normative condition within its
+1892: family. Each code fixes its HTTP status and retry disposition. The Read
+1893: profile uses this closed table:
+1894: 
+1895: | Code | Family suffix | HTTP status | Retry |
+1896: | --- | --- | --- | --- |
+1897: | `malformed-request` | `request` | 400 | `never` |
+1898: | `invalid-parameter` | `request` | 400 | `never` |
+1899: | `unauthenticated` | `authentication` | 401 | `after-state-change` |
+1900: | `forbidden` | `authorization` | 403 | `after-state-change` |
+1901: | `resource-not-found` | `not-found` | 404 | `after-state-change` |
+1902: | `resource-pruned` | `gone` | 410 | `never` |
+1903: | `resource-erased` | `gone` | 410 | `never` |
+1904: | `foreign-view` | `conflict` | 409 | `after-state-change` |
+1905: | `cursor-expired` | `gone` | 410 | `after-state-change` |
+1906: | `request-too-large` | `size` | 413 | `never` |
+1907: | `limit-exceeded` | `size` | 413 | `never` |
+1908: | `rate-limited` | `rate-limit` | 429 | `after-delay` |
+```
+
+### docs/specs/bdp.md:1984-2012 (committed 5d7fa3f049fa0b4db3aa8dae20e20d8e47fb3854)
+```
+1984: 
+1985: GET and HEAD preconditions follow [RFC 9110 section 13.2](https://www.rfc-editor.org/rfc/rfc9110.html#section-13.2).
+1986: Normal authentication, authorization/non-disclosure, query and cursor checks,
+1987: and applicable History erasure/expiry checks MUST precede any conditional not-modified shortcut. An ordinary refusal is not
+1988: replaced by `304`. A successful read whose HTTP condition selects
+1989: `304 Not Modified`, or a read whose precondition fails with
+1990: `412 Precondition Failed`, MUST be bodyless and MUST NOT carry a BDP Problem
+1991: body. Applicable cache fields remain required on these responses.
+1992: 
+1993: Omitting optional validators does not permit ignoring HTTP preconditions.
+1994: For an otherwise successful existing representation without an entity tag,
+1995: `If-None-Match: *` yields `304`, a specific `If-Match` entity tag fails with
+1996: `412`, and `If-Match: *` passes. A specific `If-None-Match` entity tag cannot
+1997: match an absent entity tag. Combined conditions retain HTTP precedence:
+1998: `If-Match` is evaluated before `If-None-Match`; date conditions obey their
+1999: HTTP availability, validity, and precedence rules. Omission of a
+2000: `Last-Modified` field does not itself establish whether a modification date
+2001: is available. No new modification-date or validator construction scheme is
+2002: assigned here.
+2003: 
+2004: HEAD retains the corresponding GET authorization, query, cursor, media
+2005: negotiation, and precondition decision and MUST send no response body. This includes canonical Resource, collection, view and pagination URLs. Ordinary HTTP
+2006: HEAD metadata rules, including permitted omissions, apply; BDP's explicitly
+2007: required context/cache fields remain required. This clarifies the existing
+2008: cumulative GET/HEAD requirement, not a new method policy.
+2009: 
+2010: ### Read conformance
+2011: 
+2012: Read acceptance covers discovery, canonical records and References, Types,
+```
+
+### docs/specs/bdp.md:3581-3593 (committed 5d7fa3f049fa0b4db3aa8dae20e20d8e47fb3854)
+```
+3581: On mutation POSTs to operation command targets, authorities MUST ignore the
+3582: `BDP-Minimum-Scope-Position`, `BDP-Scope-Epoch`, and
+3583: `BDP-Authorization-View` request fields. Their presence, absence, completeness,
+3584: and field values do not impose a minimum-position barrier or affect command
+3585: identity. Ordinary HTTP field syntax and transport, header, and body bounds
+3586: still apply, as do authorization, idempotency, carrier validation, and
+3587: `expectedRevision`. This rule applies to mutation POSTs under this profile and
+3588: cumulative profiles. It does not change conditions on reads.
+3589: 
+3590: ### Read+Update HTTP field support
+3591: 
+3592: When cross-origin access is enabled, the CORS policy MUST allow the
+3593: `Idempotency-Key` request field. Mutation responses expose applicable Read
+```
+
+### docs/specs/bdp.md:4618-4654 (committed 5d7fa3f049fa0b4db3aa8dae20e20d8e47fb3854)
+```
+4618: The Transactional mutation surface answers as follows; a row's statuses are
+4619: exhaustive for that target and method, apart from the shared bodyless `406`
+4620: negotiation refusal, GET/HEAD conditional `304` and `412`, and the bodyless
+4621: `500` an unexpected internal fault produces anywhere. The HTTP-native
+4622: exceptions follow [Conditional reads and HEAD](#conditional-reads-and-head)
+4623: and do not add BDP problem codes.
+4624: 
+4625: | Target | Method | Response |
+4626: | --- | --- | --- |
+4627: | `batch`, the six Resource singleton targets, the two set targets, and the two alias targets | `POST` | `200` terminal receipt; `202` pending receipt; direct `400`, `401`, `403`, `409`, `413`, `415`, `429`, `503` |
+4628: | `sequence` | `POST` | `200` envelope of [Sequence response envelope](#sequence-response-envelope), pending members included as problems; direct `400`, `401`, `403`, `413`, `415`, `429`, `503`, plus only the pre-admission `409` `revision-allocation-unsafe` exception below; never a sequence-level `202` receipt |
+4629: | the same targets | any other method | `405`, `Allow: POST` — plus `OPTIONS` when cross-origin access is enabled, in which case `OPTIONS` is answered by the CORS rules rather than `405` — and no BDP Problem body |
+4630: | `operations/` | `GET`, `HEAD` | `200` Operation Directory; `401`, `403`, `429`, `503` |
+4631: | `operations/` | any other method | `405`, `Allow: GET, HEAD` (`OPTIONS` as above) |
+4632: | a receipt URL `receipts/{token}` | `GET`, `HEAD` | `200` receipt in its current representation; `401`; `404` for an unknown token, another principal's receipt, a retracted receipt, a forgotten failed receipt, or a prior epoch's receipt; `409` `foreign-view` or `410` `cursor-expired` for incompatible minimum-position context; `429`, `503` |
+4633: | a receipt page URL | `GET`, `HEAD` | `200` page; `401`; `404` under the same non-disclosure rule; `409` `foreign-view` or `410` `cursor-expired` for incompatible minimum-position context; `410` `cursor-expired` after the receipt's detail expired; `429`, `503` |
+4634: | a receipt or page URL | any other method | `405`, `Allow: GET, HEAD` (`OPTIONS` as above) |
+4635: | the `receipts` root | any method | `404` `resource-not-found` for `GET` and `HEAD`, `405` with `Allow: GET, HEAD` otherwise |
+4636: 
+4637: The sequence's direct `409` exception applies only when an actual, positively
+4638: established persistent, repair-required allocation failure is known before
+4639: carrier admission, under [Revisions](#revisions). This exception introduces no
+4640: new broad allocation preflight, comparison wait or member-order bypass, and
+4641: MUST NOT prevent replay of available retained duplicate outcomes. An ordinary
+4642: operation/member allocation failure discovered after admission follows the
+4643: failed-receipt and sequence projection rules: the carrier returns `200` with
+4644: the member problem, not a direct `409`. Pending-key and dependent-member
+4645: nonwaiting precedence remains unchanged. Transient inability to establish
+4646: allocation safety remains `503`, not this persistent-conflict exception.
+4647: 
+4648: On a receipt or page read, authentication is decided first, then the
+4649: principal and epoch non-disclosure rule, then the request's minimum-position
+4650: context and consistency wait, then page expiry, then the representation.
+4651: An incompatible view returns `409` `foreign-view`; an expired context
+4652: returns `410` `cursor-expired`; a failed catch-up wait returns `503`
+4653: `catch-up-timeout`, under the shared consistency rules. These checks never
+4654: let a caller who may not see the receipt learn about its pages or history.
+```
+
+### docs/specs/bdp.md:5788-5850 (committed 5d7fa3f049fa0b4db3aa8dae20e20d8e47fb3854)
+```
+5788: Ordinary reads are strict by default. Each read observes one
+5789: transaction-consistent prefix of its Authorization View that can be
+5790: linearized during the request, and it reports its Scope epoch, view token,
+5791: and visible position. A client may require a minimum checkpoint bound to that
+5792: same view. A replica that is behind must route, wait, or fail explicitly; it
+5793: must not return older state as if current. Weaker consistency modes, if
+5794: added, require explicit client selection.
+5795: 
+5796: ### Transactional HTTP consistency
+5797: 
+5798: Transactional Scope-bounded responses carry:
+5799: 
+5800: ```http
+5801: BDP-Scope-Epoch: opaque-scope-epoch
+5802: BDP-Authorization-View: opaque-authorization-view
+5803: BDP-Scope-Position: opaque-position-42
+5804: ```
+5805: 
+5806: On reads, a Transactional client requests a minimum visible position by sending those
+5807: same epoch and view fields plus:
+5808: 
+5809: ```http
+5810: BDP-Minimum-Scope-Position: opaque-position-42
+5811: ```
+5812: 
+5813: The authority then does one of three things: it returns a representation at
+5814: that position or later, it waits or routes to an eligible replica, or it
+5815: returns the normative foreign-view, cursor-expired, or catch-up-timeout
+5816: problem. It never reports success with an older position.
+5817: 
+5818: Transactional mutation POSTs follow the shared
+5819: [mutation command preconditions](#mutation-command-preconditions): copied read
+5820: minimum fields impose no barrier or command-identity input. This does not change
+5821: minimum controls on reads, including subsequent Mutation Receipt GET or HEAD
+5822: requests.
+5823: 
+5824: SSE responses use `Cache-Control: no-store, no-transform`.
+5825: Intermediaries must not cache or transform the stream.
+5826: 
+5827: ### Transactional Resource read context
+5828: 
+5829: Every Transactional Scope-bounded read reports the Scope epoch, Authorization
+5830: View token, and position of the transaction-consistent projected prefix it
+5831: observed. It reports them through the fields defined under
+5832: [Transactional HTTP consistency](#transactional-http-consistency). Read and Read+Update use Resource
+5833: revisions, entity tags, and snapshot-preserving pagination without exposing
+5834: Scope-history tokens.
+5835: 
+5836: ### Transactional conditional reads
+5837: 
+5838: A `304` is not delivery or application of a change group or erasure record
+5839: and MUST NOT advance a client's durable checkpoint.
+5840: 
+5841: Scope epoch/view, minimum-position and erasure/expiry checks MUST precede any
+5842: conditional shortcut. Required current Scope context remains required on
+5843: 304 and 412 responses.
+5844: 
+5845: The inherited HEAD rules also cover `changes/`, Scope `events/`, Resource
+5846: `view=events`, snapshot handles/streams and receipt/page URLs. For acceptable
+5847: SSE, HEAD returns the response metadata and ends without frames; it MUST NOT
+5848: remain open merely to stream events. HEAD acknowledges neither delivery nor
+5849: application and creates no mutation transaction.
+5850: 
+```
+
+### docs/specs/bdp.md:6602-6625 (committed 5d7fa3f049fa0b4db3aa8dae20e20d8e47fb3854)
+```
+6602: ### Event-ID and checkpoint character profile
+6603: 
+6604: Every serialized Event ID and Scope checkpoint is a case-sensitive ASCII
+6605: token matching `[A-Za-z0-9_-]{1,256}`. The authority emits the token
+6606: identically in a JSON value, URL query, HTTP field, SSE `id`, and
+6607: `Last-Event-ID`. Clients compare the decoded values exactly and never apply
+6608: case folding or Unicode normalization. Whitespace, padding, percent signs,
+6609: control characters, and all non-ASCII characters are forbidden.
+6610: 
+6611: `genesis` is the reserved distinguished initial Scope checkpoint. It is never
+6612: assigned to an Event or later position. The restricted alphabet is a wire
+6613: profile, not a requirement that the value decode as base64url.
+6614: Implementations may encode UUIDs, ULIDs, hashes, counters, or other native
+6615: identities into it.
+6616: 
+6617: In the Transactional profile, Scope epochs, Authorization View tokens, Scope
+6618: positions, transaction identifiers, and receipt tokens use this same
+6619: profile, as idempotency keys do in every write profile under
+6620: [Idempotency keys](#idempotency-keys), so that every history token is safe
+6621: in a JSON value, a URL query, and an HTTP field. Resource revisions are not
+6622: covered: a revision is an opaque nonempty string compared only for
+6623: equality, and how the protocol projection encodes one as an HTTP validator
+6624: is a separate rule.
+6625: 
+```
+
+### packages/server/src/transaction-consistency.ts:1-121 (committed 5d7fa3f049fa0b4db3aa8dae20e20d8e47fb3854)
+```
+1: /** Source-private canonical minimum-read subset. No continuation or malformed-
+2:  * tuple protocol ruling; those categories remain explicit development gaps. */
+3: import { setTimeout as delay } from "node:timers/promises";
+4: import { isProxy } from "node:util/types";
+5: import { ScopeServerOperationAbortedError } from "./read-request.js";
+6: import type { TransactionReadContext } from "./transaction-store.js";
+7: 
+8: export interface TransactionMinimum {
+9:   readonly scopeEpoch: string;
+10:   readonly authorizationView: string;
+11:   readonly minimumPosition: string;
+12: }
+13: const token = /^[A-Za-z0-9_-]{1,256}$/;
+14: const position = (value: unknown): number | undefined => {
+15:   if (value === "genesis") return 0;
+16:   if (typeof value !== "string" || !/^pos-(0|[1-9][0-9]*)$/.test(value)) return undefined;
+17:   const number = Number(value.slice(4));
+18:   return Number.isSafeInteger(number) ? number : undefined;
+19: };
+20: export function snapshotTransactionMinimum(value: unknown): TransactionMinimum {
+21:   if (!value || typeof value !== "object" || isProxy(value))
+22:     throw new TypeError("unsupported minimum tuple");
+23:   const fields = Object.getOwnPropertyDescriptors(value);
+24:   if (
+25:     Object.keys(fields).sort().join(",") !== "authorizationView,minimumPosition,scopeEpoch" ||
+26:     Reflect.ownKeys(value).length !== 3 ||
+27:     Object.values(fields).some((field) => !("value" in field))
+28:   )
+29:     throw new TypeError("unsupported minimum tuple");
+30:   const scopeEpoch: unknown = fields.scopeEpoch?.value;
+31:   const authorizationView: unknown = fields.authorizationView?.value;
+32:   const minimumPosition: unknown = fields.minimumPosition?.value;
+33:   if (
+34:     typeof scopeEpoch !== "string" ||
+35:     !token.test(scopeEpoch) ||
+36:     typeof authorizationView !== "string" ||
+37:     !token.test(authorizationView) ||
+38:     typeof minimumPosition !== "string" ||
+39:     !token.test(minimumPosition) ||
+40:     position(minimumPosition) === undefined
+41:   )
+42:     throw new TypeError("unsupported minimum tuple");
+43:   return Object.freeze({ scopeEpoch, authorizationView, minimumPosition });
+44: }
+45: export function transactionMinimumHeaders(headers: Headers): TransactionMinimum | undefined {
+46:   try {
+47:     return snapshotTransactionMinimum({
+48:       scopeEpoch: headers.get("bdp-scope-epoch"),
+49:       authorizationView: headers.get("bdp-authorization-view"),
+50:       minimumPosition: headers.get("bdp-minimum-scope-position"),
+51:     });
+52:   } catch {
+53:     return undefined;
+54:   }
+55: }
+56: export class TransactionMinimumFailure extends Error {
+57:   constructor(
+58:     readonly reason: "behind" | "foreign-view" | "cursor-expired" | "catch-up-timeout",
+59:     readonly context: TransactionReadContext,
+60:   ) {
+61:     super(`transaction minimum read: ${reason}`);
+62:   }
+63: }
+64: /** Runs within the representation's owner entry, after authorization. */
+65: export function checkTransactionMinimum(
+66:   minimum: TransactionMinimum,
+67:   context: TransactionReadContext,
+68: ): void {
+69:   if (minimum.scopeEpoch !== context.scopeEpoch)
+70:     throw new TransactionMinimumFailure("cursor-expired", context);
+71:   if (minimum.authorizationView !== context.authorizationView)
+72:     throw new TransactionMinimumFailure("foreign-view", context);
+73:   const required = position(minimum.minimumPosition),
+74:     current = position(context.scopePosition);
+75:   if (required === undefined || current === undefined)
+76:     throw new Error("invalid owner minimum position");
+77:   if (current < required) throw new TransactionMinimumFailure("behind", context);
+78: }
+79: export interface TransactionMinimumWaitOptions {
+80:   readonly budgetMs?: number;
+81:   readonly now?: () => number;
+82:   readonly wait?: (milliseconds: number) => Promise<void>;
+83: }
+84: /** No SQLite entry survives an await. The original finite deadline never renews. */
+85: export async function waitForTransactionMinimum<T>(
+86:   attempt: () => T | Promise<T>,
+87:   options: TransactionMinimumWaitOptions = {},
+88:   signal?: AbortSignal,
+89: ): Promise<T> {
+90:   const budget = options.budgetMs ?? 1000,
+91:     now = options.now ?? (() => performance.now()),
+92:     wait = options.wait ?? ((milliseconds) => delay(milliseconds));
+93:   if (
+94:     !Number.isSafeInteger(budget) ||
+95:     budget <= 0 ||
+96:     budget > 2147483647 ||
+97:     typeof now !== "function" ||
+98:     typeof wait !== "function"
+99:   )
+100:     throw new TypeError("finite minimum-read wait policy required");
+101:   const started = now();
+102:   if (!Number.isFinite(started)) throw new TypeError("invalid minimum-read clock");
+103:   const deadline = started + budget;
+104:   let previous = started;
+105:   if (!Number.isFinite(deadline)) throw new TypeError("invalid minimum-read deadline");
+106:   for (;;) {
+107:     if (signal?.aborted) throw new ScopeServerOperationAbortedError();
+108:     try {
+109:       return await attempt();
+110:     } catch (error) {
+111:       if (!(error instanceof TransactionMinimumFailure) || error.reason !== "behind") throw error;
+112:       const current = now();
+113:       if (!Number.isFinite(current) || current < previous)
+114:         throw new TypeError("invalid minimum-read clock");
+115:       previous = current;
+116:       if (current >= deadline)
+117:         throw new TransactionMinimumFailure("catch-up-timeout", error.context);
+118:       await wait(Math.min(5, deadline - current));
+119:     }
+120:   }
+121: }
+```
+
+### packages/server/src/transaction-http.ts:78-90 (committed 5d7fa3f049fa0b4db3aa8dae20e20d8e47fb3854)
+```
+78: type Service = ReturnType<typeof createTransactionService>;
+79: function empty(status: number, allow?: string): HttpResponse {
+80:   return {
+81:     status,
+82:     headers: new Headers({
+83:       "cache-control": "private, no-store",
+84:       "content-length": "0",
+85:       ...(allow ? { allow } : {}),
+86:     }),
+87:   };
+88: }
+89: function problem(
+90:   value:
+```
+
+### packages/server/src/transaction-http.ts:107-152 (committed 5d7fa3f049fa0b4db3aa8dae20e20d8e47fb3854)
+```
+107: export function transactionHttpProblem(
+108:   code: ReadProblemCode,
+109:   observation?: TransactionReadContext,
+110: ): HttpResponse {
+111:   const response = problem(readProblem(code));
+112:   return observation ? context(response, observation) : response;
+113: }
+114: function context(response: HttpResponse, observation: TransactionReadContext): HttpResponse {
+115:   response.headers.set("bdp-scope-epoch", observation.scopeEpoch);
+116:   response.headers.set("bdp-authorization-view", observation.authorizationView);
+117:   response.headers.set("bdp-scope-position", observation.scopePosition);
+118:   return response;
+119: }
+120: function streamResponse(request: Request, observation: TransactionReadContext): HttpResponse {
+121:   const response = context(
+122:     {
+123:       status: 200,
+124:       headers: new Headers({
+125:         "content-type": "text/event-stream",
+126:         "cache-control": "no-store, no-transform",
+127:         vary: "Accept",
+128:       }),
+129:     },
+130:     observation,
+131:   );
+132:   const status = conditionalReadStatus(request.headers, null);
+133:   if (status !== 200) {
+134:     response.headers.delete("content-type");
+135:     if (status !== 304) response.headers.set("content-length", "0");
+136:   }
+137:   return { status, headers: response.headers };
+138: }
+139: function developmentGap(feature: string): HttpResponse {
+140:   const response = empty(500);
+141:   response.headers.set("x-bdp-development-limit", feature);
+142:   return response;
+143: }
+144: export function hasMinimumControls(request: Request): boolean {
+145:   return ["bdp-minimum-scope-position", "bdp-scope-epoch", "bdp-authorization-view"].some((field) =>
+146:     request.headers.has(field),
+147:   );
+148: }
+149: function syntax(error: unknown): boolean {
+150:   return error instanceof JsonSyntaxError || error instanceof ReadUpdateCarrierError;
+151: }
+152: 
+```
+
+### packages/server/src/transaction-http.ts:240-270 (committed 5d7fa3f049fa0b4db3aa8dae20e20d8e47fb3854)
+```
+240:   });
+241:   // Target shape, never receipt existence or authorization, determines Allow.
+242:   // The raw listener also uses this before constructing a Fetch Request, whose
+243:   // method vocabulary excludes TRACE/TRACK/CONNECT.
+244:   function methodResponse(url: URL, method: string): HttpResponse | undefined {
+245:     if (url.origin !== scopeUrl.origin || !url.pathname.startsWith(scopeUrl.pathname))
+246:       return transactionHttpProblem("resource-not-found");
+247:     if (names.has(url.href)) return method === "POST" ? undefined : empty(405, "POST");
+248:     // Operation targets use exact canonical URLs. A missing target, alternate
+249:     // encoded spelling, or query-bearing command URL is not a Read resource.
+250:     if (
+251:       url.pathname.startsWith(`${scopeUrl.pathname}operations/`) &&
+252:       url.href !== new URL("operations/", scope).href
+253:     )
+254:       return transactionHttpProblem("resource-not-found");
+255:     return method === "GET" || method === "HEAD" ? undefined : empty(405, "GET, HEAD");
+256:   }
+257:   async function route(
+258:     request: Request,
+259:     authorization: TransactionHttpAuthorization,
+260:     received: TransactionReceivedBody,
+261:     lastEventIds?: readonly string[],
+262:   ): Promise<HttpResponse | ChangefeedStream | EventStream> {
+263:     const url = new URL(request.url),
+264:       operation = names.get(url.href);
+265:     if (
+266:       request.method === "POST" &&
+267:       Buffer.byteLength(url.pathname + url.search) > TRANSACTION_HTTP_TARGET_BYTES
+268:     )
+269:       return transactionHttpProblem("request-too-large");
+270:     const methodFailure = methodResponse(url, request.method);
+```
+
+### packages/server/src/transaction-http.ts:379-634 (committed 5d7fa3f049fa0b4db3aa8dae20e20d8e47fb3854)
+```
+379:           }),
+380:           result.context,
+381:         );
+382:       }
+383:       return problem({
+384:         ...readProblem(result.code),
+385:         ...(result.limit ? { limit: result.limit } : {}),
+386:         ...(result.pointer ? { pointer: result.pointer } : {}),
+387:       });
+388:     }
+389:     if (authorization.kind === "unauthenticated") return transactionHttpProblem("unauthenticated");
+390:     if (url.pathname === new URL("snapshot", scope).pathname) {
+391:       const fields = [...url.searchParams.keys()];
+392:       const id = url.searchParams.get("snapshot"),
+393:         stream = url.searchParams.get("stream"),
+394:         token = url.searchParams.get("page");
+395:       let target: TransactionSnapshotRequest;
+396:       // These closed query shapes are local route conventions. Unknown well-
+397:       // shaped identities go to the owner; they are never guessed as expired.
+398:       if (new Set(fields).size !== fields.length)
+399:         return transactionHttpProblem("invalid-parameter");
+400:       if (fields.length === 0) target = { kind: "create" };
+401:       else if (fields.length === 1 && id !== null && id !== "") target = { kind: "manifest", id };
+402:       else if (fields.length === 3 && id && token && (stream === "beads" || stream === "links"))
+403:         target = { kind: "page", id, token, stream: stream === "beads" ? "bead" : "link" };
+404:       else return transactionHttpProblem("invalid-parameter");
+405:       // Only fresh creation has an unambiguous current observation. Retained
+406:       // anchors and unsupported tuple shapes keep their explicit private gap.
+407:       const minimum = hasMinimumControls(request)
+408:         ? transactionMinimumHeaders(request.headers)
+409:         : undefined;
+410:       if (hasMinimumControls(request) && (target.kind !== "create" || minimum === undefined))
+411:         return developmentGap("minimum-position");
+412:       function snapshotResponse(result: Awaited<ReturnType<Service["snapshot"]>>): HttpResponse {
+413:         if (result.kind === "problem") {
+414:           const response = context(transactionHttpProblem(result.code), result.context);
+415:           if (result.retryAfter !== undefined)
+416:             response.headers.set("retry-after", String(result.retryAfter));
+417:           return response;
+418:         }
+419:         if (result.kind === "eligible")
+420:           return context(
+421:             {
+422:               status: 200,
+423:               headers: new Headers({
+424:                 "content-type": "application/json",
+425:                 "cache-control": "private, no-store",
+426:               }),
+427:             },
+428:             result.context,
+429:           );
+430:         return context(jsonResponse(result.body), result.context);
+431:       }
+432:       if (target.kind === "create") {
+433:         // A pure successful-JSON candidate may select direct capture, but never
+434:         // authorizes an owner-free response. Nonallocating decisions still need
+435:         // authoritative capacity/integrity checks and same-entry context.
+436:         const candidate = applyReadHttpSemantics(request, {
+437:           status: 200,
+438:           headers: new Headers({ "content-type": "application/json" }),
+439:         });
+440:         if (request.method === "HEAD" || candidate.status !== 200) {
+441:           const eligible = snapshotResponse(
+442:             await service.snapshot({ kind: "preflight" }, minimum, request.signal),
+443:           );
+444:           // Candidate and eligible share successful JSON with no validator;
+445:           // their media/conditional decisions agree. This branch is terminal:
+446:           // never start a second capture or renew the minimum wait deadline.
+447:           return applyReadHttpSemantics(request, eligible);
+448:         }
+449:       }
+450:       return snapshotResponse(await service.snapshot(target, minimum, request.signal));
+451:     }
+452:     const changefeed = transactionChangefeedRequest(url, scope);
+453:     if (changefeed) {
+454:       const minimum = hasMinimumControls(request)
+455:         ? (transactionMinimumHeaders(request.headers) ?? "unsupported")
+456:         : undefined;
+457:       const media = selectChangefeedMedia(request.headers.get("accept"));
+458:       // URL grammar is always required. Only selected SSE consults the raw
+459:       // reconnect field; JSON ignores it, including repeated/malformed values.
+460:       const fields =
+461:         lastEventIds ??
+462:         (request.headers.has("last-event-id") ? [request.headers.get("last-event-id")!] : []);
+463:       if (media === "sse" && fields.length > 1)
+464:         throw new TransactionChangefeedParameterError("repeated Last-Event-ID");
+465:       const effective = media === "sse" && fields.length === 1 ? { after: fields[0]! } : changefeed;
+466:       const observed = await service.changes(effective, minimum, request.signal);
+467:       if (observed.kind === "unsupported") return developmentGap("minimum-position");
+468:       if (media !== "sse") return context(jsonResponse(observed.page), observed.context);
+469:       const response = streamResponse(request, observed.context);
+470:       return response.status !== 200 || request.method === "HEAD"
+471:         ? response
+472:         : {
+473:             ...response,
+474:             kind: "changefeed-stream",
+475:             page: observed.page,
+476:             context: observed.context,
+477:           };
+478:     }
+479:     // Alias query refusals and receipt identity checks own these routes, even
+480:     // when a query happens to spell view=events. Do not reclassify them as Events.
+481:     const alias = classifyAliasPath(url, scope);
+482:     if (alias !== undefined && typeof alias !== "string") return problem(alias);
+483:     const receiptRoute =
+484:       url.pathname.startsWith(`${scopeUrl.pathname}receipts/`) ||
+485:       url.pathname === `${scopeUrl.pathname}receipts`;
+486:     const eventRequest = receiptRoute ? undefined : transactionEventRequest(url, scope);
+487:     if (eventRequest) {
+488:       const minimum = hasMinimumControls(request)
+489:         ? (transactionMinimumHeaders(request.headers) ?? "unsupported")
+490:         : undefined;
+491:       if (selectChangefeedMedia(request.headers.get("accept")) !== "sse") {
+492:         const observed = await service.events(
+493:           eventRequest.source.url,
+494:           eventRequest.after,
+495:           minimum,
+496:           request.signal,
+497:         );
+498:         if (observed.kind === "missing")
+499:           return transactionHttpProblem("resource-not-found", observed.context);
+500:         if (observed.kind === "unsupported") return developmentGap("minimum-position");
+501:         return context(jsonResponse(observed.page), observed.context);
+502:       }
+503:       const fields =
+504:         lastEventIds ??
+505:         (request.headers.has("last-event-id") ? [request.headers.get("last-event-id")!] : []);
+506:       const observed = await service.beginEvents(
+507:         eventRequest.source.url,
+508:         fields.length === 1 ? fields[0] : eventRequest.after,
+509:         minimum,
+510:         request.signal,
+511:         fields.length > 1,
+512:       );
+513:       if (observed.kind === "missing")
+514:         return transactionHttpProblem("resource-not-found", observed.context);
+515:       if (observed.kind === "unsupported") return developmentGap("minimum-position");
+516:       const response = streamResponse(request, observed.context);
+517:       return response.status !== 200 || request.method === "HEAD"
+518:         ? response
+519:         : { ...response, kind: "event-stream", packet: observed, context: observed.context };
+520:     }
+521:     if (receiptRoute) {
+522:       const minimum = hasMinimumControls(request)
+523:         ? transactionMinimumHeaders(request.headers)
+524:         : undefined;
+525:       const access = { kind: "authenticated" as const, principal: authorization.principal };
+526:       if (url.pathname.slice(`${scopeUrl.pathname}receipts/`.length).includes("/pages/")) {
+527:         const page = await service.receiptPage(
+528:           access,
+529:           url.href,
+530:           minimum ?? (hasMinimumControls(request) ? "unsupported" : undefined),
+531:         );
+532:         if (page.kind === "refused")
+533:           return transactionHttpProblem(
+534:             page.code,
+535:             page.code === "resource-not-found" ? page.context : undefined,
+536:           );
+537:         if (page.kind === "unsupported") return developmentGap("minimum-position");
+538:         return context(
+539:           page.kind === "expired"
+540:             ? transactionHttpProblem("cursor-expired")
+541:             : jsonResponse(page.page),
+542:           page.context,
+543:         );
+544:       }
+545:       const result = hasMinimumControls(request)
+546:         ? await service.receiptAtMinimum(access, url.href, minimum ?? "unsupported")
+547:         : service.receipt(access, url.href);
+548:       if (result.kind === "refused")
+549:         return transactionHttpProblem(
+550:           result.code,
+551:           result.code === "resource-not-found" ? result.context : undefined,
+552:         );
+553:       // Missing barrier support cannot disclose a foreign receipt, nor permit a
+554:       // conditional shortcut to serve an unchecked minimum checkpoint.
+555:       if (result.kind === "unsupported") return developmentGap("minimum-position");
+556:       return receiptResponse(result, false);
+557:     }
+558:     const minimum = hasMinimumControls(request)
+559:       ? transactionMinimumHeaders(request.headers)
+560:       : undefined;
+561:     if (hasMinimumControls(request) && !minimum) return developmentGap("minimum-position");
+562:     if (minimum && alias === undefined) {
+563:       // Aliases have their own conditioned authority path, not a canonical
+564:       // ReadRequest or a member of the current Resource/collection subset.
+565:       const parsed = requestFromUrl(url, scope);
+566:       if (isReadProblem(parsed) && parsed.status === 400) return problem(parsed);
+567:       if (isReadProblem(parsed) || !isCurrentTransactionMinimumRead(parsed, scope))
+568:         return developmentGap("minimum-position-route");
+569:     }
+570:     // No fabricated discovery or incomplete Operation Directory is exposed. The
+571:     // source fixture gives tests actual canonical targets out of band.
+572:     if (
+573:       url.pathname === scopeUrl.pathname ||
+574:       url.href === new URL("bdp.json", scope).href ||
+575:       url.href === new URL("operations/", scope).href
+576:     )
+577:       return developmentGap("transactional-discovery");
+578:     return readRoute(request);
+579:   }
+580:   return Object.freeze({
+581:     targets,
+582:     methodResponse,
+583:     async handle(
+584:       request: Request,
+585:       authorization: TransactionHttpAuthorization,
+586:       received: TransactionReceivedBody = { text: "" },
+587:       lastEventIds?: readonly string[],
+588:     ): Promise<TransactionHttpResult> {
+589:       let response: HttpResponse | ChangefeedStream | EventStream;
+590:       try {
+591:         response = await route(request, authorization, received, lastEventIds);
+592:       } catch (error) {
+593:         if (error instanceof ScopeServerOperationAbortedError) throw error;
+594:         if (error instanceof TransactionMinimumFailure && error.reason !== "behind") {
+595:           response = context(
+596:             problem(
+597:               error.reason === "catch-up-timeout"
+598:                 ? {
+599:                     ...readProblem("temporarily-unavailable"),
+600:                     code: "catch-up-timeout",
+601:                     status: 503,
+602:                     retry: "after-delay",
+603:                   }
+604:                 : readProblem(error.reason),
+605:             ),
+606:             error.context,
+607:           );
+608:         } else if (
+609:           error instanceof TransactionEventParameterError ||
+610:           error instanceof TransactionChangefeedParameterError
+611:         )
+612:           response = transactionHttpProblem("invalid-parameter", error.context);
+613:         else if (error instanceof TransactionEventProjectionGap)
+614:           response = developmentGap(error.message);
+615:         else if (error instanceof TransactionMinimumVisibilityGap)
+616:           response = developmentGap("minimum-position-visibility");
+617:         else response = empty(500);
+618:       }
+619:       response.headers.set("x-bdp-development", "non-attesting");
+620:       if (request.method === "POST") response.headers.set("vary", "Accept");
+621:       if (
+622:         "kind" in response &&
+623:         (response.kind === "changefeed-stream" || response.kind === "event-stream")
+624:       )
+625:         return response;
+626:       return {
+627:         ...(request.method === "GET" || request.method === "HEAD"
+628:           ? applyReadHttpSemantics(request, response)
+629:           : response),
+630:         kind: "finite",
+631:       };
+632:     },
+633:   });
+634: }
+```
+
+### packages/server/src/transaction-runtime.ts:125-180 (committed 5d7fa3f049fa0b4db3aa8dae20e20d8e47fb3854)
+```
+125:         return;
+126:       }
+127:       if (
+128:         normalizationSafeRawRequestPath(raw) === undefined ||
+129:         !raw.startsWith("/") ||
+130:         raw.startsWith("//") ||
+131:         request.headers.host !==
+132:           new URL(captured.authorityMode === "canonical" ? scope : listenUrl).host
+133:       ) {
+134:         deliver(response, transactionHttpProblem("malformed-request"));
+135:         return;
+136:       }
+137:       const url = new URL(raw, scope);
+138:       const methodFailure = handler.methodResponse(url, request.method ?? "GET");
+139:       if (methodFailure) {
+140:         // Refused bodies are not consumed and cannot keep this connection alive.
+141:         methodFailure.headers.set("connection", "close");
+142:         deliver(response, methodFailure);
+143:         return;
+144:       }
+145:       const headers = new Headers();
+146:       for (let i = 0; i < request.rawHeaders.length; i += 2)
+147:         headers.append(request.rawHeaders[i] ?? "", request.rawHeaders[i + 1] ?? "");
+148:       const supplied = Buffer.from(headers.get("authorization") ?? "");
+149:       const authorization = captured.authenticate(supplied);
+150:       signal = createNodeHttpDisconnectSignal(request, response);
+151:       const input = new Request(url, { method: request.method ?? "GET", headers, signal });
+152:       const lastEventIds: string[] = [];
+153:       for (let i = 0; i < request.rawHeaders.length; i += 2)
+154:         if (request.rawHeaders[i]?.toLowerCase() === "last-event-id")
+155:           lastEventIds.push(request.rawHeaders[i + 1] ?? "");
+156:       const body = request.method === "POST" ? await receive(request) : { text: "" };
+157:       if (closing || response.destroyed) {
+158:         deliver(response, transactionHttpProblem("temporarily-unavailable"));
+159:         return;
+160:       }
+161:       // This fixture has no CORS policy. Origin is a transport refusal, not a
+162:       // mutation permission synthesized from carried provenance.
+163:       if (headers.has("origin")) {
+164:         deliver(response, transactionHttpProblem("forbidden"));
+165:         return;
+166:       }
+167:       if ("failure" in body) response.setHeader("connection", "close");
+168:       const schema = await schemas?.(input, authorization);
+169:       if (schema) {
+170:         deliver(response, schema.response, schema.raw);
+171:         return;
+172:       }
+173:       let selected: TransactionHttpResult | undefined = await handler.handle(
+174:         input,
+175:         authorization,
+176:         body,
+177:         lastEventIds,
+178:       );
+179:       if (selected.kind === "finite") deliver(response, selected);
+180:       else {
+```
+
+### packages/server/src/transaction-schema-http.ts:1-66 (committed 5d7fa3f049fa0b4db3aa8dae20e20d8e47fb3854)
+```
+1: /** Source-private exact local retrieval identities. No resolver, installation API,
+2:  * public discovery or minimum-control support is implied by this projection. */
+3: import type { HttpResponse } from "./index.js";
+4: import { assertDevelopmentContracts, type DevelopmentContracts } from "./development-contracts.js";
+5: import { applyReadHttpSemantics } from "./read-http.js";
+6: import { hasMinimumControls, type TransactionHttpAuthorization } from "./transaction-http.js";
+7: import type { createTransactionService } from "./transaction-service.js";
+8: 
+9: export function createTransactionSchemaHttp(
+10:   scope: string,
+11:   contracts: DevelopmentContracts | undefined,
+12:   observe: ReturnType<typeof createTransactionService>["schemaObserved"],
+13: ) {
+14:   const entries = new Map<string, Readonly<{ utf8: string; byteLength: number }>>();
+15:   if (contracts) {
+16:     assertDevelopmentContracts(contracts);
+17:     for (const entry of contracts.capture.artifacts) {
+18:       if (entry.kind !== "schema") continue;
+19:       const url = new URL(entry.retrievalUri);
+20:       if (
+21:         url.href !== entry.retrievalUri ||
+22:         !entry.retrievalUri.startsWith(`${scope}schemas/`) ||
+23:         entry.retrievalUri.includes("?") ||
+24:         entry.retrievalUri.includes("#") ||
+25:         url.username ||
+26:         url.password
+27:       )
+28:         continue;
+29:       entries.set(
+30:         entry.retrievalUri,
+31:         Object.freeze({
+32:           utf8: Buffer.from(entry.bytesBase64, "base64").toString("utf8"),
+33:           byteLength: entry.byteLength,
+34:         }),
+35:       );
+36:     }
+37:   }
+38:   return async (
+39:     request: Request,
+40:     authorization: TransactionHttpAuthorization,
+41:   ): Promise<Readonly<{ response: HttpResponse; raw?: string }> | undefined> => {
+42:     if (
+43:       (request.method !== "GET" && request.method !== "HEAD") ||
+44:       authorization.kind !== "authenticated" ||
+45:       hasMinimumControls(request)
+46:     )
+47:       return undefined;
+48:     const entry = entries.get(request.url);
+49:     if (!entry) return undefined;
+50:     const observed = await observe();
+51:     // Selection needs representation metadata, not another parsed schema copy.
+52:     const response = applyReadHttpSemantics(request, {
+53:       status: 200,
+54:       headers: new Headers({
+55:         "content-type": "application/json",
+56:         "cache-control": "private, no-store",
+57:         "bdp-scope-epoch": observed.context.scopeEpoch,
+58:         "bdp-authorization-view": observed.context.authorizationView,
+59:         "bdp-scope-position": observed.context.scopePosition,
+60:       }),
+61:     });
+62:     if (response.status !== 200) return Object.freeze({ response });
+63:     response.headers.set("content-length", String(entry.byteLength));
+64:     return Object.freeze({ response, raw: entry.utf8 });
+65:   };
+66: }
+```
+
+### packages/server/src/read-http.ts:1-55 (committed 5d7fa3f049fa0b4db3aa8dae20e20d8e47fb3854)
+```
+1: import { stringifyJsonValue } from "@bdp/protocol";
+2: import type { HttpResponse } from "./index.js";
+3: 
+4: /** Apply shared HTTP rules only after routing, authorization and result validation.
+5:  * This Read server selects parameter-free application/json on its 200 routes.
+6:  * Its Scope port supplies no representation modification date, so neither date
+7:  * precondition can be evaluated; Resource timestamps are not HTTP validators.
+8:  * RFC 9110 sections 12.5.1, 13.1 and 13.2 govern negotiation and ordering.
+9:  */
+10: export function applyReadHttpSemantics(request: Request, response: HttpResponse): HttpResponse {
+11:   let selected = response;
+12:   const json =
+13:     response.status === 200 && response.headers.get("content-type") === "application/json";
+14:   if (json || response.status === 204) {
+15:     const headers = new Headers(response.headers);
+16:     if (json) {
+17:       const vary = headers.get("vary");
+18:       if (
+19:         vary !== "*" &&
+20:         !vary?.split(",").some((field) => field.trim().toLowerCase() === "accept")
+21:       )
+22:         headers.set("vary", vary ? `${vary}, Accept` : "Accept");
+23:     }
+24:     // The Scope probe is an existing zero-length representation with no media
+25:     // type to negotiate; it still evaluates entity-tag preconditions.
+26:     const status =
+27:       json && !acceptsJson(request.headers.get("accept"))
+28:         ? 406
+29:         : conditionalReadStatus(request.headers, headers.get("etag"));
+30:     if (status !== 200) {
+31:       headers.delete("content-type");
+32:       if (status === 406) headers.delete("etag");
+33:       // A 304 Content-Length may describe only the corresponding 200 body,
+34:       // never an invented zero-length representation (RFC 9110 section 8.6).
+35:       headers.delete("content-length");
+36:       if (status !== 304) headers.set("content-length", "0");
+37:       selected = { status, headers };
+38:     } else selected = { ...response, headers };
+39:   }
+40:   // Keep the Fetch-level contract honest as well as the Node transport's final
+41:   // defensive strip. HEAD has GET metadata, including the serialized length.
+42:   if (request.method === "HEAD" && selected.body !== undefined) {
+43:     const headers = new Headers(selected.headers);
+44:     headers.set("content-length", String(Buffer.byteLength(stringifyJsonValue(selected.body))));
+45:     return { status: selected.status, headers };
+46:   }
+47:   return selected;
+48: }
+49: 
+50: export function conditionalReadStatus(headers: Headers, etag: string | null): 200 | 304 | 412 {
+51:   const match = headers.get("if-match");
+52:   if (match !== null && !tagListMatches(match, etag, true)) return 412;
+53:   const noneMatch = headers.get("if-none-match");
+54:   if (noneMatch !== null && tagListMatches(noneMatch, etag, false)) return 304;
+55:   return 200;
+```
+
+### packages/server/src/transaction-service.ts:435-516 (committed 5d7fa3f049fa0b4db3aa8dae20e20d8e47fb3854)
+```
+435:         signal?.throwIfAborted();
+436:         return owner.advanceEventScan(scan);
+437:       });
+438:     },
+439:     receiptPage(
+440:       access:
+441:         | { readonly kind: "unauthenticated" }
+442:         | { readonly kind: "authenticated"; readonly principal: string },
+443:       id: string,
+444:       supplied?: TransactionMinimum | "unsupported",
+445:     ): Promise<
+446:       | {
+447:           readonly kind: "page";
+448:           readonly page: TransactionReceiptPage;
+449:           readonly context: TransactionReadContext;
+450:         }
+451:       | { readonly kind: "refused"; readonly code: "unauthenticated" }
+452:       | {
+453:           readonly kind: "refused";
+454:           readonly code: "resource-not-found";
+455:           readonly context?: TransactionReadContext;
+456:         }
+457:       | { readonly kind: "expired"; readonly context: TransactionReadContext }
+458:       | { readonly kind: "unsupported" }
+459:     > {
+460:       return run(async () => {
+461:         if (access.kind === "unauthenticated") return { kind: "refused", code: "unauthenticated" };
+462:         const principal = access.principal,
+463:           minimum =
+464:             supplied === undefined || supplied === "unsupported"
+465:               ? supplied
+466:               : snapshotTransactionMinimum(supplied);
+467:         return waitForTransactionMinimum(() => {
+468:           const result = owner.readReceiptPage(principal, id, minimum);
+469:           // Prefix checking is defense in depth, not an independent plan witness.
+470:           if (
+471:             result.kind === "page" &&
+472:             (result.page.results.length < 1 ||
+473:               result.page.results.length > maximum ||
+474:               (result.page.next !== null &&
+475:                 (!result.page.next.startsWith(`${result.page.receipt}/pages/`) ||
+476:                   result.page.results.length !== maximum)))
+477:           )
+478:             throw new Error("invalid receipt page projection");
+479:           return result.kind === "missing"
+480:             ? Object.freeze({
+481:                 kind: "refused" as const,
+482:                 code: "resource-not-found" as const,
+483:                 ...(result.context === undefined ? {} : { context: result.context }),
+484:               })
+485:             : result;
+486:         }, minimumReads);
+487:       });
+488:     },
+489:     receiptAtMinimum(
+490:       access:
+491:         | { readonly kind: "unauthenticated" }
+492:         | { readonly kind: "authenticated"; readonly principal: string },
+493:       id: string,
+494:       supplied: TransactionMinimum | "unsupported",
+495:     ): Promise<TransactionServiceReceiptResult | { readonly kind: "unsupported" }> {
+496:       return run(async () => {
+497:         if (access.kind === "unauthenticated")
+498:           return Object.freeze({ kind: "refused", status: 401, code: "unauthenticated" });
+499:         const principal = access.principal;
+500:         if (supplied === "unsupported") {
+501:           const observed = owner.readReceipt(principal, id, supplied);
+502:           if ("kind" in observed) return observed;
+503:           return Object.freeze({
+504:             kind: "refused",
+505:             status: 404,
+506:             code: "resource-not-found",
+507:             context: observed.context,
+508:           });
+509:         }
+510:         const minimum = snapshotTransactionMinimum(supplied);
+511:         return waitForTransactionMinimum(() => receipt(principal, id, minimum), minimumReads);
+512:       });
+513:     },
+514:     submit(request: TransactionSubmission): Promise<TransactionServiceSubmissionResult> {
+515:       return run(async () => {
+516:         const authorization = Object.freeze({ ...request.authorization });
+```
+
+### packages/server/src/transaction-store.ts:835-902 (committed 5d7fa3f049fa0b4db3aa8dae20e20d8e47fb3854)
+```
+835:     const projected = receiptPrefix(receipt);
+836:     freeze(projected);
+837:     return Object.freeze({ receipt: projected, context });
+838:   }
+839:   // Called only inside the guarded owner's transaction. The fixed all-visible
+840:   // policy projects retained facts, including postimages since updated/deleted.
+841:   function disclosedReceipt(principal: string, id: string): Row | undefined {
+842:     for (const stored of db
+843:       .prepare("SELECT * FROM receipts WHERE principal=?")
+844:       .all(principal) as unknown as Row[]) {
+845:       const value = parseReceipt(stored.receipt);
+846:       if (value.id === id) return value.scopeEpoch === epoch ? stored : undefined;
+847:     }
+848:     return undefined;
+849:   }
+850:   function retainedReceipt(principal: string, id: string): TransactionReceipt | undefined {
+851:     const stored = disclosedReceipt(principal, id);
+852:     const remaining = stored && expireRow(stored, instant()).row;
+853:     return remaining ? parseReceipt(remaining.receipt) : undefined;
+854:   }
+855:   type ReceiptRead = {
+856:     readonly receipt: TransactionReceipt | undefined;
+857:     readonly context: TransactionReadContext;
+858:   };
+859:   function readReceipt(principal: string, id: string, minimum?: TransactionMinimum): ReceiptRead;
+860:   function readReceipt(
+861:     principal: string,
+862:     id: string,
+863:     minimum: "unsupported",
+864:   ): ReceiptRead | { readonly kind: "unsupported" };
+865:   function readReceipt(
+866:     principal: string,
+867:     id: string,
+868:     minimum?: TransactionMinimum | "unsupported",
+869:   ): ReceiptRead | { readonly kind: "unsupported" } {
+870:     if (typeof principal !== "string" || !principal || !principal.isWellFormed())
+871:       throw new TypeError("invalid trusted principal");
+872:     if (typeof id !== "string") throw new TypeError("receipt URL required");
+873:     const condition =
+874:       minimum === undefined || minimum === "unsupported"
+875:         ? minimum
+876:         : snapshotTransactionMinimum(minimum);
+877:     return enter(() =>
+878:       atomic(() => {
+879:         const stored = disclosedReceipt(principal, id);
+880:         if (stored && condition === "unsupported")
+881:           return Object.freeze({ kind: "unsupported" as const });
+882:         const context = readContext();
+883:         if (!stored) return Object.freeze({ receipt: undefined, context });
+884:         if (condition !== undefined && condition !== "unsupported")
+885:           checkTransactionMinimum(condition, context);
+886:         const remaining = expireRow(stored, instant()).row;
+887:         if (!remaining) return Object.freeze({ receipt: undefined, context });
+888:         return observeReceipt(parseReceipt(remaining.receipt), context);
+889:       }),
+890:     );
+891:   }
+892:   function withRead<T>(
+893:     callback: (reader: AuthorityReadReader, context: TransactionReadContext) => T,
+894:   ): OwnerReadEntryResult<T> {
+895:     if (busy)
+896:       return {
+897:         kind: "entry-refused",
+898:         reason: "reentrant",
+899:         cause: new Error("transaction store reentrant read"),
+900:       };
+901:     if (ownerFailure || maintenanceFailure || closed)
+902:       return {
+```
+
+### packages/server/src/transaction-store.ts:2017-2090 (committed 5d7fa3f049fa0b4db3aa8dae20e20d8e47fb3854)
+```
+2017:     readReceiptPage(
+2018:       principal: string,
+2019:       id: string,
+2020:       minimum?: TransactionMinimum | "unsupported",
+2021:     ):
+2022:       | {
+2023:           readonly kind: "page";
+2024:           readonly page: TransactionReceiptPage;
+2025:           readonly context: TransactionReadContext;
+2026:         }
+2027:       | { readonly kind: "expired"; readonly context: TransactionReadContext }
+2028:       | { readonly kind: "missing"; readonly context?: TransactionReadContext }
+2029:       | { readonly kind: "unsupported" } {
+2030:       if (
+2031:         typeof principal !== "string" ||
+2032:         !principal ||
+2033:         !principal.isWellFormed() ||
+2034:         typeof id !== "string"
+2035:       )
+2036:         throw new TypeError("trusted principal and page URL required");
+2037:       const condition =
+2038:         minimum === undefined || minimum === "unsupported"
+2039:           ? minimum
+2040:           : snapshotTransactionMinimum(minimum);
+2041:       return enter(() =>
+2042:         atomic(() => {
+2043:           const marker = id.lastIndexOf("/pages/");
+2044:           if (marker < 0) return { kind: "missing" as const };
+2045:           const parentId = id.slice(0, marker),
+2046:             token = id.slice(marker + 7);
+2047:           if (!parentId.startsWith(`${scope}receipts/`)) return { kind: "missing" as const };
+2048:           const saved = db
+2049:             .prepare("SELECT * FROM receipt_pages WHERE receipt=? AND principal=?")
+2050:             .get(parentId, principal);
+2051:           if (!saved) {
+2052:             // A visible completed parent must have its durable plan, even after expiry.
+2053:             // Nonexistent pages must not trigger retention on failed parents.
+2054:             const parent = disclosedReceipt(principal, parentId);
+2055:             if (parent && parseReceipt(parent.receipt).status === "completed")
+2056:               throw new Error("receipt page plan missing");
+2057:             return Object.freeze({ kind: "missing" as const, context: readContext() });
+2058:           }
+2059:           const stored = row(principal, String(saved.key));
+2060:           if (!stored) throw new Error("receipt page parent missing");
+2061:           const original = parseReceipt(stored.receipt);
+2062:           if (original.id !== parentId) throw new Error("receipt page parent mismatch");
+2063:           if (original.scopeEpoch !== epoch)
+2064:             return Object.freeze({ kind: "missing" as const, context: readContext() });
+2065:           const plan = pagePlan(original),
+2066:             index = plan.pages.findIndex((page) => page.token === token);
+2067:           if (index < 0) return Object.freeze({ kind: "missing" as const, context: readContext() });
+2068:           if (condition === "unsupported") return { kind: "unsupported" as const };
+2069:           const context = readContext();
+2070:           // Identity/nondisclosure precedes minimum; expiry is checked only afterwards.
+2071:           if (condition) checkTransactionMinimum(condition, context);
+2072:           const remaining = expireRow(stored, instant()).row;
+2073:           if (!remaining) throw new Error("completed page parent was forgotten");
+2074:           const receipt = parseReceipt(remaining.receipt);
+2075:           if (receipt.detail === "expired") return { kind: "expired" as const, context };
+2076:           observeReceipt(receipt, context); // same projection/integrity policy, no second clock
+2077:           const boundary = plan.pages[index];
+2078:           if (!boundary) throw new Error("receipt page boundary missing");
+2079:           const results = (receipt.results as readonly unknown[]).slice(
+2080:             boundary.start,
+2081:             boundary.end,
+2082:           );
+2083:           // Freeze the selected page entries before they escape the owner entry.
+2084:           const freeze = (value: unknown): void => {
+2085:             if (value && typeof value === "object") {
+2086:               Object.values(value).forEach(freeze);
+2087:               Object.freeze(value);
+2088:             }
+2089:           };
+2090:           const next = plan.pages[index + 1];
+```
+
+### Test fanout and deliberate omissions
+The complete eleven-path scope and affected callback titles/expected changes are enumerated in the full plan above. Test bodies, installed launcher/package internals, full schema reference graph and unrelated owner internals are intentionally omitted from this PLAN review; all relevant file hashes remain bound. The later implementation code council must inspect exact authored fixtures and measured selections. HTTP command parser internals are omitted: command branch entry and final receiving/dispatch boundary are shown, and POST ignore normative law is included. Runtime raw-header/auth/schema routing is included. Schema interceptor source is included; protocol schema file is hash-pinned, not expanded. Do not infer omitted implementation facts or treat this as full code review.

@@ -1,0 +1,48 @@
+{
+  "accepted": true,
+  "at": "2026-10-15T22:28:51.670921+00:00",
+  "sourceBindingSha256": "0dbae7cb6139263cbfd3931e80d8dec2c628d7e982deecdd6c8242573a35c6e2",
+  "results": {
+    "boundaries.exit.json": {
+      "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-principal-cumulative-draft/finalized-source-preparation-v2/run/boundaries.exit.json",
+      "sha256": "6d8af6d6a96bda003d1289c1b179ce9355b85b8e4abfa373abd47f3da77f3bed"
+    },
+    "build-inventory.exit.json": {
+      "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-principal-cumulative-draft/finalized-source-preparation-v2/run/build-inventory.exit.json",
+      "sha256": "ed856a665b0e7c524a5ed0e3a248d13052659b516c900d08b890a01f4ef3fbfb"
+    },
+    "build.exit.json": {
+      "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-principal-cumulative-draft/finalized-source-preparation-v2/run/build.exit.json",
+      "sha256": "5865d7ee8f687880faf4d3f6ac86107edfbea9e13a6ea9ca3372f5cdc8e4e206"
+    },
+    "format-check.exit.json": {
+      "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-principal-cumulative-draft/finalized-source-preparation-v2/run/format-check.exit.json",
+      "sha256": "8b8edcf261899251b3ea96ae31e36ddaf3b66ac6d2288b392ad4944a85f18c8d"
+    },
+    "lint.exit.json": {
+      "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-principal-cumulative-draft/finalized-source-preparation-v2/run/lint.exit.json",
+      "sha256": "89988bcca29da9adbfe2692cb9d9dc1a4c92e3c0e609af9dafb4ddd37df1f78f"
+    },
+    "offline-setup.exit.json": {
+      "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-principal-cumulative-draft/finalized-source-preparation-v2/run/offline-setup.exit.json",
+      "sha256": "f13a8e03c3469e92d270581afc9306162c8706b6a69363afaa6716584c438819"
+    },
+    "read-seal.exit.json": {
+      "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-principal-cumulative-draft/finalized-source-preparation-v2/run/read-seal.exit.json",
+      "sha256": "f1ffbd124b2323d7121a7267d7c937268b65636a287223ac48fadc51868ad243"
+    },
+    "static-cases.exit.json": {
+      "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-principal-cumulative-draft/finalized-source-preparation-v2/run/static-cases.exit.json",
+      "sha256": "55acf46ffe5f9266f65392f1c1e7b66481c2646cb30ba76420885bed2a2b3ba7"
+    },
+    "typecheck.exit.json": {
+      "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-principal-cumulative-draft/finalized-source-preparation-v2/run/typecheck.exit.json",
+      "sha256": "46de2f6ed2272965dd60db92a3cf249f975cbcb2bc569586532996e5c6a602a1"
+    }
+  },
+  "nativeOutcome": {
+    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-principal-cumulative-draft/finalized-source-preparation-v2/native-outcome.md",
+    "sha256": "034d8bcb5372911776d960d5c4383c983bdb53c7bce312cc458cddc974767b59"
+  },
+  "limitations": "9 exact static cases only; no installed evidence. Existing warnings remain."
+}

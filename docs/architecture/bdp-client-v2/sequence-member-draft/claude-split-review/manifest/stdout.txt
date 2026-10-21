@@ -1,0 +1,61 @@
+## Findings
+
+### 1. `s-events:ordered-facts` asserts `ordinal: 0` for *both* created events — Medium (unverified value, gates the positive scenario)
+
+Location: manifest row `transactional.sequence.member-transactions`, action `s-events`, assertion `ordered-facts`.
+
+```json
+"equals":[[".../events/","created",".../beads/a",".../types/task",0],
+          [".../events/","created",".../beads/b",".../types/task",0]]
+```
+
+Two distinct events on one `eventPage` carry the same `ordinal`. This is coherent **only** under a per-transaction reading of `event.ordinal` (each member commits separately, so each transaction's single event is ordinal 0). The provided `event`/`eventPage` schema requires both `ordinal` and `transaction` but pins neither's semantics, so I cannot prove which reading is normative.
+
+Why it matters either way:
+- If `ordinal` is **source-global**, the second tuple must be `1` and this is a defect: the positive scenario fails at the last assertion of the last of ten actions. Smallest correction: `0` → `1` in the second tuple.
+- If **per-transaction**, the value is correct *and load-bearing*: an implementation that committed the three members atomically would emit ordinals `0` and `1` and fail this assertion, whereas a global ordinal would yield `[0],[1]` for both the atomic and the separated case and discriminate nothing. Smallest correction: none, but record in the coverage `reason` that `[0,0]` is the discriminator against a single atomic commit, since nothing else in the row says so.
+
+This value is exercised by no negative control (the control stops at action 0) and by no other assertion, and the two 900 s timeouts mean it has never been observed. It is the highest-value thing to confirm in this row.
+
+### 2. No derivative-growth fence appears in this diff — Low-Medium (cross-scope)
+
+The measurement facts recommend `derivativeNormal 812575` (= `maxDerivativeNormalBytes 808479` + 4096) and `derivativeNodes 21176` (= `maxDerivativeNodes 21112` + 64), and `simultaneousStops` flags both as binding. The cumulative-test diff updates only the manifest/coverage fences. Note `maxDerivativeNormalBytes 808479 > recommendedFences.manifestNormal 806457`, so any derivative bound inherited from the manifest-normal figure is now violated. Action: confirm `812575`/`21176` land in the app-side file (wire scope); if no derivative fence exists anywhere in the four-file patch, the `simultaneousStops` claim for those two entries is unbacked.
+
+### 3. Negative controls omit the `s-replay` (index 7) branch — Low
+
+`transactional-cumulative.test.ts`, the control loop added at the top of the preservation test, drives only `[0,"middle-status"]` and `[3,"problem"]`. `assertSequenceMemberObservation` loops `for (const index of [0, 7])`, so narrowing that loop to `[0]` would leave both controls passing. Detection is still total via the row hash `48e5245968…`, so this is a demonstration gap, not a hole in coverage. Smallest correction: add `[7, "middle-status"]` to the tuple list (matching the three-control shape used for cross-carrier).
+
+### 4. Test title is now stale — Low
+
+`it("preserves every original TX scenario and coverage object while adding one bounded partial cross-carrier row")` now asserts three added rows (command-minimum via `withoutMinimumRow`, cross-carrier, sequence-member). Smallest correction: `…while adding bounded partial rows`.
+
+### 5. The three delta fences are exactly redundant with their absolute neighbours — Low (pre-existing, faithfully preserved)
+
+`488280 + 305825 = 794105`, `13019 + 8001 = 21020`, `70662 + 48064 = 118726` — each `byteLength - base <= delta` line is arithmetically identical to the `<= absolute` line that follows it and can never fail independently. The superseded values had the same property (`488280 + 254599 = 742879`, etc.), so the convention is preserved correctly. No change needed; flagged only because the `// Preserve bases…and margins…` comment reads as though the delta lines were an independent growth budget.
+
+### 6. `sequenceParentPins` duplicates `originalObjectPins` and is subsumed by the parent hash — Low
+
+`withoutSequenceMemberRow` asserts the stripped text hashes to the exact recorded `baseSha256`, which already pins every byte of all 14 parent rows; the 28 per-row `(byteLength, sha256)` expects add only failure localization at the cost of ~230 lines and a second table to keep in sync. The overlapping values agree where both are visible (`batch.deletion-safety` 131808/`3e66e7c9…`, `idempotency.conflict` 29772/`ba93aea8…`). If `originalObjectPins` covers exactly the 13 pre-command-minimum rows, `sequenceParentPins` can be derived as `[...originalObjectPins[name], ["read-update.http.command-minimum-fields", …]]`, removing the divergence risk.
+
+## Verified
+
+- **Assertion/action counts.** Recounted from the row: 38+25+13+19+15+25+13+38+11+12 = **209**; 10 actions. Matches `toHaveLength(209)`, `delta`, 210→220, and 2294+209=2503. The coverage mirror contains all 209 `action:assertion` keys with matching per-action counts, and all 209 keys are unique.
+- **Node delta.** Independently recounted the row's JSON value nodes under the walker's convention (every value counted, `Object.values` recursion) = **1386**, exactly `delta.nodes`. This also corroborates that the presented row is byte-complete.
+- **All seven fence numbers are exact**: 794105=790009+4096; 305825=794105−488280; 806457=802361+4096; 118726=117702+1024; 48064=118726−70662; 21020=20956+64; 8001=21020−13019 — same convention as the superseded command-minimum set. The new comment `disk790009/normal802361/nodes20956/coverage117702` matches the canonical facts.
+- **Coverage delta.** Reconstructed the pretty-printed row from its 5465 id characters + 209 entry lines + wrapper ≈ 9555 B against `delta.coverageDiskBytes − 6 = 9557`, which also confirms coverage is canonical 2-space pretty (consistent with `diskBytes == normalBytes` and `sha256 == normalSha256`).
+- **`withoutSequenceMemberRow` splice is correct** for the `,\n    <row>\n  ]\n}\n` tail and yields `…<prevRow>\n  ]\n}\n`. The `typeof raw` guard does fire on a missing row (`!` is compile-time only). Nesting order is right: sequence row must be last (`endsWith`), minimum row is `scenarios[0]`, and the pre-existing 13-row hash `726fc623…` stays reachable and unchanged — consistent with the 159 B / 5-node / 48 B drift between the retained command-minimum figures and the actual parent at `18104a0` being confined to the command-minimum row and the coverage file.
+- **Negative-control arithmetic is exactly seven failures.** With `/operations/1/bead` → `beads/a`: three commits ⇒ `serving-position` (pos-3 ≠ pos-2) fails; `middle-type`/`code`/`status`/`retry` fail absent; `middle-no-outcome`/`middle-no-deleted` fail present; `middle-no-resource`, `middle-no-name`, `schema`, `indices`, `http-status`, `media`, `request-*`, `present-*`, all `first-*`/`last-*`, `no-receipt`, `no-id` pass. No `evaluateAssertion` path in `s-sequence` throws before all 38 outcomes exist (no `equalsBinding`, `equalsResponse`, `presentIfResponse`, `access-control-*` absence, or fixture pointers), so "evaluate all, then stop" holds and zero captures/helper actions occur.
+- **Receipt assertion sets match the `mutationReceipt` branches.** completed+available: `next` required (asserted `exists:true, equals:null`) with `results` minItems 1 (one result asserted), `expiresAt` required (asserted). failed: `effectPosition`/`results`/`next` forbidden (all `exists:false`), `expiresAt` required. `requiredPosition` pos-1/pos-1/pos-2 and `effectPosition` pos-1/absent/pos-2 are mutually consistent with two commits and the pos-2 serving header on all ten actions.
+- **`s-sequence:indices` correctly projects only `/operationIndex`** — adding `/outcome` would make `json-array-tuples` fail on the middle problem entry.
+- **Retained `problem.operationIndex: 0` vs envelope index 1** matches `transaction-sequence.ts:project()` deleting `operationIndex`/`operationName` and re-stamping `turn.index`; pinned by `sequence-failed-internal-index`.
+- **Capture vocabulary.** Exactly three captures, in action order, all `/id` on the batch receipts; `/id` is `absoluteHttpUrl` per `receiptCore`, satisfying `captureValue`'s in-scope-absolute-HTTP-URL requirement (`runner.ts:2468-2498`). `transaction`/`revision` are correctly *not* captured — they could not be, on the HTTP path. The `*-facts` sets correctly omit `/bodyOctets` and delegate full-body equality to the harness's `isDeepStrictEqual(body, entry.body)`, which is what the coverage `reason` claims.
+- **Control labels are sound.** `toThrow("sequence-middle-status")` / `"sequence-failed-internal-index"` cannot be satisfied by the trailing row-hash expect, whose message is `sequence-complete-independent-facts`.
+
+## Omitted context (not defects)
+
+- `clauseMap` is not extended with the new scenario id. Consistent with `wholeContract:false` and "no public profile credit", but whether that map must be exhaustive is not visible.
+- The head of the `[id, expected]` action-count table and of the scenario-id `toEqual` list fall outside the hunk context, so I could not sum them independently; `toHaveLength(220)` covers the total.
+- `mutationResultMembers`, `sequenceMemberProblem`, `beadRecord`, `deletedIdentity`, `localName` and the rest of the `$defs` closure are omitted; receipt/sequence assertion sets were checked only against the shown branches.
+- Whether a requirement id `transactional.sequence.member-transactions` pre-exists in the profile contract (needed for 237→236). The `ready-unexecuted` `toEqual` makes this self-checking at runtime.
+- Manifest/coverage top-level preamble keys: the 14 pinned row lengths sum to 738457 / 107900, leaving 167 B / 239 B of wrapper plus preamble — plausible, not verifiable.
+- Nothing in this diff has been observed to execute (both supplied-context attempts timed out at ~896 s with empty output), so every item above is desk-verified only.

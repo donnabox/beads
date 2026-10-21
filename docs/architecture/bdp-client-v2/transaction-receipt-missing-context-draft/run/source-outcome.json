@@ -1,0 +1,527 @@
+{
+  "status": "all ten released stages passed once",
+  "at": "2026-10-15T12:33:58.722430+00:00",
+  "sourceBindingSha256": "edc5c98c8e5c82f2073e1bf35aa84098efe9552c7dbc74537784de75788cca5a",
+  "sourceDiffSha256": "837bacdc192bcf0401171ecc9a8312ae034beabed7b69620b6a3beaef0cb9de7",
+  "sourceUnchanged": true,
+  "stages": [
+    {
+      "stage": "offline-setup",
+      "exit": 0,
+      "elapsedSeconds": 0.8520113748963922,
+      "exitSha256": "cf5c58cf05560383b7e6dc5e7d260ea9dad3a315a84376b3a351f34205ace59a",
+      "logSha256": "640006355085be8a374c6a61f05d609838a992263acfc9c37b3bbefb808a88c6",
+      "adjudication": {
+        "kind": "command-only",
+        "testVerdict": "not-applicable"
+      }
+    },
+    {
+      "stage": "typecheck",
+      "exit": 0,
+      "elapsedSeconds": 1.9734049588441849,
+      "exitSha256": "dc77c6317598dec4c87478262d6cc81492bc21a52c1b531148a4347bc8721891",
+      "logSha256": "91d54ffbee73a3ac72294d090e58d77745f8b93edbf94b862807698273a6505a",
+      "adjudication": {
+        "kind": "command-only",
+        "testVerdict": "not-applicable"
+      }
+    },
+    {
+      "stage": "build",
+      "exit": 0,
+      "elapsedSeconds": 1.4984885409940034,
+      "exitSha256": "8eda3c0212bd819026f1d5998babf8fa469c0bdfaf57560206d29d0be1fa8a53",
+      "logSha256": "232dac5e840e45b3bb06e6e04249b5241f2e1b4f6c797a22c046d916302ac208",
+      "adjudication": {
+        "kind": "command-only",
+        "testVerdict": "not-applicable"
+      }
+    },
+    {
+      "stage": "format-check",
+      "exit": 0,
+      "elapsedSeconds": 1.0636316670570523,
+      "exitSha256": "fd4f551b69e96d70b3c815261d016f593ad05083dd4f578f76bceef9c791663e",
+      "logSha256": "8be4feb0df406521ac7f5802de0848dfe364bb5021c8480fb53194a7a3b66458",
+      "adjudication": {
+        "kind": "command-only",
+        "testVerdict": "not-applicable"
+      }
+    },
+    {
+      "stage": "lint",
+      "exit": 0,
+      "elapsedSeconds": 1.079611707944423,
+      "exitSha256": "49b444287a835646a08d0bbed7b042c1a264ca950d5895e60ad0714bed0dce5d",
+      "logSha256": "3d8d9bfbc9a687d87fa1375da9462b05bebffc9617ae0f447e85cb056809a538",
+      "adjudication": {
+        "kind": "command-only",
+        "testVerdict": "not-applicable"
+      }
+    },
+    {
+      "stage": "boundaries",
+      "exit": 0,
+      "elapsedSeconds": 1.0554687918629497,
+      "exitSha256": "4fde2426cc058e743254a5ef6d6634c28d3f084515a0631672d4991d8c22fba4",
+      "logSha256": "53f4cd856bde25513486a59799c5a05e0650fbb756bf1580fb07e56c2fdeeef3",
+      "adjudication": {
+        "kind": "command-only",
+        "testVerdict": "not-applicable"
+      }
+    },
+    {
+      "stage": "read-seal",
+      "exit": 0,
+      "elapsedSeconds": 0.9516290831379592,
+      "exitSha256": "2a0faa8c6a402c8bbfc4fb84f9306566aa72e8e872808fc1ea71b9e880682a25",
+      "logSha256": "79749014f712bd5d838b93088c70fef4cca1ae63d7738a613716ab37fa1295ba",
+      "adjudication": {
+        "kind": "command-only",
+        "testVerdict": "not-applicable"
+      }
+    },
+    {
+      "stage": "receipt-pages-positive",
+      "exit": 0,
+      "elapsedSeconds": 1.4816210421267897,
+      "exitSha256": "1d6ce57018647d23d05a03b5f0f716cf1fcf96286fc12377942fe6a15518bc6f",
+      "logSha256": "75cfbf07fd71026c6dcbda691dfb48ff9eecc3bd5c91133644156a3f32f3848f",
+      "adjudication": {
+        "kind": "exact-source-selection",
+        "passedFullNames": [
+          "records one atomic page chain, retains original postimages and all tail allocations through expiry",
+          "refuses page parents outside the receipt namespace before plan lookup",
+          "captures immutable current context for nondisclosable receipt pages before minimum checks"
+        ],
+        "skipped": 11,
+        "jsonSha256": "0da8ab9180000ef330baed23bf3f228fdba195b5ae0d85e9c822ab943c6f097e",
+        "limitation": "Static HTTP/owner model is not an independently observed network quota; raw logs and reported cleanup remain separately reviewed."
+      }
+    },
+    {
+      "stage": "receipt-service-positive",
+      "exit": 0,
+      "elapsedSeconds": 1.2616061251610518,
+      "exitSha256": "890231a358b156a4b1c13cbff0784eeb05f67c848baae13f382b632e0b3303c9",
+      "logSha256": "2b3d3c4639873efa85e0d6389779de85bbee0acd73560a61109247c7186eacec",
+      "adjudication": {
+        "kind": "exact-source-selection",
+        "passedFullNames": [
+          "private same-owner Transactional service authenticates before lookup and uniformly hides other principals, roots and unknown URLs",
+          "private same-owner Transactional service retains completed identity, forgets expired failed detail and preserves current observation across reopen",
+          "private minimum-read owner/lifecycle checks minimum before read-triggered expiry but honors independently forgotten receipts (false)",
+          "private minimum-read owner/lifecycle checks minimum before read-triggered expiry but honors independently forgotten receipts (true)",
+          "preserves current receipt absence context across ordinary and minimum service entrypoints"
+        ],
+        "skipped": 61,
+        "jsonSha256": "fc7c32b8b859fbac29b0e703475efebca4118794975b81758ca69087e910c2c1",
+        "limitation": "Static HTTP/owner model is not an independently observed network quota; raw logs and reported cleanup remain separately reviewed."
+      }
+    },
+    {
+      "stage": "receipt-http-positive",
+      "exit": 0,
+      "elapsedSeconds": 2.4999841249082237,
+      "exitSha256": "31cfb3165789ff93ad1cfa92e4b5dc53d1a17904b7f98d9df0ef62f607976991",
+      "logSha256": "122d03be53313a007cca6d48b26baa8f521ba3b5fec02565f1714cf63e3cf9d3",
+      "adjudication": {
+        "kind": "exact-source-selection",
+        "passedFullNames": [
+          "source-private actual Transactional HTTP authenticates and hides receipts before minimum-control refusal or conditional shortcuts",
+          "orders page nondisclosure, minimum waits, expiry and representation using actual owner state",
+          "checks a stored failed receipt minimum before read-triggered retention disposal over HTTP",
+          "refuses unsupported root controls after nondisclosure but before read-triggered retention",
+          "keeps failed parent rows unchanged for nonexistent page reads with any controls",
+          "serves current missing receipt root and page context without changing nondisclosure or HEAD"
+        ],
+        "skipped": 71,
+        "jsonSha256": "784cd82518767ab86947d79b6e792513e4563ddacdb708bc089903e7be713bc6",
+        "limitation": "Static HTTP/owner model is not an independently observed network quota; raw logs and reported cleanup remain separately reviewed."
+      }
+    }
+  ],
+  "passedFullNames": [
+    "records one atomic page chain, retains original postimages and all tail allocations through expiry",
+    "refuses page parents outside the receipt namespace before plan lookup",
+    "captures immutable current context for nondisclosable receipt pages before minimum checks",
+    "private same-owner Transactional service authenticates before lookup and uniformly hides other principals, roots and unknown URLs",
+    "private same-owner Transactional service retains completed identity, forgets expired failed detail and preserves current observation across reopen",
+    "private minimum-read owner/lifecycle checks minimum before read-triggered expiry but honors independently forgotten receipts (false)",
+    "private minimum-read owner/lifecycle checks minimum before read-triggered expiry but honors independently forgotten receipts (true)",
+    "preserves current receipt absence context across ordinary and minimum service entrypoints",
+    "source-private actual Transactional HTTP authenticates and hides receipts before minimum-control refusal or conditional shortcuts",
+    "orders page nondisclosure, minimum waits, expiry and representation using actual owner state",
+    "checks a stored failed receipt minimum before read-triggered retention disposal over HTTP",
+    "refuses unsupported root controls after nondisclosure but before read-triggered retention",
+    "keeps failed parent rows unchanged for nonexistent page reads with any controls",
+    "serves current missing receipt root and page context without changing nondisclosure or HEAD"
+  ],
+  "passedCases": 14,
+  "skippedCases": 143,
+  "plannedSourceHttp": 68,
+  "actualNewHttpObservation": {
+    "observation": "source-receipt-missing-context",
+    "attempted": 13,
+    "responses": [
+      {
+        "method": "POST",
+        "url": "http://127.0.0.1:56001/acme/operations/batch",
+        "status": 200,
+        "bodyOctets": 990,
+        "headers": {
+          "bdp-scope-epoch": "15caf3af-f823-44cd-b3b1-fd7a6c83982f",
+          "bdp-authorization-view": "development-all-visible",
+          "bdp-scope-position": "pos-1",
+          "content-type": "application/json",
+          "content-length": "990",
+          "cache-control": "private, no-store",
+          "x-bdp-development": "non-attesting",
+          "x-bdp-development-limit": null,
+          "www-authenticate": null,
+          "retry-after": null,
+          "etag": null,
+          "last-modified": null
+        }
+      },
+      {
+        "method": "GET",
+        "url": "http://127.0.0.1:56001/acme/receipts/019d30cd-be53-494e-860f-a75647c562a8/pages/aef03ecb-49f3-416b-baed-b3713a31daee",
+        "status": 200,
+        "bodyOctets": 334,
+        "headers": {
+          "bdp-scope-epoch": "15caf3af-f823-44cd-b3b1-fd7a6c83982f",
+          "bdp-authorization-view": "development-all-visible",
+          "bdp-scope-position": "pos-1",
+          "content-type": "application/json",
+          "content-length": "334",
+          "cache-control": "private, no-store",
+          "x-bdp-development": "non-attesting",
+          "x-bdp-development-limit": null,
+          "www-authenticate": null,
+          "retry-after": null,
+          "etag": null,
+          "last-modified": null
+        }
+      },
+      {
+        "method": "GET",
+        "url": "http://127.0.0.1:56001/acme/receipts/unknown",
+        "status": 404,
+        "bodyOctets": 134,
+        "headers": {
+          "bdp-scope-epoch": "15caf3af-f823-44cd-b3b1-fd7a6c83982f",
+          "bdp-authorization-view": "development-all-visible",
+          "bdp-scope-position": "pos-1",
+          "content-type": "application/problem+json",
+          "content-length": "134",
+          "cache-control": "private, no-store",
+          "x-bdp-development": "non-attesting",
+          "x-bdp-development-limit": null,
+          "www-authenticate": null,
+          "retry-after": null,
+          "etag": null,
+          "last-modified": null
+        }
+      },
+      {
+        "method": "HEAD",
+        "url": "http://127.0.0.1:56001/acme/receipts/unknown",
+        "status": 404,
+        "bodyOctets": 0,
+        "headers": {
+          "bdp-scope-epoch": "15caf3af-f823-44cd-b3b1-fd7a6c83982f",
+          "bdp-authorization-view": "development-all-visible",
+          "bdp-scope-position": "pos-1",
+          "content-type": "application/problem+json",
+          "content-length": "134",
+          "cache-control": "private, no-store",
+          "x-bdp-development": "non-attesting",
+          "x-bdp-development-limit": null,
+          "www-authenticate": null,
+          "retry-after": null,
+          "etag": null,
+          "last-modified": null
+        }
+      },
+      {
+        "method": "GET",
+        "url": "http://127.0.0.1:56001/acme/receipts/019d30cd-be53-494e-860f-a75647c562a8",
+        "status": 404,
+        "bodyOctets": 134,
+        "headers": {
+          "bdp-scope-epoch": "15caf3af-f823-44cd-b3b1-fd7a6c83982f",
+          "bdp-authorization-view": "development-all-visible",
+          "bdp-scope-position": "pos-1",
+          "content-type": "application/problem+json",
+          "content-length": "134",
+          "cache-control": "private, no-store",
+          "x-bdp-development": "non-attesting",
+          "x-bdp-development-limit": null,
+          "www-authenticate": null,
+          "retry-after": null,
+          "etag": null,
+          "last-modified": null
+        }
+      },
+      {
+        "method": "HEAD",
+        "url": "http://127.0.0.1:56001/acme/receipts/019d30cd-be53-494e-860f-a75647c562a8",
+        "status": 404,
+        "bodyOctets": 0,
+        "headers": {
+          "bdp-scope-epoch": "15caf3af-f823-44cd-b3b1-fd7a6c83982f",
+          "bdp-authorization-view": "development-all-visible",
+          "bdp-scope-position": "pos-1",
+          "content-type": "application/problem+json",
+          "content-length": "134",
+          "cache-control": "private, no-store",
+          "x-bdp-development": "non-attesting",
+          "x-bdp-development-limit": null,
+          "www-authenticate": null,
+          "retry-after": null,
+          "etag": null,
+          "last-modified": null
+        }
+      },
+      {
+        "method": "GET",
+        "url": "http://127.0.0.1:56001/acme/receipts/019d30cd-be53-494e-860f-a75647c562a8/pages/aef03ecb-49f3-416b-baed-b3713a31daee",
+        "status": 404,
+        "bodyOctets": 134,
+        "headers": {
+          "bdp-scope-epoch": "15caf3af-f823-44cd-b3b1-fd7a6c83982f",
+          "bdp-authorization-view": "development-all-visible",
+          "bdp-scope-position": "pos-1",
+          "content-type": "application/problem+json",
+          "content-length": "134",
+          "cache-control": "private, no-store",
+          "x-bdp-development": "non-attesting",
+          "x-bdp-development-limit": null,
+          "www-authenticate": null,
+          "retry-after": null,
+          "etag": null,
+          "last-modified": null
+        }
+      },
+      {
+        "method": "HEAD",
+        "url": "http://127.0.0.1:56001/acme/receipts/019d30cd-be53-494e-860f-a75647c562a8/pages/aef03ecb-49f3-416b-baed-b3713a31daee",
+        "status": 404,
+        "bodyOctets": 0,
+        "headers": {
+          "bdp-scope-epoch": "15caf3af-f823-44cd-b3b1-fd7a6c83982f",
+          "bdp-authorization-view": "development-all-visible",
+          "bdp-scope-position": "pos-1",
+          "content-type": "application/problem+json",
+          "content-length": "134",
+          "cache-control": "private, no-store",
+          "x-bdp-development": "non-attesting",
+          "x-bdp-development-limit": null,
+          "www-authenticate": null,
+          "retry-after": null,
+          "etag": null,
+          "last-modified": null
+        }
+      },
+      {
+        "method": "POST",
+        "url": "http://127.0.0.1:56001/acme/operations/create-bead",
+        "status": 200,
+        "bodyOctets": 664,
+        "headers": {
+          "bdp-scope-epoch": "15caf3af-f823-44cd-b3b1-fd7a6c83982f",
+          "bdp-authorization-view": "development-all-visible",
+          "bdp-scope-position": "pos-2",
+          "content-type": "application/json",
+          "content-length": "664",
+          "cache-control": "private, no-store",
+          "x-bdp-development": "non-attesting",
+          "x-bdp-development-limit": null,
+          "www-authenticate": null,
+          "retry-after": null,
+          "etag": null,
+          "last-modified": null
+        }
+      },
+      {
+        "method": "GET",
+        "url": "http://127.0.0.1:56001/acme/receipts/019d30cd-be53-494e-860f-a75647c562a8",
+        "status": 404,
+        "bodyOctets": 134,
+        "headers": {
+          "bdp-scope-epoch": "15caf3af-f823-44cd-b3b1-fd7a6c83982f",
+          "bdp-authorization-view": "development-all-visible",
+          "bdp-scope-position": "pos-2",
+          "content-type": "application/problem+json",
+          "content-length": "134",
+          "cache-control": "private, no-store",
+          "x-bdp-development": "non-attesting",
+          "x-bdp-development-limit": null,
+          "www-authenticate": null,
+          "retry-after": null,
+          "etag": null,
+          "last-modified": null
+        }
+      },
+      {
+        "method": "GET",
+        "url": "http://127.0.0.1:56001/acme/receipts/019d30cd-be53-494e-860f-a75647c562a8/pages/aef03ecb-49f3-416b-baed-b3713a31daee",
+        "status": 404,
+        "bodyOctets": 134,
+        "headers": {
+          "bdp-scope-epoch": "15caf3af-f823-44cd-b3b1-fd7a6c83982f",
+          "bdp-authorization-view": "development-all-visible",
+          "bdp-scope-position": "pos-2",
+          "content-type": "application/problem+json",
+          "content-length": "134",
+          "cache-control": "private, no-store",
+          "x-bdp-development": "non-attesting",
+          "x-bdp-development-limit": null,
+          "www-authenticate": null,
+          "retry-after": null,
+          "etag": null,
+          "last-modified": null
+        }
+      },
+      {
+        "method": "GET",
+        "url": "http://127.0.0.1:56001/acme/receipts/019d30cd-be53-494e-860f-a75647c562a8",
+        "status": 401,
+        "bodyOctets": 136,
+        "headers": {
+          "bdp-scope-epoch": null,
+          "bdp-authorization-view": null,
+          "bdp-scope-position": null,
+          "content-type": "application/problem+json",
+          "content-length": "136",
+          "cache-control": "private, no-store",
+          "x-bdp-development": "non-attesting",
+          "x-bdp-development-limit": null,
+          "www-authenticate": "Bearer realm=\"bdp-transaction-development\"",
+          "retry-after": null,
+          "etag": null,
+          "last-modified": null
+        }
+      },
+      {
+        "method": "HEAD",
+        "url": "http://127.0.0.1:56001/acme/receipts/019d30cd-be53-494e-860f-a75647c562a8/pages/aef03ecb-49f3-416b-baed-b3713a31daee",
+        "status": 401,
+        "bodyOctets": 0,
+        "headers": {
+          "bdp-scope-epoch": null,
+          "bdp-authorization-view": null,
+          "bdp-scope-position": null,
+          "content-type": "application/problem+json",
+          "content-length": "136",
+          "cache-control": "private, no-store",
+          "x-bdp-development": "non-attesting",
+          "x-bdp-development-limit": null,
+          "www-authenticate": "Bearer realm=\"bdp-transaction-development\"",
+          "retry-after": null,
+          "etag": null,
+          "last-modified": null
+        }
+      }
+    ],
+    "tupleChecks": 8,
+    "registeredCleanup": 2,
+    "completedCleanup": 2,
+    "deadlineExceeded": false,
+    "primaryOrCleanupFailureCount": 0,
+    "retention": "status, selected safe headers and body lengths; full Problem/receipt/page values asserted in memory"
+  },
+  "traceLimitation": "Remaining55HTTP is source-derived from completed selected callbacks, not independently retained wire trace; no actual lifetime-count instrumentation claim",
+  "independentCleanup": {
+    "sampledPids": [
+      6500,
+      6502,
+      6510,
+      6653,
+      6655,
+      6660,
+      6673,
+      6718,
+      6720,
+      6725,
+      6738,
+      6739,
+      6765,
+      6824,
+      6826,
+      6832,
+      6835,
+      6845,
+      6881,
+      6883,
+      6892,
+      6908,
+      6914,
+      6943,
+      6945,
+      6950,
+      6963,
+      7005,
+      7007,
+      7012,
+      7026,
+      7038,
+      7100,
+      7102,
+      7107,
+      7110,
+      7120,
+      7149,
+      7151,
+      7155,
+      7159,
+      7166,
+      7194,
+      7196,
+      7200,
+      7205,
+      7212
+    ],
+    "sampledPidsStillPresent": [],
+    "tempEntries": {
+      "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-receipt-missing-context-draft/run/boundaries.tmp": [
+        "node-compile-cache"
+      ],
+      "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-receipt-missing-context-draft/run/build.tmp": [
+        "node-compile-cache"
+      ],
+      "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-receipt-missing-context-draft/run/format-check.tmp": [
+        "node-compile-cache"
+      ],
+      "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-receipt-missing-context-draft/run/lint.tmp": [
+        "node-compile-cache"
+      ],
+      "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-receipt-missing-context-draft/run/offline-setup.tmp": [
+        "node-compile-cache"
+      ],
+      "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-receipt-missing-context-draft/run/read-seal.tmp": [
+        "node-compile-cache"
+      ],
+      "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-receipt-missing-context-draft/run/receipt-http-positive.tmp": [
+        "node-compile-cache"
+      ],
+      "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-receipt-missing-context-draft/run/receipt-pages-positive.tmp": [
+        "node-compile-cache"
+      ],
+      "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-receipt-missing-context-draft/run/receipt-service-positive.tmp": [
+        "node-compile-cache"
+      ],
+      "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-receipt-missing-context-draft/run/typecheck.tmp": [
+        "node-compile-cache"
+      ]
+    },
+    "classification": "only Node compile caches remain; no known fixture-prefix dirs, no deletion of unknown paths",
+    "samplingLimitation": "Short-lived descendants/directories may not be sampled; final owned temp root contents independently checked"
+  },
+  "controlExecuted": false,
+  "installedExecuted": false,
+  "claudeReview": "pending separate root review gate",
+  "noAutomaticRetry": true
+}

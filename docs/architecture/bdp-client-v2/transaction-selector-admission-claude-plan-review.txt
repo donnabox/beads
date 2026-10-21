@@ -1,0 +1,132 @@
+## Review: bounded Selector admission plan vs. actual BDP source
+
+Read-only inspection at `c02ccc3706f2e258d380805162a8c47dbb73f4e1`, tree `088290751951c353797b984f690b7d9fd96deb80` — confirmed identical to the plan's claim and to verified main `122800511ee6306e4105e1f73bf3658f35c90a14`. No files written, nothing run, no mutations.
+
+The plan is substantially accurate against source. Most of its structural claims check out exactly (details in the last section). Nine findings below; three would fail at authoring time.
+
+---
+
+## F1 — HIGH: deep-safety specimen's expected `413` contradicts the plan's own cap precedence
+
+**Location:** plan §"Exact Selector constructions for tests" → "Deep safety specimens"
+
+The specimen is `$[?` + 10000 `(` + `@.missing` + 10000 `)` + `]` = **20,013 UTF-8 bytes**, depth 10002, nodes 10002. All three caps are violated. The plan's authoritative selection rule is "within it bytes, then depth, then nodes", so the emitted limit is `selector.bytes` — but the plan asserts "fresh submission gets `selector.depth` 413".
+
+**Impact:** the authored test fails; the likelier bad outcome is an author "fixing" it by reordering precedence, silently diverging from the rule H1, H2 and installed rows 7–11 all depend on. It also violates the plan's own isolation rule ("independent measured bytes/depth/nodes must prove isolation").
+
+**Smallest fix:** expect `selector.bytes` for this specimen. If a depth-isolated deep specimen is wanted, use one that stays ≤4096 bytes (e.g. 2040 pairs → 4093 bytes, depth/nodes 2042). Alternatively declare the deep specimen parser-only and drop its submission claim, keeping `D31` (75 bytes, depth 33, nodes 33) as the sole depth case.
+
+## F2 — HIGH: pinned N-specimen byte lengths are wrong (836/838 → 773/775)
+
+**Location:** plan §"Exact Selector constructions for tests", `T(k)` bullet
+
+For `T0=@.missing` (9) and `T(k+1)=(`+Tk+`||`+Tk+`)`, the recurrence is `L(k+1)=2L(k)+3`, so `L(6)=64·9+63·3=765`. With `$[?`+g groups+T6+g groups+`]` the totals are **773** (g=2) and **775** (g=3). The plan's figures assume per-combine overhead 4 instead of 3 — a consistent **+63** (= the 63 binary operators). The superseded `@.id` figures are wrong the same way: 453/455, not 516/518.
+
+The depth/nodes arithmetic in the same bullet is **correct** (T6 = depth 14 / nodes 254; +2 groups = 16/256; +3 = 17/257; 64 leaves × 2 nodes + 63 or + 63 group = 254).
+
+**Impact:** the plan explicitly instructs "measure … against independent arithmetic" and "pin them rather than reusing 516/518" — so it pins the one number it got wrong. An author trusting the plan may pad the construction to reach 836, perturbing the node/depth arithmetic that the `N256`/`N257` boundary depends on.
+
+**Smallest fix:** replace 836/838 with 773/775.
+
+## F3 — HIGH: two existing tests asserting the replaced development-gap are absent from the owned/changed inventory
+
+**Locations:**
+- `packages/server/src/transaction-set.test.ts:374-386` — `it("keeps unresolved negative Selector inputs a development gap while valid carriers share preparation")` asserts at `:378-379` that `prepareTransactionSetCore(scope, {operations:[update("$..*")]})` throws `batch.TransactionDevelopmentLimitError`. Under the plan it must throw the new `TransactionSelectorSyntaxError`. The plan's scope for this file is only "one new preparation test" plus "extend existing deep-input regression".
+- `packages/server/src/transaction-http.test.ts:588-614` — `it("refuses unsupported set and depth compositions without key capture or partial effects")` posts `selector: "$[*]"` (`:595`) and asserts **500 + `x-bdp-development-limit: unsupported-transaction-composition`** (`:601-602`). Under the plan this becomes `400 malformed-request` with pointer. The plan names only one legacy HTTP case to rewrite and budgets "three affected HTTP cases".
+
+**Verification:** `grep -rn --include="*.test.ts" -E '\$\.\.\*|\$\[\*\]'` across `packages`/`apps` (excluding `read-selector.test.ts`) finds exactly five set-selector gap sites — `transaction-http.test.ts:595`, `:1749`, `:1790`, `transaction-submission.test.ts:143`, `:553/554/585`, `transaction-set.test.ts:378`. Three are in the plan; two are not.
+
+**Impact:** two red tests at authoring, plus the structural model is understated. The missed HTTP case is 5 requests, 1 fixture, 1 directory, 0 reopens, so the HTTP model becomes 4 cases / **94** requests / **19** listeners / **4** directories, and the source-positive total becomes **88** expanded cases, not 87 — which matters because the plan sets a hard preflight stop at 100 ordinary source HTTP requests.
+
+**Smallest fix:** add both cases to the changed inventory and restate the four aggregate numbers (or recount independently).
+
+## F4 — MEDIUM: the normative amendment doesn't address the `limit`/code asymmetry with the Read query path
+
+**Location:** `packages/server/src/read-request.ts:954-968`; plan §"Normative amendment and exact file ownership"
+
+Existing Read behavior: `syntax`/`unsupported-feature` → **`invalid-parameter`** 400; the three limit codes → **`limit-exceeded` 413 with no `limit` field and no `pointer`** (asserted at `read-request.test.ts:268-277`; installed 413 at `apps/bdptest/src/development-discovery.test.ts:430-432`; installed 400 `invalid-parameter` at `transactional-collection-minimum-installed.test.ts:552`).
+
+The plan's body-path mapping — `malformed-request` 400 + pointer, `limit-exceeded` 413 + `limit: selector.bytes|depth|nodes` + pointer — is well grounded (admission step 2 at `docs/specs/bdp.md:4491-4504` already specifies `malformed-request` SHOULD carry `pointer`). But the amendment as drafted ("Assign complete embedded bounded grammar to syntax step 2 and fixed structural capacity for unknown keys to step 5") reads as if both surfaces behave identically.
+
+**Impact:** a conformance reader could require `invalid-parameter` on the body path or a dotted `selector.*` on the query path; neither matches the implementation.
+
+**Smallest fix:** one sentence recording that the query-parameter surface keeps `invalid-parameter`/bare `limit-exceeded`, while the JSON-body member surface uses `malformed-request`/`limit-exceeded` with `pointer` and the dotted `selector.*` name.
+
+## F5 — MEDIUM: fresh Selector capacity is structurally unreachable on the sequence-member path
+
+**Location:** `packages/server/src/transaction-store.ts:1081-1084` (both fresh checks are guarded by `controls &&`); member call sites `:1772-1779` and `:1896` pass no `controls`
+
+Today this is harmless: `prepareTransactionSequence` (`transaction-batch.ts:231-238`) routes through `prepareReadUpdateSequence`, which cannot carry `updateWhere`/`deleteWhere`, so no member transaction holds a Selector. But the new step-5 normative text would read as universal.
+
+**Impact:** low operational risk now; real spec-vs-implementation drift once sets become sequence members (the explicitly deferred plan).
+
+**Smallest fix:** one line in the plan's exclusion paragraph (alongside the private-depth exclusion it already documents) recording that the member path carries no receiving controls and that sets are structurally excluded from it, so the step-5 rule binds the direct carrier only.
+
+## F6 — MEDIUM: the deep-specimen envelope is ~30% of the budget the plan claims to bound
+
+**Location:** plan §"Risks", §"Deep safety specimens"
+
+The safety claim itself **holds** — I verified every traversal is iterative with explicit arrays: `tokenize` (`read-selector.ts:467-535`), `parseSelector` (`:199-286`), `closeGroup` (`:327-352`), `reduceForIncoming`/`reduceAll`, `evaluate` (`:764-803`). Nothing recurses over, deep-freezes, or stringifies the AST (`makePath:295` freezes only a segment array). And the work already ahead of `assertTransactionInputDepth` today — `prepareResourceBatch`, `prepareSetShape` → `transactionInputText` (iterative, `transaction-set.ts:19-49`) → `prepareReadUpdateSingleton` — already survives a 20,000-deep `change` (proved by `transaction-submission.test.ts:821-857`). So moving only the grammar loop ahead of the depth guard adds bounded, iterative work: ~65K small nodes and ~65K tokens at worst, a few MB.
+
+But the plan pins exactly 10,000 pairs (20,013 bytes) while asserting memory is "bounded by the existing body envelope" (65,536). The near-envelope case is ~32,760 pairs.
+
+**Smallest fix:** either justify 10,000 as the operating point, or make one of the two specimens near-envelope and fold it into the per-case duration measurement the plan already promises.
+
+## F7 — LOW: malformed-key × invalid-grammar precedence is unpinned, and it is now observable
+
+**Location:** `packages/server/src/transaction-submission.ts:86-102`
+
+`TransactionSelectorSyntaxError` won't match the existing `else if` at `:93-98` (not `JsonSyntaxError`/`ReadUpdateCarrierError`/`TypeError`), so it needs a new branch. If that branch returns inside the catch, it preempts the key-shape 400 at `:101-102` — and now emits a **pointer** where the bare key-shape 400 emits none. The existing case at `transaction-submission.test.ts:543-591` exercises exactly this combination (`request("bad key")` with `$..*`) but only asserts `code: "malformed-request"`, so it passes either way.
+
+Spec step 2 (`docs/specs/bdp.md:4491-4504`) groups invalid `Idempotency-Key` and body syntax in the same step, so intra-step order is an implementation choice — which is precisely why the plan should pin it rather than leave it to the diff.
+
+**Smallest fix:** state the order (recommend keeping the existing key-shape 400 first, i.e. return the typed grammar refusal after `:102` and before authorization, so a pointer is only disclosed for a well-formed key) and add one assertion to new submission case 1.
+
+## F8 — LOW: the closest existing regression anchor is in neither the retained nor the changed list
+
+`transaction-submission.test.ts:169-207` `it("checks fresh capacity before negotiation and never captures a refused key")` establishes exactly the precedence the new `selector-limit` must mirror: `maximumOperations:1` + `acceptsJson:false` → 413 `transaction.operations`, `admitted === 0`, no resources, key reusable afterward. It needs no edit, but it is the natural anchor for the new branch and belongs in the preflight inventory the plan promises.
+
+## F9 — LOW: citation drift in two anchors
+
+The plan cites `store.ts:1381–1405` for observed-context capture; there is no `store.ts` — the file is `packages/server/src/transaction-store.ts`, `admit` starts at `:1376`, and the capture block is `:1398-1405`. `transaction-batch.ts:168–171` is really `:169` (depth guard) and `:170-171` (grammar loop). Cosmetic, except the plan's own gate is "exact file hashes/diff", so anchors should resolve.
+
+---
+
+## Verified correct — do not re-litigate
+
+**Design and placement**
+- Exactly **five** AST construction points, as claimed: `read-selector.ts:294` (path), `:346` (group), `:363` (not), `:380` (logical), `:397` (comparison).
+- Read entry point is byte-first (`:172-180` before `parseSelector` at `:182`), and trailing-token completeness is already enforced at `:233-234` *before* the expression is returned — so "complete grammar before success" and "exact final-root depth/nodes" both come free from the existing parser. Every node carries `.depth`/`.nodes`.
+- Boundaries are inclusive (`>` at `:173`, `:434`, `:442`) against `{bytes:4096,depth:32,nodes:256}` (`transaction-set.ts:16`), so B4096/D30/N256 pass and B4097/D31/N257 fail. The plan's boundary pairs are right.
+- `@.missing` can never match: `ROOT_SELECTOR_MEMBERS` (`:150-157`) excludes it; `resolvePath:818-819` returns MISSING at position 0. Zero-match sets emit no events ⇒ `effective === false` at `transaction-store.ts:1262` ⇒ no change group, no position advance. Installed rows 1/19/23 (pos-1, pos-2, exactly 2 groups) are consistent; `transaction-set.test.ts:161` already covers this.
+- Store placement is exactly right: `transaction-store.ts:1081-1084` puts the operations cap then Accept negotiation *after* every prior-key dependency/equality/conflict path and *before* the `INSERT INTO receipts` at `:1094`. Inserting between those two lines yields 413-before-406, 409-before-413, and no receipt/claim/key write, for free. H2 rows 13→14 (406 leaves the key unused) hold for the same reason.
+- `controls === undefined` already degrades `operation-limit` to a developer error (`:1389`), so the plan's "retain operation-limit-style developer-error behavior for direct source-private calls" matches the existing shape.
+- Summary trust is sound: `prepareSetShape` returns a **fresh** `Object.freeze({operation, input})` per call (`transaction-set.ts:130`), so a WeakMap keyed on it cannot collide or enter identity.
+- Pointer derivation is available without new plumbing: `prepareMixedTransaction` builds `operations` via `raw.map`, preserving original index including intervening Resource operations (`transaction-batch.ts:157-166`), and `carrier.kind` distinguishes singleton from batch (`:173`) — the same convention the execution pointers already use (`:845`, `:877`, `:928`).
+
+**Module binding / scope**
+- No `transaction-comparison.ts` edit needed: `DirectComparison` is `Exclude<TransactionReceivingAdmission, {kind:"comparison-pending"}>` (`:11-15`) and `:70` forwards everything else. `transaction-service.ts:48` likewise derives from the submission union with no exhaustive switch and no `limit` narrowing. The single exhaustive switch is `transaction-submission.ts:143` — already an owned file, and TypeScript will force the new case.
+- `selectReadResources` is also called from `index.ts:1287/1317` and `authority-read.ts:759/878` (Read collection path). The plan's 7-file inventory is correct **provided** the strategy refactor keeps Read supplying its existing check, as the plan requires.
+- Advertised/configured/enforced limits are already locked together: `transaction-discovery.ts:31-36` throws if advertised ≠ `TRANSACTION_SELECTOR_LIMITS`, single source at `transaction-runtime-configuration.ts:97`. "Byte-identical, no config change" is structurally enforced.
+
+**Normative scope**
+- Grammar-before-principal is normatively **correct**, not an information leak: `docs/specs/bdp.md:4490-4506` orders carrier syntax (step 2, `400 malformed-request`, SHOULD carry `pointer`) ahead of the principal (step 3), and the code already returns 400 for carrier errors before auth (`transaction-submission.ts:98` vs `:104-107`). Step 5 (`:4519-4520`) already hosts the unknown-key `transaction.operations` 413.
+- The gap is real: `selector` is schema-constrained only as `{type:"string",minLength:1}` (`schemas/bdp-v0.schema.json:3218-3221`), so grammar is genuinely unspecified.
+- Problem shapes are already legal: `transactionalProblem` carries `pointer` (`$ref jsonPointer`) and `limit` with pattern `^[a-z]+\.[A-Za-z]+$` (`:4210-4216`); `selector.bytes|depth|nodes` match; `/operations/1/selector` matches `jsonPointer` (`:1290-1292`); `pointer:false` applies only to `resource-erased` and the revision codes; `limit:false` only when the code is not `limit-exceeded`; no `additionalProperties:false` on any problem def. "No schema change expected" is right.
+- Status/retry triples check out: `malformed-request` → request/400/never, `limit-exceeded` → size/413/never (`packages/protocol/src/index.ts:497,508`).
+- The closed direct/receipt code partition (`docs/specs/bdp.md:5297-5305`) admits both new direct problems without amendment.
+- The `selector.bytes` amendment is **necessary**: `:1065-1066` currently says "counts UTF-8 bytes after percent-decoding" unconditionally, which read literally would require percent-decoding a JSON-body selector. Good catch, correctly anchored.
+
+**Test counts and finite workload**
+- Read Selector file: 15 plain `it` + tables of **2 / 6 / 14 / 26** = **63** expanded; +4 new = 67. Accurate.
+- Legacy HTTP case `transaction-http.test.ts:1735-1803`: I independently recount **37 fetches and 15 `receiptRows` calls**. `receiptRows` (`:125-137`) closes the runtime, opens a read-only DB, and **restarts** the runtime in its `finally` ⇒ that one case is 16 listener sessions and 15 read-only opens on one directory. `retainedReceiptInventory` (`:108-124`) closes without reopening. The plan's 37/15/16 and its warning "do not count that as one listener" are both accurate.
+- `separates cardinality syntax…` owner opens = 1 initial + 4 `f.reopen()` (2 literals × 2 orders, `:593-659`) = **5**; the ten-case table sums to **13**. Accurate.
+- H1 arithmetic is self-consistent: 2×2×3×3 = 36 requests, 12 × 413 + 24 × 200 ⇒ "exactly 24 retained zero-match receipts". H2's ledger is 16 rows as listed.
+- Installed ledger: 10 unique admitted keys as claimed; `N257` is cap-isolated (775 bytes, depth 17, nodes 257); `D31` is cap-isolated (75 bytes, depth 33).
+
+**Counterfactuals and installed harness**
+- Both named expectations are the actual behavior. C1: `developmentGap` is an empty 500 with `x-bdp-development-limit` (`transaction-http.ts:139-142`, `:365-366`). C2: an unhandled `ReadSelectorError` from the execution-time `selectReadResources` (`transaction-batch.ts:851-854`) reaches the runtime catch-all, which writes a bodyless 500 with `content-length: 0` and no development-limit header (`transaction-runtime.ts:253-259`).
+- Installed helpers exist as named: `launchInstalledTransaction` from `scripts/transaction-installed-observation.mjs`, `installedTransactionBinding` from `apps/bdptest/test-support/transactional-execution-binding.js`, `createRawHttpExchangeExecutor` from `@bdp/conformance` (`transactional-set-installed.test.ts:11-21`). Fixture schema is `{n:number}` with `required:["n"]`, `additionalProperties:false`, `retrievalUri === $id` (`:64-75`) — "replace `/n` with 1" stays valid against it.
+
+**Identity preservation**
+- `%24%5B…` tokenizes to `unexpected character "%"` (`read-selector.ts:530`) → `syntax` → 400, never decoded into `$[…]`. A quoted `%41` stays literal text (`:659-668`). `\uXXXX` source characters are counted because the byte count is taken over the decoded JSON string, not the interpreted scalar. All three plan claims verified.

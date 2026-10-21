@@ -1,0 +1,52 @@
+{
+  "F6": "CLOSED; this native CODE closure does not accept a startup/flush/drain/collector implementation or release execution",
+  "acceptedCorrections": [
+    {
+      "id": "F-A",
+      "result": "clean requires actual non-null PID, acquired handle, exit0/null AND close0/null plus settled/succeeded cached close. MissingPID cannot reopen/remove/report clean.",
+      "sourceLines": [
+        163,
+        175
+      ]
+    },
+    {
+      "id": "F-B",
+      "result": "Single diff capture hashes raw Buffer under original2000ms/1048576 bounds. External mode performs no Git, textual source/status helper unchanged.",
+      "sourceLines": [
+        230,
+        269
+      ]
+    },
+    {
+      "id": "F-C.i",
+      "result": "pending0 failure and actual28 response-count failure now have separate existing fixed labels before observed clean close/reopen.",
+      "sourceLines": [
+        695,
+        700
+      ]
+    },
+    {
+      "id": "F-C.ii",
+      "result": "Launch-failed phase starts immediately after successful metadata capture, so later directory/token/setup refusal cannot mislabel metadata failure.",
+      "sourceLines": [
+        295,
+        308
+      ]
+    }
+  ],
+  "findings": [],
+  "unchangedPlanLabels": [
+    "F1",
+    "F2",
+    "F3",
+    "F4a",
+    "F4b",
+    "F5",
+    "F6",
+    "F7",
+    "F8",
+    "F9",
+    "F10",
+    "F11"
+  ]
+}

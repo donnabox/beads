@@ -1,0 +1,212 @@
+{
+  "state": "genuine immutable helper3\u2192minimal helper4 non-control pairs",
+  "count": 16,
+  "pairs": [
+    {
+      "path": "README.md",
+      "before": "predecessor3/README.md",
+      "after": "README.md",
+      "beforeSha256": "c2adac5cdbaea916df1a10ff68512e0a31f5b864538b3f0f968eeb70c7ced6ec",
+      "afterSha256": "9748e983c36d0fe08a32e3281b69797a523eaa5f97834d220373b069ae061d4b",
+      "forward": "adaptations/README.md.patch",
+      "forwardSha256": "3eef8a5e295e0a0b189c017f17af7837bb0d17aaaf67149e7ca3921fdf0b9b6a",
+      "inverse": "adaptations/README.md.inverse.patch",
+      "inverseSha256": "3239e4e07419d49199cd13eea52e9045700fbdaea3dd3f670eb2e1346a73ef74",
+      "genuineDiffRecomputed": true
+    },
+    {
+      "path": "WIP-status.json",
+      "before": "predecessor3/WIP-status.json",
+      "after": "WIP-status.json",
+      "beforeSha256": "4961f2bb47775a1fe060e01226e9e4fdb805fbbeb88c93570b12ae11f89065cb",
+      "afterSha256": "68cfa14d5370c017becc197eb9e80ae7b3328c5be7cc68dfd6c07f4acedc1a55",
+      "forward": "adaptations/WIP-status.json.patch",
+      "forwardSha256": "3446a23cd84cce6fe5f14f003744b6614d8f96fbf4a64fbc90b701d69e5e62ca",
+      "inverse": "adaptations/WIP-status.json.inverse.patch",
+      "inverseSha256": "19dbf7f5714d3f30e871ebbecffb3ca5131f16cd7ae5a55c2ef86b9ccf9116c9",
+      "genuineDiffRecomputed": true
+    },
+    {
+      "path": "audit.py",
+      "before": "predecessor3/audit.py",
+      "after": "audit.py",
+      "beforeSha256": "8f6f3fa03ae91ba16c7928f37533fc774482d62fdbfda4b29d0ea2b255a7b257",
+      "afterSha256": "f29b7ad8a89ca85f022f494e77f59f62dcffcab29e1915931d62c0c15addd854",
+      "forward": "adaptations/audit.py.patch",
+      "forwardSha256": "96ba3669cb58446e4057d011c9661483677921a947f1402c341c1536d6ffb393",
+      "inverse": "adaptations/audit.py.inverse.patch",
+      "inverseSha256": "df7cc1b872a7e008128f7ec443e36234eee4ae3df56c5cd5f27b159bb07ba79d",
+      "genuineDiffRecomputed": true
+    },
+    {
+      "path": "commands.json",
+      "before": "predecessor3/commands.json",
+      "after": "commands.json",
+      "beforeSha256": "04697e4339dfbd35672a0c488fe93d180cc0c44b3be76945afdeee3b04edfad3",
+      "afterSha256": "b2d55f8f336e20aadeb8134871401dff802203ba1a18e3abb66629e345ba9484",
+      "forward": "adaptations/commands.json.patch",
+      "forwardSha256": "c25a32f3f851f902cecacf00048cdb0be223af41f0fb1881b571d0028f75742f",
+      "inverse": "adaptations/commands.json.inverse.patch",
+      "inverseSha256": "8f54dd4a51b296b75ef51ad3a3e5928591d1979e6f8197e7391d570d7fd32e56",
+      "genuineDiffRecomputed": true
+    },
+    {
+      "path": "control-namespace-delta.json",
+      "before": "predecessor3/control-namespace-delta.json",
+      "after": "control-namespace-delta.json",
+      "beforeSha256": "14f0acfd3ccca0d9dd8a0c3b5d8b8e36ec8add42e9b64a9ad404081a1f25debe",
+      "afterSha256": "3e304cde790019076907820d09a68d3820b794cd432e4ac9e5726624c8872e5d",
+      "forward": "adaptations/control-namespace-delta.json.patch",
+      "forwardSha256": "08e2b3e104d2463177732193926e540298abe81e6fdc7c5eee8b5a1687786e79",
+      "inverse": "adaptations/control-namespace-delta.json.inverse.patch",
+      "inverseSha256": "6bab64c37794238a1fc0b07446932519844ae1ec105589ba2b7c893ce64b27fe",
+      "genuineDiffRecomputed": true
+    },
+    {
+      "path": "findings-map.json",
+      "before": "predecessor3/findings-map.json",
+      "after": "findings-map.json",
+      "beforeSha256": "5e7fdded4b97476a89e72d451e03f18c62830eedd88ca4f414a120bc7fb397d3",
+      "afterSha256": "52179e82ff50e04fac29a502883daec5998dc1236133a0ac3de9d790d4958d8b",
+      "forward": "adaptations/findings-map.json.patch",
+      "forwardSha256": "af3c7be65c1e8dce89ad45ca490a8c8e1da56bf26fd61438c658622a7f6303b9",
+      "inverse": "adaptations/findings-map.json.inverse.patch",
+      "inverseSha256": "10494f7b7a923d52a3bca50676bda3ca7f327dc919958f51da958e3ebc15e462",
+      "genuineDiffRecomputed": true
+    },
+    {
+      "path": "origins.json",
+      "before": "predecessor3/origins.json",
+      "after": "origins.json",
+      "beforeSha256": "1da43f4042aba2afcaebbd046a65fc119451d1edc627488cf5a978be966d3695",
+      "afterSha256": "2d4276ae3a645adb21cb21e54795d1cb44e8d7d2ba3dab9023fa8c848f5bc3bb",
+      "forward": "adaptations/origins.json.patch",
+      "forwardSha256": "dc5719c0c62eb57d5e47e40ef77fa8e171021a54aeaf2e0bc8dc109318639b9b",
+      "inverse": "adaptations/origins.json.inverse.patch",
+      "inverseSha256": "bf59e51e62575e80a098cdce4590a7f5517b169285c3a9e611346cb62912cad5",
+      "genuineDiffRecomputed": true
+    },
+    {
+      "path": "predecessor-preservation.json",
+      "before": "predecessor3/predecessor-preservation.json",
+      "after": "predecessor-preservation.json",
+      "beforeSha256": "be21f8a0aace58a16d45995488d921d859b245dde0f7e79169a60cdf6d6d29f5",
+      "afterSha256": "b6fb0e8ec5c4a3a0315754296de9223899afa49beb380ac80c3f491541a335ac",
+      "forward": "adaptations/predecessor-preservation.json.patch",
+      "forwardSha256": "72e8d9c9375e9ae0d7a66b81c0ebf99cc7cea74fe6ba4c8a58faed9a7ef62ea2",
+      "inverse": "adaptations/predecessor-preservation.json.inverse.patch",
+      "inverseSha256": "34626c408fd53427673d538eb9de43a3c9ff268d1df68a5f6a6c96b2b65c38f4",
+      "genuineDiffRecomputed": true
+    },
+    {
+      "path": "preparation-inspection-failure-1.json",
+      "before": "/dev/null",
+      "after": "preparation-inspection-failure-1.json",
+      "beforeSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "afterSha256": "be464f262b073407592da285a3020dd3662b74b61d911f4c5be14d46ee1d41de",
+      "forward": "adaptations/preparation-inspection-failure-1.json.patch",
+      "forwardSha256": "a50d2997b39eb02f46f2ad5f9839897b16227f473013f0ff53a692fa5bb91373",
+      "inverse": "adaptations/preparation-inspection-failure-1.json.inverse.patch",
+      "inverseSha256": "762103704fb98a2b2456fff0c40b1ce47deab9240f68318e85d5876fff363269",
+      "genuineDiffRecomputed": true
+    },
+    {
+      "path": "process-wait-call-inventory.json",
+      "before": "predecessor3/process-wait-call-inventory.json",
+      "after": "process-wait-call-inventory.json",
+      "beforeSha256": "7152d5d798804767a8e0f930c98371aead974c0a0bdc0f0c7e5e7c3cbdb069df",
+      "afterSha256": "c6ee7261492aa9f4d43027e9a89680937541cea1ee93fc218a5e9ba34851f209",
+      "forward": "adaptations/process-wait-call-inventory.json.patch",
+      "forwardSha256": "06a89385e14040048970d8fdf5eb8aadad4ab58a13d7c6a9278f3afe45a7fcb8",
+      "inverse": "adaptations/process-wait-call-inventory.json.inverse.patch",
+      "inverseSha256": "7dc1dd9f333e6f855f3bffdfdbfe9f67bfab5a1226779b3dbd0386109b37436a",
+      "genuineDiffRecomputed": true
+    },
+    {
+      "path": "reconciliation.json",
+      "before": "predecessor3/reconciliation.json",
+      "after": "reconciliation.json",
+      "beforeSha256": "040875bd56311566dd52f1b5bd47c5fd1259e481f3d378a118d8831a17e739d1",
+      "afterSha256": "50538840eaf78d9b311e183eb1864132ca33c2c24b4b286a3aca1d01a4f451e8",
+      "forward": "adaptations/reconciliation.json.patch",
+      "forwardSha256": "3256e9af073cbcbdbaa72be2bbc1810f4cc0b4c4ac6e27704314e686422cda10",
+      "inverse": "adaptations/reconciliation.json.inverse.patch",
+      "inverseSha256": "fd58c86c775a0e6a1af9f82f2cc43a85aeb1788626946ae4bafa5bdf4edf39ee",
+      "genuineDiffRecomputed": true
+    },
+    {
+      "path": "reference-pins.json",
+      "before": "predecessor3/reference-pins.json",
+      "after": "reference-pins.json",
+      "beforeSha256": "c0bfad572dca32db859ad9693f3a162339a53a115a836aa3cd005be303456189",
+      "afterSha256": "32bc20f14d23372e55087ef5db21bb05049f51f7bb739e0953eaaf154bc4a813",
+      "forward": "adaptations/reference-pins.json.patch",
+      "forwardSha256": "216b684e540599206670b79d8626ab39d683adfe932ed707d0c4d2d4ccc4eb2d",
+      "inverse": "adaptations/reference-pins.json.inverse.patch",
+      "inverseSha256": "be14e29ced4968787531eb8fbf44de64928df7d0c5cc5f5520a409760904b7c8",
+      "genuineDiffRecomputed": true
+    },
+    {
+      "path": "report.md",
+      "before": "predecessor3/report.md",
+      "after": "report.md",
+      "beforeSha256": "1426baf7cf68c0093668c09d8c63d1f8df1d4817496041a94f2008e88dee1fbd",
+      "afterSha256": "570290017faf91200755ee10a9f8e98d3ba46f7a2c6021cce6b6b436d0b72627",
+      "forward": "adaptations/report.md.patch",
+      "forwardSha256": "2cd875381bd60b684b9c5eb1a2b77930de51f915497103def65c67677da697f2",
+      "inverse": "adaptations/report.md.inverse.patch",
+      "inverseSha256": "879ee35b3829b02470676ee2d884b2580450b28f00a813af4c05c3ef8dd1d4d6",
+      "genuineDiffRecomputed": true
+    },
+    {
+      "path": "source-state-contract.json",
+      "before": "/dev/null",
+      "after": "source-state-contract.json",
+      "beforeSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "afterSha256": "017fc064c5b8de4739d7fbc3a06298c34cbac2877b2c53b79a6b6903290abf4b",
+      "forward": "adaptations/source-state-contract.json.patch",
+      "forwardSha256": "59741ab5e1f35966101f4805c50c2a52267d4fbc13af1e608c494b17b3641cb7",
+      "inverse": "adaptations/source-state-contract.json.inverse.patch",
+      "inverseSha256": "2be6c48ff54ab294e26771fff036465507a416f129e494c6a4cdb58161a35713",
+      "genuineDiffRecomputed": true
+    },
+    {
+      "path": "static-inspection.json",
+      "before": "predecessor3/static-inspection.json",
+      "after": "static-inspection.json",
+      "beforeSha256": "03f9e94f8471131761001546ea85ee35daa52813484b6f977a4a782e81fbb8e4",
+      "afterSha256": "f69208579ed685ba818e69bdd59e75e3ad66896f42048a8283fc6aeff984eac5",
+      "forward": "adaptations/static-inspection.json.patch",
+      "forwardSha256": "e69bc42cf7b75b9772d2aa17de2d49226ac460aa0fad8cdc9cd964da4f1c7220",
+      "inverse": "adaptations/static-inspection.json.inverse.patch",
+      "inverseSha256": "1ea6ad6ac9c4bf7d400ae1000453b40ea4113650aa91c9a5f7b9148a2e674513",
+      "genuineDiffRecomputed": true
+    },
+    {
+      "path": "synthetic-controls-plan.json",
+      "before": "predecessor3/synthetic-controls-plan.json",
+      "after": "synthetic-controls-plan.json",
+      "beforeSha256": "23715d762eb0d901b68c2f1c7a0464c791c2a8c6b52a70d49c5e1424329182fa",
+      "afterSha256": "1e550dc24e9fe06eb5fe7fc68aa0533cadb4be92a245819ecc43e07bf2adac7f",
+      "forward": "adaptations/synthetic-controls-plan.json.patch",
+      "forwardSha256": "eded695f6ea5c44d7388620797012b4ebf79d73c209a373954f9f426b297eb9a",
+      "inverse": "adaptations/synthetic-controls-plan.json.inverse.patch",
+      "inverseSha256": "5be721427652be38fa5081bf72958042423c172b009b3211c9d438afd963f2cc",
+      "genuineDiffRecomputed": true
+    }
+  ],
+  "helperSemanticDeltas": [
+    "audit.py"
+  ],
+  "unchangedHelperBytes": [
+    "run.py",
+    "worker.py",
+    "gate.py",
+    "scanner.py",
+    "packages.py",
+    "schema-audit.mjs",
+    "guarded-action-session-20261018-021624-549f.py"
+  ],
+  "controlFiles": "Exact six self-referential controls bound by full preparation index; active namespace/proof fields in excluded preparation-binding.json; no additional exclusion",
+  "allOriginal526Preserved": true
+}

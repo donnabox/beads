@@ -1,0 +1,68 @@
+{
+  "source": [
+    {
+      "path": "packages/server/src/transaction-set.test.ts",
+      "titles": [
+        "keeps receiving depth facts private while legacy preparation still throws",
+        "annotates only deep sequence members after complete carrier syntax while strict preparation stays strict"
+      ],
+      "regex": "^(?:keeps\\ receiving\\ depth\\ facts\\ private\\ while\\ legacy\\ preparation\\ still\\ throws|annotates\\ only\\ deep\\ sequence\\ members\\ after\\ complete\\ carrier\\ syntax\\ while\\ strict\\ preparation\\ stays\\ strict)$",
+      "expectedPassed": 2
+    },
+    {
+      "path": "packages/server/src/transaction-sequence.test.ts",
+      "titles": [
+        "private Transactional sequence slice runs all eight explicit operation kinds as separate commits with locator-only aliases",
+        "private Transactional sequence slice reserves all unknown keys together, commits a prefix, continues past failure and permits interleaving",
+        "private Transactional sequence slice joins overlapping presentations without running a completed member twice and projects current labels",
+        "private Transactional sequence slice projects another owner's pending receipt before immutable mismatch and never retracts that owner",
+        "private Transactional sequence slice shares singleton and one-operation batch identity, preserving exact numbers and creation defaults",
+        "private Transactional sequence slice leaves no partial bulk admission on after-sequence-reservation failure",
+        "private Transactional sequence slice leaves no partial bulk admission on after-sequence-admission failure",
+        "private Transactional sequence slice classifies foreign key state at its turn after failed detail is forgotten",
+        "private Transactional sequence slice compares retained deep sequence members without executing them or replacing their receipts",
+        "private Transactional sequence slice rolls back every new reservation when a fresh deep sequence member is refused",
+        "private Transactional sequence slice refuses fresh depth after a retained failed member expires between sequence turns",
+        "private Transactional sequence slice rejects duplicate keys and invalid dependency edges before any key effects",
+        "private Transactional sequence slice projects mixed retained, conflicting, failed and unknown keys in declaration order"
+      ],
+      "regex": "^(?:private\\ Transactional\\ sequence\\ slice\\ runs\\ all\\ eight\\ explicit\\ operation\\ kinds\\ as\\ separate\\ commits\\ with\\ locator\\-only\\ aliases|private\\ Transactional\\ sequence\\ slice\\ reserves\\ all\\ unknown\\ keys\\ together,\\ commits\\ a\\ prefix,\\ continues\\ past\\ failure\\ and\\ permits\\ interleaving|private\\ Transactional\\ sequence\\ slice\\ joins\\ overlapping\\ presentations\\ without\\ running\\ a\\ completed\\ member\\ twice\\ and\\ projects\\ current\\ labels|private\\ Transactional\\ sequence\\ slice\\ projects\\ another\\ owner's\\ pending\\ receipt\\ before\\ immutable\\ mismatch\\ and\\ never\\ retracts\\ that\\ owner|private\\ Transactional\\ sequence\\ slice\\ shares\\ singleton\\ and\\ one\\-operation\\ batch\\ identity,\\ preserving\\ exact\\ numbers\\ and\\ creation\\ defaults|private\\ Transactional\\ sequence\\ slice\\ leaves\\ no\\ partial\\ bulk\\ admission\\ on\\ after\\-sequence\\-reservation\\ failure|private\\ Transactional\\ sequence\\ slice\\ leaves\\ no\\ partial\\ bulk\\ admission\\ on\\ after\\-sequence\\-admission\\ failure|private\\ Transactional\\ sequence\\ slice\\ classifies\\ foreign\\ key\\ state\\ at\\ its\\ turn\\ after\\ failed\\ detail\\ is\\ forgotten|private\\ Transactional\\ sequence\\ slice\\ compares\\ retained\\ deep\\ sequence\\ members\\ without\\ executing\\ them\\ or\\ replacing\\ their\\ receipts|private\\ Transactional\\ sequence\\ slice\\ rolls\\ back\\ every\\ new\\ reservation\\ when\\ a\\ fresh\\ deep\\ sequence\\ member\\ is\\ refused|private\\ Transactional\\ sequence\\ slice\\ refuses\\ fresh\\ depth\\ after\\ a\\ retained\\ failed\\ member\\ expires\\ between\\ sequence\\ turns|private\\ Transactional\\ sequence\\ slice\\ rejects\\ duplicate\\ keys\\ and\\ invalid\\ dependency\\ edges\\ before\\ any\\ key\\ effects|private\\ Transactional\\ sequence\\ slice\\ projects\\ mixed\\ retained,\\ conflicting,\\ failed\\ and\\ unknown\\ keys\\ in\\ declaration\\ order)$",
+      "expectedPassed": 13
+    },
+    {
+      "path": "packages/server/src/transaction-http.test.ts",
+      "titles": [
+        "labels sequence depth gaps honestly and keeps sequence capacity distinct from direct transaction capacity",
+        "compares retained sequence members before private depth refusal and preserves receiving failures",
+        "source-private actual Transactional HTTP rejects sequence carrier syntax/keys/negotiation before claiming any member"
+      ],
+      "regex": "^(?:labels\\ sequence\\ depth\\ gaps\\ honestly\\ and\\ keeps\\ sequence\\ capacity\\ distinct\\ from\\ direct\\ transaction\\ capacity|compares\\ retained\\ sequence\\ members\\ before\\ private\\ depth\\ refusal\\ and\\ preserves\\ receiving\\ failures|source\\-private\\ actual\\ Transactional\\ HTTP\\ rejects\\ sequence\\ carrier\\ syntax/keys/negotiation\\ before\\ claiming\\ any\\ member)$",
+      "expectedPassed": 3
+    }
+  ],
+  "installed": {
+    "path": "apps/bdptest/src/transactional-sequence-depth-installed.test.ts",
+    "title": "observes retained sequence member conflict before private depth refusal over packed bytes",
+    "regex": "^observes\\ retained\\ sequence\\ member\\ conflict\\ before\\ private\\ depth\\ refusal\\ over\\ packed\\ bytes$"
+  },
+  "control": {
+    "target": "sole emitted prepareTransactionSequenceForReceiving function body",
+    "replacement": "return prepareTransactionSequence(scope, text);",
+    "sourceTestTitle": "compares retained sequence members before private depth refusal and preserves receiving failures",
+    "expectedFailure": "sequence-depth:retained-member-conflict",
+    "expectedRequestIndex": 2,
+    "expectedStatus": 500,
+    "expectedMarker": null,
+    "expectedBodyBytes": 0,
+    "expectedHttp": 2,
+    "maximumHttp": 11,
+    "callbacks": 1,
+    "owners": 1,
+    "directories": 1,
+    "listeners": 1,
+    "productChildren": 0,
+    "expectedContextHeaders": [],
+    "markerMeaning": "Strict preparation throw is caught by createTransactionHttpHandler.handle generic empty(500); runtime delivers it without private marker/context.",
+    "oracleOrder": "record actual response then status-first named oracle; adjudicator requires500,empty body,no marker,no context; no added preparation catch"
+  }
+}

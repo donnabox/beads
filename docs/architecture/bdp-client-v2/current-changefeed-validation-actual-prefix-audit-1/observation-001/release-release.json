@@ -1,0 +1,17 @@
+{
+  "releasedAt": "2026-10-18T04:44:27.526948+00:00",
+  "sourceBindingSha256": "92152f96be110929dc66bb9fc2d038922944d5b9f9a46f40c9e8ec1076a520ec",
+  "approvedStages": [
+    "node-version",
+    "pnpm-version",
+    "workspace-install",
+    "bind-workspace-tools"
+  ],
+  "nativeSourceClosureSha256": "8b6e311cb9da6830d1534b0cc552c517997318728c02e1ca7e1361c742122df5",
+  "nativeMechanicsClosureSha256": "c0f068753dc10569c1a435c8a69db4c716084ecb7755226bd97009ca5acb421d",
+  "originalClosedGatePreserved": true,
+  "noRetries": true,
+  "gateBeforeSha256": "d12e67169c9111b93499253af5850a18798847b5ad7a916fd0e17ffaec1daa4d",
+  "gateAfterSha256": "9cd8954060813a536befa56fc765a2b43ee8cd9dcff7094f808cd639a2fc97e0",
+  "nextBarrier": "root acceptance of fresh workspace-tools before typecheck"
+}

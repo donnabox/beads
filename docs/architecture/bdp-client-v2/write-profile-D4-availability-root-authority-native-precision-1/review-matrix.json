@@ -1,0 +1,76 @@
+{
+  "allActualOutcomes": "UNKNOWN/UNEXECUTED",
+  "authority": {
+    "durableReadbackSyntaxIsOnlyAttribution": true,
+    "futureExternalReleaseKeys": 14,
+    "nativeCandidateKeys": 10,
+    "noMeasuredClockPrerequisiteFabricated": true,
+    "requiredIndependentClosureFields": [
+      "accepted",
+      "callerSha256",
+      "candidateSha256",
+      "preparationImplementationSha256"
+    ]
+  },
+  "budgets": {
+    "callerNormalActualRootStrictLessThan": 115,
+    "callerWhole": 120,
+    "guardRelative": 30,
+    "journalRecord": 65536,
+    "nativeAuth": 10,
+    "nativeKILL": 119,
+    "nativeTERM": 115,
+    "nativeWhole": 120,
+    "ownerDrain": 5,
+    "perStreamAcceptance": 1048576,
+    "readChunk": 65536
+  },
+  "calls": {
+    "finiteControls": 0,
+    "guardCalls": 1,
+    "nativeCalls": 1,
+    "nativeKillOrAlarmCancel": 0,
+    "productCalls": 0,
+    "sharedPopenSites": 1
+  },
+  "capture": [
+    "both actual EOF+observed raw terminal",
+    "immediate retained Popen handle",
+    "received/saved/hashed split",
+    "actual crossing bytes before cap",
+    "exclusive raw/journal files",
+    "normal file closes/identity equality",
+    "failure prefix as-of/UNKNOWN tail",
+    "alarm not cancelled/no native KILL",
+    "root actual whole terminal and fresh ALL recorded absence still mandatory"
+  ],
+  "failurePathsReviewed": [
+    "absent/malformed external authority",
+    "wrong/stale hashes/tools/source",
+    "existing attempt",
+    "output/Popen/setup exception",
+    "non-EAGAIN read/poll",
+    "partial write/hash failure",
+    "capacity crossing",
+    "late/missing EOF or terminal",
+    "guard unexpected output",
+    "native order/identity/nonzero/forced",
+    "raw/journal/final publication close errors"
+  ],
+  "fullCallerLines": 149,
+  "fullReadDependencies": [
+    "availability_limit.pl",
+    "availability_owner.py",
+    "bootstrap.py",
+    "availability_peer.py",
+    "availability-release-schema.json",
+    "availability-plan.md",
+    "hard-limiter-authority.md",
+    "ownership-fault-scope.json",
+    "root acceptance/release",
+    "native closure/report",
+    "capture contract",
+    "exact10-key candidate",
+    "exact14-key future release schema"
+  ]
+}

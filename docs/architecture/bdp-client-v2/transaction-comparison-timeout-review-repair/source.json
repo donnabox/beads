@@ -1,0 +1,38 @@
+{
+  "head": "70ac666002708202d2f93195eed90dfe8541300d",
+  "tree": "1353e8f4fb0b1149b3f4ff158335804bf3f1cecc",
+  "parent": "30035b88380b7cbb3abd5359787db236b70345c7",
+  "branch": "codex/vickie-comparison-timeout-review-repair",
+  "clean": true,
+  "scope": [
+    {
+      "path": "docs/design/transaction-implementation-progress.md",
+      "bytes": 120586,
+      "sha256": "6d567b086dfb4597e1e19776331eb233e4fae3b90b613cb64b952e906d978966",
+      "acceptedPreflightSha256": "6d567b086dfb4597e1e19776331eb233e4fae3b90b613cb64b952e906d978966"
+    },
+    {
+      "path": "packages/server/src/transaction-service.test.ts",
+      "bytes": 85513,
+      "sha256": "b79b71b13e9e293cfccfa9147e092d4d3825ab7a241244decf00e15615c6d0a6",
+      "acceptedPreflightSha256": "03f4e5c53cc8717a9818de97dd7a4c606cb1db6018844481e7cd43a18d55dd20"
+    },
+    {
+      "path": "packages/server/src/transaction-store.test.ts",
+      "bytes": 137784,
+      "sha256": "c8f1e06de60689597494cff89240103693e46b0f979519f3a3be46315ead7003",
+      "acceptedPreflightSha256": "c8f1e06de60689597494cff89240103693e46b0f979519f3a3be46315ead7003"
+    },
+    {
+      "path": "packages/server/src/transaction-submission.test.ts",
+      "bytes": 43202,
+      "sha256": "92864076bc4788f8852c23a204beab45d953072fe2a3a47ff24e40ce5ea4d596",
+      "acceptedPreflightSha256": "92864076bc4788f8852c23a204beab45d953072fe2a3a47ff24e40ce5ea4d596"
+    }
+  ],
+  "onlyPostPreflightChange": "Authorized service-test caught throw replaced by direct failures.push; no production or assertion changes",
+  "commitMessage": "Cover closed comparison faults and drain service test failures\n\nAgent-Signature: Vickie (Codex)",
+  "guardedLocalCommit": true,
+  "productionPreservation": "source-preservation-final.json",
+  "packagePreservation": "package-preservation.json"
+}

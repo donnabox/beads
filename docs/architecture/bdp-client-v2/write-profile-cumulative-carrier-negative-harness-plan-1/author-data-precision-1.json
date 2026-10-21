@@ -1,0 +1,273 @@
+{
+  "state": "Author pre-handoff DATA precision, not a subject/runtime finding",
+  "initialIndexSha256": "e05f7bbc5d49d91e506a5b7846f63aea4f9f5a2e4a9ff7bc9154e84b27a6418d",
+  "initialRows": [
+    {
+      "id": "C05",
+      "originalDescription": {
+        "expected": "no positive acquisition/no chmod",
+        "id": "C05",
+        "input": "preexisting destination/symlink/directory/mode0644/wronguid",
+        "observed": "UNEXECUTED",
+        "target": "scanner.secure_read"
+      },
+      "faultLocation": "worker.py:39-42;scanner.py:97-115",
+      "target": "secure original acquisition + prelaunch destination check",
+      "variantCount": 5,
+      "variants": [
+        {
+          "name": "preexisting-destination",
+          "kind": "Python-DATA",
+          "construction": "Owned0700 synthetic root only. Preexisting routes to worker prelaunch refusal, NOT secure_read which correctly reads existing source outputs. Other variants call secure_read on owned fixtures; wronguid uses a declared leaf-lstat fixture, never chown/privilege or a fabricated kernel observation.",
+          "expectedRefusalOrOrdering": "Source output destination must be absent/private-evidence-mode",
+          "expectedSubjectRawExitCodes": [
+            17
+          ],
+          "orderingContrastMaySettle0": false,
+          "required": true,
+          "observed": "UNEXECUTED",
+          "oracle": "COMMON + case-specific source/fixture differential + actual reached-helper/call trace; generic raw exit alone never matches. Fixture-only baseline (same helper bytes, no mutation) must reach selected phase; no skip if unreachable."
+        },
+        {
+          "name": "symlink",
+          "kind": "Python-DATA",
+          "construction": "Owned0700 synthetic root only. Preexisting routes to worker prelaunch refusal, NOT secure_read which correctly reads existing source outputs. Other variants call secure_read on owned fixtures; wronguid uses a declared leaf-lstat fixture, never chown/privilege or a fabricated kernel observation.",
+          "expectedRefusalOrOrdering": "Source output destination must be absent/private-evidence-mode",
+          "expectedSubjectRawExitCodes": [
+            17
+          ],
+          "orderingContrastMaySettle0": false,
+          "required": true,
+          "observed": "UNEXECUTED",
+          "oracle": "COMMON + case-specific source/fixture differential + actual reached-helper/call trace; generic raw exit alone never matches. Fixture-only baseline (same helper bytes, no mutation) must reach selected phase; no skip if unreachable."
+        },
+        {
+          "name": "directory",
+          "kind": "Python-DATA",
+          "construction": "Owned0700 synthetic root only. Preexisting routes to worker prelaunch refusal, NOT secure_read which correctly reads existing source outputs. Other variants call secure_read on owned fixtures; wronguid uses a declared leaf-lstat fixture, never chown/privilege or a fabricated kernel observation.",
+          "expectedRefusalOrOrdering": "Source output destination must be absent/private-evidence-mode",
+          "expectedSubjectRawExitCodes": [
+            17
+          ],
+          "orderingContrastMaySettle0": false,
+          "required": true,
+          "observed": "UNEXECUTED",
+          "oracle": "COMMON + case-specific source/fixture differential + actual reached-helper/call trace; generic raw exit alone never matches. Fixture-only baseline (same helper bytes, no mutation) must reach selected phase; no skip if unreachable."
+        },
+        {
+          "name": "mode0644",
+          "kind": "Python-DATA",
+          "construction": "Owned0700 synthetic root only. Preexisting routes to worker prelaunch refusal, NOT secure_read which correctly reads existing source outputs. Other variants call secure_read on owned fixtures; wronguid uses a declared leaf-lstat fixture, never chown/privilege or a fabricated kernel observation.",
+          "expectedRefusalOrOrdering": "Source output destination must be absent/private-evidence-mode",
+          "expectedSubjectRawExitCodes": [
+            17
+          ],
+          "orderingContrastMaySettle0": false,
+          "required": true,
+          "observed": "UNEXECUTED",
+          "oracle": "COMMON + case-specific source/fixture differential + actual reached-helper/call trace; generic raw exit alone never matches. Fixture-only baseline (same helper bytes, no mutation) must reach selected phase; no skip if unreachable."
+        },
+        {
+          "name": "wrong-uid",
+          "kind": "Python-DATA",
+          "construction": "Owned0700 synthetic root only. Preexisting routes to worker prelaunch refusal, NOT secure_read which correctly reads existing source outputs. Other variants call secure_read on owned fixtures; wronguid uses a declared leaf-lstat fixture, never chown/privilege or a fabricated kernel observation.",
+          "expectedRefusalOrOrdering": "Source output destination must be absent/private-evidence-mode",
+          "expectedSubjectRawExitCodes": [
+            17
+          ],
+          "orderingContrastMaySettle0": false,
+          "required": true,
+          "observed": "UNEXECUTED",
+          "oracle": "COMMON + case-specific source/fixture differential + actual reached-helper/call trace; generic raw exit alone never matches. Fixture-only baseline (same helper bytes, no mutation) must reach selected phase; no skip if unreachable."
+        }
+      ],
+      "noProductHTTP": true,
+      "noProductCallbacks": true
+    },
+    {
+      "id": "C22",
+      "originalDescription": {
+        "expected": "refuse proof before installed callback",
+        "id": "C22",
+        "input": "wrong generated consumer lock/manifest/settings/graph/link/entry/payload",
+        "observed": "UNEXECUTED",
+        "target": "packages.py"
+      },
+      "faultLocation": "packages.py:57-115;gate.py:131-139,177-182",
+      "target": "consumer provenance/package modes",
+      "variantCount": 7,
+      "variants": [
+        {
+          "name": "wrong-lock",
+          "kind": "Python-DATA",
+          "construction": "Finite synthetic archive/consumer tree under owned root; change only selected leaf/link/hash; no pnpm/install/product. Upstream load_gate facade is declared unit fixture, actual proof validation remains unmodified",
+          "expectedRefusalOrOrdering": "consumer lock/manifest/settings/full graph/entry/payload refusal",
+          "expectedSubjectRawExitCodes": [
+            17
+          ],
+          "orderingContrastMaySettle0": false,
+          "required": true,
+          "observed": "UNEXECUTED",
+          "oracle": "COMMON + case-specific source/fixture differential + actual reached-helper/call trace; generic raw exit alone never matches. Fixture-only baseline (same helper bytes, no mutation) must reach selected phase; no skip if unreachable."
+        },
+        {
+          "name": "wrong-manifest",
+          "kind": "Python-DATA",
+          "construction": "Finite synthetic archive/consumer tree under owned root; change only selected leaf/link/hash; no pnpm/install/product. Upstream load_gate facade is declared unit fixture, actual proof validation remains unmodified",
+          "expectedRefusalOrOrdering": "consumer lock/manifest/settings/full graph/entry/payload refusal",
+          "expectedSubjectRawExitCodes": [
+            17
+          ],
+          "orderingContrastMaySettle0": false,
+          "required": true,
+          "observed": "UNEXECUTED",
+          "oracle": "COMMON + case-specific source/fixture differential + actual reached-helper/call trace; generic raw exit alone never matches. Fixture-only baseline (same helper bytes, no mutation) must reach selected phase; no skip if unreachable."
+        },
+        {
+          "name": "wrong-settings",
+          "kind": "Python-DATA",
+          "construction": "Finite synthetic archive/consumer tree under owned root; change only selected leaf/link/hash; no pnpm/install/product. Upstream load_gate facade is declared unit fixture, actual proof validation remains unmodified",
+          "expectedRefusalOrOrdering": "consumer lock/manifest/settings/full graph/entry/payload refusal",
+          "expectedSubjectRawExitCodes": [
+            17
+          ],
+          "orderingContrastMaySettle0": false,
+          "required": true,
+          "observed": "UNEXECUTED",
+          "oracle": "COMMON + case-specific source/fixture differential + actual reached-helper/call trace; generic raw exit alone never matches. Fixture-only baseline (same helper bytes, no mutation) must reach selected phase; no skip if unreachable."
+        },
+        {
+          "name": "wrong-graph",
+          "kind": "Python-DATA",
+          "construction": "Finite synthetic archive/consumer tree under owned root; change only selected leaf/link/hash; no pnpm/install/product. Upstream load_gate facade is declared unit fixture, actual proof validation remains unmodified",
+          "expectedRefusalOrOrdering": "consumer lock/manifest/settings/full graph/entry/payload refusal",
+          "expectedSubjectRawExitCodes": [
+            17
+          ],
+          "orderingContrastMaySettle0": false,
+          "required": true,
+          "observed": "UNEXECUTED",
+          "oracle": "COMMON + case-specific source/fixture differential + actual reached-helper/call trace; generic raw exit alone never matches. Fixture-only baseline (same helper bytes, no mutation) must reach selected phase; no skip if unreachable."
+        },
+        {
+          "name": "escape-link",
+          "kind": "Python-DATA",
+          "construction": "Finite synthetic archive/consumer tree under owned root; change only selected leaf/link/hash; no pnpm/install/product. Upstream load_gate facade is declared unit fixture, actual proof validation remains unmodified",
+          "expectedRefusalOrOrdering": "consumer lock/manifest/settings/full graph/entry/payload refusal",
+          "expectedSubjectRawExitCodes": [
+            17
+          ],
+          "orderingContrastMaySettle0": false,
+          "required": true,
+          "observed": "UNEXECUTED",
+          "oracle": "COMMON + case-specific source/fixture differential + actual reached-helper/call trace; generic raw exit alone never matches. Fixture-only baseline (same helper bytes, no mutation) must reach selected phase; no skip if unreachable."
+        },
+        {
+          "name": "wrong-entry",
+          "kind": "Python-DATA",
+          "construction": "Finite synthetic archive/consumer tree under owned root; change only selected leaf/link/hash; no pnpm/install/product. Upstream load_gate facade is declared unit fixture, actual proof validation remains unmodified",
+          "expectedRefusalOrOrdering": "consumer lock/manifest/settings/full graph/entry/payload refusal",
+          "expectedSubjectRawExitCodes": [
+            17
+          ],
+          "orderingContrastMaySettle0": false,
+          "required": true,
+          "observed": "UNEXECUTED",
+          "oracle": "COMMON + case-specific source/fixture differential + actual reached-helper/call trace; generic raw exit alone never matches. Fixture-only baseline (same helper bytes, no mutation) must reach selected phase; no skip if unreachable."
+        },
+        {
+          "name": "wrong-payload",
+          "kind": "Python-DATA",
+          "construction": "Finite synthetic archive/consumer tree under owned root; change only selected leaf/link/hash; no pnpm/install/product. Upstream load_gate facade is declared unit fixture, actual proof validation remains unmodified",
+          "expectedRefusalOrOrdering": "consumer lock/manifest/settings/full graph/entry/payload refusal",
+          "expectedSubjectRawExitCodes": [
+            17
+          ],
+          "orderingContrastMaySettle0": false,
+          "required": true,
+          "observed": "UNEXECUTED",
+          "oracle": "COMMON + case-specific source/fixture differential + actual reached-helper/call trace; generic raw exit alone never matches. Fixture-only baseline (same helper bytes, no mutation) must reach selected phase; no skip if unreachable."
+        }
+      ],
+      "noProductHTTP": true,
+      "noProductCallbacks": true
+    },
+    {
+      "id": "C23",
+      "originalDescription": {
+        "expected": "no private runtime projection",
+        "id": "C23",
+        "input": "compiler nonzero/missing actual TSFILE output/newlink/sourcecatalog drift",
+        "observed": "UNEXECUTED",
+        "target": "private_emit.py"
+      },
+      "faultLocation": "worker.py:68-73;private_emit.py:23-45",
+      "target": "compiler-result and bind_emit",
+      "variantCount": 4,
+      "variants": [
+        {
+          "name": "compiler-nonzero",
+          "kind": "Python-DATA",
+          "construction": "Fake compiler is fixed peer returning2, NOT compiler invocation. Other variants use synthetic emitted inventory and exact copied catalogs; remove TSFILE line, add symlink, alter one copied catalog byte",
+          "expectedRefusalOrOrdering": "Child exit refused/missing emitted inventory/Unexpected emitted link/Exact catalog copy differs",
+          "expectedSubjectRawExitCodes": [
+            1
+          ],
+          "orderingContrastMaySettle0": false,
+          "required": true,
+          "observed": "UNEXECUTED",
+          "oracle": "COMMON + case-specific source/fixture differential + actual reached-helper/call trace; generic raw exit alone never matches. Fixture-only baseline (same helper bytes, no mutation) must reach selected phase; no skip if unreachable."
+        },
+        {
+          "name": "missing-TSFILE",
+          "kind": "Python-DATA",
+          "construction": "Fake compiler is fixed peer returning2, NOT compiler invocation. Other variants use synthetic emitted inventory and exact copied catalogs; remove TSFILE line, add symlink, alter one copied catalog byte",
+          "expectedRefusalOrOrdering": "Child exit refused/missing emitted inventory/Unexpected emitted link/Exact catalog copy differs",
+          "expectedSubjectRawExitCodes": [
+            1
+          ],
+          "orderingContrastMaySettle0": false,
+          "required": true,
+          "observed": "UNEXECUTED",
+          "oracle": "COMMON + case-specific source/fixture differential + actual reached-helper/call trace; generic raw exit alone never matches. Fixture-only baseline (same helper bytes, no mutation) must reach selected phase; no skip if unreachable."
+        },
+        {
+          "name": "extra-link",
+          "kind": "Python-DATA",
+          "construction": "Fake compiler is fixed peer returning2, NOT compiler invocation. Other variants use synthetic emitted inventory and exact copied catalogs; remove TSFILE line, add symlink, alter one copied catalog byte",
+          "expectedRefusalOrOrdering": "Child exit refused/missing emitted inventory/Unexpected emitted link/Exact catalog copy differs",
+          "expectedSubjectRawExitCodes": [
+            1
+          ],
+          "orderingContrastMaySettle0": false,
+          "required": true,
+          "observed": "UNEXECUTED",
+          "oracle": "COMMON + case-specific source/fixture differential + actual reached-helper/call trace; generic raw exit alone never matches. Fixture-only baseline (same helper bytes, no mutation) must reach selected phase; no skip if unreachable."
+        },
+        {
+          "name": "catalog-drift",
+          "kind": "Python-DATA",
+          "construction": "Fake compiler is fixed peer returning2, NOT compiler invocation. Other variants use synthetic emitted inventory and exact copied catalogs; remove TSFILE line, add symlink, alter one copied catalog byte",
+          "expectedRefusalOrOrdering": "Child exit refused/missing emitted inventory/Unexpected emitted link/Exact catalog copy differs",
+          "expectedSubjectRawExitCodes": [
+            1
+          ],
+          "orderingContrastMaySettle0": false,
+          "required": true,
+          "observed": "UNEXECUTED",
+          "oracle": "COMMON + case-specific source/fixture differential + actual reached-helper/call trace; generic raw exit alone never matches. Fixture-only baseline (same helper bytes, no mutation) must reach selected phase; no skip if unreachable."
+        }
+      ],
+      "noProductHTTP": true,
+      "noProductCallbacks": true
+    }
+  ],
+  "correction": "Distinguish actual worker raw1 from function-adapter raw17, and route supplied wrong payload digest to the existing actual consumer-payload comparison at carrier-audit.mjs33 rather than invent a packages.py supplied-payload validator.",
+  "helperEvaluation": false,
+  "sourceChanges": false,
+  "authorPackagingObservation": {
+    "initialIntermediateIndexSha256": "4c650618362bcd7b8b1a38e19eae29466999730ad45df18a173e4c5c12436597",
+    "error": "basename-only self-index exclusion unintentionally omitted two copied nested index.json rows during intermediate metadata regeneration; corrected to exact relative self-path before handoff",
+    "subjectOrHelperChange": false
+  }
+}

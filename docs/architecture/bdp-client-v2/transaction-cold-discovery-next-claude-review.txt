@@ -1,0 +1,160 @@
+Read-only audit complete. No files written, no builds or tests run. Below are findings against the handoff `transaction-cold-discovery-next-plan.md`, checked against `vickie-schema-property-change` @ `61ed530` (tree `22e448fe…` — confirmed identical to the claimed main basis `581bad0d…`), accepted `transaction-cold-client-plan-v2.md` (SHA256 `4252bf3e…` — verified), and `transaction-cold-client-root-acceptance.md`.
+
+---
+
+## F1 — HIGH — `minimumReplayPosition: "genesis"` contradicts the repository's own normative corpus
+
+**Location:** handoff §"Replay floor and limits must be explicit" (line 31). Contradicting evidence: `fixtures/transactional/discovery.json:33` (`"pos-17"`), `fixtures/transactional/changefeed.json:739,777` (`"pos-44"`), `fixtures/history/wire.json:83`, `packages/protocol/src/transactional-wire.test.ts:628,658,990`, `docs/specs/bdp.md:3730,3744-3747,6466`, `packages/server/src/transaction-changefeed.ts:56-73`.
+
+**Impact:** The handoff presents as settled ("Thus derive an internal floor using the existing checkpoint function at zero, not `pos-0`") a question the repo answers the other way. Every normative fixture and the protocol wire test carry a **position** token (`pos-N`), and `transactional-wire.test.ts:628` asserts `caughtUp.minimumReplayPosition === group.position`; spec:6466 says it "advances to at least P", i.e. it is ordered against positions. The handoff instead emits a **changefeed cursor** token. The two vocabularies are disjoint in this implementation: `parseCheckpoint` (`transaction-changefeed.ts:56-63`) accepts only `genesis` or `cg_…` and rejects `pos-0`. `$defs/wireToken` constrains neither, so AJV cannot discriminate — predicates #2 and #4 would lock in whichever the implementer chose, with no oracle. If the fixture reading is right, a C4 cold client feeding the advertised floor to `changes/?after=` gets `400 invalid-parameter`; if the handoff is right, `fixtures/transactional/discovery.json:33` is wrong and `minimumReplayPosition` is not comparable with `headPosition`.
+
+**Correction:** Move this to the C2 interpretation list and obtain a root ruling before implementation. If proceeding anyway, require two pinned facts rather than one: `minimumReplayPosition === transactionCheckpoint(scope, ctx, 0)` **and** that `checkpointPosition(scope, ctx, minimumReplayPosition)` accepts it, plus an explicit note that `fixtures/transactional/discovery.json:33` must be amended or the implementation changed. Also note `transactionCheckpoint(…, 0)` ignores both scope and context (`transaction-changefeed.ts:70-72`) and returns the literal `"genesis"` — "derive via the existing checkpoint function" buys coupling, not derivation.
+
+---
+
+## F2 — HIGH — Handoff silently downgrades accepted v2's "parse with existing protocol/schema authority" to test-only AJV
+
+**Location:** handoff line 26 vs accepted v2 line 110. Precedent ignored: `packages/server/src/development-composition.ts:23-45` (`parseReadUpdateDiscovery`); parsers at `packages/protocol/src/read-update-values.ts:410`, `read-values.ts:94`.
+
+**Impact:** v2's C3 requires "Parse with existing protocol/schema authority; do not construct a shadow descriptor inventory." The handoff says no Transactional parser exists, forbids adding one, and substitutes AJV **in tests**. Result: production code assembles a `profile: transactional` document with zero runtime validation; a wrong member, stale context or bad limit is caught only if a test happens to cover it. The Read+Update path in this same package does parse at construction time. The handoff has an escalation rule for exactly this ("return the exact seam to root"), and does not apply it — it resolves a conflict with the plan of record unilaterally.
+
+**Correction:** Either escalate `parseTransactionalDiscovery` / `parseTransactionalOperationDirectory` (mirroring `parseReadUpdateDiscovery`) to root as a named protocol seam, or state in the handoff that C3 knowingly deviates from accepted v2 C3 here, and add a done-when predicate that no serving path may consume the builder output until a parser exists.
+
+---
+
+## F3 — HIGH — Nine required absolute-URL members have no named seam; the "no second list" rule is broken at larger scale than it protects
+
+**Location:** handoff lines 22-24 and 37. Existing roots already live in five modules: `authority-read.ts:741-744` (beads/links/types/**alias/**), `transaction-http.ts:374` (`snapshot`, no trailing slash), `:462-463` (`receipts/`), `:179` (`operations/`), `transaction-changefeed.ts:92` and `transaction-store.ts:1687` (`changes/`), `transaction-store.ts:241` and `transaction-changefeed.ts:141` (`events/`), `read-request.ts:941` (`alias/`).
+
+**Impact:** `$defs.transactionalDiscovery` requires nine absolute URLs. The handoff names a seam only for the twelve-operation map and for epoch/view/head/floor, so the implementer must write a tenth copy of the nine route roots into `transaction-discovery.ts` — including the non-obvious `alias/` (not `aliases/`, per `fixtures/transactional/discovery.json:38`) and bare `snapshot`. A wrong root is not schema-detectable (`absoluteHttpUrl` only). This is precisely the drift the handoff guards against for the operation map, at 9× the surface, and it also skips the existing discovery-data builder at `authority-read.ts:738-750`.
+
+**Correction:** Name the route-root seam. Require each of the nine to be cross-checked against the module that actually routes it (`transaction-http.ts` route predicates, `transactionChangefeedRequest`, `transactionEventRequest`, `classifyAliasPath`, `authority-read.ts` discovery data), not against fresh literals. Add a predicate: every advertised URL must be accepted by its corresponding existing route classifier at the same scope.
+
+---
+
+## F4 — HIGH — "Preserve … limits from `options.read.advertisedLimits`" produces a schema-invalid document if followed literally
+
+**Location:** handoff line 33. `transaction-runtime-configuration.ts:337-341`; type assembled at `authority-read.ts:369-380`; `schemas/bdp-v0.schema.json:4854-4984` (`transactionalAdvertisedLimits`, `additionalProperties: false`).
+
+**Impact:** `advertisedLimits` is `{ page: {defaultItems, maximumItems}, selector: {bytes, depth, nodes}, cursorTtlMilliseconds }`. `cursorTtlMilliseconds` is **not** a member of `transactionalAdvertisedLimits`, so any spread or copy fails AJV. The guard the handoff supplies ("Do not copy the whole runtime-settings object") names the wrong object — the hazard is the one object it tells the implementer to preserve.
+
+**Correction:** State explicitly: build `limits` member-by-member as `{ page: { defaultItems, maximumItems }, selector: { bytes, depth, nodes } }` and drop `cursorTtlMilliseconds`. `development-composition.ts:26,33-42` destructures `const { limits, ...data } = result.data` and rebuilds for exactly this reason — cite it. Add a test asserting no `cursorTtlMilliseconds` anywhere in the output.
+
+---
+
+## F5 — HIGH/MEDIUM — Predicate #6 is unsatisfiable on the stated base and contradicts the handoff's own independence claim
+
+**Location:** handoff predicate #6 ("Real existing credentialed mutation→current collection minimum read (C1)→receipt replay→reopen"). Current base: `transaction-http.ts:526-539` returns `developmentGap("minimum-position-route")` for any collection carrying minimum controls; `transaction-read.ts:99-106` rejects every non-point minimum route.
+
+**Impact:** Directly contradicts handoff line 16 ("Implement the C3 assembly below, independently of unresolved wire decisions") and line 55 ("C3 neither closes nor delays those runtime repairs"). C3's installed done-when imports unmerged C1 behavior; if C1 slips in council repair, a complete and correct C3 cannot be reported done.
+
+**Correction:** Drop the C1 leg from predicate #6 and use an ordinary (non-minimum) credentialed collection read as the regression leg, or mark predicate #6 explicitly conditional on C1 having landed and give the fallback form. Stop describing C3 as independent while its acceptance depends on C1.
+
+---
+
+## F6 — MEDIUM — Predicate #2 contains an impossible clause and misattributes three checks to the schema
+
+**Location:** handoff predicate #2. `schemas/bdp-v0.schema.json`: `readDiscovery` props `{bdpVersion, profile, scope, beads, links, types, aliases, order, limits, maximumEndpointMultiplicity, historicalResolution}` vs `transactionalDiscovery` props — a strict superset.
+
+**Impact:**
+- "no lower-profile … members" **cannot be violated**. No member admitted by `readDiscovery`/`readUpdateDiscovery` is prohibited in `transactionalDiscovery`; the prohibition runs the other way (spec:3780-3781). No test can be written. (If the intended reading is lower-profile *limit* members — i.e. `retention.idempotency` — the clause is redundant with the retention clause in the same sentence.)
+- "Schema tests exercise … foreign Scope": `scope` is `$ref: absoluteHttpUrl` only; a well-formed foreign scope passes AJV.
+- "no … history … members": `historicalResolution` is an admitted optional member (`:5068`). Omitting it is a policy choice, not a schema check.
+
+Only wrong profile, missing member, invented directory target, and `retention.idempotency` are genuinely schema-detectable.
+
+**Correction:** Delete "no lower-profile members". Move foreign-Scope and omitted-`historicalResolution` to an independent oracle (equality against `owner.scope`; an explicit allowed-member list). Keep only the four schema-detectable cases under "schema tests".
+
+---
+
+## F7 — MEDIUM — The named installed test location does not exist as described; the cheap seam is a different file
+
+**Location:** handoff line 39: "a small installed discovery-boundary case in the existing `packages/server/src/transaction-installed.test.ts` **if its helper can execute packed bytes**". Actual file (66 lines) is a pure `captureInstalledTransactionConfiguration` unit test — no launcher, no server, no HTTP, no packed or emitted bytes. The emitted-bytes runtime seam is `packages/server/src/transaction-installed-contracts.test.ts:18-20` (`await import("../dist/transaction-runtime.js")`), which already starts a runtime, performs credentialed `operations/*` requests, and reopens (`:472-473`).
+
+**Impact:** "Choose exactly one installed test location after inspecting its existing fixture" is a false choice. An implementer inspecting the named file concludes only the expensive child-process cohort is viable and pays a full installed session for refusal and reopen legs that do not need one.
+
+**Correction:** Point the discovery-refusal and reopen legs at `transaction-installed-contracts.test.ts` (emitted dist, in-process, outside the 32-exchange cohort budget). Reserve `apps/bdptest/src/transactional-discovery-installed.test.ts` plus `scripts/transaction-installed-observation.mjs` for the legs that genuinely need the packed credentialed raw transport.
+
+---
+
+## F8 — MEDIUM — Cap ledger states a ceiling but not the enumeration its own predicate demands
+
+**Location:** handoff predicate #7 ("at most two sequential installed child sessions … 32 wire exchanges, existing 5s per exchange/90s aggregate/120s outer"; "Count actual requests before execution"). Comparable: `apps/bdptest/src/transactional-set-installed.test.ts:105-107` (90s), `:143` (`requestTimeoutMs: 5000`), `:454` (`}, 120000`). The other three installed TX tests use **60s** outer (`transactional-sse-installed.test.ts:236`, `transactional-event-sse-installed.test.ts:316`, `transactional-snapshot-installed.test.ts:526,585`) and no 90s aggregate.
+
+**Impact:** Predicate #6 implies, at minimum: 3 discovery targets × GET+HEAD (6), uncredentialed probes (3), 4 mutations (4), receipt GET (1), receipt replay (1-2), minimum collection read GET+HEAD × 2 collections (4), post-reopen re-reads/receipt/replay (4-6) — 23-26 before any negative control, inside 32 across two sessions. There is no margin, yet the handoff forbids enlarging. "Existing 5s/90s/120s" describes one of four existing installed TX tests, not the family default.
+
+**Correction:** Publish the exact per-session, per-leg exchange enumeration in the handoff rather than only a ceiling, and cite the 60s outer bound used by three of the four existing installed TX tests so the implementer does not assume 120s.
+
+---
+
+## F9 — MEDIUM — Two independent derivations of the canonical Scope, bound by nothing
+
+**Location:** handoff line 25 ("Scope is `owner.scope`") vs `transaction-http.ts:162-183` (dispatch targets built from the `canonicalScope` constructor argument). They coincide only because `transaction-runtime.ts:310,321,330` passes one local variable to both.
+
+**Impact:** After the map moves to `transaction-discovery.ts`, the relative values are shared but the absolute URLs are derived twice from two scope strings. No source-level invariant asserts agreement; predicate #1 ("each value resolves … to the existing dispatch URL") is a test assertion only. Reopen-scope drift is covered (`transaction-store.ts:272-282` locks `scope` into `configuration`), but handler-vs-owner drift within a process is not.
+
+**Correction:** Add a done-when predicate that `owner.scope` equals the handler's `parseCanonicalScope(canonicalScope)` and assert it where both are available, or derive the handler scope from the service/owner and return that as a named seam to root if it exceeds C3 scope.
+
+---
+
+## F10 — LOW/MEDIUM — Predicate #1's port clause is untestable in the default source fixture
+
+**Location:** handoff predicate #1 ("listenUrl port is never substituted into canonical targets"). `transaction-runtime.ts:309-310`: `scope = configuredScope ?? new URL("acme/", listenUrl).href`. Canonical mode requires a configured scope (`transaction-runtime-configuration.ts:224`); the installed candidate is canonical (`transaction-installed.test.ts:38`).
+
+**Impact:** In the default `authorityMode: "listener"` fixture used by `transaction-http.test.ts` and most source TX tests, the canonical Scope *is* listenUrl-derived and legitimately contains the port, so the predicate reads as violated everywhere in source tests.
+
+**Correction:** Restate as installed-candidate-only: with `authorityMode: "canonical"` and an explicit `scope`, every directory-resolved target must be prefixed by that configured scope and contain neither `listenUrl`'s host nor its port.
+
+---
+
+## F11 — LOW — Optional-member policy is silent on `order` and `maximumEndpointMultiplicity`
+
+**Location:** handoff line 33 and predicate #2. `schemas/bdp-v0.schema.json:5056-5067`. Existing Read builder emits both (`authority-read.ts:745,747`); `readConfiguration().scopeConfiguration.maximumEndpointMultiplicity` is a frozen empty array (`transaction-store.ts:578`), already asserted empty at `transaction-runtime-configuration.ts:364`.
+
+**Impact:** The handoff rules on `limits` groups and `historicalResolution` but not these two, so a reviewer cannot decide whether a document carrying `order: "canonical-uri"` and `maximumEndpointMultiplicity: []` passes or fails predicate #2's closed-membership check.
+
+**Correction:** Rule explicitly. Omitting both is defensible — spec:3769-3770 makes omitted `order` mean the `canonical-uri` baseline, and an empty `maximumEndpointMultiplicity` advertises nothing. Pin the omission in the closed-membership test.
+
+---
+
+## F12 — LOW — Ownership list omits two files the predicates require
+
+**Location:** handoff §"Precise proposed ownership" (lines 37-39) vs predicate #7 ("plus affected HTTP tests") and line 39's "emitted-file inventory update".
+
+**Impact:** `scripts/smoke-executables.mjs:132-134` is an exact package-surface tripwire and will fail until four entries are added for `transaction-discovery.{d.ts,d.ts.map,js,js.map}`. Separately, `runtime.targets` — the only handle on actual dispatch URLs — is reachable in `transaction-http.test.ts:169`, not in `transaction-discovery.test.ts` or `transaction-service.test.ts`, so predicate #1's cross-check cannot be written in either listed test file.
+
+**Correction:** Add `scripts/smoke-executables.mjs` (four entries, one module) and `packages/server/src/transaction-http.test.ts` to the explicit ownership list.
+
+---
+
+## F13 — LOW — Reentrancy hazard behind "capture configuration at service creation" is stated without its reason
+
+**Location:** handoff line 24. `transaction-store.ts:339-343` (`enter` throws on `busy`), `:1706` (`readConfiguration: () => enter(() => readConfiguration)`), `:897` (`withRead` body runs inside `enter`).
+
+**Impact:** The instruction is correct but unexplained. An implementer who instead calls `owner.readConfiguration()` inside the single `withRead` callback gets a thrown `"transaction store closed or reentrant"`. Worse, `withRead` returns the `entry-refused` shape only at its own top (`:884-889`); a nested `readConfiguration()` **throws**, so the failure surfaces as an exception rather than the refusal shape predicate #5 pins.
+
+**Correction:** State the reason, and add a done-when assertion that the new service method performs exactly one owner entry with configuration captured before it.
+
+---
+
+## F14 — LOW — Four line anchors drift in a document whose premise is exact inspection
+
+**Location:** handoff line 22 `transaction-http.ts:51–64,172–183` → actual `52–65` and `175–183` (172-174 is the `maximumOperations` guard); line 24 `transaction-store.ts:881–950` → `withRead` is `881–957` (950 is inside the async-callback rejection branch); line 33 `transaction-runtime-configuration.ts:328–349` → `readOptions` is `333–352` (328-332 is `authenticate`'s return); line 31 `transaction-store.ts:1660–1690` → the no-pruning comment is `1672–1675`.
+
+**Impact:** These anchors are the plan's evidence that each seam already exists; drift forces a reviewer to re-derive them.
+
+**Correction:** Re-anchor those four before handing off. These checked out exactly: `schemas/bdp-v0.schema.json:3465`, `transaction-store.ts:1706`, `transaction-store.ts:582–589`, `transaction-service.ts:63–69`, `transaction-http.ts:203,541–548`, `transaction-http.ts:439–440`, `transaction-changefeed.ts:53–85`.
+
+---
+
+## Items the handoff asserts that the repository confirms
+
+Stated for completeness of the verification you asked for, not as endorsement:
+
+- **No-pruning floor:** there is no `DELETE FROM groups` anywhere in `transaction-store.ts`; the integrity rule at `:1672-1675` is real, and the receipt/creator sweep (`:438,553,555`) touches only `receipts`/`creator_facts`/`aliases`/`resources`. Predicate #4's "receipt expiry cannot remove change groups" is verifiable as written. Reopen retains groups and locks `scope` into `configuration` (`:272-282`).
+- **Single-owner captured context:** `withRead` (`:881-957`) hands back `readContext()` from the same entry and already enforces synchronous-only callbacks and an expiring reader. `transaction-service.ts:419-436` (`sequenceObserved`) is an exact working precedent for the proposed method, including `entry-refused` handling via `run()`/`check()`. "No new store accessor should be necessary" is correct.
+- **Route map:** `TRANSACTION_HTTP_OPERATIONS` (`transaction-http.ts:52-65`) is exported but referenced only inside its own module, so the move is safe; it matches `$defs.transactionalOperationDirectory` (`schemas:3465-3521`) name-for-name and value-for-value, and relative values resolve against `operations/` to the constructed dispatch URLs (spec:4314-4352 confirms relative). `transaction-http.test.ts:169` currently pins only `toHaveLength(12)`, so the "a shared wrong map must not validate itself" concern is real.
+- **Refusals and exposure:** `transaction-http.ts:203,543-548` are intact; uncredentialed requests to Scope/`bdp.json`/`operations/` hit the 401 at `:373` first and carry no context headers, so predicate #6's "no uncredentialed leak" is already true. `index.ts:288-309` admits only `read`. `transaction-installed-process.ts:48-53` already ships `targets` out-of-band in ready metadata; no new seam is needed.
+- **Config limits:** `transaction-service.ts:63-69` pins page maximum to the persisted receipt maximum, and `authority-read.ts:381-389` independently enforces advertised==enforced — the handoff's pin is partly redundant with existing code.
+- **Harness:** `scripts/transaction-installed-observation.mjs` exists with the 10s launch/close bound the handoff cites; `createRawHttpExchangeExecutor` with `requestTimeoutMs: 5000` is the established installed transport.
+- **Basis:** tree of `61ed530` == tree of `581bad0d` == `22e448fe…`; plan-v2, dispositions and native-closure SHA256s all match the handoff's citations; alias commit `0de38a3e` exists.

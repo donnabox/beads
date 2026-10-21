@@ -1,0 +1,78 @@
+{
+  "sourceCommit": "88e428ce5b24a666cf2a27f0cbb34cd64dfcf7e5",
+  "sourceDirty": false,
+  "configuration": {
+    "scope": "https://reference.invalid/acme/",
+    "profile": "read-update",
+    "history": false,
+    "sourceCommit": "88e428ce5b24a666cf2a27f0cbb34cd64dfcf7e5",
+    "installedPayloadDigest": "819c09e3ade4bbc533c118a956af23e22d44d5b7f87a73aef3d391a98dc11093",
+    "installedContractsDigest": "48667497d6e13064316d0364cf8f49dfc247ab9189306985a357d7b558333dfe",
+    "policyDigest": "dbe8dbd5430f26e19e754d38167cd8084a32d702c695550e2ee0063dc2912430",
+    "authenticationDigest": "66941efc779f4f2431d65fdd5b2387b2af67bd7c1559e09dac032f82259ea16e",
+    "fixtureDigest": "f5f38235dfd28cf06e760688e2054d3e29d8d64b08c4c729baa94f380f1f7a63",
+    "fixtureId": "reference-read-update-schema-v1",
+    "capabilities": [
+      "installed-read-update-http"
+    ]
+  },
+  "reportBinding": {
+    "artifacts": {
+      "catalogDigest": "e26d3fc758a34ebb0b5028be15d28e3e09db87dc7984bba7bad6a00b26329aa0",
+      "manifestDigest": "cd8731c629aa3cbbccef8e3d1381787de565d20b0c424f45bef4e67f8d9a5085",
+      "fixtureDigest": "f5f38235dfd28cf06e760688e2054d3e29d8d64b08c4c729baa94f380f1f7a63"
+    },
+    "exactConfigurationDigest": "3224c31c83988dc0606cb76ee1f4ba8e6394159bdf7daaccc301461316cc2477"
+  },
+  "baselineReceipt": {
+    "event": "qualification.ready",
+    "scope": "https://reference.invalid/acme/",
+    "claimEligible": false,
+    "configurationIdentity": "1720b63b49a7be3299d4b2865de4db9fcbe47560f217a32eea6397db7ea54ca5",
+    "artifactIdentity": "development-schema5-48667497d6e13064316d0364cf8f49dfc247ab9189306985a357d7b558333dfe",
+    "payloadIdentity": "819c09e3ade4bbc533c118a956af23e22d44d5b7f87a73aef3d391a98dc11093",
+    "policyIdentity": "dbe8dbd5430f26e19e754d38167cd8084a32d702c695550e2ee0063dc2912430",
+    "authenticationIdentity": "66941efc779f4f2431d65fdd5b2387b2af67bd7c1559e09dac032f82259ea16e",
+    "profile": "read-update",
+    "history": false
+  },
+  "claimEligible": false,
+  "required": 129,
+  "authored": 49,
+  "uncovered": 103,
+  "sessions": 49,
+  "clientObservations": 985,
+  "setupObservations": 44,
+  "nativeReadObservations": 21,
+  "scenarioExchanges": 867,
+  "states": {
+    "pass": 49,
+    "harness-error": 85
+  },
+  "testsPassed": 171,
+  "testsFailed": 0,
+  "rows": [
+    {
+      "id": "read-update.singleton.no-local-bindings",
+      "state": "pass",
+      "rawObserved": 46,
+      "clientObserved": 53,
+      "maxObservedClientBodyOctets": 236
+    },
+    {
+      "id": "read-update.alias.non-canonical-target",
+      "state": "pass",
+      "rawObserved": 43,
+      "clientObserved": 29,
+      "maxObservedClientBodyOctets": 506
+    }
+  ],
+  "timings": {
+    "executes the partial cumulative RU matrix against actual installed factory HTTP and afterstate": 14520.394166,
+    "observes reference syntax and retained category failures against installed HTTP": 1544.5221250000031
+  },
+  "archives": {
+    "protocol.tgz": "2943f90cd4d0c5ac973dc84c75c80b6b0d944e688b0210990438a482a0a61a8c",
+    "server.tgz": "8c520754bb0aee0e1da308a0242022ce6286b537695b9c6e3db85bde215f450d"
+  }
+}

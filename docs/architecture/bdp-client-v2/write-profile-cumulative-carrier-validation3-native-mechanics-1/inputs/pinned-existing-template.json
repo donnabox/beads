@@ -1,0 +1,20 @@
+{
+  "compilerOptions": {
+    "composite": false,
+    "declaration": false,
+    "declarationMap": false,
+    "emitDeclarationOnly": false,
+    "incremental": false,
+    "noEmit": false,
+    "noEmitOnError": true,
+    "outDir": "${OWNED_ATTEMPT_ROOT}/private-emit",
+    "rootDir": "${FROZEN_SOURCE_ROOT}",
+    "sourceMap": false
+  },
+  "exclude": [],
+  "extends": "${FROZEN_SOURCE_ROOT}/tsconfig.check.json",
+  "files": [
+    "${FROZEN_SOURCE_ROOT}/packages/conformance/test-support/profile-evidence.ts"
+  ],
+  "include": []
+}

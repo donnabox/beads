@@ -1,0 +1,131 @@
+{
+  "state": "PROPOSED finite additions inside existing D03 ID; no harness authoring or execution",
+  "existingControlIDsRemain": 48,
+  "additionalTopLevelIDs": 0,
+  "finiteSourcePathSubcases": [
+    {
+      "id": "D03-M01",
+      "mutation": "settled/received/validated=000; set other row facts/aggregates consistently with that branch",
+      "expected": "eligible for remaining unchanged failed-only checks",
+      "executed": false
+    },
+    {
+      "id": "D03-M02",
+      "mutation": "settled/received/validated=001; set other row facts/aggregates consistently with that branch",
+      "expected": "refuse source-impossible state",
+      "executed": false
+    },
+    {
+      "id": "D03-M03",
+      "mutation": "settled/received/validated=010; set other row facts/aggregates consistently with that branch",
+      "expected": "refuse source-impossible state",
+      "executed": false
+    },
+    {
+      "id": "D03-M04",
+      "mutation": "settled/received/validated=011; set other row facts/aggregates consistently with that branch",
+      "expected": "refuse source-impossible state",
+      "executed": false
+    },
+    {
+      "id": "D03-M05",
+      "mutation": "settled/received/validated=100; set other row facts/aggregates consistently with that branch",
+      "expected": "eligible for remaining unchanged failed-only checks",
+      "executed": false
+    },
+    {
+      "id": "D03-M06",
+      "mutation": "settled/received/validated=101; set other row facts/aggregates consistently with that branch",
+      "expected": "refuse source-impossible state",
+      "executed": false
+    },
+    {
+      "id": "D03-M07",
+      "mutation": "settled/received/validated=110; set other row facts/aggregates consistently with that branch",
+      "expected": "eligible for remaining unchanged failed-only checks",
+      "executed": false
+    },
+    {
+      "id": "D03-M08",
+      "mutation": "settled/received/validated=111; set other row facts/aggregates consistently with that branch",
+      "expected": "eligible for remaining unchanged failed-only checks",
+      "executed": false
+    },
+    {
+      "id": "D03-C01",
+      "mutation": "000 with errorCategory=abort; writeState null; response fields null",
+      "expected": "refuse initial-state contradiction",
+      "executed": false
+    },
+    {
+      "id": "D03-C02",
+      "mutation": "000 with errorCategory=configuration; writeState null; response fields null",
+      "expected": "refuse initial-state contradiction",
+      "executed": false
+    },
+    {
+      "id": "D03-C03",
+      "mutation": "000 with errorCategory=timeout; writeState null; response fields null",
+      "expected": "refuse initial-state contradiction",
+      "executed": false
+    },
+    {
+      "id": "D03-C04",
+      "mutation": "000 with errorCategory=disconnect; writeState null; response fields null",
+      "expected": "refuse initial-state contradiction",
+      "executed": false
+    },
+    {
+      "id": "D03-C05",
+      "mutation": "000 with errorCategory=header-limit; writeState null; response fields null",
+      "expected": "refuse initial-state contradiction",
+      "executed": false
+    },
+    {
+      "id": "D03-C06",
+      "mutation": "000 with errorCategory=body-limit; writeState null; response fields null",
+      "expected": "refuse initial-state contradiction",
+      "executed": false
+    },
+    {
+      "id": "D03-C07",
+      "mutation": "000 with errorCategory=invalid-body; writeState null; response fields null",
+      "expected": "refuse initial-state contradiction",
+      "executed": false
+    },
+    {
+      "id": "D03-C08",
+      "mutation": "000 with errorCategory=network; writeState null; response fields null",
+      "expected": "refuse initial-state contradiction",
+      "executed": false
+    },
+    {
+      "id": "D03-C09",
+      "mutation": "000 with errorCategory=unavailable; writeState null; response fields null",
+      "expected": "refuse initial-state contradiction",
+      "executed": false
+    },
+    {
+      "id": "D03-W01",
+      "mutation": "000 with writeState=not-started; errorCategory null; response fields null",
+      "expected": "refuse initial-state contradiction",
+      "executed": false
+    },
+    {
+      "id": "D03-W02",
+      "mutation": "000 with writeState=started-completion-unestablished; errorCategory null; response fields null",
+      "expected": "refuse initial-state contradiction",
+      "executed": false
+    },
+    {
+      "id": "D03-W03",
+      "mutation": "000 with writeState=complete; errorCategory null; response fields null",
+      "expected": "refuse initial-state contradiction",
+      "executed": false
+    }
+  ],
+  "existingSubcasesPreserved": "All current D03 mutations including nine settled-rejection categories remain. This twenty-case supplement does not claim they were executed.",
+  "productCalls": 0,
+  "harnessPreparedOrApproved": false,
+  "budgetsAndCapsUnchanged": true
+}

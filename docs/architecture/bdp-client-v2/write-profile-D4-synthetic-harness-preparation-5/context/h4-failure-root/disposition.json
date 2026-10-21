@@ -1,0 +1,40 @@
+{
+  "utc": "2026-10-18T16:35:37.814081+00:00",
+  "session": "2026-10-18T02:16:24Z-549f",
+  "auditAccepted": true,
+  "availabilityAccepted": false,
+  "clockDomainVerified": false,
+  "nativeIndex": {
+    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-D4-availability-actual-native-audit-1/index.json",
+    "sha256": "b6d899896ee97fea09616c3fdddc7efe17f23bff7adf25ab25b809b59ff8a5cd"
+  },
+  "nativeClosure": {
+    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-D4-availability-actual-native-audit-1/closure.json",
+    "sha256": "70b9f03ae4f06335bbd6ddce454bb1051d7621c86944e7aa852e218e4ca3c299"
+  },
+  "nativeReport": {
+    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-D4-availability-actual-native-audit-1/report.md",
+    "sha256": "f88081c246a5db52cde8fd783c165193b6d2f93fa36ff1763b70990700b44417"
+  },
+  "nativeIndexedFilesAndMirrorVerified": 109,
+  "actualRootToolSession": 46536,
+  "actualRootToolExitCode": 1,
+  "actualCallerRawExit": 1,
+  "actualCallerBothToolEOF": true,
+  "actualWholeCallerSeconds": 1.7082564579322934,
+  "actualNativeRawExit": 0,
+  "actualOwnerRawExit": 0,
+  "actualNativeStdoutBytes": 1810,
+  "actualNativeStderrBytes": 215,
+  "actualNativeStderr": {
+    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-D4-availability-root-authority-preparation-1/attempt/native.stderr",
+    "sha256": "e85485bdcc427a12f23fbc5e59fc3f4585c5649e348f7b4f76c716dd69b9a1d6"
+  },
+  "diagnosis": "Actual Perl compile-time Statement unlikely to be reached warning after exec in availability_limit.pl42 violates strict zero-native-stderr. Current caller110 fails first post-capture predicate before stdout parsing111 onward; actual logged RuntimeError class only, reason text unretained. Underlying owner/peer0,-9 observations not enough to pass complete caller.",
+  "freshRecordedPids7Groups4Absent": true,
+  "censusEvidenceLimit": "Existing raw0/stdoutEOF SOURCE-ATTRIBUTED check_output success; inherited stderrEOF/bytes UNRETAINED/UNKNOWN. No new probe or positive complete-stderr census proof.",
+  "originalFailurePreserved": true,
+  "retryAuthorized": false,
+  "syntheticReleased": false,
+  "productReleased": false
+}

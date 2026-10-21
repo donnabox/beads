@@ -1,0 +1,329 @@
+{
+  "sourceIdentity": "70caea36ed38911ce11f7376de8c45d005e3b638074163eca54bc14b1819b78b",
+  "sourceBindingSha256": "ad2b24e1daaa2eef818eecddee1f82a4bc6b18166a2a1a88844d11d890181c99",
+  "qualification": false,
+  "selectedCallbacks": [
+    "checks each fresh Snapshot minimum before any handle, record, page or expiry work",
+    "does not expire retained Snapshot details on an ineligible fresh attempt",
+    "fresh Snapshot minimum service freezes create controls and retries after a real independent commit",
+    "fresh Snapshot minimum service keeps create timeout and pre-abort distinct from owner work",
+    "fresh Snapshot minimum service freezes preflight controls and retries after a real independent commit",
+    "fresh Snapshot minimum service keeps preflight timeout and pre-abort distinct from owner work",
+    "fresh Snapshot minimum service uses one service call for each fresh HTTP branch, with terminal preflight",
+    "drains admitted finite Snapshot observation and refuses new work while closing",
+    "serves complete fresh Snapshot minima with exact timeout, foreign and conditional context",
+    "gates fresh Snapshot opaque minima before allocation and expiry",
+    "captures fresh Snapshot create opaque controls across independent commits",
+    "cancels and drains fresh Snapshot create opaque waits",
+    "captures fresh Snapshot preflight opaque controls across independent commits",
+    "cancels and drains fresh Snapshot preflight opaque waits",
+    "serves fresh Snapshot opaque minima with terminal preflight and retained fences",
+    "preserves fresh Snapshot capture and refusal order: malformed-aborted",
+    "preserves fresh Snapshot capture and refusal order: malformed-invalid-kind",
+    "preserves fresh Snapshot capture and refusal order: retained-unknown",
+    "preserves fresh Snapshot capture and refusal order: retained-known",
+    "preserves fresh Snapshot capture and refusal order: closed-malformed",
+    "preserves fresh Snapshot capture and refusal order: closed-unknown-fresh",
+    "preserves fresh Snapshot capture and refusal order: unknown-preaborted"
+  ],
+  "resultsSha256": "a637307fd0b60a8ff9998e4b52057b866e6da2a6f1b9b91767496167d2162860",
+  "logSha256": "3ddf8461998b737d7c062ecb5de361864747661311e8cc76fdadc5722f33825e",
+  "actualInstrumentedObservations": [
+    {
+      "observation": "fresh-snapshot-opaque-http",
+      "requests": 27,
+      "responses": [
+        {
+          "method": "POST",
+          "path": "/acme/operations/batch",
+          "status": 200
+        },
+        {
+          "method": "GET",
+          "path": "/acme/snapshot",
+          "status": 200
+        },
+        {
+          "method": "HEAD",
+          "path": "/acme/snapshot",
+          "status": 200
+        },
+        {
+          "method": "GET",
+          "path": "/acme/snapshot",
+          "status": 503
+        },
+        {
+          "method": "GET",
+          "path": "/acme/snapshot",
+          "status": 503
+        },
+        {
+          "method": "GET",
+          "path": "/acme/snapshot",
+          "status": 503
+        },
+        {
+          "method": "GET",
+          "path": "/acme/snapshot",
+          "status": 503
+        },
+        {
+          "method": "HEAD",
+          "path": "/acme/snapshot",
+          "status": 503
+        },
+        {
+          "method": "HEAD",
+          "path": "/acme/snapshot",
+          "status": 503
+        },
+        {
+          "method": "HEAD",
+          "path": "/acme/snapshot",
+          "status": 503
+        },
+        {
+          "method": "HEAD",
+          "path": "/acme/snapshot",
+          "status": 503
+        },
+        {
+          "method": "GET",
+          "path": "/acme/snapshot",
+          "status": 500
+        },
+        {
+          "method": "HEAD",
+          "path": "/acme/snapshot",
+          "status": 500
+        },
+        {
+          "method": "GET",
+          "path": "/acme/snapshot",
+          "status": 500
+        },
+        {
+          "method": "HEAD",
+          "path": "/acme/snapshot",
+          "status": 500
+        },
+        {
+          "method": "GET",
+          "path": "/acme/snapshot",
+          "status": 400
+        },
+        {
+          "method": "HEAD",
+          "path": "/acme/snapshot",
+          "status": 400
+        },
+        {
+          "method": "GET",
+          "path": "/acme/snapshot?snapshot=20afc105-1887-4dfc-a38d-0d0c7c13a1ed",
+          "status": 500
+        },
+        {
+          "method": "HEAD",
+          "path": "/acme/snapshot?snapshot=20afc105-1887-4dfc-a38d-0d0c7c13a1ed",
+          "status": 500
+        },
+        {
+          "method": "GET",
+          "path": "/acme/snapshot?snapshot=20afc105-1887-4dfc-a38d-0d0c7c13a1ed&stream=beads&page=unused",
+          "status": 500
+        },
+        {
+          "method": "HEAD",
+          "path": "/acme/snapshot?snapshot=20afc105-1887-4dfc-a38d-0d0c7c13a1ed&stream=beads&page=unused",
+          "status": 500
+        },
+        {
+          "method": "GET",
+          "path": "/acme/snapshot?snapshot=20afc105-1887-4dfc-a38d-0d0c7c13a1ed",
+          "status": 200
+        },
+        {
+          "method": "HEAD",
+          "path": "/acme/snapshot?snapshot=20afc105-1887-4dfc-a38d-0d0c7c13a1ed",
+          "status": 200
+        },
+        {
+          "method": "GET",
+          "path": "/acme/snapshot?unsupported=x",
+          "status": 400
+        },
+        {
+          "method": "HEAD",
+          "path": "/acme/snapshot?unsupported=x",
+          "status": 400
+        },
+        {
+          "method": "GET",
+          "path": "/acme/snapshot",
+          "status": 401
+        },
+        {
+          "method": "HEAD",
+          "path": "/acme/snapshot",
+          "status": 401
+        }
+      ],
+      "statusCounts": {
+        "200": 5,
+        "400": 4,
+        "401": 2,
+        "500": 8,
+        "503": 8
+      },
+      "waits": 8
+    },
+    {
+      "observation": "fresh-snapshot-opaque-capture",
+      "kind": "create",
+      "serviceSnapshotCalls": 2,
+      "ownerSnapshotCalls": 4,
+      "waits": 2,
+      "probes": 2,
+      "transactions": 1,
+      "finalPosition": "pos-1"
+    },
+    {
+      "observation": "fresh-snapshot-opaque-capture",
+      "kind": "preflight",
+      "serviceSnapshotCalls": 2,
+      "ownerSnapshotCalls": 4,
+      "waits": 2,
+      "probes": 2,
+      "transactions": 1,
+      "finalPosition": "pos-1"
+    },
+    {
+      "observation": "fresh-snapshot-opaque-lifecycle",
+      "kind": "create",
+      "serviceSnapshotCalls": 4,
+      "delegatedOwnerCalls": 5,
+      "waits": 3,
+      "probes": 3,
+      "postCloseOwnerRefusals": 1
+    },
+    {
+      "observation": "fresh-snapshot-opaque-lifecycle",
+      "kind": "preflight",
+      "serviceSnapshotCalls": 4,
+      "delegatedOwnerCalls": 5,
+      "waits": 3,
+      "probes": 3,
+      "postCloseOwnerRefusals": 1
+    },
+    {
+      "observation": "fresh-snapshot-opaque-order",
+      "label": "malformed-aborted",
+      "serviceSnapshotCalls": 2,
+      "setupOwnerCalls": 1,
+      "checkedOwnerCalls": 0,
+      "clockCalls": 0,
+      "waits": 0
+    },
+    {
+      "observation": "fresh-snapshot-opaque-order",
+      "label": "malformed-invalid-kind",
+      "serviceSnapshotCalls": 2,
+      "setupOwnerCalls": 1,
+      "checkedOwnerCalls": 0,
+      "clockCalls": 0,
+      "waits": 0
+    },
+    {
+      "observation": "fresh-snapshot-opaque-order",
+      "label": "retained-unknown",
+      "serviceSnapshotCalls": 2,
+      "setupOwnerCalls": 1,
+      "checkedOwnerCalls": 0,
+      "clockCalls": 0,
+      "waits": 0
+    },
+    {
+      "observation": "fresh-snapshot-opaque-order",
+      "label": "retained-known",
+      "serviceSnapshotCalls": 2,
+      "setupOwnerCalls": 1,
+      "checkedOwnerCalls": 0,
+      "clockCalls": 0,
+      "waits": 0
+    },
+    {
+      "observation": "fresh-snapshot-opaque-order",
+      "label": "closed-malformed",
+      "serviceSnapshotCalls": 2,
+      "setupOwnerCalls": 1,
+      "checkedOwnerCalls": 0,
+      "clockCalls": 0,
+      "waits": 0
+    },
+    {
+      "observation": "fresh-snapshot-opaque-order",
+      "label": "closed-unknown-fresh",
+      "serviceSnapshotCalls": 2,
+      "setupOwnerCalls": 1,
+      "checkedOwnerCalls": 0,
+      "clockCalls": 0,
+      "waits": 0
+    },
+    {
+      "observation": "fresh-snapshot-opaque-order",
+      "label": "unknown-preaborted",
+      "serviceSnapshotCalls": 2,
+      "setupOwnerCalls": 1,
+      "checkedOwnerCalls": 0,
+      "clockCalls": 1,
+      "waits": 0
+    },
+    {
+      "observation": "fresh-snapshot-opaque-owner",
+      "snapshotCalls": 14,
+      "preEntryExcludedCalls": 4,
+      "offlineInspections": 2,
+      "baseline": {
+        "snapshots": 1,
+        "records": 1,
+        "pages": 2,
+        "disposition": "{\"epoch\":\"4c6b5ce7-ba1f-4be6-a6cf-ccb0a75908ad\",\"view\":\"development-all-visible\",\"position\":1,\"created\":1000000,\"expires\":1300000,\"expired\":false,\"counts\":[1,0],\"bytes\":272,\"plan\":\"48e8abe14c88c019b5e0146188f762a6efb7ec27c19d263a91313aa44d9cfb04\",\"seed\":\"d50b729c4e0501ca1ce49a5a4f6aba79cca0073e2e00051e0864f2d5d99ff046\",\"pageCounts\":[1,1],\"binding\":\"c6646270725adce07dac1bd05e5b29072915065de94abb9c0b110e58b655141b\"}"
+      },
+      "after": {
+        "snapshots": 1,
+        "records": 1,
+        "pages": 2,
+        "disposition": "{\"epoch\":\"4c6b5ce7-ba1f-4be6-a6cf-ccb0a75908ad\",\"view\":\"development-all-visible\",\"position\":1,\"created\":1000000,\"expires\":1300000,\"expired\":false,\"counts\":[1,0],\"bytes\":272,\"plan\":\"48e8abe14c88c019b5e0146188f762a6efb7ec27c19d263a91313aa44d9cfb04\",\"seed\":\"d50b729c4e0501ca1ce49a5a4f6aba79cca0073e2e00051e0864f2d5d99ff046\",\"pageCounts\":[1,1],\"binding\":\"c6646270725adce07dac1bd05e5b29072915065de94abb9c0b110e58b655141b\"}"
+      }
+    }
+  ],
+  "plannedWorkload": {
+    "existingSourceCallbacks": 9,
+    "newSourceCallbacks": 13,
+    "sourceCallbacks": 22,
+    "sourceStores": 22,
+    "sourceListeners": 2,
+    "sourceEmittedHttp": 45,
+    "sourceInProcessHandlerRequests": 15,
+    "installedCallbacks": 2,
+    "installedStores": 2,
+    "installedSequentialChildren": 3,
+    "installedHttp": 34,
+    "allStores": 24,
+    "allNetworkHttp": 79,
+    "allRequestsIncludingHandler": 94,
+    "bounds": {
+      "sourceCallbackMs": 5000,
+      "deterministicSourceMinimumBudgetMs": 2,
+      "installedRequestMs": 5000,
+      "installedOwnedMs": 45000,
+      "installedCallbackMs": 60000,
+      "stageSupervisorMs": 120000,
+      "reviewSeconds": 3600,
+      "reviewTermAfterSeconds": 3595
+    },
+    "attribution": "Prospective accepted Snapshot selection, not observed counts. 45 network exchanges and15 direct handler requests are distinct. A14 calls/two offline opens are not network or extra stores."
+  },
+  "attribution": "22 exact selected Snapshot callbacks;13 new callback records only. Historical18 network and15 handler counts remain source-derived unless explicitly reported; no inferred measured total45/60. A offline reopen counts are owner connections, not stores/children. B/C/F semantic assertions remain in pinned callbacks."
+}

@@ -1,0 +1,43 @@
+{
+  "state": "Root-authored record interface error, not product/helper/schema failure",
+  "actualToolSession": "45084 CLOSED1 per root terminal message",
+  "wrapperExit": {
+    "stage": "prepare-consumer",
+    "wrapperExit": 1,
+    "elapsedSeconds": 6.560374124906957,
+    "utc": "2026-10-18T13:49:34.671176+00:00"
+  },
+  "wrapperOutputSha256": "2848301572e3224da0cc6f69879a0d316be4709945ee5dd59426d2095fe8cdc1",
+  "gateSourceSha256": "f3781357733810861cad42b92e667822e7d3ac60e1f214e39e7f22e1bb63bb8e",
+  "rootRecordSha256": "7cf49f9798cc11ec2f020195b5db447d1534213a549a241f8454599044c30114",
+  "actualTarProvenanceSha256": "df49d4e5420657c2f615e3f43668e16af9558f6619a689d7136fa88bba49b631",
+  "fieldInventory": {
+    "accepted": true,
+    "sourceBindingSha256": "9bb16e9c984f7c259c6f4cb42ddad2886234771a90f4421c3fddec57c5079a41",
+    "nestedTarProvenance": {
+      "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/tx-discovery-validation-preparation-8/run/tar-source-provenance.json",
+      "sha256": "df49d4e5420657c2f615e3f43668e16af9558f6619a689d7136fa88bba49b631"
+    },
+    "topLevelTarProvenanceSha256": "ABSENT"
+  },
+  "line127ConjunctsFromActualData": [
+    {
+      "field": "accepted is true",
+      "value": true
+    },
+    {
+      "field": "sourceBindingSha256 equals actual binding digest",
+      "value": true
+    },
+    {
+      "field": "top-level tarProvenanceSha256 equals actual tar provenance hash",
+      "value": false
+    }
+  ],
+  "firstMismatch": "Top-level .get(tarProvenanceSha256) is None, not actual tar hash. Nested {path,sha256} is valid optional evidence but not the checked field.",
+  "beforeProduct": "run.py9 evaluates load_gate before E.mkdir/attempt/temp/env/Popen; load_gate127 throws. No prepare-consumer stage start/log/exit/sample/temp or consumer exists; no missing receipt reconstruction.",
+  "minimumFutureCorrection": "On separately released fresh P9, author a new root archive acceptance with accepted=true, exact new sourceBindingSha256 and top-level tarProvenanceSha256 equal to that future actual tar-source-provenance.json. Bind the new record digest in its future gate. Keep nested provenance if useful. Do not mutate P8 acceptance, add a fallback to gate.py, waive field or replay P8.",
+  "futureFieldsFromExistingGate": "root-barrier-interface.json",
+  "noRuntimeOrProofReuse": true,
+  "P9Release": "AWAIT root author-only release, no self-authoring"
+}

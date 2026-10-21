@@ -1,0 +1,37 @@
+# Native review: cumulative Read+Update executable slice
+
+Frozen head `31007d84a91964786cdc1424e4a55d2af83204c6`; independent detached checkout `/Users/dbox/repos/wt/vickie/bdp-read-update-executable-native-review`. Reviewed authored `572d725af9dfae9e56816a5e5019c258805c7229` against its `11cbe3c` carrier predecessor, then final tree. Ordinary inherited39a shared composition/identity,4cf symlink refusal andd9 clean-type-import/other reviewed ancestry are separated from the authored conformance change. Final310 prose clarifies structural readiness; it does not add an execution gate. No source or outward edits.
+
+## Required repairs
+
+### P2 — no-op response retention is not asserted
+
+`packages/conformance/matrices/read-update-v1.json:1370–1397` asserts successful no-op outcome, properties value and sent guard; the later GET at1401–1430 compares stored afterstate with `b-record`. It never compares the no-op **returned** resource/revision with the retained resource/revision. Captures `noop-rev` and `noop-record` are unused. Thus the catalog clause that a semantic no-op succeeds with outcome updated and the retained revision is not enforced on the mutation result.
+
+Independent counterfactual executes the actual installed HTTP target and changes only the returned no-op response's Resource revision to `incorrect-noop-response-revision` at the client-action boundary. Store and later GET remain real/unchanged. The complete selected update-bead scenario still reports pass. This is an assertion-gap reproduction, not a runtime defect or genuine wire observation. Source: `read-update-executable-native-noop-repro.test.ts`; log/exit alongside. Temporary probe copied only into independent clone, then removed.
+
+Fix: assert no-op `/body/resource` equalsBinding `b-record` (or at least revision equalsBinding `b-rev`), retain the independent GET assertion, and add the response-only negative control so it must fail. Comparing only two observed postimages without asserting the mutation response leaves this gap.
+
+### P2 — update-bead whole-contract coverage overstates observed clauses
+
+`packages/conformance/test-support/read-update-coverage-v1.json:400–443` marks update-bead `wholeContract:true`, has no limits, and removes it from uncoveredIds. Its actual catalog includes properties postimage satisfying every effective Type schema **and metadata patch yielding an object**. The authored scenario issues only positive properties replacement/no-op patches against the shipped task Type; it never sends metadataChange or exercises schema-invalid/non-object postimage rejection. The no-op response gap above compounds this overstatement. `docs/design/read-update-executable-progress.md:11` and the five-whole/124-uncovered report derive from this flag.
+
+Smallest scope-preserving fix: retain the useful row and mark it whole-contract-incomplete with explicit missing metadata/effective-schema legs, adjusting uncovered count/prose (at least125 until these legs are independently observed). Alternatively add real installed observations and meaningful counterfactuals for each missing clause. Do not import unrelated unit-test coverage into this installed target's coverage claim. Public claimEligible:false is correctly retained, but it does not make a whole-contract inventory assertion true.
+
+## Reviewed boundaries with no additional finding
+
+- Canonical loader has no caller source seam, validates classified catalogs/retirements, permits only exact core/companion duplicates, freezes catalog/order/selection, and brands only factory-loaded selections. Private cumulative factory requires branded baseline RU/no-History selection and v2 manifest; rows must be canonical required IDs/profile. Public Read and development diagnostic guards are preserved.
+- Catalog digest binds canonical exact-file digest map; manifest and fixture digest their supplied exact bytes. Frozen copied fixture/manifest parses and prior configured binder ownership/coercion defenses remain intact. Whole-contract flags are human-authored coverage assessments; tests validate mapping/order/assertion inventory, not semantic completeness—that explains the finding above.
+- Actual factory IPC Scope/profile/History, full tagged schema5 identity, payload/policy/auth identities are checked against captured baseline before HTTP. Strict schema5 parsing extracts the existing digest, not a recomputed contract identity. Source SHA/dirty state are explicitly launcher metadata. Exact receipt configuration equality supplies the additional owner/configuration binding not repeated inside the smaller served configuration object.
+- Exact client snapshots mode/listener, restricts targets to configured origin/Scope and known mutation routes, admits only captured canonical Bead GETs for the bounded dynamic path, routes via frozen loopback listener and existing credential handles, and records redacted actual serializer/write/body observations. No public transport override or secret-bearing report introduced. Missing capture, malformed/foreign/wrong-kind target and credential controls remain meaningful.
+- equalsBinding uses earlier captures, rejects self/late/missing/Scope references and conflicting oracle sources, compares JSON without coercion/normalization, and is evaluated by the shared runner for both native HTTP and client actions. The new assertion mechanism is sound; the missing no-op use is in the authored manifest.
+- Real stale-guard, wrong-postimage, anonymous/unknown credential and configuration-mismatch negative controls execute and fail/pass as intended. Delete includes incident-Link refusal, final live identity/revision and all three missing-Resource views. Conflict includes unchanged afterstate and original retained retry. Discovery omitted-order and retry lifecycle/sequence legs remain explicitly incomplete.
+- Main matrix is unfiltered. Independently observed134 applicable rows:7 pass and127 harness-error/not-implemented,129 normative required IDs,7 sessions and44 client exchanges. This is honest missing-row behavior, not qualification. Current inventory reports124 uncovered, subject to correction above.
+
+## Independent validation and limitations
+
+Pinned Node24.16.0 / pnpm11.20.0. Frozen install, clean, pre-build typecheck, then build all passed in requested order. **77 tests passed across6 focused files in4.10s**: read-update-matrix, read-update-exact-client, cumulative-artifact, observed-binding-assertion, profile-contract-plan and read-update-catalog. External logs `read-update-executable-native-{install,clean,typecheck,build,focused}.log/.exit`; structured focused.json.
+
+One additional counterfactual test demonstrates the no-op gap (exit0 means defect reproduction). A clean-source main matrix rerun (1 test, other cases filtered, overlapping—not extra unique coverage) saved `read-update-executable-native-progress.json/.log/.exit`: exact31007d, sourceDirty:false,7pass/127harness-error,44exchanges,claimEligible:false. This uses emitted installed factory bytes in the isolated workspace; fresh packed tarball observations remain author evidence, not independently rerun here.
+
+No full workspace suite, fresh Read/RU evidence generation, public admission or Transactional claim. Both author and independent checkouts remain clean. Existing public sealed evidence unchanged. Findings require bounded manifest/coverage repair before accepting the claimed whole-contract counts; architecture/configuration boundaries need no new design decision on this review.

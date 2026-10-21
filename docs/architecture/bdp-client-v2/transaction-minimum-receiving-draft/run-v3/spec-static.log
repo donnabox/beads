@@ -1,0 +1,47 @@
+
+ RUN  v4.1.10 /Users/dbox/repos/wt/vickie/vickie-minimum-receiving
+
+ ✓ packages/conformance/src/profile-catalog-boundaries.test.ts > catalog citations respect cumulative profile boundaries > owns Transactional end matter and rejects its use by Read 1ms
+ ↓ packages/conformance/src/profile-catalog-boundaries.test.ts > catalog citations respect cumulative profile boundaries > uses rendered Part anchors without collapsing their spaces
+ ↓ packages/conformance/src/profile-catalog-boundaries.test.ts > catalog citations respect cumulative profile boundaries > bounds the model introduction anchor before its child sections
+ ↓ packages/conformance/src/profile-catalog-boundaries.test.ts > catalog citations respect cumulative profile boundaries > preserves the profile ownership of existing Part and model anchors
+ ✓ packages/conformance/src/profile-catalog-boundaries.test.ts > catalog citations respect cumulative profile boundaries > resolves internal links without lower-profile forward dependencies 13ms
+ ↓ packages/conformance/src/profile-catalog-boundaries.test.ts > catalog citations respect cumulative profile boundaries > rejects model-to-Read dependencies despite their shared profile rank
+ ↓ packages/conformance/src/profile-catalog-boundaries.test.ts > catalog citations respect cumulative profile boundaries > owns explicit anchors in their containing profile
+ ↓ packages/conformance/src/profile-catalog-boundaries.test.ts > catalog citations respect cumulative profile boundaries > does not silently open an inserted top-level section or unknown end matter
+ ↓ packages/conformance/src/profile-catalog-boundaries.test.ts > catalog citations respect cumulative profile boundaries > keeps the explicit top-level section inventory complete
+ ↓ packages/conformance/src/profile-catalog-boundaries.test.ts > catalog citations respect cumulative profile boundaries > does not let an explicit alias bypass a later Part's ownership
+ ↓ packages/conformance/src/profile-catalog-boundaries.test.ts > catalog citations respect cumulative profile boundaries > does not smuggle a higher-profile table through its shared parent anchor
+ ↓ packages/conformance/src/profile-catalog-boundaries.test.ts > catalog citations respect cumulative profile boundaries > propagates shared-parent excerpt restrictions through an explicit alias
+ ↓ packages/conformance/src/profile-catalog-boundaries.test.ts > catalog citations respect cumulative profile boundaries > rejects duplicate explicit/generated anchor ownership instead of using the last owner
+ ↓ packages/conformance/src/profile-catalog-boundaries.test.ts > catalog citations respect cumulative profile boundaries > recognizes each normative part
+ ↓ packages/conformance/src/profile-catalog-boundaries.test.ts > catalog citations respect cumulative profile boundaries > audits every requirement in packages/conformance/catalog/history-v1.json
+ ↓ packages/conformance/src/profile-catalog-boundaries.test.ts > catalog citations respect cumulative profile boundaries > audits every requirement in packages/conformance/catalog/numeric-model-v1.json
+ ↓ packages/conformance/src/profile-catalog-boundaries.test.ts > catalog citations respect cumulative profile boundaries > audits every requirement in packages/conformance/catalog/owned-wildcard-v1.json
+ ↓ packages/conformance/src/profile-catalog-boundaries.test.ts > catalog citations respect cumulative profile boundaries > audits every requirement in packages/conformance/catalog/read-update-v1.json
+ ↓ packages/conformance/src/profile-catalog-boundaries.test.ts > catalog citations respect cumulative profile boundaries > audits every requirement in packages/conformance/catalog/read-v1.json
+ ↓ packages/conformance/src/profile-catalog-boundaries.test.ts > catalog citations respect cumulative profile boundaries > audits every requirement in packages/conformance/catalog/transactional-v1.json
+ ↓ packages/conformance/src/profile-catalog-boundaries.test.ts > catalog citations respect cumulative profile boundaries > audits every requirement in packages/conformance/development/read-update-catalog-v1.json
+ ✓ packages/conformance/src/transactional-catalog.test.ts > draft Transactional catalog > strictly parses and binds every citation to the current specification text 350ms
+ ↓ packages/conformance/src/transactional-catalog.test.ts > draft Transactional catalog > keeps the ruled T62/T65, HTTP-gap and changefeed reconnect objects in lockstep with the maintained packet rows
+ ↓ packages/conformance/src/transactional-catalog.test.ts > draft Transactional catalog > rejects the delta catalog alone for a Transactional run; the bundle must contain inherited rows
+ ↓ packages/conformance/src/transactional-catalog.test.ts > draft Transactional catalog > scopes every row to the Transactional profile with the profile's id prefix and area
+ ↓ packages/conformance/src/transactional-catalog.test.ts > draft Transactional catalog > does not collide with the sealed Read catalog or the drafted Read+Update catalog
+ ↓ packages/conformance/src/transactional-catalog.test.ts > draft Transactional catalog > retires exactly the twelve Read+Update rows the profile contradicts, each a lower-profile row
+ ↓ packages/conformance/src/transactional-catalog.test.ts > draft Transactional catalog > excludes the retired rows from a Transactional claim over the concatenated catalogs and keeps them below
+ ↓ packages/conformance/src/transactional-catalog.test.ts > draft Transactional catalog > is bound by no executable manifest, so no runner report can carry its rows
+ ↓ packages/conformance/src/transactional-catalog.test.ts > draft Transactional catalog > mirrors the specification's Transactional conformance rows exactly and in order
+ ✓ packages/conformance/src/read-update-catalog.test.ts > draft Read+Update catalog > strictly parses and binds every citation to the current specification text 351ms
+ ↓ packages/conformance/src/read-update-catalog.test.ts > draft Read+Update catalog > scopes every row to the Read+Update profile with the profile's id prefix
+ ↓ packages/conformance/src/read-update-catalog.test.ts > draft Read+Update catalog > mirrors the declared Read discovery retirement exactly
+ ↓ packages/conformance/src/read-update-catalog.test.ts > draft Read+Update catalog > does not collide with the sealed Read catalog
+ ↓ packages/conformance/src/read-update-catalog.test.ts > draft Read+Update catalog > binds only the approved partial version 2 RU shards, preserving the sealed Read matrix
+ ↓ packages/conformance/src/read-update-catalog.test.ts > draft Read+Update catalog > rejects RU bindings outside the approved shard filenames even with another catalog tag
+ ↓ packages/conformance/src/read-update-catalog.test.ts > draft Read+Update catalog > mirrors the specification's Read+Update conformance rows exactly and in order
+
+ Test Files  3 passed (3)
+      Tests  4 passed | 33 skipped (37)
+   Start at  15:55:37
+   Duration  1.09s (transform 119ms, setup 23ms, import 206ms, tests 717ms, environment 0ms)
+
+JSON report written to /Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-minimum-receiving-draft/run-v3/spec-static.results.json

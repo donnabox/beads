@@ -1,0 +1,52 @@
+# Native plan review — matching Transactional no-op evidence
+
+## Findings
+
+### P3 — Third control currently demonstrates page cardinality, not the continuation/head part of “no later group”
+
+**Plan:** Counterfactuals item3; action9 `n-noop-groups`; source `packages/server/src/transaction-store.ts:1683–1710`.
+
+The owner emits at most one group per finite page. If the no-op wrongly created a second group, `changes/?after=genesis` would still contain only the original pos-1 group; `next` and `observedHeadPosition` would change. Changing expected tuples from one group to two necessarily fails any successful page from this configured owner. It is a valid live-assertion/cardinality discriminator, but must not be described as independently discriminating the absence of a later group. The positive plan already correctly requires `next:null` and headpos-1, so this is a control/disclosure refinement, not a missing positive oracle or an implementation blocker.
+
+**Bounded fix:** retain the count control with its precise label, and in that same third expected-value control also perturb the `next:null` or observed-head expectation and require its named failure; no new action/cohort/route is needed. Independently pin the actual positive `next:null` and `observedHeadPosition:pos-1` assertions in the static expected-content guard. Alternatively explicitly limit the control claim to cardinality and retain the already planned positive/static pins. Do not change the runtime page limit or add an unauthorized continuation fetch.
+
+### P3 — Make the change-group `eventCount` scalar explicit in the seed/group oracle
+
+**Plan:** action3/action9 “five Events”; source `schemas/bdp-v0.schema.json` `$defs.changeGroup` (`:4610–4670`).
+
+The schema requires an integer `eventCount` but does not equate it to `events.length`. A five-entry ordered Event array and schema pass alone would tolerate an incorrect `eventCount`. The plan describes complete group facts but does not explicitly name this independent scalar.
+
+**Bounded fix:** in each existing group read pin `/groups/0/eventCount` to5, alongside exact five-entry Event inventory, and include those parameters in the independent assertion guard. No extra wire request, fixture change, schema change or whole-credit promotion. Measure these assertions within the proposed220 cap rather than assuming the count fits.
+
+No P1/P2 finding, unsupported protocol assumption, or required new runtime/DSL seam found. Recommend acceptance with these bounded oracle/disclosure refinements and the existing authoring preflight gates; this review itself does not authorize implementation.
+
+## Exact reviewed basis
+
+Plan `/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-next-conformance-plan.md`, independently hashed **1ce661b78ee37a2c22a27239af6ea318c1942149dbd828d0b9d64de6dcce4127**. Source `/Users/dbox/repos/wt/vickie/vickie-current-minimum-receiving` at **c534fcab840ef2e3753ab179feae10d3ce6431e5**, tree **48537438975a4c56ee1a5bb6056013bbddd38e03**. The plan correctly distinguishes original5d854 inspection from this separately authored service-test-only successor. No source file used by the proposed conformance slice changed in that successor. This review does not accept the unrelated receiving repair.
+
+Read primary spec/catalog, actual fixture/descriptor setup, transaction evaluator/store, ordinary runner/manifest DSL, existing artifact tests and installed route/session assertions. Local JSON counting and hashing only; no test/build/service, network, credentials, source edits or outward actions. Only this review report written. Sole design U3/T4 authority and pending product wire decisions remain unchanged.
+
+## Source-grounded feasibility
+
+- **Normative selection:** `packages/conformance/catalog/transactional-v1.json:246–263` has the two quoted clauses. `docs/specs/bdp.md:5141–5157` requires ordered updated full postimages at retained revisions for semantic no-ops, no group/effectPosition for an all-no-op transaction. Keeping the row partial is correct: failed mutations, other no-effect categories, owned-source revisions and mixed transactions are not earned by this one success partition. No other row's pass is borrowed.
+- **Actual no-op mechanism:** `transaction-batch.ts:706–711` records the updated outcome but returns before transition/Event generation when changed/deleted sets are empty. Store commit/group logic advances only on effects. Existing `transaction-store.test.ts:507–539` demonstrates matching Bead properties and Link metadata no-op behavior; this is supporting runtime evidence, not installed qualification.
+- **Input feasibility:** the installed Task/Relationship setup (`apps/bdptest/src/transactional-matrix.test.ts:46–77`) accepts the planned title properties and has no owning declaration. The Link is unowned. Root metadata replacement `[{op:"replace",path:"",value:{}}]` is already exercised by the owner no-op test. Effectful title/metadata replacements remain valid under these exact installed schemas. No Type/fixture change or product ruling is needed.
+- **Seed and effect arithmetic:** two created Beads plus one created Link yield five Scope facts: Bead created0/1, Link created2 and linked source/target3/4. The unowned a/l updates add two updated facts only. The delta's `change` and `metadataChange` arrays are emitted from the actual submitted patches (`transaction-batch.ts:739–776`); Scope-level reads avoid the pending incident metadata membership question. Three Resource upserts, not five, is correct.
+- **Independent records/captures:** raw captures are URL-only (`runner.ts:2467–2485`), so receipt URL capture followed by existing `transactional.receipt-read` is the correct seam for records/revisions/tokens. Existing client captures and prior-action equality assertions support the planned full-record comparisons. The initial receipt facts must pass literal identity/type/properties/metadata/endpoints and schema checks before their opaque revision/full-record captures are used; the plan requires this. `equalsBinding` on the empty root pointer is already supported for an entire Link record. No new comparison operator or raw arbitrary-JSON capture is needed.
+- **No-op and comparator oracles:** actual retained receipt, independent current collection/point GETs, explicit no effectPosition, current/required positions, exact Event inventory, group head/next and upserts are complementary. They do not infer no group from Event count alone. The comparator's literal changed property and metadata values, new position and emitted deltas prove updates were honored; its explicit exclusion of a general revision-freshness proof is appropriate.
+- **Group paging:** one group at a time is the actual implementation. Both genesis reads occur at headpos-1, so `groups:[seed]` and `next:null` are sound. Omitting a final headpos-2 genesis read avoids a false two-group/page expectation. There is no need for a dynamic finite-changefeed continuation grant or receipt-authority expansion.
+- **Headers and schema:** existing exact raw actions can use canonical `mutationReceipt/currentBeadCollection/currentLinkRecord/eventPage/changefeedPage` schemas. Context presence before equality, literal known positions and same-status comparisons avoid relying on redacted report values. Client envelope `/headers/...` versus raw header assertions remains distinct. Authored-body/header assertions validate actual transport, while control bodies intentionally get their own manifest identity.
+
+## Counts, preservation and budget assessment
+
+Independently counted the parent artifact: **101 HTTP actions +43 receipt-read client actions +7 reopen client actions =151 actions**, hence144 network exchanges. New **11 HTTP +3 receipt client actions =14 exchanges/actions** gives **165 total actions**, **158 exchanges**, **18 sessions/19 children including bootstrap**. One new isolated scenario adds no reopen. Four separate positive/control cohorts are bounded by76 launches/632 exchanges; failures may stop earlier and must be reported as actual observations. Existing three POST/eight raw GET count is correct.
+
+The schema-valid new row slots after rollback and before set.mutation in selected catalog order, preserving ten original raw manifest/coverage objects. Adding the conflict object's independent raw-byte pins closes the former nine-object preservation list. The fixture remains unchanged. Exactly one new literal finite changes route is sufficient; insertion order must follow actual first occurrence and the full independently pinned route inventory. Recompute the exact configuration digest from the canonical preimage; do not copy a report-produced value as its own oracle.
+
+The proposed byte/node/assertion ceilings are an **explicit planning allowance**, not measured candidate consumption: manifest<=472763 and growth<=65536 from407227; coverage<=76453 and growth<=16384 from60069; nodes<=13091 and growth<=2200 from10891; new assertions<=220. These are below unchanged TX loader1MiB/100000node bounds. They reconcile both old conjuncts rather than accidentally retaining a smaller absolute cap. They do not increase wire, execution, cancellation, cleanup, or public format limits. Normal formatting, exact old-row hashes and an actual pre-execution measurement/stop on overrun remain required. No reason to reject these bounded allowances on source evidence; no guarantee the not-yet-authored complete row fits them.
+
+The existing controls can mutate the manifest through the private observation seam, yielding real200 responses and separately bound manifests. Request-changing controls1/2 must require their named full-record failures, not a single total failure, because valid effectful mutations may also break no-effect assertions. All controls remain claim-ineligible. Static weakening controls must check assertion content, not only ID survival. No runtime/fixture/DSL/schema/catalog/Read-seal edits are needed by the proposed slice.
+
+## Acceptance limits
+
+Proceed only after root accepts the budget/oracle refinements and assigns the reviewed frozen predecessor. Preserve actual failed runs and report source-bound fresh installed observations; donor packages and reports cannot be relabelled. This is one more partial executable contract row, not discovery activation, a solution to pending Event/minimum rulings, or whole Transactional qualification. No owned processes were launched by this review.

@@ -1,0 +1,107 @@
+{
+  "actualInnerLog": {
+    "bytes": 9,
+    "sha256": "a8f8f7ba69d43285857a0ea34017ef8dadd3ba012404bb7dd188fc773cf63ee2",
+    "text": "v24.16.0\n"
+  },
+  "separateRootStdoutJsonEqualsActualInnerExit": true,
+  "stderrBothEmpty": true,
+  "streams": [
+    {
+      "EOFAndRuntimeCloseEvidence": "Exact actual source + original retained receipt and trusted normal tool terminal; no extra live FD/probe inspection.",
+      "actualEOF": true,
+      "currentStatMatchesRetainedIdentity": true,
+      "fileIdentity": {
+        "bytes": 476,
+        "device": 16777232,
+        "inode": 96058035,
+        "mode": 33152,
+        "uid": 501
+      },
+      "fullStreamSha256": "1f3f37610dcc269ac83d37be5bfb8d88ec5a821b45560b54375b4f3416c98891",
+      "fullStreamState": "COMPLETE_ACTUAL_CAPTURE",
+      "hashKnown": true,
+      "hashedPrefixBytes": 476,
+      "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation3-root-first4-dispatch-1/node-version/node-version.stdout",
+      "phase": "A",
+      "rawBytesIndependentlyRehashed": true,
+      "rawDescriptorClosed": true,
+      "receivedBytes": 476,
+      "savedBytes": 476,
+      "savedPrefixSha256": "1f3f37610dcc269ac83d37be5bfb8d88ec5a821b45560b54375b4f3416c98891",
+      "writeOrCloseError": null
+    },
+    {
+      "EOFAndRuntimeCloseEvidence": "Exact actual source + original retained receipt and trusted normal tool terminal; no extra live FD/probe inspection.",
+      "actualEOF": true,
+      "currentStatMatchesRetainedIdentity": true,
+      "fileIdentity": {
+        "bytes": 0,
+        "device": 16777232,
+        "inode": 96058036,
+        "mode": 33152,
+        "uid": 501
+      },
+      "fullStreamSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "fullStreamState": "COMPLETE_ACTUAL_CAPTURE",
+      "hashKnown": true,
+      "hashedPrefixBytes": 0,
+      "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation3-root-first4-dispatch-1/node-version/node-version.stderr",
+      "phase": "A",
+      "rawBytesIndependentlyRehashed": true,
+      "rawDescriptorClosed": true,
+      "receivedBytes": 0,
+      "savedBytes": 0,
+      "savedPrefixSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "writeOrCloseError": null
+    },
+    {
+      "EOFAndRuntimeCloseEvidence": "Exact actual source + original retained receipt and trusted normal tool terminal; no extra live FD/probe inspection.",
+      "actualEOF": true,
+      "currentStatMatchesRetainedIdentity": true,
+      "fileIdentity": {
+        "bytes": 206411,
+        "device": 16777232,
+        "inode": 96058524,
+        "mode": 33152,
+        "uid": 501
+      },
+      "fullStreamSha256": "4fa616a7b3a81c2168bec7fc33ae01e39c35db03a103d6b49aa9494a91885eb8",
+      "fullStreamState": "COMPLETE_ACTUAL_CAPTURE",
+      "hashKnown": true,
+      "hashedPrefixBytes": 206411,
+      "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation3-root-first4-dispatch-1/node-version/postterminal-census.stdout",
+      "phase": "B",
+      "rawBytesIndependentlyRehashed": true,
+      "rawDescriptorClosed": true,
+      "receivedBytes": 206411,
+      "savedBytes": 206411,
+      "savedPrefixSha256": "4fa616a7b3a81c2168bec7fc33ae01e39c35db03a103d6b49aa9494a91885eb8",
+      "writeOrCloseError": null
+    },
+    {
+      "EOFAndRuntimeCloseEvidence": "Exact actual source + original retained receipt and trusted normal tool terminal; no extra live FD/probe inspection.",
+      "actualEOF": true,
+      "currentStatMatchesRetainedIdentity": true,
+      "fileIdentity": {
+        "bytes": 0,
+        "device": 16777232,
+        "inode": 96058525,
+        "mode": 33152,
+        "uid": 501
+      },
+      "fullStreamSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "fullStreamState": "COMPLETE_ACTUAL_CAPTURE",
+      "hashKnown": true,
+      "hashedPrefixBytes": 0,
+      "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation3-root-first4-dispatch-1/node-version/postterminal-census.stderr",
+      "phase": "B",
+      "rawBytesIndependentlyRehashed": true,
+      "rawDescriptorClosed": true,
+      "receivedBytes": 0,
+      "savedBytes": 0,
+      "savedPrefixSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "writeOrCloseError": null
+    }
+  ]
+}

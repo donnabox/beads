@@ -1,0 +1,35 @@
+{
+  "status": "PROPOSED_NOT_APPLIED",
+  "head": "2e1676caa0f5861d16c5741fbd412f6c3ef7c269",
+  "tree": "d909acfdbc65e111855233ff86a3db6edfedd49e",
+  "workspace": "/Users/dbox/repos/wt/vickie/vickie-minimum-current-resource",
+  "clean": true,
+  "files": {
+    "apps/bdptest/src/transactional-collection-minimum-installed.test.ts": {
+      "beforeSha256": "3d7b202d71ab0857629b5694a397dad03bba1d36122440ba003036c8f16ba63a",
+      "proposedSha256": "cc5a741bd174230b8d89e174775628e29ce29ed19830babbacfe8871ab296fd3",
+      "beforeBytes": 54464,
+      "proposedBytes": 55527
+    },
+    "packages/server/src/transaction-read.test.ts": {
+      "beforeSha256": "c3a9e76a1d221ef1712e3f96082e7a36503232693cf9c3a3ba5689e2c47cb6a1",
+      "proposedSha256": "58e745c2ade0804bf0ab0230c34ff5e522c28725fa77ecb9303dbe972162e0f2",
+      "beforeBytes": 88219,
+      "proposedBytes": 88830
+    }
+  },
+  "patchSha256": "1126869dc210775d58ce2174c8b5ad4b58ed855d83d9fadbed4d3740d626c577",
+  "authority": {
+    "rulingSha256": "dc9d3a1ae9027f92aadb68638f38507a7fad4dbb169954ded6e5299d83d24951",
+    "specPath": "docs/specs/bdp.md",
+    "specSha256": "67772742d7d08f48c12196e9789f1859ad2d0e19f133ea65e197b049361f84f8",
+    "specLines": "5834\u20135840"
+  },
+  "priorCI": {
+    "run": 38850496734,
+    "job": 116810412440,
+    "logSha256": "56848d2ef74e4212629b7025dddae832a610a0b8e7519988599537e2f3b214ff"
+  },
+  "productChanges": false,
+  "testsExecuted": false
+}

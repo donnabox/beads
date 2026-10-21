@@ -1,0 +1,24 @@
+{
+  "argv": [
+    "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+    "/Users/dbox/repos/wt/vickie/vickie-command-minimum/node_modules/@biomejs/biome/bin/biome",
+    "format",
+    "--write",
+    "--config-path",
+    "/Users/dbox/repos/wt/vickie/vickie-selector-admission/biome.json",
+    "packages/server/src/read-selector.test.ts",
+    "packages/server/src/read-selector.ts",
+    "packages/server/src/transaction-batch.ts",
+    "packages/server/src/transaction-http.test.ts",
+    "packages/server/src/transaction-http.ts",
+    "packages/server/src/transaction-set.test.ts",
+    "packages/server/src/transaction-set.ts",
+    "packages/server/src/transaction-store.ts",
+    "packages/server/src/transaction-submission.test.ts",
+    "packages/server/src/transaction-submission.ts",
+    "apps/bdptest/src/transactional-selector-admission-installed.test.ts"
+  ],
+  "exit": 0,
+  "seconds": 0.05567087489180267,
+  "purpose": "format only; final empty-string and literal/oracle draft corrections"
+}

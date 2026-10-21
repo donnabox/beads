@@ -1,0 +1,38 @@
+{
+  "released": true,
+  "rootCouncilAccepted": true,
+  "rootExactDiffAccepted": true,
+  "session": "2026-10-08T20:26:35Z-81e5",
+  "head": "ddfb5f43a058fe0f16ff9e04e528b4e7bfc03d87",
+  "tree": "d00e27ba5c5148bce07f797606d558875fe7ecb2",
+  "files": {
+    "scripts/smoke-executables.mjs": "adeaea6e334f8fb6f7af5d09f0cb7ee0b729864affc45cb6baf84a95f1d4d9ae"
+  },
+  "diffSha256": "8ecdf489687ade462e16c88e8962d251dbe510738af03e63dc531e2f9a4a48ae",
+  "approvedStages": [
+    "format-check",
+    "lint",
+    "fresh-build",
+    "smoke",
+    "evidence-read"
+  ],
+  "preparationHashes": {
+    "adaptation.patch": "9b0aa5cc155bd8250f09ca427be473efab924f49ef5e08253d5c6f50e6220bbf",
+    "baseline-source.json": "0dc497ac668ae0dfd101d097a8bc3ec7294068e1ffb33c4ff47a9fb6f21e709a",
+    "commands.json": "7c557917e4392b87045fb873dae2fb14a54159fa22c4ee855fd0c8e28a554838",
+    "execution-gate.example.json": "38db81c823282578b6e52d8a4929b1e117b7c4578f4db9d19fd7b4168c38965f",
+    "reference-pins.json": "2ab4fcdb19cd6b499e557476aa7a555470f701430d4730e09cebeb99f8129ce2",
+    "repair-binding.json": "4bd2345a289caac6ad2c19a10a3260fff15d96382a6662c96b0ac345a0678657",
+    "repair.patch": "8ecdf489687ade462e16c88e8962d251dbe510738af03e63dc531e2f9a4a48ae",
+    "report.md": "bb9545bfa5ab0ffb736a46e5d636a413c8aa202df50a39ca6c4752b30d1ecde8",
+    "run.py": "b39713e6ce9fdb2d7ac46af39f7017762a6eb1d5dc8572ccd9ec036525dc7327",
+    "smoke-markers.json": "45e89f39e97378841b506f7fca4f9c1cf49de423b4f01fec5aae2bc94ad875b0",
+    "tools.json": "58134cff8fbdb0170d635224888aa6a12eb91357f44923c76bb7345e8ee5214f",
+    "workload.json": "80b35e7d5deace66e47a1c84fd091b505b6f9270df48cd884db06cf1c7a3da4a"
+  },
+  "rootDisposition": {
+    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/pr147-ci-smoke-failure/root-code-and-validation-disposition.md",
+    "sha256": "08c35a47b09130bb0acd28dec214ba3be5eae612fe857a478ffaa9a4d020599e"
+  },
+  "note": "CLOSED example. Root fills actual disposition and complete preparation pins, then releases exact ordered prefix. No actual gate or run exists."
+}

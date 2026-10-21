@@ -1,0 +1,28 @@
+{
+  "acceptedAt": "2026-10-18T04:21:21.849820+00:00",
+  "expectedSession": "2026-10-18T02:16:24Z-549f",
+  "sourceWorktree": "/Users/dbox/repos/wt/vickie/vickie-trusted-startup-configuration",
+  "authorIndexSha256": "d690bb937adfb5ad33198fe6d3870411ff314c88142fb4c43950c888f26dfce8",
+  "authorBindingSha256": "71249550b8e2b8c21a19a1e11bccab341e98f9684418e961ee6808b69c7f4ad0",
+  "authorFullPatchSha256": "95ac4b10eeba0da5b54f1f1c977289a3be3b6b545fb3aeefde5f00d980354ef1",
+  "afterMapSha256": "7ec81f50227dbe0e8437b0174b329521d0e9fbbb07b903cee765ff2bdc4e9b0e",
+  "verifiedSourceFiles": 682,
+  "verifiedIndexedArtifactAndMirrorRecords": 55,
+  "exactCorrectionFiles": [
+    "packages/server/src/reference-deployment.test.ts",
+    "packages/server/src/reference-deployment.ts",
+    "scripts/smoke-executables.mjs"
+  ],
+  "otherNineOwnedAnd670NonownedUnchanged": true,
+  "author1Preserved": true,
+  "nativeFindingsDisposition": {
+    "N1": "CLOSED by lazy child generator, depth-only iterator frame stack, discovered nodes charged before descendants, exact100000/100001 and depth/atomic controls; static code inspected.",
+    "N2": "CLOSED by corrected configured-listener acquisition wording and separate source attempted-call witness attribution."
+  },
+  "independentNativeCodeAccepted": true,
+  "codeReviewScope": "Full12files on author1 plus exact3fileauthor2delta, no concrete unresolved findings; static only, emitted declarations/build/runtime remain unverified.",
+  "actualCodeReviewReleased": false,
+  "productExecutionReleased": false,
+  "rootIndexMechanicsNext": "Root may intent-to-add exactly3newfiles with no source mutation; preserve before/after metadata and actual fullgitdiff before CLOSED CODE packet binding.",
+  "currentStatusBeforeIndex": " M docs/design/startup-configuration.md\n M packages/config/src/index.test.ts\n M packages/config/src/index.ts\n M packages/server/package.json\n M packages/server/src/read-sequence-lifecycle.test.ts\n M packages/server/src/transaction-snapshot.test.ts\n M scripts/smoke-executables.mjs\n M scripts/smoke-safety.mjs\n M scripts/smoke-safety.test.mjs\n?? packages/server/src/reference-deployment-state.ts\n?? packages/server/src/reference-deployment.test.ts\n?? packages/server/src/reference-deployment.ts\n"
+}

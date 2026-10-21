@@ -1,0 +1,40 @@
+{
+  "run": 38801589766,
+  "head": "a18fa993703185a108df4ad75b6d142072ba8736",
+  "base": "98c600767e8e91a79e109cb741beb91e23b9bebe",
+  "synthetic": "7c47203d3fd62980805f03cad35ecc64aa28f347",
+  "tree": "592c5e6e5c0c790b6e2690495b94ac48705b9069",
+  "jobs": [
+    {
+      "id": 116651712423,
+      "name": "verify",
+      "status": "in_progress"
+    }
+  ],
+  "conclusion": "success",
+  "steps": 27,
+  "allStepsSuccess": true,
+  "testFilesPassed": 180,
+  "testsPassed": 9311,
+  "testsSkipped": 1,
+  "suiteSeconds": 789.75,
+  "jobSeconds": 1013.0,
+  "readyPreflightPassed": 7,
+  "sealedReadRows": 89,
+  "newCallbackMilliseconds": 1239,
+  "newCallbackResponses": 6,
+  "newCallbackStatuses": [
+    200,
+    200,
+    200,
+    200,
+    200,
+    200
+  ],
+  "reportedChildPid": 18694,
+  "reportedChildExit": 0,
+  "claimEligible": false,
+  "rawLogSha256": "3f68208d7e51cc0a658832131584b9c88b0a111a30de28e8178fdeed646ef88d",
+  "rawLogBytes": 3405697,
+  "scope": "successor exact-head CI capture; no landing action or public qualification"
+}

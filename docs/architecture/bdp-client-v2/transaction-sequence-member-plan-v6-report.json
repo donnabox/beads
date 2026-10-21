@@ -1,0 +1,382 @@
+{
+  "positivePostBodies": [
+    {
+      "action": "s-sequence",
+      "body": "{\"operations\":[{\"operation\":\"createBead\",\"id\":\"beads/a\",\"type\":\"https://reference.invalid/acme/types/task\",\"properties\":{\"title\":\"member-first\"},\"idempotencyKey\":\"member-a\"},{\"operation\":\"deleteBead\",\"bead\":\"beads/missing\",\"idempotencyKey\":\"member-fail\"},{\"operation\":\"createBead\",\"id\":\"beads/b\",\"type\":\"https://reference.invalid/acme/types/task\",\"properties\":{\"title\":\"member-last\"},\"idempotencyKey\":\"member-b\"}]}",
+      "bytes": 414,
+      "sha256": "f3cde631127aaf530ea5349330e6c7bb46766b02b135f9c7c59acfcd2f2c71c7"
+    },
+    {
+      "action": "s-first-receipt",
+      "body": "{\"operations\":[{\"operation\":\"createBead\",\"id\":\"beads/a\",\"type\":\"https://reference.invalid/acme/types/task\",\"properties\":{\"title\":\"member-first\"}}]}",
+      "bytes": 147,
+      "sha256": "b3f8ec9abecce7f6de336c869281e69c2568798a9a44dccb6612a6c5fa44d775"
+    },
+    {
+      "action": "s-failed-receipt",
+      "body": "{\"operations\":[{\"operation\":\"deleteBead\",\"bead\":\"beads/missing\"}]}",
+      "bytes": 66,
+      "sha256": "47a4fd554c40bd307a50c37f422a945fae35091ac7fc206a7bb59274cb00a4ec"
+    },
+    {
+      "action": "s-last-receipt",
+      "body": "{\"operations\":[{\"operation\":\"createBead\",\"id\":\"beads/b\",\"type\":\"https://reference.invalid/acme/types/task\",\"properties\":{\"title\":\"member-last\"}}]}",
+      "bytes": 146,
+      "sha256": "6e27825f68db2ff5572688966faad2e924d2e2bdee4870d9339e56ee1db2c837"
+    },
+    {
+      "action": "s-replay",
+      "body": "{\"operations\":[{\"operation\":\"createBead\",\"id\":\"beads/a\",\"type\":\"https://reference.invalid/acme/types/task\",\"properties\":{\"title\":\"member-first\"},\"idempotencyKey\":\"member-a\"},{\"operation\":\"deleteBead\",\"bead\":\"beads/missing\",\"idempotencyKey\":\"member-fail\"},{\"operation\":\"createBead\",\"id\":\"beads/b\",\"type\":\"https://reference.invalid/acme/types/task\",\"properties\":{\"title\":\"member-last\"},\"idempotencyKey\":\"member-b\"}]}",
+      "bytes": 414,
+      "sha256": "f3cde631127aaf530ea5349330e6c7bb46766b02b135f9c7c59acfcd2f2c71c7"
+    }
+  ],
+  "negativePostBody": {
+    "action": "s-sequence",
+    "body": "{\"operations\":[{\"operation\":\"createBead\",\"id\":\"beads/a\",\"type\":\"https://reference.invalid/acme/types/task\",\"properties\":{\"title\":\"member-first\"},\"idempotencyKey\":\"member-a\"},{\"operation\":\"deleteBead\",\"bead\":\"beads/a\",\"idempotencyKey\":\"member-fail\"},{\"operation\":\"createBead\",\"id\":\"beads/b\",\"type\":\"https://reference.invalid/acme/types/task\",\"properties\":{\"title\":\"member-last\"},\"idempotencyKey\":\"member-b\"}]}",
+    "bytes": 408,
+    "sha256": "cc96f5caf3ee16a216a73ccbe6028aacecf2c1a8ff1dc1315025fbc175217c06"
+  },
+  "staticSelections": [
+    {
+      "file": "packages/conformance/src/transactional-cumulative.test.ts",
+      "names": [
+        "binds the canonical cumulative TX selection and exact source digests without qualification",
+        "rejects noncanonical selections, History, wrong factories, retired and misprofiled rows",
+        "copies source bytes before binding and exposes all missing obligations without executing them",
+        "pins the inherited command-minimum manifest facts, read-header absence and all thirteen prior objects",
+        "preserves every original TX scenario and coverage object while adding one bounded partial cross-carrier row",
+        "pins the one-page matched-plus-updated witness without advertised-limit or other-outcome credit"
+      ]
+    },
+    {
+      "file": "apps/bdptest/src/transactional-matrix.test.ts",
+      "names": [
+        "pins the matching no-op installed route digest and fifteen-action ledger",
+        "pins deletion-safety derivative carriers, complete positives, and measured source bounds"
+      ]
+    }
+  ],
+  "proposedLocal": {
+    "cohorts": 4,
+    "expectedHttp": 623,
+    "maxHttp": 632,
+    "children": 71
+  },
+  "staticCallbacks": 8,
+  "measurementAuthority": {
+    "path": "transaction-command-minimum-evidence-draft/event-final/root-growth-retention.json",
+    "sha256": "f146b00019c269a2638101521c89ee18256d052fd66de9d03b57cd32a9649651"
+  },
+  "retainedGuards": {
+    "manifestDisk": 742879,
+    "manifestNormal": 754685,
+    "manifestNodes": 19639,
+    "coverageBytes": 109115,
+    "derivativeNormal": 760803,
+    "derivativeNodes": 19795
+  },
+  "negativeDeletedShape": {
+    "resourceKind": "bead",
+    "resource": {
+      "id": "https://reference.invalid/acme/beads/a",
+      "type": "https://reference.invalid/acme/types/task",
+      "revision": "ACTUAL_VALIDATED_FIRST_RESOURCE_REVISION"
+    }
+  },
+  "negativeDeletedAbsentFields": [
+    "resource.properties",
+    "resource.metadata"
+  ],
+  "negativeExpectedFailureIds": [
+    "serving-position",
+    "middle-type",
+    "middle-code",
+    "middle-status",
+    "middle-retry",
+    "middle-no-outcome",
+    "middle-no-deleted"
+  ],
+  "rawHeaderLedger": [
+    {
+      "action": "s-sequence",
+      "authoredHeaderLines": [
+        {
+          "name": "accept",
+          "value": "application/json"
+        },
+        {
+          "name": "content-type",
+          "value": "application/json"
+        }
+      ],
+      "credentialRef": "operator",
+      "outerIdempotencyKey": null,
+      "minimumHeadersAbsent": true
+    },
+    {
+      "action": "s-first-receipt",
+      "authoredHeaderLines": [
+        {
+          "name": "accept",
+          "value": "application/json"
+        },
+        {
+          "name": "content-type",
+          "value": "application/json"
+        },
+        {
+          "name": "idempotency-key",
+          "value": "member-a"
+        }
+      ],
+      "credentialRef": "operator",
+      "outerIdempotencyKey": "member-a",
+      "minimumHeadersAbsent": true
+    },
+    {
+      "action": "s-failed-receipt",
+      "authoredHeaderLines": [
+        {
+          "name": "accept",
+          "value": "application/json"
+        },
+        {
+          "name": "content-type",
+          "value": "application/json"
+        },
+        {
+          "name": "idempotency-key",
+          "value": "member-fail"
+        }
+      ],
+      "credentialRef": "operator",
+      "outerIdempotencyKey": "member-fail",
+      "minimumHeadersAbsent": true
+    },
+    {
+      "action": "s-last-receipt",
+      "authoredHeaderLines": [
+        {
+          "name": "accept",
+          "value": "application/json"
+        },
+        {
+          "name": "content-type",
+          "value": "application/json"
+        },
+        {
+          "name": "idempotency-key",
+          "value": "member-b"
+        }
+      ],
+      "credentialRef": "operator",
+      "outerIdempotencyKey": "member-b",
+      "minimumHeadersAbsent": true
+    },
+    {
+      "action": "s-replay",
+      "authoredHeaderLines": [
+        {
+          "name": "accept",
+          "value": "application/json"
+        },
+        {
+          "name": "content-type",
+          "value": "application/json"
+        }
+      ],
+      "credentialRef": "operator",
+      "outerIdempotencyKey": null,
+      "minimumHeadersAbsent": true
+    },
+    {
+      "action": "s-current",
+      "authoredHeaderLines": [
+        {
+          "name": "accept",
+          "value": "application/json"
+        }
+      ],
+      "credentialRef": "operator",
+      "outerIdempotencyKey": null,
+      "minimumHeadersAbsent": true
+    },
+    {
+      "action": "s-events",
+      "authoredHeaderLines": [
+        {
+          "name": "accept",
+          "value": "application/json"
+        }
+      ],
+      "credentialRef": "operator",
+      "outerIdempotencyKey": null,
+      "minimumHeadersAbsent": true
+    }
+  ],
+  "helperHeaderLedger": {
+    "actions": [
+      "s-first-facts",
+      "s-failed-facts",
+      "s-last-facts"
+    ],
+    "authoredHeaders": {},
+    "credentialRef": "operator",
+    "actualMethod": "GET",
+    "bodyPresent": false,
+    "receiptAuthority": "actual prior /id capture and original-wire helper equality"
+  },
+  "freshIsolation": "new observe root and scenario directory; no new-row reopen; freshposition0 per invocation",
+  "receiptRecoveryIsMutation": false,
+  "eventContextInputs": "actual validated A/B receipt core+effectPosition and actual response context; independently projected privateID; actual transaction/time/expiry values",
+  "finiteEventBounds": {
+    "maximumItems": 32,
+    "maximumBytes": 4194304,
+    "newRequests": 0
+  },
+  "acceptedA": {
+    "stdoutSha256": "0b5a1ba0b62ba57893865a301f5f841cdeecf748862b71091e15264f77cb2533",
+    "nativeAuditSha256": "79aa548af10b7436b2ca443f76045c4a7f5e408da45eb340a8f6254c67e6bb3e",
+    "rootDispositionSha256": "ebe3688f91ec979e21e79bc52d92776e3d1abde27e021af2c09f8a78154836ef",
+    "all19Dispositioned": true
+  },
+  "status": "PLAN_ONLY_V6_ROOT_REVIEW_PENDING_PARAMETER_MERGE_PENDING",
+  "planSha256": "591b1088e101bdb12d90e3366eea1ec2c605777a59e37ca804f68062da5e4a9e",
+  "previousPlanSha256": "c058bfbf138e8a45e75c813ddafb846fe5effbcc271d9b7635ac5940e39dca7e",
+  "previousCompanionSha256": "45af1f02af14de13861ae3b4fa0e0e6a713c77696ae393c584f6636398770340",
+  "patchSha256": "bcc8585ac422db4c3ad94251e53fed91803d966fc767bb022b73601e87078b50",
+  "currentContextCommit": "77f4b89c117e46f0e73476f69b4c8b377306452b",
+  "currentContextTree": "93b2ea89d6db05512d4c0bc5bb3cf6083560e8da",
+  "contextOrderedParents": [
+    "9a42a4531def99e12fa9a1fba02e70558d643265",
+    "be0cc70d8a3174760c4877e8969728dbdec4ead5"
+  ],
+  "contextProof": {
+    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/read-update-guarded-overlap-draft/landing/postmerge-verification.json",
+    "sha256": "2bfdcfda3481b40e7322b32bbc153574faad00e5b3fa57934025629ce111701a"
+  },
+  "reviewedBaseCommit": "9a42a4531def99e12fa9a1fba02e70558d643265",
+  "actualAuthoringParent": null,
+  "actualAuthoringTree": null,
+  "parameterMerge": "PENDING",
+  "authoringReleased": false,
+  "executed": false,
+  "allowanceIncreaseAccepted": false,
+  "timeoutIncreaseAccepted": false,
+  "currentOwnedSourceHashes": {
+    "packages/conformance/test-support/transactional/manifest-v1.json": "29729151cf6da641545910ec3880f9609c13b319af7bbe99d3d2ad47833dab96",
+    "packages/conformance/test-support/transactional/coverage-v1.json": "4619813e9446e0e714a64c11eac184531950f57720e32c7ef414c7e3342121af",
+    "packages/conformance/src/transactional-cumulative.test.ts": "22a568820ab2abc187d37c27658fdcf6e5ad39e74e2172374e3658c180f7668e",
+    "apps/bdptest/src/transactional-matrix.test.ts": "6c0c240afef61831d0573775ea35b0c04b116a55da1d3fb40127b9ede68e939c"
+  },
+  "acceptedB": {
+    "stdoutSha256": "d29e8dcbc778f52ccda1d45c52c6897773514f27a35340f0f7be2228133728fc",
+    "sourceDispositionsSha256": "e8b00531af0513090f2cdb9f2af90d0d9baad040e8abfc32525a7d6e98c1495c",
+    "rootDecisionSha256": "8b1ba4cd1a2dfdedc58fa23bc8cdf3b5fd1c25e80e5d7df702be802442fdd44c",
+    "actualExit": 0,
+    "elapsedSeconds": 688.6871764580719,
+    "numberedFindings": 18,
+    "historicalEmptyB": {
+      "status": "INCONCLUSIVE_EMPTY_TIMEOUT_NO_VERDICT",
+      "exit": 143,
+      "elapsedSeconds": 900.9770699169021,
+      "actualExitSha256": "51868c31aadf0cc8dc22a4883dabf955f347affdac60721d54cba0c14171d1a7",
+      "newReviewReleased": false
+    }
+  },
+  "newRowIndex": 14,
+  "paginationIndex": 10,
+  "preservation": {
+    "objectsPerArtifact": 14,
+    "totalRawObjects": 28,
+    "removeNewTailFirst": true,
+    "wholeImmediateParentByteEquality": true,
+    "historicalHelpersUnchanged": true
+  },
+  "helperObservations": [
+    {
+      "position": 3,
+      "action": "s-first-facts",
+      "root": "s-first-root",
+      "source": "s-first-receipt",
+      "requiredPosition": "pos-1",
+      "effectPosition": "pos-1"
+    },
+    {
+      "position": 5,
+      "action": "s-failed-facts",
+      "root": "s-failed-root",
+      "source": "s-failed-receipt",
+      "requiredPosition": "pos-1",
+      "effectPosition": null
+    },
+    {
+      "position": 7,
+      "action": "s-last-facts",
+      "root": "s-last-root",
+      "source": "s-last-receipt",
+      "requiredPosition": "pos-2",
+      "effectPosition": "pos-2"
+    }
+  ],
+  "helperAuthority": "Existing original-wire receipt binding, not prefix; exact three roots/client positions and body equality; current contextpos2",
+  "rawPositions": [
+    1,
+    2,
+    4,
+    6,
+    8,
+    9,
+    10
+  ],
+  "recordBeforeCleanup": "Existing onObserved full report writers; callback failure retained and finally runs",
+  "sentinel": "Exact next-index wrapper only, keep old cross sentinel and minimum seeing every response; pure cross.finish at boundary and terminal",
+  "labels": {
+    "currentPositive": "observes fifteen partial Transactional contracts through packed-capable actual installed HTTP",
+    "summaryKind": "installed-tx-fifteen-partial-summary",
+    "historicalLabelsPreserved": true
+  },
+  "historicalTimings": {
+    "PR128": {
+      "suiteSeconds": 769.38,
+      "jobSeconds": 999,
+      "jobMarginSeconds": 201,
+      "positiveElapsedMs": 20839.126314,
+      "positiveCapMs": 63000,
+      "affected30sMs": {
+        "ordinaryResourceCapture": 19388,
+        "invalidResourceReceipt": 20761,
+        "globalReceiptDenial": 14010
+      }
+    },
+    "PR129": {
+      "run": 38750269222,
+      "job": 116474544354,
+      "suiteSeconds": 691.57,
+      "jobSeconds": 914,
+      "jobMarginSeconds": 286
+    },
+    "throughputGuarantee": false
+  },
+  "axes": {
+    "mutationCurrent": {
+      "mutated": 40,
+      "unchanged": 14
+    },
+    "mutationProposed": {
+      "mutated": 41,
+      "unchanged": 14
+    },
+    "reachability": {
+      "existingFull": 40,
+      "readyRejection": 5,
+      "globalReceiptDenial": 1,
+      "selectedMinimum": 2,
+      "abortPreflight": 6,
+      "newSelected": 1
+    },
+    "orthogonal": true
+  },
+  "reviewRerunRequested": false
+}

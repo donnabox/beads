@@ -1,0 +1,23 @@
+{
+  "status": "PREPARATION_ONLY",
+  "candidateHead": null,
+  "candidateTree": null,
+  "parent": "f5511718371a6935614eae6756e796cef71570c2",
+  "suggestedTitle": "Test Transactional principal-key isolation and credential rotation",
+  "sourceAndReviewPins": {
+    "review-repair/source-binding.json": "fce5c0dfb33221f9cc29fd6420eab607722d88d0d9b6076b64a57f763f5f9406",
+    "review-repair/draft.patch": "fcfada50487e478b26ef86b85d2a51522a5ef2c431a28ffdedf8128f2f10a5a0",
+    "native-code-review.md": "958691d3c08e13a8a40c92fe30a48acd23960789bdefcc32da7dacb592a69676",
+    "review-repair/native-repair-review.md": "f7287d3e98526950649a14909b3a5027f10fc762dc41edf733d7b0078b740bdc",
+    "review-repair/root-findings-disposition.json": "2e84a5f0125c886b17d2f4e154907667b4849e4237775a7e9fe9b9c3793ba7b4",
+    "execution-preparation-v2/root-source-acceptance.json": "b44f12a611a2f0c0eea7ff28fd68a94e1a02b0c38d8a8b902659f34a78363dda",
+    "claude-code-supplement/final-launch-binding.json": "93a74c0388cf37c3582ee430362cd34d55f6e57dfaaf35b8b1b7ff8a14d6eacd",
+    "claude-code-supplement/root-release.json": "8093e71411b400fcf8684ec58963072ffb4eab4276339097873441dafa206251"
+  },
+  "outputs": {
+    "pr-body.md": "3de0f6bfab3fcb41ce0693e4aaf3c21e5cc7fa6b888cd87cd5506a83cca07f71",
+    "checklist.md": "e9d404488602da72930948dad6cc1f1570993c0e455cb6859477f2529605cd97"
+  },
+  "executed": false,
+  "notes": "No new gates or scripts. Checklist reflects root-owned pending council, installed validation, ordinary clean candidate and exact-head CI."
+}

@@ -1,0 +1,62 @@
+{
+  "accepted": true,
+  "at": "2026-10-15T21:26:53.347984+00:00",
+  "head": "8833c9242b7788e843e9eb97a2c99b2277fe75ef",
+  "tree": "057f879132074166f2c0f643a8b45bbd9dd47c6f",
+  "coverage": "Original full source at9e5 plus exact F1/F2 successor repair and omitted helper context.",
+  "basis": [
+    {
+      "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-guarded-batch-draft/native-code-review.md",
+      "sha256": "84f8ea0292c4b1f5235e35733be9af1985fd6464e8903d2932d95c5fb4daeae3"
+    },
+    {
+      "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-guarded-batch-draft/claude-code-preparation/stdout.txt",
+      "sha256": "c5e385db679d546ed85ec64a2d42c8fc1cb431c566813ac049248f7d192fac8a"
+    },
+    {
+      "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-guarded-batch-draft/claude-code-preparation/native-findings-audit.md",
+      "sha256": "f216467d5d6bb321693a3f2680ce9d4a3aa6f1f0bc8408d749232130e96b828a"
+    },
+    {
+      "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-guarded-batch-draft/review-repair/root-findings-disposition.json",
+      "sha256": "44bc81ddf11ead77bca62d2f106c0dce45b0269b7ee465de3df0285bf3e3e845"
+    },
+    {
+      "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-guarded-batch-draft/review-repair/native-repair-review.md",
+      "sha256": "a8414bb7a523d946872a8e9dd61f0ec6bcc6ceb2bbedc9023b8c0e5d1e8ae6d5"
+    },
+    {
+      "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-guarded-batch-draft/review-repair/claude-review/stdout.txt",
+      "sha256": "4bdce8d5e8fe0dd6062728d092f63265336ac3cd9f1a66a7f12b4d1254ad4d11"
+    },
+    {
+      "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-guarded-batch-draft/review-repair/claude-review/exit.json",
+      "sha256": "92a829edc8defb37dd4aa4921736ff43008bc2f230820d0bc33347b9bebb449d"
+    },
+    {
+      "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-guarded-batch-draft/review-repair/claude-review/native-findings-audit.md",
+      "sha256": "f36c8e59ce6f8e44d456fe80690c296331f09b52db0c475c6d913dbaa843d147"
+    }
+  ],
+  "supplementDispositions": [
+    {
+      "id": 1,
+      "disposition": "deferred optional diagnostic separation; reordering retains same ambiguous label and cannot cause acceptance"
+    },
+    {
+      "id": 2,
+      "disposition": "no current defect: concrete contender index and request4 index guards precede comparisons"
+    },
+    {
+      "id": 3,
+      "disposition": "deferred optional pair transport label precision; existing report-label behavior, all errors retained, control cannot accept transport failure"
+    },
+    {
+      "id": 4,
+      "disposition": "informational accepted; send-local fingerprints not independently sniffed wire bytes"
+    }
+  ],
+  "requiredRepairsRemaining": [],
+  "mergeAllowed": false,
+  "remainingGate": "Exact repaired-head CI and ordinary ancestry/scope/merged-tree verification"
+}

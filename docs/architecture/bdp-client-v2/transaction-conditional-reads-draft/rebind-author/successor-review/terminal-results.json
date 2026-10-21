@@ -1,0 +1,112 @@
+[
+  {
+    "duration_api_ms": 576774,
+    "stop_reason": "end_turn",
+    "session_id": "be2294b2-daaa-4953-b7c3-66ca1d70d875",
+    "total_cost_usd": 4.862002,
+    "usage": {
+      "input_tokens": 100,
+      "cache_creation_input_tokens": 143458,
+      "cache_read_input_tokens": 4720348,
+      "output_tokens": 42578,
+      "output_tokens_details": {
+        "thinking_tokens": 28003
+      },
+      "server_tool_use": {
+        "web_search_requests": 0,
+        "web_fetch_requests": 0
+      },
+      "service_tier": "standard",
+      "cache_creation": {
+        "ephemeral_1h_input_tokens": 143458,
+        "ephemeral_5m_input_tokens": 0
+      },
+      "inference_geo": "global",
+      "iterations": [
+        {
+          "input_tokens": 2,
+          "output_tokens": 6906,
+          "cache_read_input_tokens": 142848,
+          "cache_creation_input_tokens": 5356,
+          "cache_creation": {
+            "ephemeral_5m_input_tokens": 0,
+            "ephemeral_1h_input_tokens": 5356
+          },
+          "type": "message"
+        }
+      ],
+      "speed": "standard"
+    },
+    "modelUsage": {
+      "claude-haiku-4-5-20251001": {
+        "inputTokens": 2223,
+        "outputTokens": 15,
+        "cacheReadInputTokens": 0,
+        "cacheCreationInputTokens": 0,
+        "webSearchRequests": 0,
+        "costUSD": 0.002298,
+        "contextWindow": 200000,
+        "maxOutputTokens": 32000,
+        "thinkingTokens": 0,
+        "canonicalModel": "claude-haiku-4-5",
+        "provider": "firstParty",
+        "costBasis": "list"
+      },
+      "claude-opus-5[1m]": {
+        "inputTokens": 100,
+        "outputTokens": 42578,
+        "cacheReadInputTokens": 4720348,
+        "cacheCreationInputTokens": 143458,
+        "webSearchRequests": 0,
+        "costUSD": 4.859704000000001,
+        "contextWindow": 1000000,
+        "maxOutputTokens": 64000,
+        "thinkingTokens": 28003,
+        "canonicalModel": "claude-opus-5",
+        "provider": "firstParty",
+        "costBasis": "list"
+      }
+    },
+    "permission_denials": [],
+    "terminal_reason": "completed",
+    "fast_mode_state": "off",
+    "fast_mode_disabled_reason": "sdk_opt_in_required",
+    "subagent_stats": {
+      "spawned": 0,
+      "requested": {
+        "background": 0,
+        "foreground": 0,
+        "unset": 0
+      },
+      "started_in_background": 0,
+      "max_depth": 0,
+      "spawned_by_subagents": 0,
+      "completed": 0,
+      "failed": 0,
+      "killed": {
+        "parent": 0,
+        "user": 0,
+        "system": 0
+      },
+      "refused": {
+        "depth_limit": 0,
+        "concurrency_limit": 0,
+        "budget": 0
+      },
+      "by_type": {}
+    },
+    "is_error": false,
+    "num_turns": 64,
+    "subtype": "success",
+    "api_error_status": null,
+    "result": "## Findings\n\n**No actionable (blocking) findings.** The bounded correction does exactly and only what `root-acceptance.json` accepted, and every measurement it changes is arithmetically corroborable from the removal itself. Three low/informational items follow, then resolution status.\n\n**1. Residual portable coupling on the 401 pair \u2014 informational, no change recommended**\n- `packages/conformance/test-support/transactional/manifest-v1.json:28105-28119` (`anonymous-head:get-metadata`).\n- The six absence assertions are gone, but the HEAD parity assertion still lists `bdp-scope-epoch`/`bdp-authorization-view`/`bdp-scope-position`, and those three cannot be made optional (`optionalHeaders` is HEAD-only and confined to `content-length|content-type|vary`). Per `packages/conformance/src/runner.ts:2185-2192`, the test is `current === prior || (current === undefined && optional)`, so both-absent passes and both-present passes \u2014 the removed absence requirement is **not** recreated. What remains binding is symmetry: a peer that reports Scope context on the 401 GET but omits it on the 401 HEAD fails. That obligation is grounded in `docs/specs/bdp.md:2004-2008` (\"HEAD retains the corresponding GET \u2026 decision\"; required context/cache fields remain required) and `:5832` (\"HEAD retains the corresponding GET response metadata\"), not in any 401 context rule. Impact: none for the reference; for peers it is a parity rule, not a disclosure rule. Fix: none \u2014 but root should record this explicitly, since it is the one place where the portable row still touches 401 context.\n\n**2. Coverage prose touches a separate unplanned requirement \u2014 informational**\n- `packages/conformance/test-support/transactional/coverage-v1.json:2844` (\"Supporting GET/HEAD observations verify metadata parity with permitted HEAD omissions\").\n- `transactional.http.head-parity` is a distinct catalog requirement (`packages/conformance/catalog/transactional-v1.json:2068`) with **no** coverage row anywhere in the repo, so it stays unplanned and no credit can leak: the row id, the single binding's `scenario`, and the retained \"no cross-credit or public profile claim follows\" sentence all confine it. The sentence is descriptive of the row's own supporting observations. No change needed.\n\n**3. SHA-256 values are the only numbers static review cannot close \u2014 low**\n- `packages/conformance/src/transactional-cumulative.test.ts:3780` (`faf0d8e6\u2026`) and the four file digests in `measurements.json`.\n- Everything *countable* I recomputed independently and it matches exactly (see \"Measurement corroboration\" below). The hash values themselves require execution. Fix: none; stated as a limit, consistent with the original review's \"Not credited as results\".\n\n## Original items: resolved vs. remaining\n\n- **Item 1 (HEAD `media` vs. conceded omission) \u2014 resolved, correctly.** `anonymous-head:media` and `missing-head:media` are gone; `content-type` stays in both `optionalHeaders` lists, so the reference's current behavior is **not** forced onto peers. `anonymous-get:media` / `missing-get:media` (GET Problem media) are retained (`manifest-v1.json:28025-28029`, `:28189-28193`), as are `schema` and `problem`. The asymmetry the review flagged is now fully gone: **no** HEAD action in the row asserts `media` (initial/conditional/mismatch/anonymous/missing/current-head), while every HEAD still asserts `body-absent` + `cache` (the explicitly required cache field) + `get-metadata`. Reference impact nil: `packages/server/src/read-http.ts:42-46` retains `content-type` on HEAD and sets `content-length` to the GET body length, so parity still pins the value whenever it is sent.\n- **Item 2 (coverage over-credited a validator comparison) \u2014 resolved.** `coverage-v1.json:2844` now assigns before/after validator comparison to the app oracle. Verified against the actual oracle: `apps/bdptest/src/transactional-matrix.test.ts:4467` (`i === 12` ETag differs from `initialTag`) and `:4456` (complete current Resource `toStrictEqual` the receipt postimage). Portable 304 evidence is unchanged and still observed-equality: `manifest-v1.json:27720-27725` and `:27797-27802` both use `{kind: header, name: etag, equalsResponse: \"initial-get\"}`.\n- **Item 3 (401 absence was an analogy) \u2014 resolved by removal; root's rejection of the broader rule is correct.** I independently checked the normative basis and found none: `bdp.md:5819-5826` scopes the refusal to malformed minimum tuples and places it *after* authentication/authorization; `:5828-5831` is that refusal's \"MUST NOT report\" clause; `:5804-5810` and `:5862-5869` define the fields without an absence exception; the bound requirement's quoted clauses (`catalog/transactional-v1.json:2044-2065`) cover refusal precedence, \"Required current Scope context remains required on 304 and 412\", optional validators, and no checkpoint advancement \u2014 nothing about 401. A scan for non-disclosure clauses (`bdp.md:1681, 1952, 1986, 3516, 4652-4655, 5213`) turned up only ordering/precedence rules, no field-absence rule for 401. So no normative rule was invented and no reference behavior was forced onto peers.\n  - Reference behavior is correctly retained and labelled: `transactional-matrix.test.ts:4361-4367`, with the inserted comment accurate against `packages/server/src/transaction-http.ts:403` (returns `transactionHttpProblem(\"unauthenticated\")` with no observation, *before* the malformed-minimum check at `:404-405`) and `packages/server/src/authority-read.ts:146-153` (`pre-context` vs `observed` refusal phases).\n  - **404 context preserved** per `bdp.md:5834-5839`: `missing-get`/`missing-head` keep `present-bdp-*` \u00d73 + `position: pos-1` (`manifest-v1.json:28164-28187`, `:28253-28276`).\n  - **412 unchanged:** `mismatch-get` = status/request-headers/request-body/cache/3\u00d7present/position/body-absent; `mismatch-head` adds only `get-metadata`. No ETag or media obligation added.\n- **Item 4 (execution-time headroom) \u2014 remains open by design, budgets not widened.** Verified unchanged: `transactional-matrix.test.ts:628` (`\u2264 63000` ms), `:131-132` (90 s cohort cap), `:644` (120 s vitest), `:354` (5 s per request), with `:627` still `234` exchanges. No new allowance anywhere in the file.\n\n## Scope and preservation checks\n\n- **Exactly eight removals, nothing else.** `correction.patch` hunks map one-to-one onto the current bytes: three `absent-bdp-*` from `anonymous-get` (now `:28004-28051`, 8 assertions), three `absent-bdp-*` + `media` from `anonymous-head` (now `:28074-28120`, 7), `media` from `missing-head` (now `:28233-28297`, 10). `missing-get` untouched at 11.\n- **No request or other oracle loss.** `request-authored-headers` + `request-authored-body` survive on all 14 actions; `raw.headerLines` for the three touched actions are byte-intact (`:27991-28002`, `:28061-28071`, `:28220-28231`) and still satisfy the literal pin at `transactional-matrix.test.ts:4611-4641` (`expect(action.raw).toEqual({headerLines, body?})`, no extra keys), including `if-none-match: *` at indices 3,4,7,8,9,10, `credentialRef: anonymous` at 7,8, and `beads/missing` at 9,10. `captures` still `[]` and pinned (`transactional-cumulative.test.ts:3783`).\n- **Counts and order.** Per-action assertions 26/18/11/10/11/9/10/**8**/**7**/11/**10**/26/18/11 = **186**; 2642 + 186 = **2828**; 14 new / **241** actions. Coverage binding list (`coverage-v1.json:2849-3034`) is order-identical to the manifest assertion ids in all three edited actions. No stale constant survives anywhere: repo-wide grep for `2836|194|23230|23386|873360|886652|134592|892770|869264|...` returns only the historical comment at `transactional-cumulative.test.ts:1188`, and `canonicalExecutionDigest` is computed at runtime (`transactional-matrix.test.ts:2174`), not pinned.\n- **32 raw objects + both full-parent pins unchanged.** `transactional-cumulative.test.ts:3562-3727` matches `preservation.json` byte-for-byte (16 manifest + 16 coverage), and `:3742-3746` still pins `cd90592e\u2026` / `0c991feb\u2026`. The new full-file digests are **not** pinned anywhere in the repo (grep for `bbb7def1`/`a2c620ce` and the predecessor `60c527f6`/`33032fe0`: no in-repo matches), so no pin was silently skipped.\n- **Route evidence correctly left alone.** `transactional-matrix.test.ts:1407-1436` keeps the 18-route preimage, `1434` B, and `5a32a664\u2026` \u2014 route-only and independent of assertions; not recomputed, correctly.\n- **Coverage disclaimers intact.** `wholeContract: false` (`:2843`), the full unqualified list, \"The separate Read conditional requirement remains unplanned; no cross-credit or public profile claim follows.\" `claimEligible` is a runtime result field, asserted `false` at `transactional-matrix.test.ts:4669`; the coverage row keys are still exactly `[\"id\",\"wholeContract\",\"reason\",\"bindings\"]` (`transactional-cumulative.test.ts:3789`).\n- **App delta is only fences + comments.** `transactional-matrix.test.ts:1795-1796` and `:2206-2207` (891310/23346), plus the three comment lines at `:4361-4362` and `:4466`. Control semantics unchanged: `maximum = control ? 4 : 14` (`:4281`), failures exactly `[\"conditional-get:status\",\"conditional-get:body-absent\"]` (`:4556`), prerequisite/cleanup/transport/harness errors all still asserted undefined (`:4528-4537`). Scenario routing (`:4573-4599`), session identity/tail completion (`:4500-4533`), and `principalNamespaceWire`/`withPrincipalWire`/`assertPrincipalPositive` (`:3766`, `:4044`, `:4053`, called at `:625`) untouched. The control never reaches index 7/8/10, so the removals cannot perturb it.\n\n## Measurement corroboration (independent, arithmetic only)\n\nI recomputed the removal's byte/node cost from the actual on-disk formatting rather than trusting `measurements.json`:\n\n- Eight removed assertion objects = 551 B per `absent-*` triple \u00d72 + 179 B per `media` \u00d72 = **1460 B**. Measured: 869264 \u2192 867804 = **\u22121460**; normal 882556 \u2192 881096 = **\u22121460** (equal, as expected: the removed objects contain no inline arrays).\n- Node cost = 8 objects \u00d7 (1 object + 4 field values) = **40**. Measured 23166 \u2192 23126 = **\u221240**.\n- Eight coverage id lines = 405 B removed; reason text 219 \u2192 420 chars = +201 B; net **\u2212204**. Measured 133568 \u2192 133364 = **\u2212204**.\n- Fences = measurement + unchanged margins: 867804+4096=**871900**, 881096+4096=**885192**, 23126+64=**23190**, 133364+1024=**134388**; bases `488280/13019/70662` unchanged (871900\u2212488280=383620, 23190\u221213019=10171, 134388\u221270662=63726). All match `transactional-cumulative.test.ts:1192-1217`.\n- Derivatives: **42** specimens enumerated, max 887214 B / 23282 nodes; app fences 887214+4096=**891310**, 23282+64=**23346** \u2014 margin unchanged, and both maxima moved by exactly the canonical \u22121460/\u221240, as they must. The control specimen (`conditional-nonmatching-if-none-match`) is 881096+23 = 881119 B with nodes unchanged, consistent with a single `*` \u2192 `\"conditional-no-match\"` value swap. Growth figures vs. the principal parent (825049/837765/21908/124537) reconcile: +42755/+43331/+1218/+8827.\n\n## Limits of this review\n\nStatic reads only \u2014 no tests, typecheck, build, product imports, services, commands, or delegation; nothing was written. I did not re-audit the base draft beyond the correction's blast radius. The SHA-256 values (`faf0d8e6\u2026`, the four file digests, `nonAssertionActionBytesSha256`) and all pass/fail outcomes remain unverified until the suite actually runs; the historical 194/2836 + 56-case evidence describes the predecessor bytes and does not validate this 186/2828 successor. **This review is not approval \u2014 root disposition is still required**, and fresh build/installed validation (including the first real full-cohort elapsed observation for item 4) remains a separate gate.",
+    "ttft_ms": 2481,
+    "type": "result",
+    "duration_ms": 576553,
+    "uuid": "8494d0ac-6ab5-4d0f-bbe8-2af4a4060e97",
+    "ttft_stream_ms": 1237,
+    "time_to_request_ms": 31,
+    "first_content_frame_ms": 1238,
+    "queued_turn_count": 0
+  }
+]

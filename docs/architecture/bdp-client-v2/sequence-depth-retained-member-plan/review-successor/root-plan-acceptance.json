@@ -1,0 +1,16 @@
+{
+  "at": "2026-10-16T04:08:36.361874+00:00",
+  "acceptedPlan": true,
+  "planSha256": "07827411c1b243f5ab4cc91188f453a22d365c3bbb9d03c2cd814c3f4617c8e0",
+  "ledgerSha256": "4ffbc5aaf6ee3f59008a65e5899679d2dd5383872cb1574ff34391839e3399f3",
+  "dispositionsSha256": "762d174a908354a28c539888f49c70d79c20887026e256b9206e833ebb211865",
+  "rootReadFullActualClaudeReviewAndDispositions": true,
+  "reviewNaturalExit0": true,
+  "productionScope": [
+    "packages/server/src/transaction-batch.ts",
+    "packages/server/src/transaction-http.ts"
+  ],
+  "authoringReleased": false,
+  "nextGate": "Reanchor against actual merged minimum serving main; preserve receiving-read changes and ordinary ancestry. No second owner preflight or store change.",
+  "corrections": "Seven review findings and four context gaps dispositioned, plus independent atomic-expiry readback clarification; source18cases/21HTTP, overall31expected40maxHTTP. Counts are plans only."
+}

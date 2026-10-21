@@ -1,0 +1,62 @@
+## Verdict
+
+**No blocking defects.** The production delta is correct and minimal, and every load-bearing claim in the draft and its docs verifies against actual source. Four optional items below; none gate review.
+
+## Artifact integrity (verified, not assumed)
+
+| Claim | Result |
+|---|---|
+| `draft.patch` SHA | `69c3c4f…d6c` ✓ matches; live `git diff 427cfef` re-hashes to the same value |
+| `source-binding.json` SHA | `9980b67…446f` ✓ |
+| plan-v2 SHA | `72a06f8e…ee85` ✓ |
+| All 5 owned-file SHAs | ✓ match binding byte-for-byte |
+| `ownedParentPathsEqualBase: true` | ✓ `git diff 70ac666 427cfef` on the 5 owned paths is **empty**; sole parent-only delta is `apps/bdptest/src/read-update-matrix.test.ts` |
+| Scope | ✓ exactly 5 files, `+272/−4`; production = 5 lines in one method |
+
+`execution: "NOT RUN; draft preflight only"` is consistent with the preflight, which explicitly marks the selective-interval/fetch interaction unproved and states no control was created. I claim no execution outcome.
+
+## Settled normative law — verified
+
+**Production guard** (`transaction-store.ts:1724-1727`). All five states enumerated against `enter` (341-345), `fence` (353-361) and the interval handler (1340-1358):
+
+- healthy → `metadata("epoch")` (unchanged); normal close → `undefined` (unchanged)
+- `ownerFailure` open → throws (unchanged); **`ownerFailure` + closed → now throws** (was masked)
+- **`maintenanceFailure` (which always sets `closed`) → now throws** (was masked)
+
+It now mirrors `observeComparisonDeadline:1734` exactly. Correctly, `enter` throws *before* `run()`, so the maintenance case never touches the already-`db.close()`d handle — no SQLITE_MISUSE.
+
+**Admission ordering.** `transaction-comparison.ts:52` is the sole production caller and precedes both the deadline branch (56) and `store.admit` (66-69). `comparisonEpoch` is a closure arrow using no `this`, so `transaction-submission.ts:119`'s unbound pass is safe. Rejection genuinely lands before admission.
+
+**Bodyless 500, traced end to end.** `service.submit` (`transaction-service.ts:499-507`) calls `submitTransaction(..., true)` — the HTTP path is *observed*. For the batch target nothing touches the owner before submit: `hasMinimumControls` (`transaction-http.ts:145`) is false for the test's three headers, and the sequence branch is skipped. The thrown `Error` falls to the terminal `else response = empty(500)` (614), yielding `content-length: 0` + `private, no-store` (79-88), then `x-bdp-development: non-attesting` (616) and POST `vary: Accept` (617). Context headers are set *only* by `context()` (115-117) and `transaction-schema-http.ts:57` — no transport injection, so all seven absence assertions hold. `retry-after`/`content-type` come only from `problem()` (101-104); `x-bdp-development-limit` only from `developmentGap()` (141).
+
+**503 control is real and distinct.** Restoring `closed ? undefined` yields `comparison-owner-stopped` → `comparison-refusal/owner-stopped` (`transaction-submission.ts:170-177`) → `problem(readProblem(...))` returned *without* context (355-357): a 503 with `application/problem+json`, `retry-after: 1` and a body. It fails on status, body, content-length, content-type and retry-after independently, and the named `"maintenance failure is internal500"` string is exact.
+
+**Cleanup safety.** `runtime.close()` memoizes `completion` (364-387), so the double close (explicit, then inside `retainedReceiptInventory`) is one listener lifetime. `service.close()` → `read.close()` → `pagination.close()` → `releaseAll()` iterates an empty `snapshots` set (POST-only test) → no-op; → `owner.close()` (2088-2095) is guarded by `if (!closed)` and bypasses `enter`, so a maintenance-failed owner closes without throwing. `closed`/`inventoryChecked` are reachable. `vi.useRealTimers()` precedes the await in the finally.
+
+**Frozen-owner adapters.** No `vi.spyOn(f.store, …)`. The returned object (1432) has **no getters** — `scopeEpoch: epoch` is a plain value — so `{...f.store}` is safe even post-`close()` in the normal-close row. The spread-adapter and `vi.fn(f.store.observeComparisonDeadline)` forms match existing precedent at `transaction-submission.test.ts:1218` / `:1250`; the overloaded-`admit` cast matches existing `as typeof f.store.admit` at `:100`.
+
+**Selective fake interval.** `setInterval` appears exactly **once** in all non-test server source (`transaction-store.ts:1340`), so `getTimerCount() === 1` is exact. `toFake` is established (`read-sequence-lifecycle.test.ts:745`), and full fake timers already wrap this store with `.unref()` at `transaction-store.test.ts:877/3329`, which retires the fake-timer-`unref` question. Leaving `setTimeout`/fetch real is what lets the seed POST complete — the `"selective interval/fetch compatibility"` assertion names that go/no-go precisely.
+
+**Fault propagation shape.** `instant()` (295-300) calls the injected clock, and `maintain()` (512-513) calls it *inside* `atomic` pre-COMMIT. So `committing=false`, clean rollback, non-SQLite → `throw error`, **no fence** → `maintenanceFailure = {cause}`. Hence the wrapper message and `.cause === original` are right in both new suites, and `before-maintenance-commit` (509) sits at the same pre-commit point.
+
+**Oracles.** `$defs/mutationReceipt` matches precedent (1498, 2917). `transaction-batch.ts:707` emits `{operationIndex, ...outcome}` — `operationName` only when `op.name` exists, which the `create()` helper omits — so the strict `toEqual` key set `{operationIndex, outcome, resource}` is exactly right. `metadata: {}` plus extra `revision` under `objectContaining` matches `beadContent` (2818-2831). The inventory row shape replicates line 3101-3104 precedent exactly. `pos-1` for a first mutation is confirmed at 3088.
+
+**No old-behavior dependants.** The only other test references to `comparisonEpoch` are stubs (`comparisonEpoch: () => epoch`) that replace the method outright. No test asserted `undefined` for a fenced/closed owner. The selected fencing regression (990-1013) fences *without* closing, so it is untouched.
+
+**Ledger.** The plan's table recomputes from source to exactly **15 dirs / 16 owner opens / 2 readonly / 7 HTTP / 4 listeners** (14 positives + 1 control). I independently confirmed the existing fencing case contributes 3 requests / 2 listeners / 2 opens / 1 dir, and the new case 2 requests / 1 listener / 1 open / 1 dir / 1 readonly. All six selected existing titles exist. No new seam: only pre-existing `clock` + `maintenanceIntervalMs` seams are used.
+
+**Doc history is accurate.** I checked both cited snapshots: at `30035b8` *and* `70ac666`, `observeComparisonDeadline` was already fault-aware while `comparisonEpoch` was not. So "the shortcut still masked that fault before final observation; those snapshots did not repair it" is literally correct, and the note's non-claims (unmerged `427cfef`, CI-blocked, no PR120 landing claim, 14/1 is healthy-regression not fault qualification) match what the tree supports.
+
+## Optional improvements — not defects
+
+1. **Control discriminator is nested one level.** `transaction-http.test.ts:986` — the named assertion surfaces only inside `AggregateError`, so a top-level reader sees `"maintenance HTTP assertion or cleanup failed"`. The preflight already mandates nested-cause inspection and `console.info` records `responseStatus` independently, so evidence is adequate. Optional hardening: interpolate the actual status into the AggregateError message (`…failed (status=${responseStatus})`). Low value, touches a frozen file.
+
+2. **Two assertions per `it.each` row are vacuous.** `transaction-submission.test.ts:1151-1153` / `:1197-1199` — on `observed=false`, `admitObserved`/`observe` are unreachable regardless of the fix; on `observed=true`, `admit` is. Harmless symmetry and arguably good defense, but each row proves slightly less than four live assertions suggest. No change recommended.
+
+3. **Successor note added pre-verification.** Plan §106 says add it "once this slice is verified"; the draft adds it now. Defensible — the note disclaims every outcome, and root permitted a dependent draft — but it is a sequencing judgment worth an explicit root nod rather than something I should ratify.
+
+4. **`expect(text).not.toContain(sentinel.message)` after `toBe("")`** (948) is strictly redundant, but plan §35 mandates body-and-every-header sentinel absence. Keep as-is.
+
+## What I did not and cannot assert
+
+I ran no tests, builds, installs or services; read-only inspection and `git show`/`shasum` only. So: no pass/fail claim, no typecheck/lint confirmation (the overloaded-`admit` cast and `seedReceipt` narrowing in `try` look sound by TS control-flow rules and have in-file precedent, but only `tsc` settles it), and no judgment on selective-interval/fetch runtime compatibility — correctly flagged unproved by the author. Nothing here infers profile qualification, default-installed fault-proof, or wave CI gates; `427cfef` remains unmerged and PR120 pending.

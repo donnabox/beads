@@ -1,0 +1,365 @@
+{
+  "state": "AUTHORED same grammar, tuple type correction identity rebound for CLOSED validation4; no callbacks executed",
+  "common": {
+    "claimEligible": false,
+    "outcome": "actual failure aggregation",
+    "failureCount": "actual collected errors"
+  },
+  "newSourceCallbacks": [
+    {
+      "kind": "new",
+      "group": "A",
+      "file": "packages/server/src/transaction-changefeed.test.ts",
+      "fullName": "preserves changefeed cursor precedence under current-admission opaque minima"
+    },
+    {
+      "kind": "new",
+      "group": "B",
+      "file": "packages/server/src/transaction-changefeed.test.ts",
+      "fullName": "captures current changefeed admission once across owner entries: start-now-unknown"
+    },
+    {
+      "kind": "new",
+      "group": "B",
+      "file": "packages/server/src/transaction-changefeed.test.ts",
+      "fullName": "captures current changefeed admission once across owner entries: genesis-unknown"
+    },
+    {
+      "kind": "new",
+      "group": "B",
+      "file": "packages/server/src/transaction-changefeed.test.ts",
+      "fullName": "captures current changefeed admission once across owner entries: retained-unknown"
+    },
+    {
+      "kind": "new",
+      "group": "B",
+      "file": "packages/server/src/transaction-changefeed.test.ts",
+      "fullName": "captures current changefeed admission once across owner entries: retained-pos-01"
+    },
+    {
+      "kind": "new",
+      "group": "C",
+      "file": "packages/server/src/transaction-changefeed.test.ts",
+      "fullName": "drains current changefeed admission before owner close: start-now"
+    },
+    {
+      "kind": "new",
+      "group": "C",
+      "file": "packages/server/src/transaction-changefeed.test.ts",
+      "fullName": "drains current changefeed admission before owner close: retained"
+    },
+    {
+      "kind": "new",
+      "group": "F",
+      "file": "packages/server/src/transaction-changefeed.test.ts",
+      "fullName": "preserves current changefeed anchor capture before waiter preflight"
+    },
+    {
+      "kind": "new",
+      "group": "D",
+      "file": "packages/server/src/transaction-sse.test.ts",
+      "fullName": "serves current changefeed opaque minima across finite and SSE admission"
+    }
+  ],
+  "newSourceReports": 9,
+  "selectedLegacyReports": 2,
+  "selectedLegacyIdentities": [
+    "changefeed-opaque-boundaries",
+    "changefeed-opaque-http"
+  ],
+  "unselectedHistorical": "private-source-changefeed-parameter-context preserved for ordinary full CI only",
+  "sourceTotalCallbacks": 15,
+  "installedTotalCallbacks": 3,
+  "sourceDerivedHttp": 60,
+  "installedSourceDerivedHttp": 24,
+  "observations": {
+    "A": {
+      "name": "current-changefeed-minimum-owner",
+      "file": "packages/server/src/transaction-changefeed.test.ts",
+      "successExpected": {
+        "records": 18,
+        "commits": 2,
+        "ownerLifetimes": 2,
+        "offlineDeletes": 1
+      },
+      "fields": [
+        "records",
+        "commits",
+        "ownerLifetimes",
+        "offlineDeletes"
+      ],
+      "fileSha256": "834d13d108cb0577cfbf0f7d32b7072a62deeb9db70a5bd72e960d5cfc42b9e3",
+      "reportLine": 2070,
+      "sharedFields": [
+        "outcome",
+        "failureCount",
+        "claimEligible"
+      ]
+    },
+    "B": {
+      "name": "current-changefeed-minimum-capture",
+      "file": "packages/server/src/transaction-changefeed.test.ts",
+      "successExpectedPerCallback": {
+        "reads": 4,
+        "commits": 2,
+        "waits": 1,
+        "clocks": 4,
+        "closes": 1
+      },
+      "fields": [
+        "label",
+        "reads",
+        "captures",
+        "anchors",
+        "waits",
+        "clocks",
+        "commits",
+        "closes",
+        "originalAfter",
+        "positiveGroup",
+        "cleanupState"
+      ],
+      "fileSha256": "834d13d108cb0577cfbf0f7d32b7072a62deeb9db70a5bd72e960d5cfc42b9e3",
+      "reportLine": 2364,
+      "sharedFields": [
+        "outcome",
+        "failureCount",
+        "claimEligible"
+      ]
+    },
+    "C": {
+      "name": "current-changefeed-minimum-drain",
+      "file": "packages/server/src/transaction-changefeed.test.ts",
+      "successExpectedPerCallback": {
+        "readsBeforeClosedProbe": 2,
+        "rawClosedProbes": 1,
+        "serviceClosedProbes": 1,
+        "waits": 1,
+        "clocks": 2,
+        "closes": 1,
+        "commits": 1
+      },
+      "fields": [
+        "label",
+        "reads",
+        "readsBeforeClosedProbe",
+        "captures",
+        "waits",
+        "clocks",
+        "closes",
+        "commits",
+        "serviceClosedProbes",
+        "rawClosedProbes",
+        "order",
+        "closeSettled",
+        "cleanupState"
+      ],
+      "fileSha256": "834d13d108cb0577cfbf0f7d32b7072a62deeb9db70a5bd72e960d5cfc42b9e3",
+      "reportLine": 2496,
+      "sharedFields": [
+        "outcome",
+        "failureCount",
+        "claimEligible"
+      ]
+    },
+    "F": {
+      "name": "current-changefeed-minimum-preflight",
+      "file": "packages/server/src/transaction-changefeed.test.ts",
+      "successExpected": {
+        "rows": 4
+      },
+      "fields": [
+        "rows"
+      ],
+      "actualRowFields": [
+        "label",
+        "initialized",
+        "attempted",
+        "closed",
+        "errorClass",
+        "stopUnknown",
+        "directory",
+        "directoryAbsent",
+        "captures",
+        "reads",
+        "waits",
+        "clocks",
+        "closes",
+        "commits",
+        "outcome",
+        "failureCount"
+      ],
+      "note": "Separate per-row try/catch/finally; no synthesized aggregate calls/closures.",
+      "fileSha256": "834d13d108cb0577cfbf0f7d32b7072a62deeb9db70a5bd72e960d5cfc42b9e3",
+      "reportLine": 2622,
+      "sharedFields": [
+        "outcome",
+        "failureCount",
+        "claimEligible"
+      ]
+    },
+    "D": {
+      "name": "current-changefeed-minimum-http",
+      "file": "packages/server/src/transaction-sse.test.ts",
+      "successExpected": {
+        "attempted": 32,
+        "completed": 32,
+        "runtimeClosed": true,
+        "directoryAbsent": true,
+        "observedResponses": 32
+      },
+      "fields": [
+        "attempted",
+        "observedResponses",
+        "completed",
+        "records",
+        "stream",
+        "elapsedMs",
+        "runtimeClosed",
+        "stopUnknown",
+        "workDeadlineFired",
+        "pendingOperationsAtReport",
+        "directory",
+        "directoryAbsent"
+      ],
+      "note": "Record ready snapshots before status assertion (also live), refresh same ordinal on actual finite/intentional-live drain, seed body chunks before seed assertions; seed socket census unavailable. Same32 dispatches/32 successes required and every original oracle/deadline retained.",
+      "fileSha256": "8f8678b9f8d84e36b7faef5279e70b3d9fa9e992ce3f8b2eb6a718ed92b31589",
+      "reportLine": 1553,
+      "sharedFields": [
+        "outcome",
+        "failureCount",
+        "claimEligible"
+      ],
+      "recordFields": [
+        "ordinal",
+        "method",
+        "url",
+        "status",
+        "bodyOctets",
+        "bodySha256",
+        "wireSha256",
+        "requestHeaders",
+        "headers",
+        "readyObserved",
+        "drained",
+        "transportClosedObserved",
+        "drainKind",
+        "availability",
+        "bodyState"
+      ],
+      "successRecordRules": {
+        "all32": {
+          "readyObserved": true,
+          "drained": true,
+          "bodyState": "drained",
+          "availability": {
+            "status": true,
+            "headers": true,
+            "body": true
+          }
+        },
+        "seed1and2": {
+          "transportClosedObserved": null,
+          "drainKind": "seed-body",
+          "wireSha256": null,
+          "availability.wire": false
+        },
+        "raw3to32": {
+          "transportClosedObserved": true,
+          "wireSha256": "actual nonempty wire SHA256",
+          "availability.wire": true
+        },
+        "rawFiniteExcept30": {
+          "drainKind": "finite-body"
+        },
+        "rawLive30": {
+          "drainKind": "intentional-live"
+        }
+      },
+      "failureRecordRules": {
+        "sameOrdinalUpsert": true,
+        "unavailableStatusBody": null,
+        "bodyState": [
+          "unavailable",
+          "partial",
+          "drained"
+        ],
+        "actualWireHashOnlyWhenObserved": true,
+        "completed": "count records with actual drainedtrue, independently of status/assertion success",
+        "observedResponses": "count readyObservedtrue",
+        "cleanup": "refresh actual recorder snapshots after bounded cleanup even on failure; cleanup-close alone does not complete a partial live observation"
+      }
+    },
+    "E": {
+      "name": "private-installed-current-changefeed-minimum",
+      "file": "apps/bdptest/src/transactional-changefeed-refusal-context-installed.test.ts",
+      "successExpected": {
+        "attempted": 10,
+        "settledFiniteExchanges": 9,
+        "cleanClose": true,
+        "closed": true,
+        "pendingOperationsAtReport": 0,
+        "directoryRemoved": true,
+        "trackedDiffUnavailableReason": null
+      },
+      "fields": [
+        "attempted",
+        "settledFiniteExchanges",
+        "responses",
+        "stream",
+        "declaredSourceCommit",
+        "workspaceDirty",
+        "witnessSourceSha256",
+        "trackedDiffSha256",
+        "trackedDiffUnavailableReason",
+        "sourceLimitation",
+        "entryLiteral",
+        "entry",
+        "entrySha256",
+        "binding",
+        "ready",
+        "childPid",
+        "processEvents",
+        "cleanClose",
+        "closed",
+        "stopUnknown",
+        "lateCleanupRejectionObserved",
+        "pendingDrained",
+        "streamDrained",
+        "pendingOperationsAtReport",
+        "directory",
+        "directoryRemoved",
+        "directoryAbsent",
+        "launchAttempted",
+        "assertionsCompleted",
+        "deadlineFired",
+        "failureCategories"
+      ],
+      "fileSha256": "813c7446abbd064fe14425b81ae4befad7a55f54e30a44172209b6a82950fa77",
+      "reportLine": 1300,
+      "sharedFields": [
+        "outcome",
+        "failureCount",
+        "claimEligible"
+      ],
+      "metadataCapture": {
+        "phase": "inside existing45s work, before launch",
+        "timeoutMs": "integer1000..1500 or fail without subprocess",
+        "maxBufferBytes": 8388608,
+        "stderr": "ignored, never echoed",
+        "onFailure": {
+          "trackedDiffSha256": null,
+          "trackedDiffUnavailableReason": "bounded tracked diff capture unavailable",
+          "failureCategory": "tracked-diff-metadata",
+          "aggregated": true,
+          "launchAttempted": false
+        },
+        "finally": "cached metadata only; no subprocess",
+        "success": "actual trackedDiffSha256 must match final bound raw .patch SHA"
+      }
+    }
+  },
+  "selectionSha256": "d6662e99711769723ff3dfaf7a72c7017ad3d2e4e0a12dc1ec59304588619d8f",
+  "workloadSha256": "8657dae2ac0dc2eb58810894075d8eb7735d2d4c633e867791b211d98add270d",
+  "countsAreProspectiveNotObserved": true
+}

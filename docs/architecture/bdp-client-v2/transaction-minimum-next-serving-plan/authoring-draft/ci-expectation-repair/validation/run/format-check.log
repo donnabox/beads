@@ -1,0 +1,29 @@
+apps/bdptest/src/transactional-collection-minimum-installed.test.ts format ━━━━━━━━━━━━━━━━━━━━━━━━━
+
+  × Formatter would have printed the following content:
+  
+    1140 1140 │         expect(collision.bodyText).toBe("");
+    1141 1141 │         expect(collision.bodyOctets).toBe(0);
+    1142      │ - ······expect(collision.headers["content-type"]?.split(";",·1)[0]).toBe(
+    1143      │ - ········"application/problem+json",
+    1144      │ - ······);
+         1142 │ + ······expect(collision.headers["content-type"]?.split(";",·1)[0]).toBe("application/problem+json");
+    1145 1143 │         expect(collision.headers["content-length"]).toBe(
+    1146 1144 │           String(
+  
+
+Checked 2 files in 24ms. No fixes applied.
+Found 1 error.
+format ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+  × Some errors were emitted while running checks.
+  
+
+Traceback (most recent call last):
+  File "/Users/dbox/repos/wt/vickie/bdp-integration-logs/guarded-action.py", line 5, in <module>
+    subprocess.run(sys.argv[1:],check=True)
+    ~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/homebrew/Cellar/python@3.14/3.14.5/Frameworks/Python.framework/Versions/3.14/lib/python3.14/subprocess.py", line 578, in run
+    raise CalledProcessError(retcode, process.args,
+                             output=stdout, stderr=stderr)
+subprocess.CalledProcessError: Command '['/Users/dbox/.nvm/versions/node/v24.16.0/bin/node', '/Users/dbox/.cache/node/corepack/v1/pnpm/11.20.0/bin/pnpm.cjs', 'exec', 'biome', 'format', '--config-path', '/Users/dbox/repos/wt/vickie/vickie-minimum-current-resource/biome.json', 'apps/bdptest/src/transactional-collection-minimum-installed.test.ts', 'packages/server/src/transaction-read.test.ts']' returned non-zero exit status 1.

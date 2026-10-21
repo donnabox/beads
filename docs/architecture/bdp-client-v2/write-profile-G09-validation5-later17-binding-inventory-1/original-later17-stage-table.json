@@ -1,0 +1,1556 @@
+{
+  "originalCommandCount": 34,
+  "range": [
+    18,
+    34
+  ],
+  "remainingCount": 17,
+  "rows": [
+    {
+      "automaticRetries": 0,
+      "commandPointer": {
+        "line": 586,
+        "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation-preparation-5/commands.json",
+        "sha256": "ef7d5889c4cdb6263d746d3d1ad698429d6a96d5c0dbd1e4d6764819b060ba8f"
+      },
+      "commonGatePointers": [
+        {
+          "endLine": 124,
+          "line": 87,
+          "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation-preparation-5/gate.py",
+          "sha256": "6260f0878ca0bb30cc5b6de69d8357751fd09276eec7f90142f301ac87206a9f"
+        },
+        {
+          "endLine": 71,
+          "line": 66,
+          "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation-preparation-5/gate.py",
+          "sha256": "6260f0878ca0bb30cc5b6de69d8357751fd09276eec7f90142f301ac87206a9f"
+        },
+        {
+          "endLine": 22,
+          "line": 9,
+          "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation-preparation-5/run.py",
+          "sha256": "16049341d6d810ea5c46a88220da30f9a04e436ee7fea0061cc26e58ba76ba70"
+        },
+        {
+          "endLine": 80,
+          "line": 60,
+          "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation-preparation-5/run.py",
+          "sha256": "16049341d6d810ea5c46a88220da30f9a04e436ee7fea0061cc26e58ba76ba70"
+        }
+      ],
+      "exactOriginalCommand": {
+        "acceptedRawExitCodes": [
+          0
+        ],
+        "argv": [
+          "/opt/homebrew/opt/python@3.14/bin/python3.14",
+          "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation-preparation-5/packages.py",
+          "directory"
+        ],
+        "automaticRetries": 0,
+        "contract": "Exclusively create new task-owned ${EXECUTION_ROOT}/run/packages; refuse existing contents, no deletion/reuse.",
+        "cwd": "/Users/dbox/repos/wt/vickie/vickie-schema-lint-correction-minimum",
+        "id": "prepare-package-directory",
+        "kind": "supervised-owned-preparation-helper",
+        "mustCompleteBeforeNextStage": true,
+        "outerSeconds": 120,
+        "termAtSeconds": 115
+      },
+      "id": "prepare-package-directory",
+      "nativeRootDurability": "Full actual conjunction plus independent native/ROOT durable disposition before next original stage; helper complete() alone does not establish native/ROOT publication durability",
+      "normalStrictSeconds": 115,
+      "observedCurrentGateIncludesStage": false,
+      "ordinal": 18,
+      "outerSeconds": 120,
+      "requiredExistingGatePredicates": [
+        "approvedStages exact original prefix including this stage; new future ROOT disposition must authorize this actual scope",
+        "unchanged source679/10 owned/head/tree/binary diff; unchanged implementation and strict reference pins",
+        "fresh workspace11 tools and source lock; all prior original stages complete; current accepted full build/rootBuildAcceptance exact"
+      ],
+      "stageSpecificOutputs": [
+        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation-preparation-5/run/packages"
+      ],
+      "stageSpecificSourcePointers": [
+        {
+          "endLine": 19,
+          "line": 12,
+          "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation-preparation-5/packages.py",
+          "sha256": "162e4f04ffe9aeffe886b194c7ed41241c6ce3cf37e9c93f92fec0969095aea9"
+        }
+      ],
+      "standardSupervisorOutputs": [
+        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation-preparation-5/run/prepare-package-directory.started.json",
+        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation-preparation-5/run/prepare-package-directory.log",
+        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation-preparation-5/run/prepare-package-directory.processes.jsonl",
+        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation-preparation-5/run/prepare-package-directory.exit.json"
+      ],
+      "state": "UNRELEASED; no invocation or authoring release from this packet"
+    },
+    {
+      "automaticRetries": 0,
+      "commandPointer": {
+        "line": 508,
+        "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation-preparation-5/commands.json",
+        "sha256": "ef7d5889c4cdb6263d746d3d1ad698429d6a96d5c0dbd1e4d6764819b060ba8f"
+      },
+      "commonGatePointers": [
+        {
+          "endLine": 124,
+          "line": 87,
+          "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation-preparation-5/gate.py",
+          "sha256": "6260f0878ca0bb30cc5b6de69d8357751fd09276eec7f90142f301ac87206a9f"
+        },
+        {
+          "endLine": 71,
+          "line": 66,
+          "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation-preparation-5/gate.py",
+          "sha256": "6260f0878ca0bb30cc5b6de69d8357751fd09276eec7f90142f301ac87206a9f"
+        },
+        {
+          "endLine": 22,
+          "line": 9,
+          "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation-preparation-5/run.py",
+          "sha256": "16049341d6d810ea5c46a88220da30f9a04e436ee7fea0061cc26e58ba76ba70"
+        },
+        {
+          "endLine": 80,
+          "line": 60,
+          "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation-preparation-5/run.py",
+          "sha256": "16049341d6d810ea5c46a88220da30f9a04e436ee7fea0061cc26e58ba76ba70"
+        }
+      ],
+      "exactOriginalCommand": {
+        "acceptedRawExitCodes": [
+          0
+        ],
+        "argv": [
+          "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+          "/Users/dbox/.cache/node/corepack/v1/pnpm/11.20.0/bin/pnpm.cjs",
+          "--filter",
+          "@bdp/protocol",
+          "pack",
+          "--pack-destination",
+          "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation-preparation-5/run/packages"
+        ],
+        "automaticRetries": 0,
+        "configurationFinalized": true,
+        "cwd": "/Users/dbox/repos/wt/vickie/vickie-schema-lint-correction-minimum",
+        "id": "pack-protocol",
+        "kind": "supervised-command",
+        "outerSeconds": 120,
+        "termAtSeconds": 115
+      },
+      "id": "pack-protocol",
+      "nativeRootDurability": "Full actual conjunction plus independent native/ROOT durable disposition before next original stage; helper complete() alone does not establish native/ROOT publication durability",
+      "normalStrictSeconds": 115,
+      "observedCurrentGateIncludesStage": false,
+      "ordinal": 19,
+      "outerSeconds": 120,
+      "requiredExistingGatePredicates": [
+        "approvedStages exact original prefix including this stage; new future ROOT disposition must authorize this actual scope",
+        "unchanged source679/10 owned/head/tree/binary diff; unchanged implementation and strict reference pins",
+        "fresh workspace11 tools and source lock; all prior original stages complete; current accepted full build/rootBuildAcceptance exact"
+      ],
+      "stageSpecificOutputs": [
+        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation-preparation-5/run/packages/bdp-protocol-0.0.0.tgz"
+      ],
+      "stageSpecificSourcePointers": [
+        {
+          "endLine": 25,
+          "line": 25,
+          "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation-preparation-5/packages.py",
+          "sha256": "162e4f04ffe9aeffe886b194c7ed41241c6ce3cf37e9c93f92fec0969095aea9"
+        }
+      ],
+      "standardSupervisorOutputs": [
+        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation-preparation-5/run/pack-protocol.started.json",
+        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation-preparation-5/run/pack-protocol.log",
+        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation-preparation-5/run/pack-protocol.processes.jsonl",
+        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation-preparation-5/run/pack-protocol.exit.json"
+      ],
+      "state": "UNRELEASED; no invocation or authoring release from this packet"
+    },
+    {
+      "automaticRetries": 0,
+      "commandPointer": {
+        "line": 529,
+        "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation-preparation-5/commands.json",
+        "sha256": "ef7d5889c4cdb6263d746d3d1ad698429d6a96d5c0dbd1e4d6764819b060ba8f"
+      },
+      "commonGatePointers": [
+        {
+          "endLine": 124,
+          "line": 87,
+          "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation-preparation-5/gate.py",
+          "sha256": "6260f0878ca0bb30cc5b6de69d8357751fd09276eec7f90142f301ac87206a9f"
+        },
+        {
+          "endLine": 71,
+          "line": 66,
+          "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation-preparation-5/gate.py",
+          "sha256": "6260f0878ca0bb30cc5b6de69d8357751fd09276eec7f90142f301ac87206a9f"
+        },
+        {
+          "endLine": 22,
+          "line": 9,
+          "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation-preparation-5/run.py",
+          "sha256": "16049341d6d810ea5c46a88220da30f9a04e436ee7fea0061cc26e58ba76ba70"
+        },
+        {
+          "endLine": 80,
+          "line": 60,
+          "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation-preparation-5/run.py",
+          "sha256": "16049341d6d810ea5c46a88220da30f9a04e436ee7fea0061cc26e58ba76ba70"
+        }
+      ],
+      "exactOriginalCommand": {
+        "acceptedRawExitCodes": [
+          0
+        ],
+        "argv": [
+          "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+          "/Users/dbox/.cache/node/corepack/v1/pnpm/11.20.0/bin/pnpm.cjs",
+          "--filter",
+          "@bdp/server",
+          "pack",
+          "--pack-destination",
+          "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation-preparation-5/run/packages"
+        ],
+        "automaticRetries": 0,
+        "configurationFinalized": true,
+        "cwd": "/Users/dbox/repos/wt/vickie/vickie-schema-lint-correction-minimum",
+        "id": "pack-server",
+        "kind": "supervised-command",
+        "outerSeconds": 120,
+        "termAtSeconds": 115
+      },
+      "id": "pack-server",
+      "nativeRootDurability": "Full actual conjunction plus independent native/ROOT durable disposition before next original stage; helper complete() alone does not establish native/ROOT publication durability",
+      "normalStrictSeconds": 115,
+      "observedCurrentGateIncludesStage": false,
+      "ordinal": 20,
+      "outerSeconds": 120,
+      "requiredExistingGatePredicates": [
+        "approvedStages exact original prefix including this stage; new future ROOT disposition must authorize this actual scope",
+        "unchanged source679/10 owned/head/tree/binary diff; unchanged implementation and strict reference pins",
+        "fresh workspace11 tools and source lock; all prior original stages complete; current accepted full build/rootBuildAcceptance exact"
+      ],
+      "stageSpecificOutputs": [
+        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation-preparation-5/run/packages/bdp-server-0.0.0.tgz"
+      ],
+      "stageSpecificSourcePointers": [
+        {
+          "endLine": 25,
+          "line": 25,
+          "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation-preparation-5/packages.py",
+          "sha256": "162e4f04ffe9aeffe886b194c7ed41241c6ce3cf37e9c93f92fec0969095aea9"
+        }
+      ],
+      "standardSupervisorOutputs": [
+        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation-preparation-5/run/pack-server.started.json",
+        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation-preparation-5/run/pack-server.log",
+        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation-preparation-5/run/pack-server.processes.jsonl",
+        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation-preparation-5/run/pack-server.exit.json"
+      ],
+      "state": "UNRELEASED; no invocation or authoring release from this packet"
+    },
+    {
+      "automaticRetries": 0,
+      "commandPointer": {
+        "line": 779,
+        "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation-preparation-5/commands.json",
+        "sha256": "ef7d5889c4cdb6263d746d3d1ad698429d6a96d5c0dbd1e4d6764819b060ba8f"
+      },
+      "commonGatePointers": [
+        {
+          "endLine": 124,
+          "line": 87,
+          "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation-preparation-5/gate.py",
+          "sha256": "6260f0878ca0bb30cc5b6de69d8357751fd09276eec7f90142f301ac87206a9f"
+        },
+        {
+          "endLine": 71,
+          "line": 66,
+          "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation-preparation-5/gate.py",
+          "sha256": "6260f0878ca0bb30cc5b6de69d8357751fd09276eec7f90142f301ac87206a9f"
+        },
+        {
+          "endLine": 22,
+          "line": 9,
+          "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation-preparation-5/run.py",
+          "sha256": "16049341d6d810ea5c46a88220da30f9a04e436ee7fea0061cc26e58ba76ba70"
+        },
+        {
+          "endLine": 80,
+          "line": 60,
+          "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation-preparation-5/run.py",
+          "sha256": "16049341d6d810ea5c46a88220da30f9a04e436ee7fea0061cc26e58ba76ba70"
+        }
+      ],
+      "exactOriginalCommand": {
+        "acceptedRawExitCodes": [
+          0
+        ],
+        "argv": [
+          "/opt/homebrew/opt/python@3.14/bin/python3.14",
+          "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation-preparation-5/packages.py",
+          "tar"
+        ],
+        "automaticRetries": 0,
+        "contract": "Rehash actual archives and safe members; compare complete expected fresh dist/schema/license/package metadata maps to frozen source/build. Only expected workspace-protocol dependency rewrite is allowed; no extraction traversal/duplicates/symlinks. Archive names/digests/member counts UNRESOLVED until actual pack.",
+        "cwd": "/Users/dbox/repos/wt/vickie/vickie-schema-lint-correction-minimum",
+        "id": "verify-archives",
+        "kind": "supervised-readonly-helper",
+        "mustCompleteBeforeNextStage": true,
+        "outerSeconds": 120,
+        "termAtSeconds": 115
+      },
+      "id": "verify-archives",
+      "nativeRootDurability": "Full actual conjunction plus independent native/ROOT durable disposition before next original stage; helper complete() alone does not establish native/ROOT publication durability",
+      "normalStrictSeconds": 115,
+      "observedCurrentGateIncludesStage": false,
+      "ordinal": 21,
+      "outerSeconds": 120,
+      "requiredExistingGatePredicates": [
+        "approvedStages exact original prefix including this stage; new future ROOT disposition must authorize this actual scope",
+        "unchanged source679/10 owned/head/tree/binary diff; unchanged implementation and strict reference pins",
+        "fresh workspace11 tools and source lock; all prior original stages complete; current accepted full build/rootBuildAcceptance exact"
+      ],
+      "stageSpecificOutputs": [
+        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation-preparation-5/run/tar-source-provenance.json"
+      ],
+      "stageSpecificSourcePointers": [
+        {
+          "endLine": 48,
+          "line": 20,
+          "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation-preparation-5/packages.py",
+          "sha256": "162e4f04ffe9aeffe886b194c7ed41241c6ce3cf37e9c93f92fec0969095aea9"
+        }
+      ],
+      "standardSupervisorOutputs": [
+        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation-preparation-5/run/verify-archives.started.json",
+        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation-preparation-5/run/verify-archives.log",
+        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation-preparation-5/run/verify-archives.processes.jsonl",
+        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation-preparation-5/run/verify-archives.exit.json"
+      ],
+      "state": "UNRELEASED; no invocation or authoring release from this packet"
+    },
+    {
+      "automaticRetries": 0,
+      "commandPointer": {
+        "line": 568,
+        "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation-preparation-5/commands.json",
+        "sha256": "ef7d5889c4cdb6263d746d3d1ad698429d6a96d5c0dbd1e4d6764819b060ba8f"
+      },
+      "commonGatePointers": [
+        {
+          "endLine": 124,
+          "line": 87,
+          "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation-preparation-5/gate.py",
+          "sha256": "6260f0878ca0bb30cc5b6de69d8357751fd09276eec7f90142f301ac87206a9f"
+        },
+        {
+          "endLine": 71,
+          "line": 66,
+          "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation-preparation-5/gate.py",
+          "sha256": "6260f0878ca0bb30cc5b6de69d8357751fd09276eec7f90142f301ac87206a9f"
+        },
+        {
+          "endLine": 22,
+          "line": 9,
+          "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation-preparation-5/run.py",
+          "sha256": "16049341d6d810ea5c46a88220da30f9a04e436ee7fea0061cc26e58ba76ba70"
+        },
+        {
+          "endLine": 80,
+          "line": 60,
+          "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation-preparation-5/run.py",
+          "sha256": "16049341d6d810ea5c46a88220da30f9a04e436ee7fea0061cc26e58ba76ba70"
+        }
+      ],
+      "exactOriginalCommand": {
+        "acceptedRawExitCodes": [
+          0
+        ],
+        "argv": [
+          "/opt/homebrew/opt/python@3.14/bin/python3.14",
+          "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation-preparation-5/packages.py",
+          "consumer"
+        ],
+        "automaticRetries": 0,
+        "contract": "Exclusively create ${EXECUTION_ROOT}/run/consumer outside workspace; manifest uses actual archive file paths and pnpm-workspace overrides for protocol and frozen transitive versions; actual closure derived from frozen lock. No old consumer/entry/lock reused.",
+        "cwd": "/Users/dbox/repos/wt/vickie/vickie-schema-lint-correction-minimum",
+        "id": "prepare-consumer",
+        "kind": "supervised-owned-preparation-helper",
+        "mustCompleteBeforeNextStage": true,
+        "outerSeconds": 120,
+        "termAtSeconds": 115
+      },
+      "id": "prepare-consumer",
+      "nativeRootDurability": "Full actual conjunction plus independent native/ROOT durable disposition before next original stage; helper complete() alone does not establish native/ROOT publication durability",
+      "normalStrictSeconds": 115,
+      "observedCurrentGateIncludesStage": false,
+      "ordinal": 22,
+      "outerSeconds": 120,
+      "requiredExistingGatePredicates": [
+        "approvedStages exact original prefix including this stage; new future ROOT disposition must authorize this actual scope",
+        "unchanged source679/10 owned/head/tree/binary diff; unchanged implementation and strict reference pins",
+        "fresh workspace11 tools and source lock; all prior original stages complete; current accepted full build/rootBuildAcceptance exact",
+        "rootArchiveAcceptance: accepted=true/sourceBindingSha256/tarProvenanceSha256 exact actual stage21 provenance"
+      ],
+      "stageSpecificOutputs": [
+        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation-preparation-5/run/consumer",
+        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation-preparation-5/run/consumer/package.json",
+        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation-preparation-5/run/consumer/pnpm-workspace.yaml"
+      ],
+      "stageSpecificSourcePointers": [
+        {
+          "endLine": 56,
+          "line": 49,
+          "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation-preparation-5/packages.py",
+          "sha256": "162e4f04ffe9aeffe886b194c7ed41241c6ce3cf37e9c93f92fec0969095aea9"
+        }
+      ],
+      "standardSupervisorOutputs": [
+        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation-preparation-5/run/prepare-consumer.started.json",
+        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation-preparation-5/run/prepare-consumer.log",
+        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation-preparation-5/run/prepare-consumer.processes.jsonl",
+        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation-preparation-5/run/prepare-consumer.exit.json"
+      ],
+      "state": "UNRELEASED; no invocation or authoring release from this packet"
+    },
+    {
+      "automaticRetries": 0,
+      "commandPointer": {
+        "line": 189,
+        "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation-preparation-5/commands.json",
+        "sha256": "ef7d5889c4cdb6263d746d3d1ad698429d6a96d5c0dbd1e4d6764819b060ba8f"
+      },
+      "commonGatePointers": [
+        {
+          "endLine": 124,
+          "line": 87,
+          "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation-preparation-5/gate.py",
+          "sha256": "6260f0878ca0bb30cc5b6de69d8357751fd09276eec7f90142f301ac87206a9f"
+        },
+        {
+          "endLine": 71,
+          "line": 66,
+          "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation-preparation-5/gate.py",
+          "sha256": "6260f0878ca0bb30cc5b6de69d8357751fd09276eec7f90142f301ac87206a9f"
+        },
+        {
+          "endLine": 22,
+          "line": 9,
+          "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation-preparation-5/run.py",
+          "sha256": "16049341d6d810ea5c46a88220da30f9a04e436ee7fea0061cc26e58ba76ba70"
+        },
+        {
+          "endLine": 80,
+          "line": 60,
+          "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation-preparation-5/run.py",
+          "sha256": "16049341d6d810ea5c46a88220da30f9a04e436ee7fea0061cc26e58ba76ba70"
+        }
+      ],
+      "exactOriginalCommand": {
+        "acceptedRawExitCodes": [
+          0
+        ],
+        "argv": [
+          "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+          "/Users/dbox/.cache/node/corepack/v1/pnpm/11.20.0/bin/pnpm.cjs",
+          "install",
+          "--offline",
+          "--ignore-scripts",
+          "--no-frozen-lockfile",
+          "--prod"
+        ],
+        "automaticRetries": 0,
+        "configurationFinalized": true,
+        "cwd": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation-preparation-5/run/consumer",
+        "id": "consumer-install",
+        "kind": "supervised-command",
+        "outerSeconds": 120,
+        "termAtSeconds": 115
+      },
+      "id": "consumer-install",
+      "nativeRootDurability": "Full actual conjunction plus independent native/ROOT durable disposition before next original stage; helper complete() alone does not establish native/ROOT publication durability",
+      "normalStrictSeconds": 115,
+      "observedCurrentGateIncludesStage": false,
+      "ordinal": 23,
+      "outerSeconds": 120,
+      "requiredExistingGatePredicates": [
+        "approvedStages exact original prefix including this stage; new future ROOT disposition must authorize this actual scope",
+        "unchanged source679/10 owned/head/tree/binary diff; unchanged implementation and strict reference pins",
+        "fresh workspace11 tools and source lock; all prior original stages complete; current accepted full build/rootBuildAcceptance exact",
+        "rootArchiveAcceptance: accepted=true/sourceBindingSha256/tarProvenanceSha256 exact actual stage21 provenance"
+      ],
+      "stageSpecificOutputs": [
+        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation-preparation-5/run/consumer/pnpm-lock.yaml",
+        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation-preparation-5/run/consumer/node_modules"
+      ],
+      "stageSpecificSourcePointers": [
+        {
+          "endLine": 132,
+          "line": 128,
+          "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation-preparation-5/gate.py",
+          "sha256": "6260f0878ca0bb30cc5b6de69d8357751fd09276eec7f90142f301ac87206a9f"
+        }
+      ],
+      "standardSupervisorOutputs": [
+        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation-preparation-5/run/consumer-install.started.json",
+        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation-preparation-5/run/consumer-install.log",
+        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation-preparation-5/run/consumer-install.processes.jsonl",
+        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation-preparation-5/run/consumer-install.exit.json"
+      ],
+      "state": "UNRELEASED; no invocation or authoring release from this packet"
+    },
+    {
+      "automaticRetries": 0,
+      "commandPointer": {
+        "line": 797,
+        "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation-preparation-5/commands.json",
+        "sha256": "ef7d5889c4cdb6263d746d3d1ad698429d6a96d5c0dbd1e4d6764819b060ba8f"
+      },
+      "commonGatePointers": [
+        {
+          "endLine": 124,
+          "line": 87,
+          "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation-preparation-5/gate.py",
+          "sha256": "6260f0878ca0bb30cc5b6de69d8357751fd09276eec7f90142f301ac87206a9f"
+        },
+        {
+          "endLine": 71,
+          "line": 66,
+          "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation-preparation-5/gate.py",
+          "sha256": "6260f0878ca0bb30cc5b6de69d8357751fd09276eec7f90142f301ac87206a9f"
+        },
+        {
+          "endLine": 22,
+          "line": 9,
+          "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation-preparation-5/run.py",
+          "sha256": "16049341d6d810ea5c46a88220da30f9a04e436ee7fea0061cc26e58ba76ba70"
+        },
+        {
+          "endLine": 80,
+          "line": 60,
+          "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation-preparation-5/run.py",
+          "sha256": "16049341d6d810ea5c46a88220da30f9a04e436ee7fea0061cc26e58ba76ba70"
+        }
+      ],
+      "exactOriginalCommand": {
+        "acceptedRawExitCodes": [
+          0
+        ],
+        "argv": [
+          "/opt/homebrew/opt/python@3.14/bin/python3.14",
+          "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation-preparation-5/packages.py",
+          "installed"
+        ],
+        "automaticRetries": 0,
+        "contract": "Reproduce complete package-member linkage, resolved production dependency graph within owned consumer, actual lock and payload recursive hash; bind entry literal+realpath+bytes and full inventory/symlinks; no workspace fallback. Emit actual installed-provenance/inventory records.",
+        "cwd": "/Users/dbox/repos/wt/vickie/vickie-schema-lint-correction-minimum",
+        "id": "verify-installed-consumer",
+        "kind": "supervised-readonly-helper",
+        "mustCompleteBeforeNextStage": true,
+        "outerSeconds": 120,
+        "termAtSeconds": 115
+      },
+      "id": "verify-installed-consumer",
+      "nativeRootDurability": "Full actual conjunction plus independent native/ROOT durable disposition before next original stage; helper complete() alone does not establish native/ROOT publication durability",
+      "normalStrictSeconds": 115,
+      "observedCurrentGateIncludesStage": false,
+      "ordinal": 24,
+      "outerSeconds": 120,
+      "requiredExistingGatePredicates": [
+        "approvedStages exact original prefix including this stage; new future ROOT disposition must authorize this actual scope",
+        "unchanged source679/10 owned/head/tree/binary diff; unchanged implementation and strict reference pins",
+        "fresh workspace11 tools and source lock; all prior original stages complete; current accepted full build/rootBuildAcceptance exact",
+        "rootArchiveAcceptance: accepted=true/sourceBindingSha256/tarProvenanceSha256 exact actual stage21 provenance",
+        "consumerLockSha256 and rootConsumerLockAcceptance: accepted=true/source binding/actual generated consumer lock/manifest/settings exact"
+      ],
+      "stageSpecificOutputs": [
+        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation-preparation-5/run/installed-provenance.json",
+        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation-preparation-5/run/installed-consumer-inventory.json"
+      ],
+      "stageSpecificSourcePointers": [
+        {
+          "endLine": 115,
+          "line": 57,
+          "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation-preparation-5/packages.py",
+          "sha256": "162e4f04ffe9aeffe886b194c7ed41241c6ce3cf37e9c93f92fec0969095aea9"
+        },
+        {
+          "endLine": 132,
+          "line": 128,
+          "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation-preparation-5/gate.py",
+          "sha256": "6260f0878ca0bb30cc5b6de69d8357751fd09276eec7f90142f301ac87206a9f"
+        }
+      ],
+      "standardSupervisorOutputs": [
+        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation-preparation-5/run/verify-installed-consumer.started.json",
+        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation-preparation-5/run/verify-installed-consumer.log",
+        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation-preparation-5/run/verify-installed-consumer.processes.jsonl",
+        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation-preparation-5/run/verify-installed-consumer.exit.json"
+      ],
+      "state": "UNRELEASED; no invocation or authoring release from this packet"
+    },
+    {
+      "automaticRetries": 0,
+      "commandPointer": {
+        "line": 258,
+        "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation-preparation-5/commands.json",
+        "sha256": "ef7d5889c4cdb6263d746d3d1ad698429d6a96d5c0dbd1e4d6764819b060ba8f"
+      },
+      "commonGatePointers": [
+        {
+          "endLine": 124,
+          "line": 87,
+          "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation-preparation-5/gate.py",
+          "sha256": "6260f0878ca0bb30cc5b6de69d8357751fd09276eec7f90142f301ac87206a9f"
+        },
+        {
+          "endLine": 71,
+          "line": 66,
+          "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation-preparation-5/gate.py",
+          "sha256": "6260f0878ca0bb30cc5b6de69d8357751fd09276eec7f90142f301ac87206a9f"
+        },
+        {
+          "endLine": 22,
+          "line": 9,
+          "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation-preparation-5/run.py",
+          "sha256": "16049341d6d810ea5c46a88220da30f9a04e436ee7fea0061cc26e58ba76ba70"
+        },
+        {
+          "endLine": 80,
+          "line": 60,
+          "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation-preparation-5/run.py",
+          "sha256": "16049341d6d810ea5c46a88220da30f9a04e436ee7fea0061cc26e58ba76ba70"
+        }
+      ],
+      "exactOriginalCommand": {
+        "acceptedRawExitCodes": [
+          0
+        ],
+        "argv": [
+          "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+          "/Users/dbox/repos/wt/vickie/vickie-schema-lint-correction-minimum/node_modules/vitest/vitest.mjs",
+          "run",
+          "apps/bdptest/src/transactional-schema-installed.test.ts",
+          "--maxWorkers=1",
+          "--reporter=verbose",
+          "--reporter=json",
+          "--outputFile.json=/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation-preparation-5/run/g09-installed-01.results.json",
+          "--testNamePattern",
+          "^(?:G09\\-I01\\ installed\\ exact\\ schema\\ current\\ minimum)$"
+        ],
+        "automaticRetries": 0,
+        "callbackMs": 60000,
+        "configurationFinalized": true,
+        "cwd": "/Users/dbox/repos/wt/vickie/vickie-schema-lint-correction-minimum",
+        "expectedObservation": "G09-I01",
+        "id": "g09-installed-01",
+        "kind": "supervised-command",
+        "outerSeconds": 120,
+        "prospectiveWorkload": {
+          "callbacks": 1,
+          "children": 1,
+          "prospective": true,
+          "wire": 14
+        },
+        "requestMs": 5000,
+        "requiresConsumerProof": true,
+        "selectedFilesByFullName": {
+          "G09-I01 installed exact schema current minimum": "apps/bdptest/src/transactional-schema-installed.test.ts"
+        },
+        "selectedFullNames": [
+          "G09-I01 installed exact schema current minimum"
+        ],
+        "termAtSeconds": 115,
+        "totalCleanupMs": 10000,
+        "workMs": 45000
+      },
+      "id": "g09-installed-01",
+      "nativeRootDurability": "Full actual conjunction plus independent native/ROOT durable disposition before next original stage; helper complete() alone does not establish native/ROOT publication durability",
+      "normalStrictSeconds": 115,
+      "observedCurrentGateIncludesStage": false,
+      "ordinal": 25,
+      "outerSeconds": 120,
+      "requiredExistingGatePredicates": [
+        "approvedStages exact original prefix including this stage; new future ROOT disposition must authorize this actual scope",
+        "unchanged source679/10 owned/head/tree/binary diff; unchanged implementation and strict reference pins",
+        "fresh workspace11 tools and source lock; all prior original stages complete; current accepted full build/rootBuildAcceptance exact",
+        "rootArchiveAcceptance: accepted=true/sourceBindingSha256/tarProvenanceSha256 exact actual stage21 provenance",
+        "installedProvenance+consumerInventory+consumerLockSha256+rootConsumerProofAcceptance exact; verify_consumer before and after; proof-derived external entry/source environment"
+      ],
+      "stageSpecificOutputs": [
+        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation-preparation-5/run/g09-installed-01.results.json",
+        "one original G09-I01 observation in its log; actual ready/config/session/wire identities UNRESOLVED"
+      ],
+      "stageSpecificSourcePointers": [
+        {
+          "endLine": 765,
+          "line": 501,
+          "path": "/Users/dbox/repos/wt/vickie/vickie-schema-lint-correction-minimum/apps/bdptest/src/transactional-schema-installed.test.ts",
+          "sha256": "63b5892abebe9ef6e9688dd05eae5c4fbe18ede0698caad5b9f7ec2213c1bd7a"
+        },
+        {
+          "endLine": 897,
+          "line": 808,
+          "path": "/Users/dbox/repos/wt/vickie/vickie-schema-lint-correction-minimum/apps/bdptest/src/transactional-schema-installed.test.ts",
+          "sha256": "63b5892abebe9ef6e9688dd05eae5c4fbe18ede0698caad5b9f7ec2213c1bd7a"
+        }
+      ],
+      "standardSupervisorOutputs": [
+        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation-preparation-5/run/g09-installed-01.started.json",
+        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation-preparation-5/run/g09-installed-01.log",
+        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation-preparation-5/run/g09-installed-01.processes.jsonl",
+        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation-preparation-5/run/g09-installed-01.exit.json"
+      ],
+      "state": "UNRELEASED; no invocation or authoring release from this packet"
+    },
+    {
+      "automaticRetries": 0,
+      "commandPointer": {
+        "line": 20,
+        "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation-preparation-5/commands.json",
+        "sha256": "ef7d5889c4cdb6263d746d3d1ad698429d6a96d5c0dbd1e4d6764819b060ba8f"
+      },
+      "commonGatePointers": [
+        {
+          "endLine": 124,
+          "line": 87,
+          "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation-preparation-5/gate.py",
+          "sha256": "6260f0878ca0bb30cc5b6de69d8357751fd09276eec7f90142f301ac87206a9f"
+        },
+        {
+          "endLine": 71,
+          "line": 66,
+          "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation-preparation-5/gate.py",
+          "sha256": "6260f0878ca0bb30cc5b6de69d8357751fd09276eec7f90142f301ac87206a9f"
+        },
+        {
+          "endLine": 22,
+          "line": 9,
+          "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation-preparation-5/run.py",
+          "sha256": "16049341d6d810ea5c46a88220da30f9a04e436ee7fea0061cc26e58ba76ba70"
+        },
+        {
+          "endLine": 80,
+          "line": 60,
+          "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation-preparation-5/run.py",
+          "sha256": "16049341d6d810ea5c46a88220da30f9a04e436ee7fea0061cc26e58ba76ba70"
+        }
+      ],
+      "exactOriginalCommand": {
+        "acceptedRawExitCodes": [
+          0
+        ],
+        "argv": [
+          "/opt/homebrew/opt/python@3.14/bin/python3.14",
+          "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation-preparation-5/audit.py",
+          "g09-installed-01"
+        ],
+        "automaticRetries": 0,
+        "contract": "IMMEDIATE exact selected result/report grammar/source/cleanup audit; missing extra invalid partial records never receive positive credit",
+        "cwd": "/Users/dbox/repos/wt/vickie/vickie-schema-lint-correction-minimum",
+        "id": "audit-g09-installed-01",
+        "kind": "supervised-readonly-helper",
+        "mustCompleteBeforeNextStage": true,
+        "outerSeconds": 120,
+        "requiresConsumerProof": true,
+        "termAtSeconds": 115
+      },
+      "id": "audit-g09-installed-01",
+      "nativeRootDurability": "Full actual conjunction plus independent native/ROOT durable disposition before next original stage; helper complete() alone does not establish native/ROOT publication durability",
+      "normalStrictSeconds": 115,
+      "observedCurrentGateIncludesStage": false,
+      "ordinal": 26,
+      "outerSeconds": 120,
+      "requiredExistingGatePredicates": [
+        "approvedStages exact original prefix including this stage; new future ROOT disposition must authorize this actual scope",
+        "unchanged source679/10 owned/head/tree/binary diff; unchanged implementation and strict reference pins",
+        "fresh workspace11 tools and source lock; all prior original stages complete; current accepted full build/rootBuildAcceptance exact",
+        "rootArchiveAcceptance: accepted=true/sourceBindingSha256/tarProvenanceSha256 exact actual stage21 provenance",
+        "installedProvenance+consumerInventory+consumerLockSha256+rootConsumerProofAcceptance exact; verify_consumer before and after; proof-derived external entry/source environment"
+      ],
+      "stageSpecificOutputs": [
+        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation-preparation-5/run/g09-installed-01.accepted-observation.json"
+      ],
+      "stageSpecificSourcePointers": [
+        {
+          "endLine": 288,
+          "line": 249,
+          "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation-preparation-5/audit.py",
+          "sha256": "1892c8b723126ea69d33053ce0ec6e2461e299dbf9e8b886be35905c132412a2"
+        },
+        {
+          "line": 461,
+          "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation-preparation-5/audit.py",
+          "sha256": "1892c8b723126ea69d33053ce0ec6e2461e299dbf9e8b886be35905c132412a2"
+        }
+      ],
+      "standardSupervisorOutputs": [
+        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation-preparation-5/run/audit-g09-installed-01.started.json",
+        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation-preparation-5/run/audit-g09-installed-01.log",
+        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation-preparation-5/run/audit-g09-installed-01.processes.jsonl",
+        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation-preparation-5/run/audit-g09-installed-01.exit.json"
+      ],
+      "state": "UNRELEASED; no invocation or authoring release from this packet"
+    },
+    {
+      "automaticRetries": 0,
+      "commandPointer": {
+        "line": 300,
+        "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation-preparation-5/commands.json",
+        "sha256": "ef7d5889c4cdb6263d746d3d1ad698429d6a96d5c0dbd1e4d6764819b060ba8f"
+      },
+      "commonGatePointers": [
+        {
+          "endLine": 124,
+          "line": 87,
+          "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation-preparation-5/gate.py",
+          "sha256": "6260f0878ca0bb30cc5b6de69d8357751fd09276eec7f90142f301ac87206a9f"
+        },
+        {
+          "endLine": 71,
+          "line": 66,
+          "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation-preparation-5/gate.py",
+          "sha256": "6260f0878ca0bb30cc5b6de69d8357751fd09276eec7f90142f301ac87206a9f"
+        },
+        {
+          "endLine": 22,
+          "line": 9,
+          "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation-preparation-5/run.py",
+          "sha256": "16049341d6d810ea5c46a88220da30f9a04e436ee7fea0061cc26e58ba76ba70"
+        },
+        {
+          "endLine": 80,
+          "line": 60,
+          "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation-preparation-5/run.py",
+          "sha256": "16049341d6d810ea5c46a88220da30f9a04e436ee7fea0061cc26e58ba76ba70"
+        }
+      ],
+      "exactOriginalCommand": {
+        "acceptedRawExitCodes": [
+          0
+        ],
+        "argv": [
+          "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+          "/Users/dbox/repos/wt/vickie/vickie-schema-lint-correction-minimum/node_modules/vitest/vitest.mjs",
+          "run",
+          "apps/bdptest/src/transactional-schema-installed.test.ts",
+          "--maxWorkers=1",
+          "--reporter=verbose",
+          "--reporter=json",
+          "--outputFile.json=/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation-preparation-5/run/g09-installed-02.results.json",
+          "--testNamePattern",
+          "^(?:G09\\-I02\\ installed\\ receiving\\ and\\ exact\\ retrieval\\ membership)$"
+        ],
+        "automaticRetries": 0,
+        "callbackMs": 60000,
+        "configurationFinalized": true,
+        "cwd": "/Users/dbox/repos/wt/vickie/vickie-schema-lint-correction-minimum",
+        "expectedObservation": "G09-I02",
+        "id": "g09-installed-02",
+        "kind": "supervised-command",
+        "outerSeconds": 120,
+        "prospectiveWorkload": {
+          "callbacks": 1,
+          "children": 1,
+          "prospective": true,
+          "wire": 16
+        },
+        "requestMs": 5000,
+        "requiresConsumerProof": true,
+        "selectedFilesByFullName": {
+          "G09-I02 installed receiving and exact retrieval membership": "apps/bdptest/src/transactional-schema-installed.test.ts"
+        },
+        "selectedFullNames": [
+          "G09-I02 installed receiving and exact retrieval membership"
+        ],
+        "termAtSeconds": 115,
+        "totalCleanupMs": 10000,
+        "workMs": 45000
+      },
+      "id": "g09-installed-02",
+      "nativeRootDurability": "Full actual conjunction plus independent native/ROOT durable disposition before next original stage; helper complete() alone does not establish native/ROOT publication durability",
+      "normalStrictSeconds": 115,
+      "observedCurrentGateIncludesStage": false,
+      "ordinal": 27,
+      "outerSeconds": 120,
+      "requiredExistingGatePredicates": [
+        "approvedStages exact original prefix including this stage; new future ROOT disposition must authorize this actual scope",
+        "unchanged source679/10 owned/head/tree/binary diff; unchanged implementation and strict reference pins",
+        "fresh workspace11 tools and source lock; all prior original stages complete; current accepted full build/rootBuildAcceptance exact",
+        "rootArchiveAcceptance: accepted=true/sourceBindingSha256/tarProvenanceSha256 exact actual stage21 provenance",
+        "installedProvenance+consumerInventory+consumerLockSha256+rootConsumerProofAcceptance exact; verify_consumer before and after; proof-derived external entry/source environment"
+      ],
+      "stageSpecificOutputs": [
+        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation-preparation-5/run/g09-installed-02.results.json",
+        "one original G09-I02 observation in its log; actual ready/config/session/wire identities UNRESOLVED"
+      ],
+      "stageSpecificSourcePointers": [
+        {
+          "endLine": 765,
+          "line": 501,
+          "path": "/Users/dbox/repos/wt/vickie/vickie-schema-lint-correction-minimum/apps/bdptest/src/transactional-schema-installed.test.ts",
+          "sha256": "63b5892abebe9ef6e9688dd05eae5c4fbe18ede0698caad5b9f7ec2213c1bd7a"
+        },
+        {
+          "endLine": 992,
+          "line": 899,
+          "path": "/Users/dbox/repos/wt/vickie/vickie-schema-lint-correction-minimum/apps/bdptest/src/transactional-schema-installed.test.ts",
+          "sha256": "63b5892abebe9ef6e9688dd05eae5c4fbe18ede0698caad5b9f7ec2213c1bd7a"
+        }
+      ],
+      "standardSupervisorOutputs": [
+        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation-preparation-5/run/g09-installed-02.started.json",
+        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation-preparation-5/run/g09-installed-02.log",
+        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation-preparation-5/run/g09-installed-02.processes.jsonl",
+        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation-preparation-5/run/g09-installed-02.exit.json"
+      ],
+      "state": "UNRELEASED; no invocation or authoring release from this packet"
+    },
+    {
+      "automaticRetries": 0,
+      "commandPointer": {
+        "line": 39,
+        "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation-preparation-5/commands.json",
+        "sha256": "ef7d5889c4cdb6263d746d3d1ad698429d6a96d5c0dbd1e4d6764819b060ba8f"
+      },
+      "commonGatePointers": [
+        {
+          "endLine": 124,
+          "line": 87,
+          "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation-preparation-5/gate.py",
+          "sha256": "6260f0878ca0bb30cc5b6de69d8357751fd09276eec7f90142f301ac87206a9f"
+        },
+        {
+          "endLine": 71,
+          "line": 66,
+          "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation-preparation-5/gate.py",
+          "sha256": "6260f0878ca0bb30cc5b6de69d8357751fd09276eec7f90142f301ac87206a9f"
+        },
+        {
+          "endLine": 22,
+          "line": 9,
+          "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation-preparation-5/run.py",
+          "sha256": "16049341d6d810ea5c46a88220da30f9a04e436ee7fea0061cc26e58ba76ba70"
+        },
+        {
+          "endLine": 80,
+          "line": 60,
+          "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation-preparation-5/run.py",
+          "sha256": "16049341d6d810ea5c46a88220da30f9a04e436ee7fea0061cc26e58ba76ba70"
+        }
+      ],
+      "exactOriginalCommand": {
+        "acceptedRawExitCodes": [
+          0
+        ],
+        "argv": [
+          "/opt/homebrew/opt/python@3.14/bin/python3.14",
+          "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation-preparation-5/audit.py",
+          "g09-installed-02"
+        ],
+        "automaticRetries": 0,
+        "contract": "IMMEDIATE exact selected result/report grammar/source/cleanup audit; missing extra invalid partial records never receive positive credit",
+        "cwd": "/Users/dbox/repos/wt/vickie/vickie-schema-lint-correction-minimum",
+        "id": "audit-g09-installed-02",
+        "kind": "supervised-readonly-helper",
+        "mustCompleteBeforeNextStage": true,
+        "outerSeconds": 120,
+        "requiresConsumerProof": true,
+        "termAtSeconds": 115
+      },
+      "id": "audit-g09-installed-02",
+      "nativeRootDurability": "Full actual conjunction plus independent native/ROOT durable disposition before next original stage; helper complete() alone does not establish native/ROOT publication durability",
+      "normalStrictSeconds": 115,
+      "observedCurrentGateIncludesStage": false,
+      "ordinal": 28,
+      "outerSeconds": 120,
+      "requiredExistingGatePredicates": [
+        "approvedStages exact original prefix including this stage; new future ROOT disposition must authorize this actual scope",
+        "unchanged source679/10 owned/head/tree/binary diff; unchanged implementation and strict reference pins",
+        "fresh workspace11 tools and source lock; all prior original stages complete; current accepted full build/rootBuildAcceptance exact",
+        "rootArchiveAcceptance: accepted=true/sourceBindingSha256/tarProvenanceSha256 exact actual stage21 provenance",
+        "installedProvenance+consumerInventory+consumerLockSha256+rootConsumerProofAcceptance exact; verify_consumer before and after; proof-derived external entry/source environment"
+      ],
+      "stageSpecificOutputs": [
+        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation-preparation-5/run/g09-installed-02.accepted-observation.json"
+      ],
+      "stageSpecificSourcePointers": [
+        {
+          "endLine": 288,
+          "line": 249,
+          "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation-preparation-5/audit.py",
+          "sha256": "1892c8b723126ea69d33053ce0ec6e2461e299dbf9e8b886be35905c132412a2"
+        },
+        {
+          "line": 461,
+          "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation-preparation-5/audit.py",
+          "sha256": "1892c8b723126ea69d33053ce0ec6e2461e299dbf9e8b886be35905c132412a2"
+        }
+      ],
+      "standardSupervisorOutputs": [
+        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation-preparation-5/run/audit-g09-installed-02.started.json",
+        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation-preparation-5/run/audit-g09-installed-02.log",
+        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation-preparation-5/run/audit-g09-installed-02.processes.jsonl",
+        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation-preparation-5/run/audit-g09-installed-02.exit.json"
+      ],
+      "state": "UNRELEASED; no invocation or authoring release from this packet"
+    },
+    {
+      "automaticRetries": 0,
+      "commandPointer": {
+        "line": 718,
+        "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation-preparation-5/commands.json",
+        "sha256": "ef7d5889c4cdb6263d746d3d1ad698429d6a96d5c0dbd1e4d6764819b060ba8f"
+      },
+      "commonGatePointers": [
+        {
+          "endLine": 124,
+          "line": 87,
+          "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation-preparation-5/gate.py",
+          "sha256": "6260f0878ca0bb30cc5b6de69d8357751fd09276eec7f90142f301ac87206a9f"
+        },
+        {
+          "endLine": 71,
+          "line": 66,
+          "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation-preparation-5/gate.py",
+          "sha256": "6260f0878ca0bb30cc5b6de69d8357751fd09276eec7f90142f301ac87206a9f"
+        },
+        {
+          "endLine": 22,
+          "line": 9,
+          "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation-preparation-5/run.py",
+          "sha256": "16049341d6d810ea5c46a88220da30f9a04e436ee7fea0061cc26e58ba76ba70"
+        },
+        {
+          "endLine": 80,
+          "line": 60,
+          "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation-preparation-5/run.py",
+          "sha256": "16049341d6d810ea5c46a88220da30f9a04e436ee7fea0061cc26e58ba76ba70"
+        }
+      ],
+      "exactOriginalCommand": {
+        "acceptedRawExitCodes": [
+          0
+        ],
+        "argv": [
+          "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+          "/Users/dbox/repos/wt/vickie/vickie-schema-lint-correction-minimum/node_modules/vitest/vitest.mjs",
+          "run",
+          "apps/bdptest/src/transactional-schema-installed.test.ts",
+          "--maxWorkers=1",
+          "--reporter=verbose",
+          "--reporter=json",
+          "--outputFile.json=/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation-preparation-5/run/schema-installed-positive.results.json",
+          "--testNamePattern",
+          "^(?:traverses\\ installed\\ local\\ schema\\ bytes\\ with\\ current\\ context\\ within14requests)$"
+        ],
+        "automaticRetries": 0,
+        "callbackMs": 120000,
+        "configurationFinalized": true,
+        "cwd": "/Users/dbox/repos/wt/vickie/vickie-schema-lint-correction-minimum",
+        "expectedObservation": "private-installed-local-schemas",
+        "id": "schema-installed-positive",
+        "inheritedBudgetException": "actual legacy source90swork/120scallback retained; outer120/TERM115 remains fail-closed, may stop before callback cap",
+        "kind": "supervised-command",
+        "outerSeconds": 120,
+        "prospectiveWorkload": {
+          "callbacks": 1,
+          "children": 1,
+          "existingSupersededExchanges": 1,
+          "wire": 14
+        },
+        "requestMs": 5000,
+        "requiresConsumerProof": true,
+        "selectedFilesByFullName": {
+          "traverses installed local schema bytes with current context within14requests": "apps/bdptest/src/transactional-schema-installed.test.ts"
+        },
+        "selectedFullNames": [
+          "traverses installed local schema bytes with current context within14requests"
+        ],
+        "termAtSeconds": 115,
+        "totalCleanupMs": "existing child.close launcher bound; no new aggregate bound inferred",
+        "workMs": 90000
+      },
+      "id": "schema-installed-positive",
+      "nativeRootDurability": "Full actual conjunction plus independent native/ROOT durable disposition before next original stage; helper complete() alone does not establish native/ROOT publication durability",
+      "normalStrictSeconds": 115,
+      "observedCurrentGateIncludesStage": false,
+      "ordinal": 29,
+      "outerSeconds": 120,
+      "requiredExistingGatePredicates": [
+        "approvedStages exact original prefix including this stage; new future ROOT disposition must authorize this actual scope",
+        "unchanged source679/10 owned/head/tree/binary diff; unchanged implementation and strict reference pins",
+        "fresh workspace11 tools and source lock; all prior original stages complete; current accepted full build/rootBuildAcceptance exact",
+        "rootArchiveAcceptance: accepted=true/sourceBindingSha256/tarProvenanceSha256 exact actual stage21 provenance",
+        "installedProvenance+consumerInventory+consumerLockSha256+rootConsumerProofAcceptance exact; verify_consumer before and after; proof-derived external entry/source environment"
+      ],
+      "stageSpecificOutputs": [
+        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation-preparation-5/run/schema-installed-positive.results.json",
+        "one original private-installed-local-schemas observation in its log;14 fingerprints/context rows"
+      ],
+      "stageSpecificSourcePointers": [
+        {
+          "endLine": 463,
+          "line": 120,
+          "path": "/Users/dbox/repos/wt/vickie/vickie-schema-lint-correction-minimum/apps/bdptest/src/transactional-schema-installed.test.ts",
+          "sha256": "63b5892abebe9ef6e9688dd05eae5c4fbe18ede0698caad5b9f7ec2213c1bd7a"
+        }
+      ],
+      "standardSupervisorOutputs": [
+        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation-preparation-5/run/schema-installed-positive.started.json",
+        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation-preparation-5/run/schema-installed-positive.log",
+        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation-preparation-5/run/schema-installed-positive.processes.jsonl",
+        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation-preparation-5/run/schema-installed-positive.exit.json"
+      ],
+      "state": "UNRELEASED; no invocation or authoring release from this packet"
+    },
+    {
+      "automaticRetries": 0,
+      "commandPointer": {
+        "line": 134,
+        "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation-preparation-5/commands.json",
+        "sha256": "ef7d5889c4cdb6263d746d3d1ad698429d6a96d5c0dbd1e4d6764819b060ba8f"
+      },
+      "commonGatePointers": [
+        {
+          "endLine": 124,
+          "line": 87,
+          "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation-preparation-5/gate.py",
+          "sha256": "6260f0878ca0bb30cc5b6de69d8357751fd09276eec7f90142f301ac87206a9f"
+        },
+        {
+          "endLine": 71,
+          "line": 66,
+          "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation-preparation-5/gate.py",
+          "sha256": "6260f0878ca0bb30cc5b6de69d8357751fd09276eec7f90142f301ac87206a9f"
+        },
+        {
+          "endLine": 22,
+          "line": 9,
+          "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation-preparation-5/run.py",
+          "sha256": "16049341d6d810ea5c46a88220da30f9a04e436ee7fea0061cc26e58ba76ba70"
+        },
+        {
+          "endLine": 80,
+          "line": 60,
+          "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation-preparation-5/run.py",
+          "sha256": "16049341d6d810ea5c46a88220da30f9a04e436ee7fea0061cc26e58ba76ba70"
+        }
+      ],
+      "exactOriginalCommand": {
+        "acceptedRawExitCodes": [
+          0
+        ],
+        "argv": [
+          "/opt/homebrew/opt/python@3.14/bin/python3.14",
+          "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation-preparation-5/audit.py",
+          "schema-installed-positive"
+        ],
+        "automaticRetries": 0,
+        "contract": "IMMEDIATE exact selected result/report grammar/source/cleanup audit; missing extra invalid partial records never receive positive credit",
+        "cwd": "/Users/dbox/repos/wt/vickie/vickie-schema-lint-correction-minimum",
+        "id": "audit-schema-installed-positive",
+        "kind": "supervised-readonly-helper",
+        "mustCompleteBeforeNextStage": true,
+        "outerSeconds": 120,
+        "requiresConsumerProof": true,
+        "termAtSeconds": 115
+      },
+      "id": "audit-schema-installed-positive",
+      "nativeRootDurability": "Full actual conjunction plus independent native/ROOT durable disposition before next original stage; helper complete() alone does not establish native/ROOT publication durability",
+      "normalStrictSeconds": 115,
+      "observedCurrentGateIncludesStage": false,
+      "ordinal": 30,
+      "outerSeconds": 120,
+      "requiredExistingGatePredicates": [
+        "approvedStages exact original prefix including this stage; new future ROOT disposition must authorize this actual scope",
+        "unchanged source679/10 owned/head/tree/binary diff; unchanged implementation and strict reference pins",
+        "fresh workspace11 tools and source lock; all prior original stages complete; current accepted full build/rootBuildAcceptance exact",
+        "rootArchiveAcceptance: accepted=true/sourceBindingSha256/tarProvenanceSha256 exact actual stage21 provenance",
+        "installedProvenance+consumerInventory+consumerLockSha256+rootConsumerProofAcceptance exact; verify_consumer before and after; proof-derived external entry/source environment"
+      ],
+      "stageSpecificOutputs": [
+        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation-preparation-5/run/schema-installed-positive.accepted-observation.json"
+      ],
+      "stageSpecificSourcePointers": [
+        {
+          "endLine": 459,
+          "line": 397,
+          "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation-preparation-5/audit.py",
+          "sha256": "1892c8b723126ea69d33053ce0ec6e2461e299dbf9e8b886be35905c132412a2"
+        },
+        {
+          "line": 461,
+          "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation-preparation-5/audit.py",
+          "sha256": "1892c8b723126ea69d33053ce0ec6e2461e299dbf9e8b886be35905c132412a2"
+        }
+      ],
+      "standardSupervisorOutputs": [
+        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation-preparation-5/run/audit-schema-installed-positive.started.json",
+        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation-preparation-5/run/audit-schema-installed-positive.log",
+        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation-preparation-5/run/audit-schema-installed-positive.processes.jsonl",
+        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation-preparation-5/run/audit-schema-installed-positive.exit.json"
+      ],
+      "state": "UNRELEASED; no invocation or authoring release from this packet"
+    },
+    {
+      "automaticRetries": 0,
+      "commandPointer": {
+        "line": 604,
+        "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation-preparation-5/commands.json",
+        "sha256": "ef7d5889c4cdb6263d746d3d1ad698429d6a96d5c0dbd1e4d6764819b060ba8f"
+      },
+      "commonGatePointers": [
+        {
+          "endLine": 124,
+          "line": 87,
+          "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation-preparation-5/gate.py",
+          "sha256": "6260f0878ca0bb30cc5b6de69d8357751fd09276eec7f90142f301ac87206a9f"
+        },
+        {
+          "endLine": 71,
+          "line": 66,
+          "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation-preparation-5/gate.py",
+          "sha256": "6260f0878ca0bb30cc5b6de69d8357751fd09276eec7f90142f301ac87206a9f"
+        },
+        {
+          "endLine": 22,
+          "line": 9,
+          "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation-preparation-5/run.py",
+          "sha256": "16049341d6d810ea5c46a88220da30f9a04e436ee7fea0061cc26e58ba76ba70"
+        },
+        {
+          "endLine": 80,
+          "line": 60,
+          "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation-preparation-5/run.py",
+          "sha256": "16049341d6d810ea5c46a88220da30f9a04e436ee7fea0061cc26e58ba76ba70"
+        }
+      ],
+      "exactOriginalCommand": {
+        "acceptedRawExitCodes": [
+          0
+        ],
+        "argv": [
+          "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+          "/Users/dbox/.cache/node/corepack/v1/pnpm/11.20.0/bin/pnpm.cjs",
+          "run",
+          "check:boundaries"
+        ],
+        "automaticRetries": 0,
+        "configurationFinalized": true,
+        "cwd": "/Users/dbox/repos/wt/vickie/vickie-schema-lint-correction-minimum",
+        "id": "required-check-boundaries",
+        "kind": "supervised-command",
+        "outerSeconds": 120,
+        "termAtSeconds": 115
+      },
+      "id": "required-check-boundaries",
+      "nativeRootDurability": "Full actual conjunction plus independent native/ROOT durable disposition before next original stage; helper complete() alone does not establish native/ROOT publication durability",
+      "normalStrictSeconds": 115,
+      "observedCurrentGateIncludesStage": false,
+      "ordinal": 31,
+      "outerSeconds": 120,
+      "requiredExistingGatePredicates": [
+        "approvedStages exact original prefix including this stage; new future ROOT disposition must authorize this actual scope",
+        "unchanged source679/10 owned/head/tree/binary diff; unchanged implementation and strict reference pins",
+        "fresh workspace11 tools and source lock; all prior original stages complete; current accepted full build/rootBuildAcceptance exact",
+        "rootArchiveAcceptance: accepted=true/sourceBindingSha256/tarProvenanceSha256 exact actual stage21 provenance"
+      ],
+      "stageSpecificOutputs": [
+        "stdout/stderr in standard stage log; no dedicated new P5 binding document"
+      ],
+      "stageSpecificSourcePointers": [
+        {
+          "endLine": 177,
+          "line": 8,
+          "path": "/Users/dbox/repos/wt/vickie/vickie-schema-lint-correction-minimum/scripts/check-dependency-boundaries.mjs",
+          "sha256": "31a3c2c7f4aaf16fd9fa102831e4068455d7b622e605d9a65c15b99178f295e4"
+        }
+      ],
+      "standardSupervisorOutputs": [
+        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation-preparation-5/run/required-check-boundaries.started.json",
+        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation-preparation-5/run/required-check-boundaries.log",
+        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation-preparation-5/run/required-check-boundaries.processes.jsonl",
+        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation-preparation-5/run/required-check-boundaries.exit.json"
+      ],
+      "state": "UNRELEASED; no invocation or authoring release from this packet"
+    },
+    {
+      "automaticRetries": 0,
+      "commandPointer": {
+        "line": 622,
+        "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation-preparation-5/commands.json",
+        "sha256": "ef7d5889c4cdb6263d746d3d1ad698429d6a96d5c0dbd1e4d6764819b060ba8f"
+      },
+      "commonGatePointers": [
+        {
+          "endLine": 124,
+          "line": 87,
+          "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation-preparation-5/gate.py",
+          "sha256": "6260f0878ca0bb30cc5b6de69d8357751fd09276eec7f90142f301ac87206a9f"
+        },
+        {
+          "endLine": 71,
+          "line": 66,
+          "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation-preparation-5/gate.py",
+          "sha256": "6260f0878ca0bb30cc5b6de69d8357751fd09276eec7f90142f301ac87206a9f"
+        },
+        {
+          "endLine": 22,
+          "line": 9,
+          "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation-preparation-5/run.py",
+          "sha256": "16049341d6d810ea5c46a88220da30f9a04e436ee7fea0061cc26e58ba76ba70"
+        },
+        {
+          "endLine": 80,
+          "line": 60,
+          "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation-preparation-5/run.py",
+          "sha256": "16049341d6d810ea5c46a88220da30f9a04e436ee7fea0061cc26e58ba76ba70"
+        }
+      ],
+      "exactOriginalCommand": {
+        "acceptedRawExitCodes": [
+          0
+        ],
+        "argv": [
+          "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+          "/Users/dbox/.cache/node/corepack/v1/pnpm/11.20.0/bin/pnpm.cjs",
+          "run",
+          "e2e:ready:preflight"
+        ],
+        "automaticRetries": 0,
+        "configurationFinalized": true,
+        "cwd": "/Users/dbox/repos/wt/vickie/vickie-schema-lint-correction-minimum",
+        "id": "required-e2e-ready-preflight",
+        "kind": "supervised-command",
+        "outerSeconds": 120,
+        "termAtSeconds": 115
+      },
+      "id": "required-e2e-ready-preflight",
+      "nativeRootDurability": "Full actual conjunction plus independent native/ROOT durable disposition before next original stage; helper complete() alone does not establish native/ROOT publication durability",
+      "normalStrictSeconds": 115,
+      "observedCurrentGateIncludesStage": false,
+      "ordinal": 32,
+      "outerSeconds": 120,
+      "requiredExistingGatePredicates": [
+        "approvedStages exact original prefix including this stage; new future ROOT disposition must authorize this actual scope",
+        "unchanged source679/10 owned/head/tree/binary diff; unchanged implementation and strict reference pins",
+        "fresh workspace11 tools and source lock; all prior original stages complete; current accepted full build/rootBuildAcceptance exact",
+        "rootArchiveAcceptance: accepted=true/sourceBindingSha256/tarProvenanceSha256 exact actual stage21 provenance"
+      ],
+      "stageSpecificOutputs": [
+        "standard stage log; source test-owned dynamic temp fixtures/child lifetimes, no new accepted P5 consumer proof"
+      ],
+      "stageSpecificSourcePointers": [
+        {
+          "endLine": 317,
+          "line": 1,
+          "path": "/Users/dbox/repos/wt/vickie/vickie-schema-lint-correction-minimum/scripts/e2e-ready.test.mjs",
+          "sha256": "0e80b8d05641386c4aa355fc80f865654304c716f95ddb9d1d00110795a8beaa"
+        }
+      ],
+      "standardSupervisorOutputs": [
+        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation-preparation-5/run/required-e2e-ready-preflight.started.json",
+        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation-preparation-5/run/required-e2e-ready-preflight.log",
+        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation-preparation-5/run/required-e2e-ready-preflight.processes.jsonl",
+        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation-preparation-5/run/required-e2e-ready-preflight.exit.json"
+      ],
+      "state": "UNRELEASED; no invocation or authoring release from this packet"
+    },
+    {
+      "automaticRetries": 0,
+      "commandPointer": {
+        "line": 665,
+        "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation-preparation-5/commands.json",
+        "sha256": "ef7d5889c4cdb6263d746d3d1ad698429d6a96d5c0dbd1e4d6764819b060ba8f"
+      },
+      "commonGatePointers": [
+        {
+          "endLine": 124,
+          "line": 87,
+          "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation-preparation-5/gate.py",
+          "sha256": "6260f0878ca0bb30cc5b6de69d8357751fd09276eec7f90142f301ac87206a9f"
+        },
+        {
+          "endLine": 71,
+          "line": 66,
+          "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation-preparation-5/gate.py",
+          "sha256": "6260f0878ca0bb30cc5b6de69d8357751fd09276eec7f90142f301ac87206a9f"
+        },
+        {
+          "endLine": 22,
+          "line": 9,
+          "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation-preparation-5/run.py",
+          "sha256": "16049341d6d810ea5c46a88220da30f9a04e436ee7fea0061cc26e58ba76ba70"
+        },
+        {
+          "endLine": 80,
+          "line": 60,
+          "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation-preparation-5/run.py",
+          "sha256": "16049341d6d810ea5c46a88220da30f9a04e436ee7fea0061cc26e58ba76ba70"
+        }
+      ],
+      "exactOriginalCommand": {
+        "acceptedRawExitCodes": [
+          0
+        ],
+        "argv": [
+          "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+          "/Users/dbox/.cache/node/corepack/v1/pnpm/11.20.0/bin/pnpm.cjs",
+          "run",
+          "smoke"
+        ],
+        "automaticRetries": 0,
+        "configurationFinalized": true,
+        "cwd": "/Users/dbox/repos/wt/vickie/vickie-schema-lint-correction-minimum",
+        "id": "required-smoke",
+        "kind": "supervised-command",
+        "outerSeconds": 120,
+        "termAtSeconds": 115
+      },
+      "id": "required-smoke",
+      "nativeRootDurability": "Full actual conjunction plus independent native/ROOT durable disposition before next original stage; helper complete() alone does not establish native/ROOT publication durability",
+      "normalStrictSeconds": 115,
+      "observedCurrentGateIncludesStage": false,
+      "ordinal": 33,
+      "outerSeconds": 120,
+      "requiredExistingGatePredicates": [
+        "approvedStages exact original prefix including this stage; new future ROOT disposition must authorize this actual scope",
+        "unchanged source679/10 owned/head/tree/binary diff; unchanged implementation and strict reference pins",
+        "fresh workspace11 tools and source lock; all prior original stages complete; current accepted full build/rootBuildAcceptance exact",
+        "rootArchiveAcceptance: accepted=true/sourceBindingSha256/tarProvenanceSha256 exact actual stage21 provenance"
+      ],
+      "stageSpecificOutputs": [
+        "standard stage log; separate ${TMPDIR}/bdp-smoke-*/packs and install scratch generated by original smoke script, not P5/run/consumer"
+      ],
+      "stageSpecificSourcePointers": [
+        {
+          "endLine": 128,
+          "line": 94,
+          "path": "/Users/dbox/repos/wt/vickie/vickie-schema-lint-correction-minimum/scripts/smoke-executables.mjs",
+          "sha256": "adeaea6e334f8fb6f7af5d09f0cb7ee0b729864affc45cb6baf84a95f1d4d9ae"
+        },
+        {
+          "endLine": 1127,
+          "line": 871,
+          "path": "/Users/dbox/repos/wt/vickie/vickie-schema-lint-correction-minimum/scripts/smoke-executables.mjs",
+          "sha256": "adeaea6e334f8fb6f7af5d09f0cb7ee0b729864affc45cb6baf84a95f1d4d9ae"
+        }
+      ],
+      "standardSupervisorOutputs": [
+        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation-preparation-5/run/required-smoke.started.json",
+        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation-preparation-5/run/required-smoke.log",
+        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation-preparation-5/run/required-smoke.processes.jsonl",
+        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation-preparation-5/run/required-smoke.exit.json"
+      ],
+      "state": "UNRELEASED; no invocation or authoring release from this packet"
+    },
+    {
+      "automaticRetries": 0,
+      "commandPointer": {
+        "line": 640,
+        "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation-preparation-5/commands.json",
+        "sha256": "ef7d5889c4cdb6263d746d3d1ad698429d6a96d5c0dbd1e4d6764819b060ba8f"
+      },
+      "commonGatePointers": [
+        {
+          "endLine": 124,
+          "line": 87,
+          "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation-preparation-5/gate.py",
+          "sha256": "6260f0878ca0bb30cc5b6de69d8357751fd09276eec7f90142f301ac87206a9f"
+        },
+        {
+          "endLine": 71,
+          "line": 66,
+          "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation-preparation-5/gate.py",
+          "sha256": "6260f0878ca0bb30cc5b6de69d8357751fd09276eec7f90142f301ac87206a9f"
+        },
+        {
+          "endLine": 22,
+          "line": 9,
+          "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation-preparation-5/run.py",
+          "sha256": "16049341d6d810ea5c46a88220da30f9a04e436ee7fea0061cc26e58ba76ba70"
+        },
+        {
+          "endLine": 80,
+          "line": 60,
+          "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation-preparation-5/run.py",
+          "sha256": "16049341d6d810ea5c46a88220da30f9a04e436ee7fea0061cc26e58ba76ba70"
+        }
+      ],
+      "exactOriginalCommand": {
+        "acceptedRawExitCodes": [
+          0,
+          2
+        ],
+        "argv": [
+          "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+          "/Users/dbox/.cache/node/corepack/v1/pnpm/11.20.0/bin/pnpm.cjs",
+          "run",
+          "evidence:verify"
+        ],
+        "automaticRetries": 0,
+        "configurationFinalized": true,
+        "cwd": "/Users/dbox/repos/wt/vickie/vickie-schema-lint-correction-minimum",
+        "id": "required-evidence-verify",
+        "kind": "supervised-command",
+        "outerSeconds": 120,
+        "rawExitMeaning": {
+          "0": "Existing claimed Read evidence verified only for its bound claim",
+          "1": "Claimed but unproved: failure",
+          "2": "No evidence claim; explicit fail-closed no-claim accepted by current CI policy, never Write/RU/TX qualification",
+          "3": "Unable to inspect claim/stale build: failure"
+        },
+        "termAtSeconds": 115
+      },
+      "id": "required-evidence-verify",
+      "nativeRootDurability": "Full actual conjunction plus independent native/ROOT durable disposition before next original stage; helper complete() alone does not establish native/ROOT publication durability",
+      "normalStrictSeconds": 115,
+      "observedCurrentGateIncludesStage": false,
+      "ordinal": 34,
+      "outerSeconds": 120,
+      "requiredExistingGatePredicates": [
+        "approvedStages exact original prefix including this stage; new future ROOT disposition must authorize this actual scope",
+        "unchanged source679/10 owned/head/tree/binary diff; unchanged implementation and strict reference pins",
+        "fresh workspace11 tools and source lock; all prior original stages complete; current accepted full build/rootBuildAcceptance exact",
+        "rootArchiveAcceptance: accepted=true/sourceBindingSha256/tarProvenanceSha256 exact actual stage21 provenance"
+      ],
+      "stageSpecificOutputs": [
+        "standard stage log with evidence.verified/evidence.gated/evidence.failed/unavailable; no evidence generation authorized by this verifier"
+      ],
+      "stageSpecificSourcePointers": [
+        {
+          "endLine": 255,
+          "line": 222,
+          "path": "/Users/dbox/repos/wt/vickie/vickie-schema-lint-correction-minimum/scripts/read-cohort-evidence.mjs",
+          "sha256": "451d77cf880329238f044e3f0e92d681d6493c509fcb3b050f6e292ce3f2a21e"
+        },
+        {
+          "endLine": 404,
+          "line": 370,
+          "path": "/Users/dbox/repos/wt/vickie/vickie-schema-lint-correction-minimum/scripts/read-cohort-evidence.mjs",
+          "sha256": "451d77cf880329238f044e3f0e92d681d6493c509fcb3b050f6e292ce3f2a21e"
+        }
+      ],
+      "standardSupervisorOutputs": [
+        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation-preparation-5/run/required-evidence-verify.started.json",
+        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation-preparation-5/run/required-evidence-verify.log",
+        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation-preparation-5/run/required-evidence-verify.processes.jsonl",
+        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation-preparation-5/run/required-evidence-verify.exit.json"
+      ],
+      "state": "UNRELEASED; no invocation or authoring release from this packet"
+    }
+  ],
+  "sourceCommandsPin": {
+    "line": 1,
+    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation-preparation-5/commands.json",
+    "sha256": "ef7d5889c4cdb6263d746d3d1ad698429d6a96d5c0dbd1e4d6764819b060ba8f"
+  }
+}

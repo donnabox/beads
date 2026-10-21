@@ -1,0 +1,71 @@
+{
+  "workspace": "/Users/dbox/repos/wt/vickie/vickie-minimum-receiving",
+  "branch": "codex/vickie-minimum-receiving",
+  "head": "5d7fa3f049fa0b4db3aa8dae20e20d8e47fb3854",
+  "tree": "057f879132074166f2c0f643a8b45bbd9dd47c6f",
+  "files": {
+    "docs/specs/bdp.md": {
+      "sha256": "63e93be562334c84c1e967da2fce212e8ef515aa3c9448924c5f9a272ea7b80b",
+      "new": false,
+      "bytes": 396081
+    },
+    "packages/server/src/transaction-consistency.ts": {
+      "sha256": "00a420c3e9f5dcb1b8814a6476d5ce52edfb7adbbd1c64ab082833f17322a336",
+      "new": false,
+      "bytes": 5482
+    },
+    "packages/server/src/transaction-http.ts": {
+      "sha256": "ebb3550110bd6fda638572966e5faa05c15f062f37a10947f6e442fc7d4570f4",
+      "new": false,
+      "bytes": 27317
+    },
+    "packages/server/src/transaction-consistency.test.ts": {
+      "sha256": "4d45ba52c028c3081188a6f76498889d7170cceaaad114004458b86331191bc9",
+      "new": false,
+      "bytes": 4562
+    },
+    "packages/server/src/transaction-http.test.ts": {
+      "sha256": "d1ea738f1cc6e84bffe88150d7eb8c6607c000ac3848e2804823692764d176c2",
+      "new": false,
+      "bytes": 183139
+    },
+    "packages/server/src/transaction-snapshot-http.test.ts": {
+      "sha256": "61023b5f24396fe484c7820c706b560cb87abd7a3e16670f5a0944fbefd44d8a",
+      "new": false,
+      "bytes": 28484
+    },
+    "packages/server/src/transaction-schema-http.test.ts": {
+      "sha256": "eee33a0948c9a0981a2a963cec5a8f16102ae5bab32128f83c39956abe0a952b",
+      "new": false,
+      "bytes": 16571
+    },
+    "packages/server/src/transaction-changefeed.test.ts": {
+      "sha256": "97c3f8604ccbb7f3141a22e5c3d338f51929b308b80614309a7e837801b12043",
+      "new": false,
+      "bytes": 39542
+    },
+    "apps/bdptest/src/transactional-snapshot-installed.test.ts": {
+      "sha256": "58f4ad828861ea332de7bf4413f48eb4646f32237b76d3a4db310e081b99ffe9",
+      "new": false,
+      "bytes": 36872
+    },
+    "apps/bdptest/src/transactional-minimum-receiving-installed.test.ts": {
+      "sha256": "cefde296b07d6be86a83d13892a603588c9054bdd54196048a855e74f9e9b7f9",
+      "new": true,
+      "bytes": 23338
+    },
+    "docs/design/transaction-implementation-progress.md": {
+      "sha256": "2c30837b7d43f51129b7cdfbc3b1cb09941b2527fb7d432a94755d6c5edb3522",
+      "new": false,
+      "bytes": 132561
+    }
+  },
+  "diffSha256": "838f8e53d13cfa121718081507fea934d4c6ff12d061c78f7cc718adc11a6284",
+  "status": "frozen test-only clock successor; initial actual typecheck failed before build/runtime",
+  "planSha256": "adc78a205c7470f19ddf1c6efbef6b2590f1530961ffdc30a15d628edcccd1e9",
+  "ledgerSha256": "6425fe6bdfbeba9a3eef468f42a5dc950b914b49b0b88bad2104cf96606c8854",
+  "supersedesBinding": {
+    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-minimum-receiving-draft/source-binding.json",
+    "sha256": "8c2912ad963de93eac28ecf9a6b162b02e0b18b7b956f77ed51ff0eaf4b826ca"
+  }
+}

@@ -1,0 +1,218 @@
+--- /Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation-preparation-1/commands.json
++++ /Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation-preparation-2/commands.json
+@@ -23,7 +23,7 @@
+       ],
+       "argv": [
+         "/opt/homebrew/opt/python@3.14/bin/python3.14",
+-        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation-preparation-1/audit.py",
++        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation-preparation-2/audit.py",
+         "g09-installed-01"
+       ],
+       "automaticRetries": 0,
+@@ -42,7 +42,7 @@
+       ],
+       "argv": [
+         "/opt/homebrew/opt/python@3.14/bin/python3.14",
+-        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation-preparation-1/audit.py",
++        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation-preparation-2/audit.py",
+         "g09-installed-02"
+       ],
+       "automaticRetries": 0,
+@@ -61,7 +61,7 @@
+       ],
+       "argv": [
+         "/opt/homebrew/opt/python@3.14/bin/python3.14",
+-        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation-preparation-1/audit.py",
++        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation-preparation-2/audit.py",
+         "g09-schema-source"
+       ],
+       "automaticRetries": 0,
+@@ -80,7 +80,7 @@
+       ],
+       "argv": [
+         "/opt/homebrew/opt/python@3.14/bin/python3.14",
+-        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation-preparation-1/audit.py",
++        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation-preparation-2/audit.py",
+         "g09-service-source"
+       ],
+       "automaticRetries": 0,
+@@ -99,7 +99,7 @@
+       ],
+       "argv": [
+         "/opt/homebrew/opt/python@3.14/bin/python3.14",
+-        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation-preparation-1/audit.py",
++        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation-preparation-2/audit.py",
+         "legacy-schema-source"
+       ],
+       "automaticRetries": 0,
+@@ -118,7 +118,7 @@
+       ],
+       "argv": [
+         "/opt/homebrew/opt/python@3.14/bin/python3.14",
+-        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation-preparation-1/audit.py",
++        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation-preparation-2/audit.py",
+         "schema-confinement-source"
+       ],
+       "automaticRetries": 0,
+@@ -137,7 +137,7 @@
+       ],
+       "argv": [
+         "/opt/homebrew/opt/python@3.14/bin/python3.14",
+-        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation-preparation-1/audit.py",
++        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation-preparation-2/audit.py",
+         "schema-installed-positive"
+       ],
+       "automaticRetries": 0,
+@@ -156,7 +156,7 @@
+       ],
+       "argv": [
+         "/opt/homebrew/opt/python@3.14/bin/python3.14",
+-        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation-preparation-1/audit.py",
++        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation-preparation-2/audit.py",
+         "build"
+       ],
+       "automaticRetries": 0,
+@@ -174,7 +174,7 @@
+       ],
+       "argv": [
+         "/opt/homebrew/opt/python@3.14/bin/python3.14",
+-        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation-preparation-1/audit.py",
++        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation-preparation-2/audit.py",
+         "tools"
+       ],
+       "automaticRetries": 0,
+@@ -201,7 +201,7 @@
+       ],
+       "automaticRetries": 0,
+       "configurationFinalized": true,
+-      "cwd": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation-preparation-1/run/consumer",
++      "cwd": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation-preparation-2/run/consumer",
+       "id": "consumer-install",
+       "kind": "supervised-command",
+       "outerSeconds": 120,
+@@ -267,7 +267,7 @@
+         "--maxWorkers=1",
+         "--reporter=verbose",
+         "--reporter=json",
+-        "--outputFile.json=/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation-preparation-1/run/g09-installed-01.results.json",
++        "--outputFile.json=/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation-preparation-2/run/g09-installed-01.results.json",
+         "--testNamePattern",
+         "^(?:G09\\-I01\\ installed\\ exact\\ schema\\ current\\ minimum)$"
+       ],
+@@ -309,7 +309,7 @@
+         "--maxWorkers=1",
+         "--reporter=verbose",
+         "--reporter=json",
+-        "--outputFile.json=/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation-preparation-1/run/g09-installed-02.results.json",
++        "--outputFile.json=/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation-preparation-2/run/g09-installed-02.results.json",
+         "--testNamePattern",
+         "^(?:G09\\-I02\\ installed\\ receiving\\ and\\ exact\\ retrieval\\ membership)$"
+       ],
+@@ -351,7 +351,7 @@
+         "--maxWorkers=1",
+         "--reporter=verbose",
+         "--reporter=json",
+-        "--outputFile.json=/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation-preparation-1/run/g09-schema-source.results.json",
++        "--outputFile.json=/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation-preparation-2/run/g09-schema-source.results.json",
+         "--testNamePattern",
+         "^(?:G09\\-S04\\ schema\\ selector\\ receiving\\ and\\ exact\\ identity|G09\\-S05\\ schema\\ selector\\ HTTP/min\\ failure\\ order|G09\\-S06\\ schema\\ runtime\\ satisfied\\ and\\ context\\ errors|G09\\-S07\\ schema\\ runtime\\ ahead\\ before\\ conditional|G09\\-S08\\ schema\\ runtime\\ unknown\\ before\\ HEAD/media)$"
+       ],
+@@ -394,7 +394,7 @@
+         "--maxWorkers=1",
+         "--reporter=verbose",
+         "--reporter=json",
+-        "--outputFile.json=/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation-preparation-1/run/g09-service-source.results.json",
++        "--outputFile.json=/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation-preparation-2/run/g09-service-source.results.json",
+         "--testNamePattern",
+         "^(?:G09\\-S01\\ schemaObserved\\ zero\\-min/current\\ and\\ captured\\ supplied\\ tuple|G09\\-S02\\ schemaObserved\\ epoch\\ and\\ view\\ errors|G09\\-S03\\ schemaObserved\\ ahead\\ and\\ opaque\\ bounded\\ attempts)$"
+       ],
+@@ -433,7 +433,7 @@
+         "--maxWorkers=1",
+         "--reporter=verbose",
+         "--reporter=json",
+-        "--outputFile.json=/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation-preparation-1/run/legacy-schema-source.results.json",
++        "--outputFile.json=/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation-preparation-2/run/legacy-schema-source.results.json",
+         "--testNamePattern",
+         "^(?:serves\\ exact\\ captured\\ root\\ and\\ transitive\\ bytes\\ without\\ retaining\\ mutable\\ input|preserves\\ receiving\\ refusals\\ and\\ foreign\\ schema\\ minima\\ before\\ conditionals)$"
+       ],
+@@ -516,7 +516,7 @@
+         "@bdp/protocol",
+         "pack",
+         "--pack-destination",
+-        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation-preparation-1/run/packages"
++        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation-preparation-2/run/packages"
+       ],
+       "automaticRetries": 0,
+       "configurationFinalized": true,
+@@ -537,7 +537,7 @@
+         "@bdp/server",
+         "pack",
+         "--pack-destination",
+-        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation-preparation-1/run/packages"
++        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation-preparation-2/run/packages"
+       ],
+       "automaticRetries": 0,
+       "configurationFinalized": true,
+@@ -571,7 +571,7 @@
+       ],
+       "argv": [
+         "/opt/homebrew/opt/python@3.14/bin/python3.14",
+-        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation-preparation-1/packages.py",
++        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation-preparation-2/packages.py",
+         "consumer"
+       ],
+       "automaticRetries": 0,
+@@ -589,7 +589,7 @@
+       ],
+       "argv": [
+         "/opt/homebrew/opt/python@3.14/bin/python3.14",
+-        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation-preparation-1/packages.py",
++        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation-preparation-2/packages.py",
+         "directory"
+       ],
+       "automaticRetries": 0,
+@@ -692,7 +692,7 @@
+         "--maxWorkers=1",
+         "--reporter=verbose",
+         "--reporter=json",
+-        "--outputFile.json=/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation-preparation-1/run/schema-confinement-source.results.json",
++        "--outputFile.json=/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation-preparation-2/run/schema-confinement-source.results.json",
+         "--testNamePattern",
+         "^(?:confines\\ observed\\ Type\\ and\\ schema\\ traversal\\ to\\ exact\\ administrative\\ identities)$"
+       ],
+@@ -727,7 +727,7 @@
+         "--maxWorkers=1",
+         "--reporter=verbose",
+         "--reporter=json",
+-        "--outputFile.json=/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation-preparation-1/run/schema-installed-positive.results.json",
++        "--outputFile.json=/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation-preparation-2/run/schema-installed-positive.results.json",
+         "--testNamePattern",
+         "^(?:traverses\\ installed\\ local\\ schema\\ bytes\\ with\\ current\\ context\\ within14requests)$"
+       ],
+@@ -782,7 +782,7 @@
+       ],
+       "argv": [
+         "/opt/homebrew/opt/python@3.14/bin/python3.14",
+-        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation-preparation-1/packages.py",
++        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation-preparation-2/packages.py",
+         "tar"
+       ],
+       "automaticRetries": 0,
+@@ -800,7 +800,7 @@
+       ],
+       "argv": [
+         "/opt/homebrew/opt/python@3.14/bin/python3.14",
+-        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation-preparation-1/packages.py",
++        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation-preparation-2/packages.py",
+         "installed"
+       ],
+       "automaticRetries": 0,
+@@ -834,7 +834,7 @@
+     }
+   },
+   "configurationFinalized": true,
+-  "executionRoot": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation-preparation-1",
++  "executionRoot": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation-preparation-2",
+   "expectedProductionVersions": {
+     "@bdp/protocol": "0.0.0",
+     "@bdp/server": "0.0.0",

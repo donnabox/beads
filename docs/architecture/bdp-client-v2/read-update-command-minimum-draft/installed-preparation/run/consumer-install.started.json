@@ -1,0 +1,43 @@
+{
+  "name": "consumer-install",
+  "argv": [
+    "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+    "/Users/dbox/.cache/node/corepack/v1/pnpm/11.20.0/bin/pnpm.cjs",
+    "install",
+    "--offline",
+    "--ignore-scripts",
+    "--no-frozen-lockfile",
+    "--prod"
+  ],
+  "cwd": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/read-update-command-minimum-draft/installed-preparation/run/consumer",
+  "started": "2026-10-16T02:32:00.168969+00:00",
+  "head": "b89554c6004edf99d3278518bee1b150dce3fa98",
+  "workspaceDirty": false,
+  "sourceSha256": {
+    "apps/bdptest/src/read-update-matrix.test.ts": "1bf2661fa7bee90aa43622741d9e71d9770b2982d0a8804fa55ac1afb59e4d5d",
+    "packages/conformance/matrices/read-update-v1.json": "10a7c6f97a280cf88e58d3aa2039fe580904b74bfffcebda4747fc3c1a34b583",
+    "packages/conformance/src/cumulative-artifact.test.ts": "db55198580ece6fbd369f5365bbca75bdd41c3398e34d6e233fb39359ce29fee",
+    "packages/conformance/src/profile-contract-plan.test.ts": "3b7c41f005d37763a616746aba98447f941d8eeed2cadb231c0260f0bd2f9340",
+    "packages/conformance/src/read-update-artifact-set.test.ts": "e5c8903119b7c336dcc1e1479378e22029aa4d36978817557e461ea723991379",
+    "packages/conformance/test-support/read-update-coverage-v1.json": "4120abfe2f724fe34b3868bd3533b181e18479768d5de752b5098c6288dbb395"
+  },
+  "sourceDiffSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+  "rootAcceptanceSha256": "d60e1771a4f1d72ae05acb20a7ab7bb7ba0abdad7dbf2d30174678fbcc083ff3",
+  "preparationSha256": "c7379208470579df06925671bbde5b611711104d9484eede8870e47c1bb9afb3",
+  "bdpOverrides": {},
+  "guardedArgv": [
+    "/opt/homebrew/opt/python@3.14/bin/python3.14",
+    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/guarded-action.py",
+    "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+    "/Users/dbox/.cache/node/corepack/v1/pnpm/11.20.0/bin/pnpm.cjs",
+    "install",
+    "--offline",
+    "--ignore-scripts",
+    "--no-frozen-lockfile",
+    "--prod"
+  ],
+  "nodePathPrefix": "/Users/dbox/.nvm/versions/node/v24.16.0/bin",
+  "sourceAttribution": "Externally bound source snapshot or frozen package; not child-attested Git identity",
+  "plannedWorkload": {},
+  "derivativeBinding": null
+}

@@ -1,0 +1,16 @@
+{
+  "argv": [
+    "/Users/dbox/repos/wt/vickie/vickie-authorization-transition/node_modules/.pnpm/@biomejs+cli-darwin-arm64@2.5.7/node_modules/@biomejs/cli-darwin-arm64/biome",
+    "format",
+    "--write",
+    "--config-path",
+    "/Users/dbox/repos/wt/vickie/vickie-minimum-current-resource/biome.json",
+    "packages/server/src/transaction-http.test.ts",
+    "apps/bdptest/src/transactional-minimum-current-resource-installed.test.ts"
+  ],
+  "cwd": "/Users/dbox/repos/wt/vickie/vickie-minimum-current-resource",
+  "before": {
+    "packages/server/src/transaction-http.test.ts": "02da41597868578865d2556b0af94eda31c2a84b9abdfabbc19ee25ff603fc96",
+    "apps/bdptest/src/transactional-minimum-current-resource-installed.test.ts": "ef25b2eedd7352de4b14a1b087707d02a62109a539922ee7680b77cefb94900a"
+  }
+}

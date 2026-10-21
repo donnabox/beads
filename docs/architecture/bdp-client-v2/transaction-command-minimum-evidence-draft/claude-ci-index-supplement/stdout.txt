@@ -1,0 +1,10 @@
+**No blocking finding.**
+
+Reasoning, confined to the one-line change:
+
+- **The new constant is arithmetically correct.** Counting the supplied canonical order zero-based puts `transactional.receipt.pagination` at index 10 (`...singleton-targets` 8, `receipt.readable` 9, `receipt.pagination` 10), consistent with the single inherited row inserted at index 0 shifting everything after it by one. This is independent of how the Vitest message orders its two numbers, so the direction of the fix is confirmed by the manifest order itself, not just by reading `expected 10 to be 9`.
+- **The patch applies to the right line.** The hunk context (`const row = manifest.scenarios.find(` / id literal / `);` … `toHaveLength(18)` / `p-later-state` / `captures` comment) matches `transactional-cumulative.test.ts:1008-1014` exactly, with the trailing URL-only-capture comment preserved.
+- **No sibling pin is left stale within scope.** The other order-sensitive assertion in this file, the full 14-id list at `transactional-cumulative.test.ts:875-890`, already carries the new row at position 0 and pagination at position 10, so it agrees with `10` rather than contradicting it. The `toHaveLength(18)` action count at 1012 agrees with the 18 pinned at line 897, and the removal-and-rehash layers (`2732-2735`, `863-866`) plus `before.size` of 13 at 2739 key off manifest bytes, which this change does not touch.
+- **Nothing is weakened.** It remains an absolute positional assertion, so an accidental reorder or a second unannounced insertion still fails; the 18-action count and every semantic check below it are untouched.
+
+I did not assume any outcome for the four static callbacks you have running separately, and per your framing I am not treating pending full-suite completion as a source-review defect.

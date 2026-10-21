@@ -1,0 +1,11 @@
+--- /Users/dbox/repos/wt/vickie/bdp-integration-logs/sequence-depth-retained-member-draft/claude-code-preparation/run.py
++++ /Users/dbox/repos/wt/vickie/bdp-integration-logs/sequence-depth-retained-member-draft/claude-split-code/production/run.py
+@@ -1,7 +1,7 @@
+ from pathlib import Path
+ import subprocess,json,hashlib,datetime,time,os,signal
+ W=Path("/Users/dbox/repos/wt/vickie/vickie-sequence-depth-retained")
+-E=Path("/Users/dbox/repos/wt/vickie/bdp-integration-logs/sequence-depth-retained-member-draft/claude-code-preparation")
++E=Path("/Users/dbox/repos/wt/vickie/bdp-integration-logs/sequence-depth-retained-member-draft/claude-split-code/production")
+ P=E;T=P/"tmp"
+ sha=lambda b:hashlib.sha256(b).hexdigest()
+ def git(*a):return subprocess.check_output(["git",*a],cwd=W)

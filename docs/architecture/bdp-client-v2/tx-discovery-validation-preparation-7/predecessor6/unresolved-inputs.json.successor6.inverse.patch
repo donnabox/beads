@@ -1,0 +1,42 @@
+--- current6/unresolved-inputs.json
++++ predecessor5/unresolved-inputs.json
+@@ -1,21 +1,23 @@
+ {
+-  "actual6Results": "All52 fresh6 results/start/log/exit/process/directory observations UNRESOLVED;27PASS1FAIL in5 strictly historical",
+-  "consumerReuseForbidden": true,
+   "executionReleased": false,
+-  "futureBarriers": [
+-    "fresh version/offlineinstall/workspace11tool observation",
+-    "freshcompiler/format/lint/build/map root acceptance",
+-    "freshcompletearchives/root acceptance",
+-    "newexternalconsumer/lock/manifest/settings/root acceptance",
+-    "actualinstalledpayload/inventory/entry proof and root acceptance"
++  "noRetry": true,
++  "actualResults": "All52 fresh5 starts/logs/exits/results/observedPIDgroups/directories UNRESOLVED;4 actual first6pass/lintfail strictly historical",
++  "knownStaticInputsResolved": {
++    "current679SourceFreeze7b3c9d": true,
++    "rootActualGitSource4d576": true,
++    "previousAnnotation0132Accepted": true,
++    "sourceBindingFinalized": true
++  },
++  "requiredBeforeAnyAttempt": [
++    "independent native lint correction precision",
++    "independent preparation5 minimal mechanics acceptance",
++    "current root execution disposition honestly chaining original CODE/full corrected native/annotation/later lint correction source",
++    "fresh base tool/implementation acceptance + durable exact ordered-prefix gate release"
+   ],
+-  "knownStaticSourceIdentity": "9b7d3a753bc22a3188f5dda7199fdb7321f65dfa0fa745cce082f3f82a837a9f",
+-  "noRetry": true,
+-  "requiredBeforeFirst4": [
+-    "independent full DATA6 mechanics",
+-    "root current implementation+source/CODE disposition wrapper honestly chaining original actual CODE and later native corrections",
+-    "durable exact ordered-prefix gate release"
++  "requiredAtBarriers": [
++    "fresh version/offline frozen workspace install/actual11tool binding",
++    "fresh actual build map/root acceptance before source tests",
++    "fresh complete archives/consumer/newlock/payload/inventory/entry proof/root barriers before installed"
+   ],
+-  "sourceBindingSha256": "b3547ec381d4e05121d3994d6550fe2f160a8ba266195a8724a6d5a851e268d4",
+-  "wholeWriteAdmission": false
++  "noFabricatedHashes": true
+ }

@@ -1,0 +1,155 @@
+{
+  "actualBridgesWritten": false,
+  "candidateOrExternalReleaseWritten": false,
+  "observedAvailabilityBridge": {
+    "actualNativeEvidence": {
+      "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-D4-availability3-actual-native-audit-1/closure.json",
+      "sha256": "57696ff940106a470fcde0e0e326ee3f1a35ffdcabf35311a672226d2798e845"
+    },
+    "actualRootDurableReadback": "20d18cc28a13438bdd2a0de4b6a3a01eecdb879f",
+    "existingGenericRecord": {
+      "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-D4-availability3-root-measured-acceptance-1/acceptance.json",
+      "sha256": "9ba1cc1fd235a63f5a238fd756bc760bf030ebba52dd0f2e6f029ebecd7b4739"
+    },
+    "existingMissingRequiredKeys": [
+      "availabilityOnly",
+      "ownershipBootstrapAccepted",
+      "nativeLimiterTerminalVerified",
+      "freshAllObservedProcessesAbsent",
+      "bothTerminalBefore115",
+      "samePinnedTools"
+    ],
+    "fields": [
+      {
+        "field": "accepted",
+        "proofAndScope": "actual root9ba accepted true; only root may adopt its separate exact projection.",
+        "proposedValueAfterActualAcceptance": true
+      },
+      {
+        "field": "availabilityOnly",
+        "proofAndScope": "Explicit projection of measuredAvailabilityOnly true and ONE NORMAL ZERO-PRODUCT scope; old document has no literal availabilityOnly field.",
+        "proposedValueAfterActualAcceptance": true
+      },
+      {
+        "field": "clockDomainVerified",
+        "proofAndScope": "Actual root9ba clockDomainVerified and native57696 bound mach_absolute_time/Perl CLOCK_UPTIME_RAW8, Python resolution/monotonic/adjustable facts from single actual sample.",
+        "proposedValueAfterActualAcceptance": true
+      },
+      {
+        "field": "ownershipBootstrapAccepted",
+        "proofAndScope": "Actual term/kill peer receipts, nonce/mask/reached ACK-before-unmask source paths and current native/source audit; raw ACK socket bytes unretained. ONE normal availability only, not ordinary-control dynamic containment.",
+        "proposedValueAfterActualAcceptance": true
+      },
+      {
+        "field": "nativeLimiterTerminalVerified",
+        "proofAndScope": "Actual retained native0/owner0/caller0, full two-event1825-byte stdout61e2 and nativeelapsed0.1377555; no forced115/119 proof.",
+        "proposedValueAfterActualAcceptance": true
+      },
+      {
+        "field": "freshAllObservedProcessesAbsent",
+        "proofAndScope": "Independent actual native freshps raw0/BOTH EOF/empty stderr/direct reaped/all7 recordedPIDs5groups absent; not wholehost/alltransient guarantee.",
+        "proposedValueAfterActualAcceptance": true
+      },
+      {
+        "field": "bothTerminalBefore115",
+        "proofAndScope": "Actual root0.91874379199 + native/owner receipts; independently completed postterminal census2237559.297582375 minus earliest root2237491.949044916 =67.348537459<115.",
+        "proposedValueAfterActualAcceptance": true
+      },
+      {
+        "field": "samePinnedTools",
+        "proofAndScope": "Full actual native/root source/helper/tool checks; current13 H6 file/realpath tool pins and preserved guards rehashed, no version inference.",
+        "proposedValueAfterActualAcceptance": true
+      },
+      {
+        "field": "syntheticReleased",
+        "proofAndScope": "Actual9ba fieldfalse: availability never releases any control.",
+        "proposedValueAfterActualAcceptance": false
+      },
+      {
+        "field": "productReleased",
+        "proofAndScope": "Actual9ba fieldfalse; no product/profile claim.",
+        "proposedValueAfterActualAcceptance": false
+      },
+      {
+        "field": "harnessImplementationSha256",
+        "proofAndScope": "Exact actual9ba current5c822; not transferable fromH5 or any later source successor.",
+        "proposedValueAfterActualAcceptance": "5c82292252d96626f8a63977c845a67261ed04bb350a339d5fd389530e409eb1"
+      }
+    ],
+    "futurePathAndSha256": "UNPREPARED",
+    "requiredFutureAuthor": "ROOT observed-data acceptance/projection after full independent precision of exact proof and fields"
+  },
+  "projectionRules": [
+    "Never insert fields into f204 or9ba, pointharness at records missing required fields, fall back aliases in source, or reuse H5 implementation approval asH6.",
+    "Every new bridge must be separately indexed, origin-bound, scope-qualified and actually accepted by the specified independent/root author. ProposedValue entries are not current approvals.",
+    "Record source-based ACK/mask facts distinctly from raw socket data; no causal identity fix, forced-deadline coverage, hard-real-time/global containment or three-event execution proof.",
+    "Root must fully review/adopt exact bridge authority before any11-key candidate freeze; further exact candidate/native/root publication and activation barriers follow."
+  ],
+  "state": "PROPOSED_FIELD_MATRICES_NOT_ACCEPTANCE_DOCUMENTS",
+  "staticBridge": {
+    "additionalExactEvidence": [
+      {
+        "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-D4-synthetic-harness5-native-mechanics-1/closure.json",
+        "sha256": "09f823deb3284a47cbc56ea00fb19f169f10d4ab6b6519699a4b560b4e264f76"
+      },
+      {
+        "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-D4-harness6-root-static-acceptance-1/acceptance.json",
+        "sha256": "3cad88e6c776f5dc06d0d9881b33ca373d8fca85347899bff9159ba073a5706c"
+      },
+      {
+        "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-D4-synthetic-harness-preparation-6/hard_limit.pl",
+        "sha256": "a53b1ade5edd7a14bcbe064c66f0f5d8414df8cdc218727134bacdb7ecfbfea5"
+      },
+      {
+        "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-D4-synthetic-harness-preparation-6/outer_host.py",
+        "sha256": "f426e0f928d6f8c5a330aeebc492fd4839f69a153f89e7c8386230e0c236a29f"
+      },
+      {
+        "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-D4-synthetic-harness-preparation-6/bootstrap.py",
+        "sha256": "6e11b44e8e95458b35052c87a02a17cffdae32ad060a5dbd3de53e19f2f873cc"
+      },
+      {
+        "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-D4-synthetic-harness-preparation-6/owned_spawn.py",
+        "sha256": "c4d73ba6d4d6d759b7e5dbeeb79986d2c8d6ccade163886b6a07b17cba02f3d8"
+      }
+    ],
+    "existingGenericRecord": {
+      "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-D4-harness6-native-source-mechanics-1/closure.json",
+      "sha256": "f2043ad0cffcadd3ef3b565184d890c0f8466dda9f1c061c75da716b49974808"
+    },
+    "existingMissingRequiredKeys": [
+      "hardLimiterStaticAcceptance",
+      "ownershipBootstrapAccepted",
+      "subjectImplementationSha256"
+    ],
+    "fields": [
+      {
+        "field": "accepted",
+        "proofAndScope": "OTHER-native must issue its own new indexed bridge after reviewing whole current source/native/protected relations; not this author approval.",
+        "proposedValueAfterActualAcceptance": true
+      },
+      {
+        "field": "hardLimiterStaticAcceptance",
+        "proofAndScope": "H5 full native exact field + H6 accepted twoPerl namespace-only/unchanged native timer/signal/wait policy; current hard_limit.pl full read. Static intact-owner fault domain only.",
+        "proposedValueAfterActualAcceptance": true
+      },
+      {
+        "field": "ownershipBootstrapAccepted",
+        "proofAndScope": "H5 full native exact field + H6 full native/root protected283 original calls/matches/ACK/unmask/direct-handle/finally mechanics. Static source acceptance only; H5 actualUNKNOWN remains.",
+        "proposedValueAfterActualAcceptance": true
+      },
+      {
+        "field": "harnessImplementationSha256",
+        "proofAndScope": "Current151-file H6 flat map; cannot point old7e5 document at5c822 as if unchanged identity.",
+        "proposedValueAfterActualAcceptance": "5c82292252d96626f8a63977c845a67261ed04bb350a339d5fd389530e409eb1"
+      },
+      {
+        "field": "subjectImplementationSha256",
+        "proofAndScope": "Current unchanged857-file subject4 map; required by actual harness.py44.",
+        "proposedValueAfterActualAcceptance": "6cc0f6e04d12877439f26ebec5d9b65fa543894a7789dea143fef156efdb771e"
+      }
+    ],
+    "futurePathAndSha256": "UNPREPARED",
+    "requiredFutureAuthor": "OTHER-native independent reviewer, then exact root adoption; this author does not issue approval"
+  }
+}

@@ -1,0 +1,61 @@
+{
+  "rootLaunchReleased": true,
+  "authorization": "Root explicitly released one actual receipt code review after frozen source verification. No tests/source edits.",
+  "head": "015cac1aa4fa827cc4a2c647dff08454c6c8e6f8",
+  "tree": "2e16329e195eb8214836de20340a5887236d78f0",
+  "branch": "codex/vickie-receipt-missing-context",
+  "workspace": "/Users/dbox/repos/wt/vickie/vickie-sequence-member-evidence",
+  "hashes": {
+    "packages/server/src/transaction-store.ts": "eec0f4723c8fcfb2245d2e80d77b2de014235cdb208101d523c0ab83fde78eed",
+    "packages/server/src/transaction-service.ts": "53f655faf494209996aac2e0f93a4c2c785e471f66aac6af9ea41f92c9cfbe00",
+    "packages/server/src/transaction-http.ts": "0e42f034c3aada6fd0a7696897200b336d2b0c547d69497e46500f6da4c2267a",
+    "packages/server/src/transaction-receipt-pages.test.ts": "e944bd61590f78a510b427b0f5d6eb7856f6b3715f9f0e5dc590bf8d4724c6a1",
+    "packages/server/src/transaction-service.test.ts": "c61ba7254ab1cf39abf85e6020e4f846ffb684740076de39f43fe12d509093b9",
+    "packages/server/src/transaction-http.test.ts": "3fc5c6750a00968021d2ecc78049535ebbe9a3d2d7684108f2807e8b2276e899",
+    "apps/bdptest/src/transactional-receipt-missing-context-installed.test.ts": "eaf1289ed0a8318ce949704ba4cd983755c6f5fd20ffe9d61712869894cb5064",
+    "docs/design/transaction-implementation-progress.md": "28b30246931ccf39588a0dd654715aa7f00eda95893a9b5ed8ec10ffe7fdf6fc"
+  },
+  "reviewedSourceHashes": {
+    "packages/server/src/transaction-store.ts": "eec0f4723c8fcfb2245d2e80d77b2de014235cdb208101d523c0ab83fde78eed",
+    "packages/server/src/transaction-service.ts": "53f655faf494209996aac2e0f93a4c2c785e471f66aac6af9ea41f92c9cfbe00",
+    "packages/server/src/transaction-http.ts": "0e42f034c3aada6fd0a7696897200b336d2b0c547d69497e46500f6da4c2267a",
+    "packages/server/src/transaction-receipt-pages.test.ts": "e944bd61590f78a510b427b0f5d6eb7856f6b3715f9f0e5dc590bf8d4724c6a1",
+    "packages/server/src/transaction-service.test.ts": "c61ba7254ab1cf39abf85e6020e4f846ffb684740076de39f43fe12d509093b9",
+    "packages/server/src/transaction-http.test.ts": "3fc5c6750a00968021d2ecc78049535ebbe9a3d2d7684108f2807e8b2276e899",
+    "apps/bdptest/src/transactional-receipt-missing-context-installed.test.ts": "eaf1289ed0a8318ce949704ba4cd983755c6f5fd20ffe9d61712869894cb5064",
+    "docs/design/transaction-implementation-progress.md": "28b30246931ccf39588a0dd654715aa7f00eda95893a9b5ed8ec10ffe7fdf6fc",
+    "packages/server/src/transaction-consistency.ts": "1507f760c790c7232f4e200faa45fdcd3c508a3fbd02909c4c1caaba7a70b6c7",
+    "scripts/transaction-installed-observation.mjs": "6f772f3776d3c3effa788676d853cc2932a6ee59ad63ac3338ad1b487408914b",
+    "apps/bdptest/test-support/transactional-execution-binding.ts": "cde506c72a8710eafe58522900f6db70ed3701cf333560252dc8e7c5e706cf89",
+    "packages/server/src/transaction-installed-configuration.ts": "e15cb54266848fdd4aa08b19b37f1b2eb080f4599d9414fad8d85b6f33f35d99",
+    "packages/server/src/transaction-set.ts": "03b1ca9427c6963f5b6ce712a7f70540501e081ed635c742015d2bc49cc9524a",
+    "docs/specs/bdp.md": "f036103ffdf5f89fa3a2033570e1e987c4cd203cd80b1c633cb44615123f892e"
+  },
+  "diffSha256": "de42c40e460788cddbf89ee5ff21b2323e605bee5006d11cf045cb3c95f4e3e7",
+  "fullPatchSha256": "837bacdc192bcf0401171ecc9a8312ae034beabed7b69620b6a3beaef0cb9de7",
+  "promptSha256": "285bc4948ab1eba9c09b749064e98975c46e810fee2929e1d203c1f2fb77811e",
+  "supervisorSha256": "a28cc02095d415abcd71828f650294ed181670c03f59ab65fcd2b8178b21c1c3",
+  "plans": {
+    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-receipt-missing-context-draft/source-binding.json": "edc5c98c8e5c82f2073e1bf35aa84098efe9552c7dbc74537784de75788cca5a",
+    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-receipt-missing-context-draft/draft.patch": "837bacdc192bcf0401171ecc9a8312ae034beabed7b69620b6a3beaef0cb9de7",
+    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-receipt-missing-context-draft/report.md": "fc778ed54c984f7459ff2a670bd20bf30720da888183ee74980604a24365ca7a",
+    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-receipt-missing-context-draft/selection.json": "aa74ad227891aade3a9c0099ae46b9a46640f213c73bd01d628f09629aee3661",
+    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-receipt-missing-context-draft/requests.json": "b6228b5280cb70b966ad594a33859fe56a6ad322de5e5ce7a47f5b403c3a55b9",
+    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-receipt-missing-context-draft/control-plan.json": "2e5e15ccfe1f4a7544cb02c086cfce2685bacc35bbb41e8688a5314ac5690cdd",
+    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-receipt-missing-context-draft/native-code-review.md": "eab2936928c979c66b77fa5cb2afd0bd66c6e1215dc373d543da33aa11643c57",
+    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-receipt-missing-context-plan-v3.md": "ede6786c64c073ab6ea92c1de8d38628043180d8c61daed41f657f4125dd80cd",
+    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-receipt-missing-context-plan-ledger-v3.json": "6e331db3f43af838c7f028b5c8a4a9c58fd0f3a07dbb1b49b0687804d50110b7",
+    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-receipt-missing-context-root-plan-dispositions.json": "32dd75f2837ce1440b6fc317691d735fc45227d56ae6367b6fbcc85d7b919d7d",
+    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-receipt-missing-context-code-claude/source-context.txt": "2c52df769a56fb5cccd8edb657ad1c0170d5b5197f057fe92590fdee71de609e",
+    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-receipt-missing-context-draft/root-source-positive-acceptance.json": "2ca51c6b6c6fb41e38fd25b07cd569a6c79496e73ce7d1b55f433985cd04d9f6"
+  },
+  "timeoutSeconds": 900,
+  "argv": [
+    "/opt/homebrew/bin/claude",
+    "--safe-mode",
+    "-p",
+    "--tools",
+    "",
+    "--no-session-persistence"
+  ]
+}

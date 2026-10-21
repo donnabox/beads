@@ -1,0 +1,65 @@
+{
+  "name": "omit-context-control",
+  "argv": [
+    "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-changefeed-parameter-context-draft/control-preparation/mirror/node_modules/.pnpm/vitest@4.1.10_@types+node@24.13.3_vite@8.2.1_@types+node@24.13.3_/node_modules/vitest/vitest.mjs",
+    "run",
+    "packages/server/src/transaction-changefeed.test.ts",
+    "--maxWorkers=1",
+    "--reporter=verbose",
+    "--reporter=json",
+    "--outputFile=/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-changefeed-parameter-context-draft/control-preparation/run/control.results.json",
+    "-t",
+    "^(?:preserves\\ current\\ context\\ on\\ owner\\-observed\\ changefeed\\ parameter\\ refusals\\ over\\ HTTP)$"
+  ],
+  "cwd": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-changefeed-parameter-context-draft/control-preparation/mirror",
+  "started": "2026-10-15T14:39:15.140989+00:00",
+  "head": "9a42a4531def99e12fa9a1fba02e70558d643265",
+  "workspaceDirty": true,
+  "sourceSha256": {
+    "packages/server/src/transaction-changefeed.ts": "fb5bc6f035db8faa351d019e7d2ae53dbb7785214f2168d931fa74e77ed14bf8",
+    "packages/server/src/transaction-store.ts": "c0d1ebcdef1b354aa0806b8106ac0a3b0b24e6c94f50ec49b550decdf36ccf89",
+    "packages/server/src/transaction-http.ts": "b51d02801e5924190aba77c377e538db0b8619149d6184e19cb56d440f40c2cf",
+    "packages/server/src/transaction-changefeed.test.ts": "eb29103cf4f9c79a06eb49261d01da274de229dbc9f0ba169418048bf79adb28",
+    "apps/bdptest/src/transactional-changefeed-refusal-context-installed.test.ts": "c8ec6da3cab3850d69b2b8b8b650b17f159fa9179930eeecd3a287716aa946af",
+    "docs/design/transaction-implementation-progress.md": "a1cc5b84d79485855dfbf1793628af4dcdba1147bd7938721a9af5317f57b569"
+  },
+  "sourceDiffSha256": "581eb3a0fcfe74b68d01a6a10b125cf00b7d6d5e7aa158645fa29bd3eee12375",
+  "rootAcceptanceSha256": "f79690ca74fca9577bfbd4edd65cf1852caa5aee5018cfcb64f2d8b759d377de",
+  "preparationSha256": "c85a5bf26e0c2d9ebf2bd886e3060aec2748e24f7faf5e046aff92f45fb2e0d9",
+  "bdpOverrides": {},
+  "guardedArgv": [
+    "/opt/homebrew/opt/python@3.14/bin/python3.14",
+    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/guarded-action.py",
+    "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-changefeed-parameter-context-draft/control-preparation/mirror/node_modules/.pnpm/vitest@4.1.10_@types+node@24.13.3_vite@8.2.1_@types+node@24.13.3_/node_modules/vitest/vitest.mjs",
+    "run",
+    "packages/server/src/transaction-changefeed.test.ts",
+    "--maxWorkers=1",
+    "--reporter=verbose",
+    "--reporter=json",
+    "--outputFile=/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-changefeed-parameter-context-draft/control-preparation/run/control.results.json",
+    "-t",
+    "^(?:preserves\\ current\\ context\\ on\\ owner\\-observed\\ changefeed\\ parameter\\ refusals\\ over\\ HTTP)$"
+  ],
+  "nodePathPrefix": "/Users/dbox/.nvm/versions/node/v24.16.0/bin",
+  "sourceAttribution": "Externally bound source snapshot or frozen package; not child-attested Git identity",
+  "plannedWorkload": {
+    "cases": 1,
+    "http": 12,
+    "owners": 1,
+    "directories": 1,
+    "listeners": 1,
+    "productChildren": 0
+  },
+  "derivativeBinding": {
+    "file": "packages/server/dist/transaction-http.js",
+    "positiveSha256": "4d2afa08788305abf0d801bff14731fabda2033ef1dfd47aa8b394ffec4441a0",
+    "copySha256": "71e4a41978f975b8424b4be5cb835aa2545d4a03d006ee27b4b7ccea971bc6de",
+    "patchSha256": "168a22584482adc4326e6201fba4b5da5153fe10720dd474a1931b1a77285c92",
+    "old": "transactionHttpProblem(\"invalid-parameter\", error.context)",
+    "new": "transactionHttpProblem(\"invalid-parameter\", error instanceof TransactionEventParameterError ? error.context : undefined)",
+    "occurrences": 1,
+    "emittedOnly": true
+  }
+}

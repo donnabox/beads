@@ -1,0 +1,112 @@
+[
+  {
+    "duration_api_ms": 1244323,
+    "stop_reason": "end_turn",
+    "session_id": "5d2838ea-4eda-48ee-8420-3ca99df3bd2f",
+    "total_cost_usd": 12.229059000000001,
+    "usage": {
+      "input_tokens": 142,
+      "cache_creation_input_tokens": 311490,
+      "cache_read_input_tokens": 13462960,
+      "output_tokens": 94406,
+      "output_tokens_details": {
+        "thinking_tokens": 76641
+      },
+      "server_tool_use": {
+        "web_search_requests": 0,
+        "web_fetch_requests": 0
+      },
+      "service_tier": "standard",
+      "cache_creation": {
+        "ephemeral_1h_input_tokens": 311490,
+        "ephemeral_5m_input_tokens": 0
+      },
+      "inference_geo": "global",
+      "iterations": [
+        {
+          "input_tokens": 2,
+          "output_tokens": 13735,
+          "cache_read_input_tokens": 312106,
+          "cache_creation_input_tokens": 4130,
+          "cache_creation": {
+            "ephemeral_5m_input_tokens": 0,
+            "ephemeral_1h_input_tokens": 4130
+          },
+          "type": "message"
+        }
+      ],
+      "speed": "standard"
+    },
+    "modelUsage": {
+      "claude-haiku-4-5-20251001": {
+        "inputTokens": 21754,
+        "outputTokens": 13,
+        "cacheReadInputTokens": 0,
+        "cacheCreationInputTokens": 0,
+        "webSearchRequests": 0,
+        "costUSD": 0.021818999999999998,
+        "contextWindow": 200000,
+        "maxOutputTokens": 32000,
+        "thinkingTokens": 0,
+        "canonicalModel": "claude-haiku-4-5",
+        "provider": "firstParty",
+        "costBasis": "list"
+      },
+      "claude-opus-5[1m]": {
+        "inputTokens": 142,
+        "outputTokens": 94406,
+        "cacheReadInputTokens": 13462960,
+        "cacheCreationInputTokens": 311490,
+        "webSearchRequests": 0,
+        "costUSD": 12.20724,
+        "contextWindow": 1000000,
+        "maxOutputTokens": 64000,
+        "thinkingTokens": 76641,
+        "canonicalModel": "claude-opus-5",
+        "provider": "firstParty",
+        "costBasis": "list"
+      }
+    },
+    "permission_denials": [],
+    "terminal_reason": "completed",
+    "fast_mode_state": "off",
+    "fast_mode_disabled_reason": "sdk_opt_in_required",
+    "subagent_stats": {
+      "spawned": 0,
+      "requested": {
+        "background": 0,
+        "foreground": 0,
+        "unset": 0
+      },
+      "started_in_background": 0,
+      "max_depth": 0,
+      "spawned_by_subagents": 0,
+      "completed": 0,
+      "failed": 0,
+      "killed": {
+        "parent": 0,
+        "user": 0,
+        "system": 0
+      },
+      "refused": {
+        "depth_limit": 0,
+        "concurrency_limit": 0,
+        "budget": 0
+      },
+      "by_type": {}
+    },
+    "is_error": false,
+    "num_turns": 81,
+    "subtype": "success",
+    "api_error_status": null,
+    "result": "I read every listed context artifact at its absolute path (all readable; `plan-binding.json` and `source-binding.json` are large hash maps that I paged/grepped rather than read whole), plus the six dirty files and the actual surrounding implementations (`transaction-consistency.ts`, `transaction-runtime.ts`, `read-http.ts`, `read-http-routing.ts`, `transaction-store.ts` entry/close, `scripts/transaction-installed-observation.mjs`, `biome.json`, `tsconfig.base.json`, `.github/workflows/ci.yml`, `vitest.config.ts`, the pinned spec at 4975\u20135894) and all out-of-scope call sites of `readReceipt` / minimum-position headers.\n\n# Numbered findings\n\n## Blocker (one, mechanical)\n\n**1. Medium \u2014 three new lines exceed `lineWidth: 100` in breakable syntax, so `pnpm format:check` (the first CI verification step) fails.**\n- `packages/server/src/transaction-service.test.ts:3619` \u2014 103 columns (`expect({ roots, waits, tick, submits }).toStrictEqual({ roots: 10, \u2026 });`).\n- `packages/server/src/transaction-service.test.ts:3729` \u2014 101 columns (`await expect(read).rejects.toMatchObject({ reason: \u2026, context: first.context });`).\n- `apps/bdptest/src/transactional-minimum-receiving-installed.test.ts:972` \u2014 101 columns (the four-term `if (child && !cleanupExceeded && \u2026)` condition).\n\nIssue: `biome.json` sets `formatter.lineWidth: 100` and `.github/workflows/ci.yml:60` runs `pnpm format:check` before lint/typecheck/test. The many pre-existing >100-column lines in these files all overflow *inside* unbreakable string literals (test titles, retention prose); these three overflow inside an object literal, an argument object, and a boolean condition, which Biome will wrap.\nImpact: the declared \"commit then exact-head CI\" gate fails at step one, before any of the new behavior is exercised. No product or test semantics affected.\nSmallest fix: let the formatter wrap them \u2014 break the two object literals onto one property per line and the `if` condition onto one operand per line. No assertion changes.\n\nScope caveat on this finding: I measured columns with `rg '^.{101,}$'`; I did not execute Biome. Related, unverified: the manually laid-out argument list at `transaction-service.test.ts:3601-3607` is under 100 columns but may still differ from Biome's last-argument-expansion output; only running the formatter settles that.\n\n## Optional observations (no behavior defect)\n\n**2. Low \u2014 `apps/bdptest/src/transactional-minimum-receiving-installed.test.ts:987-994`: the deliberately preserved directory is itself recorded as a failure on every failing run.**\nIssue: deletion is gated on `!launchAttempted || (closed && failures.length === 0)`, but the following `if (!directoryAbsent) fail(new Error(\"installed receipt root directory preserved\"), \"directory-retained\")` is unconditional. Whenever the callback has any real failure, the directory is intentionally retained and then reported as an additional failure.\nImpact: cosmetic but misleading evidence \u2014 `failureCount`/`failureCategories` in the `private-installed-receipt-root-minimum` record and the thrown `AggregateError` gain a non-failure entry that contradicts the record's own `startupLimitation` note. It cannot mask a real failure (the run is already failing) and cannot cause a false clean deletion.\nSmallest fix: hoist the predicate \u2014 `const removable = !launchAttempted || (closed && failures.length === 0);` \u2014 use it for the `rmSync` guard and change the check to `if (removable && !directoryAbsent) fail(\u2026)`.\n\n**3. Low \u2014 same file, `:972-975`: one cleanup-deadline root cause yields two distinct failures.**\nIssue: when `cleanupExceeded` is set, the race rejection already produces `fail(cleanupReason, \"cleanup\")`, and the `else if (launchAttempted)` branch adds a second, different error object (`\"installed receipt root clean close unproved\"`, category `unclean-close`). `fail`'s dedupe is identity-based, so both are retained.\nImpact: truthful but doubled accounting; the aggregate's member count no longer corresponds to distinct causes. Deletion/`closed` remain correctly fail-closed.\nSmallest fix: skip the `unclean-close` entry when `cleanupExceeded` is already recorded (`else if (launchAttempted && !cleanupExceeded)`), or leave as-is deliberately.\n\n**4. Low \u2014 `packages/server/src/transaction-http.ts:574-578` and `:587`: the root-path `?? \"unsupported\"` fallback and the root `result.kind === \"unsupported\"` branch are now wire-unreachable.**\nIssue: `malformedTransactionMinimumHeaders` at `transaction-http.ts:404` already returns `400 malformed-request` for any present-but-missing/lexically-invalid field, and `Headers.get` joins repeats, so once `hasMinimumControls(request)` is true on the root path `currentReadMinimumHeaders` always parses (every token-valid position, recognized or not, is accepted by `snapshotCurrentReadMinimum`). The owner's `{kind: \"unsupported\"}` root sentinel therefore can no longer be produced over HTTP; the private `500 minimum-position` gap now arrives only via the thrown `TransactionMinimumUnsupported` caught at `:663-664`.\nImpact: none observable \u2014 the retained fallback is defense in depth and keeps `receiptAtMinimum`'s `TransactionMinimum | \"unsupported\"` contract and the direct-API sentinel intact. It does mean the historical title `refuses unsupported root controls \u2026` (`transaction-http.test.ts:2174`) no longer has any sentinel oracle at all; the remaining root-sentinel coverage is the direct service call in `transaction-service.test.ts:3594` and the untouched page fences (`transaction-http.test.ts:2230-2256`, installed page row `:507-512`). The inline comment at `transaction-http.test.ts:2211` is the only in-test statement of that; this matches the corrected plan's \"evidence identifier\" instruction.\nSmallest fix: none required. If you want the comment to carry the whole claim, extend it to say the sentinel is now exercised only by the direct service/page paths.\n\n**5. Low \u2014 `packages/server/src/transaction-http.test.ts:2176-2179`: the added waiter seam is load-bearing, not cosmetic.**\nIssue/impact: after the owner change, the four own-credential root reads each exhaust a minimum-read budget. With the default 1000 ms budget plus the retained real 1100 ms sweep-isolation delay at `:2187`, the callback would need \u22485.1 s against Vitest's unoverridden 5000 ms default (`vitest.config.ts` sets no `testTimeout`), i.e. the historical callback would time out without `budgetMs: 2`. Removing or widening the seam later re-introduces flakiness; `maintenanceIntervalMs: 60000` and the 1100 ms delay must both stay for the no-disposal oracle.\nSmallest fix: none; consider a one-line comment recording why the seam is required.\n\n**6. Low \u2014 spec framing of the unchanged foreign-opaque gap (`transaction-http.test.ts:5852-5862`, installed `:507-512`).**\nIssue: spec 5841-5843 lists foreign-view / cursor-expired / catch-up-timeout as the normative outcomes for remaining reads; D rows 5/6 pin a bodyless `500` with `x-bdp-development-limit: minimum-position` and no context. That is a deviation, but it is byte-identical before and after this draft: previously the strict parser produced the `\"unsupported\"` sentinel and `developmentGap(\"minimum-position\")`; now `checkCurrentReadMinimum(\u2026, true)` throws `TransactionMinimumUnsupported` and reaches the same `developmentGap(\"minimum-position\")` (`transaction-http.ts:663-664`), with the same `empty(500)` headers and the same HEAD behavior (`applyReadHttpSemantics` is a no-op for a bodyless 500).\nImpact: no regression; flagged only so the newly added rows are not read as new conformance coverage. The draft's comment already says they \"preserve the excluded foreign-opaque gap, not 409/410 conformance.\"\nSmallest fix: none in scope (foreign-opaque normative policy is excluded).\n\n# Verification that found no defect\n\nRecording these because they were the plausible failure modes, not as praise:\n\n- **Positive-path spec basis.** 503 `catch-up-timeout`/`retry: after-delay` with the three context fields, HEAD metadata parity, and minimum-before-conditional ordering match spec 5841-5843 (general remaining-read law), 5853-5857 (subsequent receipt GET/HEAD), 5862-5869 and 5876-5883. The narrower MUST at 5844-5849 is Resource-scoped and 5850-5851 excludes only retained continuations/Snapshots and incident-Link lists, so the plan's \"permitted, not a receipt-specific MUST\" framing is accurate. Principal-bound readability (4997-5000) is unaffected: only a client-supplied unrecognized barrier now waits.\n- **Out-of-scope regression surface.** The only wire change is *owned + disclosed + matching epoch/view + unrecognized position*: 500 \u2192 503. I checked every `readReceipt` call site outside the six files (`transaction-store.test.ts:2125/2957/2980/2987/2989/3010/3025`, `transaction-recovery.test.ts:106`, `transaction-authorization.test.ts:404/416/443/446/551/620/621`, `transaction-submission.test.ts:1873/1924/2018/2046`, `transaction-set.test.ts:440`, `transaction-receipt-pages.test.ts:112/190/247`) \u2014 all 2-argument, so the direct-API admissibility change and the `waitable: true` flag are unobserved there. Every non-positional `bdp-minimum-scope-position` elsewhere targets beads/collections/aliases/snapshots/Events/pages, not a receipt root (`transaction-http.test.ts:1143,1793,1825,1914,2239,3148,4558,4815,5472-5715`; `transactional-collection-minimum-installed.test.ts:1310`; `transactional-snapshot-installed.test.ts:895`; `transactional-event-missing-context-installed.test.ts`; `installed-reference.test.ts:598`). `fixtures/transactional/receipts.json` uses `pos-42`; `receipt-pagination.json`/`http-contracts.json` opaque positions are paired with foreign epoch/view, i.e. the unchanged 500 path. The receipt **page** branch retains `transactionMinimumHeaders` + the sentinel, and `transaction-store.ts:2257/2288` still uses `snapshotTransactionMinimum`/`checkTransactionMinimum`, so `transaction-http.test.ts:2230-2256` and the installed page row stay valid. The two amended locations are exactly the two that needed amending.\n- **Ordering and API surface.** Synchronous `run()`/`check()` admission (so B's `expect(() => \u2026).toThrow(\"closing or closed\")` is synchronous), then unauthenticated refusal, captured principal, explicit sentinel, then `snapshotCurrentReadMinimum` before the waiter clock (`transaction-service.ts:616-631`); owner capture before `enter`, then disclosure \u2192 own sentinel \u2192 `readContext` \u2192 absence \u2192 `checkCurrentReadMinimum(condition, context, true)` \u2192 `expireRow(stored, instant())` \u2192 projection (`transaction-store.ts:959-975`). No signal parameter added anywhere; `receiptPage` (`transaction-service.ts:559-608`) is untouched.\n- **Counter arithmetic.** Traced against the real `waitForTransactionMinimum`. A: 4/4/1/1/1/1/0/0 attempts \u2192 `roots 10, waits 4, tick 11, submits 2` exactly as asserted at `:3619`, with contexts pos-1/pos-2/pos-2 and the `pos-01` trio at `observations.slice(3,6)`. B: `roots 2, waits 1, tick 3` with the post-close probe excluded from `roots`. R: 3 attempts/1 wait per row, clock 4 (no-forget) vs 3 (forget) via the second-attempt 404; `%s` with label-first `as const` tuples reproduces `(false)`/`(true)` byte-for-byte, and the multi-element readonly-tuple `it.each` form has precedent at `transactional-cumulative.test.ts:2043-2048`. D: `waits === 3` (rows 2/3/4 only; rows 5/6 rethrow without retry) and the 10-status vector matches `workload.json`.\n- **Wire mechanics behind the parity claims.** `transaction-runtime.ts:88-96` sets `content-length` from the serialized body and suppresses the body only for HEAD; `read-http.ts:42-46` sets HEAD's `content-length` from the GET serialization and drops the body; `read-http.ts:10-39` skips conditional/media handling for non-200/204, so If-None-Match/If-Match/`Accept: image/png` cannot rewrite the 503 (confirmed by the CI-green neighbour at `transaction-http.test.ts:5681-5705`). The 503 problem body (`{type, code, retry, status}`, no variable fields) is identical for GET and HEAD, so the length equality in D (`:5840-5844`) and E (`:908-910`) is well-founded.\n- **Lifecycle.** `createTransactionService.close()` sets `accepting = false` synchronously, drains `active`, then closes the spread-copy owner, which shares the real store's `closed` flag \u2014 so B's post-close `f.owner.readReceipt` throws `enter`'s exact \"transaction store closed or reentrant\" (`transaction-store.ts:402`), and double close is idempotent (`:2338-2346`) for the `cleanup` stack. E's stricter `exitCode === 0 && signalCode === null` gate is satisfiable because the launcher's `close()` already awaits `exited` and rejects on a non-clean result (`scripts/transaction-installed-observation.mjs:48-60`); its `transportDrain` cannot hang, since any request still in `active` has not yet emitted `close`.\n- **Typing under `strict`/`exactOptionalPropertyTypes`/`noUncheckedIndexedAccess`/`noUnusedLocals`/`noUnusedParameters`/`verbatimModuleSyntax`.** The overload pair matches the store's own `readReceipt` overloads exactly (so `{...owner, readReceipt: countedReceipt}` stays assignable to `Owner`), `OrdinaryRootResult` is used in both new callbacks, `TransactionMinimumUnproved` is value-imported beside `type TransactionMinimum`, `_label` satisfies the unused-parameter exemption, every index access in E is `!`-asserted, the computed-key spread `{...minimum, [field]: \"foreign\"}` has a CI-green precedent at `transaction-http.test.ts:5708`, and the self-reference to `service` inside its own initializer's `wait` body does not trigger circular inference (no `return` in that arrow). All static inspection only.\n\n# Unverified premises\n\n- No typecheck, lint, formatter, source test, build or installed run was performed, and I did not execute anything; finding 1 is a character-count/configuration inference, and every type/behavior conclusion above is read-only reasoning.\n- I did not recompute any SHA-256 in `source-binding.json`, `plan-binding.json`, `author-index.json` or `author-release.json`, nor the 679/673-byte equality, tree `9b6f50b9\u2026`, or CI run `39012707852`. I confirmed the six dirty paths' contents match `full.patch` at the changed hunks by reading them, and that the base-HEAD/tree/CI pins are asserted only by the context artifacts and by root/native/runner.\n- Durations are estimates: the installed child's default 1000 ms budget drives the historical-22 own-root read and E's two timeouts; I did not measure the per-attempt SQLite cost, so the 5 s request / 45 s work / 60 s callback headroom is reasoned, not observed.\n- Biome's exact output for the new multi-line argument layouts (beyond the three over-length lines) is unknown without running the formatter.\n- `fixtures/transactional/receipt-pagination.json` / `http-contracts.json` opaque-position receipt rows: I confirmed they are unaffected by this draft (they pair opaque positions with foreign epoch/view, i.e. the unchanged path), but I did not trace whether `transactional-matrix.test.ts` executes those specific scenarios against the reference.\n\nNo blockers other than finding 1, which is a formatting/CI-gate failure rather than a behavior defect. I found no correctness defect in the production change, the six-file boundary, the ordering invariants, the counter arithmetic, or the preserved historical oracles.",
+    "ttft_ms": 2777,
+    "type": "result",
+    "duration_ms": 1244324,
+    "uuid": "4e7aeb9e-8de7-483a-9037-d3a26bb6a103",
+    "ttft_stream_ms": 1376,
+    "time_to_request_ms": 54,
+    "first_content_frame_ms": 1376,
+    "queued_turn_count": 0
+  }
+]

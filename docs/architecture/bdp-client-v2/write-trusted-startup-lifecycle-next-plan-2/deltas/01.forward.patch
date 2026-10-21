@@ -1,0 +1,142 @@
+--- plan1/input-map.json
++++ plan2/input-map.json
+@@ -12,7 +12,7 @@
+   {
+     "path": "/Users/dbox/repos/wt/vickie/vickie-trusted-startup-configuration/packages/server/src/reference-deployment.test.ts",
+     "copy": "source/packages/server/src/reference-deployment.test.ts",
+-    "sha256": "a25940849c0977fa2e5dc310466cd3a871d6de2ec0e2a41792354468e735e9e9"
++    "sha256": "5b9de79791eb041e74b4153ffc19dfaf28b029599644a7bda056a84432ef0289"
+   },
+   {
+     "path": "/Users/dbox/repos/wt/vickie/vickie-trusted-startup-configuration/packages/server/src/development-runtime.ts",
+@@ -223,5 +223,130 @@
+     "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/tx-discovery-next-plan-2/index.json",
+     "copy": "context/tx-discovery-next-plan-2/index.json",
+     "sha256": "4fbc863fda9fc51950cf8237b0d47f61002468d6a81cebff696a0893741f5cf8"
++  },
++  {
++    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-trusted-startup-lifecycle-next-plan-1/native-precision-review-1/closure.json",
++    "copy": "context/plan1-native/closure.json",
++    "sha256": "3e172b7aac4c077dff65fc60c946d619986db8f24c5a82232b3f5d3067d094af"
++  },
++  {
++    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-trusted-startup-lifecycle-next-plan-1/native-precision-review-1/findings.json",
++    "copy": "context/plan1-native/findings.json",
++    "sha256": "124a78a3dbc8b76fd9333256fd7a0610c88875c88de882eab80239f5422398ec"
++  },
++  {
++    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-trusted-startup-lifecycle-next-plan-1/native-precision-review-1/index.json",
++    "copy": "context/plan1-native/index.json",
++    "sha256": "f7045c51d308f4816d16e76c1cb45510b31da946ed3ed5aabc6e5ebbbeee5007"
++  },
++  {
++    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-trusted-startup-lifecycle-next-plan-1/native-precision-review-1/report.md",
++    "copy": "context/plan1-native/report.md",
++    "sha256": "feea24c39e7f8cafa4da05d58197692c858ccb8eaaacf86ecfe7de87ab191f80"
++  },
++  {
++    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-trusted-startup-lifecycle-next-plan-1/native-precision-review-1/type-input-addendum-1/closure.json",
++    "copy": "context/plan1-native/type-input-addendum-1/closure.json",
++    "sha256": "fc55c5e4fc8a14ab66162b705289231a26ff302a3aa47ea14b245e973d883d39"
++  },
++  {
++    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-trusted-startup-lifecycle-next-plan-1/native-precision-review-1/type-input-addendum-1/finding.json",
++    "copy": "context/plan1-native/type-input-addendum-1/finding.json",
++    "sha256": "8f53bc2a9ce186cdd582213bb381c5cbb753b05ee7da8b125bc99a1d71dc643c"
++  },
++  {
++    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-trusted-startup-lifecycle-next-plan-1/native-precision-review-1/type-input-addendum-1/index.json",
++    "copy": "context/plan1-native/type-input-addendum-1/index.json",
++    "sha256": "5e87f56e387e383f2330a2f382223045cabccc1b6d43198df8965528b26c3456"
++  },
++  {
++    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-trusted-startup-lifecycle-next-plan-1/native-precision-review-1/type-input-addendum-1/report.md",
++    "copy": "context/plan1-native/type-input-addendum-1/report.md",
++    "sha256": "c25d1f3710754a74b33e6ca97097128c385eb0d4794a4ba7f2ea19b3a7cda72a"
++  },
++  {
++    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-trusted-startup-lifecycle-next-plan-1/native-precision-review-1/verification.json",
++    "copy": "context/plan1-native/verification.json",
++    "sha256": "42411b218ced98906327473fb853f53556d6f55eac62365f92fca79eb3da82e0"
++  },
++  {
++    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-trusted-startup-lifecycle-root-disposition-1/disposition.json",
++    "copy": "context/write-trusted-startup-lifecycle-root-disposition-1/disposition.json",
++    "sha256": "2936247bcc29b84734ec8c41f4b9f880789b6d0514417e9d68e5862f817be15c"
++  },
++  {
++    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-trusted-startup-typecheck-correction-1/after-map.json",
++    "copy": "context/write-trusted-startup-typecheck-correction-1/after-map.json",
++    "sha256": "7a503fb5271f29c01d411ac30bce2f5d6eadee17e4996e610160129687ee1849"
++  },
++  {
++    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-trusted-startup-typecheck-correction-1/after.test.ts",
++    "copy": "context/write-trusted-startup-typecheck-correction-1/after.test.ts",
++    "sha256": "5b9de79791eb041e74b4153ffc19dfaf28b029599644a7bda056a84432ef0289"
++  },
++  {
++    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-trusted-startup-typecheck-correction-1/all12.patch",
++    "copy": "context/write-trusted-startup-typecheck-correction-1/all12.patch",
++    "sha256": "e577d453fd7819c6feb88e0a87e0d710725b70cc331d36be438d61ad7b7719a3"
++  },
++  {
++    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-trusted-startup-typecheck-correction-1/before-map.json",
++    "copy": "context/write-trusted-startup-typecheck-correction-1/before-map.json",
++    "sha256": "716701cb78328a94c502e5eaf84c48ceda458432aee44fd489f36a0f0ac810bd"
++  },
++  {
++    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-trusted-startup-typecheck-correction-1/before.test.ts",
++    "copy": "context/write-trusted-startup-typecheck-correction-1/before.test.ts",
++    "sha256": "a25940849c0977fa2e5dc310466cd3a871d6de2ec0e2a41792354468e735e9e9"
++  },
++  {
++    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-trusted-startup-typecheck-correction-1/correction-inverse.patch",
++    "copy": "context/write-trusted-startup-typecheck-correction-1/correction-inverse.patch",
++    "sha256": "25c5a31d938a34beb7a7967da05ddd37f3521842517fdc2ae50a8f09663aa77c"
++  },
++  {
++    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-trusted-startup-typecheck-correction-1/correction.json",
++    "copy": "context/write-trusted-startup-typecheck-correction-1/correction.json",
++    "sha256": "64f782bbb475c55798f0394407d577e995efc5a9ba3b932c58bdc55e71c67cf7"
++  },
++  {
++    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-trusted-startup-typecheck-correction-1/correction.patch",
++    "copy": "context/write-trusted-startup-typecheck-correction-1/correction.patch",
++    "sha256": "9e67d0e7bc529a46b1d0b4051181418f4ae466d1e723589f95a182a3b202117b"
++  },
++  {
++    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-trusted-startup-typecheck-correction-1/git-status.txt",
++    "copy": "context/write-trusted-startup-typecheck-correction-1/git-status.txt",
++    "sha256": "3086fddd51e73480894a3e3e2981ae75bfd265c3096d93e43cbcb45784e7b6f3"
++  },
++  {
++    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-trusted-startup-typecheck-correction-1/index.json",
++    "copy": "context/write-trusted-startup-typecheck-correction-1/index.json",
++    "sha256": "98ab5463b224a382ac414abe8ac719aadb3c4092cbed89c61e6257b9ca18237a"
++  },
++  {
++    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-trusted-startup-typecheck-correction-1/native-precision-closure-1/closure.json",
++    "copy": "context/write-trusted-startup-typecheck-correction-1/native-precision-closure-1/closure.json",
++    "sha256": "398b99f855e98eecf260362ccb94378e82e580765c0d807b0ed3b2faad855ecb"
++  },
++  {
++    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-trusted-startup-typecheck-correction-1/native-precision-closure-1/closure.md",
++    "copy": "context/write-trusted-startup-typecheck-correction-1/native-precision-closure-1/closure.md",
++    "sha256": "58e9fdf996220c5ea3613beafd6f381afdca541e5bdd12d9fc5b084f650d9bf6"
++  },
++  {
++    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-trusted-startup-typecheck-correction-1/native-precision-closure-1/failure-process-inventory.txt",
++    "copy": "context/write-trusted-startup-typecheck-correction-1/native-precision-closure-1/failure-process-inventory.txt",
++    "sha256": "18dd96a3bb074a26d1fa22cc0a02ada780a411ebfd7e59db4105d2ae75ea592c"
++  },
++  {
++    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-trusted-startup-typecheck-correction-1/native-precision-closure-1/index.json",
++    "copy": "context/write-trusted-startup-typecheck-correction-1/native-precision-closure-1/index.json",
++    "sha256": "6469af749f41486da7be5f81b7449ff9c9ac1571a3cf4212fd709b25340a0cd7"
++  },
++  {
++    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-trusted-startup-typecheck-correction-1/native-precision-closure-1/input-verification.json",
++    "copy": "context/write-trusted-startup-typecheck-correction-1/native-precision-closure-1/input-verification.json",
++    "sha256": "c46884d15ceaf73a4656e00abf7d97f02be1def8e3c02117da2509b882d992c5"
+   }
+ ]

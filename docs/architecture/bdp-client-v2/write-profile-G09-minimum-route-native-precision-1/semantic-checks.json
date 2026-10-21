@@ -1,0 +1,76 @@
+[
+  {
+    "id": "A01",
+    "scope": "Selected route applicability",
+    "spec": "5794-5800, 5804-5826, 5841-5849, 5864-5869",
+    "source": "transaction-schema-http.ts:14-35,42-64; transaction-service.ts:705-712",
+    "conclusion": "Narrow inference supported: exact captured local current schema representations already use authenticated TX owner context. Apply remaining-read minimum law to that existing current route. Not a schema-hosting, external Web, or universal schema rule."
+  },
+  {
+    "id": "A02",
+    "scope": "Opaque unknown positions",
+    "spec": "5841-5851,6637-6660",
+    "source": "transaction-consistency.ts:33-55,115-178",
+    "conclusion": "Existing finite wait is a permitted local selection for the selected schemas. Explicit Resource MUST-wait language is not extended into a new normative schema mandate. Opaque lexical validity is not known position; no stale success/fabricated expiry."
+  },
+  {
+    "id": "A03",
+    "scope": "Receiving and transport order",
+    "spec": "5819-5839",
+    "source": "transaction-runtime.ts:123-174; transaction-http.ts:273-276,404-406; transaction-schema-http.ts:42-50",
+    "conclusion": "Malformed tuples delegate existing receiving 400 after method/auth/Origin, before map lookup and owner entry. Full tuple only reaches selected member; no malformed conditional/media escape."
+  },
+  {
+    "id": "A04",
+    "scope": "Capture and bounded ownership",
+    "spec": "5794-5800",
+    "source": "transaction-service.ts:140-155,267-292,705-712,777-797; transaction-consistency.ts:33-55,138-178",
+    "conclusion": "Capture optional tuple synchronously before run; one synchronous owner read per attempt; only wait after release, same original finite wait lifetime and request signal. No-min branch retains timing. Existing discovery pattern demonstrates seam; no runtime fit claimed."
+  },
+  {
+    "id": "A05",
+    "scope": "Error/HTTP order and exact bytes",
+    "spec": "5871-5884;1980-2009",
+    "source": "transaction-http.ts:643-680; transaction-schema-http.ts:50-64; transaction-runtime.ts:88-96",
+    "conclusion": "Exact existing error formatter can be shared via internal module export (schema already imports HTTP module). Preserve epoch410/view409/catchup503 and actual context/Retry-After, abort propagation and sanitized500; minimum before304/412/406. Preserve original raw UTF8/byte length and bodyless HEAD."
+  },
+  {
+    "id": "A06",
+    "scope": "Nonmembers versus owner Resource absence",
+    "spec": "5834-5839; Types/JSON Schema1092-1246",
+    "source": "transaction-schema-http.ts:19-35,48-49; transaction-schema-http.test.ts:301-348; transaction-http.ts:611-629; transaction-read.ts:216-247",
+    "conclusion": "Exact retrieval key is not schema$id/reference base/query variant/foreign URL/Resource alias. Unknown no-min parser404 has no owner context. Nonmember complete-min private500 controls remain unsupported, zero credit. Ordinary missing Bead/Link/properties exception remains actual-context404 before semantic comparison."
+  },
+  {
+    "id": "A07",
+    "scope": "S1 retained continuation boundaries",
+    "spec": "5850-5851;5896-6029;1511-1600",
+    "source": "authority-read.ts:852-870,974-1017; transaction-http.ts:407-428; transaction-read.ts:216-247",
+    "conclusion": "Condition hook precedes finish/continuePage retained validation. Schema change must not choose retained/current prefix or collision order; no epoch/view-only shortcut. Receipt path cannot supply general retained-page ruling."
+  },
+  {
+    "id": "A08",
+    "scope": "G2 incident Event membership",
+    "spec": "governing TX and inherited collection/Event contract unchanged",
+    "source": "transaction-events.ts:250-266",
+    "conclusion": "Metadata-only incident-Link membership guard stays explicit. Schema minimum support supplies no projector ruling."
+  },
+  {
+    "id": "A09",
+    "scope": "Footprint and existing increments",
+    "source": "prospective-footprint.json; a562-seam-comparison.json",
+    "conclusion": "Six existing owned paths, two overlap current six dirty paths, prospective cumulative10, protect other673 versus a61. No new API/package export/factory/profile/admission. Historical a562 seams remain distinguished from current D1/D3a HTTP/service changes."
+  },
+  {
+    "id": "A10",
+    "scope": "Prospective tests and deadlines",
+    "source": "source-cases.json; installed-cases.json; oracles-and-preservation.json",
+    "conclusion": "Eight source callbacks, 23 direct calls and9 wire requests; two installed callbacks14+16 requests/two children. Existing14 callback separate. Counts verified by explicit rows; 3 private500 rows zero unsupported credit. All clocks unchanged, future collection/report/actual evidence UNKNOWN, no pass/coverage inferred."
+  },
+  {
+    "id": "A11",
+    "scope": "Evidence and next authority",
+    "source": "basis.json; release-gates.json; closure.json; verification.json",
+    "conclusion": "All execution/authoring flags false, approvedStages empty, final base/proofs UNKNOWN. Normal native/root disposition precedes isolated source release; report does not adopt source, S1/G2 semantics, full251 coverage, public admission or report union."
+  }
+]

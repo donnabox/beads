@@ -1,0 +1,830 @@
+{
+  "source": "7171251d282769c1b9e2a39aed63e16f8b24ed96",
+  "tree": "76931ffeede5532cf11bd742d41dac9cdf5e7f01",
+  "parents": [
+    "fc9803565d221e43ef230d4efa2c8a78f3a7028f"
+  ],
+  "clean": true,
+  "ordinaryMerge": "fc9803565d221e43ef230d4efa2c8a78f3a7028f",
+  "files": {
+    "apps/bdptest/src/transactional-collection-minimum-installed.test.ts": {
+      "bytes": 44601,
+      "sha256": "69fc8bd2efdbf7a30d9dbdb88a7772ced92ae8bd724a4ba159a88980e2c2df47"
+    },
+    "apps/bdptest/src/transactional-matrix.test.ts": {
+      "bytes": 44969,
+      "sha256": "9c4aba7167b3d944f39245c2c9e187b4a6f30c019deb4c679f78076a031fa847"
+    },
+    "docs/design/transaction-implementation-progress.md": {
+      "bytes": 115556,
+      "sha256": "7c4769f2bcc2ae78f8c81c99c5d7b26b5dac7239b822081f548008d214be4c69"
+    },
+    "packages/conformance/src/transactional-cumulative.test.ts": {
+      "bytes": 48895,
+      "sha256": "4483e011fc06a6d813bf969dcc6a9d3eeaace248fedcf8cd1bfa3f61e8366de3"
+    },
+    "packages/conformance/test-support/transactional/coverage-v1.json": {
+      "bytes": 60069,
+      "sha256": "4c84318e57c74a928edcaead5490bc647a67f2e3ba79872f1babe7ac3b6916ec"
+    },
+    "packages/conformance/test-support/transactional/manifest-v1.json": {
+      "bytes": 407227,
+      "sha256": "7f55695401b815534f17fc69dc924ee0c0920fb6c9175529709a8e60afda5786"
+    },
+    "packages/server/src/transaction-http.test.ts": {
+      "bytes": 98244,
+      "sha256": "bf82259ae0748c5b5f6d84a170d21218ffd68e769c684fb634f96aff8292cc9f"
+    },
+    "packages/server/src/transaction-http.ts": {
+      "bytes": 26244,
+      "sha256": "4ff0b48583a0acbed249da80ebb9de29fad0b4bb50fb121f1eb78de60c114630"
+    },
+    "packages/server/src/transaction-read.test.ts": {
+      "bytes": 73158,
+      "sha256": "e995e30d5a52a83871819a939e13e5623017ee63773bec1d91d967726f110890"
+    },
+    "packages/server/src/transaction-read.ts": {
+      "bytes": 12170,
+      "sha256": "01b09818c049eb2c5dd4465edfb148cea900a6b8db082dd314f7dfbe6d80c993"
+    },
+    "packages/server/src/transaction-service.ts": {
+      "bytes": 23417,
+      "sha256": "aa2d94c9800c15c253b178f35626a2d205cd61190a0f64db6e5a0e75ad5d88af"
+    }
+  },
+  "claimEligible": false,
+  "exits": {
+    "install": {
+      "exit": 0,
+      "expected": 0,
+      "seconds": 0.466,
+      "command": [
+        "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+        "/Users/dbox/.cache/node/corepack/v1/pnpm/11.20.0/bin/pnpm.cjs",
+        "install",
+        "--frozen-lockfile"
+      ]
+    },
+    "clean": {
+      "exit": 0,
+      "expected": 0,
+      "seconds": 0.882,
+      "command": [
+        "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+        "/Users/dbox/.cache/node/corepack/v1/pnpm/11.20.0/bin/pnpm.cjs",
+        "clean"
+      ]
+    },
+    "typecheck": {
+      "exit": 0,
+      "expected": 0,
+      "seconds": 0.828,
+      "command": [
+        "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+        "/Users/dbox/.cache/node/corepack/v1/pnpm/11.20.0/bin/pnpm.cjs",
+        "typecheck"
+      ]
+    },
+    "build": {
+      "exit": 0,
+      "expected": 0,
+      "seconds": 0.75,
+      "command": [
+        "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+        "/Users/dbox/.cache/node/corepack/v1/pnpm/11.20.0/bin/pnpm.cjs",
+        "build"
+      ]
+    },
+    "format-check": {
+      "exit": 0,
+      "expected": 0,
+      "seconds": 1.307,
+      "command": [
+        "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+        "/Users/dbox/.cache/node/corepack/v1/pnpm/11.20.0/bin/pnpm.cjs",
+        "format:check"
+      ]
+    },
+    "lint": {
+      "exit": 0,
+      "expected": 0,
+      "seconds": 0.421,
+      "command": [
+        "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+        "/Users/dbox/.cache/node/corepack/v1/pnpm/11.20.0/bin/pnpm.cjs",
+        "lint"
+      ]
+    },
+    "check-boundaries": {
+      "exit": 0,
+      "expected": 0,
+      "seconds": 0.529,
+      "command": [
+        "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+        "/Users/dbox/.cache/node/corepack/v1/pnpm/11.20.0/bin/pnpm.cjs",
+        "check:boundaries"
+      ]
+    },
+    "evidence-verify": {
+      "exit": 0,
+      "expected": 0,
+      "seconds": 0.308,
+      "command": [
+        "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+        "/Users/dbox/.cache/node/corepack/v1/pnpm/11.20.0/bin/pnpm.cjs",
+        "evidence:verify"
+      ]
+    },
+    "diff-check": {
+      "exit": 0,
+      "expected": 0,
+      "seconds": 0.012,
+      "command": [
+        "git",
+        "diff",
+        "--check"
+      ]
+    },
+    "pack-protocol": {
+      "exit": 0,
+      "expected": 0,
+      "seconds": 0.195,
+      "command": [
+        "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+        "/Users/dbox/.cache/node/corepack/v1/pnpm/11.20.0/bin/pnpm.cjs",
+        "pack",
+        "--out",
+        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-current-alias-minimum-integration/packs/protocol.tgz"
+      ]
+    },
+    "pack-server": {
+      "exit": 0,
+      "expected": 0,
+      "seconds": 0.248,
+      "command": [
+        "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+        "/Users/dbox/.cache/node/corepack/v1/pnpm/11.20.0/bin/pnpm.cjs",
+        "pack",
+        "--out",
+        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-current-alias-minimum-integration/packs/server.tgz"
+      ]
+    },
+    "packed-install": {
+      "exit": 0,
+      "expected": 0,
+      "seconds": 0.307,
+      "command": [
+        "npm",
+        "install",
+        "--offline",
+        "--ignore-scripts",
+        "--no-audit",
+        "--no-fund"
+      ]
+    },
+    "packed-minimum": {
+      "exit": 0,
+      "expected": 0,
+      "seconds": 10.346,
+      "command": [
+        "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+        "/Users/dbox/.cache/node/corepack/v1/pnpm/11.20.0/bin/pnpm.cjs",
+        "exec",
+        "vitest",
+        "run",
+        "apps/bdptest/src/transactional-collection-minimum-installed.test.ts",
+        "--maxWorkers=1",
+        "--reporter=verbose",
+        "--reporter=json",
+        "--outputFile.json=/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-current-alias-minimum-integration/packed-minimum.json"
+      ]
+    },
+    "packed-ru-positives": {
+      "exit": 0,
+      "expected": 0,
+      "seconds": 2.699,
+      "command": [
+        "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+        "/Users/dbox/.cache/node/corepack/v1/pnpm/11.20.0/bin/pnpm.cjs",
+        "exec",
+        "vitest",
+        "run",
+        "apps/bdptest/src/read-update-matrix.test.ts",
+        "-t",
+        "observes retained retry dispositions across actual installed carriers and current positions|observes reference syntax and retained category failures against installed HTTP",
+        "--maxWorkers=2",
+        "--reporter=verbose",
+        "--reporter=json",
+        "--outputFile.json=/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-current-alias-minimum-integration/packed-ru-positives.json"
+      ]
+    },
+    "packed-tx-positive": {
+      "exit": 0,
+      "expected": 0,
+      "seconds": 4.289,
+      "command": [
+        "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+        "/Users/dbox/.cache/node/corepack/v1/pnpm/11.20.0/bin/pnpm.cjs",
+        "exec",
+        "vitest",
+        "run",
+        "apps/bdptest/src/transactional-matrix.test.ts",
+        "-t",
+        "observes ten partial Transactional",
+        "--maxWorkers=1",
+        "--reporter=verbose",
+        "--reporter=json",
+        "--outputFile.json=/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-current-alias-minimum-integration/packed-tx-positive.json"
+      ]
+    },
+    "final-build": {
+      "exit": 0,
+      "expected": 0,
+      "seconds": 0.797,
+      "command": [
+        "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+        "/Users/dbox/.cache/node/corepack/v1/pnpm/11.20.0/bin/pnpm.cjs",
+        "build"
+      ]
+    },
+    "final-format": {
+      "exit": 0,
+      "expected": 0,
+      "seconds": 0.317,
+      "command": [
+        "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+        "/Users/dbox/.cache/node/corepack/v1/pnpm/11.20.0/bin/pnpm.cjs",
+        "format:check"
+      ]
+    },
+    "final-diff-check": {
+      "exit": 0,
+      "expected": 0,
+      "seconds": 0.012,
+      "command": [
+        "git",
+        "diff",
+        "--check"
+      ]
+    },
+    "final-pack-protocol": {
+      "exit": 0,
+      "expected": 0,
+      "seconds": 0.21,
+      "command": [
+        "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+        "/Users/dbox/.cache/node/corepack/v1/pnpm/11.20.0/bin/pnpm.cjs",
+        "pack",
+        "--out",
+        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-current-alias-minimum-integration/packs-final/protocol.tgz"
+      ]
+    },
+    "final-pack-server": {
+      "exit": 0,
+      "expected": 0,
+      "seconds": 0.256,
+      "command": [
+        "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+        "/Users/dbox/.cache/node/corepack/v1/pnpm/11.20.0/bin/pnpm.cjs",
+        "pack",
+        "--out",
+        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-current-alias-minimum-integration/packs-final/server.tgz"
+      ]
+    },
+    "final-packed-install": {
+      "exit": 0,
+      "expected": 0,
+      "seconds": 0.304,
+      "command": [
+        "npm",
+        "install",
+        "--offline",
+        "--ignore-scripts",
+        "--no-audit",
+        "--no-fund"
+      ]
+    },
+    "final-packed-ordinary-alias": {
+      "exit": 0,
+      "expected": 0,
+      "seconds": 1.123,
+      "command": [
+        "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+        "/Users/dbox/.cache/node/corepack/v1/pnpm/11.20.0/bin/pnpm.cjs",
+        "exec",
+        "vitest",
+        "run",
+        "apps/bdptest/src/transactional-alias-installed.test.ts",
+        "--maxWorkers=1",
+        "--reporter=verbose",
+        "--reporter=json",
+        "--outputFile.json=/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-current-alias-minimum-integration/final-packed-ordinary-alias.json"
+      ]
+    }
+  },
+  "finalInstalledOrdinaryAlias": {
+    "observation": "private-installed-sequence-alias",
+    "declaredSourceCommit": "7171251d282769c1b9e2a39aed63e16f8b24ed96",
+    "workspaceDirty": false,
+    "entry": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-current-alias-minimum-integration/install-final/node_modules/@bdp/server/dist/transaction-installed-process.js",
+    "entrySha256": "bcf153170f953f9e28c6c89f1153be907f64df289e64f3ad929cad4a4a54c47c",
+    "binding": {
+      "served": {
+        "scope": "https://reference.invalid/acme/",
+        "profile": "transactional",
+        "history": false,
+        "sourceCommit": "7171251d282769c1b9e2a39aed63e16f8b24ed96",
+        "installedPayloadDigest": "91e78a58669ad359cb82174a3ff3075e22a5bbfffe3790ad2ffc78ba536e887c",
+        "installedContractsDigest": "80c3cc6befaa53f7949b91e00ef00c2658442de1ffc24dfdaf6a16cdc9235992",
+        "policyDigest": "976e5e1e35481e8b08857d2bf8e0cc5e9bf9a2011e051b851bcd615a5f27c46d",
+        "authenticationDigest": "7767f78f6a0bc150d3f97827bcc138934b164f96bd6cb3197b15990b6a29c106",
+        "fixtureDigest": "3a7899ced771d4880066d98b0000c53f801ece53458502cc4f3bc641146c9a85",
+        "fixtureId": "reference-transactional-v1",
+        "capabilities": [
+          "installed-transactional-http",
+          "transactional-receipt-observation"
+        ]
+      },
+      "operationTargets": {
+        "createBead": "https://reference.invalid/acme/operations/create-bead",
+        "updateBead": "https://reference.invalid/acme/operations/update-bead",
+        "deleteBead": "https://reference.invalid/acme/operations/delete-bead",
+        "createLink": "https://reference.invalid/acme/operations/create-link",
+        "updateLink": "https://reference.invalid/acme/operations/update-link",
+        "deleteLink": "https://reference.invalid/acme/operations/delete-link",
+        "putAlias": "https://reference.invalid/acme/operations/put-alias",
+        "deleteAlias": "https://reference.invalid/acme/operations/delete-alias",
+        "updateWhere": "https://reference.invalid/acme/operations/update-where",
+        "deleteWhere": "https://reference.invalid/acme/operations/delete-where",
+        "batch": "https://reference.invalid/acme/operations/batch",
+        "sequence": "https://reference.invalid/acme/operations/sequence"
+      },
+      "runtimeConfigurationIdentity": "8a87402c39c48e8c8f447f2688757e3c7a2954023b02ac532d9a0df7a7ed8b25",
+      "authorityMode": "canonical"
+    },
+    "sessions": [
+      {
+        "pid": 16329,
+        "exit": 0
+      },
+      {
+        "pid": 16331,
+        "exit": 0
+      }
+    ],
+    "exchanges": 36,
+    "completedResponses": [
+      {
+        "method": "POST",
+        "url": "https://reference.invalid/acme/operations/batch",
+        "status": 200,
+        "bodyOctets": 889,
+        "scopePosition": "pos-1",
+        "bodySha256": "ac112faf055b3be19d6b4697004b13cddc6d92e4f4f53247605e273e0b9cd1e8",
+        "wireSha256": "5b50fcbbf4e63962249fe15875ba7b6a0ae73b5a59d5f258f5bd9db5f5b08066"
+      },
+      {
+        "method": "POST",
+        "url": "https://reference.invalid/acme/operations/put-alias",
+        "status": 200,
+        "bodyOctets": 541,
+        "scopePosition": "pos-1",
+        "bodySha256": "457a015d7ebb253b22ef03b3b0957d3f18f5a65751a9b5c7c68b710a89bbcfb6",
+        "wireSha256": "a5f7f2096a9f690a5bc14001e09be3ce4f96e6704f4ee632fdfb61dd7b7dc24d"
+      },
+      {
+        "method": "GET",
+        "url": "https://reference.invalid/acme/alias/work",
+        "status": 307,
+        "bodyOctets": 0,
+        "scopePosition": "pos-1",
+        "bodySha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "wireSha256": "9a036bf50db1a721bc3cf259acfe79c2f1b9bf35546463b7f084ad48979bcb0f"
+      },
+      {
+        "method": "POST",
+        "url": "https://reference.invalid/acme/operations/sequence",
+        "status": 200,
+        "bodyOctets": 763,
+        "scopePosition": "pos-3",
+        "bodySha256": "bd47e31071ac83af7c15d5be10accf75e90fddf4358655dff9465508c50b4fd5",
+        "wireSha256": "cddbcb97d42a8cc0be4d6ec4aacedf0fdf1dd8cd822edb367b832a8d5623f81d"
+      },
+      {
+        "method": "GET",
+        "url": "https://reference.invalid/acme/beads/a",
+        "status": 200,
+        "bodyOctets": 183,
+        "scopePosition": "pos-3",
+        "bodySha256": "d921eedc457355d76232b78e8f6f289321ad004aee3e807dd54bbb14e881757a",
+        "wireSha256": "056eb5af382ad93258e40b1c921abb81b3274b1886c60e8b5716c0122867a1aa"
+      },
+      {
+        "method": "GET",
+        "url": "https://reference.invalid/acme/beads/b",
+        "status": 200,
+        "bodyOctets": 183,
+        "scopePosition": "pos-3",
+        "bodySha256": "ddfe366e300921de726d80c154df30fdc37811fe7bb53d41327690e43e2bd964",
+        "wireSha256": "1d08a8a1258cd0a058285475151aa2a9794b8446efcfc97ae953b06f29b75ddb"
+      },
+      {
+        "method": "GET",
+        "url": "https://reference.invalid/acme/links/edge",
+        "status": 200,
+        "bodyOctets": 318,
+        "scopePosition": "pos-3",
+        "bodySha256": "7a657f30a27c4be408ee4459346790186fa89ac78a328c903fb68dfcb3ee5e0c",
+        "wireSha256": "602f17ae75220183e5acfa742cd17ded82cdc160dac50e16a69219cf2861594f"
+      },
+      {
+        "method": "POST",
+        "url": "https://reference.invalid/acme/operations/put-alias",
+        "status": 200,
+        "bodyOctets": 538,
+        "scopePosition": "pos-3",
+        "bodySha256": "741e0a3f73f174fc06d0f03deabfdd0fcb970acd492cca4fb98531c3b3a0dc5e",
+        "wireSha256": "0959271853577b52b9d79d946478cff6f1dcd66cf7bb6a051c153e095dc8beb8"
+      },
+      {
+        "method": "GET",
+        "url": "https://reference.invalid/acme/alias/work",
+        "status": 307,
+        "bodyOctets": 0,
+        "scopePosition": "pos-3",
+        "bodySha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "wireSha256": "71730e1a74fcc6bd5ce01e06948a44a3279d8e9c50376affa542b67adc68976b"
+      },
+      {
+        "method": "POST",
+        "url": "https://reference.invalid/acme/operations/sequence",
+        "status": 200,
+        "bodyOctets": 763,
+        "scopePosition": "pos-3",
+        "bodySha256": "bd47e31071ac83af7c15d5be10accf75e90fddf4358655dff9465508c50b4fd5",
+        "wireSha256": "cddbcb97d42a8cc0be4d6ec4aacedf0fdf1dd8cd822edb367b832a8d5623f81d"
+      },
+      {
+        "method": "GET",
+        "url": "https://reference.invalid/acme/alias/work",
+        "status": 307,
+        "bodyOctets": 0,
+        "scopePosition": "pos-3",
+        "bodySha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "wireSha256": "71730e1a74fcc6bd5ce01e06948a44a3279d8e9c50376affa542b67adc68976b"
+      },
+      {
+        "method": "POST",
+        "url": "https://reference.invalid/acme/operations/update-bead",
+        "status": 200,
+        "bodyOctets": 660,
+        "scopePosition": "pos-3",
+        "bodySha256": "031bc0068475dead81ea2775a5968243b5710da31e2e8e2111bbb5f75f1d86ac",
+        "wireSha256": "3531d6aaa20223e81ddefef82ac0ef2bd28d51cb756dcf79913d90f8d7bb6209"
+      },
+      {
+        "method": "POST",
+        "url": "https://reference.invalid/acme/operations/put-alias",
+        "status": 200,
+        "bodyOctets": 541,
+        "scopePosition": "pos-3",
+        "bodySha256": "b97099b08eb3c49f8615c051df65b87b9e9ef44a1c971250582baedc592c2332",
+        "wireSha256": "c808fcd09402f32b58bf2af2d1434e32497331a9a68bd93ae5bed1b6dab1f843"
+      },
+      {
+        "method": "GET",
+        "url": "https://reference.invalid/acme/alias/fresh",
+        "status": 307,
+        "bodyOctets": 0,
+        "scopePosition": "pos-3",
+        "bodySha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "wireSha256": "92d22ee26482df1c30dc974b5fa3675d5b3be4af2f55300dae6d3daaf86c6eba"
+      },
+      {
+        "method": "POST",
+        "url": "https://reference.invalid/acme/operations/update-bead",
+        "status": 200,
+        "bodyOctets": 660,
+        "scopePosition": "pos-3",
+        "bodySha256": "031bc0068475dead81ea2775a5968243b5710da31e2e8e2111bbb5f75f1d86ac",
+        "wireSha256": "3531d6aaa20223e81ddefef82ac0ef2bd28d51cb756dcf79913d90f8d7bb6209"
+      },
+      {
+        "method": "POST",
+        "url": "https://reference.invalid/acme/operations/put-alias",
+        "status": 200,
+        "bodyOctets": 545,
+        "scopePosition": "pos-3",
+        "bodySha256": "939ade78bebd8a7e38ef653cbed0b86ecb4b22ef72bee2da97753dde37e00b93",
+        "wireSha256": "3f88ee33a6fe7136fd49a68020f801a308bc1f49266fb23c607b8fe4080d5748"
+      },
+      {
+        "method": "GET",
+        "url": "https://reference.invalid/acme/alias/fresh",
+        "status": 307,
+        "bodyOctets": 0,
+        "scopePosition": "pos-3",
+        "bodySha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "wireSha256": "71730e1a74fcc6bd5ce01e06948a44a3279d8e9c50376affa542b67adc68976b"
+      },
+      {
+        "method": "POST",
+        "url": "https://reference.invalid/acme/operations/update-bead",
+        "status": 409,
+        "bodyOctets": 122,
+        "bodySha256": "6659f511cbef9350ede5c7ed10ed8d17f0a713a0c938e35ff4ab844e06b42b96",
+        "wireSha256": "c41e64188eb0cc84a8c06b7be47bbfeafb3711e489365e6f4c5b159d6f7eb699"
+      },
+      {
+        "method": "GET",
+        "url": "https://reference.invalid/acme/beads/a",
+        "status": 200,
+        "bodyOctets": 183,
+        "scopePosition": "pos-3",
+        "bodySha256": "d921eedc457355d76232b78e8f6f289321ad004aee3e807dd54bbb14e881757a",
+        "wireSha256": "056eb5af382ad93258e40b1c921abb81b3274b1886c60e8b5716c0122867a1aa"
+      },
+      {
+        "method": "POST",
+        "url": "https://reference.invalid/acme/operations/sequence",
+        "status": 200,
+        "bodyOctets": 499,
+        "scopePosition": "pos-4",
+        "bodySha256": "c03141b83e324e560bf73b42173e30babf5d57e2f32b0caeb4b10a8d1b4e68b2",
+        "wireSha256": "8e0c129a08bf48b46aa396d032f72b9358c6b445b4c13b202bc42d0c0af07d81"
+      },
+      {
+        "method": "GET",
+        "url": "https://reference.invalid/acme/alias/work",
+        "status": 404,
+        "bodyOctets": 134,
+        "scopePosition": "pos-4",
+        "bodySha256": "6eb3ea2339cd9acd8b41edf491f4cebb381ce54504bab8215d4a421f32d68ce1",
+        "wireSha256": "54dee644cf6f4f0fbcd92764d2aaeab764088fb12517555bfe547641a61094ef"
+      },
+      {
+        "method": "GET",
+        "url": "https://reference.invalid/acme/beads/tail",
+        "status": 200,
+        "bodyOctets": 186,
+        "scopePosition": "pos-4",
+        "bodySha256": "301a2f497d14ec31ca4edbc6efabb7f5f23936397ece061d5290261a3e24b245",
+        "wireSha256": "35107e181e6a01286de1d5b6ac8eb064e7147d23f45910ed2115e690be0efb5c"
+      },
+      {
+        "method": "POST",
+        "url": "https://reference.invalid/acme/operations/put-alias",
+        "status": 200,
+        "bodyOctets": 538,
+        "scopePosition": "pos-4",
+        "bodySha256": "9752ffd6e05810d833a963e64cdc05566ce03c21b305fdaee7774a8c4b4a6f43",
+        "wireSha256": "063e9c814d3096948ab6700e895bff84677047c0eb2d536f6dc1e6d341fff53f"
+      },
+      {
+        "method": "GET",
+        "url": "https://reference.invalid/acme/alias/work",
+        "status": 307,
+        "bodyOctets": 0,
+        "scopePosition": "pos-4",
+        "bodySha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "wireSha256": "e96213d5e0bb390dada020dab6cdd9be213d9211cc2a3aa4112ca022bc5fb7f0"
+      },
+      {
+        "method": "POST",
+        "url": "https://reference.invalid/acme/operations/sequence",
+        "status": 200,
+        "bodyOctets": 499,
+        "scopePosition": "pos-4",
+        "bodySha256": "c03141b83e324e560bf73b42173e30babf5d57e2f32b0caeb4b10a8d1b4e68b2",
+        "wireSha256": "8e0c129a08bf48b46aa396d032f72b9358c6b445b4c13b202bc42d0c0af07d81"
+      },
+      {
+        "method": "POST",
+        "url": "https://reference.invalid/acme/operations/update-bead",
+        "status": 200,
+        "bodyOctets": 661,
+        "scopePosition": "pos-5",
+        "bodySha256": "3802195d4acdc0ca82e01f5b544d64f9c258deba239479712259a003cc2edf19",
+        "wireSha256": "bb43742fb8db8c9a5a5326e115455aa1495660b4511d15da2aac18c5026eff61"
+      },
+      {
+        "method": "GET",
+        "url": "https://reference.invalid/acme/beads/b",
+        "status": 200,
+        "bodyOctets": 183,
+        "scopePosition": "pos-5",
+        "bodySha256": "fac000f98d0aab0b339e295bd01532005d58f8858d0cb5d611768549930597e6",
+        "wireSha256": "657b2920e2ae848d171af7fa88eb5600ccf27b0a18d0cff90bb585c2eb9c81ab"
+      },
+      {
+        "method": "POST",
+        "url": "https://reference.invalid/acme/operations/update-bead",
+        "status": 200,
+        "bodyOctets": 660,
+        "scopePosition": "pos-5",
+        "bodySha256": "031bc0068475dead81ea2775a5968243b5710da31e2e8e2111bbb5f75f1d86ac",
+        "wireSha256": "0164e9c8de92caeb08e6b7f50e1480098fec1b13bf79fe5c4175c08e9cf45e72"
+      },
+      {
+        "method": "POST",
+        "url": "https://reference.invalid/acme/operations/sequence",
+        "status": 200,
+        "bodyOctets": 763,
+        "scopePosition": "pos-5",
+        "bodySha256": "bd47e31071ac83af7c15d5be10accf75e90fddf4358655dff9465508c50b4fd5",
+        "wireSha256": "fe31fbb0bbfa99eb1e3e114d2cb8482726addfdd660af00513641d5654f201ce"
+      },
+      {
+        "method": "POST",
+        "url": "https://reference.invalid/acme/operations/sequence",
+        "status": 200,
+        "bodyOctets": 499,
+        "scopePosition": "pos-5",
+        "bodySha256": "c03141b83e324e560bf73b42173e30babf5d57e2f32b0caeb4b10a8d1b4e68b2",
+        "wireSha256": "e918233bb88f02d732a4168c12f35f449ce14199ec81e7ed0ed60d50978e20db"
+      },
+      {
+        "method": "POST",
+        "url": "https://reference.invalid/acme/operations/update-bead",
+        "status": 200,
+        "bodyOctets": 660,
+        "scopePosition": "pos-5",
+        "bodySha256": "031bc0068475dead81ea2775a5968243b5710da31e2e8e2111bbb5f75f1d86ac",
+        "wireSha256": "0164e9c8de92caeb08e6b7f50e1480098fec1b13bf79fe5c4175c08e9cf45e72"
+      },
+      {
+        "method": "GET",
+        "url": "https://reference.invalid/acme/alias/work",
+        "status": 307,
+        "bodyOctets": 0,
+        "scopePosition": "pos-5",
+        "bodySha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "wireSha256": "89f28debfd9d30893053106a2a9f1a29faabcff13a06ba75cdaa76ee473d8e35"
+      },
+      {
+        "method": "GET",
+        "url": "https://reference.invalid/acme/beads/b",
+        "status": 200,
+        "bodyOctets": 183,
+        "scopePosition": "pos-5",
+        "bodySha256": "fac000f98d0aab0b339e295bd01532005d58f8858d0cb5d611768549930597e6",
+        "wireSha256": "657b2920e2ae848d171af7fa88eb5600ccf27b0a18d0cff90bb585c2eb9c81ab"
+      },
+      {
+        "method": "GET",
+        "url": "https://reference.invalid/acme/beads/a",
+        "status": 200,
+        "bodyOctets": 183,
+        "scopePosition": "pos-5",
+        "bodySha256": "d921eedc457355d76232b78e8f6f289321ad004aee3e807dd54bbb14e881757a",
+        "wireSha256": "fa7e68ca4beae1f187775f4ecce6dbd40897a7e57b183896f74100ab8fe170c4"
+      },
+      {
+        "method": "GET",
+        "url": "https://reference.invalid/acme/links/edge",
+        "status": 200,
+        "bodyOctets": 318,
+        "scopePosition": "pos-5",
+        "bodySha256": "7a657f30a27c4be408ee4459346790186fa89ac78a328c903fb68dfcb3ee5e0c",
+        "wireSha256": "82f0d4f8cfaff8e30cdac2694c5f585345ce35408528d0d1a16a8752ae5d6423"
+      },
+      {
+        "method": "GET",
+        "url": "https://reference.invalid/acme/beads/tail",
+        "status": 200,
+        "bodyOctets": 186,
+        "scopePosition": "pos-5",
+        "bodySha256": "301a2f497d14ec31ca4edbc6efabb7f5f23936397ece061d5290261a3e24b245",
+        "wireSha256": "b0b57f960a9b0a43557b04536525427979e4437fb7b9aedf49c03f574ec53481"
+      }
+    ],
+    "localSensitivityControls": [
+      "admission-target",
+      "stale-postimage"
+    ],
+    "outcome": "passed",
+    "claimEligible": false
+  },
+  "finalPackFilesEqualMerge": {
+    "protocol": true,
+    "server": true
+  },
+  "finalTarballs": {
+    "protocol.tgz": "4683cb6c6333c332a4bcb7efc3e28f32d1d8d06a7264913f65c31d3a826d4227",
+    "server.tgz": "6e2007d4ff92503cc4573ce1e87bdedc8eec9e995ca2b85beede53e71c616a2a"
+  },
+  "precedingSourceEvidence": {
+    "source": "fc9803565d221e43ef230d4efa2c8a78f3a7028f",
+    "summary": "fc980-summary.json",
+    "minimumScenarios": [
+      [
+        38,
+        1
+      ],
+      [
+        10,
+        1
+      ],
+      [
+        20,
+        1
+      ],
+      [
+        18,
+        1
+      ]
+    ],
+    "ruPositives": 2,
+    "txPositive": 1
+  },
+  "remainingInstalledChildren": 0,
+  "donorPreservation": {
+    "source": "fc9803565d221e43ef230d4efa2c8a78f3a7028f",
+    "mainBasis": "0432d48db8f340016a000d633d799aebbd26db3f",
+    "parents": [
+      "3959a25e70bc6dc9d143abfead187ccaf84ca11e",
+      "8d23862a03e65fa378a246310d804f0408b73937"
+    ],
+    "expectedMergeTree": "0bd3bee8b2cd3c817c7b2d91a72170c89d2fab79",
+    "actualTree": "0bd3bee8b2cd3c817c7b2d91a72170c89d2fab79",
+    "automaticMerge": true,
+    "donors": {
+      "alias": {
+        "donor": "3959a25e70bc6dc9d143abfead187ccaf84ca11e",
+        "files": {
+          "apps/bdptest/src/transactional-collection-minimum-installed.test.ts": {
+            "actualBlob": "d6b2855a55438d9946929b286edf6ac8c231e743",
+            "donorBlob": "d6b2855a55438d9946929b286edf6ac8c231e743",
+            "equal": true
+          },
+          "docs/design/transaction-implementation-progress.md": {
+            "actualBlob": "c7e7bd46eeee63c9f9a228fe5eb51348c729a6e2",
+            "donorBlob": "c7e7bd46eeee63c9f9a228fe5eb51348c729a6e2",
+            "equal": true
+          },
+          "packages/server/src/transaction-http.test.ts": {
+            "actualBlob": "5462b4e6ac6b5f67d84c38547362ca3a79f52455",
+            "donorBlob": "5462b4e6ac6b5f67d84c38547362ca3a79f52455",
+            "equal": true
+          },
+          "packages/server/src/transaction-http.ts": {
+            "actualBlob": "8b042504a578d6baba722c523b7e9bbd6042d390",
+            "donorBlob": "8b042504a578d6baba722c523b7e9bbd6042d390",
+            "equal": true
+          },
+          "packages/server/src/transaction-read.test.ts": {
+            "actualBlob": "eedd409a9039733d83234ebf7518fae4d9dffa6b",
+            "donorBlob": "eedd409a9039733d83234ebf7518fae4d9dffa6b",
+            "equal": true
+          },
+          "packages/server/src/transaction-read.ts": {
+            "actualBlob": "88158c0ed801335082b0c973e06c625a78a4f705",
+            "donorBlob": "88158c0ed801335082b0c973e06c625a78a4f705",
+            "equal": true
+          },
+          "packages/server/src/transaction-service.ts": {
+            "actualBlob": "524661c67acd52821fc0d3547255b84adcc60164",
+            "donorBlob": "524661c67acd52821fc0d3547255b84adcc60164",
+            "equal": true
+          }
+        }
+      },
+      "completedKey": {
+        "donor": "8d23862a03e65fa378a246310d804f0408b73937",
+        "files": {
+          "apps/bdptest/src/transactional-matrix.test.ts": {
+            "actualBlob": "e08f24d96f1f1ace6b950824d87ce56935839fb2",
+            "donorBlob": "e08f24d96f1f1ace6b950824d87ce56935839fb2",
+            "equal": true
+          },
+          "packages/conformance/src/transactional-cumulative.test.ts": {
+            "actualBlob": "9e2ee0fb7cc4526a9727c56ce6200e218ac65c33",
+            "donorBlob": "9e2ee0fb7cc4526a9727c56ce6200e218ac65c33",
+            "equal": true
+          },
+          "packages/conformance/test-support/transactional/coverage-v1.json": {
+            "actualBlob": "3fe58aae463c2c4e32cc34b4d8e2c558faacd7e4",
+            "donorBlob": "3fe58aae463c2c4e32cc34b4d8e2c558faacd7e4",
+            "equal": true
+          },
+          "packages/conformance/test-support/transactional/manifest-v1.json": {
+            "actualBlob": "16650dd3c633a84b7fe9ce005d32246ac47850cc",
+            "donorBlob": "16650dd3c633a84b7fe9ce005d32246ac47850cc",
+            "equal": true
+          }
+        }
+      }
+    },
+    "allOtherTrackedFilesEqualMain": true,
+    "finalDocSuccessor": {
+      "source": "7171251d282769c1b9e2a39aed63e16f8b24ed96",
+      "tree": "76931ffeede5532cf11bd742d41dac9cdf5e7f01",
+      "onlyChangeFromMerge": "docs/design/transaction-implementation-progress.md",
+      "allProductionAndTestDonorBytesPreserved": true,
+      "protocolAndServerPackedFilesEqualMerge": {
+        "protocol": true,
+        "server": true
+      }
+    }
+  }
+}

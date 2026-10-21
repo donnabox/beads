@@ -1,0 +1,356 @@
+{
+  "count": 50,
+  "files": [
+    {
+      "copy": "source/packages/server/src/transaction-http.ts",
+      "origin": "/Users/dbox/repos/wt/vickie/vickie-tx-discovery-minimum/packages/server/src/transaction-http.ts",
+      "sha256": "09e5ba9cd3203af9bffebc1db1e7840eae732dc4b506bed5d11ac9730bd0c015",
+      "bytes": 29720,
+      "role": "exact frozen actual candidate; NO corrected source exists"
+    },
+    {
+      "copy": "source/packages/server/src/transaction-http.test.ts",
+      "origin": "/Users/dbox/repos/wt/vickie/vickie-tx-discovery-minimum/packages/server/src/transaction-http.test.ts",
+      "sha256": "172d4e61365710fe2884479a36f46bb51a327273ce02864a1285dccefd6ca09f",
+      "bytes": 278017,
+      "role": "exact frozen actual candidate; NO corrected source exists"
+    },
+    {
+      "copy": "source/apps/bdptest/src/transactional-discovery-installed.test.ts",
+      "origin": "/Users/dbox/repos/wt/vickie/vickie-tx-discovery-minimum/apps/bdptest/src/transactional-discovery-installed.test.ts",
+      "sha256": "d668891114fc196be9917ba92ef6a5cb0d77d6ed3ede83108d23a0d34e38d32d",
+      "bytes": 64223,
+      "role": "exact frozen actual candidate; NO corrected source exists"
+    },
+    {
+      "copy": "source/packages/server/src/transaction-changefeed.test.ts",
+      "origin": "/Users/dbox/repos/wt/vickie/vickie-tx-discovery-minimum/packages/server/src/transaction-changefeed.test.ts",
+      "sha256": "834d13d108cb0577cfbf0f7d32b7072a62deeb9db70a5bd72e960d5cfc42b9e3",
+      "bytes": 96265,
+      "role": "exact frozen actual candidate; NO corrected source exists"
+    },
+    {
+      "copy": "source/packages/server/src/transaction-installed-contracts.test.ts",
+      "origin": "/Users/dbox/repos/wt/vickie/vickie-tx-discovery-minimum/packages/server/src/transaction-installed-contracts.test.ts",
+      "sha256": "f2dd0993c4fa61742435d3bedb101afb021ca0f1b5904147ab367ba243286bd1",
+      "bytes": 21902,
+      "role": "exact frozen actual candidate; NO corrected source exists"
+    },
+    {
+      "copy": "source/apps/bdptest/src/transactional-schema-installed.test.ts",
+      "origin": "/Users/dbox/repos/wt/vickie/vickie-tx-discovery-minimum/apps/bdptest/src/transactional-schema-installed.test.ts",
+      "sha256": "18840119f1ca270d35414f3cb0d44dfe988a44ff9cb1edaa4a405b25b6da4759",
+      "bytes": 18360,
+      "role": "exact frozen actual candidate; NO corrected source exists"
+    },
+    {
+      "copy": "source-context/packages/conformance/src/http-executor.ts",
+      "origin": "/Users/dbox/repos/wt/vickie/vickie-tx-discovery-minimum/packages/conformance/src/http-executor.ts",
+      "sha256": "770a8405ae1532484b5a2658619c067832644947888f95e0c6575002376f1b5d",
+      "bytes": 50611,
+      "role": "unchanged dependency/spec/runtime seam read-only context"
+    },
+    {
+      "copy": "source-context/packages/protocol/src/transaction-discovery-values.ts",
+      "origin": "/Users/dbox/repos/wt/vickie/vickie-tx-discovery-minimum/packages/protocol/src/transaction-discovery-values.ts",
+      "sha256": "d52e19c0b250b1dcce7a1f46c3bbe9e2d9ba77ed3a1ea41e7dca20a7982893d7",
+      "bytes": 3168,
+      "role": "unchanged dependency/spec/runtime seam read-only context"
+    },
+    {
+      "copy": "source-context/schemas/bdp-v0.schema.json",
+      "origin": "/Users/dbox/repos/wt/vickie/vickie-tx-discovery-minimum/schemas/bdp-v0.schema.json",
+      "sha256": "0baa5d5ef67144f8e6513b4cde31168effc8df6d52ef3141b0f144b87f8dc227",
+      "bytes": 133208,
+      "role": "unchanged dependency/spec/runtime seam read-only context"
+    },
+    {
+      "copy": "source-context/docs/specs/bdp.md",
+      "origin": "/Users/dbox/repos/wt/vickie/vickie-tx-discovery-minimum/docs/specs/bdp.md",
+      "sha256": "67772742d7d08f48c12196e9789f1859ad2d0e19f133ea65e197b049361f84f8",
+      "bytes": 397107,
+      "role": "unchanged dependency/spec/runtime seam read-only context"
+    },
+    {
+      "copy": "source-context/packages/server/src/read-http.ts",
+      "origin": "/Users/dbox/repos/wt/vickie/vickie-tx-discovery-minimum/packages/server/src/read-http.ts",
+      "sha256": "31934105eff6fff8ded8ce2ca9e3c19028991ca7c3d5f51b848004177e8c9268",
+      "bytes": 8997,
+      "role": "unchanged dependency/spec/runtime seam read-only context"
+    },
+    {
+      "copy": "source-context/packages/server/src/read-http-routing.ts",
+      "origin": "/Users/dbox/repos/wt/vickie/vickie-tx-discovery-minimum/packages/server/src/read-http-routing.ts",
+      "sha256": "d9344b87838f8c71381ccf9efe28b4f023df45503570beb8fb4293d553caca42",
+      "bytes": 2967,
+      "role": "unchanged dependency/spec/runtime seam read-only context"
+    },
+    {
+      "copy": "source-context/packages/server/src/transaction-discovery.ts",
+      "origin": "/Users/dbox/repos/wt/vickie/vickie-tx-discovery-minimum/packages/server/src/transaction-discovery.ts",
+      "sha256": "bb8055e2089f640a5d2071e389ac2011d08c038427265b50ab3d03c02047cfef",
+      "bytes": 2745,
+      "role": "unchanged dependency/spec/runtime seam read-only context"
+    },
+    {
+      "copy": "context/original-author/index.json",
+      "origin": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/tx-discovery-source-authoring-1/index.json",
+      "sha256": "d9d35ff6f24ad71f0daea95cd8eec81faca097c0876e2ac1a905805a617b95d7",
+      "bytes": 9029,
+      "role": "immutable original three-file freeze history; launch flags there are historical"
+    },
+    {
+      "copy": "context/original-author/source-binding.json",
+      "origin": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/tx-discovery-source-authoring-1/source-binding.json",
+      "sha256": "2bceb342d76c7727151d2bf9977e5c373309cd1c89962d7da0a5d95da497de98",
+      "bytes": 92913,
+      "role": "immutable original three-file freeze history; launch flags there are historical"
+    },
+    {
+      "copy": "context/original-author/after-map.json",
+      "origin": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/tx-discovery-source-authoring-1/after-map.json",
+      "sha256": "f55e40725115eae0475b85af47d5d4eda0bbdd2897d1ecfd9a6672903a157dae",
+      "bytes": 87874,
+      "role": "immutable original three-file freeze history; launch flags there are historical"
+    },
+    {
+      "copy": "context/original-author/before-map.json",
+      "origin": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/tx-discovery-source-authoring-1/before-map.json",
+      "sha256": "ff8ad56f23c3d7ee6e652724501cdaa16ec9551ea24b1673dc6c74bf5c1c06b7",
+      "bytes": 87874,
+      "role": "immutable original three-file freeze history; launch flags there are historical"
+    },
+    {
+      "copy": "context/original-author/source.patch",
+      "origin": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/tx-discovery-source-authoring-1/source.patch",
+      "sha256": "25b3d83ff00df794cc68c5ca1c97297b5423e210375fb8ff366c5d6967eb0e2a",
+      "bytes": 97900,
+      "role": "immutable original three-file freeze history; launch flags there are historical"
+    },
+    {
+      "copy": "context/original-author/source.inverse.patch",
+      "origin": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/tx-discovery-source-authoring-1/source.inverse.patch",
+      "sha256": "7b266815d717a8417c977085269b6ea951e4e32832c38e8808eaf198d3dda45a",
+      "bytes": 97900,
+      "role": "immutable original three-file freeze history; launch flags there are historical"
+    },
+    {
+      "copy": "context/original-author/prospective-counts.json",
+      "origin": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/tx-discovery-source-authoring-1/prospective-counts.json",
+      "sha256": "35a6a1de6dcdb6feb4520e6e12a351bd55e258e550e87f0ec3da1eb3f0b409c9",
+      "bytes": 7609,
+      "role": "immutable original three-file freeze history; launch flags there are historical"
+    },
+    {
+      "copy": "context/original-author/protected-source-observation.json",
+      "origin": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/tx-discovery-source-authoring-1/protected-source-observation.json",
+      "sha256": "4b4cb1d59dcd3bf180f03c993c1ad01f7fd79e8aaad73af3d827d5e5df405597",
+      "bytes": 884,
+      "role": "immutable original three-file freeze history; launch flags there are historical"
+    },
+    {
+      "copy": "context/original-native-CODE/index.json",
+      "origin": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/tx-discovery-native-code-review-1/index.json",
+      "sha256": "50f80e2870728218972eb805188fd6dcb4c92e28772a4331362ca62ce33bfdc2",
+      "bytes": 3254,
+      "role": "original native findings preserved; N1→F5 N2→F4 N3→F6"
+    },
+    {
+      "copy": "context/original-native-CODE/review.json",
+      "origin": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/tx-discovery-native-code-review-1/review.json",
+      "sha256": "e6a4d8772b20d8c914899de06aaacdfbee334a1a070a5c01bea9692e9bb1931a",
+      "bytes": 6521,
+      "role": "original native findings preserved; N1→F5 N2→F4 N3→F6"
+    },
+    {
+      "copy": "context/original-native-CODE/report.md",
+      "origin": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/tx-discovery-native-code-review-1/report.md",
+      "sha256": "7caeb01df72425db94bb8eee3f1aa8e3406ccaed9207740594e732eb34741efb",
+      "bytes": 6507,
+      "role": "original native findings preserved; N1→F5 N2→F4 N3→F6"
+    },
+    {
+      "copy": "context/original-native-CODE/verification.json",
+      "origin": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/tx-discovery-native-code-review-1/verification.json",
+      "sha256": "985e65746001bed69221c26337e29cb75c116842368c7617cd069d61b12499c7",
+      "bytes": 1740,
+      "role": "original native findings preserved; N1→F5 N2→F4 N3→F6"
+    },
+    {
+      "copy": "context/actual-CODE-terminal/index.json",
+      "origin": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/tx-discovery-code-review-1/actual-review-terminal-1/index.json",
+      "sha256": "82d70e624ab713cb054cabce478e973a9260ace683414771144890f2d3c1c365",
+      "bytes": 1353,
+      "role": "accepted independent single clean CODE terminal evidence; historical pending-root field is superseded by root disposition"
+    },
+    {
+      "copy": "context/actual-CODE-terminal/closure.json",
+      "origin": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/tx-discovery-code-review-1/actual-review-terminal-1/closure.json",
+      "sha256": "28a4f9ce58047194602d3f2385061f18ee9c0e6508543f71e4b4e4880c6e3084",
+      "bytes": 1669,
+      "role": "accepted independent single clean CODE terminal evidence; historical pending-root field is superseded by root disposition"
+    },
+    {
+      "copy": "context/actual-CODE-terminal/report.md",
+      "origin": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/tx-discovery-code-review-1/actual-review-terminal-1/report.md",
+      "sha256": "713f3ae81a58f53026299fcea684d7154cd8df548baf4ecc468dcd576ee694c4",
+      "bytes": 3757,
+      "role": "accepted independent single clean CODE terminal evidence; historical pending-root field is superseded by root disposition"
+    },
+    {
+      "copy": "context/actual-CODE-terminal/input-verification.json",
+      "origin": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/tx-discovery-code-review-1/actual-review-terminal-1/input-verification.json",
+      "sha256": "aeb4225bf7cc6a13eb22a221731d4510749d2afd31b626556ce57abfe8ae4c2f",
+      "bytes": 98761,
+      "role": "accepted independent single clean CODE terminal evidence; historical pending-root field is superseded by root disposition"
+    },
+    {
+      "copy": "context/actual-CODE-terminal/findings-index.json",
+      "origin": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/tx-discovery-code-review-1/actual-review-terminal-1/findings-index.json",
+      "sha256": "32a92d398aada43e6d5422eea4c61a5668e2040911c626ee6ef6819561ac8e38",
+      "bytes": 4050,
+      "role": "accepted independent single clean CODE terminal evidence; historical pending-root field is superseded by root disposition"
+    },
+    {
+      "copy": "context/actual-CODE-terminal/inner-exit.json",
+      "origin": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/tx-discovery-code-review-1/actual-review-terminal-1/inner-exit.json",
+      "sha256": "6aeee24146f50cd857c3c916291c9d13c69c95328c96e6d36fbfc75050146ee2",
+      "bytes": 664,
+      "role": "accepted independent single clean CODE terminal evidence; historical pending-root field is superseded by root disposition"
+    },
+    {
+      "copy": "context/actual-CODE-terminal/outer-exit.json",
+      "origin": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/tx-discovery-code-review-1/actual-review-terminal-1/outer-exit.json",
+      "sha256": "c91e5b2644a141048325fc6495eb2cf8d497edfda8b80c871712e5a858173ee0",
+      "bytes": 54362,
+      "role": "accepted independent single clean CODE terminal evidence; historical pending-root field is superseded by root disposition"
+    },
+    {
+      "copy": "context/actual-CODE-review.txt",
+      "origin": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/tx-discovery-code-review-1/claude-code-review/final-review.txt",
+      "sha256": "009367a6d7c76a1137cfa8f3b7a72232efc251ee94cbe99474194a6c71197c11",
+      "bytes": 20037,
+      "role": "complete original actual CODE ten findings; never claims corrected bytes reviewed"
+    },
+    {
+      "copy": "context/root-CODE-disposition.json",
+      "origin": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/tx-discovery-code-root-disposition-1/disposition.json",
+      "sha256": "4bf597a51f7bbbc872a7ed2e1bcb6ef49942ad4cc6c12f5afe705b2ca73ad705",
+      "bytes": 5567,
+      "role": "FINAL root all10 choices; authoring and execution still false"
+    },
+    {
+      "copy": "context/plan5/index.json",
+      "origin": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/tx-discovery-next-plan-5/index.json",
+      "sha256": "d9214f08a3f41e5ebf7743556c1dd4ae780e87c3154cd13901693ba9cc639540",
+      "bytes": 2512,
+      "role": "immutable effective receiptRules N1 overlay; unchanged"
+    },
+    {
+      "copy": "context/plan5/plan.md",
+      "origin": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/tx-discovery-next-plan-5/plan.md",
+      "sha256": "0a7383db49f450ee95d10dda30ed1d3838a582c85ef37afb8bc4f73781316a17",
+      "bytes": 2268,
+      "role": "immutable effective receiptRules N1 overlay; unchanged"
+    },
+    {
+      "copy": "context/plan5/composition.json",
+      "origin": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/tx-discovery-next-plan-5/composition.json",
+      "sha256": "28199eab6d3b99cab759e242854c0503f0f1c4b4da4f0fd3ac0e70922d96a3ea",
+      "bytes": 78268,
+      "role": "immutable effective receiptRules N1 overlay; unchanged"
+    },
+    {
+      "copy": "context/plan5/cold-positive-requests.json",
+      "origin": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/tx-discovery-next-plan-5/cold-positive-requests.json",
+      "sha256": "cd80851dda5be952c2a3f5c4c19b9ff047a7f14a6d801dff4b21a1f63625756f",
+      "bytes": 24999,
+      "role": "immutable effective receiptRules N1 overlay; unchanged"
+    },
+    {
+      "copy": "context/plan5/source-binding.json",
+      "origin": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/tx-discovery-next-plan-5/source-binding.json",
+      "sha256": "6730e80456f99be787e5409e111a175cc24fdd38a0ce5c50d6063c7613ce8e89",
+      "bytes": 1469,
+      "role": "immutable effective receiptRules N1 overlay; unchanged"
+    },
+    {
+      "copy": "predecessor-plan4/index.json",
+      "origin": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/tx-discovery-next-plan-4/index.json",
+      "sha256": "991e4ecd87aba8b08b6eda9f2ba7c0637a1ecdefe1f0aedddff5bbafe00a1083",
+      "bytes": 36000,
+      "role": "exact accepted before document/data precision; source remains unchanged"
+    },
+    {
+      "copy": "predecessor-plan4/plan.md",
+      "origin": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/tx-discovery-next-plan-4/plan.md",
+      "sha256": "877eb6b0a57cb5425316e05308a6e05955056f5fa5ba5ad64daa0488da854211",
+      "bytes": 24359,
+      "role": "exact accepted before document/data precision; source remains unchanged"
+    },
+    {
+      "copy": "predecessor-plan4/preservation.json",
+      "origin": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/tx-discovery-next-plan-4/preservation.json",
+      "sha256": "628b45ed35d455c5606ed077abdec9ff97f99a9dc5aa50196379fe7cf6b2f265",
+      "bytes": 3383,
+      "role": "exact accepted before document/data precision; source remains unchanged"
+    },
+    {
+      "copy": "predecessor-plan4/installed-callbacks.json",
+      "origin": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/tx-discovery-next-plan-4/installed-callbacks.json",
+      "sha256": "422190d787b43966d4135fed81010c4df1d0dadbe45f34b62601c6c6762ea31d",
+      "bytes": 64383,
+      "role": "exact accepted before document/data precision; source remains unchanged"
+    },
+    {
+      "copy": "inherited-contracts/source-callbacks.json",
+      "origin": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/tx-discovery-next-plan-4/source-callbacks.json",
+      "sha256": "ce2d41413cd8575d5a3ddfd87615a1cb3d226cad2efa086737a8ee3f52a37472",
+      "bytes": 35253,
+      "role": "BYTE-IDENTICAL required contract; this correction implements already-required law, no new behavior"
+    },
+    {
+      "copy": "inherited-contracts/cold-input-contract.json",
+      "origin": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/tx-discovery-next-plan-4/cold-input-contract.json",
+      "sha256": "02fd6824e324d4cfefd29d4f3f76552f0aa129edc7e6efd768b3818327e30105",
+      "bytes": 2622,
+      "role": "BYTE-IDENTICAL required contract; this correction implements already-required law, no new behavior"
+    },
+    {
+      "copy": "inherited-contracts/transport-and-lifecycle-contract.json",
+      "origin": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/tx-discovery-next-plan-4/transport-and-lifecycle-contract.json",
+      "sha256": "a903095b663bfb9e5fc110ac472e4c0fa6f46c675831a97322a1b2f320cbe4cf",
+      "bytes": 2981,
+      "role": "BYTE-IDENTICAL required contract; this correction implements already-required law, no new behavior"
+    },
+    {
+      "copy": "inherited-contracts/dispatch-and-schema.json",
+      "origin": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/tx-discovery-next-plan-4/dispatch-and-schema.json",
+      "sha256": "f3baa125c102452fdb9808e7c3ab443d2a38c4bc289d2a0b87d322ab461eb36c",
+      "bytes": 2530,
+      "role": "BYTE-IDENTICAL required contract; this correction implements already-required law, no new behavior"
+    },
+    {
+      "copy": "inherited-contracts/counterfactuals.json",
+      "origin": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/tx-discovery-next-plan-4/counterfactuals.json",
+      "sha256": "058cb18fa0ab4790a2663f82bff84e671a79aa6266c5fbcb29a7b3cc761a7c19",
+      "bytes": 1984,
+      "role": "BYTE-IDENTICAL required contract; this correction implements already-required law, no new behavior"
+    },
+    {
+      "copy": "inherited-contracts/observation-contract.json",
+      "origin": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/tx-discovery-next-plan-4/observation-contract.json",
+      "sha256": "1b4805b5d40f58d57793227725163b84a6b7e31969fb9dc76609c85253d49977",
+      "bytes": 3758,
+      "role": "BYTE-IDENTICAL required contract; this correction implements already-required law, no new behavior"
+    },
+    {
+      "copy": "inherited-contracts/cold-positive-requests.json",
+      "origin": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/tx-discovery-next-plan-4/cold-positive-requests.json",
+      "sha256": "9d835d8d7e2e06edd7cd2ba8534ac318762ce995441f84344f8c943b684bd483",
+      "bytes": 24987,
+      "role": "BYTE-IDENTICAL required contract; this correction implements already-required law, no new behavior"
+    }
+  ],
+  "scope": "exact selected current-source/spec/dependency and historical evidence copies; historical indices reference original unchanged full packets, not fabricated copied closures"
+}

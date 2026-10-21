@@ -1,0 +1,64 @@
+{
+  "status": "prospective only; no execution",
+  "sourceCallbacks": 17,
+  "newSourceCallbacks": 9,
+  "existingSourceCallbacks": 8,
+  "sourceHttp": {
+    "existingFinite": 15,
+    "existingKnownMinimum": 7,
+    "existingParameterContext": 12,
+    "newOpaque": 10,
+    "total": 44
+  },
+  "installedCallbacks": 2,
+  "installedHttp": [
+    10,
+    4
+  ],
+  "installedChildren": 2,
+  "totalHttp": 58,
+  "sourceDirectories": 17,
+  "installedDirectories": 2,
+  "totalDirectories": 19,
+  "sourceOwnerLifetimes": 19,
+  "installedOwnerLifetimes": 2,
+  "totalOwnerLifetimes": 21,
+  "newSourceDelegatedSubset": {
+    "callbacks": 8,
+    "stores": 8,
+    "note": "Individual A/B/C/X plan schedules govern; exclude HTTP-inferred owner work",
+    "commits": 10,
+    "captures": 11,
+    "readChangesInvocations": 14,
+    "waits": 3,
+    "minimumClockCalls": 15
+  },
+  "newSourceHttpStatuses": [
+    200,
+    200,
+    200,
+    503,
+    503,
+    503,
+    503,
+    500,
+    500,
+    400
+  ],
+  "newInstalledStatuses": [
+    200,
+    200,
+    503,
+    503
+  ],
+  "newDeadlines": {
+    "requestSeconds": 5,
+    "workSeconds": 45,
+    "totalCleanupSeconds": 10,
+    "callbackSeconds": 60,
+    "outerStageSeconds": 120,
+    "termSeconds": 115
+  },
+  "executionAuthorized": false,
+  "newSourceObservationCount": 9
+}

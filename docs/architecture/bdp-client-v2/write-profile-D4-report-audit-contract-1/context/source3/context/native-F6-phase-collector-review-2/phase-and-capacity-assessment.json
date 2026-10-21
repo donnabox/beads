@@ -1,0 +1,39 @@
+{
+  "acceptedDesignOnly": true,
+  "actualTimingMemoryAndSuccessfulFit": "UNOBSERVED; no synthetic/product/benchmark execution or guarantee that valid diagnostics fit. Failure to finish inside these fixed bounds is inconclusive evidence, no retry/widening.",
+  "clock": {
+    "KILLSeconds": 149,
+    "TERMSeconds": 145,
+    "absoluteEndReceiptMaxSeconds": 130,
+    "absoluteFlushMaxSeconds": 135,
+    "boundary": "Exactly145 is refused. The equality of all nominal phase maxima does not guarantee an accepted attempt; accepted actual completion must be strictly earlier. No later hash/receipt can turn deadline failure into pass.",
+    "callbackReceiptWindowMaxSeconds": 120,
+    "drainMaxSeconds": 10,
+    "flushAndAllFinalBindingsMaxSeconds": 5,
+    "hostOuterSeconds": 150,
+    "individualCensusProbeMaximumMs": 200,
+    "normalAcceptanceStrictlyBeforeSeconds": 145,
+    "origin": "watchdog monotonic before all attempt work",
+    "pollSliceMaximumMs": 20,
+    "startupPreflightAndMarkerReceiptMaxSeconds": 10,
+    "sumOfPhaseMaximaSeconds": 145
+  },
+  "priorFindings": {
+    "F6-N1": "CLOSED in proposal2: origin precedes worker/gate/preflight/setup/census/launch; blocking work moves to owned supervised worker; watchdog remains responsive; final bindings/hash/parser/publication charged before acceptance.",
+    "F6-N2": "CLOSED in proposal2: results16MiB plus finite structural/strict parser policy; original bytes counted/read incrementally and retained, growth/overflow/malformed/late processing refuse. No full raw-log read/splitlines."
+  },
+  "resourcePolicies": {
+    "binaryChunkMaximumBytes": 65536,
+    "depthMaximum": 128,
+    "fullSavedFileHashMayBeUnknownOnlyOnFailure": true,
+    "markerBytes": 4096,
+    "notProductCapsOrGuaranteedFit": true,
+    "objectOrArrayEntriesMaximum": 100000,
+    "rawLogBytesAcceptanceThreshold": 268435456,
+    "resultsFileBytes": 16777216,
+    "selectedCompleteLineBytesIncludingNewline": 67108864,
+    "strictUTF8UniqueKeysFiniteNumbersAndWholeParse": true,
+    "structuralScanBeforeTree": true,
+    "valueNodesMaximum": 1000000
+  }
+}

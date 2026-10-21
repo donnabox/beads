@@ -1,0 +1,80 @@
+[
+  {
+    "actualWireOctets": 331,
+    "actualWireSha256": "6efc990b49ea94eb35f5698814b3fd1132ed41d500aca297996c7eb64102b273",
+    "credential": "anonymous",
+    "id": "wrong-host",
+    "method": "GET",
+    "partialStatus": 400,
+    "partialWireAvailable": true,
+    "stage": "installed-05",
+    "state": {
+      "closeRequested": false,
+      "responseAtMs": 218.116417,
+      "responseStarted": true,
+      "settled": true,
+      "writeAtMs": 217.98437499999994,
+      "written": true
+    },
+    "terminal": "response",
+    "transport": "callback-local-raw",
+    "url": "https://reference.invalid/acme/bdp.json"
+  },
+  {
+    "actualWireOctets": 0,
+    "credential": "writer",
+    "id": "pending-minimum",
+    "method": "GET",
+    "partialWireAvailable": false,
+    "stage": "installed-07",
+    "state": {
+      "closeRequested": true,
+      "closeRequestedAtMs": 194.958667,
+      "responseStarted": false,
+      "settled": true,
+      "writeAtMs": 193.87754199999995,
+      "written": true
+    },
+    "terminal": "abort",
+    "transport": "callback-local-raw",
+    "url": "https://reference.invalid/acme/"
+  },
+  {
+    "actualWireOctets": 0,
+    "credential": "writer",
+    "id": "pending-minimum",
+    "method": "GET",
+    "partialWireAvailable": false,
+    "stage": "installed-09",
+    "state": {
+      "closeRequested": true,
+      "closeRequestedAtMs": 188.59275000000002,
+      "responseStarted": false,
+      "settled": true,
+      "writeAtMs": 187.55595800000003,
+      "written": true
+    },
+    "terminal": "abort",
+    "transport": "callback-local-raw",
+    "url": "https://reference.invalid/acme/bdp.json"
+  },
+  {
+    "actualWireOctets": 0,
+    "credential": "writer",
+    "id": "pending-minimum",
+    "method": "GET",
+    "partialWireAvailable": false,
+    "stage": "installed-11",
+    "state": {
+      "closeRequested": true,
+      "closeRequestedAtMs": 196.78220799999997,
+      "responseStarted": false,
+      "settled": true,
+      "writeAtMs": 195.67537500000003,
+      "written": true
+    },
+    "terminal": "abort",
+    "transport": "callback-local-raw",
+    "url": "https://reference.invalid/acme/operations/"
+  }
+]

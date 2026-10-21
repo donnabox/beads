@@ -1,0 +1,19 @@
+{
+  "historicalBinding": "d625e1f1b4a6b3dcea0ed1eb43cb1d0240a24c9fecfe8760d45041bd978208fb",
+  "finalBinding": "881ebb8224d75fd899aae5851dcc6a76b72293ae42595ce56ea795c7141b0952",
+  "finalPatch": "29cda7d745cd4091de2bcea19b55248e02d336e79b906ae7de62ffc3b33d7870",
+  "sourceFiles": {
+    "apps/bdptest/src/read-update-matrix.test.ts": "1bf2661fa7bee90aa43622741d9e71d9770b2982d0a8804fa55ac1afb59e4d5d",
+    "packages/conformance/matrices/read-update-v1.json": "10a7c6f97a280cf88e58d3aa2039fe580904b74bfffcebda4747fc3c1a34b583",
+    "packages/conformance/src/cumulative-artifact.test.ts": "be50d235dd17b6d4456af779aca777051e3ec9847269e40baed5aeb24e1d3461",
+    "packages/conformance/src/profile-contract-plan.test.ts": "3b7c41f005d37763a616746aba98447f941d8eeed2cadb231c0260f0bd2f9340",
+    "packages/conformance/src/read-update-artifact-set.test.ts": "e5c8903119b7c336dcc1e1479378e22029aa4d36978817557e461ea723991379",
+    "packages/conformance/test-support/read-update-coverage-v1.json": "4120abfe2f724fe34b3868bd3533b181e18479768d5de752b5098c6288dbb395"
+  },
+  "scope": "698\t25\tapps/bdptest/src/read-update-matrix.test.ts\n658\t0\tpackages/conformance/matrices/read-update-v1.json\n1\t0\tpackages/conformance/src/cumulative-artifact.test.ts\n28\t16\tpackages/conformance/src/profile-contract-plan.test.ts\n33\t7\tpackages/conformance/src/read-update-artifact-set.test.ts\n57\t4\tpackages/conformance/test-support/read-update-coverage-v1.json\n",
+  "execution": "No build, typecheck, test or runtime execution; formatting only.",
+  "corrections": [
+    "restore preformat four TS files, reapply two report/cleanup additions, explicit cwd/config",
+    "six stale positive membership expectations changed to explicit exclusion"
+  ]
+}

@@ -1,0 +1,30 @@
+Reviewed against the installed code and the two artifacts. Verified numbers myself rather than taking the plan's.
+
+## Verdict: correction is sound, one blocking scope gap
+
+**The removed capture was worse than impossible — it was unreachable by construction.** `captureValue` (`packages/conformance/src/runner.ts:2468-2497`) rejects anything that is not `typeof value === "string" && isHttpUrl(value)`, so `/items` (an array) always throws. More than that: *every* `captureValue` return is a URL string, so the binding map can only ever hold URL strings — `json-pointer` + `equalsBinding` (`executable-manifest.ts:193`) can never express array equality for any capture source. Removing it rather than repairing the capture is the only correct move. The preliminary run agrees: `draft-pagination-failure.json` reason is exactly `capture 'p-final-items' did not produce an absolute HTTP(S) URL`, 11 exchanges ending at the `p-later-state` GET.
+
+**The replacement is existing grammar, already exercised in this scenario.** Captures run *after* assertions (`runner.ts:1460-1471`), so `p-later-state:ordered-state` — the identical 32-tuple literal — already passed in the failing run. Object cells for `/properties` and `/metadata` are valid: the "must be strings" rule applies only to cells with `normalize` set (`executable-manifest.ts:2221-2236`), and these have none. `ordered: true` with `equals` is a supported pairing (`runner.ts:2379-2388`).
+
+---
+
+### 1. HIGH / blocking — coverage binding goes stale on the id rename
+**Location:** `packages/conformance/test-support/transactional/coverage-v1.json:1247` (`p-final:exact-later-items`) vs proposed `manifest-final-literal.formatted.json:11617` (`"id": "ordered-state"`, inside `p-final` starting at line 11565).
+**Impact:** `packages/conformance/src/transactional-cumulative.test.ts:107-112` `toStrictEqual`s the coverage row's whole bindings array against `actions.flatMap(a => a.assertions.map(x => \`${a.id}:${x.id}\`))`. I diffed both lists: 307 entries each, **exactly one mismatch at index 304** — `p-final:exact-later-items` vs `p-final:ordered-state`. Installing the proposed manifest with coverage unchanged is a guaranteed test failure. The plan's "two changed action objects" and "coverage unchanged" cannot both hold.
+**Fix (cheaper of two):** keep `"id": "exact-later-items"` on the rewritten p-final assertion and change only `kind`/body. Coverage then needs no edit, its bytes and digest stay put, and the change really is confined to the two action objects. Cost: +4 bytes (377077, growth 138384 — still 880 under the proposed 136KiB fence), node count unchanged. The alternative — editing coverage line 1247 — is also legal (`assertOriginalObjects` pins only the eight *original* rows, not the pagination row, and the coverage fence at line 826 is an upper bound), but it widens the change to a second artifact for a cosmetic id.
+
+### 2. LOW-MEDIUM / budget — fences pass, headroom is thin and the total fence is now decorative
+Measured with the test's own traversal: **377073 bytes, growth 138380, 10071 nodes** — all three match your figures. Current fences 128KiB growth (`:824`) and 360KiB total (`:825`) both fail; 10000 nodes (`:838`) fails. Proposed 136KiB/370KiB/10200 all pass, with **884 bytes / 1807 bytes / 129 nodes** of headroom. Note the growth fence (238693 + 139264 = 377957) is now stricter than the 370KiB total fence (378880), so the total fence no longer binds anything — one more literal tuple row (~330 bytes, ~7 nodes) breaches growth first. Unchanged and correctly claimed: 139/18 action counts (`:823`, `:891`), fixture 716 bytes + sha256 (`:827-830`), coverage 16KiB (`:826`), and the per-exchange 16KiB raw / 32KiB decoded / 10000ms container / 63000ms deadline runtime fences, which authoring size cannot move.
+
+### 3. LOW / evidence — the p-final literal has never been observed
+The only installed run aborted at `p-later-state`; `reopen`, the three `reopened-pagination-*` actions and `p-final` never executed. So the post-reopen ordering and bead state at `p-final` is extrapolated from `p-later-state`, not witnessed. `ordered: true` makes it sensitive to collection ordering surviving a reopen. It fails loudly rather than over-claiming, so it is fine as a candidate — but the acceptance record should say p-final's oracle is first witnessed by the next run, and if that run shows nondeterministic post-reopen ordering, dropping `ordered` at p-final only (multiset) is the supported fallback.
+
+### Informational — "no dropped oracle" is true of executable behavior, not of authored intent
+The four projections exclude `revision` (required in `beadRecord`) plus `links`/`ownedLinks`/`revisionProvenance`, so this is narrower than whole-`/items` deep equality. Since the old oracle could never execute, nothing executable is lost. Cross-read `revision` equality is simply not expressible in the current grammar (bindings are URL strings only); a `normalize: "endpoint-revision"` projection would add nothing the `#/$defs/beadCollection` schema assertion doesn't already give.
+
+### Your question: is there a cheaper already-supported alternative keeping the same independent final-state oracle?
+No. Two routes exist and both lose:
+- **`json-array-tuples` + `fixturePointer`** would author the 32 rows once and reference them from both actions, roughly halving the growth and leaving the current fences intact — but `fixturePointer` must resolve under `/oracles/` (`executable-manifest.ts:2204`) and `test-support/transactional/fixture-v1.json` has no `/oracles` namespace, with its 716 bytes and sha256 pinned at `transactional-cumulative.test.ts:827-830`. That breaks a frozen artifact: more scope, not less.
+- **Per-item `equalsBinding`** is legal — `/items/N/id` values are absolute in-scope HTTP URLs, so those captures would pass `captureValue` and `assertConfinedToScope` — but 32 captures plus 32 assertions costs more nodes than the 228-node tuple literal and drops `properties`/`metadata`.
+
+Repeating the literal is the right call. Fix the coverage/id coupling in #1 and the plan is clean.

@@ -1,0 +1,31 @@
+{
+  "name": "prepare-consumer",
+  "argv": [
+    "python3",
+    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-guarded-batch-draft/execution-preparation/packages.py",
+    "consumer"
+  ],
+  "cwd": "/Users/dbox/repos/wt/vickie/vickie-guarded-batch",
+  "started": "2026-10-15T21:03:25.721258+00:00",
+  "head": "9e5f040edab88be364f683098ead72f595f0ab55",
+  "workspaceDirty": false,
+  "sourceSha256": {
+    "apps/bdptest/src/transactional-guarded-batch-installed.test.ts": "f716b51eb31226beafaba80a049063d758ed803388e0ac0439ee0298e0d5019b",
+    "docs/design/transaction-implementation-progress.md": "90c370e47d9f2dbff040f757c6b8bb89f6a6eda7b540961ea377f161d5a09152"
+  },
+  "sourceDiffSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+  "rootAcceptanceSha256": "d460b7c6d724a4130fa4723d63a3d68f4880cfbf5f3ba3b666f9771fb1dcdb86",
+  "preparationSha256": "da74971257c3cc804b404dbc2d72759e301431e04d2474c692a658ed43b18f9a",
+  "bdpOverrides": {},
+  "guardedArgv": [
+    "/opt/homebrew/opt/python@3.14/bin/python3.14",
+    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/guarded-action.py",
+    "python3",
+    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-guarded-batch-draft/execution-preparation/packages.py",
+    "consumer"
+  ],
+  "nodePathPrefix": "/Users/dbox/.nvm/versions/node/v24.16.0/bin",
+  "sourceAttribution": "Externally bound source snapshot or frozen package; not child-attested Git identity",
+  "plannedWorkload": {},
+  "derivativeBinding": null
+}

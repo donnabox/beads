@@ -1,0 +1,11 @@
+{
+  "operation": "exact source replacements",
+  "exitCode": 1,
+  "error": "currentBeadRecord literal occurred twice; uniqueness assertion stopped before installed-file write",
+  "alreadyWritten": [
+    "packages/server/src/transaction-http.ts",
+    "packages/server/src/transaction-http.test.ts"
+  ],
+  "correction": "use adjacent validator-list anchor",
+  "productExecution": false
+}

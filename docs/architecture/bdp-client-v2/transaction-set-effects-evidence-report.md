@@ -1,0 +1,51 @@
+# Complete set effects and zero-match evidence
+
+Frozen source **00fa81281291e83bac16f917250a7f5615c744ae**, tree **c9a4795509134bb5cc44bddf95d5f1be0b722f85**, direct ordinary parent **e517f6f9667e1087f864921bdce2b446c9bb8225**. Checkout `/Users/dbox/repos/wt/vickie/vickie-set-effects-evidence`; branch `codex/vickie-set-effects-evidence`. Exactly four assigned files; clean and immutable after commit. Root owns reviews/publication. No push or other outward write.
+
+## Implemented contract observations
+
+Adds two canonical-position partial rows: transactional.set.mutation and transactional.set.zero-match, between rollback and cardinality. M has exactly30 required actions; Z exactly17; no spare action slots used. Total121 actions,13 scenario/reopen sessions plus bootstrap14children, nine named retained receipt reopens. The existing250required/fiveoptional/255applicable denominator remains; eight partial rows and247 explicit missing-plan results. All new coverage flags remain false, with exhaustive ordered assertion bindings and explicit whole-contract limitations.
+
+M creates b,c,a with existing Task Type; b has no title, allowed by the actual compiled schema. Replace/title fails on the second selected member after the first would change; real failed receipt422/validation-failed/index0/original/change/0/path, no partial results/effect, unchanged three point records and seed Event inventory/context prove rollback. A new update changes both selected a/b to the literal complete properties object and preserves original metadata; all flat result outcomes/index/ID order and independent live afterstate are checked. c remains unchanged. Scope Events have exact ordered subject/type/ordinal tuples, transaction identities captured from the command receipts, new/prior revisions and schema-valid deltas. Delete yields ordered tombstones with the actual final revisions, both selected points404, c unchanged, and the exact additional two deleted Events. Both retained receipts and final point state are checked after one reopen.
+
+Z starts with a real independently pinned Bead and its created Event. Valid absent-ID update and delete each produce exactly one matched0 result and no effectPosition. Required epoch/view/position headers are present before comparisons with the seed context; Event inventory and complete live Bead remain unchanged before and after both commands and reopen. Both original receipts are reread before/after reopen, including immutable body and serving-generation checks. This does not conflate empty selection with selected all-no-op mutations.
+
+Seven expectation-only controls discriminate second postimage, rollback metadata, receipt order, Event order, exact zero result, no added Event, and absent effectPosition. Each receives actual200 wire and fails exactly its named assertion. The receipt-order control changes the independently pinned a-position ID to b; it does not swap the whole array. A genuine reversal fails the separate a/b fields, while this expectation-only control fails exactly one named assertion. The Event-order control uses a full ordered tuple swap. They are assertion-oracle controls, not injected server corruption. Static tests require context-header presence on both sides of each new metadata comparison, before equality, plus all three dynamic receipt-read headers. No undefined-equality credit.
+
+## Preservation and bounds
+
+source.json independently records all six predecessor scenario and coverage object raw SHA256/lengths and proves byte equality. Permanent source tests now pin all six. Predecessor cardinality/singleton action witnesses use unique IDs and preserve16/22/38, independent of shifted positions. All47 required new action IDs are recorded; M30/Z17 need no discretionary slots. Exact ten literal routes insert GET beads/c at index7. Independent sorted-JSON configuration preimage digest is634214546089490d235fa404166dc868a0feb5dc2a8af2a566a6ad33664b4b1a, covering scope/profile/routes/request bounds. No wildcard dynamic receipt route is added.
+
+Formatted manifest238693bytes/6699nodes, growth107806bytes; within112KiB increment,240KiB total and7000nodes. Coverage41812bytes, growth18208bytes, within24KiB. Fixture remains716bytes/SHA2563a7899ced771d4880066d98b0000c53f801ece53458502cc4f3bc641146c9a85, exactly parent bytes. New raw requests<=2KiB and actual finite responses<=32KiB are enforced by the positive app test. Parser/runtime/profile/request/response/execution limits remain unchanged. Positive cohort<=63s is asserted beneath unchanged90s observation/120s outer/5s exchange/10s lifecycle bounds.
+
+First draft included context-presence assertions on every ordinary point read, even when not a side of any metadata comparison. Formatted249276bytes exceeded the fence. Root explicitly approved removing only those surplus pre-freeze helper assertions; exact57 IDs are preserved in removed-surplus-point-headers.json. All required state/schema/identity/metadata/revision and compared context assertions remain; no predecessor change, minification, dropped request or cap increase.
+
+## Pre-freeze evidence and final validation status
+
+Initial typecheck caught unknown assertion-array typing in the new negative test; corrected locally. First actual eight-row positive passed all scenario results, then correctly failed the stale nine-route digest pin. The new ten-route preimage was independently constructed and hashed; no result expectation was weakened. Original failure logs remain type-initial.log and initial.log. Subsequent typecheck and10 targeted tests pass: eight-row positive, seven controls and source/context-preservation tests. These are preliminary workspace observations, not fresh packed source evidence.
+
+Exact frozen validation is recorded below; preliminary results above remain separately labeled. Source stayed frozen. No whole-profile or readiness claim.
+
+## Exact frozen validation
+
+Final frozen install, typecheck, clean build, boundaries, format, lint, both executable/development smokes and Read evidence verification all exit0.89 focused tests/6files pass. Read seal verified without regeneration. Fresh protocol/server tarballs installed scripts-disabled into a disposable directory; actual target uses installed packages, harness uses exact frozen workspace source/build.
+
+Installed set oracle1pass. Expanded TX matrix38pass, including all inherited controls and the seven new expectation controls. Each new negative received actual200 wire and failed exactly its intended assertion; no server fault injection or new semantics claimed. Entire multi-test TX command77.547s is separate from the genuine positive cohort: **eight partial rows,121actions,13sessions+bootstrap14children, all14closed,3118.277ms**. Positive headroom86.882s of unchanged90s; below63s escalation. All nine named retained receipt reopens advance serving generation and preserve original source facts/configuration identity. Actual255 rows are eight pass/247 explicit missing-plan harness errors, not whole-profile credit. Parser/response/request/lifecycle/deadlines unchanged.
+
+M actual maximum raw body442bytes, maximum decoded response3871bytes; Z170bytes/681bytes. Both pass authored<=2KiB and response<=32KiB guards. Live ordinary Resources at most3 for M/1 for Z. Finite Event inventories are exactly7 and1 respectively, not paginated; no complete Event profile or concurrent reader proof is claimed.
+
+Appropriate unchanged installed RU positives/control cohort22pass across2files (173 unrelated tests filtered), including genuine both-shard54-row aggregate and numeric controls. Aggregate19.953s under90s;70.047s remains. Actual54pass/75notImplemented, no failed/notRun/unobserved result; RU inventory129required/54authored/30priorwhole/99notwhole remains separate from TX. Independent audit rehashes both actual wrapper files and canonical results/lengths and resolves all129 required mappings; all pass. No broad8k/SSE rerun was claimed or needed for four evidence-only files.
+
+## Exact identities and safe summaries
+
+Manifest SHA256 `3a85360725608e57d264647f59685e768118604924e8c8503d15299cae94d8a6`; coverage `fdce14327cbe8a751abe423be38f273ed57d25af7f8cce4e4b724e6a3f1c4523`; fixture unchanged `3a7899ced771d4880066d98b0000c53f801ece53458502cc4f3bc641146c9a85`. Source.json records exact bytes/nodes and all old raw object hashes.
+
+Fresh protocol archive `2943f90cd4d0c5ac973dc84c75c80b6b0d944e688b0210990438a482a0a61a8c`; server archive `80f0ab8fa061480be11428b72b110b0f2f8185d467f561f6d30912f2e268562c`; actual payload `1b12629fe54c39c8f7864dbb13bdba16bcbe4298b0a5bd420fa19daaa4fb7ec2`. Unchanged package bytes are freshly packed/source-linked, not substituted predecessor observations.
+
+Actual TX runtimeConfigurationIdentity `13b27fa5eef64507faf3fc4d98e91f6ab24e5d93601af086dc768f891e963b2e`; captured contracts `c67d12264b97e16c76bf68f850eaf394f61896bb72491e06603ef1d6debb335b`. Fresh CSPRNG credential associations contribute to configuration/policy/authentication identities; no credentials are disclosed. tx-positive.json holds actual safe observations; tx-safe-summary.json records all nine reopened source/current generations,14closed children, artifacts/configuration/exact counts/timing, new-row response/request/assertion counts and false claim eligibility. RU safe summary retains separate actual fixture/contracts/configuration,54-row result mappings/timing and both genuine shard hashes. Original evidence remains unmodified.
+
+## Cleanup and remaining limits
+
+All final stages exit0; source remains clean. No final run timed out or was interrupted; no manual kill or lingering installed child. cleanup-processes.txt is empty. Preliminary type/digest failures remain recorded, not counted as final successes. No push, PR, bus, main or launch writes. Root owns native/Claude review and any publication/merge. This is bounded evidence awaiting council, not a readiness or whole-profile claim.
+
+Negative/complex Selector policy, owned attribution/fanout and Link expansion, metadata-only incident-Link semantics, Snapshot Q1, policy variation, receipt paging, broader retention/stress/concurrency and full profile qualification remain outside this slice. No runtime defect or product ruling was required by these ordinary-Bead observations. No Type or normative/API/runtime changes were made.

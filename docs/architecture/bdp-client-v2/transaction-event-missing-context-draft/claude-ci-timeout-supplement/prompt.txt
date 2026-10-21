@@ -1,0 +1,421 @@
+Review ONLY the exact test-only timeout correction below. Do not write or modify any files. Output findings only in stdout. Tools are disabled; use supplied complete relevant source and exact diff. Provide numbered concrete blocking findings with severity, source location, issue, impact and correction; if no blockers, say so. Do not broaden this to a product redesign or request duplicate tests solely for an unchanged callback body.
+
+The candidate adds two explanatory comment lines and one explicit 10000ms Vitest timeout on a single existing callback. All body statements, assertions, fixture, product inputs/limits and other files are unchanged. The full callback below is PREDECESSOR source; apply the exact diff to obtain reviewed successor. Evaluate whether this preserves the evaluator refusal/key correction oracle, is a bounded response to observed CI headroom, and honestly retains failed-CI attribution. Root runs one exact successor callback independently; that result is not yet supplied and must not be invented. Fresh exact-head full CI remains required. No release/profile claim.
+
+Exact successor diff:
+```diff
+diff --git a/apps/bdptest/src/development-contracts.test.ts b/apps/bdptest/src/development-contracts.test.ts
+index 887a4d5..7777854 100644
+--- a/apps/bdptest/src/development-contracts.test.ts
++++ b/apps/bdptest/src/development-contracts.test.ts
+@@ -625,6 +625,8 @@ it("supports actual canonical nested/dotted/encoded IDs in hidden and read-only
+   expect(() => f.access.replace("alice", { ...allow, hidden: ["beads/a/../b"] })).toThrow();
+ });
+ 
++// Exercises the full evaluator work ceiling directly and through HTTP;
++// allow CI wall-clock headroom without changing that ceiling.
+ it("keeps an actual evaluator work refusal local and permits correction using the same unclaimed key", async () => {
+   const input = bundle();
+   input.schemas[0] = artifact(schema, {
+@@ -662,7 +664,7 @@ it("keeps an actual evaluator work refusal local and permits correction using th
+   );
+   expect(corrected.status).toBe(200);
+   expect((await f.wire("beads/work")).value).toEqual(corrected.value.resource);
+-});
++}, 10000);
+ 
+ it("configured authorities expose only explicit principal facets and duplicate credential principals share one route", async () => {
+   const f = await fixture();
+
+```
+
+SOURCE apps/bdptest/src/development-contracts.test.ts lines 1-162 at 3df82ac480f50c8f486b4e456336366e7acbdf87
+```ts
+import { mkdtempSync, rmSync, existsSync } from "node:fs";
+import { tmpdir } from "node:os";
+import path from "node:path";
+import { afterEach, expect, it } from "vitest";
+import {
+  parseReadUpdateDiscovery,
+  parseReadUpdateOperationDirectory,
+  parseCanonicalHttpUrl,
+  type MaximumEndpointMultiplicityPolicy,
+} from "@bdp/protocol";
+import { CONTRACT_ARTIFACT_CEILINGS } from "../../../packages/server/src/installed-contract-artifact.js";
+import type { DevelopmentAccess } from "../../../packages/server/src/development-contracts.js";
+import {
+  startPrivateRuntime,
+  canonicalDevelopmentComposition,
+} from "../test-support/development-discovery.js";
+const contracts = (await import(
+  new URL("../../../packages/server/dist/development-contracts.js", import.meta.url).href
+)) as typeof import("../../../packages/server/src/development-contracts.js");
+const base = "https://bdp.example/u2/base",
+  owner = "https://bdp.example/u2/owner",
+  edge = "https://bdp.example/u2/edge",
+  schema = "https://bdp.example/u2/schema";
+const alice = "u2_alice_credential_01234567890123456789",
+  bob = "u2_bob_credential_012345678901234567890";
+const allow: DevelopmentAccess = { create: true, write: true, hidden: [], readOnly: [] };
+const servers: Awaited<ReturnType<typeof startPrivateRuntime>>[] = [];
+const dirs: string[] = [];
+afterEach(async () => {
+  for (const server of servers.splice(0)) await server.close();
+  for (const dir of dirs.splice(0)) rmSync(dir, { recursive: true, force: true });
+});
+const artifact = (retrievalUri: string, body: unknown) => ({
+  retrievalUri,
+  utf8Bytes: Buffer.from(JSON.stringify(body)),
+});
+function bundle() {
+  return {
+    limits: CONTRACT_ARTIFACT_CEILINGS,
+    descriptors: [
+      artifact(base, {
+        id: base,
+        name: "Base",
+        describes: "bead",
+        conformsTo: [],
+        propertiesSchema: schema,
+      }),
+      artifact(owner, {
+        id: owner,
+        name: "Owner",
+        describes: "bead",
+        conformsTo: [base],
+        ownsOutgoing: { [edge]: { max: 2 } },
+      }),
+      artifact(edge, {
+        id: edge,
+        name: "Edge",
+        describes: "link",
+        conformsTo: [],
+        source: { conformsTo: [base], external: "opaque" },
+        target: { conformsTo: [base], external: "opaque" },
+      }),
+    ],
+    schemas: [
+      artifact(schema, {
+        $id: schema,
+        type: "object",
+        required: ["n"],
+        properties: { n: { $ref: "https://bdp.example/u2/number" } },
+      }),
+      artifact("https://bdp.example/u2/number", {
+        $id: "https://bdp.example/u2/number",
+        type: "integer",
+        minimum: 0,
+      }),
+    ],
+  };
+}
+async function fixture(
+  input = bundle(),
+  aggregate: readonly MaximumEndpointMultiplicityPolicy[] = [
+    { linkConformsTo: parseCanonicalHttpUrl(edge), endpoint: "target", max: 1 },
+  ],
+) {
+  const installed = contracts.compileDevelopmentContracts(input);
+  const access = contracts.createDevelopmentAccessPolicy({
+    alice: allow,
+    bob: { ...allow, write: false, create: false },
+  });
+  const deployment = {
+    configuration: {
+      contracts: installed,
+      access: access.policy,
+      maximumEndpointMultiplicity: aggregate,
+    },
+    credentials: [
+      { token: alice, principal: "alice" },
+      { token: bob, principal: "bob" },
+    ],
+  };
+  const directory = mkdtempSync(path.join(tmpdir(), "bdp-contracts-"));
+  dirs.push(directory);
+  const options = { directory, token: alice, port: 0, create: true };
+  const server = await startPrivateRuntime(
+    options,
+    undefined,
+    undefined,
+    canonicalDevelopmentComposition,
+    deployment,
+  );
+  servers.push(server);
+  async function wire(url: string, method = "GET", body?: unknown, key?: string, token = alice) {
+    const response = await fetch(new URL(url, server.scope), {
+      method,
+      headers: {
+        authorization: `Bearer ${token}`,
+        ...(body === undefined ? {} : { "content-type": "application/json" }),
+        ...(key === undefined ? {} : { "idempotency-key": key }),
+      },
+      ...(body === undefined ? {} : { body: JSON.stringify(body) }),
+      redirect: "manual",
+    });
+    const text = await response.text();
+    return {
+      status: response.status,
+      headers: response.headers,
+      text,
+      value: text ? JSON.parse(text) : undefined,
+    };
+  }
+  const probe = await wire("");
+  const descriptor = probe.headers.get("link")?.match(/^<([^>]+)>/)?.[1];
+  if (!descriptor) throw Error("no discovery Link");
+  const discovery = parseReadUpdateDiscovery((await wire(descriptor)).value);
+  const operationDirectory = parseReadUpdateOperationDirectory(
+    (await wire(discovery.operations)).value,
+  );
+  const post = (op: keyof typeof operationDirectory, body: unknown, key: string, token = alice) =>
+    wire(new URL(operationDirectory[op], discovery.operations).href, "POST", body, key, token);
+  const bead = async (id: string, key = id, token = alice) => {
+    const response = await post(
+      "createBead",
+      { id: `beads/${id}`, type: owner, properties: { n: 1 } },
+      key,
+      token,
+    );
+    expect(response.status, response.text).toBe(200);
+    return response.value.resource;
+  };
+  return { server, options, deployment, access, input, installed, wire, post, bead, discovery };
+}
+
+it("installs pinned schema closure and applies inherited validation through actual HTTP with retained failures", async () => {
+  const f = await fixture();
+  const bad = { id: "beads/bad", type: owner, properties: { n: -1 } };
+  const failure = await f.post("createBead", bad, "bad");
+  expect(failure.status).toBe(422);
+  expect(failure.value.code).toBe("validation-failed");
+  expect(failure.value.diagnostics).toEqual([
+    expect.objectContaining({
+      type: base,
+      schemaLocation: "https://bdp.example/u2/number#/minimum",
+```
+
+SOURCE apps/bdptest/src/development-contracts.test.ts lines 628-666 at 3df82ac480f50c8f486b4e456336366e7acbdf87
+```ts
+it("keeps an actual evaluator work refusal local and permits correction using the same unclaimed key", async () => {
+  const input = bundle();
+  input.schemas[0] = artifact(schema, {
+    type: "object",
+    properties: { values: { type: "array", uniqueItems: true } },
+  });
+  const properties = { values: Array.from({ length: 4000 }, (_, i) => i) };
+  const compiler = (await import(
+    new URL("../../../packages/server/dist/installed-schema-evaluator.js", import.meta.url).href
+  )) as typeof import("../../../packages/server/src/installed-schema-evaluator.js");
+  const shape = (await import(
+    new URL("../../../packages/server/dist/installed-schema-shape.js", import.meta.url).href
+  )) as typeof import("../../../packages/server/src/installed-schema-shape.js");
+  const compiled = compiler.compilePrivateSchemaEvaluator({
+    bundle: input,
+    entry: { kind: "descriptor", typeId: base },
+    graphLimits: shape.SCHEMA_GRAPH_CEILINGS,
+    limits: compiler.EVALUATOR_CEILINGS,
+  });
+  if (compiled.kind !== "compiled") throw Error("fixture failed to compile");
+  expect(compiled.evaluateUtf8(Buffer.from(JSON.stringify(properties)))).toMatchObject({
+    kind: "refused",
+    phase: "instance",
+    reason: "limit-work",
+  });
+  const f = await fixture(input);
+  const failed = await f.post("createBead", { id: "beads/work", type: base, properties }, "work");
+  expect(failed.status).toBe(500);
+  expect(failed.text).toBe("");
+  expect((await f.wire("beads/work")).status).toBe(404);
+  const corrected = await f.post(
+    "createBead",
+    { id: "beads/work", type: base, properties: { values: [1, 2] } },
+    "work",
+  );
+  expect(corrected.status).toBe(200);
+  expect((await f.wire("beads/work")).value).toEqual(corrected.value.resource);
+});
+
+```
+
+SOURCE apps/bdptest/test-support/development-discovery.ts lines 1-24 at 3df82ac480f50c8f486b4e456336366e7acbdf87
+```ts
+/** Source-only canonical wire fixture. Never an installed launch/profile option. */
+import type { DevelopmentServerOptions } from "../../../packages/server/src/development-runtime.js";
+import type { LifecycleScheduler } from "../../../packages/server/src/sequence-executor.js";
+// Load the actual emitted implementation, like the existing process harness.
+const runtime = (await import(
+  new URL("../../../packages/server/dist/development-runtime.js", import.meta.url).href
+)) as typeof import("../../../packages/server/src/development-runtime.js");
+const composition = (await import(
+  new URL("../../../packages/server/dist/development-composition.js", import.meta.url).href
+)) as typeof import("../../../packages/server/src/development-composition.js");
+export const canonicalDevelopmentComposition = composition.createDevelopmentComposition("/acme/");
+
+export function startCanonicalDevelopmentFixture(
+  options: DevelopmentServerOptions,
+  scheduler?: LifecycleScheduler,
+) {
+  return runtime.startDevelopmentReferenceRuntime(
+    options,
+    scheduler,
+    undefined,
+    canonicalDevelopmentComposition,
+  );
+}
+export const startPrivateRuntime = runtime.startDevelopmentReferenceRuntime;
+```
+
+SOURCE packages/server/src/installed-schema-evaluator.ts lines 597-606 at 3df82ac480f50c8f486b4e456336366e7acbdf87
+```ts
+      } else if (name === "uniqueItems" && x === true && Array.isArray(v)) {
+        let duplicate = false;
+        for (let i = 0; i < v.length && !duplicate; i++)
+          for (let j = 0; j < i; j++)
+            if (equalValue(v[i] as LosslessJsonValue, v[j] as LosslessJsonValue, b)) {
+              duplicate = true;
+              break;
+            }
+        if (duplicate) fail(name);
+      }
+```
+
+SOURCE packages/server/src/installed-schema-value.ts lines 1-75 at 3df82ac480f50c8f486b4e456336366e7acbdf87
+```ts
+import { isProxy, isUint8Array } from "node:util/types";
+import { decodeJsonDocument, JsonNumberLiteral, type LosslessJsonValue } from "@bdp/protocol";
+import { decimal, compareDecimal, type Decimal } from "./installed-schema-decimal.js";
+export const EVALUATOR_CEILINGS = Object.freeze({
+  inputBytes: 1048576,
+  valueNodes: 262144,
+  states: 1048576,
+  frames: 1048576,
+  logicalBytes: 16777216,
+  // Leading-zero-stripped coefficient width before trailing-zero normalization.
+  coefficientDigits: 4096,
+  normalizedCoefficientDigits: 4096,
+  work: 16777216,
+  occurrences: 65536,
+  annotations: 1024,
+  annotationBytes: 1048576,
+  diagnostics: 1024,
+  diagnosticBytes: 1048576,
+});
+export type EvaluatorLimits = { readonly [K in keyof typeof EVALUATOR_CEILINGS]: number };
+export class EvaluationRefusal extends Error {
+  constructor(readonly code: string) {
+    super(`private schema evaluation refused: ${code}`);
+  }
+}
+/** logicalBytes is cumulative logical allocation, never reclaimed: 64-byte value/
+ * call records, 96-byte facts, 16-byte name/failure slots, 32-byte links/annotations/memo entries,
+ * 64-byte coverage/candidate containers, 32-byte unique coverage entries,
+ * 16-byte candidate slots, and two bytes per retained JS string unit
+ * (or actual encoded diagnostic bytes).
+ * It is neither JS heap measurement nor a parser/immutable-graph allocation cap. */
+export class EvaluationBudget {
+  readonly limits: EvaluatorLimits;
+  readonly counts: Record<keyof EvaluatorLimits, number>;
+  constructor(input: EvaluatorLimits) {
+    if (
+      !input ||
+      typeof input !== "object" ||
+      isProxy(input) ||
+      ![null, Object.prototype].includes(Object.getPrototypeOf(input))
+    )
+      throw new EvaluationRefusal("limits");
+    const fields = Object.getOwnPropertyDescriptors(input),
+      values: Record<string, number> = Object.create(null),
+      counts: Record<string, number> = Object.create(null);
+    if (Reflect.ownKeys(fields).length !== Object.keys(EVALUATOR_CEILINGS).length)
+      throw new EvaluationRefusal("limits");
+    for (const key of Object.keys(EVALUATOR_CEILINGS) as (keyof EvaluatorLimits)[]) {
+      const f = fields[key];
+      if (
+        !f ||
+        !Object.hasOwn(f, "value") ||
+        typeof f.value !== "number" ||
+        !Number.isSafeInteger(f.value) ||
+        f.value < 0 ||
+        f.value > EVALUATOR_CEILINGS[key]
+      )
+        throw new EvaluationRefusal("limits");
+      values[key] = f.value;
+      counts[key] = 0;
+    }
+    this.limits = Object.freeze(values) as EvaluatorLimits;
+    this.counts = counts as Record<keyof EvaluatorLimits, number>;
+  }
+  charge(key: keyof EvaluatorLimits, n = 1): void {
+    if (!Number.isSafeInteger(n) || n < 0 || n > this.limits[key] - this.counts[key])
+      throw new EvaluationRefusal(`limit-${key}`);
+    this.counts[key] += n;
+  }
+  bound(key: keyof EvaluatorLimits, n: number): void {
+    if (!Number.isSafeInteger(n) || n < 0 || n > this.limits[key])
+      throw new EvaluationRefusal(`limit-${key}`);
+    this.counts[key] = Math.max(this.counts[key], n);
+  }
+  work = (n = 1): void => this.charge("work", n);
+```
+
+SOURCE packages/server/src/development-contracts.ts lines 94-114 at 3df82ac480f50c8f486b4e456336366e7acbdf87
+```ts
+    if (Buffer.byteLength(JSON.stringify(descriptor.id)) > 4096)
+      throw new RangeError("Type diagnostic identifier bound");
+    types[descriptor.id] = stringifyJsonValue(descriptor);
+    let validateProperties: PropertyValidator | undefined;
+    if (descriptor.propertiesSchema !== undefined) {
+      const compiled = compilePrivateSchemaEvaluator({
+        bundle,
+        entry: { kind: "descriptor", typeId: descriptor.id },
+        graphLimits: SCHEMA_GRAPH_CEILINGS,
+        limits: EVALUATOR_CEILINGS,
+      });
+      if (compiled.kind !== "compiled")
+        throw new TypeError(`administrative schema refused: ${compiled.reason}`);
+      validateProperties = (properties, emitter) => {
+        const outcome = compiled.evaluateUtf8(Buffer.from(stringifyJsonValue(properties)));
+        if (outcome.kind !== "evaluated")
+          throw new Error("installed schema evaluation did not complete");
+        if (outcome.valid) {
+          if (!outcome.diagnosticsComplete)
+            throw new Error("installed schema evaluation did not complete");
+          return { valid: true };
+```
+
+SOURCE packages/server/src/development-runtime.ts lines 565-592 at 3df82ac480f50c8f486b4e456336366e7acbdf87
+```ts
+  let completion: Promise<void> | undefined;
+  // The owner has a terminal close result. Retry listener cleanup only; never
+  // re-invoke owner close or erase its original failure.
+  let ownerCompletion: Promise<void> | undefined;
+  return Object.freeze({
+    scope,
+    close(): Promise<void> {
+      if (!completion) {
+        closing = true;
+        serving = false;
+        completion = (async () => {
+          const listener = await Promise.allSettled([closeListener()]);
+          await Promise.allSettled([...pending]);
+          ownerCompletion ??= Promise.resolve().then(() => authority?.close());
+          const owner = await Promise.allSettled([ownerCompletion]);
+          const failures = [...listener, ...owner].flatMap((result) =>
+            result.status === "rejected" ? [result.reason] : [],
+          );
+          if (failures.length)
+            throw new AggregateError(failures, "installed shutdown cleanup failed");
+        })().catch((error) => {
+          completion = undefined;
+          throw error;
+        });
+      }
+      return completion;
+    },
+  });
+```
+
+OBSERVED EVIDENCE AND LIMITS
+Original PR127 CI38728209051/job116399188531 failed this sole callback at default5000ms, reported5029ms; suite755.84s. Prior PR126 log5508 records the identical callback4430ms. Root's unchanged isolated run passed1/skipped14, callback813ms, supervisor2.2838637500535697s, exit0. These observations do not isolate the cause, establish a worst-case bound, or turn original failed CI green.
+The proposed explicit10000ms callback wall-clock threshold changes no product work/input/HTTP/global/hook/job limits. Source-derived successful path remains7HTTP,1in-process listener/owner/directory,0product children. No seven-response wire trace was recorded by the isolated run. Existing sequential cleanup can skip directory removal if server.close throws; a larger callback timeout is not cancellation.

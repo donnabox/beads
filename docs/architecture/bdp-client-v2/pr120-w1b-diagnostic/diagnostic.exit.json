@@ -1,0 +1,26 @@
+{
+  "name": "diagnostic",
+  "command": [
+    "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+    "/Users/dbox/.cache/node/corepack/v1/pnpm/11.20.0/bin/pnpm.cjs",
+    "exec",
+    "vitest",
+    "run",
+    "apps/bdptest/src/read-update-matrix.test.ts",
+    "-t",
+    "^detects W1b link-metadata assertion-input corruption after actual HTTP$",
+    "--maxWorkers=1",
+    "--reporter=verbose",
+    "--reporter=json",
+    "--outputFile=/Users/dbox/repos/wt/vickie/bdp-integration-logs/pr120-w1b-diagnostic/diagnostic-vitest.json"
+  ],
+  "cwd": "/Users/dbox/repos/wt/vickie/vickie-pr120-w1b-diagnostic",
+  "started": "2026-10-14T18:49:44.474995+00:00",
+  "ended": "2026-10-14T18:49:47.630140+00:00",
+  "elapsedSeconds": 3.1550248330459,
+  "exit": 0,
+  "timeout": false,
+  "supervisorPid": 1906,
+  "processGroup": 1907,
+  "entryOverridePresentBeforeClear": false
+}

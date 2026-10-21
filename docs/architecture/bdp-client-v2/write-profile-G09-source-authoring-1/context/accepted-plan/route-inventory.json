@@ -1,0 +1,209 @@
+{
+  "count": 25,
+  "concreteProtocolUnionMembers": 10,
+  "rows": [
+    {
+      "id": "R01",
+      "readRequest": "scope-discovery",
+      "http": "Scope /",
+      "ordinary": "204+Link via dedicated discoveryObserved",
+      "minimum": "supported lexical current minimum; no generic minimumFor scope-discovery",
+      "observationBoundary": "one owner entry per attempt; no owner-free conditional shortcut"
+    },
+    {
+      "id": "R02",
+      "readRequest": "scope-discovery descriptor projection",
+      "http": "bdp.json",
+      "ordinary": "200 TX descriptor",
+      "minimum": "same discoveryObserved minimum",
+      "observationBoundary": "one current context shared with body"
+    },
+    {
+      "id": "R03",
+      "readRequest": "collection beads initial",
+      "http": "beads/ + allowed filters",
+      "ordinary": "current owner collection",
+      "minimum": "supported current min; request validation remains before consistency",
+      "observationBoundary": "materialize and source condition in one entry; first page finished afterward"
+    },
+    {
+      "id": "R04",
+      "readRequest": "collection links initial",
+      "http": "links/ + allowed filters",
+      "ordinary": "current owner collection",
+      "minimum": "supported current min",
+      "observationBoundary": "same current materialization/source condition"
+    },
+    {
+      "id": "R05",
+      "readRequest": "collection types initial",
+      "http": "types/?limit",
+      "ordinary": "installed inventory",
+      "minimum": "supported current min; empty inventory not owner-resource404",
+      "observationBoundary": "current inventory entry"
+    },
+    {
+      "id": "R06",
+      "readRequest": "collection beads continuation",
+      "http": "beads/?cursor=ACTUAL",
+      "ordinary": "actual retained page with original snapshotSourceContext and new current sourceContext",
+      "minimum": "private minimum-position or minimum-position-route gap; S1 remains",
+      "observationBoundary": "checkSourceCondition occurs BEFORE finish/continuePage validates retained token; cannot safely add epoch/view-only check here"
+    },
+    {
+      "id": "R07",
+      "readRequest": "collection links continuation",
+      "http": "links/?cursor=ACTUAL",
+      "ordinary": "actual retained page with original snapshotSourceContext and new current sourceContext",
+      "minimum": "private minimum-position or minimum-position-route gap; S1 remains",
+      "observationBoundary": "checkSourceCondition occurs BEFORE finish/continuePage validates retained token; cannot safely add epoch/view-only check here"
+    },
+    {
+      "id": "R08",
+      "readRequest": "collection types continuation",
+      "http": "types/?cursor=ACTUAL",
+      "ordinary": "actual retained page with original snapshotSourceContext and new current sourceContext",
+      "minimum": "private minimum-position or minimum-position-route gap; S1 remains",
+      "observationBoundary": "checkSourceCondition occurs BEFORE finish/continuePage validates retained token; cannot safely add epoch/view-only check here"
+    },
+    {
+      "id": "R09",
+      "readRequest": "resource bead",
+      "http": "beads/{canonical-id}",
+      "ordinary": "current owner resource/properties or uniform missing404",
+      "minimum": "supported; missing/deleted/hidden404 current context before semantic minimum; existing current opaque waits503",
+      "observationBoundary": "same entry validates existence/visibility and minimum; no result cache escape"
+    },
+    {
+      "id": "R10",
+      "readRequest": "resource link",
+      "http": "links/{canonical-id}",
+      "ordinary": "current owner resource/properties or uniform missing404",
+      "minimum": "supported; missing/deleted/hidden404 current context before semantic minimum; existing current opaque waits503",
+      "observationBoundary": "same entry validates existence/visibility and minimum; no result cache escape"
+    },
+    {
+      "id": "R12",
+      "readRequest": "properties bead",
+      "http": "beads/{id}?view=properties",
+      "ordinary": "current owner resource/properties or uniform missing404",
+      "minimum": "supported; missing/deleted/hidden404 current context before semantic minimum; existing current opaque waits503",
+      "observationBoundary": "same entry validates existence/visibility and minimum; no result cache escape"
+    },
+    {
+      "id": "R13",
+      "readRequest": "properties link",
+      "http": "links/{id}?view=properties",
+      "ordinary": "current owner resource/properties or uniform missing404",
+      "minimum": "supported; missing/deleted/hidden404 current context before semantic minimum; existing current opaque waits503",
+      "observationBoundary": "same entry validates existence/visibility and minimum; no result cache escape"
+    },
+    {
+      "id": "R11",
+      "readRequest": "resource type local",
+      "http": "types/{canonical-id}",
+      "ordinary": "known Type descriptor or missing Type",
+      "minimum": "supported; missing Type is NOT ordinary Bead/Link missing exception",
+      "observationBoundary": "current installed type source condition; full checks before HTTP selection"
+    },
+    {
+      "id": "R14",
+      "readRequest": "bead-links initial",
+      "http": "beads/{id}?view=links&direction=...",
+      "ordinary": "current incident list or missing anchor404",
+      "minimum": "supported; missing anchor404; successful opaque wait is a local finite policy, not new normative mandate",
+      "observationBoundary": "same owner materialization, no guessed G2 membership"
+    },
+    {
+      "id": "R15",
+      "readRequest": "bead-links continuation",
+      "http": "beads/{id}?view=links&cursor=ACTUAL",
+      "ordinary": "retained original incident selection",
+      "minimum": "private gap; S1 ordinary query-cursor basis and collision precedence unresolved",
+      "observationBoundary": "retained finish outside entry; source condition runs earlier"
+    },
+    {
+      "id": "R16",
+      "readRequest": "resource type external private shape",
+      "http": "direct ReadRequest.id outside Scope",
+      "ordinary": "authority may resolve installed descriptor; not a local parsed HTTP route",
+      "minimum": "private subset rejects it; not permission to route/navigate external hosts",
+      "observationBoundary": "HTTP target membership and ordinary external Web retrieval distinct"
+    },
+    {
+      "id": "R17",
+      "readRequest": "not ReadRequest: Directory",
+      "http": "operations/",
+      "ordinary": "200 operation Directory",
+      "minimum": "supported discoveryObserved current minimum",
+      "observationBoundary": "same observation as other discovery projections"
+    },
+    {
+      "id": "R18",
+      "readRequest": "not ReadRequest: alias",
+      "http": "alias/{suffix}",
+      "ordinary": "307 or uniform404",
+      "minimum": "dedicated conditioned alias path; query validation/receiving retained",
+      "observationBoundary": "alias lookup and source condition in owner entry"
+    },
+    {
+      "id": "R19",
+      "readRequest": "not ReadRequest: exact installed schema retrieval",
+      "http": "exact captured retrieval URI under Scope schemas/",
+      "ordinary": "200 exact original UTF8 bytes with actual current TX context",
+      "minimum": "CURRENT GAP: selector declines any minimum, then generic parser404 becomes private500; selected proposal only this exact current route",
+      "observationBoundary": "schemaObserved owner.withRead currently zero-minimum only; no retained/Snapshot comparison"
+    },
+    {
+      "id": "R20",
+      "readRequest": "not ReadRequest: noninstalled schema or other parser404",
+      "http": "schemas/unknown, schema$id aliases, unmatched paths",
+      "ordinary": "generic no-min404, no owner observation/context",
+      "minimum": "complete minimum currently private500; NOT ordinary owner-resource404, NOT selected broad fallback change",
+      "observationBoundary": "no installed-map membership; never synthesize pos-0/current context"
+    },
+    {
+      "id": "R21",
+      "readRequest": "not ReadRequest: Snapshot create",
+      "http": "snapshot",
+      "ordinary": "fresh immutable acquisition; HEAD preflight",
+      "minimum": "supported fresh creation minimum; one original bounded lifetime",
+      "observationBoundary": "same owner capture/preflight"
+    },
+    {
+      "id": "R22",
+      "readRequest": "not ReadRequest: retained Snapshot",
+      "http": "snapshot?snapshot=... [&stream&page]",
+      "ordinary": "retained manifest/page",
+      "minimum": "private minimum gap; S1-Q1 NOT decided here",
+      "observationBoundary": "retained owner target fences; compare-basis unresolved"
+    },
+    {
+      "id": "R23",
+      "readRequest": "not ReadRequest: receipts/root/pages",
+      "http": "receipts/{token}[/pages/...]",
+      "ordinary": "principal/epoch-gated receipt or receipt page",
+      "minimum": "existing dedicated minimum handlers and nondisclosure order",
+      "observationBoundary": "receipt identity/nondisclosure before minimum; not collection continuation law"
+    },
+    {
+      "id": "R24",
+      "readRequest": "not ReadRequest: changes",
+      "http": "changes/?start=now or ?after=...; JSON/SSE",
+      "ordinary": "D1 current finite/reconnect/pump",
+      "minimum": "existing current-changefeed lexical minimum path",
+      "observationBoundary": "preserve entire D1 receiving/start/tag/cursor/pump and deadlines"
+    },
+    {
+      "id": "R25",
+      "readRequest": "not ReadRequest: Events",
+      "http": "events/; beads/{id}?view=events; links/{id}?view=events; JSON/SSE",
+      "ordinary": "existing Scope/Resource Event source",
+      "minimum": "existing finite/SSE minimum handlers; G2 incident metadata gap remains",
+      "observationBoundary": "not Type events; do not invent membership or change projector"
+    }
+  ],
+  "parameterRules": "exact read-request allowed keys, each at most once; next URL authoritative; no new grammar",
+  "unknownSchemaIsNotUnknownOwnerResource": true,
+  "allGenericPrivateExclusionsInventoried": true
+}

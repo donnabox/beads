@@ -1,0 +1,45 @@
+{
+  "reviewComplete": true,
+  "mechanicsAccepted": false,
+  "findings": [
+    {
+      "id": "CV1-N1",
+      "priority": 2,
+      "severity": "Medium",
+      "title": "Require census stdout/stderr EOF before using its row table for absence",
+      "locations": [
+        {
+          "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-cumulative-carrier-validation-preparation-1/run.py",
+          "start": 185,
+          "end": 230
+        }
+      ],
+      "evidence": "The native ps Popen is assigned at186. Each nonblocking pipe read can stop on BlockingIOError at196; no stdout/stderr EOF flags are retained. At200 a now-terminal poll immediately permits parsing psout and observe(rows), then quiet/finalize/reap/group-empty/publication decisions at209\u2013228. A final ps write between EAGAIN and poll can leave a syntactically valid complete-row prefix whose missing suffix was never drained. Process raw0 does not prove all pipe bytes were consumed. Census PID/PGID/raw/EOF receipts are also absent from the published ownership inventory.",
+      "impact": "A partial census can become the watchdog own fresh absence/quiet observation. Required later independent root terminal/absence receipts remain necessary and may refuse; this finding does not assert an observed leaked process or successful false validation. The helper itself does not satisfy its complete fresh-census/pipe-settlement contract.",
+      "minimumCorrection": "In a separately reviewed successor, immediately retain/register every census handle/PID/PGID, track each pipe EOF, retain complete bounded actual stdout/stderr and raw terminal before parsing a census as whole. Keep the same200ms probe cutoff and original whole clock; incomplete/overflow/nonzero/unknown remains sticky refusal with safely owned cleanup, no reinterpreted partial prefix. Retain bounded census creation/terminal/EOF records in final evidence and require fresh root absence for all recorded probe identities.",
+      "futureFiniteControls": "Within existing C13/C15/C16 descriptions, concrete separately reviewed zero-product stimuli for EAGAIN then final complete-row suffix+exit, missing EOF/held writer and failed census. They remain UNPREPARED/UNEXECUTED; no cap/time/retry widening."
+    },
+    {
+      "id": "CV1-N2",
+      "priority": 3,
+      "severity": "Low",
+      "title": "Bind clean-versus-dirty archive attribution to the actual source tuple",
+      "locations": [
+        {
+          "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-cumulative-carrier-validation-preparation-1/packages.py",
+          "start": 48,
+          "end": 48
+        },
+        {
+          "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-cumulative-carrier-validation-preparation-1/gate.py",
+          "start": 38,
+          "end": 52
+        }
+      ],
+      "evidence": "source_check explicitly accepts either exactly four reviewed dirty paths on base283 or a root-bound clean candidate whose HEAD contains all681 bytes. packages.py always emits clean:false and says Base commit does not contain the draft, even when g._sourceBinding.dirtyPaths is empty. No clean execution tuple exists yet; current source4 is still the reviewed dirty basis.",
+      "impact": "The advertised supported clean-candidate branch would publish false source provenance. This is an attribution defect, not source drift or an observed package/build failure.",
+      "minimumCorrection": "Derive clean and the human sourceAttribution statement from the independently bound actual dirtyPaths/HEAD tuple. Preserve exact dirty-base before/after checks, exact clean HEAD checks and all payload/archive hashes. No guessed future commit or semantic source change."
+    }
+  ],
+  "runtimeObserved": false
+}

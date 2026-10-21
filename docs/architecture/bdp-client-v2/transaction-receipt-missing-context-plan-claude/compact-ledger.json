@@ -1,0 +1,462 @@
+{
+  "status": "PROPOSED_PLAN_ONLY_NOT_AUTHORIZATION",
+  "basis": {
+    "actualMain": "88c9408e908590ab1a4c64c9b9dee1a8b705999c",
+    "tree": "b2d9f2c18502e0778c51123be8b4564af052d803",
+    "pendingEventBinding": "acf190e742dfb669fe5607085a3ac60c5ecb66f4f86b1f05025424a7873615b0",
+    "pendingEventDiff": "e0c25b193ef1191d10916728c54eb6a894c5f29992e0da768bd585ef089e98e3",
+    "actualCheckoutHead": "3df82ac480f50c8f486b4e456336366e7acbdf87",
+    "authoringBase": "PENDING_ACTUAL_MERGED_EVENT_SUCCESSOR_REANCHOR",
+    "pendingReviewedEventCandidate": {
+      "head": "3df82ac480f50c8f486b4e456336366e7acbdf87",
+      "tree": "d5f02c936cf080666a8e73bb5f253e52086705f4",
+      "rootReportedPr": 127,
+      "rootReportedCi": 38728209051,
+      "state": "pending actual merge; same six frozen bytes"
+    }
+  },
+  "ownedPaths": [
+    "packages/server/src/transaction-store.ts",
+    "packages/server/src/transaction-service.ts",
+    "packages/server/src/transaction-http.ts",
+    "packages/server/src/transaction-receipt-pages.test.ts",
+    "packages/server/src/transaction-service.test.ts",
+    "packages/server/src/transaction-http.test.ts",
+    "apps/bdptest/src/transactional-receipt-missing-context-installed.test.ts",
+    "docs/design/transaction-implementation-progress.md"
+  ],
+  "sourceSelections": [
+    {
+      "path": "packages/server/src/transaction-receipt-pages.test.ts",
+      "fullName": "records one atomic page chain, retains original postimages and all tail allocations through expiry",
+      "cases": 1,
+      "http": 0,
+      "ownerOpens": 2,
+      "directories": 1,
+      "listeners": 0,
+      "readonlyInventoryHandles": 0,
+      "new": false
+    },
+    {
+      "path": "packages/server/src/transaction-receipt-pages.test.ts",
+      "fullName": "refuses page parents outside the receipt namespace before plan lookup",
+      "cases": 1,
+      "http": 0,
+      "ownerOpens": 1,
+      "directories": 1,
+      "listeners": 0,
+      "readonlyInventoryHandles": 0,
+      "new": false
+    },
+    {
+      "path": "packages/server/src/transaction-receipt-pages.test.ts",
+      "fullName": "captures immutable current context for nondisclosable receipt pages before minimum checks",
+      "cases": 1,
+      "http": 0,
+      "ownerOpens": 1,
+      "directories": 1,
+      "listeners": 0,
+      "readonlyInventoryHandles": 0,
+      "new": true
+    },
+    {
+      "path": "packages/server/src/transaction-service.test.ts",
+      "fullName": "private same-owner Transactional service authenticates before lookup and uniformly hides other principals, roots and unknown URLs",
+      "cases": 1,
+      "http": 0,
+      "ownerOpens": 1,
+      "directories": 1,
+      "listeners": 0,
+      "readonlyInventoryHandles": 0,
+      "new": false
+    },
+    {
+      "path": "packages/server/src/transaction-service.test.ts",
+      "fullName": "private same-owner Transactional service retains completed identity, forgets expired failed detail and preserves current observation across reopen",
+      "cases": 1,
+      "http": 0,
+      "ownerOpens": 2,
+      "directories": 1,
+      "listeners": 0,
+      "readonlyInventoryHandles": 0,
+      "new": false
+    },
+    {
+      "path": "packages/server/src/transaction-service.test.ts",
+      "fullName": "private minimum-read owner/lifecycle checks minimum before read-triggered expiry but honors independently forgotten receipts (false)",
+      "cases": 1,
+      "http": 0,
+      "ownerOpens": 1,
+      "directories": 1,
+      "listeners": 0,
+      "readonlyInventoryHandles": 0,
+      "new": false
+    },
+    {
+      "path": "packages/server/src/transaction-service.test.ts",
+      "fullName": "private minimum-read owner/lifecycle checks minimum before read-triggered expiry but honors independently forgotten receipts (true)",
+      "cases": 1,
+      "http": 0,
+      "ownerOpens": 1,
+      "directories": 1,
+      "listeners": 0,
+      "readonlyInventoryHandles": 0,
+      "new": false
+    },
+    {
+      "path": "packages/server/src/transaction-service.test.ts",
+      "fullName": "preserves current receipt absence context across ordinary and minimum service entrypoints",
+      "cases": 1,
+      "http": 0,
+      "ownerOpens": 1,
+      "directories": 1,
+      "listeners": 0,
+      "readonlyInventoryHandles": 0,
+      "new": true
+    },
+    {
+      "path": "packages/server/src/transaction-http.test.ts",
+      "fullName": "source-private actual Transactional HTTP authenticates and hides receipts before minimum-control refusal or conditional shortcuts",
+      "cases": 1,
+      "http": 7,
+      "ownerOpens": 1,
+      "directories": 1,
+      "listeners": 1,
+      "readonlyInventoryHandles": 0,
+      "new": false
+    },
+    {
+      "path": "packages/server/src/transaction-http.test.ts",
+      "fullName": "orders page nondisclosure, minimum waits, expiry and representation using actual owner state",
+      "cases": 1,
+      "http": 18,
+      "ownerOpens": 1,
+      "directories": 1,
+      "listeners": 1,
+      "readonlyInventoryHandles": 0,
+      "new": false
+    },
+    {
+      "path": "packages/server/src/transaction-http.test.ts",
+      "fullName": "refuses unsupported root controls after nondisclosure but before read-triggered retention",
+      "cases": 1,
+      "http": 10,
+      "ownerOpens": 1,
+      "directories": 1,
+      "listeners": 1,
+      "readonlyInventoryHandles": 1,
+      "new": false
+    },
+    {
+      "path": "packages/server/src/transaction-http.test.ts",
+      "fullName": "keeps failed parent rows unchanged for nonexistent page reads with any controls",
+      "cases": 1,
+      "http": 17,
+      "ownerOpens": 1,
+      "directories": 1,
+      "listeners": 1,
+      "readonlyInventoryHandles": 1,
+      "new": false
+    },
+    {
+      "path": "packages/server/src/transaction-http.test.ts",
+      "fullName": "checks a stored failed receipt minimum before read-triggered retention disposal over HTTP",
+      "cases": 1,
+      "http": 3,
+      "ownerOpens": 1,
+      "directories": 1,
+      "listeners": 1,
+      "readonlyInventoryHandles": 0,
+      "new": false
+    },
+    {
+      "path": "packages/server/src/transaction-http.test.ts",
+      "fullName": "serves current missing receipt root and page context without changing nondisclosure or HEAD",
+      "cases": 1,
+      "http": 13,
+      "ownerOpens": 1,
+      "directories": 1,
+      "listeners": 1,
+      "readonlyInventoryHandles": 0,
+      "new": true
+    }
+  ],
+  "sourcePositiveTotals": {
+    "cases": 14,
+    "http": 68,
+    "ownerOpens": 16,
+    "directories": 14,
+    "listeners": 6,
+    "readonlyInventoryHandles": 2
+  },
+  "sourceControl": {
+    "kind": "emitted-only two HTTP refusal projection context arguments omitted",
+    "selectedFullName": "serves current missing receipt root and page context without changing nondisclosure or HEAD",
+    "expectedFailedCases": 1,
+    "expectedNamedTupleFailures": 8,
+    "http": 13,
+    "owners": 1,
+    "directories": 1,
+    "listeners": 1,
+    "productChildren": 0,
+    "noBuildOfMutantSource": true
+  },
+  "installed": {
+    "path": "apps/bdptest/src/transactional-receipt-missing-context-installed.test.ts",
+    "fullName": "observes genuine installed receipt root and page absence context at current heads",
+    "requests": [
+      {
+        "ordinal": 1,
+        "method": "POST",
+        "url": "https://reference.invalid/acme/operations/batch",
+        "expectedStatus": 200,
+        "credential": "writer",
+        "accept": "application/json",
+        "expectedContext": "pos-1",
+        "urlAuthority": "literal owned canonical operation/diagnostic root",
+        "bodyBytes": 3728,
+        "bodySha256": "aea2842b2d004b0483dd756a9e6f97c829883956b56e7f508295572392c9a3b6",
+        "idempotencyKey": "receipt-context-seed",
+        "contentType": "application/json",
+        "bodyConstruction": {
+          "literalWrapper": "operations",
+          "literalOperationTemplate": {
+            "operation": "createBead",
+            "id": "beads/r00",
+            "type": "https://reference.invalid/acme/types/task",
+            "properties": {
+              "n": 0
+            }
+          },
+          "orderedIds": [
+            "beads/r00",
+            "beads/r01",
+            "beads/r02",
+            "beads/r03",
+            "beads/r04",
+            "beads/r05",
+            "beads/r06",
+            "beads/r07",
+            "beads/r08",
+            "beads/r09",
+            "beads/r10",
+            "beads/r11",
+            "beads/r12",
+            "beads/r13",
+            "beads/r14",
+            "beads/r15",
+            "beads/r16",
+            "beads/r17",
+            "beads/r18",
+            "beads/r19",
+            "beads/r20",
+            "beads/r21",
+            "beads/r22",
+            "beads/r23",
+            "beads/r24",
+            "beads/r25",
+            "beads/r26",
+            "beads/r27",
+            "beads/r28",
+            "beads/r29",
+            "beads/r30",
+            "beads/r31"
+          ],
+          "serialization": "JSON.stringify compact JSON, object keys in shown order, no whitespace; only id varies"
+        }
+      },
+      {
+        "ordinal": 2,
+        "method": "POST",
+        "url": "https://reference.invalid/acme/operations/update-where",
+        "expectedStatus": 200,
+        "credential": "writer",
+        "accept": "application/json",
+        "expectedContext": "pos-2",
+        "urlAuthority": "literal owned canonical operation/diagnostic root",
+        "body": "{\"collection\":\"beads\",\"selector\":\"$[?@.type == \\\"https://reference.invalid/acme/types/task\\\"]\",\"cardinality\":{\"min\":32,\"max\":32},\"propertiesChange\":[{\"op\":\"replace\",\"path\":\"/n\",\"value\":1}]}",
+        "bodyBytes": 189,
+        "bodySha256": "843572126ab5973bea97906ad5bf1369c7eb468cebfdea27d36a36abfc3266ef",
+        "idempotencyKey": "receipt-context-paged",
+        "contentType": "application/json"
+      },
+      {
+        "ordinal": 3,
+        "method": "GET",
+        "url": "$page",
+        "expectedStatus": 200,
+        "credential": "writer",
+        "accept": "application/json",
+        "expectedContext": "pos-2",
+        "urlAuthority": "exact schema-validated root next from response2; strict current Scope receipt/page path, no reconstruction",
+        "bodyBytes": 0
+      },
+      {
+        "ordinal": 4,
+        "method": "GET",
+        "url": "https://reference.invalid/acme/receipts/unknown",
+        "expectedStatus": 404,
+        "credential": "writer",
+        "accept": "application/json",
+        "expectedContext": "pos-2",
+        "urlAuthority": "explicit negative raw diagnostic URL; not client-discovered receipt authority",
+        "bodyBytes": 0
+      },
+      {
+        "ordinal": 5,
+        "method": "HEAD",
+        "url": "https://reference.invalid/acme/receipts/unknown",
+        "expectedStatus": 404,
+        "credential": "writer",
+        "accept": "application/json",
+        "expectedContext": "pos-2",
+        "urlAuthority": "explicit negative raw diagnostic URL; not client-discovered receipt authority",
+        "bodyBytes": 0
+      },
+      {
+        "ordinal": 6,
+        "method": "GET",
+        "url": "$root",
+        "expectedStatus": 404,
+        "credential": "other",
+        "accept": "application/json",
+        "expectedContext": "pos-2",
+        "urlAuthority": "exact response2 receipt.id or receipt.next",
+        "bodyBytes": 0
+      },
+      {
+        "ordinal": 7,
+        "method": "HEAD",
+        "url": "$root",
+        "expectedStatus": 404,
+        "credential": "other",
+        "accept": "application/json",
+        "expectedContext": "pos-2",
+        "urlAuthority": "exact response2 receipt.id or receipt.next",
+        "bodyBytes": 0
+      },
+      {
+        "ordinal": 8,
+        "method": "GET",
+        "url": "$page",
+        "expectedStatus": 404,
+        "credential": "other",
+        "accept": "application/json",
+        "expectedContext": "pos-2",
+        "urlAuthority": "exact response2 receipt.id or receipt.next",
+        "bodyBytes": 0
+      },
+      {
+        "ordinal": 9,
+        "method": "HEAD",
+        "url": "$page",
+        "expectedStatus": 404,
+        "credential": "other",
+        "accept": "application/json",
+        "expectedContext": "pos-2",
+        "urlAuthority": "exact response2 receipt.id or receipt.next",
+        "bodyBytes": 0
+      },
+      {
+        "ordinal": 10,
+        "method": "POST",
+        "url": "https://reference.invalid/acme/operations/create-bead",
+        "expectedStatus": 200,
+        "credential": "writer",
+        "accept": "application/json",
+        "expectedContext": "pos-3",
+        "urlAuthority": "literal owned canonical operation/diagnostic root",
+        "body": "{\"id\":\"beads/later\",\"type\":\"https://reference.invalid/acme/types/task\",\"properties\":{\"n\":0}}",
+        "bodyBytes": 92,
+        "bodySha256": "fac1bc29f477a84f582884b6e83a7b7227ff02514fe2ff3bad46c969792cf1e2",
+        "idempotencyKey": "receipt-context-advance",
+        "contentType": "application/json"
+      },
+      {
+        "ordinal": 11,
+        "method": "GET",
+        "url": "$root",
+        "expectedStatus": 404,
+        "credential": "other",
+        "accept": "application/json",
+        "expectedContext": "pos-3",
+        "urlAuthority": "same exact response2 receipt.id/next",
+        "bodyBytes": 0
+      },
+      {
+        "ordinal": 12,
+        "method": "GET",
+        "url": "$page",
+        "expectedStatus": 404,
+        "credential": "other",
+        "accept": "application/json",
+        "expectedContext": "pos-3",
+        "urlAuthority": "same exact response2 receipt.id/next",
+        "bodyBytes": 0
+      },
+      {
+        "ordinal": 13,
+        "method": "GET",
+        "url": "$root",
+        "expectedStatus": 401,
+        "credential": "anonymous",
+        "accept": "application/json",
+        "expectedContext": "absent",
+        "urlAuthority": "same exact response2 receipt.id",
+        "bodyBytes": 0
+      },
+      {
+        "ordinal": 14,
+        "method": "HEAD",
+        "url": "$page",
+        "expectedStatus": 401,
+        "credential": "anonymous",
+        "accept": "application/json",
+        "expectedContext": "absent",
+        "urlAuthority": "same exact response2 receipt.next",
+        "bodyBytes": 0
+      }
+    ],
+    "http": 14,
+    "children": 1,
+    "owners": 1,
+    "directories": 1,
+    "listeners": 1,
+    "artifacts": {
+      "descriptors": [
+        {
+          "retrievalUri": "https://reference.invalid/acme/types/task",
+          "utf8": "{\"id\":\"https://reference.invalid/acme/types/task\",\"name\":\"Task\",\"describes\":\"bead\",\"conformsTo\":[],\"propertiesSchema\":\"https://reference.invalid/acme/schemas/properties\"}"
+        }
+      ],
+      "schemas": [
+        {
+          "retrievalUri": "https://reference.invalid/acme/schemas/properties",
+          "utf8": "{\"$id\":\"https://reference.invalid/acme/schemas/properties\",\"type\":\"object\",\"properties\":{\"n\":{\"type\":\"number\"}},\"required\":[\"n\"],\"additionalProperties\":false}"
+        }
+      ]
+    },
+    "artifactUtf8Bytes": 328,
+    "totalRequestBodyBytes": 4009,
+    "maximumRequestBodyBytes": 3728,
+    "responseBodyCap": 32768,
+    "requestHeaderCap": 16384,
+    "requestBodyCap": 65536,
+    "deadlineMs": 45000,
+    "testTimeoutMs": 60000,
+    "perRequestMs": 5000,
+    "readyAndCloseEachMs": 10000
+  },
+  "combined": {
+    "caseExecutions": 16,
+    "httpExpected": 95,
+    "httpMaximum": 95,
+    "ownerOpens": 18,
+    "directories": 16,
+    "listeners": 8,
+    "productChildren": 1,
+    "readonlyInventoryHandles": 2
+  },
+  "newFullCiCallbacks": 4,
+  "limits": "All counts prospective source-derived; exact frozen measured draft and actual execution evidence required. No fixture/runtime/time/CI ceiling increase."
+}

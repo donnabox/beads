@@ -1,0 +1,49 @@
+{
+  "state": "CLOSED proposed authority DATA; active prefix remains4",
+  "candidateGate": {
+    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/tx-discovery-validation10-prefix9-proposed-authority-1/execution-gate.proposed.json",
+    "sha256": "6143da003674063f7bdc6d13c2052e5b7da0dd6dbeee4c93d32517811ba98a7f"
+  },
+  "candidateDisposition": {
+    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/tx-discovery-validation10-prefix9-proposed-authority-1/disposition.json",
+    "sha256": "981b56789bb9cc1441abd1be97d38bb4f1cd17aef740c0491586a060546bfd78"
+  },
+  "activeGateBefore": {
+    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/tx-discovery-validation-preparation-10/execution-gate.json",
+    "sha256": "21bd087f344ab4da02cd0b745b58640546b32ff188ff4601c18eb969192c26ea"
+  },
+  "immutableClosedGate": {
+    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/tx-discovery-validation-preparation-10/execution-gate.closed.json",
+    "sha256": "2fd156cabd19c91628bbf70b84e39dea132f6d3839dbca743d7e89d8cfbb0079"
+  },
+  "actualCompletedStages": [
+    "node-version",
+    "pnpm-version",
+    "workspace-install",
+    "bind-workspace-tools"
+  ],
+  "nextProspectiveStages": [
+    "typecheck",
+    "format-check",
+    "lint",
+    "fresh-build",
+    "bind-fresh-build"
+  ],
+  "workspaceTools": {
+    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/tx-discovery-validation-preparation-10/run/workspace-tools.json",
+    "sha256": "72150ced3b46657e65e67557e60c10a835cb152dd49757cbe7844b2f729a681d"
+  },
+  "rootActualAcceptance": {
+    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/tx-discovery-validation10-root-first4-acceptance-1/acceptance.json",
+    "sha256": "7498ede57564cfdd4289e3c59f9ccd572bac54cc7d560c54a3141dc74e86d907"
+  },
+  "nativeFirst4AuditIndex": {
+    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/tx-discovery-validation10-actual-first4-audit-1/index.json",
+    "sha256": "9e237c9ca5181749d3db9b39a491b75f863a1b6dc834c6a97faf8a74179d7686"
+  },
+  "rootAcceptedAll68NativeFilesAndMirror": true,
+  "all26KeyAnd59PredicatePrecisionRequiredBeforeActivation": true,
+  "futureBuildArchiveConsumerProof": "UNKNOWN; no later prefix credit",
+  "activationPerformed": false,
+  "noHelperSchemaEvaluationForPreview": true
+}

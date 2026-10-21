@@ -1,0 +1,47 @@
+{
+  "status": "adapter prepared, not executed or released",
+  "changed": {
+    "review-cohort.py": "b06628e1adb111ceed4604615b54db4227b0977ce6cfb625db3e05f78fed48e5",
+    "report-adapter-binding.json": "077ca6f9e79554e69a77507fdd878ad1d457c4af8100fdad64581bfc01ba39c3",
+    "installed-test-tool.json": "adb844f33f302dcbe1bfdeaf9a2ab9c6457c1b1fb43d72e152aa364d27b11e4a",
+    "execution-gate.example.json": "e224f834fcc5817417bdd9dc6dc932de02a744efe47887bd10efa5088fb5dc7c"
+  },
+  "unchangedStaticCore": {
+    "commands.json": "b90d0ba721198e7de4834b7e34e7227d36b013b2d60df17d75817b968076edd4",
+    "gate.py": "fed548af486605046680245bcaad4d5c65b9e0f3df38228ad2ec45525f27dae4",
+    "supervise.py": "da74971257c3cc804b404dbc2d72759e301431e04d2474c692a658ed43b18f9a",
+    "packages.py": "3d7f1e3b8b7d74a41d672f9c1bf4297a6031fd2f79d2226873a874dbb711f38e",
+    "inventory.py": "f01a170801c8e259ea52696eb3c53402cc0e92ade8da797d5cec9e3f4c78127d"
+  },
+  "sourceBinding": {
+    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-same-key-overlap-draft/source-binding.json",
+    "sha256": "ad840a73fe10f830e58959dcc7642b35ec91f0a2cea4db4f4fb9912f940df0d0"
+  },
+  "staticPrefixAttribution": "Root executed first eight stages. Preparer neither ran nor independently adjudicated those stages. Original static-ready and placeholder preserved.",
+  "missing": [
+    "actual clean final commit/tree",
+    "root final/council acceptance",
+    "actual build bridge",
+    "fresh archive/source-member provenance",
+    "external consumer lock/eight-package payload/entry identity",
+    "root installed/review release"
+  ],
+  "expectations": {
+    "positive": {
+      "http": 6,
+      "testExit": 0,
+      "adapterExit": 0
+    },
+    "negative": {
+      "http": 2,
+      "maxScheduled": 6,
+      "testExit": 1,
+      "adapterExit": 0,
+      "failure": "same-key-overlap:shared-receipt-id"
+    },
+    "totalExpectedHttp": 8,
+    "totalMaximumHttp": 12,
+    "scheduledChildren": 2
+  },
+  "preparerRuntimeExecutions": 0
+}

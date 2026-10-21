@@ -1,0 +1,266 @@
+{
+  "at": "2026-10-17T23:41:20.609700+00:00",
+  "scope": "Independent terminal provenance audit, not findings disposition or runtime approval",
+  "classification": "review_complete",
+  "approvalInferred": false,
+  "exitCode": 0,
+  "elapsedSeconds": 1116.4994053747505,
+  "stream": {
+    "records": 4581,
+    "bytes": 2512423,
+    "sha256": "c6a7e7b7907feee761f252eda191cc2fd97855e9a337eb62c522af47645eb48c",
+    "parseErrors": 0,
+    "terminalCount": 1,
+    "terminalSubtype": "success",
+    "terminalIsError": false,
+    "finalEqualsTerminalResultBytes": true,
+    "finalSha256": "a7ea40bcc37fd31667fe935764508334faec79757ec62c439229f929022d0c31",
+    "terminalResultsSha256": "d53a1266b21a917d4bf0296be8617184e0f529de7ca9a9a1a36d0ba70cb20acc",
+    "stderrBytes": 0
+  },
+  "pins": {
+    "indexedEntries": 42,
+    "sourceFiles": 679,
+    "contexts": 22,
+    "artifacts": 10,
+    "head": "9f89271e2563a105410789ca8ca1e77dfb4d0b9f",
+    "patchSha256": "8bfd4de504851d43267296d0d1cacf02ac61f3a3aba5e2c7534fb7d59eafc1aa",
+    "beforeEqualsAfter": true,
+    "beforeSha256": "803351882d2dc957398ed27a0673f20400bfd66ce278fd986159594dccc5945d",
+    "afterSha256": "803351882d2dc957398ed27a0673f20400bfd66ce278fd986159594dccc5945d",
+    "closedBindingSha256": "2ed2a4eb77775afabee61b828348950982a109a6058039394067d12246fa68bd",
+    "releasedBindingSha256": "0aaeff0dda8402e4cd2977b1c5b206db7fa88cafe3b328bd5892ad6d10a25f58",
+    "authorizedOnlyDifference": "rootLaunchReleased",
+    "actualToolsVerified": true
+  },
+  "toolAccess": {
+    "invocations": {
+      "Read": 28,
+      "Grep": 45,
+      "Glob": 3
+    },
+    "resultCount": 76,
+    "unmatchedCount": 0,
+    "errorMarkedResults": [],
+    "successfulReadUniquePaths": [
+      "/Users/dbox/repos/wt/vickie/bdp-integration-logs/event-admission-replay-code-review/context-provenance.json",
+      "/Users/dbox/repos/wt/vickie/bdp-integration-logs/event-admission-replay-code-review/context/author-report.md",
+      "/Users/dbox/repos/wt/vickie/bdp-integration-logs/event-admission-replay-code-review/context/full-patch.diff",
+      "/Users/dbox/repos/wt/vickie/bdp-integration-logs/event-admission-replay-code-review/context/selection.json",
+      "/Users/dbox/repos/wt/vickie/bdp-integration-logs/event-admission-replay-code-review/context/spec.md",
+      "/Users/dbox/repos/wt/vickie/vickie-event-admission-replay-minimum/apps/bdptest/src/transactional-event-sse-installed.test.ts",
+      "/Users/dbox/repos/wt/vickie/vickie-event-admission-replay-minimum/biome.json",
+      "/Users/dbox/repos/wt/vickie/vickie-event-admission-replay-minimum/packages/conformance/src/http-executor.ts",
+      "/Users/dbox/repos/wt/vickie/vickie-event-admission-replay-minimum/packages/server/src/transaction-consistency.ts",
+      "/Users/dbox/repos/wt/vickie/vickie-event-admission-replay-minimum/packages/server/src/transaction-event-sse.test.ts",
+      "/Users/dbox/repos/wt/vickie/vickie-event-admission-replay-minimum/packages/server/src/transaction-events.test.ts",
+      "/Users/dbox/repos/wt/vickie/vickie-event-admission-replay-minimum/packages/server/src/transaction-events.ts",
+      "/Users/dbox/repos/wt/vickie/vickie-event-admission-replay-minimum/packages/server/src/transaction-http.test.ts",
+      "/Users/dbox/repos/wt/vickie/vickie-event-admission-replay-minimum/packages/server/src/transaction-http.ts",
+      "/Users/dbox/repos/wt/vickie/vickie-event-admission-replay-minimum/packages/server/src/transaction-service.ts",
+      "/Users/dbox/repos/wt/vickie/vickie-event-admission-replay-minimum/packages/server/src/transaction-store.ts",
+      "/Users/dbox/repos/wt/vickie/vickie-event-admission-replay-minimum/packages/server/test-support/raw-sse-recorder.ts",
+      "/Users/dbox/repos/wt/vickie/vickie-event-admission-replay-minimum/vitest.config.ts"
+    ],
+    "successfulReadRanges": [
+      {
+        "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/event-admission-replay-code-review/context/full-patch.diff",
+        "offset": null,
+        "limit": null,
+        "successfulResult": true
+      },
+      {
+        "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/event-admission-replay-code-review/context-provenance.json",
+        "offset": null,
+        "limit": null,
+        "successfulResult": true
+      },
+      {
+        "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/event-admission-replay-code-review/context/full-patch.diff",
+        "offset": 958,
+        "limit": 450,
+        "successfulResult": true
+      },
+      {
+        "path": "/Users/dbox/repos/wt/vickie/vickie-event-admission-replay-minimum/packages/server/src/transaction-http.ts",
+        "offset": 400,
+        "limit": 260,
+        "successfulResult": true
+      },
+      {
+        "path": "/Users/dbox/repos/wt/vickie/vickie-event-admission-replay-minimum/packages/server/src/transaction-consistency.ts",
+        "offset": null,
+        "limit": null,
+        "successfulResult": true
+      },
+      {
+        "path": "/Users/dbox/repos/wt/vickie/vickie-event-admission-replay-minimum/packages/server/src/transaction-service.ts",
+        "offset": 400,
+        "limit": 190,
+        "successfulResult": true
+      },
+      {
+        "path": "/Users/dbox/repos/wt/vickie/vickie-event-admission-replay-minimum/packages/server/src/transaction-store.ts",
+        "offset": 1600,
+        "limit": 300,
+        "successfulResult": true
+      },
+      {
+        "path": "/Users/dbox/repos/wt/vickie/vickie-event-admission-replay-minimum/packages/server/src/transaction-http.ts",
+        "offset": 655,
+        "limit": 120,
+        "successfulResult": true
+      },
+      {
+        "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/event-admission-replay-code-review/context/spec.md",
+        "offset": 5780,
+        "limit": 120,
+        "successfulResult": true
+      },
+      {
+        "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/event-admission-replay-code-review/context/spec.md",
+        "offset": 6190,
+        "limit": 190,
+        "successfulResult": true
+      },
+      {
+        "path": "/Users/dbox/repos/wt/vickie/vickie-event-admission-replay-minimum/packages/server/src/transaction-events.test.ts",
+        "offset": 1430,
+        "limit": 230,
+        "successfulResult": true
+      },
+      {
+        "path": "/Users/dbox/repos/wt/vickie/vickie-event-admission-replay-minimum/packages/server/src/transaction-events.test.ts",
+        "offset": 1750,
+        "limit": 200,
+        "successfulResult": true
+      },
+      {
+        "path": "/Users/dbox/repos/wt/vickie/vickie-event-admission-replay-minimum/packages/server/src/transaction-events.test.ts",
+        "offset": 2150,
+        "limit": 130,
+        "successfulResult": true
+      },
+      {
+        "path": "/Users/dbox/repos/wt/vickie/vickie-event-admission-replay-minimum/packages/server/test-support/raw-sse-recorder.ts",
+        "offset": null,
+        "limit": null,
+        "successfulResult": true
+      },
+      {
+        "path": "/Users/dbox/repos/wt/vickie/vickie-event-admission-replay-minimum/apps/bdptest/src/transactional-event-sse-installed.test.ts",
+        "offset": 1,
+        "limit": 120,
+        "successfulResult": true
+      },
+      {
+        "path": "/Users/dbox/repos/wt/vickie/vickie-event-admission-replay-minimum/packages/conformance/src/http-executor.ts",
+        "offset": 40,
+        "limit": 135,
+        "successfulResult": true
+      },
+      {
+        "path": "/Users/dbox/repos/wt/vickie/vickie-event-admission-replay-minimum/packages/server/src/transaction-events.ts",
+        "offset": 190,
+        "limit": 120,
+        "successfulResult": true
+      },
+      {
+        "path": "/Users/dbox/repos/wt/vickie/vickie-event-admission-replay-minimum/packages/server/src/transaction-event-sse.test.ts",
+        "offset": 1,
+        "limit": 130,
+        "successfulResult": true
+      },
+      {
+        "path": "/Users/dbox/repos/wt/vickie/vickie-event-admission-replay-minimum/packages/server/src/transaction-events.ts",
+        "offset": 103,
+        "limit": 45,
+        "successfulResult": true
+      },
+      {
+        "path": "/Users/dbox/repos/wt/vickie/vickie-event-admission-replay-minimum/packages/server/src/transaction-service.ts",
+        "offset": 1,
+        "limit": 60,
+        "successfulResult": true
+      },
+      {
+        "path": "/Users/dbox/repos/wt/vickie/vickie-event-admission-replay-minimum/packages/server/src/transaction-event-sse.test.ts",
+        "offset": 1270,
+        "limit": 190,
+        "successfulResult": true
+      },
+      {
+        "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/event-admission-replay-code-review/context/author-report.md",
+        "offset": null,
+        "limit": null,
+        "successfulResult": true
+      },
+      {
+        "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/event-admission-replay-code-review/context/selection.json",
+        "offset": null,
+        "limit": null,
+        "successfulResult": true
+      },
+      {
+        "path": "/Users/dbox/repos/wt/vickie/vickie-event-admission-replay-minimum/packages/server/src/transaction-http.test.ts",
+        "offset": 4600,
+        "limit": 140,
+        "successfulResult": true
+      },
+      {
+        "path": "/Users/dbox/repos/wt/vickie/vickie-event-admission-replay-minimum/packages/server/src/transaction-events.test.ts",
+        "offset": 548,
+        "limit": 35,
+        "successfulResult": true
+      },
+      {
+        "path": "/Users/dbox/repos/wt/vickie/vickie-event-admission-replay-minimum/packages/server/src/transaction-event-sse.test.ts",
+        "offset": 500,
+        "limit": 28,
+        "successfulResult": true
+      },
+      {
+        "path": "/Users/dbox/repos/wt/vickie/vickie-event-admission-replay-minimum/vitest.config.ts",
+        "offset": null,
+        "limit": null,
+        "successfulResult": true
+      },
+      {
+        "path": "/Users/dbox/repos/wt/vickie/vickie-event-admission-replay-minimum/biome.json",
+        "offset": null,
+        "limit": null,
+        "successfulResult": true
+      }
+    ],
+    "copiedContextPathsRead": [
+      "/Users/dbox/repos/wt/vickie/bdp-integration-logs/event-admission-replay-code-review/context/author-report.md",
+      "/Users/dbox/repos/wt/vickie/bdp-integration-logs/event-admission-replay-code-review/context/full-patch.diff",
+      "/Users/dbox/repos/wt/vickie/bdp-integration-logs/event-admission-replay-code-review/context/selection.json",
+      "/Users/dbox/repos/wt/vickie/bdp-integration-logs/event-admission-replay-code-review/context/spec.md"
+    ],
+    "changedSourcePathsRead": [
+      "/Users/dbox/repos/wt/vickie/vickie-event-admission-replay-minimum/apps/bdptest/src/transactional-event-sse-installed.test.ts",
+      "/Users/dbox/repos/wt/vickie/vickie-event-admission-replay-minimum/packages/server/src/transaction-event-sse.test.ts",
+      "/Users/dbox/repos/wt/vickie/vickie-event-admission-replay-minimum/packages/server/src/transaction-events.test.ts",
+      "/Users/dbox/repos/wt/vickie/vickie-event-admission-replay-minimum/packages/server/src/transaction-http.ts",
+      "/Users/dbox/repos/wt/vickie/vickie-event-admission-replay-minimum/packages/server/src/transaction-service.ts",
+      "/Users/dbox/repos/wt/vickie/vickie-event-admission-replay-minimum/packages/server/src/transaction-store.ts"
+    ],
+    "limitations": "Successful results establish access to requested regions, not exhaustive line coverage or access to all copied contexts. Grep/Glob counted separately. No hidden thinking is used as findings."
+  },
+  "process": {
+    "pid": 34116,
+    "pgid": 34116,
+    "started": "2026-10-17T23:14:25.807672+00:00",
+    "sampledPids": [
+      34116
+    ],
+    "remainingSampledOrGroup": [],
+    "forcedCleanup": false,
+    "timeout": false,
+    "wrapperReportedNoSurvivors": true
+  },
+  "auditPreparationNote": "An initial data-only audit assertion incorrectly compared argv without its executable to a full arguments array; it stopped before any audit write. Corrected comparison verifies the two full arrays byte-for-value. No reviewed helper or product was executed.",
+  "productExecution": false,
+  "reviewRetry": false
+}

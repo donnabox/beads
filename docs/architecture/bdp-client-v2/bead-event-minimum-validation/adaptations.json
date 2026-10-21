@@ -1,0 +1,25 @@
+{
+  "configurationFinalized": false,
+  "mechanicsPrecedent": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/finite-event-minimum-validation/successor-2",
+  "freshBootstrapGatePrecedent": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/finite-event-minimum-validation/implementation/gate.py",
+  "stageCounts": {
+    "bootstrap": 2,
+    "validation": 21,
+    "supervisedAttempts": 23
+  },
+  "helperAdaptations": [
+    "Rebind worktree and packet paths; f620 baseline replaces b76",
+    "Use explicit fresh workspace-install/tools gate; no cross-worktree bootstrap reuse",
+    "Add Bead external/audit consumer verification to run and gate",
+    "Source and Bead audit modes explicitly fail closed pending actual author schema"
+  ],
+  "pending": [
+    "Actual author frozen six-file binding and selection",
+    "Source/new Bead audit predicates/report schema",
+    "Root accepted source/tool/implementation pins",
+    "Real fresh workspace bootstrap and installed tools",
+    "Runtime code council dispositions",
+    "Actual build/archive/lock/consumer provenance and lifecycle observations"
+  ],
+  "noExecution": true
+}

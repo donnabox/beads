@@ -1,0 +1,9 @@
+# Oracle successor 1: source-only freeze
+
+The sole change restores E's explicit Type inventory object expectation to Relation, Task. Exact equality and all object fields remain intact; no sorting/set normalization weakens the oracle. The actual HTTP server canonical URI ordering is the basis, as recorded in the independently reviewed failure audit. Production behavior, installed F, traffic, titles, assertions other than this order, schemas, workloads, and deadlines are unchanged.
+
+The earlier completed Claude CODE F2 finding and its accepted native/root dispositions incorrectly inferred HTTP inventory order from internal configuration order. They remain immutable and are pinned in references.json. The actual lint-successor-1 run overrides that inference: 96 passed, 1 failed, 348 unselected/skipped. E observed only 11 of its planned 37 requests before the assertion failed; its partial report is not completion evidence. The raw failed exit/results/log and native failure audit remain under their original identities. No prior pass is relabeled as successor validation.
+
+All 679 tracked bytes were checked against the lint predecessor before mutation. Exactly transaction-http.test.ts changed; the other 678 files are identical, including every production and installed file. before/after snapshots, forward/reverse corrections and exact inverse replacement prove this two-object order change. Full base patch retains the same 16-file scope and 663 unchanged baseline files. Selection (97 exact source cases), report schemas and workload bytes are copied unchanged.
+
+This authorization ran data-only source editing and Git/hash inspection. No formatter, static checks, imports, tests, builds, runtime services, commit, or push ran. Native exact-delta closure and root staged validation remain required; execution gates were not touched.

@@ -1,0 +1,20 @@
+{
+  "at": "2026-10-18T00:15:22.238777+00:00",
+  "decision": "ACCEPT_FRESH_CONSUMER_RELEASE_EXTERNAL4",
+  "nativeAudit": "9fa7d868abb1df844cb439f9a8420520e3447685e64b02b5b69a5a4cdbe42ee9",
+  "rootIndependentChecks": "Actual verify exit/log, source679, consumer870files17links8manifestversions, entry/lock and proof binding checked. Native independently reproduced payload and build/archive linkage.",
+  "proof": {
+    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/event-admission-replay-validation/helper-successor-1/run/installed-provenance.json",
+    "sha256": "be1e750457d4e857890ab6c284b3480fe38e805b2ba17daa3b1b75db15863435"
+  },
+  "inventory": {
+    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/event-admission-replay-validation/helper-successor-1/run/installed-consumer-inventory.json",
+    "sha256": "b6b7171705e49911c5c2cb9f58efec13eaa762cc4044c31965bea167503a2236"
+  },
+  "held": [
+    "required4",
+    "commit",
+    "push"
+  ],
+  "originalFailedAuditPreserved": true
+}

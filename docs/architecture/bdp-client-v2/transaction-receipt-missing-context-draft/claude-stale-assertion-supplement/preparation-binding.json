@@ -1,0 +1,49 @@
+{
+  "rootLaunchReleased": false,
+  "authorization": "Root permits one focused actual supplement only after source tests terminal; preparation remains closed.",
+  "head": "015cac1aa4fa827cc4a2c647dff08454c6c8e6f8",
+  "tree": "2e16329e195eb8214836de20340a5887236d78f0",
+  "branch": "codex/vickie-receipt-missing-context",
+  "workspace": "/Users/dbox/repos/wt/vickie/vickie-sequence-member-evidence",
+  "hashes": {
+    "packages/server/src/transaction-store.ts": "eec0f4723c8fcfb2245d2e80d77b2de014235cdb208101d523c0ab83fde78eed",
+    "packages/server/src/transaction-service.ts": "53f655faf494209996aac2e0f93a4c2c785e471f66aac6af9ea41f92c9cfbe00",
+    "packages/server/src/transaction-http.ts": "0e42f034c3aada6fd0a7696897200b336d2b0c547d69497e46500f6da4c2267a",
+    "packages/server/src/transaction-receipt-pages.test.ts": "e944bd61590f78a510b427b0f5d6eb7856f6b3715f9f0e5dc590bf8d4724c6a1",
+    "packages/server/src/transaction-service.test.ts": "c61ba7254ab1cf39abf85e6020e4f846ffb684740076de39f43fe12d509093b9",
+    "packages/server/src/transaction-http.test.ts": "37084d256def9c1f1cec33fc2c6a0d6e793dba3d29699a57bf105bda0cde68db",
+    "apps/bdptest/src/transactional-receipt-missing-context-installed.test.ts": "eaf1289ed0a8318ce949704ba4cd983755c6f5fd20ffe9d61712869894cb5064",
+    "docs/design/transaction-implementation-progress.md": "28b30246931ccf39588a0dd654715aa7f00eda95893a9b5ed8ec10ffe7fdf6fc"
+  },
+  "reviewedSourceHashes": {
+    "packages/server/src/transaction-service.test.ts": "c61ba7254ab1cf39abf85e6020e4f846ffb684740076de39f43fe12d509093b9",
+    "docs/design/transaction-implementation-progress.md": "28b30246931ccf39588a0dd654715aa7f00eda95893a9b5ed8ec10ffe7fdf6fc",
+    "packages/server/src/transaction-http.test.ts": "37084d256def9c1f1cec33fc2c6a0d6e793dba3d29699a57bf105bda0cde68db",
+    "docs/specs/bdp.md": "f036103ffdf5f89fa3a2033570e1e987c4cd203cd80b1c633cb44615123f892e",
+    "packages/server/src/transaction-http.ts": "0e42f034c3aada6fd0a7696897200b336d2b0c547d69497e46500f6da4c2267a",
+    "packages/server/src/transaction-receipt-pages.test.ts": "e944bd61590f78a510b427b0f5d6eb7856f6b3715f9f0e5dc590bf8d4724c6a1",
+    "packages/server/src/transaction-store.ts": "eec0f4723c8fcfb2245d2e80d77b2de014235cdb208101d523c0ab83fde78eed",
+    "packages/server/src/transaction-service.ts": "53f655faf494209996aac2e0f93a4c2c785e471f66aac6af9ea41f92c9cfbe00",
+    "apps/bdptest/src/transactional-receipt-missing-context-installed.test.ts": "eaf1289ed0a8318ce949704ba4cd983755c6f5fd20ffe9d61712869894cb5064"
+  },
+  "diffSha256": "565ed185f629c115aae4a4bb6308ca1e7256732433bf34d2930c9ade5ad6e023",
+  "fullPatchSha256": "d0afee38fdab6f78bbebe6b131066204a58580c7bf0bbfce3cead43e36a73809",
+  "promptSha256": "a426705f552d701ce010859ba2c1c4f627f1675232912cf1dad3a65742bd1b12",
+  "supervisorSha256": "f8e2481890d9f3384bf0a1c33f68c4a11c43937c6bc96827a1f6f28d60dbf06b",
+  "plans": {
+    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-receipt-missing-context-draft/stale-assertion-repair/source-binding.json": "e96f012c8502285454eb3867f8b7b35c82c483ae3ceb3f7fc21eaa31127d0cf3",
+    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-receipt-missing-context-draft/stale-assertion-repair/correction.patch": "4ae1f2cf7d02670b406fb13b57c37e43997ca66f50180997df173c917a8f32c2",
+    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-receipt-missing-context-draft/stale-assertion-repair/draft.patch": "d0afee38fdab6f78bbebe6b131066204a58580c7bf0bbfce3cead43e36a73809",
+    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-receipt-missing-context-draft/claude-code-source-dispositions.md": "0133f3c50a74c77656189d863633e6dc794cb5d263710de4a08bee0a6192775e",
+    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-receipt-missing-context-code-claude/stdout.txt": "96959814652b5360d014a6f67b162a1ff774aec8730cefe0da642371ddafb094"
+  },
+  "timeoutSeconds": 900,
+  "argv": [
+    "/opt/homebrew/bin/claude",
+    "--safe-mode",
+    "-p",
+    "--tools",
+    "",
+    "--no-session-persistence"
+  ]
+}

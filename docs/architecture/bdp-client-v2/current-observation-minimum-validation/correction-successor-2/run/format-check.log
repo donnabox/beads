@@ -1,0 +1,680 @@
+apps/bdptest/src/transactional-minimum-receiving-installed.test.ts format ━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+  × Formatter would have printed the following content:
+  
+    1070 1070 │     let binding: ReturnType<typeof installedTransactionBinding> | undefined;
+    1071 1071 │     let attempted = 0;
+    1072      │ - ··const·childLifetime:·{·close:·{·code:·number·|·null;·signal:·NodeJS.Signals·|·null·}·|·undefined·}·=·{·close:·undefined·};
+         1072 │ + ··const·childLifetime:·{
+         1073 │ + ····close:·{·code:·number·|·null;·signal:·NodeJS.Signals·|·null·}·|·undefined;
+         1074 │ + ··}·=·{·close:·undefined·};
+    1073 1075 │     let childDrain: Promise<void> | undefined;
+    1074 1076 │     const active = new Set<ClientRequest>();
+    ········· │ 
+    1093 1095 │     const localArtifacts = {
+    1094 1096 │       ...artifacts,
+    1095      │ - ····descriptors:·[...artifacts.descriptors,·{
+    1096      │ - ······retrievalUri:·linkType,
+    1097      │ - ······utf8:·JSON.stringify({·id:·linkType,·name:·"Relation",·describes:·"link",·conformsTo:·[],
+    1098      │ - ········source:·{·conformsTo:·[beadType],·external:·"opaque"·},
+    1099      │ - ········target:·{·conformsTo:·[beadType],·external:·"opaque"·},
+    1100      │ - ······}),
+    1101      │ - ····}],
+         1097 │ + ····descriptors:·[
+         1098 │ + ······...artifacts.descriptors,
+         1099 │ + ······{
+         1100 │ + ········retrievalUri:·linkType,
+         1101 │ + ········utf8:·JSON.stringify({
+         1102 │ + ··········id:·linkType,
+         1103 │ + ··········name:·"Relation",
+         1104 │ + ··········describes:·"link",
+         1105 │ + ··········conformsTo:·[],
+         1106 │ + ··········source:·{·conformsTo:·[beadType],·external:·"opaque"·},
+         1107 │ + ··········target:·{·conformsTo:·[beadType],·external:·"opaque"·},
+         1108 │ + ········}),
+         1109 │ + ······},
+         1110 │ + ····],
+    1102 1111 │     };
+    1103 1112 │     try {
+    ········· │ 
+    1129 1138 │       expect(binding.operationTargets.batch).toBe(`${scope}operations/batch`);
+    1130 1139 │       const address = new URL(child.ready.listenUrl as string);
+    1131      │ - ····const·granted·=·new·Set([`${scope}operations/batch`,·`${scope}operations/update-where`,·`${scope}types/task`,·`${scope}types/`,·`${scope}types/missing`,·`${scope}beads/r00?view=links`,·`${scope}beads/missing?view=links`]);
+         1140 │ + ····const·granted·=·new·Set([
+         1141 │ + ······`${scope}operations/batch`,
+         1142 │ + ······`${scope}operations/update-where`,
+         1143 │ + ······`${scope}types/task`,
+         1144 │ + ······`${scope}types/`,
+         1145 │ + ······`${scope}types/missing`,
+         1146 │ + ······`${scope}beads/r00?view=links`,
+         1147 │ + ······`${scope}beads/missing?view=links`,
+         1148 │ + ····]);
+    1132 1149 │       const exchange = async (
+    1133 1150 │         label: string,
+    ········· │ 
+    1152 1169 │           "Connection",
+    1153 1170 │           "close",
+    1154      │ - ········...(fields.some((field,·i)·=>·i·%·2·===·0·&&·field.toLowerCase()·===·"accept")·?·[]·:·["Accept",·"application/json"]),
+         1171 │ + ········...(fields.some((field,·i)·=>·i·%·2·===·0·&&·field.toLowerCase()·===·"accept")
+         1172 │ + ··········?·[]
+         1173 │ + ··········:·["Accept",·"application/json"]),
+    1155 1174 │           ...(credential === "anonymous"
+    1156 1175 │             ? []
+    ········· │ 
+    1282 1301 │         return value;
+    1283 1302 │       };
+    1284      │ - ····const·seed·=·await·exchange("seed",·"POST",·`${scope}operations/batch`,·[],·"writer",·seedBody,·"current-observation-seed");
+         1303 │ + ····const·seed·=·await·exchange(
+         1304 │ + ······"seed",
+         1305 │ + ······"POST",
+         1306 │ + ······`${scope}operations/batch`,
+         1307 │ + ······[],
+         1308 │ + ······"writer",
+         1309 │ + ······seedBody,
+         1310 │ + ······"current-observation-seed",
+         1311 │ + ····);
+    1285 1312 │       const seeded = receipt(seed, "current-observation-seed", "pos-1");
+    1286 1313 │       expect(receiptResults(seeded)).toHaveLength(32);
+    1287      │ - ····const·updated·=·await·exchange("issue-page",·"POST",·`${scope}operations/update-where`,·[],·"writer",·setBody,·"current-observation-update");
+         1314 │ + ····const·updated·=·await·exchange(
+         1315 │ + ······"issue-page",
+         1316 │ + ······"POST",
+         1317 │ + ······`${scope}operations/update-where`,
+         1318 │ + ······[],
+         1319 │ + ······"writer",
+         1320 │ + ······setBody,
+         1321 │ + ······"current-observation-update",
+         1322 │ + ····);
+    1288 1323 │       const paged = receipt(updated, "current-observation-update", "pos-2");
+    1289 1324 │       const pageUrl = paged.next;
+    1290      │ - ····if·(typeof·pageUrl·!==·"string"·||·typeof·paged.id·!==·"string")·throw·new·Error("actual·second·mutation·page·required");
+         1325 │ + ····if·(typeof·pageUrl·!==·"string"·||·typeof·paged.id·!==·"string")
+         1326 │ + ······throw·new·Error("actual·second·mutation·page·required");
+    1291 1327 │       const parsedPage = new URL(pageUrl);
+    1292 1328 │       expect(parsedPage.origin).toBe(new URL(scope).origin);
+    1293      │ - ····expect([parsedPage.search,·parsedPage.hash,·parsedPage.username,·parsedPage.password]).toEqual(["",·"",·"",·""]);
+         1329 │ + ····expect([parsedPage.search,·parsedPage.hash,·parsedPage.username,·parsedPage.password]).toEqual([
+         1330 │ + ······"",
+         1331 │ + ······"",
+         1332 │ + ······"",
+         1333 │ + ······"",
+         1334 │ + ····]);
+    1294 1335 │       expect(pageUrl.startsWith(`${paged.id}/pages/`)).toBe(true);
+    1295 1336 │       expect(pageUrl.slice(`${paged.id}/pages/`.length)).toMatch(/^[A-Za-z0-9_-]+$/);
+    1296 1337 │       granted.add(pageUrl);
+    1297      │ - ····const·linked·=·await·exchange("link",·"POST",·`${scope}operations/batch`,·[],·"writer",·JSON.stringify({·operations:·[{
+    1298      │ - ······operation:·"createLink",·id:·"links/l",·type:·linkType,
+    1299      │ - ······source:·"beads/r00",·target:·"beads/r01",·properties:·{·n:·0·},
+    1300      │ - ····}]·}),·"current-observation-link");
+         1338 │ + ····const·linked·=·await·exchange(
+         1339 │ + ······"link",
+         1340 │ + ······"POST",
+         1341 │ + ······`${scope}operations/batch`,
+         1342 │ + ······[],
+         1343 │ + ······"writer",
+         1344 │ + ······JSON.stringify({
+         1345 │ + ········operations:·[
+         1346 │ + ··········{
+         1347 │ + ············operation:·"createLink",
+         1348 │ + ············id:·"links/l",
+         1349 │ + ············type:·linkType,
+         1350 │ + ············source:·"beads/r00",
+         1351 │ + ············target:·"beads/r01",
+         1352 │ + ············properties:·{·n:·0·},
+         1353 │ + ··········},
+         1354 │ + ········],
+         1355 │ + ······}),
+         1356 │ + ······"current-observation-link",
+         1357 │ + ····);
+    1301 1358 │       receipt(linked, "current-observation-link", "pos-3");
+    1302 1359 │       const expectedContext = context(linked);
+    1303 1360 │       expect(expectedContext.slice(0, 2)).toEqual(context(seed).slice(0, 2));
+    1304 1361 │       const minimum = (position: string, epoch = expectedContext[0]!, view = expectedContext[1]!) => [
+    1305      │ - ······"BDP-Minimum-Scope-Position",·position,·"BDP-Scope-Epoch",·epoch,·"BDP-Authorization-View",·view,
+         1362 │ + ······"BDP-Minimum-Scope-Position",
+         1363 │ + ······position,
+         1364 │ + ······"BDP-Scope-Epoch",
+         1365 │ + ······epoch,
+         1366 │ + ······"BDP-Authorization-View",
+         1367 │ + ······view,
+    1306 1368 │       ];
+    1307 1369 │       const validType = ajv.compile({ $ref: `${bundle.$id}#/$defs/typeDescriptor` });
+    ········· │ 
+    1309 1371 │       const validLinks = ajv.compile({ $ref: `${bundle.$id}#/$defs/currentLinkCollection` });
+    1310 1372 │       const validPage = ajv.compile({ $ref: `${bundle.$id}#/$defs/mutationReceiptPage` });
+    1311      │ - ····const·pair·=·async·(label:·string,·url:·string,·fields:·string[],·status:·number,·code:·string)·=>·{
+    1312      │ - ······const·get·=·await·exchange(`${label}-get`,·"GET",·url,·[...fields,·...(status·===·503·?·["If-None-Match",·"*"]·:·[])]);
+    1313      │ - ······const·head·=·await·exchange(`${label}-head`,·"HEAD",·url,·[...fields,·...(status·===·503·?·["If-Match",·'"mismatch"',·"Accept",·"image/png"]·:·[])]);
+         1373 │ + ····const·pair·=·async·(
+         1374 │ + ······label:·string,
+         1375 │ + ······url:·string,
+         1376 │ + ······fields:·string[],
+         1377 │ + ······status:·number,
+         1378 │ + ······code:·string,
+         1379 │ + ····)·=>·{
+         1380 │ + ······const·get·=·await·exchange(`${label}-get`,·"GET",·url,·[
+         1381 │ + ········...fields,
+         1382 │ + ········...(status·===·503·?·["If-None-Match",·"*"]·:·[]),
+         1383 │ + ······]);
+         1384 │ + ······const·head·=·await·exchange(`${label}-head`,·"HEAD",·url,·[
+  151 more lines truncated
+  
+
+packages/server/src/transaction-consistency.test.ts format ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+  × Formatter would have printed the following content:
+  
+    164 164 │         }
+    165 165 │         expect(failure).toBeInstanceOf(TransactionMinimumFailure);
+    166     │ - ······if·(!(failure·instanceof·TransactionMinimumFailure))·throw·new·Error("expected·minimum·failure");
+        166 │ + ······if·(!(failure·instanceof·TransactionMinimumFailure))
+        167 │ + ········throw·new·Error("expected·minimum·failure");
+    167 168 │         expect(failure.reason).toBe(reason);
+    168 169 │         expect(failure.context).toBe(context);
+    ······· │ 
+    174 175 │     let bothMismatch: unknown;
+    175 176 │     try {
+    176     │ - ····checkCurrentReadMinimum({·scopeEpoch:·"other",·authorizationView:·"other",·minimumPosition:·"opaque"·},·context,·true);
+        177 │ + ····checkCurrentReadMinimum(
+        178 │ + ······{·scopeEpoch:·"other",·authorizationView:·"other",·minimumPosition:·"opaque"·},
+        179 │ + ······context,
+        180 │ + ······true,
+        181 │ + ····);
+    177 182 │     } catch (error) {
+    178 183 │       bothMismatch = error;
+    179 184 │     }
+    180 185 │     expect(bothMismatch).toBeInstanceOf(TransactionMinimumFailure);
+    181     │ - ··if·(!(bothMismatch·instanceof·TransactionMinimumFailure))·throw·new·Error("expected·contextual·failure");
+        186 │ + ··if·(!(bothMismatch·instanceof·TransactionMinimumFailure))
+        187 │ + ····throw·new·Error("expected·contextual·failure");
+    182 188 │     expect(bothMismatch.reason).toBe("cursor-expired");
+    183 189 │     expect(bothMismatch.context).toBe(context);
+  
+
+packages/server/src/transaction-event-sse.test.ts format ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+  × Formatter would have printed the following content:
+  
+     995  995 │   it("gates initial Scope Event SSE opaque minima before scan packets", async () => {
+     996  996 │     const { DatabaseSync } = await import("node:sqlite");
+     997      │ - ··const·{·TransactionMinimumUnproved,·TransactionMinimumFailure·}·=
+     998      │ - ····await·import("./transaction-consistency.js");
+          997 │ + ··const·{·TransactionMinimumUnproved,·TransactionMinimumFailure·}·=·await·import(
+          998 │ + ····"./transaction-consistency.js"
+          999 │ + ··);
+     999 1000 │     const f = ownerFixture();
+    1000 1001 │     let seedCommits = 0;
+  
+
+packages/server/src/transaction-events.test.ts format ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+  × Formatter would have printed the following content:
+  
+    1528 1528 │       );
+    1529 1529 │       await pair("events/", {}, 200, undefined, true);
+    1530      │ - ····await·pair("events/",·{·...opaque,·"bdp-scope-epoch":·"foreign-epoch"·},·410,·"cursor-expired",·true);
+    1531      │ - ····await·pair("events/",·{·...opaque,·"bdp-authorization-view":·"foreign-view"·},·409,·"foreign-view",·true);
+         1530 │ + ····await·pair(
+         1531 │ + ······"events/",
+         1532 │ + ······{·...opaque,·"bdp-scope-epoch":·"foreign-epoch"·},
+         1533 │ + ······410,
+         1534 │ + ······"cursor-expired",
+         1535 │ + ······true,
+         1536 │ + ····);
+         1537 │ + ····await·pair(
+         1538 │ + ······"events/",
+         1539 │ + ······{·...opaque,·"bdp-authorization-view":·"foreign-view"·},
+         1540 │ + ······409,
+         1541 │ + ······"foreign-view",
+         1542 │ + ······true,
+         1543 │ + ····);
+    1532 1544 │       await pair(
+    1533 1545 │         "events/",
+    ········· │ 
+    1825 1837 │       );
+    1826 1838 │       await pair("beads/a?view=events", {}, 200, undefined, true);
+    1827      │ - ····await·pair("beads/a?view=events",·{·...opaque,·"bdp-scope-epoch":·"foreign-epoch"·},·410,·"cursor-expired",·true);
+    1828      │ - ····await·pair("beads/a?view=events",·{·...opaque,·"bdp-authorization-view":·"foreign-view"·},·409,·"foreign-view",·true);
+         1839 │ + ····await·pair(
+         1840 │ + ······"beads/a?view=events",
+         1841 │ + ······{·...opaque,·"bdp-scope-epoch":·"foreign-epoch"·},
+         1842 │ + ······410,
+         1843 │ + ······"cursor-expired",
+         1844 │ + ······true,
+         1845 │ + ····);
+         1846 │ + ····await·pair(
+         1847 │ + ······"beads/a?view=events",
+         1848 │ + ······{·...opaque,·"bdp-authorization-view":·"foreign-view"·},
+         1849 │ + ······409,
+         1850 │ + ······"foreign-view",
+         1851 │ + ······true,
+         1852 │ + ····);
+    1829 1853 │       // Initial Link Events now wait; stream, continuation and media exclusions remain gaps.
+    1830 1854 │       await pair("links/l?view=events", opaque, 503, "catch-up-timeout", true);
+    ········· │ 
+    2164 2188 │       );
+    2165 2189 │       await pair("links/l?view=events", {}, 200, undefined, true);
+    2166      │ - ····await·pair("links/l?view=events",·{·...opaque,·"bdp-scope-epoch":·"foreign-epoch"·},·410,·"cursor-expired",·true);
+    2167      │ - ····await·pair("links/l?view=events",·{·...opaque,·"bdp-authorization-view":·"foreign-view"·},·409,·"foreign-view",·true);
+         2190 │ + ····await·pair(
+         2191 │ + ······"links/l?view=events",
+         2192 │ + ······{·...opaque,·"bdp-scope-epoch":·"foreign-epoch"·},
+         2193 │ + ······410,
+         2194 │ + ······"cursor-expired",
+         2195 │ + ······true,
+         2196 │ + ····);
+         2197 │ + ····await·pair(
+         2198 │ + ······"links/l?view=events",
+         2199 │ + ······{·...opaque,·"bdp-authorization-view":·"foreign-view"·},
+         2200 │ + ······409,
+         2201 │ + ······"foreign-view",
+         2202 │ + ······true,
+         2203 │ + ····);
+    2168 2204 │       // Stream, continuation, reconnect and media exclusions remain private gaps.
+    2169 2205 │       await pair("links/l?view=events", { ...opaque, accept: "text/event-stream" }, 500);
+  
+
+packages/server/src/transaction-http.test.ts format ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+  × Formatter would have printed the following content:
+  
+    3062 3062 │         const refused = await send(suffix, { ...headers, ...patch });
+    3063 3063 │         if (suffix === "types/absent") {
+    3064      │ - ········const·status·=·"bdp-minimum-scope-position"·in·patch·?·503·:·"bdp-scope-epoch"·in·patch·?·410·:·409;
+         3064 │ + ········const·status·=
+         3065 │ + ··········"bdp-minimum-scope-position"·in·patch·?·503·:·"bdp-scope-epoch"·in·patch·?·410·:·409;
+    3065 3066 │           expect(refused.status).toBe(status);
+    3066 3067 │           expect(refused.headers.has("x-bdp-development-limit")).toBe(false);
+    ········· │ 
+    3068 3069 │           expect(checkedProblem(await body(refused))).toMatchObject({
+    3069 3070 │             status,
+    3070      │ - ··········code:·status·===·503·?·"catch-up-timeout"·:·status·===·410·?·"cursor-expired"·:·"foreign-view",
+         3071 │ + ··········code:
+         3072 │ + ············status·===·503
+         3073 │ + ··············?·"catch-up-timeout"
+         3074 │ + ··············:·status·===·410
+         3075 │ + ················?·"cursor-expired"
+         3076 │ + ················:·"foreign-view",
+    3071 3077 │           });
+    3072 3078 │         } else {
+    ········· │ 
+    5825 5831 │             expect(result.response.headers.get(name)).toBe(value);
+    5826 5832 │           if (method === "HEAD") expect(result.text).toBe("");
+    5827      │ - ········else·expect(checkedProblem(record(JSON.parse(result.text)))).toMatchObject({
+    5828      │ - ··········status,·code:·status·===·410·?·"cursor-expired"·:·"foreign-view",
+    5829      │ - ········});
+         5833 │ + ········else
+         5834 │ + ··········expect(checkedProblem(record(JSON.parse(result.text)))).toMatchObject({
+         5835 │ + ············status,
+         5836 │ + ············code:·status·===·410·?·"cursor-expired"·:·"foreign-view",
+         5837 │ + ··········});
+    5830 5838 │         }
+    5831 5839 │       }
+    ········· │ 
+    5979 5987 │         expect(context(result.response)).toStrictEqual(current);
+    5980 5988 │         if (method === "HEAD") expect(result.text).toBe("");
+    5981      │ - ······else·expect(checkedProblem(record(JSON.parse(result.text)))).toMatchObject({
+    5982      │ - ········status,·code:·"cursor-expired",
+    5983      │ - ······});
+         5989 │ + ······else
+         5990 │ + ········expect(checkedProblem(record(JSON.parse(result.text)))).toMatchObject({
+         5991 │ + ··········status,
+         5992 │ + ··········code:·"cursor-expired",
+         5993 │ + ········});
+    5984 5994 │       }
+    5985 5995 │       // Shared receiving/auth fences; these rows do not observe the receipt owner.
+    ········· │ 
+    6028 6038 │     const started = performance.now();
+    6029 6039 │     const scope = "https://current-observation.invalid/acme/";
+    6030      │ - ··const·beadType·=·`${scope}types/task`,·linkType·=·`${scope}types/relation`;
+         6040 │ + ··const·beadType·=·`${scope}types/task`,
+         6041 │ + ····linkType·=·`${scope}types/relation`;
+    6031 6042 │     const directory = mkdtempSync(path.join(tmpdir(), "bdp-current-observation-http-"));
+    6032      │ - ··let·tick·=·0,·waits·=·0,·attempted·=·0,·closed·=·false;
+         6043 │ + ··let·tick·=·0,
+         6044 │ + ····waits·=·0,
+         6045 │ + ····attempted·=·0,
+         6046 │ + ····closed·=·false;
+    6033 6047 │     let runtime: Awaited<ReturnType<typeof startTransactionRuntime>> | undefined;
+    6034 6048 │     const failures: unknown[] = [];
+    ········· │ 
+    6040 6054 │       }
+    6041 6055 │     };
+    6042      │ - ··const·responses:·{·label:·string;·method:·string;·url:·string;·status:·number;·bytes:·number;·headers:·Record<string,·string·|·null>·}[]·=·[];
+         6056 │ + ··const·responses:·{
+         6057 │ + ····label:·string;
+         6058 │ + ····method:·string;
+         6059 │ + ····url:·string;
+         6060 │ + ····status:·number;
+         6061 │ + ····bytes:·number;
+         6062 │ + ····headers:·Record<string,·string·|·null>;
+         6063 │ + ··}[]·=·[];
+    6043 6064 │     const contextNames = ["bdp-scope-epoch", "bdp-authorization-view", "bdp-scope-position"] as const;
+    6044      │ - ··const·granted·=·new·Set([`${scope}operations/batch`,·`${scope}operations/update-where`,·`${scope}types/task`,·`${scope}types/`,·`${scope}types/missing`,·`${scope}beads/r00?view=links`,·`${scope}beads/missing?view=links`]);
+    6045      │ - ··const·seedBody·=·JSON.stringify({·operations:·Array.from({·length:·32·},·(_,·n)·=>·({
+    6046      │ - ····operation:·"createBead",·id:·`beads/r${String(n).padStart(2,·"0")}`,·type:·beadType,·properties:·{·n:·0·},
+    6047      │ - ··}))·});
+    6048      │ - ··const·setBody·=·JSON.stringify({·collection:·"beads",·selector:·`$[?@.type·==·"${beadType}"]`,·cardinality:·{·min:·32,·max:·32·},·change:·[{·op:·"replace",·path:·"/n",·value:·1·}]·});
+         6065 │ + ··const·granted·=·new·Set([
+         6066 │ + ····`${scope}operations/batch`,
+         6067 │ + ····`${scope}operations/update-where`,
+         6068 │ + ····`${scope}types/task`,
+         6069 │ + ····`${scope}types/`,
+         6070 │ + ····`${scope}types/missing`,
+         6071 │ + ····`${scope}beads/r00?view=links`,
+         6072 │ + ····`${scope}beads/missing?view=links`,
+         6073 │ + ··]);
+         6074 │ + ··const·seedBody·=·JSON.stringify({
+         6075 │ + ····operations:·Array.from({·length:·32·},·(_,·n)·=>·({
+         6076 │ + ······operation:·"createBead",
+         6077 │ + ······id:·`beads/r${String(n).padStart(2,·"0")}`,
+         6078 │ + ······type:·beadType,
+         6079 │ + ······properties:·{·n:·0·},
+         6080 │ + ····})),
+         6081 │ + ··});
+         6082 │ + ··const·setBody·=·JSON.stringify({
+         6083 │ + ····collection:·"beads",
+         6084 │ + ····selector:·`$[?@.type·==·"${beadType}"]`,
+         6085 │ + ····cardinality:·{·min:·32,·max:·32·},
+         6086 │ + ····change:·[{·op:·"replace",·path:·"/n",·value:·1·}],
+         6087 │ + ··});
+    6049 6088 │     try {
+    6050      │ - ····runtime·=·await·startTransactionRuntime({
+    6051      │ - ······directory,·scope,·port:·0,·create:·true,
+    6052      │ - ······types:·[parseTypeDescriptor({·id:·beadType,·name:·"Task",·describes:·"bead",·conformsTo:·[]·}),·parseTypeDescriptor({·id:·linkType,·name:·"Relation",·describes:·"link",·conformsTo:·[],·source:·{·conformsTo:·[beadType],·external:·"opaque"·},·target:·{·conformsTo:·[beadType],·external:·"opaque"·}·})],
+    6053      │ - ······credentials:·[{·token,·principal:·"p",·canMutate:·true·},·{·token:·otherToken,·principal:·"other",·canMutate:·false·}],
+    6054      │ - ····},·{·receiptMaximumItems:·2,·minimumReads:·{·budgetMs:·2,·now:·()·=>·tick++,·wait:·async·()·=>·{·waits++;·}·}·});
+         6089 │ + ····runtime·=·await·startTransactionRuntime(
+         6090 │ + ······{
+         6091 │ + ········directory,
+         6092 │ + ········scope,
+         6093 │ + ········port:·0,
+         6094 │ + ········create:·true,
+         6095 │ + ········types:·[
+         6096 │ + ··········parseTypeDescriptor({·id:·beadType,·name:·"Task",·describes:·"bead",·conformsTo:·[]·}),
+         6097 │ + ··········parseTypeDescriptor({
+         6098 │ + ············id:·linkType,
+         6099 │ + ············name:·"Relation",
+         6100 │ + ············describes:·"link",
+         6101 │ + ············conformsTo:·[],
+         6102 │ + ············source:·{·conformsTo:·[beadType],·external:·"opaque"·},
+         6103 │ + ············target:·{·conformsTo:·[beadType],·external:·"opaque"·},
+         6104 │ + ··········}),
+         6105 │ + ········],
+         6106 │ + ········credentials:·[
+         6107 │ + ··········{·token,·principal:·"p",·canMutate:·true·},
+         6108 │ + ··········{·token:·otherToken,·principal:·"other",·canMutate:·false·},
+         6109 │ + ········],
+         6110 │ + ······},
+         6111 │ + ······{
+         6112 │ + ········receiptMaximumItems:·2,
+         6113 │ + ········minimumReads:·{
+         6114 │ + ··········budgetMs:·2,
+         6115 │ + ··········now:·()·=>·tick++,
+         6116 │ + ··········wait:·async·()·=>·{
+         6117 │ + ············waits++;
+         6118 │ + ··········},
+         6119 │ + ········},
+         6120 │ + ······},
+         6121 │ + ····);
+    6055 6122 │       const listenUrl = runtime.listenUrl;
+    6056      │ - ····const·exchange·=·async·(label:·string,·method:·"GET"·|·"HEAD"·|·"POST",·url:·string,·fields:·string[]·=·[],·credential:·"writer"·|·"other"·|·"anonymous"·=·"writer",·requestBody?:·string,·key?:·string)·=>·{
+    6057      │ - ······if·(attempted·>=·37·||·!granted.has(url))·throw·new·Error("unbound·or·excess·current·observation·request");
+         6123 │ + ····const·exchange·=·async·(
+         6124 │ + ······label:·string,
+         6125 │ + ······method:·"GET"·|·"HEAD"·|·"POST",
+         6126 │ + ······url:·string,
+         6127 │ + ······fields:·string[]·=·[],
+         6128 │ + ······credential:·"writer"·|·"other"·|·"anonymous"·=·"writer",
+         6129 │ + ······requestBody?:·string,
+         6130 │ + ······key?:·string,
+         6131 │ + ····)·=>·{
+         6132 │ + ······if·(attempted·>=·37·||·!granted.has(url))
+         6133 │ + ········throw·new·Error("unbound·or·excess·current·observation·request");
+    6058 6134 │         attempted++;
+    6059 6135 │         const target = new URL(url);
+  354 more lines truncated
+  
+
+packages/server/src/transaction-read.test.ts format ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+  × Formatter would have printed the following content:
+  
+    1684 1684 │               plane.minimumFor(principal, { ...f.minimum(), ...patch }).perform(request),
+    1685 1685 │             ).rejects.toMatchObject({
+    1686      │ - ············reason:·"minimumPosition"·in·patch·?·"behind"·:·"scopeEpoch"·in·patch·?·"cursor-expired"·:·"foreign-view",
+         1686 │ + ············reason:
+         1687 │ + ··············"minimumPosition"·in·patch
+         1688 │ + ················?·"behind"
+         1689 │ + ················:·"scopeEpoch"·in·patch
+         1690 │ + ··················?·"cursor-expired"
+         1691 │ + ··················:·"foreign-view",
+    1687 1692 │             });
+    1688 1693 │           } else {
+  
+
+packages/server/src/transaction-receipt-pages.test.ts format ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+  × Formatter would have printed the following content:
+  
+      1     │ - import·{·TransactionMinimumFailure,·TransactionMinimumUnproved,·type·TransactionMinimum·}·from·"./transaction-consistency.js";
+          1 │ + import·{
+          2 │ + ··TransactionMinimumFailure,
+          3 │ + ··TransactionMinimumUnproved,
+          4 │ + ··type·TransactionMinimum,
+          5 │ + }·from·"./transaction-consistency.js";
+      2   6 │   import { DatabaseSync } from "node:sqlite";
+      3   7 │   import { existsSync, mkdtempSync, readFileSync, rmSync } from "node:fs";
+    ······· │ 
+    378 382 │         try {
+    379 383 │           const result = owned.owner.readReceiptPage(principal, target, tuple);
+    380     │ - ········rows.push({·label,·outcome:·result.kind,·context:·"context"·in·result·?·result.context·:·null·});
+        384 │ + ········rows.push({
+        385 │ + ··········label,
+        386 │ + ··········outcome:·result.kind,
+        387 │ + ··········context:·"context"·in·result·?·result.context·:·null,
+        388 │ + ········});
+    381 389 │           return result;
+    382 390 │         } catch (error) {
+    ······· │ 
+    390 398 │                   : "unexpected",
+    391 399 │             context:
+    392     │ - ············error·instanceof·TransactionMinimumFailure·||·error·instanceof·TransactionMinimumUnproved
+        400 │ + ············error·instanceof·TransactionMinimumFailure·||
+        401 │ + ············error·instanceof·TransactionMinimumUnproved
+    393 402 │                 ? error.context
+    394 403 │                 : null,
+    ······· │ 
+    482 491 │       );
+    483 492 │     }
+    484     │ - ··if·(failures.length)·throw·new·AggregateError(failures,·"receipt·page·retention·and·cleanup·failed");
+        493 │ + ··if·(failures.length)
+        494 │ + ····throw·new·AggregateError(failures,·"receipt·page·retention·and·cleanup·failed");
+    485 495 │   });
+    486 496 │   
+  
+
+packages/server/src/transaction-service.test.ts format ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+  × Formatter would have printed the following content:
+  
+    3768 3768 │   type CurrentObservationSurface = (typeof currentObservationSurfaces)[number];
+    3769 3769 │   function currentObservationFixture(policy: NonNullable<TransactionServiceOptions["minimumReads"]>) {
+    3770      │ - ··const·localBead·=·`${scope}types/task`,·localLink·=·`${scope}types/relation`;
+         3770 │ + ··const·localBead·=·`${scope}types/task`,
+         3771 │ + ····localLink·=·`${scope}types/relation`;
+    3771 3772 │     const boundary = cleanup.length;
+    3772 3773 │     const f = fixture({
+    ········· │ 
+    3775 3776 │         parseTypeDescriptor({ id: localBead, name: "Task", describes: "bead", conformsTo: [] }),
+    3776 3777 │         parseTypeDescriptor({
+    3777      │ - ········id:·localLink,·name:·"Relation",·describes:·"link",·conformsTo:·[],
+         3778 │ + ········id:·localLink,
+         3779 │ + ········name:·"Relation",
+         3780 │ + ········describes:·"link",
+         3781 │ + ········conformsTo:·[],
+    3778 3782 │           source: { conformsTo: [localBead], external: "opaque" },
+    3779 3783 │           target: { conformsTo: [localBead], external: "opaque" },
+    ········· │ 
+    3782 3786 │     });
+    3783 3787 │     const owner = f.owner;
+    3784      │ - ··let·recording·=·false,·attempts·=·0,·mutations·=·0,·closeCalls·=·0,·closed·=·false;
+         3788 │ + ··let·recording·=·false,
+         3789 │ + ····attempts·=·0,
+         3790 │ + ····mutations·=·0,
+         3791 │ + ····closeCalls·=·0,
+         3792 │ + ····closed·=·false;
+    3785 3793 │     const entries: { method: string; context: unknown; minimum: unknown }[] = [];
+    3786 3794 │     const delegate = {
+    ········· │ 
+    3797 3805 │         try {
+    3798 3806 │           const result = owner.readReceiptPage(...args);
+    3799      │ - ········if·(recording)·entries.push({·method:·"readReceiptPage",·context:·"context"·in·result·?·result.context·:·null,·minimum:·args[2]·??·null·});
+         3807 │ + ········if·(recording)
+         3808 │ + ··········entries.push({
+         3809 │ + ············method:·"readReceiptPage",
+         3810 │ + ············context:·"context"·in·result·?·result.context·:·null,
+         3811 │ + ············minimum:·args[2]·??·null,
+         3812 │ + ··········});
+    3800 3813 │           return result;
+    3801 3814 │         } catch (error) {
+    3802      │ - ········if·(recording)·entries.push({·method:·"readReceiptPage",·context:·error·instanceof·TransactionMinimumFailure·||·error·instanceof·TransactionMinimumUnproved·?·error.context·:·null,·minimum:·args[2]·??·null·});
+         3815 │ + ········if·(recording)
+         3816 │ + ··········entries.push({
+         3817 │ + ············method:·"readReceiptPage",
+         3818 │ + ············context:
+         3819 │ + ··············error·instanceof·TransactionMinimumFailure·||
+         3820 │ + ··············error·instanceof·TransactionMinimumUnproved
+         3821 │ + ················?·error.context
+         3822 │ + ················:·null,
+         3823 │ + ············minimum:·args[2]·??·null,
+         3824 │ + ··········});
+    3803 3825 │           throw error;
+    3804 3826 │         }
+    ········· │ 
+    3826 3848 │       return requireReceipt(await service.submit(batch(operations, key)));
+    3827 3849 │     };
+    3828      │ - ··const·invoke·=·(surface:·CurrentObservationSurface,·minimum:·TransactionMinimum,·page:·string,·target?:·string,·principal·=·"p")·=>·{
+    3829      │ - ····if·(surface·===·"page")·return·service.receiptPage({·kind:·"authenticated",·principal·},·target·??·page,·minimum);
+         3850 │ + ··const·invoke·=·(
+         3851 │ + ····surface:·CurrentObservationSurface,
+         3852 │ + ····minimum:·TransactionMinimum,
+         3853 │ + ····page:·string,
+         3854 │ + ····target?:·string,
+         3855 │ + ····principal·=·"p",
+         3856 │ + ··)·=>·{
+         3857 │ + ····if·(surface·===·"page")
+         3858 │ + ······return·service.receiptPage({·kind:·"authenticated",·principal·},·target·??·page,·minimum);
+    3830 3859 │       if (surface === "discovery") return service.discoveryObserved(minimum);
+    3831      │ - ····const·request·=·requestFromUrl(new·URL(target·??·(surface·===·"type"·?·"types/task"·:·surface·===·"types"·?·"types/"·:·"beads/a?view=links"),·scope),·scope);
+         3860 │ + ····const·request·=·requestFromUrl(
+         3861 │ + ······new·URL(
+         3862 │ + ········target·??
+         3863 │ + ··········(surface·===·"type"
+         3864 │ + ············?·"types/task"
+         3865 │ + ············:·surface·===·"types"
+         3866 │ + ··············?·"types/"
+         3867 │ + ··············:·"beads/a?view=links"),
+         3868 │ + ········scope,
+         3869 │ + ······),
+         3870 │ + ······scope,
+         3871 │ + ····);
+    3832 3872 │       if (isReadProblem(request)) throw new Error("invalid current observation fixture route");
+    3833      │ - ····return·service.readAtMinimum({·kind:·"authenticated",·principal:·{·id:·principal·}·},·minimum).perform(request);
+         3873 │ + ····return·service
+         3874 │ + ······.readAtMinimum({·kind:·"authenticated",·principal:·{·id:·principal·}·},·minimum)
+         3875 │ + ······.perform(request);
+    3834 3876 │     };
+    3835 3877 │     return {
+    3836      │ - ····owner,·service,·invoke,·submit,·localCreate,·entries,
+         3878 │ + ····owner,
+         3879 │ + ····service,
+         3880 │ + ····invoke,
+         3881 │ + ····submit,
+         3882 │ + ····localCreate,
+         3883 │ + ····entries,
+    3837 3884 │       async seed() {
+    3838      │ - ······return·submit([localCreate("a"),·localCreate("b"),·{
+    3839      │ - ········operation:·"createLink",·id:·"links/l",·type:·localLink,
+    3840      │ - ········source:·"beads/a",·target:·"beads/b",·properties:·{},
+    3841      │ - ······}],·"current-observation-seed");
+         3885 │ + ······return·submit(
+         3886 │ + ········[
+         3887 │ + ··········localCreate("a"),
+         3888 │ + ··········localCreate("b"),
+         3889 │ + ··········{
+         3890 │ + ············operation:·"createLink",
+         3891 │ + ············id:·"links/l",
+         3892 │ + ············type:·localLink,
+         3893 │ + ············source:·"beads/a",
+         3894 │ + ············target:·"beads/b",
+         3895 │ + ············properties:·{},
+         3896 │ + ··········},
+         3897 │ + ········],
+         3898 │ + ········"current-observation-seed",
+         3899 │ + ······);
+    3842 3900 │       },
+    3843      │ - ····record(value:·boolean)·{·recording·=·value;·},
+         3901 │ + ····record(value:·boolean)·{
+         3902 │ + ······recording·=·value;
+         3903 │ + ····},
+    3844 3904 │       counts: () => ({ attempts, mutations, closeCalls, closed }),
+    3845 3905 │       remove() {
+    ········· │ 
+    3857 3917 │     let timer: ReturnType<typeof setTimeout> | undefined;
+    3858 3918 │     try {
+    3859      │ - ····return·await·Promise.race([promise,·new·Promise<never>((_,·reject)·=>·{
+    3860      │ - ······timer·=·setTimeout(()·=>·reject(new·Error(label)),·1000);
+    3861      │ - ····})]);
+         3919 │ + ····return·await·Promise.race([
+         3920 │ + ······promise,
+         3921 │ + ······new·Promise<never>((_,·reject)·=>·{
+         3922 │ + ········timer·=·setTimeout(()·=>·reject(new·Error(label)),·1000);
+         3923 │ + ······}),
+         3924 │ + ····]);
+    3862 3925 │     } finally {
+    3863 3926 │       clearTimeout(timer);
+    ········· │ 
+    3865 3928 │   }
+    3866 3929 │   it("waits for lexical current observations and preserves captured tuples across real progress", async () => {
+    3867      │ - ··let·tick·=·0,·waits·=·0,·operations·=·0;
+    3868      │ - ··let·changing:·{·scopeEpoch:·string;·authorizationView:·string;·minimumPosition:·string·}·|·undefined;
+         3930 │ + ··let·tick·=·0,
+         3931 │ + ····waits·=·0,
+         3932 │ + ····operations·=·0;
+         3933 │ + ··let·changing:
+         3934 │ + ····|·{·scopeEpoch:·string;·authorizationView:·string;·minimumPosition:·string·}
+         3935 │ + ····|·undefined;
+    3869 3936 │     let current: ReturnType<typeof requireReceipt>["context"];
+    3870      │ - ··const·f·=·currentObservationFixture({·budgetMs:·2,·now:·()·=>·tick++,·wait:·async·()·=>·{
+    3871      │ - ····waits++;
+    3872      │ - ····if·(waits·===·1)·{
+    3873      │ - ······const·advanced·=·await·f.submit([f.localCreate("c")],·"current-observation-advance");
+    3874      │ - ······current·=·advanced.context;
+    3875      │ - ······if·(!changing)·throw·new·Error("missing·mutable·tuple");
+    3876      │ - ······changing.minimumPosition·=·current.scopePosition;
+    3877      │ - ······changing.scopeEpoch·=·"caller-mutated";
+  444 more lines truncated
+  
+
+packages/server/src/transaction-snapshot.test.ts format ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+  × Formatter would have printed the following content:
+  
+      15   15 │   } from "@bdp/protocol";
+      16   16 │   import { openTransactionStore, type TransactionStoreOptions } from "./transaction-store.js";
+      17      │ - import·{
+      18      │ - ··TransactionMinimumUnproved,
+      19      │ - }·from·"./transaction-consistency.js";
+           17 │ + import·{·TransactionMinimumUnproved·}·from·"./transaction-consistency.js";
+      20   18 │   import { prepareTransactionSetCore } from "./transaction-batch.js";
+      21   19 │   import {
+  
+
+Checked 15 files in 29ms. No fixes applied.
+Found 9 errors.
+format ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+  × Some errors were emitted while running checks.
+  
+

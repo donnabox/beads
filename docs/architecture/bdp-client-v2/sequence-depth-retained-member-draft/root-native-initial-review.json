@@ -1,0 +1,36 @@
+{
+  "checkedAt": "2026-10-16T04:21:26.552660+00:00",
+  "bindingSha256": "987f61764ca09df676f77ab5b99a8886809f4ce7908342bc8c27fd462fddcc81",
+  "status": "native and independentnative review complete; preliminary validation exposed2noUnsafeFinally errors in test cleanup; actualClaude pending",
+  "findings": [
+    {
+      "severity": "validation",
+      "finding": "Two explicit cleanup throws violate noUnsafeFinally.",
+      "disposition": "Actual lintfailure and diagnostic preserved; proposed failurecollection/gatedcleanup patch39bbc325 accepted byroot sourceinspection but not applied whileClaudeactive."
+    }
+  ],
+  "reviewed": [
+    "complete2productiondiff",
+    "existing admitKey/admitSequence/nextSequence ordering and atomic cleanup",
+    "strict/receiving shared preparation plus rawmember depth2 brands",
+    "source boundary28/29 and malformedcarrier tests",
+    "three owner retained/pending/freshreservation/expiry tests",
+    "installed request preparation, complete receipt/resource/schema oracles,SHA256 fingerprints, bounded response and cleanup code",
+    "complete397line sourceHTTPappend including11realdispatches andboundedcleanup",
+    "installed launch/credential/byte-bound/complete-wire source"
+  ],
+  "reasoning": [
+    "Complete carrier syntax precedes annotation; strict helper then requires all depth facts, receiving retains them without weakening fresh admission.",
+    "Existing owner compares saved state at eligible turn; fresh deep requests hit existing branded guard and cleanup, with no extra HTTP key probe.",
+    "Negotiation rejects before admission; only execution development-limit caught. Strict control preparation throw reaches generic handler500 markerless.",
+    "Installed fresh-depth remains a documented private gap; this slice supports retained comparison rather than arbitrary depth."
+  ],
+  "gates": [
+    "actual Claude review",
+    "source validation after ordinary minimum-main integration",
+    "fresh installed consumer/control",
+    "exact-headCI",
+    "root fullscope acceptance"
+  ],
+  "independentNativeReviewSha256": "495cf3d4b345b0e535dc0ef7ca9975472b9bb02f31a8310ce23b99a895d4f587"
+}

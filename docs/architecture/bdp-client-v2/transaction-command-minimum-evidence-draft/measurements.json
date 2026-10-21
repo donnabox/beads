@@ -1,0 +1,80 @@
+{
+  "manifest": {
+    "diskBytes": 738783,
+    "normalBytes": 750589,
+    "compactBytes": 366164,
+    "canonicalBytes": 366164,
+    "nodes": 19575,
+    "sha256": "a48612a0935e7fe557cd3f75af281cc87522c339c3f09c0fa6aff6ccd1671446",
+    "normalSha256": "2bccebce9c8a06395cf6c58c617aedaa67fa0061eac07b15636b6cd56b90428d",
+    "compactSha256": "dd0833b4f16d25d4999b294c3d09b44257e4e27aa3d2bd07fd69852d04d74eda",
+    "canonicalSha256": "63a4edbe99c07045b62058caad84576706b4f0384f516b28aa5c790328a15b13",
+    "delta": {
+      "diskBytes": 54577,
+      "normalBytes": 54991,
+      "nodes": 1468
+    }
+  },
+  "coverage": {
+    "diskBytes": 108091,
+    "normalBytes": 108091,
+    "compactBytes": 76816,
+    "canonicalBytes": 76816,
+    "nodes": 2412,
+    "sha256": "edfa30e2bc58b7b067a3b941da896d0ed991dcf3173467e348407904f054162a",
+    "normalSha256": "edfa30e2bc58b7b067a3b941da896d0ed991dcf3173467e348407904f054162a",
+    "compactSha256": "710fe20abc51eba849a77e246f929a173d8bab41a75e315e89b88306e14d63dd",
+    "canonicalSha256": "baa0373bb80175246a154328a4a26bfc27a1b23afc5378b59b77acd0248198f7",
+    "delta": {
+      "diskBytes": 8846,
+      "normalBytes": 8846,
+      "nodes": 200
+    }
+  },
+  "newActions": 11,
+  "totalActions": 210,
+  "newAssertions": 192,
+  "totalAssertions": 2294,
+  "newCaptures": 1,
+  "newRowCompactSha256": "5164c21057c76c2f4dc96634bf441eea45fbffa261e4c091dc3b9c3647be62cd",
+  "fixture": {
+    "path": "packages/conformance/test-support/transactional/fixture-v1.json",
+    "bytes": 716,
+    "sha256": "3a7899ced771d4880066d98b0000c53f801ece53458502cc4f3bc641146c9a85"
+  },
+  "planningLimits": {
+    "manifestAdditionalBytes": 122880,
+    "nodesAdditional": 3000,
+    "coverageAdditionalBytes": 24576,
+    "newAssertions": 260
+  },
+  "executed": false,
+  "proposedCanonicalFences": {
+    "manifestDisk": {
+      "oldAbsolute": 688302,
+      "newAbsolute": 742879,
+      "oldDeltaFrom488280": 200022,
+      "newDeltaFrom488280": 254599,
+      "margin": 4096
+    },
+    "manifestNormal": {
+      "oldAbsolute": 699694,
+      "newAbsolute": 754685,
+      "margin": 4096
+    },
+    "nodes": {
+      "oldAbsolute": 18171,
+      "newAbsolute": 19639,
+      "oldDeltaFrom13019": 5152,
+      "newDeltaFrom13019": 6620,
+      "margin": 64
+    },
+    "coverage": {
+      "oldAbsolute": 100269,
+      "newAbsolute": 109115,
+      "oldDeltaFrom70662": 29607,
+      "newDeltaFrom70662": 38453,
+      "margin": 1024
+    }
+  }
+}

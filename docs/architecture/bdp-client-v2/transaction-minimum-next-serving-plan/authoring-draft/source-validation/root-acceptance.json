@@ -1,0 +1,9 @@
+{
+  "at": "2026-10-16T03:02:05.597791+00:00",
+  "status": "source-validation-released",
+  "review": "Root read all four production diffs, exact spec changes and source/installed test additions, including captured-request repair. Closed supervisor, exact 15 callback selectors, sanitized environment and owned temporary directories reviewed.",
+  "sourceBindingSha256": "f1a3bf0afc93a289fcd95c349829eb751f72cdfca1487d5c5d72f023d6f12d51",
+  "scope": "11 ordered stages on explicitly unmerged1647 dirty candidate; no installed/control execution or main attribution",
+  "stoppingRule": "Stop at first failure; preserve outcome; no automatic retry",
+  "reviewGate": "Actual complementary Claude code review remains required before PR integration."
+}

@@ -1,0 +1,47 @@
+{
+  "status": "CLOSED distinct focused code review; root release required",
+  "reviewHead": "18f5428686dd84fb139c9dbbcbe39d5958012323",
+  "reviewTree": "9c78087e1036dd26ca908e1d8feaa91263513717",
+  "parent": "98c600767e8e91a79e109cb741beb91e23b9bebe",
+  "sourceHashes": {
+    "apps/bdptest/src/transactional-same-key-overlap-installed.test.ts": "e6a52fa4d645ffef04e4b6e8ccd9bbcb7495624ae0e3f46536e0e9ac6b707974",
+    "docs/design/transaction-implementation-progress.md": "21069d8d8eb5d5048a1dbcb38871ea0f8e72b463e9456633b12b4860e024a728"
+  },
+  "promptSha256": "18e54f5432d51dbab43287f7b9b0ade3024e17a9f03e9fd02383fc12ad5d8d91",
+  "artifacts": {
+    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-same-key-overlap-draft/source-binding.json": "ad840a73fe10f830e58959dcc7642b35ec91f0a2cea4db4f4fb9912f940df0d0",
+    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-same-key-overlap-draft/draft.patch": "a4aa320ea35ac713581509bc5ae0935bf26c26b01fc1543d123ee5931f1c6626",
+    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-same-key-overlap-draft/report.md": "b10e34b690bdae4a8fd4aa0314e2b2f54a071a4a3a7b8d2f73cec37dae58b706",
+    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-same-key-overlap-draft/report-contract.json": "80ea222189de3899116e13e0ec4a7277f29e7f1c828b9a0974679ca71fcf14eb",
+    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-same-key-overlap-draft/native-code-review.md": "c3e50fffd009c66f30859f9bc1d8ce81481c5588e5190df553e4f3dad85b0c0b",
+    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-same-key-overlap-draft/landing/final-source.json": "f3e6fbef9e2a950a12dd34264bf91a1a7a27e9a30259ba1c7e796a89d415f522",
+    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-same-key-overlap-draft/execution-preparation/root-source-acceptance.json": "268171b36d1c1b5881227f596cc7b9e9077793a85d61026001cdaf3f7a46dc05",
+    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-same-key-overlap-draft/claude-code-preparation/exit.json": "cae00fb4d82fa0d94a1532ef9ed2caeae0b6a70e434b91260ec8a2ceff836959",
+    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-same-key-overlap-draft/claude-code-preparation/cleanup.json": "01bef59b059f64076406ee5093529fca9959221dbc2c12db5f7dd76007d16b24",
+    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-same-key-overlap-draft/claude-split-review/candidate.patch": "a4d740d866598f9e56a8c1a9f611d459eee607b5a9117a0fc7a52cbd9f9901b1",
+    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-same-key-overlap-draft/claude-split-review/coverage-map.json": "99ba93e79da8ed0440ed3a6a38be3e5e70c77a4d7e0ef9841f72034bd5737402",
+    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-same-key-overlap-draft/claude-split-review/oracles/context-inventory.json": "43113c8dc246980f9b537720eeaa775fddab57aadfeaf75ee98b095a350d74b0"
+  },
+  "committedSourceHashes": {
+    "packages/server/src/transaction-http.ts": "b51d02801e5924190aba77c377e538db0b8619149d6184e19cb56d440f40c2cf",
+    "packages/server/src/read-http-routing.ts": "d9344b87838f8c71381ccf9efe28b4f023df45503570beb8fb4293d553caca42",
+    "packages/server/src/transaction-events.ts": "c6052433662fcb2d0a202ad4e408a24d4c43f980313fa89659501b4475790db5",
+    "packages/server/src/resource-evaluator.ts": "89606787e455f4ed555b807d91c5331a376431807a9a581de1f94e538fcab4ff",
+    "docs/specs/bdp.md": "f036103ffdf5f89fa3a2033570e1e987c4cd203cd80b1c633cb44615123f892e",
+    "schemas/bdp-v0.schema.json": "0baa5d5ef67144f8e6513b4cde31168effc8df6d52ef3141b0f144b87f8dc227"
+  },
+  "contextSha256": "1ca3731409c3e27a2fdccdcd5dc4ca4bdfd75876e69ab929a6e3d843cf74ae94",
+  "sourceBindingPath": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-same-key-overlap-draft/source-binding.json",
+  "sourceBindingSha256": "ad840a73fe10f830e58959dcc7642b35ec91f0a2cea4db4f4fb9912f940df0d0",
+  "fullPatchPath": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-same-key-overlap-draft/draft.patch",
+  "fullPatchSha256": "a4aa320ea35ac713581509bc5ae0935bf26c26b01fc1543d123ee5931f1c6626",
+  "authorReportPath": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-same-key-overlap-draft/report.md",
+  "authorReportSha256": "b10e34b690bdae4a8fd4aa0314e2b2f54a071a4a3a7b8d2f73cec37dae58b706",
+  "ownedPaths": [
+    "apps/bdptest/src/transactional-same-key-overlap-installed.test.ts",
+    "docs/design/transaction-implementation-progress.md"
+  ],
+  "rootLaunchReleased": false,
+  "scope": "oracles",
+  "candidateDiffSha256": "a4d740d866598f9e56a8c1a9f611d459eee607b5a9117a0fc7a52cbd9f9901b1"
+}

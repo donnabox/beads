@@ -1,0 +1,25 @@
+--- after-format/apps/bdptest/src/transactional-discovery-installed.test.ts
++++ final/apps/bdptest/src/transactional-discovery-installed.test.ts
+@@ -1019,18 +1019,10 @@
+   );
+   expect(B).toMatchObject({ id: beadId, describes: "bead" });
+   expect(L).toMatchObject({ id: linkId, describes: "link" });
+-  for (const descriptor of [B, L]) {
+-    const captured = d3Artifacts.schemas.find(
+-      (item) => item.retrievalUri === descriptor.propertiesSchema,
+-    );
+-    if (!captured) throw new Error("D3 actual Type schema closure missing");
+-    expect(JSON.parse(captured.utf8)).toMatchObject({
+-      type: "object",
+-      properties: { n: { type: "number" } },
+-      required: ["n"],
+-      additionalProperties: false,
+-    });
+-  }
++  // Schema navigation uses received IDs only; provisioning retrieval URIs are private.
++  expect(d3Safe(L.propertiesSchema)).toBe(d3Safe(B.propertiesSchema));
++  expect(B.conformsTo).toEqual([]);
++  expect(L.conformsTo).toEqual([]);
+   for (const endpoint of [L.source, L.target])
+     expect(endpoint).toMatchObject({ conformsTo: [beadId], external: "opaque" });
+   return { bead: beadId, link: linkId };

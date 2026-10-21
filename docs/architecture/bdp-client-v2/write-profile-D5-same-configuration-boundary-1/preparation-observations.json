@@ -1,0 +1,14 @@
+{
+  "staticReadFailuresPreserved": [
+    {
+      "operation": "read guessed transaction-http-executor.ts after successful transaction-http excerpts",
+      "result": "FileNotFoundError; no mutation/execution; replaced with actual transaction-service.ts from current sources"
+    },
+    {
+      "operation": "read guessed development-http.ts",
+      "result": "FileNotFoundError; rg --files found actual development-composition.ts"
+    }
+  ],
+  "truncatedToolDisplays": "Some broad rg output was truncated; scoped reads and complete byte copies supply inspected anchors. No runtime report was truncated or reconstructed.",
+  "productCommandsExecuted": []
+}

@@ -1,0 +1,134 @@
+{
+  "completedFirst21NeverRepeat": [
+    "node-version",
+    "pnpm-version",
+    "workspace-install",
+    "bind-workspace-tools",
+    "typecheck",
+    "format-check",
+    "lint",
+    "fresh-build",
+    "bind-fresh-build",
+    "g09-service-source",
+    "audit-g09-service-source",
+    "g09-schema-source",
+    "audit-g09-schema-source",
+    "legacy-schema-source",
+    "audit-legacy-schema-source",
+    "schema-confinement-source",
+    "audit-schema-confinement-source",
+    "prepare-package-directory",
+    "pack-protocol",
+    "pack-server",
+    "verify-archives"
+  ],
+  "externalGeneratedNonfrozenConsumerInstallOriginal": {
+    "acceptedRawExitCodes": [
+      0
+    ],
+    "argv": [
+      "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+      "/Users/dbox/.cache/node/corepack/v1/pnpm/11.20.0/bin/pnpm.cjs",
+      "install",
+      "--offline",
+      "--ignore-scripts",
+      "--no-frozen-lockfile",
+      "--prod"
+    ],
+    "automaticRetries": 0,
+    "configurationFinalized": true,
+    "cwd": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation-preparation-5/run/consumer",
+    "id": "consumer-install",
+    "kind": "supervised-command",
+    "outerSeconds": 120,
+    "termAtSeconds": 115
+  },
+  "generatedLockProofTimingAndSuccessUnknown": true,
+  "later11Unreleased": [
+    "verify-installed-consumer",
+    "g09-installed-01",
+    "audit-g09-installed-01",
+    "g09-installed-02",
+    "audit-g09-installed-02",
+    "schema-installed-positive",
+    "audit-schema-installed-positive",
+    "required-check-boundaries",
+    "required-e2e-ready-preflight",
+    "required-smoke",
+    "required-evidence-verify"
+  ],
+  "newProposedConsumerStages": [
+    {
+      "actualAttemptExists": false,
+      "exactConfiguration": {
+        "acceptedRawExitCodes": [
+          0
+        ],
+        "argv": [
+          "/opt/homebrew/opt/python@3.14/bin/python3.14",
+          "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation-preparation-5/packages.py",
+          "consumer"
+        ],
+        "automaticRetries": 0,
+        "contract": "Exclusively create ${EXECUTION_ROOT}/run/consumer outside workspace; manifest uses actual archive file paths and pnpm-workspace overrides for protocol and frozen transitive versions; actual closure derived from frozen lock. No old consumer/entry/lock reused.",
+        "cwd": "/Users/dbox/repos/wt/vickie/vickie-schema-lint-correction-minimum",
+        "id": "prepare-consumer",
+        "kind": "supervised-owned-preparation-helper",
+        "mustCompleteBeforeNextStage": true,
+        "outerSeconds": 120,
+        "termAtSeconds": 115
+      },
+      "ordinal": 22,
+      "rootOutputChild": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation5-root-first4-dispatch-1/prepare-consumer",
+      "stage": "prepare-consumer"
+    },
+    {
+      "actualAttemptExists": false,
+      "exactConfiguration": {
+        "acceptedRawExitCodes": [
+          0
+        ],
+        "argv": [
+          "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+          "/Users/dbox/.cache/node/corepack/v1/pnpm/11.20.0/bin/pnpm.cjs",
+          "install",
+          "--offline",
+          "--ignore-scripts",
+          "--no-frozen-lockfile",
+          "--prod"
+        ],
+        "automaticRetries": 0,
+        "configurationFinalized": true,
+        "cwd": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation-preparation-5/run/consumer",
+        "id": "consumer-install",
+        "kind": "supervised-command",
+        "outerSeconds": 120,
+        "termAtSeconds": 115
+      },
+      "ordinal": 23,
+      "rootOutputChild": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation5-root-first4-dispatch-1/consumer-install",
+      "stage": "consumer-install"
+    }
+  ],
+  "stopBefore24": true,
+  "workspaceFrozenInstallOriginal": {
+    "acceptedRawExitCodes": [
+      0
+    ],
+    "argv": [
+      "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+      "/Users/dbox/.cache/node/corepack/v1/pnpm/11.20.0/bin/pnpm.cjs",
+      "install",
+      "--offline",
+      "--frozen-lockfile"
+    ],
+    "automaticRetries": 0,
+    "configurationFinalized": true,
+    "cwd": "/Users/dbox/repos/wt/vickie/vickie-schema-lint-correction-minimum",
+    "expectedSourceChange": "none; install outputs/tool maps separately measured",
+    "id": "workspace-install",
+    "kind": "supervised-command",
+    "outerSeconds": 120,
+    "termAtSeconds": 115
+  }
+}

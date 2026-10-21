@@ -1,0 +1,26 @@
+diff --git a/Users/dbox/repos/wt/vickie/bdp-integration-logs/read-update-guarded-overlap-draft/lint-repair/before.ts b/Users/dbox/repos/wt/vickie/bdp-integration-logs/read-update-guarded-overlap-draft/lint-repair/after.ts
+index ef80e7c..2ca6a93 100644
+--- a/Users/dbox/repos/wt/vickie/bdp-integration-logs/read-update-guarded-overlap-draft/lint-repair/before.ts
++++ b/Users/dbox/repos/wt/vickie/bdp-integration-logs/read-update-guarded-overlap-draft/lint-repair/after.ts
+@@ -128,6 +128,11 @@ function completeUpdate(response: Response, seed: BeadRecord, n: number): BeadRe
+   return resource;
+ }
+ 
++function writeObservation(output: string, record: unknown): void {
++  if (!path.isAbsolute(output)) throw new Error("overlap:absolute-output");
++  writeFileSync(output, `${JSON.stringify(record)}\n`, { flag: "wx" });
++}
++
+ it("preserves one guarded winner and both retained dispositions across overlapping ordinary Read+Update requests", async () => {
+   const failures: unknown[] = [];
+   const cleanupFailures: string[] = [];
+@@ -660,8 +665,7 @@ it("preserves one guarded winner and both retained dispositions across overlappi
+     const output = process.env.BDP_RU_GUARDED_OVERLAP_OUTPUT;
+     if (output) {
+       try {
+-        if (!path.isAbsolute(output)) throw new Error("overlap:absolute-output");
+-        writeFileSync(output, `${JSON.stringify(record)}\n`, { flag: "wx" });
++        writeObservation(output, record);
+       } catch (error) {
+         failures.push(error);
+         record.outcome = "failed";

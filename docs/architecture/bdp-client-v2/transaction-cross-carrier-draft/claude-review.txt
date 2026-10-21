@@ -1,0 +1,118 @@
+## Hash verification (precondition)
+
+All of `binding.json` verifies against the working tree. Parent `HEAD` = `eff1718…`, `git rev-parse eff1718^{tree}` = `5c14bcc2…` ✓. Working tree shows exactly the four modified paths, no untracked files.
+
+| Path | bytes | sha256 |
+|---|---:|---|
+| `…/transactional/manifest-v1.json` | 684206 ✓ | `726fc623…14cb9` ✓ |
+| `…/transactional/coverage-v1.json` | 99245 ✓ | `a3a15b51…bdd1df` ✓ |
+| `…/src/transactional-cumulative.test.ts` | 88878 ✓ | `ca689688…513e12` ✓ |
+| `…/src/transactional-matrix.test.ts` | 82676 ✓ | `5b4cfb0a…b068740` ✓ |
+
+`draft.patch` `2c74b730…`, `measurements.json` `316923ef…`, `measure.py` `050d0c93…`, `route-preimage.json` `a9a17908…`, `parent-object-pins.json` `99f51ea9…` all match. Accepted plan `transaction-after-timeout-next-plan-v3.md` = `c021d366…fcb0a72` ✓, matching the acceptance doc.
+
+---
+
+## Blocking (preflight) findings
+
+**1. [High] The proposed guard set omits the three *delta*-form guards, so the six stated numbers cannot land the draft.**
+*Location:* `packages/conformance/src/transactional-cumulative.test.ts:908`, `:910`, `:928`.
+*Issue:* Six of the ten assertions that currently fail are in `transactional-cumulative.test.ts`, and three of them are delta-form, not absolute:
+```
+read("manifest").byteLength - 488280  <= 135906     // measured needs >= 195926
+read("coverage").byteLength -  70662  <=  18405     // measured needs >=  28583
+nodes                       -  13019  <=   3418     // measured needs >=   5088
+```
+The proposal names only absolutes (disk 688302, coverage 100269, nodes 18171). The report (line 22) says "the existing smaller disk/delta/coverage/node guards … are unchanged", so the delta guards are known, but the dispositioned value set does not cover them.
+*Impact:* Applying the six proposed numbers verbatim leaves three failing assertions; the amendment is not executable as stated.
+*Correction:* Root should additionally disposition the three delta allowances with the same margins, bases unchanged: `135906 → 200022`, `18405 → 29607`, `3418 → 5152`. (Those are exactly measured + 4096 / + 1024 / + 64, consistent with the absolute margins, and all remain inside the plan's §Source-budget stops.)
+
+**2. [Medium] "canonical stringify 699694" corresponds to no assertion site in the four owned files.**
+*Location:* repo-wide — the only occurrences of the manifest byte literals are `transactional-cumulative.test.ts:909` (canonical **disk**) and `transactional-matrix.test.ts:1630` / `:2032` (derivative **stringify**). There is no canonical-`JSON.stringify` assertion anywhere.
+*Issue:* The proposal lists `canonical stringify 699694` alongside five values that do map to live assertions. The plan's table attributes 630676 to "App negative-derivative normal-form guard", i.e. the derivative site, not a canonical one.
+*Impact:* Either 699694 is informational (a measured ceiling with no code effect) — fine — or landing it means *adding* a new assertion, which is outside the plan's "amend every affected guard" framing and would need its own review.
+*Correction:* Root should state explicitly that 699694 is informational, or authorise a named new assertion and its site.
+
+The draft correctly splits the two unit-colliding literals the plan warned about: `650386` → 688302 (disk) vs 705812 (derivative stringify); `17275` → 18171 (canonical nodes) vs 18327 (derivative nodes). That part is right.
+
+**No blocking correctness defect found in the frozen draft itself.** The complete set of assertions that fail today, all by intent, is: `transactional-cumulative.test.ts:908,909,910,911,928,929` and `transactional-matrix.test.ts:1630,1631,2032,2033`.
+
+---
+
+## Optional improvements
+
+**3. [Medium] Four "absence" oracles on the two sequence actions cannot fail for any protocol-legal response.**
+*Location:* `manifest-v1.json:20424` (`no-receipt`), `:20430` (`no-root`), `:20436` (`no-problem`) in `x-create-sequence`; `:20940/:20946/:20952/:20971` in `x-two-sequence`.
+*Issue:* `no-problem` / `no-update-problem` assert `/results/N/problem` is absent. `transaction-sequence.ts:36–63` spreads member problems **flat** into the member, and `#/$defs/transactionalSequenceMemberProblem` has no nested `problem` member — a nested shape is not representable. `no-receipt` / `no-root` are entailed by the `schema` assertion, since `transactionalSequenceResponse` is `additionalProperties:false` with only `results`.
+*Impact:* These read as discriminating but never can be. The `sequence-fresh-key` control proves it: the member *is* an identity-taken Problem and `no-problem` is correctly listed in `expectedPassingIds`. Real discrimination rests entirely on `presentation` and `created-record`.
+*Correction:* Replace `no-problem` / `no-update-problem` with the reachable negative the control actually needs — `/results/0/code` `exists:false` (and `/results/1/code` for the two-member action) — or keep them and record in the coverage reason that they are structural, not behavioural. Either change re-opens every measured byte/node/hash value, so it is a post-freeze remeasurement, not an edit to this draft.
+
+**4. [Medium] `assertCrossCarrierControls()` never loads either derivative through the bundle, and emits no preflight ledger.**
+*Location:* `apps/bdptest/src/transactional-matrix.test.ts:2004–2043`.
+*Issue:* The deletion preflight (`:1632–1655`) calls `createCumulativeTransactionalArtifactBundle` on each derivative, asserts three distinct `executionManifestDigest`s, and can write a ledger under `BDP_TRANSACTIONAL_DELETION_PREFLIGHT_OUTPUT`. The cross-carrier preflight does neither.
+*Impact:* A structurally inadmissible control (bad assertion `kind`, unresolvable `#/$defs/…` — the controls introduce `#/$defs/transactionalProblem` to this manifest for the first time) would only surface during a cohort run, after child launch. Root also has no app-emitted derivative ledger and must rely on `measure.py` artifacts.
+*Correction:* Mirror the deletion preflight: add the bundle load, a distinct-digest assertion, and the optional output env var.
+
+**5. [Medium] The control description's `retained` / `removed` fields are self-derived, so they pin nothing independently.**
+*Location:* `transactional-matrix.test.ts:1977` (`const retained = assertions.map(a => a.id)`), consumed at `:2013–2017`.
+*Issue:* `retained` is read back out of the manifest and then compared to the manifest; `removed` is a hard-coded `[]` compared to `[]`. Contrast `applyDeletionControl`, which pins an independent `stableIds` list and computes `removed` by diff.
+*Impact:* Limited — `for (const id of description.failingIds) expect(description.retained).toContain(id)` still catches loss of any of the 13 / 2 failing IDs, and the execution test's `find(id)?.passed` catches a missing positive. But the non-failing canonical IDs on `x-create-batch` / `x-create-sequence` are pinned only by the row hash in the *other* package's test, and the published control ledger would silently change meaning.
+*Correction:* Pin both control actions' canonical assertion-ID lists literally here, as the deletion guard does.
+
+**6. [Low] Presence-before-equality has no named-cause guard for the new row.**
+*Location:* `transactional-cumulative.test.ts:949–951` — the generic guard is hard-filtered to `transactional.set.mutation` and `transactional.set.zero-match`.
+*Issue:* `assertCrossCarrierObservation` checks the nine required IDs are *defined* but not their relative order, and never inspects `serving-context` at all (its `request` target, its `headers` list, or that `present-*` precedes it). Drift is caught only by the row hash.
+*Impact:* Plan §Law line 27 ("presence must precede equality") is satisfied as authored but unguarded by cause.
+*Correction:* Add `"transactional.idempotency.cross-carrier"` to the filter at `:949`. I checked the guard's four conditions against the authored row — client actions carry `/headers/<name> exists:true`; every `serving-context` names an in-row prior action (`x-create` / `x-update`); `headers` equals the three names in order; and the `present-*` header assertions sit at indices 3–5 before `serving-context` at index 7 — so it passes unchanged.
+
+**7. [Low] The `presentation` weakening corrupts only the member name, not the index/outcome tuple.**
+*Location:* `transactional-cumulative.test.ts:836–838`.
+*Issue:* Plan §Weakenings asks for "corrupt present sequence name/**index**". The case rewrites `present-name.equals` to `"first"` only. `assertCrossCarrierObservation` does pin the `presentation` tuple object literally, so a corrupted index is rejected — but by an unexercised branch.
+*Correction:* Add a fourth case rewriting `presentation.equals` to `[[1,"created"],[0,"updated"]]`.
+
+**8. [Low] The positive row's per-row body-size bounds were not extended to the new row.**
+*Location:* `transactional-matrix.test.ts:412–441` — set/no-op/deletion/pagination/conflict rows each get `bodyOctets` / `decodedBodyBytes` ceilings; the cross-carrier row has none.
+*Correction:* Add `<= 2048` POST / `<= 8192` response, matching the conflict row.
+
+**9. [Low] The post-row sentinel in `crossCarrierWire` only forbids carrier-named keys.**
+*Location:* `transactional-matrix.test.ts:1850–1853`.
+*Issue:* Once `facts.length === maximum`, the hook only asserts no later exchange carries `carrier-create` / `carrier-update`. A stray later POST to `operations/sequence` (which carries no top-level key) would pass unnoticed.
+*Correction:* Also assert the later URL is not one of the three newly added routes.
+
+---
+
+## Notes for the eventual evidence write-up (not change requests)
+
+- **`afterExchange` throws abort the cohort, not the row.** `observe` awaits the hook inside `exactExecution.execute` (`transactional-matrix.test.ts:284`) and rethrows, so a genuine regression in, say, exchange 7's `bdp-scope-position` surfaces as an opaque cohort error rather than a named failing assertion in `result`. That is the intended hard-gate semantics the plan specifies; it just needs stating when the run is reported.
+- Hook **multiplicity and context are correct**: the private receipt-read executor at `runner.ts:906–918` builds its own raw executor and never calls `control.afterExchange`, so the hook sees exactly the row's ten ordinary-wire exchanges; activation on `operations/create-bead` + `carrier-create` is unambiguous because that route is new to the inventory and no other row uses `carrier-*` keys (checked).
+
+---
+
+## What I verified statically, and how
+
+Independently reproduced in Node (same JS semantics the tests will use) and cross-checked against Python:
+
+- canonical nodes **18107**, stringify **695598**, row compact SHA **`9edceed3…`** (identical in both runtimes — the `JSON.stringify` ↔ `json.dumps(separators=(',',':'))` equivalence holds; the row is pure ASCII with no control characters)
+- all three deletion derivatives — **701716/18263** ×2 and **698702/18184**, byte-, node- and SHA-exact against `measurements.json`, replaying the app's own `applyDeletionControl`. This confirms the binding derivative maximum against actual app code, not just `measure.py`'s model.
+- both new control derivatives — **696939/18144/`4de89753…`** and **696952/18143/`71b59501…`**, exact, replaying the app's `applyCrossCarrierControl`; its output is byte-identical to `measure.py`'s model (key-order of the spread override is preserved, so authored body and hook digest agree)
+- `ordinary-capture` 695799/18112 and `forbidden-receipt-use` 696308/18127, exact
+- route preimage digest **`a9a17908…`**, and `exactConfigurationDigest` (`runner.ts:1580`, key-sorted) consumes the same five fields in the same order
+- new raw pins: manifest `transactional.batch.deletion-safety` **`3e66e7c9…`/131808**, coverage **`ac27a329…`/17375** — exact; the new row's slices are 64106 / 11196, i.e. 64112 / 11202 with framing, matching the report
+- counts: 199 actions, 2102 assertions, 230 row assertions, catalog index 46/47, 59 app cases (44 `it.each` expansions + 15 `it`), 52 observe invocations, 37 derivatives + 15 canonical
+
+Source cross-checks that validate the control claims:
+
+- `response-metadata-equals` compares `response.status === expected.status` (`runner.ts:2195`) → `serving-context` is correctly in the batch control's failing set, and correctly in the sequence control's passing set
+- direct conflict returns 409 + `application/problem+json` + context headers (`transaction-http.ts:89–118`, `:367–380`) → the batch control's 13 failing / 15 passing split is exactly right, including `no-name`/`no-source` passing vacuously and `disposition` failing on an existing-but-409 `/status`
+- a failed member rolls back and does **not** advance position (`transaction-store.ts:1239–1248`) → `serving-position: pos-1` holds for the sequence control, and the hook's `index < 3 ? pos-1 : pos-2` is consistent
+- `identity-taken` = `conflict`/409/`never` (`resource-evaluator.ts:142,665`) → `control-member`'s six-tuple is right; `transactionalSequenceMemberProblem` disambiguates cleanly in the response `oneOf` (`mutationResultMembers` requires `outcome`), so `schema` passes
+- missing pointers yield clean assertion failures, not `ConformanceRunnerError` (`runner.ts:2323+`, json-pointer branch) → both controls stop their row rather than the matrix; all `equalsBinding` targets are captured in earlier actions
+- `pointer: ""` returns the whole document (`jsonPointer`), with existing precedent (`c-retry retained-body` already compares a raw POST body to a client `/body`); POST and GET receipts both use `jsonResponse(observed.receipt)`
+- event `ordinal` is per-transaction (confirmed against rows 0/3/4) → both events at 0 is correct; `metadataChange` is omitted from event data when absent from input (`transaction-batch.ts:801`)
+- singleton `create-bead` / `update-bead` body shapes match `SINGLETON_OPERATIONS` and `transaction-installed-contracts.test.ts:492`; all three new routes are served (`TRANSACTION_HTTP_OPERATIONS`)
+- the new client assertion set is a strict superset of the richest existing precedent (`c-original`)
+- no other file in the repo pins the changed counts, digests or parent hashes — the stale `1ba7cbbf…` appears only in the new historical comment
+
+Cost model checks out arithmetically: 192 − 12 + prefix reproduces every updated ceiling (183/184 new; 181/181/186 no-op; 176/181/177 deletion), and the author selection is 559/63 + 1082/126 = 1641/189 (absolute 1728/189).
+
+**Nothing has been executed.** No tests, builds, typechecks, installs or services were run, and no files were written. Everything above is static source, JSON and hash inspection — including the Node/Python reproductions, which load JSON and hash it without touching product or test modules. None of the nine proposed cohorts has run; there is no runtime pass evidence for the positive row, either control, or the six affected controls, and exact-head green CI remains outstanding.

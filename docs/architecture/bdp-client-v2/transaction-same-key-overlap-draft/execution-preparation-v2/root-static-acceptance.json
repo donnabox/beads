@@ -1,0 +1,47 @@
+{
+  "accepted": true,
+  "at": "2026-10-15T20:21:51.185357+00:00",
+  "checks": [
+    {
+      "stage": "setup",
+      "exit": 0,
+      "elapsedSeconds": 0.7155767499934882
+    },
+    {
+      "stage": "typecheck",
+      "exit": 0,
+      "elapsedSeconds": 1.4627506660763174
+    },
+    {
+      "stage": "build",
+      "exit": 0,
+      "elapsedSeconds": 1.5554924581665546
+    },
+    {
+      "stage": "format-check",
+      "exit": 0,
+      "elapsedSeconds": 0.9690820830874145
+    },
+    {
+      "stage": "lint",
+      "exit": 0,
+      "elapsedSeconds": 1.0333574588876218
+    },
+    {
+      "stage": "boundaries",
+      "exit": 0,
+      "elapsedSeconds": 1.1331108340527862
+    },
+    {
+      "stage": "read-seal",
+      "exit": 0,
+      "elapsedSeconds": 0.9169686660170555
+    },
+    {
+      "stage": "build-inventory",
+      "exit": 0,
+      "elapsedSeconds": 0.6382582501973957
+    }
+  ],
+  "attribution": "dirty18f repaired source; actual build attribution retained"
+}

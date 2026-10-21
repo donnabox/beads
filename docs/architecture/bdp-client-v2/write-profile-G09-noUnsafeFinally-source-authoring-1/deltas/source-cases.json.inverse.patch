@@ -1,0 +1,86 @@
+--- source-cases.json
++++ historical/source79/source-cases.json
+@@ -16,9 +16,9 @@
+       "cleanupInclusive": true,
+       "cleanupSeconds": 1,
+       "finalSelectionBinding": {
+-        "fileSha256": "7ba9d8de683f3e2c5f8a38efd6deab7e6de0950590b8de3d97bd2afa2657dac9",
+-        "line": 4408,
+-        "sourceFreeze": "write-profile-G09-noUnsafeFinally-source-authoring-1"
++        "fileSha256": "0470da566dc7a294d19f749f6977f57f63648d52e857f235795d8857a401eef1",
++        "line": 4405,
++        "sourceFreeze": "write-profile-G09-source-correction-authoring-2"
+       },
+       "id": "G09-S01",
+       "proposedFullName": "G09-S01 schemaObserved zero-min/current and captured supplied tuple",
+@@ -42,9 +42,9 @@
+       "cleanupInclusive": true,
+       "cleanupSeconds": 1,
+       "finalSelectionBinding": {
+-        "fileSha256": "7ba9d8de683f3e2c5f8a38efd6deab7e6de0950590b8de3d97bd2afa2657dac9",
+-        "line": 4481,
+-        "sourceFreeze": "write-profile-G09-noUnsafeFinally-source-authoring-1"
++        "fileSha256": "0470da566dc7a294d19f749f6977f57f63648d52e857f235795d8857a401eef1",
++        "line": 4478,
++        "sourceFreeze": "write-profile-G09-source-correction-authoring-2"
+       },
+       "id": "G09-S02",
+       "proposedFullName": "G09-S02 schemaObserved epoch and view errors",
+@@ -68,9 +68,9 @@
+       "cleanupInclusive": true,
+       "cleanupSeconds": 1,
+       "finalSelectionBinding": {
+-        "fileSha256": "7ba9d8de683f3e2c5f8a38efd6deab7e6de0950590b8de3d97bd2afa2657dac9",
+-        "line": 4510,
+-        "sourceFreeze": "write-profile-G09-noUnsafeFinally-source-authoring-1"
++        "fileSha256": "0470da566dc7a294d19f749f6977f57f63648d52e857f235795d8857a401eef1",
++        "line": 4507,
++        "sourceFreeze": "write-profile-G09-source-correction-authoring-2"
+       },
+       "id": "G09-S03",
+       "proposedFullName": "G09-S03 schemaObserved ahead and opaque bounded attempts",
+@@ -96,7 +96,7 @@
+       "finalSelectionBinding": {
+         "fileSha256": "833b1ec0260a483c8c3420a294285d4e9b9b7780b73853a488f21fccea5e71d3",
+         "line": 455,
+-        "sourceFreeze": "write-profile-G09-noUnsafeFinally-source-authoring-1"
++        "sourceFreeze": "write-profile-G09-source-correction-authoring-2"
+       },
+       "id": "G09-S04",
+       "proposedFullName": "G09-S04 schema selector receiving and exact identity",
+@@ -122,7 +122,7 @@
+       "finalSelectionBinding": {
+         "fileSha256": "833b1ec0260a483c8c3420a294285d4e9b9b7780b73853a488f21fccea5e71d3",
+         "line": 508,
+-        "sourceFreeze": "write-profile-G09-noUnsafeFinally-source-authoring-1"
++        "sourceFreeze": "write-profile-G09-source-correction-authoring-2"
+       },
+       "id": "G09-S05",
+       "proposedFullName": "G09-S05 schema selector HTTP/min failure order",
+@@ -148,7 +148,7 @@
+       "finalSelectionBinding": {
+         "fileSha256": "833b1ec0260a483c8c3420a294285d4e9b9b7780b73853a488f21fccea5e71d3",
+         "line": 796,
+-        "sourceFreeze": "write-profile-G09-noUnsafeFinally-source-authoring-1"
++        "sourceFreeze": "write-profile-G09-source-correction-authoring-2"
+       },
+       "id": "G09-S06",
+       "proposedFullName": "G09-S06 schema runtime satisfied and context errors",
+@@ -174,7 +174,7 @@
+       "finalSelectionBinding": {
+         "fileSha256": "833b1ec0260a483c8c3420a294285d4e9b9b7780b73853a488f21fccea5e71d3",
+         "line": 821,
+-        "sourceFreeze": "write-profile-G09-noUnsafeFinally-source-authoring-1"
++        "sourceFreeze": "write-profile-G09-source-correction-authoring-2"
+       },
+       "id": "G09-S07",
+       "proposedFullName": "G09-S07 schema runtime ahead before conditional",
+@@ -200,7 +200,7 @@
+       "finalSelectionBinding": {
+         "fileSha256": "833b1ec0260a483c8c3420a294285d4e9b9b7780b73853a488f21fccea5e71d3",
+         "line": 839,
+-        "sourceFreeze": "write-profile-G09-noUnsafeFinally-source-authoring-1"
++        "sourceFreeze": "write-profile-G09-source-correction-authoring-2"
+       },
+       "id": "G09-S08",
+       "proposedFullName": "G09-S08 schema runtime unknown before HEAD/media",

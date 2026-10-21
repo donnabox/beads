@@ -1,0 +1,94 @@
+{
+  "released": true,
+  "session": "2026-10-08T20:26:35Z-81e5",
+  "approvedCommandIds": [
+    "node-version",
+    "package-directory",
+    "pack-protocol",
+    "pack-server",
+    "verify-tar",
+    "prepare-consumer",
+    "consumer-install",
+    "verify-installed"
+  ],
+  "workspace": "/Users/dbox/repos/wt/vickie/vickie-guarded-batch",
+  "sourceBinding": {
+    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-principal-cumulative-draft/format-repair/source-binding.json",
+    "sha256": "0dbae7cb6139263cbfd3931e80d8dec2c628d7e982deecdd6c8242573a35c6e2"
+  },
+  "finalHead": "1f0cb9455361cef2cc793558793e4a190be6f4fe",
+  "finalTree": "22176e75848cfd6f0a54f799aeb1e62998206edb",
+  "finalBase": "5d7fa3f049fa0b4db3aa8dae20e20d8e47fb3854",
+  "finalParents": [
+    "5d7fa3f049fa0b4db3aa8dae20e20d8e47fb3854"
+  ],
+  "sourceLockSha256": "4150d8821c96dbc2cfec0b2762ff76b58318079f65fa4f5c8858ef2dd61f8d6d",
+  "node": "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+  "pnpm": "/Users/dbox/.cache/node/corepack/v1/pnpm/11.20.0/bin/pnpm.cjs",
+  "rootAcceptance": {
+    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-principal-cumulative-draft/finalized-installed-preparation/root-installed-validation-acceptance.json",
+    "sha256": "6e23056698c33c5a64e2ead002f1955eed2514a504f24f3d87d557486507a461"
+  },
+  "councilState": {
+    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-principal-cumulative-draft/finalized-installed-preparation/council-state.json",
+    "sha256": "18604abb2405f9e84702e143fc4a68bd0af57b51361008baddc85f2b534ad39f"
+  },
+  "measuredFenceAcceptance": {
+    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-principal-cumulative-draft/format-repair/fence-acceptance.json",
+    "sha256": "0a635636a4a55b34584a80a39a59cc8719d0cbd31c62fc93807bdee460c72afc"
+  },
+  "sourceValidationAcceptance": {
+    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-principal-cumulative-draft/finalized-installed-preparation/source-validation-acceptance.json",
+    "sha256": "1c6eff868f0d69d0fd697fa58e50e873f1c1a177c7d0df3b7a17955ce65ccb16"
+  },
+  "finalSource": {
+    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-principal-cumulative-draft/final-source.json",
+    "sha256": "5bb1be1e0a28ddfc4277c2d249a67f2a0f4e316fecd8dfab22f9bf996b156134"
+  },
+  "buildOutputInventory": {
+    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-principal-cumulative-draft/finalized-installed-preparation/translated-build-inventory.json",
+    "sha256": "0b803b9a14dc1026b02af7a86c131290c2871818e487d4d273c67d5b04ae17fe"
+  },
+  "rootBuildAcceptance": {
+    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-principal-cumulative-draft/finalized-installed-preparation/root-build-acceptance.json",
+    "sha256": "843cc4c8af81652116dc157e28bf879b45772fa530c560024e8c3e58582403be"
+  },
+  "consumerLockSha256": "778346d188de7ce0b17da14a5a68edfce4cae4e871665b538266230b2cc71ff6",
+  "installedProvenance": null,
+  "reportContractBinding": null,
+  "derivativeInventoryBinding": null,
+  "preparationSha256": {
+    "gate.py": "f47d31d70908cc3e58fc6ca6aa0c8ead3ea5374d37413d38f617a271a63a37d3",
+    "supervise.py": "1764ff4ec582f9ffc8d71b084745383feba2e965006d64ab20fb3c988a180c4a",
+    "packages.py": "77a805449749e22e366ecdf522bd0144dbdda2c63d110cdb528fd1f0566ee7f8",
+    "review-installed.py": "37567a9488fd5bbf9317cbae4dbaf18ee4acc1294c59ab25b2f54f462f2b07c4",
+    "commands.json": "dd1bdf157bc64e751c674238d7685a12f0fd60e84f61e18d08251d7f53263b8f",
+    "prepared-source.json": "0dbae7cb6139263cbfd3931e80d8dec2c628d7e982deecdd6c8242573a35c6e2",
+    "requests.json": "d8e3a11b780086209bd916c49e6d70ddb10fc6a1c77a21e1b7a17305c9f69f5b",
+    "control.json": "62f9c52cd6ac0eb01edb260756cd46cd83f783570fd9a270987561479174eb42",
+    "report-contract.json": "50d649aa82fa535e2e6e601da616b1b80d80823c504012c91d73223bb9fedfae",
+    "selection.json": "56aef43b493a6dff64402f0e793291b133cf62ac0f2b69e2d9bbb2605f84edb1"
+  },
+  "expectedProductionVersions": {
+    "@bdp/protocol": "0.0.0",
+    "@bdp/server": "0.0.0",
+    "ajv": "8.17.1",
+    "ajv-formats": "3.0.1",
+    "fast-deep-equal": "3.1.3",
+    "fast-uri": "3.1.5",
+    "json-schema-traverse": "1.0.0",
+    "require-from-string": "2.0.2"
+  },
+  "commitBridge": "actual clean ordinary source before package stages; if build occurred dirty, retain its actual source/HEAD chronology and root bridge only after all tracked inputs and emitted bytes compare; rebuild after changed integration",
+  "exampleOnly": false,
+  "preparedSourceBindingSha256": "0dbae7cb6139263cbfd3931e80d8dec2c628d7e982deecdd6c8242573a35c6e2",
+  "finalRunBinding": null,
+  "rootAcceptanceRequired": {
+    "accepted": true,
+    "validationOnlyWhileCouncilPending": "true only if root explicitly permits local validation while actual council remains pending"
+  },
+  "councilStateRequired": {
+    "status": "accepted OR pending-actual-claude with explicit root exception"
+  },
+  "emittedInventoryScope": "Root-directed scope correction: cohorts execute the source Vitest app test and packaged protocol/server. apps/dist is unused and excluded; historical440 package dist inventory remains exact. No app-dist historical coverage or evidence adoption is claimed."
+}

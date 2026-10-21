@@ -1,0 +1,26 @@
+{
+  "released": true,
+  "head": "9e5f040edab88be364f683098ead72f595f0ab55",
+  "tree": "81c6786a3075f1869f54460880cac1234c27fb77",
+  "base": "9bf601bfb570adae97ce8cdc99caf2cc7a2b34c1",
+  "allowedNext": [
+    "node-version",
+    "package-directory",
+    "pack-protocol",
+    "pack-server",
+    "verify-tar",
+    "prepare-consumer",
+    "consumer-install"
+  ],
+  "basis": [
+    {
+      "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-guarded-batch-draft/root-static-acceptance.json",
+      "sha256": "1097620c17e5d8631b1e461e55bd23b7112c1b4138a4830ca125b960fb604ce8"
+    },
+    {
+      "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-guarded-batch-draft/execution-preparation/run/root-build-bridge.json",
+      "sha256": "710ebd803c9ccc38ec6b27aaa094bfe0509c6f40af6a54de9e31f87a99b539b3"
+    }
+  ],
+  "note": "Fresh archive/external consumer stages only; actual CLI code review concurrently running; no installed cohort, publication or merge release."
+}

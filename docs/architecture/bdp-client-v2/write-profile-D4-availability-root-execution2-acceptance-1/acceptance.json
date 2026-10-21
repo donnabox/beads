@@ -1,0 +1,42 @@
+{
+  "utc": "2026-10-18T17:15:00.526295+00:00",
+  "session": "2026-10-18T02:16:24Z-549f",
+  "accepted": true,
+  "scope": "Exact proposed14-key execution2 DATA authority only; publish before exact activation and separately publish activation before ONE caller2.",
+  "proposalIndex": {
+    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-D4-availability-root-execution-proposed-authority-2/index.json",
+    "sha256": "ef966b331f06c17e06111196ce2ebef6db8d41bdb9663f002130f04cc8755a2f"
+  },
+  "candidateRelease": {
+    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-D4-availability-root-execution-proposed-authority-2/release.proposed.json",
+    "sha256": "034d4e93823965e006e6e059bc50cab634a9dcd1a9026546539faa02ac96fdcb"
+  },
+  "nativeIndex": {
+    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-D4-availability-root-execution2-native-precision-1/index.json",
+    "sha256": "6975c83652afdd21c5c45cce95e8437e73baa81a3a8903472824268e9339cda7"
+  },
+  "nativeClosure": {
+    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-D4-availability-root-execution2-native-precision-1/closure.json",
+    "sha256": "ead99ec6f15ab93de0b742c6ac3bac2e47dcaf8f080d21c293cf37ce67a303fc"
+  },
+  "nativeReport": {
+    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-D4-availability-root-execution2-native-precision-1/report.md",
+    "sha256": "aeaaba533dac60ab2a9439b3c8d13d04917fe8ba2c01511a36fd6f997fdd45ca"
+  },
+  "all14FieldsAndFullActualSource92to96Read": true,
+  "rootStaticAcceptance": {
+    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-D4-caller2-root-static-acceptance-1/acceptance.json",
+    "sha256": "5b0c255376bd5ef96db92186e84854941497de76818138cf5605036e099dac67"
+  },
+  "foundationAttributionIsPriorPublishedInputsNotSelfReferentialRelease": true,
+  "newDurablePublicationBeforeActivationRequired": true,
+  "activationPublicationReadbackBeforeInvocationRequired": true,
+  "externalReleaseAbsent": true,
+  "attemptsAbsent": true,
+  "helperEvaluated": false,
+  "measuredAvailabilityAccepted": false,
+  "clockDomainVerified": false,
+  "syntheticReleased": false,
+  "productReleased": false,
+  "actualAuditRequired": "Root actual caller raw0/BOTH EOF/whole<115; FULL native/owner/peer raw journals/clock/masks/ACK/source/tools; independent fresh ALL recorded PID/PGID census raw0/BOTH EOF/empty stderr; no native0-only or peer-selfsignal forced-boundary claim."
+}

@@ -1,0 +1,1372 @@
+Do not write or modify any files. Output findings only in stdout. Review this bounded IMPLEMENTATION/EVIDENCE PLAN, not the unrelated fresh-depth code currently under a separate review. Use inline source first. Read/Glob/Grep are permitted only for specific missing source context; avoid reading entire giant files or unrelated plans. No execution, subagents, test/build/service, network, main inspection or edits. Return a complete standalone concise numbered findings list (severity, exact location, issue, impact, smallest correction), or explicit no actionable findings. Target <=1500 words; distinguish required corrections from optional coverage. No praise or invented product decisions.
+
+Focus: genuine same installed Transactional configuration; inherited conditional GET/HEAD and current Resource/ETag after mutation; native bodyless304/412 and ordinary401/404 precedence; exact14 positive/14 input-control exchanges and existing bootstrap+scenario lifecycle; feasibility using existing manifest assertions/raw transport/independent safe observation; control valid200 prerequisite and exact intended failure; retention of old evidence and all public admission holds. Do not require solving pending Snapshot minima S1 or incident-Link Event membership G2. Public cold discovery is explicitly blocked and must not be fabricated or bypassed. This is partial cumulative execution, never whole-contract qualification. Identify any implementation obstacle to the proposed four-file scope or any inaccurate oracle/traffic bound. Source HEAD is recorded as chronology only; hashes pin exact reviewed source and plan.
+
+# Complete proposed plan
+# Next delivery: inherited Read conditions on the installed Transactional owner
+
+Planning only, rooted in working candidate `a17af9bc4742be33dfd64071f62ffb2936c82d86`; no main query, product execution, imports, source writes or admission changes. The sole design remains `bdp-client-design/checkout/docs/architecture/bdp-client-v2/design.md` (Autonomous profile completion, T2/T3/T4/P and accepted F5/F6/F13). This report supplements that authority. It does not repeat the prior serving audit as an exhaustive proof.
+
+**Recommendation:** implement one bounded cumulative inherited-Read wire scenario over the actual mutable Transactional owner, covering conditional GET/HEAD, ordinary-refusal precedence and complete current-state/validator changes after mutation. This is an executable requirement gap, **not an established new runtime defect**. The component implementation already appears correct. Root explicitly accepted this next planning direction; authoring and execution remain closed until review.
+
+## Actual activation obstruction
+
+1. `packages/server/src/index.ts:288–315` only admits configured `read`, then checks its target's Read evidence. `read-conformance-capability.ts:1–57` contains the existing two-target Read cohort seal, not a Transactional capability. Do not widen that enum/check or reuse its digest for writes.
+2. `transaction-http.ts:212,592–600` refuses real Scope/descriptor/directory navigation with the private discovery gap. `transaction-discovery.ts:24–66` already builds actual same-context metadata, but it explicitly advertises `transactional`. Wiring that builder now would advertise the incomplete profile. An out-of-band fixture target is not cold discovery, and a non-attesting header does not make that advertisement harmless.
+3. Cumulative TX execution itself is available: `artifact-bundle.ts:126–145,220–225` binds the canonical inherited requirement set; `runner.ts:2792–2820` demands exact TX configuration and private session transport. `runner.ts:255,422` explicitly leaves reports `claimEligible:false`. The current generator/verifier is Read-specific (`scripts/generate-read-cohort.mts:71,291,311–316`; `scripts/read-cohort-evidence.mjs:20,28–29`). A separate reviewed write-profile artifact/verification/admission path is still mandatory under the sole plan, after complete required functionality and same-target observations. A full suite or a collection of private reports cannot stand in for that path.
+
+S1/G2 still independently prevent final activation; this report neither decides them nor creates another question. It also does not propose optional History, Types development or a new provenance mechanism. No unconditional additional runtime defect was established in this focused gate inspection.
+
+## Why this particular wire slice is useful
+
+The current cumulative manifest actually executes mutations and current reads, but it contains no realization for `read.http.conditional-reads` or `read.http.head-conditional-parity`. Its current Resource observations cannot establish that 304/412 are bodyless, that HEAD retains GET decisions, that ordinary 401/404 wins over `If-None-Match: *`, or that a subsequent real mutation changes the observed Resource/ETag while advancing current context. This is a semantic omission, not a diagnostic denominator.
+
+Those laws are settled: spec lines1947–1954 preserve inherited GET/HEAD and native negotiation;1965–1970 bind Resource ETag/cache;1980–2008 require ordinary checks before conditionals, native bodyless304/412, and HEAD parity. The exact inherited catalog rows are `catalog/read-v1.json:811–850`. Production `read-http.ts:10–55` applies conditions only to successful representations and strips HEAD bodies; `transaction-http.ts:664` applies it after routing. Existing tests already establish examples (`transaction-http.test.ts:310,332,715,1675`). Reusing these laws in a same-configuration installed cumulative observation is appropriate; inventing a production fix is not.
+
+## Proposed exact positive schedule
+
+Use the existing Task descriptor/properties schema and operator/anonymous credentials in `apps/bdptest/src/transactional-matrix.test.ts:47–79,147–160`. The Task has no owned-Link declaration. The Scope is `https://reference.invalid/acme/`; all application URLs are explicitly predeclared in exact transport configuration, not discovered. No minimum headers, retained cursors, policy transition, Event feed or Snapshot is added.
+
+POSTs target `operations/batch`, with `Content-Type: application/json`, `Accept: application/json`, and distinct literal Idempotency-Key values `conditional-seed` and `conditional-update`. Their complete bodies are:
+
+```json
+{"operations":[{"operation":"createBead","id":"beads/a","type":"https://reference.invalid/acme/types/task","properties":{"title":"before"}}]}
+```
+
+Seed: 141B, SHA256 `d63bac5f6ec230f2b2420b3c0b64ff21dd4fc6d9a8bdf616353d48e35a91d7ae`.
+
+```json
+{"operations":[{"operation":"updateBead","bead":"beads/a","propertiesChange":[{"op":"replace","path":"/title","value":"after"}]}]}
+```
+
+Update: 130B, SHA256 `c86a262f896fd4b357050b2b952e8d9992aa5b98f4a5d60f1f6f793040770e20`.
+
+All reads target canonical `beads/a` except the two missing-target reads at `beads/missing`; all send `Accept: application/json`. Read rows have no request body. The fixed false entity tag is `"conditional-no-match"`; independently require the actual seed ETag to differ before using it, rather than assuming any arbitrary tag cannot match.
+
+| # | Action | Credential / condition | Expected |
+|---|---|---|---|
+|1|POST seed|operator, seed key|200 completed effect receipt, position1|
+|2|GET A|operator|200 complete original Resource, ETag/revision/context|
+|3|HEAD A|operator|200 empty wire body, GET representation metadata|
+|4|GET A|operator, If-None-Match:*|304 empty, cache/context retained|
+|5|HEAD A|operator, If-None-Match:*|304 empty, matching decision|
+|6|GET A|operator, If-Match:"conditional-no-match"|412 empty, no Problem body|
+|7|HEAD A|operator, same If-Match|412 empty, matching decision|
+|8|GET A|anonymous, If-None-Match:*|401 actual challenge/Problem, not304|
+|9|HEAD A|anonymous, same condition|401 empty, required denial metadata|
+|10|GET missing|operator, If-None-Match:*|404 actual Problem, not304|
+|11|HEAD missing|operator, same condition|404 empty, denial metadata parity|
+|12|POST update|operator, update key|200 completed effect receipt, position2|
+|13|GET A|operator|200 full updated Resource equal to actual receipt postimage; changed revision/ETag|
+|14|HEAD A|operator|200 empty, updated GET metadata and serialized byte length|
+
+Seed and update receipts must first pass actual mutationReceipt schemas and independent full shallow expected receipt/Resource oracles, including id/key/type/title/metadata/revision/result index/effect and required positions. The GETs must pass current Resource schema and equal those real postimages, not only have matching hashes. Epoch/view are captured from served responses, stable through this sequence; current positions1 then2 are actual asserted behavior. An ETag is an HTTP opaque field whose relation to the opaque Resource revision must follow the actual existing emitter; never replace it with a fabricated receipt transaction or position.
+
+For HEAD, compare explicitly required context/cache/ETag/media and actual wire-body absence; compare Content-Length to the corresponding serialized GET body where supplied, preserving permitted HTTP omissions. For304 do not require an invented Content-Length:0. For412 require body absence/no BDP Problem. For ordinary401/404 retain actual body/schema (GET), empty HEAD, and correct current/no-observation context according to existing routing. Avoid deriving anonymous context rules from authenticated responses. Exclude Date from parity; do not weaken required fields. The source author must pin the exact existing response schema IDs/error context for these rows before execution.
+
+## Coherent sensitivity control and ownership
+
+Use the same selected installed scenario in a fresh owner/store, changing only request4's `If-None-Match` from `*` to the verified nonmatching fixed tag. The actual existing Resource then legitimately returns200 with its full original body instead of304. Keep all other requests and expectations intact. Require successful seed/read/HEAD prerequisites, actual complete serialization, and independently validate the control's real200 full Resource. The named conditional-status assertion (and its bodylessness assertion) must fail; schema/setup/transport/deadline/cleanup failure is not a successful control. Freeze the exact expected failure inventory from authored assertions before release—do not guess that an arbitrary generic test failure suffices. This is an input sensitivity control, not a production mutant or proof that every conditional bug is detected.
+
+Proposed owned paths only:
+- `packages/conformance/test-support/transactional/manifest-v1.json`: append one inherited `read.http.conditional-reads` scenario.
+- `packages/conformance/test-support/transactional/coverage-v1.json`: map the precise partial observation and explicit omissions, with HEAD parity cross-reference only where existing binding rules permit; never mark either entire contract qualified.
+- `packages/conformance/src/transactional-cumulative.test.ts`: preserve all parent objects/bytes and historical reconstruction; pin new actions and revised bounded measurements.
+- `apps/bdptest/src/transactional-matrix.test.ts`: independent exact route inventory, current-wire full-body/metadata assertions and selected control. Reuse existing raw executor/serving binding/launcher; no shared helper or protocol/parser changes planned.
+
+The existing `observe` helper performs one bootstrap launch plus one selected scenario launch; budget the selected positive14HTTP and control14HTTP as28HTTP/four children, sequential, without reopen or extra hidden HTTP. Use existing90s cohort/finite request and120s outer bounds; no limit increases. Keep output outside owned runtime stores, retain safe complete response metadata/fingerprints before cleanup, and prove returned/sampled process and owned-store closure. Fresh package/eight-dependency external-consumer provenance and explicit installed entry remain mandatory for installed attribution. No workspace fallback earns qualification. These are prospective bounds; code-derived lifecycle and exact assertion inventories must be frozen before execution. Current whole-matrix/cohort totals and derivative growth must be measured after authoring; do not silently append traffic to historical whole-run limits or relax numeric fences.
+
+Retain old manifest objects and prior runs exactly. Selected positive/control output remains claimEligible:false and explicitly omits cold discovery, all other inherited-read surfaces, full conditional precedence/date/validator combinations, S1/G2 and complete profile evidence. A later write-profile seal must consume complete, freshly bound executable observations and actual discovery readiness; this plan does not solve that final admission step.
+
+## Source pins
+
+Sole-plan local content SHA256 `80f72d23c855880b16f0a80a54d97120ae9495951e5e0c05f0e1bd3ba80d5162`. Working source below was inspected without product execution. The source snapshot is the actual branch candidate, not a main readiness claim.
+
+- `docs/specs/bdp.md`: `67772742d7d08f48c12196e9789f1859ad2d0e19f133ea65e197b049361f84f8`
+- `packages/server/src/index.ts`: `34f9d9de8b48852c64919e69ce93f149e9cdae5142c15c75e4c35f08f15efc44`
+- `packages/server/src/read-conformance-capability.ts`: `58d4529dc40bbf646f02bda4c7fa3fad9b83d21f3080152cc04867dbe3fa6f60`
+- `packages/server/src/transaction-http.ts`: `81c130dd18f604ab1d13c03a2f52a98e11a6988f45d62af98b4b8c7499d14529`
+- `packages/server/src/read-http.ts`: `31934105eff6fff8ded8ce2ca9e3c19028991ca7c3d5f51b848004177e8c9268`
+- `packages/server/src/transaction-http.test.ts`: `9eb452b8e9d80b53f28cd61b40385886c3a61a992aadb1c9c201d9a188081cce`
+- `packages/server/src/transaction-discovery.ts`: `bb8055e2089f640a5d2071e389ac2011d08c038427265b50ab3d03c02047cfef`
+- `packages/conformance/src/runner.ts`: `ac20c7fbfe15a5e42a6559e89cd3467562efe9bc74d462478414414ed3efede1`
+- `packages/conformance/src/artifact-bundle.ts`: `bbf54915eb792433ae492fd73a5334717e74e0942c485a72daa5105928546dd6`
+- `packages/conformance/src/profile-contract-selection.ts`: `5b1caf61688bfa6a5465b5f8dc817b84f02be76bfc5bdd886a19e749b6441543`
+- `packages/conformance/catalog/read-v1.json`: `769ff9f24cfdfe74a47670240b04149b520af23b2c71a431883fd15e988adeb0`
+- `packages/conformance/test-support/transactional/manifest-v1.json`: `cd90592e76cace65b115dbfedf5f604c9c4011ed2e1a0fad954c1edb12aca6cd`
+- `packages/conformance/test-support/transactional/coverage-v1.json`: `0c991feb128a50625397e337464badcb17d22a0c31e1d57a6b66fa1032a92a51`
+- `apps/bdptest/src/transactional-matrix.test.ts`: `762f84132bdfae18a730e07ac3a759da2a55289644a7b97888f314a55dffae4e`
+- `scripts/generate-read-cohort.mts`: `42111310e1e76df5dee938648bc84144c30fe6a9f15c3b4d30caf670584b6847`
+- `scripts/read-cohort-evidence.mjs`: `451d77cf880329238f044e3f0e92d681d6493c509fcb3b050f6e292ce3f2a21e`
+
+# Inline primary source
+
+## docs/specs/bdp.md:1935–2008
+```
+1935: A direct problem uses its code's HTTP status. Its RFC 9457 `status` member is
+1936: optional, but when present it MUST match the HTTP status. RFC 9457 extension
+1937: members are allowed. The Read family model, required fields, status mapping, and retry table are
+1938: closed. An implementation advertising the `read`
+1939: profile MUST support `GET` and `HEAD` for application requests. It MUST NOT
+1940: assign application semantics to `OPTIONS`. When it enables cross-origin
+1941: access, it MUST answer `OPTIONS` according to the CORS rules below. It MUST
+1942: respond with `405 Method Not Allowed` to `OPTIONS` when cross-origin access
+1943: is not enabled and to every other method. Every such `405` MUST include
+1944: `Allow: GET, HEAD`, plus `OPTIONS` when cross-origin access is enabled, and
+1945: MUST NOT include a BDP Problem body. These are HTTP-native rejections rather
+1946: than members of the Read problem-code table.
+1947: Implementations advertising later cumulative profiles MUST retain `GET` and
+1948: `HEAD` support. Those profiles define their additional methods and `Allow`
+1949: values. In every profile, an otherwise valid request whose `Accept` field
+1950: accepts none of the endpoint's successful response media types MUST receive
+1951: a bodyless `406 Not Acceptable`, with no BDP problem code, family, or retry
+1952: member. Existing authentication, authorization/non-disclosure, and other ordinary
+1953: failures retain their handling; negotiation MUST NOT expose a hidden target
+1954: or recursively renegotiate an error representation. Missing `Accept` permits
+1955: the endpoint's default. Ordinary HTTP media-range matching, specificity, and
+1956: quality weights apply, including `q=0` exclusions; an endpoint selects an acceptable supported
+1957: representation when one exists.
+1958: An implementation MUST respond to an unexpected
+1959: internal server fault with a body-less `500 Internal Server Error`, MUST NOT
+1960: include a BDP Problem body, and MUST keep internal fault details off the
+1961: wire. A future revision may assign a BDP Problem mapping for those faults.
+1962: This draft deliberately does not.
+1963: 
+1964: ### HTTP consistency, caching, and CORS fields
+1965: 
+1966: Individual Resource responses use HTTP `ETag` for the opaque Resource
+1967: revision. Pagination continuations preserve their own stable result.
+1968: 
+1969: Scope-bounded representations that depend on authorization use
+1970: `Cache-Control: private, no-store`. If an implementation enables
+1971: cross-origin BDP access, its CORS policy MUST allow every BDP-defined
+1972: non-safelisted request field used by its advertised profile. It MUST also allow the applicable HTTP conditional
+1973: request fields: `If-Match`, `If-None-Match`, `If-Modified-Since`, and
+1974: `If-Unmodified-Since`. It MUST expose `Link`, `ETag`, `Retry-After`,
+1975: and `Cache-Control` when applicable. History response-field exposure is defined
+1976: under [Historical HTTP metadata](#historical-http-metadata). Ordinary CORS
+1977: rules still govern `Accept` and `Content-Type` values. Type Descriptors hosted outside a Scope keep ordinary HTTP caching
+1978: semantics.
+1979: 
+1980: ### Conditional reads and HEAD
+1981: 
+1982: No conditional response permits retaining or reusing content that the erasure
+1983: rules require removing.
+1984: 
+1985: GET and HEAD preconditions follow [RFC 9110 section 13.2](https://www.rfc-editor.org/rfc/rfc9110.html#section-13.2).
+1986: Normal authentication, authorization/non-disclosure, query and cursor checks,
+1987: and applicable History erasure/expiry checks MUST precede any conditional not-modified shortcut. An ordinary refusal is not
+1988: replaced by `304`. A successful read whose HTTP condition selects
+1989: `304 Not Modified`, or a read whose precondition fails with
+1990: `412 Precondition Failed`, MUST be bodyless and MUST NOT carry a BDP Problem
+1991: body. Applicable cache fields remain required on these responses.
+1992: 
+1993: Omitting optional validators does not permit ignoring HTTP preconditions.
+1994: For an otherwise successful existing representation without an entity tag,
+1995: `If-None-Match: *` yields `304`, a specific `If-Match` entity tag fails with
+1996: `412`, and `If-Match: *` passes. A specific `If-None-Match` entity tag cannot
+1997: match an absent entity tag. Combined conditions retain HTTP precedence:
+1998: `If-Match` is evaluated before `If-None-Match`; date conditions obey their
+1999: HTTP availability, validity, and precedence rules. Omission of a
+2000: `Last-Modified` field does not itself establish whether a modification date
+2001: is available. No new modification-date or validator construction scheme is
+2002: assigned here.
+2003: 
+2004: HEAD retains the corresponding GET authorization, query, cursor, media
+2005: negotiation, and precondition decision and MUST send no response body. This includes canonical Resource, collection, view and pagination URLs. Ordinary HTTP
+2006: HEAD metadata rules, including permitted omissions, apply; BDP's explicitly
+2007: required context/cache fields remain required. This clarifies the existing
+2008: cumulative GET/HEAD requirement, not a new method policy.
+```
+
+## packages/server/src/read-http.ts:1–100
+```
+1: import { stringifyJsonValue } from "@bdp/protocol";
+2: import type { HttpResponse } from "./index.js";
+3: 
+4: /** Apply shared HTTP rules only after routing, authorization and result validation.
+5:  * This Read server selects parameter-free application/json on its 200 routes.
+6:  * Its Scope port supplies no representation modification date, so neither date
+7:  * precondition can be evaluated; Resource timestamps are not HTTP validators.
+8:  * RFC 9110 sections 12.5.1, 13.1 and 13.2 govern negotiation and ordering.
+9:  */
+10: export function applyReadHttpSemantics(request: Request, response: HttpResponse): HttpResponse {
+11:   let selected = response;
+12:   const json =
+13:     response.status === 200 && response.headers.get("content-type") === "application/json";
+14:   if (json || response.status === 204) {
+15:     const headers = new Headers(response.headers);
+16:     if (json) {
+17:       const vary = headers.get("vary");
+18:       if (
+19:         vary !== "*" &&
+20:         !vary?.split(",").some((field) => field.trim().toLowerCase() === "accept")
+21:       )
+22:         headers.set("vary", vary ? `${vary}, Accept` : "Accept");
+23:     }
+24:     // The Scope probe is an existing zero-length representation with no media
+25:     // type to negotiate; it still evaluates entity-tag preconditions.
+26:     const status =
+27:       json && !acceptsJson(request.headers.get("accept"))
+28:         ? 406
+29:         : conditionalReadStatus(request.headers, headers.get("etag"));
+30:     if (status !== 200) {
+31:       headers.delete("content-type");
+32:       if (status === 406) headers.delete("etag");
+33:       // A 304 Content-Length may describe only the corresponding 200 body,
+34:       // never an invented zero-length representation (RFC 9110 section 8.6).
+35:       headers.delete("content-length");
+36:       if (status !== 304) headers.set("content-length", "0");
+37:       selected = { status, headers };
+38:     } else selected = { ...response, headers };
+39:   }
+40:   // Keep the Fetch-level contract honest as well as the Node transport's final
+41:   // defensive strip. HEAD has GET metadata, including the serialized length.
+42:   if (request.method === "HEAD" && selected.body !== undefined) {
+43:     const headers = new Headers(selected.headers);
+44:     headers.set("content-length", String(Buffer.byteLength(stringifyJsonValue(selected.body))));
+45:     return { status: selected.status, headers };
+46:   }
+47:   return selected;
+48: }
+49: 
+50: export function conditionalReadStatus(headers: Headers, etag: string | null): 200 | 304 | 412 {
+51:   const match = headers.get("if-match");
+52:   if (match !== null && !tagListMatches(match, etag, true)) return 412;
+53:   const noneMatch = headers.get("if-none-match");
+54:   if (noneMatch !== null && tagListMatches(noneMatch, etag, false)) return 304;
+55:   return 200;
+56: }
+57: 
+58: /** A tag's backslash is an opaque byte, not a quoted-string escape. Empty list
+59:  * elements are ignored under RFC 9110 section 5.6.1; mixed '*' lists are invalid.
+60:  * Invalid fields cannot produce a match (13.1.1/13.1.2's 'otherwise' branches).
+61:  */
+62: function tagListMatches(value: string, current: string | null, strong: boolean): boolean {
+63:   if (value.trim() === "*") return true; // Called only for an existing successful representation.
+64:   const tag = /(?:W\/)?"[\x21\x23-\x7e\x80-\xff]*"/y;
+65:   let offset = 0;
+66:   let matched = false;
+67:   while (offset < value.length) {
+68:     while (/[\t ,]/.test(value[offset] ?? "") && offset < value.length) offset += 1;
+69:     if (offset === value.length) break;
+70:     tag.lastIndex = offset;
+71:     const parsed = tag.exec(value);
+72:     if (parsed === null) return false;
+73:     const candidate = parsed[0];
+74:     if (current !== null) {
+75:       matched ||= strong
+76:         ? !candidate.startsWith("W/") && !current.startsWith("W/") && candidate === current
+77:         : candidate.replace(/^W\//, "") === current.replace(/^W\//, "");
+78:     }
+79:     offset = tag.lastIndex;
+80:     while (value[offset] === " " || value[offset] === "\t") offset += 1;
+81:     if (offset < value.length && value[offset] !== ",") return false;
+82:   }
+83:   return matched;
+84: }
+85: 
+86: const TOKEN = /^[!#$%&'*+.^_`|~0-9A-Za-z-]+$/;
+87: const QUOTED = /^"(?:[\t\x20\x21\x23-\x5b\x5d-\x7e\x80-\xff]|\\[\t\x20-\x7e\x80-\xff])*"$/;
+88: const QUALITY = /^(?:0(?:\.\d{0,3})?|1(?:\.0{0,3})?)$/;
+89: 
+90: export function acceptsJson(value: string | null): boolean {
+91:   return mediaQuality(value, "application/json") > 0;
+92: }
+93: 
+94: /** Source-private representation selection; JSON wins ties and missing Accept. */
+95: export function selectChangefeedMedia(value: string | null): "json" | "sse" | undefined {
+96:   const json = mediaQuality(value, "application/json");
+97:   const sse = mediaQuality(value, "text/event-stream");
+98:   return json > 0 && json >= sse ? "json" : sse > 0 ? "sse" : undefined;
+99: }
+100: 
+```
+
+## packages/server/src/read-http-routing.ts:1–76
+```
+1: /** Internal Read HTTP projection shared by admitted and source-only test compositions. */
+2: import {
+3:   isReadProblem,
+4:   type AbsoluteHttpUrl,
+5:   type ReadProblem,
+6:   type ReadRequest,
+7: } from "@bdp/protocol";
+8: import type { HttpHandler, HttpResponse } from "./index.js";
+9: import { classifyAliasPath, notFound, requestFromUrl } from "./read-request.js";
+10: import { resourceRevisionEtag } from "./read-http.js";
+11: 
+12: interface ReadHttpRoutes {
+13:   readonly scope: AbsoluteHttpUrl;
+14:   probe(request: Request): Promise<{ readonly serviceDescription: string }>;
+15:   problem(problem: ReadProblem): HttpResponse;
+16:   discover(request: Request): Promise<HttpResponse>;
+17:   alias(path: string | ReadProblem, request: Request): Promise<HttpResponse>;
+18:   perform(parsed: ReadRequest, request: Request): Promise<HttpResponse>;
+19: }
+20: /** Raw projection only; the caller applies Read HTTP semantics exactly once. */
+21: export function createReadHttpRoute(routes: ReadHttpRoutes): HttpHandler {
+22:   return async (request) => {
+23:     if (request.method !== "GET" && request.method !== "HEAD")
+24:       return { status: 405, headers: new Headers({ allow: "GET, HEAD", "content-length": "0" }) };
+25:     const url = new URL(request.url);
+26:     const scopeUrl = new URL(routes.scope);
+27:     if (url.origin !== scopeUrl.origin) return routes.problem(notFound());
+28:     const probe = await routes.probe(request);
+29:     const aliasPath = classifyAliasPath(url, routes.scope);
+30:     if (aliasPath !== undefined) return routes.alias(aliasPath, request);
+31:     if (url.pathname === scopeUrl.pathname)
+32:       return {
+33:         status: 204,
+34:         headers: new Headers({
+35:           link: `<${probe.serviceDescription}>; rel="service-desc"; type="application/json"`,
+36:         }),
+37:       };
+38:     if (url.href === probe.serviceDescription) return routes.discover(request);
+39:     const parsed = requestFromUrl(url, routes.scope);
+40:     return isReadProblem(parsed) ? routes.problem(parsed) : routes.perform(parsed, request);
+41:   };
+42: }
+43: 
+44: export function jsonResponse(body: unknown): HttpResponse {
+45:   return {
+46:     status: 200,
+47:     headers: new Headers({
+48:       "content-type": "application/json",
+49:       "cache-control": "private, no-store",
+50:     }),
+51:     body,
+52:   };
+53: }
+54: 
+55: export function scopeDataResponse(
+56:   operation: ReadRequest,
+57:   body: unknown,
+58:   observedResourceRevision?: string,
+59: ): HttpResponse {
+60:   const response = jsonResponse(body);
+61:   // Properties carry no revision in their body. Owner-backed adapters can supply
+62:   // the revision captured atomically with that value, never a later fresh read.
+63:   if (operation.kind === "properties" && observedResourceRevision !== undefined)
+64:     response.headers.set("etag", resourceRevisionEtag(observedResourceRevision));
+65:   if (
+66:     operation.kind === "resource" &&
+67:     operation.resource !== "type" &&
+68:     typeof body === "object" &&
+69:     body !== null &&
+70:     "revision" in body &&
+71:     typeof body.revision === "string"
+72:   ) {
+73:     response.headers.set("etag", resourceRevisionEtag(body.revision));
+74:   }
+75:   return response;
+76: }
+```
+
+## packages/server/src/transaction-http.ts:389–430
+```
+389:           problem({
+390:             ...readProblem(result.code),
+391:             limit: result.limit,
+392:             ...(result.pointer ? { pointer: result.pointer } : {}),
+393:           }),
+394:           result.context,
+395:         );
+396:       }
+397:       return problem({
+398:         ...readProblem(result.code),
+399:         ...(result.limit ? { limit: result.limit } : {}),
+400:         ...(result.pointer ? { pointer: result.pointer } : {}),
+401:       });
+402:     }
+403:     if (authorization.kind === "unauthenticated") return transactionHttpProblem("unauthenticated");
+404:     if (malformedTransactionMinimumHeaders(request.headers))
+405:       return transactionHttpProblem("malformed-request");
+406:     if (url.pathname === new URL("snapshot", scope).pathname) {
+407:       const fields = [...url.searchParams.keys()];
+408:       const id = url.searchParams.get("snapshot"),
+409:         stream = url.searchParams.get("stream"),
+410:         token = url.searchParams.get("page");
+411:       let target: TransactionSnapshotRequest;
+412:       // These closed query shapes are local route conventions. Unknown well-
+413:       // shaped identities go to the owner; they are never guessed as expired.
+414:       if (new Set(fields).size !== fields.length)
+415:         return transactionHttpProblem("invalid-parameter");
+416:       if (fields.length === 0) target = { kind: "create" };
+417:       else if (fields.length === 1 && id !== null && id !== "") target = { kind: "manifest", id };
+418:       else if (fields.length === 3 && id && token && (stream === "beads" || stream === "links"))
+419:         target = { kind: "page", id, token, stream: stream === "beads" ? "bead" : "link" };
+420:       else return transactionHttpProblem("invalid-parameter");
+421:       // Only fresh creation has an unambiguous current observation. Retained
+422:       // anchors and unsupported tuple shapes keep their explicit private gap.
+423:       const minimum = hasMinimumControls(request)
+424:         ? transactionMinimumHeaders(request.headers)
+425:         : undefined;
+426:       if (hasMinimumControls(request) && (target.kind !== "create" || minimum === undefined))
+427:         return developmentGap("minimum-position");
+428:       function snapshotResponse(result: Awaited<ReturnType<Service["snapshot"]>>): HttpResponse {
+429:         if (result.kind === "problem") {
+430:           const response = context(transactionHttpProblem(result.code), result.context);
+```
+
+## packages/server/src/transaction-http.ts:589–668
+```
+589:       if (isReadProblem(parsed) || !isCurrentTransactionMinimumRead(parsed, scope))
+590:         return developmentGap("minimum-position-route");
+591:     }
+592:     // No fabricated discovery or incomplete Operation Directory is exposed. The
+593:     // source fixture gives tests actual canonical targets out of band.
+594:     if (
+595:       url.pathname === scopeUrl.pathname ||
+596:       url.href === new URL("bdp.json", scope).href ||
+597:       url.href === new URL("operations/", scope).href
+598:     )
+599:       return developmentGap("transactional-discovery");
+600:     return readRoute(request);
+601:   }
+602:   return Object.freeze({
+603:     targets,
+604:     methodResponse,
+605:     async handle(
+606:       request: Request,
+607:       authorization: TransactionHttpAuthorization,
+608:       received: TransactionReceivedBody = { text: "" },
+609:       lastEventIds?: readonly string[],
+610:     ): Promise<TransactionHttpResult> {
+611:       let response: HttpResponse | ChangefeedStream | EventStream;
+612:       try {
+613:         if (authorization.kind === "authenticated")
+614:           readPrincipals.set(
+615:             request,
+616:             Object.freeze({
+617:               kind: "authenticated",
+618:               principal: Object.freeze({ id: authorization.principal }),
+619:             }),
+620:           );
+621:         response = await route(request, authorization, received, lastEventIds);
+622:       } catch (error) {
+623:         if (error instanceof ScopeServerOperationAbortedError) throw error;
+624:         if (error instanceof TransactionMinimumFailure && error.reason !== "behind") {
+625:           response = context(
+626:             problem(
+627:               error.reason === "catch-up-timeout"
+628:                 ? {
+629:                     ...readProblem("temporarily-unavailable"),
+630:                     code: "catch-up-timeout",
+631:                     status: 503,
+632:                     retry: "after-delay",
+633:                   }
+634:                 : readProblem(error.reason),
+635:             ),
+636:             error.context,
+637:           );
+638:         } else if (error instanceof TransactionAuthorizationFailure)
+639:           response = transactionHttpProblem(error.code, error.context);
+640:         else if (
+641:           error instanceof TransactionEventParameterError ||
+642:           error instanceof TransactionChangefeedParameterError
+643:         )
+644:           response = transactionHttpProblem("invalid-parameter", error.context);
+645:         else if (error instanceof TransactionEventProjectionGap)
+646:           response = developmentGap(error.message);
+647:         else if (error instanceof TransactionMinimumUnsupported)
+648:           response = developmentGap("minimum-position");
+649:         else if (error instanceof TransactionMinimumVisibilityGap)
+650:           response = developmentGap("minimum-position-visibility");
+651:         else response = empty(500);
+652:       } finally {
+653:         readPrincipals.delete(request);
+654:       }
+655:       response.headers.set("x-bdp-development", "non-attesting");
+656:       if (request.method === "POST") response.headers.set("vary", "Accept");
+657:       if (
+658:         "kind" in response &&
+659:         (response.kind === "changefeed-stream" || response.kind === "event-stream")
+660:       )
+661:         return response;
+662:       return {
+663:         ...(request.method === "GET" || request.method === "HEAD"
+664:           ? applyReadHttpSemantics(request, response)
+665:           : response),
+666:         kind: "finite",
+667:       };
+668:     },
+```
+
+## packages/server/src/transaction-http.test.ts:310–363
+```
+310:   it("serves receipt current context, HEAD and conditions without using execution facts as validators", async () => {
+311:     const f = await fixture(),
+312:       receipt = await body(await f.post());
+313:     await f.post(batch([create("b")]), "b");
+314:     const result = await f.get(id(receipt));
+315:     expect(result.headers.get("bdp-scope-position")).toBe("pos-2");
+316:     expect(result.headers.has("etag")).toBe(false);
+317:     expect(result.headers.has("last-modified")).toBe(false);
+318:     expect(result.headers.get("cache-control")).toBe("private, no-store");
+319:     expect(await body(result)).toEqual(receipt);
+320:     for (const [headers, status] of [
+321:       [{ "if-none-match": "*" }, 304],
+322:       [{ "if-match": '"x"' }, 412],
+323:       [{ "if-match": "*" }, 200],
+324:     ] as const) {
+325:       const head = await f.get(id(receipt), { method: "HEAD", headers });
+326:       expect(head.status).toBe(status);
+327:       expect(await head.text()).toBe("");
+328:       expect(head.headers.get("bdp-scope-position")).toBe("pos-2");
+329:       expect(head.headers.get("cache-control")).toBe("private, no-store");
+330:     }
+331:   });
+332:   it("authenticates and hides receipts before minimum-control refusal or conditional shortcuts", async () => {
+333:     const f = await fixture(),
+334:       receipt = await body(await f.post());
+335:     const controls = {
+336:       "bdp-minimum-scope-position": "pos-999",
+337:       "bdp-scope-epoch": "old",
+338:       "bdp-authorization-view": "other",
+339:       "if-none-match": "*",
+340:     };
+341:     for (const [authorization, status] of [
+342:       ["", 401],
+343:       [`Bearer ${otherToken}`, 404],
+344:       [`Bearer ${token}`, 410],
+345:     ] as const) {
+346:       const response = await f.get(id(receipt), { headers: { ...controls, authorization } });
+347:       expect(response.status).toBe(status);
+348:       expect(response.headers.has("bdp-scope-position")).toBe(status !== 401);
+349:     }
+350:     const missing = await f.get(`${f.runtime.scope}receipts/unknown`, { headers: controls });
+351:     expect(missing.status).toBe(404);
+352:     const own = await f.get(id(receipt), { headers: controls });
+353:     expect(await body(own)).toMatchObject({ code: "cursor-expired" });
+354:     expect(
+355:       (
+356:         await f.get(id(receipt), {
+357:           method: "HEAD",
+358:           headers: { authorization: `Bearer ${otherToken}`, "if-none-match": "*" },
+359:         })
+360:       ).status,
+361:     ).toBe(404);
+362:   });
+363:   it("fails minimum controls closed before ordinary Read and expired cursor conditional decisions", async () => {
+```
+
+## packages/server/src/transaction-http.test.ts:715–743
+```
+715: 
+716:   it("serves actual alias redirects and canonical property validators with current context", async () => {
+717:     const f = await fixture();
+718:     await f.post();
+719:     expect(
+720:       (
+721:         await f.post(
+722:           JSON.stringify({ alias: "alias/latest", target: "beads/a" }),
+723:           "alias",
+724:           "putAlias",
+725:         )
+726:       ).status,
+727:     ).toBe(200);
+728:     const alias = await f.get(`${f.runtime.scope}alias/latest`);
+729:     expect(alias.status).toBe(307);
+730:     expect(alias.headers.get("location")).toBe(`${f.runtime.scope}beads/a`);
+731:     expect(alias.headers.get("bdp-scope-position")).toBe("pos-1");
+732:     const properties = await f.get(`${f.runtime.scope}beads/a?view=properties`);
+733:     expect(properties.status).toBe(200);
+734:     const etag = properties.headers.get("etag");
+735:     expect(etag).toBeTruthy();
+736:     const conditional = await f.get(`${f.runtime.scope}beads/a?view=properties`, {
+737:       headers: { "if-none-match": etag ?? "" },
+738:     });
+739:     expect(conditional.status).toBe(304);
+740:     expect(await conditional.text()).toBe("");
+741:     expect(conditional.headers.get("bdp-scope-position")).toBe("pos-1");
+742:   });
+743: 
+```
+
+## packages/conformance/src/executable-manifest.ts:110–175
+```
+110:     };
+111: 
+112: export type ScenarioAssertion =
+113:   | { readonly id: string; readonly kind: "request-authored-headers" }
+114:   | { readonly id: string; readonly kind: "request-authored-body" }
+115:   | {
+116:       readonly id: string;
+117:       readonly kind: "request-write-state";
+118:       readonly equals: "not-started" | "started-completion-unestablished" | "complete";
+119:     }
+120:   | {
+121:       readonly id: string;
+122:       readonly kind: "status";
+123:       readonly equals?: number;
+124:       readonly oneOf?: readonly number[];
+125:     }
+126:   | {
+127:       readonly id: string;
+128:       readonly kind: "header";
+129:       readonly name: string;
+130:       readonly equals?: string;
+131:       /** Expected value resolved from a fixture binding as an absolute in-Scope URL. */
+132:       readonly equalsBinding?: string;
+133:       /** Compare ETag bytes with an earlier response, even across different statuses. */
+134:       readonly equalsResponse?: string;
+135:       /** On 304, require this RFC cache field when the earlier 200 supplied it; no value capture. */
+136:       readonly presentIfResponse?: string;
+137:       readonly contains?: string;
+138:       readonly absent?: boolean;
+139:     }
+140:   | {
+141:       readonly id: string;
+142:       readonly kind: "header-tokens";
+143:       readonly name: string;
+144:       readonly includes: readonly string[];
+145:       readonly optional?: readonly string[];
+146:       readonly allowsAdditional: boolean;
+147:       readonly caseInsensitive?: true;
+148:     }
+149:   | { readonly id: string; readonly kind: "media-type"; readonly equals: string }
+150:   | { readonly id: string; readonly kind: "body-absent" }
+151:   | {
+152:       readonly id: string;
+153:       readonly kind: "wire-not-contains";
+154:       /** Private fixture string whose UTF-8 octets must be absent from the entire raw response. */
+155:       readonly fixturePointer: string;
+156:     }
+157:   | {
+158:       readonly id: string;
+159:       readonly kind: "response-metadata-equals";
+160:       /** Earlier request in this scenario whose status and named headers are the oracle. */
+161:       readonly request: string;
+162:       readonly headers: readonly string[];
+163:       /** HEAD-only content metadata may be omitted; present values must still match. */
+164:       readonly optionalHeaders?: readonly string[];
+165:     }
+166:   | {
+167:       readonly id: string;
+168:       readonly kind: "json-equals";
+169:       readonly value: JsonValue;
+170:       readonly fixturePointer?: never;
+171:       readonly normalize?: "iso-timestamps";
+172:       /** JSON Pointers relative to the compared value whose timestamp values are target-dynamic. */
+173:       readonly timestampPointers?: readonly string[];
+174:     }
+175:   | {
+```
+
+## packages/conformance/src/artifact-bundle.ts:126–146
+```
+126: /** Source-private TX carrier; transport and public profile admission remain separate. */
+127: export function createCumulativeTransactionalArtifactBundle(
+128:   selection: ProfileContractSelection,
+129:   sources: Pick<ConformanceArtifactBundleSources, "manifest" | "fixture">,
+130: ): ConformanceArtifactBundle {
+131:   assertCanonicalProfileContractSelection(selection);
+132:   if (selection.profile !== "transactional" || selection.history)
+133:     throw new ConformanceArtifactBundleError(
+134:       "cumulative candidate requires baseline Transactional selection",
+135:     );
+136:   const bundle = createBoundArtifactBundle(
+137:     {
+138:       catalog: { bytes: Buffer.from(JSON.stringify(selection.catalog)) },
+139:       manifest: sources.manifest,
+140:       fixture: sources.fixture,
+141:     },
+142:     false,
+143:     selection,
+144:   );
+145:   cumulativeTransactionalBundles.add(bundle);
+146:   return bundle;
+```
+
+## packages/conformance/src/artifact-bundle.ts:220–238
+```
+220:       );
+221:     const required = new Map(cumulative.required.map((row) => [row.id, row]));
+222:     for (const row of manifest.scenarios)
+223:       if (required.get(row.id)?.requiredProfile !== row.requiredProfile)
+224:         throw new ConformanceArtifactBundleError(
+225:           `manifest row is not a cumulative requirement: ${row.id}`,
+226:         );
+227:   }
+228:   for (const scenario of manifest.scenarios) {
+229:     if (scenario.setup.fixture !== fixture.id) {
+230:       throw new ConformanceArtifactBundleError(
+231:         `scenario '${scenario.id}' names fixture '${scenario.setup.fixture}' instead of the bound fixture`,
+232:       );
+233:     }
+234:   }
+235:   validateFixtureOraclePointers(manifest, fixture);
+236: 
+237:   const bundle = deepFreeze({
+238:     catalog,
+```
+
+## packages/conformance/src/runner.ts:409–427
+```
+409:       ? {}
+410:       : { scenarioFilter: runOptions.scenarioFilter }),
+411:     ...(runOptions.scenarioSelection === undefined
+412:       ? {}
+413:       : { scenarioSelection: runOptions.scenarioSelection }),
+414:     artifacts: runOptions.artifactBundle.digests,
+415:     declarations: {
+416:       targetLabel: runOptions.declaredTargetLabel,
+417:       ...(runOptions.artifactBundle.manifest.manifestVersion === 2 &&
+418:       runOptions.exactExecution !== undefined
+419:         ? { exactConfigurationDigest: exactConfigurationDigest(runOptions.exactExecution) }
+420:         : {}),
+421:     },
+422:     claimEligible: false as const,
+423:   };
+424:   if (runOptions.artifactBundle.manifest.manifestVersion === 2)
+425:     return { ...common, reportVersion: 4, scenarios: results };
+426:   const legacy = results.map((scenario) => {
+427:     assertLegacyScenario(scenario);
+```
+
+## packages/conformance/src/runner.ts:2792–2820
+```
+2792:     options.artifactBundle.manifest.manifestVersion === 1 &&
+2793:     options.artifactBundle.manifest.catalogId === "read-v1" &&
+2794:     options.profile !== "read"
+2795:   )
+2796:     throw new ConformanceRunnerError(
+2797:       "read-v1 executable scaffold currently supports targets advertising the Read profile only",
+2798:     );
+2799:   if (
+2800:     options.artifactBundle.manifest.manifestVersion === 2 &&
+2801:     options.exactExecution !== undefined &&
+2802:     (options.exactExecution.configuration.scope !== options.scope ||
+2803:       options.exactExecution.configuration.profile !== options.profile)
+2804:   )
+2805:     throw new ConformanceRunnerError(
+2806:       "Version 2 exact configuration must match the run Scope and profile",
+2807:     );
+2808:   if (
+2809:     options.artifactBundle.manifest.manifestVersion === 2 &&
+2810:     options.profile !== "read" &&
+2811:     ((transactional ? options.profile !== "transactional" : options.profile !== "read-update") ||
+2812:       options.exactExecution === undefined ||
+2813:       options.exactExecution.configuration.profile !== options.profile ||
+2814:       options.exactExecution.configuration.scope !== options.scope)
+2815:   )
+2816:     throw new ConformanceRunnerError(
+2817:       transactional
+2818:         ? "Private Transactional execution requires matching exact configuration (private session transport required)"
+2819:         : "Version 2 non-Read execution requires matching Read+Update configuration",
+2820:     );
+```
+
+## apps/bdptest/src/transactional-matrix.test.ts:1–94
+```
+1: import { execFileSync, spawnSync, type ChildProcess } from "node:child_process";
+2: import { createHash, randomBytes } from "node:crypto";
+3: import { mkdtempSync, readFileSync, rmSync, writeFileSync } from "node:fs";
+4: import { tmpdir } from "node:os";
+5: import path from "node:path";
+6: import { fileURLToPath } from "node:url";
+7: import { expect, it } from "vitest";
+8: import {
+9:   createJsonSchemaValidator,
+10:   createRawHttpExchangeExecutor,
+11:   type ExactHttpModeOptions,
+12:   type HttpExchangeResponse,
+13: } from "@bdp/conformance";
+14: import {
+15:   createCumulativeTransactionalArtifactBundle,
+16:   loadProfileContractSelection,
+17:   runCumulativeTransactionalMatrix,
+18:   assertSameServedProfileConfiguration,
+19: } from "@bdp/conformance/testing";
+20: import {
+21:   createTransactionalExecutionBinding,
+22:   installedTransactionBinding,
+23: } from "../test-support/transactional-execution-binding.js";
+24: import schema from "../../../schemas/bdp-v0.schema.json" with { type: "json" };
+25: const root = fileURLToPath(new URL("../../../", import.meta.url));
+26: const { launchInstalledTransaction } = (await import(
+27:   new URL("../../../scripts/transaction-installed-observation.mjs", import.meta.url).href
+28: )) as {
+29:   launchInstalledTransaction(
+30:     entry: string,
+31:     configuration: unknown,
+32:     signal?: AbortSignal,
+33:   ): Promise<{ child: ChildProcess; ready: Record<string, unknown>; close(): Promise<void> }>;
+34: };
+35: const scope = "https://reference.invalid/acme/";
+36: const entry =
+37:   process.env.BDP_TRANSACTIONAL_INSTALLED_ENTRY ??
+38:   path.join(root, "packages/server/dist/transaction-installed-process.js");
+39: const source = (file: string) => ({
+40:   bytes: readFileSync(path.join(root, "packages/conformance/test-support/transactional", file)),
+41: });
+42: const fixtureSource = source("fixture-v1.json"),
+43:   manifestSource = source("manifest-v1.json");
+44: const bundle = createCumulativeTransactionalArtifactBundle(
+45:   loadProfileContractSelection("transactional"),
+46:   { manifest: manifestSource, fixture: fixtureSource },
+47: );
+48: function artifacts() {
+49:   const task = `${scope}types/task`,
+50:     link = `${scope}types/relationship`,
+51:     propertiesSchema = `${scope}schemas/properties`;
+52:   const descriptors = [
+53:     { id: task, name: "Task", describes: "bead", conformsTo: [], propertiesSchema },
+54:     {
+55:       id: link,
+56:       name: "Relationship",
+57:       describes: "link",
+58:       conformsTo: [],
+59:       propertiesSchema,
+60:       source: { conformsTo: [task], external: "opaque" },
+61:       target: { conformsTo: [task], external: "opaque" },
+62:     },
+63:   ];
+64:   return {
+65:     descriptors: descriptors.map((d) => ({ retrievalUri: d.id, utf8: JSON.stringify(d) })),
+66:     schemas: [
+67:       {
+68:         retrievalUri: propertiesSchema,
+69:         utf8: JSON.stringify({
+70:           $id: propertiesSchema,
+71:           type: "object",
+72:           properties: { title: { type: "string" } },
+73:           additionalProperties: false,
+74:         }),
+75:       },
+76:     ],
+77:   };
+78: }
+79: const sourceCommit =
+80:   process.env.BDP_TRANSACTIONAL_SOURCE_COMMIT ??
+81:   execFileSync("git", ["rev-parse", "HEAD"], { cwd: root, encoding: "utf8" }).trim();
+82: function errorCauses(error: unknown): Set<unknown> {
+83:   const seen = new Set<unknown>();
+84:   const visit = (value: unknown) => {
+85:     if (seen.has(value)) return;
+86:     seen.add(value);
+87:     if (value instanceof AggregateError) for (const cause of value.errors) visit(cause);
+88:     if (value instanceof Error && value.cause !== undefined) visit(value.cause);
+89:   };
+90:   visit(error);
+91:   return seen;
+92: }
+93: type InstalledObservation = {
+94:   result: Awaited<ReturnType<typeof runCumulativeTransactionalMatrix>>;
+```
+
+## apps/bdptest/src/transactional-matrix.test.ts:105–301
+```
+105:   /** Retain genuine returned evidence before cleanup can fail; never replace it. */
+106:   readonly onObserved?: (observed: InstalledObservation) => void;
+107:   readonly invalidReceiptCredentials?: boolean | "set-update" | "set-delete";
+108:   /** Negative-only removal of one already declared canonical set route. */
+109:   readonly omitRoute?: {
+110:     readonly method: "POST";
+111:     readonly url: `${typeof scope}operations/${"update-where" | "delete-where"}`;
+112:   };
+113:   readonly signal?: AbortSignal;
+114:   readonly children?: ChildProcess[];
+115:   /** Negative-test gate after actual ordinary wire, never a response replacement. */
+116:   readonly afterExchange?: (response: HttpExchangeResponse, signal: AbortSignal) => Promise<void>;
+117:   readonly ready?: (ready: Record<string, unknown>) => Record<string, unknown>;
+118:   readonly manifest?: (value: {
+119:     scenarios: { id: string; actions: Record<string, unknown>[] }[];
+120:   }) => void;
+121: }) {
+122:   const budgetMs = control?.budgetMs ?? 90000;
+123:   if (!Number.isSafeInteger(budgetMs) || budgetMs < 1 || budgetMs > 90000)
+124:     throw new Error("invalid cohort budget");
+125:   const afterFirstExchangeBudgetMs = control?.afterFirstExchangeBudgetMs;
+126:   if (
+127:     afterFirstExchangeBudgetMs !== undefined &&
+128:     (!Number.isSafeInteger(afterFirstExchangeBudgetMs) ||
+129:       afterFirstExchangeBudgetMs < 1 ||
+130:       afterFirstExchangeBudgetMs > budgetMs)
+131:   )
+132:     throw new Error("invalid after-first-exchange cohort budget");
+133:   const controller = new AbortController();
+134:   const signal = control?.signal
+135:     ? AbortSignal.any([control.signal, controller.signal])
+136:     : controller.signal;
+137:   signal.throwIfAborted();
+138:   const changed = JSON.parse(manifestSource.bytes.toString()) as {
+139:     scenarios: { id: string; actions: Record<string, unknown>[] }[];
+140:   };
+141:   control?.manifest?.(changed);
+142:   const runBundle = control?.manifest
+143:     ? createCumulativeTransactionalArtifactBundle(loadProfileContractSelection("transactional"), {
+144:         fixture: fixtureSource,
+145:         manifest: { bytes: Buffer.from(JSON.stringify(changed)) },
+146:       })
+147:     : bundle;
+148:   const directory = mkdtempSync(path.join(tmpdir(), "bdp-tx-installed-"));
+149:   const tokens: PrincipalTokens = {
+150:     operator: randomBytes(32).toString("base64url"),
+151:     reader: randomBytes(32).toString("base64url"),
+152:     principalA: randomBytes(32).toString("base64url"),
+153:     principalARotated: randomBytes(32).toString("base64url"),
+154:     principalB: randomBytes(32).toString("base64url"),
+155:   };
+156:   const roles = principalCredentialRoles(tokens, control?.collapsePrincipalB ?? false);
+157:   const configuration = {
+158:     scope,
+159:     directory: path.join(directory, "bootstrap"),
+160:     create: true,
+161:     credentials: roles.map(({ token, principal, canMutate }) => ({ token, principal, canMutate })),
+162:     artifacts: artifacts(),
+163:   };
+164:   let target: ReturnType<typeof createTransactionalExecutionBinding> | undefined;
+165:   const sessions: Record<string, unknown>[] = [];
+166:   const deniedReceiptUrls = new Set<string>();
+167:   const expireCohort = () => controller.abort(new Error("installed cohort deadline"));
+168:   const timer = setTimeout(expireCohort, budgetMs);
+169:   let firstExchangeTimer: ReturnType<typeof setTimeout> | undefined;
+170:   let observed: InstalledObservation | undefined;
+171:   let failure: unknown;
+172:   const cleanupFailures: unknown[] = [];
+173:   try {
+174:     const bootstrap = await launchInstalledTransaction(entry, configuration, signal);
+175:     control?.children?.push(bootstrap.child);
+176:     let baseline: ReturnType<typeof installedTransactionBinding>;
+177:     try {
+178:       baseline = installedTransactionBinding(bootstrap.ready, sourceCommit, fixtureSource);
+179:     } finally {
+180:       await bootstrap.close();
+181:     }
+182:     const routes = bundle.manifest.scenarios
+183:       .flatMap((s) => s.actions ?? [])
+184:       .flatMap((a) => {
+185:         if (a.family !== "http") return [];
+186:         const base =
+187:           a.target.binding === "scope" ? scope : bundle.fixture.bindings?.[a.target.binding];
+188:         if (!base) throw new Error("predeclared target unavailable");
+189:         const url = new URL(a.target.path ?? "", base);
+190:         for (const [key, value] of Object.entries(a.target.query ?? {})) {
+191:           if (typeof value !== "string") throw new Error("literal query required");
+192:           url.searchParams.set(key, value);
+193:         }
+194:         return [{ method: a.method, url: url.href }];
+195:       });
+196:     const uniqueRoutes = routes.filter(
+197:       (r, i) => routes.findIndex((o) => o.url === r.url && o.method === r.method) === i,
+198:     );
+199:     // Independently authored route inventory, not a second derivation from the manifest.
+200:     expect(uniqueRoutes).toEqual([
+201:       { method: "POST", url: `${scope}operations/batch` },
+202:       { method: "GET", url: `${scope}beads/?limit=32` },
+203:       { method: "GET", url: `${scope}events/` },
+204:       { method: "POST", url: `${scope}operations/create-bead` },
+205:       { method: "POST", url: `${scope}operations/sequence` },
+206:       { method: "POST", url: `${scope}operations/update-bead` },
+207:       { method: "GET", url: `${scope}beads/a` },
+208:       { method: "GET", url: `${scope}links/l` },
+209:       { method: "GET", url: `${scope}beads/new` },
+210:       { method: "GET", url: `${scope}changes/?after=genesis` },
+211:       { method: "GET", url: `${scope}links/?limit=32` },
+212:       { method: "GET", url: `${scope}beads/b` },
+213:       { method: "GET", url: `${scope}beads/c` },
+214:       { method: "POST", url: `${scope}operations/update-where` },
+215:       { method: "POST", url: `${scope}operations/delete-where` },
+216:     ]);
+217:     const omitted = control?.omitRoute;
+218:     if (omitted) {
+219:       expect([`${scope}operations/update-where`, `${scope}operations/delete-where`]).toContain(
+220:         omitted.url,
+221:       );
+222:       expect(omitted.method).toBe("POST");
+223:       expect(
+224:         uniqueRoutes.filter((r) => r.url === omitted.url && r.method === omitted.method),
+225:       ).toHaveLength(1);
+226:     }
+227:     const exactMode: ExactHttpModeOptions = {
+228:       scope,
+229:       profile: "transactional",
+230:       routes: uniqueRoutes.filter(
+231:         (r) => !omitted || r.url !== omitted.url || r.method !== omitted.method,
+232:       ),
+233:       maximumRequestHeaderBytes: 16384,
+234:       maximumRequestBodyBytes: 65536,
+235:       defaultCredentialRef: "operator",
+236:       credentialHandles: [
+237:         ...roles.map(({ ref }) => ({ id: ref, headerNames: ["authorization"] })),
+238:         { id: "anonymous", headerNames: [] },
+239:       ],
+240:       resolveCredentials: ({ credentialRef, url }) =>
+241:         principalHeaders(
+242:           roles,
+243:           credentialRef,
+244:           (control?.invalidReceiptCredentials === true && url.startsWith(`${scope}receipts/`)) ||
+245:             deniedReceiptUrls.has(url),
+246:         ),
+247:     };
+248:     target = createTransactionalExecutionBinding({
+249:       baseline,
+250:       sourceCommit,
+251:       fixtureSource,
+252:       exactMode,
+253:       launch: async (scenario, reopen, signal) => {
+254:         if (signal.aborted) throw new Error("launch aborted");
+255:         const child = await launchInstalledTransaction(
+256:           entry,
+257:           {
+258:             ...configuration,
+259:             directory: path.join(directory, scenario),
+260:             create: !reopen,
+261:           },
+262:           signal,
+263:         );
+264:         control?.children?.push(child.child);
+265:         sessions.push({ ...child.ready, scenario, reopen });
+266:         return control?.ready ? { ...child, ready: control.ready(child.ready) } : child;
+267:       },
+268:     });
+269:     const result = await runCumulativeTransactionalMatrix(
+270:       {
+271:         scope,
+272:         signal,
+273:         profile: "transactional",
+274:         seed: 0,
+275:         artifactBundle: runBundle,
+276:         ...(control?.scenarioSelection === undefined
+277:           ? {}
+278:           : { scenarioSelection: control.scenarioSelection }),
+279:         execute: async () => {
+280:           throw new Error("generic HTTP executor forbidden");
+281:         },
+282:         exactExecution: {
+283:           execute: async (request) => {
+284:             control?.onDispatch?.(
+285:               Object.freeze({
+286:                 method: request.method,
+287:                 url: request.url,
+288:                 credentialRef: request.credentialRef,
+289:               }),
+290:             );
+291:             const response = await target!.target.execute(request);
+292:             if (afterFirstExchangeBudgetMs !== undefined && firstExchangeTimer === undefined) {
+293:               firstExchangeTimer = setTimeout(expireCohort, afterFirstExchangeBudgetMs);
+294:             }
+295:             if (
+296:               typeof control?.invalidReceiptCredentials === "string" &&
+297:               response.status === 200 &&
+298:               [
+299:                 baseline.operationTargets.updateWhere,
+300:                 baseline.operationTargets.deleteWhere,
+301:               ].includes(response.url)
+```
+
+## apps/bdptest/test-support/transactional-execution-binding.ts:1–97
+```
+1: import { isDeepStrictEqual } from "node:util";
+2: import { installedContractsDigest } from "./installed-contract-identity.js";
+3: /** Source-only installed binding. Runner retains sole receipt observation authority. */
+4: import { createHash } from "node:crypto";
+5: import {
+6:   createRawHttpScenarioTarget,
+7:   type ExactHttpModeOptions,
+8:   type ConformanceFixture,
+9:   type ExecutableScenario,
+10: } from "@bdp/conformance";
+11: import {
+12:   bindServedProfileConfiguration,
+13:   assertSameServedProfileConfiguration,
+14:   type TransactionalRunContext,
+15:   type TransactionalSession,
+16: } from "@bdp/conformance/testing";
+17: export interface InstalledTransactionChild {
+18:   readonly ready: Record<string, unknown>;
+19:   close(): Promise<unknown>;
+20: }
+21: export function installedTransactionBinding(
+22:   ready: Record<string, unknown>,
+23:   sourceCommit: string,
+24:   fixture: { bytes: Uint8Array },
+25: ) {
+26:   if (
+27:     ready.profile !== "transactional" ||
+28:     ready.history !== false ||
+29:     ready.claimEligible !== false ||
+30:     ready.authorityMode !== "canonical" ||
+31:     typeof ready.scope !== "string" ||
+32:     typeof ready.runtimeConfigurationIdentity !== "string" ||
+33:     !/^[a-f0-9]{64}$/.test(ready.runtimeConfigurationIdentity)
+34:   )
+35:     throw new Error("installed Transactional metadata unavailable");
+36:   if (typeof ready.listenUrl !== "string")
+37:     throw new Error("installed physical session unavailable");
+38:   const url = new URL(ready.listenUrl);
+39:   if (
+40:     url.protocol !== "http:" ||
+41:     url.hostname !== "127.0.0.1" ||
+42:     !url.port ||
+43:     url.username ||
+44:     url.password ||
+45:     url.pathname !== "/" ||
+46:     url.search ||
+47:     url.hash
+48:   )
+49:     throw new Error("invalid installed dial binding");
+50:   const targetNames = {
+51:     createBead: "create-bead",
+52:     updateBead: "update-bead",
+53:     deleteBead: "delete-bead",
+54:     createLink: "create-link",
+55:     updateLink: "update-link",
+56:     deleteLink: "delete-link",
+57:     putAlias: "put-alias",
+58:     deleteAlias: "delete-alias",
+59:     updateWhere: "update-where",
+60:     deleteWhere: "delete-where",
+61:     batch: "batch",
+62:     sequence: "sequence",
+63:   };
+64:   const operationTargets = Object.freeze(
+65:     Object.fromEntries(
+66:       Object.entries(targetNames).map(([name, suffix]) => [
+67:         name,
+68:         `${ready.scope}operations/${suffix}`,
+69:       ]),
+70:     ),
+71:   );
+72:   if (!isDeepStrictEqual(ready.targets, operationTargets))
+73:     throw new Error("installed operation target inventory mismatch");
+74:   const served = bindServedProfileConfiguration({
+75:     scope: ready.scope,
+76:     profile: "transactional",
+77:     history: false,
+78:     sourceCommit,
+79:     installedPayloadDigest: ready.payloadIdentity as string,
+80:     installedContractsDigest: installedContractsDigest(ready.artifactIdentity),
+81:     policyDigest: ready.policyIdentity as string,
+82:     authenticationDigest: ready.authenticationIdentity as string,
+83:     fixture,
+84:   });
+85:   return Object.freeze({
+86:     served,
+87:     operationTargets,
+88:     runtimeConfigurationIdentity: ready.runtimeConfigurationIdentity,
+89:     authorityMode: "canonical" as const,
+90:   });
+91: }
+92: export function createTransactionalExecutionBinding(options: {
+93:   readonly baseline: ReturnType<typeof installedTransactionBinding>;
+94:   readonly sourceCommit: string;
+95:   readonly fixtureSource: { bytes: Uint8Array };
+96:   readonly exactMode: ExactHttpModeOptions;
+97:   readonly launch: (
+```
+
+## apps/bdptest/test-support/transactional-execution-binding.ts:110–215
+```
+110:   let reopening = false;
+111:   const target = createRawHttpScenarioTarget(
+112:     async (scenario, scope, seed, fixture, signal) => {
+113:       const child = await options.launch(scenario.id, reopening, signal);
+114:       try {
+115:         if (signal.aborted) throw new Error("installed preparation aborted");
+116:         const actual = installedTransactionBinding(
+117:           child.ready,
+118:           options.sourceCommit,
+119:           options.fixtureSource,
+120:         );
+121:         assertSameServedProfileConfiguration(options.baseline.served, actual.served);
+122:         if (
+123:           actual.runtimeConfigurationIdentity !== options.baseline.runtimeConfigurationIdentity ||
+124:           actual.authorityMode !== options.baseline.authorityMode
+125:         )
+126:           throw new Error("installed runtime identity mismatch");
+127:         const listenUrl = child.ready.listenUrl as string,
+128:           address = new URL(listenUrl);
+129:         const controller = new AbortController(),
+130:           pending = new Set<Promise<unknown>>();
+131:         const binding = Object.freeze({
+132:           scenario: scenario.id,
+133:           generation: ++generation,
+134:           listenUrl,
+135:           runtimeConfigurationIdentity: actual.runtimeConfigurationIdentity,
+136:           responseLimits: Object.freeze({
+137:             headerBytes: 65536 as const,
+138:             bodyBytes: 1048576 as const,
+139:             wireBytes: 2097152 as const,
+140:           }),
+141:           configurationDigest: createHash("sha256")
+142:             .update(JSON.stringify(actual.served))
+143:             .digest("hex"),
+144:         });
+145:         const current = {
+146:           binding,
+147:           controller,
+148:           pending,
+149:           signal: AbortSignal.any([controller.signal, signal]),
+150:           dialRoute: Object.freeze({
+151:             transport: "plain" as const,
+152:             host: address.hostname,
+153:             port: Number(address.port),
+154:           }),
+155:           resolveCredentials: options.exactMode.resolveCredentials,
+156:           register<T>(operation: Promise<T>) {
+157:             pending.add(operation);
+158:             void operation.then(
+159:               () => pending.delete(operation),
+160:               () => pending.delete(operation),
+161:             );
+162:             return operation;
+163:           },
+164:         };
+165:         active = current;
+166:         presentation = { scenario, scope, seed, fixture };
+167:         return {
+168:           capabilities: fixture.capabilities,
+169:           bindings: fixture.bindings,
+170:           dialRoute: current.dialRoute,
+171:           async close() {
+172:             if (active === current) active = undefined;
+173:             controller.abort();
+174:             await Promise.allSettled([...pending]);
+175:             await child.close();
+176:           },
+177:         };
+178:       } catch (error) {
+179:         try {
+180:           await child.close();
+181:         } catch (cleanup) {
+182:           throw new AggregateError([error, cleanup], "installed session setup cleanup failed");
+183:         }
+184:         throw error;
+185:       }
+186:     },
+187:     {
+188:       exactMode: options.exactMode,
+189:       requestTimeoutMs: 5000,
+190:       cleanupTimeoutMs: 10000,
+191:       maximumHeaderBytes: 65536,
+192:       maximumBodyBytes: 1048576,
+193:     },
+194:   );
+195:   const context: TransactionalRunContext = {
+196:     current(scenario) {
+197:       if (!active || active.binding.scenario !== scenario || active.signal.aborted)
+198:         throw new Error("installed session unavailable");
+199:       return active;
+200:     },
+201:     async reopen(scenario, signal) {
+202:       const old = presentation;
+203:       if (!old || old.scenario.id !== scenario || !active)
+204:         throw new Error("reopen outside active scenario");
+205:       await target.close(signal);
+206:       reopening = true;
+207:       try {
+208:         await target.harness.prepare(old.scenario, old.scope, old.seed, old.fixture, signal);
+209:       } finally {
+210:         reopening = false;
+211:       }
+212:     },
+213:   };
+214:   return Object.freeze({ target, context });
+215: }
+```
+
+## scripts/transaction-installed-observation.mjs:1–97
+```
+1: /** Bounded inherited-IPC launcher. No request or observation emulation. */
+2: import { spawn } from "node:child_process";
+3: import { mkdir } from "node:fs/promises";
+4: export async function launchInstalledTransaction(entry, configuration, signal) {
+5:   signal?.throwIfAborted();
+6:   // Explicit launcher-owned provisioning; reopen keeps the directory/create:false.
+7:   if (configuration.create) await mkdir(configuration.directory, { recursive: true, mode: 0o700 });
+8:   signal?.throwIfAborted();
+9:   const child = spawn(process.execPath, [entry], {
+10:     cwd: "/tmp",
+11:     stdio: ["ignore", "pipe", "pipe", "ipc"],
+12:   });
+13:   let bytes = 0;
+14:   for (const stream of [child.stdout, child.stderr])
+15:     stream.on("data", (chunk) => {
+16:       bytes += chunk.length;
+17:       if (bytes > 65536) child.kill("SIGKILL");
+18:     });
+19:   const exited = new Promise((resolve) =>
+20:     child.once("exit", (code, signal) => resolve({ code, signal })),
+21:   );
+22:   async function bounded(promise) {
+23:     let timer;
+24:     try {
+25:       return await Promise.race([
+26:         promise,
+27:         new Promise((_, reject) => {
+28:           timer = setTimeout(() => {
+29:             child.kill("SIGKILL");
+30:             reject(new Error("installed transaction process deadline"));
+31:           }, 10000);
+32:         }),
+33:       ]);
+34:     } finally {
+35:       clearTimeout(timer);
+36:     }
+37:   }
+38:   async function drainFailure(error) {
+39:     child.kill("SIGKILL");
+40:     try {
+41:       await bounded(exited);
+42:     } catch (cleanup) {
+43:       throw new AggregateError([error, cleanup], "installed transaction cleanup failed");
+44:     }
+45:     throw error;
+46:   }
+47:   let closing;
+48:   const close = () =>
+49:     (closing ??= (async () => {
+50:       try {
+51:         if (child.connected) child.send({ command: "close" });
+52:         const result = await bounded(exited);
+53:         if (result.code !== 0 || result.signal !== null)
+54:           throw new Error("installed transaction child did not close cleanly");
+55:       } catch (error) {
+56:         await drainFailure(error);
+57:       } finally {
+58:         signal?.removeEventListener("abort", onAbort);
+59:       }
+60:     })());
+61:   const onAbort = () => {
+62:     void close().catch(() => {});
+63:   };
+64:   signal?.addEventListener("abort", onAbort, { once: true });
+65:   if (signal?.aborted) onAbort();
+66:   let detachReadyAbort = () => {};
+67:   try {
+68:     const ready = await bounded(
+69:       new Promise((resolve, reject) => {
+70:         const abort = () => reject(signal.reason);
+71:         signal?.addEventListener("abort", abort, { once: true });
+72:         detachReadyAbort = () => signal?.removeEventListener("abort", abort);
+73:         if (signal?.aborted) {
+74:           abort();
+75:           return;
+76:         }
+77:         child.once("error", reject);
+78:         child.once("message", resolve);
+79:         void exited.then(() => reject(new Error("installed transaction exited before ready")));
+80:         child.send({ configuration });
+81:       }),
+82:     );
+83:     signal?.throwIfAborted();
+84:     if (!ready || ready.event !== "qualification.ready" || JSON.stringify(ready).length > 65536)
+85:       throw new Error("invalid installed ready message");
+86:     return { child, ready, close };
+87:   } catch (error) {
+88:     try {
+89:       await close();
+90:     } catch (cleanup) {
+91:       throw new AggregateError([error, cleanup], "installed transaction startup cleanup failed");
+92:     }
+93:     throw error;
+94:   } finally {
+95:     detachReadyAbort();
+96:   }
+97: }
+```
+
+Optional narrow lookups: existing transactional manifest/coverage/fixture; transactional-cumulative.test.ts preservation checks; catalog/read-v1.json exact two inherited obligations. Public server/index.ts admission and read-conformance-capability.ts stay unchanged. Do not review the unrelated fresh-depth test.

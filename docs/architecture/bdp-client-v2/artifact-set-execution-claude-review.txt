@@ -1,0 +1,94 @@
+## Findings
+
+### 1. Continuation shard's exact route table is self-certifying — no independent pin (Medium)
+
+**Where:** `apps/bdptest/test-support/read-update-artifact-execution.ts:20,175,188` · `apps/bdptest/src/read-update-matrix.test.ts:206,954-956,1307-1309`
+
+`run` now configures the harness with `routes: artifactRoutes(bundle, scope)` (`:206`), and `associateArtifactObservations` "verifies" that configuration by recomputing `artifactRoutes(shard.bundle, configuration.scope)` (`:175`) and then digesting the same projection (`:188`). Both sides of the comparison come out of one function, so the check cannot fail on a derivation defect. The runner's own `exactConfigurationDigest` is also computed from the same route array, so that comparison is equally circular. The only non-circular check is the literal `3224c31c…` pin, and it exists **only** for the baseline (the file contains exactly two 64-hex literals, both that value, at `:955` and `:1308`).
+
+**Failure scenario:** `artifactRoutes` over-derives for the continuation shard — e.g. a client-GET binding that C never requests, or a future row whose `target.query` handling widens a URL. The harness allowlist admits the extra route, `equal(exact.routes, artifactRoutes(...))` matches, `routeDigest` matches the runner's digest of that same table, the `routes` negative control (which pops a route from the *observation*, `read-update-artifact-execution.test.ts:213`) still throws, and nothing fails. The handoff requires the opposite: *"Derive exact routes independently per shard"* and *"establish the continuation's exact pin from its actual captured route table"*.
+
+**Fix:** add `expect(progress.shards[1]!.routeDigest).toBe("<measured>")` plus an explicit expected route count/URL list for the continuation; keep the two baseline pins byte-identical. Related: `equal(report.plannedIds, shard.scenarioIds, "owned plans")` (`:133`) is also vacuous — both sides derive from the same `shard.bundle` object — whereas `plannedManifestDigest` (`:146`) is genuine because the planner re-parses the source bytes.
+
+### 2. `observedIds` is a static alias of `authoredIds`; no pass/fail/not-run partition, no uncovered list, no per-ID report mapping (Medium)
+
+**Where:** `apps/bdptest/test-support/read-update-artifact-execution.ts:253-257`
+
+```ts
+authoredIds: set.requirements.filter((r) => r.owner !== null).map((r) => r.id),
+observedIds: set.requirements.filter((r) => r.owner !== null).map((r) => r.id),
+```
+
+Both fields are the *same expression* over static manifest-derived ownership. No field in the summary is derived from `result.scenarios`. `requiredOwnership` is just `set.requirements` (`{id, owner}`) with no report reference, state or reason, and the 99-uncovered figure appears nowhere in the summary — only in each shard's `uncoveredIds`, which `run` computes from the on-disk coverage file (`read-update-matrix.test.ts:776-778`), not from the validated `set.coverage`.
+
+The plan requires *"all canonical required IDs, each mapped to its single actual report row or an explicit unobserved/unplanned reason"* and *"distinct counts for authored, observed pass/fail/not-run, reviewed whole, and currently uncovered"*.
+
+**Failure scenario:** the two lists coincide today only because the helper throws unless every owned row is `pass`. The record itself asserts observation from ownership, so it cannot represent a partially-observed set, and any later relaxation of the row-state assertions publishes unobserved IDs as observed with no cross-check. A supervisor reading `observedIds` is reading the authored list under a different name.
+
+**Fix:** derive observed IDs from the owning shard's `result.scenarios`, partitioned by state (`pass`/`fail`/`not-run`/`not-implemented`); emit `requiredOwnership` as `{id, shardId|null, reportDigest|null, state|reason}`; add `uncoveredIds` from `set.coverage` (required minus `wholeContract` = 99).
+
+### 3. `cleanupComplete` is a hardcoded literal, not a measurement (Low)
+
+**Where:** `apps/bdptest/src/read-update-matrix.test.ts:755` · `apps/bdptest/test-support/read-update-artifact-execution.ts:125,243`
+
+`cleanupComplete: true` is written into the object returned at `:753-784`, i.e. *before* the `finally` at `:785-790` that actually performs `await target.close()` and `rmSync(directory)`. The summary re-emits it as a literal `true` (`:243`), and the guard `if (!report.cleanupComplete) throw` (`:125`) plus the `"cleanup"` negative control therefore exercise a value the producer can never set to false.
+
+Real failures are still caught indirectly: the runner converts a harness cleanup failure into `cleanupError` and downgrades `state` from `pass` (`runner.ts:816-824`), which fails `equal(row.state, "pass")`, and a throwing `target.close()` rejects `run`. So this is a record-honesty defect, not a leak — the record attests to cleanup it never observed.
+
+**Fix:** assemble the payload, run cleanup, then attach the observed outcome (set false / rethrow on failure); additionally assert no report row carries `cleanupError`.
+
+### 4. Budget accounting excludes set construction; no `budgetRemainingMsAtStart`, per-shard outcome, node counts or RSS (Low)
+
+**Where:** `apps/bdptest/src/read-update-matrix.test.ts:840-853,979-998`
+
+The 90 s abort timer is armed at `:841`, but `started` is taken at `:844` — after `installedArtifactSet()` parses the 3,626,922-byte baseline + 114,182-byte continuation manifests and builds both bundles. `timing[].remainingMs` therefore overstates the remaining cooperative budget by that construction time, and `expect(performance.now() - started).toBeLessThan(90000)` measures a shorter window than the timer. (No false pass is possible: `controller.signal.throwIfAborted()` at `:858`/`:977` is the real gate.) The record also omits per-shard `budgetRemainingMsAtStart` and `outcome/abort` state, per-shard source bytes/node counts, and any RSS sample, though the plan requires *"timings/memory must come from the fresh installed run"*.
+
+**Fix:** take `started` immediately before arming the timer; record per-shard `budgetRemainingMsAtStart`/`outcome`; sample `process.memoryUsage().rss` and record per-shard bytes/nodes.
+
+### 5. `reportDigest` does not digest the written child report (Low)
+
+**Where:** `apps/bdptest/test-support/read-update-artifact-execution.ts:239` · `read-update-matrix.test.ts:981-982`
+
+`reportDigest: digest(result)` covers only the `ConformanceRunResult`, while `${filename}.${shardId}.json` contains the whole wrapper (`observations`, `sessions`, `baselineReceipt`, …). A supervisor cannot verify the digest against the file it was handed without knowing to extract `.result` and canonicalize it.
+
+**Fix:** also record the written file's byte digest and length, or write `result` alone and keep the wrapper fields in the summary.
+
+### 6. Set summary is not checked for credential leakage in the live run (Low)
+
+**Where:** `apps/bdptest/src/read-update-matrix.test.ts:963-998`
+
+`expect(JSON.stringify(observed)).not.toContain(token)` is applied to each shard report, but not to `progress` — the artifact actually written to `BDP_CUMULATIVE_REPORT_PATH`. The unit test proves the `readySummary` whitelist drops arbitrary receipt keys (`read-update-artifact-execution.test.ts:160-162`), so exposure risk is low, but the plan's *"never resolved Authorization, tokens or arbitrary child stderr"* has no assertion on the published object.
+
+**Fix:** add the same two `not.toContain` assertions for `JSON.stringify(progress)` immediately before the write.
+
+### 7. 22 association negative controls assert only bare `.toThrow()` (Low)
+
+**Where:** `apps/bdptest/src/read-update-artifact-execution.test.ts:232`
+
+Every discriminator is asserted with `expect(() => associateArtifactObservations(...)).toThrow()`. `equal()` already produces labelled messages (`artifact-set <label> mismatch`), so a control that trips an *earlier, unintended* check passes silently and the intended discriminator goes untested.
+
+**Fix:** assert the expected label per case, e.g. `.toThrow(/catalog source map/)`.
+
+---
+
+## Verified clean
+
+Measured directly against the frozen tree and the historical draft; all read-only, nothing written (worktree still clean).
+
+**Baseline 49 preserved.** `matrices/read-update-v1.json` is absent from the diff; sha256 `c86b335…c3227f`, 3,626,922 bytes, 97,116 parser-convention nodes — byte-identical to `fe5b49f` and to the handoff's read-only measurement. Both exact-route pins (`:955`, `:1308`) are unchanged and legitimately so: the baseline references none of the new fixture bindings, and the unused-binding control at `:1298-1310` pins exactly that. The 30 reviewed whole-ID list is verbatim at `cumulative-artifact.test.ts:156-187` (including `no-local-bindings` and `non-canonical-target`); `uncoveredIds` stays 99.
+
+**Restored C, partial.** Continuation manifest is ordinary `{manifestVersion:2, catalogId:"read-update-v1"}`, one scenario, **structurally identical to the draft's `read-update.alias.unknown-subject`** — 73 actions / 358 ordered assertions, same action IDs in the same order, no `prerequisiteScenario`. 114,182 bytes / 3,158 nodes. Coverage changed only C's row (omitted → `bounded-observation`, `wholeContract:false`, 358 ordered bindings); 129 rows / 50 bounded / 79 omitted / 30 whole; 590,847 bytes / 12,292 nodes.
+
+**Fixture union.** `fixtures/read-update-reference-v1.json` is now **byte-identical to the draft fixture** (`2071c5a1…f956a`, 28,753 bytes / 742 nodes). Leaf-by-leaf comparison against the draft: 0 changed common values, 0 keys only in draft, 0 only in new. Exactly 10 `reference.*rc*` bindings and 9 oracles (`identities-16`–`19`, `value-24`–`28`) added; C resolves 14 distinct pointers including the pre-existing shared constants `value-0/1/2/3/8` (so the oracle-corruption control at `:2655` legitimately mutates `value-8.code`). No collision, no rename needed. Index: 242 bytes / 9 nodes, 2 shards. All per-source bounds hold (4 MiB/100 k manifest, 1 MiB/100 k fixture+coverage, 16 KiB/2 index).
+
+**Baseline witnesses are structurally guaranteed.** `selection.required` = `selectApplicableScenariosForProfile(...).filter(kind === "normative")` (`selection.ts:66-72`), so required ⊆ applicable in identical catalog order. Shard 0 runs unfiltered, `equal(result.selectedScenarioIds, selected)` pins the full applicable list, and `missingPlanResult` (`runner.ts:2958`) yields exactly the asserted `harness-error`/`not-implemented`/`exchanges:[]` shape. Every one of the 79 omitted required IDs therefore has a real baseline witness, and C has both a baseline `not-implemented` witness and a continuation pass — no double credit, `authoredIds` 49→50, whole credit unchanged at 30, `claimEligible` literal `false` throughout.
+
+**Shared-runtime attribution is real, not inferred.** `configurationIdentity` excludes `port` and `directory` (`installed-reference-configuration.ts:175-185`), so comparing shard 1's bootstrap and every session receipt against shard 0's (`helper:214-234`) is a genuine cross-process check despite each shard allocating its own port and temp dir. `assertSameServedProfileConfiguration` plus payload/contracts/policy/auth/Scope/profile/History/fixture-digest bindings are checked on both the bound configuration and the raw receipts; `:261-266` performs the check at bootstrap *before* the shard's first scenario launches, and `:2745-2785` is a meaningful negative control for it (one child launched, closed, rejection).
+
+**Bounded execution and cleanup.** One 90 s `setTimeout`, armed once, cleared in `finally`, no per-shard reset, sequential loop, 120 s outer, 5 s `requestTimeoutMs`, 30 s on every new focused test. Abort is checked at `run` entry, before bootstrap launch, immediately after the bounded launcher returns inside the close-protected block, after each scenario launch, and again in `runShard` after return. The prepare-callback signal is `AbortSignal.any([relayed aggregate, 30 s prepare deadline])` (`runner.ts:543-555`), so the pre-launch check genuinely observes the aggregate abort; harness cleanup runs on its own deadline signal (`runner.ts:807-812`) so drain survives the abort within the 120 s ceiling. The three-case abort test asserts exact child counts (+0/+1/+2) and that every child exited 0 or on SIGTERM — a leak fails loudly rather than passing.
+
+**Failure/ordering discipline.** The report write moved to after all assertions and cleanup, as the plan required (*"Do not inherit the old optional JSON write-before-assertions ordering"*). The `stoppedScenarioResult` path the removed cancellation test covered is still covered at `runner.test.ts:5807`. `(planned.actions ?? planned.requests)` replacing `(planned.actions ?? [])` is total and no longer vacuous — `executable-manifest.ts:531` forbids a row from carrying both.
+
+**Source-only exports.** `packages/conformance/package.json` `exports` has no `./testing` and no wildcard; `dist/` contains no `test-support/`; the boundary test correctly now permits the three set helpers in `testing` while still asserting `ownData` absent from both modules and all four names absent from the public `index.js`. The new app helper lives at `apps/bdptest/test-support/`, which `scripts/dependency-boundary-rules.mjs:83-89` classifies as test source, so its `@bdp/conformance/testing` import is allowed and no relative cross-package import is used. No launcher/exact-client/HTTP-harness duplication.
+
+**Tooling.** `tsc -p tsconfig.check.json` exits 0. `biome format` and `biome lint` are clean on all six changed TS files and repo-wide (exit 0). No stale digest pins elsewhere in the repo, and nothing requires every fixture binding/oracle to be referenced, so the union does not disturb `installed-read-oracles`, `installed-read-fixture`, `profile-contract-plan` or `development-read-update`.

@@ -1,0 +1,13 @@
+--- audit.py
++++ predecessor2/audit.py
+@@ -97,9 +97,7 @@
+     if expected_status==200:need(all(type(row['headers'].get(k))is str and row['headers'][k]for k in ['bdp-scope-epoch','bdp-authorization-view','bdp-scope-position']),'failed-validated-context')
+     need(row['wireResponseBase64']is not None,'validated-wire-available');body=strict_json(text.encode(),1048576);need(type(body)is dict,'failed-source-object')
+    need(row['errorCategory']is None,'received-no-transport-category')
+-  else:
+-   need(all(row[k]is None for k in ['status','headers','body','wireResponseBase64','wireSha256']),'unreceived-response-fields-null')
+-   need(not row['settled'] or row['errorCategory']in ['abort','configuration','timeout','disconnect','header-limit','body-limit','invalid-body','network','unavailable'],'settled-rejection-category')
++  else:need(all(row[k]is None for k in ['status','headers','body','wireResponseBase64','wireSha256']),'unreceived-response-fields-null')
+   continuing=index+1<len(rows)
+   if row['validated']:
+    try:expected=plan.send((body,continuing))

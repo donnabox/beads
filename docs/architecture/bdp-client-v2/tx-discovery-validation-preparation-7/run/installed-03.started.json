@@ -1,0 +1,27 @@
+{
+  "argv": [
+    "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+    "/Users/dbox/repos/wt/vickie/vickie-tx-discovery-minimum/node_modules/vitest/vitest.mjs",
+    "run",
+    "apps/bdptest/src/transactional-discovery-installed.test.ts",
+    "--maxWorkers=1",
+    "--reporter=verbose",
+    "--reporter=json",
+    "--outputFile.json=/Users/dbox/repos/wt/vickie/bdp-integration-logs/tx-discovery-validation-preparation-7/run/installed-03.results.json",
+    "--testNamePattern",
+    "^(?:private\\ installed\\ cold\\ transactional\\-carriers)$"
+  ],
+  "cwd": "/Users/dbox/repos/wt/vickie/vickie-tx-discovery-minimum",
+  "head": "cce884ccea1db97cbc6fd7bff876d4d6091f9081",
+  "tree": "6757829bd5b700faf28df39071190a272add90c9",
+  "sourceIdentity": "a61cd3fbf9fac68e3aad857a24a2456dd16b83048067eef85348d7091c0aa08e",
+  "rootGateSha256": "54da5568bfdec20cab5496c14d0a0d552da5040d38df0202bba6a91d1ed198a9",
+  "outerSeconds": 120,
+  "automaticRetries": 0,
+  "overrides": {
+    "BDP_TRANSACTIONAL_INSTALLED_ENTRY": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/tx-discovery-validation-preparation-7/run/consumer/node_modules/.pnpm/@bdp+server@file+..+packages+bdp-server-0.0.0.tgz/node_modules/@bdp/server/dist/transaction-installed-process.js",
+    "BDP_TRANSACTIONAL_SOURCE_COMMIT": "cce884ccea1db97cbc6fd7bff876d4d6091f9081"
+  },
+  "temporaryDirectory": "/private/tmp/vickie-tx-discovery-validation-installed-03-6vq4c2ri",
+  "npmCache": "/private/tmp/vickie-tx-discovery-validation-installed-03-6vq4c2ri/npm-cache"
+}

@@ -1,0 +1,20 @@
+{
+  "accepted": true,
+  "binding": {
+    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/read-update-guarded-overlap-draft/execution-preparation-v3/run/derivative-binding.json",
+    "sha256": "fd646bed61591a89801175d53b1d79a95e1e760a19d87fc795ec66763b689f9a"
+  },
+  "patch": {
+    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/read-update-guarded-overlap-draft/execution-preparation-v3/run/derivative.patch",
+    "sha256": "a3762fe2173acaf181c5b504dc2dded0b978bf5ed43aa2579443e0f4ad8aaf63"
+  },
+  "changed": [
+    "node_modules/.pnpm/@bdp+server@file+..+packages+bdp-server-0.0.0.tgz/node_modules/@bdp/server/dist/resource-evaluator.js"
+  ],
+  "filesVerified": 862,
+  "internalLinksVerified": 17,
+  "productionPackages": 8,
+  "relativeEdges": 197,
+  "rootRead": "Only removal of exact expectedRevision failureguard in external emitted resource-evaluator. Originalconsumer unchanged; derivativeentry/server/protocol/internaldependencygraph contained. No source rebuild or unrelated diff.",
+  "next": "One toolingpayload invocation checks actual Node bare edges and derivative helper identity before the single negative product run."
+}

@@ -1,0 +1,5 @@
+# Abort-before-release precision successor
+
+Preserves successor-1 and adds only failure-path cancellation precision: A supplies a callback-local AbortController to the selected opaque service operation; A/B finally unconditionally abort the supplied signal before releasing the held wait and awaiting observed operation/service-close outcomes. This prevents constant test clock0 from allowing infinite retries if an assertion fails before normal clock advancement or abort. Existing immediate outcome observers, entered-versus-settled guard and error aggregation remain.
+
+Normal successful schedules, exact selection/workload bytes, five-file scope and all deadlines are unchanged. A's expected timeout and positive operation are settled before normal finally; B already aborts on its normal path. No new successful-path call, wait, clock, HTTP, store or child is introduced. All679 clean5ceb source bytes verified; no product mutation or execution. Source/execution authority remains closed. Original and successor-1 artifacts remain intact.

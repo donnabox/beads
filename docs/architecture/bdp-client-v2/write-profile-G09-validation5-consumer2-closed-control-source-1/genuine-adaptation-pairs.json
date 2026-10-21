@@ -1,0 +1,101 @@
+[
+  {
+    "afterPath": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation5-consumer2-closed-control-source-1/cells/prepare-consumer.A.txt",
+    "afterSha256": "1d74c111960dca035939002dbcdcfc23246631b986b9b633c2ce3e28d9e844b9",
+    "beforePath": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation5-package4-closed-control-source-1/cells/verify-archives.A.txt",
+    "beforeSha256": "fae7d54d8d129e5ba1009bb9e718b4c009c5499be950f9d0a6bf003840543228",
+    "bothRestoresExact": true,
+    "forward": "deltas/prepare-consumer.A.forward.patch",
+    "inverse": "deltas/prepare-consumer.A.inverse.patch",
+    "label": "prepare-consumer.A",
+    "ndiff": "deltas/prepare-consumer.A.reversible.ndiff"
+  },
+  {
+    "afterPath": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation5-consumer2-closed-control-source-1/cells/prepare-consumer.B.txt",
+    "afterSha256": "f80985409b127734dddf9266f13e3c3507ccaac2c697368e2cfa6727a60c7801",
+    "beforePath": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation5-package4-closed-control-source-1/cells/verify-archives.B.txt",
+    "beforeSha256": "e71e568cb08bbe741f519f2c829f81868e43fbc8d9bd3843df124ae11163e7d9",
+    "bothRestoresExact": true,
+    "forward": "deltas/prepare-consumer.B.forward.patch",
+    "inverse": "deltas/prepare-consumer.B.inverse.patch",
+    "label": "prepare-consumer.B",
+    "ndiff": "deltas/prepare-consumer.B.reversible.ndiff"
+  },
+  {
+    "afterPath": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation5-consumer2-closed-control-source-1/cells/prepare-consumer.C.txt",
+    "afterSha256": "ad0f8e6ba5d4484c6beb6a6b9139483cd1eadbdb177c7362d42281edab1a8c54",
+    "beforePath": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation5-package4-closed-control-source-1/cells/verify-archives.C.txt",
+    "beforeSha256": "43d154aa597379ccd08d6b20f24ae496779a88438bcf6051f95470d28de9ee1f",
+    "bothRestoresExact": true,
+    "forward": "deltas/prepare-consumer.C.forward.patch",
+    "inverse": "deltas/prepare-consumer.C.inverse.patch",
+    "label": "prepare-consumer.C",
+    "ndiff": "deltas/prepare-consumer.C.reversible.ndiff"
+  },
+  {
+    "afterPath": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation5-consumer2-closed-control-source-1/cells/consumer-install.A.txt",
+    "afterSha256": "eac9404f1cfdf22984e9731e07966403691a2edde7f26a23eadb781819b23aa9",
+    "beforePath": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation5-package4-closed-control-source-1/cells/verify-archives.A.txt",
+    "beforeSha256": "fae7d54d8d129e5ba1009bb9e718b4c009c5499be950f9d0a6bf003840543228",
+    "bothRestoresExact": true,
+    "forward": "deltas/consumer-install.A.forward.patch",
+    "inverse": "deltas/consumer-install.A.inverse.patch",
+    "label": "consumer-install.A",
+    "ndiff": "deltas/consumer-install.A.reversible.ndiff"
+  },
+  {
+    "afterPath": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation5-consumer2-closed-control-source-1/cells/consumer-install.B.txt",
+    "afterSha256": "e050e36776072aa7ce0b5be45fab898968b2f1fc73cddf993e6ab41c1987fe96",
+    "beforePath": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation5-package4-closed-control-source-1/cells/verify-archives.B.txt",
+    "beforeSha256": "e71e568cb08bbe741f519f2c829f81868e43fbc8d9bd3843df124ae11163e7d9",
+    "bothRestoresExact": true,
+    "forward": "deltas/consumer-install.B.forward.patch",
+    "inverse": "deltas/consumer-install.B.inverse.patch",
+    "label": "consumer-install.B",
+    "ndiff": "deltas/consumer-install.B.reversible.ndiff"
+  },
+  {
+    "afterPath": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation5-consumer2-closed-control-source-1/cells/consumer-install.C.txt",
+    "afterSha256": "1aee19a6aced51244140402af6b1dc9f6508fe7a466b1588756fbd1fdf5110d9",
+    "beforePath": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation5-package4-closed-control-source-1/cells/verify-archives.C.txt",
+    "beforeSha256": "43d154aa597379ccd08d6b20f24ae496779a88438bcf6051f95470d28de9ee1f",
+    "bothRestoresExact": true,
+    "forward": "deltas/consumer-install.C.forward.patch",
+    "inverse": "deltas/consumer-install.C.inverse.patch",
+    "label": "consumer-install.C",
+    "ndiff": "deltas/consumer-install.C.reversible.ndiff"
+  },
+  {
+    "afterPath": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation5-consumer2-closed-control-source-1/execution-gate.proposed.json",
+    "afterSha256": "437edd25c7267d9595a15115db65d50051372f0cb4915f6981cf46aa04be65c6",
+    "beforePath": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation-preparation-5/execution-gate.json",
+    "beforeSha256": "34c333aa5b688d7abe944363b558e0bd431dd512ec84a24f8e0440d9d2bdf7ea",
+    "bothRestoresExact": true,
+    "forward": "deltas/gate.forward.patch",
+    "inverse": "deltas/gate.inverse.patch",
+    "label": "gate",
+    "ndiff": "deltas/gate.reversible.ndiff"
+  },
+  {
+    "afterPath": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation5-consumer2-closed-control-source-1/root-disposition.proposed.json",
+    "afterSha256": "c76e31358da9d81d4ecfdc0c452db86f430b5e33ad4b3f8151b117a483cf8175",
+    "beforePath": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation5-package4-closed-control-source-1/root-disposition.proposed.json",
+    "beforeSha256": "50f88b425a9260756f21d2122d28c0698f80f85aaacc0e1fc56c31884e54f01b",
+    "bothRestoresExact": true,
+    "forward": "deltas/bridge.forward.patch",
+    "inverse": "deltas/bridge.inverse.patch",
+    "label": "bridge",
+    "ndiff": "deltas/bridge.reversible.ndiff"
+  },
+  {
+    "afterPath": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation5-consumer2-closed-control-source-1/execution-manifest.json",
+    "afterSha256": "fa2f30c69d85e5d552ee2c461b5cd006d793a3998abc99b4a82b8b30194a99c2",
+    "beforePath": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation5-package4-closed-control-source-1/execution-manifest.json",
+    "beforeSha256": "26f834f037a00e5a287e9b97a2f06b6585bce5f7af2611bb23156c05d3bf7f19",
+    "bothRestoresExact": true,
+    "forward": "deltas/manifest.forward.patch",
+    "inverse": "deltas/manifest.inverse.patch",
+    "label": "manifest",
+    "ndiff": "deltas/manifest.reversible.ndiff"
+  }
+]

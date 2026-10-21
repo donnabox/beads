@@ -1,0 +1,38 @@
+--- integration.proposed.json
++++ integration.before.json
+@@ -1,19 +1,19 @@
+ {
+-  "manifestOwnersProspective": 25,
+-  "actionsProspective": 280,
+-  "HTTPExchangesProspective": 273,
+-  "fullCatalogRowsUnchanged": 256,
+-  "passingPartialOwnersIfAllCorePass": 25,
+-  "sessionsProspectiveNoNewReopen": 32,
+-  "childLaunchesProspectiveOneBootstrap": 33,
+-  "callbackMsUnchanged": 63000,
+-  "exactRouteInventoryProspective": 33,
+-  "original17OwnerObjectsAnd241Actions": "MUST remain byte/parsed-object identical; all original callbacks and negative controls must retain their meaning",
++  "manifestOwners": 17,
++  "actions": 241,
++  "HTTPExchanges": 234,
++  "fullCatalogRows": 256,
++  "passingPartialOwners": 17,
++  "sessions": 24,
++  "childLaunches": 25,
++  "callbackMs": 63000,
++  "exactRouteInventory": 18,
+   "futureConfiguration": "UNKNOWN",
+-  "actualResults": "UNKNOWN",
+-  "extraFullClauseConditionalCases": "UNRESOLVED; changes counts and requires review before freeze, never silently added",
+-  "noShardingOrReportUnion": true,
+-  "authoredHTTPFamilyActionsProspective": 219,
+-  "authoredClientFamilyActionsUnchanged": 61,
+-  "HTTPExchangesMeaning": "219 ordinary HTTP +54 preserved source-derived client receipt requests; all real counts UNKNOWN until actual execution"
++  "authoredHTTPFamilyActions": 180,
++  "authoredClientFamilyActions": 61,
++  "clientOperations": {
++    "transactional.receipt-read": 54,
++    "transactional.reopen": 7
++  },
++  "HTTPExchangesMeaning": "180 ordinary HTTP +54 source-derived client receipt requests;7 reopens are actions but no HTTP"
+ }

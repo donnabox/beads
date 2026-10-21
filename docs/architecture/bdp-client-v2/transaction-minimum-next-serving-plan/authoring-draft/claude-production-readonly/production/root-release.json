@@ -1,0 +1,9 @@
+{
+  "released": true,
+  "at": "2026-10-16T03:20:23.685856+00:00",
+  "scope": "production",
+  "bindingSha256": "c48ecd83019674bad2cf7ab39f4d97426c872b4ffbe3290b9b047de7c0993d31",
+  "runnerSha256": "d5cbab315007ac52569c976d886fe907190e685281f18e5f8d19063c55f9ee26",
+  "promptSha256": "9b0fc99db53b0396183fe6f1fdc1242cabc4b6fcc4985b841c8f8e95307b2395",
+  "checks": "Root read original incomplete170B response and actualexit. Same frozen source and all evidence pins independently verified. Runner delta grants onlyRead/Glob/Grep, no execution or file mutation; actual CLI help checked. Fresh successor preserves incomplete predecessor; complete findings verdict required."
+}

@@ -1,0 +1,23 @@
+{
+  "authority": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/event-admission-replay-plan/clean-base-rebind-1/claude-plan-review/root-findings-dispositions.json",
+  "authoritySha256": "e0e982e075d93eff238d6277199e578e67c1c303d9564d3bff479e585198825d",
+  "nativeAuditSha256": "01e43d5dab048b5c4251fa96322d6b6957ed2b73a68d63f72aa3022bc3ebaf7e",
+  "instructionsSha256": "47029c3f136fb60e568752a99d508962b60f218df105c167f152942b62b47268",
+  "actualReviewLimitationsPreserved": true,
+  "dispositions": {
+    "1": "Clarify separate new eligibility disjunct for both snapshot and checker; intended semantics unchanged",
+    "2": "Classification-only catch; failed classification keeps synchronous strict snapshot outside catch; no mutable pass-through",
+    "3": "Bead50318 and explicit observed/catch-up-timeout on all converted pairs",
+    "4": "Receiving400 lacks context; post-admission invalidReconnect400 carries context",
+    "5": "Explicit budget2, local fixture and unmeasured baselines",
+    "6": "Distinct a-to-b Link endpoints",
+    "7": "Raw tuple transport and actual finite close before body assertions",
+    "8": "Retain existing bounds and cleanup-inclusive D margin; reject unmeasured widening and correct Scope nominal six-response arithmetic",
+    "9": "Direct defensive fence attribution, preserve existing500 helper branch",
+    "10": "Preparations-only observer installed after baseline and restored",
+    "11": "Sequential positive stream close/drain before next dial"
+  },
+  "noWorkloadDeadlineOrFileScopeChange": true,
+  "sourceAuthoringReleased": false,
+  "runtimeReleased": false
+}

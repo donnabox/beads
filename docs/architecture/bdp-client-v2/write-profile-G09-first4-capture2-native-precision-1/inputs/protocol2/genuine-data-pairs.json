@@ -1,0 +1,82 @@
+[
+  {
+    "afterSha256": "dd19ed9120970a3e7fa6d416f007ec4ceba43c8ee7426717901608c6fb77bb5d",
+    "beforeSha256": "e5966f47a106aa00111858e0a0741ae35419d0c8baa465fda75434c073e32c9f",
+    "forward": "deltas/plan.md.forward.patch",
+    "inverse": "deltas/plan.md.inverse.patch",
+    "nonempty": true,
+    "path": "plan.md"
+  },
+  {
+    "afterSha256": "49aef637961932fa72f4634d8e315518aa6fac83670ce6ad1323c2e77696db7e",
+    "beforeSha256": "814586fb1a0210365e3372ad3c5d86c2e477ed5e88d0e67537dd6e907b533628",
+    "forward": "deltas/fixed-first4.json.forward.patch",
+    "inverse": "deltas/fixed-first4.json.inverse.patch",
+    "nonempty": true,
+    "path": "fixed-first4.json"
+  },
+  {
+    "afterSha256": "cb0ce8aca71f07fc88be06ac8e703971cf1bb9449ea05b12d1c87590592ea4e7",
+    "beforeSha256": "2570d0fd1d37494301f48bd5d1dd2034d990d26e2a8431888c647f890da18e66",
+    "forward": "deltas/clock-boundary.json.forward.patch",
+    "inverse": "deltas/clock-boundary.json.inverse.patch",
+    "nonempty": true,
+    "path": "clock-boundary.json"
+  },
+  {
+    "afterSha256": "a46a95950df62a01fdde62c73616218d2cdcca77e4c2b92872cd19e32284153a",
+    "beforeSha256": "1fb23bc3b29112d3b675598439373b89830110c7da4789c0c32f43ce90632db1",
+    "forward": "deltas/ownership-observation-protocol.json.forward.patch",
+    "inverse": "deltas/ownership-observation-protocol.json.inverse.patch",
+    "nonempty": true,
+    "path": "ownership-observation-protocol.json"
+  },
+  {
+    "afterSha256": "65cba961cd9a47fda221ac77026d0fe75a7c825ec2b65b92798c087975dbfddd",
+    "beforeSha256": "20265820a266ae43ea28f24997829069d9267f75a28d37dc6c7a27395ef1aae0",
+    "forward": "deltas/observation-record-contract.json.forward.patch",
+    "inverse": "deltas/observation-record-contract.json.inverse.patch",
+    "nonempty": true,
+    "path": "observation-record-contract.json"
+  },
+  {
+    "afterSha256": "8f963a23e9d95d44a683e17dc1450c4d3fd4ca71ffb6e4a6c787a5e4588347bd",
+    "beforeSha256": "f94fbce424e3ac521bddf51ea00f06c20f5d8d66821a85d49969c84c90b46dac",
+    "forward": "deltas/unresolved.json.forward.patch",
+    "inverse": "deltas/unresolved.json.inverse.patch",
+    "nonempty": true,
+    "path": "unresolved.json"
+  },
+  {
+    "afterSha256": "ae5e93a2e6949ee3d12b13bb56623a03e9ae067f6dcfb1f76edc69df91dd0dbb",
+    "beforeSha256": "4fd3a70fd3e9e552b2f86a573ee36be9f70b8c694a328ecbd5b1a9ecc824e82b",
+    "forward": "deltas/proposals__node-version.capture.txt.forward.patch",
+    "inverse": "deltas/proposals__node-version.capture.txt.inverse.patch",
+    "nonempty": true,
+    "path": "proposals/node-version.capture.txt"
+  },
+  {
+    "afterSha256": "a40180d63b149adc25f224e320419f46ff8e495cd8db43e736e440b9ceff9365",
+    "beforeSha256": "e99f141b2024452eed3494cc1ecddfa48c15f5cfd32bfa85cb803a18ab75e63a",
+    "forward": "deltas/proposals__pnpm-version.capture.txt.forward.patch",
+    "inverse": "deltas/proposals__pnpm-version.capture.txt.inverse.patch",
+    "nonempty": true,
+    "path": "proposals/pnpm-version.capture.txt"
+  },
+  {
+    "afterSha256": "5f7baa8003292602bc06e5b431fd8c4792c5efe1ad1aaac3b5c61877dccbff9a",
+    "beforeSha256": "b6f957f1dd1b5b7bec8c20051f265ba2996528041ee05d41c0a9befe2f6caa68",
+    "forward": "deltas/proposals__workspace-install.capture.txt.forward.patch",
+    "inverse": "deltas/proposals__workspace-install.capture.txt.inverse.patch",
+    "nonempty": true,
+    "path": "proposals/workspace-install.capture.txt"
+  },
+  {
+    "afterSha256": "fe5956313104939d9f75f2dedc56b30f8c8e2bff22696223428195aaf3dd2dcf",
+    "beforeSha256": "0df515b733a2b47ef266dbca6792dc38bcd775e501d70a2184508313a1293198",
+    "forward": "deltas/proposals__bind-workspace-tools.capture.txt.forward.patch",
+    "inverse": "deltas/proposals__bind-workspace-tools.capture.txt.inverse.patch",
+    "nonempty": true,
+    "path": "proposals/bind-workspace-tools.capture.txt"
+  }
+]

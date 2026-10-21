@@ -1,0 +1,762 @@
+{
+  "source": "8d23862a03e65fa378a246310d804f0408b73937",
+  "tree": "ea2c4dc704f50f7c6333ba962454cde28131999f",
+  "parents": [
+    "84e6b67b2d322362f1d8e44e76873584d025071c",
+    "0432d48db8f340016a000d633d799aebbd26db3f"
+  ],
+  "clean": true,
+  "files": {
+    "apps/bdptest/src/transactional-matrix.test.ts": {
+      "bytes": 44969,
+      "sha256": "9c4aba7167b3d944f39245c2c9e187b4a6f30c019deb4c679f78076a031fa847"
+    },
+    "packages/conformance/src/transactional-cumulative.test.ts": {
+      "bytes": 48895,
+      "sha256": "4483e011fc06a6d813bf969dcc6a9d3eeaace248fedcf8cd1bfa3f61e8366de3"
+    },
+    "packages/conformance/test-support/transactional/coverage-v1.json": {
+      "bytes": 60069,
+      "sha256": "4c84318e57c74a928edcaead5490bc647a67f2e3ba79872f1babe7ac3b6916ec"
+    },
+    "packages/conformance/test-support/transactional/manifest-v1.json": {
+      "bytes": 407227,
+      "sha256": "7f55695401b815534f17fc69dc924ee0c0920fb6c9175529709a8e60afda5786"
+    }
+  },
+  "claimEligible": false,
+  "installRoot": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-completed-key-conflict-integration/install",
+  "entry": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-completed-key-conflict-integration/install/node_modules/@bdp/server/dist/transaction-installed-process.js",
+  "tarballs": {
+    "protocol.tgz": "4683cb6c6333c332a4bcb7efc3e28f32d1d8d06a7264913f65c31d3a826d4227",
+    "server.tgz": "4f5e9209541b1c70f7b9c3939f73d053486e5fe6f808197532aa45c5e0f40f3f"
+  },
+  "exits": {
+    "install": {
+      "exit": 0,
+      "expected": 0,
+      "seconds": 0.419,
+      "command": [
+        "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+        "/Users/dbox/.cache/node/corepack/v1/pnpm/11.20.0/bin/pnpm.cjs",
+        "install",
+        "--frozen-lockfile"
+      ]
+    },
+    "clean": {
+      "exit": 0,
+      "expected": 0,
+      "seconds": 0.876,
+      "command": [
+        "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+        "/Users/dbox/.cache/node/corepack/v1/pnpm/11.20.0/bin/pnpm.cjs",
+        "clean"
+      ]
+    },
+    "typecheck": {
+      "exit": 0,
+      "expected": 0,
+      "seconds": 0.816,
+      "command": [
+        "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+        "/Users/dbox/.cache/node/corepack/v1/pnpm/11.20.0/bin/pnpm.cjs",
+        "typecheck"
+      ]
+    },
+    "build": {
+      "exit": 0,
+      "expected": 0,
+      "seconds": 0.77,
+      "command": [
+        "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+        "/Users/dbox/.cache/node/corepack/v1/pnpm/11.20.0/bin/pnpm.cjs",
+        "build"
+      ]
+    },
+    "cumulative": {
+      "exit": 0,
+      "expected": 0,
+      "seconds": 1.775,
+      "command": [
+        "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+        "/Users/dbox/.cache/node/corepack/v1/pnpm/11.20.0/bin/pnpm.cjs",
+        "exec",
+        "vitest",
+        "run",
+        "packages/conformance/src/transactional-cumulative.test.ts",
+        "--maxWorkers=2",
+        "--reporter=verbose",
+        "--reporter=json",
+        "--outputFile.json=/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-completed-key-conflict-integration/cumulative.json"
+      ]
+    },
+    "format": {
+      "exit": 0,
+      "expected": 0,
+      "seconds": 1.311,
+      "command": [
+        "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+        "/Users/dbox/.cache/node/corepack/v1/pnpm/11.20.0/bin/pnpm.cjs",
+        "format:check"
+      ]
+    },
+    "lint": {
+      "exit": 0,
+      "expected": 0,
+      "seconds": 0.412,
+      "command": [
+        "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+        "/Users/dbox/.cache/node/corepack/v1/pnpm/11.20.0/bin/pnpm.cjs",
+        "lint"
+      ]
+    },
+    "boundaries": {
+      "exit": 0,
+      "expected": 0,
+      "seconds": 0.578,
+      "command": [
+        "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+        "/Users/dbox/.cache/node/corepack/v1/pnpm/11.20.0/bin/pnpm.cjs",
+        "check:boundaries"
+      ]
+    },
+    "read-seal": {
+      "exit": 0,
+      "expected": 0,
+      "seconds": 0.303,
+      "command": [
+        "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+        "/Users/dbox/.cache/node/corepack/v1/pnpm/11.20.0/bin/pnpm.cjs",
+        "evidence:verify"
+      ]
+    },
+    "diff-check": {
+      "exit": 0,
+      "expected": 0,
+      "seconds": 0.012,
+      "command": [
+        "git",
+        "diff",
+        "--check"
+      ]
+    },
+    "frozen-clean": {
+      "exit": 0,
+      "expected": 0,
+      "seconds": 0.264,
+      "command": [
+        "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+        "/Users/dbox/.cache/node/corepack/v1/pnpm/11.20.0/bin/pnpm.cjs",
+        "clean"
+      ]
+    },
+    "frozen-typecheck": {
+      "exit": 0,
+      "expected": 0,
+      "seconds": 0.762,
+      "command": [
+        "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+        "/Users/dbox/.cache/node/corepack/v1/pnpm/11.20.0/bin/pnpm.cjs",
+        "typecheck"
+      ]
+    },
+    "frozen-build": {
+      "exit": 0,
+      "expected": 0,
+      "seconds": 0.748,
+      "command": [
+        "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+        "/Users/dbox/.cache/node/corepack/v1/pnpm/11.20.0/bin/pnpm.cjs",
+        "build"
+      ]
+    },
+    "frozen-cumulative": {
+      "exit": 0,
+      "expected": 0,
+      "seconds": 1.056,
+      "command": [
+        "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+        "/Users/dbox/.cache/node/corepack/v1/pnpm/11.20.0/bin/pnpm.cjs",
+        "exec",
+        "vitest",
+        "run",
+        "packages/conformance/src/transactional-cumulative.test.ts",
+        "--maxWorkers=1",
+        "--reporter=verbose",
+        "--reporter=json",
+        "--outputFile.json=/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-completed-key-conflict-integration/frozen-cumulative.json"
+      ]
+    },
+    "pack-protocol": {
+      "exit": 0,
+      "expected": 0,
+      "seconds": 0.208,
+      "command": [
+        "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+        "/Users/dbox/.cache/node/corepack/v1/pnpm/11.20.0/bin/pnpm.cjs",
+        "pack",
+        "--out",
+        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-completed-key-conflict-integration/packs/protocol.tgz"
+      ]
+    },
+    "pack-server": {
+      "exit": 0,
+      "expected": 0,
+      "seconds": 0.258,
+      "command": [
+        "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+        "/Users/dbox/.cache/node/corepack/v1/pnpm/11.20.0/bin/pnpm.cjs",
+        "pack",
+        "--out",
+        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-completed-key-conflict-integration/packs/server.tgz"
+      ]
+    },
+    "packed-install": {
+      "exit": 0,
+      "expected": 0,
+      "seconds": 0.309,
+      "command": [
+        "npm",
+        "install",
+        "--offline",
+        "--ignore-scripts",
+        "--no-audit",
+        "--no-fund"
+      ]
+    },
+    "packed-positive": {
+      "exit": 0,
+      "expected": 0,
+      "seconds": 4.252,
+      "command": [
+        "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+        "/Users/dbox/.cache/node/corepack/v1/pnpm/11.20.0/bin/pnpm.cjs",
+        "exec",
+        "vitest",
+        "run",
+        "apps/bdptest/src/transactional-matrix.test.ts",
+        "-t",
+        "observes ten partial Transactional",
+        "--maxWorkers=1",
+        "--reporter=verbose",
+        "--reporter=json",
+        "--outputFile.json=/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-completed-key-conflict-integration/packed-positive.json"
+      ]
+    },
+    "packed-five-controls": {
+      "exit": 0,
+      "expected": 0,
+      "seconds": 18.074,
+      "command": [
+        "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+        "/Users/dbox/.cache/node/corepack/v1/pnpm/11.20.0/bin/pnpm.cjs",
+        "exec",
+        "vitest",
+        "run",
+        "apps/bdptest/src/transactional-matrix.test.ts",
+        "-t",
+        "discriminates completed-key conflict",
+        "--maxWorkers=1",
+        "--reporter=verbose",
+        "--reporter=json",
+        "--outputFile.json=/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-completed-key-conflict-integration/packed-five-controls.json"
+      ]
+    },
+    "packed-ru-positives": {
+      "exit": 0,
+      "expected": 0,
+      "seconds": 2.675,
+      "command": [
+        "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+        "/Users/dbox/.cache/node/corepack/v1/pnpm/11.20.0/bin/pnpm.cjs",
+        "exec",
+        "vitest",
+        "run",
+        "apps/bdptest/src/read-update-matrix.test.ts",
+        "-t",
+        "observes retained retry dispositions across actual installed carriers and current positions|observes reference syntax and retained category failures against installed HTTP",
+        "--maxWorkers=2",
+        "--reporter=verbose",
+        "--reporter=json",
+        "--outputFile.json=/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-completed-key-conflict-integration/packed-ru-positives.json"
+      ]
+    }
+  },
+  "positive": {
+    "kind": "installed-tx-ten-partial-summary",
+    "sourceCommit": "8d23862a03e65fa378a246310d804f0408b73937",
+    "elapsedMs": 3604.511584,
+    "actions": 151,
+    "sessions": 17,
+    "childLaunches": 18,
+    "closedChildren": 18,
+    "artifacts": {
+      "catalogDigest": "e26d3fc758a34ebb0b5028be15d28e3e09db87dc7984bba7bad6a00b26329aa0",
+      "manifestDigest": "7f55695401b815534f17fc69dc924ee0c0920fb6c9175529709a8e60afda5786",
+      "fixtureDigest": "3a7899ced771d4880066d98b0000c53f801ece53458502cc4f3bc641146c9a85"
+    },
+    "baseline": {
+      "served": {
+        "scope": "https://reference.invalid/acme/",
+        "profile": "transactional",
+        "history": false,
+        "sourceCommit": "8d23862a03e65fa378a246310d804f0408b73937",
+        "installedPayloadDigest": "8bcfac0b0ee3331ca3da660b2f0a14ef106e474938e7b41f8e0532ad06b17da9",
+        "installedContractsDigest": "c67d12264b97e16c76bf68f850eaf394f61896bb72491e06603ef1d6debb335b",
+        "policyDigest": "159c0b651e6a53fe36f429bdd48cde5999fd3182158209d45057b6de85b3acbe",
+        "authenticationDigest": "702bcd334b02a6ccaf91e020928878481c6eb83d214676dede9a3225ff94faf7",
+        "fixtureDigest": "3a7899ced771d4880066d98b0000c53f801ece53458502cc4f3bc641146c9a85",
+        "fixtureId": "reference-transactional-v1",
+        "capabilities": [
+          "installed-transactional-http",
+          "transactional-receipt-observation"
+        ]
+      },
+      "operationTargets": {
+        "createBead": "https://reference.invalid/acme/operations/create-bead",
+        "updateBead": "https://reference.invalid/acme/operations/update-bead",
+        "deleteBead": "https://reference.invalid/acme/operations/delete-bead",
+        "createLink": "https://reference.invalid/acme/operations/create-link",
+        "updateLink": "https://reference.invalid/acme/operations/update-link",
+        "deleteLink": "https://reference.invalid/acme/operations/delete-link",
+        "putAlias": "https://reference.invalid/acme/operations/put-alias",
+        "deleteAlias": "https://reference.invalid/acme/operations/delete-alias",
+        "updateWhere": "https://reference.invalid/acme/operations/update-where",
+        "deleteWhere": "https://reference.invalid/acme/operations/delete-where",
+        "batch": "https://reference.invalid/acme/operations/batch",
+        "sequence": "https://reference.invalid/acme/operations/sequence"
+      },
+      "runtimeConfigurationIdentity": "8f68c488183d5d99796418df6ee6ba4a31e312aed397e4a3c11fa4c12c8987a0",
+      "authorityMode": "canonical"
+    },
+    "claimEligible": false
+  },
+  "controls": [
+    {
+      "kind": "installed-tx-completed-conflict-control",
+      "control": "conflict code",
+      "sourceCommit": "8d23862a03e65fa378a246310d804f0408b73937",
+      "actionId": "c-conflict",
+      "assertionId": "problem-code",
+      "observedStatus": 409,
+      "writeState": "complete",
+      "failures": [
+        "problem-code"
+      ],
+      "childLaunches": 17,
+      "closedChildren": 17,
+      "artifacts": {
+        "catalogDigest": "e26d3fc758a34ebb0b5028be15d28e3e09db87dc7984bba7bad6a00b26329aa0",
+        "manifestDigest": "6943cdef0499e90d9c0ddf7bb847a88d5e6167f33e37d5b6897335658aee78a3",
+        "fixtureDigest": "3a7899ced771d4880066d98b0000c53f801ece53458502cc4f3bc641146c9a85"
+      },
+      "declarations": {
+        "targetLabel": "private-installed-transactional-partial",
+        "exactConfigurationDigest": "634214546089490d235fa404166dc868a0feb5dc2a8af2a566a6ad33664b4b1a"
+      },
+      "baseline": {
+        "served": {
+          "scope": "https://reference.invalid/acme/",
+          "profile": "transactional",
+          "history": false,
+          "sourceCommit": "8d23862a03e65fa378a246310d804f0408b73937",
+          "installedPayloadDigest": "8bcfac0b0ee3331ca3da660b2f0a14ef106e474938e7b41f8e0532ad06b17da9",
+          "installedContractsDigest": "c67d12264b97e16c76bf68f850eaf394f61896bb72491e06603ef1d6debb335b",
+          "policyDigest": "ebb97e60015351e61cac04952468cee3a8030b625044f65a138c7ef47d1cff27",
+          "authenticationDigest": "31196b68428a29e6e5fd8b60c67e9b77f30c7350b84f9d59ad280b4ada4b57be",
+          "fixtureDigest": "3a7899ced771d4880066d98b0000c53f801ece53458502cc4f3bc641146c9a85",
+          "fixtureId": "reference-transactional-v1",
+          "capabilities": [
+            "installed-transactional-http",
+            "transactional-receipt-observation"
+          ]
+        },
+        "operationTargets": {
+          "createBead": "https://reference.invalid/acme/operations/create-bead",
+          "updateBead": "https://reference.invalid/acme/operations/update-bead",
+          "deleteBead": "https://reference.invalid/acme/operations/delete-bead",
+          "createLink": "https://reference.invalid/acme/operations/create-link",
+          "updateLink": "https://reference.invalid/acme/operations/update-link",
+          "deleteLink": "https://reference.invalid/acme/operations/delete-link",
+          "putAlias": "https://reference.invalid/acme/operations/put-alias",
+          "deleteAlias": "https://reference.invalid/acme/operations/delete-alias",
+          "updateWhere": "https://reference.invalid/acme/operations/update-where",
+          "deleteWhere": "https://reference.invalid/acme/operations/delete-where",
+          "batch": "https://reference.invalid/acme/operations/batch",
+          "sequence": "https://reference.invalid/acme/operations/sequence"
+        },
+        "runtimeConfigurationIdentity": "321b662659d221395a549e03dc9d09eff46d2c8c185286814f8b18570b1c883f",
+        "authorityMode": "canonical"
+      },
+      "claimEligible": false
+    },
+    {
+      "kind": "installed-tx-completed-conflict-control",
+      "control": "reopened conflict status",
+      "sourceCommit": "8d23862a03e65fa378a246310d804f0408b73937",
+      "actionId": "c-conflict-reopened",
+      "assertionId": "http-status",
+      "observedStatus": 409,
+      "writeState": "complete",
+      "failures": [
+        "http-status"
+      ],
+      "childLaunches": 18,
+      "closedChildren": 18,
+      "artifacts": {
+        "catalogDigest": "e26d3fc758a34ebb0b5028be15d28e3e09db87dc7984bba7bad6a00b26329aa0",
+        "manifestDigest": "49dc9dd83936316dca741b1fbc3e5f54a677be134ebb72ddef01deec8153c51a",
+        "fixtureDigest": "3a7899ced771d4880066d98b0000c53f801ece53458502cc4f3bc641146c9a85"
+      },
+      "declarations": {
+        "targetLabel": "private-installed-transactional-partial",
+        "exactConfigurationDigest": "634214546089490d235fa404166dc868a0feb5dc2a8af2a566a6ad33664b4b1a"
+      },
+      "baseline": {
+        "served": {
+          "scope": "https://reference.invalid/acme/",
+          "profile": "transactional",
+          "history": false,
+          "sourceCommit": "8d23862a03e65fa378a246310d804f0408b73937",
+          "installedPayloadDigest": "8bcfac0b0ee3331ca3da660b2f0a14ef106e474938e7b41f8e0532ad06b17da9",
+          "installedContractsDigest": "c67d12264b97e16c76bf68f850eaf394f61896bb72491e06603ef1d6debb335b",
+          "policyDigest": "0a43049e4da23986995800917726f352021831ac5e4c06c32669b2d8ecffbd7d",
+          "authenticationDigest": "7652bdfca42b237543251d6e5d32e93080d4f43b18294f6fb8109c37fc7a57a9",
+          "fixtureDigest": "3a7899ced771d4880066d98b0000c53f801ece53458502cc4f3bc641146c9a85",
+          "fixtureId": "reference-transactional-v1",
+          "capabilities": [
+            "installed-transactional-http",
+            "transactional-receipt-observation"
+          ]
+        },
+        "operationTargets": {
+          "createBead": "https://reference.invalid/acme/operations/create-bead",
+          "updateBead": "https://reference.invalid/acme/operations/update-bead",
+          "deleteBead": "https://reference.invalid/acme/operations/delete-bead",
+          "createLink": "https://reference.invalid/acme/operations/create-link",
+          "updateLink": "https://reference.invalid/acme/operations/update-link",
+          "deleteLink": "https://reference.invalid/acme/operations/delete-link",
+          "putAlias": "https://reference.invalid/acme/operations/put-alias",
+          "deleteAlias": "https://reference.invalid/acme/operations/delete-alias",
+          "updateWhere": "https://reference.invalid/acme/operations/update-where",
+          "deleteWhere": "https://reference.invalid/acme/operations/delete-where",
+          "batch": "https://reference.invalid/acme/operations/batch",
+          "sequence": "https://reference.invalid/acme/operations/sequence"
+        },
+        "runtimeConfigurationIdentity": "336d0a242f51673b7959ea8711edde6bb72da104a95be7a3343401c0daf32495",
+        "authorityMode": "canonical"
+      },
+      "claimEligible": false
+    },
+    {
+      "kind": "installed-tx-completed-conflict-control",
+      "control": "current record",
+      "sourceCommit": "8d23862a03e65fa378a246310d804f0408b73937",
+      "actionId": "c-state",
+      "assertionId": "ordered-state",
+      "observedStatus": 200,
+      "writeState": "complete",
+      "failures": [
+        "ordered-state"
+      ],
+      "childLaunches": 17,
+      "closedChildren": 17,
+      "artifacts": {
+        "catalogDigest": "e26d3fc758a34ebb0b5028be15d28e3e09db87dc7984bba7bad6a00b26329aa0",
+        "manifestDigest": "a506a7b6eb2105324c6922ba10b61a99088ddfdd58ed850af7921f270c8ac8fd",
+        "fixtureDigest": "3a7899ced771d4880066d98b0000c53f801ece53458502cc4f3bc641146c9a85"
+      },
+      "declarations": {
+        "targetLabel": "private-installed-transactional-partial",
+        "exactConfigurationDigest": "634214546089490d235fa404166dc868a0feb5dc2a8af2a566a6ad33664b4b1a"
+      },
+      "baseline": {
+        "served": {
+          "scope": "https://reference.invalid/acme/",
+          "profile": "transactional",
+          "history": false,
+          "sourceCommit": "8d23862a03e65fa378a246310d804f0408b73937",
+          "installedPayloadDigest": "8bcfac0b0ee3331ca3da660b2f0a14ef106e474938e7b41f8e0532ad06b17da9",
+          "installedContractsDigest": "c67d12264b97e16c76bf68f850eaf394f61896bb72491e06603ef1d6debb335b",
+          "policyDigest": "9b6fd7562583619eab6c95c5b09534ab5bf1ff6775a635cce77752c63475e89a",
+          "authenticationDigest": "3b12a5bc06f99094e16690696008ae20de9f920d98d5f6946987f4f9262d4c26",
+          "fixtureDigest": "3a7899ced771d4880066d98b0000c53f801ece53458502cc4f3bc641146c9a85",
+          "fixtureId": "reference-transactional-v1",
+          "capabilities": [
+            "installed-transactional-http",
+            "transactional-receipt-observation"
+          ]
+        },
+        "operationTargets": {
+          "createBead": "https://reference.invalid/acme/operations/create-bead",
+          "updateBead": "https://reference.invalid/acme/operations/update-bead",
+          "deleteBead": "https://reference.invalid/acme/operations/delete-bead",
+          "createLink": "https://reference.invalid/acme/operations/create-link",
+          "updateLink": "https://reference.invalid/acme/operations/update-link",
+          "deleteLink": "https://reference.invalid/acme/operations/delete-link",
+          "putAlias": "https://reference.invalid/acme/operations/put-alias",
+          "deleteAlias": "https://reference.invalid/acme/operations/delete-alias",
+          "updateWhere": "https://reference.invalid/acme/operations/update-where",
+          "deleteWhere": "https://reference.invalid/acme/operations/delete-where",
+          "batch": "https://reference.invalid/acme/operations/batch",
+          "sequence": "https://reference.invalid/acme/operations/sequence"
+        },
+        "runtimeConfigurationIdentity": "6c6dfe6e39ba4f75ebb7b6db9e2b326e0621cc714eedf1ceaf3337ebd7d4c75f",
+        "authorityMode": "canonical"
+      },
+      "claimEligible": false
+    },
+    {
+      "kind": "installed-tx-completed-conflict-control",
+      "control": "retained replay body",
+      "sourceCommit": "8d23862a03e65fa378a246310d804f0408b73937",
+      "actionId": "c-retry-reopened",
+      "assertionId": "retained-body",
+      "observedStatus": 200,
+      "writeState": "complete",
+      "failures": [
+        "retained-body"
+      ],
+      "childLaunches": 18,
+      "closedChildren": 18,
+      "artifacts": {
+        "catalogDigest": "e26d3fc758a34ebb0b5028be15d28e3e09db87dc7984bba7bad6a00b26329aa0",
+        "manifestDigest": "a74ccfe54598436b13c6232ac2f0b8ce5e40df9b33b24b743df8b7c64c283ad6",
+        "fixtureDigest": "3a7899ced771d4880066d98b0000c53f801ece53458502cc4f3bc641146c9a85"
+      },
+      "declarations": {
+        "targetLabel": "private-installed-transactional-partial",
+        "exactConfigurationDigest": "634214546089490d235fa404166dc868a0feb5dc2a8af2a566a6ad33664b4b1a"
+      },
+      "baseline": {
+        "served": {
+          "scope": "https://reference.invalid/acme/",
+          "profile": "transactional",
+          "history": false,
+          "sourceCommit": "8d23862a03e65fa378a246310d804f0408b73937",
+          "installedPayloadDigest": "8bcfac0b0ee3331ca3da660b2f0a14ef106e474938e7b41f8e0532ad06b17da9",
+          "installedContractsDigest": "c67d12264b97e16c76bf68f850eaf394f61896bb72491e06603ef1d6debb335b",
+          "policyDigest": "203051af7b31ac7aaf0782282705e11189dbabd118803b223d4dac27490d9e29",
+          "authenticationDigest": "0200fbe3342bde92dcde483c6d109d1ddb3cfdcf99ce3874d1ec57597521b327",
+          "fixtureDigest": "3a7899ced771d4880066d98b0000c53f801ece53458502cc4f3bc641146c9a85",
+          "fixtureId": "reference-transactional-v1",
+          "capabilities": [
+            "installed-transactional-http",
+            "transactional-receipt-observation"
+          ]
+        },
+        "operationTargets": {
+          "createBead": "https://reference.invalid/acme/operations/create-bead",
+          "updateBead": "https://reference.invalid/acme/operations/update-bead",
+          "deleteBead": "https://reference.invalid/acme/operations/delete-bead",
+          "createLink": "https://reference.invalid/acme/operations/create-link",
+          "updateLink": "https://reference.invalid/acme/operations/update-link",
+          "deleteLink": "https://reference.invalid/acme/operations/delete-link",
+          "putAlias": "https://reference.invalid/acme/operations/put-alias",
+          "deleteAlias": "https://reference.invalid/acme/operations/delete-alias",
+          "updateWhere": "https://reference.invalid/acme/operations/update-where",
+          "deleteWhere": "https://reference.invalid/acme/operations/delete-where",
+          "batch": "https://reference.invalid/acme/operations/batch",
+          "sequence": "https://reference.invalid/acme/operations/sequence"
+        },
+        "runtimeConfigurationIdentity": "60af3ff020a2a4fb35bab08876bbc1590a4beafe1682c8038fe31dbba34b5068",
+        "authorityMode": "canonical"
+      },
+      "claimEligible": false
+    },
+    {
+      "kind": "installed-tx-completed-conflict-control",
+      "control": "unchanged Event",
+      "sourceCommit": "8d23862a03e65fa378a246310d804f0408b73937",
+      "actionId": "c-events-reopened",
+      "assertionId": "ordered-facts",
+      "observedStatus": 200,
+      "writeState": "complete",
+      "failures": [
+        "ordered-facts"
+      ],
+      "childLaunches": 18,
+      "closedChildren": 18,
+      "artifacts": {
+        "catalogDigest": "e26d3fc758a34ebb0b5028be15d28e3e09db87dc7984bba7bad6a00b26329aa0",
+        "manifestDigest": "7ac3d4b0f3436d2e73ac57f03431aeecbe639a9ab5339fe531c3a32fcb33a6a9",
+        "fixtureDigest": "3a7899ced771d4880066d98b0000c53f801ece53458502cc4f3bc641146c9a85"
+      },
+      "declarations": {
+        "targetLabel": "private-installed-transactional-partial",
+        "exactConfigurationDigest": "634214546089490d235fa404166dc868a0feb5dc2a8af2a566a6ad33664b4b1a"
+      },
+      "baseline": {
+        "served": {
+          "scope": "https://reference.invalid/acme/",
+          "profile": "transactional",
+          "history": false,
+          "sourceCommit": "8d23862a03e65fa378a246310d804f0408b73937",
+          "installedPayloadDigest": "8bcfac0b0ee3331ca3da660b2f0a14ef106e474938e7b41f8e0532ad06b17da9",
+          "installedContractsDigest": "c67d12264b97e16c76bf68f850eaf394f61896bb72491e06603ef1d6debb335b",
+          "policyDigest": "d08c4fa398b854dff3d51303df4d81c8b36583fc94127f03c852fdf2daf52569",
+          "authenticationDigest": "4bb9bc5cfef72a55cf5e6c8d6ae77f570db63dd92f8a4d5a389a482c17cfe813",
+          "fixtureDigest": "3a7899ced771d4880066d98b0000c53f801ece53458502cc4f3bc641146c9a85",
+          "fixtureId": "reference-transactional-v1",
+          "capabilities": [
+            "installed-transactional-http",
+            "transactional-receipt-observation"
+          ]
+        },
+        "operationTargets": {
+          "createBead": "https://reference.invalid/acme/operations/create-bead",
+          "updateBead": "https://reference.invalid/acme/operations/update-bead",
+          "deleteBead": "https://reference.invalid/acme/operations/delete-bead",
+          "createLink": "https://reference.invalid/acme/operations/create-link",
+          "updateLink": "https://reference.invalid/acme/operations/update-link",
+          "deleteLink": "https://reference.invalid/acme/operations/delete-link",
+          "putAlias": "https://reference.invalid/acme/operations/put-alias",
+          "deleteAlias": "https://reference.invalid/acme/operations/delete-alias",
+          "updateWhere": "https://reference.invalid/acme/operations/update-where",
+          "deleteWhere": "https://reference.invalid/acme/operations/delete-where",
+          "batch": "https://reference.invalid/acme/operations/batch",
+          "sequence": "https://reference.invalid/acme/operations/sequence"
+        },
+        "runtimeConfigurationIdentity": "64fc59b65a9ef9e4aac5de4f83ec3fa228d06ea9a6b481b94d54e04b386ea95e",
+        "authorityMode": "canonical"
+      },
+      "claimEligible": false
+    }
+  ],
+  "remainingInstalledChildren": 0,
+  "ru": [
+    {
+      "report": "packed-ru-retry-report.json",
+      "sha256": "3d3c2e1cf159616ccf8ff2811dc2226e810283184f83d8409ae49b11c2577d25",
+      "sourceCommit": "8d23862a03e65fa378a246310d804f0408b73937",
+      "cleanupComplete": true,
+      "claimEligible": false,
+      "configuration": {
+        "scope": "https://reference.invalid/acme/",
+        "profile": "read-update",
+        "history": false,
+        "sourceCommit": "8d23862a03e65fa378a246310d804f0408b73937",
+        "installedPayloadDigest": "8bcfac0b0ee3331ca3da660b2f0a14ef106e474938e7b41f8e0532ad06b17da9",
+        "installedContractsDigest": "48667497d6e13064316d0364cf8f49dfc247ab9189306985a357d7b558333dfe",
+        "policyDigest": "dbe8dbd5430f26e19e754d38167cd8084a32d702c695550e2ee0063dc2912430",
+        "authenticationDigest": "66941efc779f4f2431d65fdd5b2387b2af67bd7c1559e09dac032f82259ea16e",
+        "fixtureDigest": "f89932d68e3bf5867d79eb3de680af4bc67b761b3c3bce5da127f6ca75e27765",
+        "fixtureId": "reference-read-update-schema-v1",
+        "capabilities": [
+          "installed-read-update-http"
+        ]
+      },
+      "baselineReceipt": {
+        "event": "qualification.ready",
+        "scope": "https://reference.invalid/acme/",
+        "claimEligible": false,
+        "configurationIdentity": "1720b63b49a7be3299d4b2865de4db9fcbe47560f217a32eea6397db7ea54ca5",
+        "artifactIdentity": "development-schema5-48667497d6e13064316d0364cf8f49dfc247ab9189306985a357d7b558333dfe",
+        "payloadIdentity": "8bcfac0b0ee3331ca3da660b2f0a14ef106e474938e7b41f8e0532ad06b17da9",
+        "policyIdentity": "dbe8dbd5430f26e19e754d38167cd8084a32d702c695550e2ee0063dc2912430",
+        "authenticationIdentity": "66941efc779f4f2431d65fdd5b2387b2af67bd7c1559e09dac032f82259ea16e",
+        "profile": "read-update",
+        "history": false
+      },
+      "sessions": 2,
+      "passIds": [
+        "read-update.sequence.idempotent-retry",
+        "read-update.idempotency.cross-carrier"
+      ],
+      "reportBinding": {
+        "artifacts": {
+          "catalogDigest": "e26d3fc758a34ebb0b5028be15d28e3e09db87dc7984bba7bad6a00b26329aa0",
+          "manifestDigest": "c86b33535f25a1d117ce021a3bb70164f5635bdaee50758e3428c130ccc3227f",
+          "fixtureDigest": "f89932d68e3bf5867d79eb3de680af4bc67b761b3c3bce5da127f6ca75e27765"
+        },
+        "exactConfigurationDigest": "3224c31c83988dc0606cb76ee1f4ba8e6394159bdf7daaccc301461316cc2477"
+      }
+    },
+    {
+      "report": "packed-ru-reference-report.json",
+      "sha256": "fb8641e7180692fae6a8b07b4676697230db822c73432c196b2062c3e58b316c",
+      "sourceCommit": "8d23862a03e65fa378a246310d804f0408b73937",
+      "cleanupComplete": true,
+      "claimEligible": false,
+      "configuration": {
+        "scope": "https://reference.invalid/acme/",
+        "profile": "read-update",
+        "history": false,
+        "sourceCommit": "8d23862a03e65fa378a246310d804f0408b73937",
+        "installedPayloadDigest": "8bcfac0b0ee3331ca3da660b2f0a14ef106e474938e7b41f8e0532ad06b17da9",
+        "installedContractsDigest": "48667497d6e13064316d0364cf8f49dfc247ab9189306985a357d7b558333dfe",
+        "policyDigest": "dbe8dbd5430f26e19e754d38167cd8084a32d702c695550e2ee0063dc2912430",
+        "authenticationDigest": "66941efc779f4f2431d65fdd5b2387b2af67bd7c1559e09dac032f82259ea16e",
+        "fixtureDigest": "f89932d68e3bf5867d79eb3de680af4bc67b761b3c3bce5da127f6ca75e27765",
+        "fixtureId": "reference-read-update-schema-v1",
+        "capabilities": [
+          "installed-read-update-http"
+        ]
+      },
+      "baselineReceipt": {
+        "event": "qualification.ready",
+        "scope": "https://reference.invalid/acme/",
+        "claimEligible": false,
+        "configurationIdentity": "1720b63b49a7be3299d4b2865de4db9fcbe47560f217a32eea6397db7ea54ca5",
+        "artifactIdentity": "development-schema5-48667497d6e13064316d0364cf8f49dfc247ab9189306985a357d7b558333dfe",
+        "payloadIdentity": "8bcfac0b0ee3331ca3da660b2f0a14ef106e474938e7b41f8e0532ad06b17da9",
+        "policyIdentity": "dbe8dbd5430f26e19e754d38167cd8084a32d702c695550e2ee0063dc2912430",
+        "authenticationIdentity": "66941efc779f4f2431d65fdd5b2387b2af67bd7c1559e09dac032f82259ea16e",
+        "profile": "read-update",
+        "history": false
+      },
+      "sessions": 2,
+      "passIds": [
+        "read-update.singleton.no-local-bindings",
+        "read-update.alias.non-canonical-target"
+      ],
+      "reportBinding": {
+        "artifacts": {
+          "catalogDigest": "e26d3fc758a34ebb0b5028be15d28e3e09db87dc7984bba7bad6a00b26329aa0",
+          "manifestDigest": "c86b33535f25a1d117ce021a3bb70164f5635bdaee50758e3428c130ccc3227f",
+          "fixtureDigest": "f89932d68e3bf5867d79eb3de680af4bc67b761b3c3bce5da127f6ca75e27765"
+        },
+        "exactConfigurationDigest": "3224c31c83988dc0606cb76ee1f4ba8e6394159bdf7daaccc301461316cc2477"
+      }
+    }
+  ],
+  "donorPreservation": {
+    "head": "8d23862a03e65fa378a246310d804f0408b73937",
+    "tree": "ea2c4dc704f50f7c6333ba962454cde28131999f",
+    "parents": [
+      "84e6b67b2d322362f1d8e44e76873584d025071c",
+      "0432d48db8f340016a000d633d799aebbd26db3f"
+    ],
+    "expectedMergeTree": "ea2c4dc704f50f7c6333ba962454cde28131999f",
+    "exactDonorFiles": {
+      "apps/bdptest/src/transactional-matrix.test.ts": {
+        "candidate": "e08f24d96f1f1ace6b950824d87ce56935839fb2",
+        "donor": "e08f24d96f1f1ace6b950824d87ce56935839fb2"
+      },
+      "packages/conformance/src/transactional-cumulative.test.ts": {
+        "candidate": "9e2ee0fb7cc4526a9727c56ce6200e218ac65c33",
+        "donor": "9e2ee0fb7cc4526a9727c56ce6200e218ac65c33"
+      },
+      "packages/conformance/test-support/transactional/coverage-v1.json": {
+        "candidate": "3fe58aae463c2c4e32cc34b4d8e2c558faacd7e4",
+        "donor": "3fe58aae463c2c4e32cc34b4d8e2c558faacd7e4"
+      },
+      "packages/conformance/test-support/transactional/manifest-v1.json": {
+        "candidate": "16650dd3c633a84b7fe9ce005d32246ac47850cc",
+        "donor": "16650dd3c633a84b7fe9ce005d32246ac47850cc"
+      }
+    },
+    "allOtherTrackedFilesMatchMain": true,
+    "main": "0432d48db8f340016a000d633d799aebbd26db3f",
+    "conflicts": false,
+    "authoredResolutions": false
+  },
+  "reportDigests": {
+    "packed-positive-observation.json": "b06cd6dcd42954180e09b62ddc2566ef046bef599d00123aa884e2b524fc315a",
+    "packed-positive.json": "2dd5ccae61691a07a9e82a3b7a4d29dc76b8210f31237b9d4b696489dfeb8594",
+    "packed-five-controls.json": "db64a11f5e6e8d417d446db093e9b5b32e1b50453b5bba2d5e6c0e8564e70a25",
+    "packed-ru-positives.json": "e81a8e2e51dbef5a9f6df6c7069e4a52cac0b93edafe7f920a878955686f8692",
+    "mapping-audit.json": "ea940052f803c916c301626d86c2b53ad4fde85495053a2062543cc1dcf8282c",
+    "final-source-audit.json": "6be80878a7c12f9224f0b536445fec43679d4c79b1da4891a577f026dc56a9a7"
+  }
+}

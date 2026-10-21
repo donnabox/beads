@@ -1,0 +1,17 @@
+{
+  "status": "released-static-source-validation",
+  "sourceBindingSha256": "a6eb425d2616279fed28132c2b59258b7503b186224ba538179704b6364c9e2a",
+  "measuredFenceAcceptanceSha256": "8c992e7a9b16d59bdd18610be89e96d2028d130dfdcaa112fc796120af63a646",
+  "scope": "Eight sequential stages and eight exact CPU-only callbacks. No installed runtime or publication. Native and actual Claude reviews remain required before publication.",
+  "authorizedStages": [
+    "offline-setup",
+    "typecheck",
+    "build",
+    "format-check",
+    "lint",
+    "boundaries",
+    "read-seal",
+    "source-positive"
+  ],
+  "repair": "Only formatting within new manifest row, disk-fence decrease/comment. Original format failure preserved; fresh stages."
+}

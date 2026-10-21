@@ -1,0 +1,11 @@
+# Focused installed-correction actual review audit
+
+The actual Claude review completed naturally with exit0 in232.112seconds, no deadline termination, unchanged source and inputs, empty stderr, and complete3,989-byte stdout SHA256 e3980f90c5249197f394dbdb7636c104533983b560a9fbd0219d55b136c08b04. Its conclusion is “No actionable defect remains.” This is a focused correction review, complementing the earlier installed review whose substantive output was retained with a forced-deadline caveat; it does not relabel that attempt.
+
+Both repaired oracles are confirmed against actual source: the in-memory digest normalizes names, excludes only Date, sorts complete name/value pairs and retains duplicate occurrences; row29 compares the same authored tuple to row18. The anonymous401 challenge literal matches transaction-http. Existing HEAD framing and fail-closed report behavior are unchanged. The review's mention of204 is background wording: shared conditionalReadStatus is200/304/412, and this correction does not change that implementation.
+
+Residual1: the digest intentionally remains in memory. The frozen test revision and its passing/failing assertion are the evidence; safe stdout retains its existing allowlist. No complete-header record is claimed. Residual2: no same-view HEAD hidden-versus-missing pair is claimed; adding a request is outside this fixed32-request witness. Existing shared HEAD stripping is separately source-reviewed. Residual3: the historical progress paragraph accurately attributes the original11stages/15callbacks to dirty1647 and the later ordinary integration. Five narrow integration stages have now actually passed on clean733728cf, including two selected read callbacks, fresh build and inventory. A factual paragraph refresh should await the installed outcome; no relabeling of historical validation.
+
+The first fresh installed positive subsequently failed before ready, at zeroHTTP, and is not a passing installed proof. The review does not override that runtime failure. Its report-size estimate is an estimate, not a measured successful32-row report.
+
+Authorship limitation: this worker authored the source correction and review preparation, so this is a source-grounded disposition of actual external review, not another independent code approval.

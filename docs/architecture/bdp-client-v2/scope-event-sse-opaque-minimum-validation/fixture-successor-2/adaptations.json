@@ -1,0 +1,53 @@
+{
+  "state": "CLOSED exact fixture successor",
+  "predecessor": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/scope-event-sse-opaque-minimum-validation/format-successor-1",
+  "sourceSuccessor": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/scope-event-sse-opaque-minimum-author/fixture-successor-2",
+  "sourceChanges": {
+    "packages/server/src/transaction-event-sse.test.ts": {
+      "before": "0bd45d46a5401c23e98d110c5f2dc0a6159965e8df09dc2c19105c7b282c8f0f",
+      "after": "d7c257a2c9f78ffd07a18b86e2b480e07e1cdeeddf43cafabfb0cd53a011fbd9"
+    }
+  },
+  "reusedPrerequisites": [
+    "workspace-install",
+    "bind-workspace-tools"
+  ],
+  "freshStages": 19,
+  "logicalStages": 21,
+  "unchangedHelpers": [
+    "run.py",
+    "audit.py",
+    "packages.py"
+  ],
+  "unchangedSelection": {
+    "sourceCallbacks": 8,
+    "sourceReports": 5,
+    "newReports": 4,
+    "historicalReports": 1,
+    "sourcePlannedHttp": 108,
+    "installedRequests": [
+      5,
+      6
+    ]
+  },
+  "dependencyInputs": 17,
+  "tools": 11,
+  "gatePrecedent": {
+    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/changefeed-opaque-minimum-validation/format-successor-1/gate.py",
+    "sha256": "72074686ca1829b5d62a511cbed642e782c8b6b71a3607afc7c85c6f36e93459"
+  },
+  "originalSourceIdentity": "db9e4f028ccab8618e0bdb4c4b8c87033571b138d171986d9a030e77767c8bfb",
+  "successorSourceIdentity": "bed43347256ca5a8b68883a42971a3c8e69a7f541e351d94e607f0ebc449a3b1",
+  "executionReleased": false,
+  "bootstrapSourceChanges": {
+    "apps/bdptest/src/transactional-event-sse-installed.test.ts": {
+      "before": "67d6d2c7f07a233c97517609d03b7d2f1d63e49c9526b351c252b93682b159fe",
+      "after": "0d2c2ddf069a57e9a4533894da03589beb1645d7608537dac45c2995ee7c0a23"
+    },
+    "packages/server/src/transaction-event-sse.test.ts": {
+      "before": "c5f51b0b8b645332f6b59b15e4af4eb1a799aa3f2e424f83d4f1ae00e0797d26",
+      "after": "d7c257a2c9f78ffd07a18b86e2b480e07e1cdeeddf43cafabfb0cd53a011fbd9"
+    }
+  },
+  "gateChange": "Diagnostic wording only; exact bootstrap source-map logic unchanged"
+}

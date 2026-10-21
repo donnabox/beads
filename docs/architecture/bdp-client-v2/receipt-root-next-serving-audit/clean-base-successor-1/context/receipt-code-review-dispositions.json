@@ -1,0 +1,46 @@
+{
+  "at": "2026-10-17T08:50:08.780459+00:00",
+  "reviewSha256": "e149e4679ef6cc6090752a4eb208ea3a469a65a03cc90cb963983a1e6afeced1",
+  "completionSha256": "9099b7d7dde3bde5d2087bfb1b0dfbde1063367190069bca887291b444a4b33e",
+  "dispositions": [
+    {
+      "id": 1,
+      "decision": "accept",
+      "action": "Apply exact four-site formatter-only plan7e8f3907 after native findings audit. Actual formatter confirms three predicted wraps plus argument-layout site; no semantic edits."
+    },
+    {
+      "id": 2,
+      "decision": "defer optional",
+      "reason": "Directory-retained remains explicit failure-preserving diagnostic on already-failing run. failureCount/categories are error observations, not distinct root-cause counts or functionality percentages. No false success or clean deletion; avoid unrelated lifecycle changes."
+    },
+    {
+      "id": 3,
+      "decision": "reject inaccurate control-flow claim",
+      "reason": "Cleanup timeout rejects Promise.race; execution jumps directly to catch, skipping subsequent clean-close/unclean-close branch. No second unclean-close entry is produced by that timeout path. Late-cleanup/directory-retained diagnostics stay separately attributed."
+    },
+    {
+      "id": 4,
+      "decision": "retain",
+      "reason": "Root HTTP fallback is defensive, direct API sentinel remains covered and page fence unchanged. Historical title identity intentionally preserved; no comment churn required."
+    },
+    {
+      "id": 5,
+      "decision": "retain",
+      "reason": "Deterministic2msbudget/tick waiter seam is required for retained1100ms isolation within existing5scallback. No widening/removal."
+    },
+    {
+      "id": 6,
+      "decision": "retain explicit exclusion",
+      "reason": "Foreign-opaque private500 preserves existing unsupported semantics, is not normative409/410 qualification. No policy change."
+    }
+  ],
+  "reviewProseCorrection": "A actual root attempts are3/3/1/1/1/1/0/0=10, not reviewer prose4/4 despite its correct total. Source assertions/actual runtime remain separate.",
+  "contextLimit": "Exactly 10 successful Read calls for 9 unique context paths observed; no context Grep/Glob or tool errors. Full plan/selection/patch inline separately. All18 read claim unproven; independent runner/native pins do not imply Claude access.",
+  "next": "Exactly four reviewed formatter replacements released; independent native inverse closure then fresh successor static/runtime validation, no full Claude rerun solely layout.",
+  "sourceAuthoringReleased": true,
+  "runtimeReleased": false,
+  "profileQualified": false,
+  "nativeFindingsAuditSha256": "8849fdf7f05f9ca435f6f9ed1bd136a976b66ce10cbe87b2603ff1fa8ed50644",
+  "nativeFindingsAccepted": true,
+  "foreignOpaqueCitation": "D rows5/6 are foreign opaque root observations; installed507\u2013512 cited by reviewer is strict page fence."
+}

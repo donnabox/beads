@@ -1,0 +1,13 @@
+# D1 CODE F1–F3 corrections — source frozen
+
+Root disposition1 (1f6dce33...) released only these bounded corrections. Pinned Biome2.5.7 binary SHA f71fe80909d2f70f1e051320f5ba9dfd553bc5ef3bacef5cdee1b00ee96a285c ran format --write exactly six owned files. First invocation fixed four; after a narrow F2 drain-observation refinement the same command reported no fixes. Exact argv/outputs are preserved. No format check/lint/unsafe.
+
+F2: D upserts actual observations by ordinal. Ready status/headers/body/wire snapshots precede status assertions, including live; finite and intentional-live drains refresh the same record. Closed finite framing can drain independently of a failed assertion; cleanup never promotes a partial live observation into successful intentional drainage. Explicit ready/drained/transport-close/availability/bodyState/drainKind distinguish unavailable, partial and complete evidence. Seed ready/chunk/drain evidence precedes status/receipt assertions, with wire unavailable rather than invented. Catch and post-cleanup refresh preserve observed partial bytes. completed counts actual drained records; pass still requires32 dispatches/records/drained completions and all prior status/context/body/HEAD/frame oracles.
+
+F3: E captures git diff --binary HEAD inside existing45s work, before launch. Timeout integer1000–1500ms, cap8MiB, stderr ignored. Failure caches null/fixed reason bounded tracked diff capture unavailable, records tracked-diff-metadata aggregate failure and does not launch. Finally uses only cached diff metadata and runs no subprocess.
+
+Source selection remains15 callbacks (nine new/six legacy), nine new plus exactly two selected legacy report keys; parameter-context stays unselected. Installed three separate callbacks remain10/4/10 requests. These are prospective inventories, not runtime observations. Corrected schemas/source locations and data candidate for named validation3 are included; preparation2 is preserved.
+
+Full679 before/after maps, full dirty patch, genuine before-to-after/inverse patches, six source copies and changed-line blocks are frozen. SSE historical33419 bytes and installed historical33116 bytes equal HEAD and author freeze. Other673 files, original/PR167679 files, and startup682 files are unchanged. No protocol/admission semantics, default tags, dispatch counts or deadlines changed.
+
+Only authorized formatting executed. No tests/checks/build/install/runtime/review CLI/git mutations, source activation, design/launch/coordination or validation execution. Native correction closure and root exact-source acceptance remain required. No further source edits without explicit named successor.

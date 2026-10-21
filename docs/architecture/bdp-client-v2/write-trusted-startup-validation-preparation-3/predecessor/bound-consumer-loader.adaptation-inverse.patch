@@ -1,0 +1,167 @@
+--- a/bound-consumer-loader.mjs
++++ b/bound-consumer-loader.mjs
+@@ -2,32 +2,6 @@
+ // 133-461 exact inventory/public entry/declarations, 483-505 root private values,
+ // 554-616 private specifiers (omit absent @bdp/conformance),1193-1353 pure loader.
+ // Shared exact export checker copied from scripts/smoke-safety.mjs. No source imports.
+-import { createRequire } from "node:module";
+-import { createHash } from "node:crypto";
+-import { isDeepStrictEqual } from "node:util";
+-import { createServer } from "node:net";
+-import { mkdtemp, readFile, readdir, realpath, rm, writeFile } from "node:fs/promises";
+-import { tmpdir } from "node:os";
+-import path from "node:path";
+-import { pathToFileURL } from "node:url";
+-const executionRoot = "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-trusted-startup-validation-preparation-1/run";
+-const installRoot = path.join(executionRoot, "consumer");
+-const proofPath = path.join(executionRoot, "installed-provenance.json");
+-let proofBytes, proof, entryRealpath, temporaryRoot;
+-const digest = (bytes) => createHash("sha256").update(bytes).digest("hex");
+-const stats = {profiles:[],loaderCalls:0,accepted:0,contractRefusals:0,privateSpecifierCount:0,
+-  publicExports:[],configuredPortAcquisitionExcluded:false,storeDirectoriesAbsent:false};
+-let cleanupDeadline;
+-const cleanupRemaining=()=>{cleanupDeadline ??= performance.now()+10000;return Math.max(1,cleanupDeadline-performance.now());};
+-let witnessGuard, workSettled=false, workTimedOut=false, cleanupUnknown=false, temporaryDirectoryRemoved=false, failed=false;
+-// Fixed guard fails the helper; it never turns unknown closure into success.
+-const totalGuard=setTimeout(()=>{console.error("bounded pure-loader process guard expired; preserve evidence");process.exit(1);},60000);
+-async function within(promise, milliseconds, phase) {
+- let timer;
+- try {return await Promise.race([promise,new Promise((_,reject)=>{timer=setTimeout(()=>{
+-   const error=new Error("bounded pure-loader "+phase+" deadline");error.phase=phase;reject(error);
+- },milliseconds);})]);} finally {clearTimeout(timer);}
+-}
+ function assertServerExports(manifest) {
+   const expected = {
+     ".": { types: "./dist/index.d.ts", default: "./dist/index.js" },
+@@ -43,19 +17,6 @@
+     );
+ }
+ 
+-async function runWitness() {
+-proofBytes = await readFile(proofPath);
+-proof = JSON.parse(proofBytes);
+-if (process.env.TRUSTED_STARTUP_PROVENANCE_SHA256 !== digest(proofBytes))
+-  throw new Error("root-bound consumer provenance differs");
+-entryRealpath = await realpath(proof.entryRealpath);
+-if (entryRealpath !== process.env.TRUSTED_STARTUP_LOADER_ENTRY ||
+-    !entryRealpath.startsWith(await realpath(installRoot) + path.sep) ||
+-    digest(await readFile(entryRealpath)) !== proof.entrySha256)
+-  throw new Error("root-bound consumer loader entry differs");
+-temporaryRoot = await mkdtemp(path.join(tmpdir(), "bdp-bound-loader-"));
+- const installedServerRoot = path.join(installRoot, "node_modules", "@bdp", "server");
+- const installedServerOutput = await readdir(path.join(installedServerRoot, "dist"));
+     // Intentional package-surface tripwire: adding or removing a shipped server
+     // module is a deliberate reviewed change, not an incidental build artifact.
+     const expectedServerOutput = new Set([
+@@ -384,7 +345,6 @@
+     ])
+       if (publicDeclaration.includes(name))
+         throw new Error("packed deployment declaration exposes private capture types");
+-    stats.publicExports = Object.keys(deployment).sort();
+     await observePackedDeploymentLoader(deployment, temporaryRoot);
+     const publicServer = await import(pathToFileURL(consumer.resolve("@bdp/server")).href);
+     if (
+@@ -419,11 +379,12 @@
+         throw new Error("packed private implementation module unexpectedly resolves");
+       } catch (error) {
+         if (error.code !== "ERR_PACKAGE_PATH_NOT_EXPORTED") throw error;
+-        stats.privateSpecifierCount++;
+       }
+     }
+ 
+     for (const specifier of [
++      "@bdp/conformance/transactional-observation",
++      "@bdp/conformance/dist/transactional-observation.js",
+       "@bdp/server/reference-deployment",
+       "@bdp/server/dist/reference-deployment.js",
+       "@bdp/server/reference-deployment-state",
+@@ -469,44 +430,14 @@
+         throw new Error("packed private development runtime unexpectedly resolves");
+       } catch (error) {
+         if (error.code !== "ERR_PACKAGE_PATH_NOT_EXPORTED") throw error;
+-        stats.privateSpecifierCount++;
+       }
+     }
+-
+- if (await realpath(deploymentEntry) !== entryRealpath) throw new Error("public resolution differs from root entry");
+-}
+-let workError;
+-const work = runWitness().catch(error=>{workError=error;}).finally(()=>{workSettled=true;});
+-try {
+- await within(work,45000,"work");
+- if (workError) throw workError;
+-} catch(error) {
+- failed=true; workTimedOut=error?.phase==="work";
+- // One remaining cleanup allowance; no cancellation or FD-close fiction for a pending file operation.
+- try {await within(work,cleanupRemaining(),"late-work-cleanup");} catch {cleanupUnknown=true;}
+-} finally {
+- cleanupUnknown ||= !workSettled || Boolean(witnessGuard?.listening);
+- if (temporaryRoot && workSettled && !cleanupUnknown) {
+-  try {await within(rm(temporaryRoot,{recursive:true,force:true}),cleanupRemaining(),"owned-removal");temporaryDirectoryRemoved=true;}
+-  catch {failed=true;cleanupUnknown=true;}
+- }
+- if (workSettled && !cleanupUnknown) clearTimeout(totalGuard);
+- if (!workSettled || cleanupUnknown) process.exitCode=1;
+-}
+-const report = {event:"startup.bound-consumer-loader",outcome:failed||cleanupUnknown?"failed":"passed",
+- ...stats,entryRealpath:entryRealpath ?? null,entrySha256:proof?.entrySha256 ?? null,provenanceSha256:proofBytes ? digest(proofBytes) : null,
+- workTimedOut,cleanupUnknown,temporaryDirectory:temporaryRoot ?? null,temporaryDirectoryRemoved,
+- sourceLimitation:"Root-bound dirty source/build/archive/lock/entry provenance; loader does not attest source or payload digest",
+- observationLimitation:"Occupied intended port excludes successful acquisition, not bind attempts; no installed per-FD or kernel socket census; no service/public profile claim"};
+-console.log(JSON.stringify(report));
+-if (failed || cleanupUnknown) process.exitCode=1;
+ /** Pure installed-loader witness; this guard owns the occupied intended port.
+  * Success excludes acquisition of that configured listener. Source forbidden-call
+  * instrumentation separately observes attempted startup calls. Store paths stay
+  * absent. This is not installed service evidence. */
+ async function observePackedDeploymentLoader(deployment, temporaryRoot) {
+   const guard = createServer();
+-  witnessGuard = guard;
+   await new Promise((resolve, reject) => {
+     guard.once("error", reject);
+     guard.listen(0, "127.0.0.1", resolve);
+@@ -604,9 +535,7 @@
+       };
+       const body = { format: "bdptest-reference-deployment-1", profile, configuration };
+       await writeFile(file, JSON.stringify(body));
+-      stats.loaderCalls++;
+       const result = await deployment.loadReferenceDeployment(input);
+-      stats.accepted++;
+       inert(result);
+       if (
+         result.profile !== profile ||
+@@ -631,7 +560,6 @@
+         await writeFile(file, JSON.stringify(candidate));
+         let refused = false;
+         try {
+-          stats.loaderCalls++;
+           await deployment.loadReferenceDeployment(input);
+         } catch (error) {
+           if (
+@@ -646,7 +574,6 @@
+           refused = true;
+         }
+         if (!refused) throw new Error("packed deployment accepted an invalid contract");
+-        stats.contractRefusals++;
+       }
+       try {
+         await realpath(directory);
+@@ -656,16 +583,13 @@
+       }
+       if (!guard.listening || guard.address().port !== address.port)
+         throw new Error("packed loader disturbed the owned witness listener");
+-      stats.profiles.push(profile);
+-      stats.configuredPortAcquisitionExcluded = true;
+-      stats.storeDirectoriesAbsent = true;
+     }
+     console.log(
+       "installed pure reference deployment loader: RU/TX, refusals and inert boundary passed",
+     );
+   } finally {
+-    await within(new Promise((resolve, reject) =>
++    await new Promise((resolve, reject) =>
+       guard.close((error) => (error ? reject(error) : resolve())),
+-    ), cleanupRemaining(), "cleanup");
++    );
+   }
+ }

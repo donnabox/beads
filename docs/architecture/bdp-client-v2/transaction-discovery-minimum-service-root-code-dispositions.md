@@ -1,0 +1,10 @@
+# Discovery minimum service code council dispositions
+
+External Claude reviewed frozen2bd4843 against26d6; session65106 completed exit0 and was reaped. Root read full output. Native original review was clean; root citation finding agreed with external3. Production correctness/lifecycle is clean in both reviews. Root authors the bounded two-file test/doc successor; original source/evidence stay frozen.
+
+1. Accept Medium bounded-test concern. Both held catch-up/abort tests use monotonically advancing tick with budget100; intended one wait/two waiting attempts unchanged, regression terminates rather than starving macrotask timeout.
+2. Accept Low drain assertion rigor. Flush one setImmediate while the gate is held before checking close remains pending and owner accessible; finally always releases.
+3. Accept Low citation. Replace bare report path with frozen fork report at4925b1b2d37de792b6ec35f89f29ba23fb1210d9 and remove duplicate blank line.
+4. Accept Low explicit oracle debt. Add no-wait/no-assembly checks after actual reentry/delegated throw/delegated refusal/closed-owner errors and exact attempt counts. Pin successful wait context identity and frozen context at assembly. Correct the review's proposed one-call assertion: this test deliberately performs an independent satisfied pos-1 discovery as well as the waiting pos-2 discovery, so total assembly count is TWO, orderedpos-1 thenpos-2, with the latter argument identical to waiting result.context. No failed attempt is assembled. Requiring one would falsely reject the accepted test behavior.
+
+Only transaction-service.test.ts and progressdoc change. No production/runtime/schema/profile/evidence binding modifications. Fresh focused/static results on successor must be separate from original2bd proof. Since production bytes are unchanged, no fresh package or emitted probe is claimed or required solely for this test/doc repair. Root source-bound report and independent native closure precede readiness; exact newCI and actual merge-tree gates remain.

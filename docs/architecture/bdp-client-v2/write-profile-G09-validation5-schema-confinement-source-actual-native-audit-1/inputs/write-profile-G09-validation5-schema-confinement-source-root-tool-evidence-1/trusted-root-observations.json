@@ -1,0 +1,79 @@
+{
+  "accepted": false,
+  "actualFunctionsCellId": "3329",
+  "actualInnerElapsedSeconds": 4.967331250198185,
+  "actualInnerExit": 0,
+  "actualLog": {
+    "bytes": 937,
+    "mode": "0o644",
+    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation-preparation-5/run/schema-confinement-source.log",
+    "sha256": "bb91e0abd41177e868ce2aeaf168bccb5ecd4adc00cf064847645915ba63318c"
+  },
+  "actualPhaseTerminalObservations": [
+    {
+      "actualRawExit": 0,
+      "actualTerminalToolId": "18b6fd",
+      "phase": "A"
+    },
+    {
+      "actualRawExit": 0,
+      "actualTerminalToolId": "2a6ecc",
+      "phase": "B"
+    },
+    {
+      "actualRawExit": 0,
+      "actualTerminalToolId": "35846b",
+      "phase": "C"
+    }
+  ],
+  "actualVitestResult": {
+    "bytes": 1694,
+    "mode": "0o644",
+    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation-preparation-5/run/schema-confinement-source.results.json",
+    "sha256": "3be25c238eae81df84594719627a62e4d0d35051ecb0c196f004c040bd33cfa1"
+  },
+  "censusRawStreamBytes": [
+    204591,
+    0
+  ],
+  "cleanupPerformedByStaticPacket": false,
+  "completedInvocationAndObservationUpperBoundSeconds": 10.432295500300825,
+  "firstPostBTerminalWitnessMonotonic": 2268717.805860916,
+  "fullIndependentConjunctionAudit": "PENDING",
+  "matchingTaskRows": [],
+  "nextStageReleased": false,
+  "observerSelfAbsenceOrGlobalContainmentClaim": false,
+  "ordinaryToolRecords": {
+    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation5-schema-confinement-source-root-tool-evidence-1/dispatch-state.json",
+    "sha256": "e548a58e9af59d0eeee5029caf474d17575c2fcfa93924d8d6287b4c3cebfb1d"
+  },
+  "probeDirectReaped": true,
+  "qualityPass": false,
+  "rawWireToolReceipts": "UNRETAINED_SOURCE_ATTRIBUTED_NORMALIZED_RESULTS",
+  "recordedTaskPGIDs": [
+    46151,
+    46155,
+    46849
+  ],
+  "recordedTaskPIDs": [
+    46154,
+    46155,
+    46849,
+    46852
+  ],
+  "reportedFailedTests": 0,
+  "reportedPassedFullNames": [
+    "confines observed Type and schema traversal to exact administrative identities"
+  ],
+  "reportedSelectedPasses": 1,
+  "reportedSuccess": true,
+  "rootOriginMonotonic": 2268707.373565416,
+  "rootRawStreamBytes": [
+    496,
+    0
+  ],
+  "stage": "schema-confinement-source",
+  "strictReportAuditStage": "audit-schema-confinement-source_NOT_ATTEMPTED",
+  "strictUnder115": true,
+  "temporaryDirectory": "/private/tmp/vickie-tx-discovery-validation-schema-confinement-source-1pt6dicb"
+}

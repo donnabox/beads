@@ -1,0 +1,70 @@
+{
+  "productExecuted": false,
+  "bodyRecipes": {
+    "seed": {
+      "bytes": 24427,
+      "sha256": "c2b9b50eac523660681ed4c0832da33849555e7d0afa0a913545b2803651b8a7",
+      "deepLiteralOccurrences": 1,
+      "shallowRecipe": "{\"operations\":[{\"operation\":\"createBead\",\"id\":\"beads/a\",\"type\":\"https://reference.invalid/acme/types/owner\",\"properties\":{}},{\"operation\":\"createBead\",\"id\":\"beads/b\",\"type\":\"https://reference.invalid/acme/types/owner\",\"properties\":{}},{\"operation\":\"createLink\",\"id\":\"links/l\",\"type\":\"https://reference.invalid/acme/types/link\",\"source\":\"beads/a\",\"target\":\"beads/b\",\"properties\":{\"n\":-0,\"deep\":0},\"metadata\":{\"tag\":\"initial\"}}]}"
+    },
+    "update": {
+      "bytes": 24099,
+      "sha256": "916905c2080f92583db1097ed6c2b813a2b68b9fd760aff3cb93b176db884506",
+      "deepLiteralOccurrences": 1,
+      "shallowRecipe": "{\"link\":\"links/l\",\"metadataChange\":[{\"op\":\"replace\",\"path\":\"\",\"value\":{\"tag\":\"updated\",\"deep\":0}}]}"
+    },
+    "noop": {
+      "bytes": 24159,
+      "sha256": "322f89d2c4e8133819775293e5423a7c2e23f4e869ff79e652c7a3bb17f26dfc",
+      "deepLiteralOccurrences": 1,
+      "shallowRecipe": "{\"link\":\"links/l\",\"propertiesChange\":[{\"op\":\"replace\",\"path\":\"/n\",\"value\":0}],\"metadataChange\":[{\"op\":\"replace\",\"path\":\"\",\"value\":{\"deep\":0,\"tag\":\"updated\"}}]}"
+    },
+    "conflict": {
+      "bytes": 24101,
+      "sha256": "6b45a53165bd6a92344eaa8d49c3543a365485591db84b71baa5d569924f04ed",
+      "deepLiteralOccurrences": 1,
+      "shallowRecipe": "{\"link\":\"links/l\",\"metadataChange\":[{\"op\":\"replace\",\"path\":\"\",\"value\":{\"tag\":\"different\",\"deep\":0}}]}"
+    },
+    "set": {
+      "bytes": 141,
+      "sha256": "08fb068040f562d9dfa692a0eb506867aacafdde63b2f1525de6d01a6eb79719",
+      "deepLiteralOccurrences": 0,
+      "shallowRecipe": "{\"collection\":\"links\",\"selector\":\"$[?@.properties.n == 0]\",\"cardinality\":{\"min\":1,\"max\":1},\"change\":[{\"op\":\"replace\",\"path\":\"/n\",\"value\":1}]}"
+    },
+    "sequence": {
+      "bytes": 48363,
+      "sha256": "c20b577e95a267d41bac22686fd89044c16138d1cc377126129b7da23a09662d",
+      "deepLiteralOccurrences": 2,
+      "shallowRecipe": "{\"operations\":[{\"operation\":\"createBead\",\"id\":\"beads/c\",\"type\":\"https://reference.invalid/acme/types/owner\",\"properties\":{\"deep\":0},\"idempotencyKey\":\"fresh-c\",\"name\":\"created\"},{\"operation\":\"createLink\",\"id\":\"links/l2\",\"type\":\"https://reference.invalid/acme/types/link\",\"source\":\"beads/a\",\"target\":\"@created\",\"properties\":{\"deep\":0},\"idempotencyKey\":\"fresh-l2\"}]}"
+    },
+    "late-failure": {
+      "bytes": 216,
+      "sha256": "9508f3e784eb06f621f31d8a63d03282594bc386a10a62ad8dad3406b17a3d18",
+      "deepLiteralOccurrences": 0,
+      "shallowRecipe": "{\"operations\":[{\"operation\":\"updateLink\",\"link\":\"links/l\",\"propertiesChange\":[{\"op\":\"replace\",\"path\":\"/n\",\"value\":2}]},{\"operation\":\"updateLink\",\"link\":\"links/l\",\"metadataChange\":[{\"op\":\"remove\",\"path\":\"/absent\"}]}]}"
+    }
+  },
+  "maximumBodyBytes": 48363,
+  "dispatchedBodyBytes": 169821,
+  "snapshotDeepLiteralCopies": 7,
+  "snapshotLiteralBytes": 168007,
+  "shallowEnvelopePlanningReserve": 65536,
+  "snapshotPlanningBytes": 233543,
+  "runtimeRepresentationLimitUnchanged": 262144,
+  "clientReceiveCap": 1048576,
+  "contractArtifacts": {
+    "https://reference.invalid/acme/types/owner": {
+      "bytes": 244,
+      "sha256": "a1629d71ca4aae6b844c8b3515957dc7b4ece8575697aa354fb6c34f252daede"
+    },
+    "https://reference.invalid/acme/types/link": {
+      "bytes": 261,
+      "sha256": "8c6f252e14b297bc7dd046bed58515e1e586ed80073e98ddb41774556430b73c"
+    },
+    "https://reference.invalid/acme/schemas/fresh-depth": {
+      "bytes": 153,
+      "sha256": "e0b8ddea6af31211b2254a45ef2e4dbb317894196e7c0d81f147d56aff4e545b"
+    }
+  },
+  "qualification": "Source/data-only planning budget; no actual schema execution or wire bytes."
+}

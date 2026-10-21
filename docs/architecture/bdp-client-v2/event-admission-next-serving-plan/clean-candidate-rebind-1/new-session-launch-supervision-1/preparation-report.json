@@ -1,0 +1,65 @@
+{
+  "createdUtc": "2026-10-18T02:59:39.553014+00:00",
+  "scope": "CLOSED independent outer execution supervision only",
+  "finding": "Original runner only polls TERM1790; final guard may extend beyond1800 without independent supervisor",
+  "before": {
+    "packet": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/event-admission-next-serving-plan/clean-candidate-rebind-1/claude-plan-review-session-20261018-021624-1",
+    "packetIndexSha256": "480a0dc8a130699726012244795cf024a47e0195ddcafb8d972a7846e515e076",
+    "bindingSha256": "8b8ad44b410387dd80e46f55d1c853dded7fba8aee0b609c2865b3854dc66677",
+    "files": 44,
+    "rootLaunchReleased": false,
+    "independentOuterSupervisor": false
+  },
+  "after": {
+    "supplement": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/event-admission-next-serving-plan/clean-candidate-rebind-1/new-session-launch-supervision-1",
+    "rootLaunchReleased": false,
+    "independentOuterSupervisor": true,
+    "termSeconds": 1790,
+    "killSeconds": 1798,
+    "totalSeconds": 1800,
+    "exclusiveAttemptDirectory": "attempt",
+    "singleAttempt": true,
+    "defaultModelAndReadOnlyArgsUnchanged": true,
+    "preciseInvocationAfterRelease": "/opt/homebrew/opt/python@3.14/bin/python3.14 /Users/dbox/repos/wt/vickie/bdp-integration-logs/event-admission-next-serving-plan/clean-candidate-rebind-1/new-session-launch-supervision-1/supervise.py"
+  },
+  "authorityRelation": "Supplement adds an independent execution limit and owns wrapper/reviewer/descendant cleanup; immutable packet remains proposal/source authority. Existing packet remains byte-identical during preparation; separate explicit flag-only release required for packet binding and supplement control.",
+  "genuineDelta": "Entire supervisor is new; supervisor-addition.patch is actual /dev/null-to-file diff. No original file changes. Frozen44-file inventory and CLOSED binding are copied byte-for-byte.",
+  "processOwnership": [
+    "direct wrapper child PID=PGID",
+    "direct session-check child groups",
+    "frozen runner process.json reviewer PID=PGID with exact argv/start/executable identity",
+    "observed ancestry with PID/start-time identities"
+  ],
+  "evidencePreserved": [
+    "exclusive attempt marker",
+    "all original packet partial/error outputs",
+    "guard stdout/stderr",
+    "wrapper stdout/stderr",
+    "outer-progress.jsonl",
+    "outer-exit.json even when runner final guard fails"
+  ],
+  "limitations": [
+    "No actual supervisor/guard/reviewer execution was performed during preparation",
+    "No hard-real-time operating-system guarantee; failed inventory/unknown cleanup is explicit failure",
+    "Final local terminal recording adds no reviewer execution allowance",
+    "Role polling detects changes at bounded read intervals; no further reviewer execution after known failure"
+  ],
+  "source": {
+    "head": "a56254d682cf4623cab22a552e3d2f695f691795",
+    "tree": "144f278c7f5a08516c4ac99ba553d4cc25bcf560",
+    "parents": [
+      "9f89271e2563a105410789ca8ca1e77dfb4d0b9f"
+    ]
+  },
+  "sourceFiles": 679,
+  "contextFiles": 24,
+  "artifactFiles": 12,
+  "staticChecks": [
+    "Python AST parses without execution",
+    "constants1790/1798/1800 and exact role/session paths inspected",
+    "no arbitrary argv accepted",
+    "root flags remain false",
+    "no attempt directory/packet outputs",
+    "all frozen packet/source/context/artifact hashes verified"
+  ]
+}

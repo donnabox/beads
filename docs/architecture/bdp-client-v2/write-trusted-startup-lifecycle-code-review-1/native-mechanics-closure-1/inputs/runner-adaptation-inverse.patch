@@ -1,0 +1,23 @@
+--- clean-CODE-current/run.py
++++ clean-PLAN-template/run.py
+@@ -1,9 +1,9 @@
+ from pathlib import Path
+ import subprocess,time,json,hashlib,os,signal,datetime,runpy
+ p=Path(__file__).parent
+-w=Path("/Users/dbox/repos/wt/vickie/vickie-trusted-startup-lifecycle-minimum")
++w=Path("/Users/dbox/repos/wt/vickie/vickie-trusted-startup-configuration")
+ b=json.loads((p/"binding.json").read_text());sha=lambda x:hashlib.sha256(x).hexdigest()
+-def guard(): subprocess.run(["/opt/homebrew/opt/python@3.14/bin/python3.14","/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-trusted-startup-lifecycle-code-review-1/claude-code-review/guarded-action-session-20261018-021624-549f.py","/usr/bin/true"],check=True)
++def guard(): subprocess.run(["/opt/homebrew/opt/python@3.14/bin/python3.14","/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-trusted-startup-lifecycle-plan-review-1/claude-plan-review/guarded-action-session-20261018-021624-549f.py","/usr/bin/true"],check=True)
+ assert b["rootLaunchReleased"] is True, "Closed: root must release this one review"
+ assert b["sourceBindingFinalized"] is True, "Closed: actual plan/source context has not been frozen"
+ outputs=["source-before.json","source-after.json","process.json","stream.jsonl","progress.jsonl","stderr.txt","exit.json","final-review.txt","terminal-results.json"]
+@@ -11,7 +11,7 @@
+ def git(*args):return subprocess.check_output(["git",*args],cwd=w)
+ def merge_snapshot():
+     head=git("rev-parse","HEAD").decode().strip()
+-    assert head=="d181d9167fdf71d64ceb1d8dc73a86557ba8f032", "Candidate changed"
++    assert head=="fdd3d2a4f8753b9d7562dcdb7ba413a33be82a10", "Candidate changed"
+     assert git("status","--porcelain=v1","--untracked-files=all").decode()==b["expectedGitStatus"]=="", "Frozen clean source changed"
+     assert set(git("ls-files").decode().splitlines())==set(b["files"]), "Tracked scope changed"
+     return {"head":head,"tree":git("rev-parse","HEAD^{tree}").decode().strip(),"parents":git("show","-s","--format=%P","HEAD").decode().split()}

@@ -1,0 +1,28 @@
+{
+  "at": "2026-10-15T13:06:54.397201+00:00",
+  "decision": "accept v2 plan and source dispositions; authoring awaits actual receipt merge reanchor",
+  "basis": "015cac1aa4fa827cc4a2c647dff08454c6c8e6f8",
+  "evidence": {
+    "read-update-guarded-overlap-plan.md": "4ed2467fda024c3c1cf71266198e2ea2e8bf4c8d3e355e9e00dd55c741c3d819",
+    "read-update-guarded-overlap-native-plan-review.md": "ca412836fc08ad8e087fe5160c6d7e6ee696331a1fc37b77ecf1f46a5656f54f",
+    "read-update-guarded-overlap-plan-claude/stdout.txt": "ff7d1f3f31b29d17f8fae9954b96ef6936c48b0b164dae709b0393d110a073a7",
+    "read-update-guarded-overlap-plan-claude/exit.json": "d98e81846dbe5630839ebd2eeaf21e50480c5edeb4fb5464b57a0023c550b1a6",
+    "read-update-guarded-overlap-claude-source-dispositions.md": "e6257a068aa142fa1bf614534f4741f4557d3459997802242544f79ae9e98539",
+    "read-update-guarded-overlap-plan-v2.md": "7de8ee2cb33d1cfd9d7d3c556cae3998838e68c58f5cca72d70cff7c84084cef",
+    "read-update-guarded-overlap-plan-v2.patch": "b078441d39bc32d24f5ba0f3390c2166853d65482e01ce35d00a922425c1a478"
+  },
+  "rootReview": "Read complete original plan/native review, actual15Claude findings, all source dispositions and full v2 delta. Required header/token, outcome classification, winner-dependent replay, directory-relative resolution, exact selector, entry/graph and cleanup clarifications accepted. Keep original failed/inconclusive statuses; do not infer stronger simultaneous-admission or loser-retention proof. No new product semantics.",
+  "limits": {
+    "ownedPaths": 2,
+    "httpPositive": 10,
+    "httpNegative": 6,
+    "productChildren": 2,
+    "callbackMs": 45000,
+    "workMs": 30000,
+    "commandSeconds": 120
+  },
+  "reviewCorrections": "F2 combined full named conjunction must let valid two200 mutant fail exactly there; F3 deadline dominates, no inflation; F4 payloadhelper is separate tooling; F7 actualbodyBytes65536 assertion preserves fixed cap; F10 explicit semanticheaders avoids brittle automaticheaders; F11 incomplete observation cannot pass; nativeL1 remains explicit.",
+  "noAuthoringYet": true,
+  "noExecutionReleased": true,
+  "noProfileQualification": true
+}

@@ -1,0 +1,119 @@
+{
+  "reviewedUtc": "2026-10-18T05:54:03.608331+00:00",
+  "indexedArtifactsVerified": 14,
+  "mirroredFilesIncludingIndexVerified": 15,
+  "inputRecords": [
+    {
+      "path": "probe-result.json",
+      "sha256": "2778afb7dcf86a15cfd3823910ec627e335a455d7db01a7a8c4810ca6827452b",
+      "bytes": 613,
+      "mirrorExact": true
+    },
+    {
+      "path": "equivalence-probe.mjs",
+      "sha256": "1abc26f1734b370591f6bb1fe6e613e986dba8014364d9ad5b212c94e162aedf",
+      "bytes": 488,
+      "mirrorExact": true
+    },
+    {
+      "path": "after-map.json",
+      "sha256": "ee57c9f27111d2f047e2a051565918d60e80cca021c13d1ae9c33cfa76281644",
+      "bytes": 88236,
+      "mirrorExact": true
+    },
+    {
+      "path": "correction.json",
+      "sha256": "2c333baf1e9619b93f1bb696ed68325e2b7919bbca40f733305b56886b421341",
+      "bytes": 1629,
+      "mirrorExact": true
+    },
+    {
+      "path": "correction.patch",
+      "sha256": "d7027911cd0d1fd9d69cd94a6bbf950d650699a1b0df0031ff2639c0ead29a3a",
+      "bytes": 683,
+      "mirrorExact": true
+    },
+    {
+      "path": "probe.stdout",
+      "sha256": "1b3740d4081a11dcbd97dfb653ca9ebae9b623d0cab0d7ea5a5002c17d993f13",
+      "bytes": 118,
+      "mirrorExact": true
+    },
+    {
+      "path": "all12.patch",
+      "sha256": "ecdc9d4ae144a4a8d24a60b4cba758decbffbe5362b3cc9a8afe9e9dc71ea38f",
+      "bytes": 69396,
+      "mirrorExact": true
+    },
+    {
+      "path": "probe.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0,
+      "mirrorExact": true
+    },
+    {
+      "path": "before-map.json",
+      "sha256": "7a503fb5271f29c01d411ac30bce2f5d6eadee17e4996e610160129687ee1849",
+      "bytes": 88236,
+      "mirrorExact": true
+    },
+    {
+      "path": "correction-inverse.patch",
+      "sha256": "4f30121033b62fb7bf6e3d3c29811d96031f68317f2518592b76de46497055ea",
+      "bytes": 683,
+      "mirrorExact": true
+    },
+    {
+      "path": "after/packages/server/src/reference-deployment.ts",
+      "sha256": "276868b4d6bbf2e5a4693b03ef73a96bb2294b76e94456597fd9584c0736c48b",
+      "bytes": 13758,
+      "mirrorExact": true
+    },
+    {
+      "path": "after/packages/config/src/index.ts",
+      "sha256": "cbcb0ecfce8a04b5a037c9923e2913079f03853d4015ba40e984d574f9f5ec47",
+      "bytes": 41332,
+      "mirrorExact": true
+    },
+    {
+      "path": "before/packages/server/src/reference-deployment.ts",
+      "sha256": "64fcccf86687e570a3c86eb460fe7d96a1260905205eb95ec35a1981fe79f1c1",
+      "bytes": 13780,
+      "mirrorExact": true
+    },
+    {
+      "path": "before/packages/config/src/index.ts",
+      "sha256": "93d6cada23b4905a4c27f0d0e674305983a3ebbef7a1349e6216b7a86614dc3d",
+      "bytes": 41354,
+      "mirrorExact": true
+    }
+  ],
+  "sourceFilesVerified": 682,
+  "sourceIdentity": "7e856365e701e96ddf233e13d6883c6d74464dd755c0ff59f1b185c37c7b19db",
+  "changedPaths": [
+    "packages/config/src/index.ts",
+    "packages/server/src/reference-deployment.ts"
+  ],
+  "other680Unchanged": true,
+  "allTestsAndFixture5b9Unchanged": true,
+  "forwardAndInverseActualTwoFileDeltasVerifiedByInMemoryApplication": true,
+  "full12FilePatchReconstructedAll682FromOriginal679AndThreeNewFiles": true,
+  "original679Rehashed": true,
+  "sourceReplacementOnly": "[\\u0000-\\u001f\\u007f-\\u009f] -> \\p{Cc}, once in each of two paths; all other bytes exact",
+  "sameUnicodeFlagsAndUnanchoredTest": true,
+  "negationAndOrderAllOtherChecksPreserved": true,
+  "lintRuleSuppressionAdded": false,
+  "probeProgramReadInFull": true,
+  "probeCodePoints": 1114112,
+  "probeMatched": 65,
+  "probeMismatches": 0,
+  "surrogateCodePointsIncluded": true,
+  "probeRecordedExit": 0,
+  "probeRecordedStderrBytes": 0,
+  "probeRecordedForcedCleanup": false,
+  "probeScriptAndStdoutStderrHashesVerified": true,
+  "pinnedNodeBinaryRehashed": true,
+  "probeExecutedByAuditor": false,
+  "productValidationPerformedByAuditor": false,
+  "postCorrectionLintCompilerRuntimePassClaimed": false
+}

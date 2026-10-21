@@ -1,0 +1,48 @@
+## Blocker status
+
+**No blocker.** The single-token change at `apps/bdptest/src/read-update-matrix.test.ts:4674` is a required stale-current-baseline repair, not a loss of preservation authority. No code change is mandatory.
+
+---
+
+## Findings
+
+### 1. The replacement is correct and necessary — Informational (confirmation)
+**Location:** `apps/bdptest/src/read-update-matrix.test.ts:4670–4674`, with the reader at `:68`.
+
+The hashed subject is `source("packages/conformance/matrices/read-update-v1.json").bytes`, and `source` is defined at `:68` as `readFileSync(path.join(root, relative))` — a working-tree read at test time, with no git plumbing, no span excision and no reconstruction. The assertion therefore pins the **current** manifest bytes, nothing historical. Adding the `read-update.discovery.operation-directory` row to that manifest in `bb9600f` necessarily invalidates `c86b3353…`.
+
+**Impact if not applied:** the callback at `:4667` fails at its very first `expect`, which matches the reported exact-head result (1 failed). **Smallest fix:** none; the applied one-line update is the minimum.
+
+### 2. Parent preservation is retained elsewhere — stale hash, not lost preservation — Informational
+**Location:** `packages/conformance/src/read-update-artifact-set.test.ts:221–227` (literal at ~`:225`), helper at `:154–186`.
+
+`c86b3353…` is still asserted in-repo, and with a *stronger* claim than the line being edited: that callback excises the cold-directory object plus its exact `",\n    "` separator from the current manifest text and requires the remainder to hash to `c86b3353…`, plus `scenarios` length 49. That is byte-for-byte proof that the current file equals *parent + cold row*, which is the actual preservation property. The old value at `:4674` only coincided with the parent digest because, pre-`bb9600f`, the current file *was* the parent.
+
+So the two assertions have distinct subjects (current whole file vs. reconstructed parent) and the patch retires only the coincidence. **Impact:** none. **Smallest fix:** none.
+
+Secondary note: the excision depends on the cold row not being last (`indexOf(cold) === 18` of 50) and on the 6-byte separator guard at `:222`. If that assumption were ever broken, the parent digest check fails loudly rather than silently weakening — no hidden erosion path.
+
+### 3. No second stale pin inside the edited callback — Informational
+**Location:** `apps/bdptest/src/read-update-matrix.test.ts:4668`, `:4675–4683`.
+
+`bytes`/`text` in this callback come from `source(continuationSource)`, i.e. the **continuation** manifest — not `read-update-v1.json`. The `39eb2fe2…` raw-span pin for `read-update.alias.unknown-subject`, the `shards[1]` scenario-id list, the attribution/numeric ledgers and the raw numeric literals are all continuation-scoped (continuation bytes separately pinned `24d75461…`). Adding a row to `read-update-v1.json` grows shard 0 to 50 and leaves shard 1 at 5, consistent with `shards.map(s => s.scenarioIds.length) === [50, 5]` at `:1843`. Line `:4674` is the only assertion in this block that reads the changed file. **Smallest fix:** none.
+
+### 4. Pre-repair CI counts do not evidence the rest of the callback — Low (evidence, not code)
+**Location:** failing assertion `:4674` vs. the unexecuted remainder `:4675–4793`.
+
+`:4674` is the *first* `expect` in the `it` at `:4667`. Under fail-fast semantics, the 9322/1/1 run aborted that test there, so none of the ~40 downstream assertions in the same block executed against the post-cold-directory tree. "Only one failure" therefore shows only that one assertion was stale; it does not show the remainder is green after the repair. My scope analysis in finding 3 argues they *should* be unaffected, but that is reasoning, not an observed pass.
+
+**Impact:** accepting on the strength of the stale-run counts would over-claim. **Smallest fix:** gate acceptance on root's bounded re-execution of the single `it` at `:4667–4794` (not on the historical counts) — which the packet already states root is doing separately.
+
+### 5. Nothing links the two digests for a future editor — Low (maintainability)
+**Location:** `apps/bdptest/src/read-update-matrix.test.ts:4674` and `packages/conformance/src/read-update-artifact-set.test.ts:225`.
+
+After this patch the current-baseline digest and the parent-baseline digest are two unexplained hex literals in different packages. The next person who edits the manifest will hit the `:4674` failure, and nothing on site tells them that `c86b3353…` is a *historical parent* pin that must **not** be refreshed the same way. That is the realistic route by which preservation could actually be lost later.
+
+**Smallest fix:** one comment line above `:4674`, e.g. that this pins the current baseline and that the parent `c86b3353…` in `read-update-artifact-set.test.ts` is deliberately frozen. Optional; no behaviour change.
+
+### 6. Limits of this review — Informational
+Per the instructions I ran no tool, test, build or import, so I did **not** independently compute `80f74625…`, and I cannot confirm it equals the current `read-update-v1.json` bytes, nor confirm the working-diff digest `bfc7dfd4…`, the before/after app digests, or that the five other authored files are unchanged. Those remain assembler-reported. The directional cross-check that *does* hold on the supplied material: the retired value equals the parent digest independently pinned at `read-update-artifact-set.test.ts:225`, which is exactly what a stale-current-file hash looks like after an insert-only change. Root's separate bounded validation is the authority for the literal itself.
+
+### 7. Claim hygiene is correct — Informational
+The packet does not relabel the original failed exact-head CI as passing, keeps the `bb9600f` council/installed evidence attributed to `bb9600f`, scopes the change as test-only (no production, fixture, corpus or runtime edit), discloses the author/reviewer overlap, and asserts no publication approval (`publicQualification: false`, `mergeReleased: false`). No corrective action.

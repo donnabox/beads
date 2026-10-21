@@ -1,0 +1,34 @@
+{
+  "candidateMatches": true,
+  "rootReviewRequired": true,
+  "command": "principal-positive",
+  "actualHttp": 7,
+  "actualRequestBodyBytes": 750,
+  "reportedChildren": 2,
+  "reportedClosedChildren": 2,
+  "sampledPidsIndependentlyAbsent": [
+    59673,
+    59685,
+    59764,
+    59813,
+    59938,
+    59965
+  ],
+  "ownedRootsAbsent": true,
+  "payloadIdentity": "6509a434a9f9e1d0403e1eb087d677ba1b8a5085c3e97601531bcc702976e813",
+  "sourceCommit": "8ee4d86cadc9a1c79a9656cc8b106f34712b3ade",
+  "sourceTree": "fb0cc3ac06be798fe6fe8ab69a1ad78ac5964257",
+  "reportSha256": "ce7679bc7d960863a10fcfb9d959d5a6a8051d7ffbd9369b27c54f72eb95a660",
+  "resultsSha256": "9fa2f2a6d0c7e5e7ca4be9eaae710601bf4ca6f25a507657c8cb4cdd020f4602",
+  "logSha256": "464b8b134d78bffa89364081d2cc0e0693bcd9657c40babf443519b56f9351f8",
+  "principalPerformed": [
+    "namespace-distinct",
+    "pk-a-rotated:pk-a-create:whole-json",
+    "pk-b-replay:pk-b-create:whole-json",
+    "validated-a-conflict",
+    "complete-current",
+    "complete-events"
+  ],
+  "claimEligible": false,
+  "limitations": "Full receipt/Resource/Event/replay comparisons occur in frozen app before redaction; fingerprints cannot reconstruct bodies or independently prove equality. Credential refs are actual input handles, not wire credential attestation. Real ready payload and source/archive verification are distinct; no child Git attestation. Process sampling may miss short-lived/detached descendants; root independent cleanup review remains required."
+}

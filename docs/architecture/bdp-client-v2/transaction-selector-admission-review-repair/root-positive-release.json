@@ -1,0 +1,23 @@
+{
+  "at": "2026-10-15T03:22:32.019300+00:00",
+  "scope": "selector-source-positives-only",
+  "scriptSha256": "1036f3dfccfebfdd896b47f21054f96cccf2d941a1b20dc730011a57fccf39c6",
+  "commandsSha256": "39997323fe8314348aababd29199b55371e3204b6e137ac010f1b972836c0683",
+  "sourceBindingSha256": "03a861851a195d5da505f311291bee6d3cd98f63866d4b6df756e2c3ae289afd",
+  "acceptedEnvelope": {
+    "sourceCases": 90,
+    "sourceHttp": 94,
+    "sourceOwners": 39,
+    "combinedOwnersIncludingControls": 41,
+    "combinedHttpEnvelope": 152
+  },
+  "limits": "This release executes source positives only. Actual emitted controls require separate review; installed cohort, commit, package, PR and merge gates remain. Planned resource counts are not observed counters.",
+  "council": {
+    "native": "522bddb69437157a053283b10a984e2a248ecd3df5d860a03852603574f634e0",
+    "claude": "9abce927f90ea0a891e84f93c39ee7ed312b29e9b7b5b54341b967a513d3c96c",
+    "F1": "No change: admission step groups both capacity checks and does not normatively order simultaneous violations. Accepted plan preserves implementation diagnostic choice; adding MAY would introduce unnecessary protocol wording. Optional editorial reordering deferred.",
+    "F2": "No change: new preparation cases assert TransactionSelectorSyntaxError and original pointers for both carriers and invalid selectors, covering this same path. Local assertion strengthening is redundant, not a coverage blocker.",
+    "emptySelector": "Intentional: empty string is invalid Selector grammar and receives typed 400/pointer before owner lookup; nonstring remains shape 400.",
+    "limitations": "Claude read original production plus exact test correction; native independently verified successor hashes. Runtime remains unobserved until this run."
+  }
+}

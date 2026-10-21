@@ -1,0 +1,63 @@
+{
+  "prospectiveOnly": true,
+  "source": {
+    "callbacks": 7,
+    "newCallbacks": 4,
+    "legacyCallbacks": 3,
+    "http": 74,
+    "newHttp": 29,
+    "legacyHttp": [
+      28,
+      13,
+      4
+    ],
+    "stores": 7,
+    "listeners": 4,
+    "ownerLifetimes": 7,
+    "newReports": 4
+  },
+  "installed": {
+    "callbacks": 2,
+    "http": 11,
+    "historicalHttp": 5,
+    "newHttp": 6,
+    "children": 3,
+    "stores": 2
+  },
+  "combined": {
+    "callbacks": 9,
+    "http": 85,
+    "stores": 9,
+    "ownerLifetimes": 10
+  },
+  "newOwnerServiceSubsetOnly": {
+    "liveOwnerBeginCalls": 18,
+    "rawClosedOwnerProbes": 1,
+    "serviceBeginCalls": 7,
+    "waits": 2,
+    "minimumClockCalls": 6,
+    "commits": 4,
+    "stores": 3
+  },
+  "newHttpStatuses": {
+    "200": 4,
+    "503": 10,
+    "500": 8,
+    "400": 3,
+    "404": 1,
+    "401": 1,
+    "304": 1,
+    "412": 1
+  },
+  "deadlinesMs": {
+    "newSourceCallbackUnchanged": 5000,
+    "heldEnteredGuard": 1000,
+    "newInstalledWork": 45000,
+    "newInstalledRequestAndRecorder": 5000,
+    "newInstalledTotalCleanup": 10000,
+    "newInstalledCallback": 60000,
+    "outerSupervisor": 120000,
+    "outerTERM": 115000
+  },
+  "runtimeAttempts": "Unmeasured; do not infer retry counts from deadlines or request counts."
+}

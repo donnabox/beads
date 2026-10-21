@@ -1,0 +1,83 @@
+{
+  "createWithLink": {
+    "operations": [
+      {
+        "operation": "createBead",
+        "name": "new",
+        "type": "https://beads.example/a/types/issue",
+        "properties": {
+          "title": "Task",
+          "status": "open"
+        }
+      },
+      {
+        "operation": "createLink",
+        "type": "https://beads.example/a/types/parent",
+        "source": "@new",
+        "target": "beads/parent",
+        "properties": {}
+      }
+    ]
+  },
+  "guardedClaim": {
+    "operations": [
+      {
+        "operation": "updateBeadProperties",
+        "bead": "beads/a",
+        "expectedRevision": "r1",
+        "change": [
+          {
+            "op": "replace",
+            "path": "/status",
+            "value": "in_progress"
+          },
+          {
+            "op": "add",
+            "path": "/assignee",
+            "value": "worker-a"
+          }
+        ]
+      }
+    ]
+  },
+  "zeroMatchThenClose": {
+    "operations": [
+      {
+        "operation": "deleteWhere",
+        "collection": "links",
+        "selector": "$[?@.target == \"https://beads.example/a/beads/p\"]",
+        "cardinality": {
+          "max": 0
+        }
+      },
+      {
+        "operation": "updateBeadProperties",
+        "bead": "beads/p",
+        "expectedRevision": "r1",
+        "change": [
+          {
+            "op": "replace",
+            "path": "/status",
+            "value": "closed"
+          }
+        ]
+      }
+    ]
+  },
+  "emptyEffectsGuard": {
+    "operations": [
+      {
+        "operation": "updateBeadProperties",
+        "bead": "beads/blocker",
+        "expectedRevision": "r1",
+        "change": [
+          {
+            "op": "replace",
+            "path": "/status",
+            "value": "closed"
+          }
+        ]
+      }
+    ]
+  }
+}

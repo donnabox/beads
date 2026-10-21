@@ -1,0 +1,61 @@
+{
+  "actualExecutionTupleToolsBuildArchivesConsumerLockGraphResults": "UNRESOLVED/UNKNOWN",
+  "all11ByteExact3": true,
+  "allGatesFalseRunAbsent": true,
+  "authoritySourceToolBuildArchiveConsumerLockEntryPayloadPrivateEmitGraphOriginalByteAuditReviewed": true,
+  "bounds": {
+    "KILL": 119,
+    "TERM": 115,
+    "census": 0.2,
+    "cleanupInclusive": 10,
+    "eventBytes": 1048576,
+    "outer": 120,
+    "work": 105
+  },
+  "controls": {
+    "descriptions": 32,
+    "executed": 0,
+    "harness": "UNPREPARED/UNAPPROVED"
+  },
+  "eightPythonASTDataExact": true,
+  "helperBodiesReadInFull": [
+    "run.py",
+    "worker.py",
+    "gate.py",
+    "packages.py",
+    "scanner.py",
+    "audit.py",
+    "private_emit.py",
+    "audit-common.mjs",
+    "private-graph.mjs",
+    "carrier-audit.mjs",
+    "guarded-action-session-20261018-021624-549f.py"
+  ],
+  "noRetry": true,
+  "rootActualProbeTerminalBothEOFStrictWholeAndFreshALLProcessProofPreserved": true,
+  "selection": {
+    "HTTP": 234,
+    "actions": 241,
+    "children": 25,
+    "missing": 234,
+    "nonRequired": 5,
+    "partial": 17,
+    "positiveCallbacks": 1,
+    "positiveImmediatelyAudited": true,
+    "positiveMaxWorkers": 1,
+    "positiveOwners": 17,
+    "productCallbackMs": 120000,
+    "required": 251,
+    "resultRows": 256,
+    "sessions": 24,
+    "sourceCallbackMs": 5000,
+    "sourceCallbacks": 48,
+    "sourceElapsedAssertionMs": 63000,
+    "sourceMaxWorkers": 2,
+    "stages": 26,
+    "wholeEstablished": 0
+  },
+  "strictLiteralProjectMatchesHelper14And15": true,
+  "templateResolution": "worker43\u201345 \u2192 private_emit13 \u2192 current local exact99dd input",
+  "threeMJSByteExactUnexecuted": true
+}

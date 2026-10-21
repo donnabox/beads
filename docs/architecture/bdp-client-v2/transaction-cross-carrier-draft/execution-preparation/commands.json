@@ -1,0 +1,518 @@
+{
+  "status": "PREPARATION_ONLY_NOT_RELEASED",
+  "checkout": "/Users/dbox/repos/wt/vickie/vickie-cross-carrier-draft",
+  "evidence": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-cross-carrier-draft/execution-preparation/run",
+  "sourceOrder": [
+    "offline-setup",
+    "typecheck",
+    "build",
+    "format-check",
+    "lint",
+    "check-boundaries",
+    "evidence-verify",
+    "cumulative",
+    "app-static"
+  ],
+  "packageOrder": [
+    "pack-protocol",
+    "pack-server",
+    "verify-tar",
+    "prepare-consumer",
+    "consumer-install",
+    "verify-installed"
+  ],
+  "cohortOrder": [
+    "positive",
+    "cross-batch",
+    "cross-sequence",
+    "noop-bead-property",
+    "noop-link-metadata",
+    "noop-group-inventory-and-head",
+    "deletion-incoming-order",
+    "deletion-outgoing-order",
+    "deletion-committed-prefix-state"
+  ],
+  "aggregate": {
+    "expectedHttp": 1641,
+    "maxHttp": 1728,
+    "expectedChildren": 189,
+    "maxChildren": 189,
+    "cohortInvocations": 9,
+    "noAutomaticRetries": true,
+    "classification": "Nine installed cohorts only; source loopback workload separately recorded."
+  },
+  "commands": {
+    "typecheck": {
+      "phase": "source",
+      "cwd": "/Users/dbox/repos/wt/vickie/vickie-cross-carrier-draft",
+      "argv": [
+        "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+        "/Users/dbox/.cache/node/corepack/v1/pnpm/11.20.0/bin/pnpm.cjs",
+        "typecheck"
+      ],
+      "supervisorSeconds": 120
+    },
+    "build": {
+      "phase": "source",
+      "cwd": "/Users/dbox/repos/wt/vickie/vickie-cross-carrier-draft",
+      "argv": [
+        "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+        "/Users/dbox/.cache/node/corepack/v1/pnpm/11.20.0/bin/pnpm.cjs",
+        "build"
+      ],
+      "supervisorSeconds": 120
+    },
+    "format-check": {
+      "phase": "source",
+      "cwd": "/Users/dbox/repos/wt/vickie/vickie-cross-carrier-draft",
+      "argv": [
+        "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+        "/Users/dbox/.cache/node/corepack/v1/pnpm/11.20.0/bin/pnpm.cjs",
+        "format:check"
+      ],
+      "supervisorSeconds": 120
+    },
+    "lint": {
+      "phase": "source",
+      "cwd": "/Users/dbox/repos/wt/vickie/vickie-cross-carrier-draft",
+      "argv": [
+        "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+        "/Users/dbox/.cache/node/corepack/v1/pnpm/11.20.0/bin/pnpm.cjs",
+        "lint"
+      ],
+      "supervisorSeconds": 120
+    },
+    "check-boundaries": {
+      "phase": "source",
+      "cwd": "/Users/dbox/repos/wt/vickie/vickie-cross-carrier-draft",
+      "argv": [
+        "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+        "/Users/dbox/.cache/node/corepack/v1/pnpm/11.20.0/bin/pnpm.cjs",
+        "check:boundaries"
+      ],
+      "supervisorSeconds": 120
+    },
+    "evidence-verify": {
+      "phase": "source",
+      "cwd": "/Users/dbox/repos/wt/vickie/vickie-cross-carrier-draft",
+      "argv": [
+        "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+        "/Users/dbox/.cache/node/corepack/v1/pnpm/11.20.0/bin/pnpm.cjs",
+        "evidence:verify"
+      ],
+      "supervisorSeconds": 120
+    },
+    "offline-setup": {
+      "phase": "source",
+      "cwd": "/Users/dbox/repos/wt/vickie/vickie-cross-carrier-draft",
+      "argv": [
+        "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+        "/Users/dbox/.cache/node/corepack/v1/pnpm/11.20.0/bin/pnpm.cjs",
+        "install",
+        "--offline",
+        "--frozen-lockfile"
+      ],
+      "supervisorSeconds": 120,
+      "conditional": "Only if matching existing setup is unavailable; once after root release."
+    },
+    "cumulative": {
+      "phase": "source",
+      "cwd": "/Users/dbox/repos/wt/vickie/vickie-cross-carrier-draft",
+      "argv": [
+        "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+        "/Users/dbox/.cache/node/corepack/v1/pnpm/11.20.0/bin/pnpm.cjs",
+        "exec",
+        "vitest",
+        "run",
+        "packages/conformance/src/transactional-cumulative.test.ts",
+        "--maxWorkers=1",
+        "--reporter=verbose",
+        "--reporter=json",
+        "--outputFile=/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-cross-carrier-draft/execution-preparation/run/cumulative.results.json"
+      ],
+      "supervisorSeconds": 120,
+      "expectedPassedCases": 39,
+      "expectedHttp": 14,
+      "expectedInstalledChildren": 0,
+      "maxHttp": 24,
+      "expectedListenerInstances": 12,
+      "maxListenerInstances": 12,
+      "maxInstalledChildren": 0,
+      "httpCountBasis": "Six fault kinds \u00d7 two targets: twelve POST requests plus two retained GET requests. Hard maximum two action wires per case.",
+      "cleanup": "Each case finally closes all connections then awaits server.close; no separate per-listener timeout is authored. Existing test/runner and120s supervisor unchanged."
+    },
+    "app-static": {
+      "phase": "source",
+      "cwd": "/Users/dbox/repos/wt/vickie/vickie-cross-carrier-draft",
+      "argv": [
+        "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+        "/Users/dbox/.cache/node/corepack/v1/pnpm/11.20.0/bin/pnpm.cjs",
+        "exec",
+        "vitest",
+        "run",
+        "apps/bdptest/src/transactional-matrix.test.ts",
+        "--maxWorkers=1",
+        "--reporter=verbose",
+        "--reporter=json",
+        "--outputFile=/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-cross-carrier-draft/execution-preparation/run/app-static.results.json",
+        "-t",
+        "^(?:pins\\ the\\ matching\\ no\\-op\\ installed\\ route\\ digest\\ and\\ fifteen\\-action\\ ledger|pins\\ deletion\\-safety\\ derivative\\ carriers,\\ complete\\ positives,\\ and\\ measured\\ source\\ bounds)$"
+      ],
+      "supervisorSeconds": 120,
+      "expectedPassedCases": 2,
+      "expectedHttp": 0,
+      "expectedInstalledChildren": 0,
+      "exactTitles": [
+        "pins the matching no-op installed route digest and fifteen-action ledger",
+        "pins deletion-safety derivative carriers, complete positives, and measured source bounds"
+      ],
+      "outputEnv": {
+        "BDP_TRANSACTIONAL_DELETION_PREFLIGHT_OUTPUT": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-cross-carrier-draft/execution-preparation/run/deletion-preflight"
+      }
+    },
+    "pack-protocol": {
+      "phase": "frozen",
+      "cwd": "/Users/dbox/repos/wt/vickie/vickie-cross-carrier-draft",
+      "argv": [
+        "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+        "/Users/dbox/.cache/node/corepack/v1/pnpm/11.20.0/bin/pnpm.cjs",
+        "--dir",
+        "/Users/dbox/repos/wt/vickie/vickie-cross-carrier-draft/packages/protocol",
+        "pack",
+        "--pack-destination",
+        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-cross-carrier-draft/execution-preparation/run/packages"
+      ],
+      "supervisorSeconds": 120
+    },
+    "pack-server": {
+      "phase": "frozen",
+      "cwd": "/Users/dbox/repos/wt/vickie/vickie-cross-carrier-draft",
+      "argv": [
+        "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+        "/Users/dbox/.cache/node/corepack/v1/pnpm/11.20.0/bin/pnpm.cjs",
+        "--dir",
+        "/Users/dbox/repos/wt/vickie/vickie-cross-carrier-draft/packages/server",
+        "pack",
+        "--pack-destination",
+        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-cross-carrier-draft/execution-preparation/run/packages"
+      ],
+      "supervisorSeconds": 120
+    },
+    "verify-tar": {
+      "phase": "frozen",
+      "cwd": "/Users/dbox/repos/wt/vickie/vickie-cross-carrier-draft",
+      "argv": [
+        "python3",
+        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-cross-carrier-draft/execution-preparation/packages.py",
+        "tar"
+      ],
+      "supervisorSeconds": 120
+    },
+    "prepare-consumer": {
+      "phase": "frozen",
+      "cwd": "/Users/dbox/repos/wt/vickie/vickie-cross-carrier-draft",
+      "argv": [
+        "python3",
+        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-cross-carrier-draft/execution-preparation/packages.py",
+        "consumer"
+      ],
+      "supervisorSeconds": 120
+    },
+    "verify-installed": {
+      "phase": "frozen",
+      "cwd": "/Users/dbox/repos/wt/vickie/vickie-cross-carrier-draft",
+      "argv": [
+        "python3",
+        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-cross-carrier-draft/execution-preparation/packages.py",
+        "installed"
+      ],
+      "supervisorSeconds": 120
+    },
+    "consumer-install": {
+      "phase": "frozen",
+      "cwd": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-cross-carrier-draft/execution-preparation/run/consumer",
+      "argv": [
+        "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+        "/Users/dbox/.cache/node/corepack/v1/pnpm/11.20.0/bin/pnpm.cjs",
+        "install",
+        "--offline",
+        "--no-frozen-lockfile",
+        "--prod"
+      ],
+      "supervisorSeconds": 120
+    },
+    "positive": {
+      "phase": "installed",
+      "cwd": "/Users/dbox/repos/wt/vickie/vickie-cross-carrier-draft",
+      "argv": [
+        "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+        "/Users/dbox/.cache/node/corepack/v1/pnpm/11.20.0/bin/pnpm.cjs",
+        "exec",
+        "vitest",
+        "run",
+        "apps/bdptest/src/transactional-matrix.test.ts",
+        "--maxWorkers=1",
+        "--reporter=verbose",
+        "--reporter=json",
+        "--outputFile=/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-cross-carrier-draft/execution-preparation/run/positive.results.json",
+        "-t",
+        "^observes\\ thirteen\\ partial\\ Transactional\\ contracts\\ through\\ packed\\-capable\\ actual\\ installed\\ HTTP$"
+      ],
+      "supervisorSeconds": 120,
+      "exactTitle": "observes thirteen partial Transactional contracts through packed-capable actual installed HTTP",
+      "expectedPassedCases": 1,
+      "expectedHttp": 192,
+      "maxHttp": 192,
+      "expectedChildren": 21,
+      "maxChildren": 21,
+      "outputEnv": {
+        "BDP_TRANSACTIONAL_OBSERVATION_OUTPUT": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-cross-carrier-draft/execution-preparation/run/positive.observed.json"
+      },
+      "reportGate": "Existing observed-result writer"
+    },
+    "cross-batch": {
+      "phase": "installed",
+      "cwd": "/Users/dbox/repos/wt/vickie/vickie-cross-carrier-draft",
+      "argv": [
+        "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+        "/Users/dbox/.cache/node/corepack/v1/pnpm/11.20.0/bin/pnpm.cjs",
+        "exec",
+        "vitest",
+        "run",
+        "apps/bdptest/src/transactional-matrix.test.ts",
+        "--maxWorkers=1",
+        "--reporter=verbose",
+        "--reporter=json",
+        "--outputFile=/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-cross-carrier-draft/execution-preparation/run/cross-batch.results.json",
+        "-t",
+        "^discriminates\\ retained\\ cross\\-carrier\\ evidence\\ against\\ batch\\-semantic\\-conflict$"
+      ],
+      "supervisorSeconds": 120,
+      "exactTitle": "discriminates retained cross-carrier evidence against batch-semantic-conflict",
+      "expectedPassedCases": 1,
+      "expectedHttp": 183,
+      "maxHttp": 192,
+      "expectedChildren": 21,
+      "maxChildren": 21,
+      "outputEnv": {
+        "BDP_TRANSACTIONAL_CROSS_CARRIER_CONTROL_OUTPUT": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-cross-carrier-draft/execution-preparation/run/cross-carrier"
+      },
+      "reportGate": "Root/native accepted staged genuine observed-result writer; final source application/hash and execution release still required.",
+      "expectedObservedReport": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-cross-carrier-draft/execution-preparation/run/cross-carrier-batch-semantic-conflict.json"
+    },
+    "cross-sequence": {
+      "phase": "installed",
+      "cwd": "/Users/dbox/repos/wt/vickie/vickie-cross-carrier-draft",
+      "argv": [
+        "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+        "/Users/dbox/.cache/node/corepack/v1/pnpm/11.20.0/bin/pnpm.cjs",
+        "exec",
+        "vitest",
+        "run",
+        "apps/bdptest/src/transactional-matrix.test.ts",
+        "--maxWorkers=1",
+        "--reporter=verbose",
+        "--reporter=json",
+        "--outputFile=/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-cross-carrier-draft/execution-preparation/run/cross-sequence.results.json",
+        "-t",
+        "^discriminates\\ retained\\ cross\\-carrier\\ evidence\\ against\\ sequence\\-fresh\\-key$"
+      ],
+      "supervisorSeconds": 120,
+      "exactTitle": "discriminates retained cross-carrier evidence against sequence-fresh-key",
+      "expectedPassedCases": 1,
+      "expectedHttp": 184,
+      "maxHttp": 192,
+      "expectedChildren": 21,
+      "maxChildren": 21,
+      "outputEnv": {
+        "BDP_TRANSACTIONAL_CROSS_CARRIER_CONTROL_OUTPUT": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-cross-carrier-draft/execution-preparation/run/cross-carrier"
+      },
+      "reportGate": "Root/native accepted staged genuine observed-result writer; final source application/hash and execution release still required.",
+      "expectedObservedReport": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-cross-carrier-draft/execution-preparation/run/cross-carrier-sequence-fresh-key.json"
+    },
+    "noop-bead-property": {
+      "phase": "installed",
+      "cwd": "/Users/dbox/repos/wt/vickie/vickie-cross-carrier-draft",
+      "argv": [
+        "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+        "/Users/dbox/.cache/node/corepack/v1/pnpm/11.20.0/bin/pnpm.cjs",
+        "exec",
+        "vitest",
+        "run",
+        "apps/bdptest/src/transactional-matrix.test.ts",
+        "--maxWorkers=1",
+        "--reporter=verbose",
+        "--reporter=json",
+        "--outputFile=/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-cross-carrier-draft/execution-preparation/run/noop-bead-property.results.json",
+        "-t",
+        "^discriminates\\ matching\\ no\\-op\\ evidence\\ against\\ bead\\-property$"
+      ],
+      "supervisorSeconds": 120,
+      "exactTitle": "discriminates matching no-op evidence against bead-property",
+      "expectedPassedCases": 1,
+      "expectedHttp": 181,
+      "maxHttp": 192,
+      "expectedChildren": 21,
+      "maxChildren": 21,
+      "outputEnv": {
+        "BDP_TRANSACTIONAL_NOOP_CONTROL_OUTPUT": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-cross-carrier-draft/execution-preparation/run/noop"
+      },
+      "reportGate": "Existing observed-result writer"
+    },
+    "noop-link-metadata": {
+      "phase": "installed",
+      "cwd": "/Users/dbox/repos/wt/vickie/vickie-cross-carrier-draft",
+      "argv": [
+        "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+        "/Users/dbox/.cache/node/corepack/v1/pnpm/11.20.0/bin/pnpm.cjs",
+        "exec",
+        "vitest",
+        "run",
+        "apps/bdptest/src/transactional-matrix.test.ts",
+        "--maxWorkers=1",
+        "--reporter=verbose",
+        "--reporter=json",
+        "--outputFile=/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-cross-carrier-draft/execution-preparation/run/noop-link-metadata.results.json",
+        "-t",
+        "^discriminates\\ matching\\ no\\-op\\ evidence\\ against\\ link\\-metadata$"
+      ],
+      "supervisorSeconds": 120,
+      "exactTitle": "discriminates matching no-op evidence against link-metadata",
+      "expectedPassedCases": 1,
+      "expectedHttp": 181,
+      "maxHttp": 192,
+      "expectedChildren": 21,
+      "maxChildren": 21,
+      "outputEnv": {
+        "BDP_TRANSACTIONAL_NOOP_CONTROL_OUTPUT": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-cross-carrier-draft/execution-preparation/run/noop"
+      },
+      "reportGate": "Existing observed-result writer"
+    },
+    "noop-group-inventory-and-head": {
+      "phase": "installed",
+      "cwd": "/Users/dbox/repos/wt/vickie/vickie-cross-carrier-draft",
+      "argv": [
+        "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+        "/Users/dbox/.cache/node/corepack/v1/pnpm/11.20.0/bin/pnpm.cjs",
+        "exec",
+        "vitest",
+        "run",
+        "apps/bdptest/src/transactional-matrix.test.ts",
+        "--maxWorkers=1",
+        "--reporter=verbose",
+        "--reporter=json",
+        "--outputFile=/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-cross-carrier-draft/execution-preparation/run/noop-group-inventory-and-head.results.json",
+        "-t",
+        "^discriminates\\ matching\\ no\\-op\\ evidence\\ against\\ group\\-inventory\\-and\\-head$"
+      ],
+      "supervisorSeconds": 120,
+      "exactTitle": "discriminates matching no-op evidence against group-inventory-and-head",
+      "expectedPassedCases": 1,
+      "expectedHttp": 186,
+      "maxHttp": 192,
+      "expectedChildren": 21,
+      "maxChildren": 21,
+      "outputEnv": {
+        "BDP_TRANSACTIONAL_NOOP_CONTROL_OUTPUT": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-cross-carrier-draft/execution-preparation/run/noop"
+      },
+      "reportGate": "Existing observed-result writer"
+    },
+    "deletion-incoming-order": {
+      "phase": "installed",
+      "cwd": "/Users/dbox/repos/wt/vickie/vickie-cross-carrier-draft",
+      "argv": [
+        "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+        "/Users/dbox/.cache/node/corepack/v1/pnpm/11.20.0/bin/pnpm.cjs",
+        "exec",
+        "vitest",
+        "run",
+        "apps/bdptest/src/transactional-matrix.test.ts",
+        "--maxWorkers=1",
+        "--reporter=verbose",
+        "--reporter=json",
+        "--outputFile=/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-cross-carrier-draft/execution-preparation/run/deletion-incoming-order.results.json",
+        "-t",
+        "^discriminates\\ operation\\-time\\ deletion\\ evidence\\ against\\ incoming\\-order$"
+      ],
+      "supervisorSeconds": 120,
+      "exactTitle": "discriminates operation-time deletion evidence against incoming-order",
+      "expectedPassedCases": 1,
+      "expectedHttp": 176,
+      "maxHttp": 192,
+      "expectedChildren": 21,
+      "maxChildren": 21,
+      "outputEnv": {
+        "BDP_TRANSACTIONAL_DELETION_CONTROL_OUTPUT": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-cross-carrier-draft/execution-preparation/run/deletion"
+      },
+      "reportGate": "Existing observed-result writer"
+    },
+    "deletion-outgoing-order": {
+      "phase": "installed",
+      "cwd": "/Users/dbox/repos/wt/vickie/vickie-cross-carrier-draft",
+      "argv": [
+        "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+        "/Users/dbox/.cache/node/corepack/v1/pnpm/11.20.0/bin/pnpm.cjs",
+        "exec",
+        "vitest",
+        "run",
+        "apps/bdptest/src/transactional-matrix.test.ts",
+        "--maxWorkers=1",
+        "--reporter=verbose",
+        "--reporter=json",
+        "--outputFile=/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-cross-carrier-draft/execution-preparation/run/deletion-outgoing-order.results.json",
+        "-t",
+        "^discriminates\\ operation\\-time\\ deletion\\ evidence\\ against\\ outgoing\\-order$"
+      ],
+      "supervisorSeconds": 120,
+      "exactTitle": "discriminates operation-time deletion evidence against outgoing-order",
+      "expectedPassedCases": 1,
+      "expectedHttp": 181,
+      "maxHttp": 192,
+      "expectedChildren": 21,
+      "maxChildren": 21,
+      "outputEnv": {
+        "BDP_TRANSACTIONAL_DELETION_CONTROL_OUTPUT": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-cross-carrier-draft/execution-preparation/run/deletion"
+      },
+      "reportGate": "Existing observed-result writer"
+    },
+    "deletion-committed-prefix-state": {
+      "phase": "installed",
+      "cwd": "/Users/dbox/repos/wt/vickie/vickie-cross-carrier-draft",
+      "argv": [
+        "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+        "/Users/dbox/.cache/node/corepack/v1/pnpm/11.20.0/bin/pnpm.cjs",
+        "exec",
+        "vitest",
+        "run",
+        "apps/bdptest/src/transactional-matrix.test.ts",
+        "--maxWorkers=1",
+        "--reporter=verbose",
+        "--reporter=json",
+        "--outputFile=/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-cross-carrier-draft/execution-preparation/run/deletion-committed-prefix-state.results.json",
+        "-t",
+        "^discriminates\\ operation\\-time\\ deletion\\ evidence\\ against\\ committed\\-prefix\\-state$"
+      ],
+      "supervisorSeconds": 120,
+      "exactTitle": "discriminates operation-time deletion evidence against committed-prefix-state",
+      "expectedPassedCases": 1,
+      "expectedHttp": 177,
+      "maxHttp": 192,
+      "expectedChildren": 21,
+      "maxChildren": 21,
+      "outputEnv": {
+        "BDP_TRANSACTIONAL_DELETION_CONTROL_OUTPUT": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-cross-carrier-draft/execution-preparation/run/deletion"
+      },
+      "reportGate": "Existing observed-result writer"
+    }
+  },
+  "sourceWorkload": {
+    "cumulativeCases": 39,
+    "appStaticCases": 2,
+    "expectedHttp": 14,
+    "maxHttp": 24,
+    "expectedListenerInstances": 12,
+    "maxListenerInstances": 12,
+    "installedChildren": 0,
+    "classification": "Separate existing source suite workload; not part of nine installed cohort allowance."
+  }
+}

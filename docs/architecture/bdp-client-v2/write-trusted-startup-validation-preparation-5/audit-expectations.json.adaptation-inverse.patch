@@ -1,0 +1,608 @@
+--- a/audit-expectations.json
++++ b/audit-expectations.json
+@@ -1,12 +1,596 @@
+ {
+   "finalized": true,
+-  "state": "prospective exact source/assertion and pure installed grammar; no run",
+-  "reportSchemasSha256": "2743d8e1fcb2c73e2527e4f030e4007f7227fd29246773c89605b7560c3602fd",
+-  "defaultSourceMs": 5000,
+-  "installedWorkMs": 45000,
+-  "cleanupMs": 10000,
+-  "callbackOrProcessGuardMs": 60000,
+-  "outerMs": 120000,
+-  "termMs": 115000,
+-  "retries": 0
++  "finalizedMeaning": "Same strict source/report grammar rebound to tuple-corrected source for CLOSED preparation4, not execution approval",
++  "reportSchemasSha256": "6b554f5bd9520bbe0a46399c97736496eda2c646d2bff105a75fcb8561e7b8e9",
++  "sourceLabels": [
++    "current-changefeed-minimum-owner",
++    "current-changefeed-minimum-capture",
++    "current-changefeed-minimum-capture",
++    "current-changefeed-minimum-capture",
++    "current-changefeed-minimum-capture",
++    "current-changefeed-minimum-drain",
++    "current-changefeed-minimum-drain",
++    "current-changefeed-minimum-preflight",
++    "current-changefeed-minimum-http",
++    "changefeed-opaque-boundaries",
++    "changefeed-opaque-http"
++  ],
++  "workload": {
++    "state": "SOURCE-DERIVED PROSPECTIVE; not observations",
++    "newSource": {
++      "callbacks": 9,
++      "stores": 12,
++      "ownerLifetimes": 13,
++      "http": 32,
++      "commits": 18,
++      "listeners": 1,
++      "reports": 9,
++      "groups": {
++        "A": {
++          "callbacks": 1,
++          "stores": 1,
++          "ownerLifetimes": 2,
++          "commits": 2,
++          "readChangesCalls": 18,
++          "baselineReads": 2,
++          "tableReads": 16,
++          "rawOfflineSqliteHandles": 1,
++          "deletionStatements": 1,
++          "waits": 0
++        },
++        "B": {
++          "callbacks": 4,
++          "stores": 4,
++          "commits": 8,
++          "readChangesCalls": 16,
++          "serviceAttempts": 8,
++          "positiveServiceReads": 4,
++          "baselineReads": 4,
++          "captures": 1,
++          "waits": 4,
++          "clocks": 16,
++          "closes": 4
++        },
++        "C": {
++          "callbacks": 2,
++          "stores": 2,
++          "commits": 2,
++          "readChangesCallsBeforeSeparateClosedProbe": 4,
++          "separateRawClosedProbes": 2,
++          "captures": 1,
++          "waits": 2,
++          "clocks": 4,
++          "closes": 2
++        },
++        "F": {
++          "callbacks": 1,
++          "isolatedRows": 4,
++          "stores": 4,
++          "commits": 4,
++          "captures": 4,
++          "readChangesCalls": 0,
++          "waits": 0,
++          "clocks": 3,
++          "closes": 4
++        },
++        "D": {
++          "callbacks": 1,
++          "stores": 1,
++          "ownerLifetimes": 1,
++          "http": 32,
++          "commits": 2,
++          "listeners": 1,
++          "positiveStreams": 1,
++          "expectedStatuses": {
++            "200": 6,
++            "503": 12,
++            "406": 1,
++            "304": 1,
++            "412": 1,
++            "400": 5,
++            "410": 3,
++            "409": 2,
++            "401": 1
++          }
++        }
++      }
++    },
++    "legacySource": {
++      "callbacks": 6,
++      "stores": 6,
++      "ownerLifetimes": 6,
++      "http": 28,
++      "commits": 5,
++      "listeners": 4,
++      "details": [
++        {
++          "file": "packages/server/src/transaction-changefeed.test.ts",
++          "title": "keeps start=now's original admission anchor through a minimum wait and drains on close",
++          "http": 0,
++          "commits": 2
++        },
++        {
++          "file": "packages/server/src/transaction-changefeed.test.ts",
++          "title": "keeps direct and excluded changefeed minimum paths strict",
++          "http": 0,
++          "commits": 1
++        },
++        {
++          "file": "packages/server/src/transaction-changefeed.test.ts",
++          "title": "serves finite start-now opaque minima before HTTP shortcuts",
++          "http": 10,
++          "commits": 1
++        },
++        {
++          "file": "packages/server/src/transaction-changefeed.test.ts",
++          "title": "decides actual HTTP minimum refusal before conditional shortcuts with final context",
++          "http": 7,
++          "commits": 0
++        },
++        {
++          "file": "packages/server/src/transaction-sse.test.ts",
++          "title": "disconnect cancels the actual finite minimum wait without consuming its remaining budget",
++          "http": 2,
++          "commits": 0
++        },
++        {
++          "file": "packages/server/src/transaction-sse.test.ts",
++          "title": "effective reconnect cursor owns epoch/view/retention decisions; overridden query is not looked up",
++          "http": 9,
++          "commits": 1
++        }
++      ],
++      "existingInstrumentedReports": 2,
++      "nonInstrumentedTraffic": "remaining18 legacy requests are source-derived, not invented observed counters"
++    },
++    "sourceTotal": {
++      "callbacks": 15,
++      "stores": 18,
++      "ownerLifetimes": 19,
++      "http": 60,
++      "commits": 23,
++      "listeners": 5,
++      "newReports": 9,
++      "legacyReports": 2
++    },
++    "installed": {
++      "callbacks": 3,
++      "http": 24,
++      "stores": 3,
++      "childrenSequential": 3,
++      "commits": 4,
++      "historicalHttp": [
++        10,
++        4
++      ],
++      "newHttp": 10,
++      "newStatuses": {
++        "200": 5,
++        "503": 5
++      }
++    },
++    "combined": {
++      "callbacks": 18,
++      "http": 84,
++      "stores": 21,
++      "ownerLifetimes": 22,
++      "commits": 27
++    },
++    "DRequests": [
++      {
++        "ordinal": 1,
++        "method": "POST",
++        "suffix": "operations/batch",
++        "controls": "seed a",
++        "expectedStatus": 200
++      },
++      {
++        "ordinal": 2,
++        "method": "POST",
++        "suffix": "operations/batch",
++        "controls": "seed b",
++        "expectedStatus": 200
++      },
++      {
++        "ordinal": 3,
++        "method": "GET",
++        "suffix": "changes/?after=genesis",
++        "controls": "JSON K",
++        "expectedStatus": 200
++      },
++      {
++        "ordinal": 4,
++        "method": "GET",
++        "suffix": "changes/?after=CP1",
++        "controls": "JSON K",
++        "expectedStatus": 200
++      },
++      {
++        "ordinal": 5,
++        "method": "HEAD",
++        "suffix": "changes/?after=CP1",
++        "controls": "JSON K",
++        "expectedStatus": 200
++      },
++      {
++        "ordinal": 6,
++        "method": "GET",
++        "suffix": "changes/?after=genesis",
++        "controls": "JSON U; If-None-Match:*",
++        "expectedStatus": 503
++      },
++      {
++        "ordinal": 7,
++        "method": "HEAD",
++        "suffix": "changes/?after=genesis",
++        "controls": "same as6",
++        "expectedStatus": 503
++      },
++      {
++        "ordinal": 8,
++        "method": "GET",
++        "suffix": "changes/?after=CP1",
++        "controls": "JSON P; If-Match:\"missing\"",
++        "expectedStatus": 503
++      },
++      {
++        "ordinal": 9,
++        "method": "HEAD",
++        "suffix": "changes/?after=CP1",
++        "controls": "same as8",
++        "expectedStatus": 503
++      },
++      {
++        "ordinal": 10,
++        "method": "GET",
++        "suffix": "changes/?start=now",
++        "controls": "SSE U",
++        "expectedStatus": 503
++      },
++      {
++        "ordinal": 11,
++        "method": "GET",
++        "suffix": "changes/?after=CP1",
++        "controls": "SSE U",
++        "expectedStatus": 503
++      },
++      {
++        "ordinal": 12,
++        "method": "GET",
++        "suffix": "changes/?start=now",
++        "controls": "SSE U; Last-Event-ID:CP1",
++        "expectedStatus": 503
++      },
++      {
++        "ordinal": 13,
++        "method": "GET",
++        "suffix": "changes/?after=STALE",
++        "controls": "SSE U; Last-Event-ID:CP1",
++        "expectedStatus": 503
++      },
++      {
++        "ordinal": 14,
++        "method": "GET",
++        "suffix": "changes/?after=genesis",
++        "controls": "JSON U; raw Last-Event-ID:bad and raw Last-Event-ID:also-bad",
++        "expectedStatus": 503
++      },
++      {
++        "ordinal": 15,
++        "method": "GET",
++        "suffix": "changes/?after=CP1",
++        "controls": "JSON U; Last-Event-ID:FOREIGN_VIEW",
++        "expectedStatus": 503
++      },
++      {
++        "ordinal": 16,
++        "method": "GET",
++        "suffix": "changes/?after=genesis",
++        "controls": "Accept:text/plain; U",
++        "expectedStatus": 503
++      },
++      {
++        "ordinal": 17,
++        "method": "GET",
++        "suffix": "changes/?after=genesis",
++        "controls": "Accept:text/plain; K",
++        "expectedStatus": 406
++      },
++      {
++        "ordinal": 18,
++        "method": "GET",
++        "suffix": "changes/?after=CP1",
++        "controls": "JSON K; If-None-Match:*",
++        "expectedStatus": 304
++      },
++      {
++        "ordinal": 19,
++        "method": "GET",
++        "suffix": "changes/?after=CP1",
++        "controls": "JSON K; If-Match:\"missing\"",
++        "expectedStatus": 412
++      },
++      {
++        "ordinal": 20,
++        "method": "GET",
++        "suffix": "changes/?after=CP1",
++        "controls": "JSON only minimum-position:unknown (missing context tuple)",
++        "expectedStatus": 400
++      },
++      {
++        "ordinal": 21,
++        "method": "GET",
++        "suffix": "changes/?after=bad",
++        "controls": "SSE U; Last-Event-ID:CP1",
++        "expectedStatus": 400
++      },
++      {
++        "ordinal": 22,
++        "method": "GET",
++        "suffix": "changes/?after=genesis",
++        "controls": "SSE U; duplicate raw Last-Event-ID:CP1 twice",
++        "expectedStatus": 400
++      },
++      {
++        "ordinal": 23,
++        "method": "GET",
++        "suffix": "changes/?after=genesis",
++        "controls": "SSE U; single Last-Event-ID:bad",
++        "expectedStatus": 400
++      },
++      {
++        "ordinal": 24,
++        "method": "GET",
++        "suffix": "changes/?after=genesis",
++        "controls": "SSE U with foreign minimum view; Last-Event-ID:STALE",
++        "expectedStatus": 410
++      },
++      {
++        "ordinal": 25,
++        "method": "GET",
++        "suffix": "changes/?after=genesis",
++        "controls": "SSE U with foreign minimum epoch; Last-Event-ID:FOREIGN_VIEW",
++        "expectedStatus": 409
++      },
++      {
++        "ordinal": 26,
++        "method": "GET",
++        "suffix": "changes/?after=genesis",
++        "controls": "SSE U; Last-Event-ID:FUTURE",
++        "expectedStatus": 400
++      },
++      {
++        "ordinal": 27,
++        "method": "GET",
++        "suffix": "changes/?after=CP1",
++        "controls": "JSON U with foreign minimum epoch",
++        "expectedStatus": 410
++      },
++      {
++        "ordinal": 28,
++        "method": "GET",
++        "suffix": "changes/?after=CP1",
++        "controls": "JSON U with foreign minimum view",
++        "expectedStatus": 409
++      },
++      {
++        "ordinal": 29,
++        "method": "GET",
++        "suffix": "changes/?after=CP1",
++        "controls": "JSON U with both minimum context fields foreign",
++        "expectedStatus": 410
++      },
++      {
++        "ordinal": 30,
++        "method": "GET",
++        "suffix": "changes/?after=genesis",
++        "controls": "SSE K; Last-Event-ID:CP1; positive live group2",
++        "expectedStatus": 200
++      },
++      {
++        "ordinal": 31,
++        "method": "HEAD",
++        "suffix": "changes/?start=now",
++        "controls": "SSE U",
++        "expectedStatus": 503
++      },
++      {
++        "ordinal": 32,
++        "method": "GET",
++        "suffix": "changes/?after=genesis",
++        "controls": "SSE U; no Authorization",
++        "expectedStatus": 401
++      }
++    ],
++    "ERequests": [
++      {
++        "ordinal": 1,
++        "method": "POST",
++        "suffix": "operations/batch",
++        "controls": "seed a",
++        "expectedStatus": 200
++      },
++      {
++        "ordinal": 2,
++        "method": "POST",
++        "suffix": "operations/batch",
++        "controls": "seed b",
++        "expectedStatus": 200
++      },
++      {
++        "ordinal": 3,
++        "method": "GET",
++        "suffix": "changes/?after=genesis",
++        "controls": "JSON K",
++        "expectedStatus": 200
++      },
++      {
++        "ordinal": 4,
++        "method": "GET",
++        "suffix": "changes/?after=CP1",
++        "controls": "JSON K",
++        "expectedStatus": 200
++      },
++      {
++        "ordinal": 5,
++        "method": "GET",
++        "suffix": "changes/?after=genesis",
++        "controls": "JSON U; If-None-Match:*",
++        "expectedStatus": 503
++      },
++      {
++        "ordinal": 6,
++        "method": "GET",
++        "suffix": "changes/?after=CP1",
++        "controls": "JSON P; If-Match:\"missing\"",
++        "expectedStatus": 503
++      },
++      {
++        "ordinal": 7,
++        "method": "GET",
++        "suffix": "changes/?start=now",
++        "controls": "SSE U",
++        "expectedStatus": 503
++      },
++      {
++        "ordinal": 8,
++        "method": "GET",
++        "suffix": "changes/?start=now",
++        "controls": "SSE U; Last-Event-ID:CP1",
++        "expectedStatus": 503
++      },
++      {
++        "ordinal": 9,
++        "method": "GET",
++        "suffix": "changes/?after=genesis",
++        "controls": "JSON U; duplicate raw malformed Last-Event-ID values",
++        "expectedStatus": 503
++      },
++      {
++        "ordinal": 10,
++        "method": "GET",
++        "suffix": "changes/?after=genesis",
++        "controls": "SSE K; Last-Event-ID:CP1; positive live group2",
++        "expectedStatus": 200
++      }
++    ],
++    "ARows": [
++      {
++        "ordinal": 1,
++        "after": "genesis",
++        "minimum": "U",
++        "expected": "unproved"
++      },
++      {
++        "ordinal": 2,
++        "after": "CP1",
++        "minimum": "P",
++        "expected": "unproved"
++      },
++      {
++        "ordinal": 3,
++        "after": "CP1",
++        "minimum": "K",
++        "expected": "page group2"
++      },
++      {
++        "ordinal": 4,
++        "after": "genesis",
++        "minimum": "undefined",
++        "expected": "page group1"
++      },
++      {
++        "ordinal": 5,
++        "after": "CP1",
++        "minimum": "U with foreign minimum epoch",
++        "expected": "cursor-expired"
++      },
++      {
++        "ordinal": 6,
++        "after": "CP1",
++        "minimum": "U with foreign minimum view",
++        "expected": "foreign-view"
++      },
++      {
++        "ordinal": 7,
++        "after": "CP1",
++        "minimum": "U with both minimum fields foreign",
++        "expected": "cursor-expired"
++      },
++      {
++        "ordinal": 8,
++        "after": "STALE",
++        "minimum": "U with foreign minimum view",
++        "expected": "cursor-expired"
++      },
++      {
++        "ordinal": 9,
++        "after": "FOREIGN_VIEW",
++        "minimum": "U with foreign minimum epoch",
++        "expected": "foreign-view"
++      },
++      {
++        "ordinal": 10,
++        "after": "FUTURE",
++        "minimum": "U",
++        "expected": "invalid-parameter"
++      },
++      {
++        "ordinal": 11,
++        "after": "bad",
++        "minimum": "U",
++        "expected": "invalid-parameter"
++      },
++      {
++        "ordinal": 12,
++        "after": "bad",
++        "minimum": "unsupported sentinel",
++        "expected": "unsupported, no context"
++      },
++      {
++        "ordinal": 13,
++        "after": "CP1",
++        "minimum": "U with OLD finite-start-now OWNER tag",
++        "expected": "unproved; owner does not check original intent"
++      },
++      {
++        "ordinal": 14,
++        "after": "genesis",
++        "minimum": "malformed tuple minimum contains space",
++        "expected": "synchronous TypeError before owner entry"
++      },
++      {
++        "ordinal": 15,
++        "after": "CP1 after offline delete row1",
++        "minimum": "U",
++        "expected": "missing retained change group Error"
++      },
++      {
++        "ordinal": 16,
++        "after": "genesis after offline delete row1",
++        "minimum": "K",
++        "expected": "missing retained change group Error"
++      }
++    ],
++    "bounds": {
++      "sourceDefaultCallbackMs": 5000,
++      "newDWorkMs": 3000,
++      "newDCleanupInclusiveStopMs": 4000,
++      "sourceLatchMs": 1000,
++      "sourceDrainMs": 1000,
++      "installedWorkMs": 45000,
++      "installedTotalCleanupMs": 10000,
++      "installedCallbackMs": 60000,
++      "requestMs": 5000,
++      "recorderMs": 5000,
++      "outerStageMs": 120000,
++      "termAtMs": 115000,
++      "automaticRetries": 0
++    }
++  },
++  "legacySchemasDistinct": true,
++  "parameterContextUnselected": true,
++  "sourceCallbacks": 15,
++  "newSourceReports": 9,
++  "selectedLegacyReports": 2
+ }

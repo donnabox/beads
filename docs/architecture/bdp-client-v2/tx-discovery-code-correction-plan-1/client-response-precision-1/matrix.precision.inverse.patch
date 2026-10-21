@@ -1,0 +1,29 @@
+--- precision/effective-correction-matrix.json
++++ parent/correction-matrix.json
+@@ -1,5 +1,5 @@
+ {
+-  "state": "CLOSED exact root choices plus additive F5-response/F10-source-classification precision; native/root pending",
++  "state": "CLOSED exact root choices, no authored patch",
+   "rootDispositionSha256": "4bf597a51f7bbbc872a7ed2e1bcb6ef49942ad4cc6c12f5afe705b2ca73ad705",
+   "actualFindings": 10,
+   "nativeAliases": {
+@@ -103,8 +103,8 @@
+           1309
+         ]
+       },
+-      "change": "Trusted cold adapter constructs REAL fresh frozen {canonicalScope:scope,send:boundClientSend} before both positive work invocations. boundClientSend calls fixture.send exactly once then returns only actual status, copied headers and bodyText; no full response spread/exactRequest/credentials/request bytes. Cold input/helpers expose only those client fields; lifecycle/report/capture remain wrapper.",
+-      "oracle": "No fixture/raw-ready/targets/child/events/directory/pending/tokens/metadata or transport exactRequest credentials cross the client view. Cold helper response types require only received status/headers/bodyText, not full executor telemetry. Same43+28 requests/caps/budgets; noncold/full telemetry lane unchanged."
++      "change": "A trusted local cold adapter constructs a REAL fresh frozen runtime object {canonicalScope:scope,send:fixture.send} before either positive cold work invocation; pass that object alone to cold callback/helpers. Shared cold helper type exposes only those two client fields. Keep fixture in existing lifecycle wrapper/adapter; no cast/spread or promise of not reading forbidden fields.",
++      "oracle": "No own property/accessor exposes child,rawready,targets,events,directory,pending,tokens,metadata,stopWork or cleanup capability. All positive helpers use only send; canonicalScope is initial client input. Bound send encapsulates credential references/dial mapping/caps, never returns secrets or provisioning targets. Existing noncold negative/lifecycle lanes retain needed full fixture. No duplicate runner/public API/HTTP request."
+     },
+     {
+       "id": "F6",
+@@ -191,7 +191,7 @@
+         ]
+       },
+       "change": "Pass expectedPosition pos-0 to d3Response only on the receiving reader success row (status<400); keep undefined on receiving/auth errors.",
+-      "oracle": "Projected HttpResponse epoch/view/position from same DIRECT handler call asserted; this is source evidence, not network-wire receipt. Only reader enters owner/discovery; same8 calls/route and counters; receiving errors remain nondisclosing."
++      "oracle": "Actual wire epoch/view/position asserted while only reader enters owner/discovery. Same8 calls per route and counters; invalid receiving rows still nondisclosing."
+     }
+   ]
+ }

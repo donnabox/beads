@@ -1,0 +1,19 @@
+{
+  "utc": "2026-10-18T16:03:14.686093+00:00",
+  "activationPublicationReadback": "9b948ee84fbba62f686763358238cffc729852ed",
+  "rootDispatcherPid": 54584,
+  "gateSha256": "0f5cdeb46a8098d00242fa61801ecc57e7f5ea41205090341ef400d4c31c08e7",
+  "stagesIntended": [
+    "focused-source",
+    "audit-focused-source",
+    "legacy-changefeed-source",
+    "audit-legacy-changefeed-source",
+    "legacy-installed-contracts-source",
+    "audit-legacy-installed-contracts-source",
+    "schema-confinement-source",
+    "audit-schema-confinement-source"
+  ],
+  "prior9NotRerun": true,
+  "noRetry": true,
+  "stopOnNonzeroOrWholeWrapperElapsedAtLeast120": true
+}

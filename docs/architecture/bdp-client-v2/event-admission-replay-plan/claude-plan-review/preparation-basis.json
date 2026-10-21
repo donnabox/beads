@@ -1,0 +1,33 @@
+{
+  "state": "CLOSED mechanics only; no finalized review target",
+  "historicalPlan": {
+    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/event-admission-replay-plan/plan.md",
+    "sha256": "7b1a80e7648cea6f98d5d7ff5a0f16393793688d71d28c7c8c3402b129b396bf"
+  },
+  "nativeHistoricalPlan": {
+    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/event-admission-replay-plan/native-plan-review.md",
+    "sha256": "c5fad74b659c215302d2909b965bb94149d8a7b19db73033058eed5e0a7016d0"
+  },
+  "rootHistoricalAcceptance": {
+    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/event-admission-replay-plan/root-plan-acceptance.json",
+    "sha256": "395bbebfd26944d96dbe130467bc817c3fe39d46840b3024c1b663c35e9e8d92"
+  },
+  "mechanicsPredecessor": {
+    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/current-observation-minimum-plan/claude-plan-review/run.py": "484629b9211d001ddfb78858b32816132fb9700cb5527fcdfdb73f4920037d7a",
+    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/current-observation-minimum-plan/claude-plan-review/parse-stream.py": "77466c44356f316a66ccd093bb64b6cd053fb2efde207916858062c878ed4ac6",
+    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/current-observation-minimum-plan/claude-plan-review/arguments.json": "c7a06e44f911e415839ce4638c3ca20330b0ae204fe1f846632d367638090ede",
+    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/current-observation-minimum-plan/claude-plan-review/exit.json": "1c88cbb13f86c9c5188ddf465e354ca19ec55d6f69bca6a9ec9230adf28f4980",
+    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/current-observation-minimum-plan/claude-plan-review/completion-audit.json": "bab651322201dd747248fb543a4fe4561477d19cc5f0863d104aa5d81d2b2056"
+  },
+  "unchanged": [
+    "parser",
+    "arguments",
+    "1800s outer bound/TERM1790",
+    "default configured model/no model override",
+    "Read,Glob,Grep only; safe-mode; no slash commands; strict empty MCP; no persistence",
+    "one attempt/no retry; raw stream/progress/terminal preservation",
+    "source/context/packet before-after verification and sampled process/group absence",
+    "one complete successful terminal result required; no approval inferred from partial text"
+  ],
+  "adaptation": "Only literal worktree/head replaced with non-executable unresolved placeholders. Final mechanical literals await verified exact-green source; no current worktree hash claims."
+}

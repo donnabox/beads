@@ -1,0 +1,20 @@
+{
+  "acceptedProductionReviewDisposition": true,
+  "reviewedSourceBindingSha256": "f7cf0b51f79c56ee6b24a5be571336066a7148b97e1aa769d511a45579646cbd",
+  "actualClaudeOutputSha256": "1472d38b42b0c3eb3da17e58c6975f2a25566b30cd566d813a073fbb7db25d6f",
+  "nativeAuditSha256": "9d5dc6c1946838bdace0cea38c6c4903b4e04dd14bd4f747ffbeca44bf1c62b7",
+  "rootReadFullReviewAndAudit": true,
+  "criticalSourceVerified": [
+    "receiptMaximumItems equals validated retained plan maximum",
+    "TransactionSequenceResponse has only results and entries are flattened facts",
+    "sequence abort cleans admitted attempts",
+    "finite failed-drain rule keeps old policy and releases admission pause"
+  ],
+  "decision": "No mandatory production defect established. Retain explicitly accepted fail-closed failed-drain rule; do not silently change publication semantics. Evidence review requires bounded test successor before final council.",
+  "retainedLimits": [
+    "Corrupt stored/future result shapes are not comprehensively schema-validated by generic projector; current closed producer domain and legal retained nonrecord facts apply.",
+    "Scope-wide all-visible to empty only; no partial ACL/regrant guarantee.",
+    "Stream diagnostic cause/refactoring observations nonblocking."
+  ],
+  "mergeReleased": false
+}

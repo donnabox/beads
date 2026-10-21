@@ -1,0 +1,677 @@
+Provide a findings-first supplied-context code review of the frozen eleven-file command-minimum catalog draft below.
+
+Do not write or modify any files. Output findings only in stdout. Do not use tools, filesystem exploration, tests, builds, installs, packages, services, network, commits or further reviewers. This safe-mode request deliberately supplies all context below. State this limitation; native/root broader source inspection is separate and complete. The first CLI review timed out without output and is inconclusive, not approval.
+
+Actual base bd2178dd6f4b9f7c2d239624d7edaa3d961c3e26, tree062c32778217aeb702b2f7798dc82b0d985e9c67, frozen eleven-file working diff SHA6c0e6f47817d0072d2f258ec68c81c5e5e565d4a66169ff567c1e4a4837ab5fc. Product code has not changed. You are reviewing supplied exact patch, law, existing fence excerpts, measurements/report and accepted plan scope.
+
+Focus: exact normative mapping of one read-update.http.command-minimum-fields ID to existing law; RU inherited once by TX, Read excluded; no duplicate authority, retirement or executable credit; honest differing canonical/development omission shapes; count fanout and preserved old evidence; meaningful API-compatible static test;12 selected cases/zero callback HTTP,listeners,stores,product children (build/worker processes separate). Current build required before RU module imports. The401-byte normally formatted omitted row makes coverage713193. Assess ONLY proposed source-authoring allowances14336→14579 overbase698614 and9728→9778 overbase703415. Existing source fences are intentionally not yet amended at this measurement stop, not an accidental defect. Two unexceeded fences/runtime bounds remain unchanged. Identify actual errors or missing proof, not generic design expansion.
+
+Return numbered concrete findings with severity/location/issue/impact/bounded fix. Separate required from optional. If none, state no findings. State unexecuted/proposed-amendment/supplied-context limits. Do not assume future execution success or public qualification.
+
+
+===== EXACT COMPLETE DRAFT PATCH =====
+diff --git a/apps/bdptest/src/read-update-matrix.test.ts b/apps/bdptest/src/read-update-matrix.test.ts
+index a222d20..2d3386f 100644
+--- a/apps/bdptest/src/read-update-matrix.test.ts
++++ b/apps/bdptest/src/read-update-matrix.test.ts
+@@ -1263,7 +1263,8 @@ it("executes the partial cumulative RU matrix against actual installed factory H
+     expect(report.reportBinding.exactConfigurationDigest).toBe(
+       "3224c31c83988dc0606cb76ee1f4ba8e6394159bdf7daaccc301461316cc2477",
+     );
+-    expect(report.uncoveredIds).toHaveLength(96);
++    expect(report.uncoveredIds).toHaveLength(97);
++    expect(report.uncoveredIds).toContain("read-update.http.command-minimum-fields");
+     expect(report.uncoveredIds).toContain("read-update.singleton.update-bead");
+     expect(report.sessions).toHaveLength(report.plannedIds.length);
+     expect(report.observations.length).toBeGreaterThan(30);
+@@ -1281,7 +1282,8 @@ it("executes the partial cumulative RU matrix against actual installed factory H
+     }
+     expect(progress.authoredIds).toHaveLength(54);
+     expect(progress.reviewedWholeIds).toHaveLength(33);
+-    expect(progress.omittedRequiredIds).toHaveLength(75);
++    expect(progress.omittedRequiredIds).toHaveLength(76);
++    expect(progress.omittedRequiredIds).toContain("read-update.http.command-minimum-fields");
+     expect(progress.shards[1]!.selectedIds).toEqual([
+       attributionId,
+       continuationId,
+@@ -1356,7 +1358,8 @@ it("executes the partial cumulative RU matrix against actual installed factory H
+     expect(progress.uncoveredIds).toEqual(
+       set.coverage.rows.filter((r) => !r.wholeContract).map((r) => r.id),
+     );
+-    expect(progress.uncoveredIds).toHaveLength(96);
++    expect(progress.uncoveredIds).toHaveLength(97);
++    expect(progress.uncoveredIds).toContain("read-update.http.command-minimum-fields");
+     expect(JSON.stringify(progress)).not.toContain(token);
+     expect(JSON.stringify(progress)).not.toContain(wrongToken);
+     controller.signal.throwIfAborted();
+@@ -2018,7 +2021,8 @@ it("observes retained retry dispositions across actual installed carriers and cu
+       report.result.scenarios.find((row) => row.id === id),
+       JSON.stringify(report.result),
+     ).toMatchObject({ state: "pass" });
+-  expect(report.uncoveredIds).toHaveLength(96);
++  expect(report.uncoveredIds).toHaveLength(97);
++  expect(report.uncoveredIds).toContain("read-update.http.command-minimum-fields");
+   expect(report.result.claimEligible).toBe(false);
+ }, 30000);
+ 
+@@ -2439,7 +2443,8 @@ it("observes key and media admission against installed HTTP with paired aftersta
+       report.result.scenarios.find((row) => row.id === id),
+       JSON.stringify(report.result),
+     ).toMatchObject({ state: "pass" });
+-  expect(report.uncoveredIds).toHaveLength(96);
++  expect(report.uncoveredIds).toHaveLength(97);
++  expect(report.uncoveredIds).toContain("read-update.http.command-minimum-fields");
+   expect(report.result.claimEligible).toBe(false);
+ }, 30000);
+ 
+@@ -2869,7 +2874,8 @@ it("observes reference syntax and retained category failures against installed H
+       report.result.scenarios.find((row) => row.id === id),
+       JSON.stringify(report.result),
+     ).toMatchObject({ state: "pass" });
+-  expect(report.uncoveredIds).toHaveLength(96);
++  expect(report.uncoveredIds).toHaveLength(97);
++  expect(report.uncoveredIds).toContain("read-update.http.command-minimum-fields");
+   expect(report.result.claimEligible).toBe(false);
+ }, 30000);
+ 
+diff --git a/apps/bdptest/src/transactional-matrix.test.ts b/apps/bdptest/src/transactional-matrix.test.ts
+index addf4ed..04e6e02 100644
+--- a/apps/bdptest/src/transactional-matrix.test.ts
++++ b/apps/bdptest/src/transactional-matrix.test.ts
+@@ -337,8 +337,8 @@ it("observes thirteen partial Transactional contracts through packed-capable act
+   const crossWire = crossCarrierWire();
+   const observed = await observe({ children, afterExchange: crossWire.afterExchange });
+   const implemented = new Set(bundle.manifest.scenarios.map((s) => s.id));
+-  expect(loadProfileContractSelection("transactional").required).toHaveLength(250);
+-  expect(observed.result.scenarios).toHaveLength(255); // Includes five optional catalog rows.
++  expect(loadProfileContractSelection("transactional").required).toHaveLength(251);
++  expect(observed.result.scenarios).toHaveLength(256); // Includes five optional catalog rows.
+   for (const row of observed.result.scenarios.filter((s) => implemented.has(s.id)))
+     expect(row, JSON.stringify(row, null, 2)).toMatchObject({ state: "pass" });
+   expect(observed.result.scenarios.filter((s) => s.state === "pass")).toHaveLength(13);
+diff --git a/docs/design/profile-contract-planning.md b/docs/design/profile-contract-planning.md
+index f792231..ae29639 100644
+--- a/docs/design/profile-contract-planning.md
++++ b/docs/design/profile-contract-planning.md
+@@ -8,7 +8,7 @@ This groundwork prepares the current required contract set for an actual served
+ 
+ A factory selection is immutable and cannot be replaced by a caller's smaller structural lookalike. The planning function preserves every selected obligation even when the executable manifest contains only one or no rows. Missing inherited behavior cannot disappear behind a delta-only manifest. Retirement also remains active transitively: a TX row retiring an RU row does not restore the Read row that RU already replaced.
+ 
+-At this change's source, there are 44 normative Read obligations (the 49-row catalog also has five diagnostics), 129 cumulative Read+Update obligations, and 250 cumulative Transactional obligations. The numeric/owned companions add five distinct Update obligations; RU replaces one Read row; TX replaces 12 RU rows. Counts are explanatory snapshots, not hardcoded authority or coverage scores. History and configuration-triggered applicability remain separate.
++At this change's source, there are 44 normative Read obligations (the 49-row catalog also has five diagnostics), 130 cumulative Read+Update obligations, and 251 cumulative Transactional obligations. The numeric/owned companions add five distinct Update obligations; RU replaces one Read row; TX replaces 12 RU rows. Counts are explanatory snapshots, not hardcoded authority or coverage scores. History and configuration-triggered applicability remain separate.
+ 
+ ## Discovery correction and inherited executable plans
+ 
+@@ -56,9 +56,11 @@ The first installed Read+Update executor captures its SQLite listener configurat
+ 
+ After council closure, author the actual cumulative Read+Update v2 manifest and fixture against the installed P1 factory, including profile-specific discovery/limits and repaired inherited prerequisites. Add a separately reviewed profile-specific artifact path while preserving the existing Read guard; execute actual credentialed HTTP and after-state observations through the exact Read+Update configuration. Bind candidate evidence only after the installed U2 repair source is frozen. This is the next delivery slice; this planning layer does not pre-enable it.
+ 
++The command-minimum catalog mapping adds one omitted inherited obligation to the explanatory snapshot above: historical 129 RU/250 TX and 81 audited RU rows become 130 RU/251 TX and 82 audited RU rows. The prior runtime evidence remains attributed to its original source; this metadata change adds no executable observation.
++
+ ## RU→TX inheritance audit
+ 
+-Audited every 81 current RU catalog rows against the existing Transactional forms. The 12 existing direct-form retirements remain sufficient for this reviewed set; no additional TX retirement is introduced. The key text is [Mutation Transactions](../specs/bdp.md#mutation-transactions): TX sequence keeps its envelope, declaration order, separate commitment and lack of isolation, projecting each receipt into the shared entry without adding a receipt member. [Batch operation target](../specs/bdp.md#batch-operation-target) explicitly requires sequence 200 while singleton/batch returns receipt 200/202. [Transactional problem details](../specs/bdp.md#transactional-problem-details) preserves code meaning but distinguishes direct, receipt and sequence contexts.
++Audited every 82 current RU catalog rows against the existing Transactional forms. The 12 existing direct-form retirements remain sufficient for this reviewed set; no additional TX retirement is introduced. The key text is [Mutation Transactions](../specs/bdp.md#mutation-transactions): TX sequence keeps its envelope, declaration order, separate commitment and lack of isolation, projecting each receipt into the shared entry without adding a receipt member. [Batch operation target](../specs/bdp.md#batch-operation-target) explicitly requires sequence 200 while singleton/batch returns receipt 200/202. [Transactional problem details](../specs/bdp.md#transactional-problem-details) preserves code meaning but distinguishes direct, receipt and sequence contexts.
+ 
+ One misleading citation was removed from `read-update.singleton.owned-link-no-op`: “Read+Update has no durable Mutation Receipts and no BDP Events.” It described the lower profile, not the row's inherited no-op law. The row still binds revision/source/provenance retention; TX separately binds absence of no-op Events. No normative semantics changed.
+ 
+@@ -142,6 +144,7 @@ One misleading citation was removed from `read-update.singleton.owned-link-no-op
+ | `read-update.validation.diagnostics` | Inherited | Validation law survives; after-admission failures use failed receipts or projected sequence problems; no direct RU singleton error assumption. |
+ | `read-update.validation.identity-taken` | Inherited | Validation law survives; after-admission failures use failed receipts or projected sequence problems; no direct RU singleton error assumption. |
+ | `read-update.validation.aggregate-constraint` | Inherited | Validation law survives; after-admission failures use failed receipts or projected sequence problems; no direct RU singleton error assumption. |
++| `read-update.http.command-minimum-fields` | Inherited | The shared command-preconditions rule covers RU singleton/sequence and TX singleton/batch/sequence POSTs, independent of field presence or values. Existing private observations are not cumulative evidence; read and receipt minima remain unchanged. |
+ | `read-update.http.request-too-large` | Inherited | Body octet limit rejection remains pre-admission 413 in TX, before body parsing; no receipt/key capture. |
+ | `read-update.http.cache-no-store` | Inherited | TX receipt and sequence representations retain private,no-store. Additional streaming no-transform rule is independent. |
+ | `read-update.http.cors-idempotency-key` | Inherited | Optional CORS, if enabled, still accepts Idempotency-Key and exposes applicable fields; TX adds its fields. |
+diff --git a/docs/specs/bdp.md b/docs/specs/bdp.md
+index 6cc4a10..bf7d6ec 100644
+--- a/docs/specs/bdp.md
++++ b/docs/specs/bdp.md
+@@ -6832,6 +6832,7 @@ Read+Update discovery row does not restore the Read-only shape.
+ | `read-update.validation.diagnostics` | A Type-contract `validation-failed` carries `diagnostics` naming the effective Type and absolute keyword location within advertised bounds, and flags omitted entries with `diagnosticsTruncated` |
+ | `read-update.validation.identity-taken` | A supplied `id` that was ever committed, including a hidden or deleted one, fails with `identity-taken` — the one inherent existence signal, acknowledged as such |
+ | `read-update.validation.aggregate-constraint` | A mutation that would cross an advertised maximum endpoint multiplicity fails with `aggregate-constraint-violation` |
++| `read-update.http.command-minimum-fields` | Mutation POSTs ignore the three read-consistency fields without a minimum-position barrier or command-identity effect, preserving ordinary admission and read minima |
+ | `read-update.http.request-too-large` | A request body above the advertised `request.bodyBytes` is rejected with `request-too-large` before execution |
+ | `read-update.http.cache-no-store` | Every mutation response carries `Cache-Control: private, no-store` |
+ | `read-update.http.cors-idempotency-key` | With cross-origin access enabled, the CORS policy allows the `Idempotency-Key` request field and exposes `Retry-After` |
+diff --git a/packages/conformance/catalog/read-update-v1.json b/packages/conformance/catalog/read-update-v1.json
+index 9871202..b2ffcd4 100644
+--- a/packages/conformance/catalog/read-update-v1.json
++++ b/packages/conformance/catalog/read-update-v1.json
+@@ -1616,6 +1616,19 @@
+         }
+       ]
+     },
++    {
++      "id": "read-update.http.command-minimum-fields",
++      "title": "Mutation POSTs ignore the three read-consistency fields without a minimum-position barrier or command-identity effect, preserving ordinary admission and read minima",
++      "kind": "normative",
++      "requiredProfile": "read-update",
++      "requirements": [
++        {
++          "source": "docs/specs/bdp.md",
++          "anchor": "#mutation-command-preconditions",
++          "selectedText": "On mutation POSTs to operation command targets, authorities MUST ignore the `BDP-Minimum-Scope-Position`, `BDP-Scope-Epoch`, and `BDP-Authorization-View` request fields. Their presence, absence, completeness, and field values do not impose a minimum-position barrier or affect command identity. Ordinary HTTP field syntax and transport, header, and body bounds still apply, as do authorization, idempotency, carrier validation, and `expectedRevision`. This rule applies to mutation POSTs under this profile and cumulative profiles. It does not change conditions on reads."
++        }
++      ]
++    },
+     {
+       "id": "read-update.http.request-too-large",
+       "title": "An oversized request body is rejected with request-too-large before execution",
+diff --git a/packages/conformance/development/README.md b/packages/conformance/development/README.md
+index 5f8dc8a..19b61de 100644
+--- a/packages/conformance/development/README.md
++++ b/packages/conformance/development/README.md
+@@ -13,11 +13,11 @@ revision bindings, controls preparation and cleanup, and hashes the exact
+ catalog/manifest/fixture bytes into its report. A guard race dispatches two
+ real requests with the same observed revision and distinct keys.
+ 
+-`read-update-coverage-v1.json` inventories all 81 current normative catalog rows
++`read-update-coverage-v1.json` inventories all 82 current normative catalog rows
+ in their original order. Fifty-eight rows have **bounded observations**, with
+ stable `scenario` and `action.assertion` references. These are partial behavioral
+ evidence, not passing normative rows. Per-binding `limits` record known missing
+-variants. Twenty-three rows are explicitly omitted with a category and reason.
++variants. Twenty-four rows are explicitly omitted with a category and reason.
+ An empty limits array does not certify exhaustive coverage of a normative row.
+ 
+ The diagnostic catalog uses `development.read-update.*` IDs and `kind:
+diff --git a/packages/conformance/development/read-update-coverage-v1.json b/packages/conformance/development/read-update-coverage-v1.json
+index beefcb6..efc936c 100644
+--- a/packages/conformance/development/read-update-coverage-v1.json
++++ b/packages/conformance/development/read-update-coverage-v1.json
+@@ -1297,6 +1297,13 @@
+       "reason": "Fixed development Types expose no owned-Link or multiplicity contract; requires a qualified installed-contract fixture.",
+       "bindings": []
+     },
++    {
++      "id": "read-update.http.command-minimum-fields",
++      "status": "omitted",
++      "category": "command-minimum-fields",
++      "reason": "Private installed Read+Update and Transactional tests are not development diagnostic bindings. No diagnostic scenario observes this command-field rule; read minimum controls remain separate.",
++      "bindings": []
++    },
+     {
+       "id": "read-update.http.request-too-large",
+       "status": "bounded-observation",
+diff --git a/packages/conformance/src/development-read-update.test.ts b/packages/conformance/src/development-read-update.test.ts
+index 7d96707..4757db9 100644
+--- a/packages/conformance/src/development-read-update.test.ts
++++ b/packages/conformance/src/development-read-update.test.ts
+@@ -64,11 +64,11 @@ describe("development Read+Update evidence inventory", () => {
+     }
+   });
+ 
+-  it("inventories all 81 normative rows once, with executable assertion bindings or explicit omissions", () => {
++  it("inventories all 82 normative rows once, with executable assertion bindings or explicit omissions", () => {
+     const normative = JSON.parse(
+       read("packages/conformance/catalog/read-update-v1.json").toString(),
+     );
+-    expect(normative.scenarios).toHaveLength(81);
++    expect(normative.scenarios).toHaveLength(82);
+     expect(inventory).toMatchObject({ version: 1, developmentOnly: true, claimEligible: false });
+     expect(inventory.rows.map((row: { id: string }) => row.id)).toEqual(
+       normative.scenarios.map((row: { id: string }) => row.id),
+diff --git a/packages/conformance/src/profile-contract-plan.test.ts b/packages/conformance/src/profile-contract-plan.test.ts
+index a970e73..ad26308 100644
+--- a/packages/conformance/src/profile-contract-plan.test.ts
++++ b/packages/conformance/src/profile-contract-plan.test.ts
+@@ -221,6 +221,65 @@ describe("canonical cumulative profile contracts", () => {
+         ).toThrow("clause lost");
+     }
+   });
++  it("inherits the command minimum-field exception without executable credit", () => {
++    const id = "read-update.http.command-minimum-fields";
++    const clause =
++      "On mutation POSTs to operation command targets, authorities MUST ignore the `BDP-Minimum-Scope-Position`, `BDP-Scope-Epoch`, and `BDP-Authorization-View` request fields. Their presence, absence, completeness, and field values do not impose a minimum-position barrier or affect command identity. Ordinary HTTP field syntax and transport, header, and body bounds still apply, as do authorization, idempotency, carrier validation, and `expectedRevision`. This rule applies to mutation POSTs under this profile and cumulative profiles. It does not change conditions on reads.";
++    const ruCatalog = loadScenarioCatalogJson(read("read-update-v1.json"));
++    const rows = ruCatalog.scenarios.filter((row) => row.id === id);
++    expect(rows).toEqual([
++      {
++        id,
++        title:
++          "Mutation POSTs ignore the three read-consistency fields without a minimum-position barrier or command-identity effect, preserving ordinary admission and read minima",
++        kind: "normative",
++        requiredProfile: "read-update",
++        requirements: [
++          {
++            source: "docs/specs/bdp.md",
++            anchor: "#mutation-command-preconditions",
++            selectedText: clause,
++          },
++        ],
++      },
++    ]);
++    const spec = readFileSync(new URL("../../../docs/specs/bdp.md", import.meta.url), "utf8");
++    expect(spec.replace(/\s+/g, " ")).toContain(clause);
++    for (const profile of ["read-update", "transactional"] as const) {
++      const selection = loadProfileContractSelection(profile);
++      expect(selection.required.filter((row) => row.id === id)).toEqual(rows);
++      expect(selection.retiredIds).not.toContain(id);
++    }
++    expect(loadProfileContractSelection("read").required.map((row) => row.id)).not.toContain(id);
++    expect(
++      loadScenarioCatalogJson(read("transactional-v1.json")).scenarios.map((row) => row.id),
++    ).not.toContain(id);
++    const coverage = JSON.parse(
++      readFileSync(new URL("../test-support/read-update-coverage-v1.json", import.meta.url), "utf8"),
++    ) as {
++      rows: {
++        id: string;
++        status: string;
++        wholeContract: boolean;
++        reason: string;
++        bindings: unknown[];
++      }[];
++    };
++    const omitted = coverage.rows.filter((row) => row.id === id);
++    expect(omitted).toHaveLength(1);
++    expect(omitted[0]).toMatchObject({ id, status: "omitted", wholeContract: false, bindings: [] });
++    expect(omitted[0]?.reason.trim().length).toBeGreaterThan(0);
++    for (const path of [
++      "../matrices/read-update-v1.json",
++      "../matrices/read-update-reference-continuation-v1.json",
++      "../test-support/transactional/manifest-v1.json",
++    ]) {
++      const manifest = JSON.parse(readFileSync(new URL(path, import.meta.url), "utf8")) as {
++        scenarios: { id: string }[];
++      };
++      expect(manifest.scenarios.map((row) => row.id)).not.toContain(id);
++    }
++  });
+   it("locks every inheritance-audit row and replacement to the catalogs", () => {
+     const doc = readFileSync(
+       new URL("../../../docs/design/profile-contract-planning.md", import.meta.url),
+diff --git a/packages/conformance/src/transactional-cumulative.test.ts b/packages/conformance/src/transactional-cumulative.test.ts
+index 7f01ad7..b7d3e5c 100644
+--- a/packages/conformance/src/transactional-cumulative.test.ts
++++ b/packages/conformance/src/transactional-cumulative.test.ts
+@@ -77,7 +77,11 @@ const ruManifest = {
+ 
+ it("binds the canonical cumulative TX selection and exact source digests without qualification", () => {
+   const actual = bundle();
+-  expect(selected.required).toHaveLength(250);
++  expect(selected.required).toHaveLength(251);
++  expect(selected.required.map((row) => row.id)).toContain("read-update.http.command-minimum-fields");
++  expect(actual.manifest.scenarios.map((row) => row.id)).not.toContain(
++    "read-update.http.command-minimum-fields",
++  );
+   expect(selected.retiredIds).toHaveLength(13);
+   expect(actual.catalog).toEqual(selected.catalog);
+   expect(actual.digests.catalogDigest).toBe(
+@@ -186,8 +190,9 @@ it("copies source bytes before binding and exposes all missing obligations witho
+   expect(
+     plan.requirements.filter((r) => r.readiness === "ready-unexecuted").map((r) => r.id),
+   ).toEqual(actual.manifest.scenarios.map((r) => r.id));
+-  expect(plan.requirements.filter((r) => r.readiness === "unplanned")).toHaveLength(237);
++  expect(plan.requirements.filter((r) => r.readiness === "unplanned")).toHaveLength(238);
+   expect(plan.unobservedIds).toEqual(selected.required.map((r) => r.id));
++  expect(plan.unobservedIds).toContain("read-update.http.command-minimum-fields");
+   expect(plan.manifestDigest).toBe(actual.digests.manifestDigest);
+   expect(() => planProfileExecution(selected, configuration("read-update"))).toThrow("disagree");
+ });
+diff --git a/packages/conformance/test-support/read-update-coverage-v1.json b/packages/conformance/test-support/read-update-coverage-v1.json
+index 9a12dac..7f2fc12 100644
+--- a/packages/conformance/test-support/read-update-coverage-v1.json
++++ b/packages/conformance/test-support/read-update-coverage-v1.json
+@@ -13182,6 +13182,13 @@
+       "reason": "No row-local scenario in this slice; cross-row observations do not award this required ID whole-contract credit.",
+       "bindings": []
+     },
++    {
++      "id": "read-update.http.command-minimum-fields",
++      "status": "omitted",
++      "wholeContract": false,
++      "reason": "Private Read+Update and Transactional implementation tests cover ignored command minimum fields, but no cumulative executable row is bound to this required ID. Read minimum controls remain separate; no whole-contract credit is claimed.",
++      "bindings": []
++    },
+     {
+       "id": "read-update.http.request-too-large",
+       "status": "omitted",
+
+
+
+===== EXISTING NORMATIVE PARAGRAPH docs/specs/bdp.md3581–3588 =====
+3581: On mutation POSTs to operation command targets, authorities MUST ignore the
+3582: `BDP-Minimum-Scope-Position`, `BDP-Scope-Epoch`, and
+3583: `BDP-Authorization-View` request fields. Their presence, absence, completeness,
+3584: and field values do not impose a minimum-position barrier or affect command
+3585: identity. Ordinary HTTP field syntax and transport, header, and body bounds
+3586: still apply, as do authorization, idempotency, carrier validation, and
+3587: `expectedRevision`. This rule applies to mutation POSTs under this profile and
+3588: cumulative profiles. It does not change conditions on reads.
+
+
+===== Numeric admission existing source excerpt =====
+4188:     1 +
+4189:     (value !== null && typeof value === "object"
+4190:       ? Object.values(value).reduce<number>((sum, entry) => sum + nodes(entry), 0)
+4191:       : 0);
+4192:   // Reviewed 9c source anchors: per-slice growth, never runtime/parser capacities.
+4193:   const NUMERIC_ADMISSION_CONTINUATION_BYTES_BASE = 535052;
+4194:   const NUMERIC_ADMISSION_CONTINUATION_NODES_BASE = 14286;
+4195:   const NUMERIC_ADMISSION_COVERAGE_BYTES_BASE = 648157;
+4196:   const NUMERIC_ADMISSION_FIXTURE_BYTES_BASE = 29055;
+4197:   expect(bytes.length - NUMERIC_ADMISSION_CONTINUATION_BYTES_BASE).toBeLessThanOrEqual(450 * 1024);
+4198:   expect(nodes(manifest) - NUMERIC_ADMISSION_CONTINUATION_NODES_BASE).toBeLessThanOrEqual(12000);
+4199:   expect(nodes(manifest)).toBeLessThanOrEqual(27158);
+4200:   expect(coverageBytes.length - NUMERIC_ADMISSION_COVERAGE_BYTES_BASE).toBeLessThanOrEqual(
+4201:     65 * 1024,
+4202:   );
+4203:   expect(fixtureBytes.length - NUMERIC_ADMISSION_FIXTURE_BYTES_BASE).toBeLessThanOrEqual(8192);
+4204:   const text = bytes.toString();
+4205:   for (const [id, digest] of [
+4206:     [
+4207:       "read-update.singleton.attribution",
+4208:       "1b81ae03b7aea896732e001291bb2ef92edd6bf5586c13a7e91afaf563f3e769",
+4209:     ],
+4210:     [
+4211:       "read-update.alias.unknown-subject",
+4212:       "39eb2fe22d25eada2c43490f37b6cb5d66950bd90042af1ae954036426e07f2a",
+4213:     ],
+
+
+===== Metadata closure base existing source excerpt =====
+4444: // Accepted 06b0e04a921c8501e36a8a68480cee72dc4c54b3 source anchors.
+4445: // Evidence-authoring fences, not receiver limits.
+4446: const METADATA_CLOSURE_CONTINUATION_BYTES_BASE = 823730;
+4447: const METADATA_CLOSURE_CONTINUATION_NODES_BASE = 21614;
+4448: const METADATA_CLOSURE_COVERAGE_BYTES_BASE = 698614;
+4449: const METADATA_CLOSURE_MAX_NEW_ASSERTIONS = 100;
+4450: const metadataClosureClientControls: (RetryControl & { failed: string[] })[] = [
+4451:   {
+4452:     scenario: numericId,
+
+
+===== Metadata closure fence existing source excerpt =====
+4578:   const countNodes = (value: unknown): number =>
+4579:     1 +
+4580:     (value !== null && typeof value === "object"
+4581:       ? Object.values(value).reduce<number>((n, v) => n + countNodes(v), 0)
+4582:       : 0);
+4583:   expect(bytes.length - METADATA_CLOSURE_CONTINUATION_BYTES_BASE).toBeLessThanOrEqual(81920);
+4584:   expect(countNodes(manifest) - METADATA_CLOSURE_CONTINUATION_NODES_BASE).toBeLessThanOrEqual(2000);
+4585:   // Root-approved schema slice amendment: 698614+12288 -> 698614+14336.
+4586:   // The 06b0e04 anchor predates this +2048 coverage allowance.
+4587:   expect(
+4588:     source("packages/conformance/test-support/read-update-coverage-v1.json").bytes.length -
+4589:       METADATA_CLOSURE_COVERAGE_BYTES_BASE,
+4590:   ).toBeLessThanOrEqual(14336);
+4591:   expect(
+4592:     createHash("sha256")
+4593:       .update(source("packages/conformance/fixtures/read-update-reference-v1.json").bytes)
+
+
+===== R closure fence existing source excerpt =====
+4958:   const countNodes = (v: unknown): number =>
+4959:     1 +
+4960:     (v !== null && typeof v === "object"
+4961:       ? Object.values(v).reduce<number>((n, child) => n + countNodes(child), 0)
+4962:       : 0);
+4963:   expect(Buffer.byteLength(text) - 844551).toBeLessThanOrEqual(57344);
+4964:   expect(countNodes(manifest) - 22146).toBeLessThanOrEqual(1400);
+4965:   const coverage = source("packages/conformance/test-support/read-update-coverage-v1.json").bytes;
+4966:   // Root-approved schema slice amendment: 703415+7168 -> 703415+9728.
+4967:   // The b604 anchor above predates this +2560 coverage allowance.
+4968:   expect(coverage.length - 703415).toBeLessThanOrEqual(9728);
+4969:   const row = manifest.scenarios.find((r: { id: string }) => r.id === numericRoundTripId) as {
+4970:     actions: readonly NumericRAction[];
+4971:   };
+4972:   const changedIds = [
+
+
+===== R explicit residual fence existing source excerpt =====
+5103:     .flatMap((a) => a.assertions.map((q) => a.id + "." + q.id));
+5104:   expect(additional).toHaveLength(100);
+5105:   expect(
+5106:     additional.reduce(
+5107:       (n, binding) => n + Buffer.byteLength("            " + JSON.stringify(binding) + ",\n"),
+5108:       0,
+5109:     ),
+5110:   ).toBe(5546);
+5111:   expect(coverage.length - 703415 - 5546 - 3700).toBeLessThanOrEqual(1708);
+5112:   expect(row.actions!.reduce((n, a) => n + a.assertions.length, 0)).toBe(687);
+5113:   expect(numericRClosureRawControls).toHaveLength(3);
+5114:   expect(
+5115:     numericRClosureRawControls.length +
+
+
+===== FROZEN AUTHOR REPORT =====
+# Command-minimum catalog draft — measured stop
+
+The eleven-file metadata draft is frozen for council at parent `bd2178dd6f4b9f7c2d239624d7edaa3d961c3e26`, tree `062c32778217aeb702b2f7798dc82b0d985e9c67`, branch `codex/vickie-command-minimum-catalog`. No commit was created. Source snapshots, exact diff and eleven path hashes are supplied alongside this report. Root's v4 plan/release scope is preserved.
+
+One normative `read-update.http.command-minimum-fields` row is inserted before `read-update.http.request-too-large` in catalog/spec/audit and both coverage inventories. Its exact citation is the existing full shared paragraph at3581–3588, including ignored presence/completeness/values/identity, ordinary syntax/bounds/auth/key/carrier/revision, cumulative applicability and unchanged reads. The spec diff is only the matching conformance-table row; removing it restores the entire original spec. No operative law changed.
+
+The cumulative coverage row is omitted/wholeContract:false/bindings:[] with a reason explicitly distinguishing existing private implementation tests from absent cumulative executable evidence. Development coverage uses its separate omitted/category/reason/empty-bindings shape, without wholeContract. No TX implemented-only coverage row or executable action is added. Prior whole IDs and public admission are unchanged.
+
+Metadata arithmetic is44Read/130RU/251TX required, with the new ID excluded fromRead and inherited once byTX. RU authored54/whole33 remain unchanged, uncovered97/omitted76; development82total/58bounded/24omitted; TX13authored/pass expectations remain unchanged, unplanned238/report256. The new static callback pins the entire independent literal catalog clause, inheritance/nonretirement/Read exclusion and absence from both RU shards and TX manifest, plus honest cumulative omission. Existing source-count assertions and omission membership were updated in the planned paths. Historical129/250/81 explanatory values are preserved in a change paragraph.
+
+## Exact source measurements
+
+| JSON source | Disk before → after | Disk growth | JSON.stringify before → after | Parsed value nodes before → after |
+|---|---:|---:|---:|---:|
+| RU normative catalog |84833→85899|1066|69233→70188|1303→1313|
+| RU cumulative coverage |712792→713193|401|525167→525518|14626→14632|
+| RU development coverage |48952→49322|370|35508→35828|1140→1146|
+
+The inserted coverage object's normal multiline representation, indentation, separator and newline contribute exactly401disk bytes. Its compact canonical contribution is351bytes. Sorted-key canonical JSON has the same measured byte totals as JSON.stringify here; both digests are retained separately. These were computed by pinned Node24.16.0 with only built-in file/crypto APIs, not product imports. `measure-json.mjs`, exact argv/exit/log and canonical-measurements.json retain this static arithmetic. Parsed nodes count each value/container once (not keys); coverage node counts are measurements, not an existing runtime/parser gate.
+
+All81old catalog,129old cumulative coverage and81old development objects are byte-identical, in order. Removing the exact inserted text reconstructs each complete parent file, not just equal parsed values. `old-row-preservation.json` carries every original raw-object hash. Both RU manifests, shard index, RU fixture, TX manifest/coverage/fixture and historical Read manifest/fixture are unchanged with exact hashes in `unchanged-artifacts.json`.
+
+## Measured allowance proposals — not applied
+
+| Existing source-authoring fence | Existing total ceiling | New total | Excess | Minimal proposed allowance |
+|---|---:|---:|---:|---:|
+| Numeric:648157+66560|714717|713193|0|unchanged66560|
+| Metadata:698614+14336|712950|713193|243|14336→14579|
+| R:703415+9728|713143|713193|50|9728→9778|
+| R residual:703415+5546+3700+1708|714369|713193|0|unchanged1708|
+
+Only the two exceeded fences need amendment. The proposed minima provide exactly enough space for the normally formatted honest omitted row, with zero residual room at those two fences. They preserve all three historical bases, prior amendment offsets/comments, and both unexceeded bounds. No allowance was changed, no reason shortened to evade a fence, and no old row rewritten. Council/root may choose a separately justified margin; none is assumed here. Current selected growth tests would encounter those two known source-authoring overruns until approval and a bounded amendment. This is an anticipated measurement stop, not a failed executed test.
+
+## Prospective verification and stop
+
+`selection.json` contains exact anchored argv for six bounded selections totalling12cases: one new registration and eleven existing registrations. They are the v4 titles, including the development82 rename. The selected callbacks plan0HTTP/listeners/stores/product children; RU matrix module evaluation still imports the built server configuration, so a current source-matching build and cleared inherited installed-entry overrides remain prerequisites. No unfiltered matrix/full file selection is proposed. Per-command120s and existing inner bounds remain unchanged; no automatic retries.
+
+No test, build, dependency setup, install, package, service, formatter, commit or push was run. Draft formatting was authored directly; format validation is still pending. The only executed measurement program parses/hashes JSON and files, with no product code loading. All source-authoring fences remain intact. Stop here for independent native/actual Claude draft review and root disposition of the measured proposals; no execution release or runtime/public credit is implied.
+
+
+
+===== EXACT MEASUREMENTS =====
+{
+  "method": "Pure JSON/file arithmetic, no product runtime imports or test execution. Canonical ECMAScript bytes measured separately.",
+  "jsonFiles": [
+    {
+      "path": "packages/conformance/catalog/read-update-v1.json",
+      "beforeDiskBytes": 84833,
+      "afterDiskBytes": 85899,
+      "diskDelta": 1066,
+      "beforeNodes": 1303,
+      "afterNodes": 1313,
+      "nodeDelta": 10
+    },
+    {
+      "path": "packages/conformance/test-support/read-update-coverage-v1.json",
+      "beforeDiskBytes": 712792,
+      "afterDiskBytes": 713193,
+      "diskDelta": 401,
+      "beforeNodes": 14626,
+      "afterNodes": 14632,
+      "nodeDelta": 6
+    },
+    {
+      "path": "packages/conformance/development/read-update-coverage-v1.json",
+      "beforeDiskBytes": 48952,
+      "afterDiskBytes": 49322,
+      "diskDelta": 370,
+      "beforeNodes": 1140,
+      "afterNodes": 1146,
+      "nodeDelta": 6
+    }
+  ],
+  "fences": [
+    {
+      "name": "numeric admission",
+      "historicalBase": 648157,
+      "currentAllowance": 66560,
+      "currentCeiling": 714717,
+      "actualAfterDelta": 65036,
+      "excessBytes": 0,
+      "proposalMinimumAllowance": null,
+      "proposedCeiling": null,
+      "applied": false
+    },
+    {
+      "name": "metadata closure",
+      "historicalBase": 698614,
+      "currentAllowance": 14336,
+      "currentCeiling": 712950,
+      "actualAfterDelta": 14579,
+      "excessBytes": 243,
+      "proposalMinimumAllowance": 14579,
+      "proposedCeiling": 713193,
+      "applied": false
+    },
+    {
+      "name": "R closure",
+      "historicalBase": 703415,
+      "currentAllowance": 9728,
+      "currentCeiling": 713143,
+      "actualAfterDelta": 9778,
+      "excessBytes": 50,
+      "proposalMinimumAllowance": 9778,
+      "proposedCeiling": 713193,
+      "applied": false
+    },
+    {
+      "name": "R explicit residual",
+      "historicalBase": 703415,
+      "currentAllowance": 1708,
+      "currentCeiling": 714369,
+      "actualAfterDelta": 532,
+      "excessBytes": 0,
+      "proposalMinimumAllowance": null,
+      "proposedCeiling": null,
+      "applied": false,
+      "priorAmendmentOffsets": [
+        5546,
+        3700
+      ],
+      "effectiveSubtractionBase": 712661
+    }
+  ],
+  "counts": {
+    "read": {
+      "required": 44,
+      "newIdOccurrences": 0,
+      "catalogSelectedIncludingDiagnostics": 49
+    },
+    "read-update": {
+      "required": 130,
+      "newIdOccurrences": 1,
+      "catalogSelectedIncludingDiagnostics": 135
+    },
+    "transactional": {
+      "required": 251,
+      "newIdOccurrences": 1,
+      "catalogSelectedIncludingDiagnostics": 256
+    }
+  },
+  "existingFenceLiteralsUnchanged": true,
+  "coverageNodesAreMeasurementNotRuntimeGate": true
+}
+
+
+
+===== ACCEPTED V4 PLAN =====
+# Command-minimum cumulative mapping implementation plan v4
+
+Preserves original plan SHA d0e30e37003a96ac922090e8d90dccdd1dc439cbb16f17e77440bff46cd6221d. Preserves v2 SHA0cdac339a6d75805d1d141fb8b0f58dae1826bc6eb645851a25a2699ff3218b2 and its native dispositions. Required Claude F1–F3 and optional precision4–8 from actual review810369d4 are accepted. This is an eleven-path/twelve-case correction, not Claude's erroneous ten-path total. No source or test was changed while revising this plan.
+
+**Plan only; pending root draft-authoring release.** PR124 is merged and the shared spec path is no longer being edited by Selector. This mechanical reanchor grants no product edits or execution. Preserved accepted v3 SHA256 `49e8c68db78dc4fb422f73adf951d609262e69606ecccecc5fdee03525281b1e`; its native closure64b24cc1 and actual Claude review810369d4 remain historical review authorities.
+
+## Source and authority
+
+Inspected clean `/Users/dbox/repos/wt/vickie/vickie-command-minimum-catalog`, branch `codex/vickie-command-minimum-catalog`, at verified merged PR124 main `bd2178dd6f4b9f7c2d239624d7edaa3d961c3e26`, tree `062c32778217aeb702b2f7798dc82b0d985e9c67`, ordered parents `757aedc8008386745d59d5005498a9256d6ea76e` and `00d7fff3320eb10d4165718d23d86519cd3b7c5e`. All eleven owned paths equal the native-reviewed22777ec source; ten non-spec paths also remain byte-identical to727e. Selector moved the spec anchors without changing the shared command rule or either TX reference. Runtime and prior spec/CI evidence retain their original source attribution; this reanchor claims no new execution. The older follow-up audit's5792 placement and v3's727e parent are historical.
+
+Current authority is `docs/specs/bdp.md:3581–3588`, `#mutation-command-preconditions`: mutation POSTs ignore BDP-Minimum-Scope-Position, BDP-Scope-Epoch and BDP-Authorization-View irrespective of presence/completeness/value, without a barrier or command-identity effect; normal syntax/bounds, authorization, idempotency, carrier validation and expectedRevision still apply. Transactional inherits this through `#transactional-http-consistency`, at 5818–5822, explicitly preserving receipt GET/HEAD minimum behavior. The inherited reference also appears under Transactional HTTP field support at5853–5855, covering shared command preconditions without a second normative authority.
+
+Use one new normative ID, **`read-update.http.command-minimum-fields`**, with requiredProfile read-update, inherited by TX. This is a proposed new ID, not existing coverage. Cite the current shared paragraph exactly; do not point backward to its superseded location, repurpose the read-side `transactional.changefeed.consistency-fields`, duplicate a TX authority row, or introduce a retirement. The rule covers all mutation POSTs, not only requests a client describes as “copied.”
+
+The four optional wording suggestions in `transaction-command-minimum-ci-repair/root-delta-dispositions.md` are not blockers: preserve the operative paragraph, existing explicit TX read carve-out, cumulative applicability and link. Do not add an editorial pass or new interpretation to this mapping. No user ruling is missing.
+
+## First implementation slice: eleven paths, metadata and honest omission
+
+| Path | Exact bounded change |
+|---|---|
+| `packages/conformance/catalog/read-update-v1.json` | Add the one normative row with exact shared-authority citation and a title stating that the three read-consistency fields neither gate mutation POSTs nor affect identity. Keep the preserved admission/read boundary in its requirements. |
+| `docs/specs/bdp.md` | Add the matching ID/title in the Read+Update conformance table only; no operative prose or TX table change. Selector ownership has ended at the verified merge; this path remains held pending root release for this slice. |
+| `docs/design/profile-contract-planning.md` | Add the row in catalog order as Inherited, explaining RU singleton/sequence versus TX singleton/batch/sequence observations and preservation of read minima. Update the explicitly explanatory source snapshot at line11 from129RU/250TX to130RU/251TX; preserve44Read and the historical basis in the change record. Also change the current inheritance-audit lead-in at line61 from81 to82 audited RU catalog rows and document this new row's shared RU→TX authority. Counts remain non-authoritative. |
+| `packages/conformance/test-support/read-update-coverage-v1.json` | Insert the same row in canonical required order with status omitted, wholeContract false, bindings [], and a reason distinguishing existing private implementation tests from absent cumulative executable evidence. |
+| `packages/conformance/src/profile-contract-plan.test.ts` | Add one focused static test, proposed title “inherits the command minimum-field exception without executable credit”: exact ID/clause presence, RU and TX selected, Read excluded, no retirement/duplicate, and omission in current executable artifacts. Preserve the complete inheritance audit. |
+| `packages/conformance/src/transactional-cumulative.test.ts` | Update required250→251 at current line80 and unplanned237→238 at line189; assert the new ID remains required/unobserved and absent from the13 implemented private manifest rows. No transport or limit change. |
+| `apps/bdptest/src/transactional-matrix.test.ts` | Update current required250→251 and total report255→256 at lines340–341. Implemented13/pass13 and existing20sessions/21children stay unchanged; the additional report row is unobserved, not a new executed case. |
+| `apps/bdptest/src/read-update-matrix.test.ts` | Immediate metadata fanout: uncovered96→97 at current lines1266,1359,2021,2442,2872; omittedRequired75→76 at1284, with new-ID omission membership checks. Preserve authored54/reviewedWhole33, manifest/route/configuration hashes and every actual traffic/session/child count. In the same path, any exceeded coverage-authoring allowance is held for the measured decision below; no speculative cap edit. |
+| `packages/conformance/development/read-update-coverage-v1.json` | Add the matching omitted row at the catalog ordinal with non-empty category/reason and bindings:[]; use this development inventory's own schema, with **no wholeContract key**. Preserve58 bounded observations; omitted23→24, total81→82. No diagnostic manifest action is added. |
+| `packages/conformance/src/development-read-update.test.ts` | Change the normative count81→82 at line71 and the count-bearing existing title at line67. Preserve exact ordered coverage/catalog ID equality and all diagnostic assertion-binding checks; select the post-edit82 title below. |
+| `packages/conformance/development/README.md` | At lines16–20 change current inventory81→82 and Twenty-three→Twenty-four omitted. Fifty-eight bounded observations and29diagnostic scenarios/312actions remain unchanged; development-only/non-attesting status remains explicit. |
+
+Why the coverage edit is mandatory: `test-support/read-update-artifact-set.ts:217–244` requires the complete canonical inventory and explicitly requires unplanned rows to be omitted/false/empty. TX private coverage instead mirrors only implemented manifest rows (`transactional-cumulative.test.ts:96–113`), so **do not** invent a TX coverage binding or append an omitted row to its differently shaped inventory. The canonical selector already inherits preserved RU requirements (`profile-contract-selection.ts`); no production selector/runner/factory change is needed.
+
+These eleven paths do not touch Selector server/test/installed paths. The spec ownership intersection has been sequenced after the verified Selector merge. This v4 reanchor checked the actual post-Selector parent, eleven path hashes, counts and citations; they preserve the reviewed deltas. Stop if source changes after this binding invalidate those deltas.
+
+## Bounded verification for the mapping slice
+
+Prepare the eleven-file draft and perform the nonexecuting measurement stop below before final freeze. Then select **12 case executions: one proposed new registration and eleven existing registrations**, with anchored exact titles and exact describe prefixes where applicable:
+
+1. New: “canonical cumulative profile contracts inherits the command minimum-field exception without executable credit” — profile-contract-plan.test.ts; author inside that existing describe block.
+2. “draft Read+Update catalog strictly parses and binds every citation to the current specification text” — read-update-catalog.test.ts.
+3. “draft Read+Update catalog scopes every row to the Read+Update profile with the profile's id prefix” — same file.
+4. “draft Read+Update catalog mirrors the specification's Read+Update conformance rows exactly and in order” — same file.
+5. “canonical cumulative profile contracts locks every inheritance-audit row and replacement to the catalogs” — profile-contract-plan.test.ts.
+6. “binds the canonical cumulative TX selection and exact source digests without qualification” — transactional-cumulative.test.ts.
+7. “pins cumulative source digest map, catalog order and every coverage binding” — cumulative-artifact.test.ts.
+8. “copies source bytes before binding and exposes all missing obligations without executing them” — transactional-cumulative.test.ts; this catches the237→238 change.
+9. “pins numeric admission source growth, old blocks and independent row ledgers” — read-update-matrix.test.ts.
+10. “pins metadata closure growth, old B actions and final N preservation” — same file.
+11. “pins bounded R closure source, changed-action ledger and unchanged companions” — same file; this one callback checks both R-related coverage fences.
+12. “development Read+Update evidence inventory inventories all 82 normative rows once, with executable assertion bindings or explicit omissions” — development-read-update.test.ts. The existing case is renamed81→82; select this **post-edit** full title, not an extra registration.
+
+
+**Selected callback workload:** local file/JSON parsing, byte copies, hashes, node/ledger comparisons and source-private artifact selection/binding/planning only. installedArtifactSet() constructs no service. The source-copy case zeroes copied input buffers to verify isolation; it does not open a store or execute the plan. The development inventory case reads normative metadata and checks diagnostic bindings/omissions without invoking diagnostic actions. Growth callbacks inspect source/raw/action ledgers and do not invoke adjacent run()/HTTP/client-control callbacks. The new callback must stay equally static. Planned selected-case total is12, with0HTTP,0listeners,0store opens/directories and0product runtime children; this is static inspection/proposal, not measured execution. Build/test-worker tool processes are separate from product runtime children.
+
+**Module and global setup scope:** selecting cases9–11 still evaluates read-update-matrix.test.ts top level. Its dynamic imports at42–45 and69–73 load scripts/installed-reference-observation.mjs and the configuration module beside the resolved installed entry; the default is packages/server/dist/installed-reference-configuration.js. That is built product-module evaluation, not merely reading source. Current source inspection finds no top-level listener/store/child launch in this path, but the emitted artifact must exist and match the source. Require a successful current build before selected tests, clear inherited BDP installed-entry overrides so the default cannot resolve an unrelated payload, and retain source/build binding. The common vitest.config.ts:70 setup packages/server/test-support/read-conformance-mock.ts initializes the in-memory grant state, registers vi.mock and an afterAll leak check/clear; it does not itself launch a receiver. Development/TX cumulative module-level artifact factories parse/bind data and do not execute their registered runtime cases. Record module-load/setup work in preflight; do not describe the run as importing no product code. Do not run whole files or installed matrices for these metadata counts.
+
+### Draft-only growth measurement stop
+
+Current RU coverage file is712792 bytes. Four independent historical coverage-authoring fences apply simultaneously:
+
+| Fence / current source anchor | Existing arithmetic ceiling | Current remaining bytes |
+|---|---:|---:|
+| Numeric admission, line4194 | 648157 + 65×1024 = 714717 | 1925 |
+| Metadata closure, lines4442/4579–4584 | 698614 + 14336 = 712950 | 158 |
+| R closure, line4962 | 703415 + 9728 = 713143 | 351 |
+| R explicit residual, line5105 | 703415 + 5546 + 3700 + 1708 = 714369 | 1577 |
+
+A minimally pretty-printed omitted row already needs at least167 bytes even with an inadequate one-character reason; therefore metadata closure necessarily exceeds its existing allowance. The required honest explanatory reason must not be shortened to evade the bound. R closure may also be exceeded; measure rather than assume.
+
+Before any tests or cap amendment, freeze the proposed row's exact normally formatted bytes, insertion/separator contribution, old/new complete coverage bytes and hashes, canonical JSON.stringify bytes, and relevant parsed node totals as measurement evidence. The existing node-count gates in these three callbacks apply to the continuation manifest, not the coverage file; coverage-node counts must not be described as an existing gate. Preserve the distinction between disk/source-byte fences and other normal forms. Record the actual delta against all **four allowances over three distinct historical bases** (648157,698614,703415), plus unchanged manifest/fixture/old-row byte or object hashes. No minification, rewriting old evidence, base reset, historical comment erasure or unreviewed unrelated-byte change is permitted.
+
+Submit the measured draft and exact exceeded-fence list for root/council approval. Only exceeded authoring allowances may receive a separately justified measured amendment; keep all original bases and prior amendment comments and append the new rationale/delta. Unexceeded ceilings stay unchanged. Freeze successor hashes after approval, then run the12 selected cases above. Their three growth callbacks exercise all four fences. Any additional unexpected fence or fanout stops for disposition rather than silently expanding scope. Runtime/parser/transport/request/service/CI capacities are not these source-authoring allowances and must remain unchanged.
+
+A current successful repository build providing source-matching packages/server/dist is a pre-execution prerequisite for the selected matrix module imports. Use the existing pinned build command and record its actual source/exit; absent or stale dist is a prerequisite failure, not evidence of a metadata defect. Appropriate format/type/lint and unchanged Read evidence verification also remain required; source syntax/citation checks are not installed proof. Before execution, retain exact argv, selection, source/diff hashes and a 120-second per-command bound, with no automatic retry. Actual exact-head CI remains a separate integration gate. No new fixture, package, archive or public admission is needed for this first slice. Historical artifacts/digests stay immutable; newly constructed selections naturally have a new catalog digest.
+
+## Subsequent executable proof: separately measured and released
+
+Mapping closes the missing-ID defect only. Before giving this obligation any whole-contract or public-profile credit, author a narrowly measured executable row under that **same ID** in an approved RU shard and the private TX manifest, with their respective coverage bindings. Later executable edits (beyond the already-owned immediate RU test-count fanout) likely include `matrices/read-update-v1.json`, RU coverage, `test-support/transactional/manifest-v1.json`, TX coverage, and the existing `read-update-matrix.test.ts`/`transactional-matrix.test.ts` observation/control guards. Do not add a new shard, fixture capability or execution seam simply to avoid current bounds.
+
+Use the existing RU6 and TX18 cases as concrete oracle sources, not fabricated runner reports. Observe valid absent/partial/empty/malformed/foreign/future field combinations over applicable singleton/sequence and TX batch carriers; same-key same-body replay; changed-body conflict; ordinary authorization/revision/carrier admission; full unchanged/poststate and exact result/receipt/sequence shapes. TX must additionally retain subsequent receipt GET/HEAD minimum refusals and compatible read. Empty fields need actual raw serializer request-header observations: fetch accepting an empty input value alone is insufficient. Do not interpret invalid ordinary HTTP syntax as permitted by the ignore rule.
+
+Bind all observations to actual launched payload/source/contract/fixture/configuration identities, exact granted routes and genuine request/response evidence. Retain the already demonstrated named old-command500 sensitivity and receipt-bypass200-vs503 sensitivity, with source/derivative identities and failure-specific adjudication. Do not silently replay old controls or assume their historical execution covers new DSL bindings. Measure request bytes/captures/canonical nodes, controls, listeners/children/temp ownership and runtime ceilings from the drafted rows before any release; this plan does not invent a final request count or authorize an installed run.
+
+Existing private f2ac evidence proves its authored cases only. A new catalog digest or manifest is not retroactively bound by that run. Fresh exact-source archive/consumer/runtime dependency and installed-session binding is needed for new executable claims. Declare unobserved field/operation partitions and keep wholeContract:false until a reviewed clause-level partition is actually covered; claimEligible remains false. Public qualification still requires every applicable cumulative Read/RU/TX obligation and the ordinary admission path, independently of this row.
+
+**Blockers:** no semantic blocker or reanchor mismatch found. Root draft-authoring release remains pending; exact draft growth measurement and approval of any exceeded source-authoring allowances are explicit pre-execution gates, not assumed permission. Executable proof remains a later measured prerequisite, not a reason to expand this metadata slice. Root owns prioritization, release, CI and merge.
+

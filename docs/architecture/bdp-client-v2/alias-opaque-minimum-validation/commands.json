@@ -1,0 +1,512 @@
+{
+  "configurationFinalized": false,
+  "state": "CLOSED plan/config; no executable helpers or release yet",
+  "finalOrder": [
+    "workspace-install",
+    "bind-workspace-tools",
+    "typecheck",
+    "format-check",
+    "lint",
+    "fresh-build",
+    "bind-fresh-build",
+    "focused-source",
+    "review-focused-source",
+    "node-version",
+    "prepare-package-directory",
+    "pack-protocol",
+    "pack-server",
+    "verify-archives",
+    "prepare-consumer",
+    "consumer-install",
+    "verify-installed-consumer",
+    "alias-history-external",
+    "review-alias-history-external",
+    "alias-opaque-external",
+    "review-alias-opaque-external"
+  ],
+  "commands": {
+    "workspace-install": {
+      "cwd": "/Users/dbox/repos/wt/vickie/vickie-alias-opaque-minimum",
+      "argv": [
+        "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+        "/Users/dbox/.cache/node/corepack/v1/pnpm/11.20.0/bin/pnpm.cjs",
+        "install",
+        "--offline",
+        "--ignore-scripts",
+        "--frozen-lockfile"
+      ],
+      "outerSeconds": 120,
+      "automaticRetries": 0,
+      "acceptedRawExitCodes": [
+        0
+      ],
+      "termAfterSeconds": 115
+    },
+    "bind-workspace-tools": {
+      "cwd": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/alias-opaque-minimum-validation",
+      "argv": [
+        "/opt/homebrew/opt/python@3.14/bin/python3.14",
+        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/alias-opaque-minimum-validation/audit.py",
+        "tools"
+      ],
+      "outerSeconds": 120,
+      "automaticRetries": 0,
+      "acceptedRawExitCodes": [
+        0
+      ],
+      "termAfterSeconds": 115,
+      "helperImplementationPending": true
+    },
+    "typecheck": {
+      "cwd": "/Users/dbox/repos/wt/vickie/vickie-alias-opaque-minimum",
+      "argv": [
+        "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+        "/Users/dbox/.cache/node/corepack/v1/pnpm/11.20.0/bin/pnpm.cjs",
+        "run",
+        "typecheck"
+      ],
+      "outerSeconds": 120,
+      "automaticRetries": 0,
+      "acceptedRawExitCodes": [
+        0
+      ],
+      "termAfterSeconds": 115
+    },
+    "format-check": {
+      "cwd": "/Users/dbox/repos/wt/vickie/vickie-alias-opaque-minimum",
+      "argv": [
+        "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+        "/Users/dbox/repos/wt/vickie/vickie-alias-opaque-minimum/node_modules/@biomejs/biome/bin/biome",
+        "format",
+        "--config-path=/Users/dbox/repos/wt/vickie/vickie-alias-opaque-minimum/biome.json",
+        "packages/server/src/transaction-read.ts",
+        "packages/server/src/transaction-read.test.ts",
+        "packages/server/src/transaction-http.test.ts",
+        "apps/bdptest/src/transactional-alias-installed.test.ts"
+      ],
+      "outerSeconds": 120,
+      "automaticRetries": 0,
+      "acceptedRawExitCodes": [
+        0
+      ],
+      "termAfterSeconds": 115
+    },
+    "lint": {
+      "cwd": "/Users/dbox/repos/wt/vickie/vickie-alias-opaque-minimum",
+      "argv": [
+        "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+        "/Users/dbox/repos/wt/vickie/vickie-alias-opaque-minimum/node_modules/@biomejs/biome/bin/biome",
+        "lint",
+        "--config-path=/Users/dbox/repos/wt/vickie/vickie-alias-opaque-minimum/biome.json",
+        "packages/server/src/transaction-read.ts",
+        "packages/server/src/transaction-read.test.ts",
+        "packages/server/src/transaction-http.test.ts",
+        "apps/bdptest/src/transactional-alias-installed.test.ts"
+      ],
+      "outerSeconds": 120,
+      "automaticRetries": 0,
+      "acceptedRawExitCodes": [
+        0
+      ],
+      "termAfterSeconds": 115
+    },
+    "fresh-build": {
+      "cwd": "/Users/dbox/repos/wt/vickie/vickie-alias-opaque-minimum",
+      "argv": [
+        "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+        "/Users/dbox/.cache/node/corepack/v1/pnpm/11.20.0/bin/pnpm.cjs",
+        "run",
+        "build"
+      ],
+      "outerSeconds": 120,
+      "automaticRetries": 0,
+      "acceptedRawExitCodes": [
+        0
+      ],
+      "termAfterSeconds": 115
+    },
+    "bind-fresh-build": {
+      "cwd": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/alias-opaque-minimum-validation",
+      "argv": [
+        "/opt/homebrew/opt/python@3.14/bin/python3.14",
+        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/alias-opaque-minimum-validation/audit.py",
+        "build"
+      ],
+      "outerSeconds": 120,
+      "automaticRetries": 0,
+      "acceptedRawExitCodes": [
+        0
+      ],
+      "termAfterSeconds": 115,
+      "helperImplementationPending": true
+    },
+    "focused-source": {
+      "cwd": "/Users/dbox/repos/wt/vickie/vickie-alias-opaque-minimum",
+      "argv": [
+        "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+        "/Users/dbox/repos/wt/vickie/vickie-alias-opaque-minimum/node_modules/vitest/vitest.mjs",
+        "run",
+        "packages/server/src/transaction-read.test.ts",
+        "packages/server/src/transaction-http.test.ts",
+        "--maxWorkers=1",
+        "--reporter=verbose",
+        "--reporter=json",
+        "--outputFile.json=/Users/dbox/repos/wt/vickie/bdp-integration-logs/alias-opaque-minimum-validation/run/focused-source.results.json",
+        "--testNamePattern",
+        "^(?:current\\ alias\\ minimum\\ subset\\ preserves\\ direct\\ minimum\\ alias\\ receiving\\ validation,\\ cancellation\\ and\\ lifecycle\\ precedence|current\\ alias\\ minimum\\ subset\\ preserves\\ service\\ minimum\\ alias\\ receiving\\ validation,\\ cancellation\\ and\\ lifecycle\\ precedence|current\\ alias\\ minimum\\ subset\\ conditions\\ alias\\ mapping\\ and\\ context\\ in\\ one\\ entry\\ without\\ revising\\ either\\ target|current\\ alias\\ minimum\\ subset\\ rechecks\\ a\\ repointed\\ alias\\ after\\ waiting\\ for\\ a\\ real\\ Resource\\ effect|current\\ alias\\ minimum\\ subset\\ keeps\\ live\\ alias\\ context\\ failures\\ and\\ compatible\\ absent/deleted/dangling\\ observations\\ distinct|current\\ alias\\ minimum\\ subset\\ forwards\\ ordinary\\ and\\ minimum\\ Request\\ aborts\\ before\\ SQL\\ and\\ drains\\ an\\ admitted\\ alias\\ wait|current\\ alias\\ minimum\\ subset\\ does\\ not\\ relabel\\ alias\\ provider\\ or\\ malformed\\ context\\ failures\\ as\\ missing|current\\ alias\\ minimum\\ subset\\ captures\\ unknown\\ alias\\ minima\\ while\\ resolving\\ each\\ retry\\ against\\ the\\ live\\ owner|current\\ alias\\ minimum\\ subset\\ captures\\ pos\\-01\\ alias\\ minima\\ while\\ resolving\\ each\\ retry\\ against\\ the\\ live\\ owner|current\\ alias\\ minimum\\ subset\\ preserves\\ absent\\ alias\\ nondisclosure\\ before\\ opaque\\ minimum\\ waiting|current\\ alias\\ minimum\\ subset\\ preserves\\ deleted\\ alias\\ nondisclosure\\ before\\ opaque\\ minimum\\ waiting|current\\ alias\\ minimum\\ subset\\ preserves\\ dangling\\ alias\\ nondisclosure\\ before\\ opaque\\ minimum\\ waiting|current\\ alias\\ minimum\\ subset\\ preserves\\ hidden\\ alias\\ nondisclosure\\ before\\ opaque\\ minimum\\ waiting|current\\ alias\\ minimum\\ subset\\ returns\\ current\\ alias\\ absence\\ when\\ an\\ admitted\\ opaque\\ wait\\ loses\\ its\\ mapping|current\\ alias\\ minimum\\ subset\\ drains\\ an\\ aborted\\ opaque\\ alias\\ wait\\ before\\ releasing\\ its\\ owner|current\\ alias\\ minimum\\ subset\\ preserves\\ incident\\-Link\\ opaque\\ exclusions\\ beside\\ alias\\ minima|uses\\ actual\\ current\\ policy\\ for\\ missing\\-first\\ and\\ unproved\\ Resource\\ attempts|current\\ Type\\ and\\ incident\\-Link\\ minimums\\ keeps\\ compatible\\ missing\\ Types\\ and\\ absent/deleted\\ incident\\ anchors\\ separate\\ from\\ collisions|serves\\ conditioned\\ live\\ aliases\\ and\\ preserves\\ bodyless\\ redirects,\\ refusal\\ context\\ and\\ receiving\\ boundaries|waits\\ for\\ current\\ Resources\\ and\\ initial\\ collections\\ with\\ unknown\\ minima\\ and\\ preserves\\ residual\\ refusals)$"
+      ],
+      "outerSeconds": 120,
+      "automaticRetries": 0,
+      "acceptedRawExitCodes": [
+        0
+      ],
+      "selectedFullNames": [
+        "current alias minimum subset preserves direct minimum alias receiving validation, cancellation and lifecycle precedence",
+        "current alias minimum subset preserves service minimum alias receiving validation, cancellation and lifecycle precedence",
+        "current alias minimum subset conditions alias mapping and context in one entry without revising either target",
+        "current alias minimum subset rechecks a repointed alias after waiting for a real Resource effect",
+        "current alias minimum subset keeps live alias context failures and compatible absent/deleted/dangling observations distinct",
+        "current alias minimum subset forwards ordinary and minimum Request aborts before SQL and drains an admitted alias wait",
+        "current alias minimum subset does not relabel alias provider or malformed context failures as missing",
+        "current alias minimum subset captures unknown alias minima while resolving each retry against the live owner",
+        "current alias minimum subset captures pos-01 alias minima while resolving each retry against the live owner",
+        "current alias minimum subset preserves absent alias nondisclosure before opaque minimum waiting",
+        "current alias minimum subset preserves deleted alias nondisclosure before opaque minimum waiting",
+        "current alias minimum subset preserves dangling alias nondisclosure before opaque minimum waiting",
+        "current alias minimum subset preserves hidden alias nondisclosure before opaque minimum waiting",
+        "current alias minimum subset returns current alias absence when an admitted opaque wait loses its mapping",
+        "current alias minimum subset drains an aborted opaque alias wait before releasing its owner",
+        "current alias minimum subset preserves incident-Link opaque exclusions beside alias minima",
+        "uses actual current policy for missing-first and unproved Resource attempts",
+        "current Type and incident-Link minimums keeps compatible missing Types and absent/deleted incident anchors separate from collisions",
+        "serves conditioned live aliases and preserves bodyless redirects, refusal context and receiving boundaries",
+        "waits for current Resources and initial collections with unknown minima and preserves residual refusals"
+      ],
+      "prospectiveWorkload": {
+        "cases": 20,
+        "stores": 20,
+        "networkRequests": 46,
+        "inProcessHandlerRequests": 3,
+        "readFileCases": 18,
+        "readFileEntries": 99,
+        "readFileWrites": 51,
+        "readFileWaits": 18,
+        "readFileClockCalls": 75,
+        "allFixtureWrites": 54,
+        "allWaits": 32,
+        "policyReplacements": 3,
+        "postCloseRawInspectProbes": 2,
+        "newObservationRecords": 10
+      },
+      "selectionAttribution": "20 exact source cases; workload source-derived, ten new report records; legacy callbacks remain uninstrumented.",
+      "termAfterSeconds": 115
+    },
+    "review-focused-source": {
+      "cwd": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/alias-opaque-minimum-validation",
+      "argv": [
+        "/opt/homebrew/opt/python@3.14/bin/python3.14",
+        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/alias-opaque-minimum-validation/audit.py",
+        "source"
+      ],
+      "outerSeconds": 120,
+      "automaticRetries": 0,
+      "acceptedRawExitCodes": [
+        0
+      ],
+      "termAfterSeconds": 115,
+      "helperImplementationPending": true
+    },
+    "node-version": {
+      "cwd": "/Users/dbox/repos/wt/vickie/vickie-alias-opaque-minimum",
+      "argv": [
+        "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+        "--version"
+      ],
+      "outerSeconds": 120,
+      "automaticRetries": 0,
+      "acceptedRawExitCodes": [
+        0
+      ],
+      "termAfterSeconds": 115
+    },
+    "prepare-package-directory": {
+      "cwd": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/alias-opaque-minimum-validation",
+      "argv": [
+        "/opt/homebrew/opt/python@3.14/bin/python3.14",
+        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/alias-opaque-minimum-validation/packages.py",
+        "directory"
+      ],
+      "outerSeconds": 120,
+      "automaticRetries": 0,
+      "acceptedRawExitCodes": [
+        0
+      ],
+      "termAfterSeconds": 115,
+      "helperImplementationPending": true
+    },
+    "pack-protocol": {
+      "cwd": "/Users/dbox/repos/wt/vickie/vickie-alias-opaque-minimum",
+      "argv": [
+        "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+        "/Users/dbox/.cache/node/corepack/v1/pnpm/11.20.0/bin/pnpm.cjs",
+        "--filter",
+        "@bdp/protocol",
+        "pack",
+        "--pack-destination",
+        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/alias-opaque-minimum-validation/run/packages"
+      ],
+      "outerSeconds": 120,
+      "automaticRetries": 0,
+      "acceptedRawExitCodes": [
+        0
+      ],
+      "termAfterSeconds": 115
+    },
+    "pack-server": {
+      "cwd": "/Users/dbox/repos/wt/vickie/vickie-alias-opaque-minimum",
+      "argv": [
+        "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+        "/Users/dbox/.cache/node/corepack/v1/pnpm/11.20.0/bin/pnpm.cjs",
+        "--filter",
+        "@bdp/server",
+        "pack",
+        "--pack-destination",
+        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/alias-opaque-minimum-validation/run/packages"
+      ],
+      "outerSeconds": 120,
+      "automaticRetries": 0,
+      "acceptedRawExitCodes": [
+        0
+      ],
+      "termAfterSeconds": 115
+    },
+    "verify-archives": {
+      "cwd": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/alias-opaque-minimum-validation",
+      "argv": [
+        "/opt/homebrew/opt/python@3.14/bin/python3.14",
+        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/alias-opaque-minimum-validation/packages.py",
+        "tar"
+      ],
+      "outerSeconds": 120,
+      "automaticRetries": 0,
+      "acceptedRawExitCodes": [
+        0
+      ],
+      "termAfterSeconds": 115,
+      "helperImplementationPending": true
+    },
+    "prepare-consumer": {
+      "cwd": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/alias-opaque-minimum-validation",
+      "argv": [
+        "/opt/homebrew/opt/python@3.14/bin/python3.14",
+        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/alias-opaque-minimum-validation/packages.py",
+        "consumer"
+      ],
+      "outerSeconds": 120,
+      "automaticRetries": 0,
+      "acceptedRawExitCodes": [
+        0
+      ],
+      "termAfterSeconds": 115,
+      "helperImplementationPending": true
+    },
+    "consumer-install": {
+      "cwd": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/alias-opaque-minimum-validation/run/consumer",
+      "argv": [
+        "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+        "/Users/dbox/.cache/node/corepack/v1/pnpm/11.20.0/bin/pnpm.cjs",
+        "install",
+        "--offline",
+        "--ignore-scripts",
+        "--no-frozen-lockfile",
+        "--prod"
+      ],
+      "outerSeconds": 120,
+      "automaticRetries": 0,
+      "acceptedRawExitCodes": [
+        0
+      ],
+      "termAfterSeconds": 115
+    },
+    "verify-installed-consumer": {
+      "cwd": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/alias-opaque-minimum-validation",
+      "argv": [
+        "/opt/homebrew/opt/python@3.14/bin/python3.14",
+        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/alias-opaque-minimum-validation/packages.py",
+        "installed"
+      ],
+      "outerSeconds": 120,
+      "automaticRetries": 0,
+      "acceptedRawExitCodes": [
+        0
+      ],
+      "termAfterSeconds": 115,
+      "helperImplementationPending": true
+    },
+    "alias-history-external": {
+      "cwd": "/Users/dbox/repos/wt/vickie/vickie-alias-opaque-minimum",
+      "argv": [
+        "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+        "/Users/dbox/repos/wt/vickie/vickie-alias-opaque-minimum/node_modules/vitest/vitest.mjs",
+        "run",
+        "apps/bdptest/src/transactional-alias-installed.test.ts",
+        "--maxWorkers=1",
+        "--reporter=verbose",
+        "--reporter=json",
+        "--outputFile.json=/Users/dbox/repos/wt/vickie/bdp-integration-logs/alias-opaque-minimum-validation/run/alias-history-external.results.json",
+        "--testNamePattern",
+        "^(?:installed\\ sequence\\ aliases\\ resolve\\ at\\ turns\\ and\\ retain\\ targets/misses\\ across\\ exact\\ retries\\ and\\ restart)$"
+      ],
+      "outerSeconds": 120,
+      "automaticRetries": 0,
+      "acceptedRawExitCodes": [
+        0
+      ],
+      "selectedFullNames": [
+        "installed sequence aliases resolve at turns and retain targets/misses across exact retries and restart"
+      ],
+      "prospectiveWorkload": {
+        "callbacks": 1,
+        "requests": 36,
+        "children": 2,
+        "stores": 1,
+        "workMs": 90000,
+        "callbackMs": 120000
+      },
+      "expectedObservation": "private-installed-sequence-alias",
+      "expectedExchanges": 36,
+      "expectedChildren": 2,
+      "env": {
+        "BDP_TRANSACTIONAL_INSTALLED_ENTRY": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/alias-opaque-minimum-validation/run/consumer/node_modules/@bdp/server/dist/transaction-installed-process.js",
+        "BDP_TRANSACTIONAL_SOURCE_COMMIT": "9d2cd441eac2be1d2b6487ab5648035e3219cc27"
+      },
+      "termAfterSeconds": 115
+    },
+    "review-alias-history-external": {
+      "cwd": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/alias-opaque-minimum-validation",
+      "argv": [
+        "/opt/homebrew/opt/python@3.14/bin/python3.14",
+        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/alias-opaque-minimum-validation/audit.py",
+        "history"
+      ],
+      "outerSeconds": 120,
+      "automaticRetries": 0,
+      "acceptedRawExitCodes": [
+        0
+      ],
+      "termAfterSeconds": 115,
+      "helperImplementationPending": true
+    },
+    "alias-opaque-external": {
+      "cwd": "/Users/dbox/repos/wt/vickie/vickie-alias-opaque-minimum",
+      "argv": [
+        "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+        "/Users/dbox/repos/wt/vickie/vickie-alias-opaque-minimum/node_modules/vitest/vitest.mjs",
+        "run",
+        "apps/bdptest/src/transactional-alias-installed.test.ts",
+        "--maxWorkers=1",
+        "--reporter=verbose",
+        "--reporter=json",
+        "--outputFile.json=/Users/dbox/repos/wt/vickie/bdp-integration-logs/alias-opaque-minimum-validation/run/alias-opaque-external.results.json",
+        "--testNamePattern",
+        "^(?:observes\\ installed\\ live\\ alias\\ opaque\\ minima\\ without\\ redirect\\ shortcuts)$"
+      ],
+      "outerSeconds": 120,
+      "automaticRetries": 0,
+      "acceptedRawExitCodes": [
+        0
+      ],
+      "selectedFullNames": [
+        "observes installed live alias opaque minima without redirect shortcuts"
+      ],
+      "prospectiveWorkload": {
+        "callbacks": 1,
+        "requests": 6,
+        "children": 1,
+        "stores": 1,
+        "workMs": 45000,
+        "cleanupTotalMs": 10000,
+        "callbackMs": 60000,
+        "requestMs": 5000
+      },
+      "expectedObservation": "private-installed-alias-opaque-minimum",
+      "expectedExchanges": 6,
+      "expectedChildren": 1,
+      "env": {
+        "BDP_TRANSACTIONAL_INSTALLED_ENTRY": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/alias-opaque-minimum-validation/run/consumer/node_modules/@bdp/server/dist/transaction-installed-process.js",
+        "BDP_TRANSACTIONAL_SOURCE_COMMIT": "9d2cd441eac2be1d2b6487ab5648035e3219cc27"
+      },
+      "termAfterSeconds": 115
+    },
+    "review-alias-opaque-external": {
+      "cwd": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/alias-opaque-minimum-validation",
+      "argv": [
+        "/opt/homebrew/opt/python@3.14/bin/python3.14",
+        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/alias-opaque-minimum-validation/audit.py",
+        "alias"
+      ],
+      "outerSeconds": 120,
+      "automaticRetries": 0,
+      "acceptedRawExitCodes": [
+        0
+      ],
+      "termAfterSeconds": 115,
+      "helperImplementationPending": true
+    }
+  },
+  "expectedProductionVersions": {
+    "@bdp/protocol": "0.0.0",
+    "@bdp/server": "0.0.0",
+    "ajv": "8.17.1",
+    "ajv-formats": "3.0.1",
+    "fast-deep-equal": "3.1.3",
+    "fast-uri": "3.1.5",
+    "json-schema-traverse": "1.0.0",
+    "require-from-string": "2.0.2"
+  },
+  "pending": [
+    "Actual Claude CODE terminal findings disposition and root acceptance",
+    "Narrow runner/gate/package adapter plus exact alias report auditors, native/root inspection",
+    "Root bootstrap release, fresh offline install and measured tool identity",
+    "Static/runtime releases, fresh exact build/archive/consumer measurements",
+    "Root measured consumer lock and installed provenance acceptance"
+  ],
+  "freshBootstrapStages": 2,
+  "postBootstrapStages": 19,
+  "totalStages": 21,
+  "reusedEvidence": [],
+  "sourceBindingSha256": "8daf7e06b56e198c27f1eae3ec229135db11acac5403b449315209f9613baaa1",
+  "helperImplementationFinalized": false,
+  "runtimeTempPolicy": {
+    "root": "/private/tmp",
+    "allocation": "new unique task-owned directory per actual stage; record literal and realpath",
+    "reason": "avoid ancestor .beads/proxieddb discovery under /Users/dbox; no shared database access",
+    "noDirectoryCreatedYet": true
+  },
+  "requiredPublicationChecks": {
+    "state": "Root-owned follow-through; no execution authorized here",
+    "commands": [
+      [
+        "pnpm",
+        "run",
+        "check:boundaries"
+      ],
+      [
+        "pnpm",
+        "run",
+        "e2e:ready:preflight"
+      ],
+      [
+        "pnpm",
+        "run",
+        "smoke"
+      ],
+      [
+        "pnpm",
+        "run",
+        "evidence:verify"
+      ]
+    ],
+    "policy": "Retain normal required checks/hooks and exact-head CI. Do not fabricate local pass or evidence, regenerate historical evidence, or add an arbitrary full local suite. Stage/supervisor scope for these normal checks must be fixed before release if root runs locally. Evidence nonzero remains explicit no-claim/failure, never silently accepted as qualification."
+  }
+}

@@ -1,0 +1,40 @@
+{
+  "configurationFinalized": false,
+  "bootstrap": [
+    "workspace-install",
+    "bind-workspace-tools"
+  ],
+  "main": [
+    "typecheck",
+    "format-check",
+    "lint",
+    "fresh-build",
+    "bind-fresh-build",
+    "focused-source",
+    "review-focused-source",
+    "node-version",
+    "prepare-package-directory",
+    "pack-protocol",
+    "pack-server",
+    "verify-archives",
+    "prepare-consumer",
+    "consumer-install",
+    "verify-installed-consumer",
+    "historical-event-restart-external",
+    "review-historical-event-restart-external",
+    "current-event-admission-replay-external",
+    "review-current-event-admission-replay-external"
+  ],
+  "required": [
+    "boundaries",
+    "preflight",
+    "package-smoke",
+    "historical-read-evidence"
+  ],
+  "outerSeconds": 120,
+  "termAfterSeconds": 115,
+  "automaticRetries": 0,
+  "commands": null,
+  "rootLaunchReleased": false,
+  "approvedStages": []
+}

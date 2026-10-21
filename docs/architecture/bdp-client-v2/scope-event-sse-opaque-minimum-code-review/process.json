@@ -1,0 +1,25 @@
+{
+  "pid": 54894,
+  "pgid": 54894,
+  "started": "2026-10-17T16:58:45.622051+00:00",
+  "argv": [
+    "/opt/homebrew/bin/claude",
+    "--safe-mode",
+    "-p",
+    "--tools",
+    "Read,Glob,Grep",
+    "--allowedTools",
+    "Read,Glob,Grep",
+    "--disable-slash-commands",
+    "--strict-mcp-config",
+    "--mcp-config",
+    "{\"mcpServers\":{}}",
+    "--no-session-persistence",
+    "--output-format",
+    "stream-json",
+    "--verbose",
+    "--include-partial-messages"
+  ],
+  "timeoutSeconds": 1800,
+  "termAfterSeconds": 1790
+}

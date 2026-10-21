@@ -1,0 +1,80 @@
+{
+  "sourceBindingSha256": "cf670a46fd94495ea550878ef3e26d4d6e9e3487b04f058da2cdd2b58540114c",
+  "environment": "BDP_COMMAND_MINIMUM_REPORT_PATH",
+  "path": "Distinct absolute file per invocation, initial wx0600 then same-invocation rewrite",
+  "maximumBytes": 262144,
+  "safeFields": [
+    "sourceCommit",
+    "targetEntry",
+    "actual configuration and baselineReceipt",
+    "artifacts and exactConfigurationDigest",
+    "claimEligible:false",
+    "cleanupComplete",
+    "commandMinimum.status/checksPassed/control/applications/provenance",
+    "actual dispatch localIndex/method/url/credentialRef safe handle",
+    "original completion status/write/body digest and boolean checks",
+    "actual observed action IDs/method/url/status and structured assertion id/passed"
+  ],
+  "forbidden": [
+    "tokens",
+    "raw header values",
+    "full bodies",
+    "invented executor action ID"
+  ],
+  "retention": "Actual runner result saved before supplemental checks/cleanup; refreshed after checks and cleanup, including genuine partial failure. Earlier runner throw fabricates no result. Absent row emits no supplement.",
+  "positive": {
+    "responses": 11,
+    "assertionsPassed": 47,
+    "applications": 0
+  },
+  "negative": {
+    "responses": 2,
+    "actualStatuses": [
+      200,
+      200
+    ],
+    "control": "replay-outcome",
+    "kind": "assertion-input-only",
+    "applications": 1,
+    "passed": 7,
+    "failed": [
+      {
+        "exchange": "singleton-replay",
+        "assertion": "outcome"
+      }
+    ],
+    "wireBodyUnchanged": true
+  },
+  "privateOracles": [
+    "ordered case-sensitive serialized authored prefix and no duplicate minimum fields in suffix",
+    "full schema before baseline",
+    "strict singleton/sequence result Resource equality",
+    "retained replay equality",
+    "state unchanged by refusals",
+    "no TX context/receipt",
+    "stale revision independently differs before dispatch"
+  ],
+  "publicQualification": false,
+  "aggregate": {
+    "whole": 35,
+    "uncovered": 95,
+    "omitted": 74,
+    "authored": 56,
+    "claimEligible": false,
+    "commandMinimum": {
+      "responses": 11,
+      "applications": 0,
+      "checksPassed": true
+    },
+    "totalHttp": 2314,
+    "children": 58,
+    "otherExistingOracles": "Preserve full cumulative report required/observed mapping and partial states; no whole-profile admission."
+  },
+  "rootVerification": [
+    "Compare actual sourceCommit/entry/baseline payload/configuration/artifacts to fresh provenance",
+    "All three Vitest callbacks pass; negative internal runner exactly7passed1failed after2HTTP",
+    "Original completion statuses200,200 for control, wire facts retained and projected outcome explicitly assertion-input-only",
+    "Private full-body equality is performed in app; safe output has scalar/fingerprint facts only",
+    "Exact aggregate planned/observed mapping and genuine cleanup; sampled PID absence is not exhaustive process proof"
+  ]
+}

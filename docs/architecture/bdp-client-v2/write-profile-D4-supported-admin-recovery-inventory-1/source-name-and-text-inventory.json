@@ -1,0 +1,314 @@
+[
+  {
+    "path": "apps/bdptest/src/installed-reference-startup.test.ts",
+    "sha256": "db93a0de4e13cf7330ba311435a3ea3af6877d4f6707f652875cba1b4364e0f2",
+    "matches": [
+      {
+        "line": 304,
+        "text": "it(\"does not erase a terminal owner cleanup failure or invoke owner close again on retry\", async () => {"
+      }
+    ]
+  },
+  {
+    "path": "apps/bdptest/src/read-matrix.test.ts",
+    "sha256": "b073336b967d4d8b09d74ea4c67712b28dd576d2902b1c12080960e0d58d8fd6",
+    "matches": [
+      {
+        "line": 577,
+        "text": "restoreScope: async ({ requestedScope, currentScopeEpoch, signal }) => {"
+      }
+    ]
+  },
+  {
+    "path": "apps/bdptest/src/read-update-matrix.test.ts",
+    "sha256": "37558e78d79d665363528fb2bf4f81de4f4334cd8438a099030cac7a68e0637b",
+    "matches": [
+      {
+        "line": 5870,
+        "text": "// through binary64, which would erase the very refusal classes being pinned."
+      }
+    ]
+  },
+  {
+    "path": "apps/bdptest/src/transactional-fresh-depth-installed.test.ts",
+    "sha256": "df4030346fc5ec402c0d77d5a5c9953542f341aa86e242d2a5e6cdcf9e09f991",
+    "matches": [
+      {
+        "line": 861,
+        "text": "erasures: [],"
+      }
+    ]
+  },
+  {
+    "path": "apps/bdptest/src/transactional-selector-admission-installed.test.ts",
+    "sha256": "527baee6dec377680beaec1402f69039d044f45d2a36165f3b739e53a517b962",
+    "matches": [
+      {
+        "line": 483,
+        "text": "erasures: [],"
+      }
+    ]
+  },
+  {
+    "path": "apps/bdptest/src/transactional-set-installed.test.ts",
+    "sha256": "4f4f942f876222521765b9830a941f2b6e0dfa01a3a66979beaa1237c4638c85",
+    "matches": [
+      {
+        "line": 904,
+        "text": "\"same-store graceful reopen is not crash or logical restore\","
+      }
+    ]
+  },
+  {
+    "path": "apps/bdptest/src/transactional-sse-installed.test.ts",
+    "sha256": "0af05a745d5c3ee74fb84adff995c39c6bf1c1ed1891a30dd5e0902f8d859d19",
+    "matches": [
+      {
+        "line": 281,
+        "text": "erasures: [],"
+      }
+    ]
+  },
+  {
+    "path": "packages/conformance/test-support/testing.test.ts",
+    "sha256": "c2da3c34015156cc154583652bd9eefc3338339cb92d3ba379950c3abe951c91",
+    "matches": [
+      {
+        "line": 125,
+        "text": "restoreScope: async () => {"
+      },
+      {
+        "line": 215,
+        "text": "restoreScope: async () => {"
+      },
+      {
+        "line": 277,
+        "text": "restoreScope: async () => ({"
+      },
+      {
+        "line": 297,
+        "text": "operation: \"scope-restore-identity\","
+      }
+    ]
+  },
+  {
+    "path": "packages/conformance/test-support/testing.ts",
+    "sha256": "51ed6be461d2e8b67bba91c195939c1611f4956b003cc33d83bc47d1739b9e54",
+    "matches": [
+      {
+        "line": 186,
+        "text": "restoreScope(options: {"
+      },
+      {
+        "line": 300,
+        "text": "case \"scope-restore-identity\":"
+      },
+      {
+        "line": 615,
+        "text": "const erased = requiredString(input, \"erasedId\");"
+      },
+      {
+        "line": 620,
+        "text": "const erasedUrl = new URL(erased, execution.scope).href;"
+      },
+      {
+        "line": 633,
+        "text": "erasedUrl,"
+      },
+      {
+        "line": 644,
+        "text": "session.excludeResourceFromAuthorizationView(erasedUrl);"
+      },
+      {
+        "line": 649,
+        "text": "[\"erased\", erasedUrl],"
+      },
+      {
+        "line": 680,
+        "text": "erased: observations.erased,"
+      },
+      {
+        "line": 1028,
+        "text": "const restored = await session.restoreScope({"
+      }
+    ]
+  },
+  {
+    "path": "packages/server/src/development-runtime.ts",
+    "sha256": "37e222682645e9d8f2d5fcf62de208640fb6216c9e9f2f279ab6017e8b9d6ca9",
+    "matches": [
+      {
+        "line": 567,
+        "text": "// re-invoke owner close or erase its original failure."
+      }
+    ]
+  },
+  {
+    "path": "packages/server/src/member-executor.test.ts",
+    "sha256": "b1f4d20a7cf935b6354f204d8d42490f4cb50b74415d20dac58997f780f886ed",
+    "matches": [
+      {
+        "line": 1973,
+        "text": "// let actual expiry erase the outcome/identity, without SQL or new format."
+      }
+    ]
+  },
+  {
+    "path": "packages/server/src/read-http.test.ts",
+    "sha256": "d3eb201e932cfc795c8091c38fad002b4625ae3c795af9bba84d3b33cabbec45",
+    "matches": [
+      {
+        "line": 291,
+        "text": "\"resource-erased\","
+      }
+    ]
+  },
+  {
+    "path": "packages/server/src/recovery-store.test.ts",
+    "sha256": "5d3a51789a8d80d14407fec6db36ff6aa27461948c285745db80f1b71ee60d2e",
+    "matches": [
+      {
+        "line": 408,
+        "text": "// Even the original owner cannot erase its now-terminal members."
+      }
+    ]
+  },
+  {
+    "path": "packages/server/src/recovery-store.ts",
+    "sha256": "48b7901e48998fe29598168a527213ebfb49e1d6e5dc5c2eb6494c862b5de9f9",
+    "matches": [
+      {
+        "line": 278,
+        "text": "* Any logical restore must preserve the complete recovery/identity state and"
+      }
+    ]
+  },
+  {
+    "path": "packages/server/src/sequence-executor.test.ts",
+    "sha256": "10bb61696597b6b2620a5168a2047f80ea9842bc479cf0c43c761b850b7f9c00",
+    "matches": [
+      {
+        "line": 770,
+        "text": "[\"resource-erased\", \"gone\", 410, \"never\"],"
+      }
+    ]
+  },
+  {
+    "path": "packages/server/src/transaction-authorization.test.ts",
+    "sha256": "4e2a4fb500e546e3a3d8d671125c37653a4df5bb46bae679f80123cc8c680760",
+    "matches": [
+      {
+        "line": 633,
+        "text": "erasures: [],"
+      }
+    ]
+  },
+  {
+    "path": "packages/server/src/transaction-batch.ts",
+    "sha256": "830ad57a680db7148fc75cd9cc10cadfc6a812448fd1704c1b0f47b13611808d",
+    "matches": [
+      {
+        "line": 566,
+        "text": "// signature would erase their requirements. Preserve extension fields explicitly."
+      }
+    ]
+  },
+  {
+    "path": "packages/server/src/transaction-changefeed.ts",
+    "sha256": "1e678ecb1b2c3e59023dbb6a2e6516763907babd79f7926ca572a4764e40fc1e",
+    "matches": [
+      {
+        "line": 47,
+        "text": "readonly erasures: readonly never[];"
+      },
+      {
+        "line": 61,
+        "text": "readonly erasures: readonly never[];"
+      },
+      {
+        "line": 140,
+        "text": "!Array.isArray(group.erasures) ||"
+      },
+      {
+        "line": 141,
+        "text": "group.erasures.length !== 0 ||"
+      },
+      {
+        "line": 177,
+        "text": "erasures: [],"
+      },
+      {
+        "line": 190,
+        "text": "erasures: [],"
+      }
+    ]
+  },
+  {
+    "path": "packages/server/src/transaction-runtime.test.ts",
+    "sha256": "4ac87ec1121760db3aff9221c2d291c3dfca45adc065c09eebcd84ed88d882f5",
+    "matches": [
+      {
+        "line": 629,
+        "text": "erasures: [],"
+      },
+      {
+        "line": 685,
+        "text": "erasures: [],"
+      }
+    ]
+  },
+  {
+    "path": "packages/server/src/transaction-service.ts",
+    "sha256": "d34b28787b70e5a14c38f1295a7cacc3bd2425768245ace46484f882987e9568",
+    "matches": [
+      {
+        "line": 727,
+        "text": "* ordered execution. Version erasure remains outside this private policy. */"
+      }
+    ]
+  },
+  {
+    "path": "packages/server/src/transaction-snapshot.test.ts",
+    "sha256": "57227357dccc13e6f47ec35aad06b238fba90743c4d0283361c4931ec1c5bad5",
+    "matches": [
+      {
+        "line": 169,
+        "text": "erasures: [],"
+      }
+    ]
+  },
+  {
+    "path": "packages/server/src/transaction-snapshot.ts",
+    "sha256": "dac7c2f121cfb6bae557b3917f5ec52e47a358ab39da4062f6a5c26f5b9fbd83",
+    "matches": [
+      {
+        "line": 77,
+        "text": "readonly erasures: readonly never[];"
+      },
+      {
+        "line": 609,
+        "text": "erasures: [],"
+      }
+    ]
+  },
+  {
+    "path": "packages/server/src/transaction-store.ts",
+    "sha256": "2feff60d7064cf6a1f8b15c8360b98c1671a04762346d1d6bb3a9321ef69a2d5",
+    "matches": [
+      {
+        "line": 1370,
+        "text": "erasures: [],"
+      }
+    ]
+  },
+  {
+    "path": "packages/server/src/transaction-submission.test.ts",
+    "sha256": "22a6f8da462658b13fd1e7bd40a75ab39ba60103e4268b5f29d17efbca69d6b8",
+    "matches": [
+      {
+        "line": 1250,
+        "text": "// Defensive composition only: no supported live epoch rotation is introduced."
+      }
+    ]
+  }
+]

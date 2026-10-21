@@ -1,0 +1,57 @@
+{
+  "firstMismatch": {
+    "bounds": {
+      "birthUtf8BytesEach": 64,
+      "commUtf8BytesEach": 1024,
+      "integerDecimalCharacters": 11,
+      "permittedCommEntries": 2,
+      "slotBytes": 32768,
+      "stateUtf8Bytes": 16
+    },
+    "derivedSubpredicates": [
+      "birthEqual",
+      "pgidEqual",
+      "rowIsZombie",
+      "oldTerminalSeen",
+      "commPermitted",
+      "which existing boolean branch rejected"
+    ],
+    "heldFields": [
+      "PID and PPID from current parsed row",
+      "old.birth, old.pgid, exact old.permittedComm, old.terminalSeen",
+      "row.birth, row.pgid, row.comm, row.state",
+      "existing generation, last_at, census_at, original failure_at if set and origin",
+      "direct handle stored PID/returncode and registration role/authenticated/direct facts if already present; null when absent"
+    ],
+    "hook": "At existing first old-is-not-None and matches(row,old)==False branch, preserve original uncertain reason/call and continue",
+    "overflow": "Do not clip or fabricate an exact tuple; slot unavailable with explicit diagnostic-capacity status. Original sticky failure/reason remains. No missing/partial diagnostics become success.",
+    "sideEffectsForbidden": [
+      "new ps/getpgid/stat/UID/process query",
+      "poll/wait/reap/send_signal",
+      "additional ownership matches() invocation or allowlist extension",
+      "clear/reorder/replace unknown reasons",
+      "retain exception message, environment, credentials, full argv or raw all-host rows"
+    ]
+  },
+  "firstSignalError": {
+    "bounds": {
+      "exceptionClassUtf8Bytes": 128,
+      "integerDecimalCharacters": 11,
+      "livePids": 4096,
+      "slotBytes": 65536
+    },
+    "heldFields": [
+      "record.pgid, signal, at, attempted/success flags",
+      "type(exc).__name__ and exc.errno only, no str(exc)/strerror",
+      "already computed direct_anchor, current, fresh_anchor and exact live PID list",
+      "last_at, generation, original failure_at, origin",
+      "already retained direct handle PID/returncode and group observed/closed state"
+    ],
+    "hook": "Existing caught OSError path after attempted group signal; preserve original signal record/error class and uncertain(signal-error)",
+    "notInvented": "fresh_anchor is the actual already-computed aggregate boolean. No chosen matching PID is fabricated or new matches() call performed. Live PIDs are metadata, never permission to signal.",
+    "overflow": "Explicit unavailable/capacity status preserves original failure; no clipped live list represented as complete."
+  },
+  "publication": "Final registry event carries latest write-once slots; original tentative file/unknown list/reasons keep original attribution. Missing event/slot on abnormal exit is UNKNOWN, not reconstructed.",
+  "scope": "Two write-once in-memory diagnostic slots; observational, never an ownership/signaling predicate or causal repair",
+  "status": "PROPOSED DATA ONLY"
+}

@@ -1,0 +1,301 @@
+      }
+    }
+    const report = {
+      observation: name,
+      declaredSourceCommit: source,
+      workspaceDirty,
+      entryLiteral: process.env.BDP_TRANSACTIONAL_INSTALLED_ENTRY ?? "workspace-dist",
+      entry,
+      entrySha256: hash(readFileSync(entry)),
+      sourceAttribution:
+        "externally bound by exact source/archive/consumer/lock/proof; no child attestation",
+      metadata: f.metadata,
+      counts: f.counts,
+      records: f.records,
+      child: { pid: f.child.child.pid, ...f.events.state },
+      workSettled,
+      cleanupKnown,
+      pending: f.pending.size,
+      directory: f.directory,
+      directoryAbsent: !existsSync(f.directory),
+      elapsedMs: performance.now() - f.started,
+      failureCount: failures.length,
+      outcome: failures.length ? "failed" : "passed",
+      claimEligible: false,
+    };
+    const serialized = JSON.stringify(report);
+    if (f.tokens.some((value) => serialized.includes(value)))
+      failures.push(new Error("D3 unsafe report"));
+    else console.log(serialized);
+  }
+  if (failures.length) throw new AggregateError(failures, "D3 installed witness or cleanup failed");
+}
+async function d3InstalledFixture(
+  name: string,
+  expected: { scheduled: number; completed: number; aborts: number; exact: number; raw: number },
+) {
+  const started = performance.now(),
+    controller = new AbortController(),
+    cancelled = Promise.withResolvers<never>();
+  void cancelled.promise.catch(() => {});
+  controller.signal.addEventListener("abort", () => cancelled.reject(controller.signal.reason), {
+    once: true,
+  });
+  const timer = setTimeout(() => controller.abort(new Error("D3 installed work deadline")), 45000);
+  const directory = mkdtempSync(path.join(tmpdir(), "bdp-d3-installed-")),
+    writer = randomBytes(32).toString("base64url"),
+    reader = randomBytes(32).toString("base64url");
+  let child: D3Session;
+  try {
+    child = await launchInstalledTransaction(
+      entry,
+      {
+        scope,
+        directory,
+        create: true,
+        artifacts: d3Artifacts,
+        credentials: [
+          { token: writer, principal: "writer", canMutate: true },
+          { token: reader, principal: "reader", canMutate: false },
+        ],
+      },
+      controller.signal,
+    );
+  } catch (error) {
+    clearTimeout(timer);
+    controller.abort();
+    // Launcher did not return a process handle. Keep evidence; no invented absence.
+    console.log(
+      JSON.stringify({
+        observation: name,
+        directory,
+        startupOwnership: "unknown",
+        outcome: "failed",
+        claimEligible: false,
+      }),
+    );
+    throw error;
+  }
+  const events = d3ObservedChild(child.child);
+  const metadata = Object.fromEntries(
+    [
+      "scope",
+      "profile",
+      "history",
+      "claimEligible",
+      "payloadIdentity",
+      "artifactIdentity",
+      "policyIdentity",
+      "authenticationIdentity",
+      "runtimeConfigurationIdentity",
+      "authorityMode",
+    ].map((key) => [key, child.ready[key]]),
+  );
+  const counts = { scheduled: 0, completed: 0, aborts: 0, exact: 0, raw: 0 },
+    records: unknown[] = [];
+  const pending = new Set<Promise<unknown>>();
+  function track<T>(promise: Promise<T>) {
+    pending.add(promise);
+    void promise.then(
+      () => pending.delete(promise),
+      () => pending.delete(promise),
+    );
+    return promise;
+  }
+  const credential = (role: string) =>
+    role === "writer" ? writer : role === "reader" ? reader : undefined;
+  async function send(
+    id: string,
+    method: D3InstalledMethod,
+    value: string,
+    status: number,
+    options: {
+      body?: unknown;
+      key?: string;
+      role?: "writer" | "reader" | "anonymous";
+      fields?: readonly { name: string; value: string }[];
+    } = {},
+  ) {
+    controller.signal.throwIfAborted();
+    if (++counts.scheduled > expected.scheduled) throw new Error("D3 request inventory bound");
+    counts.exact++;
+    const url = d3Safe(value, scope, true),
+      role = options.role ?? "writer",
+      dial = new URL(d3String(child.ready.listenUrl));
+    const fields = [
+      ...(options.fields ?? []),
+      ...(options.body === undefined ? [] : [{ name: "content-type", value: "application/json" }]),
+      ...(options.key === undefined ? [] : [{ name: "idempotency-key", value: options.key }]),
+    ];
+    const execute = createRawHttpExchangeExecutor(
+      { transport: "plain", host: dial.hostname, port: Number(dial.port) },
+      {
+        requestTimeoutMs: 5000,
+        maximumBodyBytes: 131072,
+        maximumHeaderBytes: 16384,
+        exactMode: {
+          scope,
+          profile: "transactional",
+          routes: [{ method, url }],
+          maximumRequestHeaderBytes: 16384,
+          maximumRequestBodyBytes: 65536,
+          defaultCredentialRef: role,
+          credentialHandles: [
+            { id: "writer", headerNames: ["authorization"] },
+            { id: "reader", headerNames: ["authorization"] },
+            { id: "anonymous", headerNames: [] },
+          ],
+          resolveCredentials: ({ credentialRef }) => {
+            const token = credential(credentialRef);
+            return token === undefined ? {} : { authorization: `Bearer ${token}` };
+          },
+        },
+      },
+    );
+    const task = execute({
+      method,
+      url,
+      signal: controller.signal,
+      credentialRef: role,
+      raw: {
+        headerLines: fields,
+        ...(options.body === undefined
+          ? {}
+          : { bodyBytes: Buffer.from(JSON.stringify(options.body)) }),
+      },
+    });
+    try {
+      const response = await track(task);
+      counts.completed++;
+      records.push({
+        id,
+        transport: "public-exact",
+        method,
+        url,
+        credential: role,
+        fieldOccurrences: fields,
+        status: response.status,
+        headers: response.headers,
+        bodyOctets: response.bodyOctets,
+        bodySha256: hash(response.bodyText),
+        wireSha256: response.wireResponseBytes ? hash(response.wireResponseBytes) : undefined,
+        requestWriteState: response.exactRequest?.writeState,
+      });
+      expect(response.status, id).toBe(status);
+      expect(response.headers["x-bdp-development"]).toBe("non-attesting");
+      expect(response.headers["x-bdp-development-limit"]).toBeUndefined();
+      expect(response.exactRequest?.writeState).toBe("complete");
+      expect(response.wireResponseBytes?.length).toBeGreaterThan(0);
+      expect(response.bodyOctets).toBe(Buffer.byteLength(response.bodyText));
+      if (method === "HEAD" || status === 204 || status === 304) expect(response.bodyText).toBe("");
+      return response;
+    } catch (error) {
+      records.push({
+        id,
+        transport: "public-exact",
+        terminal: "rejected",
+        errorClass: error instanceof Error ? error.name : "unknown",
+      });
+      throw error;
+    }
+  }
+  function localRaw(
+    id: string,
+    url: string,
+    options: { host?: string; role: "writer" | "anonymous"; fields?: readonly [string, string][] },
+  ) {
+    controller.signal.throwIfAborted();
+    if (++counts.scheduled > expected.scheduled)
+      throw new Error("D3 local request inventory bound");
+    counts.raw++;
+    const target = new URL(d3Safe(url)),
+      dial = new URL(d3String(child.ready.listenUrl)),
+      socket = connect({ host: dial.hostname, port: Number(dial.port) });
+    const socketClosed = Promise.withResolvers<void>();
+    track(socketClosed.promise);
+    socket.once("close", () => socketClosed.resolve());
+    const written = Promise.withResolvers<void>();
+    void written.promise.catch(() => {});
+    const state = {
+      settled: false,
+      responseStarted: false,
+      written: false,
+      closeRequested: false,
+      writeAtMs: undefined as number | undefined,
+      closeRequestedAtMs: undefined as number | undefined,
+      responseAtMs: undefined as number | undefined,
+    };
+    let bytes = Buffer.alloc(0),
+      ended = false,
+      terminalRecorded = false;
+    const recordTerminal = (terminal: string, partialStatus?: number) => {
+      if (terminalRecorded) return;
+      terminalRecorded = true;
+      records.push({
+        id,
+        transport: "callback-local-raw",
+        method: "GET",
+        url: target.href,
+        credential: options.role,
+        state: { ...state },
+        terminal,
+        partialStatus,
+        partialWireAvailable: bytes.length > 0,
+        actualWireOctets: bytes.length,
+        actualWireSha256: bytes.length ? hash(bytes) : undefined,
+      });
+    };
+    const response = track(
+      new Promise<D3InstalledResponse>((resolve, reject) => {
+        const partialStatus = () => {
+          const match = /^HTTP\/1\.1 (\d{3}) /.exec(bytes.subarray(0, 32).toString("latin1"));
+          return match ? Number(match[1]) : undefined;
+        };
+        const fail = (error: D3RawTerminal) => {
+          if (!state.settled) {
+            state.settled = true;
+            written.reject(error);
+            recordTerminal(error.category, error.partialStatus);
+            reject(error);
+          }
+          socket.destroy();
+        };
+        socket.setTimeout(5000, () => fail(new D3RawTerminal("timeout", partialStatus())));
+        socket.on("error", () =>
+          fail(
+            new D3RawTerminal(
+              state.closeRequested && state.written ? "abort" : "network",
+              partialStatus(),
+            ),
+          ),
+        );
+        socket.on("data", (chunk: Buffer) => {
+          state.responseStarted = true;
+          state.responseAtMs ??= performance.now() - started;
+          if (bytes.length + chunk.length > 163840) {
+            fail(new D3RawTerminal("bound", partialStatus()));
+            return;
+          }
+          bytes = Buffer.concat([bytes, chunk]);
+          const split = bytes.indexOf("\r\n\r\n");
+          if (
+            (split < 0 && bytes.length > 16384) ||
+            (split >= 0 && split + 4 > 16384) ||
+            (split >= 0 && bytes.length - split - 4 > 131072)
+          )
+            fail(new D3RawTerminal("bound", partialStatus()));
+        });
+        socket.once("end", () => {
+          ended = true;
+          if (state.settled) return;
+          try {
+            const split = bytes.indexOf("\r\n\r\n"),
+              status = partialStatus();
+            if (split < 0 || status === undefined) throw new Error("D3 incomplete raw headers");
+            const headers: Record<string, string> = {};
+            for (const line of bytes.subarray(0, split).toString("latin1").split("\r\n").slice(1)) {
+              const colon = line.indexOf(":");
+              if (colon <= 0) throw new Error("D3 raw invalid header");
+              headers[line.slice(0, colon).toLowerCase()] = line.slice(colon + 1).trim();
+            }
+            const bodyText = bytes.subarray(split + 4).toString("utf8");

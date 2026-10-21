@@ -1,0 +1,68 @@
+{
+  "order": [
+    "format-check",
+    "lint",
+    "fresh-build",
+    "smoke",
+    "evidence-read"
+  ],
+  "commands": {
+    "format-check": [
+      "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+      "/Users/dbox/repos/wt/vickie/vickie-fresh-depth-serving/node_modules/@biomejs/biome/bin/biome",
+      "format",
+      "--config-path=/Users/dbox/repos/wt/vickie/vickie-fresh-depth-serving/biome.json",
+      "scripts/smoke-executables.mjs"
+    ],
+    "lint": [
+      "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+      "/Users/dbox/repos/wt/vickie/vickie-fresh-depth-serving/node_modules/@biomejs/biome/bin/biome",
+      "lint",
+      "--config-path=/Users/dbox/repos/wt/vickie/vickie-fresh-depth-serving/biome.json",
+      "scripts/smoke-executables.mjs"
+    ],
+    "fresh-build": [
+      "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+      "/Users/dbox/.cache/node/corepack/v1/pnpm/11.20.0/bin/pnpm.cjs",
+      "run",
+      "build"
+    ],
+    "smoke": [
+      "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+      "/Users/dbox/.cache/node/corepack/v1/pnpm/11.20.0/bin/pnpm.cjs",
+      "run",
+      "smoke"
+    ],
+    "evidence-read": [
+      "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+      "/Users/dbox/repos/wt/vickie/vickie-fresh-depth-serving/scripts/read-cohort-evidence.mjs"
+    ]
+  },
+  "acceptedRawExitCodes": {
+    "format-check": [
+      0
+    ],
+    "lint": [
+      0
+    ],
+    "fresh-build": [
+      0
+    ],
+    "smoke": [
+      0
+    ],
+    "evidence-read": [
+      0,
+      2
+    ]
+  },
+  "maxSeconds": 120,
+  "termSeconds": 115,
+  "automaticRetries": 0,
+  "evidenceMeaning": {
+    "0": "verified claim",
+    "2": "no claim; admission remains fail-closed",
+    "1": "FAIL claimed evidence unproved",
+    "3": "FAIL unavailable or stale build"
+  }
+}

@@ -1,0 +1,151 @@
+{
+  "controlChanges": "Namespace1->2; closed false/empty controls rebound to final implementation index after construction. Final controls are exact indexed bytes and not a self-referential implementation delta pair. No release authority.",
+  "count": 11,
+  "helperSemanticDeltas": [
+    "run.py",
+    "worker.py",
+    "audit.py"
+  ],
+  "pairs": [
+    {
+      "after": "commands.json",
+      "afterSha256": "9a1c47c7058bca7909617d727fe616cc54898786eb91ed5cb9041ffdf61bb916",
+      "before": "predecessor1/commands.json",
+      "beforeSha256": "f67be62b1c8b37a6752e122cf588ffdd8ba16e9ec5ade3bfaa6d81a524b4405b",
+      "forward": "adaptations/commands.json.patch",
+      "forwardAndInverseAppliedByOwnPureDataParser": true,
+      "forwardSha256": "5a4f86ff7dfbbf6b70391daab750cbce2f6658edbc5b49083838b1873ce8ecd9",
+      "inverse": "adaptations/commands.json.inverse.patch",
+      "inverseSha256": "43961352e62c20eb6fd763b1cbe7e89b1b252004564367432dcb8f664b1b9126",
+      "path": "commands.json"
+    },
+    {
+      "after": "run.py",
+      "afterSha256": "8d566e38d3bd2d8fa25ed1ee666aabd6df41dd50abe78239873fec580cddb25b",
+      "before": "predecessor1/run.py",
+      "beforeSha256": "5d9458eac34e02e78332c115209158613c7de35002797dba2635d7c935e713f7",
+      "forward": "adaptations/run.py.patch",
+      "forwardAndInverseAppliedByOwnPureDataParser": true,
+      "forwardSha256": "f197fe11fbf19d16757b7d23edc056289720f152ddbfbef0b44f3e23767e96ba",
+      "inverse": "adaptations/run.py.inverse.patch",
+      "inverseSha256": "321cd2537474eadd1043f98fe58dcc2e1a074ad1b86cdcb2c39faffaae652cc6",
+      "path": "run.py"
+    },
+    {
+      "after": "worker.py",
+      "afterSha256": "0dd2a636948e47e1a9c6caae94bf45bbc3e34e4a2962cce82d3cb48025b47fd1",
+      "before": "predecessor1/worker.py",
+      "beforeSha256": "9b65af014abacd839ecceaa54efbb42fe8d686cbc9bb3aca08bf8f4642cc47c8",
+      "forward": "adaptations/worker.py.patch",
+      "forwardAndInverseAppliedByOwnPureDataParser": true,
+      "forwardSha256": "ff1658f5aa4545f424899e89df13a7dee5c20c8dee3bb2c96152b45de5b998ae",
+      "inverse": "adaptations/worker.py.inverse.patch",
+      "inverseSha256": "8b3011239c0a4d0c5b36d7dd5119cdb9b68506959a9fd4e6a1d0c0cec6ce415b",
+      "path": "worker.py"
+    },
+    {
+      "after": "audit.py",
+      "afterSha256": "6385959f7b4eee3f8f3a55c06050e0ff6bf49b33bd127f3325d01dfc0fa23883",
+      "before": "predecessor1/audit.py",
+      "beforeSha256": "a6a64a456fb810991762cbae2282adf6c03834a306e5350d0372370cc97995c6",
+      "forward": "adaptations/audit.py.patch",
+      "forwardAndInverseAppliedByOwnPureDataParser": true,
+      "forwardSha256": "d8757cad618b598e866b858515560405cf663940f0efd6a1ff28544b848dc5de",
+      "inverse": "adaptations/audit.py.inverse.patch",
+      "inverseSha256": "593838aca3ea0b94b3c1065b9953eac255598046c737a48ca99cc940d1320dac",
+      "path": "audit.py"
+    },
+    {
+      "after": "README.md",
+      "afterSha256": "040a17d588564765b0808fb86730684bc62048ed843b63f4b7c2fd60f3dfc59d",
+      "before": "predecessor1/README.md",
+      "beforeSha256": "5a6744ef02a30051cee9925f6b73b68caca87ad4b80895ff87b08682f3985557",
+      "forward": "adaptations/README.md.patch",
+      "forwardAndInverseAppliedByOwnPureDataParser": true,
+      "forwardSha256": "f9c0ae731239fd6ea5ce65ad24d60cee97746194b9c67c88fb9a41707c1bba33",
+      "inverse": "adaptations/README.md.inverse.patch",
+      "inverseSha256": "3e1689612fc0d7e192969e4d28b796a872234933fbfdebc325618572889f1434",
+      "path": "README.md"
+    },
+    {
+      "after": "report.md",
+      "afterSha256": "219580e38265d55ecacdb7e853ee4c307e2d8ab9c0793d614a95264d3b46253a",
+      "before": "predecessor1/report.md",
+      "beforeSha256": "59d2d89d026352727be2d327bc0806dc11944073bc5a7a451e093fb561f34121",
+      "forward": "adaptations/report.md.patch",
+      "forwardAndInverseAppliedByOwnPureDataParser": true,
+      "forwardSha256": "1beb6566939553a34444761e918f5a41c946e0b039115608380b9242abc9b3ac",
+      "inverse": "adaptations/report.md.inverse.patch",
+      "inverseSha256": "7926c1901927ae7d9ebd11b655c7ff9cbd18956ef0cf2601f114df88973832aa",
+      "path": "report.md"
+    },
+    {
+      "after": "report-schemas.json",
+      "afterSha256": "3e2fe687ceb1d393ffe536e95b5f524556e18295f575503ac75d05a32c6e57a1",
+      "before": "predecessor1/report-schemas.json",
+      "beforeSha256": "e472c0eb016dc3491d3afcb3faf2e757aa878ff4bcc2cd6210dbfcdcba592c5f",
+      "forward": "adaptations/report-schemas.json.patch",
+      "forwardAndInverseAppliedByOwnPureDataParser": true,
+      "forwardSha256": "58dbe487868aab1bb28945d731ef77925f1df5ca76a0e2f467a12bea9eaaa60d",
+      "inverse": "adaptations/report-schemas.json.inverse.patch",
+      "inverseSha256": "abd0f1df47ab1119f58bdd05c54b922d14e6929cd5607358c736881dc3e2c8d8",
+      "path": "report-schemas.json"
+    },
+    {
+      "after": "ownership-and-clock-contract.json",
+      "afterSha256": "7c1a6ed590cc6109dfdafbee814335752e13f7ce2081d6c0bc2b9a5cc344f594",
+      "before": "predecessor1/ownership-and-clock-contract.json",
+      "beforeSha256": "8f5e853dd566f4e3fc809fc7b06782b6dfe07b2418fab837ee03763c6a120d65",
+      "forward": "adaptations/ownership-and-clock-contract.json.patch",
+      "forwardAndInverseAppliedByOwnPureDataParser": true,
+      "forwardSha256": "54a8ed05dba445ed4383255ebbab5876a13c3262ce695ac0c9c68b404d28562e",
+      "inverse": "adaptations/ownership-and-clock-contract.json.inverse.patch",
+      "inverseSha256": "df398b725cdcf4011917a103e9764c50cef39bf2a64245e5cb74b8531774e371",
+      "path": "ownership-and-clock-contract.json"
+    },
+    {
+      "after": "reconciliation.json",
+      "afterSha256": "dc5d38ec5903b2e67176dd08adcc2d48fa9dcd6f7e458962e2aa5af181637927",
+      "before": "predecessor1/reconciliation.json",
+      "beforeSha256": "50f16509b49b39799c1974a0381199aa0c4bfd14a314ebfab9fc1033cef0879d",
+      "forward": "adaptations/reconciliation.json.patch",
+      "forwardAndInverseAppliedByOwnPureDataParser": true,
+      "forwardSha256": "b140b807fe0dccaa16cf1f68f08bc2e592781325fd991711f88ed474a3b02c3a",
+      "inverse": "adaptations/reconciliation.json.inverse.patch",
+      "inverseSha256": "1e1be05393efbd7071664137a2d6c490b7010e1c84185f86c4b0c277c7841051",
+      "path": "reconciliation.json"
+    },
+    {
+      "after": "synthetic-controls-plan.json",
+      "afterSha256": "8582d4ea6d5f0fed2651d4f128dd542a8c734dd17b7c7744026591aead2ad0b1",
+      "before": "predecessor1/synthetic-controls-plan.json",
+      "beforeSha256": "33c848e8fe638929d5c104b2a36639f072e504bcaf2ea4ee16061ccc00d0e1d5",
+      "forward": "adaptations/synthetic-controls-plan.json.patch",
+      "forwardAndInverseAppliedByOwnPureDataParser": true,
+      "forwardSha256": "0f2ddccd73480bfd52f087707c2700316fb311648b503e875c544f0fc04a21ff",
+      "inverse": "adaptations/synthetic-controls-plan.json.inverse.patch",
+      "inverseSha256": "cf127c0c50de5f67ee06aaad37bb8d0eddf16d5b5ad91cfe0acb99c052ee6f84",
+      "path": "synthetic-controls-plan.json"
+    },
+    {
+      "after": "static-inspection.json",
+      "afterSha256": "e0b2eb35764da15979ab338ac61225389b98c40946496c2c6600b753c0971d96",
+      "before": "predecessor1/static-inspection.json",
+      "beforeSha256": "cd0ba0e3bf7e4b1a99fd269f7165d01a950bff11f9c00953286c1cc9c36eb642",
+      "forward": "adaptations/static-inspection.json.patch",
+      "forwardAndInverseAppliedByOwnPureDataParser": true,
+      "forwardSha256": "0fc90473cb06e883fc64f361c8808e6ec331da72159214d7359bcae3cd86597a",
+      "inverse": "adaptations/static-inspection.json.inverse.patch",
+      "inverseSha256": "582857b7575c7ed217cd72de39a57a7df4f7ead23d84c41937746b3e96e0725e",
+      "path": "static-inspection.json"
+    }
+  ],
+  "state": "genuine original1 -> current2 pairs; original template adaptations preserved as historical only",
+  "unchangedHelperBytes": [
+    "gate.py",
+    "packages.py",
+    "scanner.py",
+    "schema-audit.mjs",
+    "guarded-action-session-20261018-021624-549f.py"
+  ]
+}

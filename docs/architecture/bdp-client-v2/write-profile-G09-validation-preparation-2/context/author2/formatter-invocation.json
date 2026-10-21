@@ -1,0 +1,16 @@
+{
+  "argv": [
+    "/Users/dbox/repos/wt/vickie/vickie-event-admission-replay-minimum/node_modules/.pnpm/@biomejs+cli-darwin-arm64@2.5.7/node_modules/@biomejs/cli-darwin-arm64/biome",
+    "format",
+    "--write",
+    "packages/server/src/transaction-service.test.ts",
+    "packages/server/src/transaction-schema-http.test.ts",
+    "apps/bdptest/src/transactional-schema-installed.test.ts"
+  ],
+  "cwd": "/Users/dbox/repos/wt/vickie/vickie-schema-minimum",
+  "toolSha256": "f71fe80909d2f70f1e051320f5ba9dfd553bc5ef3bacef5cdee1b00ee96a285c",
+  "existingActualToolRecord": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-source-authoring-1/format-record.json",
+  "existingActualToolRecordSha256": "03f9790f0c125a7fbccc33b4ed0408a2b3c38743767ecc6c15c6113f935fbbb6",
+  "attempts": 1,
+  "sourceOnlyException": "exact three-file format --write only"
+}

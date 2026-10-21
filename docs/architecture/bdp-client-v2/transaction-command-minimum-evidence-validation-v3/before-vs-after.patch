@@ -1,0 +1,627 @@
+--- v2/gate.py
++++ v3/gate.py
+@@ -41,11 +41,11 @@
+ def load_gate(name):
+     require(__debug__,"Python assertions must remain enabled")
+     g=json.loads((P/"execution-gate.json").read_text()) # absent until root release
+-    require(g.get("released") is True and g.get("authorizationKind")=="command-minimum-thirty-source-three-installed","Gate closed")
++    require(g.get("released") is True and g.get("authorizationKind")=="command-minimum-thirty-source-two-helpers-three-installed","Gate closed")
+     for key in ("rootAcceptance","growthAcceptance","sourceManifest","councilAcceptance"):
+         d=g[key];p=Path(d["path"])
+         require(p.is_absolute() and sha(p.read_bytes())==d["sha256"],"Changed acceptance: "+key)
+-    names={"gate.py","supervise.py","packages.py","build-inventory.py","adjudicate.py","commands.json"}
++    names={"gate.py","supervise.py","packages.py","build-inventory.py","adjudicate.py","helper-review.py","commands.json"}
+     require(set(g["preparationSha256"])==names,"Preparation binding incomplete")
+     for n,h in g["preparationSha256"].items():require(sha((P/n).read_bytes())==h,"Preparation changed: "+n)
+     config=json.loads((P/"commands.json").read_text())
+@@ -55,9 +55,9 @@
+     require(git("rev-parse","HEAD").decode().strip()==g["sourceHead"],"Source HEAD differs")
+     require(git("rev-parse","HEAD^{tree}").decode().strip()==g["sourceTree"],"Source tree differs")
+     require(g["sourceHead"]==PARENT or git("show","-s","--format=%P","HEAD").decode().strip()==PARENT,"Unexpected ancestry")
+-    require(source_hashes()==g["sourceSha256"] and len(g["sourceSha256"])==10,"Ten source hashes differ")
++    require(source_hashes()==g["sourceSha256"] and len(g["sourceSha256"])==12,"Twelve source hashes differ")
+     require(sha(git("diff","--binary","HEAD"))==g["sourceDiffSha256"],"Working diff differs")
+-    require(set(git("diff","--name-only",PARENT).decode().splitlines())==set(config["ownedPaths"]),"Ten-file footprint differs")
++    require(set(git("diff","--name-only",PARENT).decode().splitlines())==set(config["ownedPaths"]),"Twelve-file footprint differs")
+     require(not git("ls-files","--others","--exclude-standard").strip(),"Untracked product files")
+     require(sha((W/"pnpm-lock.yaml").read_bytes())==g["sourceLockSha256"],"Source lock differs")
+     require(g["node"]=="/Users/dbox/.nvm/versions/node/v24.16.0/bin/node" and g["pnpm"]=="/Users/dbox/.cache/node/corepack/v1/pnpm/11.20.0/bin/pnpm.cjs","Tool paths differ")
+@@ -82,6 +82,7 @@
+         if spec["phase"]=="installed":
+             overrides={"BDP_TRANSACTIONAL_INSTALLED_ENTRY":str(entry),"BDP_TRANSACTIONAL_SOURCE_COMMIT":g["finalHead"]}
+             if name=="installed-positive":overrides["BDP_TRANSACTIONAL_OBSERVATION_OUTPUT"]=str(E/(name+".observation.json"))
+-            else:overrides["BDP_TRANSACTIONAL_MINIMUM_CONTROL_OUTPUT"]=str(E/(name+".observation"))
++            elif name in ("installed-batch-control","installed-reader-control"):overrides["BDP_TRANSACTIONAL_MINIMUM_CONTROL_OUTPUT"]=str(E/(name+".observation"))
++            else:require(name in ("installed-compatible-minimum","installed-snapshot-wait"),"Unknown installed helper")
+             spec["validatedBdpOverrides"]=overrides
+     return g,spec
+--- /dev/null
++++ v3/helper-review.py
+@@ -0,0 +1,55 @@
++"""Read-only reconciliation of one genuine helper log/result; no matrix report assumptions."""
++from pathlib import Path
++import json,os,re,sys
++from gate import P,W,E,load_gate,completed,document,require,sha
++name=sys.argv[1]
++require(name in ("installed-compatible-minimum","installed-snapshot-wait"),"Unknown helper")
++g,_=load_gate(name+"-review");completed(name)
++spec=json.loads((P/"commands.json").read_text())["commands"][name]
++r=json.loads((E/(name+".results.json")).read_text())
++actual=[(str(Path(s["name"]).resolve().relative_to(W)),a["fullName"],a["status"]) for s in r["testResults"] for a in s["assertionResults"] if a["status"] not in ("pending","skipped","todo")]
++require(actual==[(x["path"],x["fullName"],"passed") for x in spec["selectedCases"]],"Wrong helper selection")
++require(r["success"] and r["numPassedTests"]==1 and r["numFailedTests"]==0 and not r.get("unhandledErrors"),"Helper failed")
++records=[]
++for line in (E/(name+".log")).read_text().splitlines():
++    line=re.sub(r"\x1b\[[0-9;]*m","",line).strip()
++    if not line.startswith("{"):continue
++    try:value=json.loads(line)
++    except json.JSONDecodeError:continue
++    if value.get("observation")==spec["helperObservation"]:records.append((value,line))
++require(len(records)==1,"Missing/duplicate helper observation")
++o,line=records[0];p=document(g,"installedProvenance")
++require(o["outcome"]=="passed" and o["aborted"] is False and o["claimEligible"] is False and o["workspaceDirty"] is False,"Invalid helper outcome/declaration")
++require(o["declaredSourceCommit"]==g["finalHead"] and Path(o["entry"]).resolve()==Path(p["entryRealpath"]) and o["entrySha256"]==p["entrySha256"],"Wrong helper source/entry")
++b=o["binding"];s=b["served"]
++require(b["authorityMode"]=="canonical" and re.fullmatch("[0-9a-f]{64}",b["runtimeConfigurationIdentity"]) is not None,"Wrong runtime binding")
++require(s["sourceCommit"]==g["finalHead"] and s["installedPayloadDigest"]==p["payloadIdentity"] and s["scope"]=="https://reference.invalid/acme/" and s["profile"]=="transactional" and s["history"] is False,"Wrong served binding")
++for key in ("installedContractsDigest","policyDigest","authenticationDigest","fixtureDigest"):
++    require(re.fullmatch("[0-9a-f]{64}",s[key]) is not None,"Missing helper digest")
++require(s["fixtureDigest"]==sha((W/"packages/conformance/test-support/transactional/fixture-v1.json").read_bytes()),"Wrong fixture bytes")
++scope="https://reference.invalid/acme/"
++if name=="installed-compatible-minimum":
++    require(o["closed"] is True and o["childExitCode"]==0,"Collection child not closed normally")
++    children=[o["childPid"]]
++    expected=[("POST","operations/batch",200),("POST","operations/batch",200),("GET","beads/never",404),("HEAD","beads/never?view=properties",404),("GET","links/never",404),("HEAD","links/never?view=properties",404),("GET","beads/a",404),("GET","beads/a?view=properties",404),("GET","links/l",404),("GET","links/l?view=properties",500)]
++else:
++    require(len(o["children"])==1 and o["children"][0]["exitCode"]==0 and o["children"][0]["signalCode"] is None,"Snapshot child not closed normally")
++    children=[o["children"][0]["pid"]];expected=[("GET","snapshot",200),("GET","snapshot",503)]
++responses=o["completedResponses"]
++require(o["exchanges"]==len(responses)==spec["workload"]["httpExpected"],"Wrong completed-response count")
++require([(x["method"],x["url"],x["status"]) for x in responses]==[(m,scope+url,status) for m,url,status in expected],"Wrong helper method/URL/status inventory")
++for x in responses:
++    require(type(x["responseBytes"]) is int and x["responseBytes"]>=0 and re.fullmatch("[0-9a-f]{64}",x["wireSha256"]) is not None,"Invalid response fingerprint")
++    if name=="installed-compatible-minimum":require(re.fullmatch("[0-9a-f]{64}",x["bodySha256"]) is not None,"Invalid body fingerprint")
++    if x["method"]=="HEAD":require(x["responseBytes"]==0,"Unexpected HEAD body")
++for pid in children:
++    require(type(pid) is int and pid>0,"Missing child PID")
++    try:os.kill(pid,0)
++    except ProcessLookupError:pass
++    else:raise RuntimeError("Reported helper child PID still present")
++# completed() separately requires the supervised owned temp prefix/group/sampled PIDs absent.
++observation=E/(name+".helper-observation.json")
++with observation.open("x") as f:f.write(line+"\n")
++result={"candidateMatches":True,"rootReviewRequired":True,"command":name,"actualHttp":len(responses),"reportedChildren":len(children),"childPidsIndependentlyAbsent":children,"sourceCommit":g["finalHead"],"sourceTree":g["finalTree"],"payloadIdentity":p["payloadIdentity"],"observationSha256":sha(observation.read_bytes()),"resultsSha256":sha((E/(name+".results.json")).read_bytes()),"logSha256":sha((E/(name+".log")).read_bytes()),"claimEligible":False,"limitations":"Operator-only helper regression. Actual logged response fingerprints retained; no raw bodies or exact headers reconstructed. Supervisor source attribution is not child-attested Git. No reader/anonymous, whole-profile or installed fault qualification."}
++with (E/(name+".review-candidate.json")).open("x") as f:f.write(json.dumps(result,indent=2)+"\n")
++print(json.dumps(result))
+--- v2/commands.json
++++ v3/commands.json
+@@ -7,16 +7,18 @@
+     "sha256": "88dc1ce6e43a142ac27be1b4636425463b8be23fafe9ca7e115b5370df172ea7"
+   },
+   "ownedPaths": [
+-    "packages/conformance/test-support/transactional/manifest-v1.json",
++    "apps/bdptest/src/transactional-collection-minimum-installed.test.ts",
++    "apps/bdptest/src/transactional-matrix.test.ts",
++    "apps/bdptest/src/transactional-snapshot-installed.test.ts",
++    "packages/conformance/src/executable-manifest.test.ts",
++    "packages/conformance/src/executable-manifest.ts",
++    "packages/conformance/src/http-executor.test.ts",
++    "packages/conformance/src/http-executor.ts",
++    "packages/conformance/src/profile-contract-plan.test.ts",
++    "packages/conformance/src/runner.test.ts",
++    "packages/conformance/src/transactional-cumulative.test.ts",
+     "packages/conformance/test-support/transactional/coverage-v1.json",
+-    "packages/conformance/src/transactional-cumulative.test.ts",
+-    "packages/conformance/src/profile-contract-plan.test.ts",
+-    "apps/bdptest/src/transactional-matrix.test.ts",
+-    "packages/conformance/src/executable-manifest.ts",
+-    "packages/conformance/src/http-executor.ts",
+-    "packages/conformance/src/executable-manifest.test.ts",
+-    "packages/conformance/src/http-executor.test.ts",
+-    "packages/conformance/src/runner.test.ts"
++    "packages/conformance/test-support/transactional/manifest-v1.json"
+   ],
+   "executionOrder": [
+     "offline-setup",
+@@ -36,6 +38,10 @@
+     "prepare-consumer",
+     "consumer-install",
+     "verify-installed",
++    "installed-compatible-minimum",
++    "installed-compatible-minimum-review",
++    "installed-snapshot-wait",
++    "installed-snapshot-wait-review",
+     "installed-positive",
+     "installed-positive-review",
+     "installed-batch-control",
+@@ -179,7 +185,7 @@
+         "--maxWorkers=1",
+         "--reporter=verbose",
+         "--reporter=json",
+-        "--outputFile.json=/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-command-minimum-evidence-validation-v2/run/static-cases.results.json"
++        "--outputFile.json=/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-command-minimum-evidence-validation-v3/run/static-cases.results.json"
+       ],
+       "supervisorSeconds": 120,
+       "requires": [
+@@ -336,7 +342,7 @@
+       "cwd": "/Users/dbox/repos/wt/vickie/vickie-command-minimum-evidence",
+       "argv": [
+         "python3",
+-        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-command-minimum-evidence-validation-v2/build-inventory.py"
++        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-command-minimum-evidence-validation-v3/build-inventory.py"
+       ],
+       "supervisorSeconds": 120,
+       "requires": [
+@@ -368,7 +374,7 @@
+       "cwd": "/Users/dbox/repos/wt/vickie/vickie-command-minimum-evidence",
+       "argv": [
+         "python3",
+-        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-command-minimum-evidence-validation-v2/packages.py",
++        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-command-minimum-evidence-validation-v3/packages.py",
+         "directory"
+       ],
+       "supervisorSeconds": 120,
+@@ -390,7 +396,7 @@
+         "@bdp/protocol",
+         "pack",
+         "--pack-destination",
+-        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-command-minimum-evidence-validation-v2/run/packages"
++        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-command-minimum-evidence-validation-v3/run/packages"
+       ],
+       "supervisorSeconds": 120,
+       "requires": [
+@@ -411,7 +417,7 @@
+         "@bdp/server",
+         "pack",
+         "--pack-destination",
+-        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-command-minimum-evidence-validation-v2/run/packages"
++        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-command-minimum-evidence-validation-v3/run/packages"
+       ],
+       "supervisorSeconds": 120,
+       "requires": [
+@@ -427,7 +433,7 @@
+       "cwd": "/Users/dbox/repos/wt/vickie/vickie-command-minimum-evidence",
+       "argv": [
+         "python3",
+-        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-command-minimum-evidence-validation-v2/packages.py",
++        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-command-minimum-evidence-validation-v3/packages.py",
+         "tar"
+       ],
+       "supervisorSeconds": 120,
+@@ -448,7 +454,7 @@
+       "cwd": "/Users/dbox/repos/wt/vickie/vickie-command-minimum-evidence",
+       "argv": [
+         "python3",
+-        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-command-minimum-evidence-validation-v2/packages.py",
++        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-command-minimum-evidence-validation-v3/packages.py",
+         "consumer"
+       ],
+       "supervisorSeconds": 120,
+@@ -462,7 +468,7 @@
+     },
+     "consumer-install": {
+       "phase": "package",
+-      "cwd": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-command-minimum-evidence-validation-v2/run/consumer",
++      "cwd": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-command-minimum-evidence-validation-v3/run/consumer",
+       "argv": [
+         "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+         "/Users/dbox/.cache/node/corepack/v1/pnpm/11.20.0/bin/pnpm.cjs",
+@@ -486,7 +492,7 @@
+       "cwd": "/Users/dbox/repos/wt/vickie/vickie-command-minimum-evidence",
+       "argv": [
+         "python3",
+-        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-command-minimum-evidence-validation-v2/packages.py",
++        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-command-minimum-evidence-validation-v3/packages.py",
+         "installed"
+       ],
+       "supervisorSeconds": 120,
+@@ -511,12 +517,12 @@
+         "--maxWorkers=1",
+         "--reporter=verbose",
+         "--reporter=json",
+-        "--outputFile.json=/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-command-minimum-evidence-validation-v2/run/installed-positive.results.json"
+-      ],
+-      "supervisorSeconds": 120,
+-      "requires": [
+-        {
+-          "id": "verify-installed",
++        "--outputFile.json=/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-command-minimum-evidence-validation-v3/run/installed-positive.results.json"
++      ],
++      "supervisorSeconds": 120,
++      "requires": [
++        {
++          "id": "installed-snapshot-wait-review",
+           "exit": 0
+         }
+       ],
+@@ -548,7 +554,7 @@
+       "cwd": "/Users/dbox/repos/wt/vickie/vickie-command-minimum-evidence",
+       "argv": [
+         "python3",
+-        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-command-minimum-evidence-validation-v2/adjudicate.py",
++        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-command-minimum-evidence-validation-v3/adjudicate.py",
+         "installed-positive"
+       ],
+       "supervisorSeconds": 120,
+@@ -573,7 +579,7 @@
+         "--maxWorkers=1",
+         "--reporter=verbose",
+         "--reporter=json",
+-        "--outputFile.json=/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-command-minimum-evidence-validation-v2/run/installed-batch-control.results.json"
++        "--outputFile.json=/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-command-minimum-evidence-validation-v3/run/installed-batch-control.results.json"
+       ],
+       "supervisorSeconds": 120,
+       "requires": [
+@@ -610,7 +616,7 @@
+       "cwd": "/Users/dbox/repos/wt/vickie/vickie-command-minimum-evidence",
+       "argv": [
+         "python3",
+-        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-command-minimum-evidence-validation-v2/adjudicate.py",
++        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-command-minimum-evidence-validation-v3/adjudicate.py",
+         "installed-batch-control"
+       ],
+       "supervisorSeconds": 120,
+@@ -635,7 +641,7 @@
+         "--maxWorkers=1",
+         "--reporter=verbose",
+         "--reporter=json",
+-        "--outputFile.json=/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-command-minimum-evidence-validation-v2/run/installed-reader-control.results.json"
++        "--outputFile.json=/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-command-minimum-evidence-validation-v3/run/installed-reader-control.results.json"
+       ],
+       "supervisorSeconds": 120,
+       "requires": [
+@@ -672,13 +678,139 @@
+       "cwd": "/Users/dbox/repos/wt/vickie/vickie-command-minimum-evidence",
+       "argv": [
+         "python3",
+-        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-command-minimum-evidence-validation-v2/adjudicate.py",
++        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-command-minimum-evidence-validation-v3/adjudicate.py",
+         "installed-reader-control"
+       ],
+       "supervisorSeconds": 120,
+       "requires": [
+         {
+           "id": "installed-reader-control",
++          "exit": 0
++        }
++      ],
++      "ownedTempPrefixes": []
++    },
++    "installed-compatible-minimum": {
++      "phase": "installed",
++      "cwd": "/Users/dbox/repos/wt/vickie/vickie-command-minimum-evidence",
++      "argv": [
++        "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
++        "/Users/dbox/repos/wt/vickie/vickie-command-minimum-evidence/node_modules/vitest/vitest.mjs",
++        "run",
++        "apps/bdptest/src/transactional-collection-minimum-installed.test.ts",
++        "--testNamePattern",
++        "^observes\\ genuine\\ installed\\ compatible\\ missing\\ minimum404\\ and\\ preserved\\ behind\\ gap$",
++        "--maxWorkers=1",
++        "--reporter=verbose",
++        "--reporter=json",
++        "--outputFile.json=/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-command-minimum-evidence-validation-v3/run/installed-compatible-minimum.results.json"
++      ],
++      "supervisorSeconds": 120,
++      "requires": [
++        {
++          "id": "verify-installed",
++          "exit": 0
++        }
++      ],
++      "ownedTempPrefixes": [
++        "bdp-collection-minimum-installed-"
++      ],
++      "selectedCases": [
++        {
++          "path": "apps/bdptest/src/transactional-collection-minimum-installed.test.ts",
++          "fullName": "observes genuine installed compatible missing minimum404 and preserved behind gap"
++        }
++      ],
++      "workload": {
++        "caseExecutions": 1,
++        "httpExpected": 10,
++        "httpMaximum": 10,
++        "children": 1,
++        "listeners": 1,
++        "owners": 1,
++        "storeDirectories": 1,
++        "requestTimeoutMs": 5000,
++        "cohortDeadlineMs": 90000,
++        "testTimeoutMs": 120000,
++        "operatorOnly": true
++      },
++      "helperObservation": "private-installed-compatible-missing-minimum"
++    },
++    "installed-compatible-minimum-review": {
++      "phase": "review",
++      "cwd": "/Users/dbox/repos/wt/vickie/vickie-command-minimum-evidence",
++      "argv": [
++        "python3",
++        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-command-minimum-evidence-validation-v3/helper-review.py",
++        "installed-compatible-minimum"
++      ],
++      "supervisorSeconds": 120,
++      "requires": [
++        {
++          "id": "installed-compatible-minimum",
++          "exit": 0
++        }
++      ],
++      "ownedTempPrefixes": []
++    },
++    "installed-snapshot-wait": {
++      "phase": "installed",
++      "cwd": "/Users/dbox/repos/wt/vickie/vickie-command-minimum-evidence",
++      "argv": [
++        "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
++        "/Users/dbox/repos/wt/vickie/vickie-command-minimum-evidence/node_modules/vitest/vitest.mjs",
++        "run",
++        "apps/bdptest/src/transactional-snapshot-installed.test.ts",
++        "--testNamePattern",
++        "^requires\\ a\\ real\\ fixed\\-head\\ Snapshot\\ wait\\ over\\ packed\\ bytes$",
++        "--maxWorkers=1",
++        "--reporter=verbose",
++        "--reporter=json",
++        "--outputFile.json=/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-command-minimum-evidence-validation-v3/run/installed-snapshot-wait.results.json"
++      ],
++      "supervisorSeconds": 120,
++      "requires": [
++        {
++          "id": "installed-compatible-minimum-review",
++          "exit": 0
++        }
++      ],
++      "ownedTempPrefixes": [
++        "bdp-snapshot-installed-"
++      ],
++      "selectedCases": [
++        {
++          "path": "apps/bdptest/src/transactional-snapshot-installed.test.ts",
++          "fullName": "requires a real fixed-head Snapshot wait over packed bytes"
++        }
++      ],
++      "workload": {
++        "caseExecutions": 1,
++        "httpExpected": 2,
++        "httpMaximum": 2,
++        "children": 1,
++        "listeners": 1,
++        "owners": 1,
++        "storeDirectories": 1,
++        "requestTimeoutMs": 5000,
++        "cohortDeadlineMs": 45000,
++        "testTimeoutMs": 60000,
++        "operatorOnly": true
++      },
++      "helperObservation": "private-installed-snapshot"
++    },
++    "installed-snapshot-wait-review": {
++      "phase": "review",
++      "cwd": "/Users/dbox/repos/wt/vickie/vickie-command-minimum-evidence",
++      "argv": [
++        "python3",
++        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-command-minimum-evidence-validation-v3/helper-review.py",
++        "installed-snapshot-wait"
++      ],
++      "supervisorSeconds": 120,
++      "requires": [
++        {
++          "id": "installed-snapshot-wait",
+           "exit": 0
+         }
+       ],
+@@ -691,18 +823,26 @@
+   "limits": {
+     "noAutomaticRetries": true,
+     "sourceStaticCases": 30,
+-    "installedCases": 3,
+-    "installedHttpExpected": 208,
+-    "installedHttpMaximum": 225,
+-    "installedChildrenMaximum": 26,
++    "installedCases": 5,
++    "installedHttpExpected": 220,
++    "installedHttpMaximum": 237,
++    "installedChildrenMaximum": 28,
+     "otherCommandsProductHttp": 0,
+     "otherCommandsProductChildren": 0,
+     "claimEligible": false,
+     "sourceHttpExpected": 1,
+     "sourceHttpMaximum": 1,
+     "sourceListeners": 1,
+-    "combinedHttpExpected": 209,
+-    "combinedHttpMaximum": 226
++    "combinedHttpExpected": 221,
++    "combinedHttpMaximum": 238,
++    "installedMatrixCases": 3,
++    "installedMatrixHttpExpected": 208,
++    "installedMatrixHttpMaximum": 225,
++    "installedMatrixChildrenMaximum": 26,
++    "installedHelperCases": 2,
++    "installedHelperHttpExpected": 12,
++    "installedHelperHttpMaximum": 12,
++    "installedHelperChildrenMaximum": 2
+   },
+   "controlOracle": {
+     "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-command-minimum-evidence-draft/event-id-repair/controls.json",
+@@ -713,11 +853,11 @@
+     "sha256": "db1599a1f1b38f437722b8abae8acda1847c1b1e4fd8bb2c983b118d32b2acb6"
+   },
+   "sourceBinding": {
+-    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-command-minimum-evidence-draft/raw-header-repair/source-binding.json",
+-    "sha256": "612cbb471df504b3a0440e11f15a29911cf59aeeae89247836f04d5b19dc580b"
++    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-command-minimum-evidence-draft/raw-header-test-closure/source-binding.json",
++    "sha256": "90ced9c641febb7e5cc5d494c7dc837aa55e16b2f538a852066b7b66c5491961"
+   },
+   "selectionBinding": {
+-    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-command-minimum-evidence-draft/raw-header-repair/selection.json",
++    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-command-minimum-evidence-draft/raw-header-test-closure/selection.json",
+     "sha256": "17859e4aff9ab0863077df90dab022dfeeef9a80f6625a113398d47b68ac8865"
+   }
+ }
+--- v2/prepared-source.json
++++ v3/prepared-source.json
+@@ -1,27 +1,29 @@
+ {
+-  "phase": "FROZEN_DIRTY_TEN_PATH_SOURCE_PREPARATION_NOT_INSTALLED_ATTRIBUTION",
++  "phase": "FROZEN_DIRTY_TWELVE_PATH_SOURCE_PREPARATION_NOT_INSTALLED_ATTRIBUTION",
+   "sourceHead": "453b6dab386746bb03aac2c0a293572b8a71c969",
+   "sourceTree": "40782d97c9764bc19ae78c46d1d39475e3db317a",
+   "sourceSha256": {
+-    "packages/conformance/test-support/transactional/manifest-v1.json": "29729151cf6da641545910ec3880f9609c13b319af7bbe99d3d2ad47833dab96",
++    "apps/bdptest/src/transactional-collection-minimum-installed.test.ts": "3d7b202d71ab0857629b5694a397dad03bba1d36122440ba003036c8f16ba63a",
++    "apps/bdptest/src/transactional-matrix.test.ts": "e319109ab0e9f7258e6918ae789ed7a5672eb7aabd0ec8725ae38e3634164e68",
++    "apps/bdptest/src/transactional-snapshot-installed.test.ts": "014a3b127a4be87f958e822df22fc24711bde92fa1c328e3e217e0991e5c22d2",
++    "packages/conformance/src/executable-manifest.test.ts": "ca570192d8763610b39a750d376df899b3f0f01a06b3c928e95bf3d83fd538af",
++    "packages/conformance/src/executable-manifest.ts": "65af0451cd046d57c10b0666e54efbaaecc2225551d3accc5cc1d032322913fa",
++    "packages/conformance/src/http-executor.test.ts": "13e289fe572f56f1bc15dc2a7f2ee3302c4196fc140ee2abc609871a4a5493c4",
++    "packages/conformance/src/http-executor.ts": "770a8405ae1532484b5a2658619c067832644947888f95e0c6575002376f1b5d",
++    "packages/conformance/src/profile-contract-plan.test.ts": "e5be4864e456431db74bd325ec64d785bf3c5301a6be5b230bfcc7351ade4fc4",
++    "packages/conformance/src/runner.test.ts": "ad7e756bad1f70ecc6285e19830bc001ebec01899ed868af3fb4b08e888aba86",
++    "packages/conformance/src/transactional-cumulative.test.ts": "0d1f87199222e2426b048eae1a5aadd11c20c04298d31e3198ca46897e5492d3",
+     "packages/conformance/test-support/transactional/coverage-v1.json": "4619813e9446e0e714a64c11eac184531950f57720e32c7ef414c7e3342121af",
+-    "packages/conformance/src/transactional-cumulative.test.ts": "0d1f87199222e2426b048eae1a5aadd11c20c04298d31e3198ca46897e5492d3",
+-    "apps/bdptest/src/transactional-matrix.test.ts": "e319109ab0e9f7258e6918ae789ed7a5672eb7aabd0ec8725ae38e3634164e68",
+-    "packages/conformance/src/profile-contract-plan.test.ts": "e5be4864e456431db74bd325ec64d785bf3c5301a6be5b230bfcc7351ade4fc4",
+-    "packages/conformance/src/executable-manifest.ts": "65af0451cd046d57c10b0666e54efbaaecc2225551d3accc5cc1d032322913fa",
+-    "packages/conformance/src/http-executor.ts": "770a8405ae1532484b5a2658619c067832644947888f95e0c6575002376f1b5d",
+-    "packages/conformance/src/executable-manifest.test.ts": "2e548c9e7ef8ff01e4933ce33f48bd97e91e277aebdd70c658c350c081e9ba7c",
+-    "packages/conformance/src/http-executor.test.ts": "4255422c6b7c5b0a0cadd71c73a045a3a2ae12b5e17708c14afc2607b6007aee",
+-    "packages/conformance/src/runner.test.ts": "3933d97fcdae91efeb23e24af468791d8917588b159f228433fceaa1ae317485"
++    "packages/conformance/test-support/transactional/manifest-v1.json": "29729151cf6da641545910ec3880f9609c13b319af7bbe99d3d2ad47833dab96"
+   },
+-  "sourceDiffSha256": "fc4fd747379917531c4d64d3fe52603337e72ec3f78e09aedcab8e9a8cc0b4b7",
++  "sourceDiffSha256": "06cf7eb8ca3d4e0a4caaeee81ee5688a9e44f24895809414b164833068d207bb",
+   "sourceLockSha256": "4150d8821c96dbc2cfec0b2762ff76b58318079f65fa4f5c8858ef2dd61f8d6d",
+   "authorSourceBinding": {
+-    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-command-minimum-evidence-draft/raw-header-repair/source-binding.json",
+-    "sha256": "612cbb471df504b3a0440e11f15a29911cf59aeeae89247836f04d5b19dc580b"
++    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-command-minimum-evidence-draft/raw-header-test-closure/source-binding.json",
++    "sha256": "90ced9c641febb7e5cc5d494c7dc837aa55e16b2f538a852066b7b66c5491961"
+   },
+   "authorSelection": {
+-    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-command-minimum-evidence-draft/raw-header-repair/selection.json",
++    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-command-minimum-evidence-draft/raw-header-test-closure/selection.json",
+     "sha256": "17859e4aff9ab0863077df90dab022dfeeef9a80f6625a113398d47b68ac8865"
+   }
+ }
+--- v2/execution-gate.example.json
++++ v3/execution-gate.example.json
+@@ -1,6 +1,6 @@
+ {
+   "released": false,
+-  "authorizationKind": "command-minimum-thirty-source-three-installed",
++  "authorizationKind": "command-minimum-thirty-source-two-helpers-three-installed",
+   "rootAcceptance": {
+     "path": "ROOT_MUST_SUPPLY_ABSOLUTE_PATH",
+     "sha256": "ROOT_MUST_SUPPLY_ACTUAL_SHA256"
+@@ -10,36 +10,39 @@
+     "sha256": "ROOT_MUST_SUPPLY_ACTUAL_SHA256"
+   },
+   "sourceManifest": {
+-    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-command-minimum-evidence-draft/raw-header-repair/source-binding.json",
+-    "sha256": "612cbb471df504b3a0440e11f15a29911cf59aeeae89247836f04d5b19dc580b"
++    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-command-minimum-evidence-draft/raw-header-test-closure/source-binding.json",
++    "sha256": "90ced9c641febb7e5cc5d494c7dc837aa55e16b2f538a852066b7b66c5491961"
+   },
+   "councilAcceptance": {
+     "path": "ROOT_MUST_SUPPLY_ABSOLUTE_PATH",
+     "sha256": "ROOT_MUST_SUPPLY_ACTUAL_SHA256"
+   },
+   "preparationSha256": {
+-    "gate.py": "8972c80da49d921ece0cbf0b013a43366dcdea4c0af670fa3ec8b0389668c1ce",
++    "gate.py": "0996ba64e3fa88fb718044c6fd8ce79a02d10b4d8f721ea962ad18bb6a402b02",
+     "supervise.py": "304c538d9f501c1b11c95f721a367ce990b4322bfe155ced022073f496252942",
+     "packages.py": "e5cde5e8943eca879257c744e108e6a401272d6926d265c2927f8bdd3ee23655",
+     "build-inventory.py": "1993c66eb2a1ac3b2df1bc00dbe0530117e168a84ba4ff0c5d11587524fa1616",
+     "adjudicate.py": "cb206b6ad9983018dcc1903f1f5907324894474bdf4d38660fce896a33880d16",
+-    "commands.json": "af55310fd57c8c89f9b5b64235fe01d076fe172273f0153c6f2c7aa6d52841f1"
++    "helper-review.py": "2ffc5cf9ed82866ccdc60b94cee1281c309702487e0912d6db1b0c6c111956a1",
++    "commands.json": "221c88752f1af4fe76a76218ca06b62a9c6de561c617a89a7644724ec0dcde22"
+   },
+   "sourceHead": "453b6dab386746bb03aac2c0a293572b8a71c969",
+   "sourceTree": "40782d97c9764bc19ae78c46d1d39475e3db317a",
+   "sourceSha256": {
+-    "packages/conformance/test-support/transactional/manifest-v1.json": "29729151cf6da641545910ec3880f9609c13b319af7bbe99d3d2ad47833dab96",
++    "apps/bdptest/src/transactional-collection-minimum-installed.test.ts": "3d7b202d71ab0857629b5694a397dad03bba1d36122440ba003036c8f16ba63a",
++    "apps/bdptest/src/transactional-matrix.test.ts": "e319109ab0e9f7258e6918ae789ed7a5672eb7aabd0ec8725ae38e3634164e68",
++    "apps/bdptest/src/transactional-snapshot-installed.test.ts": "014a3b127a4be87f958e822df22fc24711bde92fa1c328e3e217e0991e5c22d2",
++    "packages/conformance/src/executable-manifest.test.ts": "ca570192d8763610b39a750d376df899b3f0f01a06b3c928e95bf3d83fd538af",
++    "packages/conformance/src/executable-manifest.ts": "65af0451cd046d57c10b0666e54efbaaecc2225551d3accc5cc1d032322913fa",
++    "packages/conformance/src/http-executor.test.ts": "13e289fe572f56f1bc15dc2a7f2ee3302c4196fc140ee2abc609871a4a5493c4",
++    "packages/conformance/src/http-executor.ts": "770a8405ae1532484b5a2658619c067832644947888f95e0c6575002376f1b5d",
++    "packages/conformance/src/profile-contract-plan.test.ts": "e5be4864e456431db74bd325ec64d785bf3c5301a6be5b230bfcc7351ade4fc4",
++    "packages/conformance/src/runner.test.ts": "ad7e756bad1f70ecc6285e19830bc001ebec01899ed868af3fb4b08e888aba86",
++    "packages/conformance/src/transactional-cumulative.test.ts": "0d1f87199222e2426b048eae1a5aadd11c20c04298d31e3198ca46897e5492d3",
+     "packages/conformance/test-support/transactional/coverage-v1.json": "4619813e9446e0e714a64c11eac184531950f57720e32c7ef414c7e3342121af",
+-    "packages/conformance/src/transactional-cumulative.test.ts": "0d1f87199222e2426b048eae1a5aadd11c20c04298d31e3198ca46897e5492d3",
+-    "apps/bdptest/src/transactional-matrix.test.ts": "e319109ab0e9f7258e6918ae789ed7a5672eb7aabd0ec8725ae38e3634164e68",
+-    "packages/conformance/src/profile-contract-plan.test.ts": "e5be4864e456431db74bd325ec64d785bf3c5301a6be5b230bfcc7351ade4fc4",
+-    "packages/conformance/src/executable-manifest.ts": "65af0451cd046d57c10b0666e54efbaaecc2225551d3accc5cc1d032322913fa",
+-    "packages/conformance/src/http-executor.ts": "770a8405ae1532484b5a2658619c067832644947888f95e0c6575002376f1b5d",
+-    "packages/conformance/src/executable-manifest.test.ts": "2e548c9e7ef8ff01e4933ce33f48bd97e91e277aebdd70c658c350c081e9ba7c",
+-    "packages/conformance/src/http-executor.test.ts": "4255422c6b7c5b0a0cadd71c73a045a3a2ae12b5e17708c14afc2607b6007aee",
+-    "packages/conformance/src/runner.test.ts": "3933d97fcdae91efeb23e24af468791d8917588b159f228433fceaa1ae317485"
++    "packages/conformance/test-support/transactional/manifest-v1.json": "29729151cf6da641545910ec3880f9609c13b319af7bbe99d3d2ad47833dab96"
+   },
+-  "sourceDiffSha256": "fc4fd747379917531c4d64d3fe52603337e72ec3f78e09aedcab8e9a8cc0b4b7",
++  "sourceDiffSha256": "06cf7eb8ca3d4e0a4caaeee81ee5688a9e44f24895809414b164833068d207bb",
+   "sourceLockSha256": "4150d8821c96dbc2cfec0b2762ff76b58318079f65fa4f5c8858ef2dd61f8d6d",
+   "node": "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+   "pnpm": "/Users/dbox/.cache/node/corepack/v1/pnpm/11.20.0/bin/pnpm.cjs",
+--- v2/preparation-report.md
++++ v3/preparation-report.md
+@@ -1,27 +1,39 @@
+-# Successor validation preparation — frozen and closed; not executed
++# V3 validation preparation — frozen, closed, not executed
+ 
+-This packet prepares the root-authorized exact-name context-header repair. It has not executed any command or imported product modules. No execution-gate.json or run directory exists. The original transaction-command-minimum-evidence-validation directory and all failed artifacts remain untouched; original-packet-binding.json records their hashes. The original static attempt returned1passed/4failed/94skipped, and its two selected app callbacks never registered because module initialization rejected bdp-authorization-view. No installed cohort ran there. Prior setup/type/build successes remain attributed to that original five-file draft.
++Frozen12-path author source binding90ced9c641febb7e5cc5d494c7dc837aa55e16b2f538a852066b7b66c5491961, full diff06cf7eb8ca3d4e0a4caaeee81ee5688a9e44f24895809414b164833068d207bb, at base453b6dab/tree40782d97. All12 actual hashes and working diff were read-only verified. This remains a dirty source snapshot, not a final installed commit. Original five evidence files and two conformance production classifier files retain V2 bytes; the successor changes three test assertions and two installed helper credential registrations. No product files were modified by this preparation.
+ 
+-## Source and selection
++V and all successful V2 artifacts remain unchanged in their original directories. original-packet-binding.json hashes every current V2 top-level artifact plus flat run evidence, excluding process sample streams and temporary directories. Actual V2 nine-stage success/30passed601skipped remains attributed to fc4fd747. OriginalV static1passed4failed94skipped/app0registered remains failed. Neither becomes V3 execution evidence. No V3 execution-gate.json or run directory exists.
+ 
+-Own no product paths. Frozen author binding612cbb471df504b3a0440e11f15a29911cf59aeeae89247836f04d5b19dc580b and full diff fc4fd747379917531c4d64d3fe52603337e72ec3f78e09aedcab8e9a8cc0b4b7 bind all ten paths. Read-only inspection verified each actual source hash, HEAD453b6dab/tree40782d97, exact diff and absence of untracked product files. The original five evidence files remain byte-identical to event-final/ecc0; five additional conformance parser/executor and test files implement the exact-name correction. Gate and build inventory now require ten source hashes and exact footprint, not five. prepared-source.json binds that frozen dirty snapshot; this is not final installed commit attribution. The root must inspect the final actual source/code review and explicitly release command IDs. A native/static release may precede actual Claude completion only at root's explicit discretion; merging still requires both. No gate or document here asserts completed council or validation.
++## Source sequence and script delta
+ 
+-The source command sequence remains offline frozen setup, typecheck, fresh build, format-check, lint, boundaries, Read seal, exact selected cases, then read-only build inventory. One anchored full-name alternation selects exactly30 callbacks in six modules, maxWorkers1. commands.json records every path/fullName and executable argv. The30 are7new+15existing classifier regressions and8existing evidence callbacks, including the historical preservation/fence callback omitted from the original seven-case packet. Existing top-level module imports evaluate schema, fixtures and app bundle construction; they are actual work. No full-file suite or unfiltered matrix is selected.
++Run the full nine-stage source/check sequence once only after root release: offline frozen setup, typecheck, fresh build, format-check, lint, boundaries, Read seal, exact30 source callbacks, read-only build inventory. The30 full-name/path identities and anchored regex are unchanged from V2 (7new classifier +15retained classifier +8existing evidence). Six modules evaluate their normal schema/fixture/app setup. One loopback HTTP request/listener; zero source-phase product children/stores. Existing fixture cleanup and120s external command bound remain; no new listener timeout or broad suite.
+ 
+-There is exactly one planned loopback TCP request/listener in the exact HTTP executor regression, with existing socket/listener cleanup; zero installed product children, stores or databases in these30 callbacks. Worker/compiler processes are separately real. No distinct new listener deadline is introduced: existing test timeouts and120s supervisor remain. The source one-wire workload is separate from the three installed cohorts. Remaining commands have no product HTTP/children.
++supervise.py, packages.py, adjudicate.py and build-inventory.py are byte-identical to V2. The wrapper still requires reviewed supervisor7f0d08b5a1c819131c2efd7f5c258b565414cbe70c65cd8b8b0ffe9ec3ba0065. gate.py changes only the authorization identifier,12-path footprint/hash count, new helper-review script pin, and installed override branching: helpers receive only BDP_TRANSACTIONAL_INSTALLED_ENTRY and BDP_TRANSACTIONAL_SOURCE_COMMIT; matrix output overrides apply only to the three matrix commands. commands.json changes output paths, actual source binding/ownership, two helper and two postprocessor commands/dependencies and accounting. before-vs-after.patch/json contain complete deltas, including the new bounded helper-review.py; existing script functions are not otherwise refactored.
+ 
+-## Packaging and installed phases
++## Fresh archives and installed ordering
+ 
+-Fresh source build required; never reuse the failed predecessor's emitted conformance graph. After successful source/static checks and root's clean ordinary commit, packaging gate requires the exact final commit/tree and matching ten-path build source hashes. The root must bind the successful build-output-inventory.json, then create fresh protocol/server archives and external consumer via the existing reviewed scripts. Historical build records keep their original dirty-snapshot attribution even if the same bytes are committed afterward. No source-only test observation is relabeled as installed evidence.
++After all source checks and root's clean ordinary commit, root binds final commit/tree and the fresh successful build inventory. New protocol/server archives, tar/source byte inventory, fresh external consumer and actual8-package closure/payload proof are required. Existing local-tar and fast-uri3.1.5 overrides/offline install stay unchanged. Root separately pins actual consumer lock and installed provenance before any child command. Historical dirty build start records retain their attribution; matching12source bytes permit the ordinary clean commit to bind packaging. No old archive/consumer or V2 build is reused.
+ 
+-Packages.py, adjudicate.py and supervise.py are byte-identical to originalV. The wrapper still checks the previously reviewed supervisor SHA7f0d08b5a1c819131c2efd7f5c258b565414cbe70c65cd8b8b0ffe9ec3ba0065 before use. Two fresh package archives, complete tar/source byte inventory, fresh consumer local protocol tar and fast-uri3.1.5 overrides, one offline production ignore-scripts install, actual eight-package closure and independently reproduced payload identity remain required. Root pins actual consumer lock and installed provenance before child commands. No guessed payload, stale entry override, network fallback or child-attested Git claim. The repaired conformance executor and app test run from the frozen workspace; the service entry runs from the fresh installed server consumer. The archive proof does not claim conformance itself is part of the two installed product packages.
++The conformance host/test modules execute from the frozen workspace; service children execute the verified fresh consumer server entry. Archive evidence does not claim a separately installed conformance package. No child-attested source or public/profile qualification claim.
+ 
+-Installed cohorts remain exactly the full14-row positive203HTTP/22children, selected batch-body conflict4HTTP/2children and selected readonly refusal1HTTP/2children. Total208expected/225maximumHTTP/26children; combined with source regression209expected/226maximumHTTP. Keep each cohort separate and sequential. No extra probe, old control or replacement child. Existing90s cohort,120s test/supervisor,63s positive elapsed guard,5s exchange and10s preparation/cleanup remain unchanged. Command limits are the reviewed source model and test bounds, not a supervisor live network quota.
++After verify-installed, run these five installed cases sequentially, each followed by its designated read-only review:
+ 
+-## Retention, release and cleanup
++|Command|Exact callback|Expected/maxHTTP|Children|Existing cohort/test caps|
++|---|---|---:|---:|---|
++|installed-compatible-minimum|observes genuine installed compatible missing minimum404 and preserved behind gap|10/10|1|90s/120s|
++|installed-snapshot-wait|requires a real fixed-head Snapshot wait over packed bytes|2/2|1|45s/60s|
++|installed-positive|existing14-row full positive, title unchanged in commands|203/203|22|90s/120s and63spositiveelapsed|
++|installed-batch-control|discriminates command minimum evidence against minimum-batch-body-conflict|4/11|2|90s/120s|
++|installed-reader-control|discriminates command minimum evidence against minimum-readonly-credential|1/11|2|90s/120s|
+ 
+-Run only root-approved IDs through guarded-action.py then this packet's supervise.py. Every attempt has exclusive markers and original logs/results retained; no automatic retries. The reused supervisor records process groups/RSS/time, preserves returned artifacts, stops only its owned group on timeout, compares all ten source hashes and diff afterward and classifies owned runtime directories without deleting unknowns. The new source listener stays in the test worker; its tracked socket/listener cleanup must pass and the worker/group must exit. Compile caches remain explicitly classified evidence, not service leaks. Short-lived or detached descendants can evade sampling; independent final PID/directory checks and actual helper closure assertions remain separate gates.
++Total220expected/237maximumHTTP,28children; source adds1 separately, combined221expected/238maximumHTTP. The original three matrix cohorts remain208/225/26. All exchange caps5s and external command supervision120s remain unchanged. The two helpers add exactly2listeners/2owner lifetimes/2store directories. They are operator-only, not reader/anonymous coverage. Collection uses2POST+6GET+2HEAD over9URLs; Snapshot2GET overoneURL. Source inventories/test assertions bound these counts; supervisor is not an independent live network quota.
+ 
+-Build inventory demands exactly30 passed path/fullName pairs, no failed or unhandled errors, before snapshotting package outputs. Installed adjudication retains genuine reports and checks source/entry/payload/config/mirror/failure IDs and counters; it cannot infer full raw values hidden by reports. Actual app/helper equality assertions remain in source. Any unexpected failure stops dependent stages. Root owns final commit, actual code council, exact-head CI and publication. This preparation grants no profile qualification.
++## Actual helper record review and cleanup
+ 
+-Final selection exactly equals the author's30 path/fullName pairs and anchored regex (selection SHA17859e4aff9ab0863077df90dab022dfeeef9a80f6625a113398d47b68ac8865). Describe prefixes and literal parameter expansions were inspected in source. before-vs-after.patch/json include the complete changes to every original packet script/config/report, with zero-delta script hashes explicitly listed. preparation-hashes.json freezes all nine primary packet files. The gate remains absent; final ordinary commit, root release documents, approved command IDs, build output, actual consumer lock and installed provenance remain intentionally pending. Python files were parse-checked only through ast.parse; no script or product code was executed.
++helper-review.py accepts only the two explicit helper names and exact one-passed fullName/path result, no extra executed callback or unhandled error. It reads the genuine console observation (`private-installed-compatible-missing-minimum` or `private-installed-snapshot`), validates passed/non-aborted/clean/claimfalse, final source label, actual entry/hash, served payload/scope/profile/fixture/runtime digests, exact ordered response method/URL/status inventory and fingerprint structure. Collection requires closed:true/childExitCode0; Snapshot requires exactlyone child exit0/signalnull. Both independently check reported child PIDs absent via signal0. Original log is retained; the exact JSON observation line is copied only after successful reconciliation. These are fingerprints, not reconstructed response bodies or headers.
++
++The reused supervisor additionally requires absent sampled/group processes and owned runtime prefixes: bdp-collection-minimum-installed-, bdp-snapshot-installed-, and bdp-tx-installed- for matrix. Fixture cleanup assertions and read-only process checks supplement sampling; detached/short-lived unsampled processes remain a limitation. Compiler caches/unclassified entries are preserved, not deleted or called service leaks. Helper review uses neither matrix observation overrides nor matrix adjudicator; matrix adjudication remains unchanged.
++
++Unexpected failure stops dependent stages. Exclusive start/result files prevent automatic retries or replacement children. Preserve original failure and actual returned logs before postprocessing. No full-suite/source mutation/pack execution is authorized by this packet. Root owns native/actual-Claude closure, source release, final commit, package and installed phase release, exact-headCI and publication. Final source commit/tree, release document hashes, approved IDs, build/lock/provenance pins remain pending in the example; it cannot execute by itself.
++
++Preparation used only text/JSON/hash inspection and Python ast.parse. No test, build, install, service, package or preparation script was executed. Selection/lifecycle basis: transaction-command-minimum-evidence-draft/claude-context-header-source-audit.md (baaa0d54553c840472e5d86c73cff847f590d6475c0a0b4a9ff62a35c48ac5f3), plus explicit root acceptance of these two helper callbacks. All bounds are prospective.

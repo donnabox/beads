@@ -1,0 +1,31 @@
+{
+  "actualRootWholeCallerCaptureSeconds": 0.7951565417461097,
+  "callerTerminalSeconds": 0.7660037083551288,
+  "clockDomainVerifiedAuthorityFlag": false,
+  "limitsUnchanged": {
+    "KILL": 119,
+    "TERM": 115,
+    "authBefore": 10,
+    "internalDrain": 5,
+    "normalStrictBefore": 115,
+    "whole": 120
+  },
+  "nativeForcedBoundary115or119Observed": false,
+  "nativeLimiterElapsedSeconds": 0.133292417041957,
+  "nativeOrigin": 2229648.61652017,
+  "nativeSourceClock": "Time::HiRes clock_gettime(8), Darwin CLOCK_UPTIME_RAW bound in exact source; original source/XS/tool hashes checked",
+  "nativeToPythonBootstrapSeconds": 0.023644704837352037,
+  "noHardRealtimeOrFutureFitGuarantee": true,
+  "observedCommonEpochCompatible": true,
+  "ownerLastMinusNativeOriginSeconds": 0.12383383000269532,
+  "pythonClockInfo": {
+    "adjustable": false,
+    "implementation": "mach_absolute_time()",
+    "monotonic": true,
+    "resolution": 4.166666666666666e-08
+  },
+  "pythonFirst": 2229648.640164875,
+  "pythonLast": 2229648.740354,
+  "rootIncludingGuardAndDispatchSeconds": 1.423724124673754,
+  "runtimeToolResolutionObservedForThisInvocation": true
+}

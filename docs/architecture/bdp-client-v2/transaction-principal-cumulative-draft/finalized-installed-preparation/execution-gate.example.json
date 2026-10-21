@@ -1,0 +1,61 @@
+{
+  "released": false,
+  "session": "2026-10-08T20:26:35Z-81e5",
+  "approvedCommandIds": [],
+  "workspace": "/Users/dbox/repos/wt/vickie/vickie-guarded-batch",
+  "sourceBinding": {
+    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-principal-cumulative-draft/format-repair/source-binding.json",
+    "sha256": "0dbae7cb6139263cbfd3931e80d8dec2c628d7e982deecdd6c8242573a35c6e2"
+  },
+  "finalHead": null,
+  "finalTree": null,
+  "finalBase": "5d7fa3f049fa0b4db3aa8dae20e20d8e47fb3854",
+  "finalParents": null,
+  "sourceLockSha256": null,
+  "node": "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+  "pnpm": "/Users/dbox/.cache/node/corepack/v1/pnpm/11.20.0/bin/pnpm.cjs",
+  "rootAcceptance": null,
+  "councilState": null,
+  "measuredFenceAcceptance": null,
+  "sourceValidationAcceptance": null,
+  "finalSource": null,
+  "buildOutputInventory": null,
+  "rootBuildAcceptance": null,
+  "consumerLockSha256": null,
+  "installedProvenance": null,
+  "reportContractBinding": null,
+  "derivativeInventoryBinding": null,
+  "preparationSha256": {
+    "gate.py": "f47d31d70908cc3e58fc6ca6aa0c8ead3ea5374d37413d38f617a271a63a37d3",
+    "supervise.py": "1764ff4ec582f9ffc8d71b084745383feba2e965006d64ab20fb3c988a180c4a",
+    "packages.py": "77a805449749e22e366ecdf522bd0144dbdda2c63d110cdb528fd1f0566ee7f8",
+    "review-installed.py": "37567a9488fd5bbf9317cbae4dbaf18ee4acc1294c59ab25b2f54f462f2b07c4",
+    "commands.json": "dd1bdf157bc64e751c674238d7685a12f0fd60e84f61e18d08251d7f53263b8f",
+    "prepared-source.json": "0dbae7cb6139263cbfd3931e80d8dec2c628d7e982deecdd6c8242573a35c6e2",
+    "requests.json": "d8e3a11b780086209bd916c49e6d70ddb10fc6a1c77a21e1b7a17305c9f69f5b",
+    "control.json": "62f9c52cd6ac0eb01edb260756cd46cd83f783570fd9a270987561479174eb42",
+    "report-contract.json": "50d649aa82fa535e2e6e601da616b1b80d80823c504012c91d73223bb9fedfae",
+    "selection.json": "56aef43b493a6dff64402f0e793291b133cf62ac0f2b69e2d9bbb2605f84edb1"
+  },
+  "expectedProductionVersions": {
+    "@bdp/protocol": "0.0.0",
+    "@bdp/server": "0.0.0",
+    "ajv": "8.17.1",
+    "ajv-formats": "3.0.1",
+    "fast-deep-equal": "3.1.3",
+    "fast-uri": "3.1.5",
+    "json-schema-traverse": "1.0.0",
+    "require-from-string": "2.0.2"
+  },
+  "commitBridge": "actual clean ordinary source before package stages; if build occurred dirty, retain its actual source/HEAD chronology and root bridge only after all tracked inputs and emitted bytes compare; rebuild after changed integration",
+  "exampleOnly": true,
+  "preparedSourceBindingSha256": "0dbae7cb6139263cbfd3931e80d8dec2c628d7e982deecdd6c8242573a35c6e2",
+  "finalRunBinding": null,
+  "rootAcceptanceRequired": {
+    "accepted": true,
+    "validationOnlyWhileCouncilPending": "true only if root explicitly permits local validation while actual council remains pending"
+  },
+  "councilStateRequired": {
+    "status": "accepted OR pending-actual-claude with explicit root exception"
+  }
+}

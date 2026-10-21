@@ -1,0 +1,62 @@
+{
+  "observedUtc": "2026-10-18T04:33:10.698494+00:00",
+  "actualLiveProcessRows": [
+    "51679 66169 51679   2.7   0:02.30 Sat Oct 17 21:31:56 2026     /opt/homebrew/Cellar/python@3.14/3.14.5/Frameworks/Python.framework/Versions/3.14/Resources/Python.app/Contents/MacOS/Python",
+    "51688 51679 51688   0.0   0:00.17 Sat Oct 17 21:31:57 2026     /opt/homebrew/Cellar/python@3.14/3.14.5/Frameworks/Python.framework/Versions/3.14/Resources/Python.app/Contents/MacOS/Python",
+    "51716 51688 51716   0.0   0:01.02 Sat Oct 17 21:31:57 2026     /opt/homebrew/bin/claude"
+  ],
+  "reviewProcess": {
+    "pid": 51716,
+    "pgid": 51716,
+    "started": "2026-10-18T04:31:58.000396+00:00",
+    "argv": [
+      "/opt/homebrew/bin/claude",
+      "--safe-mode",
+      "-p",
+      "--tools",
+      "Read,Glob,Grep",
+      "--allowedTools",
+      "Read,Glob,Grep",
+      "--disable-slash-commands",
+      "--strict-mcp-config",
+      "--mcp-config",
+      "{\"mcpServers\":{}}",
+      "--no-session-persistence",
+      "--output-format",
+      "stream-json",
+      "--verbose",
+      "--include-partial-messages"
+    ],
+    "timeoutSeconds": 1800,
+    "termAfterSeconds": 1790
+  },
+  "actualInitialization": [
+    {
+      "model": "claude-opus-5[1m]",
+      "tools": [
+        "Glob",
+        "Grep",
+        "Read"
+      ],
+      "mcp_servers": [],
+      "permissionMode": "default"
+    }
+  ],
+  "currentExactSessionPreviouslyVerified": "2026-10-18T02:16:24Z-549f",
+  "source682Context98Artifacts9Match": true,
+  "runnerActualBeforeSnapshotMatchesSourceBinding": true,
+  "recordedStatusMatchesRoot": true,
+  "patchSha256": "00fa952644ab1725e4bfb8fc8c642683a39f60dd45f6a08de8881d590150a0b4",
+  "bothLiteralFlagOnlyReleasesVerified": true,
+  "rootFrozenInputExceptions": [
+    "claude-code-review/binding.json",
+    "launch-supervision/control.json"
+  ],
+  "packetFrozenFiles": 106,
+  "releaseRecordSha256": "132aca59eff6ca15a3a598b16dc3ed9a53575611d083fb51bba75a168d64f3e1",
+  "streamBytes": 384024,
+  "runnerTerminalExists": false,
+  "outerTerminalExists": false,
+  "noGitCommandsOrProductExecution": true,
+  "approvalInferred": false
+}

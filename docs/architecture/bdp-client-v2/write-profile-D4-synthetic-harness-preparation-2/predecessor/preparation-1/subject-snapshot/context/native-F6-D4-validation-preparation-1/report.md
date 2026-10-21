@@ -1,0 +1,13 @@
+Full independent static mechanics review requires revisions: two Medium and two Low findings. Original130-file preparation stays untouched and CLOSED. No helper/schema/probe/compiler/product/Git/reviewer/flag action was executed.
+
+1. Medium F6-N1 — gate.py116 requires `spec["prospectiveWorkload"]` for the selected installed callback, but the command omits it. The released installed path would raise KeyError before launch. Bind the existing finite workload, preserving selection and budgets.
+
+2. Medium F6-N2 — worker.py38–41 checks admission, spawns a separate product session, then sends its creation record. A startup/deadline interruption can kill the worker group before registration; worker96–105 has no bounded direct-child cleanup fallback. A never-sampled, reparented group can escape the parent registry. Maintain continuous direct-handle ownership through acknowledged registration and bounded failure/signal cleanup under the same clock. This is a legal static ordering, not an observed leak.
+
+3. Low F6-N3 — audit.py42–95 labels failed reports conforming while receipt aggregates/groups/pending are not rederived and Event traversal summaries are only self-consistent. Structurally valid invented counters before the relevant requests can pass. No positive credit leaks, but failed evidence truth is wrong. Bind actual source assignment points or refuse/retain unknown; do not impose the successful32-row prefix.
+
+4. Low F6-N4 — run.py37–55 stores birth+comm and marks any comm change sticky unknown; its ps query lacks state. A previously authenticated terminal `<defunct>` row therefore follows the same refusal as an unrelated live executable. Distinguish bounded terminal/zombie state while preserving exact live identity/reuse checks, actual reaping/group absence and live descendant cleanup. No actual D4 termination behavior was observed.
+
+The positive audit otherwise explicitly checks complete wire/semantic/callback/schema/external provenance and actual child exit-plus-stdio/cached-close facts. Structural parsing precedes tree allocation; raw originals and finite buffers are retained under the existing acceptance policy. Blocking proof/AJV work is assigned to owned workers, with final outer receipt required. These useful structures do not close the four findings. All21 stages and48 synthetic cases remain future/unrun.
+
+Verified all130 inputs and exact mirror,129 indexed members,124 SHA-string implementation pins/exact6 exclusions,919 current references,78 origins,679 source hashes/678 base protected and eight genuine forward/inverse adaptation pairs. Seven Python ASTs were parsed only; no import/evaluation/schema compilation occurred. Prior DATA-only acceptance remains valid and is not helper acceptance.

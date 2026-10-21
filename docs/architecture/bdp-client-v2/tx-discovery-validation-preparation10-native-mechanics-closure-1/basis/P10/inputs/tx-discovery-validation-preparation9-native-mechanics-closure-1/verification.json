@@ -1,0 +1,82 @@
+{
+  "allChecksErrors": [],
+  "commandMatrixNamespaceInverseByteExactP8": true,
+  "commandsNamespaceInverseByteExactP8": true,
+  "currentSourceFiles": 679,
+  "currentSourceMapExact": true,
+  "exactSelfExclusions": [
+    "implementation-hashes.json",
+    "preparation-index.json",
+    "execution-gate.json",
+    "execution-gate.closed.json",
+    "execution-gate.json.successor9.patch",
+    "execution-gate.json.successor9.inverse.patch",
+    "execution-gate.closed.json.successor9.patch",
+    "execution-gate.closed.json.successor9.inverse.patch",
+    "implementation-hashes.json.successor9.patch",
+    "implementation-hashes.json.successor9.inverse.patch",
+    "successor-delta.json"
+  ],
+  "genuinePairs": 23,
+  "helpers": {
+    "audit.py": {
+      "astSha256": "c9d6afd0b9437b9d1f0d91ea0ae1b62b326273daf0dbf4a0f5d9f8c7093a9afe",
+      "byteAndASTExactP8": true,
+      "bytes": 34757,
+      "sha256": "1d2bf73e1a35d37b1d1032358ea81c4c5a97ea0fa6304603730f17af96438d2b"
+    },
+    "gate.py": {
+      "astSha256": "6f3a67eebd1e93e1fa86f6752730377f99d5eec894f9498052b1d9a45f95c8e8",
+      "byteAndASTExactP8": true,
+      "bytes": 12588,
+      "sha256": "f3781357733810861cad42b92e667822e7d3ac60e1f214e39e7f22e1bb63bb8e"
+    },
+    "guarded-action-session-20261018-021624-549f.py": {
+      "astSha256": "9c253c2c8c7065f0baa8efedad7a7fa5ba7446fa299da25e009dab7d5a33052e",
+      "byteAndASTExactP8": true,
+      "bytes": 946,
+      "sha256": "b2d467920638e68d3b007ba9daa432e971636245eca988bfb29d7a99d6e3fb30"
+    },
+    "packages.py": {
+      "astSha256": "be1a7f90490ecf150d95be0a66bd120d6f61fcd7e7b7ae7483f92f954ed6f32b",
+      "byteAndASTExactP8": true,
+      "bytes": 8760,
+      "sha256": "162e4f04ffe9aeffe886b194c7ed41241c6ce3cf37e9c93f92fec0969095aea9"
+    },
+    "run.py": {
+      "astSha256": "7e16c556e62d26cf92de81b7bfb09db0cd18a612ef42c2f86f1f78c259e1d5de",
+      "byteAndASTExactP8": true,
+      "bytes": 5357,
+      "sha256": "16049341d6d810ea5c46a88220da30f9a04e436ee7fea0061cc26e58ba76ba70"
+    }
+  },
+  "identityPairs": 20,
+  "implementationFlatFiles": 3923,
+  "implementationIndexSha256": "63270eb2f0310410b1d41be762d443c46bcf672fc49876cbb8e4e8e90a11d865",
+  "method": "Independent Python standard-library file/hash/JSON/AST-as-data inspection; no subject import/evaluation",
+  "originActualAndCopyChecks": 3825,
+  "pairRegenerationErrors": [],
+  "pairsRegenerated": 43,
+  "referencePinsChecked": 11418,
+  "session": {
+    "expected": "2026-10-18T02:16:24Z-549f",
+    "observed": true,
+    "remoteBlob": "bf7ba706a6078857a9fcecba37e46083b985564c"
+  },
+  "sourceGitBinaryAttribution": "eed91e5f1abc48ef92f31d92690772c8a6489a48dd9e5e07af66de9c392712ab",
+  "sourceGitObservation": "Root/source records; no Git queried by this reviewer",
+  "sourceIdentity": "a61cd3fbf9fac68e3aad857a24a2456dd16b83048067eef85348d7091c0aa08e",
+  "subjectIndexedFiles": 3933,
+  "subjectMirrorExact": true,
+  "subjectPhysicalFiles": 3934,
+  "subjectPreparationIndexSha256": "0e7141786e421e4d8d9267753382da7c9bbdf3657b92a3f05de9f09ba9cf613e",
+  "unchangedData": [
+    "source-binding.json",
+    "selection.json",
+    "report-schemas.json",
+    "audit-expectations.json",
+    "source-audit-contract.json",
+    "installed-audit-contract.json",
+    "package-consumer-contract.json"
+  ]
+}

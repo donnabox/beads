@@ -1,0 +1,13 @@
+# Fresh startup validation5: selected source and first15 archive prefix
+
+Accepted first15 actual stages, no findings, observed 2026-10-18T06:36:58.053188+00:00. All15 raw exits0/accepted:true, source unchanged, no forced cleanup/errors/remaining processes/recorded BDP runtime directories. Earlier first4/first9 gate phases remain separately frozen. Current stage records preserve their actual started-gate hashes, log hashes and elapsed times.
+
+Independently inspected the full source JSON:44 selected callback names passed exactly once in their declared files;389 unselected callbacks remain pending,433 total tests across8 actual file records. The JSON suite counter45 is not a file count. numFailedTests and numFailedTestSuites are actual integer0. numRuntimeErrorTestSuites is absent, not invented as a reported zero. No unselected callback executed and no unhandled-error diagnostic matches the immediate auditor's denied patterns. The immediate audit passed0 and its accepted-observation binds the actual JSON/log/names/source identity. The corrected reached-schema negative callback passed. Source mocks/store-path/FD assertions remain bounded evidence, without independent kernel FD/socket census or installed/public Write qualification.
+
+Actual fresh protocol/server packaging and verify-archives passed. Independently read every tar member without extraction:63 protocol members(60dist),266 server members(264dist),329 total, exact expected name sets and content/source hashes. Package metadata matches current source with only server's expected workspace:*→0.0.0 protocol dependency rewrite. Archive hashes4683cb6c... and4ab4aabb... and provenance2623a21e... are recorded fully in observation.json. All682 current source files remain0c53/fullpatch515e; all465 immutable preparation inputs other than the root-owned active gate match index and docs mirror. The basea562 commit does not contain the draft; attribution is the dirty source identity and fresh build/archive chain.
+
+Independent ps census observes all210 sampled PIDs and15 process groups absent. Retained15 stage scratch/cache roots are expected; no bdp-prefixed runtime directory exists below them. This does not assert scratch roots were removed.
+
+At capture, root had expanded active approval to prefix17; no later started record existed yet. This is an epoch inventory, not a continuing claim about later work. No consumer install/lock/graph/entry proof, installed loader behavior or later required-check outcome is claimed. Root owns the next barriers and executions.
+
+Only mandatory current-session guard, pure filesystem/hash/JSON/tar inspection and one read-only process census ran. No helper/product/probe/compiler/runtime/Git/source/gate action occurred.

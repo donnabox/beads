@@ -1,0 +1,1346 @@
+Review ONLY the two-test expectation correction below against the supplied actual source and explicit operator ruling. Do not write or modify any files. Output numbered findings only in stdout, with severity, location, concrete impact and minimal correction; end with scope/omitted-context limitations. No tools, no product execution, no model override. This is a focused supplementary code review, not whole-PR approval.
+
+Actual parent is clean2e1676caa0f5861d16c5741fbd412f6c3ef7c269 before the proposed two-test diff. Production/spec bytes are unchanged. PR141 CI run38850496734 failed exactly six old expectations: two installed missing-resource collisions expected500 but now404, plus four malformed Type data-shapes expected subset text but correctly receive earlier authority invalid-input messages. New32HTTP witness passed. Full suite9337pass/6fail/1skip; downstream skipped. Original local32+2+2 and this failedCI remain historical; no passing claim for this proposed successor from them.
+
+Direct operator ruling: missing/hidden/deleted current Bead/Link/properties/alias returns ordinary uniform404 with actual current context before semantic minimum waiting/mismatch. Lexical/auth/method/request validation precedence remains unchanged. HEAD has same response metadata but no body. No change to Snapshot/incident-Link unresolved semantics, public profile admission or Type behavior is authorized.
+
+Check these repairs preserve the strong oracles rather than just make tests green: exact complete404 GET Problem and current context; HEAD exact Problem representation length/media with empty body/current context and no Location/development-limit; four exact AuthorityReadError invalid-input cases while all Promise/no-caller-code/recovery assertions and seven remaining subset cases stay. Existing alias503/foreign409/410, redirects, authorization refusal and request-count caps remain intact. The title changes solely to remove the obsolete preserved-gap claim.
+
+Validation scope proposed:11 existing parameterized Type cases (zeroHTTP/children;11 store lifetimes) plus10HTTP and18HTTP installed callbacks, one child each; total13cases/28HTTP/2children. Existing90s work signal,120s Vitest/external supervisor,5s request and10s launcher ready/close bounds unchanged. Current validation is separate; do not infer a pass. Original format check found only one3line→1line layout; final diff below includes it. Typecheck passed on substantive predecessor; whitespace-only bridge retained.
+
+Installed package basis remains immutable733728cf archives, consumer payloadeb632f81ab2026cfef8a6a35029df64bbd2f6c47b2222d0b541c73f1fa678289. Independent audit verified317members,8packages,474 recursive file visits and current production equality; test source is dirty2e successor. No hidden package rebuild, workspace fallback or source attestation by child. Exact consumer process entry is pinned separately in binding.
+
+Reviewer context was prepared by the test-repair author, who also audited the CI failures. Root independently reviewed original proposed patch/source. Please judge the code, not that prior agreement. No new review of unrelated production required; flag any missing context that actually prevents a decision.
+
+## Exact final two-test Git diff (once)
+```diff
+diff --git a/apps/bdptest/src/transactional-collection-minimum-installed.test.ts b/apps/bdptest/src/transactional-collection-minimum-installed.test.ts
+index 2f0f0d1..34179b2 100644
+--- a/apps/bdptest/src/transactional-collection-minimum-installed.test.ts
++++ b/apps/bdptest/src/transactional-collection-minimum-installed.test.ts
+@@ -585,7 +585,7 @@ it("observes genuine installed initial collection minimums, fixed-budget failure
+   });
+ }, 120000);
+ 
+-it("observes genuine installed compatible missing minimum404 and preserved behind gap", async () => {
++it("observes genuine installed compatible and ahead missing minimum404", async () => {
+   await withInstalled(
+     async (f) => {
+       let count = 0;
+@@ -733,11 +733,20 @@ it("observes genuine installed compatible missing minimum404 and preserved behin
+         "GET",
+         minimum(removed, "pos-3"),
+       );
+-      expect(behind.status).toBe(500);
+-      expect(behind.bodyText).toBe("");
+-      expect(behind.headers["x-bdp-development-limit"]).toBe("minimum-position-visibility");
+-      for (const name of ["bdp-scope-position", "bdp-scope-epoch", "bdp-authorization-view"])
+-        expect(behind.headers[name]).toBeUndefined();
++      const missingProblem = {
++        type: "https://github.com/gastownhall/bdp/problems/not-found",
++        code: "resource-not-found",
++        retry: "after-state-change",
++        status: 404,
++      };
++      expect(json(behind, 404)).toEqual(missingProblem);
++      expect(behind.bodyText).toBe(JSON.stringify(missingProblem));
++      expect(behind.bodyOctets).toBe(Buffer.byteLength(behind.bodyText));
++      expect(behind.headers["content-length"]).toBe(String(behind.bodyOctets));
++      expect(behind.headers["cache-control"]).toBe("private, no-store");
++      expect(behind.headers["x-bdp-development-limit"]).toBeUndefined();
++      expect(behind.headers.location).toBeUndefined();
++      context(behind, equal);
+       expect(count).toBe(10);
+       expect(urls.size).toBe(9);
+     },
+@@ -1127,9 +1136,26 @@ it("observes genuine installed current alias minimums within18requests", async (
+           expect(response.headers[h]).toBeUndefined();
+       };
+       const collision = await exchange(`${scope}alias/never`, "HEAD", future);
+-      noDisclosure(collision, 500);
++      expect(collision.status).toBe(404);
++      expect(collision.bodyText).toBe("");
+       expect(collision.bodyOctets).toBe(0);
+-      expect(collision.headers["x-bdp-development-limit"]).toBe("minimum-position-visibility");
++      expect(collision.headers["content-type"]?.split(";", 1)[0]).toBe("application/problem+json");
++      expect(collision.headers["content-length"]).toBe(
++        String(
++          Buffer.byteLength(
++            JSON.stringify({
++              type: "https://github.com/gastownhall/bdp/problems/not-found",
++              code: "resource-not-found",
++              retry: "after-state-change",
++              status: 404,
++            }),
++          ),
++        ),
++      );
++      expect(collision.headers["cache-control"]).toBe("private, no-store");
++      expect(collision.headers["x-bdp-development-limit"]).toBeUndefined();
++      expect(collision.headers.location).toBeUndefined();
++      context(collision, headers);
+       await aliasCommand("delete-alias", "alias-min-delete", "deleted");
+       const deleted = await exchange(`${scope}alias/work`, "GET", headers);
+       expect(json(deleted, 404)).toMatchObject({ code: "resource-not-found" });
+diff --git a/packages/server/src/transaction-read.test.ts b/packages/server/src/transaction-read.test.ts
+index 3ea3fcf..dbc5d31 100644
+--- a/packages/server/src/transaction-read.test.ts
++++ b/packages/server/src/transaction-read.test.ts
+@@ -1255,7 +1255,21 @@ describe("current Type and incident-Link minimums", () => {
+         delivery = minimum.perform(malformed[kind] as ReadRequest);
+       }).not.toThrow();
+       expect(delivery).toBeInstanceOf(Promise);
+-      await expect(delivery).rejects.toThrow("outside supported subset");
++      const requestShapeMessage =
++        kind === "accessor"
++          ? "Read request cannot have accessors"
++          : kind === "inherited"
++            ? "Read request must have a plain prototype"
++            : kind === "proxy" || kind === "revoked"
++              ? "Read request must be a plain data object"
++              : undefined;
++      if (requestShapeMessage !== undefined) {
++        await expect(delivery).rejects.toBeInstanceOf(AuthorityReadError);
++        await expect(delivery).rejects.toMatchObject({
++          reason: "invalid-input",
++          message: requestShapeMessage,
++        });
++      } else await expect(delivery).rejects.toThrow("outside supported subset");
+       expect(invoked).not.toHaveBeenCalled();
+       expect(body(await minimum.perform(requests[0]!))).toEqual(descriptor);
+       const external = { kind: "resource", resource: "type", id: link } as ReadRequest;
+```
+
+## Complete changed missing/deleted Link callback: apps/bdptest/src/transactional-collection-minimum-installed.test.ts:588–757
+```ts
+it("observes genuine installed compatible and ahead missing minimum404", async () => {
+  await withInstalled(
+    async (f) => {
+      let count = 0;
+      const urls = new Set<string>();
+      const exchange = async (...args: Parameters<typeof f.exchange>) => {
+        count++;
+        expect(count).toBeLessThanOrEqual(10);
+        urls.add(args[0] ?? `${scope}beads/`);
+        return f.exchange(...args);
+      };
+      type Result = {
+        operationIndex: number;
+        outcome: string;
+        resource?: Row & { source: string; target: string };
+        deleted?: { resourceKind: string; resource: Pick<Row, "id" | "type" | "revision"> };
+        source?: string;
+        sourceRevision?: string;
+      };
+      type Receipt = {
+        status: string;
+        detail: string;
+        requiredPosition: string;
+        effectPosition: string;
+        results: Result[];
+      };
+      const receipt = (response: HttpExchangeResponse, position: string, size: number) => {
+        const value = json<Receipt>(response);
+        expect(receiptSchema(value), JSON.stringify(receiptSchema.errors)).toBe(true);
+        expect(value).toMatchObject({
+          status: "completed",
+          detail: "available",
+          requiredPosition: position,
+          effectPosition: position,
+        });
+        expect(value.results).toHaveLength(size);
+        expect(response.headers["bdp-scope-position"]).toBe(position);
+        return value;
+      };
+      const seeded = await exchange(
+        `${scope}operations/batch`,
+        "POST",
+        { "content-type": "application/json", "idempotency-key": "missing_seed" },
+        {
+          operations: [
+            ...["a", "b"].map((id) => ({
+              operation: "createBead",
+              id: `beads/${id}`,
+              type: beadType,
+              properties: { title: id },
+            })),
+            {
+              operation: "createLink",
+              id: "links/l",
+              type: linkType,
+              source: "beads/a",
+              target: "beads/b",
+              properties: { title: "l" },
+            },
+          ],
+        },
+      );
+      const first = receipt(seeded, "pos-1", 3),
+        [a, b, l] = first.results;
+      if (!a?.resource || !b?.resource || !l?.resource || !l.sourceRevision)
+        throw new Error("missing created resources");
+      for (const [index, result, id, type] of [
+        [0, a, "beads/a", beadType],
+        [1, b, "beads/b", beadType],
+        [2, l, "links/l", linkType],
+      ] as const) {
+        expect(result).toMatchObject({
+          operationIndex: index,
+          outcome: "created",
+          resource: {
+            id: `${scope}${id}`,
+            type,
+            properties: { title: id.slice(id.indexOf("/") + 1) },
+            metadata: {},
+          },
+        });
+        expect(result.resource?.revision).toMatch(/^[A-Za-z0-9_-]{1,256}$/);
+      }
+      expect(l.resource).toMatchObject({ source: `${scope}beads/a`, target: `${scope}beads/b` });
+      expect(l.source).toBe(`${scope}beads/a`);
+      expect(l.sourceRevision).not.toBe(a.resource.revision);
+      const removed = await exchange(
+        `${scope}operations/batch`,
+        "POST",
+        { "content-type": "application/json", "idempotency-key": "missing_delete" },
+        {
+          operations: [
+            { operation: "deleteLink", link: "links/l", expectedRevision: l.resource.revision },
+            { operation: "deleteBead", bead: "beads/a" },
+          ],
+        },
+      );
+      const second = receipt(removed, "pos-2", 2),
+        [dl, da] = second.results;
+      if (!dl?.sourceRevision) throw new Error("missing owned deletion revision");
+      expect(dl).toEqual({
+        operationIndex: 0,
+        outcome: "deleted",
+        deleted: {
+          resourceKind: "link",
+          resource: { id: l.resource.id, type: linkType, revision: l.resource.revision },
+        },
+        source: `${scope}beads/a`,
+        sourceRevision: dl.sourceRevision,
+      });
+      expect(dl.sourceRevision).not.toBe(l.sourceRevision);
+      expect(da).toEqual({
+        operationIndex: 1,
+        outcome: "deleted",
+        deleted: {
+          resourceKind: "bead",
+          resource: { id: `${scope}beads/a`, type: beadType, revision: dl.sourceRevision },
+        },
+      });
+      const earlier = minimum(seeded),
+        equal = minimum(removed);
+      for (const [suffix, method, headers] of [
+        ["beads/never", "GET", earlier],
+        ["beads/never?view=properties", "HEAD", equal],
+        ["links/never", "GET", { ...equal, "if-none-match": "*" }],
+        ["links/never?view=properties", "HEAD", earlier],
+        ["beads/a", "GET", equal],
+        ["beads/a?view=properties", "GET", earlier],
+        ["links/l", "GET", { ...equal, "if-match": '"mismatch"' }],
+      ] as const) {
+        const response = await exchange(`${scope}${suffix}`, method, headers);
+        expect(response.status).toBe(404);
+        context(response, equal);
+        expect(response.headers["cache-control"]).toBe("private, no-store");
+        if (method === "HEAD") {
+          expect(response.bodyText).toBe("");
+          expect(response.bodyOctets).toBe(0);
+        } else
+          expect(json<Record<string, unknown>>(response, 404)).toMatchObject({
+            code: "resource-not-found",
+            status: 404,
+          });
+      }
+      const behind = await exchange(
+        `${scope}links/l?view=properties`,
+        "GET",
+        minimum(removed, "pos-3"),
+      );
+      const missingProblem = {
+        type: "https://github.com/gastownhall/bdp/problems/not-found",
+        code: "resource-not-found",
+        retry: "after-state-change",
+        status: 404,
+      };
+      expect(json(behind, 404)).toEqual(missingProblem);
+      expect(behind.bodyText).toBe(JSON.stringify(missingProblem));
+      expect(behind.bodyOctets).toBe(Buffer.byteLength(behind.bodyText));
+      expect(behind.headers["content-length"]).toBe(String(behind.bodyOctets));
+      expect(behind.headers["cache-control"]).toBe("private, no-store");
+      expect(behind.headers["x-bdp-development-limit"]).toBeUndefined();
+      expect(behind.headers.location).toBeUndefined();
+      context(behind, equal);
+      expect(count).toBe(10);
+      expect(urls.size).toBe(9);
+    },
+    undefined,
+    "private-installed-compatible-missing-minimum",
+  );
+}, 120000);
+
+```
+
+## Complete changed alias callback: apps/bdptest/src/transactional-collection-minimum-installed.test.ts:954–1188
+```ts
+it("observes genuine installed current alias minimums within18requests", async () => {
+  await withInstalled(
+    async (f) => {
+      let count = 0;
+      const urls = new Set<string>();
+      const exchange = async (...args: Parameters<typeof f.exchange>) => {
+        if (++count > 18) throw new Error("alias minimum request ceiling exceeded");
+        const response = await f.exchange(...args);
+        urls.add(args[0]!);
+        const view = args[2]?.["bdp-authorization-view"];
+        if (view !== undefined)
+          expect(
+            response.exactRequest?.headerLines.find(
+              (h) => h.name.toLowerCase() === "bdp-authorization-view",
+            )?.value,
+          ).toBe(view);
+        return response;
+      };
+      const seeded = await exchange(
+        `${scope}operations/batch`,
+        "POST",
+        { "content-type": "application/json", "idempotency-key": "alias-min-seed" },
+        {
+          operations: ["a", "b"].map((id) => ({
+            operation: "createBead",
+            id: `beads/${id}`,
+            type: beadType,
+            properties: { title: id },
+            metadata: { seed: id },
+          })),
+        },
+      );
+      const receipt = json<{
+        status: string;
+        requiredPosition: string;
+        effectPosition?: string;
+        results: { operationIndex: number; outcome: string; resource: Row }[];
+      }>(seeded);
+      expect(receiptSchema(receipt), JSON.stringify(receiptSchema.errors)).toBe(true);
+      expect(receipt).toMatchObject({
+        status: "completed",
+        requiredPosition: "pos-1",
+        effectPosition: "pos-1",
+      });
+      expect(receipt.results).toHaveLength(2);
+      for (const [i, result] of receipt.results.entries()) {
+        const id = ["a", "b"][i]!;
+        expect(result.operationIndex).toBe(i);
+        expect(result.outcome).toBe("created");
+        expect(result.resource.revision).toEqual(expect.any(String));
+        expect(result.resource.revision.length).toBeGreaterThan(0);
+        expect(result.resource).toEqual({
+          id: `${scope}beads/${id}`,
+          type: beadType,
+          properties: { title: id },
+          metadata: { seed: id },
+          ownedLinks: { [linkType]: [] },
+          revision: result.resource.revision,
+        });
+      }
+      const headers = minimum(seeded, "pos-1");
+      context(seeded, headers);
+      const aliasCommand = async (
+        operation: "put-alias" | "delete-alias",
+        key: string,
+        outcome: string,
+        target?: string,
+      ) => {
+        const response = await exchange(
+          `${scope}operations/${operation}`,
+          "POST",
+          { "content-type": "application/json", "idempotency-key": key },
+          { alias: "alias/work", ...(target ? { target: `beads/${target}` } : {}) },
+        );
+        const result = json<{
+          status: string;
+          requiredPosition: string;
+          effectPosition?: string;
+          results: unknown[];
+        }>(response);
+        expect(receiptSchema(result), JSON.stringify(receiptSchema.errors)).toBe(true);
+        expect(result.status).toBe("completed");
+        expect(result.requiredPosition).toBe("pos-1");
+        expect(result).not.toHaveProperty("effectPosition");
+        expect(result.results).toEqual([
+          {
+            operationIndex: 0,
+            outcome,
+            alias: `${scope}alias/work`,
+            ...(target ? { target: `${scope}beads/${target}` } : {}),
+          },
+        ]);
+        context(response, headers);
+      };
+      const redirect = (response: HttpExchangeResponse, target: string) => {
+        expect(response.status).toBe(307);
+        expect(response.headers.location).toBe(`${scope}beads/${target}`);
+        expect(response.bodyOctets).toBe(0);
+        expect(response.bodyText).toBe("");
+        expect(response.headers["content-length"]).toBe("0");
+        expect(response.headers["cache-control"]).toBe("private, no-store");
+        context(response, headers);
+      };
+      await aliasCommand("put-alias", "alias-min-put", "created", "a");
+      redirect(await exchange(`${scope}alias/work`, "GET", headers), "a");
+      redirect(await exchange(`${scope}alias/work`, "HEAD", headers), "a");
+      redirect(
+        await exchange(`${scope}alias/work`, "GET", {
+          ...headers,
+          "if-none-match": "*",
+          "if-match": '"different"',
+        }),
+        "a",
+      );
+      redirect(
+        await exchange(`${scope}alias/work`, "HEAD", { ...headers, accept: "text/plain" }),
+        "a",
+      );
+      await aliasCommand("put-alias", "alias-min-repoint", "updated", "b");
+      const repointed = await exchange(`${scope}alias/work`, "GET", headers);
+      redirect(repointed, "b");
+      // Same actual-response oracle, no extra requests: wrong locator/context must fail.
+      expect(() =>
+        redirect(
+          { ...repointed, headers: { ...repointed.headers, location: `${scope}beads/a` } },
+          "b",
+        ),
+      ).toThrow();
+      expect(() =>
+        redirect(
+          { ...repointed, headers: { ...repointed.headers, "bdp-scope-position": "pos-0" } },
+          "b",
+        ),
+      ).toThrow();
+      const followed = await exchange(`${scope}beads/b`, "GET", headers);
+      expect(json<Row>(followed)).toEqual(receipt.results[1]!.resource);
+      // Resource ETag is a separate oracle; context() still forbids ETags on redirects/pages.
+      expect(followed.headers["bdp-scope-epoch"]).toBe(headers["bdp-scope-epoch"]);
+      expect(followed.headers["bdp-authorization-view"]).toBe(headers["bdp-authorization-view"]);
+      expect(followed.headers["bdp-scope-position"]).toBe("pos-1");
+      expect(followed.headers.etag).toBe(`"${receipt.results[1]!.resource.revision}"`);
+      const future = { ...headers, "bdp-minimum-scope-position": "pos-2" };
+      const behind = await exchange(`${scope}alias/work`, "GET", {
+        ...future,
+        "if-none-match": "*",
+        "if-match": '"different"',
+      });
+      expect(json(behind, 503)).toMatchObject({ code: "catch-up-timeout", retry: "after-delay" });
+      expect(behind.headers["retry-after"]).toBe("1");
+      expect(behind.headers.location).toBeUndefined();
+      context(behind, headers);
+      const foreignView = await exchange(`${scope}alias/work`, "HEAD", {
+        ...headers,
+        "bdp-authorization-view": "foreign",
+      });
+      expect(foreignView.status).toBe(409);
+      expect(foreignView.bodyOctets).toBe(0);
+      expect(foreignView.bodyText).toBe("");
+      expect(foreignView.headers["content-type"]?.split(";", 1)[0]).toBe(
+        "application/problem+json",
+      );
+      expect(Number(foreignView.headers["content-length"])).toBeGreaterThan(0);
+      expect(foreignView.headers.location).toBeUndefined();
+      context(foreignView, headers);
+      const foreignEpoch = await exchange(`${scope}alias/work`, "GET", {
+        ...headers,
+        "bdp-scope-epoch": "foreign",
+      });
+      expect(json(foreignEpoch, 410)).toMatchObject({
+        code: "cursor-expired",
+        retry: "after-state-change",
+      });
+      expect(foreignEpoch.headers.location).toBeUndefined();
+      context(foreignEpoch, headers);
+      const absent = await exchange(`${scope}alias/never`, "GET", headers);
+      expect(json(absent, 404)).toMatchObject({ code: "resource-not-found" });
+      expect(absent.headers.location).toBeUndefined();
+      context(absent, headers);
+      const noDisclosure = (response: HttpExchangeResponse, status: number) => {
+        expect(response.status).toBe(status);
+        expect(response.headers.location).toBeUndefined();
+        for (const h of ["bdp-scope-epoch", "bdp-authorization-view", "bdp-scope-position"])
+          expect(response.headers[h]).toBeUndefined();
+      };
+      const collision = await exchange(`${scope}alias/never`, "HEAD", future);
+      expect(collision.status).toBe(404);
+      expect(collision.bodyText).toBe("");
+      expect(collision.bodyOctets).toBe(0);
+      expect(collision.headers["content-type"]?.split(";", 1)[0]).toBe("application/problem+json");
+      expect(collision.headers["content-length"]).toBe(
+        String(
+          Buffer.byteLength(
+            JSON.stringify({
+              type: "https://github.com/gastownhall/bdp/problems/not-found",
+              code: "resource-not-found",
+              retry: "after-state-change",
+              status: 404,
+            }),
+          ),
+        ),
+      );
+      expect(collision.headers["cache-control"]).toBe("private, no-store");
+      expect(collision.headers["x-bdp-development-limit"]).toBeUndefined();
+      expect(collision.headers.location).toBeUndefined();
+      context(collision, headers);
+      await aliasCommand("delete-alias", "alias-min-delete", "deleted");
+      const deleted = await exchange(`${scope}alias/work`, "GET", headers);
+      expect(json(deleted, 404)).toMatchObject({ code: "resource-not-found" });
+      expect(deleted.headers.location).toBeUndefined();
+      context(deleted, headers);
+      noDisclosure(
+        await exchange(`${scope}alias/work`, "GET", headers, undefined, "anonymous"),
+        401,
+      );
+      const malformed = await exchange(`${scope}alias/work?invalid=1`, "GET", future);
+      noDisclosure(malformed, 404);
+      expect(json(malformed, 404)).toMatchObject({ code: "resource-not-found" });
+      expect(count).toBe(18);
+      expect([...urls].sort()).toEqual(
+        [
+          `${scope}operations/batch`,
+          `${scope}operations/put-alias`,
+          `${scope}operations/delete-alias`,
+          `${scope}alias/work`,
+          `${scope}alias/never`,
+          `${scope}alias/work?invalid=1`,
+          `${scope}beads/b`,
+        ].sort(),
+      );
+    },
+    undefined,
+    "private-installed-alias-minimum",
+  );
+}, 120000);
+
+```
+
+## Complete malformed Type parameterized callback: packages/server/src/transaction-read.test.ts:1206–1283
+```ts
+  it.each([
+    "omitted",
+    "undefined",
+    "null",
+    "number",
+    "false",
+    "empty",
+    "method",
+    "accessor",
+    "inherited",
+    "proxy",
+    "revoked",
+  ] as const)(
+    "rejects malformed Type ID %s through a Promise without invoking caller data",
+    async (kind) => {
+      const f = prepared(),
+        { plane, facet } = f.open();
+      const minimum = plane.minimumFor(principal, f.minimum());
+      const invoked = vi.fn(() => {
+        throw new Error("Type ID caller code must not execute");
+      });
+      const base = { kind: "resource", resource: "type" };
+      const revoked = Proxy.revocable({ ...base, id: descriptor.id }, {});
+      revoked.revoke();
+      const malformed = {
+        omitted: base,
+        undefined: { ...base, id: undefined },
+        null: { ...base, id: null },
+        number: { ...base, id: 0 },
+        false: { ...base, id: false },
+        empty: { ...base, id: "" },
+        method: { ...base, id: { startsWith: invoked } },
+        accessor: Object.defineProperty({ ...base }, "id", { get: invoked }),
+        inherited: Object.assign(
+          Object.create(Object.defineProperty({}, "id", { get: invoked })),
+          base,
+        ),
+        proxy: new Proxy(
+          { ...base, id: descriptor.id },
+          {
+            get: invoked,
+            getOwnPropertyDescriptor: invoked,
+            getPrototypeOf: invoked,
+          },
+        ),
+        revoked: revoked.proxy,
+      };
+      let delivery: Promise<unknown> | undefined;
+      expect(() => {
+        delivery = minimum.perform(malformed[kind] as ReadRequest);
+      }).not.toThrow();
+      expect(delivery).toBeInstanceOf(Promise);
+      const requestShapeMessage =
+        kind === "accessor"
+          ? "Read request cannot have accessors"
+          : kind === "inherited"
+            ? "Read request must have a plain prototype"
+            : kind === "proxy" || kind === "revoked"
+              ? "Read request must be a plain data object"
+              : undefined;
+      if (requestShapeMessage !== undefined) {
+        await expect(delivery).rejects.toBeInstanceOf(AuthorityReadError);
+        await expect(delivery).rejects.toMatchObject({
+          reason: "invalid-input",
+          message: requestShapeMessage,
+        });
+      } else await expect(delivery).rejects.toThrow("outside supported subset");
+      expect(invoked).not.toHaveBeenCalled();
+      expect(body(await minimum.perform(requests[0]!))).toEqual(descriptor);
+      const external = { kind: "resource", resource: "type", id: link } as ReadRequest;
+      expect(body(await facet.perform(external))).toEqual(types[1]);
+      await expect(minimum.perform(external)).rejects.toThrow("outside supported subset");
+      // The subset gate checks only locality. Canonical Type syntax remains a Read rule.
+      expect(
+        await minimum.perform({ kind: "resource", resource: "type", id: url("beads/a") }),
+      ).toMatchObject({ kind: "problem", problem: { status: 400, code: "invalid-parameter" } });
+    },
+  );
+```
+
+## Schema setup and actual JSON response validation: apps/bdptest/src/transactional-collection-minimum-installed.test.ts:60–86
+```ts
+};
+type Page = { items: Row[]; next: string | null };
+const ajv = new Ajv2020({ allErrors: true, strict: true });
+ajv.addFormat("uri", { type: "string", validate: isJsonSchemaUri });
+ajv.addFormat("date-time", { type: "string", validate: isJsonSchemaDateTime });
+const bundle = JSON.parse(readFileSync(path.join(root, "schemas/bdp-v0.schema.json"), "utf8"));
+ajv.addSchema(bundle);
+const receiptSchema = ajv.compile({ $ref: `${bundle.$id}#/$defs/mutationReceipt` });
+const problemSchema = ajv.compile({ $ref: `${bundle.$id}#/$defs/transactionalProblem` });
+function json<T>(response: HttpExchangeResponse, status = 200): T {
+  expect(response.status, response.bodyText).toBe(status);
+  expect(response.exactRequest?.writeState).toBe("complete");
+  expect(response.wireResponseBytes?.length).toBeGreaterThan(0);
+  expect(response.headers["content-type"]?.split(";", 1)[0]).toBe(
+    status >= 400 ? "application/problem+json" : "application/json",
+  );
+  const value = JSON.parse(response.bodyText);
+  if (status >= 400) expect(problemSchema(value), JSON.stringify(problemSchema.errors)).toBe(true);
+  return value as T;
+}
+function artifacts() {
+  const schema = `${scope}schemas/properties`;
+  const descriptors = [
+    {
+      id: beadType,
+      name: "Task",
+      describes: "bead",
+```
+
+## Deadline, failure accumulation and lifecycle: apps/bdptest/src/transactional-collection-minimum-installed.test.ts:116–185
+```ts
+}
+/** Local test lifecycle only; no target responses or shared launcher changes. */
+async function finishObservation<T>(
+  run: () => Promise<T>,
+  cleanup: () => Promise<void>,
+  signal?: AbortSignal,
+  report?: (ok: boolean) => void,
+): Promise<T> {
+  const failures: unknown[] = [];
+  let value: T | undefined;
+  const checkDeadline = () => {
+    try {
+      signal?.throwIfAborted();
+    } catch (error) {
+      if (!failures.includes(error)) failures.push(error);
+    }
+  };
+  try {
+    value = await run();
+  } catch (error) {
+    failures.push(error);
+  }
+  checkDeadline();
+  try {
+    await cleanup();
+  } catch (error) {
+    failures.push(error);
+  }
+  checkDeadline();
+  report?.(failures.length === 0);
+  if (failures.length === 1) throw failures[0];
+  if (failures.length > 1)
+    throw new AggregateError(failures, "collection minimum observation and cleanup failed");
+  return value as T;
+}
+async function failureAfterCleanup(error: unknown, cleanup: () => Promise<void>): Promise<never> {
+  return finishObservation(async () => {
+    throw error;
+  }, cleanup);
+}
+async function withDeadline<T>(
+  run: (signal: AbortSignal) => Promise<T>,
+  milliseconds = 90000,
+): Promise<T> {
+  const controller = new AbortController();
+  const timer = setTimeout(
+    () => controller.abort(new Error("installed collection minimum test deadline")),
+    milliseconds,
+  );
+  return finishObservation(
+    () => run(controller.signal),
+    async () => {
+      clearTimeout(timer);
+    },
+    controller.signal,
+  );
+}
+async function withInstalled(
+  run: (f: Awaited<ReturnType<typeof start>>) => Promise<void>,
+  signal?: AbortSignal,
+  label = "private-installed-collection-minimum",
+): Promise<void> {
+  if (!signal) return withDeadline((shared) => withInstalled(run, shared, label));
+  signal.throwIfAborted();
+  const f = await start(signal, label);
+  await finishObservation(
+    () => run(f),
+    () => f.close(),
+    signal,
+    (ok) => f.report(ok),
+```
+
+## Actual exact executor and bounded observation: apps/bdptest/src/transactional-collection-minimum-installed.test.ts:226–307
+```ts
+  let key = 0;
+  let closed = false;
+  const observations: {
+    url: string;
+    status: number;
+    method: string;
+    responseBytes: number;
+    wireSha256: string;
+    bodySha256: string;
+  }[] = [];
+  async function exchange(
+    url = `${scope}beads/`,
+    method: HttpMethod = "GET",
+    headers: Record<string, string> = {},
+    body?: unknown,
+    credentialRef = "operator",
+  ) {
+    const canonical = new URL(url);
+    if (
+      canonical.username !== "" ||
+      canonical.password !== "" ||
+      canonical.hash !== "" ||
+      canonical.origin !== new URL(scope).origin ||
+      !canonical.pathname.startsWith(new URL(scope).pathname)
+    )
+      throw new Error("collection minimum observation escaped the configured Scope");
+    const address = new URL(child.ready.listenUrl as string);
+    // Authorization-view is authored protocol context, not credential decoration.
+    const execute = createRawHttpExchangeExecutor(
+      { transport: "plain", host: address.hostname, port: Number(address.port) },
+      {
+        requestTimeoutMs: 5000,
+        maximumBodyBytes: 32768,
+        exactMode: {
+          scope,
+          profile: "transactional",
+          routes: [{ method, url }],
+          maximumRequestHeaderBytes: 16384,
+          maximumRequestBodyBytes: 65536,
+          defaultCredentialRef: "operator",
+          credentialHandles: [
+            { id: "operator", headerNames: ["authorization"] },
+            { id: "reader", headerNames: ["authorization"] },
+            { id: "anonymous", headerNames: [] },
+          ],
+          resolveCredentials: ({ credentialRef }) =>
+            credentialRef === "anonymous"
+              ? {}
+              : {
+                  authorization: `Bearer ${credentialRef === "reader" ? reader : operator}`,
+                },
+        },
+      },
+    );
+    const response = await execute({
+      method,
+      url,
+      signal,
+      credentialRef,
+      raw: {
+        headerLines: Object.entries(headers).map(([name, value]) => ({ name, value })),
+        ...(body === undefined ? {} : { bodyBytes: Buffer.from(JSON.stringify(body)) }),
+      },
+    });
+    expect(response.exactRequest?.writeState).toBe("complete");
+    expect(
+      response.exactRequest?.headerLines.find((h) => h.name.toLowerCase() === "host")?.value,
+    ).toBe("reference.invalid");
+    if (!response.wireResponseBytes?.length) throw new Error("missing actual wire response");
+    if (
+      response.bodyOctets === undefined ||
+      !Number.isSafeInteger(response.bodyOctets) ||
+      response.bodyOctets < 0
+    )
+      throw new Error("completed response body octets unavailable");
+    observations.push({
+      url,
+      method,
+      status: response.status,
+      responseBytes: response.bodyOctets,
+      wireSha256: createHash("sha256").update(response.wireResponseBytes).digest("hex"),
+      bodySha256: createHash("sha256").update(response.bodyText).digest("hex"),
+```
+
+## Child/store cleanup, safe report and context helper: apps/bdptest/src/transactional-collection-minimum-installed.test.ts:328–390
+```ts
+      const receipt = json<{ status: string }>(response);
+      expect(receipt.status).toBe("completed");
+      return response;
+    },
+    async close() {
+      await finishObservation(
+        async () => {
+          await child.close();
+          closed = true;
+        },
+        async () => {
+          rmSync(directory, { recursive: true, force: true });
+        },
+      );
+    },
+    report(ok: boolean) {
+      // Never log raw credentials, exactRequest headers or authored request bodies.
+      console.log(
+        JSON.stringify({
+          observation: label,
+          outcome: ok ? "passed" : "failed",
+          aborted: signal.aborted,
+          declaredSourceCommit: sourceCommit,
+          workspaceDirty,
+          closed,
+          childPid: child.child.pid,
+          childExitCode: child.child.exitCode,
+          entry: resolvedEntry,
+          entrySha256,
+          binding: baseline,
+          exchanges: observations.length,
+          completedResponses: observations,
+          claimEligible: false,
+        }),
+      );
+    },
+  };
+}
+
+function minimum(
+  response: HttpExchangeResponse,
+  position = response.headers["bdp-scope-position"],
+) {
+  const epoch = response.headers["bdp-scope-epoch"],
+    view = response.headers["bdp-authorization-view"];
+  if (typeof epoch !== "string" || typeof view !== "string" || typeof position !== "string")
+    throw new Error("missing actual serving context");
+  return {
+    "bdp-scope-epoch": epoch,
+    "bdp-authorization-view": view,
+    "bdp-minimum-scope-position": position,
+  };
+}
+function context(
+  response: HttpExchangeResponse,
+  expected: ReturnType<typeof minimum>,
+  position = expected["bdp-minimum-scope-position"],
+) {
+  expect(response.headers["bdp-scope-epoch"]).toBe(expected["bdp-scope-epoch"]);
+  expect(response.headers["bdp-authorization-view"]).toBe(expected["bdp-authorization-view"]);
+  expect(response.headers["bdp-scope-position"], "actual current serving position").toBe(position);
+  expect(response.headers.etag).toBeUndefined();
+}
+```
+
+## Fixture/store/plane lifecycle: packages/server/src/transaction-read.test.ts:43–132
+```ts
+afterEach(async () => {
+  vi.restoreAllMocks();
+  for (const fn of cleanup.splice(0).reverse()) await fn();
+});
+function fixture(extra: Partial<Parameters<typeof openTransactionStore>[0]> = {}) {
+  const directory = mkdtempSync(path.join(tmpdir(), "bdp-transaction-read-"));
+  cleanup.push(() => rmSync(directory, { recursive: true, force: true }));
+  const options = {
+    file: path.join(directory, "owner.sqlite"),
+    scope,
+    create: true,
+    types,
+    ...extra,
+  };
+  let store = openTransactionStore(options);
+  cleanup.push(() => store.close());
+  let tokens = 0;
+  const readOptions = {
+    selectorLimits: { bytes: 4096, depth: 32, nodes: 256 },
+    advertisedLimits: {
+      page: { defaultItems: 2, maximumItems: 10 },
+      selector: { bytes: 4096, depth: 32, nodes: 256 },
+      cursorTtlMilliseconds: 1000,
+    },
+    pagination: {
+      scope,
+      defaultPageItems: 2,
+      maxPageItems: 10,
+      cursorTtlMs: 1000,
+      retainedStateCapacity: 100,
+      maxRetainedCursorPositionsPerSnapshot: 20,
+      retainedSnapshotByteCapacity: 100_000,
+      retainedSnapshotNodeCapacity: 10_000,
+      maxOpaqueTokenLength: 64,
+      tokenGenerationAttempts: 3,
+      idleCleanup: "on-demand" as const,
+      clock: () => 1000,
+      generateOpaqueToken: () => `cursor_${++tokens}`,
+    },
+  };
+  function open(patch: Partial<typeof readOptions> = {}) {
+    const plane = createTransactionReadPlane(store, { ...readOptions, ...patch });
+    cleanup.push(() => plane.close());
+    return { plane, facet: plane.readFor({ kind: "anonymous" }) };
+  }
+  let keys = 0;
+  function write(operations: unknown[]) {
+    const admitted = store.admit(
+      "principal",
+      `key_${++keys}`,
+      prepareTransaction(scope, JSON.stringify({ operations })),
+    );
+    if (admitted.kind !== "owned") throw new Error("expected new admission");
+    return store.execute(admitted.claim);
+  }
+  function alias(operation: "putAlias" | "deleteAlias", body: unknown) {
+    const admitted = store.admit(
+      "principal",
+      `key_${++keys}`,
+      prepareTransactionSingleton(scope, operation, JSON.stringify(body)),
+    );
+    if (admitted.kind !== "owned") throw new Error("expected new admission");
+    return store.execute(admitted.claim);
+  }
+  return {
+    get store() {
+      return store;
+    },
+    options,
+    readOptions,
+    open,
+    write,
+    alias,
+    reopen() {
+      store.close();
+      store = openTransactionStore({ ...options, create: false });
+      return store;
+    },
+  };
+}
+const url = (value: string) => `${scope}${value}` as AbsoluteHttpUrl;
+const resource = (id: string, kind: "bead" | "link" = "bead"): ReadRequest => ({
+  kind: "resource",
+  resource: kind,
+  id: url(id),
+});
+function body(result: unknown): Record<string, unknown> {
+  expect(result).toMatchObject({ kind: "success" });
+  return (result as { body: Record<string, unknown> }).body;
+}
+```
+
+## Type fixture seed and actual minimum: packages/server/src/transaction-read.test.ts:1165–1174
+```ts
+  function prepared() {
+    const f = fixture({ types: [...types, descriptor] });
+    f.write([...seed, ...extraLinks]);
+    const minimum = (minimumPosition = "pos-1") => ({
+      scopeEpoch: f.store.scopeEpoch,
+      authorizationView: "development-all-visible",
+      minimumPosition,
+    });
+    return { ...f, minimum };
+  }
+```
+
+## Safe request capture and route-kind classification: packages/server/src/transaction-read.ts:54–116
+```ts
+      );
+    case "bead-links":
+      return request.continuation === undefined;
+    default:
+      return false;
+  }
+}
+
+/** Capture route fields before any receiving signal callback can mutate the caller's
+ * request. Preserve rejected descriptors/prototypes for the authority's own
+ * receiving path; never invoke a getter while making this private snapshot. */
+export function captureTransactionReadRequest<O extends ReadRequest>(request: O): O {
+  if (request === null || typeof request !== "object" || isProxy(request)) return request;
+  return Object.freeze(
+    Object.create(Object.getPrototypeOf(request), Object.getOwnPropertyDescriptors(request)),
+  ) as O;
+}
+
+function dataOnlyReadRequest(request: ReadRequest): boolean {
+  if (request === null || typeof request !== "object" || isProxy(request) || Array.isArray(request))
+    return false;
+  const prototype = Object.getPrototypeOf(request);
+  return (
+    (prototype === Object.prototype || prototype === null) &&
+    Reflect.ownKeys(request).every((key) => {
+      const field = Object.getOwnPropertyDescriptor(request, key);
+      return typeof key === "string" && field !== undefined && "value" in field;
+    })
+  );
+}
+
+/** Classify only own data fields. Authority receiving still validates the full request. */
+export function currentReadMinimumKind(request: ReadRequest): "resource" | "missing" | "strict" {
+  if (isProxy(request) || !request || typeof request !== "object") return "strict";
+  const fields = Object.getOwnPropertyDescriptors(request);
+  const data = (key: string): unknown => {
+    const field = fields[key];
+    return field && "value" in field ? field.value : undefined;
+  };
+  if (
+    (data("kind") === "resource" || data("kind") === "properties") &&
+    (data("resource") === "bead" || data("resource") === "link")
+  )
+    return "resource";
+  if (data("kind") === "bead-links" && data("continuation") === undefined) return "missing";
+  return "strict";
+}
+type MinimumCondition = Readonly<{
+  minimum: TransactionMinimum;
+  kind: "resource" | "missing" | "strict";
+}>;
+const minimumConditions = new WeakSet<object>();
+function minimumCondition(
+  minimum: TransactionMinimum,
+  kind: MinimumCondition["kind"],
+): MinimumCondition {
+  const condition = Object.freeze({ minimum, kind });
+  minimumConditions.add(condition);
+  return condition;
+}
+function capturedCondition(value: unknown): MinimumCondition {
+  if (!value || typeof value !== "object" || !minimumConditions.has(value))
+    throw new TypeError("unrecognized private minimum condition");
+```
+
+## Actual missing-first condition and observation capture: packages/server/src/transaction-read.ts:180–250
+```ts
+ * but does not close or replace the mutation owner. Configuration is fixed for
+ * this private store's lifetime and is captured through its guarded entry. */
+export function createTransactionReadPlane(
+  owner: ReturnType<typeof openTransactionStore>,
+  options: TransactionReadOptions,
+) {
+  const configuration = owner.readConfiguration();
+  const plane = createAuthorityReadPlane({
+    entry: owner,
+    scopeEpoch: configuration.scopeEpoch,
+    installedTypes: configuration.installedTypes,
+    scopeConfiguration: {
+      capture: (reader) => ({
+        ...configuration.scopeConfiguration,
+        policyIdentity: owner.captureReadAuthorization(reader, { kind: "anonymous" })
+          .authorizationView,
+      }),
+    },
+    selectorLimits: options.selectorLimits,
+    pagination: options.pagination,
+    advertisedLimits: options.advertisedLimits,
+    checkSourceCondition: (condition, observation, refusal) => {
+      // Preserve the initial collection's already-materialized request-control
+      // Problem. It is not a representation whose minimum can be satisfied.
+      if (refusal?.code === "invalid-parameter" || refusal?.code === "limit-exceeded") return;
+      const { minimum, kind } = capturedCondition(condition);
+      const current = transactionReadContexts(observation).current;
+      if (refusal?.code === "resource-not-found") {
+        if (kind !== "strict") return;
+        try {
+          checkCurrentReadMinimum(minimum, current, false);
+          return;
+        } catch (error) {
+          // Only simultaneous missing/consistency failures remain unqualified.
+          if (
+            error instanceof TransactionMinimumFailure &&
+            (error.reason === "behind" ||
+              error.reason === "foreign-view" ||
+              error.reason === "cursor-expired")
+          )
+            throw new TransactionMinimumVisibilityGap(
+              "minimum-position visibility ordering unqualified",
+            );
+          throw error;
+        }
+      }
+      checkCurrentReadMinimum(minimum, current, kind === "resource");
+    },
+    captureReadAuthorization: (reader, principal) => {
+      const policy = owner.captureReadAuthorization(reader, principal);
+      return {
+        kind: "authorized",
+        authorization: {
+          scopeEpoch: configuration.scopeEpoch,
+          authorizationView: policy.authorizationView,
+          policy: { canRead: () => policy.readPolicy === "all-visible" },
+          canReadType: () => policy.readPolicy === "all-visible",
+        },
+      };
+    },
+  });
+  const checked = <Result extends AuthorityReadResult<ReadRequest> | AuthorityAliasResult>(
+    result: Result,
+  ): Result => {
+    if ("observation" in result) transactionReadContexts(result.observation);
+    return result;
+  };
+  const observe = <T>(promise: Promise<T>): Promise<T> => {
+    void promise.catch(() => {});
+    return promise;
+  };
+```
+
+## Complete minimumFor delegation boundary: packages/server/src/transaction-read.ts:280–341
+```ts
+        },
+      };
+    },
+  };
+  return Object.freeze({
+    ...composed,
+    minimumFor(
+      principal: Parameters<AuthorityReadPlane["readFor"]>[0],
+      supplied: TransactionMinimum,
+    ): AuthorityReadFacet {
+      const minimum = snapshotCurrentReadMinimum(supplied),
+        facet = plane.readFor(principal);
+      return Object.freeze({
+        perform: (request, options) => {
+          const capturedRequest = captureTransactionReadRequest(request);
+          if (!dataOnlyReadRequest(capturedRequest))
+            return observe(
+              facet.perform(capturedRequest, options).then((result) => checked(result)),
+            );
+          if (!isCurrentTransactionMinimumRead(capturedRequest, owner.scope))
+            return Promise.reject(new TypeError("minimum-read route outside supported subset"));
+          const condition = minimumCondition(minimum, currentReadMinimumKind(capturedRequest));
+          let captured: AuthorityReadDeliveryOptions | undefined;
+          try {
+            captured = captureTransactionReadDeliveryOptions(options);
+          } catch {
+            // Capture rejects only shapes the authority also rejects. Preserve
+            // its observed Promise and closed/reentrant receiving precedence.
+            return observe(
+              facet.perform(capturedRequest, options).then((result) => checked(result)),
+            );
+          }
+          return observe(
+            facet
+              .perform(capturedRequest, { ...captured, sourceCondition: condition })
+              .then((result) => checked(result)),
+          );
+        },
+        resolveAlias: (url, options) => {
+          const condition = minimumCondition(minimum, "missing");
+          let captured: AuthorityReadDeliveryOptions | undefined;
+          try {
+            captured = captureTransactionReadDeliveryOptions(options);
+          } catch {
+            // Capture rejects only shapes the authority itself rejects. Preserve
+            // its observed Promise and closed/reentrant receiving precedence.
+            return observe(facet.resolveAlias(url, options).then((result) => checked(result)));
+          }
+          return observe(
+            facet
+              .resolveAlias(url, { ...captured, sourceCondition: condition })
+              .then((result) => checked(result)),
+          );
+        },
+      } satisfies AuthorityReadFacet);
+    },
+  });
+}
+
+/** Validated TX interpretation of the generic private Read observation. A
+ * continuation's snapshot is its original selected data; current is the new
+ * entry that checked whether that retained page can still be served. Neither
+```
+
+## Canonical non-invoking request data-shape refusal: packages/server/src/authority-read.ts:296–314
+```ts
+/** Data descriptors are inspected only after the proxy check, without getters. */
+function ownData(value: unknown, label: string): Record<string, unknown> {
+  if (value === null || typeof value !== "object" || isProxy(value) || Array.isArray(value))
+    throw new AuthorityReadError("invalid-input", `${label} must be a plain data object`);
+  const prototype = Object.getPrototypeOf(value);
+  if (prototype !== Object.prototype && prototype !== null)
+    throw new AuthorityReadError("invalid-input", `${label} must have a plain prototype`);
+  const result: Record<string, unknown> = Object.create(null);
+  for (const key of Reflect.ownKeys(value)) {
+    if (typeof key !== "string")
+      throw new AuthorityReadError("invalid-input", `${label} cannot have symbol fields`);
+    const descriptor = Object.getOwnPropertyDescriptor(value, key);
+    if (descriptor === undefined || !("value" in descriptor))
+      throw new AuthorityReadError("invalid-input", `${label} cannot have accessors`);
+    Object.defineProperty(result, key, { value: descriptor.value, enumerable: true });
+  }
+  return Object.freeze(result);
+}
+
+```
+
+## Existing installed launcher bounds and cleanup: scripts/transaction-installed-observation.mjs:1–98
+```ts
+/** Bounded inherited-IPC launcher. No request or observation emulation. */
+import { spawn } from "node:child_process";
+import { mkdir } from "node:fs/promises";
+export async function launchInstalledTransaction(entry, configuration, signal) {
+  signal?.throwIfAborted();
+  // Explicit launcher-owned provisioning; reopen keeps the directory/create:false.
+  if (configuration.create) await mkdir(configuration.directory, { recursive: true, mode: 0o700 });
+  signal?.throwIfAborted();
+  const child = spawn(process.execPath, [entry], {
+    cwd: "/tmp",
+    stdio: ["ignore", "pipe", "pipe", "ipc"],
+  });
+  let bytes = 0;
+  for (const stream of [child.stdout, child.stderr])
+    stream.on("data", (chunk) => {
+      bytes += chunk.length;
+      if (bytes > 65536) child.kill("SIGKILL");
+    });
+  const exited = new Promise((resolve) =>
+    child.once("exit", (code, signal) => resolve({ code, signal })),
+  );
+  async function bounded(promise) {
+    let timer;
+    try {
+      return await Promise.race([
+        promise,
+        new Promise((_, reject) => {
+          timer = setTimeout(() => {
+            child.kill("SIGKILL");
+            reject(new Error("installed transaction process deadline"));
+          }, 10000);
+        }),
+      ]);
+    } finally {
+      clearTimeout(timer);
+    }
+  }
+  async function drainFailure(error) {
+    child.kill("SIGKILL");
+    try {
+      await bounded(exited);
+    } catch (cleanup) {
+      throw new AggregateError([error, cleanup], "installed transaction cleanup failed");
+    }
+    throw error;
+  }
+  let closing;
+  const close = () =>
+    (closing ??= (async () => {
+      try {
+        if (child.connected) child.send({ command: "close" });
+        const result = await bounded(exited);
+        if (result.code !== 0 || result.signal !== null)
+          throw new Error("installed transaction child did not close cleanly");
+      } catch (error) {
+        await drainFailure(error);
+      } finally {
+        signal?.removeEventListener("abort", onAbort);
+      }
+    })());
+  const onAbort = () => {
+    void close().catch(() => {});
+  };
+  signal?.addEventListener("abort", onAbort, { once: true });
+  if (signal?.aborted) onAbort();
+  let detachReadyAbort = () => {};
+  try {
+    const ready = await bounded(
+      new Promise((resolve, reject) => {
+        const abort = () => reject(signal.reason);
+        signal?.addEventListener("abort", abort, { once: true });
+        detachReadyAbort = () => signal?.removeEventListener("abort", abort);
+        if (signal?.aborted) {
+          abort();
+          return;
+        }
+        child.once("error", reject);
+        child.once("message", resolve);
+        void exited.then(() => reject(new Error("installed transaction exited before ready")));
+        child.send({ configuration });
+      }),
+    );
+    signal?.throwIfAborted();
+    if (!ready || ready.event !== "qualification.ready" || JSON.stringify(ready).length > 65536)
+      throw new Error("invalid installed ready message");
+    return { child, ready, close };
+  } catch (error) {
+    try {
+      await close();
+    } catch (cleanup) {
+      throw new AggregateError([error, cleanup], "installed transaction startup cleanup failed");
+    }
+    throw error;
+  } finally {
+    detachReadyAbort();
+  }
+}
+```
+
+## Actual lexical/HEAD/missing-first/current unknown rules: docs/specs/bdp.md:5817–5850
+```ts
+```
+
+If any of these three request fields is present on a read, the request MUST
+contain exactly one nonempty value for each field, using the
+[Event-ID and checkpoint character profile](#event-id-and-checkpoint-character-profile). Missing,
+repeated, or lexically invalid values MUST return `400 malformed-request`
+after ordinary transport, target/method, and authentication/authorization checks,
+but before any owner read or target-existence lookup. All three absent means
+no minimum is requested. Lexical validity does not establish that a position
+identity is known or supported; semantic handling follows the rules below.
+
+This receiving refusal observes no projected prefix and MUST NOT report
+`BDP-Scope-Epoch`, `BDP-Authorization-View`, or `BDP-Scope-Position`. It MUST NOT
+become a conditional `304` or `412`, a negotiation `406`, or an SSE stream.
+Earlier ordinary target/method and Origin-policy refusals remain unchanged.
+HEAD retains the corresponding GET response metadata and sends no body.
+
+For an ordinary unknown, deleted, or authorization-hidden Bead or Link
+Resource (including its properties view), alias target, or initial Bead
+view=links anchor, the authority MUST return the uniform 404 resource-not-found
+before semantic minimum comparison or waiting. This refusal reports the actual
+current observation context and does not disclose the hidden target. Ordinary
+request validation and the lexical receiving rule above still apply.
+
+For the remaining reads, the authority returns a representation at that position
+or later, waits or routes to an eligible replica, or returns the normative
+foreign-view, cursor-expired, or catch-up-timeout problem. It never reports
+success with an older position. For an existing authorized current Bead or Link
+Resource or properties view, a lexically valid but unrecognized minimum position
+with the actual current epoch and view does not prove eligibility. The authority
+MUST use its bounded minimum-read wait and, if eligibility remains unproved,
+return 503 catch-up-timeout with retry: "after-delay"; it MUST NOT substitute
+a stale success, fabricated expiry, or lexical malformed-request refusal.
+This rule does not establish precedence for retained continuations or Snapshots,
+```
+
+## Explicit omitted context
+The other installed callbacks, full schema bundle, full authority implementation and original full-PR council corpus are omitted. This patch changes no schema or production implementation. Supplied json() uses the real transactionalProblem schema; complete fixed Problem equality is additionally required here. Existing start() constructs private writer/reader credentials, fixture descriptors and actual installed readiness binding; its unchanged behavior is separately pinned. All selected callbacks and their changed oracle portions are supplied in full. Store execution and unrelated HTTP routes are not under review. Do not invent approval for omitted scope.

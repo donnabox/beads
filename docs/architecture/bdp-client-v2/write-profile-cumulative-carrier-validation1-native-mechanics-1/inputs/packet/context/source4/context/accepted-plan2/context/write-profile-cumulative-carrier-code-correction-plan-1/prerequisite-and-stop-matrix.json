@@ -1,0 +1,65 @@
+{
+  "algorithm": [
+    "Validate full selected/result IDs/order/metadata first as before.",
+    "For each row, validate its own source-derived row kind including prerequisite metadata if present. If earlier real stopAfterExact requires a stopped suffix, require current plain stopped shape. Known authored-plan missing-executor not-implemented is allowed only with its exact source-derived action marker and retained prefix; arbitrary present-plan not-implemented is not accepted.",
+    "Ordinary initial prerequisite not-run and recheck without stop category are local partial rows; do not flip a global stopped bit merely on category:not-run.",
+    "A plain not-run without prerequisiteFailure denotes the allowed stopped suffix shape; all its subsequent rows must be plain stopped, no fabricated cause.",
+    "After a reached row, use exact stopAfterExact to constrain following suffix; retain its own partial exchanges/actions and raw report digest.",
+    "Separate nested inventory validation from authored-outcome reduction. Unexecuted/prerequisite-not-run remains null even with retained recheck evidence; do not call every([]) or join prerequisite assertions as a dependent pass."
+  ],
+  "authority": "Real runner mustStopMatrixAfter448\u2013468, matrix loop383\u2013402, prerequisiteResultBeforeRun2986\u20133022, prerequisiteFailureResult3027\u20133055 and actions attachment790; no reason-text inference or new runner fields.",
+  "freeText": "reason/cleanupError source strings may be validated as strings for existing shape only, never classified by substring or copied to safe projection; fixed error refusal only.",
+  "outputSchema": "UNCHANGED. No new prerequisite/stop output fields; original raw report/digest retains detailed phase evidence. State/category/row index remain original.",
+  "plannedNotImplementedExecutorEdge": "ROOT ACCEPTED additive root-n4-scope-precision.json: handle actual existing-plan missing programmatic executor source row; not a new runner outcome or scope.",
+  "rowKinds": [
+    {
+      "effect": "Not a global stop by itself; null authored credit. Preserve original ID/index/metadata.",
+      "kind": "reached missing plan",
+      "shape": "harness-error/not-implemented, no plan, empty exchanges/actions"
+    },
+    {
+      "binding": "Validate the retained prefix against current manifest action order/IDs/assertions and the known missing-executor marker emitted by runner1026\u20131044. Distinguish absent plan empty missingPlanResult from present plan executor unavailable. If the action itself is a prerequisite recheck, actual runner instead wraps it as phase:recheck and that row-kind policy applies.",
+      "effect": "Null authored execution credit for the whole unexecuted row. not-implemented itself does not stop the matrix (mustStop false); cleanupError still forces a stopped suffix. No new action executor or capability support.",
+      "kind": "existing plan, missing programmatic executor",
+      "shape": "harness-error/not-implemented for an authored row, prerequisiteFailure absent, last recorded non-http action has exact known manifest id/family/operation and executionError.category:not-implemented, empty assertions at that missing action. executionError.message is a source string validated but never exposed/classified by content. Earlier real exchanges/actions may be retained; no fabricated later response/continuation."
+    },
+    {
+      "binding": "id is a prerequisite declared by this dependent manifest row, same owner earlier; catalog requirements match exact source anchors; earlier recorded prerequisite is absent or nonpass as runner permits, never invent a pass. Existing model earlier same-owner validation remains.",
+      "effect": "No global stop from this category. Following independent/missing/diagnostic rows may continue. Null authored credit.",
+      "kind": "initial prerequisite failure",
+      "shape": "harness-error/not-run; prerequisiteFailure exact id,requirements,reason,phase:initial; category absent; no exchanges/actions"
+    },
+    {
+      "binding": "id is current row declared earlier same-owner prerequisite whose preceding result passed; exact catalog requirements and phase/category grammar. Validate retained action/request/assertion IDs/family/duplicates against current dependent manifest without converting them into authored execution credit.",
+      "effect": "Always null authored credit. Stop following rows only when real stopAfterExact is true (nested category present or cleanupError). Recheck without those may continue.",
+      "kind": "recheck prerequisite failure",
+      "shape": "harness-error/not-run; prerequisiteFailure exact id,requirements,reason,phase:recheck plus optional known category; actual exchanges and optional actions may be retained by runner790"
+    },
+    {
+      "effect": "Accept a complete plain suffix even at index0, preserving genuine already-aborted or between-row abort source outputs whose external reason is not carried. Do not label an unrecorded cause as proven abort. Once suffix starts, every later row must be the same source stopped shape.",
+      "kind": "plain stopped remainder",
+      "shape": "harness-error/not-run with NO prerequisiteFailure and empty exchanges/actions, for every remaining selected ID including missing plans/diagnostics"
+    }
+  ],
+  "stopAfterExact": {
+    "falseCategoryCases": [
+      "absent",
+      "not-implemented",
+      "not-run",
+      "observation-limit",
+      "wire-observation-unavailable"
+    ],
+    "prerequisiteRecheckCategories": [
+      "deadline",
+      "containment",
+      "observation-limit",
+      "exact-configuration",
+      "exact-observation"
+    ],
+    "trueWhen": [
+      "cleanupError present (current source string field; reject malformed type, never serialize message)",
+      "prerequisiteFailure.phase is recheck AND its allowed category is present",
+      "row.category in aborted,cleanup,deadline,out-of-scope-target,exact-configuration,exact-observation"
+    ]
+  }
+}

@@ -1,0 +1,49 @@
+--- /Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-D4-synthetic-harness-preparation-4/findings-disposition.json
++++ /Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-D4-synthetic-harness-preparation-5/findings-disposition.json
+@@ -1,11 +1,38 @@
+ {
+-  "H3-N1": {
+-    "rootDispositionSha256": "04852d016f775e7a1e0b3e860b0cb5d17090813d367de0f378d85ca023d4dc1a",
+-    "authoredCorrection": "new_capture creates exclusive raw0600 files and prefix journal before bootstrap ACK; actual drain calls retain to account every received block, write all reported successful bytes unbuffered and hash saved prefixes BEFORE65536 acceptance check. Per-read/EOF/polled-exit/end/closed snapshots retained; caught failure includes all current prefix facts.",
+-    "failureTruth": "Partial writes record only actual os.write returned bytes, separate received and hashed counts; write/hash/identity/close/journal errors are not positive closure. Unavailable bytes/full stream and post-snapshot observations remain UNKNOWN. Abrupt kill may leave raw file or incomplete journal tail; no reconstructed reads/hash/EOF/terminal.",
+-    "normalTruth": "Original nonce/mask/TERM/raw-9 KILL/EOF/clock oracles and normal received-byte hashes remain unchanged; raw close, saved-count/hash/identity match and journal close must succeed before normal peer receipt.",
+-    "approval": "Author completion only; OTHER-native/root exact authority required before any evaluation"
++  "state": "AUTHOR ONLY source/static remedy, independent H5 acceptance PENDING",
++  "rootRelease": {
++    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-D4-availability-failure-root-disposition-1/release.json",
++    "sha256": "41c032ffe7ed6fb0c374ded373a5586e652113f5469d6b7d30473508e733f4a4"
+   },
+-  "allOtherSemanticHelpers": "byte-identical H3 except two Perl absolute namespace literals",
+-  "allExecutionFlags": false
++  "rootDisposition": {
++    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-D4-availability-failure-root-disposition-1/disposition.json",
++    "sha256": "78ebbc65edc0dabf86836395981116d47b980a343710e67e8cc8e873a292c64b"
++  },
++  "correction": [
++    {
++      "path": "availability_limit.pl",
++      "beforeSha256": "a417085647b6617674d8dc839222ab85c45dcbf6e62e6440e9f76b63bc49ca14",
++      "afterSha256": "9b85dcfc35879341070ee0692cffd4bcfd8a8f2d1a0d9b505ce2be4e7f15bae1",
++      "sameLiteralArgvAfterNamespace": "'/opt/homebrew/opt/python@3.14/bin/python3.14','-I','-B','/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-D4-synthetic-harness-preparation-5/availability_owner.py',\"$ORIGIN\",$release,\"$limiter\"",
++      "beforePattern": "exec LIST; then unconditional POSIX::_exit(126)",
++      "afterPattern": "exec(SAME LIST) or POSIX::_exit(126)",
++      "availabilityWarningObservedOnly": true,
++      "evaluatedOrCompileChecked": false
++    },
++    {
++      "path": "hard_limit.pl",
++      "beforeSha256": "fa2c5e9a26bb6cb1fd8d3ca2bec89f58f3136412e15330e1d93184e1b21f8c7e",
++      "afterSha256": "f18dc1a43814dbe6040545f8665adee4533e326434b65e644081b85d72bf3f91",
++      "sameLiteralArgvAfterNamespace": "'/opt/homebrew/opt/python@3.14/bin/python3.14','-I','-B','/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-D4-synthetic-harness-preparation-5/outer_host.py','--limited-owner',\"$ORIGIN\",$case,$variant,$release,\"$limiter\"",
++      "beforePattern": "exec LIST; then unconditional POSIX::_exit(126)",
++      "afterPattern": "exec(SAME LIST) or POSIX::_exit(126)",
++      "availabilityWarningObservedOnly": false,
++      "evaluatedOrCompileChecked": false
++    }
++  ],
++  "actualH4AvailabilityAccepted": false,
++  "actualH4ClockDomainVerified": false,
++  "actualH5Outcomes": "UNKNOWN/UNATTEMPTED",
++  "noWarningsSuppressionFilteringOrStderrAllowance": true,
++  "oldAttemptNeverRetryOrRelabel": true
+ }

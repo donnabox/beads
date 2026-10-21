@@ -1,0 +1,26 @@
+{
+  "recordedAt": "2026-10-16T23:09:06.587650+00:00",
+  "accepted": false,
+  "classification": "operator-interrupted-invalid-validation-prerequisite",
+  "cause": "HTTP suite imports emitted transaction-runtime.js explicitly; prior claim source aliases suffice was incorrect. Source stage started without fresh candidate build binding. Root interrupted owning exec before outcome. No test pass/failure inferred.",
+  "termination": "write_stdin Ctrl-C to owning exec68836; outer parent exited130. No normal stage exit record.",
+  "sampledPidsAbsent": [
+    49234,
+    50146,
+    50158
+  ],
+  "sourceInputsUnchanged": true,
+  "runtimeDirectoriesRemaining": [],
+  "records": {
+    "focused-source.started.json": "e71d56d619062c9d02ccbed670593b569dee73dc3b8eaf4610fff59920a63a42",
+    "focused-source.processes.jsonl": "cbffce3a26e504cfad4f6a47beb72d0126ba75665abb74f6cb55127b60393d8c",
+    "focused-source.log": "89dd9a583c7a93fb88074772b60313bf82877ff9552b42413acd37cd574dfe1d"
+  },
+  "laterStagesStarted": false,
+  "staticResultsPreserved": [
+    "typecheck",
+    "format-check",
+    "lint"
+  ],
+  "recovery": "Prepare separate corrected build-before-source ordering; no automatic retry and no product source change."
+}

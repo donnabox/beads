@@ -1,0 +1,96 @@
+{
+  "method": "Own bounded pure-data read/hash/JSON/AST/difflib; subject code never imported/evaluated",
+  "staticChecks": 9426,
+  "errors": [],
+  "Python": [
+    {
+      "path": "availability_owner.py",
+      "sha256": "c3615a87bd70256b383e585268a9d21d1c951f8f9618dfa0dd820101dd157fa7",
+      "ASTnodes": 3380,
+      "byteEqualH3": false
+    },
+    {
+      "path": "availability_peer.py",
+      "sha256": "65c078a6d9739f4c4017433eef5d260084e9ee005622a7d5f08fdc89b0b05ec7",
+      "ASTnodes": 324,
+      "byteEqualH3": true
+    },
+    {
+      "path": "bootstrap.py",
+      "sha256": "6e11b44e8e95458b35052c87a02a17cffdae32ad060a5dbd3de53e19f2f873cc",
+      "ASTnodes": 523,
+      "byteEqualH3": true
+    },
+    {
+      "path": "gate_controls.py",
+      "sha256": "47e89d6e27c0ae5d1dc80aaeedd2199decdfff41a28dca97e8382348fefc6b8c",
+      "ASTnodes": 1082,
+      "byteEqualH3": true
+    },
+    {
+      "path": "harness.py",
+      "sha256": "40d5b1a9da985fde2db27d5709eae831628b93771bb79d9401ee890177d048f5",
+      "ASTnodes": 2036,
+      "byteEqualH3": true
+    },
+    {
+      "path": "host_controls.py",
+      "sha256": "3aa0f1cf48cf404cc78203bd66089aacb12bc66bc7357ea35d28e19dad3a522d",
+      "ASTnodes": 1961,
+      "byteEqualH3": true
+    },
+    {
+      "path": "host_peer.py",
+      "sha256": "e586b1568c5b51e0e60386565922f35db98a8521ecd1b093e50d1646a6f12798",
+      "ASTnodes": 1283,
+      "byteEqualH3": true
+    },
+    {
+      "path": "outer_host.py",
+      "sha256": "abfb5adcade832dc0105b2abd29ca167d7ef14e6f15558db37e4921d1a8832e0",
+      "ASTnodes": 4579,
+      "byteEqualH3": true
+    },
+    {
+      "path": "outer_worker.py",
+      "sha256": "c18a2e78dc8da96613b36cb909a8f1503091871200884dce313de6cc06c8f35b",
+      "ASTnodes": 1345,
+      "byteEqualH3": true
+    },
+    {
+      "path": "owned_spawn.py",
+      "sha256": "c4d73ba6d4d6d759b7e5dbeeb79986d2c8d6ccade163886b6a07b17cba02f3d8",
+      "ASTnodes": 776,
+      "byteEqualH3": true
+    },
+    {
+      "path": "report_controls.py",
+      "sha256": "d814d9edfb0f393e3f5c46550e56b8f273f9445e106ebba0e3d84603c2f4b12b",
+      "ASTnodes": 3411,
+      "byteEqualH3": true
+    },
+    {
+      "path": "scanner_controls.py",
+      "sha256": "25f2b4ccdc3691acb8726a4a4a868f2df5f8f657df40a83f82013dfca93c3b56",
+      "ASTnodes": 2351,
+      "byteEqualH3": true
+    },
+    {
+      "path": "watchdog_controls.py",
+      "sha256": "8ad4abdbbc7a0973c99cf98a989e0130ca883288e6223595a157fa0bd67162ff",
+      "ASTnodes": 3451,
+      "byteEqualH3": true
+    }
+  ],
+  "pairs": 18,
+  "allForwardInverseRegenerated": true,
+  "tools": 11,
+  "currentCallMapsExact": 13,
+  "allMirrorsExact": true,
+  "caseIds": 48,
+  "prospectiveCommands": 60,
+  "prospectiveHostCommands": 12,
+  "subjectEvaluations": 0,
+  "actualClockEvidence": "UNMEASURED/UNKNOWN",
+  "GitOperations": 0
+}

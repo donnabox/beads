@@ -1,0 +1,45 @@
+--- original/verify-landing.py
++++ split-review-successor/verify-landing.py
+@@ -39,12 +39,30 @@
+ if mode=='premerge':assert textgit('rev-parse','HEAD')==head
+ else:assert textgit('rev-parse','HEAD^{tree}')==tree
+ # Hash actual existing acceptances; root supplies final values, not this preparer.
+-required={'finalSourceBinding','native','claudeExit','claudeStdout','rootCouncil','installedAcceptance','installedPositive','installedSequenceControl','installedCrossBatch','installedCrossSequence','sourceAcceptance','ciOutcome','rootLandingAcceptance'}
++required={'finalSourceBinding','native','claudeWireExit','claudeWireStdout','claudeWireCleanup','claudeManifestExit','claudeManifestStdout','claudeManifestCleanup','rootCouncil','installedAcceptance','installedPositive','installedSequenceControl','installedCrossBatch','installedCrossSequence','sourceAcceptance','ciOutcome','rootLandingAcceptance'}
+ assert set(pins['evidence'])==required
+ saved={key:pin(record) for key,record in pins['evidence'].items()}
+-exit_record=json.loads(saved['claudeExit'])
+-assert exit_record['exitCode']==0 and not exit_record['timeout'] and not exit_record['forcedTermination'] and exit_record['sourceAndPlanUnchanged'] is True
+-assert exit_record['stdoutSha256']==sha(saved['claudeStdout']) and saved['claudeStdout'].strip()
++# Two genuine scope executions; no synthetic aggregate CLI exit.
++CLAUDE_PROMPTS={'wire': '2dd418c3f937d83972271d6fa38d6aa1ccf5727851804aa2f50c7481bb9b1e2d', 'manifest': 'f25fa4540326ae312ec3a3c75a1c9181345875a7412c4986333d9f5f8a168580'}
++validated_reviews={}
++for scope,prefix in [('wire','claudeWire'),('manifest','claudeManifest')]:
++ exit_record=json.loads(saved[prefix+'Exit'])
++ assert exit_record['exitCode']==0 and not exit_record['timeout'] and not exit_record['forcedTermination'] and exit_record['sourceAndPlanUnchanged'] is True,scope
++ assert exit_record['stdoutSha256']==sha(saved[prefix+'Stdout']) and saved[prefix+'Stdout'].strip(),scope
++ assert exit_record['cleanupSha256']==sha(saved[prefix+'Cleanup']),scope
++ cleanup=json.loads(saved[prefix+'Cleanup'])
++ assert cleanup['remainingGroup']==[] and cleanup['sampledPidsStillPresent']=={},scope
++ # The real runner's exit binds source-after; source-before must agree in full.
++ # This also prevents accepting the old empty timeout or another review target.
++ review_dir=Path(pins['evidence'][prefix+'Exit']['path']).parent
++ after_bytes=(review_dir/'source-after.json').read_bytes()
++ assert sha(after_bytes)==exit_record['sourceAfterSha256'],scope
++ after=json.loads(after_bytes)
++ assert json.loads((review_dir/'source-before.json').read_bytes())==after,scope
++ assert after['head']==head and after['tree']==tree and after['status']=='' and after['untrackedFiles']==[],scope
++ assert after['promptSha256']==CLAUDE_PROMPTS[scope],scope
++ assert all(after['sourceHashes'].get(path)==digest for path,digest in pins['files'].items()),scope
++ validated_reviews[scope]={'exitCode':exit_record['exitCode'],'elapsedSeconds':exit_record['elapsedSeconds'],'exitSha256':sha(saved[prefix+'Exit']),'stdoutSha256':sha(saved[prefix+'Stdout']),'cleanupSha256':sha(saved[prefix+'Cleanup']),'sourceAfterSha256':sha(after_bytes),'promptSha256':after['promptSha256']}
+ # Root acceptance explicitly binds this final ordinary source and these exact artifacts.
+ accept=json.loads(saved['rootLandingAcceptance'])
+ assert accept['head']==head and accept['tree']==tree and accept['base']==BASE and accept['decision']=='accepted for exact-head landing checks'
+@@ -94,6 +112,6 @@
+  assert pr['merged'] and pr['state']=='closed' and pr['merge_commit_sha']==main
+  merged=api('git/commits/'+main);assert merged['tree']['sha']==tree and [x['sha'] for x in merged['parents']]==[BASE,head]
+  result={'actualMerge':main,'parents':[BASE,head],'mergedAt':pr['merged_at'],'testedMerge':S}
+-result.update(at=datetime.datetime.now(datetime.timezone.utc).isoformat(),mode=mode,head=head,tree=tree,base=BASE,run=RUN,job=JOB,ciLogSha256=sha(log),pinsSha256=sha((P/'pins.json').read_bytes()),verifiedPaths=4,requiredSteps=REQUIRED_STEPS,profileQualification=False)
++result.update(at=datetime.datetime.now(datetime.timezone.utc).isoformat(),mode=mode,head=head,tree=tree,base=BASE,run=RUN,job=JOB,ciLogSha256=sha(log),pinsSha256=sha((P/'pins.json').read_bytes()),verifiedPaths=4,requiredSteps=REQUIRED_STEPS,claudeScopes=validated_reviews,profileQualification=False)
+ with (P/(mode+'-verification.json')).open('x') as f:json.dump(result,f,indent=2);f.write('\n')
+ print(json.dumps(result))

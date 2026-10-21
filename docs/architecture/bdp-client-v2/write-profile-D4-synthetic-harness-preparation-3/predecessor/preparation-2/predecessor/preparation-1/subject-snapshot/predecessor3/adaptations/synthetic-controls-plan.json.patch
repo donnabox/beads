@@ -1,0 +1,47 @@
+--- predecessor2/synthetic-controls-plan.json
++++ synthetic-controls-plan.json
+@@ -200,7 +200,8 @@
+       "finiteSubcases": [
+         "missing prospectiveWorkload refuses; exact present workload reaches original selected-stage gate without executing product",
+         "blocked preflight no product after10",
+-        "parent TERM pending while Popen/registry handlers install: contained worker cleaned under same clock"
++        "parent TERM pending while Popen/registry handlers install: contained worker cleaned under same clock",
++        "exact current flat implementation path-to-SHA index is consumed completely; missing wrapper is not invented, all hashes/six exclusions remain bound; data-only interface reaches original stage gate without product"
+       ],
+       "id": "P01",
+       "input": "blocked gate/preflight",
+@@ -289,14 +290,22 @@
+       "input": "normal completion exactly145",
+       "predicate": "refuse equality",
+       "productCalls": 0,
+-      "status": "UNEXECUTED"
++      "status": "UNEXECUTED",
++      "finiteSubcases": [
++        "original normal completion equality145 refuses",
++        "exact relative flush+10 equality refuses even when absolute145 not reached; ordinary115 unchanged"
++      ]
+     },
+     {
+       "id": "P12",
+       "input": "publisher write blocks/fails after tentative exit artifact",
+       "predicate": "parent still enforces same clock; no outer exit0/no later-stagecredit",
+       "productCalls": 0,
+-      "status": "UNEXECUTED"
++      "status": "UNEXECUTED",
++      "finiteSubcases": [
++        "existing publisher-block/fail case preserved",
++        "publisher already registered and a fresh census/reap begins before flush+10 but completes after that relative deadline while absolute145 remains: finalreturn refuses; tentative publication also rechecks actual current effective deadline"
++      ]
+     },
+     {
+       "id": "P13",
+@@ -334,7 +343,8 @@
+     {
+       "finiteSubcases": [
+         "mutate each receiptPages[0]/[1], receiptComplete, receiptEntries, groups, pendingRequests, each Event pages/count/complete against derived facts: refuse",
+-        "positive32 body/wire/postimage counterfactuals unchanged"
++        "positive32 body/wire/postimage counterfactuals unchanged",
++        "settled=true received=false errorCategory=null refuses failed conformance; each existing nonnull allowed rejection category remains eligible for the unchanged failed path; genuinely unsettled may retainnull"
+       ],
+       "id": "D03",
+       "input": "counts32 but missing wire/changed body/incorrect owned postimage",

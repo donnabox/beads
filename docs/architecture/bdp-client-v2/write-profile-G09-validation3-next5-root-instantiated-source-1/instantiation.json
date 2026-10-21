@@ -1,0 +1,161 @@
+{
+  "activeGateWritten": false,
+  "actualCellsExecuted": 0,
+  "candidateGate": {
+    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation3-next5-root-proposed-authority-1/execution-gate.proposed.json",
+    "sha256": "779d31312b8333304fdae310ecaf4d4ca0f23f9f05307fb5be4534428adcdafc"
+  },
+  "currentLaunchApproval": false,
+  "kind": "ROOT_NEXT5_RENDERED_SOURCE_BASELINES_DATA_ONLY_PENDING_OTHER_NATIVE_ROOT_FINAL",
+  "lateToolIds": "UNRESOLVED until actual preceding terminal0; only completeLFassignment count1/fullinverse; guard/body/RAW_EXIT0 never changed",
+  "manifest": {
+    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation3-next5-root-execution-acceptance-1/acceptance.json",
+    "sha256": "57d5aba63d328daa498a47514e11a9812e9dfc5e3240a72b8dac4bee6b388223"
+  },
+  "protocol": {
+    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation3-next5-fixed-protocol-preparation-1/index.json",
+    "sha256": "d1597e644a700c8dc0e66e3f016741abf3ad0b1b85f62fac2c42ae351a2716bc"
+  },
+  "records": [
+    {
+      "cells": {
+        "A": {
+          "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation3-next5-root-instantiated-source-1/cells/typecheck.A.txt",
+          "sha256": "b508300baa67aac841db0240927f2a970fccfa22b06f8ee0d95171e78b7b7e31"
+        },
+        "B": {
+          "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation3-next5-root-instantiated-source-1/cells/typecheck.B.txt",
+          "sha256": "66674a8e0f3ffe0dddd23e54567fabe0fd23c6fa623537c7d38c45db9fee6544"
+        },
+        "C": {
+          "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation3-next5-root-instantiated-source-1/cells/typecheck.C.txt",
+          "sha256": "c26cf591ffcca6ce4e6388978d42fcce9a19890a2c9992489c84b56d321a1eab"
+        }
+      },
+      "onlyTwoWholeAssignmentSubstitutionsCountOneAndFullInverse": true,
+      "placeholderTemplate": {
+        "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation3-next5-fixed-protocol-preparation-1/proposals/typecheck.capture.txt",
+        "sha256": "6d1e09a60095e8b964c3c459d4d8353cfef1775aa5ef84132838db849b04b07b"
+      },
+      "renderedWholeTemplate": {
+        "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation3-next5-root-instantiated-source-1/templates/typecheck.capture.txt",
+        "sha256": "3091867df49d41cde12a5b4cf89eb26defb1245fab38d56a673bb9cfa9211c8d"
+      },
+      "stage": "typecheck"
+    },
+    {
+      "cells": {
+        "A": {
+          "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation3-next5-root-instantiated-source-1/cells/format-check.A.txt",
+          "sha256": "53b899335bce111e4f8412220dc7fe51c47d3ac5027a889559f33bc9423cb625"
+        },
+        "B": {
+          "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation3-next5-root-instantiated-source-1/cells/format-check.B.txt",
+          "sha256": "2c6e3244f69a00d0e5ebf6083c095cd63bbf00c4c6f9c5250d2b6805a498d377"
+        },
+        "C": {
+          "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation3-next5-root-instantiated-source-1/cells/format-check.C.txt",
+          "sha256": "c85578e40de16dfe7fe654ae6e6f1587033ab5e48aea4e04358734d150b01ef6"
+        }
+      },
+      "onlyTwoWholeAssignmentSubstitutionsCountOneAndFullInverse": true,
+      "placeholderTemplate": {
+        "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation3-next5-fixed-protocol-preparation-1/proposals/format-check.capture.txt",
+        "sha256": "690c9ed622baaa18cb58e02b0ecdd6e96eb74e34256f76fae980f522b4a03038"
+      },
+      "renderedWholeTemplate": {
+        "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation3-next5-root-instantiated-source-1/templates/format-check.capture.txt",
+        "sha256": "4d4575e79a782506e358d719c19f8cd064349fb7eb85339ee4ea160b944cb9ca"
+      },
+      "stage": "format-check"
+    },
+    {
+      "cells": {
+        "A": {
+          "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation3-next5-root-instantiated-source-1/cells/lint.A.txt",
+          "sha256": "57f780c19d4335dc0772d3df1aaff0e2f2d9030981c42889575337a3bd277fdd"
+        },
+        "B": {
+          "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation3-next5-root-instantiated-source-1/cells/lint.B.txt",
+          "sha256": "9b6e6f7ece10fcffa27b16e0d61ce8ff049ebf3fe6f26ace7a15fdff7afc1185"
+        },
+        "C": {
+          "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation3-next5-root-instantiated-source-1/cells/lint.C.txt",
+          "sha256": "4311da95e62a2217cc2605f92cb8afd9b2ee1f66fb40edbde04de8d19251dddb"
+        }
+      },
+      "onlyTwoWholeAssignmentSubstitutionsCountOneAndFullInverse": true,
+      "placeholderTemplate": {
+        "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation3-next5-fixed-protocol-preparation-1/proposals/lint.capture.txt",
+        "sha256": "815af1db1afa389933d756f82556470c2597e1c3eb341bff1a95c57274b2e787"
+      },
+      "renderedWholeTemplate": {
+        "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation3-next5-root-instantiated-source-1/templates/lint.capture.txt",
+        "sha256": "a8b5f3db53cc1ff29b459822837eb53ee9cec2c8f440cf85e62e9cca288d5921"
+      },
+      "stage": "lint"
+    },
+    {
+      "cells": {
+        "A": {
+          "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation3-next5-root-instantiated-source-1/cells/fresh-build.A.txt",
+          "sha256": "99dcd1fa64d2796c17c8d9ce29583900d3bc073dc2c54bc8116e90d430442630"
+        },
+        "B": {
+          "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation3-next5-root-instantiated-source-1/cells/fresh-build.B.txt",
+          "sha256": "152ab75000cac68da1c822ac072ab0f4e04d13046c6ff130bd0a3fb277bea139"
+        },
+        "C": {
+          "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation3-next5-root-instantiated-source-1/cells/fresh-build.C.txt",
+          "sha256": "98b1ab72e6bed8b936e8ac3c685c99a1d909212ebbbe52f01099c509f9b3944c"
+        }
+      },
+      "onlyTwoWholeAssignmentSubstitutionsCountOneAndFullInverse": true,
+      "placeholderTemplate": {
+        "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation3-next5-fixed-protocol-preparation-1/proposals/fresh-build.capture.txt",
+        "sha256": "c25f4bd4e2e187c60e8ce4dc6436c4d53a5fe60d04b4f6e000991769a02d941f"
+      },
+      "renderedWholeTemplate": {
+        "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation3-next5-root-instantiated-source-1/templates/fresh-build.capture.txt",
+        "sha256": "d6e1e055610354c1ef8e5805c786fad5d58b8a3f4112121f256fc39e7a1280a1"
+      },
+      "stage": "fresh-build"
+    },
+    {
+      "cells": {
+        "A": {
+          "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation3-next5-root-instantiated-source-1/cells/bind-fresh-build.A.txt",
+          "sha256": "bde295889d36636e87fea69843cae03863a003cc3cd691f7eca48cfd44dc6637"
+        },
+        "B": {
+          "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation3-next5-root-instantiated-source-1/cells/bind-fresh-build.B.txt",
+          "sha256": "b3678945496036a37db01480d643b12a95bf9dcf80c0950064ab4397dc531133"
+        },
+        "C": {
+          "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation3-next5-root-instantiated-source-1/cells/bind-fresh-build.C.txt",
+          "sha256": "29baef8bef13febc9acfcb274ee676fea12930dcf4b1384aa7e2b17b2f3c60f4"
+        }
+      },
+      "onlyTwoWholeAssignmentSubstitutionsCountOneAndFullInverse": true,
+      "placeholderTemplate": {
+        "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation3-next5-fixed-protocol-preparation-1/proposals/bind-fresh-build.capture.txt",
+        "sha256": "ee0bf4fd7b89b532e7cb5828a0cdf94bcff4b2e8debb3d09df6560691f5d4cf0"
+      },
+      "renderedWholeTemplate": {
+        "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation3-next5-root-instantiated-source-1/templates/bind-fresh-build.capture.txt",
+        "sha256": "e6d3e84ac96bcc877411d8bc4953d6fb70cb75eb8fe9966558765f09bd49361b"
+      },
+      "stage": "bind-fresh-build"
+    }
+  ],
+  "session": "2026-10-18T02:16:24Z-549f",
+  "sourceAuthorRelease": {
+    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation3-next5-fixed-protocol-root-static-acceptance-1/acceptance.json",
+    "sha256": "534082ff830fe2e550c043683470e65b4ff462dd7122bcdda973581b7c1e21e4"
+  },
+  "sourceAuthorReleasePublishedReadBackBeforeAuthoring": "878b9b30f0524d848c0f921a2e05beae37e3768d",
+  "substitutionContract": {
+    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation3-next5-fixed-protocol-preparation-1/substitution-and-framing-contract.json",
+    "sha256": "230d14cc2f0ff937437a5dc4f5b92698d2cb5bb12044042f8526643b39cb235b"
+  }
+}

@@ -1,0 +1,102 @@
+{
+  "status": "CLOSED_DISTINCT_COMPLEMENTARY_PLAN_REVIEWS",
+  "source": "9bf601bfb570adae97ce8cdc99caf2cc7a2b34c1",
+  "planSha256": "4c62dc5071de924492976ae77d4083b28b5b681350016e816d4296c5030f9427",
+  "ledgerSha256": "bc65536cd8e8b7fdd9eb12ae5b466c39a5ae19352b858ef1eb3812de14d6397e",
+  "planLineCount": 79,
+  "planSections": [
+    {
+      "title": "# Principal namespaces through the cumulative Transactional runner",
+      "firstLine": 1,
+      "lastLine": 6,
+      "primary": "both"
+    },
+    {
+      "title": "## Authority, files, and literal inputs",
+      "firstLine": 7,
+      "lastLine": 26,
+      "primary": "both"
+    },
+    {
+      "title": "## One truthful default configuration",
+      "firstLine": 27,
+      "lastLine": 34,
+      "primary": "both"
+    },
+    {
+      "title": "## Actual-wire authority and complete oracles",
+      "firstLine": 35,
+      "lastLine": 50,
+      "primary": "wire"
+    },
+    {
+      "title": "## Composition and the real negative",
+      "firstLine": 51,
+      "lastLine": 56,
+      "primary": "both"
+    },
+    {
+      "title": "## Preservation, affected static checks, and drafting fences",
+      "firstLine": 57,
+      "lastLine": 66,
+      "primary": "composition"
+    },
+    {
+      "title": "## Finite validation and recurring cost",
+      "firstLine": 67,
+      "lastLine": 79,
+      "primary": "composition"
+    }
+  ],
+  "sharedBoundaries": [
+    "explicit actual config/bootstrap identity and no credential swap",
+    "actual dispatch/report provenance join",
+    "row-first order,7positive/2expected-control exchanges",
+    "strict oracles and partial exclusions",
+    "no public qualification, no authoring/execution release"
+  ],
+  "fullPlanAccountability": "wire owns literal action/oracle/negative semantics; composition owns old-corpus/config/registration/fences/workload/validation. Each may flag cross-boundary defect; neither result alone is complete council.",
+  "wire": {
+    "promptSha256": "0ad13d7fb81663dbd62e791c854cacb30ad4109fad590a1de7dc6b9455530523",
+    "promptBytes": 66904,
+    "planRanges": [
+      {
+        "firstLine": 1,
+        "lastLine": 56,
+        "sha256": "f489ba04ae555cdcce90240ca626759a5805bb158fbbd0716d58f8ff129e3b02",
+        "bytes": 15388
+      }
+    ],
+    "sourceExcerptCount": 11,
+    "excerptBindingSha256": "191036efb2f301e7d1c06f6b1df88f4108fe78c8577653b3108df43b01007404",
+    "runnerSha256": "4e797907926d21df8a8a71cffd79c95273339231d9ccc04d293de312c0b00beb"
+  },
+  "composition": {
+    "promptSha256": "47fcaa30b3a0d79b70584158712dca41dcad6911f6f0047c7f75698a06e03fac",
+    "promptBytes": 72840,
+    "planRanges": [
+      {
+        "firstLine": 1,
+        "lastLine": 34,
+        "sha256": "f017d20d30263fbbb43fbe23342b115a0c42537ffa6aceea5d97f0660d9f62f9",
+        "bytes": 6994
+      },
+      {
+        "firstLine": 39,
+        "lastLine": 41,
+        "sha256": "cc875da30cc3328d4922ae3a0b214e633ba79d3f861ed5d05ef300ad73d8dd89",
+        "bytes": 2637
+      },
+      {
+        "firstLine": 49,
+        "lastLine": 79,
+        "sha256": "97a3cbec3337366de9fdd72ffdeed12aad57f4e1315a115a81920e26ed17143f",
+        "bytes": 10546
+      }
+    ],
+    "sourceExcerptCount": 14,
+    "excerptBindingSha256": "7ac732fdf30b50097a34b0487ba331a71c6babdfcee064b1731c8306a365ec2d",
+    "runnerSha256": "9c1a436c96bae6f3fdf21517bc668908f1520af0630ac30bf33535a513f2cc4f"
+  },
+  "hashGraph": "Map pins prompt/runner/excerpt content only. Each final launch binding pins map; preparation-hashes and later root release pin the final binding. No cyclic hash requirement."
+}

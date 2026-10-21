@@ -1,0 +1,142 @@
+# Readiness Review — FROZEN HEAD b7eefc9 vs BASE 486ad62
+
+No tools were run. Everything below is derived from the inline packet only.
+
+---
+
+## A. Proven local defects (trigger established inside the packet)
+
+### A1 — Medium — `creatorFact.resourceKind` is written durably and never checked
+**Files:** `packages/server/src/transaction-store.ts:418-431` (`creatorFact`), `packages/server/src/transaction-dependencies.ts:82-93` (`resolveDependencies`), `transaction-dependencies.ts:52-72` (`compareDependencyTemplate`)
+
+**Issue:** `creatorFact` records `resourceKind: operation === "createBead" ? "bead" : "link"` — a two-way ternary over an untyped `operation: string`. No code path ever compares that stored kind against the template's `d.resourceKind`. `resolveDependencies` binds purely on `value.kind === "bound" ? value.id : UNBOUND`; `compareDependencyTemplate` only checks the *candidate's* URI prefix against `d.resourceKind`, never the fact's.
+
+**Trigger:** any dependency resolution. The field is durable-but-dead, so a template/fact kind divergence (see A2) resolves silently rather than failing the owner.
+
+**Impact:** loss of the one cheap cross-check that would catch a mis-derived creator kind at resolution time; the dependent commits an identity bound to a reference of the wrong Resource kind.
+
+**Fix:** in `resolveDependencies` (and the `captured.kind === "bound"` branch of `compareDependencyTemplate`), assert `fact.resourceKind === dependency.resourceKind` and throw an owner fault on mismatch.
+
+### A2 — Medium/High if reachable (see Q1) — `@name` to a *named non-creating* member: wrong kind, then a raw internal `Error` after a committed prefix
+**Files:** `transaction-batch.ts:144-156` (dependency synthesis), `transaction-batch.ts:174` (`if (op.name) labels.set(op.name, index)`), `transaction-store.ts:800-801` (facts inserted only for `createBead`/`createLink`), `transaction-store.ts:438-444` + `:874-876` (`fact()` throws `"creator turn not resolved"`)
+
+**Issue:** `labels` registers **every** named member, not only creating ones, and `resourceKind` is then derived with `creation.operation === "createBead" ? "bead" : "link"`. `normalizeTransaction` by contrast registers creators only for creating ops (`transaction-batch.ts:338`). `admitSequence` inserts a `creator_facts` row only for create members, and the dependent's turn calls `fact(state.id, index)`, which throws when the row is absent.
+
+**Reachable trigger (conditional on the carrier rule, Q1):** `[{operation:"updateBead", name:"a", bead:"beads/x", idempotencyKey:"u"}, {operation:"deleteBead", bead:"@a", idempotencyKey:"d"}]`. Member 0 would be classified `resourceKind:"link"`; member 0 commits its own transaction; member 1's turn throws `Error("creator turn not resolved")` → `cleanupThenThrow` → `cancelSequence` → the caller receives an `Error`, not a projected member disposition.
+
+**Impact:** a committed prefix plus a hard internal error instead of a whole-carrier pre-effect refusal. Exactly the "full syntax checks precede all key effects" property the slice claims.
+
+**Fix:** restrict `labels` to `createBead`/`createLink` members (mirroring `normalizeTransaction`'s `creating && op.name`), and refuse a `@name` whose target is not a creating member locally rather than relying on the comment at `transaction-batch.ts:163-165`. Add the wrong-kind/non-creating-label case to the refusal table in `transaction-sequence.test.ts:438-446`.
+
+### A3 — Low/Medium — `references` are applied only at operation index 0 with no single-operation assertion
+**Files:** `transaction-batch.ts:313` (`index === 0 && references.has(field)`), `:326` (`if (index === 0) referenceIdentities.set(...)`), `:422-433` (unbound check), `:454-458` (evaluation substitution)
+
+**Issue:** correctness today rests entirely on the unwritten invariant "a carrier that receives `references` has exactly one operation". Nothing enforces it. A multi-operation carrier passed with non-empty `references` would bind only operation 0, and `referenceIdentities` would silently describe only operation 0 — i.e. a *wrong durable identity*, not an error. The unbound guard at `:423` is loop-invariant yet evaluated per operation and reports whatever `operationIndex` it happens to be on, so with a multi-op carrier the reported index is arbitrary.
+
+**Trigger:** no current caller (`admitKey` supplies references only for single-op member carriers). This is a latent-correctness/foot-gun finding, not a live failure.
+
+**Fix:** `if (references.size > 0 && batch.carrier.operations.length !== 1) throw new TypeError(...)` at the top of `normalizeTransaction`; hoist the unbound check out of the operation loop.
+
+### A4 — Low — the "unresolved row is always owned" invariant that recovery depends on is code-only
+**Files:** `transaction-store.ts:97` (schema), `:498-499` (`normalized?.identity ?? ""`), `:516` (`if (!normalized || current.dependency) throw`), `:907-915` (resolution clears `dependency`)
+
+**Issue:** startup recovery (`:369-372`) is correct for template rows *only because* `dependency IS NOT NULL ⇒ owner IS NOT NULL` always holds, which is enforced solely by `executeClaim`'s guard and the resolution UPDATE. There is no `CHECK` constraint. Separately, template rows persist `identity=''` and `witnesses=''` as sentinels that no read path validates; if an unresolved row ever reached the ordinary comparison branch (`:481`) it would compare a real identity against `""` and return `conflict` instead of faulting.
+
+**Fix:** `CHECK(dependency IS NULL OR owner IS NOT NULL)` on `receipts`, and make `identity`/`witnesses` nullable so "unresolved" is representable rather than faked.
+
+### A5 — Low — `comparisonEpoch()` cannot change in a real store; the epoch-stop path is stub-only, and "closed" is indistinguishable from "epoch changed"
+**Files:** `transaction-store.ts:754` (`comparisonEpoch: () => (closed ? undefined : enter(() => metadata("epoch")))`), `transaction-comparison.ts:26-29`, test `transaction-dependencies.test.ts` ("does not reset direct comparison deadline…", second half)
+
+**Issue:** `metadata("epoch")` is written once at provisioning (`:359`) and never updated, so `comparisonEpoch() !== epoch` is unsatisfiable against the real store. The test exercises it by substituting `{...f.store, comparisonEpoch: () => epoch}`. Also, a closed store returns `undefined`, which the loop maps to `temporarily-unavailable` — a closed owner is reported as a retryable 503 precursor rather than an error.
+
+**Fix:** state in the progress note that epoch-stop is observed only against a stub; distinguish `closed` from epoch change in `compareAndAdmitTransaction`.
+
+### A6 — Low — `creatorFact` throws instead of projecting when a completed creator receipt has no first allocation
+**File:** `transaction-store.ts:421-425`
+
+**Issue:** `receipt.results[0].resource` / `receipt.allocated[0]` are indexed unguarded; a miss throws `Error("creator lost allocation")`. This runs inside `atomic()` from both `executeClaim` (`:679-684`) and the fallback write (`:953-966`), so it aborts the turn and cancels the tail rather than yielding a member disposition. `expireRow` builds `allocated` only from `outcome === "created"` results (`:284-307`), and `transaction-sequence.ts:45` makes the same single-allocation assumption. Reachability depends on `resource-evaluator.ts` (not supplied) — see Q3.
+
+### A7 — Low — convention break: `resolveDependencies` and `comparisonEpoch` read durable state outside `atomic()`
+**Files:** `transaction-store.ts:874-876`, `:754`
+
+**Issue:** both read via `enter()` only, against the file's documented convention ("Caller holds the one SQLite transaction", `:445`). Safe today because the owner holds `locking_mode=EXCLUSIVE` on a single synchronous connection, so no interleaving writer exists. Flagged as a robustness/consistency item, not a live race.
+
+### A8 — Low — progress-note claims that this packet cannot support, plus one precision regression
+**File:** `docs/design/transaction-implementation-progress.md`, "Observed verification" section
+
+1. "Build, typecheck, dependency boundaries, formatting and installed-package smoke **are checked locally**" — states the checks were *run*, not that they passed. The prior text said "pass", and the adjacent lint sentence does state its outcome. In a readiness note this reads as a weakened claim rather than an outcome.
+2. "the bounded **11-file** regression suite passes **807** tests, including **83** atomic-owner, **15** sequence-adapter and 23 canonical dependency cases" — this packet adds exactly **one** test file (`transaction-dependencies.test.ts`), i.e. 7 → 8. The 11-file count, the 807 total, and the 83/15 figures cannot be established here. The **23** dependency cases *are* verifiable: I count 23 cases in the added file (19 `it` plus the 4-case `it.each` over `after-sequence-reservation|after-sequence-admission|after-effects|after-terminal`).
+3. "`transaction-comparison.ts` … rejects provable differences in known fields, pins, repeated references and already durable creator facts" — misattributed. That logic is in `transaction-dependencies.ts:38-81` and `transaction-store.ts:459-475`; `transaction-comparison.ts` only loops on the store's verdict.
+4. "Repeated keys and **invalid/forward/wrong-kind** labels remain whole-carrier errors" — the only label case in this packet is `@unknown` (`transaction-sequence.test.ts:441`, which *replaced* the former `@a` edge case). Forward labels have no test here, and wrong-kind refusal is not implemented locally at all (A2).
+5. Minor: the test titled "waits without a DB lock then joins the canonical direct/batch identity" performs no wait — the first `store.admit` already returns `existing` because the creator committed in the preceding `stepper.step()`. The waiting loop is genuinely exercised by the two later cases ("waits until creator commitment proves equality", "proves static mismatch immediately"). The title overstates what that case observes.
+
+---
+
+## B. Questions requiring omitted context (not scored as defects)
+
+**Q1 — `prepareReadUpdateSequence` label validation (`@bdp/protocol`, not supplied).** `transaction-batch.ts:163-165` asserts "The whole carrier already validated backward labels and Resource kinds." If that is true, A2 degrades to a defense-in-depth + evidence gap (Low). If `name` is accepted on non-creating members and `@name` may reference one, A2 is a live High. Also unresolved by the packet: whether `@name` is syntactically possible in fields outside `["bead","link","source","target"]` (e.g. `id`). If it is, `normalizeTransaction:324` throws `TypeError("unknown batch binding")` *inside the admission transaction* (`transaction-store.ts:798-824`) rather than at preparation — no durable effect, but not the claimed pre-effect carrier error either.
+
+**Q2 — `semantic-identity.ts` (`encodeSemanticValue`, `UNBOUND_SEMANTIC_REFERENCE`) not supplied.** `transaction-dependencies.ts:55-62` parses the encoder's output positionally: `JSON.parse(value) as [string,[string,string]]`, then indexes `encoded[1][0]` / `encoded[1][1]`. Reachable input that is **not** a string value: a direct singleton presenting an unresolved alias operand (`source: "alias/missing"`), where `normalizeTransaction:323` yields `{ unresolvedAlias: locator }`. Whether that returns `conflict` or throws a `TypeError` inside the owner's admission transaction depends entirely on the encoding shape. Also unverifiable here: that `UNBOUND_SEMANTIC_REFERENCE` cannot collide with any client-supplied reference value. **Fix regardless:** guard the parse or expose a typed accessor from `semantic-identity.ts` instead of index arithmetic.
+
+**Q3 — `resource-evaluator.ts` not supplied.** Can a `completed` `createBead`/`createLink` receipt ever have `results[0]` without `resource.id`, or an expired `allocated` of length ≠ 1? That decides whether A6 is unreachable defensive code or a live tail-cancelling throw.
+
+**Q4 — dependent of a creator answered `idempotency-conflict`.** `transaction-store.ts:953-966` maps every non-`receipt` creator disposition to `{kind:"unbound"}`, so such a dependent retains a durable `binding-unavailable` failure. The supplied spec excerpt (`bdp.md:4056-4066`) rules only on creators whose receipt is `failed`, `pending`, transient-in-this-request, or `expired`. The conflict case is not in the excerpt. If the intended answer is transient (consult no dependent key, retain nothing), this is a wrong durable retention; if unbound is intended, the ruling should be cited. Needs the omitted spec section.
+
+**Q5 — `binding-unavailable` wire shape.** `transaction-batch.ts:426-432` emits `type: …/problems/request`, `status: 400`, `retry: "never"`. The problem catalog and the status/retry mapping for `binding-unavailable` are not in the supplied `bdp.md` ranges. Cannot confirm or refute.
+
+**Q6 — `MemberCreatorBinding` (`member-identity.ts`) not supplied.** `CreatorFact` is aliased to it and handled as a three-variant union (`bound` / `unbound` / `transient`) in `resolveDependencies` and `compareDependencyTemplate`. If the source type has further variants, both switches are non-exhaustive (`resolveDependencies` would bind a fourth variant as UNBOUND; `compareDependencyTemplate` would treat it as conflict).
+
+**Q7 — `prepareReadUpdateSingleton` / `PreparedReadUpdateCarrier` not supplied.** `transaction-batch.ts:168-173` now fabricates the carrier literal (`{kind:"singleton", scope, operations:[op], keys:[key]}`) instead of routing members through singleton preparation, and shares the sequence carrier's `op` object by reference. Two things I cannot establish: (a) whether singleton preparation enforced anything besides the `@name` rejection the comment cites (per-member byte/depth bounds now come only from the whole-carrier checks at `:128`/`:131`); (b) whether `PreparedReadUpdateCarrier` carries construction invariants (branding, freezing, extra fields) that a hand-written literal bypasses. No current code mutates `op.input`, so the aliasing is latent only.
+
+Note on this change specifically: the identity shift it causes is correctly gated — `format` → `bdp-private-transaction-dependencies-4`, `identityPolicy` → `transaction-dependencies-3`, no migration, and a byte-identical reopen-refusal test. So it is not a silent reinterpretation of retained keys.
+
+---
+
+## C. Baseline vs. new behavior — what the packet does establish
+
+- **Admission now skips existing-key members** (`transaction-store.ts:802-804` `continue`) instead of calling `admitKey` for them. The old admission-time classification result was discarded anyway, and `bdp.md:3239` requires answering an unclaimable key "in its turn, as of that turn". Not a regression; it is also what makes a dependent with a pre-existing key admissible at all (it avoids normalizing an unbound `@name` at admission).
+- Admission still calls `expireRow` on every member key (`:804`), so it performs retention maintenance (compaction / failed-row forgetting) on keys that are later answered transiently and "consult no key state". That is retention work the timer sweep would do anyway within its cadence, and `expireRow` acts only past `expiresAt`, so I do not read it as a classification violation.
+- **Ownership-scoped retraction holds.** Every retraction DELETE is `… AND owner=?` with the exact owner UUID (`:693-697`, `:718-720`, `:772-776`, `:835-839`, `:885-889`). The two unscoped deletes are `expireRow`'s `owner IS NULL` retention delete (`:275-278`) and startup's `owner IS NOT NULL` recovery delete (`:369-371`), which runs with no live owners under `locking_mode=EXCLUSIVE`. Creator-fact deletes are attempt-scoped (`:722`, `:841`, `:971`) except the unconditional startup wipe (`:372`).
+- **Creator binding atomicity.** `writeFact` for an executing creator is inside `executeClaim`'s single `atomic()` block, after the terminal-receipt UPDATE and its `changes === 1` ownership check (`:673-684`). Facts are therefore committed with effects + terminal receipt, and are independent of receipt retention (separate `creator_facts` table, keyed by attempt, not by key).
+- **Fact coverage.** Every create member gets a fact on every path: executed (`:679`), classified as existing/conflict (`:949-966`), or transient (`:958`). The admission-time `INSERT … VALUES(?,?,NULL)` (`:800-801`) is unconditional for create members, including skipped existing keys, which is what makes the later `UPDATE … WHERE fact IS NULL` single-row check (`:432-436`) hold. The only gap in that coverage is A2's non-creating label.
+- **Transient precedence.** `resolveDependencies` returns `undefined` on the first `transient` fact regardless of other `unbound` facts, so a mixed transient/unbound dependent is answered `idempotency-in-progress` and retains nothing — the conservative reading of `bdp.md:4068-4075`.
+- **Direct comparison does not hand out the owner's pending receipt before equality.** `compareDependencyTemplate` returns `equal` only when all facts are resolved-and-bound *and* the hole-masked identities match (`transaction-dependencies.ts:73-80`); `pendingWins` is false on the direct path, so the template branch is the only way in (`transaction-store.ts:459-475`). The `comparison-pending` guard in `nextSequence` (`:934-935`) is unreachable given the owned/dependency invariant (A4) — defensive only.
+- **Cancellation-cause repair.** `nextSequence`'s catch now routes through `cleanupThenThrow` (`:974-978`), which fences with a combined `AggregateError` and replaces the wrapper rather than mutating `cause` (`:188-196`), keeping traversal acyclic. The added `transaction-store.test.ts` case asserts acyclicity and the sticky-fence behavior on later `inspect`/`maintain`/`admitSequence`.
+- `close()` at `:1038-1045` is fence-exempt by design; I did not treat it as missing.
+
+---
+
+## D. Coverage statement — exactly what I read
+
+**Read in full (as supplied inline):**
+- The complete packet diff, all hunks.
+- `packages/server/src/transaction-store.ts` lines 1–1047 (full current file).
+- `packages/server/src/transaction-batch.ts` lines 1–586 (full current file).
+- `packages/server/src/transaction-sequence.ts` lines 1–137 (full current file).
+- `packages/server/src/transaction-dependencies.ts` lines 1–93 (full current file).
+- `packages/server/src/transaction-comparison.ts` lines 1–36 (full current file).
+- `packages/server/src/transaction-dependencies.test.ts` lines 1–683 — as **added diff content only** (new file, so this is complete).
+
+**Read partially — diff hunks only; remainder unread:**
+- `packages/server/src/transaction-store.test.ts` — only the +97-line addition at ~line 2358. The preceding ~2358 lines were not supplied.
+- `packages/server/src/transaction-sequence.test.ts` — only the hunk at lines 434–450. The rest of the file, including the assertion harness that consumes the `unsupported` array, was not supplied.
+- `docs/design/transaction-implementation-progress.md` — only the changed hunks; unchanged sections not supplied.
+
+**Supplied spec excerpts (the only spec text I used):**
+- `docs/specs/bdp.md` lines 3200–3339 and 3810–4095. Everything outside those two ranges is unread, including the problem catalog, `#idempotency-keys`, `#batch-operation-target`, `#mutation-receipt-responses`, and `#scopes-and-identity`.
+
+**Not supplied at all; relied on as unknown:** `semantic-identity.ts`, `member-identity.ts`, `resource-evaluator.ts`, `alias-evaluator.ts`, `@bdp/protocol` (`prepareReadUpdateSequence`, `prepareReadUpdateSingleton`, `admitReadUpdateOperationNumbers`, `PreparedReadUpdateCarrier`, `parseReadUpdateProblem`, `referenceUri`), `schemas/bdp-v0.schema.json`, `packages/server/dist/*` (the child-process recovery test imports from `dist`), and the other files of the claimed 11-file suite.
+
+**I make no claim of entire-branch coverage.** This review covers only the packet above; the combined head b7eefc9 contains content I was not shown.
+
+---
+
+## E. Known bounded exclusions relevant to this packet
+
+- Write-profile conformance claims intentionally disabled; no executable whole-profile evidence.
+- Public finite pending supervisor and direct HTTP Transactional profile unimplemented. `compareAndAdmitTransaction` is a comparison/inspection seam: it returns `owned` claims it never executes or retracts, and `temporarily-unavailable` is an internal value with no 503/`Retry-After` mapping.
+- Turn-time Resource-alias resolution for sequence members still refused (`transaction-batch.ts:157-161`); the representation question is recorded, not resolved.
+- Fixed `development-all-visible` authorization view: no authorization projection, no retained-receipt re-authorization, no `forbidden` / `{withheld:true}` projection, so `bdp.md:4079-4091` is untouched by this packet.
+- No `transaction.duration` or finite abandoned-attempt bound. **Consequence worth stating:** an admitted sequence whose stepper is dropped without `abort()` leaves every reserved member key pending until process restart — concurrent presentations get `idempotency-in-progress` indefinitely and direct callers exhaust their comparison budget into `temporarily-unavailable`. Retraction is caller-driven (`:705-729`) or startup-driven (`:369-372`) only. The progress note already lists duration/recovery bounds as remaining; I record this as the relevant exclusion, not a new regression.
+- No migration, in-place upgrade, or reseed; `creator_facts` is wiped unconditionally at startup (`:372`), so pinned resolution state is attempt-lifetime only — adequate because every template row is owned and therefore also retracted at startup, but it means cross-restart resolution relies entirely on retained creator receipts.
+- Set operations, owned-Link transitions, Event Sources/changefeed/snapshots/erasure, native schemas/aggregate policies/limits, HTTP reception/status/conditional behavior: out of packet, not regressions.

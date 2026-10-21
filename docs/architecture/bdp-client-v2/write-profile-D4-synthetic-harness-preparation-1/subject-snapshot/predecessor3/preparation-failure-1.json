@@ -1,0 +1,9 @@
+{
+  "stage": "author static AST call text comparison",
+  "exception": "AssertionError",
+  "cause": "Compared gate call receiver text byte-for-byte even though authorized fix intentionally changes read(idx)[files].items to read(idx).items; no new subprocess/signal/clock/API call",
+  "preservedHelperBytes": true,
+  "sourceHelperOrProductExecuted": false,
+  "indicesOrGateWrittenBeforeFailure": false,
+  "correction": "Compare gate calls after exactly normalizing that one intentional receiver expression; do not alter helper source"
+}

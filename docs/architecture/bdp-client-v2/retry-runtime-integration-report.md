@@ -1,0 +1,9 @@
+# Retry and runtime closure integration
+
+Exact clean source **4a8607ac2131aae4706d00684a2f3f1185cb37e9**, branch `codex/vickie-retry-runtime-integration`, checkout `/Users/dbox/repos/wt/vickie/vickie-retry-runtime-integration`. Ordinary no-conflict merge of published315b04 with reviewed M1closure80d9 and retry evidence/corrections29e715→965f27c→a899872. Root inspected three-file external followup delta and accepts F2/F3/F5; F4/F6 residuals are explicit in author report. No Snapshot core or H1b implementation included.
+
+Pinned Node24.16.0/pnpm11.20.0. Clean install/typecheck/build, **8,451 tests/148files/one optional skip**, boundaries/format/lint, both smoke suites, preflight7 and historical Read89 verifier pass. Full test process111.63s. Actual result logs/exit records are retained in this directory. The historical Read evidence/constant/source remain unchanged.
+
+Fresh packed **134tests/four files** pass on exact clean4a8607a,45 actual sessions/781wire/44setup/21native Read observations. Required129/authored45/whole26/uncovered103; claimEligible:false. Payload **819c09e3ade4bbc533c118a956af23e22d44d5b7f87a73aef3d391a98dc11093**; contracts48667497d6e13064316d0364cf8f49dfc247ab9189306985a357d7b558333dfe; runtimeRU configuration1720b63b49a7be3299d4b2865de4db9fcbe47560f217a32eea6397db7ea54ca5; exact routes092b9ac9abf64dcd02f592059bc6333b0a6dfc69efe9d50332086335474c8f3c. Full source/config/artifact bindings in packed-summary.json. These are new measurements, not thea899payload relabeled.
+
+The M1/runtime and retry evidence council findings are dispositioned; full retained-Problem equality was independently proven to detect prior false positives. No public profile selection or exact TX transport admission changes. Root publishes this as another draft PR88 increment; exact CI38398699570/job115300435669 subsequently passed on4a8607a. No main merge or Preview2 promotion.

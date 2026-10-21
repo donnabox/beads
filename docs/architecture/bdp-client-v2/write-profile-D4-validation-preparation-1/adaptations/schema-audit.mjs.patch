@@ -1,0 +1,34 @@
+--- /dev/null
++++ authored/schema-audit.mjs
+@@ -0,0 +1,31 @@
++/** Owned private validation artifact, not product/runtime API. Input already fully
++ * structurally scanned by scanner.py; exact raw report bytes retained independently.
++ * Same source AJV2020/formats/bundle as the frozen callback; no weakened schemas.
++ */
++import {readFileSync} from "node:fs";
++import {createRequire} from "node:module";
++import {pathToFileURL} from "node:url";
++import path from "node:path";
++const root="/Users/dbox/repos/wt/vickie/vickie-owned-set-retarget-minimum";
++const require=createRequire(path.join(root,"apps/bdptest/package.json"));
++const {Ajv2020}=await import(pathToFileURL(require.resolve("ajv/dist/2020.js")).href);
++const {isJsonSchemaUri,isJsonSchemaDateTime}=await import(pathToFileURL(path.join(root,"packages/protocol/dist/index.js")).href);
++const report=JSON.parse(readFileSync(process.argv[2],"utf8"));
++const ajv=new Ajv2020({strict:true,allErrors:true});
++ajv.addFormat("uri",{type:"string",validate:isJsonSchemaUri});
++ajv.addFormat("date-time",{type:"string",validate:isJsonSchemaDateTime});
++const grammar=JSON.parse(readFileSync(new URL("./context/semantic-audit-contract/report-grammar.schema.json",import.meta.url),"utf8"));
++const envelopeAjv=new Ajv2020({strict:true,allErrors:true,allowUnionTypes:true});
++if(!envelopeAjv.compile(grammar)(report))process.exit(2); // fixed exit only, no raw diagnostics
++if(report.outcome!=="observed")process.exit(3); // retained failed report never positive
++const bundle=JSON.parse(readFileSync(path.join(root,"schemas/bdp-v0.schema.json"),"utf8"));
++ajv.addSchema(bundle);
++const validators=Object.fromEntries(["mutationReceipt","mutationReceiptPage","eventPage","changeGroup"].map(name=>[name,ajv.compile({$ref:`${bundle.$id}#/$defs/${name}`})]));
++const post=new Set([1,2,8,15,16,18,21,24,25,31,32]);
++for(const row of report.observations){
++ const body=JSON.parse(row.body),i=row.ordinal;
++ const name=post.has(i)?"mutationReceipt":[3,4,5,6,10,11,12].includes(i)?"eventPage":[9,30].includes(i)?"mutationReceiptPage":i===29?"mutationReceipt":null;
++ if(name&&!validators[name](body))process.exit(4);
++ if(i===13&&(!Array.isArray(body.groups)||body.groups.some(group=>!validators.changeGroup(group))))process.exit(4);
++}
++process.exit(0);

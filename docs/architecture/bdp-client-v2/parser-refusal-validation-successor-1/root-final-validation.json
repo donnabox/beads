@@ -1,0 +1,134 @@
+{
+  "time": "2026-10-17T00:25:00.046889+00:00",
+  "head": "d4f3f4be88c7837b71d6646518ca3589d464ba3d",
+  "tree": "d71a5753aef97444db36d044a74d3f99c168dc29",
+  "sourceBindingSha256": "5fecd704d54e08b0de899505decf8da1ae80f6ad64fdcbc90608e8a516f715db",
+  "sourceIdentity": "1a3caa86808b72da3488c1a9fe34f05ca7b7ce244b75d7d537137b37fe5594ae",
+  "fullPatchSha256": "2d74171b6a0d05aab3fe4570692630c58e2245c22218ce14227aee5c3669c145",
+  "freshStagesPassed": 19,
+  "reusedPrerequisites": [
+    "Original workspace installation and tool capture only; source identity f48ed263 remains original. No static result reused."
+  ],
+  "stages": {
+    "typecheck": {
+      "exitSha256": "350dd53c3231776f182e0263e81093ecdf3354c8e3d4d4f743834c04375f3ccd",
+      "elapsedSeconds": 5.869395417161286,
+      "logSha256": "91d54ffbee73a3ac72294d090e58d77745f8b93edbf94b862807698273a6505a"
+    },
+    "format-check": {
+      "exitSha256": "d35d050f69e24f50420590ebedb10da87926a211011758708c90ae26445e5b80",
+      "elapsedSeconds": 4.822349749971181,
+      "logSha256": "234b80584535ecf3447bab9d5b896282b4dc7105a864eb82cc425183c152cb20"
+    },
+    "lint": {
+      "exitSha256": "fdfb65305214a4ef834671702efe599a947a84e00a4bcc374248a269b186e6f4",
+      "elapsedSeconds": 4.985685875173658,
+      "logSha256": "594753149cde709b7f5810f78fffa7378478ed535c767ea1a451c740203c87fd"
+    },
+    "fresh-build": {
+      "exitSha256": "c00cabfcd1c242b2c3822b0c5d436b66b9808dffbeedc7ba85640d9142039a5f",
+      "elapsedSeconds": 5.927175290882587,
+      "logSha256": "232dac5e840e45b3bb06e6e04249b5241f2e1b4f6c797a22c046d916302ac208"
+    },
+    "bind-fresh-build": {
+      "exitSha256": "a563f165af1df70deeed1c2c457d1ebc18429046cf670b99e0c5387dc3729789",
+      "elapsedSeconds": 10.159238000167534,
+      "logSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "focused-source": {
+      "exitSha256": "c833c3192e61ef4b641e9b4193093637365bc215251d9cef9f5958d4bd3c65c4",
+      "elapsedSeconds": 6.19282037508674,
+      "logSha256": "1fd339cabbb22d36bff8858ba358eed81fbe9efb7e71e9f82347f7b0c0920f42"
+    },
+    "review-focused-source": {
+      "exitSha256": "a6468f3107cd00340bc4795282da1e76e66fc9c41461c80205094d5439f708bf",
+      "elapsedSeconds": 10.014253000030294,
+      "logSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "node-version": {
+      "exitSha256": "3b916d1c83d3195e6c187fc78717e7141ace587271f4f796039a71a87990c6ea",
+      "elapsedSeconds": 4.434170665917918,
+      "logSha256": "a8f8f7ba69d43285857a0ea34017ef8dadd3ba012404bb7dd188fc773cf63ee2"
+    },
+    "prepare-package-directory": {
+      "exitSha256": "f9c2c69d0e35d50b6c155ed9ea9518f25af88dbd48cf86bf2391126533887ee6",
+      "elapsedSeconds": 9.874623000156134,
+      "logSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "pack-protocol": {
+      "exitSha256": "203455e331e2c76617f2759e0ed224f61c53ffafb1dfe4c3b27058949ed7f6c8",
+      "elapsedSeconds": 4.824251041049138,
+      "logSha256": "c9dd6e094227361dde9682431707da2185673351f786fd78e7ad03b926ecdb79"
+    },
+    "pack-server": {
+      "exitSha256": "61c052cea7b782f7692dddc561ae94b9494a843aa32256787ecf003ab30fae52",
+      "elapsedSeconds": 4.882749125128612,
+      "logSha256": "027658d1b9e51d7c4ff66794420c36587d724ba2e62b5beb6598fdb2b133d368"
+    },
+    "verify-archives": {
+      "exitSha256": "69fd56c0d1a6055f300e2e49b2dbf24d252e2f44cb4cc964f182018abe771335",
+      "elapsedSeconds": 9.785178042016923,
+      "logSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "prepare-consumer": {
+      "exitSha256": "a8a99dd4de939f62e5e72b1f4e9c13650dd02e4b367c3a2d43d0f504c043bef5",
+      "elapsedSeconds": 9.559552249964327,
+      "logSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "consumer-install": {
+      "exitSha256": "1257c919942510b725fa0a73ad71bec8da1792cb2d3e007cbc50e2cd51eab3fa",
+      "elapsedSeconds": 5.181805375032127,
+      "logSha256": "b62647ed73178c1e8fcd1bc588aed98624a0f5fde1551f1917a60793247a15a2"
+    },
+    "verify-installed-consumer": {
+      "exitSha256": "89759535a75be969c22af4e37209c8f50c063d3ef1cada7305703637570c69a1",
+      "elapsedSeconds": 9.616700750077143,
+      "logSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "parser-external": {
+      "exitSha256": "83dde183236245d5a5efb1f5f78097dbcc57c72ce85ddd6b2c1da34fa348980d",
+      "elapsedSeconds": 5.146536624990404,
+      "logSha256": "ed94d8c8fe03d02ee9e567fad017886e6778137fe1bd0bf6730b2d6a8c88e21f"
+    },
+    "review-parser-external": {
+      "exitSha256": "0541a03bef788ee98aebe8c7b55350a25bd434b36700ed795108a92a38a6474c",
+      "elapsedSeconds": 9.764769332949072,
+      "logSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "waiter-external": {
+      "exitSha256": "1a749041708b218c9a4a8b417411af1e131687bb1f004a50622909d90dc04423",
+      "elapsedSeconds": 13.273503834148869,
+      "logSha256": "9ffa1ecb8f540c1540c3668099473d0561f954200a466cb750f8e1eed30f377c"
+    },
+    "review-waiter-external": {
+      "exitSha256": "efd20531e0437d4c1add091f25dd18749292ea3ed206bceb798b374a3a48bd6c",
+      "elapsedSeconds": 9.561974250013009,
+      "logSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    }
+  },
+  "sourceCallbacksPassed": 7,
+  "otherCallbacksSkipped": 79,
+  "installedObservations": {
+    "parser-external": {
+      "exchanges": 25,
+      "childPid": 56312,
+      "observationSha256": "3c12e52202d42c7307bef126cf5589a27bb0ab65285efbfbee9922f941cd7298"
+    },
+    "waiter-external": {
+      "exchanges": 42,
+      "childPid": 59973,
+      "observationSha256": "b3e00b51e18d88a9660482cd979481c9fbcb3c822fb67682242f6bfc25ce11f3"
+    }
+  },
+  "actualInstalledHTTPExchanges": 67,
+  "productChildren": 2,
+  "sourceFilesVerified": 679,
+  "buildFilesVerified": 476,
+  "consumerFilesVerified": 870,
+  "consumerLinksVerified": 17,
+  "payloadIdentity": "bba965aa2f8288d46fcbe811ae48bd56909d6f2d3e26c241e4d75b771e2e233f",
+  "consumerLockSha256": "f7aa569d87664a97eaa2b2d2491ce0463acf53f01fc890e77808c4d2c98e1abd",
+  "sampledPidsAbsent": 379,
+  "lintDiagnostics": "47 warnings and5 infos retained; exit0, not warning-free",
+  "limitations": "Private diagnostic evidence on exact dirty source. Base d4 is chronology, not a clean-source attestation. No full profile qualification, public admission, release or main integration. Original formatter failure remains historical."
+}

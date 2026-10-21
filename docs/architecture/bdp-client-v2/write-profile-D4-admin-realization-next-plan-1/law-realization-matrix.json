@@ -1,0 +1,1045 @@
+{
+  "metadataIDs": 38,
+  "mode": "EXACT_EXISTING_METADATA_SELECTION_NO_FACTORY_OR_HELPER_EVALUATION",
+  "note": "Optional History exclusion is existing catalog selection only, not a waiver of independently selected TX erasure duties.",
+  "optionalHistoryIDsNotSelected": [
+    "history.erasure",
+    "history.erasure.transactional"
+  ],
+  "pinnedCompleteSections": 16,
+  "requirementCitations": 59,
+  "rows": [
+    {
+      "RUHistoryFalseSelected": true,
+      "TXHistoryFalseSelected": true,
+      "applicability": "Keep actual trigger/claim and complete clause; never N/A from missing entry or Historyfalse",
+      "catalog": "packages/conformance/catalog/read-v1.json",
+      "currentlyImplementedOrSupported": "NO_SUPPORTED_LOGICAL_IMPORT_EXPORT_ENTRY; applicability remains required when restore occurs, not N/A",
+      "family": "RESTORE-ID",
+      "freshInstalledQualification": "UNKNOWN_UNESTABLISHED",
+      "governingRequirements": [
+        {
+          "anchor": "#scopes-and-identity",
+          "selectedText": "A restore that cannot preserve that guarantee creates a different logical Scope and therefore uses a different canonical Scope URL.",
+          "source": "docs/specs/bdp.md"
+        }
+      ],
+      "lawId": "read.scope.restore-identity",
+      "requiredMilestones": [
+        "AR01",
+        "AR06",
+        "AR08"
+      ],
+      "retiredByOnTX": null,
+      "status": "IMPLEMENTATION_OR_FRESH_PROOF_MISSING; NO_WHOLE_LAW_CREDIT"
+    },
+    {
+      "RUHistoryFalseSelected": true,
+      "TXHistoryFalseSelected": true,
+      "applicability": "Keep actual trigger/claim and complete clause; never N/A from missing entry or Historyfalse",
+      "catalog": "packages/conformance/catalog/read-update-v1.json",
+      "currentlyImplementedOrSupported": "INTERNAL_IMPLEMENTED_PRIVATE_STARTUP_REOPEN_SUPPORTED; final installed/crash proof UNKNOWN",
+      "family": "REC-RU",
+      "freshInstalledQualification": "UNKNOWN_UNESTABLISHED",
+      "governingRequirements": [
+        {
+          "anchor": "#durability-and-recovery",
+          "selectedText": "an authority MUST NOT commit a mutation without retaining its disposition under its key, and MUST NOT retain a disposition for a mutation it did not commit",
+          "source": "docs/specs/bdp.md"
+        },
+        {
+          "anchor": "#durability-and-recovery",
+          "selectedText": "A claim abandoned by a crash — one whose member reached no durable disposition — is cleared during restart or failover, so a retry executes the member once",
+          "source": "docs/specs/bdp.md"
+        },
+        {
+          "anchor": "#durability-and-recovery",
+          "selectedText": "Every mutation route — each singleton target, the sequence target, and every replica that accepts mutations — consults one authoritative key state for the namespace",
+          "source": "docs/specs/bdp.md"
+        }
+      ],
+      "lawId": "read-update.idempotency.durable-boundary",
+      "requiredMilestones": [
+        "AR08"
+      ],
+      "retiredByOnTX": null,
+      "status": "IMPLEMENTATION_OR_FRESH_PROOF_MISSING; NO_WHOLE_LAW_CREDIT"
+    },
+    {
+      "RUHistoryFalseSelected": true,
+      "TXHistoryFalseSelected": true,
+      "applicability": "Keep actual trigger/claim and complete clause; never N/A from missing entry or Historyfalse",
+      "catalog": "packages/conformance/catalog/read-update-v1.json",
+      "currentlyImplementedOrSupported": "INTERNAL_IMPLEMENTED_PRIVATE_STARTUP_REOPEN_SUPPORTED; final installed/crash proof UNKNOWN",
+      "family": "REC-RU",
+      "freshInstalledQualification": "UNKNOWN_UNESTABLISHED",
+      "governingRequirements": [
+        {
+          "anchor": "#durability-and-recovery",
+          "selectedText": "When the authority fails mid-sequence, members that reached a durable disposition stay retained, the member in flight is recovered as an abandoned claim, and unstarted members are never executed by recovery: the authority does not resume a sequence.",
+          "source": "docs/specs/bdp.md"
+        },
+        {
+          "anchor": "#durability-and-recovery",
+          "selectedText": "The client resubmits the sequence; retained dispositions answer the committed members, and the remaining members execute in order.",
+          "source": "docs/specs/bdp.md"
+        }
+      ],
+      "lawId": "read-update.idempotency.crash-mid-sequence",
+      "requiredMilestones": [
+        "AR08"
+      ],
+      "retiredByOnTX": null,
+      "status": "IMPLEMENTATION_OR_FRESH_PROOF_MISSING; NO_WHOLE_LAW_CREDIT"
+    },
+    {
+      "RUHistoryFalseSelected": true,
+      "TXHistoryFalseSelected": false,
+      "applicability": "Keep actual trigger/claim and complete clause; never N/A from missing entry or Historyfalse",
+      "catalog": "packages/conformance/catalog/read-update-v1.json",
+      "currentlyImplementedOrSupported": "NO_SUPPORTED_LOGICAL_IMPORT_EXPORT_ENTRY; applicability remains required when restore occurs, not N/A",
+      "family": "RESTORE-ID",
+      "freshInstalledQualification": "UNKNOWN_UNESTABLISHED",
+      "governingRequirements": [
+        {
+          "anchor": "#durability-and-recovery",
+          "selectedText": "A restore that cannot preserve it creates a different logical Scope under [Scopes and identity](#scopes-and-identity), at a different canonical Scope URL",
+          "source": "docs/specs/bdp.md"
+        },
+        {
+          "anchor": "#scopes-and-identity",
+          "selectedText": "A restore that cannot preserve that guarantee creates a different logical Scope and therefore uses a different canonical Scope URL.",
+          "source": "docs/specs/bdp.md"
+        },
+        {
+          "anchor": "#outcome-retention",
+          "selectedText": "Read+Update exposes no epoch: a client cannot detect a restore except through a changed canonical Scope URL, and the profile offers no restore signal beyond `resource-not-found`, `revision-mismatch`, and `idempotency-expired` in its base surface.",
+          "source": "docs/specs/bdp.md"
+        },
+        {
+          "anchor": "#outcome-retention",
+          "selectedText": "When `historicalResolution` is advertised, the History surface additionally\nreports positively evidenced `revision-reorganized` under its subject-history\ngate and preserves retained old addresses.",
+          "source": "docs/specs/bdp.md"
+        }
+      ],
+      "lawId": "read-update.idempotency.restore",
+      "requiredMilestones": [
+        "AR01",
+        "AR06",
+        "AR08"
+      ],
+      "retiredByOnTX": "transactional.restore.key-namespace",
+      "status": "IMPLEMENTATION_OR_FRESH_PROOF_MISSING; NO_WHOLE_LAW_CREDIT"
+    },
+    {
+      "RUHistoryFalseSelected": false,
+      "TXHistoryFalseSelected": true,
+      "applicability": "Keep actual trigger/claim and complete clause; never N/A from missing entry or Historyfalse",
+      "catalog": "packages/conformance/catalog/transactional-v1.json",
+      "currentlyImplementedOrSupported": "INTERNAL_IMPLEMENTED_PRIVATE_REOPEN_SUPPORTED; bounded actual installed crash/failover UNKNOWN",
+      "family": "REC-TX",
+      "freshInstalledQualification": "UNKNOWN_UNESTABLISHED",
+      "governingRequirements": [
+        {
+          "anchor": "#mutation-transactions",
+          "selectedText": "executes atomically, so every operation commits or none do;",
+          "source": "docs/specs/bdp.md"
+        },
+        {
+          "anchor": "#mutation-receipt-responses",
+          "selectedText": "Created and updated results carry complete postimages — the full Resource state after the change — and revisions.",
+          "source": "docs/specs/bdp.md"
+        }
+      ],
+      "lawId": "transactional.batch.atomic-commit",
+      "requiredMilestones": [
+        "AR08"
+      ],
+      "retiredByOnTX": null,
+      "status": "IMPLEMENTATION_OR_FRESH_PROOF_MISSING; NO_WHOLE_LAW_CREDIT"
+    },
+    {
+      "RUHistoryFalseSelected": false,
+      "TXHistoryFalseSelected": true,
+      "applicability": "Keep actual trigger/claim and complete clause; never N/A from missing entry or Historyfalse",
+      "catalog": "packages/conformance/catalog/transactional-v1.json",
+      "currentlyImplementedOrSupported": "NO_ERASURE_INGESTION_OR_CLEANUP_PATH; retained copies do exist, so empty erasure arrays/Historyfalse cannot establish inapplicability",
+      "family": "ERASE-COPIES",
+      "freshInstalledQualification": "UNKNOWN_UNESTABLISHED",
+      "governingRequirements": [
+        {
+          "anchor": "#mutation-receipt-responses",
+          "selectedText": "Entries that carry no record — `matched` counts, `deleted` and `erased` identities, and `withheld` entries — and a `failed` receipt's `problem` are the transaction's own execution facts, disclosed to the principal when it executed, and are served as retained.",
+          "source": "docs/specs/bdp.md"
+        }
+      ],
+      "lawId": "transactional.receipt.non-record-entries",
+      "requiredMilestones": [
+        "AR03",
+        "AR04",
+        "AR05",
+        "AR07",
+        "AR08"
+      ],
+      "retiredByOnTX": null,
+      "status": "IMPLEMENTATION_OR_FRESH_PROOF_MISSING; NO_WHOLE_LAW_CREDIT"
+    },
+    {
+      "RUHistoryFalseSelected": false,
+      "TXHistoryFalseSelected": true,
+      "applicability": "Keep actual trigger/claim and complete clause; never N/A from missing entry or Historyfalse",
+      "catalog": "packages/conformance/catalog/transactional-v1.json",
+      "currentlyImplementedOrSupported": "INTERNAL_IMPLEMENTED_PRIVATE_REOPEN_SUPPORTED; bounded actual installed crash/failover UNKNOWN",
+      "family": "REC-TX",
+      "freshInstalledQualification": "UNKNOWN_UNESTABLISHED",
+      "governingRequirements": [
+        {
+          "anchor": "#mutation-transactions",
+          "selectedText": "The authority records the key, the normalized request identity or the durable unresolved dependency form below, the `pending` Mutation Receipt with its `transaction` identity, and its own exclusive ownership of the execution together or not at all",
+          "source": "docs/specs/bdp.md"
+        },
+        {
+          "anchor": "#batch-operation-target",
+          "selectedText": "From that point\nclient disconnection, a transport failure, and a bodyless `500` decide\nnothing",
+          "source": "docs/specs/bdp.md"
+        }
+      ],
+      "lawId": "transactional.idempotency.durable-admission",
+      "requiredMilestones": [
+        "AR08"
+      ],
+      "retiredByOnTX": null,
+      "status": "IMPLEMENTATION_OR_FRESH_PROOF_MISSING; NO_WHOLE_LAW_CREDIT"
+    },
+    {
+      "RUHistoryFalseSelected": false,
+      "TXHistoryFalseSelected": true,
+      "applicability": "Keep actual trigger/claim and complete clause; never N/A from missing entry or Historyfalse",
+      "catalog": "packages/conformance/catalog/transactional-v1.json",
+      "currentlyImplementedOrSupported": "INTERNAL_IMPLEMENTED_PRIVATE_REOPEN_SUPPORTED; bounded actual installed crash/failover UNKNOWN",
+      "family": "REC-TX",
+      "freshInstalledQualification": "UNKNOWN_UNESTABLISHED",
+      "governingRequirements": [
+        {
+          "anchor": "#mutation-transactions",
+          "selectedText": "a `pending` receipt older than the bound is a conformance failure.",
+          "source": "docs/specs/bdp.md"
+        }
+      ],
+      "lawId": "transactional.idempotency.pending-recovery",
+      "requiredMilestones": [
+        "AR08"
+      ],
+      "retiredByOnTX": null,
+      "status": "IMPLEMENTATION_OR_FRESH_PROOF_MISSING; NO_WHOLE_LAW_CREDIT"
+    },
+    {
+      "RUHistoryFalseSelected": false,
+      "TXHistoryFalseSelected": true,
+      "applicability": "Keep actual trigger/claim and complete clause; never N/A from missing entry or Historyfalse",
+      "catalog": "packages/conformance/catalog/transactional-v1.json",
+      "currentlyImplementedOrSupported": "NO_ERASURE_INGESTION_OR_CLEANUP_PATH; retained copies do exist, so empty erasure arrays/Historyfalse cannot establish inapplicability",
+      "family": "ERASE-COPIES",
+      "freshInstalledQualification": "UNKNOWN_UNESTABLISHED",
+      "governingRequirements": [
+        {
+          "anchor": "#mutation-transactions",
+          "selectedText": "an entry the current view withholds projects as the `forbidden` member problem of",
+          "source": "docs/specs/bdp.md"
+        },
+        {
+          "anchor": "#mutation-transactions",
+          "selectedText": "an entry whose version was erased projects as a `resource-erased` member problem to a caller authorized for the subject's retained history and as `forbidden` to every other caller",
+          "source": "docs/specs/bdp.md"
+        }
+      ],
+      "lawId": "transactional.sequence.member-reauthorization",
+      "requiredMilestones": [
+        "AR03",
+        "AR04",
+        "AR05",
+        "AR07",
+        "AR08"
+      ],
+      "retiredByOnTX": null,
+      "status": "IMPLEMENTATION_OR_FRESH_PROOF_MISSING; NO_WHOLE_LAW_CREDIT"
+    },
+    {
+      "RUHistoryFalseSelected": false,
+      "TXHistoryFalseSelected": true,
+      "applicability": "Keep actual trigger/claim and complete clause; never N/A from missing entry or Historyfalse",
+      "catalog": "packages/conformance/catalog/transactional-v1.json",
+      "currentlyImplementedOrSupported": "NO_ERASURE_INGESTION_OR_CLEANUP_PATH; retained copies do exist, so empty erasure arrays/Historyfalse cannot establish inapplicability",
+      "family": "ERASE-COPIES",
+      "freshInstalledQualification": "UNKNOWN_UNESTABLISHED",
+      "governingRequirements": [
+        {
+          "anchor": "#version-erasure",
+          "selectedText": "every served Event's cursor stays valid, a cursor whose Event was withheld remains a valid exclusive `after` position, and a group's `eventCount` counts the Events it serves",
+          "source": "docs/specs/bdp.md"
+        }
+      ],
+      "lawId": "transactional.event.cursor-after-withheld",
+      "requiredMilestones": [
+        "AR03",
+        "AR04",
+        "AR05",
+        "AR07",
+        "AR08"
+      ],
+      "retiredByOnTX": null,
+      "status": "IMPLEMENTATION_OR_FRESH_PROOF_MISSING; NO_WHOLE_LAW_CREDIT"
+    },
+    {
+      "RUHistoryFalseSelected": false,
+      "TXHistoryFalseSelected": true,
+      "applicability": "Keep actual trigger/claim and complete clause; never N/A from missing entry or Historyfalse",
+      "catalog": "packages/conformance/catalog/transactional-v1.json",
+      "currentlyImplementedOrSupported": "NO_LEDGER_STORAGE_OR_NONEMPTY_PROJECTION_SUPPORT; current policy only all-visible then empty, future applicable view fixture UNKNOWN",
+      "family": "ERASE-VIEW",
+      "freshInstalledQualification": "UNKNOWN_UNESTABLISHED",
+      "governingRequirements": [
+        {
+          "anchor": "#version-erasure",
+          "selectedText": "Every snapshot manifest carries `erasures`, the ledger projected for the manifest's view — each record whose subject was observable in that view",
+          "source": "docs/specs/bdp.md"
+        }
+      ],
+      "lawId": "transactional.snapshot.erasure-ledger",
+      "requiredMilestones": [
+        "AR02",
+        "AR05",
+        "AR08"
+      ],
+      "retiredByOnTX": null,
+      "status": "IMPLEMENTATION_OR_FRESH_PROOF_MISSING; NO_WHOLE_LAW_CREDIT"
+    },
+    {
+      "RUHistoryFalseSelected": false,
+      "TXHistoryFalseSelected": true,
+      "applicability": "Keep actual trigger/claim and complete clause; never N/A from missing entry or Historyfalse",
+      "catalog": "packages/conformance/catalog/transactional-v1.json",
+      "currentlyImplementedOrSupported": "NO_ADMIN_ENTRY_OR_COMMIT_PATH; nonempty erasure groups unsupported by current private projection; not N/A",
+      "family": "ERASE-ACT",
+      "freshInstalledQualification": "UNKNOWN_UNESTABLISHED",
+      "governingRequirements": [
+        {
+          "anchor": "#version-erasure",
+          "selectedText": "An erasure occupies its own Scope position, carried by the Change Group's `erasures` member as an **erasure record**: the subject's canonical Resource URL, the erased `revision`, and a digest of the erased version record taken before erasure",
+          "source": "docs/specs/bdp.md"
+        },
+        {
+          "anchor": "#version-erasure",
+          "selectedText": "BDP v0 defines exactly one scheme, `sha-256-jcs`",
+          "source": "docs/specs/bdp.md"
+        }
+      ],
+      "lawId": "transactional.erasure.record-digest",
+      "requiredMilestones": [
+        "AR01",
+        "AR02",
+        "AR03",
+        "AR04",
+        "AR08"
+      ],
+      "retiredByOnTX": null,
+      "status": "IMPLEMENTATION_OR_FRESH_PROOF_MISSING; NO_WHOLE_LAW_CREDIT"
+    },
+    {
+      "RUHistoryFalseSelected": false,
+      "TXHistoryFalseSelected": true,
+      "applicability": "Keep actual trigger/claim and complete clause; never N/A from missing entry or Historyfalse",
+      "catalog": "packages/conformance/catalog/transactional-v1.json",
+      "currentlyImplementedOrSupported": "NO_ADMIN_ENTRY_OR_COMMIT_PATH; nonempty erasure groups unsupported by current private projection; not N/A",
+      "family": "ERASE-ACT",
+      "freshInstalledQualification": "UNKNOWN_UNESTABLISHED",
+      "governingRequirements": [
+        {
+          "anchor": "#bdp-json-and-http-protocol",
+          "selectedText": "Every JSON text BDP admits or emits follows the number model defined under",
+          "source": "docs/specs/bdp.md"
+        },
+        {
+          "anchor": "#version-erasure",
+          "selectedText": "Digest computation never gates erasure",
+          "source": "docs/specs/bdp.md"
+        }
+      ],
+      "lawId": "transactional.erasure.digest-domain",
+      "requiredMilestones": [
+        "AR01",
+        "AR02",
+        "AR03",
+        "AR04",
+        "AR08"
+      ],
+      "retiredByOnTX": null,
+      "status": "IMPLEMENTATION_OR_FRESH_PROOF_MISSING; NO_WHOLE_LAW_CREDIT"
+    },
+    {
+      "RUHistoryFalseSelected": false,
+      "TXHistoryFalseSelected": true,
+      "applicability": "Keep actual trigger/claim and complete clause; never N/A from missing entry or Historyfalse",
+      "catalog": "packages/conformance/catalog/transactional-v1.json",
+      "currentlyImplementedOrSupported": "NO_ADMIN_ENTRY_OR_COMMIT_PATH; nonempty erasure groups unsupported by current private projection; not N/A",
+      "family": "ERASE-ACT",
+      "freshInstalledQualification": "UNKNOWN_UNESTABLISHED",
+      "governingRequirements": [
+        {
+          "anchor": "#version-erasure",
+          "selectedText": "An erasure-only group, one that erases historical versions and commits nothing, carries empty `changes` and `events`.",
+          "source": "docs/specs/bdp.md"
+        }
+      ],
+      "lawId": "transactional.erasure.historical-version",
+      "requiredMilestones": [
+        "AR01",
+        "AR02",
+        "AR03",
+        "AR04",
+        "AR08"
+      ],
+      "retiredByOnTX": null,
+      "status": "IMPLEMENTATION_OR_FRESH_PROOF_MISSING; NO_WHOLE_LAW_CREDIT"
+    },
+    {
+      "RUHistoryFalseSelected": false,
+      "TXHistoryFalseSelected": true,
+      "applicability": "Keep actual trigger/claim and complete clause; never N/A from missing entry or Historyfalse",
+      "catalog": "packages/conformance/catalog/transactional-v1.json",
+      "currentlyImplementedOrSupported": "NO_ADMIN_ENTRY_OR_COMMIT_PATH; nonempty erasure groups unsupported by current private projection; not N/A",
+      "family": "ERASE-ACT",
+      "freshInstalledQualification": "UNKNOWN_UNESTABLISHED",
+      "governingRequirements": [
+        {
+          "anchor": "#version-erasure",
+          "selectedText": "The correction case commits the erasure record and the successor's `StateChange` in one atomic group at one position.",
+          "source": "docs/specs/bdp.md"
+        },
+        {
+          "anchor": "#version-erasure",
+          "selectedText": "The successor MUST differ in the durable state that determines its",
+          "source": "docs/specs/bdp.md"
+        },
+        {
+          "anchor": "#version-erasure",
+          "selectedText": "For the owning Bead's successor induced by an owned Link's correction or deletion, its `updated` fact instead carries only `ownedLink`, never a direct object delta.",
+          "source": "docs/specs/bdp.md"
+        }
+      ],
+      "lawId": "transactional.erasure.live-successor",
+      "requiredMilestones": [
+        "AR01",
+        "AR02",
+        "AR03",
+        "AR04",
+        "AR08"
+      ],
+      "retiredByOnTX": null,
+      "status": "IMPLEMENTATION_OR_FRESH_PROOF_MISSING; NO_WHOLE_LAW_CREDIT"
+    },
+    {
+      "RUHistoryFalseSelected": false,
+      "TXHistoryFalseSelected": true,
+      "applicability": "Keep actual trigger/claim and complete clause; never N/A from missing entry or Historyfalse",
+      "catalog": "packages/conformance/catalog/transactional-v1.json",
+      "currentlyImplementedOrSupported": "NO_ADMIN_ENTRY_OR_COMMIT_PATH; nonempty erasure groups unsupported by current private projection; not N/A",
+      "family": "ERASE-ACT",
+      "freshInstalledQualification": "UNKNOWN_UNESTABLISHED",
+      "governingRequirements": [
+        {
+          "anchor": "#version-erasure",
+          "selectedText": "Erasing a live version with a tombstone is an administrative deletion of the Resource.",
+          "source": "docs/specs/bdp.md"
+        }
+      ],
+      "lawId": "transactional.erasure.live-tombstone",
+      "requiredMilestones": [
+        "AR01",
+        "AR02",
+        "AR03",
+        "AR04",
+        "AR08"
+      ],
+      "retiredByOnTX": null,
+      "status": "IMPLEMENTATION_OR_FRESH_PROOF_MISSING; NO_WHOLE_LAW_CREDIT"
+    },
+    {
+      "RUHistoryFalseSelected": false,
+      "TXHistoryFalseSelected": true,
+      "applicability": "Keep actual trigger/claim and complete clause; never N/A from missing entry or Historyfalse",
+      "catalog": "packages/conformance/catalog/transactional-v1.json",
+      "currentlyImplementedOrSupported": "NO_ADMIN_ENTRY_OR_COMMIT_PATH; nonempty erasure groups unsupported by current private projection; not N/A",
+      "family": "ERASE-ACT",
+      "freshInstalledQualification": "UNKNOWN_UNESTABLISHED",
+      "governingRequirements": [
+        {
+          "anchor": "#version-erasure",
+          "selectedText": "the authority emits one erasure record per erased version in the same group, and each is applied on its own.",
+          "source": "docs/specs/bdp.md"
+        }
+      ],
+      "lawId": "transactional.erasure.owned-link-cascade",
+      "requiredMilestones": [
+        "AR01",
+        "AR02",
+        "AR03",
+        "AR04",
+        "AR08"
+      ],
+      "retiredByOnTX": null,
+      "status": "IMPLEMENTATION_OR_FRESH_PROOF_MISSING; NO_WHOLE_LAW_CREDIT"
+    },
+    {
+      "RUHistoryFalseSelected": false,
+      "TXHistoryFalseSelected": true,
+      "applicability": "Keep actual trigger/claim and complete clause; never N/A from missing entry or Historyfalse",
+      "catalog": "packages/conformance/catalog/transactional-v1.json",
+      "currentlyImplementedOrSupported": "NO_ERASURE_INGESTION_OR_CLEANUP_PATH; retained copies do exist, so empty erasure arrays/Historyfalse cannot establish inapplicability",
+      "family": "ERASE-COPIES",
+      "freshInstalledQualification": "UNKNOWN_UNESTABLISHED",
+      "governingRequirements": [
+        {
+          "anchor": "#version-erasure",
+          "selectedText": "withhold, from every Event Source it serves, every Event whose `data` carries erased content",
+          "source": "docs/specs/bdp.md"
+        }
+      ],
+      "lawId": "transactional.erasure.event-withholding",
+      "requiredMilestones": [
+        "AR03",
+        "AR04",
+        "AR05",
+        "AR07",
+        "AR08"
+      ],
+      "retiredByOnTX": null,
+      "status": "IMPLEMENTATION_OR_FRESH_PROOF_MISSING; NO_WHOLE_LAW_CREDIT"
+    },
+    {
+      "RUHistoryFalseSelected": false,
+      "TXHistoryFalseSelected": true,
+      "applicability": "Keep actual trigger/claim and complete clause; never N/A from missing entry or Historyfalse",
+      "catalog": "packages/conformance/catalog/transactional-v1.json",
+      "currentlyImplementedOrSupported": "NO_ERASURE_INGESTION_OR_CLEANUP_PATH; retained copies do exist, so empty erasure arrays/Historyfalse cannot establish inapplicability",
+      "family": "ERASE-COPIES",
+      "freshInstalledQualification": "UNKNOWN_UNESTABLISHED",
+      "governingRequirements": [
+        {
+          "anchor": "#version-erasure",
+          "selectedText": "which is the case exactly when every version of the Link that carried them is erased, since a Link's endpoints are immutable across its versions.",
+          "source": "docs/specs/bdp.md"
+        }
+      ],
+      "lawId": "transactional.erasure.graph-facts",
+      "requiredMilestones": [
+        "AR03",
+        "AR04",
+        "AR05",
+        "AR07",
+        "AR08"
+      ],
+      "retiredByOnTX": null,
+      "status": "IMPLEMENTATION_OR_FRESH_PROOF_MISSING; NO_WHOLE_LAW_CREDIT"
+    },
+    {
+      "RUHistoryFalseSelected": false,
+      "TXHistoryFalseSelected": true,
+      "applicability": "Keep actual trigger/claim and complete clause; never N/A from missing entry or Historyfalse",
+      "catalog": "packages/conformance/catalog/transactional-v1.json",
+      "currentlyImplementedOrSupported": "NO_ERASURE_INGESTION_OR_CLEANUP_PATH; retained copies do exist, so empty erasure arrays/Historyfalse cannot establish inapplicability",
+      "family": "ERASE-COPIES",
+      "freshInstalledQualification": "UNKNOWN_UNESTABLISHED",
+      "governingRequirements": [
+        {
+          "anchor": "#mutation-receipt-responses",
+          "selectedText": "an entry whose postimage is an erased version never carries the content again.",
+          "source": "docs/specs/bdp.md"
+        },
+        {
+          "anchor": "#version-erasure",
+          "selectedText": "it MUST be applied by every store, cache, and replica holding the version, and the changefeed is the vehicle that carries the obligation.",
+          "source": "docs/specs/bdp.md"
+        }
+      ],
+      "lawId": "transactional.erasure.receipts",
+      "requiredMilestones": [
+        "AR03",
+        "AR04",
+        "AR05",
+        "AR07",
+        "AR08"
+      ],
+      "retiredByOnTX": null,
+      "status": "IMPLEMENTATION_OR_FRESH_PROOF_MISSING; NO_WHOLE_LAW_CREDIT"
+    },
+    {
+      "RUHistoryFalseSelected": false,
+      "TXHistoryFalseSelected": true,
+      "applicability": "Keep actual trigger/claim and complete clause; never N/A from missing entry or Historyfalse",
+      "catalog": "packages/conformance/catalog/transactional-v1.json",
+      "currentlyImplementedOrSupported": "NO_ERASURE_FENCE/PUBLICATION_PATH; current minReplayPosition constant pos0 is not erasure advancement",
+      "family": "ERASE-FENCE",
+      "freshInstalledQualification": "UNKNOWN_UNESTABLISHED",
+      "governingRequirements": [
+        {
+          "anchor": "#version-erasure",
+          "selectedText": "An erasure record committed at position P invalidates, in each view that receives it, every changefeed checkpoint and every snapshot anchored before P",
+          "source": "docs/specs/bdp.md"
+        }
+      ],
+      "lawId": "transactional.erasure.replication-invalidation",
+      "requiredMilestones": [
+        "AR05",
+        "AR07",
+        "AR08"
+      ],
+      "retiredByOnTX": null,
+      "status": "IMPLEMENTATION_OR_FRESH_PROOF_MISSING; NO_WHOLE_LAW_CREDIT"
+    },
+    {
+      "RUHistoryFalseSelected": false,
+      "TXHistoryFalseSelected": true,
+      "applicability": "Keep actual trigger/claim and complete clause; never N/A from missing entry or Historyfalse",
+      "catalog": "packages/conformance/catalog/transactional-v1.json",
+      "currentlyImplementedOrSupported": "NO_ERASURE_INGESTION_OR_CLEANUP_PATH; retained copies do exist, so empty erasure arrays/Historyfalse cannot establish inapplicability",
+      "family": "ERASE-COPIES",
+      "freshInstalledQualification": "UNKNOWN_UNESTABLISHED",
+      "governingRequirements": [
+        {
+          "anchor": "#version-erasure",
+          "selectedText": "a replica with a longer window legitimately keeps what the authority dropped, and retention removals therefore do not propagate.",
+          "source": "docs/specs/bdp.md"
+        }
+      ],
+      "lawId": "transactional.erasure.retention-non-propagation",
+      "requiredMilestones": [
+        "AR03",
+        "AR04",
+        "AR05",
+        "AR07",
+        "AR08"
+      ],
+      "retiredByOnTX": null,
+      "status": "IMPLEMENTATION_OR_FRESH_PROOF_MISSING; NO_WHOLE_LAW_CREDIT"
+    },
+    {
+      "RUHistoryFalseSelected": false,
+      "TXHistoryFalseSelected": true,
+      "applicability": "Keep actual trigger/claim and complete clause; never N/A from missing entry or Historyfalse",
+      "catalog": "packages/conformance/catalog/transactional-v1.json",
+      "currentlyImplementedOrSupported": "NO_SUPPORTED_EPOCH_ROTATION_OR_LOGICAL_RESTORE_ENTRY; observed restore proof UNKNOWN",
+      "family": "RESTORE-TX",
+      "freshInstalledQualification": "UNKNOWN_UNESTABLISHED",
+      "governingRequirements": [
+        {
+          "anchor": "#version-erasure",
+          "selectedText": "After a restore into a new epoch the authority also re-emits the projected ledger as erasure-only groups at the new epoch's first positions, before any other group, and no group of the prior epoch is served under the new one.",
+          "source": "docs/specs/bdp.md"
+        }
+      ],
+      "lawId": "transactional.erasure.restore",
+      "requiredMilestones": [
+        "AR02",
+        "AR06",
+        "AR08"
+      ],
+      "retiredByOnTX": null,
+      "status": "IMPLEMENTATION_OR_FRESH_PROOF_MISSING; NO_WHOLE_LAW_CREDIT"
+    },
+    {
+      "RUHistoryFalseSelected": false,
+      "TXHistoryFalseSelected": true,
+      "applicability": "Keep actual trigger/claim and complete clause; never N/A from missing entry or Historyfalse",
+      "catalog": "packages/conformance/catalog/transactional-v1.json",
+      "currentlyImplementedOrSupported": "NO_BOUND_INSTALLED_CONSUMER/RECOVERY_ROUTE; applicability/retained-copy scope UNKNOWN, cannot assert N/A",
+      "family": "ERASE-CONSUMER",
+      "freshInstalledQualification": "UNKNOWN_UNESTABLISHED",
+      "governingRequirements": [
+        {
+          "anchor": "#version-erasure",
+          "selectedText": "A replica that retains content whose erasure status it cannot establish — content held under a view or epoch for which it can no longer obtain the ledger — MUST discard that content.",
+          "source": "docs/specs/bdp.md"
+        }
+      ],
+      "lawId": "transactional.erasure.unestablishable-content",
+      "requiredMilestones": [
+        "AR07",
+        "AR08"
+      ],
+      "retiredByOnTX": null,
+      "status": "IMPLEMENTATION_OR_FRESH_PROOF_MISSING; NO_WHOLE_LAW_CREDIT"
+    },
+    {
+      "RUHistoryFalseSelected": false,
+      "TXHistoryFalseSelected": true,
+      "applicability": "Keep actual trigger/claim and complete clause; never N/A from missing entry or Historyfalse",
+      "catalog": "packages/conformance/catalog/transactional-v1.json",
+      "currentlyImplementedOrSupported": "NO_LEDGER_STORAGE_OR_NONEMPTY_PROJECTION_SUPPORT; current policy only all-visible then empty, future applicable view fixture UNKNOWN",
+      "family": "ERASE-VIEW",
+      "freshInstalledQualification": "UNKNOWN_UNESTABLISHED",
+      "governingRequirements": [
+        {
+          "anchor": "#version-erasure",
+          "selectedText": "a view receives the record only when the subject Resource was observable in that view.",
+          "source": "docs/specs/bdp.md"
+        }
+      ],
+      "lawId": "transactional.erasure.view-projection",
+      "requiredMilestones": [
+        "AR02",
+        "AR05",
+        "AR08"
+      ],
+      "retiredByOnTX": null,
+      "status": "IMPLEMENTATION_OR_FRESH_PROOF_MISSING; NO_WHOLE_LAW_CREDIT"
+    },
+    {
+      "RUHistoryFalseSelected": false,
+      "TXHistoryFalseSelected": true,
+      "applicability": "Keep actual trigger/claim and complete clause; never N/A from missing entry or Historyfalse",
+      "catalog": "packages/conformance/catalog/transactional-v1.json",
+      "currentlyImplementedOrSupported": "ORDINARY_READ_FAILURE_MACHINERY_EXISTS; no actual erasure disposition/subject-history admin fixture, whole law proof UNKNOWN",
+      "family": "DISCLOSURE",
+      "freshInstalledQualification": "UNKNOWN_UNESTABLISHED",
+      "governingRequirements": [
+        {
+          "anchor": "#reads-after-deletion",
+          "selectedText": "A `resource-erased` problem carries no condition-specific extension members beyond its ordinary problem members: even a pointer would disclose what erasure exists to remove.",
+          "source": "docs/specs/bdp.md"
+        }
+      ],
+      "lawId": "transactional.erasure.reads",
+      "requiredMilestones": [
+        "AR05",
+        "AR08"
+      ],
+      "retiredByOnTX": null,
+      "status": "IMPLEMENTATION_OR_FRESH_PROOF_MISSING; NO_WHOLE_LAW_CREDIT"
+    },
+    {
+      "RUHistoryFalseSelected": false,
+      "TXHistoryFalseSelected": true,
+      "applicability": "Keep actual trigger/claim and complete clause; never N/A from missing entry or Historyfalse",
+      "catalog": "packages/conformance/catalog/transactional-v1.json",
+      "currentlyImplementedOrSupported": "NO_ERASURE_FENCE/PUBLICATION_PATH; current minReplayPosition constant pos0 is not erasure advancement",
+      "family": "ERASE-FENCE",
+      "freshInstalledQualification": "UNKNOWN_UNESTABLISHED",
+      "governingRequirements": [
+        {
+          "anchor": "#version-erasure",
+          "selectedText": "An erasure does not rotate the Scope epoch: every token anchored at or after the erasure position remains exactly as valid as it was",
+          "source": "docs/specs/bdp.md"
+        }
+      ],
+      "lawId": "transactional.erasure.epoch-unrotated",
+      "requiredMilestones": [
+        "AR05",
+        "AR07",
+        "AR08"
+      ],
+      "retiredByOnTX": null,
+      "status": "IMPLEMENTATION_OR_FRESH_PROOF_MISSING; NO_WHOLE_LAW_CREDIT"
+    },
+    {
+      "RUHistoryFalseSelected": false,
+      "TXHistoryFalseSelected": true,
+      "applicability": "Keep actual trigger/claim and complete clause; never N/A from missing entry or Historyfalse",
+      "catalog": "packages/conformance/catalog/transactional-v1.json",
+      "currentlyImplementedOrSupported": "NO_SUPPORTED_EPOCH_ROTATION_OR_LOGICAL_RESTORE_ENTRY; observed restore proof UNKNOWN",
+      "family": "RESTORE-TX",
+      "freshInstalledQualification": "UNKNOWN_UNESTABLISHED",
+      "governingRequirements": [
+        {
+          "anchor": "#scope-history",
+          "selectedText": "Each Scope history has an opaque,\nunguessable **Scope epoch**. The epoch remains stable across ordinary restart\nand failover that preserve identical committed history. It changes whenever\nrestore, destructive reinitialization, or authority replacement may discard,\nrewrite, or replace history. The epoch is not part of canonical Scope or\nResource identity. Retained Resource-version addresses follow [Revisions](#revisions).\nEvery other history-dependent token remains fenced by that epoch, including\nScope positions, transaction identifiers, snapshots and handles, read and Event\ncursors, changefeed checkpoints, minimum-read barriers, receipts, and the\nidempotency-key namespace and its bound dispositions. Individual token contracts\nstill apply. Cached representations retain their epoch and Authorization View\nbindings under Authorization views. An epoch change in the same logical Scope\npreserves canonical Scope and Resource URLs. Prior-epoch uses retain their own\nhandling: a prior-epoch idempotency key is unbound in the new namespace, so a\nsubmission under the new epoch executes anew rather than replaying its prior\ndisposition. Read/Read+Update do not gain exposed epoch fields.",
+          "source": "docs/specs/bdp.md"
+        }
+      ],
+      "lawId": "transactional.restore.epoch-fence",
+      "requiredMilestones": [
+        "AR02",
+        "AR06",
+        "AR08"
+      ],
+      "retiredByOnTX": null,
+      "status": "IMPLEMENTATION_OR_FRESH_PROOF_MISSING; NO_WHOLE_LAW_CREDIT"
+    },
+    {
+      "RUHistoryFalseSelected": false,
+      "TXHistoryFalseSelected": true,
+      "applicability": "Keep actual trigger/claim and complete clause; never N/A from missing entry or Historyfalse",
+      "catalog": "packages/conformance/catalog/transactional-v1.json",
+      "currentlyImplementedOrSupported": "NO_SUPPORTED_EPOCH_ROTATION_OR_LOGICAL_RESTORE_ENTRY; observed restore proof UNKNOWN",
+      "family": "RESTORE-TX",
+      "freshInstalledQualification": "UNKNOWN_UNESTABLISHED",
+      "governingRequirements": [
+        {
+          "anchor": "#mutation-transactions",
+          "selectedText": "A new epoch is a new namespace: a key first used under a prior epoch is unbound, and a retry under the new epoch executes as a new mutation, which a client that observes a changed `scopeEpoch` MUST treat as a first execution rather than a replay.",
+          "source": "docs/specs/bdp.md"
+        }
+      ],
+      "lawId": "transactional.restore.key-namespace",
+      "requiredMilestones": [
+        "AR02",
+        "AR06",
+        "AR08"
+      ],
+      "retiredByOnTX": null,
+      "status": "IMPLEMENTATION_OR_FRESH_PROOF_MISSING; NO_WHOLE_LAW_CREDIT"
+    },
+    {
+      "RUHistoryFalseSelected": false,
+      "TXHistoryFalseSelected": true,
+      "applicability": "Keep actual trigger/claim and complete clause; never N/A from missing entry or Historyfalse",
+      "catalog": "packages/conformance/catalog/transactional-v1.json",
+      "currentlyImplementedOrSupported": "NO_ERASURE_FENCE/PUBLICATION_PATH; current minReplayPosition constant pos0 is not erasure advancement",
+      "family": "ERASE-FENCE",
+      "freshInstalledQualification": "UNKNOWN_UNESTABLISHED",
+      "governingRequirements": [
+        {
+          "anchor": "#version-erasure",
+          "selectedText": "Only such caught-up streams in a view receiving the erasure record receive the\ncomplete group at P; their server-side stream position then advances to P.",
+          "source": "docs/specs/bdp.md"
+        }
+      ],
+      "lawId": "transactional.erasure.live-publication",
+      "requiredMilestones": [
+        "AR05",
+        "AR07",
+        "AR08"
+      ],
+      "retiredByOnTX": null,
+      "status": "IMPLEMENTATION_OR_FRESH_PROOF_MISSING; NO_WHOLE_LAW_CREDIT"
+    },
+    {
+      "RUHistoryFalseSelected": false,
+      "TXHistoryFalseSelected": true,
+      "applicability": "Keep actual trigger/claim and complete clause; never N/A from missing entry or Historyfalse",
+      "catalog": "packages/conformance/catalog/transactional-v1.json",
+      "currentlyImplementedOrSupported": "NO_ERASURE_FENCE/PUBLICATION_PATH; current minReplayPosition constant pos0 is not erasure advancement",
+      "family": "ERASE-FENCE",
+      "freshInstalledQualification": "UNKNOWN_UNESTABLISHED",
+      "governingRequirements": [
+        {
+          "anchor": "#version-erasure",
+          "selectedText": "The client advances its durable checkpoint\nonly after atomically applying the complete group.",
+          "source": "docs/specs/bdp.md"
+        }
+      ],
+      "lawId": "transactional.erasure.disconnect-race",
+      "requiredMilestones": [
+        "AR05",
+        "AR07",
+        "AR08"
+      ],
+      "retiredByOnTX": null,
+      "status": "IMPLEMENTATION_OR_FRESH_PROOF_MISSING; NO_WHOLE_LAW_CREDIT"
+    },
+    {
+      "RUHistoryFalseSelected": false,
+      "TXHistoryFalseSelected": true,
+      "applicability": "Keep actual trigger/claim and complete clause; never N/A from missing entry or Historyfalse",
+      "catalog": "packages/conformance/catalog/transactional-v1.json",
+      "currentlyImplementedOrSupported": "NO_BOUND_INSTALLED_CONSUMER/RECOVERY_ROUTE; applicability/retained-copy scope UNKNOWN, cannot assert N/A",
+      "family": "ERASE-CONSUMER",
+      "freshInstalledQualification": "UNKNOWN_UNESTABLISHED",
+      "governingRequirements": [
+        {
+          "anchor": "#event-replay-and-live-observation",
+          "selectedText": "A persistent Event consumer claiming protocol-backed erasure handling MUST integrate the existing Scope changefeed and snapshot erasure ledger as its supported acquisition and reconciliation route.",
+          "source": "docs/specs/bdp.md"
+        },
+        {
+          "anchor": "#event-replay-and-live-observation",
+          "selectedText": "It applies projected erasure records to its retained copies and, for this changefeed/ledger integration, follows the existing durable-checkpoint, disconnect, replay-expiry, and Authorization View recovery rules, including a fresh snapshot and its ledger when required.",
+          "source": "docs/specs/bdp.md"
+        },
+        {
+          "anchor": "#event-replay-and-live-observation",
+          "selectedText": "This requirement scopes the supported erasure-handling claim; it neither prohibits other storage deployments nor exempts any store, cache, or replica from the every-store erasure duty.",
+          "source": "docs/specs/bdp.md"
+        }
+      ],
+      "lawId": "transactional.erasure.persistent-event-consumer",
+      "requiredMilestones": [
+        "AR07",
+        "AR08"
+      ],
+      "retiredByOnTX": null,
+      "status": "IMPLEMENTATION_OR_FRESH_PROOF_MISSING; NO_WHOLE_LAW_CREDIT"
+    },
+    {
+      "RUHistoryFalseSelected": false,
+      "TXHistoryFalseSelected": false,
+      "applicability": "Keep actual trigger/claim and complete clause; never N/A from missing entry or Historyfalse",
+      "catalog": "packages/conformance/catalog/history-v1.json",
+      "currentlyImplementedOrSupported": "OPTIONAL_HISTORY_CATALOG_NOT_SELECTED_FOR_CURRENT_HISTORY_FALSE; that is not an erasure or restore N/A ruling",
+      "family": "OPTIONAL-HISTORY",
+      "freshInstalledQualification": "UNKNOWN_UNESTABLISHED",
+      "governingRequirements": [
+        {
+          "anchor": "#history-recovery-imports-and-assurance",
+          "selectedText": "Every History implementation enforces applicable erasure decisions on every controlled retained copy before further serving and preserves required erasure evidence across local recovery. This includes context, inline owned content, indexes, caches and any other controlled retained copies. Retaining an old address never permits serving erased content. A non-owning reference is not embedded target content; no new retention propagation, target rewrite or wire hold follows.",
+          "source": "docs/specs/bdp.md"
+        }
+      ],
+      "lawId": "history.erasure",
+      "requiredMilestones": [
+        "AR01",
+        "AR06",
+        "AR07",
+        "AR08"
+      ],
+      "retiredByOnTX": null,
+      "status": "IMPLEMENTATION_OR_FRESH_PROOF_MISSING; NO_WHOLE_LAW_CREDIT"
+    },
+    {
+      "RUHistoryFalseSelected": false,
+      "TXHistoryFalseSelected": false,
+      "applicability": "Keep actual trigger/claim and complete clause; never N/A from missing entry or Historyfalse",
+      "catalog": "packages/conformance/catalog/history-v1.json",
+      "currentlyImplementedOrSupported": "OPTIONAL_HISTORY_CATALOG_NOT_SELECTED_FOR_CURRENT_HISTORY_FALSE; that is not an erasure or restore N/A ruling",
+      "family": "OPTIONAL-HISTORY",
+      "freshInstalledQualification": "UNKNOWN_UNESTABLISHED",
+      "governingRequirements": [
+        {
+          "anchor": "#history-and-transactional-erasure",
+          "selectedText": "Where Transactional erasure applies, its permanent projected ledger, containing-version erasure, same-group live successor/tombstone, pre-erasure checkpoint expiry and snapshot recovery rules remain mandatory.",
+          "source": "docs/specs/bdp.md"
+        },
+        {
+          "anchor": "#history-and-transactional-erasure",
+          "selectedText": "Controlled retained copies include old groups, Events and receipt postimages. Where the Transactional erasure contract applies, its existing changefeed and snapshot-ledger route remains required.",
+          "source": "docs/specs/bdp.md"
+        }
+      ],
+      "lawId": "history.erasure.transactional",
+      "requiredMilestones": [
+        "AR01",
+        "AR06",
+        "AR07",
+        "AR08"
+      ],
+      "retiredByOnTX": null,
+      "status": "IMPLEMENTATION_OR_FRESH_PROOF_MISSING; NO_WHOLE_LAW_CREDIT"
+    },
+    {
+      "RUHistoryFalseSelected": true,
+      "TXHistoryFalseSelected": true,
+      "applicability": "Keep actual trigger/claim and complete clause; never N/A from missing entry or Historyfalse",
+      "catalog": "packages/conformance/catalog/read-v1.json",
+      "currentlyImplementedOrSupported": "ORDINARY_READ_FAILURE_MACHINERY_EXISTS; no actual erasure disposition/subject-history admin fixture, whole law proof UNKNOWN",
+      "family": "DISCLOSURE",
+      "freshInstalledQualification": "UNKNOWN_UNESTABLISHED",
+      "governingRequirements": [
+        {
+          "anchor": "#reads-after-deletion",
+          "selectedText": "A\n`resource-pruned` problem MAY carry one `archivedAt` member — a Reference,\npossibly pinned, naming where the content went",
+          "source": "docs/specs/bdp.md"
+        },
+        {
+          "anchor": "#reads-after-deletion",
+          "selectedText": "A\n`resource-erased` problem carries no condition-specific extension members\nbeyond its ordinary problem members: even a pointer would disclose what\nerasure exists to remove.",
+          "source": "docs/specs/bdp.md"
+        }
+      ],
+      "lawId": "read.disclosure.gone",
+      "requiredMilestones": [
+        "AR05",
+        "AR08"
+      ],
+      "retiredByOnTX": null,
+      "status": "IMPLEMENTATION_OR_FRESH_PROOF_MISSING; NO_WHOLE_LAW_CREDIT"
+    },
+    {
+      "RUHistoryFalseSelected": true,
+      "TXHistoryFalseSelected": true,
+      "applicability": "Keep actual trigger/claim and complete clause; never N/A from missing entry or Historyfalse",
+      "catalog": "packages/conformance/catalog/read-v1.json",
+      "currentlyImplementedOrSupported": "ORDINARY_READ_FAILURE_MACHINERY_EXISTS; no actual erasure disposition/subject-history admin fixture, whole law proof UNKNOWN",
+      "family": "DISCLOSURE",
+      "freshInstalledQualification": "UNKNOWN_UNESTABLISHED",
+      "governingRequirements": [
+        {
+          "anchor": "#conditional-reads-and-head",
+          "selectedText": "A successful read whose HTTP condition selects\n`304 Not Modified`, or a read whose precondition fails with\n`412 Precondition Failed`, MUST be bodyless and MUST NOT carry a BDP Problem\nbody.",
+          "source": "docs/specs/bdp.md"
+        },
+        {
+          "anchor": "#conditional-reads-and-head",
+          "selectedText": "Normal authentication, authorization/non-disclosure, query and cursor checks, and applicable History erasure/expiry checks MUST precede any conditional not-modified shortcut. An ordinary refusal is not replaced by `304`.",
+          "source": "docs/specs/bdp.md"
+        },
+        {
+          "anchor": "#conditional-reads-and-head",
+          "selectedText": "Applicable cache fields remain required on these responses.",
+          "source": "docs/specs/bdp.md"
+        }
+      ],
+      "lawId": "read.http.conditional-reads",
+      "requiredMilestones": [
+        "AR05",
+        "AR08"
+      ],
+      "retiredByOnTX": null,
+      "status": "IMPLEMENTATION_OR_FRESH_PROOF_MISSING; NO_WHOLE_LAW_CREDIT"
+    },
+    {
+      "RUHistoryFalseSelected": false,
+      "TXHistoryFalseSelected": true,
+      "applicability": "Keep actual trigger/claim and complete clause; never N/A from missing entry or Historyfalse",
+      "catalog": "packages/conformance/catalog/transactional-v1.json",
+      "currentlyImplementedOrSupported": "NO_LEDGER_STORAGE_OR_NONEMPTY_PROJECTION_SUPPORT; current policy only all-visible then empty, future applicable view fixture UNKNOWN",
+      "family": "ERASE-VIEW",
+      "freshInstalledQualification": "UNKNOWN_UNESTABLISHED",
+      "governingRequirements": [
+        {
+          "anchor": "#scope-changefeed",
+          "selectedText": "`changes`, `erasures`, and `events` are always present, and each is empty when the group carries nothing of its kind; a visible group carries at least one of the three non-empty.",
+          "source": "docs/specs/bdp.md"
+        }
+      ],
+      "lawId": "transactional.changefeed.wire-form",
+      "requiredMilestones": [
+        "AR02",
+        "AR05",
+        "AR08"
+      ],
+      "retiredByOnTX": null,
+      "status": "IMPLEMENTATION_OR_FRESH_PROOF_MISSING; NO_WHOLE_LAW_CREDIT"
+    },
+    {
+      "RUHistoryFalseSelected": false,
+      "TXHistoryFalseSelected": true,
+      "applicability": "Keep actual trigger/claim and complete clause; never N/A from missing entry or Historyfalse",
+      "catalog": "packages/conformance/catalog/transactional-v1.json",
+      "currentlyImplementedOrSupported": "NO_LEDGER_STORAGE_OR_NONEMPTY_PROJECTION_SUPPORT; current policy only all-visible then empty, future applicable view fixture UNKNOWN",
+      "family": "ERASE-VIEW",
+      "freshInstalledQualification": "UNKNOWN_UNESTABLISHED",
+      "governingRequirements": [
+        {
+          "anchor": "#change-groups-and-replication",
+          "selectedText": "For an invisible group, `projectionAdvance` is true, `transaction` is absent, and `changes`, `erasures`, and `events` are empty.",
+          "source": "docs/specs/bdp.md"
+        },
+        {
+          "anchor": "#scope-changefeed",
+          "selectedText": "A projection advance carries `projectionAdvance` `true`, no `transaction`, `eventCount` `0`, and three empty arrays.",
+          "source": "docs/specs/bdp.md"
+        }
+      ],
+      "lawId": "transactional.changefeed.projection-advance",
+      "requiredMilestones": [
+        "AR02",
+        "AR05",
+        "AR08"
+      ],
+      "retiredByOnTX": null,
+      "status": "IMPLEMENTATION_OR_FRESH_PROOF_MISSING; NO_WHOLE_LAW_CREDIT"
+    }
+  ],
+  "selectedRUHistoryFalse": 6,
+  "selectedTXHistoryFalse": 35
+}

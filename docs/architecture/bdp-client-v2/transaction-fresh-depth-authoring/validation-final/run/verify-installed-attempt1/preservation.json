@@ -1,0 +1,36 @@
+{
+  "reason": "Root omitted mandatory acceptance of actual generated consumer lock before verification; no product child started. Exact source/build/archive/consumer unchanged.",
+  "manualRetryAuthorized": true,
+  "automaticRetry": false,
+  "originalFailedArtifacts": {
+    "verify-installed.exit.json": {
+      "originalPath": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-fresh-depth-authoring/validation-final/run/verify-installed.exit.json",
+      "sha256": "bd0e6adbe32b47c49eaa07190b327435dca67d6e38dc680ddb0dda5c848ea1b2"
+    },
+    "verify-installed.log": {
+      "originalPath": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-fresh-depth-authoring/validation-final/run/verify-installed.log",
+      "sha256": "a2b66a4605a975838f4cf1b1fc83c9a5e867f6c283f73d1c8188b9254fe1e3ed"
+    },
+    "verify-installed.processes.jsonl": {
+      "originalPath": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-fresh-depth-authoring/validation-final/run/verify-installed.processes.jsonl",
+      "sha256": "06c2e7ce4a53e598781ea62c1b02b35a813db894b1a15ba0eb95246c8c9085eb"
+    },
+    "verify-installed.started.json": {
+      "originalPath": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-fresh-depth-authoring/validation-final/run/verify-installed.started.json",
+      "sha256": "9b1c61c361705f0234fb0488739e2e622589214b57be83c375e0698a3bd8a9d4"
+    }
+  },
+  "acceptedConsumerLockSha256": "7a3288d4e94fbb4b7f9239db3b3d256994fbcf1d4b17abd06bed4c7e892ac622",
+  "packages": {
+    "@bdp/protocol": "0.0.0",
+    "@bdp/server": "0.0.0",
+    "ajv": "8.17.1",
+    "ajv-formats": "3.0.1",
+    "fast-deep-equal": "3.1.3",
+    "fast-uri": "3.1.5",
+    "json-schema-traverse": "1.0.0",
+    "require-from-string": "2.0.2"
+  },
+  "archiveIntegrityIndependentlyMatched": true,
+  "scope": "Repeat read-only verify-installed only; no tests/build/install repeated."
+}

@@ -1,0 +1,211 @@
+{
+  "sourceIdentity": "6627203817e3405ec0841394910ffe331fe28a809cc30e0152001afd57c9d678",
+  "sourceBindingSha256": "86eaf40e4dad7a3b52be592094fea7f030ca1a6326e3319342864ef0e1249530",
+  "qualification": false,
+  "selectedCallbacks": [
+    "observes installed live alias opaque minima without redirect shortcuts"
+  ],
+  "resultsSha256": "dd341c91e5fd79b98d8506c9493860def85f6cac56ac99a0962653d837cfab83",
+  "logSha256": "22f46bbfca3514c7f53fc9f2ab98bd022d618e4a8f9186ef0bef98d5aef87063",
+  "lifecycleLimit": "Actual child exit+close, timed cleanup and exchange settlement; no socket-close census or source attestation. Unknown/late cleanup is failure with retained directory, never late success.",
+  "observation": {
+    "observation": "private-installed-alias-opaque-minimum",
+    "declaredSourceCommit": "9d2cd441eac2be1d2b6487ab5648035e3219cc27",
+    "workspaceDirty": true,
+    "entry": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/alias-opaque-minimum-validation/format-successor-1/run/consumer/node_modules/.pnpm/@bdp+server@file+..+packages+bdp-server-0.0.0.tgz/node_modules/@bdp/server/dist/transaction-installed-process.js",
+    "entrySha256": "bcf153170f953f9e28c6c89f1153be907f64df289e64f3ad929cad4a4a54c47c",
+    "artifactSha256": "a07636a172c6064adef69dac524f109665f7656dcd85a94ddecf82e786cb8d14",
+    "binding": {
+      "served": {
+        "scope": "https://reference.invalid/acme/",
+        "profile": "transactional",
+        "history": false,
+        "sourceCommit": "9d2cd441eac2be1d2b6487ab5648035e3219cc27",
+        "installedPayloadDigest": "3bcccdbcf7abd2ba9282c2412d43ddc60cb5c1da65e9b069438c66a6caf087ed",
+        "installedContractsDigest": "80c3cc6befaa53f7949b91e00ef00c2658442de1ffc24dfdaf6a16cdc9235992",
+        "policyDigest": "d6738fbeef24d6d54545882fdc101ae0bbf88db18d2982db8052a31563fd8301",
+        "authenticationDigest": "ddf4fdc670b61e79c225f0bec26df4c60296e597f80fb036a0b0c8f16938957d",
+        "fixtureDigest": "3a7899ced771d4880066d98b0000c53f801ece53458502cc4f3bc641146c9a85",
+        "fixtureId": "reference-transactional-v1",
+        "capabilities": [
+          "installed-transactional-http",
+          "transactional-receipt-observation"
+        ]
+      },
+      "operationTargets": {
+        "createBead": "https://reference.invalid/acme/operations/create-bead",
+        "updateBead": "https://reference.invalid/acme/operations/update-bead",
+        "deleteBead": "https://reference.invalid/acme/operations/delete-bead",
+        "createLink": "https://reference.invalid/acme/operations/create-link",
+        "updateLink": "https://reference.invalid/acme/operations/update-link",
+        "deleteLink": "https://reference.invalid/acme/operations/delete-link",
+        "putAlias": "https://reference.invalid/acme/operations/put-alias",
+        "deleteAlias": "https://reference.invalid/acme/operations/delete-alias",
+        "updateWhere": "https://reference.invalid/acme/operations/update-where",
+        "deleteWhere": "https://reference.invalid/acme/operations/delete-where",
+        "batch": "https://reference.invalid/acme/operations/batch",
+        "sequence": "https://reference.invalid/acme/operations/sequence"
+      },
+      "runtimeConfigurationIdentity": "9e524de27ab4c48465a4997d557486bf95dd177fd63c52e3139e52d469c01148",
+      "authorityMode": "canonical"
+    },
+    "attempted": 6,
+    "exchanges": 6,
+    "completedResponses": [
+      {
+        "method": "POST",
+        "url": "https://reference.invalid/acme/operations/batch",
+        "status": 200,
+        "bodyOctets": 666,
+        "bodySha256": "7800c84283dbd26d535d4eacfda393f8e6016002ff3e69fe81de5b27d09737ec",
+        "wireSha256": "08a4ca7e3f6a8c6abdaac9f27572d4d22c8bf25ee9a68381e24d7ac46261946c",
+        "headers": {
+          "bdp-scope-epoch": "fea470b8-1989-4fa5-815c-f1d35cf69364",
+          "bdp-authorization-view": "development-all-visible",
+          "bdp-scope-position": "pos-1",
+          "content-length": "666",
+          "content-type": "application/json",
+          "cache-control": "private, no-store",
+          "retry-after": null,
+          "location": null,
+          "etag": null,
+          "x-bdp-development": "non-attesting"
+        }
+      },
+      {
+        "method": "POST",
+        "url": "https://reference.invalid/acme/operations/put-alias",
+        "status": 200,
+        "bodyOctets": 547,
+        "bodySha256": "577ef9a034510325662d1968b232729a4aa438fda0f2a26d323ba24b5c0036d0",
+        "wireSha256": "030a089d8209ba920d6906dc7ef21a6bb46ffcee9fa6fd1bbb0360ac1099f0c1",
+        "headers": {
+          "bdp-scope-epoch": "fea470b8-1989-4fa5-815c-f1d35cf69364",
+          "bdp-authorization-view": "development-all-visible",
+          "bdp-scope-position": "pos-1",
+          "content-length": "547",
+          "content-type": "application/json",
+          "cache-control": "private, no-store",
+          "retry-after": null,
+          "location": null,
+          "etag": null,
+          "x-bdp-development": "non-attesting"
+        }
+      },
+      {
+        "method": "GET",
+        "url": "https://reference.invalid/acme/alias/work",
+        "status": 307,
+        "bodyOctets": 0,
+        "bodySha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "wireSha256": "3c3c52e32cd7c546b4af4d6fd0c29e58a3a49fa0673933ca64a6b731cd0d486f",
+        "headers": {
+          "bdp-scope-epoch": "fea470b8-1989-4fa5-815c-f1d35cf69364",
+          "bdp-authorization-view": "development-all-visible",
+          "bdp-scope-position": "pos-1",
+          "content-length": "0",
+          "content-type": null,
+          "cache-control": "private, no-store",
+          "retry-after": null,
+          "location": "https://reference.invalid/acme/beads/a",
+          "etag": null,
+          "x-bdp-development": "non-attesting"
+        }
+      },
+      {
+        "method": "GET",
+        "url": "https://reference.invalid/acme/alias/work",
+        "status": 503,
+        "bodyOctets": 127,
+        "bodySha256": "5e7c50923b5ef2e22379c96cbec4f9197175e38d9a81970f7db4f81ae46255b0",
+        "wireSha256": "6ccd1b390252079c81a3fcebe41ee04d70f816654581be4f907d358e713b46a4",
+        "headers": {
+          "bdp-scope-epoch": "fea470b8-1989-4fa5-815c-f1d35cf69364",
+          "bdp-authorization-view": "development-all-visible",
+          "bdp-scope-position": "pos-1",
+          "content-length": "127",
+          "content-type": "application/problem+json",
+          "cache-control": "private, no-store",
+          "retry-after": "1",
+          "location": null,
+          "etag": null,
+          "x-bdp-development": "non-attesting"
+        }
+      },
+      {
+        "method": "HEAD",
+        "url": "https://reference.invalid/acme/alias/work",
+        "status": 503,
+        "bodyOctets": 0,
+        "bodySha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "wireSha256": "55848c3c94c9353ada47acf985293284a99607b1faa6b6ca8cc7532d0495bb17",
+        "headers": {
+          "bdp-scope-epoch": "fea470b8-1989-4fa5-815c-f1d35cf69364",
+          "bdp-authorization-view": "development-all-visible",
+          "bdp-scope-position": "pos-1",
+          "content-length": "127",
+          "content-type": "application/problem+json",
+          "cache-control": "private, no-store",
+          "retry-after": "1",
+          "location": null,
+          "etag": null,
+          "x-bdp-development": "non-attesting"
+        }
+      },
+      {
+        "method": "GET",
+        "url": "https://reference.invalid/acme/alias/missing",
+        "status": 404,
+        "bodyOctets": 134,
+        "bodySha256": "6eb3ea2339cd9acd8b41edf491f4cebb381ce54504bab8215d4a421f32d68ce1",
+        "wireSha256": "011024ac553f296d5ff99e75e2bfff5ae8d95233db72a05273af7164c74dde09",
+        "headers": {
+          "bdp-scope-epoch": "fea470b8-1989-4fa5-815c-f1d35cf69364",
+          "bdp-authorization-view": "development-all-visible",
+          "bdp-scope-position": "pos-1",
+          "content-length": "134",
+          "content-type": "application/problem+json",
+          "cache-control": "private, no-store",
+          "retry-after": null,
+          "location": null,
+          "etag": null,
+          "x-bdp-development": "non-attesting"
+        }
+      }
+    ],
+    "assertionsCompleted": true,
+    "deadlineFired": false,
+    "lifecycleAtReport": {
+      "launchAttempted": true,
+      "returnedChild": true,
+      "pid": 60070,
+      "exitCode": 0,
+      "signalCode": null,
+      "observedExit": {
+        "code": 0,
+        "signal": null
+      },
+      "observedClose": {
+        "code": 0,
+        "signal": null
+      },
+      "childStdioDrainObserved": true,
+      "closure": "clean",
+      "cleanClose": true,
+      "cleanupDeadlineExceeded": false,
+      "pendingExchanges": 0,
+      "pendingDrained": true,
+      "settledExchanges": 6,
+      "socketCloseCensusAvailable": false,
+      "transportSettlementContract": "executor destroys socket before exchange settles",
+      "lateCleanupRejectionObserved": false,
+      "directory": "/private/tmp/vickie-alias-validation-alias-opaque-external-loi3kdwu/bdp-alias-opaque-installed-2KLyPt",
+      "directoryRemoved": true,
+      "directoryPresent": false
+    },
+    "failureCategories": [],
+    "outcome": "passed",
+    "claimEligible": false
+  },
+  "attribution": "Verified reviewed dirty source\u2192fresh build\u2192archives\u2192consumer\u2192actual child payload. Body/schema validations remain pinned passing callback assertions; no public profile qualification."
+}

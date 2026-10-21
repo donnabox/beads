@@ -1,0 +1,29 @@
+{
+  "status": "closed-installed-preparation-reviewed-candidate-and-council-pending",
+  "checkedAt": "2026-10-15T16:17:20.422771+00:00",
+  "preparationSha256": "f097b9791ee849db17f3cbc60649ffdac81553bddfdd41561aad25d4ad5eb16b",
+  "files": {
+    "build-attribution-bridge.json": "724171236be784095ddd6a52e5aa485a29b607a383d2822c5c96dcd5fb64c74d",
+    "commands.json": "ca35819eae510e11344afca5fa844daed33ca474965d1417b59d9f8c69ab6352",
+    "copy-divergence-correction.patch": "0f453ff995d2ba4f3017d0aa18843eb3545fb1cf211a86b63164dea976988b00",
+    "execution-gate.example.json": "a6728f381837a9ea58e09569d308e9e9600d4b310b1d445cac90d1a69b4dd519",
+    "gate.py": "86274428f74d1ea6c3da06ebc203dd266b7f0f89d4b9bb019a388ce378c8e611",
+    "packages.py": "40fba4f17352258adaa4a2b0e26ac1adedcce36d979ed733c47e63834f15c61f",
+    "preparation.patch": "832f54a90c2708cb0faf178e74e537ba8fc431ea0e8c6aad253ff934cf2be85e",
+    "report.md": "3746d0fbe52dd4a500aeb48374c1c78d5c30dbdbad343634c4f3c1d7d152814d",
+    "review-installed.py": "557066a6548f4410abfe706bb4f1ea91b72b256821b50141527692a971025392",
+    "supervise.py": "1764ff4ec582f9ffc8d71b084745383feba2e965006d64ab20fb3c988a180c4a"
+  },
+  "positiveMembersVerified": 1133,
+  "reviewed": [
+    "complete gate/supervisor/package verifier/installed postprocessor and ten exact commands",
+    "all positive input/emitted byte hashes and sole exact control divergence",
+    "fresh archive and independent consumer required; historical build attribution retained"
+  ],
+  "release": false,
+  "remaining": [
+    "actual Claude code findings disposition",
+    "ordinary frozen-byte candidate commit",
+    "root final execution gate"
+  ]
+}

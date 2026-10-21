@@ -1,0 +1,50 @@
+"""Actual gate.complete/verify_consumer on own synthetic files, not root receipts.
+The original function object is called. P/E namespace adaptations point only at
+unit fixtures; these files cannot authorize or satisfy an actual D4 stage.
+"""
+import copy,hashlib,json
+from pathlib import Path
+from contextlib import ExitStack
+from unittest.mock import patch
+from scanner_controls import refusal
+
+def encoded(value):return (json.dumps(value,indent=2)+'\n').encode()
+def stage_receipts(G,P,root):
+ directory=root/'gate-unit';directory.mkdir();commands=(P/'commands.json').read_bytes();(directory/'commands.json').write_bytes(commands)
+ name='installed-owned-set';log=b'unit log\n';(directory/(name+'.log')).write_bytes(log)
+ binding='b'*64;attempt='a'*32
+ terminal=dict(accepted=True,attemptId=attempt,exit=0,forcedCleanup=False,errors=[],remainingProcesses=[],runtimeDirectoriesStillPresent=[],sourceIdentity='unit-source',sourceUnchanged=True,logSha256=G.sha(log))
+ watch=dict(accepted=True,attemptId=attempt,ownershipUnknown=False,sourceBindingSha256=binding)
+ (directory/(name+'.exit.json')).write_bytes(encoded(terminal));(directory/(name+'.watchdog.json')).write_bytes(encoded(watch))
+ outer=dict(accepted=True,wholeParentElapsedSeconds=1,rawExit=0,stage=name,attemptId=attempt,sourceBindingSha256=binding,stageExitSha256=G.sha(encoded(terminal)),watchdogSha256=G.sha(encoded(watch)))
+ path=directory/'outer.json';path.write_bytes(encoded(outer));g=dict(sourceBinding={'sha256':binding},_sourceIdentity='unit-source',outerExitReceipts={name:{'path':str(path),'sha256':G.sha(path.read_bytes())}})
+ def call(value=outer,stage=name):
+  path.write_bytes(encoded(value));gg=copy.deepcopy(g);gg['outerExitReceipts']={stage:{'path':str(path),'sha256':G.sha(path.read_bytes())}}
+  if stage!=name:
+   for suffix in ['.log','.exit.json','.watchdog.json']:(directory/(stage+suffix)).write_bytes((directory/(name+suffix)).read_bytes())
+  with patch.object(G,'E',directory),patch.object(G,'P',directory):return G.complete(stage,gg)
+ assert call()['accepted']is True
+ records=[]
+ for key,value in [('wholeParentElapsedSeconds',145),('wholeParentElapsedSeconds',True),('wholeParentElapsedSeconds',-1),('accepted',False),('rawExit',1),('attemptId','c'*32),('sourceBindingSha256','c'*64),('stageExitSha256','c'*64),('watchdogSha256','c'*64)]:
+  changed={**outer,key:value};records.append({'key':key,'value':value,'result':refusal(lambda changed=changed:call(changed))})
+ missing=copy.deepcopy(g);missing['outerExitReceipts']={}
+ with patch.object(G,'E',directory),patch.object(G,'P',directory):records.append({'missingOuter':refusal(lambda:G.complete(name,missing))})
+ # Original ordinary115 equality is independently preserved by real function.
+ ordinary={**outer,'stage':'node-version','wholeParentElapsedSeconds':115}
+ records.append({'ordinary115':refusal(lambda:call(ordinary,'node-version'))})
+ return {'scope':'unit synthetic stage receipts only, no host elapsed truth','validUnitTupleAccepted':True,'counterfactuals':records,'productCalls':0}
+
+def consumer_bindings(G,root):
+ directory=root/'consumer-unit';consumer=directory/'consumer';consumer.mkdir(parents=True);lock=consumer/'pnpm-lock.yaml';lock.write_text('unit-lock\n');entry=consumer/'unit.mjs';entry.write_text('// not imported\n');archive=directory/'unit.tgz';archive.write_bytes(b'unit archive bytes, not a package\n')
+ tar={'packages':{'unit':{'archive':str(archive)}}};tarpath=directory/'tar-source-provenance.json';tarpath.write_bytes(encoded(tar));proof=dict(sourceCommit='unit-head',sourceTree='unit-tree',sourceIdentity='unit-source',sourceBindingSha256='b'*64,consumerLockSha256=G.sha(lock.read_bytes()),tarProvenanceSha256=G.sha(tarpath.read_bytes()),packages={'unit':{'archiveSha256':G.sha(archive.read_bytes())}},entryRealpath=str(entry.resolve()),entrySha256=G.sha(entry.read_bytes()))
+ def document_file(name,value):
+  p=directory/name;p.write_bytes(encoded(value));return {'path':str(p),'sha256':G.sha(p.read_bytes())}
+ with patch.object(G,'E',directory):inventory=G.consumer_inventory()
+ g=dict(finalHead='unit-head',finalTree='unit-tree',_sourceIdentity='unit-source',sourceBinding={'sha256':'b'*64},consumerLockSha256=proof['consumerLockSha256'],installedProvenance=document_file('proof.json',proof),consumerInventory=document_file('inventory.json',inventory))
+ def call():
+  with patch.object(G,'E',directory):return G.verify_consumer(g)
+ call();records=[]
+ original=archive.read_bytes();archive.write_bytes(original+b'x');records.append(refusal(call,'Archive changed'));archive.write_bytes(original)
+ original=lock.read_bytes();lock.write_bytes(original+b'x');records.append(refusal(call));lock.write_bytes(original)
+ original=entry.read_bytes();entry.write_bytes(original+b'x');records.append(refusal(call));entry.write_bytes(original)
+ call();return {'scope':'actual original consumer-binding function on unit files, not package validity/payload execution','bindingMutationRefusals':records,'productCalls':0}

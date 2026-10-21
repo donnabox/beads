@@ -1,0 +1,37 @@
+{
+  "released": true,
+  "authorizationKind": "measured-source-execution",
+  "rootAcceptancePath": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-command-minimum-final-draft/root-source-acceptance.md",
+  "rootAcceptanceSha256": "c94c128b22a082d6f8a35b780c918cf467dcaed9f76fbae1054a28a25d7695fc",
+  "preparationSha256": {
+    "commands.json": "8d5e2cac9018ec5ca7a01b12bda4c7d54db9d7ed2dba3226af25a401414c12f0",
+    "gate.py": "0cd34eb265a4504ec71b82ad35f0f2a9b3ab41301836af3beea84c76b6f35842",
+    "supervise.py": "15866c2a550df0a8cc11174bae719965d6e5b474cb56a0588fb81e09f59b71e7"
+  },
+  "approvedCommandIds": [
+    "typecheck",
+    "build",
+    "format-check",
+    "lint",
+    "check-boundaries",
+    "evidence-verify",
+    "http-positive",
+    "service-exclusions",
+    "catalog-citations",
+    "ru-emitted"
+  ],
+  "sourceDiffSha256": "891a3dd1d17d9f754dc81ef6223bdb61de4c330e15bc5ab7760559ca5c563106",
+  "sourceSha256": {
+    "apps/bdptest/src/installed-reference.test.ts": "2c87160890b1c8aed2ada117a1aa293fe7fcfa85db794a3d9ef6514a39d199d1",
+    "apps/bdptest/src/transactional-collection-minimum-installed.test.ts": "a3f772525ee1c87f3c488e37914af8114421dff5cc003d81640182d6f7a05903",
+    "docs/design/transaction-implementation-progress.md": "e4f474baf6808aa110dea0ac53df2560c8f7a9be9298928908acca2ba45e9be5",
+    "docs/specs/bdp.md": "c2bee88f7a29349f7e420f711d10f3acff1fb0559d012b0d111fd7ac21bd175d",
+    "packages/server/src/transaction-http.test.ts": "8f66df9f9cf891383a19a67fb50c85708eaae055c59a661777b7110060b0c56f",
+    "packages/server/src/transaction-http.ts": "1339f32e0818aee5a44fc01a2034366a73e72c40027d6cde7041f26525aba366",
+    "packages/server/src/transaction-service.test.ts": "5e8dc095dcbe9c8fdfb28a5dea4db024ddc65e7e4f51175edeae5a90ea7125be"
+  },
+  "actualSourceManifest": {
+    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-command-minimum-final-draft/source-binding.json",
+    "sha256": "ff9c63417fbb348bf8ad9863483096ccc0329beb5c05b532333cf75cd0726a38"
+  }
+}

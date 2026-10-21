@@ -1,0 +1,75 @@
+# Review — retained direct keys before private carrier-depth refusal
+
+**No production blocker found.** The ordering chain, brand safety, result mapping and context truthfulness hold under the accepted contract. The concrete risk is concentrated in the one path with no execution evidence: the new installed witness. Findings below, blockers first.
+
+---
+
+## 1. Installed point-read validated against a different `$defs` than the executed source witness
+**Severity: medium-high (blocks the installed witness if the def is absent).**
+`apps/bdptest/src/transactional-depth-key-order-installed.test.ts` ≈82 (`["mutationReceipt","transactionalProblem","beadRecord","currentBeadCollection"]`) and the two call sites `checked(point.bodyText, "beadRecord")`.
+
+The source witness validates the *same* two point reads with `$defs/currentBeadRecord` (`packages/server/src/transaction-http.test.ts` — `validBead`), and both files validate the final collection with `currentBeadCollection`. The installed file is the only place that references `$defs/beadRecord`.
+
+- Impact if `$defs/beadRecord` does not exist in `schemas/bdp-v0.schema.json`: `ajv.compile` raises `MissingRefError` at **module evaluation**, outside any `try`/`finally`. The file fails to collect; no child launches, no directory is created, and no `private-installed-depth-key-order` observation record is emitted at all. The 13-request witness silently never exists rather than failing visibly.
+- Impact if it does exist: the installed point read is checked against a different (presumably non-current) record def than the source read of the identical response, weakening the one assertion the two witnesses were meant to mirror.
+
+Smallest correction: use `currentBeadRecord` in the validator list and at both `checked(..., "beadRecord")` call sites; keep `beadRecord` only if it is deliberately a second, distinct def (then validate both). One `grep '"beadRecord"' schemas/bdp-v0.schema.json` settles it.
+
+## 2. Three blanket per-exchange assertions in the installed `exchange()` rest on contracts not in the packet
+**Severity: medium (blocks the installed witness if any differs); missing proof, not a demonstrated defect.**
+Same file, inside `exchange()`:
+
+- `if (row.method === "POST") expect(response.headers.vary).toBe("Accept")` applies to **all six POSTs, including requests 4 and 10** — the bodyless development gaps. The full header construction for those is supplied: `empty(500)` (`packages/server/src/transaction-http.ts:79–87`) emits only `cache-control`, `content-length`, optional `allow`, and `developmentGap` (139–143) adds only `x-bdp-development-limit`. A `vary` there must come from a global decorator that is not supplied. The executed source witness neither records nor asserts `vary` (its `observations` header list omits it), so the passing source run gives zero evidence either way. Same for the 409 `problem(...)` path.
+- `expect(response.headers["cache-control"]).toBe("private, no-store")` applies to all 13, including the two GET point reads and the collection. Proven only for the `empty()` family.
+- `expect(response.exactRequest?.bodyOctets).toBe(row.bodyBytes)` expects `0` for the three bodyless GETs, while the adjacent assertion expects `bodyDigest === undefined` for the same rows. One of the two conventions is wrong unless the executor reports `bodyOctets: 0` for absent bodies, which the packet does not state ("conformance raw HTTP executor is unchanged and ... not reimplemented here").
+
+Smallest correction: move `vary` (and `cache-control` if it varies by representation) into the frozen `requests` table alongside the existing `contextPosition`, so each expectation is authored per response rather than inferred from the method; and write the octet assertion as `expect(response.exactRequest?.bodyOctets ?? 0).toBe(row.bodyBytes)` so it is correct under either executor convention. Failure mode is benign (after the response projection is pushed), but it costs the whole 13-request witness.
+
+## 3. `transactionDepthRefusal(batch)` is read unconditionally, widening the brand requirement
+**Severity: low-medium (hardening; no reachable break under the supplied contracts).**
+`packages/server/src/transaction-store.ts:1080`.
+
+The lookup runs on **every** `admitKey` invocation, including both internal sequence call sites (1810–1817, 1933), and it throws `TypeError("expected prepared transaction")` for anything outside the `prepared` WeakSet. Before this patch, a *fresh templated* admission never required the brand at all: `prior` is undefined and `template` is set, so `normalizeTransaction` — the only prior brand check on that path — is skipped. The patch therefore adds a new throw surface to a previously brand-free path. The supplied anchor ("constructs each member via unchanged `prepareCarrier`") is what keeps this safe, so it is a dependency on an unchanged contract, not a defect.
+
+Smallest correction, which also removes two map lookups per sequence turn:
+
+```ts
+if (!prior) {
+  const depthRefusal = transactionDepthRefusal(batch);
+  if (depthRefusal !== undefined) { /* existing two lines */ }
+}
+```
+
+## 4. The new progress-doc section is already contradicted by the packet's own snapshot
+**Severity: low (truthfulness of the owned doc).**
+`docs/design/transaction-implementation-progress.md`, new section: "No tests, builds, controls or installed execution have run at this draft checkpoint."
+
+The validation snapshot records seven V2 static stages and the corrected 17-case source selection passing **on this exact frozen source** (`primaryFailureCount: 0`, 13 H responses). The doc now under-claims, which will push a later reader to re-run or to treat the four source cases as unexercised. Smallest correction: state that the static stages and the source selection pass on this source, and keep control, installed and CI explicitly pending — which is exactly the snapshot's own `limitations` list. (Under-claiming is the safe direction; nothing here over-claims.)
+
+## 5. Coverage gap: the set-singleton receiving path
+**Severity: low (precise limitation, not a defect).**
+`packages/server/src/transaction-batch.ts:214–232`. `prepareTransactionForReceiving({kind:"singleton", operation:"updateWhere"|"deleteWhere"})` routes through `prepareMixedTransaction(..., true)` and is therefore annotated at the **synthetic-root offset 0**, whereas the non-set singleton is annotated at **offset 2** (`:237`). The two conventions coincide only by construction (root → `operations` → member = 2). The new `transaction-set.test.ts` case covers `createBead` for both strict and receiving, plus the batch wrapper, but no case exercises a set singleton through `prepareTransactionForReceiving`, so the offset-0/offset-2 equivalence for that route is unasserted. The council required only the "explicit strict non-set singleton depth test", which is present — this is the residual gap, not a missed requirement.
+
+## 6. Informational
+- **Internal no-controls throw is unreachable.** `transaction-store.ts:1082` fires only for an annotated batch reaching `admitKey` without controls; the only no-controls callers are the sequence paths, whose members are never annotated. Both required throws exist in code; only the public wrapper throw (`:1415–1416`) is covered by a test (`transaction-submission.test.ts`, the `f.store.admit("p", legacy.key, prepared)` case). Defensive, correct to keep.
+- **`requireTransactionDepth` rethrows a fresh instance** (`transaction-batch.ts:358–362`), so the class and the exact message `"development batch depth limit"` are preserved — the contract holds — but the throw site now points at the wrapper rather than `assertTransactionInputDepth`. Only diagnostics change.
+- **Public export surface unverified.** `prepareTransactionForReceiving` and `transactionDepthRefusal` are new module-level exports. `packages/server/package.json` exposes only `.` and `./development`; neither barrel is supplied. If either does `export *` from `transaction-batch.js`, the private fact accessor becomes public API, contradicting "No public export … changes". The pre-existing `prepareTransactionSetCore` has the identical shape, which is weak evidence the barrels enumerate explicitly. One grep settles it.
+- **Cleanup fragility**, `transaction-submission.test.ts` (second new case): `attempt` is never cleared after both `nextSequence` turns are consumed, so the `finally` calls `cancelSequence` on a fully consumed attempt; `pending` uses the opposite (`pending = undefined`) pattern. The passing run indicates this is tolerated; mirroring the `pending` pattern removes the dependency.
+
+---
+
+## What I verified as correct
+
+**Ordering.** Fresh no-prior refusal sits after `expireRow` (so a `failedForgotten` key behaves fresh and a compacted `completedExpired` row still compares on its retained `identity`/`witnesses`), after the `prior?.dependency` branch (so a deep retry of a dependent key is adjudicated by `compareDependencyTemplate`, never by the depth fact), and before `normalizeTransaction`, `maximumOperations`, Selector capacity, `acceptsJson` and the `INSERT`/claim. Retraction mid-loop correctly reclassifies to fresh via `compareAndAdmitTransaction`'s re-`admit` under the same request/epoch/deadline. Syntax/byte/key-shape/authentication all still precede owner access; the `extra: true` pair in `transaction-set.test.ts` demonstrates carrier syntax beating the annotation on both routes. The depth-500 continues to preempt the 413/406 refusals exactly as the pre-patch code did (the old `developmentLimit` was also returned before admission), so there is no public-ordering regression.
+
+**Branded fact.** The accessor gates on the `prepared` WeakSet, which only `prepareCarrier` populates; `{...prepared}` and `assertPreparedTransaction({...prepared})` both throw `TypeError`; the result is frozen with the single `carrier` key; the fact is read-only `string | undefined` with no exported setter. Annotation after branding leaks nothing (a non-`TransactionDevelopmentLimitError` rethrow discards an unreachable branded object).
+
+**Mapping and context.** `development-limit` is excluded from `observeReceipt` attachment, from `admit`'s observed-context branch, and from `submitTransaction`'s `!result.context` invariant, and lands on `developmentGap` → bodyless 500 + marker with no epoch/view/position — truthful, and both witnesses assert the absence. `DirectComparison` gains the variant and `submitTransaction`'s switch covers all ten members; `TransactionAdmission` is unwidened and the three-arg `admit` overload stays honest because the wrapper throws.
+
+**Stack safety.** The newly exercised comparison path uses `encodeSemanticValue` (explicit work/leave/text stacks) and `transactionInputText` (explicit pending stack); the only `JSON.stringify` is over the witnesses object, which carries operation names and alias locators, never the input. The 20,000-array retry keeps the same operation/id/type so it reaches real identity comparison rather than a shape short circuit. Note that `decodeJsonDocument`/`prepareReadUpdateSequence` also walk that body — but they did so before this patch too (the old assert sat after `prepareResourceBatch`), so the patch adds no new exposure; only the new test depends on it, and the claimed source pass is the sole evidence.
+
+**Frozen literals (arithmetic checked).** Installed bodies 166/621/124/579 are exact; `3270` total and `621` max are exact; the shallow installed bodies are exactly 16 bytes longer than the source equivalents, whose recorded request sizes 150/605/108/563 and the status vector `[200,409,200,500,200,200,200,409,200,500,200,200,200]` match the snapshot request-for-request. The 41-object structural re-walk matches the source's `for (i<40) nested = {nested}` under `metadata` and the stated "41 nested objects". The stress body is `40119` bytes as asserted and under 64 KiB. Position ladder pos-1/pos-2/pos-3/pos-4 is consistent across both witnesses and the collection ordering is stable under either creation or lexicographic order. The `sha256` digests (installed bodies and the stress body) cannot be checked from the packet; a mismatch fails early — for the installed file, before `mkdtempSync`, so cleanup stays clean.
+
+**Cleanup/provenance.** Source H splices only its own two fixture actions, reversed, under a 5 s budget, and the logged `cleanupActions: 2 / 2` matches the snapshot. Installed cleanup dedupes `deadlineReason`, memoizes `close()` against the launcher's abort listener, gates `rmSync` on `stopped`, and records `directoryAbsent`. `declaredSourceCommit` is emitted beside `workspaceDirty` and `entrySha256` with an explicit "supervisor attribution, never child-attested" comment, `claimEligible: false`, no raw `Authorization` retained, and the startup-window limitation stated — provenance stays attribution-only, consistent with the packet's pending external verification.
+
+Treated as preserved known outcomes, not re-raised: the original lint failure, the 16-case selection adjudication, and the selector-prefix mistake. The counterfactual early-refusal control, installed execution, council and exact CI remain unclaimed and unreviewed here.

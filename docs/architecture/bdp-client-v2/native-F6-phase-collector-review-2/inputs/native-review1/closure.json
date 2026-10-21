@@ -1,0 +1,30 @@
+{
+  "absoluteLimitsSeconds": {
+    "KILL": 149,
+    "TERM": 145,
+    "outer": 150
+  },
+  "accepted": false,
+  "findings": [
+    "F6-N1",
+    "F6-N2"
+  ],
+  "findingsSha256": "f6c11563a70ed36c70828781dd5afbfaf976197af602fc75003476c5e8b66c7c",
+  "helperExecuted": false,
+  "noRetryPreserved": true,
+  "optionsSha256": "b702291083f8483e6cf2da504514b80854eda49fb8c919abaed7f25019a2f3b8",
+  "originsSha256": "1732e9a5741f147fe1ed542188752de6613a71a50420c055331e3e42f244e733",
+  "proposalIndexSha256": "e90e7bc81e308fefb735e078ccfa6a4066f57c790780fe9c30c24ae6dc21aeae",
+  "proposalPlanSha256": "abe7cdb35109a36def37ae416930abfb69664578afdcac5ecf6253df652f64bc",
+  "reportSha256": "a74867808328268bc974da6b81b595ff56444ace02bc056f9c0fba74929a1521",
+  "revisionsRequired": true,
+  "runtimeReleased": false,
+  "scope": "Independent static F6 proposal mechanics; not product CODE rejection",
+  "session": "2026-10-18T02:16:24Z-549f",
+  "severity": "2 Medium",
+  "sourceEdited": false,
+  "sourceOrHelperAuthoringReleased": false,
+  "sourceSha256": "085a2e8e481a7cdbc8a705723939808b8120dca4518183c4e26a70de69f7382a",
+  "stdioSeam": "conditionally feasible on pinned Vitest4.1.10 default forks; exact future marker/helper bytes still require review",
+  "utc": "2026-10-18T09:26:27.266952+00:00"
+}

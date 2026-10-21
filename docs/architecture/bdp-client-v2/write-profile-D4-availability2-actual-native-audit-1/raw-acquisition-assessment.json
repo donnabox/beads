@@ -1,0 +1,299 @@
+{
+  "allCompletedFileIdentitiesReproduced": true,
+  "allSavedPrefixDigestsReproduced": true,
+  "callerJournalFinal": {
+    "availabilityAccepted": false,
+    "callerPgid": 29106,
+    "callerPid": 29106,
+    "captures": [
+      {
+        "completeCapture": true,
+        "createdAtSeconds": 0.2706261249259114,
+        "creationPGIDBasis": "direct Popen start_new_session",
+        "parentPid": 29106,
+        "pgid": 29107,
+        "pid": 29107,
+        "rawExitIfObserved": 0,
+        "role": "guard",
+        "streams": [
+          {
+            "actualEOF": true,
+            "closeError": null,
+            "fileIdentity": {
+              "bytes": 0,
+              "ctimeNs": 1792343919280788694,
+              "device": 16777232,
+              "inode": 95880392,
+              "mode": 33152,
+              "mtimeNs": 1792343919280788694,
+              "uid": 501
+            },
+            "fullStreamSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+            "fullStreamState": "COMPLETE_ACTUAL_CAPTURE",
+            "hashedPrefixBytes": 0,
+            "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-D4-availability-root-authority-preparation-2/attempt/guard.stdout",
+            "rawDescriptorClosed": true,
+            "receivedBytes": 0,
+            "savedBytes": 0,
+            "savedPrefixSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+            "writeError": null
+          },
+          {
+            "actualEOF": true,
+            "closeError": null,
+            "fileIdentity": {
+              "bytes": 0,
+              "ctimeNs": 1792343919280838237,
+              "device": 16777232,
+              "inode": 95880393,
+              "mode": 33152,
+              "mtimeNs": 1792343919280838237,
+              "uid": 501
+            },
+            "fullStreamSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+            "fullStreamState": "COMPLETE_ACTUAL_CAPTURE",
+            "hashedPrefixBytes": 0,
+            "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-D4-availability-root-authority-preparation-2/attempt/guard.stderr",
+            "rawDescriptorClosed": true,
+            "receivedBytes": 0,
+            "savedBytes": 0,
+            "savedPrefixSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+            "writeError": null
+          }
+        ],
+        "termRequested": false
+      },
+      {
+        "completeCapture": true,
+        "createdAtSeconds": 0.617238708306104,
+        "creationPGIDBasis": "direct Popen start_new_session",
+        "parentPid": 29106,
+        "pgid": 29111,
+        "pid": 29111,
+        "rawExitIfObserved": 0,
+        "role": "native",
+        "streams": [
+          {
+            "actualEOF": true,
+            "closeError": null,
+            "fileIdentity": {
+              "bytes": 1822,
+              "ctimeNs": 1792343919768938550,
+              "device": 16777232,
+              "inode": 95880395,
+              "mode": 33152,
+              "mtimeNs": 1792343919768938550,
+              "uid": 501
+            },
+            "fullStreamSha256": "68f39206272329289d39927eb93ed24544b74aa539d51c3cfb2a91f112671329",
+            "fullStreamState": "COMPLETE_ACTUAL_CAPTURE",
+            "hashedPrefixBytes": 1822,
+            "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-D4-availability-root-authority-preparation-2/attempt/native.stdout",
+            "rawDescriptorClosed": true,
+            "receivedBytes": 1822,
+            "savedBytes": 1822,
+            "savedPrefixSha256": "68f39206272329289d39927eb93ed24544b74aa539d51c3cfb2a91f112671329",
+            "writeError": null
+          },
+          {
+            "actualEOF": true,
+            "closeError": null,
+            "fileIdentity": {
+              "bytes": 0,
+              "ctimeNs": 1792343919627459580,
+              "device": 16777232,
+              "inode": 95880396,
+              "mode": 33152,
+              "mtimeNs": 1792343919627459580,
+              "uid": 501
+            },
+            "fullStreamSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+            "fullStreamState": "COMPLETE_ACTUAL_CAPTURE",
+            "hashedPrefixBytes": 0,
+            "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-D4-availability-root-authority-preparation-2/attempt/native.stderr",
+            "rawDescriptorClosed": true,
+            "receivedBytes": 0,
+            "savedBytes": 0,
+            "savedPrefixSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+            "writeError": null
+          }
+        ],
+        "termRequested": false
+      }
+    ],
+    "clockDomainVerified": false,
+    "elapsedSeconds": 0.7659040000289679,
+    "event": "D4-root-availability-capture",
+    "failure": null,
+    "nativeInvocations": 1,
+    "productReleased": false,
+    "reason": "final-as-of-capture-snapshot",
+    "requiresActualRootTerminalAndFreshAllRecordedAbsence": true,
+    "syntheticReleased": false
+  },
+  "callerJournalRecords": 13,
+  "callerTerminal": {
+    "availabilityAccepted": false,
+    "callerPgid": 29106,
+    "callerPid": 29106,
+    "captures": [
+      {
+        "completeCapture": true,
+        "createdAtSeconds": 0.2706261249259114,
+        "creationPGIDBasis": "direct Popen start_new_session",
+        "parentPid": 29106,
+        "pgid": 29107,
+        "pid": 29107,
+        "rawExitIfObserved": 0,
+        "role": "guard",
+        "streams": [
+          {
+            "actualEOF": true,
+            "closeError": null,
+            "fileIdentity": {
+              "bytes": 0,
+              "ctimeNs": 1792343919280788694,
+              "device": 16777232,
+              "inode": 95880392,
+              "mode": 33152,
+              "mtimeNs": 1792343919280788694,
+              "uid": 501
+            },
+            "fullStreamSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+            "fullStreamState": "COMPLETE_ACTUAL_CAPTURE",
+            "hashedPrefixBytes": 0,
+            "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-D4-availability-root-authority-preparation-2/attempt/guard.stdout",
+            "rawDescriptorClosed": true,
+            "receivedBytes": 0,
+            "savedBytes": 0,
+            "savedPrefixSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+            "writeError": null
+          },
+          {
+            "actualEOF": true,
+            "closeError": null,
+            "fileIdentity": {
+              "bytes": 0,
+              "ctimeNs": 1792343919280838237,
+              "device": 16777232,
+              "inode": 95880393,
+              "mode": 33152,
+              "mtimeNs": 1792343919280838237,
+              "uid": 501
+            },
+            "fullStreamSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+            "fullStreamState": "COMPLETE_ACTUAL_CAPTURE",
+            "hashedPrefixBytes": 0,
+            "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-D4-availability-root-authority-preparation-2/attempt/guard.stderr",
+            "rawDescriptorClosed": true,
+            "receivedBytes": 0,
+            "savedBytes": 0,
+            "savedPrefixSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+            "writeError": null
+          }
+        ],
+        "termRequested": false
+      },
+      {
+        "completeCapture": true,
+        "createdAtSeconds": 0.617238708306104,
+        "creationPGIDBasis": "direct Popen start_new_session",
+        "parentPid": 29106,
+        "pgid": 29111,
+        "pid": 29111,
+        "rawExitIfObserved": 0,
+        "role": "native",
+        "streams": [
+          {
+            "actualEOF": true,
+            "closeError": null,
+            "fileIdentity": {
+              "bytes": 1822,
+              "ctimeNs": 1792343919768938550,
+              "device": 16777232,
+              "inode": 95880395,
+              "mode": 33152,
+              "mtimeNs": 1792343919768938550,
+              "uid": 501
+            },
+            "fullStreamSha256": "68f39206272329289d39927eb93ed24544b74aa539d51c3cfb2a91f112671329",
+            "fullStreamState": "COMPLETE_ACTUAL_CAPTURE",
+            "hashedPrefixBytes": 1822,
+            "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-D4-availability-root-authority-preparation-2/attempt/native.stdout",
+            "rawDescriptorClosed": true,
+            "receivedBytes": 1822,
+            "savedBytes": 1822,
+            "savedPrefixSha256": "68f39206272329289d39927eb93ed24544b74aa539d51c3cfb2a91f112671329",
+            "writeError": null
+          },
+          {
+            "actualEOF": true,
+            "closeError": null,
+            "fileIdentity": {
+              "bytes": 0,
+              "ctimeNs": 1792343919627459580,
+              "device": 16777232,
+              "inode": 95880396,
+              "mode": 33152,
+              "mtimeNs": 1792343919627459580,
+              "uid": 501
+            },
+            "fullStreamSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+            "fullStreamState": "COMPLETE_ACTUAL_CAPTURE",
+            "hashedPrefixBytes": 0,
+            "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-D4-availability-root-authority-preparation-2/attempt/native.stderr",
+            "rawDescriptorClosed": true,
+            "receivedBytes": 0,
+            "savedBytes": 0,
+            "savedPrefixSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+            "writeError": null
+          }
+        ],
+        "termRequested": false
+      }
+    ],
+    "clockDomainVerified": false,
+    "elapsedSeconds": 0.7660037083551288,
+    "event": "D4-root-availability-capture",
+    "failure": null,
+    "nativeInvocations": 1,
+    "normalCaptureCandidate": true,
+    "productReleased": false,
+    "reason": "root-terminal-provisional",
+    "requiresActualRootTerminalAndFreshAllRecordedAbsence": true,
+    "syntheticReleased": false,
+    "wholeCallerTerminalStillRequiresRootReceipt": true
+  },
+  "fullStreamCompletenessDerivedOnlyFromConjunctiveNormalTerminal": true,
+  "nativeStderrBytes": 0,
+  "nativeStdoutBytes": 1822,
+  "nativeStdoutSha256": "68f39206272329289d39927eb93ed24544b74aa539d51c3cfb2a91f112671329",
+  "noJournalFailureOrPartialTail": true,
+  "noNativeOrOwnerFailureFiles": true,
+  "noReceivedSavedHashedMismatch": true,
+  "originalNativeStdoutExactlyOwnerThenLimiter": true,
+  "originalOwnerPrefixesKeepFullUnknown": true,
+  "ownerTerminalFileEqualsOriginalStdoutObject": true,
+  "peerAssessments": [
+    {
+      "allActualSavedPrefixesRehashed": true,
+      "bothEOF": true,
+      "fullRawSha256": "e9d82cdc546ada7d8041fafc20bff6357ae242fd77b56605f05c29de06b0fdb2",
+      "journalRows": 8,
+      "noForceBoundaryCoverage": true,
+      "pid": 29113,
+      "rawExit": 0,
+      "role": "term"
+    },
+    {
+      "allActualSavedPrefixesRehashed": true,
+      "bothEOF": true,
+      "fullRawSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "journalRows": 7,
+      "noForceBoundaryCoverage": true,
+      "pid": 29114,
+      "rawExit": -9,
+      "role": "kill"
+    }
+  ]
+}

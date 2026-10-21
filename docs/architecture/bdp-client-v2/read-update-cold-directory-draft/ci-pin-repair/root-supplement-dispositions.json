@@ -1,0 +1,25 @@
+{
+  "acceptedAt": "2026-10-16T01:16:00.839654+00:00",
+  "baseCouncil": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/read-update-cold-directory-draft/root-final-council.json",
+  "supplementOutput": "dd0d7c3fccbbb8cdfd4f917b8d373b95e9edc59f8d1a08e3abcb2a48053f4536",
+  "nativeClosure": "5e2d5ae8202b102ff39726cfc93c187a65c4dc7b54bf78b46cd79ef83f395e3a",
+  "targetedTest": "84ab3080216ae60256305b131f2441185f7391727069023ce1446dc6652e219d",
+  "source": {
+    "apps/bdptest/src/read-update-matrix.test.ts": "b9a2fedbb8fc7c94b32b600553353e5aff4b7b2f53d05e919ba993be559e69f9",
+    "packages/conformance/matrices/read-update-v1.json": "80f74625b6074892b707365859572f8bc0b8c10478d36ac307370ef6027f5fc3",
+    "packages/conformance/src/cumulative-artifact.test.ts": "d3e8a462694174cf34db94700df51f3de6943aa1072dbf4bd04de7560db9b523",
+    "packages/conformance/src/profile-contract-plan.test.ts": "8d649bf6f88b6faeafd7b629d9bb541dab7e818e00818e577de41dd0700f70a4",
+    "packages/conformance/src/read-update-artifact-set.test.ts": "9d337a232a0f2311aff2394a52b31e64c41e8516fcaa5d4a7a5bd7c2d36ecd47",
+    "packages/conformance/test-support/read-update-coverage-v1.json": "85b717f1817d8ea295d0a7c51f8914bdfb942d1786d414924d3d5f80be7cd10a"
+  },
+  "dispositions": {
+    "F1-F3": "Correct current-manifest digest; historical reconstruction and continuation pins preserved. Independently checked hashes and exact patch.",
+    "F4": "Entire affected callback actually passed in bounded root test,1.136s. Failed CI remains failed.",
+    "F5": "Optional explanatory comment deferred; no functional defect.",
+    "F6": "Supplied-context limitation preserved; root independently verified exact files/diff.",
+    "F7": "Original installed/council evidence remains bb attribution; repair CPU only."
+  },
+  "commitAndPushAccepted": true,
+  "mergeAccepted": false,
+  "requires": "new exact-head green CI and actual merge verification"
+}

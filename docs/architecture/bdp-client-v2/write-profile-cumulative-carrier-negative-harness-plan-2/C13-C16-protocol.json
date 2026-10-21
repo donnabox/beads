@@ -1,0 +1,62 @@
+{
+  "state": "Finite prospective protocol only",
+  "registry": "Immediate direct handle/PID/setsidPGID/birth/parent/run role; exact creation and mutation ACK records before IO; no arbitrary command or unsafe historical signals.",
+  "C13": [
+    {
+      "variant": "EAGAIN-final-suffix",
+      "sequence": [
+        "Probe child writes complete-row prefix while holding stdout open",
+        "Real read yields EAGAIN; record no EOF and no observe/quiet/reap/census-use event",
+        "ACK releases exact final row suffix and closes BOTH streams, then actual raw terminal",
+        "Only complete original bytes parsed; target0 allowed only after original200ms and normal ownership closure"
+      ],
+      "oracle": "compare actual suffix/raw hashes and syscall/phase trace; timer alone never proves ordering"
+    },
+    {
+      "variant": "setup-io-after-handle",
+      "sequence": [
+        "Popen returns real current probe handle",
+        "handle/identity retained",
+        "fileno/set_nonblocking raises fixed ordinary error",
+        "target same-clock best-effort failure event current sequence and actual empty/partial prefix"
+      ],
+      "oracle": "current receipt matches actual created PID/PGID; no lost probe; raw1/failure remains"
+    },
+    {
+      "variant": "new-Popen-failure-after-complete",
+      "sequence": [
+        "One real complete census retained as lastComplete",
+        "Next acquisition fails before handle return",
+        "Current prefix empty/EOFfalse/exitnull/probe null while last complete remains exact"
+      ],
+      "oracle": "previous buffers/receipt never reassigned to null acquisition"
+    }
+  ],
+  "C15": [
+    {
+      "variants": [
+        "partial-read-EIO",
+        "post-EOF-poll-ValueError"
+      ],
+      "sequence": "Inject only after actual current received chunk, or BOTH actual EOF respectively; observed returncode may be null, never poll again to repair.",
+      "oracle": "censusIoFailurePrefix exact actual current received bytes/EOF/previous observed raw; fixed census-io only, no exception text."
+    },
+    {
+      "variant": "first-refusal-then-current-IO",
+      "sequence": "First probe yields retained failure prefix; later probe on same cleanup lifetime experiences current IO exception.",
+      "oracle": "BOTH historical failurePrefix and current censusIoFailurePrefix nonnull with distinct actual associations; first bytes unchanged, lastComplete separately exact; actual positive gate MUST refuse."
+    }
+  ],
+  "C16": {
+    "publication": "Native/root owner retain actual full or received-prefix bytes even when target publication cannot complete; no event reconstruction/EOF inference. No probe creation after target finish begins, measured by exact launch registry/trace.",
+    "safety": "Last owner/native timer remains intact. Real cleanup/root fresh all-recorded task/subject-probe PIDs and groups required; intentional target failed publication alone is never proof of absence.",
+    "actualNegativeMatch": "Only precise refusal/UNKNOWN semantics may match as synthetic control, never positive helper/product/availability approval.",
+    "requiredLatePublicationCoverage": {
+      "variant": "IO-publication-after-cutoff",
+      "cutoff": "actual finish loop subjectBegin+120 at run.py40, not work105 or census200ms",
+      "status": "BLOCKED_REQUIRED_UNMATCHABLE_IN_CURRENT_FAULT_DOMAIN",
+      "normalMatchPermitted": false,
+      "earlierVariants": "IO-publication-unavailable/partial can exercise actual early source error/prefix behavior if reached before normal deadline, NOT actual120 expiry. No surrogate coverage credit."
+    }
+  }
+}

@@ -1,0 +1,346 @@
+{
+  "status": "all19fresh-stages-passed",
+  "sourceIdentity": "bed43347256ca5a8b68883a42971a3c8e69a7f541e351d94e607f0ebc449a3b1",
+  "sourceFiles": 679,
+  "buildArtifactsRehashed": 476,
+  "consumerFilesRehashed": 870,
+  "consumerLinksRechecked": 17,
+  "allSampledPidsAbsent": 443,
+  "records": [
+    {
+      "stage": "typecheck",
+      "elapsedSeconds": 8.291459749918431,
+      "exitSha256": "8b078933827082e3856aaefde99fa0d02b7edddec0342bf36bf3ee26a3e4e37a",
+      "logSha256": "91d54ffbee73a3ac72294d090e58d77745f8b93edbf94b862807698273a6505a"
+    },
+    {
+      "stage": "format-check",
+      "elapsedSeconds": 5.710381917189807,
+      "exitSha256": "a39115ebf73c76584f492e8db9a135c654cb48860c4afae089c2d28988e4b2ed",
+      "logSha256": "ff37a61ca549abe62341448332e3b9235f9c4043c176d39ce99e2abb7eaad10e"
+    },
+    {
+      "stage": "lint",
+      "elapsedSeconds": 5.954279915895313,
+      "exitSha256": "cd5aa314e9598f070d5c9bc0d3754bc8c983e386e10f744426c11d85d90e0f66",
+      "logSha256": "273c91fb1ee462863710ef511dc87bf731de264aa6fb2fd0051e174079ebeae4"
+    },
+    {
+      "stage": "fresh-build",
+      "elapsedSeconds": 7.496075541712344,
+      "exitSha256": "c3133073765e2e343be770c67fc9fb905002a09b7cd4a92dc275a0736dd404c5",
+      "logSha256": "232dac5e840e45b3bb06e6e04249b5241f2e1b4f6c797a22c046d916302ac208"
+    },
+    {
+      "stage": "bind-fresh-build",
+      "elapsedSeconds": 13.361528458073735,
+      "exitSha256": "5572a229302b0cce2c6286b3efa198f36a0b947e4cdef5ca6839d3b24ab65ca5",
+      "logSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "stage": "focused-source",
+      "elapsedSeconds": 9.38302491698414,
+      "exitSha256": "d4f57158f4c7a139a8b92c19d7b2adabeae3e13c4c0d6f684a96aa159af18380",
+      "logSha256": "03263973497ef0badd2454afa456907b8a0e801b03030d4ab03f93c5cf1f716a"
+    },
+    {
+      "stage": "review-focused-source",
+      "elapsedSeconds": 12.850435374770314,
+      "exitSha256": "6059e8471045919a3e03122c9945bc53d582fd04f66331885d441b57d3c5f304",
+      "logSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "stage": "node-version",
+      "elapsedSeconds": 5.707317290827632,
+      "exitSha256": "e80f20f0eec9f1765143835cbbefca8f28d9395c2deb10b18a4b42b28d04e023",
+      "logSha256": "a8f8f7ba69d43285857a0ea34017ef8dadd3ba012404bb7dd188fc773cf63ee2"
+    },
+    {
+      "stage": "prepare-package-directory",
+      "elapsedSeconds": 12.721537999808788,
+      "exitSha256": "b2b244d71d3d67eaeda3efba914b3e4b99b2112fe2050bc801fdd7f60d55d61b",
+      "logSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "stage": "pack-protocol",
+      "elapsedSeconds": 6.289075874723494,
+      "exitSha256": "8e1254a67b487830f2651d056c8b1ca9bd737757b317c814b99c66542161caa9",
+      "logSha256": "1ba2a5900f4dbf9fb7adf29b2d61b2faf12b360e1adf358d0d048394840a16a0"
+    },
+    {
+      "stage": "pack-server",
+      "elapsedSeconds": 6.5261393752880394,
+      "exitSha256": "8a422086695b1351cf3ad20cb3ec050a5884e2423c5d1a45f6160358170a182f",
+      "logSha256": "0dfefb7a97bb654897a0b3130bde90d14b7016c7216134f4f94881655a8f0b4c"
+    },
+    {
+      "stage": "verify-archives",
+      "elapsedSeconds": 13.539011291693896,
+      "exitSha256": "d118b20751c610583d21d99063cfc894bfc1d7152f647f4a655e04557c284ae3",
+      "logSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "stage": "prepare-consumer",
+      "elapsedSeconds": 13.169690750073642,
+      "exitSha256": "db4f537f947abd09a7ee605428dae63f7acaad07e71451d6e8a52c03d14eb8ed",
+      "logSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "stage": "consumer-install",
+      "elapsedSeconds": 7.22372454078868,
+      "exitSha256": "12efb91874eb562137f8e8b90079bca3d84d5975c7034080975273ad059b781c",
+      "logSha256": "01ab6b363165666a7d7c5892925fea4a6dbf04de750c54602626afb70123ee88"
+    },
+    {
+      "stage": "verify-installed-consumer",
+      "elapsedSeconds": 13.46124141709879,
+      "exitSha256": "54e2ec2bd217165bd7d1b13f5da828f206063f455e3e0401ee9cc699c60031ae",
+      "logSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "stage": "event-restart-external",
+      "elapsedSeconds": 7.455400500446558,
+      "exitSha256": "fdd7b0586ead80083d2e0755a0d49a6e93f677df6cf5a3cc1158de369e332baf",
+      "logSha256": "983009a421c6767aa4f37c744fef7711ab694217b0a17b8e5ce9d69b4d794672"
+    },
+    {
+      "stage": "review-event-restart-external",
+      "elapsedSeconds": 12.587540625128895,
+      "exitSha256": "427c7ba59260f679276e33de15d318f1ae392016de7488fc2e3dbb94cdd9607c",
+      "logSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "stage": "scope-event-sse-opaque-external",
+      "elapsedSeconds": 9.406936374958605,
+      "exitSha256": "28d011039749d0b83678a8bb1f80eadb443f8c837f5551d806c333469f29b437",
+      "logSha256": "a635bdc03dcddfd770bf5116056767fb6b3fd5054e9f8ed18f40d0c7d76ce5bd"
+    },
+    {
+      "stage": "review-scope-event-sse-opaque-external",
+      "elapsedSeconds": 12.83280091593042,
+      "exitSha256": "182fb3105c3cfac14fe25d6afbbf2ee45cb9236fb0998fd971b31a3ca66b4cbe",
+      "logSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    }
+  ],
+  "installedObservations": [
+    {
+      "stage": "event-restart-external",
+      "observation": "private-event-restart-cursor",
+      "requests": 5,
+      "wire": [
+        {
+          "ordinal": 1,
+          "method": "POST",
+          "status": 200,
+          "bodyOctets": 913,
+          "headers": {
+            "content-type": "application/json",
+            "bdp-scope-epoch": "7e787ed7-e713-4001-b80b-97a3600a7aa3",
+            "bdp-authorization-view": "development-all-visible",
+            "bdp-scope-position": "pos-1",
+            "x-bdp-development": "non-attesting"
+          }
+        },
+        {
+          "ordinal": 2,
+          "method": "GET",
+          "status": 200,
+          "bodyOctets": 1116,
+          "headers": {
+            "content-type": "application/json",
+            "bdp-scope-epoch": "7e787ed7-e713-4001-b80b-97a3600a7aa3",
+            "bdp-authorization-view": "development-all-visible",
+            "bdp-scope-position": "pos-1",
+            "x-bdp-development": "non-attesting"
+          }
+        },
+        {
+          "ordinal": 3,
+          "method": "GET",
+          "status": 200,
+          "bodyOctets": 595,
+          "headers": {
+            "content-type": "application/json",
+            "bdp-scope-epoch": "7e787ed7-e713-4001-b80b-97a3600a7aa3",
+            "bdp-authorization-view": "development-all-visible",
+            "bdp-scope-position": "pos-1",
+            "x-bdp-development": "non-attesting"
+          }
+        },
+        {
+          "ordinal": 5,
+          "method": "GET",
+          "status": 400,
+          "bodyOctets": 118,
+          "headers": {
+            "content-type": "application/problem+json",
+            "bdp-scope-epoch": "7e787ed7-e713-4001-b80b-97a3600a7aa3",
+            "bdp-authorization-view": "development-all-visible",
+            "bdp-scope-position": "pos-1",
+            "x-bdp-development": "non-attesting"
+          }
+        }
+      ],
+      "sseStatus": 200,
+      "sseFrames": 1,
+      "sseDrained": true,
+      "streamAtReportDestroyed": true,
+      "liveBeforeClose": null,
+      "sessions": [
+        {
+          "ordinal": 1,
+          "create": true,
+          "state": "owned",
+          "pid": 36160,
+          "exit": {
+            "code": 0,
+            "signal": null
+          },
+          "closed": true,
+          "stopUnknown": false
+        },
+        {
+          "ordinal": 2,
+          "create": false,
+          "state": "owned",
+          "pid": 36164,
+          "exit": {
+            "code": 0,
+            "signal": null
+          },
+          "closed": true,
+          "stopUnknown": false
+        }
+      ],
+      "directoryRemoved": true,
+      "pendingOperationsAtReport": 0,
+      "payloadDigest": "0e02c5d0524f5aa504172c14abd5b9ac3bae9bf8a38f0c6c9b378269b8d0f278",
+      "claimEligible": false
+    },
+    {
+      "stage": "scope-event-sse-opaque-external",
+      "observation": "private-installed-scope-event-sse-opaque-minimum",
+      "requests": 6,
+      "wire": [
+        {
+          "ordinal": 1,
+          "method": "POST",
+          "status": 200,
+          "bodyOctets": 681,
+          "headers": {
+            "content-type": "application/json",
+            "content-length": "681",
+            "cache-control": "private, no-store",
+            "bdp-scope-epoch": "6dbe72bb-9f71-429e-b1a5-2c456b9a28b4",
+            "bdp-authorization-view": "development-all-visible",
+            "bdp-scope-position": "pos-1",
+            "x-bdp-development": "non-attesting"
+          }
+        },
+        {
+          "ordinal": 2,
+          "method": "GET",
+          "status": 200,
+          "bodyOctets": 595,
+          "headers": {
+            "content-type": "application/json",
+            "content-length": "595",
+            "cache-control": "private, no-store",
+            "bdp-scope-epoch": "6dbe72bb-9f71-429e-b1a5-2c456b9a28b4",
+            "bdp-authorization-view": "development-all-visible",
+            "bdp-scope-position": "pos-1",
+            "x-bdp-development": "non-attesting"
+          }
+        },
+        {
+          "ordinal": 3,
+          "method": "HEAD",
+          "status": 200,
+          "bodyOctets": 0,
+          "headers": {
+            "content-type": "text/event-stream",
+            "cache-control": "no-store, no-transform",
+            "bdp-scope-epoch": "6dbe72bb-9f71-429e-b1a5-2c456b9a28b4",
+            "bdp-authorization-view": "development-all-visible",
+            "bdp-scope-position": "pos-1",
+            "x-bdp-development": "non-attesting"
+          }
+        },
+        {
+          "ordinal": 4,
+          "method": "GET",
+          "status": 503,
+          "bodyOctets": 127,
+          "headers": {
+            "content-type": "application/problem+json",
+            "content-length": "127",
+            "cache-control": "private, no-store",
+            "retry-after": "1",
+            "bdp-scope-epoch": "6dbe72bb-9f71-429e-b1a5-2c456b9a28b4",
+            "bdp-authorization-view": "development-all-visible",
+            "bdp-scope-position": "pos-1",
+            "x-bdp-development": "non-attesting"
+          }
+        },
+        {
+          "ordinal": 5,
+          "method": "HEAD",
+          "status": 503,
+          "bodyOctets": 0,
+          "headers": {
+            "content-type": "application/problem+json",
+            "content-length": "127",
+            "cache-control": "private, no-store",
+            "retry-after": "1",
+            "bdp-scope-epoch": "6dbe72bb-9f71-429e-b1a5-2c456b9a28b4",
+            "bdp-authorization-view": "development-all-visible",
+            "bdp-scope-position": "pos-1",
+            "x-bdp-development": "non-attesting"
+          }
+        }
+      ],
+      "sseStatus": 200,
+      "sseFrames": 1,
+      "sseDrained": true,
+      "streamAtReportDestroyed": true,
+      "liveBeforeClose": {
+        "aborted": false,
+        "destroyed": false,
+        "elapsedMs": 3.0445420000000922
+      },
+      "sessions": [
+        {
+          "ordinal": 1,
+          "create": true,
+          "state": "owned",
+          "pid": 39883,
+          "exit": {
+            "code": 0,
+            "signal": null
+          },
+          "closeEvent": {
+            "code": 0,
+            "signal": null
+          },
+          "closed": true,
+          "stopUnknown": false
+        }
+      ],
+      "directoryRemoved": true,
+      "pendingOperationsAtReport": 0,
+      "payloadDigest": "0e02c5d0524f5aa504172c14abd5b9ac3bae9bf8a38f0c6c9b378269b8d0f278",
+      "claimEligible": false
+    }
+  ],
+  "bootstrap": "Only2original implementation prerequisite stages reused with originalsource identity; all19 later stages fresh.",
+  "requiredChecks": "Not executed by this worker; separate root release remains required.",
+  "lint": {
+    "warnings": 87,
+    "infos": 4
+  },
+  "limitations": [
+    "Historical witness records exit0 and closed true without a separate child closeEvent field; new witness records actual closeEvent0.",
+    "Finite bounded frame observations, no indefinite absence or socket-allocation census.",
+    "Private installed candidate only; claimEligible false."
+  ]
+}

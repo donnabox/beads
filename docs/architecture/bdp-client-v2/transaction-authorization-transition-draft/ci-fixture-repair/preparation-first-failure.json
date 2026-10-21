@@ -1,0 +1,7 @@
+{
+  "stage": "wrapper preparation AST parse",
+  "error": "Naive placeholder replacement changed m.COMMANDS_SHA attribute into a string literal; SyntaxError before saving runner. Subsequent wrapper command returned2 missingfile.",
+  "productExecuted": false,
+  "validationAttempts": 0,
+  "correction": "Use separate HASHES dictionary without text substitution."
+}

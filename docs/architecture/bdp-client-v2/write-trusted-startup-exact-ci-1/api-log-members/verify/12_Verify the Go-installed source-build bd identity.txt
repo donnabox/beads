@@ -1,0 +1,18 @@
+﻿2026-10-18T07:01:11.6571245Z ##[group]Run test "$(cd "$RUNNER_TEMP/bdp-tools" && ./bd --version)" = "bd version 1.0.5 (dev)"
+2026-10-18T07:01:11.6572000Z [36;1mtest "$(cd "$RUNNER_TEMP/bdp-tools" && ./bd --version)" = "bd version 1.0.5 (dev)"[0m
+2026-10-18T07:01:11.6572566Z [36;1m(cd "$RUNNER_TEMP/bdp-tools" && ./bd version --json) | node -e '[0m
+2026-10-18T07:01:11.6573504Z [36;1m  const { isDeepStrictEqual } = require("node:util");[0m
+2026-10-18T07:01:11.6574231Z [36;1m  let source = "";[0m
+2026-10-18T07:01:11.6574511Z [36;1m  process.stdin.setEncoding("utf8");[0m
+2026-10-18T07:01:11.6574904Z [36;1m  process.stdin.on("data", (chunk) => { source += chunk; });[0m
+2026-10-18T07:01:11.6575282Z [36;1m  process.stdin.on("end", () => {[0m
+2026-10-18T07:01:11.6575590Z [36;1m    const actual = JSON.parse(source);[0m
+2026-10-18T07:01:11.6575997Z [36;1m    const expected = { build: "dev", schema_version: 1, version: "1.0.5" };[0m
+2026-10-18T07:01:11.6576490Z [36;1m    if (!isDeepStrictEqual(actual, expected)) process.exit(1);[0m
+2026-10-18T07:01:11.6576880Z [36;1m  });[0m
+2026-10-18T07:01:11.6577072Z [36;1m'[0m
+2026-10-18T07:01:11.6639916Z shell: /usr/bin/bash -e {0}
+2026-10-18T07:01:11.6640175Z env:
+2026-10-18T07:01:11.6640438Z   PNPM_HOME: /home/runner/setup-pnpm/node_modules/.bin
+2026-10-18T07:01:11.6640768Z   GOTOOLCHAIN: local
+2026-10-18T07:01:11.6640986Z ##[endgroup]

@@ -1,0 +1,74 @@
+{
+  "head": "7660d3d743883bab558a6a1ec9f4bf31979a4d90",
+  "parent": "6c23cc6299cd4acf5e7ce19bc37c8ec83c42e003",
+  "clean": true,
+  "focusedStatic": {
+    "passed": 3,
+    "unselected": 207
+  },
+  "freshPacked": {
+    "passed": 1,
+    "unselected": 209,
+    "failed": 0,
+    "supervisorSeconds": 17.431998014450073
+  },
+  "genuineCohort": {
+    "authoredPassed": 54,
+    "whole": 33,
+    "uncovered": 96,
+    "timing": [
+      {
+        "id": "baseline",
+        "budgetRemainingMsAtStart": 89919.597916,
+        "elapsedMs": 14471.018958999999,
+        "remainingMs": 75528.981041,
+        "outcome": "pass"
+      },
+      {
+        "id": "reference-continuation",
+        "budgetRemainingMsAtStart": 75517.73675,
+        "elapsedMs": 16382.321084000001,
+        "remainingMs": 73617.678916,
+        "outcome": "pass"
+      }
+    ],
+    "configuration": {
+      "scope": "https://reference.invalid/acme/",
+      "profile": "read-update",
+      "history": false,
+      "sourceCommit": "7660d3d743883bab558a6a1ec9f4bf31979a4d90",
+      "installedPayloadDigest": "1b12629fe54c39c8f7864dbb13bdba16bcbe4298b0a5bd420fa19daaa4fb7ec2",
+      "installedContractsDigest": "48667497d6e13064316d0364cf8f49dfc247ab9189306985a357d7b558333dfe",
+      "policyDigest": "dbe8dbd5430f26e19e754d38167cd8084a32d702c695550e2ee0063dc2912430",
+      "authenticationDigest": "66941efc779f4f2431d65fdd5b2387b2af67bd7c1559e09dac032f82259ea16e",
+      "fixtureDigest": "f89932d68e3bf5867d79eb3de680af4bc67b761b3c3bce5da127f6ca75e27765",
+      "fixtureId": "reference-read-update-schema-v1",
+      "capabilities": [
+        "installed-read-update-http"
+      ]
+    },
+    "runtimeConfigurationIdentity": "1720b63b49a7be3299d4b2865de4db9fcbe47560f217a32eea6397db7ea54ca5",
+    "setDigest": "d149b39172167ffe80b87b19e9e52a3096a908ac80d7842812266d76009076b2",
+    "coverageDigest": "57dcd3ae173992c8c9b70e11cb37c73d179ee977a208d2a3cb02ec3a1d496c27",
+    "shards": [
+      {
+        "id": "baseline",
+        "manifestDigest": "c86b33535f25a1d117ce021a3bb70164f5635bdaee50758e3428c130ccc3227f",
+        "routeDigest": "3224c31c83988dc0606cb76ee1f4ba8e6394159bdf7daaccc301461316cc2477",
+        "cleanupComplete": true
+      },
+      {
+        "id": "reference-continuation",
+        "manifestDigest": "ab0eb34f3b815819c6f288ff6169aa1238f00ae395313761fee6bd919e994565",
+        "routeDigest": "272c31e6bdf474d3889042e3bc636f4f144b58ea1e87a8f8176c772a1a026110",
+        "cleanupComplete": true
+      }
+    ]
+  },
+  "claimEligible": false,
+  "remainingOwnedProcesses": [],
+  "caffeinateCleanup": {
+    "caffeinate": 50290,
+    "exit": -15
+  }
+}

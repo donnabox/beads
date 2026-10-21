@@ -1,0 +1,9 @@
+# CLOSED formatting validation successor
+
+Exactly six measured layout sites changed in two tests; production and677 other tracked files are unchanged. Source binding points to the frozen author formatting successor; selection/workload/report schemas remain byte-identical. run.py/audit.py/packages.py are byte-identical to the native-reviewed Scope SSE implementation. Gate delta uses the proven changefeed formatting-successor bootstrap resolver, limited to these two test files.
+
+Only workspace-install and bind-workspace-tools are inherited prerequisites. bootstrap-origins.json pins their actual start/exit/log/process records, exact original source identity,17 unchanged dependency inputs,11 reverified realpath/tool bytes, and explicit two-file old→new source mapping. They are not copied into this run directory or relabeled successor passes. Attempting either bootstrap stage is forbidden. Original typecheck pass and format-check failure remain historical and excluded from reuse.
+
+Logical order remains21 with two origin-resolved prerequisites and19 fresh stages: typecheck, format, lint, fresh build/bind before eight exact source cases/five report audits, then fresh package/consumer and separate historical5/new6 installed callbacks with immediate audits. All120s/TERM115/callback/cleanup bounds, source and installed schemas, live-frame controls and lifecycle limitations stay unchanged. Future build/lock/proof/inventory are absent/null. Gates are allfalse with no approved stages. Native/root closure and staged release precede any attempt; source formatting success is not claimed before a fresh actual check.
+
+Separate required checks will be rebound to this source and original bootstrap attribution in their own closed successor. No formatter, install, check, build, test, helper import, runtime, commit or push ran during this preparation. Original author/CODE/validation packets and failed evidence remain unchanged.

@@ -1,0 +1,85 @@
+Verified: plan hash `a0d494bc…544f0` matches; both `vickie-installed-profiles-replication` and the plan's own `vickie-replication-integration-validation` worktree are at `d907a1e1576c5795c17edb5f15528f47edfd7d6b`, clean. Read-only throughout — nothing written, built, or executed against the repo (one Node API property probe, detailed under A-note in "Verified clean").
+
+# Summary
+
+The plan is substantially accurate. **All 17 rows of the defaults table verify exactly against `d907`**, F3–F6/F10 are dispositioned correctly, and the canonical-Host design is genuinely minimal — an existing test already proves a configured canonical Scope works end-to-end, so the real delta is the one comparison at `transaction-runtime.ts:172`. Nine findings; two are authoring blockers.
+
+---
+
+# Authoring blockers (M1, must resolve before authoring)
+
+## A1 · `seams` is never captured — metadata eligibility can disagree with the behavior actually installed
+**Severity:** High. **Location:** plan phase 1 (line 29) + line 35; code `transaction-runtime.ts:92` (`seams` param), `:99` (`seams.receiptMaximumItems`), `:283-286`, `:291-293`, `:318` — every seam read after the listen await.
+**Impact:** Phase 1 specifies closed-world capture of `options` and is silent on `seams`. All seam consumption happens *post-await* from the live caller-owned object. A caller passing `{}` (eligible for metadata), then setting `seams.clock` or `seams.maintenanceIntervalMs` before the await at `:264` resolves, gets a runtime running on a test clock that still advertises qualifying `configurationMetadata` — exactly the indistinguishability line 35 exists to forbid. H1b binds on that metadata, so the falsehood propagates into the binding. Acceptance item 1 says "mutate … and options after call" and would not catch it.
+**Fix:** Extend phase 1's capture to `seams` under the same own-data/accessor/proxy/unknown-field rules; compute eligibility from that snapshot only; have `:283-293,:318` read the snapshot. Add to item 1: mutate the seams object after the call (adding `clock`, `maintenanceIntervalMs`, `receiptMaximumItems`) → both installed behavior and metadata presence reflect only captured seams.
+
+## A2 · Acceptance item 10 ("both smokes … pass") is unsatisfiable under the H1 plan's file ownership
+**Severity:** High. **Location:** plan line 15 + item 10 (line 96); `transaction-installed-harness-plan.md:102` (M1 edit list — no `scripts/`) vs `:104` (H1b owns "`scripts/smoke-executables.mjs` inventory/denial/packed invocation"); code `scripts/smoke-executables.mjs:345-351` (exact set-equality over the `dist/` listing read at `:131`).
+**Impact:** The dist inventory is an exact-equality assertion, so adding `transaction-runtime-configuration.ts` emits four new `dist/` entries and makes the smoke **fail** until the inventory is updated — mechanically forced, not discretionary. The H1 plan assigns that file to H1b and gates out-of-scope dependencies on root approval; this plan records root approval only for the `transaction-store.ts` seam and leaves the smoke edit open ("root may carry these"). Under strict ownership M1 cannot self-verify item 10 before freeze.
+**Fix:** Either get the smoke edit explicitly root-approved into M1's owned list, or state in item 10 that the inventory lines land at integration and M1's pre-freeze smoke is expected red with exactly those four entries named. Also correct the line-15 framing: the **dist-spelling denial is already automatic** via the `startsWith("transaction-")` filter at `:439-442`, and the bare spelling is already closed by the two-subpath `exports` map (`packages/server/package.json:11-19`). Only the inventory is load-bearing; the plan presents all three as equally required.
+
+---
+
+# Plan precision and test executability (M1)
+
+## A3 · Blanket seam suppression discards the one fixture that already has the qualifying shape
+**Severity:** Medium. **Location:** plan line 35 ("…or count/cadence overrides"), line 44; code `transaction-runtime.test.ts:55,61` — the `{pages:true, compiled:true}` row has explicit `stableScope` **and** compiled `artifacts`, disqualified only by `receiptMaximumItems: 2`; `transaction-http.test.ts:88` (passes `clock` always), `:637,:657` (no seams, stable Scope, but schema-free `types`).
+**Impact:** No existing fixture qualifies — every `startTransactionRuntime` call in the repo either supplies a seam or lacks compiled artifacts. The qualifying combination is therefore **never currently exercised**, and item 4's claim that "the existing HTTP suite provide behavioral regression witnesses" witnesses the *seamed* path only. Meanwhile `receiptMaximumItems`/`maximumOperations`/`maintenanceIntervalMs` are plain integers the tuple already hashes: overriding them yields a *different truthful* digest, not an indistinguishable one.
+**Fix:** Suppress on **function-valued** seams only (`clock`, `scheduler`, and `comparison`/`minimumReads` when they carry `now`/`wait` — `transaction-consistency.ts:79-83`, `transaction-comparison.ts:29,54`), and hash numeric seam values as effective configuration. That promotes `transaction-runtime.test.ts`'s `{pages:true,compiled:true}` row to a real qualifying witness instead of requiring a new child-process fixture. If the blanket rule is deliberate, item 4 must say the default path has *no* pre-existing behavioral witness and M1 must author one.
+
+## A4 · `rawMethod` structurally cannot express item 5's canonical control
+**Severity:** Medium. **Location:** plan item 5 (line 91); code `transaction-http.test.ts:737-770` — `rawMethod` derives the dial endpoint (`:744` `connect({host: url.hostname, port: Number(url.port)})`) and the `Host` header (`:767`) from the *same* URL.
+**Impact:** Canonical mode is exactly the case where those diverge (dial `127.0.0.1:<ephemeral>`, send `Host: canonical.test`), and `fetch` cannot set `Host`. Item 5 has no vehicle. The existing workarounds (`transaction-runtime.test.ts:105-106` `wire()`, `transaction-http.test.ts:639-647` `send()`) rebase onto `listenUrl` — the very behavior canonical mode replaces.
+**Fix:** Specify the helper change — an explicit `{dial, host, target}` triple — and enumerate the four Host cases: captured canonical host (accept), physical loopback host while in canonical mode (refuse), foreign host (refuse), canonical host while in listener mode (refuse). Worth adding that `transaction-http.test.ts:626-661` already proves canonical *Scope* works today (HTTPS scope, canonical receipt IDs, reopen across ports), so the canonical delta is only the `:172` comparison — that bounds the change usefully.
+
+## A5 · "Default-port variation" is unconfigurable by construction; the control is mis-specified
+**Severity:** Medium. **Location:** plan line 66 ("default URL port normalization follows the existing canonical URL parser. Test both cases") and item 5 ("default-port variation as applicable"); code `read-values.ts` `parseCanonicalHttpUrl` — `parsed.href !== value` → throw, which `parseCanonicalScope` builds on.
+**Impact:** `https://acme.test:443/` or `http://acme.test:80/` can never be *captured*: `new URL(v).href` drops the default port, so it differs from `value` and the parser refuses. An implementer following "test both cases" will write a configure-with-`:443` test, see it refused by URL canonicalization, and may book that as a Host-gate control it is not.
+**Fix:** Replace with the two reachable cases — (a) a nondefault port must appear in both Scope and Host; (b) a request sending `Host: acme.test:443` against a portless captured Scope is refused at `:172`. State that default-port Scope *configuration* is unreachable at `parseCanonicalHttpUrl`, not a Host-gate behavior.
+
+## A6 · `day` is dual-purpose; the proposed alias misnames one of its two sites
+**Severity:** Low-Medium. **Location:** plan line 14 and the "Receipt detail lifetime" row (line 52); code `transaction-store.ts:158` (`const day = 86400000`), `:1080` (`expiresAt = instant() + day`), `:251` (`time > 8640000000000000 - day` — the Date-range headroom that exists *because* of `:1080`).
+**Impact:** "Prefer exporting that existing binding under a descriptive private alias (`TRANSACTION_RECEIPT_DETAIL_MS`)" reads as renaming `day`, which would make `:251`'s overflow-margin check read as a retention concern and couple two readings under one name. The plan's own export-only constraint is in tension with getting a correctly-named seam.
+**Fix:** Keep `day` internal at both sites and add one additive line — `export const TRANSACTION_RECEIPT_DETAIL_MS = day;` — so the seam is genuinely export-only, both call sites keep their local reading, and M1 imports the alias. Say explicitly that no identifier at `:251`/`:1080` changes.
+
+## A7 · policyIdentity is *mutually determined* with authenticationIdentity, not merely "coupled"
+**Severity:** Low-Medium. **Location:** plan line 77 ("coupled; real independent variability is not promised") and item 3; code `transaction-store.ts:517-527` — `authorizationView` and `maximumEndpointMultiplicity: []` are compile-time constants (`:159-162`, `:518`); **no access-policy registry exists in `transaction-store.ts`** (zero matches for `createDevelopmentAccessPolicy`, unlike RU's `installed-reference-configuration.ts:122,169`); `canMutate` is enforced only at `transaction-http.ts:252,267,290`.
+**Impact:** With view and aggregate fixed by code, policyIdentity's only variable inputs are the same `{tokenDigest, principal, canMutate}` triples that determine authenticationIdentity. The two digests are bijectively determined by one input set — **no input moves one without the other.** Item 3's "authentication, policy and runtime identities change" is three dependent readings of a single fact and can read as stronger corroboration than it is.
+**Fix:** State plainly that policyIdentity carries no discrimination beyond authenticationIdentity at `d907`, and give the real reason to keep it — shape parity with RU plus a slot for a future policy registry. Reword item 3 to assert one permission fact with one primary witness (the allow/forbid pair at `:252,267`) plus digest-change assertions explicitly labeled dependent.
+
+## A8 · Phase 4 re-specifies a check the service already enforces
+**Severity:** Low. **Location:** plan phase 4 (line 32); code `transaction-service.ts:57-62` already throws `"receipt page maximum differs from installed owner"` when `advertisedLimits.page.maximumItems` or `pagination.maxPageItems` disagrees with `owner.readConfiguration().receiptMaximumItems`.
+**Impact:** A second error path for a condition already unreachable past service construction. The genuinely unchecked parts of phase 4 are the descriptor closure, `authorizationView`, and `maximumEndpointMultiplicity`.
+**Fix:** Credit `transaction-service.ts:57-62` and scope phase 4 to what is actually unchecked. Phase 4's "ordinary startup configuration entry" requirement is satisfiable as written — the accessor is `readConfiguration: () => enter(() => readConfiguration)` at `transaction-store.ts:1429`, not a diagnostic adapter.
+
+## A9 · Item 6's reopen test lands beside a pre-existing assumption it forbids
+**Severity:** Low. **Location:** plan item 6 ("No assumption that the OS must allocate a different port"); code `transaction-runtime.test.ts:140` — `if (pages) expect(second.ready.listenUrl).not.toBe(first.ready.listenUrl)` assumes the OS hands out a different ephemeral port after `SIGKILL`.
+**Impact:** The guidance is right, but M1's narrow extension lands in the same file and `it.each` body as an assertion that already makes the forbidden assumption; an author will reasonably copy the adjacent pattern.
+**Fix:** Name `:140` in item 6 as pre-existing and out of scope (or explicitly in scope, to be replaced by the two-live-listener control), so the new test does not inherit it.
+
+---
+
+# Not M1 — later H1b / profile gaps (confirmed still open at `d907`; correctly excluded)
+
+- **F1** — `http-executor.ts:57,443` still types and gates `profile: "read" | "read-update"`. Hard H1b gate; plan line 110 correctly disclaims it.
+- **F2** — recorder extension is still conditional in the H1 plan (`:104` "Extend only … if"); the prior review resolved it as required. Unchanged by M1.
+- **F7** — public-gate control at `runner.ts:2590-2600`; H1a-scoped, accepted at H1 plan line 127.
+- **F8** — collection `limit`/cursor decision must precede observations 1 and 3. H1b.
+- **F9 / F11** — packaging and exact-mode byte caps. H1b — **note F9 edits the same `scripts/smoke-executables.mjs` as A2**; that collision is the one real cross-lane coupling.
+- **S1 / retention** — no Snapshot or retention advertisement exists. Plan line 59 and H1 plan F13 both correctly decline to infer either from the internal `day` default.
+
+# Verified clean (no action)
+
+**Defaults table — all 17 rows exact at `d907`:** `TRANSACTION_RUNTIME_LIMITS` nine fields (`transaction-batch.ts:60-69`) = 32 / 256 / 32 / 262144 / 65536 / 65536 / 65536 / 524288 / 16; `transactionReceiptMaximum()`→32 (`transaction-store.ts:175`); `defaultItems = min(2,…)` (`:100`); selector 4096/32/256 (`:295`, `:298` — duplicated, as the plan says); cursor TTL 1000 (`:299`, `:305`); pagination 100 / 20 / 1048576 / 100000 / 64 / 3 / on-demand (`:306-312`); `randomBytes(24).toString("base64url")` (`:314`); maintenance `?? 1000` (`transaction-store.ts:242` — store-side, so "pass explicitly" is a real change, not a restatement); comparison `?? 1000` (`transaction-comparison.ts:38`); minimum `?? 1000` (`transaction-consistency.ts:90`); `TRANSACTION_HTTP_TARGET_BYTES = 8192` (`transaction-http.ts:58`); header `16*1024` and 10000/10000/10000/1000 (`:237`, `:252-255`); `127.0.0.1` (`:266`); Origin→forbidden (`:210-213`); default scheduler `createNodeLifecycleScheduler()` (`transaction-service.ts:63`).
+
+**Node readback is fully executable** — I probed `http.Server` for `maxHeaderSize`, `requestTimeout`, `headersTimeout`, `timeout`, `keepAliveTimeout`; all five are present, so "verify readback where Node exposes them" covers all five, not a subset. (Probe ran on the host's Node v26; repo pins 24.16.0 per `package.json:9` / `.nvmrc` — these five properties are stable across both. No repo code built or run.)
+
+**F3/F4 premises hold.** RU captures only `["token","principal"]` (`installed-reference-configuration.ts:110`), digests `{principal, tokenDigest}` (`:170-172`), rejects port < 1 (`:102`), and excludes port from the `identity` preimage — so "do not reuse RU capture unchanged" is right. Store `configurationIdentity` is the compatibility JSON (`transaction-store.ts:232-240` → `:519`) and `policyIdentity` is the literal `"development-all-visible"` (`:518`, `:520`); neither is 64-hex, and the distinct-name + no-forward rule is correct.
+
+**`canMutate` reaches all three required identities** — authenticationIdentity directly (line 76), policyIdentity directly (line 77), runtimeConfigurationIdentity transitively through both (line 78) — and dispatch uses the same captured values, matching `:194-201`. Subject to A7 on what the policy digest independently proves.
+
+**Secret handling is right.** `:110` holds `Buffer.from("Bearer "+token)`; line 73 correctly keeps it in an encapsulated authenticator and warns that freezing a record does not freeze a Buffer.
+
+**Four dist artifacts is correct** — `packages/server/tsconfig.json` excludes `src/**/*.test.ts`, so the new test file is not emitted.
+
+**The detach gap is real as described.** `options.directory` (`:277`), `options.create` (`:279`), and `types`/`contracts` (`:280-281`) are all read after the listen await; `options.port` (`:266`) and the compile (`:150`) are synchronous. Phase 1/3's "no caller-owned value reread after await" targets the right set — extend it to `seams` per A1. Line 21's citations (`:99-111`, `:121-122`, `:172`, `:237`, `:252-255`, `:271-274`, `:294-316`, `:338-365`) and line 25's decoder path (`apps/bdptest/test-support/installed-contract-identity.ts:3`) all check out.

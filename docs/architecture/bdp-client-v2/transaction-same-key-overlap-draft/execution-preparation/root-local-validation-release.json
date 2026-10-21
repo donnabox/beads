@@ -1,0 +1,39 @@
+{
+  "released": true,
+  "createdAt": "2026-10-15T19:50:18.443934+00:00",
+  "source": {
+    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-same-key-overlap-draft/landing/final-source.json",
+    "sha256": "f3e6fbef9e2a950a12dd34264bf91a1a7a27e9a30259ba1c7e796a89d415f522"
+  },
+  "buildBridge": {
+    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-same-key-overlap-draft/execution-preparation/root-build-bridge.json",
+    "sha256": "d82d6a94e17591e360b3e22f1500d4237de862c0f134b5327ba502ce583aea34"
+  },
+  "codeReviewState": {
+    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-same-key-overlap-draft/execution-preparation/local-code-review-state.json",
+    "sha256": "a50434567b5e723b6bfad3b8004c83204ab4c1d6e2a764247cafff792cdec18b"
+  },
+  "adapterAcceptance": {
+    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-same-key-overlap-draft/execution-preparation/root-adapter-acceptance.json",
+    "sha256": "b0ff07506ab084aeb3e526c7a1da351a9d679cda149d085201f42a05fee497ce"
+  },
+  "scope": "Sequential fresh archive and offline external consumer preparation. Original static results unchanged. Installed cohorts require provenance/consumer-lock and explicit later prefix release. Publication/merge remain closed.",
+  "gatePolicyDelta": "Replace package prerequisite named councilAcceptance with explicit local codeReviewState validationAllowed. Does not fabricate completed council; preserves prior gate.",
+  "approvedCommandIds": [
+    "setup",
+    "typecheck",
+    "build",
+    "format-check",
+    "lint",
+    "boundaries",
+    "read-seal",
+    "build-inventory",
+    "node-version",
+    "package-directory",
+    "pack-protocol",
+    "pack-server",
+    "verify-tar",
+    "prepare-consumer",
+    "consumer-install"
+  ]
+}

@@ -1,0 +1,67 @@
+## Scope of this review
+
+I reviewed the plan against the supplied excerpts only — I did not read the worktree, run anything, or touch the tree. Where a load-bearing claim is not decidable from the frozen source, I say so and name the one check that decides it.
+
+---
+
+## Findings
+
+### F1 — High (blocking). Three retained assertions cannot survive the owner change
+**Location:** `packages/server/src/transaction-events.test.ts:221`, `:283–285`, `:893–895`
+
+All three existing tests the plan commits to retaining assert the missing result with `toEqual({ kind: "missing" })`. `toEqual` compares own enumerable properties exactly, so a received `{ kind: "missing", context }` fails. These three excerpted tests are precisely the ones the change breaks, yet the plan states "Existing precedence/closed tests retain all assertions" and lists no amendment.
+
+**Smallest fix** — amend the three expectations in place (same declared file, no new cases, no behavior change):
+- `:221` → `toEqual({ kind: "missing", context: { scopeEpoch: config.scopeEpoch, authorizationView: config.authorizationView, scopePosition: "pos-2" } })`, adding one `const config = f.owner.readConfiguration();` line. Position is `pos-2` there: two `f.run` commits (`:213`, `:216`), and `:291` pins baseline 0 / +1 per run.
+- `:283` → same shape with `scopePosition: "pos-1"`, reusing the `config` already bound at `:277`.
+- `:893` → `toEqual({ kind: "missing", context: current.context })`; `current.context` is already in scope at `:889` and already used at `:897`.
+
+**Also required by this finding:** sweep for `kind: "missing"` shape assertions and for exact-header/exact-problem assertions on the Event 404 across the whole repo, not just the three excerpted sites. Any such assertion living outside `transaction-events.test.ts` makes the declared three-file set insufficient, and that is a plan-level change, not an authoring detail.
+
+### F2 — High. The derivative run, as written, has no executable consumer
+**Location:** plan paragraph "One emitted derivative only…"
+
+The derivative is an emitted JS copy of the built graph with the context argument removed from the two HTTP missing calls, and the plan says "prove test `../dist` runtime resolves derivative" — only the installed `apps/bdptest` case imports `../dist`. But the same paragraph says "Run only new HTTP case once" and "No installed mutant", and forbids building a TS mutant. A `packages/server/src` Vitest case resolves TypeScript sources, so it cannot observe an emitted-only derivative. As specified, the one declared mutant run is unobservable.
+
+**Smallest fix:** relabel the consumer — run the **installed** case against the derivative `dist`, expecting exactly its 8 named tuple failures, and change "No installed mutant/retry" to "no src-level mutant, no retry". No count changes: 3 listeners (src HTTP + installed + installed mutant) and 33 max HTTP (11×3) already fit this reading, as does "control 1".
+
+### F3 — Medium. "Service inference needs no source change" is undecidable from the supplied source and may force a fourth file
+**Location:** `transaction-http.ts:492`, `:505` (the `service` parameter's type is not excerpted); `transaction-service.ts:390–421`
+
+The service *implementation* is inference-friendly (no return annotations), but that only covers `openTransactionService`'s own output. `transaction-http.ts` must name a type for its `service` parameter. If that type is an explicit interface or alias rather than something derived (`ReturnType<typeof …>`), its `missing` member still lacks `context`, `observed.context` at `:498`/`:512` will not typecheck, and the fix lands outside the declared three-file set.
+
+**Smallest fix:** Read the declaration of the `service` parameter type (and any exported `Transaction*Service` type) before authoring. If explicit, add `readonly context: TransactionReadContext` to its missing variant and add that file to the plan's file set; if derived, record that in the plan so the claim is no longer bare.
+
+### F4 — Medium. The four Link tuples rest on unexcerpted URL admission
+**Location:** `transaction-store.ts:629–631`, `transaction-http.ts:486`; plan's `<Bead|Link>` axis
+
+`eventSource()` throws when `transactionEventRequest` rejects a URL, and at the HTTP layer a rejected URL falls out of the Event route entirely (`:486`), producing a 404 from a different path with no context headers. Neither `transactionEventRequest` nor the `identities`-table membership of `links/*` ids appears in the supplied source; every excerpted missing-source test uses `beads/missing`. If `links/<id>?view=events` is not admitted as a subject source, the two owner-level Link cases throw instead of returning missing, and 4 of the 8 named tuples fail against a *correct* build.
+
+**Smallest fix:** confirm `links/<id>?view=events` yields `request.source.subject` and that `createLink` writes an `identities` row. If not, replace the Link axis with a second admitted unknown subject form and rename the tuple labels to match.
+
+### F5 — Low. The nondisclosing 404 path gains a new fault mode, and `pos-0` is an unpinned precondition
+**Location:** `transaction-store.ts:1565`, `:1648`, `:590–599`
+
+Today the missing branch returns before `readContext()` is ever called. After the change, malformed/absent position metadata turns an unknown-source 404 into a throw — a real precedence shift on a nondisclosure path, which the plan's "preserve … fault/closed" does not acknowledge. The same coupling makes each owner case's first assertion (missing at `pos-0`, before any commit) depend on a fresh `create: true` store initializing `metadata("position")` to `"0"`; the nearest evidence in the excerpts (`:291`) is post-commit `pos-1`, not the initialized default.
+
+**Smallest fix:** one plan line accepting the fault reclassification, and keep the explicit pre-commit `pos-0` context assertion (already planned) so a non-`"0"` default fails loudly. No implementation change.
+
+### F6 — Low. The SSE Accept header is unstated, and the mutant oracle cannot catch the omission
+**Location:** plan's "Content-Type/Accept application/json" vs. `transaction-http.ts:491`
+
+`selectChangefeedMedia(request.headers.get("accept")) !== "sse"` is what routes to `service.events` vs. `service.beginEvents`. If the four SSE tuples inherit `Accept: application/json`, they silently exercise `readEvents` twice, `beginEventScan`'s missing branch goes unexercised at the HTTP layer, and the derivative still yields exactly 8 failures — the oracle is blind to the mix-up.
+
+**Smallest fix:** state Accept per request: `application/json` for seed / known-page / finite tuples, `text/event-stream` for the four SSE tuples (GET **and** HEAD) and for the anonymous 401 request.
+
+---
+
+## Verified, no action
+
+- **Precedence preserved.** Placing the read inside the existing `if (!eventSourceKnown(source))` branch keeps missing before minimum (`:1565` → `:1566`) and before reconnect (`:1648` → `:1649`/`:1652`); the success path retains its single `readContext()` (`:1567`, `:1650`). `readContext()` already returns a frozen object (`:594`), so "frozen context" needs no extra freeze.
+- **HTTP change is two arguments.** `transactionHttpProblem` already takes the optional observation and applies the three fields (`:107–118`); no signature or helper change.
+- **404 header expectations hold.** No `retry-after` (`problem():104` fires only on `after-delay`), no `www-authenticate` (`:102` only on `unauthenticated`).
+- **HEAD metadata.** Root's re-attribution is consistent: `read-http.ts:42–45` computes the GET-serialized length before stripping, `transaction-http.ts:620–624` applies it, and `deliver` (`:92`) will not overwrite it because `selected.body` is already `undefined`.
+- **Nondisclosure parity.** 401 precedes Event routing (`:389` vs `:480–518`), so the anonymous request correctly lacks context; `readContext()` is source-independent, so unknown and out-of-projection identities emit identical context — consistent with `bdp.md:5661–5668` and `:5827–5835`.
+- **Counts are internally consistent.** 8 source cases (3 retained + 4 owner + 1 HTTP), +1 control +1 installed = 10 executions; 11×3 = 33 HTTP; 3 listeners; 5 server + 1 installed = 6 new CI cases.
+- **Seed body length pins the absolute Type.** 152 B is exact only with `"type":"https://reference.invalid/acme/types/task"` (the relative `types/task` form is 112 B). Worth saying out loud in the plan so the author doesn't write the relative form.
+- **Informational:** 11 exchanges × 5 s exceeds the 45 s case aggregate, so per-exchange budgets cannot all be consumed; the aggregate is the binding constraint. Not a defect.

@@ -1,0 +1,45 @@
+{
+  "at": "2026-10-15T13:08:52.861107+00:00",
+  "decision": "accepted fresh installed receipt witness",
+  "head": "3968081f8231566908e69045424b067c3c36dc40",
+  "tree": "a597518b819941e3f579dd7838e247b010a072a1",
+  "evidence": {
+    "installed-preparation-successor/run/installed-provenance.json": {
+      "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-receipt-missing-context-draft/installed-preparation-successor/run/installed-provenance.json",
+      "sha256": "ef2aa520508b73400e03886b58c5a0fb2188d5b0062c38eb971f277a26aebeb5"
+    },
+    "installed-preparation-successor/run/installed-observation.json": {
+      "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-receipt-missing-context-draft/installed-preparation-successor/run/installed-observation.json",
+      "sha256": "fe69586fe1aea356593b44dd1a2935f86eebd8be9d306e88185e011b949e547f"
+    },
+    "installed-preparation-successor/run/installed-positive.json": {
+      "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-receipt-missing-context-draft/installed-preparation-successor/run/installed-positive.json",
+      "sha256": "38f7fd47535dca294cba06b7f03fe9bafb0539d29ca6e48dbe24f7b01375bf0a"
+    },
+    "installed-preparation-successor/run/installed-review.json": {
+      "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-receipt-missing-context-draft/installed-preparation-successor/run/installed-review.json",
+      "sha256": "dedb8a35e9c9180627be844f96f834b098f59fd11d4b1b4e6b9ecd576d7cc696"
+    },
+    "installed-preparation-successor/run/final-summary.json": {
+      "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-receipt-missing-context-draft/installed-preparation-successor/run/final-summary.json",
+      "sha256": "9f3b86cf23504ec2f0c35883d5bd28a52fc4deee6d80025f7beb532a62da9f6f"
+    },
+    "installed-preparation-successor/run/final-cleanup.json": {
+      "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-receipt-missing-context-draft/installed-preparation-successor/run/final-cleanup.json",
+      "sha256": "ad8eb3cf4c3e37c0966baacda5f469820b2928ffdccee51473a1307e317b343d"
+    },
+    "installed-preparation-successor/native-installed-audit.md": {
+      "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-receipt-missing-context-draft/installed-preparation-successor/native-installed-audit.md",
+      "sha256": "113d3ee2008d7e82edc79636f27e754c650ba6977b395a1b9b2714726b58b202"
+    },
+    "installed-preparation-successor/native-installed-audit.json": {
+      "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-receipt-missing-context-draft/installed-preparation-successor/native-installed-audit.json",
+      "sha256": "cfaa8118da4874d6edaac4e759585f2c4b22a157f37f0ea4e1852a3f75a8486a"
+    }
+  },
+  "rootVerification": "Read final report, actual safe14response observation, provenance and independent audit. Independently checked exact one pass, all statuses and current positions, child PID/store absence. Actual313archive members/8package graph verified independently by native audit. No source or build byte change; priorbuild attribution preserved.",
+  "actualHttp": 14,
+  "productChildren": 1,
+  "claimEligible": false,
+  "fullCiPending": true
+}

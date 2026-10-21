@@ -1,0 +1,172 @@
+--- validation-preparation/gate.py
++++ rebind-validation-preparation/gate.py
+@@ -1,10 +1,11 @@
+ """Closed exact conditional-branch gate. Root supplies actual identities and phase releases."""
+ from pathlib import Path
+ import hashlib,json,subprocess,os
+-P=Path(__file__).resolve().parent;D=P;L=P.parent.parent
++P=Path(__file__).resolve().parent;D=P;L=Path('/Users/dbox/repos/wt/vickie/bdp-integration-logs')
+ W=Path('/Users/dbox/repos/wt/vickie/vickie-transaction-conditional-reads');E=P/'run';GUARD=L/'guarded-action.py';COMMANDS=P/'commands.json'
+-COMMANDS_SHA='8c049f7e46a13c76824792dfed1d12dead70f666eb073e76949e7823d56fb070'
++COMMANDS_SHA='3f7424d0dfdc9bb05f12910763e4f57278eae7f23f1813abb0e2de8f3ffd25f0'
+ sha=lambda b:hashlib.sha256(b).hexdigest()
++def re_full_sha(s):return len(s)==40 and all(c in "0123456789abcdef" for c in s)
+ def require(ok,message):
+  if not ok:raise RuntimeError(message)
+ def git(*args):return subprocess.check_output(['git',*args],cwd=W,timeout=10)
+@@ -84,6 +85,9 @@
+   require(a.get('sourceValidationAuthorized') is True and a.get('sourceCouncilAccepted') is True,'Diagnostic source authorization/council absent')
+  else:
+   require(g['councilAccepted'] is True,'Full council still pending for control/package/installed')
++ require(a.get('ordinaryIntegrationAccepted') is True and a.get('servingSuccessorExactHeadGreenCI') is True and a.get('servingCouncilDisposed') is True,'Reviewed serving successor integration not accepted')
++ serving=g.get('servingSuccessorCommit');require(isinstance(serving,str) and re_full_sha(serving),'Actual serving successor missing')
++ git('merge-base','--is-ancestor',serving,g['finalHead'])
+  source=source_hashes()
+  for prior in order[:order.index(name)]:completed(prior)
+  require(spec['supervisorSeconds']==120 and spec['automaticRetries']==0,'Limits differ')
+@@ -105,7 +109,7 @@
+    spec['validatedBdpOverrides']={'BDP_TRANSACTIONAL_INSTALLED_ENTRY':str(entry),'BDP_TRANSACTIONAL_SOURCE_COMMIT':g['finalHead']}
+    report=Path(spec['observationPath']);require(report.is_absolute() and report.is_relative_to(E) and not report.exists(),'Fresh exclusive observation required')
+    for k,v in spec.get('reportOverrides',{}).items():
+-    require(k in ['BDP_TRANSACTIONAL_CONDITIONAL_OUTPUT','BDP_TRANSACTIONAL_OBSERVATION_OUTPUT','BDP_TRANSACTIONAL_CROSS_CARRIER_CONTROL_OUTPUT'] and Path(v).is_relative_to(E),'Unexpected report override')
++    require(k in ['BDP_TRANSACTIONAL_CONDITIONAL_OUTPUT','BDP_TRANSACTIONAL_OBSERVATION_OUTPUT','BDP_TRANSACTIONAL_CROSS_CARRIER_CONTROL_OUTPUT','BDP_TRANSACTIONAL_PRINCIPAL_CUMULATIVE_OUTPUT'] and Path(v).is_relative_to(E),'Unexpected report override')
+    spec['validatedBdpOverrides'].update(spec.get('reportOverrides',{}))
+  spec.setdefault('workload',{k:spec[k] for k in ['cases','http','expectedHTTP','maxHTTP','owners','listeners','directories','productChildren'] if k in spec})
+  return {**g,'sourceSha256':source,'sourceDiffSha256':source_patch_hash(),'preparationSha256':sha((P/'supervise.py').read_bytes())},spec
+--- validation-preparation/review-cohort.py
++++ rebind-validation-preparation/review-cohort.py
+@@ -2,6 +2,9 @@
+ import sys,runpy
+ from pathlib import Path
+ name=sys.argv[1]
++if name in ('principal-positive','principal-collapse'):
++    runpy.run_path(str(Path(__file__).with_name('review-existing.py')))
++    raise SystemExit(0)
+ if name in ('full-positive','cross-batch','cross-sequence'):
+     globals().update(runpy.run_path(str(Path(__file__).with_name('review-existing.py'))))
+ else:
+@@ -27,20 +30,31 @@
+         require(ready["payloadIdentity"]==p["payloadIdentity"] and ready["runtimeConfigurationIdentity"]==o["baseline"]["runtimeConfigurationIdentity"],"Session payload/runtime differs")
+         require(ready["authorityMode"]=="canonical" and ready["profile"]=="transactional" and ready["history"] is False and ready["claimEligible"] is False,"Session declaration differs")
+     require(r["claimEligible"] is False and r["profile"]=="transactional","False qualification")
+-    require(r["declarations"]["exactConfigurationDigest"]=="dba06191b37fd2deea15f876512321dae7695bdc792b7c02468b0b586b8954e4","Route configuration differs")
++    require(r["declarations"]["exactConfigurationDigest"]=="5a32a664575b83fe55ea3b73b617fc738aefffd56d83affdf66a61d7fd8100e5","Route configuration differs")
+ 
+ ledger=json.loads((P/'request-ledger.json').read_text());literals=ledger['requests']
+ control=name=='conditional-control';count=4 if control else 14
+ if name in ('full-positive','cross-batch','cross-sequence'):
+     count=14;control=False
+-row=next(x for x in r['scenarios'] if x['id']=='read.http.conditional-reads')
++row=next(x for x in r['scenarios'] if x['id']=='transactional.http.conditional-reads')
+ require(row['state']==('fail' if control else 'pass') and not row.get('prerequisiteFailure') and not row.get('cleanupError') and not row.get('actions'),'Conditional row state/lifecycle differs')
+ require(len(row['exchanges'])==count,'Conditional exact prefix differs')
+ supp=o['conditionalSupplemental']
+-require(set(supp)=={'mode','dispatches','responses','expectedExchanges','provenance'},'Conditional projection shape differs')
++require(set(supp)=={'mode','session','dispatches','responses','expectedExchanges','provenance'},'Conditional projection shape differs')
+ require(supp['mode']==('nonmatching-if-none-match' if control else 'positive') and supp['expectedExchanges']==count,'Conditional mode/count differs')
+ require(supp['provenance']=='authored credential handles and actual completed raw request fingerprints; safe response metadata and body digests; full report joined by action order; no wire credential attestation','Projection attribution differs')
+ require(len(supp['dispatches'])==len(supp['responses'])==count,'Missing actual dispatch/response')
++contract=json.loads((P/'conditional-report-contract.json').read_text())
++session=supp['session'];require(set(session)=={'scenario','reopen','sessionOrdinal'},'Conditional session fields differ')
++ordinal=session['sessionOrdinal'];require(type(ordinal) is int and ordinal>=0 and session['scenario']=='transactional.http.conditional-reads' and session['reopen'] is False,'Conditional session identity differs')
++require(ordinal<len(o['sessions']) and all(o['sessions'][ordinal].get(k)==v for k,v in session.items()),'Conditional actual session join differs')
++require(sum(x.get('scenario')=='transactional.http.conditional-reads' for x in o['sessions'])==1,'Conditional session duplicated')
++require(all(x.get('sessionOrdinal')==i for i,x in enumerate(o['sessions'])),'Actual session ordinal inventory differs')
++if name in ('full-positive','cross-batch','cross-sequence'):
++    parent=contract['sessionChecks']['full']['parentFirstPresentations']
++    require([x['scenario'] for x in o['sessions'] if x.get('reopen') is False]==parent+['transactional.http.conditional-reads'],'Parent first presentations/tail order differ')
++    require(ordinal==len(o['sessions'])-1 and all(x['scenario'] in parent for x in o['sessions'][:ordinal]),'Conditional not actual final session')
++else:require(ordinal==0 and len(o['sessions'])==1,'Selected conditional session differs')
+ allowed=set(json.loads((P/'conditional-report-contract.json').read_text())['responseHeaderAllowlist'])
+ failures=[];epoch=view=None
+ for i,(literal,dispatch,response,ex) in enumerate(zip(literals[:count],supp['dispatches'],supp['responses'],row['exchanges'],strict=True)):
+@@ -67,13 +81,17 @@
+     require([a['id'] for a in ex['assertions']]==literal['assertionIds'],'Complete conditional assertion inventory differs')
+     failures.extend(literal['id']+':'+a['id'] for a in ex['assertions'] if not a['passed'])
+ require(failures==(ledger['control']['expectedFailureIds'] if control else []),'Wrong genuine conditional failure inventory')
++initial=supp['responses'][1]['headers'].get('etag');require(isinstance(initial,str) and initial and initial!='"conditional-no-match"','Initial validator/control precondition differs')
++for index in ([3] if control else [3,4]):require(supp['responses'][index]['headers'].get('etag')==initial,'Conditional earlier-validator equality differs')
++if control:require(supp['responses'][3]['bodyBytes']>0 and supp['responses'][3]['bodyDigest']==supp['responses'][1]['bodyDigest'],'Control genuine full current body differs')
+ if name.startswith('conditional-'):
+-    require(r['selectedScenarioIds']==['read.http.conditional-reads'] and len(r['scenarios'])==1 and len(o['sessions'])==1,'Wrong selected conditional execution')
++    require(r['selectedScenarioIds']==['transactional.http.conditional-reads'] and len(r['scenarios'])==1 and len(o['sessions'])==1,'Wrong selected conditional execution')
+     require(sum(x['requestBodyBytes'] for x in supp['responses'])==spec['workload']['requestBodyBytes'],'Conditional body workload differs')
+     manifest=json.loads((W/'packages/conformance/test-support/transactional/manifest-v1.json').read_text())
+     if control:
+-        row_source=next(x for x in manifest['scenarios'] if x['id']=='read.http.conditional-reads')
+-        header=row_source['actions'][3]['raw']['headerLines'][-1]
++        row_source=next(x for x in manifest['scenarios'] if x['id']=='transactional.http.conditional-reads')
++        control_action=next(a for a in row_source['actions'] if a['id']=='conditional-get')
++        header=next(h for h in control_action['raw']['headerLines'] if h['name']=='if-none-match')
+         require(header=={'name':'if-none-match','value':'*'},'Control source seam differs')
+         header['value']='"conditional-no-match"'
+         require(r['artifacts']['manifestDigest']==sha(json.dumps(manifest,separators=(',',':'),ensure_ascii=False).encode()),'Control derivative differs')
+--- validation-preparation/review-existing.py
++++ rebind-validation-preparation/review-existing.py
+@@ -20,7 +20,7 @@
+     require(ready["payloadIdentity"]==p["payloadIdentity"] and ready["runtimeConfigurationIdentity"]==o["baseline"]["runtimeConfigurationIdentity"],"Session payload/runtime differs")
+     require(ready["authorityMode"]=="canonical" and ready["profile"]=="transactional" and ready["history"] is False and ready["claimEligible"] is False,"Session declaration differs")
+ require(r["claimEligible"] is False and r["profile"]=="transactional","False qualification")
+-require(r["declarations"]["exactConfigurationDigest"]=="dba06191b37fd2deea15f876512321dae7695bdc792b7c02468b0b586b8954e4","Route configuration differs")
++require(r["declarations"]["exactConfigurationDigest"]=="5a32a664575b83fe55ea3b73b617fc738aefffd56d83affdf66a61d7fd8100e5","Route configuration differs")
+ principal="read-update.idempotency.principal-isolation"
+ member="transactional.sequence.member-transactions"
+ memberids=["s-sequence","s-first-receipt","s-first-facts","s-failed-receipt","s-failed-facts","s-last-receipt","s-last-facts","s-replay","s-current","s-events"]
+--- rebind-validation-preparation/gate.py
++++ rebind-validation-preparation/source-preflight/gate.py
+@@ -3,7 +3,7 @@
+ import hashlib,json,subprocess,os
+ P=Path(__file__).resolve().parent;D=P;L=Path('/Users/dbox/repos/wt/vickie/bdp-integration-logs')
+ W=Path('/Users/dbox/repos/wt/vickie/vickie-transaction-conditional-reads');E=P/'run';GUARD=L/'guarded-action.py';COMMANDS=P/'commands.json'
+-COMMANDS_SHA='3f7424d0dfdc9bb05f12910763e4f57278eae7f23f1813abb0e2de8f3ffd25f0'
++COMMANDS_SHA='1bdfdf0098730229117bcb9208fd46122819a0b8522cf297226c53d7a9756507'
+ sha=lambda b:hashlib.sha256(b).hexdigest()
+ def re_full_sha(s):return len(s)==40 and all(c in "0123456789abcdef" for c in s)
+ def require(ok,message):
+@@ -16,27 +16,16 @@
+ def input_files():return {p:sha((W/p).read_bytes()) for p in git('ls-files').decode().splitlines()}
+ def source_hashes():
+  g=gate();b=document(g,'sourceBinding')
+- require(b['head']==g['finalHead'] and b['tree']==g['finalTree'] and b['workspace']==str(W),'Conditional identity missing')
+- require(git('rev-parse','HEAD').decode().strip()==b['head'] and git('rev-parse','HEAD^{tree}').decode().strip()==b['tree'],'Actual Git identity changed')
+- require(not git('status','--porcelain').strip(),'Conditional source must be clean')
+- require(git('show','-s','--format=%P',b['head']).decode().split()==b['parents'],'Ordered conditional parents changed')
+- prepared_document=json.loads((P/'prepared-source.json').read_text())
+- require(isinstance(prepared_document['finalBase'],str) and len(prepared_document['finalBase'])==40 and b['diffBase']==prepared_document['finalBase'],'Actual final branch base pending/changed')
+- git('merge-base','--is-ancestor',prepared_document['reviewBase'],b['diffBase'])
+- git('merge-base','--is-ancestor',b['diffBase'],b['head'])
+- prepared=prepared_document['files']
+- require(len(prepared)==4 and all(isinstance(v,str) and len(v)==64 for v in prepared.values()),'Final4 source hashes pending')
+- require(set(git('diff','--name-only',b['diffBase'],b['head']).decode().splitlines())==set(prepared)==set(b['files']),'Final4 scope differs')
+- require({p:v['sha256'] for p,v in b['files'].items()}==prepared,'Final source differs from reviewed bytes')
++ require(git('rev-parse','HEAD').decode().strip()==b['head']==g['finalHead'],'Reviewed draft HEAD changed')
++ require(git('rev-parse','HEAD^{tree}').decode().strip()==b['tree']==g['finalTree'],'Reviewed draft base tree changed')
++ require(set(git('diff','--name-only','HEAD').decode().splitlines())==set(b['files']),'Reviewed draft scope changed')
++ require(git('status','--porcelain').decode()==b['status'],'Reviewed draft status changed')
+  actual={p:sha((W/p).read_bytes()) for p in b['files']}
+- require(actual=={p:v['sha256'] for p,v in b['files'].items()},'Conditional source hashes changed')
+- require(sha(git('diff','--binary',b['diffBase'],b['head']))==b['diffSha256'],'Conditional patch changed')
+- require(document(g,'inputBinding')==input_files(),'Tracked conditional inputs changed')
+- if (E/'installed-consumer-inventory.json').exists():
+-  require(json.loads((E/'installed-consumer-inventory.json').read_text())==consumer_inventory(),'Consumer graph changed')
++ require(actual=={p:v['sha256'] for p,v in b['files'].items()},'Reviewed draft bytes changed')
++ require(sha(git('diff','--binary','HEAD'))==b['diffSha256'],'Reviewed draft patch changed')
++ require(document(g,'inputBinding')==input_files(),'Tracked preflight input changed')
+  return actual
+-def source_patch_hash():
+- b=document(gate(),'sourceBinding');return sha(git('diff','--binary',b['diffBase'],b['head']))
++def source_patch_hash():return sha(git('diff','--binary','HEAD'))
+ def build_outputs():
+  files=[W/'LICENSE']
+  for name in ['protocol','server']:
+@@ -85,9 +74,7 @@
+   require(a.get('sourceValidationAuthorized') is True and a.get('sourceCouncilAccepted') is True,'Diagnostic source authorization/council absent')
+  else:
+   require(g['councilAccepted'] is True,'Full council still pending for control/package/installed')
+- require(a.get('ordinaryIntegrationAccepted') is True and a.get('servingSuccessorExactHeadGreenCI') is True and a.get('servingCouncilDisposed') is True,'Reviewed serving successor integration not accepted')
+- serving=g.get('servingSuccessorCommit');require(isinstance(serving,str) and re_full_sha(serving),'Actual serving successor missing')
+- git('merge-base','--is-ancestor',serving,g['finalHead'])
++ require(spec['phase']=='source' and a.get('reviewedDirtySourceOnly') is True,'Only reviewed dirty preflight permitted')
+  source=source_hashes()
+  for prior in order[:order.index(name)]:completed(prior)
+  require(spec['supervisorSeconds']==120 and spec['automaticRetries']==0,'Limits differ')

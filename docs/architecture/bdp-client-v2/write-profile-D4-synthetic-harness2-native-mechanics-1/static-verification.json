@@ -1,0 +1,101 @@
+{
+  "PerlEvaluation": false,
+  "actualInvocations": 0,
+  "additionalToolRealpathAndProtectedSourceChecks": 690,
+  "cases": 48,
+  "checks": 14388,
+  "currentSourcePaths": 679,
+  "deltaPairs": 12,
+  "errors": [],
+  "exactMirror": true,
+  "executionReleased": false,
+  "externalPins": 3170,
+  "hostVariants": 12,
+  "implementationExclusions": [
+    "closure.json",
+    "implementation-hashes.json",
+    "preparation-index.json"
+  ],
+  "implementationFiles": 1775,
+  "method": "Own bounded read/hash/JSON/AST/diff data only; no module import/eval or source/runtime/Git action",
+  "origins": 1719,
+  "ownedAfterSha256": "4f4f942f876222521765b9830a941f2b6e0dfa01a3a66979beaa1237c4638c85",
+  "ownedSourcePaths": 1,
+  "packetPhysical": 1778,
+  "passedControls": 0,
+  "predecessorPhysical": 1595,
+  "prospectiveInvocations": 60,
+  "protectedBaseSourcePaths": 678,
+  "pythonPrograms": {
+    "bootstrap.py": {
+      "ASTSha256": "3a50d0fa7c18927eff4b5c94058d2dc5d31a33342d98bd1af11729a805d3c24f",
+      "bytes": 1804,
+      "lines": 36,
+      "sha256": "ac3ea5619e2a2a72b6f471cf21e4e02bc1f9c56e6a07254d68c35edd63b4c5cc"
+    },
+    "gate_controls.py": {
+      "ASTSha256": "17bce09456999c15ccb64ba65150c6977c1d1873ff402d116c59d3223afbdf9f",
+      "bytes": 4985,
+      "lines": 50,
+      "sha256": "47e89d6e27c0ae5d1dc80aaeedd2199decdfff41a28dca97e8382348fefc6b8c"
+    },
+    "harness.py": {
+      "ASTSha256": "bf1fac859efd2014176483b4190a121563efa1831518b7fbc0b1dc1f99f4b9d6",
+      "bytes": 8971,
+      "lines": 107,
+      "sha256": "ad7a8c61a591fdd2baa1370e065c145861798ba9ea4eb1a53e10f01c8ce5910e"
+    },
+    "host_controls.py": {
+      "ASTSha256": "02962c74803f9871c424fdd65230e203720e892fb54cf83bd0e13df45ed7cdac",
+      "bytes": 9733,
+      "lines": 114,
+      "sha256": "3aa0f1cf48cf404cc78203bd66089aacb12bc66bc7357ea35d28e19dad3a522d"
+    },
+    "host_peer.py": {
+      "ASTSha256": "76507be2a1eeec5b923c7809bffbe8ea7c8f8c2489bba262b37e595979247085",
+      "bytes": 5185,
+      "lines": 80,
+      "sha256": "e586b1568c5b51e0e60386565922f35db98a8521ecd1b093e50d1646a6f12798"
+    },
+    "outer_host.py": {
+      "ASTSha256": "83e771482e878afb3b53a8177dd93b91089daebb972649a387dc16d0bfa6fa5f",
+      "bytes": 18317,
+      "lines": 273,
+      "sha256": "abfb5adcade832dc0105b2abd29ca167d7ef14e6f15558db37e4921d1a8832e0"
+    },
+    "outer_worker.py": {
+      "ASTSha256": "bc044bc9a95e63c99916e1b6be419f3ebfec6eb13df6313a244a8d681d4a9331",
+      "bytes": 4438,
+      "lines": 88,
+      "sha256": "bbf1845fe061a1be43752c4e9bd39eb0889ca026cc61c65a55feb5e5d4b98682"
+    },
+    "owned_spawn.py": {
+      "ASTSha256": "cbe0c5aff637ff976f3f20e763c8cad83390f38df8da328839cd8cf856fe47e4",
+      "bytes": 3508,
+      "lines": 60,
+      "sha256": "c4d73ba6d4d6d759b7e5dbeeb79986d2c8d6ccade163886b6a07b17cba02f3d8"
+    },
+    "report_controls.py": {
+      "ASTSha256": "6f0806fb52dec9d1a765933369b6abf29d6d139ad416cd4e193144b10a894fbf",
+      "bytes": 16265,
+      "lines": 133,
+      "sha256": "d814d9edfb0f393e3f5c46550e56b8f273f9445e106ebba0e3d84603c2f4b12b"
+    },
+    "scanner_controls.py": {
+      "ASTSha256": "e972094cdca5f77806553a1c9e98e5055b5b58b77aa87f30953f15789ad65797",
+      "bytes": 7316,
+      "lines": 121,
+      "sha256": "91f0baa79720e450a8c345ca69f366fab00db56c98503c4c1d826939c559f437"
+    },
+    "watchdog_controls.py": {
+      "ASTSha256": "65feaa715e5b916e580d32f65732b61bf55228acf4af0743a77e8a692d2ecae6",
+      "bytes": 14512,
+      "lines": 196,
+      "sha256": "8ad4abdbbc7a0973c99cf98a989e0130ca883288e6223595a157fa0bd67162ff"
+    }
+  },
+  "subjectImplementationFiles": 857,
+  "subjectIndexedFiles": 862,
+  "subjectPhysicalObserved": 863,
+  "totalChecks": 15078
+}

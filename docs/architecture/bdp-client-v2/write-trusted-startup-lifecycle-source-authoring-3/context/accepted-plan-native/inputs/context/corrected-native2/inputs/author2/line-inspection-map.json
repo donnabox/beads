@@ -1,0 +1,95 @@
+{
+  "apps/bdptest/src/reference-deployment-lifecycle-installed.test.ts": {
+    "sha256": "ddc6e8d12a26cd66f74f6644fcdbabfa4b1dc3ef1cf0c48cc9c7d4e7abff6e8e",
+    "lines": 1394,
+    "anchors": {
+      "const parentCleanup": [
+        180
+      ],
+      "const parentResults": [
+        195
+      ],
+      "f.parentOwnershipKnown()": [
+        204
+      ],
+      "parentOwnership: f.parentOwnership()": [
+        259
+      ],
+      "const parentOwners": [
+        395,
+        475,
+        479
+      ],
+      "async function withParentOwner": [
+        406
+      ],
+      "parentOwners.push": [
+        441
+      ],
+      "await limited(close()": [
+        450
+      ],
+      "const cleanupParents": [
+        464
+      ],
+      "const parentOwnershipKnown": [
+        475
+      ],
+      "\"probe\"": [
+        758,
+        774
+      ],
+      "\"initialize\"": [
+        827,
+        843
+      ],
+      "\"probe-resource-read\"": [
+        789
+      ],
+      "\"persisted-capture-edit\"": [
+        1253
+      ],
+      "\"persisted-capture-restore\"": [
+        1266
+      ],
+      "\"I20\"": [
+        1365
+      ],
+      "\"I21\"": [
+        1383
+      ]
+    }
+  },
+  "packages/server/src/reference-deployment-runtime.test.ts": {
+    "sha256": "b2aa17f82e13c7d13c9ef40650644ec11d777c6b633cc92236ac2c2d8137302e",
+    "lines": 968,
+    "anchors": {
+      "let sqlStart": [
+        91
+      ],
+      "const callbackSQLite": [
+        92
+      ],
+      "const previousUnresolvedSQLite": [
+        93
+      ],
+      "sqlStart = sql.rows.length": [
+        110
+      ],
+      "SQLite: callbackSQLite()": [
+        247,
+        277
+      ],
+      "previousUnresolvedSQLite:": [
+        248,
+        278
+      ],
+      "callbackSQLite().some": [
+        269
+      ],
+      "callbackSQLite().every": [
+        821
+      ]
+    }
+  }
+}

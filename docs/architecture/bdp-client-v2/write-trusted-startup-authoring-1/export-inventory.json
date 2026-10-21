@@ -1,0 +1,41 @@
+{
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "default": "./dist/index.js"
+    },
+    "./development": {
+      "types": "./dist/development.d.ts",
+      "default": "./dist/development.js"
+    },
+    "./reference-configuration": {
+      "types": "./dist/reference-deployment.d.ts",
+      "default": "./dist/reference-deployment.js"
+    }
+  },
+  "newPublicEntry": "./reference-configuration",
+  "publicRuntimeExports": [
+    "ReferenceDeploymentError",
+    "loadReferenceDeployment"
+  ],
+  "registryPackageExported": false,
+  "rootIndexChanged": false,
+  "newExpectedEmittedFiles": [
+    "reference-deployment.d.ts",
+    "reference-deployment.d.ts.map",
+    "reference-deployment.js",
+    "reference-deployment.js.map",
+    "reference-deployment-state.d.ts",
+    "reference-deployment-state.d.ts.map",
+    "reference-deployment-state.js",
+    "reference-deployment-state.js.map"
+  ],
+  "expectedNewEmittedCount": 8,
+  "actualBuildAndEmittedDeclarationInspection": "UNRESOLVED; authored installed smoke will inspect actual package output",
+  "forbiddenBareDeepSpecifiers": [
+    "@bdp/server/reference-deployment",
+    "@bdp/server/dist/reference-deployment.js",
+    "@bdp/server/reference-deployment-state",
+    "@bdp/server/dist/reference-deployment-state.js"
+  ]
+}

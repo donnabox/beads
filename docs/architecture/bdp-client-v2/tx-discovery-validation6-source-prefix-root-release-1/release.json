@@ -1,0 +1,34 @@
+{
+  "utc": "2026-10-18T11:40:35.932871+00:00",
+  "rootSourceAcceptance": {
+    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/tx-discovery-validation6-source-prefix-root-release-1/acceptance.json",
+    "sha256": "581e854e22e55230c3c4360933c35c6a9399b78c3174c92500c59ed9c37c0eed"
+  },
+  "approvedPrefix": [
+    "node-version",
+    "pnpm-version",
+    "workspace-install",
+    "bind-workspace-tools",
+    "typecheck",
+    "format-check",
+    "lint",
+    "fresh-build",
+    "bind-fresh-build",
+    "focused-source",
+    "audit-focused-source",
+    "legacy-changefeed-source",
+    "audit-legacy-changefeed-source",
+    "legacy-installed-contracts-source",
+    "audit-legacy-installed-contracts-source",
+    "schema-confinement-source",
+    "audit-schema-confinement-source",
+    "prepare-package-directory",
+    "pack-protocol",
+    "pack-server",
+    "verify-archives"
+  ],
+  "gateSha256": "50d0f614e8c80e845137dc9f8d15705b38e2b8bba412ea2ed71ddfae725b4504",
+  "durablePushRequiredBeforeNextStages": true,
+  "nextScope": "Fresh package directory, two actual package archives and full member audit ONLY; no consumer/installed callbacks.",
+  "noRetry": true
+}

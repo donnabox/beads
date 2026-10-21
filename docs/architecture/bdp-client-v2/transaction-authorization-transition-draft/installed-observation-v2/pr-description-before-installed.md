@@ -1,0 +1,5 @@
+Persist a private authorization-policy transition from all-visible, writable access to an empty, read-only view. The transition drains admitted mutations within a bounded administrative deadline, publishes a new durable view, and revokes old stream delivery leases. Current reads and receipt pages project the new policy; old-view checkpoints, Snapshots, and continuations fail with their existing view errors.
+
+The implementation preserves durable Event identity across policy changes and adds atomic migration/reopen handling. This is a Scope-wide private transition, not per-resource or per-principal ACL support. Public profile admission remains unchanged.
+
+Validation: static checks and 11 distinct source cases passed across the retained runs, including 22 HTTP exchanges, durable rollback/reopen, projected receipt schemas, HEAD behavior, stale handles, and queued-stream delivery. A coherent old-policy emitted control failed only its intended generation-and-lease assertion after seven requests. The clean integrated candidate also passed a fresh build. Fresh installed validation and exact-head CI remain pending in this draft description.

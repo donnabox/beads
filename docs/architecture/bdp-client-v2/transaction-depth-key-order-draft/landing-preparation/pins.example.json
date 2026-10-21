@@ -1,0 +1,101 @@
+{
+  "pr": null,
+  "run": null,
+  "job": null,
+  "base": "0d63cf59d447eca2e7ff8b2e0e6a5f31513b9a3a",
+  "head": "1b491d8b888627fcaa5f18908d4308b343397ca3",
+  "tree": "10810a8016a451e241ea974487681dcddd63c2e4",
+  "synthetic": null,
+  "rootAccepted": false,
+  "ordinaryChain": [
+    "0d63cf59d447eca2e7ff8b2e0e6a5f31513b9a3a",
+    "1b491d8b888627fcaa5f18908d4308b343397ca3"
+  ],
+  "files": {
+    "packages/server/src/transaction-batch.ts": "70d941d416979edd54e250d51318cfb7e5d4ddb315ea6131de7ca5f56e98a014",
+    "packages/server/src/transaction-store.ts": "fcd6882b29e538db45867c894c06dfbaa6ca588db0c2e403ef1b7abb14f6c706",
+    "packages/server/src/transaction-submission.ts": "4336e45d7b4f90eec685b70c7ba059219954bb20271aa2c942ee9e140f0743af",
+    "packages/server/src/transaction-set.test.ts": "fdd29d8e8064ddc12848946fabf8347e2939e963294912c139bc8d8f5617f2e8",
+    "packages/server/src/transaction-submission.test.ts": "86342bc18126965f380d0e09218481eceac4a8396afb4543dd7e11d464fd1976",
+    "packages/server/src/transaction-http.test.ts": "1c9cd7c7c85a5f6a58253f4178e40453a2443a218408eeba9abfddde4bf7948d",
+    "docs/design/transaction-implementation-progress.md": "4046f8603ae260e14b62cdc17c7084a0e47194a7bd44f0aad93666209a4ba555",
+    "apps/bdptest/src/transactional-depth-key-order-installed.test.ts": "48c6a84c84e470c7ce79f4d978bb09e2099daa5df4b4a6ef8629e1b7bf1b1700"
+  },
+  "evidence": {
+    "finalSourceBinding": {
+      "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-depth-key-order-draft/final-source.json",
+      "sha256": "b5a5ecfff73cfa349e4e3ff1b2c9014edb2a75a8f16065be9b9c265d804fb579"
+    },
+    "native": {
+      "path": null,
+      "sha256": null
+    },
+    "claudeExit": {
+      "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-depth-key-order-draft/claude-code-preparation/exit.json",
+      "sha256": "8cfd49fccec1f079b8f1ebafdb995453c0553845b43a780fac8de191e6c0351b"
+    },
+    "claudeStdout": {
+      "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-depth-key-order-draft/claude-code-preparation/stdout.txt",
+      "sha256": "d0ca412ec71bc03160af98fbaefcd7e426ce5e268cee1cf954c4e9b7a5566dd7"
+    },
+    "rootCouncil": {
+      "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-depth-key-order-draft/root-final-council.json",
+      "sha256": "8e45b8ba7ca913528e9b5d231dee6b7780fb9e4e8754786d7cfd51550ebc1485"
+    },
+    "installedAcceptance": {
+      "path": null,
+      "sha256": null
+    },
+    "controlAcceptance": {
+      "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-depth-key-order-draft/root-control-acceptance.json",
+      "sha256": "f05bbba3c7930711be29783d3dc125fbb2eef46203ed392229e369be9069bf0d"
+    },
+    "sourceAcceptance": {
+      "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-depth-key-order-draft/root-source-acceptance.json",
+      "sha256": "32a3df157395c2b4d84783c19f6338389ec7e621c3c310522e509f9379181e38"
+    },
+    "ciOutcome": {
+      "path": null,
+      "sha256": null
+    },
+    "rootLandingAcceptance": {
+      "path": null,
+      "sha256": null
+    }
+  },
+  "ciLogSha256": null,
+  "expectedJobSteps": [
+    "Set up job",
+    "Run actions/checkout@11d5960a326750d5838078e36cf38b85af677262",
+    "Run pnpm/action-setup@b906affcce14559ad1aafd4ab0e942779e9f58b1",
+    "Run actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020",
+    "Run actions/setup-go@924ae3a1cded613372ab5595356fb5720e22ba16",
+    "Run test \"$(node --version)\" = \"v24.16.0\"",
+    "Run test \"$(pnpm --version)\" = \"11.20.0\"",
+    "Run sudo apt-get update",
+    "Run sudo apt-get install --yes libicu-dev",
+    "Run mkdir -p \"$RUNNER_TEMP/bdp-tools\"",
+    "Run go install github.com/steveyegge/beads/cmd/bd@v1.0.5",
+    "Verify the Go-installed source-build bd identity",
+    "Run pnpm install --frozen-lockfile",
+    "Run pnpm format:check",
+    "Run pnpm lint",
+    "Run pnpm check:boundaries",
+    "Run pnpm typecheck",
+    "Run pnpm build",
+    "Run pnpm test",
+    "Run pnpm e2e:ready:preflight",
+    "Run pnpm smoke",
+    "Read-cohort evidence gate",
+    "Post Run actions/setup-go@924ae3a1cded613372ab5595356fb5720e22ba16",
+    "Post Run actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020",
+    "Post Run pnpm/action-setup@b906affcce14559ad1aafd4ab0e942779e9f58b1",
+    "Post Run actions/checkout@11d5960a326750d5838078e36cf38b85af677262",
+    "Complete job"
+  ],
+  "workflowSha256": "fd0a08da61f74abe19c8db16d879bfff85d8090643bf4da326d3e597ae129be3",
+  "draftSourceBinding": {
+    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-depth-key-order-draft/lint-repair/source-binding.json",
+    "sha256": "5fbe5c9b0c57f2c253fb16d114675ccb4929a9e4e18b21a1efbf1ca18385d778"
+  }
+}

@@ -1,0 +1,59 @@
+{
+  "static": [
+    {
+      "file": "packages/conformance/src/transactional-cumulative.test.ts",
+      "names": [
+        "binds the canonical cumulative TX selection and exact source digests without qualification",
+        "rejects noncanonical selections, History, wrong factories, retired and misprofiled rows",
+        "copies source bytes before binding and exposes all missing obligations without executing them",
+        "pins the inherited command-minimum manifest facts, read-header absence and all thirteen prior objects",
+        "preserves every original TX scenario and coverage object while adding one bounded partial cross-carrier row",
+        "pins the one-page matched-plus-updated witness without advertised-limit or other-outcome credit"
+      ]
+    },
+    {
+      "file": "apps/bdptest/src/transactional-matrix.test.ts",
+      "names": [
+        "pins the matching no-op installed route digest and fifteen-action ledger",
+        "pins deletion-safety derivative carriers, complete positives, and measured source bounds"
+      ]
+    }
+  ],
+  "staticCases": 8,
+  "cohorts": [
+    {
+      "id": "positive",
+      "title": "observes fifteen partial Transactional contracts through packed-capable actual installed HTTP",
+      "expectedHttp": 213,
+      "maxHttp": 213,
+      "children": 23
+    },
+    {
+      "id": "selected-member-control",
+      "title": "discriminates sequence member transactions against a successful middle delete",
+      "expectedHttp": 1,
+      "maxHttp": 10,
+      "children": 2
+    },
+    {
+      "id": "cross-batch",
+      "title": "discriminates retained cross-carrier evidence against batch-semantic-conflict",
+      "expectedHttp": 204,
+      "maxHttp": 204,
+      "children": 23
+    },
+    {
+      "id": "cross-sequence",
+      "title": "discriminates retained cross-carrier evidence against sequence-fresh-key",
+      "expectedHttp": 205,
+      "maxHttp": 205,
+      "children": 23
+    }
+  ],
+  "totals": {
+    "expectedHttp": 623,
+    "maxHttp": 632,
+    "children": 71
+  },
+  "executed": false
+}

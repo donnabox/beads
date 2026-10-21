@@ -1,0 +1,139 @@
+{
+  "afterSha256": "9b4c8f7b9e3b6f74c4ce8e94ddf311107486c7179582d31959c61b5d7f427162",
+  "beforeSha256": "815af1db1afa389933d756f82556470c2597e1c3eb341bff1a95c57274b2e787",
+  "bytes": 30194,
+  "eighteenTextChangesForwardAndReverseExact": true,
+  "genuineUnifiedAndNdiffExactBothDirections": true,
+  "lines": 332,
+  "literalChangeLabels": [
+    {
+      "label": "fixed helper namespace",
+      "occurrences": 2
+    },
+    {
+      "label": "fixed diagnostic output namespace",
+      "occurrences": 3
+    },
+    {
+      "label": "fixed external manifest path",
+      "occurrences": 1
+    },
+    {
+      "label": "accepted diagnostic implementation pin",
+      "occurrences": 2
+    },
+    {
+      "label": "exact singleton commands pin",
+      "occurrences": 2
+    },
+    {
+      "label": "exact fixed stage literal",
+      "occurrences": 7
+    },
+    {
+      "label": "manifest approved singleton",
+      "occurrences": 1
+    },
+    {
+      "label": "manifest diagnostic-only scope",
+      "occurrences": 1
+    },
+    {
+      "label": "exclusive first and only diagnostic parent",
+      "occurrences": 1
+    },
+    {
+      "label": "child failure and local capture-only predicate",
+      "occurrences": 1
+    },
+    {
+      "label": "manifest scope comment",
+      "occurrences": 1
+    },
+    {
+      "label": "diagnostic completion wording",
+      "occurrences": 1
+    },
+    {
+      "label": "no pipeline continuation wording",
+      "occurrences": 1
+    },
+    {
+      "label": "explicit receipt diagnostic-only scope: 'commandsSha256'",
+      "occurrences": 1
+    },
+    {
+      "label": "explicit receipt diagnostic-only scope: 'requiresIndependentOrdinaryToolObservations'",
+      "occurrences": 1
+    },
+    {
+      "label": "explicit receipt diagnostic-only scope: 'finalClockWitness'",
+      "occurrences": 1
+    },
+    {
+      "label": "explicit receipt diagnostic-only scope: 'laterStaticAuditAndGitExcludedFromRuntime'",
+      "occurrences": 1
+    },
+    {
+      "label": "fixed diagnostic purpose annotation",
+      "occurrences": 1
+    }
+  ],
+  "provisionalHashUnchanged": true,
+  "sectionFilesExtracted": false,
+  "sectionMetadataExactByteFraming": {
+    "framing": "UNCHANGED_LITERAL_A_B_C_TEXT_DELIMITERS",
+    "noAcquisitionAuthorized": true,
+    "sections": [
+      {
+        "bytes": 16141,
+        "endByteExclusive": 16141,
+        "executionAuthorized": false,
+        "name": "A",
+        "renderedCellCreated": false,
+        "sha256": "d98c4fff4655a907eb46adf5d153b468d943219b4755076f23c7a47680279d0b",
+        "startByte": 0,
+        "startLine": 1
+      },
+      {
+        "bytes": 6929,
+        "endByteExclusive": 25883,
+        "executionAuthorized": false,
+        "name": "B",
+        "renderedCellCreated": false,
+        "sha256": "28bbf0853275a32afe4dc3f269941d80809bbcc22f1756aa26c9083790159ea8",
+        "startByte": 18954,
+        "startLine": 218
+      },
+      {
+        "bytes": 2010,
+        "endByteExclusive": 29768,
+        "executionAuthorized": false,
+        "name": "C",
+        "renderedCellCreated": false,
+        "sha256": "7361d347affea2a965f44653fcc39c0698a16b8f7f21865ed6cdc495372838da",
+        "startByte": 27758,
+        "startLine": 315
+      }
+    ],
+    "wholeSha256": "9b4c8f7b9e3b6f74c4ce8e94ddf311107486c7179582d31959c61b5d7f427162"
+  },
+  "sixteenClockComparisonLinesByteExact": [
+    "assert time.monotonic()-ORIGIN<115",
+    "    assert time.monotonic() - ORIGIN < 115",
+    "    assert time.monotonic() - ORIGIN < 115",
+    "    while time.monotonic() - ORIGIN < 120:",
+    "        if time.monotonic() - ORIGIN >= 115:",
+    "                assert time.monotonic() - ORIGIN < 120",
+    "            assert time.monotonic()-ORIGIN<120",
+    "    if time.monotonic()-ORIGIN>=115: failure = failure or 'root-normal-deadline'",
+    "assert time.monotonic()-ORIGIN<115",
+    "    assert time.monotonic()-ORIGIN<115",
+    "    assert p.returncode==0 and time.monotonic()-ORIGIN<115",
+    "            assert time.monotonic()-ORIGIN<120",
+    "                    assert time.monotonic()-ORIGIN<120",
+    "        assert time.monotonic()-ORIGIN<120",
+    "    if failure is not None or not complete or time.monotonic()-ORIGIN>=115:raise SystemExit(1)",
+    "assert 0<=elapsed<115"
+  ]
+}

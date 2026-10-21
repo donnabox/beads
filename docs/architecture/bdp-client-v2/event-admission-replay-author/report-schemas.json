@@ -1,0 +1,287 @@
+{
+  "kind": "source-derived report contracts, not observations",
+  "new": {
+    "event-replay-minimum-owner": {
+      "occurrences": 3,
+      "fields": [
+        "observation",
+        "sourceKind",
+        "source",
+        "calls",
+        "baselineCalls",
+        "baselineGroupPreparations",
+        "seedCommits",
+        "rows",
+        "groupObservation"
+      ],
+      "expected": {
+        "sourceKind": [
+          "scope",
+          "bead",
+          "link"
+        ],
+        "calls": 22,
+        "baselineCalls": 2,
+        "baselineGroupPreparations": "unobserved",
+        "seedCommits": 1,
+        "rows": 20
+      },
+      "rowFields": [
+        "label",
+        "method",
+        "source",
+        "intent",
+        "after",
+        "minimum",
+        "outcome",
+        "reason",
+        "context (omitted on strict/malformed)",
+        "groupPrepareCalls"
+      ],
+      "rowOrder": [
+        "initial-opaque",
+        "issued-opaque",
+        "stale-opaque",
+        "both-foreign",
+        "foreign-view",
+        "issued-known",
+        "wrong-source",
+        "strict-after",
+        "malformed",
+        "missing"
+      ],
+      "rowMethods": [
+        "finite",
+        "sse"
+      ],
+      "groupPrepareOracle": "positive issued-known >0; other rows0; setup unobserved"
+    },
+    "event-replay-minimum-capture": {
+      "occurrences": 6,
+      "fields": [
+        "observation",
+        "label",
+        "serviceCalls",
+        "ownerAttempts",
+        "baselineCalls",
+        "waits",
+        "clockCalls",
+        "commits",
+        "ownerCloseCalls",
+        "attempts",
+        "closed",
+        "failureCount"
+      ],
+      "expected": {
+        "serviceCalls": 1,
+        "ownerAttempts": 2,
+        "baselineCalls": 1,
+        "waits": 1,
+        "clockCalls": 3,
+        "commits": 2,
+        "ownerCloseCalls": 1,
+        "closed": true,
+        "failureCount": 0
+      },
+      "attemptFields": [
+        "method",
+        "after",
+        "minimum",
+        "intent",
+        "outcome",
+        "context"
+      ],
+      "attemptOracle": "two TransactionMinimumUnproved; immutable supplied original tuple/after/current-event intent; pos-1 then pos-2 contexts"
+    },
+    "event-replay-minimum-drain": {
+      "occurrences": 2,
+      "fields": [
+        "observation",
+        "transport",
+        "serviceCalls",
+        "ownerAttempts",
+        "baselineCalls",
+        "waits",
+        "clockCalls",
+        "commits",
+        "ownerCloseCalls",
+        "attempts",
+        "postCloseProbes",
+        "synchronouslyUnsettled",
+        "closed",
+        "failureCount"
+      ],
+      "expected": {
+        "serviceCalls": 1,
+        "ownerAttempts": 1,
+        "baselineCalls": 1,
+        "waits": 1,
+        "clockCalls": 2,
+        "commits": 1,
+        "ownerCloseCalls": 1,
+        "postCloseProbes": 1,
+        "synchronouslyUnsettled": true,
+        "closed": true,
+        "failureCount": 0
+      },
+      "limit": "synchronouslyUnsettled is only immediate Promise settlement observation; actual successful close and returned owner refusal independently asserted"
+    },
+    "event-replay-minimum-http": {
+      "occurrences": 1,
+      "fields": [
+        "observation",
+        "requests",
+        "records",
+        "seedCommits",
+        "positives",
+        "elapsedMs",
+        "closed",
+        "directory",
+        "directoryRemoved",
+        "failureCount"
+      ],
+      "expected": {
+        "requests": 37,
+        "seedCommits": 1,
+        "positives": 2,
+        "closed": true,
+        "directoryRemoved": true,
+        "failureCount": 0
+      },
+      "records": "ordinal/method/target/status/bodyBytes/context; exact ordered dispatch table in workload",
+      "positiveFields": [
+        "target",
+        "ready",
+        "status",
+        "headers",
+        "framesBeforeClose",
+        "framesAfterDrain",
+        "liveBeforeClose",
+        "drained"
+      ],
+      "positiveOracle": "200/context/media; one source-bound Event each; live nonaborted/nondestroyed before close; same exact Event frames after drain",
+      "elapsedOracle": "cleanup-inclusive <4000ms; actual unknown until run"
+    },
+    "private-installed-event-admission-replay-minimum": {
+      "occurrences": 1,
+      "fields": [
+        "observation",
+        "attribution",
+        "installedProvenance",
+        "claimEligible",
+        "outcome",
+        "declaredSourceCommit",
+        "witnessSource",
+        "entryLiteral",
+        "entry",
+        "entrySha256",
+        "binding",
+        "node",
+        "seedBodySha256",
+        "seedBodyBytes",
+        "seedKey",
+        "deadlines",
+        "requests",
+        "completedFiniteResponses",
+        "localSensitivityControls",
+        "baselineEvents",
+        "sse",
+        "streamAtReport",
+        "sessions",
+        "pendingOperationsAtReport",
+        "directory",
+        "directoryRemoved",
+        "failures",
+        "diagnosticLimit",
+        "supervisorAcceptanceRequired"
+      ],
+      "expected": {
+        "claimEligible": false,
+        "outcome": "passed",
+        "requests": 10,
+        "completedFiniteResponses": 9,
+        "baselineEvents": 8,
+        "sessions": 1,
+        "pendingOperationsAtReport": 0,
+        "directoryRemoved": true,
+        "failures": [],
+        "localSensitivityControls": [
+          "frame-event-identity"
+        ]
+      },
+      "sseExpected": {
+        "requestOrdinal": 10,
+        "status": 200,
+        "framesBeforeClose": 1,
+        "completeObservedFrames": 1,
+        "liveBeforeClose": {
+          "aborted": false,
+          "destroyed": false
+        },
+        "drained": true
+      },
+      "sessionExpected": {
+        "ordinal": 1,
+        "create": true,
+        "state": "owned",
+        "exit": {
+          "code": 0,
+          "signal": null
+        },
+        "closeEvent": {
+          "code": 0,
+          "signal": null
+        },
+        "closed": true,
+        "stopUnknown": false
+      },
+      "attribution": "external-installed-candidate requires independent package/source/proof inventory; default development-local is never external evidence",
+      "terminalRawResponses": "ordinals5\u20139 include actual headers/body/wire digests, no Event frames and natural drained=true"
+    }
+  },
+  "legacy": [
+    {
+      "observation": "finite-event-minimum-http",
+      "calls": 32
+    },
+    {
+      "observation": "bead-event-minimum-http",
+      "calls": 37,
+      "status503": 18
+    },
+    {
+      "observation": "link-event-minimum-http",
+      "calls": 35,
+      "status503": 16,
+      "status500": 0
+    },
+    {
+      "observation": "scope-event-sse-minimum-http",
+      "requests": 31,
+      "statusCounts": {
+        "200": 6,
+        "503": 16,
+        "400": 3,
+        "404": 1,
+        "401": 1,
+        "304": 1,
+        "412": 1,
+        "409": 1,
+        "410": 1
+      }
+    }
+  ],
+  "historicalInstalled": {
+    "observation": "private-event-restart-cursor",
+    "requests": 5,
+    "sessions": 2,
+    "unchangedSourcePrefix": true
+  },
+  "limitations": [
+    "No runtime emitted yet",
+    "Recorder.close does not expose stored error; readiness, complete terminal body length/schema/no frames, positive live state and exact Event frame drain are explicit assertions",
+    "Pending promises are not a socket inventory",
+    "A\u2013C use existing ownerFixture afterEach close/removal; service close is explicitly observed in B/C before that historical idempotent cleanup",
+    "D own store removed only on clean runtime closure with no accumulated failures; installed unknown ownership preserves store"
+  ]
+}

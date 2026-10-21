@@ -1,0 +1,236 @@
+{
+  "status": "planned not observed",
+  "scope": "https://event-sse.invalid/acme/",
+  "configuration": {
+    "ownKeys": [
+      "scope",
+      "directory",
+      "create",
+      "credentials",
+      "artifacts"
+    ],
+    "create": true,
+    "credentials": "fresh cryptographic token, principal p, canMutate true; not persisted in evidence",
+    "artifacts": {
+      "descriptors": [
+        {
+          "retrievalUri": "https://event-sse.invalid/acme/types/task",
+          "utf8": "{\"id\":\"https://event-sse.invalid/acme/types/task\",\"name\":\"Task\",\"describes\":\"bead\",\"conformsTo\":[]}"
+        }
+      ],
+      "schemas": []
+    }
+  },
+  "artifactBytes": 99,
+  "artifactSha256": "e0e9f76993a80caf17a70549a05eec01e32dacded24fc067a5a2fe7a576fe8bf",
+  "cohorts": {
+    "visibility-handles": {
+      "http": 18,
+      "children": 1,
+      "owners": 1,
+      "directories": 1,
+      "listeners": 1,
+      "rows": [
+        [
+          1,
+          "POST",
+          "operations/batch",
+          200,
+          "seed32, key auth-transition-seed-32"
+        ],
+        [
+          2,
+          "POST",
+          "operations/batch",
+          200,
+          "seed1 b32, key auth-transition-seed-1"
+        ],
+        [
+          3,
+          "GET",
+          "beads/b00",
+          200,
+          "complete first seed Resource"
+        ],
+        [
+          4,
+          "GET",
+          "beads/?limit=2",
+          200,
+          "first two exact Resources plus actual next"
+        ],
+        [
+          5,
+          "GET",
+          "snapshot",
+          200,
+          "first32+actual Snapshot next/checkpoint"
+        ],
+        [
+          6,
+          "GET",
+          "events/",
+          200,
+          "first32 exact Events+actual next"
+        ],
+        [
+          7,
+          "GET",
+          "changes/?start=now",
+          200,
+          "live SSE; publish only after ready; server closes"
+        ],
+        [
+          8,
+          "GET",
+          "beads/b00",
+          404,
+          "resource-not-found/current context"
+        ],
+        [
+          9,
+          "GET",
+          "beads/?limit=2",
+          200,
+          "exact empty page/current context"
+        ],
+        [
+          10,
+          "GET",
+          "snapshot",
+          200,
+          "new empty Snapshot/current context"
+        ],
+        [
+          11,
+          "GET",
+          "<actual old Snapshot id>",
+          409,
+          "foreign-view"
+        ],
+        [
+          12,
+          "GET",
+          "<actual old Snapshot next>",
+          409,
+          "foreign-view"
+        ],
+        [
+          13,
+          "GET",
+          "<actual old collection next>",
+          409,
+          "foreign-view"
+        ],
+        [
+          14,
+          "GET",
+          "changes/?start=now",
+          409,
+          "actual Last-Event-ID checkpoint; no id frame"
+        ],
+        [
+          15,
+          "GET",
+          "events/?after=<actual final Event id>",
+          409,
+          "foreign-view"
+        ],
+        [
+          16,
+          "GET",
+          "<actual first receipt id>",
+          200,
+          "full withheld receipt; expiresAt absent"
+        ],
+        [
+          17,
+          "HEAD",
+          "<actual first receipt id>",
+          200,
+          "zero body octets; GET representation length/current context/private no-store/no validators"
+        ],
+        [
+          18,
+          "POST",
+          "operations/batch",
+          403,
+          "exact first seed replay/key; forbidden/current context"
+        ]
+      ]
+    },
+    "active-event": {
+      "http": 4,
+      "children": 1,
+      "owners": 1,
+      "directories": 1,
+      "listeners": 1,
+      "rows": [
+        [
+          1,
+          "POST",
+          "operations/batch",
+          200,
+          "seed a,b key auth-transition-event-seed"
+        ],
+        [
+          2,
+          "GET",
+          "events/",
+          200,
+          "two complete Events"
+        ],
+        [
+          3,
+          "GET",
+          "events/",
+          200,
+          "live SSE two complete Event frames; publish then server closure"
+        ],
+        [
+          4,
+          "GET",
+          "events/",
+          200,
+          "exact empty current page"
+        ]
+      ]
+    }
+  },
+  "totals": {
+    "expectedHTTP": 22,
+    "maximumHTTP": 22,
+    "children": 2,
+    "owners": 2,
+    "directories": 2,
+    "listeners": 2,
+    "administrativePublications": 2,
+    "reopens": 0,
+    "automaticRetries": 0
+  },
+  "bounds": {
+    "stageSeconds": 120,
+    "cohortWorkSeconds": 30,
+    "readySeconds": 10,
+    "childCloseSeconds": 10,
+    "requestMs": 5000,
+    "adminMs": 1000,
+    "streamClosureObservationMs": 1000,
+    "finiteDecodedBodyBytes": 32768,
+    "sseWireBytes": 2097152,
+    "sseHeaderBytes": 16384,
+    "childStdoutStderrBytes": 65536,
+    "finalSafeReportBytes": 1048576
+  },
+  "publicClaimEligible": false,
+  "installedAdaptations": {
+    "canonicalHost": "event-sse.invalid",
+    "cursorWindow": {
+      "measuredFrom": "immediately before issuance request4",
+      "dispatchRequest": 13,
+      "dispatchAndResponseMustBeBelowMs": 500,
+      "actualTTLms": 1000,
+      "otherwise": "nonpassing timing limitation; no expiry accepted or clock override"
+    }
+  }
+}

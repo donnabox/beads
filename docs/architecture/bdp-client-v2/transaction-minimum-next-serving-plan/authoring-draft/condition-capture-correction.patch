@@ -1,0 +1,136 @@
+--- before/packages/server/src/transaction-read.ts
++++ after/packages/server/src/transaction-read.ts
+@@ -57,6 +57,29 @@
+     default:
+       return false;
+   }
++}
++
++/** Capture route fields before any receiving signal callback can mutate the caller's
++ * request. Preserve rejected descriptors/prototypes for the authority's own
++ * receiving path; never invoke a getter while making this private snapshot. */
++export function captureTransactionReadRequest<O extends ReadRequest>(request: O): O {
++  if (request === null || typeof request !== "object" || isProxy(request)) return request;
++  return Object.freeze(
++    Object.create(Object.getPrototypeOf(request), Object.getOwnPropertyDescriptors(request)),
++  ) as O;
++}
++
++function dataOnlyReadRequest(request: ReadRequest): boolean {
++  if (request === null || typeof request !== "object" || isProxy(request) || Array.isArray(request))
++    return false;
++  const prototype = Object.getPrototypeOf(request);
++  return (
++    (prototype === Object.prototype || prototype === null) &&
++    Reflect.ownKeys(request).every((key) => {
++      const field = Object.getOwnPropertyDescriptor(request, key);
++      return typeof key === "string" && field !== undefined && "value" in field;
++    })
++  );
+ }
+ 
+ /** Classify only own data fields. Authority receiving still validates the full request. */
+@@ -268,20 +291,27 @@
+         facet = plane.readFor(principal);
+       return Object.freeze({
+         perform: (request, options) => {
+-          if (!isCurrentTransactionMinimumRead(request, owner.scope))
++          const capturedRequest = captureTransactionReadRequest(request);
++          if (!dataOnlyReadRequest(capturedRequest))
++            return observe(
++              facet.perform(capturedRequest, options).then((result) => checked(result)),
++            );
++          if (!isCurrentTransactionMinimumRead(capturedRequest, owner.scope))
+             return Promise.reject(new TypeError("minimum-read route outside supported subset"));
+-          const condition = minimumCondition(minimum, currentReadMinimumKind(request));
++          const condition = minimumCondition(minimum, currentReadMinimumKind(capturedRequest));
+           let captured: AuthorityReadDeliveryOptions | undefined;
+           try {
+             captured = captureTransactionReadDeliveryOptions(options);
+           } catch {
+             // Capture rejects only shapes the authority also rejects. Preserve
+             // its observed Promise and closed/reentrant receiving precedence.
+-            return observe(facet.perform(request, options).then((result) => checked(result)));
++            return observe(
++              facet.perform(capturedRequest, options).then((result) => checked(result)),
++            );
+           }
+           return observe(
+             facet
+-              .perform(request, { ...captured, sourceCondition: condition })
++              .perform(capturedRequest, { ...captured, sourceCondition: condition })
+               .then((result) => checked(result)),
+           );
+         },
+--- before/packages/server/src/transaction-service.ts
++++ after/packages/server/src/transaction-service.ts
+@@ -23,6 +23,7 @@
+ import {
+   createTransactionReadPlane,
+   captureTransactionReadDeliveryOptions,
++  captureTransactionReadRequest,
+   type TransactionReadOptions,
+ } from "./transaction-read.js";
+ import {
+@@ -384,16 +385,17 @@
+       const guarded: ReturnType<typeof read.readFor> = {
+         perform: (request, receiving) =>
+           run(() => {
++            const capturedRequest = captureTransactionReadRequest(request);
+             let captured: ReturnType<typeof captureTransactionReadDeliveryOptions>;
+             try {
+               captured = captureTransactionReadDeliveryOptions(receiving);
+             } catch {
+               // Preserve authority receiving errors without reading a caller
+               // signal getter or allowing an unconditioned successful fallback.
+-              return facet.perform(request, receiving);
++              return facet.perform(capturedRequest, receiving);
+             }
+             return waitForTransactionMinimum(
+-              () => facet.perform(request, captured),
++              () => facet.perform(capturedRequest, captured),
+               minimumReads,
+               captured?.signal,
+             );
+--- before/packages/server/src/transaction-read.test.ts
++++ after/packages/server/src/transaction-read.test.ts
+@@ -2213,6 +2213,39 @@
+     authorizationView: "development-all-visible",
+     minimumPosition: "opaque",
+   };
++  // A genuine signal can have an own getter. Its receiving callback must
++  // not redirect the request after the private minimum route was captured.
++  const originalBody = body(await service.readFor(principal).perform(resource("beads/a")));
++  const mutableRequest: Record<string, unknown> = { ...resource("beads/a") };
++  const mutatingSignal = new AbortController().signal;
++  let signalReads = 0;
++  Object.defineProperty(mutatingSignal, "aborted", {
++    get() {
++      signalReads++;
++      delete mutableRequest.resource;
++      delete mutableRequest.id;
++      mutableRequest.kind = "collection";
++      mutableRequest.collection = "types";
++      return false;
++    },
++  });
++  const capturedResult = await service
++    .readAtMinimum(principal, { ...minimum, minimumPosition: "pos-1" })
++    .perform(mutableRequest as unknown as ReadRequest, { signal: mutatingSignal });
++  expect(signalReads).toBeGreaterThan(0);
++  expect(mutableRequest.kind).toBe("collection");
++  expect(body(capturedResult)).toEqual(originalBody);
++  let requestGetterCalls = 0;
++  const invalidRequest = Object.defineProperty({ ...resource("beads/a") }, "id", {
++    get() {
++      requestGetterCalls++;
++      return url("beads/a");
++    },
++  });
++  await expect(
++    service.readAtMinimum(principal, minimum).perform(invalidRequest),
++  ).rejects.toMatchObject({ reason: "invalid-input" });
++  expect(requestGetterCalls).toBe(0);
+   for (const token of ["opaque", "pos-01", "pos-9007199254740992"]) {
+     const start = entries;
+     await expect(

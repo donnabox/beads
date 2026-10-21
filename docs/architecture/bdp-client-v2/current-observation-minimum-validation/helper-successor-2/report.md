@@ -1,0 +1,9 @@
+# CLOSED helper-successor-2 validation
+
+This metadata-only successor preserves helper-successor-1 index8bd48989 unchanged. Its malformed standalone audit-correction.patch was generated from a reused scratch variable holding the required-checks-lint index hash91356a2e instead of predecessor source text. The actual corrected auditor was correct, as independently established by native/root review; full adapter.patch also used real file bytes. No helper or product fix is introduced here.
+
+The new standalone forward/reverse patches use actual oracle-successor-1/audit.py bytes and this byte-identical corrected auditor. A data-only unified-patch reconstruction checks every context/removal and hunk count, reconstructing after bytes forward and original bytes backward. Native blocker c7542998 and root metadata release43ecd3a8 are pinned. Original flawed artifact/report remain historical, not silently replaced.
+
+All679 product files, source bindingf133bf6d,97selection/schema/workload and all executable helper bytes remain unchanged from helper-successor-1 (required sibling gate changes only its V path). The sole existing auditor correction is strict empty-list checking for refusedOwnerEntries. Original97-source pass/E37 and immediate audit failure retain separate identities; this packet has no execution result.
+
+Original correction-successor-2 bootstrap2 only remains reusable through17 dependency inputs/11 tool hashes+realpaths/8 records. All19 later stages and4 required checks fresh. Same120s/TERM115/no retry, build before emitted collection, distinct installed22/new37 and immediate audits, root consumer lock/proof gates, owned cleanup. All flags false, approved stages empty, actual tool/build/consumer gate slots null. No product/helper/static/runtime execution occurred. Native/root exact metadata review precedes release; no profile qualification claimed.

@@ -1,0 +1,44 @@
+{
+  "createdUtc": "2026-10-18T03:04:30.348371+00:00",
+  "finding": "N2",
+  "status": "closed",
+  "closedFindingIds": [
+    "N2",
+    "N2a",
+    "N2b"
+  ],
+  "mechanicsAcceptedForLaunch": true,
+  "rootLaunchReleased": false,
+  "actualReviewLaunched": false,
+  "sourceAuthoringReleased": false,
+  "acceptedSupplement": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/event-admission-next-serving-plan/clean-candidate-rebind-1/new-session-launch-supervision-2",
+  "checkedIndexSha256": "141fa43533f4b51b9027eb00123f8adcc7ba703dea23a5b1c46bb5cb487a9226",
+  "checkedSupervisorSha256": "44a8c1948ca8b257277bdfaa854e7748271b72dc970df1031d6b54b62e4e589e",
+  "checkedControlSha256": "22d4123075f329834997f2325e4548759a2a7094b59d7abe4e6b2050a95cf579",
+  "findings": [],
+  "checks": {
+    "indexedFiles": 11,
+    "totalFiles": 12,
+    "allHashesMatched": true,
+    "predecessorFilesPreserved": 8,
+    "frozenPacketFilesPreserved": 44,
+    "forwardAndInverseDeltaRegenerated": true,
+    "sourceFilesMatched": 679,
+    "contextInputsMatched": 24,
+    "artifactInputsMatched": 12,
+    "supplementMirrorIdentical": true,
+    "bothFlagsFalse": true,
+    "noAttemptOutputs": true,
+    "noRuntimeExecution": true
+  },
+  "remainingRootDuties": [
+    "Preserve CLOSED bytes/index/control and record two flag-only release deltas",
+    "Launch exactly one attempt through accepted supervisor only",
+    "Independently adjudicate actual terminal provenance, source invariance, process closure and findings before authoring"
+  ],
+  "limitations": [
+    "Static inspection and hash verification; no runtime fault injection",
+    "Persistent OS/process-inventory failure is unknown/failure, not hard-real-time closure proof"
+  ],
+  "reportSha256": "d731d00188f0ba5b70a84a5f67922239c733e827b27a67a04283653f13b54910"
+}

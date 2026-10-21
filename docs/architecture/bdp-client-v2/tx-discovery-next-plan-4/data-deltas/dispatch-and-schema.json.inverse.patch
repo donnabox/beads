@@ -1,0 +1,32 @@
+--- a/dispatch-and-schema.json
++++ b/dispatch-and-schema.json
+@@ -28,14 +28,12 @@
+   },
+   "dispatchReceiver": {
+     "path": "packages/server/src/transaction-http.ts",
+-    "targetsAndNames": "175-183",
+-    "operationDispatch": "274-402",
++    "targetsAndNames": "174-189",
++    "operationDispatch": "278-402",
+     "authAndMinimumSyntax": "403-405",
+-    "existingCurrentChangefeed": "468-501",
+-    "selectedDiscoveryInsertion": "immediately before586; after special Snapshot/changefeed/Events/receipt branches",
+-    "currentReadGate": "586-603",
+-    "discoveryRefusal": "604-611",
+-    "finalSemantics": "667-679"
++    "currentReadGate": "589-606",
++    "discoveryRefusal": "607-616",
++    "finalSemantics": "670-682"
+   },
+   "schemas": [
+     "transactionalDiscovery",
+@@ -54,7 +52,6 @@
+   ],
+   "protocolParsers": "packages/protocol/src/transaction-discovery-values.ts:63-81",
+   "projection": "packages/server/src/transaction-discovery.ts:26-67",
+-  "observation": "packages/server/src/transaction-service.ts:267-293",
+-  "noSchemaOrDispatcherEdits": true,
+-  "activeSourceCommit": "cce884ccea1db97cbc6fd7bff876d4d6091f9081"
++  "observation": "packages/server/src/transaction-service.ts:267-300",
++  "noSchemaOrDispatcherEdits": true
+ }

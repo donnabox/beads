@@ -1,0 +1,76 @@
+
+ RUN  v4.1.10 /Users/dbox/repos/wt/vickie/vickie-sequence-depth-retained
+
+ ↓ packages/server/src/transaction-service.test.ts > private same-owner Transactional service > requires explicit owner lifetime and a bound that fits retained inline receipts
+ ↓ packages/server/src/transaction-service.test.ts > private same-owner Transactional service > shares singleton, batch and sequence keys and serves actual canonical afterstate
+ ↓ packages/server/src/transaction-service.test.ts > private same-owner Transactional service > retains execution facts while observing a newer head, even after the postimage is deleted
+ ↓ packages/server/src/transaction-service.test.ts > private same-owner Transactional service > authenticates before lookup and uniformly hides other principals, roots and unknown URLs
+ ↓ packages/server/src/transaction-service.test.ts > private same-owner Transactional service > freezes receipt bytes and context before a later caller can commit
+ ↓ packages/server/src/transaction-service.test.ts > private same-owner Transactional service > retains completed identity, forgets expired failed detail and preserves current observation across reopen
+ ↓ packages/server/src/transaction-service.test.ts > private same-owner Transactional service > serves pending duplicates without another execution and retracts abandoned pending on recovery
+ ↓ packages/server/src/transaction-service.test.ts > private same-owner Transactional service > drains detached admitted sequence deliveries before releasing the owner
+ ↓ packages/server/src/transaction-service.test.ts > private same-owner Transactional service > drains admitted singleton delivery and rejects calls on previously acquired Read facets
+ ↓ packages/server/src/transaction-service.test.ts > private same-owner Transactional service > releases only its unexecuted sequence tail after scheduler failure and preserves a foreign pending key
+ ↓ packages/server/src/transaction-service.test.ts > private same-owner Transactional service > refuses inline scheduling and retains both scheduler and cancellation failure causes
+ ↓ packages/server/src/transaction-service.test.ts > private same-owner Transactional service > ignores repeated scheduler callbacks without running a member twice
+ ↓ packages/server/src/transaction-service.test.ts > private same-owner Transactional service > uses the original finite comparison budget while an earlier sequence dependency is unresolved
+ ↓ packages/server/src/transaction-service.test.ts > private same-owner Transactional service > recovers an abrupt service process exit at after-admission with original durable disposition
+ ↓ packages/server/src/transaction-service.test.ts > private same-owner Transactional service > recovers an abrupt service process exit at after-effects with original durable disposition
+ ↓ packages/server/src/transaction-service.test.ts > private same-owner Transactional service > recovers an abrupt service process exit at delivered with original durable disposition
+ ↓ packages/server/src/transaction-service.test.ts > private same-owner Transactional service > preserves original scheduling and failed owner cleanup causes on later service access
+ ↓ packages/server/src/transaction-service.test.ts > private same-owner Transactional service > fits the largest supported receipt in the declared bound without inventing a page
+ ↓ packages/server/src/transaction-service.test.ts > private same-owner Transactional service > does not use supplied revision attribution as a receipt access principal
+ ↓ packages/server/src/transaction-service.test.ts > private same-owner Transactional service > projects sequence retained member facts and current serving context in the owner entry
+ ↓ packages/server/src/transaction-service.test.ts > private same-owner Transactional service > does not return an observed sequence when the final owner observation fails
+ ↓ packages/server/src/transaction-service.test.ts > same-entry direct receipt delivery > does not re-expire a first terminal delivery after a clock jump (failed=false)
+ ↓ packages/server/src/transaction-service.test.ts > same-entry direct receipt delivery > does not re-expire a first terminal delivery after a clock jump (failed=true)
+ ↓ packages/server/src/transaction-service.test.ts > same-entry direct receipt delivery > fresh and retained replay deliveries never use receipt-ID scans
+ ↓ packages/server/src/transaction-service.test.ts > private minimum-read owner/lifecycle > isolates concurrent immutable controls and never holds SQLite during a wait
+ ↓ packages/server/src/transaction-service.test.ts > private minimum-read owner/lifecycle > checks minimum before read-triggered expiry but honors independently forgotten receipts (false)
+ ↓ packages/server/src/transaction-service.test.ts > private minimum-read owner/lifecycle > checks minimum before read-triggered expiry but honors independently forgotten receipts (true)
+ ↓ packages/server/src/transaction-service.test.ts > private minimum-read owner/lifecycle > drains a bounded pending read on close and respects an aborted reader
+ ↓ packages/server/src/transaction-service.test.ts > drains concurrent receipt-page waits on close while admitted commits can satisfy them
+ ↓ packages/server/src/transaction-service.test.ts > cancels finite Event waits through the facet and drains uncancelled waits before owner close
+ ↓ packages/server/src/transaction-service.test.ts > drains admitted finite Snapshot observation and refuses new work while closing
+ ↓ packages/server/src/transaction-service.test.ts > cancels separate streams on shutdown, drains admitted finite work and refuses stale registration
+ ↓ packages/server/src/transaction-service.test.ts > fresh Snapshot minimum service > freezes create controls and retries after a real independent commit
+ ↓ packages/server/src/transaction-service.test.ts > fresh Snapshot minimum service > freezes preflight controls and retries after a real independent commit
+ ↓ packages/server/src/transaction-service.test.ts > fresh Snapshot minimum service > keeps create timeout and pre-abort distinct from owner work
+ ↓ packages/server/src/transaction-service.test.ts > fresh Snapshot minimum service > keeps preflight timeout and pre-abort distinct from owner work
+ ↓ packages/server/src/transaction-service.test.ts > fresh Snapshot minimum service > uses one service call for each fresh HTTP branch, with terminal preflight
+ ↓ packages/server/src/transaction-service.test.ts > internal discovery owner observation > copies exactly one owner entry and parses only after releasing it
+ ↓ packages/server/src/transaction-service.test.ts > internal discovery owner observation > keeps entry refusal distinct from structural validation failure
+ ↓ packages/server/src/transaction-service.test.ts > internal discovery owner observation > captures nested limits once and enforces the captured values after caller mutation
+ ↓ packages/server/src/transaction-service.test.ts > internal discovery owner observation > keeps the replay position floor and complete genesis groups through receipt expiry and reopen
+ ↓ packages/server/src/transaction-service.test.ts > captured pagination callback receivers > reads each callback once but keeps state on the original pagination receiver
+ ↓ packages/server/src/transaction-service.test.ts > captured pagination callback receivers > preserves validation for an invalid clock without rereading its getter
+ ↓ packages/server/src/transaction-service.test.ts > captured pagination callback receivers > preserves validation for an invalid generateOpaqueToken without rereading its getter
+ ↓ packages/server/src/transaction-service.test.ts > internal discovery minimum observation > preserves synchronous no-minimum timing and ignores its signal and wait policy
+ ↓ packages/server/src/transaction-service.test.ts > internal discovery minimum observation > returns an immutable same-entry eligible prefix for pos-1 after release
+ ↓ packages/server/src/transaction-service.test.ts > internal discovery minimum observation > returns an immutable same-entry eligible prefix for pos-0 after release
+ ↓ packages/server/src/transaction-service.test.ts > internal discovery minimum observation > returns an immutable same-entry eligible prefix for genesis after release
+ ↓ packages/server/src/transaction-service.test.ts > internal discovery minimum observation > captures immutable minimum controls and releases the owner during controlled catch-up
+ ↓ packages/server/src/transaction-service.test.ts > internal discovery minimum observation > releases the owner after an in-entry scopeEpoch refusal
+ ↓ packages/server/src/transaction-service.test.ts > internal discovery minimum observation > releases the owner after an in-entry authorizationView refusal
+ ↓ packages/server/src/transaction-service.test.ts > internal discovery minimum observation > times out after two controlled attempts without assembly and leaves the owner reusable
+ ↓ packages/server/src/transaction-service.test.ts > internal discovery minimum observation > rejects pre-abort before entry and pending abort before retry
+ ↓ packages/server/src/transaction-service.test.ts > internal discovery minimum observation > drains an admitted discovery wait before closing the owner
+ ↓ packages/server/src/transaction-service.test.ts > internal discovery minimum observation > keeps malformed input, entry refusal, provider and parser failures distinct
+ ↓ packages/server/src/transaction-service.test.ts > current minimum perform receiving capture > retains the captured signal inside the second owner read after a genuine behind wait
+ ↓ packages/server/src/transaction-service.test.ts > current minimum perform receiving capture > rejects a service delivery signal getter without invoking it or entering the owner
+ ↓ packages/server/src/transaction-service.test.ts > current minimum perform receiving capture > keeps captured delivery options across a held wait (abort original: false)
+ ↓ packages/server/src/transaction-service.test.ts > current minimum perform receiving capture > keeps captured delivery options across a held wait (abort original: true)
+ ↓ packages/server/src/transaction-service.test.ts > nonexecuting sequence refusal observation > uses one synchronous owner entry and freezes each current refusal tuple without admission
+ ↓ packages/server/src/transaction-service.test.ts > nonexecuting sequence refusal observation > preserves reentrant and failed-owner causes and sanitizes unexpected refusal observation faults with 33 members
+ ↓ packages/server/src/transaction-service.test.ts > nonexecuting sequence refusal observation > preserves reentrant and failed-owner causes and sanitizes unexpected refusal observation faults with 1 members
+ ✓ packages/server/src/transaction-service.test.ts > nonexecuting sequence refusal observation > keeps early sequence refusals unobserved and observes deep negotiation refusal 68ms
+ ↓ packages/server/src/transaction-service.test.ts > nonexecuting local schema observation > uses one synchronous owner entry and freezes each current schema tuple without admission
+ ↓ packages/server/src/transaction-service.test.ts > preserves schema observation reentrancy, owner-fault causes and synchronous close refusal
+ ↓ packages/server/src/transaction-service.test.ts > preserves current receipt absence context across ordinary and minimum service entrypoints
+ ↓ packages/server/src/transaction-service.test.ts > rejects an old selected Event packet before stream registration and accepts a current lease
+
+ Test Files  1 passed (1)
+      Tests  1 passed | 66 skipped (67)
+   Start at  23:17:27
+   Duration  471ms (transform 229ms, setup 19ms, import 323ms, tests 69ms, environment 0ms)
+

@@ -1,0 +1,224 @@
+apps/bdptest/src/transactional-event-missing-context-installed.test.ts format ━━━━━━━━━━━━━━━━━━━━━━
+
+  × Formatter would have printed the following content:
+  
+    579 579 │             closing,
+    580 580 │             new Promise<never>((_, reject) => {
+    581     │ - ············cleanupTimer·=·setTimeout(()·=>·{
+    582     │ - ··············deadlineExceeded·=·true;
+    583     │ - ··············reject(deadlineReason);
+    584     │ - ············},·Math.max(0,·expiresAt·-·Date.now()));
+        581 │ + ············cleanupTimer·=·setTimeout(
+        582 │ + ··············()·=>·{
+        583 │ + ················deadlineExceeded·=·true;
+        584 │ + ················reject(deadlineReason);
+        585 │ + ··············},
+        586 │ + ··············Math.max(0,·expiresAt·-·Date.now()),
+        587 │ + ············);
+    585 588 │             }),
+    586 589 │           ]);
+  
+
+packages/server/src/transaction-events.test.ts format ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+  × Formatter would have printed the following content:
+  
+    1386 1386 │       expect(groupReads).toBe(0);
+    1387 1387 │       expect(reads).toBe(8);
+    1388      │ - ····console.log(JSON.stringify({·observation:·"finite-event-minimum-owner",·reads,·seedMutations:·1·}));
+         1388 │ + ····console.log(
+         1389 │ + ······JSON.stringify({·observation:·"finite-event-minimum-owner",·reads,·seedMutations:·1·}),
+         1390 │ + ····);
+    1389 1391 │     } finally {
+    1390 1392 │       spy.mockRestore();
+    ········· │ 
+    1466 1468 │           const text = await response.text();
+    1467 1469 │           expect(response.status, `${method} ${suffix}`).toBe(status);
+    1468      │ - ········for·(const·name·of·["etag",·"last-modified"])·expect(response.headers.has(name)).toBe(false);
+         1470 │ + ········for·(const·name·of·["etag",·"last-modified"])
+         1471 │ + ··········expect(response.headers.has(name)).toBe(false);
+    1469 1472 │           if (status === 500) {
+    1470 1473 │             // Explicit preserved private gap, not a normative Problem response.
+    ········· │ 
+    1475 1478 │             if (method === "GET") {
+    1476 1479 │               const value: unknown = JSON.parse(text);
+    1477      │ - ············if·(status·===·200)·expect(validPage(value),·JSON.stringify(validPage.errors)).toBe(true);
+         1480 │ + ············if·(status·===·200)
+         1481 │ + ··············expect(validPage(value),·JSON.stringify(validPage.errors)).toBe(true);
+    1478 1482 │               else {
+    1479      │ - ··············expect(validMinimumProblem(value),·JSON.stringify(validMinimumProblem.errors)).toBe(true);
+         1483 │ + ··············expect(validMinimumProblem(value),·JSON.stringify(validMinimumProblem.errors)).toBe(
+         1484 │ + ················true,
+         1485 │ + ··············);
+    1480 1486 │                 expect(value).toMatchObject({ status, code });
+    1481 1487 │                 if (status === 503)
+    ········· │ 
+    1549 1555 │     }
+    1550 1556 │     if (failures.length === 1) throw failures[0];
+    1551      │ - ··if·(failures.length·>·1)·throw·new·AggregateError(failures,·"finite·Event·HTTP·observation·failed");
+         1557 │ + ··if·(failures.length·>·1)
+         1558 │ + ····throw·new·AggregateError(failures,·"finite·Event·HTTP·observation·failed");
+    1552 1559 │   });
+    1553 1560 │   
+  
+
+packages/server/src/transaction-service.test.ts format ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+  × Formatter would have printed the following content:
+  
+    2638 2638 │       f.watchScans();
+    2639 2639 │       const controller = new AbortController();
+    2640      │ - ····const·cancelled·=·f.observe(
+    2641      │ - ······f.events(`${scope}events/`,·undefined,·minimum,·controller.signal),
+    2642      │ - ····);
+         2640 │ + ····const·cancelled·=·f.observe(f.events(`${scope}events/`,·undefined,·minimum,·controller.signal));
+    2643 2641 │       await f.entered(0, cancelled);
+    2644 2642 │       controller.abort();
+    ········· │ 
+    2697 2695 │     "nonfinite-clock",
+    2698 2696 │     "malformed-after-valid-preflight",
+    2699      │ - ]·as·const)("preserves·initial·Scope·Event·preflight·before·malformed·capture:·%s",·async·(label)·=>·{
+    2700      │ - ··const·f·=·fixture();
+    2701      │ - ··let·reads·=·0;
+    2702      │ - ··const·clockError·=·new·Error("finite·Event·initial·clock·sentinel");
+    2703      │ - ··const·now·=·vi.fn(()·=>·{
+    2704      │ - ····if·(label·===·"throwing-clock")·throw·clockError;
+    2705      │ - ····return·label·===·"nonfinite-clock"·?·Number.NaN·:·0;
+    2706      │ - ··});
+    2707      │ - ··const·wait·=·vi.fn(async·()·=>·{});
+    2708      │ - ··const·service·=·createTransactionService(
+    2709      │ - ····{
+    2710      │ - ······...f.owner,
+    2711      │ - ······readEvents:·(...args:·Parameters<typeof·f.owner.readEvents>)·=>·{
+    2712      │ - ········reads++;
+    2713      │ - ········return·f.owner.readEvents(...args);
+    2714      │ - ······},
+    2715      │ - ····},
+    2716      │ - ····{
+    2717      │ - ······ownerLifetime:·"service",
+    2718      │ - ······read:·f.read,
+    2719      │ - ······minimumReads:·{·budgetMs:·label·===·"invalid-policy"·?·0·:·10,·now,·wait·},
+    2720      │ - ····},
+    2721      │ - ··);
+    2722      │ - ··cleanup.push(()·=>·service.close());
+    2723      │ - ··const·pending·=·service.events(
+    2724      │ - ····`${scope}events/`,
+    2725      │ - ····undefined,
+    2726      │ - ····{
+    2727      │ - ······scopeEpoch:·"bad·space",
+    2728      │ - ······authorizationView:·"development-all-visible",
+    2729      │ - ······minimumPosition:·"opaque",
+    2730      │ - ····},
+    2731      │ - ····label·===·"already-aborted"·?·AbortSignal.abort()·:·undefined,
+    2732      │ - ··);
+    2733      │ - ··expect(pending).toBeInstanceOf(Promise);
+    2734      │ - ··const·error·=·await·pending.then(
+    2735      │ - ····()·=>·undefined,
+    2736      │ - ····(cause:·unknown)·=>·cause,
+    2737      │ - ··);
+    2738      │ - ··if·(label·===·"already-aborted")·expect(error).toBeInstanceOf(ScopeServerOperationAbortedError);
+    2739      │ - ··else·if·(label·===·"throwing-clock")·expect(error).toBe(clockError);
+    2740      │ - ··else·{
+    2741      │ - ····expect(error).toBeInstanceOf(TypeError);
+    2742      │ - ····expect(error).toMatchObject({
+    2743      │ - ······message:
+    2744      │ - ········label·===·"invalid-policy"
+    2745      │ - ··········?·"finite·minimum-read·wait·policy·required"
+    2746      │ - ··········:·label·===·"nonfinite-clock"
+    2747      │ - ············?·"invalid·minimum-read·clock"
+    2748      │ - ············:·"unsupported·minimum·tuple",
+    2749      │ - ····});
+    2750      │ - ··}
+    2751      │ - ··expect(now).toHaveBeenCalledTimes(label·===·"invalid-policy"·?·0·:·1);
+    2752      │ - ··expect(reads).toBe(0);
+    2753      │ - ··expect(wait).not.toHaveBeenCalled();
+    2754      │ - ··console.log(
+    2755      │ - ····JSON.stringify({
+    2756      │ - ······observation:·"finite-event-minimum-preflight",
+    2757      │ - ······label,
+    2758      │ - ······serviceCalls:·1,
+    2759      │ - ······clockCalls:·now.mock.calls.length,
+    2760      │ - ······ownerReads:·reads,
+    2761      │ - ······waits:·wait.mock.calls.length,
+    2762      │ - ····}),
+    2763      │ - ··);
+    2764      │ - });
+         2697 │ + ]·as·const)(
+         2698 │ + ··"preserves·initial·Scope·Event·preflight·before·malformed·capture:·%s",
+         2699 │ + ··async·(label)·=>·{
+         2700 │ + ····const·f·=·fixture();
+         2701 │ + ····let·reads·=·0;
+         2702 │ + ····const·clockError·=·new·Error("finite·Event·initial·clock·sentinel");
+         2703 │ + ····const·now·=·vi.fn(()·=>·{
+         2704 │ + ······if·(label·===·"throwing-clock")·throw·clockError;
+         2705 │ + ······return·label·===·"nonfinite-clock"·?·Number.NaN·:·0;
+         2706 │ + ····});
+         2707 │ + ····const·wait·=·vi.fn(async·()·=>·{});
+         2708 │ + ····const·service·=·createTransactionService(
+         2709 │ + ······{
+         2710 │ + ········...f.owner,
+         2711 │ + ········readEvents:·(...args:·Parameters<typeof·f.owner.readEvents>)·=>·{
+         2712 │ + ··········reads++;
+         2713 │ + ··········return·f.owner.readEvents(...args);
+         2714 │ + ········},
+         2715 │ + ······},
+         2716 │ + ······{
+         2717 │ + ········ownerLifetime:·"service",
+         2718 │ + ········read:·f.read,
+         2719 │ + ········minimumReads:·{·budgetMs:·label·===·"invalid-policy"·?·0·:·10,·now,·wait·},
+         2720 │ + ······},
+         2721 │ + ····);
+         2722 │ + ····cleanup.push(()·=>·service.close());
+         2723 │ + ····const·pending·=·service.events(
+         2724 │ + ······`${scope}events/`,
+         2725 │ + ······undefined,
+         2726 │ + ······{
+         2727 │ + ········scopeEpoch:·"bad·space",
+         2728 │ + ········authorizationView:·"development-all-visible",
+         2729 │ + ········minimumPosition:·"opaque",
+         2730 │ + ······},
+         2731 │ + ······label·===·"already-aborted"·?·AbortSignal.abort()·:·undefined,
+         2732 │ + ····);
+         2733 │ + ····expect(pending).toBeInstanceOf(Promise);
+         2734 │ + ····const·error·=·await·pending.then(
+         2735 │ + ······()·=>·undefined,
+         2736 │ + ······(cause:·unknown)·=>·cause,
+         2737 │ + ····);
+         2738 │ + ····if·(label·===·"already-aborted")·expect(error).toBeInstanceOf(ScopeServerOperationAbortedError);
+         2739 │ + ····else·if·(label·===·"throwing-clock")·expect(error).toBe(clockError);
+         2740 │ + ····else·{
+         2741 │ + ······expect(error).toBeInstanceOf(TypeError);
+         2742 │ + ······expect(error).toMatchObject({
+         2743 │ + ········message:
+         2744 │ + ··········label·===·"invalid-policy"
+         2745 │ + ············?·"finite·minimum-read·wait·policy·required"
+         2746 │ + ············:·label·===·"nonfinite-clock"
+         2747 │ + ··············?·"invalid·minimum-read·clock"
+         2748 │ + ··············:·"unsupported·minimum·tuple",
+         2749 │ + ······});
+         2750 │ + ····}
+         2751 │ + ····expect(now).toHaveBeenCalledTimes(label·===·"invalid-policy"·?·0·:·1);
+         2752 │ + ····expect(reads).toBe(0);
+         2753 │ + ····expect(wait).not.toHaveBeenCalled();
+         2754 │ + ····console.log(
+         2755 │ + ······JSON.stringify({
+         2756 │ + ········observation:·"finite-event-minimum-preflight",
+         2757 │ + ········label,
+         2758 │ + ········serviceCalls:·1,
+         2759 │ + ········clockCalls:·now.mock.calls.length,
+         2760 │ + ········ownerReads:·reads,
+         2761 │ + ········waits:·wait.mock.calls.length,
+         2762 │ + ······}),
+         2763 │ + ····);
+         2764 │ + ··},
+         2765 │ + );
+    2765 2766 │   
+  
+
+Checked 6 files in 12ms. No fixes applied.
+Found 3 errors.
+format ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+  × Some errors were emitted while running checks.
+  
+

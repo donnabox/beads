@@ -1,0 +1,35 @@
+{
+  "utc": "2026-10-18T08:08:08.905542+00:00",
+  "rawSha256": "88f7113de4d61acbe140d152c308d993c77968062bae5a59f691545c6b641fd5",
+  "rawBytes": 2493551,
+  "records": 4612,
+  "results": 1,
+  "source682Context119Artifact31Exact": true,
+  "nativeAudit155IndexedExact": true,
+  "156ObservedPids62GroupsAndSupervisorAbsent": true,
+  "supervision": "FAILED process_ownership_or_cleanup_failure",
+  "cliExit": "UNKNOWN",
+  "wrapperExitCode": -15,
+  "missingRunnerOutputs": [
+    "exit.json",
+    "source-after.json",
+    "terminal-results.json",
+    "final-review.txt"
+  ],
+  "firstFailure": {
+    "elapsedSeconds": 920.9256703336723,
+    "stage": "row_executable",
+    "row": {
+      "pid": 83347,
+      "ppid": 83318,
+      "pgid": 83347,
+      "state": "Ss",
+      "start": "Sun Oct 18 00:37:59 2026",
+      "comm": "(claude)"
+    },
+    "exceptionType": "RuntimeError"
+  },
+  "currentSourceIsNotMissingRunnerAfter": true,
+  "noRetryOrSignals": true,
+  "priorRootMetadataProbeFailure": "Read-only .values() on list AttributeError; no files created/product action; corrected concrete list handling"
+}

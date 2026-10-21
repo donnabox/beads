@@ -1,0 +1,36 @@
+{
+  "utc": "2026-10-18T15:04:01.775380+00:00",
+  "accepted": true,
+  "scope": "Accept full native H3 facts and H3-N1 corrective diagnosis only; H3 NOT accepted for evaluation",
+  "nativeIndex": {
+    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-D4-synthetic-harness3-native-mechanics-1/index.json",
+    "sha256": "131489165f40aaff2b2eaea684833864ea9f0d1dbf4d733e62ec1b9d737f33df"
+  },
+  "nativeClosure": {
+    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-D4-synthetic-harness3-native-mechanics-1/closure.json",
+    "sha256": "8b891a351a31c53d6cf75ebb5247b8d80ef5f395237dd133778c5fee885d1e4b"
+  },
+  "nativeReport": {
+    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-D4-synthetic-harness3-native-mechanics-1/report.md",
+    "sha256": "1af447ca28e45859ebf73ab020e4e6127bbf099e60594d153a96304cf5dd72bd"
+  },
+  "findings": {
+    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-D4-synthetic-harness3-native-mechanics-1/findings.json",
+    "sha256": "56b3450c2bc3d63f45c6b7c1fe93276e4fd764190bcb85c9babd1928aaec148f"
+  },
+  "verifiedNativeFilesAndMirror": 128,
+  "harnessIndex": {
+    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-D4-synthetic-harness-preparation-3/preparation-index.json",
+    "sha256": "32a0861ea658dada00107d3f2f6013091ac1415314cd164c2d8cf4f76f66010a"
+  },
+  "H2N1N2N3StaticallyClosed": true,
+  "H3N1Accepted": true,
+  "diagnosis": "Availability drain buffers received stdout/stderr until success, losing actual raw prefixes on failed drain before raw files are created. Minimal correction is on-clock incremental exclusive retention with received/saved counts, EOF/exit and prefix-only/full UNKNOWN state.",
+  "notAProductOrHelper4Defect": true,
+  "actualAvailabilityOrControlsOrProductRuns": 0,
+  "actualClockMasksSignalPipes": "UNMEASURED/UNKNOWN",
+  "executionReleased": false,
+  "intactLastOwnerFaultDomainUnchanged": true,
+  "unexpectedLastOwnerLoss": "FAILED/UNKNOWN, no global known cleanup guarantee, no inner failure waiver",
+  "preservedRootToolingError": "One guard succeeded then empty Python DATA invocation referenced nonexistent /opt/homebrew/opt/python3.14/bin/python3.14 and failed before child launch; no subject/helper/product ran. Correct absolute python@3.14 used for this DATA action."
+}

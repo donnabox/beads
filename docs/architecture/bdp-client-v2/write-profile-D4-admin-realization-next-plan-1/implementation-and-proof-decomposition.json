@@ -1,0 +1,103 @@
+{
+  "firstConcreteNextDeliverable": "AR01–AR05 exact owner/store/publication design and source/test footprint; one source-only historical-closure milestone can be reviewed first but must remain unexposed/unqualified until every affected serving path is coherent. Do not publish a ledger-only method as a completed realization.",
+  "independentWork": "Existing installed abandoned-pending and RU member recovery design can progress separately through current APIs under their own gates; no administrative decision need block that legwork.",
+  "kind": "EIGHT_ORDERED_DESIGN_MILESTONES_NOT_EXECUTABLE_STAGES",
+  "milestones": [
+    {
+      "governingClauses": [
+        "#version-erasure:6443-6446",
+        "#history-recovery-imports-and-assurance:1868-1884"
+      ],
+      "id": "AR01",
+      "name": "Freeze supported private authority and assurance boundary",
+      "observableDonePredicate": "A reviewed exact private authority/ownership/dataflow and finite source/test footprint, not an API guess.",
+      "prerequisites": "Root/platform design choices AD01–AD06; no BDP semantic change.",
+      "status": "PROSPECTIVE_NO_CREDIT",
+      "work": "No current admin entry exists; define owner capability and documented local operator act, one controlled acquisition/recovery route, actual policy and final source/configuration. A returned internal store/test handle is not already supported administration."
+    },
+    {
+      "governingClauses": [
+        "#version-erasure:6409-6441,6581-6597"
+      ],
+      "id": "AR02",
+      "name": "Persist original-version evidence and permanent identity-level ledger",
+      "observableDonePredicate": "Crash-safe original evidence and ledger survive ordinary reopen, view/history rotation; old-format refusal/conversion is explicit.",
+      "prerequisites": "AR01 plus reviewed digest/format design; use existing wire erasure shape only.",
+      "status": "PROSPECTIVE_NO_CREDIT",
+      "work": "Inside existing owner enter/atomic, retain original served version commitment before projections or content expiry. Ledger keys are canonical subject/revision, retaining lineage/digest and necessary observability evidence independently of epoch/history retention. Add internal format change; do not silently backfill from later metadata projection or configuration hashes."
+    },
+    {
+      "governingClauses": [
+        "#version-erasure:6379-6407,6443-6451,6499-6536"
+      ],
+      "id": "AR03",
+      "name": "Commit historical erasure and all authority retained-copy cleanup",
+      "observableDonePredicate": "Before any authority visibility no affected content survives controlled DB/caches; same epoch, complete visible erasure-only group, no receipt minted.",
+      "prerequisites": "AR02 and full carrier/index closure; no exposed entry before publication dependencies implemented.",
+      "status": "PROSPECTIVE_NO_CREDIT",
+      "work": "Mint admin transaction identity and next position, no key/admission MutationReceipt. Historical-only group has changes/events empty and real erasures. In one owner SQLite transaction sanitize/delete all authority content carriers, preserve lineage/digest/nonreuse/execution facts, persist record/floor and group. Do not infer success from output projection alone."
+    },
+    {
+      "governingClauses": [
+        "#version-erasure:6448-6497"
+      ],
+      "id": "AR04",
+      "name": "Realize live correction, tombstone and owned-containing closure",
+      "observableDonePredicate": "All-or-none ledger/live state/group/copy cleanup; no erased preimage delta, no unchanged-state fake successor, no illegal incident-Bead deletion.",
+      "prerequisites": "AR03; historical-only proof is not live/owned credit.",
+      "status": "PROSPECTIVE_NO_CREDIT",
+      "work": "Stage corrected successor or tombstone and every containing source-version erasure; reuse graph/type/deletion invariants. Owned-Link source updates use only ownedLink; direct corrections use full root replacements. Every in-Scope endpoint remains live and first-class/inline owned set agrees."
+    },
+    {
+      "governingClauses": [
+        "#mutation-receipt-responses:5215-5223,5231-5267",
+        "#version-erasure:6512-6579"
+      ],
+      "id": "AR05",
+      "name": "Integrate per-view serving, floors, snapshots and stream publication",
+      "observableDonePredicate": "Receipts/pages/sequence/read/Event paths expose no content or pointer leak; original ordinals/cursors survive gaps, unaffected tokens >=P remain valid, erasure does not rotate epoch.",
+      "prerequisites": "AR03/04 plus actual authorization/read/receipt/Event/Snapshot/SSE integration and capacity proof.",
+      "status": "PROSPECTIVE_NO_CREDIT",
+      "work": "Use actual policy-captured observability and subject-history permission. Project records only to receiving views; others identifier-free advances. Ledger in every fresh snapshot; pre-P checkpoints/handles expire in receiving view only. Serialize caught-up stream eligibility, floor and complete publication; fence lagging/backpressure before transport handoff."
+    },
+    {
+      "governingClauses": [
+        "#scope-history:3674-3689",
+        "#mutation-transactions:3947-3951",
+        "#version-erasure:6581-6597"
+      ],
+      "id": "AR06",
+      "name": "Implement controlled logical history import into intact identity state",
+      "observableDonePredicate": "Same canonical Resource identity and surviving address binding; old key unbound new namespace, no prior group served under new epoch, ledger cannot roll back with backup.",
+      "prerequisites": "AR02–05 plus documented origin/version/continuity mechanism. Whole-file replacement is not this route.",
+      "status": "PROSPECTIVE_NO_CREDIT",
+      "work": "Recommended bounded route imports a positively authenticated local history image into the exclusive current owner while retaining its latest identity allocations/version commitments/erasure ledger. Reconcile and discard erased/unknown content before visibility, mint new actual TX epoch, fence history-dependent tokens/keys and reemit projected ledger-only groups at first new positions before all other groups."
+    },
+    {
+      "governingClauses": [
+        "#event-replay-and-live-observation:6308-6323",
+        "#version-erasure:6538-6597"
+      ],
+      "id": "AR07",
+      "name": "Bind one real controlled consumer acquisition/recovery path",
+      "observableDonePredicate": "Consumer cleanup on erasure/rebootstrap/view/epoch recovery precedes its own visibility; no fabricated ack from server socket write or Python data.",
+      "prerequisites": "AR05/06 plus actual consumer implementation/configuration/retention and independent proof.",
+      "status": "PROSPECTIVE_NO_CREDIT",
+      "work": "Existing client is not a persistent TX store. Select a supported external consumer only through explicit scope design; it consumes whole change groups and fresh snapshot ledger, applies cleanup+durable checkpoint atomically, and discards old generations whose status cannot be established. Event-only observation is insufficient."
+    },
+    {
+      "governingClauses": [
+        "#durability-and-recovery:3369-3403",
+        "#mutation-transactions:3953-3976",
+        "#scope-history:3674-3689"
+      ],
+      "id": "AR08",
+      "name": "Fresh exact installed recovery/admin/restore proof and cumulative binding",
+      "observableDonePredicate": "One actual final TX target/configuration carries all applicable admin/restore witnesses; distinct final RU proof retains inline retry/prefix/Scope continuity, without pooling configurations.",
+      "prerequisites": "Independent native/root/source review and exact finite validation plan/runtime release; existing C16/last-owner issues remain separate.",
+      "status": "PROSPECTIVE_NO_CREDIT",
+      "work": "Freeze final combined source, Types/contracts/policy/principals/admin boundary/store and independent locked consumer/payload/proof before an actual act. Observe real owner/process/HTTP and post-act independent reads. Preserve every failure/unknown and actual exit+close/EOF; source fixtures and old D4 graceful32 rows do not count."
+    }
+  ],
+  "notAReplacementForFinalOwnerPlanOr251": "All missing final law owners, actual review and whole-clause requirements remain independently required."
+}

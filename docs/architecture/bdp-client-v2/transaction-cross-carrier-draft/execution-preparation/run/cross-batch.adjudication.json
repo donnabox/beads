@@ -1,0 +1,27 @@
+{
+  "accepted": true,
+  "sourceCommit": "c02ccc3706f2e258d380805162a8c47dbb73f4e1",
+  "attemptedHttp": 183,
+  "childLaunches": 21,
+  "closedChildren": 21,
+  "reportSha256": "e45ca1f41e811772355fdd0393cc6a302a8b1813e0217adf568a53baa88e871d",
+  "failures": [
+    "http-status",
+    "schema",
+    "media",
+    "serving-context",
+    "disposition",
+    "detail",
+    "key",
+    "no-next",
+    "required-position",
+    "effect-position",
+    "literal-result",
+    "retained-root",
+    "retained-body"
+  ],
+  "otherAuthoredRowsPassed": 12,
+  "claimEligible": false,
+  "cleanup": "No owned processes/runtime roots; Node cache retained.",
+  "basis": "Root verified full report, exact expected failures and seven positive Problem checks; all other exchange/client assertions pass, source/entry/payload/config bindings checked. Log confirms 21 launches and closes."
+}

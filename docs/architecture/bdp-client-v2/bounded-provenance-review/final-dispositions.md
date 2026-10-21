@@ -1,0 +1,11 @@
+# Final bounded-delivery review dispositions
+
+PR64 a57991fc and PR65 d4d78fc have exact green CI and scoped native + Claude review closure; they landed in order with main trees equal to reviewed candidates.
+
+PR83 final85c661543d4ccb68c1b426bf4355762bcd3f841c has full7,884pass/one optional skip/117files, allchecks/bothsmokes/preflight7, exactCI38214063746 and selected-pair closure. Native independently exercised real raw submissions; Claude independently confirms the feasibility math, actual worst first diagnostic131,009bytes against283,906floor/524,288budget, consistent consumers, storage/identity boundaries and retained replay. Medium overflow and low dead-callback fields are closed. Read evidence remains at observedsourcee5f7d0c/directevidencedbaf63a, unchanged89rows; the private TX correction is separately tested.
+
+The external review's nonblocking note1 says development callback coverage is absent. That search result is incorrect: apps/bdptest/src/development-server.test.ts:928 directly exercises numeric properties/metadata UPDATE messages and omission of document locations over development HTTP; it is included in the completed full suite. No additional test or code change is needed for that note. Note2 correctly says the exact-bound assertion and over-bound case together distinguish byte truncation from count truncation; the regression already does both.
+
+Deferred, not claimed fixed: custom embedder numeric callbacks can forward type/schemaLocation despite non-Type admission failures; shipped callbacks never provide those fields. Clean up before general-purpose public write qualification. Read hardening: broader server metadata-selector coverage, mandatory per-composition current-wire observation, recomputing all observer bindings at the gate and shared routing classifier. Current observations/bindings are verified; the gate documents its narrower re-derivation scope. Private Transactional normalize-before-count efficiency remains an optimization. None of these lows establishes a current wrong outcome in the shipped authorities or blocks this guarded development delivery.
+
+No public Update/Transactional capability claim, Transactional HTTP service, Preview2 promotion, new source/completeness/Activity/terminal revision mechanism, Type work or CLI parity is included. The remaining service branches remain unintegrated.

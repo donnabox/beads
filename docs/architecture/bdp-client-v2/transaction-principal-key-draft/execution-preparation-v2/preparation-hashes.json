@@ -1,0 +1,48 @@
+{
+  "status": "CLOSED_UNEXECUTED",
+  "sourceBinding": {
+    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-principal-key-draft/review-repair/source-binding.json",
+    "sha256": "fce5c0dfb33221f9cc29fd6420eab607722d88d0d9b6076b64a57f763f5f9406"
+  },
+  "actualParent": "f5511718371a6935614eae6756e796cef71570c2",
+  "candidateCommit": null,
+  "originalFiles": {
+    "gate.py": "730e722b9eeb1fd9b9fe6f9b48a7e69d6871c98ec64afc1893d54ee83bb1e547",
+    "supervise.py": "eb5c132deebc0435f0646f2793d556a501e8cc022cbabefae1f11835167dfca1",
+    "inventory.py": "f01a170801c8e259ea52696eb3c53402cc0e92ade8da797d5cec9e3f4c78127d",
+    "packages.py": "60a49b12891d9eab4fd7316e7caadb88fedef285bae8890efeaf207db9938e52",
+    "review-cohort.py": "87f7895e3458ec082cecd342b785a1093c5caa8466dcdc4938992bb5acd6f46b",
+    "commands.json": "b0e5c5846d5cde44d54dea08622cc1d2264233de74249eabf0e21429aa374be0",
+    "report-adapter-binding.json": "405947308c1cf0ba1b9bfeff94c0170275c17255d7016aef08dfce0dce3ed200"
+  },
+  "files": {
+    "gate.py": "c725c0f0338d86efe306f9d8a171d1ef76b37215c9ade870211551dddd4bdf70",
+    "supervise.py": "da74971257c3cc804b404dbc2d72759e301431e04d2474c692a658ed43b18f9a",
+    "inventory.py": "f01a170801c8e259ea52696eb3c53402cc0e92ade8da797d5cec9e3f4c78127d",
+    "packages.py": "60a49b12891d9eab4fd7316e7caadb88fedef285bae8890efeaf207db9938e52",
+    "review-cohort.py": "87f7895e3458ec082cecd342b785a1093c5caa8466dcdc4938992bb5acd6f46b",
+    "commands.json": "c1d63cd680a657eada8a611206ae3f8103cae4377386842265a69ab645ca0074",
+    "report-adapter-binding.json": "c75f6517763a2efb5527fda9fcf9ff7cd58418960efe8c0bf34132e6bf9af417"
+  },
+  "positiveOutput": {
+    "argument": "--outputFile=../bdp-integration-logs/transaction-principal-key-draft/execution-preparation-v2/run/installed-positive.results.json",
+    "cwd": "/Users/dbox/repos/wt/vickie/vickie-principal-key-isolation",
+    "resolved": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-principal-key-draft/execution-preparation-v2/run/installed-positive.results.json"
+  },
+  "limits": {
+    "expectedHttp": 9,
+    "maximumHttp": 14,
+    "children": 2,
+    "owners": 2,
+    "listeners": 2,
+    "directories": 2,
+    "reopens": 0,
+    "bootstrapHttp": 0,
+    "readonlyDatabaseHandles": 0
+  },
+  "scriptValidation": "AST parse only; no imports/invocations",
+  "originalUnchanged": true,
+  "rootRelease": false,
+  "patchSha256": "49b0c40b6123fee58f67a3594f9f141acec5c8dd9564c7498f6d7a10086978fe",
+  "reportSha256": "bb3da752a550e638841ec65add7cdf202024d9ebf3782298c15799f36a94907e"
+}

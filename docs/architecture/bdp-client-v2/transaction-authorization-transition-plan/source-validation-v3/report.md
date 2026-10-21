@@ -1,0 +1,7 @@
+# Closed source-validation-v3
+
+This new directory preserves all original and failed v2 preparation/results. Final-code-v2 author binding e0bbb4bf is the authority; the local adapter only adds tree=baseTree. All15 actual file hashes and full patch cfac763e were independently verified. The only product delta from the v2 attempt is the authorized T1 fixture correction: two collection URLs limit1→limit2 and initial items equality first.resources.slice(0,2). Production bytes, cap20, request bodies, assertion titles, next-handle409 checks and all other tests remain unchanged.
+
+The ten commands remain typecheck/build/format-check/lint/boundaries/Read seal/transport/queued-frame/stale-lease/authorization-owner. Only JSON output paths move from v2/run to v3/run; runner code differs only by its pinned commands hash. Exact11positive cases,21plannedHTTP,14successfulowneropens,11ordinarydirectories plus5rejected-open copies,2listeners and0productchildren. All original120scommand/115sTERM, test, response and cleanup bounds remain; no retries or cap growth. V2 actual8HTTP/1passed+1failed is retained as failed partial evidence, not relabeled or added to this successor's planned21.
+
+No live execution-gate.json or run directory exists. Root acceptance and authorized stage prefix remain absent/empty; controls/installed stay closed. No supervisor, product import, build or test was executed for this preparation; only Python compile syntax inspection and data-only hash/Git verification. Root must review preparation.patch and release exact pins before any execution.

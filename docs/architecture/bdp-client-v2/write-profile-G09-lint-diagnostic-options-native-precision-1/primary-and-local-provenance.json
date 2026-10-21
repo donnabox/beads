@@ -1,0 +1,224 @@
+{
+  "RustSources": 22,
+  "all36PrimaryOriginHashesUrlsCommitRelationsVerified": true,
+  "capturedRetrievalAttributionNotNewHTTPObservation": true,
+  "directorySnapshots": 12,
+  "freshExternalSourceRetrievalPerformedByReviewer": false,
+  "gitBlobRelations": [
+    {
+      "commit": "191d051335821e804e7ffe484240ca326af86f7c",
+      "directoryGitBlobSha1": "5f91fd5e48f5e90f867f6bafa159f70308f9c25f",
+      "exactRelation": true,
+      "localFile": "primary/cli_options.rs",
+      "rawSha256": "5f14d9c0d9088031cdc3b7f264fb65940f85ae6a2cd124c7ae9b069bbca9bb23",
+      "upstreamPath": "crates/biome_cli/src/cli_options.rs"
+    },
+    {
+      "commit": "191d051335821e804e7ffe484240ca326af86f7c",
+      "directoryGitBlobSha1": "9a79c13533e38d0665fbe0cc2730262d380355be",
+      "exactRelation": true,
+      "localFile": "primary/execute--mod.rs",
+      "rawSha256": "284d2181041875a0fd25bf18f288162a1344878e01d76dbbead786c233fc9e48",
+      "upstreamPath": "crates/biome_cli/src/execute/mod.rs"
+    },
+    {
+      "commit": "191d051335821e804e7ffe484240ca326af86f7c",
+      "directoryGitBlobSha1": "db0b6fd6e748d4ec3cd0086c78d449f1d63b1167",
+      "exactRelation": true,
+      "localFile": "primary/reporter--mod.rs",
+      "rawSha256": "441a8072937696d9067129eaa8218f8ff30f72e11b9f103388dedea29bde7dd9",
+      "upstreamPath": "crates/biome_cli/src/reporter/mod.rs"
+    },
+    {
+      "commit": "191d051335821e804e7ffe484240ca326af86f7c",
+      "directoryGitBlobSha1": "c8d0a69f4cd67ec9fe3683e6cd30d7ea31493dfe",
+      "exactRelation": true,
+      "localFile": "primary/reporter--terminal.rs",
+      "rawSha256": "d244ed5a4debf4b955934d6b1d02287efa5816ff405af0f29ab8e8d5bbdd0ed5",
+      "upstreamPath": "crates/biome_cli/src/reporter/terminal.rs"
+    },
+    {
+      "commit": "191d051335821e804e7ffe484240ca326af86f7c",
+      "directoryGitBlobSha1": "45d6981af4e8e0e420af408d47a05e1c01f8cb49",
+      "exactRelation": true,
+      "localFile": "primary/commands--lint.rs",
+      "rawSha256": "2998e47841fdb260b6d9a59537b93a46742028c0611f4746956df0959fc93dd0",
+      "upstreamPath": "crates/biome_cli/src/commands/lint.rs"
+    },
+    {
+      "commit": "191d051335821e804e7ffe484240ca326af86f7c",
+      "directoryGitBlobSha1": "f90a616a8ac6ca7e9a3ef36481f9afb0c6f827fc",
+      "exactRelation": true,
+      "localFile": "primary/runner--mod.rs",
+      "rawSha256": "d5036f8a59a46ac523d84c319b89103efd199cb12f79603f4eb835126e24bdbe",
+      "upstreamPath": "crates/biome_cli/src/runner/mod.rs"
+    },
+    {
+      "commit": "191d051335821e804e7ffe484240ca326af86f7c",
+      "directoryGitBlobSha1": "7fbc2fe69fad0a0bfe2a7622921058e24bc4c7d5",
+      "exactRelation": true,
+      "localFile": "primary/runner--collector.rs",
+      "rawSha256": "40188b6e637db28210f90fde51fe3a25330133960d45101f2d5aa8997727c67c",
+      "upstreamPath": "crates/biome_cli/src/runner/collector.rs"
+    },
+    {
+      "commit": "191d051335821e804e7ffe484240ca326af86f7c",
+      "directoryGitBlobSha1": "c343b1dfe19ca8eb6ad8fe16ad49a8b6a0da0d71",
+      "exactRelation": true,
+      "localFile": "primary/runner--crawler.rs",
+      "rawSha256": "c57acfb2251e0a51d9e10fd15538f12a25ec2c364eb9c5da282a6ccff12468d6",
+      "upstreamPath": "crates/biome_cli/src/runner/crawler.rs"
+    },
+    {
+      "commit": "191d051335821e804e7ffe484240ca326af86f7c",
+      "directoryGitBlobSha1": "643f48b070921cf3458f1a84975aa66ca96e81ba",
+      "exactRelation": true,
+      "localFile": "primary/runner--diagnostics.rs",
+      "rawSha256": "7b82a392cff04d88469e6518c699c28f62a7282c470dc00e3a045ab494529354",
+      "upstreamPath": "crates/biome_cli/src/runner/diagnostics.rs"
+    },
+    {
+      "commit": "191d051335821e804e7ffe484240ca326af86f7c",
+      "directoryGitBlobSha1": "44e81e4fed26501bb912b1fe84804f526f68e320",
+      "exactRelation": true,
+      "localFile": "primary/runner--finalizer.rs",
+      "rawSha256": "9a496dcf3b345fe88dcbfc5587189f8127d24f9934e01d958c91c547c44b2680",
+      "upstreamPath": "crates/biome_cli/src/runner/finalizer.rs"
+    },
+    {
+      "commit": "191d051335821e804e7ffe484240ca326af86f7c",
+      "directoryGitBlobSha1": "80d962c148afce6a5865da10cd250d4b4618d59c",
+      "exactRelation": true,
+      "localFile": "primary/runner--impls--mod.rs",
+      "rawSha256": "df851e133acfa6c8e234e23710a9259d1c1d847bd6ed4d04dfd8391f1a7d9d41",
+      "upstreamPath": "crates/biome_cli/src/runner/impls/mod.rs"
+    },
+    {
+      "commit": "191d051335821e804e7ffe484240ca326af86f7c",
+      "directoryGitBlobSha1": "9dc63073bd25af30b4e185d57b2438c6ebe90f19",
+      "exactRelation": true,
+      "localFile": "primary/runner--execution.rs",
+      "rawSha256": "b6f723f97771f75aeb3398810c5b2f0dea987458f0c898476eeae2fb8e700bbf",
+      "upstreamPath": "crates/biome_cli/src/runner/execution.rs"
+    },
+    {
+      "commit": "191d051335821e804e7ffe484240ca326af86f7c",
+      "directoryGitBlobSha1": "9d27f43e9c4374b1a091da255e593ae21b5736ea",
+      "exactRelation": true,
+      "localFile": "primary/runner--impls--collectors--default.rs",
+      "rawSha256": "67061729ab7533d70fdbba60a7ef7985e1ed40a770b1332138d688194aa64d2c",
+      "upstreamPath": "crates/biome_cli/src/runner/impls/collectors/default.rs"
+    },
+    {
+      "commit": "191d051335821e804e7ffe484240ca326af86f7c",
+      "directoryGitBlobSha1": "22fb33de82507500a7437205d6f4c5c7787b8b29",
+      "exactRelation": true,
+      "localFile": "primary/runner--impls--finalizers--default.rs",
+      "rawSha256": "b79b28db7801b2ebca056372bc7f1bddf29a200130b5397e36be96f475198b38",
+      "upstreamPath": "crates/biome_cli/src/runner/impls/finalizers/default.rs"
+    },
+    {
+      "commit": "191d051335821e804e7ffe484240ca326af86f7c",
+      "directoryGitBlobSha1": "d578c2331fda51aa406919ec30969ec9afa1a431",
+      "exactRelation": true,
+      "localFile": "primary/runner--impls--process_file--lint_and_assist.rs",
+      "rawSha256": "745c8a85bb2f395d2b0ff06be998e989d21208fd6061cc41168a863a6bb727b6",
+      "upstreamPath": "crates/biome_cli/src/runner/impls/process_file/lint_and_assist.rs"
+    },
+    {
+      "commit": "191d051335821e804e7ffe484240ca326af86f7c",
+      "directoryGitBlobSha1": "b920195e095717bbcfba28e170c6ecee7f4e3925",
+      "exactRelation": true,
+      "localFile": "primary/crates--biome_service--src--workspace--server.rs",
+      "rawSha256": "8ddc8bc68264a619d2042998388114e6a57ca48896d36ac08eb43d0e1921ff41",
+      "upstreamPath": "crates/biome_service/src/workspace/server.rs"
+    },
+    {
+      "commit": "191d051335821e804e7ffe484240ca326af86f7c",
+      "directoryGitBlobSha1": "66e6f9c3c0fb99cd1fc27c3aabaffdbba2a7efff",
+      "exactRelation": true,
+      "localFile": "primary/crates--biome_service--src--file_handlers--mod.rs",
+      "rawSha256": "727afffe497270959b3ae2072387f96ef1e2aa1298b1611e1208a196a6be5535",
+      "upstreamPath": "crates/biome_service/src/file_handlers/mod.rs"
+    },
+    {
+      "commit": "191d051335821e804e7ffe484240ca326af86f7c",
+      "directoryGitBlobSha1": "6b44dc4f2946dddd505e6b22186ef78afc9dffd6",
+      "exactRelation": true,
+      "localFile": "primary/crates--biome_service--src--workspace_types.rs",
+      "rawSha256": "eb34f7e1dbd4041c2ccb4f478ce7d1b86752da73c6f89ab4fdc98c0f25873812",
+      "upstreamPath": "crates/biome_service/src/workspace_types.rs"
+    },
+    {
+      "commit": "191d051335821e804e7ffe484240ca326af86f7c",
+      "directoryGitBlobSha1": "c8ec863a892997e6695491454d491b5c2fec0b33",
+      "exactRelation": true,
+      "localFile": "primary/crates--biome_service--src--file_handlers--javascript.rs",
+      "rawSha256": "630f07ad690a600f23e2621640cf95c684ef3475d75c266278554d4f37402332",
+      "upstreamPath": "crates/biome_service/src/file_handlers/javascript.rs"
+    },
+    {
+      "commit": "191d051335821e804e7ffe484240ca326af86f7c",
+      "directoryGitBlobSha1": "3591031c72d04deb0fe55c622d1913bec1f0dd0b",
+      "exactRelation": true,
+      "localFile": "primary/crates--biome_cli--src--main.rs",
+      "rawSha256": "6a45f1785399a04398808e5b28e98769a9b26cbdf32cc8a81734e34034d9508d",
+      "upstreamPath": "crates/biome_cli/src/main.rs"
+    },
+    {
+      "commit": "191d051335821e804e7ffe484240ca326af86f7c",
+      "directoryGitBlobSha1": "11ff765a4100d23a3e1c9f56ee7d8e3b5b1db0f7",
+      "exactRelation": true,
+      "localFile": "primary/crates--biome_cli--src--lib.rs",
+      "rawSha256": "5dea864fe5eca2be1c270a58a0d99e9667f73c88a5c5785fd410709712cc73a0",
+      "upstreamPath": "crates/biome_cli/src/lib.rs"
+    },
+    {
+      "commit": "191d051335821e804e7ffe484240ca326af86f7c",
+      "directoryGitBlobSha1": "3ac68a600382780d17c87416ca10af1957a72652",
+      "exactRelation": true,
+      "localFile": "primary/diagnostics.rs",
+      "rawSha256": "8c91acb4e2e5c7f1d99f2fb26a796d4b8a24e66edc38a8ab3bad89dbc075b90b",
+      "upstreamPath": "crates/biome_cli/src/diagnostics.rs"
+    }
+  ],
+  "localExactCopiesVerified": 7,
+  "localInPlacePinsVerified": 5,
+  "nativeBinaryReproducibleBuildAttestation": false,
+  "nineAdditionalDirectoryRecordsInInputOriginsNotPrimaryRetrievalLedger": true,
+  "packageParsedEqualityAndUpstreamOneAdditionalLF": true,
+  "preserved404Records": [
+    {
+      "error": "HTTPError: HTTP Error 404: Not Found",
+      "file": "execute.rs",
+      "url": "https://raw.githubusercontent.com/biomejs/biome/191d051335821e804e7ffe484240ca326af86f7c/crates/biome_cli/src/execute.rs"
+    },
+    {
+      "error": "HTTPError: HTTP Error 404: Not Found",
+      "file": "traverse.rs",
+      "url": "https://raw.githubusercontent.com/biomejs/biome/191d051335821e804e7ffe484240ca326af86f7c/crates/biome_cli/src/execute/traverse.rs"
+    }
+  ],
+  "primaryFiles": 36,
+  "rawWithoutParentDirectoryWitness": [
+    {
+      "localFile": "primary/upstream-package.json",
+      "rawSha256": "5228ec89ebf509d4b7d56b4ff185ccff7de50962893f61b4102327bff1f55c99",
+      "scope": "Commit-pinned captured rawURL; no supplied parent directory blob witness",
+      "upstreamPath": "packages/@biomejs/biome/package.json"
+    }
+  ],
+  "retrievalLedgerRecords": 29,
+  "successfulRetrievalLedgerRecords": 27,
+  "tag": {
+    "node_id": "REF_kwDOKAiibL5yZWZzL3RhZ3MvQGJpb21lanMvYmlvbWVAMi41Ljc",
+    "object": {
+      "sha": "191d051335821e804e7ffe484240ca326af86f7c",
+      "type": "commit",
+      "url": "https://api.github.com/repos/biomejs/biome/git/commits/191d051335821e804e7ffe484240ca326af86f7c"
+    },
+    "ref": "refs/tags/@biomejs/biome@2.5.7",
+    "url": "https://api.github.com/repos/biomejs/biome/git/refs/tags/@biomejs/biome@2.5.7"
+  },
+  "upstreamCommit": "191d051335821e804e7ffe484240ca326af86f7c"
+}

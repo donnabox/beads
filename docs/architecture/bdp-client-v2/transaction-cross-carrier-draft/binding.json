@@ -1,0 +1,43 @@
+{
+  "createdAt": "2026-10-14T20:10:24.035258+00:00",
+  "checkout": "/Users/dbox/repos/wt/vickie/vickie-cross-carrier-draft",
+  "branch": "codex/vickie-cross-carrier-draft",
+  "parent": "eff171839fe4f37638284a4c3346428979d26b5d",
+  "parentTree": "5c14bcc20ec7a72118bc07d2ed5896703211a660",
+  "commitCreated": false,
+  "fourParentPathsIdenticalToC555": true,
+  "changedPaths": [
+    "packages/conformance/test-support/transactional/manifest-v1.json",
+    "packages/conformance/test-support/transactional/coverage-v1.json",
+    "packages/conformance/src/transactional-cumulative.test.ts",
+    "apps/bdptest/src/transactional-matrix.test.ts"
+  ],
+  "sourceFiles": [
+    {
+      "path": "packages/conformance/test-support/transactional/manifest-v1.json",
+      "bytes": 684206,
+      "sha256": "726fc623bbb115a0f39e0bb3aaa586ea37254522b254e55e555ea95587f14cb9"
+    },
+    {
+      "path": "packages/conformance/test-support/transactional/coverage-v1.json",
+      "bytes": 99245,
+      "sha256": "a3a15b5143c118b24965698ec10289821664c90e935820b51c8cf76c05bdb1df"
+    },
+    {
+      "path": "packages/conformance/src/transactional-cumulative.test.ts",
+      "bytes": 88878,
+      "sha256": "ca689688836d2de747c0fa838d01ed14e7cefcadfd62be7f7b53632a1a513e12"
+    },
+    {
+      "path": "apps/bdptest/src/transactional-matrix.test.ts",
+      "bytes": 82676,
+      "sha256": "5b4cfb0a6c7e21514953464be5a9730cad122d1b1bb712f04f9f1d371b068740"
+    }
+  ],
+  "patchSHA256": "2c74b73049bd2a5be07698199faac8b011f403f2155286d405c24b101652fbb2",
+  "measurementsSHA256": "316923ef6922c943ed848d67085956033d7b620030a3245c4796079c569881e3",
+  "measureScriptSHA256": "050d0c93e40ee24da00589b11f83ee5f661070e18be6dbd7d3fe417b8f5274dc",
+  "routePreimageSHA256": "a9a17908b6fa87674d5f573b584f4a1ce1d41d7909fadf48b65e9b05397ddfd4",
+  "parentPinsSHA256": "99f51ea92b59c8b80cfc8f209ce1ddad2a1c587f38c273d1255c365db78d5a5a",
+  "execution": "No test/build/typecheck/lint/install/service/pack/CI execution. Source formatting and independent JSON measurement only. Smaller committed guards unchanged."
+}

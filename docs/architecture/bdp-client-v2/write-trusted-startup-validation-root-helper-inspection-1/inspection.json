@@ -1,0 +1,31 @@
+{
+  "kind": "root-full-helper-and-data-inspection-preparation1",
+  "createdUtc": "2026-10-18T05:23:23.638832+00:00",
+  "session": "2026-10-18T02:16:24Z-549f",
+  "preparationIndexSha256": "34b03b3a3eec7aeca7d37e98008f32d0ab1db1557e4efe75b9b48fac51b3d87d",
+  "indexedArtifactsVerified": 106,
+  "implementationIdentitiesVerified": 101,
+  "referencesVerified": 5,
+  "liveSourceFiles": 682,
+  "sourcePatchSha256": "4fd125d8613b0d3370227353b3e29e1ee73735466bd332a6961c400e3535fbe2",
+  "sourceIdentity": "824f2a33c01476f47504db3af8461d17e1cb953fba88d8ad2f5e1ff4824e2886",
+  "rootReadFullHelpers": [
+    "gate.py",
+    "run.py",
+    "audit.py",
+    "packages.py",
+    "bound-consumer-loader.mjs"
+  ],
+  "commandsInspected": 25,
+  "selectedCallbacks": 44,
+  "staticAstParsedOnly": true,
+  "executionOccurred": false,
+  "accepted": false,
+  "findingsDisposition": "write-trusted-startup-validation-root-disposition-1/disposition.json",
+  "requiredCorrections": [
+    "N1 actual close callback ownership settlement/success before removal and guard clear",
+    "N2 mandatory typed integer zero failed-test and failed-suite counters"
+  ],
+  "otherwiseAssessment": "New-owned HEAD absence/empty intent index and exact682/source/fullpatch gate are precise. Fresh tools/build/archive/consumer lock and graph/payload/entry proof barriers remain. Stock smoke second consumer remains separate. Root must verify minimal successor exact delta and independent native closure before fresh prefix release.",
+  "executionReleased": false
+}

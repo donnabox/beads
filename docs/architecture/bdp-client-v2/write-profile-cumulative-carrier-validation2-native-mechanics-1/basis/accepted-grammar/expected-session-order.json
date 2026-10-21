@@ -1,0 +1,138 @@
+{
+  "bootstrapChildren": 1,
+  "bootstrapNotInventedInWrapper": "Legacy wrapper baseline contains served metadata/runtime/targets only, no original bootstrap listenUrl or PID. Do not fabricate either.",
+  "initialScenarioCount": 17,
+  "reopenCount": 7,
+  "sessionCount": 24,
+  "sessions": [
+    {
+      "ordinal": 0,
+      "reopen": false,
+      "scenario": "read-update.idempotency.principal-isolation"
+    },
+    {
+      "ordinal": 1,
+      "reopen": false,
+      "scenario": "read-update.http.command-minimum-fields"
+    },
+    {
+      "ordinal": 2,
+      "reopen": false,
+      "scenario": "transactional.batch.atomic-commit"
+    },
+    {
+      "ordinal": 3,
+      "reopen": false,
+      "scenario": "transactional.batch.rollback"
+    },
+    {
+      "ordinal": 4,
+      "reopen": false,
+      "scenario": "transactional.batch.deletion-safety"
+    },
+    {
+      "ordinal": 5,
+      "reopen": false,
+      "scenario": "transactional.batch.no-op-entries"
+    },
+    {
+      "ordinal": 6,
+      "reopen": false,
+      "scenario": "transactional.set.mutation"
+    },
+    {
+      "ordinal": 7,
+      "reopen": true,
+      "scenario": "transactional.set.mutation",
+      "sourceActionId": "reopen"
+    },
+    {
+      "ordinal": 8,
+      "reopen": false,
+      "scenario": "transactional.set.zero-match"
+    },
+    {
+      "ordinal": 9,
+      "reopen": true,
+      "scenario": "transactional.set.zero-match",
+      "sourceActionId": "reopen"
+    },
+    {
+      "ordinal": 10,
+      "reopen": false,
+      "scenario": "transactional.set.cardinality"
+    },
+    {
+      "ordinal": 11,
+      "reopen": true,
+      "scenario": "transactional.set.cardinality",
+      "sourceActionId": "reopen"
+    },
+    {
+      "ordinal": 12,
+      "reopen": false,
+      "scenario": "transactional.set.singleton-targets"
+    },
+    {
+      "ordinal": 13,
+      "reopen": true,
+      "scenario": "transactional.set.singleton-targets",
+      "sourceActionId": "reopen"
+    },
+    {
+      "ordinal": 14,
+      "reopen": false,
+      "scenario": "transactional.receipt.readable"
+    },
+    {
+      "ordinal": 15,
+      "reopen": true,
+      "scenario": "transactional.receipt.readable",
+      "sourceActionId": "reopen"
+    },
+    {
+      "ordinal": 16,
+      "reopen": false,
+      "scenario": "transactional.receipt.pagination"
+    },
+    {
+      "ordinal": 17,
+      "reopen": true,
+      "scenario": "transactional.receipt.pagination",
+      "sourceActionId": "reopen"
+    },
+    {
+      "ordinal": 18,
+      "reopen": false,
+      "scenario": "transactional.idempotency.conflict"
+    },
+    {
+      "ordinal": 19,
+      "reopen": true,
+      "scenario": "transactional.idempotency.conflict",
+      "sourceActionId": "c-reopen"
+    },
+    {
+      "ordinal": 20,
+      "reopen": false,
+      "scenario": "transactional.idempotency.cross-carrier"
+    },
+    {
+      "ordinal": 21,
+      "reopen": false,
+      "scenario": "transactional.idempotency.failed-retained"
+    },
+    {
+      "ordinal": 22,
+      "reopen": false,
+      "scenario": "transactional.sequence.member-transactions"
+    },
+    {
+      "ordinal": 23,
+      "reopen": false,
+      "scenario": "transactional.http.conditional-reads"
+    }
+  ],
+  "state": "Prospective source-derived order, NOT actual observations",
+  "totalProductChildren": 25
+}

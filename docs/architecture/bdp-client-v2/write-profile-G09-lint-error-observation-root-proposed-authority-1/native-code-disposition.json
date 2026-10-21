@@ -1,0 +1,41 @@
+{
+  "session": "2026-10-18T02:16:24Z-549f",
+  "accepted": true,
+  "sourceBindingSha256": "712c3c5a8e1543bf5005cbb54d321c6874b7443afb7e01805f393434fe5cd714",
+  "diagnosticOnly": true,
+  "noPipelineCredit": true,
+  "approvedStages": [
+    "lint-error-observation"
+  ],
+  "qualityAcceptance": false,
+  "candidateInactiveAtAuthoring": true,
+  "effectiveRuntimeAuthorityNow": false,
+  "executionRequiresSeparateFullReviewPublicationAndActivation": true,
+  "newActualReviewPerformed": false,
+  "reviewOfCorrectedBytesByClaudeClaim": false,
+  "ordinaryProfileOrWholeWriteCredit": false,
+  "originalP3RemainsFailedStopped": true,
+  "helperRootStaticAcceptance": {
+    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-lint-error-observation-helper-root-static-acceptance-1/acceptance.json",
+    "sha256": "7de285aecb711b4219de734d1c4dbcd0adbd888f2e8bb8395723ba4a24b7c68e"
+  },
+  "role": "ROOT diagnostic-only disposition of existing corrected-source native CODE evidence, not a repeated review",
+  "nativeSourceReview": {
+    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-corrected-native-code-review-2/closure.json",
+    "sha256": "55c270e44ca306510135516911ae09712a8d9aa43dfefd769f4f12f1799e0f5b"
+  },
+  "rootStaticSourceAcceptance": {
+    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-corrected-source-root-acceptance-2/acceptance.json",
+    "sha256": "a9cf24e1c322318e73bf43d8a29fc773a57dae22abe5320fd8ca89277edf356c"
+  },
+  "closedNativeFindings": [
+    "F1",
+    "F2",
+    "F3",
+    "F4",
+    "F5",
+    "G09-CODE-N1"
+  ],
+  "F7F8F9": "Recorded unchanged per8c782 root disposition",
+  "meaning": "Existing corrected f6 native static acceptance only; no new compiler/runtime/actual provider current-source review or pipeline credit."
+}

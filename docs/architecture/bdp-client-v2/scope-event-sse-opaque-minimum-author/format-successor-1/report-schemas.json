@@ -1,0 +1,242 @@
+{
+  "kind": "source-derived-report-contracts-not-runtime-results",
+  "contracts": {
+    "scope-event-sse-minimum-owner": {
+      "emission": "success only; failed assertions propagate after prepare observer restoration",
+      "fields": {
+        "observation": "literal",
+        "reads": "number",
+        "seedCommits": "number",
+        "cases": "array<{label:string,outcome:string,groupObserverActive:boolean,groupPrepareCalls:number|null,context?:{scopeEpoch:string,authorizationView:string,scopePosition:string}}>"
+      },
+      "expected": {
+        "reads": 14,
+        "seedCommits": 1,
+        "cases": 14,
+        "row1": {
+          "groupObserverActive": false,
+          "groupPrepareCalls": null
+        },
+        "rows2to13": "active=true; prepares=0",
+        "row14": "active=true; actual prepares>0"
+      },
+      "measurementLimit": "SQL preparations only, never execution/scan-allocation census"
+    },
+    "scope-event-sse-minimum-capture": {
+      "emission": "after cleanup, including failureCount; finalContext omitted if failure precedes observation",
+      "fields": {
+        "observation": "literal",
+        "seedCommits": "number",
+        "interveningCommits": "number",
+        "serviceCalls": "number",
+        "ownerAttempts": "number",
+        "waits": "number",
+        "clockCalls": "number",
+        "ownerCloseCalls": "number",
+        "attempts": "array<{minimum:tuple|sentinel|null,outcome:string,context?:readContext}>",
+        "probes": "array<{call:number,outcome:string}>",
+        "finalContext": "readContext|omitted",
+        "closed": "boolean actual service.closed settlement",
+        "failureCount": "number"
+      },
+      "expected": {
+        "seedCommits": 1,
+        "interveningCommits": 1,
+        "serviceCalls": 5,
+        "ownerAttempts": 3,
+        "waits": 1,
+        "clockCalls": 4,
+        "ownerCloseCalls": 1,
+        "attempts": 3,
+        "probes": 5,
+        "closed": true,
+        "failureCount": 0,
+        "positions": [
+          "pos-1",
+          "pos-2",
+          "pos-2"
+        ],
+        "probeOutcomes": [
+          "TypeError",
+          "promise-returned",
+          "promise-returned",
+          "TypeError",
+          "Error"
+        ]
+      }
+    },
+    "scope-event-sse-minimum-abort": {
+      "emission": "after cleanup including failures",
+      "fields": {
+        "observation": "literal",
+        "seedCommits": "number",
+        "interveningCommits": "number",
+        "serviceCalls": "number",
+        "ownerAttempts": "number",
+        "waits": "number",
+        "clockCalls": "number",
+        "ownerCloseCalls": "number",
+        "rawPostCloseProbes": "number",
+        "probes": "array<{call:number,outcome:string}>",
+        "operationOutcome": "string",
+        "synchronouslyUnsettled": "boolean instantaneous observation only",
+        "closed": "boolean actual service.closed settlement",
+        "failureCount": "number"
+      },
+      "expected": {
+        "seedCommits": 1,
+        "interveningCommits": 0,
+        "serviceCalls": 2,
+        "ownerAttempts": 1,
+        "waits": 1,
+        "clockCalls": 2,
+        "ownerCloseCalls": 1,
+        "rawPostCloseProbes": 1,
+        "probes": 2,
+        "operationOutcome": "aborted",
+        "synchronouslyUnsettled": true,
+        "closed": true,
+        "failureCount": 0
+      }
+    },
+    "scope-event-sse-minimum-http": {
+      "emission": "after recorder/runtime cleanup; positive omitted if admission evidence incomplete",
+      "fields": {
+        "observation": "literal",
+        "requests": "number",
+        "records": "array<{ordinal:number,method:string,target:string,status:number,bodyBytes:number,context:object with optional bdp-scope-epoch/bdp-authorization-view/bdp-scope-position string keys}>",
+        "seedCommits": "number",
+        "elapsedMs": "number",
+        "baselinePages": "array<{target:string,eventCount:number,next:string|null,context:wireContext}>",
+        "positive": "{ready:boolean,status:number,headers:Record<string,string>,framesBeforeClose:string[],framesAfterDrain:string[],liveBeforeClose:{aborted:boolean,destroyed:boolean,elapsedMs:number},drained:boolean}|omitted",
+        "failureCount": "number"
+      },
+      "expected": {
+        "requests": 31,
+        "records": 31,
+        "seedCommits": 1,
+        "baselinePages": 3,
+        "pageEventCounts": [
+          2,
+          2,
+          1
+        ],
+        "positiveFrames": 5,
+        "failureCount": 0,
+        "statuses": {
+          "200": 6,
+          "503": 10,
+          "500": 8,
+          "400": 3,
+          "404": 1,
+          "401": 1,
+          "304": 1,
+          "412": 1
+        }
+      },
+      "measurementLimit": "four new report; legacy finite-event-minimum-http separate; exact full frame/header/body assertions in callback"
+    },
+    "private-installed-scope-event-sse-opaque-minimum": {
+      "emission": "finally safe available facts on success/failure; missing facts omitted, never fabricated",
+      "fields": {
+        "observation": "literal",
+        "attribution": "external-installed-candidate|development-local",
+        "installedProvenance": "string explicit independent verification requirement",
+        "claimEligible": "false",
+        "outcome": "passed|failed",
+        "declaredSourceCommit": "string",
+        "witnessSource": "{fingerprintScope:string,head:string,fileSha256:string,diffSha256:string,dirtyPaths:string[]}",
+        "entry": "string",
+        "entrySha256": "string",
+        "binding": "installedTransactionBinding|omitted",
+        "node": "string",
+        "seedBodySha256": "string",
+        "seedBodyBytes": "number",
+        "seedKey": "string",
+        "deadlines": "{work:45000,cleanup:10000,callback:60000,outerSupervisor:120000,finite:5000,recorder:5000}",
+        "requests": "array<{ordinal:number,session:number,method:string,target:string}>",
+        "completedFiniteResponses": "array<{ordinal:number,session:number,method:string,target:string,status:number,bodyOctets:number,bodySha256:string,wireSha256?:string,headers:optional-safe-header-map}>",
+        "localSensitivityControls": "string[] from completed assertions",
+        "baselineEvents": "complete Event[]",
+        "sse": "{requestOrdinal:6,status:number,headers:Record<string,string>,framesBeforeClose:string[],completeObservedFrames:string[],liveBeforeClose:{aborted:boolean,destroyed:boolean,elapsedMs:number},drained:boolean,wireBytes:number,wireSha256:string}|omitted",
+        "streamAtReport": "{status:number,headers:safeHeaderMap,wireBytes:number,wireSha256:string,completeObservedFrames:string[],drained:boolean,destroyed:boolean}|omitted",
+        "sessions": "array<{ordinal:number,create:boolean,state:launching|owned|unknown-no-handle,pid?:number,listenUrl?:string,binding?:object,exit?:{code:number|null,signal:string|null},closeEvent?:{code:number|null,signal:string|null},closed:boolean,stopUnknown:boolean}>",
+        "pendingOperationsAtReport": "number (promises, not socket census)",
+        "directory": "string",
+        "directoryRemoved": "boolean",
+        "failures": "array<{phase:string,name:string,message:string}> redacted",
+        "diagnosticLimit": "string",
+        "supervisorAcceptanceRequired": "string"
+      },
+      "expected": {
+        "outcome": "passed",
+        "requests": 6,
+        "methods": [
+          "POST",
+          "GET",
+          "HEAD",
+          "GET",
+          "HEAD",
+          "GET"
+        ],
+        "completedFiniteResponses": 5,
+        "finiteStatuses": [
+          200,
+          200,
+          200,
+          503,
+          503
+        ],
+        "baselineEvents": 1,
+        "sseFrames": 1,
+        "sessions": 1,
+        "sessionState": "owned",
+        "exit": {
+          "code": 0,
+          "signal": null
+        },
+        "closeEvent": {
+          "code": 0,
+          "signal": null
+        },
+        "closed": true,
+        "stopUnknown": false,
+        "pendingOperationsAtReport": 0,
+        "directoryRemoved": true,
+        "failures": 0,
+        "localSensitivityControls": [
+          "frame-event-identity"
+        ]
+      },
+      "cleanup": "one10s envelope begins before deliberate stream close and includes child close/stdio event; failures/pre-ready uncertainty preserve store; late promises observed and no fabricated survivor absence"
+    },
+    "finite-event-minimum-http": {
+      "historicalSchema": true,
+      "fields": {
+        "observation": "literal",
+        "calls": "number",
+        "productChildren": "number",
+        "directoryAbsent": "boolean",
+        "failureCount": "number"
+      },
+      "expected": {
+        "calls": 32,
+        "productChildren": 0,
+        "directoryAbsent": true,
+        "failureCount": 0
+      },
+      "change": "only canonical Scope SSE pair oracle, no dispatch/schema change"
+    },
+    "private-event-restart-cursor": {
+      "historicalSchema": true,
+      "prefixByteExact": true,
+      "expectedSubset": {
+        "requests": 5,
+        "completedFiniteResponses": 4,
+        "sessions": 2,
+        "stores": 1
+      },
+      "schemaAuthority": "unchanged original callback in before/apps/bdptest/src/transactional-event-sse-installed.test.ts"
+    }
+  }
+}

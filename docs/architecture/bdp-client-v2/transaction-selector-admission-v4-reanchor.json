@@ -1,0 +1,212 @@
+{
+  "parent": "757aedc8008386745d59d5005498a9256d6ea76e",
+  "tree": "734bf9daf40fd17d0fe2bf86b085598589122f2f",
+  "orderedParents": [
+    "122800511ee6306e4105e1f73bf3658f35c90a14",
+    "727e919c2893bd34d5e72ea4659302a999bc4a6f"
+  ],
+  "branch": "codex/vickie-selector-admission",
+  "clean": true,
+  "comparison": "f2ac3f980fc8d35a3b485db04b813ad1b569d94d",
+  "changedTrackedPaths": [
+    "docs/specs/bdp.md"
+  ],
+  "unchangedTrackedObjectModeEntries": 662,
+  "oldPlan": {
+    "path": "transaction-selector-admission-implementation-plan-v3.md",
+    "sha256": "05fd6cf2fb89e7c85d0edfe5b1621782ae1cb1ac20b55734c70c91dc7fd555c7"
+  },
+  "planV2Sha256": "8adb89c30795d4e53f610debbbc2ec1ed798e5789cd4bf5dc23df4ece0e3268a",
+  "planV4Sha256": "55f240fd2dfcdc48d142ab9e9d4366068829d88cf2e3880065313f4d169cb5cb",
+  "planDiffSha256": "49248a7737aafb6ca5c51048610146a7a0a6d8ebea9f8271c55ceb7894b7bd9d",
+  "inventory": [
+    {
+      "path": "packages/server/src/read-selector.ts",
+      "exists": true,
+      "sha256": "cf7e82465a3cb40e1e0a09c88375d61bc8e22e66f461db16c02f8e356a5d4563",
+      "gitEntry": "100644 blob a1d9a379529d8bf130dce9407cd3eca05c2c87f9\tpackages/server/src/read-selector.ts",
+      "sameAsF2ac": true
+    },
+    {
+      "path": "packages/server/src/transaction-set.ts",
+      "exists": true,
+      "sha256": "8929939059acdbfb87c1423ac9102917ac036b5591cc2e81d97099836f45f4e3",
+      "gitEntry": "100644 blob 09c976c3c29f45ebed8e7bc69a49165afa8e2c4e\tpackages/server/src/transaction-set.ts",
+      "sameAsF2ac": true
+    },
+    {
+      "path": "packages/server/src/transaction-batch.ts",
+      "exists": true,
+      "sha256": "32aec23b0a701d8f481ee324b230e44e66b18cd6267f38c68246921234882b3e",
+      "gitEntry": "100644 blob a3ae488169e8b5f6365cd5d759b45b1d6bbbda9c\tpackages/server/src/transaction-batch.ts",
+      "sameAsF2ac": true
+    },
+    {
+      "path": "packages/server/src/transaction-store.ts",
+      "exists": true,
+      "sha256": "54df6965f747e6610fe8ed95f8e2517cf3904f5812732831b78420edae2efbd0",
+      "gitEntry": "100644 blob 9641bdab901306f6091b19c2070fc03755aa74c4\tpackages/server/src/transaction-store.ts",
+      "sameAsF2ac": true
+    },
+    {
+      "path": "packages/server/src/transaction-submission.ts",
+      "exists": true,
+      "sha256": "242839f8014eb6083d6f9d544c1461618561f8c511a53086eb45cd0fd3b75a37",
+      "gitEntry": "100644 blob fdd4a987039c6c6bfd498133ae9d25aabdcc9555\tpackages/server/src/transaction-submission.ts",
+      "sameAsF2ac": true
+    },
+    {
+      "path": "packages/server/src/transaction-http.ts",
+      "exists": true,
+      "sha256": "1339f32e0818aee5a44fc01a2034366a73e72c40027d6cde7041f26525aba366",
+      "gitEntry": "100644 blob fd1e16757740ae172bdd698b7664634236e61b08\tpackages/server/src/transaction-http.ts",
+      "sameAsF2ac": true
+    },
+    {
+      "path": "docs/specs/bdp.md",
+      "exists": true,
+      "sha256": "287a0a64bea0c1c3be51b5bb50d528283185ef7886a9c7402b4d4b5a7d5a0941",
+      "gitEntry": "100644 blob c400133c505e215fe6ca6be37b4eac388054ec45\tdocs/specs/bdp.md",
+      "sameAsF2ac": false
+    },
+    {
+      "path": "packages/server/src/read-selector.test.ts",
+      "exists": true,
+      "sha256": "b4d4a9bf087edf88e1d1a273b11b9a34a1dcdfad7dd5c15d37b842b0f8a06a9d",
+      "gitEntry": "100644 blob 4ad4be915e38459c79dd0c263e66ae375d3a7eeb\tpackages/server/src/read-selector.test.ts",
+      "sameAsF2ac": true
+    },
+    {
+      "path": "packages/server/src/transaction-set.test.ts",
+      "exists": true,
+      "sha256": "67a043837d06d040bcc5c3e632b03339eb614765dec5eb2fc9adf9bcfdb47bee",
+      "gitEntry": "100644 blob 9afd591f81e725532c0bc41532ffa98d18d57e49\tpackages/server/src/transaction-set.test.ts",
+      "sameAsF2ac": true
+    },
+    {
+      "path": "packages/server/src/transaction-submission.test.ts",
+      "exists": true,
+      "sha256": "d006a11aaf2f991388c2d1ae347cafa5a1827bdb5d784a793c6b672feb6e0c85",
+      "gitEntry": "100644 blob c40db1589d39eb68cb2a35617188f95cb32bac86\tpackages/server/src/transaction-submission.test.ts",
+      "sameAsF2ac": true
+    },
+    {
+      "path": "packages/server/src/transaction-http.test.ts",
+      "exists": true,
+      "sha256": "8f66df9f9cf891383a19a67fb50c85708eaae055c59a661777b7110060b0c56f",
+      "gitEntry": "100644 blob 01236567d3801e2e7482af571ff4010fff6e0be6\tpackages/server/src/transaction-http.test.ts",
+      "sameAsF2ac": true
+    },
+    {
+      "path": "apps/bdptest/src/transactional-selector-admission-installed.test.ts",
+      "exists": false,
+      "sha256": null,
+      "gitEntry": null,
+      "sameAsF2ac": true
+    }
+  ],
+  "retainedTitleInventory": [
+    {
+      "path": "packages/server/src/transaction-submission.test.ts",
+      "title": "compares conflict before negotiation and negotiates exact pending/terminal replay without changing it",
+      "line": 154,
+      "plannedOwnerOpens": "1"
+    },
+    {
+      "path": "packages/server/src/transaction-submission.test.ts",
+      "title": "checks fresh capacity before negotiation and never captures a refused key",
+      "line": 169,
+      "plannedOwnerOpens": "1"
+    },
+    {
+      "path": "packages/server/src/transaction-submission.test.ts",
+      "title": "joins overlapping calls through one pending receipt without second execution",
+      "line": 286,
+      "plannedOwnerOpens": "1"
+    },
+    {
+      "path": "packages/server/src/transaction-submission.test.ts",
+      "title": "counts every outer set before negotiation while retained sets bypass fresh operation capacity",
+      "line": 746,
+      "plannedOwnerOpens": "1"
+    },
+    {
+      "path": "packages/server/src/transaction-submission.test.ts",
+      "title": "separates cardinality syntax, numeric admission and guarded failure, preserving original pointers on replay/reopen",
+      "line": 593,
+      "plannedOwnerOpens": "5 (one initial plus four reopens)"
+    },
+    {
+      "path": "packages/server/src/transaction-submission.test.ts",
+      "title": "maps known numeric failure at the original outer index and rolls back staged work",
+      "line": 662,
+      "plannedOwnerOpens": "1"
+    },
+    {
+      "path": "packages/server/src/transaction-submission.test.ts",
+      "title": "uses the same depth boundary for singleton and wrapped set content",
+      "line": 681,
+      "plannedOwnerOpens": "1"
+    },
+    {
+      "path": "packages/server/src/transaction-set.test.ts",
+      "title": "selects staged canonical Resources once, retains indices and expands in canonical order",
+      "line": 125,
+      "plannedOwnerOpens": "1"
+    },
+    {
+      "path": "packages/server/src/transaction-set.test.ts",
+      "title": "cardinality is inclusive, rolls back the whole batch and retains original failed disposition",
+      "line": 196,
+      "plannedOwnerOpens": "1"
+    },
+    {
+      "path": "packages/server/src/transaction-set.test.ts",
+      "title": "late selected patch failure rolls back earlier selected mutations and batch creation",
+      "line": 216,
+      "plannedOwnerOpens": "1"
+    },
+    {
+      "path": "packages/server/src/transaction-set.test.ts",
+      "title": "serializes byte-bounded deep syntax iteratively without changing number lexemes or key order",
+      "line": 1024,
+      "plannedOwnerOpens": "0"
+    }
+  ],
+  "specAnchorMap": {
+    "1065": 1065,
+    "4250": 4255,
+    "4497": 4502,
+    "5250": 5255,
+    "5307": 5312
+  },
+  "sourcePositiveCases": 90,
+  "sourcePositiveHttp": 94,
+  "sourcePositiveOwners": 39,
+  "sourcePositiveListeners": 19,
+  "sourcePositiveDirectories": 20,
+  "sourcePositiveReadonly": 17,
+  "controls": {
+    "invocations": 2,
+    "expectedHttp": 2,
+    "maxHttp": 52
+  },
+  "combined": {
+    "expectedHttp": 96,
+    "plannedMaxHttp": 146,
+    "prospectiveEnvelopeHttp": 152,
+    "owners": 41,
+    "listeners": 21,
+    "directories": 22,
+    "expectedReadonly": 17,
+    "maxReadonly": 19
+  },
+  "installed": {
+    "requests": 25,
+    "children": 1,
+    "directories": 1
+  },
+  "authoringReleased": false,
+  "executionPerformed": false,
+  "substantiveBlockers": []
+}

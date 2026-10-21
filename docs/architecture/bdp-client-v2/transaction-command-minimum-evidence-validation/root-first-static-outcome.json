@@ -1,0 +1,79 @@
+{
+  "at": "2026-10-15T07:05:12.081876+00:00",
+  "status": "STATIC_FAILED_INSTALLED_NOT_STARTED",
+  "commands": [
+    {
+      "name": "boundaries",
+      "exit": 0,
+      "supervisorExit": 0,
+      "seconds": 0.7347885419148952,
+      "sourceUnchanged": true,
+      "sampledPidsAbsentNow": true
+    },
+    {
+      "name": "build",
+      "exit": 0,
+      "supervisorExit": 0,
+      "seconds": 1.063682584092021,
+      "sourceUnchanged": true,
+      "sampledPidsAbsentNow": true
+    },
+    {
+      "name": "format-check",
+      "exit": 0,
+      "supervisorExit": 0,
+      "seconds": 1.4719584581907839,
+      "sourceUnchanged": true,
+      "sampledPidsAbsentNow": true
+    },
+    {
+      "name": "lint",
+      "exit": 0,
+      "supervisorExit": 0,
+      "seconds": 0.6560327920597047,
+      "sourceUnchanged": true,
+      "sampledPidsAbsentNow": true
+    },
+    {
+      "name": "offline-setup",
+      "exit": 0,
+      "supervisorExit": 0,
+      "seconds": 0.6480940841138363,
+      "sourceUnchanged": true,
+      "sampledPidsAbsentNow": true
+    },
+    {
+      "name": "read-seal",
+      "exit": 0,
+      "supervisorExit": 0,
+      "seconds": 0.518501500133425,
+      "sourceUnchanged": true,
+      "sampledPidsAbsentNow": true
+    },
+    {
+      "name": "static-cases",
+      "exit": 1,
+      "supervisorExit": 1,
+      "seconds": 1.83628920908086,
+      "sourceUnchanged": true,
+      "sampledPidsAbsentNow": true
+    },
+    {
+      "name": "typecheck",
+      "exit": 0,
+      "supervisorExit": 0,
+      "seconds": 1.6674350830726326,
+      "sourceUnchanged": true,
+      "sampledPidsAbsentNow": true
+    }
+  ],
+  "passedTests": 1,
+  "failedTests": 4,
+  "remainingStagesNotRun": true,
+  "rootCauseUnderAudit": "Auth-bearing header classifier rejects public bdp-authorization-view in authored exact headers. No weakening or retry authorized.",
+  "notes": [
+    "Two selected app cases did not execute because suite import failed.",
+    "Compile-cache tool directories retained; no product store/service created.",
+    "Original full logs/results preserved."
+  ]
+}

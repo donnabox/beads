@@ -1,0 +1,80 @@
+{
+  "released": true,
+  "session": "2026-10-08T20:26:35Z-81e5",
+  "approvedCommandIds": [
+    "setup",
+    "typecheck",
+    "build",
+    "format-check",
+    "lint",
+    "boundaries",
+    "read-seal",
+    "build-inventory"
+  ],
+  "node": "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+  "pnpm": "/Users/dbox/.cache/node/corepack/v1/pnpm/11.20.0/bin/pnpm.cjs",
+  "preparationSha256": {
+    "gate.py": "c725c0f0338d86efe306f9d8a171d1ef76b37215c9ade870211551dddd4bdf70",
+    "supervise.py": "da74971257c3cc804b404dbc2d72759e301431e04d2474c692a658ed43b18f9a",
+    "packages.py": "60a49b12891d9eab4fd7316e7caadb88fedef285bae8890efeaf207db9938e52",
+    "inventory.py": "f01a170801c8e259ea52696eb3c53402cc0e92ade8da797d5cec9e3f4c78127d",
+    "review-cohort.py": "87f7895e3458ec082cecd342b785a1093c5caa8466dcdc4938992bb5acd6f46b",
+    "commands.json": "c1d63cd680a657eada8a611206ae3f8103cae4377386842265a69ab645ca0074"
+  },
+  "guardSha256": "fd81ba029cd4e7c7e60623df89e8292af91141d311d9ce789ed19e2152375e84",
+  "sourceHead": "f5511718371a6935614eae6756e796cef71570c2",
+  "sourceTree": "3cd1da66ba3a6cbd0bbdaa2442d10002939d826b",
+  "sourceStatus": " M docs/design/transaction-implementation-progress.md\n?? apps/bdptest/src/transactional-principal-key-installed.test.ts\n",
+  "sourceDiffSha256": "a74e915724535842c82daa39ac016455f7aeb889f19f37bbfd2db7da84d447f9",
+  "finalHead": null,
+  "finalTree": null,
+  "finalBase": null,
+  "sourceLockSha256": "4150d8821c96dbc2cfec0b2762ff76b58318079f65fa4f5c8858ef2dd61f8d6d",
+  "consumerLockSha256": null,
+  "expectedProductionVersions": {
+    "@bdp/protocol": "0.0.0",
+    "@bdp/server": "0.0.0",
+    "ajv": "8.17.1",
+    "ajv-formats": "3.0.1",
+    "fast-deep-equal": "3.1.3",
+    "fast-uri": "3.1.5",
+    "json-schema-traverse": "1.0.0",
+    "require-from-string": "2.0.2"
+  },
+  "sourceBinding": {
+    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-principal-key-draft/review-repair/source-binding.json",
+    "sha256": "fce5c0dfb33221f9cc29fd6420eab607722d88d0d9b6076b64a57f763f5f9406"
+  },
+  "rootAcceptance": {
+    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-principal-key-draft/execution-preparation-v2/root-static-release.json",
+    "sha256": "b7ad8b60d6794812b2081f6b024820965a0da32b4b234b885db47ecdeb90ea12"
+  },
+  "councilAcceptance": {
+    "path": null,
+    "sha256": null
+  },
+  "finalSource": {
+    "path": null,
+    "sha256": null
+  },
+  "finalIntegrationAcceptance": {
+    "path": null,
+    "sha256": null
+  },
+  "buildOutputInventory": {
+    "path": null,
+    "sha256": null
+  },
+  "buildBridge": {
+    "path": null,
+    "sha256": null
+  },
+  "installedProvenance": {
+    "path": null,
+    "sha256": null
+  },
+  "reportContract": {
+    "path": null,
+    "sha256": null
+  }
+}

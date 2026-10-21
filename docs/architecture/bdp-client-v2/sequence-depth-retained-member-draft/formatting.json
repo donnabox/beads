@@ -1,0 +1,22 @@
+{
+  "argv": [
+    "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+    "/Users/dbox/repos/wt/vickie/vickie-authorization-transition/node_modules/@biomejs/biome/bin/biome",
+    "format",
+    "--write",
+    "--config-path",
+    "/Users/dbox/repos/wt/vickie/vickie-sequence-depth-retained",
+    "packages/server/src/transaction-batch.ts",
+    "packages/server/src/transaction-http.ts",
+    "packages/server/src/transaction-set.test.ts",
+    "packages/server/src/transaction-sequence.test.ts",
+    "packages/server/src/transaction-http.test.ts",
+    "apps/bdptest/src/transactional-sequence-depth-installed.test.ts"
+  ],
+  "cwd": "/Users/dbox/repos/wt/vickie/vickie-sequence-depth-retained",
+  "exitCode": 0,
+  "elapsedSeconds": 0.12772479210980237,
+  "stdout": "Formatted 6 files in 46ms. Fixed 4 files.\n",
+  "stderr": "",
+  "scope": "formatting only; no product module imports/tests/build/install"
+}

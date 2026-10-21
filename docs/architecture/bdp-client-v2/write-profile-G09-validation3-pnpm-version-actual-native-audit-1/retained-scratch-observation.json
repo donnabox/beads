@@ -1,0 +1,50 @@
+{
+  "cacheRetentionIsNotFailure": true,
+  "cleanupAuthorizedOrPerformed": false,
+  "contract": "Original run.py checks nested bdp-* runtime dirs; it does not promise empty/deleted stage root or removal of Node compile cache.",
+  "count": 9,
+  "directories": 2,
+  "entries": [
+    {
+      "kind": "directory",
+      "relative": "node-compile-cache"
+    },
+    {
+      "kind": "directory",
+      "relative": "node-compile-cache/v24.16.0-arm64-cf738c9d-501"
+    },
+    {
+      "kind": "file",
+      "relative": "node-compile-cache/v24.16.0-arm64-cf738c9d-501/21949e48"
+    },
+    {
+      "kind": "file",
+      "relative": "node-compile-cache/v24.16.0-arm64-cf738c9d-501/3088bb2c"
+    },
+    {
+      "kind": "file",
+      "relative": "node-compile-cache/v24.16.0-arm64-cf738c9d-501/42483939"
+    },
+    {
+      "kind": "file",
+      "relative": "node-compile-cache/v24.16.0-arm64-cf738c9d-501/63382e8b"
+    },
+    {
+      "kind": "file",
+      "relative": "node-compile-cache/v24.16.0-arm64-cf738c9d-501/836e5827"
+    },
+    {
+      "kind": "file",
+      "relative": "node-compile-cache/v24.16.0-arm64-cf738c9d-501/99ccc123"
+    },
+    {
+      "kind": "file",
+      "relative": "node-compile-cache/v24.16.0-arm64-cf738c9d-501/e0ed69ce"
+    }
+  ],
+  "exists": true,
+  "files": 7,
+  "nestedBdpRuntimeDirectories": [],
+  "path": "/private/tmp/vickie-tx-discovery-validation-pnpm-version-xjhoyl04",
+  "wholeScratchAbsenceRequired": false
+}

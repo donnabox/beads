@@ -1,0 +1,140 @@
+{
+  "callbacks": [
+    {
+      "basisFileSha256": "8dc7caba3f88438df13fd950fc0a1ce619fc772ad6c91b93d4ba8d6e0302568c",
+      "basisLine": 4405,
+      "finalFileSha256": "UNKNOWN",
+      "finalLine": "UNKNOWN",
+      "id": "G09-S01",
+      "kind": "source",
+      "name": "G09-S01 schemaObserved zero-min/current and captured supplied tuple",
+      "observedExecution": false,
+      "path": "packages/server/src/transaction-service.test.ts",
+      "sourceAuthoringAndSelectionFinalized": false
+    },
+    {
+      "basisFileSha256": "8dc7caba3f88438df13fd950fc0a1ce619fc772ad6c91b93d4ba8d6e0302568c",
+      "basisLine": 4426,
+      "finalFileSha256": "UNKNOWN",
+      "finalLine": "UNKNOWN",
+      "id": "G09-S02",
+      "kind": "source",
+      "name": "G09-S02 schemaObserved epoch and view errors",
+      "observedExecution": false,
+      "path": "packages/server/src/transaction-service.test.ts",
+      "sourceAuthoringAndSelectionFinalized": false
+    },
+    {
+      "basisFileSha256": "8dc7caba3f88438df13fd950fc0a1ce619fc772ad6c91b93d4ba8d6e0302568c",
+      "basisLine": 4455,
+      "finalFileSha256": "UNKNOWN",
+      "finalLine": "UNKNOWN",
+      "id": "G09-S03",
+      "kind": "source",
+      "name": "G09-S03 schemaObserved ahead and opaque bounded attempts",
+      "observedExecution": false,
+      "path": "packages/server/src/transaction-service.test.ts",
+      "sourceAuthoringAndSelectionFinalized": false
+    },
+    {
+      "basisFileSha256": "f448ff5566833d9b445609aa2205c36a6b43acf9a7fda51930170ea15912780e",
+      "basisLine": 455,
+      "finalFileSha256": "UNKNOWN",
+      "finalLine": "UNKNOWN",
+      "id": "G09-S04",
+      "kind": "source",
+      "name": "G09-S04 schema selector receiving and exact identity",
+      "observedExecution": false,
+      "path": "packages/server/src/transaction-schema-http.test.ts",
+      "sourceAuthoringAndSelectionFinalized": false
+    },
+    {
+      "basisFileSha256": "f448ff5566833d9b445609aa2205c36a6b43acf9a7fda51930170ea15912780e",
+      "basisLine": 508,
+      "finalFileSha256": "UNKNOWN",
+      "finalLine": "UNKNOWN",
+      "id": "G09-S05",
+      "kind": "source",
+      "name": "G09-S05 schema selector HTTP/min failure order",
+      "observedExecution": false,
+      "path": "packages/server/src/transaction-schema-http.test.ts",
+      "sourceAuthoringAndSelectionFinalized": false
+    },
+    {
+      "basisFileSha256": "f448ff5566833d9b445609aa2205c36a6b43acf9a7fda51930170ea15912780e",
+      "basisLine": 756,
+      "finalFileSha256": "UNKNOWN",
+      "finalLine": "UNKNOWN",
+      "id": "G09-S06",
+      "kind": "source",
+      "name": "G09-S06 schema runtime satisfied and context errors",
+      "observedExecution": false,
+      "path": "packages/server/src/transaction-schema-http.test.ts",
+      "sourceAuthoringAndSelectionFinalized": false
+    },
+    {
+      "basisFileSha256": "f448ff5566833d9b445609aa2205c36a6b43acf9a7fda51930170ea15912780e",
+      "basisLine": 781,
+      "finalFileSha256": "UNKNOWN",
+      "finalLine": "UNKNOWN",
+      "id": "G09-S07",
+      "kind": "source",
+      "name": "G09-S07 schema runtime ahead before conditional",
+      "observedExecution": false,
+      "path": "packages/server/src/transaction-schema-http.test.ts",
+      "sourceAuthoringAndSelectionFinalized": false
+    },
+    {
+      "basisFileSha256": "f448ff5566833d9b445609aa2205c36a6b43acf9a7fda51930170ea15912780e",
+      "basisLine": 799,
+      "finalFileSha256": "UNKNOWN",
+      "finalLine": "UNKNOWN",
+      "id": "G09-S08",
+      "kind": "source",
+      "name": "G09-S08 schema runtime unknown before HEAD/media",
+      "observedExecution": false,
+      "path": "packages/server/src/transaction-schema-http.test.ts",
+      "sourceAuthoringAndSelectionFinalized": false
+    },
+    {
+      "basisFileSha256": "a496043a747b3e8f9bc9dd6e7f9849b3c4a400253b3d90e64d0405b7752b1c89",
+      "basisLine": 808,
+      "finalFileSha256": "UNKNOWN",
+      "finalLine": "UNKNOWN",
+      "id": "G09-I01",
+      "kind": "installed",
+      "name": "G09-I01 installed exact schema current minimum",
+      "observedExecution": false,
+      "path": "apps/bdptest/src/transactional-schema-installed.test.ts",
+      "sourceAuthoringAndSelectionFinalized": false
+    },
+    {
+      "basisFileSha256": "a496043a747b3e8f9bc9dd6e7f9849b3c4a400253b3d90e64d0405b7752b1c89",
+      "basisLine": 899,
+      "finalFileSha256": "UNKNOWN",
+      "finalLine": "UNKNOWN",
+      "id": "G09-I02",
+      "kind": "installed",
+      "name": "G09-I02 installed receiving and exact retrieval membership",
+      "observedExecution": false,
+      "path": "apps/bdptest/src/transactional-schema-installed.test.ts",
+      "sourceAuthoringAndSelectionFinalized": false
+    }
+  ],
+  "countsAreProposedNotAuthoredOrObserved": true,
+  "countsAreStaticProgramInventoriesNotRuntimeResults": true,
+  "extraDirect": 3,
+  "historicalInstalled14": "unchanged separate callback, no report union",
+  "installedRequests": [
+    14,
+    16
+  ],
+  "newInstalledCallbacks": 2,
+  "newSourceCallbacks": 8,
+  "normalChildren": [
+    1,
+    1
+  ],
+  "sourceDirect": 26,
+  "sourceWire": 9
+}

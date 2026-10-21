@@ -1,0 +1,108 @@
+{
+  "ready": true,
+  "sourceBindingSha256": "77c27b159f545a82738c8acf50a3e0a741f41d0168d8da435c95900443b9217b",
+  "sourceBinding": {
+    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-guarded-batch-draft/review-repair/source-binding.json",
+    "sha256": "77c27b159f545a82738c8acf50a3e0a741f41d0168d8da435c95900443b9217b"
+  },
+  "reportContract": {
+    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-guarded-batch-draft/report-contract.json",
+    "sha256": "33a9a7183cb2d309eec3a57257e634cdb744829de14400d163f5ba8788d1482c"
+  },
+  "requests": {
+    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-guarded-batch-draft/requests.json",
+    "sha256": "4b0cebcec5b56eecbd2a32ebabfe1e18863b2e30ca014fa7d2d46a877a4b1126"
+  },
+  "selection": {
+    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-guarded-batch-draft/selection.json",
+    "sha256": "6cfa676d0a7ce7c3da779e8e9de3403a0e3e34ed4d06dd6d3e2aa4f6d907be1a"
+  },
+  "ledger": {
+    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-guarded-batch-plan/proposed-successor-v2/ledger.json",
+    "sha256": "5aa8f75096d1f9eb3b1dc8ab3244dd012d64bf5e843f7738e820dc621f77a1e0"
+  },
+  "testSha256": "01e3ec2bf5f5af19dcd497fce5a37c8a9394723bca5760ceca53f8b8128626ab",
+  "referenceSourceSha256": {
+    "scripts/transaction-installed-observation.mjs": "6f772f3776d3c3effa788676d853cc2932a6ee59ad63ac3338ad1b487408914b",
+    "apps/bdptest/test-support/transactional-execution-binding.ts": "cde506c72a8710eafe58522900f6db70ed3701cf333560252dc8e7c5e706cf89",
+    "apps/bdptest/test-support/installed-contract-identity.ts": "d33f6d1ca8a3691bbc2529129bbe85260cdd38f09c8895304a870ec8cf7c4165",
+    "packages/conformance/test-support/transactional/fixture-v1.json": "3a7899ced771d4880066d98b0000c53f801ece53458502cc4f3bc641146c9a85",
+    "schemas/bdp-v0.schema.json": "0baa5d5ef67144f8e6513b4cde31168effc8df6d52ef3141b0f144b87f8dc227",
+    "pnpm-lock.yaml": "4150d8821c96dbc2cfec0b2762ff76b58318079f65fa4f5c8858ef2dd61f8d6d"
+  },
+  "reviewerSha256": "f64f54196300a1479854b6d0ee2d985fa788dac84dd3e5d86681fee93fb43c88",
+  "topLevelFields": [
+    "label",
+    "mode",
+    "declaredSourceCommit",
+    "sourceAttribution",
+    "workspaceDirty",
+    "entry",
+    "entrySha256",
+    "executionMode",
+    "binding",
+    "servedIdentities",
+    "credentialFreeConfigurationProjectionSha256",
+    "artifacts",
+    "attempts",
+    "completedResponses",
+    "responses",
+    "receiptObservations",
+    "milestones",
+    "milestoneOverflow",
+    "socketCount",
+    "maximumLiveSockets",
+    "liveSocketsAfterCleanup",
+    "requestSockets",
+    "clientDispatchDisciplinePassed",
+    "bothConnectedBeforeFirstResponse",
+    "bothWritesPrecededFirstResponse",
+    "inconclusivePending",
+    "prerequisites",
+    "completedContenderCount",
+    "failedContenderCount",
+    "selectedWinner",
+    "selectedLoser",
+    "revisionEncodingBytes",
+    "performed",
+    "failedAssertion",
+    "namedAssertion",
+    "failedPhase",
+    "primaryFailureCount",
+    "cleanupFailureCount",
+    "reportWriteFailed",
+    "reportOverflow",
+    "failureCount",
+    "outcome",
+    "retention",
+    "launchAttempted",
+    "childPid",
+    "childExitCode",
+    "childSignalCode",
+    "stopKnowledge",
+    "closed",
+    "temporaryRoot",
+    "directory",
+    "directoryAbsent",
+    "deadlineExceeded",
+    "cleanupExceeded",
+    "drainExceeded",
+    "elapsedMs",
+    "bounds",
+    "claimEligible"
+  ],
+  "milestoneFields": [
+    "order",
+    "request",
+    "kind",
+    "elapsedMs",
+    "socket"
+  ],
+  "executionAuthorization": false,
+  "actualAdapterRuns": 0,
+  "historicalPlaceholder": {
+    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-guarded-batch-draft/execution-preparation/before-adapter-finalization/review-cohort.py",
+    "sha256": "cc8d43e47142d7c3060bf64905d181a9dc1dd45c8a2ca92c0db4adbc4beb44d7"
+  },
+  "note": "Same strict7/3 report shape and oracles, source-rebound F1/F2 test-only successor. No actual runs yet; initial static root release and later clean ordinary successor/build/consumer gates mandatory."
+}

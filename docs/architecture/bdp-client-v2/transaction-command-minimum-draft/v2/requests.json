@@ -1,0 +1,1969 @@
+{
+  "status": "prospective static arithmetic; no test, build, service or package execution",
+  "serialization": "UTF-8 compact JSON; insertion order mirrors source. Variable receipt/context values are explicitly symbolic. No credential bytes.",
+  "sourceBindingSha256": "cf5d2cd13a57d4a01220f931bdd308a71c8709f5d185592b2f6a08347631c24e",
+  "requests": [
+    {
+      "group": "A",
+      "step": 1,
+      "method": "POST",
+      "scopeRelativeRoute": "operations/batch",
+      "bodyText": "{\"operations\":[{\"operation\":\"createBead\",\"id\":\"beads/batch_0\",\"type\":\"https://example.test/bead\",\"properties\":{\"title\":\"batch_0\"}}]}",
+      "bodyBytes": 132,
+      "bodySha256": "630d3d8aaabdbe20ffecf6ea27595c5880eaf732b6802075d865e9e5c9f6b867",
+      "key": "batch_0",
+      "copiedOrSpecialHeaders": {
+        "bdp-minimum-scope-position": ""
+      },
+      "expectedStatus": 200,
+      "note": null,
+      "bodyShaKind": "literal"
+    },
+    {
+      "group": "A",
+      "step": 2,
+      "method": "GET",
+      "scopeRelativeRoute": "beads/batch_0",
+      "bodyText": null,
+      "bodyBytes": 0,
+      "bodySha256": null,
+      "key": null,
+      "copiedOrSpecialHeaders": {},
+      "expectedStatus": 200,
+      "note": null,
+      "bodyShaKind": "absent"
+    },
+    {
+      "group": "A",
+      "step": 3,
+      "method": "POST",
+      "scopeRelativeRoute": "operations/batch",
+      "bodyText": "{\"operations\":[{\"operation\":\"createBead\",\"id\":\"beads/batch_0\",\"type\":\"https://example.test/bead\",\"properties\":{\"title\":\"batch_0\"}}]}",
+      "bodyBytes": 132,
+      "bodySha256": "630d3d8aaabdbe20ffecf6ea27595c5880eaf732b6802075d865e9e5c9f6b867",
+      "key": "batch_0",
+      "copiedOrSpecialHeaders": {
+        "bdp-minimum-scope-position": "pos-999",
+        "bdp-scope-epoch": "foreign-epoch",
+        "bdp-authorization-view": "foreign-view"
+      },
+      "expectedStatus": 200,
+      "note": null,
+      "bodyShaKind": "literal"
+    },
+    {
+      "group": "A",
+      "step": 4,
+      "method": "POST",
+      "scopeRelativeRoute": "operations/create-bead",
+      "bodyText": "{\"id\":\"beads/createBead_0\",\"type\":\"https://example.test/bead\",\"properties\":{\"title\":\"createBead_0\"}}",
+      "bodyBytes": 100,
+      "bodySha256": "7b0b631d9c8f1866c51be75cc80e5a080b82e550c90535600e0ac30c1cec1793",
+      "key": "createBead_0",
+      "copiedOrSpecialHeaders": {
+        "bdp-minimum-scope-position": "not a token!"
+      },
+      "expectedStatus": 200,
+      "note": null,
+      "bodyShaKind": "literal"
+    },
+    {
+      "group": "A",
+      "step": 5,
+      "method": "GET",
+      "scopeRelativeRoute": "beads/createBead_0",
+      "bodyText": null,
+      "bodyBytes": 0,
+      "bodySha256": null,
+      "key": null,
+      "copiedOrSpecialHeaders": {},
+      "expectedStatus": 200,
+      "note": null,
+      "bodyShaKind": "absent"
+    },
+    {
+      "group": "A",
+      "step": 6,
+      "method": "POST",
+      "scopeRelativeRoute": "operations/create-bead",
+      "bodyText": "{\"id\":\"beads/createBead_0\",\"type\":\"https://example.test/bead\",\"properties\":{\"title\":\"createBead_0\"}}",
+      "bodyBytes": 100,
+      "bodySha256": "7b0b631d9c8f1866c51be75cc80e5a080b82e550c90535600e0ac30c1cec1793",
+      "key": "createBead_0",
+      "copiedOrSpecialHeaders": {
+        "bdp-minimum-scope-position": "pos-999",
+        "bdp-scope-epoch": "foreign-epoch",
+        "bdp-authorization-view": "foreign-view"
+      },
+      "expectedStatus": 200,
+      "note": null,
+      "bodyShaKind": "literal"
+    },
+    {
+      "group": "A",
+      "step": 7,
+      "method": "POST",
+      "scopeRelativeRoute": "operations/sequence",
+      "bodyText": "{\"operations\":[{\"operation\":\"createBead\",\"id\":\"beads/sequence_0\",\"type\":\"https://example.test/bead\",\"properties\":{\"title\":\"sequence_0\"},\"idempotencyKey\":\"sequence_0\"}]}",
+      "bodyBytes": 168,
+      "bodySha256": "095f82534379dab153f928a81175b651cb81e9806baeeb80fa5cc8c95ef368f2",
+      "key": null,
+      "copiedOrSpecialHeaders": {
+        "bdp-minimum-scope-position": "token-one, token-two"
+      },
+      "expectedStatus": 200,
+      "note": null,
+      "bodyShaKind": "literal"
+    },
+    {
+      "group": "A",
+      "step": 8,
+      "method": "GET",
+      "scopeRelativeRoute": "beads/sequence_0",
+      "bodyText": null,
+      "bodyBytes": 0,
+      "bodySha256": null,
+      "key": null,
+      "copiedOrSpecialHeaders": {},
+      "expectedStatus": 200,
+      "note": null,
+      "bodyShaKind": "absent"
+    },
+    {
+      "group": "A",
+      "step": 9,
+      "method": "POST",
+      "scopeRelativeRoute": "operations/sequence",
+      "bodyText": "{\"operations\":[{\"operation\":\"createBead\",\"id\":\"beads/sequence_0\",\"type\":\"https://example.test/bead\",\"properties\":{\"title\":\"sequence_0\"},\"idempotencyKey\":\"sequence_0\"}]}",
+      "bodyBytes": 168,
+      "bodySha256": "095f82534379dab153f928a81175b651cb81e9806baeeb80fa5cc8c95ef368f2",
+      "key": null,
+      "copiedOrSpecialHeaders": {
+        "bdp-minimum-scope-position": "pos-999",
+        "bdp-scope-epoch": "foreign-epoch",
+        "bdp-authorization-view": "foreign-view"
+      },
+      "expectedStatus": 200,
+      "note": null,
+      "bodyShaKind": "literal"
+    },
+    {
+      "group": "A",
+      "step": 10,
+      "method": "POST",
+      "scopeRelativeRoute": "operations/batch",
+      "bodyText": "{\"operations\":[{\"operation\":\"createBead\",\"id\":\"beads/batch_1\",\"type\":\"https://example.test/bead\",\"properties\":{\"title\":\"batch_1\"}}]}",
+      "bodyBytes": 132,
+      "bodySha256": "d70041f835b19fae31912420c3f8ad82c2f80a8a416b6832cc89297fd840ecbb",
+      "key": "batch_1",
+      "copiedOrSpecialHeaders": {
+        "bdp-scope-epoch": ""
+      },
+      "expectedStatus": 200,
+      "note": null,
+      "bodyShaKind": "literal"
+    },
+    {
+      "group": "A",
+      "step": 11,
+      "method": "GET",
+      "scopeRelativeRoute": "beads/batch_1",
+      "bodyText": null,
+      "bodyBytes": 0,
+      "bodySha256": null,
+      "key": null,
+      "copiedOrSpecialHeaders": {},
+      "expectedStatus": 200,
+      "note": null,
+      "bodyShaKind": "absent"
+    },
+    {
+      "group": "A",
+      "step": 12,
+      "method": "POST",
+      "scopeRelativeRoute": "operations/batch",
+      "bodyText": "{\"operations\":[{\"operation\":\"createBead\",\"id\":\"beads/batch_1\",\"type\":\"https://example.test/bead\",\"properties\":{\"title\":\"batch_1\"}}]}",
+      "bodyBytes": 132,
+      "bodySha256": "d70041f835b19fae31912420c3f8ad82c2f80a8a416b6832cc89297fd840ecbb",
+      "key": "batch_1",
+      "copiedOrSpecialHeaders": {
+        "bdp-minimum-scope-position": "pos-999",
+        "bdp-scope-epoch": "foreign-epoch",
+        "bdp-authorization-view": "foreign-view"
+      },
+      "expectedStatus": 200,
+      "note": null,
+      "bodyShaKind": "literal"
+    },
+    {
+      "group": "A",
+      "step": 13,
+      "method": "POST",
+      "scopeRelativeRoute": "operations/create-bead",
+      "bodyText": "{\"id\":\"beads/createBead_1\",\"type\":\"https://example.test/bead\",\"properties\":{\"title\":\"createBead_1\"}}",
+      "bodyBytes": 100,
+      "bodySha256": "0d2e44fcc0959b35270f4f4aaebbb6727ee06a20d9bfb5ab52c6a111caa0b47c",
+      "key": "createBead_1",
+      "copiedOrSpecialHeaders": {
+        "bdp-scope-epoch": "not a token!"
+      },
+      "expectedStatus": 200,
+      "note": null,
+      "bodyShaKind": "literal"
+    },
+    {
+      "group": "A",
+      "step": 14,
+      "method": "GET",
+      "scopeRelativeRoute": "beads/createBead_1",
+      "bodyText": null,
+      "bodyBytes": 0,
+      "bodySha256": null,
+      "key": null,
+      "copiedOrSpecialHeaders": {},
+      "expectedStatus": 200,
+      "note": null,
+      "bodyShaKind": "absent"
+    },
+    {
+      "group": "A",
+      "step": 15,
+      "method": "POST",
+      "scopeRelativeRoute": "operations/create-bead",
+      "bodyText": "{\"id\":\"beads/createBead_1\",\"type\":\"https://example.test/bead\",\"properties\":{\"title\":\"createBead_1\"}}",
+      "bodyBytes": 100,
+      "bodySha256": "0d2e44fcc0959b35270f4f4aaebbb6727ee06a20d9bfb5ab52c6a111caa0b47c",
+      "key": "createBead_1",
+      "copiedOrSpecialHeaders": {
+        "bdp-minimum-scope-position": "pos-999",
+        "bdp-scope-epoch": "foreign-epoch",
+        "bdp-authorization-view": "foreign-view"
+      },
+      "expectedStatus": 200,
+      "note": null,
+      "bodyShaKind": "literal"
+    },
+    {
+      "group": "A",
+      "step": 16,
+      "method": "POST",
+      "scopeRelativeRoute": "operations/sequence",
+      "bodyText": "{\"operations\":[{\"operation\":\"createBead\",\"id\":\"beads/sequence_1\",\"type\":\"https://example.test/bead\",\"properties\":{\"title\":\"sequence_1\"},\"idempotencyKey\":\"sequence_1\"}]}",
+      "bodyBytes": 168,
+      "bodySha256": "d036d211d09af696f860c8f7722ab346f07153c9608a1bc0ca6f83cf04552ade",
+      "key": null,
+      "copiedOrSpecialHeaders": {
+        "bdp-scope-epoch": "token-one, token-two"
+      },
+      "expectedStatus": 200,
+      "note": null,
+      "bodyShaKind": "literal"
+    },
+    {
+      "group": "A",
+      "step": 17,
+      "method": "GET",
+      "scopeRelativeRoute": "beads/sequence_1",
+      "bodyText": null,
+      "bodyBytes": 0,
+      "bodySha256": null,
+      "key": null,
+      "copiedOrSpecialHeaders": {},
+      "expectedStatus": 200,
+      "note": null,
+      "bodyShaKind": "absent"
+    },
+    {
+      "group": "A",
+      "step": 18,
+      "method": "POST",
+      "scopeRelativeRoute": "operations/sequence",
+      "bodyText": "{\"operations\":[{\"operation\":\"createBead\",\"id\":\"beads/sequence_1\",\"type\":\"https://example.test/bead\",\"properties\":{\"title\":\"sequence_1\"},\"idempotencyKey\":\"sequence_1\"}]}",
+      "bodyBytes": 168,
+      "bodySha256": "d036d211d09af696f860c8f7722ab346f07153c9608a1bc0ca6f83cf04552ade",
+      "key": null,
+      "copiedOrSpecialHeaders": {
+        "bdp-minimum-scope-position": "pos-999",
+        "bdp-scope-epoch": "foreign-epoch",
+        "bdp-authorization-view": "foreign-view"
+      },
+      "expectedStatus": 200,
+      "note": null,
+      "bodyShaKind": "literal"
+    },
+    {
+      "group": "A",
+      "step": 19,
+      "method": "POST",
+      "scopeRelativeRoute": "operations/batch",
+      "bodyText": "{\"operations\":[{\"operation\":\"createBead\",\"id\":\"beads/batch_2\",\"type\":\"https://example.test/bead\",\"properties\":{\"title\":\"batch_2\"}}]}",
+      "bodyBytes": 132,
+      "bodySha256": "73b876411d2cb50e705d422e508a6382ed2dabee6bb63c2aa0c78fb136aebfe0",
+      "key": "batch_2",
+      "copiedOrSpecialHeaders": {
+        "bdp-authorization-view": ""
+      },
+      "expectedStatus": 200,
+      "note": null,
+      "bodyShaKind": "literal"
+    },
+    {
+      "group": "A",
+      "step": 20,
+      "method": "GET",
+      "scopeRelativeRoute": "beads/batch_2",
+      "bodyText": null,
+      "bodyBytes": 0,
+      "bodySha256": null,
+      "key": null,
+      "copiedOrSpecialHeaders": {},
+      "expectedStatus": 200,
+      "note": null,
+      "bodyShaKind": "absent"
+    },
+    {
+      "group": "A",
+      "step": 21,
+      "method": "POST",
+      "scopeRelativeRoute": "operations/batch",
+      "bodyText": "{\"operations\":[{\"operation\":\"createBead\",\"id\":\"beads/batch_2\",\"type\":\"https://example.test/bead\",\"properties\":{\"title\":\"batch_2\"}}]}",
+      "bodyBytes": 132,
+      "bodySha256": "73b876411d2cb50e705d422e508a6382ed2dabee6bb63c2aa0c78fb136aebfe0",
+      "key": "batch_2",
+      "copiedOrSpecialHeaders": {
+        "bdp-minimum-scope-position": "pos-999",
+        "bdp-scope-epoch": "foreign-epoch",
+        "bdp-authorization-view": "foreign-view"
+      },
+      "expectedStatus": 200,
+      "note": null,
+      "bodyShaKind": "literal"
+    },
+    {
+      "group": "A",
+      "step": 22,
+      "method": "POST",
+      "scopeRelativeRoute": "operations/create-bead",
+      "bodyText": "{\"id\":\"beads/createBead_2\",\"type\":\"https://example.test/bead\",\"properties\":{\"title\":\"createBead_2\"}}",
+      "bodyBytes": 100,
+      "bodySha256": "e1f77c536874f969eb77b3e8b4d9c6a8a31bb4f68e8ac6ed3917828e3554c93c",
+      "key": "createBead_2",
+      "copiedOrSpecialHeaders": {
+        "bdp-authorization-view": "not a token!"
+      },
+      "expectedStatus": 200,
+      "note": null,
+      "bodyShaKind": "literal"
+    },
+    {
+      "group": "A",
+      "step": 23,
+      "method": "GET",
+      "scopeRelativeRoute": "beads/createBead_2",
+      "bodyText": null,
+      "bodyBytes": 0,
+      "bodySha256": null,
+      "key": null,
+      "copiedOrSpecialHeaders": {},
+      "expectedStatus": 200,
+      "note": null,
+      "bodyShaKind": "absent"
+    },
+    {
+      "group": "A",
+      "step": 24,
+      "method": "POST",
+      "scopeRelativeRoute": "operations/create-bead",
+      "bodyText": "{\"id\":\"beads/createBead_2\",\"type\":\"https://example.test/bead\",\"properties\":{\"title\":\"createBead_2\"}}",
+      "bodyBytes": 100,
+      "bodySha256": "e1f77c536874f969eb77b3e8b4d9c6a8a31bb4f68e8ac6ed3917828e3554c93c",
+      "key": "createBead_2",
+      "copiedOrSpecialHeaders": {
+        "bdp-minimum-scope-position": "pos-999",
+        "bdp-scope-epoch": "foreign-epoch",
+        "bdp-authorization-view": "foreign-view"
+      },
+      "expectedStatus": 200,
+      "note": null,
+      "bodyShaKind": "literal"
+    },
+    {
+      "group": "A",
+      "step": 25,
+      "method": "POST",
+      "scopeRelativeRoute": "operations/sequence",
+      "bodyText": "{\"operations\":[{\"operation\":\"createBead\",\"id\":\"beads/sequence_2\",\"type\":\"https://example.test/bead\",\"properties\":{\"title\":\"sequence_2\"},\"idempotencyKey\":\"sequence_2\"}]}",
+      "bodyBytes": 168,
+      "bodySha256": "4cd29881c1c6dcf868f356a2615033b929ae9e7be713a8bb811b0bb39f9b3b3b",
+      "key": null,
+      "copiedOrSpecialHeaders": {
+        "bdp-authorization-view": "token-one, token-two"
+      },
+      "expectedStatus": 200,
+      "note": null,
+      "bodyShaKind": "literal"
+    },
+    {
+      "group": "A",
+      "step": 26,
+      "method": "GET",
+      "scopeRelativeRoute": "beads/sequence_2",
+      "bodyText": null,
+      "bodyBytes": 0,
+      "bodySha256": null,
+      "key": null,
+      "copiedOrSpecialHeaders": {},
+      "expectedStatus": 200,
+      "note": null,
+      "bodyShaKind": "absent"
+    },
+    {
+      "group": "A",
+      "step": 27,
+      "method": "POST",
+      "scopeRelativeRoute": "operations/sequence",
+      "bodyText": "{\"operations\":[{\"operation\":\"createBead\",\"id\":\"beads/sequence_2\",\"type\":\"https://example.test/bead\",\"properties\":{\"title\":\"sequence_2\"},\"idempotencyKey\":\"sequence_2\"}]}",
+      "bodyBytes": 168,
+      "bodySha256": "4cd29881c1c6dcf868f356a2615033b929ae9e7be713a8bb811b0bb39f9b3b3b",
+      "key": null,
+      "copiedOrSpecialHeaders": {
+        "bdp-minimum-scope-position": "pos-999",
+        "bdp-scope-epoch": "foreign-epoch",
+        "bdp-authorization-view": "foreign-view"
+      },
+      "expectedStatus": 200,
+      "note": null,
+      "bodyShaKind": "literal"
+    },
+    {
+      "group": "B",
+      "step": 1,
+      "method": "POST",
+      "scopeRelativeRoute": "operations/batch",
+      "bodyText": "{\"operations\":[{\"operation\":\"createBead\",\"id\":\"beads/a\",\"type\":\"https://example.test/bead\",\"properties\":{\"title\":\"a\"}},{\"operation\":\"createBead\",\"id\":\"beads/b\",\"type\":\"https://example.test/bead\",\"properties\":{\"title\":\"b\"}},{\"operation\":\"createLink\",\"id\":\"links/victim\",\"type\":\"https://example.test/link\",\"source\":\"beads/a\",\"target\":\"beads/b\"}]}",
+      "bodyBytes": 344,
+      "bodySha256": "c91b24dcbd65ff6db3a25ce7aa41846955f4c2e1a180349cb6ab9a50d9b834bc",
+      "key": "all-seed",
+      "copiedOrSpecialHeaders": {
+        "bdp-minimum-scope-position": "not a position!",
+        "bdp-scope-epoch": "",
+        "bdp-authorization-view": "view-one, view-two"
+      },
+      "expectedStatus": 200,
+      "note": null,
+      "bodyShaKind": "literal"
+    },
+    {
+      "group": "B",
+      "step": 2,
+      "method": "POST",
+      "scopeRelativeRoute": "operations/create-bead",
+      "bodyText": "{\"id\":\"beads/c\",\"type\":\"https://example.test/bead\",\"properties\":{\"title\":\"c\"}}",
+      "bodyBytes": 78,
+      "bodySha256": "d63729b2da5b74c012dab27c6a7a0241493eb1715a96f093e0bd5bc2fe2565a5",
+      "key": "all-createBead",
+      "copiedOrSpecialHeaders": {
+        "bdp-minimum-scope-position": "pos-999",
+        "bdp-scope-epoch": "@observed-epoch",
+        "bdp-authorization-view": "@observed-view"
+      },
+      "expectedStatus": 200,
+      "note": null,
+      "bodyShaKind": "literal"
+    },
+    {
+      "group": "B",
+      "step": 3,
+      "method": "POST",
+      "scopeRelativeRoute": "operations/update-bead",
+      "bodyText": "{\"bead\":\"beads/c\",\"propertiesChange\":[{\"op\":\"replace\",\"path\":\"/title\",\"value\":\"c2\"}]}",
+      "bodyBytes": 85,
+      "bodySha256": "0e4db9c9ef62ec29dc430a49e706cb3fc6c2ead97c981b7c453e1de3ac98ce24",
+      "key": "all-updateBead",
+      "copiedOrSpecialHeaders": {
+        "bdp-minimum-scope-position": "pos-999",
+        "bdp-scope-epoch": "foreign-epoch",
+        "bdp-authorization-view": "foreign-view"
+      },
+      "expectedStatus": 200,
+      "note": null,
+      "bodyShaKind": "literal"
+    },
+    {
+      "group": "B",
+      "step": 4,
+      "method": "POST",
+      "scopeRelativeRoute": "operations/create-link",
+      "bodyText": "{\"id\":\"links/l\",\"type\":\"https://example.test/link\",\"source\":\"beads/a\",\"target\":\"beads/b\",\"properties\":{\"title\":\"l\"}}",
+      "bodyBytes": 116,
+      "bodySha256": "c1e8afd83ff11e99b487bc66c7341c77d414224ce7998fb0d9e52611d2708b32",
+      "key": "all-createLink",
+      "copiedOrSpecialHeaders": {
+        "bdp-minimum-scope-position": "pos-999",
+        "bdp-scope-epoch": "@observed-epoch",
+        "bdp-authorization-view": "@observed-view"
+      },
+      "expectedStatus": 200,
+      "note": null,
+      "bodyShaKind": "literal"
+    },
+    {
+      "group": "B",
+      "step": 5,
+      "method": "POST",
+      "scopeRelativeRoute": "operations/update-link",
+      "bodyText": "{\"link\":\"links/l\",\"propertiesChange\":[{\"op\":\"replace\",\"path\":\"/title\",\"value\":\"l2\"}]}",
+      "bodyBytes": 85,
+      "bodySha256": "2879db4de178951f8b4ccb4a77de094b671d0632f76fadf009249c6a48bd761c",
+      "key": "all-updateLink",
+      "copiedOrSpecialHeaders": {
+        "bdp-minimum-scope-position": "pos-999",
+        "bdp-scope-epoch": "foreign-epoch",
+        "bdp-authorization-view": "foreign-view"
+      },
+      "expectedStatus": 200,
+      "note": null,
+      "bodyShaKind": "literal"
+    },
+    {
+      "group": "B",
+      "step": 6,
+      "method": "POST",
+      "scopeRelativeRoute": "operations/put-alias",
+      "bodyText": "{\"alias\":\"alias/work\",\"target\":\"beads/c\"}",
+      "bodyBytes": 41,
+      "bodySha256": "2968b918db35514e36fde76249c289466b294aa368d94658b382115f1f020b77",
+      "key": "all-putAlias",
+      "copiedOrSpecialHeaders": {
+        "bdp-minimum-scope-position": "pos-999",
+        "bdp-scope-epoch": "@observed-epoch",
+        "bdp-authorization-view": "@observed-view"
+      },
+      "expectedStatus": 200,
+      "note": null,
+      "bodyShaKind": "literal"
+    },
+    {
+      "group": "B",
+      "step": 7,
+      "method": "POST",
+      "scopeRelativeRoute": "operations/update-where",
+      "bodyText": "{\"collection\":\"beads\",\"selector\":\"$[?@.id]\",\"change\":[{\"op\":\"add\",\"path\":\"/marked\",\"value\":true}]}",
+      "bodyBytes": 98,
+      "bodySha256": "56ebe5bb6513a67ed25cabbebaab7e2a3e8bb7db82da091a3345393c5a254656",
+      "key": "all-updateWhere",
+      "copiedOrSpecialHeaders": {
+        "bdp-minimum-scope-position": "pos-999",
+        "bdp-scope-epoch": "foreign-epoch",
+        "bdp-authorization-view": "foreign-view"
+      },
+      "expectedStatus": 200,
+      "note": null,
+      "bodyShaKind": "literal"
+    },
+    {
+      "group": "B",
+      "step": 8,
+      "method": "POST",
+      "scopeRelativeRoute": "operations/delete-alias",
+      "bodyText": "{\"alias\":\"alias/work\"}",
+      "bodyBytes": 22,
+      "bodySha256": "53e2067b8f74e47f62f73ccee5cb1b9aa0ccfab59b8da56bd7ef440de48a01e5",
+      "key": "all-deleteAlias",
+      "copiedOrSpecialHeaders": {
+        "bdp-minimum-scope-position": "pos-999",
+        "bdp-scope-epoch": "@observed-epoch",
+        "bdp-authorization-view": "@observed-view"
+      },
+      "expectedStatus": 200,
+      "note": null,
+      "bodyShaKind": "literal"
+    },
+    {
+      "group": "B",
+      "step": 9,
+      "method": "POST",
+      "scopeRelativeRoute": "operations/delete-link",
+      "bodyText": "{\"link\":\"links/l\"}",
+      "bodyBytes": 18,
+      "bodySha256": "e26c1384683a43df726c8e7d4f2dbf46bb9d99cd157e2ebe67889bf2d30fad25",
+      "key": "all-deleteLink",
+      "copiedOrSpecialHeaders": {
+        "bdp-minimum-scope-position": "pos-999",
+        "bdp-scope-epoch": "foreign-epoch",
+        "bdp-authorization-view": "foreign-view"
+      },
+      "expectedStatus": 200,
+      "note": null,
+      "bodyShaKind": "literal"
+    },
+    {
+      "group": "B",
+      "step": 10,
+      "method": "POST",
+      "scopeRelativeRoute": "operations/batch",
+      "bodyText": "{\"operations\":[{\"operation\":\"createBead\",\"id\":\"beads/d\",\"type\":\"https://example.test/bead\",\"properties\":{\"title\":\"d\"}}]}",
+      "bodyBytes": 120,
+      "bodySha256": "0334d69486f8e2795ff9549bf5a50ed4eda7237fda81df1de6e66df298f10acf",
+      "key": "all-batch",
+      "copiedOrSpecialHeaders": {
+        "bdp-minimum-scope-position": "pos-999",
+        "bdp-scope-epoch": "@observed-epoch",
+        "bdp-authorization-view": "@observed-view"
+      },
+      "expectedStatus": 200,
+      "note": null,
+      "bodyShaKind": "literal"
+    },
+    {
+      "group": "B",
+      "step": 11,
+      "method": "POST",
+      "scopeRelativeRoute": "operations/sequence",
+      "bodyText": "{\"operations\":[{\"operation\":\"createBead\",\"id\":\"beads/e\",\"type\":\"https://example.test/bead\",\"properties\":{\"title\":\"e\"},\"idempotencyKey\":\"all-sequence\"}]}",
+      "bodyBytes": 152,
+      "bodySha256": "c57665b4612e0d23641f1e551ddc6af3ebfcc8f3cae45af8f113734320a6d590",
+      "key": null,
+      "copiedOrSpecialHeaders": {
+        "bdp-minimum-scope-position": "pos-999",
+        "bdp-scope-epoch": "foreign-epoch",
+        "bdp-authorization-view": "foreign-view"
+      },
+      "expectedStatus": 200,
+      "note": null,
+      "bodyShaKind": "literal"
+    },
+    {
+      "group": "B",
+      "step": 12,
+      "method": "POST",
+      "scopeRelativeRoute": "operations/delete-bead",
+      "bodyText": "{\"bead\":\"beads/d\"}",
+      "bodyBytes": 18,
+      "bodySha256": "7cca18094d6774fa670c98d28a3b68efd96e548c7099f4a247487e1b7769ea51",
+      "key": "all-deleteBead",
+      "copiedOrSpecialHeaders": {
+        "bdp-minimum-scope-position": "pos-999",
+        "bdp-scope-epoch": "@observed-epoch",
+        "bdp-authorization-view": "@observed-view"
+      },
+      "expectedStatus": 200,
+      "note": null,
+      "bodyShaKind": "literal"
+    },
+    {
+      "group": "B",
+      "step": 13,
+      "method": "POST",
+      "scopeRelativeRoute": "operations/delete-where",
+      "bodyText": "{\"collection\":\"links\",\"selector\":\"$[?@.id]\"}",
+      "bodyBytes": 44,
+      "bodySha256": "2c6ca1166853b0aa2b799c4f95cf7d946a3e486517fbcc400ae3ab814663b809",
+      "key": "all-deleteWhere",
+      "copiedOrSpecialHeaders": {
+        "bdp-minimum-scope-position": "pos-999",
+        "bdp-scope-epoch": "foreign-epoch",
+        "bdp-authorization-view": "foreign-view"
+      },
+      "expectedStatus": 200,
+      "note": null,
+      "bodyShaKind": "literal"
+    },
+    {
+      "group": "B",
+      "step": 14,
+      "method": "GET",
+      "scopeRelativeRoute": "beads/?limit=32",
+      "bodyText": null,
+      "bodyBytes": 0,
+      "bodySha256": null,
+      "key": null,
+      "copiedOrSpecialHeaders": {},
+      "expectedStatus": 200,
+      "note": null,
+      "bodyShaKind": "absent"
+    },
+    {
+      "group": "B",
+      "step": 15,
+      "method": "GET",
+      "scopeRelativeRoute": "links/?limit=32",
+      "bodyText": null,
+      "bodyBytes": 0,
+      "bodySha256": null,
+      "key": null,
+      "copiedOrSpecialHeaders": {},
+      "expectedStatus": 200,
+      "note": null,
+      "bodyShaKind": "absent"
+    },
+    {
+      "group": "B",
+      "step": 16,
+      "method": "GET",
+      "scopeRelativeRoute": "alias/work",
+      "bodyText": null,
+      "bodyBytes": 0,
+      "bodySha256": null,
+      "key": null,
+      "copiedOrSpecialHeaders": {},
+      "expectedStatus": 404,
+      "note": null,
+      "bodyShaKind": "absent"
+    },
+    {
+      "group": "C",
+      "step": 1,
+      "method": "POST",
+      "scopeRelativeRoute": "operations/batch",
+      "bodyText": "{\"operations\":[{\"operation\":\"createBead\",\"id\":\"beads/a\",\"type\":\"https://example.test/bead\",\"properties\":{\"title\":\"a\"}}]}",
+      "bodyBytes": 120,
+      "bodySha256": "12f4f2ecab65f2b945c856774071f75ffa1ca5e12306b457cad111f526d429f0",
+      "key": "guard-seed",
+      "copiedOrSpecialHeaders": {
+        "bdp-minimum-scope-position": "not a position!",
+        "bdp-scope-epoch": "",
+        "bdp-authorization-view": "view-one, view-two"
+      },
+      "expectedStatus": 200,
+      "note": null,
+      "bodyShaKind": "literal"
+    },
+    {
+      "group": "C",
+      "step": 2,
+      "method": "POST",
+      "scopeRelativeRoute": "operations/create-bead",
+      "bodyText": "{\"id\":\"beads/key-corrected\",\"type\":\"https://example.test/bead\",\"properties\":{\"title\":\"key-corrected\"}}",
+      "bodyBytes": 102,
+      "bodySha256": "b0de5cab7251e86522635086184afd760c6e0882c3b5b4af196e7120615f8240",
+      "key": "bad key",
+      "copiedOrSpecialHeaders": {
+        "bdp-minimum-scope-position": "not a position!",
+        "bdp-scope-epoch": "",
+        "bdp-authorization-view": "view-one, view-two"
+      },
+      "expectedStatus": 400,
+      "note": null,
+      "bodyShaKind": "literal"
+    },
+    {
+      "group": "C",
+      "step": 3,
+      "method": "POST",
+      "scopeRelativeRoute": "operations/create-bead",
+      "bodyText": "{\"id\":\"beads/key-corrected\",\"type\":\"https://example.test/bead\",\"properties\":{\"title\":\"key-corrected\"}}",
+      "bodyBytes": 102,
+      "bodySha256": "b0de5cab7251e86522635086184afd760c6e0882c3b5b4af196e7120615f8240",
+      "key": "good-key",
+      "copiedOrSpecialHeaders": {
+        "bdp-minimum-scope-position": "not a position!",
+        "bdp-scope-epoch": "",
+        "bdp-authorization-view": "view-one, view-two"
+      },
+      "expectedStatus": 200,
+      "note": null,
+      "bodyShaKind": "literal"
+    },
+    {
+      "group": "C",
+      "step": 4,
+      "method": "POST",
+      "scopeRelativeRoute": "operations/update-bead",
+      "bodyText": "{\"bead\":\"beads/a\",\"expectedRevision\":\"wrong\",\"propertiesChange\":[{\"op\":\"replace\",\"path\":\"/title\",\"value\":\"changed\"}]}",
+      "bodyBytes": 117,
+      "bodySha256": "06eeac59467a40d3676a788abc91417db1e93b1fceb00a25fbaa6a2e5b4291cd",
+      "key": "guard-failed",
+      "copiedOrSpecialHeaders": {
+        "bdp-minimum-scope-position": "not a position!",
+        "bdp-scope-epoch": "",
+        "bdp-authorization-view": "view-one, view-two"
+      },
+      "expectedStatus": 200,
+      "note": null,
+      "bodyShaKind": "literal"
+    },
+    {
+      "group": "C",
+      "step": 5,
+      "method": "GET",
+      "scopeRelativeRoute": "beads/a",
+      "bodyText": null,
+      "bodyBytes": 0,
+      "bodySha256": null,
+      "key": null,
+      "copiedOrSpecialHeaders": {},
+      "expectedStatus": 200,
+      "note": null,
+      "bodyShaKind": "absent"
+    },
+    {
+      "group": "C",
+      "step": 6,
+      "method": "POST",
+      "scopeRelativeRoute": "operations/update-bead",
+      "bodyText": "{\"bead\":\"beads/a\",\"expectedRevision\":\"wrong\",\"propertiesChange\":[{\"op\":\"replace\",\"path\":\"/title\",\"value\":\"changed\"}]}",
+      "bodyBytes": 117,
+      "bodySha256": "06eeac59467a40d3676a788abc91417db1e93b1fceb00a25fbaa6a2e5b4291cd",
+      "key": "guard-failed",
+      "copiedOrSpecialHeaders": {
+        "bdp-minimum-scope-position": "not a position!",
+        "bdp-scope-epoch": "",
+        "bdp-authorization-view": "view-one, view-two"
+      },
+      "expectedStatus": 200,
+      "note": null,
+      "bodyShaKind": "literal"
+    },
+    {
+      "group": "C",
+      "step": 7,
+      "method": "POST",
+      "scopeRelativeRoute": "operations/update-bead",
+      "bodyText": "{\"bead\":\"beads/a\",\"expectedRevision\":\"00000000-0000-4000-8000-000000000000\",\"propertiesChange\":[{\"op\":\"replace\",\"path\":\"/title\",\"value\":\"changed\"}]}",
+      "bodyBytes": 148,
+      "bodySha256": "7bc9949f1edcb3cfb382b66b01026931bd8d60d7b1c9024f4af688c68908a967",
+      "key": "guard-valid",
+      "copiedOrSpecialHeaders": {
+        "bdp-minimum-scope-position": "not a position!",
+        "bdp-scope-epoch": "",
+        "bdp-authorization-view": "view-one, view-two"
+      },
+      "expectedStatus": 200,
+      "note": "Body hash is a template, not observed bytes. Actual revision is randomUUID() from first Resource; exactly36 ASCII bytes, so byte length is exact.",
+      "bodyShaKind": "revision-template-only"
+    },
+    {
+      "group": "C",
+      "step": 8,
+      "method": "GET",
+      "scopeRelativeRoute": "beads/a",
+      "bodyText": null,
+      "bodyBytes": 0,
+      "bodySha256": null,
+      "key": null,
+      "copiedOrSpecialHeaders": {},
+      "expectedStatus": 200,
+      "note": null,
+      "bodyShaKind": "absent"
+    },
+    {
+      "group": "C",
+      "step": 9,
+      "method": "POST",
+      "scopeRelativeRoute": "operations/create-bead",
+      "bodyText": "{\"id\":\"beads/negotiated\",\"type\":\"https://example.test/bead\",\"properties\":{\"title\":\"negotiated\"}}",
+      "bodyBytes": 96,
+      "bodySha256": "9dd5c97791e9adfd3750469431e69a9d9a144b162269babbb393e7d1b39874bc",
+      "key": "negotiate",
+      "copiedOrSpecialHeaders": {
+        "bdp-minimum-scope-position": "not a position!",
+        "bdp-scope-epoch": "",
+        "bdp-authorization-view": "view-one, view-two",
+        "accept": "text/plain"
+      },
+      "expectedStatus": 406,
+      "note": null,
+      "bodyShaKind": "literal"
+    },
+    {
+      "group": "C",
+      "step": 10,
+      "method": "POST",
+      "scopeRelativeRoute": "operations/create-bead",
+      "bodyText": "{\"id\":\"beads/negotiated\",\"type\":\"https://example.test/bead\",\"properties\":{\"title\":\"negotiated\"}}",
+      "bodyBytes": 96,
+      "bodySha256": "9dd5c97791e9adfd3750469431e69a9d9a144b162269babbb393e7d1b39874bc",
+      "key": "negotiate",
+      "copiedOrSpecialHeaders": {
+        "bdp-minimum-scope-position": "not a position!",
+        "bdp-scope-epoch": "",
+        "bdp-authorization-view": "view-one, view-two"
+      },
+      "expectedStatus": 200,
+      "note": null,
+      "bodyShaKind": "literal"
+    },
+    {
+      "group": "C",
+      "step": 11,
+      "method": "GET",
+      "scopeRelativeRoute": "beads/negotiated",
+      "bodyText": null,
+      "bodyBytes": 0,
+      "bodySha256": null,
+      "key": null,
+      "copiedOrSpecialHeaders": {},
+      "expectedStatus": 200,
+      "note": null,
+      "bodyShaKind": "absent"
+    },
+    {
+      "group": "C",
+      "step": 12,
+      "method": "POST",
+      "scopeRelativeRoute": "operations/sequence",
+      "bodyText": "{\"operations\":[{\"operation\":\"createBead\",\"id\":\"beads/sequence-corrected\",\"type\":\"https://example.test/bead\",\"properties\":{\"title\":\"sequence-corrected\"},\"idempotencyKey\":\"sequence-member\"}]}",
+      "bodyBytes": 189,
+      "bodySha256": "1b709b2f3a57af8e3da3706f05f41e6de3aec0e874fae362b9f8a3b46570768f",
+      "key": "forbidden-header",
+      "copiedOrSpecialHeaders": {
+        "bdp-minimum-scope-position": "not a position!",
+        "bdp-scope-epoch": "",
+        "bdp-authorization-view": "view-one, view-two"
+      },
+      "expectedStatus": 400,
+      "note": null,
+      "bodyShaKind": "literal"
+    },
+    {
+      "group": "C",
+      "step": 13,
+      "method": "POST",
+      "scopeRelativeRoute": "operations/sequence",
+      "bodyText": "{\"operations\":[{\"operation\":\"createBead\",\"id\":\"beads/sequence-corrected\",\"type\":\"https://example.test/bead\",\"properties\":{\"title\":\"sequence-corrected\"},\"idempotencyKey\":\"sequence-member\"}]}",
+      "bodyBytes": 189,
+      "bodySha256": "1b709b2f3a57af8e3da3706f05f41e6de3aec0e874fae362b9f8a3b46570768f",
+      "key": null,
+      "copiedOrSpecialHeaders": {
+        "bdp-minimum-scope-position": "not a position!",
+        "bdp-scope-epoch": "",
+        "bdp-authorization-view": "view-one, view-two"
+      },
+      "expectedStatus": 200,
+      "note": null,
+      "bodyShaKind": "literal"
+    },
+    {
+      "group": "D",
+      "step": 1,
+      "method": "POST",
+      "scopeRelativeRoute": "operations/batch",
+      "bodyText": "{\"operations\":[{\"operation\":\"createBead\",\"id\":\"beads/batch_401\",\"type\":\"https://example.test/bead\",\"properties\":{\"title\":\"batch_401\"}}]}",
+      "bodyBytes": 136,
+      "bodySha256": "4c5442ab03fb1ea69e990e141d187a35ef1272dd4cf02aa5078561d679b34960",
+      "key": "batch_401",
+      "copiedOrSpecialHeaders": {
+        "bdp-minimum-scope-position": "pos-999",
+        "authorization": "@absent"
+      },
+      "expectedStatus": 401,
+      "note": null,
+      "bodyShaKind": "literal"
+    },
+    {
+      "group": "D",
+      "step": 2,
+      "method": "GET",
+      "scopeRelativeRoute": "beads/batch_401",
+      "bodyText": null,
+      "bodyBytes": 0,
+      "bodySha256": null,
+      "key": null,
+      "copiedOrSpecialHeaders": {},
+      "expectedStatus": 404,
+      "note": null,
+      "bodyShaKind": "absent"
+    },
+    {
+      "group": "D",
+      "step": 3,
+      "method": "POST",
+      "scopeRelativeRoute": "operations/batch",
+      "bodyText": "{\"operations\":[{\"operation\":\"createBead\",\"id\":\"beads/batch_401_replacement\",\"type\":\"https://example.test/bead\",\"properties\":{\"title\":\"batch_401_replacement\"}}]}",
+      "bodyBytes": 160,
+      "bodySha256": "47f94f3ea24c4aa2cfbc217f17317200cb10758db3d88de0afd9eecdfb4551e0",
+      "key": "batch_401",
+      "copiedOrSpecialHeaders": {},
+      "expectedStatus": 200,
+      "note": null,
+      "bodyShaKind": "literal"
+    },
+    {
+      "group": "D",
+      "step": 4,
+      "method": "POST",
+      "scopeRelativeRoute": "operations/batch",
+      "bodyText": "{\"operations\":[{\"operation\":\"createBead\",\"id\":\"beads/batch_403\",\"type\":\"https://example.test/bead\",\"properties\":{\"title\":\"batch_403\"}}]}",
+      "bodyBytes": 136,
+      "bodySha256": "14ebf01b339482e280ab79a02c83fc065523d6eb3b30be8fec67762ea7be3dc5",
+      "key": "batch_403",
+      "copiedOrSpecialHeaders": {
+        "bdp-minimum-scope-position": "pos-999",
+        "authorization": "@reader-credential"
+      },
+      "expectedStatus": 403,
+      "note": null,
+      "bodyShaKind": "literal"
+    },
+    {
+      "group": "D",
+      "step": 5,
+      "method": "GET",
+      "scopeRelativeRoute": "beads/batch_403",
+      "bodyText": null,
+      "bodyBytes": 0,
+      "bodySha256": null,
+      "key": null,
+      "copiedOrSpecialHeaders": {},
+      "expectedStatus": 404,
+      "note": null,
+      "bodyShaKind": "absent"
+    },
+    {
+      "group": "D",
+      "step": 6,
+      "method": "POST",
+      "scopeRelativeRoute": "operations/batch",
+      "bodyText": "{\"operations\":[{\"operation\":\"createBead\",\"id\":\"beads/batch_403_replacement\",\"type\":\"https://example.test/bead\",\"properties\":{\"title\":\"batch_403_replacement\"}}]}",
+      "bodyBytes": 160,
+      "bodySha256": "dc828c1cae305f94e7cfe1db1b91737b5025bff6184bbea20574e85f1df38525",
+      "key": "batch_403",
+      "copiedOrSpecialHeaders": {},
+      "expectedStatus": 200,
+      "note": null,
+      "bodyShaKind": "literal"
+    },
+    {
+      "group": "D",
+      "step": 7,
+      "method": "POST",
+      "scopeRelativeRoute": "operations/create-bead",
+      "bodyText": "{\"id\":\"beads/createBead_401\",\"type\":\"https://example.test/bead\",\"properties\":{\"title\":\"createBead_401\"}}",
+      "bodyBytes": 104,
+      "bodySha256": "59c5d90e854410d240fe544801337bfd8536c47184c6ca31bf32289ccb932088",
+      "key": "createBead_401",
+      "copiedOrSpecialHeaders": {
+        "bdp-minimum-scope-position": "pos-999",
+        "authorization": "@absent"
+      },
+      "expectedStatus": 401,
+      "note": null,
+      "bodyShaKind": "literal"
+    },
+    {
+      "group": "D",
+      "step": 8,
+      "method": "GET",
+      "scopeRelativeRoute": "beads/createBead_401",
+      "bodyText": null,
+      "bodyBytes": 0,
+      "bodySha256": null,
+      "key": null,
+      "copiedOrSpecialHeaders": {},
+      "expectedStatus": 404,
+      "note": null,
+      "bodyShaKind": "absent"
+    },
+    {
+      "group": "D",
+      "step": 9,
+      "method": "POST",
+      "scopeRelativeRoute": "operations/batch",
+      "bodyText": "{\"operations\":[{\"operation\":\"createBead\",\"id\":\"beads/createBead_401_replacement\",\"type\":\"https://example.test/bead\",\"properties\":{\"title\":\"createBead_401_replacement\"}}]}",
+      "bodyBytes": 170,
+      "bodySha256": "9e81b34551c884d890f7cacf67436b9537675511f8bb142cceccf70d5cf04013",
+      "key": "createBead_401",
+      "copiedOrSpecialHeaders": {},
+      "expectedStatus": 200,
+      "note": null,
+      "bodyShaKind": "literal"
+    },
+    {
+      "group": "D",
+      "step": 10,
+      "method": "POST",
+      "scopeRelativeRoute": "operations/create-bead",
+      "bodyText": "{\"id\":\"beads/createBead_403\",\"type\":\"https://example.test/bead\",\"properties\":{\"title\":\"createBead_403\"}}",
+      "bodyBytes": 104,
+      "bodySha256": "163d491e9bfce03c0993e747152765d03a6364d3a79597847afbc1f2c928b9ea",
+      "key": "createBead_403",
+      "copiedOrSpecialHeaders": {
+        "bdp-minimum-scope-position": "pos-999",
+        "authorization": "@reader-credential"
+      },
+      "expectedStatus": 403,
+      "note": null,
+      "bodyShaKind": "literal"
+    },
+    {
+      "group": "D",
+      "step": 11,
+      "method": "GET",
+      "scopeRelativeRoute": "beads/createBead_403",
+      "bodyText": null,
+      "bodyBytes": 0,
+      "bodySha256": null,
+      "key": null,
+      "copiedOrSpecialHeaders": {},
+      "expectedStatus": 404,
+      "note": null,
+      "bodyShaKind": "absent"
+    },
+    {
+      "group": "D",
+      "step": 12,
+      "method": "POST",
+      "scopeRelativeRoute": "operations/batch",
+      "bodyText": "{\"operations\":[{\"operation\":\"createBead\",\"id\":\"beads/createBead_403_replacement\",\"type\":\"https://example.test/bead\",\"properties\":{\"title\":\"createBead_403_replacement\"}}]}",
+      "bodyBytes": 170,
+      "bodySha256": "05e06e4e981f048eb8c87167de88c3ca2f32041168250293abb27d5a9ac4fd1c",
+      "key": "createBead_403",
+      "copiedOrSpecialHeaders": {},
+      "expectedStatus": 200,
+      "note": null,
+      "bodyShaKind": "literal"
+    },
+    {
+      "group": "D",
+      "step": 13,
+      "method": "POST",
+      "scopeRelativeRoute": "operations/sequence",
+      "bodyText": "{\"operations\":[{\"operation\":\"createBead\",\"id\":\"beads/sequence_401\",\"type\":\"https://example.test/bead\",\"properties\":{\"title\":\"sequence_401\"},\"idempotencyKey\":\"sequence_401\"}]}",
+      "bodyBytes": 174,
+      "bodySha256": "5e6e99e45b18c0985b6116f9c9e063d7ddadbe533fca984f30b65e6e48c9db1d",
+      "key": null,
+      "copiedOrSpecialHeaders": {
+        "bdp-minimum-scope-position": "pos-999",
+        "authorization": "@absent"
+      },
+      "expectedStatus": 401,
+      "note": null,
+      "bodyShaKind": "literal"
+    },
+    {
+      "group": "D",
+      "step": 14,
+      "method": "GET",
+      "scopeRelativeRoute": "beads/sequence_401",
+      "bodyText": null,
+      "bodyBytes": 0,
+      "bodySha256": null,
+      "key": null,
+      "copiedOrSpecialHeaders": {},
+      "expectedStatus": 404,
+      "note": null,
+      "bodyShaKind": "absent"
+    },
+    {
+      "group": "D",
+      "step": 15,
+      "method": "POST",
+      "scopeRelativeRoute": "operations/batch",
+      "bodyText": "{\"operations\":[{\"operation\":\"createBead\",\"id\":\"beads/sequence_401_replacement\",\"type\":\"https://example.test/bead\",\"properties\":{\"title\":\"sequence_401_replacement\"}}]}",
+      "bodyBytes": 166,
+      "bodySha256": "925b8a8f968cb618af4c8f80997587a040c1189dfe05134aca826470e92be110",
+      "key": "sequence_401",
+      "copiedOrSpecialHeaders": {},
+      "expectedStatus": 200,
+      "note": null,
+      "bodyShaKind": "literal"
+    },
+    {
+      "group": "D",
+      "step": 16,
+      "method": "POST",
+      "scopeRelativeRoute": "operations/sequence",
+      "bodyText": "{\"operations\":[{\"operation\":\"createBead\",\"id\":\"beads/sequence_403\",\"type\":\"https://example.test/bead\",\"properties\":{\"title\":\"sequence_403\"},\"idempotencyKey\":\"sequence_403\"}]}",
+      "bodyBytes": 174,
+      "bodySha256": "46f4d99acf55431cf4bed14c16d5427f04d8e043d9f5e6a54fd8232f9c149531",
+      "key": null,
+      "copiedOrSpecialHeaders": {
+        "bdp-minimum-scope-position": "pos-999",
+        "authorization": "@reader-credential"
+      },
+      "expectedStatus": 403,
+      "note": null,
+      "bodyShaKind": "literal"
+    },
+    {
+      "group": "D",
+      "step": 17,
+      "method": "GET",
+      "scopeRelativeRoute": "beads/sequence_403",
+      "bodyText": null,
+      "bodyBytes": 0,
+      "bodySha256": null,
+      "key": null,
+      "copiedOrSpecialHeaders": {},
+      "expectedStatus": 404,
+      "note": null,
+      "bodyShaKind": "absent"
+    },
+    {
+      "group": "D",
+      "step": 18,
+      "method": "POST",
+      "scopeRelativeRoute": "operations/batch",
+      "bodyText": "{\"operations\":[{\"operation\":\"createBead\",\"id\":\"beads/sequence_403_replacement\",\"type\":\"https://example.test/bead\",\"properties\":{\"title\":\"sequence_403_replacement\"}}]}",
+      "bodyBytes": 166,
+      "bodySha256": "d5895886755ab482b88266c63ad957a3f803bbc23e4988fcbf9612993a3394ef",
+      "key": "sequence_403",
+      "copiedOrSpecialHeaders": {},
+      "expectedStatus": 200,
+      "note": null,
+      "bodyShaKind": "literal"
+    },
+    {
+      "group": "E",
+      "step": 1,
+      "method": "POST",
+      "scopeRelativeRoute": "operations/batch",
+      "bodyText": "{\"operations\":[{\"operation\":\"createBead\",\"id\":\"beads/a\",\"type\":\"https://example.test/bead\",\"properties\":{\"title\":\"a\"}}]}",
+      "bodyBytes": 120,
+      "bodySha256": "12f4f2ecab65f2b945c856774071f75ffa1ca5e12306b457cad111f526d429f0",
+      "key": "receipt-minimum",
+      "copiedOrSpecialHeaders": {
+        "bdp-minimum-scope-position": "not a position!",
+        "bdp-scope-epoch": "",
+        "bdp-authorization-view": "view-one, view-two"
+      },
+      "expectedStatus": 200,
+      "note": null,
+      "bodyShaKind": "literal"
+    },
+    {
+      "group": "E",
+      "step": 2,
+      "method": "GET",
+      "scopeRelativeRoute": "@observed-exact-receipt-root",
+      "bodyText": null,
+      "bodyBytes": 0,
+      "bodySha256": null,
+      "key": null,
+      "copiedOrSpecialHeaders": {
+        "bdp-minimum-scope-position": "pos-99",
+        "bdp-scope-epoch": "@observed-epoch",
+        "bdp-authorization-view": "@observed-view"
+      },
+      "expectedStatus": 503,
+      "note": null,
+      "bodyShaKind": "absent"
+    },
+    {
+      "group": "E",
+      "step": 3,
+      "method": "GET",
+      "scopeRelativeRoute": "@observed-exact-receipt-root",
+      "bodyText": null,
+      "bodyBytes": 0,
+      "bodySha256": null,
+      "key": null,
+      "copiedOrSpecialHeaders": {
+        "bdp-minimum-scope-position": "@actual-position",
+        "bdp-scope-epoch": "@observed-epoch",
+        "bdp-authorization-view": "foreign"
+      },
+      "expectedStatus": 409,
+      "note": null,
+      "bodyShaKind": "absent"
+    },
+    {
+      "group": "E",
+      "step": 4,
+      "method": "GET",
+      "scopeRelativeRoute": "@observed-exact-receipt-root",
+      "bodyText": null,
+      "bodyBytes": 0,
+      "bodySha256": null,
+      "key": null,
+      "copiedOrSpecialHeaders": {
+        "bdp-minimum-scope-position": "@actual-position",
+        "bdp-scope-epoch": "foreign",
+        "bdp-authorization-view": "@observed-view"
+      },
+      "expectedStatus": 410,
+      "note": null,
+      "bodyShaKind": "absent"
+    },
+    {
+      "group": "E",
+      "step": 5,
+      "method": "GET",
+      "scopeRelativeRoute": "@observed-exact-receipt-root",
+      "bodyText": null,
+      "bodyBytes": 0,
+      "bodySha256": null,
+      "key": null,
+      "copiedOrSpecialHeaders": {
+        "bdp-minimum-scope-position": "@actual-position",
+        "bdp-scope-epoch": "@observed-epoch",
+        "bdp-authorization-view": "@observed-view"
+      },
+      "expectedStatus": 200,
+      "note": null,
+      "bodyShaKind": "absent"
+    },
+    {
+      "group": "E",
+      "step": 6,
+      "method": "HEAD",
+      "scopeRelativeRoute": "@observed-exact-receipt-root",
+      "bodyText": null,
+      "bodyBytes": 0,
+      "bodySha256": null,
+      "key": null,
+      "copiedOrSpecialHeaders": {
+        "bdp-minimum-scope-position": "pos-99",
+        "bdp-scope-epoch": "@observed-epoch",
+        "bdp-authorization-view": "@observed-view"
+      },
+      "expectedStatus": 503,
+      "note": null,
+      "bodyShaKind": "absent"
+    },
+    {
+      "group": "RU",
+      "step": 1,
+      "method": "POST",
+      "scopeRelativeRoute": "operations/create-bead",
+      "bodyText": "{\"id\":\"beads/copied-singleton\",\"type\":\"https://reference.invalid/acme/types/task\",\"properties\":{\"title\":\"copied-singleton\"}}",
+      "bodyBytes": 124,
+      "bodySha256": "efa6ef5bdd921eda98b5d74516b032b42ac6a400850b4527e3dc87230309e210",
+      "key": "copied-singleton",
+      "copiedOrSpecialHeaders": {
+        "bdp-minimum-scope-position": "pos-999",
+        "bdp-scope-epoch": "foreign-epoch",
+        "bdp-authorization-view": "foreign-view"
+      },
+      "expectedStatus": 200,
+      "note": "Exact canonical Scope from referenceConfiguration default https://reference.invalid/acme/; listener port only selects transport endpoint. Literal bytes/hash, not executed observation.",
+      "bodyShaKind": "literal"
+    },
+    {
+      "group": "RU",
+      "step": 2,
+      "method": "GET",
+      "scopeRelativeRoute": "beads/copied-singleton",
+      "bodyText": null,
+      "bodyBytes": 0,
+      "bodySha256": null,
+      "key": null,
+      "copiedOrSpecialHeaders": {},
+      "expectedStatus": 200,
+      "note": null,
+      "bodyShaKind": "absent"
+    },
+    {
+      "group": "RU",
+      "step": 3,
+      "method": "POST",
+      "scopeRelativeRoute": "operations/create-bead",
+      "bodyText": "{\"id\":\"beads/copied-singleton\",\"type\":\"https://reference.invalid/acme/types/task\",\"properties\":{\"title\":\"copied-singleton\"}}",
+      "bodyBytes": 124,
+      "bodySha256": "efa6ef5bdd921eda98b5d74516b032b42ac6a400850b4527e3dc87230309e210",
+      "key": "copied-singleton",
+      "copiedOrSpecialHeaders": {
+        "bdp-minimum-scope-position": "",
+        "bdp-scope-epoch": "epoch-one, epoch-two",
+        "bdp-authorization-view": "not a view!"
+      },
+      "expectedStatus": 200,
+      "note": "Exact canonical Scope from referenceConfiguration default https://reference.invalid/acme/; listener port only selects transport endpoint. Literal bytes/hash, not executed observation.",
+      "bodyShaKind": "literal"
+    },
+    {
+      "group": "RU",
+      "step": 4,
+      "method": "POST",
+      "scopeRelativeRoute": "operations/sequence",
+      "bodyText": "{\"operations\":[{\"operation\":\"createBead\",\"id\":\"beads/copied-sequence\",\"type\":\"https://reference.invalid/acme/types/task\",\"properties\":{\"title\":\"copied-sequence\"},\"idempotencyKey\":\"copied-sequence\"}]}",
+      "bodyBytes": 199,
+      "bodySha256": "9006ca55dd01e1a7b18d0282e1f83c520421841b8153dbb7a7cfe2c696863fa0",
+      "key": null,
+      "copiedOrSpecialHeaders": {
+        "bdp-minimum-scope-position": "not a token!"
+      },
+      "expectedStatus": 200,
+      "note": "Exact canonical Scope from referenceConfiguration default https://reference.invalid/acme/; listener port only selects transport endpoint. Literal bytes/hash, not executed observation.",
+      "bodyShaKind": "literal"
+    },
+    {
+      "group": "RU",
+      "step": 5,
+      "method": "GET",
+      "scopeRelativeRoute": "beads/copied-sequence",
+      "bodyText": null,
+      "bodyBytes": 0,
+      "bodySha256": null,
+      "key": null,
+      "copiedOrSpecialHeaders": {},
+      "expectedStatus": 200,
+      "note": null,
+      "bodyShaKind": "absent"
+    },
+    {
+      "group": "RU",
+      "step": 6,
+      "method": "POST",
+      "scopeRelativeRoute": "operations/sequence",
+      "bodyText": "{\"operations\":[{\"operation\":\"createBead\",\"id\":\"beads/copied-sequence\",\"type\":\"https://reference.invalid/acme/types/task\",\"properties\":{\"title\":\"copied-sequence\"},\"idempotencyKey\":\"copied-sequence\"}]}",
+      "bodyBytes": 199,
+      "bodySha256": "9006ca55dd01e1a7b18d0282e1f83c520421841b8153dbb7a7cfe2c696863fa0",
+      "key": null,
+      "copiedOrSpecialHeaders": {
+        "bdp-minimum-scope-position": "",
+        "bdp-scope-epoch": "epoch-one, epoch-two",
+        "bdp-authorization-view": "not a view!"
+      },
+      "expectedStatus": 200,
+      "note": "Exact canonical Scope from referenceConfiguration default https://reference.invalid/acme/; listener port only selects transport endpoint. Literal bytes/hash, not executed observation.",
+      "bodyShaKind": "literal"
+    },
+    {
+      "group": "S-direct",
+      "step": 1,
+      "method": "POST",
+      "scopeRelativeRoute": "operations/sequence",
+      "bodyText": "{\"operations\":[{\"operation\":\"createBead\",\"id\":\"beads/a\",\"type\":\"https://example.test/bead\",\"properties\":{\"title\":\"a\"},\"idempotencyKey\":\"unused\"}]}",
+      "bodyBytes": 146,
+      "bodySha256": "0ea3232e34613e6cd86cc825cd2809a4383c0e2c7cf573603cca42166a87168c",
+      "key": null,
+      "copiedOrSpecialHeaders": {},
+      "expectedStatus": 400,
+      "note": "Direct handler Request, not TCP HTTP; six existing exclusions; header/auth mapping in source.",
+      "bodyShaKind": "literal"
+    },
+    {
+      "group": "S-direct",
+      "step": 2,
+      "method": "POST",
+      "scopeRelativeRoute": "operations/sequence",
+      "bodyText": "{",
+      "bodyBytes": 1,
+      "bodySha256": "021fb596db81e6d02bf3d2586ee3981fe519f275c0ac9ca76bbcf2ebb4097d96",
+      "key": null,
+      "copiedOrSpecialHeaders": {},
+      "expectedStatus": 400,
+      "note": "Direct handler Request, not TCP HTTP; six existing exclusions; header/auth mapping in source.",
+      "bodyShaKind": "literal"
+    },
+    {
+      "group": "S-direct",
+      "step": 3,
+      "method": "POST",
+      "scopeRelativeRoute": "operations/sequence",
+      "bodyText": "{\"operations\":[{\"operation\":\"createBead\",\"id\":\"beads/a\",\"type\":\"https://example.test/bead\",\"properties\":{\"title\":\"a\"},\"idempotencyKey\":\"unused\"}]}",
+      "bodyBytes": 146,
+      "bodySha256": "0ea3232e34613e6cd86cc825cd2809a4383c0e2c7cf573603cca42166a87168c",
+      "key": null,
+      "copiedOrSpecialHeaders": {},
+      "expectedStatus": 401,
+      "note": "Direct handler Request, not TCP HTTP; six existing exclusions; header/auth mapping in source.",
+      "bodyShaKind": "literal"
+    },
+    {
+      "group": "S-direct",
+      "step": 4,
+      "method": "POST",
+      "scopeRelativeRoute": "operations/sequence",
+      "bodyText": "{\"operations\":[{\"operation\":\"createBead\",\"id\":\"beads/a\",\"type\":\"https://example.test/bead\",\"properties\":{\"title\":\"a\"},\"idempotencyKey\":\"unused\"}]}",
+      "bodyBytes": 146,
+      "bodySha256": "0ea3232e34613e6cd86cc825cd2809a4383c0e2c7cf573603cca42166a87168c",
+      "key": null,
+      "copiedOrSpecialHeaders": {},
+      "expectedStatus": 403,
+      "note": "Direct handler Request, not TCP HTTP; six existing exclusions; header/auth mapping in source.",
+      "bodyShaKind": "literal"
+    },
+    {
+      "group": "S-direct",
+      "step": 5,
+      "method": "POST",
+      "scopeRelativeRoute": "operations/sequence",
+      "bodyText": "{\"operations\":[{\"operation\":\"createBead\",\"id\":\"beads/a\",\"type\":\"https://example.test/bead\",\"properties\":{\"title\":\"a\"},\"idempotencyKey\":\"unused\"}]}",
+      "bodyBytes": 146,
+      "bodySha256": "0ea3232e34613e6cd86cc825cd2809a4383c0e2c7cf573603cca42166a87168c",
+      "key": null,
+      "copiedOrSpecialHeaders": {},
+      "expectedStatus": 415,
+      "note": "Direct handler Request, not TCP HTTP; six existing exclusions; header/auth mapping in source.",
+      "bodyShaKind": "literal"
+    },
+    {
+      "group": "S-direct",
+      "step": 6,
+      "method": "POST",
+      "scopeRelativeRoute": "operations/sequence",
+      "bodyText": "{\"operations\":[{\"operation\":\"createBead\",\"id\":\"beads/a\",\"type\":\"https://example.test/bead\",\"properties\":{\"nested\":{\"nested\":{\"nested\":{\"nested\":{\"nested\":{\"nested\":{\"nested\":{\"nested\":{\"nested\":{\"nested\":{\"nested\":{\"nested\":{\"nested\":{\"nested\":{\"nested\":{\"nested\":{\"nested\":{\"nested\":{\"nested\":{\"nested\":{\"nested\":{\"nested\":{\"nested\":{\"nested\":{\"nested\":{\"nested\":{\"nested\":{\"nested\":{\"nested\":{\"nested\":{\"nested\":{\"nested\":{\"nested\":{\"nested\":{\"nested\":{\"nested\":{\"nested\":{\"nested\":{\"nested\":{\"nested\":{\"nested\":\"leaf\"}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}},\"idempotencyKey\":\"unsupported\"}]}",
+      "bodyBytes": 595,
+      "bodySha256": "096287df64a1f123dca09b853d974fd80c68553f561ce567288441610a5e644f",
+      "key": null,
+      "copiedOrSpecialHeaders": {},
+      "expectedStatus": 500,
+      "note": "Direct handler Request, not TCP HTTP; six existing exclusions; header/auth mapping in source.",
+      "bodyShaKind": "literal"
+    },
+    {
+      "group": "TX18",
+      "step": 1,
+      "method": "GET",
+      "scopeRelativeRoute": "beads/?limit=32",
+      "bodyText": null,
+      "bodyBytes": 0,
+      "bodySha256": null,
+      "key": null,
+      "copiedOrSpecialHeaders": {},
+      "expectedStatus": 200,
+      "note": null,
+      "bodyShaKind": "absent"
+    },
+    {
+      "group": "TX18",
+      "step": 2,
+      "method": "POST",
+      "scopeRelativeRoute": "operations/create-bead",
+      "bodyText": "{\"id\":\"beads/a\",\"type\":\"https://reference.invalid/acme/types/task\",\"properties\":{\"title\":\"a\"}}",
+      "bodyBytes": 94,
+      "bodySha256": "8730ee46597d5173aa5f13593fd8282ada4fecc1729fd568974cbcdee7275ee8",
+      "key": "minimum-a",
+      "copiedOrSpecialHeaders": {
+        "bdp-minimum-scope-position": "not a position!",
+        "bdp-scope-epoch": "",
+        "bdp-authorization-view": "view-one, view-two"
+      },
+      "expectedStatus": 200,
+      "note": null,
+      "bodyShaKind": "literal"
+    },
+    {
+      "group": "TX18",
+      "step": 3,
+      "method": "GET",
+      "scopeRelativeRoute": "beads/a",
+      "bodyText": null,
+      "bodyBytes": 0,
+      "bodySha256": null,
+      "key": null,
+      "copiedOrSpecialHeaders": {},
+      "expectedStatus": 200,
+      "note": null,
+      "bodyShaKind": "absent"
+    },
+    {
+      "group": "TX18",
+      "step": 4,
+      "method": "POST",
+      "scopeRelativeRoute": "operations/create-bead",
+      "bodyText": "{\"id\":\"beads/a\",\"type\":\"https://reference.invalid/acme/types/task\",\"properties\":{\"title\":\"a\"}}",
+      "bodyBytes": 94,
+      "bodySha256": "8730ee46597d5173aa5f13593fd8282ada4fecc1729fd568974cbcdee7275ee8",
+      "key": "minimum-a",
+      "copiedOrSpecialHeaders": {
+        "bdp-minimum-scope-position": "pos-99",
+        "bdp-scope-epoch": "foreign-epoch",
+        "bdp-authorization-view": "foreign-view"
+      },
+      "expectedStatus": 200,
+      "note": null,
+      "bodyShaKind": "literal"
+    },
+    {
+      "group": "TX18",
+      "step": 5,
+      "method": "POST",
+      "scopeRelativeRoute": "operations/batch",
+      "bodyText": "{\"operations\":[{\"operation\":\"createBead\",\"id\":\"beads/b\",\"type\":\"https://reference.invalid/acme/types/task\",\"properties\":{\"title\":\"b\"}}]}",
+      "bodyBytes": 136,
+      "bodySha256": "bdec7df3b90efd349ee33374fe1cb8911aa7b7adbf06ca8d31e920e8115e166d",
+      "key": "minimum-b",
+      "copiedOrSpecialHeaders": {
+        "bdp-scope-epoch": "partial"
+      },
+      "expectedStatus": 200,
+      "note": null,
+      "bodyShaKind": "literal"
+    },
+    {
+      "group": "TX18",
+      "step": 6,
+      "method": "GET",
+      "scopeRelativeRoute": "beads/b",
+      "bodyText": null,
+      "bodyBytes": 0,
+      "bodySha256": null,
+      "key": null,
+      "copiedOrSpecialHeaders": {},
+      "expectedStatus": 200,
+      "note": null,
+      "bodyShaKind": "absent"
+    },
+    {
+      "group": "TX18",
+      "step": 7,
+      "method": "POST",
+      "scopeRelativeRoute": "operations/batch",
+      "bodyText": "{\"operations\":[{\"operation\":\"createBead\",\"id\":\"beads/b\",\"type\":\"https://reference.invalid/acme/types/task\",\"properties\":{\"title\":\"b\"}}]}",
+      "bodyBytes": 136,
+      "bodySha256": "bdec7df3b90efd349ee33374fe1cb8911aa7b7adbf06ca8d31e920e8115e166d",
+      "key": "minimum-b",
+      "copiedOrSpecialHeaders": {
+        "bdp-scope-epoch": ""
+      },
+      "expectedStatus": 200,
+      "note": null,
+      "bodyShaKind": "literal"
+    },
+    {
+      "group": "TX18",
+      "step": 8,
+      "method": "POST",
+      "scopeRelativeRoute": "operations/sequence",
+      "bodyText": "{\"operations\":[{\"operation\":\"createBead\",\"id\":\"beads/c\",\"type\":\"https://reference.invalid/acme/types/task\",\"properties\":{\"title\":\"c\"},\"idempotencyKey\":\"minimum-c\"}]}",
+      "bodyBytes": 165,
+      "bodySha256": "b1e78b6162584bc0a38b661585f8d51cf4c499cdb893ffc6b3cd13297f0c8c38",
+      "key": null,
+      "copiedOrSpecialHeaders": {
+        "bdp-minimum-scope-position": "pos-99",
+        "bdp-scope-epoch": "@observed-epoch",
+        "bdp-authorization-view": "@observed-view"
+      },
+      "expectedStatus": 200,
+      "note": null,
+      "bodyShaKind": "literal"
+    },
+    {
+      "group": "TX18",
+      "step": 9,
+      "method": "GET",
+      "scopeRelativeRoute": "beads/c",
+      "bodyText": null,
+      "bodyBytes": 0,
+      "bodySha256": null,
+      "key": null,
+      "copiedOrSpecialHeaders": {},
+      "expectedStatus": 200,
+      "note": null,
+      "bodyShaKind": "absent"
+    },
+    {
+      "group": "TX18",
+      "step": 10,
+      "method": "POST",
+      "scopeRelativeRoute": "operations/sequence",
+      "bodyText": "{\"operations\":[{\"operation\":\"createBead\",\"id\":\"beads/c\",\"type\":\"https://reference.invalid/acme/types/task\",\"properties\":{\"title\":\"c\"},\"idempotencyKey\":\"minimum-c\"}]}",
+      "bodyBytes": 165,
+      "bodySha256": "b1e78b6162584bc0a38b661585f8d51cf4c499cdb893ffc6b3cd13297f0c8c38",
+      "key": null,
+      "copiedOrSpecialHeaders": {
+        "bdp-minimum-scope-position": "not a position!",
+        "bdp-scope-epoch": "",
+        "bdp-authorization-view": "view-one, view-two"
+      },
+      "expectedStatus": 200,
+      "note": null,
+      "bodyShaKind": "literal"
+    },
+    {
+      "group": "TX18",
+      "step": 11,
+      "method": "POST",
+      "scopeRelativeRoute": "operations/batch",
+      "bodyText": "{\"operations\":[{\"operation\":\"createBead\",\"id\":\"beads/conflict-extra\",\"type\":\"https://reference.invalid/acme/types/task\",\"properties\":{\"title\":\"conflict-extra\"}}]}",
+      "bodyBytes": 162,
+      "bodySha256": "120c7933ffd572305ac6cdb07273d7527b3762821ab41ac867bef680226d0055",
+      "key": "minimum-b",
+      "copiedOrSpecialHeaders": {
+        "bdp-minimum-scope-position": "pos-99",
+        "bdp-scope-epoch": "foreign-epoch",
+        "bdp-authorization-view": "foreign-view"
+      },
+      "expectedStatus": 409,
+      "note": null,
+      "bodyShaKind": "literal"
+    },
+    {
+      "group": "TX18",
+      "step": 12,
+      "method": "POST",
+      "scopeRelativeRoute": "operations/update-bead",
+      "bodyText": "{\"bead\":\"beads/a\",\"expectedRevision\":\"wrong\",\"propertiesChange\":[{\"op\":\"replace\",\"path\":\"/title\",\"value\":\"not-admitted\"}]}",
+      "bodyBytes": 122,
+      "bodySha256": "22874bc0170080905b6d7ab8b7defe87b546ebcc3ff310a415ab9f86097fcec5",
+      "key": "minimum-stale",
+      "copiedOrSpecialHeaders": {
+        "bdp-minimum-scope-position": "pos-99",
+        "bdp-scope-epoch": "foreign-epoch",
+        "bdp-authorization-view": "foreign-view"
+      },
+      "expectedStatus": 200,
+      "note": null,
+      "bodyShaKind": "literal"
+    },
+    {
+      "group": "TX18",
+      "step": 13,
+      "method": "GET",
+      "scopeRelativeRoute": "beads/a",
+      "bodyText": null,
+      "bodyBytes": 0,
+      "bodySha256": null,
+      "key": null,
+      "copiedOrSpecialHeaders": {},
+      "expectedStatus": 200,
+      "note": null,
+      "bodyShaKind": "absent"
+    },
+    {
+      "group": "TX18",
+      "step": 14,
+      "method": "GET",
+      "scopeRelativeRoute": "@observed-exact-receipt-root",
+      "bodyText": null,
+      "bodyBytes": 0,
+      "bodySha256": null,
+      "key": null,
+      "copiedOrSpecialHeaders": {
+        "bdp-minimum-scope-position": "pos-99",
+        "bdp-scope-epoch": "@observed-epoch",
+        "bdp-authorization-view": "@observed-view"
+      },
+      "expectedStatus": 503,
+      "note": null,
+      "bodyShaKind": "absent"
+    },
+    {
+      "group": "TX18",
+      "step": 15,
+      "method": "GET",
+      "scopeRelativeRoute": "@observed-exact-receipt-root",
+      "bodyText": null,
+      "bodyBytes": 0,
+      "bodySha256": null,
+      "key": null,
+      "copiedOrSpecialHeaders": {
+        "bdp-minimum-scope-position": "pos-3",
+        "bdp-scope-epoch": "@observed-epoch",
+        "bdp-authorization-view": "foreign"
+      },
+      "expectedStatus": 409,
+      "note": null,
+      "bodyShaKind": "absent"
+    },
+    {
+      "group": "TX18",
+      "step": 16,
+      "method": "GET",
+      "scopeRelativeRoute": "@observed-exact-receipt-root",
+      "bodyText": null,
+      "bodyBytes": 0,
+      "bodySha256": null,
+      "key": null,
+      "copiedOrSpecialHeaders": {
+        "bdp-minimum-scope-position": "pos-3",
+        "bdp-scope-epoch": "@observed-epoch",
+        "bdp-authorization-view": "@observed-view"
+      },
+      "expectedStatus": 200,
+      "note": null,
+      "bodyShaKind": "absent"
+    },
+    {
+      "group": "TX18",
+      "step": 17,
+      "method": "HEAD",
+      "scopeRelativeRoute": "@observed-exact-receipt-root",
+      "bodyText": null,
+      "bodyBytes": 0,
+      "bodySha256": null,
+      "key": null,
+      "copiedOrSpecialHeaders": {
+        "bdp-minimum-scope-position": "pos-99",
+        "bdp-scope-epoch": "@observed-epoch",
+        "bdp-authorization-view": "@observed-view"
+      },
+      "expectedStatus": 503,
+      "note": null,
+      "bodyShaKind": "absent"
+    },
+    {
+      "group": "TX18",
+      "step": 18,
+      "method": "GET",
+      "scopeRelativeRoute": "beads/?limit=32",
+      "bodyText": null,
+      "bodyBytes": 0,
+      "bodySha256": null,
+      "key": null,
+      "copiedOrSpecialHeaders": {},
+      "expectedStatus": 200,
+      "note": null,
+      "bodyShaKind": "absent"
+    }
+  ],
+  "groups": {
+    "A": {
+      "requests": 27,
+      "methods": {
+        "POST": 18,
+        "GET": 9
+      },
+      "bodyBytesTotal": 2400,
+      "largestBodyBytes": 168,
+      "routes": [
+        "beads/batch_0",
+        "beads/batch_1",
+        "beads/batch_2",
+        "beads/createBead_0",
+        "beads/createBead_1",
+        "beads/createBead_2",
+        "beads/sequence_0",
+        "beads/sequence_1",
+        "beads/sequence_2",
+        "operations/batch",
+        "operations/create-bead",
+        "operations/sequence"
+      ],
+      "routeTemplateSha256": "deb36749da2726ebb1a416e90efed163eef0a528b4a851cb868196c44ef84c55"
+    },
+    "B": {
+      "requests": 16,
+      "methods": {
+        "POST": 13,
+        "GET": 3
+      },
+      "bodyBytesTotal": 1221,
+      "largestBodyBytes": 344,
+      "routes": [
+        "alias/work",
+        "beads/?limit=32",
+        "links/?limit=32",
+        "operations/batch",
+        "operations/create-bead",
+        "operations/create-link",
+        "operations/delete-alias",
+        "operations/delete-bead",
+        "operations/delete-link",
+        "operations/delete-where",
+        "operations/put-alias",
+        "operations/sequence",
+        "operations/update-bead",
+        "operations/update-link",
+        "operations/update-where"
+      ],
+      "routeTemplateSha256": "538802201c391689ad9ca0f3f6060ad724bd9fad58b14be9f899092e2899f2e1"
+    },
+    "C": {
+      "requests": 13,
+      "methods": {
+        "POST": 10,
+        "GET": 3
+      },
+      "bodyBytesTotal": 1276,
+      "largestBodyBytes": 189,
+      "routes": [
+        "beads/a",
+        "beads/negotiated",
+        "operations/batch",
+        "operations/create-bead",
+        "operations/sequence",
+        "operations/update-bead"
+      ],
+      "routeTemplateSha256": "ca122f296e18dd94afdaa4efb68a044675562b64b4b704a3869f68b20949da16"
+    },
+    "D": {
+      "requests": 18,
+      "methods": {
+        "POST": 12,
+        "GET": 6
+      },
+      "bodyBytesTotal": 1820,
+      "largestBodyBytes": 174,
+      "routes": [
+        "beads/batch_401",
+        "beads/batch_403",
+        "beads/createBead_401",
+        "beads/createBead_403",
+        "beads/sequence_401",
+        "beads/sequence_403",
+        "operations/batch",
+        "operations/create-bead",
+        "operations/sequence"
+      ],
+      "routeTemplateSha256": "fff9256248b5d65152ecfb4052fbd6c466b38d2679c06aa340e386f8d6b7578d"
+    },
+    "E": {
+      "requests": 6,
+      "methods": {
+        "POST": 1,
+        "GET": 4,
+        "HEAD": 1
+      },
+      "bodyBytesTotal": 120,
+      "largestBodyBytes": 120,
+      "routes": [
+        "@observed-exact-receipt-root",
+        "operations/batch"
+      ],
+      "routeTemplateSha256": "6b3ec72e4f8cafa5912032706c9daf6e7032ce32f42ea9036782889395b73b23"
+    },
+    "RU": {
+      "requests": 6,
+      "methods": {
+        "POST": 4,
+        "GET": 2
+      },
+      "bodyBytesTotal": 646,
+      "largestBodyBytes": 199,
+      "routes": [
+        "beads/copied-sequence",
+        "beads/copied-singleton",
+        "operations/create-bead",
+        "operations/sequence"
+      ],
+      "routeTemplateSha256": "c6c5d947f6a4b56a0444cd6d68f7ff1277cc8effd840e81c7ed0d473ce932e84"
+    },
+    "S-direct": {
+      "requests": 6,
+      "methods": {
+        "POST": 6
+      },
+      "bodyBytesTotal": 1180,
+      "largestBodyBytes": 595,
+      "routes": [
+        "operations/sequence"
+      ],
+      "routeTemplateSha256": "725a443d8cdb9860a9a6cabd71dbb4f1240e25a833d316de13c460e05a5bd6f8"
+    },
+    "TX18": {
+      "requests": 18,
+      "methods": {
+        "GET": 9,
+        "POST": 8,
+        "HEAD": 1
+      },
+      "bodyBytesTotal": 1074,
+      "largestBodyBytes": 165,
+      "routes": [
+        "@observed-exact-receipt-root",
+        "beads/?limit=32",
+        "beads/a",
+        "beads/b",
+        "beads/c",
+        "operations/batch",
+        "operations/create-bead",
+        "operations/sequence",
+        "operations/update-bead"
+      ],
+      "routeTemplateSha256": "95894199ab9ccc7c05b87d0205253ed26089025d109da5894ba0682463f3c8fb"
+    }
+  },
+  "controls": [
+    {
+      "id": "restore-command-refusal",
+      "selected": "A",
+      "expectedHttp": 1,
+      "maximumHttp": 27,
+      "observedRequired": "500 with developmentLimit minimum-position/contentLength0 at copied command accepted before effects",
+      "bodySource": "A step1"
+    },
+    {
+      "id": "bypass-receipt-root-minimum",
+      "selected": "E",
+      "expectedHttp": 2,
+      "maximumHttp": 6,
+      "observedRequired": "first future GET incorrectly200 with original full receipt/current context at receipt minimum remains enforced",
+      "bodySource": "E steps1\u20132"
+    }
+  ]
+}

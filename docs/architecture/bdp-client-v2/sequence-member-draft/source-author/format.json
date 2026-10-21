@@ -1,0 +1,21 @@
+{
+  "argv": [
+    "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+    "/Users/dbox/repos/wt/vickie/vickie-sequence-member-evidence/node_modules/@biomejs/biome/bin/biome",
+    "format",
+    "--write",
+    "packages/conformance/src/transactional-cumulative.test.ts",
+    "apps/bdptest/src/transactional-matrix.test.ts"
+  ],
+  "cwd": "/Users/dbox/repos/wt/vickie/vickie-sequence-member-evidence",
+  "exitCode": 0,
+  "elapsedSeconds": 0.09319525002501905,
+  "before": {
+    "packages/conformance/src/transactional-cumulative.test.ts": "d3b95d70c6d482a646b78b3a2e2f3d975a670940cd038cab9ff6043472f59014",
+    "apps/bdptest/src/transactional-matrix.test.ts": "3a657a253218f7645c945a267a33dc75cbc71cbf59a9d221ff4b667d4f28d0ce"
+  },
+  "after": {
+    "packages/conformance/src/transactional-cumulative.test.ts": "9b282cb8c8f6edb73bc4761f764af911d3e5ae36f1e31172296a461b6a6d8856",
+    "apps/bdptest/src/transactional-matrix.test.ts": "08099ab572bdd99a768d157d5e64f75a10c0a7b6b676c1cf89096c828bed41c8"
+  }
+}

@@ -1,0 +1,18 @@
+{
+  "priorPreservationSha256": "b122a56dc24b791c233f5951c7189f88fed69be93e2ee51c10b378fd9182e051",
+  "reversibleToPriorFrozenSource": true,
+  "reversalSha256": "128d9ff1c9e316938c188c03cb9f9f043a0f0bba4d3f82a2917eaca2be04e671",
+  "allOtherTrackedFilesUnchanged": 672,
+  "allThreeProductionFilesIdenticalToOriginalDraft": true,
+  "changedFromPredecessor": [
+    "apps/bdptest/src/transactional-snapshot-installed.test.ts",
+    "packages/server/src/transaction-http.test.ts",
+    "packages/server/src/transaction-service.test.ts",
+    "packages/server/src/transaction-snapshot.test.ts"
+  ],
+  "sourceRequestsCallbacksStoresChildrenDeadlinesUnchanged": true,
+  "historicalSharedInstalledHelpersUnchanged": true,
+  "formattingLimitedToFourNewTestRegions": true,
+  "N1": "NonNullable test-local parameter only",
+  "N2": "callback-local Retry-After1 GET/HEAD assertion only"
+}

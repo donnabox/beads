@@ -1,0 +1,49 @@
+ Failed Tests 2 ⎯⎯⎯⎯⎯⎯⎯
+2026-10-14T22:27:55.8716090Z 
+2026-10-14T22:27:55.8719776Z  FAIL  packages/conformance/src/profile-catalog-boundaries.test.ts > catalog citations respect cumulative profile boundaries > resolves internal links without lower-profile forward dependencies
+2026-10-14T22:27:55.8727610Z AssertionError: expected [Function] to not throw an error but 'Error: Later-profile anchor: #transac…' was thrown
+2026-10-14T22:27:55.8728432Z 
+2026-10-14T22:27:55.8728908Z - Expected:
+2026-10-14T22:27:55.8729364Z undefined
+2026-10-14T22:27:55.8729678Z 
+2026-10-14T22:27:55.8730036Z + Received:
+2026-10-14T22:27:55.8730773Z "Error: Later-profile anchor: #transactional-http-consistency"
+2026-10-14T22:27:55.8731074Z 
+2026-10-14T22:27:55.8731823Z  ❯ packages/conformance/src/profile-catalog-boundaries.test.ts:162:48
+2026-10-14T22:27:55.8830104Z     160|   });
+2026-10-14T22:27:55.8831637Z     161|   it("resolves internal links without lower-profile forward dependenci…
+2026-10-14T22:27:55.8832408Z 
+2026-10-14T22:27:55.8834032Z     162|     expect(() => assertProfileLinks(spec)).not.toThrow();
+2026-10-14T22:27:55.8835653Z        |                                                ^
+2026-10-14T22:27:55.8836738Z     163|     expect(() =>
+2026-10-14T22:27:55.8837779Z     164|       assertProfileLinks(
+2026-10-14T22:27:55.8838560Z 
+2026-10-14T22:27:55.8839230Z ⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/2]⎯
+2026-10-14T22:27:55.8839819Z 
+2026-10-14T22:27:55.8842103Z  FAIL  packages/conformance/src/profile-catalog-boundaries.test.ts > catalog citations respect cumulative profile boundaries > rejects model-to-Read dependencies despite their shared profile rank
+2026-10-14T22:27:55.8845012Z AssertionError: expected [Function] to not throw an error but 'Error: Later-part anchor: #transactio…' was thrown
+2026-10-14T22:27:55.8846028Z 
+2026-10-14T22:27:55.8846337Z - Expected:
+2026-10-14T22:27:55.8846711Z undefined
+2026-10-14T22:27:55.8846945Z 
+2026-10-14T22:27:55.8847211Z + Received:
+2026-10-14T22:27:55.8847989Z "Error: Later-part anchor: #transactional-http-consistency"
+2026-10-14T22:27:55.8848848Z 
+2026-10-14T22:27:55.8849921Z  ❯ packages/conformance/src/profile-catalog-boundaries.test.ts:178:45
+2026-10-14T22:27:55.8851169Z     176|   });
+2026-10-14T22:27:55.8852478Z     177|   it("rejects model-to-Read dependencies despite their shared profile …
+2026-10-14T22:27:55.8854459Z     178|     expect(() => assertPartLinks(spec)).not.toThrow();
+2026-10-14T22:27:55.8856252Z        |                                             ^
+2026-10-14T22:27:55.8857553Z     179|     expect(() =>
+2026-10-14T22:27:55.8858936Z     180|       assertPartLinks(
+2026-10-14T22:27:55.8859512Z 
+2026-10-14T22:27:55.8860127Z ⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/2]⎯
+2026-10-14T22:27:55.8860796Z 
+2026-10-14T22:27:55.8864489Z  Test Files  1 failed | 171 passed (172)
+2026-10-14T22:27:55.8939794Z       Tests  2 failed | 9266 passed | 1 skipped (9269)
+2026-10-14T22:27:55.8940914Z    Start at  22:15:20
+2026-10-14T22:27:55.8944387Z    Duration  755.31s (transform 8.37s, setup 3.05s, import 42.15s, tests 1692.64s, environment 30ms)
+2026-10-14T22:27:55.8949232Z 
+2026-10-14T22:27:55.9592750Z [ELIFECYCLE] Test failed. See above for more details.
+2026-10-14T22:27:55.9824281Z ##[error]Process completed with exit code 1.
+2026-10-14T22:27:55.9935401Z 

@@ -1,0 +1,312 @@
+{
+  "status": "accepted-source-positive",
+  "sourceBindingSha256": "0abed77764ff7763e5e5a6f9b5a767090423fed01b21ea01b162a17b3b743e70",
+  "nativeReviewSha256": "7184936efc82f646a1670121135a85294fe0661780975c003404d5d760b0bb62",
+  "stages": {
+    "boundaries": {
+      "resultSha256": "a33631d9c1b662b746fdfe3bba175815f6a0a82c5c6ac77fa38653610b9589ab",
+      "logSha256": "53f4cd856bde25513486a59799c5a05e0650fbb756bf1580fb07e56c2fdeeef3",
+      "elapsedSeconds": 1.1474800419528037
+    },
+    "build": {
+      "resultSha256": "d08e12d6c6d4c4f60ca07ea40512bb86c02be79d98e109f6d9e19421ca0dce40",
+      "logSha256": "232dac5e840e45b3bb06e6e04249b5241f2e1b4f6c797a22c046d916302ac208",
+      "elapsedSeconds": 1.3984785419888794
+    },
+    "format-check": {
+      "resultSha256": "54fe1e4cd1cc3e872f4d27ff98f9577c4d8f7019ece0753bb45effa542d1711b",
+      "logSha256": "31289202270e72d0259d84e3c74c9a6dbb8f2c26c2f68cd6e0079b5ca06de2a7",
+      "elapsedSeconds": 1.8757770000956953
+    },
+    "lint": {
+      "resultSha256": "8593afcd51d6ddc04ae60882253a50738dd45716f3d3ac962165c2f853f09510",
+      "logSha256": "d78ab70fa2085f18de26e720edadb407449c1ff7f68904ec061030e1590054b1",
+      "elapsedSeconds": 0.9669072080869228
+    },
+    "offline-setup": {
+      "resultSha256": "62b4e14d089449579e74179334c9ab6bf9b93c1d2dfe6d16d86b11d7ee5842f2",
+      "logSha256": "f249d5d929334a1392c46a3e120768143ab0f45ae794abf2ab54e571609d00d8",
+      "elapsedSeconds": 1.0775539998430759
+    },
+    "read-seal": {
+      "resultSha256": "325c8cb117c0539c3355b93eceb48969e419c4a25963135403d7b478f2728db3",
+      "logSha256": "79749014f712bd5d838b93088c70fef4cca1ae63d7738a613716ab37fa1295ba",
+      "elapsedSeconds": 0.8783996249549091
+    },
+    "source-positive": {
+      "resultSha256": "6e1cb78c9fc2ac2980074fbd3ffa183d077d43e417775fc1c06aa6eec77e3f3e",
+      "logSha256": "1d3417d79d2df2370d6af062a72d8de589355119a5ab1c76a6d0a9d52b20fd9a",
+      "elapsedSeconds": 1.7556649579200894
+    },
+    "typecheck": {
+      "resultSha256": "545639cea646617060c64ea1cbf6b248ef29c0ad5572a7fdb7b977aac95eab71",
+      "logSha256": "91d54ffbee73a3ac72294d090e58d77745f8b93edbf94b862807698273a6505a",
+      "elapsedSeconds": 1.9825146668590605
+    }
+  },
+  "selectedPassedNames": [
+    "uses bounded context-fenced checkpoints, never Event IDs/raw positions/future rows",
+    "rejects invalid feed intent  with the local parameter convention",
+    "rejects invalid feed intent ?after=genesis&start=now with the local parameter convention",
+    "rejects invalid feed intent ?start=then with the local parameter convention",
+    "rejects invalid feed intent ?after= with the local parameter convention",
+    "rejects invalid feed intent ?after=genesis&after=genesis with the local parameter convention",
+    "rejects invalid feed intent ?start=now&limit=1 with the local parameter convention",
+    "decides actual HTTP minimum refusal before conditional shortcuts with final context",
+    "preserves current context on owner-observed changefeed parameter refusals over HTTP"
+  ],
+  "observedNewHTTP": {
+    "observation": "private-source-changefeed-parameter-context",
+    "outcome": "passed",
+    "attempted": 12,
+    "completedResponses": [
+      {
+        "ordinal": 1,
+        "method": "POST",
+        "url": "https://example.test/feed/operations/batch",
+        "accept": "application/json",
+        "reconnect": null,
+        "status": 200,
+        "bodyOctets": 711,
+        "context": [
+          "26a25b55-858b-4a93-bb76-b813fe034e16",
+          "development-all-visible",
+          "pos-1"
+        ],
+        "contentType": "application/json",
+        "contentLength": "711"
+      },
+      {
+        "ordinal": 2,
+        "method": "GET",
+        "url": "https://example.test/feed/changes/?after=genesis",
+        "accept": "application/json",
+        "reconnect": null,
+        "status": 200,
+        "bodyOctets": 1386,
+        "context": [
+          "26a25b55-858b-4a93-bb76-b813fe034e16",
+          "development-all-visible",
+          "pos-1"
+        ],
+        "contentType": "application/json",
+        "contentLength": "1386"
+      },
+      {
+        "ordinal": 3,
+        "method": "GET",
+        "url": "https://example.test/feed/changes/?after=cg_pS35J9POj2NH_NFje9RavqOlFPMxS3gCvwRjqdVil2M_47N0Lek1tTBK8mUwBvdk-2U80tOIJ3TStuh1cA2AaXk_3",
+        "accept": "application/json",
+        "reconnect": null,
+        "status": 400,
+        "bodyOctets": 118,
+        "context": [
+          "26a25b55-858b-4a93-bb76-b813fe034e16",
+          "development-all-visible",
+          "pos-1"
+        ],
+        "contentType": "application/problem+json",
+        "contentLength": "118"
+      },
+      {
+        "ordinal": 4,
+        "method": "HEAD",
+        "url": "https://example.test/feed/changes/?after=cg_pS35J9POj2NH_NFje9RavqOlFPMxS3gCvwRjqdVil2M_47N0Lek1tTBK8mUwBvdk-2U80tOIJ3TStuh1cA2AaXk_3",
+        "accept": "application/json",
+        "reconnect": null,
+        "status": 400,
+        "bodyOctets": 0,
+        "context": [
+          "26a25b55-858b-4a93-bb76-b813fe034e16",
+          "development-all-visible",
+          "pos-1"
+        ],
+        "contentType": "application/problem+json",
+        "contentLength": "118"
+      },
+      {
+        "ordinal": 5,
+        "method": "GET",
+        "url": "https://example.test/feed/changes/?after=cg_pS35J9POj2NH_NFje9RavqOlFPMxS3gCvwRjqdVil2M_47N0Lek1tTBK8mUwBvdk-2U80tOIJ3TStuh1cA2AaXk_3",
+        "accept": "text/event-stream",
+        "reconnect": null,
+        "status": 400,
+        "bodyOctets": 118,
+        "context": [
+          "26a25b55-858b-4a93-bb76-b813fe034e16",
+          "development-all-visible",
+          "pos-1"
+        ],
+        "contentType": "application/problem+json",
+        "contentLength": "118"
+      },
+      {
+        "ordinal": 6,
+        "method": "HEAD",
+        "url": "https://example.test/feed/changes/?after=cg_pS35J9POj2NH_NFje9RavqOlFPMxS3gCvwRjqdVil2M_47N0Lek1tTBK8mUwBvdk-2U80tOIJ3TStuh1cA2AaXk_3",
+        "accept": "text/event-stream",
+        "reconnect": null,
+        "status": 400,
+        "bodyOctets": 0,
+        "context": [
+          "26a25b55-858b-4a93-bb76-b813fe034e16",
+          "development-all-visible",
+          "pos-1"
+        ],
+        "contentType": "application/problem+json",
+        "contentLength": "118"
+      },
+      {
+        "ordinal": 7,
+        "method": "GET",
+        "url": "https://example.test/feed/changes/?after=genesis",
+        "accept": "text/event-stream",
+        "reconnect": "malformed",
+        "status": 400,
+        "bodyOctets": 118,
+        "context": [
+          "26a25b55-858b-4a93-bb76-b813fe034e16",
+          "development-all-visible",
+          "pos-1"
+        ],
+        "contentType": "application/problem+json",
+        "contentLength": "118"
+      },
+      {
+        "ordinal": 8,
+        "method": "HEAD",
+        "url": "https://example.test/feed/changes/?after=genesis",
+        "accept": "text/event-stream",
+        "reconnect": "malformed",
+        "status": 400,
+        "bodyOctets": 0,
+        "context": [
+          "26a25b55-858b-4a93-bb76-b813fe034e16",
+          "development-all-visible",
+          "pos-1"
+        ],
+        "contentType": "application/problem+json",
+        "contentLength": "118"
+      },
+      {
+        "ordinal": 9,
+        "method": "GET",
+        "url": "https://example.test/feed/changes/?after=cg_pS35J9POj2NH_NFje9RavqOlFPMxS3gCvwRjqdVil2M_47N0Lek1tTBK8mUwBvdk-2U80tOIJ3TStuh1cA2AaXk_3",
+        "accept": "application/json",
+        "reconnect": null,
+        "status": 401,
+        "bodyOctets": 136,
+        "context": [
+          null,
+          null,
+          null
+        ],
+        "contentType": "application/problem+json",
+        "contentLength": "136"
+      },
+      {
+        "ordinal": 10,
+        "method": "GET",
+        "url": "https://example.test/feed/changes/?after=genesis&start=now",
+        "accept": "application/json",
+        "reconnect": null,
+        "status": 400,
+        "bodyOctets": 118,
+        "context": [
+          null,
+          null,
+          null
+        ],
+        "contentType": "application/problem+json",
+        "contentLength": "118"
+      },
+      {
+        "ordinal": 11,
+        "method": "POST",
+        "url": "https://example.test/feed/operations/batch",
+        "accept": "application/json",
+        "reconnect": null,
+        "status": 200,
+        "bodyOctets": 711,
+        "context": [
+          "26a25b55-858b-4a93-bb76-b813fe034e16",
+          "development-all-visible",
+          "pos-2"
+        ],
+        "contentType": "application/json",
+        "contentLength": "711"
+      },
+      {
+        "ordinal": 12,
+        "method": "GET",
+        "url": "https://example.test/feed/changes/?after=cg_pS35J9POj2NH_NFje9RavqOlFPMxS3gCvwRjqdVil2M_47N0Lek1tTBK8mUwBvdk-2U80tOIJ3TStuh1cA2AaXk_3",
+        "accept": "application/json",
+        "reconnect": null,
+        "status": 400,
+        "bodyOctets": 118,
+        "context": [
+          "26a25b55-858b-4a93-bb76-b813fe034e16",
+          "development-all-visible",
+          "pos-2"
+        ],
+        "contentType": "application/problem+json",
+        "contentLength": "118"
+      }
+    ],
+    "exchanges": 12,
+    "contextFailures": [],
+    "hardFailureCount": 0,
+    "deadlineExceeded": false,
+    "startupCompleted": true,
+    "closed": true,
+    "directory": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-changefeed-parameter-context-draft/run/source-positive.tmp/bdp-feed-http-VlUnX1",
+    "directoryAbsent": true,
+    "claimEligible": false
+  },
+  "sourceHTTPStaticTotal": 19,
+  "observedBodyBytes": 3534,
+  "sampledPidsIndependentlyAbsent": [
+    44211,
+    44213,
+    44218,
+    44254,
+    44256,
+    44261,
+    44285,
+    44330,
+    44332,
+    44337,
+    44361,
+    44362,
+    44388,
+    44389,
+    44397,
+    44456,
+    44458,
+    44466,
+    44469,
+    44479,
+    44515,
+    44517,
+    44522,
+    44546,
+    44552,
+    44579,
+    44581,
+    44587,
+    44610,
+    44639,
+    44641,
+    44647,
+    44671,
+    44697,
+    44748,
+    44750,
+    44756,
+    44764
+  ],
+  "claudeCodeReview": "pending",
+  "control": "not-run",
+  "installed": "not-run",
+  "qualification": false
+}

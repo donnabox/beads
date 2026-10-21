@@ -1,0 +1,20 @@
+--- before/node_modules/.pnpm/node_modules/.bin/rolldown
++++ after/node_modules/.pnpm/node_modules/.bin/rolldown
+@@ -25,9 +25,9 @@
+ esac
+ 
+ if [ -z "$NODE_PATH" ]; then
+-  export NODE_PATH="/Users/dbox/repos/wt/vickie/vickie-sequence-member-evidence/node_modules/.pnpm/rolldown@1.2.3/node_modules/rolldown/node_modules:/Users/dbox/repos/wt/vickie/vickie-sequence-member-evidence/node_modules/.pnpm/rolldown@1.2.3/node_modules:/Users/dbox/repos/wt/vickie/vickie-sequence-member-evidence/node_modules/.pnpm/node_modules"
++  export NODE_PATH="/Users/dbox/repos/wt/vickie/vickie-sequence-member-evidence/node_modules/.pnpm/rolldown@1.2.3/node_modules/rolldown/node_modules:/Users/dbox/repos/wt/vickie/vickie-sequence-member-evidence/node_modules/.pnpm/rolldown@1.2.3/node_modules:/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-event-missing-context-draft/control/copy/node_modules/.pnpm/node_modules"
+ else
+-  export NODE_PATH="/Users/dbox/repos/wt/vickie/vickie-sequence-member-evidence/node_modules/.pnpm/rolldown@1.2.3/node_modules/rolldown/node_modules:/Users/dbox/repos/wt/vickie/vickie-sequence-member-evidence/node_modules/.pnpm/rolldown@1.2.3/node_modules:/Users/dbox/repos/wt/vickie/vickie-sequence-member-evidence/node_modules/.pnpm/node_modules:$NODE_PATH"
++  export NODE_PATH="/Users/dbox/repos/wt/vickie/vickie-sequence-member-evidence/node_modules/.pnpm/rolldown@1.2.3/node_modules/rolldown/node_modules:/Users/dbox/repos/wt/vickie/vickie-sequence-member-evidence/node_modules/.pnpm/rolldown@1.2.3/node_modules:/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-event-missing-context-draft/control/copy/node_modules/.pnpm/node_modules:$NODE_PATH"
+ fi
+ if [ -n "$exe" ] && [ -x "$basedir/node.exe" ]; then
+   exec "$basedir/node.exe"  "$basedir_win/../rolldown/bin/cli.mjs" "$@"
+@@ -40,4 +40,4 @@
+ else
+   exec node  "$basedir/../rolldown/bin/cli.mjs" "$@"
+ fi
+-# cmd-shim-target=/Users/dbox/repos/wt/vickie/vickie-sequence-member-evidence/node_modules/.pnpm/node_modules/rolldown/bin/cli.mjs
++# cmd-shim-target=/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-event-missing-context-draft/control/copy/node_modules/.pnpm/node_modules/rolldown/bin/cli.mjs

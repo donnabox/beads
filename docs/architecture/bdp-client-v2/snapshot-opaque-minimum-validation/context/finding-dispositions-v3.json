@@ -1,0 +1,107 @@
+{
+  "state": "root-directed v3 dispositions reconciled to completed native findings audit; no authoring release",
+  "reviewAttribution": {
+    "reviewedPlan": "plan-v2.md",
+    "reviewedPlanSha256": "78e8fd03e892a87c76adb19f7f6f6a0026fdb05fd31a2d789bb532feb6faf44b",
+    "reviewFile": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/link-event-next-serving-audit/claude-plan-review/final-review.txt",
+    "reviewSha256": "1ad8389ab387a1f0f58f2f85534e1f48f721470a7e7446ef3e16cbab6b426a76",
+    "streamSha256": "d70d0b596cf28c1bdaff37b1eb6556b62cb8c915265688b4d475f9fa8c52b2f7",
+    "exitSha256": "7e87404dfa394f8d4f53c6c88c2c667f382547aeb94c1f7ad0c2eb30425bea38",
+    "elapsedSeconds": 1002.4693263331428,
+    "newReviewClaimed": false
+  },
+  "findings": [
+    {
+      "finding": 1,
+      "disposition": "accepted",
+      "action": "A captures actual allocation/disposition/expiry baseline immediately after real create, asserts1/1/2 and identical post-gate counts; no pages0 oracle.",
+      "sourceEvidence": "transaction-snapshot.ts711\u2013761; transaction-snapshot.test.ts1093\u20131094/1121"
+    },
+    {
+      "finding": 2,
+      "disposition": "accepted",
+      "action": "D asserts only observable HEAD metadata/empty body and retained literal bytes. No internal allocation or unchanged-expiry inference from wire.",
+      "sourceEvidence": "transaction-http.ts456\u2013463; transaction-snapshot.ts806\u2013808"
+    },
+    {
+      "finding": 3,
+      "disposition": "accepted",
+      "action": "E owns one exact executor with three routes, local pre-dispatch max3/final3; explicit write/Host/wire/bodyOctets/minimum-header/development marker invariants.",
+      "sourceEvidence": "http-executor.ts125\u2013131/554\u2013570; installed Snapshot270\u2013333"
+    },
+    {
+      "finding": 4,
+      "disposition": "accepted",
+      "action": "Only strict helper call caught; instanceof TypeError, no message classification; separate lexical catch rethrows original, kind read outside catches. Second synchronous recapture disclosed; no retry recapture.",
+      "sourceEvidence": "transaction-consistency.ts33\u201362"
+    },
+    {
+      "finding": 5,
+      "disposition": "accepted",
+      "action": "Preserve full hasMinimumControls && (notcreate || minimum===undefined) defensive fence.",
+      "sourceEvidence": "transaction-http.ts423\u2013427"
+    },
+    {
+      "finding": 6,
+      "disposition": "accepted",
+      "action": "A synchronous, no await, no maintenance override; two synchronous offline inspections. Comparison precedes final reopen.",
+      "sourceEvidence": "transaction-store.ts1451; transaction-snapshot.test.ts1264\u20131283"
+    },
+    {
+      "finding": 7,
+      "disposition": "accepted",
+      "action": "Exactly one matched-context pos-01 fresh create inA;13\u219214 owner calls, all wire/store/child/callback totals unchanged.",
+      "sourceEvidence": "transaction-consistency.ts26\u201331/115\u2013132"
+    },
+    {
+      "finding": 8,
+      "disposition": "accepted",
+      "action": "E compiles/applies mutationReceipt validator locally using existing snapshotAjv; shared validators unchanged.",
+      "sourceEvidence": "installed Snapshot85\u201390; transaction-http.test.ts29"
+    },
+    {
+      "finding": 9,
+      "disposition": "accepted",
+      "action": "C post-close probe explicitly calls real f.owner.observeSnapshot, preserving5 delegated attempts.",
+      "sourceEvidence": "transaction-store.ts398\u2013402; transaction-service.ts723\u2013724"
+    },
+    {
+      "finding": 10,
+      "disposition": "deferred",
+      "action": "Unifying known/no-minimum request.kind capture is unnecessary widening; retain those paths, capture only newly admitted opaque path. No universal accessor-side-effect equivalence claim.",
+      "sourceEvidence": "transaction-store.ts1558\u20131600"
+    },
+    {
+      "finding": 11,
+      "disposition": "deferred",
+      "action": "Do not add two existing known-pos2 emitted disconnect rows; preserved strict path and fullCI remain separate gates. No claim they are in22. If later selected, both add4 network requests including2 seed POSTs, not Claude optional arithmetic2; current counts unchanged.",
+      "sourceEvidence": "transaction-http.test.ts2749\u20132803"
+    },
+    {
+      "finding": 12,
+      "disposition": "accepted",
+      "action": "Name withDeadline/finishObservation as byte-identical reusable helpers; E local child close verified before directory removal, actual failure/unknown metadata.",
+      "sourceEvidence": "installed Snapshot136\u2013190/363\u2013370"
+    }
+  ],
+  "nativeCoordination": "Native source audit message agrees accept1\u20139/12 and defer10/11; clarifies retained bytes do not prove unextended expiry and max3 counter is local before-dispatch plus final.",
+  "counts": {
+    "AOwnerCallsBefore": 13,
+    "AOwnerCallsAfter": 14,
+    "extraNearMissCalls": 1,
+    "sourceCallbacks": 22,
+    "sourceEmittedHttp": 45,
+    "sourceHandlerRequests": 15,
+    "installedHttp": 34,
+    "installedChildren": 3,
+    "installedStores": 2,
+    "allStores": 24
+  },
+  "sourceReleased": false,
+  "nativeFindingsAudit": {
+    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/link-event-next-serving-audit/claude-plan-review/findings-audit.md",
+    "sha256": "3d1fe94512ae5fa8e7ea1cb569d799140592ff2c49e8b2c7b184253795c3593b",
+    "verdict": "accept1\u20139/12, defer10/11 with recorded qualifications"
+  },
+  "nativeChronology": "Earlier native clean v2 critique missed A pages2 baseline; original report preserved, superseded on that point by actual Claude finding1 and native findings audit."
+}

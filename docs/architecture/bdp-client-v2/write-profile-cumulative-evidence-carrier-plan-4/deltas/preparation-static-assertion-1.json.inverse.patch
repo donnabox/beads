@@ -1,0 +1,9 @@
+--- plan4/preparation-static-assertion-1.json
++++ /dev/null
+@@ -1,6 +0,0 @@
+-{
+-  "scope": "own document/data audit only, no product/helper execution",
+-  "failure": "Audit mistakenly expected credential case prefix E; preserved actual IDs are S01-S08. Assertion stopped before index/mirror/freeze.",
+-  "correction": "Check actual existing V/R/S/L prefixes and retain all48 IDs; no plan cases renamed or added.",
+-  "sourceChanged": false
+-}

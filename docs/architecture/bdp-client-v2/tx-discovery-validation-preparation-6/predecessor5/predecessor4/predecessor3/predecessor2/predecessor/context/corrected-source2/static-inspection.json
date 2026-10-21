@@ -1,0 +1,41 @@
+{
+  "all679CurrentBytesMatchAfterMap": true,
+  "bothHeaderBoundsIncludeTerminator": true,
+  "changedOwnedPaths": [
+    "apps/bdptest/src/transactional-discovery-installed.test.ts",
+    "apps/bdptest/src/transactional-schema-installed.test.ts",
+    "packages/server/src/transaction-changefeed.test.ts",
+    "packages/server/src/transaction-http.test.ts",
+    "packages/server/src/transaction-http.ts",
+    "packages/server/src/transaction-installed-contracts.test.ts"
+  ],
+  "coldRuntimeClientKeys": [
+    "canonicalScope",
+    "send"
+  ],
+  "coldRuntimeResponseKeys": [
+    "status",
+    "headers",
+    "bodyText"
+  ],
+  "compilerTestsBuildInstallRuntimeGitExecutions": 0,
+  "fixtureSendCallsPerColdSend": 1,
+  "formatCheckOrLintClaimed": false,
+  "formatterExit": 0,
+  "formatterInvocations": 1,
+  "headersDetachedAndFrozen": true,
+  "installedExpectedInventoryLiteralsUnchanged": true,
+  "installedSendCallSites": [
+    37,
+    37
+  ],
+  "kind": "author static textual inspection only",
+  "oldSourcePrefixBeforeD3RoutesExact": true,
+  "onlyProductionDelta": "exact Scope204 private, no-store header insertion; all remaining bytes identical to reviewed candidate",
+  "positiveColdAdapters": 2,
+  "sourceCallSites": [
+    12,
+    12
+  ],
+  "unchangedUnowned": 673
+}

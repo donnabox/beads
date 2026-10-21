@@ -1,0 +1,9 @@
+# Direct refusal context: root plan acceptance
+
+Root fully read v2, all eleven external dispositions and independent native closure on 2026-10-14. Their recorded hashes are independently verified. The three-disposition repair is accepted: direct authenticated conflict409, operation-count413 and fresh/retained bodyless406 receive current context captured inside their observed atomic admission. Root inspected actual8c HTTP/store/submission seams and confirms the diagnosed omission and existing capture boundary.
+
+This accepts design and seven-file scope only. Implementation remains gated on PR116 exact combined-head CI and actual merged-tree verification. Pin that verified main before source authoring; preserve ordinary ancestry and reconcile HTTP ownership. Worker update_implementation currently owns only a read-only stage0 anchor/selector inventory. No source authoring or test execution is released yet.
+
+After parent release, stage1 may author the three production files, their three existing test files and one dedicated installed test. Before test execution, publish measured source/request/route footprint and exact test/control selectors for root acceptance. Positive plus original-payload negative is bounded at28requests/twochildren, expected17/two; no broader installed matrix, no changed deadlines, runtime caps or public claims. Source controls are separate selected tests. Preserve old unobserved exact shapes, including both406 paths; do not synthesize context from a retained receipt or follow-up read.
+
+Native and Claude plan review is complete; implementation still requires its own native/Claude code review, exact-source validation and exact-head CI before merging. Unresolved comparison503/minimum/nondisclosure behavior stays separate. Cross-carrier evidence proposal remains held behind this serving repair.

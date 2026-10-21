@@ -1,0 +1,90 @@
+{
+  "source": {
+    "head": "c958e6416f5e9d406abbdacd17f15cecdf789766",
+    "parent": "99e28c5155afa31a55868c219f7771fa46bcef1d",
+    "tree": "c0fa3c30092476ea56fe21ca9f2da6a1c53e5ab1",
+    "branch": "codex/vickie-retry-diagnostic-closure",
+    "clean": true,
+    "file": "apps/bdptest/src/read-update-matrix.test.ts",
+    "fileSha256": "9f474d2a4cf35e56cc8a38ed1fadda2ceef2d4b3aac5879410682e2f70a10b22",
+    "unchangedRetainedRetryControlBlock": true,
+    "runtimeArtifactsAndAllOtherFilesUnchanged": true
+  },
+  "tests": {
+    "passed": 23,
+    "failed": 0,
+    "filtered": 169,
+    "evidenceBasis": "final precommit bytes; not a frozen-head runtime attestation"
+  },
+  "stages": {
+    "typecheck": {
+      "command": [
+        "node",
+        "/Users/dbox/.cache/node/corepack/v1/pnpm/11.20.0/bin/pnpm.cjs",
+        "typecheck"
+      ],
+      "exit": 0,
+      "elapsedSeconds": 1.7968120574951172,
+      "finishedAt": 1791933401.0495
+    },
+    "build": {
+      "command": [
+        "node",
+        "/Users/dbox/.cache/node/corepack/v1/pnpm/11.20.0/bin/pnpm.cjs",
+        "build"
+      ],
+      "exit": 0,
+      "elapsedSeconds": 0.8266561031341553,
+      "finishedAt": 1791933401.876499
+    },
+    "format": {
+      "command": [
+        "node",
+        "/Users/dbox/.cache/node/corepack/v1/pnpm/11.20.0/bin/pnpm.cjs",
+        "exec",
+        "biome",
+        "format",
+        "apps/bdptest/src/read-update-matrix.test.ts"
+      ],
+      "exit": 0,
+      "elapsedSeconds": 0.24149394035339355,
+      "finishedAt": 1791933402.118252
+    },
+    "lint": {
+      "command": [
+        "node",
+        "/Users/dbox/.cache/node/corepack/v1/pnpm/11.20.0/bin/pnpm.cjs",
+        "exec",
+        "biome",
+        "lint",
+        "apps/bdptest/src/read-update-matrix.test.ts"
+      ],
+      "exit": 0,
+      "elapsedSeconds": 0.29236412048339844,
+      "finishedAt": 1791933402.410881
+    },
+    "focused": {
+      "command": [
+        "node",
+        "/Users/dbox/.cache/node/corepack/v1/pnpm/11.20.0/bin/pnpm.cjs",
+        "exec",
+        "vitest",
+        "run",
+        "apps/bdptest/src/read-update-matrix.test.ts",
+        "--maxWorkers=2",
+        "--reporter=verbose",
+        "--reporter=json",
+        "--outputFile.json=/Users/dbox/repos/wt/vickie/bdp-integration-logs/retry-diagnostic-closure/focused.json",
+        "-t",
+        "retained.retry|retained retry diagnostics"
+      ],
+      "exit": 0,
+      "elapsedSeconds": 15.166584014892578,
+      "finishedAt": 1791933417.5777001
+    }
+  },
+  "originalCiCauseResolved": false,
+  "claimEligible": false,
+  "remainingOwnedChildren": 0,
+  "outwardActions": false
+}

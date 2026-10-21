@@ -1,0 +1,13 @@
+--- /dev/null
++++ authoring-static-inspection-error-1.json
+@@ -0,0 +1,10 @@
++{
++  "stage": "pure-data prefreeze verification",
++  "error": "TypeError: object of type int has no len() at assertion len(controlMatrix.D03StateSubcases)==20",
++  "actualField": "D03StateSubcases is the integer20; individual20 definitions are retained separately in source/subcase-call-map",
++  "correction": "Use exact integer equality and retained predecessor/subcase definitions, not len() on this summary field.",
++  "indexWrittenBeforeFailure": false,
++  "mirrorWrittenBeforeFailure": false,
++  "helperOrRuntimeExecuted": false,
++  "candidateCodeChangedForThisError": false
++}

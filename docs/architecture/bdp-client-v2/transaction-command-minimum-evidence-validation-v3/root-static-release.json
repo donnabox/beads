@@ -1,0 +1,30 @@
+{
+  "at": "2026-10-15T07:49:37.902041+00:00",
+  "acceptedForStaticValidation": true,
+  "source": {
+    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-command-minimum-evidence-draft/raw-header-test-closure/source-binding.json",
+    "sha256": "90ced9c641febb7e5cc5d494c7dc837aa55e16b2f538a852066b7b66c5491961"
+  },
+  "preparation": {
+    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-command-minimum-evidence-validation-v3/preparation-hashes.json",
+    "sha256": "8940c69ec61abe1a8ba25fa90f400d393bf202d8a8b498671806b4c674299886"
+  },
+  "native": {
+    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-command-minimum-evidence-draft/raw-header-test-closure/native-closure.md",
+    "sha256": "65c8c90565b8b286b78f4e177cf3bef332def9def170d5f1a87e00a1e58038d8"
+  },
+  "claudePending": true,
+  "approvedCommandIds": [
+    "offline-setup",
+    "typecheck",
+    "build",
+    "format-check",
+    "lint",
+    "boundaries",
+    "read-seal",
+    "static-cases",
+    "build-inventory"
+  ],
+  "limits": "Same30 sourcecallbacks/1loopback/0productchildren. After freshcommit/consumer, separately gated helpers12HTTP2children +matrix208expected225max26children. Stop on any failure, no automatic retry.",
+  "historicalEvidence": "V2passed and Vfailed retained; no historical relabeling."
+}

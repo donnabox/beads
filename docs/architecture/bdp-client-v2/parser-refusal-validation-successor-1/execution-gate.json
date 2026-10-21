@@ -1,0 +1,56 @@
+{
+  "released": true,
+  "rootPlanAccepted": true,
+  "rootExactSourceAccepted": true,
+  "session": "2026-10-08T20:26:35Z-81e5",
+  "mode": "final",
+  "approvedStages": [
+    "typecheck",
+    "format-check",
+    "lint",
+    "fresh-build",
+    "bind-fresh-build",
+    "focused-source",
+    "review-focused-source",
+    "node-version",
+    "prepare-package-directory",
+    "pack-protocol",
+    "pack-server",
+    "verify-archives",
+    "prepare-consumer",
+    "consumer-install",
+    "verify-installed-consumer",
+    "parser-external",
+    "review-parser-external",
+    "waiter-external",
+    "review-waiter-external"
+  ],
+  "staticValidationAuthorized": true,
+  "actualClaudeReviewDisposed": true,
+  "implementationIndexSha256": "4ab3895cd0ff8033b801644dcd55725677e26e79eee3e06628ed8a30955138d1",
+  "sourceBinding": {
+    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/parser-refusal-validation-successor-1/source-binding.json",
+    "sha256": "5fecd704d54e08b0de899505decf8da1ae80f6ad64fdcbc90608e8a516f715db"
+  },
+  "baseTools": {
+    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/parser-refusal-validation-successor-1/base-tools.json",
+    "sha256": "640ab0908e15f93a877802401ede3532e9db446e49777833a1e12a55d0f389dd"
+  },
+  "workspaceTools": {
+    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/parser-refusal-validation-preparation/run/workspace-tools.json",
+    "sha256": "1be8b56e7deb4dd19e4d23bd6fe213db9069df6888cddbd7328992940397892d"
+  },
+  "rootDisposition": {
+    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/parser-refusal-validation-successor-1/root-runtime-disposition.json",
+    "sha256": "a7d1c3f1087796f1eb590cc56b4c50fab25ecbb501cbd574189b181626fe5698"
+  },
+  "consumerLockSha256": "f7aa569d87664a97eaa2b2d2491ce0463acf53f01fc890e77808c4d2c98e1abd",
+  "installedProvenance": {
+    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/parser-refusal-validation-successor-1/run/installed-provenance.json",
+    "sha256": "3f4308b6b83f7ac5fb2b616b35a74145407be4a2cd33b327fcbfe7e8b5b3865c"
+  },
+  "consumerInventory": {
+    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/parser-refusal-validation-successor-1/run/installed-consumer-inventory.json",
+    "sha256": "6b92183343d9e130407643c3e8cc23bbafa2b59cf2a86594d4c523a7b241ca9c"
+  }
+}

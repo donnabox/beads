@@ -1,0 +1,20 @@
+{
+  "issue": "One draft source end-line exceeded the actual file by3; found by static pointer QA before report/index/mirror. Only inventory pointer correction needed, no source fix.",
+  "observed": [
+    {
+      "actualHash": "63b5892abebe9ef6e9688dd05eae5c4fbe18ede0698caad5b9f7ec2213c1bd7a",
+      "actualLines": 992,
+      "owner": "original-later17-stage-table.json",
+      "pointer": "/rows/9/stageSpecificSourcePointers/1",
+      "record": {
+        "endLine": 995,
+        "line": 899,
+        "path": "/Users/dbox/repos/wt/vickie/vickie-schema-lint-correction-minimum/apps/bdptest/src/transactional-schema-installed.test.ts",
+        "sha256": "63b5892abebe9ef6e9688dd05eae5c4fbe18ede0698caad5b9f7ec2213c1bd7a"
+      }
+    }
+  ],
+  "phase": "PRE_REPORT_SOURCE_POINTER_QA",
+  "runtimeOrSubjectInvocation": false,
+  "subjectFailure": false
+}

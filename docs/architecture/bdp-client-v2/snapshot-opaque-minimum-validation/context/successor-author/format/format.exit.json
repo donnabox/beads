@@ -1,0 +1,25 @@
+{
+  "argv": [
+    "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+    "/Users/dbox/repos/wt/vickie/vickie-link-event-minimum/node_modules/@biomejs/biome/bin/biome",
+    "format",
+    "--write",
+    "--config-path=/Users/dbox/repos/wt/vickie/vickie-snapshot-opaque-minimum/biome.json",
+    "packages/server/src/transaction-http.ts",
+    "packages/server/src/transaction-service.ts",
+    "packages/server/src/transaction-store.ts",
+    "packages/server/src/transaction-snapshot.test.ts",
+    "packages/server/src/transaction-service.test.ts",
+    "packages/server/src/transaction-http.test.ts",
+    "apps/bdptest/src/transactional-snapshot-installed.test.ts"
+  ],
+  "cwd": "/Users/dbox/repos/wt/vickie/vickie-snapshot-opaque-minimum",
+  "pid": 96779,
+  "timeoutSeconds": 120,
+  "timeout": false,
+  "exitCode": 0,
+  "elapsedSeconds": 0.1178621668368578,
+  "remainingProcesses": [],
+  "stdoutSha256": "558a63eba7c0974615ae37cd575575119fa7326b0372a31d46d8ba42a8dd5c96",
+  "stderrSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+}

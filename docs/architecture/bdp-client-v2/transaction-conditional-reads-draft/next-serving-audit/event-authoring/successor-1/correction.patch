@@ -1,0 +1,85 @@
+--- frozen-original/apps/bdptest/src/transactional-event-sse-installed.test.ts
++++ successor-1/apps/bdptest/src/transactional-event-sse-installed.test.ts
+@@ -318,16 +318,25 @@
+ }, 60000);
+ 
+ it("installed Event cursors survive restart with Last-Event-ID precedence and source binding", async () => {
+-  // This callback is installed evidence only; the unchanged historical callback retains its fallback.
+-  if (
+-    !process.env.BDP_TRANSACTIONAL_INSTALLED_ENTRY ||
+-    !process.env.BDP_TRANSACTIONAL_SOURCE_COMMIT
+-  )
+-    throw new Error("Event restart witness requires explicit installed entry and source");
++  // The full suite executes this same witness locally; only externally bound artifacts
++  // can supply installed attribution. A declared source string alone proves no provenance.
++  const entryOverride = process.env.BDP_TRANSACTIONAL_INSTALLED_ENTRY;
++  const sourceOverride = process.env.BDP_TRANSACTIONAL_SOURCE_COMMIT;
++  const hasEntryOverride = entryOverride !== undefined;
++  const hasSourceOverride = sourceOverride !== undefined;
++  if (hasEntryOverride !== hasSourceOverride)
++    throw new Error("Event restart overrides must include both installed entry and source");
+   expect(source).toMatch(/^[0-9a-f]{40}$/);
+-  const installedRelative = path.relative(root, entry);
+-  if (!installedRelative.startsWith(`..${path.sep}`) && !path.isAbsolute(installedRelative))
+-    throw new Error("Event restart witness requires an external installed entry");
++  const attribution = hasEntryOverride ? "external-installed-candidate" : "development-local";
++  if (hasEntryOverride) {
++    if (!entryOverride || !sourceOverride || !/^[0-9a-f]{40}$/.test(sourceOverride))
++      throw new Error(
++        "Event restart installed overrides must be nonempty and source must be a commit",
++      );
++    const installedRelative = path.relative(root, entry);
++    if (!installedRelative.startsWith(`..${path.sep}`) && !path.isAbsolute(installedRelative))
++      throw new Error("Event restart installed attribution requires an external entry");
++  }
+   const hash = (value: string | Uint8Array) => createHash("sha256").update(value).digest("hex");
+   const witnessPath = fileURLToPath(import.meta.url);
+   const witnessSource = {
+@@ -728,19 +737,16 @@
+       expect(result.outcome).toBe("created");
+       const resource = object(result.resource);
+       validate("currentBeadRecord", resource);
+-      // Independent complete shape; only authority-issued revision/time are opaque.
++      // Independent complete shape; the authority-issued revision is opaque.
+       expect(resource).toEqual({
+         id: `${scope}beads/${i === 0 ? "a" : "b"}`,
+         type,
+         revision: expect.any(String),
+         properties: { n: 0 },
+         metadata: {},
+-        revisionProvenance: {
+-          committedAt: { state: "present", value: expect.any(String) },
+-          agent: { state: "undetermined" },
+-          message: { state: "undetermined" },
+-        },
+       });
++      // Unattributed seed with recordChangeContext:false must not invent native provenance.
++      expect(resource).not.toHaveProperty("revisionProvenance");
+       expect((resource.revision as string).length).toBeGreaterThan(0);
+       return resource;
+     });
+@@ -765,9 +771,9 @@
+           revision: resources[i]!.revision,
+           properties: { n: 0 },
+           metadata: {},
+-          revisionProvenance: resources[i]!.revisionProvenance,
+         },
+       });
++      expect(object(event.data)).not.toHaveProperty("revisionProvenance");
+       expect((event.id as string).length).toBeGreaterThan(0);
+     });
+     const e0 = events[0]!,
+@@ -945,7 +951,12 @@
+     }
+     console.log(
+       JSON.stringify({
+-        observation: "private-installed-event-restart-cursor",
++        observation: "private-event-restart-cursor",
++        attribution,
++        installedProvenance:
++          attribution === "external-installed-candidate"
++            ? "requires separately verified external package/consumer/source binding"
++            : "none; development fallback is not installed evidence",
+         claimEligible: false,
+         outcome: failures.length ? "failed" : "passed",
+         declaredSourceCommit: source,

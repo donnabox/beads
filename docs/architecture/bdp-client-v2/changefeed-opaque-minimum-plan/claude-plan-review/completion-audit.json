@@ -1,0 +1,381 @@
+{
+  "review": "actual Claude PLAN on successor-2",
+  "completedAt": "2026-10-17T14:03:01.646011+00:00",
+  "verdictAttribution": "Claude reports no blockers; findings1\u20133 are medium plan precision/scope choices before authoring. Root owns disposition; this audit is not release approval.",
+  "head": "5ceb213b632e17f28714684efc5e35a62b282bf6",
+  "sourceFilesVerified": 679,
+  "contextsVerified": 18,
+  "artifactsVerified": 8,
+  "beforeAfterExact": true,
+  "cleanCurrent": true,
+  "exit": {
+    "classification": "review_complete",
+    "reviewComplete": true,
+    "approvalInferred": false,
+    "exitCode": 0,
+    "timeout": false,
+    "elapsedSeconds": 990.562100041192,
+    "sourceInputsUnchanged": true,
+    "packetUnchanged": true,
+    "sampledPids": [
+      88851
+    ],
+    "remainingProcesses": [],
+    "cleanupRequired": false,
+    "wrapperErrorType": null,
+    "streamRecords": 4084,
+    "streamBytes": 2195579,
+    "parseErrors": 0,
+    "terminalResultCount": 1,
+    "lastEventElapsed": 989.7705623749644,
+    "streamSha256": "69f66e9fb3ca9ce7a925f87e782af1acbdceaed0ea64f4354d065d8397bd2a06",
+    "stderrSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  "finalSha256": "b215857c09f6bcd955e91bfa32770d91aafece18869c993cca5fcb83dae0ec9f",
+  "exitSha256": "2985a6dfa9da7f21f3a6c7f12b3d9282c417b7fa654e749d05aacb3065cccaf4",
+  "bindingSha256": "4236a6e2f9d94c70c0f2d950b4cf56f31bfbe97873dc81bc4c64636f7e429aab",
+  "processSha256": "3ac3a2944b567ce9d4ee71adda39dd739d9b3eb3d664cce3d22d4379f49d098b",
+  "terminalResultSubtype": "success",
+  "toolCounts": {
+    "Read": 36,
+    "Grep": 24,
+    "Glob": 1
+  },
+  "toolErrors": [],
+  "readAccessEvidence": [
+    {
+      "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/changefeed-opaque-minimum-plan/claude-plan-review/context/plan.md",
+      "offset": null,
+      "limit": null,
+      "toolUseRecord": 26,
+      "successfulResult": true,
+      "resultRecord": 30
+    },
+    {
+      "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/changefeed-opaque-minimum-plan/claude-plan-review/context/plan-binding.json",
+      "offset": null,
+      "limit": null,
+      "toolUseRecord": 40,
+      "successfulResult": true,
+      "resultRecord": 46
+    },
+    {
+      "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/changefeed-opaque-minimum-plan/claude-plan-review/context/plan-index.json",
+      "offset": null,
+      "limit": null,
+      "toolUseRecord": 54,
+      "successfulResult": true,
+      "resultRecord": 58
+    },
+    {
+      "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/changefeed-opaque-minimum-plan/claude-plan-review/context/correction-2-report.md",
+      "offset": null,
+      "limit": null,
+      "toolUseRecord": 68,
+      "successfulResult": true,
+      "resultRecord": 72
+    },
+    {
+      "path": "/Users/dbox/repos/wt/vickie/vickie-alias-opaque-minimum/packages/server/src/transaction-http.ts",
+      "offset": 380,
+      "limit": 190,
+      "toolUseRecord": 104,
+      "successfulResult": true,
+      "resultRecord": 108
+    },
+    {
+      "path": "/Users/dbox/repos/wt/vickie/vickie-alias-opaque-minimum/packages/server/src/transaction-service.ts",
+      "offset": 400,
+      "limit": 160,
+      "toolUseRecord": 121,
+      "successfulResult": true,
+      "resultRecord": 125
+    },
+    {
+      "path": "/Users/dbox/repos/wt/vickie/vickie-alias-opaque-minimum/packages/server/src/transaction-consistency.ts",
+      "offset": null,
+      "limit": null,
+      "toolUseRecord": 200,
+      "successfulResult": true,
+      "resultRecord": 202
+    },
+    {
+      "path": "/Users/dbox/repos/wt/vickie/vickie-alias-opaque-minimum/packages/server/src/transaction-store.ts",
+      "offset": 1770,
+      "limit": 160,
+      "toolUseRecord": 308,
+      "successfulResult": true,
+      "resultRecord": 310
+    },
+    {
+      "path": "/Users/dbox/repos/wt/vickie/vickie-alias-opaque-minimum/packages/server/src/transaction-http.ts",
+      "offset": 80,
+      "limit": 220,
+      "toolUseRecord": 434,
+      "successfulResult": true,
+      "resultRecord": 438
+    },
+    {
+      "path": "/Users/dbox/repos/wt/vickie/vickie-alias-opaque-minimum/packages/server/src/transaction-http.ts",
+      "offset": 570,
+      "limit": 200,
+      "toolUseRecord": 467,
+      "successfulResult": true,
+      "resultRecord": 471
+    },
+    {
+      "path": "/Users/dbox/repos/wt/vickie/vickie-alias-opaque-minimum/packages/server/src/read-http.ts",
+      "offset": null,
+      "limit": null,
+      "toolUseRecord": 545,
+      "successfulResult": true,
+      "resultRecord": 549
+    },
+    {
+      "path": "/Users/dbox/repos/wt/vickie/vickie-alias-opaque-minimum/packages/server/src/transaction-service.ts",
+      "offset": 150,
+      "limit": 130,
+      "toolUseRecord": 661,
+      "successfulResult": true,
+      "resultRecord": 665
+    },
+    {
+      "path": "/Users/dbox/repos/wt/vickie/vickie-alias-opaque-minimum/packages/server/src/transaction-service.ts",
+      "offset": 60,
+      "limit": 95,
+      "toolUseRecord": 694,
+      "successfulResult": true,
+      "resultRecord": 698
+    },
+    {
+      "path": "/Users/dbox/repos/wt/vickie/vickie-alias-opaque-minimum/packages/server/src/transaction-changefeed.test.ts",
+      "offset": 1,
+      "limit": 140,
+      "toolUseRecord": 750,
+      "successfulResult": true,
+      "resultRecord": 754
+    },
+    {
+      "path": "/Users/dbox/repos/wt/vickie/vickie-alias-opaque-minimum/packages/server/src/transaction-changefeed.test.ts",
+      "offset": 140,
+      "limit": 160,
+      "toolUseRecord": 793,
+      "successfulResult": true,
+      "resultRecord": 797
+    },
+    {
+      "path": "/Users/dbox/repos/wt/vickie/vickie-alias-opaque-minimum/packages/server/src/transaction-changefeed.test.ts",
+      "offset": 505,
+      "limit": 260,
+      "toolUseRecord": 873,
+      "successfulResult": true,
+      "resultRecord": 875
+    },
+    {
+      "path": "/Users/dbox/repos/wt/vickie/vickie-alias-opaque-minimum/packages/server/src/transaction-runtime.ts",
+      "offset": 180,
+      "limit": 70,
+      "toolUseRecord": 1026,
+      "successfulResult": true,
+      "resultRecord": 1030
+    },
+    {
+      "path": "/Users/dbox/repos/wt/vickie/vickie-alias-opaque-minimum/apps/bdptest/src/transactional-changefeed-refusal-context-installed.test.ts",
+      "offset": null,
+      "limit": null,
+      "toolUseRecord": 1179,
+      "successfulResult": true,
+      "resultRecord": 1183
+    },
+    {
+      "path": "/Users/dbox/repos/wt/vickie/vickie-alias-opaque-minimum/packages/server/src/transaction-changefeed.test.ts",
+      "offset": 764,
+      "limit": 230,
+      "toolUseRecord": 1254,
+      "successfulResult": true,
+      "resultRecord": 1256
+    },
+    {
+      "path": "/Users/dbox/repos/wt/vickie/vickie-alias-opaque-minimum/packages/server/src/transaction-changefeed.test.ts",
+      "offset": 376,
+      "limit": 60,
+      "toolUseRecord": 1313,
+      "successfulResult": true,
+      "resultRecord": 1317
+    },
+    {
+      "path": "/Users/dbox/repos/wt/vickie/vickie-alias-opaque-minimum/packages/server/src/transaction-store.ts",
+      "offset": 1545,
+      "limit": 30,
+      "toolUseRecord": 1449,
+      "successfulResult": true,
+      "resultRecord": 1453
+    },
+    {
+      "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/changefeed-opaque-minimum-plan/claude-plan-review/context/bdp.md",
+      "offset": 5815,
+      "limit": 45,
+      "toolUseRecord": 1569,
+      "successfulResult": true,
+      "resultRecord": 1573
+    },
+    {
+      "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/changefeed-opaque-minimum-plan/claude-plan-review/context/bdp.md",
+      "offset": 6030,
+      "limit": 30,
+      "toolUseRecord": 1593,
+      "successfulResult": true,
+      "resultRecord": 1595
+    },
+    {
+      "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/changefeed-opaque-minimum-plan/claude-plan-review/context/bdp.md",
+      "offset": 6143,
+      "limit": 15,
+      "toolUseRecord": 1643,
+      "successfulResult": true,
+      "resultRecord": 1647
+    },
+    {
+      "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/changefeed-opaque-minimum-plan/claude-plan-review/context/bdp.md",
+      "offset": 6180,
+      "limit": 14,
+      "toolUseRecord": 1668,
+      "successfulResult": true,
+      "resultRecord": 1672
+    },
+    {
+      "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/changefeed-opaque-minimum-plan/claude-plan-review/context/bdp.md",
+      "offset": 6988,
+      "limit": 12,
+      "toolUseRecord": 1692,
+      "successfulResult": true,
+      "resultRecord": 1696
+    },
+    {
+      "path": "/Users/dbox/repos/wt/vickie/vickie-alias-opaque-minimum/packages/server/src/transaction-sse.test.ts",
+      "offset": 270,
+      "limit": 160,
+      "toolUseRecord": 1968,
+      "successfulResult": true,
+      "resultRecord": 1972
+    },
+    {
+      "path": "/Users/dbox/repos/wt/vickie/vickie-alias-opaque-minimum/packages/server/src/transaction-http.test.ts",
+      "offset": 4600,
+      "limit": 100,
+      "toolUseRecord": 2097,
+      "successfulResult": true,
+      "resultRecord": 2101
+    },
+    {
+      "path": "/Users/dbox/repos/wt/vickie/vickie-alias-opaque-minimum/packages/server/src/transaction-service.test.ts",
+      "offset": 3500,
+      "limit": 100,
+      "toolUseRecord": 2336,
+      "successfulResult": true,
+      "resultRecord": 2338
+    },
+    {
+      "path": "/Users/dbox/repos/wt/vickie/vickie-alias-opaque-minimum/packages/server/src/transaction-store.ts",
+      "offset": 930,
+      "limit": 60,
+      "toolUseRecord": 2392,
+      "successfulResult": true,
+      "resultRecord": 2396
+    },
+    {
+      "path": "/Users/dbox/repos/wt/vickie/vickie-alias-opaque-minimum/packages/server/src/transaction-service.ts",
+      "offset": 595,
+      "limit": 70,
+      "toolUseRecord": 2415,
+      "successfulResult": true,
+      "resultRecord": 2419
+    },
+    {
+      "path": "/Users/dbox/repos/wt/vickie/vickie-alias-opaque-minimum/packages/server/src/transaction-store.ts",
+      "offset": 1668,
+      "limit": 50,
+      "toolUseRecord": 2469,
+      "successfulResult": true,
+      "resultRecord": 2473
+    },
+    {
+      "path": "/Users/dbox/repos/wt/vickie/vickie-alias-opaque-minimum/docs/design/transaction-implementation-progress.md",
+      "offset": 700,
+      "limit": 40,
+      "toolUseRecord": 2730,
+      "successfulResult": true,
+      "resultRecord": 2734
+    },
+    {
+      "path": "/Users/dbox/repos/wt/vickie/vickie-alias-opaque-minimum/docs/design/transaction-implementation-progress.md",
+      "offset": 1243,
+      "limit": 40,
+      "toolUseRecord": 2816,
+      "successfulResult": true,
+      "resultRecord": 2820
+    },
+    {
+      "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/changefeed-opaque-minimum-plan/claude-plan-review/context/original-native-critique.md",
+      "offset": null,
+      "limit": null,
+      "toolUseRecord": 2861,
+      "successfulResult": true,
+      "resultRecord": 2865
+    },
+    {
+      "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/changefeed-opaque-minimum-plan/claude-plan-review/context/recommendation.md",
+      "offset": null,
+      "limit": null,
+      "toolUseRecord": 2880,
+      "successfulResult": true,
+      "resultRecord": 2884
+    }
+  ],
+  "successfulDistinctReadPaths": [
+    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/changefeed-opaque-minimum-plan/claude-plan-review/context/bdp.md",
+    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/changefeed-opaque-minimum-plan/claude-plan-review/context/correction-2-report.md",
+    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/changefeed-opaque-minimum-plan/claude-plan-review/context/original-native-critique.md",
+    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/changefeed-opaque-minimum-plan/claude-plan-review/context/plan-binding.json",
+    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/changefeed-opaque-minimum-plan/claude-plan-review/context/plan-index.json",
+    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/changefeed-opaque-minimum-plan/claude-plan-review/context/plan.md",
+    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/changefeed-opaque-minimum-plan/claude-plan-review/context/recommendation.md",
+    "/Users/dbox/repos/wt/vickie/vickie-alias-opaque-minimum/apps/bdptest/src/transactional-changefeed-refusal-context-installed.test.ts",
+    "/Users/dbox/repos/wt/vickie/vickie-alias-opaque-minimum/docs/design/transaction-implementation-progress.md",
+    "/Users/dbox/repos/wt/vickie/vickie-alias-opaque-minimum/packages/server/src/read-http.ts",
+    "/Users/dbox/repos/wt/vickie/vickie-alias-opaque-minimum/packages/server/src/transaction-changefeed.test.ts",
+    "/Users/dbox/repos/wt/vickie/vickie-alias-opaque-minimum/packages/server/src/transaction-consistency.ts",
+    "/Users/dbox/repos/wt/vickie/vickie-alias-opaque-minimum/packages/server/src/transaction-http.test.ts",
+    "/Users/dbox/repos/wt/vickie/vickie-alias-opaque-minimum/packages/server/src/transaction-http.ts",
+    "/Users/dbox/repos/wt/vickie/vickie-alias-opaque-minimum/packages/server/src/transaction-runtime.ts",
+    "/Users/dbox/repos/wt/vickie/vickie-alias-opaque-minimum/packages/server/src/transaction-service.test.ts",
+    "/Users/dbox/repos/wt/vickie/vickie-alias-opaque-minimum/packages/server/src/transaction-service.ts",
+    "/Users/dbox/repos/wt/vickie/vickie-alias-opaque-minimum/packages/server/src/transaction-sse.test.ts",
+    "/Users/dbox/repos/wt/vickie/vickie-alias-opaque-minimum/packages/server/src/transaction-store.ts"
+  ],
+  "copiedContextPathsWithSuccessfulReads": [
+    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/changefeed-opaque-minimum-plan/claude-plan-review/context/bdp.md",
+    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/changefeed-opaque-minimum-plan/claude-plan-review/context/correction-2-report.md",
+    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/changefeed-opaque-minimum-plan/claude-plan-review/context/original-native-critique.md",
+    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/changefeed-opaque-minimum-plan/claude-plan-review/context/plan-binding.json",
+    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/changefeed-opaque-minimum-plan/claude-plan-review/context/plan-index.json",
+    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/changefeed-opaque-minimum-plan/claude-plan-review/context/plan.md",
+    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/changefeed-opaque-minimum-plan/claude-plan-review/context/recommendation.md"
+  ],
+  "copiedContextPathsWithoutSuccessfulReads": [
+    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/changefeed-opaque-minimum-plan/claude-plan-review/context/changefeed-original-plan.md",
+    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/changefeed-opaque-minimum-plan/claude-plan-review/context/correction-1-report.md",
+    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/changefeed-opaque-minimum-plan/claude-plan-review/context/correction-1.patch",
+    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/changefeed-opaque-minimum-plan/claude-plan-review/context/correction-2.patch",
+    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/changefeed-opaque-minimum-plan/claude-plan-review/context/design.md",
+    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/changefeed-opaque-minimum-plan/claude-plan-review/context/exact-head-ci-audit.md",
+    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/changefeed-opaque-minimum-plan/claude-plan-review/context/original-plan.md",
+    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/changefeed-opaque-minimum-plan/claude-plan-review/context/parameter-context-plan.md",
+    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/changefeed-opaque-minimum-plan/claude-plan-review/context/selection.json",
+    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/changefeed-opaque-minimum-plan/claude-plan-review/context/successor-1-plan.md",
+    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/changefeed-opaque-minimum-plan/claude-plan-review/context/workload.json"
+  ],
+  "contextLimitations": "Only Read calls with matched successful tool results establish reads listed here. Grep/Glob calls counted separately and not promoted to complete file inspection. Inline plan/selection/workload were supplied in prompt. Claude explicitly discloses partial binding read, skipped historical contexts/design/CI, no hash recomputation or product execution. Independent hash verification is this audit, not attributed to Claude.",
+  "remainingProcessesNow": [],
+  "mutations": "Only this completion audit outside frozen input index; no source, plan, gate, runner or review input edits."
+}

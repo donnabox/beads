@@ -1,0 +1,211 @@
+{
+  "purpose": "Existing Event plan source rebind only; no scope/workload change",
+  "originalPlanSha256": "7b1a80e7648cea6f98d5d7ff5a0f16393793688d71d28c7c8c3402b129b396bf",
+  "originalSourceBindingSha256": "7c785f7f6b3247aef21a5fd81df91737b2b9c051c97b376e07ec61e6a2f38797",
+  "committedHead": "9f89271e2563a105410789ca8ca1e77dfb4d0b9f",
+  "committedTree": "30eaca668f17a191068444f8d6ca1232c80171b2",
+  "parents": [
+    "d9c3eb9e61b1982b9bd56aa77e4cdc114384e886"
+  ],
+  "currentClean": true,
+  "trackedFiles": 679,
+  "committedWorkingTestedMapsEqual": true,
+  "historicalUnchangedFiles": 668,
+  "historicalChangedFiles": {
+    "apps/bdptest/src/transactional-minimum-receiving-installed.test.ts": {
+      "before": "9c73fc09d024169cf21feee5095e63c630431e7f6a634fd9be41b4c8df285d7c",
+      "after": "165ded90d0e172bfc6bd9c4c9de634739aa5d2a1ab5e0bcbd51258122178f11a"
+    },
+    "docs/design/transaction-implementation-progress.md": {
+      "before": "36309c8dbf1b5ae99392da6c2585f6375bf2dc65fe41bddedcad4276bf16e53b",
+      "after": "08f9040e3feee9961d7b72fcb6cf85f09d02e0699e7e0dd0d6306d38e61549d8"
+    },
+    "packages/server/src/transaction-consistency.test.ts": {
+      "before": "8ab94b280dcea4cf243b48e90bc8910d4f85981b5f53c0f26bb7a59005b0a290",
+      "after": "a35b0e6050442a637df0bef96efe1d0d275c6bde7fdb423c78d01f198f894ce8"
+    },
+    "packages/server/src/transaction-event-sse.test.ts": {
+      "before": "7be697d50e48937f6f2fbb910f74b071730b552dac1202ee2d50c7a8632b6a22",
+      "after": "4345d1405e98820879fc84a5e88b4afee73bfe6ee07ae2bc01e084b225da73ad"
+    },
+    "packages/server/src/transaction-events.test.ts": {
+      "before": "e9a9897943eae8fe68a3db697a0ecb229ae47343fb87b0129b15b36705b46694",
+      "after": "eb9fa9c8138cf81d8071107bcdcabd168be6933de00e178b8c5ec40af444080e"
+    },
+    "packages/server/src/transaction-http.test.ts": {
+      "before": "d5bafae5d66dcd29f489c4e9ec9f2cfdd7940c86cc06fe378ddb1a69446a3370",
+      "after": "f972c417409302e750f0936c80be5c261de21556d5ca8a883bbe0f713f2049df"
+    },
+    "packages/server/src/transaction-read.test.ts": {
+      "before": "b9799ade1a6b2bd5b77ebcaefe80886f7526825e43cf4fc94e3ac227a528d208",
+      "after": "7f1c4f1bd45728eb5702cbde1e2656f8ea657cf681e70145563a84546a41a04a"
+    },
+    "packages/server/src/transaction-read.ts": {
+      "before": "c4cc1011af7afcff940110fb0ce7b49e80a663dd89120ff9ec098892b57f2260",
+      "after": "bde7e3069f4a1cb028acaba725ad6f3bcdef692f914284f668631c700fe17683"
+    },
+    "packages/server/src/transaction-receipt-pages.test.ts": {
+      "before": "b470058499042424805567b9ea74eadc3320b2807e4bc8a0118b0c93996e1f05",
+      "after": "3bf6cbaeef0258bdbd89420007a123a9135358f5b30008a86ee1dcb0a15267c1"
+    },
+    "packages/server/src/transaction-service.test.ts": {
+      "before": "2433b3b324c990be6cd2228b72505cc2c9dcdaa08952265a1f1ca3acd68fa1ec",
+      "after": "e66f4384e7e6f4fb10b2072e298093991fffcfae606d005b54dda97dbf250705"
+    },
+    "packages/server/src/transaction-snapshot.test.ts": {
+      "before": "3a1e25d20a69c3818c81c6d47c9621bdc799fc9e494ac980904ebf2f43a62b2d",
+      "after": "57227357dccc13e6f47ec35aad06b238fba90743c4d0283361c4931ec1c5bad5"
+    }
+  },
+  "proposedSixFiles": {
+    "packages/server/src/transaction-http.ts": {
+      "historical": "6d570df85e21526c59ad84115d0bbf9fb7b1d1158efe68850fad84d9fa57ee42",
+      "committed": "6d570df85e21526c59ad84115d0bbf9fb7b1d1158efe68850fad84d9fa57ee42",
+      "changed": false
+    },
+    "packages/server/src/transaction-service.ts": {
+      "historical": "1eea06b33d70585de2bc1d9ffc05772f787d62616b50e119a574d145c344ac6c",
+      "committed": "1eea06b33d70585de2bc1d9ffc05772f787d62616b50e119a574d145c344ac6c",
+      "changed": false
+    },
+    "packages/server/src/transaction-store.ts": {
+      "historical": "816f8c006cde78965e20fe765f06e02b1f0afd4de69d081209952ed836344baa",
+      "committed": "816f8c006cde78965e20fe765f06e02b1f0afd4de69d081209952ed836344baa",
+      "changed": false
+    },
+    "packages/server/src/transaction-events.test.ts": {
+      "historical": "e9a9897943eae8fe68a3db697a0ecb229ae47343fb87b0129b15b36705b46694",
+      "committed": "eb9fa9c8138cf81d8071107bcdcabd168be6933de00e178b8c5ec40af444080e",
+      "changed": true
+    },
+    "packages/server/src/transaction-event-sse.test.ts": {
+      "historical": "7be697d50e48937f6f2fbb910f74b071730b552dac1202ee2d50c7a8632b6a22",
+      "committed": "4345d1405e98820879fc84a5e88b4afee73bfe6ee07ae2bc01e084b225da73ad",
+      "changed": true
+    },
+    "apps/bdptest/src/transactional-event-sse-installed.test.ts": {
+      "historical": "0d2c2ddf069a57e9a4533894da03589beb1645d7608537dac45c2995ee7c0a23",
+      "committed": "0d2c2ddf069a57e9a4533894da03589beb1645d7608537dac45c2995ee7c0a23",
+      "changed": false
+    }
+  },
+  "allThreeProposedProductionFilesUnchanged": true,
+  "predecessorChronology": [
+    {
+      "phase": "correction-successor-1",
+      "sourceBinding": {
+        "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/current-observation-minimum-author/correction-successor-1/source-binding.json",
+        "sha256": "9c75bdd9409a3930ae75aaa539f08e0bd74904da6fed618f9b8c0206b4757310"
+      },
+      "nativeClosure": {
+        "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/current-observation-minimum-author/correction-successor-1/native-closure.md",
+        "sha256": "a3b6dbd33832e9162d25fb8909010615f2a880fac536ca8cff6a39a6379d7bf9"
+      },
+      "correctionPatch": {
+        "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/current-observation-minimum-author/correction-successor-1/correction.patch",
+        "sha256": "616fe4a65fbe9576ac299ba9f727a725030ed8b3266bf9178afeee0658f935ad"
+      },
+      "changedFiles": [
+        "docs/design/transaction-implementation-progress.md",
+        "packages/server/src/transaction-events.test.ts",
+        "packages/server/src/transaction-http.test.ts",
+        "packages/server/src/transaction-read.ts",
+        "packages/server/src/transaction-receipt-pages.test.ts",
+        "packages/server/src/transaction-service.test.ts"
+      ],
+      "attribution": "Six-file correction of actual partial-review findings: Link aggregate12\u21928; source lifecycle/report assertions; read.ts explanatory comment and progress prose. Original timed-out CODE is not a verdict."
+    },
+    {
+      "phase": "correction-successor-2",
+      "sourceBinding": {
+        "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/current-observation-minimum-author/correction-successor-2/source-binding.json",
+        "sha256": "43a6e9f16f79d6625c4c59510ae35a08b4d07a3cb7298cb00f191fe9355eb6cb"
+      },
+      "nativeClosure": {
+        "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/current-observation-minimum-author/correction-successor-2/native-closure.md",
+        "sha256": "2d0778f68dfa924b081f9b71ed7b309481055899ca1ac7cdaa55d6af7dd78e30"
+      },
+      "correctionPatch": {
+        "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/current-observation-minimum-author/correction-successor-2/correction.patch",
+        "sha256": "ffe40ffb96c66fe3054341a01e9a8dd2e6ec877ee83c45659ddd0b36539fbc35"
+      },
+      "changedFiles": [
+        "packages/server/src/transaction-http.test.ts",
+        "packages/server/src/transaction-service.test.ts"
+      ],
+      "attribution": "Prescribed principal object fix and Type expected-order change after completed CODE. The Type-order F2 recommendation was later shown erroneous and is preserved as such."
+    },
+    {
+      "phase": "format-successor-1",
+      "sourceBinding": {
+        "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/current-observation-minimum-author/format-successor-1/source-binding.json",
+        "sha256": "bddf5335f1277b6462b4cea240cce43123fcc743549789b58c3989a6d4c5e4e1"
+      },
+      "nativeClosure": {
+        "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/current-observation-minimum-author/format-successor-1/native-closure.md",
+        "sha256": "8b0b8e7c679bd459c8d0797214f04e03f31b4754e257c7a82291bea43c06f4ff"
+      },
+      "correctionPatch": {
+        "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/current-observation-minimum-author/format-successor-1/correction.patch",
+        "sha256": "6fee603fb12d02ebbac37ec3b4135a866fc786dbc657fba51c77cd7f694aef1c"
+      },
+      "changedFiles": [
+        "apps/bdptest/src/transactional-minimum-receiving-installed.test.ts",
+        "packages/server/src/transaction-consistency.test.ts",
+        "packages/server/src/transaction-event-sse.test.ts",
+        "packages/server/src/transaction-events.test.ts",
+        "packages/server/src/transaction-http.test.ts",
+        "packages/server/src/transaction-read.test.ts",
+        "packages/server/src/transaction-receipt-pages.test.ts",
+        "packages/server/src/transaction-service.test.ts",
+        "packages/server/src/transaction-snapshot.test.ts"
+      ],
+      "attribution": "One measured formatter execution on9tests; production unchanged."
+    },
+    {
+      "phase": "lint-successor-1",
+      "sourceBinding": {
+        "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/current-observation-minimum-author/lint-successor-1/source-binding.json",
+        "sha256": "b79e0ab9b750bfa0784effecabdc56e9a7bb19c484aaaa0293f0a1c736c2f264"
+      },
+      "nativeClosure": {
+        "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/current-observation-minimum-author/lint-successor-1/native-closure.md",
+        "sha256": "622a57627a3a294a2ac53e3d5ce38915274fe29963da4c0d660f660eb946302c"
+      },
+      "correctionPatch": {
+        "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/current-observation-minimum-author/lint-successor-1/correction.patch",
+        "sha256": "fe1067e3a5e9c3099de0020c8506d750715dd372ce1d84eb4f820c50d8f62b3d"
+      },
+      "changedFiles": [
+        "packages/server/src/transaction-service.test.ts"
+      ],
+      "attribution": "Equivalent direct error collection/else success cleanup in service test; one block only."
+    },
+    {
+      "phase": "oracle-successor-1",
+      "sourceBinding": {
+        "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/current-observation-minimum-author/oracle-successor-1/source-binding.json",
+        "sha256": "761e451b24f6765e23949ad97cdd58cbb81e052fc30cd3a0f3e3fb4b94e1151a"
+      },
+      "nativeClosure": {
+        "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/current-observation-minimum-author/oracle-successor-1/native-closure.md",
+        "sha256": "38e381dfcfbe52ca821132cfb54806b30500958f55640d9675a75b8463b54d39"
+      },
+      "correctionPatch": {
+        "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/current-observation-minimum-author/oracle-successor-1/correction.patch",
+        "sha256": "060450157c92a7777b9b5a2567008b732e36d1b4da1038f47c762e5fc048a074"
+      },
+      "changedFiles": [
+        "packages/server/src/transaction-http.test.ts"
+      ],
+      "attribution": "Restore HTTP canonical Relation,Task expected object order, preserving erroneous earlier F2 and failed run."
+    }
+  ],
+  "selectionByteIdentical": true,
+  "changesToPlan": "Only basis/CI gates and predecessor Link-count chronology. Original functional scope, fixtures, deadlines, exact selection and workload remain unchanged.",
+  "ciAcceptance": "PENDING",
+  "nativeRebindClosure": null,
+  "rootRebindClosure": null,
+  "reviewLaunchAuthorized": false,
+  "sourceAuthoringAuthorized": false
+}

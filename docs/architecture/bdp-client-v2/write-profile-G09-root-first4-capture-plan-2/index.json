@@ -1,0 +1,391 @@
+{
+  "actualInvocations": 0,
+  "executionReady": false,
+  "files": {
+    "C3-actual288-INPLACE-census.json": {
+      "bytes": 46123,
+      "sha256": "7fc6258832a8371e2ca3f621039edd90d7aa12acecba805f8da3043eb94835ed"
+    },
+    "author-data-errors.json": {
+      "bytes": 611,
+      "sha256": "f93a2d6ba8ea4c59f9e19fa0da0a9cba6dd196dcdd5adbbe88d14db6514b4d84"
+    },
+    "authority-adoption-and-activation-protocol.json": {
+      "bytes": 3092,
+      "sha256": "dcfa6af114bf5b070bbf8cd44b1d19d2a0e757d4895d641d7c025628a9b18083"
+    },
+    "before/clock-boundary.json": {
+      "bytes": 1933,
+      "sha256": "2570d0fd1d37494301f48bd5d1dd2034d990d26e2a8431888c647f890da18e66"
+    },
+    "before/fixed-first4.json": {
+      "bytes": 4717,
+      "sha256": "814586fb1a0210365e3372ad3c5d86c2e477ed5e88d0e67537dd6e907b533628"
+    },
+    "before/observation-record-contract.json": {
+      "bytes": 3631,
+      "sha256": "20265820a266ae43ea28f24997829069d9267f75a28d37dc6c7a27395ef1aae0"
+    },
+    "before/ownership-observation-protocol.json": {
+      "bytes": 1889,
+      "sha256": "1fb23bc3b29112d3b675598439373b89830110c7da4789c0c32f43ce90632db1"
+    },
+    "before/plan.md": {
+      "bytes": 5649,
+      "sha256": "e5966f47a106aa00111858e0a0741ae35419d0c8baa465fda75434c073e32c9f"
+    },
+    "before/proposals/bind-workspace-tools.capture.txt": {
+      "bytes": 5771,
+      "sha256": "0df515b733a2b47ef266dbca6792dc38bcd775e501d70a2184508313a1293198"
+    },
+    "before/proposals/node-version.capture.txt": {
+      "bytes": 5755,
+      "sha256": "4fd3a70fd3e9e552b2f86a573ee36be9f70b8c694a328ecbd5b1a9ecc824e82b"
+    },
+    "before/proposals/pnpm-version.capture.txt": {
+      "bytes": 5755,
+      "sha256": "e99f141b2024452eed3494cc1ecddfa48c15f5cfd32bfa85cb803a18ab75e63a"
+    },
+    "before/proposals/workspace-install.capture.txt": {
+      "bytes": 5765,
+      "sha256": "b6f957f1dd1b5b7bec8c20051f265ba2996528041ee05d41c0a9befe2f6caa68"
+    },
+    "before/unresolved.json": {
+      "bytes": 1322,
+      "sha256": "f94fbce424e3ac521bddf51ea00f06c20f5d8d66821a85d49969c84c90b46dac"
+    },
+    "binding.json": {
+      "bytes": 2395,
+      "sha256": "8c96f0ed6078e7b80917f80f8abe15dbad7d8885977bfa5af0bf24c9e74415f1"
+    },
+    "checks.json": {
+      "bytes": 602,
+      "sha256": "ea2f7f6d8f41da9181f44c8a61f7fd617dd038365be458ecac63f0010a31d60e"
+    },
+    "clock-boundary.json": {
+      "bytes": 2046,
+      "sha256": "cb0ce8aca71f07fc88be06ac8e703971cf1bb9449ea05b12d1c87590592ea4e7"
+    },
+    "closure.json": {
+      "bytes": 2174,
+      "sha256": "a4f9e7185b59470b6772c3b7385a810f6503e02f497c06a33dbce4eb888ad9ac"
+    },
+    "deltas/clock-boundary.json.forward.patch": {
+      "bytes": 4001,
+      "sha256": "636004b6f023e1114c552fcf10924f1800122757b831912e6b7cae08041cc3c4"
+    },
+    "deltas/clock-boundary.json.inverse.patch": {
+      "bytes": 4001,
+      "sha256": "0b546ad9b8660a2221ee6db2048d5acc79bad17af837e8b30edf11efb25452e6"
+    },
+    "deltas/fixed-first4.json.forward.patch": {
+      "bytes": 4606,
+      "sha256": "b4c9f318ffc382871b47e3af5c69e756f17abf4cafc33f41f1571245bcdb3c90"
+    },
+    "deltas/fixed-first4.json.inverse.patch": {
+      "bytes": 4606,
+      "sha256": "b651036763e0dad8ac2c3debddd4602e477f26c05a6fca67ce844b8c4dc5f25e"
+    },
+    "deltas/observation-record-contract.json.forward.patch": {
+      "bytes": 6473,
+      "sha256": "de0bc4ec10cc924a4797d473e1e10dfae5887cf79f2d6bbdae18d6711afda252"
+    },
+    "deltas/observation-record-contract.json.inverse.patch": {
+      "bytes": 6473,
+      "sha256": "a1ce13a284ba84dc40bb8207bdfe52d94ecad1483b3a1e08c6b13a6adc15bd05"
+    },
+    "deltas/ownership-observation-protocol.json.forward.patch": {
+      "bytes": 9317,
+      "sha256": "be91cde2712dee4eeb55a033f7a63b4b7edd8ef4f7f05b10de375da26a126840"
+    },
+    "deltas/ownership-observation-protocol.json.inverse.patch": {
+      "bytes": 9317,
+      "sha256": "b28e33ed06c8fade0947e86dd0f5123162a9e26c56426aef8e0759c01ee9f36b"
+    },
+    "deltas/plan.md.forward.patch": {
+      "bytes": 13787,
+      "sha256": "1f1ad066ed3c67716b812775e9ffa031653b8890e7de0c48195ea810646177ab"
+    },
+    "deltas/plan.md.inverse.patch": {
+      "bytes": 13787,
+      "sha256": "3241cd3815ad9050f2ed537a4fa5a340375cee0065bd3fbeccc5c768cc7dee5c"
+    },
+    "deltas/proposals__bind-workspace-tools.capture.txt.forward.patch": {
+      "bytes": 25575,
+      "sha256": "e915170c3ee27f98f2cfa34540fe1b3d064b0457efaeeea9383e753c1e4eeb88"
+    },
+    "deltas/proposals__bind-workspace-tools.capture.txt.inverse.patch": {
+      "bytes": 25575,
+      "sha256": "33883b77cfc5c5a1deded68f13204e7a323b1da4e6136a8cc3de39491eb4ceb1"
+    },
+    "deltas/proposals__node-version.capture.txt.forward.patch": {
+      "bytes": 25479,
+      "sha256": "2c7ed52c532a304af7066e78f29e3f63a9f21e6b9a6e38b25024d212eac06eaa"
+    },
+    "deltas/proposals__node-version.capture.txt.inverse.patch": {
+      "bytes": 25479,
+      "sha256": "bd01c5f014bb57d03808fb1d46c1244447c8aa5ed90daaa2ddfaae4be09951c5"
+    },
+    "deltas/proposals__pnpm-version.capture.txt.forward.patch": {
+      "bytes": 25479,
+      "sha256": "6dd52d4b7d5167a3c7d2a59f32e62e1472916ea933039a46b44c9a207a16735c"
+    },
+    "deltas/proposals__pnpm-version.capture.txt.inverse.patch": {
+      "bytes": 25479,
+      "sha256": "3fccffe3cf169f36e971ed221796e531197ad7361b6de2eee991e5f598494a8b"
+    },
+    "deltas/proposals__workspace-install.capture.txt.forward.patch": {
+      "bytes": 25539,
+      "sha256": "8ae9a1c1662bdcb03f18897cf0f4bd7bccc55dfcf679eb684860e293c6604c01"
+    },
+    "deltas/proposals__workspace-install.capture.txt.inverse.patch": {
+      "bytes": 25539,
+      "sha256": "22ccd7b6b5c249e90056d30cef48d3b6cff4417ec987efc92241a1b848a95fd4"
+    },
+    "deltas/unresolved.json.forward.patch": {
+      "bytes": 2680,
+      "sha256": "7963fdbe40c6988278d56c95cc7e595b14508898df96a60ead8db6828f10386a"
+    },
+    "deltas/unresolved.json.inverse.patch": {
+      "bytes": 2680,
+      "sha256": "014e3221dd5605654346884d7b27753fc8e57cffaebf7e3dc07ec0e5646bbbff"
+    },
+    "fixed-first4.json": {
+      "bytes": 6058,
+      "sha256": "49aef637961932fa72f4634d8e315518aa6fac83670ce6ad1323c2e77696db7e"
+    },
+    "genuine-data-pairs.json": {
+      "bytes": 3843,
+      "sha256": "f14dbf3b43c0dbdb1d157174a44bbae1c5015839aed02257d6f285fe29733e9a"
+    },
+    "helper2-450-INPLACE-census.json": {
+      "bytes": 77035,
+      "sha256": "301120bf0ce613a582dd9cf8cadfae638dc4271b553951e2af2b8d7954babd72"
+    },
+    "helper2-input-verification.json": {
+      "bytes": 534,
+      "sha256": "88366c8e34f41e85e6ebdd5e323bcdc2ab9acfb13add953755d4b8571fd49168"
+    },
+    "input-origins.json": {
+      "bytes": 13996,
+      "sha256": "42d3d8e134747257eca1e9a5049201a2666afcbb658eba298cf30e6408d3e799"
+    },
+    "inputs/C3-actual-native/closure.json": {
+      "bytes": 1503,
+      "sha256": "57696ff940106a470fcde0e0e326ee3f1a35ffdcabf35311a672226d2798e845"
+    },
+    "inputs/C3-actual-native/fresh-process-census-terminal.json": {
+      "bytes": 25257,
+      "sha256": "53160eccf2b880112df734608cd65dfeae14901c4c69ebaab34153d41b66dad8"
+    },
+    "inputs/C3-actual-native/index.json": {
+      "bytes": 48550,
+      "sha256": "d4407e4bb40a2e4cec8ac204ab43f6e8525403d4c84dba6e8a6a79c03db476fb"
+    },
+    "inputs/C3-actual-native/report.md": {
+      "bytes": 4681,
+      "sha256": "f96c3a2e939331178713c657e9db876dcc1bf885072d6fc89dab06f5f2c628de"
+    },
+    "inputs/C3-root-acceptance/acceptance.json": {
+      "bytes": 2445,
+      "sha256": "9ba1cc1fd235a63f5a238fd756bc760bf030ebba52dd0f2e6f029ebecd7b4739"
+    },
+    "inputs/C3-root-acceptance/index.json": {
+      "bytes": 111,
+      "sha256": "4d549b6609b19ba2798fe40da6fb3f3eb0acf36b1ca9e7207f7c7a7d084c8865"
+    },
+    "inputs/C3-root-actual/caller-exit.json": {
+      "bytes": 767,
+      "sha256": "33717b87e6efd1e9012d73ecfd8929235413653d0589a8ab2c0fc0e13758a6f7"
+    },
+    "inputs/C3-root-actual/caller-process.json": {
+      "bytes": 158,
+      "sha256": "3c9d139c6e64425a915fdf8804f63c1bf4501b00ac3360e0ff9ad50e3f318fad"
+    },
+    "inputs/C3-root-actual/started.json": {
+      "bytes": 670,
+      "sha256": "37ccecde4d897135729699c395c3842ac22da68bdc86eebb838431bfc297888f"
+    },
+    "inputs/helper2/audit.py": {
+      "bytes": 46796,
+      "sha256": "1892c8b723126ea69d33053ce0ec6e2461e299dbf9e8b886be35905c132412a2"
+    },
+    "inputs/helper2/base-tools.candidate.json": {
+      "bytes": 1019,
+      "sha256": "c05588f1210d14a4716a67ee0ee1dc727b5cb150e6e81727fbddbc17c424066a"
+    },
+    "inputs/helper2/closure.json": {
+      "bytes": 1019,
+      "sha256": "edc2bd835437db8be5f13d61269a9a11ec0c56c7c5a5836d46940d1445b093da"
+    },
+    "inputs/helper2/commands.json": {
+      "bytes": 35072,
+      "sha256": "b898591c4d062da2ac044e8dbc633e92a0e4334bbf8bbe6b9102fe20b1f8c135"
+    },
+    "inputs/helper2/execution-gate.closed.json": {
+      "bytes": 2282,
+      "sha256": "ec0d956a5fc29b9f90414b0b4031e6fda6267cd77e3b43f18c704fb73eb682a7"
+    },
+    "inputs/helper2/execution-gate.json": {
+      "bytes": 2282,
+      "sha256": "ec0d956a5fc29b9f90414b0b4031e6fda6267cd77e3b43f18c704fb73eb682a7"
+    },
+    "inputs/helper2/gate.py": {
+      "bytes": 12583,
+      "sha256": "c3e631f818f63a17d1b5518b6122d761f6d1fecf5dfb3cb0b1b043d568204168"
+    },
+    "inputs/helper2/guarded-action-session-20261018-021624-549f.py": {
+      "bytes": 946,
+      "sha256": "b2d467920638e68d3b007ba9daa432e971636245eca988bfb29d7a99d6e3fb30"
+    },
+    "inputs/helper2/implementation-hashes.json": {
+      "bytes": 60176,
+      "sha256": "57ecb824dec79722836e63b618e30e0557815142e796da988a80b65af2161413"
+    },
+    "inputs/helper2/packages.py": {
+      "bytes": 8760,
+      "sha256": "162e4f04ffe9aeffe886b194c7ed41241c6ce3cf37e9c93f92fec0969095aea9"
+    },
+    "inputs/helper2/preparation-index.json": {
+      "bytes": 81104,
+      "sha256": "56e68b20a4a273611e8828cc944c7bad9613decbaeee854736a16880764f8c0f"
+    },
+    "inputs/helper2/report.md": {
+      "bytes": 3495,
+      "sha256": "60465fba19d4d638352a97d952b4fbfa834319a840828205ea4fd13b31b1a98d"
+    },
+    "inputs/helper2/root-authority-integration.json": {
+      "bytes": 2266,
+      "sha256": "f6c24ba28a95c6861abc156fb8dfedf3e87332f376e2854a9ac0082e6b758389"
+    },
+    "inputs/helper2/run.py": {
+      "bytes": 5357,
+      "sha256": "16049341d6d810ea5c46a88220da30f9a04e436ee7fea0061cc26e58ba76ba70"
+    },
+    "inputs/helper2/source-binding.json": {
+      "bytes": 94175,
+      "sha256": "712c3c5a8e1543bf5005cbb54d321c6874b7443afb7e01805f393434fe5cd714"
+    },
+    "inputs/original-plan1/clock-boundary.json": {
+      "bytes": 1933,
+      "sha256": "2570d0fd1d37494301f48bd5d1dd2034d990d26e2a8431888c647f890da18e66"
+    },
+    "inputs/original-plan1/closure.json": {
+      "bytes": 949,
+      "sha256": "7d30ed9c4d30ac497420bdab6bef962fd3fb4243ec9a698763dda130fa9c424e"
+    },
+    "inputs/original-plan1/fixed-first4.json": {
+      "bytes": 4717,
+      "sha256": "814586fb1a0210365e3372ad3c5d86c2e477ed5e88d0e67537dd6e907b533628"
+    },
+    "inputs/original-plan1/index.json": {
+      "bytes": 7803,
+      "sha256": "be5de8c132aea246b603248fcde05743498198b185071f6e902cf6f44aeed42b"
+    },
+    "inputs/original-plan1/observation-record-contract.json": {
+      "bytes": 3631,
+      "sha256": "20265820a266ae43ea28f24997829069d9267f75a28d37dc6c7a27395ef1aae0"
+    },
+    "inputs/original-plan1/ownership-observation-protocol.json": {
+      "bytes": 1889,
+      "sha256": "1fb23bc3b29112d3b675598439373b89830110c7da4789c0c32f43ce90632db1"
+    },
+    "inputs/original-plan1/plan.md": {
+      "bytes": 5649,
+      "sha256": "e5966f47a106aa00111858e0a0741ae35419d0c8baa465fda75434c073e32c9f"
+    },
+    "inputs/original-plan1/unresolved.json": {
+      "bytes": 1322,
+      "sha256": "f94fbce424e3ac521bddf51ea00f06c20f5d8d66821a85d49969c84c90b46dac"
+    },
+    "inputs/write-profile-G09-validation2-native-mechanics-1/closure.json": {
+      "bytes": 1206,
+      "sha256": "b98034f7ed46d67c89d7724b909b5f37f69114191a8bdc2d6f68528ede516bec"
+    },
+    "inputs/write-profile-G09-validation2-native-mechanics-1/index.json": {
+      "bytes": 11499,
+      "sha256": "97f8049be7787c2c5eb576a6bb0df1d304c2c489d99c62073b532bd8c5eb16c9"
+    },
+    "inputs/write-profile-G09-validation2-native-mechanics-1/report.md": {
+      "bytes": 6709,
+      "sha256": "0a39f137b18880c3dcd51631aa2165499e66ab17013ce2d4be8d78b6f3804f0f"
+    },
+    "inputs/write-profile-G09-validation2-root-static-acceptance-1/acceptance.json": {
+      "bytes": 2126,
+      "sha256": "bf55f088e036446eaa039644fbc981d50dcf8e009ab605afa0930a59c579774e"
+    },
+    "inputs/write-profile-G09-validation2-root-static-acceptance-1/index.json": {
+      "bytes": 156,
+      "sha256": "5d96b8295435972097eb45192fc70eb48291591aa58be1d1988a7256f748d1cf"
+    },
+    "literal-cell-inventory.json": {
+      "bytes": 1225,
+      "sha256": "018226a0705a7bd99e11fb2557636a5d55c92a05ecf55674cdecbb0eed5d611f"
+    },
+    "negative-observation-cases.json": {
+      "bytes": 2371,
+      "sha256": "9e57af16c607d64af9dd0d500e24d026799170923c9691d6d157995d2536f9f9"
+    },
+    "observation-record-contract.json": {
+      "bytes": 7337,
+      "sha256": "65cba961cd9a47fda221ac77026d0fe75a7c825ec2b65b92798c087975dbfddd"
+    },
+    "ownership-observation-protocol.json": {
+      "bytes": 7237,
+      "sha256": "a46a95950df62a01fdde62c73616218d2cdcca77e4c2b92872cd19e32284153a"
+    },
+    "ownership-scope-and-observation-limits.json": {
+      "bytes": 1948,
+      "sha256": "a0e666973f81f24788d91a8a7aa5329c6b43dd29e8bf4548c58ec6eb86d8cbcd"
+    },
+    "plan.md": {
+      "bytes": 8056,
+      "sha256": "dd19ed9120970a3e7fa6d416f007ec4ceba43c8ee7426717901608c6fb77bb5d"
+    },
+    "prepared-snapshot-and-live-control.json": {
+      "bytes": 1115,
+      "sha256": "e45c133ea18de17009c7fa174027d37f716063054f51c0c0957d09341fa16529"
+    },
+    "prior-and-precedent-verification.json": {
+      "bytes": 844,
+      "sha256": "98e14937a685f815f39d7d7fbfe3809279e9cbc260280853cd7f76f8ebac0363"
+    },
+    "prior45-INPLACE-census.json": {
+      "bytes": 7451,
+      "sha256": "e3f1f743b10d9076c8222d941e08de9f5e1bfb9b397628a581bf832d7f97602e"
+    },
+    "proposals/bind-workspace-tools.capture.txt": {
+      "bytes": 26356,
+      "sha256": "fe5956313104939d9f75f2dedc56b30f8c8e2bff22696223428195aaf3dd2dcf"
+    },
+    "proposals/node-version.capture.txt": {
+      "bytes": 26284,
+      "sha256": "ae5e93a2e6949ee3d12b13bb56623a03e9ae067f6dcfb1f76edc69df91dd0dbb"
+    },
+    "proposals/pnpm-version.capture.txt": {
+      "bytes": 26284,
+      "sha256": "a40180d63b149adc25f224e320419f46ff8e495cd8db43e736e440b9ceff9365"
+    },
+    "proposals/workspace-install.capture.txt": {
+      "bytes": 26329,
+      "sha256": "5f7baa8003292602bc06e5b431fd8c4792c5efe1ad1aaac3b5c61877dccbff9a"
+    },
+    "reference-pins.json": {
+      "bytes": 510598,
+      "sha256": "d283488fa646ad102a8083b643824a3736148d717b263932c7355cbdc797e678"
+    },
+    "report.md": {
+      "bytes": 8056,
+      "sha256": "dd19ed9120970a3e7fa6d416f007ec4ceba43c8ee7426717901608c6fb77bb5d"
+    },
+    "unresolved.json": {
+      "bytes": 1267,
+      "sha256": "8f963a23e9d95d44a683e17dc1450c4d3fd4ca71ffb6e4a6c787a5e4588347bd"
+    }
+  },
+  "kind": "CLOSED fixed-four ordinary-tool capture DATA plan2",
+  "physicalFiles": 96,
+  "rootLaunchReleased": false,
+  "selfExcluded": "index.json",
+  "sourceBindingFinalized": true
+}

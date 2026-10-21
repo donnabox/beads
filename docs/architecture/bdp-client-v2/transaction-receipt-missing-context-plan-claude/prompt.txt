@@ -1,0 +1,1456 @@
+Independent PLAN review of the frozen receipt missing-context serving slice below. Do not write or modify files. Output findings only in stdout. No tools/commands/tests/builds/imports/services/network/delegation. Gemini excluded; no model override. Focus concrete correctness/feasibility/security/ordering/counts and smallest correction; numbered Critical/High/Medium/Low with plan/source location, issue, impact, fix. Distinguish actual defects from specific missing-context proof gaps. Do not demand full-profile proof from an explicitly private partial witness.
+
+Source is clean pending Event candidate3df82ac480f50c8f486b4e456336366e7acbdf87/treed5f02c936cf080666a8e73bb5f253e52086705f4 in /Users/dbox/repos/wt/vickie/vickie-sequence-member-evidence. Receipt source authoring remains blocked on actual Event merge, ordinary reanchor and root release. Pending CI/merge is explicit, not a plan defect. Snippets are PRE-RECEIPT-REPAIR: contextless receipt404 is the target defect, not already repaired. Native review runs separately. No new receipt tests/evidence have run.
+
+Review same-entry context flow,401 vs404 discriminants, namespace defenses, principal/epoch and unsupported/minimum/expiry precedence, integrity fault propagation, affected assertions/callers, genuine default32-page construction with32updateWhere matches yielding33results, singleton/batch bodies and HTTP keys, learned real root/page identity, exact counts, failfast/soft assertions, hidden requests, bounds and cleanup. Compact ledger preserves ALL14installed dispatches; repeated32-create literal is represented by exact template/ordered IDs/length/digest. Redundant selector argv omitted; exact14source names/counts remain. Full plan/ledger hashes pinned externally.
+
+Unchanged helper facts: readContext freezes current epoch/view/position and throws on corruption; enter fences maintenance/closed/reentrancy. Root readReceipt already observes context atomically; no second read. Page namespace defenses remain missing-only by plan. Service type inferred; waitForTransactionMinimum retries ONLY behind failures, so nondisclosure never waits. HTTP auth precedes receipt routing. Tests import emitted runtime: positive build freshness/copied-mutant graph binding required. NEW bounded reader must reject redirects. Existing raw executor uses one socket exchange, exact authored/credential/default fields,32768body/65536responseheader→163840wire bound; no method in exactRequest, caller binds it. Installed sourceCommit is supervisor attribution, not child attestation. Fresh source/build/archive/consumer/payload/8-package provenance and PIDs/temp remain separate gates. Launcher below is memoized closing??=; abort thenexplicitclose does not duplicate close. No qualification/promotion.
+
+Review actual proposed scope, not unrelated redesign. Complete plan follows.
+
+## COMPLETE FROZEN PLAN
+# Receipt-root/page missing-context serving plan — proposed, not released
+
+Repair the current Scope context lost on authenticated, nondisclosable receipt root/page404 responses. Keep the uniform404 body, principal/epoch nondisclosure, minimum/expiry precedence and private qualification boundary. This is a concrete existing-law serving repair, not a new diagnostic catalog row.
+
+## Authority, source and dependency
+
+Actual inspected main basis is88c9408e908590ab1a4c64c9b9dee1a8b705999c/treeb2d9f2c18502e0778c51123be8b4564af052d803 plus the pending Event six-path snapshot acf190e742dfb669fe5607085a3ac60c5ecb66f4f86b1f05025424a7873615b0/fullpatche0c25b193ef1191d10916728c54eb6a894c5f29992e0da768bd585ef089e98e3. Inspected checkout is /Users/dbox/repos/wt/vickie/vickie-sequence-member-evidence, branch codex/vickie-event-missing-context. The unchanged six bytes are now committed as pending Event candidate3df82ac480f50c8f486b4e456336366e7acbdf87/treed5f02c936cf080666a8e73bb5f253e52086705f4, PR127 with exact CI38728209051 running per root. It remains the current lane's frozen workspace; this plan does not authorize modifying it. Candidate identity does not establish actual merge; the ledger records it separately from verified main88c. Root must first land the Event successor, verify actual main tree/ancestry, and mechanically reanchor this plan and its exact source hashes before authoring. Native and actual Claude plan review are required.
+
+The direction comes from transaction-after-event-context-next-audit.md. Sole implementation direction remains /Users/dbox/repos/wt/vickie/bdp-client-design/checkout/docs/architecture/bdp-client-v2/design.md, Autonomous profile completion; this artifact is its subordinate bounded slice, not competing authority. No unresolved metadata-only incident-Link Event membership or retained Snapshot/continuation minimum ruling is inferred.
+
+Normative docs/specs/bdp.md4632–4633 lists unknown/foreign/retracted/forgotten/prior-epoch receipt404 and the page nondisclosure rule. Lines4650–4656 require authentication → principal/epoch nondisclosure → minimum context/wait → expiry → representation. Lines5116–5133 establish receipt identity/principal binding, namespace/no listing and recovery by original-key replay. Lines5798–5804/5830–5835 require observed current Scope fields. A missing receipt does not grant its body's execution facts; current fixed/all-visible Scope context reveals no receipt existence.
+
+## Exact production scope and type flow
+
+Only three production paths:
+
+1. `packages/server/src/transaction-store.ts`: root `readReceipt`854–884 already returns frozen `{receipt:undefined,context}` in its existing enter/atomic callback. Do not change it or add a second read. In `readReceiptPage`2008–2089, keep principal/string validation and the existing two namespace-defense branches (`marker<0`, parent not under exact Scope receipts prefix) unchanged, including missing-only shape and no receipt-plan lookup. After those checks, each genuine missing branch (no visible saved parent, prior epoch, unknown issued-token match) returns frozen `{kind:"missing",context:readContext()}` inside the same existing entry. Preserve missing-plan/parent/chain integrity throws before constructing any normal response; preserve unknown-token-before-minimum-before-expiry and no retention side effect on nonexistent pages. The private missing variant therefore permits absent context only for the two unchanged namespace-defense paths. Existing current context is frozen by readContext590–598. Do not move metadata reads across owner lifetime guards or change failure sanitization.
+2. `packages/server/src/transaction-service.ts`: make authenticated root404 carry required context while401 remains exact/contextless (type50–53). Internal receipt helper202–210 should return a checked receipt or frozen404 using the original owner observation, instead of discarding it as undefined. Ordinary receipt570–583 and supported minimum470–497 consume that result directly; the unsupported path preserves its existing unsupported outcome for visible receipts and adds the actual observed context only for nondisclosable absence. Page429–468 splits401 from404 and forwards context when present on the owner's missing variant; it must not synthesize a context for the two namespace-defense results. No extra owner access, wait, service API/export or lifetime change. Missing with malformed/partial minimum still wins exactly where the current owner already so decides; visible unsupported behavior remains unchanged.
+3. `packages/server/src/transaction-http.ts`: root/page refused projections532/544 pass only their supplied context to existing transactionHttpProblem107–112. Preserve auth389, route/namespace483–485, target/method rules243–258, minimum decoding521–545, statuses, body/cache/conditions and non-attesting marker. A401 or namespace-defense result lacking context remains contextless. No inferred minimum preflight, lookup by key, receipt enumeration, runtime setting or discovery activation.
+
+The scope distinction above is intentional: the existing private page API can be called with outside-Scope/non-page strings; its no-lookup defense is not a newly observed canonical receipt absence. Do not broaden this repair to arbitrary route404 or change those input guards. A canonical missing root uses existing readReceipt observation even for the nonlisting receipt namespace, as it already does today.
+
+Metadata integrity limitation: newly retaining page absence context can surface existing metadata corruption through the existing fault path rather than return a contextless404. Do not mask such a fault, fabricate an epoch or advertise a new maintenance/fault qualification. No metadata/store-format change is proposed.
+
+## Complete ownership and caller/expectation fanout
+
+Eight paths only: the three production paths above; transaction-receipt-pages.test.ts; transaction-service.test.ts; transaction-http.test.ts; new apps/bdptest/src/transactional-receipt-missing-context-installed.test.ts; docs/design/transaction-implementation-progress.md. No spec/catalog/schema/runner/fixture/installed launcher/runtime/exports edit.
+
+The sole production readReceiptPage caller is service453; HTTP is the service result consumer. Publicly exported service result typing is source-private package implementation (retain package export surface). Other source page consumers in transaction-owned.test.ts482/491, transaction-set.test.ts328/341/443/621, recovery.test.ts110 assert successful page paths and remain unchanged. Existing page tests that inspect `.kind` on missing remain valid. Namespace test280–290 stays exact missing-only and keeps its no-FROM-receipt_pages query assertion. Root service test227–246 has the sole exact hidden404 object needing context; partial404 checks in retained/recovery/revision-attribution cases continue to hold.
+
+Four existing HTTP callbacks require actual stale absence-oracle correction: root auth/minimum table328–359 (404context present,401absent); page ordering2028–2088 (foreign/unknown404context present, visible unsupported500 and401absence unchanged); unsupported root controls2150–2181 (404context present, visible500absence unchanged); nonexistent failed page2184–2214 (all legitimate missing404 carry current context with unchanged retained row). Preserve every status/Problem/retention/no-listing/minimum/conditional assertion. Do not change other read/alias/Event404 expectations. Typecheck plus exact selected regressions below address fanout; no claim of a completed broad suite.
+
+## Source tests and exact workload
+
+The companion ledger lists14 exact full callback names/paths and anchored argv (three sequential Vitest selections, maxWorkers1). Eleven are existing callback registrations, with amended assertions only where needed; three new source callbacks bring the selection to14. There is no new parameter-table title guessing: the three new titles are literal, existing false/true expanded titles are explicitly listed. Freeze actual discovery names at measured draft; if mismatch occurs, stop and amend external selection rather than rerun completed cases.
+
+Store selection: existing atomic page retention/reopen/expiry case; existing namespace-defense case; new `captures immutable current context for nondisclosable receipt pages before minimum checks`. The new case uses receiptMaximumItems2 and an actual three-create receipt. Read its actual page once, then foreign-principal/unknown-token/unknown-parent misses across undefined, unsupported and incompatible tuple controls (nine calls); independently commit a later Resource, read the three misses again, and reject incompatible minimum on the real visible page. Fourteen page calls total, one owner: retained old missing contexts stay frozen atpos1 and later results reportpos2. Unknown URL construction is an explicit negative private diagnostic; no client receipt authority is inferred.
+
+Service selection: existing exact authentication/nondisclosure case; retained completed/forgotten failed/reopen case; existing minimum-before-expiry cases false/true; new `preserves current receipt absence context across ordinary and minimum service entrypoints`. New case uses three-create/paged receipt, six ordinary/unsupported/incompatible root/page foreign-principal calls, three unauthenticated entry calls, independent second submit and two later root/page calls. Thirteen service calls including two submits, zero TCP; prove no wait on nondisclosure and preserve exact401/no owner lookup. Use current owner result as the complete context comparator, not hardcoded epoch.
+
+HTTP selection: the four stale callbacks above; existing `checks a stored failed receipt minimum before read-triggered retention disposal over HTTP`; new `serves current missing receipt root and page context without changing nondisclosure or HEAD`. Existing callback HTTP counts are7,18,10,17,3 respectively. New13: seed actual three-create paged receipt atpos1, GET its actual page200; unknown root GET/HEAD404; foreign root GET/HEAD404; foreign page GET/HEAD404; independent singleton commitpos2; foreign root GET404 and page GET404 atpos2; anonymous root GET401 and page HEAD401. Use existing fixture's receiptMaximumItems2 only in source tests (already existing test seam), exact returned root/next, and no automatic redirect. Each404 GET has complete transactionalProblem schema/exact body and cache/absence headers before the named tuple assertion; HEAD body0 and representation length must match a preceding equivalent GET. Check no ETag/Last-Modified validator claims. Compare pre/post current tuples against actual mutation response context while old receipt required/effect facts remain historical.
+
+New HTTP fixture bounds:45s encompassing startup/work/cleanup,60s test,5s request,32768B bounded response consumption; use existing Event reader/raw-executor approach inside the owned test file. Preserve primary error plus cleanup errors through startup failure, abort/drain/close/remove; retain safe status/header/body fingerprints and actual request count. Existing tests retain their current authored test/wait/maintenance bounds (including the existing1.1s retention isolation wait); no timeout increase. Existing HTTP fixture dynamically imports ../dist/transaction-runtime.js before tests, so clean pinned build is mandatory. No new shared helper/framework.
+
+Positive source total:14 callbacks,68HTTP,16 owner opens/14directories,6listeners,2 readonly SQLite inventory handles,0 product children. Counts include the two explicit reopen owner lifetimes in store/service tests, not extra directories. Existing cleanup is not silently claimed to log a complete wire trace; measured draft must enumerate fixture paths and finally behavior. Source-selected commands load existing Vitest config/setup and modules, not a full suite.
+
+## One meaningful emitted counterfactual
+
+After positive build and exact source tests, copy the reviewed source/emitted graph with all @bdp links resolving to the derivative, including pnpm fallback scope links. Retain positive bytes. Change only the two emitted HTTP root/page refused projections to omit context; do not build mutated TS or stub service/owner. Run only the new13-request source HTTP callback. All404status/full Problem/metadata and401 prerequisites must pass before soft named context-tuple assertions. Expect exactly eight named failures: unknown-root GET/HEAD, foreign-root GET/HEAD and foreign-page GET/HEAD at first head, then foreign-root GET and foreign-page GET at second head. Seed/visible-page/current-head facts remain valid. Final JSON must contain one failed case/eight specific assertion errors; generic AggregateError/exit1 is insufficient. Preserve expected nested errors and complete cleanup. No installed mutant, second child or retry.
+
+## Fresh installed witness from actual issued pages
+
+New exact title: `observes genuine installed receipt root and page absence context at current heads`. Existing installed entry offers no page-size override; do not add one. Store default receiptMaximumItems=TRANSACTION_MAXIMUM_OPERATIONS32 (store224/281), page construction723–739, plus existing set installed witness(transactional-set-installed.test.ts seed/delete32 around205–252) demonstrate how32 selected Resource mutations produce33 result entries (matched summary plus32 outcomes). Use one real32-create batch, then a singleton update-where matching exactly32 to replace/n0→1. Its genuine receipt must expose32 inline results and a nonempty actualnext; GET that exactnext and validate one tail result withnext:null. This is enough to obtain a real page without inventing a URL, changing a cap or proving unrelated full graph/Event behavior.
+
+The measured ledger contains all fourteen prospective dispatches and exact literal bodies: seed3728B, update-where189B, singleton advance92B; total4009B, max3728B. Descriptor/schema UTF8 total328B. Three distinct keys remain HTTP Idempotency-Key headers and singleton bodies omit operation. Two mutations establishpos1 thenpos2, later singletonpos3. GET real page200; unknown root GET/HEAD404; foreign principal root/page GET/HEAD404; later root/page GET404pos3; anonymous root GET/page HEAD401. Token values are independently random per credential and not retained. Unknown root is an explicit raw negative diagnostic, not a purported ordinary client recovery route. Root/page URL grants come only from schema-validated response2.id/next, strict canonical Scope/receipt path/noquery/fragment/userinfo and bounded target lengths; reader uses the actual returned path, never regenerates a page token. No collection fetch, receipt polling, hidden replay or pagination loop.
+
+Exactly14HTTP/one child/one owner+directory/listener,45s cohort/60s test/5s exchange,10s existing launcher readiness+close. Request headers16384B/body65536B, response body32768B; source fixture runtime caps unchanged. One callback directly asserts schemas/full body/current tuple, while safe log retains ordered actual method/URL/status/Accept and response fingerprints. A genuine fresh protocol/server archive and isolated offline consumer must reproduce exact source/archive/member bytes, the eight-package locked closure, entry/payload/configuration/fixture bindings. Compare actual child payload against independent recursive hash, not a caller source label. Only claim supervisor-verified source attribution; no child-attested commit, full-body retention or whole-profile eligibility. Actual requests/PIDs/directory absence independently adjudicated, no extra retry if setup or a response fails.
+
+## Gates, totals and done-when
+
+Plan/native/Claude approval → actual merged Event parent reanchor → eight-path source draft and exact measured selection/body/build/cleanup packet → root execution release. No execution authorization here. Pinned Node24.16.0/pnpm11.20.0, offline setup/type/build/format/lint/boundaries/Read seal, three bounded source selectors, one emitted13HTTP control, then clean ordinary freeze and one actual14HTTP installed witness. Use existing115TERM/120KILL supervisor discipline; no broad workspace/matrix suite, no automatic retries or limit changes. Full exact-head CI remains a root-owned landing gate. The prospective combined allowance is16case executions/95HTTP/18owner opens/16dirs/8listeners/1productchild/2readonlyhandles. Four new full-CI callbacks only (store, service, HTTP, installed); all other registrations reused.
+
+Done when: each genuinely observed missing root/page result carries the same-entry frozen current tuple; HTTP preserves that tuple on all targeted404 GET/HEAD while401/defense/unsupported behavior remains exact; all selected precedence/retention tests pass; the two-projection emitted control fails only at eight named context assertions; actual installed fourteen dispatches complete with exact byte/package/configuration provenance and clean child/store teardown; all source/diff/review hashes bind final ordinary source and historical attempts retain their original identities. Any additional fanout, semantic ambiguity, request/case increase, unknown page-bound assumption or hidden fixture call stops for root review. Neither pending product question nor public admission is changed.
+
+Companion ledger SHA256: 133d93f01d6fb85bf111b016a49a0467470ce09694b8dff7dd1b40b591f5ce9d
+
+## COMPACT COMPLETE REQUEST/SELECTION LEDGER
+{
+  "status": "PROPOSED_PLAN_ONLY_NOT_AUTHORIZATION",
+  "basis": {
+    "actualMain": "88c9408e908590ab1a4c64c9b9dee1a8b705999c",
+    "tree": "b2d9f2c18502e0778c51123be8b4564af052d803",
+    "pendingEventBinding": "acf190e742dfb669fe5607085a3ac60c5ecb66f4f86b1f05025424a7873615b0",
+    "pendingEventDiff": "e0c25b193ef1191d10916728c54eb6a894c5f29992e0da768bd585ef089e98e3",
+    "actualCheckoutHead": "3df82ac480f50c8f486b4e456336366e7acbdf87",
+    "authoringBase": "PENDING_ACTUAL_MERGED_EVENT_SUCCESSOR_REANCHOR",
+    "pendingReviewedEventCandidate": {
+      "head": "3df82ac480f50c8f486b4e456336366e7acbdf87",
+      "tree": "d5f02c936cf080666a8e73bb5f253e52086705f4",
+      "rootReportedPr": 127,
+      "rootReportedCi": 38728209051,
+      "state": "pending actual merge; same six frozen bytes"
+    }
+  },
+  "ownedPaths": [
+    "packages/server/src/transaction-store.ts",
+    "packages/server/src/transaction-service.ts",
+    "packages/server/src/transaction-http.ts",
+    "packages/server/src/transaction-receipt-pages.test.ts",
+    "packages/server/src/transaction-service.test.ts",
+    "packages/server/src/transaction-http.test.ts",
+    "apps/bdptest/src/transactional-receipt-missing-context-installed.test.ts",
+    "docs/design/transaction-implementation-progress.md"
+  ],
+  "sourceSelections": [
+    {
+      "path": "packages/server/src/transaction-receipt-pages.test.ts",
+      "fullName": "records one atomic page chain, retains original postimages and all tail allocations through expiry",
+      "cases": 1,
+      "http": 0,
+      "ownerOpens": 2,
+      "directories": 1,
+      "listeners": 0,
+      "readonlyInventoryHandles": 0,
+      "new": false
+    },
+    {
+      "path": "packages/server/src/transaction-receipt-pages.test.ts",
+      "fullName": "refuses page parents outside the receipt namespace before plan lookup",
+      "cases": 1,
+      "http": 0,
+      "ownerOpens": 1,
+      "directories": 1,
+      "listeners": 0,
+      "readonlyInventoryHandles": 0,
+      "new": false
+    },
+    {
+      "path": "packages/server/src/transaction-receipt-pages.test.ts",
+      "fullName": "captures immutable current context for nondisclosable receipt pages before minimum checks",
+      "cases": 1,
+      "http": 0,
+      "ownerOpens": 1,
+      "directories": 1,
+      "listeners": 0,
+      "readonlyInventoryHandles": 0,
+      "new": true
+    },
+    {
+      "path": "packages/server/src/transaction-service.test.ts",
+      "fullName": "private same-owner Transactional service authenticates before lookup and uniformly hides other principals, roots and unknown URLs",
+      "cases": 1,
+      "http": 0,
+      "ownerOpens": 1,
+      "directories": 1,
+      "listeners": 0,
+      "readonlyInventoryHandles": 0,
+      "new": false
+    },
+    {
+      "path": "packages/server/src/transaction-service.test.ts",
+      "fullName": "private same-owner Transactional service retains completed identity, forgets expired failed detail and preserves current observation across reopen",
+      "cases": 1,
+      "http": 0,
+      "ownerOpens": 2,
+      "directories": 1,
+      "listeners": 0,
+      "readonlyInventoryHandles": 0,
+      "new": false
+    },
+    {
+      "path": "packages/server/src/transaction-service.test.ts",
+      "fullName": "private minimum-read owner/lifecycle checks minimum before read-triggered expiry but honors independently forgotten receipts (false)",
+      "cases": 1,
+      "http": 0,
+      "ownerOpens": 1,
+      "directories": 1,
+      "listeners": 0,
+      "readonlyInventoryHandles": 0,
+      "new": false
+    },
+    {
+      "path": "packages/server/src/transaction-service.test.ts",
+      "fullName": "private minimum-read owner/lifecycle checks minimum before read-triggered expiry but honors independently forgotten receipts (true)",
+      "cases": 1,
+      "http": 0,
+      "ownerOpens": 1,
+      "directories": 1,
+      "listeners": 0,
+      "readonlyInventoryHandles": 0,
+      "new": false
+    },
+    {
+      "path": "packages/server/src/transaction-service.test.ts",
+      "fullName": "preserves current receipt absence context across ordinary and minimum service entrypoints",
+      "cases": 1,
+      "http": 0,
+      "ownerOpens": 1,
+      "directories": 1,
+      "listeners": 0,
+      "readonlyInventoryHandles": 0,
+      "new": true
+    },
+    {
+      "path": "packages/server/src/transaction-http.test.ts",
+      "fullName": "source-private actual Transactional HTTP authenticates and hides receipts before minimum-control refusal or conditional shortcuts",
+      "cases": 1,
+      "http": 7,
+      "ownerOpens": 1,
+      "directories": 1,
+      "listeners": 1,
+      "readonlyInventoryHandles": 0,
+      "new": false
+    },
+    {
+      "path": "packages/server/src/transaction-http.test.ts",
+      "fullName": "orders page nondisclosure, minimum waits, expiry and representation using actual owner state",
+      "cases": 1,
+      "http": 18,
+      "ownerOpens": 1,
+      "directories": 1,
+      "listeners": 1,
+      "readonlyInventoryHandles": 0,
+      "new": false
+    },
+    {
+      "path": "packages/server/src/transaction-http.test.ts",
+      "fullName": "refuses unsupported root controls after nondisclosure but before read-triggered retention",
+      "cases": 1,
+      "http": 10,
+      "ownerOpens": 1,
+      "directories": 1,
+      "listeners": 1,
+      "readonlyInventoryHandles": 1,
+      "new": false
+    },
+    {
+      "path": "packages/server/src/transaction-http.test.ts",
+      "fullName": "keeps failed parent rows unchanged for nonexistent page reads with any controls",
+      "cases": 1,
+      "http": 17,
+      "ownerOpens": 1,
+      "directories": 1,
+      "listeners": 1,
+      "readonlyInventoryHandles": 1,
+      "new": false
+    },
+    {
+      "path": "packages/server/src/transaction-http.test.ts",
+      "fullName": "checks a stored failed receipt minimum before read-triggered retention disposal over HTTP",
+      "cases": 1,
+      "http": 3,
+      "ownerOpens": 1,
+      "directories": 1,
+      "listeners": 1,
+      "readonlyInventoryHandles": 0,
+      "new": false
+    },
+    {
+      "path": "packages/server/src/transaction-http.test.ts",
+      "fullName": "serves current missing receipt root and page context without changing nondisclosure or HEAD",
+      "cases": 1,
+      "http": 13,
+      "ownerOpens": 1,
+      "directories": 1,
+      "listeners": 1,
+      "readonlyInventoryHandles": 0,
+      "new": true
+    }
+  ],
+  "sourcePositiveTotals": {
+    "cases": 14,
+    "http": 68,
+    "ownerOpens": 16,
+    "directories": 14,
+    "listeners": 6,
+    "readonlyInventoryHandles": 2
+  },
+  "sourceControl": {
+    "kind": "emitted-only two HTTP refusal projection context arguments omitted",
+    "selectedFullName": "serves current missing receipt root and page context without changing nondisclosure or HEAD",
+    "expectedFailedCases": 1,
+    "expectedNamedTupleFailures": 8,
+    "http": 13,
+    "owners": 1,
+    "directories": 1,
+    "listeners": 1,
+    "productChildren": 0,
+    "noBuildOfMutantSource": true
+  },
+  "installed": {
+    "path": "apps/bdptest/src/transactional-receipt-missing-context-installed.test.ts",
+    "fullName": "observes genuine installed receipt root and page absence context at current heads",
+    "requests": [
+      {
+        "ordinal": 1,
+        "method": "POST",
+        "url": "https://reference.invalid/acme/operations/batch",
+        "expectedStatus": 200,
+        "credential": "writer",
+        "accept": "application/json",
+        "expectedContext": "pos-1",
+        "urlAuthority": "literal owned canonical operation/diagnostic root",
+        "bodyBytes": 3728,
+        "bodySha256": "aea2842b2d004b0483dd756a9e6f97c829883956b56e7f508295572392c9a3b6",
+        "idempotencyKey": "receipt-context-seed",
+        "contentType": "application/json",
+        "bodyConstruction": {
+          "literalWrapper": "operations",
+          "literalOperationTemplate": {
+            "operation": "createBead",
+            "id": "beads/r00",
+            "type": "https://reference.invalid/acme/types/task",
+            "properties": {
+              "n": 0
+            }
+          },
+          "orderedIds": [
+            "beads/r00",
+            "beads/r01",
+            "beads/r02",
+            "beads/r03",
+            "beads/r04",
+            "beads/r05",
+            "beads/r06",
+            "beads/r07",
+            "beads/r08",
+            "beads/r09",
+            "beads/r10",
+            "beads/r11",
+            "beads/r12",
+            "beads/r13",
+            "beads/r14",
+            "beads/r15",
+            "beads/r16",
+            "beads/r17",
+            "beads/r18",
+            "beads/r19",
+            "beads/r20",
+            "beads/r21",
+            "beads/r22",
+            "beads/r23",
+            "beads/r24",
+            "beads/r25",
+            "beads/r26",
+            "beads/r27",
+            "beads/r28",
+            "beads/r29",
+            "beads/r30",
+            "beads/r31"
+          ],
+          "serialization": "JSON.stringify compact JSON, object keys in shown order, no whitespace; only id varies"
+        }
+      },
+      {
+        "ordinal": 2,
+        "method": "POST",
+        "url": "https://reference.invalid/acme/operations/update-where",
+        "expectedStatus": 200,
+        "credential": "writer",
+        "accept": "application/json",
+        "expectedContext": "pos-2",
+        "urlAuthority": "literal owned canonical operation/diagnostic root",
+        "body": "{\"collection\":\"beads\",\"selector\":\"$[?@.type == \\\"https://reference.invalid/acme/types/task\\\"]\",\"cardinality\":{\"min\":32,\"max\":32},\"propertiesChange\":[{\"op\":\"replace\",\"path\":\"/n\",\"value\":1}]}",
+        "bodyBytes": 189,
+        "bodySha256": "843572126ab5973bea97906ad5bf1369c7eb468cebfdea27d36a36abfc3266ef",
+        "idempotencyKey": "receipt-context-paged",
+        "contentType": "application/json"
+      },
+      {
+        "ordinal": 3,
+        "method": "GET",
+        "url": "$page",
+        "expectedStatus": 200,
+        "credential": "writer",
+        "accept": "application/json",
+        "expectedContext": "pos-2",
+        "urlAuthority": "exact schema-validated root next from response2; strict current Scope receipt/page path, no reconstruction",
+        "bodyBytes": 0
+      },
+      {
+        "ordinal": 4,
+        "method": "GET",
+        "url": "https://reference.invalid/acme/receipts/unknown",
+        "expectedStatus": 404,
+        "credential": "writer",
+        "accept": "application/json",
+        "expectedContext": "pos-2",
+        "urlAuthority": "explicit negative raw diagnostic URL; not client-discovered receipt authority",
+        "bodyBytes": 0
+      },
+      {
+        "ordinal": 5,
+        "method": "HEAD",
+        "url": "https://reference.invalid/acme/receipts/unknown",
+        "expectedStatus": 404,
+        "credential": "writer",
+        "accept": "application/json",
+        "expectedContext": "pos-2",
+        "urlAuthority": "explicit negative raw diagnostic URL; not client-discovered receipt authority",
+        "bodyBytes": 0
+      },
+      {
+        "ordinal": 6,
+        "method": "GET",
+        "url": "$root",
+        "expectedStatus": 404,
+        "credential": "other",
+        "accept": "application/json",
+        "expectedContext": "pos-2",
+        "urlAuthority": "exact response2 receipt.id or receipt.next",
+        "bodyBytes": 0
+      },
+      {
+        "ordinal": 7,
+        "method": "HEAD",
+        "url": "$root",
+        "expectedStatus": 404,
+        "credential": "other",
+        "accept": "application/json",
+        "expectedContext": "pos-2",
+        "urlAuthority": "exact response2 receipt.id or receipt.next",
+        "bodyBytes": 0
+      },
+      {
+        "ordinal": 8,
+        "method": "GET",
+        "url": "$page",
+        "expectedStatus": 404,
+        "credential": "other",
+        "accept": "application/json",
+        "expectedContext": "pos-2",
+        "urlAuthority": "exact response2 receipt.id or receipt.next",
+        "bodyBytes": 0
+      },
+      {
+        "ordinal": 9,
+        "method": "HEAD",
+        "url": "$page",
+        "expectedStatus": 404,
+        "credential": "other",
+        "accept": "application/json",
+        "expectedContext": "pos-2",
+        "urlAuthority": "exact response2 receipt.id or receipt.next",
+        "bodyBytes": 0
+      },
+      {
+        "ordinal": 10,
+        "method": "POST",
+        "url": "https://reference.invalid/acme/operations/create-bead",
+        "expectedStatus": 200,
+        "credential": "writer",
+        "accept": "application/json",
+        "expectedContext": "pos-3",
+        "urlAuthority": "literal owned canonical operation/diagnostic root",
+        "body": "{\"id\":\"beads/later\",\"type\":\"https://reference.invalid/acme/types/task\",\"properties\":{\"n\":0}}",
+        "bodyBytes": 92,
+        "bodySha256": "fac1bc29f477a84f582884b6e83a7b7227ff02514fe2ff3bad46c969792cf1e2",
+        "idempotencyKey": "receipt-context-advance",
+        "contentType": "application/json"
+      },
+      {
+        "ordinal": 11,
+        "method": "GET",
+        "url": "$root",
+        "expectedStatus": 404,
+        "credential": "other",
+        "accept": "application/json",
+        "expectedContext": "pos-3",
+        "urlAuthority": "same exact response2 receipt.id/next",
+        "bodyBytes": 0
+      },
+      {
+        "ordinal": 12,
+        "method": "GET",
+        "url": "$page",
+        "expectedStatus": 404,
+        "credential": "other",
+        "accept": "application/json",
+        "expectedContext": "pos-3",
+        "urlAuthority": "same exact response2 receipt.id/next",
+        "bodyBytes": 0
+      },
+      {
+        "ordinal": 13,
+        "method": "GET",
+        "url": "$root",
+        "expectedStatus": 401,
+        "credential": "anonymous",
+        "accept": "application/json",
+        "expectedContext": "absent",
+        "urlAuthority": "same exact response2 receipt.id",
+        "bodyBytes": 0
+      },
+      {
+        "ordinal": 14,
+        "method": "HEAD",
+        "url": "$page",
+        "expectedStatus": 401,
+        "credential": "anonymous",
+        "accept": "application/json",
+        "expectedContext": "absent",
+        "urlAuthority": "same exact response2 receipt.next",
+        "bodyBytes": 0
+      }
+    ],
+    "http": 14,
+    "children": 1,
+    "owners": 1,
+    "directories": 1,
+    "listeners": 1,
+    "artifacts": {
+      "descriptors": [
+        {
+          "retrievalUri": "https://reference.invalid/acme/types/task",
+          "utf8": "{\"id\":\"https://reference.invalid/acme/types/task\",\"name\":\"Task\",\"describes\":\"bead\",\"conformsTo\":[],\"propertiesSchema\":\"https://reference.invalid/acme/schemas/properties\"}"
+        }
+      ],
+      "schemas": [
+        {
+          "retrievalUri": "https://reference.invalid/acme/schemas/properties",
+          "utf8": "{\"$id\":\"https://reference.invalid/acme/schemas/properties\",\"type\":\"object\",\"properties\":{\"n\":{\"type\":\"number\"}},\"required\":[\"n\"],\"additionalProperties\":false}"
+        }
+      ]
+    },
+    "artifactUtf8Bytes": 328,
+    "totalRequestBodyBytes": 4009,
+    "maximumRequestBodyBytes": 3728,
+    "responseBodyCap": 32768,
+    "requestHeaderCap": 16384,
+    "requestBodyCap": 65536,
+    "deadlineMs": 45000,
+    "testTimeoutMs": 60000,
+    "perRequestMs": 5000,
+    "readyAndCloseEachMs": 10000
+  },
+  "combined": {
+    "caseExecutions": 16,
+    "httpExpected": 95,
+    "httpMaximum": 95,
+    "ownerOpens": 18,
+    "directories": 16,
+    "listeners": 8,
+    "productChildren": 1,
+    "readonlyInventoryHandles": 2
+  },
+  "newFullCiCallbacks": 4,
+  "limits": "All counts prospective source-derived; exact frozen measured draft and actual execution evidence required. No fixture/runtime/time/CI ceiling increase."
+}
+
+## ACTUAL RELEVANT SOURCE
+
+### packages/server/src/transaction-store.ts:224-228
+```
+export function transactionReceiptMaximum(value: number = TRANSACTION_MAXIMUM_OPERATIONS): number {
+  if (!Number.isSafeInteger(value) || value < 1)
+    throw new TypeError("positive receipt page maximum required");
+  return value;
+}
+```
+
+### packages/server/src/transaction-store.ts:278-283
+```
+  const capture = compiled ? json(compiled.capture) : "null";
+  if (Buffer.byteLength(capture) > captureMaximumBytes)
+    throw new TypeError("transaction contract capture exceeds private bound");
+  const receiptMaximumItems = transactionReceiptMaximum(options.receiptMaximumItems);
+  const configuration = json({
+    format,
+```
+
+### packages/server/src/transaction-store.ts:348-359
+```
+  function enter<T>(run: () => T): T {
+    if (ownerFailure) throw ownerFailure;
+    if (maintenanceFailure)
+      throw new Error("transaction maintenance failed; owner fenced", maintenanceFailure);
+    if (closed || busy) throw new Error("transaction store closed or reentrant");
+    busy = true;
+    try {
+      return run();
+    } finally {
+      busy = false;
+    }
+  }
+```
+
+### packages/server/src/transaction-store.ts:590-599
+```
+  function readContext(): TransactionReadContext {
+    const position = metadata("position");
+    if (!/^(0|[1-9][0-9]*)$/.test(position) || !Number.isSafeInteger(Number(position)))
+      throw new Error("invalid transaction read position");
+    return Object.freeze({
+      scopeEpoch: epoch,
+      authorizationView: view,
+      scopePosition: `pos-${position}`,
+    });
+  }
+```
+
+### packages/server/src/transaction-store.ts:723-889
+```
+  function createPagePlan(principal: string, key: string, receipt: TransactionReceipt): void {
+    const entries = receipt.results as readonly unknown[];
+    db.prepare("INSERT INTO receipt_pages VALUES(?,?,?,?,?)").run(
+      receipt.id,
+      principal,
+      key,
+      entries.length,
+      receiptMaximumItems,
+    );
+    for (let start = receiptMaximumItems; start < entries.length; start += receiptMaximumItems)
+      db.prepare("INSERT INTO receipt_page_ranges VALUES(?,?,?,?)").run(
+        randomUUID(),
+        receipt.id,
+        start,
+        Math.min(start + receiptMaximumItems, entries.length),
+      );
+  }
+  function pagePlan(receipt: TransactionReceipt): ReceiptPagePlan {
+    const saved = db.prepare("SELECT * FROM receipt_pages WHERE receipt=?").get(receipt.id);
+    if (!saved) throw new Error("receipt page plan missing");
+    const parent = row(String(saved.principal), String(saved.key));
+    if (
+      !parent ||
+      String(saved.key) !== receipt.idempotencyKey ||
+      parseReceipt(parent.receipt).id !== receipt.id
+    )
+      throw new Error("receipt page plan parent mismatch");
+    const plan: ReceiptPagePlan = {
+      entries: Number(saved.entries),
+      maximum: Number(saved.maximum),
+      pages: db
+        .prepare("SELECT token,start,end FROM receipt_page_ranges WHERE receipt=? ORDER BY start")
+        .all(receipt.id)
+        .map((value) => ({
+          token: String(value.token),
+          start: Number(value.start),
+          end: Number(value.end),
+        })),
+    };
+    if (
+      !Number.isSafeInteger(plan.entries) ||
+      plan.entries < 1 ||
+      plan.maximum !== receiptMaximumItems ||
+      !Array.isArray(plan.pages) ||
+      (receipt.detail === "available" &&
+        (!Array.isArray(receipt.results) || receipt.results.length !== plan.entries))
+    )
+      throw new Error("invalid receipt page plan");
+    let start = receiptMaximumItems;
+    const tokens = new Set<string>();
+    for (const page of plan.pages) {
+      if (
+        !page ||
+        typeof page.token !== "string" ||
+        !/^[A-Za-z0-9_-]{1,256}$/.test(page.token) ||
+        tokens.has(page.token) ||
+        page.start !== start ||
+        start >= plan.entries ||
+        page.end !== Math.min(start + receiptMaximumItems, plan.entries)
+      )
+        throw new Error("invalid receipt page chain");
+      tokens.add(page.token);
+      start = page.end;
+    }
+    if (start !== Math.max(receiptMaximumItems, plan.entries))
+      throw new Error("incomplete receipt page chain");
+    return plan;
+  }
+  function pageUrl(receipt: string, token: string): string {
+    return `${receipt}/pages/${token}`;
+  }
+  function receiptPrefix(receipt: TransactionReceipt): TransactionReceipt {
+    if (receipt.status !== "completed" || receipt.detail !== "available") return receipt;
+    const plan = pagePlan(receipt);
+    return {
+      ...receipt,
+      results: (receipt.results as readonly unknown[]).slice(0, plan.maximum),
+      next: plan.pages[0] ? pageUrl(receipt.id, plan.pages[0].token) : null,
+    };
+  }
+  // Fixed all-visible projection and current position are captured before this
+  // authoritative transaction releases. No second clock/retention observation.
+  function observeReceipt(
+    receipt: TransactionReceipt,
+    context = readContext(),
+  ): TransactionReceiptObservation {
+    if (receipt.scopeEpoch !== context.scopeEpoch)
+      throw new Error("receipt epoch differs from serving owner", {
+        cause: { id: receipt.id, key: receipt.idempotencyKey },
+      });
+    for (const field of ["requiredPosition", "effectPosition"] as const) {
+      const value = receipt[field];
+      if (value === undefined && (field === "effectPosition" || receipt.status === "pending"))
+        continue;
+      if (
+        typeof value !== "string" ||
+        !/^pos-(0|[1-9][0-9]*)$/.test(value) ||
+        !Number.isSafeInteger(Number(value.slice(4))) ||
+        Number(value.slice(4)) > Number(context.scopePosition.slice(4))
+      )
+        throw new Error("receipt position exceeds serving owner", {
+          cause: { id: receipt.id, key: receipt.idempotencyKey, field },
+        });
+    }
+    const freeze = (value: unknown): void => {
+      if (value !== null && typeof value === "object") {
+        for (const child of Object.values(value)) freeze(child);
+        Object.freeze(value);
+      }
+    };
+    const projected = receiptPrefix(receipt);
+    freeze(projected);
+    return Object.freeze({ receipt: projected, context });
+  }
+  // Called only inside the guarded owner's transaction. The fixed all-visible
+  // policy projects retained facts, including postimages since updated/deleted.
+  function disclosedReceipt(principal: string, id: string): Row | undefined {
+    for (const stored of db
+      .prepare("SELECT * FROM receipts WHERE principal=?")
+      .all(principal) as unknown as Row[]) {
+      const value = parseReceipt(stored.receipt);
+      if (value.id === id) return value.scopeEpoch === epoch ? stored : undefined;
+    }
+    return undefined;
+  }
+  function retainedReceipt(principal: string, id: string): TransactionReceipt | undefined {
+    const stored = disclosedReceipt(principal, id);
+    const remaining = stored && expireRow(stored, instant()).row;
+    return remaining ? parseReceipt(remaining.receipt) : undefined;
+  }
+  type ReceiptRead = {
+    readonly receipt: TransactionReceipt | undefined;
+    readonly context: TransactionReadContext;
+  };
+  function readReceipt(principal: string, id: string, minimum?: TransactionMinimum): ReceiptRead;
+  function readReceipt(
+    principal: string,
+    id: string,
+    minimum: "unsupported",
+  ): ReceiptRead | { readonly kind: "unsupported" };
+  function readReceipt(
+    principal: string,
+    id: string,
+    minimum?: TransactionMinimum | "unsupported",
+  ): ReceiptRead | { readonly kind: "unsupported" } {
+    if (typeof principal !== "string" || !principal || !principal.isWellFormed())
+      throw new TypeError("invalid trusted principal");
+    if (typeof id !== "string") throw new TypeError("receipt URL required");
+    const condition =
+      minimum === undefined || minimum === "unsupported"
+        ? minimum
+        : snapshotTransactionMinimum(minimum);
+    return enter(() =>
+      atomic(() => {
+        const stored = disclosedReceipt(principal, id);
+        if (stored && condition === "unsupported")
+          return Object.freeze({ kind: "unsupported" as const });
+        const context = readContext();
+        if (!stored) return Object.freeze({ receipt: undefined, context });
+        if (condition !== undefined && condition !== "unsupported")
+          checkTransactionMinimum(condition, context);
+        const remaining = expireRow(stored, instant()).row;
+        if (!remaining) return Object.freeze({ receipt: undefined, context });
+        return observeReceipt(parseReceipt(remaining.receipt), context);
+      }),
+    );
+  }
+```
+
+### packages/server/src/transaction-store.ts:2005-2090
+```
+    /** Trusted authenticated principal, never actor/provenance. Lookup, retention
+     * cleanup, fixed current projection and source context share one owner entry.
+     * No serving authorization callbacks run inside this observation. */
+    readReceiptPage(
+      principal: string,
+      id: string,
+      minimum?: TransactionMinimum | "unsupported",
+    ):
+      | {
+          readonly kind: "page";
+          readonly page: TransactionReceiptPage;
+          readonly context: TransactionReadContext;
+        }
+      | { readonly kind: "expired"; readonly context: TransactionReadContext }
+      | { readonly kind: "missing" }
+      | { readonly kind: "unsupported" } {
+      if (
+        typeof principal !== "string" ||
+        !principal ||
+        !principal.isWellFormed() ||
+        typeof id !== "string"
+      )
+        throw new TypeError("trusted principal and page URL required");
+      const condition =
+        minimum === undefined || minimum === "unsupported"
+          ? minimum
+          : snapshotTransactionMinimum(minimum);
+      return enter(() =>
+        atomic(() => {
+          const marker = id.lastIndexOf("/pages/");
+          if (marker < 0) return { kind: "missing" as const };
+          const parentId = id.slice(0, marker),
+            token = id.slice(marker + 7);
+          if (!parentId.startsWith(`${scope}receipts/`)) return { kind: "missing" as const };
+          const saved = db
+            .prepare("SELECT * FROM receipt_pages WHERE receipt=? AND principal=?")
+            .get(parentId, principal);
+          if (!saved) {
+            // A visible completed parent must have its durable plan, even after expiry.
+            // Nonexistent pages must not trigger retention on failed parents.
+            const parent = disclosedReceipt(principal, parentId);
+            if (parent && parseReceipt(parent.receipt).status === "completed")
+              throw new Error("receipt page plan missing");
+            return { kind: "missing" as const };
+          }
+          const stored = row(principal, String(saved.key));
+          if (!stored) throw new Error("receipt page parent missing");
+          const original = parseReceipt(stored.receipt);
+          if (original.id !== parentId) throw new Error("receipt page parent mismatch");
+          if (original.scopeEpoch !== epoch) return { kind: "missing" as const };
+          const plan = pagePlan(original),
+            index = plan.pages.findIndex((page) => page.token === token);
+          if (index < 0) return { kind: "missing" as const };
+          if (condition === "unsupported") return { kind: "unsupported" as const };
+          const context = readContext();
+          // Identity/nondisclosure precedes minimum; expiry is checked only afterwards.
+          if (condition) checkTransactionMinimum(condition, context);
+          const remaining = expireRow(stored, instant()).row;
+          if (!remaining) throw new Error("completed page parent was forgotten");
+          const receipt = parseReceipt(remaining.receipt);
+          if (receipt.detail === "expired") return { kind: "expired" as const, context };
+          observeReceipt(receipt, context); // same projection/integrity policy, no second clock
+          const boundary = plan.pages[index];
+          if (!boundary) throw new Error("receipt page boundary missing");
+          const results = (receipt.results as readonly unknown[]).slice(
+            boundary.start,
+            boundary.end,
+          );
+          // Freeze the selected page entries before they escape the owner entry.
+          const freeze = (value: unknown): void => {
+            if (value && typeof value === "object") {
+              Object.values(value).forEach(freeze);
+              Object.freeze(value);
+            }
+          };
+          const next = plan.pages[index + 1];
+          const page = {
+            receipt: parentId,
+            results,
+            next: next ? pageUrl(parentId, next.token) : null,
+          };
+          freeze(page);
+          return Object.freeze({ kind: "page" as const, page, context });
+        }),
+      );
+    },
+```
+
+### packages/server/src/transaction-service.ts:41-53
+```
+type Owner = ReturnType<typeof openTransactionStore>;
+type ReceiptObservation = {
+  readonly kind: "receipt";
+  readonly receipt: TransactionReceipt;
+  readonly context: TransactionReadContext;
+};
+export type TransactionServiceSubmissionResult =
+  | Exclude<TransactionSubmissionResult, { readonly kind: "receipt" }>
+  | ReceiptObservation;
+export type TransactionServiceReceiptResult =
+  | ReceiptObservation
+  | { readonly kind: "refused"; readonly status: 401; readonly code: "unauthenticated" }
+  | { readonly kind: "refused"; readonly status: 404; readonly code: "resource-not-found" };
+```
+
+### packages/server/src/transaction-service.ts:202-211
+```
+  function receipt(
+    principal: string,
+    id: string,
+    minimum?: TransactionMinimum,
+  ): ReceiptObservation | undefined {
+    const observed = owner.readReceipt(principal, id, minimum);
+    return observed.receipt === undefined
+      ? undefined
+      : checked({ ...observed, receipt: observed.receipt });
+  }
+```
+
+### packages/server/src/transaction-service.ts:429-499
+```
+    receiptPage(
+      access:
+        | { readonly kind: "unauthenticated" }
+        | { readonly kind: "authenticated"; readonly principal: string },
+      id: string,
+      supplied?: TransactionMinimum | "unsupported",
+    ): Promise<
+      | {
+          readonly kind: "page";
+          readonly page: TransactionReceiptPage;
+          readonly context: TransactionReadContext;
+        }
+      | { readonly kind: "refused"; readonly code: "unauthenticated" | "resource-not-found" }
+      | { readonly kind: "expired"; readonly context: TransactionReadContext }
+      | { readonly kind: "unsupported" }
+    > {
+      return run(async () => {
+        if (access.kind === "unauthenticated") return { kind: "refused", code: "unauthenticated" };
+        const principal = access.principal,
+          minimum =
+            supplied === undefined || supplied === "unsupported"
+              ? supplied
+              : snapshotTransactionMinimum(supplied);
+        return waitForTransactionMinimum(() => {
+          const result = owner.readReceiptPage(principal, id, minimum);
+          // Prefix checking is defense in depth, not an independent plan witness.
+          if (
+            result.kind === "page" &&
+            (result.page.results.length < 1 ||
+              result.page.results.length > maximum ||
+              (result.page.next !== null &&
+                (!result.page.next.startsWith(`${result.page.receipt}/pages/`) ||
+                  result.page.results.length !== maximum)))
+          )
+            throw new Error("invalid receipt page projection");
+          return result.kind === "missing"
+            ? { kind: "refused" as const, code: "resource-not-found" as const }
+            : result;
+        }, minimumReads);
+      });
+    },
+    receiptAtMinimum(
+      access:
+        | { readonly kind: "unauthenticated" }
+        | { readonly kind: "authenticated"; readonly principal: string },
+      id: string,
+      supplied: TransactionMinimum | "unsupported",
+    ): Promise<TransactionServiceReceiptResult | { readonly kind: "unsupported" }> {
+      return run(async () => {
+        if (access.kind === "unauthenticated")
+          return Object.freeze({ kind: "refused", status: 401, code: "unauthenticated" });
+        const principal = access.principal;
+        if (supplied === "unsupported") {
+          const observed = owner.readReceipt(principal, id, supplied);
+          if ("kind" in observed) return observed;
+          return Object.freeze({ kind: "refused", status: 404, code: "resource-not-found" });
+        }
+        const minimum = snapshotTransactionMinimum(supplied);
+        return waitForTransactionMinimum(
+          () =>
+            receipt(principal, id, minimum) ??
+            Object.freeze({
+              kind: "refused" as const,
+              status: 404 as const,
+              code: "resource-not-found" as const,
+            }),
+          minimumReads,
+        );
+      });
+    },
+    submit(request: TransactionSubmission): Promise<TransactionServiceSubmissionResult> {
+```
+
+### packages/server/src/transaction-service.ts:567-585
+```
+    /** Authentication is transport-supplied, never inferred from actor or URL.
+     * Current owner policy is all-visible; principal binding still denies foreign
+     * receipts uniformly. No key lookup, receipt listing or fabricated page URL. */
+    receipt(
+      access:
+        | { readonly kind: "unauthenticated" }
+        | { readonly kind: "authenticated"; readonly principal: string },
+      id: string,
+    ): TransactionServiceReceiptResult {
+      check();
+      if (access.kind === "unauthenticated")
+        return Object.freeze({ kind: "refused", status: 401, code: "unauthenticated" });
+      return (
+        receipt(access.principal, id) ??
+        Object.freeze({ kind: "refused", status: 404, code: "resource-not-found" })
+      );
+    },
+    /** Stop accepting work, drain admitted work even when the client dropped its
+     * delivery, then close cursors and this service-owned database. No disconnect
+```
+
+### packages/server/src/transaction-consistency.ts:85-125
+```
+export async function waitForTransactionMinimum<T>(
+  attempt: () => T | Promise<T>,
+  options: TransactionMinimumWaitOptions = {},
+  signal?: AbortSignal,
+): Promise<T> {
+  const budget = options.budgetMs ?? 1000,
+    now = options.now ?? (() => performance.now()),
+    wait = options.wait ?? ((milliseconds) => delay(milliseconds));
+  if (
+    !Number.isSafeInteger(budget) ||
+    budget <= 0 ||
+    budget > 2147483647 ||
+    typeof now !== "function" ||
+    typeof wait !== "function"
+  )
+    throw new TypeError("finite minimum-read wait policy required");
+  const started = now();
+  if (!Number.isFinite(started)) throw new TypeError("invalid minimum-read clock");
+  const deadline = started + budget;
+  let previous = started;
+  if (!Number.isFinite(deadline)) throw new TypeError("invalid minimum-read deadline");
+  for (;;) {
+    if (signal?.aborted) throw new ScopeServerOperationAbortedError();
+    try {
+      return await attempt();
+    } catch (error) {
+      if (!(error instanceof TransactionMinimumFailure) || error.reason !== "behind") throw error;
+      const current = now();
+      if (!Number.isFinite(current) || current < previous)
+        throw new TypeError("invalid minimum-read clock");
+      previous = current;
+      if (current >= deadline)
+        throw new TransactionMinimumFailure("catch-up-timeout", error.context);
+      await wait(Math.min(5, deadline - current));
+    }
+  }
+}
+```
+
+### packages/server/src/transaction-http.ts:78-78
+```
+type Service = ReturnType<typeof createTransactionService>;
+```
+
+### packages/server/src/transaction-http.ts:107-119
+```
+export function transactionHttpProblem(
+  code: ReadProblemCode,
+  observation?: TransactionReadContext,
+): HttpResponse {
+  const response = problem(readProblem(code));
+  return observation ? context(response, observation) : response;
+}
+function context(response: HttpResponse, observation: TransactionReadContext): HttpResponse {
+  response.headers.set("bdp-scope-epoch", observation.scopeEpoch);
+  response.headers.set("bdp-authorization-view", observation.authorizationView);
+  response.headers.set("bdp-scope-position", observation.scopePosition);
+  return response;
+}
+```
+
+### packages/server/src/transaction-http.ts:243-258
+```
+  // method vocabulary excludes TRACE/TRACK/CONNECT.
+  function methodResponse(url: URL, method: string): HttpResponse | undefined {
+    if (url.origin !== scopeUrl.origin || !url.pathname.startsWith(scopeUrl.pathname))
+      return transactionHttpProblem("resource-not-found");
+    if (names.has(url.href)) return method === "POST" ? undefined : empty(405, "POST");
+    // Operation targets use exact canonical URLs. A missing target, alternate
+    // encoded spelling, or query-bearing command URL is not a Read resource.
+    if (
+      url.pathname.startsWith(`${scopeUrl.pathname}operations/`) &&
+      url.href !== new URL("operations/", scope).href
+    )
+      return transactionHttpProblem("resource-not-found");
+    return method === "GET" || method === "HEAD" ? undefined : empty(405, "GET, HEAD");
+  }
+  async function route(
+    request: Request,
+```
+
+### packages/server/src/transaction-http.ts:389-389
+```
+    if (authorization.kind === "unauthenticated") return transactionHttpProblem("unauthenticated");
+```
+
+### packages/server/src/transaction-http.ts:481-486
+```
+    const alias = classifyAliasPath(url, scope);
+    if (alias !== undefined && typeof alias !== "string") return problem(alias);
+    const receiptRoute =
+      url.pathname.startsWith(`${scopeUrl.pathname}receipts/`) ||
+      url.pathname === `${scopeUrl.pathname}receipts`;
+    const eventRequest = receiptRoute ? undefined : transactionEventRequest(url, scope);
+```
+
+### packages/server/src/transaction-http.ts:521-550
+```
+    if (receiptRoute) {
+      const minimum = hasMinimumControls(request)
+        ? transactionMinimumHeaders(request.headers)
+        : undefined;
+      const access = { kind: "authenticated" as const, principal: authorization.principal };
+      if (url.pathname.slice(`${scopeUrl.pathname}receipts/`.length).includes("/pages/")) {
+        const page = await service.receiptPage(
+          access,
+          url.href,
+          minimum ?? (hasMinimumControls(request) ? "unsupported" : undefined),
+        );
+        if (page.kind === "refused") return transactionHttpProblem(page.code);
+        if (page.kind === "unsupported") return developmentGap("minimum-position");
+        return context(
+          page.kind === "expired"
+            ? transactionHttpProblem("cursor-expired")
+            : jsonResponse(page.page),
+          page.context,
+        );
+      }
+      const result = hasMinimumControls(request)
+        ? await service.receiptAtMinimum(access, url.href, minimum ?? "unsupported")
+        : service.receipt(access, url.href);
+      if (result.kind === "refused") return transactionHttpProblem(result.code);
+      // Missing barrier support cannot disclose a foreign receipt, nor permit a
+      // conditional shortcut to serve an unchecked minimum checkpoint.
+      if (result.kind === "unsupported") return developmentGap("minimum-position");
+      return receiptResponse(result, false);
+    }
+    const minimum = hasMinimumControls(request)
+```
+
+### packages/server/src/read-http.ts:40-48
+```
+  // Keep the Fetch-level contract honest as well as the Node transport's final
+  // defensive strip. HEAD has GET metadata, including the serialized length.
+  if (request.method === "HEAD" && selected.body !== undefined) {
+    const headers = new Headers(selected.headers);
+    headers.set("content-length", String(Buffer.byteLength(stringifyJsonValue(selected.body))));
+    return { status: selected.status, headers };
+  }
+  return selected;
+}
+```
+
+### packages/server/src/transaction-runtime.ts:87-95
+```
+function deliver(response: ServerResponse, selected: HttpResponse, raw?: string): void {
+  if (response.destroyed) return;
+  const bytes =
+    raw ?? (selected.body === undefined ? undefined : stringifyJsonValue(selected.body));
+  selected.headers.set("x-bdp-development", "non-attesting");
+  if (bytes !== undefined) selected.headers.set("content-length", String(Buffer.byteLength(bytes)));
+  response.writeHead(selected.status, Object.fromEntries(selected.headers));
+  response.end(response.req.method === "HEAD" ? undefined : bytes);
+}
+```
+
+### packages/server/src/transaction-batch.ts:885-912
+```
+        // Count selections across operations, including repeat matches and
+        // semantic no-ops, before adding their result entries. Enumeration and
+        // selection above still scan the complete candidate collection.
+        matchedResources += selected.length;
+        if (matchedResources > matchMaximum) throw new MatchExpansionLimit();
+        results.push({ operationIndex, outcome: "matched", count: selected.length });
+        for (const resource of selected) {
+          const bead = input.collection === "beads";
+          const failure = applyResource(
+            {
+              operation:
+                op.operation === "updateWhere"
+                  ? bead
+                    ? "updateBead"
+                    : "updateLink"
+                  : bead
+                    ? "deleteBead"
+                    : "deleteLink",
+            },
+            {
+              [bead ? "bead" : "link"]: resource.id,
+              ...(op.operation === "updateWhere" ? { propertiesChange: input.change } : {}),
+              ...(input.revisionProvenance === undefined
+                ? {}
+                : { revisionProvenance: input.revisionProvenance }),
+            },
+            operationIndex,
+            new Map(),
+```
+
+### apps/bdptest/src/transactional-set-installed.test.ts:237-258
+```
+    const feedStart = await send("changes/?start=now");
+    expect(feedStart.groups).toEqual([]);
+    const input = {
+      collection: "links",
+      selector: `$[?@.type == "${link}"]`,
+      cardinality: { min: 32, max: 32 },
+    };
+    const receipt = await send("operations/delete-where", input, "delete32");
+    expect(receipt.status).toBe("completed");
+    expect(array(receipt.results)).toHaveLength(32);
+    expect(typeof receipt.next).toBe("string");
+    const page = await send(receipt.next as string);
+    checked("mutationReceiptPage", page);
+    expect(array(page.results)).toHaveLength(1);
+    expect(page.next).toBeNull();
+    const allResults = [...array(receipt.results), ...array(page.results)];
+    const assertResults = (rows: Record<string, unknown>[]) => {
+      expect(rows[0]).toEqual({ operationIndex: 0, outcome: "matched", count: 32 });
+      expect(
+        rows.slice(1).map((r) => ({
+          operationIndex: r.operationIndex,
+          outcome: r.outcome,
+```
+
+### packages/server/src/transaction-receipt-pages.test.ts:280-290
+```
+});
+
+it("refuses page parents outside the receipt namespace before plan lookup", () => {
+  const f = fixture();
+  const prepare = vi.spyOn(DatabaseSync.prototype, "prepare");
+  for (const url of [`${scope}other/x/pages/token`, `${scope}receipts/pages/token`]) {
+    for (const controls of [undefined, "unsupported"] as const)
+      expect(f.owner.readReceiptPage("p", url, controls)).toEqual({ kind: "missing" });
+  }
+  expect(prepare.mock.calls.some(([sql]) => sql.includes("FROM receipt_pages"))).toBe(false);
+});
+```
+
+### packages/server/src/transaction-http.test.ts:11-24
+```
+import type { TransactionRuntimeTestSeams } from "./transaction-runtime.js";
+const { startTransactionRuntime } = (await import(
+  new URL("../dist/transaction-runtime.js", import.meta.url).href
+)) as typeof import("./transaction-runtime.js");
+const ajv = new Ajv2020({ allErrors: true, strict: true });
+ajv.addFormat("uri", { type: "string", validate: isJsonSchemaUri });
+ajv.addFormat("date-time", { type: "string", validate: isJsonSchemaDateTime });
+const schema = JSON.parse(
+  readFileSync(new URL("../../../schemas/bdp-v0.schema.json", import.meta.url), "utf8"),
+);
+ajv.addSchema(schema);
+const validateTransactionalProblem = ajv.compile({
+  $ref: `${schema.$id}#/$defs/transactionalProblem`,
+});
+```
+
+### packages/server/src/transaction-http.test.ts:81-103
+```
+  const options = {
+    directory,
+    port: 0,
+    create: true,
+    types,
+    credentials: [
+      { token, principal: "p", canMutate: true },
+      { token: otherToken, principal: "other", canMutate: true },
+      { token: readToken, principal: "reader", canMutate: false },
+    ],
+  };
+  let runtime = await startTransactionRuntime(options, { clock: () => time, ...seams });
+  cleanup.push(() => runtime.close());
+  return {
+    get runtime() {
+      return runtime;
+    },
+    async retainedReceipts() {
+      await runtime.close();
+      const db = new DatabaseSync(path.join(directory, "transaction.sqlite"), { readOnly: true });
+      try {
+        return db
+          .prepare("SELECT receipt FROM receipts ORDER BY key")
+```
+
+### packages/server/src/transaction-http.test.ts:142-166
+```
+    },
+    async get(url: string, init: RequestInit = {}) {
+      const headers = new Headers({
+        authorization: `Bearer ${token}`,
+        ...Object.fromEntries(new Headers(init.headers)),
+      });
+      return fetch(url, { ...init, headers, redirect: "manual" });
+    },
+    async post(
+      text = batch(),
+      key: string | null = "key",
+      target: keyof typeof runtime.targets = "batch",
+      headers: Record<string, string> = {},
+    ) {
+      return fetch(runtime.targets[target], {
+        method: "POST",
+        headers: {
+          authorization: `Bearer ${token}`,
+          "content-type": "application/json",
+          ...(key === null ? {} : { "idempotency-key": key }),
+          ...headers,
+        },
+        body: text,
+      });
+    },
+```
+
+### scripts/transaction-installed-observation.mjs:1-97
+```
+/** Bounded inherited-IPC launcher. No request or observation emulation. */
+import { spawn } from "node:child_process";
+import { mkdir } from "node:fs/promises";
+export async function launchInstalledTransaction(entry, configuration, signal) {
+  signal?.throwIfAborted();
+  // Explicit launcher-owned provisioning; reopen keeps the directory/create:false.
+  if (configuration.create) await mkdir(configuration.directory, { recursive: true, mode: 0o700 });
+  signal?.throwIfAborted();
+  const child = spawn(process.execPath, [entry], {
+    cwd: "/tmp",
+    stdio: ["ignore", "pipe", "pipe", "ipc"],
+  });
+  let bytes = 0;
+  for (const stream of [child.stdout, child.stderr])
+    stream.on("data", (chunk) => {
+      bytes += chunk.length;
+      if (bytes > 65536) child.kill("SIGKILL");
+    });
+  const exited = new Promise((resolve) =>
+    child.once("exit", (code, signal) => resolve({ code, signal })),
+  );
+  async function bounded(promise) {
+    let timer;
+    try {
+      return await Promise.race([
+        promise,
+        new Promise((_, reject) => {
+          timer = setTimeout(() => {
+            child.kill("SIGKILL");
+            reject(new Error("installed transaction process deadline"));
+          }, 10000);
+        }),
+      ]);
+    } finally {
+      clearTimeout(timer);
+    }
+  }
+  async function drainFailure(error) {
+    child.kill("SIGKILL");
+    try {
+      await bounded(exited);
+    } catch (cleanup) {
+      throw new AggregateError([error, cleanup], "installed transaction cleanup failed");
+    }
+    throw error;
+  }
+  let closing;
+  const close = () =>
+    (closing ??= (async () => {
+      try {
+        if (child.connected) child.send({ command: "close" });
+        const result = await bounded(exited);
+        if (result.code !== 0 || result.signal !== null)
+          throw new Error("installed transaction child did not close cleanly");
+      } catch (error) {
+        await drainFailure(error);
+      } finally {
+        signal?.removeEventListener("abort", onAbort);
+      }
+    })());
+  const onAbort = () => {
+    void close().catch(() => {});
+  };
+  signal?.addEventListener("abort", onAbort, { once: true });
+  if (signal?.aborted) onAbort();
+  let detachReadyAbort = () => {};
+  try {
+    const ready = await bounded(
+      new Promise((resolve, reject) => {
+        const abort = () => reject(signal.reason);
+        signal?.addEventListener("abort", abort, { once: true });
+        detachReadyAbort = () => signal?.removeEventListener("abort", abort);
+        if (signal?.aborted) {
+          abort();
+          return;
+        }
+        child.once("error", reject);
+        child.once("message", resolve);
+        void exited.then(() => reject(new Error("installed transaction exited before ready")));
+        child.send({ configuration });
+      }),
+    );
+    signal?.throwIfAborted();
+    if (!ready || ready.event !== "qualification.ready" || JSON.stringify(ready).length > 65536)
+      throw new Error("invalid installed ready message");
+    return { child, ready, close };
+  } catch (error) {
+    try {
+      await close();
+    } catch (cleanup) {
+      throw new AggregateError([error, cleanup], "installed transaction startup cleanup failed");
+    }
+    throw error;
+  } finally {
+    detachReadyAbort();
+  }
+}
+```
+
+### docs/specs/bdp.md:4632-4635
+```
+| a receipt URL `receipts/{token}` | `GET`, `HEAD` | `200` receipt in its current representation; `401`; `404` for an unknown token, another principal's receipt, a retracted receipt, a forgotten failed receipt, or a prior epoch's receipt; `409` `foreign-view` or `410` `cursor-expired` for incompatible minimum-position context; `429`, `503` |
+| a receipt page URL | `GET`, `HEAD` | `200` page; `401`; `404` under the same non-disclosure rule; `409` `foreign-view` or `410` `cursor-expired` for incompatible minimum-position context; `410` `cursor-expired` after the receipt's detail expired; `429`, `503` |
+| a receipt or page URL | any other method | `405`, `Allow: GET, HEAD` (`OPTIONS` as above) |
+| the `receipts` root | any method | `404` `resource-not-found` for `GET` and `HEAD`, `405` with `Allow: GET, HEAD` otherwise |
+```
+
+### docs/specs/bdp.md:4650-4656
+```
+context and consistency wait, then page expiry, then the representation.
+An incompatible view returns `409` `foreign-view`; an expired context
+returns `410` `cursor-expired`; a failed catch-up wait returns `503`
+`catch-up-timeout`, under the shared consistency rules. These checks never
+let a caller who may not see the receipt learn about its pages or history.
+
+### Batch operation record schema
+```
+
+### docs/specs/bdp.md:5116-5133
+```
+Every admitted mutation has one Mutation Receipt at an authority-allocated
+URL beneath the discovered `receipts` root — `receipts/{token}`, where the
+token is a checkpoint-profile token — and the receipt's `id` is that
+absolute URL. `GET` and `HEAD` of the receipt URL return the receipt's
+current representation with `200 OK`, `Cache-Control: private, no-store`,
+and the Transactional response fields. A receipt URL that does not exist,
+that belongs to another principal, that was retracted under
+[Mutation Transactions](#mutation-transactions), that named a failed
+receipt the authority has since forgotten under the same section, or that
+was allocated in another Scope epoch returns the uniform `404`
+`resource-not-found`: receipts are principal-bound, and they are not an
+enumeration oracle. The `receipts` root is a namespace prefix, not a
+Resource: it is discovered so that receipt URLs are recognizably the
+authority's and clients never construct them, BDP v0 defines no receipt
+listing and no lookup by key, and a `GET` of the root returns `404`
+`resource-not-found`. A client resolves a lost response by retrying the
+original request with its original key, which returns the receipt.
+
+```
+
+### docs/specs/bdp.md:5796-5804
+```
+### Transactional HTTP consistency
+
+Transactional Scope-bounded responses carry:
+
+```http
+BDP-Scope-Epoch: opaque-scope-epoch
+BDP-Authorization-View: opaque-authorization-view
+BDP-Scope-Position: opaque-position-42
+```
+```
+
+### docs/specs/bdp.md:5827-5835
+```
+### Transactional Resource read context
+
+Every Transactional Scope-bounded read reports the Scope epoch, Authorization
+View token, and position of the transaction-consistent projected prefix it
+observed. It reports them through the fields defined under
+[Transactional HTTP consistency](#transactional-http-consistency). Read and Read+Update use Resource
+revisions, entity tags, and snapshot-preserving pagination without exposing
+Scope-history tokens.
+
+```
+
+End of packet. Findings only; no execution/source edits. Identify specific missing proof rather than invent helper behavior.

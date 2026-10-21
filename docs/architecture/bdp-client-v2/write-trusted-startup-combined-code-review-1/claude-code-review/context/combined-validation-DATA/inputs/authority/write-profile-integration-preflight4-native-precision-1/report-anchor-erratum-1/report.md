@@ -1,0 +1,1 @@
+IP4-N1 source anchor correction: preflight4 report.md line12 (original native field14). No source/composition/finding disposition change. Original47 native files remain immutable; this additive erratum contains the complete current50-file census.

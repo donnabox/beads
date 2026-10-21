@@ -1,0 +1,33 @@
+{
+  "argv": [
+    "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+    "/Users/dbox/repos/wt/vickie/vickie-current-observation-minimum/node_modules/@biomejs/biome/bin/biome",
+    "lint",
+    "--config-path=/Users/dbox/repos/wt/vickie/vickie-current-observation-minimum/biome.json",
+    "packages/server/src/transaction-consistency.ts",
+    "packages/server/src/transaction-read.ts",
+    "packages/server/src/transaction-http.ts",
+    "packages/server/src/transaction-service.ts",
+    "packages/server/src/transaction-store.ts",
+    "packages/server/src/transaction-consistency.test.ts",
+    "packages/server/src/transaction-read.test.ts",
+    "packages/server/src/transaction-http.test.ts",
+    "packages/server/src/transaction-service.test.ts",
+    "packages/server/src/transaction-receipt-pages.test.ts",
+    "packages/server/src/transaction-snapshot.test.ts",
+    "packages/server/src/transaction-events.test.ts",
+    "packages/server/src/transaction-event-sse.test.ts",
+    "packages/server/src/transaction-changefeed.test.ts",
+    "apps/bdptest/src/transactional-minimum-receiving-installed.test.ts"
+  ],
+  "cwd": "/Users/dbox/repos/wt/vickie/vickie-current-observation-minimum",
+  "head": "d9c3eb9e61b1982b9bd56aa77e4cdc114384e886",
+  "tree": "30753e31480a1bef4c17f2b7182c1cc818ba4caf",
+  "sourceIdentity": "6edbb35f0de805cbd2c03f413eb51e7a27df6cec094569c942a5a8aea179bc62",
+  "rootGateSha256": "0dcb2b438065909f72fc546ff1379cab44dc007324f81fd3862456a3b173df62",
+  "outerSeconds": 120,
+  "automaticRetries": 0,
+  "overrides": {},
+  "temporaryDirectory": "/private/tmp/vickie-current-observation-validation-lint-4rd4sa9t",
+  "npmCache": "/private/tmp/vickie-current-observation-validation-lint-4rd4sa9t/npm-cache"
+}

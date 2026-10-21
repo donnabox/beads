@@ -1,0 +1,11 @@
+{
+  "sourceKind": "Developer-provided current tool definitions visible to this task; no unavailable local backend source or runtime experiments claimed",
+  "exec_commandDocumentedBehavior": "Runs a command, returning output or a session ID for ongoing interaction.",
+  "exec_commandTimingField": "yield_time_ms: wait before yielding output, effective250\u201330000ms; not a documented command wall timeout",
+  "exec_commandDeadlineParameterPresent": false,
+  "write_stdinTimingField": "yield_time_ms: wait for additional output; not absolute runtime or process-tree deadline",
+  "functionsExecTimingField": "yield_time_ms: yields while script remains running; not evidence of task termination",
+  "noBackendContainmentAssumed": true,
+  "boundedScope": "Only current exposed interfaces and pinned allowed fixed H6/C3 entrypoints assessed; not an exhaustive inventory of every installed executable",
+  "noToolProbeOrInvocationForAssessment": true
+}

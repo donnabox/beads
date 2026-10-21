@@ -1,0 +1,108 @@
+from pathlib import Path
+import json,hashlib,stat,difflib,re,subprocess
+L=Path('/Users/dbox/repos/wt/vickie/bdp-integration-logs');C=Path('/Users/dbox/repos/wt/vickie/bdp-client-design/checkout');D=C/'docs/architecture/bdp-client-v2';P=L/'write-profile-G09-validation-preparation-5';S=L/'write-profile-G09-validation5-source-pairs-closed-control-source-1';B=L/'write-profile-G09-validation5-next5-closed-control-source-1'
+def sha(p):return hashlib.sha256(p.read_bytes()).hexdigest()
+def strict(p):
+ def unique(v):
+  d=dict(v);assert len(d)==len(v);return d
+ return json.loads(p.read_text(),object_pairs_hook=unique,parse_constant=lambda v:(_ for _ in ()).throw(ValueError(v)))
+def meta(p):return {'bytes':p.stat().st_size,'mode':oct(stat.S_IMODE(p.stat().st_mode)),'sha256':sha(p)}
+assert sha(S/'index.json')=='a1f550af52d2a53b91175f7fb6fcc6e121257971512ddc63a25e3c86b7656c65'
+ix=strict(S/'index.json');assert len(ix['files'])==206
+files={str(p.relative_to(S)):p for p in S.rglob('*') if p.is_file()};assert set(files)==set(ix['files'])|{'index.json'}
+for n,m in ix['files'].items():assert meta(S/n)==m and (S/n).read_bytes()==(D/S.name/n).read_bytes(),n
+assert (S/'index.json').read_bytes()==(D/S.name/'index.json').read_bytes()
+orig=strict(S/'input-origins.json');assert len(orig)==81
+for r in orig:assert meta(Path(r['origin']))==meta(S/r['copy'])=={k:r[k] for k in ['bytes','mode','sha256']},r
+ledger=strict(S/'external-input-ledger.json');refs=strict(S/'reference-pins.json');assert len(ledger)==len(refs)==3510 and set(ledger)==set(refs)
+for n,m in ledger.items():assert meta(Path(n))=={k:m[k] for k in ['bytes','mode','sha256']} and refs[n]==m['sha256'],n
+order=strict(P/'commands.json')['finalOrder'];stages=order[9:17];assert len(stages)==8
+current=strict(P/'execution-gate.json');candidate=strict(S/'execution-gate.proposed.json');manifest=strict(S/'execution-manifest.json');bridge=strict(S/'root-disposition.proposed.json')
+assert sha(P/'execution-gate.json')=='18a440d47c2b4e7aef7e46afc73f627a27d13e51cae8b990cd2feade33c774a4'
+assert sha(S/'execution-gate.proposed.json')=='f16d895808b965918bade0cbe1e7552d828423b96930485ec34f74f051e884c8'
+assert len(candidate)==26 and set(candidate)==set(current) and {k for k in current if current[k]!=candidate[k]}=={'approvedStages','rootBuildAcceptance','rootDisposition'}
+assert candidate['approvedStages']==manifest['approvedStages']==order[:17] and candidate['bootstrapReuse']==[]
+assert manifest['accepted'] is True and manifest['session']=='2026-10-18T02:16:24Z-549f' and manifest['mode']=='final'
+assert manifest['activeGate']=={'path':str(P/'execution-gate.json'),'sha256':sha(S/'execution-gate.proposed.json')}
+for k in ['released','rootPlanAccepted','rootExactSourceAccepted','actualClaudeReviewDisposed','nativeCodeReviewDisposed','staticValidationAuthorized']:assert type(candidate[k]) is bool and candidate[k] is True
+assert candidate['rootDisposition']=={'path':str(S/'root-disposition.proposed.json'),'sha256':sha(S/'root-disposition.proposed.json')}
+r=candidate['rootBuildAcceptance'];assert r['path']==str(L/'write-profile-G09-validation5-bind-fresh-build-root-final-disposition-1/disposition.json') and r['sha256']==sha(Path(r['path']))
+acc=strict(Path(r['path']));assert acc['accepted'] is True and acc['sourceBindingSha256']==sha(P/'source-binding.json') and acc['buildMapSha256']==sha(P/'run/build-artifacts.json')
+for k in ['accepted','runtimeValidationAuthorized','staticValidationAuthorized','freshPipelineRequired']:assert bridge[k] is True
+assert bridge['sourceBindingSha256']==sha(P/'source-binding.json')
+proofs=strict(S/'literal-derivation-proofs.json');assert len(proofs)==24
+seen=set();total=0
+allowedA=['STAGE = ','ARGV = ','OWNED_ROOT_OUTPUT = ','APPROVED_GATE_SHA256 = ','APPROVED_EXECUTION_ACCEPTANCE_SHA256 = ','EXECUTION_ACCEPTANCE_PATH = ',"assert type(execution_acceptance['approvedStages'])"]
+for row in proofs:
+ st,ph=row['stage'],row['phase'];assert st in stages and ph in 'ABC' and (st,ph) not in seen;seen.add((st,ph))
+ baseline=B/('cells/bind-fresh-build.'+ph+'.txt');target=S/('cells/'+st+'.'+ph+'.txt')
+ assert row['baseline']=={'path':str(baseline),'sha256':sha(baseline)} and row['after']=={'path':str(target),'sha256':sha(target)}
+ steps=row['steps'];assert len(steps)==row['changedCompleteLfLines']==(7 if ph=='A' else 3);total+=len(steps)
+ text=baseline.read_text();before=text
+ for change in steps:
+  old,new=change['oldCompleteLf'],change['newCompleteLf'];assert old.endswith('\n') and new.endswith('\n') and '\n' not in old[:-1] and '\n' not in new[:-1]
+  assert text.count(old)==change['oldBeforeOccurrences']==1 and text.count(new)==change['newBeforeOccurrences']==0
+  text=text.replace(old,new)
+ assert text==target.read_text()
+ inverse=text
+ for change in reversed(steps):assert inverse.count(change['newCompleteLf'])==1;inverse=inverse.replace(change['newCompleteLf'],change['oldCompleteLf'])
+ assert inverse==before
+ if ph=='A':
+  assert all(steps[i]['oldCompleteLf'].startswith(prefix) and steps[i]['newCompleteLf'].startswith(prefix) for i,prefix in enumerate(allowedA))
+  assert "STAGE = '"+st+"'\n" in text and "APPROVED_GATE_SHA256 = '"+sha(S/'execution-gate.proposed.json')+"'\n" in text and "APPROVED_EXECUTION_ACCEPTANCE_SHA256 = '"+sha(S/'execution-manifest.json')+"'\n" in text
+ else:
+  name='ACTUAL_A_TOOL_ID' if ph=='B' else 'ACTUAL_B_TOOL_ID';sentinel='UNRESOLVED_ACTUAL_TOOL_ID' if ph=='B' else 'UNRESOLVED_ACTUAL_B_TOOL_ID'
+  assert name+" = '"+sentinel+"'\n" in text and name+" != '"+sentinel+"'" in text and ('ACTUAL_A_TOOL_RAW_EXIT' if ph=='B' else 'ACTUAL_B_TOOL_RAW_EXIT')+' = 0\n' in text
+assert total==104 and seen=={(st,ph) for st in stages for ph in 'ABC'}
+pairs=strict(S/'genuine-adaptation-pairs.json');assert len(pairs)==27
+for row in pairs:
+ before=Path(row['beforePath']);after=Path(row['afterPath']);assert sha(before)==row['beforeSha256'] and sha(after)==row['afterSha256']
+ bt,at=before.read_text().splitlines(True),after.read_text().splitlines(True)
+ nd=(S/row['ndiff']).read_text().splitlines(True);assert ''.join(difflib.restore(nd,1))==''.join(bt) and ''.join(difflib.restore(nd,2))==''.join(at)
+ for key,x,y in [('forward',bt,at),('inverse',at,bt)]:
+  patch=(S/row[key]).read_text();lines=patch.splitlines(True);assert len(lines)>=3 and lines[0].startswith('--- ') and lines[1].startswith('+++ ')
+  assert patch==''.join(difflib.unified_diff(x,y,fromfile=lines[0][4:].rstrip('\n'),tofile=lines[1][4:].rstrip('\n'))),row
+graph={n:set() for n in files};structured_pins=[];historical_records=[]
+def walk(v,owner):
+ if type(v) is dict:
+  if type(v.get('path')) is str and type(v.get('sha256')) is str and re.fullmatch('[a-f0-9]{64}',v['sha256']):
+   path=v['path'];p=Path(path)
+   if p.is_absolute():
+    assert sha(p)==v['sha256'],(owner,path)
+    structured_pins.append((owner,path))
+    if p.is_relative_to(S):graph[owner].add(str(p.relative_to(S)))
+   else:
+    # Only repository-relative sole-plan publication metadata is historical, and
+    # must match its originating manifest exactly, never current design.md.
+    assert path=='docs/architecture/bdp-client-v2/design.md' and owner=='author-release-publication-checks.json',(owner,v)
+    m=strict(L/'root-G09-validation5-bind-build-final-and-authoring-release-publication-1.manifest.json')
+    assert m[path]=={k:v[k] for k in ['bytes','mode','sha256']};historical_records.append(v)
+  for x in v.values():walk(x,owner)
+ elif type(v) is list:
+  for x in v:walk(x,owner)
+for n,p in files.items():
+ if p.suffix=='.json':walk(strict(p),n)
+for st in stages:
+ for ph in 'ABC':graph['cells/'+st+'.'+ph+'.txt'].update(['execution-gate.proposed.json','execution-manifest.json'])
+# The index hashes all other members; recorded graph edges are descriptive DATA.
+graph['index.json'].update(set(files)-{'index.json'})
+active=set();done=set()
+def visit(n):
+ assert n in graph and n not in active,n
+ if n in done:return
+ active.add(n)
+ for x in graph[n]:visit(x)
+ active.remove(n);done.add(n)
+for n in graph:visit(n)
+source=strict(P/'source-binding.json');W=Path(source['worktree']);assert len(source['trackedSourceFiles'])==679
+for n,h in source['trackedSourceFiles'].items():assert sha(W/n)==h,n
+assert len(strict(P/'implementation-hashes.json')['files'])==105 and len(list((P/'run').iterdir()))==38
+assert len(strict(P/'run/build-artifacts.json')['artifacts'])==476
+for n,h in strict(P/'run/build-artifacts.json')['artifacts'].items():assert sha(W/n)==h,n
+def git(*a):return subprocess.check_output(['git',*a],cwd=W)
+gitstate={'branch':git('branch','--show-current').decode().strip(),'head':git('rev-parse','HEAD').decode().strip(),'tree':git('rev-parse','HEAD^{tree}').decode().strip(),'parent':git('rev-parse','HEAD^').decode().strip(),'diffFromHead':hashlib.sha256(git('diff','--binary')).hexdigest(),'unstaged':git('diff','--name-only').decode().splitlines(),'staged':git('diff','--cached','--name-only').decode().splitlines(),'untracked':git('ls-files','--others','--exclude-standard').decode().splitlines()}
+assert gitstate['branch']=='codex/vickie-schema-lint-correction-minimum' and gitstate['head']=='cce884ccea1db97cbc6fd7bff876d4d6091f9081' and gitstate['tree']=='6757829bd5b700faf28df39071190a272add90c9' and gitstate['parent']=='a56254d682cf4623cab22a552e3d2f695f691795' and gitstate['diffFromHead']=='f87d60ddc56b23737c46ed14e1675cc751c0062c7ab3466c33606398ae305df6' and len(gitstate['unstaged'])==10 and not gitstate['staged'] and not gitstate['untracked']
+cl=strict(S/'closure.json');assert cl['accepted'] is False and cl['runtimeInvocationAuthority'] is False and cl['sourceAuthoringComplete'] is True
+out=L/'root-G09-validation5-source-pairs-independent-source-inspection-1.json';assert not out.exists()
+result={'scope':'CLOSED source/control DATA mechanics; no gatewrite or runtime release','sourceIndexSha256':sha(S/'index.json'),'all207FilesMetadataAndMirrorsExact':True,'originsVerified':81,'currentExternalLedgerAndReferencePathsVerified':3510,'candidateOnlyThreeFieldsChanged':True,'candidatePrefix':17,'newStages':stages,'first9NeverRepeat':True,'later17Closed':True,'all24FullLiteralCellLFInversesAndSentinelsExact':True,'completeLFChanges':104,'all27GenuineDiffAndNdiffBothRestoresExact':True,'independentGraphNodes':len(graph),'independentGraphAcyclic':True,'absoluteStructuredPinsVerified':len(structured_pins),'historicalSolePlanMetadataQualified':historical_records,'currentGitSourceIdentity':gitstate,'source679Helper105Build476Run38Exact':True,'acceptedActualBuildRootAndSourceBuildMapJoinsExact':True,'currentLiveGateUnchanged':sha(P/'execution-gate.json'),'sourceOriginalAcceptedFalsePreserved':True,'nativeFullPrecision':'PENDING','rootFinalAccepted':False,'runtimeAuthority':False,'qualityPass':False}
+out.write_text(json.dumps(result,indent=2,sort_keys=True)+'\n');print(json.dumps({'inspectionSha256':sha(out),'graphNodes':len(graph),'typedPins':len(structured_pins),'origins':81,'refs':3510}))

@@ -1,0 +1,9 @@
+{
+  "noEvaluatorOrProductInvocation": true,
+  "noSourceOrGateChange": true,
+  "notSubjectFailures": true,
+  "ownInspectionOnlyErrors": [
+    "Initial exploratory top-file read asked for predecessor-preservation.json from older packet; P10 correctly uses inplace-history-censuses.json.",
+    "An exploratory history-print treated histories as list, but it is a named dict. Corrected full census/tree check passed all3934+3950+66 entries."
+  ]
+}

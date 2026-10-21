@@ -1,0 +1,212 @@
+{
+  "accepted": true,
+  "scope": "Independent read-only audit of existing IV2 installed outcomes, package/copy provenance and sampled cleanup; not publication authorization.",
+  "reviewerOverlap": "Prior minimum plan and repair review; did not author or execute this installed packet. Root owns final acceptance.",
+  "findings": [
+    {
+      "severity": "low",
+      "blocking": false,
+      "artifact": "scope-type-repair/requests.json",
+      "issue": "Historical headers.body says Content-Length:562. Exact seed literal, source line394 and actual requests are610 bytes; serializer lines448-449 derives length from actual request body. Preserve artifact with this erratum; no rerun or product correction warranted."
+    }
+  ],
+  "archiveMembers": 317,
+  "consumers": {
+    "positive": {
+      "consumerFiles": 866,
+      "internalLinks": 17,
+      "payload": "eb632f81ab2026cfef8a6a35029df64bbd2f6c47b2222d0b541c73f1fa678289",
+      "payloadFileVisits": 474,
+      "packages": 8,
+      "soleMutation": null
+    },
+    "restore-missing-gap": {
+      "consumerFiles": 866,
+      "internalLinks": 17,
+      "payload": "850be3352a57a360b6f0e2436c9b272864b47186c73fb2f5916d8d02454319db",
+      "payloadFileVisits": 474,
+      "packages": 8,
+      "soleMutation": "dist/transaction-read.js"
+    },
+    "restore-unknown-gap": {
+      "consumerFiles": 866,
+      "internalLinks": 17,
+      "payload": "0c38370b9b0aacf32555a20bcae9c5e1bae254d8b4aa5ee55aceb58ef29950a0",
+      "payloadFileVisits": 474,
+      "packages": 8,
+      "soleMutation": "dist/transaction-http.js"
+    }
+  },
+  "stages": [
+    [
+      "typecheck",
+      0,
+      0
+    ],
+    [
+      "format-check",
+      0,
+      0
+    ],
+    [
+      "verify-installed",
+      0,
+      0
+    ],
+    [
+      "positive",
+      0,
+      0
+    ],
+    [
+      "review-positive-corrected",
+      0,
+      0
+    ],
+    [
+      "prepare-restore-missing-gap",
+      0,
+      0
+    ],
+    [
+      "restore-missing-gap",
+      1,
+      0
+    ],
+    [
+      "review-restore-missing-gap",
+      0,
+      0
+    ],
+    [
+      "prepare-restore-unknown-gap",
+      0,
+      0
+    ],
+    [
+      "restore-unknown-gap",
+      1,
+      0
+    ],
+    [
+      "review-restore-unknown-gap",
+      0,
+      0
+    ]
+  ],
+  "sampledPidsAbsent": 224,
+  "groupsAbsent": 26,
+  "retained": [
+    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-minimum-next-serving-plan/authoring-draft/installed-preparation-v2/run/typecheck.tmp/node-compile-cache"
+  ],
+  "cohorts": [
+    {
+      "mode": "positive",
+      "http": 32,
+      "statuses": [
+        200,
+        404,
+        404,
+        404,
+        404,
+        404,
+        404,
+        404,
+        404,
+        404,
+        503,
+        503,
+        503,
+        200,
+        404,
+        503,
+        404,
+        404,
+        404,
+        404,
+        404,
+        404,
+        404,
+        404,
+        404,
+        404,
+        404,
+        404,
+        404,
+        401,
+        405,
+        400
+      ],
+      "child": 86876,
+      "failures": [],
+      "responseBytes": 4076
+    },
+    {
+      "mode": "restore-missing-gap",
+      "http": 2,
+      "statuses": [
+        200,
+        500
+      ],
+      "child": 88981,
+      "failures": [
+        "minimum-current:missing-before-minimum"
+      ],
+      "responseBytes": 974
+    },
+    {
+      "mode": "restore-unknown-gap",
+      "http": 2,
+      "statuses": [
+        200,
+        500
+      ],
+      "child": 90143,
+      "failures": [
+        "minimum-current:unknown-catch-up-timeout"
+      ],
+      "responseBytes": 974
+    }
+  ],
+  "historicalStartupHTTP": 0,
+  "historicalAdapterExit": 1,
+  "buildBridge": {
+    "buildHead": "733728cf40fc2f57407000251673bd5d3218acd4",
+    "cleanBuild": true,
+    "trackedInputs": 676,
+    "packagePaths": 316,
+    "emittedFiles": 444,
+    "validatedInputChanges": [
+      "apps/bdptest/src/transactional-minimum-current-resource-installed.test.ts",
+      "docs/design/transaction-implementation-progress.md"
+    ],
+    "postValidationChange": "Only factual documentation changed between prepared-source and final-source-binding; all test/production bytes identical."
+  },
+  "currentIntegration": {
+    "head": "2e1676caa0f5861d16c5741fbd412f6c3ef7c269",
+    "tree": "d909acfdbc65e111855233ff86a3db6edfedd49e",
+    "base": "9df574a9ac980272fa31be9f443a771233b69c6a",
+    "entries": 676,
+    "changedPaths": 10,
+    "addedPath": "apps/bdptest/src/transactional-minimum-current-resource-installed.test.ts",
+    "clean": true,
+    "allFinalSourceHashesMatch": true
+  },
+  "limitations": [
+    "Raw full Resource bodies were asserted inside the selected test; persisted observations contain fingerprints, not recoverable full body bytes.",
+    "224 sampled PIDs and26 groups independently absent across integration-preparation, original installed-preparation and IV2 exit records. Sampling is not proof that no short-lived detached process ever existed.",
+    "Original zero-HTTP startup failure and first positive adapter serialization-order failure remain failures. Corrected adapter reused the same positive observation; no positive rerun was inferred.",
+    "No new tests, imports, services or package execution. Standard-library hashing, tar reads, Git object reads and ps only. Prior runs retain dirty733 source attribution, not the later integration identity.",
+    "No public qualification, CI or publication acceptance implied."
+  ],
+  "auditedAt": "2026-10-16T04:25:31.602978+00:00",
+  "evidenceHashes": {
+    "scope-type-repair/final-source-binding.json": "f2108b6da0f1bfdd3570775823306d11caa46ef473247c83a5ba6dd8b482bfa3",
+    "root-final-integration.json": "9635736be22065083c41379a61d51fe727b1e8379e9ba5a732c79de9eb99c2f7",
+    "installed-preparation-v2/prepared-source.json": "801434e084288b932c224dfae1e2087157ad92cb022e026980039207f9750e85",
+    "installed-preparation-v2/build-output-inventory.json": "80be311894063715d84ac482790b8f104fefd6280dbfcc748de4406c11798969",
+    "installed-preparation-v2/run/installed-provenance.json": "ccdc3fbc8026e0b070a27647f6f4d399dffe0d100aff1bbb6aeaa655437a827d",
+    "installed-preparation-v2/run/restore-missing-gap.provenance.json": "c9ba2516bba03c22932d828080a0fca863effa358af6077cbaacdce2a960d4ee",
+    "installed-preparation-v2/run/restore-unknown-gap.provenance.json": "6e69098da9aab31363706a7b6d4c23608b816acd4ce9183a5a0fc71dcded62b9"
+  }
+}

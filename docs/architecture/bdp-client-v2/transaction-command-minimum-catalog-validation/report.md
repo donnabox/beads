@@ -1,0 +1,17 @@
+# Catalog mapping static validation preparation
+
+Closed command preparation only. No source draft was inspected as final, and no install/build/test/package/service/commit ran. Source pins remain null pending the author's measured freeze and root approval. No execution-gate.json or run directory is supplied.
+
+commands.json uses the accepted v4 plan's eleven paths and exact twelve post-edit full titles. One Vitest invocation selects those12 registrations across six explicit files through one anchored alternation; it does not run whole test files. The two planned title changes (new inheritance case and81→82 development inventory title) are prospective until freeze. Root must reconcile the frozen registrations against this manifest before release.
+
+Commands, each once and at most120seconds: pinned Node24.16.0/pnpm11.20.0 offline frozen setup, typecheck, current build, format:check, lint, check:boundaries, evidence:verify, then static-cases. The last command requires the successful current build's source/diff binding. Existing installed entry overrides and all inherited BDP_* are cleared by the reused supervisor; no replacement BDP overrides are injected.
+
+Selected callback workload is planned0HTTP,0listeners,0store opens/directories and0product runtime children. These are static bounds from the accepted plan, not instrumented execution results. Build tools and Vitest workers are separate processes and remain supervised. The selected RU matrix module still imports emitted installed-reference configuration at top level; this is product-module evaluation, not a claim that no product code loads. The common Vitest mock setup initializes in-memory grant state and registers leak cleanup. No selected callback invokes adjacent matrix execution/actions.
+
+The closed gate requires root acceptance, source-manifest bytes and separate measured-growth acceptance before any command. That acceptance must address actual draft growth against all four authoring allowances, preserving the three historical bases; this preparation grants no cap changes. It checks the eleven actual source hashes, HEAD/tree, diff hash, lock and footprint at execution time. It intentionally carries no guessed final source or generated-artifact pins.
+
+supervise.py is a small hash-checked wrapper around the already reviewed command-minimum-later-preparation-v4 supervisor. It supplies this packet's gate and commands while reusing the120-second process-group bound,30-second progress, log/actual-exit recording, BDP/Node override clearing, isolated TMPDIR, sampled descendants and post-source checks. Existing attempt markers prevent automatic retries; failed attempts must be retained. No runtime prefixes are declared because none are expected; all temporary entries remain visible for root classification rather than being silently deleted or falsely called stores. Root inspects unknown entries and actual PID cleanup before acceptance.
+
+After the single selected run, root must read the JSON reporter and require exactly these12 fullNames passed, no unexpected executed registrations, no unhandled errors, and clean supervisor cleanup. A zero command exit alone is not case-count validation. The setup/type/build/format/lint/Read commands do not count toward the12 selected Vitest cases. Exact-head CI remains separate.
+
+Preparation was verified only by Python AST/JSON parsing and manifest arithmetic. No product module was imported. The example gate remains released:false with approvedCommandIds:[] and all pending source/acceptance fields null.

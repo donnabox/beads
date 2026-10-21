@@ -1,0 +1,475 @@
+# Independent Claude plan review: supplied exact source, no execution
+
+Return findings first with severity/location/smallest fix, or no actionable findings. Review this bounded serving PLAN, not an authored implementation. Do not edit, execute commands/tests/build/services/network, or infer public qualification. Source is merged main88c9408e908590ab1a4c64c9b9dee1a8b705999c/treeb2d9f2c18502e0778c51123be8b4564af052d803. W=/Users/dbox/repos/wt/vickie/vickie-sequence-member-evidence is clean on codex/vickie-event-missing-context. Root launches this prompt separately.
+
+Proposal: exactly transaction-store.ts, transaction-http.ts, transaction-events.test.ts in packages/server/src; NEW apps/bdptest/src/transactional-event-missing-context-installed.test.ts; docs/design/transaction-implementation-progress.md. Owner's two missing variants gain frozen context from readContext() inside SAME existing enter callback immediately after absence is established. HTTP's two missing projections pass observed.context. No second read/reconstructed context or successful-path change. Preserve validation, missing-before-minimum/reconnect, fault/closed, auth,404/HEAD. Service inference needs no source change. No runtime/schema/catalog/format/exports/launcher/config/discovery edits. Pending metadata-only incident-Link Event membership and retained Snapshot minima excluded.
+
+Source selection8: retain three existing tests excerpted below; four expanded new `captures immutable current context for missing <finite|SSE> <Bead|Link> Event source`; one new `serves contextual missing Event responses for Bead and Link JSON and SSE GET and HEAD`. Each owner case: actual configuration epoch/view; missingpos0, one unrelated create commit, missingpos1, old frozen context stayspos0; additional unsupported-minimum and future-minimum+badcursor missing observations (invalidReconnect true for SSE). Exact missing result kind/context only. Existing precedence/closed tests retain all assertions. Eight source owners/directories, one listener,11HTTP, no child. Build precedes real emitted runtime import; module-level schema/Ajv/setup disclosed.
+
+HTTP and new installed case each11requests: seed batchcreate atpos1, known Scope Event JSONGET, missingBead/Link×JSON/SSE×GET/HEAD=8, anonymous missingBead SSEGET. Installed exacttitle `observes genuine installed missing Event context across Bead and Link JSON and SSE GET and HEAD`. Canonical scope https://reference.invalid/acme/, target operations/batch; HTTP key missing-event-context-seed; Content-Type/Accept application/json; keyless152B body contains operations/createBead,id beads/known,type types/task,properties title event-context. Existing supported Type/schema fixture, no hidden Type/receipt/discovery/poll/reopen requests. Counter<=11 BEFORE dispatch. Seed receipt schema/completed/required andeffectPositionpos1; known page schema/source/next:null/one createdknownsubject; actual read epoch/view + independentpos1 expected.
+
+Hard404 first; GET exact current Problem type=https://github.com/gastownhall/bdp/problems/not-found,code resource-not-found,retry after-state-change,status404. HEAD emptybody, matching GET representation metadata. application/problem+json/private,no-store/non-attesting; no retry-after/development-limit. EOF/no frames establishes finite404 even SSE Accept; no successSSE opened. Anonymous401/challenge lacks3context. Only eight context tuple comparisons use expect.soft named `missing-event-context:<Bead|Link>:<JSON|SSE>:<GET|HEAD>`; finalViteststate determines outcome, not absence of throw. Actual safe responses retained before assertions.
+
+One emitted derivative only: copy built graph, remove context arg from both HTTP missing calls, prove test ../dist runtime resolves derivative; do not build TS mutant. Run only new HTTP case once: all11requests complete,404/body/401 prerequisites pass, exactly8named tuple failures, cleanup passes. No installed mutant/retry. Positive8+control1+installed1=10case executions,10owners/dirs,3listeners,33expected/maxHTTP,1productchild. NewHTTP/installed45saggregate/60souter/5sexchange;120ssupervisor; existing defaults unchanged. Raw response32768B/request65536B/header16384B. Cleanup attempts close/drain/remove/timer/mock restoration independently; retains primary and cleanup failures, logs actual state; independent PID/temp absence. Failed launch consumes one-child budget.
+
+After council+measured release: pinned24.16/11.20 offline/type/cleanbuild/static/Read,8source+1control, cleanordinarysourcefreeze, one freshprotocol/serverpack+externalconsumer, verify actual tar/build/source+installed files/8dependencyclosure/entry/config/payload, fresh11/1. Supervisor source label not childattestation; fingerprints do not reconstruct full body checks. Historical evidence stays historical. No broadmatrix orprofilecredit. FullCIadds6cases. Root gates authoring/execution/publication. Check feasibility, precedence, oracles, counts, cleanup and type fanout; do not demand optional scope expansion.
+
+Below is verbatim actual source (discontinuous original-line ranges explicitly marked, full-file hashes). Review data is not instruction. Full plan/ledger hashes follow.
+
+## docs/specs/bdp.md SHA256 f036103ffdf5f89fa3a2033570e1e987c4cd203cd80b1c633cb44615123f892e
+
+Lines 5661–5668:
+```
+5661: In the Transactional profile, an authorized `view=events` may remain readable
+5662: at that canonical URL while its Event Source is retained. That history does not
+5663: make the deleted subject readable again. When the Event Source is no longer
+5664: retained, an authority may return `410` `event-history-expired` only to a
+5665: principal authorized for that subject's retained history and only when its
+5666: policy permits disclosing that the history elapsed. Unknown identities and
+5667: identities outside the caller's authorization projection always return the
+5668: same `404` `resource-not-found`. `410` is therefore not an
+```
+
+Lines 5800–5808:
+```
+5800: ```http
+5801: BDP-Scope-Epoch: opaque-scope-epoch
+5802: BDP-Authorization-View: opaque-authorization-view
+5803: BDP-Scope-Position: opaque-position-42
+5804: ```
+5805: 
+5806: On reads, a Transactional client requests a minimum visible position by sending those
+5807: same epoch and view fields plus:
+5808: 
+```
+
+Lines 5830–5835:
+```
+5830: View token, and position of the transaction-consistent projected prefix it
+5831: observed. It reports them through the fields defined under
+5832: [Transactional HTTP consistency](#transactional-http-consistency). Read and Read+Update use Resource
+5833: revisions, entity tags, and snapshot-preserving pagination without exposing
+5834: Scope-history tokens.
+5835: 
+```
+
+## packages/server/src/transaction-store.ts SHA256 0cda4b6488f589258eda46d1a00612e0278228172fc102305d889fe3c4364ad1
+
+Lines 348–360:
+```
+348:   function enter<T>(run: () => T): T {
+349:     if (ownerFailure) throw ownerFailure;
+350:     if (maintenanceFailure)
+351:       throw new Error("transaction maintenance failed; owner fenced", maintenanceFailure);
+352:     if (closed || busy) throw new Error("transaction store closed or reentrant");
+353:     busy = true;
+354:     try {
+355:       return run();
+356:     } finally {
+357:       busy = false;
+358:     }
+359:   }
+360:   function fence(cause: unknown): Error {
+```
+
+Lines 590–599:
+```
+590:   function readContext(): TransactionReadContext {
+591:     const position = metadata("position");
+592:     if (!/^(0|[1-9][0-9]*)$/.test(position) || !Number.isSafeInteger(Number(position)))
+593:       throw new Error("invalid transaction read position");
+594:     return Object.freeze({
+595:       scopeEpoch: epoch,
+596:       authorizationView: view,
+597:       scopePosition: `pos-${position}`,
+598:     });
+599:   }
+```
+
+Lines 621–631:
+```
+621:   function eventSourceKnown(source: TransactionEventSource): boolean {
+622:     return (
+623:       !source.subject ||
+624:       Boolean(
+625:         db.prepare("SELECT id FROM identities WHERE id=?").get(source.subject.slice(scope.length)),
+626:       )
+627:     );
+628:   }
+629:   function eventSource(sourceUrl: string): TransactionEventSource {
+630:     const request = transactionEventRequest(new URL(sourceUrl), scope);
+631:     if (!request || request.after !== undefined || request.source.url !== sourceUrl)
+```
+
+Lines 1543–1574:
+```
+1543:     readEvents(
+1544:       sourceUrl: string,
+1545:       after?: string,
+1546:       supplied?: TransactionMinimum | "unsupported",
+1547:     ):
+1548:       | {
+1549:           readonly kind: "page";
+1550:           readonly page: TransactionEventPage;
+1551:           readonly context: TransactionReadContext;
+1552:         }
+1553:       | { readonly kind: "missing" }
+1554:       | { readonly kind: "unsupported" } {
+1555:       if (typeof sourceUrl !== "string" || (after !== undefined && typeof after !== "string"))
+1556:         throw new TypeError("Event source and cursor must be strings");
+1557:       const source = eventSource(sourceUrl);
+1558:       const minimum =
+1559:         supplied === undefined || supplied === "unsupported"
+1560:           ? supplied
+1561:           : snapshotTransactionMinimum(supplied);
+1562:       return enter(() => {
+1563:         // Reference convention: unknown sources are nondisclosing before minimum
+1564:         // checks. A retained identity remains a source after Resource deletion.
+1565:         if (!eventSourceKnown(source)) return Object.freeze({ kind: "missing" as const });
+1566:         if (minimum === "unsupported") return Object.freeze({ kind: "unsupported" as const });
+1567:         const context = readContext(),
+1568:           head = Number(context.scopePosition.slice(4));
+1569:         // This owner entry cannot advance while scanning. Refuse/wait before any
+1570:         // group read rather than repeating projection work on every wait attempt.
+1571:         if (minimum !== undefined) checkTransactionMinimum(minimum, context);
+1572:         const start = after === undefined ? undefined : parseTransactionEventCursor(after, context);
+1573:         if (start) checkTransactionEventCursor(start, context, source.url);
+1574:         let cursorMatched = start === undefined;
+```
+
+Lines 1628–1669:
+```
+1628:     },
+1629:     /** Initial source/minimum/cursor observation, never a wire or durable cursor. */
+1630:     beginEventScan(
+1631:       sourceUrl: string,
+1632:       after?: string,
+1633:       supplied?: TransactionMinimum | "unsupported",
+1634:       invalidReconnect = false,
+1635:     ): TransactionEventPacket | { readonly kind: "missing" } | { readonly kind: "unsupported" } {
+1636:       if (
+1637:         typeof sourceUrl !== "string" ||
+1638:         (after !== undefined && typeof after !== "string") ||
+1639:         typeof invalidReconnect !== "boolean"
+1640:       )
+1641:         throw new TypeError("invalid Event scan controls");
+1642:       const source = eventSource(sourceUrl);
+1643:       const minimum =
+1644:         supplied === undefined || supplied === "unsupported"
+1645:           ? supplied
+1646:           : snapshotTransactionMinimum(supplied);
+1647:       return enter(() => {
+1648:         if (!eventSourceKnown(source)) return Object.freeze({ kind: "missing" as const });
+1649:         if (minimum === "unsupported") return Object.freeze({ kind: "unsupported" as const });
+1650:         const context = readContext();
+1651:         if (minimum !== undefined) checkTransactionMinimum(minimum, context);
+1652:         if (invalidReconnect) throw new TransactionEventParameterError(undefined, context);
+1653:         const cursor =
+1654:           after === undefined ? undefined : parseTransactionEventCursor(after, context);
+1655:         if (cursor) checkTransactionEventCursor(cursor, context, source.url);
+1656:         return eventPacket(
+1657:           {
+1658:             source,
+1659:             context,
+1660:             head: Number(context.scopePosition.slice(4)),
+1661:             at: cursor?.position ?? 1,
+1662:             ordinal: cursor?.ordinal ?? -1,
+1663:           },
+1664:           context,
+1665:           cursor && after !== undefined ? { ...cursor, id: after } : undefined,
+1666:         );
+1667:       });
+1668:     },
+1669:     advanceEventScan(scan: TransactionEventScan): TransactionEventPacket {
+```
+
+## packages/server/src/transaction-http.ts SHA256 4fd4758726c363c342e9a7b292e56e3f8b17dd1beb7b98d45554bd07a25dde83
+
+Lines 97–118:
+```
+97:         readonly retry: "after-delay";
+98:       },
+99: ): HttpResponse {
+100:   const response = jsonResponse(value);
+101:   response.headers.set("content-type", "application/problem+json");
+102:   if (value.code === "unauthenticated")
+103:     response.headers.set("www-authenticate", 'Bearer realm="bdp-transaction-development"');
+104:   if (value.retry === "after-delay") response.headers.set("retry-after", "1");
+105:   return { ...response, status: value.status ?? 500 };
+106: }
+107: export function transactionHttpProblem(
+108:   code: ReadProblemCode,
+109:   observation?: TransactionReadContext,
+110: ): HttpResponse {
+111:   const response = problem(readProblem(code));
+112:   return observation ? context(response, observation) : response;
+113: }
+114: function context(response: HttpResponse, observation: TransactionReadContext): HttpResponse {
+115:   response.headers.set("bdp-scope-epoch", observation.scopeEpoch);
+116:   response.headers.set("bdp-authorization-view", observation.authorizationView);
+117:   response.headers.set("bdp-scope-position", observation.scopePosition);
+118:   return response;
+```
+
+Lines 389–389:
+```
+389:     if (authorization.kind === "unauthenticated") return transactionHttpProblem("unauthenticated");
+```
+
+Lines 480–520:
+```
+480:     // when a query happens to spell view=events. Do not reclassify them as Events.
+481:     const alias = classifyAliasPath(url, scope);
+482:     if (alias !== undefined && typeof alias !== "string") return problem(alias);
+483:     const receiptRoute =
+484:       url.pathname.startsWith(`${scopeUrl.pathname}receipts/`) ||
+485:       url.pathname === `${scopeUrl.pathname}receipts`;
+486:     const eventRequest = receiptRoute ? undefined : transactionEventRequest(url, scope);
+487:     if (eventRequest) {
+488:       const minimum = hasMinimumControls(request)
+489:         ? (transactionMinimumHeaders(request.headers) ?? "unsupported")
+490:         : undefined;
+491:       if (selectChangefeedMedia(request.headers.get("accept")) !== "sse") {
+492:         const observed = await service.events(
+493:           eventRequest.source.url,
+494:           eventRequest.after,
+495:           minimum,
+496:           request.signal,
+497:         );
+498:         if (observed.kind === "missing") return transactionHttpProblem("resource-not-found");
+499:         if (observed.kind === "unsupported") return developmentGap("minimum-position");
+500:         return context(jsonResponse(observed.page), observed.context);
+501:       }
+502:       const fields =
+503:         lastEventIds ??
+504:         (request.headers.has("last-event-id") ? [request.headers.get("last-event-id")!] : []);
+505:       const observed = await service.beginEvents(
+506:         eventRequest.source.url,
+507:         fields.length === 1 ? fields[0] : eventRequest.after,
+508:         minimum,
+509:         request.signal,
+510:         fields.length > 1,
+511:       );
+512:       if (observed.kind === "missing") return transactionHttpProblem("resource-not-found");
+513:       if (observed.kind === "unsupported") return developmentGap("minimum-position");
+514:       const response = streamResponse(request, observed.context);
+515:       return response.status !== 200 || request.method === "HEAD"
+516:         ? response
+517:         : { ...response, kind: "event-stream", packet: observed, context: observed.context };
+518:     }
+519:     if (receiptRoute) {
+520:       const minimum = hasMinimumControls(request)
+```
+
+Lines 620–627:
+```
+620:         ...(request.method === "GET" || request.method === "HEAD"
+621:           ? applyReadHttpSemantics(request, response)
+622:           : response),
+623:         kind: "finite",
+624:       };
+625:     },
+626:   });
+627: }
+```
+
+## packages/server/src/transaction-service.ts SHA256 191767f53b7f95503e39d7579a16b4843b64d90b4c887257a22352c446058409
+
+Lines 390–421:
+```
+390:     events(
+391:       source: string,
+392:       after?: string,
+393:       supplied?: TransactionMinimum | "unsupported",
+394:       signal?: AbortSignal,
+395:     ) {
+396:       return run(() =>
+397:         waitForTransactionMinimum(
+398:           () => owner.readEvents(source, after, supplied),
+399:           minimumReads,
+400:           signal,
+401:         ),
+402:       );
+403:     },
+404:     beginEvents(
+405:       source: string,
+406:       after?: string,
+407:       supplied?: TransactionMinimum | "unsupported",
+408:       signal?: AbortSignal,
+409:       invalidReconnect = false,
+410:     ) {
+411:       const minimum =
+412:         supplied === undefined || supplied === "unsupported"
+413:           ? supplied
+414:           : snapshotTransactionMinimum(supplied);
+415:       return run(() =>
+416:         waitForTransactionMinimum(
+417:           () => owner.beginEventScan(source, after, minimum, invalidReconnect),
+418:           minimumReads,
+419:           signal,
+420:         ),
+421:       );
+```
+
+## packages/server/src/transaction-runtime.ts SHA256 77954f0a85029d76443feac54cd53cda4339ffc126660ace5a9f5af92466c573
+
+Lines 87–95:
+```
+87: function deliver(response: ServerResponse, selected: HttpResponse, raw?: string): void {
+88:   if (response.destroyed) return;
+89:   const bytes =
+90:     raw ?? (selected.body === undefined ? undefined : stringifyJsonValue(selected.body));
+91:   selected.headers.set("x-bdp-development", "non-attesting");
+92:   if (bytes !== undefined) selected.headers.set("content-length", String(Buffer.byteLength(bytes)));
+93:   response.writeHead(selected.status, Object.fromEntries(selected.headers));
+94:   response.end(response.req.method === "HEAD" ? undefined : bytes);
+95: }
+```
+
+## packages/server/src/transaction-events.test.ts SHA256 9fa1e8fc59e9abd1660ff13ac456f8506d01aebe7766ce8f3df580c37e128213
+
+Lines 58–102:
+```
+58:     clock: () => now,
+59:     file: path.join(directory, "owner.sqlite"),
+60:     scope: s,
+61:     types: types(s, owned),
+62:     create: true,
+63:     receiptMaximumItems: maximum,
+64:   };
+65:   let owner = openTransactionStore(options);
+66:   cleanups.push(() => {
+67:     owner.close();
+68:     rmSync(directory, { recursive: true, force: true });
+69:   });
+70:   let key = 0;
+71:   return {
+72:     get owner() {
+73:       return owner;
+74:     },
+75:     options,
+76:     advance(ms: number) {
+77:       now += ms;
+78:     },
+79:     reopen() {
+80:       owner.close();
+81:       owner = openTransactionStore({ ...options, create: false });
+82:     },
+83:     run(operations: unknown[]) {
+84:       const admission = owner.admit(
+85:         "p",
+86:         `k${key++}`,
+87:         prepareTransaction(s, JSON.stringify({ operations })),
+88:       );
+89:       if (admission.kind !== "owned") throw Error("admission");
+90:       return owner.execute(admission.claim);
+91:     },
+92:   };
+93: }
+94: const bead = (id: string, s = scope) => ({
+95:   operation: "createBead",
+96:   id: `beads/${id}`,
+97:   type: `${s}types/bead`,
+98:   properties: { n: 0 },
+99: });
+100: const link = (id = "l", source = "beads/a", target: unknown = "beads/b", s = scope) => ({
+101:   operation: "createLink",
+102:   id: `links/${id}`,
+```
+
+Lines 209–222:
+```
+209:   },
+210: );
+211: it("preserves endpoint pins, omits external sources and does not mutate Beads for incidence", () => {
+212:   const f = fixture();
+213:   f.run([bead("a")]);
+214:   const before = f.owner.inspect().resources[0];
+215:   const pin = { uri: "https://external.invalid/resource", revision: "r-external" };
+216:   expect(f.run([link("l", "beads/a", pin)]).status).toBe("completed");
+217:   const events = collect(f.owner, `${scope}beads/a?view=events`).events;
+218:   expect(events).toHaveLength(2);
+219:   expect(events[1]?.data).toMatchObject({ target: pin, endpoint: "source" });
+220:   expect(f.owner.inspect().resources[0]).toEqual(before);
+221:   expect(f.owner.readEvents(`${scope}beads/missing?view=events`)).toEqual({ kind: "missing" });
+222: });
+```
+
+Lines 274–295:
+```
+274: it("keeps unknown sources nondisclosing before minimum and refuses older success/fenced owner", () => {
+275:   const f = fixture();
+276:   f.run([bead("a")]);
+277:   const config = f.owner.readConfiguration();
+278:   const minimum = {
+279:     scopeEpoch: config.scopeEpoch,
+280:     authorizationView: config.authorizationView,
+281:     minimumPosition: "pos-2",
+282:   };
+283:   expect(f.owner.readEvents(`${scope}beads/unknown?view=events`, undefined, minimum)).toEqual({
+284:     kind: "missing",
+285:   });
+286:   expect(() => f.owner.readEvents(`${scope}events/`, undefined, minimum)).toThrow(
+287:     TransactionMinimumFailure,
+288:   );
+289:   const observed = f.owner.readEvents(`${scope}events/`);
+290:   if (observed.kind !== "page") throw Error("page");
+291:   expect(observed.context.scopePosition).toBe("pos-1");
+292:   expect(Object.isFrozen(observed.page.events[0]?.data)).toBe(true);
+293:   f.owner.close();
+294:   expect(() => f.owner.readEvents(`${scope}events/`)).toThrow();
+295: });
+```
+
+Lines 884–908:
+```
+884: it("scan initial identity and minimum precede reconnect validity; contextual errors preserve the observed entry", () => {
+885:   const f = fixture();
+886:   f.run([bead("a")]);
+887:   const current = packet(f.owner.beginEventScan(`${scope}events/`));
+888:   const minimum = {
+889:     scopeEpoch: current.context.scopeEpoch,
+890:     authorizationView: current.context.authorizationView,
+891:     minimumPosition: "pos-9",
+892:   };
+893:   expect(f.owner.beginEventScan(`${scope}beads/missing?view=events`, "bad", minimum, true)).toEqual(
+894:     { kind: "missing" },
+895:   );
+896:   expect(() => f.owner.beginEventScan(`${scope}beads/a?view=events`, "bad", minimum, true)).toThrow(
+897:     expect.objectContaining({ reason: "behind", context: current.context }),
+898:   );
+899:   for (const after of ["", "genesis", current.events[0]!.id.replace(/pos-1_/, "pos-99_")]) {
+900:     expect(() => f.owner.beginEventScan(`${scope}events/`, after)).toThrow(
+901:       expect.objectContaining({ context: current.context }),
+902:     );
+903:   }
+904:   expect(() => f.owner.readEvents(`${scope}beads/a?view=events`, current.events[0]!.id)).toThrow(
+905:     expect.objectContaining({ context: current.context }),
+906:   );
+907: });
+908: it("byte-bound scan packets preserve the exact finite reservation and within-group suffix", () => {
+```
+
+## packages/server/src/read-http.ts SHA256 31934105eff6fff8ded8ce2ca9e3c19028991ca7c3d5f51b848004177e8c9268
+
+Lines 35–49:
+```
+35:       headers.delete("content-length");
+36:       if (status !== 304) headers.set("content-length", "0");
+37:       selected = { status, headers };
+38:     } else selected = { ...response, headers };
+39:   }
+40:   // Keep the Fetch-level contract honest as well as the Node transport's final
+41:   // defensive strip. HEAD has GET metadata, including the serialized length.
+42:   if (request.method === "HEAD" && selected.body !== undefined) {
+43:     const headers = new Headers(selected.headers);
+44:     headers.set("content-length", String(Buffer.byteLength(stringifyJsonValue(selected.body))));
+45:     return { status: selected.status, headers };
+46:   }
+47:   return selected;
+48: }
+49: 
+```
+
+Plan SHA256 cfeb672740e393b71376b4d7cf39989d7fd8ea75f097195279e2525844db8c9f
+Ledger SHA256 457c0c33d0558cb92c4bbdd0ae060f81446656c6562ef59c5eb0e394b7f6ce18

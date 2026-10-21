@@ -1,0 +1,11 @@
+--- a/packages/server/src/transaction-store.ts
++++ b/packages/server/src/transaction-store.ts
+@@ -1732,7 +1732,7 @@
+         return Object.freeze({ kind: "owner-stopped" });
+       return enter(() =>
+         atomic(() => {
+-          if (metadata("epoch") !== expectedEpoch)
++          if (metadata("epoch") !== expectedEpoch && false)
+             return Object.freeze({ kind: "owner-stopped" as const });
+           return Object.freeze({ kind: "observed" as const, context: readContext() });
+         }),

@@ -1,0 +1,498 @@
+{
+  "label": "private-installed-same-key-overlap",
+  "mode": "positive",
+  "declaredSourceCommit": "4ac569d715998d0609fb1ec08caa957c15ae93eb",
+  "sourceAttribution": "caller label; supervisor must verify source/package equality",
+  "workspaceDirty": false,
+  "entry": "/home/runner/work/bdp/bdp/packages/server/dist/transaction-installed-process.js",
+  "entrySha256": "bcf153170f953f9e28c6c89f1153be907f64df289e64f3ad929cad4a4a54c47c",
+  "executionMode": "workspace-emitted",
+  "binding": {
+    "served": {
+      "scope": "https://reference.invalid/acme/",
+      "profile": "transactional",
+      "history": false,
+      "sourceCommit": "4ac569d715998d0609fb1ec08caa957c15ae93eb",
+      "installedPayloadDigest": "c46d037aceb3c706fd1d993664a9c3222fc6ccafbbf5463421809c545a71ec4b",
+      "installedContractsDigest": "20ac1760c5f180db51459da74a501417a2701393369732254c51e7ec9a64c1e9",
+      "policyDigest": "57f4d59d13462bb9089be874b7f5ee01daae4e6ac1612449ab91735612f31916",
+      "authenticationDigest": "a7d200d9ba2b5dc46dd32de63b3de716d76b422b1c52473b07fd43f83d1e687c",
+      "fixtureDigest": "3a7899ced771d4880066d98b0000c53f801ece53458502cc4f3bc641146c9a85",
+      "fixtureId": "reference-transactional-v1",
+      "capabilities": [
+        "installed-transactional-http",
+        "transactional-receipt-observation"
+      ]
+    },
+    "operationTargets": {
+      "createBead": "https://reference.invalid/acme/operations/create-bead",
+      "updateBead": "https://reference.invalid/acme/operations/update-bead",
+      "deleteBead": "https://reference.invalid/acme/operations/delete-bead",
+      "createLink": "https://reference.invalid/acme/operations/create-link",
+      "updateLink": "https://reference.invalid/acme/operations/update-link",
+      "deleteLink": "https://reference.invalid/acme/operations/delete-link",
+      "putAlias": "https://reference.invalid/acme/operations/put-alias",
+      "deleteAlias": "https://reference.invalid/acme/operations/delete-alias",
+      "updateWhere": "https://reference.invalid/acme/operations/update-where",
+      "deleteWhere": "https://reference.invalid/acme/operations/delete-where",
+      "batch": "https://reference.invalid/acme/operations/batch",
+      "sequence": "https://reference.invalid/acme/operations/sequence"
+    },
+    "runtimeConfigurationIdentity": "2425f5bf2530947c8c12d8ce817eba1285e7f9471404c898dff09d7cb4d2229a",
+    "authorityMode": "canonical"
+  },
+  "servedIdentities": {
+    "runtimeConfigurationIdentity": "2425f5bf2530947c8c12d8ce817eba1285e7f9471404c898dff09d7cb4d2229a",
+    "artifactIdentity": "development-schema5-20ac1760c5f180db51459da74a501417a2701393369732254c51e7ec9a64c1e9",
+    "policyIdentity": "57f4d59d13462bb9089be874b7f5ee01daae4e6ac1612449ab91735612f31916",
+    "authenticationIdentity": "a7d200d9ba2b5dc46dd32de63b3de716d76b422b1c52473b07fd43f83d1e687c",
+    "payloadIdentity": "c46d037aceb3c706fd1d993664a9c3222fc6ccafbbf5463421809c545a71ec4b"
+  },
+  "credentialFreeConfigurationProjectionSha256": "1d19c210f1a0a63b77cecf895c291d2c702b9032ad9e756d7e3c7325e894b567",
+  "artifacts": {
+    "descriptors": [
+      {
+        "retrievalUri": "https://reference.invalid/acme/types/task",
+        "utf8": "{\"id\":\"https://reference.invalid/acme/types/task\",\"name\":\"Task\",\"describes\":\"bead\",\"conformsTo\":[],\"propertiesSchema\":\"https://reference.invalid/acme/schemas/properties\"}"
+      }
+    ],
+    "schemas": [
+      {
+        "retrievalUri": "https://reference.invalid/acme/schemas/properties",
+        "utf8": "{\"$id\":\"https://reference.invalid/acme/schemas/properties\",\"type\":\"object\",\"properties\":{\"title\":{\"type\":\"string\"}},\"required\":[\"title\"],\"additionalProperties\":false}"
+      }
+    ]
+  },
+  "attempts": 6,
+  "completedResponses": 6,
+  "responses": [
+    {
+      "index": 1,
+      "method": "POST",
+      "url": "https://reference.invalid/acme/operations/create-bead",
+      "sentKey": "same-key-overlap",
+      "requestBodyBytes": 108,
+      "requestBodySha256": "387ed98ffa4e2603db3358ac9a41a1acd815f64bf8e2dc3f233ef5c132328649",
+      "status": 200,
+      "bodyBytes": 721,
+      "bodySha256": "a7e4b8e4dca14c461b0048596044bce17be5fc752bbf58641b39584cab4bbc80",
+      "headers": {
+        "content-type": "application/json",
+        "content-length": "721",
+        "cache-control": "private, no-store",
+        "x-bdp-development": "non-attesting",
+        "vary": "Accept",
+        "location": null,
+        "retry-after": null,
+        "bdp-scope-epoch": "320afe4a-7fd7-4b34-ab3a-e830ad15576b",
+        "bdp-authorization-view": "development-all-visible",
+        "bdp-scope-position": "pos-1"
+      }
+    },
+    {
+      "index": 2,
+      "method": "POST",
+      "url": "https://reference.invalid/acme/operations/batch",
+      "sentKey": "same-key-overlap",
+      "requestBodyBytes": 150,
+      "requestBodySha256": "278716c3e493fbdee5adb3ef532fc296bf929111200bf85bfedf56fc6f6d012b",
+      "status": 200,
+      "bodyBytes": 721,
+      "bodySha256": "a7e4b8e4dca14c461b0048596044bce17be5fc752bbf58641b39584cab4bbc80",
+      "headers": {
+        "content-type": "application/json",
+        "content-length": "721",
+        "cache-control": "private, no-store",
+        "x-bdp-development": "non-attesting",
+        "vary": "Accept",
+        "location": null,
+        "retry-after": null,
+        "bdp-scope-epoch": "320afe4a-7fd7-4b34-ab3a-e830ad15576b",
+        "bdp-authorization-view": "development-all-visible",
+        "bdp-scope-position": "pos-1"
+      }
+    },
+    {
+      "index": 3,
+      "method": "GET",
+      "url": "https://reference.invalid/acme/receipts/de581c55-427f-46ec-8d78-328d6a3c9326",
+      "sentKey": null,
+      "requestBodyBytes": 0,
+      "requestBodySha256": null,
+      "status": 200,
+      "bodyBytes": 721,
+      "bodySha256": "a7e4b8e4dca14c461b0048596044bce17be5fc752bbf58641b39584cab4bbc80",
+      "headers": {
+        "content-type": "application/json",
+        "content-length": "721",
+        "cache-control": "private, no-store",
+        "x-bdp-development": "non-attesting",
+        "vary": "Accept",
+        "location": null,
+        "retry-after": null,
+        "bdp-scope-epoch": "320afe4a-7fd7-4b34-ab3a-e830ad15576b",
+        "bdp-authorization-view": "development-all-visible",
+        "bdp-scope-position": "pos-1"
+      }
+    },
+    {
+      "index": 4,
+      "method": "GET",
+      "url": "https://reference.invalid/acme/beads/?limit=32",
+      "sentKey": null,
+      "requestBodyBytes": 0,
+      "requestBodySha256": null,
+      "status": 200,
+      "bodyBytes": 263,
+      "bodySha256": "60857d26693d0b7ddc59c3fcb081ca5610330ce0a4d570feae317c2651389312",
+      "headers": {
+        "content-type": "application/json",
+        "content-length": "263",
+        "cache-control": "private, no-store",
+        "x-bdp-development": "non-attesting",
+        "vary": "Accept",
+        "location": null,
+        "retry-after": null,
+        "bdp-scope-epoch": "320afe4a-7fd7-4b34-ab3a-e830ad15576b",
+        "bdp-authorization-view": "development-all-visible",
+        "bdp-scope-position": "pos-1"
+      }
+    },
+    {
+      "index": 5,
+      "method": "GET",
+      "url": "https://reference.invalid/acme/events/",
+      "sentKey": null,
+      "requestBodyBytes": 0,
+      "requestBodySha256": null,
+      "status": 200,
+      "bodyBytes": 651,
+      "bodySha256": "a2fd63e63711a5360255b809f7f9ab9bb705a7dc15c9efa9e34f547b738a4982",
+      "headers": {
+        "content-type": "application/json",
+        "content-length": "651",
+        "cache-control": "private, no-store",
+        "x-bdp-development": "non-attesting",
+        "vary": "Accept",
+        "location": null,
+        "retry-after": null,
+        "bdp-scope-epoch": "320afe4a-7fd7-4b34-ab3a-e830ad15576b",
+        "bdp-authorization-view": "development-all-visible",
+        "bdp-scope-position": "pos-1"
+      }
+    },
+    {
+      "index": 6,
+      "method": "POST",
+      "url": "https://reference.invalid/acme/operations/batch",
+      "sentKey": "same-key-overlap",
+      "requestBodyBytes": 150,
+      "requestBodySha256": "278716c3e493fbdee5adb3ef532fc296bf929111200bf85bfedf56fc6f6d012b",
+      "status": 200,
+      "bodyBytes": 721,
+      "bodySha256": "a7e4b8e4dca14c461b0048596044bce17be5fc752bbf58641b39584cab4bbc80",
+      "headers": {
+        "content-type": "application/json",
+        "content-length": "721",
+        "cache-control": "private, no-store",
+        "x-bdp-development": "non-attesting",
+        "vary": "Accept",
+        "location": null,
+        "retry-after": null,
+        "bdp-scope-epoch": "320afe4a-7fd7-4b34-ab3a-e830ad15576b",
+        "bdp-authorization-view": "development-all-visible",
+        "bdp-scope-position": "pos-1"
+      }
+    }
+  ],
+  "receiptObservations": [
+    {
+      "index": 1,
+      "id": "https://reference.invalid/acme/receipts/de581c55-427f-46ec-8d78-328d6a3c9326",
+      "transaction": "21f06b5e-ef97-4c7f-81a2-c76e41e33d63",
+      "key": "same-key-overlap",
+      "pending": false,
+      "resourceId": "https://reference.invalid/acme/beads/fdcb1b93-328b-4aa1-a4d4-c90edce55183",
+      "revision": "81ebda7e-dee5-427f-9df5-f9364950923a",
+      "effectPosition": "pos-1",
+      "requiredPosition": "pos-1"
+    },
+    {
+      "index": 2,
+      "id": "https://reference.invalid/acme/receipts/de581c55-427f-46ec-8d78-328d6a3c9326",
+      "transaction": "21f06b5e-ef97-4c7f-81a2-c76e41e33d63",
+      "key": "same-key-overlap",
+      "pending": false,
+      "resourceId": "https://reference.invalid/acme/beads/fdcb1b93-328b-4aa1-a4d4-c90edce55183",
+      "revision": "81ebda7e-dee5-427f-9df5-f9364950923a",
+      "effectPosition": "pos-1",
+      "requiredPosition": "pos-1"
+    },
+    {
+      "index": 3,
+      "id": "https://reference.invalid/acme/receipts/de581c55-427f-46ec-8d78-328d6a3c9326",
+      "transaction": "21f06b5e-ef97-4c7f-81a2-c76e41e33d63",
+      "key": "same-key-overlap",
+      "pending": false,
+      "resourceId": "https://reference.invalid/acme/beads/fdcb1b93-328b-4aa1-a4d4-c90edce55183",
+      "revision": "81ebda7e-dee5-427f-9df5-f9364950923a",
+      "effectPosition": "pos-1",
+      "requiredPosition": "pos-1"
+    },
+    {
+      "index": 6,
+      "id": "https://reference.invalid/acme/receipts/de581c55-427f-46ec-8d78-328d6a3c9326",
+      "transaction": "21f06b5e-ef97-4c7f-81a2-c76e41e33d63",
+      "key": "same-key-overlap",
+      "pending": false,
+      "resourceId": "https://reference.invalid/acme/beads/fdcb1b93-328b-4aa1-a4d4-c90edce55183",
+      "revision": "81ebda7e-dee5-427f-9df5-f9364950923a",
+      "effectPosition": "pos-1",
+      "requiredPosition": "pos-1"
+    }
+  ],
+  "milestones": [
+    {
+      "order": 0,
+      "request": 1,
+      "kind": "invoked",
+      "elapsedMs": 853.4768100000001,
+      "socket": null
+    },
+    {
+      "order": 1,
+      "request": 1,
+      "kind": "end-called",
+      "elapsedMs": 861.635963,
+      "socket": null
+    },
+    {
+      "order": 2,
+      "request": 2,
+      "kind": "invoked",
+      "elapsedMs": 862.815186,
+      "socket": null
+    },
+    {
+      "order": 3,
+      "request": 2,
+      "kind": "end-called",
+      "elapsedMs": 864.393746,
+      "socket": null
+    },
+    {
+      "order": 4,
+      "request": 1,
+      "kind": "socket-assigned",
+      "elapsedMs": 865.377199,
+      "socket": 1
+    },
+    {
+      "order": 5,
+      "request": 2,
+      "kind": "socket-assigned",
+      "elapsedMs": 866.876055,
+      "socket": 2
+    },
+    {
+      "order": 6,
+      "request": 1,
+      "kind": "connected",
+      "elapsedMs": 867.5739270000001,
+      "socket": 1
+    },
+    {
+      "order": 7,
+      "request": 1,
+      "kind": "finish",
+      "elapsedMs": 869.779556,
+      "socket": 1
+    },
+    {
+      "order": 8,
+      "request": 2,
+      "kind": "connected",
+      "elapsedMs": 869.9471639999999,
+      "socket": 2
+    },
+    {
+      "order": 9,
+      "request": 2,
+      "kind": "finish",
+      "elapsedMs": 870.0693650000001,
+      "socket": 2
+    },
+    {
+      "order": 10,
+      "request": 1,
+      "kind": "response-start",
+      "elapsedMs": 1081.095307,
+      "socket": 1
+    },
+    {
+      "order": 11,
+      "request": 1,
+      "kind": "response-end",
+      "elapsedMs": 1086.44182,
+      "socket": 1
+    },
+    {
+      "order": 12,
+      "request": 1,
+      "kind": "settled",
+      "elapsedMs": 1087.225584,
+      "socket": 1
+    },
+    {
+      "order": 13,
+      "request": 1,
+      "kind": "response-close",
+      "elapsedMs": 1087.63002,
+      "socket": 1
+    },
+    {
+      "order": 14,
+      "request": 1,
+      "kind": "request-close",
+      "elapsedMs": 1088.616197,
+      "socket": 1
+    },
+    {
+      "order": 15,
+      "request": 1,
+      "kind": "socket-close",
+      "elapsedMs": 1088.655762,
+      "socket": 1
+    },
+    {
+      "order": 16,
+      "request": 2,
+      "kind": "response-start",
+      "elapsedMs": 1092.257902,
+      "socket": 2
+    },
+    {
+      "order": 17,
+      "request": 2,
+      "kind": "response-end",
+      "elapsedMs": 1092.445727,
+      "socket": 2
+    },
+    {
+      "order": 18,
+      "request": 2,
+      "kind": "settled",
+      "elapsedMs": 1092.680421,
+      "socket": 2
+    },
+    {
+      "order": 19,
+      "request": 2,
+      "kind": "response-close",
+      "elapsedMs": 1092.725577,
+      "socket": 2
+    },
+    {
+      "order": 20,
+      "request": 2,
+      "kind": "request-close",
+      "elapsedMs": 1092.967054,
+      "socket": 2
+    },
+    {
+      "order": 21,
+      "request": 2,
+      "kind": "socket-close",
+      "elapsedMs": 1092.985208,
+      "socket": 2
+    }
+  ],
+  "milestoneOverflow": false,
+  "socketCount": 6,
+  "maximumLiveSockets": 2,
+  "liveSocketsAfterCleanup": 0,
+  "requestSockets": [
+    {
+      "index": 1,
+      "socket": 1
+    },
+    {
+      "index": 2,
+      "socket": 2
+    },
+    {
+      "index": 3,
+      "socket": 3
+    },
+    {
+      "index": 4,
+      "socket": 4
+    },
+    {
+      "index": 5,
+      "socket": 5
+    },
+    {
+      "index": 6,
+      "socket": 6
+    }
+  ],
+  "clientDispatchDisciplinePassed": true,
+  "bothConnectedBeforeFirstResponse": true,
+  "bothWritesPrecededFirstResponse": true,
+  "pendingObserved": false,
+  "inconclusiveBothPending": false,
+  "controlPrerequisites": false,
+  "receiptIdsDiffer": false,
+  "performed": [
+    "literal-inputs",
+    "ready-targets",
+    "dispatch-discipline",
+    "receipt-1-schema-and-literals",
+    "receipt-2-schema-and-literals",
+    "shared-receipt-id",
+    "shared-identity",
+    "pair-full-terminal-equality",
+    "receipt-3-schema-and-literals",
+    "issued-receipt-full-equality",
+    "complete-resource-collection",
+    "complete-event-linkage",
+    "receipt-6-schema-and-literals",
+    "retained-batch-full-equality",
+    "complete-fixed-schedule"
+  ],
+  "failedAssertion": null,
+  "failedPhase": null,
+  "primaryFailureCount": 0,
+  "cleanupFailureCount": 0,
+  "reportWriteFailed": false,
+  "reportOverflow": false,
+  "failureCount": 0,
+  "outcome": "passed",
+  "retention": "Full parsed receipt/Resource/Event comparisons occur in memory; response fingerprints are not retained full-wire evidence.",
+  "launchAttempted": true,
+  "childPid": 18420,
+  "childExitCode": 0,
+  "childSignalCode": null,
+  "stopKnowledge": "known-stopped-or-never-launched",
+  "closed": true,
+  "temporaryRoot": "/tmp",
+  "directory": "/tmp/bdp-same-key-overlap-installed-GNwbyc",
+  "directoryAbsent": true,
+  "deadlineExceeded": false,
+  "cleanupExceeded": false,
+  "drainExceeded": false,
+  "elapsedMs": 1155.497843,
+  "bounds": {
+    "workMs": 45000,
+    "requestMs": 5000,
+    "cleanupMs": 10000,
+    "requestDrainMs": 5000,
+    "testMs": 60000,
+    "maximumRequests": 6,
+    "responseBodyBytes": 32768,
+    "responseHeaderBytes": 16384,
+    "reportBytes": 65536
+  },
+  "claimEligible": false
+}

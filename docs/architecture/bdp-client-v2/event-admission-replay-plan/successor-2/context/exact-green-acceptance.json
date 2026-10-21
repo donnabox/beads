@@ -1,0 +1,26 @@
+{
+  "at": "2026-10-17T22:08:02.893279+00:00",
+  "decision": "Accept exact-head CI and readiness for bounded PR166; accept predecessor for next PLAN preparation",
+  "head": "9f89271e2563a105410789ca8ca1e77dfb4d0b9f",
+  "tree": "30eaca668f17a191068444f8d6ca1232c80171b2",
+  "run": 39072180684,
+  "indexSha256": "83a6f80be22c8e4c7816e5f32af686ce01f48df458c418c0ab3c24d6c219b0da",
+  "nativeSha256": "efd9c803212f37d3738ae30e647fe977b5c43dee14d717c56069b26f0bba14e0",
+  "nativeJsonSha256": "b0d9517d2ea3bc7ff1bb457a686d178da0bbedbb2dd6fd39c9bf97061c6b7eb1",
+  "rawSha256": "a32499cbc356f83f6c9eb6c20efc61557b5816f608e11c026403fce70124cea2",
+  "verifiedIndexEntries": 7,
+  "verifiedSourceFiles": 679,
+  "successfulSteps": 27,
+  "testsPassed": 9451,
+  "testsSkipped": 1,
+  "testFiles": 186,
+  "preflightPassed": 7,
+  "limitations": [
+    "Eight masked JSON observations including installed22/new37 cannot be reconstructed; local external proof remains distinct",
+    "No whole-profile/main/release qualification"
+  ],
+  "nextPlanPreparationReleased": true,
+  "actualReviewLaunchReleased": false,
+  "sourceAuthoringReleased": false,
+  "rootDiagnostic": "Initial literal summary comparison stopped on ANSI escapes; normalized read-only comparison passed with raw bytes unchanged."
+}

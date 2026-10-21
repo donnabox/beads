@@ -1,0 +1,7 @@
+All four released required checks passed once on the exact formatter successor: boundaries3.812s,preflight4.329s,package-smoke8.581s,historical-read-evidence4.400s (supervised elapsed, including final verification). No warnings/deprecations appeared in these logs.
+
+Boundary checker validated11 workspace packages. Actual preflight JSON has7 passed cases. Package smoke passed installed executable identity/lifecycle, tarball configuration roundtrips, public Read discovery and fail-closed profile admission. Its payloadIdentity is `1a3211afe8e479f5b3adf36331254149eb05ac8becdf34c1ea6d025a76bfe087`, configurationIdentity `46668fb12fee8644c3665d047db981e6b2800b830f20f5953b3f54ad43f52db7`, allNineTargets=true and claimEligible=false. This is smoke evidence, separate from changefeed's installed consumer cohorts.
+
+Historical verifier exited0 and emitted evidence.verified for read-v1.json:89rows,constant674982be2123b9b7aae630bf79c3f774122900cd,runHeade5f7d0c43c151426350ceededdc77fe7e372db9b,evidenceCommitdbaf63a24219e1ea3f80394746853598b0d4464a. Identities remain historical; no evidence relabeling or profile claim.
+
+All679 source bytes/fullpatch and bound fresh build remained unchanged. Independent final census found all29 sampled PIDs/process groups absent and no bdp-* runtime directories in the four owned temporary roots. Root/cache directories remain retained artifacts. No forced cleanup, errors, retries or source changes. Consumer/install pipeline was untouched.

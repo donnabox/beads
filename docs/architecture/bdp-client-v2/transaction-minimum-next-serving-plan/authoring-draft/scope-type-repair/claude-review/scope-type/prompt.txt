@@ -1,0 +1,246 @@
+Review the exact test-only compiled Type URI repair below. Read-only Read/Glob/Grep tools are allowed for actual files; no Bash, edits, builds/tests, execution, model changes or external actions. Deliver your complete concise code-review findings in final stdout (<=600 words); do not output a textual tool request or defer the review. Actual source workspace: /Users/dbox/repos/wt/vickie/vickie-minimum-current-resource, dirty two-file successor of733728cf after ordinary df80integration. Root explicitly authorizes one focused review; the author prepared this packet.
+
+Prior full production/source-test code reviews are accepted. The prior installed scope had substantive findings with forced-deadline caveat; its header/401 correction subsequently had a natural232s actual review with no actionable defect. This is the newly exposed fixture repair, not a repeat full review.
+
+Actual first fresh installed positive failed before ready at0HTTP; retained store empty, unknown-stop/directory-retained honestly preserved. A separately authorized bounded diagnostic imported exact unchanged installed files and executed only installed/runtime configuration capture plus payload identity: all passed, no owner/listener/HTTP. Source store281–282 then necessarily rejects non-Scope-local compiled Types. Do not infer a product serving defect or weaken that guard.
+
+Repair substitutes only two Type identities consistently across retrieval IDs/descriptors/endpoint conformsTo/seed operations/full expected Resource+Link types; actual canonical Scope and resource IDs remain unchanged. Seed562→610UTF8 bytes; artifact314→378. Fixed32positive/2+2controls,96maxHTTP,3children and every timing/wire/report cap unchanged. All production and packaged bytes remain exact original733; dirty test/doc attribution and independent package bridge are explicit. No successor installed pass claimed by this prompt. Check identity consistency, real seed length and full-body oracles, no assertion weakening, no unintended configuration/lifecycle change. Factual doc preserves failures and original attribution.
+
+Exact correction:
+diff --git a/apps/bdptest/src/transactional-minimum-current-resource-installed.test.ts b/apps/bdptest/src/transactional-minimum-current-resource-installed.test.ts
+index 6ab7df0..915711d 100644
+--- a/apps/bdptest/src/transactional-minimum-current-resource-installed.test.ts
++++ b/apps/bdptest/src/transactional-minimum-current-resource-installed.test.ts
+@@ -40,12 +40,12 @@ const artifacts: {
+ } = {
+   descriptors: [
+     {
+-      retrievalUri: "https://example.test/bead",
+-      utf8: '{"id":"https://example.test/bead","name":"Bead","describes":"bead","conformsTo":[]}',
++      retrievalUri: "https://event-sse.invalid/acme/types/bead",
++      utf8: '{"id":"https://event-sse.invalid/acme/types/bead","name":"Bead","describes":"bead","conformsTo":[]}',
+     },
+     {
+-      retrievalUri: "https://example.test/link",
+-      utf8: '{"id":"https://example.test/link","name":"Link","describes":"link","conformsTo":[],"source":{"conformsTo":["https://example.test/bead"],"external":"opaque"},"target":{"conformsTo":["https://example.test/bead"],"external":"opaque"}}',
++      retrievalUri: "https://event-sse.invalid/acme/types/link",
++      utf8: '{"id":"https://event-sse.invalid/acme/types/link","name":"Link","describes":"link","conformsTo":[],"source":{"conformsTo":["https://event-sse.invalid/acme/types/bead"],"external":"opaque"},"target":{"conformsTo":["https://event-sse.invalid/acme/types/bead"],"external":"opaque"}}',
+     },
+   ],
+   schemas: [],
+@@ -117,7 +117,7 @@ function sequenceResults(value: Record<string, unknown>) {
+   return value.results.map(record);
+ }
+ const seedBody =
+-  '{"operations":[{"operation":"createBead","id":"beads/a","type":"https://example.test/bead","properties":{"title":"a"},"idempotencyKey":"minimum-current-a"},{"operation":"createBead","id":"beads/b","type":"https://example.test/bead","properties":{"title":"b"},"idempotencyKey":"minimum-current-b"},{"operation":"createLink","id":"links/self","type":"https://example.test/link","source":"beads/a","target":"beads/a","idempotencyKey":"minimum-current-link"},{"operation":"putAlias","alias":"alias/work","target":"beads/a","idempotencyKey":"minimum-current-alias"}]}';
++  '{"operations":[{"operation":"createBead","id":"beads/a","type":"https://event-sse.invalid/acme/types/bead","properties":{"title":"a"},"idempotencyKey":"minimum-current-a"},{"operation":"createBead","id":"beads/b","type":"https://event-sse.invalid/acme/types/bead","properties":{"title":"b"},"idempotencyKey":"minimum-current-b"},{"operation":"createLink","id":"links/self","type":"https://event-sse.invalid/acme/types/link","source":"beads/a","target":"beads/a","idempotencyKey":"minimum-current-link"},{"operation":"putAlias","alias":"alias/work","target":"beads/a","idempotencyKey":"minimum-current-alias"}]}';
+ const rows = [
+   {
+     index: 2,
+@@ -391,7 +391,7 @@ it("serves missing-first current Resources and bounds unproved minimum eligibili
+   }[] = [];
+   const writer = randomBytes(32).toString("base64url");
+   try {
+-    expect(Buffer.byteLength(seedBody)).toBe(562);
++    expect(Buffer.byteLength(seedBody)).toBe(610);
+     directory = mkdtempSync(path.join(tmpdir(), "bdp-minimum-current-installed-"));
+     wrapper = path.join(directory, "private-bootstrap.mjs");
+     writeFileSync(wrapper, bootstrap, { mode: 0o600, flag: "wx" });
+@@ -566,7 +566,7 @@ it("serves missing-first current Resources and bounds unproved minimum eligibili
+       expect(validResource(value), JSON.stringify(validResource.errors)).toBe(true);
+       expect(value).toEqual({
+         id: scope + "beads/" + id,
+-        type: "https://example.test/bead",
++        type: "https://event-sse.invalid/acme/types/bead",
+         revision: expect.any(String),
+         properties: { title },
+         metadata: {},
+@@ -575,7 +575,7 @@ it("serves missing-first current Resources and bounds unproved minimum eligibili
+     expect(validLink(link), JSON.stringify(validLink.errors)).toBe(true);
+     expect(link).toEqual({
+       id: scope + "links/self",
+-      type: "https://example.test/link",
++      type: "https://event-sse.invalid/acme/types/link",
+       revision: expect.any(String),
+       source: scope + "beads/a",
+       target: scope + "beads/a",
+diff --git a/docs/design/transaction-implementation-progress.md b/docs/design/transaction-implementation-progress.md
+index b30b1dc..20fae18 100644
+--- a/docs/design/transaction-implementation-progress.md
++++ b/docs/design/transaction-implementation-progress.md
+@@ -2001,11 +2001,17 @@ missing/hidden Resource, alias and initial incident-anchor precedence and bounde
+ unproved-position waiting for existing current Bead/Link Resource/properties.
+ Strict consumers and pending Snapshot/incident-Event questions remain separate.
+ On that isolated candidate, all 11 source-validation stages passed, including
+-the fresh build and 15 selected source callbacks; the preceding fixture-type and
+-report-lint failures remain preserved under their original bindings. An installed
+-minimum-current observation test is authored but unexecuted; no installed or
+-counterfactual control run is recorded. Actual authorization main df80f8cb is ordinarily integrated through bf50e1e8;
+-final installed validation remains pending. Unknown
+-positions combined with foreign epoch/view remain a private unsupported
+-development gap, outside the current operator ruling. Source and later installed
+-evidence retain their exact commit/build provenance; no qualification is claimed.
++the fresh build and 15 selected source callbacks; preceding fixture-type and
++report-lint failures remain preserved under their original bindings. Actual
++authorization main df80f8cb is ordinarily integrated through bf50e1e8. On clean
++733728cf, five narrow integration stages passed, including the fresh build and
++two selected owner-read callbacks. Fresh archives and their external consumer
++passed package and dependency verification. The first installed positive failed
++before ready with zero HTTP requests: its compiled Type fixture used identities
++outside the configured Scope. That failure and its unknown-stop/retained-directory
++report remain preserved. The test-only Scope-local Type correction leaves all
++production bytes and the verified archives unchanged; successor installed and
++counterfactual results remain pending. Unknown positions combined with foreign
++epoch/view remain a private unsupported development gap, outside the current
++operator ruling. Source and installed evidence retain their exact commit/build
++provenance; no qualification is claimed.
+
+Actual unchanged authoritative guard (transaction-store.ts258–294):
+258: /** Owns a single SQLite connection under persistent EXCLUSIVE locking. Admission
+259:  * is durable separately; graph/positions/group/terminal receipt are one commit.
+260:  * Startup retracts abandoned pending receipts instead of running requests itself.
+261:  * Private Scope policy; this is not an authentication boundary. */
+262: export function openTransactionStore(options: TransactionStoreOptions) {
+263:   const scope = parseCanonicalScope(options.scope);
+264:   const view = INITIAL_TRANSACTION_VIEW;
+265:   let authorization: TransactionAuthorizationSnapshot = initialTransactionAuthorization();
+266:   const leases = new Set<AbortController>();
+267:   const readAuthorizations = new WeakMap<AuthorityReadReader, TransactionAuthorizationSnapshot>();
+268:   const activeSequences = new Set<TransactionSequenceAdmission>();
+269:   let mutationPause: object | undefined;
+270:   const revokeLeases = () => {
+271:     for (const lease of leases) lease.abort(new Error("authorization lease ended"));
+272:     leases.clear();
+273:   };
+274:   if (Buffer.byteLength(json(`${scope}events/`)) > TRANSACTION_RUNTIME_LIMITS.scopeSourceBytes)
+275:     throw new TypeError("transaction Scope exceeds private materialization bound");
+276:   if (!path.isAbsolute(options.file))
+277:     throw new TypeError("absolute transaction store file required");
+278:   const compiled = options.contracts;
+279:   if (compiled !== undefined) assertDevelopmentContracts(compiled);
+280:   const descriptors = options.types.map((d) => parseTypeDescriptor(d));
+281:   if (compiled && descriptors.some((d) => !d.id.startsWith(`${scope}types/`)))
+282:     throw new TypeError("compiled transaction Types must be Scope-local");
+283:   if (new Set(descriptors.map((d) => d.id)).size !== descriptors.length)
+284:     throw new TypeError("duplicate Type");
+285:   for (const d of descriptors) {
+286:     if (d.propertiesSchema !== undefined && !compiled)
+287:       throw new TypeError("transaction store requires compiled schemas");
+288:   }
+289:   const installed = new Map(descriptors.map((d) => [d.id, json(d)]));
+290:   if (
+291:     compiled &&
+292:     (descriptors.length !== compiled.descriptors.length ||
+293:       descriptors.some((d) => compiled.types[d.id] !== installed.get(d.id)))
+294:   )
+Complete seed receipt/resource assertions (test lines535–625):
+535:     };
+536:     type Response = Awaited<ReturnType<typeof exchange>>;
+537:     const context = (response: Response) => contextNames.map((name) => response.headers.get(name));
+538: 
+539:     const parse = (response: Response) => record(JSON.parse(response.text));
+540:     phase = "seed";
+541:     const seeded = await exchange(
+542:       "seed",
+543:       "POST",
+544:       binding.operationTargets.sequence!,
+545:       [],
+546:       "writer",
+547:       seedBody,
+548:     );
+549:     expect(seeded.status).toBe(200);
+550:     const sequence = parse(seeded);
+551:     expect(validSequence(sequence), JSON.stringify(validSequence.errors)).toBe(true);
+552:     const results = sequenceResults(sequence);
+553:     expect(results).toHaveLength(4);
+554:     for (let i = 0; i < 4; i++) {
+555:       expect(results[i]?.operationIndex).toBe(i);
+556:       expect(results[i]?.outcome).toBe("created");
+557:       expect(results[i]).not.toHaveProperty("problem");
+558:     }
+559:     const a = record(results[0]?.resource),
+560:       b = record(results[1]?.resource),
+561:       link = record(results[2]?.resource);
+562:     for (const [value, id, title] of [
+563:       [a, "a", "a"],
+564:       [b, "b", "b"],
+565:     ] as const) {
+566:       expect(validResource(value), JSON.stringify(validResource.errors)).toBe(true);
+567:       expect(value).toEqual({
+568:         id: scope + "beads/" + id,
+569:         type: "https://event-sse.invalid/acme/types/bead",
+570:         revision: expect.any(String),
+571:         properties: { title },
+572:         metadata: {},
+573:       });
+574:     }
+575:     expect(validLink(link), JSON.stringify(validLink.errors)).toBe(true);
+576:     expect(link).toEqual({
+577:       id: scope + "links/self",
+578:       type: "https://event-sse.invalid/acme/types/link",
+579:       revision: expect.any(String),
+580:       source: scope + "beads/a",
+581:       target: scope + "beads/a",
+582:       properties: {},
+583:       metadata: {},
+584:     });
+585:     expect(results[3]).toEqual({
+586:       operationIndex: 3,
+587:       outcome: "created",
+588:       alias: scope + "alias/work",
+589:       target: scope + "beads/a",
+590:     });
+591:     const seedContext = context(seeded);
+592:     expect(seedContext[0]).toMatch(/^[0-9a-f-]{36}$/);
+593:     expect(seedContext[1]).toBe("development-all-visible");
+594:     expect(seedContext[2]).toBe("pos-3");
+595:     let current = [...seedContext],
+596:       firstHidden: Response | undefined,
+597:       firstHiddenFields: string[] | undefined;
+598:     const publish = async () => {
+599:       const owned = child!;
+600:       const policy = await new Promise<Record<string, unknown>>((resolve, reject) => {
+601:         let timer: ReturnType<typeof setTimeout>;
+602:         const finish = (error?: unknown, value?: Record<string, unknown>) => {
+603:           clearTimeout(timer);
+604:           owned.child.off("message", receive);
+605:           owned.child.off("exit", exit);
+606:           controller.signal.removeEventListener("abort", abort);
+607:           if (error !== undefined) reject(error);
+608:           else resolve(value!);
+609:         };
+610:         const receive = (message: unknown) => {
+611:           try {
+612:             const m = record(message);
+613:             expect(Object.keys(m).sort()).toEqual(["event", "policy", "requestId"]);
+614:             expect(m.event).toBe("authorization.published");
+615:             expect(m.requestId).toBe(1);
+616:             finish(undefined, record(m.policy));
+617:           } catch (error) {
+618:             finish(error);
+619:           }
+620:         };
+621:         const exit = () => finish(new Error("publication child exited"));
+622:         const abort = () => finish(controller.signal.reason);
+623:         timer = setTimeout(() => finish(new Error("publication response deadline")), 5000);
+624:         owned.child.once("message", receive);
+625:         owned.child.once("exit", exit);
+Data-only measurements:
+{
+  "seedBodyBytes": 610,
+  "seedBodySha256": "7339d6a0c00a9846fd67677a87aa49d43a9f626096ea57397afe469a6daacf87",
+  "artifactUtf8Bytes": 378,
+  "positiveHTTP": 32,
+  "controlsExpectedHTTP": [
+    2,
+    2
+  ],
+  "maximumCombinedHTTP": 96,
+  "productChildren": 3,
+  "scope": "https://event-sse.invalid/acme/",
+  "substitutions": {
+    "https://example.test/bead": "https://event-sse.invalid/acme/types/bead",
+    "https://example.test/link": "https://event-sse.invalid/acme/types/link"
+  },
+  "productionChanged": false
+}

@@ -1,0 +1,38 @@
+{
+  "actualProof": {
+    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation-preparation-5/run/tar-source-provenance.json",
+    "sha256": "adb24bc4154d97f48c2acb5c4e21bc67a3f541dfd8696bfaff95bf997e552fea"
+  },
+  "affectedExactPointer": "/actualOutputPackagesDirectory/actualCombinedTarProvenance/all12KeysAnd321MemberRecordsReproducedExactly",
+  "affectedRootInspection": {
+    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/root-G09-validation5-verify-archives-independent-actual-inspection-1.json",
+    "sha256": "fa152b0a303831908855645042d1b6b5d73346c9ac5a3930de186b5051374aa3"
+  },
+  "correctTopLevelKeyCount": 11,
+  "correctedDescriptor": "allElevenSourceDefinedKeysAnd321MemberRecordsReproducedExactly",
+  "exactSourceDefinedKeys": [
+    "head",
+    "tree",
+    "clean",
+    "dirtyPaths",
+    "ownedSourceFiles",
+    "sourceIdentity",
+    "sourceBindingSha256",
+    "binaryDiffSha256",
+    "packages",
+    "sourceLockSha256",
+    "sourceAttribution"
+  ],
+  "incorrectPriorTaskBusPlanCount": 12,
+  "independentRootComparisonAlreadyUsedExact11MemberKeySetAndWholeObject": "Source reader explicit set literal has exactly11 and matched actual basis; member maps all321 exactlyreproduced. Only descriptive count in output flag/task/bus/launch wrong. No missing source-defined field or generic skip.",
+  "nextStageReleased": false,
+  "originalInspectionAndProofUnchanged": true,
+  "qualityPass": false,
+  "runtimeAuthority": false,
+  "runtimeRetryOrHelperMutation": false,
+  "scope": "EXACT_DESCRIPTIVE_KEY_COUNT_CORRECTION_ONLY",
+  "sourceDefinition": {
+    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation-preparation-5/packages.py",
+    "sha256": "162e4f04ffe9aeffe886b194c7ed41241c6ce3cf37e9c93f92fec0969095aea9"
+  }
+}

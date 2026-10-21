@@ -1,0 +1,40 @@
+{
+  "source": "5401e2fcd2abc414bfe83a2798101c02025153a2",
+  "tree": "ee86fd4f58747bf9685e17a7196a9842ae779d74",
+  "parents": [
+    "739022601416346fa68f8f027f9b1c62d8dd2b1b",
+    "8d83e49a073130bf711e144e95e97687cda8edd4"
+  ],
+  "base": "26d6cd1b947db8c00e24015771506d26098a293e",
+  "expectedMergeTree": "ee86fd4f58747bf9685e17a7196a9842ae779d74",
+  "ordinaryMerge": true,
+  "authoredResolutions": false,
+  "donorFiles": {
+    "packages/server/src/transaction-service.test.ts": {
+      "donor": "739022601416346fa68f8f027f9b1c62d8dd2b1b",
+      "sha256": "6849d2a88ff068afb21404e894dbc84e8478483e51f8f5c2efa7cf299afbb069"
+    },
+    "packages/server/src/transaction-service.ts": {
+      "donor": "739022601416346fa68f8f027f9b1c62d8dd2b1b",
+      "sha256": "44d7541635fad6c3d9be827b97df4b78b7d4a1ed3d7bf658676f9875e6ddfc22"
+    },
+    "apps/bdptest/src/transactional-collection-minimum-installed.test.ts": {
+      "donor": "8d83e49a073130bf711e144e95e97687cda8edd4",
+      "sha256": "15ac10dadb019deabda1b22e5c8363aebc3c89692992e5e017e682e8c94b85c9"
+    },
+    "packages/server/src/transaction-http.test.ts": {
+      "donor": "8d83e49a073130bf711e144e95e97687cda8edd4",
+      "sha256": "6e526002eecd7c6c3407bbfcb6e661742c819e644eb5292a439d88942a640b03"
+    },
+    "packages/server/src/transaction-read.test.ts": {
+      "donor": "8d83e49a073130bf711e144e95e97687cda8edd4",
+      "sha256": "18526226e3433ca68d2ffa86fe5503b77e2a5f991ac059fdf5f0b4f9b1565c67"
+    },
+    "packages/server/src/transaction-read.ts": {
+      "donor": "8d83e49a073130bf711e144e95e97687cda8edd4",
+      "sha256": "a4798e7601b73dda3b2b256a7fb706c004e6d445ce1c7ad8ad92943236ac4cc3"
+    }
+  },
+  "progressDoc": "automatic ordinary merge; exact merge-tree verified",
+  "clean": true
+}

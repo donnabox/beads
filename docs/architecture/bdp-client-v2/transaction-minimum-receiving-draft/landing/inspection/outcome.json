@@ -1,0 +1,34 @@
+{
+  "inspection": "EXACT_CANDIDATE_CI_AND_COUNCIL_CHECKS_PASSED",
+  "head": "c18c71202c90fa2558f34107ad342befabf750fe",
+  "tree": "596abe870220fb61ce606f8382a9da52d554d063",
+  "base": "73fc0daed2e5fa6843e581de9bf7a46e519562ab",
+  "candidateParents": [
+    "3cf662e8ccd75c9bd0fdb95953fdd676f1771aec",
+    "73fc0daed2e5fa6843e581de9bf7a46e519562ab"
+  ],
+  "actualSynthetic": "6b4fc76d87d4f61e61cc973f4f2435300d87f435",
+  "syntheticParents": [
+    "73fc0daed2e5fa6843e581de9bf7a46e519562ab",
+    "c18c71202c90fa2558f34107ad342befabf750fe"
+  ],
+  "actualSteps": 27,
+  "rawLogSha256": "86ba19acedeb493782b163279d2e5b52792b6d5768dd3e4a74df705326307593",
+  "rootCouncilAcceptance": {
+    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-minimum-receiving-draft/root-final-council.json",
+    "sha256": "de78924023fc13df1a0871e2a955b46814f9704a040d404a3d4fe41f29b30bab"
+  },
+  "summaryLinesForHumanReview": [
+    "2026-10-15T23:27:43.0843722Z \u001b[90mstdout\u001b[2m | apps/bdptest/src/transactional-minimum-receiving-installed.test.ts\u001b[2m > \u001b[22m\u001b[2mrejects malformed read minimum tuples before observation while preserving receipt nondisclosure",
+    "2026-10-15T23:27:43.1276621Z  \u001b[32m\u2713\u001b[39m apps/bdptest/src/transactional-minimum-receiving-installed.test.ts\u001b[2m > \u001b[22mrejects malformed read minimum tuples before observation while preserving receipt nondisclosure\u001b[33m 2048\u001b[2mms\u001b[22m\u001b[39m",
+    "2026-10-15T23:37:01.2842292Z \u001b[2m Test Files \u001b[22m \u001b[1m\u001b[32m182 passed\u001b[39m\u001b[22m\u001b[90m (182)\u001b[39m",
+    "2026-10-15T23:37:01.3528578Z ##[group]Run pnpm e2e:ready:preflight",
+    "2026-10-15T23:37:01.3528954Z \u001b[36;1mpnpm e2e:ready:preflight\u001b[0m",
+    "2026-10-15T23:37:03.6969500Z \u001b[2m Test Files \u001b[22m \u001b[1m\u001b[32m1 passed\u001b[39m\u001b[22m\u001b[90m (1)\u001b[39m"
+  ],
+  "suiteTotals": null,
+  "humanFullLogReviewRequired": true,
+  "ready": false,
+  "mergeAuthorized": false,
+  "limitation": "Read-only point-in-time inspection. Root must freshly recheck head/base/checks immediately before any merge and independently verify actual merge parents/tree. Remote child PID absence cannot be inferred."
+}

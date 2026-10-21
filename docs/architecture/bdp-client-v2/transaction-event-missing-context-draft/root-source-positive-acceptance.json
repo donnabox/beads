@@ -1,0 +1,54 @@
+{
+  "at": "2026-10-15T11:05:14.345766+00:00",
+  "uniquePassedCases": [
+    "preserves endpoint pins, omits external sources and does not mutate Beads for incidence",
+    "keeps unknown sources nondisclosing before minimum and refuses older success/fenced owner",
+    "scan initial identity and minimum precede reconnect validity; contextual errors preserve the observed entry",
+    "serves contextual missing Event responses for Bead and Link JSON and SSE GET and HEAD",
+    "captures immutable current context for missing 'finite' 'Bead' Event source",
+    "captures immutable current context for missing 'finite' 'Link' Event source",
+    "captures immutable current context for missing 'SSE' 'Bead' Event source",
+    "captures immutable current context for missing 'SSE' 'Link' Event source",
+    "Event reconnect syntax, minimum ordering and exact context codes are preserved over HTTP"
+  ],
+  "records": [
+    {
+      "stage": "events-positive",
+      "passed": 4,
+      "supervisorExit": 1,
+      "jsonSha256": "d1a2fe2096dea032a8dce5b548a7ebb87f714cab90d1188f74931582f2444b65"
+    },
+    {
+      "stage": "owners-followon",
+      "passed": 4,
+      "supervisorExit": 0,
+      "jsonSha256": "2516ed6e778d4c59f222ccfd5b7c6791a98a3a7712f2e29bc7d301c6a49c1d51"
+    },
+    {
+      "stage": "sse-regression",
+      "passed": 1,
+      "supervisorExit": 0,
+      "jsonSha256": "ef8133409ca55cbfed8b2f61ddb02be6efceb1cd3246f18d9867431fab06921a"
+    }
+  ],
+  "originalSelectionFailurePreserved": true,
+  "positiveSourceBinding": "acf190e742dfb669fe5607085a3ac60c5ecb66f4f86b1f05025424a7873615b0",
+  "sampledPidsAbsent": [
+    80818,
+    80820,
+    80825,
+    80828,
+    80844,
+    82316,
+    82318,
+    82323,
+    82327,
+    82334,
+    82442,
+    82444,
+    82449,
+    82453,
+    82460
+  ],
+  "limitations": "11 retained source HTTP responses; 28-request existing SSE passed source path. 39 is source-derived workload, not independently retained wire aggregate. No installed/public profile claim."
+}

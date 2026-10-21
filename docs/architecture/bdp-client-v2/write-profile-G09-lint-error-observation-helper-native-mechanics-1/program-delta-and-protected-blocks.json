@@ -1,0 +1,68 @@
+{
+  "fourProgramAndDataPairs": [
+    {
+      "afterSha256": "8da2272beb92f056ab56e1a63e4a1cb8d3e42454dc1d8666e00b827003e5bfe4",
+      "beforeSha256": "16049341d6d810ea5c46a88220da30f9a04e436ee7fea0061cc26e58ba76ba70",
+      "changed": true,
+      "file": "run.py",
+      "forwardInverseNdiffExact": true
+    },
+    {
+      "afterSha256": "9a8a331a1dd556f29cbf199cb70a5f1efbde5e20ac630afcb5a55a2e67f6a60c",
+      "beforeSha256": "c3e631f818f63a17d1b5518b6122d761f6d1fecf5dfb3cb0b1b043d568204168",
+      "changed": true,
+      "file": "gate.py",
+      "forwardInverseNdiffExact": true
+    },
+    {
+      "afterSha256": "b2d467920638e68d3b007ba9daa432e971636245eca988bfb29d7a99d6e3fb30",
+      "beforeSha256": "b2d467920638e68d3b007ba9daa432e971636245eca988bfb29d7a99d6e3fb30",
+      "changed": false,
+      "file": "guarded-action-session-20261018-021624-549f.py",
+      "forwardInverseNdiffExact": true
+    },
+    {
+      "afterSha256": "7850e90410ac64eb109fbbe51650bee67bb5a7afa934edfa069c6e5c8aaadc94",
+      "beforeSha256": "d7189bd723bce76f8b214a33197ec48485e6f534f310dad10522f8612d495ef7",
+      "changed": true,
+      "file": "commands.json",
+      "forwardInverseNdiffExact": true
+    }
+  ],
+  "gateEmbeddedRebindForwardInverseNdiffExact": true,
+  "gateUtilitySourceToolDocumentPrefixByteExact": {
+    "bytes": 6002,
+    "sha256": "236cf0e6b565a2c6623de4e76d732075f06b3ca49684248175f4f5cfff709b85"
+  },
+  "guardPairIdentityOnly": true,
+  "noASTOrSubjectEvaluation": true,
+  "programHashesEqualProvisionalRead": {
+    "gate.py": "9a8a331a1dd556f29cbf199cb70a5f1efbde5e20ac630afcb5a55a2e67f6a60c",
+    "guarded-action-session-20261018-021624-549f.py": "b2d467920638e68d3b007ba9daa432e971636245eca988bfb29d7a99d6e3fb30",
+    "run.py": "8da2272beb92f056ab56e1a63e4a1cb8d3e42454dc1d8666e00b827003e5bfe4"
+  },
+  "protectedRunnerBlocks": [
+    {
+      "byteExact": true,
+      "bytes": 781,
+      "endMarker": "write(name+'.started.json'",
+      "sha256": "fac730523e836223d4e7e63fa96588fe50098f764c4f128aed4d3aa536338423",
+      "startMarker": "env=os.environ.copy()"
+    },
+    {
+      "byteExact": true,
+      "bytes": 2266,
+      "endMarker": "unchanged=source_check(g['_sourceBinding'])==g['_sourceIdentity']",
+      "sha256": "9ab23b330e14e5ebb19229259580711aa142b58d805c60be8963b830d3859847",
+      "startMarker": "env['TX_DISCOVERY_VALIDATION_STAGE']"
+    },
+    {
+      "byteExact": true,
+      "bytes": 216,
+      "endMarker": "if time.monotonic()-start>=",
+      "sha256": "246480338c43b33ff45af025506395a7bbbad7d2e6de07a025dd32f1a3a2636e",
+      "startMarker": "try:runtime="
+    }
+  ],
+  "samePopenSignalsSamplingStopSourceFinally": true
+}

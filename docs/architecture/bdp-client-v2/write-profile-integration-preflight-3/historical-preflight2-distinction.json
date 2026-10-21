@@ -1,0 +1,72 @@
+{
+  "allChangesFromAcceptedSourceSuccessors": "D3a onecall +startup sevenexisting +carrier four =12; no new path or broad snapshot replacement",
+  "changeCount": 12,
+  "changedProspectiveBytes": [
+    {
+      "path": "apps/bdptest/src/reference-deployment-lifecycle-installed.test.ts",
+      "preflight2Sha256": "ddc6e8d12a26cd66f74f6644fcdbabfa4b1dc3ef1cf0c48cc9c7d4e7abff6e8e",
+      "preflight3Sha256": "d045ecbafdd53db35842c08f38c754f0814f7de891cadb40303921fa4146bceb"
+    },
+    {
+      "path": "apps/bdptest/src/transactional-discovery-installed.test.ts",
+      "preflight2Sha256": "7120504ceaa804baf96ddc4e2c167c459b84fca0e0a9ad6e7255e49c061b3255",
+      "preflight3Sha256": "5b2d59a9f959294a3e9899ec613b3d88073cbbc9da3b22bde069375695516f20"
+    },
+    {
+      "path": "apps/bdptest/src/transactional-matrix.test.ts",
+      "preflight2Sha256": "a06d4891a4ac5a87c11e91c5a1b28c7c441217408bf121fc76f185810d6e12d2",
+      "preflight3Sha256": "cf9ba0c7cb9331826ac42303ca9de70c80af70e1066d8a4948ad3b27df37b06f"
+    },
+    {
+      "path": "apps/bdptest/test-support/read-update-artifact-execution.ts",
+      "preflight2Sha256": "cfdf5e4d7f3518531cd9a0e753ef45f8866da18abf19def225190a7b28a7f797",
+      "preflight3Sha256": "4102e1d1f0e2d35f2a23d5a090b06131ddbd12c71a8d756940e6b40bd6e158ca"
+    },
+    {
+      "path": "docs/design/startup-configuration.md",
+      "preflight2Sha256": "2dfc3fd5f3f30c8515baba3db0043724a7865e026d1ccc104c3afe6e61dc7b06",
+      "preflight3Sha256": "0ab47c709ffcb74decb6180675f886ca4182fc25934fb7d7bd2828ce2dc368d3"
+    },
+    {
+      "path": "packages/conformance/test-support/profile-evidence.test.ts",
+      "preflight2Sha256": "55d7546935587afaf11599af824c2bd588b7d4fa9ed3ce4961fc952bdcdc5ee4",
+      "preflight3Sha256": "566e3c8b8d2c939611ac0a40b55e184b2cb3d6acdbd8dfe47155dcb06fa77ba2"
+    },
+    {
+      "path": "packages/conformance/test-support/profile-evidence.ts",
+      "preflight2Sha256": "0b457dfbd74fbf53fca0dfa0e93507fd0051792de4df54f5ddc4931823a52bfc",
+      "preflight3Sha256": "c8cb626093c21fd14326071d10a11eefac979176aacdd8e585f491187201bfb3"
+    },
+    {
+      "path": "packages/server/src/development-runtime.ts",
+      "preflight2Sha256": "c0dae240adaca64d0f0edaa77a1adc6fcc5e1f1a430fc93b10e1a711226d509b",
+      "preflight3Sha256": "bb50d83f79b4f3aeb09080276a8cc4a72ffe0fd06eb1bbf4349d778aa060a8ef"
+    },
+    {
+      "path": "packages/server/src/reference-deployment-runtime.test.ts",
+      "preflight2Sha256": "b2aa17f82e13c7d13c9ef40650644ec11d777c6b633cc92236ac2c2d8137302e",
+      "preflight3Sha256": "720cb5166521b6e02fec2dd7765e50303482cd54b755e6bc8f8d94b1afc338b5"
+    },
+    {
+      "path": "packages/server/src/reference-deployment-runtime.ts",
+      "preflight2Sha256": "4ed8c017825d86b33e7e8fedbf8971e691f05ed5644953785c54986520087f3a",
+      "preflight3Sha256": "a3386c680014ea9762739e315b3459fe82480d0a0717774ef2386ad8015eff8d"
+    },
+    {
+      "path": "packages/server/src/transaction-runtime.ts",
+      "preflight2Sha256": "d208e18588772dd931655f8f85bcbafcf3d64a14590e60d7ab0165d455de4424",
+      "preflight3Sha256": "8d2185e75474ffadb5d17aa57ccf3fdf822292f9cf2c46640f6bc6ab81702694"
+    },
+    {
+      "path": "scripts/smoke-executables.mjs",
+      "preflight2Sha256": "e4f54303820eeee8d6b8941d24244d8a37592bead1aee2a353754331234d7f8c",
+      "preflight3Sha256": "806865aed9c3d3bca020655e9a708c794f7e68e60076afb430fae7d0d82707ea"
+    }
+  ],
+  "noEqualityAssertedToChangedOldAbsoluteOrigins": true,
+  "oldFrozenFactsRemainHistorical": true,
+  "oldPacketName": "write-profile-private-integration-preflight-2",
+  "oldPhysical": 109,
+  "oldReadyStatesNotCurrent": "Old source9b7/startupd181/carrier283 readiness preserved, not retroactively rewritten",
+  "sameProspectivePathSet": true
+}

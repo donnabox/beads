@@ -1,0 +1,77 @@
+{
+  "at": "2026-10-15T07:01:11.439399+00:00",
+  "sourceBinding": {
+    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-command-minimum-evidence-draft/event-final/source-binding.json",
+    "sha256": "ecc0ceea2ca3eed4f8acf2638dacc315b0c63235f7c266b2689f71dcc0962d47"
+  },
+  "actualClaude": {
+    "stdoutSha256": "ad884c7168ca1f0ae247d8b7695ab1d9e85bc7d007ca407f6ea639e6c59e961a",
+    "exit": {
+      "exitCode": 0,
+      "timeout": false,
+      "forcedTermination": false,
+      "elapsedSeconds": 487.0107915420085,
+      "sourceAndPlanUnchanged": true,
+      "stdoutSha256": "ad884c7168ca1f0ae247d8b7695ab1d9e85bc7d007ca407f6ea639e6c59e961a",
+      "stderrSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "cleanupSha256": "d9404e6a1aa85cab409766b50bee83aa2bd0d5d42e5ee3faa3dde4fc9256ced8",
+      "sourceAfterSha256": "cfc884b561c8e206795902d8dc76f201f9d4abc05f87512030bafe6393449190"
+    }
+  },
+  "dispositions": [
+    {
+      "finding": 1,
+      "decision": "closed by actual source",
+      "basis": "transaction-http.ts114-118 stamps scopeEpoch/authorizationView/scopePosition verbatim. Route492-500 uses observed.page and observed.context from the same service observation."
+    },
+    {
+      "finding": 2,
+      "decision": "closed by actual source; correlated oracle limitation retained",
+      "basis": "transactionEventRequest transaction-events.ts147-161 forms new URL(events/, canonical scope).href, returns that scope source. HTTP493 passes source.url; store629-634 rejects a noncanonical source. Source and ID assertions share a literal canonical URL; they are not independent URL provenance evidence."
+    },
+    {
+      "finding": 3,
+      "decision": "closed by measured successor/native closure/root recount",
+      "basis": "Mapping test checks wholeContract false, reason contains Whole contract remains unqualified, exact192ID mirror; no coverage byte/digest phrase-length pin. New compact row hash4344f370 verified by root. Both complete parents/26rawobjects retained. Current40specimens, control hashes and full packet bindings independently checked in native78bc and root growth/rebind records. Global blanket absence of stored IDs is not required of unrelated historical runtime fixtures; relevant conformance/app search found none."
+    },
+    {
+      "finding": 4,
+      "decision": "no change required",
+      "basis": "The fixed three-entry a/b/c loop indexes the fixed three-entry checkpoint array. Out-of-range cannot occur here; non-null assertion has no runtime effect. Existing exact Event inventory and IDs fail any future mismatched cardinality. Preserve reviewed literals."
+    },
+    {
+      "finding": 5,
+      "decision": "optional commentary declined",
+      "basis": "Adjacent comment already states credentials/framing responsibility and never retain or serialize secret values. Names-first rationale and invariant are durably recorded in source audit/closure and these dispositions. No correctness change needed."
+    },
+    {
+      "finding": 6,
+      "decision": "no coverage claim change",
+      "basis": "Row is specifically the copied command-minimum exception, not complete Event-ID/cursor conformance. Reason already explicitly attributes exact private IDs to app supplements and excludes supplements from manifest assertion bindings, wholeContract false. No cursor or across-view identity stability claim is made."
+    },
+    {
+      "finding": 7,
+      "decision": "optional producer pointer retained in review artifacts",
+      "basis": "Current comment explicitly says private installed-fixture spelling/non-normative. Native closure and this review name transaction-events.ts renderTransactionEvent. No runtime/test semantics change needed."
+    },
+    {
+      "finding": 8,
+      "decision": "record fixed-view scope only; no new semantic ruling",
+      "basis": "This oracle checks one fixed epoch/view fixture against the implemented private renderer. It does not resolve cross-view/epoch immutability interpretation, cursor retention or broader provenance; no profile qualification follows."
+    }
+  ],
+  "limitations": [
+    "No test/build/installed execution is implied by review or static measurements.",
+    "Full original receipt body proof is internal helper before public report projection. Dynamic raw-to-client action9 epoch/view equality remains unproved.",
+    "A/B Event-to-receipt transaction equality only; C has no receipt baseline.",
+    "Root source attribution is not child-attested Git identity."
+  ],
+  "executionReleased": false,
+  "pending": null,
+  "sourceAudit": {
+    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-command-minimum-evidence-draft/claude-event-source-audit.md",
+    "sha256": "9b55cb85cc3ca2c2fdaea245e4150786b36d0f9d9ed197ff3fb0eae7fc5597c4"
+  },
+  "councilClosed": true,
+  "closedAt": "2026-10-15T07:02:09.614296+00:00"
+}

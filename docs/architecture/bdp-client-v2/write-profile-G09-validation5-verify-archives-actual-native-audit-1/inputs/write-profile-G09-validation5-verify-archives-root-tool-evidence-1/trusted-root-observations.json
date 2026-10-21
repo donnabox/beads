@@ -1,0 +1,120 @@
+{
+  "accepted": false,
+  "actualArchiveConsumerInstalledProofStillUnresolved": true,
+  "actualEmptyVerifierLog": {
+    "bytes": 0,
+    "mode": "0o644",
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  "actualTaskPGIDs": [
+    26944,
+    26948,
+    27647
+  ],
+  "actualTaskPIDs": [
+    26947,
+    26948,
+    27647,
+    27660,
+    27692,
+    27709,
+    27728,
+    27746,
+    27765,
+    27799,
+    27816,
+    27835,
+    27853,
+    27871,
+    27889,
+    27907,
+    27925,
+    27941,
+    27959,
+    27975,
+    27992,
+    28027,
+    28044,
+    28061,
+    28079,
+    28095,
+    28113,
+    28130,
+    28147,
+    28164,
+    28200,
+    28216,
+    28233,
+    28250,
+    28267,
+    28303,
+    28319,
+    28338,
+    28353,
+    28371,
+    28384,
+    28385
+  ],
+  "actualTerminalTools": [
+    {
+      "actualExit": 0,
+      "actualTerminalToolId": "72f799",
+      "baselineSha256": "fae7d54d8d129e5ba1009bb9e718b4c009c5499be950f9d0a6bf003840543228",
+      "issuedSha256": "fae7d54d8d129e5ba1009bb9e718b4c009c5499be950f9d0a6bf003840543228",
+      "normalizedResultCount": 2,
+      "phase": "A",
+      "sourceRelation": "EXACT_A"
+    },
+    {
+      "actualExit": 0,
+      "actualTerminalToolId": "9b2d0c",
+      "baselineSha256": "e71e568cb08bbe741f519f2c829f81868e43fbc8d9bd3843df124ae11163e7d9",
+      "issuedSha256": "d1f8920c0aed2b1248358676558c3c408bb021e1982788fc671fb27392711d0b",
+      "normalizedResultCount": 1,
+      "phase": "B",
+      "sourceRelation": "ONE_COMPLETE_LF_PRECEDING_ACTUAL_TERMINAL_ID_ONLY_FULL_INVERSE"
+    },
+    {
+      "actualExit": 0,
+      "actualTerminalToolId": "468fc0",
+      "baselineSha256": "43d154aa597379ccd08d6b20f24ae496779a88438bcf6051f95470d28de9ee1f",
+      "issuedSha256": "75659266a304a79631ce859f17517256cddd4f91a9ac0823eeb07dfde3121361",
+      "normalizedResultCount": 1,
+      "phase": "C",
+      "sourceRelation": "ONE_COMPLETE_LF_PRECEDING_ACTUAL_TERMINAL_ID_ONLY_FULL_INVERSE"
+    }
+  ],
+  "censusRawStreamBytes": [
+    206707,
+    0
+  ],
+  "cleanupPerformedByStaticPacket": false,
+  "completedInvocationAndObservationUpperBoundSeconds": 14.412029457744211,
+  "fullIndependentAudit": "PENDING",
+  "globalOrObserverSelfAbsenceClaim": false,
+  "innerAccepted": true,
+  "innerElapsedSeconds": 8.705028832890093,
+  "innerExit": 0,
+  "matchingTaskRows": [],
+  "nextStageReleased": false,
+  "outputDirectory": {
+    "entries": [
+      "bdp-server-0.0.0.tgz",
+      "bdp-protocol-0.0.0.tgz"
+    ],
+    "mode": "0o755",
+    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation-preparation-5/run/packages"
+  },
+  "probeDirectReaped": true,
+  "qualityPass": false,
+  "rawWireAndFullEnvironment": "UNRETAINED",
+  "rootRawStreamBytes": [
+    752,
+    0
+  ],
+  "sourceIdentity": "1ecaf2e47369cc12cc26bc3ed693c5d4d3b9cffa4714b13dbe5567f9e46bfb15",
+  "sourceUnchanged": true,
+  "stage": "verify-archives",
+  "strictUnder115": true,
+  "temporaryDirectory": "/private/tmp/vickie-tx-discovery-validation-verify-archives-uugc1p4i"
+}

@@ -1,0 +1,5 @@
+Preliminary isolateddf80 validation stopped at lint. Setup1.594s, typecheck2.958s, build2.203s, format2.882s all exit0; lint1.528s exit1 with2errors/931warnings/66infos. Format retained existing oversized matrix warning. No boundaries/Read/test stages ran,0actualcases/0HTTP. Original logs remain unchanged.
+
+The separately authorized read-only diagnostic exit1 (2.958s, stderrSHA96bd1e04bb061b9d21112c9b5a326e5df59fb856ad137ecb17903fc45a7889f9) exposes noUnsafeFinally at transaction-http.test.ts5137 and5139: both say “Unsafe usage of 'throw'.” It is diagnosis, not a validation retry/pass. External narrow branch proposal is under proposed-lint-repair; no source change.
+
+All29context/source hashes, full7filepatch, HEAD/tree and gitstatus remain exact. 25 sampled PIDs independently absent; no runtime stores/listeners/children launched. Tooling node-compile-cache entries retained. Preliminary dirty build does not replace required actual-minimum-main integration/affected tests/fresh installed validation.

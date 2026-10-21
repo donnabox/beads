@@ -1,0 +1,34 @@
+--- original-required/gate.py
++++ format-successor-required/gate.py
+@@ -1,7 +1,7 @@
+ from pathlib import Path
+ import json,hashlib,subprocess,os,importlib.util
+ P=Path(__file__).resolve().parent
+-V=Path("/Users/dbox/repos/wt/vickie/bdp-integration-logs/scope-event-sse-opaque-minimum-validation/implementation")
++V=Path("/Users/dbox/repos/wt/vickie/bdp-integration-logs/scope-event-sse-opaque-minimum-validation/format-successor-1")
+ W=Path("/Users/dbox/repos/wt/vickie/vickie-scope-event-sse-opaque-minimum")
+ E=P/'run';MODE='final'
+ sha=lambda b:hashlib.sha256(b).hexdigest()
+@@ -38,8 +38,9 @@
+  subprocess.run(['/opt/homebrew/opt/python@3.14/bin/python3.14','/Users/dbox/repos/wt/vickie/bdp-integration-logs/guarded-action.py','/usr/bin/true'],check=True,timeout=30)
+  b=document(g['sourceBinding']);g['_sourceBinding']=b;g['_sourceIdentity']=source_check(b);g['finalHead']=b['head'];g['finalTree']=b['tree']
+  base=document(g['baseTools']);_v.tools_check(base['tools']);tb=document(g['workspaceTools']);_v.tools_check(tb['tools'])
+- require(base['sourceLockSha256']==b['trackedSourceFiles']['pnpm-lock.yaml'] and tb['sourceIdentity']==g['_sourceIdentity'] and tb['head']==g['finalHead'] and tb['sourceLockSha256']==base['sourceLockSha256'],'Workspace tool source attribution differs')
+- require(tb['installExitSha256']==sha((V/'run/workspace-install.exit.json').read_bytes()) and tb['installLogSha256']==sha((V/'run/workspace-install.log').read_bytes()),'Actual bootstrap evidence changed')
++ m=_v.bootstrap_origins(g)
++ require(g['workspaceTools']==m['workspaceTools'] and base['sourceLockSha256']==b['trackedSourceFiles']['pnpm-lock.yaml'] and tb['sourceIdentity']==m['predecessorSourceIdentity'] and tb['head']==g['finalHead'] and tb['sourceLockSha256']==base['sourceLockSha256'],'Original bootstrap tool source attribution differs')
++ require(tb['installExitSha256']==m['origins']['workspace-install']['exit.json']['sha256'] and tb['installLogSha256']==m['origins']['workspace-install']['log']['sha256'],'Actual original bootstrap evidence changed')
+  for stage in ['workspace-install','bind-workspace-tools']:_v.complete(stage,g)
+  verify_build(g)
+  for prior in c['order'][:c['order'].index(name)]:
+--- original-required/commands.json
++++ format-successor-required/commands.json
+@@ -28,7 +28,7 @@
+         "scripts/e2e-ready.test.mjs",
+         "--reporter=verbose",
+         "--reporter=json",
+-        "--outputFile.json=/Users/dbox/repos/wt/vickie/bdp-integration-logs/scope-event-sse-opaque-minimum-validation/required-checks/run/preflight.results.json"
++        "--outputFile.json=/Users/dbox/repos/wt/vickie/bdp-integration-logs/scope-event-sse-opaque-minimum-validation/required-checks-format-successor-1/run/preflight.results.json"
+       ],
+       "outerSeconds": 120,
+       "termAfterSeconds": 115,

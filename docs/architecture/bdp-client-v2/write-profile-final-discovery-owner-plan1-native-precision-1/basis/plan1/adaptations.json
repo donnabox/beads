@@ -1,0 +1,32 @@
+[
+  {
+    "name": "interfaces",
+    "before": "interfaces.before.json",
+    "beforeSha256": "16ccdb69f846cfd2b4d6abdae398d75b1a3d725d8ca2e763c820a90216fb04d7",
+    "after": "interfaces.proposed.json",
+    "afterSha256": "0ba85933d2e8fc8d917b80cf966ba8e92564156014f25159d224608d22648124",
+    "forward": "deltas/interfaces.patch",
+    "inverse": "deltas/interfaces.inverse.patch",
+    "scope": "genuine DATA proposal delta, NOT a source patch or implementation claim"
+  },
+  {
+    "name": "integration",
+    "before": "integration.before.json",
+    "beforeSha256": "5453808650d2e771a732919d60ebdb667ccc04bff257461557708b922faecf8d",
+    "after": "integration.proposed.json",
+    "afterSha256": "ccdbe1d966627dbf49f16578e798bbb8f1b24d6204633dedd6b5704edb717172",
+    "forward": "deltas/integration.patch",
+    "inverse": "deltas/integration.inverse.patch",
+    "scope": "genuine DATA proposal delta, NOT a source patch or implementation claim"
+  },
+  {
+    "name": "ownership",
+    "before": "ownership.before.json",
+    "beforeSha256": "0982b49d7beb95602f912e53960c1a1efe367a2ad24e6e59ee955ed1cc966aa3",
+    "after": "ownership.proposed.json",
+    "afterSha256": "9050f32dafd16e831dcd67f8c983a21c7f1f61e995359ac1d116d44e0865a1f8",
+    "forward": "deltas/ownership.patch",
+    "inverse": "deltas/ownership.inverse.patch",
+    "scope": "genuine DATA proposal delta, NOT a source patch or implementation claim"
+  }
+]

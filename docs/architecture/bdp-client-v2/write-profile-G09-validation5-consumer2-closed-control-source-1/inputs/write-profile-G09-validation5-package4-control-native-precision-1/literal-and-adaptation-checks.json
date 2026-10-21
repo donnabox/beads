@@ -1,0 +1,170 @@
+{
+  "allUntouchedClockRawOwnershipIdGuardBytesInvariant": true,
+  "approvedClassesIndependentlyReconstructed": true,
+  "changedCompleteLfTotal": 52,
+  "completeInverseEveryBody": true,
+  "literalChecks": [
+    {
+      "allOtherBytesInvariant": true,
+      "changedLfLines": 7,
+      "fullInverse": true,
+      "phase": "A",
+      "stage": "prepare-package-directory"
+    },
+    {
+      "allOtherBytesInvariant": true,
+      "changedLfLines": 3,
+      "fullInverse": true,
+      "phase": "B",
+      "stage": "prepare-package-directory"
+    },
+    {
+      "allOtherBytesInvariant": true,
+      "changedLfLines": 3,
+      "fullInverse": true,
+      "phase": "C",
+      "stage": "prepare-package-directory"
+    },
+    {
+      "allOtherBytesInvariant": true,
+      "changedLfLines": 7,
+      "fullInverse": true,
+      "phase": "A",
+      "stage": "pack-protocol"
+    },
+    {
+      "allOtherBytesInvariant": true,
+      "changedLfLines": 3,
+      "fullInverse": true,
+      "phase": "B",
+      "stage": "pack-protocol"
+    },
+    {
+      "allOtherBytesInvariant": true,
+      "changedLfLines": 3,
+      "fullInverse": true,
+      "phase": "C",
+      "stage": "pack-protocol"
+    },
+    {
+      "allOtherBytesInvariant": true,
+      "changedLfLines": 7,
+      "fullInverse": true,
+      "phase": "A",
+      "stage": "pack-server"
+    },
+    {
+      "allOtherBytesInvariant": true,
+      "changedLfLines": 3,
+      "fullInverse": true,
+      "phase": "B",
+      "stage": "pack-server"
+    },
+    {
+      "allOtherBytesInvariant": true,
+      "changedLfLines": 3,
+      "fullInverse": true,
+      "phase": "C",
+      "stage": "pack-server"
+    },
+    {
+      "allOtherBytesInvariant": true,
+      "changedLfLines": 7,
+      "fullInverse": true,
+      "phase": "A",
+      "stage": "verify-archives"
+    },
+    {
+      "allOtherBytesInvariant": true,
+      "changedLfLines": 3,
+      "fullInverse": true,
+      "phase": "B",
+      "stage": "verify-archives"
+    },
+    {
+      "allOtherBytesInvariant": true,
+      "changedLfLines": 3,
+      "fullInverse": true,
+      "phase": "C",
+      "stage": "verify-archives"
+    }
+  ],
+  "opcodeBlocksNotMiscountedAsLines": true,
+  "pairs": [
+    {
+      "bothRestoresExact": true,
+      "fullForwardInverseAndNdiffRegenerated": true,
+      "label": "prepare-package-directory.A"
+    },
+    {
+      "bothRestoresExact": true,
+      "fullForwardInverseAndNdiffRegenerated": true,
+      "label": "prepare-package-directory.B"
+    },
+    {
+      "bothRestoresExact": true,
+      "fullForwardInverseAndNdiffRegenerated": true,
+      "label": "prepare-package-directory.C"
+    },
+    {
+      "bothRestoresExact": true,
+      "fullForwardInverseAndNdiffRegenerated": true,
+      "label": "pack-protocol.A"
+    },
+    {
+      "bothRestoresExact": true,
+      "fullForwardInverseAndNdiffRegenerated": true,
+      "label": "pack-protocol.B"
+    },
+    {
+      "bothRestoresExact": true,
+      "fullForwardInverseAndNdiffRegenerated": true,
+      "label": "pack-protocol.C"
+    },
+    {
+      "bothRestoresExact": true,
+      "fullForwardInverseAndNdiffRegenerated": true,
+      "label": "pack-server.A"
+    },
+    {
+      "bothRestoresExact": true,
+      "fullForwardInverseAndNdiffRegenerated": true,
+      "label": "pack-server.B"
+    },
+    {
+      "bothRestoresExact": true,
+      "fullForwardInverseAndNdiffRegenerated": true,
+      "label": "pack-server.C"
+    },
+    {
+      "bothRestoresExact": true,
+      "fullForwardInverseAndNdiffRegenerated": true,
+      "label": "verify-archives.A"
+    },
+    {
+      "bothRestoresExact": true,
+      "fullForwardInverseAndNdiffRegenerated": true,
+      "label": "verify-archives.B"
+    },
+    {
+      "bothRestoresExact": true,
+      "fullForwardInverseAndNdiffRegenerated": true,
+      "label": "verify-archives.C"
+    },
+    {
+      "bothRestoresExact": true,
+      "fullForwardInverseAndNdiffRegenerated": true,
+      "label": "gate"
+    },
+    {
+      "bothRestoresExact": true,
+      "fullForwardInverseAndNdiffRegenerated": true,
+      "label": "bridge"
+    },
+    {
+      "bothRestoresExact": true,
+      "fullForwardInverseAndNdiffRegenerated": true,
+      "label": "manifest"
+    }
+  ]
+}

@@ -1,0 +1,13 @@
+{
+  "at": "2026-10-17T22:52:13.880966+00:00",
+  "decision": "Preserve successor1; authorize exact plan-only successor2 to restore original finite invalid-source ordering",
+  "evidence": [
+    "transaction-service.ts496-538 leaves minimum supplied when classification fails",
+    "transaction-store.ts1670-1690 validates eventSource before snapshot",
+    "native independently confirmed via message"
+  ],
+  "replacement": "Catch only TypeError or TransactionEventParameterError from URL/transactionEventRequest canonical classification. If classification does not establish eligibility, leave minimum as supplied and preserve owner source-before-tuple validation; do not introduce a finite-service strict snapshot fallback. Only for an eligible source, capture the lexical tuple once outside that catch on the first waiter attempt; tuple errors must not be swallowed.",
+  "unchanged": "beginEvents strict synchronous fallback; all other dispositions, six-file scope, selection/workload/deadlines",
+  "sourceAuthoringReleased": false,
+  "runtimeReleased": false
+}

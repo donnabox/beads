@@ -1,0 +1,112 @@
+[
+  {
+    "duration_api_ms": 425853,
+    "stop_reason": "end_turn",
+    "session_id": "e7335c78-526e-445a-8656-e2c4fe573741",
+    "total_cost_usd": 2.9346445,
+    "usage": {
+      "input_tokens": 32,
+      "cache_creation_input_tokens": 139491,
+      "cache_read_input_tokens": 1526105,
+      "output_tokens": 30674,
+      "output_tokens_details": {
+        "thinking_tokens": 22395
+      },
+      "server_tool_use": {
+        "web_search_requests": 0,
+        "web_fetch_requests": 0
+      },
+      "service_tier": "standard",
+      "cache_creation": {
+        "ephemeral_1h_input_tokens": 139491,
+        "ephemeral_5m_input_tokens": 0
+      },
+      "inference_geo": "global",
+      "iterations": [
+        {
+          "input_tokens": 2,
+          "output_tokens": 7326,
+          "cache_read_input_tokens": 139856,
+          "cache_creation_input_tokens": 4381,
+          "cache_creation": {
+            "ephemeral_5m_input_tokens": 0,
+            "ephemeral_1h_input_tokens": 4381
+          },
+          "type": "message"
+        }
+      ],
+      "speed": "standard"
+    },
+    "modelUsage": {
+      "claude-haiku-4-5-20251001": {
+        "inputTokens": 9577,
+        "outputTokens": 19,
+        "cacheReadInputTokens": 0,
+        "cacheCreationInputTokens": 0,
+        "webSearchRequests": 0,
+        "costUSD": 0.009672,
+        "contextWindow": 200000,
+        "maxOutputTokens": 32000,
+        "thinkingTokens": 0,
+        "canonicalModel": "claude-haiku-4-5",
+        "provider": "firstParty",
+        "costBasis": "list"
+      },
+      "claude-opus-5[1m]": {
+        "inputTokens": 32,
+        "outputTokens": 30674,
+        "cacheReadInputTokens": 1526105,
+        "cacheCreationInputTokens": 139491,
+        "webSearchRequests": 0,
+        "costUSD": 2.9249725000000004,
+        "contextWindow": 1000000,
+        "maxOutputTokens": 64000,
+        "thinkingTokens": 22395,
+        "canonicalModel": "claude-opus-5",
+        "provider": "firstParty",
+        "costBasis": "list"
+      }
+    },
+    "permission_denials": [],
+    "terminal_reason": "completed",
+    "fast_mode_state": "off",
+    "fast_mode_disabled_reason": "sdk_opt_in_required",
+    "subagent_stats": {
+      "spawned": 0,
+      "requested": {
+        "background": 0,
+        "foreground": 0,
+        "unset": 0
+      },
+      "started_in_background": 0,
+      "max_depth": 0,
+      "spawned_by_subagents": 0,
+      "completed": 0,
+      "failed": 0,
+      "killed": {
+        "parent": 0,
+        "user": 0,
+        "system": 0
+      },
+      "refused": {
+        "depth_limit": 0,
+        "concurrency_limit": 0,
+        "budget": 0
+      },
+      "by_type": {}
+    },
+    "is_error": false,
+    "num_turns": 41,
+    "subtype": "success",
+    "api_error_status": null,
+    "result": "## Verdict\n\n**No blockers.** The change does what it claims: it actually removes the ancestor `.beads` contamination, preserves every gate/timeout/coverage contract byte-for-byte, introduces no deletion or shared-state touch, and the diagnosis is scoped honestly. Five low/informational items below, none gating. This output confers no approval; `root-native-disposition.json:4` correctly lists this review as pending and execution stays closed.\n\n## Findings\n\n**1. LOW \u2014 \"preserved for audit\" overstates `/private/tmp` durability**\n`plan.md:7` (\"The directory/caches remain preserved for audit\") and `run.py:91` (records `temporaryDirectory` as a bare path, no inventory or digest). `/private/tmp` is subject to macOS `periodic daily` tmp cleaning and is not reboot-guaranteed; the predecessor's temp tree lived inside the audited log tree. Causal impact: evidence durability only \u2014 acceptance depends on `runtimeDirectoriesStillPresent`, computed at exit (`run.py:76,89`), not on later re-reading the directory. Smallest correction: reword `plan.md:7` to \"retained best-effort; `/private/tmp` is subject to OS cleanup\", or additionally record the rglob listing at exit.\n\n**2. LOW \u2014 vestigial `.tmp` entry in the no-retry guard**\n`run.py:11` still probes `(E/(name+'.tmp')).exists()`, but no `.tmp` directory is created under `E` anymore (predecessor `validation/run.py:17`). Impact: none. The atomic exclusivity barrier is now solely `write(name+'.started.json')` \u2192 `open('x')` (`gate.py:13`), which still runs at `run.py:22`, before `Popen` at `run.py:48` \u2014 a duplicate launch is still rejected before any product process starts. Smallest correction: none required; optionally drop `'.tmp'` or keep it as defence against predecessor-shaped leftovers.\n\n**3. LOW \u2014 orphan temp root on early abort**\n`run.py:19-22`: `mkdtemp` runs outside the `try`/`finally`. If the `require` at `run.py:20` or the `write` at `run.py:22` raises, an empty 0700 directory is left in `/private/tmp` with no evidence record referencing it. Impact: litter only; no stage evidence is written, so retry stays legitimate. Smallest correction (optional): `try: ... except: os.rmdir(tmp); raise` around lines 20-22.\n\n**4. LOW \u2014 the new ancestor chain is clean today but never asserted at runtime**\n`run.py:18-21` depends on `/private/tmp` and `/` holding no `.beads`. I confirmed both are currently clean; the only `.beads` under `/private/tmp` is inside the preserved probe workspace (`/private/tmp/vickie-bdp-reconciliation-probe-8nx995vh/workspace/.beads/*`), a sibling, not an ancestor. But `/private/tmp` is world-writable/sticky, so an unrelated process could reintroduce the exact failure between preparation and execution. Smallest correction (cheap, optional): after `run.py:20`, `require(not any((a/'.beads').exists() for a in [tmp,*tmp.parents]),'Ancestor .beads present')`, and record the probed chain in `started.json`.\n\n**5. INFO \u2014 one CLI fixture does not inherit TMPDIR (inherited, unchanged)**\n`scripts/demo-read.test.mjs:52,84,109` hardcode `/tmp/bdp-demo-*` instead of `tmpdir()`. Those fixtures land as siblings of the task-owned root, outside the per-stage census (`run.py:76`) \u2014 identical to predecessor behaviour, and ancestor-safe since `/tmp \u2192 /private/tmp`. The case the audit recorded as skipped is gated by `it.runIf(process.env.BDP_DEMO_BD_EXECUTABLE)` (`demo-read.test.mjs:106`); that variable is stripped by `run.py:15` and not re-added by the full-test environment, so the skip is deterministic and the TMPDIR move neither widens nor narrows that coverage. `plan.md:7`'s wording is literally accurate but not exhaustive \u2014 one clause would close it.\n\n**6. INFO \u2014 census predicate misses non-`bdp-` fixtures (inherited)**\n`run.py:76` flags only leftover dirs whose name starts with `bdp-`. Fixtures named `artifact-evidence-unit-`, `artifact-failure-evidence-`, `artifact-assertion-evidence-`, `native-abort-io-` (`apps/bdptest/src/read-update-matrix.test.ts:258,4881,5017,5077`) would not be reported. The predicate is identical before and after; not a regression, and not something I'd demand be changed here.\n\n## What I verified\n\n**Contamination is genuinely removed.** `tmpdir()` reads `TMPDIR`, so `read-matrix.test.ts:399` places `bdp-bdpbd-matrix-*` inside the stage's `/private/tmp` root, and `workspace`, `externalEndpointWorkspace`, `restored-workspace` (`:400-405,447`) are all its children. Every bd process is spawned with an explicit workspace cwd \u2014 `bd-workspace.ts:78` and `packages/adapter-bd/src/index.ts:162` \u2014 so no bd process inherits the stage cwd (the checkout under `/Users/dbox`). New chain: fixture \u2192 `/private/tmp/vickie-pr150-validation-<stage>-*` \u2192 `/private/tmp` \u2192 `/`, both confirmed `.beads`-free. Discovery was proven cwd-ancestor-driven, not HOME-driven: the failing probe already used an isolated HOME (`bd-init-diagnosis/result.json:16`) and still reported `/Users/dbox/.beads/proxieddb` (`stderr.txt:2`). Probe fidelity holds \u2014 its argv (`result.json:2-11`) matches the first seed command built at `bd-workspace.ts:165` from `read-bdpbd-v1.json:60-61` (`actor` `bdp-conformance`, `prefix` `demo`) and the env shape at `read-matrix.test.ts:412-420`. Independent corroboration neither the plan nor the native review cites: `docs/read-demo.md:102-103` already documents \"The `/tmp` isolation root is deliberate: it avoids ancestor `.beads` discovery under user home directories.\"\n\n**cwd vs TMPDIR, logged path.** Stage cwd is unchanged (`commands.json:37,52,126,\u2026`); only `TMPDIR`/`npm_config_cache` move, and the exact root is written to both `started.json` (`run.py:22`) and `exit.json` (`run.py:91`). New path (~54 chars) is far shorter than the predecessor's, so no socket-path-length risk; `/private/tmp` and `/Users` are the same APFS Data volume, so no new cross-device rename failure mode.\n\n**No shared-DB touch, no unsafe cleanup.** `run.py`, `gate.py`, `bind-build.py`, `packages.py` contain no delete/move/chmod. The only creations are the mkdtemp root, `E/*` evidence, `E/'packages'` (`packages.py:19`) and `E/'consumer'` (`packages.py:51`), both `exist_ok=False`. Nothing reads or writes `/Users/dbox/.beads`.\n\n**Gate/package contracts intact.** The successor `gate.py` is line-for-line identical to `validation/gate.py` (both read in full). Preserved: prior-stage `complete()` chain (`gate.py:81`), fresh `workspaceTools` required after the new dependencies stage (`gate.py:82` + `execution-gate.json:11` null), build binding (`:83`), root full-suite acceptance before `e2e-ready-preflight` and all packed stages (`:84,87`), prior-packed acceptance (`:88-89`), consumer lock (`:95`), placeholder binding (`:98-99`). Acceptance conjunct unchanged (`run.py:89`): exact raw exit **and** no errors, no forced cleanup, no survivors, no runtime dirs, source unchanged.\n\n**No-retry / timeouts / coverage / source identity.** `full-test` keeps 1800s / TERM 1795, `BDP_REQUIRE_BD_MATRIX=1` and the pinned `tools/bin/bd`; `automaticRetries: 0` on every stage; 25-stage `finalOrder` intact (`commands.json:2-28`); grep confirms **no** residual `\u2026/validation/` prefix anywhere in the successor `commands.json`; five packed selectors and the distinct `transaction-installed.js` entry for `packed-affected-4` preserved. The `run.py` diff is faithful and minimal \u2014 I compared both files directly: the only functional delta is the mkdtemp root plus two recorded fields. Note that `RECONCILIATION_VALIDATION_ATTEMPT` is now nondeterministic (it hashes a `started.json` containing a random path); nothing in the product consumes it (grep: no matches for `RECONCILIATION_VALIDATION`).\n\n**Diagnosis scoping is honest.** `plan.md:5` says the probe \"supports a fixture-location repair\" and \"Neither diagnosis is relabeled as a successful full suite\", matching `full-suite-failure-audit.md:5`, which states that the helper's nonzero branch (`bd-workspace.ts:131`) discards stderr so the suite record does not itself establish the cause. The matrix-failure \u2192 ancestor-`.beads` link remains an inference from a matching out-of-band probe and is labelled as such. Gate is closed (`execution-gate.json:2,3,12,13-15`), and no `run/` directory or `/private/tmp/vickie-pr150-validation-*` exists \u2014 preparation created nothing at runtime, as claimed.\n\n## Not verified under these constraints\n\nI computed no digests (no execution), so `preparation-index.json` / `references.json` hashes are self-attested. They are internally consistent with the claimed change set: `gate.py`, `bind-build.py`, `packages.py`, `tools.json`, `selector-check.json`, `parent-evidence-baseline.json` carry identical digests in `references.json:3-9` and `preparation-index.json:3-13`, while `run.py` and `commands.json` differ \u2014 exactly the two files the patch touches. I confirmed `gate.py` identity and the `run.py` diff by direct byte-content reading; I did not read-compare the predecessor `packages.py`, `bind-build.py` or `tools.json`. I did not re-review the 9k-test suite.",
+    "ttft_ms": 2016,
+    "type": "result",
+    "duration_ms": 424953,
+    "uuid": "12be6287-130c-4bc3-8637-bda6636afcbe",
+    "ttft_stream_ms": 1635,
+    "time_to_request_ms": 12,
+    "first_content_frame_ms": 1636,
+    "queued_turn_count": 0
+  }
+]

@@ -1,0 +1,7 @@
+Adds a bounded Transactional conditional-read scenario that exercises GET and HEAD before and after a mutation, conditional responses, and authentication/missing-resource precedence over actual installed HTTP. Portable assertions allow the specified HEAD omissions; complete postimage and changed-validator comparisons remain explicit reference-app checks. Historical scenarios and ordinary Update behavior are preserved.
+
+An existing Read negative-control assertion now includes bounded, allowlisted failure metadata, so CI reports a harness failure separately from the expected deliberately incorrect oracle. Its exact assertions, request sequence and deadlines are unchanged.
+
+Validation: native Codex and actual Claude reviews dispositioned. The conditional candidate8ee4d86 passed56 selected source cases/static checks, fresh clean build, Read evidence, strict archives/external-consumer checks and7 installed cohorts (712HTTP). Its full CI then failed one unchanged Read control with harness-error instead of fail; underlying cause remains unknown. The diagnostic successor passed typecheck, owned-file formatting/lint and all three selected negative controls (25 sampled processes absent; existing lint warnings retained). That isolated run did not reproduce the CI failure. The new head gets full CI with the additional diagnostic; earlier evidence is not relabeled as execution of that successor.
+
+Targets the working sequence/depth branch. Transactional coverage remains partial and claimEligible:false; no public write-profile activation or release promotion.

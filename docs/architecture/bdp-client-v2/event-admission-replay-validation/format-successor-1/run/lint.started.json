@@ -1,0 +1,24 @@
+{
+  "argv": [
+    "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+    "/Users/dbox/repos/wt/vickie/vickie-event-admission-replay-minimum/node_modules/@biomejs/biome/bin/biome",
+    "lint",
+    "--config-path=/Users/dbox/repos/wt/vickie/vickie-event-admission-replay-minimum/biome.json",
+    "apps/bdptest/src/transactional-event-sse-installed.test.ts",
+    "packages/server/src/transaction-event-sse.test.ts",
+    "packages/server/src/transaction-events.test.ts",
+    "packages/server/src/transaction-http.ts",
+    "packages/server/src/transaction-service.ts",
+    "packages/server/src/transaction-store.ts"
+  ],
+  "cwd": "/Users/dbox/repos/wt/vickie/vickie-event-admission-replay-minimum",
+  "head": "9f89271e2563a105410789ca8ca1e77dfb4d0b9f",
+  "tree": "30eaca668f17a191068444f8d6ca1232c80171b2",
+  "sourceIdentity": "10928ef28513fb178c3310c6610c689e7b6a39c4262d8363da3082598fd6ddbb",
+  "rootGateSha256": "0cb0224b89f37fcd7782253a575c1c6dbaf840cbbf7d21825d35f8601ce25c09",
+  "outerSeconds": 120,
+  "automaticRetries": 0,
+  "overrides": {},
+  "temporaryDirectory": "/private/tmp/vickie-event-replay-validation-lint-g6r68da8",
+  "npmCache": "/private/tmp/vickie-event-replay-validation-lint-g6r68da8/npm-cache"
+}

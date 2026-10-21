@@ -1,0 +1,986 @@
+--- preparation4/README.md
++++ preparation5/README.md
+@@ -1,13 +1,15 @@
+-# Startup validation preparation 4 — CLOSED
++# Startup validation preparation 5 — CLOSED
+ 
+-This data successor binds the root's two-regex lint correction after validation3 passed its first four stages, typecheck and format, then failed lint with four explicit-control-regex diagnostics. Only packages/config/src/index.ts and packages/server/src/reference-deployment.ts change. The root correction uses Unicode Cc with the same unanchored Unicode predicate. The root's frozen all1114112-codepoint result records65 controls and0 mismatches; that pure-data proof is context, not a product lint/test/build result. No lint rule is suppressed or permission grammar expanded. The5b9 fixture test and all other680 source files remain unchanged.
++This minimal data successor binds root's one-test correction to the captured validation4 failure. The RU negative fixture now uses existing artifacts() and referenced schemas/item containing a missing external $ref. The existing compiler/policy/aggregate contract and all production bytes remain unchanged. Root applied exactly089370f6; new test hashadfbf6b0, full12patch515e1193, source identity0c53a6bb/682 files; other681 unchanged. The failure's actual fixture ordinal was not logged: row10 remains the source-grounded first-success inference.
+ 
+-Five helpers are byte-identical to preparation3; bound-consumer-loader.mjs changes only the executionRoot literal3→4. Selection bytes,44 callbacks, report schemas,71 private specifiers, six loader calls,25 stages and all budgets are unchanged. The only active data changes are exact source identities, two after hashes/source copies, paths, provenance/history and closed gates.
++The completed native recommendation50b18af2 is bound as proposal precision. Exact applied-source native closure and executable corrected-source disposition wrappers remain UNRESOLVED until additive independent mechanics/root acceptance. The copied root source-binding92166de7 is an immutable input; validation5 adds current correction/pending-native ancestry metadata in its own source binding, preserving every actual source/index/status/12-owned constraint. Prior lint native closure d840 is labeled ancestry, not current corrected-source acceptance. No new actual CODE review is requested or launched.
+ 
+-Both gates remain closed with all release/acceptance flags false, approvedStages empty and bootstrapReuse empty. All25 stages must run fresh, including the first four, typecheck and format. Existing validation3 passes and failed lint are historical only. The old run stays in place and is hash-inventoried; its actual after-failure gate and root failure evidence are preserved as context. There is no new run, scratch consumer, node_modules or output directory.
++Five Python helpers are byte-identical4. bound-consumer-loader.mjs changes only its executionRoot literal4→5. The44 selected names/ownership/regex and seven other selected file hashes stay exact; only corrected fixture metadata changes. Schemas,71 private specifiers,six loader calls,25 stages and all budgets are unchanged. No invalid-ref rule is weakened, no unused schema validator added, no finite RU policy restricted, no Type inventory manufactured.
+ 
+-Root and independent native review must accept this exact packet and corrected-source binding before any release. Corrected-source actual/native disposition wrappers, mechanics acceptance, actual base/workspace tools, fresh build inventory, archive, consumer generated lock and graph/inventory/entry proof remain unresolved. The original complete substantive CODE result and failed supervisor finalization remain historical; no reviewer retry is requested or launched. D3a's actual review is outside this packet.
++Both gates are closed; all acceptance/release booleans false, approvedStages empty and bootstrapReuse empty. All25 stages are fresh, including first4/typecheck/format/lint/build/bind. Validation4's9 successful stages and failed focused source are historical only; its43 run files stay in place and are hash-inventoried. Root's preserved failed log/JSON/exit and actual closed gate are context. There is no new run/scratch consumer/output/node_modules copy, and no old tool/build/archive/consumer/lock/graph/proof result is reused.
+ 
+-Review successor-disposition.json, successor-preservation.json, successor4-delta-manifest.json and unresolved-inputs.json. successor4-deltas/ plus successor-delta.patch and successor-inverse.patch are the active3→4 deltas. Other inherited adaptation/delta files and earlier preservation reports are historical. preparation-index.json seals all bytes; implementation-hashes.json excludes its own/gate/derived-delta cycles.
++Before any stage, root/native must accept exact current source and this candidate's mechanics, then supply the existing actual-source-bound disposition/tool records. Fresh build/root inventory acceptance precedes collection; actual archive, generated external consumer lock and graph/inventory/entry proof retain their existing root barriers. Installed pure-loader qualification, public startup/admission and CI remain unresolved.
+ 
+-No source, Git, reviewer, helper, Node, compiler, formatter, lint, test, build, install or runtime execution occurred during this preparation. Only guarded filesystem/pure-data preparation was performed. No existing packet/guard/gate/source bytes were edited.
++Read successor-disposition.json, successor-preservation.json, successor5-delta-manifest.json and unresolved-inputs.json. Only successor5-deltas/ plus successor-delta.patch and successor-inverse.patch are current4→5 deltas. Inherited earlier deltas/preservation reports are historical. preparation-index.json seals all artifacts; implementation inventory omits its own/gate/derived-delta cycles.
++
++No source, helper, Node, compiler, lint, formatter, build, test, install, runtime, Git, reviewer, guard or flag was edited or executed by this preparation, except invoking the unchanged mandatory role guard to perform filesystem/pure-data preparation.
+--- preparation4/adaptation-provenance.json
++++ preparation5/adaptation-provenance.json
+@@ -1,18 +1,22 @@
+ {
+-  "state": "CLOSED data-only validation4 successor; no execution",
+-  "mechanicsPredecessor": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-trusted-startup-validation-preparation-3",
+-  "predecessorIndexSha256": "e72bd91b92a78da93a9e05550482faba347466457ff10db9887c6af86d41582e",
+-  "sourceCorrectionIndexSha256": "9c8a051005b29686dddb1eb5cc939d35c0012d80b290d1a8d71e85a7c6b24b56",
++  "state": "CLOSED data-only validation5 successor; no execution",
++  "mechanicsPredecessor": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-trusted-startup-validation-preparation-4",
++  "predecessorIndexSha256": "0bff51f3c4f142c641a585152756d504a9efd7d0fc2ab2d65f19b93f3e14012b",
++  "sourceCorrectionIndexSha256": "6c342bbe6970afadeec6009d6bf4c9d8ef7bb59b2564567bd72420e2215078ad",
++  "rootFrozenSourceBindingSha256": "92166de7cf4ec773d973dd6ab92cb15cf0e3fc4fa1a4b7896674a375b7c82824",
++  "diagnosisIndexSha256": "a6602394dfab65c9fe7a3361e0bc5e95b9807ca89bdcb12b52a3779e90473e5f",
++  "nativeRecommendationSha256": "50b18af2aed32d972229cdb0c628b32d154b5c9971f45b4e3bc082ea22ff198a",
++  "correctedSourceNativePrecision": "UNRESOLVED; completed recommendation is proposal precision, not exact applied-source closure",
+   "changes": [
+-    "exact682 source map/full12patch/two production-file after hashes and sourceIdentity",
+-    "active execution/data paths3 to4",
++    "exact682 source map/full12patch/one fixture after hash and source identity",
++    "selected-file metadata hash only, same44 names/ownership/regex",
++    "active execution/data paths4 to5",
+     "bound-consumer-loader.mjs executionRoot literal only",
+-    "fresh closed acceptance wrappers; all25 stages fresh"
++    "all release wrappers closed/unresolved and all25 stages fresh"
+   ],
+   "helperSemanticChanges": false,
++  "productionChanges": false,
+   "oldN1N2MechanicsPreserved": true,
+-  "selectedTestHashesChanged": false,
+-  "sourceEdits": false,
+-  "executionReleased": false,
+-  "regexProof": "Root frozen pure-data predicate result preserved; no Node/probe execution here."
++  "sourceEditsByThisWorker": false,
++  "executionReleased": false
+ }
+--- preparation4/bound-consumer-loader.mjs
++++ preparation5/bound-consumer-loader.mjs
+@@ -10,7 +10,7 @@
+ import { tmpdir } from "node:os";
+ import path from "node:path";
+ import { pathToFileURL } from "node:url";
+-const executionRoot = "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-trusted-startup-validation-preparation-4/run";
++const executionRoot = "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-trusted-startup-validation-preparation-5/run";
+ const installRoot = path.join(executionRoot, "consumer");
+ const proofPath = path.join(executionRoot, "installed-provenance.json");
+ let proofBytes, proof, entryRealpath, temporaryRoot;
+--- preparation4/command-matrix.md
++++ preparation5/command-matrix.md
+@@ -7,27 +7,27 @@
+ | 1 | node-version | `["/Users/dbox/.nvm/versions/node/v24.16.0/bin/node", "--version"]` |120s / TERM115 / retries0|
+ | 2 | pnpm-version | `["/Users/dbox/.nvm/versions/node/v24.16.0/bin/node", "/Users/dbox/.cache/node/corepack/v1/pnpm/11.20.0/bin/pnpm.cjs", "--version"]` |120s / TERM115 / retries0|
+ | 3 | workspace-install | `["/Users/dbox/.nvm/versions/node/v24.16.0/bin/node", "/Users/dbox/.cache/node/corepack/v1/pnpm/11.20.0/bin/pnpm.cjs", "install", "--offline", "--frozen-lockfile"]` |120s / TERM115 / retries0|
+-| 4 | bind-workspace-tools | `["/opt/homebrew/opt/python@3.14/bin/python3.14", "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-trusted-startup-validation-preparation-4/audit.py", "tools"]` |120s / TERM115 / retries0|
++| 4 | bind-workspace-tools | `["/opt/homebrew/opt/python@3.14/bin/python3.14", "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-trusted-startup-validation-preparation-5/audit.py", "tools"]` |120s / TERM115 / retries0|
+ | 5 | typecheck | `["/Users/dbox/.nvm/versions/node/v24.16.0/bin/node", "/Users/dbox/.cache/node/corepack/v1/pnpm/11.20.0/bin/pnpm.cjs", "run", "typecheck"]` |120s / TERM115 / retries0|
+ | 6 | format-check | `["/Users/dbox/.nvm/versions/node/v24.16.0/bin/node", "/Users/dbox/repos/wt/vickie/vickie-trusted-startup-configuration/node_modules/@biomejs/biome/bin/biome", "format", "--config-path=/Users/dbox/repos/wt/vickie/vickie-trusted-startup-configuration/biome.json", "docs/design/startup-configuration.md", "packages/config/src/index.test.ts", "packages/config/src/index.ts", "packages/server/package.json", "packages/server/src/read-sequence-lifecycle.test.ts", "packages/server/src/reference-deployment-state.ts", "packages/server/src/reference-deployment.test.ts", "packages/server/src/reference-deployment.ts", "packages/server/src/transaction-snapshot.test.ts", "scripts/smoke-executables.mjs", "scripts/smoke-safety.mjs", "scripts/smoke-safety.test.mjs"]` |120s / TERM115 / retries0|
+ | 7 | lint | `["/Users/dbox/.nvm/versions/node/v24.16.0/bin/node", "/Users/dbox/repos/wt/vickie/vickie-trusted-startup-configuration/node_modules/@biomejs/biome/bin/biome", "lint", "--config-path=/Users/dbox/repos/wt/vickie/vickie-trusted-startup-configuration/biome.json", "docs/design/startup-configuration.md", "packages/config/src/index.test.ts", "packages/config/src/index.ts", "packages/server/package.json", "packages/server/src/read-sequence-lifecycle.test.ts", "packages/server/src/reference-deployment-state.ts", "packages/server/src/reference-deployment.test.ts", "packages/server/src/reference-deployment.ts", "packages/server/src/transaction-snapshot.test.ts", "scripts/smoke-executables.mjs", "scripts/smoke-safety.mjs", "scripts/smoke-safety.test.mjs"]` |120s / TERM115 / retries0|
+ | 8 | fresh-build | `["/Users/dbox/.nvm/versions/node/v24.16.0/bin/node", "/Users/dbox/.cache/node/corepack/v1/pnpm/11.20.0/bin/pnpm.cjs", "run", "build"]` |120s / TERM115 / retries0|
+-| 9 | bind-fresh-build | `["/opt/homebrew/opt/python@3.14/bin/python3.14", "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-trusted-startup-validation-preparation-4/audit.py", "build"]` |120s / TERM115 / retries0|
+-| 10 | focused-source | `["/Users/dbox/.nvm/versions/node/v24.16.0/bin/node", "/Users/dbox/repos/wt/vickie/vickie-trusted-startup-configuration/node_modules/vitest/vitest.mjs", "run", "apps/bdptest/src/installed-reference-startup.test.ts", "packages/config/src/index.test.ts", "packages/server/src/read-sequence-lifecycle.test.ts", "packages/server/src/reference-deployment.test.ts", "packages/server/src/transaction-installed.test.ts", "packages/server/src/transaction-runtime-configuration.test.ts", "packages/server/src/transaction-snapshot.test.ts", "scripts/smoke-safety.test.mjs", "--maxWorkers=1", "--reporter=verbose", "--reporter=json", "--outputFile.json=/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-trusted-startup-validation-preparation-4/run/focused-source.results.json", "--testNamePattern", "^(?:captures\\ the\\ RU\\ default\\ closure\\ through\\ the\\ existing\\ capture\\ and\\ exposes\\ only\\ an\\ inert\\ handle|delegates\\ explicit\\ RU\\ schemas,\\ ownership\\ and\\ endpoint\\ multiplicity\\ without\\ an\\ alternate\\ compiler|keeps\\ TX\\ compilation,\\ credentials\\ and\\ capabilities\\ private\\ and\\ leaves\\ live\\ metadata\\ unavailable|accepts\\ duplicate\\ RU\\ principals\\ with\\ unique\\ tokens,\\ preserving\\ existing\\ semantics|snapshots\\ caller\\ settings\\ before\\ await\\ and\\ never\\ rereads\\ after\\ file\\ replacement|does\\ not\\ create\\ or\\ alter\\ a\\ pre\\-existing\\ read\\-only\\ target\\ store\\ directory|refuses\\ shared\\ listener/limits/fixture/fault\\ conflicts\\ before\\ opening\\ and\\ never\\ invokes\\ getters|accepts\\ the\\ supported\\ RU\\ IPv6\\ intended\\ listener|refuses\\ envelope\\ extensions,\\ wrong\\ profile/format\\ and\\ Directory/descriptor\\ wire\\ shapes|delegates\\ RU\\ credential,\\ policy,\\ provisioning,\\ artifact,\\ locality\\ and\\ aggregate\\ refusals|delegates\\ TX\\ exact\\ credential\\ and\\ compiled\\ closure\\ refusals|rejects\\ malformed\\ UTF8,\\ BOM,\\ escaped\\ duplicate\\ names,\\ lone\\ surrogates\\ and\\ unsafe\\ numbers\\ without\\ echo|bounds\\ the\\ lossless\\ tree\\ before\\ numeric\\ admission\\ and\\ treats\\ number\\ literals\\ as\\ atomic|isolates\\ the\\ outer\\ byte\\ ceiling\\ with\\ a\\ valid\\ small\\ envelope\\ and\\ legal\\ trailing\\ whitespace|closes\\ the\\ single\\ real\\ descriptor\\ on\\ success\\ and\\ syntax/contract\\ failures|bounds\\ reads\\ despite\\ stale\\ stat\\ and\\ closes\\ handles\\ on\\ overflow/read\\ failure/non\\-file|exports\\ only\\ the\\ loader\\ and\\ local\\ error\\ constructor\\ from\\ the\\ public\\ data\\ entry|accepts\\ the\\ deploymentFile\\-only\\ bdptest\\ section\\ for\\ read\\-update\\ with\\ one\\ selected\\ file\\ open|accepts\\ the\\ deploymentFile\\-only\\ bdptest\\ section\\ for\\ transactional\\ with\\ one\\ selected\\ file\\ open|refuses\\ a\\ nested\\ deploymentFile\\ mismatched\\-path\\ before\\ opening|refuses\\ a\\ nested\\ deploymentFile\\ invalid\\-path\\-type\\ before\\ opening|refuses\\ a\\ nested\\ deploymentFile\\ fixture\\-conflict\\ before\\ opening|refuses\\ unsupported\\ profile\\ read\\ before\\ opening|refuses\\ unsupported\\ profile\\ undefined\\ before\\ opening|refuses\\ unsupported\\ profile\\ future\\ before\\ opening|bdptest\\.deploymentFile\\ stores\\ a\\ nonsecret\\ absolute\\ path\\ without\\ opening\\ it\\ and\\ preserves\\ precedence|bdptest\\.deploymentFile\\ uses\\ UTF8\\ bytes\\ at\\ the\\ exact\\ path\\ bound|bdptest\\.deploymentFile\\ refuses\\ invalid\\ path\\ case\\ 0\\ with\\ field/rule\\-only\\ diagnostics|bdptest\\.deploymentFile\\ refuses\\ invalid\\ path\\ case\\ 1\\ with\\ field/rule\\-only\\ diagnostics|bdptest\\.deploymentFile\\ refuses\\ invalid\\ path\\ case\\ 2\\ with\\ field/rule\\-only\\ diagnostics|bdptest\\.deploymentFile\\ refuses\\ invalid\\ path\\ case\\ 3\\ with\\ field/rule\\-only\\ diagnostics|bdptest\\.deploymentFile\\ refuses\\ invalid\\ path\\ case\\ 4\\ with\\ field/rule\\-only\\ diagnostics|bdptest\\.deploymentFile\\ refuses\\ invalid\\ path\\ case\\ 5\\ with\\ field/rule\\-only\\ diagnostics|bdptest\\.deploymentFile\\ ignores\\ content\\ but\\ preserves\\ global\\ vocabulary\\ for\\ bdp|bdptest\\.deploymentFile\\ ignores\\ content\\ but\\ preserves\\ global\\ vocabulary\\ for\\ bdpbd|bdptest\\.deploymentFile\\ ignores\\ content\\ but\\ preserves\\ global\\ vocabulary\\ for\\ conformance|pins\\ the\\ root\\ and\\ explicit\\ development\\ facade\\ and\\ refuses\\ missing\\ or\\ broad\\ exports|refuses\\ root,\\ descendants\\ and\\ symlink\\ aliases\\ while\\ accepting\\ an\\ external\\ sibling|new\\ private\\ Snapshot\\ entry\\ points\\ do\\ not\\ escape\\ package\\ public\\ exports|G11\\ source\\ qualification\\ and\\ private\\ containment\\ keeps\\ lifecycle\\ internals\\ private\\ alongside\\ the\\ explicit\\ development\\ facade|captures\\ detached\\ bounded\\ own\\-data\\ launch\\ inputs\\ without\\ installing\\ alternate\\ runtime\\ controls|binds\\ every\\ default\\ tuple\\ leaf\\ in\\ the\\ pure\\ digest\\ dependency\\ test\\ \\(not\\ a\\ served\\ override\\)|effective\\ stream\\ availability\\ preserves\\ finite\\-only\\ idle\\ seams\\ at\\ the\\ strict\\ boundary|binds\\ every\\ fixed\\ owner\\-bound\\ group\\ into\\ configuration\\ identity\\ without\\ enabling\\ overrides)$"]` |120s / TERM115 / retries0|
+-| 11 | audit-focused-source | `["/opt/homebrew/opt/python@3.14/bin/python3.14", "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-trusted-startup-validation-preparation-4/audit.py", "source"]` |120s / TERM115 / retries0|
+-| 12 | prepare-package-directory | `["/opt/homebrew/opt/python@3.14/bin/python3.14", "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-trusted-startup-validation-preparation-4/packages.py", "directory"]` |120s / TERM115 / retries0|
+-| 13 | pack-protocol | `["/Users/dbox/.nvm/versions/node/v24.16.0/bin/node", "/Users/dbox/.cache/node/corepack/v1/pnpm/11.20.0/bin/pnpm.cjs", "--filter", "@bdp/protocol", "pack", "--pack-destination", "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-trusted-startup-validation-preparation-4/run/packages"]` |120s / TERM115 / retries0|
+-| 14 | pack-server | `["/Users/dbox/.nvm/versions/node/v24.16.0/bin/node", "/Users/dbox/.cache/node/corepack/v1/pnpm/11.20.0/bin/pnpm.cjs", "--filter", "@bdp/server", "pack", "--pack-destination", "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-trusted-startup-validation-preparation-4/run/packages"]` |120s / TERM115 / retries0|
+-| 15 | verify-archives | `["/opt/homebrew/opt/python@3.14/bin/python3.14", "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-trusted-startup-validation-preparation-4/packages.py", "tar"]` |120s / TERM115 / retries0|
+-| 16 | prepare-consumer | `["/opt/homebrew/opt/python@3.14/bin/python3.14", "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-trusted-startup-validation-preparation-4/packages.py", "consumer"]` |120s / TERM115 / retries0|
++| 9 | bind-fresh-build | `["/opt/homebrew/opt/python@3.14/bin/python3.14", "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-trusted-startup-validation-preparation-5/audit.py", "build"]` |120s / TERM115 / retries0|
++| 10 | focused-source | `["/Users/dbox/.nvm/versions/node/v24.16.0/bin/node", "/Users/dbox/repos/wt/vickie/vickie-trusted-startup-configuration/node_modules/vitest/vitest.mjs", "run", "apps/bdptest/src/installed-reference-startup.test.ts", "packages/config/src/index.test.ts", "packages/server/src/read-sequence-lifecycle.test.ts", "packages/server/src/reference-deployment.test.ts", "packages/server/src/transaction-installed.test.ts", "packages/server/src/transaction-runtime-configuration.test.ts", "packages/server/src/transaction-snapshot.test.ts", "scripts/smoke-safety.test.mjs", "--maxWorkers=1", "--reporter=verbose", "--reporter=json", "--outputFile.json=/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-trusted-startup-validation-preparation-5/run/focused-source.results.json", "--testNamePattern", "^(?:captures\\ the\\ RU\\ default\\ closure\\ through\\ the\\ existing\\ capture\\ and\\ exposes\\ only\\ an\\ inert\\ handle|delegates\\ explicit\\ RU\\ schemas,\\ ownership\\ and\\ endpoint\\ multiplicity\\ without\\ an\\ alternate\\ compiler|keeps\\ TX\\ compilation,\\ credentials\\ and\\ capabilities\\ private\\ and\\ leaves\\ live\\ metadata\\ unavailable|accepts\\ duplicate\\ RU\\ principals\\ with\\ unique\\ tokens,\\ preserving\\ existing\\ semantics|snapshots\\ caller\\ settings\\ before\\ await\\ and\\ never\\ rereads\\ after\\ file\\ replacement|does\\ not\\ create\\ or\\ alter\\ a\\ pre\\-existing\\ read\\-only\\ target\\ store\\ directory|refuses\\ shared\\ listener/limits/fixture/fault\\ conflicts\\ before\\ opening\\ and\\ never\\ invokes\\ getters|accepts\\ the\\ supported\\ RU\\ IPv6\\ intended\\ listener|refuses\\ envelope\\ extensions,\\ wrong\\ profile/format\\ and\\ Directory/descriptor\\ wire\\ shapes|delegates\\ RU\\ credential,\\ policy,\\ provisioning,\\ artifact,\\ locality\\ and\\ aggregate\\ refusals|delegates\\ TX\\ exact\\ credential\\ and\\ compiled\\ closure\\ refusals|rejects\\ malformed\\ UTF8,\\ BOM,\\ escaped\\ duplicate\\ names,\\ lone\\ surrogates\\ and\\ unsafe\\ numbers\\ without\\ echo|bounds\\ the\\ lossless\\ tree\\ before\\ numeric\\ admission\\ and\\ treats\\ number\\ literals\\ as\\ atomic|isolates\\ the\\ outer\\ byte\\ ceiling\\ with\\ a\\ valid\\ small\\ envelope\\ and\\ legal\\ trailing\\ whitespace|closes\\ the\\ single\\ real\\ descriptor\\ on\\ success\\ and\\ syntax/contract\\ failures|bounds\\ reads\\ despite\\ stale\\ stat\\ and\\ closes\\ handles\\ on\\ overflow/read\\ failure/non\\-file|exports\\ only\\ the\\ loader\\ and\\ local\\ error\\ constructor\\ from\\ the\\ public\\ data\\ entry|accepts\\ the\\ deploymentFile\\-only\\ bdptest\\ section\\ for\\ read\\-update\\ with\\ one\\ selected\\ file\\ open|accepts\\ the\\ deploymentFile\\-only\\ bdptest\\ section\\ for\\ transactional\\ with\\ one\\ selected\\ file\\ open|refuses\\ a\\ nested\\ deploymentFile\\ mismatched\\-path\\ before\\ opening|refuses\\ a\\ nested\\ deploymentFile\\ invalid\\-path\\-type\\ before\\ opening|refuses\\ a\\ nested\\ deploymentFile\\ fixture\\-conflict\\ before\\ opening|refuses\\ unsupported\\ profile\\ read\\ before\\ opening|refuses\\ unsupported\\ profile\\ undefined\\ before\\ opening|refuses\\ unsupported\\ profile\\ future\\ before\\ opening|bdptest\\.deploymentFile\\ stores\\ a\\ nonsecret\\ absolute\\ path\\ without\\ opening\\ it\\ and\\ preserves\\ precedence|bdptest\\.deploymentFile\\ uses\\ UTF8\\ bytes\\ at\\ the\\ exact\\ path\\ bound|bdptest\\.deploymentFile\\ refuses\\ invalid\\ path\\ case\\ 0\\ with\\ field/rule\\-only\\ diagnostics|bdptest\\.deploymentFile\\ refuses\\ invalid\\ path\\ case\\ 1\\ with\\ field/rule\\-only\\ diagnostics|bdptest\\.deploymentFile\\ refuses\\ invalid\\ path\\ case\\ 2\\ with\\ field/rule\\-only\\ diagnostics|bdptest\\.deploymentFile\\ refuses\\ invalid\\ path\\ case\\ 3\\ with\\ field/rule\\-only\\ diagnostics|bdptest\\.deploymentFile\\ refuses\\ invalid\\ path\\ case\\ 4\\ with\\ field/rule\\-only\\ diagnostics|bdptest\\.deploymentFile\\ refuses\\ invalid\\ path\\ case\\ 5\\ with\\ field/rule\\-only\\ diagnostics|bdptest\\.deploymentFile\\ ignores\\ content\\ but\\ preserves\\ global\\ vocabulary\\ for\\ bdp|bdptest\\.deploymentFile\\ ignores\\ content\\ but\\ preserves\\ global\\ vocabulary\\ for\\ bdpbd|bdptest\\.deploymentFile\\ ignores\\ content\\ but\\ preserves\\ global\\ vocabulary\\ for\\ conformance|pins\\ the\\ root\\ and\\ explicit\\ development\\ facade\\ and\\ refuses\\ missing\\ or\\ broad\\ exports|refuses\\ root,\\ descendants\\ and\\ symlink\\ aliases\\ while\\ accepting\\ an\\ external\\ sibling|new\\ private\\ Snapshot\\ entry\\ points\\ do\\ not\\ escape\\ package\\ public\\ exports|G11\\ source\\ qualification\\ and\\ private\\ containment\\ keeps\\ lifecycle\\ internals\\ private\\ alongside\\ the\\ explicit\\ development\\ facade|captures\\ detached\\ bounded\\ own\\-data\\ launch\\ inputs\\ without\\ installing\\ alternate\\ runtime\\ controls|binds\\ every\\ default\\ tuple\\ leaf\\ in\\ the\\ pure\\ digest\\ dependency\\ test\\ \\(not\\ a\\ served\\ override\\)|effective\\ stream\\ availability\\ preserves\\ finite\\-only\\ idle\\ seams\\ at\\ the\\ strict\\ boundary|binds\\ every\\ fixed\\ owner\\-bound\\ group\\ into\\ configuration\\ identity\\ without\\ enabling\\ overrides)$"]` |120s / TERM115 / retries0|
++| 11 | audit-focused-source | `["/opt/homebrew/opt/python@3.14/bin/python3.14", "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-trusted-startup-validation-preparation-5/audit.py", "source"]` |120s / TERM115 / retries0|
++| 12 | prepare-package-directory | `["/opt/homebrew/opt/python@3.14/bin/python3.14", "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-trusted-startup-validation-preparation-5/packages.py", "directory"]` |120s / TERM115 / retries0|
++| 13 | pack-protocol | `["/Users/dbox/.nvm/versions/node/v24.16.0/bin/node", "/Users/dbox/.cache/node/corepack/v1/pnpm/11.20.0/bin/pnpm.cjs", "--filter", "@bdp/protocol", "pack", "--pack-destination", "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-trusted-startup-validation-preparation-5/run/packages"]` |120s / TERM115 / retries0|
++| 14 | pack-server | `["/Users/dbox/.nvm/versions/node/v24.16.0/bin/node", "/Users/dbox/.cache/node/corepack/v1/pnpm/11.20.0/bin/pnpm.cjs", "--filter", "@bdp/server", "pack", "--pack-destination", "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-trusted-startup-validation-preparation-5/run/packages"]` |120s / TERM115 / retries0|
++| 15 | verify-archives | `["/opt/homebrew/opt/python@3.14/bin/python3.14", "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-trusted-startup-validation-preparation-5/packages.py", "tar"]` |120s / TERM115 / retries0|
++| 16 | prepare-consumer | `["/opt/homebrew/opt/python@3.14/bin/python3.14", "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-trusted-startup-validation-preparation-5/packages.py", "consumer"]` |120s / TERM115 / retries0|
+ | 17 | consumer-install | `["/Users/dbox/.nvm/versions/node/v24.16.0/bin/node", "/Users/dbox/.cache/node/corepack/v1/pnpm/11.20.0/bin/pnpm.cjs", "install", "--offline", "--ignore-scripts", "--no-frozen-lockfile", "--prod"]` |120s / TERM115 / retries0|
+-| 18 | verify-installed-consumer | `["/opt/homebrew/opt/python@3.14/bin/python3.14", "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-trusted-startup-validation-preparation-4/packages.py", "installed"]` |120s / TERM115 / retries0|
+-| 19 | bound-consumer-loader | `["/Users/dbox/.nvm/versions/node/v24.16.0/bin/node", "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-trusted-startup-validation-preparation-4/bound-consumer-loader.mjs"]` |120s / TERM115 / retries0|
+-| 20 | audit-bound-consumer-loader | `["/opt/homebrew/opt/python@3.14/bin/python3.14", "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-trusted-startup-validation-preparation-4/audit.py", "installed"]` |120s / TERM115 / retries0|
++| 18 | verify-installed-consumer | `["/opt/homebrew/opt/python@3.14/bin/python3.14", "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-trusted-startup-validation-preparation-5/packages.py", "installed"]` |120s / TERM115 / retries0|
++| 19 | bound-consumer-loader | `["/Users/dbox/.nvm/versions/node/v24.16.0/bin/node", "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-trusted-startup-validation-preparation-5/bound-consumer-loader.mjs"]` |120s / TERM115 / retries0|
++| 20 | audit-bound-consumer-loader | `["/opt/homebrew/opt/python@3.14/bin/python3.14", "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-trusted-startup-validation-preparation-5/audit.py", "installed"]` |120s / TERM115 / retries0|
+ | 21 | required-check-boundaries | `["/Users/dbox/.nvm/versions/node/v24.16.0/bin/node", "/Users/dbox/.cache/node/corepack/v1/pnpm/11.20.0/bin/pnpm.cjs", "run", "check:boundaries"]` |120s / TERM115 / retries0|
+ | 22 | required-e2e-ready-preflight | `["/Users/dbox/.nvm/versions/node/v24.16.0/bin/node", "/Users/dbox/.cache/node/corepack/v1/pnpm/11.20.0/bin/pnpm.cjs", "run", "e2e:ready:preflight"]` |120s / TERM115 / retries0|
+ | 23 | required-smoke | `["/Users/dbox/.nvm/versions/node/v24.16.0/bin/node", "/Users/dbox/.cache/node/corepack/v1/pnpm/11.20.0/bin/pnpm.cjs", "run", "smoke"]` |120s / TERM115 / retries0|
+-| 24 | audit-required-smoke | `["/opt/homebrew/opt/python@3.14/bin/python3.14", "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-trusted-startup-validation-preparation-4/audit.py", "smoke"]` |120s / TERM115 / retries0|
++| 24 | audit-required-smoke | `["/opt/homebrew/opt/python@3.14/bin/python3.14", "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-trusted-startup-validation-preparation-5/audit.py", "smoke"]` |120s / TERM115 / retries0|
+ | 25 | required-evidence-verify | `["/Users/dbox/.nvm/versions/node/v24.16.0/bin/node", "/Users/dbox/.cache/node/corepack/v1/pnpm/11.20.0/bin/pnpm.cjs", "run", "evidence:verify"]` |120s / TERM115 / retries0|
+ 
+ Fresh version/install/tools → static → fresh build/binding → source selection/audit → archives → root actual archive → external consumer install → root actual lock → actual proof → root actual proof → bound pure-loader/audit → required checks/full stock smoke/audit/evidence. Full-suite/exact-head CI stays separately root controlled.
+--- preparation4/commands.json
++++ preparation5/commands.json
+@@ -2,7 +2,7 @@
+   "configurationFinalized": true,
+   "closedPreparation": true,
+   "sourceRoot": "/Users/dbox/repos/wt/vickie/vickie-trusted-startup-configuration",
+-  "executionRoot": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-trusted-startup-validation-preparation-4",
++  "executionRoot": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-trusted-startup-validation-preparation-5",
+   "commands": {
+     "node-version": {
+       "id": "node-version",
+@@ -65,7 +65,7 @@
+       "cwd": "/Users/dbox/repos/wt/vickie/vickie-trusted-startup-configuration",
+       "argv": [
+         "/opt/homebrew/opt/python@3.14/bin/python3.14",
+-        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-trusted-startup-validation-preparation-4/audit.py",
++        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-trusted-startup-validation-preparation-5/audit.py",
+         "tools"
+       ],
+       "outerSeconds": 120,
+@@ -182,7 +182,7 @@
+       "cwd": "/Users/dbox/repos/wt/vickie/vickie-trusted-startup-configuration",
+       "argv": [
+         "/opt/homebrew/opt/python@3.14/bin/python3.14",
+-        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-trusted-startup-validation-preparation-4/audit.py",
++        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-trusted-startup-validation-preparation-5/audit.py",
+         "build"
+       ],
+       "outerSeconds": 120,
+@@ -213,7 +213,7 @@
+         "--maxWorkers=1",
+         "--reporter=verbose",
+         "--reporter=json",
+-        "--outputFile.json=/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-trusted-startup-validation-preparation-4/run/focused-source.results.json",
++        "--outputFile.json=/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-trusted-startup-validation-preparation-5/run/focused-source.results.json",
+         "--testNamePattern",
+         "^(?:captures\\ the\\ RU\\ default\\ closure\\ through\\ the\\ existing\\ capture\\ and\\ exposes\\ only\\ an\\ inert\\ handle|delegates\\ explicit\\ RU\\ schemas,\\ ownership\\ and\\ endpoint\\ multiplicity\\ without\\ an\\ alternate\\ compiler|keeps\\ TX\\ compilation,\\ credentials\\ and\\ capabilities\\ private\\ and\\ leaves\\ live\\ metadata\\ unavailable|accepts\\ duplicate\\ RU\\ principals\\ with\\ unique\\ tokens,\\ preserving\\ existing\\ semantics|snapshots\\ caller\\ settings\\ before\\ await\\ and\\ never\\ rereads\\ after\\ file\\ replacement|does\\ not\\ create\\ or\\ alter\\ a\\ pre\\-existing\\ read\\-only\\ target\\ store\\ directory|refuses\\ shared\\ listener/limits/fixture/fault\\ conflicts\\ before\\ opening\\ and\\ never\\ invokes\\ getters|accepts\\ the\\ supported\\ RU\\ IPv6\\ intended\\ listener|refuses\\ envelope\\ extensions,\\ wrong\\ profile/format\\ and\\ Directory/descriptor\\ wire\\ shapes|delegates\\ RU\\ credential,\\ policy,\\ provisioning,\\ artifact,\\ locality\\ and\\ aggregate\\ refusals|delegates\\ TX\\ exact\\ credential\\ and\\ compiled\\ closure\\ refusals|rejects\\ malformed\\ UTF8,\\ BOM,\\ escaped\\ duplicate\\ names,\\ lone\\ surrogates\\ and\\ unsafe\\ numbers\\ without\\ echo|bounds\\ the\\ lossless\\ tree\\ before\\ numeric\\ admission\\ and\\ treats\\ number\\ literals\\ as\\ atomic|isolates\\ the\\ outer\\ byte\\ ceiling\\ with\\ a\\ valid\\ small\\ envelope\\ and\\ legal\\ trailing\\ whitespace|closes\\ the\\ single\\ real\\ descriptor\\ on\\ success\\ and\\ syntax/contract\\ failures|bounds\\ reads\\ despite\\ stale\\ stat\\ and\\ closes\\ handles\\ on\\ overflow/read\\ failure/non\\-file|exports\\ only\\ the\\ loader\\ and\\ local\\ error\\ constructor\\ from\\ the\\ public\\ data\\ entry|accepts\\ the\\ deploymentFile\\-only\\ bdptest\\ section\\ for\\ read\\-update\\ with\\ one\\ selected\\ file\\ open|accepts\\ the\\ deploymentFile\\-only\\ bdptest\\ section\\ for\\ transactional\\ with\\ one\\ selected\\ file\\ open|refuses\\ a\\ nested\\ deploymentFile\\ mismatched\\-path\\ before\\ opening|refuses\\ a\\ nested\\ deploymentFile\\ invalid\\-path\\-type\\ before\\ opening|refuses\\ a\\ nested\\ deploymentFile\\ fixture\\-conflict\\ before\\ opening|refuses\\ unsupported\\ profile\\ read\\ before\\ opening|refuses\\ unsupported\\ profile\\ undefined\\ before\\ opening|refuses\\ unsupported\\ profile\\ future\\ before\\ opening|bdptest\\.deploymentFile\\ stores\\ a\\ nonsecret\\ absolute\\ path\\ without\\ opening\\ it\\ and\\ preserves\\ precedence|bdptest\\.deploymentFile\\ uses\\ UTF8\\ bytes\\ at\\ the\\ exact\\ path\\ bound|bdptest\\.deploymentFile\\ refuses\\ invalid\\ path\\ case\\ 0\\ with\\ field/rule\\-only\\ diagnostics|bdptest\\.deploymentFile\\ refuses\\ invalid\\ path\\ case\\ 1\\ with\\ field/rule\\-only\\ diagnostics|bdptest\\.deploymentFile\\ refuses\\ invalid\\ path\\ case\\ 2\\ with\\ field/rule\\-only\\ diagnostics|bdptest\\.deploymentFile\\ refuses\\ invalid\\ path\\ case\\ 3\\ with\\ field/rule\\-only\\ diagnostics|bdptest\\.deploymentFile\\ refuses\\ invalid\\ path\\ case\\ 4\\ with\\ field/rule\\-only\\ diagnostics|bdptest\\.deploymentFile\\ refuses\\ invalid\\ path\\ case\\ 5\\ with\\ field/rule\\-only\\ diagnostics|bdptest\\.deploymentFile\\ ignores\\ content\\ but\\ preserves\\ global\\ vocabulary\\ for\\ bdp|bdptest\\.deploymentFile\\ ignores\\ content\\ but\\ preserves\\ global\\ vocabulary\\ for\\ bdpbd|bdptest\\.deploymentFile\\ ignores\\ content\\ but\\ preserves\\ global\\ vocabulary\\ for\\ conformance|pins\\ the\\ root\\ and\\ explicit\\ development\\ facade\\ and\\ refuses\\ missing\\ or\\ broad\\ exports|refuses\\ root,\\ descendants\\ and\\ symlink\\ aliases\\ while\\ accepting\\ an\\ external\\ sibling|new\\ private\\ Snapshot\\ entry\\ points\\ do\\ not\\ escape\\ package\\ public\\ exports|G11\\ source\\ qualification\\ and\\ private\\ containment\\ keeps\\ lifecycle\\ internals\\ private\\ alongside\\ the\\ explicit\\ development\\ facade|captures\\ detached\\ bounded\\ own\\-data\\ launch\\ inputs\\ without\\ installing\\ alternate\\ runtime\\ controls|binds\\ every\\ default\\ tuple\\ leaf\\ in\\ the\\ pure\\ digest\\ dependency\\ test\\ \\(not\\ a\\ served\\ override\\)|effective\\ stream\\ availability\\ preserves\\ finite\\-only\\ idle\\ seams\\ at\\ the\\ strict\\ boundary|binds\\ every\\ fixed\\ owner\\-bound\\ group\\ into\\ configuration\\ identity\\ without\\ enabling\\ overrides)$"
+       ],
+@@ -329,7 +329,7 @@
+       "cwd": "/Users/dbox/repos/wt/vickie/vickie-trusted-startup-configuration",
+       "argv": [
+         "/opt/homebrew/opt/python@3.14/bin/python3.14",
+-        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-trusted-startup-validation-preparation-4/audit.py",
++        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-trusted-startup-validation-preparation-5/audit.py",
+         "source"
+       ],
+       "outerSeconds": 120,
+@@ -347,7 +347,7 @@
+       "cwd": "/Users/dbox/repos/wt/vickie/vickie-trusted-startup-configuration",
+       "argv": [
+         "/opt/homebrew/opt/python@3.14/bin/python3.14",
+-        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-trusted-startup-validation-preparation-4/packages.py",
++        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-trusted-startup-validation-preparation-5/packages.py",
+         "directory"
+       ],
+       "outerSeconds": 120,
+@@ -370,7 +370,7 @@
+         "@bdp/protocol",
+         "pack",
+         "--pack-destination",
+-        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-trusted-startup-validation-preparation-4/run/packages"
++        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-trusted-startup-validation-preparation-5/run/packages"
+       ],
+       "outerSeconds": 120,
+       "termAtSeconds": 115,
+@@ -391,7 +391,7 @@
+         "@bdp/server",
+         "pack",
+         "--pack-destination",
+-        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-trusted-startup-validation-preparation-4/run/packages"
++        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-trusted-startup-validation-preparation-5/run/packages"
+       ],
+       "outerSeconds": 120,
+       "termAtSeconds": 115,
+@@ -407,7 +407,7 @@
+       "cwd": "/Users/dbox/repos/wt/vickie/vickie-trusted-startup-configuration",
+       "argv": [
+         "/opt/homebrew/opt/python@3.14/bin/python3.14",
+-        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-trusted-startup-validation-preparation-4/packages.py",
++        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-trusted-startup-validation-preparation-5/packages.py",
+         "tar"
+       ],
+       "outerSeconds": 120,
+@@ -425,7 +425,7 @@
+       "cwd": "/Users/dbox/repos/wt/vickie/vickie-trusted-startup-configuration",
+       "argv": [
+         "/opt/homebrew/opt/python@3.14/bin/python3.14",
+-        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-trusted-startup-validation-preparation-4/packages.py",
++        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-trusted-startup-validation-preparation-5/packages.py",
+         "consumer"
+       ],
+       "outerSeconds": 120,
+@@ -440,7 +440,7 @@
+     "consumer-install": {
+       "id": "consumer-install",
+       "kind": "supervised-command",
+-      "cwd": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-trusted-startup-validation-preparation-4/run/consumer",
++      "cwd": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-trusted-startup-validation-preparation-5/run/consumer",
+       "argv": [
+         "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+         "/Users/dbox/.cache/node/corepack/v1/pnpm/11.20.0/bin/pnpm.cjs",
+@@ -464,7 +464,7 @@
+       "cwd": "/Users/dbox/repos/wt/vickie/vickie-trusted-startup-configuration",
+       "argv": [
+         "/opt/homebrew/opt/python@3.14/bin/python3.14",
+-        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-trusted-startup-validation-preparation-4/packages.py",
++        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-trusted-startup-validation-preparation-5/packages.py",
+         "installed"
+       ],
+       "outerSeconds": 120,
+@@ -561,7 +561,7 @@
+       "cwd": "/Users/dbox/repos/wt/vickie/vickie-trusted-startup-configuration",
+       "argv": [
+         "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+-        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-trusted-startup-validation-preparation-4/bound-consumer-loader.mjs"
++        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-trusted-startup-validation-preparation-5/bound-consumer-loader.mjs"
+       ],
+       "outerSeconds": 120,
+       "termAtSeconds": 115,
+@@ -583,7 +583,7 @@
+       "cwd": "/Users/dbox/repos/wt/vickie/vickie-trusted-startup-configuration",
+       "argv": [
+         "/opt/homebrew/opt/python@3.14/bin/python3.14",
+-        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-trusted-startup-validation-preparation-4/audit.py",
++        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-trusted-startup-validation-preparation-5/audit.py",
+         "installed"
+       ],
+       "outerSeconds": 120,
+@@ -600,7 +600,7 @@
+       "cwd": "/Users/dbox/repos/wt/vickie/vickie-trusted-startup-configuration",
+       "argv": [
+         "/opt/homebrew/opt/python@3.14/bin/python3.14",
+-        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-trusted-startup-validation-preparation-4/audit.py",
++        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-trusted-startup-validation-preparation-5/audit.py",
+         "smoke"
+       ],
+       "outerSeconds": 120,
+--- preparation4/context/source/packages/server/src/reference-deployment.test.ts
++++ preparation5/context/source/packages/server/src/reference-deployment.test.ts
+@@ -509,9 +509,15 @@
+     },
+     {
+       contracts: {
+-        descriptors: [],
++        ...artifacts(),
+         schemas: [
+-          { retrievalUri: `${scope}schemas/bad`, utf8: '{"$ref":"https://missing.test/schema"}' },
++          {
++            retrievalUri: `${scope}schemas/item`,
++            utf8: JSON.stringify({
++              $id: `${scope}schemas/item`,
++              $ref: "https://missing.test/schema",
++            }),
++          },
+         ],
+       },
+     },
+--- preparation4/dependency-inputs.json
++++ preparation5/dependency-inputs.json
+@@ -1,5 +1,5 @@
+ {
+-  "sourceIdentity": "7e856365e701e96ddf233e13d6883c6d74464dd755c0ff59f1b185c37c7b19db",
++  "sourceIdentity": "0c53a6bb33d57133c8fbb43b8787d9251ca4276abcdb18b2a9f434279bfe364b",
+   "files": {
+     ".node-version": "2722b61f414f07f08be7f1f1316012813818f26f1c40d6a24a748686cec7d2ff",
+     ".npmrc": "7151cf397def0c2cb0ab65643701d27d335a72c90f775675b5f826bc7005818a",
+--- preparation4/execution-gate.closed.json
++++ preparation5/execution-gate.closed.json
+@@ -6,8 +6,8 @@
+   "mode": "final",
+   "approvedStages": [],
+   "sourceBinding": {
+-    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-trusted-startup-validation-preparation-4/source-binding.json",
+-    "sha256": "5ba54d754dc0512206f3eb9883970063f0acb07001c788aaaf0bfc17a92cca50"
++    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-trusted-startup-validation-preparation-5/source-binding.json",
++    "sha256": "0572475970aee5a5466530ad68c4e84b5725947a0d7f3740da9321b6a23f75de"
+   },
+   "rootDisposition": {
+     "path": "UNRESOLVED",
+@@ -58,37 +58,49 @@
+     "path": "UNRESOLVED",
+     "sha256": "UNRESOLVED"
+   },
+-  "implementationIndexSha256": "c906833ed996333c305bd1f29e77db67b6250fd73753206757cc9ebceb747a24",
++  "implementationIndexSha256": "f7abdd4090565e51ea608f3f4d2858ff8e916f421e38012d2870ea6c6da071ca",
+   "nativeMechanicsAcceptance": {
+     "path": "UNRESOLVED",
+     "sha256": "UNRESOLVED"
+   },
+   "knownActualCodeDisposition": {
+-    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-trusted-startup-validation-preparation-4/context/write-trusted-startup-code-root-disposition-1/disposition.json",
++    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-trusted-startup-validation-preparation-5/context/write-trusted-startup-code-root-disposition-1/disposition.json",
+     "sha256": "3fc6bdf1758b0ad37fd49d140cd3f09faf9481ae81318fa5716ccc6d87c2b6f3"
+   },
+   "knownNativePrecision": {
+-    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-trusted-startup-validation-preparation-4/context/write-trusted-startup-code-corrections-1/native-precision-closure-1/closure.json",
++    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-trusted-startup-validation-preparation-5/context/write-trusted-startup-code-corrections-1/native-precision-closure-1/closure.json",
+     "sha256": "c0423feca0955787ade78039c7ee8fd7960939a907da8a3ae5cd1d99567b6b28"
+   },
+   "knownCorrectionFreeze": {
+-    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-trusted-startup-validation-preparation-4/context/write-trusted-startup-code-corrections-1/index.json",
++    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-trusted-startup-validation-preparation-5/context/write-trusted-startup-code-corrections-1/index.json",
+     "sha256": "85b2b9eeb6dc785ee7b8195f93e4c7759a2dd66ac71052d350539abb44c61576"
+   },
+   "knownTypecheckCorrection": {
+-    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-trusted-startup-validation-preparation-4/context/typecheck-correction-1/index.json",
++    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-trusted-startup-validation-preparation-5/context/typecheck-correction-1/index.json",
+     "sha256": "98ab5463b224a382ac414abe8ac719aadb3c4092cbed89c61e6257b9ca18237a"
+   },
+   "knownFixtureTypePrecision": {
+-    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-trusted-startup-validation-preparation-4/context/typecheck-correction-1/native-precision-closure-1/closure.json",
++    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-trusted-startup-validation-preparation-5/context/typecheck-correction-1/native-precision-closure-1/closure.json",
+     "sha256": "398b99f855e98eecf260362ccb94378e82e580765c0d807b0ed3b2faad855ecb"
+   },
+   "knownLintCorrection": {
+-    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-trusted-startup-validation-preparation-4/context/lint-correction-1/index.json",
++    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-trusted-startup-validation-preparation-5/context/lint-correction-1/index.json",
+     "sha256": "9c8a051005b29686dddb1eb5cc939d35c0012d80b290d1a8d71e85a7c6b24b56"
+   },
+   "knownLintPrecision": {
+-    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-trusted-startup-validation-preparation-4/context/lint-correction-1/native-precision-closure-1/closure.json",
++    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-trusted-startup-validation-preparation-5/context/lint-correction-1/native-precision-closure-1/closure.json",
+     "sha256": "d840ae8f52008049a4d267d68f20bf98561cc2b12a676be191185d26148cf92d"
++  },
++  "knownFocusedSourceCorrection": {
++    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-trusted-startup-validation-preparation-5/context/focused-source-correction-1/index.json",
++    "sha256": "6c342bbe6970afadeec6009d6bf4c9d8ef7bb59b2564567bd72420e2215078ad"
++  },
++  "knownRootFrozenSourceBinding": {
++    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-trusted-startup-validation-preparation-5/context/focused-source-correction-1/source-binding.json",
++    "sha256": "92166de7cf4ec773d973dd6ab92cb15cf0e3fc4fa1a4b7896674a375b7c82824"
++  },
++  "knownNativeFixtureRecommendation": {
++    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-trusted-startup-validation-preparation-5/context/native-failure-recommendation-1/recommendation-precision.json",
++    "sha256": "50b18af2aed32d972229cdb0c628b32d154b5c9971f45b4e3bc082ea22ff198a"
+   }
+ }
+--- preparation4/execution-gate.json
++++ preparation5/execution-gate.json
+@@ -6,8 +6,8 @@
+   "mode": "final",
+   "approvedStages": [],
+   "sourceBinding": {
+-    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-trusted-startup-validation-preparation-4/source-binding.json",
+-    "sha256": "5ba54d754dc0512206f3eb9883970063f0acb07001c788aaaf0bfc17a92cca50"
++    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-trusted-startup-validation-preparation-5/source-binding.json",
++    "sha256": "0572475970aee5a5466530ad68c4e84b5725947a0d7f3740da9321b6a23f75de"
+   },
+   "rootDisposition": {
+     "path": "UNRESOLVED",
+@@ -58,37 +58,49 @@
+     "path": "UNRESOLVED",
+     "sha256": "UNRESOLVED"
+   },
+-  "implementationIndexSha256": "c906833ed996333c305bd1f29e77db67b6250fd73753206757cc9ebceb747a24",
++  "implementationIndexSha256": "f7abdd4090565e51ea608f3f4d2858ff8e916f421e38012d2870ea6c6da071ca",
+   "nativeMechanicsAcceptance": {
+     "path": "UNRESOLVED",
+     "sha256": "UNRESOLVED"
+   },
+   "knownActualCodeDisposition": {
+-    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-trusted-startup-validation-preparation-4/context/write-trusted-startup-code-root-disposition-1/disposition.json",
++    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-trusted-startup-validation-preparation-5/context/write-trusted-startup-code-root-disposition-1/disposition.json",
+     "sha256": "3fc6bdf1758b0ad37fd49d140cd3f09faf9481ae81318fa5716ccc6d87c2b6f3"
+   },
+   "knownNativePrecision": {
+-    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-trusted-startup-validation-preparation-4/context/write-trusted-startup-code-corrections-1/native-precision-closure-1/closure.json",
++    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-trusted-startup-validation-preparation-5/context/write-trusted-startup-code-corrections-1/native-precision-closure-1/closure.json",
+     "sha256": "c0423feca0955787ade78039c7ee8fd7960939a907da8a3ae5cd1d99567b6b28"
+   },
+   "knownCorrectionFreeze": {
+-    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-trusted-startup-validation-preparation-4/context/write-trusted-startup-code-corrections-1/index.json",
++    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-trusted-startup-validation-preparation-5/context/write-trusted-startup-code-corrections-1/index.json",
+     "sha256": "85b2b9eeb6dc785ee7b8195f93e4c7759a2dd66ac71052d350539abb44c61576"
+   },
+   "knownTypecheckCorrection": {
+-    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-trusted-startup-validation-preparation-4/context/typecheck-correction-1/index.json",
++    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-trusted-startup-validation-preparation-5/context/typecheck-correction-1/index.json",
+     "sha256": "98ab5463b224a382ac414abe8ac719aadb3c4092cbed89c61e6257b9ca18237a"
+   },
+   "knownFixtureTypePrecision": {
+-    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-trusted-startup-validation-preparation-4/context/typecheck-correction-1/native-precision-closure-1/closure.json",
++    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-trusted-startup-validation-preparation-5/context/typecheck-correction-1/native-precision-closure-1/closure.json",
+     "sha256": "398b99f855e98eecf260362ccb94378e82e580765c0d807b0ed3b2faad855ecb"
+   },
+   "knownLintCorrection": {
+-    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-trusted-startup-validation-preparation-4/context/lint-correction-1/index.json",
++    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-trusted-startup-validation-preparation-5/context/lint-correction-1/index.json",
+     "sha256": "9c8a051005b29686dddb1eb5cc939d35c0012d80b290d1a8d71e85a7c6b24b56"
+   },
+   "knownLintPrecision": {
+-    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-trusted-startup-validation-preparation-4/context/lint-correction-1/native-precision-closure-1/closure.json",
++    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-trusted-startup-validation-preparation-5/context/lint-correction-1/native-precision-closure-1/closure.json",
+     "sha256": "d840ae8f52008049a4d267d68f20bf98561cc2b12a676be191185d26148cf92d"
++  },
++  "knownFocusedSourceCorrection": {
++    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-trusted-startup-validation-preparation-5/context/focused-source-correction-1/index.json",
++    "sha256": "6c342bbe6970afadeec6009d6bf4c9d8ef7bb59b2564567bd72420e2215078ad"
++  },
++  "knownRootFrozenSourceBinding": {
++    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-trusted-startup-validation-preparation-5/context/focused-source-correction-1/source-binding.json",
++    "sha256": "92166de7cf4ec773d973dd6ab92cb15cf0e3fc4fa1a4b7896674a375b7c82824"
++  },
++  "knownNativeFixtureRecommendation": {
++    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-trusted-startup-validation-preparation-5/context/native-failure-recommendation-1/recommendation-precision.json",
++    "sha256": "50b18af2aed32d972229cdb0c628b32d154b5c9971f45b4e3bc082ea22ff198a"
+   }
+ }
+--- preparation4/implementation-hashes.json
++++ preparation5/implementation-hashes.json
+@@ -1,10 +1,10 @@
+ {
+   "state": "CLOSED candidate mechanics; requires native/root precision acceptance before execution",
+   "files": {
+-    "README.md": "10eef144810ab9cfa33befb386d7a213956617e97a812f8e2da38182adb763ad",
++    "README.md": "e3e6e3a618ca2226519691317265644db830067c5512812a6f70dd0f375c4931",
+     "README.md.adaptation-inverse.patch": "5871f2d9bd339739c35ef2a34dca023753be70b703fde20a1c7525b4b760c4e8",
+     "README.md.adaptation.patch": "b68a9349729c4b662b1dc1cbeaeb2d1940f722094e44e18fb53dfdfe0b9e1da0",
+-    "adaptation-provenance.json": "e5cf57e9e4c7872451420a24073c1c508713337c43ff3cb1c1f6b5f8b2385e43",
++    "adaptation-provenance.json": "06750d1d419a0d0ea3c62e19dfe488160fb05eb8f0bf83e913e55f960da0955c",
+     "audit-expectations.json": "2285c43b42993f9bf46e118e6cc3853ebe316d05c4f80e90d187c9e65379ad52",
+     "audit-expectations.json.adaptation-inverse.patch": "836b59cdc31bc76f448cb53862ef900a52bc520316b65413512d970522f53d8d",
+     "audit-expectations.json.adaptation.patch": "d8896f55ffcc0fb194b6329ec04a32bdd034d584dc90933ea0c726d9b63dddaa",
+@@ -14,15 +14,40 @@
+     "base-tools.required.json": "b75f63d22691c526eafecc3e1ac391709ba8bfd1ea6a7254b56953a78c8a67a9",
+     "bound-consumer-loader.adaptation-inverse.patch": "258c2eb043a25a3d374a0a906b442244873b9976aceb96270a0ba8d398d1544a",
+     "bound-consumer-loader.adaptation.patch": "bcafadfb0a557617ca03258e82d483cdbd2b985dd5f4f725be890b62bae280f9",
+-    "bound-consumer-loader.mjs": "5c6572df8216188bf58a563f224cc1b968798a900f701de609cdab169c51b137",
+-    "command-matrix.md": "9e2c2d912c543f3c9d44b77d1b5d830122012cc3f73e3ffd54cfdea7c52e2870",
+-    "commands.json": "b2b3387155733dc71bc788980030aebcc497e2623ac56bb8c18e80a94c5c359f",
++    "bound-consumer-loader.mjs": "9638844c05dfa24fca2f85ea9f4a4a744542249dda197940e6a63b10d5327990",
++    "command-matrix.md": "95ff5b5592b5419194d5dd834b0f2184335056fbd11139a86966816df057bd5e",
++    "commands.json": "3ca66a2d9c2d8924fed0712f28033e67ecff2a2c547e349e83f5a1bd75104620",
+     "commands.json.adaptation-inverse.patch": "e671721951742392df4eeee279f228e7a88e2505fc5f13b8702647e7dedf7f12",
+     "commands.json.adaptation.patch": "8a2d233a4ab292fc49b3411ac70b32a1293a6654bfc63d706b414038b43e3e80",
++    "context/focused-source-correction-1/correction.inverse.patch": "86eb9cfd9337d88a0dfd1197d01b4c1beecd2d71b74bc7d19f1db8f22af4ff25",
++    "context/focused-source-correction-1/correction.json": "4bcb24ce38d93156a876c8db63f86ee88e8843ba225684ec0f2d7a8b93a19f4f",
++    "context/focused-source-correction-1/correction.patch": "089370f6d93cc2aae590968d004b05205bcfe17caa08fef1264a3a6d10a7d112",
++    "context/focused-source-correction-1/full12.patch": "515e11937c2a89c5e22a696a11a0c01a547a532a02fd645a8994ef12d6d27343",
++    "context/focused-source-correction-1/index.json": "6c342bbe6970afadeec6009d6bf4c9d8ef7bb59b2564567bd72420e2215078ad",
++    "context/focused-source-correction-1/source-binding.json": "92166de7cf4ec773d973dd6ab92cb15cf0e3fc4fa1a4b7896674a375b7c82824",
++    "context/focused-source-correction-1/source-map.json": "054d825cdc815260f0d4472c4b13fafca0130f1330798c8204a45a8de53f403d",
++    "context/focused-source-correction-1/test.after.ts": "adfbf6b0132cc24b3b65bf482000de2da43bf242102020637ed894b2cdd0cee9",
++    "context/focused-source-correction-1/test.before.ts": "5b9de79791eb041e74b4153ffc19dfaf28b029599644a7bda056a84432ef0289",
++    "context/focused-source-diagnosis-1/actual-failure-summary.json": "e16e8f7f350276d223cce50a1659468f9cb37c5e4838687c3d28ae8250179c58",
++    "context/focused-source-diagnosis-1/fixture-predictions.json": "fb22ded1a5046b9fc9de32000eb8e15a208b7e0ad77339e6a450864eeb2fbb76",
++    "context/focused-source-diagnosis-1/index.json": "a6602394dfab65c9fe7a3361e0bc5e95b9807ca89bdcb12b52a3779e90473e5f",
++    "context/focused-source-diagnosis-1/proposed-correction.json": "c572857aa8743c049795702c1884430d780d7944ca8431629823c5b2994a9f2b",
++    "context/focused-source-diagnosis-1/proposed-test-only-inverse.patch": "86eb9cfd9337d88a0dfd1197d01b4c1beecd2d71b74bc7d19f1db8f22af4ff25",
++    "context/focused-source-diagnosis-1/proposed-test-only.patch": "089370f6d93cc2aae590968d004b05205bcfe17caa08fef1264a3a6d10a7d112",
++    "context/focused-source-diagnosis-1/report.md": "4edd4f45551ba8796be234c49e309abcfb2c8ac571f1bd97aad98b882500e015",
++    "context/focused-source-failure-1/diagnosis.json": "a1f8bc5af7c81c6627b2a2050310dcab6eae5903fb698e1dbb034894a063ae57",
++    "context/focused-source-failure-1/execution-gate.closed-after-failure.json": "724f6a81f210940c6e210afd2a20caf6d602c9e230411a712bb26ee8dc91fac3",
++    "context/focused-source-failure-1/focused-source.exit.json": "acaa2b7f77def0ecda0769dcc945704e3e356d1e14c58d5dd360271977760d9a",
++    "context/focused-source-failure-1/focused-source.log": "677ca4bdd7e814dfbe177ad7ce5706063557d274b5fc06b836fb1c454ea1734e",
++    "context/focused-source-failure-1/focused-source.processes.jsonl": "dcc18bca749110945b98dd47cc900096f9c9b02aae1164704c2bb04deb42cbf2",
++    "context/focused-source-failure-1/focused-source.results.json": "10e335ef22366c65fd471a1aba72c9378410f42210b3ca1ca09e71135f0631e1",
++    "context/focused-source-failure-1/focused-source.started.json": "0268395a25ffb52b18c6d21689302b10bfb008b3788f7c99fcfa60c97e18c0bb",
+     "context/historical-validation2/execution-gate.after-failure.json": "a1019d03fa2c31598b85b5a017b70ac2af5debf2a4fab0af617ab49d8615208e",
+     "context/historical-validation2/execution-gate.initial-closed.json": "30ee5da67028aca5b7459a2da2398f415475328a3226b00a0df958b61fc3c55c",
+     "context/historical-validation3/execution-gate.after-lint-failure.json": "9115324cf669ade604f522913f663b145ac60aee893c7e16b61199bafd53d03c",
+     "context/historical-validation3/execution-gate.initial-closed.json": "12dc866ab0ca1cfb5128f9bff34e7c4a928b39bd83a2725ae21752ef1c2fb39f",
++    "context/historical-validation4/execution-gate.after-focused-failure.json": "724f6a81f210940c6e210afd2a20caf6d602c9e230411a712bb26ee8dc91fac3",
++    "context/historical-validation4/execution-gate.initial-closed.json": "542fe2a7eb4817872fe1e3b1ec6f14b8c7846f1b042663547bf71c672f9b84c0",
+     "context/lint-correction-1/after/packages/config/src/index.ts": "cbcb0ecfce8a04b5a037c9923e2913079f03853d4015ba40e984d574f9f5ec47",
+     "context/lint-correction-1/after/packages/server/src/reference-deployment.ts": "276868b4d6bbf2e5a4693b03ef73a96bb2294b76e94456597fd9584c0736c48b",
+     "context/lint-correction-1/after-map.json": "ee57c9f27111d2f047e2a051565918d60e80cca021c13d1ae9c33cfa76281644",
+@@ -71,6 +96,10 @@
+     "context/lint-failure-1/lint.log": "f8cec4261332e69f07b57b4594f210705a85e1594f9cb6e6b931fb7ffaab3c02",
+     "context/lint-failure-1/lint.processes.jsonl": "6d1a9089e007b4b48cb832ddebe0bfba0864ebe8ef5e5515a6e43afdf6eb7d61",
+     "context/lint-failure-1/lint.started.json": "3b84d40e37149d10bf7de1c5fe6b1b146f89f50e66325eee4d790acd4161830c",
++    "context/native-failure-recommendation-1/diagnosis.json": "f7c8e10cca91451cf978016d08d5306720f7c83f3c32bf334f902240c5b9e629",
++    "context/native-failure-recommendation-1/recommendation-precision.json": "50b18af2aed32d972229cdb0c628b32d154b5c9971f45b4e3bc082ea22ff198a",
++    "context/native-failure-recommendation-1/report.md": "a1167d5c4488cbb03d48f8df61a37c75812ed59477984c15428c67897b8e5b16",
++    "context/native-failure-recommendation-1/row-analysis.json": "eaf14c1ee15e93b72a36705e327a79d7f114cf3ef74c3b230d1dd5e88dd9f899",
+     "context/preparation1-native-review.json": "b50419912a3eb97138af1270b63c820ec74f5707a1fef1e0037a52fb30a878dc",
+     "context/preparation1-native-review.md": "ac8386972bfccec2cd6af7b1aaed7750af82f00fdfb672808ae6a8d5c27b376e",
+     "context/preparation2-native-mechanics/acceptance.json": "4fec6d92bad984189bb4b3c463ebaa5857a34f87bbef2fe0adf9adf4d3ee22aa",
+@@ -83,6 +112,12 @@
+     "context/preparation3-native-mechanics/closure.md": "33512a68a80e95984110634d59d421a1eea2bedbf5492ec0545a0ce5b452cf1a",
+     "context/preparation3-native-mechanics/index.json": "95b54ead2f1f3f1e71997509249342f42bd7246e408175e80e60a222cb02c7ea",
+     "context/preparation3-native-mechanics/input-verification.json": "f15b3df3686f62c7eed6ff6af6939c88119a509c7782c26d322a96f8ed061bd9",
++    "context/preparation4-native-mechanics/auditor-data-shape-corrections.json": "75e9a2571750cd1512d271b2a460004a7a8258081d466ef25043bae174490915",
++    "context/preparation4-native-mechanics/closure.json": "50ee3e324cf3764e31a39de588d1c7641912d7ba8f542fdfce0fea7b8b12caa2",
++    "context/preparation4-native-mechanics/delta-verification.json": "cfbc80013d7ae96833a8191448bcfbe26d09e0918f2ee688350517ddcde934f6",
++    "context/preparation4-native-mechanics/index.json": "0e8b9f8e3acb96439eeab44ad388d8fd817eb393c6ca3d0c55c8dca90d9c0279",
++    "context/preparation4-native-mechanics/input-verification.json": "ef0e6671c8f01e4d20603dd6bcd979cd9bb8334f573f2296c4bab6bae8c982a8",
++    "context/preparation4-native-mechanics/report.md": "15557b3f5e2ec2e7780549159825bf79a83ec3c1869659dc580d2a5786cc49ef",
+     "context/root-code-correction-acceptance-1.json": "d24825b83a0cd599d0bba435d1fe6b7e6bea50a453ab56c155500c5c1dfb0d01",
+     "context/source/.github/workflows/ci.yml": "268c9563e8d2f4fa4b7314492cb6c4994f7c76da9b26cda7a74c7e5b3c6f664a",
+     "context/source/apps/bdptest/src/installed-reference-startup.test.ts": "db93a0de4e13cf7330ba311435a3ea3af6877d4f6707f652875cba1b4364e0f2",
+@@ -90,7 +125,7 @@
+     "context/source/packages/config/src/index.test.ts": "075bfa623cf5f5b5cee97084b3f534a1649539afdc7d9f8539652c1678ef4a26",
+     "context/source/packages/config/src/index.ts": "cbcb0ecfce8a04b5a037c9923e2913079f03853d4015ba40e984d574f9f5ec47",
+     "context/source/packages/server/src/read-sequence-lifecycle.test.ts": "83f93562c4742d6a5f7f04ebd5772908a1cf716c99f794c3a2078d416046f497",
+-    "context/source/packages/server/src/reference-deployment.test.ts": "5b9de79791eb041e74b4153ffc19dfaf28b029599644a7bda056a84432ef0289",
++    "context/source/packages/server/src/reference-deployment.test.ts": "adfbf6b0132cc24b3b65bf482000de2da43bf242102020637ed894b2cdd0cee9",
+     "context/source/packages/server/src/reference-deployment.ts": "276868b4d6bbf2e5a4693b03ef73a96bb2294b76e94456597fd9584c0736c48b",
+     "context/source/packages/server/src/transaction-installed.test.ts": "d664779fd64d50eb4736961472538473b2969fb9ce36e4fd39b6efe40c2d0327",
+     "context/source/packages/server/src/transaction-runtime-configuration.test.ts": "3167dc4a4748f63ec069f0c9f3fddbcbd82a14aca127c49c5ba118bb8cd9f79d",
+@@ -195,7 +230,7 @@
+     "deltas/successor-disposition.json.inverse.patch": "28d28562dbd4f40fe01fe391140fd870a8ef8b47796e3b4d4f28485624344d02",
+     "deltas/successor-static-checks.json.forward.patch": "10734c8c3aef530ea92752f196125de16a8579bbe4353e8bccad357ca2e9f02b",
+     "deltas/successor-static-checks.json.inverse.patch": "6078568893249ba59d14dc56bd728333446007240278452c97492b6df66b7581",
+-    "dependency-inputs.json": "d4462e687a197e4e313013e0425e1778496a7199131a55789b1d737b2b9449aa",
++    "dependency-inputs.json": "4dd94bce1961f115955dcc977776913a3f70b4ce64127bead5d022f27267c119",
+     "dependency-inputs.json.adaptation-inverse.patch": "a443a98b9a9a3623eec92764374502edf6db9f3acaca4aba31e05b1bfe91a5b3",
+     "dependency-inputs.json.adaptation.patch": "0c4720bb1909d3a03f7d4d63c9efee99df76518af64342673c4eb6d62c2c86ea",
+     "execution-gate.closed.json.adaptation-inverse.patch": "81a726b5499005d7d35746301feb9b1abf5449062783e6542828144390f53fab",
+@@ -210,11 +245,11 @@
+     "guarded-action-session-20261018-021624-549f.py": "b2d467920638e68d3b007ba9daa432e971636245eca988bfb29d7a99d6e3fb30",
+     "implementation-hashes.json.successor-inverse.patch": "0c382dac9ee18e9c5cb04c0f2bbe62c524220e84f595488e8a14519ce28f97b2",
+     "implementation-hashes.json.successor.patch": "a0bb86f5aba3e859e5c445f16264ac042e8979f7a35dd065f6cb6558b68b779b",
+-    "installed-audit-contract.json": "8cdca1f9e931c22b5eda989d42f27ba2c6489bc65a29119f5570ed93aa0f0c57",
++    "installed-audit-contract.json": "156e8a79b4050ea7abe4cb115910265ed41e1a37a25a19265acc28f8df4ce3fc",
+     "installed-audit-contract.json.adaptation-inverse.patch": "7e1d09363ac1c0cf8116c07b37a71a1fc02026ebedbaaa40d57ce3e193b6a78e",
+     "installed-audit-contract.json.adaptation.patch": "594aace186f0df7c2ace98c4c9a5509d208a883b8c2e0e9b436c3169abc89b05",
+     "lifecycle-and-stop-predicates.md": "68c25d8a6dd6290feaa964541c5a0ca8c87b15aea83f514558f61896ab9a1d2a",
+-    "package-consumer-contract.json": "0cd0cbfb34c6437bfa5300f2b97d89a29f15c79532378a841f82438b4a9b5af9",
++    "package-consumer-contract.json": "4c61867b590d8b9223a17e3a5ab37610b3a6ffa4e0dab509b71ee0a6d1fe8a1c",
+     "package-consumer-contract.json.adaptation-inverse.patch": "6dba8212fc0ecc5638bf1de786413c26d1a08ee3375e65334759e17d7dcec42c",
+     "package-consumer-contract.json.adaptation.patch": "1c49c3ab4ac99b06b04e0eb0df82c38050f69738b33641b3b006c525b09ff506",
+     "packages.py": "4e779f7d95dffec9534f258dec1fe3102f5e0d7419559bd8cb8c97631b529449",
+@@ -284,14 +319,38 @@
+     "predecessor/preparation3-static/successor-disposition.json": "106c927cbdaeeb555697b39a6ff940c01a9f8ce2776daf62bfde4ff65f7f3bdd",
+     "predecessor/preparation3-static/successor-preservation.json": "3aab858dc26ccc9a8e8b5620b5806dc3008d7850831ec96c132a30ddb6990b4a",
+     "predecessor/preparation3-static/successor-static-checks.json": "aaa7c6b116b306b002149bba99593338cbe7a7a65841c327560f26fa9da18f8e",
++    "predecessor/preparation4-index.json": "0bff51f3c4f142c641a585152756d504a9efd7d0fc2ab2d65f19b93f3e14012b",
++    "predecessor/preparation4-static/README.md": "10eef144810ab9cfa33befb386d7a213956617e97a812f8e2da38182adb763ad",
++    "predecessor/preparation4-static/adaptation-provenance.json": "e5cf57e9e4c7872451420a24073c1c508713337c43ff3cb1c1f6b5f8b2385e43",
++    "predecessor/preparation4-static/bound-consumer-loader.mjs": "5c6572df8216188bf58a563f224cc1b968798a900f701de609cdab169c51b137",
++    "predecessor/preparation4-static/command-matrix.md": "9e2c2d912c543f3c9d44b77d1b5d830122012cc3f73e3ffd54cfdea7c52e2870",
++    "predecessor/preparation4-static/commands.json": "b2b3387155733dc71bc788980030aebcc497e2623ac56bb8c18e80a94c5c359f",
++    "predecessor/preparation4-static/context/source/packages/server/src/reference-deployment.test.ts": "5b9de79791eb041e74b4153ffc19dfaf28b029599644a7bda056a84432ef0289",
++    "predecessor/preparation4-static/dependency-inputs.json": "d4462e687a197e4e313013e0425e1778496a7199131a55789b1d737b2b9449aa",
++    "predecessor/preparation4-static/execution-gate.closed.json": "542fe2a7eb4817872fe1e3b1ec6f14b8c7846f1b042663547bf71c672f9b84c0",
++    "predecessor/preparation4-static/execution-gate.json": "542fe2a7eb4817872fe1e3b1ec6f14b8c7846f1b042663547bf71c672f9b84c0",
++    "predecessor/preparation4-static/implementation-hashes.json": "c906833ed996333c305bd1f29e77db67b6250fd73753206757cc9ebceb747a24",
++    "predecessor/preparation4-static/installed-audit-contract.json": "8cdca1f9e931c22b5eda989d42f27ba2c6489bc65a29119f5570ed93aa0f0c57",
++    "predecessor/preparation4-static/package-consumer-contract.json": "0cd0cbfb34c6437bfa5300f2b97d89a29f15c79532378a841f82438b4a9b5af9",
++    "predecessor/preparation4-static/reference-pins.json": "a6663691f8cd08980bf51095e012b444df6cbd788b635e595b930b46fe2fb7db",
++    "predecessor/preparation4-static/selection.json": "b3d1ad1f764748a32454ab35ba96b01936753ed624155ec0fd5b6b129773074b",
++    "predecessor/preparation4-static/source-audit-contract.json": "252dbb80a653de23a851679773d1fa438924d87c06044aa8bbacd8cd39589997",
++    "predecessor/preparation4-static/source-binding.json": "5ba54d754dc0512206f3eb9883970063f0acb07001c788aaaf0bfc17a92cca50",
++    "predecessor/preparation4-static/source-map.json": "ee57c9f27111d2f047e2a051565918d60e80cca021c13d1ae9c33cfa76281644",
++    "predecessor/preparation4-static/static-preparation-checks.json": "ec45fbe080235c624b7f92c75f42e7923b877cf61096cf52d0819eaf7e4314e9",
++    "predecessor/preparation4-static/successor-disposition.json": "d6dd547248eb5455547b206f8e6bfe78919742568657446352cd17e5555fe087",
++    "predecessor/preparation4-static/successor-preservation.json": "3d3067db6ff6f1fdd2c0ad020a26c104437574081a0a02c4720e4cd919b301b3",
++    "predecessor/preparation4-static/successor-static-checks.json": "ec45fbe080235c624b7f92c75f42e7923b877cf61096cf52d0819eaf7e4314e9",
++    "predecessor/preparation4-static/unresolved-inputs.json": "74c9eba3fe666fda24274e50eb0a929ee73864af14b3e781507e32211cb7cab1",
+     "predecessor/source-audit-contract.json": "08a04e8edb77d82872c9b6c06382894013d86e0f72135cdd42b4d50014636a6a",
+     "predecessor/source-audit-contract.json.adaptation-inverse.patch": "8f2447a906807d23ac262f3bcfe25063b735f5f820800a47f3b88a1d8830eeb3",
+     "predecessor/source-audit-contract.json.adaptation.patch": "563164602c57824add88185a220bf46b7402be97d05f4f2abaece39abb0b9f43",
+     "predecessor-preservation.json": "1c7dc62a581cc7969c013f84d101dd1b678ebb315b2d276c15a71e27896d9520",
+     "predecessor-validation2-run-map.json": "7653f1f24b2dff092d48c0e2250823a5c59a7a1ee8a3418355cec32c6a9bb020",
+     "predecessor-validation3-run-map.json": "35ab8e0edac9a208f84d67f5c101b3d0ad70bb503e8ec4a98ee5dac4d2aabd9e",
++    "predecessor-validation4-run-map.json": "32a603b614a6d3299fbf28f7b5f5dfa8ed350bad1111da76ed97865cab5e3794",
+     "preparation-failure-1.json": "472e26c82e8186d77c6987f0f7af879f58bdd827e3c7cf9d54c2537b327d8928",
+-    "reference-pins.json": "a6663691f8cd08980bf51095e012b444df6cbd788b635e595b930b46fe2fb7db",
++    "reference-pins.json": "132a75c1bd168136355153c945d36b5d0830d86458a88984a502d9f0275ed738",
+     "report-schemas.json": "2743d8e1fcb2c73e2527e4f030e4007f7227fd29246773c89605b7560c3602fd",
+     "report-schemas.json.adaptation-inverse.patch": "039be86d347cd9682ccff91a99a4cacfd57731ec72cf5f19ebc5c68cd16f064b",
+     "report-schemas.json.adaptation.patch": "88cfcf845dc9d0bf10122c8f474dd325ced8cd248cff7bf5dd1bc908fc80de85",
+@@ -299,22 +358,63 @@
+     "run.py": "6af15172dc1dd2bbb70fca451bbb27bb2c34ee003849b6d48620caffcce33235",
+     "run.py.adaptation-inverse.patch": "417179b0ec0a27f638f39ed2dd6c0a313719adbfe1e483b184e80fbaa38608f5",
+     "run.py.adaptation.patch": "ae83696590899c0a4b175b902375bb6276b6be162616c2bd7af7f078594af348",
+-    "selection.json": "b3d1ad1f764748a32454ab35ba96b01936753ed624155ec0fd5b6b129773074b",
+-    "source-audit-contract.json": "252dbb80a653de23a851679773d1fa438924d87c06044aa8bbacd8cd39589997",
++    "selection.json": "bf247dfcb4314777875efd7159f64c56b30d3c15eb4ef49ccef8526a4993ad16",
++    "source-audit-contract.json": "cbb606f5e5b3ee2eb79d3379688966d36da697f32438bff71f1ad81eef33cb83",
+     "source-audit-contract.json.adaptation-inverse.patch": "0ab8d19ed89e4924948a315765a47167bfdae0e8434ea22439d66a609c01448c",
+     "source-audit-contract.json.adaptation.patch": "4fb198e870b2846658b58452b9e2cbb3e623937b29e8d40c2461b4bd54d9a151",
+-    "source-binding.json": "5ba54d754dc0512206f3eb9883970063f0acb07001c788aaaf0bfc17a92cca50",
++    "source-binding.json": "0572475970aee5a5466530ad68c4e84b5725947a0d7f3740da9321b6a23f75de",
+     "source-binding.json.adaptation-inverse.patch": "c716aed882ef2bb3905c85ca99d9643edae6c5228b15e09affe7644119289213",
+     "source-binding.json.adaptation.patch": "33dbeb3ccdd0e6e6af86b4db4f24d5f606375753ed066baf42d9aaf1c78a424b",
+-    "source-map.json": "ee57c9f27111d2f047e2a051565918d60e80cca021c13d1ae9c33cfa76281644",
+-    "static-preparation-checks.json": "ec45fbe080235c624b7f92c75f42e7923b877cf61096cf52d0819eaf7e4314e9",
++    "source-map.json": "054d825cdc815260f0d4472c4b13fafca0130f1330798c8204a45a8de53f403d",
++    "static-preparation-checks.json": "fd5719332fe7194b3bfaa1e5fdb7f9a4c2042263d4346d77940459c9c1e4692e",
+     "successor-delta-manifest.json": "a1ee60454b27c8b0bcf5889b53317bd9cbf51afd1a1f6a364f54539e4826ce38",
+-    "successor-disposition.json": "d6dd547248eb5455547b206f8e6bfe78919742568657446352cd17e5555fe087",
++    "successor-disposition.json": "1c58fdb74834a119f36605a9bdc7867a5fd519b7f8944f12853b4548cb02bc80",
+     "successor-origins.initial.json": "b91892a8400a7ffae9f8a763decedd3059b858ebe192147815d9cdc310c371bf",
+     "successor-origins.json": "02397b6f709c5de766e37d4ea32eafb834ead33ea4e3fbb41d9e2ee43f8a5d9d",
+-    "successor-preservation.json": "3d3067db6ff6f1fdd2c0ad020a26c104437574081a0a02c4720e4cd919b301b3",
+-    "successor-static-checks.json": "ec45fbe080235c624b7f92c75f42e7923b877cf61096cf52d0819eaf7e4314e9",
++    "successor-preservation.json": "5766a1696d84cec6ec49fcdbcbbc153ff7396b9a9da80a3142e3cda538e4ca7e",
++    "successor-static-checks.json": "fd5719332fe7194b3bfaa1e5fdb7f9a4c2042263d4346d77940459c9c1e4692e",
++    "successor4-delta-manifest.json": "53b5f72d6680d7ac44f76225acf29eeb344babc4886f7c7813f17d89c5ac8b9d",
++    "successor4-deltas/README.md.forward.patch": "1660b5e1106a410d18f261894e005c11e28c9e1aa042e0fd27926259324f4348",
++    "successor4-deltas/README.md.inverse.patch": "9459f8f0030c2458661f50694befca1897ce877041422e99d426a047f87b6d33",
++    "successor4-deltas/adaptation-provenance.json.forward.patch": "db184ec3210cdd01ce89a9333eb0ac89649f8d6062dd66cacb05e335dc88dfef",
++    "successor4-deltas/adaptation-provenance.json.inverse.patch": "df9ca0a8fb1f17de83264caa1c92836704841dce8f1149ef629e3557a239ea94",
++    "successor4-deltas/bound-consumer-loader.mjs.forward.patch": "9464c0c581142ea3c0c63798ed34a80a64a6bbed3c2fdf15f02ba005db3add5b",
++    "successor4-deltas/bound-consumer-loader.mjs.inverse.patch": "b4a1097ab461ca62903844d8181bd66d22b12dd0906333d65f4213883bf24e04",
++    "successor4-deltas/command-matrix.md.forward.patch": "4444036fb63b3d3488ede62309643129e5c5ca091f6042e18546b81525955758",
++    "successor4-deltas/command-matrix.md.inverse.patch": "6f94b2d11a68056e71857d140fa1cbf67c4cfe728c397017c49d48f2258b9d20",
++    "successor4-deltas/commands.json.forward.patch": "165c05ddd196ce25c7df78cfe24ba30e362a8fc3b4a1c715667ce71877b003fb",
++    "successor4-deltas/commands.json.inverse.patch": "18317e6b35ca9f093f44d04b2d78cb0fdf06f60021266641994a5671d48b02fc",
++    "successor4-deltas/dependency-inputs.json.forward.patch": "dd97e5b5cd289cc24f211fb6e9bab3c9d717254c226bb9eccd67e98ee5dd8b35",
++    "successor4-deltas/dependency-inputs.json.inverse.patch": "f8166093c963316da5ac55952b974ca3bbd687effa011f9a0462306682a10cc5",
++    "successor4-deltas/execution-gate.closed.json.forward.patch": "fe835c6bc292bc09f66192557ef00edf74cda913831866eed15f51ce93ecc3d4",
++    "successor4-deltas/execution-gate.closed.json.inverse.patch": "cf6a1bae23c26886fd783ca29f1c6cc26a3a110e88ff3c96074502175a3fef50",
++    "successor4-deltas/execution-gate.json.forward.patch": "d68d689de997c436b4d1ce1765a51b7d7e61182aa4c336868e9d2a4fba96b77e",
++    "successor4-deltas/execution-gate.json.inverse.patch": "9f82ab23f7682b3cb574c582244e6bde10407a1386cba361032c5184c0917dad",
++    "successor4-deltas/implementation-hashes.json.forward.patch": "ea4a89374638834e2ad81b42f6bc6e9bb2a86e56d7fa5728b6d4f59ec96f9782",
++    "successor4-deltas/implementation-hashes.json.inverse.patch": "7517b88464ba3447356df7c52fda02302b9caba5d5805a8873b595eb9da85264",
++    "successor4-deltas/installed-audit-contract.json.forward.patch": "d48624633c50cce4e06e088f5832e192f2734339181e06446ef45a23d09af30f",
++    "successor4-deltas/installed-audit-contract.json.inverse.patch": "305325399ec2bcf01c26bb5a67fc9e5423af809b348e0469befd55a5a56e2d86",
++    "successor4-deltas/package-consumer-contract.json.forward.patch": "020b2d0cd8476393982d17ff60080216c23976cfd9784cb2389f815daa803fab",
++    "successor4-deltas/package-consumer-contract.json.inverse.patch": "346a2ce248503d790bfe19743e7de5d76c7601d17edd2e23991ddd3dcedb9c6c",
++    "successor4-deltas/reference-pins.json.forward.patch": "aa4511817823bfc4e8a194654d3c0845840d5c71ff7383a1095944d6cc2c10df",
++    "successor4-deltas/reference-pins.json.inverse.patch": "e2d8a5edf0a8c8ef768468d1b547248b3b7cbb441e9879a02c8171b22855ec42",
++    "successor4-deltas/source-audit-contract.json.forward.patch": "f40df85e5ae7d84793c45d4791d93e4a77b3f82c4650896316bceb465d954aa3",
++    "successor4-deltas/source-audit-contract.json.inverse.patch": "c1e547a95ba64d626caa65682c615dda9b156f14acfdc1487d2602c47dac242e",
++    "successor4-deltas/source-binding.json.forward.patch": "4cecd39d55e93b083f98ddc30557197539fcc441129ce2ece4b03670053e5c3c",
++    "successor4-deltas/source-binding.json.inverse.patch": "e0a469eeab7e8d5add4d268b0b29690225f4f0bcf5b7e05473146cda55ea306c",
++    "successor4-deltas/source-map.json.forward.patch": "0179eb80e815a2b4fc8bf4796b81574f7bd7b4e473d5ca9649aa83cc8b1787a6",
++    "successor4-deltas/source-map.json.inverse.patch": "3e7362f49009c3a3567d85129e7e9a3f889dc876820aae90951f63529cf89e1b",
++    "successor4-deltas/static-preparation-checks.json.forward.patch": "c73bc51719b3885c168ccd37cc1d802e6cf652bc6f5e505fec645743c590b24d",
++    "successor4-deltas/static-preparation-checks.json.inverse.patch": "25ac67ba8950a8671f50db4e7930abb059e86194a91e9f12ad85f77de3236989",
++    "successor4-deltas/successor-disposition.json.forward.patch": "b09b2f9294cf17805a090d114fdf6c830ab97b5af404d7bada58f044f28d095e",
++    "successor4-deltas/successor-disposition.json.inverse.patch": "87edf286078e9bf9554323ab39f82dd1faf23f6fa5d5f2e5a237d44b524fc02d",
++    "successor4-deltas/successor-preservation.json.forward.patch": "563d43134c2a09805f0e008713d48085cf77030ef6b321f97b8efe3d3302dfc8",
++    "successor4-deltas/successor-preservation.json.inverse.patch": "366553a6144b5236a802205679a07bc19870efa4cf4ecc78c31c6ce2fa248764",
++    "successor4-deltas/successor-static-checks.json.forward.patch": "5775c3f060f6d872501c5e487e53753f2cd2e5010a680cd6405bc954aafb5050",
++    "successor4-deltas/successor-static-checks.json.inverse.patch": "9c8d228ccde3fdeff8aed7ecddd102ce08c3223d91a615496d81a46ed0fa3457",
+     "successor4-origins.initial.json": "44c44b52c41bfe982193e69f46b4c02d931241420bffb661b8eda6a8d9e30f3a",
+-    "unresolved-inputs.json": "74c9eba3fe666fda24274e50eb0a929ee73864af14b3e781507e32211cb7cab1"
++    "successor4-origins.json": "d666141e962bac67f70ecba4ca3dd13d1a6a2ce48ed120a955f86549e7cb13fc",
++    "successor5-origins.initial.json": "cb62e4f333ef888d24f33c92b9aabdf7ada1910e4b960ce802305bd8c234eb0e",
++    "unresolved-inputs.json": "62d7cef1b525429d527f6e7dbf212b476ba0de83de24dab05b553c8f45694896"
+   }
+ }
+--- preparation4/installed-audit-contract.json
++++ preparation5/installed-audit-contract.json
+@@ -1,9 +1,9 @@
+ {
+   "mode": "PURE NONLISTENING LOADER",
+-  "consumerRoot": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-trusted-startup-validation-preparation-4/run/consumer",
++  "consumerRoot": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-trusted-startup-validation-preparation-5/run/consumer",
+   "entrySpecifier": "@bdp/server/reference-configuration",
+   "actualEntryPath": "UNRESOLVED until root accepted fresh installed proof",
+-  "program": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-trusted-startup-validation-preparation-4/bound-consumer-loader.mjs",
++  "program": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-trusted-startup-validation-preparation-5/bound-consumer-loader.mjs",
+   "origin": {
+     "script": "/Users/dbox/repos/wt/vickie/vickie-trusted-startup-configuration/scripts/smoke-executables.mjs",
+     "scriptSha256": "80c1ecf1d55939fbb0a0fe94aad46bcede1c9d7841dbc3793e00e4493440ddb3",
+@@ -41,7 +41,7 @@
+       "reference-deployment-state.js",
+       "reference-deployment-state.js.map"
+     ],
+-    "exactNames": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-trusted-startup-validation-preparation-4/packaging-inventory.json",
++    "exactNames": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-trusted-startup-validation-preparation-5/packaging-inventory.json",
+     "actualBytes": "UNRESOLVED fresh build/archive/consumer"
+   },
+   "privacy": "exact shared export checker, public root values absent, loader public d.ts private capture-name scan, bare/deep loader+registry+Snapshot and every copied private module path must produce ERR_PACKAGE_PATH_NOT_EXPORTED",
+--- preparation4/package-consumer-contract.json
++++ preparation5/package-consumer-contract.json
+@@ -4,11 +4,11 @@
+     "@bdp/protocol",
+     "@bdp/server"
+   ],
+-  "packDestination": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-trusted-startup-validation-preparation-4/run/packages",
++  "packDestination": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-trusted-startup-validation-preparation-5/run/packages",
+   "directoryExclusive": true,
+   "completeTarMembership": "All members regular package/ files; unique safe relative paths; exactly LICENSE/package.json/dist and protocol full schemas inventory; bytes equal actual build/source except approved server workspace:* ->0.0.0 metadata rewrite",
+   "actualArchiveHashes": "UNRESOLVED",
+-  "externalConsumer": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-trusted-startup-validation-preparation-4/run/consumer",
++  "externalConsumer": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-trusted-startup-validation-preparation-5/run/consumer",
+   "install": [
+     "install",
+     "--offline",
+--- preparation4/reference-pins.json
++++ preparation5/reference-pins.json
+@@ -80,5 +80,42 @@
+   "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-trusted-startup-lint-correction-1/native-precision-closure-1/inputs/index.json": "9c8a051005b29686dddb1eb5cc939d35c0012d80b290d1a8d71e85a7c6b24b56",
+   "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-trusted-startup-lint-correction-1/native-precision-closure-1/inputs/probe-result.json": "2778afb7dcf86a15cfd3823910ec627e335a455d7db01a7a8c4810ca6827452b",
+   "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-trusted-startup-lint-correction-1/native-precision-closure-1/inputs/probe.stderr": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+-  "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-trusted-startup-lint-correction-1/native-precision-closure-1/inputs/probe.stdout": "1b3740d4081a11dcbd97dfb653ca9ebae9b623d0cab0d7ea5a5002c17d993f13"
++  "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-trusted-startup-lint-correction-1/native-precision-closure-1/inputs/probe.stdout": "1b3740d4081a11dcbd97dfb653ca9ebae9b623d0cab0d7ea5a5002c17d993f13",
++  "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-trusted-startup-validation-preparation-4/preparation-index.json": "0bff51f3c4f142c641a585152756d504a9efd7d0fc2ab2d65f19b93f3e14012b",
++  "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-trusted-startup-validation-preparation-4/execution-gate.json": "724f6a81f210940c6e210afd2a20caf6d602c9e230411a712bb26ee8dc91fac3",
++  "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-trusted-startup-validation-preparation-4/execution-gate.closed.json": "542fe2a7eb4817872fe1e3b1ec6f14b8c7846f1b042663547bf71c672f9b84c0",
++  "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-trusted-startup-focused-source-correction-1/index.json": "6c342bbe6970afadeec6009d6bf4c9d8ef7bb59b2564567bd72420e2215078ad",
++  "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-trusted-startup-focused-source-correction-1/correction.inverse.patch": "86eb9cfd9337d88a0dfd1197d01b4c1beecd2d71b74bc7d19f1db8f22af4ff25",
++  "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-trusted-startup-focused-source-correction-1/correction.json": "4bcb24ce38d93156a876c8db63f86ee88e8843ba225684ec0f2d7a8b93a19f4f",
++  "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-trusted-startup-focused-source-correction-1/correction.patch": "089370f6d93cc2aae590968d004b05205bcfe17caa08fef1264a3a6d10a7d112",
++  "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-trusted-startup-focused-source-correction-1/full12.patch": "515e11937c2a89c5e22a696a11a0c01a547a532a02fd645a8994ef12d6d27343",
++  "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-trusted-startup-focused-source-correction-1/source-binding.json": "92166de7cf4ec773d973dd6ab92cb15cf0e3fc4fa1a4b7896674a375b7c82824",
++  "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-trusted-startup-focused-source-correction-1/source-map.json": "054d825cdc815260f0d4472c4b13fafca0130f1330798c8204a45a8de53f403d",
++  "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-trusted-startup-focused-source-correction-1/test.after.ts": "adfbf6b0132cc24b3b65bf482000de2da43bf242102020637ed894b2cdd0cee9",
++  "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-trusted-startup-focused-source-correction-1/test.before.ts": "5b9de79791eb041e74b4153ffc19dfaf28b029599644a7bda056a84432ef0289",
++  "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-trusted-startup-focused-source-failure-1/focused-source.started.json": "0268395a25ffb52b18c6d21689302b10bfb008b3788f7c99fcfa60c97e18c0bb",
++  "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-trusted-startup-focused-source-failure-1/execution-gate.closed-after-failure.json": "724f6a81f210940c6e210afd2a20caf6d602c9e230411a712bb26ee8dc91fac3",
++  "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-trusted-startup-focused-source-failure-1/focused-source.processes.jsonl": "dcc18bca749110945b98dd47cc900096f9c9b02aae1164704c2bb04deb42cbf2",
++  "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-trusted-startup-focused-source-failure-1/focused-source.log": "677ca4bdd7e814dfbe177ad7ce5706063557d274b5fc06b836fb1c454ea1734e",
++  "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-trusted-startup-focused-source-failure-1/focused-source.exit.json": "acaa2b7f77def0ecda0769dcc945704e3e356d1e14c58d5dd360271977760d9a",
++  "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-trusted-startup-focused-source-failure-1/diagnosis.json": "a1f8bc5af7c81c6627b2a2050310dcab6eae5903fb698e1dbb034894a063ae57",
++  "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-trusted-startup-focused-source-failure-1/focused-source.results.json": "10e335ef22366c65fd471a1aba72c9378410f42210b3ca1ca09e71135f0631e1",
++  "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-trusted-startup-focused-source-diagnosis-1/index.json": "a6602394dfab65c9fe7a3361e0bc5e95b9807ca89bdcb12b52a3779e90473e5f",
++  "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-trusted-startup-focused-source-diagnosis-1/report.md": "4edd4f45551ba8796be234c49e309abcfb2c8ac571f1bd97aad98b882500e015",
++  "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-trusted-startup-focused-source-diagnosis-1/fixture-predictions.json": "fb22ded1a5046b9fc9de32000eb8e15a208b7e0ad77339e6a450864eeb2fbb76",
++  "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-trusted-startup-focused-source-diagnosis-1/proposed-correction.json": "c572857aa8743c049795702c1884430d780d7944ca8431629823c5b2994a9f2b",
++  "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-trusted-startup-focused-source-diagnosis-1/proposed-test-only.patch": "089370f6d93cc2aae590968d004b05205bcfe17caa08fef1264a3a6d10a7d112",
++  "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-trusted-startup-focused-source-diagnosis-1/proposed-test-only-inverse.patch": "86eb9cfd9337d88a0dfd1197d01b4c1beecd2d71b74bc7d19f1db8f22af4ff25",
++  "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-trusted-startup-focused-source-diagnosis-1/actual-failure-summary.json": "e16e8f7f350276d223cce50a1659468f9cb37c5e4838687c3d28ae8250179c58",
++  "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-trusted-startup-validation4-actual-prefix-audit-1/native-failure-diagnosis-1/recommendation-precision.json": "50b18af2aed32d972229cdb0c628b32d154b5c9971f45b4e3bc082ea22ff198a",
++  "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-trusted-startup-validation4-actual-prefix-audit-1/native-failure-diagnosis-1/diagnosis.json": "f7c8e10cca91451cf978016d08d5306720f7c83f3c32bf334f902240c5b9e629",
++  "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-trusted-startup-validation4-actual-prefix-audit-1/native-failure-diagnosis-1/row-analysis.json": "eaf14c1ee15e93b72a36705e327a79d7f114cf3ef74c3b230d1dd5e88dd9f899",
++  "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-trusted-startup-validation4-actual-prefix-audit-1/native-failure-diagnosis-1/report.md": "a1167d5c4488cbb03d48f8df61a37c75812ed59477984c15428c67897b8e5b16",
++  "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-trusted-startup-validation-preparation-4/native-mechanics-closure-1/index.json": "0e8b9f8e3acb96439eeab44ad388d8fd817eb393c6ca3d0c55c8dca90d9c0279",
++  "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-trusted-startup-validation-preparation-4/native-mechanics-closure-1/auditor-data-shape-corrections.json": "75e9a2571750cd1512d271b2a460004a7a8258081d466ef25043bae174490915",
++  "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-trusted-startup-validation-preparation-4/native-mechanics-closure-1/closure.json": "50ee3e324cf3764e31a39de588d1c7641912d7ba8f542fdfce0fea7b8b12caa2",
++  "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-trusted-startup-validation-preparation-4/native-mechanics-closure-1/delta-verification.json": "cfbc80013d7ae96833a8191448bcfbe26d09e0918f2ee688350517ddcde934f6",
++  "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-trusted-startup-validation-preparation-4/native-mechanics-closure-1/input-verification.json": "ef0e6671c8f01e4d20603dd6bcd979cd9bb8334f573f2296c4bab6bae8c982a8",
++  "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-trusted-startup-validation-preparation-4/native-mechanics-closure-1/report.md": "15557b3f5e2ec2e7780549159825bf79a83ec3c1869659dc580d2a5786cc49ef",
++  "/Users/dbox/repos/wt/vickie/vickie-trusted-startup-configuration/packages/server/src/reference-deployment.test.ts": "adfbf6b0132cc24b3b65bf482000de2da43bf242102020637ed894b2cdd0cee9"
+ }
+--- preparation4/selection.json
++++ preparation5/selection.json
+@@ -97,7 +97,7 @@
+     "apps/bdptest/src/installed-reference-startup.test.ts": "db93a0de4e13cf7330ba311435a3ea3af6877d4f6707f652875cba1b4364e0f2",
+     "packages/config/src/index.test.ts": "075bfa623cf5f5b5cee97084b3f534a1649539afdc7d9f8539652c1678ef4a26",
+     "packages/server/src/read-sequence-lifecycle.test.ts": "83f93562c4742d6a5f7f04ebd5772908a1cf716c99f794c3a2078d416046f497",
+-    "packages/server/src/reference-deployment.test.ts": "5b9de79791eb041e74b4153ffc19dfaf28b029599644a7bda056a84432ef0289",
++    "packages/server/src/reference-deployment.test.ts": "adfbf6b0132cc24b3b65bf482000de2da43bf242102020637ed894b2cdd0cee9",
+     "packages/server/src/transaction-installed.test.ts": "d664779fd64d50eb4736961472538473b2969fb9ce36e4fd39b6efe40c2d0327",
+     "packages/server/src/transaction-runtime-configuration.test.ts": "3167dc4a4748f63ec069f0c9f3fddbcbd82a14aca127c49c5ba118bb8cd9f79d",
+     "packages/server/src/transaction-snapshot.test.ts": "d4b338ec53db6a14d4a469a70a70dfb908eb0898cd1d4a2bb2797d62429ceb9e",
+--- preparation4/source-audit-contract.json
++++ preparation5/source-audit-contract.json
+@@ -1,13 +1,13 @@
+ {
+-  "sourceIdentity": "7e856365e701e96ddf233e13d6883c6d74464dd755c0ff59f1b185c37c7b19db",
++  "sourceIdentity": "0c53a6bb33d57133c8fbb43b8787d9251ca4276abcdb18b2a9f434279bfe364b",
+   "callbacks": 44,
+-  "selector": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-trusted-startup-validation-preparation-4/selection.json",
++  "selector": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-trusted-startup-validation-preparation-5/selection.json",
+   "defaultCallbackMs": 5000,
+   "files": {
+     "apps/bdptest/src/installed-reference-startup.test.ts": "db93a0de4e13cf7330ba311435a3ea3af6877d4f6707f652875cba1b4364e0f2",
+     "packages/config/src/index.test.ts": "075bfa623cf5f5b5cee97084b3f534a1649539afdc7d9f8539652c1678ef4a26",
+     "packages/server/src/read-sequence-lifecycle.test.ts": "83f93562c4742d6a5f7f04ebd5772908a1cf716c99f794c3a2078d416046f497",
+-    "packages/server/src/reference-deployment.test.ts": "5b9de79791eb041e74b4153ffc19dfaf28b029599644a7bda056a84432ef0289",
++    "packages/server/src/reference-deployment.test.ts": "adfbf6b0132cc24b3b65bf482000de2da43bf242102020637ed894b2cdd0cee9",
+     "packages/server/src/transaction-installed.test.ts": "d664779fd64d50eb4736961472538473b2969fb9ce36e4fd39b6efe40c2d0327",
+     "packages/server/src/transaction-runtime-configuration.test.ts": "3167dc4a4748f63ec069f0c9f3fddbcbd82a14aca127c49c5ba118bb8cd9f79d",
+     "packages/server/src/transaction-snapshot.test.ts": "d4b338ec53db6a14d4a469a70a70dfb908eb0898cd1d4a2bb2797d62429ceb9e",
+--- preparation4/source-binding.json
++++ preparation5/source-binding.json
+@@ -417,7 +417,7 @@
+     "packages/server/src/recovery-store.test.ts": "5d3a51789a8d80d14407fec6db36ff6aa27461948c285745db80f1b71ee60d2e",
+     "packages/server/src/recovery-store.ts": "48b7901e48998fe29598168a527213ebfb49e1d6e5dc5c2eb6494c862b5de9f9",
+     "packages/server/src/reference-deployment-state.ts": "c95b91aec78da06796e4f1337db0ef90c1a412151e9e1d836358bd5b273af806",
+-    "packages/server/src/reference-deployment.test.ts": "5b9de79791eb041e74b4153ffc19dfaf28b029599644a7bda056a84432ef0289",
++    "packages/server/src/reference-deployment.test.ts": "adfbf6b0132cc24b3b65bf482000de2da43bf242102020637ed894b2cdd0cee9",
+     "packages/server/src/reference-deployment.ts": "276868b4d6bbf2e5a4693b03ef73a96bb2294b76e94456597fd9584c0736c48b",
+     "packages/server/src/resource-evaluator.test.ts": "2a35e3add8eabe18d27a69c173b709e1d958c16191c049a4877d92a7b27fa7f1",
+     "packages/server/src/resource-evaluator.ts": "6784629841a92baaeed648862cfa84d071356ef82e6d29250b254a9eddf793a2",
+@@ -1434,7 +1434,7 @@
+     "packages/server/src/reference-deployment.test.ts": {
+       "beforeExists": false,
+       "beforeSha256": null,
+-      "afterSha256": "5b9de79791eb041e74b4153ffc19dfaf28b029599644a7bda056a84432ef0289",
++      "afterSha256": "adfbf6b0132cc24b3b65bf482000de2da43bf242102020637ed894b2cdd0cee9",
+       "indexMode": "100644",
+       "intentToAdd": true,
+       "expectedIndexBlob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391"
+@@ -1485,16 +1485,21 @@
+     "packages/server/src/reference-deployment.test.ts",
+     "packages/server/src/reference-deployment.ts"
+   ],
+-  "binaryDiffSha256": "ecdc9d4ae144a4a8d24a60b4cba758decbffbe5362b3cc9a8afe9e9dc71ea38f",
++  "binaryDiffSha256": "515e11937c2a89c5e22a696a11a0c01a547a532a02fd645a8994ef12d6d27343",
+   "expectedStatus": " M docs/design/startup-configuration.md\n M packages/config/src/index.test.ts\n M packages/config/src/index.ts\n M packages/server/package.json\n M packages/server/src/read-sequence-lifecycle.test.ts\n A packages/server/src/reference-deployment-state.ts\n A packages/server/src/reference-deployment.test.ts\n A packages/server/src/reference-deployment.ts\n M packages/server/src/transaction-snapshot.test.ts\n M scripts/smoke-executables.mjs\n M scripts/smoke-safety.mjs\n M scripts/smoke-safety.test.mjs\n",
+   "stagedDiffMustBeEmpty": true,
+   "actualHeadStatusIndexRevalidation": "UNRESOLVED: root acceptance and candidate gate execution",
+-  "correctionFreezeSha256": "9c8a051005b29686dddb1eb5cc939d35c0012d80b290d1a8d71e85a7c6b24b56",
+-  "nativePrecisionClosureSha256": "d840ae8f52008049a4d267d68f20bf98561cc2b12a676be191185d26148cf92d",
++  "correctionFreezeSha256": "6c342bbe6970afadeec6009d6bf4c9d8ef7bb59b2564567bd72420e2215078ad",
++  "nativePrecisionClosureSha256": "UNRESOLVED",
+   "originalCorrectionFreezeSha256": "85b2b9eeb6dc785ee7b8195f93e4c7759a2dd66ac71052d350539abb44c61576",
+   "originalNativePrecisionClosureSha256": "c0423feca0955787ade78039c7ee8fd7960939a907da8a3ae5cd1d99567b6b28",
+   "typecheckFailurePreserved": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-trusted-startup-typecheck-failure-1",
+   "previousFixtureCorrectionFreezeSha256": "98ab5463b224a382ac414abe8ac719aadb3c4092cbed89c61e6257b9ca18237a",
+   "previousFixtureNativePrecisionClosureSha256": "398b99f855e98eecf260362ccb94378e82e580765c0d807b0ed3b2faad855ecb",
+-  "lintFailurePreserved": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-trusted-startup-lint-failure-1"
++  "lintFailurePreserved": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-trusted-startup-lint-failure-1",
++  "previousLintCorrectionFreezeSha256": "9c8a051005b29686dddb1eb5cc939d35c0012d80b290d1a8d71e85a7c6b24b56",
++  "previousLintNativePrecisionClosureSha256": "d840ae8f52008049a4d267d68f20bf98561cc2b12a676be191185d26148cf92d",
++  "rootFrozenSourceBindingSha256": "92166de7cf4ec773d973dd6ab92cb15cf0e3fc4fa1a4b7896674a375b7c82824",
++  "focusedSourceFailurePreserved": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-trusted-startup-focused-source-failure-1",
++  "nativeRecommendationSha256": "50b18af2aed32d972229cdb0c628b32d154b5c9971f45b4e3bc082ea22ff198a"
+ }
+--- preparation4/source-map.json
++++ preparation5/source-map.json
+@@ -412,7 +412,7 @@
+   "packages/server/src/recovery-store.test.ts": "5d3a51789a8d80d14407fec6db36ff6aa27461948c285745db80f1b71ee60d2e",
+   "packages/server/src/recovery-store.ts": "48b7901e48998fe29598168a527213ebfb49e1d6e5dc5c2eb6494c862b5de9f9",
+   "packages/server/src/reference-deployment-state.ts": "c95b91aec78da06796e4f1337db0ef90c1a412151e9e1d836358bd5b273af806",
+-  "packages/server/src/reference-deployment.test.ts": "5b9de79791eb041e74b4153ffc19dfaf28b029599644a7bda056a84432ef0289",
++  "packages/server/src/reference-deployment.test.ts": "adfbf6b0132cc24b3b65bf482000de2da43bf242102020637ed894b2cdd0cee9",
+   "packages/server/src/reference-deployment.ts": "276868b4d6bbf2e5a4693b03ef73a96bb2294b76e94456597fd9584c0736c48b",
+   "packages/server/src/resource-evaluator.test.ts": "2a35e3add8eabe18d27a69c173b709e1d958c16191c049a4877d92a7b27fa7f1",
+   "packages/server/src/resource-evaluator.ts": "6784629841a92baaeed648862cfa84d071356ef82e6d29250b254a9eddf793a2",
+--- preparation4/static-preparation-checks.json
++++ preparation5/static-preparation-checks.json
+@@ -1,16 +1,17 @@
+ {
+-  "state": "STATIC preparation4 data checks only",
++  "state": "STATIC preparation5 data checks only",
+   "helperExecution": false,
+   "sourceExecution": false,
+   "allSixHelperRelationsVerified": true,
+   "all682SourceBytesMatchRootAfterMap": true,
+-  "only680SourceFilesUnchangedSinceValidation3": true,
+-  "selectedCallbacks": 44,
+-  "selectionByteIdentical": true,
++  "other681SourceFilesUnchanged": true,
++  "selectionNamesFilesRegexCount44Unchanged": true,
++  "selectionOnlyFixtureHashChanged": true,
+   "reportSchemasByteIdentical": true,
+   "all25CommandsOnlyExecutionPathRebound": true,
+   "all25StagesFresh": true,
++  "exactCorrectedSourceNativeAndRootMechanicsAcceptance": "UNRESOLVED",
++  "actualFailedOrdinal": "UNLOGGED; source prediction remains separate",
+   "executionReleased": false,
+-  "rootAndNativeMechanicsAcceptance": "UNRESOLVED",
+   "noNewRunDirectory": true
+ }
+--- preparation4/successor-disposition.json
++++ preparation5/successor-disposition.json
+@@ -1,16 +1,14 @@
+ {
+-  "state": "CLOSED minimal two-regex lint correction data successor4; unexecuted",
+-  "predecessorIndexSha256": "e72bd91b92a78da93a9e05550482faba347466457ff10db9887c6af86d41582e",
+-  "correctionIndexSha256": "9c8a051005b29686dddb1eb5cc939d35c0012d80b290d1a8d71e85a7c6b24b56",
+-  "sourcePatchSha256": "ecdc9d4ae144a4a8d24a60b4cba758decbffbe5362b3cc9a8afe9e9dc71ea38f",
+-  "sourceIdentity": "7e856365e701e96ddf233e13d6883c6d74464dd755c0ff59f1b185c37c7b19db",
++  "state": "CLOSED minimal referenced-schema fixture data successor5; unexecuted",
++  "predecessorIndexSha256": "0bff51f3c4f142c641a585152756d504a9efd7d0fc2ab2d65f19b93f3e14012b",
++  "correctionIndexSha256": "6c342bbe6970afadeec6009d6bf4c9d8ef7bb59b2564567bd72420e2215078ad",
++  "rootFrozenSourceBindingSha256": "92166de7cf4ec773d973dd6ab92cb15cf0e3fc4fa1a4b7896674a375b7c82824",
++  "sourcePatchSha256": "515e11937c2a89c5e22a696a11a0c01a547a532a02fd645a8994ef12d6d27343",
++  "sourceIdentity": "0c53a6bb33d57133c8fbb43b8787d9251ca4276abcdb18b2a9f434279bfe364b",
+   "sourceFiles": 682,
+-  "unchangedSinceValidation3SourceFiles": 680,
+-  "changedPaths": [
+-    "packages/config/src/index.ts",
+-    "packages/server/src/reference-deployment.ts"
+-  ],
+-  "fixtureTestSha256": "5b9de79791eb041e74b4153ffc19dfaf28b029599644a7bda056a84432ef0289",
++  "unchangedSinceValidation4SourceFiles": 681,
++  "changedPath": "packages/server/src/reference-deployment.test.ts",
++  "fixtureTestSha256": "adfbf6b0132cc24b3b65bf482000de2da43bf242102020637ed894b2cdd0cee9",
+   "callbacks": 44,
+   "stages": 25,
+   "privateSpecifierCount": 71,
+@@ -19,12 +17,10 @@
+   "bootstrapReuse": [],
+   "executionReleased": false,
+   "schemaOrBudgetChanges": false,
+-  "priorPrefix": "Historical first4+typecheck+format passed; lint failed four noControlCharactersInRegex diagnostics. Fresh build and later stages unattempted. No old stage reused.",
+-  "currentSourceQualification": "UNATTEMPTED; root pure-data predicate proof is not product validation.",
+-  "nativeCorrectionAcceptance": {
+-    "knownStaticClosureSha256": "d840ae8f52008049a4d267d68f20bf98561cc2b12a676be191185d26148cf92d",
+-    "nativeIndexSha256": "6394aaef0615adeda91f0de7140c86debe63d7ccffd0e4926455b8e3742e6116",
+-    "executableWrapper": "UNRESOLVED"
+-  },
++  "priorPrefix": "Historical4 passed9 stages including build binding; focused-source stage10 failed43pass1fail389skip. Later15 stages unattempted. No old stage reused.",
++  "actualFailingFixtureOrdinal": "UNLOGGED; row10 attribution remains static inference",
++  "currentSourceQualification": "UNATTEMPTED; root applied exact native-recommended one-test patch",
++  "nativeRecommendationSha256": "50b18af2aed32d972229cdb0c628b32d154b5c9971f45b4e3bc082ea22ff198a",
++  "exactCorrectedSourceNativeClosure": "UNRESOLVED pending additive mechanics/acceptance",
+   "newActualCodeReviewAttempt": false
+ }
+--- preparation4/successor-preservation.json
++++ preparation5/successor-preservation.json
+@@ -1,12 +1,9 @@
+ {
+   "state": "STATIC byte/hash checks only; no runtime validation",
+-  "sourceIdentity": "7e856365e701e96ddf233e13d6883c6d74464dd755c0ff59f1b185c37c7b19db",
++  "sourceIdentity": "0c53a6bb33d57133c8fbb43b8787d9251ca4276abcdb18b2a9f434279bfe364b",
+   "sourceFiles": 682,
+-  "unchangedSourceFiles": 680,
+-  "onlyChangedSourcePaths": [
+-    "packages/config/src/index.ts",
+-    "packages/server/src/reference-deployment.ts"
+-  ],
++  "unchangedSourceFiles": 681,
++  "onlyChangedSourcePath": "packages/server/src/reference-deployment.test.ts",
+   "helperChecks": {
+     "run.py": {
+       "beforeSha256": "6af15172dc1dd2bbb70fca451bbb27bb2c34ee003849b6d48620caffcce33235",
+@@ -34,25 +31,25 @@
+       "delta": "byte-identical"
+     },
+     "bound-consumer-loader.mjs": {
+-      "beforeSha256": "eaf74ee1512bf40475546509f6797d5c3d40ed44283902d424eb39440af8258f",
+-      "afterSha256": "5c6572df8216188bf58a563f224cc1b968798a900f701de609cdab169c51b137",
++      "beforeSha256": "5c6572df8216188bf58a563f224cc1b968798a900f701de609cdab169c51b137",
++      "afterSha256": "9638844c05dfa24fca2f85ea9f4a4a744542249dda197940e6a63b10d5327990",
+       "delta": "one executionRoot literal"
+     }
+   },
+   "unchangedSchemasAndInventories": {
+-    "selection.json": "b3d1ad1f764748a32454ab35ba96b01936753ed624155ec0fd5b6b129773074b",
+     "report-schemas.json": "2743d8e1fcb2c73e2527e4f030e4007f7227fd29246773c89605b7560c3602fd",
+     "audit-expectations.json": "2285c43b42993f9bf46e118e6cc3853ebe316d05c4f80e90d187c9e65379ad52",
+     "packaging-inventory.json": "816b0cf72d732ce80921507738d6a0add32fa5061abcb9cb21e0d37dbec082aa",
+     "base-tools.required.json": "b75f63d22691c526eafecc3e1ac391709ba8bfd1ea6a7254b56953a78c8a67a9"
+   },
+   "selectedCallbacks": 44,
+-  "selectedNamesFilesRegexAndHashesUnchanged": true,
++  "selectedNamesOwnershipRegexAndOtherFileHashesUnchanged": true,
++  "onlySelectionDelta": "current corrected fixture hash",
+   "stages": 25,
+   "commandsOnlyPathRebound": true,
+   "privateSpecifierCount": 71,
+   "loaderCalls": 6,
+-  "predecessorRunFiles": 30,
++  "predecessorRunFiles": 43,
+   "predecessorRunUnchanged": true,
+   "newRunAbsent": true,
+   "executionReleased": false,
+--- preparation4/successor-static-checks.json
++++ preparation5/successor-static-checks.json
+@@ -1,16 +1,17 @@
+ {
+-  "state": "STATIC preparation4 data checks only",
++  "state": "STATIC preparation5 data checks only",
+   "helperExecution": false,
+   "sourceExecution": false,
+   "allSixHelperRelationsVerified": true,
+   "all682SourceBytesMatchRootAfterMap": true,
+-  "only680SourceFilesUnchangedSinceValidation3": true,
+-  "selectedCallbacks": 44,
+-  "selectionByteIdentical": true,
++  "other681SourceFilesUnchanged": true,
++  "selectionNamesFilesRegexCount44Unchanged": true,
++  "selectionOnlyFixtureHashChanged": true,
+   "reportSchemasByteIdentical": true,
+   "all25CommandsOnlyExecutionPathRebound": true,
+   "all25StagesFresh": true,
++  "exactCorrectedSourceNativeAndRootMechanicsAcceptance": "UNRESOLVED",
++  "actualFailedOrdinal": "UNLOGGED; source prediction remains separate",
+   "executionReleased": false,
+-  "rootAndNativeMechanicsAcceptance": "UNRESOLVED",
+   "noNewRunDirectory": true
+ }
+--- preparation4/unresolved-inputs.json
++++ preparation5/unresolved-inputs.json
+@@ -1,6 +1,6 @@
+ {
+   "state": "CLOSED; preparation is reviewable but no stage executable",
+-  "rootExactCorrectedSourceAcceptance": "UNRESOLVED",
++  "rootExactCorrectedSourceAcceptance": "UNRESOLVED for current0c53 identity",
+   "independentCandidateMechanicsAcceptance": "UNRESOLVED",
+   "correctedSourceNativeCodeDispositionWrapper": "UNRESOLVED",
+   "correctedSourceActualCodeDispositionWrapper": "UNRESOLVED; original complete substantive result+failed finalization remains context",
+@@ -14,5 +14,6 @@
+   "rootFinalLocalAndExactHeadCI": "UNRESOLVED",
+   "automaticRetries": 0,
+   "allExecutionGatesFalse": true,
+-  "approvedStages": []
++  "approvedStages": [],
++  "exactAppliedFixtureCorrectionNativePrecision": "UNRESOLVED; native recommendation50b18 is not applied-source acceptance"
+ }

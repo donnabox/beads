@@ -1,0 +1,59 @@
+{
+  "TXWrapperHandoff": {
+    "acceptanceBoundary": "Invoke original hook under its original error path. Separately catch ONLY new handoff capture/validation/assembly/sidecar operations. Missing/malformed/oversize/digest mismatch/JSON projection refusal creates sticky failed carrier with rawWrapperSha256:null; no return replacement or throw. On valid handoff retain exact bytes only transiently, no new raw wrapper output. Sidecar IO refusal likewise never converts to carrier success or escapes observe.",
+    "carrierOnlyHookError": "If no legacy output was requested, failure of the NEW carrier-only serialization/return is caught in that new branch; return void and fixed carrier unavailable state. It must not throw out of observe or prevent genuine assertions. Never catch an original legacy error with this new branch.",
+    "caseBindings": [
+      "V06",
+      "R20",
+      "L03",
+      "L05",
+      "L10"
+    ],
+    "failureVisibility": "Fixed code/stage only, no raw message/cause/path/token. Safe attempt failure retained when writable; absent sidecar remains an explicit failing validation observation. Return unchanged genuine observed; caller product assertions proceed. Later exact evidence validation rejects missing/invalid carrier independently. Cleanup failure is sticky, original genuine result preserved. Ownership remains unverified.",
+    "genuineCapture": "Immediately before original onObserved invocation detach genuine result/sessions/baseline plus actual source/entry. The returned genuine observed object and existing product assertions are not replaced by carrier state.",
+    "hookType": "existing private onObserved void | {bytes:Uint8Array,rawWrapperSha256:string}; optional carrierPath remains positive-only",
+    "jsonRepresentationComparison": {
+      "actual": "canonicalJson(parsedActualField)",
+      "fields": [
+        "result",
+        "sessions",
+        "baseline"
+      ],
+      "preHook": "canonicalJson(JSON.parse(JSON.stringify(preHookField)))",
+      "rawIdentity": "Raw wrapper digest is SHA256 of exact handoff bytes, unchanged by JSON comparison. canonicalResultSha256 remains separate derived result-data identity. No normalization/exclusion/fixedpoint/source/config/payload identity changes.",
+      "rule": "Require all three own actual fields and successful projections. Compare explicit JSON representation, including normal omission of undefined object members and null array representation. Fixed evidence failure for missing/refused projection. sourceCommit/entry still match actual fixed provenance."
+    },
+    "legacyErrors": "Original serialization/write errors when legacy output requested remain genuine hook exceptions and propagate through original observe try/catch/finally cleanup aggregation. Do not catch/reclassify them as carrier-only failure or suppress product errors. Legacy-only default behavior/bytes unchanged.",
+    "singleSerialization": "Existing positive closure owns EXACT original literal field order sourceCommit,entry,...observed,supplemental,sequenceMemberSupplemental,principalSupplemental,conditionalSupplemental. If legacy output OR carrierPath: ONE JSON.stringify(wrapper,null,2)+newline, ONE UTF8 encoding. Legacy file uses these exact bytes; carrier receives these same bytes/digest. Neither path: original void/no new work. Carrier-only: same in-memory wrapper, no legacy path/readback dependency.",
+    "sourceFile": "apps/bdptest/src/transactional-matrix.test.ts",
+    "state": "FULL active TX handoff/error isolation contract"
+  },
+  "artifacts": {
+    "RU": {
+      "kind": "read-update",
+      "set": "existing branded ReadUpdateArtifactSet; copy exact sources through copyReadUpdateArtifactSetSources; retain current two-shard index/manifest/fixture/coverage policies"
+    },
+    "TX": {
+      "binding": "create canonical TXv2 bundle from exact supplied source; full required ownership map includes null for234 missing current IDs; no new TX index/action language",
+      "coverage": "ConformanceArtifactSource exact current coverageVersion1 bytes; preserve colon-joined assertion binding convention, not RU dot spelling",
+      "fixture": "ConformanceArtifactSource exact bytes",
+      "kind": "transactional",
+      "manifest": "ConformanceArtifactSource exact bytes"
+    }
+  },
+  "attempt": "closed data: outcome running|failed|observed; failureStages subset execution/assertion/cleanup/credential-check; owner states from existing writer; reported lifecycle facts/explicit unknown; sourceDirty boolean|null (null unavailable never false); unresolvedConditions list from frozen plan/adapters, not N/A certificates",
+  "configuration": "existing factory-bound ServedProfileConfiguration, every actual field preserved; compare profile/history to selection and fixture digest to parsed artifacts",
+  "functions": {
+    "assembleProfileEvidence": "(selection, configuration, artifacts, observations, attempt) -> deeply detached/frozen BOUND ProfileEvidenceV1; never called while RU configuration unavailable",
+    "serializeProfileEvidence": "(bound ProfileEvidenceV1 OR exact UnboundRUAttemptV1 data, transientCredentialValues) -> canonical UTF8 bytes, distinct closed kind/schema per branch; no new export/action language",
+    "verifyProfileEvidence": "(selection, configuration, artifacts, observations, attempt, evidenceSource) -> BOUND ProfileEvidenceV1 or fixed error; unbound attempt kind is explicitly not accepted as a bound carrier"
+  },
+  "noTruthByHash": "Expected hashes and labels establish byte identity only; trusted external installer/owner/root run provenance establishes truth. The carrier never verifies a service merely by agreement of its own assertions.",
+  "observations": "Original closed observation API unchanged. Primitive ownerId/sourceCommit/expectedReportSha256/runtime identity slots are typed before canonical traversal; nested ready/session/exact context is intrinsically captured within existing limits. Exact RU and TX existing wrapper shapes and ordered cross-binding are defined by wrapper-comparison-matrix.json; absent differs from explicit empty sessions.",
+  "ownData": "Existing intrinsic ownData/copySourceBytes/safeData boundaries before any canonical traversal of supplied observation identity or nested metadata; reject nested Proxy/getter/function without invocation. Factory configuration brand remains original, no structural replacement authority.",
+  "preBindingRU": "Existing writer constructor/set/source/path/credentials and start/acquired have NO actual served configuration. Writer emits only distinct UnboundRUAttemptV1 until first safe genuine returned(report) supplies its existing factory-bound configuration. No fake bindServedProfileConfiguration call, new RU signature/caller parameter or guessed ready/target data.",
+  "pureFunctionExportsOnly": 3,
+  "reportExtraction": "Existing bounded raw wrapper result plus REQUIRED selected-profile baseline/session metadata is cross-bound to typed intrinsically captured trusted ready/configuration/runtime/source/order as wrapper-comparison-matrix.json; raw RU exactConfiguration also equals trusted exact data. Never evaluate getter/proxy/function values in canonical comparison. Unknown unused wrapper fields remain untrusted/unserialized; no new report format.",
+  "selection": "existing canonical factory brand, profile read-update|transactional, historyfalse only",
+  "state": "PROPOSED PRIVATE SOURCE API; no public/wire schema"
+}

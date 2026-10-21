@@ -1,0 +1,273 @@
+[
+  {
+    "actualOutput": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation-preparation-5/run/packages",
+    "binding": "package directory ownership",
+    "condition": "Absent owned directory; no delete/reuse",
+    "evidence": [
+      {
+        "endLine": 19,
+        "line": 18,
+        "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation-preparation-5/packages.py",
+        "sha256": "162e4f04ffe9aeffe886b194c7ed41241c6ce3cf37e9c93f92fec0969095aea9"
+      }
+    ],
+    "firstCreatedBy": 18,
+    "firstGateConsumption": "No new document field; exclusive directory creation existing packages.py mode directory",
+    "gateFieldsToBind": [],
+    "stage": "prepare-package-directory"
+  },
+  {
+    "actualOutput": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation-preparation-5/run/packages/bdp-protocol-0.0.0.tgz",
+    "binding": "actual protocol archive bytes",
+    "condition": "Helper expects literal basename; actual produced filename/existence/digest/members remain UNRESOLVED until original pack and audit",
+    "evidence": [
+      {
+        "endLine": 47,
+        "line": 25,
+        "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation-preparation-5/packages.py",
+        "sha256": "162e4f04ffe9aeffe886b194c7ed41241c6ce3cf37e9c93f92fec0969095aea9"
+      }
+    ],
+    "firstCreatedBy": 19,
+    "firstGateConsumption": 21,
+    "gateFieldsToBind": [],
+    "stage": "pack-protocol"
+  },
+  {
+    "actualOutput": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation-preparation-5/run/packages/bdp-server-0.0.0.tgz",
+    "binding": "actual server archive bytes",
+    "condition": "Only existing workspace:* protocol dependency\u21920.0.0 package metadata rewrite permitted",
+    "evidence": [
+      {
+        "endLine": 47,
+        "line": 35,
+        "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation-preparation-5/packages.py",
+        "sha256": "162e4f04ffe9aeffe886b194c7ed41241c6ce3cf37e9c93f92fec0969095aea9"
+      }
+    ],
+    "firstCreatedBy": 20,
+    "firstGateConsumption": 21,
+    "gateFieldsToBind": [],
+    "stage": "pack-server"
+  },
+  {
+    "actualOutput": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation-preparation-5/run/tar-source-provenance.json",
+    "binding": "archive-to-current-source/build provenance map",
+    "condition": "Root acceptance after stage21 actual native/ROOT/durability; never predicted map or earlier-lane archives",
+    "evidence": [
+      {
+        "endLine": 48,
+        "line": 20,
+        "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation-preparation-5/packages.py",
+        "sha256": "162e4f04ffe9aeffe886b194c7ed41241c6ce3cf37e9c93f92fec0969095aea9"
+      },
+      {
+        "endLine": 127,
+        "line": 125,
+        "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation-preparation-5/gate.py",
+        "sha256": "6260f0878ca0bb30cc5b6de69d8357751fd09276eec7f90142f301ac87206a9f"
+      }
+    ],
+    "firstCreatedBy": 21,
+    "firstGateConsumption": 22,
+    "gateFieldsToBind": [
+      "rootArchiveAcceptance"
+    ],
+    "requiredRootAcceptanceFields": [
+      "accepted=true",
+      "sourceBindingSha256 exact current sourceBinding",
+      "tarProvenanceSha256 exact actual map hash"
+    ],
+    "stage": "verify-archives"
+  },
+  {
+    "actualOutput": [
+      "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation-preparation-5/run/consumer/package.json",
+      "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation-preparation-5/run/consumer/pnpm-workspace.yaml"
+    ],
+    "binding": "external consumer manifest/settings",
+    "condition": "Actual archive file: dependencies; protocol file override and fast-uri3.1.5; external exclusively created consumer; no old manifest/settings/lock reuse",
+    "evidence": [
+      {
+        "endLine": 56,
+        "line": 49,
+        "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation-preparation-5/packages.py",
+        "sha256": "162e4f04ffe9aeffe886b194c7ed41241c6ce3cf37e9c93f92fec0969095aea9"
+      },
+      {
+        "endLine": 132,
+        "line": 128,
+        "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation-preparation-5/gate.py",
+        "sha256": "6260f0878ca0bb30cc5b6de69d8357751fd09276eec7f90142f301ac87206a9f"
+      }
+    ],
+    "firstCreatedBy": 22,
+    "firstGateConsumption": 24,
+    "gateFieldsToBind": [
+      "rootConsumerLockAcceptance (when actual lock also exists after23)"
+    ],
+    "requiredRootAcceptanceFields": [
+      "consumerManifestSha256",
+      "consumerSettingsSha256"
+    ],
+    "stage": "prepare-consumer"
+  },
+  {
+    "actualOutput": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation-preparation-5/run/consumer/pnpm-lock.yaml",
+    "binding": "generated external consumer lock",
+    "condition": "Original offline/ignore-scripts/no-frozen-lockfile/prod install; generated NONFROZEN consumer lock accepted by ROOT afterward; distinct from stage3 frozen workspace install",
+    "evidence": [
+      {
+        "line": 189,
+        "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation-preparation-5/commands.json",
+        "sha256": "ef7d5889c4cdb6263d746d3d1ad698429d6a96d5c0dbd1e4d6764819b060ba8f"
+      },
+      {
+        "endLine": 132,
+        "line": 128,
+        "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation-preparation-5/gate.py",
+        "sha256": "6260f0878ca0bb30cc5b6de69d8357751fd09276eec7f90142f301ac87206a9f"
+      }
+    ],
+    "firstCreatedBy": 23,
+    "firstGateConsumption": 24,
+    "gateFieldsToBind": [
+      "consumerLockSha256",
+      "rootConsumerLockAcceptance"
+    ],
+    "requiredRootAcceptanceFields": [
+      "accepted=true",
+      "sourceBindingSha256",
+      "consumerLockSha256",
+      "consumerManifestSha256",
+      "consumerSettingsSha256"
+    ],
+    "stage": "consumer-install"
+  },
+  {
+    "actualOutput": [
+      "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation-preparation-5/run/installed-provenance.json",
+      "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation-preparation-5/run/installed-consumer-inventory.json"
+    ],
+    "binding": "actual installed provenance and complete consumer inventory",
+    "condition": "Archive bytes/all package members, exact8-package production graph, recursive payload identity, actual entry realpath/hash inside consumer, exact lock/manifest/settings and every file/symlink binding; only afterward six installed/audit stages25..30 may use it",
+    "evidence": [
+      {
+        "endLine": 115,
+        "line": 57,
+        "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation-preparation-5/packages.py",
+        "sha256": "162e4f04ffe9aeffe886b194c7ed41241c6ce3cf37e9c93f92fec0969095aea9"
+      },
+      {
+        "endLine": 86,
+        "line": 78,
+        "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation-preparation-5/gate.py",
+        "sha256": "6260f0878ca0bb30cc5b6de69d8357751fd09276eec7f90142f301ac87206a9f"
+      },
+      {
+        "endLine": 136,
+        "line": 133,
+        "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation-preparation-5/gate.py",
+        "sha256": "6260f0878ca0bb30cc5b6de69d8357751fd09276eec7f90142f301ac87206a9f"
+      }
+    ],
+    "firstCreatedBy": 24,
+    "firstGateConsumption": 25,
+    "gateFieldsToBind": [
+      "installedProvenance",
+      "consumerInventory",
+      "rootConsumerProofAcceptance"
+    ],
+    "requiredRootAcceptanceFields": [
+      "accepted=true",
+      "sourceBindingSha256",
+      "installedProvenance exact {path,sha256} equals gate pin",
+      "consumerInventory exact {path,sha256} equals gate pin"
+    ],
+    "stage": "verify-installed-consumer"
+  },
+  {
+    "auditedAndAcceptedObservationFirstEmittedBy": 26,
+    "binding": "G09-I01 actual report/result/log accepted-observation",
+    "condition": "One selected callback14 prospective requests; immediate audit exact existing grammar; claimEligible=false",
+    "evidence": [
+      {
+        "endLine": 288,
+        "line": 249,
+        "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation-preparation-5/audit.py",
+        "sha256": "1892c8b723126ea69d33053ce0ec6e2461e299dbf9e8b886be35905c132412a2"
+      },
+      {
+        "line": 461,
+        "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation-preparation-5/audit.py",
+        "sha256": "1892c8b723126ea69d33053ce0ec6e2461e299dbf9e8b886be35905c132412a2"
+      }
+    ],
+    "firstCreatedBy": 25,
+    "firstGateConsumption": "next original stage uses complete(prior); accepted-observation is independently reviewed/audited, not a new gate field",
+    "gateFieldsToBind": []
+  },
+  {
+    "auditedAndAcceptedObservationFirstEmittedBy": 28,
+    "binding": "G09-I02 actual report/result/log accepted-observation",
+    "condition": "One selected callback16 prospective requests; immediate audit exact existing grammar; claimEligible=false",
+    "evidence": [
+      {
+        "endLine": 288,
+        "line": 249,
+        "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation-preparation-5/audit.py",
+        "sha256": "1892c8b723126ea69d33053ce0ec6e2461e299dbf9e8b886be35905c132412a2"
+      },
+      {
+        "line": 461,
+        "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation-preparation-5/audit.py",
+        "sha256": "1892c8b723126ea69d33053ce0ec6e2461e299dbf9e8b886be35905c132412a2"
+      }
+    ],
+    "firstCreatedBy": 27,
+    "firstGateConsumption": "next original stage completion conjunction",
+    "gateFieldsToBind": []
+  },
+  {
+    "auditedAndAcceptedObservationFirstEmittedBy": 30,
+    "binding": "legacy installed schema14 fingerprints/context report",
+    "condition": "One selected historical callback,90s work/120s callback subordinate root115/120; no new aggregate cleanup guarantee",
+    "evidence": [
+      {
+        "endLine": 461,
+        "line": 437,
+        "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation-preparation-5/audit.py",
+        "sha256": "1892c8b723126ea69d33053ce0ec6e2461e299dbf9e8b886be35905c132412a2"
+      }
+    ],
+    "firstCreatedBy": 29,
+    "firstGateConsumption": "next original stage completion conjunction",
+    "gateFieldsToBind": []
+  },
+  {
+    "binding": "required-check terminal/log evidence",
+    "condition": "No new archive/consumer proof field is produced by these required checks. Their specs do not set requiresConsumerProof; do not invent injected P5 installed-entry ENV for them. Stage34 raw2 is explicit no-claim only.",
+    "evidence": [
+      {
+        "endLine": 136,
+        "line": 121,
+        "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation-preparation-5/gate.py",
+        "sha256": "6260f0878ca0bb30cc5b6de69d8357751fd09276eec7f90142f301ac87206a9f"
+      },
+      {
+        "endLine": 80,
+        "line": 74,
+        "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation-preparation-5/run.py",
+        "sha256": "16049341d6d810ea5c46a88220da30f9a04e436ee7fea0061cc26e58ba76ba70"
+      }
+    ],
+    "firstCreatedBy": [
+      31,
+      32,
+      33,
+      34
+    ],
+    "firstGateConsumption": "each later prior-stage completion; original after34 separate local/fullsuite/publication/exactCI barriers remain",
+    "gateFieldsToBind": []
+  }
+]

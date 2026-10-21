@@ -1,0 +1,18 @@
+{
+  "releasedStages": [
+    "offline-setup",
+    "typecheck",
+    "build",
+    "format-check",
+    "lint",
+    "boundaries",
+    "read-seal",
+    "build-inventory"
+  ],
+  "sourceCouncil": {
+    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/read-update-guarded-overlap-draft/execution-preparation-v3/root-static-council-disposition.json",
+    "sha256": "8c9e8a76e777ca1914521f430b049a00a7f58641078caca301bd9c51213f9250"
+  },
+  "purpose": "Diagnose/validate exact lint repair while actual supplement proceeds independently. Static evidence does not imply review completion.",
+  "policy": "One attempt each; stop first failure/drift/timeout/cleanup. Original failedrun retained. No package/service/commit/publish release."
+}

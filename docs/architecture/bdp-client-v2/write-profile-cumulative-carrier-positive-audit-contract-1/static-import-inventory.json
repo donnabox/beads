@@ -1,0 +1,34 @@
+{
+  "entry": "packages/conformance/test-support/profile-evidence.ts",
+  "externalSpecifiers": [
+    "@bdp/protocol",
+    "ajv/dist/2020.js",
+    "node:crypto",
+    "node:fs",
+    "node:net",
+    "node:tls",
+    "node:util"
+  ],
+  "files": {
+    "packages/conformance/src/artifact-bundle.ts": "bbf54915eb792433ae492fd73a5334717e74e0942c485a72daa5105928546dd6",
+    "packages/conformance/src/canonical-json.ts": "645a9f3a84572574e587cdfac61b675eaba54d2036ee10060add6209f23f0432",
+    "packages/conformance/src/catalog.ts": "ea5b96fc40f0d90f5f38dd66b916c77971fb1df41e3a36e4630d20627cf51f85",
+    "packages/conformance/src/conditional-header.ts": "2fc6496f4eb5e33d44ad77a92f14e396f097f2f3eaa9b9f9982b7f156af572e7",
+    "packages/conformance/src/executable-manifest.ts": "65af0451cd046d57c10b0666e54efbaaecc2225551d3accc5cc1d032322913fa",
+    "packages/conformance/src/http-executor.ts": "770a8405ae1532484b5a2658619c067832644947888f95e0c6575002376f1b5d",
+    "packages/conformance/src/markdown.ts": "fb8bfb85dad4db2de6536896a22d62e56f3ce454eef5bdd9d195210ad8b77d88",
+    "packages/conformance/src/profile-contract-selection.ts": "5b1caf61688bfa6a5465b5f8dc817b84f02be76bfc5bdd886a19e749b6441543",
+    "packages/conformance/src/raw-http-scenario-target.ts": "d1afc4d70a066a674db40caa5c26e846d7b6f78c98743b8a504eb4b38d73a581",
+    "packages/conformance/src/runner.ts": "ac20c7fbfe15a5e42a6559e89cd3467562efe9bc74d462478414414ed3efede1",
+    "packages/conformance/src/scenario-action.ts": "d6b03ea2a3e2ad7d155aab0fa4a91dc4d313e137a163c8d925bffba8c462ce05",
+    "packages/conformance/src/schema-validator.ts": "0006229c7a5103e7820e131c2ee693c95e2c446e9f66584d0639d1f1291c7272",
+    "packages/conformance/src/selection.ts": "1799c9ec233f755b158c1787e8b1f9ab8523722f3dc25282e50f87c7294e780d",
+    "packages/conformance/src/transactional-observation.ts": "603fcc1240e43da3c477f42b8b942141c06c989a48a2a88099fd5d90e283159f",
+    "packages/conformance/test-support/profile-contract-plan.ts": "18c953443e6695cfa48f89677231fecffc349df02bd080f107a5c739db10b728",
+    "packages/conformance/test-support/profile-evidence.ts": "c8cb626093c21fd14326071d10a11eefac979176aacdd8e585f491187201bfb3",
+    "packages/conformance/test-support/read-update-artifact-set.ts": "8c1e3d17d7bc5823ab69ddaac6ee0a443800f0348d4f14d969c22f1384aea2a3"
+  },
+  "initialInspectionLimitation": "Initial broad from-string regex misidentified two strings as import specifiers; replaced with anchored import-declaration scan before freeze, no subject/helper evaluation or candidate change.",
+  "runtimeGraph": "UNRESOLVED until fresh private compiler output/import census; protocol mapped-source dependency closure not expanded by this scanner",
+  "state": "conservative static import-declaration scan, including type-only dependencies; not compiler/runtime proof"
+}

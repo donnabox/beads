@@ -1,0 +1,8 @@
+{
+  "error": "ValueError: D-mirror native closure is not relative to L log root",
+  "fix": "Reviewer retention routes the equal canonical L native closure; no source fix or runtime retry. Existing partial review copies preserved.",
+  "phase": "OWN_REVIEW_COPY_ROUTING",
+  "runtimeOrSubjectInvocation": false,
+  "scope": "Reviewer tried to retain a mirror path using its logs-root-only copy routing. Prior-nine read-only inspection had passed for node-version before copy routing failed.",
+  "subjectConstraintMismatch": false
+}

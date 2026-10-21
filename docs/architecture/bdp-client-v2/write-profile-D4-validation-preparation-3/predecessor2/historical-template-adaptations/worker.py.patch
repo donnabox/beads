@@ -1,0 +1,108 @@
+--- /dev/null
++++ authored/worker.py
+@@ -0,0 +1,105 @@
++"""Owned blocking attempt worker, supervised under the parent's single monotonic origin."""
++import sys,os,time,json,socket,subprocess,tempfile,secrets,hashlib
++sys.dont_write_bytecode=True
++from pathlib import Path
++from scanner import LogScanner,file_json,file_hash,RESULTS,need
++if len(sys.argv)>1 and sys.argv[1]=='publish':
++ # Small private publisher is still an owned deadline-supervised direct child.
++ channel=socket.socket(fileno=int(sys.argv[2]));stage=sys.argv[3];data=b''
++ while b'\n'not in data:
++  part=channel.recv(65536);need(part and len(data)+len(part)<=1048576,'publication-bound');data+=part
++ need(data.endswith(b'\n')and data.count(b'\n')==1,'publication-record');record=json.loads(data);need(record['stage']==stage and record['watchdogPid']==os.getppid(),'publication-identity');root=Path(__file__).parent/'run';need(stage and all(c.isalnum()or c=='-'for c in stage)and root.is_dir(),'publication-path')
++ with (root/(stage+'.watchdog.json')).open('xb')as f:f.write(data)
++ channel.close();raise SystemExit(0)
++channel=socket.socket(fileno=int(sys.argv[1]));name=sys.argv[2];origin=float(sys.argv[3]);inbox=b''
++def note(event,**data):
++ raw=(json.dumps({'event':event,**data},separators=(',',':'))+'\n').encode();need(len(raw)<=4096,'private-control-bound');channel.sendall(raw)
++def await_control(expected):
++ global inbox
++ while True:
++  if b'\n'in inbox:
++   line,inbox=inbox.split(b'\n',1);value=json.loads(line);need(value.get('event')==expected,'parent-control-order');return value
++  block=channel.recv(4096);need(block and len(inbox)+len(block)<=8192,'parent-control-bound');inbox+=block
++try:
++ os.environ['D4_VALIDATION_PHASE']='final'
++ from gate import *
++ g,spec=load_gate(name);E.mkdir(exist_ok=True)
++ for suffix in ['.started.json','.log','.exit.json','.results.json','.phase-evidence.json','.worker-verified.json']:
++  require(not(E/(name+suffix)).exists(),'Preserve previous stage; no retry')
++ attempt=secrets.token_hex(16);(E/('attempt-'+name)).mkdir(exist_ok=False)
++ tmp=Path(tempfile.mkdtemp(prefix='vickie-d4-validation-'+name+'-',dir='/private/tmp'))
++ env=os.environ.copy()
++ for k in list(env):
++  if k.startswith(('BDP_','VITEST_')) or k in ['NODE_OPTIONS','NODE_PATH','NODE_DEBUG','PYTHONOPTIMIZE','BIOME_BINARY','npm_execpath','npm_node_execpath','FORCE_COLOR']:env.pop(k)
++ env.update({'PATH':'/Users/dbox/.nvm/versions/node/v24.16.0/bin:'+env.get('PATH',''),'CI':'true','NO_COLOR':'1','PYTHONDONTWRITEBYTECODE':'1','D4_VALIDATION_PHASE':'final','TMPDIR':str(tmp),'npm_config_cache':str(tmp/'npm-cache')});env.update(spec.get('environment',{}));env['BDP_D4_VALIDATION_ATTEMPT_ID']=attempt
++ started={'argv':spec['argv'],'cwd':spec['cwd'],'head':g['finalHead'],'tree':g['finalTree'],'sourceIdentity':g['_sourceIdentity'],'rootGateSha256':sha((P/'execution-gate.json').read_bytes()),'temporaryDirectory':str(tmp),'attemptId':attempt,'singleMonotonicOrigin':origin,'outerSeconds':spec['outerSeconds'],'automaticRetries':0};write(name+'.started.json',started)
++ env['D4_VALIDATION_STAGE']=name;env['D4_VALIDATION_ATTEMPT']=sha((E/(name+'.started.json')).read_bytes());note('attempt',attemptId=attempt,sourceBindingSha256=g['sourceBinding']['sha256'])
++ admission=10 if name=='installed-owned-set' else 115
++ require(time.monotonic()<origin+admission,'Admission exhausted; no product spawn')
++ with (E/(name+'.log')).open('xb') as log:
++  child=subprocess.Popen(spec['argv'],cwd=spec['cwd'],env=env,stdout=log,stderr=subprocess.STDOUT,start_new_session=True)
++  note('created',pid=child.pid,pgid=child.pid,ppid=os.getpid(),executable=Path(spec['argv'][0]).name,createdEpoch=time.time())
++ # Parent logfile handle is closed; only the child/group writers remain.
++ scanner=LogScanner(attempt) if name=='installed-owned-set' else None
++ with (E/(name+'.log')).open('rb') as tail:
++  while True:
++   chunk=tail.read(65536)
++   if chunk and scanner:
++    scanner.feed(chunk)
++    while scanner.notifications:
++     item=scanner.notifications.pop(0);note('phase',phase=item['phase'],sourceElapsedMilliseconds=item['sourceElapsedMilliseconds'])
++   if child.poll()is not None and not chunk:break
++   if not chunk:time.sleep(.01)
++ note('leader-exit',pid=child.pid,code=child.returncode);note('need-quiet');await_control('quiet')
++ # Group quiet is parent-owned evidence. Drain any final retained bytes before parsing.
++ if scanner:
++  with (E/(name+'.log')).open('rb') as f:
++   f.seek(scanner.offset)
++   while True:
++    chunk=f.read(65536)
++    if not chunk:break
++    scanner.feed(chunk)
++    while scanner.notifications:
++     item=scanner.notifications.pop(0);note('phase',phase=item['phase'],sourceElapsedMilliseconds=item['sourceElapsedMilliseconds'])
++  scanner.finish()
++ unchanged=source_check(g['_sourceBinding'])==g['_sourceIdentity'];require(unchanged,'Final source differs')
++ if name not in ['node-version','pnpm-version','workspace-install','bind-workspace-tools','typecheck','format-check','lint','fresh-build','bind-fresh-build']:verify_build(g)
++ proof=verify_consumer(g) if spec.get('requiresConsumerProof')is True else None
++ runtime=[str(x)for x in tmp.rglob('*')if x.is_dir()and x.name.startswith('bdp-')];require(not runtime,'Runtime directories remain')
++ semantic=None
++ if scanner:
++  from audit import audit_d4,audit_partial
++  selected=E/(name+'.selected-report.json')
++  # Copy exactly the bounded already-scanned source line; never reserialize evidence.
++  report_record=scanner.reports[0]
++  with (E/(name+'.log')).open('rb')as source:
++   source.seek(report_record['offset']);report_bytes=source.read(report_record['bytes'])
++  require(len(report_bytes)==report_record['bytes'] and sha(report_bytes)==report_record['sha256'],'Selected raw report changed')
++  with selected.open('xb')as output:output.write(report_bytes)
++  # Same worker-owned group, no new session. Parent retains this identity even
++  # after product leader exit; all schema/compiler work charged to flush.
++  schema_process=subprocess.Popen(['/Users/dbox/.nvm/versions/node/v24.16.0/bin/node',str(P/'schema-audit.mjs'),str(selected)],cwd=W,env=env,stdin=subprocess.DEVNULL,stdout=subprocess.DEVNULL,stderr=subprocess.DEVNULL)
++  note('check-created',pid=schema_process.pid,pgid=os.getpgrp(),ppid=os.getpid(),role='pinned-schema-audit')
++  schema_exit=schema_process.wait()
++  note('check-exit',pid=schema_process.pid,code=schema_exit)
++  classification={0:'positive-schema-candidate',2:'nonconforming-failed',3:'conforming-failed-no-positive-credit',4:'protocol-schema-refusal'}.get(schema_exit,'schema-worker-failed')
++  partial=audit_partial(scanner.reports[0]['value']) if schema_exit==3 else None
++  write(name+'.schema-observation.json',{'ownedCheck':{'pid':schema_process.pid,'pgid':os.getpgrp(),'observedExit':schema_exit},'failedPartial':partial,'classification':classification,'rawExit':schema_exit,'selectedReportSha256':report_record['sha256'],'claimEligible':False,'positiveCredit':False})
++  require(schema_exit==0,'Actual complete schema observation refused')
++  require(child.returncode in spec.get('acceptedRawExitCodes',[0]),'Child exit refused')
++  result=file_json(E/(name+'.results.json'),RESULTS);semantic=audit_d4(scanner.reports[0]['value'],result,g,spec,tmp,proof)
++  write(name+'.phase-evidence.json',{'markers':scanner.markers,'selectedReport':{k:v for k,v in scanner.reports[0].items()if k!='value'},'attemptId':attempt,'semantic':semantic,'results':file_hash(E/(name+'.results.json'))})
++ require(child.returncode in spec.get('acceptedRawExitCodes',[0]),'Child exit refused')
++ logfile=file_hash(E/(name+'.log'));require(not scanner or logfile['sha256']==scanner.hash.hexdigest(),'Log changed during flush')
++ verified={'sourceIdentity':g['_sourceIdentity'],'sourceBindingSha256':g['sourceBinding']['sha256'],'attemptId':attempt,'sourceUnchanged':unchanged,'productExit':child.returncode,'log':logfile,'runtimeDirectoriesStillPresent':runtime,'semantic':semantic,'verifiedAtSeconds':time.monotonic()-origin};write(name+'.worker-verified.json',verified);note('verified',logSha256=logfile['sha256']);final=await_control('finalize')
++ record={'exit':child.returncode,'accepted':True,'acceptanceRequiresOuterReceipt':True,'sourceIdentity':g['_sourceIdentity'],'sourceBindingSha256':g['sourceBinding']['sha256'],'sourceUnchanged':True,'attemptId':attempt,'elapsedSeconds':time.monotonic()-origin,'forcedCleanup':False,'errors':[],'remainingProcesses':[],'runtimeDirectoriesStillPresent':[],'temporaryDirectory':str(tmp),'logSha256':logfile['sha256'],'watchdogObservations':final};write(name+'.exit.json',record);note('published');channel.close()
++except BaseException as error:
++ # Failure metadata is cached-only. Full hash stays explicitly UNKNOWN if incomplete.
++ try:
++  if 'E'in globals() and E.is_dir() and 'attempt'in globals():
++   write(name+'.partial.json',{'attemptId':attempt,'errorClass':type(error).__name__,'sourceBindingSha256':g['sourceBinding']['sha256'],'logFullHash':'UNKNOWN','resultsFullHash':'UNKNOWN','markers':scanner.markers if 'scanner'in globals() and scanner else [],'selectedReport':[{k:v for k,v in item.items() if k!='value'}for item in scanner.reports] if 'scanner'in globals() and scanner else [],'claimEligible':False,'positiveCredit':False})
++ except BaseException:pass
++ # Preserve raw files and partial records; no raw exception/input text in control.
++ try:note('failed',errorClass=type(error).__name__)
++ except BaseException:pass
++ raise SystemExit(1)

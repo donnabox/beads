@@ -1,0 +1,37 @@
+{
+  "copiedRoot": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-receipt-missing-context-draft/control-preparation/copy",
+  "dynamicRuntime": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-receipt-missing-context-draft/control-preparation/copy/packages/server/dist/transaction-runtime.js",
+  "mutatedHttp": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-receipt-missing-context-draft/control-preparation/copy/packages/server/dist/transaction-http.js",
+  "aliases": {
+    "@bdp/adapter-in-memory": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-receipt-missing-context-draft/control-preparation/copy/packages/adapter-in-memory/src/index.ts",
+    "@bdp/bd-domain": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-receipt-missing-context-draft/control-preparation/copy/packages/bd-domain/src/index.ts",
+    "@bdp/adapter-bd": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-receipt-missing-context-draft/control-preparation/copy/packages/adapter-bd/src/index.ts",
+    "@bdp/config": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-receipt-missing-context-draft/control-preparation/copy/packages/config/src/index.ts",
+    "@bdp/server": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-receipt-missing-context-draft/control-preparation/copy/packages/server/src/index.ts",
+    "@bdp/protocol": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-receipt-missing-context-draft/control-preparation/copy/packages/protocol/src/index.ts",
+    "@bdp/client": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-receipt-missing-context-draft/control-preparation/copy/packages/client/src/index.ts",
+    "@bdp/conformance": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-receipt-missing-context-draft/control-preparation/copy/packages/conformance/src/index.ts",
+    "@bdp/server/testing": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-receipt-missing-context-draft/control-preparation/copy/packages/server/test-support/testing.ts",
+    "@bdp/server/development": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-receipt-missing-context-draft/control-preparation/copy/packages/server/src/development.ts",
+    "@bdp/client/testing": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-receipt-missing-context-draft/control-preparation/copy/packages/client/test-support/testing.ts",
+    "@bdp/conformance/testing": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-receipt-missing-context-draft/control-preparation/copy/packages/conformance/test-support/testing.ts"
+  },
+  "emittedRelativeEdges": [
+    {
+      "from": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-receipt-missing-context-draft/control-preparation/copy/packages/server/dist/transaction-runtime.js",
+      "specifier": "./transaction-http.js",
+      "resolved": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-receipt-missing-context-draft/control-preparation/copy/packages/server/dist/transaction-http.js",
+      "sha256": "194427b2ff57c2581bfe063b98d92c4f7bbdead2d835d746980b5e0832364487"
+    },
+    {
+      "from": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-receipt-missing-context-draft/control-preparation/copy/packages/server/dist/transaction-runtime-configuration.js",
+      "specifier": "./transaction-http.js",
+      "resolved": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-receipt-missing-context-draft/control-preparation/copy/packages/server/dist/transaction-http.js",
+      "sha256": "194427b2ff57c2581bfe063b98d92c4f7bbdead2d835d746980b5e0832364487"
+    }
+  ],
+  "sourceTestSha256": "3fc5c6750a00968021d2ecc78049535ebbe9a3d2d7684108f2807e8b2276e899",
+  "vitestConfigSha256": "a84575ea9ef0b6e75b6484024a627fa89422aea2fdbeb26127e09714dba0641f",
+  "setupSha256": "dbfb86ac2325c684567ffce40f17105c6b12a63edfa54cc08f0601df8dc613f8",
+  "limitation": "No runtime import/resolver execution. Exact dynamic/relative paths plus copied alias/link layouts and subsequent named-failure oracle are the intended proof."
+}

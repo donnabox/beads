@@ -1,0 +1,270 @@
+{
+  "scopePreflightLabels": [
+    "already-aborted",
+    "invalid-policy",
+    "throwing-clock",
+    "nonfinite-clock",
+    "malformed-after-valid-preflight"
+  ],
+  "beadPreflightLabels": [
+    "already-aborted",
+    "invalid-policy",
+    "throwing-clock",
+    "nonfinite-clock",
+    "malformed-after-valid-preflight",
+    "noncanonical-query",
+    "relative-source"
+  ],
+  "beadFixedObservations": [
+    {
+      "observation": "bead-event-minimum-owner",
+      "reads": 12,
+      "seedMutations": 2,
+      "policyReplacements": 1,
+      "groupReadsAfterHidden": 0
+    },
+    {
+      "observation": "bead-event-minimum-capture",
+      "reads": 4,
+      "serviceCalls": 2,
+      "waits": 2,
+      "probes": 2,
+      "groupReads": 0,
+      "attemptTimes": [
+        0,
+        0,
+        5,
+        10
+      ],
+      "seedMutations": 1
+    },
+    {
+      "observation": "bead-event-minimum-cancel-drain",
+      "reads": 5,
+      "serviceCalls": 4,
+      "waits": 3,
+      "probes": 3,
+      "groupReads": 0,
+      "attemptTimes": [
+        0,
+        0,
+        5,
+        10,
+        15
+      ],
+      "postCloseDirectRefusals": 1,
+      "seedMutations": 1
+    }
+  ],
+  "beadHttpOrderedResponses": [
+    {
+      "method": "POST",
+      "suffix": "operations/batch",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "suffix": "beads/a?view=events",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "suffix": "beads/a?view=events",
+      "status": 503
+    },
+    {
+      "method": "HEAD",
+      "suffix": "beads/a?view=events",
+      "status": 503
+    },
+    {
+      "method": "GET",
+      "suffix": "beads/a?view=events",
+      "status": 503
+    },
+    {
+      "method": "HEAD",
+      "suffix": "beads/a?view=events",
+      "status": 503
+    },
+    {
+      "method": "GET",
+      "suffix": "beads/a?view=events",
+      "status": 503
+    },
+    {
+      "method": "HEAD",
+      "suffix": "beads/a?view=events",
+      "status": 503
+    },
+    {
+      "method": "GET",
+      "suffix": "beads/a?view=events",
+      "status": 200
+    },
+    {
+      "method": "HEAD",
+      "suffix": "beads/a?view=events",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "suffix": "beads/a?view=events",
+      "status": 200
+    },
+    {
+      "method": "HEAD",
+      "suffix": "beads/a?view=events",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "suffix": "beads/a?view=events",
+      "status": 500
+    },
+    {
+      "method": "HEAD",
+      "suffix": "beads/a?view=events",
+      "status": 500
+    },
+    {
+      "method": "GET",
+      "suffix": "beads/a?view=events",
+      "status": 500
+    },
+    {
+      "method": "HEAD",
+      "suffix": "beads/a?view=events",
+      "status": 500
+    },
+    {
+      "method": "GET",
+      "suffix": "links/l?view=events",
+      "status": 500
+    },
+    {
+      "method": "HEAD",
+      "suffix": "links/l?view=events",
+      "status": 500
+    },
+    {
+      "method": "GET",
+      "suffix": "beads/a?view=events",
+      "status": 500
+    },
+    {
+      "method": "HEAD",
+      "suffix": "beads/a?view=events",
+      "status": 500
+    },
+    {
+      "method": "GET",
+      "suffix": "__ACTUAL_SOURCE_CURSOR__",
+      "status": 500
+    },
+    {
+      "method": "HEAD",
+      "suffix": "__ACTUAL_SOURCE_CURSOR__",
+      "status": 500
+    },
+    {
+      "method": "GET",
+      "suffix": "beads/a?view=events",
+      "status": 500
+    },
+    {
+      "method": "HEAD",
+      "suffix": "beads/a?view=events",
+      "status": 500
+    },
+    {
+      "method": "GET",
+      "suffix": "beads/a?view=events",
+      "status": 500
+    },
+    {
+      "method": "HEAD",
+      "suffix": "beads/a?view=events",
+      "status": 500
+    },
+    {
+      "method": "GET",
+      "suffix": "beads/a?view=events",
+      "status": 400
+    },
+    {
+      "method": "HEAD",
+      "suffix": "beads/a?view=events",
+      "status": 400
+    },
+    {
+      "method": "GET",
+      "suffix": "beads/a?view=events&unsupported=x",
+      "status": 400
+    },
+    {
+      "method": "HEAD",
+      "suffix": "beads/a?view=events&unsupported=x",
+      "status": 400
+    },
+    {
+      "method": "GET",
+      "suffix": "beads/missing?view=events",
+      "status": 404
+    },
+    {
+      "method": "HEAD",
+      "suffix": "beads/missing?view=events",
+      "status": 404
+    },
+    {
+      "method": "POST",
+      "suffix": "operations/batch",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "suffix": "beads/gone",
+      "status": 404
+    },
+    {
+      "method": "GET",
+      "suffix": "beads/gone?view=events",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "suffix": "beads/gone?view=events",
+      "status": 503
+    },
+    {
+      "method": "HEAD",
+      "suffix": "beads/gone?view=events",
+      "status": 503
+    }
+  ],
+  "beadInstalledOrderedResponses": [
+    {
+      "method": "POST",
+      "url": "https://reference.invalid/acme/operations/batch",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "url": "https://reference.invalid/acme/beads/known?view=events",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "url": "https://reference.invalid/acme/beads/known?view=events",
+      "status": 503
+    },
+    {
+      "method": "HEAD",
+      "url": "https://reference.invalid/acme/beads/known?view=events",
+      "status": 503
+    }
+  ],
+  "sourceObservationRecords": 20,
+  "limits": "D cursor is dynamic; callback asserts real page cursor. Exact after suffix shared by pair; no fabricated cursor. Raw request-body/header oracles execute inside pinned E callback, not retained in report."
+}

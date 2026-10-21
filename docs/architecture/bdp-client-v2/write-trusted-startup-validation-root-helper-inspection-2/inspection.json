@@ -1,0 +1,32 @@
+{
+  "kind": "root-minimal-successor2-full-static-helper-acceptance",
+  "createdUtc": "2026-10-18T05:25:36.167705+00:00",
+  "session": "2026-10-18T02:16:24Z-549f",
+  "accepted": true,
+  "scope": "Static helper and data inspection only; native precision closure and explicit staged root gate release still required before execution.",
+  "preparationIndexSha256": "03fb7810376c9e71dcdd5af5ef9d7e6723b101c138e97183fe24c95a9c302337",
+  "implementationIndexSha256": "75c6d0e1232a4a1a38d9511c922e55cf047537b66c4ecc66dfd9948d3d8f6871",
+  "indexedArtifactsVerified": 148,
+  "implementationIdentitiesVerified": 134,
+  "referencesVerified": 5,
+  "sourceBindingSha256": "fcd37bf3a028b90d89fd5f98652510b9a0afaa849470e7aa6964b44c82cb9fc3",
+  "sourceFiles": 682,
+  "sourceIdentity": "824f2a33c01476f47504db3af8461d17e1cb953fba88d8ad2f5e1ff4824e2886",
+  "sourcePatchSha256": "4fd125d8613b0d3370227353b3e29e1ee73735466bd332a6961c400e3535fbe2",
+  "unchangedIdenticalFiles": [
+    "gate.py",
+    "run.py",
+    "packages.py",
+    "guarded-action-session-20261018-021624-549f.py",
+    "source-binding.json",
+    "selection.json",
+    "report-schemas.json"
+  ],
+  "commandsUnchangedExceptExecutionRoot": true,
+  "fullPriorHelperInspection": "write-trusted-startup-validation-root-helper-inspection-1/inspection.json",
+  "N1Closed": "Close callback settlement and success explicitly tracked. Timeout/error sticky cleanupUnknown prevents owned directory removal and guard clear even if server.listening false. Original shared cleanupRemaining and45/10/60/115/120 remain.",
+  "N2Closed": "Mandatory typed-zero numFailedTests/numFailedTestSuites restored; optional typed-zero runtime error suites preserved.",
+  "staticPythonAstParsedOnly": true,
+  "executionOccurred": false,
+  "executionReleased": false
+}

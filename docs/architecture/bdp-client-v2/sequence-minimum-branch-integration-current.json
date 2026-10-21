@@ -1,0 +1,151 @@
+{
+  "status": "READ-ONLY prospective ordinary working-branch integration; no merge performed; no execution authorized",
+  "checkedAt": "2026-10-16T05:13:11.932213+00:00",
+  "priorMap": {
+    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/sequence-minimum-branch-integration-plan.md",
+    "sha256": "7a190c7b6bb683bbb7c5596721595df3298e40b50c1efa21dc24abe1e497bfaa",
+    "preserved": true
+  },
+  "commonBase": "df80f8cb86b7763bc7bb005492e43d8840527045",
+  "minimum": {
+    "workspace": "/Users/dbox/repos/wt/vickie/vickie-minimum-current-resource",
+    "head": "5ca22ec4e710cc4417a80d27bff69e1d8424c115",
+    "tree": "2747663746fde13b8b0b8c7ef3c78f7d8ca9f2a8",
+    "parents": [
+      "2e1676caa0f5861d16c5741fbd412f6c3ef7c269"
+    ],
+    "clean": true,
+    "repairBindingSha256": "bf1c223dede6029eb28a5ba4e264922a2b16f567e4549ecf6ef85cceee5c8e20"
+  },
+  "sequence": {
+    "workspace": "/Users/dbox/repos/wt/vickie/vickie-sequence-depth-retained",
+    "head": "df80f8cb86b7763bc7bb005492e43d8840527045",
+    "dirty": true,
+    "bindingPath": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/sequence-depth-retained-member-draft/review-corrections/final-source-binding.json",
+    "bindingSha256": "b937a736c8b4b16c10346b0f8d998640fe31415a6ee79a10188945cb4324c81a",
+    "futureCommit": null
+  },
+  "integration": {
+    "orderedParents": [
+      "future-sequence-author-commit",
+      "5ca22ec4e710cc4417a80d27bff69e1d8424c115"
+    ],
+    "actualCommit": null,
+    "actualTree": null,
+    "outsideUnion": "preserve common-base bytes/modes; minimum five inherited PR140 paths included in union",
+    "unionPathCount": 20,
+    "sharedPathCount": 3,
+    "combinedHashChanges": [],
+    "soleOwnerHashChangesSincePriorMap": [
+      "apps/bdptest/src/transactional-sequence-depth-installed.test.ts",
+      "packages/server/src/transaction-batch.ts",
+      "packages/server/src/transaction-set.test.ts"
+    ],
+    "method": "Pure line-sequence composition against common base, asserting no overlapping replacement intervals; same EOF insertions minimum then sequence. No Git merge/merge-tree/index/object write."
+  },
+  "files": {
+    "apps/bdptest/src/read-update-matrix.test.ts": {
+      "sha256": "376709ecdcf356a98c5bf7770e6b0a637ab6e06cf9a9f7ed68c2e5c15da9dd36",
+      "bytes": 253039,
+      "source": "minimum-commit"
+    },
+    "apps/bdptest/src/transactional-collection-minimum-installed.test.ts": {
+      "sha256": "615caab0e5a846c546e718f65c4041c5ca41bef59df1d56a6dea0e42638b0174",
+      "bytes": 55510,
+      "source": "minimum-commit"
+    },
+    "apps/bdptest/src/transactional-minimum-current-resource-installed.test.ts": {
+      "sha256": "21146871e6b5bfa3d9e96ff2db7c4897dd62fac026de538981832de295628f15",
+      "bytes": 32522,
+      "source": "minimum-commit"
+    },
+    "apps/bdptest/src/transactional-sequence-depth-installed.test.ts": {
+      "sha256": "8ad2c796bfb22375584fc6b348d494ece512490f8a59ef72a74fb34de3f2fca1",
+      "bytes": 27325,
+      "source": "sequence-working-source"
+    },
+    "docs/design/transaction-implementation-progress.md": {
+      "sha256": "9668b52c1d5cfdcc7f2a326cafe3468d87de6cca14438b73ae88816587b99c28",
+      "bytes": 135887,
+      "source": "in-memory union; same-position insertions minimum then sequence",
+      "unchangedFromOriginalMap": true
+    },
+    "docs/specs/bdp.md": {
+      "sha256": "67772742d7d08f48c12196e9789f1859ad2d0e19f133ea65e197b049361f84f8",
+      "bytes": 397107,
+      "source": "minimum-commit"
+    },
+    "packages/conformance/matrices/read-update-v1.json": {
+      "sha256": "10a7c6f97a280cf88e58d3aa2039fe580904b74bfffcebda4747fc3c1a34b583",
+      "bytes": 3689484,
+      "source": "minimum-commit"
+    },
+    "packages/conformance/src/profile-contract-plan.test.ts": {
+      "sha256": "3fec4ca8c6eee7a20bbcdd1aa53ef2a015989087ba2f8d6b37fd997dcae7dd64",
+      "bytes": 36792,
+      "source": "minimum-commit"
+    },
+    "packages/conformance/src/read-update-artifact-set.test.ts": {
+      "sha256": "e5c8903119b7c336dcc1e1479378e22029aa4d36978817557e461ea723991379",
+      "bytes": 30569,
+      "source": "minimum-commit"
+    },
+    "packages/conformance/test-support/read-update-coverage-v1.json": {
+      "sha256": "287c2a258afd04a95417f5de416c81bd8159c95762d71d568a64f0b402159f0f",
+      "bytes": 720729,
+      "source": "minimum-commit"
+    },
+    "packages/server/src/transaction-batch.ts": {
+      "sha256": "0f67235a7fdadf3ae342695b6f8eee795ad51b70e6507dcb7d70ec8848ba9836",
+      "bytes": 47071,
+      "source": "sequence-working-source"
+    },
+    "packages/server/src/transaction-consistency.test.ts": {
+      "sha256": "904d1f74ff06237da41c45f3dc1d4727a1387dc760950860ef548db51e7f02c4",
+      "bytes": 7999,
+      "source": "minimum-commit"
+    },
+    "packages/server/src/transaction-consistency.ts": {
+      "sha256": "ad51311d6098db32fd47849e0b78d3118162cdf1e80ee9ef4d46324bfa9f436f",
+      "bytes": 7167,
+      "source": "minimum-commit"
+    },
+    "packages/server/src/transaction-http.test.ts": {
+      "sha256": "f4353454c8f8a9dc42367395804bbe6309f7bcc51dba2b91b3176975d08b5cce",
+      "bytes": 200546,
+      "source": "in-memory union; same-position insertions minimum then sequence",
+      "unchangedFromOriginalMap": true
+    },
+    "packages/server/src/transaction-http.ts": {
+      "sha256": "4143e8a36021d60d1deba4649b1de5dfbcb3ee2d630486749932eccc1374c602",
+      "bytes": 28669,
+      "source": "in-memory union; same-position insertions minimum then sequence",
+      "unchangedFromOriginalMap": true
+    },
+    "packages/server/src/transaction-read.test.ts": {
+      "sha256": "58e745c2ade0804bf0ab0230c34ff5e522c28725fa77ecb9303dbe972162e0f2",
+      "bytes": 88830,
+      "source": "minimum-commit"
+    },
+    "packages/server/src/transaction-read.ts": {
+      "sha256": "7e2cc29b668bb80a3ba2948e90511518a98a7ff798b1dbfb8c6f51f0c0bd2a6f",
+      "bytes": 15957,
+      "source": "minimum-commit"
+    },
+    "packages/server/src/transaction-sequence.test.ts": {
+      "sha256": "687f1a9c10277d178db187b2c8efefe07d099755c473db4c2e7d87e4d7be6a4b",
+      "bytes": 26670,
+      "source": "sequence-working-source"
+    },
+    "packages/server/src/transaction-service.ts": {
+      "sha256": "c700d5719918b60c3239a336eef02c9dff6717faca698777aba01181ebdcd278",
+      "bytes": 28348,
+      "source": "minimum-commit"
+    },
+    "packages/server/src/transaction-set.test.ts": {
+      "sha256": "494f7536fac5fd452521902301d943865e40b20895fa16e9c0a3beb1b4481dc9",
+      "bytes": 50438,
+      "source": "sequence-working-source"
+    }
+  }
+}

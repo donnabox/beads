@@ -1,0 +1,24 @@
+	onUserConsoleLog(log, taskState) {
+		if (!this.shouldLog(log, taskState)) return;
+		const output = log.type === "stdout" ? this.ctx.logger.outputStream : this.ctx.logger.errorStream;
+		const write = (msg) => output.write(msg);
+		let headerText = "unknown test";
+		const task = log.taskId ? this.ctx.state.idMap.get(log.taskId) : void 0;
+		if (task) headerText = this.getFullName(task, separator);
+		else if (log.taskId && log.taskId !== "__vitest__unknown_test__") headerText = log.taskId;
+		write(c.gray(log.type + c.dim(` | ${headerText}\n`)) + log.content);
+		if (log.origin) {
+			// browser logs don't have an extra end of line at the end like Node.js does
+			if (log.browser) write("\n");
+			const project = task ? this.ctx.getProjectByName(task.file.projectName || "") : this.ctx.getRootProject();
+			const stack = log.browser ? project.browser?.parseStacktrace(log.origin) || [] : parseStacktrace(log.origin);
+			const highlight = task && stack.find((i) => i.file === task.file.filepath);
+			for (const frame of stack) {
+				const color = frame === highlight ? c.cyan : c.gray;
+				const path = relative(project.config.root, frame.file);
+				const positions = [frame.method, `${path}:${c.dim(`${frame.line}:${frame.column}`)}`].filter(Boolean).join(" ");
+				write(color(` ${c.dim(F_POINTER)} ${positions}\n`));
+			}
+		}
+		write("\n");
+	}

@@ -1,0 +1,474 @@
+{
+  "families": [
+    {
+      "family": "REC-RU",
+      "lawIds": [
+        "read-update.idempotency.durable-boundary",
+        "read-update.idempotency.crash-mid-sequence"
+      ],
+      "trigger": "Same logical Scope authority restart/crash/failover preserving complete recovery state; RU member is durable atomically, sequence members commit separately",
+      "currentSupport": "INTERNAL_IMPLEMENTED_PRIVATE_STARTUP_REOPEN_SUPPORTED; final installed/crash proof UNKNOWN",
+      "entryRefs": [
+        "ENTRY-02",
+        "ENTRY-03",
+        "ENTRY-05"
+      ],
+      "sourceRefs": [
+        {
+          "path": "packages/server/src/recovery-store.ts",
+          "startLine": 560,
+          "endLine": 689,
+          "sha256": "48b7901e48998fe29598168a527213ebfb49e1d6e5dc5c2eb6494c862b5de9f9"
+        },
+        {
+          "path": "packages/server/src/recovery-store.test.ts",
+          "startLine": 900,
+          "endLine": 948,
+          "sha256": "5d3a51789a8d80d14407fec6db36ff6aa27461948c285745db80f1b71ee60d2e"
+        },
+        {
+          "path": "packages/server/src/sequence-executor.test.ts",
+          "startLine": 2108,
+          "endLine": 2176,
+          "sha256": "10bb61696597b6b2620a5168a2047f80ea9842bc479cf0c43c761b850b7f9c00"
+        }
+      ],
+      "applicability": "CONDITIONAL_ON_ACTUAL_TRIGGER_AND_DECLARED_TARGET; NOT_INFERRED_NA_FROM_MISSING_ENTRY",
+      "currentInstalledQualification": "UNKNOWN_NOT_OBSERVED_HERE",
+      "minimumFutureProof": "Preserve retained inline results/tombstones/allocations, clear abandoned owned claims, never auto-resume tail; retry unchanged carrier and observe retained prefix plus only previously uncommitted evaluations; do not demand TX receipt or whole-sequence atomicity"
+    },
+    {
+      "family": "REC-TX",
+      "lawIds": [
+        "transactional.batch.atomic-commit",
+        "transactional.idempotency.durable-admission",
+        "transactional.idempotency.pending-recovery"
+      ],
+      "trigger": "TX admission/atomic commit and restart with pending or terminal receipt; every carrier consults same durable namespace",
+      "currentSupport": "INTERNAL_IMPLEMENTED_PRIVATE_REOPEN_SUPPORTED; bounded actual installed crash/failover UNKNOWN",
+      "entryRefs": [
+        "ENTRY-04",
+        "ENTRY-06"
+      ],
+      "sourceRefs": [
+        {
+          "path": "packages/server/src/transaction-store.ts",
+          "startLine": 358,
+          "endLine": 364,
+          "sha256": "2feff60d7064cf6a1f8b15c8360b98c1671a04762346d1d6bb3a9321ef69a2d5"
+        },
+        {
+          "path": "packages/server/src/transaction-store.ts",
+          "startLine": 577,
+          "endLine": 639,
+          "sha256": "2feff60d7064cf6a1f8b15c8360b98c1671a04762346d1d6bb3a9321ef69a2d5"
+        },
+        {
+          "path": "packages/server/src/transaction-store.test.ts",
+          "startLine": 353,
+          "endLine": 377,
+          "sha256": "7cd155ddd959ec31a207adbe6f8eb0a26f0af968a144abb58915720436bf0774"
+        },
+        {
+          "path": "packages/server/src/transaction-store.test.ts",
+          "startLine": 1231,
+          "endLine": 1255,
+          "sha256": "7cd155ddd959ec31a207adbe6f8eb0a26f0af968a144abb58915720436bf0774"
+        },
+        {
+          "path": "packages/server/src/transaction-recovery.test.ts",
+          "startLine": 18,
+          "endLine": 124,
+          "sha256": "7267388d138d5c8ec0c223d545c641ea5fec9d9f9cea97b68550fdb698866303"
+        }
+      ],
+      "applicability": "CONDITIONAL_ON_ACTUAL_TRIGGER_AND_DECLARED_TARGET; NOT_INFERRED_NA_FROM_MISSING_ENTRY",
+      "currentInstalledQualification": "UNKNOWN_NOT_OBSERVED_HERE",
+      "minimumFutureProof": "One real fresh installed basis and same store/config/principal/key; capture proven predeath admission/effect barrier without test-only hook smuggling; actual kill/exit+close and lock release, reopen within true finite bound, no partial graph/group/receipt; retry once yields one terminal receipt/group; whole-sequence remains separate member commitments"
+    },
+    {
+      "family": "RESTORE-ID",
+      "lawIds": [
+        "read.scope.restore-identity",
+        "read-update.idempotency.restore"
+      ],
+      "trigger": "Supported restore either preserves complete same-logical-Scope identity/recovery state or uses a different canonical Scope URL; RU exposes no epoch",
+      "currentSupport": "NO_SUPPORTED_LOGICAL_IMPORT_EXPORT_ENTRY; applicability remains required when restore occurs, not N/A",
+      "entryRefs": [
+        "ENTRY-01",
+        "ENTRY-02",
+        "ENTRY-03",
+        "ENTRY-05",
+        "ENTRY-08",
+        "ENTRY-09"
+      ],
+      "sourceRefs": [
+        {
+          "path": "packages/server/src/recovery-store.ts",
+          "startLine": 115,
+          "endLine": 128,
+          "sha256": "48b7901e48998fe29598168a527213ebfb49e1d6e5dc5c2eb6494c862b5de9f9"
+        },
+        {
+          "path": "packages/server/src/recovery-store.ts",
+          "startLine": 270,
+          "endLine": 280,
+          "sha256": "48b7901e48998fe29598168a527213ebfb49e1d6e5dc5c2eb6494c862b5de9f9"
+        },
+        {
+          "path": "packages/server/src/recovery-store.ts",
+          "startLine": 631,
+          "endLine": 676,
+          "sha256": "48b7901e48998fe29598168a527213ebfb49e1d6e5dc5c2eb6494c862b5de9f9"
+        },
+        {
+          "path": "packages/server/src/recovery-store.test.ts",
+          "startLine": 694,
+          "endLine": 711,
+          "sha256": "5d3a51789a8d80d14407fec6db36ff6aa27461948c285745db80f1b71ee60d2e"
+        },
+        {
+          "path": "apps/bdptest/src/read-matrix.test.ts",
+          "startLine": 577,
+          "endLine": 602,
+          "sha256": "b073336b967d4d8b09d74ea4c67712b28dd576d2902b1c12080960e0d58d8fd6"
+        }
+      ],
+      "applicability": "CONDITIONAL_ON_ACTUAL_TRIGGER_AND_DECLARED_TARGET; NOT_INFERRED_NA_FROM_MISSING_ENTRY",
+      "currentInstalledQualification": "UNKNOWN_NOT_OBSERVED_HERE",
+      "minimumFutureProof": "Identify actual supported operator recovery/import route and complete durable-state provenance first; preserve all identity markers/dispositions/tombstones/claim resolutions, or demonstrate actual different canonical URL. Store mismatch refusal and a recreated portable Read fixture do not certify restore. RU restore row is expressly retired on TX, not silently pooled"
+    },
+    {
+      "family": "RESTORE-TX",
+      "lawIds": [
+        "transactional.restore.epoch-fence",
+        "transactional.restore.key-namespace",
+        "transactional.erasure.restore"
+      ],
+      "trigger": "History-discarding logical restore/authority replacement into new TX epoch, same canonical identity only with continuity, ledger survives/re-emits before new groups",
+      "currentSupport": "NO_SUPPORTED_EPOCH_ROTATION_OR_LOGICAL_RESTORE_ENTRY; observed restore proof UNKNOWN",
+      "entryRefs": [
+        "ENTRY-04",
+        "ENTRY-06",
+        "ENTRY-09",
+        "ENTRY-10"
+      ],
+      "sourceRefs": [
+        {
+          "path": "packages/server/src/transaction-store.ts",
+          "startLine": 584,
+          "endLine": 639,
+          "sha256": "2feff60d7064cf6a1f8b15c8360b98c1671a04762346d1d6bb3a9321ef69a2d5"
+        },
+        {
+          "path": "packages/server/src/transaction-store.test.ts",
+          "startLine": 2993,
+          "endLine": 3028,
+          "sha256": "7cd155ddd959ec31a207adbe6f8eb0a26f0af968a144abb58915720436bf0774"
+        },
+        {
+          "path": "packages/server/src/transaction-submission.test.ts",
+          "startLine": 1245,
+          "endLine": 1252,
+          "sha256": "22a6f8da462658b13fd1e7bd40a75ab39ba60103e4268b5f29d17efbca69d6b8"
+        },
+        {
+          "path": "packages/server/src/transaction-discovery.ts",
+          "startLine": 54,
+          "endLine": 56,
+          "sha256": "bb8055e2089f640a5d2071e389ac2011d08c038427265b50ab3d03c02047cfef"
+        }
+      ],
+      "applicability": "CONDITIONAL_ON_ACTUAL_TRIGGER_AND_DECLARED_TARGET; NOT_INFERRED_NA_FROM_MISSING_ENTRY",
+      "currentInstalledQualification": "UNKNOWN_NOT_OBSERVED_HERE",
+      "minimumFutureProof": "A reviewed real restore procedure with authoritative complete identity/ledger evidence; changed actual epoch, stable canonical URLs/surviving addresses, old token-specific fences, prior key executes as new and never stale replay, ledger-only first positions and no old groups served. Fresh create/SQL receipt edits are not this procedure"
+    },
+    {
+      "family": "ERASE-ACT",
+      "lawIds": [
+        "transactional.erasure.record-digest",
+        "transactional.erasure.digest-domain",
+        "transactional.erasure.historical-version",
+        "transactional.erasure.live-successor",
+        "transactional.erasure.live-tombstone",
+        "transactional.erasure.owned-link-cascade"
+      ],
+      "trigger": "Administrative erasure of a named version (historical or live/owned); erasure is not a BDP mutation operation and has no Mutation Receipt",
+      "currentSupport": "NO_ADMIN_ENTRY_OR_COMMIT_PATH; nonempty erasure groups unsupported by current private projection; not N/A",
+      "entryRefs": [
+        "ENTRY-04",
+        "ENTRY-06",
+        "ENTRY-07"
+      ],
+      "sourceRefs": [
+        {
+          "path": "packages/server/src/transaction-store.ts",
+          "startLine": 238,
+          "endLine": 248,
+          "sha256": "2feff60d7064cf6a1f8b15c8360b98c1671a04762346d1d6bb3a9321ef69a2d5"
+        },
+        {
+          "path": "packages/server/src/transaction-store.ts",
+          "startLine": 1360,
+          "endLine": 1375,
+          "sha256": "2feff60d7064cf6a1f8b15c8360b98c1671a04762346d1d6bb3a9321ef69a2d5"
+        },
+        {
+          "path": "packages/server/src/transaction-changefeed.ts",
+          "startLine": 128,
+          "endLine": 146,
+          "sha256": "1e678ecb1b2c3e59023dbb6a2e6516763907babd79f7926ca572a4764e40fc1e"
+        },
+        {
+          "path": "packages/server/src/transaction-service.ts",
+          "startLine": 726,
+          "endLine": 728,
+          "sha256": "d34b28787b70e5a14c38f1295a7cacc3bd2425768245ace46484f882987e9568"
+        },
+        {
+          "path": "packages/server/src/transaction-discovery.ts",
+          "startLine": 8,
+          "endLine": 21,
+          "sha256": "bb8055e2089f640a5d2071e389ac2011d08c038427265b50ab3d03c02047cfef"
+        }
+      ],
+      "applicability": "CONDITIONAL_ON_ACTUAL_TRIGGER_AND_DECLARED_TARGET; NOT_INFERRED_NA_FROM_MISSING_ENTRY",
+      "currentInstalledQualification": "UNKNOWN_NOT_OBSERVED_HERE",
+      "minimumFutureProof": "First bind a genuinely supported administrative act and its operator authority/policy; retain pre-erasure complete actual version for JCS digest, separate admin transaction with no receipt, historical-only empty changes/events, atomic live successor/tombstone and source-owned containing-version cascades, valid graph/deletion safety. No new route or semantics is proposed here"
+    },
+    {
+      "family": "ERASE-COPIES",
+      "lawIds": [
+        "transactional.erasure.receipts",
+        "transactional.receipt.non-record-entries",
+        "transactional.sequence.member-reauthorization",
+        "transactional.erasure.event-withholding",
+        "transactional.erasure.graph-facts",
+        "transactional.event.cursor-after-withheld",
+        "transactional.erasure.retention-non-propagation"
+      ],
+      "trigger": "After supported erasure reaches every controlled retained copy before further visibility",
+      "currentSupport": "NO_ERASURE_INGESTION_OR_CLEANUP_PATH; retained copies do exist, so empty erasure arrays/Historyfalse cannot establish inapplicability",
+      "entryRefs": [
+        "ENTRY-04",
+        "ENTRY-06",
+        "ENTRY-07"
+      ],
+      "sourceRefs": [
+        {
+          "path": "packages/server/src/transaction-store.ts",
+          "startLine": 238,
+          "endLine": 248,
+          "sha256": "2feff60d7064cf6a1f8b15c8360b98c1671a04762346d1d6bb3a9321ef69a2d5"
+        },
+        {
+          "path": "packages/server/src/transaction-store.ts",
+          "startLine": 877,
+          "endLine": 923,
+          "sha256": "2feff60d7064cf6a1f8b15c8360b98c1671a04762346d1d6bb3a9321ef69a2d5"
+        },
+        {
+          "path": "packages/server/src/transaction-store.ts",
+          "startLine": 2320,
+          "endLine": 2336,
+          "sha256": "2feff60d7064cf6a1f8b15c8360b98c1671a04762346d1d6bb3a9321ef69a2d5"
+        },
+        {
+          "path": "packages/server/src/transaction-snapshot.ts",
+          "startLine": 36,
+          "endLine": 39,
+          "sha256": "dac7c2f121cfb6bae557b3917f5ec52e47a358ab39da4062f6a5c26f5b9fbd83"
+        },
+        {
+          "path": "packages/server/src/transaction-authorization.ts",
+          "startLine": 85,
+          "endLine": 125,
+          "sha256": "c87a7bfa8840aee2f097bf683fe3f3c97fcae80782020c6d5b1e41364d16b6d2"
+        }
+      ],
+      "applicability": "CONDITIONAL_ON_ACTUAL_TRIGGER_AND_DECLARED_TARGET; NOT_INFERRED_NA_FROM_MISSING_ENTRY",
+      "currentInstalledQualification": "UNKNOWN_NOT_OBSERVED_HERE",
+      "minimumFutureProof": "Inventory current/version postimages, groups, Events, receipts/pages/sequence, snapshots/pages and indexes/caches actually controlled; prove destruction before publish, lineage/digest surviving, authorized erased vs unauthorized withheld/no content, independent non-record facts retained, ordinal gaps/deleted graph fact law; retention expiry is not erasure"
+    },
+    {
+      "family": "ERASE-VIEW",
+      "lawIds": [
+        "transactional.erasure.view-projection",
+        "transactional.snapshot.erasure-ledger",
+        "transactional.changefeed.wire-form",
+        "transactional.changefeed.projection-advance"
+      ],
+      "trigger": "Erasure projects only to views which observed subject; permanent projected ledger on snapshots",
+      "currentSupport": "NO_LEDGER_STORAGE_OR_NONEMPTY_PROJECTION_SUPPORT; current policy only all-visible then empty, future applicable view fixture UNKNOWN",
+      "entryRefs": [
+        "ENTRY-04",
+        "ENTRY-06",
+        "ENTRY-07"
+      ],
+      "sourceRefs": [
+        {
+          "path": "packages/server/src/transaction-changefeed.ts",
+          "startLine": 38,
+          "endLine": 63,
+          "sha256": "1e678ecb1b2c3e59023dbb6a2e6516763907babd79f7926ca572a4764e40fc1e"
+        },
+        {
+          "path": "packages/server/src/transaction-changefeed.ts",
+          "startLine": 128,
+          "endLine": 146,
+          "sha256": "1e678ecb1b2c3e59023dbb6a2e6516763907babd79f7926ca572a4764e40fc1e"
+        },
+        {
+          "path": "packages/server/src/transaction-snapshot.ts",
+          "startLine": 594,
+          "endLine": 614,
+          "sha256": "dac7c2f121cfb6bae557b3917f5ec52e47a358ab39da4062f6a5c26f5b9fbd83"
+        },
+        {
+          "path": "packages/server/src/transaction-authorization.ts",
+          "startLine": 5,
+          "endLine": 44,
+          "sha256": "c87a7bfa8840aee2f097bf683fe3f3c97fcae80782020c6d5b1e41364d16b6d2"
+        }
+      ],
+      "applicability": "CONDITIONAL_ON_ACTUAL_TRIGGER_AND_DECLARED_TARGET; NOT_INFERRED_NA_FROM_MISSING_ENTRY",
+      "currentInstalledQualification": "UNKNOWN_NOT_OBSERVED_HERE",
+      "minimumFutureProof": "Actual same target/policy with positively established previously observed and never-observed views; ledger survives epoch/view/reopen, erasure record only appropriate view, other gets identifier-free projectionAdvance, complete three arrays and actual group schema. Withholding policy alone does not erase bytes"
+    },
+    {
+      "family": "ERASE-FENCE",
+      "lawIds": [
+        "transactional.erasure.replication-invalidation",
+        "transactional.erasure.epoch-unrotated",
+        "transactional.erasure.live-publication",
+        "transactional.erasure.disconnect-race"
+      ],
+      "trigger": "Erasure at P invalidates earlier checkpoints/snapshots in receiving views; already admitted caught-up SSE exception has atomic publication and durable client checkpoint rules",
+      "currentSupport": "NO_ERASURE_FENCE/PUBLICATION_PATH; current minReplayPosition constant pos0 is not erasure advancement",
+      "entryRefs": [
+        "ENTRY-04",
+        "ENTRY-06"
+      ],
+      "sourceRefs": [
+        {
+          "path": "packages/server/src/transaction-discovery.ts",
+          "startLine": 54,
+          "endLine": 56,
+          "sha256": "bb8055e2089f640a5d2071e389ac2011d08c038427265b50ab3d03c02047cfef"
+        },
+        {
+          "path": "packages/server/src/transaction-changefeed.ts",
+          "startLine": 128,
+          "endLine": 146,
+          "sha256": "1e678ecb1b2c3e59023dbb6a2e6516763907babd79f7926ca572a4764e40fc1e"
+        },
+        {
+          "path": "packages/server/src/transaction-snapshot.ts",
+          "startLine": 594,
+          "endLine": 614,
+          "sha256": "dac7c2f121cfb6bae557b3917f5ec52e47a358ab39da4062f6a5c26f5b9fbd83"
+        }
+      ],
+      "applicability": "CONDITIONAL_ON_ACTUAL_TRIGGER_AND_DECLARED_TARGET; NOT_INFERRED_NA_FROM_MISSING_ENTRY",
+      "currentInstalledQualification": "UNKNOWN_NOT_OBSERVED_HERE",
+      "minimumFutureProof": "Actual pre-P snapshot/checkpoint, live caught-up vs lagging vs never-observed streams; same epoch for erasure, observed minimumReplayPosition>=P, old handles410, no queued pre-P after atomic fence, reconnect from last durably applied group not socket-write progress. Timing/ownership bounds must be separately reviewed, no new D4 requests assumed"
+    },
+    {
+      "family": "ERASE-CONSUMER",
+      "lawIds": [
+        "transactional.erasure.unestablishable-content",
+        "transactional.erasure.persistent-event-consumer"
+      ],
+      "trigger": "Persistent Event consumer/replica claiming protocol-backed erasure retains bytes across rebootstrap/view/epoch changes",
+      "currentSupport": "NO_BOUND_INSTALLED_CONSUMER/RECOVERY_ROUTE; applicability/retained-copy scope UNKNOWN, cannot assert N/A",
+      "entryRefs": [
+        "ENTRY-08"
+      ],
+      "sourceRefs": [
+        {
+          "path": "packages/server/src/transaction-changefeed.ts",
+          "startLine": 38,
+          "endLine": 63,
+          "sha256": "1e678ecb1b2c3e59023dbb6a2e6516763907babd79f7926ca572a4764e40fc1e"
+        },
+        {
+          "path": "packages/server/src/transaction-snapshot.ts",
+          "startLine": 594,
+          "endLine": 614,
+          "sha256": "dac7c2f121cfb6bae557b3917f5ec52e47a358ab39da4062f6a5c26f5b9fbd83"
+        }
+      ],
+      "applicability": "CONDITIONAL_ON_ACTUAL_TRIGGER_AND_DECLARED_TARGET; NOT_INFERRED_NA_FROM_MISSING_ENTRY",
+      "currentInstalledQualification": "UNKNOWN_NOT_OBSERVED_HERE",
+      "minimumFutureProof": "Declare actual controlled consumer and retention scope; authoritative snapshot-ledger recovery before old data visible, discard/reject unestablishable status, no Event-only delivery claim. No arbitrary downloaded-copy assurance or unclaimed consumer requirement is invented"
+    },
+    {
+      "family": "DISCLOSURE",
+      "lawIds": [
+        "read.disclosure.gone",
+        "read.http.conditional-reads",
+        "transactional.erasure.reads"
+      ],
+      "trigger": "Read of removed/erased version and applicable preconditions; subject-history authorization and no pointer leakage",
+      "currentSupport": "ORDINARY_READ_FAILURE_MACHINERY_EXISTS; no actual erasure disposition/subject-history admin fixture, whole law proof UNKNOWN",
+      "entryRefs": [
+        "ENTRY-01",
+        "ENTRY-03",
+        "ENTRY-04",
+        "ENTRY-07"
+      ],
+      "sourceRefs": [
+        {
+          "path": "packages/server/src/transaction-authorization.ts",
+          "startLine": 85,
+          "endLine": 125,
+          "sha256": "c87a7bfa8840aee2f097bf683fe3f3c97fcae80782020c6d5b1e41364d16b6d2"
+        },
+        {
+          "path": "packages/server/src/transaction-service.ts",
+          "startLine": 726,
+          "endLine": 728,
+          "sha256": "d34b28787b70e5a14c38f1295a7cacc3bd2425768245ace46484f882987e9568"
+        }
+      ],
+      "applicability": "CONDITIONAL_ON_ACTUAL_TRIGGER_AND_DECLARED_TARGET; NOT_INFERRED_NA_FROM_MISSING_ENTRY",
+      "currentInstalledQualification": "UNKNOWN_NOT_OBSERVED_HERE",
+      "minimumFutureProof": "Actual authoritative erased-version identity and authorized/unauthorized principals; applicable410resource-erased/no condition-specific extension vs uniform404; erasure refusal before304/412; do not infer erasure from absence or authorization revocation"
+    },
+    {
+      "family": "OPTIONAL-HISTORY",
+      "lawIds": [
+        "history.erasure",
+        "history.erasure.transactional"
+      ],
+      "trigger": "History claimed or controlled History import/recovery route, distinct from mandatory TX erasure duties",
+      "currentSupport": "OPTIONAL_HISTORY_CATALOG_NOT_SELECTED_FOR_CURRENT_HISTORY_FALSE; that is not an erasure or restore N/A ruling",
+      "entryRefs": [
+        "ENTRY-01",
+        "ENTRY-03",
+        "ENTRY-04"
+      ],
+      "sourceRefs": [
+        {
+          "path": "packages/conformance/src/profile-contract-selection.ts",
+          "startLine": 10,
+          "endLine": 11,
+          "sha256": "5b1caf61688bfa6a5465b5f8dc817b84f02be76bfc5bdd886a19e749b6441543"
+        },
+        {
+          "path": "packages/conformance/src/profile-contract-selection.ts",
+          "startLine": 58,
+          "endLine": 65,
+          "sha256": "5b1caf61688bfa6a5465b5f8dc817b84f02be76bfc5bdd886a19e749b6441543"
+        }
+      ],
+      "applicability": "CONDITIONAL_ON_ACTUAL_TRIGGER_AND_DECLARED_TARGET; NOT_INFERRED_NA_FROM_MISSING_ENTRY",
+      "currentInstalledQualification": "UNKNOWN_NOT_OBSERVED_HERE",
+      "minimumFutureProof": "If History later selected, positively establish origin/version identity/erasure status for every controlled import before publication; source/configuration/profile selection separately reviewed. Current inventory adopts no History feature"
+    }
+  ],
+  "coverage": "Finite34primary+4cross-cited law metadata inventory, not full profile execution/credit",
+  "allIndexedLawIdsAssignedExactlyOnce": true,
+  "sourceVsInstalled": "Source bodies/tests inspected statically; no test or product run, no final target/config assembled",
+  "noNewCommandsOrSemantics": true
+}

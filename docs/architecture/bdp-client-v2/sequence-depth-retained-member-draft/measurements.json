@@ -1,0 +1,441 @@
+{
+  "status": "SOURCE ONLY; prospective counts, no execution",
+  "sourceBindingSha256": "987f61764ca09df676f77ab5b99a8886809f4ce7908342bc8c27fd462fddcc81",
+  "sourceSelections": [
+    {
+      "path": "packages/server/src/transaction-set.test.ts",
+      "titles": [
+        "keeps receiving depth facts private while legacy preparation still throws",
+        "annotates only deep sequence members after complete carrier syntax while strict preparation stays strict"
+      ],
+      "regex": "^(?:keeps\\ receiving\\ depth\\ facts\\ private\\ while\\ legacy\\ preparation\\ still\\ throws|annotates\\ only\\ deep\\ sequence\\ members\\ after\\ complete\\ carrier\\ syntax\\ while\\ strict\\ preparation\\ stays\\ strict)$",
+      "expectedPassed": 2
+    },
+    {
+      "path": "packages/server/src/transaction-sequence.test.ts",
+      "titles": [
+        "private Transactional sequence slice runs all eight explicit operation kinds as separate commits with locator-only aliases",
+        "private Transactional sequence slice reserves all unknown keys together, commits a prefix, continues past failure and permits interleaving",
+        "private Transactional sequence slice joins overlapping presentations without running a completed member twice and projects current labels",
+        "private Transactional sequence slice projects another owner's pending receipt before immutable mismatch and never retracts that owner",
+        "private Transactional sequence slice shares singleton and one-operation batch identity, preserving exact numbers and creation defaults",
+        "private Transactional sequence slice leaves no partial bulk admission on after-sequence-reservation failure",
+        "private Transactional sequence slice leaves no partial bulk admission on after-sequence-admission failure",
+        "private Transactional sequence slice classifies foreign key state at its turn after failed detail is forgotten",
+        "private Transactional sequence slice compares retained deep sequence members without executing them or replacing their receipts",
+        "private Transactional sequence slice rolls back every new reservation when a fresh deep sequence member is refused",
+        "private Transactional sequence slice refuses fresh depth after a retained failed member expires between sequence turns",
+        "private Transactional sequence slice rejects duplicate keys and invalid dependency edges before any key effects",
+        "private Transactional sequence slice projects mixed retained, conflicting, failed and unknown keys in declaration order"
+      ],
+      "regex": "^(?:private\\ Transactional\\ sequence\\ slice\\ runs\\ all\\ eight\\ explicit\\ operation\\ kinds\\ as\\ separate\\ commits\\ with\\ locator\\-only\\ aliases|private\\ Transactional\\ sequence\\ slice\\ reserves\\ all\\ unknown\\ keys\\ together,\\ commits\\ a\\ prefix,\\ continues\\ past\\ failure\\ and\\ permits\\ interleaving|private\\ Transactional\\ sequence\\ slice\\ joins\\ overlapping\\ presentations\\ without\\ running\\ a\\ completed\\ member\\ twice\\ and\\ projects\\ current\\ labels|private\\ Transactional\\ sequence\\ slice\\ projects\\ another\\ owner's\\ pending\\ receipt\\ before\\ immutable\\ mismatch\\ and\\ never\\ retracts\\ that\\ owner|private\\ Transactional\\ sequence\\ slice\\ shares\\ singleton\\ and\\ one\\-operation\\ batch\\ identity,\\ preserving\\ exact\\ numbers\\ and\\ creation\\ defaults|private\\ Transactional\\ sequence\\ slice\\ leaves\\ no\\ partial\\ bulk\\ admission\\ on\\ after\\-sequence\\-reservation\\ failure|private\\ Transactional\\ sequence\\ slice\\ leaves\\ no\\ partial\\ bulk\\ admission\\ on\\ after\\-sequence\\-admission\\ failure|private\\ Transactional\\ sequence\\ slice\\ classifies\\ foreign\\ key\\ state\\ at\\ its\\ turn\\ after\\ failed\\ detail\\ is\\ forgotten|private\\ Transactional\\ sequence\\ slice\\ compares\\ retained\\ deep\\ sequence\\ members\\ without\\ executing\\ them\\ or\\ replacing\\ their\\ receipts|private\\ Transactional\\ sequence\\ slice\\ rolls\\ back\\ every\\ new\\ reservation\\ when\\ a\\ fresh\\ deep\\ sequence\\ member\\ is\\ refused|private\\ Transactional\\ sequence\\ slice\\ refuses\\ fresh\\ depth\\ after\\ a\\ retained\\ failed\\ member\\ expires\\ between\\ sequence\\ turns|private\\ Transactional\\ sequence\\ slice\\ rejects\\ duplicate\\ keys\\ and\\ invalid\\ dependency\\ edges\\ before\\ any\\ key\\ effects|private\\ Transactional\\ sequence\\ slice\\ projects\\ mixed\\ retained,\\ conflicting,\\ failed\\ and\\ unknown\\ keys\\ in\\ declaration\\ order)$",
+      "expectedPassed": 13
+    },
+    {
+      "path": "packages/server/src/transaction-http.test.ts",
+      "titles": [
+        "labels sequence depth gaps honestly and keeps sequence capacity distinct from direct transaction capacity",
+        "compares retained sequence members before private depth refusal and preserves receiving failures",
+        "source-private actual Transactional HTTP rejects sequence carrier syntax/keys/negotiation before claiming any member"
+      ],
+      "regex": "^(?:labels\\ sequence\\ depth\\ gaps\\ honestly\\ and\\ keeps\\ sequence\\ capacity\\ distinct\\ from\\ direct\\ transaction\\ capacity|compares\\ retained\\ sequence\\ members\\ before\\ private\\ depth\\ refusal\\ and\\ preserves\\ receiving\\ failures|source\\-private\\ actual\\ Transactional\\ HTTP\\ rejects\\ sequence\\ carrier\\ syntax/keys/negotiation\\ before\\ claiming\\ any\\ member)$",
+      "expectedPassed": 3
+    }
+  ],
+  "newRegistrations": {
+    "source": 5,
+    "installed": 1
+  },
+  "sourceNewHttp": {
+    "requests": [
+      {
+        "index": 1,
+        "id": "seed",
+        "method": "POST",
+        "url": "<actual-runtime-scope>operations/create-bead",
+        "body": "{\"id\":\"beads/sequence-a\",\"type\":\"https://example.test/bead\",\"properties\":{\"title\":\"sequence-a\"},\"metadata\":{}}",
+        "bodyBytes": 110,
+        "bodySha256": "aabacf6097b464c93dd32450577afa104a99d494622a12982a06cc712d517179",
+        "headers": {
+          "Accept": "application/json",
+          "Content-Type": "application/json",
+          "Idempotency-Key": "sequence-retained"
+        },
+        "credential": "operator (actual random token excluded)",
+        "expectedStatus": 200
+      },
+      {
+        "index": 2,
+        "id": "retained-deep",
+        "method": "POST",
+        "url": "<actual-runtime-scope>operations/sequence",
+        "body": "{\"operations\":[{\"operation\":\"createBead\",\"id\":\"beads/sequence-a\",\"type\":\"https://example.test/bead\",\"properties\":{\"title\":\"sequence-a\"},\"metadata\":{\"nested\":{\"nested\":{\"nested\":{\"nested\":{\"nested\":{\"nested\":{\"nested\":{\"nested\":{\"nested\":{\"nested\":{\"nested\":{\"nested\":{\"nested\":{\"nested\":{\"nested\":{\"nested\":{\"nested\":{\"nested\":{\"nested\":{\"nested\":{\"nested\":{\"nested\":{\"nested\":{\"nested\":{\"nested\":{\"nested\":{\"nested\":{\"nested\":{\"nested\":{\"nested\":{\"nested\":{\"nested\":{\"nested\":{\"nested\":{\"nested\":{\"nested\":{\"nested\":{\"nested\":{\"nested\":{\"nested\":{\"nested\":\"leaf\"}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}},\"idempotencyKey\":\"sequence-retained\",\"name\":\"present\"}]}",
+        "bodyBytes": 661,
+        "bodySha256": "ceda96248db93c3cb51b7984c68bdf635a4390b4d9ea882873a2a888c7237ea0",
+        "headers": {
+          "Accept": "application/json",
+          "Content-Type": "application/json"
+        },
+        "credential": "operator (actual random token excluded)",
+        "expectedStatus": 200
+      },
+      {
+        "index": 3,
+        "id": "original-replay",
+        "method": "POST",
+        "url": "<actual-runtime-scope>operations/create-bead",
+        "body": "{\"id\":\"beads/sequence-a\",\"type\":\"https://example.test/bead\",\"properties\":{\"title\":\"sequence-a\"},\"metadata\":{}}",
+        "bodyBytes": 110,
+        "bodySha256": "aabacf6097b464c93dd32450577afa104a99d494622a12982a06cc712d517179",
+        "headers": {
+          "Accept": "application/json",
+          "Content-Type": "application/json",
+          "Idempotency-Key": "sequence-retained"
+        },
+        "credential": "operator (actual random token excluded)",
+        "expectedStatus": 200
+      },
+      {
+        "index": 4,
+        "id": "original-resource",
+        "method": "GET",
+        "url": "<actual-runtime-scope>beads/sequence-a",
+        "body": "",
+        "bodyBytes": 0,
+        "bodySha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "headers": {
+          "Accept": "application/json"
+        },
+        "credential": "operator (actual random token excluded)",
+        "expectedStatus": 200
+      },
+      {
+        "index": 5,
+        "id": "fresh-deep",
+        "method": "POST",
+        "url": "<actual-runtime-scope>operations/sequence",
+        "body": "{\"operations\":[{\"operation\":\"createBead\",\"id\":\"beads/sequence-b\",\"type\":\"https://example.test/bead\",\"properties\":{\"title\":\"sequence-b\"},\"metadata\":{\"nested\":{\"nested\":{\"nested\":{\"nested\":{\"nested\":{\"nested\":{\"nested\":{\"nested\":{\"nested\":{\"nested\":{\"nested\":{\"nested\":{\"nested\":{\"nested\":{\"nested\":{\"nested\":{\"nested\":{\"nested\":{\"nested\":{\"nested\":{\"nested\":{\"nested\":{\"nested\":{\"nested\":{\"nested\":{\"nested\":{\"nested\":{\"nested\":{\"nested\":{\"nested\":{\"nested\":{\"nested\":{\"nested\":{\"nested\":{\"nested\":{\"nested\":{\"nested\":{\"nested\":{\"nested\":{\"nested\":{\"nested\":\"leaf\"}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}},\"idempotencyKey\":\"sequence-fresh\",\"name\":\"present\"}]}",
+        "bodyBytes": 658,
+        "bodySha256": "0fbc5f70f0a6c29bcbcddfd820a5856833068e2c04892394296f554baf6fae55",
+        "headers": {
+          "Accept": "application/json",
+          "Content-Type": "application/json"
+        },
+        "credential": "operator (actual random token excluded)",
+        "expectedStatus": 500
+      },
+      {
+        "index": 6,
+        "id": "fresh-key-reuse",
+        "method": "POST",
+        "url": "<actual-runtime-scope>operations/sequence",
+        "body": "{\"operations\":[{\"operation\":\"createBead\",\"id\":\"beads/sequence-b\",\"type\":\"https://example.test/bead\",\"properties\":{\"title\":\"sequence-b\"},\"metadata\":{},\"idempotencyKey\":\"sequence-fresh\",\"name\":\"present\"}]}",
+        "bodyBytes": 203,
+        "bodySha256": "2bd89145b1b2d4675c7f6a04e37f1f1aefa874f0830a12b64b85b1d602ca262a",
+        "headers": {
+          "Accept": "application/json",
+          "Content-Type": "application/json"
+        },
+        "credential": "operator (actual random token excluded)",
+        "expectedStatus": 200
+      },
+      {
+        "index": 7,
+        "id": "retained-deep-negotiation",
+        "method": "POST",
+        "url": "<actual-runtime-scope>operations/sequence",
+        "body": "{\"operations\":[{\"operation\":\"createBead\",\"id\":\"beads/sequence-a\",\"type\":\"https://example.test/bead\",\"properties\":{\"title\":\"sequence-a\"},\"metadata\":{\"nested\":{\"nested\":{\"nested\":{\"nested\":{\"nested\":{\"nested\":{\"nested\":{\"nested\":{\"nested\":{\"nested\":{\"nested\":{\"nested\":{\"nested\":{\"nested\":{\"nested\":{\"nested\":{\"nested\":{\"nested\":{\"nested\":{\"nested\":{\"nested\":{\"nested\":{\"nested\":{\"nested\":{\"nested\":{\"nested\":{\"nested\":{\"nested\":{\"nested\":{\"nested\":{\"nested\":{\"nested\":{\"nested\":{\"nested\":{\"nested\":{\"nested\":{\"nested\":{\"nested\":{\"nested\":{\"nested\":{\"nested\":\"leaf\"}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}},\"idempotencyKey\":\"sequence-retained\",\"name\":\"present\"}]}",
+        "bodyBytes": 661,
+        "bodySha256": "ceda96248db93c3cb51b7984c68bdf635a4390b4d9ea882873a2a888c7237ea0",
+        "headers": {
+          "Accept": "text/plain",
+          "Content-Type": "application/json"
+        },
+        "credential": "operator (actual random token excluded)",
+        "expectedStatus": 406
+      },
+      {
+        "index": 8,
+        "id": "fresh-deep-negotiation",
+        "method": "POST",
+        "url": "<actual-runtime-scope>operations/sequence",
+        "body": "{\"operations\":[{\"operation\":\"createBead\",\"id\":\"beads/sequence-c\",\"type\":\"https://example.test/bead\",\"properties\":{\"title\":\"sequence-c\"},\"metadata\":{\"nested\":{\"nested\":{\"nested\":{\"nested\":{\"nested\":{\"nested\":{\"nested\":{\"nested\":{\"nested\":{\"nested\":{\"nested\":{\"nested\":{\"nested\":{\"nested\":{\"nested\":{\"nested\":{\"nested\":{\"nested\":{\"nested\":{\"nested\":{\"nested\":{\"nested\":{\"nested\":{\"nested\":{\"nested\":{\"nested\":{\"nested\":{\"nested\":{\"nested\":{\"nested\":{\"nested\":{\"nested\":{\"nested\":{\"nested\":{\"nested\":{\"nested\":{\"nested\":{\"nested\":{\"nested\":{\"nested\":{\"nested\":\"leaf\"}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}},\"idempotencyKey\":\"sequence-negotiation\",\"name\":\"present\"}]}",
+        "bodyBytes": 664,
+        "bodySha256": "176ba993b022161dc0df8d5f7fa4f22d6708b22fa9753ec2e43e8b1098f361e4",
+        "headers": {
+          "Accept": "text/plain",
+          "Content-Type": "application/json"
+        },
+        "credential": "operator (actual random token excluded)",
+        "expectedStatus": 406
+      },
+      {
+        "index": 9,
+        "id": "absent",
+        "method": "POST",
+        "url": "<actual-runtime-scope>operations/sequence",
+        "body": "{\"operations\":[{\"operation\":\"createBead\",\"id\":\"beads/sequence-a\",\"type\":\"https://example.test/bead\",\"properties\":{\"title\":\"sequence-a\"},\"metadata\":{\"nested\":{\"nested\":{\"nested\":{\"nested\":{\"nested\":{\"nested\":{\"nested\":{\"nested\":{\"nested\":{\"nested\":{\"nested\":{\"nested\":{\"nested\":{\"nested\":{\"nested\":{\"nested\":{\"nested\":{\"nested\":{\"nested\":{\"nested\":{\"nested\":{\"nested\":{\"nested\":{\"nested\":{\"nested\":{\"nested\":{\"nested\":{\"nested\":{\"nested\":{\"nested\":{\"nested\":{\"nested\":{\"nested\":{\"nested\":{\"nested\":{\"nested\":{\"nested\":{\"nested\":{\"nested\":{\"nested\":{\"nested\":\"leaf\"}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}},\"idempotencyKey\":\"sequence-retained\",\"name\":\"present\"}]}",
+        "bodyBytes": 661,
+        "bodySha256": "ceda96248db93c3cb51b7984c68bdf635a4390b4d9ea882873a2a888c7237ea0",
+        "headers": {
+          "Accept": "application/json",
+          "Content-Type": "application/json"
+        },
+        "credential": "absent",
+        "expectedStatus": 401
+      },
+      {
+        "index": 10,
+        "id": "reader",
+        "method": "POST",
+        "url": "<actual-runtime-scope>operations/sequence",
+        "body": "{\"operations\":[{\"operation\":\"createBead\",\"id\":\"beads/sequence-a\",\"type\":\"https://example.test/bead\",\"properties\":{\"title\":\"sequence-a\"},\"metadata\":{\"nested\":{\"nested\":{\"nested\":{\"nested\":{\"nested\":{\"nested\":{\"nested\":{\"nested\":{\"nested\":{\"nested\":{\"nested\":{\"nested\":{\"nested\":{\"nested\":{\"nested\":{\"nested\":{\"nested\":{\"nested\":{\"nested\":{\"nested\":{\"nested\":{\"nested\":{\"nested\":{\"nested\":{\"nested\":{\"nested\":{\"nested\":{\"nested\":{\"nested\":{\"nested\":{\"nested\":{\"nested\":{\"nested\":{\"nested\":{\"nested\":{\"nested\":{\"nested\":{\"nested\":{\"nested\":{\"nested\":{\"nested\":\"leaf\"}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}},\"idempotencyKey\":\"sequence-retained\",\"name\":\"present\"}]}",
+        "bodyBytes": 661,
+        "bodySha256": "ceda96248db93c3cb51b7984c68bdf635a4390b4d9ea882873a2a888c7237ea0",
+        "headers": {
+          "Accept": "application/json",
+          "Content-Type": "application/json"
+        },
+        "credential": "reader",
+        "expectedStatus": 403
+      },
+      {
+        "index": 11,
+        "id": "duplicate-key",
+        "method": "POST",
+        "url": "<actual-runtime-scope>operations/sequence",
+        "body": "{\"operations\":[{\"operation\":\"createBead\",\"id\":\"beads/sequence-a\",\"type\":\"https://example.test/bead\",\"properties\":{\"title\":\"sequence-a\"},\"metadata\":{\"nested\":{\"nested\":{\"nested\":{\"nested\":{\"nested\":{\"nested\":{\"nested\":{\"nested\":{\"nested\":{\"nested\":{\"nested\":{\"nested\":{\"nested\":{\"nested\":{\"nested\":{\"nested\":{\"nested\":{\"nested\":{\"nested\":{\"nested\":{\"nested\":{\"nested\":{\"nested\":{\"nested\":{\"nested\":{\"nested\":{\"nested\":{\"nested\":{\"nested\":{\"nested\":{\"nested\":{\"nested\":{\"nested\":{\"nested\":{\"nested\":{\"nested\":{\"nested\":{\"nested\":{\"nested\":{\"nested\":{\"nested\":\"leaf\"}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}},\"idempotencyKey\":\"sequence-retained\",\"name\":\"first\"},{\"operation\":\"createBead\",\"id\":\"beads/sequence-a\",\"type\":\"https://example.test/bead\",\"properties\":{\"title\":\"sequence-a\"},\"metadata\":{\"nested\":{\"nested\":{\"nested\":{\"nested\":{\"nested\":{\"nested\":{\"nested\":{\"nested\":{\"nested\":{\"nested\":{\"nested\":{\"nested\":{\"nested\":{\"nested\":{\"nested\":{\"nested\":{\"nested\":{\"nested\":{\"nested\":{\"nested\":{\"nested\":{\"nested\":{\"nested\":{\"nested\":{\"nested\":{\"nested\":{\"nested\":{\"nested\":{\"nested\":{\"nested\":{\"nested\":{\"nested\":{\"nested\":{\"nested\":{\"nested\":{\"nested\":{\"nested\":{\"nested\":{\"nested\":{\"nested\":{\"nested\":\"leaf\"}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}},\"idempotencyKey\":\"sequence-retained\",\"name\":\"second\"}]}",
+        "headers": {
+          "Accept": "application/json",
+          "Content-Type": "application/json"
+        },
+        "credential": "operator",
+        "expectedStatus": 400,
+        "bodyBytes": 1303,
+        "bodySha256": "66a11a95dae380e40816f10a20819ab723c2d51b36252968c5c9730636126865"
+      }
+    ],
+    "count": 11,
+    "bodyBytesTotal": 5692,
+    "bodyBytesMaximum": 1303,
+    "derivation": "Standard-library JSON reconstruction of actual callback recipe with constant https://example.test/bead. Dynamic port is not in request bodies. Not a wire observation."
+  },
+  "installed": {
+    "path": "apps/bdptest/src/transactional-sequence-depth-installed.test.ts",
+    "title": "observes retained sequence member conflict before private depth refusal over packed bytes",
+    "requests": [
+      {
+        "index": 1,
+        "id": "seed",
+        "method": "POST",
+        "url": "https://reference.invalid/acme/operations/create-bead",
+        "body": "{\"id\":\"beads/sequence-a\",\"type\":\"https://reference.invalid/acme/types/task\",\"properties\":{\"title\":\"sequence-a\"},\"metadata\":{}}",
+        "bodyBytes": 126,
+        "bodySha256": "764bc2f11265c9581533352015d0313596277a928c88556eedb32ef732ceadd1",
+        "headers": {
+          "Accept": "application/json",
+          "Content-Type": "application/json",
+          "Idempotency-Key": "sequence-retained"
+        },
+        "credential": "operator (actual random token excluded)",
+        "expectedStatus": 200
+      },
+      {
+        "index": 2,
+        "id": "retained-deep",
+        "method": "POST",
+        "url": "https://reference.invalid/acme/operations/sequence",
+        "body": "{\"operations\":[{\"operation\":\"createBead\",\"id\":\"beads/sequence-a\",\"type\":\"https://reference.invalid/acme/types/task\",\"properties\":{\"title\":\"sequence-a\"},\"metadata\":{\"nested\":{\"nested\":{\"nested\":{\"nested\":{\"nested\":{\"nested\":{\"nested\":{\"nested\":{\"nested\":{\"nested\":{\"nested\":{\"nested\":{\"nested\":{\"nested\":{\"nested\":{\"nested\":{\"nested\":{\"nested\":{\"nested\":{\"nested\":{\"nested\":{\"nested\":{\"nested\":{\"nested\":{\"nested\":{\"nested\":{\"nested\":{\"nested\":{\"nested\":{\"nested\":{\"nested\":{\"nested\":{\"nested\":{\"nested\":{\"nested\":{\"nested\":{\"nested\":{\"nested\":{\"nested\":{\"nested\":{\"nested\":\"leaf\"}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}},\"idempotencyKey\":\"sequence-retained\",\"name\":\"present\"}]}",
+        "bodyBytes": 677,
+        "bodySha256": "7fd1a9710303612edcccee2ebc29d408193283f02ddc3804e75b128d30fb2d23",
+        "headers": {
+          "Accept": "application/json",
+          "Content-Type": "application/json"
+        },
+        "credential": "operator (actual random token excluded)",
+        "expectedStatus": 200
+      },
+      {
+        "index": 3,
+        "id": "original-replay",
+        "method": "POST",
+        "url": "https://reference.invalid/acme/operations/create-bead",
+        "body": "{\"id\":\"beads/sequence-a\",\"type\":\"https://reference.invalid/acme/types/task\",\"properties\":{\"title\":\"sequence-a\"},\"metadata\":{}}",
+        "bodyBytes": 126,
+        "bodySha256": "764bc2f11265c9581533352015d0313596277a928c88556eedb32ef732ceadd1",
+        "headers": {
+          "Accept": "application/json",
+          "Content-Type": "application/json",
+          "Idempotency-Key": "sequence-retained"
+        },
+        "credential": "operator (actual random token excluded)",
+        "expectedStatus": 200
+      },
+      {
+        "index": 4,
+        "id": "original-resource",
+        "method": "GET",
+        "url": "https://reference.invalid/acme/beads/sequence-a",
+        "body": "",
+        "bodyBytes": 0,
+        "bodySha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "headers": {
+          "Accept": "application/json"
+        },
+        "credential": "operator (actual random token excluded)",
+        "expectedStatus": 200
+      },
+      {
+        "index": 5,
+        "id": "fresh-deep",
+        "method": "POST",
+        "url": "https://reference.invalid/acme/operations/sequence",
+        "body": "{\"operations\":[{\"operation\":\"createBead\",\"id\":\"beads/sequence-b\",\"type\":\"https://reference.invalid/acme/types/task\",\"properties\":{\"title\":\"sequence-b\"},\"metadata\":{\"nested\":{\"nested\":{\"nested\":{\"nested\":{\"nested\":{\"nested\":{\"nested\":{\"nested\":{\"nested\":{\"nested\":{\"nested\":{\"nested\":{\"nested\":{\"nested\":{\"nested\":{\"nested\":{\"nested\":{\"nested\":{\"nested\":{\"nested\":{\"nested\":{\"nested\":{\"nested\":{\"nested\":{\"nested\":{\"nested\":{\"nested\":{\"nested\":{\"nested\":{\"nested\":{\"nested\":{\"nested\":{\"nested\":{\"nested\":{\"nested\":{\"nested\":{\"nested\":{\"nested\":{\"nested\":{\"nested\":{\"nested\":\"leaf\"}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}},\"idempotencyKey\":\"sequence-fresh\",\"name\":\"present\"}]}",
+        "bodyBytes": 674,
+        "bodySha256": "66f3c980ebb072c775200bda8b73f5d64176d00196eecf4de0fa69240958735e",
+        "headers": {
+          "Accept": "application/json",
+          "Content-Type": "application/json"
+        },
+        "credential": "operator (actual random token excluded)",
+        "expectedStatus": 500
+      },
+      {
+        "index": 6,
+        "id": "fresh-key-reuse",
+        "method": "POST",
+        "url": "https://reference.invalid/acme/operations/sequence",
+        "body": "{\"operations\":[{\"operation\":\"createBead\",\"id\":\"beads/sequence-b\",\"type\":\"https://reference.invalid/acme/types/task\",\"properties\":{\"title\":\"sequence-b\"},\"metadata\":{},\"idempotencyKey\":\"sequence-fresh\",\"name\":\"present\"}]}",
+        "bodyBytes": 219,
+        "bodySha256": "6542f995ee8619607353fd01b5c2f3b257c9ae85ef43f0357e2393bffd81fd62",
+        "headers": {
+          "Accept": "application/json",
+          "Content-Type": "application/json"
+        },
+        "credential": "operator (actual random token excluded)",
+        "expectedStatus": 200
+      },
+      {
+        "index": 7,
+        "id": "retained-deep-negotiation",
+        "method": "POST",
+        "url": "https://reference.invalid/acme/operations/sequence",
+        "body": "{\"operations\":[{\"operation\":\"createBead\",\"id\":\"beads/sequence-a\",\"type\":\"https://reference.invalid/acme/types/task\",\"properties\":{\"title\":\"sequence-a\"},\"metadata\":{\"nested\":{\"nested\":{\"nested\":{\"nested\":{\"nested\":{\"nested\":{\"nested\":{\"nested\":{\"nested\":{\"nested\":{\"nested\":{\"nested\":{\"nested\":{\"nested\":{\"nested\":{\"nested\":{\"nested\":{\"nested\":{\"nested\":{\"nested\":{\"nested\":{\"nested\":{\"nested\":{\"nested\":{\"nested\":{\"nested\":{\"nested\":{\"nested\":{\"nested\":{\"nested\":{\"nested\":{\"nested\":{\"nested\":{\"nested\":{\"nested\":{\"nested\":{\"nested\":{\"nested\":{\"nested\":{\"nested\":{\"nested\":\"leaf\"}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}},\"idempotencyKey\":\"sequence-retained\",\"name\":\"present\"}]}",
+        "bodyBytes": 677,
+        "bodySha256": "7fd1a9710303612edcccee2ebc29d408193283f02ddc3804e75b128d30fb2d23",
+        "headers": {
+          "Accept": "text/plain",
+          "Content-Type": "application/json"
+        },
+        "credential": "operator (actual random token excluded)",
+        "expectedStatus": 406
+      },
+      {
+        "index": 8,
+        "id": "fresh-deep-negotiation",
+        "method": "POST",
+        "url": "https://reference.invalid/acme/operations/sequence",
+        "body": "{\"operations\":[{\"operation\":\"createBead\",\"id\":\"beads/sequence-c\",\"type\":\"https://reference.invalid/acme/types/task\",\"properties\":{\"title\":\"sequence-c\"},\"metadata\":{\"nested\":{\"nested\":{\"nested\":{\"nested\":{\"nested\":{\"nested\":{\"nested\":{\"nested\":{\"nested\":{\"nested\":{\"nested\":{\"nested\":{\"nested\":{\"nested\":{\"nested\":{\"nested\":{\"nested\":{\"nested\":{\"nested\":{\"nested\":{\"nested\":{\"nested\":{\"nested\":{\"nested\":{\"nested\":{\"nested\":{\"nested\":{\"nested\":{\"nested\":{\"nested\":{\"nested\":{\"nested\":{\"nested\":{\"nested\":{\"nested\":{\"nested\":{\"nested\":{\"nested\":{\"nested\":{\"nested\":{\"nested\":\"leaf\"}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}},\"idempotencyKey\":\"sequence-negotiation\",\"name\":\"present\"}]}",
+        "bodyBytes": 680,
+        "bodySha256": "37f093585358ce052ca89c3d8c7f4ce32e3945ff5406c0c17f942688a082be3e",
+        "headers": {
+          "Accept": "text/plain",
+          "Content-Type": "application/json"
+        },
+        "credential": "operator (actual random token excluded)",
+        "expectedStatus": 406
+      }
+    ],
+    "bodyBytesTotal": 3179,
+    "bodyBytesMaximum": 680,
+    "count": 8,
+    "children": 1,
+    "credentials": "operator only; reader credential and401/403 probes are source fixture only"
+  },
+  "control": {
+    "target": "sole emitted prepareTransactionSequenceForReceiving function body",
+    "replacement": "return prepareTransactionSequence(scope, text);",
+    "sourceTestTitle": "compares retained sequence members before private depth refusal and preserves receiving failures",
+    "expectedFailure": "sequence-depth:retained-member-conflict",
+    "expectedRequestIndex": 2,
+    "expectedStatus": 500,
+    "expectedMarker": null,
+    "expectedBodyBytes": 0,
+    "expectedHttp": 2,
+    "maximumHttp": 11,
+    "callbacks": 1,
+    "owners": 1,
+    "directories": 1,
+    "listeners": 1,
+    "productChildren": 0,
+    "expectedContextHeaders": [],
+    "markerMeaning": "Strict preparation throw is caught by createTransactionHttpHandler.handle generic empty(500); runtime delivers it without private marker/context.",
+    "oracleOrder": "record actual response then status-first named oracle; adjudicator requires500,empty body,no marker,no context; no added preparation catch"
+  },
+  "workload": {
+    "source": {
+      "callbacks": 18,
+      "http": 21,
+      "owners": 16,
+      "directories": 16,
+      "listeners": 3,
+      "productChildren": 0,
+      "detail": "2 preparation,13 owner sequence,3 HTTP: new11 +existing4 +existing6; no product children"
+    },
+    "installed": {
+      "callbacks": 1,
+      "http": 8,
+      "owners": 1,
+      "directories": 1,
+      "listeners": 1,
+      "productChildren": 1
+    },
+    "allIncludingControl": {
+      "callbacks": 20,
+      "httpExpected": 31,
+      "httpMaximum": 40,
+      "owners": 18,
+      "directories": 18,
+      "listeners": 5,
+      "productChildren": 1
+    },
+    "automaticRetries": 0,
+    "deliberateReplay": 1
+  },
+  "bounds": {
+    "newSourceCpuTestSeconds": 15,
+    "newSourceHttpWorkSeconds": 25,
+    "newSourceCleanupSeconds": 5,
+    "newSourceHttpTestSeconds": 30,
+    "installedWorkSeconds": 45,
+    "installedCleanupSeconds": 10,
+    "installedTestSeconds": 60,
+    "perRequestSeconds": 5,
+    "requestBodyBytes": 65536,
+    "requestHeaderBytes": 16384,
+    "responseBodyBytes": 131072,
+    "responseHeaderBytes": 65536,
+    "perCommandSeconds": 120,
+    "processGroupTermSeconds": 115,
+    "processGroupKillSeconds": 120,
+    "existingCases": "unchanged bounds;10 existing HTTP responses (4+6) do not acquire new streaming cap"
+  },
+  "actualTimeoutNote": "Preparation-only case uses existing Vitest default5s, within15s ceiling; new owners explicitly15s; sourceHTTP30s;installed60s.",
+  "responseBoundsNote": "New readers enforce body ceiling during consumption; source Fetch header cap is checked after receipt. Existing10 HTTP responses unchanged/uninstrumented; no aggregate heap ceiling claimed.",
+  "cleanup": {
+    "owner": "local boundary; aggregate primary and each reverse cleanup error",
+    "sourceHttp": "25s work/5s request; cancel and release reader;5s runtime close then remove own directory; startup or stop uncertainty retains directory",
+    "installed": "45s work/5s requests;10s close race; only returned owned child may be killed; unknown pre-ready stop preserves directory;120s outer supervisor required",
+    "prefixes": [
+      "bdp-transaction-sequence-",
+      "bdp-tx-http-",
+      "bdp-sequence-depth-installed-"
+    ]
+  },
+  "safeReportContract": {
+    "sourceTag": "private-source-sequence-depth",
+    "installedTag": "private-installed-sequence-depth",
+    "retained": "status, selected safe headers, response/body wire fingerprints, method/URL/Accept/nonsecret key/body bytes+hash; declared source/entry/binding and lifecycle booleans/count/PID/owned directory",
+    "excluded": "Authorization value/random token/credential-bearing configuration/full response bodies; full AJV/body equality assertions are in memory"
+  }
+}

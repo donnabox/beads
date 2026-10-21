@@ -1,0 +1,11 @@
+--- plan1/future-footprint.json
++++ plan2/future-footprint.json
+@@ -3,7 +3,7 @@
+     "apps/bdptest/src/transactional-set-installed.test.ts"
+   ],
+   "why": "One existing callback already owns workload. Local response/pending/returned-child observation and final reporting solve the concrete success/restart evidence gap. Pre-ready failure stays unknown and fails; root supervisor handles descendant closure. No new runtime, duplicated product test or new helper framework.",
+-  "sharedHelper": "scripts/transaction-installed-observation.mjs unchanged; optional onSpawn/export change NOT proposed. Its 23 importing source files retain signatures/defaults; failure cleanup internals can outlive local10s wait and must remain visible to root.",
++  "sharedHelper": "scripts/transaction-installed-observation.mjs byte-identical; no onSpawn/export/signature/default/argument change. Of23 source importers, the sole owned transactional-set-installed.test.ts changes; the OTHER22 importers remain byte-identical. Failure drain may outlive local10s wait; future root mechanics accounts for it.",
+   "outsideFootprint": [
+     "all runtime/store/configuration/policy/compiler/schema files",
+     "transactional-execution-binding.ts",

@@ -1,0 +1,39 @@
+{
+  "kind": "independent-failed-five-stage-terminal-prefix-audit",
+  "observedUtc": "2026-10-18T04:47:05.502680+00:00",
+  "decision": "STOP: actual typecheck failed; first four passed, no later validation attempted",
+  "firstFourReport": {
+    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/current-changefeed-validation-actual-prefix-audit-1/observation-002-first4-terminal/report.json",
+    "sha256": "afa7006fae38f84b00253eb873153ad3895f14b917481263256e1b64ac97e909"
+  },
+  "stage": "typecheck",
+  "actualExit": 1,
+  "accepted": false,
+  "elapsedSeconds": 5.137787208892405,
+  "sourceIdentityAtExecution": "bada68a4268fa521b7651b8afca3c68b2c8f8f741fcf9795464d51455c914d68",
+  "sourceUnchangedAtTerminalReported": true,
+  "currentSourceDifferencesFromFrozenCandidate": [
+    "packages/server/src/transaction-sse.test.ts"
+  ],
+  "actualDiagnostics": [
+    "packages/server/src/transaction-sse.test.ts(1511,22): error TS18048: 'head' is possibly 'undefined'.",
+    "packages/server/src/transaction-sse.test.ts(1512,22): error TS18048: 'head' is possibly 'undefined'.",
+    "packages/server/src/transaction-sse.test.ts(1513,17): error TS18048: 'get' is possibly 'undefined'.",
+    "packages/server/src/transaction-sse.test.ts(1515,22): error TS18048: 'get' is possibly 'undefined'.",
+    "packages/server/src/transaction-sse.test.ts(1516,24): error TS18048: 'get' is possibly 'undefined'."
+  ],
+  "failureClass": "TypeScript tuple inference: destructured get/head possibly undefined",
+  "noTimeoutOrForcedCleanup": true,
+  "sampledPidsIndependentlyAbsent": [
+    87756,
+    87780,
+    87807
+  ],
+  "stageLogSha256": "94e8283f23558f7242d5f4725a2e141afa27a1917c7bea1aa8bd49f7bbe850d2",
+  "laterStartedStages": [],
+  "noRetry": true,
+  "observerExecutedValidation": false,
+  "observerChangedSourceGitGateHelpers": false,
+  "qualification": false,
+  "next": "Preserve failed preparation3 and its exact source. Root closes gate and separately freezes minimal tuple annotation successor. Independently review successor before fresh named validation pipeline."
+}

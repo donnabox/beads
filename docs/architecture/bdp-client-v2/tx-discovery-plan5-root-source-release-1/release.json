@@ -1,0 +1,35 @@
+{
+  "accepted": true,
+  "session": "2026-10-18T02:16:24Z-549f",
+  "utc": "2026-10-18T06:23:06.313666+00:00",
+  "plan5IndexSha256": "d9214f08a3f41e5ebf7743556c1dd4ae780e87c3154cd13901693ba9cc639540",
+  "nativeClosureSha256": "522435b5f34cb238b585468ca7416f4ddc20fb9d049f9c1328e4119a9445bc6d",
+  "compositionSha256": "28199eab6d3b99cab759e242854c0503f0f1c4b4da4f0fd3ac0e70922d96a3ea",
+  "rootReadFullPlan4": true,
+  "rootVerifiedAll210EffectiveArtifacts": true,
+  "rootVerifiedAll679CleanCceSource": true,
+  "rootAcceptedExactCceCI": "0c550825a6da468344d3bb4c3cae4d24c30bc27099a68fcea5e361ea52e2fc92",
+  "rootSourceBasisAccepted": "b1cf937281ce082fe2f50866c7e91e900b3cbfd8b257f4cec9eedf8f679f17e3",
+  "actualPlanCount": 1,
+  "actualSupervision": "FAILED retained; CLIexitUNKNOWN/missingrunneroutputs retained; substantive13dispositions accepted",
+  "secondActualPlanAllowed": false,
+  "worktree": "/Users/dbox/repos/wt/vickie/vickie-tx-discovery-minimum",
+  "branch": "codex/vickie-tx-discovery-minimum",
+  "head": "cce884ccea1db97cbc6fd7bff876d4d6091f9081",
+  "ownedFiles": [
+    "packages/server/src/transaction-http.ts",
+    "packages/server/src/transaction-http.test.ts",
+    "apps/bdptest/src/transactional-discovery-installed.test.ts"
+  ],
+  "sourceAuthoringReleased": true,
+  "validationReleased": false,
+  "gitOrReviewerOrHelperExecutionAllowed": false,
+  "oneFormatOnlyInvocationAllowed": {
+    "binary": "/Users/dbox/repos/wt/vickie/vickie-event-admission-replay-minimum/node_modules/.pnpm/@biomejs+cli-darwin-arm64@2.5.7/node_modules/@biomejs/cli-darwin-arm64/biome",
+    "sha256": "f71fe80909d2f70f1e051320f5ba9dfd553bc5ef3bacef5cdee1b00ee96a285c",
+    "args": "format --write --config-path=<newworktree>/biome.json <exactthreeownedpaths>",
+    "timeoutSeconds": 30,
+    "automaticRetries": 0
+  },
+  "limitations": "No listener/publicadmission/startup/main/spec changes; D1preservation exact; no compiler/tests/build/install/runtime/reviewers/gates or otherowner/source edits; native+oneactualCODE before validation."
+}

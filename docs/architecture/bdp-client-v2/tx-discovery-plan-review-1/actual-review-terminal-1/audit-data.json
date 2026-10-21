@@ -1,0 +1,2503 @@
+{
+  "observedUtc": "2026-10-18T05:57:26.061439+00:00",
+  "session": "2026-10-18T02:16:24Z-549f",
+  "remoteClaimSha": "df8393784777aee148e9ed93288a63397a655ea2",
+  "outerTerminal": {
+    "classification": "process_ownership_or_cleanup_failure",
+    "approvalInferred": false,
+    "started": "2026-10-18T05:40:15.337891+00:00",
+    "elapsedSeconds": 962.2080912920646,
+    "deadlineSeconds": 1800,
+    "termAfterSeconds": 1790,
+    "killAfterSeconds": 1798,
+    "wrapperPid": 82335,
+    "wrapperExitCode": -15,
+    "roleChecks": [
+      {
+        "pid": 82328,
+        "startedElapsed": 0.005881292279809713,
+        "exitCode": 0
+      },
+      {
+        "pid": 83078,
+        "startedElapsed": 15.449144124984741,
+        "exitCode": 0
+      },
+      {
+        "pid": 83359,
+        "startedElapsed": 30.768958625383675,
+        "exitCode": 0
+      },
+      {
+        "pid": 84068,
+        "startedElapsed": 46.14293062500656,
+        "exitCode": 0
+      },
+      {
+        "pid": 84644,
+        "startedElapsed": 61.49074887530878,
+        "exitCode": 0
+      },
+      {
+        "pid": 85479,
+        "startedElapsed": 77.02939954213798,
+        "exitCode": 0
+      },
+      {
+        "pid": 86094,
+        "startedElapsed": 92.4638092094101,
+        "exitCode": 0
+      },
+      {
+        "pid": 87072,
+        "startedElapsed": 107.95945620909333,
+        "exitCode": 0
+      },
+      {
+        "pid": 87241,
+        "startedElapsed": 123.31768879201263,
+        "exitCode": 0
+      },
+      {
+        "pid": 89481,
+        "startedElapsed": 138.80695904232562,
+        "exitCode": 0
+      },
+      {
+        "pid": 89667,
+        "startedElapsed": 154.1759347501211,
+        "exitCode": 0
+      },
+      {
+        "pid": 89887,
+        "startedElapsed": 169.5425224173814,
+        "exitCode": 0
+      },
+      {
+        "pid": 90072,
+        "startedElapsed": 184.9406264591962,
+        "exitCode": 0
+      },
+      {
+        "pid": 90729,
+        "startedElapsed": 200.40411054203287,
+        "exitCode": 0
+      },
+      {
+        "pid": 90946,
+        "startedElapsed": 215.72803866723552,
+        "exitCode": 0
+      },
+      {
+        "pid": 91161,
+        "startedElapsed": 231.09479545941576,
+        "exitCode": 0
+      },
+      {
+        "pid": 91334,
+        "startedElapsed": 246.5128168342635,
+        "exitCode": 0
+      },
+      {
+        "pid": 92034,
+        "startedElapsed": 262.0238216673024,
+        "exitCode": 0
+      },
+      {
+        "pid": 92203,
+        "startedElapsed": 277.3899407093413,
+        "exitCode": 0
+      },
+      {
+        "pid": 92370,
+        "startedElapsed": 292.84805820928887,
+        "exitCode": 0
+      },
+      {
+        "pid": 93498,
+        "startedElapsed": 308.25383033417165,
+        "exitCode": 0
+      },
+      {
+        "pid": 96748,
+        "startedElapsed": 323.5647570420988,
+        "exitCode": 0
+      },
+      {
+        "pid": 99553,
+        "startedElapsed": 339.03273229207844,
+        "exitCode": 0
+      },
+      {
+        "pid": 99970,
+        "startedElapsed": 354.37569037498906,
+        "exitCode": 0
+      },
+      {
+        "pid": 234,
+        "startedElapsed": 369.75251325033605,
+        "exitCode": 0
+      },
+      {
+        "pid": 1304,
+        "startedElapsed": 385.10503345914185,
+        "exitCode": 0
+      },
+      {
+        "pid": 1531,
+        "startedElapsed": 400.43866929225624,
+        "exitCode": 0
+      },
+      {
+        "pid": 1743,
+        "startedElapsed": 415.9243964171037,
+        "exitCode": 0
+      },
+      {
+        "pid": 2030,
+        "startedElapsed": 431.2740657501854,
+        "exitCode": 0
+      },
+      {
+        "pid": 2761,
+        "startedElapsed": 446.6878365841694,
+        "exitCode": 0
+      },
+      {
+        "pid": 4710,
+        "startedElapsed": 462.0393096250482,
+        "exitCode": 0
+      },
+      {
+        "pid": 7425,
+        "startedElapsed": 477.40628608409315,
+        "exitCode": 0
+      },
+      {
+        "pid": 7683,
+        "startedElapsed": 492.80085595929995,
+        "exitCode": 0
+      },
+      {
+        "pid": 8406,
+        "startedElapsed": 508.1754882503301,
+        "exitCode": 0
+      },
+      {
+        "pid": 8601,
+        "startedElapsed": 523.564470875077,
+        "exitCode": 0
+      },
+      {
+        "pid": 8915,
+        "startedElapsed": 538.9695016252808,
+        "exitCode": 0
+      },
+      {
+        "pid": 9081,
+        "startedElapsed": 554.3477157922462,
+        "exitCode": 0
+      },
+      {
+        "pid": 9753,
+        "startedElapsed": 569.7373727094382,
+        "exitCode": 0
+      },
+      {
+        "pid": 10000,
+        "startedElapsed": 585.1943410001695,
+        "exitCode": 0
+      },
+      {
+        "pid": 10156,
+        "startedElapsed": 600.6977084171958,
+        "exitCode": 0
+      },
+      {
+        "pid": 10320,
+        "startedElapsed": 616.0449712923728,
+        "exitCode": 0
+      },
+      {
+        "pid": 10980,
+        "startedElapsed": 631.3783656670712,
+        "exitCode": 0
+      },
+      {
+        "pid": 11140,
+        "startedElapsed": 646.8634752919897,
+        "exitCode": 0
+      },
+      {
+        "pid": 11308,
+        "startedElapsed": 662.2862875424325,
+        "exitCode": 0
+      },
+      {
+        "pid": 11466,
+        "startedElapsed": 677.7962240842171,
+        "exitCode": 0
+      },
+      {
+        "pid": 12149,
+        "startedElapsed": 693.1362960841507,
+        "exitCode": 0
+      },
+      {
+        "pid": 12361,
+        "startedElapsed": 708.4657387924381,
+        "exitCode": 0
+      },
+      {
+        "pid": 12529,
+        "startedElapsed": 724.0817844592966,
+        "exitCode": 0
+      },
+      {
+        "pid": 12695,
+        "startedElapsed": 739.4531020000577,
+        "exitCode": 0
+      },
+      {
+        "pid": 13405,
+        "startedElapsed": 754.8441525842063,
+        "exitCode": 0
+      },
+      {
+        "pid": 13556,
+        "startedElapsed": 770.1698131673038,
+        "exitCode": 0
+      },
+      {
+        "pid": 13711,
+        "startedElapsed": 785.5566000421531,
+        "exitCode": 0
+      },
+      {
+        "pid": 13876,
+        "startedElapsed": 800.9285282501951,
+        "exitCode": 0
+      },
+      {
+        "pid": 14537,
+        "startedElapsed": 816.2681174171157,
+        "exitCode": 0
+      },
+      {
+        "pid": 14749,
+        "startedElapsed": 831.607051584404,
+        "exitCode": 0
+      },
+      {
+        "pid": 15551,
+        "startedElapsed": 847.065172042232,
+        "exitCode": 0
+      },
+      {
+        "pid": 15717,
+        "startedElapsed": 862.4396586250514,
+        "exitCode": 0
+      },
+      {
+        "pid": 16392,
+        "startedElapsed": 877.8406632090919,
+        "exitCode": 0
+      },
+      {
+        "pid": 16576,
+        "startedElapsed": 893.2427660841495,
+        "exitCode": 0
+      },
+      {
+        "pid": 16783,
+        "startedElapsed": 908.5826390422881,
+        "exitCode": 0
+      },
+      {
+        "pid": 17011,
+        "startedElapsed": 924.0493752923794,
+        "exitCode": 0
+      },
+      {
+        "pid": 17692,
+        "startedElapsed": 939.3908439590596,
+        "exitCode": 0
+      },
+      {
+        "pid": 17914,
+        "startedElapsed": 954.7495532091707,
+        "exitCode": 0
+      }
+    ],
+    "finalRoleVerified": false,
+    "forcedCleanup": true,
+    "termSentAtDeadline": false,
+    "killSentAtDeadline": false,
+    "termSignalPassAttempts": 0,
+    "killSignalPassAttempts": 0,
+    "signalStateMeaning": "Sent flags mean a complete successful inventory/signal pass, not a scheduled attempt; logs preserve per-group signals and failed passes.",
+    "firstReviewerIdentityFailure": {
+      "elapsedSeconds": 960.9348080423661,
+      "stage": "row_executable",
+      "row": {
+        "pid": 82360,
+        "ppid": 82335,
+        "pgid": 82360,
+        "state": "Ss",
+        "start": "Sat Oct 17 22:40:16 2026",
+        "comm": "(claude)"
+      },
+      "exceptionType": "RuntimeError"
+    },
+    "errors": [
+      "reviewer_identity:RuntimeError"
+    ],
+    "remainingOwned": [],
+    "ownershipUnknown": true,
+    "observedOwned": [
+      {
+        "pid": 82328,
+        "ppid": 82327,
+        "pgid": 82328,
+        "state": "Ss",
+        "start": "Sat Oct 17 22:40:15 2026",
+        "comm": "/opt/homebrew/Cellar/python@3.14/3.14.5/Frameworks/Python.framework/Versions/3.14/Resources/Python.app/Contents/MacOS/Python"
+      },
+      {
+        "pid": 82330,
+        "ppid": 82328,
+        "pgid": 82328,
+        "state": "S",
+        "start": "Sat Oct 17 22:40:15 2026",
+        "comm": "gh"
+      },
+      {
+        "pid": 82335,
+        "ppid": 82327,
+        "pgid": 82335,
+        "state": "Z",
+        "start": "Sat Oct 17 22:40:15 2026",
+        "comm": "<defunct>"
+      },
+      {
+        "pid": 82345,
+        "ppid": 82335,
+        "pgid": 82335,
+        "state": "S",
+        "start": "Sat Oct 17 22:40:15 2026",
+        "comm": "/opt/homebrew/Cellar/python@3.14/3.14.5/Frameworks/Python.framework/Versions/3.14/Resources/Python.app/Contents/MacOS/Python"
+      },
+      {
+        "pid": 82346,
+        "ppid": 82345,
+        "pgid": 82335,
+        "state": "S",
+        "start": "Sat Oct 17 22:40:15 2026",
+        "comm": "gh"
+      },
+      {
+        "pid": 82352,
+        "ppid": 82335,
+        "pgid": 82335,
+        "state": "S",
+        "start": "Sat Oct 17 22:40:16 2026",
+        "comm": "(Python)"
+      },
+      {
+        "pid": 82353,
+        "ppid": 82352,
+        "pgid": 82335,
+        "state": "S",
+        "start": "Sat Oct 17 22:40:16 2026",
+        "comm": "(gh)"
+      },
+      {
+        "pid": 82360,
+        "ppid": 82335,
+        "pgid": 82360,
+        "state": "Z",
+        "start": "Sat Oct 17 22:40:16 2026",
+        "comm": "<defunct>"
+      },
+      {
+        "pid": 82374,
+        "ppid": 82360,
+        "pgid": 82360,
+        "state": "Z",
+        "start": "Sat Oct 17 22:40:16 2026",
+        "comm": "<defunct>"
+      },
+      {
+        "pid": 82375,
+        "ppid": 82360,
+        "pgid": 82360,
+        "state": "Z",
+        "start": "Sat Oct 17 22:40:16 2026",
+        "comm": "<defunct>"
+      },
+      {
+        "pid": 82376,
+        "ppid": 82360,
+        "pgid": 82360,
+        "state": "Z",
+        "start": "Sat Oct 17 22:40:16 2026",
+        "comm": "<defunct>"
+      },
+      {
+        "pid": 82377,
+        "ppid": 82360,
+        "pgid": 82360,
+        "state": "Z",
+        "start": "Sat Oct 17 22:40:16 2026",
+        "comm": "<defunct>"
+      },
+      {
+        "pid": 82378,
+        "ppid": 82360,
+        "pgid": 82360,
+        "state": "R",
+        "start": "Sat Oct 17 22:40:16 2026",
+        "comm": "(git)"
+      },
+      {
+        "pid": 82379,
+        "ppid": 82360,
+        "pgid": 82360,
+        "state": "Z",
+        "start": "Sat Oct 17 22:40:16 2026",
+        "comm": "<defunct>"
+      },
+      {
+        "pid": 82381,
+        "ppid": 82360,
+        "pgid": 82360,
+        "state": "R",
+        "start": "Sat Oct 17 22:40:16 2026",
+        "comm": "(sh)"
+      },
+      {
+        "pid": 83078,
+        "ppid": 82327,
+        "pgid": 83078,
+        "state": "Ss",
+        "start": "Sat Oct 17 22:40:30 2026",
+        "comm": "(Python)"
+      },
+      {
+        "pid": 83079,
+        "ppid": 83078,
+        "pgid": 83078,
+        "state": "S",
+        "start": "Sat Oct 17 22:40:30 2026",
+        "comm": "(gh)"
+      },
+      {
+        "pid": 83364,
+        "ppid": 83359,
+        "pgid": 83359,
+        "state": "S",
+        "start": "Sat Oct 17 22:40:46 2026",
+        "comm": "gh"
+      },
+      {
+        "pid": 83359,
+        "ppid": 82327,
+        "pgid": 83359,
+        "state": "Z",
+        "start": "Sat Oct 17 22:40:46 2026",
+        "comm": "<defunct>"
+      },
+      {
+        "pid": 84068,
+        "ppid": 82327,
+        "pgid": 84068,
+        "state": "Ss",
+        "start": "Sat Oct 17 22:41:01 2026",
+        "comm": "(Python)"
+      },
+      {
+        "pid": 84076,
+        "ppid": 84068,
+        "pgid": 84068,
+        "state": "S",
+        "start": "Sat Oct 17 22:41:01 2026",
+        "comm": "(gh)"
+      },
+      {
+        "pid": 84644,
+        "ppid": 82327,
+        "pgid": 84644,
+        "state": "Z",
+        "start": "Sat Oct 17 22:41:16 2026",
+        "comm": "<defunct>"
+      },
+      {
+        "pid": 84645,
+        "ppid": 84644,
+        "pgid": 84644,
+        "state": "S",
+        "start": "Sat Oct 17 22:41:16 2026",
+        "comm": "gh"
+      },
+      {
+        "pid": 85479,
+        "ppid": 82327,
+        "pgid": 85479,
+        "state": "Z",
+        "start": "Sat Oct 17 22:41:32 2026",
+        "comm": "<defunct>"
+      },
+      {
+        "pid": 85480,
+        "ppid": 85479,
+        "pgid": 85479,
+        "state": "S",
+        "start": "Sat Oct 17 22:41:32 2026",
+        "comm": "gh"
+      },
+      {
+        "pid": 86095,
+        "ppid": 86094,
+        "pgid": 86094,
+        "state": "S",
+        "start": "Sat Oct 17 22:41:47 2026",
+        "comm": "(gh)"
+      },
+      {
+        "pid": 86094,
+        "ppid": 82327,
+        "pgid": 86094,
+        "state": "Ss",
+        "start": "Sat Oct 17 22:41:47 2026",
+        "comm": "(Python)"
+      },
+      {
+        "pid": 87072,
+        "ppid": 82327,
+        "pgid": 87072,
+        "state": "Ss",
+        "start": "Sat Oct 17 22:42:03 2026",
+        "comm": "(Python)"
+      },
+      {
+        "pid": 87073,
+        "ppid": 87072,
+        "pgid": 87072,
+        "state": "S",
+        "start": "Sat Oct 17 22:42:03 2026",
+        "comm": "(gh)"
+      },
+      {
+        "pid": 87101,
+        "ppid": 82360,
+        "pgid": 82360,
+        "state": "R",
+        "start": "Sat Oct 17 22:42:05 2026",
+        "comm": "(bash)"
+      },
+      {
+        "pid": 87248,
+        "ppid": 87241,
+        "pgid": 87241,
+        "state": "S",
+        "start": "Sat Oct 17 22:42:18 2026",
+        "comm": "gh"
+      },
+      {
+        "pid": 87241,
+        "ppid": 82327,
+        "pgid": 87241,
+        "state": "Z",
+        "start": "Sat Oct 17 22:42:18 2026",
+        "comm": "<defunct>"
+      },
+      {
+        "pid": 89481,
+        "ppid": 82327,
+        "pgid": 89481,
+        "state": "Ss",
+        "start": "Sat Oct 17 22:42:34 2026",
+        "comm": "(Python)"
+      },
+      {
+        "pid": 89482,
+        "ppid": 89481,
+        "pgid": 89481,
+        "state": "S",
+        "start": "Sat Oct 17 22:42:34 2026",
+        "comm": "(gh)"
+      },
+      {
+        "pid": 89621,
+        "ppid": 82360,
+        "pgid": 82360,
+        "state": "R",
+        "start": "Sat Oct 17 22:42:44 2026",
+        "comm": "(bash)"
+      },
+      {
+        "pid": 89667,
+        "ppid": 82327,
+        "pgid": 89667,
+        "state": "Rs",
+        "start": "Sat Oct 17 22:42:49 2026",
+        "comm": "(Python)"
+      },
+      {
+        "pid": 89668,
+        "ppid": 89667,
+        "pgid": 89667,
+        "state": "S",
+        "start": "Sat Oct 17 22:42:49 2026",
+        "comm": "gh"
+      },
+      {
+        "pid": 89888,
+        "ppid": 89887,
+        "pgid": 89887,
+        "state": "S",
+        "start": "Sat Oct 17 22:43:04 2026",
+        "comm": "gh"
+      },
+      {
+        "pid": 89887,
+        "ppid": 82327,
+        "pgid": 89887,
+        "state": "Z",
+        "start": "Sat Oct 17 22:43:04 2026",
+        "comm": "<defunct>"
+      },
+      {
+        "pid": 90072,
+        "ppid": 82327,
+        "pgid": 90072,
+        "state": "Z",
+        "start": "Sat Oct 17 22:43:20 2026",
+        "comm": "<defunct>"
+      },
+      {
+        "pid": 90073,
+        "ppid": 90072,
+        "pgid": 90072,
+        "state": "S",
+        "start": "Sat Oct 17 22:43:20 2026",
+        "comm": "gh"
+      },
+      {
+        "pid": 90729,
+        "ppid": 82327,
+        "pgid": 90729,
+        "state": "Ss",
+        "start": "Sat Oct 17 22:43:35 2026",
+        "comm": "(Python)"
+      },
+      {
+        "pid": 90730,
+        "ppid": 90729,
+        "pgid": 90729,
+        "state": "S",
+        "start": "Sat Oct 17 22:43:35 2026",
+        "comm": "(gh)"
+      },
+      {
+        "pid": 90907,
+        "ppid": 82335,
+        "pgid": 82335,
+        "state": "R",
+        "start": "Sat Oct 17 22:43:47 2026",
+        "comm": "(ps)"
+      },
+      {
+        "pid": 90946,
+        "ppid": 82327,
+        "pgid": 90946,
+        "state": "Z",
+        "start": "Sat Oct 17 22:43:51 2026",
+        "comm": "<defunct>"
+      },
+      {
+        "pid": 90947,
+        "ppid": 90946,
+        "pgid": 90946,
+        "state": "S",
+        "start": "Sat Oct 17 22:43:51 2026",
+        "comm": "gh"
+      },
+      {
+        "pid": 91161,
+        "ppid": 82327,
+        "pgid": 91161,
+        "state": "Z",
+        "start": "Sat Oct 17 22:44:06 2026",
+        "comm": "<defunct>"
+      },
+      {
+        "pid": 91162,
+        "ppid": 91161,
+        "pgid": 91161,
+        "state": "S",
+        "start": "Sat Oct 17 22:44:06 2026",
+        "comm": "gh"
+      },
+      {
+        "pid": 91334,
+        "ppid": 82327,
+        "pgid": 91334,
+        "state": "Z",
+        "start": "Sat Oct 17 22:44:21 2026",
+        "comm": "<defunct>"
+      },
+      {
+        "pid": 91335,
+        "ppid": 91334,
+        "pgid": 91334,
+        "state": "S",
+        "start": "Sat Oct 17 22:44:21 2026",
+        "comm": "gh"
+      },
+      {
+        "pid": 92034,
+        "ppid": 82327,
+        "pgid": 92034,
+        "state": "Rs",
+        "start": "Sat Oct 17 22:44:37 2026",
+        "comm": "(Python)"
+      },
+      {
+        "pid": 92035,
+        "ppid": 92034,
+        "pgid": 92034,
+        "state": "S",
+        "start": "Sat Oct 17 22:44:37 2026",
+        "comm": "gh"
+      },
+      {
+        "pid": 92153,
+        "ppid": 82335,
+        "pgid": 82335,
+        "state": "R",
+        "start": "Sat Oct 17 22:44:47 2026",
+        "comm": "(ps)"
+      },
+      {
+        "pid": 92203,
+        "ppid": 82327,
+        "pgid": 92203,
+        "state": "Z",
+        "start": "Sat Oct 17 22:44:52 2026",
+        "comm": "<defunct>"
+      },
+      {
+        "pid": 92204,
+        "ppid": 92203,
+        "pgid": 92203,
+        "state": "S",
+        "start": "Sat Oct 17 22:44:52 2026",
+        "comm": "gh"
+      },
+      {
+        "pid": 92370,
+        "ppid": 82327,
+        "pgid": 92370,
+        "state": "Ss",
+        "start": "Sat Oct 17 22:45:08 2026",
+        "comm": "(Python)"
+      },
+      {
+        "pid": 92371,
+        "ppid": 92370,
+        "pgid": 92370,
+        "state": "S",
+        "start": "Sat Oct 17 22:45:08 2026",
+        "comm": "(gh)"
+      },
+      {
+        "pid": 92527,
+        "ppid": 82335,
+        "pgid": 82335,
+        "state": "R",
+        "start": "Sat Oct 17 22:45:17 2026",
+        "comm": "ps"
+      },
+      {
+        "pid": 93498,
+        "ppid": 82327,
+        "pgid": 93498,
+        "state": "Ss",
+        "start": "Sat Oct 17 22:45:23 2026",
+        "comm": "(Python)"
+      },
+      {
+        "pid": 93502,
+        "ppid": 93498,
+        "pgid": 93498,
+        "state": "S",
+        "start": "Sat Oct 17 22:45:23 2026",
+        "comm": "(gh)"
+      },
+      {
+        "pid": 96748,
+        "ppid": 82327,
+        "pgid": 96748,
+        "state": "Z",
+        "start": "Sat Oct 17 22:45:38 2026",
+        "comm": "<defunct>"
+      },
+      {
+        "pid": 96749,
+        "ppid": 96748,
+        "pgid": 96748,
+        "state": "S",
+        "start": "Sat Oct 17 22:45:38 2026",
+        "comm": "gh"
+      },
+      {
+        "pid": 99553,
+        "ppid": 82327,
+        "pgid": 99553,
+        "state": "Z",
+        "start": "Sat Oct 17 22:45:54 2026",
+        "comm": "<defunct>"
+      },
+      {
+        "pid": 99557,
+        "ppid": 99553,
+        "pgid": 99553,
+        "state": "S",
+        "start": "Sat Oct 17 22:45:54 2026",
+        "comm": "gh"
+      },
+      {
+        "pid": 99970,
+        "ppid": 82327,
+        "pgid": 99970,
+        "state": "Ss",
+        "start": "Sat Oct 17 22:46:09 2026",
+        "comm": "(Python)"
+      },
+      {
+        "pid": 99971,
+        "ppid": 99970,
+        "pgid": 99970,
+        "state": "S",
+        "start": "Sat Oct 17 22:46:09 2026",
+        "comm": "(gh)"
+      },
+      {
+        "pid": 234,
+        "ppid": 82327,
+        "pgid": 234,
+        "state": "Ss",
+        "start": "Sat Oct 17 22:46:25 2026",
+        "comm": "/opt/homebrew/Cellar/python@3.14/3.14.5/Frameworks/Python.framework/Versions/3.14/Resources/Python.app/Contents/MacOS/Python"
+      },
+      {
+        "pid": 235,
+        "ppid": 234,
+        "pgid": 234,
+        "state": "S",
+        "start": "Sat Oct 17 22:46:25 2026",
+        "comm": "gh"
+      },
+      {
+        "pid": 1304,
+        "ppid": 82327,
+        "pgid": 1304,
+        "state": "Z",
+        "start": "Sat Oct 17 22:46:40 2026",
+        "comm": "<defunct>"
+      },
+      {
+        "pid": 1305,
+        "ppid": 1304,
+        "pgid": 1304,
+        "state": "S",
+        "start": "Sat Oct 17 22:46:40 2026",
+        "comm": "gh"
+      },
+      {
+        "pid": 1531,
+        "ppid": 82327,
+        "pgid": 1531,
+        "state": "Z",
+        "start": "Sat Oct 17 22:46:55 2026",
+        "comm": "<defunct>"
+      },
+      {
+        "pid": 1532,
+        "ppid": 1531,
+        "pgid": 1531,
+        "state": "S",
+        "start": "Sat Oct 17 22:46:55 2026",
+        "comm": "gh"
+      },
+      {
+        "pid": 1744,
+        "ppid": 1743,
+        "pgid": 1743,
+        "state": "S",
+        "start": "Sat Oct 17 22:47:11 2026",
+        "comm": "(gh)"
+      },
+      {
+        "pid": 1743,
+        "ppid": 82327,
+        "pgid": 1743,
+        "state": "Ss",
+        "start": "Sat Oct 17 22:47:11 2026",
+        "comm": "(Python)"
+      },
+      {
+        "pid": 2031,
+        "ppid": 2030,
+        "pgid": 2030,
+        "state": "S",
+        "start": "Sat Oct 17 22:47:26 2026",
+        "comm": "gh"
+      },
+      {
+        "pid": 2030,
+        "ppid": 82327,
+        "pgid": 2030,
+        "state": "Z",
+        "start": "Sat Oct 17 22:47:26 2026",
+        "comm": "<defunct>"
+      },
+      {
+        "pid": 2761,
+        "ppid": 82327,
+        "pgid": 2761,
+        "state": "Z",
+        "start": "Sat Oct 17 22:47:42 2026",
+        "comm": "<defunct>"
+      },
+      {
+        "pid": 2762,
+        "ppid": 2761,
+        "pgid": 2761,
+        "state": "S",
+        "start": "Sat Oct 17 22:47:42 2026",
+        "comm": "gh"
+      },
+      {
+        "pid": 4710,
+        "ppid": 82327,
+        "pgid": 4710,
+        "state": "Ss",
+        "start": "Sat Oct 17 22:47:57 2026",
+        "comm": "(Python)"
+      },
+      {
+        "pid": 4714,
+        "ppid": 4710,
+        "pgid": 4710,
+        "state": "S",
+        "start": "Sat Oct 17 22:47:57 2026",
+        "comm": "(gh)"
+      },
+      {
+        "pid": 7425,
+        "ppid": 82327,
+        "pgid": 7425,
+        "state": "Rs",
+        "start": "Sat Oct 17 22:48:12 2026",
+        "comm": "(Python)"
+      },
+      {
+        "pid": 7429,
+        "ppid": 7425,
+        "pgid": 7425,
+        "state": "S",
+        "start": "Sat Oct 17 22:48:12 2026",
+        "comm": "gh"
+      },
+      {
+        "pid": 7501,
+        "ppid": 82335,
+        "pgid": 82335,
+        "state": "R",
+        "start": "Sat Oct 17 22:48:18 2026",
+        "comm": "ps"
+      },
+      {
+        "pid": 7683,
+        "ppid": 82327,
+        "pgid": 7683,
+        "state": "Ss",
+        "start": "Sat Oct 17 22:48:28 2026",
+        "comm": "(Python)"
+      },
+      {
+        "pid": 7684,
+        "ppid": 7683,
+        "pgid": 7683,
+        "state": "?E",
+        "start": "Sat Oct 17 22:48:28 2026",
+        "comm": "(gh)"
+      },
+      {
+        "pid": 7722,
+        "ppid": 82360,
+        "pgid": 82360,
+        "state": "R",
+        "start": "Sat Oct 17 22:48:31 2026",
+        "comm": "(claude)"
+      },
+      {
+        "pid": 8408,
+        "ppid": 8406,
+        "pgid": 8406,
+        "state": "S",
+        "start": "Sat Oct 17 22:48:43 2026",
+        "comm": "(gh)"
+      },
+      {
+        "pid": 8406,
+        "ppid": 82327,
+        "pgid": 8406,
+        "state": "Ss",
+        "start": "Sat Oct 17 22:48:43 2026",
+        "comm": "(Python)"
+      },
+      {
+        "pid": 8483,
+        "ppid": 82335,
+        "pgid": 82335,
+        "state": "R",
+        "start": "Sat Oct 17 22:48:48 2026",
+        "comm": "(ps)"
+      },
+      {
+        "pid": 8601,
+        "ppid": 82327,
+        "pgid": 8601,
+        "state": "Ss",
+        "start": "Sat Oct 17 22:48:58 2026",
+        "comm": "(Python)"
+      },
+      {
+        "pid": 8602,
+        "ppid": 8601,
+        "pgid": 8601,
+        "state": "S",
+        "start": "Sat Oct 17 22:48:58 2026",
+        "comm": "(gh)"
+      },
+      {
+        "pid": 8915,
+        "ppid": 82327,
+        "pgid": 8915,
+        "state": "Z",
+        "start": "Sat Oct 17 22:49:14 2026",
+        "comm": "<defunct>"
+      },
+      {
+        "pid": 8916,
+        "ppid": 8915,
+        "pgid": 8915,
+        "state": "S",
+        "start": "Sat Oct 17 22:49:14 2026",
+        "comm": "gh"
+      },
+      {
+        "pid": 9081,
+        "ppid": 82327,
+        "pgid": 9081,
+        "state": "Z",
+        "start": "Sat Oct 17 22:49:29 2026",
+        "comm": "<defunct>"
+      },
+      {
+        "pid": 9082,
+        "ppid": 9081,
+        "pgid": 9081,
+        "state": "S",
+        "start": "Sat Oct 17 22:49:29 2026",
+        "comm": "gh"
+      },
+      {
+        "pid": 9753,
+        "ppid": 82327,
+        "pgid": 9753,
+        "state": "Z",
+        "start": "Sat Oct 17 22:49:45 2026",
+        "comm": "<defunct>"
+      },
+      {
+        "pid": 9754,
+        "ppid": 9753,
+        "pgid": 9753,
+        "state": "S",
+        "start": "Sat Oct 17 22:49:45 2026",
+        "comm": "gh"
+      },
+      {
+        "pid": 10000,
+        "ppid": 82327,
+        "pgid": 10000,
+        "state": "Z",
+        "start": "Sat Oct 17 22:50:00 2026",
+        "comm": "<defunct>"
+      },
+      {
+        "pid": 10001,
+        "ppid": 10000,
+        "pgid": 10000,
+        "state": "S",
+        "start": "Sat Oct 17 22:50:00 2026",
+        "comm": "gh"
+      },
+      {
+        "pid": 10082,
+        "ppid": 82360,
+        "pgid": 82360,
+        "state": "R",
+        "start": "Sat Oct 17 22:50:08 2026",
+        "comm": "(security)"
+      },
+      {
+        "pid": 10156,
+        "ppid": 82327,
+        "pgid": 10156,
+        "state": "Ss",
+        "start": "Sat Oct 17 22:50:16 2026",
+        "comm": "(Python)"
+      },
+      {
+        "pid": 10157,
+        "ppid": 10156,
+        "pgid": 10156,
+        "state": "S",
+        "start": "Sat Oct 17 22:50:16 2026",
+        "comm": "(gh)"
+      },
+      {
+        "pid": 10193,
+        "ppid": 82335,
+        "pgid": 82335,
+        "state": "R",
+        "start": "Sat Oct 17 22:50:19 2026",
+        "comm": "ps"
+      },
+      {
+        "pid": 10320,
+        "ppid": 82327,
+        "pgid": 10320,
+        "state": "Rs",
+        "start": "Sat Oct 17 22:50:31 2026",
+        "comm": "(Python)"
+      },
+      {
+        "pid": 10321,
+        "ppid": 10320,
+        "pgid": 10320,
+        "state": "S",
+        "start": "Sat Oct 17 22:50:31 2026",
+        "comm": "gh"
+      },
+      {
+        "pid": 10326,
+        "ppid": 10320,
+        "pgid": 10320,
+        "state": "?",
+        "start": "Sat Oct 17 22:50:31 2026",
+        "comm": "(true)"
+      },
+      {
+        "pid": 10980,
+        "ppid": 82327,
+        "pgid": 10980,
+        "state": "Z",
+        "start": "Sat Oct 17 22:50:46 2026",
+        "comm": "<defunct>"
+      },
+      {
+        "pid": 10981,
+        "ppid": 10980,
+        "pgid": 10980,
+        "state": "S",
+        "start": "Sat Oct 17 22:50:46 2026",
+        "comm": "gh"
+      },
+      {
+        "pid": 11010,
+        "ppid": 82335,
+        "pgid": 82335,
+        "state": "R",
+        "start": "Sat Oct 17 22:50:49 2026",
+        "comm": "(ps)"
+      },
+      {
+        "pid": 11140,
+        "ppid": 82327,
+        "pgid": 11140,
+        "state": "Z",
+        "start": "Sat Oct 17 22:51:02 2026",
+        "comm": "<defunct>"
+      },
+      {
+        "pid": 11141,
+        "ppid": 11140,
+        "pgid": 11140,
+        "state": "S",
+        "start": "Sat Oct 17 22:51:02 2026",
+        "comm": "gh"
+      },
+      {
+        "pid": 11308,
+        "ppid": 82327,
+        "pgid": 11308,
+        "state": "Z",
+        "start": "Sat Oct 17 22:51:17 2026",
+        "comm": "<defunct>"
+      },
+      {
+        "pid": 11309,
+        "ppid": 11308,
+        "pgid": 11308,
+        "state": "S",
+        "start": "Sat Oct 17 22:51:17 2026",
+        "comm": "gh"
+      },
+      {
+        "pid": 11466,
+        "ppid": 82327,
+        "pgid": 11466,
+        "state": "Z",
+        "start": "Sat Oct 17 22:51:33 2026",
+        "comm": "<defunct>"
+      },
+      {
+        "pid": 11468,
+        "ppid": 11466,
+        "pgid": 11466,
+        "state": "S",
+        "start": "Sat Oct 17 22:51:33 2026",
+        "comm": "gh"
+      },
+      {
+        "pid": 11489,
+        "ppid": 82360,
+        "pgid": 82360,
+        "state": "R",
+        "start": "Sat Oct 17 22:51:34 2026",
+        "comm": "(sh)"
+      },
+      {
+        "pid": 12149,
+        "ppid": 82327,
+        "pgid": 12149,
+        "state": "Rs",
+        "start": "Sat Oct 17 22:51:48 2026",
+        "comm": "(Python)"
+      },
+      {
+        "pid": 12150,
+        "ppid": 12149,
+        "pgid": 12149,
+        "state": "S",
+        "start": "Sat Oct 17 22:51:48 2026",
+        "comm": "gh"
+      },
+      {
+        "pid": 12176,
+        "ppid": 82335,
+        "pgid": 82335,
+        "state": "R",
+        "start": "Sat Oct 17 22:51:49 2026",
+        "comm": "(ps)"
+      },
+      {
+        "pid": 12361,
+        "ppid": 82327,
+        "pgid": 12361,
+        "state": "Z",
+        "start": "Sat Oct 17 22:52:03 2026",
+        "comm": "<defunct>"
+      },
+      {
+        "pid": 12362,
+        "ppid": 12361,
+        "pgid": 12361,
+        "state": "S",
+        "start": "Sat Oct 17 22:52:03 2026",
+        "comm": "gh"
+      },
+      {
+        "pid": 12388,
+        "ppid": 82360,
+        "pgid": 82360,
+        "state": "S",
+        "start": "Sat Oct 17 22:52:06 2026",
+        "comm": "(security)"
+      },
+      {
+        "pid": 12529,
+        "ppid": 82327,
+        "pgid": 12529,
+        "state": "Ss",
+        "start": "Sat Oct 17 22:52:19 2026",
+        "comm": "(Python)"
+      },
+      {
+        "pid": 12530,
+        "ppid": 12529,
+        "pgid": 12529,
+        "state": "S",
+        "start": "Sat Oct 17 22:52:19 2026",
+        "comm": "(gh)"
+      },
+      {
+        "pid": 12696,
+        "ppid": 12695,
+        "pgid": 12695,
+        "state": "S",
+        "start": "Sat Oct 17 22:52:34 2026",
+        "comm": "(gh)"
+      },
+      {
+        "pid": 12695,
+        "ppid": 82327,
+        "pgid": 12695,
+        "state": "Ss",
+        "start": "Sat Oct 17 22:52:34 2026",
+        "comm": "(Python)"
+      },
+      {
+        "pid": 13401,
+        "ppid": 82335,
+        "pgid": 82335,
+        "state": "R",
+        "start": "Sat Oct 17 22:52:50 2026",
+        "comm": "(ps)"
+      },
+      {
+        "pid": 13405,
+        "ppid": 82327,
+        "pgid": 13405,
+        "state": "Z",
+        "start": "Sat Oct 17 22:52:50 2026",
+        "comm": "<defunct>"
+      },
+      {
+        "pid": 13407,
+        "ppid": 13405,
+        "pgid": 13405,
+        "state": "S",
+        "start": "Sat Oct 17 22:52:50 2026",
+        "comm": "gh"
+      },
+      {
+        "pid": 13556,
+        "ppid": 82327,
+        "pgid": 13556,
+        "state": "Z",
+        "start": "Sat Oct 17 22:53:05 2026",
+        "comm": "<defunct>"
+      },
+      {
+        "pid": 13557,
+        "ppid": 13556,
+        "pgid": 13556,
+        "state": "S",
+        "start": "Sat Oct 17 22:53:05 2026",
+        "comm": "gh"
+      },
+      {
+        "pid": 13704,
+        "ppid": 82335,
+        "pgid": 82335,
+        "state": "R",
+        "start": "Sat Oct 17 22:53:20 2026",
+        "comm": "(ps)"
+      },
+      {
+        "pid": 13712,
+        "ppid": 13711,
+        "pgid": 13711,
+        "state": "S",
+        "start": "Sat Oct 17 22:53:20 2026",
+        "comm": "gh"
+      },
+      {
+        "pid": 13711,
+        "ppid": 82327,
+        "pgid": 13711,
+        "state": "Z",
+        "start": "Sat Oct 17 22:53:20 2026",
+        "comm": "<defunct>"
+      },
+      {
+        "pid": 13876,
+        "ppid": 82327,
+        "pgid": 13876,
+        "state": "Z",
+        "start": "Sat Oct 17 22:53:36 2026",
+        "comm": "<defunct>"
+      },
+      {
+        "pid": 13877,
+        "ppid": 13876,
+        "pgid": 13876,
+        "state": "S",
+        "start": "Sat Oct 17 22:53:36 2026",
+        "comm": "gh"
+      },
+      {
+        "pid": 14537,
+        "ppid": 82327,
+        "pgid": 14537,
+        "state": "Ss",
+        "start": "Sat Oct 17 22:53:51 2026",
+        "comm": "(Python)"
+      },
+      {
+        "pid": 14538,
+        "ppid": 14537,
+        "pgid": 14537,
+        "state": "S",
+        "start": "Sat Oct 17 22:53:51 2026",
+        "comm": "(gh)"
+      },
+      {
+        "pid": 14749,
+        "ppid": 82327,
+        "pgid": 14749,
+        "state": "Z",
+        "start": "Sat Oct 17 22:54:06 2026",
+        "comm": "<defunct>"
+      },
+      {
+        "pid": 14750,
+        "ppid": 14749,
+        "pgid": 14749,
+        "state": "S",
+        "start": "Sat Oct 17 22:54:06 2026",
+        "comm": "gh"
+      },
+      {
+        "pid": 15530,
+        "ppid": 82335,
+        "pgid": 82335,
+        "state": "R",
+        "start": "Sat Oct 17 22:54:20 2026",
+        "comm": "(ps)"
+      },
+      {
+        "pid": 15552,
+        "ppid": 15551,
+        "pgid": 15551,
+        "state": "S",
+        "start": "Sat Oct 17 22:54:22 2026",
+        "comm": "(gh)"
+      },
+      {
+        "pid": 15551,
+        "ppid": 82327,
+        "pgid": 15551,
+        "state": "Ss",
+        "start": "Sat Oct 17 22:54:22 2026",
+        "comm": "(Python)"
+      },
+      {
+        "pid": 15717,
+        "ppid": 82327,
+        "pgid": 15717,
+        "state": "Z",
+        "start": "Sat Oct 17 22:54:37 2026",
+        "comm": "<defunct>"
+      },
+      {
+        "pid": 15718,
+        "ppid": 15717,
+        "pgid": 15717,
+        "state": "S",
+        "start": "Sat Oct 17 22:54:37 2026",
+        "comm": "gh"
+      },
+      {
+        "pid": 16392,
+        "ppid": 82327,
+        "pgid": 16392,
+        "state": "Z",
+        "start": "Sat Oct 17 22:54:53 2026",
+        "comm": "<defunct>"
+      },
+      {
+        "pid": 16393,
+        "ppid": 16392,
+        "pgid": 16392,
+        "state": "S",
+        "start": "Sat Oct 17 22:54:53 2026",
+        "comm": "gh"
+      },
+      {
+        "pid": 16576,
+        "ppid": 82327,
+        "pgid": 16576,
+        "state": "Ss",
+        "start": "Sat Oct 17 22:55:08 2026",
+        "comm": "(Python)"
+      },
+      {
+        "pid": 16577,
+        "ppid": 16576,
+        "pgid": 16576,
+        "state": "S",
+        "start": "Sat Oct 17 22:55:08 2026",
+        "comm": "(gh)"
+      },
+      {
+        "pid": 16756,
+        "ppid": 82335,
+        "pgid": 82335,
+        "state": "R",
+        "start": "Sat Oct 17 22:55:21 2026",
+        "comm": "ps"
+      },
+      {
+        "pid": 16784,
+        "ppid": 16783,
+        "pgid": 16783,
+        "state": "S",
+        "start": "Sat Oct 17 22:55:23 2026",
+        "comm": "gh"
+      },
+      {
+        "pid": 16783,
+        "ppid": 82327,
+        "pgid": 16783,
+        "state": "Z",
+        "start": "Sat Oct 17 22:55:23 2026",
+        "comm": "<defunct>"
+      },
+      {
+        "pid": 17011,
+        "ppid": 82327,
+        "pgid": 17011,
+        "state": "Z",
+        "start": "Sat Oct 17 22:55:39 2026",
+        "comm": "<defunct>"
+      },
+      {
+        "pid": 17012,
+        "ppid": 17011,
+        "pgid": 17011,
+        "state": "S",
+        "start": "Sat Oct 17 22:55:39 2026",
+        "comm": "gh"
+      },
+      {
+        "pid": 17692,
+        "ppid": 82327,
+        "pgid": 17692,
+        "state": "Z",
+        "start": "Sat Oct 17 22:55:54 2026",
+        "comm": "<defunct>"
+      },
+      {
+        "pid": 17693,
+        "ppid": 17692,
+        "pgid": 17692,
+        "state": "S",
+        "start": "Sat Oct 17 22:55:54 2026",
+        "comm": "gh"
+      },
+      {
+        "pid": 17914,
+        "ppid": 82327,
+        "pgid": 17914,
+        "state": "Ss",
+        "start": "Sat Oct 17 22:56:10 2026",
+        "comm": "(Python)"
+      },
+      {
+        "pid": 17915,
+        "ppid": 17914,
+        "pgid": 17914,
+        "state": "S",
+        "start": "Sat Oct 17 22:56:10 2026",
+        "comm": "(gh)"
+      },
+      {
+        "pid": 17984,
+        "ppid": 82335,
+        "pgid": 82335,
+        "state": "R",
+        "start": "Sat Oct 17 22:56:16 2026",
+        "comm": "ps"
+      }
+    ],
+    "observedGroups": {
+      "82328": "session-check",
+      "82335": "wrapper",
+      "82360": "reviewer",
+      "83078": "session-check",
+      "83359": "session-check",
+      "84068": "session-check",
+      "84644": "session-check",
+      "85479": "session-check",
+      "86094": "session-check",
+      "87072": "session-check",
+      "87241": "session-check",
+      "89481": "session-check",
+      "89667": "session-check",
+      "89887": "session-check",
+      "90072": "session-check",
+      "90729": "session-check",
+      "90946": "session-check",
+      "91161": "session-check",
+      "91334": "session-check",
+      "92034": "session-check",
+      "92203": "session-check",
+      "92370": "session-check",
+      "93498": "session-check",
+      "96748": "session-check",
+      "99553": "session-check",
+      "99970": "session-check",
+      "234": "session-check",
+      "1304": "session-check",
+      "1531": "session-check",
+      "1743": "session-check",
+      "2030": "session-check",
+      "2761": "session-check",
+      "4710": "session-check",
+      "7425": "session-check",
+      "7683": "session-check",
+      "8406": "session-check",
+      "8601": "session-check",
+      "8915": "session-check",
+      "9081": "session-check",
+      "9753": "session-check",
+      "10000": "session-check",
+      "10156": "session-check",
+      "10320": "session-check",
+      "10980": "session-check",
+      "11140": "session-check",
+      "11308": "session-check",
+      "11466": "session-check",
+      "12149": "session-check",
+      "12361": "session-check",
+      "12529": "session-check",
+      "12695": "session-check",
+      "13405": "session-check",
+      "13556": "session-check",
+      "13711": "session-check",
+      "13876": "session-check",
+      "14537": "session-check",
+      "14749": "session-check",
+      "15551": "session-check",
+      "15717": "session-check",
+      "16392": "session-check",
+      "16576": "session-check",
+      "16783": "session-check",
+      "17011": "session-check",
+      "17692": "session-check",
+      "17914": "session-check"
+    },
+    "authenticatedReviewers": [
+      {
+        "pid": 82360,
+        "pgid": 82360,
+        "start": "Sat Oct 17 22:40:16 2026",
+        "recordStarted": "2026-10-18T05:40:16.396998+00:00",
+        "argv": [
+          "/opt/homebrew/bin/claude",
+          "--safe-mode",
+          "-p",
+          "--tools",
+          "Read,Glob,Grep",
+          "--allowedTools",
+          "Read,Glob,Grep",
+          "--disable-slash-commands",
+          "--strict-mcp-config",
+          "--mcp-config",
+          "{\"mcpServers\":{}}",
+          "--no-session-persistence",
+          "--output-format",
+          "stream-json",
+          "--verbose",
+          "--include-partial-messages"
+        ]
+      }
+    ],
+    "unanchoredKnownGroupsAtLastInventory": {},
+    "unanchoredKnownGroupsObserved": {},
+    "noRetry": true,
+    "localEvidenceAfterSupersessionAllowed": true,
+    "remoteWritesPerformed": false,
+    "limitation": "PID/start-time/ancestry and authenticated runner process record provide owned-group evidence; no system-wide socket census or hard-real-time OS guarantee. Terminal local evidence adds no reviewer execution allowance."
+  },
+  "runnerExit": null,
+  "runnerAfterPresent": false,
+  "missingRunnerOutputs": [
+    "exit.json",
+    "source-after.json",
+    "final-review.txt",
+    "terminal-results.json"
+  ],
+  "raw": {
+    "bytes": 2631948,
+    "sha256": "2e79d0ace0234c32b0b395a091c70fc030c53bda6558548fbbd02e09463a6b42",
+    "records": 4840,
+    "invalidOrPartialRows": [],
+    "newlineTerminated": true,
+    "resultCount": 1,
+    "initialization": [
+      {
+        "model": "claude-opus-5[1m]",
+        "tools": [
+          "Glob",
+          "Grep",
+          "Read"
+        ],
+        "mcp_servers": [],
+        "permissionMode": "default",
+        "session_id": "1a43463b-3884-45d3-8c41-9286de8c878b"
+      }
+    ],
+    "toolUses": {
+      "Read": 39,
+      "Grep": 26
+    },
+    "results": [
+      {
+        "duration_api_ms": 959595,
+        "stop_reason": "end_turn",
+        "session_id": "1a43463b-3884-45d3-8c41-9286de8c878b",
+        "total_cost_usd": 7.481014000000001,
+        "usage": {
+          "input_tokens": 92,
+          "cache_creation_input_tokens": 220038,
+          "cache_read_input_tokens": 6825880,
+          "output_tokens": 74561,
+          "output_tokens_details": {
+            "thinking_tokens": 54471
+          },
+          "server_tool_use": {
+            "web_search_requests": 0,
+            "web_fetch_requests": 0
+          },
+          "service_tier": "standard",
+          "cache_creation": {
+            "ephemeral_1h_input_tokens": 220038,
+            "ephemeral_5m_input_tokens": 0
+          },
+          "inference_geo": "global",
+          "iterations": [
+            {
+              "input_tokens": 2,
+              "output_tokens": 19302,
+              "cache_read_input_tokens": 223331,
+              "cache_creation_input_tokens": 1453,
+              "cache_creation": {
+                "ephemeral_5m_input_tokens": 0,
+                "ephemeral_1h_input_tokens": 1453
+              },
+              "type": "message"
+            }
+          ],
+          "speed": "standard"
+        },
+        "modelUsage": {
+          "claude-haiku-4-5-20251001": {
+            "inputTokens": 3119,
+            "outputTokens": 18,
+            "cacheReadInputTokens": 0,
+            "cacheCreationInputTokens": 0,
+            "webSearchRequests": 0,
+            "costUSD": 0.0032089999999999996,
+            "contextWindow": 200000,
+            "maxOutputTokens": 32000,
+            "thinkingTokens": 0,
+            "canonicalModel": "claude-haiku-4-5",
+            "provider": "firstParty",
+            "costBasis": "list"
+          },
+          "claude-opus-5[1m]": {
+            "inputTokens": 92,
+            "outputTokens": 74561,
+            "cacheReadInputTokens": 6825880,
+            "cacheCreationInputTokens": 220038,
+            "webSearchRequests": 0,
+            "costUSD": 7.477805000000001,
+            "contextWindow": 1000000,
+            "maxOutputTokens": 64000,
+            "thinkingTokens": 54471,
+            "canonicalModel": "claude-opus-5",
+            "provider": "firstParty",
+            "costBasis": "list"
+          }
+        },
+        "permission_denials": [],
+        "terminal_reason": "completed",
+        "fast_mode_state": "off",
+        "fast_mode_disabled_reason": "sdk_opt_in_required",
+        "subagent_stats": {
+          "spawned": 0,
+          "requested": {
+            "background": 0,
+            "foreground": 0,
+            "unset": 0
+          },
+          "started_in_background": 0,
+          "max_depth": 0,
+          "spawned_by_subagents": 0,
+          "completed": 0,
+          "failed": 0,
+          "killed": {
+            "parent": 0,
+            "user": 0,
+            "system": 0
+          },
+          "refused": {
+            "depth_limit": 0,
+            "concurrency_limit": 0,
+            "budget": 0
+          },
+          "by_type": {}
+        },
+        "is_error": false,
+        "num_turns": 66,
+        "subtype": "success",
+        "api_error_status": null,
+        "ttft_ms": 2386,
+        "type": "result",
+        "duration_ms": 958869,
+        "uuid": "14ba4bbd-5257-448c-87c0-165fb5bdf42c",
+        "ttft_stream_ms": 1367,
+        "time_to_request_ms": 11,
+        "first_content_frame_ms": 1367,
+        "queued_turn_count": 0,
+        "resultTextBytes": 24872,
+        "resultTextSha256": "a8dd9b7e87b2ee7540bc71f8017670832e95187113e546676200a0cf1759a1d1"
+      }
+    ]
+  },
+  "inputPreservation": {
+    "sourceCount": 679,
+    "contextCount": 71,
+    "artifactCount": 26,
+    "allHashesMatch": true,
+    "sourceBeforeMatches": true,
+    "runnerAfterMatches": false,
+    "head": "cce884ccea1db97cbc6fd7bff876d4d6091f9081",
+    "mergeState": {
+      "head": "cce884ccea1db97cbc6fd7bff876d4d6091f9081",
+      "tree": "6757829bd5b700faf28df39071190a272add90c9",
+      "parents": [
+        "a56254d682cf4623cab22a552e3d2f695f691795"
+      ]
+    },
+    "runnerPrelaunchGitStatus": "",
+    "postGitStatus": null,
+    "literalTwoFlagOnlyReleases": true,
+    "releaseSha256": "1145ded4ae3c252d9607946b416091c99a138579a90f378c4d77a140ea5f3b9e",
+    "preparationIndexSha256": "2485cd0b80aeff71277c94e1789f2df4a4cf99f79db32285ffc1bf9441fdb930",
+    "preparationIndexCount": 110,
+    "authorizedIndexExceptions": [
+      "claude-plan-review/binding.json",
+      "launch-supervision/control.json"
+    ],
+    "frozenPacketCount": 82,
+    "authorizedFrozenIndexExceptions": [
+      "binding.json"
+    ],
+    "mirroredFilesIncludingIndex": 111,
+    "mirrorExceptions": [
+      "claude-plan-review/binding.json",
+      "launch-supervision/control.json"
+    ]
+  },
+  "processClosure": {
+    "observedPidsIncludingSupervisor": 160,
+    "observedGroupsIncludingSupervisor": 66,
+    "allObservedAbsent": true,
+    "matchingRows": []
+  },
+  "signalEvents": [
+    {
+      "elapsedSeconds": 961.030467542354,
+      "kind": "signal",
+      "pgid": 82335,
+      "signal": 15
+    },
+    {
+      "elapsedSeconds": 961.030511750374,
+      "kind": "signal_pass",
+      "signal": 15,
+      "complete": true,
+      "signaledGroups": [
+        82335
+      ]
+    },
+    {
+      "elapsedSeconds": 962.1154146250337,
+      "kind": "signal_pass",
+      "signal": 17,
+      "complete": true,
+      "signaledGroups": []
+    },
+    {
+      "elapsedSeconds": 962.1595583343878,
+      "kind": "signal_pass",
+      "signal": 9,
+      "complete": true,
+      "signaledGroups": []
+    },
+    {
+      "elapsedSeconds": 962.2083774590865,
+      "kind": "outer_terminal",
+      "classification": "process_ownership_or_cleanup_failure",
+      "remainingOwned": []
+    }
+  ],
+  "actualOutputIdentities": {
+    "claude-plan-review/stream.jsonl": {
+      "sha256": "2e79d0ace0234c32b0b395a091c70fc030c53bda6558548fbbd02e09463a6b42",
+      "bytes": 2631948
+    },
+    "claude-plan-review/source-before.json": {
+      "sha256": "f55902b2c943f9567279dc27cfe9f1e596c46c91200fbccdd78324bdc9a9df8b",
+      "bytes": 109852
+    },
+    "claude-plan-review/progress.jsonl": {
+      "sha256": "3b7f4a50fc9c61b282dd213404c081cd02e9ae0f1375546ccc878dd7770b6848",
+      "bytes": 961036
+    },
+    "claude-plan-review/stderr.txt": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    "claude-plan-review/process.json": {
+      "sha256": "41511726a4a1b0c3542f86c8fbd2a1379a4f2fa3753b704bf60294b4ef6256ff",
+      "bytes": 527
+    },
+    "launch-supervision/attempt/guard-021.stdout": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    "launch-supervision/attempt/guard-042.stdout": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    "launch-supervision/attempt/guard-033.stdout": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    "launch-supervision/attempt/guard-050.stdout": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    "launch-supervision/attempt/guard-005.stdout": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    "launch-supervision/attempt/guard-017.stdout": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    "launch-supervision/attempt/guard-009.stdout": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    "launch-supervision/attempt/guard-001.stderr": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    "launch-supervision/attempt/outer-progress.jsonl": {
+      "sha256": "4505eef55338642fb674801e57051fc3fb220ca40f569fab9c96ab91cd4652dc",
+      "bytes": 414044
+    },
+    "launch-supervision/attempt/guard-062.stderr": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    "launch-supervision/attempt/guard-013.stderr": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    "launch-supervision/attempt/guard-058.stderr": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    "launch-supervision/attempt/guard-025.stderr": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    "launch-supervision/attempt/guard-046.stderr": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    "launch-supervision/attempt/guard-037.stderr": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    "launch-supervision/attempt/guard-054.stderr": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    "launch-supervision/attempt/guard-029.stderr": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    "launch-supervision/attempt/wrapper.stderr": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    "launch-supervision/attempt/guard-011.stderr": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    "launch-supervision/attempt/guard-060.stderr": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    "launch-supervision/attempt/guard-003.stderr": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    "launch-supervision/attempt/guard-056.stderr": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    "launch-supervision/attempt/guard-048.stderr": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    "launch-supervision/attempt/guard-035.stderr": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    "launch-supervision/attempt/guard-044.stderr": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    "launch-supervision/attempt/guard-039.stderr": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    "launch-supervision/attempt/guard-027.stderr": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    "launch-supervision/attempt/guard-052.stdout": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    "launch-supervision/attempt/guard-031.stdout": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    "launch-supervision/attempt/guard-040.stdout": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    "launch-supervision/attempt/guard-023.stdout": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    "launch-supervision/attempt/guard-015.stdout": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    "launch-supervision/attempt/guard-019.stdout": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    "launch-supervision/attempt/guard-007.stdout": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    "launch-supervision/attempt/guard-040.stderr": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    "launch-supervision/attempt/guard-023.stderr": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    "launch-supervision/attempt/guard-052.stderr": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    "launch-supervision/attempt/guard-031.stderr": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    "launch-supervision/attempt/guard-019.stderr": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    "launch-supervision/attempt/guard-007.stderr": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    "launch-supervision/attempt/guard-015.stderr": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    "launch-supervision/attempt/guard-060.stdout": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    "launch-supervision/attempt/guard-003.stdout": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    "launch-supervision/attempt/wrapper.stdout": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    "launch-supervision/attempt/guard-011.stdout": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    "launch-supervision/attempt/guard-039.stdout": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    "launch-supervision/attempt/guard-044.stdout": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    "launch-supervision/attempt/guard-027.stdout": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    "launch-supervision/attempt/guard-056.stdout": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    "launch-supervision/attempt/guard-035.stdout": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    "launch-supervision/attempt/guard-048.stdout": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    "launch-supervision/attempt/guard-013.stdout": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    "launch-supervision/attempt/guard-001.stdout": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    "launch-supervision/attempt/guard-062.stdout": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    "launch-supervision/attempt/guard-037.stdout": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    "launch-supervision/attempt/guard-029.stdout": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    "launch-supervision/attempt/guard-054.stdout": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    "launch-supervision/attempt/guard-025.stdout": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    "launch-supervision/attempt/guard-058.stdout": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    "launch-supervision/attempt/guard-046.stdout": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    "launch-supervision/attempt/guard-033.stderr": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    "launch-supervision/attempt/guard-050.stderr": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    "launch-supervision/attempt/guard-021.stderr": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    "launch-supervision/attempt/guard-042.stderr": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    "launch-supervision/attempt/guard-017.stderr": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    "launch-supervision/attempt/outer-exit.json": {
+      "sha256": "3c2a3f2785a919bb5f11c5bc7adb6bcc7861a7ccc8fe9ce37d60ed8a1b45fa3e",
+      "bytes": 36039
+    },
+    "launch-supervision/attempt/guard-009.stderr": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    "launch-supervision/attempt/guard-005.stderr": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    "launch-supervision/attempt/guard-047.stderr": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    "launch-supervision/attempt/guard-024.stderr": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    "launch-supervision/attempt/guard-059.stderr": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    "launch-supervision/attempt/guard-028.stderr": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    "launch-supervision/attempt/guard-055.stderr": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    "launch-supervision/attempt/guard-036.stderr": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    "launch-supervision/attempt/guard-000.stderr": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    "launch-supervision/attempt/guard-012.stderr": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    "launch-supervision/attempt/guard-004.stdout": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    "launch-supervision/attempt/guard-008.stdout": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    "launch-supervision/attempt/guard-016.stdout": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    "launch-supervision/attempt/guard-043.stdout": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    "launch-supervision/attempt/guard-020.stdout": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    "launch-supervision/attempt/guard-051.stdout": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    "launch-supervision/attempt/guard-032.stdout": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    "launch-supervision/attempt/guard-014.stdout": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    "launch-supervision/attempt/guard-006.stdout": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    "launch-supervision/attempt/guard-018.stdout": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    "launch-supervision/attempt/guard-030.stdout": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    "launch-supervision/attempt/guard-053.stdout": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    "launch-supervision/attempt/guard-022.stdout": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    "launch-supervision/attempt/guard-041.stdout": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    "launch-supervision/attempt/guard-034.stderr": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    "launch-supervision/attempt/guard-049.stderr": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    "launch-supervision/attempt/guard-057.stderr": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    "launch-supervision/attempt/guard-026.stderr": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    "launch-supervision/attempt/guard-038.stderr": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    "launch-supervision/attempt/guard-045.stderr": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    "launch-supervision/attempt/guard-010.stderr": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    "launch-supervision/attempt/guard-002.stderr": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    "launch-supervision/attempt/guard-061.stderr": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    "launch-supervision/attempt/guard-026.stdout": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    "launch-supervision/attempt/guard-045.stdout": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    "launch-supervision/attempt/guard-038.stdout": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    "launch-supervision/attempt/guard-049.stdout": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    "launch-supervision/attempt/guard-034.stdout": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    "launch-supervision/attempt/guard-057.stdout": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    "launch-supervision/attempt/guard-002.stdout": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    "launch-supervision/attempt/guard-061.stdout": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    "launch-supervision/attempt/guard-010.stdout": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    "launch-supervision/attempt/guard-006.stderr": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    "launch-supervision/attempt/guard-018.stderr": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    "launch-supervision/attempt/guard-014.stderr": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    "launch-supervision/attempt/guard-022.stderr": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    "launch-supervision/attempt/guard-041.stderr": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    "launch-supervision/attempt/guard-030.stderr": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    "launch-supervision/attempt/guard-053.stderr": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    "launch-supervision/attempt/guard-008.stderr": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    "launch-supervision/attempt/guard-016.stderr": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    "launch-supervision/attempt/guard-004.stderr": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    "launch-supervision/attempt/guard-051.stderr": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    "launch-supervision/attempt/guard-032.stderr": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    "launch-supervision/attempt/guard-043.stderr": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    "launch-supervision/attempt/guard-020.stderr": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    "launch-supervision/attempt/guard-055.stdout": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    "launch-supervision/attempt/guard-028.stdout": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    "launch-supervision/attempt/guard-036.stdout": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    "launch-supervision/attempt/guard-047.stdout": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    "launch-supervision/attempt/guard-059.stdout": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    "launch-supervision/attempt/guard-024.stdout": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    "launch-supervision/attempt/guard-012.stdout": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    "launch-supervision/attempt/guard-000.stdout": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    }
+  },
+  "noRetry": true,
+  "reviewerLaunchedByAuditor": false,
+  "signalsByAuditor": false,
+  "sourceOrLaunchEdits": false,
+  "productExecution": false,
+  "approvalInferred": false
+}

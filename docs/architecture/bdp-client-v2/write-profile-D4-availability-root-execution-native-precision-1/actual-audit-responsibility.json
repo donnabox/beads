@@ -1,0 +1,56 @@
+{
+  "activationPrerequisites": [
+    "root exact DATA acceptance of this closure",
+    "final external release byte-identical to release.proposed.json, exact14 keys; no altered caller/native/candidate",
+    "root actual durable publication/readback of final release BEFORE caller invocation",
+    "outer dispatch retains later actual release-publication commit separately from foundation25d0 attribution",
+    "one exact caller invocation under reviewed root whole clock; no retries"
+  ],
+  "callerArtifacts": {
+    "attemptRoot": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-D4-availability-root-authority-preparation-1/attempt",
+    "files": [
+      "guard.stdout",
+      "guard.stderr",
+      "native.stdout",
+      "native.stderr",
+      "capture.jsonl",
+      "caller-terminal.json"
+    ]
+  },
+  "measuredAvailabilityDisposition": "Root only AFTER independent complete actual audit. All actual runtime outcomes currently UNATTEMPTED/UNKNOWN.",
+  "ownerArtifacts": {
+    "attemptRoot": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-D4-synthetic-harness-preparation-4/availability-attempt",
+    "files": [
+      "started.json",
+      "term.stdout",
+      "term.stderr",
+      "term.capture.jsonl",
+      "term.json",
+      "kill.stdout",
+      "kill.stderr",
+      "kill.capture.jsonl",
+      "kill.json",
+      "terminal.json"
+    ],
+    "optionalFailure": "failure.json only if actually written; missing artifacts UNKNOWN, never synthesize"
+  },
+  "requiredChecks": [
+    "ONE invocation, no preexisting or reused attempt/result; exact source/tool/argv/authority throughout",
+    "actual caller raw0+BOTH tool EOF+independent whole elapsed STRICTLY<115; stored candidate provisional",
+    "guard raw0+BOTH actual EOF and empty streams; current549f identity",
+    "native raw0+BOTH actual EOF+empty stderr; exact owner-then-native two actual raw lines and identities/no forced flag",
+    "native and owner normal terminal times strictly<115 on observed clock brackets; actual clock/XS/resolution/masks not assumed from source",
+    "owner direct peers authenticated fresh nonce/execute ACK before unmask; actual term peer0/selfTERM and kill peer raw-9/empty stdout; actual EOF and children settled",
+    "raw received/saved/hashed counts and exact crossing bytes; actual files/modes/identity/prefix hashes/full only with complete stream; complete journal records plus preserve partial tails",
+    "all descriptor/journal closes and source-attested as-of limits remain truthful; failed/partial/killed/missing cannot pass",
+    "fresh safe root ordinary census through raw0+BOTH EOF proves ALL actually recorded caller/guard/native/owner/peer PIDs and PGIDs absent; zombie not absence; source identity unchanged",
+    "actual failures/late/unknown preserved; no retry/widening or inferred successful control/product"
+  ],
+  "rootOuterArtifacts": "Actual outer dispatch/command/tool raw stdout+stderr/exit/whole-clock receipt and release publication/readback evidence supplied by root; concrete future paths UNKNOWN, do not reconstruct",
+  "scopeLimits": [
+    "peer selfTERM/selfKILL do NOT establish native forced115/119 dispatch coverage",
+    "intact-last-owner conditional fault domain; no global host-loss/cleanup guarantee",
+    "availability only; no finite controls/helper4/product/profile/public admission/Write qualification"
+  ],
+  "state": "PROSPECTIVE independent actual audit responsibility only; ONE future probe not started; no execution authority"
+}

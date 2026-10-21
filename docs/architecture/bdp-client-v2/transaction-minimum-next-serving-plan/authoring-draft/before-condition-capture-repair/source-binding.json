@@ -1,0 +1,66 @@
+{
+  "workspace": "/Users/dbox/repos/wt/vickie/vickie-minimum-current-resource",
+  "branch": "codex/vickie-minimum-current-resource",
+  "head": "1647c5df37a82e1364d281ac46beb60a94ab6c76",
+  "tree": "a070420a4c17aa67a821c742d363ff9e82e872a6",
+  "parentKind": "reviewed unmerged authorization candidate; not main",
+  "workspaceDirty": true,
+  "diffSha256": "88f7b565d266a2e51fe6b6342d94902ab61aa2ec62745fb761ebb224d021e78e",
+  "files": {
+    "packages/server/src/transaction-consistency.ts": {
+      "sha256": "ad51311d6098db32fd47849e0b78d3118162cdf1e80ee9ef4d46324bfa9f436f",
+      "bytes": 7167,
+      "new": false
+    },
+    "packages/server/src/transaction-read.ts": {
+      "sha256": "afd7e3655c219836f8de957ed0ccd5a3376e8b4eba96946383597a568fd20531",
+      "bytes": 14571,
+      "new": false
+    },
+    "packages/server/src/transaction-service.ts": {
+      "sha256": "fd024b333277424ce8d7f70b662460abc2ec8c5cd566927c065c41da9f1c43be",
+      "bytes": 28223,
+      "new": false
+    },
+    "packages/server/src/transaction-http.ts": {
+      "sha256": "90489b22858be99579f7ce8753bab0d6204d4caae215f7a293c1537d09477636",
+      "bytes": 28706,
+      "new": false
+    },
+    "packages/server/src/transaction-consistency.test.ts": {
+      "sha256": "904d1f74ff06237da41c45f3dc1d4727a1387dc760950860ef548db51e7f02c4",
+      "bytes": 7999,
+      "new": false
+    },
+    "packages/server/src/transaction-read.test.ts": {
+      "sha256": "21affb903d74443f6f942cc970cf627c699461b52b5834d4745d024672598f8e",
+      "bytes": 86292,
+      "new": false
+    },
+    "packages/server/src/transaction-http.test.ts": {
+      "sha256": "1ae690d8135c0ecd44f01b39a3412f50921828d83e7395bd076ff2404e503672",
+      "bytes": 186758,
+      "new": false
+    },
+    "apps/bdptest/src/transactional-minimum-current-resource-installed.test.ts": {
+      "sha256": "440036edf77248d578ee2fc70c6e4b9d4bfdf305d88dfd913c3d81dc6364b803",
+      "bytes": 31480,
+      "new": true
+    },
+    "docs/specs/bdp.md": {
+      "sha256": "67772742d7d08f48c12196e9789f1859ad2d0e19f133ea65e197b049361f84f8",
+      "bytes": 397107,
+      "new": false
+    },
+    "docs/design/transaction-implementation-progress.md": {
+      "sha256": "8475dffe744267d735366438798ca388263359be744eba105d867818f0402182",
+      "bytes": 133772,
+      "new": false
+    }
+  },
+  "acceptedPlanSha256": "edde5bfebc665124a6809667df1cc41176927d89e5628f6d3df127aaa3f15fa4",
+  "acceptedLedgerSha256": "95611b471a1b93fc52cd1acb10f0010cabe1682b86b7e52742677ad456ca5e82",
+  "rootAuthoringReleaseSha256": "cd57f946d42a6f3bae78f14c1b2ed43982429378aa11ea4efde7ac636f3a3dc4",
+  "actualAuthorizationMainIntegrationRequiredBeforeValidation": true,
+  "frozenAt": "2026-10-16T02:47:34.566525+00:00"
+}

@@ -1,0 +1,55 @@
+--- write-trusted-startup-next-plan-2/plan.md
++++ write-trusted-startup-next-plan-1/plan.md
+@@ -1,6 +1,6 @@
+ # Trusted Write startup input — next bounded preparation
+ 
+-Prepared 2026-10-18 UTC for the sole `docs/architecture/bdp-client-v2/design.md`. This is corrected D3b successor2 after native-review-2 N1; `write-trusted-startup-next-plan-1` and `tx-discovery-next-plan-20261018` remain untouched. Pinned product source: a56254d682cf4623cab22a552e3d2f695f691795 / tree144f278c7f5a08516c4ac99ba553d4cc25bcf560. Root must bind any eventual authoring/review packet to the actual reviewed implementation successor. No incoming main/spec adoption, product changes, test/build/install/runtime/review execution, git mutation, coordination, launch or design edit occurred in this preparation.
++Prepared 2026-10-18 UTC for the sole `docs/architecture/bdp-client-v2/design.md`. This is the concrete D3b successor to `tx-discovery-next-plan-20261018`, which remains untouched. Pinned product source: a56254d682cf4623cab22a552e3d2f695f691795 / tree144f278c7f5a08516c4ac99ba553d4cc25bcf560. Root must bind any eventual authoring/review packet to the actual reviewed implementation successor. No incoming main/spec adoption, product changes, test/build/install/runtime/review execution, git mutation, coordination, launch or design edit occurred in this preparation.
+ 
+ **Recommendation:** add one optional bdptest-owned absolute deployment-file path to the existing startup contract and one non-listening server-side loader that converts a closed versioned file into the existing RU or TX captured configuration. Scope, listener, profile intent and resolved Read limits remain owned by shared startup configuration. The deployment file supplies only trusted storage, credentials and existing installed artifact/policy data. Do not wire main or change admission in this slice.
+ 
+@@ -51,7 +51,7 @@
+ 
+ The immutable captured data, not a reread of deploymentFile, must be passed to later startup. Replacing the file after preparation cannot change the running selection. Existing runtime capture may compile the same frozen TX input again until D3c provides an internal captured-runtime seam; that is deterministic validation duplication, not a second policy. Do not add that runtime refactor here just to avoid it.
+ 
+-## Exact first-authoring footprint: eleven files
++## Exact first-authoring footprint: seven files
+ 
+ | File | Intended change |
+ | --- | --- |
+@@ -61,13 +61,9 @@
+ | **new** `packages/server/src/reference-deployment.ts` | Only the loader/capture projection, limits checks and sanitized errors above. Reuse existing internal captures/compilers; no new policy implementation. |
+ | **new** `packages/server/src/reference-deployment.test.ts` | Positive/negative source tests for exact variants and no-listener/no-store side effects. |
+ | `packages/server/package.json` | Add only `./reference-configuration` pointing at dist/reference-deployment d.ts/js. No candidate/runtime/admission export. |
+-| `scripts/smoke-executables.mjs` | Add the four emitted files to the existing exact server dist inventory and bounded installed data-loader import/positive/negative checks in the fresh consumer. Keep its existing call to the shared exact export checker; existing executable refusal behavior is unchanged. |
+-| `scripts/smoke-safety.mjs` | Add only `./reference-configuration` to the shared exact export map, types `./dist/reference-deployment.d.ts` and default `./dist/reference-deployment.js`; preserve deep equality and closed export checking. |
+-| `scripts/smoke-safety.test.mjs` | Update the exact positive map and expected diagnostic wording if necessary; preserve missing/broad/private refusals and add wrong-loader-target plus candidate/runtime/admission export refusals. |
+-| `packages/server/src/transaction-snapshot.test.ts` | Update only the exact package export key assertion at the existing privacy test; preserve private Snapshot/json-equality facade checks and all behavioral assertions. |
+-| `packages/server/src/read-sequence-lifecycle.test.ts` | Update only the exact package export map assertion; preserve real lifecycle/facet key, freeze, owner/entry and private-plane assertions. |
++| `scripts/smoke-executables.mjs` | Add the four emitted files to the existing exact server dist inventory and bounded installed data-loader import/positive/negative checks in the fresh consumer. Existing executable refusal behavior is unchanged. |
+ 
+-N1 correction: those four pre-existing exact export-map assertions are required fanout of the new data subpath. Do not strip the export before checking, weaken equality, duplicate the shared allowlist, broaden package exports or change Snapshot/lifecycle production behavior. No `apps/bdptest/src/main.ts`/composition, Read capability, server index, runtime/service/store production, Type/protocol/schema, conformance manifest, package lock, build config or historical evidence changes are needed. Server tsconfig already includes src/**/*.ts and excludes *.test.ts. If emitted declarations accidentally expose unusable internal types or dependency checking rejects the narrow subpath, resolve in the new module/package boundary; do not export unsafe factories or broaden the module dependency graph. Review an explicit footprint successor if any additional source is genuinely required.
++No `apps/bdptest/src/main.ts`/composition, Read capability, server index, runtime/service/store, Type/protocol/schema, conformance manifest, package lock, build config or historical evidence changes are needed. Server tsconfig already includes src/**/*.ts and excludes *.test.ts. If emitted declarations accidentally expose unusable internal types or dependency checking rejects the narrow subpath, resolve in the new module/package boundary; do not export unsafe factories or broaden the module dependency graph. Review an explicit footprint successor if any additional source is genuinely required.
+ 
+ ## Prospective tests and bounded validation
+ 
+@@ -83,11 +79,11 @@
+ 
+ **Installed pure-loader proof:** the existing fresh packed smoke resolves `@bdp/server/reference-configuration` from the external consumer (not workspace dist/deep source import). Run small RU and TX positive deployment inputs and wrong-profile/invalid-artifact negatives through the exact shipped loader. Bind entry resolution/package bytes and source under normal smoke evidence. Verify no configured port binds and no store is created, while existing normal bdptest/bdpbd profile-refusal smoke remains unchanged. This proves installed loader packaging, not installed service startup. Preserve source/consumer/payload distinctions and existing exact inventory checks.
+ 
+-After source/code review: pinned Node24.16.0/pnpm11.20.0; focused config/loader, smoke-safety, existing Snapshot and Read-sequence privacy assertions, and relevant installed-configuration/runtime-configuration contract tests, static format/type/boundary/lint, build before emitted/installed smoke, unchanged Read evidence verification. Keep existing 5s source defaults; source fixtures are local bounded data. Bind a finite installed-smoke selection and outer wrapper before running; no deadline widening/retries to hide a failed step. Root decides full-suite/CI timing with the combined reviewed changefeed/discovery tree to avoid repeated broad runs. All failures/raw logs/provenance remain distinct.
++After source/code review: pinned Node24.16.0/pnpm11.20.0; focused config/loader and relevant installed-configuration/runtime-configuration contract tests, static format/type/boundary/lint, build before emitted/installed smoke, unchanged Read evidence verification. Keep existing 5s source defaults; source fixtures are local bounded data. Bind a finite installed-smoke selection and outer wrapper before running; no deadline widening/retries to hide a failed step. Root decides full-suite/CI timing with the combined reviewed changefeed/discovery tree to avoid repeated broad runs. All failures/raw logs/provenance remain distinct.
+ 
+ ## Staged done predicates and fail-before-bind continuation
+ 
+-1. **Prepared contract:** native/Claude plan findings dispositioned; exact eleven-file scope and supported config tuples frozen; no human product ruling required for these ordinary implementation choices.
++1. **Prepared contract:** native/Claude plan findings dispositioned; exact seven-file scope and supported config tuples frozen; no human product ruling required for these ordinary implementation choices.
+ 2. **Loader implemented:** focused source positives/negatives pass, actual existing captures supply policy/compiler behavior, no owner/listener side effects, secret-safe errors, source invariant/independent code review closed.
+ 3. **Installed loader delivered:** fresh external package tests resolve the declared data subpath, accept/reject both real variants and preserve all existing normal executable admission/refusal/Read behavior. This slice can be ready with public Write selection still refused.
+ 4. **Later D3c/P:** ordinary `bdptest --serve` selects explicit intended profile; pure config→loader→supported-data capture occurs before any listener. Profile/config/source/payload capability verification and store open/readback/Scope-Types-policy consistency checks also occur before listen; if store opening fails, close any acquired owner and never emit server.started. Rework private TX listener-before-owner order only in its separately reviewed lifecycle slice, and pass the validated intended listener without port0/host substitution. Preserve SIGINT/SIGTERM/listener-fault drain and Read/no-serve behavior.
+@@ -95,4 +91,4 @@
+ 
+ The full readiness gate is the conjunction of these stages and the sole plan's remaining required-profile evidence, not this loader alone. D2 S1/G2 still gate affected behavior; this preparation neither adopts a ruling nor blocks independent config work. Trish's prospective integration/spec lane remains separate, and Vickie's pinned contract/source stays stable.
+ 
+-Next root action: review this packet and prepare one closed independent PLAN review binding exact source and eleven files. No source authoring, listener, public activation or git publication is released by the packet itself.
++Next root action: review this packet and prepare one closed independent PLAN review binding exact source and seven files. No source authoring, listener, public activation or git publication is released by the packet itself.

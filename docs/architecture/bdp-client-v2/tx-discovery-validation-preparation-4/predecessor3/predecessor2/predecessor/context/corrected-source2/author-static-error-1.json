@@ -1,0 +1,8 @@
+{
+  "candidateMutation": false,
+  "correctedInspection": "compare original bytes with exact unique Scope Link anchor insertion; passes",
+  "exitCode": 1,
+  "operation": "production single-header identity assertion",
+  "productExecution": false,
+  "reason": "removed first matching cache-control line globally; there are existing unrelated identical header lines"
+}

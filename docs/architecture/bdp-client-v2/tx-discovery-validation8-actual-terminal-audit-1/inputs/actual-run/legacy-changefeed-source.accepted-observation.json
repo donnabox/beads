@@ -1,0 +1,1730 @@
+{
+  "sourceIdentity": "a61cd3fbf9fac68e3aad857a24a2456dd16b83048067eef85348d7091c0aa08e",
+  "sourceBindingSha256": "9bb16e9c984f7c259c6f4cb42ddad2886234771a90f4421c3fddec57c5079a41",
+  "resultsSha256": "054ecc39e333bdab8458b3e2f9c7af3f00c7aada95ca225692e80b30d1d21015",
+  "logSha256": "441237534e6194146545c66acf6c06b7264136ae4df4e173a9e4fd50ab112d2f",
+  "selectedFullNames": [
+    "serves normalized whole groups and identical Scope facts for atomic replica reconstruction",
+    "replica refuses partial publication, gaps, conflicts and owned upsert/tombstone disagreement",
+    "keeps genesis checkpoint distinct from zero position and resumes after an empty caught-up page",
+    "uses bounded context-fenced checkpoints, never Event IDs/raw positions/future rows",
+    "fails closed on corrupt stored framing without renumbering or changing graph state",
+    "does not classify a missing previously committed cursor row as never issued or skip its gap",
+    "serves128 Events from32 selected owned Links as one group despite a two-item receipt page setting",
+    "captures feed body and serving context inside one fenced owner entry",
+    "serves representative large postimages whole without importing the Event page byte cap",
+    "refuses feed reads after uncertain commit fencing and recovers the committed group on reopen",
+    "bounds rendered Scope/next overhead with a long installed Scope and no long cursor",
+    "keeps start=now's original admission anchor through a minimum wait and drains on close",
+    "serves actual HTTP finite GET/HEAD, absolute navigation, native conditions and restart",
+    "decides actual HTTP minimum refusal before conditional shortcuts with final context",
+    "preserves current context on owner-observed changefeed parameter refusals over HTTP",
+    "aborts fresh finite changefeed opaque waiting before close drains",
+    "keeps direct and excluded changefeed minimum paths strict",
+    "serves finite start-now opaque minima before HTTP shortcuts",
+    "preserves changefeed cursor precedence under current-admission opaque minima",
+    "captures current changefeed admission once across owner entries: start-now-unknown",
+    "captures current changefeed admission once across owner entries: genesis-unknown",
+    "captures current changefeed admission once across owner entries: retained-unknown",
+    "captures current changefeed admission once across owner entries: retained-pos-01",
+    "drains current changefeed admission before owner close: start-now",
+    "drains current changefeed admission before owner close: retained",
+    "preserves current changefeed anchor capture before waiter preflight",
+    "waits for fresh finite changefeed opaque minimum without recapturing admission: unknown",
+    "waits for fresh finite changefeed opaque minimum without recapturing admission: pos-01",
+    "preserves fresh finite changefeed admission before wait preflight: already-aborted",
+    "preserves fresh finite changefeed admission before wait preflight: invalid-policy",
+    "preserves fresh finite changefeed admission before wait preflight: throwing-clock",
+    "preserves fresh finite changefeed admission before wait preflight: nonfinite-clock"
+  ],
+  "reports": [
+    {
+      "observation": "private-source-changefeed-parameter-context",
+      "outcome": "passed",
+      "attempted": 12,
+      "completedResponses": [
+        {
+          "ordinal": 1,
+          "method": "POST",
+          "url": "https://example.test/feed/operations/batch",
+          "accept": "application/json",
+          "reconnect": null,
+          "status": 200,
+          "bodyOctets": 711,
+          "context": [
+            "ac50e931-c4e1-4507-bb53-d360b87c9a12",
+            "development-all-visible",
+            "pos-1"
+          ],
+          "contentType": "application/json",
+          "contentLength": "711"
+        },
+        {
+          "ordinal": 2,
+          "method": "GET",
+          "url": "https://example.test/feed/changes/?after=genesis",
+          "accept": "application/json",
+          "reconnect": null,
+          "status": 200,
+          "bodyOctets": 1386,
+          "context": [
+            "ac50e931-c4e1-4507-bb53-d360b87c9a12",
+            "development-all-visible",
+            "pos-1"
+          ],
+          "contentType": "application/json",
+          "contentLength": "1386"
+        },
+        {
+          "ordinal": 3,
+          "method": "GET",
+          "url": "https://example.test/feed/changes/?after=cg_1YhWvKHMkQp9cCAB6dBpqXRlK33zEMWp3wCZSdNBNTg_xWnv5XtWTyx8Cu1p_3xa0za99E1cKTxH4XoPmTQt5ns_3",
+          "accept": "application/json",
+          "reconnect": null,
+          "status": 400,
+          "bodyOctets": 118,
+          "context": [
+            "ac50e931-c4e1-4507-bb53-d360b87c9a12",
+            "development-all-visible",
+            "pos-1"
+          ],
+          "contentType": "application/problem+json",
+          "contentLength": "118"
+        },
+        {
+          "ordinal": 4,
+          "method": "HEAD",
+          "url": "https://example.test/feed/changes/?after=cg_1YhWvKHMkQp9cCAB6dBpqXRlK33zEMWp3wCZSdNBNTg_xWnv5XtWTyx8Cu1p_3xa0za99E1cKTxH4XoPmTQt5ns_3",
+          "accept": "application/json",
+          "reconnect": null,
+          "status": 400,
+          "bodyOctets": 0,
+          "context": [
+            "ac50e931-c4e1-4507-bb53-d360b87c9a12",
+            "development-all-visible",
+            "pos-1"
+          ],
+          "contentType": "application/problem+json",
+          "contentLength": "118"
+        },
+        {
+          "ordinal": 5,
+          "method": "GET",
+          "url": "https://example.test/feed/changes/?after=cg_1YhWvKHMkQp9cCAB6dBpqXRlK33zEMWp3wCZSdNBNTg_xWnv5XtWTyx8Cu1p_3xa0za99E1cKTxH4XoPmTQt5ns_3",
+          "accept": "text/event-stream",
+          "reconnect": null,
+          "status": 400,
+          "bodyOctets": 118,
+          "context": [
+            "ac50e931-c4e1-4507-bb53-d360b87c9a12",
+            "development-all-visible",
+            "pos-1"
+          ],
+          "contentType": "application/problem+json",
+          "contentLength": "118"
+        },
+        {
+          "ordinal": 6,
+          "method": "HEAD",
+          "url": "https://example.test/feed/changes/?after=cg_1YhWvKHMkQp9cCAB6dBpqXRlK33zEMWp3wCZSdNBNTg_xWnv5XtWTyx8Cu1p_3xa0za99E1cKTxH4XoPmTQt5ns_3",
+          "accept": "text/event-stream",
+          "reconnect": null,
+          "status": 400,
+          "bodyOctets": 0,
+          "context": [
+            "ac50e931-c4e1-4507-bb53-d360b87c9a12",
+            "development-all-visible",
+            "pos-1"
+          ],
+          "contentType": "application/problem+json",
+          "contentLength": "118"
+        },
+        {
+          "ordinal": 7,
+          "method": "GET",
+          "url": "https://example.test/feed/changes/?after=genesis",
+          "accept": "text/event-stream",
+          "reconnect": "malformed",
+          "status": 400,
+          "bodyOctets": 118,
+          "context": [
+            "ac50e931-c4e1-4507-bb53-d360b87c9a12",
+            "development-all-visible",
+            "pos-1"
+          ],
+          "contentType": "application/problem+json",
+          "contentLength": "118"
+        },
+        {
+          "ordinal": 8,
+          "method": "HEAD",
+          "url": "https://example.test/feed/changes/?after=genesis",
+          "accept": "text/event-stream",
+          "reconnect": "malformed",
+          "status": 400,
+          "bodyOctets": 0,
+          "context": [
+            "ac50e931-c4e1-4507-bb53-d360b87c9a12",
+            "development-all-visible",
+            "pos-1"
+          ],
+          "contentType": "application/problem+json",
+          "contentLength": "118"
+        },
+        {
+          "ordinal": 9,
+          "method": "GET",
+          "url": "https://example.test/feed/changes/?after=cg_1YhWvKHMkQp9cCAB6dBpqXRlK33zEMWp3wCZSdNBNTg_xWnv5XtWTyx8Cu1p_3xa0za99E1cKTxH4XoPmTQt5ns_3",
+          "accept": "application/json",
+          "reconnect": null,
+          "status": 401,
+          "bodyOctets": 136,
+          "context": [
+            null,
+            null,
+            null
+          ],
+          "contentType": "application/problem+json",
+          "contentLength": "136"
+        },
+        {
+          "ordinal": 10,
+          "method": "GET",
+          "url": "https://example.test/feed/changes/?after=genesis&start=now",
+          "accept": "application/json",
+          "reconnect": null,
+          "status": 400,
+          "bodyOctets": 118,
+          "context": [
+            null,
+            null,
+            null
+          ],
+          "contentType": "application/problem+json",
+          "contentLength": "118"
+        },
+        {
+          "ordinal": 11,
+          "method": "POST",
+          "url": "https://example.test/feed/operations/batch",
+          "accept": "application/json",
+          "reconnect": null,
+          "status": 200,
+          "bodyOctets": 711,
+          "context": [
+            "ac50e931-c4e1-4507-bb53-d360b87c9a12",
+            "development-all-visible",
+            "pos-2"
+          ],
+          "contentType": "application/json",
+          "contentLength": "711"
+        },
+        {
+          "ordinal": 12,
+          "method": "GET",
+          "url": "https://example.test/feed/changes/?after=cg_1YhWvKHMkQp9cCAB6dBpqXRlK33zEMWp3wCZSdNBNTg_xWnv5XtWTyx8Cu1p_3xa0za99E1cKTxH4XoPmTQt5ns_3",
+          "accept": "application/json",
+          "reconnect": null,
+          "status": 400,
+          "bodyOctets": 118,
+          "context": [
+            "ac50e931-c4e1-4507-bb53-d360b87c9a12",
+            "development-all-visible",
+            "pos-2"
+          ],
+          "contentType": "application/problem+json",
+          "contentLength": "118"
+        }
+      ],
+      "exchanges": 12,
+      "contextFailures": [],
+      "hardFailureCount": 0,
+      "deadlineExceeded": false,
+      "startupCompleted": true,
+      "closed": true,
+      "directory": "/private/tmp/vickie-tx-discovery-validation-legacy-changefeed-source-mzg0udtp/bdp-feed-http-4ybxI9",
+      "directoryAbsent": true,
+      "claimEligible": false
+    },
+    {
+      "observation": "changefeed-opaque-capture",
+      "row": "unknown",
+      "outcome": "passed",
+      "commits": 2,
+      "captures": 2,
+      "anchors": [
+        "cg_MRt55KiK6CMAjtcecQDESexCX0LAwpmPkR-4QlimZ4U_oVWqXnQHSEZyHK4CQQSaWrhpMX4jWNqcj2RVllODpso_1",
+        "cg_MRt55KiK6CMAjtcecQDESexCX0LAwpmPkR-4QlimZ4U_oVWqXnQHSEZyHK4CQQSaWrhpMX4jWNqcj2RVllODpso_1"
+      ],
+      "reads": [
+        {
+          "after": "cg_MRt55KiK6CMAjtcecQDESexCX0LAwpmPkR-4QlimZ4U_oVWqXnQHSEZyHK4CQQSaWrhpMX4jWNqcj2RVllODpso_1",
+          "minimum": {
+            "scopeEpoch": "9d5c2206-4836-47d7-a8a9-a369ea06368c",
+            "authorizationView": "development-all-visible",
+            "minimumPosition": "unknown"
+          },
+          "minimumFrozen": false,
+          "admission": "finite-start-now",
+          "outcome": "unproved",
+          "context": {
+            "scopeEpoch": "9d5c2206-4836-47d7-a8a9-a369ea06368c",
+            "authorizationView": "development-all-visible",
+            "scopePosition": "pos-1"
+          }
+        },
+        {
+          "after": "cg_MRt55KiK6CMAjtcecQDESexCX0LAwpmPkR-4QlimZ4U_oVWqXnQHSEZyHK4CQQSaWrhpMX4jWNqcj2RVllODpso_1",
+          "minimum": {
+            "scopeEpoch": "9d5c2206-4836-47d7-a8a9-a369ea06368c",
+            "authorizationView": "development-all-visible",
+            "minimumPosition": "unknown"
+          },
+          "minimumFrozen": true,
+          "admission": "finite-start-now",
+          "outcome": "unproved",
+          "context": {
+            "scopeEpoch": "9d5c2206-4836-47d7-a8a9-a369ea06368c",
+            "authorizationView": "development-all-visible",
+            "scopePosition": "pos-1"
+          }
+        },
+        {
+          "after": "cg_MRt55KiK6CMAjtcecQDESexCX0LAwpmPkR-4QlimZ4U_oVWqXnQHSEZyHK4CQQSaWrhpMX4jWNqcj2RVllODpso_1",
+          "minimum": {
+            "scopeEpoch": "9d5c2206-4836-47d7-a8a9-a369ea06368c",
+            "authorizationView": "development-all-visible",
+            "minimumPosition": "unknown"
+          },
+          "minimumFrozen": true,
+          "admission": "finite-start-now",
+          "outcome": "unproved",
+          "context": {
+            "scopeEpoch": "9d5c2206-4836-47d7-a8a9-a369ea06368c",
+            "authorizationView": "development-all-visible",
+            "scopePosition": "pos-2"
+          }
+        },
+        {
+          "after": "cg_MRt55KiK6CMAjtcecQDESexCX0LAwpmPkR-4QlimZ4U_oVWqXnQHSEZyHK4CQQSaWrhpMX4jWNqcj2RVllODpso_1",
+          "minimum": {
+            "scopeEpoch": "9d5c2206-4836-47d7-a8a9-a369ea06368c",
+            "authorizationView": "development-all-visible",
+            "minimumPosition": "pos-2"
+          },
+          "minimumFrozen": true,
+          "admission": null,
+          "outcome": "page",
+          "context": {
+            "scopeEpoch": "9d5c2206-4836-47d7-a8a9-a369ea06368c",
+            "authorizationView": "development-all-visible",
+            "scopePosition": "pos-2"
+          }
+        }
+      ],
+      "waits": 1,
+      "clocks": 4,
+      "closes": 1,
+      "positiveAfter": "cg_MRt55KiK6CMAjtcecQDESexCX0LAwpmPkR-4QlimZ4U_oVWqXnQHSEZyHK4CQQSaWrhpMX4jWNqcj2RVllODpso_1",
+      "failureCount": 0
+    },
+    {
+      "observation": "changefeed-opaque-capture",
+      "row": "pos-01",
+      "outcome": "passed",
+      "commits": 2,
+      "captures": 2,
+      "anchors": [
+        "cg_9iVxA5zLclT22lWj5smUBNsyP3EyKmugpwOU1yZQcyw_2rHkl_1PW8e-VNh0jH9XtK9I0_aUBKVkmYGJTxIvKJs_1",
+        "cg_9iVxA5zLclT22lWj5smUBNsyP3EyKmugpwOU1yZQcyw_2rHkl_1PW8e-VNh0jH9XtK9I0_aUBKVkmYGJTxIvKJs_1"
+      ],
+      "reads": [
+        {
+          "after": "cg_9iVxA5zLclT22lWj5smUBNsyP3EyKmugpwOU1yZQcyw_2rHkl_1PW8e-VNh0jH9XtK9I0_aUBKVkmYGJTxIvKJs_1",
+          "minimum": {
+            "scopeEpoch": "4b7918a8-0a37-4feb-a5d7-3fddf6bc8e29",
+            "authorizationView": "development-all-visible",
+            "minimumPosition": "pos-01"
+          },
+          "minimumFrozen": false,
+          "admission": "finite-start-now",
+          "outcome": "unproved",
+          "context": {
+            "scopeEpoch": "4b7918a8-0a37-4feb-a5d7-3fddf6bc8e29",
+            "authorizationView": "development-all-visible",
+            "scopePosition": "pos-1"
+          }
+        },
+        {
+          "after": "cg_9iVxA5zLclT22lWj5smUBNsyP3EyKmugpwOU1yZQcyw_2rHkl_1PW8e-VNh0jH9XtK9I0_aUBKVkmYGJTxIvKJs_1",
+          "minimum": {
+            "scopeEpoch": "4b7918a8-0a37-4feb-a5d7-3fddf6bc8e29",
+            "authorizationView": "development-all-visible",
+            "minimumPosition": "pos-01"
+          },
+          "minimumFrozen": true,
+          "admission": "finite-start-now",
+          "outcome": "unproved",
+          "context": {
+            "scopeEpoch": "4b7918a8-0a37-4feb-a5d7-3fddf6bc8e29",
+            "authorizationView": "development-all-visible",
+            "scopePosition": "pos-1"
+          }
+        },
+        {
+          "after": "cg_9iVxA5zLclT22lWj5smUBNsyP3EyKmugpwOU1yZQcyw_2rHkl_1PW8e-VNh0jH9XtK9I0_aUBKVkmYGJTxIvKJs_1",
+          "minimum": {
+            "scopeEpoch": "4b7918a8-0a37-4feb-a5d7-3fddf6bc8e29",
+            "authorizationView": "development-all-visible",
+            "minimumPosition": "pos-01"
+          },
+          "minimumFrozen": true,
+          "admission": "finite-start-now",
+          "outcome": "unproved",
+          "context": {
+            "scopeEpoch": "4b7918a8-0a37-4feb-a5d7-3fddf6bc8e29",
+            "authorizationView": "development-all-visible",
+            "scopePosition": "pos-2"
+          }
+        },
+        {
+          "after": "cg_9iVxA5zLclT22lWj5smUBNsyP3EyKmugpwOU1yZQcyw_2rHkl_1PW8e-VNh0jH9XtK9I0_aUBKVkmYGJTxIvKJs_1",
+          "minimum": {
+            "scopeEpoch": "4b7918a8-0a37-4feb-a5d7-3fddf6bc8e29",
+            "authorizationView": "development-all-visible",
+            "minimumPosition": "pos-2"
+          },
+          "minimumFrozen": true,
+          "admission": null,
+          "outcome": "page",
+          "context": {
+            "scopeEpoch": "4b7918a8-0a37-4feb-a5d7-3fddf6bc8e29",
+            "authorizationView": "development-all-visible",
+            "scopePosition": "pos-2"
+          }
+        }
+      ],
+      "waits": 1,
+      "clocks": 4,
+      "closes": 1,
+      "positiveAfter": "cg_9iVxA5zLclT22lWj5smUBNsyP3EyKmugpwOU1yZQcyw_2rHkl_1PW8e-VNh0jH9XtK9I0_aUBKVkmYGJTxIvKJs_1",
+      "failureCount": 0
+    },
+    {
+      "observation": "changefeed-opaque-abort",
+      "outcome": "passed",
+      "captures": 1,
+      "reads": 1,
+      "waits": 1,
+      "clocks": 2,
+      "closes": 1,
+      "postCloseProbes": 1,
+      "order": [
+        "wait-entered",
+        "abort",
+        "wait-released",
+        "owner-close",
+        "close-resolved"
+      ],
+      "failureCount": 0
+    },
+    {
+      "observation": "changefeed-opaque-preflight",
+      "row": "already-aborted",
+      "outcome": "passed",
+      "captures": 1,
+      "reads": 0,
+      "waits": 0,
+      "clocks": 1,
+      "errorName": "ScopeServerOperationAbortedError",
+      "failureCount": 0
+    },
+    {
+      "observation": "changefeed-opaque-preflight",
+      "row": "invalid-policy",
+      "outcome": "passed",
+      "captures": 1,
+      "reads": 0,
+      "waits": 0,
+      "clocks": 0,
+      "errorName": "TypeError",
+      "failureCount": 0
+    },
+    {
+      "observation": "changefeed-opaque-preflight",
+      "row": "throwing-clock",
+      "outcome": "passed",
+      "captures": 1,
+      "reads": 0,
+      "waits": 0,
+      "clocks": 1,
+      "errorName": "Error",
+      "failureCount": 0
+    },
+    {
+      "observation": "changefeed-opaque-preflight",
+      "row": "nonfinite-clock",
+      "outcome": "passed",
+      "captures": 1,
+      "reads": 0,
+      "waits": 0,
+      "clocks": 1,
+      "errorName": "TypeError",
+      "failureCount": 0
+    },
+    {
+      "observation": "changefeed-opaque-boundaries",
+      "outcome": "passed",
+      "captures": 2,
+      "reads": 4,
+      "waits": 0,
+      "clocks": 2,
+      "outcomes": [
+        "default-owner-TypeError",
+        "default-service-TypeError",
+        "after-TypeError",
+        "malformed-TypeError",
+        "unsupported-sentinel",
+        "foreign-cursor-expired",
+        "valid-closed",
+        "malformed-before-closed",
+        "owner-closed"
+      ],
+      "failureCount": 0
+    },
+    {
+      "observation": "changefeed-opaque-http",
+      "outcome": "passed",
+      "attempted": 10,
+      "exchanges": 10,
+      "records": [
+        {
+          "ordinal": 1,
+          "method": "POST",
+          "url": "https://example.test/feed/operations/batch",
+          "status": 200,
+          "bodyOctets": 704,
+          "bodySha256": "93e23b800e88759ccd3b9c9454812ba8816f98a94d8bb61206ddf5806d6f63b0",
+          "headers": {
+            "bdp-scope-epoch": "82654708-9f3c-433d-843d-6007e717eb33",
+            "bdp-authorization-view": "development-all-visible",
+            "bdp-scope-position": "pos-1",
+            "content-type": "application/json",
+            "content-length": "704",
+            "cache-control": "private, no-store",
+            "retry-after": null,
+            "etag": null,
+            "x-bdp-development-limit": null
+          }
+        },
+        {
+          "ordinal": 2,
+          "method": "GET",
+          "url": "https://example.test/feed/changes/?start=now",
+          "status": 200,
+          "bodyOctets": 294,
+          "bodySha256": "a6dafb8586f9262d49a50f2915a702928056201fd003de6b588b31c9234bb4d5",
+          "headers": {
+            "bdp-scope-epoch": "82654708-9f3c-433d-843d-6007e717eb33",
+            "bdp-authorization-view": "development-all-visible",
+            "bdp-scope-position": "pos-1",
+            "content-type": "application/json",
+            "content-length": "294",
+            "cache-control": "private, no-store",
+            "retry-after": null,
+            "etag": null,
+            "x-bdp-development-limit": null
+          }
+        },
+        {
+          "ordinal": 3,
+          "method": "HEAD",
+          "url": "https://example.test/feed/changes/?start=now",
+          "status": 200,
+          "bodyOctets": 0,
+          "bodySha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "headers": {
+            "bdp-scope-epoch": "82654708-9f3c-433d-843d-6007e717eb33",
+            "bdp-authorization-view": "development-all-visible",
+            "bdp-scope-position": "pos-1",
+            "content-type": "application/json",
+            "content-length": "294",
+            "cache-control": "private, no-store",
+            "retry-after": null,
+            "etag": null,
+            "x-bdp-development-limit": null
+          }
+        },
+        {
+          "ordinal": 4,
+          "method": "GET",
+          "url": "https://example.test/feed/changes/?start=now",
+          "status": 503,
+          "bodyOctets": 127,
+          "bodySha256": "5e7c50923b5ef2e22379c96cbec4f9197175e38d9a81970f7db4f81ae46255b0",
+          "headers": {
+            "bdp-scope-epoch": "82654708-9f3c-433d-843d-6007e717eb33",
+            "bdp-authorization-view": "development-all-visible",
+            "bdp-scope-position": "pos-1",
+            "content-type": "application/problem+json",
+            "content-length": "127",
+            "cache-control": "private, no-store",
+            "retry-after": "1",
+            "etag": null,
+            "x-bdp-development-limit": null
+          }
+        },
+        {
+          "ordinal": 5,
+          "method": "HEAD",
+          "url": "https://example.test/feed/changes/?start=now",
+          "status": 503,
+          "bodyOctets": 0,
+          "bodySha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "headers": {
+            "bdp-scope-epoch": "82654708-9f3c-433d-843d-6007e717eb33",
+            "bdp-authorization-view": "development-all-visible",
+            "bdp-scope-position": "pos-1",
+            "content-type": "application/problem+json",
+            "content-length": "127",
+            "cache-control": "private, no-store",
+            "retry-after": "1",
+            "etag": null,
+            "x-bdp-development-limit": null
+          }
+        },
+        {
+          "ordinal": 6,
+          "method": "GET",
+          "url": "https://example.test/feed/changes/?start=now",
+          "status": 503,
+          "bodyOctets": 127,
+          "bodySha256": "5e7c50923b5ef2e22379c96cbec4f9197175e38d9a81970f7db4f81ae46255b0",
+          "headers": {
+            "bdp-scope-epoch": "82654708-9f3c-433d-843d-6007e717eb33",
+            "bdp-authorization-view": "development-all-visible",
+            "bdp-scope-position": "pos-1",
+            "content-type": "application/problem+json",
+            "content-length": "127",
+            "cache-control": "private, no-store",
+            "retry-after": "1",
+            "etag": null,
+            "x-bdp-development-limit": null
+          }
+        },
+        {
+          "ordinal": 7,
+          "method": "HEAD",
+          "url": "https://example.test/feed/changes/?start=now",
+          "status": 503,
+          "bodyOctets": 0,
+          "bodySha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "headers": {
+            "bdp-scope-epoch": "82654708-9f3c-433d-843d-6007e717eb33",
+            "bdp-authorization-view": "development-all-visible",
+            "bdp-scope-position": "pos-1",
+            "content-type": "application/problem+json",
+            "content-length": "127",
+            "cache-control": "private, no-store",
+            "retry-after": "1",
+            "etag": null,
+            "x-bdp-development-limit": null
+          }
+        },
+        {
+          "ordinal": 8,
+          "method": "GET",
+          "url": "https://example.test/feed/changes/?after=genesis",
+          "status": 503,
+          "bodyOctets": 127,
+          "bodySha256": "5e7c50923b5ef2e22379c96cbec4f9197175e38d9a81970f7db4f81ae46255b0",
+          "headers": {
+            "bdp-scope-epoch": "82654708-9f3c-433d-843d-6007e717eb33",
+            "bdp-authorization-view": "development-all-visible",
+            "bdp-scope-position": "pos-1",
+            "content-type": "application/problem+json",
+            "content-length": "127",
+            "cache-control": "private, no-store",
+            "retry-after": "1",
+            "etag": null,
+            "x-bdp-development-limit": null
+          }
+        },
+        {
+          "ordinal": 9,
+          "method": "GET",
+          "url": "https://example.test/feed/changes/?start=now",
+          "status": 503,
+          "bodyOctets": 127,
+          "bodySha256": "5e7c50923b5ef2e22379c96cbec4f9197175e38d9a81970f7db4f81ae46255b0",
+          "headers": {
+            "bdp-scope-epoch": "82654708-9f3c-433d-843d-6007e717eb33",
+            "bdp-authorization-view": "development-all-visible",
+            "bdp-scope-position": "pos-1",
+            "content-type": "application/problem+json",
+            "content-length": "127",
+            "cache-control": "private, no-store",
+            "retry-after": "1",
+            "etag": null,
+            "x-bdp-development-limit": null
+          }
+        },
+        {
+          "ordinal": 10,
+          "method": "GET",
+          "url": "https://example.test/feed/changes/?start=now",
+          "status": 400,
+          "bodyOctets": 118,
+          "bodySha256": "c42495c7aceb17f70d66be3b14415057805675541db06619cc439bcc5cb010f2",
+          "headers": {
+            "bdp-scope-epoch": null,
+            "bdp-authorization-view": null,
+            "bdp-scope-position": null,
+            "content-type": "application/problem+json",
+            "content-length": "118",
+            "cache-control": "private, no-store",
+            "retry-after": null,
+            "etag": null,
+            "x-bdp-development-limit": null
+          }
+        }
+      ],
+      "deadlineExceeded": false,
+      "cleanupDeadlineExceeded": false,
+      "closed": true,
+      "directory": "/private/tmp/vickie-tx-discovery-validation-legacy-changefeed-source-mzg0udtp/bdp-feed-opaque-http-pcsmRD",
+      "directoryAbsent": true,
+      "failureCount": 0
+    },
+    {
+      "observation": "current-changefeed-minimum-owner",
+      "outcome": "passed",
+      "records": [
+        {
+          "ordinal": 1,
+          "role": "baseline",
+          "after": "genesis",
+          "admission": null,
+          "minimum": null,
+          "tupleFrozen": null,
+          "outcome": "page",
+          "context": {
+            "scopeEpoch": "8da66b01-608e-4514-966c-a4def74674fd",
+            "authorizationView": "development-all-visible",
+            "scopePosition": "pos-2"
+          }
+        },
+        {
+          "ordinal": 2,
+          "role": "baseline",
+          "after": "cg_gpaOSO81fBQ7hAeTvlJ8tXtZZD9LokOSenZ6itfyRhs_Mq4Q0Ia-ikFDyXfxm-CtfjozJZko0UFsishXy-QSqtI_1",
+          "admission": null,
+          "minimum": null,
+          "tupleFrozen": null,
+          "outcome": "page",
+          "context": {
+            "scopeEpoch": "8da66b01-608e-4514-966c-a4def74674fd",
+            "authorizationView": "development-all-visible",
+            "scopePosition": "pos-2"
+          }
+        },
+        {
+          "ordinal": 3,
+          "role": "table-1",
+          "after": "genesis",
+          "admission": "current-changefeed",
+          "minimum": {
+            "scopeEpoch": "8da66b01-608e-4514-966c-a4def74674fd",
+            "authorizationView": "development-all-visible",
+            "minimumPosition": "unknown"
+          },
+          "tupleFrozen": true,
+          "outcome": "TransactionMinimumUnproved",
+          "context": {
+            "scopeEpoch": "8da66b01-608e-4514-966c-a4def74674fd",
+            "authorizationView": "development-all-visible",
+            "scopePosition": "pos-2"
+          }
+        },
+        {
+          "ordinal": 4,
+          "role": "table-2",
+          "after": "cg_gpaOSO81fBQ7hAeTvlJ8tXtZZD9LokOSenZ6itfyRhs_Mq4Q0Ia-ikFDyXfxm-CtfjozJZko0UFsishXy-QSqtI_1",
+          "admission": "current-changefeed",
+          "minimum": {
+            "scopeEpoch": "8da66b01-608e-4514-966c-a4def74674fd",
+            "authorizationView": "development-all-visible",
+            "minimumPosition": "pos-01"
+          },
+          "tupleFrozen": true,
+          "outcome": "TransactionMinimumUnproved",
+          "context": {
+            "scopeEpoch": "8da66b01-608e-4514-966c-a4def74674fd",
+            "authorizationView": "development-all-visible",
+            "scopePosition": "pos-2"
+          }
+        },
+        {
+          "ordinal": 5,
+          "role": "table-3",
+          "after": "cg_gpaOSO81fBQ7hAeTvlJ8tXtZZD9LokOSenZ6itfyRhs_Mq4Q0Ia-ikFDyXfxm-CtfjozJZko0UFsishXy-QSqtI_1",
+          "admission": "current-changefeed",
+          "minimum": {
+            "scopeEpoch": "8da66b01-608e-4514-966c-a4def74674fd",
+            "authorizationView": "development-all-visible",
+            "minimumPosition": "pos-2"
+          },
+          "tupleFrozen": true,
+          "outcome": "page",
+          "context": {
+            "scopeEpoch": "8da66b01-608e-4514-966c-a4def74674fd",
+            "authorizationView": "development-all-visible",
+            "scopePosition": "pos-2"
+          }
+        },
+        {
+          "ordinal": 6,
+          "role": "table-4",
+          "after": "genesis",
+          "admission": "current-changefeed",
+          "minimum": null,
+          "tupleFrozen": null,
+          "outcome": "page",
+          "context": {
+            "scopeEpoch": "8da66b01-608e-4514-966c-a4def74674fd",
+            "authorizationView": "development-all-visible",
+            "scopePosition": "pos-2"
+          }
+        },
+        {
+          "ordinal": 7,
+          "role": "table-5",
+          "after": "cg_gpaOSO81fBQ7hAeTvlJ8tXtZZD9LokOSenZ6itfyRhs_Mq4Q0Ia-ikFDyXfxm-CtfjozJZko0UFsishXy-QSqtI_1",
+          "admission": "current-changefeed",
+          "minimum": {
+            "scopeEpoch": "foreign",
+            "authorizationView": "development-all-visible",
+            "minimumPosition": "unknown"
+          },
+          "tupleFrozen": false,
+          "outcome": "TransactionMinimumFailure",
+          "context": {
+            "scopeEpoch": "8da66b01-608e-4514-966c-a4def74674fd",
+            "authorizationView": "development-all-visible",
+            "scopePosition": "pos-2"
+          },
+          "reason": "cursor-expired"
+        },
+        {
+          "ordinal": 8,
+          "role": "table-6",
+          "after": "cg_gpaOSO81fBQ7hAeTvlJ8tXtZZD9LokOSenZ6itfyRhs_Mq4Q0Ia-ikFDyXfxm-CtfjozJZko0UFsishXy-QSqtI_1",
+          "admission": "current-changefeed",
+          "minimum": {
+            "scopeEpoch": "8da66b01-608e-4514-966c-a4def74674fd",
+            "authorizationView": "foreign",
+            "minimumPosition": "unknown"
+          },
+          "tupleFrozen": false,
+          "outcome": "TransactionMinimumFailure",
+          "context": {
+            "scopeEpoch": "8da66b01-608e-4514-966c-a4def74674fd",
+            "authorizationView": "development-all-visible",
+            "scopePosition": "pos-2"
+          },
+          "reason": "foreign-view"
+        },
+        {
+          "ordinal": 9,
+          "role": "table-7",
+          "after": "cg_gpaOSO81fBQ7hAeTvlJ8tXtZZD9LokOSenZ6itfyRhs_Mq4Q0Ia-ikFDyXfxm-CtfjozJZko0UFsishXy-QSqtI_1",
+          "admission": "current-changefeed",
+          "minimum": {
+            "scopeEpoch": "foreign",
+            "authorizationView": "foreign",
+            "minimumPosition": "unknown"
+          },
+          "tupleFrozen": false,
+          "outcome": "TransactionMinimumFailure",
+          "context": {
+            "scopeEpoch": "8da66b01-608e-4514-966c-a4def74674fd",
+            "authorizationView": "development-all-visible",
+            "scopePosition": "pos-2"
+          },
+          "reason": "cursor-expired"
+        },
+        {
+          "ordinal": 10,
+          "role": "table-8",
+          "after": "cg_IVRr1yy-xGzapOkCqxIlEfZuMr_ES5VHZjinG3TD9mg_X2Tbz6g-brQFT4JC4Mb7FRObHnQeHhVICpEV9Miyb-o_1",
+          "admission": "current-changefeed",
+          "minimum": {
+            "scopeEpoch": "8da66b01-608e-4514-966c-a4def74674fd",
+            "authorizationView": "foreign",
+            "minimumPosition": "unknown"
+          },
+          "tupleFrozen": false,
+          "outcome": "TransactionMinimumFailure",
+          "context": {
+            "scopeEpoch": "8da66b01-608e-4514-966c-a4def74674fd",
+            "authorizationView": "development-all-visible",
+            "scopePosition": "pos-2"
+          },
+          "reason": "cursor-expired"
+        },
+        {
+          "ordinal": 11,
+          "role": "table-9",
+          "after": "cg_gpaOSO81fBQ7hAeTvlJ8tXtZZD9LokOSenZ6itfyRhs_BN4DqQ8D7_F2S-qznizhiqDcJ2ainNzotc4rKKLupJA_1",
+          "admission": "current-changefeed",
+          "minimum": {
+            "scopeEpoch": "foreign",
+            "authorizationView": "development-all-visible",
+            "minimumPosition": "unknown"
+          },
+          "tupleFrozen": false,
+          "outcome": "TransactionMinimumFailure",
+          "context": {
+            "scopeEpoch": "8da66b01-608e-4514-966c-a4def74674fd",
+            "authorizationView": "development-all-visible",
+            "scopePosition": "pos-2"
+          },
+          "reason": "foreign-view"
+        },
+        {
+          "ordinal": 12,
+          "role": "table-10",
+          "after": "cg_gpaOSO81fBQ7hAeTvlJ8tXtZZD9LokOSenZ6itfyRhs_Mq4Q0Ia-ikFDyXfxm-CtfjozJZko0UFsishXy-QSqtI_3",
+          "admission": "current-changefeed",
+          "minimum": {
+            "scopeEpoch": "8da66b01-608e-4514-966c-a4def74674fd",
+            "authorizationView": "development-all-visible",
+            "minimumPosition": "unknown"
+          },
+          "tupleFrozen": true,
+          "outcome": "TransactionChangefeedParameterError",
+          "context": {
+            "scopeEpoch": "8da66b01-608e-4514-966c-a4def74674fd",
+            "authorizationView": "development-all-visible",
+            "scopePosition": "pos-2"
+          }
+        },
+        {
+          "ordinal": 13,
+          "role": "table-11",
+          "after": "bad",
+          "admission": "current-changefeed",
+          "minimum": {
+            "scopeEpoch": "8da66b01-608e-4514-966c-a4def74674fd",
+            "authorizationView": "development-all-visible",
+            "minimumPosition": "unknown"
+          },
+          "tupleFrozen": true,
+          "outcome": "TransactionChangefeedParameterError",
+          "context": {
+            "scopeEpoch": "8da66b01-608e-4514-966c-a4def74674fd",
+            "authorizationView": "development-all-visible",
+            "scopePosition": "pos-2"
+          }
+        },
+        {
+          "ordinal": 14,
+          "role": "table-12",
+          "after": "bad",
+          "admission": "current-changefeed",
+          "minimum": "unsupported",
+          "tupleFrozen": null,
+          "outcome": "unsupported",
+          "context": null
+        },
+        {
+          "ordinal": 15,
+          "role": "table-13",
+          "after": "cg_gpaOSO81fBQ7hAeTvlJ8tXtZZD9LokOSenZ6itfyRhs_Mq4Q0Ia-ikFDyXfxm-CtfjozJZko0UFsishXy-QSqtI_1",
+          "admission": "finite-start-now",
+          "minimum": {
+            "scopeEpoch": "8da66b01-608e-4514-966c-a4def74674fd",
+            "authorizationView": "development-all-visible",
+            "minimumPosition": "unknown"
+          },
+          "tupleFrozen": true,
+          "outcome": "TransactionMinimumUnproved",
+          "context": {
+            "scopeEpoch": "8da66b01-608e-4514-966c-a4def74674fd",
+            "authorizationView": "development-all-visible",
+            "scopePosition": "pos-2"
+          }
+        },
+        {
+          "ordinal": 16,
+          "role": "table-14",
+          "after": "genesis",
+          "admission": "current-changefeed",
+          "minimum": {
+            "scopeEpoch": "8da66b01-608e-4514-966c-a4def74674fd",
+            "authorizationView": "development-all-visible",
+            "minimumPosition": "two tokens"
+          },
+          "tupleFrozen": false,
+          "outcome": "TypeError",
+          "context": null
+        },
+        {
+          "ordinal": 17,
+          "role": "table-15",
+          "after": "cg_gpaOSO81fBQ7hAeTvlJ8tXtZZD9LokOSenZ6itfyRhs_Mq4Q0Ia-ikFDyXfxm-CtfjozJZko0UFsishXy-QSqtI_1",
+          "admission": "current-changefeed",
+          "minimum": {
+            "scopeEpoch": "8da66b01-608e-4514-966c-a4def74674fd",
+            "authorizationView": "development-all-visible",
+            "minimumPosition": "unknown"
+          },
+          "tupleFrozen": true,
+          "outcome": "Error",
+          "context": null
+        },
+        {
+          "ordinal": 18,
+          "role": "table-16",
+          "after": "genesis",
+          "admission": "current-changefeed",
+          "minimum": {
+            "scopeEpoch": "8da66b01-608e-4514-966c-a4def74674fd",
+            "authorizationView": "development-all-visible",
+            "minimumPosition": "pos-2"
+          },
+          "tupleFrozen": true,
+          "outcome": "Error",
+          "context": null
+        }
+      ],
+      "commits": 2,
+      "ownerLifetimes": 2,
+      "offlineDeletes": 1,
+      "failureCount": 0,
+      "claimEligible": false
+    },
+    {
+      "observation": "current-changefeed-minimum-capture",
+      "label": "start-now-unknown",
+      "outcome": "passed",
+      "reads": [
+        {
+          "after": "genesis",
+          "minimum": null,
+          "tupleFrozen": null,
+          "admission": null,
+          "outcome": "page",
+          "context": {
+            "scopeEpoch": "8d8846d6-33d7-4e75-9996-0da207b9a56d",
+            "authorizationView": "development-all-visible",
+            "scopePosition": "pos-1"
+          }
+        },
+        {
+          "after": "cg_HxXjGV2T9KlKw0JeByw3q-jgxy1JRyOj0WvpRsm8wrQ_3w0NQ_DemSSio8CJ4_AdtjHM1Dz8hrbt3-PMns_PcKk_1",
+          "minimum": {
+            "scopeEpoch": "8d8846d6-33d7-4e75-9996-0da207b9a56d",
+            "authorizationView": "development-all-visible",
+            "minimumPosition": "unknown"
+          },
+          "tupleFrozen": true,
+          "admission": "current-changefeed",
+          "outcome": "TransactionMinimumUnproved",
+          "context": {
+            "scopeEpoch": "8d8846d6-33d7-4e75-9996-0da207b9a56d",
+            "authorizationView": "development-all-visible",
+            "scopePosition": "pos-1"
+          }
+        },
+        {
+          "after": "cg_HxXjGV2T9KlKw0JeByw3q-jgxy1JRyOj0WvpRsm8wrQ_3w0NQ_DemSSio8CJ4_AdtjHM1Dz8hrbt3-PMns_PcKk_1",
+          "minimum": {
+            "scopeEpoch": "8d8846d6-33d7-4e75-9996-0da207b9a56d",
+            "authorizationView": "development-all-visible",
+            "minimumPosition": "unknown"
+          },
+          "tupleFrozen": true,
+          "admission": "current-changefeed",
+          "outcome": "TransactionMinimumUnproved",
+          "context": {
+            "scopeEpoch": "8d8846d6-33d7-4e75-9996-0da207b9a56d",
+            "authorizationView": "development-all-visible",
+            "scopePosition": "pos-2"
+          }
+        },
+        {
+          "after": "cg_HxXjGV2T9KlKw0JeByw3q-jgxy1JRyOj0WvpRsm8wrQ_3w0NQ_DemSSio8CJ4_AdtjHM1Dz8hrbt3-PMns_PcKk_1",
+          "minimum": {
+            "scopeEpoch": "8d8846d6-33d7-4e75-9996-0da207b9a56d",
+            "authorizationView": "development-all-visible",
+            "minimumPosition": "pos-2"
+          },
+          "tupleFrozen": true,
+          "admission": "current-changefeed",
+          "outcome": "page",
+          "context": {
+            "scopeEpoch": "8d8846d6-33d7-4e75-9996-0da207b9a56d",
+            "authorizationView": "development-all-visible",
+            "scopePosition": "pos-2"
+          }
+        }
+      ],
+      "captures": 1,
+      "anchors": [
+        "cg_HxXjGV2T9KlKw0JeByw3q-jgxy1JRyOj0WvpRsm8wrQ_3w0NQ_DemSSio8CJ4_AdtjHM1Dz8hrbt3-PMns_PcKk_1"
+      ],
+      "waits": 1,
+      "clocks": 4,
+      "commits": 2,
+      "closes": 1,
+      "originalAfter": "cg_HxXjGV2T9KlKw0JeByw3q-jgxy1JRyOj0WvpRsm8wrQ_3w0NQ_DemSSio8CJ4_AdtjHM1Dz8hrbt3-PMns_PcKk_1",
+      "positiveGroup": {
+        "scopeEpoch": "8d8846d6-33d7-4e75-9996-0da207b9a56d",
+        "authorizationView": "development-all-visible",
+        "checkpoint": "cg_HxXjGV2T9KlKw0JeByw3q-jgxy1JRyOj0WvpRsm8wrQ_3w0NQ_DemSSio8CJ4_AdtjHM1Dz8hrbt3-PMns_PcKk_2",
+        "position": "pos-2",
+        "previousPosition": "pos-1",
+        "projectionAdvance": false,
+        "transaction": "441fa439-7a97-4315-a0e9-01d0ba58498a",
+        "changes": [
+          {
+            "operation": "upsert",
+            "resourceKind": "bead",
+            "resource": {
+              "id": "https://example.test/feed/beads/b",
+              "type": "https://example.test/feed/types/bead",
+              "revision": "8da68d50-34a3-446a-9e4e-b042bdced8f8",
+              "properties": {
+                "n": 0
+              },
+              "metadata": {},
+              "ownedLinks": {
+                "https://example.test/feed/types/link": []
+              }
+            }
+          }
+        ],
+        "erasures": [],
+        "eventCount": 1,
+        "events": [
+          {
+            "id": "ev_1e2yylFcjsP1ltyCFeYdQWIgYMjPcOehy8sg4IV4D34_bLUW9ljdXBysp41tfjGcabueApuHaoJDxyqyaQ2NBU4_lzt8XxXhKEwJeiAtFanOjLXmO0Oslm2ypW4o6pTGfGE_pos-2_0",
+            "ordinal": 0,
+            "type": "created",
+            "source": "https://example.test/feed/events/",
+            "subject": "https://example.test/feed/beads/b",
+            "subjectType": "https://example.test/feed/types/bead",
+            "transaction": "441fa439-7a97-4315-a0e9-01d0ba58498a",
+            "time": "2026-10-18T13:43:11.440Z",
+            "data": {
+              "revision": "8da68d50-34a3-446a-9e4e-b042bdced8f8",
+              "properties": {
+                "n": 0
+              },
+              "metadata": {}
+            }
+          }
+        ]
+      },
+      "cleanupState": {
+        "closed": true,
+        "stopUnknown": false,
+        "directory": "/private/tmp/vickie-tx-discovery-validation-legacy-changefeed-source-mzg0udtp/bdp-current-feed-vIk139",
+        "directoryAbsent": true
+      },
+      "failureCount": 0,
+      "claimEligible": false
+    },
+    {
+      "observation": "current-changefeed-minimum-capture",
+      "label": "genesis-unknown",
+      "outcome": "passed",
+      "reads": [
+        {
+          "after": "genesis",
+          "minimum": null,
+          "tupleFrozen": null,
+          "admission": null,
+          "outcome": "page",
+          "context": {
+            "scopeEpoch": "0526cf43-c973-42ff-ac7b-7d6225cc631a",
+            "authorizationView": "development-all-visible",
+            "scopePosition": "pos-1"
+          }
+        },
+        {
+          "after": "genesis",
+          "minimum": {
+            "scopeEpoch": "0526cf43-c973-42ff-ac7b-7d6225cc631a",
+            "authorizationView": "development-all-visible",
+            "minimumPosition": "unknown"
+          },
+          "tupleFrozen": true,
+          "admission": "current-changefeed",
+          "outcome": "TransactionMinimumUnproved",
+          "context": {
+            "scopeEpoch": "0526cf43-c973-42ff-ac7b-7d6225cc631a",
+            "authorizationView": "development-all-visible",
+            "scopePosition": "pos-1"
+          }
+        },
+        {
+          "after": "genesis",
+          "minimum": {
+            "scopeEpoch": "0526cf43-c973-42ff-ac7b-7d6225cc631a",
+            "authorizationView": "development-all-visible",
+            "minimumPosition": "unknown"
+          },
+          "tupleFrozen": true,
+          "admission": "current-changefeed",
+          "outcome": "TransactionMinimumUnproved",
+          "context": {
+            "scopeEpoch": "0526cf43-c973-42ff-ac7b-7d6225cc631a",
+            "authorizationView": "development-all-visible",
+            "scopePosition": "pos-2"
+          }
+        },
+        {
+          "after": "genesis",
+          "minimum": {
+            "scopeEpoch": "0526cf43-c973-42ff-ac7b-7d6225cc631a",
+            "authorizationView": "development-all-visible",
+            "minimumPosition": "pos-2"
+          },
+          "tupleFrozen": true,
+          "admission": "current-changefeed",
+          "outcome": "page",
+          "context": {
+            "scopeEpoch": "0526cf43-c973-42ff-ac7b-7d6225cc631a",
+            "authorizationView": "development-all-visible",
+            "scopePosition": "pos-2"
+          }
+        }
+      ],
+      "captures": 0,
+      "anchors": [],
+      "waits": 1,
+      "clocks": 4,
+      "commits": 2,
+      "closes": 1,
+      "originalAfter": "genesis",
+      "positiveGroup": {
+        "scopeEpoch": "0526cf43-c973-42ff-ac7b-7d6225cc631a",
+        "authorizationView": "development-all-visible",
+        "checkpoint": "cg_1iNBypyJIPloPwMw9v0zp00Va5HojeSC-UpX9FN1O5A_tSBdlGACIt0WtAAbjm7VVBD0xxdaBk8JnKZmxtIHmKc_1",
+        "position": "pos-1",
+        "previousPosition": "pos-0",
+        "projectionAdvance": false,
+        "transaction": "f774d58a-8ec7-4a9e-a268-258ce8bd8773",
+        "changes": [
+          {
+            "operation": "upsert",
+            "resourceKind": "bead",
+            "resource": {
+              "id": "https://example.test/feed/beads/a",
+              "type": "https://example.test/feed/types/bead",
+              "revision": "ab21e390-f499-4387-a538-587b0d83ce13",
+              "properties": {
+                "n": 0
+              },
+              "metadata": {},
+              "ownedLinks": {
+                "https://example.test/feed/types/link": []
+              }
+            }
+          }
+        ],
+        "erasures": [],
+        "eventCount": 1,
+        "events": [
+          {
+            "id": "ev_NuBHRSwRpx4_TA_H6Rt9NIp17t_ms7TSnBqetZRy-Zg_bLUW9ljdXBysp41tfjGcabueApuHaoJDxyqyaQ2NBU4_lzt8XxXhKEwJeiAtFanOjLXmO0Oslm2ypW4o6pTGfGE_pos-1_0",
+            "ordinal": 0,
+            "type": "created",
+            "source": "https://example.test/feed/events/",
+            "subject": "https://example.test/feed/beads/a",
+            "subjectType": "https://example.test/feed/types/bead",
+            "transaction": "f774d58a-8ec7-4a9e-a268-258ce8bd8773",
+            "time": "2026-10-18T13:43:11.443Z",
+            "data": {
+              "revision": "ab21e390-f499-4387-a538-587b0d83ce13",
+              "properties": {
+                "n": 0
+              },
+              "metadata": {}
+            }
+          }
+        ]
+      },
+      "cleanupState": {
+        "closed": true,
+        "stopUnknown": false,
+        "directory": "/private/tmp/vickie-tx-discovery-validation-legacy-changefeed-source-mzg0udtp/bdp-current-feed-2lzvLT",
+        "directoryAbsent": true
+      },
+      "failureCount": 0,
+      "claimEligible": false
+    },
+    {
+      "observation": "current-changefeed-minimum-capture",
+      "label": "retained-unknown",
+      "outcome": "passed",
+      "reads": [
+        {
+          "after": "genesis",
+          "minimum": null,
+          "tupleFrozen": null,
+          "admission": null,
+          "outcome": "page",
+          "context": {
+            "scopeEpoch": "e98f7f1c-8948-4223-a1c8-091c2da813aa",
+            "authorizationView": "development-all-visible",
+            "scopePosition": "pos-1"
+          }
+        },
+        {
+          "after": "cg_PuDDjMsUZQF803uh_pEJv50ITVo2-bLXR60yFyw6_ak_ivPFvHrM8mafSaU7Ve6IM3tgdix3fIKErI9s28JYbSo_1",
+          "minimum": {
+            "scopeEpoch": "e98f7f1c-8948-4223-a1c8-091c2da813aa",
+            "authorizationView": "development-all-visible",
+            "minimumPosition": "unknown"
+          },
+          "tupleFrozen": true,
+          "admission": "current-changefeed",
+          "outcome": "TransactionMinimumUnproved",
+          "context": {
+            "scopeEpoch": "e98f7f1c-8948-4223-a1c8-091c2da813aa",
+            "authorizationView": "development-all-visible",
+            "scopePosition": "pos-1"
+          }
+        },
+        {
+          "after": "cg_PuDDjMsUZQF803uh_pEJv50ITVo2-bLXR60yFyw6_ak_ivPFvHrM8mafSaU7Ve6IM3tgdix3fIKErI9s28JYbSo_1",
+          "minimum": {
+            "scopeEpoch": "e98f7f1c-8948-4223-a1c8-091c2da813aa",
+            "authorizationView": "development-all-visible",
+            "minimumPosition": "unknown"
+          },
+          "tupleFrozen": true,
+          "admission": "current-changefeed",
+          "outcome": "TransactionMinimumUnproved",
+          "context": {
+            "scopeEpoch": "e98f7f1c-8948-4223-a1c8-091c2da813aa",
+            "authorizationView": "development-all-visible",
+            "scopePosition": "pos-2"
+          }
+        },
+        {
+          "after": "cg_PuDDjMsUZQF803uh_pEJv50ITVo2-bLXR60yFyw6_ak_ivPFvHrM8mafSaU7Ve6IM3tgdix3fIKErI9s28JYbSo_1",
+          "minimum": {
+            "scopeEpoch": "e98f7f1c-8948-4223-a1c8-091c2da813aa",
+            "authorizationView": "development-all-visible",
+            "minimumPosition": "pos-2"
+          },
+          "tupleFrozen": true,
+          "admission": "current-changefeed",
+          "outcome": "page",
+          "context": {
+            "scopeEpoch": "e98f7f1c-8948-4223-a1c8-091c2da813aa",
+            "authorizationView": "development-all-visible",
+            "scopePosition": "pos-2"
+          }
+        }
+      ],
+      "captures": 0,
+      "anchors": [],
+      "waits": 1,
+      "clocks": 4,
+      "commits": 2,
+      "closes": 1,
+      "originalAfter": "cg_PuDDjMsUZQF803uh_pEJv50ITVo2-bLXR60yFyw6_ak_ivPFvHrM8mafSaU7Ve6IM3tgdix3fIKErI9s28JYbSo_1",
+      "positiveGroup": {
+        "scopeEpoch": "e98f7f1c-8948-4223-a1c8-091c2da813aa",
+        "authorizationView": "development-all-visible",
+        "checkpoint": "cg_PuDDjMsUZQF803uh_pEJv50ITVo2-bLXR60yFyw6_ak_ivPFvHrM8mafSaU7Ve6IM3tgdix3fIKErI9s28JYbSo_2",
+        "position": "pos-2",
+        "previousPosition": "pos-1",
+        "projectionAdvance": false,
+        "transaction": "a970ff3c-3f2b-40e1-a0b4-4cbb323d3208",
+        "changes": [
+          {
+            "operation": "upsert",
+            "resourceKind": "bead",
+            "resource": {
+              "id": "https://example.test/feed/beads/b",
+              "type": "https://example.test/feed/types/bead",
+              "revision": "737a88fd-d393-44a3-8d06-121d9dcc3722",
+              "properties": {
+                "n": 0
+              },
+              "metadata": {},
+              "ownedLinks": {
+                "https://example.test/feed/types/link": []
+              }
+            }
+          }
+        ],
+        "erasures": [],
+        "eventCount": 1,
+        "events": [
+          {
+            "id": "ev_zNsbKTpp1s389ly-h4Q32Bi_yK5mJFdQLKCUTgI5LqI_bLUW9ljdXBysp41tfjGcabueApuHaoJDxyqyaQ2NBU4_lzt8XxXhKEwJeiAtFanOjLXmO0Oslm2ypW4o6pTGfGE_pos-2_0",
+            "ordinal": 0,
+            "type": "created",
+            "source": "https://example.test/feed/events/",
+            "subject": "https://example.test/feed/beads/b",
+            "subjectType": "https://example.test/feed/types/bead",
+            "transaction": "a970ff3c-3f2b-40e1-a0b4-4cbb323d3208",
+            "time": "2026-10-18T13:43:11.448Z",
+            "data": {
+              "revision": "737a88fd-d393-44a3-8d06-121d9dcc3722",
+              "properties": {
+                "n": 0
+              },
+              "metadata": {}
+            }
+          }
+        ]
+      },
+      "cleanupState": {
+        "closed": true,
+        "stopUnknown": false,
+        "directory": "/private/tmp/vickie-tx-discovery-validation-legacy-changefeed-source-mzg0udtp/bdp-current-feed-rgqyaH",
+        "directoryAbsent": true
+      },
+      "failureCount": 0,
+      "claimEligible": false
+    },
+    {
+      "observation": "current-changefeed-minimum-capture",
+      "label": "retained-pos-01",
+      "outcome": "passed",
+      "reads": [
+        {
+          "after": "genesis",
+          "minimum": null,
+          "tupleFrozen": null,
+          "admission": null,
+          "outcome": "page",
+          "context": {
+            "scopeEpoch": "d7c92930-828e-4665-ac1d-81f5154fc1bf",
+            "authorizationView": "development-all-visible",
+            "scopePosition": "pos-1"
+          }
+        },
+        {
+          "after": "cg_5ACx6l-ioRBuVFM96qhgknc2ObeRV9mmppbhfadlcyM_sE0o2d-rKBhUrxdjV2aKEnJ_x8NsC8b9weYZD48GsQU_1",
+          "minimum": {
+            "scopeEpoch": "d7c92930-828e-4665-ac1d-81f5154fc1bf",
+            "authorizationView": "development-all-visible",
+            "minimumPosition": "pos-01"
+          },
+          "tupleFrozen": true,
+          "admission": "current-changefeed",
+          "outcome": "TransactionMinimumUnproved",
+          "context": {
+            "scopeEpoch": "d7c92930-828e-4665-ac1d-81f5154fc1bf",
+            "authorizationView": "development-all-visible",
+            "scopePosition": "pos-1"
+          }
+        },
+        {
+          "after": "cg_5ACx6l-ioRBuVFM96qhgknc2ObeRV9mmppbhfadlcyM_sE0o2d-rKBhUrxdjV2aKEnJ_x8NsC8b9weYZD48GsQU_1",
+          "minimum": {
+            "scopeEpoch": "d7c92930-828e-4665-ac1d-81f5154fc1bf",
+            "authorizationView": "development-all-visible",
+            "minimumPosition": "pos-01"
+          },
+          "tupleFrozen": true,
+          "admission": "current-changefeed",
+          "outcome": "TransactionMinimumUnproved",
+          "context": {
+            "scopeEpoch": "d7c92930-828e-4665-ac1d-81f5154fc1bf",
+            "authorizationView": "development-all-visible",
+            "scopePosition": "pos-2"
+          }
+        },
+        {
+          "after": "cg_5ACx6l-ioRBuVFM96qhgknc2ObeRV9mmppbhfadlcyM_sE0o2d-rKBhUrxdjV2aKEnJ_x8NsC8b9weYZD48GsQU_1",
+          "minimum": {
+            "scopeEpoch": "d7c92930-828e-4665-ac1d-81f5154fc1bf",
+            "authorizationView": "development-all-visible",
+            "minimumPosition": "pos-2"
+          },
+          "tupleFrozen": true,
+          "admission": "current-changefeed",
+          "outcome": "page",
+          "context": {
+            "scopeEpoch": "d7c92930-828e-4665-ac1d-81f5154fc1bf",
+            "authorizationView": "development-all-visible",
+            "scopePosition": "pos-2"
+          }
+        }
+      ],
+      "captures": 0,
+      "anchors": [],
+      "waits": 1,
+      "clocks": 4,
+      "commits": 2,
+      "closes": 1,
+      "originalAfter": "cg_5ACx6l-ioRBuVFM96qhgknc2ObeRV9mmppbhfadlcyM_sE0o2d-rKBhUrxdjV2aKEnJ_x8NsC8b9weYZD48GsQU_1",
+      "positiveGroup": {
+        "scopeEpoch": "d7c92930-828e-4665-ac1d-81f5154fc1bf",
+        "authorizationView": "development-all-visible",
+        "checkpoint": "cg_5ACx6l-ioRBuVFM96qhgknc2ObeRV9mmppbhfadlcyM_sE0o2d-rKBhUrxdjV2aKEnJ_x8NsC8b9weYZD48GsQU_2",
+        "position": "pos-2",
+        "previousPosition": "pos-1",
+        "projectionAdvance": false,
+        "transaction": "132018e7-71cf-4e25-b98c-126f8f816a5a",
+        "changes": [
+          {
+            "operation": "upsert",
+            "resourceKind": "bead",
+            "resource": {
+              "id": "https://example.test/feed/beads/b",
+              "type": "https://example.test/feed/types/bead",
+              "revision": "6c0266b4-cb7a-4fb9-a9d7-035aa79d9970",
+              "properties": {
+                "n": 0
+              },
+              "metadata": {},
+              "ownedLinks": {
+                "https://example.test/feed/types/link": []
+              }
+            }
+          }
+        ],
+        "erasures": [],
+        "eventCount": 1,
+        "events": [
+          {
+            "id": "ev_eiMfIpLUoiSRffjmqh-jlTy6HiM2xxUww05hwgtoUzA_bLUW9ljdXBysp41tfjGcabueApuHaoJDxyqyaQ2NBU4_lzt8XxXhKEwJeiAtFanOjLXmO0Oslm2ypW4o6pTGfGE_pos-2_0",
+            "ordinal": 0,
+            "type": "created",
+            "source": "https://example.test/feed/events/",
+            "subject": "https://example.test/feed/beads/b",
+            "subjectType": "https://example.test/feed/types/bead",
+            "transaction": "132018e7-71cf-4e25-b98c-126f8f816a5a",
+            "time": "2026-10-18T13:43:11.451Z",
+            "data": {
+              "revision": "6c0266b4-cb7a-4fb9-a9d7-035aa79d9970",
+              "properties": {
+                "n": 0
+              },
+              "metadata": {}
+            }
+          }
+        ]
+      },
+      "cleanupState": {
+        "closed": true,
+        "stopUnknown": false,
+        "directory": "/private/tmp/vickie-tx-discovery-validation-legacy-changefeed-source-mzg0udtp/bdp-current-feed-YURbXr",
+        "directoryAbsent": true
+      },
+      "failureCount": 0,
+      "claimEligible": false
+    },
+    {
+      "observation": "current-changefeed-minimum-drain",
+      "label": "start-now",
+      "outcome": "passed",
+      "reads": [
+        {
+          "after": "genesis",
+          "minimum": null,
+          "tupleFrozen": null,
+          "admission": null,
+          "outcome": "page",
+          "context": {
+            "scopeEpoch": "6e480300-332c-41d7-9aae-fc91648e8209",
+            "authorizationView": "development-all-visible",
+            "scopePosition": "pos-1"
+          }
+        },
+        {
+          "after": "cg_6ZLtski_8P5x-mhqvK9z2X3hp-N6xjiNlNS4mfLim6c_3TmTLNOMQmNp-Fgjyu8WEdaam6MQvMM4cUeUg6AdC_U_1",
+          "minimum": {
+            "scopeEpoch": "6e480300-332c-41d7-9aae-fc91648e8209",
+            "authorizationView": "development-all-visible",
+            "minimumPosition": "unknown"
+          },
+          "tupleFrozen": true,
+          "admission": "current-changefeed",
+          "outcome": "TransactionMinimumUnproved",
+          "context": {
+            "scopeEpoch": "6e480300-332c-41d7-9aae-fc91648e8209",
+            "authorizationView": "development-all-visible",
+            "scopePosition": "pos-1"
+          }
+        }
+      ],
+      "readsBeforeClosedProbe": 2,
+      "captures": 1,
+      "waits": 1,
+      "clocks": 2,
+      "closes": 1,
+      "commits": 1,
+      "serviceClosedProbes": 1,
+      "rawClosedProbes": 1,
+      "order": [
+        "wait-entered",
+        "abort",
+        "wait-released",
+        "owner-close",
+        "close-resolved"
+      ],
+      "closeSettled": true,
+      "cleanupState": {
+        "closed": true,
+        "stopUnknown": false,
+        "directory": "/private/tmp/vickie-tx-discovery-validation-legacy-changefeed-source-mzg0udtp/bdp-current-feed-EsBtSx",
+        "directoryAbsent": true
+      },
+      "failureCount": 0,
+      "claimEligible": false
+    },
+    {
+      "observation": "current-changefeed-minimum-drain",
+      "label": "retained",
+      "outcome": "passed",
+      "reads": [
+        {
+          "after": "genesis",
+          "minimum": null,
+          "tupleFrozen": null,
+          "admission": null,
+          "outcome": "page",
+          "context": {
+            "scopeEpoch": "6617a18c-6b16-4930-926b-56c044d11194",
+            "authorizationView": "development-all-visible",
+            "scopePosition": "pos-1"
+          }
+        },
+        {
+          "after": "cg_mEvHOrxwYbx4WTcDST7ryOhkKKta5PqFHvpc4FdU72w_CV7W2c0N8V2jWqM9MpB6N0W7Yu8r0ZHtpOC-1kujLEA_1",
+          "minimum": {
+            "scopeEpoch": "6617a18c-6b16-4930-926b-56c044d11194",
+            "authorizationView": "development-all-visible",
+            "minimumPosition": "unknown"
+          },
+          "tupleFrozen": true,
+          "admission": "current-changefeed",
+          "outcome": "TransactionMinimumUnproved",
+          "context": {
+            "scopeEpoch": "6617a18c-6b16-4930-926b-56c044d11194",
+            "authorizationView": "development-all-visible",
+            "scopePosition": "pos-1"
+          }
+        }
+      ],
+      "readsBeforeClosedProbe": 2,
+      "captures": 0,
+      "waits": 1,
+      "clocks": 2,
+      "closes": 1,
+      "commits": 1,
+      "serviceClosedProbes": 1,
+      "rawClosedProbes": 1,
+      "order": [
+        "wait-entered",
+        "abort",
+        "wait-released",
+        "owner-close",
+        "close-resolved"
+      ],
+      "closeSettled": true,
+      "cleanupState": {
+        "closed": true,
+        "stopUnknown": false,
+        "directory": "/private/tmp/vickie-tx-discovery-validation-legacy-changefeed-source-mzg0udtp/bdp-current-feed-D0GPHJ",
+        "directoryAbsent": true
+      },
+      "failureCount": 0,
+      "claimEligible": false
+    },
+    {
+      "observation": "current-changefeed-minimum-preflight",
+      "rows": [
+        {
+          "label": "already-aborted",
+          "initialized": true,
+          "attempted": true,
+          "closed": true,
+          "errorClass": "ScopeServerOperationAbortedError",
+          "stopUnknown": false,
+          "directory": "/private/tmp/vickie-tx-discovery-validation-legacy-changefeed-source-mzg0udtp/bdp-current-feed-lEuATG",
+          "directoryAbsent": true,
+          "captures": 1,
+          "reads": 0,
+          "waits": 0,
+          "clocks": 1,
+          "closes": 1,
+          "commits": 1,
+          "outcome": "passed",
+          "failureCount": 0
+        },
+        {
+          "label": "invalid-policy",
+          "initialized": true,
+          "attempted": true,
+          "closed": true,
+          "errorClass": "TypeError",
+          "stopUnknown": false,
+          "directory": "/private/tmp/vickie-tx-discovery-validation-legacy-changefeed-source-mzg0udtp/bdp-current-feed-SK7zlA",
+          "directoryAbsent": true,
+          "captures": 1,
+          "reads": 0,
+          "waits": 0,
+          "clocks": 0,
+          "closes": 1,
+          "commits": 1,
+          "outcome": "passed",
+          "failureCount": 0
+        },
+        {
+          "label": "throwing-clock",
+          "initialized": true,
+          "attempted": true,
+          "closed": true,
+          "errorClass": "Error",
+          "stopUnknown": false,
+          "directory": "/private/tmp/vickie-tx-discovery-validation-legacy-changefeed-source-mzg0udtp/bdp-current-feed-KRmhg1",
+          "directoryAbsent": true,
+          "captures": 1,
+          "reads": 0,
+          "waits": 0,
+          "clocks": 1,
+          "closes": 1,
+          "commits": 1,
+          "outcome": "passed",
+          "failureCount": 0
+        },
+        {
+          "label": "nonfinite-clock",
+          "initialized": true,
+          "attempted": true,
+          "closed": true,
+          "errorClass": "TypeError",
+          "stopUnknown": false,
+          "directory": "/private/tmp/vickie-tx-discovery-validation-legacy-changefeed-source-mzg0udtp/bdp-current-feed-Q0G178",
+          "directoryAbsent": true,
+          "captures": 1,
+          "reads": 0,
+          "waits": 0,
+          "clocks": 1,
+          "closes": 1,
+          "commits": 1,
+          "outcome": "passed",
+          "failureCount": 0
+        }
+      ],
+      "outcome": "passed",
+      "failureCount": 0,
+      "claimEligible": false
+    }
+  ],
+  "claimEligible": false,
+  "limitations": "Private exact source/build/archive/consumer only. Historical lanes distinct. Failure/partial records remain raw, never reconstructed; no public Write qualification/admission claim."
+}

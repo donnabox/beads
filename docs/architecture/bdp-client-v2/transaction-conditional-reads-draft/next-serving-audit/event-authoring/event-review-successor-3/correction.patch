@@ -1,0 +1,42 @@
+--- successor-2/apps/bdptest/src/transactional-event-sse-installed.test.ts
++++ successor-3/apps/bdptest/src/transactional-event-sse-installed.test.ts
+@@ -960,6 +960,7 @@
+         failures.push({ phase: "directory cleanup", error });
+       }
+     }
++    const reportedStream = stream;
+     console.log(
+       JSON.stringify({
+         observation: "private-event-restart-cursor",
+@@ -993,9 +994,9 @@
+         events,
+         sse: sseEvidence,
+         // Preserve available safe transport facts even when assertions failed before success evidence.
+-        streamAtReport: stream
++        streamAtReport: reportedStream
+           ? {
+-              status: stream.recorder.status,
++              status: reportedStream.recorder.status,
+               headers: Object.fromEntries(
+                 [
+                   "content-type",
+@@ -1003,13 +1004,13 @@
+                   "bdp-scope-epoch",
+                   "bdp-authorization-view",
+                   "bdp-scope-position",
+-                ].map((name) => [name, stream.recorder.headers[name]] as const),
++                ].map((name) => [name, reportedStream.recorder.headers[name]] as const),
+               ),
+-              wireBytes: stream.recorder.wireBytes.length,
+-              wireSha256: hash(stream.recorder.wireBytes),
+-              completeObservedFrames: idFrames(stream.recorder),
+-              drained: stream.drained,
+-              destroyed: stream.recorder.destroyed,
++              wireBytes: reportedStream.recorder.wireBytes.length,
++              wireSha256: hash(reportedStream.recorder.wireBytes),
++              completeObservedFrames: idFrames(reportedStream.recorder),
++              drained: reportedStream.drained,
++              destroyed: reportedStream.recorder.destroyed,
+             }
+           : undefined,
+         sessions: sessions.map((session) => ({

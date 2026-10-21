@@ -1,0 +1,58 @@
+--- source-state-contract.json
++++ /dev/null
+@@ -1,55 +0,0 @@
+-{
+-  "state": "AUTHOR static source-path contract; no report/control/helper execution",
+-  "sourceSha256": "4f4f942f876222521765b9830a941f2b6e0dfa01a3a66979beaa1237c4638c85",
+-  "sourceAnchors": {
+-    "initialization": [
+-      424,
+-      440
+-    ],
+-    "onlyExchangeAwait": 461,
+-    "responseSynchronous": [
+-      462,
+-      485
+-    ],
+-    "catch": [
+-      486,
+-      493
+-    ],
+-    "finally": [
+-      494,
+-      498
+-    ],
+-    "synchronousSerialization": 909,
+-    "callbackEndMarker": 910
+-  },
+-  "authoritativeTruthTable": "context/helper3-native/source-state-truth-table.json",
+-  "observableSettledReceivedValidated": [
+-    "000",
+-    "100",
+-    "110",
+-    "111"
+-  ],
+-  "impossibleTuples": [
+-    "001",
+-    "010",
+-    "011",
+-    "101"
+-  ],
+-  "newRequiredImplications": [
+-    "received implies settled",
+-    "unreceived and unsettled implies errorCategory null AND writeState null"
+-  ],
+-  "preservedImplications": [
+-    "validated implies received AND settled",
+-    "unreceived response facts null",
+-    "settled unreceived existing nonnull9category",
+-    "settled writeState genuinely nullable",
+-    "received category null, captured response availability and facts unchanged"
+-  ],
+-  "positiveAdmissionChanged": false,
+-  "failedClassificationOnly": "CONFORMING_FAILED_PARTIAL_NO_CREDIT; unsupported boundaries retain raw and refuse; no invented facts",
+-  "D03Subcases": 20,
+-  "D03SubcasesReference": "context/helper3-native/prospective-D03-subcases.json",
+-  "harness": "UNPREPARED/UNAPPROVED; no control evaluation",
+-  "sourceOrBudgetsChanged": false
+-}

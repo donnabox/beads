@@ -1,0 +1,87 @@
+{
+  "workspace": "/Users/dbox/repos/wt/vickie/vickie-fresh-depth-serving",
+  "head": "77b4cf980ec91f66c52a554c3dd8c9de5aee859f",
+  "branch": "codex/vickie-fresh-depth-serving",
+  "tree": "6a8af0f4b40216ce9c0b3f26957d293caf6f6627",
+  "files": {
+    "packages/server/src/transaction-set.ts": {
+      "sha256": "3085632e897481b048d563cf0ba3ea66dc96a0662cebfde9f978ee00675519e5",
+      "new": false
+    },
+    "packages/server/src/transaction-batch.ts": {
+      "sha256": "830ad57a680db7148fc75cd9cc10cadfc6a812448fd1704c1b0f47b13611808d",
+      "new": false
+    },
+    "packages/server/src/transaction-store.ts": {
+      "sha256": "f7fe71da918c135eb43cb4659f186df6cd442aed9c42c2835e95cde05c782a9e",
+      "new": false
+    },
+    "packages/server/src/transaction-submission.ts": {
+      "sha256": "580a5f56075c3f7e2c041354eab75529dd304f86588337f725f4cb33429b33bf",
+      "new": false
+    },
+    "packages/server/src/transaction-http.ts": {
+      "sha256": "81c130dd18f604ab1d13c03a2f52a98e11a6988f45d62af98b4b8c7499d14529",
+      "new": false
+    },
+    "packages/server/src/transaction-snapshot.ts": {
+      "sha256": "dac7c2f121cfb6bae557b3917f5ec52e47a358ab39da4062f6a5c26f5b9fbd83",
+      "new": false
+    },
+    "packages/server/src/resource-evaluator.ts": {
+      "sha256": "6784629841a92baaeed648862cfa84d071356ef82e6d29250b254a9eddf793a2",
+      "new": false
+    },
+    "packages/server/src/json-value-equality.ts": {
+      "sha256": "f93e0bc3a090eeda9d40ec873c0024da2fbc368df5babe4f7d18cfa9b4780a66",
+      "new": true
+    },
+    "packages/server/src/transaction-set.test.ts": {
+      "sha256": "aec0ce27196f6ec4916cb2f35b8a3de7ee879ab35f14aab657e11416254860b8",
+      "new": false
+    },
+    "packages/server/src/transaction-submission.test.ts": {
+      "sha256": "2bf3a65b0c49488d38a392a422c18ba175b585869848befe144243996a6f9b6e",
+      "new": false
+    },
+    "packages/server/src/transaction-sequence.test.ts": {
+      "sha256": "5526903a6e094602612bac8448fe1bee5e8f8c6e675458360abc43e43eda6d91",
+      "new": false
+    },
+    "packages/server/src/transaction-http.test.ts": {
+      "sha256": "6b6ea02c8a6fa7bf2c59c6abd24e190a577a43858260443ad8e09b413b09cbb5",
+      "new": false
+    },
+    "packages/server/src/transaction-snapshot.test.ts": {
+      "sha256": "01c8e65a6dfe19bd13c41088446ac47c2dd2b06c9915b63480528c4495056cb4",
+      "new": false
+    },
+    "packages/server/src/resource-evaluator.test.ts": {
+      "sha256": "b7f557f57e6980a6c514afe6b76b0b6b69938ecc4265c02246994ab7ed8e5510",
+      "new": false
+    }
+  },
+  "diffSha256": "dfc5c7b07425e954df122e3cdc46fe3f6f4ed4ece93222a5c2d12f3fc0c12418",
+  "scope": "14 source-author paths only; exactly store and submission test changed, other12 unchanged; installed3/doc excluded",
+  "predecessor": {
+    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-fresh-depth-authoring/source-author/source-binding.json",
+    "sha256": "3c3c08dd3f98e65130b1025c509dda011dcea1fdb258e1ac015df1bf704a360f"
+  },
+  "changedFiles": {
+    "packages/server/src/transaction-store.ts": {
+      "before": "2766e7748a569d44821a0e8481cb5108cfdf1aaa86fca5126c865025a857eb85",
+      "prepared": "f7fe71da918c135eb43cb4659f186df6cd442aed9c42c2835e95cde05c782a9e",
+      "after": "f7fe71da918c135eb43cb4659f186df6cd442aed9c42c2835e95cde05c782a9e"
+    },
+    "packages/server/src/transaction-submission.test.ts": {
+      "before": "40541de34a881acdfefde923cf02a8e0d72687488fd079fb79ca395987d5ae29",
+      "prepared": "2e5ffe067e69360507464a708ff5c63ff125e6752124ccdcfdb20493874c86aa",
+      "after": "2bf3a65b0c49488d38a392a422c18ba175b585869848befe144243996a6f9b6e"
+    }
+  },
+  "actualSuccessor": {
+    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-fresh-depth-authoring/review-corrections/actual-successor.json",
+    "sha256": "543f9093c070f896962b4933bad28dec0ac2a1f6119c12e6acf84948431bdbcd"
+  },
+  "status": "Corrected frozen source; runtime unexecuted"
+}

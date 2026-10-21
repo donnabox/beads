@@ -1,0 +1,107 @@
+{
+  "at": "2026-10-15T18:23:31.125963+00:00",
+  "decision": "static prefix accepted; installed and readiness remain pending",
+  "head": "f5511718371a6935614eae6756e796cef71570c2",
+  "workspaceDirty": true,
+  "sourceHashes": {
+    "apps/bdptest/src/transactional-principal-key-installed.test.ts": "e6af6263f164032ea4ae97167740412b9ad2a23af98e2a92729cd85dfa6d9b32",
+    "docs/design/transaction-implementation-progress.md": "f0171eccfb02d85174abc51dca22f6b456b932fc2286d82319088bf497a5baf1"
+  },
+  "stages": {
+    "setup": {
+      "exit": "78b810d28463804c346f49c2afa5c6bc32ca29d33ca413d751d651bd1cd8994a",
+      "log": "cd2d94d4a215fa8fa7e9d73b5380c791ce79d72be8040d4b046374d45a440c1c",
+      "elapsedSeconds": 1.1281602079980075
+    },
+    "typecheck": {
+      "exit": "28dd7d8912ace719df585b75ec72845b94b2f056fd5ef97de64f7370987e14e4",
+      "log": "91d54ffbee73a3ac72294d090e58d77745f8b93edbf94b862807698273a6505a",
+      "elapsedSeconds": 1.9817134588956833
+    },
+    "build": {
+      "exit": "286403f0193663d487963d8724c6506b19dd6709d8898871ed757e569c154dae",
+      "log": "232dac5e840e45b3bb06e6e04249b5241f2e1b4f6c797a22c046d916302ac208",
+      "elapsedSeconds": 1.446330999955535
+    },
+    "format-check": {
+      "exit": "fbc32503cde87999bf1188044a30b2f0a8c9732bf045e0b0f3bef2f7cb4703d1",
+      "log": "c17361bdef46627b1a11c785d91680b199aa79772c8e0194cfa102b944e1900c",
+      "elapsedSeconds": 1.814921917160973
+    },
+    "lint": {
+      "exit": "6eb201d4145f8b9000a59ea7ace483def99455a6c4c8d53a2714a1cbc2fcd995",
+      "log": "44a264e854611c1db4b2e78e50b2c2f075ebd5544d32b2223048b6c7b87f39f1",
+      "elapsedSeconds": 1.0359124999959022
+    },
+    "boundaries": {
+      "exit": "118ebca9ec1fb17b339a99e494cc6e726daabf392cec68eafe4506893ad80da0",
+      "log": "53f4cd856bde25513486a59799c5a05e0650fbb756bf1580fb07e56c2fdeeef3",
+      "elapsedSeconds": 1.1194574171677232
+    },
+    "read-seal": {
+      "exit": "a783a41068d56081454763bad2eb472b9f46fcfe4d2d18795d392dc63c616cfe",
+      "log": "79749014f712bd5d838b93088c70fef4cca1ae63d7738a613716ab37fa1295ba",
+      "elapsedSeconds": 0.8990427921526134
+    },
+    "build-inventory": {
+      "exit": "aeb1558d3f85137edcbcaad431e1d6d3b2d16a185334a2de7d8daf65b4caa763",
+      "log": "b2ca4021ad2cf1fcf8c7ad407658c690a4ea8cecb3821f137e2158e3ad429dac",
+      "elapsedSeconds": 0.6362060410901904
+    }
+  },
+  "sampledPidsIndependentlyAbsent": [
+    22896,
+    22898,
+    22905,
+    22930,
+    22932,
+    22938,
+    22962,
+    22997,
+    22999,
+    23005,
+    23028,
+    23029,
+    23065,
+    23115,
+    23117,
+    23122,
+    23145,
+    23149,
+    23155,
+    23180,
+    23182,
+    23187,
+    23210,
+    23217,
+    23234,
+    23236,
+    23241,
+    23264,
+    23283,
+    23285,
+    23290,
+    23313,
+    23382,
+    23384,
+    23389
+  ],
+  "retainedNonRuntimeNodeCompileCaches": [
+    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-principal-key-draft/execution-preparation/run/setup.tmp/node-compile-cache",
+    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-principal-key-draft/execution-preparation/run/typecheck.tmp/node-compile-cache",
+    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-principal-key-draft/execution-preparation/run/build.tmp/node-compile-cache",
+    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-principal-key-draft/execution-preparation/run/format-check.tmp/node-compile-cache",
+    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-principal-key-draft/execution-preparation/run/lint.tmp/node-compile-cache",
+    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-principal-key-draft/execution-preparation/run/boundaries.tmp/node-compile-cache",
+    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-principal-key-draft/execution-preparation/run/read-seal.tmp/node-compile-cache"
+  ],
+  "actualBuildInventorySha256": "eca93eabc4f7ee0644a4eba0c69e6eeff63b1b9a28ea6adb4f00f138680fbc98",
+  "buildInputs": 670,
+  "packageOutputs": 312,
+  "emittedFiles": 440,
+  "warnings": "Formatting reports historical3.5MiB matrix above1MiB scanner limit; lint completes with821warnings/50infos; not warning-free.",
+  "readSeal": "89rows unchanged; historical run/evidence attribution preserved",
+  "productChildren": 0,
+  "actualClaude": "running, not accepted",
+  "profileQualification": false
+}

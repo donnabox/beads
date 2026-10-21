@@ -1,0 +1,36 @@
+{
+  "state": "STATIC ONLY byte/AST reuse; never helper import/evaluation",
+  "helpers": {
+    "run.py": {
+      "sha256": "16049341d6d810ea5c46a88220da30f9a04e436ee7fea0061cc26e58ba76ba70",
+      "bytes": 5357
+    },
+    "gate.py": {
+      "sha256": "f3781357733810861cad42b92e667822e7d3ac60e1f214e39e7f22e1bb63bb8e",
+      "bytes": 12588
+    },
+    "audit.py": {
+      "sha256": "1d2bf73e1a35d37b1d1032358ea81c4c5a97ea0fa6304603730f17af96438d2b",
+      "bytes": 34757
+    },
+    "packages.py": {
+      "sha256": "162e4f04ffe9aeffe886b194c7ed41241c6ce3cf37e9c93f92fec0969095aea9",
+      "bytes": 8760
+    },
+    "guarded-action-session-20261018-021624-549f.py": {
+      "sha256": "b2d467920638e68d3b007ba9daa432e971636245eca988bfb29d7a99d6e3fb30",
+      "bytes": 946
+    }
+  },
+  "helperBytesAndASTIdenticalToAccepted2And3": true,
+  "indexValueShape": "SHA256 strings, accepted gate.py101 direct comparison compatible",
+  "sourceChangesByThisPreparation": false,
+  "semanticReportSchemasSelectionUnchanged": true,
+  "commandsPathOnly": true,
+  "stages": 52,
+  "immediateAuditPairs": 16,
+  "sourceFiles": 679,
+  "sourceIdentity": "5964d40af0ced41634e47df86cda7ac01b86768c51970e557b60ffbfc9739907",
+  "freshAllStagesRequired": true,
+  "nativeMechanicsAcceptance": "PENDING"
+}

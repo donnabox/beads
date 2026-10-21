@@ -1,0 +1,14 @@
+{
+  "kind": "static authored-draft correction; no test/compiler execution",
+  "findings": [
+    "Exact existing DevelopmentAccess schema has hidden, not invented read/unreadable fields; corrected both fixture literals.",
+    "Avoid raw tuple/resource assertion diffs and preserve nested actually observed cleanup errors.",
+    "Public CLI config excludes private top-level deploymentFile envelope selector; child entry hash cached before cleanup instead of fresh throwing report read."
+  ],
+  "paths": [
+    "packages/server/src/reference-deployment-runtime.test.ts",
+    "apps/bdptest/src/reference-deployment-lifecycle-installed.test.ts",
+    "packages/server/src/reference-deployment-process.ts"
+  ],
+  "runtimeExecuted": false
+}

@@ -1,0 +1,12 @@
+{
+  "priorFrozenReport": {
+    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation5-partial-overlay-native-precision-1/report.md",
+    "sha256": "41fbf670393ac15f79c8cfcda877084685f01d86929127eac54df4c031f58b95"
+  },
+  "incorrectStatement": "before679 equals original cce-relative baseline",
+  "correction": "The source-before679-map.json is the f6 correction baseline, canonical f6baa7922feea80b9ae9641abc08ed79c339ff719769cc95162fe87ddc70bc65, SHA1a1f47ba...; it is not a full HEAD map. HEAD-relative before hashes are in source-binding.ownedFiles[...].beforeSha256 and the protected669 map. f6-relative protection is678.",
+  "measuredPriorP3PartialAndP5BeforeMapsAgree": true,
+  "P5ExplicitSourcePreservationDomainIsCorrect": true,
+  "changesSubjectOrPriorReport": false,
+  "scopeImpact": "Corrects only prior native prose baseline label; actual before/after maps, one changed correction path and protected669/678 checks remain exact."
+}

@@ -1,0 +1,107 @@
+{
+  "planReplacements": [
+    {
+      "before": "# Sequence member transactions \u2014 plan-only v7 candidate reanchor",
+      "after": "# Sequence member transactions \u2014 plan-only v8 merged reanchor"
+    },
+    {
+      "before": "Current main context is actual PR130 merge0d63cf59d447eca2e7ff8b2e0e6a5f31513b9a3a. Depth PR131 candidate1b491d8b888627fcaa5f18908d4308b343397ca3/tree10810a8016a451e241ea974487681dcddd63c2e4 is not an authoring parent: its actual merge remains PENDING; CI38768400100 was reported running at this preparation checkpoint.",
+      "after": "Current main and bound authoring-parent identity is actual PR131 merge18104a03b850553641f24fe83e7318493fa102ca/tree10810a8016a451e241ea974487681dcddd63c2e4, ordered parents0d63cf59d447eca2e7ff8b2e0e6a5f31513b9a3a+1b491d8b888627fcaa5f18908d4308b343397ca3. Exact CI38768400100/job116537531157 passed all27steps. Binding the verified identity is not an authoring release."
+    },
+    {
+      "before": "no final authoring-parent reanchor is claimed.",
+      "after": "the merged-parent reanchor is now verified while authoring remains closed pending root review."
+    },
+    {
+      "before": "this v7 makes only chronology/candidate-citation substitutions,",
+      "after": "v7 made only chronology/candidate-citation substitutions and this v8 binds their verified ordinary merged tree,"
+    },
+    {
+      "before": "final post-depth mechanical reanchor, root review of this successor",
+      "after": "root review of this completed post-depth mechanical reanchor"
+    },
+    {
+      "before": "Actual PR130 context is",
+      "after": "Historical actual PR130 context is"
+    },
+    {
+      "before": "Candidate PR131 is the clean ordinary child1b491d8b888627fcaa5f18908d4308b343397ca3/tree10810a8016a451e241ea974487681dcddd63c2e4 of actual0d63. Its eight authored paths are disjoint from the four sequence paths; all four bytes and28raw objects are rechecked equal to reviewed9a42 and actual0d63. This candidate is source context only, not a claimed merge/CI result. Final actual post-depth parent/tree remain null; root must supply verified merge/CI pins and recheck before authoring.",
+      "after": "PR131 ordinary candidate1b491d8b888627fcaa5f18908d4308b343397ca3 merged as18104a03b850553641f24fe83e7318493fa102ca/tree10810a8016a451e241ea974487681dcddd63c2e4 with ordered parents0d63+1b491d8b. transaction-depth-key-order-draft/landing-preparation/postmerge-verification.json and ci-outcome.json bind exact tested synthetic5dd229cb1beda15d0611fcc3c656161c365bbffb, CI38768400100/job116537531157 and the actual merge. Local Git confirms the tree and ordered parents. Its eight authored paths are disjoint from the four sequence paths; all four bytes and28raw objects/full-parent reconstructions are rechecked against the actual merge, reviewed9a42, actual0d63 and candidate1b491d8b. actualAuthoringParent/tree now bind18104a03/10810a80; authoringReleased remains false until root reads this packet."
+    },
+    {
+      "before": "through actual PR130 and the inspected depth candidate.",
+      "after": "through actual PR130 and merged PR131."
+    },
+    {
+      "before": "Unchanged citations retain reviewed9a42 attribution; changed citations explicitly marked candidate bind only1b491d8b. Final post-depth reanchor must recheck all shifted anchors against the actual merged tree.",
+      "after": "Unchanged citations retain reviewed9a42 attribution; refreshed citations explicitly marked merged bind actual18104a03. They were rechecked against its tree, which equals candidate1b491d8b byte-for-byte; the historical v7 candidate citations remain preserved."
+    },
+    {
+      "before": "Candidate store1791ff",
+      "after": "Merged store1791ff"
+    },
+    {
+      "before": "candidate readChanges1705\u20131751",
+      "after": "merged readChanges1705\u20131751"
+    },
+    {
+      "before": "candidate transaction-changefeed.ts98\u2013112",
+      "after": "merged transaction-changefeed.ts98\u2013112"
+    },
+    {
+      "before": "candidate batch105\u2013124",
+      "after": "merged batch105\u2013124"
+    },
+    {
+      "before": "Candidate store1237\u20131256",
+      "after": "Merged store1237\u20131256"
+    },
+    {
+      "before": "candidate batch692\u2013708",
+      "after": "merged batch692\u2013708"
+    },
+    {
+      "before": "candidate store1552\u20131644",
+      "after": "merged store1552\u20131644"
+    },
+    {
+      "before": "candidate transaction-batch.ts:760\u2013767",
+      "after": "merged transaction-batch.ts:760\u2013767"
+    },
+    {
+      "before": "Actual PR129 remains historical; PR130 merge0d63 is verified above. PR131 actual depth merge remains pending; no running-CI result or capacity is assumed.",
+      "after": "Actual PR129 remains historical; PR130 merge0d63 and PR131 merge18104a03 are verified above. Exact PR131 CI38768400100/job116537531157 passed9308/skip1/178files,784.04s suite/1005s job, all27steps including7preflight/smoke/89Read gate; its195s observed margin under the unchanged1200s job cap is a historical sample, not capacity assurance for this slice."
+    },
+    {
+      "before": "these bytes also equal committed77f4b89, actual0d63 and candidate1b491d8b.",
+      "after": "these bytes also equal committed77f4b89, actual0d63, candidate1b491d8b and merged18104a03."
+    },
+    {
+      "before": "Final actual post-depth parent preservation proof remains required.",
+      "after": "Actual post-depth four-file/28-object/full-parent preservation is now bound in this packet; any source drift before authoring must be rechecked."
+    },
+    {
+      "before": "Root must read this mechanical candidate reanchor/diff, then after actual depth merge obtain exact current parent/tree/CI and recheck four owned files, relevant helpers and28raw/full-parent preservation. PR130 main0d63 is current merged context and PR131 head1b491d8b is candidate context only; neither is substituted for the still-null future authoring parent.",
+      "after": "Root must read this completed mechanical merged reanchor/diff before explicitly releasing authoring. Actual parent18104a03/tree10810a80 and exact CI are bound, with four owned files, relevant moved citations and28raw/full-parent preservation rechecked. Accepted v6 and provisional v7 remain historical and unchanged."
+    }
+  ],
+  "companionChangedKeys": [
+    "status",
+    "planSha256",
+    "previousPlanSha256",
+    "previousCompanionSha256",
+    "patchSha256",
+    "currentContextCommit",
+    "currentContextTree",
+    "contextOrderedParents",
+    "contextProof",
+    "actualAuthoringParent",
+    "actualAuthoringTree",
+    "historicalTimings",
+    "depthMerge",
+    "depthCandidate",
+    "actualDepthMerge"
+  ],
+  "allOtherCompanionFieldsExact": true,
+  "historicalTimingsOnlyAddsPR131": true
+}

@@ -1,0 +1,30 @@
+{
+  "head": "01a247b2283f70890c8c35ec65a43aa3c3ab0542",
+  "tree": "b2d9f2c18502e0778c51123be8b4564af052d803",
+  "hashes": {},
+  "reviewedSourceHashes": {
+    "docs/specs/bdp.md": "f036103ffdf5f89fa3a2033570e1e987c4cd203cd80b1c633cb44615123f892e",
+    "packages/server/src/transaction-sequence.ts": "019e02f2f392047d568d7464b1c5af0482d6d743ed09a6d0aa4edab151607cbe",
+    "packages/server/src/transaction-batch.ts": "5fa7052d95942548727760625e368f3892e1dacced1654f022720af0b5ce899a",
+    "packages/server/src/transaction-store.ts": "0cda4b6488f589258eda46d1a00612e0278228172fc102305d889fe3c4364ad1",
+    "packages/server/src/resource-evaluator.ts": "89606787e455f4ed555b807d91c5331a376431807a9a581de1f94e538fcab4ff",
+    "packages/server/src/transaction-events.ts": "c6052433662fcb2d0a202ad4e408a24d4c43f980313fa89659501b4475790db5",
+    "packages/conformance/src/transactional-observation.ts": "603fcc1240e43da3c477f42b8b942141c06c989a48a2a88099fd5d90e283159f",
+    "packages/conformance/src/runner.ts": "ac20c7fbfe15a5e42a6559e89cd3467562efe9bc74d462478414414ed3efede1",
+    "apps/bdptest/src/transactional-matrix.test.ts": "e319109ab0e9f7258e6918ae789ed7a5672eb7aabd0ec8725ae38e3634164e68",
+    "packages/conformance/src/transactional-cumulative.test.ts": "22a568820ab2abc187d37c27658fdcf6e5ad39e74e2172374e3658c180f7668e"
+  },
+  "plans": {
+    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-sequence-member-plan-v4.md": "45acc3ab6580f6654c573b48f93b26b2c9a32a73297fc5ab6c2b53d0b18dffd5",
+    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-sequence-member-plan-v4-report.json": "ddd5e5a2b8d719476b313f11047f9de19e3d3034a53938b50f0cc2b7e5c8475a",
+    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-sequence-member-plan-v4-report.md": "9feb136dec93b4542ba71b62449005450b4d8767178b3375841291eafa8e78f3",
+    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-sequence-member-merged-reanchor.md": "e553b4eac48241ec3839ac72c8016ab0eca17e0c5a03f8b15eb6e05edeb64f60",
+    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-sequence-member-accepted-parent.json": "f3fa1b62a687f9ff61ed999f56017400c8dd74292480c6fc8344da63177eb1c5",
+    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-sequence-member-plan-v3-native-closure.md": "75975009d1760ed67f5ca1d805c7158d8c545849d9dbafa4ee98ccab43d191f6"
+  },
+  "diffSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+  "promptSha256": "1b862ebcb0ed34b9af4823b9f485b407940523f5f4bc5bd7405dd67511dc3c7e",
+  "supervisorSha256": "719ccfc32e0c806f6686bd0ff0d2befebcf80de2d86d003a2e4ff6e1b5c89f41",
+  "sourceScope": "Clean full tracked snapshot, exact supplied source sections and frozen plan/parent evidence",
+  "reviewScope": "Split B observer composition, preservation and bounds; A independently required"
+}

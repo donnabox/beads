@@ -1,0 +1,334 @@
+{
+  "status": "closed direct-response seam successor proposal; root release required",
+  "sourceBindingSha256": "b7082c68869b1cecd715ed8d6e0ef88c6ba064a2e698beddf02844ed4dc252fb",
+  "selectionSha256": "fffb9c32d4e78dc5d4f9dde2b46a273e47ab0052749063a6012582eaa96901b2",
+  "commands": [
+    {
+      "id": "offline-setup",
+      "cwd": "/Users/dbox/repos/wt/vickie/vickie-minimum-receiving",
+      "argv": [
+        "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+        "/Users/dbox/.cache/node/corepack/v1/pnpm/11.20.0/bin/pnpm.cjs",
+        "install",
+        "--offline",
+        "--frozen-lockfile",
+        "--ignore-scripts"
+      ],
+      "supervisorSeconds": 120,
+      "cases": 0,
+      "http": 0,
+      "owners": 0,
+      "listeners": 0,
+      "directories": 0,
+      "productChildren": 0,
+      "ownedTempPrefixes": []
+    },
+    {
+      "id": "typecheck",
+      "cwd": "/Users/dbox/repos/wt/vickie/vickie-minimum-receiving",
+      "argv": [
+        "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+        "/Users/dbox/.cache/node/corepack/v1/pnpm/11.20.0/bin/pnpm.cjs",
+        "run",
+        "typecheck"
+      ],
+      "supervisorSeconds": 120,
+      "cases": 0,
+      "http": 0,
+      "owners": 0,
+      "listeners": 0,
+      "directories": 0,
+      "productChildren": 0,
+      "ownedTempPrefixes": []
+    },
+    {
+      "id": "build",
+      "cwd": "/Users/dbox/repos/wt/vickie/vickie-minimum-receiving",
+      "argv": [
+        "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+        "/Users/dbox/.cache/node/corepack/v1/pnpm/11.20.0/bin/pnpm.cjs",
+        "run",
+        "build"
+      ],
+      "supervisorSeconds": 120,
+      "cases": 0,
+      "http": 0,
+      "owners": 0,
+      "listeners": 0,
+      "directories": 0,
+      "productChildren": 0,
+      "ownedTempPrefixes": []
+    },
+    {
+      "id": "format-check",
+      "cwd": "/Users/dbox/repos/wt/vickie/vickie-minimum-receiving",
+      "argv": [
+        "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+        "/Users/dbox/.cache/node/corepack/v1/pnpm/11.20.0/bin/pnpm.cjs",
+        "run",
+        "format:check"
+      ],
+      "supervisorSeconds": 120,
+      "cases": 0,
+      "http": 0,
+      "owners": 0,
+      "listeners": 0,
+      "directories": 0,
+      "productChildren": 0,
+      "ownedTempPrefixes": []
+    },
+    {
+      "id": "lint",
+      "cwd": "/Users/dbox/repos/wt/vickie/vickie-minimum-receiving",
+      "argv": [
+        "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+        "/Users/dbox/.cache/node/corepack/v1/pnpm/11.20.0/bin/pnpm.cjs",
+        "run",
+        "lint"
+      ],
+      "supervisorSeconds": 120,
+      "cases": 0,
+      "http": 0,
+      "owners": 0,
+      "listeners": 0,
+      "directories": 0,
+      "productChildren": 0,
+      "ownedTempPrefixes": []
+    },
+    {
+      "id": "boundaries",
+      "cwd": "/Users/dbox/repos/wt/vickie/vickie-minimum-receiving",
+      "argv": [
+        "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+        "/Users/dbox/.cache/node/corepack/v1/pnpm/11.20.0/bin/pnpm.cjs",
+        "run",
+        "check:boundaries"
+      ],
+      "supervisorSeconds": 120,
+      "cases": 0,
+      "http": 0,
+      "owners": 0,
+      "listeners": 0,
+      "directories": 0,
+      "productChildren": 0,
+      "ownedTempPrefixes": []
+    },
+    {
+      "id": "read-seal",
+      "cwd": "/Users/dbox/repos/wt/vickie/vickie-minimum-receiving",
+      "argv": [
+        "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+        "/Users/dbox/.cache/node/corepack/v1/pnpm/11.20.0/bin/pnpm.cjs",
+        "run",
+        "evidence:verify"
+      ],
+      "supervisorSeconds": 120,
+      "cases": 0,
+      "http": 0,
+      "owners": 0,
+      "listeners": 0,
+      "directories": 0,
+      "productChildren": 0,
+      "ownedTempPrefixes": []
+    },
+    {
+      "id": "consistency-positive",
+      "cwd": "/Users/dbox/repos/wt/vickie/vickie-minimum-receiving",
+      "argv": [
+        "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+        "/Users/dbox/repos/wt/vickie/vickie-minimum-receiving/node_modules/vitest/vitest.mjs",
+        "run",
+        "packages/server/src/transaction-consistency.test.ts",
+        "--maxWorkers=1",
+        "--reporter=verbose",
+        "--reporter=json",
+        "--outputFile=/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-minimum-receiving-draft/run-v3/consistency-positive.results.json",
+        "-t",
+        "^(?:private\\ minimum\\-read\\ subset\\ snapshots\\ canonical\\ supported\\ tuples\\ without\\ getters\\ or\\ opaque\\-token\\ guesses|private\\ minimum\\-read\\ subset\\ only\\ turns\\ actual\\ behind\\ observations\\ into\\ timeout\\ after\\ the\\ original\\ finite\\ deadline|distinguishes\\ closed\\ minimum\\ receiving\\ syntax\\ from\\ supported\\ position\\ identities)$"
+      ],
+      "supervisorSeconds": 120,
+      "selectedFullNames": [
+        "private minimum-read subset snapshots canonical supported tuples without getters or opaque-token guesses",
+        "private minimum-read subset only turns actual behind observations into timeout after the original finite deadline",
+        "distinguishes closed minimum receiving syntax from supported position identities"
+      ],
+      "cases": 3,
+      "ownedTempPrefixes": [],
+      "http": 0,
+      "owners": 0,
+      "listeners": 0,
+      "directories": 0,
+      "productChildren": 0,
+      "readonlyInventoryHandles": 0,
+      "otherInventoryHandles": 0
+    },
+    {
+      "id": "http-positive",
+      "cwd": "/Users/dbox/repos/wt/vickie/vickie-minimum-receiving",
+      "argv": [
+        "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+        "/Users/dbox/repos/wt/vickie/vickie-minimum-receiving/node_modules/vitest/vitest.mjs",
+        "run",
+        "packages/server/src/transaction-http.test.ts",
+        "--maxWorkers=1",
+        "--reporter=verbose",
+        "--reporter=json",
+        "--outputFile=/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-minimum-receiving-draft/run-v3/http-positive.results.json",
+        "-t",
+        "^(?:source\\-private\\ actual\\ Transactional\\ HTTP\\ fails\\ minimum\\ controls\\ closed\\ before\\ ordinary\\ Read\\ and\\ expired\\ cursor\\ conditional\\ decisions|orders\\ page\\ nondisclosure,\\ minimum\\ waits,\\ expiry\\ and\\ representation\\ using\\ actual\\ owner\\ state|refuses\\ unsupported\\ root\\ controls\\ after\\ nondisclosure\\ but\\ before\\ read\\-triggered\\ retention|keeps\\ failed\\ parent\\ rows\\ unchanged\\ for\\ nonexistent\\ page\\ reads\\ with\\ any\\ controls|serves\\ conditioned\\ live\\ aliases\\ and\\ preserves\\ bodyless\\ redirects,\\ refusal\\ context\\ and\\ receiving\\ boundaries|rejects\\ malformed\\ minimum\\ tuples\\ across\\ read\\ routes\\ without\\ entering\\ the\\ actual\\ owner|rejects\\ raw\\ repeated\\ minimum\\ fields\\ and\\ keeps\\ receiving\\ HEAD\\ and\\ SSE\\ refusals\\ finite|enforces\\ the\\ minimum\\-receiving\\-malformed\\-request\\ boundary\\ over\\ the\\ emitted\\ listener)$"
+      ],
+      "supervisorSeconds": 120,
+      "selectedFullNames": [
+        "source-private actual Transactional HTTP fails minimum controls closed before ordinary Read and expired cursor conditional decisions",
+        "orders page nondisclosure, minimum waits, expiry and representation using actual owner state",
+        "refuses unsupported root controls after nondisclosure but before read-triggered retention",
+        "keeps failed parent rows unchanged for nonexistent page reads with any controls",
+        "serves conditioned live aliases and preserves bodyless redirects, refusal context and receiving boundaries",
+        "rejects malformed minimum tuples across read routes without entering the actual owner",
+        "rejects raw repeated minimum fields and keeps receiving HEAD and SSE refusals finite",
+        "enforces the minimum-receiving-malformed-request boundary over the emitted listener"
+      ],
+      "cases": 8,
+      "ownedTempPrefixes": [
+        "bdp-tx-http-"
+      ],
+      "http": 77,
+      "owners": 8,
+      "listeners": 7,
+      "directories": 8,
+      "productChildren": 0,
+      "readonlyInventoryHandles": 2,
+      "otherInventoryHandles": 0
+    },
+    {
+      "id": "snapshot-positive",
+      "cwd": "/Users/dbox/repos/wt/vickie/vickie-minimum-receiving",
+      "argv": [
+        "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+        "/Users/dbox/repos/wt/vickie/vickie-minimum-receiving/node_modules/vitest/vitest.mjs",
+        "run",
+        "packages/server/src/transaction-snapshot-http.test.ts",
+        "--maxWorkers=1",
+        "--reporter=verbose",
+        "--reporter=json",
+        "--outputFile=/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-minimum-receiving-draft/run-v3/snapshot-positive.results.json",
+        "-t",
+        "^(?:closed\\ query\\ syntax,\\ unsupported\\ controls\\ and\\ foreign\\ creation\\ context\\ fail\\ before\\ capture\\ or\\ conditional\\ success)$"
+      ],
+      "supervisorSeconds": 120,
+      "selectedFullNames": [
+        "closed query syntax, unsupported controls and foreign creation context fail before capture or conditional success"
+      ],
+      "cases": 1,
+      "ownedTempPrefixes": [
+        "bdp-snapshot-http-"
+      ],
+      "http": 31,
+      "owners": 3,
+      "listeners": 3,
+      "directories": 1,
+      "productChildren": 0,
+      "readonlyInventoryHandles": 0,
+      "otherInventoryHandles": 2
+    },
+    {
+      "id": "schema-positive",
+      "cwd": "/Users/dbox/repos/wt/vickie/vickie-minimum-receiving",
+      "argv": [
+        "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+        "/Users/dbox/repos/wt/vickie/vickie-minimum-receiving/node_modules/vitest/vitest.mjs",
+        "run",
+        "packages/server/src/transaction-schema-http.test.ts",
+        "--maxWorkers=1",
+        "--reporter=verbose",
+        "--reporter=json",
+        "--outputFile=/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-minimum-receiving-draft/run-v3/schema-positive.results.json",
+        "-t",
+        "^(?:preserves\\ minimum\\ refusals\\ before\\ schema\\ conditionals\\ and\\ never\\ observes\\ excluded\\ requests)$"
+      ],
+      "supervisorSeconds": 120,
+      "selectedFullNames": [
+        "preserves minimum refusals before schema conditionals and never observes excluded requests"
+      ],
+      "cases": 1,
+      "ownedTempPrefixes": [
+        "bdp-schema-http-"
+      ],
+      "http": 16,
+      "owners": 1,
+      "listeners": 1,
+      "directories": 1,
+      "productChildren": 0,
+      "readonlyInventoryHandles": 0,
+      "otherInventoryHandles": 0
+    },
+    {
+      "id": "changefeed-positive",
+      "cwd": "/Users/dbox/repos/wt/vickie/vickie-minimum-receiving",
+      "argv": [
+        "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+        "/Users/dbox/repos/wt/vickie/vickie-minimum-receiving/node_modules/vitest/vitest.mjs",
+        "run",
+        "packages/server/src/transaction-changefeed.test.ts",
+        "--maxWorkers=1",
+        "--reporter=verbose",
+        "--reporter=json",
+        "--outputFile=/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-minimum-receiving-draft/run-v3/changefeed-positive.results.json",
+        "-t",
+        "^(?:decides\\ actual\\ HTTP\\ minimum\\ refusal\\ before\\ conditional\\ shortcuts\\ with\\ final\\ context)$"
+      ],
+      "supervisorSeconds": 120,
+      "selectedFullNames": [
+        "decides actual HTTP minimum refusal before conditional shortcuts with final context"
+      ],
+      "cases": 1,
+      "ownedTempPrefixes": [
+        "bdp-feed-http-"
+      ],
+      "http": 7,
+      "owners": 1,
+      "listeners": 1,
+      "directories": 1,
+      "productChildren": 0,
+      "readonlyInventoryHandles": 0,
+      "otherInventoryHandles": 0
+    },
+    {
+      "id": "spec-static",
+      "cwd": "/Users/dbox/repos/wt/vickie/vickie-minimum-receiving",
+      "argv": [
+        "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+        "/Users/dbox/repos/wt/vickie/vickie-minimum-receiving/node_modules/vitest/vitest.mjs",
+        "run",
+        "packages/conformance/src/transactional-catalog.test.ts",
+        "packages/conformance/src/read-update-catalog.test.ts",
+        "packages/conformance/src/profile-catalog-boundaries.test.ts",
+        "--maxWorkers=1",
+        "--reporter=verbose",
+        "--reporter=json",
+        "--outputFile=/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-minimum-receiving-draft/run-v3/spec-static.results.json",
+        "-t",
+        "^(?:draft\\ Transactional\\ catalog\\ strictly\\ parses\\ and\\ binds\\ every\\ citation\\ to\\ the\\ current\\ specification\\ text|draft\\ Read\\+Update\\ catalog\\ strictly\\ parses\\ and\\ binds\\ every\\ citation\\ to\\ the\\ current\\ specification\\ text|catalog\\ citations\\ respect\\ cumulative\\ profile\\ boundaries\\ owns\\ Transactional\\ end\\ matter\\ and\\ rejects\\ its\\ use\\ by\\ Read|catalog\\ citations\\ respect\\ cumulative\\ profile\\ boundaries\\ resolves\\ internal\\ links\\ without\\ lower\\-profile\\ forward\\ dependencies)$"
+      ],
+      "supervisorSeconds": 120,
+      "selectedFullNames": [
+        "draft Transactional catalog strictly parses and binds every citation to the current specification text",
+        "draft Read+Update catalog strictly parses and binds every citation to the current specification text",
+        "catalog citations respect cumulative profile boundaries owns Transactional end matter and rejects its use by Read",
+        "catalog citations respect cumulative profile boundaries resolves internal links without lower-profile forward dependencies"
+      ],
+      "cases": 4,
+      "ownedTempPrefixes": [],
+      "http": 0,
+      "owners": 0,
+      "listeners": 0,
+      "directories": 0,
+      "productChildren": 0,
+      "readonlyInventoryHandles": 0,
+      "otherInventoryHandles": 0
+    }
+  ],
+  "nodePathPrefix": "/Users/dbox/.nvm/versions/node/v24.16.0/bin",
+  "controls": "separate closed gate; no derivative copy/run here",
+  "installed": "separate closed gate and actual candidate/build provenance pending"
+}

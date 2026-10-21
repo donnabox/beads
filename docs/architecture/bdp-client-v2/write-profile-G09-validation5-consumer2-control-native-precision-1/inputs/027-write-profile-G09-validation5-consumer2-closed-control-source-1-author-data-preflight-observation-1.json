@@ -1,0 +1,14 @@
+{
+  "errorType": "AssertionError",
+  "newPacketDirectoryAtFailure": false,
+  "originalBroadNameFilter": [
+    "input-ledger.json",
+    "old-ledger-phase-checks.json",
+    "strict-predecessor-ledger-checks.json"
+  ],
+  "phase": "PRE_DIRECTORY_OWN_LEDGER_DISCOVERY",
+  "reason": "Own substring filter incorrectly expected only one filename containing ledger; two names were report files. No ledger content had yet been read as current authority.",
+  "resolution": "Discover the sole top-level JSON absolute-path\u2192sha256/bytes/mode metadata map from the pinned index; read all8143 entries strictly. No guessed basename, source repair or subject retry.",
+  "subjectArtifactOrRuntimeInvocation": false,
+  "subjectMismatch": false
+}

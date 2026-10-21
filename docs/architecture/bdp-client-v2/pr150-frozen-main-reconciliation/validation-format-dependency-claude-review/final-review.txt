@@ -1,0 +1,85 @@
+## PLAN REVIEW — Python format-dependency continuation (read-only)
+
+No files were written or modified. No tests, imports, installs, helpers, or gate operations were executed. This review grants no execution permission; provisioning and release remain root-owned.
+
+---
+
+## Verified correct (no change needed)
+
+**Diagnosis.** The mechanism claim is exact. `_format.py:395-402` is `with suppress(ImportError): from rfc3339_validator import validate_rfc3339` followed by `@_checks_drafts(name="date-time")`; `METADATA:39` and `:48` declare `rfc3339-validator` under `format`/`format-nongpl`. The installed set is exactly the six packages the plan lists at the exact versions (only `pip-26.1.1`, `rpds_py-2026.9.1`, `attrs-26.1.0`, `referencing-0.37.0`, `jsonschema_specifications-2025.9.1`, `jsonschema-4.26.0` dist-infos exist); no `rfc3339_validator` module or dist-info is present. `type-examples.log:8` (`AssertionError: ('Issue due_at', [])`) and `type-examples.exit.json` (`exit 1`, `errors []`, `forcedCleanup false`, `remainingProcesses []`) match. No `node-version.*` records exist, confirming "no later stage ran."
+
+**Sufficiency of a dependency-only correction.** `issue.properties.schema.json:65-76` is the only source of `date-time` among the six schemas the script loads, and `domain-property-cases.json:3-10` carries **no** `due_at`/`defer_until`/`closed_at` value. So the single `date-time` instance anywhere in the script is the injected `"bad-date"` at `check_type_examples.py:205`. Enabling the checker cannot flip any positive case, and the `time` checker co-registered at `_format.py:404-412` is inert (no `format: "time"` in the tree). The correction is both necessary and sufficient for this assertion. Note the plan does not claim the script will pass — correct, since lines 208-229 were never reached.
+
+**Origin-map scope claim.** Accurate for `gate.py`: the only `E`-reads reachable for prefix names are `complete()` (`gate.py:54-55`) and `verify_build()` (`gate.py:58`). Consumer reads (`gate.py:43-51, 65-67`) are correctly sibling-fresh, and `write()` (`gate.py:12-13`, exclusive `open('x')`) always targets the sibling, so origin records cannot be written.
+
+**No reuse of the failed type stage** is structurally guaranteed, not just asserted: `run.py:11-12` refuses any name whose records already exist, and in a fresh sibling run directory `type-examples` is absent while the origin failure stays outside the 11-name map with "no general fallback."
+
+**Identity continuity** needs no adaptation. `complete()` (`gate.py:54`) compares against `g['_sourceIdentity']`, recomputed at `gate.py:27-29` from the clean worktree; it will reproduce the origin value `b9fe0a23…` recorded in both `type-examples.exit.json:6` and `build-artifacts.json:4`. Candidate pins check out: 701 tracked hashes, head `d7197e97…`, tree `630a94d0…`, branch and worktree all match `execution-gate.json:28-29` and `source_check` (`gate.py:22-25`). The new venv lives outside `W`, so it cannot dirty `git status --porcelain` (`gate.py:26`).
+
+**Stage inventory.** `commands.json:2-27` is exactly 25 names; the 11 reused are positions 1-11; `type-examples` is #12 with caps unchanged (`:212-213` 120/115, `acceptedRawExitCodes [0]`, `automaticRetries 0`). 11 reused + 14 new, and "type-examples through the remaining 13," are internally consistent. `9375` matches `root-full-suite-acceptance.json:5`, and the plan's `full-test.exit.json` pin matches its `exitSha256`.
+
+**Callback distinctions preserved.** The five packed stages keep distinct `selectedFullNames`, `rootResultAuditRequired`, differing `expectedHttp` (`null/13/32/8`), and the `packed-affected-4` entry difference (`transaction-installed.js` vs `transaction-installed-process.js`). Individual acceptance is enforced by `gate.py:88-89` and exact-set equality at `run.py:84`.
+
+---
+
+## Blockers
+
+**1 — BLOCKER: origin reuse has no hash pin for 10 of the 11 exit records.**
+`gate.py:54-55` trusts the content of `<name>.exit.json` and derives the log hash from that same file. Only the `build` stage is externally pinned (`build-artifacts.json:484-497`, verified at `gate.py:60`), and `build-artifacts.json` itself is unpinned. The sibling's pinned set covers sibling-local files only (`gate.py:74-75` over `preparation-index.json`), and the origin directory is writable.
+*Consequence:* "immutable origin reuse" is narrative, not a gate property. An edited origin `exit.json` (flipping `accepted`, or restating `logSha256` to match an altered log) would be accepted by `complete()` — exactly the retroactive-pass outcome the plan forbids.
+*Minimal correction:* add a `preparation-index.json`-listed `prefix-origin.json` mapping each of the 11 names to `{exit:{path,sha256}, log:{path,sha256}}` plus `build-artifacts.json`, and have the adapted `complete()`/`verify_build()` validate through the existing `document()` primitive (`gate.py:15-17`) before reading.
+
+**2 — BLOCKER: `rootResultsAccepted` seeding is unspecified.**
+The plan enumerates only `rootExecutionReleased=false`, empty `approvedStages`, and null consumer pins. But `gate.py:87` requires `'full-test' in g['rootResultsAccepted']` before `packed-affected-1`, and `gate.py:89` for each prior packed stage. The predecessor carries `["full-test"]` (`execution-gate.json:35-37`).
+*Consequence:* seeded empty by analogy, the chain cannot reach `packed-affected-1` without root accepting a `full-test` that will never re-run in the sibling; seeded silently, the 9375-test result is attributed to the new run — the precise misattribution the plan sets out to prevent.
+*Minimal correction:* state that `rootResultsAccepted` starts as exactly `["full-test"]`, bound by a `document()` pin on `root-full-suite-acceptance.json` (which already carries `exitSha256`/`jsonSha256`/`logSha256`) and labelled as prior-run attribution; packed entries accumulate fresh.
+
+**3 — BLOCKER: the pinning mechanism permits the incidental upgrades the plan rejects.**
+Intent is right; mechanism is missing. The existing provisioning idiom pins only two top-level names (`tools/python-requirements.json:4-7`), with `attrs`/`jsonschema-specifications`/`rpds-py` arriving as pip resolutions (`python-install-report.json`, `requested: false`). The plan pins archive identities only for "added" packages. A fresh venv provisioned the same way re-resolves the entire closure to whatever is current at provisioning time.
+*Consequence:* a stated dependency-only correction can silently become a five-package upgrade, invalidating reuse of the 11 stages that ran against the recorded versions.
+*Minimal correction:* provision from a fully pinned set — `jsonschema==4.26.0`, `referencing==0.37.0`, `attrs==26.1.0`, `jsonschema-specifications==2025.9.1`, `rpds-py==2026.9.1`, plus `rfc3339-validator==<resolved>` and `six==<resolved>` — using `--require-hashes` with the wheel `sha256`s already recorded in `python-install-report.json`; then assert the resulting installed set equals exactly those seven plus `pip`, with no extras.
+
+---
+
+## Should fix
+
+**4 — `tools_check` cannot distinguish the two venvs.**
+`tools.json:26-29` records `python-venv/bin/python` with realpath `/opt/homebrew/Cellar/python@3.14/.../python3.14` and sha `2477b47f…` — byte-identical to the base-interpreter entry at `tools.json:13-17`, because `gate.py:20` resolves and hashes through the venv symlink. A `python-format-venv/bin/python` entry would be indistinguishable.
+*Consequence:* the gate would not detect the new interpreter being substituted by the old one; "date-time is enforced" remains unbound by any gate check.
+*Minimal correction:* require the sibling `tools.json` `pythonEnvironmentFiles` to enumerate the new venv in full — `pyvenv.cfg`, `jsonschema/_format.py`, the `rfc3339_validator` module, `six.py`, and `*.dist-info/{METADATA,RECORD}` for all seven — following the existing idiom (`tools.json:41-171`), and state plainly that `argv[0]`'s literal path plus that enumeration is the actual binding.
+
+**5 — the plan misstates what `complete()` reads.**
+Plan: "`complete()` reads the original pinned started/exit/log/process records." Actual: `gate.py:54-55` reads only `<name>.exit.json` and `<name>.log`. Nothing in `gate.py` or `run.py` reads a prior `.started.json` or `.processes.jsonl`; the sole pinned `started.json` is `build`'s, inside `build-artifacts.json:485-488`.
+*Consequence:* as written the sentence either overstates the delta root is asked to review, or implies two new reads — contradicting "the only gate adaptation needed" and "minimal helper delta." Those files also have no existing hash to validate against (`run.py:91` records none).
+*Minimal correction:* reword to "`complete()` resolves `<name>.exit.json` and `<name>.log` to pinned origin paths for these 11 names." If started/process records are to be bound too, say so explicitly and add their hashes to the origin map of finding 1.
+
+**6 — provisioning and probe cannot run through `run.py`, and the plan doesn't say so.**
+`run.py:3` accepts only `final STAGE` and `gate.py:80` requires `name in finalOrder`.
+*Consequence:* an implementer could add provisioning or probe to `finalOrder` to obtain bounding and records, which would break the "unchanged stage names/order" invariant, shift every `order.index()` comparison (`gate.py:81,83,85,88`; `run.py:72-73`), and corrupt the 11-reused / 14-new accounting.
+*Minimal correction:* state that provisioning and probe run in a separate non-stage helper outside `finalOrder`, that it replicates `run.py:11-12`'s exclusive-create "preserve, do not retry" guard for its own records, and that neither produces a stage pass.
+
+---
+
+## Clarifications (non-blocking)
+
+**7 — continuation feasibility depends on surviving build outputs, which are absent from the drift list.** `verify_build` (`gate.py:59`) compares the origin `artifacts` map against a live `inventory()` walk of `W/packages/*/dist` and `W/apps/*/dist` (`gate.py:30-42`), re-run at load and again at `run.py:73` for all 14 new stages. `dist/` is present now (8 packages, 3 apps), but any rebuild or clean since the origin run makes `build` unreusable, and the only remedy — re-running `build` — the plan forbids. *Correction:* add a read-only pre-release confirmation that `inventory()` still equals `build-artifacts.json` `artifacts`, and name `packages/*/dist`, `apps/*/dist` and `node_modules` (pinned indirectly via `workspace-tools.json` at `gate.py:82`) in the drift list beside candidate/lock/Node/pnpm/bd.
+
+**8 — inherited freshness strings would become false.** Copying `execution-gate.json:42` ("CLOSED fresh 25-stage … no prior stage records reused") and `preparation-index.json:15` ("no execution or reused stage records") would make the gate itself assert no reuse while reusing 11 stages. The plan governs final *reporting* but not these two fields. *Correction:* specify replacement text naming 11 reused origin stages and 14 fresh attempts, and list `note`/`state` alongside the three initial-state fields already enumerated.
+
+**9 — the probe should name the exact `FormatChecker` instance.** `check_type_examples.py:38` uses `format_checker=FormatChecker()` — the bare instance, which snapshots the class-level dict populated at `_format.py:225-228` — not `draft202012_format_checker` (`_format.py:176`). *Correction:* specify `FormatChecker()` constructed with no arguments, assert `"date-time" in FormatChecker().checkers`, and record `rfc3339_validator.__file__` and version as provider identity. The positive/negative pairing is otherwise well chosen: the negative case is the only thing that detects silent non-enforcement, which is exactly how the original failure arose.
+
+**10 — pip version continuity is assumed, not pinned.** The plan lists `pip 26.1.1` under "keep existing versions," but in a new venv pip comes from `ensurepip` on the base interpreter, outside the requirement set. *Correction:* record the bootstrapped pip version in the provisioning record and treat any difference from 26.1.1 as a stop-for-root, not an accepted incidental change.
+
+**11 — the 120s provisioning cap is tighter than the comparable precedent.** Provisioning installs seven wheels under 120s/TERM115 with no retries, while the predecessor's `dependencies` install stage was given 300/295 (`commands.json:38-39`). A slow index makes a transient timeout indistinguishable from a real failure, which then escalates to root. *Correction:* either pre-stage the pinned wheels locally and provision offline (`--no-index --find-links`), which also reinforces finding 3, or state explicitly that a provisioning timeout is a stop-for-root with the partial venv discarded rather than reused.
+
+---
+
+## Inherited unchanged mechanisms (correctly not reopened)
+
+TMPDIR/`/private/tmp` task-owned temp design; process-group supervision and survivor accounting (`run.py:24-77`); `acceptedRawExitCodes`/`automaticRetries: 0` across all 25 stages; raw-0 evidence rule and `evidence-verify` `NO_CLAIM` handling (`run.py:91`, `commands.json:203-204`); required-CLI matrix (`BDP_REQUIRE_BD_MATRIX`); packed selector and consumer-lock acceptance gates (`gate.py:84-95`); the `<ACTUAL_RECONCILED_COMMIT>` placeholder check (`gate.py:98-99`).
+
+## Limitation of this review
+
+The plan's claim that `check_type_examples.py` and `issue.properties.schema.json` are byte-identical to frozen main `8d6671ed…` is a Git-object comparison I could not independently verify with read-only file tools; I confirmed only that both files match the pinned candidate content. That claim remains for root to check. It is also not load-bearing for the attribution: the failure mode is a missing environment-side optional import, and the empty error list at `type-examples.log:8` plus `sourceUnchanged: true` already localise the cause. Note that `fixtures/specs/issue/domain-property-cases.json` is a third load-bearing input to the failing assertion, covered by the 701-hash unchanged check but not named in the diagnosis's `sourceUnchangedFromFrozenMain` list.
+
+**Summary: 3 blockers (1, 2, 3), 3 should-fix (4, 5, 6), 5 clarifications.** The diagnosis itself is correct and the dependency-only disposition is the right call; the blockers are all in the binding and pinning of the reuse, not in the analysis.

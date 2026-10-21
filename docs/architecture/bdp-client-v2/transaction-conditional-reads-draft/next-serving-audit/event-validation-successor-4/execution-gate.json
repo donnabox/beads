@@ -1,0 +1,53 @@
+{
+  "released": true,
+  "rootPlanAccepted": true,
+  "rootExactSourceAccepted": true,
+  "session": "2026-10-08T20:26:35Z-81e5",
+  "implementationIndexSha256": "0a8515dfbf7cce1433527f9e5b9e9cc1e6f992cefd70c285ab8c9eeacb520aac",
+  "rootDisposition": {
+    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-conditional-reads-draft/next-serving-audit/event-validation-successor-4/root-runtime-disposition.json",
+    "sha256": "1e0eb604b701aaca908301711f0b804c46bc17cdddac09af9a293f0783ac2e42"
+  },
+  "approvedStages": [
+    "typecheck",
+    "format-check",
+    "lint",
+    "fresh-build",
+    "bind-fresh-build",
+    "historical-default",
+    "review-historical",
+    "restart-default",
+    "review-restart-default",
+    "node-version",
+    "prepare-package-directory",
+    "pack-protocol",
+    "pack-server",
+    "verify-archives",
+    "prepare-consumer",
+    "consumer-install",
+    "verify-installed-consumer",
+    "restart-external",
+    "review-restart-external"
+  ],
+  "mode": "final",
+  "sourceBinding": {
+    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-conditional-reads-draft/next-serving-audit/event-validation-successor-4/source-binding.json",
+    "sha256": "128acfba4fcfb6b614c96f285fbf38899c714088095b8660aa409a82db2763a3"
+  },
+  "ordinaryIntegrationAccepted": true,
+  "workspaceTools": {
+    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-conditional-reads-draft/next-serving-audit/event-validation-preparation/implementation/bootstrap/workspace-tools.json",
+    "sha256": "f604c3c02938696bb0d02bbd129553b3331ea435ec93f2a8c4699afbd6714425"
+  },
+  "consumerLockSha256": "a50da9c8894ae56f953779fdeee178ab4091f69f926fbcbd9b95ef0d2d629197",
+  "installedProvenance": {
+    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-conditional-reads-draft/next-serving-audit/event-validation-successor-4/run/installed-provenance.json",
+    "sha256": "06884384b7ba1b4de7e9f68cdbf075a02d7c8c908a1ead593217e3bddf6c01ad"
+  },
+  "consumerInventory": {
+    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-conditional-reads-draft/next-serving-audit/event-validation-successor-4/run/installed-consumer-inventory.json",
+    "sha256": "9b5aab52eea22eeb04998bd5e4860548f97ec9a8a4d367cccc7b1327370fabf7"
+  },
+  "actualClaudeSupplementDisposed": true,
+  "staticValidationAuthorized": true
+}

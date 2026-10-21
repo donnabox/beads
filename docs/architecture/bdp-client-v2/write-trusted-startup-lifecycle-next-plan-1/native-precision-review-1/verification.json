@@ -1,0 +1,67 @@
+{
+  "at": "2026-10-18T05:32:58.413543+00:00",
+  "planSha256": "158cfcbbbe8026a9792864038dae3205e783504450203f64dd30b7c666aa7da8",
+  "frozenIndexSha256": "e4098fa33857a4e721f967a5c9b0387d9e41362653ae195dead449b784f48d33",
+  "indexedFilesVerified": 59,
+  "mirroredFilesVerified": 60,
+  "sourceCopies": 34,
+  "frozen682MapMatches4fdFreeze": true,
+  "liveStartupMatchingFiles": 681,
+  "rootAuthorizedLaterTestOnlyDelta": [
+    {
+      "path": "packages/server/src/reference-deployment.test.ts",
+      "frozen": "a25940849c0977fa2e5dc310466cd3a871d6de2ec0e2a41792354468e735e9e9",
+      "live": "5b9de79791eb041e74b4153ffc19dfaf28b029599644a7bda056a84432ef0289"
+    }
+  ],
+  "boundOriginLiveDifferences": [
+    {
+      "path": "/Users/dbox/repos/wt/vickie/vickie-trusted-startup-configuration/packages/server/src/reference-deployment.test.ts",
+      "frozen": "a25940849c0977fa2e5dc310466cd3a871d6de2ec0e2a41792354468e735e9e9",
+      "live": "5b9de79791eb041e74b4153ffc19dfaf28b029599644a7bda056a84432ef0289"
+    }
+  ],
+  "laterCorrectionPacket": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-trusted-startup-typecheck-correction-1",
+  "laterMapSha256": "7a503fb5271f29c01d411ac30bce2f5d6eadee17e4996e610160129687ee1849",
+  "protectedSourceMaps": {
+    "d1": 679,
+    "original": 679
+  },
+  "d1HeadCheckPerformed": false,
+  "d1PublicationNote": "Parent records authorized dirty->clean cce884c publication with tested679 bytes unchanged; this review checks bytes, not old HEAD condition.",
+  "futurePaths": 9,
+  "modifications": 5,
+  "newFiles": 4,
+  "newEmittedNonTestModuleFamilies": 2,
+  "newEmittedFilesProspective": 8,
+  "sourceCallbacksProspective": 51,
+  "persistedSourceCasesProspective": 21,
+  "sourceHttpDispatchesProspective": 2,
+  "installedCallbacksProspective": 21,
+  "installedFiniteHttpProspective": 126,
+  "additionalRawConnectProspective": 2,
+  "installedAllAttemptsProspective": 128,
+  "candidateProcessGenerationsProspective": 32,
+  "budgetsMs": {
+    "requestMs": 5000,
+    "workMs": 45000,
+    "cleanupMs": 10000,
+    "callbackMs": 60000,
+    "outerMs": 120000,
+    "outerTermMs": 115000
+  },
+  "txColdDependentCallbacks": [
+    "I02",
+    "I04",
+    "I13",
+    "I15",
+    "I17",
+    "I19"
+  ],
+  "validationResultsInferred": false,
+  "sourceAuthoringOrRuntimeReleased": false,
+  "helperProductReviewerGitOrProcessExecution": false,
+  "frozenCopyBindingsVerified": 45,
+  "liveOriginsMatching": 44,
+  "frozen682IdentitiesReconstructedFrom681LiveAndChangedFrozenCopy": true
+}

@@ -1,0 +1,5 @@
+# Closed CODE mechanics only
+
+Author is active. No source, actual dirty status/full patch, schemas, final tool/context/artifact maps or prompt has been frozen. binding.json is a non-final placeholder with both release/finalization flags false. No prompt.txt is present. Runner is not launched/imported.
+
+Reused completed actual dirty CODE runner with exactly checkout/HEAD/diagnostic wording substitutions; parser/args byte-identical. Before finalization preserve this initial mechanics packet, then bind actual author packet/full six-file patch/all tracked bytes and observed dirty status; reconcile actual selectors/report schemas/workload/preservation and council attribution. Snapshot current versus historical sole design separately. Rehash actual CLI/interpreter/guard and their realpaths. Prepare concise full-scope CODE prompt with explicit absolute source/context paths, not a verdict or acceptance assumption. Final native mechanics/root inspection and explicit one-attempt launch release remain mandatory. No product execution follows from CODE preparation.

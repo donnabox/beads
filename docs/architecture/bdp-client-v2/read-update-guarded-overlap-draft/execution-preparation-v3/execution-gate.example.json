@@ -1,0 +1,99 @@
+{
+  "released": false,
+  "session": "2026-10-08T20:26:35Z-81e5",
+  "approvedCommandIds": [],
+  "mergedParent": "9a42a4531def99e12fa9a1fba02e70558d643265",
+  "finalHead": "PENDING_ORDINARY_CLEAN_COMMIT",
+  "finalTree": "PENDING_ORDINARY_CLEAN_COMMIT",
+  "node": "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+  "pnpm": "/Users/dbox/.cache/node/corepack/v1/pnpm/11.20.0/bin/pnpm.cjs",
+  "sourceLockSha256": "4150d8821c96dbc2cfec0b2762ff76b58318079f65fa4f5c8858ef2dd61f8d6d",
+  "consumerLockSha256": "PENDING_ACTUAL_CONSUMER",
+  "reviewedRuHashes": {
+    "scripts/installed-reference-observation.mjs": "ca897f4a7659969df123037b5847d5765b357d9b8e1652f367bb204450db6278",
+    "packages/server/src/installed-reference.ts": "c311a724d5d81710264b443da6800e960f49402f10383889de59714949b9eec7",
+    "packages/server/src/installed-reference-process.ts": "149f98c04e096a9eab9a291bd4aac3f7db34ba57578e63cb4439e0e3e24fc654",
+    "packages/server/src/development-runtime.ts": "37e222682645e9d8f2d5fcf62de208640fb6216c9e9f2f279ab6017e8b9d6ca9",
+    "packages/server/src/development-composition.ts": "a7113a8a3164dc6f4b1f6b5bdcbf74cee811e5b8a0474d241ac30706997ee54f",
+    "packages/server/src/member-executor.ts": "cfce8e561f9315948c6b3b3def25893a7dfde78e2cc338fa142b859ae209771f",
+    "packages/server/src/resource-evaluator.ts": "89606787e455f4ed555b807d91c5331a376431807a9a581de1f94e538fcab4ff",
+    "packages/server/src/recovery-store.ts": "48b7901e48998fe29598168a527213ebfb49e1d6e5dc5c2eb6494c862b5de9f9",
+    "packages/protocol/src/index.ts": "92e547e807ec2d23223c47dbc4e04867d55db89ac9aab5fbd55f33349f92bdc6",
+    "docs/specs/bdp.md": "f036103ffdf5f89fa3a2033570e1e987c4cd203cd80b1c633cb44615123f892e",
+    "apps/bdptest/src/development-matrix.test.ts": "858e6f85bf40bde4327df52e34a2aceab235b8130e7539a816651ce19f71e1ac",
+    "packages/server/src/read-http-routing.ts": "d9344b87838f8c71381ccf9efe28b4f023df45503570beb8fb4293d553caca42",
+    "packages/server/src/read-request.ts": "57675afc647df3e8ad1f26a40aef72584aa388ade6af4a465e3ffef16670f6a2",
+    "packages/server/src/development-authority.ts": "d49f89da345234f7eaee83dd872a5c2d7a1a8d38ffc794e5e69d333976d22d49",
+    "packages/server/src/authority-read.ts": "fd6554c4ee0d08b997fb3622c2f21697f02d58b838f4ae0de10aca4707f67734",
+    "packages/protocol/src/read-values.ts": "6ff2cd2456a5487ded968bac6651164ed4a82ad665b8896986accfd662688482",
+    "packages/protocol/src/read-update-values.ts": "d1fdbc660d5e2c009275c152bdcebda46031700920aa03bfea89f39564c89de2",
+    "packages/protocol/src/read-update-problems.ts": "1a6315705b72fad1f1a287053c17858130c91317ed08c95f6d68a1ecc620a211",
+    "packages/protocol/src/json-values.ts": "9a1cd0b12ccd41913e2874673fdb2a24ae7925d7e4e880f50cecc717dadec591",
+    "packages/protocol/schemas/bdp-v0.schema.json": "0baa5d5ef67144f8e6513b4cde31168effc8df6d52ef3141b0f144b87f8dc227",
+    ".github/workflows/ci.yml": "fd0a08da61f74abe19c8db16d879bfff85d8090643bf4da326d3e597ae129be3"
+  },
+  "preparationSha256": {
+    "gate.py": "8654bdf02f6c7777601164cc3e6725b7efb024cf4c3cc27f969ac7a8c733a0d9",
+    "supervise.py": "6a67e588e01e319467ddc82fd2e84a2ae99441948dff1997f50dcaed65c94c4c",
+    "packages.py": "29d90c563efc6a072f0cbdb9ada74547afdb76153cedfa9635f063bbf503cc48",
+    "derivative.py": "77c3fc32cba5826614a7fcf7e9e6f87161d8ec9e8cac329ae18364bfad9394c2",
+    "derivative-payload.mjs": "6d6d0e999b8507835a411d25da60fee6cdb61a4ba56effaf3b7e6179ecdc46b4",
+    "review.py": "2cdbc04ed6a75b4e133e869bb5b9de390868b77f47b1b0976c08b04da5444117",
+    "inventory.py": "0fa979cd18f043396214787e20168c9c60df0af33a029a56daec8383eb680cdc",
+    "commands.json": "450c609ddfe4943b39fbad8883d1b91e9ef606688ae9e3116f496e388f826f47"
+  },
+  "expectedProductionVersions": {
+    "@bdp/protocol": "0.0.0",
+    "@bdp/server": "0.0.0",
+    "ajv": "8.17.1",
+    "ajv-formats": "3.0.1",
+    "fast-deep-equal": "3.1.3",
+    "fast-uri": "3.1.5",
+    "json-schema-traverse": "1.0.0",
+    "require-from-string": "2.0.2"
+  },
+  "rootAcceptance": {
+    "path": "PENDING_ROOT_V3_STATIC_RELEASE",
+    "sha256": "PENDING"
+  },
+  "reanchorAcceptance": {
+    "path": "PENDING_ROOT_ACTUAL_PARENT_AND_REPAIRED_SOURCE_ACCEPTANCE",
+    "sha256": "PENDING"
+  },
+  "sourceCouncil": {
+    "path": "PENDING_ROOT_FULL_AND_LINT_REPAIR_COUNCIL_ACCEPTANCE",
+    "sha256": "PENDING"
+  },
+  "sourceBinding": {
+    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/read-update-guarded-overlap-draft/lint-repair/source-binding.json",
+    "sha256": "792d7e813bc153a7bcf1d7bf4c5750522644873c831d8812b42301702b512f6e"
+  },
+  "finalSource": {
+    "path": "PENDING_ROOT_finalSource",
+    "sha256": "PENDING"
+  },
+  "buildOutputInventory": {
+    "path": "PENDING_ROOT_buildOutputInventory",
+    "sha256": "PENDING"
+  },
+  "installedProvenance": {
+    "path": "PENDING_ROOT_installedProvenance",
+    "sha256": "PENDING"
+  },
+  "positiveAcceptance": {
+    "path": "PENDING_ROOT_positiveAcceptance",
+    "sha256": "PENDING"
+  },
+  "derivativeAcceptance": {
+    "path": "PENDING_ROOT_derivativeAcceptance",
+    "sha256": "PENDING"
+  },
+  "derivativeBinding": {
+    "path": "PENDING_ROOT_derivativeBinding",
+    "sha256": "PENDING"
+  },
+  "derivativePayload": {
+    "path": "PENDING_ROOT_derivativePayload",
+    "sha256": "PENDING"
+  }
+}

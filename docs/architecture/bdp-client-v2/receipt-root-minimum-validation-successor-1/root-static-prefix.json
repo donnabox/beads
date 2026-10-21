@@ -1,0 +1,65 @@
+{
+  "at": "2026-10-17T08:53:42.232059+00:00",
+  "accepted": true,
+  "records": {
+    "typecheck": {
+      "exit": 0,
+      "accepted": true,
+      "sourceIdentity": "10489259dc7c06650b596eba32513acc3e31cdde0cd615b83b1a4b32fcf86da9",
+      "sourceUnchanged": true,
+      "elapsedSeconds": 4.436140958685428,
+      "forcedCleanup": false,
+      "errors": [],
+      "sampledPids": [
+        13719,
+        13743
+      ],
+      "remainingProcesses": [],
+      "runtimeDirectoriesStillPresent": [],
+      "logSha256": "91d54ffbee73a3ac72294d090e58d77745f8b93edbf94b862807698273a6505a"
+    },
+    "format-check": {
+      "exit": 0,
+      "accepted": true,
+      "sourceIdentity": "10489259dc7c06650b596eba32513acc3e31cdde0cd615b83b1a4b32fcf86da9",
+      "sourceUnchanged": true,
+      "elapsedSeconds": 3.615454999729991,
+      "forcedCleanup": false,
+      "errors": [],
+      "sampledPids": [
+        15162
+      ],
+      "remainingProcesses": [],
+      "runtimeDirectoriesStillPresent": [],
+      "logSha256": "fcf7da5261a0ba5f56bd5f33e3edc8a917b63b8866eae288fdc2699440b964c0"
+    },
+    "lint": {
+      "exit": 0,
+      "accepted": true,
+      "sourceIdentity": "10489259dc7c06650b596eba32513acc3e31cdde0cd615b83b1a4b32fcf86da9",
+      "sourceUnchanged": true,
+      "elapsedSeconds": 3.6216390002518892,
+      "forcedCleanup": false,
+      "errors": [],
+      "sampledPids": [
+        16576,
+        16578
+      ],
+      "remainingProcesses": [],
+      "runtimeDirectoriesStillPresent": [],
+      "logSha256": "7d011b7e87abcee5be9bd52936114befc8cba91ff642f835b15d27923d961176"
+    }
+  },
+  "sampledPidsFreshlyAbsent": [
+    13719,
+    13743,
+    15162,
+    16576,
+    16578
+  ],
+  "lintWarnings": 58,
+  "lintInfos": 6,
+  "diagnosticsNotShown": 44,
+  "originalBootstrapOnlyReuse": true,
+  "freshResultsNotRelabeled": true
+}

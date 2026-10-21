@@ -1,0 +1,11 @@
+# PR141 final CI inspection
+
+One read-only inspection found run38854278919 / verify job116822138712 completed successfully for exact head5ca22ec4e710cc4417a80d27bff69e1d8424c115. All27 recorded steps succeeded. No rerun, polling, repository mutation, current-main query, fetch, publication or merge occurred; prior failures remain untouched.
+
+The full suite passed9343 tests with1 skipped across184 files in643.62s. The separate ready preflight passed7 tests in1 file (1.12s). Installed CLI help/version/diagnostics, clean lifecycle, public Read admission and fail-closed profile smoke checks succeeded. The private installed reference observation retained claimEligible:false. Read evidence emitted evidence.verified with89 rows. Formatting emitted1 warning; lint emitted939 warnings and76 infos. The log also retains upstream Node action/deprecation warnings; success does not mean zero warnings.
+
+Job timing is05:09:08Z–05:22:47Z,819seconds. The test step is05:11:50Z–05:22:34Z; the full-suite internal duration above is more precise. Complete per-step times/statuses are retained in jobs.json and outcome.json.
+
+Checkout attribution is materially narrower than candidate-tree equality. The actual checkout log printed8a3d5a6494c19f8638377db178a44c4274ca76e6. Reading that immutable Git commit through the API gives tree1835152010b07c6c48dad5d3bb630d5abeaf1e67 and ordered parents[aed21767e1ade54bef6dad108c4f24b8e9cd844b,5ca22ec4e710cc4417a80d27bff69e1d8424c115]. This differs from candidate tree2747663746fde13b8b0b8c7ef3c78f7d8ca9f2a8. The run metadata separately retains historical PR base9df574a9ac980272fa31be9f443a771233b69c6a; it must not replace the actual synthetic parent seen in checkout. No current-main ref or parent source was fetched/read. The successful run therefore proves this exact-head PR's recorded synthetic checkout, not candidate-only tree identity, and not the forthcoming sequence/minimum branch integration.
+
+Raw job log116822138712.log is3493704bytes, SHA256c01a5d0d4cfd4c3a8e4bc12842e1e33da720269f4d43710d41636af794a295e2. Jobs and synthetic-commit API responses are preserved verbatim. run-snapshot.json is explicitly a selected-field transcription from the single run API tool result, not a claimed raw response.

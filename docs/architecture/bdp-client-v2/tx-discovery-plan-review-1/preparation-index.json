@@ -1,0 +1,448 @@
+{
+  "state": "COMPLETE CLOSED first D3a PLAN preparation; no execution",
+  "rootLaunchReleased": false,
+  "createdUtc": "2026-10-18T05:33:39.558789+00:00",
+  "fileCountExcludingIndex": 110,
+  "files": {
+    "README.md": {
+      "sha256": "634be4c91895f91f711eb61134d8e44cab6414fe185ae578fcee8e0ce62bebf4",
+      "bytes": 3853
+    },
+    "authority/supervisor5-native-final/closure.json": {
+      "sha256": "bb6646afbea69e66cdc20488d27e0127895d29d404d1f90d0b0ef64dc9c867a3",
+      "bytes": 1360
+    },
+    "authority/supervisor5-native-final/index.json": {
+      "sha256": "025c36e2a76e0859b4cfe988508203ce10455fe2e6e66f7806fc5a9bdd947c9f",
+      "bytes": 372
+    },
+    "authority/supervisor5-native-final/report.md": {
+      "sha256": "9197a02eb3c4774100aee716adc954a291b510e59f9aedbd976915d9ac9167fa",
+      "bytes": 3454
+    },
+    "authority/supervisor5-native-final/reviewer-preparation-failure-1.json": {
+      "sha256": "e513ede18a67b06a19cbc4335d7468407479ed81a2f492c05e63a0e7d13f3536",
+      "bytes": 259
+    },
+    "authority/supervisor5-native-final/verification.json": {
+      "sha256": "47168bd76c9cbec1708dde378b0932d7d65845744cf6448b44ca5570e7083bed",
+      "bytes": 1517
+    },
+    "authority/supervisor5-root-static-inspection.json": {
+      "sha256": "49e0bae65baf67e6b83df3e9cb8b5b73e28ce749b29200148d1d83822888e2d4",
+      "bytes": 870
+    },
+    "claude-plan-review/arguments.json": {
+      "sha256": "c7a06e44f911e415839ce4638c3ca20330b0ae204fe1f846632d367638090ede",
+      "bytes": 344
+    },
+    "claude-plan-review/binding.json": {
+      "sha256": "fb2ac0c7be0b61c9e135b2f18486f23ada8551731ae658d1425a2d1fe0bf72af",
+      "bytes": 110379
+    },
+    "claude-plan-review/context/native-plan3/index.json": {
+      "sha256": "9aadb90e0afc89d12b88552739478994acf2de3963c79fce2312f67bb1e7c429",
+      "bytes": 554
+    },
+    "claude-plan-review/context/native-plan3/input-verification.json": {
+      "sha256": "c7a9fdbcd91ab2ab7a7613e216ede7375055580b133996f0e8b03db783842d52",
+      "bytes": 2464
+    },
+    "claude-plan-review/context/native-plan3/review.json": {
+      "sha256": "89f66628bb834b816524f6412685c77c3872d009202db12e55558f7f19e79186",
+      "bytes": 3082
+    },
+    "claude-plan-review/context/native-plan3/review.md": {
+      "sha256": "07601522ff7464577bdde390941649145521dfc819b79d62bb5e98436db59e04",
+      "bytes": 1923
+    },
+    "claude-plan-review/context/plan3/actual-inputs.json": {
+      "sha256": "a4541e5659c4174e8d1442ee54aa21b101b200f5a83c75264fffd203a4613e71",
+      "bytes": 15040
+    },
+    "claude-plan-review/context/plan3/cold-input-contract.json": {
+      "sha256": "7a62b0eca649f19316b7d4346db2d9cbcda0a281df480f30f1e93d9ff0730245",
+      "bytes": 1750
+    },
+    "claude-plan-review/context/plan3/cold-positive-requests.json": {
+      "sha256": "ee4001be667ed8851c1330028da5fa20893c060446ac34fb432a49b694b157de",
+      "bytes": 23962
+    },
+    "claude-plan-review/context/plan3/counterfactuals.json": {
+      "sha256": "af575aacce1b68f9d780dead626924083a367e436b2036af323e500e2f353087",
+      "bytes": 1547
+    },
+    "claude-plan-review/context/plan3/dispatch-and-schema.json": {
+      "sha256": "32d36c13803778d528dfe6f16f459b0e37ef83d6cf586e2d1433ed947246fdd2",
+      "bytes": 2080
+    },
+    "claude-plan-review/context/plan3/index.json": {
+      "sha256": "1ebde5ba44aecebc7fc2db327b1d4ef0fc8e4a94d3dea68682e082641629958a",
+      "bytes": 22362
+    },
+    "claude-plan-review/context/plan3/installed-callbacks.json": {
+      "sha256": "b1e57845d067d64304adaf0efefbb281019a21838ba61db9d59d850ba176876e",
+      "bytes": 53002
+    },
+    "claude-plan-review/context/plan3/observation-contract.json": {
+      "sha256": "8194b07f75a0dc3cfb32075bd89edd09a834adea596d0c13aff46466d272a4fc",
+      "bytes": 2864
+    },
+    "claude-plan-review/context/plan3/plan.md": {
+      "sha256": "e3ac1d6f17f698e367ab7db6b2884efef0e40f2724eae81247edd640ba5144b3",
+      "bytes": 19253
+    },
+    "claude-plan-review/context/plan3/plan.successor-inverse.patch": {
+      "sha256": "5c2f6774afae351777538938e8f509d0dce0399b7808152efca609eb9deabcca",
+      "bytes": 10987
+    },
+    "claude-plan-review/context/plan3/plan.successor.patch": {
+      "sha256": "b170fa48838ad67f4d5e63865ca246d81a0e7a97c7bfd9467bbc620eefd7556f",
+      "bytes": 10987
+    },
+    "claude-plan-review/context/plan3/preservation.json": {
+      "sha256": "109abcefd813426674f199440c94e4ac59e0fd8b23e167a445db823f8bfbcbd8",
+      "bytes": 2574
+    },
+    "claude-plan-review/context/plan3/shared-http-composition.md": {
+      "sha256": "ffb2a367297d4aefd593a9b60f8431332cb8b69334a3f7d89dd728c6f32091bd",
+      "bytes": 6924
+    },
+    "claude-plan-review/context/plan3/source-bases.json": {
+      "sha256": "1c11ed14276ce5e5e1891f20bd67d5c6369d055cbfb1bd12424401bab2f72100",
+      "bytes": 91936
+    },
+    "claude-plan-review/context/plan3/source-callbacks.json": {
+      "sha256": "329ccfe8cd8cae2f828a720297398bee89822cb184328a2bf6d5f89130518d33",
+      "bytes": 33542
+    },
+    "claude-plan-review/context/plan3/source-map.json": {
+      "sha256": "ff8ad56f23c3d7ee6e652724501cdaa16ec9551ea24b1673dc6c74bf5c1c06b7",
+      "bytes": 87874
+    },
+    "claude-plan-review/context/plan3/static-rebind-checks.json": {
+      "sha256": "407a525e172bf852f417852077767703bae0c83e330da988eb25d232990670ac",
+      "bytes": 1432
+    },
+    "claude-plan-review/context/plan3/status.json": {
+      "sha256": "a0d844a780d5f9ef3a1ae23106a18537836dbddd8e10309cce2e747a9dde30a6",
+      "bytes": 1651
+    },
+    "claude-plan-review/context/predecessor-plan2/index.json": {
+      "sha256": "4fbc863fda9fc51950cf8237b0d47f61002468d6a81cebff696a0893741f5cf8",
+      "bytes": 5516
+    },
+    "claude-plan-review/context/predecessor-plan2/plan.md": {
+      "sha256": "52d086a1bcc94a582e10fcd104effa00356c67e2552c525e8fec3919f8337c39",
+      "bytes": 17178
+    },
+    "claude-plan-review/context/source/apps/bdptest/src/main.ts": {
+      "sha256": "2749fa0ad9aadfc548f07b9e87d8b604290ed63e699423a18742fc9ab771e940",
+      "bytes": 4947
+    },
+    "claude-plan-review/context/source/apps/bdptest/src/read-update-matrix.test.ts": {
+      "sha256": "37558e78d79d665363528fb2bf4f81de4f4334cd8438a099030cac7a68e0637b",
+      "bytes": 254295
+    },
+    "claude-plan-review/context/source/apps/bdptest/src/server-composition.test.ts": {
+      "sha256": "83f50cc80c8f69c290550f3dd78fe26f3be2d292df9efaf47f9bfc0da493b2df",
+      "bytes": 3204
+    },
+    "claude-plan-review/context/source/apps/bdptest/src/server-composition.ts": {
+      "sha256": "ddd8efd9faf89a607fc767a961b476e6e8067130165f65d267822866ae28148a",
+      "bytes": 1336
+    },
+    "claude-plan-review/context/source/apps/bdptest/src/transactional-discovery-installed.test.ts": {
+      "sha256": "7cf8822108489f3fb2f9c5ca1d97c6d7b832acca95a2f7d891c3413404d90c49",
+      "bytes": 11162
+    },
+    "claude-plan-review/context/source/apps/bdptest/src/transactional-matrix.test.ts": {
+      "sha256": "95e07ead41f9cb39087a155e87cad22998d92cd3967cb9c3c446568ff6139bc8",
+      "bytes": 183859
+    },
+    "claude-plan-review/context/source/apps/bdptest/test-support/transactional-execution-binding.ts": {
+      "sha256": "cde506c72a8710eafe58522900f6db70ed3701cf333560252dc8e7c5e706cf89",
+      "bytes": 7378
+    },
+    "claude-plan-review/context/source/docs/design/startup-configuration.md": {
+      "sha256": "f957814cabb23136a6064b6ea2814bf6a5c454fe841666053bf1a01cae67d175",
+      "bytes": 37223
+    },
+    "claude-plan-review/context/source/docs/specs/bdp.md": {
+      "sha256": "67772742d7d08f48c12196e9789f1859ad2d0e19f133ea65e197b049361f84f8",
+      "bytes": 397107
+    },
+    "claude-plan-review/context/source/package.json": {
+      "sha256": "f081baa3202b4815663d360d3ad1608206efe1b023086a4c8feff4d7fb97d8d0",
+      "bytes": 1337
+    },
+    "claude-plan-review/context/source/packages/config/src/index.ts": {
+      "sha256": "356febdfe9e3818f471da4c2ddf8d62370ad91542404e4aa630d3734a61babe3",
+      "bytes": 40311
+    },
+    "claude-plan-review/context/source/packages/protocol/schemas/bdp-v0.schema.json": {
+      "sha256": "0baa5d5ef67144f8e6513b4cde31168effc8df6d52ef3141b0f144b87f8dc227",
+      "bytes": 133208
+    },
+    "claude-plan-review/context/source/packages/protocol/src/read-update-values.ts": {
+      "sha256": "d1fdbc660d5e2c009275c152bdcebda46031700920aa03bfea89f39564c89de2",
+      "bytes": 19883
+    },
+    "claude-plan-review/context/source/packages/protocol/src/transaction-discovery-values.ts": {
+      "sha256": "d52e19c0b250b1dcce7a1f46c3bbe9e2d9ba77ed3a1ea41e7dca20a7982893d7",
+      "bytes": 3168
+    },
+    "claude-plan-review/context/source/packages/server/package.json": {
+      "sha256": "110e00c403c667d8c848c6280b2e98c47f98f134158a621967d889914d44632e",
+      "bytes": 495
+    },
+    "claude-plan-review/context/source/packages/server/src/development-composition.ts": {
+      "sha256": "a7113a8a3164dc6f4b1f6b5bdcbf74cee811e5b8a0474d241ac30706997ee54f",
+      "bytes": 3484
+    },
+    "claude-plan-review/context/source/packages/server/src/development-contracts.ts": {
+      "sha256": "182a1a6d06b09f08ca3c83ad0fb27a09a419ad3e99729528381f210973b2c40a",
+      "bytes": 11334
+    },
+    "claude-plan-review/context/source/packages/server/src/index.ts": {
+      "sha256": "34f9d9de8b48852c64919e69ce93f149e9cdae5142c15c75e4c35f08f15efc44",
+      "bytes": 55615
+    },
+    "claude-plan-review/context/source/packages/server/src/installed-reference-configuration.ts": {
+      "sha256": "1920271bd8f23bef75a685b8c4c06affaf6c84b9c220735115d1a7515688b268",
+      "bytes": 7815
+    },
+    "claude-plan-review/context/source/packages/server/src/installed-reference.ts": {
+      "sha256": "c311a724d5d81710264b443da6800e960f49402f10383889de59714949b9eec7",
+      "bytes": 1585
+    },
+    "claude-plan-review/context/source/packages/server/src/read-conformance-capability.ts": {
+      "sha256": "58d4529dc40bbf646f02bda4c7fa3fad9b83d21f3080152cc04867dbe3fa6f60",
+      "bytes": 2970
+    },
+    "claude-plan-review/context/source/packages/server/src/read-http-routing.ts": {
+      "sha256": "d9344b87838f8c71381ccf9efe28b4f023df45503570beb8fb4293d553caca42",
+      "bytes": 2967
+    },
+    "claude-plan-review/context/source/packages/server/src/read-http.ts": {
+      "sha256": "31934105eff6fff8ded8ce2ca9e3c19028991ca7c3d5f51b848004177e8c9268",
+      "bytes": 8997
+    },
+    "claude-plan-review/context/source/packages/server/src/read-request.ts": {
+      "sha256": "57675afc647df3e8ad1f26a40aef72584aa388ade6af4a465e3ffef16670f6a2",
+      "bytes": 36371
+    },
+    "claude-plan-review/context/source/packages/server/src/transaction-authorization.ts": {
+      "sha256": "c87a7bfa8840aee2f097bf683fe3f3c97fcae80782020c6d5b1e41364d16b6d2",
+      "bytes": 4536
+    },
+    "claude-plan-review/context/source/packages/server/src/transaction-batch.ts": {
+      "sha256": "830ad57a680db7148fc75cd9cc10cadfc6a812448fd1704c1b0f47b13611808d",
+      "bytes": 45508
+    },
+    "claude-plan-review/context/source/packages/server/src/transaction-changefeed.ts": {
+      "sha256": "1e678ecb1b2c3e59023dbb6a2e6516763907babd79f7926ca572a4764e40fc1e",
+      "bytes": 7664
+    },
+    "claude-plan-review/context/source/packages/server/src/transaction-consistency.ts": {
+      "sha256": "49cf5e1a7682b7fff570b3691b91d9de0816fc6fb93970847d5ece0992f21e9d",
+      "bytes": 7287
+    },
+    "claude-plan-review/context/source/packages/server/src/transaction-discovery.test.ts": {
+      "sha256": "977dfae7a1cba9ffe11bdd3633ee26fa15eb8579254c6304eea1d6ac10667356",
+      "bytes": 6361
+    },
+    "claude-plan-review/context/source/packages/server/src/transaction-discovery.ts": {
+      "sha256": "bb8055e2089f640a5d2071e389ac2011d08c038427265b50ab3d03c02047cfef",
+      "bytes": 2745
+    },
+    "claude-plan-review/context/source/packages/server/src/transaction-events.ts": {
+      "sha256": "6c5ab4482f0b00110a71a96b16d44ca5fe713cb5f397ff78778cc6646f632a3a",
+      "bytes": 11915
+    },
+    "claude-plan-review/context/source/packages/server/src/transaction-http.test.ts": {
+      "sha256": "f972c417409302e750f0936c80be5c261de21556d5ca8a883bbe0f713f2049df",
+      "bytes": 247333
+    },
+    "claude-plan-review/context/source/packages/server/src/transaction-http.ts": {
+      "sha256": "be9402cadf5d2888dd42a1904bbd8eeea0b32643bd7d7949f0ae34a8eefdd2e0",
+      "bytes": 28966
+    },
+    "claude-plan-review/context/source/packages/server/src/transaction-installed-configuration.ts": {
+      "sha256": "e15cb54266848fdd4aa08b19b37f1b2eb080f4599d9414fad8d85b6f33f35d99",
+      "bytes": 2942
+    },
+    "claude-plan-review/context/source/packages/server/src/transaction-installed-process.ts": {
+      "sha256": "6bd16f940f1f751189fc76419e3a18ca26cd5f54da3cfa3946b30c3956a2f8b7",
+      "bytes": 2630
+    },
+    "claude-plan-review/context/source/packages/server/src/transaction-installed.ts": {
+      "sha256": "afddc6b0304fee4762c79e40ac6610a281ca8791928d8f779a900a7f6eac881a",
+      "bytes": 1112
+    },
+    "claude-plan-review/context/source/packages/server/src/transaction-read.ts": {
+      "sha256": "bde7e3069f4a1cb028acaba725ad6f3bcdef692f914284f668631c700fe17683",
+      "bytes": 16779
+    },
+    "claude-plan-review/context/source/packages/server/src/transaction-runtime-configuration.test.ts": {
+      "sha256": "3167dc4a4748f63ec069f0c9f3fddbcbd82a14aca127c49c5ba118bb8cd9f79d",
+      "bytes": 24066
+    },
+    "claude-plan-review/context/source/packages/server/src/transaction-runtime-configuration.ts": {
+      "sha256": "57cd5d38c7199011d05589bc2b8ac1a0e2a4a9dc7585d019f9de5801a0a4d808",
+      "bytes": 16196
+    },
+    "claude-plan-review/context/source/packages/server/src/transaction-runtime.ts": {
+      "sha256": "48cb5411407c456d7b3f301a4b67970061be9f51c94201de832ba5deff6ea2d4",
+      "bytes": 16727
+    },
+    "claude-plan-review/context/source/packages/server/src/transaction-service.test.ts": {
+      "sha256": "e66f4384e7e6f4fb10b2072e298093991fffcfae606d005b54dda97dbf250705",
+      "bytes": 156515
+    },
+    "claude-plan-review/context/source/packages/server/src/transaction-service.ts": {
+      "sha256": "d34b28787b70e5a14c38f1295a7cacc3bd2425768245ace46484f882987e9568",
+      "bytes": 32308
+    },
+    "claude-plan-review/context/source/packages/server/src/transaction-set.ts": {
+      "sha256": "3085632e897481b048d563cf0ba3ea66dc96a0662cebfde9f978ee00675519e5",
+      "bytes": 6176
+    },
+    "claude-plan-review/context/source/packages/server/src/transaction-store.ts": {
+      "sha256": "2feff60d7064cf6a1f8b15c8360b98c1671a04762346d1d6bb3a9321ef69a2d5",
+      "bytes": 96474
+    },
+    "claude-plan-review/context/source/schemas/bdp-v0.schema.json": {
+      "sha256": "0baa5d5ef67144f8e6513b4cde31168effc8df6d52ef3141b0f144b87f8dc227",
+      "bytes": 133208
+    },
+    "claude-plan-review/context/source/scripts/smoke-executables.mjs": {
+      "sha256": "adeaea6e334f8fb6f7af5d09f0cb7ee0b729864affc45cb6baf84a95f1d4d9ae",
+      "bytes": 43245
+    },
+    "claude-plan-review/context/source/scripts/transaction-installed-observation.mjs": {
+      "sha256": "6f772f3776d3c3effa788676d853cc2932a6ee59ad63ac3338ad1b487408914b",
+      "bytes": 3264
+    },
+    "claude-plan-review/context-provenance.json": {
+      "sha256": "dc5fbca69bc586fec679cc24685d344d709e5df22a7a5877b37d3f7d5c9e0063",
+      "bytes": 20489
+    },
+    "claude-plan-review/guarded-action-session-20261018-021624-549f.py": {
+      "sha256": "b2d467920638e68d3b007ba9daa432e971636245eca988bfb29d7a99d6e3fb30",
+      "bytes": 946
+    },
+    "claude-plan-review/parse-stream.py": {
+      "sha256": "77466c44356f316a66ccd093bb64b6cd053fb2efde207916858062c878ed4ac6",
+      "bytes": 2640
+    },
+    "claude-plan-review/preparation-status.md": {
+      "sha256": "4cfb81a04ad443fae2502f32a9f050371d1078f5da5652d4a34f41a65728a94c",
+      "bytes": 498
+    },
+    "claude-plan-review/prompt.txt": {
+      "sha256": "7c13258673b9cf6d1367f32bb5b211f6178a7fd5e298673029202fc86a26c0a1",
+      "bytes": 8425
+    },
+    "claude-plan-review/run.py": {
+      "sha256": "c974716e74cf89c822e72a9b2ef038aae69374ed304354e4cf8d83a7ca338a29",
+      "bytes": 8313
+    },
+    "claude-plan-review/source-reanchor.json": {
+      "sha256": "d172e29e2e798c7d0e8ca52791ee591a423fa54b49a8f5bdd24883f8bf443144",
+      "bytes": 1017
+    },
+    "claude-plan-review/template-reuse.json": {
+      "sha256": "586ac712a80e334394595aa24ba71f0bdef2da237c6641a2a138433f87e7a634",
+      "bytes": 992
+    },
+    "claude-plan-review/tool-inventory.json": {
+      "sha256": "3d0171e0fef49911cfd7e148938fb5742b8a3e7f868cfc095043aed115f55328",
+      "bytes": 2270
+    },
+    "input-origins.json": {
+      "sha256": "37d99ad187517c676e109508d662b9c2ebf107a54890a147de5ad4b09f5b1ce7",
+      "bytes": 33388
+    },
+    "launch-supervision/closed-binding.json": {
+      "sha256": "fb2ac0c7be0b61c9e135b2f18486f23ada8551731ae658d1425a2d1fe0bf72af",
+      "bytes": 110379
+    },
+    "launch-supervision/control.json": {
+      "sha256": "dfe65683c14ac98691dcf0c33b5159d6049a69b795fc62aadf3de1b491cd93b4",
+      "bytes": 1259
+    },
+    "launch-supervision/frozen-packet-index.json": {
+      "sha256": "23eee40fc61521d51bd39e96e5c836323d3294b6e6371f166f08574a68fe74e1",
+      "bytes": 9758
+    },
+    "launch-supervision/supervise.py": {
+      "sha256": "791e5a566561798aa3352f19b021e6db9beeddb033ae5725c7d031d51716f95c",
+      "bytes": 24843
+    },
+    "mechanical-predecessor/runner/arguments.json": {
+      "sha256": "c7a06e44f911e415839ce4638c3ca20330b0ae204fe1f846632d367638090ede",
+      "bytes": 344
+    },
+    "mechanical-predecessor/runner/guarded-action-session-20261018-021624-549f.py": {
+      "sha256": "b2d467920638e68d3b007ba9daa432e971636245eca988bfb29d7a99d6e3fb30",
+      "bytes": 946
+    },
+    "mechanical-predecessor/runner/parse-stream.py": {
+      "sha256": "77466c44356f316a66ccd093bb64b6cd053fb2efde207916858062c878ed4ac6",
+      "bytes": 2640
+    },
+    "mechanical-predecessor/runner/run.py": {
+      "sha256": "c3acbc94e2d994d890d707d0faf243a677a91482d26c0254e0c016979406efdf",
+      "bytes": 8324
+    },
+    "mechanical-predecessor/supervisor5/ast-strip-proof.json": {
+      "sha256": "b2f2ecc1b62849bbd89f785814db7720925f4fde3a5529f9c6a47e1fe2155a41",
+      "bytes": 5017
+    },
+    "mechanical-predecessor/supervisor5/control.json": {
+      "sha256": "6d133887e5d295711f8d2c303665b9a1441651e2397bdd0ca14bc7079d2d139d",
+      "bytes": 1320
+    },
+    "mechanical-predecessor/supervisor5/preparation-index.json": {
+      "sha256": "6fcca98a7c50dde057f4994c5b352702f992ec5879fb0bc0706872689b29b5b1",
+      "bytes": 2072
+    },
+    "mechanical-predecessor/supervisor5/supervise.py": {
+      "sha256": "791e5a566561798aa3352f19b021e6db9beeddb033ae5725c7d031d51716f95c",
+      "bytes": 24843
+    },
+    "preparation-binding.json": {
+      "sha256": "105d044362d6c3dea6df54eef8f386b1181fd326523eda3be6b658cfc6127b65",
+      "bytes": 1290
+    },
+    "preservation.json": {
+      "sha256": "c62b654908f996a1f181894e137632582fb98100d647feeaf67cdf05ff7a5730",
+      "bytes": 7112
+    },
+    "release-prerequisites.json": {
+      "sha256": "b465ff42d5d310568ad82920ecce9f41cc7ee32210bd6d69f3e707e463d8d85e",
+      "bytes": 1462
+    },
+    "runner-adaptation-inverse.patch": {
+      "sha256": "928972e970cde2206de7ebef1f60266b9b41f68dd40c5022cd1f00c2b5ac46a7",
+      "bytes": 1995
+    },
+    "runner-adaptation.patch": {
+      "sha256": "8417fa0260b11263d6957b0eee649cd5f512ff411362231f3e9d945244df9c86",
+      "bytes": 1995
+    },
+    "static-verification.json": {
+      "sha256": "9ed2cefad99c86001150151563e8c4472a1739b6ddec49c71beca9fec37f8681",
+      "bytes": 1359
+    },
+    "supervision-control-inverse.patch": {
+      "sha256": "59d733b3d62cf62dfb4a6a3fcf4ac85c21d76e62c6e11a0feaf0fc36517c52f3",
+      "bytes": 1679
+    },
+    "supervision-control.patch": {
+      "sha256": "c8006365b9ff4c0e358821e618061b6635bf10d4e66903b0c30eab4b79cac6d6",
+      "bytes": 1679
+    }
+  }
+}

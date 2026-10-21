@@ -1,0 +1,17 @@
+{
+  "accepted": true,
+  "actualDirectVitestExit": 1,
+  "actualGuardExit": 0,
+  "supervisorExit": 0,
+  "directExitRecordSha256": "de4f4462171283940470a8adc703bb3e435d2d796f5818a78bf6101256ddf64d",
+  "verboseFailedBlock": {
+    "startLine": 59,
+    "endLine": 71,
+    "sha256": "7d79e147ea329d2dca1a64c0a0fa043e61ef73dbd38083db2344c3096bdb6b23"
+  },
+  "http": 0,
+  "httpAttribution": "Pinned selected callback uses explicit emitted owner and no HTTP; not independent packet capture",
+  "resultSha256": "2e2ec40449b04130f28773bd56b5356912a6c5034c8b16f1f795b4709fb0d5a4",
+  "logSha256": "a66f0b131b0718edb31ce149583cc2ca6679572c593df4cc22e5dcbcb880eb2d",
+  "limitation": "Named catch surrounds capture only after successful deep Link commit/assertions. Exact nested verbose RangeError, direct Vitest exit1 and supervisor cleanup mandatory. Root must inspect the first actual captured named block. Source aliases remain copied source; only owner and comparator closure explicitly emitted."
+}

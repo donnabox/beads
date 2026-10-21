@@ -1,0 +1,16 @@
+--- /Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-authorization-transition-draft/installed-validation-plan/observe-installed.ts
++++ /Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-authorization-transition-draft/installed-observation-v2/observe-installed.ts
+@@ -21,8 +21,12 @@
+ const hash=(bytes:Uint8Array|string)=>createHash('sha256').update(bytes).digest('hex');
+ if(hash(readFileSync(entry))!==provenance.entrySha256)throw Error('installed entry hash');
+ const installedRequire=createRequire(path.join(consumer,'package.json'));
++const protocolManifest=realpathSync(path.join(consumer,'node_modules/@bdp/protocol/package.json'));
++if(!protocolManifest.startsWith(consumer+path.sep))throw Error('installed protocol containment');
++const protocolRequire=createRequire(protocolManifest);
+ function installedModule(name:string){
+- const p=realpathSync(installedRequire.resolve(name));
++ const resolver=name==='@bdp/protocol'?installedRequire:protocolRequire;
++ const p=realpathSync(resolver.resolve(name));
+  if(!p.startsWith(consumer+path.sep))throw Error('installed dependency escape');
+  return pathToFileURL(p).href;
+ }

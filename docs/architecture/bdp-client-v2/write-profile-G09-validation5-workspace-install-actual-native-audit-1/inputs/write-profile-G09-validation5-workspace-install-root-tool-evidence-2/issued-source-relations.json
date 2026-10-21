@@ -1,0 +1,33 @@
+{
+  "guardedInvocationPrefix": "Python3.14 exact guarded-action-session549f then Python3.14 stdin literal heredoc",
+  "noRawExitOrGuardChange": true,
+  "noRetry": true,
+  "relations": [
+    {
+      "actualSha256": "9cca505ff01a43ca0b1055635094d4919f680c110ee6aeeebfd6f44233b70801",
+      "baselineSha256": "9cca505ff01a43ca0b1055635094d4919f680c110ee6aeeebfd6f44233b70801",
+      "kind": "EXACT_BASELINE_A",
+      "phase": "A"
+    },
+    {
+      "actualPrecedingTerminalToolId": "500ac0",
+      "actualSha256": "6c9ae24bff7b49427776f36dd37b4f36b332869ef8deedc6af450d5456fa0ccf",
+      "baselineSha256": "179dd7bae28fa7b20c83c5ec7eb6389e65c023d3fccd9fe1e57b6efddff3c426",
+      "fullInverseExact": true,
+      "kind": "ONE_COMPLETE_LF_ACTUAL_PRECEDING_TERMINAL_ID_ASSIGNMENT_ONLY",
+      "phase": "B",
+      "sentinelComparisonAndRawExit0Unchanged": true
+    },
+    {
+      "actualPrecedingTerminalToolId": "fea40e",
+      "actualSha256": "74933bde771784fd7d4389f0981a200ad42430563cfb8b1038f2bbbeeed333a3",
+      "baselineSha256": "8cb253bb94e8cd724a52d3113a0fa5f9d4822bc097cf1be7f2a4cd2d7a6c999c",
+      "fullInverseExact": true,
+      "kind": "ONE_COMPLETE_LF_ACTUAL_PRECEDING_TERMINAL_ID_ASSIGNMENT_ONLY",
+      "phase": "C",
+      "sentinelComparisonAndRawExit0Unchanged": true
+    }
+  ],
+  "sourceAttribution": "Actual contiguous functions3076 awaited each ordinary terminal before next assignment/call. Original raw wire receipts UNRETAINED.",
+  "stage": "workspace-install"
+}

@@ -1,0 +1,26 @@
+--- plan2/source-witnesses.json
++++ plan1/source-witnesses.json
+@@ -18,7 +18,7 @@
+     {
+       "id": "S03",
+       "callbacks": 1,
+-      "oracle": "TX delegating owner.readConfiguration records one explicit pre-bind snapshot order and checks listen attempts still zero; actual metadata and same preflight/read tuple complete before the first listen call. Record unchanged service-constructor readConfiguration calls separately; no global exactly-one-read assertion."
++      "oracle": "TX delegating owner.readConfiguration records order and checks listen attempts still zero; actual metadata and same preflight/read tuple complete before the first listen call."
+     },
+     {
+       "id": "S04",
+@@ -28,12 +28,12 @@
+     {
+       "id": "S05",
+       "callbacks": 21,
+-      "oracle": "Real persisted mismatch cases, one finite callback per row in persisted-cases.json; initialize/close genuine owner, mutate only named row or resource/outcome, close fixture database, attempt prepared start. Distinguish failed open from returned owner; no listen call. For cases actually entering DatabaseSync, observe actual internal acquisition/close path and genuine restore/reopen separately; later probe success alone does not prove internal close."
++      "oracle": "Real persisted mismatch cases, one finite callback per row in persisted-cases.json; initialize/close genuine owner, mutate only named row or resource/outcome, close fixture database, attempt prepared start. Distinguish failed open from returned owner; no listen call."
+     },
+     {
+       "id": "S06",
+       "callbacks": 2,
+-      "oracle": "create:false absent store, RU/TX: actual opener attempt, zero returned owner, zero SQLite acquisition, zero listen attempts and no files provisioned. Missing-file rejection precedes DatabaseSync. No acquired-SQLite close or internal release claim; acquired-store close/reopen witnesses belong to applicable S05 cases."
++      "oracle": "create:false absent store, RU/TX: actual open attempted, no returned owner and no listen attempt; opener internally releases acquired SQLite resources as shown by independent valid reopen/probe."
+     },
+     {
+       "id": "S07",

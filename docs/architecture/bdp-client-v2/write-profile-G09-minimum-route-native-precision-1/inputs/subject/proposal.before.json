@@ -1,0 +1,7 @@
+{
+  "schemaSelector": "GET/HEAD+authenticated+no minimum only; exact immutable retrieval map; observe() current; apply HTTP semantics",
+  "schemaObserved": "zero-arg run(async owner.withRead(context)); no min or signal",
+  "minimumErrorFormatter": "existing HTTP catch maps TransactionMinimumFailure nonbehind, context and retry; schema runtime outer catch otherwise500",
+  "nonmember": "no-min404 absent owner context; complete minimum private gap; unchanged",
+  "retainedAndG2": "private gaps preserved"
+}

@@ -1,0 +1,61 @@
+--- /Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-conditional-reads-draft/rebind-validation-preparation/packages.py
++++ implementation/packages.py
+@@ -1,15 +1,17 @@
+ """Read-only provenance modes plus external consumer preparation; never imports product.
+-Modes tar, consumer, installed. All require the explicit final source gate.
++Modes tar, consumer, installed. All require the Event final integrated source gate; copied narrowly from pinned packages.py.
+ """
+ from pathlib import Path
+ import json,tarfile,re,copy
++import sys
++sys.dont_write_bytecode=True
+ from gate import P,W,E,sha,load_gate,require,verify_build,consumer_inventory
+-import sys,hashlib,shutil,os
++import sys,hashlib,os
+ if not __debug__: raise RuntimeError('Python assertions must remain enabled')
+-mode=sys.argv[1];control=None;mutation=None
+-g,_=load_gate({'directory':'package-directory','tar':'verify-tar','consumer':'prepare-consumer','installed':'verify-installed'}[mode]);C=E/'consumer'
++mode=sys.argv[1]
++g,_=load_gate({'directory':'prepare-package-directory','tar':'verify-archives','consumer':'prepare-consumer','installed':'verify-installed-consumer'}[mode],child=True);C=E/'consumer'
+ expected={'@bdp/protocol':'0.0.0','@bdp/server':'0.0.0','ajv':'8.17.1','ajv-formats':'3.0.1','fast-deep-equal':'3.1.3','fast-uri':'3.1.5','json-schema-traverse':'1.0.0','require-from-string':'2.0.2'}
+-assert g['expectedProductionVersions']==expected
++assert json.loads((P/'commands.json').read_text())['expectedProductionVersions']==expected
+ assert sha((W/'pnpm-lock.yaml').read_bytes())==g['sourceLockSha256']
+ def write(name,value):
+  with (E/name).open('x') as f:f.write(json.dumps(value,indent=2)+'\n')
+@@ -43,13 +45,13 @@
+    required.update(p.relative_to(root).as_posix() for p in (root/sub).rglob('*') if p.is_file())
+   assert set(files)==required,(name,set(files)^required)
+   packages[name]={'archive':str(archive),'archiveSha256':sha(archive.read_bytes()),'files':files}
+- write('tar-source-provenance.json',{'head':g['finalHead'],'tree':g['finalTree'],'clean':True,'packages':packages,'sourceLockSha256':g['sourceLockSha256'],'sourceAttribution':'Supervisor-verified clean source/build/archive binding, not child-attested source.'})
++ write('tar-source-provenance.json',{'head':g['finalHead'],'tree':g['finalTree'],'clean':False,'dirtyPaths':g['_sourceBinding']['dirtyPaths'],'witnessSha256':g['_sourceBinding']['witnessSha256'],'witnessDiffSha256':g['_sourceBinding']['binaryDiffSha256'],'packages':packages,'sourceLockSha256':g['sourceLockSha256'],'sourceAttribution':'Supervisor-verified runtime HEAD plus frozen dirty witness/build/archive binding; not child-attested source.'})
+ elif mode=='consumer':
+  basis=json.loads((E/'tar-source-provenance.json').read_text());assert basis['head']==g['finalHead']
+  C.mkdir(exist_ok=False)
+  for data in basis['packages'].values():assert sha(Path(data['archive']).read_bytes())==data['archiveSha256']
+  deps={f'@bdp/{n}':'file:'+basis['packages'][n]['archive'] for n in ['protocol','server']}
+- (C/'package.json').write_text(json.dumps({'name':'minimum-current-external-consumer','private':True,'type':'module','dependencies':deps},indent=2)+'\n')
++ (C/'package.json').write_text(json.dumps({'name':'event-restart-external-consumer','private':True,'type':'module','dependencies':deps},indent=2)+'\n')
+  # pnpm11 reads workspace overrides here. Frozen lock is independently pinned by root gate.
+  (C/'pnpm-workspace.yaml').write_text('overrides:\n  "@bdp/protocol": '+json.dumps(deps['@bdp/protocol'])+'\n  "fast-uri": "3.1.5"\n')
+ elif mode=='installed':
+@@ -60,9 +62,7 @@
+   with tarfile.open(archive,'r:gz') as tar:
+    for rel,info in data['files'].items():
+     b=(root/rel).read_bytes();original=tar.extractfile('package/'+rel).read()
+-    if control and name=='server' and rel==mutation['relativePackagePath']:
+-     assert b==original.decode().replace(mutation['old'],mutation['new']).encode() and sha(original)==mutation['beforeSha256']
+-    else:assert b==original and sha(b)==info['sha256']
++    assert b==original and sha(b)==info['sha256']
+     assert sha(Path(info['source']).read_bytes())==info['sourceSha256']
+   actual={p.relative_to(root).as_posix() for p in root.rglob('*') if p.is_file()}
+   assert actual==set(data['files'])
+@@ -111,6 +111,6 @@
+   for dep in sorted(m.get('dependencies',{})):bind(resolve_dep(manifest,dep).parent,identity+'>'+dep,[*ancestors,root])
+  bind((C/'node_modules/@bdp/server').resolve(strict=True),'@bdp/server',[])
+  entry=(C/'node_modules/@bdp/server/dist/transaction-installed-process.js').resolve(strict=True);assert entry.is_relative_to(C.resolve())
+- write((control+'.provenance.json') if control else 'installed-provenance.json',{'mutation':mutation,'status':'VERIFIED_BEFORE_CHILD','sourceCommit':g['finalHead'],'sourceTree':g['finalTree'],'consumer':str(C),'entryRealpath':str(entry),'entrySha256':sha(entry.read_bytes()),'packages':packages,'installedProductionGraph':graph,'expectedProductionVersionsFromFrozenLock':expected,'sourceLockSha256':g['sourceLockSha256'],'consumerLockSha256':sha((C/'pnpm-lock.yaml').read_bytes()),'consumerManifestSha256':sha((C/'package.json').read_bytes()),'consumerSettingsSha256':sha((C/'pnpm-workspace.yaml').read_bytes()),'payloadIdentity':payload.hexdigest(),'payloadRecursiveVisits':visits,'payloadFileVisits':filecount,'limitations':'Read-only independent fixed dependency closure hash; compare against actual child result. Not source attestation or Node/TLS/deployment identity.'})
+- if not control:write('installed-consumer-inventory.json',consumer_inventory())
++ write('installed-provenance.json',{'status':'VERIFIED_BEFORE_CHILD','tarProvenanceSha256':sha((E/'tar-source-provenance.json').read_bytes()),'sourceCommit':g['finalHead'],'sourceTree':g['finalTree'],'consumer':str(C),'entryRealpath':str(entry),'entrySha256':sha(entry.read_bytes()),'packages':packages,'installedProductionGraph':graph,'expectedProductionVersionsFromFrozenLock':expected,'sourceLockSha256':g['sourceLockSha256'],'consumerLockSha256':sha((C/'pnpm-lock.yaml').read_bytes()),'consumerManifestSha256':sha((C/'package.json').read_bytes()),'consumerSettingsSha256':sha((C/'pnpm-workspace.yaml').read_bytes()),'payloadIdentity':payload.hexdigest(),'payloadRecursiveVisits':visits,'payloadFileVisits':filecount,'limitations':'Read-only independent fixed dependency closure hash; compare against actual child result. Not source attestation or Node/TLS/deployment identity.'})
++ write('installed-consumer-inventory.json',consumer_inventory())
+ else:raise ValueError(mode)

@@ -1,0 +1,45 @@
+{
+  "sourceRoot": "/Users/dbox/repos/wt/vickie/vickie-trusted-startup-configuration",
+  "base": "a56254d682cf4623cab22a552e3d2f695f691795",
+  "beforeFullPatchSha256": "00fa952644ab1725e4bfb8fc8c642683a39f60dd45f6a08de8881d590150a0b4",
+  "fullPatchSha256": "4fd125d8613b0d3370227353b3e29e1ee73735466bd332a6961c400e3535fbe2",
+  "beforeMapSha256": "ca2377c828c4ca9fe9c2d08da27108f7377e438cdc87270516ba7f8d765085ec",
+  "afterMapSha256": "716701cb78328a94c502e5eaf84c48ceda458432aee44fd489f36a0f0ac810bd",
+  "sourceFiles": 682,
+  "ownedPaths": [
+    "docs/design/startup-configuration.md",
+    "packages/config/src/index.test.ts",
+    "packages/config/src/index.ts",
+    "packages/server/package.json",
+    "packages/server/src/read-sequence-lifecycle.test.ts",
+    "packages/server/src/reference-deployment-state.ts",
+    "packages/server/src/reference-deployment.test.ts",
+    "packages/server/src/reference-deployment.ts",
+    "packages/server/src/transaction-snapshot.test.ts",
+    "scripts/smoke-executables.mjs",
+    "scripts/smoke-safety.mjs",
+    "scripts/smoke-safety.test.mjs"
+  ],
+  "correctionPaths": [
+    "docs/design/startup-configuration.md",
+    "packages/server/src/reference-deployment.test.ts",
+    "packages/server/src/reference-deployment.ts"
+  ],
+  "unchangedOtherOwned": 9,
+  "unchangedNonowned": 670,
+  "changedPaths": {
+    "docs/design/startup-configuration.md": {
+      "before": "21f64665cdb690ad945eec39c8382cfc12fd63d9645ae59f11728cd3f58e8954",
+      "after": "8a7d348e56adda7d0222d2180763149f348594a770fdd773e01076fb68c9caa8"
+    },
+    "packages/server/src/reference-deployment.test.ts": {
+      "before": "b713f902a293c327a830a741bc28703af92b4b031d7b3ed32d21bbd3cc28ba27",
+      "after": "a25940849c0977fa2e5dc310466cd3a871d6de2ec0e2a41792354468e735e9e9"
+    },
+    "packages/server/src/reference-deployment.ts": {
+      "before": "2decaf12e4ebe0f0c69ec52a622d9b2437f7a22f905be0e783a2ad6a09d9da63",
+      "after": "64fcccf86687e570a3c86eb460fe7d96a1260905205eb95ec35a1981fe79f1c1"
+    }
+  },
+  "runtimeQualification": false
+}

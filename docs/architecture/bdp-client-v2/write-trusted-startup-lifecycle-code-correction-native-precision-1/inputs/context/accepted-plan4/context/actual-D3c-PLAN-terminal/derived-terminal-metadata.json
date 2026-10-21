@@ -1,0 +1,116 @@
+{
+  "kind": "INDEPENDENT DERIVATION FROM RAW STREAM, NOT missing runner terminal-results.json or exit record",
+  "rawSha256": "88f7113de4d61acbe140d152c308d993c77968062bae5a59f691545c6b641fd5",
+  "rawFinalResultRecordOrdinal": 4612,
+  "resultMetadata": {
+    "duration_api_ms": 919089,
+    "stop_reason": "end_turn",
+    "session_id": "a3d61621-7c68-427a-921a-21a43ffd040a",
+    "total_cost_usd": 7.086038499999999,
+    "usage": {
+      "input_tokens": 118,
+      "cache_creation_input_tokens": 194554,
+      "cache_read_input_tokens": 6635781,
+      "output_tokens": 72740,
+      "output_tokens_details": {
+        "thinking_tokens": 52827
+      },
+      "server_tool_use": {
+        "web_search_requests": 0,
+        "web_fetch_requests": 0
+      },
+      "service_tier": "standard",
+      "cache_creation": {
+        "ephemeral_1h_input_tokens": 194554,
+        "ephemeral_5m_input_tokens": 0
+      },
+      "inference_geo": "global",
+      "iterations": [
+        {
+          "input_tokens": 2,
+          "output_tokens": 17945,
+          "cache_read_input_tokens": 197398,
+          "cache_creation_input_tokens": 1902,
+          "cache_creation": {
+            "ephemeral_5m_input_tokens": 0,
+            "ephemeral_1h_input_tokens": 1902
+          },
+          "type": "message"
+        }
+      ],
+      "speed": "standard"
+    },
+    "modelUsage": {
+      "claude-haiku-4-5-20251001": {
+        "inputTokens": 3443,
+        "outputTokens": 15,
+        "cacheReadInputTokens": 0,
+        "cacheCreationInputTokens": 0,
+        "webSearchRequests": 0,
+        "costUSD": 0.003518,
+        "contextWindow": 200000,
+        "maxOutputTokens": 32000,
+        "thinkingTokens": 0,
+        "canonicalModel": "claude-haiku-4-5",
+        "provider": "firstParty",
+        "costBasis": "list"
+      },
+      "claude-opus-5[1m]": {
+        "inputTokens": 118,
+        "outputTokens": 72740,
+        "cacheReadInputTokens": 6635781,
+        "cacheCreationInputTokens": 194554,
+        "webSearchRequests": 0,
+        "costUSD": 7.082520499999999,
+        "contextWindow": 1000000,
+        "maxOutputTokens": 64000,
+        "thinkingTokens": 52827,
+        "canonicalModel": "claude-opus-5",
+        "provider": "firstParty",
+        "costBasis": "list"
+      }
+    },
+    "permission_denials": [],
+    "terminal_reason": "completed",
+    "fast_mode_state": "off",
+    "fast_mode_disabled_reason": "sdk_opt_in_required",
+    "subagent_stats": {
+      "spawned": 0,
+      "requested": {
+        "background": 0,
+        "foreground": 0,
+        "unset": 0
+      },
+      "started_in_background": 0,
+      "max_depth": 0,
+      "spawned_by_subagents": 0,
+      "completed": 0,
+      "failed": 0,
+      "killed": {
+        "parent": 0,
+        "user": 0,
+        "system": 0
+      },
+      "refused": {
+        "depth_limit": 0,
+        "concurrency_limit": 0,
+        "budget": 0
+      },
+      "by_type": {}
+    },
+    "is_error": false,
+    "num_turns": 80,
+    "subtype": "success",
+    "api_error_status": null,
+    "ttft_ms": 2441,
+    "type": "result",
+    "duration_ms": 918694,
+    "uuid": "187b55b2-80a0-4fde-9bdb-a55d3d031b74",
+    "ttft_stream_ms": 1170,
+    "time_to_request_ms": 14,
+    "first_content_frame_ms": 1170,
+    "queued_turn_count": 0
+  },
+  "derivedReviewSha256": "e5bae2d8e820c96723f14ca540ee48eed864515c4ef100a66902344ac23fe6b4",
+  "derivedReviewBytes": 23751
+}

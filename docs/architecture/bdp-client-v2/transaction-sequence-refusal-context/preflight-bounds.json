@@ -1,0 +1,336 @@
+{
+  "stage": "draft-unexecuted",
+  "base": "d50f554cf6418ba036072ebf6795cb272cd6cbc1",
+  "baseTree": "7544b53aa8aa6d7edae94bd6bf0a4d157ee55985",
+  "branch": "codex/vickie-sequence-refusal-context",
+  "files": [
+    {
+      "path": "packages/server/src/transaction-service.ts",
+      "bytes": 24395,
+      "sha256": "6e1213f5546f8e910f61d9573a4b4486418f754014663aa067339715da9a214b",
+      "baseSha256": "c3d8b1e5f5e5b2588aa8a726e085c7f03ab80f91b34f6f477c2b550768317b5e",
+      "added": 12,
+      "removed": 0
+    },
+    {
+      "path": "packages/server/src/transaction-service.test.ts",
+      "bytes": 78316,
+      "sha256": "9174642351432941fe941cd6f9843c92722f359921b5430f62d5ff175555ddd7",
+      "baseSha256": "4b437a056e18c7a8942604fb539a46bae0e5779dd541dfb6c9b336bc93e83118",
+      "added": 133,
+      "removed": 0
+    },
+    {
+      "path": "packages/server/src/transaction-http.ts",
+      "bytes": 27010,
+      "sha256": "0859e2291ce335b482e9120b57f81387b1e8e7c1c7c4ca933eae00b54d2b09b1",
+      "baseSha256": "f80157d591f9cf2e0269d7eb6927e42d8a9abd81395552924528d1e3b0a81f5a",
+      "added": 11,
+      "removed": 3
+    },
+    {
+      "path": "packages/server/src/transaction-http.test.ts",
+      "bytes": 110825,
+      "sha256": "0b9886ff0c7b5f411a59886ddc14b912b1ce4ed9700f538d454270c54e0bedc0",
+      "baseSha256": "4e67bbc71431ba17509137dcd714605d524fdc739cee99e69c9edee2c7c69955",
+      "added": 150,
+      "removed": 0
+    },
+    {
+      "path": "apps/bdptest/src/transactional-sequence-refusal-installed.test.ts",
+      "bytes": 19327,
+      "sha256": "7861e55113e3e3bbf6621e526f2836a638e2bbcffafd2b321cc98e40846f1ba2",
+      "baseSha256": null,
+      "added": 501,
+      "removed": 0
+    },
+    {
+      "path": "docs/design/transaction-implementation-progress.md",
+      "bytes": 116687,
+      "sha256": "dadcde5f49535704fdf34dc946701682d09cbd8e10cdc107c29eca848181dde0",
+      "baseSha256": "97b34a9cc7d4bd6bf973015cc1c96b4c86900174f8354e688e0850dec6e086c1",
+      "added": 21,
+      "removed": 3
+    }
+  ],
+  "diffSha256": "e555a7cfa328993aab66f378fcfda3a07b4d3e6df82cba289effb23aa1405e2f",
+  "added": 828,
+  "removed": 6,
+  "requests": [
+    {
+      "index": 1,
+      "label": "seed-a",
+      "method": "POST",
+      "url": "https://reference.invalid/acme/operations/create-bead",
+      "key": "seed-a",
+      "accept": null,
+      "status": 200,
+      "body": "{\"id\":\"beads/a\",\"type\":\"https://reference.invalid/acme/types/task\",\"properties\":{\"title\":\"a\"}}",
+      "bodyBytes": 94,
+      "bodySha256": "8730ee46597d5173aa5f13593fd8282ada4fecc1729fd568974cbcdee7275ee8"
+    },
+    {
+      "index": 2,
+      "label": "seed-b",
+      "method": "POST",
+      "url": "https://reference.invalid/acme/operations/create-bead",
+      "key": "seed-b",
+      "accept": null,
+      "status": 200,
+      "body": "{\"id\":\"beads/b\",\"type\":\"https://reference.invalid/acme/types/task\",\"properties\":{\"title\":\"b\"}}",
+      "bodyBytes": 94,
+      "bodySha256": "ac92c80dc5ff82b89fc4c498a045cf1ce85d062c1ee66bbc50e8b749db1c0ef5"
+    },
+    {
+      "index": 3,
+      "label": "initial-capacity",
+      "method": "POST",
+      "url": "https://reference.invalid/acme/operations/sequence",
+      "key": null,
+      "accept": "text/plain",
+      "status": 413,
+      "body": "{\"operations\":[{\"operation\":\"createBead\",\"id\":\"beads/rejected-0\",\"type\":\"https://reference.invalid/acme/types/task\",\"properties\":{\"title\":\"rejected-0\"},\"idempotencyKey\":\"over-0\"},{\"operation\":\"createBead\",\"id\":\"beads/rejected-1\",\"type\":\"https://reference.invalid/acme/types/task\",\"properties\":{\"title\":\"rejected-1\"},\"idempotencyKey\":\"over-1\"},{\"operation\":\"createBead\",\"id\":\"beads/rejected-2\",\"type\":\"https://reference.invalid/acme/types/task\",\"properties\":{\"title\":\"rejected-2\"},\"idempotencyKey\":\"over-2\"},{\"operation\":\"createBead\",\"id\":\"beads/rejected-3\",\"type\":\"https://reference.invalid/acme/types/task\",\"properties\":{\"title\":\"rejected-3\"},\"idempotencyKey\":\"over-3\"},{\"operation\":\"createBead\",\"id\":\"beads/rejected-4\",\"type\":\"https://reference.invalid/acme/types/task\",\"properties\":{\"title\":\"rejected-4\"},\"idempotencyKey\":\"over-4\"},{\"operation\":\"createBead\",\"id\":\"beads/rejected-5\",\"type\":\"https://reference.invalid/acme/types/task\",\"properties\":{\"title\":\"rejected-5\"},\"idempotencyKey\":\"over-5\"},{\"operation\":\"createBead\",\"id\":\"beads/rejected-6\",\"type\":\"https://reference.invalid/acme/types/task\",\"properties\":{\"title\":\"rejected-6\"},\"idempotencyKey\":\"over-6\"},{\"operation\":\"createBead\",\"id\":\"beads/rejected-7\",\"type\":\"https://reference.invalid/acme/types/task\",\"properties\":{\"title\":\"rejected-7\"},\"idempotencyKey\":\"over-7\"},{\"operation\":\"createBead\",\"id\":\"beads/rejected-8\",\"type\":\"https://reference.invalid/acme/types/task\",\"properties\":{\"title\":\"rejected-8\"},\"idempotencyKey\":\"over-8\"},{\"operation\":\"createBead\",\"id\":\"beads/rejected-9\",\"type\":\"https://reference.invalid/acme/types/task\",\"properties\":{\"title\":\"rejected-9\"},\"idempotencyKey\":\"over-9\"},{\"operation\":\"createBead\",\"id\":\"beads/rejected-10\",\"type\":\"https://reference.invalid/acme/types/task\",\"properties\":{\"title\":\"rejected-10\"},\"idempotencyKey\":\"over-10\"},{\"operation\":\"createBead\",\"id\":\"beads/rejected-11\",\"type\":\"https://reference.invalid/acme/types/task\",\"properties\":{\"title\":\"rejected-11\"},\"idempotencyKey\":\"over-11\"},{\"operation\":\"createBead\",\"id\":\"beads/rejected-12\",\"type\":\"https://reference.invalid/acme/types/task\",\"properties\":{\"title\":\"rejected-12\"},\"idempotencyKey\":\"over-12\"},{\"operation\":\"createBead\",\"id\":\"beads/rejected-13\",\"type\":\"https://reference.invalid/acme/types/task\",\"properties\":{\"title\":\"rejected-13\"},\"idempotencyKey\":\"over-13\"},{\"operation\":\"createBead\",\"id\":\"beads/rejected-14\",\"type\":\"https://reference.invalid/acme/types/task\",\"properties\":{\"title\":\"rejected-14\"},\"idempotencyKey\":\"over-14\"},{\"operation\":\"createBead\",\"id\":\"beads/rejected-15\",\"type\":\"https://reference.invalid/acme/types/task\",\"properties\":{\"title\":\"rejected-15\"},\"idempotencyKey\":\"over-15\"},{\"operation\":\"createBead\",\"id\":\"beads/rejected-16\",\"type\":\"https://reference.invalid/acme/types/task\",\"properties\":{\"title\":\"rejected-16\"},\"idempotencyKey\":\"over-16\"},{\"operation\":\"createBead\",\"id\":\"beads/rejected-17\",\"type\":\"https://reference.invalid/acme/types/task\",\"properties\":{\"title\":\"rejected-17\"},\"idempotencyKey\":\"over-17\"},{\"operation\":\"createBead\",\"id\":\"beads/rejected-18\",\"type\":\"https://reference.invalid/acme/types/task\",\"properties\":{\"title\":\"rejected-18\"},\"idempotencyKey\":\"over-18\"},{\"operation\":\"createBead\",\"id\":\"beads/rejected-19\",\"type\":\"https://reference.invalid/acme/types/task\",\"properties\":{\"title\":\"rejected-19\"},\"idempotencyKey\":\"over-19\"},{\"operation\":\"createBead\",\"id\":\"beads/rejected-20\",\"type\":\"https://reference.invalid/acme/types/task\",\"properties\":{\"title\":\"rejected-20\"},\"idempotencyKey\":\"over-20\"},{\"operation\":\"createBead\",\"id\":\"beads/rejected-21\",\"type\":\"https://reference.invalid/acme/types/task\",\"properties\":{\"title\":\"rejected-21\"},\"idempotencyKey\":\"over-21\"},{\"operation\":\"createBead\",\"id\":\"beads/rejected-22\",\"type\":\"https://reference.invalid/acme/types/task\",\"properties\":{\"title\":\"rejected-22\"},\"idempotencyKey\":\"over-22\"},{\"operation\":\"createBead\",\"id\":\"beads/rejected-23\",\"type\":\"https://reference.invalid/acme/types/task\",\"properties\":{\"title\":\"rejected-23\"},\"idempotencyKey\":\"over-23\"},{\"operation\":\"createBead\",\"id\":\"beads/rejected-24\",\"type\":\"https://reference.invalid/acme/types/task\",\"properties\":{\"title\":\"rejected-24\"},\"idempotencyKey\":\"over-24\"},{\"operation\":\"createBead\",\"id\":\"beads/rejected-25\",\"type\":\"https://reference.invalid/acme/types/task\",\"properties\":{\"title\":\"rejected-25\"},\"idempotencyKey\":\"over-25\"},{\"operation\":\"createBead\",\"id\":\"beads/rejected-26\",\"type\":\"https://reference.invalid/acme/types/task\",\"properties\":{\"title\":\"rejected-26\"},\"idempotencyKey\":\"over-26\"},{\"operation\":\"createBead\",\"id\":\"beads/rejected-27\",\"type\":\"https://reference.invalid/acme/types/task\",\"properties\":{\"title\":\"rejected-27\"},\"idempotencyKey\":\"over-27\"},{\"operation\":\"createBead\",\"id\":\"beads/rejected-28\",\"type\":\"https://reference.invalid/acme/types/task\",\"properties\":{\"title\":\"rejected-28\"},\"idempotencyKey\":\"over-28\"},{\"operation\":\"createBead\",\"id\":\"beads/rejected-29\",\"type\":\"https://reference.invalid/acme/types/task\",\"properties\":{\"title\":\"rejected-29\"},\"idempotencyKey\":\"over-29\"},{\"operation\":\"createBead\",\"id\":\"beads/rejected-30\",\"type\":\"https://reference.invalid/acme/types/task\",\"properties\":{\"title\":\"rejected-30\"},\"idempotencyKey\":\"over-30\"},{\"operation\":\"createBead\",\"id\":\"beads/rejected-31\",\"type\":\"https://reference.invalid/acme/types/task\",\"properties\":{\"title\":\"rejected-31\"},\"idempotencyKey\":\"over-31\"},{\"operation\":\"createBead\",\"id\":\"beads/rejected-32\",\"type\":\"https://reference.invalid/acme/types/task\",\"properties\":{\"title\":\"rejected-32\"},\"idempotencyKey\":\"over-32\"}]}",
+      "bodyBytes": 5497,
+      "bodySha256": "c16ffbfa6d67f6a752cc9de8eb0bec03767e7335b5cc92742c20121fa9c4e779"
+    },
+    {
+      "index": 4,
+      "label": "initial-negotiation",
+      "method": "POST",
+      "url": "https://reference.invalid/acme/operations/sequence",
+      "key": null,
+      "accept": "text/plain",
+      "status": 406,
+      "body": "{\"operations\":[{\"operation\":\"createBead\",\"id\":\"beads/c\",\"type\":\"https://reference.invalid/acme/types/task\",\"properties\":{\"title\":\"original-c\"},\"idempotencyKey\":\"negotiation\"}]}",
+      "bodyBytes": 176,
+      "bodySha256": "ce725f9f700da4f94349fceb5dea7ca16a07cff88abc8986a0d6e84d3cf8b894"
+    },
+    {
+      "index": 5,
+      "label": "retained-root",
+      "method": "GET",
+      "url": "<observed seed receipt id>",
+      "key": null,
+      "accept": null,
+      "status": 200,
+      "body": "",
+      "bodyBytes": 0,
+      "bodySha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "index": 6,
+      "label": "unchanged-beads",
+      "method": "GET",
+      "url": "https://reference.invalid/acme/beads/?limit=32",
+      "key": null,
+      "accept": null,
+      "status": 200,
+      "body": "",
+      "bodyBytes": 0,
+      "bodySha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "index": 7,
+      "label": "unchanged-events",
+      "method": "GET",
+      "url": "https://reference.invalid/acme/events/",
+      "key": null,
+      "accept": null,
+      "status": 200,
+      "body": "",
+      "bodyBytes": 0,
+      "bodySha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "index": 8,
+      "label": "reuse-negotiation-key",
+      "method": "POST",
+      "url": "https://reference.invalid/acme/operations/create-bead",
+      "key": "negotiation",
+      "accept": null,
+      "status": 200,
+      "body": "{\"id\":\"beads/c\",\"type\":\"https://reference.invalid/acme/types/task\",\"properties\":{\"title\":\"corrected-c\"}}",
+      "bodyBytes": 104,
+      "bodySha256": "b02bd25db8ff6950caeccc03dfea81bdafd9a91849c25bc215625b42474df8ab"
+    },
+    {
+      "index": 9,
+      "label": "reuse-capacity-key",
+      "method": "POST",
+      "url": "https://reference.invalid/acme/operations/create-bead",
+      "key": "over-0",
+      "accept": null,
+      "status": 200,
+      "body": "{\"id\":\"beads/d\",\"type\":\"https://reference.invalid/acme/types/task\",\"properties\":{\"title\":\"d\"}}",
+      "bodyBytes": 94,
+      "bodySha256": "ddd8e5218882483f61a09a7a2e4f5cbe2374c7f6c9452ff4e7e256b345fdc36c"
+    },
+    {
+      "index": 10,
+      "label": "repeat-capacity",
+      "method": "POST",
+      "url": "https://reference.invalid/acme/operations/sequence",
+      "key": null,
+      "accept": "text/plain",
+      "status": 413,
+      "body": "{\"operations\":[{\"operation\":\"createBead\",\"id\":\"beads/rejected-0\",\"type\":\"https://reference.invalid/acme/types/task\",\"properties\":{\"title\":\"rejected-0\"},\"idempotencyKey\":\"repeat-over-0\"},{\"operation\":\"createBead\",\"id\":\"beads/rejected-1\",\"type\":\"https://reference.invalid/acme/types/task\",\"properties\":{\"title\":\"rejected-1\"},\"idempotencyKey\":\"repeat-over-1\"},{\"operation\":\"createBead\",\"id\":\"beads/rejected-2\",\"type\":\"https://reference.invalid/acme/types/task\",\"properties\":{\"title\":\"rejected-2\"},\"idempotencyKey\":\"repeat-over-2\"},{\"operation\":\"createBead\",\"id\":\"beads/rejected-3\",\"type\":\"https://reference.invalid/acme/types/task\",\"properties\":{\"title\":\"rejected-3\"},\"idempotencyKey\":\"repeat-over-3\"},{\"operation\":\"createBead\",\"id\":\"beads/rejected-4\",\"type\":\"https://reference.invalid/acme/types/task\",\"properties\":{\"title\":\"rejected-4\"},\"idempotencyKey\":\"repeat-over-4\"},{\"operation\":\"createBead\",\"id\":\"beads/rejected-5\",\"type\":\"https://reference.invalid/acme/types/task\",\"properties\":{\"title\":\"rejected-5\"},\"idempotencyKey\":\"repeat-over-5\"},{\"operation\":\"createBead\",\"id\":\"beads/rejected-6\",\"type\":\"https://reference.invalid/acme/types/task\",\"properties\":{\"title\":\"rejected-6\"},\"idempotencyKey\":\"repeat-over-6\"},{\"operation\":\"createBead\",\"id\":\"beads/rejected-7\",\"type\":\"https://reference.invalid/acme/types/task\",\"properties\":{\"title\":\"rejected-7\"},\"idempotencyKey\":\"repeat-over-7\"},{\"operation\":\"createBead\",\"id\":\"beads/rejected-8\",\"type\":\"https://reference.invalid/acme/types/task\",\"properties\":{\"title\":\"rejected-8\"},\"idempotencyKey\":\"repeat-over-8\"},{\"operation\":\"createBead\",\"id\":\"beads/rejected-9\",\"type\":\"https://reference.invalid/acme/types/task\",\"properties\":{\"title\":\"rejected-9\"},\"idempotencyKey\":\"repeat-over-9\"},{\"operation\":\"createBead\",\"id\":\"beads/rejected-10\",\"type\":\"https://reference.invalid/acme/types/task\",\"properties\":{\"title\":\"rejected-10\"},\"idempotencyKey\":\"repeat-over-10\"},{\"operation\":\"createBead\",\"id\":\"beads/rejected-11\",\"type\":\"https://reference.invalid/acme/types/task\",\"properties\":{\"title\":\"rejected-11\"},\"idempotencyKey\":\"repeat-over-11\"},{\"operation\":\"createBead\",\"id\":\"beads/rejected-12\",\"type\":\"https://reference.invalid/acme/types/task\",\"properties\":{\"title\":\"rejected-12\"},\"idempotencyKey\":\"repeat-over-12\"},{\"operation\":\"createBead\",\"id\":\"beads/rejected-13\",\"type\":\"https://reference.invalid/acme/types/task\",\"properties\":{\"title\":\"rejected-13\"},\"idempotencyKey\":\"repeat-over-13\"},{\"operation\":\"createBead\",\"id\":\"beads/rejected-14\",\"type\":\"https://reference.invalid/acme/types/task\",\"properties\":{\"title\":\"rejected-14\"},\"idempotencyKey\":\"repeat-over-14\"},{\"operation\":\"createBead\",\"id\":\"beads/rejected-15\",\"type\":\"https://reference.invalid/acme/types/task\",\"properties\":{\"title\":\"rejected-15\"},\"idempotencyKey\":\"repeat-over-15\"},{\"operation\":\"createBead\",\"id\":\"beads/rejected-16\",\"type\":\"https://reference.invalid/acme/types/task\",\"properties\":{\"title\":\"rejected-16\"},\"idempotencyKey\":\"repeat-over-16\"},{\"operation\":\"createBead\",\"id\":\"beads/rejected-17\",\"type\":\"https://reference.invalid/acme/types/task\",\"properties\":{\"title\":\"rejected-17\"},\"idempotencyKey\":\"repeat-over-17\"},{\"operation\":\"createBead\",\"id\":\"beads/rejected-18\",\"type\":\"https://reference.invalid/acme/types/task\",\"properties\":{\"title\":\"rejected-18\"},\"idempotencyKey\":\"repeat-over-18\"},{\"operation\":\"createBead\",\"id\":\"beads/rejected-19\",\"type\":\"https://reference.invalid/acme/types/task\",\"properties\":{\"title\":\"rejected-19\"},\"idempotencyKey\":\"repeat-over-19\"},{\"operation\":\"createBead\",\"id\":\"beads/rejected-20\",\"type\":\"https://reference.invalid/acme/types/task\",\"properties\":{\"title\":\"rejected-20\"},\"idempotencyKey\":\"repeat-over-20\"},{\"operation\":\"createBead\",\"id\":\"beads/rejected-21\",\"type\":\"https://reference.invalid/acme/types/task\",\"properties\":{\"title\":\"rejected-21\"},\"idempotencyKey\":\"repeat-over-21\"},{\"operation\":\"createBead\",\"id\":\"beads/rejected-22\",\"type\":\"https://reference.invalid/acme/types/task\",\"properties\":{\"title\":\"rejected-22\"},\"idempotencyKey\":\"repeat-over-22\"},{\"operation\":\"createBead\",\"id\":\"beads/rejected-23\",\"type\":\"https://reference.invalid/acme/types/task\",\"properties\":{\"title\":\"rejected-23\"},\"idempotencyKey\":\"repeat-over-23\"},{\"operation\":\"createBead\",\"id\":\"beads/rejected-24\",\"type\":\"https://reference.invalid/acme/types/task\",\"properties\":{\"title\":\"rejected-24\"},\"idempotencyKey\":\"repeat-over-24\"},{\"operation\":\"createBead\",\"id\":\"beads/rejected-25\",\"type\":\"https://reference.invalid/acme/types/task\",\"properties\":{\"title\":\"rejected-25\"},\"idempotencyKey\":\"repeat-over-25\"},{\"operation\":\"createBead\",\"id\":\"beads/rejected-26\",\"type\":\"https://reference.invalid/acme/types/task\",\"properties\":{\"title\":\"rejected-26\"},\"idempotencyKey\":\"repeat-over-26\"},{\"operation\":\"createBead\",\"id\":\"beads/rejected-27\",\"type\":\"https://reference.invalid/acme/types/task\",\"properties\":{\"title\":\"rejected-27\"},\"idempotencyKey\":\"repeat-over-27\"},{\"operation\":\"createBead\",\"id\":\"beads/rejected-28\",\"type\":\"https://reference.invalid/acme/types/task\",\"properties\":{\"title\":\"rejected-28\"},\"idempotencyKey\":\"repeat-over-28\"},{\"operation\":\"createBead\",\"id\":\"beads/rejected-29\",\"type\":\"https://reference.invalid/acme/types/task\",\"properties\":{\"title\":\"rejected-29\"},\"idempotencyKey\":\"repeat-over-29\"},{\"operation\":\"createBead\",\"id\":\"beads/rejected-30\",\"type\":\"https://reference.invalid/acme/types/task\",\"properties\":{\"title\":\"rejected-30\"},\"idempotencyKey\":\"repeat-over-30\"},{\"operation\":\"createBead\",\"id\":\"beads/rejected-31\",\"type\":\"https://reference.invalid/acme/types/task\",\"properties\":{\"title\":\"rejected-31\"},\"idempotencyKey\":\"repeat-over-31\"},{\"operation\":\"createBead\",\"id\":\"beads/rejected-32\",\"type\":\"https://reference.invalid/acme/types/task\",\"properties\":{\"title\":\"rejected-32\"},\"idempotencyKey\":\"repeat-over-32\"}]}",
+      "bodyBytes": 5728,
+      "bodySha256": "ccb7a982d39bb5a7749745888c5ecb205d0298cbfccc9bede9b4fb2adcfd9612"
+    },
+    {
+      "index": 11,
+      "label": "repeat-negotiation",
+      "method": "POST",
+      "url": "https://reference.invalid/acme/operations/sequence",
+      "key": null,
+      "accept": "text/plain",
+      "status": 406,
+      "body": "{\"operations\":[{\"operation\":\"createBead\",\"id\":\"beads/c\",\"type\":\"https://reference.invalid/acme/types/task\",\"properties\":{\"title\":\"original-c\"},\"idempotencyKey\":\"repeat-negotiation\"}]}",
+      "bodyBytes": 183,
+      "bodySha256": "6f25a491b3ec613bd39283231b858e831e2999cafff9ac06ea5aa7c6703c2f86"
+    },
+    {
+      "index": 12,
+      "label": "final-beads",
+      "method": "GET",
+      "url": "https://reference.invalid/acme/beads/?limit=32",
+      "key": null,
+      "accept": null,
+      "status": 200,
+      "body": "",
+      "bodyBytes": 0,
+      "bodySha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "index": 13,
+      "label": "final-events",
+      "method": "GET",
+      "url": "https://reference.invalid/acme/events/",
+      "key": null,
+      "accept": null,
+      "status": 200,
+      "body": "",
+      "bodyBytes": 0,
+      "bodySha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    }
+  ],
+  "staticRoutes": [
+    {
+      "method": "POST",
+      "url": "https://reference.invalid/acme/operations/create-bead"
+    },
+    {
+      "method": "POST",
+      "url": "https://reference.invalid/acme/operations/sequence"
+    },
+    {
+      "method": "GET",
+      "url": "https://reference.invalid/acme/beads/?limit=32"
+    },
+    {
+      "method": "GET",
+      "url": "https://reference.invalid/acme/events/"
+    }
+  ],
+  "routePreimage": "[{\"method\":\"POST\",\"url\":\"https://reference.invalid/acme/operations/create-bead\"},{\"method\":\"POST\",\"url\":\"https://reference.invalid/acme/operations/sequence\"},{\"method\":\"GET\",\"url\":\"https://reference.invalid/acme/beads/?limit=32\"},{\"method\":\"GET\",\"url\":\"https://reference.invalid/acme/events/\"}]",
+  "routeSha256": "f7a455537dfef750506fcbdaec8b858a4d1484f37a56693639ced38f5fb24d1c",
+  "largestBodyBytes": 5728,
+  "totalBodyBytes": 11970,
+  "staticMaximumUrlBytes": 53,
+  "limits": {
+    "body": 65536,
+    "headers": 16384,
+    "response": 131072,
+    "target": 8192,
+    "exchangeMs": 5000,
+    "cohortMs": 90000,
+    "outerMs": 120000,
+    "closeMs": 10000
+  },
+  "proposedInstalled": {
+    "newPositive": {
+      "requests": 13,
+      "children": 1
+    },
+    "unchangedDirect": {
+      "requests": 14,
+      "children": 1
+    },
+    "parentNegative": {
+      "expectedRequests": 3,
+      "maximumRequests": 13,
+      "children": 1
+    },
+    "expectedRequests": 30,
+    "maximumRequests": 40,
+    "children": 3,
+    "executionAuthorized": false
+  },
+  "responseEstimates": {
+    "receipt": 8192,
+    "problem": 4096,
+    "collection": 16384,
+    "events": 32768,
+    "status": "planning estimates, not observations"
+  },
+  "controls": [
+    {
+      "name": "omitted-context",
+      "productionFile": "packages/server/src/transaction-http.ts",
+      "patchSha256": "8c25fc2d4f2043bd0be74bcb427a0259bb4a1101fa8e1cf9d5ad4e37ceeff0c9",
+      "mutantSha256": "2db4b30cf158f25e5e651485b9649cccbbc11c2ba17cc79e9c29d6e98a038d13",
+      "testFile": "packages/server/src/transaction-http.test.ts",
+      "selectors": [
+        "observes sequence refusal context with 413 first",
+        "observes sequence refusal context with 406 first"
+      ],
+      "expectedFailures": [
+        "sequence refusal context presence: 413 bdp-scope-epoch",
+        "sequence refusal context presence: 406 bdp-scope-epoch"
+      ],
+      "executed": false
+    },
+    {
+      "name": "stale-context",
+      "productionFile": "packages/server/src/transaction-http.ts",
+      "patchSha256": "1ad41f0c743e78786a6dfad9175e395c2f896f143829bb6da0fccb1d781a8e74",
+      "mutantSha256": "fca353d8c5ca236bb3255b9e1fb004fc775ca811d624b3df2ec0e7a6e0ac17cf",
+      "testFile": "packages/server/src/transaction-http.test.ts",
+      "selectors": [
+        "observes sequence refusal context with 413 first",
+        "observes sequence refusal context with 406 first"
+      ],
+      "expectedFailures": [
+        "sequence refusal current context: 413 bdp-scope-position",
+        "sequence refusal current context: 406 bdp-scope-position"
+      ],
+      "executed": false
+    },
+    {
+      "name": "over-wrapped-exclusion",
+      "productionFile": "packages/server/src/transaction-http.ts",
+      "patchSha256": "5ad8571498859a178e33702a5a60d297965bbef804d49984fd14ba5e1bf16b4b",
+      "mutantSha256": "6855a87316e0c610ce71fa7002769d86864816bdbd029eba9947af88467861bc",
+      "testFile": "packages/server/src/transaction-service.test.ts",
+      "selectors": [
+        "keeps excluded sequence responses unobserved and without refusal context"
+      ],
+      "expectedFailures": [
+        "excluded sequence refusal malformed-request context: bdp-scope-epoch"
+      ],
+      "executed": false
+    }
+  ],
+  "preservation": {
+    "discoveryPrefixUnchanged": true,
+    "directHttpSuffixUnchanged": true,
+    "directInstalledTestSha256": "c817729792a8bd97473b4b7ebe06474d4a0c27bcd5122e58268b997aa03408b0"
+  },
+  "executed": {
+    "tests": false,
+    "build": false,
+    "controls": false,
+    "services": false,
+    "installed": false
+  }
+}

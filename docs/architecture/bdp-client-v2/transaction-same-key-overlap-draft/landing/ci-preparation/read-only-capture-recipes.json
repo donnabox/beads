@@ -1,0 +1,95 @@
+{
+  "status": "RECIPES_ONLY_NOT_EXECUTED",
+  "noPollingLoop": true,
+  "noAutomaticRetry": true,
+  "commands": [
+    {
+      "purpose": "One actual PR snapshot before readiness/merge",
+      "argv": [
+        "gh",
+        "api",
+        "repos/gastownhall/bdp/pulls/134"
+      ],
+      "retain": "pr-premerge.json"
+    },
+    {
+      "purpose": "Exact run metadata including head/event/attempt/status",
+      "argv": [
+        "gh",
+        "api",
+        "repos/gastownhall/bdp/actions/runs/38798151776"
+      ],
+      "retain": "run-terminal.json"
+    },
+    {
+      "purpose": "Exact job metadata with every actual step and timestamps",
+      "argv": [
+        "gh",
+        "api",
+        "repos/gastownhall/bdp/actions/jobs/116639895675"
+      ],
+      "retain": "job-terminal.json"
+    },
+    {
+      "purpose": "All required/status checks for candidate; retain check identities and head SHA",
+      "argv": [
+        "gh",
+        "api",
+        "repos/gastownhall/bdp/commits/18f5428686dd84fb139c9dbbcbe39d5958012323/check-runs"
+      ],
+      "retain": "candidate-check-runs.json",
+      "note": "Paginate if response incomplete; never discard a failure/required pending check."
+    },
+    {
+      "purpose": "FULL raw job logs only after terminal, not truncated gh run view output",
+      "argv": [
+        "gh",
+        "api",
+        "repos/gastownhall/bdp/actions/jobs/116639895675/logs"
+      ],
+      "stdoutRedirect": "ci-full.log",
+      "stderrRedirect": "ci-full.stderr.txt",
+      "retainExit": "ci-full-download-exit.json",
+      "note": "Capture actual CLI exit, size and SHA256; do not parse only a truncated tool display."
+    },
+    {
+      "purpose": "Actual immutable synthetic checkout identified from complete checkout log",
+      "argv": [
+        "gh",
+        "api",
+        "repos/gastownhall/bdp/git/commits/<ACTUAL_SYNTHETIC_SHA>"
+      ],
+      "retain": "synthetic-commit.json",
+      "pendingParameter": true
+    },
+    {
+      "purpose": "Current main immediately before merge",
+      "argv": [
+        "gh",
+        "api",
+        "repos/gastownhall/bdp/git/ref/heads/main"
+      ],
+      "retain": "main-premerge.json"
+    },
+    {
+      "purpose": "Read back actual PR merge outcome after root merge",
+      "argv": [
+        "gh",
+        "api",
+        "repos/gastownhall/bdp/pulls/134"
+      ],
+      "retain": "pr-postmerge.json"
+    },
+    {
+      "purpose": "Read actual immutable merged commit from observed merge SHA",
+      "argv": [
+        "gh",
+        "api",
+        "repos/gastownhall/bdp/git/commits/<ACTUAL_MERGE_SHA>"
+      ],
+      "retain": "merged-commit.json",
+      "pendingParameter": true
+    }
+  ],
+  "safety": "No script invokes these recipes. Root must choose actual capture time and run read-only commands under session guard. No fetch, push, ready, merge or cancel command is provided."
+}

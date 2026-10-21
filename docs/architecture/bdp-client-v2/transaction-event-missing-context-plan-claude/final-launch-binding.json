@@ -1,0 +1,27 @@
+{
+  "head": "88c9408e908590ab1a4c64c9b9dee1a8b705999c",
+  "tree": "b2d9f2c18502e0778c51123be8b4564af052d803",
+  "branch": "codex/vickie-event-missing-context",
+  "hashes": {},
+  "reviewedSourceHashes": {
+    "docs/specs/bdp.md": "f036103ffdf5f89fa3a2033570e1e987c4cd203cd80b1c633cb44615123f892e",
+    "packages/server/src/transaction-store.ts": "0cda4b6488f589258eda46d1a00612e0278228172fc102305d889fe3c4364ad1",
+    "packages/server/src/transaction-http.ts": "4fd4758726c363c342e9a7b292e56e3f8b17dd1beb7b98d45554bd07a25dde83",
+    "packages/server/src/transaction-service.ts": "191767f53b7f95503e39d7579a16b4843b64d90b4c887257a22352c446058409",
+    "packages/server/src/transaction-runtime.ts": "77954f0a85029d76443feac54cd53cda4339ffc126660ace5a9f5af92466c573",
+    "packages/server/src/transaction-events.test.ts": "9fa1e8fc59e9abd1660ff13ac456f8506d01aebe7766ce8f3df580c37e128213",
+    "packages/server/src/read-http.ts": "31934105eff6fff8ded8ce2ca9e3c19028991ca7c3d5f51b848004177e8c9268"
+  },
+  "plans": {
+    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-event-missing-context-plan.md": "cfeb672740e393b71376b4d7cf39989d7fd8ea75f097195279e2525844db8c9f",
+    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-event-missing-context-plan-ledger.json": "457c0c33d0558cb92c4bbdd0ae060f81446656c6562ef59c5eb0e394b7f6ce18",
+    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-event-missing-context-native-plan-review.md": "a56db51ca4f7761e0e5f468c9490d4f71b58e41a71eaea38277ce913472204f2",
+    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-event-missing-context-plan-claude-prompt.txt": "f95d8d8f283ccabea247c9a1860c0445c90a1140e583de262583c778b6adec15",
+    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-event-missing-context-plan-claude-prompt-final.txt": "b9cdeeadcb859e02dc9ffe80ca8f15e29cec8189429e7ea887d2f84f63a3619b"
+  },
+  "diffSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+  "promptSha256": "b9cdeeadcb859e02dc9ffe80ca8f15e29cec8189429e7ea887d2f84f63a3619b",
+  "supervisorSha256": "030253ef42c2f6eb432ba197356f86fac17f6eb0db34f562f2688aa6ed45f5c7",
+  "sourceScope": "Clean complete tracked source snapshot; seven supplied source files and five external plan/review/prompt artifacts verified before/after",
+  "reviewScope": "Narrow missing Event context serving PLAN only; no authoring or execution release"
+}

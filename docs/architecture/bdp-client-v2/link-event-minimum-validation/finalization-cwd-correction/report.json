@@ -1,0 +1,19 @@
+{
+  "reason": "Native preparation reviewer requested current packet helper cwd attribution; argv and __file__ already bound Link outputs",
+  "changedHelperCwdStages": [
+    "bind-fresh-build",
+    "review-focused-source",
+    "prepare-package-directory",
+    "verify-archives",
+    "prepare-consumer",
+    "verify-installed-consumer",
+    "review-event-minimum-external",
+    "review-event-missing-context-external",
+    "review-event-bead-minimum-external",
+    "review-event-link-minimum-external"
+  ],
+  "sourceChanged": false,
+  "helperBytesChanged": false,
+  "rootFlagsChanged": false,
+  "executionPerformed": false
+}

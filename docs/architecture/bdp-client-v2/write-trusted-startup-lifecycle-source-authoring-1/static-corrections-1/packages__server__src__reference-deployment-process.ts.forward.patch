@@ -1,0 +1,27 @@
+--- before/packages/server/src/reference-deployment-process.ts
++++ after/packages/server/src/reference-deployment-process.ts
+@@ -55,6 +55,7 @@
+     const prepared = await loadReferenceDeployment(input);
+     controller.signal.throwIfAborted();
+     const runtime = await startPreparedReferenceDeployment(prepared, controller.signal);
++    let primary: unknown;
+     try {
+       controller.signal.throwIfAborted();
+       if (!process.connected || stopping) throw new Error("stopped before ready");
+@@ -64,10 +65,13 @@
+       }, (error: Error | null) => error ? reject(error) : resolve()));
+       await Promise.race([stopped.promise, runtime.completion]);
+       if (controlFailure !== undefined) throw controlFailure;
+-    } finally {
+-      // close memoizes both success and failure. It drains actual admitted work.
+-      await runtime.close();
++    } catch (error) { primary = error; }
++    try { await runtime.close(); }
++    catch (cleanup) {
++      if (primary !== undefined) throw new AggregateError([primary, cleanup], "reference lifecycle terminal failure");
++      throw cleanup;
+     }
++    if (primary !== undefined) throw primary;
+   } finally {
+     if (control) process.removeListener("message", control);
+     process.removeListener("SIGTERM", stop);

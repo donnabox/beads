@@ -1,0 +1,1 @@
+Operator requested pause on 2026-10-13. Review process group 36334 was stopped before final output. Review is incomplete, not acceptance or a failure finding. Preserve the frozen target and rerun this review only after operator resumes work.

@@ -1,0 +1,68 @@
+--- original/run-source.py
++++ followon/run-source.py
+@@ -15,19 +15,19 @@
+ P = Path(__file__).resolve().parent
+ D = P.parent
+ W = Path("/Users/dbox/repos/wt/vickie/vickie-sequence-member-evidence")
+-E = D / "run"
++E = D / "run-followon"
+ L = Path("/Users/dbox/repos/wt/vickie/bdp-integration-logs")
+ GUARD = L / "guarded-action.py"
+ BINDING = D / "redirect-repair/source-binding.json"
+-COMMANDS = D / "commands.json"
++COMMANDS = P / "commands.json"
+ BINDING_SHA = "acf190e742dfb669fe5607085a3ac60c5ecb66f4f86b1f05025424a7873615b0"
+-COMMANDS_SHA = "7f2d7dfb8ec33809c27bcf85be759a42365f7d76e7c299666979b5d82bf19291"
++COMMANDS_SHA = "333e20132d6c468aa8b53cde0feae590de78b7446110d5ee9e4cfcb23e1c365c"
++PRIOR_SHA = "ffe23db70516212252b3f30ee04b0e9557c305ecc37fadbea580aafe8d646932"
+ GUARD_SHA = "fd81ba029cd4e7c7e60623df89e8292af91141d311d9ce789ed19e2152375e84"
+ HEAD = "88c9408e908590ab1a4c64c9b9dee1a8b705999c"
+ TREE = "b2d9f2c18502e0778c51123be8b4564af052d803"
+ SESSION = "2026-10-08T20:26:35Z-81e5"
+-ORDER = ["offline-setup", "typecheck", "build", "format-check", "lint", "boundaries",
+-         "read-seal", "events-positive", "sse-regression"]
++ORDER = ["owners-followon", "sse-regression"]
+ 
+ def require(ok, message):
+     if not ok:
+@@ -66,6 +66,32 @@
+             patch += result.stdout
+     return sha(patch)
+ 
++def verify_prior(source):
++    p = P / "prior-evidence.json"
++    require(sha(p.read_bytes()) == PRIOR_SHA, "Historical evidence pins changed")
++    prior = json.loads(p.read_text())
++    for path, digest in prior["files"].items():
++        require(sha(Path(path).read_bytes()) == digest, "Historical evidence changed")
++    require(prior["sourceAfter"] == source, "Historical source differs")
++    for stage in prior["staticStages"]:
++        r = json.loads((D / "run" / (stage + ".exit.json")).read_text())
++        require(r["exit"] == 0 and r["supervisorExit"] == 0 and r["sourceUnchanged"]
++                and r["sourceSha256After"] == source and not r["errors"], "Prior static stage failed")
++    r = json.loads((D / "run/events-positive.exit.json").read_text())
++    require(r["exit"] == 0 and r["supervisorExit"] == 1 and r["sourceUnchanged"]
++            and r["errors"] == ["result-adjudication:RuntimeError"]
++            and not r["timeout"] and not r["forcedCleanup"], "Unexpected prior outcome")
++    report = json.loads((D / "run/events-positive.json").read_text())
++    cases = [a for f in report["testResults"] for a in f["assertionResults"]]
++    executed = [a for a in cases if a["status"] not in ["pending", "skipped", "todo"]]
++    require(len(executed) == 4 and all(a["status"] == "passed" for a in executed)
++            and sorted(a["fullName"] for a in executed) == sorted(prior["actualPassed"]), "Actual four passes changed")
++    require(sorted(a["fullName"] for a in cases if a["fullName"].startswith("captures immutable") and a["status"] == "skipped")
++            == sorted(prior["actualSkippedOwners"]), "Skipped owner partition changed")
++    require(report["success"] and report["numPassedTests"] == 4 and report["numFailedTests"] == 0
++            and not report.get("unhandledErrors") and not report.get("errors"), "Prior JSON errors")
++    require(not (D / "run/sse-regression.started.json").exists(), "SSE already attempted in original run")
++
+ def load_gate(name):
+     require(name in ORDER, "Control, package and installed stages are separately closed")
+     gate = json.loads((P / "execution-gate.json").read_text())
+@@ -81,6 +107,7 @@
+     authority = Path(acceptance["path"])
+     require(authority.is_relative_to(L) and sha(authority.read_bytes()) == acceptance["sha256"], "Root acceptance missing or changed")
+     source = source_hashes()
++    verify_prior(source)
+     binding = json.loads(BINDING.read_text())
+     require(source_patch_hash() == binding["diffSha256"], "Full draft diff changed")
+     for previous in ORDER[:ORDER.index(name)]:

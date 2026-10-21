@@ -1,0 +1,153 @@
+{
+  "method": "Literal unchanged parser/runner/supervisor control-flow DATA inventory; NOT evaluated controls",
+  "cases": [
+    {
+      "id": "P01",
+      "input": "timed_out true",
+      "sourceDerivedExpected": "timeout",
+      "executed": false
+    },
+    {
+      "id": "P02",
+      "input": "wrapper_error present",
+      "sourceDerivedExpected": "wrapper_error",
+      "executed": false
+    },
+    {
+      "id": "P03",
+      "input": "remainingProcesses nonempty or cleanup_required true",
+      "sourceDerivedExpected": "process_cleanup_failure",
+      "executed": false
+    },
+    {
+      "id": "P04",
+      "input": "source or packet changed",
+      "sourceDerivedExpected": "binding_changed",
+      "executed": false
+    },
+    {
+      "id": "P05",
+      "input": "parse_errors >0",
+      "sourceDerivedExpected": "invalid_stream",
+      "executed": false
+    },
+    {
+      "id": "P06",
+      "input": "no terminal result",
+      "sourceDerivedExpected": "missing_result",
+      "executed": false
+    },
+    {
+      "id": "P07",
+      "input": "two terminal results",
+      "sourceDerivedExpected": "multiple_results",
+      "executed": false
+    },
+    {
+      "id": "P08",
+      "input": "subtype contains max_turn",
+      "sourceDerivedExpected": "max_turns",
+      "executed": false
+    },
+    {
+      "id": "P09",
+      "input": "result.is_error true or error subtype",
+      "sourceDerivedExpected": "result_error",
+      "executed": false
+    },
+    {
+      "id": "P10",
+      "input": "CLI exit nonzero",
+      "sourceDerivedExpected": "cli_error",
+      "executed": false
+    },
+    {
+      "id": "P11",
+      "input": "subtype not success or is_error not literal false",
+      "sourceDerivedExpected": "unknown_result_schema",
+      "executed": false
+    },
+    {
+      "id": "P12",
+      "input": "permission_denials nonempty",
+      "sourceDerivedExpected": "permission_denied",
+      "executed": false
+    },
+    {
+      "id": "P13",
+      "input": "missing/nonstring/blank result text",
+      "sourceDerivedExpected": "empty_result",
+      "executed": false
+    },
+    {
+      "id": "P14",
+      "input": "single success/is_error false/nonempty result/raw0/unchanged/clean",
+      "sourceDerivedExpected": "review_complete; approval still false",
+      "executed": false
+    },
+    {
+      "id": "G01",
+      "input": "outer rootLaunchReleased false",
+      "sourceDerivedExpected": "refuses before attempt creation",
+      "executed": false
+    },
+    {
+      "id": "G02",
+      "input": "inner rootLaunchReleased false",
+      "sourceDerivedExpected": "refuses before source outputs",
+      "executed": false
+    },
+    {
+      "id": "G03",
+      "input": "inner released binding differs by any field besides rootLaunchReleased",
+      "sourceDerivedExpected": "outer refuses",
+      "executed": false
+    },
+    {
+      "id": "G04",
+      "input": "any of nine prior inner outputs or prior outer attempt exists",
+      "sourceDerivedExpected": "refuses; no retry",
+      "executed": false
+    },
+    {
+      "id": "G05",
+      "input": "current role session superseded/ambiguous",
+      "sourceDerivedExpected": "guard refuses; preserved local terminal allowed",
+      "executed": false
+    },
+    {
+      "id": "G06",
+      "input": "source679/status/owned6/diffHEAD/head/context/artifact changed",
+      "sourceDerivedExpected": "binding refuses; no source authoring",
+      "executed": false
+    },
+    {
+      "id": "O01",
+      "input": "reviewer first seen zombie without prior live authentication",
+      "sourceDerivedExpected": "identity failure/UNKNOWN; no relaxation",
+      "executed": false
+    },
+    {
+      "id": "O02",
+      "input": "known group survives without authenticated anchor",
+      "sourceDerivedExpected": "ownership UNKNOWN/failure, never absence or historical numeric signal",
+      "executed": false
+    },
+    {
+      "id": "O03",
+      "input": "normal wrapper exit but reviewer/group remains",
+      "sourceDerivedExpected": "failed cleanup, not complete",
+      "executed": false
+    },
+    {
+      "id": "O04",
+      "input": "actual TERM1790/KILL1798/total1800 reached or receipt missing",
+      "sourceDerivedExpected": "failed/timeout/UNKNOWN, no new attempt",
+      "executed": false
+    }
+  ],
+  "noNewParserOrOwnershipRules": true,
+  "nativeSupervisorRequires": 22,
+  "normalCompletionNotApproval": true,
+  "pastFailedSupervisionKept": true
+}

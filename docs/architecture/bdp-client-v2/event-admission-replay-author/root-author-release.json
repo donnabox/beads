@@ -1,0 +1,39 @@
+{
+  "at": "2026-10-17T22:57:13.800643+00:00",
+  "roleSession": "2026-10-08T20:26:35Z-81e5",
+  "kind": "Root acceptance of completed council dispositions and exact native plan closure; source authoring only",
+  "planSha256": "b5794ea2408ec867006a0b1fefed1af1a4866a186f890cb343763ad74e7c9f1f",
+  "planIndexSha256": "934c9b9e66cd9f8cfad6fc8203fa04c59f4836fa5c9f4111abe31da01d7942e8",
+  "nativePlanClosureSha256": "c6b5cb5dc375550e05ebdedd6262395aee977273e5fa3a15f4cc04b8dd7aadc5",
+  "validationPlanSha256": "ae6c10ff60e68dc236e2b207a793b2eb273f34c32a2a6d6b26c7f38efb302b93",
+  "validationIndexSha256": "fc71e90a4bbc4417e8c7f51a9744b6b23a8bd23b9609e102a48f776524b20968",
+  "nativeValidationClosureSha256": "c9dd0c896ef1cff35f1a48673e0d09e395878329a61eac6a45ac08fb46ada21b",
+  "sourceCount": 679,
+  "contextCount": 9,
+  "base": "9f89271e2563a105410789ca8ca1e77dfb4d0b9f",
+  "ownedFiles": [
+    "packages/server/src/transaction-http.ts",
+    "packages/server/src/transaction-service.ts",
+    "packages/server/src/transaction-store.ts",
+    "packages/server/src/transaction-events.test.ts",
+    "packages/server/src/transaction-event-sse.test.ts",
+    "apps/bdptest/src/transactional-event-sse-installed.test.ts"
+  ],
+  "authorWorktree": "/Users/dbox/repos/wt/vickie/vickie-event-admission-replay-minimum",
+  "authorBranch": "codex/vickie-event-admission-replay-minimum",
+  "owner": "event_restart_plan_review",
+  "sourceAuthoringReleased": true,
+  "formatterReleased": false,
+  "testReleased": false,
+  "buildReleased": false,
+  "installReleased": false,
+  "runtimeReleased": false,
+  "commitReleased": false,
+  "pushReleased": false,
+  "conditions": [
+    "Exactly six reviewed files; no scope or deadline widening.",
+    "Finite failed classification preserves supplied input and owner source-before-tuple validation; beginEvents strict synchronous capture outside catch.",
+    "Freeze full patch, source/context pins and report schemas before native and actual Claude CODE review.",
+    "Preserve every prior failed or superseded artifact; PR166 stays untouched."
+  ]
+}

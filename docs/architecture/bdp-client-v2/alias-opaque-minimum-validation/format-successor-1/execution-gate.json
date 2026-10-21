@@ -1,0 +1,59 @@
+{
+  "released": true,
+  "rootPlanAccepted": true,
+  "rootExactSourceAccepted": true,
+  "session": "2026-10-08T20:26:35Z-81e5",
+  "mode": "final",
+  "approvedStages": [
+    "workspace-install",
+    "bind-workspace-tools",
+    "typecheck",
+    "format-check",
+    "lint",
+    "fresh-build",
+    "bind-fresh-build",
+    "focused-source",
+    "review-focused-source",
+    "node-version",
+    "prepare-package-directory",
+    "pack-protocol",
+    "pack-server",
+    "verify-archives",
+    "prepare-consumer",
+    "consumer-install",
+    "verify-installed-consumer",
+    "alias-history-external",
+    "review-alias-history-external",
+    "alias-opaque-external",
+    "review-alias-opaque-external"
+  ],
+  "staticValidationAuthorized": true,
+  "nativeCodeReviewDisposed": true,
+  "actualClaudeReviewDisposed": true,
+  "implementationIndexSha256": "234e8ec43e6d986b1085de78e8257079a3b9c3d411f6c0fa4720410df445bd4a",
+  "sourceBinding": {
+    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/alias-opaque-minimum-validation/format-successor-1/source-binding.json",
+    "sha256": "86eaf40e4dad7a3b52be592094fea7f030ca1a6326e3319342864ef0e1249530"
+  },
+  "baseTools": {
+    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/alias-opaque-minimum-validation/format-successor-1/base-tools.json",
+    "sha256": "82d52d2d6dce29cfc94d281b463e56818f960aaa7337b73e2384fe23c47c977a"
+  },
+  "workspaceTools": {
+    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/alias-opaque-minimum-validation/implementation/run/workspace-tools.json",
+    "sha256": "b677321f92c56396d877d85b7ba1a2e0be3c65f8d530e7e3b61f74647e602767"
+  },
+  "rootDisposition": {
+    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/alias-opaque-minimum-validation/format-successor-1/root-runtime-disposition.json",
+    "sha256": "e1e87f5a366168d95ad38d34adf1d9b98af795ed4bd30f0f49d696de5e32b5cd"
+  },
+  "consumerLockSha256": "38bb7d3bd8291e9408977285e6bbb1e5620f03bf3eef17b0555a3e0e46944f23",
+  "installedProvenance": {
+    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/alias-opaque-minimum-validation/format-successor-1/run/installed-provenance.json",
+    "sha256": "8926d1803f22b92326bd921b1bfe9a3365392d1827e82af3f4e4e080ce751964"
+  },
+  "consumerInventory": {
+    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/alias-opaque-minimum-validation/format-successor-1/run/installed-consumer-inventory.json",
+    "sha256": "002a857742cd859ecf8719ef38c9a27c703e82756cf061a73c57cfc4c28ef7ed"
+  }
+}

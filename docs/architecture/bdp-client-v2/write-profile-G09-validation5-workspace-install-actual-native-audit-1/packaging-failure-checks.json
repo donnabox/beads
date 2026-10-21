@@ -1,0 +1,22 @@
+{
+  "BCAndOtherStateFieldsUnchanged": true,
+  "actualRuntimeRerun": false,
+  "attributionLimit": "Corrected evidence2 serialization is ROOT source-attributed original actual state; not independently decoded raw original tool/wire receipt. Invalid evidence1 is preserved and never adopted.",
+  "badEmbeddedStateEqualsTraceJSON": true,
+  "correctApprovedStages": "['node-version','pnpm-version','workspace-install','bind-workspace-tools']",
+  "dumpBeforeBaselineAssertion": true,
+  "evidence2AEqualsPublishedBaseline": true,
+  "failedAuthorTraceSha256": "0f201f1f6a252f4d8a696a3a363362fb44f28ce102ecfd3366f19d5034159558",
+  "failureRecordSha256": "1bfe702a768c3fccea0e6c7f421eac188a921baa3b4ae3de0a2f327bb212c109",
+  "invalidEvidence1": {
+    "actualIssuedSourceAuthority": false,
+    "dispatchStateSha256": "0fa832b0a6ade742c2892cd66ed6f9f3be025881194f9ba50e8750e6b881888f",
+    "files": 1,
+    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation5-workspace-install-root-tool-evidence-1"
+  },
+  "onlyChangedEmbeddedSourceLine": 37,
+  "topLevelDiffKeys": [
+    "issuedSources"
+  ],
+  "wrongApprovedStages": "['node-version','workspace-install','workspace-install','bind-workspace-tools']"
+}

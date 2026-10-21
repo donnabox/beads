@@ -1,0 +1,70 @@
+
+ RUN  v4.1.10 /Users/dbox/repos/wt/vickie/bdp-client-audit-20261008/bdp
+
+ ✓ packages/server/src/read-selector.test.ts > Read Selector > preserves candidate order and identities without mutating records 1ms
+ ✓ packages/server/src/read-selector.test.ts > Read Selector > applies !, &&, ||, and parentheses with JSONPath precedence 0ms
+ ✓ packages/server/src/read-selector.test.ts > Read Selector > supports the == operator 0ms
+ ✓ packages/server/src/read-selector.test.ts > Read Selector > supports the != operator 0ms
+ ✓ packages/server/src/read-selector.test.ts > Read Selector > supports the < operator 0ms
+ ✓ packages/server/src/read-selector.test.ts > Read Selector > supports the <= operator 0ms
+ ✓ packages/server/src/read-selector.test.ts > Read Selector > supports the > operator 0ms
+ ✓ packages/server/src/read-selector.test.ts > Read Selector > supports the >= operator 0ms
+ ✓ packages/server/src/read-selector.test.ts > Read Selector > supports string ordering and never coerces cross-type ordering or equality 0ms
+ ✓ packages/server/src/read-selector.test.ts > Read Selector > treats own missing-path status as existence, including null and undefined values 0ms
+ ✓ packages/server/src/read-selector.test.ts > Read Selector > selects Bead identity/type fields and Link endpoint IDs without normalization 0ms
+ ✓ packages/server/src/read-selector.test.ts > Read Selector > projects response-only revision out of Selector candidates 0ms
+ ✓ packages/server/src/read-selector.test.ts > Read Selector > parses escaped JSON strings and numeric, boolean, and null literals 0ms
+ ✓ packages/server/src/read-selector.test.ts > Read Selector > supports RFC singular bracket names and canonical array indices 0ms
+ ✓ packages/server/src/read-selector.test.ts > Read Selector > supports RFC single-quoted literals and quote-specific escapes 0ms
+ ✓ packages/server/src/read-selector.test.ts > Read Selector > orders strings lexicographically by Unicode scalar value 0ms
+ ✓ packages/server/src/read-selector.test.ts > Read Selector > rejects excluded feature $[?@..properties.status == "open"] 0ms
+ ✓ packages/server/src/read-selector.test.ts > Read Selector > rejects excluded feature $[?@.*] 0ms
+ ✓ packages/server/src/read-selector.test.ts > Read Selector > rejects excluded feature $[?length(@.properties) == 1] 0ms
+ ✓ packages/server/src/read-selector.test.ts > Read Selector > rejects excluded feature $[?@.properties.status =~ "open"] 0ms
+ ✓ packages/server/src/read-selector.test.ts > Read Selector > rejects excluded feature $[?@.properties[?@.status]] 0ms
+ ✓ packages/server/src/read-selector.test.ts > Read Selector > rejects excluded feature $[?@.properties.left == @.properties.right] 0ms
+ ✓ packages/server/src/read-selector.test.ts > Read Selector > rejects excluded feature $[?@.properties.a,@.properties.b] 0ms
+ ✓ packages/server/src/read-selector.test.ts > Read Selector > rejects excluded feature $[?@.properties.value == [1]] 0ms
+ ✓ packages/server/src/read-selector.test.ts > Read Selector > rejects excluded feature $[?@.properties.value == {"x":1}] 0ms
+ ✓ packages/server/src/read-selector.test.ts > Read Selector > rejects excluded feature $[?@.properties.status].name 0ms
+ ✓ packages/server/src/read-selector.test.ts > Read Selector > rejects excluded feature $[?$.properties.status] 0ms
+ ✓ packages/server/src/read-selector.test.ts > Read Selector > rejects excluded feature $[?@.properties.rows[*]] 0ms
+ ✓ packages/server/src/read-selector.test.ts > Read Selector > rejects excluded feature $[?@.properties.rows[0:2]] 0ms
+ ✓ packages/server/src/read-selector.test.ts > Read Selector > rejects excluded feature $[?@.properties.rows[0,1]] 0ms
+ ✓ packages/server/src/read-selector.test.ts > Read Selector > rejects malformed Selector  0ms
+ ✓ packages/server/src/read-selector.test.ts > Read Selector > rejects malformed Selector $ 0ms
+ ✓ packages/server/src/read-selector.test.ts > Read Selector > rejects malformed Selector $[] 0ms
+ ✓ packages/server/src/read-selector.test.ts > Read Selector > rejects malformed Selector $[?] 0ms
+ ✓ packages/server/src/read-selector.test.ts > Read Selector > rejects malformed Selector $[?true] 0ms
+ ✓ packages/server/src/read-selector.test.ts > Read Selector > rejects malformed Selector $[?@.properties.value ==] 0ms
+ ✓ packages/server/src/read-selector.test.ts > Read Selector > rejects malformed Selector $[?== 1] 0ms
+ ✓ packages/server/src/read-selector.test.ts > Read Selector > rejects malformed Selector $[?@.properties.value = 1] 0ms
+ ✓ packages/server/src/read-selector.test.ts > Read Selector > rejects malformed Selector $[?@.properties.value &&] 0ms
+ ✓ packages/server/src/read-selector.test.ts > Read Selector > rejects malformed Selector $[?(@.properties.value] 0ms
+ ✓ packages/server/src/read-selector.test.ts > Read Selector > rejects malformed Selector $[?@.properties.value)] 0ms
+ ✓ packages/server/src/read-selector.test.ts > Read Selector > rejects malformed Selector $[?@.properties.value == "unterminated]  0ms
+ ✓ packages/server/src/read-selector.test.ts > Read Selector > rejects malformed Selector $[?@.properties.value == 01] 0ms
+ ✓ packages/server/src/read-selector.test.ts > Read Selector > rejects malformed Selector $[?@.properties.value == NaN] 0ms
+ ✓ packages/server/src/read-selector.test.ts > Read Selector > rejects malformed Selector $[?@.properties.value == true false] 0ms
+ ✓ packages/server/src/read-selector.test.ts > Read Selector > rejects malformed Selector $[?!@.properties.value == true] 0ms
+ ✓ packages/server/src/read-selector.test.ts > Read Selector > rejects malformed Selector $[?!!@.properties.value] 0ms
+ ✓ packages/server/src/read-selector.test.ts > Read Selector > rejects malformed Selector $[?! !@.properties.value] 0ms
+ ✓ packages/server/src/read-selector.test.ts > Read Selector > rejects malformed Selector $[?@.properties.rows[01]] 0ms
+ ✓ packages/server/src/read-selector.test.ts > Read Selector > rejects malformed Selector $[?@.properties.rows[-0]] 0ms
+ ✓ packages/server/src/read-selector.test.ts > Read Selector > rejects malformed Selector $[?@.properties.rows[-01]] 0ms
+ ✓ packages/server/src/read-selector.test.ts > Read Selector > rejects malformed Selector $[?@.properties.rows[9007199254740992]] 0ms
+ ✓ packages/server/src/read-selector.test.ts > Read Selector > rejects malformed Selector $[?@.properties.rows[-9007199254740992]] 0ms
+ ✓ packages/server/src/read-selector.test.ts > Read Selector > rejects malformed Selector $[?@.properties.value == "\uD800"] 0ms
+ ✓ packages/server/src/read-selector.test.ts > Read Selector > rejects malformed Selector $[?@.properties.value == "\uDC00"] 0ms
+ ✓ packages/server/src/read-selector.test.ts > Read Selector > rejects malformed Selector $[?@.properties.value == "\uD800\uD800"] 0ms
+ ✓ packages/server/src/read-selector.test.ts > Read Selector > enforces exact UTF-8 source-byte boundaries, including Unicode 0ms
+ ✓ packages/server/src/read-selector.test.ts > Read Selector > enforces exact AST depth and node boundaries without truncation 0ms
+ ✓ packages/server/src/read-selector.test.ts > Read Selector > bounds pathological nesting, negation, and expression width with typed failures 7ms
+ ✓ packages/server/src/read-selector.test.ts > Read Selector > ignores inherited and accessor members without invoking hostile getters 0ms
+ ✓ packages/server/src/read-selector.test.ts > Read Selector > requires explicit positive safe-integer limits and a primitive string 0ms
+
+ Test Files  1 passed (1)
+      Tests  61 passed (61)
+   Start at  14:23:09
+   Duration  116ms (transform 33ms, setup 18ms, import 25ms, tests 13ms, environment 0ms)
+

@@ -1,0 +1,173 @@
+--- a/packages/server/src/transaction-events.test.ts
++++ b/packages/server/src/transaction-events.test.ts
+@@ -1893,6 +1893,5 @@
+     );
+   }
+   if (failures.length === 1) throw failures[0];
+-  if (failures.length > 1)
+-    throw new AggregateError(failures, "Bead Event HTTP observation failed");
+-});
++  if (failures.length > 1) throw new AggregateError(failures, "Bead Event HTTP observation failed");
++});
+--- a/packages/server/src/transaction-service.test.ts
++++ b/packages/server/src/transaction-service.test.ts
+@@ -2891,83 +2891,80 @@
+   "malformed-after-valid-preflight",
+   "noncanonical-query",
+   "relative-source",
+-] as const)(
+-  "preserves initial Bead Event classification and preflight: %s",
+-  async (label) => {
+-    const f = fixture();
+-    let reads = 0;
+-    const clockError = new Error("finite Event initial clock sentinel");
+-    const now = vi.fn(() => {
+-      if (label === "throwing-clock") throw clockError;
+-      return label === "nonfinite-clock" ? Number.NaN : 0;
+-    });
+-    const wait = vi.fn(async () => {});
+-    const service = createTransactionService(
+-      {
+-        ...f.owner,
+-        readEvents: (...args: Parameters<typeof f.owner.readEvents>) => {
+-          reads++;
+-          return f.owner.readEvents(...args);
+-        },
++] as const)("preserves initial Bead Event classification and preflight: %s", async (label) => {
++  const f = fixture();
++  let reads = 0;
++  const clockError = new Error("finite Event initial clock sentinel");
++  const now = vi.fn(() => {
++    if (label === "throwing-clock") throw clockError;
++    return label === "nonfinite-clock" ? Number.NaN : 0;
++  });
++  const wait = vi.fn(async () => {});
++  const service = createTransactionService(
++    {
++      ...f.owner,
++      readEvents: (...args: Parameters<typeof f.owner.readEvents>) => {
++        reads++;
++        return f.owner.readEvents(...args);
+       },
+-      {
+-        ownerLifetime: "service",
+-        read: f.read,
+-        minimumReads: { budgetMs: label === "invalid-policy" ? 0 : 10, now, wait },
+-      },
+-    );
+-    cleanup.push(() => service.close());
+-    const source =
+-      label === "noncanonical-query"
+-        ? `${scope}beads/a?view=events&extra=x`
+-        : label === "relative-source"
+-          ? "beads/a?view=events"
+-          : `${scope}beads/a?view=events`;
+-    const pending = service.events(
+-      source,
+-      undefined,
+-      {
+-        scopeEpoch: "bad space",
+-        authorizationView: "development-all-visible",
+-        minimumPosition: "opaque",
+-      },
+-      label === "already-aborted" ? AbortSignal.abort() : undefined,
+-    );
+-    expect(pending).toBeInstanceOf(Promise);
+-    const error = await pending.then(
+-      () => undefined,
+-      (cause: unknown) => cause,
+-    );
+-    if (label === "already-aborted") expect(error).toBeInstanceOf(ScopeServerOperationAbortedError);
+-    else if (label === "throwing-clock") expect(error).toBe(clockError);
+-    else if (label === "noncanonical-query")
+-      expect(error).toBeInstanceOf(TransactionEventParameterError);
+-    else if (label === "relative-source") {
+-      expect(error).toBeInstanceOf(TypeError);
+-      expect(error).toMatchObject({ code: "ERR_INVALID_URL" });
+-    } else {
+-      expect(error).toBeInstanceOf(TypeError);
+-      expect(error).toMatchObject({
+-        message:
+-          label === "invalid-policy"
+-            ? "finite minimum-read wait policy required"
+-            : label === "nonfinite-clock"
+-              ? "invalid minimum-read clock"
+-              : "unsupported minimum tuple",
+-      });
+-    }
+-    expect(now).toHaveBeenCalledTimes(label === "invalid-policy" ? 0 : 1);
+-    expect(reads).toBe(label === "noncanonical-query" || label === "relative-source" ? 1 : 0);
+-    expect(wait).not.toHaveBeenCalled();
+-    console.log(
+-      JSON.stringify({
+-        observation: "bead-event-minimum-preflight",
+-        label,
+-        serviceCalls: 1,
+-        clockCalls: now.mock.calls.length,
+-        ownerReads: reads,
+-        waits: wait.mock.calls.length,
+-      }),
+-    );
+-  },
+-);
++    },
++    {
++      ownerLifetime: "service",
++      read: f.read,
++      minimumReads: { budgetMs: label === "invalid-policy" ? 0 : 10, now, wait },
++    },
++  );
++  cleanup.push(() => service.close());
++  const source =
++    label === "noncanonical-query"
++      ? `${scope}beads/a?view=events&extra=x`
++      : label === "relative-source"
++        ? "beads/a?view=events"
++        : `${scope}beads/a?view=events`;
++  const pending = service.events(
++    source,
++    undefined,
++    {
++      scopeEpoch: "bad space",
++      authorizationView: "development-all-visible",
++      minimumPosition: "opaque",
++    },
++    label === "already-aborted" ? AbortSignal.abort() : undefined,
++  );
++  expect(pending).toBeInstanceOf(Promise);
++  const error = await pending.then(
++    () => undefined,
++    (cause: unknown) => cause,
++  );
++  if (label === "already-aborted") expect(error).toBeInstanceOf(ScopeServerOperationAbortedError);
++  else if (label === "throwing-clock") expect(error).toBe(clockError);
++  else if (label === "noncanonical-query")
++    expect(error).toBeInstanceOf(TransactionEventParameterError);
++  else if (label === "relative-source") {
++    expect(error).toBeInstanceOf(TypeError);
++    expect(error).toMatchObject({ code: "ERR_INVALID_URL" });
++  } else {
++    expect(error).toBeInstanceOf(TypeError);
++    expect(error).toMatchObject({
++      message:
++        label === "invalid-policy"
++          ? "finite minimum-read wait policy required"
++          : label === "nonfinite-clock"
++            ? "invalid minimum-read clock"
++            : "unsupported minimum tuple",
++    });
++  }
++  expect(now).toHaveBeenCalledTimes(label === "invalid-policy" ? 0 : 1);
++  expect(reads).toBe(label === "noncanonical-query" || label === "relative-source" ? 1 : 0);
++  expect(wait).not.toHaveBeenCalled();
++  console.log(
++    JSON.stringify({
++      observation: "bead-event-minimum-preflight",
++      label,
++      serviceCalls: 1,
++      clockCalls: now.mock.calls.length,
++      ownerReads: reads,
++      waits: wait.mock.calls.length,
++    }),
++  );
++});

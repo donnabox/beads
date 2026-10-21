@@ -1,0 +1,39 @@
+# Native review — Transactional recovery repair
+
+**Runtime blocker closure supported. One nonblocking P3 test-isolation finding; no runtime defect found.** This is an independent review of frozen `270a1216cb918a4194f3b195db6c8fcbecf0c040` against parent `7a768c160eecd6c698c934a47492a5943359c50d`, not public profile qualification.
+
+Read the author report and prior `transaction-receipt-pages-claude-review.txt`, all seven changed files and surrounding owner/service/HTTP paths. Author checkout `/Users/dbox/repos/wt/vickie/vickie-transaction-recovery-repair` stayed clean at the exact SHA. Independent build/tests used detached clone `/Users/dbox/repos/wt/vickie/bdp-recovery-native-review`, also clean. No source edits, shared databases or outward actions.
+
+## Finding
+
+**P3 — Isolate background maintenance in the new read-triggered-retention test.**
+`packages/server/src/transaction-http.test.ts:1313–1343`, especially clock advance at1319 and final full-document assertion at1343, runs the normal runtime with its default one-second maintenance interval (`transaction-store.ts:199`, `1098–1120`). Between that advance and final close it awaits eight HTTP exchanges. If a legitimate scheduled sweep fires during a slow/loaded run, the failed root is forgotten and/or completed detail compacted; expected500 can become404 or the final equality fails even though the unsupported read itself correctly performed no retention. The current test passes quickly; this is a false-failure risk, not evidence of a runtime ordering defect.
+
+Minimal repair: control just the background maintenance interval in this fixture through test timer control, restoring it afterward, while leaving socket/HTTP and receipt-clock behavior real. Do not change production retention policy or add a public configuration. Preserve separate maintenance-expiry tests. This finding is based on inspected scheduling paths; no source mutation or slow-path fault injection was performed in this review.
+
+## Prior findings and mechanism audit
+
+**F1 High — closed.** The read-only preflight is removed, so the ordinary writable SQLite connection can roll back a hot journal before metadata inspection. The one locked `atomic` startup entry checks identity policy and exact configuration before pending deletion, creator-fact cleanup and retention (`transaction-store.ts:424–456`). Normal incompatible files still roll back without BDP writes. The documentation correctly distinguishes physical SQLite recovery of an interrupted image from BDP recovery/maintenance; byte identity of a hot interrupted image is not promised.
+
+Both new recovery tests actually SIGKILL during an open transaction and assert SQLite's nonzero journal magic before reopen. They preserve sixty committed three-result receipts and stable tail URLs, 180 Resources and sixty groups. The terminal case's real small SQLite cache forces dirty-page spill and leaves one durable pending admission whose uncommitted effects are rolled back and then retracted. These are substantially stronger than a postresponse/process-exit witness. The child uses the reviewed emitted owner; the parent uses its matching source owner. No synthetic journal bytes or fabricated outcomes.
+
+**Independent combined crash/compatibility counterexample also passed.** External `native/hot-incompatible.mjs` creates sixty paged receipts plus one pending admission, then SIGKILLs real emitted maintenance after expiry eligibility. The journal header is hot. Opening with a changed page maximum throws installation mismatch *after* SQLite removes the journal, while direct read-only inspection finds sixty complete available receipts/page plans, sixty groups, 180 Resources and the original pending row unchanged. A subsequent compatible reopen retracts that pending row and all sixty original page URLs remain usable. This directly tests the subtle guarantee introduced by removal of the preflight: SQLite recovery is allowed, BDP maintenance under an incompatible installation is not.
+
+**F2 root minimum/expiry — closed.** `disclosedReceipt` now performs principal-scoped ID and epoch lookup without retention. New `readReceipt` checks the typed unsupported condition after that lookup, before read context/expiry/projection. Supported minimum checks still precede `expireRow`; normal reads still expire normally. Unknown, other-principal and prior-epoch identities do not receive a minimum diagnosis. The service preserves unauthorized/missing results and the HTTP union handles unsupported before `receiptResponse`, so no context or receipt body is accidentally attached. Actual GET/HEAD tests cover completed and failed expiry-eligible roots, foreign principal404, bodyless gap and all three absent context headers; direct postclose inspection avoids startup expiry. The P3 above concerns independent maintenance during that test, not the corrected owner order.
+
+**F3 preflight diagnostics — closed by removing the duplicate path.** Metadata lookup/identity checks use the existing owner parser and cleanup. No `String(undefined)` preflight remains. This does not promise new generalized diagnostics for arbitrary corrupt SQLite files; the report correctly avoids that claim.
+
+**F4 page invariants — closed.** The removed request reconstruction checks were tautologies. Page lookup now independently requires `${scope}receipts/`, then principal-bound plan, retained parent/key, exact stored parent ID, epoch and whole-chain validation. Token lookup uses the final `/pages/` marker and remains compatible with a Scope containing `/pages/`. Service still checks nonempty/max-sized slices and next-parent prefix/full-page constraints. Selected page records are deep-frozen locally; the corrected comment makes no claim about freezing unprojected tail facts. Root/page chain-corruption and unknown/cross-principal handling regressions pass.
+
+**F5 evidence gaps — substantially closed.** Both genuine hot-journal crash paths pass; independent pagination.maxPageItems mismatch is exercised; two page minimum waits park deterministically, a real intervening commit advances position, close remains pending until release, both pages return original facts at pos-2, and subsequent access refuses. Unsupported page gaps assert no epoch/view/position. The latter concurrency witness is an in-process service/lifecycle interleaving with controlled wait scheduling, not HTTP disconnect cancellation, production load, or an unbounded concurrency guarantee. Existing HTTP disconnect semantics remain finite drain.
+
+## Independent verification
+
+Pinned Node24.16.0 / pnpm11.20.0. Frozen install and build PASS before process tests.
+
+- **215 tests / 6 files PASS**, 3.71s, maxWorkers2: transaction-recovery, transaction-store, transaction-service, transaction-http, transaction-receipt-pages, transaction-runtime. Includes real emitted HTTP, process loss, both new hot-journal tests, compatibility/chain integrity and drain controls. Logs `native/tests.log` and `native/tests.json`.
+- Combined hot-journal/incompatible-installation probe PASS (`native/hot-incompatible.mjs`, `.log`); disposable directory removed in finally.
+- Typecheck, dependency boundaries, changed-file format/lint and `git diff --check` PASS (`native/checks.log`).
+- No test-owned crash/process children remained after completion; source trees clean.
+
+Not repeated: author's full523-test run, both smokes, old-d325/second-page-insert standalone probe, or 89-row evidence check. Relevant normal compatibility and page rollback regressions were included in the215-test run. No test was interrupted or counted as passing after timeout. This closes the identified recovery/ordering blockers within the fixed private owner; it does not establish power-loss durability, variable authorization policy, optional controls, full Transactional serving or public profile admission.

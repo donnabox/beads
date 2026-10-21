@@ -1,0 +1,9 @@
+{
+  "target": "packages/server/dist/transaction-store.js",
+  "beforeSha256": "29072fccbd53dedac651670984a63f4daf3706581a05c849eaea72e942ba7823",
+  "afterSha256": "8f4a02cbe33ef6c613676f37d83079e6416ef68bc3a8d5163811eff39174ab55",
+  "needle": "        replaceAuthorizationPolicy() {\n            return enter(() => {\n                if (activeSequences.size ||\n                    db.prepare(\"SELECT 1 FROM receipts WHERE owner IS NOT NULL LIMIT 1\").get())\n                    throw new TransactionAuthorizationFailure(\"temporarily-unavailable\", readContext());\n                if (authorization.generation === 1)\n                    return authorization;\n                const next = emptyTransactionAuthorization();\n                atomic(() => {\n                    db.prepare(\"UPDATE metadata SET value=? WHERE name='authorizationPolicy'\").run(json(next));\n                    options.fault?.(\"before-policy-commit\");\n                });\n                try {\n                    options.fault?.(\"after-policy-commit\");\n                    authorization = next;\n                    revokeLeases();\n                }\n                catch (error) {\n                    throw fence(error);\n                }\n                return authorization;\n            });\n        },\n",
+  "replacement": "        replaceAuthorizationPolicy() {\n            return enter(() => authorization);\n        },\n",
+  "matches": 1,
+  "status": "proposed against actualv4build; not applied"
+}

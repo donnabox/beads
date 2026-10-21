@@ -1,0 +1,219 @@
+{
+  "state": "prospective source-authored workload, not execution evidence",
+  "totals": {
+    "sourceCallbacks": 25,
+    "installedCallbacks": 3,
+    "stores": 28,
+    "inProcessListeners": 3,
+    "sequentialInstalledChildren": 3,
+    "emittedHttp": 128,
+    "installedHttp": 18,
+    "allHttp": 146
+  },
+  "bounds": {
+    "sourceCallbackMs": 5000,
+    "installedCallbackMs": 60000,
+    "newHttpMinimumBudgetMs": 80,
+    "installedOwnedMs": 45000,
+    "installedRequestMs": 5000,
+    "outerStageMs": 120000
+  },
+  "newSourceObservations": {
+    "bead-event-minimum-owner": {
+      "records": 1,
+      "reads": 12,
+      "seedMutations": 2,
+      "policyReplacements": 1,
+      "groupReadsAfterHidden": 0,
+      "http": 0
+    },
+    "bead-event-minimum-capture": {
+      "records": 1,
+      "reads": 4,
+      "serviceCalls": 2,
+      "waits": 2,
+      "probes": 2,
+      "groupReads": 0,
+      "attemptTimes": [
+        0,
+        0,
+        5,
+        10
+      ],
+      "seedMutations": 1,
+      "http": 0
+    },
+    "bead-event-minimum-cancel-drain": {
+      "records": 1,
+      "reads": 5,
+      "serviceCalls": 4,
+      "waits": 3,
+      "probes": 3,
+      "groupReads": 0,
+      "attemptTimes": [
+        0,
+        0,
+        5,
+        10,
+        15
+      ],
+      "postCloseDirectRefusals": 1,
+      "seedMutations": 1,
+      "http": 0
+    },
+    "bead-event-minimum-preflight": {
+      "records": 7,
+      "labels": [
+        "already-aborted",
+        "invalid-policy",
+        "throwing-clock",
+        "nonfinite-clock",
+        "malformed-after-valid-preflight",
+        "noncanonical-query",
+        "relative-source"
+      ],
+      "serviceCallsPerRecord": 1,
+      "clockCallsByLabel": [
+        1,
+        0,
+        1,
+        1,
+        1,
+        1,
+        1
+      ],
+      "ownerReadsByLabel": [
+        0,
+        0,
+        0,
+        0,
+        0,
+        1,
+        1
+      ],
+      "waitsPerRecord": 0,
+      "http": 0
+    },
+    "bead-event-minimum-http": {
+      "records": 1,
+      "calls": 37,
+      "completedResponsesLength": 37,
+      "statusCounts": {
+        "200": 8,
+        "503": 8,
+        "500": 14,
+        "400": 4,
+        "404": 3
+      },
+      "elapsedMs": "measured including import/startup/work/cleanup; fixed5000ms callback",
+      "productChildren": 0,
+      "directoryAbsent": true,
+      "failureCount": 0,
+      "completedResponseFields": [
+        "method",
+        "suffix",
+        "status"
+      ]
+    }
+  },
+  "newInstalledObservation": {
+    "name": "private-installed-bead-event-minimum",
+    "records": 1,
+    "attempted": 4,
+    "exchanges": 4,
+    "sequence": [
+      {
+        "method": "POST",
+        "suffix": "operations/batch",
+        "status": 200
+      },
+      {
+        "method": "GET",
+        "suffix": "beads/known?view=events",
+        "status": 200
+      },
+      {
+        "method": "GET",
+        "suffix": "beads/known?view=events",
+        "status": 503
+      },
+      {
+        "method": "HEAD",
+        "suffix": "beads/known?view=events",
+        "status": 503
+      }
+    ],
+    "completedResponseFields": [
+      "method",
+      "url",
+      "status",
+      "bodyOctets",
+      "bodySha256",
+      "wireSha256",
+      "headers"
+    ],
+    "successLifecycle": {
+      "outcome": "passed",
+      "deadlineExceeded": false,
+      "failureCount": 0,
+      "closeAttempted": true,
+      "closed": true,
+      "launchStarted": true,
+      "startupCompleted": true,
+      "childExitCode": 0,
+      "childSignalCode": null,
+      "ownership": "closed",
+      "directoryAbsent": true,
+      "claimEligible": false
+    },
+    "measuredFields": [
+      "childPid",
+      "directory",
+      "binding",
+      "entry",
+      "entrySha256",
+      "declaredSourceCommit",
+      "workspaceDirty"
+    ]
+  },
+  "existingRegressionWorkload": {
+    "sourceCallbacks": 14,
+    "sourceHttp": 91,
+    "sourceListeners": 2,
+    "sourceStores": 14,
+    "installedCallbacks": 2,
+    "installedHttp": 14,
+    "installedStoresAndChildren": 2,
+    "oldScopeHttp": {
+      "calls": 32,
+      "waitRequests": 8,
+      "oldOwnerReads": 8
+    }
+  },
+  "newMutationWorkload": {
+    "A": {
+      "directTransactions": 2,
+      "policyCalls": 1
+    },
+    "B": {
+      "serviceSubmit": 1
+    },
+    "C": {
+      "serviceSubmit": 1
+    },
+    "D": {
+      "httpTransactions": 2,
+      "operations": 5,
+      "distinctKeys": true
+    },
+    "E": {
+      "httpTransactions": 1,
+      "operations": 1
+    },
+    "F": {
+      "mutations": 0
+    }
+  },
+  "controls": "No metadata-gap+opaque combined observation; G2 callback separately selected unchanged. Unknown+foreign/Link/SSE/after controls retain private gaps. All request and owner counters are separate.",
+  "lifecycle": "B/C use existing gate releases before cancellation/close awaits, finish observes pending operations; fixtures clean via existing callbacks. D fresh runtime closes before rm; import precedes directory. E shared45s deadline,5000ms requests/60000ms callback, only clean timely child close permits directory removal; uncertain ownership preserves directory."
+}

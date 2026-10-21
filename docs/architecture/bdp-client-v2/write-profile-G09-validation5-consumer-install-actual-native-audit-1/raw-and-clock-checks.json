@@ -1,0 +1,452 @@
+{
+  "actualCensus": {
+    "accepted": false,
+    "actualObserverToolTerminal": null,
+    "censusEndMonotonic": 2275000.744024625,
+    "failure": null,
+    "finalClockWitness": null,
+    "matchingTaskRows": [],
+    "observerPgid": 95541,
+    "observerPid": 95544,
+    "originReceiptSha256": "3be84d021dbf637532083e2f06352636660bcad4be2a94984bcf6cc580bcb0d8",
+    "phaseAToolId": "8f972f",
+    "phaseAToolRawExit": 0,
+    "phaseAToolReceiptAttribution": "trusted root actual ordinary-tool observation; independently decoded raw tool receipt UNRETAINED unless separately actually supplied",
+    "probeBothEOF": true,
+    "probeCreationPgid": 95545,
+    "probeDirectReaped": true,
+    "probePid": 95545,
+    "probeRawExit": 0,
+    "provisionalReceiptSha256": "dad9ed706a380a27204aa33d8d5025a3dedf81ce70568cf02164eff1b0ca82f3",
+    "rootOriginMonotonic": 2274991.045335125,
+    "selectionOrigins": [
+      {
+        "basis": "actual local getpid/getpgrp; no signal authority",
+        "pgid": 94045,
+        "pid": 94050,
+        "role": "collector"
+      },
+      {
+        "basis": "actual retained Popen start_new_session",
+        "pgid": 94051,
+        "pid": 94051,
+        "role": "direct-wrapper"
+      },
+      {
+        "pgid": 94762,
+        "pid": 94762,
+        "receipt": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation-preparation-5/run/consumer-install.processes.jsonl",
+        "role": "actual-inner-sample"
+      },
+      {
+        "pgid": 94762,
+        "pid": 94762,
+        "receipt": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation-preparation-5/run/consumer-install.processes.jsonl",
+        "role": "actual-inner-sample"
+      },
+      {
+        "pgid": 94762,
+        "pid": 94762,
+        "receipt": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation-preparation-5/run/consumer-install.processes.jsonl",
+        "role": "actual-inner-sample"
+      },
+      {
+        "pgid": 94762,
+        "pid": 94762,
+        "receipt": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation-preparation-5/run/consumer-install.processes.jsonl",
+        "role": "actual-inner-sample"
+      },
+      {
+        "pgid": 94762,
+        "pid": 94762,
+        "receipt": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation-preparation-5/run/consumer-install.processes.jsonl",
+        "role": "actual-inner-sample"
+      },
+      {
+        "pgid": 94762,
+        "pid": 94762,
+        "receipt": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation-preparation-5/run/consumer-install.processes.jsonl",
+        "role": "actual-inner-sample"
+      },
+      {
+        "pgid": null,
+        "pid": 94762,
+        "receipt": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation-preparation-5/run/consumer-install.exit.json",
+        "role": "actual-inner-sampledPid"
+      }
+    ],
+    "stage": "consumer-install",
+    "streams": [
+      {
+        "actualEOF": true,
+        "fileIdentity": {
+          "bytes": 211487,
+          "device": 16777232,
+          "inode": 96448551,
+          "mode": 33152,
+          "uid": 501
+        },
+        "fullStreamSha256": "93064d451435f3de9cf7f0b260971a0af75d9ca3cea7d5df58a18b2a4cfa17b8",
+        "fullStreamState": "COMPLETE_ACTUAL_CAPTURE",
+        "hashKnown": true,
+        "hashedPrefixBytes": 211487,
+        "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation5-root-first4-dispatch-1/consumer-install/postterminal-census.stdout",
+        "rawDescriptorClosed": true,
+        "receivedBytes": 211487,
+        "savedBytes": 211487,
+        "savedPrefixSha256": "93064d451435f3de9cf7f0b260971a0af75d9ca3cea7d5df58a18b2a4cfa17b8",
+        "writeOrCloseError": null
+      },
+      {
+        "actualEOF": true,
+        "fileIdentity": {
+          "bytes": 0,
+          "device": 16777232,
+          "inode": 96448552,
+          "mode": 33152,
+          "uid": 501
+        },
+        "fullStreamSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "fullStreamState": "COMPLETE_ACTUAL_CAPTURE",
+        "hashKnown": true,
+        "hashedPrefixBytes": 0,
+        "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation5-root-first4-dispatch-1/consumer-install/postterminal-census.stderr",
+        "rawDescriptorClosed": true,
+        "receivedBytes": 0,
+        "savedBytes": 0,
+        "savedPrefixSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "writeOrCloseError": null
+      }
+    ],
+    "taskPGIDs": [
+      94045,
+      94051,
+      94762
+    ],
+    "taskPIDs": [
+      94050,
+      94051,
+      94762
+    ]
+  },
+  "actualEarliestSourceOriginBeforeChildSetupImportsAndGate": true,
+  "actualProvisional": {
+    "accepted": false,
+    "actualCollectorToolTerminal": null,
+    "collectorPgid": 94045,
+    "collectorPid": 94050,
+    "creationPgid": 94051,
+    "creationPid": 94051,
+    "directHandleRegistered": true,
+    "elapsedAtProvisionalPublication": 9.320162374991924,
+    "failure": null,
+    "finalClockWitness": null,
+    "forcedTermination": false,
+    "freshSelectedCensus": null,
+    "implementationIndexSha256": "c2a7d11deb63169052434c3b45c62bd30664009d4ea6a3e9b42c4cd85bd649a6",
+    "innerReceipts": {
+      "exit.json": {
+        "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation-preparation-5/run/consumer-install.exit.json",
+        "sha256": "2d6a6f2bf300b6c52ab9071b2037ea20dcb8846b68e8c82ba96d3c5353145da9"
+      },
+      "processes.jsonl": {
+        "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation-preparation-5/run/consumer-install.processes.jsonl",
+        "sha256": "6cc4a93ad5bc91d06f10a5fdf74f0cc89582a73d7428da7f7a42cdc36086de67"
+      },
+      "started.json": {
+        "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation-preparation-5/run/consumer-install.started.json",
+        "sha256": "76dbb3cb67214c3ed012bda05bc6f2887548606b3e7ec22e4a9cb2a64859e751"
+      }
+    },
+    "knownTaskRegistry": {
+      "origins": [
+        {
+          "basis": "actual local getpid/getpgrp; no signal authority",
+          "pgid": 94045,
+          "pid": 94050,
+          "role": "collector"
+        },
+        {
+          "basis": "actual retained Popen start_new_session",
+          "pgid": 94051,
+          "pid": 94051,
+          "role": "direct-wrapper"
+        },
+        {
+          "pgid": 94762,
+          "pid": 94762,
+          "receipt": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation-preparation-5/run/consumer-install.processes.jsonl",
+          "role": "actual-inner-sample"
+        },
+        {
+          "pgid": 94762,
+          "pid": 94762,
+          "receipt": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation-preparation-5/run/consumer-install.processes.jsonl",
+          "role": "actual-inner-sample"
+        },
+        {
+          "pgid": 94762,
+          "pid": 94762,
+          "receipt": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation-preparation-5/run/consumer-install.processes.jsonl",
+          "role": "actual-inner-sample"
+        },
+        {
+          "pgid": 94762,
+          "pid": 94762,
+          "receipt": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation-preparation-5/run/consumer-install.processes.jsonl",
+          "role": "actual-inner-sample"
+        },
+        {
+          "pgid": 94762,
+          "pid": 94762,
+          "receipt": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation-preparation-5/run/consumer-install.processes.jsonl",
+          "role": "actual-inner-sample"
+        },
+        {
+          "pgid": 94762,
+          "pid": 94762,
+          "receipt": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation-preparation-5/run/consumer-install.processes.jsonl",
+          "role": "actual-inner-sample"
+        },
+        {
+          "pgid": null,
+          "pid": 94762,
+          "receipt": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation-preparation-5/run/consumer-install.exit.json",
+          "role": "actual-inner-sampledPid"
+        }
+      ],
+      "pgids": [
+        94045,
+        94051,
+        94762
+      ],
+      "pids": [
+        94050,
+        94051,
+        94762
+      ]
+    },
+    "originMonotonic": 2274991.045335125,
+    "pipeCloseSucceeded": true,
+    "rawExit": 0,
+    "requiresIndependentOrdinaryToolObservations": true,
+    "rootGateSha256": "437edd25c7267d9595a15115db65d50051372f0cb4915f6981cf46aa04be65c6",
+    "rootWrapperArgv": [
+      "/opt/homebrew/opt/python@3.14/bin/python3.14",
+      "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation-preparation-5/run.py",
+      "final",
+      "consumer-install"
+    ],
+    "rootWrapperCwd": "/Users/dbox/repos/wt/vickie/vickie-schema-lint-correction-minimum",
+    "sourceBindingSha256": "e0252cb07ac1896fac0faab395e10e50ea58eac263b6d33ee224e378413c2d68",
+    "stage": "consumer-install",
+    "streams": [
+      {
+        "actualEOF": true,
+        "fileIdentity": {
+          "bytes": 480,
+          "device": 16777232,
+          "inode": 96446695,
+          "mode": 33152,
+          "uid": 501
+        },
+        "fullStreamSha256": "a26bca6bccf648b8e4aa0e0bc8d1a180de7735bdaf556125ed20c4db4037ab30",
+        "fullStreamState": "COMPLETE_ACTUAL_CAPTURE",
+        "hashKnown": true,
+        "hashedPrefixBytes": 480,
+        "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation5-root-first4-dispatch-1/consumer-install/consumer-install.stdout",
+        "rawDescriptorClosed": true,
+        "receivedBytes": 480,
+        "savedBytes": 480,
+        "savedPrefixSha256": "a26bca6bccf648b8e4aa0e0bc8d1a180de7735bdaf556125ed20c4db4037ab30",
+        "writeOrCloseError": null
+      },
+      {
+        "actualEOF": true,
+        "fileIdentity": {
+          "bytes": 0,
+          "device": 16777232,
+          "inode": 96446696,
+          "mode": 33152,
+          "uid": 501
+        },
+        "fullStreamSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "fullStreamState": "COMPLETE_ACTUAL_CAPTURE",
+        "hashKnown": true,
+        "hashedPrefixBytes": 0,
+        "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation5-root-first4-dispatch-1/consumer-install/consumer-install.stderr",
+        "rawDescriptorClosed": true,
+        "receivedBytes": 0,
+        "savedBytes": 0,
+        "savedPrefixSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "writeOrCloseError": null
+      }
+    ]
+  },
+  "actualWitness": {
+    "accepted": false,
+    "censusReceiptSha256": "c13961af4e46534dbda277fdb3997eb31bf0f95b568b66616688ce69a0380af4",
+    "completedInvocationAndObservationUpperBoundSeconds": 10.000101832672954,
+    "laterStaticAuditAndGitExcludedFromRuntime": true,
+    "noNewRuntimeChildOrProbe": true,
+    "originReceiptSha256": "3be84d021dbf637532083e2f06352636660bcad4be2a94984bcf6cc580bcb0d8",
+    "phaseBActualToolId": "ab393a",
+    "phaseBActualToolRawExit": 0,
+    "phaseBToolTerminalAttribution": "trusted root actual ordinary-tool observation; raw tool receipt UNRETAINED unless actually separately supplied",
+    "postTerminalWitnessMonotonic": 2275001.045436958,
+    "requiresIndependentRootFullConjunction": true,
+    "rootOriginMonotonic": 2274991.045335125,
+    "stage": "consumer-install",
+    "strictUnder115": true
+  },
+  "currentScratchInventory": [
+    {
+      "bytes": 96,
+      "directory": true,
+      "mode": "0o755",
+      "relative": "node-compile-cache"
+    },
+    {
+      "bytes": 288,
+      "directory": true,
+      "mode": "0o755",
+      "relative": "node-compile-cache/v24.16.0-arm64-cf738c9d-501"
+    },
+    {
+      "bytes": 2292,
+      "directory": false,
+      "mode": "0o600",
+      "relative": "node-compile-cache/v24.16.0-arm64-cf738c9d-501/21949e48"
+    },
+    {
+      "bytes": 2170460,
+      "directory": false,
+      "mode": "0o600",
+      "relative": "node-compile-cache/v24.16.0-arm64-cf738c9d-501/3088bb2c"
+    },
+    {
+      "bytes": 2044,
+      "directory": false,
+      "mode": "0o600",
+      "relative": "node-compile-cache/v24.16.0-arm64-cf738c9d-501/42483939"
+    },
+    {
+      "bytes": 2644,
+      "directory": false,
+      "mode": "0o600",
+      "relative": "node-compile-cache/v24.16.0-arm64-cf738c9d-501/63382e8b"
+    },
+    {
+      "bytes": 1068,
+      "directory": false,
+      "mode": "0o600",
+      "relative": "node-compile-cache/v24.16.0-arm64-cf738c9d-501/836e5827"
+    },
+    {
+      "bytes": 6148,
+      "directory": false,
+      "mode": "0o600",
+      "relative": "node-compile-cache/v24.16.0-arm64-cf738c9d-501/99ccc123"
+    },
+    {
+      "bytes": 2772,
+      "directory": false,
+      "mode": "0o600",
+      "relative": "node-compile-cache/v24.16.0-arm64-cf738c9d-501/e0ed69ce"
+    }
+  ],
+  "independentlyRecomputedCommonClock": 10.000101832672954,
+  "innerElapsed": 4.699581999797374,
+  "innerLog": {
+    "bytes": 455,
+    "mode": "0o644",
+    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation-preparation-5/run/consumer-install.log",
+    "sha256": "072b17518f5e1c0de392562d55b3a7c2232b1a7ff9aa0fff6f9353b6229d2602"
+  },
+  "laterObserverSelfAbsenceOrHardRealtimeNotClaimed": true,
+  "origin": {
+    "argv": [
+      "/opt/homebrew/opt/python@3.14/bin/python3.14",
+      "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation-preparation-5/run.py",
+      "final",
+      "consumer-install"
+    ],
+    "collectorPgid": 94045,
+    "collectorPid": 94050,
+    "commandsSha256": "ef7d5889c4cdb6263d746d3d1ad698429d6a96d5c0dbd1e4d6764819b060ba8f",
+    "cwd": "/Users/dbox/repos/wt/vickie/vickie-schema-lint-correction-minimum",
+    "implementationSha256": "c2a7d11deb63169052434c3b45c62bd30664009d4ea6a3e9b42c4cd85bd649a6",
+    "originMonotonic": 2274991.045335125,
+    "rootGateSha256": "437edd25c7267d9595a15115db65d50051372f0cb4915f6981cf46aa04be65c6",
+    "session": "2026-10-18T02:16:24Z-549f",
+    "sourceBindingSha256": "e0252cb07ac1896fac0faab395e10e50ea58eac263b6d33ee224e378413c2d68",
+    "stage": "consumer-install"
+  },
+  "scratchCleanupPerformed": false,
+  "streams": [
+    {
+      "actualEOF": true,
+      "bytes": 480,
+      "descriptorClosed": true,
+      "fileIdentity": {
+        "bytes": 480,
+        "device": 16777232,
+        "inode": 96446695,
+        "mode": 33152,
+        "uid": 501
+      },
+      "fullCountsAndHash": true,
+      "mode": "0o600",
+      "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation5-root-first4-dispatch-1/consumer-install/consumer-install.stdout",
+      "sha256": "a26bca6bccf648b8e4aa0e0bc8d1a180de7735bdaf556125ed20c4db4037ab30"
+    },
+    {
+      "actualEOF": true,
+      "bytes": 0,
+      "descriptorClosed": true,
+      "fileIdentity": {
+        "bytes": 0,
+        "device": 16777232,
+        "inode": 96446696,
+        "mode": 33152,
+        "uid": 501
+      },
+      "fullCountsAndHash": true,
+      "mode": "0o600",
+      "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation5-root-first4-dispatch-1/consumer-install/consumer-install.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "actualEOF": true,
+      "bytes": 211487,
+      "descriptorClosed": true,
+      "fileIdentity": {
+        "bytes": 211487,
+        "device": 16777232,
+        "inode": 96448551,
+        "mode": 33152,
+        "uid": 501
+      },
+      "fullCountsAndHash": true,
+      "mode": "0o600",
+      "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation5-root-first4-dispatch-1/consumer-install/postterminal-census.stdout",
+      "sha256": "93064d451435f3de9cf7f0b260971a0af75d9ca3cea7d5df58a18b2a4cfa17b8"
+    },
+    {
+      "actualEOF": true,
+      "bytes": 0,
+      "descriptorClosed": true,
+      "fileIdentity": {
+        "bytes": 0,
+        "device": 16777232,
+        "inode": 96448552,
+        "mode": 33152,
+        "uid": 501
+      },
+      "fullCountsAndHash": true,
+      "mode": "0o600",
+      "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation5-root-first4-dispatch-1/consumer-install/postterminal-census.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    }
+  ]
+}

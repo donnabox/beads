@@ -1,0 +1,86 @@
+{
+  "absoluteStructuredPinsVerified": 271,
+  "acceptedActualBuildRootAndSourceBuildMapJoinsExact": true,
+  "all207FilesMetadataAndMirrorsExact": true,
+  "all24FullLiteralCellLFInversesAndSentinelsExact": true,
+  "all27GenuineDiffAndNdiffBothRestoresExact": true,
+  "candidateOnlyThreeFieldsChanged": true,
+  "candidatePrefix": 17,
+  "completeLFChanges": 104,
+  "currentExternalLedgerAndReferencePathsVerified": 3510,
+  "currentGitSourceIdentity": {
+    "branch": "codex/vickie-schema-lint-correction-minimum",
+    "diffFromHead": "f87d60ddc56b23737c46ed14e1675cc751c0062c7ab3466c33606398ae305df6",
+    "head": "cce884ccea1db97cbc6fd7bff876d4d6091f9081",
+    "parent": "a56254d682cf4623cab22a552e3d2f695f691795",
+    "staged": [],
+    "tree": "6757829bd5b700faf28df39071190a272add90c9",
+    "unstaged": [
+      "apps/bdptest/src/transactional-discovery-installed.test.ts",
+      "apps/bdptest/src/transactional-schema-installed.test.ts",
+      "packages/server/src/transaction-changefeed.test.ts",
+      "packages/server/src/transaction-http.test.ts",
+      "packages/server/src/transaction-http.ts",
+      "packages/server/src/transaction-installed-contracts.test.ts",
+      "packages/server/src/transaction-schema-http.test.ts",
+      "packages/server/src/transaction-schema-http.ts",
+      "packages/server/src/transaction-service.test.ts",
+      "packages/server/src/transaction-service.ts"
+    ],
+    "untracked": []
+  },
+  "currentLiveGateUnchanged": "18a440d47c2b4e7aef7e46afc73f627a27d13e51cae8b990cd2feade33c774a4",
+  "first9NeverRepeat": true,
+  "futureCandidateActiveGateExactPointerQualification": [
+    {
+      "candidateSha256": "f16d895808b965918bade0cbe1e7552d828423b96930485ec34f74f051e884c8",
+      "currentSha256": "18a440d47c2b4e7aef7e46afc73f627a27d13e51cae8b990cd2feade33c774a4",
+      "effectiveNow": false,
+      "owner": "execution-manifest.json",
+      "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation-preparation-5/execution-gate.json",
+      "pointer": "/activeGate"
+    }
+  ],
+  "historicalSolePlanMetadataQualified": [
+    {
+      "bytes": 444037,
+      "currentEqualityClaimed": false,
+      "mode": "0o644",
+      "path": "docs/architecture/bdp-client-v2/design.md",
+      "sha256": "205b842eefc1e9a4ab073fc31953b7d0f9c5c23882895caeca96963a78fe52d1"
+    },
+    {
+      "bytes": 444037,
+      "currentEqualityClaimed": false,
+      "mode": "0o644",
+      "path": "docs/architecture/bdp-client-v2/design.md",
+      "sha256": "205b842eefc1e9a4ab073fc31953b7d0f9c5c23882895caeca96963a78fe52d1"
+    }
+  ],
+  "independentGraphAcyclic": true,
+  "independentGraphNodes": 207,
+  "later17Closed": true,
+  "nativeFullPrecision": "PENDING",
+  "newStages": [
+    "g09-service-source",
+    "audit-g09-service-source",
+    "g09-schema-source",
+    "audit-g09-schema-source",
+    "legacy-schema-source",
+    "audit-legacy-schema-source",
+    "schema-confinement-source",
+    "audit-schema-confinement-source"
+  ],
+  "originsVerified": 81,
+  "qualityPass": false,
+  "readOnlyInspectionDevelopmentFailuresRetained": [
+    "root-G09-validation5-source-pairs-inspection-checker-failure-1.json",
+    "root-G09-validation5-source-pairs-inspection-checker-failure-2.json"
+  ],
+  "rootFinalAccepted": false,
+  "runtimeAuthority": false,
+  "scope": "CLOSED source/control DATA mechanics; no gatewrite or runtime release",
+  "source679Helper105Build476Run38Exact": true,
+  "sourceIndexSha256": "a1f550af52d2a53b91175f7fb6fcc6e121257971512ddc63a25e3c86b7656c65",
+  "sourceOriginalAcceptedFalsePreserved": true
+}

@@ -1,0 +1,65 @@
+{
+  "state": "PRESERVED ACTUAL FAILED validation4 focused source; no retry",
+  "sourceIdentity": "7e856365e701e96ddf233e13d6883c6d74464dd755c0ff59f1b185c37c7b19db",
+  "passedCallbacks": 43,
+  "failedCallbacks": 1,
+  "skippedCallbacks": 389,
+  "selectedCallbacks": 44,
+  "failure": {
+    "ancestorTitles": [],
+    "fullName": "delegates RU credential, policy, provisioning, artifact, locality and aggregate refusals",
+    "status": "failed",
+    "title": "delegates RU credential, policy, provisioning, artifact, locality and aggregate refusals",
+    "duration": 19.37383299999999,
+    "failureMessages": [
+      "Error: expected local preparation failure\n    at failure (/Users/dbox/repos/wt/vickie/vickie-trusted-startup-configuration/packages/server/src/reference-deployment.test.ts:216:9)\n    at /Users/dbox/repos/wt/vickie/vickie-trusted-startup-configuration/packages/server/src/reference-deployment.test.ts:541:5\n    at file:///Users/dbox/repos/wt/vickie/vickie-trusted-startup-configuration/node_modules/.pnpm/@vitest+runner@4.1.10/node_modules/@vitest/runner/dist/chunk-artifact.js:1903:20"
+    ],
+    "meta": {},
+    "tags": []
+  },
+  "runnerExit": {
+    "exit": 1,
+    "accepted": false,
+    "sourceIdentity": "7e856365e701e96ddf233e13d6883c6d74464dd755c0ff59f1b185c37c7b19db",
+    "sourceUnchanged": true,
+    "elapsedSeconds": 6.283950583077967,
+    "forcedCleanup": false,
+    "errors": [],
+    "sampledPids": [
+      44330,
+      44338,
+      44343,
+      44345,
+      44347,
+      44353,
+      44358,
+      44362,
+      44364
+    ],
+    "remainingProcesses": [],
+    "runtimeDirectoriesStillPresent": [],
+    "temporaryDirectory": "/private/tmp/vickie-trusted-startup-validation-focused-source-s96s8274",
+    "logSha256": "677ca4bdd7e814dfbe177ad7ce5706063557d274b5fc06b836fb1c454ea1734e"
+  },
+  "failedStageOrdinal": 10,
+  "laterUnattemptedStages": [
+    "audit-focused-source",
+    "prepare-package-directory",
+    "pack-protocol",
+    "pack-server",
+    "verify-archives",
+    "prepare-consumer",
+    "consumer-install",
+    "verify-installed-consumer",
+    "bound-consumer-loader",
+    "audit-bound-consumer-loader",
+    "required-check-boundaries",
+    "required-e2e-ready-preflight",
+    "required-smoke",
+    "audit-required-smoke",
+    "required-evidence-verify"
+  ],
+  "gateReleased": false,
+  "sourceRowIndex": "not captured directly; row10 is static inference",
+  "newAttemptStarted": false
+}

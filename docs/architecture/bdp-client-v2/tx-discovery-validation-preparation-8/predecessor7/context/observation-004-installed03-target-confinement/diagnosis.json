@@ -1,0 +1,78 @@
+{
+  "actualFailure": "D3 target confinement at source1480 d3Safe(manifest.id), actualselectedcallbackfailed; no audit03",
+  "observed": {
+    "records": 26,
+    "planned": 28,
+    "lastRecord": {
+      "id": "snapshot-root",
+      "transport": "public-exact",
+      "method": "GET",
+      "url": "https://reference.invalid/acme/snapshot",
+      "credential": "writer",
+      "fieldOccurrences": [],
+      "status": 200,
+      "headers": {
+        "bdp-authorization-view": "development-all-visible",
+        "bdp-scope-epoch": "f6c9fcf7-8155-4d47-8609-81f9101703e0",
+        "bdp-scope-position": "pos-5",
+        "cache-control": "private, no-store",
+        "content-length": "1036",
+        "content-type": "application/json",
+        "vary": "Accept",
+        "x-bdp-development": "non-attesting",
+        "date": "Sun, 18 Oct 2026 11:47:55 GMT",
+        "connection": "close"
+      },
+      "bodyOctets": 1036,
+      "bodySha256": "95fcf08b5ee3a28b4503f1f128a7acb2d34be402a3fbea8e977460ff8b73c08b",
+      "wireSha256": "052d1cfd5ff391c7092e765b96fbe53a7b84544f747301fa69a446b171164fc9",
+      "requestWriteState": "complete"
+    },
+    "bodyOrWireBytesAvailable": false,
+    "manifestIdActualValue": "UNKNOWN; not logged/persisted",
+    "workSettled": true,
+    "cleanupKnown": true
+  },
+  "staticTrace": [
+    {
+      "path": "source/apps/bdptest/src/transactional-discovery-installed.test.ts",
+      "lines": [
+        400,
+        415,
+        1469,
+        1480
+      ],
+      "fact": "d3Safe defaults allowQueryfalse; schema/anchor checks precede manifest.id check. Narrow planned correction can pass allowQuerytrue only at this retainedmanifest URL."
+    },
+    {
+      "path": "source/packages/server/src/transaction-snapshot.ts",
+      "lines": [
+        142,
+        154,
+        594,
+        613
+      ],
+      "fact": "transactionSnapshotUrl adds snapshot query, and manifestValue.id is this URL; legitimate production manifest shape."
+    },
+    {
+      "path": "source/docs/specs/bdp.md",
+      "lines": [
+        5896,
+        5990
+      ],
+      "fact": "Normative example uses snapshot?snapshot=snapshot-42; manifestid refetch GET/HEAD retains identity/anchor/expiry. No query-free handle restriction."
+    }
+  ],
+  "classification": "SOURCE_DERIVED_TEST_ASSERTION_INCOMPATIBILITY; not evidence of product query violation",
+  "recommendedBoundedCorrection": {
+    "path": "apps/bdptest/src/transactional-discovery-installed.test.ts",
+    "old": "d3Safe(manifest.id);",
+    "proposed": "d3Safe(manifest.id, scope, true);",
+    "scope": "Only this call uses already-existing bounded scope/origin/no credentials/no fragment validator with query enabled; do not globally enablequery or changeproduct. No additionalrequest/refetch, all28plannedrequests unchanged.",
+    "authorized": false
+  },
+  "futureDataConsequences": "neighboring-occurrence-inventory.json8exactarrays; strictauditnotexecutedhere or relaxed",
+  "noExactFailedBodyReconstruction": true,
+  "productUnchanged": true,
+  "noRetry": true
+}

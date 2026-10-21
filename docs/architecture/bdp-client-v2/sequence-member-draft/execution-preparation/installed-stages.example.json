@@ -1,0 +1,197 @@
+{
+  "status": "CLOSED_DESCRIPTIVE_FUTURE_BINDINGS_REQUIRED",
+  "packagingPredecessor": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-depth-key-order-draft/installed-preparation",
+  "separateStages": [
+    "clean-source-and-council-binding",
+    "actual-fresh-build-or-explicit-unchanged-build-bridge",
+    "package-directory",
+    "pack-protocol",
+    "pack-server",
+    "verify-tar-source-members",
+    "prepare-external-consumer",
+    "offline-ignore-scripts-consumer-install",
+    "verify-installed-members-and-eight-dependency-payload",
+    "positive-fifteen",
+    "selected-sequence-delete-control",
+    "cross-batch-control",
+    "cross-sequence-control"
+  ],
+  "expectedProductionVersions": {
+    "@bdp/protocol": "0.0.0",
+    "@bdp/server": "0.0.0",
+    "ajv": "8.17.1",
+    "ajv-formats": "3.0.1",
+    "fast-deep-equal": "3.1.3",
+    "fast-uri": "3.1.5",
+    "json-schema-traverse": "1.0.0",
+    "require-from-string": "2.0.2"
+  },
+  "cohorts": [
+    {
+      "id": "positive-fifteen",
+      "released": false,
+      "title": "observes fifteen partial Transactional contracts through packed-capable actual installed HTTP",
+      "argv": [
+        "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+        "/Users/dbox/repos/wt/vickie/vickie-sequence-member-evidence/node_modules/.pnpm/vitest@4.1.10_@types+node@24.13.3_vite@8.2.1_@types+node@24.13.3_/node_modules/vitest/vitest.mjs",
+        "run",
+        "apps/bdptest/src/transactional-matrix.test.ts",
+        "--maxWorkers=1",
+        "--reporter=verbose",
+        "--reporter=json",
+        "--outputFile=/Users/dbox/repos/wt/vickie/bdp-integration-logs/sequence-member-draft/execution-preparation/installed-run/positive-fifteen.results.json",
+        "-t",
+        "^observes\\ fifteen\\ partial\\ Transactional\\ contracts\\ through\\ packed\\-capable\\ actual\\ installed\\ HTTP$"
+      ],
+      "httpExpected": 213,
+      "httpMaximum": 213,
+      "productChildren": 23,
+      "externalSeconds": 120,
+      "vitestMs": 120000,
+      "workMs": 90000,
+      "exchangeMs": 5000,
+      "prepareMs": 10000,
+      "cleanupMs": 10000,
+      "positiveElapsedAssertionMs": 63000,
+      "fullReportOutputOverrides": {
+        "BDP_TRANSACTIONAL_OBSERVATION_OUTPUT": null
+      },
+      "futureBinding": {
+        "cleanHead": null,
+        "tree": null,
+        "entry": null,
+        "sourceCommit": null,
+        "payloadSha256": null,
+        "configSha256": null,
+        "fixturesSha256": null,
+        "provenanceSha256": null
+      },
+      "noWorkspaceEntryFallback": true
+    },
+    {
+      "id": "selected-sequence-delete-control",
+      "released": false,
+      "title": null,
+      "argv": null,
+      "httpExpected": 1,
+      "httpMaximum": 10,
+      "productChildren": 2,
+      "externalSeconds": 120,
+      "vitestMs": null,
+      "workMs": 90000,
+      "exchangeMs": 5000,
+      "prepareMs": 10000,
+      "cleanupMs": 10000,
+      "positiveElapsedAssertionMs": null,
+      "fullReportOutputOverrides": null,
+      "futureBinding": {
+        "cleanHead": null,
+        "tree": null,
+        "entry": null,
+        "sourceCommit": null,
+        "payloadSha256": null,
+        "configSha256": null,
+        "fixturesSha256": null,
+        "provenanceSha256": null
+      },
+      "noWorkspaceEntryFallback": true
+    },
+    {
+      "id": "cross-batch-control",
+      "released": false,
+      "title": "discriminates retained cross-carrier evidence against batch-semantic-conflict",
+      "argv": [
+        "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+        "/Users/dbox/repos/wt/vickie/vickie-sequence-member-evidence/node_modules/.pnpm/vitest@4.1.10_@types+node@24.13.3_vite@8.2.1_@types+node@24.13.3_/node_modules/vitest/vitest.mjs",
+        "run",
+        "apps/bdptest/src/transactional-matrix.test.ts",
+        "--maxWorkers=1",
+        "--reporter=verbose",
+        "--reporter=json",
+        "--outputFile=/Users/dbox/repos/wt/vickie/bdp-integration-logs/sequence-member-draft/execution-preparation/installed-run/cross-batch-control.results.json",
+        "-t",
+        "^discriminates\\ retained\\ cross\\-carrier\\ evidence\\ against\\ batch\\-semantic\\-conflict$"
+      ],
+      "httpExpected": 204,
+      "httpMaximum": 204,
+      "productChildren": 23,
+      "externalSeconds": 120,
+      "vitestMs": 120000,
+      "workMs": 90000,
+      "exchangeMs": 5000,
+      "prepareMs": 10000,
+      "cleanupMs": 10000,
+      "positiveElapsedAssertionMs": null,
+      "fullReportOutputOverrides": {
+        "BDP_TRANSACTIONAL_CROSS_CARRIER_CONTROL_OUTPUT": null
+      },
+      "futureBinding": {
+        "cleanHead": null,
+        "tree": null,
+        "entry": null,
+        "sourceCommit": null,
+        "payloadSha256": null,
+        "configSha256": null,
+        "fixturesSha256": null,
+        "provenanceSha256": null
+      },
+      "noWorkspaceEntryFallback": true
+    },
+    {
+      "id": "cross-sequence-control",
+      "released": false,
+      "title": "discriminates retained cross-carrier evidence against sequence-fresh-key",
+      "argv": [
+        "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+        "/Users/dbox/repos/wt/vickie/vickie-sequence-member-evidence/node_modules/.pnpm/vitest@4.1.10_@types+node@24.13.3_vite@8.2.1_@types+node@24.13.3_/node_modules/vitest/vitest.mjs",
+        "run",
+        "apps/bdptest/src/transactional-matrix.test.ts",
+        "--maxWorkers=1",
+        "--reporter=verbose",
+        "--reporter=json",
+        "--outputFile=/Users/dbox/repos/wt/vickie/bdp-integration-logs/sequence-member-draft/execution-preparation/installed-run/cross-sequence-control.results.json",
+        "-t",
+        "^discriminates\\ retained\\ cross\\-carrier\\ evidence\\ against\\ sequence\\-fresh\\-key$"
+      ],
+      "httpExpected": 205,
+      "httpMaximum": 205,
+      "productChildren": 23,
+      "externalSeconds": 120,
+      "vitestMs": 120000,
+      "workMs": 90000,
+      "exchangeMs": 5000,
+      "prepareMs": 10000,
+      "cleanupMs": 10000,
+      "positiveElapsedAssertionMs": null,
+      "fullReportOutputOverrides": {
+        "BDP_TRANSACTIONAL_CROSS_CARRIER_CONTROL_OUTPUT": null
+      },
+      "futureBinding": {
+        "cleanHead": null,
+        "tree": null,
+        "entry": null,
+        "sourceCommit": null,
+        "payloadSha256": null,
+        "configSha256": null,
+        "fixturesSha256": null,
+        "provenanceSha256": null
+      },
+      "noWorkspaceEntryFallback": true
+    }
+  ],
+  "aggregate": {
+    "cohorts": 4,
+    "expectedHttp": 623,
+    "maxHttp": 632,
+    "children": 71
+  },
+  "ownedTempPrefix": "bdp-tx-installed-",
+  "sourceControlsDistinct": "CPU derivative/schema/replay/handoff weakenings run within two selected static callbacks. Actual negative/cross controls use same fresh external payload, full unchanged action sequences and genuine full report before cleanup. They are not emitted runtime mutants.",
+  "missing": [
+    "Actual new control registration/title/report env",
+    "Actual post-draft code and all55 invocation/41-mutated specimens",
+    "Fresh archive/consumer byte inventory and recursive payload",
+    "Exactly selected four result/adjudication schemas and reports",
+    "Root per-stage execution release"
+  ]
+}

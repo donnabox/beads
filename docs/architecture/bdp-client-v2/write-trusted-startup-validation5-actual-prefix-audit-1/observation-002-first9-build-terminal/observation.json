@@ -1,0 +1,279 @@
+{
+  "observedUtc": "2026-10-18T06:35:45.130010+00:00",
+  "acceptedPrefixStages": 9,
+  "stages": {
+    "node-version": {
+      "accepted": true,
+      "exit": 0,
+      "elapsedSeconds": 3.7187292091548443,
+      "exitSha256": "68dc817999c01e6f1f807ce1df2009b0e3d9672c82e6211d4d0e1633f554271d",
+      "logSha256": "a8f8f7ba69d43285857a0ea34017ef8dadd3ba012404bb7dd188fc773cf63ee2"
+    },
+    "pnpm-version": {
+      "accepted": true,
+      "exit": 0,
+      "elapsedSeconds": 3.926880791783333,
+      "exitSha256": "cd98a0665712bf1a338f674ae48fa3472a8b34e52a192ff84a827808e4309970",
+      "logSha256": "6784d6c924df1c8341f9f841f5b5b20c37255de3d34f923baebc0a557d5d5201"
+    },
+    "workspace-install": {
+      "accepted": true,
+      "exit": 0,
+      "elapsedSeconds": 3.992049000225961,
+      "exitSha256": "4a9ee6ea97e6483e40c5b6eb1244f2e758c6e4f87befd8999cc7c8e0806532c6",
+      "logSha256": "22afcd1754a4446650ca500eb8762c9aaaebb04d77f123a1879fdeb8893b0ba2"
+    },
+    "bind-workspace-tools": {
+      "accepted": true,
+      "exit": 0,
+      "elapsedSeconds": 8.191032166127115,
+      "exitSha256": "ece3e5de0e80bdff3aec85f2d5c83d5c49eebfeb5205aa3d8085a92ddf266608",
+      "logSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "typecheck": {
+      "accepted": true,
+      "exit": 0,
+      "elapsedSeconds": 4.712786290794611,
+      "exitSha256": "cd07247d867ed5dc7ffc3917ed340e89fff0bd1820395fb0052ee2dcd2951d2f",
+      "logSha256": "91d54ffbee73a3ac72294d090e58d77745f8b93edbf94b862807698273a6505a"
+    },
+    "format-check": {
+      "accepted": true,
+      "exit": 0,
+      "elapsedSeconds": 3.750851540826261,
+      "exitSha256": "40567f0e0b61904fbb70d6a00d9d3002c81ebde3a8aeb924ec3e5eae5df6d97c",
+      "logSha256": "4d442fb504a03dea91fad2ba27aeae9a3d0286fff815ef41ccd5f252ee7c4f8b"
+    },
+    "lint": {
+      "accepted": true,
+      "exit": 0,
+      "elapsedSeconds": 3.7869388326071203,
+      "exitSha256": "34d7508cad87fa1c273e03924b5100d29497903ba6cd9ad470c7dc286d59b3d0",
+      "logSha256": "0a4bebed5de83f19cae848300c47bbfb27ab9400b4def1a674607e7d99423999"
+    },
+    "fresh-build": {
+      "accepted": true,
+      "exit": 0,
+      "elapsedSeconds": 4.670122374780476,
+      "exitSha256": "cb8b3cb1cab49f1591138c245f3047de2b108bbc6fbc60708562d86ac44f9cd9",
+      "logSha256": "232dac5e840e45b3bb06e6e04249b5241f2e1b4f6c797a22c046d916302ac208"
+    },
+    "bind-fresh-build": {
+      "accepted": true,
+      "exit": 0,
+      "elapsedSeconds": 8.165129667147994,
+      "exitSha256": "f5bd0af31a2c1f4ad671d3a36f2ba3f348416eec5e1468aab9c2f9f0475ef68a",
+      "logSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    }
+  },
+  "stageStartedGateSha256": {
+    "node-version": "4eb58108e5bcd823d8decb39644faf79ad83936b4a49c1c5b2399b09c26d90e9",
+    "pnpm-version": "4eb58108e5bcd823d8decb39644faf79ad83936b4a49c1c5b2399b09c26d90e9",
+    "workspace-install": "4eb58108e5bcd823d8decb39644faf79ad83936b4a49c1c5b2399b09c26d90e9",
+    "bind-workspace-tools": "4eb58108e5bcd823d8decb39644faf79ad83936b4a49c1c5b2399b09c26d90e9",
+    "typecheck": "863ea3cefaa82d035026babd9785fbe411b00b7d948c20aec178fc442645e7c9",
+    "format-check": "863ea3cefaa82d035026babd9785fbe411b00b7d948c20aec178fc442645e7c9",
+    "lint": "863ea3cefaa82d035026babd9785fbe411b00b7d948c20aec178fc442645e7c9",
+    "fresh-build": "863ea3cefaa82d035026babd9785fbe411b00b7d948c20aec178fc442645e7c9",
+    "bind-fresh-build": "863ea3cefaa82d035026babd9785fbe411b00b7d948c20aec178fc442645e7c9"
+  },
+  "observedActiveGateSha256": "7cb80779cc3f6ddcf310c6d82ce94c137310d9486f17f6e601f58142e0000b91",
+  "observedActiveApprovedStages": [
+    "node-version",
+    "pnpm-version",
+    "workspace-install",
+    "bind-workspace-tools",
+    "typecheck",
+    "format-check",
+    "lint",
+    "fresh-build",
+    "bind-fresh-build",
+    "focused-source",
+    "audit-focused-source",
+    "prepare-package-directory",
+    "pack-protocol",
+    "pack-server",
+    "verify-archives"
+  ],
+  "sourceIdentity": "0c53a6bb33d57133c8fbb43b8787d9251ca4276abcdb18b2a9f434279bfe364b",
+  "currentSourceFilesVerified": 682,
+  "immutablePreparationFilesVerified": 465,
+  "activeGateOnlyReleaseException": true,
+  "toolsVerified": 11,
+  "buildInventorySha256": "a0594be659e9b54cf43f83bfac18d2c2b0f46f056a267b709c40290dc6b17383",
+  "buildInventoryRecords": 484,
+  "distRecords": 480,
+  "newLoaderRegistryEntries": [
+    "packages/server/dist/reference-deployment.js",
+    "packages/server/dist/reference-deployment.js.map",
+    "packages/server/dist/reference-deployment.d.ts",
+    "packages/server/dist/reference-deployment.d.ts.map",
+    "packages/server/dist/reference-deployment-state.js",
+    "packages/server/dist/reference-deployment-state.js.map",
+    "packages/server/dist/reference-deployment-state.d.ts",
+    "packages/server/dist/reference-deployment-state.d.ts.map"
+  ],
+  "sampledPids": [
+    61369,
+    62776,
+    64295,
+    65711,
+    65721,
+    65740,
+    65761,
+    65778,
+    65815,
+    65835,
+    65855,
+    65876,
+    65893,
+    65913,
+    65931,
+    65950,
+    65970,
+    65985,
+    66003,
+    66042,
+    66079,
+    66100,
+    66118,
+    66138,
+    66158,
+    66180,
+    66200,
+    66217,
+    66239,
+    66275,
+    66317,
+    66332,
+    66350,
+    66369,
+    66388,
+    66407,
+    66427,
+    66445,
+    66456,
+    66457,
+    69198,
+    69222,
+    70672,
+    72086,
+    73486,
+    73510,
+    73511,
+    73537,
+    73538,
+    73546,
+    74960,
+    74988,
+    75007,
+    75027,
+    75047,
+    75069,
+    75106,
+    75125,
+    75144,
+    75166,
+    75186,
+    75205,
+    75224,
+    75243,
+    75263,
+    75283,
+    75303,
+    75321,
+    75341,
+    75379,
+    75397,
+    75415,
+    75436,
+    75456,
+    75492,
+    75510,
+    75529,
+    75567,
+    75605,
+    75645,
+    75664,
+    75682,
+    75693,
+    75694
+  ],
+  "sampledGroups": [
+    61369,
+    62776,
+    64295,
+    65711,
+    69198,
+    70672,
+    72086,
+    73486,
+    74960
+  ],
+  "sampledPidsGroupsAbsent": true,
+  "scratchDirectories": [
+    {
+      "stage": "node-version",
+      "path": "/private/tmp/vickie-trusted-startup-validation-node-version-dyp1441_",
+      "exists": true,
+      "bdpDirectories": []
+    },
+    {
+      "stage": "pnpm-version",
+      "path": "/private/tmp/vickie-trusted-startup-validation-pnpm-version-hu6chy6k",
+      "exists": true,
+      "bdpDirectories": []
+    },
+    {
+      "stage": "workspace-install",
+      "path": "/private/tmp/vickie-trusted-startup-validation-workspace-install-z6qe1fc5",
+      "exists": true,
+      "bdpDirectories": []
+    },
+    {
+      "stage": "bind-workspace-tools",
+      "path": "/private/tmp/vickie-trusted-startup-validation-bind-workspace-tools-4r1xdmki",
+      "exists": true,
+      "bdpDirectories": []
+    },
+    {
+      "stage": "typecheck",
+      "path": "/private/tmp/vickie-trusted-startup-validation-typecheck-tpfvudmz",
+      "exists": true,
+      "bdpDirectories": []
+    },
+    {
+      "stage": "format-check",
+      "path": "/private/tmp/vickie-trusted-startup-validation-format-check-gid9m0tx",
+      "exists": true,
+      "bdpDirectories": []
+    },
+    {
+      "stage": "lint",
+      "path": "/private/tmp/vickie-trusted-startup-validation-lint-idsr1b93",
+      "exists": true,
+      "bdpDirectories": []
+    },
+    {
+      "stage": "fresh-build",
+      "path": "/private/tmp/vickie-trusted-startup-validation-fresh-build-l5xjqegs",
+      "exists": true,
+      "bdpDirectories": []
+    },
+    {
+      "stage": "bind-fresh-build",
+      "path": "/private/tmp/vickie-trusted-startup-validation-bind-fresh-build-z6u3d52u",
+      "exists": true,
+      "bdpDirectories": []
+    }
+  ],
+  "laterStartedAtObservation": [
+    "audit-focused-source.started.json",
+    "focused-source.started.json",
+    "pack-protocol.started.json",
+    "prepare-package-directory.started.json"
+  ],
+  "laterResults": "No later result claimed; inventory applies only at observation epoch",
+  "findings": [],
+  "auditorRuntimeExecuted": false
+}

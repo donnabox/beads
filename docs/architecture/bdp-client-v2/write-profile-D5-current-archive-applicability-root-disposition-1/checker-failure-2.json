@@ -1,0 +1,8 @@
+{
+  "actualToolResult": "7b36f6",
+  "exitCode": 1,
+  "failure": "Read-only binary-origin branch required anchors key but archive origin omits optional text anchors",
+  "correction": "Missing optional anchors means zero textual anchor claims; binary raw metadata/hashes still strict and no JSON child pointer inferred",
+  "beforeAnyRootOutputDirectoryOrSubjectAction": true,
+  "runtimeRetry": false
+}

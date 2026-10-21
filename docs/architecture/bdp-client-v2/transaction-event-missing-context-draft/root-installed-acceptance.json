@@ -1,0 +1,74 @@
+{
+  "at": "2026-10-15T11:35:10.101249+00:00",
+  "decision": "Accept actual fresh installed Event-context observation, independently checked by root; exact-head CI remains pending.",
+  "head": "3df82ac480f50c8f486b4e456336366e7acbdf87",
+  "tree": "d5f02c936cf080666a8e73bb5f253e52086705f4",
+  "actualHttp": 11,
+  "actualChildren": 1,
+  "archiveMembers": 313,
+  "productionPackages": 8,
+  "payloadIdentity": "0caa48ec6e4a74ad3e3c322150cd29d3ec172048b82e5cf62ae55bd917141b48",
+  "stages": [
+    {
+      "name": "consumer-install.exit.json",
+      "sha256": "9987acfdcd42fa54f94ce3b11bd7e3e9c2e020f80d885889a390da6b9a560ef1",
+      "elapsedSeconds": 0.9201511659193784
+    },
+    {
+      "name": "installed-positive.exit.json",
+      "sha256": "bb4d8bf39542f05145e5c2d72fc66fad0b9f42a716f98c76e060899f3718f2bf",
+      "elapsedSeconds": 2.629334749886766
+    },
+    {
+      "name": "installed-review.exit.json",
+      "sha256": "d664b424106e536886e992a4b5c1a32819ab39751ef058ea6e4003c7d3cae59c",
+      "elapsedSeconds": 0.7346823341213167
+    },
+    {
+      "name": "node-version.exit.json",
+      "sha256": "6229bdf007c9dfa275c564a6d6aff4d42243cdc5595432d1b5443eb5e079179d",
+      "elapsedSeconds": 0.5506116671022028
+    },
+    {
+      "name": "pack-protocol.exit.json",
+      "sha256": "5c34aadd73a64c0f69aabb59e23f2fd77b31fefa63e32e39008be2ee55529670",
+      "elapsedSeconds": 0.837670249864459
+    },
+    {
+      "name": "pack-server.exit.json",
+      "sha256": "9ceff4f600d45650d2f01076d28bdf7cbb1e6e9c1ed185a7c0df3b70c87f4956",
+      "elapsedSeconds": 0.8192364999558777
+    },
+    {
+      "name": "package-directory.exit.json",
+      "sha256": "e9dbec4cfefa621fcccfaec37eeabae619aca5bedff840344e4db4cb9cbf72ad",
+      "elapsedSeconds": 0.6206322498619556
+    },
+    {
+      "name": "prepare-consumer.exit.json",
+      "sha256": "96cb6cb3fcfe9c3a0b8c75ff63dde48d28ea3467e0cba2dc2e297d3430be3ad7",
+      "elapsedSeconds": 0.6180231659673154
+    },
+    {
+      "name": "verify-installed.exit.json",
+      "sha256": "83b08f3f8656bd311da591112618ca77597857d4b35dc4be8a1c7b03a5942591",
+      "elapsedSeconds": 0.7236992081161588
+    },
+    {
+      "name": "verify-tar.exit.json",
+      "sha256": "0763fcb9bd59cd7c7a0dd4697a52a09b1892a1d037b075191bea057d39214354",
+      "elapsedSeconds": 0.6294219580013305
+    }
+  ],
+  "artifacts": {
+    "installed-positive.json": "5156a58463b3573a55800c329ee7c8e4471b1ea653834adce48e4e80c519bef1",
+    "installed-observation.json": "3a79fd2ddd9a333927e17ecce7e61d5a7035a51c8d67b42684e4574064a52cf6",
+    "installed-review.json": "65a9dcca58d23ef779d728b37aa2b190f066383115f651ce899d49c68127638b",
+    "installed-provenance.json": "8eb1ef9c2122cea5676321a738789b60c9087240c277453a66bf57f464c21a6d",
+    "tar-source-provenance.json": "7a0915ee6858764be570a34fa09d8006566fbec0c820677bb89b4563d782c083"
+  },
+  "childPidAbsent": 89610,
+  "storeAbsent": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-event-missing-context-draft/installed-preparation/run/installed-positive.tmp/bdp-event-missing-context-installed-imsItu",
+  "claimEligible": false,
+  "limitations": "Full schemas/bodies and exact-request serializer fields asserted in process; log retains safe headers/fingerprints only. Method is authored ledger plus returned response mapping, not invented exactRequest.method. Git attribution is supervisor verified, not child attested; no qualification or public admission."
+}

@@ -1,0 +1,1258 @@
+--- /Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-D4-synthetic-harness-preparation-2/subcase-call-map.json
++++ subcase-call-map.json
+@@ -160,176 +160,6 @@
+       "executed": false
+     }
+   ],
+-  "sourceDefinitionsAndBranches": {
+-    "gate_controls.py": {
+-      "sha256": "47e89d6e27c0ae5d1dc80aaeedd2199decdfff41a28dca97e8382348fefc6b8c",
+-      "definitions": {
+-        "encoded": 11,
+-        "stage_receipts": 12,
+-        "consumer_bindings": 37,
+-        "call": 44,
+-        "document_file": 40
+-      },
+-      "literalCaseLines": {}
+-    },
+-    "harness.py": {
+-      "sha256": "7a7b2e27e554d57dcb2fe411740cc9a7b1d362e65628a70705b60e938aad3f0e",
+-      "definitions": {
+-        "need": 16,
+-        "sha": 18,
+-        "unique": 19,
+-        "read": 23,
+-        "write": 24,
+-        "document": 26,
+-        "authorized": 28,
+-        "load": 56,
+-        "child": 60,
+-        "parent": 89,
+-        "main": 132
+-      },
+-      "literalCaseLines": {
+-        "D06": 80
+-      }
+-    },
+-    "host_controls.py": {
+-      "sha256": "1ea700f6f369a097532e852f5feed1cbcc8585cb257acaf68b1bf99bde3e8714",
+-      "definitions": {
+-        "run": 14,
+-        "popen": 22,
+-        "trace": 43
+-      },
+-      "literalCaseLines": {}
+-    },
+-    "host_peer.py": {
+-      "sha256": "36658b92223c50f40c455472f631a44c706ebabaf16febcf140d0d398ff46a02",
+-      "definitions": {
+-        "write": 9,
+-        "wait_until": 11,
+-        "main": 13,
+-        "note": 36,
+-        "receive": 38
+-      },
+-      "literalCaseLines": {}
+-    },
+-    "report_controls.py": {
+-      "sha256": "575fb771d2c1af1103666576d7ea6576f5382641b8b773b26fe82b7a95ed77cd",
+-      "definitions": {
+-        "wire": 11,
+-        "child": 16,
+-        "row": 18,
+-        "pending": 22,
+-        "partial": 24,
+-        "positive": 28,
+-        "run": 60,
+-        "full": 62,
+-        "check": 64
+-      },
+-      "literalCaseLines": {
+-        "D01": 66,
+-        "D02": 69,
+-        "D03": 78,
+-        "D04": 107,
+-        "D05": 112,
+-        "D06": 117
+-      }
+-    },
+-    "scanner_controls.py": {
+-      "sha256": "91f0baa79720e450a8c345ca69f366fab00db56c98503c4c1d826939c559f437",
+-      "definitions": {
+-        "line": 9,
+-        "marker": 10,
+-        "refusal": 12,
+-        "feed": 18,
+-        "stream": 20,
+-        "run": 24,
+-        "reject": 27,
+-        "drive": 83,
+-        "Growing": 110,
+-        "opening": 118,
+-        "__init__": 111,
+-        "read": 112
+-      },
+-      "literalCaseLines": {
+-        "M01": 28,
+-        "M02": 35,
+-        "M03": 36,
+-        "M04": 37,
+-        "M05": 40,
+-        "M06": 41,
+-        "M07": 42,
+-        "M08": 43,
+-        "M09": 44,
+-        "M10": 45,
+-        "M11": 46,
+-        "M12": 47,
+-        "M13": 52,
+-        "M14": 53,
+-        "M15": 59,
+-        "M16": 60,
+-        "J01": 61,
+-        "J02": 62,
+-        "J03": 63,
+-        "J04": 64,
+-        "J05": 65,
+-        "J06": 69,
+-        "J07": 72,
+-        "J08": 77,
+-        "J09": 80,
+-        "J10": 91,
+-        "J11": 100,
+-        "J12": 108
+-      }
+-    },
+-    "watchdog_controls.py": {
+-      "sha256": "086d0c9be51ba49a18eb6c6c2e49618c7f08d03e9385d47524c74d01f7260731",
+-      "definitions": {
+-        "Pipe": 11,
+-        "Process": 15,
+-        "Channel": 33,
+-        "Model": 53,
+-        "scenario": 152,
+-        "run": 163,
+-        "__init__": 54,
+-        "fileno": 35,
+-        "close": 37,
+-        "poll": 18,
+-        "kill": 32,
+-        "setblocking": 36,
+-        "send": 38,
+-        "recv": 47,
+-        "monotonic": 78,
+-        "wall": 79,
+-        "pair": 80,
+-        "member_live": 82,
+-        "row": 87,
+-        "rows": 91,
+-        "popen": 111,
+-        "read": 119,
+-        "killpg": 122,
+-        "install": 127,
+-        "mask": 128,
+-        "select": 133,
+-        "execute": 137,
+-        "trace": 140
+-      },
+-      "literalCaseLines": {
+-        "P01": 164,
+-        "P02": 170,
+-        "P03": 171,
+-        "P04": 172,
+-        "P05": 173,
+-        "P06": 174,
+-        "P07": 175,
+-        "P08": 176,
+-        "P09": 178,
+-        "P10": 184,
+-        "P11": 189,
+-        "P12": 190,
+-        "P13": 191,
+-        "P14": 194
+-      }
+-    }
+-  },
+   "authority": "static intended call map only; zero execution",
+   "all48RegistryIds": [
+     "M01",
+@@ -399,5 +229,1078 @@
+     ],
+     "actualOuterOwner": "all invocations use native limiter -> outer_host -> owned IO/control workers; registered bootstrap bridge for exact peer/ps argv",
+     "noEvaluations": true
++  },
++  "historicalPredecessorSourceDefinitionsAndBranches": {
++    "status": "HISTORICAL ONLY; copied original H1 attribution carried by H2, not active H3 source and not executed coverage",
++    "frozenH2MapSha256": "e0bc99370e636d3abc0a8c2df4b615aa26635f60e2824169e0af88d260f5cf7e",
++    "entries": {
++      "gate_controls.py": {
++        "sha256": "47e89d6e27c0ae5d1dc80aaeedd2199decdfff41a28dca97e8382348fefc6b8c",
++        "definitions": {
++          "encoded": 11,
++          "stage_receipts": 12,
++          "consumer_bindings": 37,
++          "call": 44,
++          "document_file": 40
++        },
++        "literalCaseLines": {}
++      },
++      "harness.py": {
++        "sha256": "7a7b2e27e554d57dcb2fe411740cc9a7b1d362e65628a70705b60e938aad3f0e",
++        "definitions": {
++          "need": 16,
++          "sha": 18,
++          "unique": 19,
++          "read": 23,
++          "write": 24,
++          "document": 26,
++          "authorized": 28,
++          "load": 56,
++          "child": 60,
++          "parent": 89,
++          "main": 132
++        },
++        "literalCaseLines": {
++          "D06": 80
++        }
++      },
++      "host_controls.py": {
++        "sha256": "1ea700f6f369a097532e852f5feed1cbcc8585cb257acaf68b1bf99bde3e8714",
++        "definitions": {
++          "run": 14,
++          "popen": 22,
++          "trace": 43
++        },
++        "literalCaseLines": {}
++      },
++      "host_peer.py": {
++        "sha256": "36658b92223c50f40c455472f631a44c706ebabaf16febcf140d0d398ff46a02",
++        "definitions": {
++          "write": 9,
++          "wait_until": 11,
++          "main": 13,
++          "note": 36,
++          "receive": 38
++        },
++        "literalCaseLines": {}
++      },
++      "report_controls.py": {
++        "sha256": "575fb771d2c1af1103666576d7ea6576f5382641b8b773b26fe82b7a95ed77cd",
++        "definitions": {
++          "wire": 11,
++          "child": 16,
++          "row": 18,
++          "pending": 22,
++          "partial": 24,
++          "positive": 28,
++          "run": 60,
++          "full": 62,
++          "check": 64
++        },
++        "literalCaseLines": {
++          "D01": 66,
++          "D02": 69,
++          "D03": 78,
++          "D04": 107,
++          "D05": 112,
++          "D06": 117
++        }
++      },
++      "scanner_controls.py": {
++        "sha256": "91f0baa79720e450a8c345ca69f366fab00db56c98503c4c1d826939c559f437",
++        "definitions": {
++          "line": 9,
++          "marker": 10,
++          "refusal": 12,
++          "feed": 18,
++          "stream": 20,
++          "run": 24,
++          "reject": 27,
++          "drive": 83,
++          "Growing": 110,
++          "opening": 118,
++          "__init__": 111,
++          "read": 112
++        },
++        "literalCaseLines": {
++          "M01": 28,
++          "M02": 35,
++          "M03": 36,
++          "M04": 37,
++          "M05": 40,
++          "M06": 41,
++          "M07": 42,
++          "M08": 43,
++          "M09": 44,
++          "M10": 45,
++          "M11": 46,
++          "M12": 47,
++          "M13": 52,
++          "M14": 53,
++          "M15": 59,
++          "M16": 60,
++          "J01": 61,
++          "J02": 62,
++          "J03": 63,
++          "J04": 64,
++          "J05": 65,
++          "J06": 69,
++          "J07": 72,
++          "J08": 77,
++          "J09": 80,
++          "J10": 91,
++          "J11": 100,
++          "J12": 108
++        }
++      },
++      "watchdog_controls.py": {
++        "sha256": "086d0c9be51ba49a18eb6c6c2e49618c7f08d03e9385d47524c74d01f7260731",
++        "definitions": {
++          "Pipe": 11,
++          "Process": 15,
++          "Channel": 33,
++          "Model": 53,
++          "scenario": 152,
++          "run": 163,
++          "__init__": 54,
++          "fileno": 35,
++          "close": 37,
++          "poll": 18,
++          "kill": 32,
++          "setblocking": 36,
++          "send": 38,
++          "recv": 47,
++          "monotonic": 78,
++          "wall": 79,
++          "pair": 80,
++          "member_live": 82,
++          "row": 87,
++          "rows": 91,
++          "popen": 111,
++          "read": 119,
++          "killpg": 122,
++          "install": 127,
++          "mask": 128,
++          "select": 133,
++          "execute": 137,
++          "trace": 140
++        },
++        "literalCaseLines": {
++          "P01": 164,
++          "P02": 170,
++          "P03": 171,
++          "P04": 172,
++          "P05": 173,
++          "P06": 174,
++          "P07": 175,
++          "P08": 176,
++          "P09": 178,
++          "P10": 184,
++          "P11": 189,
++          "P12": 190,
++          "P13": 191,
++          "P14": 194
++        }
++      }
++    }
++  },
++  "sourceDefinitionsAndBranches": {
++    "availability_owner.py": {
++      "sha256": "db0abde1dcf4921bab3d830fc3bb8616fff4984e1cc2c211b5a2ee205be148e5",
++      "definitions": [
++        {
++          "name": "need",
++          "line": 13,
++          "endLine": 14
++        },
++        {
++          "name": "unique",
++          "line": 15,
++          "endLine": 18
++        },
++        {
++          "name": "read",
++          "line": 19,
++          "endLine": 22
++        },
++        {
++          "name": "sha",
++          "line": 23,
++          "endLine": 23
++        },
++        {
++          "name": "pinned",
++          "line": 24,
++          "endLine": 26
++        },
++        {
++          "name": "emit",
++          "line": 27,
++          "endLine": 28
++        },
++        {
++          "name": "main",
++          "line": 30,
++          "endLine": 102
++        },
++        {
++          "name": "left",
++          "line": 36,
++          "endLine": 36
++        },
++        {
++          "name": "save",
++          "line": 37,
++          "endLine": 39
++        },
++        {
++          "name": "drain",
++          "line": 40,
++          "endLine": 53
++        }
++      ],
++      "literalCaseLines": []
++    },
++    "availability_peer.py": {
++      "sha256": "65c078a6d9739f4c4017433eef5d260084e9ee005622a7d5f08fdc89b0b05ec7",
++      "definitions": [
++        {
++          "name": "main",
++          "line": 6,
++          "endLine": 19
++        }
++      ],
++      "literalCaseLines": []
++    },
++    "bootstrap.py": {
++      "sha256": "6e11b44e8e95458b35052c87a02a17cffdae32ad060a5dbd3de53e19f2f873cc",
++      "definitions": [
++        {
++          "name": "main",
++          "line": 8,
++          "endLine": 38
++        }
++      ],
++      "literalCaseLines": []
++    },
++    "gate_controls.py": {
++      "sha256": "47e89d6e27c0ae5d1dc80aaeedd2199decdfff41a28dca97e8382348fefc6b8c",
++      "definitions": [
++        {
++          "name": "encoded",
++          "line": 11,
++          "endLine": 11
++        },
++        {
++          "name": "stage_receipts",
++          "line": 12,
++          "endLine": 35
++        },
++        {
++          "name": "consumer_bindings",
++          "line": 37,
++          "endLine": 50
++        },
++        {
++          "name": "call",
++          "line": 21,
++          "endLine": 25
++        },
++        {
++          "name": "document_file",
++          "line": 40,
++          "endLine": 41
++        },
++        {
++          "name": "call",
++          "line": 44,
++          "endLine": 45
++        }
++      ],
++      "literalCaseLines": []
++    },
++    "harness.py": {
++      "sha256": "40d5b1a9da985fde2db27d5709eae831628b93771bb79d9401ee890177d048f5",
++      "definitions": [
++        {
++          "name": "need",
++          "line": 16,
++          "endLine": 17
++        },
++        {
++          "name": "sha",
++          "line": 18,
++          "endLine": 18
++        },
++        {
++          "name": "unique",
++          "line": 19,
++          "endLine": 22
++        },
++        {
++          "name": "read",
++          "line": 23,
++          "endLine": 23
++        },
++        {
++          "name": "write",
++          "line": 24,
++          "endLine": 25
++        },
++        {
++          "name": "document",
++          "line": 26,
++          "endLine": 27
++        },
++        {
++          "name": "authorized",
++          "line": 28,
++          "endLine": 55
++        },
++        {
++          "name": "load",
++          "line": 57,
++          "endLine": 59
++        },
++        {
++          "name": "child",
++          "line": 61,
++          "endLine": 88
++        },
++        {
++          "name": "parent",
++          "line": 90,
++          "endLine": 91
++        },
++        {
++          "name": "main",
++          "line": 93,
++          "endLine": 96
++        }
++      ],
++      "literalCaseLines": [
++        {
++          "id": "M01",
++          "line": 79
++        },
++        {
++          "id": "P11",
++          "line": 79
++        },
++        {
++          "id": "D06",
++          "line": 79
++        },
++        {
++          "id": "D06",
++          "line": 81
++        }
++      ]
++    },
++    "host_controls.py": {
++      "sha256": "3aa0f1cf48cf404cc78203bd66089aacb12bc66bc7357ea35d28e19dad3a522d",
++      "definitions": [
++        {
++          "name": "run",
++          "line": 15,
++          "endLine": 114
++        },
++        {
++          "name": "popen",
++          "line": 45,
++          "endLine": 64
++        },
++        {
++          "name": "trace",
++          "line": 66,
++          "endLine": 68
++        }
++      ],
++      "literalCaseLines": [
++        {
++          "id": "P01",
++          "line": 16
++        },
++        {
++          "id": "P03",
++          "line": 16
++        },
++        {
++          "id": "P05",
++          "line": 16
++        },
++        {
++          "id": "P06",
++          "line": 16
++        },
++        {
++          "id": "P07",
++          "line": 16
++        },
++        {
++          "id": "P08",
++          "line": 16
++        },
++        {
++          "id": "P12",
++          "line": 16
++        }
++      ]
++    },
++    "host_peer.py": {
++      "sha256": "e586b1568c5b51e0e60386565922f35db98a8521ecd1b093e50d1646a6f12798",
++      "definitions": [
++        {
++          "name": "write",
++          "line": 11,
++          "endLine": 12
++        },
++        {
++          "name": "wait_until",
++          "line": 13,
++          "endLine": 14
++        },
++        {
++          "name": "receive_control",
++          "line": 15,
++          "endLine": 27
++        },
++        {
++          "name": "main",
++          "line": 29,
++          "endLine": 79
++        },
++        {
++          "name": "note",
++          "line": 53,
++          "endLine": 54
++        },
++        {
++          "name": "receive",
++          "line": 55,
++          "endLine": 55
++        }
++      ],
++      "literalCaseLines": []
++    },
++    "outer_host.py": {
++      "sha256": "abfb5adcade832dc0105b2abd29ca167d7ef14e6f15558db37e4921d1a8832e0",
++      "definitions": [
++        {
++          "name": "main",
++          "line": 12,
++          "endLine": 272
++        },
++        {
++          "name": "fail",
++          "line": 27,
++          "endLine": 29
++        },
++        {
++          "name": "uncertain",
++          "line": 30,
++          "endLine": 32
++        },
++        {
++          "name": "elapsed",
++          "line": 33,
++          "endLine": 33
++        },
++        {
++          "name": "registered",
++          "line": 34,
++          "endLine": 37
++        },
++        {
++          "name": "launch",
++          "line": 38,
++          "endLine": 49
++        },
++        {
++          "name": "matches",
++          "line": 50,
++          "endLine": 53
++        },
++        {
++          "name": "parse",
++          "line": 54,
++          "endLine": 60
++        },
++        {
++          "name": "observe",
++          "line": 61,
++          "endLine": 119
++        },
++        {
++          "name": "signal_owned",
++          "line": 120,
++          "endLine": 141
++        },
++        {
++          "name": "ingest",
++          "line": 142,
++          "endLine": 182
++        },
++        {
++          "name": "interrupt",
++          "line": 183,
++          "endLine": 183
++        }
++      ],
++      "literalCaseLines": [
++        {
++          "id": "P01",
++          "line": 81
++        }
++      ]
++    },
++    "outer_worker.py": {
++      "sha256": "c18a2e78dc8da96613b36cb909a8f1503091871200884dce313de6cc06c8f35b",
++      "definitions": [
++        {
++          "name": "write",
++          "line": 12,
++          "endLine": 13
++        },
++        {
++          "name": "remaining",
++          "line": 14,
++          "endLine": 14
++        },
++        {
++          "name": "receive",
++          "line": 15,
++          "endLine": 28
++        },
++        {
++          "name": "retain_block",
++          "line": 32,
++          "endLine": 37
++        },
++        {
++          "name": "main",
++          "line": 39,
++          "endLine": 102
++        }
++      ],
++      "literalCaseLines": []
++    },
++    "owned_spawn.py": {
++      "sha256": "c4d73ba6d4d6d759b7e5dbeeb79986d2c8d6ccade163886b6a07b17cba02f3d8",
++      "definitions": [
++        {
++          "name": "bridge",
++          "line": 11,
++          "endLine": 14
++        },
++        {
++          "name": "note",
++          "line": 16,
++          "endLine": 23
++        },
++        {
++          "name": "spawn",
++          "line": 25,
++          "endLine": 60
++        }
++      ],
++      "literalCaseLines": []
++    },
++    "report_controls.py": {
++      "sha256": "d814d9edfb0f393e3f5c46550e56b8f273f9445e106ebba0e3d84603c2f4b12b",
++      "definitions": [
++        {
++          "name": "exact_refusal",
++          "line": 11,
++          "endLine": 16
++        },
++        {
++          "name": "wire",
++          "line": 17,
++          "endLine": 21
++        },
++        {
++          "name": "child",
++          "line": 22,
++          "endLine": 23
++        },
++        {
++          "name": "row",
++          "line": 24,
++          "endLine": 27
++        },
++        {
++          "name": "pending",
++          "line": 28,
++          "endLine": 29
++        },
++        {
++          "name": "partial",
++          "line": 30,
++          "endLine": 33
++        },
++        {
++          "name": "positive",
++          "line": 34,
++          "endLine": 64
++        },
++        {
++          "name": "run",
++          "line": 66,
++          "endLine": 133
++        },
++        {
++          "name": "full",
++          "line": 68,
++          "endLine": 69
++        },
++        {
++          "name": "check",
++          "line": 70,
++          "endLine": 71
++        }
++      ],
++      "literalCaseLines": [
++        {
++          "id": "D01",
++          "line": 72
++        },
++        {
++          "id": "D02",
++          "line": 75
++        },
++        {
++          "id": "D03",
++          "line": 84
++        },
++        {
++          "id": "D04",
++          "line": 114
++        },
++        {
++          "id": "D05",
++          "line": 120
++        },
++        {
++          "id": "D06",
++          "line": 125
++        }
++      ]
++    },
++    "scanner_controls.py": {
++      "sha256": "25f2b4ccdc3691acb8726a4a4a868f2df5f8f657df40a83f82013dfca93c3b56",
++      "definitions": [
++        {
++          "name": "line",
++          "line": 9,
++          "endLine": 9
++        },
++        {
++          "name": "marker",
++          "line": 10,
++          "endLine": 11
++        },
++        {
++          "name": "refusal",
++          "line": 12,
++          "endLine": 17
++        },
++        {
++          "name": "feed",
++          "line": 18,
++          "endLine": 19
++        },
++        {
++          "name": "stream",
++          "line": 20,
++          "endLine": 22
++        },
++        {
++          "name": "run",
++          "line": 24,
++          "endLine": 138
++        },
++        {
++          "name": "reject",
++          "line": 27,
++          "endLine": 27
++        },
++        {
++          "name": "drive",
++          "line": 83,
++          "endLine": 89
++        },
++        {
++          "name": "Growing",
++          "line": 127,
++          "endLine": 134
++        },
++        {
++          "name": "opening",
++          "line": 135,
++          "endLine": 135
++        },
++        {
++          "name": "__init__",
++          "line": 128,
++          "endLine": 128
++        },
++        {
++          "name": "read",
++          "line": 129,
++          "endLine": 134
++        }
++      ],
++      "literalCaseLines": [
++        {
++          "id": "M01",
++          "line": 28
++        },
++        {
++          "id": "M02",
++          "line": 35
++        },
++        {
++          "id": "M03",
++          "line": 36
++        },
++        {
++          "id": "M04",
++          "line": 37
++        },
++        {
++          "id": "M05",
++          "line": 40
++        },
++        {
++          "id": "M06",
++          "line": 41
++        },
++        {
++          "id": "M07",
++          "line": 42
++        },
++        {
++          "id": "M08",
++          "line": 43
++        },
++        {
++          "id": "M09",
++          "line": 44
++        },
++        {
++          "id": "M10",
++          "line": 45
++        },
++        {
++          "id": "M11",
++          "line": 46
++        },
++        {
++          "id": "M12",
++          "line": 47
++        },
++        {
++          "id": "M13",
++          "line": 52
++        },
++        {
++          "id": "M14",
++          "line": 53
++        },
++        {
++          "id": "M15",
++          "line": 59
++        },
++        {
++          "id": "M16",
++          "line": 60
++        },
++        {
++          "id": "J01",
++          "line": 61
++        },
++        {
++          "id": "J02",
++          "line": 62
++        },
++        {
++          "id": "J03",
++          "line": 63
++        },
++        {
++          "id": "J04",
++          "line": 64
++        },
++        {
++          "id": "J05",
++          "line": 65
++        },
++        {
++          "id": "J06",
++          "line": 69
++        },
++        {
++          "id": "J07",
++          "line": 72
++        },
++        {
++          "id": "J08",
++          "line": 77
++        },
++        {
++          "id": "J09",
++          "line": 80
++        },
++        {
++          "id": "J10",
++          "line": 91
++        },
++        {
++          "id": "J11",
++          "line": 117
++        },
++        {
++          "id": "J12",
++          "line": 125
++        }
++      ]
++    },
++    "watchdog_controls.py": {
++      "sha256": "8ad4abdbbc7a0973c99cf98a989e0130ca883288e6223595a157fa0bd67162ff",
++      "definitions": [
++        {
++          "name": "Pipe",
++          "line": 11,
++          "endLine": 14
++        },
++        {
++          "name": "Process",
++          "line": 15,
++          "endLine": 32
++        },
++        {
++          "name": "Channel",
++          "line": 33,
++          "endLine": 51
++        },
++        {
++          "name": "Model",
++          "line": 53,
++          "endLine": 150
++        },
++        {
++          "name": "scenario",
++          "line": 152,
++          "endLine": 161
++        },
++        {
++          "name": "run",
++          "line": 163,
++          "endLine": 196
++        },
++        {
++          "name": "__init__",
++          "line": 12,
++          "endLine": 12
++        },
++        {
++          "name": "fileno",
++          "line": 13,
++          "endLine": 13
++        },
++        {
++          "name": "close",
++          "line": 14,
++          "endLine": 14
++        },
++        {
++          "name": "__init__",
++          "line": 16,
++          "endLine": 17
++        },
++        {
++          "name": "poll",
++          "line": 18,
++          "endLine": 31
++        },
++        {
++          "name": "kill",
++          "line": 32,
++          "endLine": 32
++        },
++        {
++          "name": "__init__",
++          "line": 34,
++          "endLine": 34
++        },
++        {
++          "name": "fileno",
++          "line": 35,
++          "endLine": 35
++        },
++        {
++          "name": "setblocking",
++          "line": 36,
++          "endLine": 36
++        },
++        {
++          "name": "close",
++          "line": 37,
++          "endLine": 37
++        },
++        {
++          "name": "send",
++          "line": 38,
++          "endLine": 46
++        },
++        {
++          "name": "recv",
++          "line": 47,
++          "endLine": 51
++        },
++        {
++          "name": "__init__",
++          "line": 54,
++          "endLine": 77
++        },
++        {
++          "name": "monotonic",
++          "line": 78,
++          "endLine": 78
++        },
++        {
++          "name": "wall",
++          "line": 79,
++          "endLine": 79
++        },
++        {
++          "name": "pair",
++          "line": 80,
++          "endLine": 81
++        },
++        {
++          "name": "member_live",
++          "line": 82,
++          "endLine": 86
++        },
++        {
++          "name": "row",
++          "line": 87,
++          "endLine": 90
++        },
++        {
++          "name": "rows",
++          "line": 91,
++          "endLine": 110
++        },
++        {
++          "name": "popen",
++          "line": 111,
++          "endLine": 118
++        },
++        {
++          "name": "read",
++          "line": 119,
++          "endLine": 121
++        },
++        {
++          "name": "killpg",
++          "line": 122,
++          "endLine": 126
++        },
++        {
++          "name": "install",
++          "line": 127,
++          "endLine": 127
++        },
++        {
++          "name": "mask",
++          "line": 128,
++          "endLine": 132
++        },
++        {
++          "name": "select",
++          "line": 133,
++          "endLine": 136
++        },
++        {
++          "name": "execute",
++          "line": 137,
++          "endLine": 150
++        },
++        {
++          "name": "trace",
++          "line": 140,
++          "endLine": 143
++        }
++      ],
++      "literalCaseLines": [
++        {
++          "id": "P01",
++          "line": 164
++        },
++        {
++          "id": "P02",
++          "line": 170
++        },
++        {
++          "id": "P03",
++          "line": 171
++        },
++        {
++          "id": "P04",
++          "line": 173
++        },
++        {
++          "id": "P05",
++          "line": 174
++        },
++        {
++          "id": "P06",
++          "line": 175
++        },
++        {
++          "id": "P07",
++          "line": 176
++        },
++        {
++          "id": "P08",
++          "line": 177
++        },
++        {
++          "id": "P09",
++          "line": 179
++        },
++        {
++          "id": "P10",
++          "line": 185
++        },
++        {
++          "id": "P11",
++          "line": 190
++        },
++        {
++          "id": "P12",
++          "line": 191
++        },
++        {
++          "id": "P13",
++          "line": 192
++        },
++        {
++          "id": "P14",
++          "line": 195
++        }
++      ]
++    }
++  },
++  "activeSourceMapAuthority": "Exact H3 source hashes and AST lines; intended static calls only, never executed control/branch coverage.",
++  "successor3": {
++    "H2-N1": "bootstrap authenticated ACK then SIG_UNBLOCK only TERM/INT before role exec",
++    "H2-N2": "outer_worker.retain_block actual IO + J10 split-stream below/equal/over; original raw limit unchanged",
++    "H2-N3": "old table explicitly historical; current regenerated AST definitions/calls bound",
++    "faultScope": "intact last outer_host/native limiter, mandatory inner faults retained; unexpected last-owner loss FAILED/UNKNOWN",
++    "availability": "separate availability_limit.pl/owner/peer, all execution closed"
+   }
+ }

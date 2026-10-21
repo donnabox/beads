@@ -1,0 +1,123 @@
+{
+  "at": "2026-10-16T03:11:08.305527+00:00",
+  "status": "source-validation-accepted",
+  "sourceBinding": {
+    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-minimum-next-serving-plan/authoring-draft/report-ceiling-repair/source-binding.json",
+    "sha256": "855e81418b223d62f19b0b5d9ce38a6ea2bb56b8612b6f6e81e4285141632d0f"
+  },
+  "stages": {
+    "boundaries": {
+      "sha256": "674b00faad2f7ee739a2e6b5312d3bc0baacc38a42449dc626d81c0baa60ad6c",
+      "seconds": 1.1975833750329912
+    },
+    "build-inventory": {
+      "sha256": "74b4fac305b27753779e1508be5de6bcd87c7b4d7e089284bfb45ebe41947977",
+      "seconds": 0.7650119580794126
+    },
+    "build": {
+      "sha256": "177980a6795bdd66e70ce9a7ea1c5016176dfccf46ab6b01681b1d1845297ae1",
+      "seconds": 1.555910374969244
+    },
+    "consistency": {
+      "sha256": "6bf3793c545f3e83872111264ee4535574daec8e6cbe1d47d388995b5da9f230",
+      "seconds": 1.4627832910045981
+    },
+    "format-check": {
+      "sha256": "02f0a0b4dc4916fd95fe9d4755c2f7178cd57375aa8016859f722fa7ead89c7a",
+      "seconds": 0.9396068330388516
+    },
+    "http": {
+      "sha256": "f89d619c4b37dac52322d3a39178d25851c1c76583d7624b9e8fff61357c4570",
+      "seconds": 1.6800402498338372
+    },
+    "lint": {
+      "sha256": "eb19bb283c7ca8578b241b75cc03e38e02e00f5aa11c181e54d8e986543f1917",
+      "seconds": 1.1342841249424964
+    },
+    "owner-read": {
+      "sha256": "e2efb35b36411deb1da9e0eb00f3c7b5e550aab48172c9d11436d10bd42f5d78",
+      "seconds": 1.4931431249715388
+    },
+    "read-seal": {
+      "sha256": "e836facbbd68fc8908efa6e9e2f4e1abefe4b9f76f5ad7f2d9d0a025522b839e",
+      "seconds": 0.9123999578878284
+    },
+    "setup": {
+      "sha256": "27e071885038563325e5e0f84cca8445b6d936d6a1976e35c47695f752d3e56c",
+      "seconds": 0.7981420420110226
+    },
+    "typecheck": {
+      "sha256": "6e4f1eab7d76aa29fec85ccf55a5239c7d71defd6ffb7a6188353fc2360cf12f",
+      "seconds": 1.5497950001154095
+    }
+  },
+  "passedFullNames": [
+    "private minimum-read subset snapshots canonical supported tuples without getters or opaque-token guesses",
+    "private minimum-read subset only turns actual behind observations into timeout after the original finite deadline",
+    "distinguishes closed minimum receiving syntax from supported position identities",
+    "captures lexical current minimums without widening strict consumers or invoking accessors",
+    "waits for unproved current eligibility with one deadline and preserves terminal failures",
+    "uses actual epoch/view decisions and an exhausted wait before conditional or timeout responses",
+    "serves missing Resource404 with current context before semantic minimum comparisons",
+    "serves canonical current Type and incident minimums with truthful context and parser boundaries",
+    "serves conditioned live aliases and preserves bodyless redirects, refusal context and receiving boundaries",
+    "waits only for existing current Resource unknown minima and keeps unsupported route labels",
+    "compatible missing Resource minimum returns observed missing Resources before behind and foreign minimum collisions",
+    "current Type and incident-Link minimums keeps compatible missing Types and absent/deleted incident anchors separate from collisions",
+    "current alias minimum subset keeps live alias context failures and compatible absent/deleted/dangling observations distinct",
+    "uses actual current policy for missing-first and unproved Resource attempts",
+    "drains an admitted unknown minimum to timeout and rejects new reads while closing"
+  ],
+  "independentlyAbsentSampledPids": [
+    51898,
+    51903,
+    51938,
+    52092,
+    52095,
+    52139,
+    52213,
+    52265,
+    52267,
+    52272,
+    52297,
+    52298,
+    52334,
+    52393,
+    52395,
+    52399,
+    52423,
+    52429,
+    52456,
+    52458,
+    52462,
+    52488,
+    52494,
+    52523,
+    52525,
+    52544,
+    52571,
+    52606,
+    52608,
+    52623,
+    52678,
+    52769,
+    52771,
+    52779,
+    52792,
+    52870,
+    52874,
+    52892,
+    52905,
+    53003,
+    53005,
+    53025,
+    53038,
+    53098,
+    53104,
+    53115
+  ],
+  "sourceFilesRehashed": 10,
+  "warnings": "format1warning; lint936warnings76infos0errors. Compile-cache entries are classified tool outputs; runtime directories gone.",
+  "history": "Initial typecheck failure and second attempt lint failure preserved. Third attempt is actual corrected-source evidence. No claims for unselected139tests.",
+  "limitations": "Explicit dirty candidate on unmerged1647; Read seal verifies existing89row historical artifact, not new qualification. Planned172HTTP source total is not independently instrumented wire count. Actual installed controls/observations and Claude reviews remain pending."
+}

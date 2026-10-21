@@ -1,0 +1,7 @@
+{
+  "action": "Read previous formatter path before locating exact filename",
+  "correction": "rg --files found formatter-invocation.json; read actual exact native binary path from that record before hash verification and sole authorized invocation",
+  "failure": "cat source-authoring-3/format-record.json exited1, file absent",
+  "formatterAttemptsAdded": 0,
+  "sourceMutation": false
+}

@@ -1,0 +1,86 @@
+{
+  "status": "verified",
+  "observedAt": "2026-10-16T01:59:00.725604+00:00",
+  "auditorRole": "Scenario author and build-supervisor preparer performing fresh read-only Git/hash/evidence audit; not independent code council.",
+  "head": "1647c5df37a82e1364d281ac46beb60a94ab6c76",
+  "tree": "a070420a4c17aa67a821c742d363ff9e82e872a6",
+  "orderedParents": [
+    "dae39d526ea543112da68bdb483a8af7e90972fd",
+    "6f5e607bf338dd166820bfa3f9f480f7cd54c5f1"
+  ],
+  "authorParent": "67a2842e3f1918e70978f745587cf11eaf0df5a8",
+  "clean": true,
+  "exactFeaturePaths": [
+    "packages/server/src/transaction-authorization.test.ts",
+    "packages/server/src/transaction-authorization.ts",
+    "packages/server/src/transaction-changefeed.test.ts",
+    "packages/server/src/transaction-changefeed.ts",
+    "packages/server/src/transaction-event-sse.test.ts",
+    "packages/server/src/transaction-events.ts",
+    "packages/server/src/transaction-http.ts",
+    "packages/server/src/transaction-read.ts",
+    "packages/server/src/transaction-runtime-configuration.ts",
+    "packages/server/src/transaction-runtime.test.ts",
+    "packages/server/src/transaction-runtime.ts",
+    "packages/server/src/transaction-service.test.ts",
+    "packages/server/src/transaction-service.ts",
+    "packages/server/src/transaction-snapshot.ts",
+    "packages/server/src/transaction-store.ts"
+  ],
+  "sourceSha256": {
+    "packages/server/src/transaction-authorization.test.ts": "4e2a4fb500e546e3a3d8d671125c37653a4df5bb46bae679f80123cc8c680760",
+    "packages/server/src/transaction-authorization.ts": "c87a7bfa8840aee2f097bf683fe3f3c97fcae80782020c6d5b1e41364d16b6d2",
+    "packages/server/src/transaction-changefeed.test.ts": "ae4b6a0d4ae6e4e74e032074c850e5ced2de14d565078c2de88e2e62fa5e9c81",
+    "packages/server/src/transaction-changefeed.ts": "1e678ecb1b2c3e59023dbb6a2e6516763907babd79f7926ca572a4764e40fc1e",
+    "packages/server/src/transaction-event-sse.test.ts": "de14cbbbe935205c5ec43ef6cf6a055d3f1ca2b9632ee684c4c13fbfe9eed042",
+    "packages/server/src/transaction-events.ts": "6c5ab4482f0b00110a71a96b16d44ca5fe713cb5f397ff78778cc6646f632a3a",
+    "packages/server/src/transaction-http.ts": "c6bac496033781306d1c63e570e1c65b5786d41ebb8dc565c5a8be44e91ccfa9",
+    "packages/server/src/transaction-read.ts": "66e71ff74a8139b12f0c7581c30a6798cc8724bb488cac8517119b9678ace212",
+    "packages/server/src/transaction-runtime-configuration.ts": "57cd5d38c7199011d05589bc2b8ac1a0e2a4a9dc7585d019f9de5801a0a4d808",
+    "packages/server/src/transaction-runtime.test.ts": "4ac87ec1121760db3aff9221c2d291c3dfca45adc065c09eebcd84ed88d882f5",
+    "packages/server/src/transaction-runtime.ts": "48cb5411407c456d7b3f301a4b67970061be9f51c94201de832ba5deff6ea2d4",
+    "packages/server/src/transaction-service.test.ts": "b6ec4b39ade9a204232bcf6ae10855011dacf23086948c9df2a8e04a9d4873e2",
+    "packages/server/src/transaction-service.ts": "8e2a00fba538fc38fd81241301d38b232190f7241fa695e1dcdaf10641e97dc8",
+    "packages/server/src/transaction-snapshot.ts": "d74aad937b0a07ea2878ef2c275cec6dbdb033cf112006e2569d64537520b15c",
+    "packages/server/src/transaction-store.ts": "bc10df9d02316e395b8c4ea7db6134ab2646c8e8abd83ea785b0ea09f2f0c82c"
+  },
+  "inventoryCounts": {
+    "inputFiles": 675,
+    "packageFiles": 316,
+    "emittedFiles": 444
+  },
+  "allCurrentInventoryHashesMatch": true,
+  "trackedInputsBeforeAfterEqual": true,
+  "buildExit": 0,
+  "elapsedSeconds": 1.7637905420269817,
+  "timeout": false,
+  "forcedCleanup": false,
+  "independentlyAbsentSampledPids": [
+    15597,
+    15599,
+    15604,
+    15631,
+    15632,
+    15659,
+    15660,
+    15662,
+    15667,
+    15669
+  ],
+  "retainedTempEntries": [
+    "node-compile-cache"
+  ],
+  "cleanupQualification": "Node compile cache retained; no fixture stores. Process sampling does not prove absence of unsampled detached descendants.",
+  "evidence": {
+    "final-source.json": "45495ef3b365c0b9a512efe3d280d3e541f8cd4be51396394a60c3fefc9c0eb0",
+    "evidence-repair/source-binding.json": "06ef3656296d8288cc5d00be9c988d4ccc7d817a67f2ea6ce6b31c42068ad873",
+    "root-final-council.json": "c378ae6c23d95d74309d7e2a8c606f7a29d41ca6180afa8d0ce1325fc984a8f7",
+    "final-build-preparation/run/build-inventory-before.json": "228d8afe72e389f384b65ac2c4456dffc8b16185e3479caa764b0df60019beba",
+    "final-build-preparation/run/build-output-inventory.json": "ba9fbe9b511a2a477b515e6f799e044a73904604011ef9b503c12f38f47c9aee",
+    "final-build-preparation/run/build.started.json": "06ea986278c9c046b75e8d4cd8713f4ac6dd467c636cd2c3f74a47fc55f82111",
+    "final-build-preparation/run/build.exit.json": "3258ec4ca783b049e50829edf59d4a8c4f632d96864a852348b44efdc151ed0a",
+    "final-build-preparation/run/build.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "final-build-preparation/run/build.stderr.log": "232dac5e840e45b3bb06e6e04249b5241f2e1b4f6c797a22c046d916302ac208"
+  },
+  "limits": "No build, tests, packaging, install, services, or Git mutation performed by this audit. Installed results and CI are separate gates; historical dirty-source builds remain historical."
+}

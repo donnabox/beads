@@ -1,0 +1,46 @@
+{
+  "status": "released",
+  "session": "2026-10-08T20:26:35Z-81e5",
+  "sourceBindingPath": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-minimum-next-serving-plan/authoring-draft/integration-preparation/final-source-binding.json",
+  "sourceBindingSha256": "8140843fc8450d28c419a243d9f95e57c0537eced684f52872d6d49c69445dad",
+  "ownedPaths": [
+    "packages/server/src/transaction-consistency.ts",
+    "packages/server/src/transaction-read.ts",
+    "packages/server/src/transaction-service.ts",
+    "packages/server/src/transaction-http.ts",
+    "packages/server/src/transaction-consistency.test.ts",
+    "packages/server/src/transaction-read.test.ts",
+    "packages/server/src/transaction-http.test.ts",
+    "apps/bdptest/src/transactional-minimum-current-resource-installed.test.ts",
+    "docs/specs/bdp.md",
+    "docs/design/transaction-implementation-progress.md"
+  ],
+  "authoringReleaseSha256": "cd57f946d42a6f3bae78f14c1b2ed43982429378aa11ea4efde7ac636f3a3dc4",
+  "supervisorSha256": "330c365170b6a15d0d868ad2cb5ae235575cfcf29c5ed4563fa26e2316bfb3d5",
+  "commandsSha256": "12f008b21aff581897d1eeefbec58829e35e5974af4d1ca9904bf779ff74c5fc",
+  "expectedHead": "733728cf40fc2f57407000251673bd5d3218acd4",
+  "expectedTree": "ea0dccd68d91323887424cad9729e6593aef04f2",
+  "inputBindingSha256": "4e774511ae3daa265c392578a4125df1fedcd177207982475d4e175418ea70c3",
+  "preparationFiles": {
+    "commands.json": "12f008b21aff581897d1eeefbec58829e35e5974af4d1ca9904bf779ff74c5fc",
+    "run-source.py": "330c365170b6a15d0d868ad2cb5ae235575cfcf29c5ed4563fa26e2316bfb3d5",
+    "inventory.py": "791d363945b3711a3b9834e0ee44291c78f061317a0109c2196a293fee7f9b55",
+    "input-binding.json": "4e774511ae3daa265c392578a4125df1fedcd177207982475d4e175418ea70c3",
+    "final-source-binding.json": "8140843fc8450d28c419a243d9f95e57c0537eced684f52872d6d49c69445dad",
+    "native-integration-audit.md": "b301e53b399d7faaab2207bb321ed2f4c6515ba2d4a1d37532145b5a9a568384"
+  },
+  "authorizedStages": [
+    "typecheck",
+    "build",
+    "format-check",
+    "integration-owner-read",
+    "build-inventory"
+  ],
+  "rootAcceptance": {
+    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-minimum-next-serving-plan/authoring-draft/integration-preparation/delegated-root-release.json",
+    "sha256": "31050e6fb9214d34e88e7a431322de8b1276743b2a9444bade09e912f810a447"
+  },
+  "controlGate": "closed",
+  "installedGate": "closed",
+  "integratedCandidateValidation": true
+}

@@ -1,0 +1,32 @@
+{
+  "status": "closed",
+  "session": "2026-10-08T20:26:35Z-81e5",
+  "sourceBindingPath": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-authorization-transition-plan/source-validation-t11/source-binding.json",
+  "sourceBindingSha256": "7fee05f3043469c88d26d28f6b55d6b75aef5f71474eb88ee3b53a71d1c97ef1",
+  "ownedPaths": [
+    "packages/server/src/transaction-authorization.test.ts",
+    "packages/server/src/transaction-authorization.ts",
+    "packages/server/src/transaction-changefeed.test.ts",
+    "packages/server/src/transaction-changefeed.ts",
+    "packages/server/src/transaction-event-sse.test.ts",
+    "packages/server/src/transaction-events.ts",
+    "packages/server/src/transaction-http.ts",
+    "packages/server/src/transaction-read.ts",
+    "packages/server/src/transaction-runtime-configuration.ts",
+    "packages/server/src/transaction-runtime.test.ts",
+    "packages/server/src/transaction-runtime.ts",
+    "packages/server/src/transaction-service.test.ts",
+    "packages/server/src/transaction-service.ts",
+    "packages/server/src/transaction-snapshot.ts",
+    "packages/server/src/transaction-store.ts"
+  ],
+  "authoringReleaseSha256": "fd8751aaa7929f71f17fa87f014275cf620a537c38722d910d87940ff0fd7226",
+  "supervisorSha256": "ea48c657f7ab814014f1e91abf9b49bf4490e82f0cce17795912c6e13521389e",
+  "commandsSha256": "a4c0ea9ffb92d2e92bd21c6e16ec688c358d2d690b7222e704340108190d4e72",
+  "expectedHead": "67a2842e3f1918e70978f745587cf11eaf0df5a8",
+  "expectedTree": "596abe870220fb61ce606f8382a9da52d554d063",
+  "authorizedStages": [],
+  "controlGate": "closed",
+  "installedGate": "closed",
+  "rootAcceptance": null
+}

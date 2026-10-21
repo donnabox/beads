@@ -1,0 +1,39 @@
+{
+  "kind": "manifest-derivative",
+  "path": "actions[2].raw.headerLines[3].value",
+  "before": "unissued-current-minimum",
+  "after": "genesis",
+  "allOtherSemanticValuesUnchanged": true,
+  "expectedHttp": 3,
+  "maximumHttp": 4,
+  "children": 2,
+  "expectedLastStatus": 200,
+  "requiredPrerequisites": [
+    "seed completed available receipt and exact Resource",
+    "cm-at-minimum exact200 Resource equals seed",
+    "actual control request same captured epoch/view and literal genesis; complete write",
+    "cm-unknown actual200 currentBeadRecord complete equality with seed"
+  ],
+  "failedAssertionIds": [
+    "cm-unknown:http-status",
+    "cm-unknown:schema",
+    "cm-unknown:media",
+    "cm-unknown:exact-problem"
+  ],
+  "passingAssertionIds": [
+    "cm-unknown:present-bdp-scope-epoch",
+    "cm-unknown:same-bdp-scope-epoch",
+    "cm-unknown:present-bdp-authorization-view",
+    "cm-unknown:same-bdp-authorization-view",
+    "cm-unknown:present-bdp-scope-position",
+    "cm-unknown:same-bdp-scope-position",
+    "cm-unknown:serving-position",
+    "cm-unknown:request-headers",
+    "cm-unknown:request-body",
+    "cm-unknown:write-complete"
+  ],
+  "afterActionNotRun": true,
+  "rawTestExit": 1,
+  "externalExpectedControlAdjudicationExit": 0,
+  "prohibited": "No fake response, header omission, tuple source replacement, failed-source fallback, generic exit1 acceptance or Problem schema weakening."
+}

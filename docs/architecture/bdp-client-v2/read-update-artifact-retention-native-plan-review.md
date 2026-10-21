@@ -1,0 +1,11 @@
+# Root native review — Read+Update artifact retention plan
+
+Basis8d64fcf7fdaa34642fadb3c2c0b8f4729c7778df, read-only. Reviewed proposed plan, actual development-contracts capture/identity code, recovery-store format/metadata/open sequence and development-authority installed-Type visitor. No tests or implementation in this review.
+
+Bounded plan is sound with the following implementation constraints. Existing format/Scope/installation/lineage mismatch check at recovery-store587 precedes claimed-key deletion613, but exact Type inventory validation starts only after open returns in development-authority193. A descriptor/capture corruption check placed there cannot undo recovery cleanup; moving expected immutable inventory/capture equality into the existing locked startup transaction is required. Preserve writable SQLite journal recovery; ordinary file refusal byte equality excludes required rollback of interrupted images.
+
+Retain complete exact captured bytes as a separate row, not in installation/lineage/Read identity strings. Reuse reviewed TX accessor and its limits/policy witness; do not persist mutable access or transport credentials. Digest mismatch already exists and must not be relabeled as evidence for new exact-byte retention. Captured-byte equality and offline reconstruction need separate concrete tests.
+
+Additional implementation check: reject an oversized persisted capture before materializing it into a JS string where feasible (SQLite byte-length probe under the same lock), not only before serializing the configured expected capture. Corrupt local metadata must not defeat the new finite capture bound. Account for base64 and URI/JSON escaping using existing maximum artifact limits; no unrelated low cap. Do not invent a general migration or load-from-disk public option. Existing source-provided config can remain required.
+
+Accept explicit lifetime retention/noGC, private format change with real predecessor refusal, pending-claim preservation controls, same authority hosting/Type/validation checks, fresh packed RU observations and unchanged historical Read evidence. No Type lifecycle/product ruling required for this existing-law slice. Native approval remains plan-only; shared accessor and final code require independent exact-source review. Claude review pending.

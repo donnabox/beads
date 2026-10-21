@@ -1,0 +1,101 @@
+No files written; working tree is clean at `8e12162`. Everything below is static + cross-source verification against the installed runtime source — I did not execute the suite, and the newest artifacts under `read-update-admission-evidence/` are 06:08–06:22 (the `394d320` cycle), so there is no recorded execution for `8e12162` yet.
+
+# Findings
+
+## 1. MEDIUM — Per-carrier parameterized-JSON success was added by *replacing* the bare-`application/json` success, not alongside it
+
+**Location.** `packages/conformance/matrices/read-update-v1.json`, scenario index 33 (`read-update.singleton.unsupported-media-type`), actions `media-route-{create-bead,update-bead,delete-bead,create-link,update-link,delete-link,put-alias,delete-alias,sequence}-corrected`.
+
+**Evidence.** All nine `-corrected` actions were converted from `family:"client"` / `installed.exact-request` (plain `application/json` via the client) to `family:"http"` raw actions carrying `application/json; charset=iso-8859-1; arbitrary=ignored`. That is the whole `43 → 34` client / `73 → 140` raw shift in the media ledger. The media row's raw POST content-type tally is now: absent 9, `text/plain` 10, `text/plain; charset=utf-8; arbitrary=ignored` 9, `application/json; charset=iso-8859-1; arbitrary=ignored` 9, `application/problem+json` 1, `application/json; charset=iso-8859-1` 1, `application/json; arbitrary=ignored` 1 — **zero bare `application/json`**. The only bare-JSON mutation successes left in the row are the two client actions `media-plain-corrected` and `media-problem-corrected`, both on `create-bead`. So per-target bare-JSON success went from 9/9 (client) to 1/9.
+
+**Impact.** This is an exact selected-clause gap, not an out-of-scope law. For `#readupdate-problem-details` / spec 3432–3434 "parameters … are ignored", the row now observes, at each of 9 targets, *parameterized* JSON → 200 and *parameterized* non-JSON → 415. It never compares either against the bare form at 8 of them. An implementation that *required* a Content-Type parameter at those 8 targets would satisfy every media-row observation. This is exactly the degenerate-implementation control the plan's own B.4 clause ("Ordinary `application/json` success remains the baseline") exists to exclude, and whole credit here is row-local, so the key row's 8 bare-JSON client corrections and the other 45 rows do not close it.
+
+**Bounded fix.** Add one bare-`application/json` raw success per remaining target, or re-bare one of the nine and add a parameterized sibling. No new route is introduced (`POST operations/<target>` and `GET beads|links?limit=100` are already in the digest), so `exactConfigurationDigest` is unaffected; manifest + the coverage binding list + the media ledger pin only. Cost ≈ 27 actions ≈ 54 KB at the measured ~2.0 KB/action, inside the 891,401-byte headroom.
+
+## 2. MEDIUM — Both coverage reasons still name only out-of-clause disclaimers, while real in-clause residuals exist
+
+**Location.** `packages/conformance/test-support/read-update-coverage-v1.json`, rows 63 and 67.
+
+**Evidence.** 19 of the other 21 partial rows name their residual explicitly (`Whole=false: …`, "remains unobserved", "incomplete"). Both admission reasons were rewritten to describe the corpus positively and still close with "Partial pending independent revised selected-clause audit; no internal drain, retention, namespace, concurrency or public conformance claim" — every item there is outside the clause. The in-clause residuals that survive this commit:
+
+- **Distinct-value repetition** (`dup-first`/`dup-last`) with its two recovery witnesses is `create-bead` only (`key-repeat-distinct`). The 7 added carriers repeat an *identical* value (second field name mixed-case `Idempotency-Key`, so case-insensitive multiplicity *is* per-carrier).
+- **The changed-record same-key retry** — the strong non-capture discriminator the plan mandates in A.4 — is `create-bead` only (`key-repeat-same` `dup-same` → `key-repeat-same-corrected-0` with body `ak-repeat-same-0`). The 7 added carriers' shared `-corrected` reuses the repeated key with a **byte-identical** body, so "captured the key and replayed an identical disposition" is indistinguishable from fresh execution. (The after-snapshots still exclude any *state* capture.)
+- **Positive key boundary controls** (1 char `A`, 256 chars, `aZ09_-`) are `create-bead` only.
+- **`application/problem+json`** — the `+json` structured-suffix class — is `create-bead` only.
+- **The decoder-non-switching observation** (`café雪` round-tripped under `charset=iso-8859-1`) is `create-bead` only; all nine new parameterized successes carry ASCII-only bodies, so they establish "the parameter does not cause 415", not "the parameter does not switch the decoder".
+- The bare-JSON baseline from finding 1.
+
+**Impact.** Flags are correctly `false` and nothing is over-claimed numerically, but the durable reason string is what the later whole-clause audit reads, and as written both rows read as complete per-carrier coverage of the selected clause.
+
+**Bounded fix.** Append a `Whole=false:` clause to each reason naming the above. Coverage file only — no flag, status, pin, digest or binding-order change.
+
+## 3. LOW — The new completion pin under-constrains the properties it is named for
+
+**Location.** `apps/bdptest/src/read-update-matrix.test.ts:2024-2110`.
+
+**Evidence.** The loop asserts existence of `${bad.id}-after-beads` / `-after-links`, but (a) never asserts the alias witness `${bad.id}-alias-after` for `put-alias`/`delete-alias`, (b) never asserts an after-snapshot *equals* the carrier baseline — the actual no-effect property, which I verified holds byte-for-byte (modulo `id`) for all 32 refusal snapshot chains plus all 6 alias chains, (c) does not pin the `-wrong` / `-wrong-parameters` keys to equal the correction's key (only `missing.raw.headerLines[0]` is compared, though I confirmed all four share the key at every one of the 9 targets), and (d) relies on `missing.raw.headerLines[0]` positionally rather than by name.
+
+**Impact.** The static pin is the only guard for structural properties the runtime cannot check. A later edit could drop an alias witness, swap a key, or weaken an after-snapshot and still pass.
+
+**Bounded fix.** Three assertions inside the existing loop: alias-after existence for the two alias carriers; deep-equal of each `-after-*` action's assertions to the carrier baseline with `id` stripped; key equality for the two extra media refusals. Look the key line up by name. Test file only.
+
+## 4. LOW — Two of the four new raw boundary controls cascade instead of isolating
+
+**Location.** `apps/bdptest/src/read-update-matrix.test.ts:1870-1871`.
+
+**Evidence.** `[0, "key-route-update-bead-malformed", "valid-key", 200, "status"]` makes the malformed update actually apply `/n = 2` mid-row; `[1, "media-route-create-link-corrected", "wrong-media", 415, "status"]` makes a relied-upon mutation fail. Both leave every subsequent collection/record assertion in the row failing. The oracle is `toContain(assertion)`, so they pass — unlike the two exact-targeting controls (`alias-location`, `stale-collection-record`) which require `toEqual([assertionId])`. The other two new rows (`key-route-delete-link-repeated`/`single-key`, `media-route-sequence-wrong-parameters`/`json-media`) are locally confined.
+
+**Impact.** Sensitivity is demonstrated; *specificity* is not — a perturbation failing for an unrelated reason would still pass.
+
+**Bounded fix.** Use `toEqual` on the perturbed exchange's failed set where the perturbation is local, or pin the expected downstream failure count. Test file only.
+
+## 5. INFORMATIONAL — Measured growth and the one tight budget
+
+- Manifest **3,094,308 → 3,302,903 bytes** (+208,595, +6.7%); nodes 82,657 → 88,362 (+5,705); actions 1,583 → 1,681 (+104 added − 6 pruned); assertions 9,204 → 9,983 (+779). **4 MiB headroom 1,099,996 → 891,401 bytes** — 19% of prior headroom consumed, which bounds findings 1 and 2's whole-credit extension.
+- Route configuration 258 → **255** unique routes (the 3 pruned fixture routes). I recomputed `a8d5687519da4040d2f23989f86f9bc804d30ac6c91a85074397eaf7c92de712` independently from manifest + fixture + the app's route assembly and it reproduces exactly; both pins (lines 917, 1234) are updated and no stale `fdcbe130…`/`092b9ac9…` remains anywhere.
+- All four row ledger pins reproduce from my independent ∅-start simulation: key **284 / 196 raw / 88 client, peak {beads:36, links:3}**; media **174 / 140 / 34, peak {beads:11, links:4}**.
+- The focused test at line 1783 now runs **458 exchanges** + 2 authority launches (was 360, +27%) under the same **30,000 ms** timeout — the budget the aggregate comment already records Linux CI exceeding for a smaller job. **All deadlines are unchanged as required**: 5,000 ms per exchange (line 367), 90,000 ms cooperative abort (line 807), 120,000 ms outer (line 925), 30,000 ms focused. No measurement is recorded in the four files. The new static test at line 2024 carries no explicit timeout unlike its 30,000 ms neighbours; it is pure JSON work, so the default applies.
+
+**Pagination.** Confirmed **20 default / 100 maximum** for this private runtime: `packages/server/src/development-authority.ts:50`, and exactly one `"defaultItems":20,"maximumItems":100` occurrence in the recorded `394d` packed `progress.json`. `limit=100` is admissible because `validateLimit` refuses only `selected > maxPageItems` (`packages/server/src/read-pagination.ts:587`), and the 36-bead peak keeps `next: null` sound. The 50/200 pair is `packages/config/src/index.ts:45`, the separate public Read configuration — I am not treating it as this runtime's fact.
+
+# Not findings — scope boundaries, stated explicitly
+
+- **Exhaustive malformed-token syntax enumeration per carrier is impossible.** One transportable out-of-profile representative (`bad.key`) per carrier, plus the 8-class corpus on `create-bead`, is the correct boundary for "a key outside the profile". The asymmetry is worth *naming* (finding 2) but is not a defect.
+- **Spec 3179** (no allocation / normalization / case-folding), namespace isolation, retention and concurrency are outside the selected clause by the plan's own scoping.
+- **The absence of a media-only (same-body) correction** is plan-mandated: B.3 requires the corrected retry to change the body. A deliberate boundary, not a gap.
+- **Key-row resource post-reads carry no `json-schema` assertion**, but they assert whole-body `equalsBinding` against a record captured from a mutation result that *was* validated against `#/$defs/harnessInstalled_mutationResult`, and `currentBeadRecord` → `beadRecord` is `additionalProperties:false`. The record shape is closed transitively.
+- **Prior finding 3 is genuinely resolved.** `beadCollection`/`linkCollection` carry `additionalProperties:false`, and `currentBeadCollection` is `allOf` over that closed base declaring only `items`, so the new assertions really do forbid an unexpected top-level envelope member.
+
+# What verified clean
+
+**Frozen bytes, placement, digests.** All 45 prior scenarios are **byte-identical** in the formatted file (per-scenario slice compare), the header prefix is identical, order is identical, `manifestVersion`/`catalogId` unchanged; only indices 30 and 33 differ. Working tree clean; only the four declared files changed.
+
+**Flags and pins.** Both rows `wholeContract:false` / `bounded-observation`; top-level `claimEligible:false`; the reviewed 26-ID whole list in the untouched `cumulative-artifact.test.ts` is unchanged (no promotion path opened); statuses still 47 `bounded-observation` / 82 `omitted`; `uncoveredIds` pin 103 is consistent (129 − 26). Coverage binding lists exactly equal the manifest's flattened ordered `action.id.assertion.id` list for all 47 planned rows, omitted rows `[]`, and no duplicate action or assertion ids anywhere in the manifest.
+
+**Pruning (F2).** `ak-seed-alt-delete`, `ak-seed-link-alt-delete`, `ak-seed-alias-alt-delete` and their three reads removed, plus the three fixture routes. Media alt-delete seeds correctly retained and genuinely used by `media-route-{delete-bead,delete-link,delete-alias}-corrected`. **Zero orphan fixture bindings** remain — all 64 `admission.*` entries (and every other binding) are referenced.
+
+**Collection schemas (F3).** All **220** collection GETs across both rows carry the correct `#/$defs/current{Bead,Link}Collection` assertion in position 2 (`status, schema, complete, identities, record-N…`), with `limit=100` and `credentialRef:"operator"`. `schemaValidator.validate` is a real validation path, and the reference pre-resolves at plan time.
+
+**Per-carrier completion.** Key row: malformed (`bad.key`) + repeated (identical value, mixed-case second field name) on all 7 non-`create-bead` singleton carriers, same target and byte-identical body as the missing-key probe. Media row: `text/plain` and `text/plain; charset=utf-8; arbitrary=ignored` on all 9 mutation targets, same target and byte-identical body as the undeclared probe — which closes the prior review's "no probe shows a parameter failing to rescue a non-JSON type".
+
+**No-effect oracles.** Every refusal's `-after-beads`, `-after-links` and `-alias-after` is byte-identical (modulo `id`) to that carrier's pre-refusal baseline, across all 7 added key carriers × 2 refusals and all 9 media carriers × 2 refusals, including both alias carriers in each row.
+
+**Key-correction discriminators.** Refusal indices always precede the correction in every carrier. The correction's key is the row's **only lawful use** of that value — 32 key-row / 23 media-row lawful singleton keys and 16 / 2 lawful member keys, zero reuse. Media corrections reuse the refused key at all 9 targets with a changed body (sequence reuses both member keys with changed member inputs). `key-route-put-alias*` genuinely repoints `ak-locator-put` from `ak-source` to `ak-target`, so the unchanged-`location` witness is effectful rather than vacuous.
+
+**Alias oracles.** 307 + exact `location` + `body-absent`, or 404 + `#/$defs/readProblem` + exact 4-field Problem — independently authored literals, no redirect following, no alias state inferred from collections or revisions.
+
+**Live-identity ledger.** My independent simulation from ∅ reproduces both pinned peaks and matches **all 220** collection GETs' ordered identity lists, record-binding targets and record counts: **0 mismatches**. Peaks 36/3 and 11/4 sit inside the 64/16 slice ceilings and far inside the 100-item runtime maximum.
+
+**Negatives.** 70 refusals (41 × 400, 29 × 415), each with exactly `[authored-headers, authored-body, written="complete", status, schema=#/$defs/readUpdateProblem, problem]`, whole-body (`pointer:""`) equality to a 4-field Problem whose `status` matches the HTTP status and `retry:"never"`, and **zero captures** on any non-2xx action.
+
+**Raw successes are stronger, not weaker.** The nine converted corrections keep every assertion the client versions had (pointers re-based `/body/x` → `/x`), gain `request-authored-headers` / `request-authored-body` / `request-write-state`, and now validate the **normative** `#/$defs/{mutationResult, aliasResult, sequenceResponse}` — closed via `unevaluatedProperties:false` — instead of the harness wrapper.
+
+**Binding flow and capture restriction.** Zero `equalsBinding` references to an unproduced binding in either row. The only `family:"http"` captures are the 7 discovery/navigation URL captures per row (`service-desc` header-link, `/operations`, `/types`, `/beads`, `/links`, two type `/id`s) — no raw collection-body captures, consistent with the approved `captureValue` URL-only clarification.
+
+**Runtime agreement.** `development-runtime.ts:78-83` `header()` scans `rawHeaders` case-insensitively and throws `malformed-request` on more than one occurrence, so `Idempotency-Key` + `idempotency-key` is caught. `:443-452` does `split(";",1)[0]?.trim().toLowerCase() !== "application/json"` → 415 **before** the key gate, so `application/json; charset=iso-8859-1; arbitrary=ignored` is admitted and `text/plain; charset=utf-8; arbitrary=ignored` is refused, with no 400/415 conflation at any probe.
+
+**Graph hygiene and bounds.** All links are `*-source → *-target` on the unowned `relates` Type; no link is incident to any delete subject (`ak-delete`, `am-delete`, `am-alt-delete`); aliases target `*-source` / `*-target` / `am-update`, never a deleted bead. Authored bodies ≤ 661 bytes and header blocks ≤ 306 bytes, far under the 65,536 installed body / 16,384 harness header bounds.
+
+**Control anchors survive the pruning.** `key-route-put-alias-alias-after` still carries its `location` assertion, and `key-empty-after-beads` still carries exactly one `equalsBinding: "key-route-update-bead-corrected-0-record"` (`record-3`), so both exact-targeting controls still bind.
+
+**No widening.** No runner, executor, runtime, schema, catalog or public-export edit; no new assertion kind, capture kind or client operation (`installed.exact-request` only); `cumulative-artifact.test.ts` untouched. I did not run the 122 local checks or the fresh pack — those remain yours to confirm, and the per-row exchange counts (284 / 174) and the measured byte/node growth above are what the external report needs.

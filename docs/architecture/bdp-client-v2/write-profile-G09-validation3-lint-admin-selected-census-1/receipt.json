@@ -1,0 +1,46 @@
+{
+  "actualFailedA": "3952b6/1; B/C NOT_INVOKED",
+  "argv": [
+    "/bin/ps",
+    "-axo",
+    "pid=,ppid=,pgid=,stat=,lstart=,comm="
+  ],
+  "at": "2026-10-18T23:06:36.555121+00:00",
+  "bothPIPEEOFAndDirectReap": true,
+  "globalOrAllTransientOrCleanupCredit": false,
+  "kind": "LATER_ADMINISTRATIVE_SELECTED_DOMAIN_CENSUS_OUTSIDE_FAILED_RUNTIME_NOT_PHASE_B_OR_C",
+  "matchingRows": [],
+  "monotonicAtAdministrativeReceipt": 2250525.404075291,
+  "normal115Credit": false,
+  "observerPgid": 59031,
+  "observerPid": 59034,
+  "probeCreationPgid": 59035,
+  "probePid": 59035,
+  "rawExit": 0,
+  "restoresFailedAttempt": false,
+  "rows": 1376,
+  "selectedKnownIDsAbsent": true,
+  "session": "2026-10-18T02:16:24Z-549f",
+  "streams": {
+    "stderr": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "stdout": {
+      "bytes": 204548,
+      "sha256": "b75b2fb46bba6e2c789853618f6843e6484d907dec9b0dee7ec08d60d7def1d5"
+    }
+  },
+  "taskPGIDs": [
+    55380,
+    55393,
+    56114
+  ],
+  "taskPIDs": [
+    55392,
+    55393,
+    56114,
+    56116
+  ],
+  "unknownEscapedAdministrativeOrUnrecordedDomain": "UNKNOWN; no signal/cleanup performed"
+}

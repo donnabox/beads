@@ -1,0 +1,28 @@
+{
+  "status": "root-authoring-released",
+  "at": "2026-10-15T22:30:40.709481+00:00",
+  "workspace": "/Users/dbox/repos/wt/vickie/vickie-minimum-receiving",
+  "base": "5d7fa3f049fa0b4db3aa8dae20e20d8e47fb3854",
+  "planSha256": "adc78a205c7470f19ddf1c6efbef6b2590f1530961ffdc30a15d628edcccd1e9",
+  "ledgerSha256": "6425fe6bdfbeba9a3eef468f42a5dc950b914b49b0b88bad2104cf96606c8854",
+  "nativeClosureSha256": "444cf46a062540346626a5608ef6cb77ffde9f4f5c1753f26e8f80c80d9188ad",
+  "actualClaudeSha256": "261184ad05ea70632888288caf2d3f1c9e266c5b1697a0b04e57eabacfb7f0a9",
+  "dispositionsSha256": "bd5a06ea63d50e465d023181cab7ee875fa1506b140958dd5905469f21faac17",
+  "ownedPaths": [
+    "docs/specs/bdp.md",
+    "packages/server/src/transaction-consistency.ts",
+    "packages/server/src/transaction-http.ts",
+    "packages/server/src/transaction-consistency.test.ts",
+    "packages/server/src/transaction-http.test.ts",
+    "packages/server/src/transaction-snapshot-http.test.ts",
+    "packages/server/src/transaction-schema-http.test.ts",
+    "packages/server/src/transaction-changefeed.test.ts",
+    "apps/bdptest/src/transactional-snapshot-installed.test.ts",
+    "apps/bdptest/src/transactional-minimum-receiving-installed.test.ts",
+    "docs/design/transaction-implementation-progress.md"
+  ],
+  "rootDecision": "Read full actual review, all eleven source dispositions, correction and native closure; independently checked command return invariant and exact status table. Accept bounded successor without reopening operator rule or adding speculative production guard.",
+  "testsBuildServicesReleased": false,
+  "publicationReleased": false,
+  "next": "Author exact serving implementation/tests/spec; freeze measured draft and concrete source/installed validation workload before execution."
+}

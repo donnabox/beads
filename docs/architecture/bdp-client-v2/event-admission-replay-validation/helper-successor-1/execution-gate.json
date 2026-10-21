@@ -1,0 +1,57 @@
+{
+  "released": true,
+  "rootPlanAccepted": true,
+  "rootExactSourceAccepted": true,
+  "session": "2026-10-08T20:26:35Z-81e5",
+  "mode": "final",
+  "approvedStages": [
+    "typecheck",
+    "format-check",
+    "lint",
+    "fresh-build",
+    "bind-fresh-build",
+    "focused-source",
+    "review-focused-source",
+    "node-version",
+    "prepare-package-directory",
+    "pack-protocol",
+    "pack-server",
+    "verify-archives",
+    "prepare-consumer",
+    "consumer-install",
+    "verify-installed-consumer",
+    "historical-event-restart-external",
+    "review-historical-event-restart-external",
+    "current-event-admission-replay-external",
+    "review-current-event-admission-replay-external"
+  ],
+  "staticValidationAuthorized": true,
+  "nativeCodeReviewDisposed": true,
+  "actualClaudeReviewDisposed": true,
+  "implementationIndexSha256": "6fd741c9997e29520232031302037d0396a121b8b910c5119a218ea7d01f47fd",
+  "sourceBinding": {
+    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/event-admission-replay-validation/helper-successor-1/source-binding.json",
+    "sha256": "07c407cf0a676e2f53d4e4b2ce7948d9df8a4cc8a4f1ad0bc6e4d9e89f370218"
+  },
+  "baseTools": {
+    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/event-admission-replay-validation/metadata-successor-1/base-tools.actual.json",
+    "sha256": "2a49dd1674706c9d806d6a40f8374bcc8e910ccbb57bed2d61618133b506491f"
+  },
+  "workspaceTools": {
+    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/event-admission-replay-validation/metadata-successor-1/run/workspace-tools.json",
+    "sha256": "13d53c8ed5eb6f3caf3f247dbc798a60c266debf88ed4dcf26e53b0bde2c1831"
+  },
+  "rootDisposition": {
+    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/event-admission-replay-validation/helper-successor-1/root-disposition.json",
+    "sha256": "2975681065b32eaa4af5ea18e3ff267b4e5bfb8744c5112fa785cbc25010fdaa"
+  },
+  "consumerLockSha256": "93cb2686e1e1b962dd223710bef867d4791a69d59c04740f614e05d9981d086f",
+  "installedProvenance": {
+    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/event-admission-replay-validation/helper-successor-1/run/installed-provenance.json",
+    "sha256": "be1e750457d4e857890ab6c284b3480fe38e805b2ba17daa3b1b75db15863435"
+  },
+  "consumerInventory": {
+    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/event-admission-replay-validation/helper-successor-1/run/installed-consumer-inventory.json",
+    "sha256": "b6b7171705e49911c5c2cb9f58efec13eaa762cc4044c31965bea167503a2236"
+  }
+}

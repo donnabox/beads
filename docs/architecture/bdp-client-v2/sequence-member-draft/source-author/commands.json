@@ -1,0 +1,124 @@
+{
+  "status": "PROSPECTIVE_CLOSED_NOT_EXECUTED",
+  "commands": [
+    {
+      "id": "static-cumulative",
+      "cwd": "/Users/dbox/repos/wt/vickie/vickie-sequence-member-evidence",
+      "argv": [
+        "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+        "/Users/dbox/repos/wt/vickie/vickie-sequence-member-evidence/node_modules/vitest/vitest.mjs",
+        "run",
+        "packages/conformance/src/transactional-cumulative.test.ts",
+        "--maxWorkers=1",
+        "--no-file-parallelism",
+        "--reporter=verbose",
+        "-t",
+        "^(?:binds\\ the\\ canonical\\ cumulative\\ TX\\ selection\\ and\\ exact\\ source\\ digests\\ without\\ qualification|rejects\\ noncanonical\\ selections,\\ History,\\ wrong\\ factories,\\ retired\\ and\\ misprofiled\\ rows|copies\\ source\\ bytes\\ before\\ binding\\ and\\ exposes\\ all\\ missing\\ obligations\\ without\\ executing\\ them|pins\\ the\\ inherited\\ command\\-minimum\\ manifest\\ facts,\\ read\\-header\\ absence\\ and\\ all\\ thirteen\\ prior\\ objects|preserves\\ every\\ original\\ TX\\ scenario\\ and\\ coverage\\ object\\ while\\ adding\\ one\\ bounded\\ partial\\ cross\\-carrier\\ row|pins\\ the\\ one\\-page\\ matched\\-plus\\-updated\\ witness\\ without\\ advertised\\-limit\\ or\\ other\\-outcome\\ credit)$"
+      ],
+      "expectedCases": 6,
+      "expectedHttp": 0,
+      "expectedProductChildren": 0
+    },
+    {
+      "id": "static-app",
+      "cwd": "/Users/dbox/repos/wt/vickie/vickie-sequence-member-evidence",
+      "argv": [
+        "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+        "/Users/dbox/repos/wt/vickie/vickie-sequence-member-evidence/node_modules/vitest/vitest.mjs",
+        "run",
+        "apps/bdptest/src/transactional-matrix.test.ts",
+        "--maxWorkers=1",
+        "--no-file-parallelism",
+        "--reporter=verbose",
+        "-t",
+        "^(?:pins\\ the\\ matching\\ no\\-op\\ installed\\ route\\ digest\\ and\\ fifteen\\-action\\ ledger|pins\\ deletion\\-safety\\ derivative\\ carriers,\\ complete\\ positives,\\ and\\ measured\\ source\\ bounds)$"
+      ],
+      "expectedCases": 2,
+      "expectedHttp": 0,
+      "expectedProductChildren": 0
+    },
+    {
+      "id": "positive",
+      "cwd": "/Users/dbox/repos/wt/vickie/vickie-sequence-member-evidence",
+      "argv": [
+        "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+        "/Users/dbox/repos/wt/vickie/vickie-sequence-member-evidence/node_modules/vitest/vitest.mjs",
+        "run",
+        "apps/bdptest/src/transactional-matrix.test.ts",
+        "--maxWorkers=1",
+        "--no-file-parallelism",
+        "--reporter=verbose",
+        "-t",
+        "^observes\\ fifteen\\ partial\\ Transactional\\ contracts\\ through\\ packed\\-capable\\ actual\\ installed\\ HTTP$"
+      ],
+      "expectedCases": 1,
+      "expectedHttp": 213,
+      "maxHttp": 213,
+      "expectedProductChildren": 23,
+      "gate": "CLOSED_FINAL_CANDIDATE_AND_FRESH_PACKAGES_PENDING"
+    },
+    {
+      "id": "selected-member-control",
+      "cwd": "/Users/dbox/repos/wt/vickie/vickie-sequence-member-evidence",
+      "argv": [
+        "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+        "/Users/dbox/repos/wt/vickie/vickie-sequence-member-evidence/node_modules/vitest/vitest.mjs",
+        "run",
+        "apps/bdptest/src/transactional-matrix.test.ts",
+        "--maxWorkers=1",
+        "--no-file-parallelism",
+        "--reporter=verbose",
+        "-t",
+        "^discriminates\\ sequence\\ member\\ transactions\\ against\\ a\\ successful\\ middle\\ delete$"
+      ],
+      "expectedCases": 1,
+      "expectedHttp": 1,
+      "maxHttp": 10,
+      "expectedProductChildren": 2,
+      "gate": "CLOSED_FINAL_CANDIDATE_AND_FRESH_PACKAGES_PENDING"
+    },
+    {
+      "id": "cross-batch",
+      "cwd": "/Users/dbox/repos/wt/vickie/vickie-sequence-member-evidence",
+      "argv": [
+        "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+        "/Users/dbox/repos/wt/vickie/vickie-sequence-member-evidence/node_modules/vitest/vitest.mjs",
+        "run",
+        "apps/bdptest/src/transactional-matrix.test.ts",
+        "--maxWorkers=1",
+        "--no-file-parallelism",
+        "--reporter=verbose",
+        "-t",
+        "^discriminates\\ retained\\ cross\\-carrier\\ evidence\\ against\\ batch\\-semantic\\-conflict$"
+      ],
+      "expectedCases": 1,
+      "expectedHttp": 204,
+      "maxHttp": 204,
+      "expectedProductChildren": 23,
+      "gate": "CLOSED_FINAL_CANDIDATE_AND_FRESH_PACKAGES_PENDING"
+    },
+    {
+      "id": "cross-sequence",
+      "cwd": "/Users/dbox/repos/wt/vickie/vickie-sequence-member-evidence",
+      "argv": [
+        "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+        "/Users/dbox/repos/wt/vickie/vickie-sequence-member-evidence/node_modules/vitest/vitest.mjs",
+        "run",
+        "apps/bdptest/src/transactional-matrix.test.ts",
+        "--maxWorkers=1",
+        "--no-file-parallelism",
+        "--reporter=verbose",
+        "-t",
+        "^discriminates\\ retained\\ cross\\-carrier\\ evidence\\ against\\ sequence\\-fresh\\-key$"
+      ],
+      "expectedCases": 1,
+      "expectedHttp": 205,
+      "maxHttp": 205,
+      "expectedProductChildren": 23,
+      "gate": "CLOSED_FINAL_CANDIDATE_AND_FRESH_PACKAGES_PENDING"
+    }
+  ],
+  "timeoutSeconds": 120,
+  "concurrency": 1,
+  "setupAndBuildNotAuthorized": true
+}

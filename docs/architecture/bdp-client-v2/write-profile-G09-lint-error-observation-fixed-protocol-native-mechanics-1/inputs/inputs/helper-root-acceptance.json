@@ -1,0 +1,44 @@
+{
+  "session": "2026-10-18T02:16:24Z-549f",
+  "accepted": true,
+  "helperMechanicsAccepted": true,
+  "scope": "CLOSED_FIXED_SINGLETON_HELPER_SOURCE_MECHANICS_ONLY",
+  "preparationIndex": {
+    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-lint-error-observation-preparation-1/preparation-index.json",
+    "sha256": "ce3c5c5dc67303293be1dd22c510248216edd8efb4fe818a8bf5364a9d4f7cea"
+  },
+  "implementationIndex": {
+    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-lint-error-observation-preparation-1/implementation-hashes.json",
+    "sha256": "e5859fb63e924b6e931d33dd88e217dea97c091159507287c06bcb0312913a47"
+  },
+  "nativeIndex": {
+    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-lint-error-observation-helper-native-mechanics-1/index.json",
+    "sha256": "05d0ddc4b5f0916bdf06c4e606ffaea25ad5290e3176ed643f22b0e7cbc64cd2"
+  },
+  "nativeClosure": {
+    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-lint-error-observation-helper-native-mechanics-1/closure.json",
+    "sha256": "3600e8b552612b7d01553af5d243c50d42759fae0aa186e1722f8f9db84d3cc3"
+  },
+  "inspection": {
+    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-lint-error-observation-helper-root-static-acceptance-1/inspection.json",
+    "sha256": "d081edb7aeafd3d62fd50dec3fec4cef1be6fcf3969bd3245136441d9e92f28c"
+  },
+  "findings": [],
+  "closedGate": {
+    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-lint-error-observation-preparation-1/execution-gate.closed.json",
+    "sha256": "771887f040a1ac188df56442820aff56595e1d2da559c0a8292b1d01da7321fe"
+  },
+  "programs": {
+    "gate.py": "9a8a331a1dd556f29cbf199cb70a5f1efbde5e20ac630afcb5a55a2e67f6a60c",
+    "guarded-action-session-20261018-021624-549f.py": "b2d467920638e68d3b007ba9daa432e971636245eca988bfb29d7a99d6e3fb30",
+    "run.py": "8da2272beb92f056ab56e1a63e4a1cb8d3e42454dc1d8666e00b827003e5bfe4"
+  },
+  "originalP3RemainsFailedClosed": true,
+  "childOneIsFailedLintWrapperZeroIsOnlyLocalCapture": true,
+  "rootRawClassificationAndExternalCaptureStillRequired": true,
+  "rawOutputQualification": "Full untruncated bytes of severity-FILTERED report; not ordinary unfiltered lint or zero warnings/infos quality evidence. Original1error96warnings30infos107omitted and causeUNKNOWN preserved.",
+  "runtimeReleased": false,
+  "captureAuthoringReleasedByThisAcceptance": false,
+  "productSourceCorrectionOrNextStageAuthorized": false,
+  "next": "Separate durable capture-TEXT author-only release; exact whole A/B/C/candidate/manifest/root mechanics and publications before any activation/invocation."
+}

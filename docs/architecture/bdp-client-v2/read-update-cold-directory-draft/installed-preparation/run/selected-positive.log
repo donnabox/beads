@@ -1,0 +1,215 @@
+
+ RUN  v4.1.10 /Users/dbox/repos/wt/vickie/vickie-update-cold-directory
+
+ ↓ apps/bdptest/src/read-update-matrix.test.ts > pins cold RU directory literals, actual target bindings and parent preservation
+ ✓ apps/bdptest/src/read-update-matrix.test.ts > observes all nine discovered RU operation targets through cold navigation 645ms
+ ↓ apps/bdptest/src/read-update-matrix.test.ts > rejects a missing updateLink directory member in actual response assertion input
+ ↓ apps/bdptest/src/read-update-matrix.test.ts > executes the partial cumulative RU matrix against actual installed factory HTTP and afterstate
+ ↓ apps/bdptest/src/read-update-matrix.test.ts > fails actual response comparisons for mutated captures and postimages
+ ↓ apps/bdptest/src/read-update-matrix.test.ts > rejects anonymous credentials and proves the refused create did not execute
+ ↓ apps/bdptest/src/read-update-matrix.test.ts > rejects unknown credentials and proves the refused create did not execute
+ ↓ apps/bdptest/src/read-update-matrix.test.ts > rejects mismatched observed configuration identity before any matrix request
+ ↓ apps/bdptest/src/read-update-matrix.test.ts > rejects response-only no-op revision corruption after actual HTTP
+ ↓ apps/bdptest/src/read-update-matrix.test.ts > rejects a wrong inherited Read expectation for read.types.descriptor
+ ↓ apps/bdptest/src/read-update-matrix.test.ts > rejects a wrong inherited Read expectation for read.discovery.canonical-navigation
+ ↓ apps/bdptest/src/read-update-matrix.test.ts > rejects a wrong inherited Read expectation for read.collections.invalid-query
+ ↓ apps/bdptest/src/read-update-matrix.test.ts > rejects a missing seed Resource through actual public setup
+ ↓ apps/bdptest/src/read-update-matrix.test.ts > detects incorrect independent Read properties expectations
+ ↓ apps/bdptest/src/read-update-matrix.test.ts > detects incorrect independent Read collection expectations
+ ↓ apps/bdptest/src/read-update-matrix.test.ts > detects incorrect independent Read condition expectations
+ ↓ apps/bdptest/src/read-update-matrix.test.ts > detects W1 patch-array response corruption after actual HTTP
+ ↓ apps/bdptest/src/read-update-matrix.test.ts > detects W1 noop-provenance response corruption after actual HTTP
+ ↓ apps/bdptest/src/read-update-matrix.test.ts > detects W1 link-pin response corruption after actual HTTP
+ ↓ apps/bdptest/src/read-update-matrix.test.ts > detects W1 deleted-revision response corruption after actual HTTP
+ ↓ apps/bdptest/src/read-update-matrix.test.ts > detects W1 alias-target response corruption after actual HTTP
+ ↓ apps/bdptest/src/read-update-matrix.test.ts > detects W1 resource-header response corruption after actual HTTP
+ ↓ apps/bdptest/src/read-update-matrix.test.ts > detects W1 alias-header response corruption after actual HTTP
+ ↓ apps/bdptest/src/read-update-matrix.test.ts > detects W1 closed-body response corruption after actual HTTP
+ ↓ apps/bdptest/src/read-update-matrix.test.ts > detects W1b retained-noop-link assertion-input corruption after actual HTTP
+ ↓ apps/bdptest/src/read-update-matrix.test.ts > detects W1b stale-unowned-link assertion-input corruption after actual HTTP
+ ↓ apps/bdptest/src/read-update-matrix.test.ts > detects W1b stale-link assertion-input corruption after actual HTTP
+ ↓ apps/bdptest/src/read-update-matrix.test.ts > detects W1b owned-plane assertion-input corruption after actual HTTP
+ ↓ apps/bdptest/src/read-update-matrix.test.ts > detects W1b unowned-source-only assertion-input corruption after actual HTTP
+ ↓ apps/bdptest/src/read-update-matrix.test.ts > detects W1b source-revision assertion-input corruption after actual HTTP
+ ↓ apps/bdptest/src/read-update-matrix.test.ts > detects W1b owner-inline-link assertion-input corruption after actual HTTP
+ ↓ apps/bdptest/src/read-update-matrix.test.ts > detects W1b link-noop-provenance assertion-input corruption after actual HTTP
+ ↓ apps/bdptest/src/read-update-matrix.test.ts > detects W1b owner-noop-provenance assertion-input corruption after actual HTTP
+ ↓ apps/bdptest/src/read-update-matrix.test.ts > detects W1b noop-source-revision assertion-input corruption after actual HTTP
+ ↓ apps/bdptest/src/read-update-matrix.test.ts > detects W1b link-metadata assertion-input corruption after actual HTTP
+ ↓ apps/bdptest/src/read-update-matrix.test.ts > detects W1b unowned-source-pair assertion-input corruption after actual HTTP
+ ↓ apps/bdptest/src/read-update-matrix.test.ts > detects W1b target-postimage assertion-input corruption after actual HTTP
+ ↓ apps/bdptest/src/read-update-matrix.test.ts > detects row-local alias alias-revision corruption after actual HTTP
+ ↓ apps/bdptest/src/read-update-matrix.test.ts > detects row-local alias target-revision corruption after actual HTTP
+ ↓ apps/bdptest/src/read-update-matrix.test.ts > does not admit an unused fixture binding as a fixed client GET route
+ ↓ apps/bdptest/src/read-update-matrix.test.ts > detects W2 link-name after real sequence HTTP
+ ↓ apps/bdptest/src/read-update-matrix.test.ts > detects W2 alias-index after real sequence HTTP
+ ↓ apps/bdptest/src/read-update-matrix.test.ts > detects W2 index after real sequence HTTP
+ ↓ apps/bdptest/src/read-update-matrix.test.ts > detects W2 missing-name after real sequence HTTP
+ ↓ apps/bdptest/src/read-update-matrix.test.ts > detects W2 extra-name after real sequence HTTP
+ ↓ apps/bdptest/src/read-update-matrix.test.ts > detects W2 wrong-name after real sequence HTTP
+ ↓ apps/bdptest/src/read-update-matrix.test.ts > detects W2 problem after real sequence HTTP
+ ↓ apps/bdptest/src/read-update-matrix.test.ts > detects W2 swap after real sequence HTTP
+ ↓ apps/bdptest/src/read-update-matrix.test.ts > detects W2 binding-id after real sequence HTTP
+ ↓ apps/bdptest/src/read-update-matrix.test.ts > detects W2 dependent-success after real sequence HTTP
+ ↓ apps/bdptest/src/read-update-matrix.test.ts > detects W2 retained-failure after real sequence HTTP
+ ↓ apps/bdptest/src/read-update-matrix.test.ts > detects W2 tail-state after real sequence HTTP
+ ↓ apps/bdptest/src/read-update-matrix.test.ts > detects W2 prefix-present after real sequence HTTP
+ ↓ apps/bdptest/src/read-update-matrix.test.ts > detects W2 corrected-conflict after real sequence HTTP
+ ↓ apps/bdptest/src/read-update-matrix.test.ts > checks W2 raw carrier wrong-status refusal sensitivity or encoding equivalence
+ ↓ apps/bdptest/src/read-update-matrix.test.ts > checks W2 raw carrier wrong-code refusal sensitivity or encoding equivalence
+ ↓ apps/bdptest/src/read-update-matrix.test.ts > checks W2 raw carrier below-count-boundary refusal sensitivity or encoding equivalence
+ ↓ apps/bdptest/src/read-update-matrix.test.ts > checks W2 raw carrier base64 refusal sensitivity or encoding equivalence
+ ↓ apps/bdptest/src/read-update-matrix.test.ts > leaves singleton missing-key refusal to the actual authority after optional header omission
+ ↓ apps/bdptest/src/read-update-matrix.test.ts > detects a mismatched advertised request body bound in the actual carrier discovery
+ ↓ apps/bdptest/src/read-update-matrix.test.ts > refuses an already cancelled aggregate before launching any installed child
+ ↓ apps/bdptest/src/read-update-matrix.test.ts > detects document patch link-order after actual HTTP
+ ↓ apps/bdptest/src/read-update-matrix.test.ts > detects document patch link-clear after actual HTTP
+ ↓ apps/bdptest/src/read-update-matrix.test.ts > detects document patch link-result after actual HTTP
+ ↓ apps/bdptest/src/read-update-matrix.test.ts > detects document patch link-get after actual HTTP
+ ↓ apps/bdptest/src/read-update-matrix.test.ts > detects document patch refusal-get after actual HTTP
+ ↓ apps/bdptest/src/read-update-matrix.test.ts > detects document patch diagnostic-document after actual HTTP
+ ↓ apps/bdptest/src/read-update-matrix.test.ts > detects document patch diagnostic-type after actual HTTP
+ ↓ apps/bdptest/src/read-update-matrix.test.ts > detects document patch problem-tuple after actual HTTP
+ ↓ apps/bdptest/src/read-update-matrix.test.ts > rejects settled but unsuccessful installed child exit {"exitCode":null,"signalCode":null}
+ ↓ apps/bdptest/src/read-update-matrix.test.ts > rejects settled but unsuccessful installed child exit {"exitCode":null,"signalCode":"SIGKILL"}
+ ↓ apps/bdptest/src/read-update-matrix.test.ts > rejects settled but unsuccessful installed child exit {"exitCode":1,"signalCode":null}
+ ↓ apps/bdptest/src/read-update-matrix.test.ts > detects effective schema schema-document assertion-input corruption after actual HTTP
+ ↓ apps/bdptest/src/read-update-matrix.test.ts > detects effective schema schema-contract-code assertion-input corruption after actual HTTP
+ ↓ apps/bdptest/src/read-update-matrix.test.ts > detects effective schema schema-type assertion-input corruption after actual HTTP
+ ↓ apps/bdptest/src/read-update-matrix.test.ts > detects effective schema schema-keyword assertion-input corruption after actual HTTP
+ ↓ apps/bdptest/src/read-update-matrix.test.ts > detects effective schema schema-pointer assertion-input corruption after actual HTTP
+ ↓ apps/bdptest/src/read-update-matrix.test.ts > detects effective schema schema-afterstate assertion-input corruption after actual HTTP
+ ↓ apps/bdptest/src/read-update-matrix.test.ts > detects effective schema schema-metadata assertion-input corruption after actual HTTP
+ ↓ apps/bdptest/src/read-update-matrix.test.ts > detects effective schema schema-open assertion-input corruption after actual HTTP
+ ↓ apps/bdptest/src/read-update-matrix.test.ts > observes retained retry dispositions across actual installed carriers and current positions
+ ↓ apps/bdptest/src/read-update-matrix.test.ts > retained retry diagnostics preserve failure position without credential or body output
+ ↓ apps/bdptest/src/read-update-matrix.test.ts > detects retained-retry 'initial failure gains title' after actual wire capture
+ ↓ apps/bdptest/src/read-update-matrix.test.ts > detects retained-retry 'retained failure gains title' after actual wire capture
+ ↓ apps/bdptest/src/read-update-matrix.test.ts > detects retained-retry 'retained failure gains extension' after actual wire capture
+ ↓ apps/bdptest/src/read-update-matrix.test.ts > detects retained-retry 'retained failure gains instance' after actual wire capture
+ ↓ apps/bdptest/src/read-update-matrix.test.ts > detects retained-retry 'reordered failure gains extension' after actual wire capture
+ ↓ apps/bdptest/src/read-update-matrix.test.ts > detects retained-retry 'fresh image instead of retained' after actual wire capture
+ ↓ apps/bdptest/src/read-update-matrix.test.ts > detects retained-retry 'retained revision' after actual wire capture
+ ↓ apps/bdptest/src/read-update-matrix.test.ts > detects retained-retry 'old failure executes successfully' after actual wire capture
+ ↓ apps/bdptest/src/read-update-matrix.test.ts > detects retained-retry 'singleton carries sequence index' after actual wire capture
+ ↓ apps/bdptest/src/read-update-matrix.test.ts > detects retained-retry 'final GET silently rolled back' after actual wire capture
+ ↓ apps/bdptest/src/read-update-matrix.test.ts > detects retained-retry 'conflict body replaced while HTTP sta…' after actual wire capture
+ ↓ apps/bdptest/src/read-update-matrix.test.ts > detects retained-retry 'cross-carrier name changed' after actual wire capture
+ ↓ apps/bdptest/src/read-update-matrix.test.ts > detects retained-retry 'repeated replay changes retained resu…' after actual wire capture
+ ↓ apps/bdptest/src/read-update-matrix.test.ts > detects retained-retry 'fresh member GET loses committed value' after actual wire capture
+ ↓ apps/bdptest/src/read-update-matrix.test.ts > detects retained-retry 'conflict overwrites retained image' after actual wire capture
+ ↓ apps/bdptest/src/read-update-matrix.test.ts > detects retained-retry 'old sequence index' after actual wire capture
+ ↓ apps/bdptest/src/read-update-matrix.test.ts > detects retained-retry 'removed name returns' after actual wire capture
+ ↓ apps/bdptest/src/read-update-matrix.test.ts > detects retained-retry 'added name lost' after actual wire capture
+ ↓ apps/bdptest/src/read-update-matrix.test.ts > detects retained-retry 'failure gains detail' after actual wire capture
+ ↓ apps/bdptest/src/read-update-matrix.test.ts > detects retained-retry 'sequence replay refreshes image' after actual wire capture
+ ↓ apps/bdptest/src/read-update-matrix.test.ts > detects retained-retry 'sequence GET regresses' after actual wire capture
+ ↓ apps/bdptest/src/read-update-matrix.test.ts > observes key and media admission against installed HTTP with paired afterstate
+ ↓ apps/bdptest/src/read-update-matrix.test.ts > pins admission action, request-byte and live-identity budgets without hidden setup
+ ↓ apps/bdptest/src/read-update-matrix.test.ts > detects admission raw input boundary 0/key-repeat-distinct/single-key
+ ↓ apps/bdptest/src/read-update-matrix.test.ts > detects admission raw input boundary 0/key-long/length-256
+ ↓ apps/bdptest/src/read-update-matrix.test.ts > detects admission raw input boundary 0/key-route-delete-link-repeated/single-key
+ ↓ apps/bdptest/src/read-update-matrix.test.ts > detects admission raw input boundary 0/key-route-update-bead-malformed/valid-key
+ ↓ apps/bdptest/src/read-update-matrix.test.ts > detects admission raw input boundary 1/media-route-sequence-wrong-parameters/json-media
+ ↓ apps/bdptest/src/read-update-matrix.test.ts > detects admission raw input boundary 1/media-route-create-link-corrected/wrong-media
+ ↓ apps/bdptest/src/read-update-matrix.test.ts > detects admission raw input boundary 1/media-route-create-link-corrected-bare/wrong-media
+ ↓ apps/bdptest/src/read-update-matrix.test.ts > detects admission raw input boundary 1/media-parameter-charset/wrong-media
+ ↓ apps/bdptest/src/read-update-matrix.test.ts > detects admission corrected disposition or state corruption 'key-empty-corrected'
+ ↓ apps/bdptest/src/read-update-matrix.test.ts > detects admission corrected disposition or state corruption 'key-empty-corrected-0-read'
+ ↓ apps/bdptest/src/read-update-matrix.test.ts > detects admission corrected disposition or state corruption 'media-plain-corrected'
+ ↓ apps/bdptest/src/read-update-matrix.test.ts > detects admission corrected disposition or state corruption 'media-plain-corrected-0-read'
+ ↓ apps/bdptest/src/read-update-matrix.test.ts > pairs every malformed key with identical body and route and only a valid key correction
+ ↓ apps/bdptest/src/read-update-matrix.test.ts > detects admission independent alias-location oracle mismatch
+ ↓ apps/bdptest/src/read-update-matrix.test.ts > detects admission independent stale-collection-record oracle mismatch
+ ↓ apps/bdptest/src/read-update-matrix.test.ts > pins admission carrier completion, same-body key corrections and same-key media corrections
+ ↓ apps/bdptest/src/read-update-matrix.test.ts > observes reference syntax and retained category failures against installed HTTP
+ ↓ apps/bdptest/src/read-update-matrix.test.ts > detects reference input correction 0/ra-create-link-source-pin/source-pin
+ ↓ apps/bdptest/src/read-update-matrix.test.ts > detects reference input correction 1/rb-alias-local/missing-bead
+ ↓ apps/bdptest/src/read-update-matrix.test.ts > detects reference input correction 1/rb-endpoint-source/valid-endpoint
+ ↓ apps/bdptest/src/read-update-matrix.test.ts > detects reference input correction 1/rb-seed-alias/wrong-absolute-category
+ ↓ apps/bdptest/src/read-update-matrix.test.ts > detects reference input correction 1/rb-seed-link/wrong-pinned-category
+ ↓ apps/bdptest/src/read-update-matrix.test.ts > detects reference post-wire corruption 'rb-seed-link'
+ ↓ apps/bdptest/src/read-update-matrix.test.ts > detects reference post-wire corruption 'rb-seed-link'
+ ↓ apps/bdptest/src/read-update-matrix.test.ts > detects reference post-wire corruption 'ra-create-link-source-pin-corrected'
+ ↓ apps/bdptest/src/read-update-matrix.test.ts > detects reference post-wire corruption 'ra-update-bead-corrected-0-read'
+ ↓ apps/bdptest/src/read-update-matrix.test.ts > detects reference post-wire corruption 'ra-metadata-literal'
+ ↓ apps/bdptest/src/read-update-matrix.test.ts > detects reference post-wire corruption 'rb-alias-replay'
+ ↓ apps/bdptest/src/read-update-matrix.test.ts > detects reference post-wire corruption 'rb-alias-conflict'
+ ↓ apps/bdptest/src/read-update-matrix.test.ts > detects reference post-wire corruption 'rb-sequence-alias'
+ ↓ apps/bdptest/src/read-update-matrix.test.ts > detects reference post-wire corruption 'rb-sequence-endpoint'
+ ↓ apps/bdptest/src/read-update-matrix.test.ts > binds a changed reference fixture oracle and rejects its wrong complete Problem expectation
+ ↓ apps/bdptest/src/read-update-matrix.test.ts > pins all thirteen reference syntax vectors and literal opaque pin corrections
+ ↓ apps/bdptest/src/read-update-matrix.test.ts > detects reference live alias oracle corruption after fresh corrected put
+ ↓ apps/bdptest/src/read-update-matrix.test.ts > pins admitted absolute alias target and opaque pinned endpoint comparators in category row
+ ↓ apps/bdptest/src/read-update-matrix.test.ts > detects named reference collection oracle corruption identities
+ ↓ apps/bdptest/src/read-update-matrix.test.ts > detects named reference collection oracle corruption stale-record
+ ↓ apps/bdptest/src/read-update-matrix.test.ts > detects restored C post-wire corruption 'rc-delete-replay'
+ ↓ apps/bdptest/src/read-update-matrix.test.ts > detects restored C post-wire corruption 'rc-sequence-wrong-0-read'
+ ↓ apps/bdptest/src/read-update-matrix.test.ts > detects restored C retained-delete live-alias Location corruption
+ ↓ apps/bdptest/src/read-update-matrix.test.ts > binds restored C independent oracle corruption and fails its actual comparison
+ ↓ apps/bdptest/src/read-update-matrix.test.ts > drains actual segmented children on abort before-continuation
+ ↓ apps/bdptest/src/read-update-matrix.test.ts > drains actual segmented children on abort after-continuation-launch
+ ↓ apps/bdptest/src/read-update-matrix.test.ts > drains actual segmented children on abort during-continuation
+ ↓ apps/bdptest/src/read-update-matrix.test.ts > keeps dependent-only selection as an unexecuted runner prerequisite failure
+ ↓ apps/bdptest/src/read-update-matrix.test.ts > blocks a same-shard dependent after an actually failed prerequisite
+ ↓ apps/bdptest/src/read-update-matrix.test.ts > checks the actual second bootstrap configuration before starting its scenario
+ ↓ apps/bdptest/src/read-update-matrix.test.ts > retains actual artifact attempt evidence on during-continuation
+ ↓ apps/bdptest/src/read-update-matrix.test.ts > retains actual artifact attempt evidence on before-continuation
+ ↓ apps/bdptest/src/read-update-matrix.test.ts > retains actual artifact attempt evidence on during-baseline
+ ↓ apps/bdptest/src/read-update-matrix.test.ts > retains actual artifact attempt evidence on startup-failure
+ ↓ apps/bdptest/src/read-update-matrix.test.ts > retains actual artifact attempt evidence on cleanup-failure
+ ↓ apps/bdptest/src/read-update-matrix.test.ts > retains actual returned continuation assertion failure without a successful summary
+ ↓ apps/bdptest/src/read-update-matrix.test.ts > preserves actual abort and IO causes when returned-evidence persistence is denied
+ ↓ apps/bdptest/src/read-update-matrix.test.ts > observes installed attribution/numeric row read-update.singleton.attribution
+ ↓ apps/bdptest/src/read-update-matrix.test.ts > observes installed attribution/numeric row read-update.numeric-model.same-value-no-op
+ ↓ apps/bdptest/src/read-update-matrix.test.ts > detects attribution/numeric post-wire 'fresh retained-revision guard rejecti…'
+ ↓ apps/bdptest/src/read-update-matrix.test.ts > detects attribution/numeric post-wire 'minted actor basis'
+ ↓ apps/bdptest/src/read-update-matrix.test.ts > detects attribution/numeric post-wire 'owner attribution fanout'
+ ↓ apps/bdptest/src/read-update-matrix.test.ts > detects attribution/numeric post-wire 'entire no-op context'
+ ↓ apps/bdptest/src/read-update-matrix.test.ts > detects attribution/numeric post-wire 'omitted envelope'
+ ↓ apps/bdptest/src/read-update-matrix.test.ts > detects attribution/numeric post-wire 'context-only absent actor'
+ ↓ apps/bdptest/src/read-update-matrix.test.ts > detects attribution/numeric post-wire 'owned inline Link'
+ ↓ apps/bdptest/src/read-update-matrix.test.ts > detects attribution/numeric post-wire 'unchanged target'
+ ↓ apps/bdptest/src/read-update-matrix.test.ts > detects attribution/numeric post-wire 'deletion owner attribution'
+ ↓ apps/bdptest/src/read-update-matrix.test.ts > detects attribution/numeric post-wire 'numeric no-op revision'
+ ↓ apps/bdptest/src/read-update-matrix.test.ts > detects attribution/numeric post-wire 'numeric no-op GET envelope'
+ ↓ apps/bdptest/src/read-update-matrix.test.ts > detects attribution/numeric post-wire 'numeric real change old state'
+ ↓ apps/bdptest/src/read-update-matrix.test.ts > detects attribution/numeric post-wire 'numeric refusal unchanged GET'
+ ↓ apps/bdptest/src/read-update-matrix.test.ts > detects attribution/numeric exact raw 'digest'
+ ↓ apps/bdptest/src/read-update-matrix.test.ts > detects attribution/numeric exact raw 'changed-number'
+ ↓ apps/bdptest/src/read-update-matrix.test.ts > detects attribution/numeric exact raw 'refusal-success'
+ ↓ apps/bdptest/src/read-update-matrix.test.ts > pins attribution/numeric action ledgers, raw literals and prior scenario bytes
+ ↓ apps/bdptest/src/read-update-matrix.test.ts > observes installed numeric admission row read-update.numeric-model.round-trip-admission
+ ↓ apps/bdptest/src/read-update-matrix.test.ts > observes installed numeric admission row read-update.numeric-model.nested-refusal
+ ↓ apps/bdptest/src/read-update-matrix.test.ts > detects numeric admission raw control 1 'request-number'
+ ↓ apps/bdptest/src/read-update-matrix.test.ts > detects numeric admission raw control 2 'pointer'
+ ↓ apps/bdptest/src/read-update-matrix.test.ts > detects numeric admission raw control 5 'document-prefix'
+ ↓ apps/bdptest/src/read-update-matrix.test.ts > detects numeric admission raw control 6 'patch-location'
+ ↓ apps/bdptest/src/read-update-matrix.test.ts > detects numeric admission raw control 7 'metadata-label'
+ ↓ apps/bdptest/src/read-update-matrix.test.ts > detects numeric admission raw control 8 'deep-missing'
+ ↓ apps/bdptest/src/read-update-matrix.test.ts > detects numeric admission client control 3
+ ↓ apps/bdptest/src/read-update-matrix.test.ts > detects numeric admission client control 4
+ ↓ apps/bdptest/src/read-update-matrix.test.ts > detects numeric admission client control 9
+ ↓ apps/bdptest/src/read-update-matrix.test.ts > pins numeric admission source growth, old blocks and independent row ledgers
+ ↓ apps/bdptest/src/read-update-matrix.test.ts > rejects shortened or drifted nested numeric lexemes for bead
+ ↓ apps/bdptest/src/read-update-matrix.test.ts > rejects shortened or drifted nested numeric lexemes for link
+ ↓ apps/bdptest/src/read-update-matrix.test.ts > detects metadata closure state 'num-subject-metadata-closure-unchanged'
+ ↓ apps/bdptest/src/read-update-matrix.test.ts > detects metadata closure Problem 'metadata-refusal-success'
+ ↓ apps/bdptest/src/read-update-matrix.test.ts > pins metadata closure growth, old B actions and final N preservation
+ ↓ apps/bdptest/src/read-update-matrix.test.ts > detects R closure raw control 1 'pointer'
+ ↓ apps/bdptest/src/read-update-matrix.test.ts > detects R closure raw control 2 'metadata-label'
+ ↓ apps/bdptest/src/read-update-matrix.test.ts > detects R closure raw control 3 'schema-location'
+ ↓ apps/bdptest/src/read-update-matrix.test.ts > rejects incomplete R comparator maps, other-document differences and flattened precision
+ ↓ apps/bdptest/src/read-update-matrix.test.ts > pins bounded R closure source, changed-action ledger and unchanged companions
+ ↓ apps/bdptest/src/read-update-matrix.test.ts > detects schema PropertyChange control 1 at 'nr-bead-schema-patch-refused'
+ ↓ apps/bdptest/src/read-update-matrix.test.ts > detects schema PropertyChange control 2 at 'nr-link-schema-patch-unchanged'
+ ↓ apps/bdptest/src/read-update-matrix.test.ts > detects schema PropertyChange control 3 at 'nr-bead-schema-updated-read'
+ ↓ apps/bdptest/src/read-update-matrix.test.ts > detects schema PropertyChange control 4 at 'nr-link-schema-updated-read'
+ ↓ apps/bdptest/src/read-update-matrix.test.ts > pins schema PropertyChange preimage capture, complete corrections and four controls
+
+ Test Files  1 passed (1)
+      Tests  1 passed | 204 skipped (205)
+   Start at  17:28:54
+   Duration  1.01s (transform 186ms, setup 15ms, import 291ms, tests 646ms, environment 0ms)
+
+JSON report written to /Users/dbox/repos/wt/vickie/bdp-integration-logs/read-update-cold-directory-draft/installed-preparation/run/selected-positive.results.json

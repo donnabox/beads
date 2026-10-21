@@ -1,0 +1,54 @@
+## Verdict
+
+The production change is correct. No actionable findings in `transaction-service.ts`. Three test-side findings, one of which materially weakens the regression guard's future value.
+
+### Production walk — verified equivalent, not just "doesn't crash"
+
+`transaction-service.ts:644-653` visits exactly the node set the old recursion visited (`Object.values`, same null/typeof predicate, no frozen-skip), so the final freeze state is identical. The only behavioral delta is order — the old walk froze post-order, the new one freezes a node before its children — and that is unobservable: `Object.freeze(parent)` does not block freezing a child, `Object.values(node)` is still evaluated before `Object.freeze(node)` (so accessor timing is unchanged), and `freeze(body)` completes before `Object.freeze({ body, context })` returns. Acyclic carrier ⇒ termination; shared-subtree re-traversal cost is unchanged from the recursive version. It matches the established non-skipping precedent at `transaction-store.ts:86` (`freezeReceiptValue`), which exists for the same reason.
+
+Worth knowing: the RangeError came from recursing *into an already-frozen subtree*. `resource-evaluator.ts:411` deep-freezes the whole success evaluation (including the 12000-deep `properties`) before the entry ever reaches `sequenceObserved`, and `transaction-store.ts:920` does the same for the retained receipt on replay. So adding `!Object.isFrozen(node)` would also have made the 500 disappear today — the chosen fix is the conservative one, and correctly so.
+
+---
+
+## Findings
+
+**1. Medium — regression test does not pin "traverse already frozen parents"**
+`packages/server/src/transaction-service.test.ts:722`
+
+The `frozen` assertion is satisfied by upstream walks, not by the code under change. In the fresh path the graph is `body`(new) → `results`(new array) → entry(new, `transaction-batch.ts:740`) → `resource`(**already deep-frozen** by `resource-evaluator.ts:411`) → … 12000 frozen levels. On replay the entry subtree is already deep-frozen by `freezeReceiptValue`. There is currently no node in the walked graph that is frozen but has an unfrozen descendant.
+
+*Impact:* the test passes unchanged if someone later "harmonizes" this walk with the four skipping variants in the same package (`transaction-snapshot.ts:131`, `transaction-events.ts:283`, `transaction-changefeed.ts:199`, `resource-evaluator.ts:415`) by adding `!Object.isFrozen(node)`. That is precisely the invariant you listed as acceptance criteria, and it is unenforced. The test does still earn its keep as the RangeError guard — it would go red against the old recursion.
+
+*Fix:* the real fix is extracting one shared exported no-skip helper and unit-testing it with `Object.freeze({ child: { deep: {} } })` → assert `Object.isFrozen(parent.child.deep)` — but that needs a third file, outside your bound. In-bound alternative: a rationale comment at `transaction-service.ts:644` in the style of `transaction-store.ts:85` ("must not skip frozen nodes — fresh containers can hold frozen children; nested immutability is this layer's guarantee, not the evaluator's"), so the divergence from the four skipping helpers is deliberate on its face.
+
+**2. Low — ~200k assertions in one test; 20s timeout is a symptom, not a margin**
+`packages/server/src/transaction-service.test.ts:708-731, 770`
+
+`checkJson` issues ~4 `expect()` calls per node (`Array.isArray`, `isFrozen`, `Object.keys(...).sort()` → `toStrictEqual`, array length) across ~12k nodes × 5 invocations (the event-page comparisons also carry the deep payload). `toStrictEqual` on a fresh pair of sorted key arrays per node dominates.
+
+*Impact:* multi-second runtime and timeout-flake exposure on loaded CI; and on failure you get `expected false to be true` with no path into a 12000-deep structure, which is nearly undebuggable.
+
+*Fix:* compare with plain `if` and track a path string; call `expect`/`throw` only on first divergence (`` throw new Error(`deep observation differs at ${path}`) ``), keeping the single `expect(objects).toBeGreaterThan(depth)`. Drops to ~5 assertions and makes failures localizable.
+
+**3. Low — reported symptom (HTTP 500) has no coverage at the depth that produced it**
+`packages/server/src/transaction-service.test.ts:693`, vs `transaction-http.ts:337-338`
+
+The new test stops at `service.sequenceObserved`; the existing handler-level deep sequence test (`transaction-http.test.ts:4882`, depth 40) was not raised. `transaction-service.test.ts:19` already imports `createTransactionHttpHandler`, so an in-bound handler case is possible. This matters because V8's `JSON.parse` is iterative but `JSON.stringify` is stack-bounded, and response assembly after `jsonResponse(observed.body)` still has to serialize the same graph.
+
+*Impact:* nothing in the committed suite proves the installed-client 500 is gone end to end — consistent with your own note that the archive rerun is outstanding.
+
+*Mitigating evidence, so don't over-weight this:* the same depth already passes through `JSON.stringify` when the resource body is persisted (`transaction-store.ts:1300-1305`) and when events are byte-accounted (`transaction-store.ts:1673`). If the new test is genuinely green, stringify survives 12000 in this runtime.
+
+*Fix:* one handler-level POST of the same carrier in this file asserting `200` + a parsed body, or raise the depth constant in `transaction-http.test.ts:5040`.
+
+---
+
+## Checked and clean
+
+- No remaining recursive JSON walk in the `sequenceObserved` path: `transaction-sequence.ts` freezes shallowly only, `projectTransactionEntry` is non-recursive, the read/event/changefeed/snapshot freezers are all iterative. `transaction-service.ts:644` was the only one.
+- `inspect()` (`transaction-store.ts:2280-2296`) returns only JSON-parsed values and strings, so `checkJson(f.owner.inspect(), before)` is sound — no functions/Dates to fall into the `===` leaf branch.
+- Event pages carry a deterministic `next` from `eventContinuation(source, id)`, not a minted `cursor_N` token, so the two `service.events` calls are legitimately comparable and won't flake on the fixture's token counter.
+- `expectedResource`'s five-key shape matches the independently-asserted wire shape at `transaction-http.test.ts:4917`.
+- Both branches of the new loop predicate are exercised by the test (leaf `1` values and containers).
+
+I did not run the suite — no execution tooling in this session; the above is static review only.

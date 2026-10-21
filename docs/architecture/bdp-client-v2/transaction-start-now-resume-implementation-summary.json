@@ -1,0 +1,236 @@
+{
+  "source": "d53450a4f337bcd01aa5963980b6e85eb50a987e",
+  "tree": "6712045caed63dc0ad36f2876b3d8ae8cfa85480",
+  "clean": true,
+  "focused": {
+    "files": 6,
+    "tests": 163,
+    "failed": 0
+  },
+  "frozenCitationTests": 9,
+  "positive": {
+    "tests": 2,
+    "requests": 12,
+    "children": 2,
+    "requestCounting": "Eight new authored attempts all completed their required live assertions; old idle four requests from preserved successful sequence. Finite write-completion assertions passed, but finite exactRequest projections and raw wire-response bytes were discarded by the unchanged helper.",
+    "idleMilliseconds": 15201.740125,
+    "streams": [
+      {
+        "headers": {
+          "bdp-authorization-view": "development-all-visible",
+          "bdp-scope-epoch": "d80ed362-2fe5-4200-af6b-487338d4596e",
+          "bdp-scope-position": "pos-0",
+          "cache-control": "no-store, no-transform",
+          "content-type": "text/event-stream",
+          "vary": "Accept",
+          "x-bdp-development": "non-attesting",
+          "date": "Wed, 14 Oct 2026 14:41:42 GMT",
+          "connection": "close",
+          "transfer-encoding": "chunked"
+        },
+        "wireSha256": "b32690bb43a00f068010b3f92fbdd77623fa7d771bb3bc4577b0d0423e511095",
+        "wireBytes": 1637,
+        "groupFrames": 1
+      },
+      {
+        "headers": {
+          "bdp-authorization-view": "development-all-visible",
+          "bdp-scope-epoch": "d80ed362-2fe5-4200-af6b-487338d4596e",
+          "bdp-scope-position": "pos-2",
+          "cache-control": "no-store, no-transform",
+          "content-type": "text/event-stream",
+          "vary": "Accept",
+          "x-bdp-development": "non-attesting",
+          "date": "Wed, 14 Oct 2026 14:41:42 GMT",
+          "connection": "close",
+          "transfer-encoding": "chunked"
+        },
+        "wireSha256": "4cb685abb615f86ab5ecdc11d542932ad576cb41f3af5b0d76df82b30be5c469",
+        "wireBytes": 2920,
+        "groupFrames": 2
+      }
+    ],
+    "bindings": [
+      {
+        "served": {
+          "scope": "https://reference.invalid/acme/",
+          "profile": "transactional",
+          "history": false,
+          "sourceCommit": "d53450a4f337bcd01aa5963980b6e85eb50a987e",
+          "installedPayloadDigest": "a4f4d446ff0e506a329fc19d8f0dbac9a81e325e80750a30936a31bb9e57f6b6",
+          "installedContractsDigest": "ecadbf2f7c92004ae5b6a02502f337f7a9a49fec7eef07be57e2ad6dbf3f8544",
+          "policyDigest": "ff16dd99305ba3fb0807e3e6330f44116f5595e89cca3b4154bccbb41d2e800a",
+          "authenticationDigest": "b4e601637daa4ce30adf494f2f9a5b9263a4b51eb5c6e2f255d69c3662afd6bd",
+          "fixtureDigest": "3a7899ced771d4880066d98b0000c53f801ece53458502cc4f3bc641146c9a85",
+          "fixtureId": "reference-transactional-v1",
+          "capabilities": [
+            "installed-transactional-http",
+            "transactional-receipt-observation"
+          ]
+        },
+        "operationTargets": {
+          "createBead": "https://reference.invalid/acme/operations/create-bead",
+          "updateBead": "https://reference.invalid/acme/operations/update-bead",
+          "deleteBead": "https://reference.invalid/acme/operations/delete-bead",
+          "createLink": "https://reference.invalid/acme/operations/create-link",
+          "updateLink": "https://reference.invalid/acme/operations/update-link",
+          "deleteLink": "https://reference.invalid/acme/operations/delete-link",
+          "putAlias": "https://reference.invalid/acme/operations/put-alias",
+          "deleteAlias": "https://reference.invalid/acme/operations/delete-alias",
+          "updateWhere": "https://reference.invalid/acme/operations/update-where",
+          "deleteWhere": "https://reference.invalid/acme/operations/delete-where",
+          "batch": "https://reference.invalid/acme/operations/batch",
+          "sequence": "https://reference.invalid/acme/operations/sequence"
+        },
+        "runtimeConfigurationIdentity": "66f835cd64a0b15a59439f66b3620e1b64db4fac2788642767b9c012c63856e9",
+        "authorityMode": "canonical"
+      },
+      {
+        "served": {
+          "scope": "https://reference.invalid/acme/",
+          "profile": "transactional",
+          "history": false,
+          "sourceCommit": "d53450a4f337bcd01aa5963980b6e85eb50a987e",
+          "installedPayloadDigest": "a4f4d446ff0e506a329fc19d8f0dbac9a81e325e80750a30936a31bb9e57f6b6",
+          "installedContractsDigest": "ecadbf2f7c92004ae5b6a02502f337f7a9a49fec7eef07be57e2ad6dbf3f8544",
+          "policyDigest": "391c65e687fc008cd5bdcf4b517a96a3eb3768b6882d1f93e8230951168c7d18",
+          "authenticationDigest": "3ba84b575525fc12f9e1c6f1be054fa87d3b3b727b8d0713c5b9eac15d697e13",
+          "fixtureDigest": "3a7899ced771d4880066d98b0000c53f801ece53458502cc4f3bc641146c9a85",
+          "fixtureId": "reference-transactional-v1",
+          "capabilities": [
+            "installed-transactional-http",
+            "transactional-receipt-observation"
+          ]
+        },
+        "operationTargets": {
+          "createBead": "https://reference.invalid/acme/operations/create-bead",
+          "updateBead": "https://reference.invalid/acme/operations/update-bead",
+          "deleteBead": "https://reference.invalid/acme/operations/delete-bead",
+          "createLink": "https://reference.invalid/acme/operations/create-link",
+          "updateLink": "https://reference.invalid/acme/operations/update-link",
+          "deleteLink": "https://reference.invalid/acme/operations/delete-link",
+          "putAlias": "https://reference.invalid/acme/operations/put-alias",
+          "deleteAlias": "https://reference.invalid/acme/operations/delete-alias",
+          "updateWhere": "https://reference.invalid/acme/operations/update-where",
+          "deleteWhere": "https://reference.invalid/acme/operations/delete-where",
+          "batch": "https://reference.invalid/acme/operations/batch",
+          "sequence": "https://reference.invalid/acme/operations/sequence"
+        },
+        "runtimeConfigurationIdentity": "3d79de5684f3193f285a5d4cddbcb521648ff1591e8a6c2a2ed9e7f00aad3cf1",
+        "authorityMode": "canonical"
+      }
+    ],
+    "finiteBodyHashes": [
+      "638eb4e691cb84a389a4ff3ad7a567099969c9479453875afc6d5ce365f1426e",
+      "25831a13e5252be733cfa87b2d2ebe1cf2de9fbda9707a676cc21805e502bb72",
+      "ac665ac8d180e1543dd92c15dc50f1e2acd4afc0a4a7870cc25968bf741bb98e"
+    ],
+    "package": {
+      "source": "d53450a4f337bcd01aa5963980b6e85eb50a987e",
+      "tree": "6712045caed63dc0ad36f2876b3d8ae8cfa85480",
+      "clean": true,
+      "packs": {
+        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-start-now-resume-implementation/packed-positive/packs/protocol.tgz": "4683cb6c6333c332a4bcb7efc3e28f32d1d8d06a7264913f65c31d3a826d4227",
+        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-start-now-resume-implementation/packed-positive/packs/server.tgz": "e0dd60d3101768be2d1ddeb5b45fd49939aefb01769cba7c0b7ad48d33f04d97"
+      },
+      "entry": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-start-now-resume-implementation/packed-positive/install/node_modules/@bdp/server/dist/transaction-installed-process.js",
+      "entrySha256": "bcf153170f953f9e28c6c89f1153be907f64df289e64f3ad929cad4a4a54c47c"
+    },
+    "authoredRequestAttempts": [
+      {
+        "method": "GET",
+        "target": "https://reference.invalid/acme/changes/?start=now",
+        "category": "sse"
+      },
+      {
+        "method": "POST",
+        "target": "https://reference.invalid/acme/operations/batch",
+        "category": "finite"
+      },
+      {
+        "method": "GET",
+        "target": "https://reference.invalid/acme/changes/?after=genesis",
+        "category": "finite"
+      },
+      {
+        "method": "POST",
+        "target": "https://reference.invalid/acme/operations/batch",
+        "category": "finite"
+      },
+      {
+        "method": "GET",
+        "target": "https://reference.invalid/acme/changes/?start=now",
+        "category": "sse"
+      },
+      {
+        "method": "GET",
+        "target": "https://reference.invalid/acme/changes/?after=cg_8rZGO2hywjPrZA4gtsH7dv7GZPKgPJLqDp12ZyGqoS0_H11K2UdoxtavvB0-mLZ7EbVgi5ddsdP-NjwEWR-Y80c_1",
+        "category": "finite"
+      },
+      {
+        "method": "POST",
+        "target": "https://reference.invalid/acme/operations/batch",
+        "category": "finite"
+      },
+      {
+        "method": "GET",
+        "target": "https://reference.invalid/acme/changes/?after=cg_8rZGO2hywjPrZA4gtsH7dv7GZPKgPJLqDp12ZyGqoS0_H11K2UdoxtavvB0-mLZ7EbVgi5ddsdP-NjwEWR-Y80c_2",
+        "category": "finite"
+      }
+    ]
+  },
+  "counterfactual": {
+    "source": "802d8f70ece347e5a5aa1c166f40cc0b23e08e60",
+    "tree": "e9945fb051cdabd0f18f593db8d717ede3613fa5",
+    "parent": "d53450a4f337bcd01aa5963980b6e85eb50a987e",
+    "clean": true,
+    "packs": {
+      "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-start-now-resume-implementation/packed-counterfactual/packs/protocol.tgz": "4683cb6c6333c332a4bcb7efc3e28f32d1d8d06a7264913f65c31d3a826d4227",
+      "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-start-now-resume-implementation/packed-counterfactual/packs/server.tgz": "64aaa227c9338cefebeffb758840538316699a598d40a31132536bbecaffbe85"
+    },
+    "entry": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-start-now-resume-implementation/packed-counterfactual/install/node_modules/@bdp/server/dist/transaction-installed-process.js",
+    "entrySha256": "bcf153170f953f9e28c6c89f1153be907f64df289e64f3ad929cad4a4a54c47c",
+    "namedOracleFailure": "offline-G2-before-live-G3: saved-checkpoint replay did not deliver the offline group",
+    "actualRequests": 5,
+    "children": 1,
+    "reconnectStatus": 200,
+    "reconnectGroupFrames": 0,
+    "childClosed": true
+  },
+  "total": {
+    "requests": 17,
+    "children": 3,
+    "maximumRequests": 20,
+    "maximumChildren": 3
+  },
+  "cleanup": {
+    "ownedInstalledProcesses": [],
+    "sourceStatuses": {
+      "/Users/dbox/repos/wt/vickie/vickie-start-now-resume": "",
+      "/Users/dbox/repos/wt/vickie/vickie-start-now-resume-ignored-header": ""
+    },
+    "newPositiveChildClosed": true,
+    "counterfactualChildClosed": true,
+    "newPositiveStreamsDestroyed": [
+      true,
+      true
+    ],
+    "counterfactualStreamsDestroyed": [
+      true,
+      true
+    ],
+    "temporaryStoresRemovedByAwaitedFinally": true,
+    "oldIdleCleanupSucceeded": true,
+    "note": "Old idle successful test preserves its awaited recorder/child close and rmSync cleanup; no added historical telemetry claim."
+  },
+  "claimEligible": false,
+  "limitsUnchanged": true,
+  "retentionLimitation": {
+    "rootAcceptedNarrowing": true,
+    "rawSseResponsesRetained": true,
+    "threeFiniteParityBodyStringsRetained": true,
+    "finiteExactRequestProjectionsRetained": false,
+    "finiteWireResponseBytesRetained": false,
+    "scope": "bounded private replay proof, not target attestation or general qualification"
+  }
+}

@@ -1,0 +1,21 @@
+{
+  "manifestPinsOnlyUpstreamPlaceholder": true,
+  "manifestDoesNotContainOwnSha256": true,
+  "manifestDoesNotPinRenderedWholeOrCellsContainingItsHash": true,
+  "externalInstantiationRecordPinsCompletedManifestAndRendering": true,
+  "authorRelease": {
+    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-lint-error-observation-root-rendering-authoring-release-1/release.json",
+    "sha256": "5f0bfcf0544644115c6762c424a5bd2d1845b13cf03c09abeb4c465e4675be19"
+  },
+  "authorDurability": {
+    "commit": "5ad23ee7de9812369c6214fd107d0fd34507fbae",
+    "rootRetainedReadback": {
+      "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/root-G09-lint-error-observation-text-candidate-publication-1.remote-readback.json",
+      "sha256": "b0736105007643bdb05a95c481ca33a62e7f9573a851d304029aad47481f9e31"
+    }
+  },
+  "rootDurabilityAttribution": "Retained ROOT commit/remote/readback receipt says all94raw/modes and directcritical verified BEFORE authoring. This reviewer checked local receipt hash/content and exact release/upstream pins, not a new network/Git readback.",
+  "futureFinalScopePublication": "NOT_YET_PROVEN_BY_AUTHOR_ONLY_DURABILITY",
+  "futureSeparateActivationPublication": "NOT_YET_PERFORMED",
+  "noClockProofFromPublicationOrSourceHashes": true
+}

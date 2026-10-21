@@ -1,0 +1,69 @@
+I have everything. Findings below.
+
+---
+
+## Inputs and frozen state
+
+Review log read at `/Users/dbox/repos/wt/vickie/bdp-integration-logs/installed-marker-complete-claude-review.txt` (Findings 1–3 at `:35-48`).
+
+`HEAD` = `b50c5e8d91336b087966cd3374de7e72513d6906`, base `d779ea1`. Tree clean at entry **and** exit; `git status --porcelain` empty, `HEAD` unmoved. No repo file written or modified. Diff is 3 files, 27 insertions, 3 deletions — `docs/design/update-implementation-progress.md`, `packages/server/src/development-runtime.ts`, `scripts/installed-reference-observation.mjs`. Nothing else in the frozen range.
+
+**What I executed:** three throwaway in-memory Node probes (`node --input-type=module -e`, loopback `http.createServer` replicating the handler shape; no file created, no repo state touched, no suite, build or smoke run). I did not re-run root's 33-test/2-file run or either smoke. Platform darwin 25.6.0, Node v26 local / `24.16.0` pinned (`.nvmrc`, `ci.yml:31`) — `resetAndDestroy` is available on both.
+
+## The fix, verified behaviorally rather than by claim
+
+`development-runtime.ts:488-494`, registered only under `transport !== undefined` (installed candidate only; the ordinary receiver still has no `connect` listener). Now character-identical to the public sibling at `index.ts:529-535` apart from the marker header, which is correctly absent on the attesting transport.
+
+Measured over 40 reset-peer iterations each:
+
+| Configuration | `connect` fired | write error | reached guard | uncaught | client errors |
+|---|---|---|---|---|---|
+| guard present (as shipped) | 40/40 | 40/40 EPIPE | 40/40 | 0 | 0 |
+| guard removed (revert sim) | 40/40 | 40/40 EPIPE | — | **40/40 EPIPE** | 0 |
+
+Three consequences, all stronger than the prior finding assumed:
+
+- The probe is **deterministic, not racy** — the handler fires and the write fails on every attempt. The prior log's concern that the probe's RST would be a "flake channel with a misleading failure mode" (`:37`) does not apply to this implementation: the client never errors (0/40, `hadError=false` on close), so `once("error", reject)` at `:330` cannot fire spuriously, and the loop needs no retry tolerance (4 attempts is harmless surplus).
+- The regression **is** pinned for the error-listener half: unguarded, the child takes an uncaught EPIPE, and there is no `uncaughtException`/`unhandledRejection` handler anywhere outside test files (grep over `packages/server/src`, `scripts`, `apps/bdptest/src`), so the child dies and the liveness assertion at `:340` fails on connection refusal (`requestInstalled` rejects on `incoming.on("error")`).
+- No truncation from the new `destroy()`: 10/10 clients received the complete `405` with the refusal intact, both with and without trailing unread bytes in the server's receive queue (a pipelined pseudo-ClientHello), identically with and without `() => socket.destroy()`. The "close with unread data ⇒ RST discards the queued response" hazard does not materialize here on darwin loopback.
+
+Additionally — and not claimed by root or by the prior review — `() => socket.destroy()` closes a real **shutdown hang**, not just an error path. `closeListener` (`:500-504`) is awaited with no timeout at `:576`, and `server.closeAllConnections()` does not reach a CONNECT-detached socket. Measured with one silent half-open peer that never reads and never closes: `server.close()` callback at **1 ms** with the destroy, **no completion within 2 s** without it.
+
+## Findings
+
+**1 — LOW · `scripts/installed-reference-observation.mjs:324-340` · test coverage, not behavior**
+The destroy-after-end half of the fix has no regression pin. Reverting only `() => socket.destroy()` (`development-runtime.ts:492`) leaves every assertion in the diff green: a reset peer self-releases regardless, because the swallowed EPIPE triggers stream `autoDestroy` — measured, `server.close()` callback at 0 ms with the destroy reverted and 4 reset peers already served. Only a *silent* non-resetting peer exposes the difference, and no probe creates one.
+Impact: a later revert or refactor of `:492` reintroduces an unbounded `close()` hang (store lock never released, owner close never invoked, `:570-580`) with the full observation still passing. In the harness the hang would eventually surface as the launcher's 10 s `bounded` SIGKILL (`:43-46`) and a failed `{code: 0, signal: null}` at `:375` — i.e. as a child-deadline error rather than as the property that broke.
+Fix: mirror the sibling unit that already pins exactly this for the public listener — `node-http-listener.test.ts:439-453` (`it("does not let a non-reading CONNECT peer block listener shutdown")`, helper `nonReadingConnect` at `:710-721`, `withTimeout(close(listener), 1_000)`) — against the installed runtime in `installed-reference.test.ts`, which already imports the dist runtime at `:73-75`. Existing in-repo pattern, no new harness. Optional: the shipped behavior is correct; only its durability is unasserted.
+
+**2 — INFO · `scripts/installed-reference-observation.mjs:325` · comment overclaims what the loop observes**
+"The receiver must remain usable and release those detached sockets" — the loop observes only continued service (`:340`); socket release is never observed (and per finding 1, is not even distinguishable from the reset peers used here). The doc sentence at `:601-603` is correctly scoped ("check continued service", plus an explicit disclaimer about write-error timings); the inline comment is not.
+Impact: a reader trusting the comment believes release is covered and does not add the pin from finding 1.
+Fix: "…must remain usable after a reset peer." No code change.
+
+**3 — INFO · `docs/design/update-implementation-progress.md:589-593` · residual of prior Finding 3**
+The union framing requested by the prior review landed, and 4 of the 5 configuration-specific paths are now attributed ("ordinary Read responses", "installed alias redirects", "the ordinary development alias redirect", "the installed raw CONNECT refusal"). "captured schemas" (`:591`) is the one that still carries no label, and it is installed-only: `schemaArtifacts` is `[]` whenever `transport === undefined` (`development-runtime.ts:203-205`), so the `:335`/`:361` path is unreachable in the ordinary configuration.
+Impact: an auditor checking the ordinary receiver finds no captured-schema response and no statement that none exists — the same discrepancy-reads-as-gap failure the prior finding described, now reduced to one item.
+Fix: "captured installed schemas". No code change.
+
+**4 — INFO · `scripts/installed-reference-observation.mjs:320-322` · assertion strictness, deliberate deviation**
+The prior fix text asked for case-exact *values* with tolerant *names*; the implementation pinned both names and values byte-exactly via `includes`, and left `Content-Length` on `assert.match(…/i)`. This is the right call and not a defect: the refusal is a single frozen byte literal written raw to the socket (`development-runtime.ts:491`) with no header serializer in the path that could legitimately normalize case, and the probe reads raw wire bytes, so byte-exact is the stronger pin. `Content-Length: 0` loses nothing from `/i` (the value has no case) and stays pinned by the terminator assertion at `:323`. Recorded only so the now-mixed styles on adjacent lines are not later "unified" in the wrong direction, toward `/i`.
+
+**5 — INFO · `scripts/installed-reference-observation.mjs:326-339` vs `apps/bdptest/src/installed-reference.test.ts:94` · budget headroom**
+Four serial attempts at a 5 s per-socket deadline is a 20 s worst case against the unchanged 30 000 ms `it(...)` budget. Benign in practice: the happy path is sub-millisecond per attempt (measured), and a stalled attempt rejects with its own `"CONNECT reset deadline"` message. The only bad mode is cumulative sub-deadline slowness on a loaded runner surfacing as an opaque vitest timeout instead of the probe's message. No change recommended.
+
+Nothing at MEDIUM or above. Nothing in the diff is a behavioral defect.
+
+## Closure
+
+**CLOSED — prior Finding 1 (detached CONNECT error listener).** Root-caused, not patched around: the listener is attached synchronously as the handler's first statement, before any write can fail, matching `index.ts:530`. Verified 40/40 capture with the guard and 40/40 uncaught EPIPE without it, and the failure is pinned by `:340` through child death. The fix also closes an unbounded `closeListener` hang that the original finding did not identify (1 ms vs no completion in 2 s with a silent half-open peer), which is the more consequential half for a real operator. The flake channel the prior log predicted in the probe is absent — the client side is clean 40/40.
+
+**CLOSED — prior Finding 2 (case-exact header assertions).** `:320-321` are byte-exact on both name and value; `:322` retains `/i` with no loss of strength. A regression to `Allow: get, head` or `X-Bdp-Development: Non-Attesting` now fails in both the emitted (`installed-reference.test.ts:94`) and packed (`smoke-executables.mjs:986`) runs, which call the same `observeInstalledReference`.
+
+**CLOSED with one residual — prior Finding 3 (union-of-configurations prose).** The union clause landed at `:589` and four of five configuration-specific paths are attributed; the single unlabeled installed-only item is Finding 3 above, INFO, prose only.
+
+**No regression.** Source delta is one `error` listener plus one `end` completion callback on an already non-attesting, installed-only path. The marker literal at `:491` is byte-unchanged. No assertion in the diff is loosened — `:320-321` tighten, `:326-340` are additive. Shutdown composition (`:500-504`, `:553`, `:576`) is untouched and now completes rather than hanging. `git diff --check` clean; `biome format` and `biome lint` on both changed source files report no fixes applied; new doc lines are 81/81/78 chars against a file maximum of 113.
+
+**Scope honored.** Only the installed candidate's CONNECT path, the observation script, and the one doc paragraph were reviewed. `transaction-runtime.ts` and the public attesting transport were read solely for parity reference; no finding is opened against them and no unrelated profile, admission, schema, store, evaluator or export surface was examined. No broad rerun requested, no future-framework assertion made.
+
+**Not verified by me.** Root's 33-test/2-file focused run, both packed and development smokes, and any identity digests — all outside this pass. My three probes replicate the handler shape on a throwaway loopback server; they are evidence about Node socket semantics on this platform, not a substitute for the real child-process observation. Behavior under Linux loopback was not measured — the RST-on-close-with-unread-data path (probed negative here) is the one place where a kernel difference could in principle change the truncation result, and the existing `:319-323` assertions would catch it if it did.

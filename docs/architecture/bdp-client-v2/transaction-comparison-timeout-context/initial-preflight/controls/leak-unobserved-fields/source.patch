@@ -1,0 +1,11 @@
+--- a/packages/server/src/transaction-comparison.ts
++++ b/packages/server/src/transaction-comparison.ts
+@@ -52,7 +52,7 @@
+         ? { kind: "comparison-owner-stopped" }
+         : { kind: "temporarily-unavailable" };
+     if (now() >= deadline) {
+-      if (!options.observeDeadline) return { kind: "temporarily-unavailable" };
++      if (!options.observeDeadline) return { kind: "temporarily-unavailable", context: undefined } as DirectComparison;
+       // Synchronous final check + current tuple; never hold its owner entry over wait.
+       const observed = options.observeDeadline(epoch);
+       return observed.kind === "observed"

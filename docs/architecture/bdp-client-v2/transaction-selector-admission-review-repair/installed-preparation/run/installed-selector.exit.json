@@ -1,0 +1,59 @@
+{
+  "name": "installed-selector",
+  "argv": [
+    "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+    "/Users/dbox/repos/wt/vickie/vickie-selector-review-repair/node_modules/vitest/vitest.mjs",
+    "run",
+    "apps/bdptest/src/transactional-selector-admission-installed.test.ts",
+    "--maxWorkers=1",
+    "--reporter=verbose",
+    "--reporter=json",
+    "--outputFile.json=/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-selector-admission-review-repair/installed-preparation/run/installed-selector.results.json",
+    "-t",
+    "^installed Selector grammar and fresh capacity preserve keys receipts and complete effects$"
+  ],
+  "cwd": "/Users/dbox/repos/wt/vickie/vickie-selector-review-repair",
+  "started": "2026-10-15T03:36:14.947756+00:00",
+  "elapsedSeconds": 1.0003494578413665,
+  "exit": 1,
+  "supervisorExit": 1,
+  "timeout": false,
+  "forcedCleanup": false,
+  "errors": [],
+  "processGroup": 53941,
+  "remainingBeforeCleanup": [],
+  "remainingAfterCleanup": [],
+  "sampledPids": [
+    53941,
+    53945,
+    53950
+  ],
+  "sampledPidsStillPresent": {},
+  "sampledTempEntries": [
+    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-selector-admission-review-repair/installed-preparation/run/installed-selector.tmp/bdp-selector-installed-YA1F6v",
+    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-selector-admission-review-repair/installed-preparation/run/installed-selector.tmp/xBg6Sz19Y0cYmO4D59iNG"
+  ],
+  "tempEntriesAfter": [],
+  "remainingTempEntriesForClassification": [],
+  "runtimeDirectoriesStillPresent": [],
+  "unclassifiedTempEntriesStillPresent": [],
+  "sourceUnchanged": true,
+  "sourceSha256After": {
+    "packages/server/src/read-selector.ts": "5b50bd45211bbbaea1e8d8b257e2c9b6a53d4c848e8ef9b849eb228aa723b849",
+    "packages/server/src/transaction-set.ts": "03b1ca9427c6963f5b6ce712a7f70540501e081ed635c742015d2bc49cc9524a",
+    "packages/server/src/transaction-batch.ts": "5fa7052d95942548727760625e368f3892e1dacced1654f022720af0b5ce899a",
+    "packages/server/src/transaction-store.ts": "0cda4b6488f589258eda46d1a00612e0278228172fc102305d889fe3c4364ad1",
+    "packages/server/src/transaction-submission.ts": "795b45d87b6ee7f727a3727ace64c0e6569d0cfa7ad941e46740e285d04df942",
+    "packages/server/src/transaction-http.ts": "4fd4758726c363c342e9a7b292e56e3f8b17dd1beb7b98d45554bd07a25dde83",
+    "packages/server/src/read-selector.test.ts": "7392c19b5de8f032e7445452e5c56e9bea7f371351d096e1869481f1021f6a31",
+    "packages/server/src/transaction-set.test.ts": "a47a5bcf0a9e754eb0446dbfe5a2055c9728b27bfc3d96b22781ca927c557fd3",
+    "packages/server/src/transaction-submission.test.ts": "24e7692bd99b2f5cea5d6fdc0b70e9165d99022dbbce1af6535e33615d1bb730",
+    "packages/server/src/transaction-http.test.ts": "45ba9da34887b4daac1ed34cd9a623d7468f2448b5e8a744f52bebe23f33ef2a",
+    "docs/specs/bdp.md": "13fae18c85e6ed240483fd1b7e1faaf8ec36e9383b017fa881ad3c2238797a6b",
+    "apps/bdptest/src/transactional-selector-admission-installed.test.ts": "26b8dbc41cacccc7ad1f5157b1f65421e3eff6b3add65c0e122343a3db738e5b"
+  },
+  "samplingSeconds": 0.05,
+  "samplingLimitation": "Short-lived or detached descendants may evade group sampling; helper counts and independent final checks remain separate.",
+  "tempClassification": "Only the selected fixture prefixes under this attempt TMPDIR are owned runtime roots; all other entries are preserved for review, not deleted or called leaks.",
+  "resultLimitation": "Exit0 is command completion, not independent oracle/claim/provenance adjudication."
+}

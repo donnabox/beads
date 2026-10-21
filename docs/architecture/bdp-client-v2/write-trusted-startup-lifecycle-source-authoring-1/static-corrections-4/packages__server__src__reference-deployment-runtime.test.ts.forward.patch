@@ -1,0 +1,85 @@
+--- before/packages/server/src/reference-deployment-runtime.test.ts
++++ after/packages/server/src/reference-deployment-runtime.test.ts
+@@ -5,7 +5,7 @@
+ import { isDeepStrictEqual } from "node:util";
+ import { createServer as createPortReservation } from "node:net";
+ import { DatabaseSync } from "node:sqlite";
+-import { existsSync, mkdtempSync, mkdirSync, rmSync, writeFileSync } from "node:fs";
++import { existsSync, mkdtempSync, mkdirSync, readdirSync, rmSync, writeFileSync } from "node:fs";
+ import { tmpdir } from "node:os";
+ import path from "node:path";
+ import * as authority from "./development-authority.js";
+@@ -53,6 +53,7 @@
+ let secondPrincipal: { entered: PromiseWithResolvers<void>; release: PromiseWithResolvers<void>; fail: boolean } | undefined;
+ let mutation: { entered: PromiseWithResolvers<void>; release: PromiseWithResolvers<void> } | undefined;
+ let actualComposition: ReturnType<typeof compose> | undefined;
++let observedCase = "", assertionsCompleted = false, bodyExtra: unknown = null, emittedId: string | null = null;
+ function altered<T>(value: T, key: string | undefined): T {
+   if (!key) return value;
+   const copy = structuredClone(value) as Record<string, unknown>;
+@@ -64,7 +65,8 @@
+   else if (key === "authorizationView") copy.authorizationView = "wrong";
+   return copy as T;
+ }
+-beforeEach(() => {
++beforeEach((context) => {
++  observedCase = context.task.name; assertionsCompleted = false; bodyExtra = null; emittedId = null;
+   trace = []; listenArgs = []; acquired = returned = ownerCloses = serviceCloses = serviceAttempts = configurationReads = 0;
+   corruption = undefined; primary = closeFailure = listenFailure = eventFailure = undefined;
+   constructorThrow = false; abortOnOpen = undefined; secondPrincipal = undefined; mutation = undefined; actualComposition = undefined;
+@@ -131,6 +133,8 @@
+   });
+ });
+ afterEach(async () => {
++  const directories = [...roots];
++  console.log(JSON.stringify({ observation: "reference-lifecycle-source-before-cleanup", callback: observedCase, id: emittedId, assertionsCompleted, counts: counts(), extra: bodyExtra, SQLite: sql.rows.map((r) => ({ ...r })), claimEligible: false }));
+   for (const controller of preparationControllers.splice(0)) controller.abort();
+   secondPrincipal?.release.resolve(); mutation?.release.resolve();
+   await Promise.allSettled([...pendingStarts]);
+@@ -141,6 +145,10 @@
+   })));
+   const unknown = cleanup.some((r) => r.status === "rejected") || sql.rows.some((r) => !r.closed);
+   if (!unknown) for (const root of roots.splice(0)) rmSync(root, { recursive: true, force: true });
++  console.log(JSON.stringify({ observation: "reference-lifecycle-source-terminal", callback: observedCase,
++    assertionsCompleted, cleanupKnown: !unknown, counts: counts(),
++    directories: directories.map((directory) => ({ directory, absent: !existsSync(directory) })),
++    claimEligible: false }));
+   // Unknown ownership deliberately retains evidence; no timeout or missing event is clean.
+ });
+ async function port() {
+@@ -177,7 +185,7 @@
+   return openTX({ file: path.join(p.directory, "transaction.sqlite"), scope: p.configuredScope!, create: p.create, types: p.types, contracts: p.contracts!, receiptMaximumItems: p.settings.receiptMaximumItems, maintenanceIntervalMs: p.settings.maintenanceIntervalMs });
+ }
+ function counts() { return { returned, ownerCloses, serviceCloses, serviceAttempts, configurationReads, listenAttempts: listenArgs.length, listeningAcquisitions: acquired, trace: [...trace] }; }
+-function emit(id: string, extra: unknown = null) { console.log(JSON.stringify({ observation: "reference-lifecycle-source", id, counts: counts(), extra, claimEligible: false })); }
++function emit(id: string, extra: unknown = null) { emittedId = id; bodyExtra = extra; assertionsCompleted = true; }
+ function start(handle: PreparedReferenceDeployment, signal?: AbortSignal) {
+   const controller = new AbortController(); preparationControllers.push(controller);
+   const pending = startPreparedReferenceDeployment(handle, signal ? AbortSignal.any([signal, controller.signal]) : controller.signal)
+@@ -283,14 +291,14 @@
+   emit("S05-" + profile + "-" + row, { openerTrace: trace.slice(attempts), internalAcquisitionAndClose: internal, genuineProbeClosed: true, databaseBytesUnchangedClaim: false });
+ });
+ it.each(["read-update", "transactional"] as const)("S06 absent create:false %s never acquires SQLite or listener", async (profile) => {
+-  const f = await fixture(profile), before = sql.rows.length;
++  const f = await fixture(profile), before = sql.rows.length, directoryBefore = existsSync(f.directory), filesBefore = directoryBefore ? readdirSync(f.directory) : [];
+   await expect(startPreparedReferenceDeployment(await f.prepare(false))).rejects.toThrow();
+-  expect(sql.rows.length).toBe(before); expect(returned).toBe(0); expect(listenArgs).toHaveLength(0); expect(existsSync(f.file)).toBe(false); emit("S06-" + profile);
++  expect(sql.rows.length).toBe(before); expect(returned).toBe(0); expect(listenArgs).toHaveLength(0); expect(existsSync(f.file)).toBe(false); expect(existsSync(f.directory)).toBe(directoryBefore); expect(directoryBefore ? readdirSync(f.directory) : []).toEqual(filesBefore); emit("S06-" + profile);
+ });
+ it.each(["read-update", "transactional"] as const)("S07 occupied intended port %s closes owner without acquisition", async (profile) => {
+   const f = await fixture(profile), blocker = createPortReservation();
+   await new Promise<void>((resolve, reject) => { blocker.once("error", reject); blocker.listen(f.input.server.port, f.input.server.host, resolve); });
+-  try { await expect(startPreparedReferenceDeployment(await f.prepare())).rejects.toThrow(); expect(blocker.listening).toBe(true); expect(listenArgs).toHaveLength(1); expect(acquired).toBe(0); expect(ownerCloses).toBe(1); }
++  try { await expect(startPreparedReferenceDeployment(await f.prepare())).rejects.toThrow(); expect(blocker.listening).toBe(true); expect(listenArgs).toHaveLength(1); expect(acquired).toBe(0); expect(ownerCloses).toBe(1); expect(existsSync(f.file)).toBe(true); }
+   finally { await new Promise<void>((resolve) => blocker.close(() => resolve())); }
+   emit("S07-" + profile);
+ });
+@@ -307,7 +315,7 @@
+ it.each(["read-update", "transactional"] as const)("S10 observed primary plus close failure %s preserves both causes", async (profile) => {
+   const f = await fixture(profile); listenFailure = new Error("primary sentinel"); closeFailure = new Error("cleanup sentinel");
+   let failure: unknown; try { await startPreparedReferenceDeployment(await f.prepare()); } catch (error) { failure = error; }
+-  const causes = (value: unknown): unknown[] => value instanceof AggregateError ? [value, ...value.errors.flatMap(causes)] : [value];
++  const causes = (value: unknown): unknown[] => value instanceof AggregateError ? [value, ...value.errors.flatMap(causes)] : value instanceof Error && "cause" in value ? [value, ...causes(value.cause)] : [value];
+   expect(failure).toBeInstanceOf(AggregateError); expect(causes(failure).includes(listenFailure)).toBe(true); expect(causes(failure).includes(closeFailure)).toBe(true);
+   expect(ownerCloses).toBe(1); expect(sql.rows.every((value) => value.closed)).toBe(true); emit("S10-" + profile, { observedPrimary: true, observedCleanupFailure: true });
+ });

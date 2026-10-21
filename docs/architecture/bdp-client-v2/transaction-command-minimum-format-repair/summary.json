@@ -1,0 +1,94 @@
+{
+  "status": "format-only candidate outside frozen worktree; not applied",
+  "parentDraftDiffSha256": "8f0123c9484a74a5c4995dea84833561056f603c8da64d5f9139107b85d44df8",
+  "sourceBindingSha256": "cf5d2cd13a57d4a01220f931bdd308a71c8709f5d185592b2f6a08347631c24e",
+  "sourceStillExact": true,
+  "changedPaths": [
+    "apps/bdptest/src/installed-reference.test.ts",
+    "apps/bdptest/src/transactional-collection-minimum-installed.test.ts",
+    "packages/server/src/transaction-http.test.ts"
+  ],
+  "rows": [
+    {
+      "path": "apps/bdptest/src/installed-reference.test.ts",
+      "beforeSha256": "447a8b5fb3ee03ec4f2a894b02a1bb0fdb74ccdea0ad35576da78942373e0cae",
+      "afterSha256": "2c87160890b1c8aed2ada117a1aa293fe7fcfa85db794a3d9ef6514a39d199d1",
+      "normalizedBeforeSha256": "136730102a9ef95f6c994e137df855923eb9f9d20b7f149a3f2b6212876eb5d4",
+      "normalizedAfterSha256": "136730102a9ef95f6c994e137df855923eb9f9d20b7f149a3f2b6212876eb5d4",
+      "normalizedBytes": 198832,
+      "equal": true
+    },
+    {
+      "path": "apps/bdptest/src/transactional-collection-minimum-installed.test.ts",
+      "beforeSha256": "5349dab51055d29d30bb80f286cb30e69947882bd07ed1eaa831b26fd0567174",
+      "afterSha256": "a3f772525ee1c87f3c488e37914af8114421dff5cc003d81640182d6f7a05903",
+      "normalizedBeforeSha256": "7c79794e7590a055e82b314eedcd8aa34585b2420ec5778817ab25b9d8ce77b7",
+      "normalizedAfterSha256": "7c79794e7590a055e82b314eedcd8aa34585b2420ec5778817ab25b9d8ce77b7",
+      "normalizedBytes": 407914,
+      "equal": true
+    },
+    {
+      "path": "packages/server/src/transaction-http.test.ts",
+      "beforeSha256": "b4ed09796b4dc28a51d9cc73c04a677059434a606f09dddffa46eefaa432ad8e",
+      "afterSha256": "8f66df9f9cf891383a19a67fb50c85708eaae055c59a661777b7110060b0c56f",
+      "normalizedBeforeSha256": "abfd06c301416269c5cfcece5f07c30b80172d2ba2ebca1589c729967e8c6147",
+      "normalizedAfterSha256": "abfd06c301416269c5cfcece5f07c30b80172d2ba2ebca1589c729967e8c6147",
+      "normalizedBytes": 1194139,
+      "equal": true
+    }
+  ],
+  "astAllEqual": true,
+  "configSha256": "62beced4e0227b97fe9ade1a1a573bf53a2f8916af8da7ce70f94315fece39dc",
+  "biomeVersion": "2.5.7",
+  "nodeVersion": "v24.16.0",
+  "correctionPatchSha256": "5d5104f9ada2652d9dd821792d59027bc0ea374d25626db33eeed10e1cace888",
+  "commands": [
+    {
+      "name": "format",
+      "argv": [
+        "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+        "/Users/dbox/repos/wt/vickie/vickie-command-minimum/node_modules/@biomejs/biome/bin/biome",
+        "format",
+        "--write",
+        "--config-path",
+        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-command-minimum-format-repair/output/biome.json",
+        "apps/bdptest/src/installed-reference.test.ts",
+        "apps/bdptest/src/transactional-collection-minimum-installed.test.ts",
+        "packages/server/src/transaction-http.test.ts"
+      ],
+      "cwd": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-command-minimum-format-repair/output",
+      "exit": 0,
+      "timeout": false,
+      "elapsedSeconds": 0.07235408294945955,
+      "pid": 95457,
+      "reaped": true
+    },
+    {
+      "name": "ast-equality",
+      "argv": [
+        "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-command-minimum-format-repair/ast-equality.mjs"
+      ],
+      "cwd": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-command-minimum-format-repair",
+      "exit": 0,
+      "timeout": false,
+      "elapsedSeconds": 0.1767778331413865,
+      "pid": 95459,
+      "reaped": true
+    }
+  ],
+  "processes": [
+    {
+      "pid": 95457,
+      "absent": true,
+      "reaped": true
+    },
+    {
+      "pid": 95459,
+      "absent": true,
+      "reaped": true
+    }
+  ],
+  "productTestsBuildServices": 0,
+  "initialFormatFailurePreserved": "61217cd6dc380066e9ec9aa0b824f88b18479b508230f9250e487dccf415df46"
+}

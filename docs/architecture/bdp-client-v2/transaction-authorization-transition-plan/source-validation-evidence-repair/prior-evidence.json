@@ -1,0 +1,33 @@
+{
+  "sourceBindingPath": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-authorization-transition-draft/final-code-v4/source-binding.json",
+  "sourceBindingSha256": "f7cf0b51f79c56ee6b24a5be571336066a7148b97e1aa769d511a45579646cbd",
+  "artifactHashes": {
+    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-authorization-transition-plan/source-validation-v4/run/typecheck.exit.json": "9ba89bc0ad50de2737620fcf5a7927e7fb5346276807fc3e2d5af82b40991cc0",
+    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-authorization-transition-plan/source-validation-v4/run/build.exit.json": "5742ecb89800bda4ca212644ce546e8c36b691dc17d5ef374158434b7729d7f8",
+    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-authorization-transition-plan/source-validation-v4/run/format-check.exit.json": "73312f56db325bd62e27cee781dbede0b9b5951ced8505b1b2bfbc02add92509",
+    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-authorization-transition-plan/source-validation-v4/run/lint.exit.json": "393f7a4afb0bfb0eda90c7b1073329598faab8a6fc55aee6c477c391f9fcb8c6",
+    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-authorization-transition-plan/source-validation-v4/run/boundaries.exit.json": "2712bfd008b396d06a2bd9e65f82ba406b89b082eb36bd19b72ae20cf479d1aa",
+    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-authorization-transition-plan/source-validation-v4/run/read-seal.exit.json": "62dda5253ebcc1c2e2139fa8f5de4d569992d65913b0ea3d1bf96318c4a301a1",
+    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-authorization-transition-plan/source-validation-v4/run/transport.exit.json": "bbdc14d10f1d202c2c99c711f32ef49425b12c652406509e90a4452aff87e502",
+    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-authorization-transition-plan/source-validation-v4/run/queued-frame.exit.json": "f767a441891f5b7a15bc41f2d9255413a77777cef1590b7d37adc14dcfe9d0bd",
+    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-authorization-transition-plan/source-validation-v4/run/stale-lease.exit.json": "87c4224d24394f93176a787f7fd3be8d728f136039875ca8b39ff1de89833415",
+    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-authorization-transition-plan/source-validation-v4/run/authorization-owner.exit.json": "f49b7bf668b9f019a5866be2477f2682a7ca9074bba732f26ef11241c28f0287",
+    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-authorization-transition-plan/source-validation-v4/run/transport.results.json": "775504bcc2cd630a98a2d82f5247c3e766e61f14dfbe58e8d2d4a1bbbd0c27a2",
+    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-authorization-transition-plan/source-validation-v4/run/queued-frame.results.json": "493c3dfb6abd2283ab306e4cdfebbcd453a0bafe88eb4e9331cabf88cfb3e95b",
+    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-authorization-transition-plan/source-validation-v4/run/stale-lease.results.json": "27cb57211957ef26f7afa637fc53e6da733a45a640c81c02805d6b9ec5cd6707",
+    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-authorization-transition-plan/source-validation-v4/run/authorization-owner.results.json": "a6cf7c55046345898130564182a4a70797201c04778f22cd9f5d07c810650f9c",
+    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-authorization-transition-plan/source-validation-t11/combined-outcome.json": "3c636dd73c08d1d5afed9fcd3b4e8298a23b33f2188508f33a2cc3b92b8d795e",
+    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-authorization-transition-plan/source-validation-t11/run/scope-policy-targeted.exit.json": "160e6b76bc17ff79b774368fe8ea5343474e1cea1c3b4d1bd3dfe1f0db9fc2b6",
+    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-authorization-transition-plan/emitted-control-preparation-v2/positive-graph.json": "6b461f78fb1fa5c0834a7ba94225dff8ad8f2cd0aca43d87bdd17d2ea1b06a6f",
+    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-authorization-transition-plan/emitted-control-preparation-v2/copy-manifest.json": "dccbcc00d9fde4a4f2a6929f7da278ee37ccd01e225185490a4dc786b2897e9e",
+    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-authorization-transition-plan/emitted-control-preparation-v2/root-execution-acceptance.json": "cd7e11fd733ba82893d9e3639841fcbc92b21c827f9229acf051f79c417363ef",
+    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-authorization-transition-draft/evidence-repair/measurements.json": "4534fa414799005dfb6f42047ed56c3c1e475bfee5f099b25ddb52164ab12234",
+    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-authorization-transition-draft/evidence-repair/correction.patch": "36341fc9438db33c0f7a5dc2aee7086e2e14f2226d96833be9f11cb6ebdf46b0"
+  },
+  "onlyChangedPaths": [
+    "packages/server/src/transaction-authorization.test.ts",
+    "packages/server/src/transaction-runtime.test.ts"
+  ],
+  "notRelabeled": "Preserve failed source-v2/v3/v4 and combined actual11 distinct outcomes. Current5 targeted cases unexecuted.",
+  "positiveCopyManifest": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-authorization-transition-plan/emitted-control-preparation-v2/copy-manifest.json"
+}

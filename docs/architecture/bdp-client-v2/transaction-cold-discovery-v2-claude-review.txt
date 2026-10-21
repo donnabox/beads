@@ -1,0 +1,122 @@
+Read-only review complete. No files written, no builds or tests run; only read-only `git`/`grep`/`sed` and Python file reads.
+
+**Verified basis:** working tree HEAD is `20d61119b5faf7251a5d285c5c34a1049866ffe5`, tree `3de0c4b5589423d01eb0dcb7df7ad150d184273d` — exactly as claimed. All five cited SHA256s match (`4252bf3e…` accepted plan, `bb90ce03…` v2, `1c8ee762…` v1/reviewed-v1, `65926949…` floor audit). `20d6111` **is** an ancestor of `origin/main` (merged as PR #103), so "C1 has now merged" is accurate; the `581bad0..20d6111` delta touches only `transaction-http.{ts,test.ts}`, `transaction-read.{ts,test.ts}`, the C1 app cohort and the progress doc, leaving every parser/owner/schema/classifier seam the plan depends on unchanged.
+
+---
+
+## 1 — HIGH — The 12-request app cohort cannot produce the "packed bytes" evidence its own done-when requires
+
+**Location:** plan lines 88, 97, 114 vs `apps/bdptest/src/transactional-set-installed.test.ts:23-27` (identical pattern in `transactional-snapshot-installed.test.ts:33-35`, `transactional-sse-installed.test.ts:24-27`, `transactional-event-sse-installed.test.ts:24-27`, `transactional-collection-minimum-installed.test.ts:35-37`, `transactional-matrix.test.ts:37`) and `docs/design/transaction-snapshot-installed-observations.md:8-11`.
+
+**Issue:** every existing `apps/bdptest` installed TX test derives its child as `process.env.BDP_TRANSACTIONAL_INSTALLED_ENTRY ?? path.join(root, "packages/server/dist/transaction-installed-process.js")`. A repo-wide search finds **no** setter for that variable — only those six test-file reads and the doc, which states plainly: "The default entry is the emitted process. Setting `BDP_TRANSACTIONAL_INSTALLED_ENTRY` to the actual installed tarball's private process path runs the identical tests against packed bytes." The plan requires the new cohort to reuse `scripts/transaction-installed-observation.mjs` with "no new launcher or ready-metadata seam," so by default it executes **emitted `packages/server/dist` bytes** — precisely the class the plan itself labels "emitted/in-process, not packed" for `transaction-installed-contracts.test.ts`. The only genuinely packed seam in the plan is the zero-wire smoke, which issues no HTTP.
+
+**Impact:** the done-when "required routes remain privately refused over actual packed bytes" is unsatisfiable by the only cohort named to satisfy it; the 12 requests would re-prove refusals the emitted contract test already covers, and C3 would close on a packaging claim nothing produced. `scripts/smoke-executables.mjs:94-128` builds its install root inside an `mkdtemp` it deletes, so no retained packed entry currently exists to point at.
+
+**Correction:** either (a) state that this cohort runs with `BDP_TRANSACTIONAL_INSTALLED_ENTRY` set to the installed tarball's `node_modules/@bdp/server/dist/transaction-installed-process.js` plus the mandatory `BDP_TRANSACTIONAL_SOURCE_COMMIT`, and name who produces and retains that install root (a new owner, since the smoke discards it); or (b) relabel the cohort as emitted evidence and restrict the "over actual packed bytes" done-when to the zero-wire module/parser smoke checks.
+
+---
+
+## 2 — MEDIUM — "17 required discovery members" is 16; the prescribed exact-key-set test is off by one
+
+**Location:** plan line 76 vs `schemas/bdp-v0.schema.json` `$defs.transactionalDiscovery.required` and `fixtures/transactional/discovery.json:29-68`.
+
+**Issue:** `required` holds exactly 16 names (`bdpVersion, profile, scope, beads, links, types, operations, aliases, scopeEpoch, authorizationView, headPosition, minimumReplayPosition, receipts, snapshot, changes, events`) — the 8 of `readUpdateDiscovery` plus the 8 Transactional additions. The normative fixture body carries those 16 plus `limits` = 17 keys. "the 17 required discovery members plus limits only" reads as 18.
+
+**Impact:** the plan explicitly makes this the oracle ("candidate omissions are checked against its exact allowed-key set"); an implementer transcribing the count builds a closed-membership test that can never pass, or pads it with a nineteenth name.
+
+**Correction:** "the 16 required members plus `limits` — 17 keys total," and derive the allowed set in the test from `def("transactionalDiscovery").required` (the pattern already used at `packages/protocol/src/transactional-wire.test.ts:850`) rather than from a literal count.
+
+---
+
+## 3 — MEDIUM — A shallow `advertisedLimits` capture leaves the description aliased to caller-mutable nested objects, so the stated mutation proof fails
+
+**Location:** plan line 31 vs `packages/server/src/transaction-service.ts:62-72` and `packages/server/src/authority-read.ts:369-380`.
+
+**Issue:** "Capture the small advertised Read-limit scalar object once" is satisfied by `{...options.read.advertisedLimits}`, whose `page` and `selector` remain the **caller's** objects. Enforcement is immune because `authority-read.ts:369-380` rebuilds `page`/`selector` member-by-member and freezes each level before the advertised-vs-enforced comparison at `:381-388`. The description is not immune, because the plan builds `limits` member-by-member at observation time from the capture.
+
+**Impact:** mutating `options.read.advertisedLimits.page.maximumItems` after `createTransactionService` returns would change the advertised description while enforcement stays pinned — the exact divergence line 31 says must not occur, and the named negative "mutated configuration" would pass rather than fail.
+
+**Correction:** require the capture itself to be the five frozen scalars (or a two-level frozen clone mirroring `authority-read.ts:369-380`), taken before the existing receipt-maximum comparison at `transaction-service.ts:63-66`, and require the mutation-after-construction test to mutate the nested `page`/`selector` objects, not only the top-level `advertisedLimits` reference. Note `cursorTtlMilliseconds` must stay in the object handed to `createTransactionReadPlane` (it is compared at `authority-read.ts:384`) while being absent from the capture used for the wire projection.
+
+---
+
+## 4 — MEDIUM — The Scope-mismatch negative has no home: `transaction-http.test.ts` is dist-only, and the one source-level handler caller is unlisted
+
+**Location:** plan line 85 vs `packages/server/src/transaction-http.test.ts:11-14`, `packages/server/src/transaction-read.test.ts:16,774`, `packages/server/src/transaction-runtime.ts:310,330`.
+
+**Issue:** `transaction-http.test.ts` obtains `startTransactionRuntime` via `await import(new URL("../dist/transaction-runtime.js", …))` and never imports `createTransactionHttpHandler`. It can only reach the handler through the runtime, which passes one `scope` local to both `openTransactionStore` (`:311`) and the handler (`:330`), so a mismatch is unconstructible there. The sole source-level caller is `transaction-read.test.ts:774` — `createTransactionHttpHandler(service, scope)` — a file absent from the plan's inventory.
+
+**Impact:** "Test mismatched handler/owner Scope refusal and normal equality" and the done-when "owner/handler Scope mismatch fails" have no listed owner. An implementer either grafts a source import of `transaction-http.js` into a dist-based test — pairing a source-built handler with a dist-built service — or quietly drops the negative, leaving the new private property with no proof.
+
+**Correction:** keep the `runtime.targets`/route-root resolution checks in `transaction-http.test.ts` (that is where `runtime.targets` is reachable, per `:169`), and add `packages/server/src/transaction-read.test.ts` to the explicit owner inventory for the direct mismatch and equality assertions — its module-level `scope` (`:20`) already equals the fixture store's scope (`:44`), so the existing positive case needs no change — or name a new source-level server test file for them.
+
+---
+
+## 5 — MEDIUM/LOW — Parsing inside the single `withRead` entry puts schema load/compile and validation failure inside the owner's exclusive entry
+
+**Location:** plan line 33 vs `packages/server/src/transaction-store.ts:881-957` and `:339-350`; `packages/protocol/src/read-values.ts:388-400`; `packages/protocol/src/read-update-values.ts:128-150`.
+
+**Issue:** "Assemble the parsed immutable description and directory from that entry's epoch/view/head" leaves it open whether the parsers run inside the callback. Both parsers lazily `JSON.parse` the 133 KB packaged bundle and compile AJV validators on first use. Run inside the callback, that one-time work holds `busy` (set at `:344`), and a `ProtocolArtifactValidationError` escapes `withRead` as a thrown exception rather than through the refusal/error channel the plan carefully distinguishes from `entry-refused.cause`.
+
+**Impact:** the owner's single-entry gate is held for a schema compile unrelated to the read, and the plan's two failure vocabularies blur — a parser rejection and a lifecycle refusal surface the same way, weakening the "never return entry-refused as a successful description" assertion.
+
+**Correction:** state that only `scopeEpoch`, `authorizationView` and `scopePosition` are captured inside the entry and that both parsers run after it returns; add a done-when that no schema read, compile or validation occurs inside the owner entry (the `sequenceObserved` precedent at `transaction-service.ts:419-436` likewise does only freezing inside the callback).
+
+---
+
+## 6 — LOW — "reject unsupported host objects/accessors/proxies" misstates the existing snapshot boundary
+
+**Location:** plan line 18 vs `packages/protocol/src/json-values.ts:35-91` and `packages/protocol/src/json-values.test.ts:82-104`.
+
+**Issue:** `snapshotJsonValue` rejects non-plain prototypes (`:55-57`), cycles (`:52`), non-finite numbers (`:48`) and unpaired surrogates (`:44,:83`). It does **not** reject accessors or plain-prototype Proxies: `:84-89` reads each key once and stores the resulting value, and the existing test asserts `snapshotJsonValue(new Proxy([1], …))` **succeeds** returning `[1]` with exactly one trap read. The module's own comment states the guarantee as "accessors/toJSON cannot swap data after validation" — single evaluation, not rejection.
+
+**Impact:** the plan's "hostile input" parser negative, written to expect rejection of a getter-bearing or Proxy-wrapped candidate, would fail against the unchanged boundary and invite pressure to strengthen a shared Read/RU helper the plan forbids touching.
+
+**Correction:** restate as "host objects with non-plain prototypes, cycles, non-finite numbers and unpaired surrogates are rejected; accessors and plain-prototype Proxies are evaluated exactly once and normalized into the frozen snapshot," and write the hostile-input case to assert single evaluation plus a frozen plain result.
+
+---
+
+## 7 — LOW — `scope` and `snapshot` need different canonical URL helpers; the plan conflates them
+
+**Location:** plan line 18 ("canonical URL validation for scope and the nine URL members") and line 53 (`snapshot`, no trailing slash) vs `packages/protocol/src/read-values.ts:291-308` (`parseCanonicalHttpUrl`) and `:316-325` (`parseCanonicalScope`); precedent `read-update-values.ts:410-413`.
+
+**Issue:** `parseCanonicalScope` additionally requires `pathname` to end in `/`, so applying it to `snapshot` rejects the correct value (`fixtures/transactional/discovery.json` → `…/acme/snapshot`). Conversely, following the RU precedent exactly means `scope` is validated only as a canonical HTTP URL, admitting a `scope` that does not end in `/` — not a legal Scope.
+
+**Impact:** one reading breaks the `snapshot` member, the other leaves the one member with a stricter normative grammar unchecked; the plan's "as the existing discovery parsers do" points at the looser option without saying so.
+
+**Correction:** specify `parseCanonicalScope` for `scope` and `parseCanonicalHttpUrl` for the nine navigation members, and add a parser negative for a `scope` lacking its trailing `/`.
+
+---
+
+## 8 — LOW — The hardcoded `pos-0` floor carries no tripwire binding it to the no-pruning precondition
+
+**Location:** plan lines 61-63 vs `packages/server/src/transaction-store.ts:527` (`put.run("position","0")`), `:582-589`, `:1672-1675`; `transaction-changefeed.ts:116`; and the accepted audit's closing caution that "a hardcoded initial floor would then cease to be truthful."
+
+**Issue:** the floor correction itself is source-grounded and verifies cleanly — a fresh owner's `readContext().scopePosition` is `pos-0`, the first group's `previousPosition` must equal `pos-${position-1}` = `pos-0`, `transactionCheckpoint(…,0)` returns the literal `genesis`, and `pos-0` matches `$defs/wireToken`. The gap is that nothing in the plan fails if pruning or erasure later lands: the private constant keeps advertising an untruthful floor, and every named negative (stale epoch/view/head, foreign canonical Scope, wrong roots, History addition, unconsumed limits) still passes. This is not future base re-anchoring; it is the one precondition the constant's truthfulness rests on, left unguarded.
+
+**Impact:** a later owner change silently converts a correct advertisement into a false one with no failing test to catch it.
+
+**Correction:** add one cheap in-repo tripwire beside the constant — e.g. assert in the builder's test that `readConfiguration().scopeConfiguration` still declares no retention/erasure capability and that the "missing retained change group" corruption branch at `transaction-store.ts:1672-1675` remains the only handling of an absent positive group — so introducing pruning fails this test. No future owner seam is implied.
+
+---
+
+## 9 — LOW — Three line anchors are wrong on the frozen commit the plan presents as exactly inspected
+
+**Location and corrections:**
+- plan line 27, "dispatch target construction180–190" → `transaction-http.ts:179-186` (180 is `Object.fromEntries(` inside it; 187 is `names`, 188+ is `receiptResponse`).
+- plan line 33, "service420–437" → `transaction-service.ts:419-436` (`sequenceObserved` signature at 419, closing `},` at 436).
+- plan line 57, "`transaction-changefeed.ts` request classifier89–107" → `:87-106`; and "`transaction-events.ts` request143–180" → `:143-177`.
+
+**Impact:** minor, but the document's premise is exact inspection of `20d6111`, and these force a re-derivation. Anchors that checked out exactly on this commit: `transaction-http.ts:56-69`, `:378`, `:466-467`, `:546-553`; `transaction-store.ts:339-350`, `:881-957`, `:1706`, `:1672-1675`; `authority-read.ts:738-750`; `read-request.ts:142`, `:935-952`.
+
+---
+
+## Axes that checked out — do not re-litigate
+
+- **Source feasibility / parser boundaries:** `$defs/transactionalDiscovery` and `$defs/transactionalOperationDirectory` both exist in the packaged bundle, which is byte-identical to the root (`0baa5d5e…`); `readCanonicalSchemaBundle`/`requireSchemaValidator`/`snapshotProtocolRecord`/`isUnicodeScalarString` are all present and the lazy strict-AJV2020 pattern is reproducible per `read-update-values.ts:128-150`. `retention.idempotency` is genuinely schema-forbidden (`transactionalAdvertisedLimits.retention` closes on `receipt`/`maximumSnapshotLifetime`/`replay`); `absoluteHttpUrl` plus `parseCanonicalHttpUrl` make malformed URLs detectable; all twelve directory values are `const`s, so a wrong value is schema-detectable; `scope` is `absoluteHttpUrl` only, so a foreign canonical Scope legitimately needs the separate owner oracle.
+- **One owner entry / immutable configuration:** `owner.readConfiguration()` is `Object.freeze`d with nested freezes (`transaction-store.ts:566-580`); `readConfiguration` wraps `enter` (`:1706`) and `enter` throws on `busy` (`:343`), so the plan's reentrancy warning is exactly right; `sequenceObserved` is a working precedent.
+- **One owner entry / true route roots:** all nine verified — `beads/`,`links/`,`types/` via `requestFromUrl:148-150`; `alias/` singular via `authority-read.ts:744` and `classifyAliasPath:941-951` (empty root → `notFound`); `operations/` refused at `transaction-http.ts:551`; `receipts/` and bare `receipts` at `:466-467`; `snapshot` without slash at `:378`; `changes/` at `transaction-changefeed.ts:92` (bare root is parameter-invalid); `events/` at `transaction-events.ts:149-152`.
+- **Package scope:** `@bdp/protocol` ships `dist` + `schemas` and exports only `.` and the schema path, so the two reexports need no export-map change and no deep import. `TRANSACTION_HTTP_OPERATIONS` has no referent outside its own module, so the move is safe. `type Service = ReturnType<typeof createTransactionService>` means adding `scope` to the frozen service object needs no type plumbing, and `openTransactionStore` already canonicalizes via `parseCanonicalScope(options.scope)`, so the comparison is well-formed. `smoke-executables.mjs:338-348` is an exact set comparison needing exactly four new entries; its `:472-483` loop already denies any new `transaction-*.js` deep import automatically; there is no protocol dist tripwire; `schema-bundle.test.ts`'s sealed `$defs` inventory stays untouched; the Read evidence gate binds catalog/manifest/fixture/schema digests, not the protocol index surface.
+- **Harness bounds:** 45 s aggregate / 60 s outer / 5 s wire / 10 s launcher are all real existing values (`transactional-snapshot-installed.test.ts:152` + `:526`, `transaction-installed-observation.mjs:31`), so the attribution holds. `developmentGap` is `empty(500)` + `x-bdp-development-limit` (`transaction-http.ts:152-156`), the anonymous 401 at `:377` precedes the refusal at `:553`, and `methodResponse:263` admits HEAD — so cohort rows 1-9 are achievable as written. `transaction-installed-contracts.test.ts` does import `../dist/transaction-runtime.js` and does exercise credentialed `operations/*` plus reopen (`:473`); `transaction-installed.test.ts` is 66 lines of pure configuration capture.
+
+No implementation or publication authority is implied by this review.

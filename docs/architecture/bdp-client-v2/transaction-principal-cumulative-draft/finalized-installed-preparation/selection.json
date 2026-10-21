@@ -1,0 +1,84 @@
+{
+  "static": [
+    {
+      "file": "packages/conformance/src/transactional-cumulative.test.ts",
+      "names": [
+        "binds the canonical cumulative TX selection and exact source digests without qualification",
+        "rejects noncanonical selections, History, wrong factories, retired and misprofiled rows",
+        "copies source bytes before binding and exposes all missing obligations without executing them",
+        "pins the inherited command-minimum manifest facts, read-header absence and all thirteen prior objects",
+        "preserves every original TX scenario and coverage object while adding one bounded partial cross-carrier row",
+        "pins the one-page matched-plus-updated witness without advertised-limit or other-outcome credit",
+        "pins the partial principal namespace row, full parent and exact credential roles"
+      ]
+    },
+    {
+      "file": "apps/bdptest/src/transactional-matrix.test.ts",
+      "names": [
+        "pins the matching no-op installed route digest and fifteen-action ledger",
+        "pins deletion-safety derivative carriers, complete positives, and measured source bounds"
+      ]
+    }
+  ],
+  "staticCases": 9,
+  "cohorts": [
+    {
+      "id": "principal-positive",
+      "title": "observes authenticated principal isolation and rotation through selected cumulative HTTP",
+      "expectedHttp": 7,
+      "maxHttp": 7,
+      "children": 2,
+      "requestBodyBytes": 750,
+      "maximumRequestBodyBytes": 750
+    },
+    {
+      "id": "principal-collapse",
+      "title": "discriminates principal isolation against a separately bound collapsed namespace",
+      "expectedHttp": 2,
+      "maxHttp": 7,
+      "children": 2,
+      "requestBodyBytes": 300,
+      "maximumRequestBodyBytes": 750
+    },
+    {
+      "id": "full-positive",
+      "title": "observes sixteen partial Transactional contracts through packed-capable actual installed HTTP",
+      "expectedHttp": 220,
+      "maxHttp": 220,
+      "children": 24,
+      "requestBodyBytes": 18606,
+      "maximumRequestBodyBytes": 18606
+    },
+    {
+      "id": "cross-batch",
+      "title": "discriminates retained cross-carrier evidence against batch-semantic-conflict",
+      "expectedHttp": 211,
+      "maxHttp": 211,
+      "children": 24,
+      "requestBodyBytes": 17550,
+      "maximumRequestBodyBytes": 17550
+    },
+    {
+      "id": "cross-sequence",
+      "title": "discriminates retained cross-carrier evidence against sequence-fresh-key",
+      "expectedHttp": 212,
+      "maxHttp": 212,
+      "children": 24,
+      "requestBodyBytes": 17754,
+      "maximumRequestBodyBytes": 17754
+    }
+  ],
+  "totals": {
+    "expectedHttp": 652,
+    "maxHttp": 657,
+    "children": 76,
+    "requestBodyBytes": 54960,
+    "maximumRequestBodyBytes": 55410
+  },
+  "executed": false,
+  "maximumWorkers": 1,
+  "externalCommandTimeoutMs": 120000,
+  "sourceBindingSha256": "b03f5faa4a6d96dfbd72c960b835a737248ee292184326246ffc9d321e87aa31",
+  "staticCallbacksExecuted": 0,
+  "productCallbacksExecuted": 0
+}

@@ -1,0 +1,49 @@
+{
+  "runner": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-depth-key-order-draft/control-preparation/mirror/node_modules/.pnpm/vitest@4.1.10_@types+node@24.13.3_vite@8.2.1_@types+node@24.13.3_/node_modules/vitest/vitest.mjs",
+  "runnerSha256": "39db22f579acf5639bbb17a261408debbde03f4692c0c439e77e7f13aeba74d6",
+  "aliases": {
+    "@bdp/adapter-in-memory": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-depth-key-order-draft/control-preparation/mirror/packages/adapter-in-memory/src/index.ts",
+    "@bdp/bd-domain": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-depth-key-order-draft/control-preparation/mirror/packages/bd-domain/src/index.ts",
+    "@bdp/adapter-bd": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-depth-key-order-draft/control-preparation/mirror/packages/adapter-bd/src/index.ts",
+    "@bdp/config": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-depth-key-order-draft/control-preparation/mirror/packages/config/src/index.ts",
+    "@bdp/server": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-depth-key-order-draft/control-preparation/mirror/packages/server/src/index.ts",
+    "@bdp/server/testing": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-depth-key-order-draft/control-preparation/mirror/packages/server/test-support/testing.ts",
+    "@bdp/server/development": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-depth-key-order-draft/control-preparation/mirror/packages/server/src/development.ts",
+    "@bdp/protocol": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-depth-key-order-draft/control-preparation/mirror/packages/protocol/src/index.ts",
+    "@bdp/client": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-depth-key-order-draft/control-preparation/mirror/packages/client/src/index.ts",
+    "@bdp/client/testing": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-depth-key-order-draft/control-preparation/mirror/packages/client/test-support/testing.ts",
+    "@bdp/conformance": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-depth-key-order-draft/control-preparation/mirror/packages/conformance/src/index.ts",
+    "@bdp/conformance/testing": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-depth-key-order-draft/control-preparation/mirror/packages/conformance/test-support/testing.ts"
+  },
+  "setup": {
+    "path": "packages/server/test-support/read-conformance-mock.ts",
+    "sha256": "dbfb86ac2325c684567ffce40f17105c6b12a63edfa54cc08f0601df8dc613f8"
+  },
+  "decisiveEdges": [
+    {
+      "from": "packages/server/src/transaction-http.test.ts",
+      "specifier": "../dist/transaction-runtime.js",
+      "target": "packages/server/dist/transaction-runtime.js",
+      "sha256": "b16df10012c986765c62e442839509aece3e8522ad0e721fab66b1b109b7742c"
+    },
+    {
+      "from": "packages/server/dist/transaction-runtime.js",
+      "specifier": "./transaction-service.js",
+      "target": "packages/server/dist/transaction-service.js",
+      "sha256": "d3a25ed2181228c2e27b34798ea011fc3219df2d91909212af53825a9083d671"
+    },
+    {
+      "from": "packages/server/dist/transaction-runtime.js",
+      "specifier": "./transaction-store.js",
+      "target": "packages/server/dist/transaction-store.js",
+      "sha256": "cb6fe59d56d8e4ffad63a5f4d2cf05eb587d41260bcc7605ea121245e72790ad"
+    },
+    {
+      "from": "packages/server/dist/transaction-store.js",
+      "specifier": "./transaction-batch.js",
+      "target": "packages/server/dist/transaction-batch.js",
+      "sha256": "95f4c546d5f2b80e438fea50a92ae8eb9ce87def014c01efc99c2931115b36aa"
+    }
+  ],
+  "boundary": "Complete source/config/dist and node_modules physical copy. Every dependency symlink resolves inside mirror. Source dynamic runtime import reaches copied service/store; exact one emitted store divergence. No product imports executed."
+}

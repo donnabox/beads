@@ -1,0 +1,375 @@
+--- /Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-minimum-receiving-draft/installed-preparation/packages.py
++++ /Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-authorization-transition-draft/installed-validation-plan/packages.py
+@@ -48,7 +48,7 @@
+  C.mkdir(exist_ok=False)
+  for data in basis['packages'].values():assert sha(Path(data['archive']).read_bytes())==data['archiveSha256']
+  deps={f'@bdp/{n}':'file:'+basis['packages'][n]['archive'] for n in ['protocol','server']}
+- (C/'package.json').write_text(json.dumps({'name':'minimum-receiving-external-consumer','private':True,'type':'module','dependencies':deps},indent=2)+'\n')
++ (C/'package.json').write_text(json.dumps({'name':'authorization-external-consumer','private':True,'type':'module','dependencies':deps},indent=2)+'\n')
+  # pnpm11 reads workspace overrides here. Frozen lock is independently pinned by root gate.
+  (C/'pnpm-workspace.yaml').write_text('overrides:\n  "@bdp/protocol": '+json.dumps(deps['@bdp/protocol'])+'\n  "fast-uri": "3.1.5"\n')
+ elif mode=='installed':
+@@ -106,6 +106,6 @@
+   else:walk('')
+   for dep in sorted(m.get('dependencies',{})):bind(resolve_dep(manifest,dep).parent,identity+'>'+dep,[*ancestors,root])
+  bind((C/'node_modules/@bdp/server').resolve(strict=True),'@bdp/server',[])
+- entry=(C/'node_modules/@bdp/server/dist/transaction-installed-process.js').resolve(strict=True);assert entry.is_relative_to(C.resolve())
++ entry=(C/'node_modules/@bdp/server/dist/transaction-installed.js').resolve(strict=True);assert entry.is_relative_to(C.resolve())
+  write('installed-provenance.json',{'status':'VERIFIED_BEFORE_CHILD','sourceCommit':g['finalHead'],'sourceTree':g['finalTree'],'consumer':str(C),'entryRealpath':str(entry),'entrySha256':sha(entry.read_bytes()),'packages':packages,'installedProductionGraph':graph,'expectedProductionVersionsFromFrozenLock':expected,'sourceLockSha256':g['sourceLockSha256'],'consumerLockSha256':sha((C/'pnpm-lock.yaml').read_bytes()),'consumerManifestSha256':sha((C/'package.json').read_bytes()),'consumerSettingsSha256':sha((C/'pnpm-workspace.yaml').read_bytes()),'payloadIdentity':payload.hexdigest(),'payloadRecursiveVisits':visits,'payloadFileVisits':filecount,'limitations':'Read-only independent fixed dependency closure hash; compare against actual child result. Not source attestation or Node/TLS/deployment identity.'})
+ else:raise ValueError(mode)
+--- before-operative/commands.json
++++ commands.json
+@@ -1,6 +1,6 @@
+ {
+-  "status": "PROPOSED_NOT_EXECUTABLE",
+-  "note": "Algorithms/bootstrap/observer are not authored by this plan. No execution-gate exists. Candidate/build/package bindings remain null; root must review concrete scripts and release before any invocation.",
++  "status": "CLOSED_OPERATIVE_PENDING_FINAL_SOURCE_AND_ROOT_RELEASE",
++  "note": "Concrete scripts prepared, not executed. Final candidate/build/consumer/source/council root bindings remain pending; no execution-gate.json exists.",
+   "node": "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+   "pnpm": "/Users/dbox/.cache/node/corepack/v1/pnpm/11.20.0/bin/pnpm.cjs",
+   "executionOrder": [
+@@ -28,7 +28,8 @@
+       "supervisorSeconds": 120,
+       "automaticRetries": 0,
+       "requires": [],
+-      "released": false
++      "released": false,
++      "ownedTempPrefixes": []
+     },
+     "package-directory": {
+       "phase": "package",
+@@ -41,9 +42,13 @@
+       "supervisorSeconds": 120,
+       "automaticRetries": 0,
+       "requires": [
+-        "node-version"
+-      ],
+-      "released": false
++        {
++          "id": "node-version",
++          "supervisorExit": 0
++        }
++      ],
++      "released": false,
++      "ownedTempPrefixes": []
+     },
+     "pack-protocol": {
+       "phase": "package",
+@@ -60,9 +65,13 @@
+       "supervisorSeconds": 120,
+       "automaticRetries": 0,
+       "requires": [
+-        "package-directory"
+-      ],
+-      "released": false
++        {
++          "id": "package-directory",
++          "supervisorExit": 0
++        }
++      ],
++      "released": false,
++      "ownedTempPrefixes": []
+     },
+     "pack-server": {
+       "phase": "package",
+@@ -79,9 +88,13 @@
+       "supervisorSeconds": 120,
+       "automaticRetries": 0,
+       "requires": [
+-        "pack-protocol"
+-      ],
+-      "released": false
++        {
++          "id": "pack-protocol",
++          "supervisorExit": 0
++        }
++      ],
++      "released": false,
++      "ownedTempPrefixes": []
+     },
+     "verify-tar": {
+       "phase": "package",
+@@ -94,9 +107,13 @@
+       "supervisorSeconds": 120,
+       "automaticRetries": 0,
+       "requires": [
+-        "pack-server"
+-      ],
+-      "released": false
++        {
++          "id": "pack-server",
++          "supervisorExit": 0
++        }
++      ],
++      "released": false,
++      "ownedTempPrefixes": []
+     },
+     "prepare-consumer": {
+       "phase": "package",
+@@ -109,9 +126,13 @@
+       "supervisorSeconds": 120,
+       "automaticRetries": 0,
+       "requires": [
+-        "verify-tar"
+-      ],
+-      "released": false
++        {
++          "id": "verify-tar",
++          "supervisorExit": 0
++        }
++      ],
++      "released": false,
++      "ownedTempPrefixes": []
+     },
+     "consumer-install": {
+       "phase": "package",
+@@ -128,9 +149,13 @@
+       "supervisorSeconds": 120,
+       "automaticRetries": 0,
+       "requires": [
+-        "prepare-consumer"
+-      ],
+-      "released": false
++        {
++          "id": "prepare-consumer",
++          "supervisorExit": 0
++        }
++      ],
++      "released": false,
++      "ownedTempPrefixes": []
+     },
+     "verify-installed": {
+       "phase": "package",
+@@ -143,15 +168,20 @@
+       "supervisorSeconds": 120,
+       "automaticRetries": 0,
+       "requires": [
+-        "consumer-install"
+-      ],
+-      "released": false
++        {
++          "id": "consumer-install",
++          "supervisorExit": 0
++        }
++      ],
++      "released": false,
++      "ownedTempPrefixes": []
+     },
+     "visibility-handles": {
+       "phase": "installed",
+       "argv": [
+         "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+-        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-authorization-transition-draft/installed-validation-plan/observe-installed.mjs",
++        "--experimental-strip-types",
++        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-authorization-transition-draft/installed-validation-plan/observe-installed.ts",
+         "visibility-handles",
+         "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-authorization-transition-draft/installed-validation-plan/run/visibility-handles.json"
+       ],
+@@ -159,9 +189,22 @@
+       "supervisorSeconds": 120,
+       "automaticRetries": 0,
+       "requires": [
+-        "verify-installed"
+-      ],
+-      "released": false
++        {
++          "id": "verify-installed",
++          "supervisorExit": 0
++        }
++      ],
++      "released": false,
++      "ownedTempPrefixes": [
++        "bdp-authorization-installed-"
++      ],
++      "workload": {
++        "http": 18,
++        "children": 1,
++        "owners": 1,
++        "directories": 1,
++        "listeners": 1
++      }
+     },
+     "review-visibility-handles": {
+       "phase": "review",
+@@ -174,15 +217,20 @@
+       "supervisorSeconds": 120,
+       "automaticRetries": 0,
+       "requires": [
+-        "visibility-handles"
+-      ],
+-      "released": false
++        {
++          "id": "visibility-handles",
++          "supervisorExit": 0
++        }
++      ],
++      "released": false,
++      "ownedTempPrefixes": []
+     },
+     "active-event": {
+       "phase": "installed",
+       "argv": [
+         "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+-        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-authorization-transition-draft/installed-validation-plan/observe-installed.mjs",
++        "--experimental-strip-types",
++        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-authorization-transition-draft/installed-validation-plan/observe-installed.ts",
+         "active-event",
+         "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-authorization-transition-draft/installed-validation-plan/run/active-event.json"
+       ],
+@@ -190,9 +238,22 @@
+       "supervisorSeconds": 120,
+       "automaticRetries": 0,
+       "requires": [
+-        "review-visibility-handles"
+-      ],
+-      "released": false
++        {
++          "id": "review-visibility-handles",
++          "supervisorExit": 0
++        }
++      ],
++      "released": false,
++      "ownedTempPrefixes": [
++        "bdp-authorization-installed-"
++      ],
++      "workload": {
++        "http": 4,
++        "children": 1,
++        "owners": 1,
++        "directories": 1,
++        "listeners": 1
++      }
+     },
+     "review-active-event": {
+       "phase": "review",
+@@ -205,9 +266,30 @@
+       "supervisorSeconds": 120,
+       "automaticRetries": 0,
+       "requires": [
+-        "active-event"
+-      ],
+-      "released": false
++        {
++          "id": "active-event",
++          "supervisorExit": 0
++        }
++      ],
++      "released": false,
++      "ownedTempPrefixes": []
+     }
+-  }
++  },
++  "ownedPaths": [
++    "packages/server/src/transaction-authorization.test.ts",
++    "packages/server/src/transaction-authorization.ts",
++    "packages/server/src/transaction-changefeed.test.ts",
++    "packages/server/src/transaction-changefeed.ts",
++    "packages/server/src/transaction-event-sse.test.ts",
++    "packages/server/src/transaction-events.ts",
++    "packages/server/src/transaction-http.ts",
++    "packages/server/src/transaction-read.ts",
++    "packages/server/src/transaction-runtime-configuration.ts",
++    "packages/server/src/transaction-runtime.test.ts",
++    "packages/server/src/transaction-runtime.ts",
++    "packages/server/src/transaction-service.test.ts",
++    "packages/server/src/transaction-service.ts",
++    "packages/server/src/transaction-snapshot.ts",
++    "packages/server/src/transaction-store.ts"
++  ]
+ }
+--- before-operative/ledger.json
++++ ledger.json
+@@ -25,7 +25,7 @@
+   "artifactSha256": "e0e9f76993a80caf17a70549a05eec01e32dacded24fc067a5a2fe7a576fe8bf",
+   "cohorts": {
+     "visibility-handles": {
+-      "http": 17,
++      "http": 18,
+       "children": 1,
+       "owners": 1,
+       "directories": 1,
+@@ -145,6 +145,13 @@
+         ],
+         [
+           17,
++          "HEAD",
++          "<actual first receipt id>",
++          200,
++          "zero body octets; GET representation length/current context/private no-store/no validators"
++        ],
++        [
++          18,
+           "POST",
+           "operations/batch",
+           403,
+@@ -191,8 +198,8 @@
+     }
+   },
+   "totals": {
+-    "expectedHTTP": 21,
+-    "maximumHTTP": 21,
++    "expectedHTTP": 22,
++    "maximumHTTP": 22,
+     "children": 2,
+     "owners": 2,
+     "directories": 2,
+@@ -215,5 +222,15 @@
+     "childStdoutStderrBytes": 65536,
+     "finalSafeReportBytes": 1048576
+   },
+-  "publicClaimEligible": false
++  "publicClaimEligible": false,
++  "installedAdaptations": {
++    "canonicalHost": "event-sse.invalid",
++    "cursorWindow": {
++      "measuredFrom": "immediately before issuance request4",
++      "dispatchRequest": 13,
++      "dispatchAndResponseMustBeBelowMs": 500,
++      "actualTTLms": 1000,
++      "otherwise": "nonpassing timing limitation; no expiry accepted or clock override"
++    }
++  }
+ }
+--- before-operative/plan.md
++++ plan.md
+@@ -1,6 +1,6 @@
+ # Closed fresh installed authorization validation
+ 
+-Recommend two fresh external-payload observations reusing the final T1/T2 wire recipes:17+4 HTTP, two independently started/closed installed product children, two stores/listeners, two real private policy publications. No additional HTTP, reopen, counterfactual or public-profile claim. Source-v4 plus targeted T11 remains source evidence; the emitted C1 control is a separate source-derived experiment.
++Recommend two fresh external-payload observations reusing the final T1/T2 wire recipes:18+4 HTTP, two independently started/closed installed product children, two stores/listeners, two real private policy publications. No additional HTTP, reopen, counterfactual or public-profile claim. Source-v4 plus targeted T11 remains source evidence; the emitted C1 control is a separate source-derived experiment.
+ 
+ ## Actual seam and necessary validation-only adaptation
+ 
+@@ -10,26 +10,26 @@
+ 
+ After ready, the wrapper accepts exactly close or one publish-empty-policy command, no arbitrary policy/body/clock/store/outcome input. For publication it awaits the actual runtime.replaceAuthorizationPolicy({timeoutMs:1000}), then emits one correlated small success record with actual returned generation/view/readPolicy/canMutate. Serialize command handling, reject duplicates/unknown data, retain failure and perform final runtime.close. Parent disconnect/signals trigger cleanup; no public HTTP endpoint, CLI/package export or capability/admission change. Administrative messages are not counted as HTTP.
+ 
+-This external wrapper is validation code, NOT the package's original transaction-installed-process entry. Record/hash both wrapper and installed imported entry separately; installedPayloadIdentity excludes the external wrapper. Do not falsely report the packaged bootstrap was used unchanged. This adaptation requires root approval and concrete code review before execution; current plan grants neither.
++This external wrapper is validation code, NOT the package's original transaction-installed-process entry. Record/hash both wrapper and installed imported entry separately; installedPayloadIdentity excludes the external wrapper. Do not falsely report the packaged bootstrap was used unchanged. Root authorized authoring this adaptation only. Its concrete scripts remain subject to root inspection and a separate execution release.
+ 
+ ## Configuration and oracles
+ 
+-Keep source scope https://event-sse.invalid/acme/, principal p and exact Task descriptor. Install it as a serialized descriptor artifact with schemas:[]; transaction-installed.test.ts:11–25 already demonstrates this accepted fixture shape. Strict installed capture converts to canonical authority mode/ephemeral loopback port. No clock/maintenance/receipt-limit overrides (the source fixture's clock and maintenance seam are deliberately omitted). Real wall time runs within30s; no expiry/collision proof is claimed.
++Keep source scope https://event-sse.invalid/acme/, principal p and exact Task descriptor. Install it as a serialized descriptor artifact with schemas:[]; transaction-installed.test.ts:11–25 already demonstrates this accepted fixture shape. Strict installed capture converts to canonical authority mode/ephemeral loopback port. No clock/maintenance/receipt-limit overrides (the source fixture's clock and maintenance seam are deliberately omitted). Real wall time runs within30s; no expiry/collision proof is claimed. Every finite/SSE request sends canonical Host:event-sse.invalid while dialing the real loopback listenUrl. The actual collection cursor has TTL1000ms: request13 must be dispatched AND completed <500ms from the timestamp immediately before issuance request4. Exceeding that conservative window is a nonpassing timing limitation, not acceptable expiry or an override. Request order and strict foreign-view409 remain unchanged.
+ 
+-ledger.json enumerates every actual route/status and dynamic handle source. Reuse complete current T1/T2 assertions: schema validation, exact Resource/receipt/Event values, old/current context, exact page/stream behavior and no pre-closure client abort. In particular17-request witness must reach full schema-valid withheld receipt equality without results/next/allocated/expiresAt, then the actual403 replay. T2 must compare the two decoded SSE Event bodies with finite Events before publication and prove actual server closure/current empty view afterward. Keep actual32 Events+next boundary; no claim all33 Events were fetched. Use actual captured continuation/checkpoint/receipt/Event ids, no invented ids or URL scope rewrites beyond fixed canonical-to-loopback dial.
++ledger.json enumerates every actual route/status and dynamic handle source. Reuse complete current T1/T2 assertions: schema validation, exact Resource/receipt/Event values, old/current context, exact page/stream behavior and no pre-closure client abort. In particular18-request witness must reach full schema-valid withheld receipt equality without results/next/allocated/expiresAt, then HEAD17 with empty body, matching GET representation length/current context/private no-store/no validators, and the actual403 replay18. T2 must compare the two decoded SSE Event bodies with finite Events before publication and prove actual server closure/current empty view afterward. Keep actual32 Events+next boundary; no claim all33 Events were fetched. Use actual captured continuation/checkpoint/receipt/Event ids, no invented ids or URL scope rewrites beyond fixed canonical-to-loopback dial.
+ 
+ Ready's configuration/policy digest describes immutable installation input, not a fresh after-publication view. Bind it with the existing exact twelve-target installedTransactionBinding checks; independently record actual publication result and later response context. Never derive a successful transition from unchanged ready metadata alone.
+ 
+ ## Provenance and stages
+ 
+-commands.json proposes12 stages using the established minimum-receiving package helper shape (hash-bound source references). Nothing is executable/released yet: package helper, bootstrap, observer, reviewer and gate need concrete implementation. The exact clean candidate/tree/parent integration, root council, actual build input/output inventory and source-to-build byte bridge remain null. No current dirty-source hash is represented as a clean candidate.
++commands.json proposes12 stages using the established minimum-receiving package helper shape (hash-bound source references). Concrete package helper, bootstrap, observer, reviewer and closed gate are now authored; none has been executed. The strengthened test source is bound to evidence-repair, and both full T1/T2 callback bodies are retained byte-identically in the observer. The exact clean candidate/tree/parent integration, root council, actual build input/output inventory and source-to-build byte bridge remain null. No current dirty-source hash is represented as a clean candidate.
+ 
+ After root supplies those bindings: pinned Node24.16/pnpm11.20, offline archives from exact clean built protocol/server; verify every tar member against package source/build, then fresh outside-checkout consumer offline install with scripts disabled. The consumer's first generated lock is measured/accepted before installed verification (do not invent a preexisting frozen consumer lock). Verify full archive→consumer equality, eight exact production dependencies, real module resolution and independently computed runtime payload identity. Reuse actual package inventories; do not hardcode obsolete member counts. Package runtime cannot resolve back to workspace dist. Freeze all inputs and outputs, then run the two observations once and independently adjudicate each.
+ 
+-Supervisor120s per stage, no automatic retry. Cohort work30s, requests5s, private admin1s, stream-close observation1s, launcher readiness/close10s. Entire process group is bounded/reaped; retain raw argv/log/actual exit/report on any failure. Register child/store cleanup before launch. Unknown startup stop preserves store, never claims clean; verify real PID disappearance and close exit0 before removing store. Track raw request attempts and completions; fail if over17/4 or incomplete. Bound received finite/SSE bytes and child output as ledger. Report overflow is failure; raw exit and full safe observations must agree. A single early assertion/startup failure is not installed success.
++Supervisor120s per stage, no automatic retry. Cohort work30s, requests5s, private admin1s, stream-close observation1s, launcher readiness/close10s. Entire process group is bounded/reaped; retain raw argv/log/actual exit/report on any failure. Register child/store cleanup before launch. Unknown startup stop preserves store, never claims clean; verify real PID disappearance and close exit0 before removing store. Track raw request attempts and completions; fail if over18/4 or incomplete. Bound received finite/SSE bytes and child output as ledger. Report overflow is failure; raw exit and full safe observations must agree. A single early assertion/startup failure is not installed success.
+ 
+ ## Scope/limits and pending artifacts
+ 
+ These are private installed component diagnostics. They do not establish public activation, complete profile qualification, fine-grained ACL/regrant, installed durable reopen/migration, arbitrary-principal policy or every Snapshot collision. Those source tests and pending product decisions retain their own attribution. Existing public admission remains untouched.
+ 
+-All frozen source and ongoing Claude inputs remain unchanged. This document and JSON are preparation only; no imports, product build, packages, install, child, HTTP, tests or review launch occurred. The preparer authored production and source tests; independent code council and root actual-data audit remain separate.
++All product source and actual Claude inputs are untouched by this preparation; the separately authorized evidence-only source successor is explicitly bound. This document and JSON are preparation only; no imports, product build, packages, install, child, HTTP, tests or review launch occurred. The preparer authored production and source tests; independent code council and root actual-data audit remain separate.

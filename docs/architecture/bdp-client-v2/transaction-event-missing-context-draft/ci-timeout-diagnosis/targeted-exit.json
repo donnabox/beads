@@ -1,0 +1,28 @@
+{
+  "argv": [
+    "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+    "/Users/dbox/.cache/node/corepack/v1/pnpm/11.20.0/bin/pnpm.cjs",
+    "exec",
+    "vitest",
+    "run",
+    "apps/bdptest/src/development-contracts.test.ts",
+    "--maxWorkers=1",
+    "--reporter=verbose",
+    "--reporter=json",
+    "--outputFile=/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-event-missing-context-draft/ci-timeout-diagnosis/targeted.json",
+    "-t",
+    "^keeps an actual evaluator work refusal local and permits correction using the same unclaimed key$"
+  ],
+  "pid": 97783,
+  "started": "2026-10-15T11:52:03.057129+00:00",
+  "boundSeconds": 30,
+  "sourceHead": "3df82ac480f50c8f486b4e456336366e7acbdf87",
+  "exit": 0,
+  "timeout": false,
+  "elapsedSeconds": 2.2838637500535697,
+  "logSha256": "9116dd97984a60286950dec9b6754942ba006fa7690092e06796d3175560e458",
+  "temporaryEntries": [
+    "node-compile-cache"
+  ],
+  "gitStatus": ""
+}

@@ -1,0 +1,5 @@
+# Author-discovered test correction — pending successor
+
+The frozen submission witness uses `op: "copy"` for the first properties change in the `patch` request. This is invalid BDP input: docs/specs/bdp.md:2205–2206 and2227 admit only add/replace/remove; packages/protocol/src/read-update-values.ts:57–59 and packages/protocol/schemas/bdp-v0.schema.json:1294–1323 enforce that closed grammar. The evaluator’s internal iterative `copy` helper does not imply a public JSON Patch copy operation.
+
+Replace that one change with `{"op":"add","path":"/copy","value":<the same existing12000-level raw literal>}`, retaining the following add `/deep/-` value2. This still exercises deep value copying, array append and full independent expected state. Body bytes/hash and source test hash must be refreshed; it remains below64KiB and adds no callback, owner or HTTP. The old frozen body/patch remains historical. No production change is warranted. Root acknowledged and holds source changes until the current source review is terminal. No test was run and no source was modified for this discovery.

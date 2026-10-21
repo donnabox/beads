@@ -1,0 +1,9 @@
+# D4 source3 marker instrumentation freeze
+
+Source authoring only. Exactly one existing owned test changed from085a to the hash in source-binding.json; all678 other known source files are exact. One pinned Biome2.5.7 format --write invocation succeeded on this file only. Its sole reflow is saved independently, and no edits followed formatting. No compiler/check/test/build/install/runtime/helper/synthetic/reviewer/Git command ran.
+
+A source-private no-throw observation helper builds the exact five-key marker. It emits the primitive32lowerhex attempt variable or null and freshly sampled actual elapsed time; invalid elapsed or oversize output suppresses the marker. Only marker construction/write is caught. Start is the FIRST protected statement in the existing try, before throwing metadata IO. End follows console.log(JSON.stringify(report)) returning and precedes the original final failure throw. No drain/flush/pass/cleanup assertion is added. Ordinary missing/invalid environment yields null diagnostic markers; the independent collector must refuse these for validation.
+
+Removing the helper and its two call sites reproduces085a byte-for-byte. Thus original report, product assertions, ownership, real request/workload and all90/120/5/10s limits are preserved. Exact32HTTP11POST21GET/2children/33receipts96Events/fourTypes/fivecounterfactuals remain; counts are prospective, not execution evidence.
+
+The earlier actual CODE never reviewed source3 markers. Earlier plan/native/root evidence remains historical immutable. No second actual CODE/PLAN is requested. Root owns additive actual Git patch/readback after this freeze; independent source3 native/mechanics/root acceptance and separately durable synthetic/product gates remain required. All helper and execution gates are CLOSED. The collector preparation may bind these frozen source bytes but cannot manufacture missing build/package/consumer/proof identities.

@@ -1,0 +1,205 @@
+{
+  "status": "PROPOSED_DATA_ONLY_NO_SOURCE_EDIT_OR_EXECUTION",
+  "oldId": "read.http.conditional-reads",
+  "id": "transactional.http.conditional-reads",
+  "requiredProfile": "transactional",
+  "catalogIndexZeroBased": 131,
+  "plannedRowIndexZeroBased": 16,
+  "manifestProfiles": {
+    "read-update": 2,
+    "transactional": 15
+  },
+  "newActionCount": 14,
+  "newAssertionCount": 194,
+  "totalActionCount": 241,
+  "totalAssertionCount": 2836,
+  "canonicalPlannedIds": [
+    "read-update.idempotency.principal-isolation",
+    "read-update.http.command-minimum-fields",
+    "transactional.batch.atomic-commit",
+    "transactional.batch.rollback",
+    "transactional.batch.deletion-safety",
+    "transactional.batch.no-op-entries",
+    "transactional.set.mutation",
+    "transactional.set.zero-match",
+    "transactional.set.cardinality",
+    "transactional.set.singleton-targets",
+    "transactional.receipt.readable",
+    "transactional.receipt.pagination",
+    "transactional.idempotency.conflict",
+    "transactional.idempotency.cross-carrier",
+    "transactional.idempotency.failed-retained",
+    "transactional.sequence.member-transactions",
+    "transactional.http.conditional-reads"
+  ],
+  "routeOrder": [
+    {
+      "method": "POST",
+      "url": "https://reference.invalid/acme/operations/batch"
+    },
+    {
+      "method": "GET",
+      "url": "https://reference.invalid/acme/beads/?limit=32"
+    },
+    {
+      "method": "GET",
+      "url": "https://reference.invalid/acme/events/"
+    },
+    {
+      "method": "POST",
+      "url": "https://reference.invalid/acme/operations/create-bead"
+    },
+    {
+      "method": "POST",
+      "url": "https://reference.invalid/acme/operations/sequence"
+    },
+    {
+      "method": "POST",
+      "url": "https://reference.invalid/acme/operations/update-bead"
+    },
+    {
+      "method": "GET",
+      "url": "https://reference.invalid/acme/beads/a"
+    },
+    {
+      "method": "GET",
+      "url": "https://reference.invalid/acme/links/l"
+    },
+    {
+      "method": "GET",
+      "url": "https://reference.invalid/acme/beads/new"
+    },
+    {
+      "method": "GET",
+      "url": "https://reference.invalid/acme/changes/?after=genesis"
+    },
+    {
+      "method": "GET",
+      "url": "https://reference.invalid/acme/links/?limit=32"
+    },
+    {
+      "method": "GET",
+      "url": "https://reference.invalid/acme/beads/b"
+    },
+    {
+      "method": "GET",
+      "url": "https://reference.invalid/acme/beads/c"
+    },
+    {
+      "method": "POST",
+      "url": "https://reference.invalid/acme/operations/update-where"
+    },
+    {
+      "method": "POST",
+      "url": "https://reference.invalid/acme/operations/delete-where"
+    },
+    {
+      "method": "HEAD",
+      "url": "https://reference.invalid/acme/beads/a"
+    },
+    {
+      "method": "GET",
+      "url": "https://reference.invalid/acme/beads/missing"
+    },
+    {
+      "method": "HEAD",
+      "url": "https://reference.invalid/acme/beads/missing"
+    }
+  ],
+  "routeCount": 18,
+  "requestBodiesUnchanged": [
+    {
+      "action": "seed",
+      "bytes": 141,
+      "sha256": "d63bac5f6ec230f2b2420b3c0b64ff21dd4fc6d9a8bdf616353d48e35a91d7ae"
+    },
+    {
+      "action": "update",
+      "bytes": 130,
+      "sha256": "c86a262f896fd4b357050b2b952e8d9992aa5b98f4a5d60f1f6f793040770e20"
+    }
+  ],
+  "newInstalledTotals": {
+    "expectedHttp": 18,
+    "maximumNondiscriminatingDiagnosticHttp": 28,
+    "children": 4,
+    "runtimeStoreLifetimes": 4,
+    "ownedTopDirectories": 2,
+    "listeners": 4,
+    "requestBodyBytesExpected": 412,
+    "requestBodyBytesDiagnosticMaximum": 542
+  },
+  "affectedExistingCohorts": [
+    {
+      "id": "principal-positive",
+      "title": "observes authenticated principal isolation and rotation through selected cumulative HTTP",
+      "expectedHttp": 7,
+      "maxHttp": 7,
+      "children": 2,
+      "requestBodyBytes": 750,
+      "maximumRequestBodyBytes": 750
+    },
+    {
+      "id": "principal-collapse",
+      "title": "discriminates principal isolation against a separately bound collapsed namespace",
+      "expectedHttp": 2,
+      "maxHttp": 7,
+      "children": 2,
+      "requestBodyBytes": 300,
+      "maximumRequestBodyBytes": 750
+    },
+    {
+      "id": "full-positive",
+      "title": "observes seventeen partial Transactional contracts through packed-capable actual installed HTTP",
+      "expectedHttp": 234,
+      "maxHttp": 234,
+      "children": 25,
+      "requestBodyBytes": 18877,
+      "maximumRequestBodyBytes": 18877
+    },
+    {
+      "id": "cross-batch",
+      "title": "discriminates retained cross-carrier evidence against batch-semantic-conflict",
+      "expectedHttp": 225,
+      "maxHttp": 225,
+      "children": 25,
+      "requestBodyBytes": 17821,
+      "maximumRequestBodyBytes": 17821
+    },
+    {
+      "id": "cross-sequence",
+      "title": "discriminates retained cross-carrier evidence against sequence-fresh-key",
+      "expectedHttp": 226,
+      "maxHttp": 226,
+      "children": 25,
+      "requestBodyBytes": 18025,
+      "maximumRequestBodyBytes": 18025
+    }
+  ],
+  "allSevenCohorts": {
+    "expectedHttp": 712,
+    "maxHttp": 727,
+    "children": 83,
+    "requestBodyBytesExpected": 56185,
+    "requestBodyBytesDiagnosticMaximum": 56765
+  },
+  "timersUnchanged": {
+    "cohortMs": 90000,
+    "prepareMs": 10000,
+    "requestMs": 5000,
+    "cleanupMs": 10000,
+    "testMs": 120000,
+    "fullPositiveElapsedAssertionMs": 63000
+  },
+  "postAuthorMeasurementRequired": [
+    "formatted disk bytes",
+    "JSON.stringify normalized bytes",
+    "JSON nodes",
+    "coverage bytes",
+    "all42 derivative specimens and maxima",
+    "full parent reconstruction and32 old object hashes",
+    "row digest and exact assertions",
+    "route/configuration digests",
+    "exact selector names"
+  ]
+}

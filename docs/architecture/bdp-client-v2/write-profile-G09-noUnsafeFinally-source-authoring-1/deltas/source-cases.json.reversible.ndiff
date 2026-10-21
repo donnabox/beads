@@ -1,0 +1,255 @@
+  {
+    "callbacks": [
+      {
+        "authoredDirectCalls": 4,
+        "authoredWireRequests": 0,
+        "basisSelection": {
+          "fileSha256": "8dc7caba3f88438df13fd950fc0a1ce619fc772ad6c91b93d4ba8d6e0302568c",
+          "id": "G09-S01",
+          "kind": "source",
+          "line": 4405,
+          "name": "G09-S01 schemaObserved zero-min/current and captured supplied tuple",
+          "observedExecution": false,
+          "path": "packages/server/src/transaction-service.test.ts"
+        },
+        "callbackSeconds": 5,
+        "cleanupInclusive": true,
+        "cleanupSeconds": 1,
+        "finalSelectionBinding": {
+-         "fileSha256": "0470da566dc7a294d19f749f6977f57f63648d52e857f235795d8857a401eef1",
++         "fileSha256": "7ba9d8de683f3e2c5f8a38efd6deab7e6de0950590b8de3d97bd2afa2657dac9",
+-         "line": 4405,
+?                    ^
++         "line": 4408,
+?                    ^
+-         "sourceFreeze": "write-profile-G09-source-correction-authoring-2"
+?                                                  -----------           ^
++         "sourceFreeze": "write-profile-G09-noUnsafeFinally-source-authoring-1"
+?                                            ++++++++++++++++                 ^
+        },
+        "id": "G09-S01",
+        "proposedFullName": "G09-S01 schemaObserved zero-min/current and captured supplied tuple",
+        "status": "AUTHORED_FROZEN_NOT_EXECUTED",
+        "workSeconds": 3,
+        "workload": "Original3 calls unchanged plus one real pos1 pending/retry snapshot call; genuine owner.admit+execute once, no service.submit/wire"
+      },
+      {
+        "authoredDirectCalls": 2,
+        "authoredWireRequests": 0,
+        "basisSelection": {
+          "fileSha256": "8dc7caba3f88438df13fd950fc0a1ce619fc772ad6c91b93d4ba8d6e0302568c",
+          "id": "G09-S02",
+          "kind": "source",
+          "line": 4426,
+          "name": "G09-S02 schemaObserved epoch and view errors",
+          "observedExecution": false,
+          "path": "packages/server/src/transaction-service.test.ts"
+        },
+        "callbackSeconds": 5,
+        "cleanupInclusive": true,
+        "cleanupSeconds": 1,
+        "finalSelectionBinding": {
+-         "fileSha256": "0470da566dc7a294d19f749f6977f57f63648d52e857f235795d8857a401eef1",
++         "fileSha256": "7ba9d8de683f3e2c5f8a38efd6deab7e6de0950590b8de3d97bd2afa2657dac9",
+-         "line": 4478,
+?                   -
++         "line": 4481,
+?                    +
+-         "sourceFreeze": "write-profile-G09-source-correction-authoring-2"
+?                                                  -----------           ^
++         "sourceFreeze": "write-profile-G09-noUnsafeFinally-source-authoring-1"
+?                                            ++++++++++++++++                 ^
+        },
+        "id": "G09-S02",
+        "proposedFullName": "G09-S02 schemaObserved epoch and view errors",
+        "status": "AUTHORED_FROZEN_NOT_EXECUTED",
+        "workSeconds": 3,
+        "workload": "2 direct service calls; actual context, zero waits"
+      },
+      {
+        "authoredDirectCalls": 3,
+        "authoredWireRequests": 0,
+        "basisSelection": {
+          "fileSha256": "8dc7caba3f88438df13fd950fc0a1ce619fc772ad6c91b93d4ba8d6e0302568c",
+          "id": "G09-S03",
+          "kind": "source",
+          "line": 4455,
+          "name": "G09-S03 schemaObserved ahead and opaque bounded attempts",
+          "observedExecution": false,
+          "path": "packages/server/src/transaction-service.test.ts"
+        },
+        "callbackSeconds": 5,
+        "cleanupInclusive": true,
+        "cleanupSeconds": 1,
+        "finalSelectionBinding": {
+-         "fileSha256": "0470da566dc7a294d19f749f6977f57f63648d52e857f235795d8857a401eef1",
++         "fileSha256": "7ba9d8de683f3e2c5f8a38efd6deab7e6de0950590b8de3d97bd2afa2657dac9",
+-         "line": 4507,
+?                    -
++         "line": 4510,
+?                   +
+-         "sourceFreeze": "write-profile-G09-source-correction-authoring-2"
+?                                                  -----------           ^
++         "sourceFreeze": "write-profile-G09-noUnsafeFinally-source-authoring-1"
+?                                            ++++++++++++++++                 ^
+        },
+        "id": "G09-S03",
+        "proposedFullName": "G09-S03 schemaObserved ahead and opaque bounded attempts",
+        "status": "AUTHORED_FROZEN_NOT_EXECUTED",
+        "workSeconds": 3,
+        "workload": "Original2 timeoutcases unchanged first, then one pending abort/owner-release/cached-close-drain call; no post-close observation invocation"
+      },
+      {
+        "authoredDirectCalls": 8,
+        "authoredWireRequests": 0,
+        "basisSelection": {
+          "fileSha256": "f448ff5566833d9b445609aa2205c36a6b43acf9a7fda51930170ea15912780e",
+          "id": "G09-S04",
+          "kind": "source",
+          "line": 455,
+          "name": "G09-S04 schema selector receiving and exact identity",
+          "observedExecution": false,
+          "path": "packages/server/src/transaction-schema-http.test.ts"
+        },
+        "callbackSeconds": 5,
+        "cleanupInclusive": true,
+        "cleanupSeconds": 1,
+        "finalSelectionBinding": {
+          "fileSha256": "833b1ec0260a483c8c3420a294285d4e9b9b7780b73853a488f21fccea5e71d3",
+          "line": 455,
+-         "sourceFreeze": "write-profile-G09-source-correction-authoring-2"
+?                                                  -----------           ^
++         "sourceFreeze": "write-profile-G09-noUnsafeFinally-source-authoring-1"
+?                                            ++++++++++++++++                 ^
+        },
+        "id": "G09-S04",
+        "proposedFullName": "G09-S04 schema selector receiving and exact identity",
+        "status": "AUTHORED_FROZEN_NOT_EXECUTED",
+        "workSeconds": 3,
+        "workload": "8 direct excluded calls; no observe; exact retrieval not$id/query/foreign/local Resource alias; no getter invocation"
+      },
+      {
+        "authoredDirectCalls": 9,
+        "authoredWireRequests": 0,
+        "basisSelection": {
+          "fileSha256": "f448ff5566833d9b445609aa2205c36a6b43acf9a7fda51930170ea15912780e",
+          "id": "G09-S05",
+          "kind": "source",
+          "line": 508,
+          "name": "G09-S05 schema selector HTTP/min failure order",
+          "observedExecution": false,
+          "path": "packages/server/src/transaction-schema-http.test.ts"
+        },
+        "callbackSeconds": 5,
+        "cleanupInclusive": true,
+        "cleanupSeconds": 1,
+        "finalSelectionBinding": {
+          "fileSha256": "833b1ec0260a483c8c3420a294285d4e9b9b7780b73853a488f21fccea5e71d3",
+          "line": 508,
+-         "sourceFreeze": "write-profile-G09-source-correction-authoring-2"
+?                                                  -----------           ^
++         "sourceFreeze": "write-profile-G09-noUnsafeFinally-source-authoring-1"
+?                                            ++++++++++++++++                 ^
+        },
+        "id": "G09-S05",
+        "proposedFullName": "G09-S05 schema selector HTTP/min failure order",
+        "status": "AUTHORED_FROZEN_NOT_EXECUTED",
+        "workSeconds": 3,
+        "workload": "Original8 rows+exact forwarded request.signal assertions unchanged; one same-clock direct handler abort error identity counterfactual, no response/wire"
+      },
+      {
+        "authoredDirectCalls": 0,
+        "authoredWireRequests": 5,
+        "basisSelection": {
+          "fileSha256": "f448ff5566833d9b445609aa2205c36a6b43acf9a7fda51930170ea15912780e",
+          "id": "G09-S06",
+          "kind": "source",
+          "line": 756,
+          "name": "G09-S06 schema runtime satisfied and context errors",
+          "observedExecution": false,
+          "path": "packages/server/src/transaction-schema-http.test.ts"
+        },
+        "callbackSeconds": 5,
+        "cleanupInclusive": true,
+        "cleanupSeconds": 1,
+        "finalSelectionBinding": {
+          "fileSha256": "833b1ec0260a483c8c3420a294285d4e9b9b7780b73853a488f21fccea5e71d3",
+          "line": 796,
+-         "sourceFreeze": "write-profile-G09-source-correction-authoring-2"
+?                                                  -----------           ^
++         "sourceFreeze": "write-profile-G09-noUnsafeFinally-source-authoring-1"
+?                                            ++++++++++++++++                 ^
+        },
+        "id": "G09-S06",
+        "proposedFullName": "G09-S06 schema runtime satisfied and context errors",
+        "status": "AUTHORED_FROZEN_NOT_EXECUTED",
+        "workSeconds": 3,
+        "workload": "5 real source wire requests: baselineGET, knownGET, knownHEAD, epochGET, viewHEAD; canonical Host, same captured bytes"
+      },
+      {
+        "authoredDirectCalls": 0,
+        "authoredWireRequests": 2,
+        "basisSelection": {
+          "fileSha256": "f448ff5566833d9b445609aa2205c36a6b43acf9a7fda51930170ea15912780e",
+          "id": "G09-S07",
+          "kind": "source",
+          "line": 781,
+          "name": "G09-S07 schema runtime ahead before conditional",
+          "observedExecution": false,
+          "path": "packages/server/src/transaction-schema-http.test.ts"
+        },
+        "callbackSeconds": 5,
+        "cleanupInclusive": true,
+        "cleanupSeconds": 1,
+        "finalSelectionBinding": {
+          "fileSha256": "833b1ec0260a483c8c3420a294285d4e9b9b7780b73853a488f21fccea5e71d3",
+          "line": 821,
+-         "sourceFreeze": "write-profile-G09-source-correction-authoring-2"
+?                                                  -----------           ^
++         "sourceFreeze": "write-profile-G09-noUnsafeFinally-source-authoring-1"
+?                                            ++++++++++++++++                 ^
+        },
+        "id": "G09-S07",
+        "proposedFullName": "G09-S07 schema runtime ahead before conditional",
+        "status": "AUTHORED_FROZEN_NOT_EXECUTED",
+        "workSeconds": 3,
+        "workload": "2 real source wire requests: baseline then aheadGET+If-None-Match:* ->503"
+      },
+      {
+        "authoredDirectCalls": 0,
+        "authoredWireRequests": 2,
+        "basisSelection": {
+          "fileSha256": "f448ff5566833d9b445609aa2205c36a6b43acf9a7fda51930170ea15912780e",
+          "id": "G09-S08",
+          "kind": "source",
+          "line": 799,
+          "name": "G09-S08 schema runtime unknown before HEAD/media",
+          "observedExecution": false,
+          "path": "packages/server/src/transaction-schema-http.test.ts"
+        },
+        "callbackSeconds": 5,
+        "cleanupInclusive": true,
+        "cleanupSeconds": 1,
+        "finalSelectionBinding": {
+          "fileSha256": "833b1ec0260a483c8c3420a294285d4e9b9b7780b73853a488f21fccea5e71d3",
+          "line": 839,
+-         "sourceFreeze": "write-profile-G09-source-correction-authoring-2"
+?                                                  -----------           ^
++         "sourceFreeze": "write-profile-G09-noUnsafeFinally-source-authoring-1"
+?                                            ++++++++++++++++                 ^
+        },
+        "id": "G09-S08",
+        "proposedFullName": "G09-S08 schema runtime unknown before HEAD/media",
+        "status": "AUTHORED_FROZEN_NOT_EXECUTED",
+        "workSeconds": 3,
+        "workload": "2 real source wire requests: baseline then opaqueHEAD+conditional/media ->503"
+      }
+    ],
+    "extraDirectCalls": 3,
+    "measurement": "Static authored call inventory only, no execution or qualification result",
+    "newCallbacks": 8,
+    "oldCallbacks": "preserve all except narrow supersession of known-schema min-refusal expectations in same existing source file; retain former hardcoded foreign tuple as410 control instead of deleting it",
+    "prospectiveDirectCalls": 26,
+    "prospectiveSourceWireRequests": 9,
+    "status": "ACTUAL FROZEN source program inventory, not observed counts"
+  }

@@ -1,0 +1,37 @@
+{
+  "sourceBindingFinalized": true,
+  "helperImplementationFinalized": true,
+  "executionAuthorized": false,
+  "predecessor": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/current-observation-minimum-validation/oracle-successor-1",
+  "sourceCandidate": "/Users/dbox/repos/wt/vickie/vickie-current-observation-minimum",
+  "authorSuccessor": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/current-observation-minimum-author/oracle-successor-1",
+  "bootstrapReusePrecedent": {
+    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/receipt-root-minimum-validation-successor-1/gate.py",
+    "sha256": "ba1ebedb59300ba40d89c44f28ba411a0f15f038e83d243b68f6c032d17c38aa"
+  },
+  "changes": [
+    "Sole semantic auditor correction: remove refusedOwnerEntries from scalar dict; require existing rows helper exact list length0",
+    "All679 product/source-binding/schema/selection/workload bytes unchanged",
+    "Preserve actual97pass/348skip/E37 source result versus failed immediate audit; no successor pass inferred",
+    "Other main helpers and all predicates unchanged; required gate delegated validation path only"
+  ],
+  "unchanged": [
+    "Main run.py/packages.py/audit.py and all expected source/installed observation predicates",
+    "97 exact source cases,9new reports plus28 separately attributed legacy reports",
+    "Source37HTTP and separate historical22/new37 installed; sibling5 fullCI only",
+    "All19 post-bootstrap stages fresh, starting typecheck; required4 fresh",
+    "120s/TERM115/no retries, owned cleanup, fresh build before source collection",
+    "Consumer-install cwd run/consumer and root approval of actual consumer lock/proof",
+    "Original correction-successor-2 bootstrap2 identity remains original; no formatted typecheck/format/lint record reused"
+  ],
+  "reusedOnly": [
+    "workspace-install",
+    "bind-workspace-tools"
+  ],
+  "notReused": [
+    "typecheck",
+    "format-check",
+    "any lint/build/runtime/required stage"
+  ],
+  "actualFreshBuildConsumerPins": null
+}

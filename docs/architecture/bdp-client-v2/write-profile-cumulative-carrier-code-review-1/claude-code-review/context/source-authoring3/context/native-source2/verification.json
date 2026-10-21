@@ -1,0 +1,45 @@
+{
+  "sourcePacketPhysical": 353,
+  "sourcePacketIndexed": 352,
+  "allPacketAndMirrorHashesExact": true,
+  "all319OriginCopiesVerified": true,
+  "all681LiveSourceHashesExact": true,
+  "sourceMapSha256": "ac1bb8ae4f04ba853b72762554f4add4534cddb1bf83827ccfdad39f8df611fc",
+  "beforeHeadAuthority": "16c280991ae9d6dad19b9b58c7e141fa7ca68253",
+  "beforeTreeAuthority": "595b0ddc0d3fa00deb8de88eba6c537b3deb3c1e",
+  "changedPaths": [
+    "packages/conformance/test-support/profile-evidence.test.ts",
+    "packages/conformance/test-support/profile-evidence.ts"
+  ],
+  "other679CandidateFilesExact": true,
+  "other677CcePathsExact": true,
+  "bothAdaptersExact": true,
+  "fourForwardInversePairsGenuine": [
+    "correction",
+    "format-only",
+    "postformat-manual",
+    "cumulative-cce"
+  ],
+  "genuineAbortedHelperAndCallbackRegistrationSuffixByteIdentical": true,
+  "caseInventory": {
+    "callbacks": 48,
+    "ids": "V01\u2013V06,R01\u2013R24,S01\u2013S08,L01\u2013L10",
+    "defaultMs": 5000,
+    "newCallbacks": 0,
+    "newWire": 0,
+    "newChildren": 0,
+    "extraRealRunnerCalls": 0,
+    "originalTXElapsedAssertionMs": 63000
+  },
+  "sourceExports": 3,
+  "bothEligibilityFlagsFalse": true,
+  "wholeClauseQualification": "unestablished",
+  "runtime": false,
+  "formatter": "Author recorded one format--write then explicit manual prefix/R22 edits; final format-check UNRUN",
+  "rootGitReceipt": {
+    "sha256": "3d6f49be89a514322b4381281772f3be353674cfca498360930d43410e786741",
+    "correctionBinaryPatchSha256": "fa8aa2c99b55a14b45412fd5b766a6a51d8e473a300eefcb1bf4137aa764a233",
+    "cumulativeBinaryPatchSha256": "d902de0271dd29da5b1385521dcb64d57355842995877d6b7837be9de707cefa",
+    "currentCleanHead": "PENDING; no Git command by reviewer"
+  }
+}

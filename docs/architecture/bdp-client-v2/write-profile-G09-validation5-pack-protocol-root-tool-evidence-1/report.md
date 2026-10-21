@@ -1,0 +1,3 @@
+# Actual protocol package capture — pending independent acceptance
+
+ONE actual A f2e587/B63fea1/C92f1af all0; no polls/active sessions/retry. Inner4.5054187080822885s/common10.553203000221401s<115/source1eca unchanged. Original pnpm --filter @bdp/protocol pack emitted actual68665B bdp-protocol-0.0.0.tgz SHA4683cb6c6333c332a4bcb7efc3e28f32d1d8d06a7264913f65c31d3a826d4227; full log7063c833 retained. Previous directory FULLnative79/ROOTd7b59de7/all83pub4bfbff5a BEFOREactual. Both archive verification/provenance/consumer/installedproof still unresolved; no installed/public/fullWrite credit. Full actual native+ROOT conjunction/durable disposition required BEFOREpack-server, UNATTEMPTED. FullENV/rawwire UNRETAINED/finiteprocess/scratch/originalfailures unchanged.

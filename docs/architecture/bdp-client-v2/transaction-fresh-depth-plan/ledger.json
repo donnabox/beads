@@ -1,0 +1,328 @@
+{
+  "status": "PROPOSED; no authoring/execution release",
+  "basis": {
+    "head": "df80f8cb86b7763bc7bb005492e43d8840527045",
+    "tree": "25e9d4aa926ea728f5e356365cb1ffadba269221",
+    "sequenceSuccessorBinding": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/sequence-depth-retained-member-draft/lint-repair/source-binding.json",
+    "combinedWriteBranch": "actual reviewed minimum+sequence successor not yet supplied; ordinary branch integration, no latest-main dependency"
+  },
+  "ownedPaths": [
+    "packages/server/src/transaction-set.ts",
+    "packages/server/src/transaction-batch.ts",
+    "packages/server/src/transaction-store.ts",
+    "packages/server/src/transaction-submission.ts",
+    "packages/server/src/transaction-http.ts",
+    "packages/server/src/transaction-snapshot.ts",
+    "packages/server/src/resource-evaluator.ts",
+    "packages/server/src/json-value-equality.ts",
+    "packages/server/src/transaction-set.test.ts",
+    "packages/server/src/transaction-submission.test.ts",
+    "packages/server/src/transaction-sequence.test.ts",
+    "packages/server/src/transaction-http.test.ts",
+    "packages/server/src/transaction-snapshot.test.ts",
+    "packages/server/src/resource-evaluator.test.ts",
+    "apps/bdptest/src/transactional-depth-key-order-installed.test.ts",
+    "apps/bdptest/src/transactional-sequence-depth-installed.test.ts",
+    "apps/bdptest/src/transactional-fresh-depth-installed.test.ts",
+    "docs/design/transaction-implementation-progress.md"
+  ],
+  "newTitles": {
+    "submission": [
+      "executes deep values through set and dependent sequence with durable receipt recovery"
+    ],
+    "snapshot": [
+      "captures and reopens deep owned Links without losing JSON value equality",
+      "rejects deep owned-Link divergence before Snapshot issuance"
+    ],
+    "installed": [
+      "serves byte-bounded deep mutations receipts Events and owned-Link Snapshots over packed bytes"
+    ]
+  },
+  "depth": 12000,
+  "depthMeaning": "fixture, not normative maximum; bracket literal1 is24001B",
+  "bodies": {
+    "seed": {
+      "bytes": 24427,
+      "sha256": "c2b9b50eac523660681ed4c0832da33849555e7d0afa0a913545b2803651b8a7"
+    },
+    "update": {
+      "bytes": 24099,
+      "sha256": "916905c2080f92583db1097ed6c2b813a2b68b9fd760aff3cb93b176db884506"
+    },
+    "noop": {
+      "bytes": 24159,
+      "sha256": "322f89d2c4e8133819775293e5423a7c2e23f4e869ff79e652c7a3bb17f26dfc"
+    },
+    "conflict": {
+      "bytes": 24101,
+      "sha256": "6b45a53165bd6a92344eaa8d49c3543a365485591db84b71baa5d569924f04ed"
+    },
+    "set": {
+      "bytes": 141,
+      "sha256": "08fb068040f562d9dfa692a0eb506867aacafdde63b2f1525de6d01a6eb79719"
+    },
+    "sequence": {
+      "bytes": 48363,
+      "sha256": "c20b577e95a267d41bac22686fd89044c16138d1cc377126129b7da23a09662d"
+    },
+    "late-failure": {
+      "bytes": 216,
+      "sha256": "9508f3e784eb06f621f31d8a63d03282594bc386a10a62ad8dad3406b17a3d18"
+    }
+  },
+  "newInstalledRequests": [
+    {
+      "ordinal": 1,
+      "label": "seed",
+      "method": "POST",
+      "target": "https://reference.invalid/acme/operations/batch",
+      "bodyRef": "seed",
+      "bodyBytes": 24427,
+      "bodySha256": "c2b9b50eac523660681ed4c0832da33849555e7d0afa0a913545b2803651b8a7",
+      "key": "fresh-seed",
+      "status": 200,
+      "accept": "application/json",
+      "credential": "actual fresh operator token; never retained",
+      "contentType": "application/json"
+    },
+    {
+      "ordinal": 2,
+      "label": "update",
+      "method": "POST",
+      "target": "https://reference.invalid/acme/operations/update-link",
+      "bodyRef": "update",
+      "bodyBytes": 24099,
+      "bodySha256": "916905c2080f92583db1097ed6c2b813a2b68b9fd760aff3cb93b176db884506",
+      "key": "fresh-update",
+      "status": 200,
+      "accept": "application/json",
+      "credential": "actual fresh operator token; never retained",
+      "contentType": "application/json"
+    },
+    {
+      "ordinal": 3,
+      "label": "no-op",
+      "method": "POST",
+      "target": "https://reference.invalid/acme/operations/update-link",
+      "bodyRef": "noop",
+      "bodyBytes": 24159,
+      "bodySha256": "322f89d2c4e8133819775293e5423a7c2e23f4e869ff79e652c7a3bb17f26dfc",
+      "key": "fresh-noop",
+      "status": 200,
+      "accept": "application/json",
+      "credential": "actual fresh operator token; never retained",
+      "contentType": "application/json"
+    },
+    {
+      "ordinal": 4,
+      "label": "replay",
+      "method": "POST",
+      "target": "https://reference.invalid/acme/operations/update-link",
+      "bodyRef": "update",
+      "bodyBytes": 24099,
+      "bodySha256": "916905c2080f92583db1097ed6c2b813a2b68b9fd760aff3cb93b176db884506",
+      "key": "fresh-update",
+      "status": 200,
+      "accept": "application/json",
+      "credential": "actual fresh operator token; never retained",
+      "contentType": "application/json"
+    },
+    {
+      "ordinal": 5,
+      "label": "conflict",
+      "method": "POST",
+      "target": "https://reference.invalid/acme/operations/update-link",
+      "bodyRef": "conflict",
+      "bodyBytes": 24101,
+      "bodySha256": "6b45a53165bd6a92344eaa8d49c3543a365485591db84b71baa5d569924f04ed",
+      "key": "fresh-update",
+      "status": 409,
+      "accept": "application/json",
+      "credential": "actual fresh operator token; never retained",
+      "contentType": "application/json"
+    },
+    {
+      "ordinal": 6,
+      "label": "set",
+      "method": "POST",
+      "target": "https://reference.invalid/acme/operations/update-where",
+      "bodyRef": "set",
+      "bodyBytes": 141,
+      "bodySha256": "08fb068040f562d9dfa692a0eb506867aacafdde63b2f1525de6d01a6eb79719",
+      "key": "fresh-set",
+      "status": 200,
+      "accept": "application/json",
+      "credential": "actual fresh operator token; never retained",
+      "contentType": "application/json"
+    },
+    {
+      "ordinal": 7,
+      "label": "dependent-sequence",
+      "method": "POST",
+      "target": "https://reference.invalid/acme/operations/sequence",
+      "bodyRef": "sequence",
+      "bodyBytes": 48363,
+      "bodySha256": "c20b577e95a267d41bac22686fd89044c16138d1cc377126129b7da23a09662d",
+      "key": null,
+      "status": 200,
+      "accept": "application/json",
+      "credential": "actual fresh operator token; never retained",
+      "contentType": "application/json"
+    },
+    {
+      "ordinal": 8,
+      "label": "late-failure",
+      "method": "POST",
+      "target": "https://reference.invalid/acme/operations/batch",
+      "bodyRef": "late-failure",
+      "bodyBytes": 216,
+      "bodySha256": "9508f3e784eb06f621f31d8a63d03282594bc386a10a62ad8dad3406b17a3d18",
+      "key": "fresh-failed",
+      "status": 200,
+      "accept": "application/json",
+      "credential": "actual fresh operator token; never retained",
+      "contentType": "application/json"
+    },
+    {
+      "ordinal": 9,
+      "label": "failed-replay",
+      "method": "POST",
+      "target": "https://reference.invalid/acme/operations/batch",
+      "bodyRef": "late-failure",
+      "bodyBytes": 216,
+      "bodySha256": "9508f3e784eb06f621f31d8a63d03282594bc386a10a62ad8dad3406b17a3d18",
+      "key": "fresh-failed",
+      "status": 200,
+      "accept": "application/json",
+      "credential": "actual fresh operator token; never retained",
+      "contentType": "application/json"
+    },
+    {
+      "ordinal": 10,
+      "label": "current-link",
+      "method": "GET",
+      "target": "https://reference.invalid/acme/links/l",
+      "bodyRef": null,
+      "bodyBytes": 0,
+      "bodySha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "key": null,
+      "status": 200,
+      "accept": "application/json",
+      "credential": "actual fresh operator token; never retained",
+      "contentType": null
+    },
+    {
+      "ordinal": 11,
+      "label": "link-events",
+      "method": "GET",
+      "target": "https://reference.invalid/acme/links/l?view=events",
+      "bodyRef": null,
+      "bodyBytes": 0,
+      "bodySha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "key": null,
+      "status": 200,
+      "accept": "application/json",
+      "credential": "actual fresh operator token; never retained",
+      "contentType": null
+    },
+    {
+      "ordinal": 12,
+      "label": "snapshot",
+      "method": "GET",
+      "target": "https://reference.invalid/acme/snapshot",
+      "bodyRef": null,
+      "bodyBytes": 0,
+      "bodySha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "key": null,
+      "status": 200,
+      "accept": "application/json",
+      "credential": "actual fresh operator token; never retained",
+      "contentType": null
+    },
+    {
+      "ordinal": 13,
+      "label": "receipt",
+      "method": "GET",
+      "target": "<actual update receipt.id>",
+      "bodyRef": null,
+      "bodyBytes": 0,
+      "bodySha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "key": null,
+      "status": 200,
+      "accept": "application/json",
+      "credential": "actual fresh operator token; never retained",
+      "contentType": null
+    }
+  ],
+  "newInstalledBodyBytesTotal": 169821,
+  "sourceSelections": {
+    "preparation": 3,
+    "sequence": 13,
+    "HTTP": 4,
+    "submission": 3,
+    "resourceEvaluator": 1,
+    "Snapshot": 11,
+    "total": 35,
+    "http": 34,
+    "ordinaryDirectories": 30,
+    "successfulOwnerOpens": 43,
+    "listeners": 4,
+    "productChildren": 0,
+    "externalSQLiteInventoryHandles": 11,
+    "qualification": "proposed frozen callback mapping and lifecycle accounting; implementation must remeasure exact expanded names/fixtures before release, no silent expansion"
+  },
+  "installed": {
+    "callbacks": 3,
+    "http": [
+      13,
+      8,
+      13
+    ],
+    "totalHttp": 34,
+    "children": 3,
+    "owners": 3,
+    "directories": 3,
+    "listeners": 3
+  },
+  "control": {
+    "kind": "emitted Snapshot complete-record comparator restored to util.isDeepStrictEqual",
+    "selectedCallback": "captures and reopens deep owned Links without losing JSON value equality",
+    "cases": 1,
+    "http": 0,
+    "owners": 1,
+    "directories": 1,
+    "listeners": 0,
+    "children": 0,
+    "expected": "named fresh-depth:snapshot-capture failure with captured RangeError before reopen, after genuine committed deep owned Link; no generic timeout/setup failure accepted"
+  },
+  "total": {
+    "caseExecutions": 39,
+    "httpExpectedAndMaximum": 68,
+    "productChildren": 3,
+    "successfulOwnerOpens": 47,
+    "ordinaryDirectories": 34,
+    "listeners": 7
+  },
+  "bounds": {
+    "installedWorkSeconds": 45,
+    "installedCleanupSeconds": 10,
+    "installedTestSeconds": 60,
+    "newSourceWorkSeconds": 20,
+    "newSourceCleanupSeconds": 5,
+    "newSourceTestSeconds": 30,
+    "supervisorSeconds": 120,
+    "requestSeconds": 5,
+    "requestBodyBytes": 65536,
+    "requestHeaderBytes": 16384,
+    "responseBodyBytes": 1048576,
+    "responseHeaderBytes": 65536,
+    "automaticRetries": 0,
+    "deliberateReplays": 2
+  },
+  "blockedUntil": [
+    "root/native/actualClaude plan review",
+    "actual combined write branch source reanchor",
+    "exact authored source/expanded selector/lifecycle measurement",
+    "code council and root finite execution gate"
+  ]
+}

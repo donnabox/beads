@@ -1,0 +1,46 @@
+{
+  "A_B_CNonInsertionBytes": "All byteexact original96, proven byremoval andfourinversepatches",
+  "allowedChangesToNewInsertion": "Only replace literal UNRESOLVED_FUTURE_ROOT_EXECUTION_ACCEPTANCE_SHA256 with actual future64lowercasehex manifest SHA after separatelyreviewed freeze/publication. No other insertion code changes.",
+  "candidateGateSha256": "b931ef2c3f9cdee4c40f0bae3f26fd2747840a8f4111895ff77a140653ada12b",
+  "candidateMeaning": "Independentlyconditionallyaccepted INACTIVE candidate; notactualgate/currentauthority. Activegate currentlyec0d; rootmustcompletebothpublication/readbackbarriers.",
+  "externalManifestCurrently": "ABSENT",
+  "externalManifestFixedPath": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-first4-root-execution-acceptance-1/acceptance.json",
+  "fourTemplates": [
+    {
+      "bytes": 28530,
+      "originalTemplateSha256": "ae5e93a2e6949ee3d12b13bb56623a03e9ae067f6dcfb1f76edc69df91dd0dbb",
+      "path": "proposals/node-version.capture.txt",
+      "templateSha256": "3a3143f26cb95008dd1df87ecf303ef8a583a30282437cd7ee2b471a5264f8a3"
+    },
+    {
+      "bytes": 28530,
+      "originalTemplateSha256": "a40180d63b149adc25f224e320419f46ff8e495cd8db43e736e440b9ceff9365",
+      "path": "proposals/pnpm-version.capture.txt",
+      "templateSha256": "f6795df448646e22b3cadc9e5fe23cd374072d90c970a88c043a9fd8b45cbe8b"
+    },
+    {
+      "bytes": 28575,
+      "originalTemplateSha256": "5f7baa8003292602bc06e5b431fd8c4792c5efe1ad1aaac3b5c61877dccbff9a",
+      "path": "proposals/workspace-install.capture.txt",
+      "templateSha256": "1963bedee54d82494835719c4322237086b7d521ddf47c8c023575013fbb7072"
+    },
+    {
+      "bytes": 28602,
+      "originalTemplateSha256": "fe5956313104939d9f75f2dedc56b30f8c8e2bff22696223428195aaf3dd2dcf",
+      "path": "proposals/bind-workspace-tools.capture.txt",
+      "templateSha256": "37dc321c32914819e325aaa18e76ad7d9e2d3937e6c5a4da2e61209e339a0b9b"
+    }
+  ],
+  "gateKeysAndCommandsAndBudgets": "All26gatekeys/fullschema/34stagecommands/4prefix/120outer115normal/noRetry unchanged",
+  "noSelfPin": "Final root manifest binds ORIGINAL and ADDENDUM TEMPLATE hashes with placeholders plus exact allowedsubstitutionrules. Its actual SHA is supplied to the root ordinary-tool source only AFTER manifestfreeze. Manifest must not store/hash its own actualSHA or require an instantiatedcellhash containing that sameSHA. Later actualroot finalreceipt can bind instantiatedsource/hash externally withouta cycle.",
+  "originAndProvisionalRecordShape": "BYTEUNCHANGED. No newmanifestmetadatafields; actualrootfinalreceipt binds manifestpath/hash externally.",
+  "originalAllowedRuntimeBindingsUnchanged": [
+    "APPROVED_GATE_SHA256 becomes actual externallyaccepted activegate SHA matching actualhelper2gate bytes after separateactivation/publication",
+    "ACTUAL_A_TOOL_ID/ACTUAL_A_TOOL_RAW_EXIT are actual phaseA tool observations only afterAterminal",
+    "ACTUAL_B_TOOL_ID/ACTUAL_B_TOOL_RAW_EXIT are actual phaseB tool observations only afterBterminal"
+  ],
+  "selfApproval": false,
+  "sourceRuntimeOrGitActions": 0,
+  "state": "CLOSED_DATA_NOT_EXECUTION_AUTHORITY",
+  "subjectOrSchemaEvaluations": 0
+}

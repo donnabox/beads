@@ -1,0 +1,48 @@
+{
+  "status": "prepared, not released or executed",
+  "sourceBinding": {
+    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-same-key-overlap-draft/source-binding.json",
+    "sha256": "ad840a73fe10f830e58959dcc7642b35ec91f0a2cea4db4f4fb9912f940df0d0"
+  },
+  "selection": {
+    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-same-key-overlap-draft/selection.json",
+    "sha256": "b52fc165435a86152ec1aa5a48793037c9c4f448c8d13c3c43c687f3f925845a"
+  },
+  "reportContract": {
+    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-same-key-overlap-draft/report-contract.json",
+    "sha256": "80ea222189de3899116e13e0ec4a7277f29e7f1c828b9a0974679ca71fcf14eb"
+  },
+  "staticPrefix": [
+    "setup",
+    "typecheck",
+    "build",
+    "format-check",
+    "lint",
+    "boundaries",
+    "read-seal",
+    "build-inventory"
+  ],
+  "preparation": {
+    "commands.json": "b90d0ba721198e7de4834b7e34e7227d36b013b2d60df17d75817b968076edd4",
+    "gate.py": "fed548af486605046680245bcaad4d5c65b9e0f3df38228ad2ec45525f27dae4",
+    "supervise.py": "da74971257c3cc804b404dbc2d72759e301431e04d2474c692a658ed43b18f9a",
+    "packages.py": "3d7f1e3b8b7d74a41d672f9c1bf4297a6031fd2f79d2226873a874dbb711f38e",
+    "inventory.py": "f01a170801c8e259ea52696eb3c53402cc0e92ade8da797d5cec9e3f4c78127d",
+    "review-cohort.py": "10127f2045b4edd3a96b48b8a5d1bbbd21bfe0e3b66d61f2882d905a3bcb59b9"
+  },
+  "preservedInitial": {
+    "review-cohort.py": "10127f2045b4edd3a96b48b8a5d1bbbd21bfe0e3b66d61f2882d905a3bcb59b9",
+    "packages.py": "3d7f1e3b8b7d74a41d672f9c1bf4297a6031fd2f79d2226873a874dbb711f38e",
+    "execution-gate.example.json": "2c68c7776ac7e168c87b0faf91368791aa9caa32fa5ac94f1a9caa95bd6f84aa",
+    "commands.json": "dda2665f9c920a5faa81018873981e0d7da52533f54f34fe88d5b15b1195b89d",
+    "README.md": "4f88756afa5af14eb22a71c7de45ccbfd576a550cf74d2eab77b1747b8bb754e",
+    "report-adapter-binding.json": "3ba468623a84e85bda7df697409d8d82ebf965d92005d5fcbf2db1860811d1f7",
+    "preparation-hashes.json": "12cad7fff27cfd6c90b08d30b6d6812dab6c362e039169c697e0bde0a1cdbc8b",
+    "gate.py": "38709b76fb37335aa92cacd46f7122aee1f5ae41d0e8031ac2f8724ec490c1d9",
+    "supervise.py": "da74971257c3cc804b404dbc2d72759e301431e04d2474c692a658ed43b18f9a",
+    "inventory.py": "f01a170801c8e259ea52696eb3c53402cc0e92ade8da797d5cec9e3f4c78127d"
+  },
+  "preparationInterruption": "Before command edits, a read-only path assertion found W Vitest CLI absent before setup; no product command executed. Static tools are pinned; installed gate separately requires post-setup CLI hash.",
+  "installedTestTool": null,
+  "actualRuns": 0
+}

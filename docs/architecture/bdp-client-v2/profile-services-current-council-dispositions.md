@@ -1,0 +1,17 @@
+# Profile service council dispositions — 2026-10-13
+
+PR86 frozen03b external supplement closes the pagination privacy Medium with static source/package-boundary review. Native/root/CI supply executed checks; external review did not run tests. The only factual evidence wording error is corrected by12343ce: “Emitted public declarations” becomes “Source public declarations.” No runtime delta. Original lows are accepted/deferred as in design.md; the supplement explicitly finds no concrete blocker for this private slice. Broader intentional renamed re-exports are a future API audit concern, not an existing exposed capability. Unit runtime probes require build; no clean source-only test claim is made. Moving duplicate checks into installed smoke is optional cleanup, not a new acceptance gate. Public write profiles stay unadvertised.
+
+U2 external code review identifies five repairs accepted before integration:
+
+1. Emit the evaluator's confirmed diagnostic prefix before checking its completion bit. If the receiver stops at its tighter bound, return invalid/incomplete and a bounded422; if it did not stop, an incomplete evaluator cannot invent completeness. Refused evaluation remains local failure with no key capture. Root inspected both the adapter and receiver's strict complete===!stopped law; this refines the earlier native1025-branch500 probe rather than changing protocol semantics.
+2. Reject aggregate max0 before any database provisioning; normative max is positive.
+3. Canonicalize aggregate policy order/exact duplicates before installation identity; meaningful policy changes still require a new installation.
+4. Validate trusted credential principal policies before store creation, and check discovery success rather than only thrown faults.
+5. Include every captured compiler-input limit in contract identity; current byte-only digest omits those inputs.
+
+P1a author owns these shared files and will add separate repair commits atop its installed candidate46d8809, leaving frozenU2 untouched. Additional low repairs: freeze captured config, use legal canonical local IDs in policy lists, remove configured default-principal facet, deduplicate principal routes. Global policy digest vs principal view is documented; full deny-read remains a supported-fixture limitation, not a new IAM design. P1a exact tests/config evidence must be regenerated after repairs; first five process tests are not final qualification.
+
+Numeric runtime4f5 received a correct verdict; two lows are nonblocking: future operations containing free-form numbers should retain default stripping, and a single-diagnostic matrix can additionally pin absent truncation. Current non-create/update inputs cannot reach numeric callbacks under the admitted schema. Exact assertion successorc245 has separate external supplement running; native/root366tests already passed. No review of original4f5 is relabeled as covering successor assertions.
+
+T2b plan advances actual HTTP/receipt paths without an incomplete on-wire descriptor. Fixture supplies canonical URLs privately. Missing set/replication/discovery and barrier laws remain required gaps. Sequence observation uses a single final owner read entry for projection/current context while preserving member execution facts; it shares the existing runner. Unsupported minimum controls cannot silently return success. Root accepts this bounded implementation plan; external plan review is in progress. It is not full Transactional qualification.

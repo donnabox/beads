@@ -1,0 +1,80 @@
+--- /Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-minimum-next-serving-plan/authoring-draft/installed-preparation/packages.py
++++ /Users/dbox/repos/wt/vickie/bdp-integration-logs/sequence-minimum-combined-validation/packages.py
+@@ -3,37 +3,11 @@
+ """
+ from pathlib import Path
+ import json,tarfile,re,copy
+-from gate import P,W,E,sha,load_gate,require,verify_build
++from gate import P,W,E,sha,load_gate,require,verify_build,consumer_inventory
+ import sys,hashlib,shutil,os
+ if not __debug__: raise RuntimeError('Python assertions must remain enabled')
+-mode=sys.argv[1];control=mode if mode.startswith('restore-') else None
+-g,_=load_gate(('prepare-'+mode) if control else {'directory':'package-directory','tar':'verify-tar','consumer':'prepare-consumer','installed':'verify-installed'}[mode]);C=E/('consumer-'+mode if control else 'consumer')
+-mutation=None
+-if control:
+- source=E/'consumer';require(not C.exists(),'Control already exists')
+- before={p.relative_to(source).as_posix():sha(p.read_bytes()) for p in source.rglob('*') if p.is_file() and not p.is_symlink()}
+- shutil.copytree(source,C,symlinks=True)
+- links=[]
+- for p in C.rglob('*'):
+-  if p.is_symlink():
+-   old=os.readlink(p);target=p.resolve(strict=True)
+-   if not target.is_relative_to(C.resolve()):
+-    require(target.is_relative_to(source.resolve()),'Unexpected external control link')
+-    new=C/target.relative_to(source);p.unlink();p.symlink_to(os.path.relpath(new,p.parent),target_is_directory=new.is_dir())
+-   require(p.resolve(strict=True).is_relative_to(C.resolve()),'Control link escapes')
+-   links.append({'path':p.relative_to(C).as_posix(),'target':p.resolve().relative_to(C).as_posix()})
+- require(before=={p.relative_to(C).as_posix():sha(p.read_bytes()) for p in C.rglob('*') if p.is_file() and not p.is_symlink()},'Copy bytes differ before mutation')
+- name='transaction-read.js' if control=='restore-missing-gap' else 'transaction-http.js'
+- target=(C/'node_modules/@bdp/server/dist'/name).resolve(strict=True);original=target.read_text()
+- if control=='restore-missing-gap':
+-  old='if (kind !== "strict")\n                    return;';new='/* control: restore missing-before-minimum gap */'
+- else:
+-  old='const minimum = hasMinimumControls(request)\n            ? currentReadMinimumHeaders(request.headers)\n            : undefined;';new=old.replace('currentReadMinimumHeaders','transactionMinimumHeaders')
+- require(original.count(old)==1,'Exact control anchor count')
+- target.write_text(original.replace(old,new))
+- mutation={'mode':control,'path':str(target),'relativePackagePath':'dist/'+name,'beforeSha256':sha(original.encode()),'afterSha256':sha(target.read_bytes()),'old':old,'new':new,'copyFiles':before,'links':links}
+- require(before=={p.relative_to(source).as_posix():sha(p.read_bytes()) for p in source.rglob('*') if p.is_file() and not p.is_symlink()},'Positive consumer changed')
+- mode='installed'
++mode=sys.argv[1];control=None;mutation=None
++g,_=load_gate({'directory':'package-directory','tar':'verify-tar','consumer':'prepare-consumer','installed':'verify-installed'}[mode]);C=E/'consumer'
+ expected={'@bdp/protocol':'0.0.0','@bdp/server':'0.0.0','ajv':'8.17.1','ajv-formats':'3.0.1','fast-deep-equal':'3.1.3','fast-uri':'3.1.5','json-schema-traverse':'1.0.0','require-from-string':'2.0.2'}
+ assert g['expectedProductionVersions']==expected
+ assert sha((W/'pnpm-lock.yaml').read_bytes())==g['sourceLockSha256']
+@@ -138,4 +112,5 @@
+  bind((C/'node_modules/@bdp/server').resolve(strict=True),'@bdp/server',[])
+  entry=(C/'node_modules/@bdp/server/dist/transaction-installed.js').resolve(strict=True);assert entry.is_relative_to(C.resolve())
+  write((control+'.provenance.json') if control else 'installed-provenance.json',{'mutation':mutation,'status':'VERIFIED_BEFORE_CHILD','sourceCommit':g['finalHead'],'sourceTree':g['finalTree'],'consumer':str(C),'entryRealpath':str(entry),'entrySha256':sha(entry.read_bytes()),'packages':packages,'installedProductionGraph':graph,'expectedProductionVersionsFromFrozenLock':expected,'sourceLockSha256':g['sourceLockSha256'],'consumerLockSha256':sha((C/'pnpm-lock.yaml').read_bytes()),'consumerManifestSha256':sha((C/'package.json').read_bytes()),'consumerSettingsSha256':sha((C/'pnpm-workspace.yaml').read_bytes()),'payloadIdentity':payload.hexdigest(),'payloadRecursiveVisits':visits,'payloadFileVisits':filecount,'limitations':'Read-only independent fixed dependency closure hash; compare against actual child result. Not source attestation or Node/TLS/deployment identity.'})
++ if not control:write('installed-consumer-inventory.json',consumer_inventory())
+ else:raise ValueError(mode)
+--- /Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-minimum-next-serving-plan/authoring-draft/installed-preparation-v2/review-installed.py
++++ /Users/dbox/repos/wt/vickie/bdp-integration-logs/sequence-minimum-combined-validation/review-minimum.py
+@@ -2,8 +2,8 @@
+ from pathlib import Path
+ import json,re,sys,os,subprocess
+ from gate import P,D,W,E,sha,require,load_gate,proof_for,verify_build
+-mode=sys.argv[1];g,spec=load_gate(sys.argv[2] if len(sys.argv)>2 else 'review-'+mode);proof=json.loads(proof_for(mode).read_text())
+-log=E/(mode+'.log');result=E/(mode+'.results.json');x=json.loads((E/(mode+'.exit.json')).read_text())
++mode='positive';g,spec=load_gate('review-minimum-installed');proof=json.loads(proof_for(mode).read_text())
++log=E/'minimum-installed.log';result=E/'minimum-installed.results.json';x=json.loads((E/'minimum-installed.exit.json').read_text())
+ require(x['exit']==(0 if mode=='positive' else 1) and x['supervisorExit']==0,'Wrong raw/supervisor exit')
+ observations=[]
+ for line in log.read_text().splitlines():
+@@ -14,7 +14,7 @@
+ require(len(observations)==1,'Exactly one real observation required');o=observations[0]
+ keys='observation mode controlPrerequisites publishedView wrapper wrapperSha256 outcome declaredSourceCommit workspaceDirty entry entrySha256 binding artifactBytes attempted exchanges completedResponses deadlineExceeded cleanupExceeded launchAttempted startupCompleted closed childPid childExitCode childSignalCode directory directoryAbsent failureCount failureCategories claimEligible retention startupLimitation'.split()
+ require(set(o)==set(keys),'Unexpected observation fields')
+-require(o['mode']==mode and o['declaredSourceCommit']==g['finalHead'] and o['workspaceDirty']==True and o['claimEligible']==False,'Source/mode/claim mismatch')
++require(o['mode']==mode and o['declaredSourceCommit']==g['finalHead'] and o['workspaceDirty']==False and o['claimEligible']==False,'Source/mode/claim mismatch')
+ require(o['entry']==proof['entryRealpath'] and o['entrySha256']==proof['entrySha256'],'Entry mismatch')
+ require(all(o[k] is True for k in ['launchAttempted','startupCompleted','closed','directoryAbsent']),'Lifecycle incomplete')
+ require(o['childExitCode']==0 and o['childSignalCode'] is None and not o['deadlineExceeded'] and not o['cleanupExceeded'],'Unclean child')
+@@ -88,6 +88,6 @@
+  require(len(active[0]['failureMessages'])==1 and label in active[0]['failureMessages'][0] and 'expected 500 to be '+('404' if mode=='restore-missing-gap' else '503') in active[0]['failureMessages'][0],'Wrong named negative failure')
+  require(o['outcome']=='failed' and o['failureCount']==1 and o['failureCategories']==[label] and o['controlPrerequisites']==True and o['publishedView'] is None,'Negative prerequisite or error multiplicity')
+ verify_build(g)
+-record={'accepted':True,'mode':mode,'actualRawExit':x['exit'],'adapterExitExpected':0,'observedHTTP':n,'productChildren':1,'observation':o,'resultSha256':sha(result.read_bytes()),'logSha256':sha(log.read_bytes()),'exitSha256':sha((E/(mode+'.exit.json')).read_bytes()),'proofSha256':sha(proof_for(mode).read_bytes()),'independentChildAbsent':o['childPid'],'storeAbsent':str(directory),'limitation':'Source test performs full schema/body/raw-header oracles in memory; this adapter checks actual safe records and independent package binding. Author/preparation overlap disclosed; no qualification.'}
+-with (E/(mode+'.adjudication.json')).open('x') as f:f.write(json.dumps(record,indent=2)+'\n')
++record={'accepted':True,'mode':mode,'actualRawExit':x['exit'],'adapterExitExpected':0,'observedHTTP':n,'productChildren':1,'observation':o,'resultSha256':sha(result.read_bytes()),'logSha256':sha(log.read_bytes()),'exitSha256':sha((E/'minimum-installed.exit.json').read_bytes()),'proofSha256':sha(proof_for(mode).read_bytes()),'independentChildAbsent':o['childPid'],'storeAbsent':str(directory),'limitation':'Source test performs full schema/body/raw-header oracles in memory; this adapter checks actual safe records and independent package binding. Author/preparation overlap disclosed; no qualification.'}
++with (E/'minimum-installed.adjudication.json').open('x') as f:f.write(json.dumps(record,indent=2)+'\n')
+ print(json.dumps({'accepted':True,'mode':mode,'actualHTTP':n,'childPidAbsent':o['childPid']}))

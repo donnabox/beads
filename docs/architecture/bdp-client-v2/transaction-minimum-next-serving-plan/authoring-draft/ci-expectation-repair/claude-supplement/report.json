@@ -1,0 +1,24 @@
+{
+  "status": "CLOSED_NOT_LAUNCHED",
+  "promptBytes": 56032,
+  "promptSha256": "0914e7469486229d6330386045a881f444d19ace3f93bc96f1376b4b2a8e4294",
+  "runnerSha256": "83fcb90f0a218120f9f8517fdc926dfacd7d377b7d38ddc0baedb380bb15d916",
+  "bindingSha256": "824da2c55ae9e401c0ca16507dc0eb4513c18d75b90fcfbcd2ea893cb869cc0e",
+  "sourceBindingSha256": "bf1c223dede6029eb28a5ba4e264922a2b16f567e4549ecf6ef85cceee5c8e20",
+  "excerpts": 15,
+  "argv": [
+    "/opt/homebrew/bin/claude",
+    "--safe-mode",
+    "-p",
+    "--tools",
+    "",
+    "--no-session-persistence"
+  ],
+  "launchArgv": [
+    "python3",
+    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-minimum-next-serving-plan/authoring-draft/ci-expectation-repair/claude-supplement/run.py",
+    "expectations"
+  ],
+  "runnerChanges": "Scope name and tools Read/Glob/Grep\u2192empty, plus truthful description only;900s/TERM895,exclusive outputs/source snapshots/group cleanup unchanged.",
+  "sourceValidation": "Separate supervised validation still in progress; no future result included."
+}

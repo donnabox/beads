@@ -1,0 +1,1236 @@
+--- a/packages/conformance/test-support/profile-evidence.test.ts
++++ b/packages/conformance/test-support/profile-evidence.test.ts
+@@ -226,14 +226,40 @@
+     authenticationIdentity: cfg.authenticationDigest,
+     configurationIdentity: runtime,
+   };
+-  const reportSource = json({ sourceCommit: cfg.sourceCommit, configuration: cfg, result });
++  const baseline =
++    c.selection.profile === "read-update"
++      ? ready
++      : {
++          served: cfg,
++          operationTargets: unitTargets(c),
++          runtimeConfigurationIdentity: runtime,
++          authorityMode: "canonical",
++        };
++  const reportSource = json(
++    c.selection.profile === "read-update"
++      ? {
++          sourceCommit: cfg.sourceCommit,
++          configuration: cfg,
++          baselineReceipt: baseline,
++          sessions: [],
++          exactConfiguration: mode,
++          result,
++        }
++      : {
++          sourceCommit: cfg.sourceCommit,
++          entry: "synthetic-unit-data-not-installed",
++          baseline,
++          sessions: [],
++          result,
++        },
++  );
+   return {
+     ownerId: owner.id,
+     sourceCommit: cfg.sourceCommit,
+     configuration: cfg,
+     runtimeConfigurationIdentity: runtime,
+     exactConfiguration: mode,
+-    ready: [ready],
++    ready: [baseline],
+     reportSource,
+     expectedReportSha256: sha(reportSource.bytes),
+     lifecycle: { cleanup: "pending" },
+@@ -250,6 +276,182 @@
+   const reportSource = json(wrapper);
+   return { ...o, reportSource, expectedReportSha256: sha(reportSource.bytes) };
+ }
++// Synthetic source-data metadata only: these fixtures never claim an installed child/listener.
++function unitTargets(c: Context) {
++  const suffixes = {
++    batch: "batch",
++    createBead: "create-bead",
++    createLink: "create-link",
++    deleteAlias: "delete-alias",
++    deleteBead: "delete-bead",
++    deleteLink: "delete-link",
++    deleteWhere: "delete-where",
++    putAlias: "put-alias",
++    sequence: "sequence",
++    updateBead: "update-bead",
++    updateLink: "update-link",
++    updateWhere: "update-where",
++  };
++  return Object.fromEntries(
++    Object.entries(suffixes).map(([k, v]) => [k, c.configuration.scope + "operations/" + v]),
++  );
++}
++function unitSession(c: Context, scenario: string, ordinal = 0, reopen = false): Data {
++  const cfg = c.configuration;
++  const common = {
++    scope: cfg.scope,
++    profile: cfg.profile,
++    history: false,
++    payloadIdentity: cfg.installedPayloadDigest,
++    artifactIdentity: `development-schema5-${cfg.installedContractsDigest}`,
++    policyIdentity: cfg.policyDigest,
++    authenticationIdentity: cfg.authenticationDigest,
++  };
++  return c.selection.profile === "read-update"
++    ? { scenario, ...common, configurationIdentity: "f".repeat(64) }
++    : {
++        event: "qualification.ready",
++        authorityMode: "canonical",
++        runtimeConfigurationIdentity: "f".repeat(64),
++        ...common,
++        claimEligible: false,
++        listenUrl: `http://127.0.0.1:${41000 + ordinal}/`,
++        targets: unitTargets(c),
++        scenario,
++        reopen,
++        sessionOrdinal: ordinal,
++      };
++}
++function withUnitSessions(c: Context, o: Observation, sessions: Data[]): Observation {
++  const updated = changeReport(o, (w) => {
++    w.sessions = sessions;
++  });
++  return { ...updated, ready: [o.ready[0], ...sessions] };
++}
++function reachedThrough(c: Context, rows: Data[], index: number) {
++  for (let i = 0; i <= index; i++) {
++    const row = rows[i]!,
++      plan = c.owners[0]!.bundle.manifest.scenarios.find((p) => p.id === row.id);
++    if (plan) {
++      delete row.category;
++      row.state = "pass";
++    } else {
++      row.state = "harness-error";
++      row.category = "not-implemented";
++    }
++  }
++}
++function prerequisiteData(
++  phase: "initial" | "recheck",
++  stop?: "category" | "cleanup",
++  retainedActions = false,
++) {
++  let c = context();
++  if (retainedActions) {
++    // Existing action/IDs only; an in-memory source-data prerequisite exercises the real generic schema.
++    const sources = copyReadUpdateArtifactSetSources(ruSet()),
++      sourceName = index.shards[0]!.source;
++    const manifest = JSON.parse(Buffer.from(sources.manifests[sourceName]!.bytes).toString());
++    const plan = manifest.scenarios.find((p: { actions?: Data[] }) =>
++      p.actions?.some((a) => a.family !== "http"),
++    );
++    plan.actions.at(-1).prerequisiteScenario = manifest.scenarios[0].id;
++    (sources.manifests as Record<string, { bytes: Uint8Array }>)[sourceName] = json(manifest);
++    const unitSet = createReadUpdateArtifactSet(ruSelection, sources);
++    c = {
++      ...c,
++      artifacts: { kind: "read-update", set: unitSet },
++      owners: unitSet.shards.map((s) => ({ id: s.id, bundle: s.bundle, ids: s.scenarioIds })),
++    };
++  }
++  const owner = c.owners[0]!,
++    plan = owner.bundle.manifest.scenarios.find(
++      (p) =>
++        (p.actions ?? p.requests).some((a) => a.prerequisiteScenario !== undefined) &&
++        (!retainedActions ||
++          (p.actions ?? p.requests).some((a) => "family" in a && a.family !== "http")),
++    )!;
++  const prerequisiteId = (plan.actions ?? plan.requests).find(
++    (a) => a.prerequisiteScenario !== undefined,
++  )!.prerequisiteScenario!;
++  const o = changeReport(observation(c), (w) => {
++    const rows = rec(w.result).scenarios as Data[],
++      row = rows.find((r) => r.id === plan.id)!;
++    reachedThrough(c, rows, rows.indexOf(row));
++    const prior = rows.find((r) => r.id === prerequisiteId)!;
++    prior.state = phase === "initial" ? "fail" : "pass";
++    row.state = "harness-error";
++    row.category = "not-run";
++    const metadata = owner.bundle.catalog.scenarios.find((r) => r.id === prerequisiteId)!;
++    row.prerequisiteFailure = {
++      id: prerequisiteId,
++      requirements: metadata.requirements.map(({ source, anchor }) => `${source}${anchor}`),
++      reason: "synthetic source-data prerequisite",
++      phase,
++      ...(stop === "category" ? { category: "observation-limit" } : {}),
++    };
++    if (phase === "recheck") {
++      const declared = plan.actions ?? plan.requests;
++      const retained = retainedActions ? declared : declared.slice(0, 1);
++      row.exchanges = retained
++        .filter((a) => !("family" in a) || a.family === "http")
++        .map((a) => ({ request: { id: a.id }, assertions: [] }));
++      row.actions = retained
++        .filter((a) => "family" in a && a.family !== "http")
++        .map((a) => ({
++          action: {
++            id: a.id,
++            family: "family" in a ? a.family : "http",
++            operation: "operation" in a ? a.operation : undefined,
++          },
++          assertions: [],
++        }));
++    }
++    if (stop === "cleanup") row.cleanupError = "synthetic source-data cleanup";
++    if (!stop) {
++      // One following actual selected row demonstrates that a local skip is not a matrix stop.
++      const next = rows[rows.indexOf(row) + 1]!;
++      reachedThrough(c, [next], 0);
++    }
++  });
++  return { c, o, plan, prerequisiteId };
++}
++function missingExecutorData() {
++  const c = context(),
++    owner = c.owners[0]!,
++    plan = owner.bundle.manifest.scenarios.find((p) =>
++      (p.actions ?? p.requests).some((a) => "family" in a && a.family !== "http"),
++    )!;
++  const o = changeReport(observation(c), (w) => {
++    const rows = rec(w.result).scenarios as Data[],
++      row = rows.find((r) => r.id === plan.id)!;
++    reachedThrough(c, rows, rows.indexOf(row) + 1);
++    row.state = "harness-error";
++    row.category = "not-implemented";
++    const declared = plan.actions ?? plan.requests,
++      missing = declared.findIndex((a) => "family" in a && a.family !== "http");
++    const prefix = declared.slice(0, missing + 1);
++    row.exchanges = prefix
++      .filter((a) => !("family" in a) || a.family === "http")
++      .map((a) => ({ request: { id: a.id }, assertions: [] }));
++    row.actions = prefix
++      .filter((a) => "family" in a && a.family !== "http")
++      .map((a) => ({
++        action: {
++          id: a.id,
++          family: "family" in a ? a.family : "http",
++          operation: "operation" in a ? a.operation : undefined,
++        },
++        assertions: [],
++        executionError: {
++          category: "not-implemented",
++          message: "synthetic source-data missing executor",
++        },
++      }));
++  });
++  return { c, o, plan };
++}
++
+ function code(work: () => unknown, expected: string) {
+   let caught: unknown;
+   try {
+@@ -374,6 +576,11 @@
+               request: { id: rec(a.action).id },
+               assertions: [{ id: "unrelated", passed: false }],
+             });
++          (row.exchanges as Data[]).sort(
++            (a, b) =>
++              actions.findIndex((x) => x.id === rec(a.request).id) -
++              actions.findIndex((x) => x.id === rec(b.request).id),
++          );
+           const at = rows.indexOf(row);
+           for (let i = 0; i < at; i++) {
+             if (rows[i]!.category === "not-run") rows[i]!.category = "not-implemented";
+@@ -409,6 +616,14 @@
+       ),
+     ).toEqual(e);
+     const original = o.reportSource.bytes;
++    const raw = JSON.parse(Buffer.from(original).toString());
++    for (const row of (e.requirements as Data[]).filter((r) => r.observation !== null)) {
++      expect(rec(row.observation).rawWrapperSha256).toBe(sha(original));
++      expect(rec(row.observation).canonicalResultSha256).toBe(sha(canonicalJson(raw.result)));
++    }
++    expect(rec((e.reports as Data[])[0]).canonicalResultSha256).toBe(
++      sha(canonicalJson(raw.result)),
++    );
+     original[0] = 0;
+     expect(
+       rec((e.requirements as Data[]).find((r) => r.observation !== null)!.observation)
+@@ -484,6 +699,51 @@
+       "invalid-source",
+     );
+     expect(calls).toBe(0);
++    for (const profile of ["read-update", "transactional"] as const) {
++      const unit = context(profile),
++        o = observation(unit);
++      const tripwire = () =>
++        Object.defineProperty({}, "secret", {
++          enumerable: true,
++          get() {
++            calls++;
++            throw Error("tripwire");
++          },
++        });
++      for (const field of [
++        "ownerId",
++        "sourceCommit",
++        "expectedReportSha256",
++        "runtimeConfigurationIdentity",
++      ])
++        code(
++          () => assemble(unit, withObservation(unit, { ...o, [field]: tripwire() } as Observation)),
++          "invalid-source",
++        );
++      const accessor = Object.defineProperty([o.ready[0]], "0", {
++        enumerable: true,
++        get() {
++          calls++;
++          throw Error("tripwire");
++        },
++      });
++      const nested =
++        profile === "transactional"
++          ? { ...rec(o.ready[0]), served: tripwire() }
++          : { ...rec(o.ready[0]), scope: tripwire() };
++      for (const ready of [
++        accessor,
++        [nested],
++        [
++          () => {
++            calls++;
++          },
++        ],
++        [o.ready[0], { scenario: "unit", metadata: tripwire() }],
++      ])
++        code(() => assemble(unit, withObservation(unit, { ...o, ready })), "invalid-source");
++    }
++    expect(calls).toBe(0);
+   },
+   R13() {
+     const c = context();
+@@ -498,6 +758,42 @@
+       () => assembleProfileEvidence(c.selection, c.configuration, bad, absent(c), attempt(c)),
+       "invalid-source",
+     );
++    expect(calls).toBe(0);
++    for (const profile of ["read-update", "transactional"] as const) {
++      const unit = context(profile),
++        o = observation(unit);
++      const proxy = (value: object) =>
++        new Proxy(value, {
++          ownKeys() {
++            calls++;
++            throw Error("tripwire");
++          },
++          get() {
++            calls++;
++            throw Error("tripwire");
++          },
++        });
++      for (const field of [
++        "ownerId",
++        "sourceCommit",
++        "expectedReportSha256",
++        "runtimeConfigurationIdentity",
++      ])
++        code(
++          () => assemble(unit, withObservation(unit, { ...o, [field]: proxy({}) } as Observation)),
++          "invalid-source",
++        );
++      for (const ready of [
++        proxy([...o.ready]),
++        [proxy(rec(o.ready[0]))],
++        [{ ...rec(o.ready[0]), served: proxy({}) }],
++        [o.ready[0], proxy({})],
++      ])
++        code(
++          () => assemble(unit, withObservation(unit, { ...o, ready } as Observation)),
++          "invalid-source",
++        );
++    }
+     expect(calls).toBe(0);
+   },
+   R14() {
+@@ -587,6 +883,161 @@
+         ),
+       "evidence-mismatch",
+     );
++    for (const profile of ["read-update", "transactional"] as const) {
++      const unit = context(profile),
++        plain = observation(unit),
++        ids = unit.owners[0]!.ids;
++      const full = withUnitSessions(unit, plain, [
++        unitSession(unit, ids[0]!, 0),
++        unitSession(unit, ids[1]!, 1),
++      ]);
++      expect(assemble(unit, withObservation(unit, full)).qualificationReady).toBe(false);
++      const baselineKey = profile === "read-update" ? "baselineReceipt" : "baseline";
++      const variants: [string, (w: Data) => void][] = [
++        [
++          "invalid-report",
++          (w) => {
++            delete w[baselineKey];
++          },
++        ],
++        [
++          "invalid-report",
++          (w) => {
++            delete w.sessions;
++          },
++        ],
++        [
++          "invalid-report",
++          (w) => {
++            w.sessions = {};
++          },
++        ],
++        [
++          "configuration-mismatch",
++          (w) => {
++            w.sourceCommit = "0".repeat(40);
++          },
++        ],
++        [
++          "invalid-report",
++          (w) => {
++            rec(w[baselineKey]).extra = true;
++          },
++        ],
++        [
++          "configuration-mismatch",
++          (w) => {
++            (w.sessions as Data[]).pop();
++          },
++        ],
++        [
++          "invalid-report",
++          (w) => {
++            (w.sessions as Data[]).reverse();
++          },
++        ],
++        [
++          "invalid-report",
++          (w) => {
++            (w.sessions as Data[])[1] = { ...(w.sessions as Data[])[0] };
++          },
++        ],
++        [
++          "configuration-mismatch",
++          (w) => {
++            (w.sessions as Data[])[0]!.payloadIdentity = "0".repeat(64);
++          },
++        ],
++      ];
++      if (profile === "read-update")
++        variants.push(
++          [
++            "configuration-mismatch",
++            (w) => {
++              rec(w.configuration).scope = "https://other.invalid/";
++            },
++          ],
++          [
++            "configuration-mismatch",
++            (w) => {
++              rec(w.baselineReceipt).configurationIdentity = "0".repeat(64);
++            },
++          ],
++          [
++            "configuration-mismatch",
++            (w) => {
++              rec(w.exactConfiguration).defaultCredentialRef = "other";
++            },
++          ],
++          [
++            "invalid-report",
++            (w) => {
++              rec(w.baselineReceipt).listenUrl = "http://127.0.0.1:41000/";
++            },
++          ],
++        );
++      else
++        variants.push(
++          [
++            "configuration-mismatch",
++            (w) => {
++              rec(rec(w.baseline).served).sourceCommit = "0".repeat(40);
++            },
++          ],
++          [
++            "configuration-mismatch",
++            (w) => {
++              rec(w.baseline).runtimeConfigurationIdentity = "0".repeat(64);
++            },
++          ],
++          [
++            "configuration-mismatch",
++            (w) => {
++              rec(rec(w.baseline).operationTargets).batch = scope + "operations/other";
++            },
++          ],
++          [
++            "invalid-report",
++            (w) => {
++              (w.sessions as Data[])[0]!.listenUrl = "http://127.0.0.1:0/";
++            },
++          ],
++          [
++            "invalid-report",
++            (w) => {
++              (w.sessions as Data[])[0]!.sessionOrdinal = 1;
++            },
++          ],
++          [
++            "invalid-report",
++            (w) => {
++              (w.sessions as Data[])[0]!.reopen = true;
++            },
++          ],
++        );
++      for (const [expected, edit] of variants) {
++        const changed = changeReport(full, edit);
++        // Rehashed bytes force metadata validation rather than a stale expected-SHA failure.
++        code(() => assemble(unit, withObservation(unit, changed)), expected);
++      }
++      const mismatchedReady = [...full.ready].reverse();
++      code(
++        () => assemble(unit, withObservation(unit, { ...full, ready: mismatchedReady })),
++        "configuration-mismatch",
++      );
++      if (profile === "transactional") {
++        const reopenPlan = unit.owners[0]!.bundle.manifest.scenarios.find((p) =>
++          (p.actions ?? p.requests).some(
++            (a) => "operation" in a && a.operation === "transactional.reopen",
++          ),
++        )!;
++        const reopening = withUnitSessions(unit, plain, [
++          unitSession(unit, reopenPlan.id, 0),
++          unitSession(unit, reopenPlan.id, 1, true),
++        ]);
++        expect(assemble(unit, withObservation(unit, reopening)).claimEligible).toBe(false);
++      }
++    }
+   },
+   R21() {
+     const c = context();
+@@ -677,6 +1128,116 @@
+         (rec(w.result).scenarios as Data[]).pop();
+       });
+     code(() => assemble(tx, withObservation(tx, diagnostic)), "invalid-report");
++    const initial = prerequisiteData("initial"),
++      recheck = prerequisiteData("recheck", undefined, true);
++    for (const [unit, edits] of [
++      [
++        initial,
++        [
++          (r: Data) => {
++            rec(r.prerequisiteFailure).id = "unknown-id";
++          },
++          (r: Data) => {
++            rec(r.prerequisiteFailure).id = initial.c.owners[1]!.ids[0];
++          },
++          (r: Data) => {
++            rec(r.prerequisiteFailure).id = initial.c.owners[0]!.ids.at(-1);
++          },
++          (r: Data) => {
++            rec(r.prerequisiteFailure).phase = "other";
++          },
++          (r: Data) => {
++            rec(r.prerequisiteFailure).phase = false;
++          },
++          (r: Data) => {
++            rec(r.prerequisiteFailure).category = "deadline";
++          },
++          (r: Data) => {
++            rec(r.prerequisiteFailure).requirements = [];
++          },
++          (r: Data) => {
++            r.exchanges = [{ request: { id: "invented" }, assertions: [] }];
++          },
++        ],
++      ],
++      [
++        recheck,
++        [
++          (r: Data) => {
++            rec(r.prerequisiteFailure).category = "not-implemented";
++          },
++          (r: Data) => {
++            (r.actions as Data[])[0]!.action = { id: "unknown", family: "client" };
++          },
++          (r: Data) => {
++            (r.actions as Data[]).push((r.actions as Data[])[0]!);
++          },
++          (r: Data) => {
++            (r.exchanges as Data[]).push((r.exchanges as Data[])[0]!);
++          },
++          (r: Data) => {
++            (r.actions as Data[])[0]!.assertions = [{ id: "unknown", passed: true }];
++          },
++          (r: Data) => {
++            (r.actions as Data[])[0]!.assertions = [{ id: "unknown", passed: "yes" }];
++          },
++        ],
++      ],
++    ] as const) {
++      for (const edit of edits) {
++        const bad = changeReport(unit.o, (w) =>
++          edit((rec(w.result).scenarios as Data[]).find((r) => r.id === unit.plan.id)!),
++        );
++        code(() => assemble(unit.c, withObservation(unit.c, bad)), "invalid-report");
++      }
++    }
++    for (const stop of ["category", "cleanup"] as const) {
++      const unit = prerequisiteData("recheck", stop);
++      const bad = changeReport(unit.o, (w) => {
++        const rows = rec(w.result).scenarios as Data[],
++          at = rows.findIndex((r) => r.id === unit.plan.id);
++        reachedThrough(unit.c, [rows[at + 1]!], 0);
++      });
++      code(() => assemble(unit.c, withObservation(unit.c, bad)), "invalid-report");
++    }
++    const missing = missingExecutorData();
++    for (const edit of [
++      (r: Data) => {
++        r.actions = [];
++      },
++      (r: Data) => {
++        (r.exchanges as Data[])[0]!.transportError = { category: "deadline" };
++      },
++      (r: Data) => {
++        delete (r.actions as Data[]).at(-1)!.executionError;
++      },
++      (r: Data) => {
++        rec((r.actions as Data[]).at(-1)!.executionError).category = false;
++      },
++      (r: Data) => {
++        rec((r.actions as Data[]).at(-1)!.executionError).message = {};
++      },
++      (r: Data) => {
++        rec((r.actions as Data[]).at(-1)!.action).operation = "invented";
++      },
++      (r: Data) => {
++        rec((r.actions as Data[]).at(-1)!.action).family = "invented";
++      },
++      (r: Data) => {
++        rec((r.actions as Data[]).at(-1)!.action).id = "unknown";
++      },
++      (r: Data) => {
++        (r.actions as Data[]).push({
++          action: { id: "after-failure", family: "client", operation: "invented" },
++          assertions: [],
++        });
++      },
++    ]) {
++      const bad = changeReport(missing.o, (w) =>
++        edit((rec(w.result).scenarios as Data[]).find((r) => r.id === missing.plan.id)!),
++      );
++      code(() => assemble(missing.c, withObservation(missing.c, bad)), "invalid-report");
++    }
+   },
+   R23() {
+     const c = context(),
+@@ -908,6 +1469,32 @@
+     expect((e.reports as Data[])[0]!.rawWrapperSha256).not.toBeNull();
+     expect((e.reports as Data[])[1]!.rawWrapperSha256).toBeNull();
+     expect(e.qualificationReady).toBe(false);
++    for (const [phase, stop, retain] of [
++      ["initial", undefined, false],
++      ["recheck", undefined, false],
++      ["recheck", undefined, true],
++      ["recheck", "category", false],
++      ["recheck", "cleanup", true],
++    ] as const) {
++      const unit = prerequisiteData(phase, stop, retain),
++        projected = assemble(unit.c, withObservation(unit.c, unit.o));
++      const row = (projected.requirements as Data[]).find((r) => r.id === unit.plan.id)!;
++      expect(rec(row.observation).authoredAssertionsAllPassed).toBeNull();
++      expect(rec(row.observation).state).toBe("harness-error");
++      expect(projected.qualificationReady).toBe(false);
++      const original = JSON.parse(Buffer.from(unit.o.reportSource.bytes).toString());
++      const retainedRow = rec(original.result).scenarios as Data[];
++      if (retain)
++        expect(
++          (retainedRow.find((r) => r.id === unit.plan.id)!.actions as Data[]).length,
++        ).toBeGreaterThan(0);
++    }
++    const missing = missingExecutorData(),
++      retained = assemble(missing.c, withObservation(missing.c, missing.o));
++    expect(
++      rec((retained.requirements as Data[]).find((r) => r.id === missing.plan.id)!.observation)
++        .authoredAssertionsAllPassed,
++    ).toBeNull();
+   },
+   L09() {
+     const c = context(),
+--- a/packages/conformance/test-support/profile-evidence.ts
++++ b/packages/conformance/test-support/profile-evidence.ts
+@@ -300,11 +300,403 @@
+   }
+   return { owners, coverage, claimed, artifactDigests };
+ }
++type ScenarioPlan = ConformanceArtifactBundle["manifest"]["scenarios"][number];
++const servedKeys = [
++  "scope",
++  "profile",
++  "history",
++  "sourceCommit",
++  "installedPayloadDigest",
++  "installedContractsDigest",
++  "policyDigest",
++  "authenticationDigest",
++  "fixtureDigest",
++  "fixtureId",
++  "capabilities",
++];
++const ruReadyKeys = [
++  "scope",
++  "profile",
++  "history",
++  "payloadIdentity",
++  "artifactIdentity",
++  "policyIdentity",
++  "authenticationIdentity",
++  "configurationIdentity",
++];
++const targetSuffixes = {
++  batch: "batch",
++  createBead: "create-bead",
++  createLink: "create-link",
++  deleteAlias: "delete-alias",
++  deleteBead: "delete-bead",
++  deleteLink: "delete-link",
++  deleteWhere: "delete-where",
++  putAlias: "put-alias",
++  sequence: "sequence",
++  updateBead: "update-bead",
++  updateLink: "update-link",
++  updateWhere: "update-where",
++};
++function primitiveHash(value: unknown, length: 40 | 64): string {
++  const valueText = text(value);
++  if (!(length === 40 ? /^[a-f0-9]{40}$/ : /^[a-f0-9]{64}$/).test(valueText)) refuse();
++  return valueText;
++}
++// Only called on bounded parsed JSON or already intrinsically captured data.
++function reportRecord(value: unknown, allowed: readonly string[], required = allowed): Data {
++  if (value === null || typeof value !== "object" || Array.isArray(value)) refuse("invalid-report");
++  const r = value as Data;
++  if (
++    Object.keys(r).some((k) => !allowed.includes(k)) ||
++    required.some((k) => !Object.hasOwn(r, k))
++  )
++    refuse("invalid-report");
++  return r;
++}
++function reportText(value: unknown): string {
++  if (typeof value !== "string") refuse("invalid-report");
++  return value;
++}
++function reportHash(value: unknown, length: 40 | 64 = 64): string {
++  const v = reportText(value);
++  if (!(length === 40 ? /^[a-f0-9]{40}$/ : /^[a-f0-9]{64}$/).test(v)) refuse("invalid-report");
++  return v;
++}
++function reportArray(value: unknown): unknown[] {
++  if (!Array.isArray(value)) refuse("invalid-report");
++  return value;
++}
++function servedMetadata(value: unknown, configuration: ServedProfileConfiguration) {
++  const r = reportRecord(value, servedKeys);
++  for (const k of ["scope", "profile", "fixtureId"]) reportText(r[k]);
++  if (
++    typeof r.history !== "boolean" ||
++    reportArray(r.capabilities).some((v) => typeof v !== "string")
++  )
++    refuse("invalid-report");
++  reportHash(r.sourceCommit, 40);
++  for (const k of [
++    "installedPayloadDigest",
++    "installedContractsDigest",
++    "policyDigest",
++    "authenticationDigest",
++    "fixtureDigest",
++  ])
++    reportHash(r[k]);
++  equal(r, configuration);
++}
++function readyMetadata(
++  r: Data,
++  configuration: ServedProfileConfiguration,
++  runtime: string,
++  transactional: boolean,
++) {
++  reportText(r.scope);
++  reportText(r.profile);
++  if (typeof r.history !== "boolean") refuse("invalid-report");
++  for (const k of ["payloadIdentity", "policyIdentity", "authenticationIdentity"]) reportHash(r[k]);
++  const artifact = reportText(r.artifactIdentity);
++  if (!/^development-schema5-[a-f0-9]{64}$/.test(artifact)) refuse("invalid-report");
++  const actualRuntime = reportHash(
++    r[transactional ? "runtimeConfigurationIdentity" : "configurationIdentity"],
++  );
++  equal(
++    [
++      r.scope,
++      r.profile,
++      r.history,
++      r.payloadIdentity,
++      installedContractsDigest(artifact),
++      r.policyIdentity,
++      r.authenticationIdentity,
++      actualRuntime,
++    ],
++    [
++      configuration.scope,
++      configuration.profile,
++      configuration.history,
++      configuration.installedPayloadDigest,
++      configuration.installedContractsDigest,
++      configuration.policyDigest,
++      configuration.authenticationDigest,
++      runtime,
++    ],
++  );
++}
++function wrapperMetadata(
++  wrapper: Data,
++  configuration: ServedProfileConfiguration,
++  runtime: string,
++  ready: unknown[],
++  exact: Data,
++  owner: { ids: readonly string[]; bundle: ConformanceArtifactBundle },
++) {
++  if (reportHash(wrapper.sourceCommit, 40) !== configuration.sourceCommit)
++    refuse("configuration-mismatch");
++  const sessions = reportArray(wrapper.sessions),
++    sequence: unknown[] = [];
++  if (configuration.profile === "read-update") {
++    servedMetadata(wrapper.configuration, configuration);
++    if (wrapper.exactConfiguration === undefined) refuse("invalid-report");
++    // Source has already passed the bounded JSON parser; do not substitute its digest for equality.
++    if (
++      wrapper.exactConfiguration === null ||
++      typeof wrapper.exactConfiguration !== "object" ||
++      Array.isArray(wrapper.exactConfiguration)
++    )
++      refuse("invalid-report");
++    equal(wrapper.exactConfiguration, exact);
++    const baseline = reportRecord(wrapper.baselineReceipt, ruReadyKeys);
++    readyMetadata(baseline, configuration, runtime, false);
++    sequence.push(baseline);
++    let last = -1;
++    for (const value of sessions) {
++      const r = reportRecord(value, ["scenario", ...ruReadyKeys]);
++      readyMetadata(r, configuration, runtime, false);
++      const index = owner.ids.indexOf(reportText(r.scenario));
++      if (index < 0 || index <= last) refuse("invalid-report");
++      last = index;
++      sequence.push(r);
++    }
++  } else {
++    reportText(wrapper.entry);
++    const baseline = reportRecord(wrapper.baseline, [
++      "served",
++      "operationTargets",
++      "runtimeConfigurationIdentity",
++      "authorityMode",
++    ]);
++    servedMetadata(baseline.served, configuration);
++    reportText(baseline.authorityMode);
++    equal(baseline.authorityMode, "canonical");
++    equal(reportHash(baseline.runtimeConfigurationIdentity), runtime);
++    const expectedTargets = Object.fromEntries(
++      Object.entries(targetSuffixes).map(([k, v]) => [k, configuration.scope + "operations/" + v]),
++    );
++    const targets = (value: unknown) => {
++      const r = reportRecord(value, Object.keys(targetSuffixes));
++      for (const v of Object.values(r)) reportText(v);
++      equal(r, expectedTargets);
++    };
++    targets(baseline.operationTargets);
++    sequence.push(baseline);
++    let active = -1,
++      reopens = 0;
++    sessions.forEach((value, ordinal) => {
++      const r = reportRecord(value, [
++        "event",
++        "authorityMode",
++        "runtimeConfigurationIdentity",
++        "artifactIdentity",
++        "policyIdentity",
++        "authenticationIdentity",
++        "scope",
++        "profile",
++        "history",
++        "claimEligible",
++        "listenUrl",
++        "targets",
++        "payloadIdentity",
++        "scenario",
++        "reopen",
++        "sessionOrdinal",
++      ]);
++      readyMetadata(r, configuration, runtime, true);
++      reportText(r.event);
++      reportText(r.authorityMode);
++      if (
++        typeof r.claimEligible !== "boolean" ||
++        typeof r.reopen !== "boolean" ||
++        typeof r.sessionOrdinal !== "number" ||
++        !Number.isInteger(r.sessionOrdinal)
++      )
++        refuse("invalid-report");
++      equal(
++        [r.event, r.authorityMode, r.claimEligible],
++        ["qualification.ready", "canonical", false],
++      );
++      if (r.sessionOrdinal !== ordinal) refuse("invalid-report");
++      const url = reportText(r.listenUrl);
++      if (
++        Buffer.byteLength(url) > 8192 ||
++        !/^http:\/\/127\.0\.0\.1:[1-9][0-9]{0,4}\/$/.test(url) ||
++        Number(new URL(url).port) > 65535
++      )
++        refuse("invalid-report");
++      targets(r.targets);
++      const index = owner.ids.indexOf(reportText(r.scenario));
++      if (index < 0) refuse("invalid-report");
++      if (r.reopen) {
++        if (index !== active) refuse("invalid-report");
++        const plan = owner.bundle.manifest.scenarios.find((p) => p.id === r.scenario)!;
++        const maximum = (plan.actions ?? plan.requests).filter(
++          (a) => "operation" in a && a.operation === "transactional.reopen",
++        ).length;
++        if (++reopens > maximum) refuse("invalid-report");
++      } else {
++        if (index <= active) refuse("invalid-report");
++        active = index;
++        reopens = 0;
++      }
++      sequence.push(r);
++    });
++  }
++  // Captured supplied metadata must have the identical actual prefix, fields and JSON representation.
++  equal(sequence, ready);
++}
++function stopsAfter(row: Data) {
++  if (Object.hasOwn(row, "cleanupError")) {
++    reportText(row.cleanupError);
++    return true;
++  }
++  if (row.prerequisiteFailure !== undefined) {
++    const p = record(row.prerequisiteFailure);
++    if (p.phase === "recheck" && p.category !== undefined) return true;
++  }
++  return [
++    "aborted",
++    "cleanup",
++    "deadline",
++    "out-of-scope-target",
++    "exact-configuration",
++    "exact-observation",
++  ].includes(String(row.category));
++}
++function rowKind(
++  row: Data,
++  plan: ScenarioPlan | undefined,
++  owner: { ids: readonly string[]; bundle: ConformanceArtifactBundle },
++  prior: readonly Data[],
++): boolean {
++  const exchanges = array(row.exchanges),
++    actions = row.actions === undefined ? [] : array(row.actions);
++  if (Object.hasOwn(row, "cleanupError")) reportText(row.cleanupError);
++  if (row.prerequisiteFailure !== undefined) {
++    if (!plan || row.state !== "harness-error" || row.category !== "not-run")
++      refuse("invalid-report");
++    const p = reportRecord(
++      row.prerequisiteFailure,
++      ["id", "requirements", "reason", "phase", "category"],
++      ["id", "requirements", "reason", "phase"],
++    );
++    const id = reportText(p.id),
++      phase = reportText(p.phase);
++    reportText(p.reason);
++    const declared = (plan.actions ?? plan.requests).some((a) => a.prerequisiteScenario === id);
++    const before = prior.find((r) => r.id === id),
++      metadata = owner.bundle.catalog.scenarios.find((r) => r.id === id);
++    if (
++      !declared ||
++      !metadata ||
++      !owner.ids.includes(id) ||
++      !["initial", "recheck"].includes(phase)
++    )
++      refuse("invalid-report");
++    equal(
++      p.requirements,
++      metadata.requirements.map(({ source, anchor }) => `${source}${anchor}`),
++      "invalid-report",
++    );
++    if (phase === "initial") {
++      if (
++        before?.state === "pass" ||
++        Object.hasOwn(p, "category") ||
++        exchanges.length ||
++        actions.length
++      )
++        refuse("invalid-report");
++    } else {
++      if (before?.state !== "pass") refuse("invalid-report");
++      if (
++        Object.hasOwn(p, "category") &&
++        ![
++          "deadline",
++          "containment",
++          "observation-limit",
++          "exact-configuration",
++          "exact-observation",
++        ].includes(reportText(p.category))
++      )
++        refuse("invalid-report");
++    }
++    return false;
++  }
++  if (row.category === "not-run") {
++    if (
++      row.state !== "harness-error" ||
++      exchanges.length ||
++      actions.length ||
++      Object.hasOwn(row, "cleanupError")
++    )
++      refuse("invalid-report");
++    return true; // Actual plain stopped suffix; external cause remains unknown.
++  }
++  if (!plan) {
++    if (
++      row.state !== "harness-error" ||
++      row.category !== "not-implemented" ||
++      exchanges.length ||
++      actions.length
++    )
++      refuse("invalid-report");
++  } else if (row.category === "not-implemented") {
++    if (row.state !== "harness-error" || !actions.length) refuse("invalid-report");
++    const last = record(actions.at(-1)),
++      actual = reportRecord(last.action, ["id", "family", "operation"]);
++    const authored = plan.actions ?? plan.requests,
++      index = authored.findIndex((a) => a.id === actual.id),
++      target = authored[index];
++    if (
++      !target ||
++      !("family" in target) ||
++      target.family === "http" ||
++      target.family !== actual.family ||
++      !("operation" in target) ||
++      target.operation !== actual.operation ||
++      array(last.assertions).length
++    )
++      refuse("invalid-report");
++    const error = reportRecord(last.executionError, ["category", "message"]);
++    if (error.category !== "not-implemented") refuse("invalid-report");
++    reportText(error.message);
++    // An earlier action failure cannot precede a newly reached missing executor.
++    for (const value of actions.slice(0, -1))
++      if (record(value).executionError !== undefined) refuse("invalid-report");
++    for (const value of exchanges) {
++      const exchange = record(value);
++      if (exchange.transportError !== undefined || exchange.harnessError !== undefined)
++        refuse("invalid-report");
++    }
++    for (const lane of [exchanges, actions])
++      for (const value of lane) {
++        const r = record(value),
++          id = record(r.request ?? r.action).id;
++        if (authored.findIndex((a) => a.id === id) > index) refuse("invalid-report");
++      }
++    // The missing executor is reached only after every earlier declared action.
++    for (const a of authored.slice(0, index)) {
++      const http = !("family" in a) || a.family === "http";
++      if (
++        !(http ? exchanges : actions).some(
++          (v) => record(record(v)[http ? "request" : "action"]).id === a.id,
++        )
++      )
++        refuse("invalid-report");
++    }
++  }
++  return false;
++}
++
+ function joinedOutcome(
+   row: Data,
+   plan: ConformanceArtifactBundle["manifest"]["scenarios"][number] | undefined,
+ ) {
+-  if (!plan || ["not-run", "not-implemented"].includes(String(row.category))) return null;
++  if (!plan) {
++    if (array(row.exchanges).length || (row.actions !== undefined && array(row.actions).length))
++      refuse("invalid-report");
++    return null;
++  }
+   const lanes = {
+     http: array(row.exchanges),
+     other: row.actions === undefined ? [] : array(row.actions),
+@@ -342,6 +734,38 @@
+     })
+   )
+     refuse("invalid-report");
++  for (const [records, http] of [
++    [httpRows, true],
++    [other, false],
++  ] as const) {
++    let last = -1;
++    for (const value of records) {
++      const actual = record(value[http ? "request" : "action"]),
++        index = authored.findIndex((a) => a.id === actual.id),
++        declared = authored[index]!;
++      if (index <= last) refuse("invalid-report");
++      last = index;
++      if (
++        !http &&
++        actual.operation !== undefined &&
++        (!("operation" in declared) || declared.operation !== actual.operation)
++      )
++        refuse("invalid-report");
++      const assertions = array(value.assertions).map(record);
++      if (
++        new Set(assertions.map((a) => a.id)).size !== assertions.length ||
++        assertions.some((a) => typeof a.id !== "string" || typeof a.passed !== "boolean")
++      )
++        refuse("invalid-report");
++      // Incidental same-ID non-HTTP exchanges never supply the authored assertion lane.
++      if (
++        (!http || !("family" in declared) || declared.family === "http") &&
++        assertions.some((a) => !declared.assertions.some((x) => x.id === a.id))
++      )
++        refuse("invalid-report");
++    }
++  }
++  if (["not-run", "not-implemented"].includes(String(row.category))) return null;
+   const values: (boolean | null)[] = [];
+   for (const action of plan.actions ?? plan.requests) {
+     const http = !("family" in action) || action.family === "http";
+@@ -413,24 +837,28 @@
+         "expectedReportSha256",
+         "lifecycle",
+       ]);
+-      equal(o.ownerId, owner.id, "invalid-report");
+-      equal(o.sourceCommit, configuration.sourceCommit);
++      equal(text(o.ownerId), owner.id, "invalid-report");
++      equal(primitiveHash(o.sourceCommit, 40), configuration.sourceCommit);
++      const expectedReportSha256 = primitiveHash(o.expectedReportSha256, 64);
++      const runtimeIdentity = primitiveHash(o.runtimeConfigurationIdentity, 64);
++      // Capture nested caller data before any canonical traversal; branded config stays original.
++      const captureBudget = { nodes: 0 };
++      const ready = array(safeData(o.ready, 0, captureBudget));
++      const exact = record(safeData(o.exactConfiguration, 0, captureBudget));
+       assertSameServedProfileConfiguration(
+         o.configuration as ServedProfileConfiguration,
+         o.configuration as ServedProfileConfiguration,
+       );
+       equal(configuration, o.configuration);
+-      if (!/^[a-f0-9]{64}$/.test(text(o.runtimeConfigurationIdentity)))
+-        refuse("configuration-mismatch");
+       const lifecycle = ownData(o.lifecycle, ["cleanup"]);
+       if (!["pending", "reported-complete", "failed", "unknown"].includes(text(lifecycle.cleanup)))
+         refuse();
+       const bytes = source(o.reportSource);
+-      equal(digest(bytes), o.expectedReportSha256, "invalid-report");
++      const rawWrapperSha256 = digest(bytes);
++      equal(rawWrapperSha256, expectedReportSha256, "invalid-report");
+       const wrapper = record(parsed(bytes)),
+         result = record(wrapper.result);
+-      if (wrapper.sourceCommit !== configuration.sourceCommit) refuse("configuration-mismatch");
+-      if (wrapper.configuration !== undefined) equal(wrapper.configuration, configuration);
++      wrapperMetadata(wrapper, configuration, runtimeIdentity, ready, exact, owner);
+       if (
+         result.reportVersion !== 4 ||
+         result.claimEligible !== false ||
+@@ -465,7 +893,6 @@
+         selected,
+         "invalid-report",
+       );
+-      const exact = record(safeData(o.exactConfiguration));
+       equal([exact.scope, exact.profile], [configuration.scope, configuration.profile]);
+       const routeDigest = digest(
+         canonicalJson({
+@@ -481,37 +908,7 @@
+         routeDigest,
+         "configuration-mismatch",
+       );
+-      const ready = array(o.ready).map(record);
+-      if (!ready.length) refuse("invalid-report");
+-      for (const r of ready) {
+-        if (r.served !== undefined) equal(r.served, configuration);
+-        else {
+-          equal(
+-            [
+-              r.scope,
+-              r.profile,
+-              r.history,
+-              r.payloadIdentity,
+-              installedContractsDigest(r.artifactIdentity),
+-              r.policyIdentity,
+-              r.authenticationIdentity,
+-            ],
+-            [
+-              configuration.scope,
+-              configuration.profile,
+-              configuration.history,
+-              configuration.installedPayloadDigest,
+-              configuration.installedContractsDigest,
+-              configuration.policyDigest,
+-              configuration.authenticationDigest,
+-            ],
+-          );
+-        }
+-        equal(
+-          r.runtimeConfigurationIdentity ?? r.configurationIdentity,
+-          o.runtimeConfigurationIdentity,
+-        );
+-      }
++      const canonicalResultSha256 = digest(canonicalJson(result));
+       let stopped = false;
+       rows.forEach((r, index) => {
+         if (
+@@ -540,24 +937,13 @@
+         if (!metadata) refuse("invalid-report");
+         equal(r.requiredProfile, metadata.requiredProfile, "invalid-report");
+         const plan = owner.bundle.manifest.scenarios.find((p) => p.id === r.id);
+-        if (plan && r.category === "not-implemented") refuse("invalid-report");
+-        if (r.category === "not-run") stopped = true;
+-        if (stopped && r.category !== "not-run") refuse("invalid-report");
+-        if (
+-          !plan &&
+-          (r.state !== "harness-error" ||
+-            !["not-run", "not-implemented"].includes(text(r.category)))
+-        )
+-          refuse("invalid-report");
+-        if (
+-          ["not-run", "not-implemented"].includes(String(r.category)) &&
+-          (array(r.exchanges).length || (r.actions !== undefined && array(r.actions).length))
+-        )
+-          refuse("invalid-report");
++        const plainStopped = rowKind(r, plan, owner, rows.slice(0, index));
++        if (stopped && !plainStopped) refuse("invalid-report");
++        stopped = stopped || plainStopped || stopsAfter(r);
+         const projection = {
+           ownerId: owner.id,
+-          rawWrapperSha256: digest(bytes),
+-          canonicalResultSha256: digest(canonicalJson(result)),
++          rawWrapperSha256,
++          canonicalResultSha256,
+           rowIndex: index,
+           state: r.state,
+           category: r.category ?? null,
+@@ -582,11 +968,11 @@
+       });
+       reports.push({
+         ownerId: owner.id,
+-        rawWrapperSha256: digest(bytes),
+-        canonicalResultSha256: digest(canonicalJson(result)),
++        rawWrapperSha256,
++        canonicalResultSha256,
+         selectedIds: selected,
+         resultIds: rows.map((r) => r.id),
+-        runtimeConfigurationIdentity: o.runtimeConfigurationIdentity,
++        runtimeConfigurationIdentity: runtimeIdentity,
+         exactConfigurationDigest: routeDigest,
+         reportedCleanupState: lifecycle.cleanup,
+         ownershipVerification: "unverified",

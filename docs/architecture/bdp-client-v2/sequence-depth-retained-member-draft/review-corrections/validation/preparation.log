@@ -1,0 +1,67 @@
+
+ RUN  v4.1.10 /Users/dbox/repos/wt/vickie/vickie-sequence-depth-retained
+
+ ↓ packages/server/src/transaction-set.test.ts > selects staged canonical Resources once, retains indices and expands in canonical order
+ ↓ packages/server/src/transaction-set.test.ts > keeps original Resource label positions across sets, without interpreting selector literals
+ ↓ packages/server/src/transaction-set.test.ts > zero matches and all-noop sets retain revisions/provenance without groups
+ ↓ packages/server/src/transaction-set.test.ts > fans out supplied provenance on changed versions and preserves metadata
+ ↓ packages/server/src/transaction-set.test.ts > cardinality is inclusive, rolls back the whole batch and retains original failed disposition
+ ↓ packages/server/src/transaction-set.test.ts > late selected patch failure rolls back earlier selected mutations and batch creation
+ ↓ packages/server/src/transaction-set.test.ts > Link sets preserve singleton endpoint/self-Link facts and deletion incidence
+ ↓ packages/server/src/transaction-set.test.ts > shares singleton/batch semantic identity, retains lossless numeric equality and original set selection
+ ↓ packages/server/src/transaction-set.test.ts > retains actual cardinality and patch literals without an invented safe-integer bound
+ ↓ packages/server/src/transaction-set.test.ts > retains original set facts through durable pages and same-version restart
+ ↓ packages/server/src/transaction-set.test.ts > expires the staged enumeration capability after its owner turn and freezes rows
+ ↓ packages/server/src/transaction-set.test.ts > enforces one total Event cap across ordinary and set facts, with atomic retained failure
+ ↓ packages/server/src/transaction-set.test.ts > rejects invalid set Selector grammar while valid carriers share preparation and sequence sets remain excluded
+ ↓ packages/server/src/transaction-set.test.ts > retracts transient set after-effects failures with no graph or page prefix
+ ↓ packages/server/src/transaction-set.test.ts > retracts transient set after-terminal failures with no graph or page prefix
+ ↓ packages/server/src/transaction-set.test.ts > recovers a committed set and its original page chain after uncertain COMMIT
+ ↓ packages/server/src/transaction-set.test.ts > retains ordinary writes followed by set reversal as ordered facts with final original values
+ ↓ packages/server/src/transaction-set.test.ts > keeps allocation binding indices when sets precede a named Resource creator
+ ↓ packages/server/src/transaction-set.test.ts > set Link updates share ordinary no-op and fact behavior without endpoint-linking facts
+ ↓ packages/server/src/transaction-set.test.ts > counts all outer set members before new-key admission without a filtered Resource count
+ ↓ packages/server/src/transaction-set.test.ts > checks updateWhere cardinality, collection and provenance shapes against the normative bundle
+ ↓ packages/server/src/transaction-set.test.ts > checks deleteWhere cardinality, collection and provenance shapes against the normative bundle
+ ↓ packages/server/src/transaction-set.test.ts > preserves outer witness/alias indices and result pages with a set before alias-referenced mutation
+ ↓ packages/server/src/transaction-set.test.ts > executes updateWhere beads with valid provenance without minting a deleted version
+ ↓ packages/server/src/transaction-set.test.ts > executes updateWhere links with valid provenance without minting a deleted version
+ ↓ packages/server/src/transaction-set.test.ts > executes deleteWhere beads with valid provenance without minting a deleted version
+ ↓ packages/server/src/transaction-set.test.ts > executes deleteWhere links with valid provenance without minting a deleted version
+ ↓ packages/server/src/transaction-set.test.ts > bounds total matched Resources across no-op sets and retains atomic failure after reopen
+ ↓ packages/server/src/transaction-set.test.ts > checks cardinality before charging the matched Resource budget
+ ↓ packages/server/src/transaction-set.test.ts > accepts 32 real no-op matches at the private default and durably refuses overflow
+ ↓ packages/server/src/transaction-set.test.ts > projects updateWhere Link matches through local endpoint visibility before cardinality
+ ↓ packages/server/src/transaction-set.test.ts > projects deleteWhere Link matches through local endpoint visibility before cardinality
+ ↓ packages/server/src/transaction-set.test.ts > refuses an invalid or raised induced Event bound 0
+ ↓ packages/server/src/transaction-set.test.ts > refuses an invalid or raised induced Event bound -1
+ ↓ packages/server/src/transaction-set.test.ts > refuses an invalid or raised induced Event bound 1.5
+ ↓ packages/server/src/transaction-set.test.ts > refuses an invalid or raised induced Event bound 257
+ ↓ packages/server/src/transaction-set.test.ts > refuses an invalid or raised induced Event bound Infinity
+ ↓ packages/server/src/transaction-set.test.ts > refuses an invalid or raised matched Resource bound 0
+ ↓ packages/server/src/transaction-set.test.ts > refuses an invalid or raised matched Resource bound -1
+ ↓ packages/server/src/transaction-set.test.ts > refuses an invalid or raised matched Resource bound 1.5
+ ↓ packages/server/src/transaction-set.test.ts > refuses an invalid or raised matched Resource bound 33
+ ↓ packages/server/src/transaction-set.test.ts > refuses an invalid or raised matched Resource bound Infinity
+ ↓ packages/server/src/transaction-set.test.ts > does not retain a malformed private evaluator failure type=undefined
+ ↓ packages/server/src/transaction-set.test.ts > does not retain a malformed private evaluator failure status=undefined
+ ↓ packages/server/src/transaction-set.test.ts > does not retain a malformed private evaluator failure retry=undefined
+ ↓ packages/server/src/transaction-set.test.ts > does not retain a malformed private evaluator failure code=undefined
+ ↓ packages/server/src/transaction-set.test.ts > does not retain a malformed private evaluator failure code=rate-limited
+ ↓ packages/server/src/transaction-set.test.ts > does not retain a malformed private evaluator failure code=not-a-code
+ ↓ packages/server/src/transaction-set.test.ts > does not retain a malformed private evaluator failure status=500
+ ↓ packages/server/src/transaction-set.test.ts > does not retain a malformed private evaluator failure status=200
+ ↓ packages/server/src/transaction-set.test.ts > does not retain a malformed private evaluator failure status=413.5
+ ↓ packages/server/src/transaction-set.test.ts > does not retain a malformed private evaluator failure status=404
+ ↓ packages/server/src/transaction-set.test.ts > requires operation indices except for enumerated whole-transaction limits at the type boundary
+ ↓ packages/server/src/transaction-set.test.ts > serializes byte-bounded deep syntax iteratively without changing number lexemes or key order
+ ↓ packages/server/src/transaction-set.test.ts > preserves literal Selector identity and original mixed-carrier diagnostic pointers
+ ✓ packages/server/src/transaction-set.test.ts > keeps receiving depth facts private while legacy preparation still throws 40ms
+ ✓ packages/server/src/transaction-set.test.ts > annotates only deep sequence members after complete carrier syntax while strict preparation stays strict 3ms
+
+ Test Files  1 passed (1)
+      Tests  2 passed | 55 skipped (57)
+   Start at  22:07:53
+   Duration  432ms (transform 176ms, setup 18ms, import 308ms, tests 44ms, environment 0ms)
+
+JSON report written to /Users/dbox/repos/wt/vickie/bdp-integration-logs/sequence-depth-retained-member-draft/review-corrections/validation/preparation.vitest.json

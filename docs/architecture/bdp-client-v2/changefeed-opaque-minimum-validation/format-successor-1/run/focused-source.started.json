@@ -1,0 +1,24 @@
+{
+  "argv": [
+    "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+    "/Users/dbox/repos/wt/vickie/vickie-changefeed-opaque-minimum/node_modules/vitest/vitest.mjs",
+    "run",
+    "packages/server/src/transaction-changefeed.test.ts",
+    "--maxWorkers=1",
+    "--reporter=verbose",
+    "--reporter=json",
+    "--outputFile.json=/Users/dbox/repos/wt/vickie/bdp-integration-logs/changefeed-opaque-minimum-validation/format-successor-1/run/focused-source.results.json",
+    "--testNamePattern",
+    "^(keeps\\ genesis\\ checkpoint\\ distinct\\ from\\ zero\\ position\\ and\\ resumes\\ after\\ an\\ empty\\ caught\\-up\\ page|uses\\ bounded\\ context\\-fenced\\ checkpoints,\\ never\\ Event\\ IDs/raw\\ positions/future\\ rows|does\\ not\\ classify\\ a\\ missing\\ previously\\ committed\\ cursor\\ row\\ as\\ never\\ issued\\ or\\ skip\\ its\\ gap|captures\\ feed\\ body\\ and\\ serving\\ context\\ inside\\ one\\ fenced\\ owner\\ entry|keeps\\ start=now's\\ original\\ admission\\ anchor\\ through\\ a\\ minimum\\ wait\\ and\\ drains\\ on\\ close|serves\\ actual\\ HTTP\\ finite\\ GET/HEAD,\\ absolute\\ navigation,\\ native\\ conditions\\ and\\ restart|decides\\ actual\\ HTTP\\ minimum\\ refusal\\ before\\ conditional\\ shortcuts\\ with\\ final\\ context|preserves\\ current\\ context\\ on\\ owner\\-observed\\ changefeed\\ parameter\\ refusals\\ over\\ HTTP|waits\\ for\\ fresh\\ finite\\ changefeed\\ opaque\\ minimum\\ without\\ recapturing\\ admission:\\ unknown|waits\\ for\\ fresh\\ finite\\ changefeed\\ opaque\\ minimum\\ without\\ recapturing\\ admission:\\ pos\\-01|aborts\\ fresh\\ finite\\ changefeed\\ opaque\\ waiting\\ before\\ close\\ drains|preserves\\ fresh\\ finite\\ changefeed\\ admission\\ before\\ wait\\ preflight:\\ already\\-aborted|preserves\\ fresh\\ finite\\ changefeed\\ admission\\ before\\ wait\\ preflight:\\ invalid\\-policy|preserves\\ fresh\\ finite\\ changefeed\\ admission\\ before\\ wait\\ preflight:\\ throwing\\-clock|preserves\\ fresh\\ finite\\ changefeed\\ admission\\ before\\ wait\\ preflight:\\ nonfinite\\-clock|keeps\\ direct\\ and\\ excluded\\ changefeed\\ minimum\\ paths\\ strict|serves\\ finite\\ start\\-now\\ opaque\\ minima\\ before\\ HTTP\\ shortcuts)$"
+  ],
+  "cwd": "/Users/dbox/repos/wt/vickie/vickie-changefeed-opaque-minimum",
+  "head": "5ceb213b632e17f28714684efc5e35a62b282bf6",
+  "tree": "7701b6a0084fe42b8990812e5fc3ddc5ce249a82",
+  "sourceIdentity": "c47a8bea7cb18b190235ebe4a560eec5d91eb34257e85db6040dc3fe3ccb8542",
+  "rootGateSha256": "6e266be3784bd2fb38d6e1eab93d0ddcc17d7d79d6a0936dd5e9f98cebbfd015",
+  "outerSeconds": 120,
+  "automaticRetries": 0,
+  "overrides": {},
+  "temporaryDirectory": "/private/tmp/vickie-changefeed-validation-focused-source-zbdsrdo1",
+  "npmCache": "/private/tmp/vickie-changefeed-validation-focused-source-zbdsrdo1/npm-cache"
+}

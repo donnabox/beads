@@ -1,0 +1,18 @@
+{
+  "at": "2026-10-15T18:24:41.405471+00:00",
+  "decision": "adapter accepted for exact positive and named configuration-collapse outcome adjudication; execution still gated",
+  "adapterSha256": "87f7895e3458ec082cecd342b785a1093c5caa8466dcdc4938992bb5acd6f46b",
+  "bindingSha256": "405947308c1cf0ba1b9bfeff94c0170275c17255d7016aef08dfce0dce3ed200",
+  "reviewedAgainst": {
+    "test": "e6af6263f164032ea4ae97167740412b9ad2a23af98e2a92729cd85dfa6d9b32",
+    "reportContract": "600d21b4b1d8cfff91a16ebca1053db9d55c2d7c9ec1e91df031bb9572b3d7c0"
+  },
+  "checks": [
+    "strict report and nested binding/response field allowlists",
+    "real selected Vitest test and sole named409-vs200negative",
+    "full seven/two authored request fingerprints and complete writes",
+    "actual external entry/payload/fixture/target/artifact binding",
+    "normal closed child, storedir absent and sampled/actual returned PIDs independently absent"
+  ],
+  "limitations": "No response bodies retained except validated Problem; full schema/equality exercised in actual callback, not reconstructed by adapter. No broader conformance claim."
+}

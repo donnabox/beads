@@ -1,0 +1,177 @@
+{
+  "candidateCommit": "01a247b2283f70890c8c35ec65a43aa3c3ab0542",
+  "tree": "b2d9f2c18502e0778c51123be8b4564af052d803",
+  "actualMergedParent": "88c9408e908590ab1a4c64c9b9dee1a8b705999c",
+  "sourceHashes": {
+    "docs/specs/bdp.md": "f036103ffdf5f89fa3a2033570e1e987c4cd203cd80b1c633cb44615123f892e",
+    "packages/server/src/transaction-sequence.ts": "019e02f2f392047d568d7464b1c5af0482d6d743ed09a6d0aa4edab151607cbe",
+    "packages/server/src/transaction-batch.ts": "5fa7052d95942548727760625e368f3892e1dacced1654f022720af0b5ce899a",
+    "packages/server/src/transaction-store.ts": "0cda4b6488f589258eda46d1a00612e0278228172fc102305d889fe3c4364ad1",
+    "packages/server/src/resource-evaluator.ts": "89606787e455f4ed555b807d91c5331a376431807a9a581de1f94e538fcab4ff",
+    "packages/server/src/transaction-events.ts": "c6052433662fcb2d0a202ad4e408a24d4c43f980313fa89659501b4475790db5",
+    "packages/conformance/src/transactional-observation.ts": "603fcc1240e43da3c477f42b8b942141c06c989a48a2a88099fd5d90e283159f",
+    "packages/conformance/src/runner.ts": "ac20c7fbfe15a5e42a6559e89cd3467562efe9bc74d462478414414ed3efede1",
+    "apps/bdptest/src/transactional-matrix.test.ts": "e319109ab0e9f7258e6918ae789ed7a5672eb7aabd0ec8725ae38e3634164e68",
+    "packages/conformance/src/transactional-cumulative.test.ts": "22a568820ab2abc187d37c27658fdcf6e5ad39e74e2172374e3658c180f7668e"
+  },
+  "verbatimSourceRanges": {
+    "A": [
+      {
+        "path": "docs/specs/bdp.md",
+        "firstLine": 4057,
+        "lastLine": 4080
+      },
+      {
+        "path": "packages/server/src/transaction-sequence.ts",
+        "firstLine": 32,
+        "lastLine": 74
+      },
+      {
+        "path": "packages/server/src/transaction-sequence.ts",
+        "firstLine": 123,
+        "lastLine": 137
+      },
+      {
+        "path": "packages/server/src/transaction-batch.ts",
+        "firstLine": 277,
+        "lastLine": 309
+      },
+      {
+        "path": "packages/server/src/transaction-batch.ts",
+        "firstLine": 410,
+        "lastLine": 491
+      },
+      {
+        "path": "packages/server/src/transaction-store.ts",
+        "firstLine": 1258,
+        "lastLine": 1310
+      },
+      {
+        "path": "packages/server/src/transaction-store.ts",
+        "firstLine": 1543,
+        "lastLine": 1634
+      },
+      {
+        "path": "packages/server/src/resource-evaluator.ts",
+        "firstLine": 1073,
+        "lastLine": 1093
+      },
+      {
+        "path": "packages/server/src/transaction-events.ts",
+        "firstLine": 74,
+        "lastLine": 104
+      },
+      {
+        "path": "packages/server/src/transaction-events.ts",
+        "firstLine": 250,
+        "lastLine": 269
+      },
+      {
+        "path": "packages/conformance/src/transactional-observation.ts",
+        "firstLine": 228,
+        "lastLine": 312
+      },
+      {
+        "path": "packages/conformance/src/runner.ts",
+        "firstLine": 2468,
+        "lastLine": 2495
+      },
+      {
+        "path": "packages/server/src/transaction-store.ts",
+        "firstLine": 1104,
+        "lastLine": 1125
+      },
+      {
+        "path": "packages/server/src/transaction-batch.ts",
+        "firstLine": 644,
+        "lastLine": 660
+      },
+      {
+        "path": "packages/server/src/transaction-batch.ts",
+        "firstLine": 742,
+        "lastLine": 750
+      }
+    ],
+    "B": [
+      {
+        "path": "apps/bdptest/src/transactional-matrix.test.ts",
+        "firstLine": 169,
+        "lastLine": 328
+      },
+      {
+        "path": "apps/bdptest/src/transactional-matrix.test.ts",
+        "firstLine": 340,
+        "lastLine": 368
+      },
+      {
+        "path": "apps/bdptest/src/transactional-matrix.test.ts",
+        "firstLine": 1897,
+        "lastLine": 1932
+      },
+      {
+        "path": "apps/bdptest/src/transactional-matrix.test.ts",
+        "firstLine": 2005,
+        "lastLine": 2038
+      },
+      {
+        "path": "apps/bdptest/src/transactional-matrix.test.ts",
+        "firstLine": 2136,
+        "lastLine": 2208
+      },
+      {
+        "path": "apps/bdptest/src/transactional-matrix.test.ts",
+        "firstLine": 2335,
+        "lastLine": 2356
+      },
+      {
+        "path": "apps/bdptest/src/transactional-matrix.test.ts",
+        "firstLine": 2545,
+        "lastLine": 2571
+      },
+      {
+        "path": "packages/conformance/src/transactional-cumulative.test.ts",
+        "firstLine": 670,
+        "lastLine": 710
+      },
+      {
+        "path": "packages/conformance/src/transactional-cumulative.test.ts",
+        "firstLine": 836,
+        "lastLine": 875
+      },
+      {
+        "path": "packages/conformance/src/transactional-cumulative.test.ts",
+        "firstLine": 917,
+        "lastLine": 945
+      },
+      {
+        "path": "packages/conformance/src/transactional-cumulative.test.ts",
+        "firstLine": 1007,
+        "lastLine": 1020
+      },
+      {
+        "path": "packages/conformance/src/transactional-cumulative.test.ts",
+        "firstLine": 2724,
+        "lastLine": 2778
+      }
+    ]
+  },
+  "planHashes": {
+    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-sequence-member-plan-v4.md": "45acc3ab6580f6654c573b48f93b26b2c9a32a73297fc5ab6c2b53d0b18dffd5",
+    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-sequence-member-plan-v4-report.json": "ddd5e5a2b8d719476b313f11047f9de19e3d3034a53938b50f0cc2b7e5c8475a",
+    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-sequence-member-plan-v4-report.md": "9feb136dec93b4542ba71b62449005450b4d8767178b3375841291eafa8e78f3",
+    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-sequence-member-merged-reanchor.md": "e553b4eac48241ec3839ac72c8016ab0eca17e0c5a03f8b15eb6e05edeb64f60",
+    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-sequence-member-accepted-parent.json": "f3fa1b62a687f9ff61ed999f56017400c8dd74292480c6fc8344da63177eb1c5",
+    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-sequence-member-plan-v3-native-closure.md": "75975009d1760ed67f5ca1d805c7158d8c545849d9dbafa4ee98ccab43d191f6"
+  },
+  "promptHashes": {
+    "A": "96d124878e55fb3eaa5ae380896199358a78d94311fa62c9c9e1528fa57a495f",
+    "B": "5e2eaecd2e0c293344b60fea80d28c151df7100e75e10c0b44487efb7f4d80d9"
+  },
+  "promptBytes": {
+    "A": 38950,
+    "B": 40300
+  },
+  "launchStatus": "NOT_LAUNCHED",
+  "tools": [],
+  "timeoutSeconds": 900
+}

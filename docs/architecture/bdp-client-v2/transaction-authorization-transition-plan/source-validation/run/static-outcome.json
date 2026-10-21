@@ -1,0 +1,164 @@
+{
+  "status": "six static stages passed; runtime held by root before first launch",
+  "sourceBindingSha256": "19cba5c8433ee3e9e588c38c451c9be7f3a4c127215a16a66db354fbbf2cba85",
+  "stages": {
+    "typecheck": {
+      "exit": 0,
+      "supervisorExit": 0,
+      "elapsedSeconds": 1.984159082872793,
+      "timeout": false,
+      "forcedCleanup": false,
+      "sourceUnchanged": true,
+      "errors": [],
+      "runtimeDirectoriesStillPresent": [],
+      "unclassifiedTempEntriesStillPresent": [
+        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-authorization-transition-plan/source-validation/run/typecheck.tmp/node-compile-cache"
+      ]
+    },
+    "build": {
+      "exit": 0,
+      "supervisorExit": 0,
+      "elapsedSeconds": 1.5027501250151545,
+      "timeout": false,
+      "forcedCleanup": false,
+      "sourceUnchanged": true,
+      "errors": [],
+      "runtimeDirectoriesStillPresent": [],
+      "unclassifiedTempEntriesStillPresent": [
+        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-authorization-transition-plan/source-validation/run/build.tmp/node-compile-cache"
+      ]
+    },
+    "format-check": {
+      "exit": 0,
+      "supervisorExit": 0,
+      "elapsedSeconds": 1.0669223750010133,
+      "timeout": false,
+      "forcedCleanup": false,
+      "sourceUnchanged": true,
+      "errors": [],
+      "runtimeDirectoriesStillPresent": [],
+      "unclassifiedTempEntriesStillPresent": [
+        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-authorization-transition-plan/source-validation/run/format-check.tmp/node-compile-cache"
+      ]
+    },
+    "lint": {
+      "exit": 0,
+      "supervisorExit": 0,
+      "elapsedSeconds": 0.990142917027697,
+      "timeout": false,
+      "forcedCleanup": false,
+      "sourceUnchanged": true,
+      "errors": [],
+      "runtimeDirectoriesStillPresent": [],
+      "unclassifiedTempEntriesStillPresent": [
+        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-authorization-transition-plan/source-validation/run/lint.tmp/node-compile-cache"
+      ]
+    },
+    "boundaries": {
+      "exit": 0,
+      "supervisorExit": 0,
+      "elapsedSeconds": 1.0526934589724988,
+      "timeout": false,
+      "forcedCleanup": false,
+      "sourceUnchanged": true,
+      "errors": [],
+      "runtimeDirectoriesStillPresent": [],
+      "unclassifiedTempEntriesStillPresent": [
+        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-authorization-transition-plan/source-validation/run/boundaries.tmp/node-compile-cache"
+      ]
+    },
+    "read-seal": {
+      "exit": 0,
+      "supervisorExit": 0,
+      "elapsedSeconds": 0.7720854580402374,
+      "timeout": false,
+      "forcedCleanup": false,
+      "sourceUnchanged": true,
+      "errors": [],
+      "runtimeDirectoriesStillPresent": [],
+      "unclassifiedTempEntriesStillPresent": [
+        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-authorization-transition-plan/source-validation/run/read-seal.tmp/node-compile-cache"
+      ]
+    }
+  },
+  "artifacts": {
+    "typecheck": {
+      ".exit.json": "3fa10858c2ab5adb58038353d8b04b7736df6890ea2660e31bf49c278561e338",
+      ".log": "6b3db3c0055243528bb8d4faa22a9ff175e74a56dbfa9559d1dd0dc035b23a13",
+      ".stderr.log": "91d54ffbee73a3ac72294d090e58d77745f8b93edbf94b862807698273a6505a"
+    },
+    "build": {
+      ".exit.json": "8dcaa6884a250172acaba5454fe0aa60c177001c9140dfcbf135b5d20505cc65",
+      ".log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      ".stderr.log": "232dac5e840e45b3bb06e6e04249b5241f2e1b4f6c797a22c046d916302ac208"
+    },
+    "format-check": {
+      ".exit.json": "7bf104b45910a3e466c3301d6f46e42c57f70dd9a82c8565f9ad49c260d1144d",
+      ".log": "f43686ad3b416ea8b2e67a6fc4135898fa8d40034b2ba5e318c5a4ae02eede46",
+      ".stderr.log": "27d4a8f9f57ffa2ed1a62044be304d354ca11792394fc73b595fd300491885e9"
+    },
+    "lint": {
+      ".exit.json": "55b7785cdb8a3fd3f4053d736a06df55646059089156693bd137dcfc936cb712",
+      ".log": "d6feb74b084a4ca1c0218a96c10b5111f1b2969d18bf53d6b679ee92efa148e1",
+      ".stderr.log": "cfcb28d3eb51a1978330cc283efb33bf64bb7367c17612f25580e80f16eab676"
+    },
+    "boundaries": {
+      ".exit.json": "c3306873a10bc9e42bbfff2390b621b4bfed22201cc88fdbdd6921d3f29c711d",
+      ".log": "25f2896a4960c5d83a2204d5d35f52d3e1a6f7e77d5f53a88ddc9d70b9ebe696",
+      ".stderr.log": "d260441eb2539a76bd20c55dd70475eb60928b9473eb9ca28381db489a642c51"
+    },
+    "read-seal": {
+      ".exit.json": "494f57a163a96b8f36917e3d452383f40320eba5428bf37df134ca1c0de70cb8",
+      ".log": "18a58981597b6d29981cfc6a9587156d7b37a5fc7ead823c32dc08cf350020b3",
+      ".stderr.log": "dd750dcee9bf2c0c1be7ded137d7691e5cbad5444a22f6abc980bf6a9b724308"
+    }
+  },
+  "independentSampledPidCheck": {
+    "sampledPids": [
+      88482,
+      88484,
+      88489,
+      88492,
+      88519,
+      88669,
+      88671,
+      88675,
+      88698,
+      88699,
+      88735,
+      89016,
+      89018,
+      89022,
+      89046,
+      89054,
+      89087,
+      89089,
+      89093,
+      89116,
+      89123,
+      89168,
+      89170,
+      89174,
+      89198,
+      89256,
+      89258,
+      89262,
+      89285
+    ],
+    "stillPresent": []
+  },
+  "warnings": {
+    "format": "one3.5MiB matrix exceeds1MiB formatter file limit",
+    "lint": {
+      "warnings": 923,
+      "infos": 65,
+      "diagnosticsSuppressedByReporter": 968
+    }
+  },
+  "boundariesWorkspacePackages": 11,
+  "historicalReadEvidenceRowsVerified": 89,
+  "runtimeCallbacksExecuted": 0,
+  "httpDispatchedBySelectedCallbacks": 0,
+  "rootHold": "Native receipt-page sensitive Resource oracle finding; successor disposition pending. No prior runtime credit fabricated.",
+  "attribution": "typecheck was executed by root; remaining five static stages by update_implementation. Existing Read artifact verification is not fresh runtime evidence."
+}

@@ -1,0 +1,53 @@
+{
+  "utc": "2026-10-18T16:08:56.929316+00:00",
+  "session": "2026-10-18T02:16:24Z-549f",
+  "auditAccepted": true,
+  "reviewAccepted": false,
+  "reviewComplete": false,
+  "nativeTerminalIndex": {
+    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-final-discovery-owner-plan-review-1/actual-review-terminal-1/index.json",
+    "sha256": "ecb5ce39ccc32dfb044832c1ebb76aaece66572a6eddcca7568c23e99f2e7bfc"
+  },
+  "nativeTerminalClosure": {
+    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-final-discovery-owner-plan-review-1/actual-review-terminal-1/closure.json",
+    "sha256": "ef6bedbb89e43a3856a44d13e4e92adb87e4c5123c9b3614be0f9dccad60e568"
+  },
+  "nativeTerminalReport": {
+    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-final-discovery-owner-plan-review-1/actual-review-terminal-1/report.md",
+    "sha256": "60586c497d08739074910d7fec0f600d83094918be491a243b81b7245e3faec8"
+  },
+  "nativeIndexedFilesAndMirrorVerified": 104,
+  "actualRootToolReceipt": {
+    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-final-discovery-review-root-exec-terminal-1/receipt.json",
+    "sha256": "aaee6d94dc80bb8d12e1c0d5bf6682dcb0c6a588243010bec32a4486611e92c0"
+  },
+  "actualToolExit": 1,
+  "wrapperRawExit": -15,
+  "innerCliExit": "UNKNOWN",
+  "terminalResultCount": 0,
+  "completeFindingsAvailable": false,
+  "partialStream": {
+    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-final-discovery-owner-plan-review-1/claude-plan-review/stream.jsonl",
+    "sha256": "3821bde8b9dfa66b0f0fa59a7a334d15ffbaf662f98a4ed2304245776d5bec86"
+  },
+  "records": 2415,
+  "missingOutputs": [
+    "source-after.json",
+    "exit.json",
+    "final-review.txt",
+    "terminal-results.json"
+  ],
+  "failureDisposition": "Preserve FAILED supervision and incomplete substantive review. Initiating outer TimeoutExpired469.850759s precedes cleanupTERM470.447s and later row_executable470.751726s; no retained exception command/stack, deeper cause UNKNOWN. No1790/1800deadline expiry.",
+  "source679StillExact": true,
+  "freshKnownPidsGroupsAbsent": true,
+  "priorStickyOwnershipUnknownPreserved": true,
+  "retryAuthorized": false,
+  "sourceOrDslAuthoringAuthorized": false,
+  "independentWorkContinues": [
+    "P10 source/package/installed validation",
+    "Carrier3 ordinary exception preservation correction and independent mechanics",
+    "D4 availability caller independent mechanics/actual availability only after release",
+    "G09 pinned applicability native review"
+  ],
+  "remainingDecision": "Mandatory completed external PLAN result is absent; final discovery-owner source/DSL lane stays CLOSED. Reconcile this unresolved review gate with operator only after independent authorized work is exhausted. No review waiver inferred."
+}

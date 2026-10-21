@@ -1,0 +1,31 @@
+{
+  "checkedAt": "2026-10-14T15:11:11.943568+00:00",
+  "head": "39c160d0d35294003f400cef8d5ab5c6ec9aec9c",
+  "base": "5995f6b08ebd045e4343059c2da1cffd38b09b80",
+  "tree": "75e8fb97979e304bbe6fa24b7a570d9fa01efbbb",
+  "files": [
+    "apps/bdptest/src/transactional-matrix.test.ts",
+    "packages/conformance/src/transactional-cumulative.test.ts",
+    "packages/conformance/test-support/transactional/coverage-v1.json",
+    "packages/conformance/test-support/transactional/manifest-v1.json"
+  ],
+  "ciRun": 38581374707,
+  "ciJob": 115925110459,
+  "ciAttempt": 2,
+  "tests": {
+    "passed": 9213,
+    "skipped": 1,
+    "files": 168
+  },
+  "councilReports": {
+    "transaction-deletion-safety-claude-code-review.txt": "93b8ca4b27e291ea07070b660629eb11c4221ebd1a57b82605585baaaf9cfa30",
+    "transaction-deletion-safety-final-council-dispositions.md": "4bb8411260d227642849f982fa8b56249a77ceba46f8ce9539b612f1207e976a",
+    "transaction-deletion-safety-final-council-native-closure.md": "2c65eca40d9113c83967a29035e8af8f6648d2a4a679bca5cd95036143e924a4",
+    "transaction-deletion-safety-schema-repair-native-closure.md": "0a9d60dea7bc98e01f8b3964da5264766b13d11adc7b3fd2e9ed4fd3acefe33c",
+    "transaction-deletion-safety-schema-repair/root-source-evidence-audit.json": "9ee71aac56d10c8c6d619b2806131f491f14d72cb9da6ca192acb44dff283e19"
+  },
+  "allActionableFindingsDispositioned": true,
+  "ready": true,
+  "noReleaseOrProfilePromotion": true,
+  "priorTimeoutPreserved": true
+}

@@ -1,0 +1,153 @@
+Reviewed `transaction-event-serving-plan.md` against `71549f2` via `git show` only (frozen blobs piped to `/tmp`; no working-tree reads, no files written, no tests/builds). Basis attribution in the plan checks out: `71549f2` is an ancestor of `codex/vickie-installed-profiles` HEAD, which is what `vickie-installed-profiles-integration` is checked out to.
+
+The plan is substantially accurate — every spec anchor, seam line range, catalog row and schema `$def` it cites exists at the basis, and its authority boundary (owner = prefix/epoch/facts, service = cancellation/drain, HTTP = framing) is the right one. The findings below are where it is wrong, infeasible, or silent on something that blocks a step.
+
+---
+
+# FINDINGS
+
+## F1 — HIGH — Resource-source ID rewrite contradicts the frozen wire fixture
+**Location:** plan:87 ("rewrites source and source-local ID") vs `fixtures/transactional/events.json` (all three `dec-9`/`dec-11` exchanges) and `packages/protocol/src/transactional-wire.test.ts:404`.
+**Impact:** The published Resource-source IDs are `ckpt-43_0`, `ckpt-43_2`, `ckpt-43_4` — the **unmodified Scope checkpoint+ordinal**, with gaps at the ordinals the projection drops (the fixture's own `condition` says so). Only `source` is rewritten (`:404` asserts `event.source === body.source`). Implementing an ID rewrite makes the runtime disagree with the only published wire form, and breaks the plan's own requirement at plan:109-110 that "the Scope Event projection must be the same one later used by a served change group" — a replica's `after` cursors would not match served Event IDs.
+**Fix:** Rewrite `source` only. ID stays `f(checkpoint, ordinal)`. If per-source binding is still wanted, make it a digest *prefix* (F2) and state plainly that it diverges from `fixtures/transactional/events.json` — pick one, don't half-do both.
+
+## F2 — HIGH — The prescribed token codec cannot fit the 256-char grammar
+**Location:** plan:104-106 ("one deterministic private codec over epoch, view, source, checkpoint and ordinal, obeying the 256-character token profile").
+**Impact:** `$defs/event.id` → `$defs/wireToken` = `^[A-Za-z0-9_-]{1,256}$` (bundle), per spec 6565-6566. At the basis, epoch is `randomUUID()` (36 chars, `transaction-store.ts:458`), view is `development-all-visible` (23), checkpoint is `pos-N`, and **source is an unbounded canonical URL**. Concatenating-and-encoding overflows 256 for any realistic Bead URL. Step 1 as written is not implementable, and that is discovered only after the codec exists.
+**Fix:** Your proposal is the right shape: fixed-width digest of the source context, e.g. `base64url(sha256(epoch \0 view \0 source))` truncated to 128 bits = 22 chars, then `_<ordinal>` appended to the checkpoint. Verify by **recomputing** the digest from the request's own source plus current epoch/view — never by decoding the token. Budget is then ~22 + checkpoint + ordinal ≪ 256, and the prefix cannot collide with the reserved `genesis`.
+
+## F3 — HIGH — Plan overstates the spec on cross-source cursor refusal
+**Location:** plan:203-204 ("The spec clearly requires explicit cross-source/epoch/view cursor refusal"); predicate at plan:164-165.
+**Impact:** Epoch/view fencing *is* explicit (spec 3669-3672, 3701-3704, 6146). Cross-**source** refusal is not: spec 6187 only says IDs "have meaning only within their Event Source", which is satisfied by per-source interpretation. And under the fixture's ID form (F1) a Scope ID and a Resource ID for the same fact are the *same string*, so the refusal is undetectable. The plan asserts as spec-mandated a rule that is a local strictness choice, and one its own chosen ID form cannot deliver.
+**Fix:** Restate as an implementation choice (safe — a refusal is never a disclosure), conditional on adopting the F2 digest; or drop the predicate. Do not cite it as spec.
+
+## F4 — HIGH — Missing, unavoidable law: `after` naming a *filtered* Event
+**Location:** plan:108-109 ("Verify a candidate names an actual retained position belonging to this source").
+**Impact:** Every Resource projection has gaps by construction — `dec-9`'s page omits ordinals 1 and 3. "Belonging to this source" therefore refuses `ckpt-43_1` on `dec-9?view=events`. That contradicts the erasure precedent the plan explicitly wants to reuse later (spec 6453-6457: "a cursor whose Event was withheld remains a valid exclusive `after` position"), and makes filtered and withheld projections behave differently. The fixture settles the intended semantics: `after=ckpt-43_4` on `dec-9` returns facts from group **46**, skipping groups 44-45 entirely — the cursor is a position in Scope order, then filter.
+**Fix:** Admit any cursor naming a **retained (checkpoint, ordinal) at this epoch/view**; apply it as an exclusive Scope-order position, then filter. Refuse only non-retained positions. Change "belonging to this source" to "retained in this Scope at this epoch/view". Record the stricter alternative as rejected.
+
+## F5 — HIGH — Live SSE cannot survive the runtime's socket timeouts; plan never mentions them
+**Location:** plan:127-135 vs `transaction-runtime.ts:252-256` — `requestTimeout = 10000`, `headersTimeout = 10000`, `timeout = 10000`, `keepAliveTimeout = 1000`, and `server.on("timeout", (socket) => socket.destroy())`.
+**Impact:** An SSE stream idle for >10 s (no commits) has its socket **destroyed**, not closed. `deliver()` then no-ops on `response.destroyed`. This is indistinguishable from a client disconnect, so predicate 3's "disconnect mid-frame and reconnect" evidence and predicate 5's "concurrent streams terminate boundedly" become flaky or outright false.
+**Fix:** Per-stream `response.setTimeout(0)` (or `request.socket.setTimeout(0)`) on the SSE branch *plus* keepalive comment lines under the budget (spec 6273 permits them); leave the 10 s default for every non-stream request. Add an explicit assertion that an idle stream survives past 10 s — otherwise this defect hides inside "flaky live test".
+
+## F6 — HIGH — No abort plumbing exists; one live stream hangs shutdown forever
+**Location:** plan:131-133 vs `transaction-runtime.ts:202,215-217` (`new Request(url, {method, headers})` — no signal) and `transaction-service.ts:352-359` (`close()` = `accepting = false` then `await Promise.allSettled([...active])`; its own comment: "No disconnect cancellation exists").
+**Impact:** "Stop it on socket close/abort" and "cancel before draining service shutdown" have **no** existing mechanism. `run()` has no cancellation hook, so a stream registered in `active` whose promise resolves only on socket close blocks `close()` indefinitely. Note the runtime's `closeListener()` already calls `server.closeAllConnections()` *before* the drain, so the two orderings must be reconciled, not just one of them fixed.
+**Fix:** Thread an `AbortSignal` (from `response.on("close")`) as a new `handle()` parameter; add a stream registry + `cancelStreams()` to the service, called after `accepting = false` and **before** the `allSettled` drain; make cancel idempotent under socket destruction; keep stream failures out of `cleanupFailure` so one bad stream does not poison the service.
+
+## F7 — HIGH — `enter()` throws on contention; the live loop has no refusal policy
+**Location:** plan:129-130 ("Every next observation goes through the owner fence") vs `transaction-store.ts:275-286` (`if (closed || busy) throw`), `:689-694` (`withRead` → `entry-refused` / `reason: "reentrant"`), `:449` (`PRAGMA locking_mode=EXCLUSIVE; busy_timeout=0`).
+**Impact:** The owner entry is hard mutual exclusion with **no queueing and no waiting**. A poll or wakeup landing while a mutation holds the entry gets a synchronous throw or `entry-refused`. The nearest precedent, `transaction-service.ts:330-331` (`sequenceObserved`), **throws** on `entry-refused` — so naive reuse kills the stream on every concurrent commit.
+**Fix:** Classify explicitly: `reason: "reentrant"` → retry on next turn; `"not-accepting"` → terminate stream (close, no post-header error frame). This also decides the plan's open "wakeup vs bounded polling" choice at plan:128-129 in favour of a post-commit wakeup — a `setInterval` poll deterministically hits the reentrant window.
+
+## F8 — MEDIUM — The plan's stated "required implementation dependency" is unnecessary
+**Location:** plan:97-102 (historical incident endpoints "cannot use only today's Link table… a bounded per-entry lookup/index over durable groups is a valid first implementation").
+**Impact:** The endpoints are already in the same group body being read. `transaction-batch.ts:609-622` does `changes.set(subject.id, {operation: "upsert", resource: subject})` with the **full `ResourceRecord`** (`source`/`target` included) *before* `scopeEvent`, and `transaction-store.ts:1067` persists `changes` in the group. Provable: any group carrying an `updated` fact whose subject is a Link also carries that Link's immutable endpoints in that same group, via (a) the `changes[]` upsert postimage, else (b) the same-group `created` fact's `data.source`/`data.target`, else (c) the same-group `linked`/`unlinked` facts when the Link is deleted in that group. The "Link can subsequently be deleted" and "test after restart/deletion" concerns dissolve — each historical `updated` fact carries its endpoints in its own group. This is the only part of step 1 that would touch durable format, and it is the plan's single largest avoidable cost.
+**Fix:** Drop the index. Resolve endpoints from the group body at read time, O(1) per group already being scanned. Then assert the invariant in a **writer** test — it is precisely what the owned-Link author can break (see Coordination below).
+
+## F9 — MEDIUM — Event route insertion point unspecified; every obvious placement is wrong
+**Location:** plan:137-146 vs `read-request.ts:220,253` (`view=events` falls through to `invalidParameter()` → 400) and `transaction-http.ts:312` (auth gate), `:317` (receipts), `:345-359` (minimum-route gap), `:351` (`isReadProblem(parsed) && status === 400` → `problem`), `:368` (`readRoute`).
+**Impact:** Today `?view=events` → 400 and `events/` → 404 before any Event code could run. With minimum headers present they return 400 at `:351` or `developmentGap("minimum-position-route")` (a 500) at `:358`.
+**Fix:** Branch on exact `${scope}events/` and canonical bead/link + `view=events` immediately **after** the `:312` auth gate and **before** `:317`/`:345`. Leave `read-request.ts` untouched — `http-handler.test.ts:319` pins `beads/a?view=events` → 400 for the Read profile, which is correct per spec 5625-5627 and is the guard proving the plan's "no public Read API changes" claim.
+
+## F10 — MEDIUM — Stream variant must bypass two JSON-assuming call sites
+**Location:** plan:72-75, 219-222 vs `index.ts:348-352` (`HttpResponse.body?: unknown`), `transaction-http.ts:402-404` (`applyReadHttpSemantics` on every GET/HEAD), `transaction-runtime.ts:84` (`stringifyJsonValue(selected.body)`), `read-http.ts:42-46`.
+**Impact:** A stream body reaching `deliver()` is JSON-serialized; reaching `read-http.ts:44` it is `stringifyJsonValue`'d for a HEAD content-length. The plan names the "private response union" but not these two sites.
+**Fix:** Discriminated stream variant handled in `deliver` (writeHead → `flushHeaders` → incremental `write` with `drain` backpressure) and short-circuited at `transaction-http.ts:402` so `read-http.ts` stays untouched. Worth noting: **HEAD + `Accept: text/event-stream` already works** through existing code (body undefined, content-type not JSON → `applyReadHttpSemantics` passes it through), matching fixture rows `events-head-event-stream` / `resource-events-head-event-stream` (200, `text/event-stream`, `no-store, no-transform`, three BDP headers, no frames).
+
+## F11 — MEDIUM — Negotiation must split into early selection / late refusal; tie-break undecided
+**Location:** plan:139-140 ("Accept finite JSON or SSE on the same source, negotiate honestly").
+**Impact:** `transactional.http.accept-refusal` ("…while ordinary refusals retain precedence") plus spec 1947-1955 put the bodyless 406 **after** source/cursor/minimum decisions — which the existing post-hoc `applyReadHttpSemantics` already gives for JSON. But *selection* (stream vs page) must happen **before** the minimum wait, or a request destined to 406 burns the full catch-up budget, and you cannot know whether to open a stream. Separately, `Accept: application/json, text/event-stream` (equal q, equal specificity) has no defined winner, and predicate 3 depends on a deterministic answer. `read-http.ts:90` gives `acceptsJson(null) === true`, so missing Accept defaults to JSON (spec 1952).
+**Fix:** Add `selectEventMedia(accept)` reusing `read-http.ts`'s private `splitQuoted`/`jsonRange` logic (generalize internally; do not widen exports — this is the "justified duplication" the plan hedges on at plan:220-222). Default, tie, `*/*` and `text/*` → JSON. Record the tie-break as a local decision.
+
+## F12 — MEDIUM — Conditionals on the SSE branch are undecided and currently skipped silently
+**Location:** plan:143-144 vs `read-http.ts:12-14` (the `json` gate excludes `text/event-stream`), `fixtures/transactional/http-contracts.json` (`events-none-match-star` → 304, `events-match-specific` → 412, `events-match-precedence` → 412 — **GET/JSON only; no SSE conditional case**), spec 1991-1995, `transactional.http.head-parity` ("HEAD retains the corresponding GET … precondition decision").
+**Impact:** `GET` with `Accept: text/event-stream` + `If-None-Match: *` currently opens a stream, while head-parity implies a shared precondition decision. Neither spec nor fixtures resolve it, and the existing code resolves it by accident.
+**Fix:** Decide explicitly — recommend evaluating the same conditional on the SSE branch and returning bodyless 304/412 instead of opening a stream. Test it either way; if deferred, record it in the plan's unresolved-combination list rather than letting `read-http.ts:13` decide by omission.
+
+## F13 — MEDIUM — Metadata-only incident-Link `updated` projection unresolved but tested
+**Location:** plan:154-157 (predicate 1 tests "properties and metadata changes") vs spec 5553-5554 ("`updated` facts whose subject is an incident Link when that Link's mutable **properties** change") and `$defs/updatedData`, which admits `metadataChange` alone.
+**Impact:** A metadata-only Link update either appears in the endpoint Bead's source or doesn't. The literal text excludes it — which breaks `previousRevision`/`revision` chaining for a consumer following the Bead source. The plan tests the input without resolving the rule.
+**Fix:** Project all incident-Link `updated` facts (properties and/or metadata); pin it in the test; record the literal-text divergence as an open spec question for the BDP owner.
+
+## F14 — MEDIUM — Minimum + undisclosable/deleted Event Source collides with a recorded gap
+**Location:** plan:173-175, 205-207 vs `transaction-read.ts:46-51` (`TransactionMinimumVisibilityGap`, "Absence/visibility versus minimum ordering is not yet specified") and `transaction-http.ts:396-397` (→ `developmentGap("minimum-position-visibility")`, a **500**).
+**Impact:** For Events the 404 path is *normal* (unknown source) and the deleted-subject path must still serve while retained (spec 5631-5640). Inheriting the Read route's gap-throw turns an ordinary nondisclosing 404 into a 500. The plan's open combination (plan:205-207) is about *cursors*, not source existence, so this case is uncovered.
+**Fix:** On the Event route, run source disclosure to a definite 404 **before** the minimum check; keep `TransactionMinimumVisibilityGap` reserved for the Resource-read route. State this as the Event-specific ordering rather than reusing the Read precedent.
+
+## F15 — MEDIUM — No problem code exists for "well-formed cursor naming no retained Event"
+**Location:** plan:203-209 (declines to choose), predicate at plan:163-166.
+**Impact:** `$defs/directProblemCode` has no `invalid-cursor`. Available: `invalid-parameter`, `cursor-expired`, `foreign-view`, `resource-not-found`, `event-history-expired`. `transactional.http.problem-contexts` closes each context to its codes, so no code can be invented — yet every Event read must answer this. It cannot be deferred.
+**Fix:** `invalid-parameter` (400) for malformed **and** non-retained/fabricated cursors; `cursor-expired` strictly for epoch mismatch and future retention expiry; `foreign-view` for view mismatch — matching the existing precedent in `checkTransactionMinimum` (`transaction-consistency.ts:69-72`). Record the malformed-vs-unknown merge as resolved-by-choice, keeping the plan's "pure syntax and unknown retained identity are distinct test inputs" as two inputs with one code.
+
+## F16 — MEDIUM — `genesis` must be refused as a cursor; the existing helper accepts it
+**Location:** plan:164-165 vs `transaction-consistency.ts:14-19` — `position()` maps `"genesis"` → `0`.
+**Impact:** Spec 6572-6573: `genesis` "is never assigned to an Event or later position." Reusing `position()` for cursor parsing silently accepts `after=genesis` as "start at 0" — a fallback-to-start, exactly what plan:166 forbids.
+**Fix:** Separate Event-cursor parser. Do not reuse `position()`.
+
+## F17 — LOW — The 256-grammar validator is module-private and will be triplicated
+**Location:** plan:106 vs `transaction-consistency.ts:13` (`const token = /^[A-Za-z0-9_-]{1,256}$/`, **not exported**) and `$defs/wireToken` in the bundle.
+**Impact:** A third independent spelling in `transaction-events.ts`; `transactional.http.token-profile` then has three copies to keep in sync.
+**Fix:** Export one validator and use it for epoch, view, position, transaction and Event IDs.
+
+## F18 — LOW — Catalog citations incomplete for rows this slice actually binds
+**Location:** plan:213-216. All verified present in `packages/conformance/catalog/transactional-v1.json`.
+**Impact:** Missing: `transactional.event.fact-order` (the row whose prose the ordering/self-link tests actually bind — its `selectedText` is exactly "the Link's lifecycle fact first, then the graph facts at its in-Scope endpoints, source before target"), `transactional.http.token-profile`, `.accept-refusal`, `.method-405`, `.problem-contexts`, `.head-parity`, `.conditional-reads`.
+**Fix:** Add them. Also add `transactional.http.disconnect-admitted` to the *must-not-be-claimed* list beside the plan's correct `changefeed.sse`/`.sse-reconnect` warning — it is about admitted mutations surviving disconnect, not SSE reconnect, and predicate 3/5's disconnect tests will look like they cover it.
+
+## F19 — LOW — Two plan line items are already satisfied at the basis
+**Location:** plan:17-18 and plan:175-176.
+**Impact:** Effort budgeted for work that doesn't exist. (a) "receipt expiry must never delete Event facts": `sweep()` (`transaction-store.ts:429-443`) touches only `receipts`; `groups` is never swept. (b) "If-Match/If-None-Match behavior without validators": `read-http.ts:50-84` already implements spec 1991-1995 exactly — `If-Match: *` passes, specific `If-Match` → 412, `If-None-Match: *` → 304, specific `If-None-Match` → 200 — and `applyReadHttpSemantics` preserves the three BDP context headers while deleting `content-type`/`etag`, which is precisely the `events-*` / `resource-events-*` fixture rows. Just don't set an ETag.
+**Fix:** Demote both to cheap regression assertions.
+
+## F20 — LOW — Two citation drifts
+**Location:** plan:42 cites "Transactional consistency/conditional reads (5760–5830)", but 5825-5830 is `### Scope snapshots`; the intended span ends at 5824. plan:48 cites "Erasure rules (6430–6460)", which sits inside `### Version erasure` (6289) rather than `### History and Transactional erasure` (6525) as the ordering implies.
+**Fix:** Tighten to 5760-5824 and label 6430-6460 as Version erasure.
+
+---
+
+# MISSING LAWS (must be decided, cannot be deferred)
+
+Ordered by whether an Event read can be served without them:
+
+1. **Filtered-Event cursor validity** (F4) — blocking. Every Resource read needs it.
+2. **Problem code for a non-retained cursor** (F15) — blocking. No code can be invented.
+3. **`genesis` as cursor** (F16) — blocking, trivial.
+4. **Minimum vs source-nondisclosure ordering on the Event route** (F14) — blocking for any minimum-bearing Event request.
+5. **Accept tie-break and selection-vs-refusal ordering** (F11) — blocking for SSE.
+6. **Conditionals on the SSE branch** (F12) — currently decided by omission.
+7. **Metadata-only incident-Link `updated`** (F13) — blocking for predicate 1.
+8. **Cross-source refusal: local choice or dropped** (F3) — must be settled before the token codec is written.
+9. **Last-Event-ID validation must complete before the 200 + SSE headers are committed** — the plan has "no new wire error message after SSE headers" (plan:134-135) but never states the converse: an invalid `Last-Event-ID` must produce a problem *response*, not a stream that then closes.
+
+Correctly deferred by the plan, no action: erasure withholding, `event-history-expired` / pruning, owned-Link closure, Snapshot/changefeed, full discovery, public profile admission.
+
+# IMPLEMENTATION DEPENDENCIES (real ones, at the basis)
+
+- **New**: streaming response variant in `deliver` with `drain` backpressure (F10); `AbortSignal` threading through `handle()` (F6); service stream registry + `cancelStreams()` before drain (F6); per-stream socket-timeout override + keepalives (F5); `selectEventMedia` (F11); Event-cursor parser (F16); `entry-refused` classification (F7).
+- **Not needed, contrary to the plan**: any endpoint index or cross-group scan (F8); any durable-format change or old-store refusal — which also means plan:110-112's versioning/refusal clause and predicate 6 are unnecessary *if* F1/F8 are adopted; any conditional-header code (F19b); any receipt-sweep guard (F19a); any `read-request.ts` or public Read change (F9).
+
+# SMALLEST SAFE SEQUENCING
+
+The reordering that matters: **the entire finite path can land as reader-only, touching no writer file.** The facts it needs already exist in durable group bytes — `events[]` with Scope IDs and `changes[]` with Link postimages.
+
+- **0 (new, ~1 h).** Settle laws 1-4, 7, 8 above and the ID form (F1 vs F2 digest). Nothing downstream is stable until the ID form is chosen.
+- **1.** `transaction-events.ts`, **reader-only**: projection + cursor parse/verify + finite page. Explicitly freeze `transaction-batch.ts` and `transaction-store.ts`'s group body for this slice. Drop the index (F8); drop format versioning. Add a writer-side *assertion* test for the same-group-endpoints invariant (F8) — no writer edit.
+- **2.** Owner finite read under `enter()`, returning current context + frozen page. Reuse `checkTransactionMinimum`; apply the F14 ordering.
+- **3.** HTTP finite JSON: new branch after `transaction-http.ts:312`, before `:317` (F9). `jsonResponse(page)` + `context(...)` — no new header code (F19b). Finite path is now complete and testable with zero streaming risk.
+- **4.** HEAD-SSE metadata only (F10) — it works through existing code, so it is nearly free and pins the fixture rows before any stream exists.
+- **5.** Streaming infrastructure: `deliver` variant + abort threading + timeout override + stream registry (F5, F6, F10). Land shutdown/backpressure/disconnect tests *here*, before any live observation.
+- **6.** Live observation: replay→follow with no race, post-commit wakeup, `entry-refused` classification (F7).
+
+Steps 1-4 are independent of 5-6 and independent of the owned-Link work. Step 5 is where the genuinely new risk is, and the plan currently has it entangled with step 3.
+
+# COORDINATION WITH THE OWNED-LINK AUTHOR
+
+The owned author will remove `transaction-batch.ts:601` (`if (outcome.sourceRevision !== undefined) throw new Error("unsupported owned-Link transition")`) and add the 2 Resource versions / 4 Event facts per owned operation. The shared store surface is `scopeEvent()` (`:544-560`), `changes` (`:609-622`), and the group body (`transaction-store.ts:1059-1071`). Three things to agree rather than duplicate:
+
+1. **`scopeEvent` stays the single minting point.** Ordinal is `events.length`; nothing appends to `events[]` directly. The spec 5480-5485 order (Link lifecycle → graph facts source-before-target → source `updated` last) lives in the writer only — the reader "never renumbers by projection" (spec 5485). `transactional.event.fact-order` is the owned author's row, not the Event-serving slice's.
+2. **The reader treats `data.ownedLink` as opaque passthrough.** `$defs/updatedData`'s `oneOf` already admits it, so no protocol change is needed and the Event module does not get re-landed when owned facts arrive. The Bead-source filter must key on `subject` + `type` + `data.endpoint`/`data.source`/`data.target` — never on a closed set of `data` shapes. Verified against the fixture: the Bead source carries `linked`/`unlinked` whose `subject` is the *Link*, and excludes an incident Link's own `created`/`deleted` (`ckpt-43_1`, `ckpt-46_0`).
+3. **One shared invariant, asserted by whoever lands last:** every committed group carrying an `updated` fact whose subject is a Link also carries that Link's immutable endpoints in the same group body. This is what makes F8's simplification safe, and it is exactly what an owned-Link transition could break (`ownedLink.link` for an `updated` transition carries a delta with no endpoints). Agreeing this one line removes the plan's index entirely.
+
+Also: the owned author owns the `eventMaximum` / `EventExpansionLimit` count change (a self-Link already counts 2; owned adds one more per transition). The Event-serving slice should not touch it.

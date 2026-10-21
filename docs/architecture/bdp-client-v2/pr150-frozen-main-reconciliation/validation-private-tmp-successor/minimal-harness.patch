@@ -1,0 +1,279 @@
+--- /Users/dbox/repos/wt/vickie/bdp-integration-logs/pr150-frozen-main-reconciliation/validation/run.py
++++ /Users/dbox/repos/wt/vickie/bdp-integration-logs/pr150-frozen-main-reconciliation/validation-private-tmp-successor/run.py
+@@ -1,5 +1,5 @@
+ """Single bounded stage. Usage: run.py final STAGE; workspace tools are captured after guarded frozen-lock install. Closed without root gate."""
+-import os,sys
++import os,sys,tempfile
+ if len(sys.argv)!=3 or sys.argv[1]!='final':raise SystemExit('usage: run.py final STAGE')
+ os.environ['RECONCILIATION_VALIDATION_PHASE']=sys.argv[1]
+ import sys
+@@ -14,8 +14,12 @@
+ for k in list(env):
+  if k.startswith(('BDP_','VITEST_')) or k in ['NODE_OPTIONS','NODE_PATH','NODE_DEBUG','PYTHONOPTIMIZE','BIOME_BINARY','npm_execpath','npm_node_execpath','FORCE_COLOR']:env.pop(k)
+ env.update({'PATH':'/Users/dbox/.nvm/versions/node/v24.16.0/bin:'+env.get('PATH',''),'CI':'true','NO_COLOR':'1','PYTHONDONTWRITEBYTECODE':'1','RECONCILIATION_VALIDATION_PHASE':MODE})
+-env.update(spec.get('environment',{}));tmp=E/(name+'.tmp');tmp.mkdir();env['TMPDIR']=str(tmp);env['npm_config_cache']=str(tmp/'npm-cache')
+-write(name+'.started.json',{'argv':spec['argv'],'cwd':spec['cwd'],'head':g['finalHead'],'tree':g['finalTree'],'sourceIdentity':g['_sourceIdentity'],'rootGateSha256':sha((P/('bootstrap-gate.json' if MODE=='bootstrap' else 'execution-gate.json')).read_bytes()),'outerSeconds':outer,'automaticRetries':0,'overrides':spec.get('environment',{})})
++env.update(spec.get('environment',{}))
++# Runtime fixtures must not inherit /Users/dbox/.beads through ancestor discovery.
++tmp=Path(tempfile.mkdtemp(prefix='vickie-pr150-validation-'+name+'-',dir='/private/tmp'))
++require(tmp.parent==Path('/private/tmp') and tmp.resolve()==tmp,'Unexpected owned temp path')
++env['TMPDIR']=str(tmp);env['npm_config_cache']=str(tmp/'npm-cache')
++write(name+'.started.json',{'argv':spec['argv'],'cwd':spec['cwd'],'head':g['finalHead'],'tree':g['finalTree'],'sourceIdentity':g['_sourceIdentity'],'rootGateSha256':sha((P/('bootstrap-gate.json' if MODE=='bootstrap' else 'execution-gate.json')).read_bytes()),'outerSeconds':outer,'automaticRetries':0,'overrides':spec.get('environment',{}),'temporaryDirectory':str(tmp),'npmCache':str(tmp/'npm-cache')})
+ env['RECONCILIATION_VALIDATION_STAGE']=name;env['RECONCILIATION_VALIDATION_ATTEMPT']=sha((E/(name+'.started.json')).read_bytes())
+ start=time.monotonic();p=None;seen=set();forced=False;errors=[]
+ def rows():
+@@ -84,6 +88,6 @@
+  if time.monotonic()-start>=outer:errors.append('outer elapsed exceeded configured bound')
+  accepted=code in spec['acceptedRawExitCodes'] and not errors and not forced and not alive and not runtime and unchanged
+  log=E/(name+'.log')
+- record={'exit':code,'accepted':accepted,'structuredResults':results,'exitMeaning':('NO_CLAIM' if name=='evidence-verify' and code==2 else None),'sourceIdentity':g['_sourceIdentity'],'sourceUnchanged':unchanged,'elapsedSeconds':time.monotonic()-start,'forcedCleanup':forced,'errors':errors,'sampledPids':sorted(seen),'remainingProcesses':alive,'runtimeDirectoriesStillPresent':runtime,'logSha256':sha(log.read_bytes()) if log.exists() else None}
++ record={'exit':code,'accepted':accepted,'structuredResults':results,'exitMeaning':('NO_CLAIM' if name=='evidence-verify' and code==2 else None),'sourceIdentity':g['_sourceIdentity'],'sourceUnchanged':unchanged,'elapsedSeconds':time.monotonic()-start,'forcedCleanup':forced,'errors':errors,'sampledPids':sorted(seen),'remainingProcesses':alive,'runtimeDirectoriesStillPresent':runtime,'temporaryDirectory':str(tmp),'logSha256':sha(log.read_bytes()) if log.exists() else None}
+  write(name+'.exit.json',record)
+  print(json.dumps(record));sys.exit(0 if accepted else 1)
+--- /Users/dbox/repos/wt/vickie/bdp-integration-logs/pr150-frozen-main-reconciliation/validation/commands.json
++++ /Users/dbox/repos/wt/vickie/bdp-integration-logs/pr150-frozen-main-reconciliation/validation-private-tmp-successor/commands.json
+@@ -121,9 +121,9 @@
+     "bind-build": {
+       "argv": [
+         "/opt/homebrew/opt/python@3.14/bin/python3.14",
+-        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/pr150-frozen-main-reconciliation/validation/bind-build.py"
+-      ],
+-      "cwd": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/pr150-frozen-main-reconciliation/validation",
++        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/pr150-frozen-main-reconciliation/validation-private-tmp-successor/bind-build.py"
++      ],
++      "cwd": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/pr150-frozen-main-reconciliation/validation-private-tmp-successor",
+       "outerSeconds": 120,
+       "termAfterSeconds": 115,
+       "automaticRetries": 0,
+@@ -141,7 +141,7 @@
+         "run",
+         "--reporter=verbose",
+         "--reporter=json",
+-        "--outputFile.json=/Users/dbox/repos/wt/vickie/bdp-integration-logs/pr150-frozen-main-reconciliation/validation/run/full-test.json"
++        "--outputFile.json=/Users/dbox/repos/wt/vickie/bdp-integration-logs/pr150-frozen-main-reconciliation/validation-private-tmp-successor/run/full-test.json"
+       ],
+       "cwd": "/Users/dbox/repos/wt/vickie/vickie-pr150-main-reconciliation",
+       "outerSeconds": 1800,
+@@ -154,7 +154,7 @@
+         "BDP_BD_MATRIX_EXECUTABLE": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/pr150-frozen-main-reconciliation/tools/bin/bd",
+         "BDP_REQUIRE_BD_MATRIX": "1"
+       },
+-      "resultsJson": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/pr150-frozen-main-reconciliation/validation/run/full-test.json"
++      "resultsJson": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/pr150-frozen-main-reconciliation/validation-private-tmp-successor/run/full-test.json"
+     },
+     "e2e-ready-preflight": {
+       "argv": [
+@@ -234,10 +234,10 @@
+     "prepare-package-directory": {
+       "argv": [
+         "/opt/homebrew/opt/python@3.14/bin/python3.14",
+-        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/pr150-frozen-main-reconciliation/validation/packages.py",
++        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/pr150-frozen-main-reconciliation/validation-private-tmp-successor/packages.py",
+         "directory"
+       ],
+-      "cwd": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/pr150-frozen-main-reconciliation/validation",
++      "cwd": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/pr150-frozen-main-reconciliation/validation-private-tmp-successor",
+       "outerSeconds": 120,
+       "termAfterSeconds": 115,
+       "automaticRetries": 0,
+@@ -254,7 +254,7 @@
+         "@bdp/protocol",
+         "pack",
+         "--pack-destination",
+-        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/pr150-frozen-main-reconciliation/validation/run/packages"
++        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/pr150-frozen-main-reconciliation/validation-private-tmp-successor/run/packages"
+       ],
+       "cwd": "/Users/dbox/repos/wt/vickie/vickie-pr150-main-reconciliation",
+       "outerSeconds": 120,
+@@ -273,7 +273,7 @@
+         "@bdp/server",
+         "pack",
+         "--pack-destination",
+-        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/pr150-frozen-main-reconciliation/validation/run/packages"
++        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/pr150-frozen-main-reconciliation/validation-private-tmp-successor/run/packages"
+       ],
+       "cwd": "/Users/dbox/repos/wt/vickie/vickie-pr150-main-reconciliation",
+       "outerSeconds": 120,
+@@ -287,10 +287,10 @@
+     "verify-archives": {
+       "argv": [
+         "/opt/homebrew/opt/python@3.14/bin/python3.14",
+-        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/pr150-frozen-main-reconciliation/validation/packages.py",
++        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/pr150-frozen-main-reconciliation/validation-private-tmp-successor/packages.py",
+         "tar"
+       ],
+-      "cwd": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/pr150-frozen-main-reconciliation/validation",
++      "cwd": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/pr150-frozen-main-reconciliation/validation-private-tmp-successor",
+       "outerSeconds": 120,
+       "termAfterSeconds": 115,
+       "automaticRetries": 0,
+@@ -302,10 +302,10 @@
+     "prepare-consumer": {
+       "argv": [
+         "/opt/homebrew/opt/python@3.14/bin/python3.14",
+-        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/pr150-frozen-main-reconciliation/validation/packages.py",
++        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/pr150-frozen-main-reconciliation/validation-private-tmp-successor/packages.py",
+         "consumer"
+       ],
+-      "cwd": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/pr150-frozen-main-reconciliation/validation",
++      "cwd": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/pr150-frozen-main-reconciliation/validation-private-tmp-successor",
+       "outerSeconds": 120,
+       "termAfterSeconds": 115,
+       "automaticRetries": 0,
+@@ -324,7 +324,7 @@
+         "--no-frozen-lockfile",
+         "--prod"
+       ],
+-      "cwd": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/pr150-frozen-main-reconciliation/validation/run/consumer",
++      "cwd": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/pr150-frozen-main-reconciliation/validation-private-tmp-successor/run/consumer",
+       "outerSeconds": 120,
+       "termAfterSeconds": 115,
+       "automaticRetries": 0,
+@@ -336,10 +336,10 @@
+     "verify-installed-consumer": {
+       "argv": [
+         "/opt/homebrew/opt/python@3.14/bin/python3.14",
+-        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/pr150-frozen-main-reconciliation/validation/packages.py",
++        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/pr150-frozen-main-reconciliation/validation-private-tmp-successor/packages.py",
+         "installed"
+       ],
+-      "cwd": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/pr150-frozen-main-reconciliation/validation",
++      "cwd": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/pr150-frozen-main-reconciliation/validation-private-tmp-successor",
+       "outerSeconds": 120,
+       "termAfterSeconds": 115,
+       "automaticRetries": 0,
+@@ -360,7 +360,7 @@
+         "^installed Scope/Bead/Link Event SSE matches finite bytes and sparse Bead survives fifteen seconds$",
+         "--reporter=verbose",
+         "--reporter=json",
+-        "--outputFile.json=/Users/dbox/repos/wt/vickie/bdp-integration-logs/pr150-frozen-main-reconciliation/validation/run/packed-affected-1.json"
++        "--outputFile.json=/Users/dbox/repos/wt/vickie/bdp-integration-logs/pr150-frozen-main-reconciliation/validation-private-tmp-successor/run/packed-affected-1.json"
+       ],
+       "cwd": "/Users/dbox/repos/wt/vickie/vickie-pr150-main-reconciliation",
+       "outerSeconds": 120,
+@@ -370,7 +370,7 @@
+         0
+       ],
+       "environment": {
+-        "BDP_TRANSACTIONAL_INSTALLED_ENTRY": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/pr150-frozen-main-reconciliation/validation/run/consumer/node_modules/@bdp/server/dist/transaction-installed-process.js",
++        "BDP_TRANSACTIONAL_INSTALLED_ENTRY": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/pr150-frozen-main-reconciliation/validation-private-tmp-successor/run/consumer/node_modules/@bdp/server/dist/transaction-installed-process.js",
+         "BDP_TRANSACTIONAL_SOURCE_COMMIT": "<ACTUAL_RECONCILED_COMMIT>"
+       },
+       "selectedFullNames": [
+@@ -379,7 +379,7 @@
+       "entryRelativePath": "node_modules/@bdp/server/dist/transaction-installed-process.js",
+       "expectedHttp": null,
+       "rootResultAuditRequired": true,
+-      "resultsJson": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/pr150-frozen-main-reconciliation/validation/run/packed-affected-1.json"
++      "resultsJson": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/pr150-frozen-main-reconciliation/validation-private-tmp-successor/run/packed-affected-1.json"
+     },
+     "packed-affected-2": {
+       "argv": [
+@@ -393,7 +393,7 @@
+         "^installed Event cursors survive restart with Last-Event-ID precedence and source binding$",
+         "--reporter=verbose",
+         "--reporter=json",
+-        "--outputFile.json=/Users/dbox/repos/wt/vickie/bdp-integration-logs/pr150-frozen-main-reconciliation/validation/run/packed-affected-2.json"
++        "--outputFile.json=/Users/dbox/repos/wt/vickie/bdp-integration-logs/pr150-frozen-main-reconciliation/validation-private-tmp-successor/run/packed-affected-2.json"
+       ],
+       "cwd": "/Users/dbox/repos/wt/vickie/vickie-pr150-main-reconciliation",
+       "outerSeconds": 120,
+@@ -403,7 +403,7 @@
+         0
+       ],
+       "environment": {
+-        "BDP_TRANSACTIONAL_INSTALLED_ENTRY": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/pr150-frozen-main-reconciliation/validation/run/consumer/node_modules/@bdp/server/dist/transaction-installed-process.js",
++        "BDP_TRANSACTIONAL_INSTALLED_ENTRY": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/pr150-frozen-main-reconciliation/validation-private-tmp-successor/run/consumer/node_modules/@bdp/server/dist/transaction-installed-process.js",
+         "BDP_TRANSACTIONAL_SOURCE_COMMIT": "<ACTUAL_RECONCILED_COMMIT>"
+       },
+       "selectedFullNames": [
+@@ -412,7 +412,7 @@
+       "entryRelativePath": "node_modules/@bdp/server/dist/transaction-installed-process.js",
+       "expectedHttp": null,
+       "rootResultAuditRequired": true,
+-      "resultsJson": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/pr150-frozen-main-reconciliation/validation/run/packed-affected-2.json"
++      "resultsJson": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/pr150-frozen-main-reconciliation/validation-private-tmp-successor/run/packed-affected-2.json"
+     },
+     "packed-affected-3": {
+       "argv": [
+@@ -426,7 +426,7 @@
+         "^serves byte-bounded deep mutations receipts Events and owned-Link Snapshots over packed bytes$",
+         "--reporter=verbose",
+         "--reporter=json",
+-        "--outputFile.json=/Users/dbox/repos/wt/vickie/bdp-integration-logs/pr150-frozen-main-reconciliation/validation/run/packed-affected-3.json"
++        "--outputFile.json=/Users/dbox/repos/wt/vickie/bdp-integration-logs/pr150-frozen-main-reconciliation/validation-private-tmp-successor/run/packed-affected-3.json"
+       ],
+       "cwd": "/Users/dbox/repos/wt/vickie/vickie-pr150-main-reconciliation",
+       "outerSeconds": 120,
+@@ -436,7 +436,7 @@
+         0
+       ],
+       "environment": {
+-        "BDP_TRANSACTIONAL_INSTALLED_ENTRY": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/pr150-frozen-main-reconciliation/validation/run/consumer/node_modules/@bdp/server/dist/transaction-installed-process.js",
++        "BDP_TRANSACTIONAL_INSTALLED_ENTRY": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/pr150-frozen-main-reconciliation/validation-private-tmp-successor/run/consumer/node_modules/@bdp/server/dist/transaction-installed-process.js",
+         "BDP_TRANSACTIONAL_SOURCE_COMMIT": "<ACTUAL_RECONCILED_COMMIT>"
+       },
+       "selectedFullNames": [
+@@ -445,7 +445,7 @@
+       "entryRelativePath": "node_modules/@bdp/server/dist/transaction-installed-process.js",
+       "expectedHttp": 13,
+       "rootResultAuditRequired": true,
+-      "resultsJson": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/pr150-frozen-main-reconciliation/validation/run/packed-affected-3.json"
++      "resultsJson": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/pr150-frozen-main-reconciliation/validation-private-tmp-successor/run/packed-affected-3.json"
+     },
+     "packed-affected-4": {
+       "argv": [
+@@ -459,7 +459,7 @@
+         "^serves missing-first current Resources and bounds unproved minimum eligibility$",
+         "--reporter=verbose",
+         "--reporter=json",
+-        "--outputFile.json=/Users/dbox/repos/wt/vickie/bdp-integration-logs/pr150-frozen-main-reconciliation/validation/run/packed-affected-4.json"
++        "--outputFile.json=/Users/dbox/repos/wt/vickie/bdp-integration-logs/pr150-frozen-main-reconciliation/validation-private-tmp-successor/run/packed-affected-4.json"
+       ],
+       "cwd": "/Users/dbox/repos/wt/vickie/vickie-pr150-main-reconciliation",
+       "outerSeconds": 120,
+@@ -469,7 +469,7 @@
+         0
+       ],
+       "environment": {
+-        "BDP_TRANSACTIONAL_INSTALLED_ENTRY": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/pr150-frozen-main-reconciliation/validation/run/consumer/node_modules/@bdp/server/dist/transaction-installed.js",
++        "BDP_TRANSACTIONAL_INSTALLED_ENTRY": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/pr150-frozen-main-reconciliation/validation-private-tmp-successor/run/consumer/node_modules/@bdp/server/dist/transaction-installed.js",
+         "BDP_TRANSACTIONAL_SOURCE_COMMIT": "<ACTUAL_RECONCILED_COMMIT>"
+       },
+       "selectedFullNames": [
+@@ -478,7 +478,7 @@
+       "entryRelativePath": "node_modules/@bdp/server/dist/transaction-installed.js",
+       "expectedHttp": 32,
+       "rootResultAuditRequired": true,
+-      "resultsJson": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/pr150-frozen-main-reconciliation/validation/run/packed-affected-4.json"
++      "resultsJson": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/pr150-frozen-main-reconciliation/validation-private-tmp-successor/run/packed-affected-4.json"
+     },
+     "packed-affected-5": {
+       "argv": [
+@@ -492,7 +492,7 @@
+         "^observes retained sequence member conflict and fresh deep execution over packed bytes$",
+         "--reporter=verbose",
+         "--reporter=json",
+-        "--outputFile.json=/Users/dbox/repos/wt/vickie/bdp-integration-logs/pr150-frozen-main-reconciliation/validation/run/packed-affected-5.json"
++        "--outputFile.json=/Users/dbox/repos/wt/vickie/bdp-integration-logs/pr150-frozen-main-reconciliation/validation-private-tmp-successor/run/packed-affected-5.json"
+       ],
+       "cwd": "/Users/dbox/repos/wt/vickie/vickie-pr150-main-reconciliation",
+       "outerSeconds": 120,
+@@ -502,7 +502,7 @@
+         0
+       ],
+       "environment": {
+-        "BDP_TRANSACTIONAL_INSTALLED_ENTRY": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/pr150-frozen-main-reconciliation/validation/run/consumer/node_modules/@bdp/server/dist/transaction-installed-process.js",
++        "BDP_TRANSACTIONAL_INSTALLED_ENTRY": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/pr150-frozen-main-reconciliation/validation-private-tmp-successor/run/consumer/node_modules/@bdp/server/dist/transaction-installed-process.js",
+         "BDP_TRANSACTIONAL_SOURCE_COMMIT": "<ACTUAL_RECONCILED_COMMIT>"
+       },
+       "selectedFullNames": [
+@@ -511,7 +511,7 @@
+       "entryRelativePath": "node_modules/@bdp/server/dist/transaction-installed-process.js",
+       "expectedHttp": 8,
+       "rootResultAuditRequired": true,
+-      "resultsJson": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/pr150-frozen-main-reconciliation/validation/run/packed-affected-5.json"
++      "resultsJson": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/pr150-frozen-main-reconciliation/validation-private-tmp-successor/run/packed-affected-5.json"
+     }
+   },
+   "expectedProductionVersions": {

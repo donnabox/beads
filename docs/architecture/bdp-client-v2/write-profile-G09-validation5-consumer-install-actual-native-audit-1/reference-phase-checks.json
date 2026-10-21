@@ -1,0 +1,516 @@
+{
+  "actualLive": {
+    "bytes": 3922,
+    "mode": "0o644",
+    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation-preparation-5/execution-gate.json",
+    "sha256": "437edd25c7267d9595a15115db65d50051372f0cb4915f6981cf46aa04be65c6"
+  },
+  "chain": [
+    {
+      "after": "ad5b647e6b2f1aba93981d1a85fdb7ef0930062418012cf4acf90073de202919",
+      "before": "4a87b45d714a6bd28a94fd50a389defe4b5582dc5f42ec56fd827c7cf5b01e76",
+      "root": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation5-root-activation-1"
+    },
+    {
+      "after": "18a440d47c2b4e7aef7e46afc73f627a27d13e51cae8b990cd2feade33c774a4",
+      "before": "ad5b647e6b2f1aba93981d1a85fdb7ef0930062418012cf4acf90073de202919",
+      "root": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation5-next5-root-activation-1"
+    },
+    {
+      "after": "f16d895808b965918bade0cbe1e7552d828423b96930485ec34f74f051e884c8",
+      "before": "18a440d47c2b4e7aef7e46afc73f627a27d13e51cae8b990cd2feade33c774a4",
+      "root": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation5-source-pairs-root-activation-1"
+    },
+    {
+      "after": "34c333aa5b688d7abe944363b558e0bd431dd512ec84a24f8e0440d9d2bdf7ea",
+      "before": "f16d895808b965918bade0cbe1e7552d828423b96930485ec34f74f051e884c8",
+      "root": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation5-package4-root-activation-1"
+    },
+    {
+      "after": "437edd25c7267d9595a15115db65d50051372f0cb4915f6981cf46aa04be65c6",
+      "before": "34c333aa5b688d7abe944363b558e0bd431dd512ec84a24f8e0440d9d2bdf7ea",
+      "root": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation5-consumer2-root-activation-1"
+    }
+  ],
+  "closedCopyIndicesSourcePendingFieldsNeverRewritten": true,
+  "eightReferenceDomains": [
+    {
+      "count": 1857,
+      "everyOtherPinStrict": true,
+      "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation-preparation-5/reference-pins.json",
+      "soleExactLivePhase": []
+    },
+    {
+      "count": 2206,
+      "everyOtherPinStrict": true,
+      "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation5-root-proposed-authority-1/reference-pins.json",
+      "soleExactLivePhase": [
+        {
+          "actualSha256": "437edd25c7267d9595a15115db65d50051372f0cb4915f6981cf46aa04be65c6",
+          "actualSnapshot": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation5-consumer2-root-activation-1/execution-gate.active.json",
+          "exactHistoricalSnapshot": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation5-root-activation-1/execution-gate.before.json",
+          "historicalSha256": "4a87b45d714a6bd28a94fd50a389defe4b5582dc5f42ec56fd827c7cf5b01e76",
+          "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation-preparation-5/execution-gate.json"
+        }
+      ]
+    },
+    {
+      "count": 2082,
+      "everyOtherPinStrict": true,
+      "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation5-root-fixed-protocol-preparation-1/reference-pins.json",
+      "soleExactLivePhase": [
+        {
+          "actualSha256": "437edd25c7267d9595a15115db65d50051372f0cb4915f6981cf46aa04be65c6",
+          "actualSnapshot": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation5-consumer2-root-activation-1/execution-gate.active.json",
+          "exactHistoricalSnapshot": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation5-root-activation-1/execution-gate.before.json",
+          "historicalSha256": "4a87b45d714a6bd28a94fd50a389defe4b5582dc5f42ec56fd827c7cf5b01e76",
+          "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation-preparation-5/execution-gate.json"
+        }
+      ]
+    },
+    {
+      "count": 2207,
+      "everyOtherPinStrict": true,
+      "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation5-fixed-text-proof-correction-1/reference-pins.json",
+      "soleExactLivePhase": [
+        {
+          "actualSha256": "437edd25c7267d9595a15115db65d50051372f0cb4915f6981cf46aa04be65c6",
+          "actualSnapshot": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation5-consumer2-root-activation-1/execution-gate.active.json",
+          "exactHistoricalSnapshot": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation5-root-activation-1/execution-gate.before.json",
+          "historicalSha256": "4a87b45d714a6bd28a94fd50a389defe4b5582dc5f42ec56fd827c7cf5b01e76",
+          "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation-preparation-5/execution-gate.json"
+        }
+      ]
+    },
+    {
+      "count": 2314,
+      "everyOtherPinStrict": true,
+      "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation5-next5-closed-control-source-1/reference-pins.json",
+      "soleExactLivePhase": [
+        {
+          "actualSha256": "437edd25c7267d9595a15115db65d50051372f0cb4915f6981cf46aa04be65c6",
+          "actualSnapshot": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation5-consumer2-root-activation-1/execution-gate.active.json",
+          "exactHistoricalSnapshot": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation5-next5-root-activation-1/execution-gate.before.json",
+          "historicalSha256": "ad5b647e6b2f1aba93981d1a85fdb7ef0930062418012cf4acf90073de202919",
+          "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation-preparation-5/execution-gate.json"
+        }
+      ]
+    },
+    {
+      "count": 3510,
+      "everyOtherPinStrict": true,
+      "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation5-source-pairs-closed-control-source-1/reference-pins.json",
+      "soleExactLivePhase": [
+        {
+          "actualSha256": "437edd25c7267d9595a15115db65d50051372f0cb4915f6981cf46aa04be65c6",
+          "actualSnapshot": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation5-consumer2-root-activation-1/execution-gate.active.json",
+          "exactHistoricalSnapshot": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation5-source-pairs-root-activation-1/execution-gate.before.json",
+          "historicalSha256": "18a440d47c2b4e7aef7e46afc73f627a27d13e51cae8b990cd2feade33c774a4",
+          "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation-preparation-5/execution-gate.json"
+        }
+      ]
+    },
+    {
+      "count": 6892,
+      "everyOtherPinStrict": true,
+      "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation5-package4-closed-control-source-1/reference-pins.json",
+      "soleExactLivePhase": [
+        {
+          "actualSha256": "437edd25c7267d9595a15115db65d50051372f0cb4915f6981cf46aa04be65c6",
+          "actualSnapshot": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation5-consumer2-root-activation-1/execution-gate.active.json",
+          "exactHistoricalSnapshot": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation5-package4-root-activation-1/execution-gate.before.json",
+          "historicalSha256": "f16d895808b965918bade0cbe1e7552d828423b96930485ec34f74f051e884c8",
+          "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation-preparation-5/execution-gate.json"
+        }
+      ]
+    },
+    {
+      "count": 8472,
+      "everyOtherPinStrict": true,
+      "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation5-consumer2-closed-control-source-1/reference-pins.json",
+      "soleExactLivePhase": [
+        {
+          "actualSha256": "437edd25c7267d9595a15115db65d50051372f0cb4915f6981cf46aa04be65c6",
+          "actualSnapshot": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation5-consumer2-root-activation-1/execution-gate.active.json",
+          "exactHistoricalSnapshot": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation5-consumer2-root-activation-1/execution-gate.before.json",
+          "historicalSha256": "34c333aa5b688d7abe944363b558e0bd431dd512ec84a24f8e0440d9d2bdf7ea",
+          "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation-preparation-5/execution-gate.json"
+        }
+      ]
+    }
+  ],
+  "everyOtherPinStrictCurrent": true,
+  "noGenericSkipAliasRepairOrOldPassReuse": true,
+  "onlyExactAbsoluteLivePath": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation-preparation-5/execution-gate.json",
+  "prior16NativeLedgers": [
+    {
+      "allOtherPinsStrict": true,
+      "count": 3743,
+      "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation5-source-pairs-control-native-precision-1/current-input-ledger.json",
+      "soleExactPhaseQualification": [
+        {
+          "actualMetadata": {
+            "bytes": 3922,
+            "mode": "0o644",
+            "sha256": "437edd25c7267d9595a15115db65d50051372f0cb4915f6981cf46aa04be65c6"
+          },
+          "currentSnapshot": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation5-consumer2-root-activation-1/execution-gate.active.json",
+          "exactHistoricalSnapshot": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation5-source-pairs-root-activation-1/execution-gate.before.json",
+          "historicalMetadata": {
+            "bytes": 3165,
+            "mode": "0o644",
+            "sha256": "18a440d47c2b4e7aef7e46afc73f627a27d13e51cae8b990cd2feade33c774a4"
+          },
+          "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation-preparation-5/execution-gate.json",
+          "strictCurrentNoNewProjection": false
+        }
+      ]
+    },
+    {
+      "allOtherPinsStrict": true,
+      "count": 5534,
+      "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation5-g09-service-source-actual-native-audit-1/input-ledger.json",
+      "soleExactPhaseQualification": [
+        {
+          "actualMetadata": {
+            "bytes": 3922,
+            "mode": "0o644",
+            "sha256": "437edd25c7267d9595a15115db65d50051372f0cb4915f6981cf46aa04be65c6"
+          },
+          "currentSnapshot": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation5-consumer2-root-activation-1/execution-gate.active.json",
+          "exactHistoricalSnapshot": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation5-package4-root-activation-1/execution-gate.before.json",
+          "historicalMetadata": {
+            "bytes": 3601,
+            "mode": "0o644",
+            "sha256": "f16d895808b965918bade0cbe1e7552d828423b96930485ec34f74f051e884c8"
+          },
+          "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation-preparation-5/execution-gate.json",
+          "strictCurrentNoNewProjection": false
+        }
+      ]
+    },
+    {
+      "allOtherPinsStrict": true,
+      "count": 5669,
+      "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation5-audit-g09-service-source-actual-native-audit-1/input-ledger.json",
+      "soleExactPhaseQualification": [
+        {
+          "actualMetadata": {
+            "bytes": 3922,
+            "mode": "0o644",
+            "sha256": "437edd25c7267d9595a15115db65d50051372f0cb4915f6981cf46aa04be65c6"
+          },
+          "currentSnapshot": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation5-consumer2-root-activation-1/execution-gate.active.json",
+          "exactHistoricalSnapshot": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation5-package4-root-activation-1/execution-gate.before.json",
+          "historicalMetadata": {
+            "bytes": 3601,
+            "mode": "0o644",
+            "sha256": "f16d895808b965918bade0cbe1e7552d828423b96930485ec34f74f051e884c8"
+          },
+          "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation-preparation-5/execution-gate.json",
+          "strictCurrentNoNewProjection": false
+        }
+      ]
+    },
+    {
+      "allOtherPinsStrict": true,
+      "count": 5817,
+      "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation5-g09-schema-source-actual-native-audit-1/input-ledger.json",
+      "soleExactPhaseQualification": [
+        {
+          "actualMetadata": {
+            "bytes": 3922,
+            "mode": "0o644",
+            "sha256": "437edd25c7267d9595a15115db65d50051372f0cb4915f6981cf46aa04be65c6"
+          },
+          "currentSnapshot": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation5-consumer2-root-activation-1/execution-gate.active.json",
+          "exactHistoricalSnapshot": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation5-package4-root-activation-1/execution-gate.before.json",
+          "historicalMetadata": {
+            "bytes": 3601,
+            "mode": "0o644",
+            "sha256": "f16d895808b965918bade0cbe1e7552d828423b96930485ec34f74f051e884c8"
+          },
+          "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation-preparation-5/execution-gate.json",
+          "strictCurrentNoNewProjection": false
+        }
+      ]
+    },
+    {
+      "allOtherPinsStrict": true,
+      "count": 5959,
+      "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation5-audit-g09-schema-source-actual-native-audit-1/input-ledger.json",
+      "soleExactPhaseQualification": [
+        {
+          "actualMetadata": {
+            "bytes": 3922,
+            "mode": "0o644",
+            "sha256": "437edd25c7267d9595a15115db65d50051372f0cb4915f6981cf46aa04be65c6"
+          },
+          "currentSnapshot": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation5-consumer2-root-activation-1/execution-gate.active.json",
+          "exactHistoricalSnapshot": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation5-package4-root-activation-1/execution-gate.before.json",
+          "historicalMetadata": {
+            "bytes": 3601,
+            "mode": "0o644",
+            "sha256": "f16d895808b965918bade0cbe1e7552d828423b96930485ec34f74f051e884c8"
+          },
+          "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation-preparation-5/execution-gate.json",
+          "strictCurrentNoNewProjection": false
+        }
+      ]
+    },
+    {
+      "allOtherPinsStrict": true,
+      "count": 6107,
+      "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation5-legacy-schema-source-actual-native-audit-1/input-ledger.json",
+      "soleExactPhaseQualification": [
+        {
+          "actualMetadata": {
+            "bytes": 3922,
+            "mode": "0o644",
+            "sha256": "437edd25c7267d9595a15115db65d50051372f0cb4915f6981cf46aa04be65c6"
+          },
+          "currentSnapshot": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation5-consumer2-root-activation-1/execution-gate.active.json",
+          "exactHistoricalSnapshot": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation5-package4-root-activation-1/execution-gate.before.json",
+          "historicalMetadata": {
+            "bytes": 3601,
+            "mode": "0o644",
+            "sha256": "f16d895808b965918bade0cbe1e7552d828423b96930485ec34f74f051e884c8"
+          },
+          "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation-preparation-5/execution-gate.json",
+          "strictCurrentNoNewProjection": false
+        }
+      ]
+    },
+    {
+      "allOtherPinsStrict": true,
+      "count": 6253,
+      "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation5-audit-legacy-schema-source-actual-native-audit-1/input-ledger.json",
+      "soleExactPhaseQualification": [
+        {
+          "actualMetadata": {
+            "bytes": 3922,
+            "mode": "0o644",
+            "sha256": "437edd25c7267d9595a15115db65d50051372f0cb4915f6981cf46aa04be65c6"
+          },
+          "currentSnapshot": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation5-consumer2-root-activation-1/execution-gate.active.json",
+          "exactHistoricalSnapshot": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation5-package4-root-activation-1/execution-gate.before.json",
+          "historicalMetadata": {
+            "bytes": 3601,
+            "mode": "0o644",
+            "sha256": "f16d895808b965918bade0cbe1e7552d828423b96930485ec34f74f051e884c8"
+          },
+          "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation-preparation-5/execution-gate.json",
+          "strictCurrentNoNewProjection": false
+        }
+      ]
+    },
+    {
+      "allOtherPinsStrict": true,
+      "count": 6401,
+      "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation5-schema-confinement-source-actual-native-audit-1/input-ledger.json",
+      "soleExactPhaseQualification": [
+        {
+          "actualMetadata": {
+            "bytes": 3922,
+            "mode": "0o644",
+            "sha256": "437edd25c7267d9595a15115db65d50051372f0cb4915f6981cf46aa04be65c6"
+          },
+          "currentSnapshot": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation5-consumer2-root-activation-1/execution-gate.active.json",
+          "exactHistoricalSnapshot": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation5-package4-root-activation-1/execution-gate.before.json",
+          "historicalMetadata": {
+            "bytes": 3601,
+            "mode": "0o644",
+            "sha256": "f16d895808b965918bade0cbe1e7552d828423b96930485ec34f74f051e884c8"
+          },
+          "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation-preparation-5/execution-gate.json",
+          "strictCurrentNoNewProjection": false
+        }
+      ]
+    },
+    {
+      "allOtherPinsStrict": true,
+      "count": 6548,
+      "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation5-audit-schema-confinement-source-actual-native-audit-1/input-ledger.json",
+      "soleExactPhaseQualification": [
+        {
+          "actualMetadata": {
+            "bytes": 3922,
+            "mode": "0o644",
+            "sha256": "437edd25c7267d9595a15115db65d50051372f0cb4915f6981cf46aa04be65c6"
+          },
+          "currentSnapshot": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation5-consumer2-root-activation-1/execution-gate.active.json",
+          "exactHistoricalSnapshot": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation5-package4-root-activation-1/execution-gate.before.json",
+          "historicalMetadata": {
+            "bytes": 3601,
+            "mode": "0o644",
+            "sha256": "f16d895808b965918bade0cbe1e7552d828423b96930485ec34f74f051e884c8"
+          },
+          "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation-preparation-5/execution-gate.json",
+          "strictCurrentNoNewProjection": false
+        }
+      ]
+    },
+    {
+      "allOtherPinsStrict": true,
+      "count": 7752,
+      "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation5-package4-control-native-precision-1/input-ledger.json",
+      "soleExactPhaseQualification": [
+        {
+          "actualMetadata": {
+            "bytes": 3922,
+            "mode": "0o644",
+            "sha256": "437edd25c7267d9595a15115db65d50051372f0cb4915f6981cf46aa04be65c6"
+          },
+          "currentSnapshot": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation5-consumer2-root-activation-1/execution-gate.active.json",
+          "exactHistoricalSnapshot": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation5-package4-root-activation-1/execution-gate.before.json",
+          "historicalMetadata": {
+            "bytes": 3601,
+            "mode": "0o644",
+            "sha256": "f16d895808b965918bade0cbe1e7552d828423b96930485ec34f74f051e884c8"
+          },
+          "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation-preparation-5/execution-gate.json",
+          "strictCurrentNoNewProjection": false
+        }
+      ]
+    },
+    {
+      "allOtherPinsStrict": true,
+      "count": 7949,
+      "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation5-prepare-package-directory-actual-native-audit-1/input-ledger.json",
+      "soleExactPhaseQualification": [
+        {
+          "actualMetadata": {
+            "bytes": 3922,
+            "mode": "0o644",
+            "sha256": "437edd25c7267d9595a15115db65d50051372f0cb4915f6981cf46aa04be65c6"
+          },
+          "currentSnapshot": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation5-consumer2-root-activation-1/execution-gate.active.json",
+          "exactHistoricalSnapshot": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation5-consumer2-root-activation-1/execution-gate.before.json",
+          "historicalMetadata": {
+            "bytes": 3693,
+            "mode": "0o644",
+            "sha256": "34c333aa5b688d7abe944363b558e0bd431dd512ec84a24f8e0440d9d2bdf7ea"
+          },
+          "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation-preparation-5/execution-gate.json",
+          "strictCurrentNoNewProjection": false
+        }
+      ]
+    },
+    {
+      "allOtherPinsStrict": true,
+      "count": 8016,
+      "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation5-pack-protocol-actual-native-audit-1/input-ledger.json",
+      "soleExactPhaseQualification": [
+        {
+          "actualMetadata": {
+            "bytes": 3922,
+            "mode": "0o644",
+            "sha256": "437edd25c7267d9595a15115db65d50051372f0cb4915f6981cf46aa04be65c6"
+          },
+          "currentSnapshot": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation5-consumer2-root-activation-1/execution-gate.active.json",
+          "exactHistoricalSnapshot": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation5-consumer2-root-activation-1/execution-gate.before.json",
+          "historicalMetadata": {
+            "bytes": 3693,
+            "mode": "0o644",
+            "sha256": "34c333aa5b688d7abe944363b558e0bd431dd512ec84a24f8e0440d9d2bdf7ea"
+          },
+          "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation-preparation-5/execution-gate.json",
+          "strictCurrentNoNewProjection": false
+        }
+      ]
+    },
+    {
+      "allOtherPinsStrict": true,
+      "count": 8079,
+      "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation5-pack-server-actual-native-audit-1/input-ledger.json",
+      "soleExactPhaseQualification": [
+        {
+          "actualMetadata": {
+            "bytes": 3922,
+            "mode": "0o644",
+            "sha256": "437edd25c7267d9595a15115db65d50051372f0cb4915f6981cf46aa04be65c6"
+          },
+          "currentSnapshot": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation5-consumer2-root-activation-1/execution-gate.active.json",
+          "exactHistoricalSnapshot": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation5-consumer2-root-activation-1/execution-gate.before.json",
+          "historicalMetadata": {
+            "bytes": 3693,
+            "mode": "0o644",
+            "sha256": "34c333aa5b688d7abe944363b558e0bd431dd512ec84a24f8e0440d9d2bdf7ea"
+          },
+          "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation-preparation-5/execution-gate.json",
+          "strictCurrentNoNewProjection": false
+        }
+      ]
+    },
+    {
+      "allOtherPinsStrict": true,
+      "count": 8143,
+      "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation5-verify-archives-actual-native-audit-1/input-ledger.json",
+      "soleExactPhaseQualification": [
+        {
+          "actualMetadata": {
+            "bytes": 3922,
+            "mode": "0o644",
+            "sha256": "437edd25c7267d9595a15115db65d50051372f0cb4915f6981cf46aa04be65c6"
+          },
+          "currentSnapshot": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation5-consumer2-root-activation-1/execution-gate.active.json",
+          "exactHistoricalSnapshot": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation5-consumer2-root-activation-1/execution-gate.before.json",
+          "historicalMetadata": {
+            "bytes": 3693,
+            "mode": "0o644",
+            "sha256": "34c333aa5b688d7abe944363b558e0bd431dd512ec84a24f8e0440d9d2bdf7ea"
+          },
+          "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation-preparation-5/execution-gate.json",
+          "strictCurrentNoNewProjection": false
+        }
+      ]
+    },
+    {
+      "allOtherPinsStrict": true,
+      "count": 9479,
+      "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation5-consumer2-control-native-precision-1/input-ledger.json",
+      "soleExactPhaseQualification": [
+        {
+          "actualMetadata": {
+            "bytes": 3922,
+            "mode": "0o644",
+            "sha256": "437edd25c7267d9595a15115db65d50051372f0cb4915f6981cf46aa04be65c6"
+          },
+          "currentSnapshot": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation5-consumer2-root-activation-1/execution-gate.active.json",
+          "exactHistoricalSnapshot": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation5-consumer2-root-activation-1/execution-gate.before.json",
+          "historicalMetadata": {
+            "bytes": 3693,
+            "mode": "0o644",
+            "sha256": "34c333aa5b688d7abe944363b558e0bd431dd512ec84a24f8e0440d9d2bdf7ea"
+          },
+          "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation-preparation-5/execution-gate.json",
+          "strictCurrentNoNewProjection": false
+        }
+      ]
+    },
+    {
+      "allOtherPinsStrict": true,
+      "count": 10049,
+      "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation5-prepare-consumer-actual-native-audit-1/input-ledger.json",
+      "soleExactPhaseQualification": [
+        {
+          "actualMetadata": {
+            "bytes": 3922,
+            "mode": "0o644",
+            "sha256": "437edd25c7267d9595a15115db65d50051372f0cb4915f6981cf46aa04be65c6"
+          },
+          "currentSnapshot": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation5-consumer2-root-activation-1/execution-gate.active.json",
+          "exactHistoricalSnapshot": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation5-consumer2-root-activation-1/execution-gate.active.json",
+          "historicalMetadata": {
+            "bytes": 3922,
+            "mode": "0o644",
+            "sha256": "437edd25c7267d9595a15115db65d50051372f0cb4915f6981cf46aa04be65c6"
+          },
+          "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation-preparation-5/execution-gate.json",
+          "strictCurrentNoNewProjection": true
+        }
+      ]
+    }
+  ],
+  "prior22Ledger10049StrictCurrentNoNewProjection": true
+}

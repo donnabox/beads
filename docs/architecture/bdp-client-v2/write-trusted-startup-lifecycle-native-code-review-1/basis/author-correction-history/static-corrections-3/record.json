@@ -1,0 +1,13 @@
+{
+  "kind": "static pre-formatter precision; no compiler/test execution",
+  "corrections": [
+    "Delegating builtin module mocks keep Vitest spies configurable without behavioral emulation.",
+    "Successful closure-assigned TX handler is asserted at private post-start return.",
+    "Private selector checks actual Promise/history/listenURL result before forwarding."
+  ],
+  "paths": [
+    "packages/server/src/reference-deployment-runtime.test.ts",
+    "packages/server/src/transaction-runtime.ts",
+    "packages/server/src/reference-deployment-runtime.ts"
+  ]
+}

@@ -1,0 +1,92 @@
+{
+  "actualCalls": 0,
+  "actualPasses": 0,
+  "count": 14,
+  "noNewOperationOrRule": true,
+  "recipes": [
+    {
+      "counterexample": "Ordinary bearer token or knowing Resource URL treated as admin capability.",
+      "id": "CF01",
+      "requiredCounterObservation": "No privileged act; trusted deployment authority must be independently established.",
+      "status": "DESIGN_ONLY_NOT_EVALUATED"
+    },
+    {
+      "counterexample": "Digest uses storage/config hash or later metadata{} projection for original pre-metadata record.",
+      "id": "CF02",
+      "requiredCounterObservation": "Original JCS domain/representation commitment mismatch, never substitute proof.",
+      "status": "DESIGN_ONLY_NOT_EVALUATED"
+    },
+    {
+      "counterexample": "JCS escape/error prevents cleanup of out-of-contract content.",
+      "id": "CF03",
+      "requiredCounterObservation": "Cleanup proceeds with best canonical digest/OOB audit as pinned; no serialization hold.",
+      "status": "DESIGN_ONLY_NOT_EVALUATED"
+    },
+    {
+      "counterexample": "Group erasure emitted while receipt/snapshot/Event/inline/index/raw-capture content remains.",
+      "id": "CF04",
+      "requiredCounterObservation": "No further holder visibility before cleanup; output withholding alone is insufficient.",
+      "status": "DESIGN_ONLY_NOT_EVALUATED"
+    },
+    {
+      "counterexample": "Live erasure commits without changed successor/tombstone or misses one containing source version.",
+      "id": "CF05",
+      "requiredCounterObservation": "Atomic admin refusal/rollback; no partial valid-looking group.",
+      "status": "DESIGN_ONLY_NOT_EVALUATED"
+    },
+    {
+      "counterexample": "Tombstone Bead has a live incident Link or inline owned set disagrees with first-class Links.",
+      "id": "CF06",
+      "requiredCounterObservation": "Existing deletion/graph safety retained; no raw SQL bypass.",
+      "status": "DESIGN_ONLY_NOT_EVALUATED"
+    },
+    {
+      "counterexample": "Receipt page is reissued/expired early, immutable execution fields changed, or erased key executes again in same epoch.",
+      "id": "CF07",
+      "requiredCounterObservation": "Keep exact page identities/boundaries, current erased/withheld projection and original durable disposition.",
+      "status": "DESIGN_ONLY_NOT_EVALUATED"
+    },
+    {
+      "counterexample": "Event ordinals renumbered, withheld cursor invalidated, or graph facts removed before every carrying Link version erased.",
+      "id": "CF08",
+      "requiredCounterObservation": "Stable authority ordinal/cursor and exact graph-fact predicate.",
+      "status": "DESIGN_ONLY_NOT_EVALUATED"
+    },
+    {
+      "counterexample": "Never-observed view receives subject identity or unrelated checkpoint expiry; simple erasure rotates epoch.",
+      "id": "CF09",
+      "requiredCounterObservation": "Identifier-free advance/unaffected tokens and same epoch.",
+      "status": "DESIGN_ONLY_NOT_EVALUATED"
+    },
+    {
+      "counterexample": "Queued pre-P frame handed after fence or write(false) treated as consumer checkpoint.",
+      "id": "CF10",
+      "requiredCounterObservation": "Fence lagging/backpressure and require real atomic consumer apply.",
+      "status": "DESIGN_ONLY_NOT_EVALUATED"
+    },
+    {
+      "counterexample": "Old backup drops newer erasure ledger/allocated IDs or old epoch key replays after history restore.",
+      "id": "CF11",
+      "requiredCounterObservation": "Reject incomplete continuity; retain latest identity state/new namespace and ledger-first groups.",
+      "status": "DESIGN_ONLY_NOT_EVALUATED"
+    },
+    {
+      "counterexample": "Event-only consumer republishes old generation when ledger status unknown.",
+      "id": "CF12",
+      "requiredCounterObservation": "Changefeed/snapshot-backed reconciliation or discard/refusal before publication.",
+      "status": "DESIGN_ONLY_NOT_EVALUATED"
+    },
+    {
+      "counterexample": "Future validation raw report/log retains erased postimage after act under an evidence exception.",
+      "id": "CF13",
+      "requiredCounterObservation": "Apply controlled-copy duty through separately reviewed capture lifecycle; preserve unrelated old packets, do not reconstruct missing evidence.",
+      "status": "DESIGN_ONLY_NOT_EVALUATED"
+    },
+    {
+      "counterexample": "SQL receipt epoch edit, blank create:true or copied hot journal labelled supported logical restore/power-loss proof.",
+      "id": "CF14",
+      "requiredCounterObservation": "Keep actual evidence/support domains distinct and missing proof UNKNOWN.",
+      "status": "DESIGN_ONLY_NOT_EVALUATED"
+    }
+  ]
+}

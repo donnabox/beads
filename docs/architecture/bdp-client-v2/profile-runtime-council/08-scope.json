@@ -1,0 +1,51 @@
+{
+  "head": "b7eefc9ecad02540f9c26576220841c78f1725cb",
+  "base": "486ad62d7c6ecb8e36dad4e596b1597fde425cdd",
+  "allChangedFiles": [
+    "apps/bdptest/src/development-matrix.test.ts",
+    "apps/bdptest/test-support/development-process-actions.ts",
+    "apps/bdptest/test-support/development-process.ts",
+    "docs/design/transaction-implementation-progress.md",
+    "packages/conformance/development/README.md",
+    "packages/conformance/development/read-update-catalog-v1.json",
+    "packages/conformance/development/read-update-coverage-v1.json",
+    "packages/conformance/development/read-update-fixture-v1.json",
+    "packages/conformance/development/read-update-manifest-v1.json",
+    "packages/server/src/development-authority.ts",
+    "packages/server/src/development-runtime.ts",
+    "packages/server/src/transaction-batch.ts",
+    "packages/server/src/transaction-comparison.ts",
+    "packages/server/src/transaction-dependencies.test.ts",
+    "packages/server/src/transaction-dependencies.ts",
+    "packages/server/src/transaction-sequence.test.ts",
+    "packages/server/src/transaction-sequence.ts",
+    "packages/server/src/transaction-store.test.ts",
+    "packages/server/src/transaction-store.ts",
+    "scripts/smoke-executables.mjs"
+  ],
+  "packetA": [
+    "docs/design/transaction-implementation-progress.md",
+    "packages/server/src/transaction-batch.ts",
+    "packages/server/src/transaction-comparison.ts",
+    "packages/server/src/transaction-dependencies.test.ts",
+    "packages/server/src/transaction-dependencies.ts",
+    "packages/server/src/transaction-sequence.test.ts",
+    "packages/server/src/transaction-sequence.ts",
+    "packages/server/src/transaction-store.test.ts",
+    "packages/server/src/transaction-store.ts"
+  ],
+  "packetB": [
+    "apps/bdptest/src/development-matrix.test.ts",
+    "apps/bdptest/test-support/development-process-actions.ts",
+    "apps/bdptest/test-support/development-process.ts",
+    "packages/conformance/development/README.md",
+    "packages/conformance/development/read-update-catalog-v1.json",
+    "packages/conformance/development/read-update-coverage-v1.json",
+    "packages/conformance/development/read-update-fixture-v1.json",
+    "packages/conformance/development/read-update-manifest-v1.json",
+    "packages/server/src/development-authority.ts",
+    "packages/server/src/development-runtime.ts",
+    "scripts/smoke-executables.mjs"
+  ],
+  "priorCouncilPR84Coverage": false
+}

@@ -1,0 +1,74 @@
+[
+  {
+    "id": "anonymous-get:absent-bdp-scope-epoch",
+    "assertion": {
+      "id": "absent-bdp-scope-epoch",
+      "kind": "header",
+      "name": "bdp-scope-epoch",
+      "absent": true
+    }
+  },
+  {
+    "id": "anonymous-get:absent-bdp-authorization-view",
+    "assertion": {
+      "id": "absent-bdp-authorization-view",
+      "kind": "header",
+      "name": "bdp-authorization-view",
+      "absent": true
+    }
+  },
+  {
+    "id": "anonymous-get:absent-bdp-scope-position",
+    "assertion": {
+      "id": "absent-bdp-scope-position",
+      "kind": "header",
+      "name": "bdp-scope-position",
+      "absent": true
+    }
+  },
+  {
+    "id": "anonymous-head:absent-bdp-scope-epoch",
+    "assertion": {
+      "id": "absent-bdp-scope-epoch",
+      "kind": "header",
+      "name": "bdp-scope-epoch",
+      "absent": true
+    }
+  },
+  {
+    "id": "anonymous-head:absent-bdp-authorization-view",
+    "assertion": {
+      "id": "absent-bdp-authorization-view",
+      "kind": "header",
+      "name": "bdp-authorization-view",
+      "absent": true
+    }
+  },
+  {
+    "id": "anonymous-head:absent-bdp-scope-position",
+    "assertion": {
+      "id": "absent-bdp-scope-position",
+      "kind": "header",
+      "name": "bdp-scope-position",
+      "absent": true
+    }
+  },
+  {
+    "id": "anonymous-head:media",
+    "assertion": {
+      "id": "media",
+      "kind": "header",
+      "name": "content-type",
+      "equals": "application/problem+json"
+    }
+  },
+  {
+    "id": "missing-head:media",
+    "assertion": {
+      "id": "media",
+      "kind": "header",
+      "name": "content-type",
+      "equals": "application/problem+json"
+    }
+  }
+]

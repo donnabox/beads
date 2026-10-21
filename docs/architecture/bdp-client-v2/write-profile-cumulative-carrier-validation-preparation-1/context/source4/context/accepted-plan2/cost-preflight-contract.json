@@ -1,0 +1,66 @@
+{
+  "allControlsFutureUnexecuted": true,
+  "caseCountAdded": 0,
+  "finiteSubcontrols": [
+    {
+      "expected": "invalid-source; ownKeys/get/getPrototypeOf traps0",
+      "id": "R13",
+      "shape": "Proxy record containing>10000 hypothetical keys"
+    },
+    {
+      "expected": "invalid-source; getter0; no enumeration of callable",
+      "id": "R12",
+      "shape": "callable carrying an own enumerable getter"
+    },
+    {
+      "expected": "invalid-source before key capture; no invocation",
+      "id": "R24",
+      "shape": "nonplain instance with10001 own data fields"
+    },
+    {
+      "expected": "invalid-source; accessor0",
+      "id": "R24",
+      "shape": "plain10001 keys with top-level accessor"
+    },
+    {
+      "expected": "invalid-source",
+      "id": "R24",
+      "shape": "plain10001 keys with symbol"
+    },
+    {
+      "expected": "invalid-source",
+      "id": "R24",
+      "shape": "plain10001 keys with nonenumerable descriptor"
+    },
+    {
+      "expected": "same postcapture configuration-mismatch at exactConfiguration fixture; no capacity",
+      "id": "R24",
+      "shape": "plain10000 valid data keys"
+    },
+    {
+      "expected": "capacity before nested getter; getter0",
+      "id": "R24",
+      "shape": "plain10001 valid data keys including nested child getter"
+    }
+  ],
+  "honestCost": "O(n) key inventory and shape scan are still necessary to preserve refusal precedence, with temporary key-array allocation. Removes full descriptor-object materialization and O(n\u00b2) allowed.includes work on overlimit inputs; NOT a hard allocation/runtime bound or maximum response-size claim.",
+  "location": "profile-evidence.ts safeData object branch129-138; source-private bounded plain-record capture only",
+  "precedence": {
+    "ProxyCallableNonplain": "invalid-source before enumeration",
+    "nestedInvalidWithinOverlimit": "outer capacity first, as original postcapture/pretraversal guard",
+    "node100001OrDepth129": "capacity before input shape (unchanged)",
+    "symbolAccessorNonenumerableTopLevel": "invalid-source with no invocation, even if count>10000",
+    "validOwnDataCount10000": "capture proceeds, then same configuration/report semantic refusal or acceptance",
+    "validOwnDataCount10001": "capacity before child traversal; nested getter never invoked"
+  },
+  "state": "PROPOSED F7 cost-only implementation, no observed performance or prior contract violation asserted",
+  "steps": [
+    "Keep existing node increment/depth check FIRST and unchanged primitive/array behavior.",
+    "For object branch reject null/nonobject/callable/Proxy intrinsically BEFORE any Object.keys/Reflect/prototype/descriptor operation on it.",
+    "Read intrinsic Object.getPrototypeOf only after Proxy/type guard; permit exactly Object.prototype or null; refuse nonplain before keys.",
+    "Read Reflect.ownKeys once to obtain key inventory/count before any bulk descriptor materialization. Symbols refuse invalid-source.",
+    "Perform linear per-key intrinsic Object.getOwnPropertyDescriptor shape check without reading property values or invoking getters. Require own enumerable data descriptors. For over10000 keys this shape-only scan preserves existing top-level accessor/nonenumerable invalid-source precedence; then refuse capacity BEFORE recursive value traversal or captured descriptor bulk/object materialization.",
+    "For <=10000 valid own data keys, capture descriptor.value into a null-prototype own-data record; no allowed.includes quadratic scan. Recursively visit only this captured record under original shared100000-node/128depth budget.",
+    "Do not call old record(value)/Object.getOwnPropertyDescriptors for this safeData object branch; retain other record/array/public helper behavior unless mechanically unused import only."
+  ]
+}

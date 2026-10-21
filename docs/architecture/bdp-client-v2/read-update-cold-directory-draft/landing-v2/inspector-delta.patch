@@ -1,0 +1,30 @@
+--- landing/landing-check.py
++++ landing-v2/landing-check.py
+@@ -5,7 +5,7 @@
+ import subprocess,json,hashlib,re,datetime
+ P=Path(__file__).resolve().parent;D=P.parent;L=D.parent
+ W=Path("/Users/dbox/repos/wt/vickie/vickie-update-cold-directory")
+-INPUTS_SHA='85909bfee0e22fed03eab6a4e665ea640a7200ab091f9fffc888aaaea43a6f1e'
++INPUTS_SHA='73273cb2ae1486bc848b79f6042ae6825088073814010fae025480f0b84a195c'
+ def sha(p):return hashlib.sha256(p.read_bytes()).hexdigest()
+ def require(ok,message):
+     if not ok:raise RuntimeError(message)
+@@ -14,6 +14,7 @@
+ def main():
+     require(sha(P/"inspection-inputs.json")==INPUTS_SHA,"Inspection pins changed")
+     cfg=read(P/"inspection-inputs.json");release=read(P/"root-inspection-release.json")
++    require(type(cfg["run"]) is int and cfg["run"]>0 and type(cfg["job"]) is int and cfg["job"]>0,"Actual successor CI run/job not bound")
+     require(release.get("released") is True and release["scriptSha256"]==sha(Path(__file__)) and release["inputsSha256"]==INPUTS_SHA,"Root inspection release absent/changed")
+     council_pin=release["rootCouncilAcceptance"];council_path=Path(council_pin["path"])
+     require(council_path.is_relative_to(D) and sha(council_path)==council_pin["sha256"],"Final root council document missing/changed")
+@@ -35,7 +36,9 @@
+         require(git("rev-parse","HEAD").decode().strip()==cfg["head"] and git("rev-parse","HEAD^{tree}").decode().strip()==cfg["tree"],"Local candidate drift")
+         require(not git("status","--porcelain").strip(),"Candidate must remain clean")
+         require(git("show","-s","--format=%P","HEAD").decode().strip().split()==cfg["parents"],"Ordinary integration parents changed")
+-        require(cfg["parents"]==[cfg["base"]] and cfg["authorCandidate"]==cfg["head"] and git("show","-s","--format=%P",cfg["authorCandidate"]).decode().strip().split()==[cfg["authoringParent"]],"Author/integration ancestry differs")
++        require(cfg["parents"]==[cfg["authorCandidate"]] and cfg["authoringParent"]==cfg["base"] and git("show","-s","--format=%P",cfg["authorCandidate"]).decode().strip().split()==[cfg["base"]],"Ordinary base -> original candidate -> repair ancestry differs")
++        require(hashlib.sha256(git("diff","--binary",cfg["authorCandidate"],cfg["head"])).hexdigest()==cfg["repairDiffSha256"],"One-hash repair differs")
++        require(git("diff","--name-only",cfg["authorCandidate"],cfg["head"]).decode().splitlines()==["apps/bdptest/src/read-update-matrix.test.ts"],"Repair scope differs")
+         git("merge-base","--is-ancestor",cfg["base"],cfg["head"])
+         require(set(git("diff","--name-only",cfg["base"],cfg["head"]).decode().splitlines())==set(cfg["files"]) and len(cfg["files"])==6,"Feature scope differs")
+         require(hashlib.sha256(git("diff","--binary",cfg["base"],cfg["head"])).hexdigest()==cfg["featureDiffSha256"],"Feature diff changed")

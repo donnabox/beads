@@ -1,0 +1,52 @@
+{
+  "actualManifest": {
+    "bytes": 420,
+    "mode": "0o644",
+    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation-preparation-5/run/consumer/package.json",
+    "sha256": "e5e96542af510e59f9856db34e994e8d706f18afdc0e7a3a2e1c609de0ce9279"
+  },
+  "actualSettings": {
+    "bytes": 187,
+    "mode": "0o644",
+    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation-preparation-5/run/consumer/pnpm-workspace.yaml",
+    "sha256": "1d620557a5caab797d2fd516df77e3a108ba29c0e1f7e3de7ada175e145e3e43"
+  },
+  "consumerInstallOriginalContract": {
+    "acceptedRawExitCodes": [
+      0
+    ],
+    "argv": [
+      "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+      "/Users/dbox/.cache/node/corepack/v1/pnpm/11.20.0/bin/pnpm.cjs",
+      "install",
+      "--offline",
+      "--ignore-scripts",
+      "--no-frozen-lockfile",
+      "--prod"
+    ],
+    "automaticRetries": 0,
+    "configurationFinalized": true,
+    "cwd": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation-preparation-5/run/consumer",
+    "id": "consumer-install",
+    "kind": "supervised-command",
+    "outerSeconds": 120,
+    "termAtSeconds": 115
+  },
+  "consumerPath": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation-preparation-5/run/consumer",
+  "dependencies": {
+    "@bdp/protocol": "file:/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation-preparation-5/run/packages/bdp-protocol-0.0.0.tgz",
+    "@bdp/server": "file:/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation-preparation-5/run/packages/bdp-server-0.0.0.tgz"
+  },
+  "directoryMode": "0o755",
+  "exactEntries": [
+    "package.json",
+    "pnpm-workspace.yaml"
+  ],
+  "exclusiveCreationAndActualArchiveHashChecksSourceAttested": true,
+  "expectedManifestRaw": "{\n  \"name\": \"tx-discovery-external-consumer\",\n  \"private\": true,\n  \"type\": \"module\",\n  \"dependencies\": {\n    \"@bdp/protocol\": \"file:/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation-preparation-5/run/packages/bdp-protocol-0.0.0.tgz\",\n    \"@bdp/server\": \"file:/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation-preparation-5/run/packages/bdp-server-0.0.0.tgz\"\n  }\n}\n",
+  "expectedWorkspaceRaw": "overrides:\n  \"@bdp/protocol\": \"file:/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation-preparation-5/run/packages/bdp-protocol-0.0.0.tgz\"\n  \"fast-uri\": \"3.1.5\"\n",
+  "generatedNonfrozenLockRootBarrierBefore24": true,
+  "lockNodeModulesInstalledEntryProofInventory": "ABSENT; no installation credit",
+  "rawOutputBytesExact": true,
+  "sourcePackagesHelperSha256": "162e4f04ffe9aeffe886b194c7ed41241c6ce3cf37e9c93f92fec0969095aea9"
+}

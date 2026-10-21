@@ -1,0 +1,26 @@
+{
+  "utc": "2026-10-18T13:08:31.266811+00:00",
+  "status": "Root source/contract diagnosis, awaiting independent actualterminal packet for exact oneDATAleaf disposition",
+  "actualFirstMismatch": {
+    "row": 8,
+    "label": "unknown",
+    "status": 404,
+    "context": {},
+    "schemaPosition": "pos-0"
+  },
+  "sourceAssertions": "test218\u2013222 captures actual headers, undefined fields omitted by JSON serialization; unknown404 checksproblem only while known selected schema/conditional responses assert context",
+  "actualSourcePath": "packages/server/src/transaction-schema-http.ts49\u201350 returns undefined before observe for map-miss",
+  "actualArchitecture": "docs/design/transaction-implementation-progress.md1750\u20131769 selects only installed canonical retrieval identity and otherwise preserves routing",
+  "governingSpecRanges": [
+    "1234\u20131245 ordinaryWebretrieval",
+    "2534\u20132584 immutable offline pinned closure",
+    "5804 Scopebounded responses",
+    "5831 ordinary earlier target-method refusals unchanged",
+    "5834\u20135839 unknown Bead-Link-properties-alias-anchor context remains mandatory",
+    "5864 observed transaction-consistent prefix"
+  ],
+  "scope": "Unknown uninstalled schema route is not an installed retrieval identity or supported Bead/Link owner lookup; no arbitrary namespace-prefix context waiver",
+  "minimalProposal": "report-schemas.json schemaRows[8].position pos-0 to null ONLY, strict empty-context branch/source/helper/schema-all-other-bytes unchanged; actualrun remains failed",
+  "rawBodyWireBytes": "UNKNOWN fingerprint-only, never reconstruct",
+  "readonlyLookupErratum": "Root guessed nonexistent docs/architecture/reference-sqlite-transaction.md; actual docs/design/transaction-implementation-progress.md found/read; no product action"
+}

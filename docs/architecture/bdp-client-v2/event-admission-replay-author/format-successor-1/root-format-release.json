@@ -1,0 +1,31 @@
+{
+  "at": "2026-10-17T23:44:58.491682+00:00",
+  "kind": "Single measured formatting-only source correction",
+  "argv": [
+    "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+    "/Users/dbox/repos/wt/vickie/vickie-event-admission-replay-minimum/node_modules/@biomejs/biome/bin/biome",
+    "format",
+    "--write",
+    "--config-path=/Users/dbox/repos/wt/vickie/vickie-event-admission-replay-minimum/biome.json",
+    "apps/bdptest/src/transactional-event-sse-installed.test.ts",
+    "packages/server/src/transaction-event-sse.test.ts",
+    "packages/server/src/transaction-events.test.ts",
+    "packages/server/src/transaction-service.ts",
+    "packages/server/src/transaction-store.ts"
+  ],
+  "cwd": "/Users/dbox/repos/wt/vickie/vickie-event-admission-replay-minimum",
+  "outerSeconds": 120,
+  "termAfterSeconds": 115,
+  "automaticRetries": 0,
+  "nativeStaticAuditSha256": "6833b056eccc2828d8d71316d37b9849c22a087fa2769287206be45da0dba97b",
+  "actualFormatLogSha256": "2aea74c1948a420af5b218a16b92070de5c82e50230a2d17fcfb83c89f3d3f34",
+  "workspaceTools": {
+    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/event-admission-replay-validation/metadata-successor-1/run/workspace-tools.json",
+    "sha256": "13d53c8ed5eb6f3caf3f247dbc798a60c266debf88ed4dcf26e53b0bde2c1831"
+  },
+  "preserveBeforeAll679": true,
+  "requireFullDeltaAndSyntaxEquivalence": true,
+  "laterValidationReleased": false,
+  "reuseAllowedOnly": "Original unchanged bootstrap2/dependency/tool evidence after explicit successor binding; all19later+4required fresh",
+  "note": "Root closed failed gate before this release; native earlier gate snapshot is historical."
+}

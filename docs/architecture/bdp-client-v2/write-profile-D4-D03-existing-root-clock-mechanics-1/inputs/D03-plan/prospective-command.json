@@ -1,0 +1,49 @@
+{
+  "exactUnchangedCatalogRow": {
+    "approved": false,
+    "argv": [
+      "/usr/bin/env",
+      "-u",
+      "PERL5OPT",
+      "-u",
+      "PERL5LIB",
+      "-u",
+      "PERLLIB",
+      "-u",
+      "PERL5DB",
+      "-u",
+      "PERL_SIGNALS",
+      "LC_ALL=C",
+      "TZ=UTC",
+      "/usr/bin/perl5.34",
+      "-I/System/Library/Perl/5.34/darwin-thread-multi-2level",
+      "-I/System/Library/Perl/5.34",
+      "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-D4-synthetic-harness-preparation-6/hard_limit.pl",
+      "D03",
+      "unit",
+      "UNKNOWN_FUTURE_DURABLE_SYNTHETIC_RELEASE_ABSOLUTE_PATH"
+    ],
+    "attempt": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-D4-synthetic-harness-preparation-6/attempts/D03--unit",
+    "case": "D03",
+    "clock": {
+      "KILL": 119,
+      "TERM": 115,
+      "normalSettlementStrictBefore": 115,
+      "whole": 120
+    },
+    "executed": false,
+    "noRetry": true,
+    "productCalls": 0,
+    "remainingUnsupported": [],
+    "rootGuardRequiredImmediatelyBeforeLaunch": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-D4-validation-preparation-4/guarded-action-session-20261018-021624-549f.py",
+    "stdio": "root-owned drained PIPE for both stdout/stderr; no TTY/direct file redirect",
+    "variant": "unit"
+  },
+  "existingAttemptMustBeAbsent": true,
+  "externalReleasePath": "UNKNOWN_FUTURE_SEPARATELY_INDEXED_DURABLE_ROOT_RELEASE",
+  "noCommandExecuted": true,
+  "onlyProposedInvocation": "D03--unit",
+  "rootCaptureSourceAndNativeAcceptance": "UNPREPARED",
+  "rootRoleGuardImmediatelyBeforeEveryAction": true,
+  "state": "DATA_ONLY_UNPREPARED_NO_EXECUTABLE_CALLER_OR_RELEASE"
+}

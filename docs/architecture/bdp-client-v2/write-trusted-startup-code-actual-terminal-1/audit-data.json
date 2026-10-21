@@ -1,0 +1,946 @@
+{
+  "observedUtc": "2026-10-18T04:46:49.380803+00:00",
+  "session": "2026-10-18T02:16:24Z-549f",
+  "remoteClaimSha": "3a20a31d83d1a709a00332b33463ddb9b8077433",
+  "classification": "process_ownership_or_cleanup_failure",
+  "outerElapsedSeconds": 642.0107433749363,
+  "wrapperExitCode": -15,
+  "forcedCleanup": true,
+  "ownershipUnknown": true,
+  "finalRoleVerified": false,
+  "errors": [
+    "reviewer_identity:RuntimeError"
+  ],
+  "remainingOwned": [],
+  "roleChecks": [
+    {
+      "pid": 51681,
+      "startedElapsed": 0.013793916907161474,
+      "exitCode": 0
+    },
+    {
+      "pid": 52053,
+      "startedElapsed": 15.38603820791468,
+      "exitCode": 0
+    },
+    {
+      "pid": 52432,
+      "startedElapsed": 30.71998754190281,
+      "exitCode": 0
+    },
+    {
+      "pid": 52828,
+      "startedElapsed": 46.10342308320105,
+      "exitCode": 0
+    },
+    {
+      "pid": 53608,
+      "startedElapsed": 61.43477208307013,
+      "exitCode": 0
+    },
+    {
+      "pid": 54080,
+      "startedElapsed": 76.84068816713989,
+      "exitCode": 0
+    },
+    {
+      "pid": 54602,
+      "startedElapsed": 92.16957620810717,
+      "exitCode": 0
+    },
+    {
+      "pid": 55772,
+      "startedElapsed": 107.58688866719604,
+      "exitCode": 0
+    },
+    {
+      "pid": 57741,
+      "startedElapsed": 123.04765079217032,
+      "exitCode": 0
+    },
+    {
+      "pid": 58116,
+      "startedElapsed": 138.45945504214615,
+      "exitCode": 0
+    },
+    {
+      "pid": 58479,
+      "startedElapsed": 153.7799604171887,
+      "exitCode": 0
+    },
+    {
+      "pid": 58817,
+      "startedElapsed": 169.1067766668275,
+      "exitCode": 0
+    },
+    {
+      "pid": 59598,
+      "startedElapsed": 184.43789750011638,
+      "exitCode": 0
+    },
+    {
+      "pid": 59985,
+      "startedElapsed": 199.87967004207894,
+      "exitCode": 0
+    },
+    {
+      "pid": 60395,
+      "startedElapsed": 215.38885979214683,
+      "exitCode": 0
+    },
+    {
+      "pid": 61211,
+      "startedElapsed": 230.86690849997103,
+      "exitCode": 0
+    },
+    {
+      "pid": 63507,
+      "startedElapsed": 246.25403762515634,
+      "exitCode": 0
+    },
+    {
+      "pid": 64116,
+      "startedElapsed": 261.6102383751422,
+      "exitCode": 0
+    },
+    {
+      "pid": 64640,
+      "startedElapsed": 276.92029999988154,
+      "exitCode": 0
+    },
+    {
+      "pid": 65418,
+      "startedElapsed": 292.45765508292243,
+      "exitCode": 0
+    },
+    {
+      "pid": 66263,
+      "startedElapsed": 307.9141805418767,
+      "exitCode": 0
+    },
+    {
+      "pid": 66585,
+      "startedElapsed": 323.2337121251039,
+      "exitCode": 0
+    },
+    {
+      "pid": 66903,
+      "startedElapsed": 338.5541101670824,
+      "exitCode": 0
+    },
+    {
+      "pid": 67969,
+      "startedElapsed": 354.06113275000826,
+      "exitCode": 0
+    },
+    {
+      "pid": 69374,
+      "startedElapsed": 369.4056122498587,
+      "exitCode": 0
+    },
+    {
+      "pid": 69694,
+      "startedElapsed": 384.7402978329919,
+      "exitCode": 0
+    },
+    {
+      "pid": 70010,
+      "startedElapsed": 400.3110752501525,
+      "exitCode": 0
+    },
+    {
+      "pid": 70288,
+      "startedElapsed": 415.70808666711673,
+      "exitCode": 0
+    },
+    {
+      "pid": 71170,
+      "startedElapsed": 431.1085607078858,
+      "exitCode": 0
+    },
+    {
+      "pid": 71729,
+      "startedElapsed": 446.4556725420989,
+      "exitCode": 0
+    },
+    {
+      "pid": 72249,
+      "startedElapsed": 461.9542648331262,
+      "exitCode": 0
+    },
+    {
+      "pid": 72644,
+      "startedElapsed": 477.3737235828303,
+      "exitCode": 0
+    },
+    {
+      "pid": 73906,
+      "startedElapsed": 492.72189354198053,
+      "exitCode": 0
+    },
+    {
+      "pid": 74724,
+      "startedElapsed": 508.2330126669258,
+      "exitCode": 0
+    },
+    {
+      "pid": 76162,
+      "startedElapsed": 523.5810404168442,
+      "exitCode": 0
+    },
+    {
+      "pid": 76384,
+      "startedElapsed": 538.9871168332174,
+      "exitCode": 0
+    },
+    {
+      "pid": 77114,
+      "startedElapsed": 554.3006882499903,
+      "exitCode": 0
+    },
+    {
+      "pid": 77335,
+      "startedElapsed": 569.6796227078885,
+      "exitCode": 0
+    },
+    {
+      "pid": 77625,
+      "startedElapsed": 585.0657571251504,
+      "exitCode": 0
+    },
+    {
+      "pid": 77883,
+      "startedElapsed": 600.4317274582572,
+      "exitCode": 0
+    },
+    {
+      "pid": 78532,
+      "startedElapsed": 615.9188691251911,
+      "exitCode": 0
+    },
+    {
+      "pid": 78769,
+      "startedElapsed": 631.4289489998482,
+      "exitCode": 0
+    }
+  ],
+  "authenticatedReviewers": [
+    {
+      "pid": 51716,
+      "pgid": 51716,
+      "start": "Sat Oct 17 21:31:57 2026",
+      "recordStarted": "2026-10-18T04:31:58.000396+00:00",
+      "argv": [
+        "/opt/homebrew/bin/claude",
+        "--safe-mode",
+        "-p",
+        "--tools",
+        "Read,Glob,Grep",
+        "--allowedTools",
+        "Read,Glob,Grep",
+        "--disable-slash-commands",
+        "--strict-mcp-config",
+        "--mcp-config",
+        "{\"mcpServers\":{}}",
+        "--no-session-persistence",
+        "--output-format",
+        "stream-json",
+        "--verbose",
+        "--include-partial-messages"
+      ]
+    }
+  ],
+  "lastReviewerRow": [
+    {
+      "pid": 51716,
+      "ppid": 51688,
+      "pgid": 51716,
+      "state": "Z",
+      "start": "Sat Oct 17 21:31:57 2026",
+      "comm": "<defunct>"
+    }
+  ],
+  "unanchoredKnownGroupsObserved": {},
+  "signalEvents": [
+    {
+      "elapsedSeconds": 640.8407577918842,
+      "kind": "signal",
+      "pgid": 51688,
+      "signal": 15
+    },
+    {
+      "elapsedSeconds": 640.8408005419187,
+      "kind": "signal_pass",
+      "signal": 15,
+      "complete": true,
+      "signaledGroups": [
+        51688
+      ]
+    },
+    {
+      "elapsedSeconds": 641.9238717081025,
+      "kind": "signal_pass",
+      "signal": 17,
+      "complete": true,
+      "signaledGroups": []
+    },
+    {
+      "elapsedSeconds": 641.968272625003,
+      "kind": "signal_pass",
+      "signal": 9,
+      "complete": true,
+      "signaledGroups": []
+    },
+    {
+      "elapsedSeconds": 642.011088124942,
+      "kind": "outer_terminal",
+      "classification": "process_ownership_or_cleanup_failure",
+      "remainingOwned": []
+    }
+  ],
+  "terminalRecordedElapsedSeconds": [
+    639.8144028331153
+  ],
+  "runnerOutputsAbsent": [
+    "exit.json",
+    "source-after.json",
+    "final-review.md",
+    "terminal-results.json"
+  ],
+  "raw": {
+    "bytes": 1451853,
+    "sha256": "959b47c76c8f32846eb7a53bbc4e3828ed1973e838aa58a31dab85db68418768",
+    "records": 2519,
+    "invalidRecords": 0,
+    "newlineTerminated": true,
+    "resultCount": 1,
+    "resultTextBytes": 9782,
+    "resultTextSha256": "40ae1279e4747e6c245d8302df6d7febc99a9fe4dca25b01f9fd0d4e0c665502",
+    "subtype": "success",
+    "is_error": false,
+    "permission_denials": [],
+    "duration_ms": 638980,
+    "num_turns": 38,
+    "stop_reason": "end_turn",
+    "initialization": [
+      {
+        "model": "claude-opus-5[1m]",
+        "tools": [
+          "Glob",
+          "Grep",
+          "Read"
+        ],
+        "mcp_servers": [],
+        "permissionMode": "default",
+        "session_id": "21e7784a-1a02-4d35-adb9-e39f455e833f"
+      }
+    ],
+    "toolUses": {
+      "Read": 20,
+      "Grep": 17
+    },
+    "modelUsage": {
+      "claude-haiku-4-5-20251001": {
+        "inputTokens": 2534,
+        "outputTokens": 14,
+        "cacheReadInputTokens": 0,
+        "cacheCreationInputTokens": 0,
+        "webSearchRequests": 0,
+        "costUSD": 0.002604,
+        "contextWindow": 200000,
+        "maxOutputTokens": 32000,
+        "thinkingTokens": 0,
+        "canonicalModel": "claude-haiku-4-5",
+        "provider": "firstParty",
+        "costBasis": "list"
+      },
+      "claude-opus-5[1m]": {
+        "inputTokens": 62,
+        "outputTokens": 50711,
+        "cacheReadInputTokens": 2828530,
+        "cacheCreationInputTokens": 133702,
+        "webSearchRequests": 0,
+        "costUSD": 4.01937,
+        "contextWindow": 1000000,
+        "maxOutputTokens": 64000,
+        "thinkingTokens": 40700,
+        "canonicalModel": "claude-opus-5",
+        "provider": "firstParty",
+        "costBasis": "list"
+      }
+    }
+  },
+  "inputPreservation": {
+    "sourceCount": 682,
+    "contexts": 98,
+    "artifacts": 9,
+    "allHashesMatch": true,
+    "originalSourceCount": 679,
+    "originalSourceMatches": true,
+    "literalFlagOnlyReleases": true,
+    "preparationIndexedFiles": 124,
+    "preparationIndexSha256": "92ad271d0d6f548db4cc3aed26f1f8e152ab41243ad7fb5f61ccb6ab221f273c",
+    "preparationMismatchesAuthorized": [
+      "claude-code-review/binding.json",
+      "launch-supervision/control.json"
+    ],
+    "frozenPacketFiles": 106,
+    "frozenPacketIndexSha256": "9bb6ef7f580563682a25667062f1281368bb4c467ef1a50e1078efdcf7df39c2",
+    "frozenPacketMismatchesAuthorized": [
+      "binding.json"
+    ],
+    "mirroredFilesIncludingIndex": 125,
+    "mirrorMismatchesAuthorized": [
+      "claude-code-review/binding.json",
+      "launch-supervision/control.json"
+    ],
+    "sourcePatchSha256": "00fa952644ab1725e4bfb8fc8c642683a39f60dd45f6a08de8881d590150a0b4",
+    "releaseSha256": "132aca59eff6ca15a3a598b16dc3ed9a53575611d083fb51bba75a168d64f3e1",
+    "sourceBeforeMatchesBinding": true,
+    "runnerPostStatusAbsent": true,
+    "independentAfterHashEvidence": "independent-source-after.json"
+  },
+  "processInventory": {
+    "utc": "2026-10-18T04:46:49.894578+00:00",
+    "command": "ps -axo pid=,ppid=,pgid=,state=,lstart=,comm=",
+    "observedPidCountIncludingSupervisor": 106,
+    "observedGroupCountIncludingSupervisor": 45,
+    "checkedPids": [
+      51679,
+      51681,
+      51683,
+      51688,
+      51700,
+      51702,
+      51707,
+      51710,
+      51715,
+      51716,
+      51735,
+      52053,
+      52054,
+      52432,
+      52433,
+      52828,
+      52829,
+      53608,
+      53610,
+      54080,
+      54081,
+      54602,
+      54606,
+      55772,
+      55777,
+      57629,
+      57741,
+      57742,
+      57749,
+      58116,
+      58119,
+      58453,
+      58479,
+      58480,
+      58817,
+      58818,
+      59598,
+      59599,
+      59985,
+      59986,
+      60330,
+      60395,
+      60396,
+      61211,
+      61214,
+      63507,
+      63511,
+      64116,
+      64118,
+      64143,
+      64539,
+      64640,
+      64641,
+      65418,
+      65419,
+      65684,
+      66263,
+      66265,
+      66585,
+      66587,
+      66903,
+      66904,
+      67969,
+      67973,
+      69374,
+      69376,
+      69694,
+      69695,
+      70010,
+      70011,
+      70017,
+      70288,
+      70289,
+      70531,
+      71170,
+      71171,
+      71729,
+      71731,
+      72249,
+      72250,
+      72639,
+      72644,
+      72645,
+      72764,
+      72946,
+      73906,
+      73907,
+      74724,
+      74725,
+      76162,
+      76164,
+      76384,
+      76385,
+      77114,
+      77115,
+      77335,
+      77336,
+      77346,
+      77625,
+      77626,
+      77883,
+      77884,
+      78532,
+      78533,
+      78769,
+      78770
+    ],
+    "checkedGroups": [
+      51679,
+      51681,
+      51688,
+      51716,
+      52053,
+      52432,
+      52828,
+      53608,
+      54080,
+      54602,
+      55772,
+      57741,
+      58116,
+      58479,
+      58817,
+      59598,
+      59985,
+      60395,
+      61211,
+      63507,
+      64116,
+      64640,
+      65418,
+      66263,
+      66585,
+      66903,
+      67969,
+      69374,
+      69694,
+      70010,
+      70288,
+      71170,
+      71729,
+      72249,
+      72644,
+      73906,
+      74724,
+      76162,
+      76384,
+      77114,
+      77335,
+      77625,
+      77883,
+      78532,
+      78769
+    ],
+    "matchingCurrentRows": [],
+    "limitation": "One successful postterminal inventory establishes observed PID/group absence at this instant only; it cannot repair historical ownershipUnknown or establish unseen descendants."
+  },
+  "actualOutputIdentities": {
+    "claude-code-review/stream.jsonl": {
+      "sha256": "959b47c76c8f32846eb7a53bbc4e3828ed1973e838aa58a31dab85db68418768",
+      "bytes": 1451853
+    },
+    "claude-code-review/source-before.json": {
+      "sha256": "34f19a5be665c4339c7cda898cae685ae4c659eb86d73ff0abe00c11929a5388",
+      "bytes": 115180
+    },
+    "claude-code-review/progress.jsonl": {
+      "sha256": "8bf4e2cd70d25a30bc65183d5d593056a0950edd8b1247267cb69e8ba00ba580",
+      "bytes": 494023
+    },
+    "claude-code-review/stderr.txt": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    "claude-code-review/process.json": {
+      "sha256": "f8d6241448c6fcb0eed733038d8839fce69de927bef310b05bbcb2bdb8c79feb",
+      "bytes": 527
+    },
+    "launch-supervision/attempt/guard-021.stdout": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    "launch-supervision/attempt/guard-033.stdout": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    "launch-supervision/attempt/guard-005.stdout": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    "launch-supervision/attempt/guard-017.stdout": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    "launch-supervision/attempt/guard-009.stdout": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    "launch-supervision/attempt/guard-001.stderr": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    "launch-supervision/attempt/outer-progress.jsonl": {
+      "sha256": "0e159c90d05f63d8c27918e998c0bba3e00a6d9002eedc4569d18eccc4e89b13",
+      "bytes": 275739
+    },
+    "launch-supervision/attempt/guard-013.stderr": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    "launch-supervision/attempt/guard-025.stderr": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    "launch-supervision/attempt/guard-037.stderr": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    "launch-supervision/attempt/guard-029.stderr": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    "launch-supervision/attempt/wrapper.stderr": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    "launch-supervision/attempt/guard-011.stderr": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    "launch-supervision/attempt/guard-003.stderr": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    "launch-supervision/attempt/guard-035.stderr": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    "launch-supervision/attempt/guard-039.stderr": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    "launch-supervision/attempt/guard-027.stderr": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    "launch-supervision/attempt/guard-031.stdout": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    "launch-supervision/attempt/guard-040.stdout": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    "launch-supervision/attempt/guard-023.stdout": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    "launch-supervision/attempt/guard-015.stdout": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    "launch-supervision/attempt/guard-019.stdout": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    "launch-supervision/attempt/guard-007.stdout": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    "launch-supervision/attempt/guard-040.stderr": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    "launch-supervision/attempt/guard-023.stderr": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    "launch-supervision/attempt/guard-031.stderr": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    "launch-supervision/attempt/guard-019.stderr": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    "launch-supervision/attempt/guard-007.stderr": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    "launch-supervision/attempt/guard-015.stderr": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    "launch-supervision/attempt/guard-003.stdout": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    "launch-supervision/attempt/wrapper.stdout": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    "launch-supervision/attempt/guard-011.stdout": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    "launch-supervision/attempt/guard-039.stdout": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    "launch-supervision/attempt/guard-027.stdout": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    "launch-supervision/attempt/guard-035.stdout": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    "launch-supervision/attempt/guard-013.stdout": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    "launch-supervision/attempt/guard-001.stdout": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    "launch-supervision/attempt/guard-037.stdout": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    "launch-supervision/attempt/guard-029.stdout": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    "launch-supervision/attempt/guard-025.stdout": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    "launch-supervision/attempt/guard-033.stderr": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    "launch-supervision/attempt/guard-021.stderr": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    "launch-supervision/attempt/guard-017.stderr": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    "launch-supervision/attempt/outer-exit.json": {
+      "sha256": "57d146c3bc39629e92a7d7aa5ef032140b5b4f61e26f34305a0b06150ed60e63",
+      "bytes": 24272
+    },
+    "launch-supervision/attempt/guard-009.stderr": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    "launch-supervision/attempt/guard-005.stderr": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    "launch-supervision/attempt/guard-024.stderr": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    "launch-supervision/attempt/guard-028.stderr": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    "launch-supervision/attempt/guard-036.stderr": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    "launch-supervision/attempt/guard-000.stderr": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    "launch-supervision/attempt/guard-012.stderr": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    "launch-supervision/attempt/guard-004.stdout": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    "launch-supervision/attempt/guard-008.stdout": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    "launch-supervision/attempt/guard-016.stdout": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    "launch-supervision/attempt/guard-020.stdout": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    "launch-supervision/attempt/guard-032.stdout": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    "launch-supervision/attempt/guard-014.stdout": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    "launch-supervision/attempt/guard-006.stdout": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    "launch-supervision/attempt/guard-018.stdout": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    "launch-supervision/attempt/guard-030.stdout": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    "launch-supervision/attempt/guard-022.stdout": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    "launch-supervision/attempt/guard-041.stdout": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    "launch-supervision/attempt/guard-034.stderr": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    "launch-supervision/attempt/guard-026.stderr": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    "launch-supervision/attempt/guard-038.stderr": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    "launch-supervision/attempt/guard-010.stderr": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    "launch-supervision/attempt/guard-002.stderr": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    "launch-supervision/attempt/guard-026.stdout": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    "launch-supervision/attempt/guard-038.stdout": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    "launch-supervision/attempt/guard-034.stdout": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    "launch-supervision/attempt/guard-002.stdout": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    "launch-supervision/attempt/guard-010.stdout": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    "launch-supervision/attempt/guard-006.stderr": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    "launch-supervision/attempt/guard-018.stderr": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    "launch-supervision/attempt/guard-014.stderr": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    "launch-supervision/attempt/guard-022.stderr": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    "launch-supervision/attempt/guard-041.stderr": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    "launch-supervision/attempt/guard-030.stderr": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    "launch-supervision/attempt/guard-008.stderr": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    "launch-supervision/attempt/guard-016.stderr": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    "launch-supervision/attempt/guard-004.stderr": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    "launch-supervision/attempt/guard-032.stderr": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    "launch-supervision/attempt/guard-020.stderr": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    "launch-supervision/attempt/guard-028.stdout": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    "launch-supervision/attempt/guard-036.stdout": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    "launch-supervision/attempt/guard-024.stdout": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    "launch-supervision/attempt/guard-012.stdout": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    "launch-supervision/attempt/guard-000.stdout": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    }
+  },
+  "noRetry": true,
+  "reviewerLaunchedByAuditor": false,
+  "sourceOrLaunchEdits": false,
+  "productExecution": false,
+  "approvalInferred": false,
+  "identityFailureCause": "Sanitized RuntimeError omits require message and triggering inventory. Prior-live authentication and final matching zombie do not identify the failing intermediate row. Exact cause unresolved."
+}

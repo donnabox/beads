@@ -1,0 +1,75 @@
+{
+  "kind": "genuine document precision before/after/inverse only; no product patch",
+  "pairs": [
+    {
+      "path": "plan.md",
+      "beforeSha256": "3a2fcd7082e800affde96515c606d08d1129fa41547f207a60075e99cb8744a0",
+      "afterSha256": "ed133692197946e85e21f47ca713b8f135d2f54e3ebaad65b9b9f21c7eae7998",
+      "beforeCopy": "predecessor-plan1/plan.md",
+      "forward": "deltas/plan.md.patch",
+      "inverse": "deltas/plan.md.inverse.patch"
+    },
+    {
+      "path": "basis.json",
+      "beforeSha256": "b61795ec0e5afc19a15d4ccbcaa44b0b53a49169ba53bfad68b6cd02ff84496a",
+      "afterSha256": "c7ee38f35abbc65246eb408cbb20ee4ea4f7d73a158f8c9baef89294196d08c0",
+      "beforeCopy": "predecessor-plan1/basis.json",
+      "forward": "deltas/basis.json.patch",
+      "inverse": "deltas/basis.json.inverse.patch"
+    },
+    {
+      "path": "future-footprint.json",
+      "beforeSha256": "1e64ff5bd04d14b0760d30415509f262552cf4840ce4cfdff2d46256fc019a3f",
+      "afterSha256": "270cb8754b446a911c88c46c21fc8397f898972b66192efab944b3e963c97f6f",
+      "beforeCopy": "predecessor-plan1/future-footprint.json",
+      "forward": "deltas/future-footprint.json.patch",
+      "inverse": "deltas/future-footprint.json.inverse.patch"
+    },
+    {
+      "path": "report-contract.json",
+      "beforeSha256": "82e04bd2e249c484976629291fa4d0cd7e845d3c8044b1b776ad5f457c6b5390",
+      "afterSha256": "6fa81f480257e86fc31c89bf0810109afba6738ee57a3e140a750da382e83d46",
+      "beforeCopy": "predecessor-plan1/report-contract.json",
+      "forward": "deltas/report-contract.json.patch",
+      "inverse": "deltas/report-contract.json.inverse.patch"
+    },
+    {
+      "path": "lifecycle-inventory.json",
+      "beforeSha256": "a3f5317e93a233aa8dee1f11178194708beff436178906bfe3deed637c5c3171",
+      "afterSha256": "75f5b18c6257b4f2fbbe449f799731958463bd047cc7df75bc0c274b72d2ba22",
+      "beforeCopy": "predecessor-plan1/lifecycle-inventory.json",
+      "forward": "deltas/lifecycle-inventory.json.patch",
+      "inverse": "deltas/lifecycle-inventory.json.inverse.patch"
+    },
+    {
+      "path": "counterfactual-inventory.json",
+      "beforeSha256": "4d36bad3ed4c4416d9e1fdd7dcadb2acf99d433cad703f3fe52ae8ac042daed1",
+      "afterSha256": "0c03e3e19eea8afb8dc477704f329663f10b656f2f60cc80c6960c4461db3e1b",
+      "beforeCopy": "predecessor-plan1/counterfactual-inventory.json",
+      "forward": "deltas/counterfactual-inventory.json.patch",
+      "inverse": "deltas/counterfactual-inventory.json.inverse.patch"
+    },
+    {
+      "path": "closure.json",
+      "beforeSha256": "36c10cccc69a8ae07f10e6d0a7983e703b4c1844c1c92102d09e7e67d95d9f8a",
+      "afterSha256": "04960a9ad65f83dd6c09df07e5fdf4e48140c3df312e7a3972642329998b947c",
+      "beforeCopy": "predecessor-plan1/closure.json",
+      "forward": "deltas/closure.json.patch",
+      "inverse": "deltas/closure.json.inverse.patch"
+    },
+    {
+      "path": "preservation.json",
+      "beforeSha256": "21206b2766ac92f38fcd0b769b4a201feaba4f489f80c811af5877fc10d6de97",
+      "afterSha256": "5131db350e1b4bda061637deeb1735e57cb5199a07399a26b9fa849f7c4d9776",
+      "beforeCopy": "predecessor-plan1/preservation.json",
+      "forward": "deltas/preservation.json.patch",
+      "inverse": "deltas/preservation.json.inverse.patch"
+    }
+  ],
+  "genuinePairs": 8,
+  "unchangedRequestInventorySha256": "5295ff6b710b1364616e4271427b39a845cbafc2e703ba3fcf18b3b41f2bf15a",
+  "unchangedConfigurationSha256": "a5aa9613cfb6906b736474c370194f3e5cdd17788d690ee4d62418a70d1e3d87",
+  "unchangedSourceMapSha256": "ff8ad56f23c3d7ee6e652724501cdaa16ec9551ea24b1673dc6c74bf5c1c06b7",
+  "unchangedCloneOracleDefinitions": true,
+  "secondActualPlanAllowed": false
+}

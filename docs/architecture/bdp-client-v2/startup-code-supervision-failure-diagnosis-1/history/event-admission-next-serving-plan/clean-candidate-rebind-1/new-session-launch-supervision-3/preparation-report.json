@@ -1,0 +1,53 @@
+{
+  "createdUtc": "2026-10-18T03:33:14.456065+00:00",
+  "state": "CLOSED future-launch mechanics correction only",
+  "scope": "T1 terminal/zombie reviewer handling; preserve failed2 and frozenstartup2",
+  "predecessor": {
+    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/event-admission-next-serving-plan/clean-candidate-rebind-1/new-session-launch-supervision-2",
+    "supervisorSha256": "44a8c1948ca8b257277bdfaa854e7748271b72dc970df1031d6b54b62e4e589e",
+    "preparationIndexSha256": "141fa43533f4b51b9027eb00123f8adcc7ba703dea23a5b1c46bb5cb487a9226",
+    "actualFailedExitSha256": "1c6e64920eaaa61ce6cdc911cb72b4d168e96110dd417fe4e0a3fa2835449b6c",
+    "terminalAuditSha256": "cd9f7dee2c2adb3e35930932febabda89592e705369977d006a00fc6c6d5e9f9"
+  },
+  "actualFailure": {
+    "classification": "process_ownership_or_cleanup_failure",
+    "elapsedSeconds": 1133.902927415911,
+    "wrapperExitCode": -15,
+    "historicalOwnershipUnknown": true,
+    "cause": "T1 zombie executable-name false-positive is likely; exact require and three PermissionErrors remain unattributed",
+    "cleanRunClaim": false,
+    "retryPerformed": false
+  },
+  "changes": [
+    "Parse bounded ps state column",
+    "Accept terminal Z reviewer only against prior LIVE authentication of exact PID/start/PGID/argv/record start",
+    "Retain strict live executable identity",
+    "Collect full current owned group, retaining live reparented children",
+    "Skip signal targets only when fresh inventory shows all group members zombie",
+    "Keep zombies tracked until actual reaping/absence"
+  ],
+  "unchanged": [
+    "Exact current remote-session checks and prior role-guard binding",
+    "Source/packet/argument invariance requirements",
+    "Immediate direct Popen handle registration",
+    "Safe unreaped direct-child fallback when inventory fails",
+    "Serialized polling/reaping and retryable signal success state",
+    "TERM1790/KILL1798/absolute1800",
+    "Exclusive attempt and no retry",
+    "No success while owned processes remain or ownership is unknown"
+  ],
+  "launchability": "NO: control false and referenced changefeed packet already attempted; no relaunch allowed. Future fresh packet needs data-only binding, not alteration of frozen startup2 review inputs.",
+  "staticVerification": [
+    "Python AST parses without execution",
+    "Genuine code/control delta and inverse generated from exact prior bytes",
+    "State field offsets and prior-live-authenticated Z branch inspected",
+    "Live rows retain claude name check; unknown zombie cannot create auth",
+    "All-zombie skip requires fresh full group census; live group children included",
+    "No new timeout constants/flag bypass/raw waitpid",
+    "Every predecessor file rehashed unchanged; no attempt created"
+  ],
+  "runtimeVerification": "NOT RUN; no claim that future runtime mechanics have already passed",
+  "futureBindingIdentities": "UNRESOLVED; no fabricated source/build/package/review results",
+  "remoteWrites": false,
+  "sourceDesignLaunchRunningPacketEdits": false
+}

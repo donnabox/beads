@@ -1,0 +1,1985 @@
+{
+  "source": {
+    "sourceCommit": "b20450950af93f882e4d3a1dafc547cc6f303ac7",
+    "sourceCheckout": "/Users/dbox/repos/wt/vickie/vickie-reference-integration",
+    "sourceClean": true,
+    "node": "v24.16.0",
+    "entry": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/reference-main-integration/packed/install/node_modules/@bdp/server/dist/transaction-installed-process.js",
+    "entryRealPath": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/reference-main-integration/packed/install/node_modules/@bdp/server/dist/transaction-installed-process.js",
+    "ruEntry": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/reference-main-integration/packed/install/node_modules/@bdp/server/dist/installed-reference-process.js",
+    "files": [
+      {
+        "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/reference-main-integration/packed/packs/protocol.tgz",
+        "sha256": "2943f90cd4d0c5ac973dc84c75c80b6b0d944e688b0210990438a482a0a61a8c",
+        "bytes": 67368
+      },
+      {
+        "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/reference-main-integration/packed/packs/server.tgz",
+        "sha256": "aa52a497f921dc00f4b66e94cf31843d0c91613019ddbb9292a9319d1ba8115b",
+        "bytes": 401246
+      },
+      {
+        "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/reference-main-integration/packed/install/node_modules/@bdp/server/dist/transaction-installed-process.js",
+        "sha256": "bcf153170f953f9e28c6c89f1153be907f64df289e64f3ad929cad4a4a54c47c",
+        "bytes": 2971
+      },
+      {
+        "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/reference-main-integration/packed/install/node_modules/@bdp/server/dist/installed-reference-process.js",
+        "sha256": "3eb9a6bc8df1237d78ba4aae7e95589df6fb7f4781f572e04adda583f359c71d",
+        "bytes": 3241
+      },
+      {
+        "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/reference-main-integration/packed/install/node_modules/@bdp/server/package.json",
+        "sha256": "d583f4158c3a393923c37d70a61212f6a716c951a5f3be7ed9bbe3aa8846ca2e",
+        "bytes": 488
+      }
+    ]
+  },
+  "merge": {
+    "parents": [
+      "1f9d7dbc401f6a265cf1ce0bdfea0fe493cd79a5",
+      "88e428ce5b24a666cf2a27f0cbb34cd64dfcf7e5"
+    ],
+    "manifestBytes": 3626754,
+    "manifestNodes": 97112,
+    "nodeHeadroom": 2888,
+    "old47RawScenarioBlocksIdenticalToMain": true,
+    "new2RawScenarioBlocksIdenticalToReference": true,
+    "fixtureIdenticalToReference": true,
+    "coverageRowsEqualCorrectParent": true,
+    "whole": 28,
+    "uncovered": 101,
+    "authored": 49,
+    "rows": [
+      {
+        "id": "read-update.singleton.no-local-bindings",
+        "actions": 99,
+        "raw": 46,
+        "client": 53,
+        "assertions": 570
+      },
+      {
+        "id": "read-update.alias.non-canonical-target",
+        "actions": 72,
+        "raw": 43,
+        "client": 29,
+        "assertions": 359
+      }
+    ]
+  },
+  "runtimeTrees": {
+    "packages/server": "82bbcbf1d4ff426a293578c8ed4e8d323991364f",
+    "packages/protocol": "4203166f61226ebb1a4cf7258d7d794196376d0f",
+    "packages/client": "d6f6f67cb4ad12054aeac1f65ac680a7831676bb",
+    "packages/config": "2dc68c3092802f6506f8ec455ddbf3c656cad8e9",
+    "scripts": "ab3e89eb7894f8e0462fcdd4b0b392e245ef7b8f"
+  },
+  "precommitChecks": [
+    {
+      "name": "frozen-install",
+      "exit": 0,
+      "seconds": 0.5083250999450684
+    },
+    {
+      "name": "typecheck",
+      "exit": 0,
+      "seconds": 1.3577358722686768
+    },
+    {
+      "name": "build",
+      "exit": 0,
+      "seconds": 0.8290271759033203
+    },
+    {
+      "name": "affected",
+      "exit": 0,
+      "seconds": 96.76041293144226
+    },
+    {
+      "name": "check-boundaries",
+      "exit": 0,
+      "seconds": 0.5630278587341309
+    },
+    {
+      "name": "format-check",
+      "exit": 0,
+      "seconds": 1.3106520175933838
+    },
+    {
+      "name": "lint",
+      "exit": 0,
+      "seconds": 0.45422792434692383
+    }
+  ],
+  "frozenChecks": [
+    {
+      "name": "build",
+      "exit": 0,
+      "seconds": 0.8262770175933838
+    },
+    {
+      "name": "typecheck",
+      "exit": 0,
+      "seconds": 0.7765557765960693
+    },
+    {
+      "name": "check-boundaries",
+      "exit": 0,
+      "seconds": 0.5541579723358154
+    },
+    {
+      "name": "format-check",
+      "exit": 0,
+      "seconds": 0.3378908634185791
+    },
+    {
+      "name": "lint",
+      "exit": 0,
+      "seconds": 0.396392822265625
+    },
+    {
+      "name": "cumulative-artifact",
+      "exit": 0,
+      "seconds": 0.7203052043914795
+    },
+    {
+      "name": "pack-protocol",
+      "exit": 0,
+      "seconds": 0.2367548942565918
+    },
+    {
+      "name": "pack-server",
+      "exit": 0,
+      "seconds": 0.2867732048034668
+    },
+    {
+      "name": "install",
+      "exit": 0,
+      "seconds": 0.766618013381958
+    },
+    {
+      "name": "read-update-matrix",
+      "exit": 0,
+      "seconds": 96.10666298866272
+    }
+  ],
+  "observations": {
+    "read-update": {
+      "sourceCommit": "b20450950af93f882e4d3a1dafc547cc6f303ac7",
+      "sourceDirty": false,
+      "claimEligible": false,
+      "configuration": {
+        "scope": "https://reference.invalid/acme/",
+        "profile": "read-update",
+        "history": false,
+        "sourceCommit": "b20450950af93f882e4d3a1dafc547cc6f303ac7",
+        "installedPayloadDigest": "78a80950acd6c1981d6829fc4d59c05eaafc65e0d68cf20d3d84f61f377acb99",
+        "installedContractsDigest": "48667497d6e13064316d0364cf8f49dfc247ab9189306985a357d7b558333dfe",
+        "policyDigest": "dbe8dbd5430f26e19e754d38167cd8084a32d702c695550e2ee0063dc2912430",
+        "authenticationDigest": "66941efc779f4f2431d65fdd5b2387b2af67bd7c1559e09dac032f82259ea16e",
+        "fixtureDigest": "f5f38235dfd28cf06e760688e2054d3e29d8d64b08c4c729baa94f380f1f7a63",
+        "fixtureId": "reference-read-update-schema-v1",
+        "capabilities": [
+          "installed-read-update-http"
+        ]
+      },
+      "baselineReceipt": {
+        "event": "qualification.ready",
+        "scope": "https://reference.invalid/acme/",
+        "claimEligible": false,
+        "configurationIdentity": "1720b63b49a7be3299d4b2865de4db9fcbe47560f217a32eea6397db7ea54ca5",
+        "artifactIdentity": "development-schema5-48667497d6e13064316d0364cf8f49dfc247ab9189306985a357d7b558333dfe",
+        "payloadIdentity": "78a80950acd6c1981d6829fc4d59c05eaafc65e0d68cf20d3d84f61f377acb99",
+        "policyIdentity": "dbe8dbd5430f26e19e754d38167cd8084a32d702c695550e2ee0063dc2912430",
+        "authenticationIdentity": "66941efc779f4f2431d65fdd5b2387b2af67bd7c1559e09dac032f82259ea16e",
+        "profile": "read-update",
+        "history": false
+      },
+      "reportBinding": {
+        "artifacts": {
+          "catalogDigest": "e26d3fc758a34ebb0b5028be15d28e3e09db87dc7984bba7bad6a00b26329aa0",
+          "manifestDigest": "d40a9a3311c11d58d74841ddd57d0f07e69759fb5ba7e51fa371e98382fd42bb",
+          "fixtureDigest": "f5f38235dfd28cf06e760688e2054d3e29d8d64b08c4c729baa94f380f1f7a63"
+        },
+        "exactConfigurationDigest": "3224c31c83988dc0606cb76ee1f4ba8e6394159bdf7daaccc301461316cc2477"
+      },
+      "catalogSources": {
+        "read-v1.json": "769ff9f24cfdfe74a47670240b04149b520af23b2c71a431883fd15e988adeb0",
+        "read-update-v1.json": "0ad91810510dd7b688b291863d9b33949bba85fab69d6004ef1423b8c5e47039",
+        "transactional-v1.json": "d824e73b05a37ba6c7a66b3d97769dcb6b27fe0204310b0155b5c18a11e232d0",
+        "numeric-model-v1.json": "f4428d53cc1e67beaa146ba9811cd9676e47e84d75a344ba68eb9a24cdc2d0a5",
+        "owned-wildcard-v1.json": "6023bff763b7579992fc9092901f2f8ddfc752f264c2a9de6bc0caf0880c5ecd"
+      },
+      "requiredRows": 129,
+      "plannedRows": 49,
+      "uncoveredRows": 101,
+      "wholeRows": 28,
+      "sessions": 49,
+      "clientObservations": 985,
+      "setupObservations": 44,
+      "nativeReadObservations": 21,
+      "reportedExchanges": 876,
+      "scenarioStates": {
+        "pass": 49,
+        "harness-error": 85
+      },
+      "routes": [
+        {
+          "method": "GET",
+          "url": "https://reference.invalid/acme/bdp.json",
+          "observations": 1
+        },
+        {
+          "method": "GET",
+          "url": "https://reference.invalid/acme/beads/242c1a1086d5af37ecffedee24af55d6336d3d0bd98933498bb22d90d0e0e692",
+          "observations": 1
+        },
+        {
+          "method": "GET",
+          "url": "https://reference.invalid/acme/beads/a",
+          "observations": 12
+        },
+        {
+          "method": "GET",
+          "url": "https://reference.invalid/acme/beads/a337626d35ab7ad369c623f09d437b09499b9197f0be43020fce821f8fffd4e2",
+          "observations": 1
+        },
+        {
+          "method": "GET",
+          "url": "https://reference.invalid/acme/beads/a?view=links",
+          "observations": 1
+        },
+        {
+          "method": "GET",
+          "url": "https://reference.invalid/acme/beads/a?view=properties",
+          "observations": 1
+        },
+        {
+          "method": "GET",
+          "url": "https://reference.invalid/acme/beads/ak-comma",
+          "observations": 1
+        },
+        {
+          "method": "GET",
+          "url": "https://reference.invalid/acme/beads/ak-delete",
+          "observations": 2
+        },
+        {
+          "method": "GET",
+          "url": "https://reference.invalid/acme/beads/ak-empty",
+          "observations": 1
+        },
+        {
+          "method": "GET",
+          "url": "https://reference.invalid/acme/beads/ak-latin",
+          "observations": 1
+        },
+        {
+          "method": "GET",
+          "url": "https://reference.invalid/acme/beads/ak-long",
+          "observations": 1
+        },
+        {
+          "method": "GET",
+          "url": "https://reference.invalid/acme/beads/ak-punctuation",
+          "observations": 1
+        },
+        {
+          "method": "GET",
+          "url": "https://reference.invalid/acme/beads/ak-quoted",
+          "observations": 1
+        },
+        {
+          "method": "GET",
+          "url": "https://reference.invalid/acme/beads/ak-repeat-distinct",
+          "observations": 1
+        },
+        {
+          "method": "GET",
+          "url": "https://reference.invalid/acme/beads/ak-repeat-distinct-0",
+          "observations": 1
+        },
+        {
+          "method": "GET",
+          "url": "https://reference.invalid/acme/beads/ak-repeat-distinct-1",
+          "observations": 1
+        },
+        {
+          "method": "GET",
+          "url": "https://reference.invalid/acme/beads/ak-repeat-mixed",
+          "observations": 1
+        },
+        {
+          "method": "GET",
+          "url": "https://reference.invalid/acme/beads/ak-repeat-mixed-0",
+          "observations": 1
+        },
+        {
+          "method": "GET",
+          "url": "https://reference.invalid/acme/beads/ak-repeat-mixed-1",
+          "observations": 1
+        },
+        {
+          "method": "GET",
+          "url": "https://reference.invalid/acme/beads/ak-repeat-same",
+          "observations": 1
+        },
+        {
+          "method": "GET",
+          "url": "https://reference.invalid/acme/beads/ak-repeat-same-0",
+          "observations": 1
+        },
+        {
+          "method": "GET",
+          "url": "https://reference.invalid/acme/beads/ak-route-create",
+          "observations": 1
+        },
+        {
+          "method": "GET",
+          "url": "https://reference.invalid/acme/beads/ak-seq-comma-member",
+          "observations": 1
+        },
+        {
+          "method": "GET",
+          "url": "https://reference.invalid/acme/beads/ak-seq-comma-prefix",
+          "observations": 1
+        },
+        {
+          "method": "GET",
+          "url": "https://reference.invalid/acme/beads/ak-seq-empty-member",
+          "observations": 1
+        },
+        {
+          "method": "GET",
+          "url": "https://reference.invalid/acme/beads/ak-seq-empty-prefix",
+          "observations": 1
+        },
+        {
+          "method": "GET",
+          "url": "https://reference.invalid/acme/beads/ak-seq-latin-member",
+          "observations": 1
+        },
+        {
+          "method": "GET",
+          "url": "https://reference.invalid/acme/beads/ak-seq-latin-prefix",
+          "observations": 1
+        },
+        {
+          "method": "GET",
+          "url": "https://reference.invalid/acme/beads/ak-seq-long-member",
+          "observations": 1
+        },
+        {
+          "method": "GET",
+          "url": "https://reference.invalid/acme/beads/ak-seq-long-prefix",
+          "observations": 1
+        },
+        {
+          "method": "GET",
+          "url": "https://reference.invalid/acme/beads/ak-seq-punctuation-member",
+          "observations": 1
+        },
+        {
+          "method": "GET",
+          "url": "https://reference.invalid/acme/beads/ak-seq-punctuation-prefix",
+          "observations": 1
+        },
+        {
+          "method": "GET",
+          "url": "https://reference.invalid/acme/beads/ak-seq-quoted-member",
+          "observations": 1
+        },
+        {
+          "method": "GET",
+          "url": "https://reference.invalid/acme/beads/ak-seq-quoted-prefix",
+          "observations": 1
+        },
+        {
+          "method": "GET",
+          "url": "https://reference.invalid/acme/beads/ak-seq-space-member",
+          "observations": 1
+        },
+        {
+          "method": "GET",
+          "url": "https://reference.invalid/acme/beads/ak-seq-space-prefix",
+          "observations": 1
+        },
+        {
+          "method": "GET",
+          "url": "https://reference.invalid/acme/beads/ak-seq-tab-member",
+          "observations": 1
+        },
+        {
+          "method": "GET",
+          "url": "https://reference.invalid/acme/beads/ak-seq-tab-prefix",
+          "observations": 1
+        },
+        {
+          "method": "GET",
+          "url": "https://reference.invalid/acme/beads/ak-source",
+          "observations": 1
+        },
+        {
+          "method": "GET",
+          "url": "https://reference.invalid/acme/beads/ak-space",
+          "observations": 1
+        },
+        {
+          "method": "GET",
+          "url": "https://reference.invalid/acme/beads/ak-tab",
+          "observations": 1
+        },
+        {
+          "method": "GET",
+          "url": "https://reference.invalid/acme/beads/ak-target",
+          "observations": 1
+        },
+        {
+          "method": "GET",
+          "url": "https://reference.invalid/acme/beads/ak-update",
+          "observations": 2
+        },
+        {
+          "method": "GET",
+          "url": "https://reference.invalid/acme/beads/ak-valid-alphabet",
+          "observations": 1
+        },
+        {
+          "method": "GET",
+          "url": "https://reference.invalid/acme/beads/ak-valid-maximum",
+          "observations": 1
+        },
+        {
+          "method": "GET",
+          "url": "https://reference.invalid/acme/beads/ak-valid-one",
+          "observations": 1
+        },
+        {
+          "method": "GET",
+          "url": "https://reference.invalid/acme/beads/am-alt-delete",
+          "observations": 2
+        },
+        {
+          "method": "GET",
+          "url": "https://reference.invalid/acme/beads/am-charset",
+          "observations": 1
+        },
+        {
+          "method": "GET",
+          "url": "https://reference.invalid/acme/beads/am-delete",
+          "observations": 1
+        },
+        {
+          "method": "GET",
+          "url": "https://reference.invalid/acme/beads/am-irrelevant",
+          "observations": 1
+        },
+        {
+          "method": "GET",
+          "url": "https://reference.invalid/acme/beads/am-plain-corrected",
+          "observations": 1
+        },
+        {
+          "method": "GET",
+          "url": "https://reference.invalid/acme/beads/am-problem-corrected",
+          "observations": 1
+        },
+        {
+          "method": "GET",
+          "url": "https://reference.invalid/acme/beads/am-route-create-alt",
+          "observations": 1
+        },
+        {
+          "method": "GET",
+          "url": "https://reference.invalid/acme/beads/am-seq-0-corrected",
+          "observations": 1
+        },
+        {
+          "method": "GET",
+          "url": "https://reference.invalid/acme/beads/am-seq-1-corrected",
+          "observations": 1
+        },
+        {
+          "method": "GET",
+          "url": "https://reference.invalid/acme/beads/am-source",
+          "observations": 1
+        },
+        {
+          "method": "GET",
+          "url": "https://reference.invalid/acme/beads/am-target",
+          "observations": 1
+        },
+        {
+          "method": "GET",
+          "url": "https://reference.invalid/acme/beads/am-update",
+          "observations": 2
+        },
+        {
+          "method": "GET",
+          "url": "https://reference.invalid/acme/beads/dd84c9bf0e5859395d17b235baefaf6a549d6b809247a2e72cfdd9baebddc6b2",
+          "observations": 1
+        },
+        {
+          "method": "GET",
+          "url": "https://reference.invalid/acme/beads/e4cf69d5248386a5191c8d6f9bb55a4a1bac2f566788a173fae7edb70e0b44b1",
+          "observations": 2
+        },
+        {
+          "method": "GET",
+          "url": "https://reference.invalid/acme/beads/ra-created-id",
+          "observations": 1
+        },
+        {
+          "method": "GET",
+          "url": "https://reference.invalid/acme/beads/ra-delete",
+          "observations": 2
+        },
+        {
+          "method": "GET",
+          "url": "https://reference.invalid/acme/beads/ra-metadata",
+          "observations": 1
+        },
+        {
+          "method": "GET",
+          "url": "https://reference.invalid/acme/beads/ra-source",
+          "observations": 1
+        },
+        {
+          "method": "GET",
+          "url": "https://reference.invalid/acme/beads/ra-target",
+          "observations": 1
+        },
+        {
+          "method": "GET",
+          "url": "https://reference.invalid/acme/beads/ra-update",
+          "observations": 2
+        },
+        {
+          "method": "GET",
+          "url": "https://reference.invalid/acme/beads/rb-rb-sequence-alias-tail",
+          "observations": 1
+        },
+        {
+          "method": "GET",
+          "url": "https://reference.invalid/acme/beads/rb-rb-sequence-endpoint-tail",
+          "observations": 1
+        },
+        {
+          "method": "GET",
+          "url": "https://reference.invalid/acme/beads/rb-source",
+          "observations": 1
+        },
+        {
+          "method": "GET",
+          "url": "https://reference.invalid/acme/beads/rb-target",
+          "observations": 1
+        },
+        {
+          "method": "GET",
+          "url": "https://reference.invalid/acme/beads/retry-cross-a",
+          "observations": 3
+        },
+        {
+          "method": "GET",
+          "url": "https://reference.invalid/acme/beads/retry-cross-b",
+          "observations": 3
+        },
+        {
+          "method": "GET",
+          "url": "https://reference.invalid/acme/beads/retry-cross-f",
+          "observations": 4
+        },
+        {
+          "method": "GET",
+          "url": "https://reference.invalid/acme/beads/retry-cross-g",
+          "observations": 4
+        },
+        {
+          "method": "GET",
+          "url": "https://reference.invalid/acme/beads/retry-position-b",
+          "observations": 2
+        },
+        {
+          "method": "GET",
+          "url": "https://reference.invalid/acme/beads/retry-position-d",
+          "observations": 1
+        },
+        {
+          "method": "GET",
+          "url": "https://reference.invalid/acme/beads/retry-position-f",
+          "observations": 3
+        },
+        {
+          "method": "GET",
+          "url": "https://reference.invalid/acme/beads/w1-a",
+          "observations": 54
+        },
+        {
+          "method": "GET",
+          "url": "https://reference.invalid/acme/beads/w1-b",
+          "observations": 37
+        },
+        {
+          "method": "GET",
+          "url": "https://reference.invalid/acme/beads/w1b-owner",
+          "observations": 51
+        },
+        {
+          "method": "GET",
+          "url": "https://reference.invalid/acme/beads/w1b-target",
+          "observations": 20
+        },
+        {
+          "method": "GET",
+          "url": "https://reference.invalid/acme/beads/w1b-unowned-source",
+          "observations": 9
+        },
+        {
+          "method": "GET",
+          "url": "https://reference.invalid/acme/beads/w2-alias-target",
+          "observations": 4
+        },
+        {
+          "method": "GET",
+          "url": "https://reference.invalid/acme/beads/w2-anonymous-pre",
+          "observations": 2
+        },
+        {
+          "method": "GET",
+          "url": "https://reference.invalid/acme/beads/w2-anonymous-tail",
+          "observations": 2
+        },
+        {
+          "method": "GET",
+          "url": "https://reference.invalid/acme/beads/w2-bad-pointer-corrected-1",
+          "observations": 1
+        },
+        {
+          "method": "GET",
+          "url": "https://reference.invalid/acme/beads/w2-bad-pointer-pre",
+          "observations": 2
+        },
+        {
+          "method": "GET",
+          "url": "https://reference.invalid/acme/beads/w2-bad-pointer-tail",
+          "observations": 2
+        },
+        {
+          "method": "GET",
+          "url": "https://reference.invalid/acme/beads/w2-bead-as-link-corrected-1",
+          "observations": 1
+        },
+        {
+          "method": "GET",
+          "url": "https://reference.invalid/acme/beads/w2-bead-as-link-pre",
+          "observations": 2
+        },
+        {
+          "method": "GET",
+          "url": "https://reference.invalid/acme/beads/w2-bead-as-link-tail",
+          "observations": 2
+        },
+        {
+          "method": "GET",
+          "url": "https://reference.invalid/acme/beads/w2-bind-tail",
+          "observations": 1
+        },
+        {
+          "method": "GET",
+          "url": "https://reference.invalid/acme/beads/w2-body-size-pre",
+          "observations": 2
+        },
+        {
+          "method": "GET",
+          "url": "https://reference.invalid/acme/beads/w2-body-size-tail",
+          "observations": 2
+        },
+        {
+          "method": "GET",
+          "url": "https://reference.invalid/acme/beads/w2-collision",
+          "observations": 4
+        },
+        {
+          "method": "GET",
+          "url": "https://reference.invalid/acme/beads/w2-count-0",
+          "observations": 2
+        },
+        {
+          "method": "GET",
+          "url": "https://reference.invalid/acme/beads/w2-count-1",
+          "observations": 2
+        },
+        {
+          "method": "GET",
+          "url": "https://reference.invalid/acme/beads/w2-count-10",
+          "observations": 2
+        },
+        {
+          "method": "GET",
+          "url": "https://reference.invalid/acme/beads/w2-count-11",
+          "observations": 2
+        },
+        {
+          "method": "GET",
+          "url": "https://reference.invalid/acme/beads/w2-count-12",
+          "observations": 2
+        },
+        {
+          "method": "GET",
+          "url": "https://reference.invalid/acme/beads/w2-count-13",
+          "observations": 2
+        },
+        {
+          "method": "GET",
+          "url": "https://reference.invalid/acme/beads/w2-count-14",
+          "observations": 2
+        },
+        {
+          "method": "GET",
+          "url": "https://reference.invalid/acme/beads/w2-count-15",
+          "observations": 2
+        },
+        {
+          "method": "GET",
+          "url": "https://reference.invalid/acme/beads/w2-count-16",
+          "observations": 2
+        },
+        {
+          "method": "GET",
+          "url": "https://reference.invalid/acme/beads/w2-count-17",
+          "observations": 2
+        },
+        {
+          "method": "GET",
+          "url": "https://reference.invalid/acme/beads/w2-count-18",
+          "observations": 2
+        },
+        {
+          "method": "GET",
+          "url": "https://reference.invalid/acme/beads/w2-count-19",
+          "observations": 2
+        },
+        {
+          "method": "GET",
+          "url": "https://reference.invalid/acme/beads/w2-count-2",
+          "observations": 2
+        },
+        {
+          "method": "GET",
+          "url": "https://reference.invalid/acme/beads/w2-count-20",
+          "observations": 2
+        },
+        {
+          "method": "GET",
+          "url": "https://reference.invalid/acme/beads/w2-count-21",
+          "observations": 2
+        },
+        {
+          "method": "GET",
+          "url": "https://reference.invalid/acme/beads/w2-count-22",
+          "observations": 2
+        },
+        {
+          "method": "GET",
+          "url": "https://reference.invalid/acme/beads/w2-count-23",
+          "observations": 2
+        },
+        {
+          "method": "GET",
+          "url": "https://reference.invalid/acme/beads/w2-count-24",
+          "observations": 2
+        },
+        {
+          "method": "GET",
+          "url": "https://reference.invalid/acme/beads/w2-count-25",
+          "observations": 2
+        },
+        {
+          "method": "GET",
+          "url": "https://reference.invalid/acme/beads/w2-count-26",
+          "observations": 2
+        },
+        {
+          "method": "GET",
+          "url": "https://reference.invalid/acme/beads/w2-count-27",
+          "observations": 2
+        },
+        {
+          "method": "GET",
+          "url": "https://reference.invalid/acme/beads/w2-count-28",
+          "observations": 2
+        },
+        {
+          "method": "GET",
+          "url": "https://reference.invalid/acme/beads/w2-count-29",
+          "observations": 2
+        },
+        {
+          "method": "GET",
+          "url": "https://reference.invalid/acme/beads/w2-count-3",
+          "observations": 2
+        },
+        {
+          "method": "GET",
+          "url": "https://reference.invalid/acme/beads/w2-count-30",
+          "observations": 2
+        },
+        {
+          "method": "GET",
+          "url": "https://reference.invalid/acme/beads/w2-count-31",
+          "observations": 2
+        },
+        {
+          "method": "GET",
+          "url": "https://reference.invalid/acme/beads/w2-count-32",
+          "observations": 2
+        },
+        {
+          "method": "GET",
+          "url": "https://reference.invalid/acme/beads/w2-count-4",
+          "observations": 2
+        },
+        {
+          "method": "GET",
+          "url": "https://reference.invalid/acme/beads/w2-count-5",
+          "observations": 2
+        },
+        {
+          "method": "GET",
+          "url": "https://reference.invalid/acme/beads/w2-count-6",
+          "observations": 2
+        },
+        {
+          "method": "GET",
+          "url": "https://reference.invalid/acme/beads/w2-count-7",
+          "observations": 2
+        },
+        {
+          "method": "GET",
+          "url": "https://reference.invalid/acme/beads/w2-count-8",
+          "observations": 2
+        },
+        {
+          "method": "GET",
+          "url": "https://reference.invalid/acme/beads/w2-count-9",
+          "observations": 2
+        },
+        {
+          "method": "GET",
+          "url": "https://reference.invalid/acme/beads/w2-duplicate-json-pre",
+          "observations": 2
+        },
+        {
+          "method": "GET",
+          "url": "https://reference.invalid/acme/beads/w2-duplicate-json-tail",
+          "observations": 2
+        },
+        {
+          "method": "GET",
+          "url": "https://reference.invalid/acme/beads/w2-duplicate-key-pre",
+          "observations": 1
+        },
+        {
+          "method": "GET",
+          "url": "https://reference.invalid/acme/beads/w2-duplicate-key-tail",
+          "observations": 2
+        },
+        {
+          "method": "GET",
+          "url": "https://reference.invalid/acme/beads/w2-duplicate-name-pre",
+          "observations": 2
+        },
+        {
+          "method": "GET",
+          "url": "https://reference.invalid/acme/beads/w2-duplicate-name-tail",
+          "observations": 2
+        },
+        {
+          "method": "GET",
+          "url": "https://reference.invalid/acme/beads/w2-empty-pre",
+          "observations": 2
+        },
+        {
+          "method": "GET",
+          "url": "https://reference.invalid/acme/beads/w2-empty-tail",
+          "observations": 2
+        },
+        {
+          "method": "GET",
+          "url": "https://reference.invalid/acme/beads/w2-forward-corrected-0",
+          "observations": 1
+        },
+        {
+          "method": "GET",
+          "url": "https://reference.invalid/acme/beads/w2-forward-pre",
+          "observations": 2
+        },
+        {
+          "method": "GET",
+          "url": "https://reference.invalid/acme/beads/w2-forward-tail",
+          "observations": 2
+        },
+        {
+          "method": "GET",
+          "url": "https://reference.invalid/acme/beads/w2-held",
+          "observations": 3
+        },
+        {
+          "method": "GET",
+          "url": "https://reference.invalid/acme/beads/w2-independent",
+          "observations": 2
+        },
+        {
+          "method": "GET",
+          "url": "https://reference.invalid/acme/beads/w2-invalid-key-pre",
+          "observations": 2
+        },
+        {
+          "method": "GET",
+          "url": "https://reference.invalid/acme/beads/w2-invalid-key-tail",
+          "observations": 1
+        },
+        {
+          "method": "GET",
+          "url": "https://reference.invalid/acme/beads/w2-invalid-name-pre",
+          "observations": 2
+        },
+        {
+          "method": "GET",
+          "url": "https://reference.invalid/acme/beads/w2-invalid-name-tail",
+          "observations": 2
+        },
+        {
+          "method": "GET",
+          "url": "https://reference.invalid/acme/beads/w2-link-as-bead-corrected-1",
+          "observations": 1
+        },
+        {
+          "method": "GET",
+          "url": "https://reference.invalid/acme/beads/w2-link-as-bead-corrected-2",
+          "observations": 1
+        },
+        {
+          "method": "GET",
+          "url": "https://reference.invalid/acme/beads/w2-link-as-bead-pre",
+          "observations": 2
+        },
+        {
+          "method": "GET",
+          "url": "https://reference.invalid/acme/beads/w2-link-as-bead-tail",
+          "observations": 2
+        },
+        {
+          "method": "GET",
+          "url": "https://reference.invalid/acme/beads/w2-link-as-endpoint-corrected-1",
+          "observations": 1
+        },
+        {
+          "method": "GET",
+          "url": "https://reference.invalid/acme/beads/w2-link-as-endpoint-corrected-2",
+          "observations": 1
+        },
+        {
+          "method": "GET",
+          "url": "https://reference.invalid/acme/beads/w2-link-as-endpoint-pre",
+          "observations": 2
+        },
+        {
+          "method": "GET",
+          "url": "https://reference.invalid/acme/beads/w2-link-as-endpoint-tail",
+          "observations": 2
+        },
+        {
+          "method": "GET",
+          "url": "https://reference.invalid/acme/beads/w2-malformed-json-pre",
+          "observations": 2
+        },
+        {
+          "method": "GET",
+          "url": "https://reference.invalid/acme/beads/w2-malformed-json-tail",
+          "observations": 2
+        },
+        {
+          "method": "GET",
+          "url": "https://reference.invalid/acme/beads/w2-media-pre",
+          "observations": 2
+        },
+        {
+          "method": "GET",
+          "url": "https://reference.invalid/acme/beads/w2-media-tail",
+          "observations": 2
+        },
+        {
+          "method": "GET",
+          "url": "https://reference.invalid/acme/beads/w2-missing",
+          "observations": 2
+        },
+        {
+          "method": "GET",
+          "url": "https://reference.invalid/acme/beads/w2-missing-pre",
+          "observations": 2
+        },
+        {
+          "method": "GET",
+          "url": "https://reference.invalid/acme/beads/w2-missing-tail",
+          "observations": 2
+        },
+        {
+          "method": "GET",
+          "url": "https://reference.invalid/acme/beads/w2-name-update-corrected-1",
+          "observations": 1
+        },
+        {
+          "method": "GET",
+          "url": "https://reference.invalid/acme/beads/w2-name-update-pre",
+          "observations": 2
+        },
+        {
+          "method": "GET",
+          "url": "https://reference.invalid/acme/beads/w2-prefix",
+          "observations": 2
+        },
+        {
+          "method": "GET",
+          "url": "https://reference.invalid/acme/beads/w2-self-corrected-1",
+          "observations": 1
+        },
+        {
+          "method": "GET",
+          "url": "https://reference.invalid/acme/beads/w2-self-pre",
+          "observations": 2
+        },
+        {
+          "method": "GET",
+          "url": "https://reference.invalid/acme/beads/w2-self-tail",
+          "observations": 2
+        },
+        {
+          "method": "GET",
+          "url": "https://reference.invalid/acme/beads/w2-surrogate-pre",
+          "observations": 2
+        },
+        {
+          "method": "GET",
+          "url": "https://reference.invalid/acme/beads/w2-surrogate-tail",
+          "observations": 2
+        },
+        {
+          "method": "GET",
+          "url": "https://reference.invalid/acme/beads/w2-tail",
+          "observations": 2
+        },
+        {
+          "method": "GET",
+          "url": "https://reference.invalid/acme/beads/w2-top-key-pre",
+          "observations": 2
+        },
+        {
+          "method": "GET",
+          "url": "https://reference.invalid/acme/beads/w2-top-key-tail",
+          "observations": 2
+        },
+        {
+          "method": "GET",
+          "url": "https://reference.invalid/acme/beads/w2-unknown-corrected-1",
+          "observations": 1
+        },
+        {
+          "method": "GET",
+          "url": "https://reference.invalid/acme/beads/w2-unknown-member-pre",
+          "observations": 2
+        },
+        {
+          "method": "GET",
+          "url": "https://reference.invalid/acme/beads/w2-unknown-member-tail",
+          "observations": 2
+        },
+        {
+          "method": "GET",
+          "url": "https://reference.invalid/acme/beads/w2-unknown-operation-corrected-1",
+          "observations": 1
+        },
+        {
+          "method": "GET",
+          "url": "https://reference.invalid/acme/beads/w2-unknown-operation-pre",
+          "observations": 2
+        },
+        {
+          "method": "GET",
+          "url": "https://reference.invalid/acme/beads/w2-unknown-pre",
+          "observations": 2
+        },
+        {
+          "method": "GET",
+          "url": "https://reference.invalid/acme/beads/w2-unknown-root-pre",
+          "observations": 2
+        },
+        {
+          "method": "GET",
+          "url": "https://reference.invalid/acme/beads/w2-unknown-root-tail",
+          "observations": 2
+        },
+        {
+          "method": "GET",
+          "url": "https://reference.invalid/acme/beads/w2-unknown-tail",
+          "observations": 2
+        },
+        {
+          "method": "GET",
+          "url": "https://reference.invalid/acme/links/ak-delete",
+          "observations": 2
+        },
+        {
+          "method": "GET",
+          "url": "https://reference.invalid/acme/links/ak-route-create",
+          "observations": 1
+        },
+        {
+          "method": "GET",
+          "url": "https://reference.invalid/acme/links/ak-update",
+          "observations": 2
+        },
+        {
+          "method": "GET",
+          "url": "https://reference.invalid/acme/links/am-alt-delete",
+          "observations": 2
+        },
+        {
+          "method": "GET",
+          "url": "https://reference.invalid/acme/links/am-delete",
+          "observations": 1
+        },
+        {
+          "method": "GET",
+          "url": "https://reference.invalid/acme/links/am-route-create-alt",
+          "observations": 1
+        },
+        {
+          "method": "GET",
+          "url": "https://reference.invalid/acme/links/am-update",
+          "observations": 2
+        },
+        {
+          "method": "GET",
+          "url": "https://reference.invalid/acme/links/ra-create-link-source",
+          "observations": 1
+        },
+        {
+          "method": "GET",
+          "url": "https://reference.invalid/acme/links/ra-create-link-source-pin",
+          "observations": 1
+        },
+        {
+          "method": "GET",
+          "url": "https://reference.invalid/acme/links/ra-create-link-target",
+          "observations": 1
+        },
+        {
+          "method": "GET",
+          "url": "https://reference.invalid/acme/links/ra-create-link-target-pin",
+          "observations": 1
+        },
+        {
+          "method": "GET",
+          "url": "https://reference.invalid/acme/links/ra-created-id",
+          "observations": 1
+        },
+        {
+          "method": "GET",
+          "url": "https://reference.invalid/acme/links/ra-delete",
+          "observations": 2
+        },
+        {
+          "method": "GET",
+          "url": "https://reference.invalid/acme/links/ra-update",
+          "observations": 2
+        },
+        {
+          "method": "GET",
+          "url": "https://reference.invalid/acme/links/rb-endpoint-source",
+          "observations": 1
+        },
+        {
+          "method": "GET",
+          "url": "https://reference.invalid/acme/links/rb-live",
+          "observations": 1
+        },
+        {
+          "method": "GET",
+          "url": "https://reference.invalid/acme/links/w1-external-pin",
+          "observations": 1
+        },
+        {
+          "method": "GET",
+          "url": "https://reference.invalid/acme/links/w1-l",
+          "observations": 21
+        },
+        {
+          "method": "GET",
+          "url": "https://reference.invalid/acme/links/w1-l?view=properties",
+          "observations": 2
+        },
+        {
+          "method": "GET",
+          "url": "https://reference.invalid/acme/links/w1-local-pin",
+          "observations": 1
+        },
+        {
+          "method": "GET",
+          "url": "https://reference.invalid/acme/links/w1-missing",
+          "observations": 1
+        },
+        {
+          "method": "GET",
+          "url": "https://reference.invalid/acme/links/w1b-owned",
+          "observations": 25
+        },
+        {
+          "method": "GET",
+          "url": "https://reference.invalid/acme/links/w1b-owned?view=properties",
+          "observations": 1
+        },
+        {
+          "method": "GET",
+          "url": "https://reference.invalid/acme/links/w1b-unowned",
+          "observations": 24
+        },
+        {
+          "method": "GET",
+          "url": "https://reference.invalid/acme/links/w2-link-as-bead",
+          "observations": 1
+        },
+        {
+          "method": "GET",
+          "url": "https://reference.invalid/acme/links/w2-link-as-endpoint",
+          "observations": 1
+        },
+        {
+          "method": "GET",
+          "url": "https://reference.invalid/acme/links/w2-link-as-endpoint-ref",
+          "observations": 1
+        },
+        {
+          "method": "GET",
+          "url": "https://reference.invalid/acme/links/w2-self",
+          "observations": 1
+        },
+        {
+          "method": "GET",
+          "url": "https://reference.invalid/acme/links/w2-shape",
+          "observations": 1
+        },
+        {
+          "method": "GET",
+          "url": "https://reference.invalid/acme/operations/",
+          "observations": 32
+        },
+        {
+          "method": "POST",
+          "url": "https://reference.invalid/acme/operations/create-bead",
+          "observations": 100
+        },
+        {
+          "method": "POST",
+          "url": "https://reference.invalid/acme/operations/create-link",
+          "observations": 45
+        },
+        {
+          "method": "POST",
+          "url": "https://reference.invalid/acme/operations/delete-alias",
+          "observations": 9
+        },
+        {
+          "method": "POST",
+          "url": "https://reference.invalid/acme/operations/delete-bead",
+          "observations": 8
+        },
+        {
+          "method": "POST",
+          "url": "https://reference.invalid/acme/operations/delete-link",
+          "observations": 11
+        },
+        {
+          "method": "POST",
+          "url": "https://reference.invalid/acme/operations/put-alias",
+          "observations": 41
+        },
+        {
+          "method": "POST",
+          "url": "https://reference.invalid/acme/operations/sequence",
+          "observations": 48
+        },
+        {
+          "method": "POST",
+          "url": "https://reference.invalid/acme/operations/update-bead",
+          "observations": 71
+        },
+        {
+          "method": "POST",
+          "url": "https://reference.invalid/acme/operations/update-link",
+          "observations": 51
+        }
+      ],
+      "observationOrigins": {
+        "raw-http1-serializer": 985
+      },
+      "writeStates": {
+        "complete": 985
+      }
+    },
+    "admission": {
+      "sourceCommit": "b20450950af93f882e4d3a1dafc547cc6f303ac7",
+      "sourceDirty": false,
+      "claimEligible": false,
+      "configuration": {
+        "scope": "https://reference.invalid/acme/",
+        "profile": "read-update",
+        "history": false,
+        "sourceCommit": "b20450950af93f882e4d3a1dafc547cc6f303ac7",
+        "installedPayloadDigest": "78a80950acd6c1981d6829fc4d59c05eaafc65e0d68cf20d3d84f61f377acb99",
+        "installedContractsDigest": "48667497d6e13064316d0364cf8f49dfc247ab9189306985a357d7b558333dfe",
+        "policyDigest": "dbe8dbd5430f26e19e754d38167cd8084a32d702c695550e2ee0063dc2912430",
+        "authenticationDigest": "66941efc779f4f2431d65fdd5b2387b2af67bd7c1559e09dac032f82259ea16e",
+        "fixtureDigest": "f5f38235dfd28cf06e760688e2054d3e29d8d64b08c4c729baa94f380f1f7a63",
+        "fixtureId": "reference-read-update-schema-v1",
+        "capabilities": [
+          "installed-read-update-http"
+        ]
+      },
+      "baselineReceipt": {
+        "event": "qualification.ready",
+        "scope": "https://reference.invalid/acme/",
+        "claimEligible": false,
+        "configurationIdentity": "1720b63b49a7be3299d4b2865de4db9fcbe47560f217a32eea6397db7ea54ca5",
+        "artifactIdentity": "development-schema5-48667497d6e13064316d0364cf8f49dfc247ab9189306985a357d7b558333dfe",
+        "payloadIdentity": "78a80950acd6c1981d6829fc4d59c05eaafc65e0d68cf20d3d84f61f377acb99",
+        "policyIdentity": "dbe8dbd5430f26e19e754d38167cd8084a32d702c695550e2ee0063dc2912430",
+        "authenticationIdentity": "66941efc779f4f2431d65fdd5b2387b2af67bd7c1559e09dac032f82259ea16e",
+        "profile": "read-update",
+        "history": false
+      },
+      "reportBinding": {
+        "artifacts": {
+          "catalogDigest": "e26d3fc758a34ebb0b5028be15d28e3e09db87dc7984bba7bad6a00b26329aa0",
+          "manifestDigest": "d40a9a3311c11d58d74841ddd57d0f07e69759fb5ba7e51fa371e98382fd42bb",
+          "fixtureDigest": "f5f38235dfd28cf06e760688e2054d3e29d8d64b08c4c729baa94f380f1f7a63"
+        },
+        "exactConfigurationDigest": "3224c31c83988dc0606cb76ee1f4ba8e6394159bdf7daaccc301461316cc2477"
+      },
+      "catalogSources": {
+        "read-v1.json": "769ff9f24cfdfe74a47670240b04149b520af23b2c71a431883fd15e988adeb0",
+        "read-update-v1.json": "0ad91810510dd7b688b291863d9b33949bba85fab69d6004ef1423b8c5e47039",
+        "transactional-v1.json": "d824e73b05a37ba6c7a66b3d97769dcb6b27fe0204310b0155b5c18a11e232d0",
+        "numeric-model-v1.json": "f4428d53cc1e67beaa146ba9811cd9676e47e84d75a344ba68eb9a24cdc2d0a5",
+        "owned-wildcard-v1.json": "6023bff763b7579992fc9092901f2f8ddfc752f264c2a9de6bc0caf0880c5ecd"
+      },
+      "requiredRows": 129,
+      "plannedRows": 49,
+      "uncoveredRows": 101,
+      "wholeRows": 28,
+      "sessions": 2,
+      "clientObservations": 122,
+      "setupObservations": 0,
+      "nativeReadObservations": 0,
+      "reportedExchanges": 345,
+      "scenarioStates": {
+        "pass": 2
+      },
+      "routes": [
+        {
+          "method": "GET",
+          "url": "https://reference.invalid/acme/beads/ak-comma",
+          "observations": 1
+        },
+        {
+          "method": "GET",
+          "url": "https://reference.invalid/acme/beads/ak-delete",
+          "observations": 2
+        },
+        {
+          "method": "GET",
+          "url": "https://reference.invalid/acme/beads/ak-empty",
+          "observations": 1
+        },
+        {
+          "method": "GET",
+          "url": "https://reference.invalid/acme/beads/ak-latin",
+          "observations": 1
+        },
+        {
+          "method": "GET",
+          "url": "https://reference.invalid/acme/beads/ak-long",
+          "observations": 1
+        },
+        {
+          "method": "GET",
+          "url": "https://reference.invalid/acme/beads/ak-punctuation",
+          "observations": 1
+        },
+        {
+          "method": "GET",
+          "url": "https://reference.invalid/acme/beads/ak-quoted",
+          "observations": 1
+        },
+        {
+          "method": "GET",
+          "url": "https://reference.invalid/acme/beads/ak-repeat-distinct",
+          "observations": 1
+        },
+        {
+          "method": "GET",
+          "url": "https://reference.invalid/acme/beads/ak-repeat-distinct-0",
+          "observations": 1
+        },
+        {
+          "method": "GET",
+          "url": "https://reference.invalid/acme/beads/ak-repeat-distinct-1",
+          "observations": 1
+        },
+        {
+          "method": "GET",
+          "url": "https://reference.invalid/acme/beads/ak-repeat-mixed",
+          "observations": 1
+        },
+        {
+          "method": "GET",
+          "url": "https://reference.invalid/acme/beads/ak-repeat-mixed-0",
+          "observations": 1
+        },
+        {
+          "method": "GET",
+          "url": "https://reference.invalid/acme/beads/ak-repeat-mixed-1",
+          "observations": 1
+        },
+        {
+          "method": "GET",
+          "url": "https://reference.invalid/acme/beads/ak-repeat-same",
+          "observations": 1
+        },
+        {
+          "method": "GET",
+          "url": "https://reference.invalid/acme/beads/ak-repeat-same-0",
+          "observations": 1
+        },
+        {
+          "method": "GET",
+          "url": "https://reference.invalid/acme/beads/ak-route-create",
+          "observations": 1
+        },
+        {
+          "method": "GET",
+          "url": "https://reference.invalid/acme/beads/ak-seq-comma-member",
+          "observations": 1
+        },
+        {
+          "method": "GET",
+          "url": "https://reference.invalid/acme/beads/ak-seq-comma-prefix",
+          "observations": 1
+        },
+        {
+          "method": "GET",
+          "url": "https://reference.invalid/acme/beads/ak-seq-empty-member",
+          "observations": 1
+        },
+        {
+          "method": "GET",
+          "url": "https://reference.invalid/acme/beads/ak-seq-empty-prefix",
+          "observations": 1
+        },
+        {
+          "method": "GET",
+          "url": "https://reference.invalid/acme/beads/ak-seq-latin-member",
+          "observations": 1
+        },
+        {
+          "method": "GET",
+          "url": "https://reference.invalid/acme/beads/ak-seq-latin-prefix",
+          "observations": 1
+        },
+        {
+          "method": "GET",
+          "url": "https://reference.invalid/acme/beads/ak-seq-long-member",
+          "observations": 1
+        },
+        {
+          "method": "GET",
+          "url": "https://reference.invalid/acme/beads/ak-seq-long-prefix",
+          "observations": 1
+        },
+        {
+          "method": "GET",
+          "url": "https://reference.invalid/acme/beads/ak-seq-punctuation-member",
+          "observations": 1
+        },
+        {
+          "method": "GET",
+          "url": "https://reference.invalid/acme/beads/ak-seq-punctuation-prefix",
+          "observations": 1
+        },
+        {
+          "method": "GET",
+          "url": "https://reference.invalid/acme/beads/ak-seq-quoted-member",
+          "observations": 1
+        },
+        {
+          "method": "GET",
+          "url": "https://reference.invalid/acme/beads/ak-seq-quoted-prefix",
+          "observations": 1
+        },
+        {
+          "method": "GET",
+          "url": "https://reference.invalid/acme/beads/ak-seq-space-member",
+          "observations": 1
+        },
+        {
+          "method": "GET",
+          "url": "https://reference.invalid/acme/beads/ak-seq-space-prefix",
+          "observations": 1
+        },
+        {
+          "method": "GET",
+          "url": "https://reference.invalid/acme/beads/ak-seq-tab-member",
+          "observations": 1
+        },
+        {
+          "method": "GET",
+          "url": "https://reference.invalid/acme/beads/ak-seq-tab-prefix",
+          "observations": 1
+        },
+        {
+          "method": "GET",
+          "url": "https://reference.invalid/acme/beads/ak-source",
+          "observations": 1
+        },
+        {
+          "method": "GET",
+          "url": "https://reference.invalid/acme/beads/ak-space",
+          "observations": 1
+        },
+        {
+          "method": "GET",
+          "url": "https://reference.invalid/acme/beads/ak-tab",
+          "observations": 1
+        },
+        {
+          "method": "GET",
+          "url": "https://reference.invalid/acme/beads/ak-target",
+          "observations": 1
+        },
+        {
+          "method": "GET",
+          "url": "https://reference.invalid/acme/beads/ak-update",
+          "observations": 2
+        },
+        {
+          "method": "GET",
+          "url": "https://reference.invalid/acme/beads/ak-valid-alphabet",
+          "observations": 1
+        },
+        {
+          "method": "GET",
+          "url": "https://reference.invalid/acme/beads/ak-valid-maximum",
+          "observations": 1
+        },
+        {
+          "method": "GET",
+          "url": "https://reference.invalid/acme/beads/ak-valid-one",
+          "observations": 1
+        },
+        {
+          "method": "GET",
+          "url": "https://reference.invalid/acme/beads/am-alt-delete",
+          "observations": 2
+        },
+        {
+          "method": "GET",
+          "url": "https://reference.invalid/acme/beads/am-charset",
+          "observations": 1
+        },
+        {
+          "method": "GET",
+          "url": "https://reference.invalid/acme/beads/am-delete",
+          "observations": 1
+        },
+        {
+          "method": "GET",
+          "url": "https://reference.invalid/acme/beads/am-irrelevant",
+          "observations": 1
+        },
+        {
+          "method": "GET",
+          "url": "https://reference.invalid/acme/beads/am-plain-corrected",
+          "observations": 1
+        },
+        {
+          "method": "GET",
+          "url": "https://reference.invalid/acme/beads/am-problem-corrected",
+          "observations": 1
+        },
+        {
+          "method": "GET",
+          "url": "https://reference.invalid/acme/beads/am-route-create-alt",
+          "observations": 1
+        },
+        {
+          "method": "GET",
+          "url": "https://reference.invalid/acme/beads/am-seq-0-corrected",
+          "observations": 1
+        },
+        {
+          "method": "GET",
+          "url": "https://reference.invalid/acme/beads/am-seq-1-corrected",
+          "observations": 1
+        },
+        {
+          "method": "GET",
+          "url": "https://reference.invalid/acme/beads/am-source",
+          "observations": 1
+        },
+        {
+          "method": "GET",
+          "url": "https://reference.invalid/acme/beads/am-target",
+          "observations": 1
+        },
+        {
+          "method": "GET",
+          "url": "https://reference.invalid/acme/beads/am-update",
+          "observations": 2
+        },
+        {
+          "method": "GET",
+          "url": "https://reference.invalid/acme/links/ak-delete",
+          "observations": 2
+        },
+        {
+          "method": "GET",
+          "url": "https://reference.invalid/acme/links/ak-route-create",
+          "observations": 1
+        },
+        {
+          "method": "GET",
+          "url": "https://reference.invalid/acme/links/ak-update",
+          "observations": 2
+        },
+        {
+          "method": "GET",
+          "url": "https://reference.invalid/acme/links/am-alt-delete",
+          "observations": 2
+        },
+        {
+          "method": "GET",
+          "url": "https://reference.invalid/acme/links/am-delete",
+          "observations": 1
+        },
+        {
+          "method": "GET",
+          "url": "https://reference.invalid/acme/links/am-route-create-alt",
+          "observations": 1
+        },
+        {
+          "method": "GET",
+          "url": "https://reference.invalid/acme/links/am-update",
+          "observations": 2
+        },
+        {
+          "method": "GET",
+          "url": "https://reference.invalid/acme/operations/",
+          "observations": 2
+        },
+        {
+          "method": "POST",
+          "url": "https://reference.invalid/acme/operations/create-bead",
+          "observations": 28
+        },
+        {
+          "method": "POST",
+          "url": "https://reference.invalid/acme/operations/create-link",
+          "observations": 6
+        },
+        {
+          "method": "POST",
+          "url": "https://reference.invalid/acme/operations/delete-alias",
+          "observations": 1
+        },
+        {
+          "method": "POST",
+          "url": "https://reference.invalid/acme/operations/delete-bead",
+          "observations": 1
+        },
+        {
+          "method": "POST",
+          "url": "https://reference.invalid/acme/operations/delete-link",
+          "observations": 1
+        },
+        {
+          "method": "POST",
+          "url": "https://reference.invalid/acme/operations/put-alias",
+          "observations": 6
+        },
+        {
+          "method": "POST",
+          "url": "https://reference.invalid/acme/operations/sequence",
+          "observations": 8
+        },
+        {
+          "method": "POST",
+          "url": "https://reference.invalid/acme/operations/update-bead",
+          "observations": 1
+        },
+        {
+          "method": "POST",
+          "url": "https://reference.invalid/acme/operations/update-link",
+          "observations": 1
+        }
+      ],
+      "observationOrigins": {
+        "raw-http1-serializer": 122
+      },
+      "writeStates": {
+        "complete": 122
+      }
+    },
+    "reference": {
+      "sourceCommit": "b20450950af93f882e4d3a1dafc547cc6f303ac7",
+      "sourceDirty": false,
+      "claimEligible": false,
+      "configuration": {
+        "scope": "https://reference.invalid/acme/",
+        "profile": "read-update",
+        "history": false,
+        "sourceCommit": "b20450950af93f882e4d3a1dafc547cc6f303ac7",
+        "installedPayloadDigest": "78a80950acd6c1981d6829fc4d59c05eaafc65e0d68cf20d3d84f61f377acb99",
+        "installedContractsDigest": "48667497d6e13064316d0364cf8f49dfc247ab9189306985a357d7b558333dfe",
+        "policyDigest": "dbe8dbd5430f26e19e754d38167cd8084a32d702c695550e2ee0063dc2912430",
+        "authenticationDigest": "66941efc779f4f2431d65fdd5b2387b2af67bd7c1559e09dac032f82259ea16e",
+        "fixtureDigest": "f5f38235dfd28cf06e760688e2054d3e29d8d64b08c4c729baa94f380f1f7a63",
+        "fixtureId": "reference-read-update-schema-v1",
+        "capabilities": [
+          "installed-read-update-http"
+        ]
+      },
+      "baselineReceipt": {
+        "event": "qualification.ready",
+        "scope": "https://reference.invalid/acme/",
+        "claimEligible": false,
+        "configurationIdentity": "1720b63b49a7be3299d4b2865de4db9fcbe47560f217a32eea6397db7ea54ca5",
+        "artifactIdentity": "development-schema5-48667497d6e13064316d0364cf8f49dfc247ab9189306985a357d7b558333dfe",
+        "payloadIdentity": "78a80950acd6c1981d6829fc4d59c05eaafc65e0d68cf20d3d84f61f377acb99",
+        "policyIdentity": "dbe8dbd5430f26e19e754d38167cd8084a32d702c695550e2ee0063dc2912430",
+        "authenticationIdentity": "66941efc779f4f2431d65fdd5b2387b2af67bd7c1559e09dac032f82259ea16e",
+        "profile": "read-update",
+        "history": false
+      },
+      "reportBinding": {
+        "artifacts": {
+          "catalogDigest": "e26d3fc758a34ebb0b5028be15d28e3e09db87dc7984bba7bad6a00b26329aa0",
+          "manifestDigest": "d40a9a3311c11d58d74841ddd57d0f07e69759fb5ba7e51fa371e98382fd42bb",
+          "fixtureDigest": "f5f38235dfd28cf06e760688e2054d3e29d8d64b08c4c729baa94f380f1f7a63"
+        },
+        "exactConfigurationDigest": "3224c31c83988dc0606cb76ee1f4ba8e6394159bdf7daaccc301461316cc2477"
+      },
+      "catalogSources": {
+        "read-v1.json": "769ff9f24cfdfe74a47670240b04149b520af23b2c71a431883fd15e988adeb0",
+        "read-update-v1.json": "0ad91810510dd7b688b291863d9b33949bba85fab69d6004ef1423b8c5e47039",
+        "transactional-v1.json": "d824e73b05a37ba6c7a66b3d97769dcb6b27fe0204310b0155b5c18a11e232d0",
+        "numeric-model-v1.json": "f4428d53cc1e67beaa146ba9811cd9676e47e84d75a344ba68eb9a24cdc2d0a5",
+        "owned-wildcard-v1.json": "6023bff763b7579992fc9092901f2f8ddfc752f264c2a9de6bc0caf0880c5ecd"
+      },
+      "requiredRows": 129,
+      "plannedRows": 49,
+      "uncoveredRows": 101,
+      "wholeRows": 28,
+      "sessions": 2,
+      "clientObservations": 82,
+      "setupObservations": 0,
+      "nativeReadObservations": 0,
+      "reportedExchanges": 89,
+      "scenarioStates": {
+        "pass": 2
+      },
+      "routes": [
+        {
+          "method": "GET",
+          "url": "https://reference.invalid/acme/beads/ra-created-id",
+          "observations": 1
+        },
+        {
+          "method": "GET",
+          "url": "https://reference.invalid/acme/beads/ra-delete",
+          "observations": 2
+        },
+        {
+          "method": "GET",
+          "url": "https://reference.invalid/acme/beads/ra-metadata",
+          "observations": 1
+        },
+        {
+          "method": "GET",
+          "url": "https://reference.invalid/acme/beads/ra-source",
+          "observations": 1
+        },
+        {
+          "method": "GET",
+          "url": "https://reference.invalid/acme/beads/ra-target",
+          "observations": 1
+        },
+        {
+          "method": "GET",
+          "url": "https://reference.invalid/acme/beads/ra-update",
+          "observations": 2
+        },
+        {
+          "method": "GET",
+          "url": "https://reference.invalid/acme/beads/rb-rb-sequence-alias-tail",
+          "observations": 1
+        },
+        {
+          "method": "GET",
+          "url": "https://reference.invalid/acme/beads/rb-rb-sequence-endpoint-tail",
+          "observations": 1
+        },
+        {
+          "method": "GET",
+          "url": "https://reference.invalid/acme/beads/rb-source",
+          "observations": 1
+        },
+        {
+          "method": "GET",
+          "url": "https://reference.invalid/acme/beads/rb-target",
+          "observations": 1
+        },
+        {
+          "method": "GET",
+          "url": "https://reference.invalid/acme/links/ra-create-link-source",
+          "observations": 1
+        },
+        {
+          "method": "GET",
+          "url": "https://reference.invalid/acme/links/ra-create-link-source-pin",
+          "observations": 1
+        },
+        {
+          "method": "GET",
+          "url": "https://reference.invalid/acme/links/ra-create-link-target",
+          "observations": 1
+        },
+        {
+          "method": "GET",
+          "url": "https://reference.invalid/acme/links/ra-create-link-target-pin",
+          "observations": 1
+        },
+        {
+          "method": "GET",
+          "url": "https://reference.invalid/acme/links/ra-created-id",
+          "observations": 1
+        },
+        {
+          "method": "GET",
+          "url": "https://reference.invalid/acme/links/ra-delete",
+          "observations": 2
+        },
+        {
+          "method": "GET",
+          "url": "https://reference.invalid/acme/links/ra-update",
+          "observations": 2
+        },
+        {
+          "method": "GET",
+          "url": "https://reference.invalid/acme/links/rb-endpoint-source",
+          "observations": 1
+        },
+        {
+          "method": "GET",
+          "url": "https://reference.invalid/acme/links/rb-live",
+          "observations": 1
+        },
+        {
+          "method": "GET",
+          "url": "https://reference.invalid/acme/operations/",
+          "observations": 2
+        },
+        {
+          "method": "POST",
+          "url": "https://reference.invalid/acme/operations/create-bead",
+          "observations": 9
+        },
+        {
+          "method": "POST",
+          "url": "https://reference.invalid/acme/operations/create-link",
+          "observations": 20
+        },
+        {
+          "method": "POST",
+          "url": "https://reference.invalid/acme/operations/delete-alias",
+          "observations": 2
+        },
+        {
+          "method": "POST",
+          "url": "https://reference.invalid/acme/operations/delete-bead",
+          "observations": 2
+        },
+        {
+          "method": "POST",
+          "url": "https://reference.invalid/acme/operations/delete-link",
+          "observations": 2
+        },
+        {
+          "method": "POST",
+          "url": "https://reference.invalid/acme/operations/put-alias",
+          "observations": 16
+        },
+        {
+          "method": "POST",
+          "url": "https://reference.invalid/acme/operations/sequence",
+          "observations": 2
+        },
+        {
+          "method": "POST",
+          "url": "https://reference.invalid/acme/operations/update-bead",
+          "observations": 2
+        },
+        {
+          "method": "POST",
+          "url": "https://reference.invalid/acme/operations/update-link",
+          "observations": 2
+        }
+      ],
+      "observationOrigins": {
+        "raw-http1-serializer": 82
+      },
+      "writeStates": {
+        "complete": 82
+      }
+    }
+  },
+  "tests": {
+    "affected": {
+      "numTotalTests": 143,
+      "numPassedTests": 143,
+      "numFailedTests": 0,
+      "numPendingTests": 0,
+      "success": true
+    },
+    "cumulative-artifact": {
+      "numTotalTests": 6,
+      "numPassedTests": 6,
+      "numFailedTests": 0,
+      "numPendingTests": 0,
+      "success": true
+    },
+    "read-update-matrix": {
+      "numTotalTests": 172,
+      "numPassedTests": 172,
+      "numFailedTests": 0,
+      "numPendingTests": 0,
+      "success": true
+    }
+  },
+  "sourceAfter": {
+    "head": "b20450950af93f882e4d3a1dafc547cc6f303ac7",
+    "porcelain": ""
+  },
+  "cleanup": {
+    "ownedInstalledChildrenRemaining": 0
+  }
+}

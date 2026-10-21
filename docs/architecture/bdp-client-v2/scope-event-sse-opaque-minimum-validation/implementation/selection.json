@@ -1,0 +1,90 @@
+{
+  "newSource": [
+    {
+      "id": "A",
+      "title": "gates initial Scope Event SSE opaque minima before scan packets",
+      "fullName": "gates initial Scope Event SSE opaque minima before scan packets",
+      "file": "packages/server/src/transaction-event-sse.test.ts"
+    },
+    {
+      "id": "B",
+      "title": "captures initial Scope Event SSE minima once and recaptures context on retry",
+      "fullName": "captures initial Scope Event SSE minima once and recaptures context on retry",
+      "file": "packages/server/src/transaction-event-sse.test.ts"
+    },
+    {
+      "id": "C",
+      "title": "drains an aborted initial Scope Event SSE minimum wait before owner close",
+      "fullName": "drains an aborted initial Scope Event SSE minimum wait before owner close",
+      "file": "packages/server/src/transaction-event-sse.test.ts"
+    },
+    {
+      "id": "D",
+      "title": "serves initial Scope Event SSE opaque minima before conditional admission",
+      "fullName": "serves initial Scope Event SSE opaque minima before conditional admission",
+      "file": "packages/server/src/transaction-event-sse.test.ts"
+    }
+  ],
+  "legacySource": [
+    {
+      "title": "Event reconnect syntax, minimum ordering and exact context codes are preserved over HTTP",
+      "fullName": "Event reconnect syntax, minimum ordering and exact context codes are preserved over HTTP",
+      "httpRequests": 28,
+      "file": "packages/server/src/transaction-event-sse.test.ts"
+    },
+    {
+      "title": "conditions, HEAD,406 and shared cross-kind capacity preserve initial context without a stream slot",
+      "fullName": "conditions, HEAD,406 and shared cross-kind capacity preserve initial context without a stream slot",
+      "httpRequests": 13,
+      "file": "packages/server/src/transaction-event-sse.test.ts"
+    },
+    {
+      "title": "disconnect during an Event minimum wait releases the request without capturing a stream slot",
+      "fullName": "disconnect during an Event minimum wait releases the request without capturing a stream slot",
+      "httpRequests": 4,
+      "file": "packages/server/src/transaction-event-sse.test.ts"
+    },
+    {
+      "title": "serves initial finite Scope Event opaque minima through bounded waiting",
+      "fullName": "serves initial finite Scope Event opaque minima through bounded waiting",
+      "file": "packages/server/src/transaction-events.test.ts",
+      "httpRequests": 32,
+      "seedCommits": 1,
+      "expectationChanged": "canonical Scope SSE pair only; dispatch and report schema unchanged"
+    }
+  ],
+  "sourceSelected": 8,
+  "sourceRegex": "^(?:gates\\ initial\\ Scope\\ Event\\ SSE\\ opaque\\ minima\\ before\\ scan\\ packets|captures\\ initial\\ Scope\\ Event\\ SSE\\ minima\\ once\\ and\\ recaptures\\ context\\ on\\ retry|drains\\ an\\ aborted\\ initial\\ Scope\\ Event\\ SSE\\ minimum\\ wait\\ before\\ owner\\ close|serves\\ initial\\ Scope\\ Event\\ SSE\\ opaque\\ minima\\ before\\ conditional\\ admission|Event\\ reconnect\\ syntax,\\ minimum\\ ordering\\ and\\ exact\\ context\\ codes\\ are\\ preserved\\ over\\ HTTP|conditions,\\ HEAD,406\\ and\\ shared\\ cross\\-kind\\ capacity\\ preserve\\ initial\\ context\\ without\\ a\\ stream\\ slot|disconnect\\ during\\ an\\ Event\\ minimum\\ wait\\ releases\\ the\\ request\\ without\\ capturing\\ a\\ stream\\ slot|serves\\ initial\\ finite\\ Scope\\ Event\\ opaque\\ minima\\ through\\ bounded\\ waiting)$",
+  "installedFile": "apps/bdptest/src/transactional-event-sse-installed.test.ts",
+  "installed": [
+    {
+      "role": "historical",
+      "title": "installed Event cursors survive restart with Last-Event-ID precedence and source binding",
+      "fullName": "installed Event cursors survive restart with Last-Event-ID precedence and source binding",
+      "httpRequests": 5,
+      "children": 2,
+      "stores": 1
+    },
+    {
+      "role": "new",
+      "title": "observes genuine installed initial Scope Event SSE opaque minimum refusal",
+      "fullName": "observes genuine installed initial Scope Event SSE opaque minimum refusal",
+      "httpRequests": 6,
+      "children": 1,
+      "stores": 1
+    }
+  ],
+  "unselectedHistorical": "installed Scope/Bead/Link Event SSE matches finite bytes and sparse Bead survives fifteen seconds",
+  "suiteNote": "All selected cases are top-level it; filepath identifies module, fullName is the literal test title. No describe prefix.",
+  "sourceFiles": [
+    "packages/server/src/transaction-event-sse.test.ts",
+    "packages/server/src/transaction-events.test.ts"
+  ],
+  "sourceObservationLabels": [
+    "scope-event-sse-minimum-owner",
+    "scope-event-sse-minimum-capture",
+    "scope-event-sse-minimum-abort",
+    "scope-event-sse-minimum-http",
+    "finite-event-minimum-http"
+  ]
+}

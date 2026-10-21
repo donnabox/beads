@@ -1,0 +1,327 @@
+{
+  "acceptedActualBuildMap": {
+    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation-preparation-5/run/build-artifacts.json",
+    "sha256": "8a0241044612922b2801e6b5d1670919d37671d8191f567e5d36807a223ed56a"
+  },
+  "activeGate": {
+    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation-preparation-5/execution-gate.json",
+    "sha256": "34c333aa5b688d7abe944363b558e0bd431dd512ec84a24f8e0440d9d2bdf7ea"
+  },
+  "actualActivation": {
+    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation5-package4-root-activation-1/activation.json",
+    "sha256": "a0f25c36e30002593a9ba602dcff94ba18c4b4b411cd406351e934fe43bd0dc5"
+  },
+  "actualOutputDirectory": {
+    "entries": [
+      "bdp-protocol-0.0.0.tgz"
+    ],
+    "mode": "0o755",
+    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation-preparation-5/run/packages"
+  },
+  "actualRawFiles": {
+    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation-preparation-5/run/pack-protocol.exit.json": {
+      "bytes": 512,
+      "mode": "0o644",
+      "sha256": "9975ec5fc2c39ea752fbaa30c6bbfef223288c6bb6c09a170d32ebcd3340c98d"
+    },
+    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation-preparation-5/run/pack-protocol.log": {
+      "bytes": 1890,
+      "mode": "0o644",
+      "sha256": "7063c8332fb9b67af18223c81d339466aebb796e28170ca61a55bccf833d06a8"
+    },
+    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation-preparation-5/run/pack-protocol.processes.jsonl": {
+      "bytes": 454,
+      "mode": "0o644",
+      "sha256": "0ce7213d695c472736113e0f17d4db943c7ec314b56979612efe5c34a5996153"
+    },
+    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation-preparation-5/run/pack-protocol.started.json": {
+      "bytes": 948,
+      "mode": "0o644",
+      "sha256": "fd1d091f79e271ea8c58eeb7d3ab99bd1de80e0218e24a30602f11b69cd65b7a"
+    },
+    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation-preparation-5/run/packages/bdp-protocol-0.0.0.tgz": {
+      "bytes": 68665,
+      "mode": "0o644",
+      "sha256": "4683cb6c6333c332a4bcb7efc3e28f32d1d8d06a7264913f65c31d3a826d4227"
+    },
+    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation5-root-first4-dispatch-1/pack-protocol/collector-provisional.json": {
+      "bytes": 4346,
+      "mode": "0o644",
+      "sha256": "e0e62c92ab82416bf4f9614b6b7cbd94999ba099a9a7b3e8c12264e78427a63d"
+    },
+    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation5-root-first4-dispatch-1/pack-protocol/final-clock-witness.json": {
+      "bytes": 761,
+      "mode": "0o644",
+      "sha256": "c10a0dee20d6008a14ed97b92beab039c960de21d8e1034c0d2ac0c010b59d64"
+    },
+    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation5-root-first4-dispatch-1/pack-protocol/origin.json": {
+      "bytes": 767,
+      "mode": "0o644",
+      "sha256": "980ba074a4dd60b06e8ba7641ebb896ab94df7bf163f4cd557a659d58a5c6245"
+    },
+    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation5-root-first4-dispatch-1/pack-protocol/pack-protocol.stderr": {
+      "bytes": 0,
+      "mode": "0o600",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation5-root-first4-dispatch-1/pack-protocol/pack-protocol.stdout": {
+      "bytes": 478,
+      "mode": "0o600",
+      "sha256": "69a30a8c58457aebcaa6ebd4a0f657395f1813fd7eb780ac0d6d3b030481c711"
+    },
+    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation5-root-first4-dispatch-1/pack-protocol/postterminal-census.json": {
+      "bytes": 3405,
+      "mode": "0o644",
+      "sha256": "8ef47d450baf21379ca7d751e5b26feb18fcc7fcd452639bc1268bf1a2862a49"
+    },
+    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation5-root-first4-dispatch-1/pack-protocol/postterminal-census.stderr": {
+      "bytes": 0,
+      "mode": "0o600",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation5-root-first4-dispatch-1/pack-protocol/postterminal-census.stdout": {
+      "bytes": 206677,
+      "mode": "0o600",
+      "sha256": "6656858a44e70d494e677ac2bc4d3397c1178d5f3bf46ad3d8dbe6c2eb3cea7c"
+    }
+  },
+  "actualSources": {
+    "A": {
+      "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation5-pack-protocol-root-tool-evidence-1/actual-A.txt",
+      "sha256": "d0d7baa68859b9bce239a2b0e4094d025fc69a9763f8b4cee3fd14f9a1269247"
+    },
+    "B": {
+      "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation5-pack-protocol-root-tool-evidence-1/actual-B.txt",
+      "sha256": "44c870e56e304a678e55ed4ba3e5cdc20324545526ba227ba157e222be49cb12"
+    },
+    "C": {
+      "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation5-pack-protocol-root-tool-evidence-1/actual-C.txt",
+      "sha256": "c25ec940cecb1adef930c51f064f30705b39ac973248eb47947cbeb408535e64"
+    }
+  },
+  "commands": {
+    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation-preparation-5/commands.json",
+    "sha256": "ef7d5889c4cdb6263d746d3d1ad698429d6a96d5c0dbd1e4d6764819b060ba8f"
+  },
+  "freshActualWorkspaceTools": {
+    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation-preparation-5/run/workspace-tools.json",
+    "sha256": "69713067eef866d61e8e9e3c49d695bd2d534d1cb7d0913c977da4f3f7d2cdb0"
+  },
+  "full3349AuthorityPublicationBeforeLiveWrite": {
+    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/root-G09-validation5-package4-final-authority-publication-1.remote-readback.json",
+    "sha256": "d8d372f58f0d176a5ab5039c7d16af7bdfeff1f06be1d4962a654ff400126a39"
+  },
+  "fullDifferentNativeControlClosure": {
+    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation5-package4-control-native-precision-1/closure.json",
+    "sha256": "2351296d46957d64a919c3e814e850be83b9ba4d8394dc1eece4048377b460bc"
+  },
+  "fullDifferentNativeControlIndex": {
+    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation5-package4-control-native-precision-1/index.json",
+    "sha256": "0b332f9fbf184cf5fb2c398f4d43038d39f7f46971c59d154b0f4b7de2e0f15e"
+  },
+  "fullEnvironmentAndWireReceipts": "UNRETAINED/source-attributed only",
+  "implementation": {
+    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation-preparation-5/implementation-hashes.json",
+    "sha256": "c2a7d11deb63169052434c3b45c62bd30664009d4ea6a3e9b42c4cd85bd649a6"
+  },
+  "manifest": {
+    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation5-package4-closed-control-source-1/execution-manifest.json",
+    "sha256": "26f834f037a00e5a287e9b97a2f06b6585bce5f7af2611bb23156c05d3bf7f19"
+  },
+  "nativeActualAudit": "PENDING",
+  "nextStageReleased": false,
+  "prior17Publications": {
+    "audit-g09-schema-source": {
+      "commit": "faba6dbef9bb52f083a6ab83052e203f79c57cd8",
+      "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/root-G09-validation5-audit-g09-schema-source-final-disposition-publication-1.remote-readback.json",
+      "sha256": "a4179e90fa1723ca732e46374c65fafb3d130d79c2d71ab30f05ab440531d998"
+    },
+    "audit-g09-service-source": {
+      "commit": "0891bb5b885395ab2e6aae4a6e558db8e709fde6",
+      "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/root-G09-validation5-audit-g09-service-source-final-disposition-publication-1.remote-readback.json",
+      "sha256": "7eec28d9b8f3d88b757bc3a4cead74fcc9c6832c20745b3b690c868ba3a5cc07"
+    },
+    "audit-legacy-schema-source": {
+      "commit": "a484807f38227bf00d9f52d6dab32a8c1223b6a3",
+      "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/root-G09-validation5-audit-legacy-schema-source-final-disposition-publication-1.remote-readback.json",
+      "sha256": "a5278c69728fc5169ffa118afa595ff4ca6fdae35b90297a9daf1d1fd5302f8e"
+    },
+    "audit-schema-confinement-source": {
+      "commit": "f87ff29463fa5c4fc561d57bc3a224c25deeb601",
+      "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/root-G09-validation5-source-pairs-final-and-package4-authoring-release-publication-1.remote-readback.json",
+      "sha256": "b7ed482aeb60e59bcba0736b6926561d69283adb4bd5507a0018921596075717"
+    },
+    "bind-fresh-build": {
+      "commit": "51d3901f176eb5067bc8e2388ceff5ca2dece041",
+      "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/root-G09-validation5-bind-build-final-and-authoring-release-publication-1.remote-readback.json",
+      "sha256": "042d06a1216f1210df85b1109e8a43e0e6e5523140803c1734d6d3b555888e51"
+    },
+    "bind-workspace-tools": {
+      "commit": "d0130634fa9ceea9e5845155bb167072e83f566a",
+      "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/root-G09-validation5-bind-workspace-tools-final-disposition-source-release-publication-1.remote-readback.json",
+      "sha256": "103e5525668f743c849ca0d8326b59ce332749edb0aae62264635d4fcbbcd120"
+    },
+    "format-check": {
+      "commit": "538315c0e6d88a310c15e2a9b93b6931e6079798",
+      "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/root-G09-validation5-format-check-final-disposition-publication-1.remote-readback.json",
+      "sha256": "799ec0908d380ef7588419536cbad5d0b26f7c7ca46e107c37e8f47d88ff9ed1"
+    },
+    "fresh-build": {
+      "commit": "7e54086e4140ea578ccd639bb8bc1cb12526d817",
+      "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/root-G09-validation5-fresh-build-final-disposition-publication-1.remote-readback.json",
+      "sha256": "9a8f78d687760e6a80a4c0e4d2ab88e6f7fe16abbd7ecd1f457e505f42a77891"
+    },
+    "g09-schema-source": {
+      "commit": "613a72867c1e871d99bc086406f4c7a63b75dc48",
+      "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/root-G09-validation5-g09-schema-source-final-disposition-publication-1.remote-readback.json",
+      "sha256": "50c279b8cbd7bbf7a15f56663c434fc87af7654ae8cabd5c6b7b3d88ffcb2c1c"
+    },
+    "g09-service-source": {
+      "commit": "7348d1eeb63fef9a7159e52882a0399d8446ffd2",
+      "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/root-G09-validation5-g09-service-source-final-disposition-publication-1.remote-readback.json",
+      "sha256": "43109bff0c6591d1ba30b3c3f262f3678fe7eee176dea32b0afd629829d56709"
+    },
+    "legacy-schema-source": {
+      "commit": "6474f44a96940828d7ca60e71f4c8ce7d797903d",
+      "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/root-G09-validation5-legacy-schema-source-final-disposition-publication-1.remote-readback.json",
+      "sha256": "04c31f7805afb7fe2063d20f2396fcdc3fa51dfba707efc9578f44b3f51138dc"
+    },
+    "lint": {
+      "commit": "522e9a4ba7ebb5bb515f924a4822dd4a1ece03ec",
+      "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/root-G09-validation5-lint-final-disposition-publication-1.remote-readback.json",
+      "sha256": "c7abaf821f49d0606b0651cf0c4e55eeb75440868183fc479f50801c37c9c27e"
+    },
+    "node-version": {
+      "commit": "873d2df56bd914bc9076ee68f290a46dcf8ab9f0",
+      "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/root-G09-validation5-node-version-final-disposition-publication-1.remote-readback.json",
+      "sha256": "5becbf6b8698712db3f5a40efb122d1247c1876abecf4ffe9ec50e757f7df237"
+    },
+    "pnpm-version": {
+      "commit": "4ac798d63c6065b5b3137c15bf7fbe7aaa3c565d",
+      "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/root-G09-validation5-pnpm-version-final-disposition-publication-1.remote-readback.json",
+      "sha256": "50daa2448dc710727a261393c9a9c9f7a625ae62da13014b82fdb9ba01b1969d"
+    },
+    "schema-confinement-source": {
+      "commit": "7896473fa9644ad5d7cc4603302f21312415a450",
+      "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/root-G09-validation5-schema-confinement-source-final-disposition-publication-1.remote-readback.json",
+      "sha256": "e2e558f38f888413036b3406362530ddce4b41526bfa390e7d7baa5d2fc1a077"
+    },
+    "typecheck": {
+      "commit": "7a55be2fac05ff14bda0fd8646405ecf696a12b1",
+      "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/root-G09-validation5-typecheck-final-disposition-publication-1.remote-readback.json",
+      "sha256": "70529914fe8eef450555383cbaea369e792354117d738bc6dbe98d3073b90ff8"
+    },
+    "workspace-install": {
+      "commit": "1594f3fb7263cf2b601ff0f0049f8c4742e66601",
+      "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/root-G09-validation5-workspace-install-final-disposition-publication-1.remote-readback.json",
+      "sha256": "c22ce640b307ca5fc3b1fbe877be3cdd242916ab7d942d5634bddb09877263b8"
+    }
+  },
+  "prior17RootDispositions": {
+    "audit-g09-schema-source": {
+      "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation5-audit-g09-schema-source-root-final-disposition-1/disposition.json",
+      "sha256": "919ed45603624b298105ab5174243839a9ec51da76ac91b81862bcc62ebc40da"
+    },
+    "audit-g09-service-source": {
+      "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation5-audit-g09-service-source-root-final-disposition-1/disposition.json",
+      "sha256": "f37b6cc075a4accec3cee0558bb2dd8e0bd7bf4e56f81aac558a0271911e359c"
+    },
+    "audit-legacy-schema-source": {
+      "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation5-audit-legacy-schema-source-root-final-disposition-1/disposition.json",
+      "sha256": "5c7397b5ca88bb0c35ccb8508aebe8a5fef1c711ca96497c30d49421004c648a"
+    },
+    "audit-schema-confinement-source": {
+      "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation5-audit-schema-confinement-source-root-final-disposition-2/disposition.json",
+      "sha256": "123fbf378616e7702330afd0806dc007702ce4646cb656cc903944141394f283"
+    },
+    "bind-fresh-build": {
+      "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation5-bind-fresh-build-root-final-disposition-1/disposition.json",
+      "sha256": "af7d1c0a6026964e7d68f4cf7d465125883c46801dacfd76f009311e416a8772"
+    },
+    "bind-workspace-tools": {
+      "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation5-bind-workspace-tools-root-final-disposition-1/disposition.json",
+      "sha256": "dec6f8e6b3af9ad0e1bc247a0f5b4628b9cc9b284b230d5040a53c8520f6308a"
+    },
+    "format-check": {
+      "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation5-format-check-root-final-disposition-1/disposition.json",
+      "sha256": "942bc874dd378ae1f24fb221e20fe9e969a1aed85e600901a0ca85954c397eaa"
+    },
+    "fresh-build": {
+      "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation5-fresh-build-root-final-disposition-1/disposition.json",
+      "sha256": "605e7445426db2946ea8c2a9a1cf1e5851715f8cf3074fc914486f336f0b9e18"
+    },
+    "g09-schema-source": {
+      "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation5-g09-schema-source-root-final-disposition-1/disposition.json",
+      "sha256": "9a33c2c5ac9ba61e9c2ad38c0e67462bf5ffdaef612b891c288c56017005ba1f"
+    },
+    "g09-service-source": {
+      "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation5-g09-service-source-root-final-disposition-1/disposition.json",
+      "sha256": "65957b8070a3672b63e497474f0b35d23ca808d12a5465f16881d5b7ba742cab"
+    },
+    "legacy-schema-source": {
+      "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation5-legacy-schema-source-root-final-disposition-1/disposition.json",
+      "sha256": "0167850a17dfb0728840840d2e741a49a0fd275c3f7a9de35a480873b03e1033"
+    },
+    "lint": {
+      "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation5-lint-root-final-disposition-1/disposition.json",
+      "sha256": "e9ae37938202ed5ac2d6857b7a6fe01d219a5c4c0f31faacfc8dc591a8ab382d"
+    },
+    "node-version": {
+      "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation5-node-version-root-final-disposition-1/disposition.json",
+      "sha256": "df79acf714e4f969cfe8e3bd06cf7ac931469606d4545d59aebc30c1f229f14b"
+    },
+    "pnpm-version": {
+      "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation5-pnpm-version-root-final-disposition-1/disposition.json",
+      "sha256": "ba3485ce7528283c538027c492faf97a205d60d476d3def9facde14643c3fe1e"
+    },
+    "schema-confinement-source": {
+      "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation5-schema-confinement-source-root-final-disposition-1/disposition.json",
+      "sha256": "2e15671447bf204a666f9514270d561072db3326cd56cdb3b1f8022cb3799d5d"
+    },
+    "typecheck": {
+      "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation5-typecheck-root-final-disposition-1/disposition.json",
+      "sha256": "06c01b119aaa02904a74468f10d1fe2570a4b5e16e261de41f07a7db6fff944d"
+    },
+    "workspace-install": {
+      "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation5-workspace-install-root-final-disposition-1/disposition.json",
+      "sha256": "1b8fa425accec60d70218c9f277c937d26398d780f90de5f72147455ee99b1ad"
+    }
+  },
+  "priorDirectoryFinalPublication": {
+    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/root-G09-validation5-prepare-package-directory-final-disposition-publication-1.remote-readback.json",
+    "sha256": "85e2f0952f2ca460a497ff405bd40c25363e743b3db6156acd542331f6eb861f"
+  },
+  "priorDirectoryNativeClosure": {
+    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation5-prepare-package-directory-actual-native-audit-1/closure.json",
+    "sha256": "6af2a9fbd9389fd6bd181418e2275424162ab14f1170bf380372a330315ccd04"
+  },
+  "priorDirectoryRootDisposition": {
+    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation5-prepare-package-directory-root-final-disposition-1/disposition.json",
+    "sha256": "d7b59de7aa0aa4bd8435fb7fca940ce121f90572b641e56191232496a2a883c7"
+  },
+  "publishedBaselineSourceIndex": {
+    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation5-package4-closed-control-source-1/index.json",
+    "sha256": "c89de2f1746d5c94845661726ab1ff1aca51733b3f5e7349ac98dd8d4f43c39e"
+  },
+  "qualityPass": false,
+  "rootActualFinalConjunction": "PENDING",
+  "rootFinalControlAcceptance": {
+    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation5-package4-root-final-acceptance-1/acceptance.json",
+    "sha256": "895acbe1a4c35c61f32aadd4a6d8d6307d6d47ad1f75f5efc85cd464c2fd32dd"
+  },
+  "rootFindingsDisposition": {
+    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation5-package4-root-final-acceptance-1/findings-disposition.json",
+    "sha256": "86af59e79eea36b8f212c81b7b7f476369e15c93f189adb3f73604873c7d6e75"
+  },
+  "runtimeCensusAndScratchLimitsPreserved": true,
+  "separateActivation6PublicationBeforeActual": {
+    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/root-G09-validation5-package4-activation-publication-1.remote-readback.json",
+    "sha256": "8af14ecd5a5b39134987b2587002cee196c4c852d60ddd3af8b837658daaf6d5"
+  },
+  "session": "2026-10-18T02:16:24Z-549f",
+  "sourceBinding": {
+    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation-preparation-5/source-binding.json",
+    "sha256": "e0252cb07ac1896fac0faab395e10e50ea58eac263b6d33ee224e378413c2d68"
+  },
+  "stage": "pack-protocol"
+}

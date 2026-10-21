@@ -1,0 +1,47 @@
+--- after/packages/server/src/reference-deployment-runtime.test.ts
++++ before/packages/server/src/reference-deployment-runtime.test.ts
+@@ -1,10 +1,9 @@
+ /** Genuine owner/listener witnesses. Counts are prospective until this exact source runs. */
+ import { afterEach, beforeEach, expect, it, vi } from "vitest";
+ import * as http from "node:http";
+-import { isDeepStrictEqual } from "node:util";
+ import { createServer as createPortReservation } from "node:net";
+ import { DatabaseSync } from "node:sqlite";
+-import { existsSync, mkdtempSync, mkdirSync, rmSync, writeFileSync } from "node:fs";
++import { existsSync, mkdtempSync, mkdirSync, readFileSync, rmSync, writeFileSync } from "node:fs";
+ import { tmpdir } from "node:os";
+ import path from "node:path";
+ import * as authority from "./development-authority.js";
+@@ -38,7 +37,7 @@
+   createHTTP = http.createServer;
+ const roots: string[] = [], active: { close(): Promise<unknown> }[] = [], servers: http.Server[] = [];
+ const token = "lifecycle_writer_" + "a".repeat(32), reader = "lifecycle_reader_" + "b".repeat(32);
+-const allow = { create: true, write: true, hidden: [], readOnly: [] };
++const allow = { read: true, create: true, write: true, unreadable: [], readOnly: [] };
+ let trace: string[], listenArgs: unknown[][], acquired: number, returned: number,
+   ownerCloses: number, serviceCloses: number, serviceAttempts: number, configurationReads: number;
+ let corruption: string | undefined, primary: Error | undefined, closeFailure: Error | undefined,
+@@ -185,11 +184,11 @@
+   const pending = start(handle); void pending.catch(() => {}); await secondPrincipal.entered.promise;
+   expect(listenArgs).toHaveLength(0); expect(acquired).toBe(0);
+   const state = referenceDeploymentState(handle); if (state.profile !== "read-update" || !actualComposition) throw Error("missing genuine RU capture");
+-  expect(isDeepStrictEqual(assemblePreparedDevelopmentArguments(state.installed, actualComposition), [
++  expect(assemblePreparedDevelopmentArguments(state.installed, actualComposition)).toEqual([
+     { directory: state.installed.directory, port: state.installed.port, create: state.installed.create, token: state.installed.credentials[0]!.token },
+     actualComposition, { configuration: state.installed.configuration, credentials: state.installed.credentials },
+     { scope: state.installed.scope, host: state.installed.host, schemas: state.installed.schemas },
+-  ])).toBe(true);
++  ]);
+   expect(vi.mocked(compositions.createDevelopmentComposition)).toHaveBeenCalledTimes(1);
+   secondPrincipal.release.resolve();
+   if (fail) { await expect(pending).rejects.toBe(primary); expect(ownerCloses).toBe(1); expect(listenArgs).toHaveLength(0); }
+@@ -289,8 +288,7 @@
+ it.each(["read-update", "transactional"] as const)("S10 observed primary plus close failure %s preserves both causes", async (profile) => {
+   const f = await fixture(profile); listenFailure = new Error("primary sentinel"); closeFailure = new Error("cleanup sentinel");
+   let failure: unknown; try { await startPreparedReferenceDeployment(await f.prepare()); } catch (error) { failure = error; }
+-  const causes = (value: unknown): unknown[] => value instanceof AggregateError ? [value, ...value.errors.flatMap(causes)] : [value];
+-  expect(failure).toBeInstanceOf(AggregateError); expect(causes(failure).includes(listenFailure)).toBe(true); expect(causes(failure).includes(closeFailure)).toBe(true);
++  expect(failure).toBeInstanceOf(AggregateError); expect((failure as AggregateError).errors).toContain(listenFailure); expect((failure as AggregateError).errors).toContain(closeFailure);
+   expect(ownerCloses).toBe(1); expect(sql.rows.every((value) => value.closed)).toBe(true); emit("S10-" + profile, { observedPrimary: true, observedCleanupFailure: true });
+ });
+ it.each(["read-update", "transactional"] as const)("S11 memoized trusted close and exact legacy shape %s", async (profile) => {

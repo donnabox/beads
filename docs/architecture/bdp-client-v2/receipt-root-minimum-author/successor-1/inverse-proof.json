@@ -1,0 +1,23 @@
+{
+  "files": {
+    "apps/bdptest/src/transactional-minimum-receiving-installed.test.ts": {
+      "before": "257bca572efb1900fbfbcdc4aafbce8fc9b01895feb87781ba42f5dc97b8b779",
+      "after": "df501f4671decf2e6fd81ff76864450312bed17c76d0be52cb1c2efb16c37b09",
+      "inverse": "257bca572efb1900fbfbcdc4aafbce8fc9b01895feb87781ba42f5dc97b8b779"
+    },
+    "packages/server/src/transaction-service.test.ts": {
+      "before": "b5b8cd2712f92837a1ab6b676d9b27bdd4e7662cf3256a6853b0f1206aae29f0",
+      "after": "ba23d242e73a67765db4de77ff0d43f691feb68641ffdf8071a5ded4dc05cb08",
+      "inverse": "b5b8cd2712f92837a1ab6b676d9b27bdd4e7662cf3256a6853b0f1206aae29f0"
+    }
+  },
+  "exactFourReplacements": true,
+  "all677OtherTrackedFilesUnchanged": true,
+  "productionUnchanged": true,
+  "selectionWorkloadUnchanged": true,
+  "originalAuthorIndexUnchanged": true,
+  "log": {
+    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/receipt-root-minimum-validation/run/format-check.log",
+    "sha256": "26d19938157c3b1fd73dad45e8381320bf8d3c4d7abc4b682a80a653d8def39e"
+  }
+}

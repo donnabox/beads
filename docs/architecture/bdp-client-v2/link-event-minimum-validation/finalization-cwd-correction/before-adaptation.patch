@@ -1,0 +1,959 @@
+--- successful-bead/run.py
++++ closed-link/run.py
+@@ -63,7 +63,7 @@
+  try:
+   unchanged=source_check(g['_sourceBinding'])==g['_sourceIdentity']
+   if MODE=='final' and name not in ['workspace-install','bind-workspace-tools','typecheck','format-check','lint','fresh-build','bind-fresh-build']:verify_build(g)
+-  if name in ['event-bead-minimum-external','review-event-bead-minimum-external','event-minimum-external','review-event-minimum-external','event-missing-context-external','review-event-missing-context-external']:verify_consumer(g)
++  if name in ['event-link-minimum-external','review-event-link-minimum-external','event-bead-minimum-external','review-event-bead-minimum-external','event-minimum-external','review-event-minimum-external','event-missing-context-external','review-event-missing-context-external']:verify_consumer(g)
+  except BaseException as e:errors.append('final binding:'+str(e))
+  try:runtime=[str(x) for x in tmp.rglob('*') if x.is_dir() and x.name.startswith('bdp-')]
+  except BaseException as e:errors.append('temp verification:'+type(e).__name__)
+--- successful-bead/gate.py
++++ closed-link/gate.py
+@@ -2,12 +2,12 @@
+ from pathlib import Path
+ import hashlib,json,subprocess,os
+ P=Path(__file__).resolve().parent
+-W=Path('/Users/dbox/repos/wt/vickie/vickie-bead-event-minimum')
++W=Path('/Users/dbox/repos/wt/vickie/vickie-link-event-minimum')
+ GUARD=Path('/Users/dbox/repos/wt/vickie/bdp-integration-logs/guarded-action.py')
+ MODE=os.environ.get('FINITE_EVENT_VALIDATION_PHASE','final')
+ assert MODE=='final'
+ E=P/'run'
+-INTEGRATION='f6204255d53ef65d4aea56ff5ccc86d72e8cc7b0'
++INTEGRATION='5bcd277b2a61461211ffc0c2d2f8fd701ef0a385'
+ sha=lambda b:hashlib.sha256(b).hexdigest()
+ def require(ok,message):
+  if not ok:raise RuntimeError(message)
+@@ -74,30 +74,10 @@
+  for name,data in tar['packages'].items():require(sha(Path(data['archive']).read_bytes())==proof['packages'][name]['archiveSha256'],'Archive changed')
+  entry=Path(proof['entryRealpath']);require(entry.resolve(strict=True).is_relative_to((E/'consumer').resolve()) and sha(entry.read_bytes())==proof['entrySha256'],'External entry changed')
+  return proof
+-def verify_bootstrap_reuse(g):
+- reuse=read(P/'bootstrap-reuse-binding.json');require(reuse.get('mappingFinalized') is True,'Bootstrap source transition pending');old=document(reuse['sourceBinding']);new=g['_sourceBinding']
+- require(reuse['successorSourceBinding']==g['sourceBinding'] and reuse['successorSourceIdentity']==g['_sourceIdentity'],'Successor bootstrap link differs')
+- require(reuse['originalSourceIdentity']==sha(json.dumps(old['trackedSourceFiles'],sort_keys=True).encode()),'Original source identity differs')
+- require(old['head']==reuse['originalHead']==new['head'] and old['tree']==reuse['originalTree']==new['tree'],'Bootstrap base chronology differs')
+- changes=sorted(p for p,h in new['trackedSourceFiles'].items() if old['trackedSourceFiles'].get(p)!=h)
+- require(set(old['trackedSourceFiles'])==set(new['trackedSourceFiles']) and changes==reuse['allowedSourceChanges'],'Unreviewed source transition')
+- require(all(old['trackedSourceFiles'][p]==new['trackedSourceFiles'][p]==h for p,h in reuse['dependencyInputs'].items()),'Dependency inputs changed')
+- for p,h in reuse['records'].items():require(sha(Path(p).read_bytes())==h,'Bootstrap evidence changed '+p)
+- require(reuse['tools']==g['workspaceTools'],'Original tool record must be reused without relabeling')
+- disposition=document(reuse['rootBootstrapDisposition']);require(disposition['accepted'] is True and disposition['dependencyInstallAuthorized'] is True and disposition['sourceBindingSha256']==reuse['sourceBinding']['sha256'],'Original bootstrap release differs')
+- tb=document(reuse['tools']);tools_check(tb['tools'])
+- require(tb['sourceIdentity']==reuse['originalSourceIdentity'] and tb['head']==reuse['originalHead'] and tb['sourceLockSha256']==g['sourceLockSha256'],'Original tool chronology/lock differs')
+- directory=Path(reuse['directory']);cfg=read(P/'commands.json')
+- for name in reuse['stages']:
+-  v=read(directory/(name+'.exit.json'));start=read(directory/(name+'.started.json'))
+-  require(v['accepted'] and v['exit']==0 and v['sourceUnchanged'] and not v['forcedCleanup'] and not v['errors'] and not v['remainingProcesses'] and not v['runtimeDirectoriesStillPresent'],'Original bootstrap failed')
+-  require(v['sourceIdentity']==start['sourceIdentity']==reuse['originalSourceIdentity'] and start['head']==reuse['originalHead'] and start['tree']==reuse['originalTree'],'Bootstrap source chronology changed')
+-  require(sha((directory/(name+'.log')).read_bytes())==v['logSha256'],'Bootstrap log changed')
+- require(tb['installExitSha256']==sha((directory/'workspace-install.exit.json').read_bytes()) and tb['installLogSha256']==sha((directory/'workspace-install.log').read_bytes()),'Install/tool linkage differs')
+ def load_gate(name,child=False):
+  require(__debug__,'Assertions required')
+  g=read(P/'execution-gate.json')
+- require(read(P/'commands.json').get('configurationFinalized') is True,'Corrected successor source/selection not finalized')
++ require(read(P/'commands.json').get('configurationFinalized') is True,'Authored Link source/selection not finalized')
+  require(g['released'] is True and g['rootPlanAccepted'] is True and g['rootExactSourceAccepted'] is True and g['session']=='2026-10-08T20:26:35Z-81e5','Root release absent')
+  require(g['mode']==MODE,'Wrong phase')
+  if child:
+@@ -116,14 +96,19 @@
+  if 'selectedFullNames' in spec:require(isinstance(spec['selectedFullNames'],list) and len(spec['selectedFullNames'])>0 and isinstance(spec['prospectiveWorkload'],dict),'Unbound callback selection/workload')
+  base=document(g['baseTools']);tools_check(base['tools'])
+  require(base['sourceLockSha256']==g['sourceLockSha256'],'Base lock differs')
+- require(disposition.get('bootstrapReuseAccepted') is True and disposition.get('bootstrapReuseBinding')=={'path':str(P/'bootstrap-reuse-binding.json'),'sha256':sha((P/'bootstrap-reuse-binding.json').read_bytes())},'Root bootstrap reuse acceptance absent')
+- verify_bootstrap_reuse(g)
+- require((g['actualClaudeReviewDisposed'] is True and g['nativeCodeReviewDisposed'] is True) or (name in ['typecheck','format-check','lint'] and g['staticValidationAuthorized'] is True),'Code review disposition pending; only explicit static prefix may run')
+- require(disposition['staticValidationAuthorized'] is True if name in ['typecheck','format-check','lint'] else disposition['runtimeValidationAuthorized'] is True,'Root disposition does not authorize this stage')
++ if name in ['workspace-install','bind-workspace-tools']:
++  require(disposition.get('dependencyInstallAuthorized') is True,'Dependency preparation not released')
++  if name=='workspace-install':require(not (W/'node_modules').exists(),'Workspace install already exists; preserve it and rebind explicitly')
++ else:
++  tb=document(g['workspaceTools']);tools_check(tb['tools'])
++  require(tb['sourceIdentity']==g['_sourceIdentity'] and tb['sourceLockSha256']==g['sourceLockSha256'] and tb['head']==g['finalHead'],'Installed tools source differs')
++  require(tb['installExitSha256']==sha((E/'workspace-install.exit.json').read_bytes()) and tb['installLogSha256']==sha((E/'workspace-install.log').read_bytes()),'Install evidence changed')
++  require((g['actualClaudeReviewDisposed'] is True and g['nativeCodeReviewDisposed'] is True) or (name in ['typecheck','format-check','lint'] and g['staticValidationAuthorized'] is True),'Code review disposition pending; only explicit static prefix may run')
++  require(disposition['staticValidationAuthorized'] is True if name in ['typecheck','format-check','lint'] else disposition['runtimeValidationAuthorized'] is True,'Root disposition does not authorize this stage')
+  for prior in order[:order.index(name)]:complete(prior,g)
+  if MODE=='final' and order.index(name)>order.index('bind-fresh-build'):verify_build(g)
+  if name=='verify-installed-consumer':require(isinstance(g.get('consumerLockSha256'),str) and sha((E/'consumer/pnpm-lock.yaml').read_bytes())==g['consumerLockSha256'],'Consumer lock not root-pinned')
+- if name in ['event-bead-minimum-external','review-event-bead-minimum-external','event-minimum-external','review-event-minimum-external','event-missing-context-external','review-event-missing-context-external']:
++ if name in ['event-link-minimum-external','review-event-link-minimum-external','event-bead-minimum-external','review-event-bead-minimum-external','event-minimum-external','review-event-minimum-external','event-missing-context-external','review-event-missing-context-external']:
+   proof=verify_consumer(g)
+   spec={**spec,'environment':{'BDP_TRANSACTIONAL_INSTALLED_ENTRY':proof['entryRealpath'],'BDP_TRANSACTIONAL_SOURCE_COMMIT':b['head']}}
+  guarded();return g,spec
+--- successful-bead/audit.py
++++ closed-link/audit.py
+@@ -5,8 +5,8 @@
+ import re,math
+ from urllib.parse import urlsplit,parse_qsl
+ mode=sys.argv[1]
+-stage={'source':'focused-source','bead':'event-bead-minimum-external','minimum':'event-minimum-external','missing':'event-missing-context-external'}.get(mode)
+-g,_=load_gate({'tools':'bind-workspace-tools','build':'bind-fresh-build','source':'review-focused-source','bead':'review-event-bead-minimum-external','minimum':'review-event-minimum-external','missing':'review-event-missing-context-external'}[mode],child=True)
++stage={'source':'focused-source','link':'event-link-minimum-external','bead':'event-bead-minimum-external','minimum':'event-minimum-external','missing':'event-missing-context-external'}.get(mode)
++g,_=load_gate({'tools':'bind-workspace-tools','build':'bind-fresh-build','source':'review-focused-source','link':'review-event-link-minimum-external','bead':'review-event-bead-minimum-external','minimum':'review-event-minimum-external','missing':'review-event-missing-context-external'}[mode],child=True)
+ if mode=='tools':
+  tools=dict(read(P/'base-tools.json')['tools'])
+  paths=[W/'node_modules'/n for n in ['@biomejs/biome/bin/biome','vitest/vitest.mjs','typescript/bin/tsc','typescript/lib/tsc.js','typescript/lib/getExePath.js','typescript/package.json']]
+@@ -41,27 +41,28 @@
+   expectations=read(P/'audit-expectations.json');labels=expectations['scopePreflightLabels']
+   preflight=[x for x in observations if x['observation']=='finite-event-minimum-preflight']
+   require(sorted(preflight,key=lambda x:x['label'])==sorted([{'observation':'finite-event-minimum-preflight','label':label,'serviceCalls':1,'clockCalls':0 if label=='invalid-policy' else 1,'ownerReads':0,'waits':0} for label in labels],key=lambda x:x['label']),'Preflight row reports differ')
+-  for expected in expectations['beadFixedObservations']:
+-   require(one(expected['observation'])==expected,'Bead source observation differs '+expected['observation'])
+-  bead_preflight=[x for x in observations if x['observation']=='bead-event-minimum-preflight']
+-  expected_preflight=[{'observation':'bead-event-minimum-preflight','label':label,'serviceCalls':1,'clockCalls':0 if label=='invalid-policy' else 1,'ownerReads':1 if label in ['noncanonical-query','relative-source'] else 0,'waits':0} for label in expectations['beadPreflightLabels']]
+-  require(sorted(bead_preflight,key=lambda x:x['label'])==sorted(expected_preflight,key=lambda x:x['label']),'Bead preflight observation differs')
+-  bead_http=one('bead-event-minimum-http')
+-  require(set(bead_http)=={'observation','calls','completedResponses','elapsedMs','productChildren','directoryAbsent','failureCount'} and bead_http['calls']==37 and bead_http['productChildren']==0 and bead_http['directoryAbsent'] is True and bead_http['failureCount']==0,'Bead HTTP count/cleanup differs')
+-  elapsed=bead_http['elapsedMs'];require(type(elapsed) in [int,float] and math.isfinite(elapsed) and 0<=elapsed<5000,'Bead HTTP elapsed exceeds unchanged callback bound')
+-  responses=bead_http['completedResponses'];expected=expectations['beadHttpOrderedResponses'];require(len(responses)==37,'Bead HTTP response count differs')
+-  cursor_suffix=None
+-  for response,wanted in zip(responses,expected):
+-   require(set(response)=={'method','suffix','status'},'Unexpected Bead HTTP report fields')
+-   if wanted['suffix']=='__ACTUAL_SOURCE_CURSOR__':
+-    suffix=response['suffix'];require(isinstance(suffix,str),'Cursor suffix absent');u=urlsplit(suffix);q=parse_qsl(u.query,keep_blank_values=True)
+-    require(not u.scheme and not u.netloc and not u.fragment and u.path=='beads/a' and len(q)==2 and q[0]==('view','events') and q[1][0]=='after' and bool(q[1][1]),'Invalid after-control route')
+-    require(cursor_suffix is None or cursor_suffix==suffix,'GET/HEAD cursor differs');cursor_suffix=suffix
+-    require(response['method']==wanted['method'] and response['status']==wanted['status'],'After-control result differs')
+-   else:require(response==wanted,'Ordered Bead HTTP method/route/status differs')
++  for kind,calls,path in [('bead',37,'beads/a'),('link',35,'links/l')]:
++   for expected in expectations[kind+'FixedObservations']:
++    require(one(expected['observation'])==expected,kind+' source observation differs '+expected['observation'])
++   preflight=[x for x in observations if x['observation']==kind+'-event-minimum-preflight']
++   expected_preflight=[{'observation':kind+'-event-minimum-preflight','label':label,'serviceCalls':1,'clockCalls':0 if label=='invalid-policy' else 1,'ownerReads':1 if label in ['noncanonical-query','relative-source'] else 0,'waits':0} for label in expectations[kind+'PreflightLabels']]
++   require(sorted(preflight,key=lambda x:x['label'])==sorted(expected_preflight,key=lambda x:x['label']),kind+' preflight observation differs')
++   http=one(kind+'-event-minimum-http')
++   require(set(http)=={'observation','calls','completedResponses','elapsedMs','productChildren','directoryAbsent','failureCount'} and http['calls']==calls and http['productChildren']==0 and http['directoryAbsent'] is True and http['failureCount']==0,kind+' HTTP count/cleanup differs')
++   elapsed=http['elapsedMs'];require(type(elapsed) in [int,float] and math.isfinite(elapsed) and 0<=elapsed<4000,kind+' HTTP elapsed reached audit stop margin; root-reviewed split required, no retry or timeout widening')
++   responses=http['completedResponses'];expected=expectations[kind+'HttpOrderedResponses'];require(len(responses)==calls,kind+' HTTP response count differs')
++   cursor_suffix=None
++   for response,wanted in zip(responses,expected):
++    require(set(response)=={'method','suffix','status'},'Unexpected '+kind+' HTTP report fields')
++    if wanted['suffix']=='__ACTUAL_SOURCE_CURSOR__':
++     suffix=response['suffix'];require(isinstance(suffix,str),'Cursor suffix absent');u=urlsplit(suffix);q=parse_qsl(u.query,keep_blank_values=True)
++     require(not u.scheme and not u.netloc and not u.fragment and u.path==path and len(q)==2 and q[0]==('view','events') and q[1][0]=='after' and bool(q[1][1]),'Invalid after-control route')
++     require(cursor_suffix is None or cursor_suffix==suffix,'GET/HEAD cursor differs');cursor_suffix=suffix
++     require(response['method']==wanted['method'] and response['status']==wanted['status'],'After-control result differs')
++    else:require(response==wanted,'Ordered '+kind+' HTTP method/route/status differs')
+   require(len(observations)==expectations['sourceObservationRecords'],'Unexpected source observation record')
+   report['actualInstrumentedObservations']=observations
+-  report.update({'attribution':'Selected source owner/service and fresh emitted HTTP callbacks; actual names verified individually','plannedWorkload':config['prospectiveWorkload'],'limits':'Instrumented records are separately observed if executed; historical59 HTTP remains source-derived, not a measured128 total; counts are not qualification; preserve service precedence controls as separate service calls and owner attempts. Assertions of passing pinned callbacks supply semantic evidence.'})
++  report.update({'attribution':'Selected source owner/service and fresh emitted HTTP callbacks; actual names verified individually','plannedWorkload':config['prospectiveWorkload'],'limits':'Instrumented records are separately observed if executed; historical59 HTTP remains source-derived, not a measured163 total; counts are not qualification; preserve service precedence controls as separate service calls and owner attempts. Assertions of passing pinned callbacks supply semantic evidence.'})
+  else:
+   observations=[]
+   for line in (E/(stage+'.log')).read_text().splitlines():
+@@ -86,15 +87,16 @@
+   proof=verify_consumer(g);entry=Path(proof['entryRealpath'])
+   require(Path(o['entry']).resolve(strict=True)==entry and o['entrySha256']==proof['entrySha256'] and served['installedPayloadDigest']==proof['payloadIdentity'],'Child differs from independently verified external payload')
+   responses=o['completedResponses'];contextNames=['bdp-scope-epoch','bdp-authorization-view','bdp-scope-position']
+-  if mode in ['minimum','bead']:
++  if mode in ['minimum','bead','link']:
+    require(o['launchStarted'] is True and o['closeAttempted'] is True and o['ownership']=='closed','Owned clean close absent')
+-   if mode=='bead':
+-    expected=read(P/'audit-expectations.json')['beadInstalledOrderedResponses'];require([{k:r[k] for k in ['method','url','status']} for r in responses]==expected,'Installed Bead method/URL/status sequence differs')
++   if mode in ['bead','link']:
++    expected=read(P/'audit-expectations.json')[mode+'InstalledOrderedResponses'];require([{k:r[k] for k in ['method','url','status']} for r in responses]==expected,'Installed Bead/Link method/URL/status sequence differs')
+     seed,setup,get,head=responses;require(seed['bodyOctets']>0,'Completed seed response body absent')
+    else:
+     require([(r['method'],r['status']) for r in responses]==[('GET',200),('GET',503),('HEAD',503)],'Initial finite Event exchange sequence differs')
+     setup,get,head=responses
+    context=[setup['headers'][n] for n in contextNames];require(all(context),'Real setup context absent')
++   if mode=='link':require(context[2]=='pos-1','Link setup position differs from completed seed')
+    for r in [get,head]:
+     h=r['headers'];require([h[n] for n in contextNames]==context and h['cache-control']=='private, no-store' and h['retry-after']=='1' and h['x-bdp-development-limit'] is None and h['x-bdp-development']=='non-attesting','Timeout context/retry differs')
+    require(get['bodyOctets']>0 and head['bodyOctets']==0 and head['bodySha256']==sha(b''),'GET/HEAD body differs')
+@@ -110,5 +112,5 @@
+     h=r['headers'];require([h[n] for n in contextNames]==context and h['content-type']=='application/problem+json' and h['cache-control']=='private, no-store' and all(h[n] is None for n in ['retry-after','www-authenticate','x-bdp-development-limit']),'Historical missing metadata differs')
+     if r['method']=='HEAD':require(r['bodyOctets']==0 and r['bodySha256']==sha(b''),'Historical HEAD body differs')
+    require(all(responses[-1]['headers'][n] is None for n in contextNames),'Unauthenticated context exposed')
+-  report.update({'attribution':'Verified external candidate; base HEAD plus exact dirty source/build/archive/consumer binding, not child source attestation','observation':o,'storeCleanup':'Reported clean exit, actual stage-owned directory absent, and supervisor PID/store census accepted. Historical unconditional deletion is not independently sufficient for clean exit.','limits':'Problem schema/exact-body and non-retained validator assertions ran inside the pinned callback. No invented elapsed-wait or raw request census beyond reported responses; new Bead URLs are retained and compared exactly, while Scope routes and request body/header checks remain in pinned callback assertions; no conformance/profile credit.'})
++  report.update({'attribution':'Verified external candidate; base HEAD plus exact dirty source/build/archive/consumer binding, not child source attestation','observation':o,'storeCleanup':'Reported clean exit, actual stage-owned directory absent, and supervisor PID/store census accepted. Historical unconditional deletion is not independently sufficient for clean exit.','limits':'Problem schema/exact-body and non-retained validator assertions ran inside the pinned callback. No invented elapsed-wait or raw request census beyond reported responses; Bead/Link URLs are retained and compared exactly, while Scope routes and request body/header checks remain in pinned callback assertions; no conformance/profile credit.'})
+  write(stage+'.accepted-observation.json',report)
+--- successful-bead/commands.json
++++ closed-link/commands.json
+@@ -1,5 +1,7 @@
+ {
+   "finalOrder": [
++    "workspace-install",
++    "bind-workspace-tools",
+     "typecheck",
+     "format-check",
+     "lint",
+@@ -15,6 +17,8 @@
+     "prepare-consumer",
+     "consumer-install",
+     "verify-installed-consumer",
++    "event-link-minimum-external",
++    "review-event-link-minimum-external",
+     "event-bead-minimum-external",
+     "review-event-bead-minimum-external",
+     "event-minimum-external",
+@@ -24,7 +28,7 @@
+   ],
+   "commands": {
+     "typecheck": {
+-      "cwd": "/Users/dbox/repos/wt/vickie/vickie-bead-event-minimum",
++      "cwd": "/Users/dbox/repos/wt/vickie/vickie-link-event-minimum",
+       "argv": [
+         "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+         "/Users/dbox/.cache/node/corepack/v1/pnpm/11.20.0/bin/pnpm.cjs",
+@@ -38,12 +42,12 @@
+       ]
+     },
+     "format-check": {
+-      "cwd": "/Users/dbox/repos/wt/vickie/vickie-bead-event-minimum",
+-      "argv": [
+-        "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+-        "/Users/dbox/repos/wt/vickie/vickie-bead-event-minimum/node_modules/@biomejs/biome/bin/biome",
++      "cwd": "/Users/dbox/repos/wt/vickie/vickie-link-event-minimum",
++      "argv": [
++        "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
++        "/Users/dbox/repos/wt/vickie/vickie-link-event-minimum/node_modules/@biomejs/biome/bin/biome",
+         "format",
+-        "--config-path=/Users/dbox/repos/wt/vickie/vickie-bead-event-minimum/biome.json",
++        "--config-path=/Users/dbox/repos/wt/vickie/vickie-link-event-minimum/biome.json",
+         "packages/server/src/transaction-http.ts",
+         "packages/server/src/transaction-service.ts",
+         "packages/server/src/transaction-store.ts",
+@@ -58,12 +62,12 @@
+       ]
+     },
+     "lint": {
+-      "cwd": "/Users/dbox/repos/wt/vickie/vickie-bead-event-minimum",
+-      "argv": [
+-        "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+-        "/Users/dbox/repos/wt/vickie/vickie-bead-event-minimum/node_modules/@biomejs/biome/bin/biome",
++      "cwd": "/Users/dbox/repos/wt/vickie/vickie-link-event-minimum",
++      "argv": [
++        "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
++        "/Users/dbox/repos/wt/vickie/vickie-link-event-minimum/node_modules/@biomejs/biome/bin/biome",
+         "lint",
+-        "--config-path=/Users/dbox/repos/wt/vickie/vickie-bead-event-minimum/biome.json",
++        "--config-path=/Users/dbox/repos/wt/vickie/vickie-link-event-minimum/biome.json",
+         "packages/server/src/transaction-http.ts",
+         "packages/server/src/transaction-service.ts",
+         "packages/server/src/transaction-store.ts",
+@@ -78,7 +82,7 @@
+       ]
+     },
+     "fresh-build": {
+-      "cwd": "/Users/dbox/repos/wt/vickie/vickie-bead-event-minimum",
++      "cwd": "/Users/dbox/repos/wt/vickie/vickie-link-event-minimum",
+       "argv": [
+         "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+         "/Users/dbox/.cache/node/corepack/v1/pnpm/11.20.0/bin/pnpm.cjs",
+@@ -95,7 +99,7 @@
+       "cwd": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/bead-event-minimum-validation",
+       "argv": [
+         "/opt/homebrew/opt/python@3.14/bin/python3.14",
+-        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/bead-event-minimum-validation/successor-1/audit.py",
++        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/link-event-minimum-validation/audit.py",
+         "build"
+       ],
+       "outerSeconds": 120,
+@@ -105,19 +109,19 @@
+       ]
+     },
+     "focused-source": {
+-      "cwd": "/Users/dbox/repos/wt/vickie/vickie-bead-event-minimum",
+-      "argv": [
+-        "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+-        "/Users/dbox/repos/wt/vickie/vickie-bead-event-minimum/node_modules/vitest/vitest.mjs",
++      "cwd": "/Users/dbox/repos/wt/vickie/vickie-link-event-minimum",
++      "argv": [
++        "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
++        "/Users/dbox/repos/wt/vickie/vickie-link-event-minimum/node_modules/vitest/vitest.mjs",
+         "run",
+         "packages/server/src/transaction-events.test.ts",
+         "packages/server/src/transaction-service.test.ts",
+         "--maxWorkers=1",
+         "--reporter=verbose",
+         "--reporter=json",
+-        "--outputFile=/Users/dbox/repos/wt/vickie/bdp-integration-logs/bead-event-minimum-validation/successor-1/run/focused-source.results.json",
++        "--outputFile=/Users/dbox/repos/wt/vickie/bdp-integration-logs/link-event-minimum-validation/run/focused-source.results.json",
+         "--testNamePattern",
+-        "^(?:gates\\ initial\\ Scope\\ Event\\ unknown\\ minima\\ before\\ retained\\ scans|captures\\ an\\ initial\\ Scope\\ Event\\ opaque\\ tuple\\ across\\ one\\ bounded\\ wait|cancels\\ and\\ drains\\ initial\\ Scope\\ Event\\ opaque\\ waits|serves\\ initial\\ finite\\ Scope\\ Event\\ opaque\\ minima\\ through\\ bounded\\ waiting|preserves\\ initial\\ Scope\\ Event\\ preflight\\ before\\ malformed\\ capture:\\ already\\-aborted|preserves\\ initial\\ Scope\\ Event\\ preflight\\ before\\ malformed\\ capture:\\ invalid\\-policy|preserves\\ initial\\ Scope\\ Event\\ preflight\\ before\\ malformed\\ capture:\\ throwing\\-clock|preserves\\ initial\\ Scope\\ Event\\ preflight\\ before\\ malformed\\ capture:\\ nonfinite\\-clock|preserves\\ initial\\ Scope\\ Event\\ preflight\\ before\\ malformed\\ capture:\\ malformed\\-after\\-valid\\-preflight|pages\\ within\\ groups,\\ continues\\ exclusively\\ after\\ end\\ and\\ rejects\\ unrelated/fabricated\\ cursors|checks\\ minimum\\ position\\ before\\ any\\ retained\\ group\\ scan\\ or\\ body\\ materialization|cancels\\ finite\\ Event\\ waits\\ through\\ the\\ facet\\ and\\ drains\\ uncancelled\\ waits\\ before\\ owner\\ close|serves\\ finite\\ Event\\ HTTP\\ with\\ current\\ context,\\ conditionals,\\ HEAD\\ and\\ bounded\\ minimum\\ waits|isolates\\ unresolved\\ metadata\\-only\\ incident\\ membership\\ while\\ Scope/Link\\ sources\\ remain\\ available|gates\\ initial\\ Bead\\ Event\\ unknown\\ minima\\ before\\ retained\\ scans|captures\\ an\\ initial\\ Bead\\ Event\\ opaque\\ tuple\\ across\\ one\\ bounded\\ wait|cancels\\ and\\ drains\\ initial\\ Bead\\ Event\\ opaque\\ waits|serves\\ initial\\ finite\\ Bead\\ Event\\ opaque\\ minima\\ with\\ retained\\ identity\\ and\\ route\\ fences|preserves\\ initial\\ Bead\\ Event\\ classification\\ and\\ preflight:\\ already\\-aborted|preserves\\ initial\\ Bead\\ Event\\ classification\\ and\\ preflight:\\ invalid\\-policy|preserves\\ initial\\ Bead\\ Event\\ classification\\ and\\ preflight:\\ throwing\\-clock|preserves\\ initial\\ Bead\\ Event\\ classification\\ and\\ preflight:\\ nonfinite\\-clock|preserves\\ initial\\ Bead\\ Event\\ classification\\ and\\ preflight:\\ malformed\\-after\\-valid\\-preflight|preserves\\ initial\\ Bead\\ Event\\ classification\\ and\\ preflight:\\ noncanonical\\-query|preserves\\ initial\\ Bead\\ Event\\ classification\\ and\\ preflight:\\ relative\\-source)$"
++        "^(?:gates\\ initial\\ Scope\\ Event\\ unknown\\ minima\\ before\\ retained\\ scans|captures\\ an\\ initial\\ Scope\\ Event\\ opaque\\ tuple\\ across\\ one\\ bounded\\ wait|cancels\\ and\\ drains\\ initial\\ Scope\\ Event\\ opaque\\ waits|serves\\ initial\\ finite\\ Scope\\ Event\\ opaque\\ minima\\ through\\ bounded\\ waiting|preserves\\ initial\\ Scope\\ Event\\ preflight\\ before\\ malformed\\ capture:\\ already\\-aborted|preserves\\ initial\\ Scope\\ Event\\ preflight\\ before\\ malformed\\ capture:\\ invalid\\-policy|preserves\\ initial\\ Scope\\ Event\\ preflight\\ before\\ malformed\\ capture:\\ throwing\\-clock|preserves\\ initial\\ Scope\\ Event\\ preflight\\ before\\ malformed\\ capture:\\ nonfinite\\-clock|preserves\\ initial\\ Scope\\ Event\\ preflight\\ before\\ malformed\\ capture:\\ malformed\\-after\\-valid\\-preflight|pages\\ within\\ groups,\\ continues\\ exclusively\\ after\\ end\\ and\\ rejects\\ unrelated/fabricated\\ cursors|checks\\ minimum\\ position\\ before\\ any\\ retained\\ group\\ scan\\ or\\ body\\ materialization|cancels\\ finite\\ Event\\ waits\\ through\\ the\\ facet\\ and\\ drains\\ uncancelled\\ waits\\ before\\ owner\\ close|serves\\ finite\\ Event\\ HTTP\\ with\\ current\\ context,\\ conditionals,\\ HEAD\\ and\\ bounded\\ minimum\\ waits|isolates\\ unresolved\\ metadata\\-only\\ incident\\ membership\\ while\\ Scope/Link\\ sources\\ remain\\ available|gates\\ initial\\ Bead\\ Event\\ unknown\\ minima\\ before\\ retained\\ scans|captures\\ an\\ initial\\ Bead\\ Event\\ opaque\\ tuple\\ across\\ one\\ bounded\\ wait|cancels\\ and\\ drains\\ initial\\ Bead\\ Event\\ opaque\\ waits|serves\\ initial\\ finite\\ Bead\\ Event\\ opaque\\ minima\\ with\\ retained\\ identity\\ and\\ route\\ fences|preserves\\ initial\\ Bead\\ Event\\ classification\\ and\\ preflight:\\ already\\-aborted|preserves\\ initial\\ Bead\\ Event\\ classification\\ and\\ preflight:\\ invalid\\-policy|preserves\\ initial\\ Bead\\ Event\\ classification\\ and\\ preflight:\\ throwing\\-clock|preserves\\ initial\\ Bead\\ Event\\ classification\\ and\\ preflight:\\ nonfinite\\-clock|preserves\\ initial\\ Bead\\ Event\\ classification\\ and\\ preflight:\\ malformed\\-after\\-valid\\-preflight|preserves\\ initial\\ Bead\\ Event\\ classification\\ and\\ preflight:\\ noncanonical\\-query|preserves\\ initial\\ Bead\\ Event\\ classification\\ and\\ preflight:\\ relative\\-source|gates\\ initial\\ Link\\ Event\\ unknown\\ minima\\ before\\ retained\\ scans|captures\\ an\\ initial\\ Link\\ Event\\ opaque\\ tuple\\ across\\ one\\ bounded\\ wait|cancels\\ and\\ drains\\ initial\\ Link\\ Event\\ opaque\\ waits|serves\\ initial\\ finite\\ Link\\ Event\\ opaque\\ minima\\ with\\ retained\\ identity\\ and\\ route\\ fences|preserves\\ initial\\ Link\\ Event\\ classification\\ and\\ preflight:\\ already\\-aborted|preserves\\ initial\\ Link\\ Event\\ classification\\ and\\ preflight:\\ malformed\\-after\\-valid\\-preflight|preserves\\ initial\\ Link\\ Event\\ classification\\ and\\ preflight:\\ noncanonical\\-query|preserves\\ initial\\ Link\\ Event\\ classification\\ and\\ preflight:\\ relative\\-source)$"
+       ],
+       "outerSeconds": 120,
+       "automaticRetries": 0,
+@@ -149,39 +153,51 @@
+         "preserves initial Bead Event classification and preflight: nonfinite-clock",
+         "preserves initial Bead Event classification and preflight: malformed-after-valid-preflight",
+         "preserves initial Bead Event classification and preflight: noncanonical-query",
+-        "preserves initial Bead Event classification and preflight: relative-source"
++        "preserves initial Bead Event classification and preflight: relative-source",
++        "gates initial Link Event unknown minima before retained scans",
++        "captures an initial Link Event opaque tuple across one bounded wait",
++        "cancels and drains initial Link Event opaque waits",
++        "serves initial finite Link Event opaque minima with retained identity and route fences",
++        "preserves initial Link Event classification and preflight: already-aborted",
++        "preserves initial Link Event classification and preflight: malformed-after-valid-preflight",
++        "preserves initial Link Event classification and preflight: noncanonical-query",
++        "preserves initial Link Event classification and preflight: relative-source"
+       ],
+       "prospectiveWorkload": {
+-        "callbacks": 25,
+-        "existingCallbacks": 14,
+-        "newCallbacks": 11,
+-        "stores": 25,
+-        "inProcessListeners": 3,
++        "callbacks": 33,
++        "existingCallbacks": 25,
++        "newCallbacks": 8,
++        "stores": 33,
++        "inProcessListeners": 4,
+         "productChildren": 0,
+-        "httpExchanges": 128,
+-        "existingHttpExchanges": 91,
+-        "newHttpExchanges": 37,
+-        "newBeadDirectOwnerReads": 12,
+-        "newBeadNonReadPolicyReplacements": 1,
+-        "newBeadSeedDirectTransactions": 2,
+-        "newBeadServiceSeedSubmissions": 2,
+-        "newBeadServiceEventsCalls": 6,
+-        "newBeadWaitDelegatedReads": 9,
+-        "newBeadWaitsAndProbes": 5,
+-        "newBeadPostCloseDirectRefusal": 1,
+-        "newBeadPreflightCallbacks": 7,
+-        "newBeadPreflightInitialClocks": 6,
+-        "newBeadPreflightDelegatedReads": 2,
+-        "newBeadPreflightWaits": 0,
++        "httpExchanges": 163,
++        "existingHttpExchanges": 128,
++        "newHttpExchanges": 35,
++        "historicalSourceDerivedHttp": 59,
++        "newLinkOwnerReads": 11,
++        "newLinkNonReadPolicyReplacements": 1,
++        "newLinkDirectMutationTransactions": 2,
++        "newLinkServiceSeedSubmissions": 2,
++        "newLinkServiceEventsCalls": 6,
++        "newLinkWaitDelegatedReads": 9,
++        "newLinkWaitsAndProbes": 5,
++        "newLinkPostCloseDirectRefusal": 1,
++        "newLinkPreflightCallbacks": 4,
++        "newLinkPreflightInitialClocks": 4,
++        "newLinkPreflightDelegatedReads": 2,
++        "newLinkPreflightWaits": 0,
++        "sourceObservationRecords": 28,
++        "linkAndAmendedBeadAuditElapsedExclusiveMs": 4000,
++        "implicitSourceCallbackMs": 5000,
+         "existingRetryAttempts": null,
+-        "attribution": "Prospective plan-v3 only; no authored-source or measured observation claim."
++        "attribution": "Authored frozen Link draft plus preserved/amended25 callbacks; counts are prospective, not execution results or whole-profile support."
+       }
+     },
+     "review-focused-source": {
+       "cwd": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/bead-event-minimum-validation",
+       "argv": [
+         "/opt/homebrew/opt/python@3.14/bin/python3.14",
+-        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/bead-event-minimum-validation/successor-1/audit.py",
++        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/link-event-minimum-validation/audit.py",
+         "source"
+       ],
+       "outerSeconds": 120,
+@@ -191,7 +207,7 @@
+       ]
+     },
+     "node-version": {
+-      "cwd": "/Users/dbox/repos/wt/vickie/vickie-bead-event-minimum",
++      "cwd": "/Users/dbox/repos/wt/vickie/vickie-link-event-minimum",
+       "argv": [
+         "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+         "--version"
+@@ -206,7 +222,7 @@
+       "cwd": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/bead-event-minimum-validation",
+       "argv": [
+         "/opt/homebrew/opt/python@3.14/bin/python3.14",
+-        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/bead-event-minimum-validation/successor-1/packages.py",
++        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/link-event-minimum-validation/packages.py",
+         "directory"
+       ],
+       "outerSeconds": 120,
+@@ -216,7 +232,7 @@
+       ]
+     },
+     "pack-protocol": {
+-      "cwd": "/Users/dbox/repos/wt/vickie/vickie-bead-event-minimum",
++      "cwd": "/Users/dbox/repos/wt/vickie/vickie-link-event-minimum",
+       "argv": [
+         "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+         "/Users/dbox/.cache/node/corepack/v1/pnpm/11.20.0/bin/pnpm.cjs",
+@@ -224,7 +240,7 @@
+         "@bdp/protocol",
+         "pack",
+         "--pack-destination",
+-        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/bead-event-minimum-validation/successor-1/run/packages"
++        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/link-event-minimum-validation/run/packages"
+       ],
+       "outerSeconds": 120,
+       "automaticRetries": 0,
+@@ -233,7 +249,7 @@
+       ]
+     },
+     "pack-server": {
+-      "cwd": "/Users/dbox/repos/wt/vickie/vickie-bead-event-minimum",
++      "cwd": "/Users/dbox/repos/wt/vickie/vickie-link-event-minimum",
+       "argv": [
+         "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+         "/Users/dbox/.cache/node/corepack/v1/pnpm/11.20.0/bin/pnpm.cjs",
+@@ -241,7 +257,7 @@
+         "@bdp/server",
+         "pack",
+         "--pack-destination",
+-        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/bead-event-minimum-validation/successor-1/run/packages"
++        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/link-event-minimum-validation/run/packages"
+       ],
+       "outerSeconds": 120,
+       "automaticRetries": 0,
+@@ -253,7 +269,7 @@
+       "cwd": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/bead-event-minimum-validation",
+       "argv": [
+         "/opt/homebrew/opt/python@3.14/bin/python3.14",
+-        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/bead-event-minimum-validation/successor-1/packages.py",
++        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/link-event-minimum-validation/packages.py",
+         "tar"
+       ],
+       "outerSeconds": 120,
+@@ -266,7 +282,7 @@
+       "cwd": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/bead-event-minimum-validation",
+       "argv": [
+         "/opt/homebrew/opt/python@3.14/bin/python3.14",
+-        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/bead-event-minimum-validation/successor-1/packages.py",
++        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/link-event-minimum-validation/packages.py",
+         "consumer"
+       ],
+       "outerSeconds": 120,
+@@ -276,7 +292,7 @@
+       ]
+     },
+     "consumer-install": {
+-      "cwd": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/bead-event-minimum-validation/successor-1/run/consumer",
++      "cwd": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/link-event-minimum-validation/run/consumer",
+       "argv": [
+         "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+         "/Users/dbox/.cache/node/corepack/v1/pnpm/11.20.0/bin/pnpm.cjs",
+@@ -296,7 +312,7 @@
+       "cwd": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/bead-event-minimum-validation",
+       "argv": [
+         "/opt/homebrew/opt/python@3.14/bin/python3.14",
+-        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/bead-event-minimum-validation/successor-1/packages.py",
++        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/link-event-minimum-validation/packages.py",
+         "installed"
+       ],
+       "outerSeconds": 120,
+@@ -306,16 +322,16 @@
+       ]
+     },
+     "event-minimum-external": {
+-      "cwd": "/Users/dbox/repos/wt/vickie/vickie-bead-event-minimum",
+-      "argv": [
+-        "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+-        "/Users/dbox/repos/wt/vickie/vickie-bead-event-minimum/node_modules/vitest/vitest.mjs",
++      "cwd": "/Users/dbox/repos/wt/vickie/vickie-link-event-minimum",
++      "argv": [
++        "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
++        "/Users/dbox/repos/wt/vickie/vickie-link-event-minimum/node_modules/vitest/vitest.mjs",
+         "run",
+         "apps/bdptest/src/transactional-event-missing-context-installed.test.ts",
+         "--maxWorkers=1",
+         "--reporter=verbose",
+         "--reporter=json",
+-        "--outputFile=/Users/dbox/repos/wt/vickie/bdp-integration-logs/bead-event-minimum-validation/successor-1/run/event-minimum-external.results.json",
++        "--outputFile=/Users/dbox/repos/wt/vickie/bdp-integration-logs/link-event-minimum-validation/run/event-minimum-external.results.json",
+         "--testNamePattern",
+         "^(?:observes\\ installed\\ initial\\ finite\\ Scope\\ Event\\ opaque\\ minimum\\ timeout)$"
+       ],
+@@ -344,7 +360,7 @@
+       "cwd": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/bead-event-minimum-validation",
+       "argv": [
+         "/opt/homebrew/opt/python@3.14/bin/python3.14",
+-        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/bead-event-minimum-validation/successor-1/audit.py",
++        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/link-event-minimum-validation/audit.py",
+         "minimum"
+       ],
+       "outerSeconds": 120,
+@@ -354,16 +370,16 @@
+       ]
+     },
+     "event-missing-context-external": {
+-      "cwd": "/Users/dbox/repos/wt/vickie/vickie-bead-event-minimum",
+-      "argv": [
+-        "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+-        "/Users/dbox/repos/wt/vickie/vickie-bead-event-minimum/node_modules/vitest/vitest.mjs",
++      "cwd": "/Users/dbox/repos/wt/vickie/vickie-link-event-minimum",
++      "argv": [
++        "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
++        "/Users/dbox/repos/wt/vickie/vickie-link-event-minimum/node_modules/vitest/vitest.mjs",
+         "run",
+         "apps/bdptest/src/transactional-event-missing-context-installed.test.ts",
+         "--maxWorkers=1",
+         "--reporter=verbose",
+         "--reporter=json",
+-        "--outputFile=/Users/dbox/repos/wt/vickie/bdp-integration-logs/bead-event-minimum-validation/successor-1/run/event-missing-context-external.results.json",
++        "--outputFile=/Users/dbox/repos/wt/vickie/bdp-integration-logs/link-event-minimum-validation/run/event-missing-context-external.results.json",
+         "--testNamePattern",
+         "^(?:observes\\ genuine\\ installed\\ missing\\ Event\\ context\\ across\\ Bead\\ and\\ Link\\ JSON\\ and\\ SSE\\ GET\\ and\\ HEAD)$"
+       ],
+@@ -392,7 +408,7 @@
+       "cwd": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/bead-event-minimum-validation",
+       "argv": [
+         "/opt/homebrew/opt/python@3.14/bin/python3.14",
+-        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/bead-event-minimum-validation/successor-1/audit.py",
++        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/link-event-minimum-validation/audit.py",
+         "missing"
+       ],
+       "outerSeconds": 120,
+@@ -402,16 +418,16 @@
+       ]
+     },
+     "event-bead-minimum-external": {
+-      "cwd": "/Users/dbox/repos/wt/vickie/vickie-bead-event-minimum",
+-      "argv": [
+-        "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+-        "/Users/dbox/repos/wt/vickie/vickie-bead-event-minimum/node_modules/vitest/vitest.mjs",
++      "cwd": "/Users/dbox/repos/wt/vickie/vickie-link-event-minimum",
++      "argv": [
++        "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
++        "/Users/dbox/repos/wt/vickie/vickie-link-event-minimum/node_modules/vitest/vitest.mjs",
+         "run",
+         "apps/bdptest/src/transactional-event-missing-context-installed.test.ts",
+         "--maxWorkers=1",
+         "--reporter=verbose",
+         "--reporter=json",
+-        "--outputFile=/Users/dbox/repos/wt/vickie/bdp-integration-logs/bead-event-minimum-validation/successor-1/run/event-bead-minimum-external.results.json",
++        "--outputFile=/Users/dbox/repos/wt/vickie/bdp-integration-logs/link-event-minimum-validation/run/event-bead-minimum-external.results.json",
+         "--testNamePattern",
+         "^(?:observes\\ installed\\ initial\\ finite\\ Bead\\ Event\\ opaque\\ minimum\\ timeout)$"
+       ],
+@@ -440,8 +456,85 @@
+       "cwd": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/bead-event-minimum-validation",
+       "argv": [
+         "/opt/homebrew/opt/python@3.14/bin/python3.14",
+-        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/bead-event-minimum-validation/successor-1/audit.py",
++        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/link-event-minimum-validation/audit.py",
+         "bead"
++      ],
++      "outerSeconds": 120,
++      "automaticRetries": 0,
++      "acceptedRawExitCodes": [
++        0
++      ]
++    },
++    "workspace-install": {
++      "cwd": "/Users/dbox/repos/wt/vickie/vickie-link-event-minimum",
++      "argv": [
++        "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
++        "/Users/dbox/.cache/node/corepack/v1/pnpm/11.20.0/bin/pnpm.cjs",
++        "install",
++        "--offline",
++        "--ignore-scripts",
++        "--frozen-lockfile"
++      ],
++      "outerSeconds": 120,
++      "automaticRetries": 0,
++      "acceptedRawExitCodes": [
++        0
++      ]
++    },
++    "bind-workspace-tools": {
++      "cwd": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/link-event-minimum-validation",
++      "argv": [
++        "/opt/homebrew/opt/python@3.14/bin/python3.14",
++        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/link-event-minimum-validation/audit.py",
++        "tools"
++      ],
++      "outerSeconds": 120,
++      "automaticRetries": 0,
++      "acceptedRawExitCodes": [
++        0
++      ]
++    },
++    "event-link-minimum-external": {
++      "cwd": "/Users/dbox/repos/wt/vickie/vickie-link-event-minimum",
++      "argv": [
++        "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
++        "/Users/dbox/repos/wt/vickie/vickie-link-event-minimum/node_modules/vitest/vitest.mjs",
++        "run",
++        "apps/bdptest/src/transactional-event-missing-context-installed.test.ts",
++        "--maxWorkers=1",
++        "--reporter=verbose",
++        "--reporter=json",
++        "--outputFile=/Users/dbox/repos/wt/vickie/bdp-integration-logs/link-event-minimum-validation/run/event-link-minimum-external.results.json",
++        "--testNamePattern",
++        "^(?:observes\\ installed\\ initial\\ finite\\ Link\\ Event\\ opaque\\ minimum\\ timeout)$"
++      ],
++      "outerSeconds": 120,
++      "automaticRetries": 0,
++      "acceptedRawExitCodes": [
++        0
++      ],
++      "selectedFullNames": [
++        "observes installed initial finite Link Event opaque minimum timeout"
++      ],
++      "prospectiveWorkload": {
++        "callbacks": 1,
++        "stores": 1,
++        "productChildren": 1,
++        "maximumConcurrentChildren": 1,
++        "httpExchanges": 4,
++        "requestTimeoutMs": 5000,
++        "ownedDeadlineMs": 45000,
++        "callbackBoundMs": 60000
++      },
++      "expectedObservation": "private-installed-link-event-minimum",
++      "expectedExchanges": 4
++    },
++    "review-event-link-minimum-external": {
++      "cwd": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/bead-event-minimum-validation",
++      "argv": [
++        "/opt/homebrew/opt/python@3.14/bin/python3.14",
++        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/link-event-minimum-validation/audit.py",
++        "link"
+       ],
+       "outerSeconds": 120,
+       "automaticRetries": 0,
+@@ -460,16 +553,18 @@
+     "json-schema-traverse": "1.0.0",
+     "require-from-string": "2.0.2"
+   },
+-  "rootCheckpoints": {
+-    "beforeBootstrap": "No install stage. Only original successful workspace-install + bind-workspace-tools records may be reused after exact finalized old-to-new source/dependency/tool mapping and root acceptance.",
+-    "afterWorkspaceTools": "Original tool record retains original source attribution; rehash17 unchanged dependency inputs and11 actual tools, require root acceptance of bootstrap-reuse-binding before fresh static.",
+-    "beforeRuntime": "Final exact source binding, native and actual Claude code dispositions required; build+binding before source/module collection.",
+-    "afterConsumerInstall": "Stop; root pins newly measured consumer lock before verification.",
+-    "afterConsumerVerification": "Stop; root accepts actual archive/source/payload/provenance and whole consumer inventory before external callbacks.",
+-    "afterAllValidation": "Root may commit only after all source+three installed immediate audits and cleanup; exact679-byte equality maps honest dirty evidence to final clean commit."
+-  },
+-  "configurationFinalized": true,
+-  "sourceSelectionState": "Frozen author formatting successor1; unchanged25source+3installed and actual audit schemas. No execution authorization.",
++  "rootCheckpoints": [
++    "Root/native final packet inspection then explicitly finalize execution configuration and regenerate index before any stage",
++    "Root release fresh offline bootstrap only, then actual measured workspace tools",
++    "Root static-only prefix or completed native+actual Claude dispositions for runtime",
++    "Fresh build and full inventory before any selected source module collection",
++    "Stop if Link D or amended Bead D elapsed reaches4000ms; preserve result, root-reviewed split only",
++    "Root independently accepts actual consumer lock before verify-installed-consumer",
++    "Root independently accepts whole consumer/provenance before any external callback",
++    "All23 validation stages and immediate audits before ordinary commit; exact CI later"
++  ],
++  "configurationFinalized": false,
++  "sourceSelectionState": "VERIFIED frozen author draft; execution configuration deliberately CLOSED pending root/native packet inspection",
+   "validationOrder": [
+     "typecheck",
+     "format-check",
+@@ -486,6 +581,8 @@
+     "prepare-consumer",
+     "consumer-install",
+     "verify-installed-consumer",
++    "event-link-minimum-external",
++    "review-event-link-minimum-external",
+     "event-bead-minimum-external",
+     "review-event-bead-minimum-external",
+     "event-minimum-external",
+@@ -493,14 +590,16 @@
+     "event-missing-context-external",
+     "review-event-missing-context-external"
+   ],
+-  "bootstrapOrder": [],
+-  "stageCounts": {
+-    "reusedBootstrap": 2,
+-    "validation": 21,
+-    "newSupervisedAttempts": 21
+-  },
+-  "reusedPrerequisiteStages": [
++  "bootstrapOrder": [
+     "workspace-install",
+     "bind-workspace-tools"
+-  ]
++  ],
++  "stageCounts": {
++    "freshBootstrap": 2,
++    "postBootstrap": 23,
++    "total": 25,
++    "installedCallbackAuditPairs": 4
++  },
++  "reusedPrerequisiteStages": [],
++  "sourceBindingFinalized": true
+ }
+--- successful-bead/audit-expectations.json
++++ closed-link/audit-expectations.json
+@@ -140,12 +140,12 @@
+     {
+       "method": "GET",
+       "suffix": "links/l?view=events",
+-      "status": 500
+-    },
+-    {
+-      "method": "HEAD",
+-      "suffix": "links/l?view=events",
+-      "status": 500
++      "status": 503
++    },
++    {
++      "method": "HEAD",
++      "suffix": "links/l?view=events",
++      "status": 503
+     },
+     {
+       "method": "GET",
+@@ -265,6 +265,255 @@
+       "status": 503
+     }
+   ],
+-  "sourceObservationRecords": 20,
+-  "limits": "D cursor is dynamic; callback asserts real page cursor. Exact after suffix shared by pair; no fabricated cursor. Raw request-body/header oracles execute inside pinned E callback, not retained in report."
++  "sourceObservationRecords": 28,
++  "limits": "Exact observed records only. Historical59 remains source-derived; no instrumented HTTP wait-count claim. Both D elapsed >=4000ms fail audit for root-reviewed split, without modifying implicit5000ms callbacks. Actual after cursor is dynamic and paired. Schema/body/header oracles remain pinned callback assertions.",
++  "linkFixedObservations": [
++    {
++      "observation": "link-event-minimum-owner",
++      "reads": 11,
++      "seedMutations": 2,
++      "policyReplacements": 1,
++      "groupReadsAfterHidden": 0
++    },
++    {
++      "observation": "link-event-minimum-capture",
++      "reads": 4,
++      "serviceCalls": 2,
++      "waits": 2,
++      "probes": 2,
++      "groupReads": 0,
++      "attemptTimes": [
++        0,
++        0,
++        5,
++        10
++      ],
++      "seedMutations": 1
++    },
++    {
++      "observation": "link-event-minimum-cancel-drain",
++      "reads": 5,
++      "serviceCalls": 4,
++      "waits": 3,
++      "probes": 3,
++      "groupReads": 0,
++      "attemptTimes": [
++        0,
++        0,
++        5,
++        10,
++        15
++      ],
++      "postCloseDirectRefusals": 1,
++      "seedMutations": 1
++    }
++  ],
++  "linkPreflightLabels": [
++    "already-aborted",
++    "malformed-after-valid-preflight",
++    "noncanonical-query",
++    "relative-source"
++  ],
++  "linkHttpOrderedResponses": [
++    {
++      "method": "POST",
++      "suffix": "operations/batch",
++      "status": 200
++    },
++    {
++      "method": "GET",
++      "suffix": "links/l?view=events",
++      "status": 200
++    },
++    {
++      "method": "GET",
++      "suffix": "links/l?view=events",
++      "status": 503
++    },
++    {
++      "method": "HEAD",
++      "suffix": "links/l?view=events",
++      "status": 503
++    },
++    {
++      "method": "GET",
++      "suffix": "links/l?view=events",
++      "status": 503
++    },
++    {
++      "method": "HEAD",
++      "suffix": "links/l?view=events",
++      "status": 503
++    },
++    {
++      "method": "GET",
++      "suffix": "links/l?view=events",
++      "status": 503
++    },
++    {
++      "method": "HEAD",
++      "suffix": "links/l?view=events",
++      "status": 503
++    },
++    {
++      "method": "GET",
++      "suffix": "links/l?view=events",
++      "status": 200
++    },
++    {
++      "method": "HEAD",
++      "suffix": "links/l?view=events",
++      "status": 200
++    },
++    {
++      "method": "GET",
++      "suffix": "links/l?view=events",
++      "status": 200
++    },
++    {
++      "method": "HEAD",
++      "suffix": "links/l?view=events",
++      "status": 200
++    },
++    {
++      "method": "GET",
++      "suffix": "links/l?view=events",
++      "status": 500
++    },
++    {
++      "method": "HEAD",
++      "suffix": "links/l?view=events",
++      "status": 500
++    },
++    {
++      "method": "GET",
++      "suffix": "links/l?view=events",
++      "status": 500
++    },
++    {
++      "method": "HEAD",
++      "suffix": "links/l?view=events",
++      "status": 500
++    },
++    {
++      "method": "GET",
++      "suffix": "links/l?view=events",
++      "status": 500
++    },
++    {
++      "method": "HEAD",
++      "suffix": "links/l?view=events",
++      "status": 500
++    },
++    {
++      "method": "GET",
++      "suffix": "__ACTUAL_SOURCE_CURSOR__",
++      "status": 500
++    },
++    {
++      "method": "HEAD",
++      "suffix": "__ACTUAL_SOURCE_CURSOR__",
++      "status": 500
++    },
++    {
++      "method": "GET",
++      "suffix": "links/l?view=events",
++      "status": 500
++    },
++    {
++      "method": "HEAD",
++      "suffix": "links/l?view=events",
++      "status": 500
++    },
++    {
++      "method": "GET",
++      "suffix": "links/l?view=events",
++      "status": 500
++    },
++    {
++      "method": "HEAD",
++      "suffix": "links/l?view=events",
++      "status": 500
++    },
++    {
++      "method": "GET",
++      "suffix": "links/l?view=events",
++      "status": 400
++    },
++    {
++      "method": "HEAD",
++      "suffix": "links/l?view=events",
++      "status": 400
++    },
++    {
++      "method": "GET",
++      "suffix": "links/l?view=events&unsupported=x",
++      "status": 400
++    },
++    {
++      "method": "HEAD",
++      "suffix": "links/l?view=events&unsupported=x",
++      "status": 400
++    },
++    {
++      "method": "GET",
++      "suffix": "links/missing?view=events",
++      "status": 404
++    },
++    {
++      "method": "HEAD",
++      "suffix": "links/missing?view=events",
++      "status": 404
++    },
++    {
++      "method": "POST",
++      "suffix": "operations/batch",
++      "status": 200
++    },
++    {
++      "method": "GET",
++      "suffix": "links/gone",
++      "status": 404
++    },
++    {
++      "method": "GET",
++      "suffix": "links/gone?view=events",
++      "status": 200
++    },
++    {
++      "method": "GET",
++      "suffix": "links/gone?view=events",
++      "status": 503
++    },
++    {
++      "method": "HEAD",
++      "suffix": "links/gone?view=events",
++      "status": 503
++    }
++  ],
++  "linkInstalledOrderedResponses": [
++    {
++      "method": "POST",
++      "url": "https://reference.invalid/acme/operations/batch",
++      "status": 200
++    },
++    {
++      "method": "GET",
++      "url": "https://reference.invalid/acme/links/known?view=events",
++      "status": 200
++    },
++    {
++      "method": "GET",
++      "url": "https://reference.invalid/acme/links/known?view=events",
++      "status": 503
++    },
++    {
++      "method": "HEAD",
++      "url": "https://reference.invalid/acme/links/known?view=events",
++      "status": 503
++    }
++  ],
++  "httpAuditElapsedCeilingExclusiveMs": 4000,
++  "implicitSourceCallbackMs": 5000,
++  "contractState": "Verified against frozen author binding14f6ceef: exact reporting fields, labels, literal route choices and ordered workload; no execution"
+ }

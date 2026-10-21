@@ -1,0 +1,29 @@
+{
+  "runnerTemplate": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/tx-discovery-code-review-1/claude-code-review/run.py",
+  "runnerTemplateSha256": "e36bba99247cf6b581f90a30c0045239209ec80e13628a28d6c4b74d4b137bbd",
+  "literalSubstitutions": [
+    {
+      "before": "/Users/dbox/repos/wt/vickie/vickie-tx-discovery-minimum",
+      "after": "/Users/dbox/repos/wt/vickie/vickie-owned-set-retarget-minimum",
+      "occurrences": 1
+    },
+    {
+      "before": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/tx-discovery-code-review-1/claude-code-review/guarded-action-session-20261018-021624-549f.py",
+      "after": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-D4-owned-set-code-review-1/claude-code-review/guarded-action-session-20261018-021624-549f.py",
+      "occurrences": 1
+    },
+    {
+      "before": "Exact frozen three-file dirty status required",
+      "after": "Exact frozen one-file dirty status required",
+      "occurrences": 1
+    }
+  ],
+  "expectedHead": "cce884ccea1db97cbc6fd7bff876d4d6091f9081",
+  "expectedHeadLiteralUnchanged": true,
+  "ownedScopePredicateUnchanged": "set(actual git diff --name-only HEAD)==set(binding.ownedFiles); only binding data changes3paths to1",
+  "inverseRestoresExactBytesAndAst": true,
+  "parserArgumentsGuardByteIdentical": true,
+  "genericSupervisor5Sha256": "791e5a566561798aa3352f19b021e6db9beeddb033ae5725c7d031d51716f95c",
+  "supervisorCodeByteIdentical": true,
+  "noNewReviewFramework": true
+}

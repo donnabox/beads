@@ -1,0 +1,69 @@
+{
+  "at": "2026-10-15T18:16:32.839589+00:00",
+  "decision": "accepted for exact-head landing checks",
+  "head": "82f60a25da8799334381f6ebd810f32a3574cd2d",
+  "tree": "3cd1da66ba3a6cbd0bbdaa2442d10002939d826b",
+  "base": "18104a03b850553641f24fe83e7318493fa102ca",
+  "native": {
+    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/sequence-member-draft/native-code-review.md",
+    "sha256": "6a36c3cb150517fdc0fe2c3f215f06052ddbdcc94a85036aa5473a1b167bdb25"
+  },
+  "scopeAudits": {
+    "wire": {
+      "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/sequence-member-draft/claude-split-review/wire/native-findings-audit.md",
+      "sha256": "e59a1f1c2b65f53f92d16808aefd6d99c161f036f27ac876437f73840246deb4"
+    },
+    "manifest": {
+      "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/sequence-member-draft/claude-split-review/manifest/native-findings-audit.md",
+      "sha256": "82f1406303c3561ec515229ac24aad2e78d8eb64a2832955e3d0c8b42aa657f0"
+    }
+  },
+  "actualClaudeScopes": {
+    "wire": {
+      "exit": {
+        "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/sequence-member-draft/claude-split-review/wire/exit.json",
+        "sha256": "ee5d5eb1fb3389a01325aac8ecfab306aeeaf7ebf6dd5f51be9eaa4c1db29238"
+      },
+      "stdout": {
+        "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/sequence-member-draft/claude-split-review/wire/stdout.txt",
+        "sha256": "72996311f2cf4112c7fa3105c4e4b034e6010c180307e88a9e127e7d9885b7d4"
+      },
+      "cleanup": {
+        "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/sequence-member-draft/claude-split-review/wire/cleanup.json",
+        "sha256": "faafe4d7a57d946fa3925a10b6192f2c1e3155d57487330a67e3511aa00f20f1"
+      },
+      "pidIndependentlyAbsent": 12539
+    },
+    "manifest": {
+      "exit": {
+        "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/sequence-member-draft/claude-split-review/manifest/exit.json",
+        "sha256": "78278575d77e52e369368291572702d44121e694733253fb43f25625af0fc680"
+      },
+      "stdout": {
+        "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/sequence-member-draft/claude-split-review/manifest/stdout.txt",
+        "sha256": "797e7cb90f042e68b7610951db1c1cb12ecfcc29765d0bcae0f6d1df682e6c98"
+      },
+      "cleanup": {
+        "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/sequence-member-draft/claude-split-review/manifest/cleanup.json",
+        "sha256": "a42bbba5ee1ff4967a6c560f444d411109c9cc67f125e097fbc553cfbbd06065"
+      },
+      "pidIndependentlyAbsent": 12581
+    }
+  },
+  "dispositions": {
+    "manifest:F1": "Rejected: ordinals are per change group; each separate one-event commit is ordinal0. Actual installed and CI tests passed; reviewer timeouts did not erase those executions.",
+    "manifest:F2": "Closed against full source: both derivative fences are812575/21176, measured maxima plus original margins.",
+    "manifest:F3": "Deferred optional extra static replay-removal demonstration. Existing full-row pin, replay assertions and actual full replay comparison remain.",
+    "manifest:F4": "Deferred Low title cleanup; current historical callback selection remains exact.",
+    "manifest:F5": "Retain intentional historical delta and absolute fences; no additional independent protection claimed.",
+    "manifest:F6": "Retain deliberate28raw-object plus whole-parent preservation for localization and full-byte protection.",
+    "wire:F1": "Rejected as present defect: every extra exchange fails index bound before dereference, including impersonation. Actual catalog execution order and fixed final row passed. Future row insertion requires deliberate composition update; no permissive terminal branch added.",
+    "wire:F2": "Accept Low comment freshness; defer optional editorial update. Actual measured maxima and numeric fences are correct.",
+    "wire:F3": "Rejected: full schema validation closes receipt, collection and Event envelopes before literal assertions; available receipt branches forbid allocated. Event source is also asserted in manifest.",
+    "wire:nits": "Diagnostic defined assertion, extra action-id redundancy, redundant absence checks, handoff error labeling and summary/report-key cleanup deferred as nonblocking. No weakened success predicate.",
+    "omitted-context": "Independently closed by both native findings audits, full source/schema inspection, actual positive and seven-failure negative observations, capacity10, derived implemented rows and recomputed request digest."
+  },
+  "sourceCorrectionRequired": false,
+  "profileQualification": false,
+  "priorTimeouts": "Both prior empty exit143 attempts remain inconclusive, never approvals."
+}

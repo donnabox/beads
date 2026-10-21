@@ -1,0 +1,35 @@
+{
+  "kind": "DATA ONLY, not a modified source or implemented patch",
+  "sites": [
+    {
+      "path": "packages/server/src/transaction-service.ts",
+      "actualLines": [
+        706,
+        714
+      ],
+      "actualBefore": "schemaObserved() { return run(async () => { const observed = owner.withRead((_reader, context) => Object.freeze({ context })); if (observed.kind === \"entry-refused\") throw new Error(\"transaction schema observation refused\", { cause: observed.cause }); return observed.value; }); }",
+      "proposedAfter": "schemaObserved(supplied?: TransactionMinimum, signal?: AbortSignal): capture optional snapshotCurrentReadMinimum; observe is one synchronous owner.withRead that checks checkCurrentReadMinimum(minimum,context,true) and returns frozen context; unchanged zero-min run path; supplied run awaits waitForTransactionMinimum(observe, minimumReads, signal). Never hold entry across await."
+    },
+    {
+      "path": "packages/server/src/transaction-schema-http.ts",
+      "actualLines": [
+        41,
+        58
+      ],
+      "actualBefore": "selector declines hasMinimumControls before exact entries lookup; observe() only",
+      "proposedAfter": "GET/HEAD/auth first; malformed minimum delegates existing400 before entries.get; exact member only then lexical captured tuple; await observe(minimum, request.signal); map exact min failures before HTTP selection; preserve original raw UTF8 on200"
+    },
+    {
+      "path": "packages/server/src/transaction-http.ts",
+      "actualLines": [
+        643,
+        662
+      ],
+      "actualBefore": "ScopeServerOperationAbortedError rethrows; TransactionMinimumFailure nonbehind gets503 catch-up-timeout or readProblem(reason), actual context and existing Retry-After",
+      "proposedAfter": "extract current exact catch into module-internal transactionMinimumFailureResponse(error), ignore behind/nonmatching; original handler and schema projection reuse without package export"
+    }
+  ],
+  "actualCurrentFilesUnchanged": true,
+  "compiledOrFormatted": false,
+  "finalSourceAndPatchHashes": "UNKNOWN"
+}

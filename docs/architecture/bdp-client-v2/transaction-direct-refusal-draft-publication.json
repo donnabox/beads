@@ -1,0 +1,37 @@
+{
+  "head": "6ce9cb4e30d4afa7ac26552490619358fb7044fe",
+  "main": "f76bf119f531c6b44d1d3bc43531a4a8da27c4d0",
+  "mergeBase": "8c78cba5d2be5d5612c6a9324ee36ed690fdeb19",
+  "baseAndMainTreesIdentical": true,
+  "candidateTree": "4984b474155560429a318bd5459593a6c53ad6bd",
+  "scope": [
+    "apps/bdptest/src/transactional-direct-refusal-installed.test.ts",
+    "packages/server/src/transaction-http.test.ts",
+    "packages/server/src/transaction-http.ts",
+    "packages/server/src/transaction-store.test.ts",
+    "packages/server/src/transaction-store.ts",
+    "packages/server/src/transaction-submission.test.ts",
+    "packages/server/src/transaction-submission.ts"
+  ],
+  "reconciliation": "Main adds only the already reviewed merge ancestry over candidate parent8c; no merge commit is needed on the candidate. Ordinary PR merge preserves both lineages and the exact candidate tree.",
+  "externalReview": "active; draft publication only",
+  "checkedAt": "2026-10-14T15:50:29.666778+00:00",
+  "remote": {
+    "baseRefOid": "f76bf119f531c6b44d1d3bc43531a4a8da27c4d0",
+    "headRefOid": "6ce9cb4e30d4afa7ac26552490619358fb7044fe",
+    "isDraft": true,
+    "statusCheckRollup": [
+      {
+        "__typename": "CheckRun",
+        "completedAt": "0001-01-01T00:00:00Z",
+        "conclusion": "",
+        "detailsUrl": "https://github.com/gastownhall/bdp/actions/runs/38592899718/job/115952099819",
+        "name": "verify",
+        "startedAt": "2026-10-14T15:50:44Z",
+        "status": "IN_PROGRESS",
+        "workflowName": "CI"
+      }
+    ],
+    "url": "https://github.com/gastownhall/bdp/pull/117"
+  }
+}

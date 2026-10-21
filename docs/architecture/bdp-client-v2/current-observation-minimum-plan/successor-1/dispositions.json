@@ -1,0 +1,45 @@
+{
+  "N1": {
+    "disposition": "accepted, provenance only",
+    "original29PinsAlreadyContainFixtureSuccessor": true,
+    "fiveProductionUnchanged": true,
+    "sourceFilesChanged": false,
+    "finalClaudeContextMustInclude": [
+      "fixture-successor-author-binding.json",
+      "fixture-successor-normalized-binding.json"
+    ],
+    "originalBindings": "historical, preserved; no relabeling/all679 claim"
+  },
+  "N2": {
+    "disposition": "accepted, exact cleanup schedule",
+    "immediateObservedSettlement": true,
+    "entryRace": [
+      "entered",
+      "premature observed settlement",
+      "1000ms guard"
+    ],
+    "outerFinallyOrder": [
+      "clock=2",
+      "release",
+      "clear entry timer",
+      "bounded observed operation settlement",
+      "bounded once-only owner/service close",
+      "real post-close probe only on clean successful schedule",
+      "remove only after verified clean close"
+    ],
+    "unchanged": [
+      "five C rows",
+      "all operations/attempts/waits/probes",
+      "product minimum budgets",
+      "5s callbacks",
+      "source and installed process bounds"
+    ],
+    "fixtures": [
+      "callback-local Type IDs/owner and pagination maximum2",
+      "B explicit counted post-policy context",
+      "D raw() closes owner; reopen before advancing clock only; no second-inspection maintenance",
+      "source graph A-D versus emitted runtime E",
+      "F immutable page content versus pos3 context"
+    ]
+  }
+}

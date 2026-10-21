@@ -1,0 +1,20 @@
+{
+  "status": "PREPARATION_REVIEWED_EXECUTION_NOT_RELEASED",
+  "reviewer": "root",
+  "preparation": {
+    "commands.json": "0795e89b8fa78ac68d84c07040ca362f5a53a9a16aa0539466f4de9e3ff36bf1",
+    "gate.py": "4008e6cfffccad032ebf535230b9afcaf9fb74d288acb81e3bb9a2b9e58a4160",
+    "supervise.py": "304c538d9f501c1b11c95f721a367ce990b4322bfe155ced022073f496252942",
+    "report.md": "45eb82a5adc39728c40c222d46c38d2b5f1aeb911ad27ac6e5e05de3fd59e700"
+  },
+  "draftDiffSha256": "6c0e6f47817d0072d2f258ec68c81c5e5e565d4a66169ff567c1e4a4837ab5fc",
+  "findings": [],
+  "acceptedScope": "Eight sequential pinned commands, current build before product configuration module import, exactly twelve statically selected callbacks; reporter exact names and outcomes must be checked. No matrix HTTP execution locally.",
+  "limits": "No automatic retries;120 seconds per command; process/temp/source postchecks. Sampled children limitations retained.",
+  "remainingGates": [
+    "Native and actual Claude draft review",
+    "Disposition and exact two measured authoring-allowance amendments",
+    "Final source binding and root execution gate"
+  ],
+  "runtimeOrCiLimitsChanged": false
+}

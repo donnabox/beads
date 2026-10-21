@@ -1,0 +1,33 @@
+I read the three changed test files in full against the sources they drive (`transaction-consistency.ts`, `transaction-read.ts`, `transaction-service.ts`, `transaction-http.ts`, `authority-read.ts`, `transaction-store.ts`) plus the built `dist` the HTTP fixture loads.
+
+## Conclusion: no concrete correctness/security/regression defects found in the assigned hunks
+
+Each migrated expectation traces to actual current source behavior:
+
+**Missing-first migrations (404 instead of gap/500)** — `transaction-read.ts:207-209` returns from `checkSourceCondition` whenever the refusal is `resource-not-found` and the classified kind is not `"strict"`. So:
+- `transaction-read.test.ts:956-960` (bead/link `*/never` with behind/foreign patches), `:1552-1561` (bead-links), `:1840-1853` (alias, condition kind is hard-coded `"missing"` at `transaction-read.ts:319`) correctly resolve to 404.
+- `:1548-1551` keeps `TransactionMinimumVisibilityGap` for `resource: "type"`, which `currentReadMinimumKind` (`transaction-read.ts:86-104`) classifies `"strict"` — so the gap class retains real coverage; same for `transaction-http.test.ts:3042-3045` (`types/absent`).
+- `transaction-http.test.ts:1911-1920` asserting truthful `bdp-scope-*` echo is right: `context()` (`transaction-http.ts:122-127`) writes the *current* context, not the supplied foreign tuple; `removed` was `pos-2` and nothing writes afterwards.
+- `:1923-1931` (`"unissued"`) is right because `currentReadMinimumHeaders` accepts any token (`transaction-consistency.ts:63-73`) and kind `"resource"` bypasses the early `minimum-position` label at `transaction-http.ts:586-590`.
+
+**Counters** — all verified arithmetically against `waitForTransactionMinimum` (`transaction-consistency.ts:160-178`, 5 ms cap, non-renewing deadline):
+- consistency `:200` `[tick, attempts] = [7, 3]` ✓; abort case 1 wait then `signal?.aborted` at loop top ✓ (`ScopeServerOperationAbortedError` message "…was aborted" satisfies `toThrow("abort")`).
+- read `:2257` `entries - start === 3` ✓ (1 owner entry per attempt, matching the existing precedent at `:924`); `:2279` `=== 1` and `:2281` no-wait ✓.
+- http `:4848`/`:4872` `waits === 2` ✓ (budget 2, `now: () => tick`, one 2 ms wait per request); `:4849-4855` labels ✓ (`collection` → strict → `minimum-position`; `?view=links` → kind `"missing"` → `waitable=false` → `TransactionMinimumUnsupported` → `transaction-http.ts:650`).
+
+**Positions** — `pos-N` advances per *effective* transaction (`transaction-store.ts:1374-1379`); alias ops are non-effective (confirmed by `transaction-read.test.ts:1790-1793`), so the new read test's single `f.write` + `f.alias` correctly yields `pos-1` everywhere.
+
+**Policy transition** — `initialTransactionAuthorization` is generation 0, so `replaceAuthorizationPolicy` really swaps to `generation 1 / readPolicy "empty"` with a UUID view (`transaction-authorization.ts:18-36`), which is header-token-valid. Hidden beads/links/aliases/bead-links all yield `notFound` (`authority-read.ts:785, 801, 820`), so the uniform 404 bodies in `transaction-http.test.ts:4858-4871` and `transaction-read.test.ts:2283-2322` hold. Calling `service.replaceAuthorizationPolicy` from inside the `wait` seam does not deadlock: it drains `mutations` only (`transaction-service.ts:353`), and the read lives in `active`.
+
+**Request-capture regression guard** (`transaction-read.test.ts:2217-2238`) is genuinely conclusive: the service snapshots the request *before* `waitForTransactionMinimum` touches `signal.aborted` (`transaction-service.ts:388-401`), so `body(capturedResult) === originalBody` while `mutableRequest.kind === "collection"` can only pass with the capture in place. `:2249` `requestGetterCalls === 0` is sound — `ownData` rejects accessors without reading them (`authority-read.ts:307-309`) and `reason: "invalid-input"` matches the error field.
+
+**Cleanup** is preserved: both new read tests push `service.close()` (and `release.resolve()` after it, so it unwinds first); double `store.close()` is idempotent (`transaction-store.ts:2311`); `:2362` `toThrow("closing")` matches `check()`'s message, and `close()` drains `active` before closing the plane, which is what lets the drained attempt still reach `catch-up-timeout`.
+
+**Exact-body assertion** `transaction-http.test.ts:4839-4844` matches `readProblem("temporarily-unavailable")`'s exactly four fields (`protocol/src/index.ts:534-546`) after the `code/status/retry` override.
+
+## Material context (not defects)
+
+1. **Source/dist split**: every HTTP assertion runs against `../dist/transaction-runtime.js` (test file header), not `src`. I checked `dist/transaction-read.js:147-168` and `dist/transaction-http.js:426-442` — the built artifact currently carries the new missing-first and label logic, so these tests do exercise the new behavior; but they are only valid after a rebuild of the current `src`, which the recorded source-only validation does not establish.
+2. **Low-value coverage nit** (`transaction-read.test.ts:2290-2296`): the matching-view + unknown-token + *missing* resource read has no `waits` assertion around it; that "no wait" claim is enforced only at HTTP (`:4858-4872`). Smallest fix: capture `const priorWaits = waits` before line 2290 and assert `expect(waits).toBe(priorWaits)` after 2296.
+
+No security issues: the newly disclosed 404 context headers (epoch/view/position) are already disclosed on every other authenticated 200/404 response, and the anonymous 401 case at `transaction-http.test.ts:1932-1936` still asserts no context leakage.

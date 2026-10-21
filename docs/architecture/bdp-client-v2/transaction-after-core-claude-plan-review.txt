@@ -1,0 +1,85 @@
+Reviewed the plan against `3e2b878` by reading the actual seams. Findings only — no files written, no implementation, no qualification claim.
+
+## Baseline check
+
+`git diff 2fa2d02..3e2b878` touches **no** file under `packages/server/src/` (only RU conformance matrices, `apps/bdptest` RU tests, and docs). Every source citation in the plan therefore holds unchanged at the review target. All five normative anchors verify: `docs/specs/bdp.md:562` (effective Type contracts), `:2532` (installed Type contracts), `:3858` (whole-batch atomicity), `:5297` (receipt/direct code closure), `:5742` (Snapshot). `transaction-read-pause-checkpoint.md` is indeed absent; `transaction-read/read-composition-plan.md` exists. Node 24.16.0 / pnpm 11.20.0 pins confirmed in `package.json:7-9`.
+
+---
+
+### HIGH — locked-metadata capture lands inside `configurationIdentity`, which is `.trim()`ed per read
+**Location:** `transaction-store.ts:191-197,467`; `authority-read.ts:269,486-492`; plan:98-99 vs plan:75-76
+`configuration` is the whole locked JSON text, and `readConfiguration.scopeConfiguration.configurationIdentity` is set to *that entire string*. `authority-read.ts:269` validates it with `value.trim().length === 0` on every read-entry capture (`:486-492`), and reopen does `JSON.parse` plus a full byte compare (`transaction-store.ts:436-442`).
+**Impact:** Putting the base64 capture in the same metadata row makes `configurationIdentity` a multi-megabyte string — bounded only by `CONTRACT_ARTIFACT_CEILINGS.totalBytes` (16 MiB raw → ~22 MiB base64, `installed-contract-artifact.ts:19-34`) — allocating a full copy per read request. The plan's "No changes should be needed to AuthorityReadPlane" is false under its own storage choice.
+**Action:** Require the capture in a *separate* metadata row, keep `configurationIdentity` a bounded digest, and add a done predicate naming an explicit TX-side byte bound (`stringifyJsonValue` imposes none by design — `json-values.ts:99`).
+
+### HIGH — the branded object cannot cross the fixture seam that produces restart evidence
+**Location:** `transaction-runtime.ts:22-34,228-239`; `transaction-runtime.test.ts:13,20-28`; `development-contracts.ts:60-63`; plan items 1 and 4, predicate 6
+`TransactionRuntimeOptions` is `JSON.stringify`ed into a child process, and `types` is plain `TypeDescriptor[]`. Branding is a module-level `WeakSet`, so a compiled `DevelopmentContracts` survives neither JSON transport nor a second module instance — and that test loads `../dist/transaction-runtime.js` while unit tests load `src`.
+**Impact:** "Accept only the existing branded DevelopmentContracts" (plan:57-59) is incompatible with threading the bridge through this fixture (plan:77-79) to prove predicate 6. Compiling in `src` and passing to `dist` throws `assertDevelopmentContracts` even in-process.
+**Action:** State that the *runtime fixture* seam accepts a plain artifact bundle and compiles inside the runtime (child side), with the branded-only rule applying at `openTransactionStore`; pin one module instance for the compile.
+
+### MEDIUM — scope-local Type IDs and compile-after-scope ordering are unstated
+**Location:** `read-request.ts:211-219,286`; `authority-read.ts:789-793`; `transaction-runtime.ts:228`; `transaction-runtime.test.ts:13`; `transaction-store.ts:195`
+The Type-descriptor route resolves only `{scope}types/{localId}`; the fixture derives `scope` from the bound port when `options.scope` is omitted; the existing TX fixture Type is `https://example.test/process-bead` (not scope-local).
+**Impact:** Predicate 1 ("Same-owner Type lookup/probe/list … agree on its exact ID") 404s unless descriptors are scope-local, and predicate 6 cannot reopen a port-derived scope because `scope` is inside the locked configuration. Note `installed-reference-configuration.ts:149` enforces scope-locality; `transaction-store.ts` does not.
+**Action:** Add explicit steps: explicit `scope` required, artifacts compiled after it is fixed, and a stated decision on whether the TX bridge enforces `{scope}types/` locality.
+
+### MEDIUM — enabling validation activates a retained-diagnostic obligation with no step for it
+**Location:** `docs/specs/bdp.md:2607-2614`; `transaction-batch.ts:58-63`; `transaction-store.ts:191-197`; `read-update-runtime-limits.ts:62-80` vs `development-authority.ts:205-206`
+Spec: a still-replayable retained diagnostic list "constrains subsequent configuration: the authority must refuse an incompatible lower bound or retain a sufficient bound through lawful expiry." TX's bounds are the module constant `TRANSACTION_RUNTIME_LIMITS`, which is **not** in the locked configuration, and TX has no analogue of RU's `assertReadUpdateRuntimeCompatibility` / `visitRetainedOutcomes`.
+**Impact:** Dormant today (TX can never emit `validation-failed`); this slice is exactly what wakes it. A build lowering `diagnosticBytes`/`diagnosticCount` would reopen a store holding oversized retained diagnostics without refusing.
+**Action:** Add a step/predicate — fold the diagnostic/properties bounds into the locked configuration, or scan retained receipts after the installation check and before pending retraction.
+*Already satisfied, worth recording as such:* joint feasibility **is** qualified — `transaction-batch.ts:64` calls `snapshotReadUpdateRuntimeLimits(TRANSACTION_RUNTIME_LIMITS)` at module load; 512 KiB ≥ the 283,906-byte first-diagnostic requirement, matching the 16384/1024 metadata allowances enforced at `development-contracts.ts:108-112`.
+
+### MEDIUM — predicate 6 credits the new capture with a refusal the digest already delivers
+**Location:** `development-contracts.ts:128-137`; `development-authority.ts:152-154`; `recovery-store.ts:587-594`; `apps/bdptest/src/development-contracts.test.ts:364`; plan:142-147 vs 148-151
+Contract identity folds `captured.sha256` (which covers kind, URI bytes, length and content of every artifact — `installed-contract-artifact.ts:250-264`), becomes `installationId`/`lineageId`, and is byte-compared at reopen. RU already has passing evidence that a changed schema closure is refused on reopen *from the digest alone*.
+**Impact:** Predicate 6's "changed schema bytes at the same URI … refuses" is not evidence for the capture. Read with predicate 7, an implementer may build a second comparison path for a property already held.
+**Action:** Restate the capture's purpose narrowly as the `bdp.md:2546` exact-artifact retention obligation plus offline reconstruction, and attribute the divergence refusal to the existing identity path.
+
+### MEDIUM — "compiler limits/policy identity" has no parameter to be restored through
+**Location:** plan:96; `development-contracts.ts:17-18,89-94,128-137`; `installed-contract-artifact.ts:42-46`
+`compileDevelopmentContracts` accepts only `{descriptors, schemas, limits}`. `SCHEMA_GRAPH_CEILINGS` and `EVALUATOR_CEILINGS` are module constants, already folded into `identity`.
+**Impact:** Recorded ceilings cannot be fed back into reconstruction — it always uses the running build's constants. Consequence (unstated): any ceilings change fails *every* persisted installation closed with no migration path.
+**Action:** Say the recorded ceilings are a comparison witness only, and fold "ceilings change ⇒ fail-closed reseed" into the format-compatibility paragraph (plan:107-112).
+
+### LOW — TX pins an empty aggregate policy silently
+**Location:** `transaction-store.ts:468,986`; `development-authority.ts:109-113,152-154`
+`maximumEndpointMultiplicity` is hard-coded `[]` in both the read configuration and the evaluation options. `DevelopmentContracts` carries no aggregate policy (it is a sibling field of `DevelopmentAuthorityConfiguration`), and RU folds the aggregate digest into installation identity while TX would fold only the contract identity.
+**Impact:** The same artifacts under TX enforce no Scope aggregate constraints, and TX/RU installation identities are not comparable — neither recorded as a refusal nor as a gap.
+**Action:** State the pinned empty aggregate and that the bridge cannot accept one; add it to predicate 8's explicit-gap list.
+
+### LOW — schema hosting for TX is left undefined
+**Location:** `installed-contract-artifact.ts:321-325`; `installed-reference-configuration.ts:151-159`; `transaction-http.ts:189-363`; plan predicates 1-2
+Ingestion requires schema `retrievalUri` only to be a canonical HTTP URL. The `{scope}schemas/` hosting rule lives solely in the RU candidate factory, and TX HTTP routes cover operations/receipts/aliases/resources — no schema route.
+**Impact:** A TX Type descriptor served over HTTP can advertise a `propertiesSchema` URI the fixture does not host; "schema references" in predicates 1-2 is ambiguous about whether schema documents are served.
+**Action:** Decide and state it — require out-of-scope schema URIs (no hosting implied), or record the gap explicitly.
+
+### LOW — fixture "reuse" is not importable from TX's owned test location
+**Location:** plan:36-37 vs plan:116-117; `apps/bdptest/src/` (no `transaction-*` test exists); `packages/server/src/transaction-*.test.ts`
+`@bdp/server` cannot import from `apps/bdptest`, and the cited fixtures are inline TS in that test file.
+**Impact:** "For reuse" means re-authoring the transitive-schema/diagnostics/immutability fixtures inside `packages/server/src` — unscoped work.
+**Action:** Budget the duplication, or declare a shared on-disk artifact fixture; precedent exists at `transaction-set.test.ts:33-34` reading `schemas/bdp-v0.schema.json` from disk.
+
+### LOW — two citation ranges in "Concrete current seams" are off
+**Location:** plan:33 and plan:38
+`installed-reference-configuration.ts` capture is 123-146, compile 147, hosted schemas 151-159, pinned candidate identity 175-186 — the cited `130–183` starts inside the `artifacts` closure and stops before the candidate closes. In `development-authority.ts`, identity derivation is 143-154 (not 126-160) and the registry fallback is 231-237 (bracketed by, not equal to, 223-240).
+**Action:** Retighten to 123-186 and 143-154 / 231-237; these are the plan's own normative pointers.
+
+### LOW — exact-field validators are a latent trap for the shared accessor
+**Location:** `development-contracts.ts:21-39,127-143`; `development-authority.ts:132-138`; `installed-reference-configuration.ts:86-95,123`
+`administrativeData` refuses any object whose own-key count differs from the supplied list. Adding a `captured` member to the frozen `DevelopmentContracts` is safe **today** — no validator enumerates that object's keys, and `apps/bdptest/src/development-contracts.test.ts` has no key-count assertion.
+**Action:** Add a done predicate that no exact-field validator is applied to `DevelopmentContracts` itself, so a later TX-side `administrativeData` call cannot break the shared accessor.
+
+---
+
+## Verified accurate in the plan
+
+- `transaction-store.ts:184-188` rejects every `propertiesSchema` **and** bead `ownsOutgoing` in one condition; `:978-982` builds descriptor-only contracts inline; `:191-197` fingerprints only format/receipt max/identity policy/scope/type bytes; `:1196` returns the owner's own descriptors and config identity to `transaction-read.ts:37-45`.
+- Hot-journal recovery genuinely precedes the locked check, and the check precedes retraction/`creator_facts` cleanup/sweep *inside one `atomic()`* — `transaction-store.ts:215-218,425-450`. Refusal before any write keeps the file untouched; the plan's refusal to promise byte-identity after a journal rollback (plan:146-147) is the right carve-out.
+- `resource-evaluator.ts:250-310,684-717` needs no fork: the existing validator contract (`complete !== !stopped`) is already satisfied by `development-contracts.ts:97-120`, and `validation-failed` requiring `diagnostics` is enforced by `schemas/bdp-v0.schema.json:2447-2464`.
+- Byte-exact agreement between the two descriptor representations is achievable: `transactionStorageText` is `stringifyJsonValue` (`transaction-batch.ts:793-795`), the same canonicalizer as `development-contracts.ts:86`.
+- Shipped reference closure does contain owned Types (`reference-domain.ts:63,70`) — the warning not to route that configuration into TX by profile string is well founded.
+- Owned-Link deferral is accurate: hard reject at `transaction-batch.ts:555`, direct-subject-only changes map at `:563-575`. Set core is genuinely store-wired (`transaction-set.test.ts:10,39-76`), so predicate 5 needs no new mechanism. Transactional discovery is already a recorded development gap (`transaction-http.ts:143`).
+- No new public API: `development-contracts` is absent from `index.ts`/`development.ts`, and `smoke-executables.mjs:457-458` actively asserts the subpath does not resolve; `:243-246,287-290` is the exact dist inventory a new private module would touch — matching plan:119.
+- No pinned conformance or evidence artifact binds the TX format marker (only `STATUS.md`, `docs/design/transaction-implementation-progress.md`, and the source), so a format bump will not invalidate evidence. Precedent for predecessor-file refusal evidence exists at `transaction-store.test.ts:1575-1589,1924-1940`.

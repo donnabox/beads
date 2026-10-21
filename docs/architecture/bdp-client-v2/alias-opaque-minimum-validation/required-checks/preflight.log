@@ -1,0 +1,17 @@
+
+ RUN  v4.1.10 /Users/dbox/repos/wt/vickie/vickie-alias-opaque-minimum
+
+ ✓ scripts/e2e-ready.test.mjs > E2E child supervision > terminates a descendant that inherits the supervised child's stdio 51ms
+ ✓ scripts/e2e-ready.test.mjs > E2E child supervision > kills a same-group descendant after its leader exits and it ignores SIGTERM 125ms
+ ✓ scripts/e2e-ready.test.mjs > E2E child supervision > reports a process group that survives SIGKILL and abandons its local handles 1ms
+ ✓ scripts/e2e-ready.test.mjs > E2E child supervision > observes a failed fire-and-forget termination without rejecting 0ms
+ ✓ scripts/e2e-ready.test.mjs > E2E child supervision > waits for the child close event after its process group disappears 1ms
+ ✓ scripts/e2e-ready.test.mjs > E2E child supervision > flushes a final unterminated server diagnostic before stop validation 89ms
+ ✓ scripts/e2e-ready.test.mjs > E2E child supervision > runs the packaged ready CLI against a test-admitted bdptest service 195ms
+
+ Test Files  1 passed (1)
+      Tests  7 passed (7)
+   Start at  06:05:09
+   Duration  653ms (transform 94ms, setup 17ms, import 120ms, tests 463ms, environment 0ms)
+
+JSON report written to /Users/dbox/repos/wt/vickie/bdp-integration-logs/alias-opaque-minimum-validation/required-checks/preflight.results.json

@@ -1,0 +1,15 @@
+--- plan4/dispatch-and-schema.json
++++ plan3/dispatch-and-schema.json
+@@ -56,11 +56,5 @@
+   "projection": "packages/server/src/transaction-discovery.ts:26-67",
+   "observation": "packages/server/src/transaction-service.ts:267-293",
+   "noSchemaOrDispatcherEdits": true,
+-  "activeSourceCommit": "cce884ccea1db97cbc6fd7bff876d4d6091f9081",
+-  "retainedCallbackSites": {
+-    "readRouteDiscover": "required member212 becomes unreachable; retain async function throwing fixed Error(\"unreachable Transactional discovery route\")",
+-    "performDiscoveryUnionArm": "already unreachable parser union arm244-245 is retained as a narrowing branch that throws same fixed invariant Error before non-discovery result.body use",
+-    "noNonownedInterfaceEdit": true,
+-    "noSecondObservation": true
+-  }
++  "activeSourceCommit": "cce884ccea1db97cbc6fd7bff876d4d6091f9081"
+ }

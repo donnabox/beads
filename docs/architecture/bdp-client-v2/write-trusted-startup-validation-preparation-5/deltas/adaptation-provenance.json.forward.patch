@@ -1,0 +1,56 @@
+--- preparation2/adaptation-provenance.json
++++ preparation3/adaptation-provenance.json
+@@ -1,39 +1,17 @@
+ {
+-  "createdUtc": "2026-10-18T05:10:46.400342+00:00",
+-  "mechanicsPredecessor": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/current-changefeed-validation-preparation-4",
+-  "predecessorHelperHashes": {
+-    "run.py": "cd36402bdddfc691029c2bd4c9ddeb71ca1a9edf4a1f9a4451a56613bd950c77",
+-    "gate.py": "1f47a1d2c4f5de91d366ab64f7c7f7bb9bf471e957889d4a657294abbbc1627d",
+-    "audit.py": "4669bf01024381545e0daccbc289d6ec5c549e12281b06180053b057bc300f26",
+-    "packages.py": "d4be62bef0118a591eeecc97103cf600626e9d501ea63f7ffdbdee2eb8805bbd"
+-  },
+-  "externalWitnessOrigins": [
+-    {
+-      "path": "/Users/dbox/repos/wt/vickie/vickie-trusted-startup-configuration/scripts/smoke-executables.mjs",
+-      "sha256": "80c1ecf1d55939fbb0a0fe94aad46bcede1c9d7841dbc3793e00e4493440ddb3",
+-      "ranges": [
+-        "133-461",
+-        "483-505",
+-        "554-616",
+-        "1193-1353"
+-      ]
+-    },
+-    {
+-      "path": "/Users/dbox/repos/wt/vickie/vickie-trusted-startup-configuration/scripts/smoke-safety.mjs",
+-      "sha256": "35bf1d65dbc5cc4b866438cd082feaa1287c2350ac6860e258a3b525a0e34967",
+-      "function": "assertServerExports"
+-    }
++  "state": "CLOSED data-only validation3 successor; no execution",
++  "mechanicsPredecessor": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-trusted-startup-validation-preparation-2",
++  "predecessorIndexSha256": "03fb7810376c9e71dcdd5af5ef9d7e6723b101c138e97183fe24c95a9c302337",
++  "sourceCorrectionIndexSha256": "98ab5463b224a382ac414abe8ac719aadb3c4092cbed89c61e6257b9ca18237a",
++  "nativeFixtureClosureSha256": "398b99f855e98eecf260362ccb94378e82e580765c0d807b0ed3b2faad855ecb",
++  "changes": [
++    "exact682 source map/full12patch/test hash and sourceIdentity rebind",
++    "validation2 to validation3 active data paths",
++    "bound-consumer-loader.mjs executionRoot literal only",
++    "all executable acceptance wrappers unresolved and all25 stages fresh"
+   ],
+-  "changes": [
+-    "exact worktree/session/data rebind",
+-    "source gate explicit3new-owned HEAD absence+intent-to-add/index/status protections",
+-    "generic strict44callback audit replaces unrelated D1 report parsers",
+-    "package proof entry changed from transaction process to public loader; same graph/archive/lock checks",
+-    "narrow copied external pure-loader witness with one45work/10cleanup/60fail guard, dynamic non-echo report",
+-    "stock smoke evidence explicitly separate consumer"
+-  ],
+-  "priorActualCodeFailureRetained": true,
+-  "nativePrecisionAcceptanceIsNotRuntimeQualification": true,
+-  "productSourceEdits": false,
+-  "noExecution": true
++  "helperSemanticChanges": false,
++  "oldN1N2MechanicsPreserved": true,
++  "sourceEdits": false,
++  "executionReleased": false
+ }

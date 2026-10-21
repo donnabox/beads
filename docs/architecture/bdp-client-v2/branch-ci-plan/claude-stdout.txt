@@ -1,0 +1,61 @@
+## Verdict
+
+The patch is mechanically correct and the trigger semantics in the plan are, with one exception, accurate. Seven actionable findings, mostly in scope disclosure and verification rather than in the one line itself.
+
+---
+
+## Findings
+
+### 1. The glob also covers the repo's PR base branch — undisclosed scope [Medium]
+Per this session's repo context, the branch used as the PR base is `codex/vickie-current-minimum-receiving`. That name matches `codex/vickie-*`. So the patch does not only enable CI for "working branches": it newly enables direct push CI on the integration branch as well, which is exactly the ref the authorization boundary ("no changing/chasing main") is drawn around. Triggering CI there is not a violation, but the plan presents the pattern as bounded to peer working branches and never says this.
+
+A second consequence of the same premise: if there is no branch literally named `main`, then both retained entries (`pull_request: branches: [main]` and `main` in the push list) are inert, and the plan's "retaining current main-push and main-targeted PR triggers" is a vacuous claim — and the repo currently has *no* PR-event coverage at all.
+
+**Fix:** confirm the actual default branch and whether `main` exists; then either state explicitly that the family glob includes `codex/vickie-current-minimum-receiving`, or take the narrow literal alternative `[main, "codex/vickie-sequence-depth-retained"]`. I cannot verify this without repository access, and you asked for no exploration, so it is stated as conditional on that premise.
+
+### 2. The real security delta is branch-authoritative workflow definition, and it is understated [Medium]
+For `push` events, GitHub reads the workflow file — including its `permissions:` block, its action pins, and its job commands — from the *pushed ref*, and push events receive repository/organization secrets (unlike fork `pull_request` events). Today the only push-triggered ref is `main`, which presumably sits behind review/protection. After the patch, any `codex/vickie-*` push self-defines its CI contract: a branch commit can raise `permissions` up to the repo's maximum `GITHUB_TOKEN` setting, swap action pins, and run arbitrary commands with secret access, with no main-side review.
+
+The plan's "no new token permissions, no secrets expressions, existing `contents: read`" is true of this literal file but does not bound subsequent commits on the newly-triggering branches — and the plan itself relies on branch-local workflow authority ("a workflow-bearing commit pushed on the selected branch can trigger the push run"). The `branch naming is not an authorization boundary` sentence gestures at this but draws the opposite conclusion. Severity is moderated by the fact that push events require write access to this repo.
+
+**Fix:** state the delta in one sentence. Optionally note the mitigations that are *not* part of this patch: repo-level max token permission set to read, environment-scoped secrets with deployment branch rules, and rulesets governing who may create `codex/vickie-*` refs.
+
+### 3. `workflow_run` consumers were never enumerated [Medium]
+The plan asserts "no ... privileged follow-on workflow," but the packet contains only `ci.yml`. A `workflow_run`-triggered workflow keyed on `CI` executes from the default branch with its own (often write) permissions and secrets, and fires regardless of which branch produced the triggering run. If one exists, this patch newly lets a branch-controlled CI run start a privileged downstream workflow and hand it artifacts.
+
+**Fix:** before application, grep `.github/workflows/` for `workflow_run` and `workflow_call` referencing this workflow, and record the result in the plan. A zero-hit grep is sufficient evidence; an unstated assumption is not.
+
+### 4. "Confirm checkout's actual HEAD=C and compare its complete tree" is not satisfiable from this run [Medium]
+No step in the job emits HEAD, a tree hash, or a file listing, and the plan forbids command changes. What is actually observable is: the run's `head_sha` from the API, and the SHA `actions/checkout` reports in its own log. Tree equality then *follows from commit identity* — it is derived, not independently observed. As written, the verification section promises an observation the artifacts cannot supply.
+
+**Fix:** restate as "API `head_sha` = C, checkout log shows C, tree equality derived from commit identity," or defer a `git rev-parse HEAD HEAD^{tree}` echo step to a separate patch outside this one-line change.
+
+### 5. No predicted exit code for the only branch-relative step [Medium]
+The acceptance criterion is a green run, but the evidence gate is the one step whose semantics depend on head and ancestry, and until now it has only ever evaluated on `main` in a push context. The plan says source inspection found no main-ref assumption, yet it predicts nothing — so a `1` or `3` on the first working-branch push would be indistinguishable from a real regression.
+
+**Fix:** record a pre-application local baseline (`pnpm evidence:verify; echo $?` at `11742645`, expected `2` per the plan's own "no evidence claimed" reading) and name the ref the ancestry check anchors against. If it resolves `origin/main`, confirm that remote-tracking ref is actually present in the runner's checkout — `actions/checkout`'s fetch refspec differs between the single-ref and all-refs cases, so `fetch-depth: 0` should be verified to provide it rather than assumed. Note the tension with "no need to inspect, fetch or reconcile main": that is a local policy, but the *runner* may require `origin/main`.
+
+### 6. Cancellation and force-push recovery paths are unstated [Low]
+With `cancel-in-progress: true`, a follow-up push cancels the in-flight run for C; once the branch has advanced, no new push can ever produce a push run at `head_sha=C`. The only recovery is re-running that same run (attempt ≥ 2), which preserves `event=push` and `head_sha=C`. The plan captures `attempt` but says "no automatic retry" without naming the manual path, leaving evidence for C apparently unobtainable. Separately, a later force-push that rewrites C leaves the run record intact but can make C unreachable from the branch, so re-verifying the tree depends on C staying reachable — "retain older run attribution if branch advanced" covers fast-forward advance only.
+
+**Fix:** one sentence for each in the verification section.
+
+### 7. Patch mechanics — one transcription risk [Low]
+The hunk is sound: `@@ -4,7 +4,7 @@` counts to 7 old / 7 new, and line 7 of the current file is indeed `    branches: [main]`, matching the plan's `ci.yml:7`. Quoting is correct too — `*` is a YAML alias indicator only in first position, so `"codex/vickie-*"` is defensive but valid. The one risk is the trailing blank context line: it must retain its single leading space, and packets like this often lose it.
+
+**Fix:** `git apply --check` before applying (`--recount` if it rejects).
+
+---
+
+## Claims I checked and found accurate
+
+- `*` in a GitHub branch filter does not cross `/`, so `codex/vickie-*` matches `codex/vickie-sequence-depth-retained` but not nested additional segments, and not arbitrary `codex/*`.
+- Tags are unaffected: with `branches` defined and no `tags` key, tag pushes do not trigger the workflow.
+- Push and PR runs will not cancel each other — `github.ref` is `refs/heads/...` versus `refs/pull/N/merge`; later pushes on the same branch do cancel earlier branch runs.
+- Push runs test the pushed commit, not a synthetic merge ref; a green PR run is separate evidence.
+- Bootstrap works: the patch-bearing commit pushed on a matching branch triggers its own push run, since push events use the workflow from the pushed ref. No `workflow_dispatch` or main reconciliation needed.
+- The gate citation is exact — lines 72–77 are the Read-cohort step.
+- `pnpm evidence:verify || test $? -eq 2` is correct under the default `bash -e`: `$?` expands to the left command's status, `-e` does not fire on the left of `||`, and exits 0/2 pass while 1/3 fail. Fragile idiom, but correct as written and unchanged by this patch.
+- Authorization: the plan performs no mutation, no main inspection, and defers push to separate approval. Compliant.
+
+**Bottom line:** the one line is safe to apply as written. Findings 1, 3, and 5 are worth closing *before* application — they are cheap checks whose answers could change the recommendation (1) or the expected result (5). Findings 2, 4, 6, and 7 are plan-text and procedure corrections.

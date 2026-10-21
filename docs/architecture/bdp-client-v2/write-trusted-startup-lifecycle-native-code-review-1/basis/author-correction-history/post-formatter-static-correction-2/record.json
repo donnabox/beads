@@ -1,0 +1,17 @@
+{
+  "utc": "2026-10-18T09:27:57.720487+00:00",
+  "reason": "Static public declaration inspection: shared core inferred trusted union must not widen legacy exported result types. Explicit RU legacy return type; TX exact six-key frozen projection. No execution or second formatter.",
+  "formatterAlreadyConsumed": true,
+  "files": [
+    {
+      "path": "packages/server/src/development-runtime.ts",
+      "beforeSha256": "2ca2201048f751b33fd5763be2e41418a458b2206b7ecd7eb9e51fc038aa4a0b",
+      "afterSha256": "c0dae240adaca64d0f0edaa77a1adc6fcc5e1f1a430fc93b10e1a711226d509b"
+    },
+    {
+      "path": "packages/server/src/transaction-runtime.ts",
+      "beforeSha256": "6146cbe1aca2ffe9a769d221dac463906e4966e226e236d87c6fd06394b864e6",
+      "afterSha256": "d208e18588772dd931655f8f85bcbafcf3d64a14590e60d7ab0165d455de4424"
+    }
+  ]
+}

@@ -1,0 +1,31 @@
+{
+  "accepted": false,
+  "status": "one_small_precision_revision_required",
+  "findings": [
+    {
+      "id": "P2-N1",
+      "severity": "Low",
+      "title": "Include required null configuration in the unbound closed-key allowlist",
+      "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-cumulative-evidence-carrier-plan-2/output-schema.json",
+      "startLine": 49,
+      "endLine": 63,
+      "related": [
+        {
+          "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-cumulative-evidence-carrier-plan-2/output-schema.json",
+          "line": 46
+        },
+        {
+          "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-cumulative-evidence-carrier-plan-2/lifecycle-and-adapters.json",
+          "line": 8
+        },
+        {
+          "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-cumulative-evidence-carrier-plan-2/source-data-cases.json",
+          "line": 356
+        }
+      ],
+      "problem": "unboundAttemptSchema declares configuration:null, and the plan/lifecycle/L01/L02/L06 require that explicit field, but its exact closedKeys list omits configuration. serializeProfileEvidence is required to accept an exact closed unbound envelope, so implementing the list literally rejects the required field while following the prose emits an undeclared key.",
+      "impact": "One contradictory closed-schema detail remains in the original N1 correction; the substantive unbound/bound phase design is otherwise implementable.",
+      "requiredCorrection": "Add only configuration to unboundAttemptSchema.closedKeys, preserving configuration:null, all observations:null, false eligibility and first-genuine-return transition. No source/API/callback/case/selection/budget change is needed. Preserve plan2 immutable and bind the correction separately."
+    }
+  ]
+}

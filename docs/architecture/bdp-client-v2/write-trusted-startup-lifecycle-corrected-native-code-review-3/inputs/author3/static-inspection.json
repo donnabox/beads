@@ -1,0 +1,21 @@
+{
+  "scope": "read/hash/JSON/text only, no evaluator/compiler/helper/test",
+  "all686BeforeAfterAndOriginalReviewVerified": true,
+  "onlySevenAllowedPathsChanged": true,
+  "F3CaptureBeforePublishInsideTry": true,
+  "finalReturnAfterCloseCacheDeclarations": true,
+  "noAwaitBetweenCapturePublishCacheInitialization": true,
+  "legacyResultKeysOrderAndCloseBodiesPreserved": true,
+  "wireGateNoRawEvidenceMutation": true,
+  "originalI21ControlsPreserved": true,
+  "same51And21Registrations": "Base tables retained; only existing S02 assertions/I21body+title extended",
+  "formatterChangedPaths": [
+    "packages/server/src/development-runtime.ts",
+    "packages/server/src/transaction-runtime.ts",
+    "apps/bdptest/src/reference-deployment-lifecycle-installed.test.ts"
+  ],
+  "formatDeltaWhitespaceAndTrailingCallCommaEquivalent": true,
+  "postFormatterSourceEdits": false,
+  "knownStaticPreparationFailure": "preparation-failure-1.json, resolved data assertion only",
+  "runtimeValidation": "UNRUN"
+}

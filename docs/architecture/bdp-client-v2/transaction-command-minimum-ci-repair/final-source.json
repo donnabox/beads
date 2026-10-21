@@ -1,0 +1,49 @@
+{
+  "head": "727e919c2893bd34d5e72ea4659302a999bc4a6f",
+  "tree": "734bf9daf40fd17d0fe2bf86b085598589122f2f",
+  "parent": "f2ac3f980fc8d35a3b485db04b813ad1b569d94d",
+  "mainBase": "122800511ee6306e4105e1f73bf3658f35c90a14",
+  "clean": true,
+  "sevenFiles": [
+    {
+      "path": "apps/bdptest/src/installed-reference.test.ts",
+      "sha256": "2c87160890b1c8aed2ada117a1aa293fe7fcfa85db794a3d9ef6514a39d199d1"
+    },
+    {
+      "path": "apps/bdptest/src/transactional-collection-minimum-installed.test.ts",
+      "sha256": "a3f772525ee1c87f3c488e37914af8114421dff5cc003d81640182d6f7a05903"
+    },
+    {
+      "path": "docs/design/transaction-implementation-progress.md",
+      "sha256": "e4f474baf6808aa110dea0ac53df2560c8f7a9be9298928908acca2ba45e9be5"
+    },
+    {
+      "path": "docs/specs/bdp.md",
+      "sha256": "287a0a64bea0c1c3be51b5bb50d528283185ef7886a9c7402b4d4b5a7d5a0941"
+    },
+    {
+      "path": "packages/server/src/transaction-http.test.ts",
+      "sha256": "8f66df9f9cf891383a19a67fb50c85708eaae055c59a661777b7110060b0c56f"
+    },
+    {
+      "path": "packages/server/src/transaction-http.ts",
+      "sha256": "1339f32e0818aee5a44fc01a2034366a73e72c40027d6cde7041f26525aba366"
+    },
+    {
+      "path": "packages/server/src/transaction-service.test.ts",
+      "sha256": "5e8dc095dcbe9c8fdfb28a5dea4db024ddc65e7e4f51175edeae5a90ea7125be"
+    }
+  ],
+  "changedFromPriorHead": [
+    "docs/specs/bdp.md"
+  ],
+  "priorRuntimeEvidenceHead": "f2ac3f980fc8d35a3b485db04b813ad1b569d94d",
+  "runtimeFilesUnchanged": true,
+  "freshRuntimeRerun": false,
+  "staticResults": {
+    "passed": 95,
+    "failed": 0
+  },
+  "claudeDelta": "blocked OAuth expired; exit1 no review",
+  "nativeDeltaReviewSha256": "1c86875d3c78af1772cc156ac5fb807be870ff22bb6977ee2a268c6c9bd94395"
+}

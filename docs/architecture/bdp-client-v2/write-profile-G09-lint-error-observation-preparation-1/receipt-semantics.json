@@ -1,0 +1,64 @@
+{
+  "innerExitKeys": [
+    "exit",
+    "accepted",
+    "qualityPass",
+    "observationComplete",
+    "observationKind",
+    "status",
+    "diagnosticClassification",
+    "rootClassificationRequired",
+    "sourceIdentity",
+    "sourceUnchanged",
+    "elapsedSeconds",
+    "forcedCleanup",
+    "errors",
+    "sampledPids",
+    "remainingProcesses",
+    "runtimeDirectoriesStillPresent",
+    "temporaryDirectory",
+    "logSha256"
+  ],
+  "acceptedAlways": false,
+  "qualityPassAlways": false,
+  "observationKind": "ERROR_ONLY_NOT_QUALITY_PASS",
+  "localObservationComplete": "Actual childraw1/no errors/no forced/no sampled or group live/no bdp runtime roots/source unchanged; inner elapsed<115 at decision. Not independent wholeclock/PIPE/terminal/census/root classification.",
+  "wrapperZero": "Only local expected-error capture; never product lint PASS or final observation acceptance.",
+  "diagnosticClassificationAlwaysPendingRoot": "No heuristic log parser or inferred error identity. Fatal/tool/gate/refusal/parse failure cannot be accepted by root just because raw1; actual full raw must be independently classified before either final complete state.",
+  "rootFinalStatuses": [
+    {
+      "status": "NOT_RELEASED",
+      "condition": "Any author/runtime barrier unresolved",
+      "effect": "No acquisition; closed"
+    },
+    {
+      "status": "OBSERVATION_COMPLETE_ERROR_RETAINED",
+      "condition": "Child1, genuine actionable error detail retained, all independentcapture/source/tool/clock/cleanup facts satisfied",
+      "effect": "Diagnostic fact only; product lint remains FAILED; STOP for root disposition"
+    },
+    {
+      "status": "OBSERVATION_COMPLETE_ERROR_UNIDENTIFIED",
+      "condition": "Child1 and complete capture but no actionable error detail (e.g. failure aggregate)",
+      "effect": "Cause UNKNOWN; stop; no automatic extra observation"
+    },
+    {
+      "status": "UNEXPECTED_ZERO",
+      "condition": "Child0",
+      "effect": "No inference original127 diagnostics fixed; refuse planned expected-error observation and stop"
+    },
+    {
+      "status": "UNEXPECTED_OR_INFRASTRUCTURE_EXIT",
+      "condition": "Child otherexit/null, wrapper1, abnormal fatal/tool/gate/refusal/parse state",
+      "effect": "FAILED or UNKNOWN; preserve all actual bytes; no B/C normal route or retry"
+    },
+    {
+      "status": "INCOMPLETE_OR_LATE",
+      "condition": "Missing raw/EOF/terminal/identity/close/registry/census/witness, >=115normal or >=120outer, forcedcleanup, source/tooldiff",
+      "effect": "FAILED/UNKNOWN, no positive observation/cleanup/nextstage credit"
+    }
+  ],
+  "errorDetailUnavailable": "Complete expected1 can remain UNKNOWN_NOT_SHOWN; root stop/disposition, no next invocation/fix.",
+  "unexpectedZeroOtherPartialLate": "wrapper nonzero on unexpected child0/non1 or local errors/forced/live/source mismatch/late; raw facts retained, final FAILED/UNKNOWN, no B/C normal route or retry.",
+  "externalRequired": "Separate reviewed future root capture/BOTH PIPE full counts hash identity EOF close/direct terminal, finite recorded-domain census/direct probe reap/tool terminal, first subsequent commonclock witness<115, plus final raw-error classification; UNPREPARED here.",
+  "noCaptureTextOrOutputsAuthored": true
+}

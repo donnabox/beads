@@ -1,0 +1,1 @@
+Initial external measurement exited1 before artifact writes: it incorrectly expected null ledger SHA for absent bodies. Accepted ledger correctly pins SHA256(empty bytes), while actual raw exactRequest omits bodyDigest for absent body (http-executor.ts759–763). Corrected external arithmetic only; source unchanged. This was not a product execution or test failure.

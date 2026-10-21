@@ -1,0 +1,63 @@
+{
+  "passed": true,
+  "sourceManifest": {
+    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-command-minimum-catalog-draft/format-repair/source-binding.json",
+    "sha256": "55c1492aa3302dadf743fe050ae39b1387a068b3df31a74ccadedbc337bccc16"
+  },
+  "sourceDiffSha256": "6dd175cd419c947d96c5e333dd7dcc5598c6807af55969ad40c409416dbf8469",
+  "commands": {
+    "offline-setup": {
+      "exit": 0,
+      "recordSha256": "691240e65f5bb00050c211bec4b999b51526eecdf55f611ac22fa168bb9a07ee"
+    },
+    "typecheck": {
+      "exit": 0,
+      "recordSha256": "243677567c3ab92a026fb1ec2fab33709d399ccef239312815879cc35eb96cc9"
+    },
+    "build": {
+      "exit": 0,
+      "recordSha256": "9fb11068f37b6d7d95d4ced791ade4a903d7b41cb9be05d53fc05ac6f1006041"
+    },
+    "format-check": {
+      "exit": 0,
+      "recordSha256": "7dd9d24f30c2cadf84b1e1875dba58a39b21f4866dd16863f2ab86d46d29400a"
+    },
+    "lint": {
+      "exit": 0,
+      "recordSha256": "c4c8207dd7c113c8cad6b6e38dd7321319a70ba58db9c525e6af02ed6d6e583b"
+    },
+    "boundaries": {
+      "exit": 0,
+      "recordSha256": "31e231d0593af562239a9ebc3231348860981db685ca7e7c497536fcf126faae"
+    },
+    "read-seal": {
+      "exit": 0,
+      "recordSha256": "ac9a60611b6c40706ad6b9b5109d792eafbcb12e8987a1cabc75205e4ac19821"
+    },
+    "static-cases": {
+      "exit": 0,
+      "recordSha256": "27510eb198802b460560fc8f37bc2780afd94131a66cd6de4c9f406400f1a4f0"
+    }
+  },
+  "tests": [
+    "pins numeric admission source growth, old blocks and independent row ledgers",
+    "pins metadata closure growth, old B actions and final N preservation",
+    "pins bounded R closure source, changed-action ledger and unchanged companions",
+    "pins cumulative source digest map, catalog order and every coverage binding",
+    "development Read+Update evidence inventory inventories all 82 normative rows once, with executable assertion bindings or explicit omissions",
+    "canonical cumulative profile contracts inherits the command minimum-field exception without executable credit",
+    "canonical cumulative profile contracts locks every inheritance-audit row and replacement to the catalogs",
+    "draft Read+Update catalog strictly parses and binds every citation to the current specification text",
+    "draft Read+Update catalog scopes every row to the Read+Update profile with the profile's id prefix",
+    "draft Read+Update catalog mirrors the specification's Read+Update conformance rows exactly and in order",
+    "binds the canonical cumulative TX selection and exact source digests without qualification",
+    "copies source bytes before binding and exposes all missing obligations without executing them"
+  ],
+  "passedTests": 12,
+  "notSelected": 308,
+  "failedTests": 0,
+  "resultsSha256": "c0be0cec1416beb4e059da2ffd611047cdd71f129ffc48d34508b298aaadd3cb",
+  "cleanup": "No sampled processes or runtime directories remain; retained Node compile caches classified as tool caches. Sampling cannot prove absence of every transient descendant.",
+  "limitations": "Static tests only; affected installed matrix callbacks require exact-head full CI. No new profile qualification.",
+  "originalFailure": "Original V format-check1 preserved separately; successor fixes only exact formatter hunks."
+}

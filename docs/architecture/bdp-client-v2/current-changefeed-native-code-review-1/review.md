@@ -1,0 +1,13 @@
+# Independent native current-changefeed CODE review
+
+**No concrete findings. Bounded static CODE review accepted** for exact dirty six-file patch4ff4ef9448fb79a0c08b3665b7069fb019c9b1d311b898b5525bc888bcd2955c on basea56254d682cf4623cab22a552e3d2f695f691795. This is source inspection, not a test/build/runtime pass or profile qualification.
+
+Inspected the full actual production delta and complete appended A/B/C/F/D/E callbacks, the narrow legacy500→503 amendments and relevant unchanged minimum waiter/raw recorder/installed ready+close/framing/spec source. The HTTP selection and private-tag change preserve cursor/header/media precedence; service captures one immutable tuple/intent/anchor before waiter preflight; owner cursor/retention/corruption checks stay before current semantic minimum. Default and old-tag paths, later pump minimumundefined and readConfiguration remain preserved.
+
+A/B/C/F actual records and bounded local ownership match precision2. B delegate precedes baseline; C asserts deferred owner close and exact abort/drain order; F attempts allfour rows independently and reports actual failure/cleanup states. Unknown drainage preserves stores rather than invoking historical global cleanup. D follows32actual dispatch oracles and strict3swork/4stotal/default5s bounds, with HEAD/context/Problem/finite/SSE equality and safe source-vs-wire evidence. E keeps the33116-byte historical prefix, uses the callback-local recorder and global10-request ceiling, validates two actual commits/pages and full retained group2/CP2 stream, and records pending/entry/binding/exit+close/removal under existing installed budgets.
+
+Exactly15selected source callbacks retain NINEnew and TWOselected legacy reports. The separate parameter-context callback stays unselected ordinary full-CI coverage. No changed scope, request count, timeout or protocol ruling was inferred from earlier reviews. The baseline commit/tree does not contain the dirty implementation; review.json binds complete author freeze/source maps/status/full patch and source locations.
+
+All679post-author source hashes, exact status and full patch were reverified after inspection;673files remain unchanged. Original PR167 source remains untouched. No source/design/launch/packet/git edit or formatter/compiler/test/build/install/service/CLI reviewer execution occurred. Runtime timing, actual emitted reports and external package/consumer proof are still future validation evidence.
+
+Next: root combines this result with independent mechanics acceptance and controls the single read-only actual Claude CODE attempt, then dispositions findings before validation release. No broader readiness/public-admission/Write-profile completion or clean prior PLAN execution claim is made.

@@ -1,0 +1,386 @@
+{
+  "status": "proposed successor; incomplete original external review preserved; full standalone supplemental council/root acceptance pending; authoring/execution closed",
+  "planningHead": "98c600767e8e91a79e109cb741beb91e23b9bebe",
+  "planningTree": "fde859381752d15c8caabcbc946d3c2e384b9cf6",
+  "pendingPredecessor": {
+    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-same-key-overlap-draft/source-binding.json",
+    "sha256": "ad840a73fe10f830e58959dcc7642b35ec91f0a2cea4db4f4fb9912f940df0d0",
+    "state": "Historical original planning capture: dirty, unmerged and unexecuted author draft on98c600; not guarded-batch runtime evidence",
+    "currentRootObservation": "Clean candidate18f5428/PR134 has locally validated6+2 responses; still unmerged, council and CI pending. Actual merged-parent reanchor remains required; no credit to this proposed slice."
+  },
+  "ownedPaths": [
+    "apps/bdptest/src/transactional-guarded-batch-installed.test.ts",
+    "docs/design/transaction-implementation-progress.md"
+  ],
+  "registration": {
+    "title": "preserves one guarded batch winner and rolls back the losing marker through installed HTTP",
+    "count": 1,
+    "defaultMode": "positive",
+    "modeEnvironment": "BDP_TRANSACTIONAL_GUARDED_BATCH_MODE",
+    "outputEnvironment": "BDP_TRANSACTIONAL_GUARDED_BATCH_OUTPUT",
+    "modes": [
+      "positive",
+      "unguarded-contenders"
+    ],
+    "selectionRegex": "^preserves one guarded batch winner and rolls back the losing marker through installed HTTP$"
+  },
+  "requests": [
+    {
+      "index": 1,
+      "label": "seed",
+      "method": "POST",
+      "url": "https://reference.invalid/acme/operations/batch",
+      "key": "guarded-seed",
+      "bodySource": "seed",
+      "headers": {
+        "Host": "reference.invalid",
+        "Accept": "application/json",
+        "Connection": "close",
+        "Authorization": "in-memory Bearer token; excluded from evidence",
+        "Content-Type": "application/json",
+        "Idempotency-Key": "guarded-seed",
+        "Content-Length": "actual UTF8 body byte length"
+      }
+    },
+    {
+      "index": 2,
+      "label": "contender-a",
+      "method": "POST",
+      "url": "https://reference.invalid/acme/operations/batch",
+      "key": "guarded-a",
+      "bodySource": "a(actualSeedRevision)",
+      "headers": {
+        "Host": "reference.invalid",
+        "Accept": "application/json",
+        "Connection": "close",
+        "Authorization": "in-memory Bearer token; excluded from evidence",
+        "Content-Type": "application/json",
+        "Idempotency-Key": "guarded-a",
+        "Content-Length": "actual UTF8 body byte length"
+      }
+    },
+    {
+      "index": 3,
+      "label": "contender-b",
+      "method": "POST",
+      "url": "https://reference.invalid/acme/operations/batch",
+      "key": "guarded-b",
+      "bodySource": "b(actualSeedRevision)",
+      "headers": {
+        "Host": "reference.invalid",
+        "Accept": "application/json",
+        "Connection": "close",
+        "Authorization": "in-memory Bearer token; excluded from evidence",
+        "Content-Type": "application/json",
+        "Idempotency-Key": "guarded-b",
+        "Content-Length": "actual UTF8 body byte length"
+      }
+    },
+    {
+      "index": 4,
+      "label": "loser-retained-replay",
+      "method": "POST",
+      "url": "https://reference.invalid/acme/operations/batch",
+      "key": "exact actual losing key",
+      "bodySource": "exact original losing body bytes",
+      "headers": {
+        "Host": "reference.invalid",
+        "Accept": "application/json",
+        "Connection": "close",
+        "Authorization": "in-memory Bearer token; excluded from evidence",
+        "Content-Type": "application/json",
+        "Idempotency-Key": "exact actual losing key",
+        "Content-Length": "actual UTF8 body byte length"
+      }
+    },
+    {
+      "index": 5,
+      "label": "issued-loser-receipt",
+      "method": "GET",
+      "url": "validated actual losing receipt.id",
+      "key": null,
+      "bodySource": null,
+      "headers": {
+        "Host": "reference.invalid",
+        "Accept": "application/json",
+        "Connection": "close",
+        "Authorization": "in-memory Bearer token; excluded from evidence"
+      }
+    },
+    {
+      "index": 6,
+      "label": "complete-current-beads",
+      "method": "GET",
+      "url": "https://reference.invalid/acme/beads/?limit=32",
+      "key": null,
+      "bodySource": null,
+      "headers": {
+        "Host": "reference.invalid",
+        "Accept": "application/json",
+        "Connection": "close",
+        "Authorization": "in-memory Bearer token; excluded from evidence"
+      }
+    },
+    {
+      "index": 7,
+      "label": "complete-scope-events",
+      "method": "GET",
+      "url": "https://reference.invalid/acme/events/",
+      "key": null,
+      "bodySource": null,
+      "headers": {
+        "Host": "reference.invalid",
+        "Accept": "application/json",
+        "Connection": "close",
+        "Authorization": "in-memory Bearer token; excluded from evidence"
+      }
+    }
+  ],
+  "inputs": {
+    "seed": {
+      "body": "{\"operations\":[{\"operation\":\"createBead\",\"id\":\"beads/guarded-seed\",\"type\":\"https://reference.invalid/acme/types/task\",\"properties\":{\"title\":\"guarded-seed\"},\"metadata\":{}}]}",
+      "bytes": 172,
+      "sha256": "a1937453b366087694cc040cc81534d1d073fed0e0bcc09b0fc6de39304ef3f0"
+    },
+    "aReferenceGuard": {
+      "body": "{\"operations\":[{\"operation\":\"createBead\",\"id\":\"beads/marker-a\",\"type\":\"https://reference.invalid/acme/types/task\",\"properties\":{\"title\":\"marker-a\"},\"metadata\":{}},{\"operation\":\"updateBead\",\"bead\":\"https://reference.invalid/acme/beads/guarded-seed\",\"expectedRevision\":\"00000000-0000-4000-8000-000000000000\",\"propertiesChange\":[{\"op\":\"replace\",\"path\":\"/title\",\"value\":\"winner-a\"}]}]}",
+      "bytes": 381,
+      "sha256": "386fc744c79e39fe4428c6a77c4d7b7b885dc18b41e2b90f1acdf0e0df5fb226"
+    },
+    "bReferenceGuard": {
+      "body": "{\"operations\":[{\"operation\":\"createBead\",\"id\":\"beads/marker-b\",\"type\":\"https://reference.invalid/acme/types/task\",\"properties\":{\"title\":\"marker-b\"},\"metadata\":{}},{\"operation\":\"updateBead\",\"bead\":\"https://reference.invalid/acme/beads/guarded-seed\",\"expectedRevision\":\"00000000-0000-4000-8000-000000000000\",\"propertiesChange\":[{\"op\":\"replace\",\"path\":\"/title\",\"value\":\"winner-b\"}]}]}",
+      "bytes": 381,
+      "sha256": "59f91799860c3fa0957c4e93fe3bd57fd94621b992da4772b67307329bde0e70"
+    },
+    "aControl": {
+      "body": "{\"operations\":[{\"operation\":\"createBead\",\"id\":\"beads/marker-a\",\"type\":\"https://reference.invalid/acme/types/task\",\"properties\":{\"title\":\"marker-a\"},\"metadata\":{}},{\"operation\":\"updateBead\",\"bead\":\"https://reference.invalid/acme/beads/guarded-seed\",\"propertiesChange\":[{\"op\":\"replace\",\"path\":\"/title\",\"value\":\"winner-a\"}]}]}",
+      "bytes": 323,
+      "sha256": "f707e87dc9ec95f6f564940d3fc097b6880aeeeda9ac493981d9a4344bb5a91d"
+    },
+    "bControl": {
+      "body": "{\"operations\":[{\"operation\":\"createBead\",\"id\":\"beads/marker-b\",\"type\":\"https://reference.invalid/acme/types/task\",\"properties\":{\"title\":\"marker-b\"},\"metadata\":{}},{\"operation\":\"updateBead\",\"bead\":\"https://reference.invalid/acme/beads/guarded-seed\",\"propertiesChange\":[{\"op\":\"replace\",\"path\":\"/title\",\"value\":\"winner-b\"}]}]}",
+      "bytes": 323,
+      "sha256": "bbc04ffd826ba2519b86b4a22e47eff5566d2bb5ec90f45fe6ecb8779f6148a5"
+    }
+  },
+  "dynamicRevision": {
+    "referenceValue": "00000000-0000-4000-8000-000000000000",
+    "referenceIsNeverSent": "reference-only arithmetic specimen; actual r comes from independently validated seed receipt Resource",
+    "sourceExpectedJsonStringBytes": 38,
+    "hardJsonStringBytes": 128,
+    "positiveBodyFormula": "343 + r bytes per contender/replay where r=UTF8 bytes of JSON.stringify(actual seed revision)",
+    "maximumPositiveBodyBytes": 471,
+    "revisionSemantics": "opaque nonempty string; no normative UUID assumption; record exact captured encoding/body hashes at execution"
+  },
+  "bodyTotals": {
+    "seedBytes": 172,
+    "referencePositiveContenderBytes": 381,
+    "fixedControlContenderBytes": 323,
+    "referencePositiveTotal": 1315,
+    "maximumPositiveTotal": 1585,
+    "fixedControlTotal": 818,
+    "referenceCombinedTotal": 2133,
+    "maximumCombinedTotal": 2403
+  },
+  "runtimeConfiguration": {
+    "scope": "https://reference.invalid/acme/",
+    "directory": "fresh resolved absolute external owned temporary directory",
+    "create": true,
+    "artifacts": {
+      "descriptors": [
+        {
+          "retrievalUri": "https://reference.invalid/acme/types/task",
+          "utf8": "{\"id\":\"https://reference.invalid/acme/types/task\",\"name\":\"Task\",\"describes\":\"bead\",\"conformsTo\":[],\"propertiesSchema\":\"https://reference.invalid/acme/schemas/properties\"}"
+        }
+      ],
+      "schemas": [
+        {
+          "retrievalUri": "https://reference.invalid/acme/schemas/properties",
+          "utf8": "{\"$id\":\"https://reference.invalid/acme/schemas/properties\",\"type\":\"object\",\"properties\":{\"title\":{\"type\":\"string\"}},\"required\":[\"title\"],\"additionalProperties\":false}"
+        }
+      ]
+    },
+    "credentials": [
+      {
+        "token": "ephemeral32-characterbase64url; never retained",
+        "principal": "writer",
+        "canMutate": true
+      }
+    ]
+  },
+  "artifactMeasures": {
+    "descriptors": [
+      {
+        "bytes": 170,
+        "sha256": "f448e126550b2809d01dc6b24811d1796e82b2599c35b438550ed3bec65a2a22"
+      }
+    ],
+    "schemas": [
+      {
+        "bytes": 166,
+        "sha256": "1ed8b24d90a8c278bc466fd48ba1e849afac01326c377e5c6985855e62373f95"
+      }
+    ]
+  },
+  "control": {
+    "onlyInputChange": "omit expectedRevision from the updateBead at zero-based operationIndex1 of BOTH contender bodies; all other values unchanged",
+    "whyBoth": "Omitting only one guard can still yield one failure if that unguarded contender executes first; omitting both makes the counterfactual order-independent.",
+    "prefixRequests": [
+      1,
+      2,
+      3
+    ],
+    "expectedHttp": 3,
+    "maximumHttp": 3,
+    "expectedStatuses": [
+      200,
+      200,
+      200
+    ],
+    "preconditions": [
+      "seed completed pos-1",
+      "both contenders schema-valid completed/available with exact two results",
+      "distinct receipt and transaction IDs; marker ids fixed a/b",
+      "unordered contender effects {pos-2,pos-3}, own required=effect",
+      "both updated seed revisions differ from seed and each other; each title matches own input",
+      "response current context epoch/view consistent; own effect<=serving position<=pos-3",
+      "dispatch/socket prerequisites pass"
+    ],
+    "namedFailure": "guarded-batch:one-retained-revision-failure",
+    "assertion": "actual failed contender count must equal1; observed0 after the control preconditions",
+    "expectedFailureCount": 1,
+    "notAccepted": "generic failure, pending/failed control receipt, schema/transport/cleanup/report failure, false dispatch observation; no fallback follow-ups",
+    "attribution": "prerequisite two-successful-effects evidence discriminates guard omission; named failed-count assertion is deterministic adjudication, not a production mutant detector",
+    "noOpExclusion": [
+      "guarded-seed",
+      "winner-a",
+      "winner-b"
+    ]
+  },
+  "workload": {
+    "positiveHttp": 7,
+    "positiveMaximumHttp": 7,
+    "controlHttp": 3,
+    "controlMaximumHttp": 3,
+    "combinedExpectedHttp": 10,
+    "combinedMaximumHttp": 10,
+    "positivePost": 4,
+    "positiveGet": 3,
+    "controlPost": 3,
+    "controlGet": 0,
+    "registeredCallbacks": 1,
+    "externalCaseExecutions": 2,
+    "ordinaryFullCiAddedCallbacks": 1,
+    "ordinaryFullCiAddedHttp": 7,
+    "scheduledLaunchAttempts": 2,
+    "maximumProductChildren": 2,
+    "owners": 2,
+    "listeners": 2,
+    "storeDirectories": 2,
+    "expectedTcpConnections": 10,
+    "maximumTcpConnections": 10,
+    "maximumOutstandingRequestsPerCohort": 2,
+    "maximumLiveSocketsPerCohort": 2,
+    "sourceRuntimeCallbacks": 0,
+    "bootstrapRequests": 0,
+    "retry": 0,
+    "reopen": 0,
+    "continuationFetch": 0,
+    "retryMeaning": "automatic retries only",
+    "retainedReplay": 1
+  },
+  "limits": {
+    "workMs": 45000,
+    "readyMs": 10000,
+    "exchangeMs": 5000,
+    "cleanupMs": 10000,
+    "requestDrainMs": 5000,
+    "testMs": 60000,
+    "commandMs": 120000,
+    "requestBodyBytes": 65536,
+    "requestHeaderBytes": 16384,
+    "responseBodyRetainedBytes": 32768,
+    "responseHeaderBytes": 16384,
+    "reportBytesIncludingNewline": 65536,
+    "pairMilestones": 32,
+    "receiptUrlBytesAndCharacters": 8192,
+    "positiveRetainedBodySumCeiling": 229376,
+    "controlRetainedBodySumCeiling": 98304,
+    "combinedRetainedBodySumCeiling": 327680,
+    "workBudgetPolicy": "45000ms is sole binding aggregate work deadline; ready/exchange caps cannot all be spent independently",
+    "cleanupBudgetPolicy": "hard10000ms local race retained; inherited close may enter another drain after failure; late promises handled; deadline race is nonpassing; no increase"
+  },
+  "failedProblem": {
+    "type": "https://github.com/gastownhall/bdp/problems/conflict",
+    "code": "revision-mismatch",
+    "status": 409,
+    "retry": "after-state-change",
+    "operationIndex": 1
+  },
+  "executionAuthorized": false,
+  "profileQualification": false,
+  "planningProvenance": {
+    "planningHead": "historical98c600 only",
+    "executionSourceCommit": "actual eventual clean candidate verified by supervisor against source/build/archive/installed payload; never hard-code planningHead",
+    "pendingPredecessor": "same-key draft unmerged at original planning capture; actual merge/dependency reanchor required"
+  },
+  "constructionAssertions": [
+    "capture revision from independently validated seed Resource",
+    "construct each closed body once via JSON.stringify with same captured revision",
+    "check both expectedRevision values exactly seed revision; encoded r<=128 and actual body length343+r",
+    "retain exact original body/key/hash per contender",
+    "replay selected loser exact original string/bytes/key/hash; no body reconstruction",
+    "control differs only by removing both operationIndex1.expectedRevision fields"
+  ],
+  "headerOracle": "named presence/value checks only; never exhaustive header-set equality",
+  "reports": {
+    "environment": "BDP_TRANSACTIONAL_GUARDED_BATCH_OUTPUT",
+    "cohortPaths": {
+      "positive": "<external-run>/positive-observation.json",
+      "unguarded-contenders": "<external-run>/unguarded-observation.json"
+    },
+    "vitestPaths": {
+      "positive": "<external-run>/positive-vitest.json",
+      "unguarded-contenders": "<external-run>/unguarded-vitest.json"
+    },
+    "exclusive": true,
+    "absolute": true,
+    "outsideWorktreeAndStore": true,
+    "requiredSafeFields": [
+      "mode",
+      "namedAssertion",
+      "failedPhase",
+      "failureCount",
+      "primaryFailureCount",
+      "cleanupFailureCount",
+      "reportWriteFailed",
+      "prerequisites",
+      "completedContenderCount",
+      "failedContenderCount",
+      "attempts",
+      "completedResponses",
+      "validatedReceiptFacts",
+      "performedEqualities",
+      "sourceEntryAndServedIdentityDigests",
+      "boundedMilestones",
+      "cleanupFacts"
+    ],
+    "negativeRequired": {
+      "namedAssertion": "guarded-batch:one-retained-revision-failure",
+      "completedContenderCount": 2,
+      "failedContenderCount": 0,
+      "attempts": 3,
+      "completedResponses": 3,
+      "failureCount": 1,
+      "cleanupFailureCount": 0,
+      "reportWriteFailed": false,
+      "prerequisites": "all independent successful fixture/control facts true before named throw"
+    },
+    "actualOutputPaths": "resolve and pin at measured execution gate; no file exists or run occurred now"
+  },
+  "fixtureBinding": {
+    "path": "packages/conformance/test-support/transactional/fixture-v1.json",
+    "shape": "{bytes:Uint8Array}",
+    "meaning": "identity metadata only; never execute extra scenarios or imply qualification"
+  }
+}

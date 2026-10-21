@@ -1,0 +1,31 @@
+--- a/packages/server/src/reference-deployment-runtime.test.ts
++++ b/packages/server/src/reference-deployment-runtime.test.ts
+@@ -231,7 +231,7 @@
+   });
+ });
+ afterEach(async () => {
+-  const directories = [...roots];
++  const directories = roots.splice(0);
+   console.log(
+     JSON.stringify({
+       observation: "reference-lifecycle-source-before-cleanup",
+@@ -261,7 +261,7 @@
+     ),
+   );
+   const unknown = cleanup.some((r) => r.status === "rejected") || sql.rows.some((r) => !r.closed);
+-  if (!unknown) for (const root of roots.splice(0)) rmSync(root, { recursive: true, force: true });
++  if (!unknown) for (const root of directories) rmSync(root, { recursive: true, force: true });
+   console.log(
+     JSON.stringify({
+       observation: "reference-lifecycle-source-terminal",
+--- a/apps/bdptest/src/reference-deployment-lifecycle-installed.test.ts
++++ b/apps/bdptest/src/reference-deployment-lifecycle-installed.test.ts
+@@ -974,7 +974,7 @@
+     expect(anonymous.headers[name] === undefined).toBe(true);
+   const descriptorHead = await client.send("descriptor-HEAD", "HEAD", routes.descriptorUrl, 200);
+   const directoryHead = await client.send("Directory-HEAD", "HEAD", routes.directoryUrl, 200);
+-  for (const [get, head] of [[routes.descriptorResponse, descriptorHead], [routes.directoryResponse, directoryHead]])
++  for (const [get, head] of [[routes.descriptorResponse, descriptorHead], [routes.directoryResponse, directoryHead]] as const)
+     for (const name of ["content-type", "content-length", "cache-control", "etag", "last-modified", "vary"])
+       expect(head.headers[name] === get.headers[name]).toBe(true);
+   await client.send("absent", "GET", client.scope + "beads/not-created", 404);

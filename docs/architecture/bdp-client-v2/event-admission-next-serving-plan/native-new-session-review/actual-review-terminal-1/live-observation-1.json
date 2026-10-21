@@ -1,0 +1,53 @@
+{
+  "observedUtc": "2026-10-18T03:06:01.653461+00:00",
+  "expectedSessionConfirmed": [
+    "2026-10-18T02:16:24Z-549f"
+  ],
+  "liveOwnedProcessInventory": [
+    " 5331 66169  5331   2.7   0:01.75 Sat Oct 17 20:05:03 2026     /opt/homebrew/Cellar/python@3.14/3.14.5/Frameworks/Python.framework/Versions/3.14/Resources/Python.app/Contents/MacOS/Python",
+    " 5342  5331  5342   0.0   0:00.16 Sat Oct 17 20:05:04 2026     /opt/homebrew/Cellar/python@3.14/3.14.5/Frameworks/Python.framework/Versions/3.14/Resources/Python.app/Contents/MacOS/Python",
+    " 5366  5342  5366   0.1   0:00.84 Sat Oct 17 20:05:04 2026     /opt/homebrew/bin/claude"
+  ],
+  "reviewProcess": {
+    "pid": 5366,
+    "pgid": 5366,
+    "started": "2026-10-18T03:05:04.759490+00:00",
+    "argv": [
+      "/opt/homebrew/bin/claude",
+      "--safe-mode",
+      "-p",
+      "--tools",
+      "Read,Glob,Grep",
+      "--allowedTools",
+      "Read,Glob,Grep",
+      "--disable-slash-commands",
+      "--strict-mcp-config",
+      "--mcp-config",
+      "{\"mcpServers\":{}}",
+      "--no-session-persistence",
+      "--output-format",
+      "stream-json",
+      "--verbose",
+      "--include-partial-messages"
+    ],
+    "timeoutSeconds": 1800,
+    "termAfterSeconds": 1790
+  },
+  "streamBytes": 149078,
+  "terminalExists": false,
+  "all679Source24Context12ArtifactsMatch": true,
+  "all3ToolIdentitiesMatch": true,
+  "beforeSnapshotMatchesReleasedBinding": true,
+  "releaseFlagDeltasOnly": true,
+  "explicitIndexExceptions": {
+    "packet": "binding.json sole false-to-true release; new nine attempt output names remain outside CLOSED44-file inventory",
+    "supplement": "control.json sole false-to-true release; attempt/ execution outputs remain outside CLOSED12-file inventory"
+  },
+  "closedPacketBindingSha256": "8b8ad44b410387dd80e46f55d1c853dded7fba8aee0b609c2865b3854dc66677",
+  "releasedPacketBindingSha256": "590a414396833f54eead6150b49b9a1ed39c149cbde1f6645a7e0e142fe23b08",
+  "closedControlSha256": "22d4123075f329834997f2325e4548759a2a7094b59d7abe4e6b2050a95cf579",
+  "releasedControlSha256": "967adf122b980120a139e9cdcc7fcc6262ae99f9e9b26b73dfc03060d332f062",
+  "supplementIndexSha256": "141fa43533f4b51b9027eb00123f8adcc7ba703dea23a5b1c46bb5cb487a9226",
+  "releaseRecordSha256": "828379fc459ce6915a303d8d21ffcca83b2c1cc92ec9a13e47feca19faf0f5f2",
+  "approvalInferred": false
+}

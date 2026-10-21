@@ -1,0 +1,12 @@
+--- reviewed-samekey/run.py
++++ guarded-repair/run.py
+@@ -1,7 +1,7 @@
+ from pathlib import Path
+ import subprocess,json,hashlib,datetime,time,os,signal
+-W=Path("/Users/dbox/repos/wt/vickie/vickie-same-key-dispatch")
+-E=Path("/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-same-key-overlap-draft/report-overflow-repair/claude-review")
++W=Path("/Users/dbox/repos/wt/vickie/vickie-guarded-batch")
++E=Path("/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-guarded-batch-draft/review-repair/claude-review")
+ P=E;T=P/"tmp"
+ sha=lambda b:hashlib.sha256(b).hexdigest()
+ def git(*a):return subprocess.check_output(["git",*a],cwd=W)

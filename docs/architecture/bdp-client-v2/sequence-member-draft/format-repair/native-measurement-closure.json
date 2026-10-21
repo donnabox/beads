@@ -1,0 +1,907 @@
+{
+  "status": "READ_ONLY_MEASUREMENT_AUDIT_NO_EXECUTION_RELEASE",
+  "base": "18104a03b850553641f24fe83e7318493fa102ca",
+  "sourceHashes": {
+    "packages/conformance/test-support/transactional/manifest-v1.json": "a11a79f6d0f9ffa5933a680a3e4fed87987789c3deca50a38cda8563132d242e",
+    "packages/conformance/test-support/transactional/coverage-v1.json": "346e1edaa22af789f89017fdc2fef6bb01b7564ed72a65344e9fe5635887c74f",
+    "packages/conformance/src/transactional-cumulative.test.ts": "313e6a947b33a3893565ea5db2d9d4a962b46c2e926900598e9285e657a31bf2",
+    "apps/bdptest/src/transactional-matrix.test.ts": "dcf0161723a6b77dd4235111a83a6aa1ce0cbb6a1a5d79e362f992742bc503de"
+  },
+  "inputs": {
+    "sourceBinding": {
+      "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/sequence-member-draft/source-binding.json",
+      "sha256": "a6eb425d2616279fed28132c2b59258b7503b186224ba538179704b6364c9e2a"
+    },
+    "fullPatch": {
+      "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/sequence-member-draft/draft.patch",
+      "sha256": "53c66bc9a5d07f53749e18628eaba32773458160ab506566ec1fb7960d13c313"
+    },
+    "measurements": {
+      "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/sequence-member-draft/format-repair/measurements.json",
+      "sha256": "befeb6aba4a4984563395a73622bdf75843a141db93669472a9652bc60e9dfeb"
+    },
+    "retention": {
+      "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-command-minimum-evidence-draft/event-final/root-growth-retention.json",
+      "sha256": "f146b00019c269a2638101521c89ee18256d052fd66de9d03b57cd32a9649651"
+    },
+    "companion": {
+      "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/sequence-v8-preparation/companion.json",
+      "sha256": "3853547b6baa1d50cc6309ad213806c8418a89fc36970c4744faafb35384fdeb"
+    }
+  },
+  "canonical": {
+    "sha256": "a11a79f6d0f9ffa5933a680a3e4fed87987789c3deca50a38cda8563132d242e",
+    "diskBytes": 790009,
+    "normalBytes": 802361,
+    "normalSha256": "a4fbfff3c4dcc38e156ebe09d27b33a44a682b081820192ff8e58b60e4dbe1e1",
+    "compactBytes": 392300,
+    "nodes": 20956,
+    "actions": 220,
+    "assertions": 2503
+  },
+  "coverage": {
+    "sha256": "346e1edaa22af789f89017fdc2fef6bb01b7564ed72a65344e9fe5635887c74f",
+    "diskBytes": 117702,
+    "normalBytes": 117702,
+    "normalSha256": "346e1edaa22af789f89017fdc2fef6bb01b7564ed72a65344e9fe5635887c74f",
+    "compactBytes": 83608,
+    "nodes": 2629
+  },
+  "delta": {
+    "diskBytes": 51385,
+    "normalBytes": 51931,
+    "nodes": 1386,
+    "coverageDiskBytes": 9563,
+    "coverageNormalBytes": 9563,
+    "actions": 10,
+    "assertions": 209
+  },
+  "rawParentPreservation": [
+    {
+      "path": "packages/conformance/test-support/transactional/manifest-v1.json",
+      "parentSha256": "29729151cf6da641545910ec3880f9609c13b319af7bbe99d3d2ad47833dab96",
+      "reconstructedSha256": "29729151cf6da641545910ec3880f9609c13b319af7bbe99d3d2ad47833dab96",
+      "oldRawObjects": [
+        {
+          "id": "read-update.http.command-minimum-fields",
+          "sha256": "f04c001617ccad14ef67a82586ea5f61ec918bc2545bb041fafc21dee07b5d7e",
+          "bytes": 54412
+        },
+        {
+          "id": "transactional.batch.atomic-commit",
+          "sha256": "0dfd3b9ed02d01f76ecac08c00b009b4bb9f03e57f7e15a2266eed82fc144747",
+          "bytes": 14936
+        },
+        {
+          "id": "transactional.batch.rollback",
+          "sha256": "be24067358af7b5acf7bc1beae2eb6534cbc0effa6f65406ab61b139310bfc37",
+          "bytes": 16319
+        },
+        {
+          "id": "transactional.batch.deletion-safety",
+          "sha256": "3e66e7c95aec963cc80e076249a5870b952765b2e98c1023ea148f8f628e6aeb",
+          "bytes": 131808
+        },
+        {
+          "id": "transactional.batch.no-op-entries",
+          "sha256": "9307b230eb053131e9127cbbb5e6285305b79d6794edd22f5432a07fc74d9faa",
+          "bytes": 81047
+        },
+        {
+          "id": "transactional.set.mutation",
+          "sha256": "6e7280a9ebbbc3faa1da989015cc802f82cd51b17a9cea11e7cc91392bef49d6",
+          "bytes": 71739
+        },
+        {
+          "id": "transactional.set.zero-match",
+          "sha256": "35aa23bd32539869ea3db41e1c9f3e81a3217e2eb983e764e860a6e00c9eb2c9",
+          "bytes": 36055
+        },
+        {
+          "id": "transactional.set.cardinality",
+          "sha256": "205af1c54d62efb09c9eadf20147a1730909e788c0d4763ce9718b8648f24ede",
+          "bytes": 28546
+        },
+        {
+          "id": "transactional.set.singleton-targets",
+          "sha256": "561b8ebc21106628918111332a9ab7b47be7350935925ed1e76a6cb5bed576b9",
+          "bytes": 40018
+        },
+        {
+          "id": "transactional.receipt.readable",
+          "sha256": "ddb97e450e233b941f7d905d49f48648d9965ed1b361dcdc5dee6f810038a1e0",
+          "bytes": 12545
+        },
+        {
+          "id": "transactional.receipt.pagination",
+          "sha256": "c531c260349347cdc3e54ba68282f1a266a5fa207d3775660615f836a4768782",
+          "bytes": 138750
+        },
+        {
+          "id": "transactional.idempotency.conflict",
+          "sha256": "ba93aea884ae462533d02695642f03a2ca854f5adabeb41867254216dabb2106",
+          "bytes": 29772
+        },
+        {
+          "id": "transactional.idempotency.cross-carrier",
+          "sha256": "4ad8c05fe5fbb4682809d4481c93e2684fe30fbbb8962b4da498590637f8f35b",
+          "bytes": 64106
+        },
+        {
+          "id": "transactional.idempotency.failed-retained",
+          "sha256": "a867694406dde07da71ac70197c60c478dd0fb3344cf2c8160795d1aa62d3378",
+          "bytes": 18404
+        }
+      ]
+    },
+    {
+      "path": "packages/conformance/test-support/transactional/coverage-v1.json",
+      "parentSha256": "4619813e9446e0e714a64c11eac184531950f57720e32c7ef414c7e3342121af",
+      "reconstructedSha256": "4619813e9446e0e714a64c11eac184531950f57720e32c7ef414c7e3342121af",
+      "oldRawObjects": [
+        {
+          "id": "read-update.http.command-minimum-fields",
+          "sha256": "47914ed67c7b06e721e74134e0c633f3e1a7d461cb50ea200ff1874686885c2a",
+          "bytes": 8888
+        },
+        {
+          "id": "transactional.batch.atomic-commit",
+          "sha256": "ffd77a9d34ac41a6e1f960671bea6880eb5b2ab7b11b3af4ccf0177363d7f4d7",
+          "bytes": 2383
+        },
+        {
+          "id": "transactional.batch.rollback",
+          "sha256": "9e4f5cdb45f0133f1c6d23caa402701981db2e6f4198e23c667579622ace6769",
+          "bytes": 2857
+        },
+        {
+          "id": "transactional.batch.deletion-safety",
+          "sha256": "ac27a329a1cc013e6a0e24e0f5cad6b5b4af6c128ad65302d030422a3c7e3c0a",
+          "bytes": 17375
+        },
+        {
+          "id": "transactional.batch.no-op-entries",
+          "sha256": "383de4e0cb9b3bad310b9db7ff9009cb59fac55966f0309bc71c5d007bea6c1c",
+          "bytes": 10587
+        },
+        {
+          "id": "transactional.set.mutation",
+          "sha256": "058147f8194f091ee5a7ef3d4fd378f0324f6570049df777f993acb5f967d540",
+          "bytes": 11676
+        },
+        {
+          "id": "transactional.set.zero-match",
+          "sha256": "4e79e18a5e4c2735b5c686b9ad610dedc890386bfb06584f98268a421bbb832b",
+          "bytes": 6520
+        },
+        {
+          "id": "transactional.set.cardinality",
+          "sha256": "2a255ed4d364c435c9f985d7a770386bc7b20b2865887b9c8cc2d6cc5f0dd116",
+          "bytes": 5800
+        },
+        {
+          "id": "transactional.set.singleton-targets",
+          "sha256": "0c9008bac3e2c047d9aa8d47d343b7ed936c9c9352bb140c6422127c71b156b1",
+          "bytes": 7314
+        },
+        {
+          "id": "transactional.receipt.readable",
+          "sha256": "684eba200912ccb0932c0a8286e350a6e545262a205b3ea3df47a12fc6dd18ec",
+          "bytes": 2142
+        },
+        {
+          "id": "transactional.receipt.pagination",
+          "sha256": "0735edbca2fbf384f9f8147140a353dc084d9ad85facaddf2f5073f56a7256ee",
+          "bytes": 13057
+        },
+        {
+          "id": "transactional.idempotency.conflict",
+          "sha256": "de9b758f8ac4df7db5597b1eb2b402a116720becc30a41e7198f78f244358ec0",
+          "bytes": 5188
+        },
+        {
+          "id": "transactional.idempotency.cross-carrier",
+          "sha256": "c5e6076a2104c06f88fac88c77214522cab457faf925fe03881dff9778c35245",
+          "bytes": 11196
+        },
+        {
+          "id": "transactional.idempotency.failed-retained",
+          "sha256": "63918cbb495a504fd2043f52b60e7cd8ef1518b8022a96edb0d02660c7df1a8e",
+          "bytes": 2917
+        }
+      ]
+    }
+  ],
+  "unchangedTransforms": [
+    {
+      "name": "applyDeletionControl",
+      "sha256": "b6f008b64e3df838b8f3d462289823273578a4b3e35c4d4582bb6396de2673b5",
+      "bytes": 4386
+    },
+    {
+      "name": "applyCrossCarrierControl",
+      "sha256": "e320cb1d6ef755e38940669bd5fdc40c09a53185550384416644d9f1eb83b7ca",
+      "bytes": 3208
+    },
+    {
+      "name": "applyCommandMinimumControl",
+      "sha256": "7e538bce0ab307a91112db2d2d2ffaebfa7f1736cf0043da1ffcaf78c2db4f92",
+      "bytes": 1372
+    },
+    {
+      "name": "crossCarrierRequests",
+      "sha256": "5a96fe3e9f84256943cdd3a0a5052f43b2f7ddf70d5298b6ac8dc211a5da3bda",
+      "bytes": 1491
+    },
+    {
+      "name": "minimumRequests",
+      "sha256": "7a62cd985b2879efef0f98b5b984f386dd43a3b7472a0ffac8c31102fd7e0397",
+      "bytes": 2222
+    },
+    {
+      "name": "crossCarrierWire",
+      "sha256": "cf2439337fce21997b5d6559921c2b63fcc70a4c437d2d19c6fa550fd7a458d3",
+      "bytes": 3214
+    }
+  ],
+  "unchangedInlineMutatorCount": 12,
+  "unchangedInlineMutatorHashes": [
+    "b2249b84044151649b1056e28f3a079d15ab5585a5460391e7e8b8e0facf30a9",
+    "fe2d229f37cf0c4c35cebc1517b18f8e613f301af06aafdf642cdf59e940f1e1",
+    "566e85cb79884156959ff598d157b6e50e2f66b9d409644aa279390dca1c3343",
+    "26ccb9652e95553b13ff8736801fd404809852cb58eddbf52889dfa9432f13d6",
+    "979326a366944cf36b463c2cfa96e197bcb8f148fd6e11b6222ea9a786aae53c",
+    "80675c74fb9a82cbcd5c380cbf67bc0685dfb2a2659f37f16649ed8d59e1eeb7",
+    "9761be78ec2763cd6abaf8db2ef79053c089e1bf848c2a52d83a2efbffceb85b",
+    "dc80636c4a345329ea846aad68d73d1301e637cffc956414708581660ad405d6",
+    "c4ce9a70f5b28f35279196fc853cc571cf1a14fbb0e8c43f7aca90fd68ad5880",
+    "268cda7a4875d9e98805c395c142611059737e21ed98f64e1c011fa2ee2cd160",
+    "98b95eeb2d10bfb887a37fc46cf025fbd6038f52617eda9172ebeb148a5d2272",
+    "8ba5eb987476c594968f720c969b17f6025e816793ef1d7e154ffcfd9ce781d7"
+  ],
+  "derivatives": [
+    {
+      "name": "effects-zero-results.json",
+      "sha256": "81cd0cf578282a50afe53b29eaa75ca2dc88b826a7e7c36979b0840de56819b7",
+      "diskBytes": 802361,
+      "normalBytes": 802361,
+      "normalSha256": "81cd0cf578282a50afe53b29eaa75ca2dc88b826a7e7c36979b0840de56819b7",
+      "compactBytes": 392300,
+      "nodes": 20956,
+      "actions": 220,
+      "assertions": 2503,
+      "historicalSha256": "6d81908ecc55eb7a92c49060c5a8ca5e07315d6ce31c457b20a0258868d1379e",
+      "strippedHistoricalNormalSha256": "6d81908ecc55eb7a92c49060c5a8ca5e07315d6ce31c457b20a0258868d1379e",
+      "historicalObjectEquality": true,
+      "appendedRowEquality": true
+    },
+    {
+      "name": "duplicate-receipt-binding.json",
+      "sha256": "d82bc2ef71ffb6a895febc2b8175481280e3d8aff5000bcb672b1fb83fcb3504",
+      "diskBytes": 802556,
+      "normalBytes": 802556,
+      "normalSha256": "d82bc2ef71ffb6a895febc2b8175481280e3d8aff5000bcb672b1fb83fcb3504",
+      "compactBytes": 392375,
+      "nodes": 20961,
+      "actions": 220,
+      "assertions": 2503,
+      "historicalSha256": "e036b2fa85d93a443a3cb39f8dfac23cb2a30762b729d3ac3bca892363e571fd",
+      "strippedHistoricalNormalSha256": "e036b2fa85d93a443a3cb39f8dfac23cb2a30762b729d3ac3bca892363e571fd",
+      "historicalObjectEquality": true,
+      "appendedRowEquality": true
+    },
+    {
+      "name": "set-order.json",
+      "sha256": "fe34d689ab979444c589f8e931eb6595a5845b74d9f3af98e8846a43ac4893b6",
+      "diskBytes": 802361,
+      "normalBytes": 802361,
+      "normalSha256": "fe34d689ab979444c589f8e931eb6595a5845b74d9f3af98e8846a43ac4893b6",
+      "compactBytes": 392300,
+      "nodes": 20956,
+      "actions": 220,
+      "assertions": 2503,
+      "historicalSha256": "76e6a1d17fea6a2d92b3beeed5060bbac80a2cedbed2d8b2e1eb674a0f59c5c7",
+      "strippedHistoricalNormalSha256": "76e6a1d17fea6a2d92b3beeed5060bbac80a2cedbed2d8b2e1eb674a0f59c5c7",
+      "historicalObjectEquality": true,
+      "appendedRowEquality": true
+    },
+    {
+      "name": "conflict-event.json",
+      "sha256": "23144ab8efcc1bbae65a16265d562ecab42b4b9b225bc53648191d65a230a104",
+      "diskBytes": 802361,
+      "normalBytes": 802361,
+      "normalSha256": "23144ab8efcc1bbae65a16265d562ecab42b4b9b225bc53648191d65a230a104",
+      "compactBytes": 392300,
+      "nodes": 20956,
+      "actions": 220,
+      "assertions": 2503,
+      "historicalSha256": "84721eab910a237c5d2f01a0d6a786374e1d60ffc9bd3e662cec8661a04ab68e",
+      "strippedHistoricalNormalSha256": "84721eab910a237c5d2f01a0d6a786374e1d60ffc9bd3e662cec8661a04ab68e",
+      "historicalObjectEquality": true,
+      "appendedRowEquality": true
+    },
+    {
+      "name": "cross-wired-receipt.json",
+      "sha256": "79e05ba3c9c56855f901774529e583e18a81f5c9635555e05b9f81af13d0e34a",
+      "diskBytes": 801639,
+      "normalBytes": 801639,
+      "normalSha256": "79e05ba3c9c56855f901774529e583e18a81f5c9635555e05b9f81af13d0e34a",
+      "compactBytes": 391954,
+      "nodes": 20935,
+      "actions": 220,
+      "assertions": 2499,
+      "historicalSha256": "287621e12d697f668ba48965b4f9944aa5915ba0b7a58ff0dcb5f28319989d64",
+      "strippedHistoricalNormalSha256": "287621e12d697f668ba48965b4f9944aa5915ba0b7a58ff0dcb5f28319989d64",
+      "historicalObjectEquality": true,
+      "appendedRowEquality": true
+    },
+    {
+      "name": "ordinary-capture.json",
+      "sha256": "aaabfdd28a1d10a69f090aa5c23ee3d60c5c1f2ed33998aa1376271453ab74a2",
+      "diskBytes": 802562,
+      "normalBytes": 802562,
+      "normalSha256": "aaabfdd28a1d10a69f090aa5c23ee3d60c5c1f2ed33998aa1376271453ab74a2",
+      "compactBytes": 392381,
+      "nodes": 20961,
+      "actions": 220,
+      "assertions": 2503,
+      "historicalSha256": "bc67542e29d9389e3821e7f44c16be18ea6a295dcb9f4e52ebb2a687bad2c52a",
+      "strippedHistoricalNormalSha256": "bc67542e29d9389e3821e7f44c16be18ea6a295dcb9f4e52ebb2a687bad2c52a",
+      "historicalObjectEquality": true,
+      "appendedRowEquality": true
+    },
+    {
+      "name": "cross-sequence-fresh-key.json",
+      "sha256": "7c4f9cf24c3e8cfdb07c7d6784ab16df81a6b43aceaadd402bb6bec54ae00c76",
+      "diskBytes": 803715,
+      "normalBytes": 803715,
+      "normalSha256": "7c4f9cf24c3e8cfdb07c7d6784ab16df81a6b43aceaadd402bb6bec54ae00c76",
+      "compactBytes": 392850,
+      "nodes": 20992,
+      "actions": 220,
+      "assertions": 2506,
+      "historicalSha256": "64c814c1f0188af65b503d0072976ba72fab1e1d63016cd0138afc1b19bdcd6e",
+      "strippedHistoricalNormalSha256": "64c814c1f0188af65b503d0072976ba72fab1e1d63016cd0138afc1b19bdcd6e",
+      "historicalObjectEquality": true,
+      "appendedRowEquality": true
+    },
+    {
+      "name": "pagination-page-parent.json",
+      "sha256": "f2eaba3c4847b23a6659f6f0e40a943a5fdccd742174288b32c84b7c77abe238",
+      "diskBytes": 802393,
+      "normalBytes": 802393,
+      "normalSha256": "f2eaba3c4847b23a6659f6f0e40a943a5fdccd742174288b32c84b7c77abe238",
+      "compactBytes": 392332,
+      "nodes": 20956,
+      "actions": 220,
+      "assertions": 2503,
+      "historicalSha256": "0204b55dd6e12f97adc5216bbe5da6eb2047c6f6988c4255fa1a025276af30be",
+      "strippedHistoricalNormalSha256": "0204b55dd6e12f97adc5216bbe5da6eb2047c6f6988c4255fa1a025276af30be",
+      "historicalObjectEquality": true,
+      "appendedRowEquality": true
+    },
+    {
+      "name": "pagination-root-next.json",
+      "sha256": "1d542536f49b3a23d27ad73fb7505aefb64a4b0d7b07066482c2985f0aabb519",
+      "diskBytes": 802350,
+      "normalBytes": 802350,
+      "normalSha256": "1d542536f49b3a23d27ad73fb7505aefb64a4b0d7b07066482c2985f0aabb519",
+      "compactBytes": 392289,
+      "nodes": 20956,
+      "actions": 220,
+      "assertions": 2503,
+      "historicalSha256": "1b3265da08d1469453721f621265569fc3c8b045eea95a9f5735952101d365c5",
+      "strippedHistoricalNormalSha256": "1b3265da08d1469453721f621265569fc3c8b045eea95a9f5735952101d365c5",
+      "historicalObjectEquality": true,
+      "appendedRowEquality": true
+    },
+    {
+      "name": "pagination-historical-title.json",
+      "sha256": "f3a15fc6bbe217ba172bba26f878f4ffa4ae1bb78b5548abab4654553f0b934e",
+      "diskBytes": 802359,
+      "normalBytes": 802359,
+      "normalSha256": "f3a15fc6bbe217ba172bba26f878f4ffa4ae1bb78b5548abab4654553f0b934e",
+      "compactBytes": 392298,
+      "nodes": 20956,
+      "actions": 220,
+      "assertions": 2503,
+      "historicalSha256": "45d144063a2a25d18e3039c1af899d9f5a357809069eca8da83103c1cd30f3be",
+      "strippedHistoricalNormalSha256": "45d144063a2a25d18e3039c1af899d9f5a357809069eca8da83103c1cd30f3be",
+      "historicalObjectEquality": true,
+      "appendedRowEquality": true
+    },
+    {
+      "name": "receipt-body-assertion.json",
+      "sha256": "58e25b190091d3014aefabdb5073b1301aa2cfa7c588a23b3d9783de2a96a321",
+      "diskBytes": 801678,
+      "normalBytes": 801678,
+      "normalSha256": "58e25b190091d3014aefabdb5073b1301aa2cfa7c588a23b3d9783de2a96a321",
+      "compactBytes": 391993,
+      "nodes": 20935,
+      "actions": 220,
+      "assertions": 2499,
+      "historicalSha256": "6ab15cb8d3d259669e2e7631ab0df89e242499319aed7bef84649694967debe3",
+      "strippedHistoricalNormalSha256": "6ab15cb8d3d259669e2e7631ab0df89e242499319aed7bef84649694967debe3",
+      "historicalObjectEquality": true,
+      "appendedRowEquality": true
+    },
+    {
+      "name": "receipt-credential.json",
+      "sha256": "47f9aff67e0c6cdfd40592d8af5f29b0d20eefd94908a6d703cb912d01ffde22",
+      "diskBytes": 802400,
+      "normalBytes": 802400,
+      "normalSha256": "47f9aff67e0c6cdfd40592d8af5f29b0d20eefd94908a6d703cb912d01ffde22",
+      "compactBytes": 392325,
+      "nodes": 20957,
+      "actions": 220,
+      "assertions": 2503,
+      "historicalSha256": "c3da287fbfe50d97ea26e32ee0ec72b97ad737a46ac6a52ebfd9b0179207cb4a",
+      "strippedHistoricalNormalSha256": "c3da287fbfe50d97ea26e32ee0ec72b97ad737a46ac6a52ebfd9b0179207cb4a",
+      "historicalObjectEquality": true,
+      "appendedRowEquality": true
+    },
+    {
+      "name": "deletion-incoming-order.json",
+      "sha256": "1294e1050a79f9b71080fbf163032ee502c7f4e34a1dd9ab22ab354fd50021c8",
+      "diskBytes": 808479,
+      "normalBytes": 808479,
+      "normalSha256": "1294e1050a79f9b71080fbf163032ee502c7f4e34a1dd9ab22ab354fd50021c8",
+      "compactBytes": 395488,
+      "nodes": 21112,
+      "actions": 220,
+      "assertions": 2526,
+      "historicalSha256": "3f1ceaa0c9ae24b6f152b406418f06f4b0c5eaf2a46fd0286d9f06db36c574ae",
+      "strippedHistoricalNormalSha256": "3f1ceaa0c9ae24b6f152b406418f06f4b0c5eaf2a46fd0286d9f06db36c574ae",
+      "historicalObjectEquality": true,
+      "appendedRowEquality": true
+    },
+    {
+      "name": "effects-event-order.json",
+      "sha256": "2a2708832dea3e44c673efd038f4109811cd605ec4a9c5603f7f72e1186f5de4",
+      "diskBytes": 802361,
+      "normalBytes": 802361,
+      "normalSha256": "2a2708832dea3e44c673efd038f4109811cd605ec4a9c5603f7f72e1186f5de4",
+      "compactBytes": 392300,
+      "nodes": 20956,
+      "actions": 220,
+      "assertions": 2503,
+      "historicalSha256": "8d1d5fca3bd9e6c50f1a9ed0c8c4b47438952818ac92dd8231bab625e3a4a47c",
+      "strippedHistoricalNormalSha256": "8d1d5fca3bd9e6c50f1a9ed0c8c4b47438952818ac92dd8231bab625e3a4a47c",
+      "historicalObjectEquality": true,
+      "appendedRowEquality": true
+    },
+    {
+      "name": "conflict-reopened-status.json",
+      "sha256": "3ebdc2b606a45e2e921c146422ee1d326ff57d5312223e81354b62db41e0114f",
+      "diskBytes": 802361,
+      "normalBytes": 802361,
+      "normalSha256": "3ebdc2b606a45e2e921c146422ee1d326ff57d5312223e81354b62db41e0114f",
+      "compactBytes": 392300,
+      "nodes": 20956,
+      "actions": 220,
+      "assertions": 2503,
+      "historicalSha256": "11e3f9f84843f3f99294e39f709b2d007ae25dbf8ef3cc50e030faa747d9898c",
+      "strippedHistoricalNormalSha256": "11e3f9f84843f3f99294e39f709b2d007ae25dbf8ef3cc50e030faa747d9898c",
+      "historicalObjectEquality": true,
+      "appendedRowEquality": true
+    },
+    {
+      "name": "effects-rollback-metadata.json",
+      "sha256": "e538e6a74b6345f1fd2b3e0c89ffe6ada64f3a42419180765af10f1f77a3d41c",
+      "diskBytes": 802374,
+      "normalBytes": 802374,
+      "normalSha256": "e538e6a74b6345f1fd2b3e0c89ffe6ada64f3a42419180765af10f1f77a3d41c",
+      "compactBytes": 392313,
+      "nodes": 20956,
+      "actions": 220,
+      "assertions": 2503,
+      "historicalSha256": "5c3379d60218251a5ed7703fc46e08feffca983821dd7791674e3e3de33ac579",
+      "strippedHistoricalNormalSha256": "5c3379d60218251a5ed7703fc46e08feffca983821dd7791674e3e3de33ac579",
+      "historicalObjectEquality": true,
+      "appendedRowEquality": true
+    },
+    {
+      "name": "set-index.json",
+      "sha256": "dedf47d4867a9d4c19ebafb93e04571e58ba7650117d089bed9b54b849dafb87",
+      "diskBytes": 802361,
+      "normalBytes": 802361,
+      "normalSha256": "dedf47d4867a9d4c19ebafb93e04571e58ba7650117d089bed9b54b849dafb87",
+      "compactBytes": 392300,
+      "nodes": 20956,
+      "actions": 220,
+      "assertions": 2503,
+      "historicalSha256": "73f1428bc753a4d47b248196501ffebf143bddb376176b4eee4589b3cc3d75af",
+      "strippedHistoricalNormalSha256": "73f1428bc753a4d47b248196501ffebf143bddb376176b4eee4589b3cc3d75af",
+      "historicalObjectEquality": true,
+      "appendedRowEquality": true
+    },
+    {
+      "name": "noop-bead-property.json",
+      "sha256": "08b2d8db247f152f1345ded4efe5e8878b874966871a86e6d165a7e5287eaa8c",
+      "diskBytes": 802369,
+      "normalBytes": 802369,
+      "normalSha256": "08b2d8db247f152f1345ded4efe5e8878b874966871a86e6d165a7e5287eaa8c",
+      "compactBytes": 392308,
+      "nodes": 20956,
+      "actions": 220,
+      "assertions": 2503,
+      "historicalSha256": "149a59538afb4a3c1efd04681ae34ed07737513d43ea255ca277d403050eb0d7",
+      "strippedHistoricalNormalSha256": "149a59538afb4a3c1efd04681ae34ed07737513d43ea255ca277d403050eb0d7",
+      "historicalObjectEquality": true,
+      "appendedRowEquality": true
+    },
+    {
+      "name": "conflict-code.json",
+      "sha256": "6aa1fcc94f308992e416092367d73dd5f4b51257b010dfece0eeac1fc7ce9d07",
+      "diskBytes": 802358,
+      "normalBytes": 802358,
+      "normalSha256": "6aa1fcc94f308992e416092367d73dd5f4b51257b010dfece0eeac1fc7ce9d07",
+      "compactBytes": 392297,
+      "nodes": 20956,
+      "actions": 220,
+      "assertions": 2503,
+      "historicalSha256": "fbdc92ffad03fcf6c678e72eb5016d18269eb84e92c4d7e0f03529e76b1330c0",
+      "strippedHistoricalNormalSha256": "fbdc92ffad03fcf6c678e72eb5016d18269eb84e92c4d7e0f03529e76b1330c0",
+      "historicalObjectEquality": true,
+      "appendedRowEquality": true
+    },
+    {
+      "name": "set-poststate.json",
+      "sha256": "d55f96844b175d0f0ec0b84fea2dbe17e3ea825c42dd1618fcfddca68c105a34",
+      "diskBytes": 802368,
+      "normalBytes": 802368,
+      "normalSha256": "d55f96844b175d0f0ec0b84fea2dbe17e3ea825c42dd1618fcfddca68c105a34",
+      "compactBytes": 392307,
+      "nodes": 20956,
+      "actions": 220,
+      "assertions": 2503,
+      "historicalSha256": "324bbb2e328844419cda95eef41430a1d6a0d1629149b11211e881596b3c71e4",
+      "strippedHistoricalNormalSha256": "324bbb2e328844419cda95eef41430a1d6a0d1629149b11211e881596b3c71e4",
+      "historicalObjectEquality": true,
+      "appendedRowEquality": true
+    },
+    {
+      "name": "conflict-current-record.json",
+      "sha256": "49e35ae7ffc965bca96baceaaae2b13f68058cb889271e99ae47c0f04de208e9",
+      "diskBytes": 802361,
+      "normalBytes": 802361,
+      "normalSha256": "49e35ae7ffc965bca96baceaaae2b13f68058cb889271e99ae47c0f04de208e9",
+      "compactBytes": 392300,
+      "nodes": 20956,
+      "actions": 220,
+      "assertions": 2503,
+      "historicalSha256": "dc1242a79ad597e9064b34f870fccb745b35bd3c2a5238c6f55116aba69e447b",
+      "strippedHistoricalNormalSha256": "dc1242a79ad597e9064b34f870fccb745b35bd3c2a5238c6f55116aba69e447b",
+      "historicalObjectEquality": true,
+      "appendedRowEquality": true
+    },
+    {
+      "name": "effects-no-effect.json",
+      "sha256": "a79517b9f4908d82d542f42ba17c356a634afd5a582292c97f4be7b4f9070a9c",
+      "diskBytes": 802360,
+      "normalBytes": 802360,
+      "normalSha256": "a79517b9f4908d82d542f42ba17c356a634afd5a582292c97f4be7b4f9070a9c",
+      "compactBytes": 392299,
+      "nodes": 20956,
+      "actions": 220,
+      "assertions": 2503,
+      "historicalSha256": "29726cc604d409d3949ec3272dad3101257a9b119601418406fc32ee63750c0f",
+      "strippedHistoricalNormalSha256": "29726cc604d409d3949ec3272dad3101257a9b119601418406fc32ee63750c0f",
+      "historicalObjectEquality": true,
+      "appendedRowEquality": true
+    },
+    {
+      "name": "deletion-outgoing-order.json",
+      "sha256": "e8fcc1b38dab26e4ce38fe48c6f94de7a7f3466afb2632c3048c6ed7d9a5c987",
+      "diskBytes": 808479,
+      "normalBytes": 808479,
+      "normalSha256": "e8fcc1b38dab26e4ce38fe48c6f94de7a7f3466afb2632c3048c6ed7d9a5c987",
+      "compactBytes": 395488,
+      "nodes": 21112,
+      "actions": 220,
+      "assertions": 2526,
+      "historicalSha256": "d750ae41c11a81726ba53831e27f655fe04877399814ff5cb4a8b98a849d8308",
+      "strippedHistoricalNormalSha256": "d750ae41c11a81726ba53831e27f655fe04877399814ff5cb4a8b98a849d8308",
+      "historicalObjectEquality": true,
+      "appendedRowEquality": true
+    },
+    {
+      "name": "forbidden-receipt-use.json",
+      "sha256": "94a99cff0702569fe53f444c037fde9f1905f85c4f30d0abd3f0586569237593",
+      "diskBytes": 803071,
+      "normalBytes": 803071,
+      "normalSha256": "94a99cff0702569fe53f444c037fde9f1905f85c4f30d0abd3f0586569237593",
+      "compactBytes": 392644,
+      "nodes": 20976,
+      "actions": 221,
+      "assertions": 2504,
+      "historicalSha256": "3d5de8c2b52103492c87ec935453ac0a58144805d3d845cc5c5f6a7cbea77794",
+      "strippedHistoricalNormalSha256": "3d5de8c2b52103492c87ec935453ac0a58144805d3d845cc5c5f6a7cbea77794",
+      "historicalObjectEquality": true,
+      "appendedRowEquality": true
+    },
+    {
+      "name": "pagination-terminal-next.json",
+      "sha256": "e1a41e31c7934869771dceff5007f630ee50b1cd66130bcd2b46aecf392daa8e",
+      "diskBytes": 802415,
+      "normalBytes": 802415,
+      "normalSha256": "e1a41e31c7934869771dceff5007f630ee50b1cd66130bcd2b46aecf392daa8e",
+      "compactBytes": 392354,
+      "nodes": 20956,
+      "actions": 220,
+      "assertions": 2503,
+      "historicalSha256": "6d5c410b02e2b22a8079918a078fb3d866597a5d12f86c885917ce61eeadd10a",
+      "strippedHistoricalNormalSha256": "6d5c410b02e2b22a8079918a078fb3d866597a5d12f86c885917ce61eeadd10a",
+      "historicalObjectEquality": true,
+      "appendedRowEquality": true
+    },
+    {
+      "name": "deletion-committed-prefix-state.json",
+      "sha256": "c9f7cd1e9711b3b576da8cef0134852b3aeebad701d7ef1f240cb3f8b025608a",
+      "diskBytes": 805465,
+      "normalBytes": 805465,
+      "normalSha256": "c9f7cd1e9711b3b576da8cef0134852b3aeebad701d7ef1f240cb3f8b025608a",
+      "compactBytes": 393925,
+      "nodes": 21033,
+      "actions": 220,
+      "assertions": 2514,
+      "historicalSha256": "d696209feb46c0f1841f3638162f61581b2de7b7af331c609f87f9d55dff4dc8",
+      "strippedHistoricalNormalSha256": "d696209feb46c0f1841f3638162f61581b2de7b7af331c609f87f9d55dff4dc8",
+      "historicalObjectEquality": true,
+      "appendedRowEquality": true
+    },
+    {
+      "name": "cross-batch-semantic-conflict.json",
+      "sha256": "df2aefb78617b82efb62a4b6e7d7023ac58f4369766cb92083a360700c01b110",
+      "diskBytes": 803702,
+      "normalBytes": 803702,
+      "normalSha256": "df2aefb78617b82efb62a4b6e7d7023ac58f4369766cb92083a360700c01b110",
+      "compactBytes": 392979,
+      "nodes": 20993,
+      "actions": 220,
+      "assertions": 2510,
+      "historicalSha256": "3be5ad2d33d4b50412f1343d36e4b4bd4acde71e60d9bb577b2f05a1e00a1d53",
+      "strippedHistoricalNormalSha256": "3be5ad2d33d4b50412f1343d36e4b4bd4acde71e60d9bb577b2f05a1e00a1d53",
+      "historicalObjectEquality": true,
+      "appendedRowEquality": true
+    },
+    {
+      "name": "pagination-page-member.json",
+      "sha256": "7cdfed1e93fe18786be50e1cc4a74c5f556e367838c8083a2822781c110aedd3",
+      "diskBytes": 802361,
+      "normalBytes": 802361,
+      "normalSha256": "7cdfed1e93fe18786be50e1cc4a74c5f556e367838c8083a2822781c110aedd3",
+      "compactBytes": 392300,
+      "nodes": 20956,
+      "actions": 220,
+      "assertions": 2503,
+      "historicalSha256": "917c44255be1e3beb74acee3943d7e1748165518a03268bf5b931c396cc0e984",
+      "strippedHistoricalNormalSha256": "917c44255be1e3beb74acee3943d7e1748165518a03268bf5b931c396cc0e984",
+      "historicalObjectEquality": true,
+      "appendedRowEquality": true
+    },
+    {
+      "name": "receipt-binding.json",
+      "sha256": "a80168007e4503f3861e44e30e2b8bc03c345b018ac8e2432478d6c6e8352dc4",
+      "diskBytes": 802354,
+      "normalBytes": 802354,
+      "normalSha256": "a80168007e4503f3861e44e30e2b8bc03c345b018ac8e2432478d6c6e8352dc4",
+      "compactBytes": 392293,
+      "nodes": 20956,
+      "actions": 220,
+      "assertions": 2503,
+      "historicalSha256": "56dfb4ffc523342be5b3ead74e41341ac36e4455dbc9fa906a7b4a3abf6b147a",
+      "strippedHistoricalNormalSha256": "56dfb4ffc523342be5b3ead74e41341ac36e4455dbc9fa906a7b4a3abf6b147a",
+      "historicalObjectEquality": true,
+      "appendedRowEquality": true
+    },
+    {
+      "name": "minimum-batch-body-conflict.json",
+      "sha256": "200e683194cb5171534c78effa7f653972f14ae22693986be544984daf234036",
+      "diskBytes": 802368,
+      "normalBytes": 802368,
+      "normalSha256": "200e683194cb5171534c78effa7f653972f14ae22693986be544984daf234036",
+      "compactBytes": 392307,
+      "nodes": 20956,
+      "actions": 220,
+      "assertions": 2503,
+      "historicalSha256": "76228beffb8ad856916d0fee52dc06b66b20944399d1ff8568fe5731f0e27dc9",
+      "strippedHistoricalNormalSha256": "76228beffb8ad856916d0fee52dc06b66b20944399d1ff8568fe5731f0e27dc9",
+      "historicalObjectEquality": true,
+      "appendedRowEquality": true
+    },
+    {
+      "name": "effects-changed-poststate.json",
+      "sha256": "ef355f96e1e71827a1bb2df72dd3a88e563dcc56ff7196b79a0fe29fcc06d651",
+      "diskBytes": 802368,
+      "normalBytes": 802368,
+      "normalSha256": "ef355f96e1e71827a1bb2df72dd3a88e563dcc56ff7196b79a0fe29fcc06d651",
+      "compactBytes": 392307,
+      "nodes": 20956,
+      "actions": 220,
+      "assertions": 2503,
+      "historicalSha256": "35dcc29165fc19793621a685b3ef2465c7c1521faa6ad9db6dfe6ccaee1ba7d5",
+      "strippedHistoricalNormalSha256": "35dcc29165fc19793621a685b3ef2465c7c1521faa6ad9db6dfe6ccaee1ba7d5",
+      "historicalObjectEquality": true,
+      "appendedRowEquality": true
+    },
+    {
+      "name": "set-matched.json",
+      "sha256": "605040335164135afea00d0d97b655287f9150871d1e1c98b5e2c722950923b2",
+      "diskBytes": 802361,
+      "normalBytes": 802361,
+      "normalSha256": "605040335164135afea00d0d97b655287f9150871d1e1c98b5e2c722950923b2",
+      "compactBytes": 392300,
+      "nodes": 20956,
+      "actions": 220,
+      "assertions": 2503,
+      "historicalSha256": "38c7033478eb99d4dedbd6cd97be8b07e64d1407cc44570652118595bbd55719",
+      "strippedHistoricalNormalSha256": "38c7033478eb99d4dedbd6cd97be8b07e64d1407cc44570652118595bbd55719",
+      "historicalObjectEquality": true,
+      "appendedRowEquality": true
+    },
+    {
+      "name": "noop-link-metadata.json",
+      "sha256": "482b44cd064cc40c57967d474973c74ffdde2fef74bef321279d67c26ae2a405",
+      "diskBytes": 802382,
+      "normalBytes": 802382,
+      "normalSha256": "482b44cd064cc40c57967d474973c74ffdde2fef74bef321279d67c26ae2a405",
+      "compactBytes": 392321,
+      "nodes": 20956,
+      "actions": 220,
+      "assertions": 2503,
+      "historicalSha256": "68f1e44b664781dcbfcebb26c522a11dd62bfa87db8adb9431704da2650eeb1a",
+      "strippedHistoricalNormalSha256": "68f1e44b664781dcbfcebb26c522a11dd62bfa87db8adb9431704da2650eeb1a",
+      "historicalObjectEquality": true,
+      "appendedRowEquality": true
+    },
+    {
+      "name": "effects-zero-events.json",
+      "sha256": "29bd93582eb0fad85b9ca5d26f2e73f1a36f4d05eeb2f32da6b246f87dacd51e",
+      "diskBytes": 802507,
+      "normalBytes": 802507,
+      "normalSha256": "29bd93582eb0fad85b9ca5d26f2e73f1a36f4d05eeb2f32da6b246f87dacd51e",
+      "compactBytes": 392355,
+      "nodes": 20960,
+      "actions": 220,
+      "assertions": 2503,
+      "historicalSha256": "22d3098eb600d8050c42b00eae3afd0ef46c4ec2ecb0c6463370b8d6e45102a0",
+      "strippedHistoricalNormalSha256": "22d3098eb600d8050c42b00eae3afd0ef46c4ec2ecb0c6463370b8d6e45102a0",
+      "historicalObjectEquality": true,
+      "appendedRowEquality": true
+    },
+    {
+      "name": "conflict-retained-body.json",
+      "sha256": "4cebdad83cd5907dcc96ad9140e779aa6cd1998ec5d07cc39caed8fab2151874",
+      "diskBytes": 802348,
+      "normalBytes": 802348,
+      "normalSha256": "4cebdad83cd5907dcc96ad9140e779aa6cd1998ec5d07cc39caed8fab2151874",
+      "compactBytes": 392287,
+      "nodes": 20956,
+      "actions": 220,
+      "assertions": 2503,
+      "historicalSha256": "b6f672558e4d6d331240271ef039f42893f31f71c5916ad3aff838137462042c",
+      "strippedHistoricalNormalSha256": "b6f672558e4d6d331240271ef039f42893f31f71c5916ad3aff838137462042c",
+      "historicalObjectEquality": true,
+      "appendedRowEquality": true
+    },
+    {
+      "name": "minimum-readonly-credential.json",
+      "sha256": "638a7183f7d3c0edd4483525cf2ecd8a6ce6509cb825a2050350d5e7c4832f5a",
+      "diskBytes": 802359,
+      "normalBytes": 802359,
+      "normalSha256": "638a7183f7d3c0edd4483525cf2ecd8a6ce6509cb825a2050350d5e7c4832f5a",
+      "compactBytes": 392298,
+      "nodes": 20956,
+      "actions": 220,
+      "assertions": 2503,
+      "historicalSha256": "a7f9be255ce7b551d5b97622e7edb2c1e942e77c3beb9bf02d630aa85e6a5e78",
+      "strippedHistoricalNormalSha256": "a7f9be255ce7b551d5b97622e7edb2c1e942e77c3beb9bf02d630aa85e6a5e78",
+      "historicalObjectEquality": true,
+      "appendedRowEquality": true
+    },
+    {
+      "name": "effects-receipt-order.json",
+      "sha256": "bcb55fc08e3f38cf8d2fe74a6f467f07b550c44f4db2dfd8ba1002f736ef0ee4",
+      "diskBytes": 802361,
+      "normalBytes": 802361,
+      "normalSha256": "bcb55fc08e3f38cf8d2fe74a6f467f07b550c44f4db2dfd8ba1002f736ef0ee4",
+      "compactBytes": 392300,
+      "nodes": 20956,
+      "actions": 220,
+      "assertions": 2503,
+      "historicalSha256": "a0536c0d8ed9049375c81e409ffda25eb777dd5ecb8e70d638c58cf62cdcc449",
+      "strippedHistoricalNormalSha256": "a0536c0d8ed9049375c81e409ffda25eb777dd5ecb8e70d638c58cf62cdcc449",
+      "historicalObjectEquality": true,
+      "appendedRowEquality": true
+    },
+    {
+      "name": "noop-group-inventory-and-head.json",
+      "sha256": "1ffa8871fc349a3f15e1badbb91fce3956aff749c797024fdd3b2a1c82239be6",
+      "diskBytes": 802424,
+      "normalBytes": 802424,
+      "normalSha256": "1ffa8871fc349a3f15e1badbb91fce3956aff749c797024fdd3b2a1c82239be6",
+      "compactBytes": 392310,
+      "nodes": 20958,
+      "actions": 220,
+      "assertions": 2503,
+      "historicalSha256": "a90fdd035d1737bbd7101667042424509d52903476b04efd81230edd078c1384",
+      "strippedHistoricalNormalSha256": "a90fdd035d1737bbd7101667042424509d52903476b04efd81230edd078c1384",
+      "historicalObjectEquality": true,
+      "appendedRowEquality": true
+    },
+    {
+      "name": "pagination-inline-boundary.json",
+      "sha256": "1df1d71d1c6a9f85830432b6f19f0a7501a0bf32aa87e26be3533074bf254c0b",
+      "diskBytes": 802361,
+      "normalBytes": 802361,
+      "normalSha256": "1df1d71d1c6a9f85830432b6f19f0a7501a0bf32aa87e26be3533074bf254c0b",
+      "compactBytes": 392300,
+      "nodes": 20956,
+      "actions": 220,
+      "assertions": 2503,
+      "historicalSha256": "56aa6e2501277e1aad77df48c12f38a78830242ba220f872f07eaf06d52da5fa",
+      "strippedHistoricalNormalSha256": "56aa6e2501277e1aad77df48c12f38a78830242ba220f872f07eaf06d52da5fa",
+      "historicalObjectEquality": true,
+      "appendedRowEquality": true
+    },
+    {
+      "name": "receipt-method.json",
+      "sha256": "edc9f0d6fd65fa3dd7be1aaa62364350accbfc228332a2e4b39e362613cdc476",
+      "diskBytes": 802362,
+      "normalBytes": 802362,
+      "normalSha256": "edc9f0d6fd65fa3dd7be1aaa62364350accbfc228332a2e4b39e362613cdc476",
+      "compactBytes": 392301,
+      "nodes": 20956,
+      "actions": 220,
+      "assertions": 2503,
+      "historicalSha256": "b9e1a040d1ee23032fb222f9b1e94510b47dbbb6e240870732df85abadbbd224",
+      "strippedHistoricalNormalSha256": "b9e1a040d1ee23032fb222f9b1e94510b47dbbb6e240870732df85abadbbd224",
+      "historicalObjectEquality": true,
+      "appendedRowEquality": true
+    },
+    {
+      "name": "sequence-member-successful-delete.json",
+      "sha256": "db01d1e393d45f9b3441a39b05984b9cd0a21af9994a31d22241fa5ec5b5b54c",
+      "diskBytes": 802355,
+      "normalBytes": 802355,
+      "normalSha256": "db01d1e393d45f9b3441a39b05984b9cd0a21af9994a31d22241fa5ec5b5b54c",
+      "compactBytes": 392294,
+      "nodes": 20956,
+      "actions": 220,
+      "assertions": 2503,
+      "onlyChangedPath": "/scenarios/14/actions/0/raw/body/value",
+      "onlyParsedBodyChange": "/operations/1/bead: beads/missing -> beads/a",
+      "bodySha256": "cc96f5caf3ee16a216a73ccbe6028aacecf2c1a8ff1dc1315025fbc175217c06"
+    }
+  ],
+  "maxDerivativeNormalBytes": 808479,
+  "maxDerivativeNodes": 21112,
+  "simultaneousStops": {
+    "newDisk": true,
+    "newNormal": true,
+    "newNodes": true,
+    "newCoverage": true,
+    "newAssertions": true,
+    "canonicalDisk": true,
+    "canonicalNormal": true,
+    "canonicalNodes": true,
+    "coverageDisk": true,
+    "coverageNormal": true,
+    "actions": true,
+    "assertions": true,
+    "derivativeNormal": true,
+    "derivativeNodes": true
+  },
+  "recommendedFences": {
+    "manifestDisk": 794105,
+    "manifestNormal": 806457,
+    "manifestNodes": 21020,
+    "coverageBytes": 118726,
+    "derivativeNormal": 812575,
+    "derivativeNodes": 21176
+  },
+  "fencesChanged": false,
+  "testsExecuted": false,
+  "publicQualification": false
+}

@@ -1,0 +1,12 @@
+{
+  "status": "NOT_PREPARED",
+  "path": "packages/server/dist/transaction-store.js",
+  "positiveSha256": null,
+  "derivativeSha256": null,
+  "patchSha256": null,
+  "exactBeforeText": null,
+  "exactAfterText": null,
+  "occurrencesRequired": 1,
+  "purpose": "Restore early private depth refusal before retained row lookup in emitted admitKey only, using the final built imported accessor and exact existing private result/exception contract. Do not alter preparation, source TS, tests, request bytes or any other emitted file.",
+  "reviewRequired": "Actual final emitted function/imports must prove the inserted branch precedes lookup, permits the shallow seed, and makes the valid retained deep retry return the existing contextless bodyless 500. Do not guess accessor identifier or emitted insertion text before build."
+}

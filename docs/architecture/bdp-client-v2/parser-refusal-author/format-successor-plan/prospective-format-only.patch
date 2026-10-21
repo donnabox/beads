@@ -1,0 +1,28 @@
+--- a/apps/bdptest/src/transactional-collection-minimum-installed.test.ts
++++ b/apps/bdptest/src/transactional-collection-minimum-installed.test.ts
+@@ -1530,8 +1530,8 @@
+         ])
+           expect(response.headers[name], name).toBeUndefined();
+       }
++      // limit=0 is existing parser parity; unsupported/repeated is normative 400.
+       for (const collection of ["beads", "links"])
+-        // limit=0 is existing parser parity; unsupported/repeated is normative 400.
+         for (const query of ["unsupported=x", "limit=1&limit=2", "limit=0"])
+           for (const method of ["GET", "HEAD"] as const)
+             await refusal(`${collection}/?${query}`, method, opaque);
+--- a/packages/server/src/transaction-http.test.ts
++++ b/packages/server/src/transaction-http.test.ts
+@@ -5559,11 +5559,10 @@
+ it("rejects collection parser errors before unknown minimum support checks", async () => {
+   await withParserRefusalOwner(37, async (f) => {
+     const controls: readonly Record<string, string>[] = [{}, f.current, f.opaque];
++    // Unsupported/repeated parameters are normative 400; limit=0 is parser parity.
+     for (const collection of ["beads", "links"])
+-      // Unsupported/repeated parameters are normative 400; limit=0 is parser parity.
+       for (const query of ["unsupported=x", "limit=1&limit=2", "limit=0"])
+-        for (const headers of controls)
+-          await f.problemPair(`${collection}/?${query}`, headers);
++        for (const headers of controls) await f.problemPair(`${collection}/?${query}`, headers);
+   });
+ });
+ 

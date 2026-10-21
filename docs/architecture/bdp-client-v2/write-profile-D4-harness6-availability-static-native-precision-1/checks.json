@@ -1,0 +1,65 @@
+{
+  "actualH6Implementation": "5c82292252d96626f8a63977c845a67261ed04bb350a339d5fd389530e409eb1",
+  "actualH6Index": "c63d6905d768581b1147e9756162488348d07cacffd725280ca5752566b6054d",
+  "all6223ExternalPinsActualMatch": true,
+  "attemptAbsent": true,
+  "candidateExactKeys": {
+    "controlReleaseAddition": "Existing strict finite-control release gains availabilityAcceptance path+SHA. It must pin separate actual root acceptance with accepted/availabilityOnly/clockDomainVerified/ownershipBootstrapAccepted/nativeLimiterTerminalVerified/freshAllObservedProcessesAbsent/bothTerminalBefore115/samePinnedTools=true, syntheticReleased/productReleased=false and exact harnessImplementationSha256. Existing static native acceptance keeps hardLimiterStaticAcceptance and ownershipBootstrapAccepted; no false clock measurement in static review.",
+    "durableRootRelease": "pinned path+SHA document: accepted=true, availabilityOnly=true, syntheticReleased=false, productReleased=false, exact implementation",
+    "exactKeys": [
+      "session",
+      "scope",
+      "availabilityOnly",
+      "syntheticReleased",
+      "productReleased",
+      "harnessImplementationSha256",
+      "approvedInvocations",
+      "nativeHarnessAcceptance",
+      "durableRootRelease",
+      "noRetry"
+    ],
+    "fixedValues": {
+      "approvedInvocations": [
+        "AVAIL--availability"
+      ],
+      "availabilityOnly": true,
+      "noRetry": true,
+      "productReleased": false,
+      "scope": "D4 zero-product clock/bootstrap availability only",
+      "session": "2026-10-18T02:16:24Z-549f",
+      "syntheticReleased": false
+    },
+    "nativeAcceptance": "pinned path+SHA document: accepted=true, availabilityStaticAcceptance=true, exact harnessImplementationSha256; no clockDomainVerified prerequisite/invented measured proof",
+    "state": "DATA only; no released document"
+  },
+  "checkedUtc": "2026-10-18T19:14:49.524488+00:00",
+  "controlThreeEventProtocolReleasedOrValidated": false,
+  "fullAvailabilitySourceRead": [
+    "availability_owner.py",
+    "availability_peer.py",
+    "availability_limit.pl",
+    "bootstrap.py"
+  ],
+  "fullNativePriorH6Files": 176,
+  "gatesBothFalse": true,
+  "measuredEpochResolutionSignalPipeFit": "UNKNOWN",
+  "normalOwnerNativeCallerRootStrictBefore": 115,
+  "oldH5FullNativeFiles": 153,
+  "ownerPeerBootstrapByteExactH5": true,
+  "perlNamespaceOnlyInverseExactH5": true,
+  "runtimeAttempts": 0,
+  "session": "2026-10-18T02:16:24Z-549f",
+  "source679Protected": true,
+  "subjectEvaluations": 0,
+  "twoEventProtocol": [
+    "availability-owner-terminal",
+    "availability-native-limiter-terminal"
+  ],
+  "wholeTermKillAuthDrain": [
+    120,
+    115,
+    119,
+    10,
+    5
+  ]
+}

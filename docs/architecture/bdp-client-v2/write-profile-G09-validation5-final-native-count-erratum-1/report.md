@@ -1,0 +1,1 @@
+The original native report incorrectly says eleven changed fields. The actual count is ten top-level keys: six booleans, three document pins and approvedStages. Its machine checks already contain the correct ten-key list. The frozen report/index remain unchanged; this additive erratum preserves and corrects my arithmetic error. No subject or authority change follows.

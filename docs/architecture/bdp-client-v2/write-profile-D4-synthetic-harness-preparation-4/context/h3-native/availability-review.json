@@ -1,0 +1,28 @@
+{
+  "allAvailabilityResults": "UNEXECUTED/UNKNOWN",
+  "authority": [
+    "Strict separate10-key availability release, exact session/availabilityOnly and both synthetic/product false",
+    "Native static availability acceptance only, no fabricated clockDomainVerified prior prerequisite",
+    "Exact full implementation hashes, pinned tools, unchanged CLOSED control gates before auth10",
+    "Immediate current-session root guard immediately before future native invocation",
+    "Exclusive availability-attempt/noRetry"
+  ],
+  "availabilityDoesNotReleaseControls": "Finite-control release separately pins a root measured availability acceptance with all actual flags; native static acceptance cannot supply measurement. Finite controls do not release product.",
+  "clockAndSignals": [
+    "First nativeCLOCK_UPTIME_RAW8 origin passed to Python; FIRST bracket0..10 and peer time brackets are actual future observations only",
+    "Native terminal must be actual raw0/unforced before115 plus owner raw0/complete terminal before115",
+    "Self TERM/KILL checks prove only observed signal availability; they do not exercise native forced TERM115/KILL119/alarm, which remain static mechanisms/unobserved boundary coverage",
+    "Clock loading/id/epoch/bootstrap/timing/safe pipes remain UNKNOWN until exact future receipts/root acceptance; no hard real-time or all-future guarantee"
+  ],
+  "executionReleased": false,
+  "ownership": [
+    "Native limiter retains unreaped direct owner PID/group under same120/115/119 origin",
+    "Two peers start_new_session=False, share owner group; direct Popen handle appended as first operation before metadata/IO",
+    "Actual corrected bootstrap ACK/PID/nonce and TERM/INT unmask; TERM peer self-signal and KILL peer raw-9, no owner killed",
+    "Bounded5s ACK/read windows inside same absolute115 normal deadline; nonblocking PIPE reads and WNOHANG native wait",
+    "Filesystem/auth/hash/publication can block in Python owner, but independent native timer still runs and covers same availability group",
+    "Error direct unreaped-child KILL with no postdeadline blocking wait; missing reap/EOF remains FAILED/UNKNOWN, fresh root group/PID absence necessary"
+  ],
+  "retentionIssue": "H3-N1; incomplete drain buffers never reach raw files and need incremental retention correction before evaluation acceptance",
+  "scope": "Separate zero-product code availability preparation; no helper4/control/product imports/execution"
+}

@@ -1,0 +1,30 @@
+{
+  "utc": "2026-10-18T09:39:21.487942+00:00",
+  "classification": "actual compiler failure; no retry",
+  "sourceIdentity": "6bbcce5e8d6c107607822b24853bb8121f7d612137f00d3f0f173b747773f6ea",
+  "failedStage": "typecheck",
+  "errors": [
+    "TS2304 HeadersInit:6757",
+    "TS2304 HeadersInit:6890",
+    "TS2304 HeadersInit:6904"
+  ],
+  "typecheckLogSha256": "3e98a69fac228a117253f9bdef2b27a49bb509b37d5c4c3e1c12e86d777e504b",
+  "sourceUnchanged": true,
+  "forcedCleanup": false,
+  "remainingProcesses": [],
+  "laterStages": "UNATTEMPTED",
+  "gateClosed": true,
+  "sourceOnlyCorrectionRelease": {
+    "author": "/root/changefeed_native_review",
+    "ownedPaths": [
+      "packages/server/src/transaction-http.test.ts"
+    ],
+    "replacement": "All three HeadersInit annotations -> Record<string, string>",
+    "basis": "Every actual authored call uses string-valued plain header maps; sibling projection table already uses Record<string,string>. Node-only type environment does not declare HeadersInit globally. No DOM lib/new dependency/import/public type change.",
+    "forbidden": "No values/requests/assertions/order/selection/deadlines/helper changes; no format/compiler/tests/Git/runtime.",
+    "freezeSuccessor": "tx-discovery-typecheck-correction-1",
+    "independentNativeClosureRequired": true,
+    "freshNamedValidationSuccessorRequired": true,
+    "secondActualReview": false
+  }
+}

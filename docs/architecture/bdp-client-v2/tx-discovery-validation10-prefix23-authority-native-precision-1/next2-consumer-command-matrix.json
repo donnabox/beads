@@ -1,0 +1,49 @@
+[
+  {
+    "actualResult": "UNATTEMPTED/UNKNOWN",
+    "command": {
+      "acceptedRawExitCodes": [
+        0
+      ],
+      "argv": [
+        "/opt/homebrew/opt/python@3.14/bin/python3.14",
+        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/tx-discovery-validation-preparation-10/packages.py",
+        "consumer"
+      ],
+      "automaticRetries": 0,
+      "contract": "Exclusively create ${EXECUTION_ROOT}/run/consumer outside workspace; manifest uses actual archive file paths and pnpm-workspace overrides for protocol and frozen transitive versions; actual closure derived from frozen lock. No old consumer/entry/lock reused.",
+      "cwd": "/Users/dbox/repos/wt/vickie/vickie-tx-discovery-minimum",
+      "id": "prepare-consumer",
+      "kind": "supervised-owned-preparation-helper",
+      "mustCompleteBeforeNextStage": true,
+      "outerSeconds": 120,
+      "termAtSeconds": 115
+    },
+    "stage": "prepare-consumer"
+  },
+  {
+    "actualResult": "UNATTEMPTED/UNKNOWN",
+    "command": {
+      "acceptedRawExitCodes": [
+        0
+      ],
+      "argv": [
+        "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+        "/Users/dbox/.cache/node/corepack/v1/pnpm/11.20.0/bin/pnpm.cjs",
+        "install",
+        "--offline",
+        "--ignore-scripts",
+        "--no-frozen-lockfile",
+        "--prod"
+      ],
+      "automaticRetries": 0,
+      "configurationFinalized": true,
+      "cwd": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/tx-discovery-validation-preparation-10/run/consumer",
+      "id": "consumer-install",
+      "kind": "supervised-command",
+      "outerSeconds": 120,
+      "termAtSeconds": 115
+    },
+    "stage": "consumer-install"
+  }
+]

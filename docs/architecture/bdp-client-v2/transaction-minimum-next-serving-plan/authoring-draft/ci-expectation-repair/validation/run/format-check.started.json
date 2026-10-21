@@ -1,0 +1,43 @@
+{
+  "name": "format-check",
+  "argv": [
+    "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+    "/Users/dbox/.cache/node/corepack/v1/pnpm/11.20.0/bin/pnpm.cjs",
+    "exec",
+    "biome",
+    "format",
+    "--config-path",
+    "/Users/dbox/repos/wt/vickie/vickie-minimum-current-resource/biome.json",
+    "apps/bdptest/src/transactional-collection-minimum-installed.test.ts",
+    "packages/server/src/transaction-read.test.ts"
+  ],
+  "cwd": "/Users/dbox/repos/wt/vickie/vickie-minimum-current-resource",
+  "started": "2026-10-16T04:49:51.210669+00:00",
+  "head": "2e1676caa0f5861d16c5741fbd412f6c3ef7c269",
+  "workspaceDirty": true,
+  "sourceSha256": {
+    "apps/bdptest/src/transactional-collection-minimum-installed.test.ts": "cc5a741bd174230b8d89e174775628e29ce29ed19830babbacfe8871ab296fd3",
+    "packages/server/src/transaction-read.test.ts": "58e745c2ade0804bf0ab0230c34ff5e522c28725fa77ecb9303dbe972162e0f2"
+  },
+  "sourceDiffSha256": "94f8530aebfd3e776cf060c46a0ee2733323e88ae46b026b5706d74917e99d8a",
+  "rootAcceptanceSha256": "46b7a4966aa4c8a53922c07c8e753f722d695c3f09c222158666467481ff5093",
+  "preparationSha256": "c9b524743c8b71c4487e55f5719713985a1665b6e61ec32d2d99534796ff9194",
+  "bdpOverrides": {},
+  "guardedArgv": [
+    "/opt/homebrew/opt/python@3.14/bin/python3.14",
+    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/guarded-action.py",
+    "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+    "/Users/dbox/.cache/node/corepack/v1/pnpm/11.20.0/bin/pnpm.cjs",
+    "exec",
+    "biome",
+    "format",
+    "--config-path",
+    "/Users/dbox/repos/wt/vickie/vickie-minimum-current-resource/biome.json",
+    "apps/bdptest/src/transactional-collection-minimum-installed.test.ts",
+    "packages/server/src/transaction-read.test.ts"
+  ],
+  "nodePathPrefix": "/Users/dbox/.nvm/versions/node/v24.16.0/bin",
+  "sourceAttribution": "Externally bound source snapshot or frozen package; not child-attested Git identity",
+  "plannedWorkload": {},
+  "derivativeBinding": null
+}

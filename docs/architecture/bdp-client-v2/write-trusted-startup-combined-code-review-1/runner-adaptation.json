@@ -1,0 +1,51 @@
+{
+  "allOtherRunnerBytesUnchanged": true,
+  "authoritySha256": "076cac82ce858538f03d264c4cf5be9ed406ecc072385950a744b94dba7fbf45",
+  "candidateSha256": "afa65bcbd04546a3a3abdc57faf4b8af2b46b0410c22c1aa3945b67036cb6e50",
+  "inverseByteAndASTExact": true,
+  "literalSubstitutions": [
+    {
+      "after": "/Users/dbox/repos/wt/vickie/vickie-ordinary-startup-combined-minimum",
+      "before": "/Users/dbox/repos/wt/vickie/vickie-schema-minimum",
+      "occurrences": 1
+    },
+    {
+      "after": "write-trusted-startup-combined-code-review-1",
+      "before": "write-profile-G09-code-review-1",
+      "occurrences": 1
+    },
+    {
+      "after": "a56254d682cf4623cab22a552e3d2f695f691795",
+      "before": "cce884ccea1db97cbc6fd7bff876d4d6091f9081",
+      "occurrences": 1
+    },
+    {
+      "after": "set(b[\"trackedOwnedFiles\"]), \"Owned dirty scope changed\"",
+      "before": "set(b[\"ownedFiles\"]), \"Owned dirty scope changed\"",
+      "occurrences": 1
+    },
+    {
+      "after": "set(b[\"trackedFiles\"]), \"Tracked scope changed\"",
+      "before": "set(b[\"files\"]), \"Tracked scope changed\"",
+      "occurrences": 1
+    },
+    {
+      "after": "Exact frozen 29-path dirty status required",
+      "before": "Exact frozen ten-file dirty status required",
+      "occurrences": 1
+    }
+  ],
+  "newBindingKeys": [
+    "trackedFiles",
+    "trackedOwnedFiles",
+    "newFiles"
+  ],
+  "newPredicates": [
+    "    assert set(git(\"ls-files\",\"--others\",\"--exclude-standard\").decode().splitlines())==set(b[\"newFiles\"]), \"New untracked scope changed\"",
+    "    assert not (set(b[\"trackedFiles\"]) & set(b[\"newFiles\"])) and (set(b[\"trackedFiles\"]) | set(b[\"newFiles\"]))==set(b[\"files\"]), \"Complete source union changed\"",
+    "    assert set(b[\"trackedOwnedFiles\"])<=set(b[\"trackedFiles\"]) and (set(b[\"trackedOwnedFiles\"]) | set(b[\"newFiles\"]))==set(b[\"ownedFiles\"]), \"Complete owned scope changed\""
+  ],
+  "noAlgorithmOrPolicyChangesToParserGuardArgvSupervisor": true,
+  "sourceSnapshotsStillHashAll686": true,
+  "templateSha256": "df8047684ac8846c494412b91416caf0dc61cc27827e8df3d34fda8380a6871f"
+}

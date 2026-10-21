@@ -1,0 +1,22 @@
+{
+  "nativePlanReviewed": true,
+  "at": "2026-10-16T03:44:39.131427+00:00",
+  "planSha256": "a7af69fd59fb7f1554190103b418541985698aa725405ce524f6b41107c449fb",
+  "ledgerSha256": "1e24b04e4a64aa25ac607a4f364e8dab7fe79328ba6850f15ad5910553351361",
+  "sourceBindingSha256": "14916bb0ee9e6569d2f0d65318b6004e3ce812c8047bfe52cdfd0decdcbdb8c2",
+  "checks": [
+    "current sequence prepares carrier then rejects global depth before owner",
+    "prepareDepthCarrier already records branded capacity fact without changing parsed operation",
+    "admitKey retained/dependency/pending classification precedes unknown depth refusal",
+    "admitSequence atomic reservation/cleanup path and turn-time recheck remain unchanged",
+    "HTTP current Accept order and intentional private-marker precedence difference reviewed"
+  ],
+  "requirements": [
+    "No new owner preflight or service/store production edit",
+    "Retain complete syntax before lookup and strict preparation API",
+    "Prove mixed reservation rollback and failed retention expiry turn",
+    "Schedule isolated HTTP hunk after minimum integration; reanchor real hashes",
+    "Actual Claude plan review required before authoring"
+  ],
+  "authoringReleased": false
+}

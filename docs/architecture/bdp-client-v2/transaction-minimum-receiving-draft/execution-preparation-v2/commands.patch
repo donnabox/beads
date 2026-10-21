@@ -1,0 +1,65 @@
+--- execution-preparation/commands.json
++++ execution-preparation-v2/commands.json
+@@ -1,6 +1,6 @@
+ {
+-  "status": "closed source-only proposal; root release required",
+-  "sourceBindingSha256": "8c2912ad963de93eac28ecf9a6b162b02e0b18b7b956f77ed51ff0eaf4b826ca",
++  "status": "closed type-only successor proposal; root release required",
++  "sourceBindingSha256": "19a468a70b041341f89d025938e2fa6702c4d94bf653816440a80bbee0e1fd29",
+   "selectionSha256": "fffb9c32d4e78dc5d4f9dde2b46a273e47ab0052749063a6012582eaa96901b2",
+   "commands": [
+     {
+@@ -142,7 +142,7 @@
+         "--maxWorkers=1",
+         "--reporter=verbose",
+         "--reporter=json",
+-        "--outputFile=/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-minimum-receiving-draft/run/consistency-positive.results.json",
++        "--outputFile=/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-minimum-receiving-draft/run-v2/consistency-positive.results.json",
+         "-t",
+         "^(?:private\\ minimum\\-read\\ subset\\ snapshots\\ canonical\\ supported\\ tuples\\ without\\ getters\\ or\\ opaque\\-token\\ guesses|private\\ minimum\\-read\\ subset\\ only\\ turns\\ actual\\ behind\\ observations\\ into\\ timeout\\ after\\ the\\ original\\ finite\\ deadline|distinguishes\\ closed\\ minimum\\ receiving\\ syntax\\ from\\ supported\\ position\\ identities)$"
+       ],
+@@ -173,7 +173,7 @@
+         "--maxWorkers=1",
+         "--reporter=verbose",
+         "--reporter=json",
+-        "--outputFile=/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-minimum-receiving-draft/run/http-positive.results.json",
++        "--outputFile=/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-minimum-receiving-draft/run-v2/http-positive.results.json",
+         "-t",
+         "^(?:source\\-private\\ actual\\ Transactional\\ HTTP\\ fails\\ minimum\\ controls\\ closed\\ before\\ ordinary\\ Read\\ and\\ expired\\ cursor\\ conditional\\ decisions|orders\\ page\\ nondisclosure,\\ minimum\\ waits,\\ expiry\\ and\\ representation\\ using\\ actual\\ owner\\ state|refuses\\ unsupported\\ root\\ controls\\ after\\ nondisclosure\\ but\\ before\\ read\\-triggered\\ retention|keeps\\ failed\\ parent\\ rows\\ unchanged\\ for\\ nonexistent\\ page\\ reads\\ with\\ any\\ controls|serves\\ conditioned\\ live\\ aliases\\ and\\ preserves\\ bodyless\\ redirects,\\ refusal\\ context\\ and\\ receiving\\ boundaries|rejects\\ malformed\\ minimum\\ tuples\\ across\\ read\\ routes\\ without\\ entering\\ the\\ actual\\ owner|rejects\\ raw\\ repeated\\ minimum\\ fields\\ and\\ keeps\\ receiving\\ HEAD\\ and\\ SSE\\ refusals\\ finite|enforces\\ the\\ minimum\\-receiving\\-malformed\\-request\\ boundary\\ over\\ the\\ emitted\\ listener)$"
+       ],
+@@ -211,7 +211,7 @@
+         "--maxWorkers=1",
+         "--reporter=verbose",
+         "--reporter=json",
+-        "--outputFile=/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-minimum-receiving-draft/run/snapshot-positive.results.json",
++        "--outputFile=/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-minimum-receiving-draft/run-v2/snapshot-positive.results.json",
+         "-t",
+         "^(?:closed\\ query\\ syntax,\\ unsupported\\ controls\\ and\\ foreign\\ creation\\ context\\ fail\\ before\\ capture\\ or\\ conditional\\ success)$"
+       ],
+@@ -242,7 +242,7 @@
+         "--maxWorkers=1",
+         "--reporter=verbose",
+         "--reporter=json",
+-        "--outputFile=/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-minimum-receiving-draft/run/schema-positive.results.json",
++        "--outputFile=/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-minimum-receiving-draft/run-v2/schema-positive.results.json",
+         "-t",
+         "^(?:preserves\\ minimum\\ refusals\\ before\\ schema\\ conditionals\\ and\\ never\\ observes\\ excluded\\ requests)$"
+       ],
+@@ -273,7 +273,7 @@
+         "--maxWorkers=1",
+         "--reporter=verbose",
+         "--reporter=json",
+-        "--outputFile=/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-minimum-receiving-draft/run/changefeed-positive.results.json",
++        "--outputFile=/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-minimum-receiving-draft/run-v2/changefeed-positive.results.json",
+         "-t",
+         "^(?:decides\\ actual\\ HTTP\\ minimum\\ refusal\\ before\\ conditional\\ shortcuts\\ with\\ final\\ context)$"
+       ],
+@@ -306,7 +306,7 @@
+         "--maxWorkers=1",
+         "--reporter=verbose",
+         "--reporter=json",
+-        "--outputFile=/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-minimum-receiving-draft/run/spec-static.results.json",
++        "--outputFile=/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-minimum-receiving-draft/run-v2/spec-static.results.json",
+         "-t",
+         "^(?:draft\\ Transactional\\ catalog\\ strictly\\ parses\\ and\\ binds\\ every\\ citation\\ to\\ the\\ current\\ specification\\ text|draft\\ Read\\+Update\\ catalog\\ strictly\\ parses\\ and\\ binds\\ every\\ citation\\ to\\ the\\ current\\ specification\\ text|catalog\\ citations\\ respect\\ cumulative\\ profile\\ boundaries\\ owns\\ Transactional\\ end\\ matter\\ and\\ rejects\\ its\\ use\\ by\\ Read|catalog\\ citations\\ respect\\ cumulative\\ profile\\ boundaries\\ resolves\\ internal\\ links\\ without\\ lower\\-profile\\ forward\\ dependencies)$"
+       ],

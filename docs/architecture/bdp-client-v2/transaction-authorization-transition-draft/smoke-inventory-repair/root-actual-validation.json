@@ -1,0 +1,60 @@
+{
+  "accepted": true,
+  "at": "2026-10-16T02:55:39.564076+00:00",
+  "sourceBindingSha256": "1d163c7b17364bc5ac94ccb853642ba86993ac5bd3639db3066b8106afc9212c",
+  "stages": [
+    {
+      "stage": "syntax",
+      "elapsed": 0.6069437919650227,
+      "exit": 0
+    },
+    {
+      "stage": "format-check",
+      "elapsed": 0.5916720000095665,
+      "exit": 0
+    },
+    {
+      "stage": "smoke",
+      "elapsed": 4.979564500041306,
+      "exit": 0
+    }
+  ],
+  "sampledPidsAbsent": [
+    42785,
+    42787,
+    42791,
+    42848,
+    42850,
+    42886,
+    42889,
+    42893,
+    42918,
+    42919,
+    42927,
+    42938,
+    42942,
+    42945,
+    42947,
+    42950,
+    42954,
+    42956,
+    42959,
+    42962,
+    42965,
+    42968,
+    42970,
+    42973,
+    42976,
+    42979,
+    42983,
+    42985,
+    42989,
+    42990,
+    42992,
+    42995,
+    42998,
+    43002
+  ],
+  "smokeLogSha256": "9e383693a1c28dcc28e242d707d28124f23484ac07ac0482c327f8e1cd2a1ce4",
+  "smoke": "Root read complete log; installed help/version/diagnostics/lifecycle, admitted Read discovery, public write admission refusal, real private nine-target observer all pass. Owned stores removed. No whole-profile claim."
+}

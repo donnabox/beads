@@ -1,0 +1,145 @@
+--- /Users/dbox/repos/wt/vickie/bdp-integration-logs/current-observation-minimum-validation/required-checks/commands.json
++++ /Users/dbox/repos/wt/vickie/bdp-integration-logs/current-observation-minimum-validation/required-checks-correction-successor-1/commands.json
+@@ -28,7 +28,7 @@
+         "scripts/e2e-ready.test.mjs",
+         "--reporter=verbose",
+         "--reporter=json",
+-        "--outputFile.json=/Users/dbox/repos/wt/vickie/bdp-integration-logs/current-observation-minimum-validation/required-checks/run/preflight.results.json"
++        "--outputFile.json=/Users/dbox/repos/wt/vickie/bdp-integration-logs/current-observation-minimum-validation/required-checks-correction-successor-1/run/preflight.results.json"
+       ],
+       "outerSeconds": 120,
+       "termAfterSeconds": 115,
+--- /Users/dbox/repos/wt/vickie/bdp-integration-logs/current-observation-minimum-validation/required-checks/gate.py
++++ /Users/dbox/repos/wt/vickie/bdp-integration-logs/current-observation-minimum-validation/required-checks-correction-successor-1/gate.py
+@@ -1,7 +1,7 @@
+ from pathlib import Path
+ import json,hashlib,subprocess,os,importlib.util
+ P=Path(__file__).resolve().parent
+-V=Path("/Users/dbox/repos/wt/vickie/bdp-integration-logs/current-observation-minimum-validation/implementation")
++V=Path("/Users/dbox/repos/wt/vickie/bdp-integration-logs/current-observation-minimum-validation/correction-successor-1")
+ W=Path("/Users/dbox/repos/wt/vickie/vickie-current-observation-minimum")
+ E=P/'run';MODE='final'
+ sha=lambda b:hashlib.sha256(b).hexdigest()
+--- /Users/dbox/repos/wt/vickie/bdp-integration-logs/current-observation-minimum-validation/required-checks/preparation-report.md
++++ /Users/dbox/repos/wt/vickie/bdp-integration-logs/current-observation-minimum-validation/required-checks-correction-successor-1/preparation-report.md
+@@ -1,3 +1,3 @@
+-# CLOSED required checks
++# CLOSED required checks for correction successor1
+ 
+-Fresh four-stage boundaries/preflight/package-smoke/historical-read-evidence adaptation for the frozen current-observation draft. No execution, reused result or public qualification. Source/built artifacts must resolve to the fresh implementation chain; actual base/workspace tool and build pins remain null. Each command keeps120s outer/TERM115/no retries and exact raw0 acceptance. Smoke's complete package/install/executable workload is preserved; no tiny-workload claim. Historical Read artifact and sealed runHead remain predecessor evidence, never a new Transactional cohort. All release flags are false and approvedStages empty.
++Four fresh ordered stages: boundaries, preflight, package-smoke, historical-read-evidence. Exact commands/deadlines/oracles unchanged except sibling paths. Source binding is the corrected679 map; build/tools must come from the fresh correction-successor-1 bootstrap/build chain. No prior attempt or runtime result is reused. Historical evidence inputs/artifact/runHead remain unchanged and separately attributed. All gates false, approvedStages empty, actual base/workspace/build pins null. No helper import or execution performed.
+--- /Users/dbox/repos/wt/vickie/bdp-integration-logs/current-observation-minimum-validation/required-checks/references.json
++++ /Users/dbox/repos/wt/vickie/bdp-integration-logs/current-observation-minimum-validation/required-checks-correction-successor-1/references.json
+@@ -1,9 +1,9 @@
+ {
+   "files": {
+-    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/current-observation-minimum-validation/implementation/gate.py": "8d9551bc10bdfab1c880761e5bc62a99ae3f393a2be7117e254d88d232c9f71c",
+-    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/current-observation-minimum-validation/implementation/run.py": "5a5d56ff13c857da83a1e2fb14b68cfaf135c9103676eb14969909e5a973f091",
+-    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/current-observation-minimum-validation/implementation/source-binding.json": "0c6c47c5aafb0b2e0f9b9f1f879037c32159cecea02d963ce05932346a3a50b4",
+-    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/current-observation-minimum-validation/implementation/commands.json": "46e0057c60ce63d9f805d817800476a160d4c507eb9bd802978d9ecbfe7c5c7c"
++    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/current-observation-minimum-validation/correction-successor-1/gate.py": "8d9551bc10bdfab1c880761e5bc62a99ae3f393a2be7117e254d88d232c9f71c",
++    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/current-observation-minimum-validation/correction-successor-1/run.py": "5a5d56ff13c857da83a1e2fb14b68cfaf135c9103676eb14969909e5a973f091",
++    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/current-observation-minimum-validation/correction-successor-1/source-binding.json": "693b740ecbd231dd50a76ab6110ec602975167d9eb5f117b104dd755dd1fa203",
++    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/current-observation-minimum-validation/correction-successor-1/commands.json": "71d0a04f17166697590f1ab161b222bfc44f7014dcf21c59bac15b360dcfc1e3"
+   },
+   "precedents": {
+     "/Users/dbox/repos/wt/vickie/bdp-integration-logs/scope-event-sse-opaque-minimum-validation/required-checks/run.py": "03f75db503322f86cea7534a39fad1616baa9e36db2ad6400895b2fc10ed762e",
+--- /Users/dbox/repos/wt/vickie/bdp-integration-logs/current-observation-minimum-validation/required-checks/source-binding.json
++++ /Users/dbox/repos/wt/vickie/bdp-integration-logs/current-observation-minimum-validation/required-checks-correction-successor-1/source-binding.json
+@@ -137,7 +137,7 @@
+     "docs/design/startup-configuration.md": "f957814cabb23136a6064b6ea2814bf6a5c454fe841666053bf1a01cae67d175",
+     "docs/design/transaction-event-review-closure.md": "905b4d8ee7210c8d82c6fc6bdb4f40fb34b4d33c16888186ce9f7d8088fd51dc",
+     "docs/design/transaction-harness-review-closure.md": "dfac3c425e603b324c508a8aeee236d1dad664667bd10a2f05f268962407b646",
+-    "docs/design/transaction-implementation-progress.md": "36309c8dbf1b5ae99392da6c2585f6375bf2dc65fe41bddedcad4276bf16e53b",
++    "docs/design/transaction-implementation-progress.md": "08f9040e3feee9961d7b72fcb6cf85f09d02e0699e7e0dd0d6306d38e61549d8",
+     "docs/design/transaction-snapshot-core-review-closure.md": "fd0e88da435bf90fd8e1c97bb6c031ef9f7e765bf28643e5b5ce6c29e52726c5",
+     "docs/design/transaction-snapshot-installed-observations.md": "bfc3b9095c8f613ebfcc062a884a2f8bb2df628d3f43734d39ebde15f64b61f6",
+     "docs/design/transaction-snapshot-serving-progress.md": "043f9585580bbbc0ef4835aa747810129aa14bcf8d0086c4744ac0b903912527",
+@@ -437,9 +437,9 @@
+     "packages/server/src/transaction-discovery.test.ts": "977dfae7a1cba9ffe11bdd3633ee26fa15eb8579254c6304eea1d6ac10667356",
+     "packages/server/src/transaction-discovery.ts": "bb8055e2089f640a5d2071e389ac2011d08c038427265b50ab3d03c02047cfef",
+     "packages/server/src/transaction-event-sse.test.ts": "7be697d50e48937f6f2fbb910f74b071730b552dac1202ee2d50c7a8632b6a22",
+-    "packages/server/src/transaction-events.test.ts": "e9a9897943eae8fe68a3db697a0ecb229ae47343fb87b0129b15b36705b46694",
++    "packages/server/src/transaction-events.test.ts": "73610525cba9c29a57ec0d3e654f5e30160b2520725f7b6dfe532ae7dc325cc1",
+     "packages/server/src/transaction-events.ts": "6c5ab4482f0b00110a71a96b16d44ca5fe713cb5f397ff78778cc6646f632a3a",
+-    "packages/server/src/transaction-http.test.ts": "d5bafae5d66dcd29f489c4e9ec9f2cfdd7940c86cc06fe378ddb1a69446a3370",
++    "packages/server/src/transaction-http.test.ts": "1fe199e7f3d4830065084b88d1e23a34679db95c94394436ac01cf1ad8c49f87",
+     "packages/server/src/transaction-http.ts": "6d570df85e21526c59ad84115d0bbf9fb7b1d1158efe68850fad84d9fa57ee42",
+     "packages/server/src/transaction-installed-configuration.ts": "e15cb54266848fdd4aa08b19b37f1b2eb080f4599d9414fad8d85b6f33f35d99",
+     "packages/server/src/transaction-installed-contracts.test.ts": "f2dd0993c4fa61742435d3bedb101afb021ca0f1b5904147ab367ba243286bd1",
+@@ -449,8 +449,8 @@
+     "packages/server/src/transaction-materialization.test.ts": "9a2ce6b1a3a461fbede11ece36566368b1e5f1c034c550a2593ac93a3ef79096",
+     "packages/server/src/transaction-owned.test.ts": "48ada80b0868ef95f5bb1cf5f7489bafca4c3aab37883feb1a2bbe7067d3e58b",
+     "packages/server/src/transaction-read.test.ts": "b9799ade1a6b2bd5b77ebcaefe80886f7526825e43cf4fc94e3ac227a528d208",
+-    "packages/server/src/transaction-read.ts": "c4cc1011af7afcff940110fb0ce7b49e80a663dd89120ff9ec098892b57f2260",
+-    "packages/server/src/transaction-receipt-pages.test.ts": "b470058499042424805567b9ea74eadc3320b2807e4bc8a0118b0c93996e1f05",
++    "packages/server/src/transaction-read.ts": "bde7e3069f4a1cb028acaba725ad6f3bcdef692f914284f668631c700fe17683",
++    "packages/server/src/transaction-receipt-pages.test.ts": "654b827928a95277395e5d382fa3f083860b72c2a4650b9f0ed85a3343e86219",
+     "packages/server/src/transaction-recovery.test.ts": "7267388d138d5c8ec0c223d545c641ea5fec9d9f9cea97b68550fdb698866303",
+     "packages/server/src/transaction-runtime-configuration.test.ts": "3167dc4a4748f63ec069f0c9f3fddbcbd82a14aca127c49c5ba118bb8cd9f79d",
+     "packages/server/src/transaction-runtime-configuration.ts": "57cd5d38c7199011d05589bc2b8ac1a0e2a4a9dc7585d019f9de5801a0a4d808",
+@@ -461,7 +461,7 @@
+     "packages/server/src/transaction-sequence-alias.test.ts": "5e819d7746238003bcabd791d5c6c08abccfcd5db12bd256cc99781078795ff4",
+     "packages/server/src/transaction-sequence.test.ts": "31fba92ece191ad6be239b6c1edac8fe71ef63ce716597edc45d015e46730170",
+     "packages/server/src/transaction-sequence.ts": "019e02f2f392047d568d7464b1c5af0482d6d743ed09a6d0aa4edab151607cbe",
+-    "packages/server/src/transaction-service.test.ts": "2433b3b324c990be6cd2228b72505cc2c9dcdaa08952265a1f1ca3acd68fa1ec",
++    "packages/server/src/transaction-service.test.ts": "bf2e6945a9162e3127dd5e0e3e0193d928c541849cf283f2791e7b6e177459dd",
+     "packages/server/src/transaction-service.ts": "1eea06b33d70585de2bc1d9ffc05772f787d62616b50e119a574d145c344ac6c",
+     "packages/server/src/transaction-set.test.ts": "86642f122eb0ab8d0ba1b5c454d4bd76fb31a7b1c485e6bbe05284c4ccd9b85f",
+     "packages/server/src/transaction-set.ts": "3085632e897481b048d563cf0ba3ea66dc96a0662cebfde9f978ee00675519e5",
+@@ -709,7 +709,7 @@
+     },
+     "packages/server/src/transaction-read.ts": {
+       "beforeSha256": "dd1ce54966c092ace3164c54a2911f0231b48276f10d024453e33ab4541c659c",
+-      "afterSha256": "c4cc1011af7afcff940110fb0ce7b49e80a663dd89120ff9ec098892b57f2260"
++      "afterSha256": "bde7e3069f4a1cb028acaba725ad6f3bcdef692f914284f668631c700fe17683"
+     },
+     "packages/server/src/transaction-http.ts": {
+       "beforeSha256": "6ba85bc270f0fd5f81c22b563ad776bb1ee939445b81f1647c9d6baec2a4fc33",
+@@ -733,15 +733,15 @@
+     },
+     "packages/server/src/transaction-http.test.ts": {
+       "beforeSha256": "05f9be15d1ef262cf87dc3a07229290499dd0acd553a03a8d2f9febc1d15920a",
+-      "afterSha256": "d5bafae5d66dcd29f489c4e9ec9f2cfdd7940c86cc06fe378ddb1a69446a3370"
++      "afterSha256": "1fe199e7f3d4830065084b88d1e23a34679db95c94394436ac01cf1ad8c49f87"
+     },
+     "packages/server/src/transaction-service.test.ts": {
+       "beforeSha256": "ba23d242e73a67765db4de77ff0d43f691feb68641ffdf8071a5ded4dc05cb08",
+-      "afterSha256": "2433b3b324c990be6cd2228b72505cc2c9dcdaa08952265a1f1ca3acd68fa1ec"
++      "afterSha256": "bf2e6945a9162e3127dd5e0e3e0193d928c541849cf283f2791e7b6e177459dd"
+     },
+     "packages/server/src/transaction-receipt-pages.test.ts": {
+       "beforeSha256": "e944bd61590f78a510b427b0f5d6eb7856f6b3715f9f0e5dc590bf8d4724c6a1",
+-      "afterSha256": "b470058499042424805567b9ea74eadc3320b2807e4bc8a0118b0c93996e1f05"
++      "afterSha256": "654b827928a95277395e5d382fa3f083860b72c2a4650b9f0ed85a3343e86219"
+     },
+     "packages/server/src/transaction-snapshot.test.ts": {
+       "beforeSha256": "4ab1bb6fa6a6a9e3104b3a9cd11fb045af6002459578275528e31c0d2d6e3122",
+@@ -749,7 +749,7 @@
+     },
+     "packages/server/src/transaction-events.test.ts": {
+       "beforeSha256": "708fafc31d031abdff6434110d36d4bfd1126d38cbb977d81af1da1703121673",
+-      "afterSha256": "e9a9897943eae8fe68a3db697a0ecb229ae47343fb87b0129b15b36705b46694"
++      "afterSha256": "73610525cba9c29a57ec0d3e654f5e30160b2520725f7b6dfe532ae7dc325cc1"
+     },
+     "packages/server/src/transaction-event-sse.test.ts": {
+       "beforeSha256": "d7c257a2c9f78ffd07a18b86e2b480e07e1cdeeddf43cafabfb0cd53a011fbd9",
+@@ -765,13 +765,13 @@
+     },
+     "docs/design/transaction-implementation-progress.md": {
+       "beforeSha256": "cf7707ffc7018c9486359192189f1ac8d140734b06aee46e025d8a4db9596314",
+-      "afterSha256": "36309c8dbf1b5ae99392da6c2585f6375bf2dc65fe41bddedcad4276bf16e53b"
++      "afterSha256": "08f9040e3feee9961d7b72fcb6cf85f09d02e0699e7e0dd0d6306d38e61549d8"
+     }
+   },
+-  "binaryDiffSha256": "194419e1b5210531b781fd822dd8e0de1be4d2c18c70e4d9a77a503a0a78bf7c",
++  "binaryDiffSha256": "ca59dc9f280ed0ac281f5b6ec00ed6d0fab1197fae7ef3b6a281bf817476eb55",
+   "authorBinding": {
+-    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/current-observation-minimum-author/source-binding.json",
+-    "sha256": "d81b271b04b78af8da81b1f85bc84c9d2b2ff1856979d1a92c8d79215165843a"
++    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/current-observation-minimum-author/correction-successor-1/source-binding.json",
++    "sha256": "9c75bdd9409a3930ae75aaa539f08e0bd74904da6fed618f9b8c0206b4757310"
+   },
+-  "attribution": "Exactly frozen reviewed-pending dirty candidate; no executed validation."
++  "attribution": "Frozen correction successor1; all stages fresh, no old CODE approval or validation result reused."
+ }

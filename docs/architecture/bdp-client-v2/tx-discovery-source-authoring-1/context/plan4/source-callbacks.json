@@ -1,0 +1,1097 @@
+{
+  "callbacks": [
+    {
+      "callback": "D3 source projection scope",
+      "route": "scope",
+      "directHandlerCalls": 7,
+      "wireRequests": 0,
+      "discoveryCalls": 7,
+      "ownerWithReadAboveDelegatedBaseline": 7,
+      "assemblyCalls": 7,
+      "waitCalls": 0,
+      "clockCalls": 0,
+      "callbackMs": 5000,
+      "requestMs": 5000,
+      "automaticRetries": 0,
+      "rows": [
+        {
+          "method": "GET",
+          "headers": {},
+          "status": 204
+        },
+        {
+          "method": "HEAD",
+          "headers": {},
+          "status": 204
+        },
+        {
+          "method": "GET",
+          "headers": {
+            "Accept": "text/plain"
+          },
+          "status": 204
+        },
+        {
+          "method": "GET",
+          "headers": {
+            "If-None-Match": "*"
+          },
+          "status": 304
+        },
+        {
+          "method": "GET",
+          "headers": {
+            "If-Match": "\"absent\""
+          },
+          "status": 412
+        },
+        {
+          "method": "GET",
+          "headers": {
+            "If-Match": "*"
+          },
+          "status": 204
+        },
+        {
+          "method": "GET",
+          "target": "@canonicalScope + ?x=1",
+          "headers": {},
+          "status": 204,
+          "assert": "same pathname-selected Scope; exact existing service-desc Link spelling and current context"
+        }
+      ],
+      "assertion": "Each of7 requests observes real owner once; same-entry context, HEAD/body rules, exact Link bytes from exactScopeServiceDescLink for no-query/query/HEAD/conditional eligible rows; no-minimum clock/wait unused."
+    },
+    {
+      "callback": "D3 source receiving scope",
+      "route": "scope",
+      "directHandlerCalls": 8,
+      "wireRequests": 0,
+      "discoveryCalls": 1,
+      "ownerWithReadAboveDelegatedBaseline": 1,
+      "assemblyCalls": 1,
+      "waitCalls": 0,
+      "clockCalls": 0,
+      "callbackMs": 5000,
+      "requestMs": 5000,
+      "automaticRetries": 0,
+      "rows": [
+        {
+          "label": "anonymous malformed",
+          "authorization": "anonymous",
+          "fields": [
+            "BDP-Minimum-Scope-Position",
+            "genesis"
+          ],
+          "method": "GET",
+          "status": 401
+        },
+        {
+          "label": "read-only ordinary",
+          "authorization": "reader",
+          "fields": [],
+          "method": "GET",
+          "status": 204
+        },
+        {
+          "label": "writer partial",
+          "authorization": "writer",
+          "fields": [
+            "BDP-Minimum-Scope-Position",
+            "genesis"
+          ],
+          "method": "GET",
+          "status": 400
+        },
+        {
+          "label": "duplicate bdp-minimum-scope-position",
+          "authorization": "writer",
+          "duplicateField": "bdp-minimum-scope-position",
+          "tuple": "genesis + actual owner epoch/view",
+          "method": "GET",
+          "status": 400
+        },
+        {
+          "label": "duplicate bdp-scope-epoch",
+          "authorization": "writer",
+          "duplicateField": "bdp-scope-epoch",
+          "tuple": "genesis + actual owner epoch/view",
+          "method": "GET",
+          "status": 400
+        },
+        {
+          "label": "duplicate bdp-authorization-view",
+          "authorization": "writer",
+          "duplicateField": "bdp-authorization-view",
+          "tuple": "genesis + actual owner epoch/view",
+          "method": "GET",
+          "status": 400
+        },
+        {
+          "label": "comma token",
+          "authorization": "writer",
+          "minimumPosition": "genesis,genesis",
+          "method": "GET",
+          "status": 400,
+          "tuple": "genesis,genesis + actual owner epoch/view"
+        },
+        {
+          "label": "HEAD partial",
+          "authorization": "writer",
+          "fields": [
+            "BDP-Minimum-Scope-Position",
+            "genesis"
+          ],
+          "method": "HEAD",
+          "status": 400
+        }
+      ],
+      "assertion": "Only reader enters discovery; receiving/auth have no context/Link/ETag/Location. HEAD partial length matches partial GET, bodyzero."
+    },
+    {
+      "callback": "D3 source minimum order scope",
+      "route": "scope",
+      "directHandlerCalls": 10,
+      "wireRequests": 0,
+      "discoveryCalls": 10,
+      "ownerWithReadAboveDelegatedBaseline": 16,
+      "assemblyCalls": 2,
+      "waitCalls": 6,
+      "clockCalls": 22,
+      "callbackMs": 5000,
+      "requestMs": 5000,
+      "automaticRetries": 0,
+      "rows": [
+        {
+          "case": "known",
+          "position": "pos-1",
+          "status": 204
+        },
+        {
+          "case": "genesis",
+          "position": "genesis",
+          "status": 204
+        },
+        {
+          "case": "opaque",
+          "position": "opaque-unknown",
+          "status": 503
+        },
+        {
+          "case": "future",
+          "position": "pos-2",
+          "status": 503
+        },
+        {
+          "case": "foreign epoch opaque",
+          "position": "opaque-unknown",
+          "epoch": "foreign",
+          "status": 410
+        },
+        {
+          "case": "foreign view opaque",
+          "position": "opaque-unknown",
+          "view": "foreign",
+          "status": 409
+        },
+        {
+          "case": "opaque before Accept",
+          "position": "opaque-unknown",
+          "headers": {
+            "Accept": "text/plain"
+          },
+          "status": 503
+        },
+        {
+          "case": "opaque before If-None-Match",
+          "position": "opaque-unknown",
+          "headers": {
+            "If-None-Match": "*"
+          },
+          "status": 503
+        },
+        {
+          "case": "opaque before If-Match",
+          "position": "opaque-unknown",
+          "headers": {
+            "If-Match": "\"absent\""
+          },
+          "status": 503
+        },
+        {
+          "case": "Scope query opaque",
+          "target": "@canonicalScope + ?x=1",
+          "position": "opaque-unknown",
+          "tuple": "complete actual owner epoch/view + opaque-unknown",
+          "status": 503
+        }
+      ],
+      "seedServiceCommits": 1,
+      "assertion": "Real owner seedpos1. Reset controlled tick0 per request; budget2 nowtick++; timeout2attempts/1wait/3clocks; eligible/foreign1clock. actual503context+Retry-After1+Problem; foreign410/409; no assembly for refusal."
+    },
+    {
+      "callback": "D3 source catch-up scope",
+      "route": "scope",
+      "directHandlerCalls": 2,
+      "wireRequests": 0,
+      "discoveryCalls": 2,
+      "ownerWithReadAboveDelegatedBaseline": 3,
+      "assemblyCalls": 2,
+      "waitCalls": 1,
+      "clockCalls": 2,
+      "callbackMs": 5000,
+      "requestMs": 5000,
+      "automaticRetries": 0,
+      "concurrentServiceCommits": 1,
+      "assertion": "Admit pos1 atpos0, latch actual wait, mutate original Request Headers after entry to foreign/pos999; independent no-minimum discoverypos0; actual commitpos1; release and pending succeeds from captured original tuple. owner released throughout await.",
+      "rows": [
+        {
+          "id": "handler-1",
+          "method": "GET",
+          "target": "@source actual scope",
+          "signal": "callback owned",
+          "assert": "Admit pos1 atpos0, latch actual wait, mutate original Request Headers after entry to foreign/pos999; independent no-minimum discoverypos0; actual commitpos1; release and pending succeeds from captured original tuple. owner released throughout await."
+        },
+        {
+          "id": "handler-2",
+          "method": "GET",
+          "target": "@source actual scope",
+          "signal": "callback owned",
+          "assert": "Admit pos1 atpos0, latch actual wait, mutate original Request Headers after entry to foreign/pos999; independent no-minimum discoverypos0; actual commitpos1; release and pending succeeds from captured original tuple. owner released throughout await."
+        }
+      ]
+    },
+    {
+      "callback": "D3 source abort scope",
+      "route": "scope",
+      "directHandlerCalls": 1,
+      "wireRequests": 0,
+      "discoveryCalls": 1,
+      "ownerWithReadAboveDelegatedBaseline": 1,
+      "assemblyCalls": 0,
+      "waitCalls": 1,
+      "clockCalls": 2,
+      "callbackMs": 5000,
+      "requestMs": 5000,
+      "automaticRetries": 0,
+      "assertion": "Latch actual wait, abort then release; ScopeServerOperationAbortedError; no retry/assembly. Close service+closed before deletion;1000ms local close bound inside5s.",
+      "rows": [
+        {
+          "id": "handler-1",
+          "method": "GET",
+          "target": "@source actual scope",
+          "signal": "callback owned",
+          "assert": "Latch actual wait, abort then release; ScopeServerOperationAbortedError; no retry/assembly. Close service+closed before deletion;1000ms local close bound inside5s."
+        }
+      ]
+    },
+    {
+      "callback": "D3 source close-drain scope",
+      "route": "scope",
+      "directHandlerCalls": 1,
+      "wireRequests": 0,
+      "discoveryCalls": 1,
+      "ownerWithReadAboveDelegatedBaseline": 2,
+      "assemblyCalls": 0,
+      "waitCalls": 1,
+      "clockCalls": 3,
+      "callbackMs": 5000,
+      "requestMs": 5000,
+      "automaticRetries": 0,
+      "assertion": "now0/budget2, hold wait, call close; remains pending across microtasks while ownerinspect live; advance now2/release; handler503contextpos0 then close/closed fulfills and ownerinspect throwsclosed. Check close idempotence, no additional admitted handler.",
+      "rows": [
+        {
+          "id": "handler-1",
+          "method": "GET",
+          "target": "@source actual scope",
+          "signal": "callback owned",
+          "assert": "now0/budget2, hold wait, call close; remains pending across microtasks while ownerinspect live; advance now2/release; handler503contextpos0 then close/closed fulfills and ownerinspect throwsclosed. Check close idempotence, no additional admitted handler."
+        }
+      ]
+    },
+    {
+      "callback": "D3 source projection descriptor",
+      "route": "descriptor",
+      "directHandlerCalls": 6,
+      "wireRequests": 0,
+      "discoveryCalls": 6,
+      "ownerWithReadAboveDelegatedBaseline": 6,
+      "assemblyCalls": 6,
+      "waitCalls": 0,
+      "clockCalls": 0,
+      "callbackMs": 5000,
+      "requestMs": 5000,
+      "automaticRetries": 0,
+      "rows": [
+        {
+          "method": "GET",
+          "headers": {},
+          "status": 200
+        },
+        {
+          "method": "HEAD",
+          "headers": {},
+          "status": 200
+        },
+        {
+          "method": "GET",
+          "headers": {
+            "Accept": "text/plain"
+          },
+          "status": 406
+        },
+        {
+          "method": "GET",
+          "headers": {
+            "If-None-Match": "*"
+          },
+          "status": 304
+        },
+        {
+          "method": "GET",
+          "headers": {
+            "If-Match": "\"absent\""
+          },
+          "status": 412
+        },
+        {
+          "method": "GET",
+          "headers": {
+            "If-Match": "*"
+          },
+          "status": 200
+        }
+      ],
+      "assertion": "Each request observes real owner once; context from observation, HEAD length/body/context and Scope Link; no-minimum clock/wait unused."
+    },
+    {
+      "callback": "D3 source receiving descriptor",
+      "route": "descriptor",
+      "directHandlerCalls": 8,
+      "wireRequests": 0,
+      "discoveryCalls": 1,
+      "ownerWithReadAboveDelegatedBaseline": 1,
+      "assemblyCalls": 1,
+      "waitCalls": 0,
+      "clockCalls": 0,
+      "callbackMs": 5000,
+      "requestMs": 5000,
+      "automaticRetries": 0,
+      "rows": [
+        {
+          "label": "anonymous malformed",
+          "authorization": "anonymous",
+          "fields": [
+            "BDP-Minimum-Scope-Position",
+            "genesis"
+          ],
+          "method": "GET",
+          "status": 401
+        },
+        {
+          "label": "read-only ordinary",
+          "authorization": "reader",
+          "fields": [],
+          "method": "GET",
+          "status": 200
+        },
+        {
+          "label": "writer partial",
+          "authorization": "writer",
+          "fields": [
+            "BDP-Minimum-Scope-Position",
+            "genesis"
+          ],
+          "method": "GET",
+          "status": 400
+        },
+        {
+          "label": "duplicate bdp-minimum-scope-position",
+          "authorization": "writer",
+          "duplicateField": "bdp-minimum-scope-position",
+          "tuple": "genesis + actual owner epoch/view",
+          "method": "GET",
+          "status": 400
+        },
+        {
+          "label": "duplicate bdp-scope-epoch",
+          "authorization": "writer",
+          "duplicateField": "bdp-scope-epoch",
+          "tuple": "genesis + actual owner epoch/view",
+          "method": "GET",
+          "status": 400
+        },
+        {
+          "label": "duplicate bdp-authorization-view",
+          "authorization": "writer",
+          "duplicateField": "bdp-authorization-view",
+          "tuple": "genesis + actual owner epoch/view",
+          "method": "GET",
+          "status": 400
+        },
+        {
+          "label": "comma token",
+          "authorization": "writer",
+          "minimumPosition": "genesis,genesis",
+          "method": "GET",
+          "status": 400,
+          "tuple": "genesis,genesis + actual owner epoch/view"
+        },
+        {
+          "label": "HEAD partial",
+          "authorization": "writer",
+          "fields": [
+            "BDP-Minimum-Scope-Position",
+            "genesis"
+          ],
+          "method": "HEAD",
+          "status": 400
+        }
+      ],
+      "assertion": "Only reader enters discovery; receiving/auth have no context/Link/ETag/Location. HEAD partial length matches partial GET, bodyzero."
+    },
+    {
+      "callback": "D3 source minimum order descriptor",
+      "route": "descriptor",
+      "directHandlerCalls": 9,
+      "wireRequests": 0,
+      "discoveryCalls": 9,
+      "ownerWithReadAboveDelegatedBaseline": 14,
+      "assemblyCalls": 2,
+      "waitCalls": 5,
+      "clockCalls": 19,
+      "callbackMs": 5000,
+      "requestMs": 5000,
+      "automaticRetries": 0,
+      "rows": [
+        {
+          "case": "known",
+          "position": "pos-1",
+          "status": 200
+        },
+        {
+          "case": "genesis",
+          "position": "genesis",
+          "status": 200
+        },
+        {
+          "case": "opaque",
+          "position": "opaque-unknown",
+          "status": 503
+        },
+        {
+          "case": "future",
+          "position": "pos-2",
+          "status": 503
+        },
+        {
+          "case": "foreign epoch opaque",
+          "position": "opaque-unknown",
+          "epoch": "foreign",
+          "status": 410
+        },
+        {
+          "case": "foreign view opaque",
+          "position": "opaque-unknown",
+          "view": "foreign",
+          "status": 409
+        },
+        {
+          "case": "opaque before Accept",
+          "position": "opaque-unknown",
+          "headers": {
+            "Accept": "text/plain"
+          },
+          "status": 503
+        },
+        {
+          "case": "opaque before If-None-Match",
+          "position": "opaque-unknown",
+          "headers": {
+            "If-None-Match": "*"
+          },
+          "status": 503
+        },
+        {
+          "case": "opaque before If-Match",
+          "position": "opaque-unknown",
+          "headers": {
+            "If-Match": "\"absent\""
+          },
+          "status": 503
+        }
+      ],
+      "seedServiceCommits": 1,
+      "assertion": "Real owner seedpos1. Reset controlled tick0 per request; budget2 nowtick++; timeout2attempts/1wait/3clocks; eligible/foreign1clock. actual503context+Retry-After1+Problem; foreign410/409; no assembly for refusal."
+    },
+    {
+      "callback": "D3 source catch-up descriptor",
+      "route": "descriptor",
+      "directHandlerCalls": 2,
+      "wireRequests": 0,
+      "discoveryCalls": 2,
+      "ownerWithReadAboveDelegatedBaseline": 3,
+      "assemblyCalls": 2,
+      "waitCalls": 1,
+      "clockCalls": 2,
+      "callbackMs": 5000,
+      "requestMs": 5000,
+      "automaticRetries": 0,
+      "concurrentServiceCommits": 1,
+      "assertion": "Admit pos1 atpos0, latch actual wait, mutate original Request Headers after entry to foreign/pos999; independent no-minimum discoverypos0; actual commitpos1; release and pending succeeds from captured original tuple. owner released throughout await.",
+      "rows": [
+        {
+          "id": "handler-1",
+          "method": "GET",
+          "target": "@source actual descriptor",
+          "signal": "callback owned",
+          "assert": "Admit pos1 atpos0, latch actual wait, mutate original Request Headers after entry to foreign/pos999; independent no-minimum discoverypos0; actual commitpos1; release and pending succeeds from captured original tuple. owner released throughout await."
+        },
+        {
+          "id": "handler-2",
+          "method": "GET",
+          "target": "@source actual descriptor",
+          "signal": "callback owned",
+          "assert": "Admit pos1 atpos0, latch actual wait, mutate original Request Headers after entry to foreign/pos999; independent no-minimum discoverypos0; actual commitpos1; release and pending succeeds from captured original tuple. owner released throughout await."
+        }
+      ]
+    },
+    {
+      "callback": "D3 source abort descriptor",
+      "route": "descriptor",
+      "directHandlerCalls": 1,
+      "wireRequests": 0,
+      "discoveryCalls": 1,
+      "ownerWithReadAboveDelegatedBaseline": 1,
+      "assemblyCalls": 0,
+      "waitCalls": 1,
+      "clockCalls": 2,
+      "callbackMs": 5000,
+      "requestMs": 5000,
+      "automaticRetries": 0,
+      "assertion": "Latch actual wait, abort then release; ScopeServerOperationAbortedError; no retry/assembly. Close service+closed before deletion;1000ms local close bound inside5s.",
+      "rows": [
+        {
+          "id": "handler-1",
+          "method": "GET",
+          "target": "@source actual descriptor",
+          "signal": "callback owned",
+          "assert": "Latch actual wait, abort then release; ScopeServerOperationAbortedError; no retry/assembly. Close service+closed before deletion;1000ms local close bound inside5s."
+        }
+      ]
+    },
+    {
+      "callback": "D3 source close-drain descriptor",
+      "route": "descriptor",
+      "directHandlerCalls": 1,
+      "wireRequests": 0,
+      "discoveryCalls": 1,
+      "ownerWithReadAboveDelegatedBaseline": 2,
+      "assemblyCalls": 0,
+      "waitCalls": 1,
+      "clockCalls": 3,
+      "callbackMs": 5000,
+      "requestMs": 5000,
+      "automaticRetries": 0,
+      "assertion": "now0/budget2, hold wait, call close; remains pending across microtasks while ownerinspect live; advance now2/release; handler503contextpos0 then close/closed fulfills and ownerinspect throwsclosed. Check close idempotence, no additional admitted handler.",
+      "rows": [
+        {
+          "id": "handler-1",
+          "method": "GET",
+          "target": "@source actual descriptor",
+          "signal": "callback owned",
+          "assert": "now0/budget2, hold wait, call close; remains pending across microtasks while ownerinspect live; advance now2/release; handler503contextpos0 then close/closed fulfills and ownerinspect throwsclosed. Check close idempotence, no additional admitted handler."
+        }
+      ]
+    },
+    {
+      "callback": "D3 source projection directory",
+      "route": "directory",
+      "directHandlerCalls": 6,
+      "wireRequests": 0,
+      "discoveryCalls": 6,
+      "ownerWithReadAboveDelegatedBaseline": 6,
+      "assemblyCalls": 6,
+      "waitCalls": 0,
+      "clockCalls": 0,
+      "callbackMs": 5000,
+      "requestMs": 5000,
+      "automaticRetries": 0,
+      "rows": [
+        {
+          "method": "GET",
+          "headers": {},
+          "status": 200
+        },
+        {
+          "method": "HEAD",
+          "headers": {},
+          "status": 200
+        },
+        {
+          "method": "GET",
+          "headers": {
+            "Accept": "text/plain"
+          },
+          "status": 406
+        },
+        {
+          "method": "GET",
+          "headers": {
+            "If-None-Match": "*"
+          },
+          "status": 304
+        },
+        {
+          "method": "GET",
+          "headers": {
+            "If-Match": "\"absent\""
+          },
+          "status": 412
+        },
+        {
+          "method": "GET",
+          "headers": {
+            "If-Match": "*"
+          },
+          "status": 200
+        }
+      ],
+      "assertion": "Each request observes real owner once; context from observation, HEAD length/body/context and Scope Link; no-minimum clock/wait unused."
+    },
+    {
+      "callback": "D3 source receiving directory",
+      "route": "directory",
+      "directHandlerCalls": 8,
+      "wireRequests": 0,
+      "discoveryCalls": 1,
+      "ownerWithReadAboveDelegatedBaseline": 1,
+      "assemblyCalls": 1,
+      "waitCalls": 0,
+      "clockCalls": 0,
+      "callbackMs": 5000,
+      "requestMs": 5000,
+      "automaticRetries": 0,
+      "rows": [
+        {
+          "label": "anonymous malformed",
+          "authorization": "anonymous",
+          "fields": [
+            "BDP-Minimum-Scope-Position",
+            "genesis"
+          ],
+          "method": "GET",
+          "status": 401
+        },
+        {
+          "label": "read-only ordinary",
+          "authorization": "reader",
+          "fields": [],
+          "method": "GET",
+          "status": 200
+        },
+        {
+          "label": "writer partial",
+          "authorization": "writer",
+          "fields": [
+            "BDP-Minimum-Scope-Position",
+            "genesis"
+          ],
+          "method": "GET",
+          "status": 400
+        },
+        {
+          "label": "duplicate bdp-minimum-scope-position",
+          "authorization": "writer",
+          "duplicateField": "bdp-minimum-scope-position",
+          "tuple": "genesis + actual owner epoch/view",
+          "method": "GET",
+          "status": 400
+        },
+        {
+          "label": "duplicate bdp-scope-epoch",
+          "authorization": "writer",
+          "duplicateField": "bdp-scope-epoch",
+          "tuple": "genesis + actual owner epoch/view",
+          "method": "GET",
+          "status": 400
+        },
+        {
+          "label": "duplicate bdp-authorization-view",
+          "authorization": "writer",
+          "duplicateField": "bdp-authorization-view",
+          "tuple": "genesis + actual owner epoch/view",
+          "method": "GET",
+          "status": 400
+        },
+        {
+          "label": "comma token",
+          "authorization": "writer",
+          "minimumPosition": "genesis,genesis",
+          "method": "GET",
+          "status": 400,
+          "tuple": "genesis,genesis + actual owner epoch/view"
+        },
+        {
+          "label": "HEAD partial",
+          "authorization": "writer",
+          "fields": [
+            "BDP-Minimum-Scope-Position",
+            "genesis"
+          ],
+          "method": "HEAD",
+          "status": 400
+        }
+      ],
+      "assertion": "Only reader enters discovery; receiving/auth have no context/Link/ETag/Location. HEAD partial length matches partial GET, bodyzero."
+    },
+    {
+      "callback": "D3 source minimum order directory",
+      "route": "directory",
+      "directHandlerCalls": 9,
+      "wireRequests": 0,
+      "discoveryCalls": 9,
+      "ownerWithReadAboveDelegatedBaseline": 14,
+      "assemblyCalls": 2,
+      "waitCalls": 5,
+      "clockCalls": 19,
+      "callbackMs": 5000,
+      "requestMs": 5000,
+      "automaticRetries": 0,
+      "rows": [
+        {
+          "case": "known",
+          "position": "pos-1",
+          "status": 200
+        },
+        {
+          "case": "genesis",
+          "position": "genesis",
+          "status": 200
+        },
+        {
+          "case": "opaque",
+          "position": "opaque-unknown",
+          "status": 503
+        },
+        {
+          "case": "future",
+          "position": "pos-2",
+          "status": 503
+        },
+        {
+          "case": "foreign epoch opaque",
+          "position": "opaque-unknown",
+          "epoch": "foreign",
+          "status": 410
+        },
+        {
+          "case": "foreign view opaque",
+          "position": "opaque-unknown",
+          "view": "foreign",
+          "status": 409
+        },
+        {
+          "case": "opaque before Accept",
+          "position": "opaque-unknown",
+          "headers": {
+            "Accept": "text/plain"
+          },
+          "status": 503
+        },
+        {
+          "case": "opaque before If-None-Match",
+          "position": "opaque-unknown",
+          "headers": {
+            "If-None-Match": "*"
+          },
+          "status": 503
+        },
+        {
+          "case": "opaque before If-Match",
+          "position": "opaque-unknown",
+          "headers": {
+            "If-Match": "\"absent\""
+          },
+          "status": 503
+        }
+      ],
+      "seedServiceCommits": 1,
+      "assertion": "Real owner seedpos1. Reset controlled tick0 per request; budget2 nowtick++; timeout2attempts/1wait/3clocks; eligible/foreign1clock. actual503context+Retry-After1+Problem; foreign410/409; no assembly for refusal."
+    },
+    {
+      "callback": "D3 source catch-up directory",
+      "route": "directory",
+      "directHandlerCalls": 2,
+      "wireRequests": 0,
+      "discoveryCalls": 2,
+      "ownerWithReadAboveDelegatedBaseline": 3,
+      "assemblyCalls": 2,
+      "waitCalls": 1,
+      "clockCalls": 2,
+      "callbackMs": 5000,
+      "requestMs": 5000,
+      "automaticRetries": 0,
+      "concurrentServiceCommits": 1,
+      "assertion": "Admit pos1 atpos0, latch actual wait, mutate original Request Headers after entry to foreign/pos999; independent no-minimum discoverypos0; actual commitpos1; release and pending succeeds from captured original tuple. owner released throughout await.",
+      "rows": [
+        {
+          "id": "handler-1",
+          "method": "GET",
+          "target": "@source actual directory",
+          "signal": "callback owned",
+          "assert": "Admit pos1 atpos0, latch actual wait, mutate original Request Headers after entry to foreign/pos999; independent no-minimum discoverypos0; actual commitpos1; release and pending succeeds from captured original tuple. owner released throughout await."
+        },
+        {
+          "id": "handler-2",
+          "method": "GET",
+          "target": "@source actual directory",
+          "signal": "callback owned",
+          "assert": "Admit pos1 atpos0, latch actual wait, mutate original Request Headers after entry to foreign/pos999; independent no-minimum discoverypos0; actual commitpos1; release and pending succeeds from captured original tuple. owner released throughout await."
+        }
+      ]
+    },
+    {
+      "callback": "D3 source abort directory",
+      "route": "directory",
+      "directHandlerCalls": 1,
+      "wireRequests": 0,
+      "discoveryCalls": 1,
+      "ownerWithReadAboveDelegatedBaseline": 1,
+      "assemblyCalls": 0,
+      "waitCalls": 1,
+      "clockCalls": 2,
+      "callbackMs": 5000,
+      "requestMs": 5000,
+      "automaticRetries": 0,
+      "assertion": "Latch actual wait, abort then release; ScopeServerOperationAbortedError; no retry/assembly. Close service+closed before deletion;1000ms local close bound inside5s.",
+      "rows": [
+        {
+          "id": "handler-1",
+          "method": "GET",
+          "target": "@source actual directory",
+          "signal": "callback owned",
+          "assert": "Latch actual wait, abort then release; ScopeServerOperationAbortedError; no retry/assembly. Close service+closed before deletion;1000ms local close bound inside5s."
+        }
+      ]
+    },
+    {
+      "callback": "D3 source close-drain directory",
+      "route": "directory",
+      "directHandlerCalls": 1,
+      "wireRequests": 0,
+      "discoveryCalls": 1,
+      "ownerWithReadAboveDelegatedBaseline": 2,
+      "assemblyCalls": 0,
+      "waitCalls": 1,
+      "clockCalls": 3,
+      "callbackMs": 5000,
+      "requestMs": 5000,
+      "automaticRetries": 0,
+      "assertion": "now0/budget2, hold wait, call close; remains pending across microtasks while ownerinspect live; advance now2/release; handler503contextpos0 then close/closed fulfills and ownerinspect throwsclosed. Check close idempotence, no additional admitted handler.",
+      "rows": [
+        {
+          "id": "handler-1",
+          "method": "GET",
+          "target": "@source actual directory",
+          "signal": "callback owned",
+          "assert": "now0/budget2, hold wait, call close; remains pending across microtasks while ownerinspect live; advance now2/release; handler503contextpos0 then close/closed fulfills and ownerinspect throwsclosed. Check close idempotence, no additional admitted handler."
+        }
+      ]
+    },
+    {
+      "callback": "D3 source raw receiving",
+      "route": "all",
+      "directHandlerCalls": 0,
+      "wireRequests": 12,
+      "discoveryCalls": null,
+      "ownerWithReadAboveDelegatedBaseline": null,
+      "assemblyCalls": null,
+      "waitCalls": null,
+      "clockCalls": null,
+      "callbackMs": 5000,
+      "requestMs": 5000,
+      "automaticRetries": 0,
+      "rows": [
+        {
+          "route": "scope",
+          "case": "duplicate minimum",
+          "status": 400
+        },
+        {
+          "route": "scope",
+          "case": "duplicate epoch",
+          "status": 400
+        },
+        {
+          "route": "scope",
+          "case": "duplicate view",
+          "status": 400
+        },
+        {
+          "route": "scope",
+          "case": "HEAD partial",
+          "status": 400
+        },
+        {
+          "route": "descriptor",
+          "case": "duplicate minimum",
+          "status": 400
+        },
+        {
+          "route": "descriptor",
+          "case": "duplicate epoch",
+          "status": 400
+        },
+        {
+          "route": "descriptor",
+          "case": "duplicate view",
+          "status": 400
+        },
+        {
+          "route": "descriptor",
+          "case": "HEAD partial",
+          "status": 400
+        },
+        {
+          "route": "directory",
+          "case": "duplicate minimum",
+          "status": 400
+        },
+        {
+          "route": "directory",
+          "case": "duplicate epoch",
+          "status": 400
+        },
+        {
+          "route": "directory",
+          "case": "duplicate view",
+          "status": 400
+        },
+        {
+          "route": "directory",
+          "case": "HEAD partial",
+          "status": 400
+        }
+      ],
+      "assertion": "True raw field multiplicity; bounded byte consumption; no context/Link. Do not infer internal owner counters from wire alone.",
+      "wireHelper": "New callback-local bounded raw helper for these14 exchanges only; old transaction-http.test.ts1033-1055 helper (2s) byte-unchanged. request5s ceiling is dominated by remaining3s work/1s cleanup/default5s."
+    },
+    {
+      "callback": "D3 source target transport boundary",
+      "route": "all",
+      "directHandlerCalls": 10,
+      "wireRequests": 2,
+      "discoveryCalls": 0,
+      "ownerWithReadAboveDelegatedBaseline": null,
+      "assemblyCalls": null,
+      "waitCalls": null,
+      "clockCalls": null,
+      "callbackMs": 5000,
+      "requestMs": 5000,
+      "automaticRetries": 0,
+      "rows": [
+        {
+          "case": "POST Scope",
+          "status": 405
+        },
+        {
+          "case": "POST descriptor",
+          "status": 405
+        },
+        {
+          "case": "POST Directory",
+          "status": 405
+        },
+        {
+          "case": "GET actual known operation",
+          "status": 405
+        },
+        {
+          "case": "HEAD actual known operation",
+          "status": 405
+        },
+        {
+          "case": "PUT actual known operation",
+          "status": 405
+        },
+        {
+          "case": "unknown operation",
+          "status": 404
+        },
+        {
+          "case": "encoded alternative operation",
+          "status": 404
+        },
+        {
+          "case": "query-bearing operation",
+          "status": 404
+        },
+        {
+          "case": "descriptor query",
+          "status": 404
+        },
+        {
+          "case": "raw wrong Host",
+          "status": 400
+        },
+        {
+          "case": "raw Origin",
+          "status": 403
+        }
+      ],
+      "assertion": "AllowGET, HEAD orPOST exactly; no invented query normalization; raw Host/Origin before service.",
+      "wireHelper": "New callback-local bounded raw helper for these14 exchanges only; old transaction-http.test.ts1033-1055 helper (2s) byte-unchanged. request5s ceiling is dominated by remaining3s work/1s cleanup/default5s."
+    },
+    {
+      "callback": "D3 source cold oracle counterfactual",
+      "route": "all",
+      "directHandlerCalls": 3,
+      "wireRequests": 0,
+      "discoveryCalls": 3,
+      "ownerWithReadAboveDelegatedBaseline": 3,
+      "assemblyCalls": 3,
+      "waitCalls": 0,
+      "clockCalls": 0,
+      "callbackMs": 5000,
+      "requestMs": 5000,
+      "automaticRetries": 0,
+      "counterfactualApplications": 9,
+      "assertion": "Capture actual Scope Link, descriptor and Directory through three handler calls; clone-only substitutions in counterfactuals.json; zero unsafe dial/retry/fallback.",
+      "rows": [
+        {
+          "id": "actual-Scope",
+          "method": "GET",
+          "target": "@actual Scope",
+          "status": 204,
+          "assert": "capture actual input for clone-only assertion oracle"
+        },
+        {
+          "id": "actual-descriptor",
+          "method": "GET",
+          "target": "@actual descriptor",
+          "status": 200,
+          "assert": "capture actual input for clone-only assertion oracle"
+        },
+        {
+          "id": "actual-Directory",
+          "method": "GET",
+          "target": "@actual Directory",
+          "status": 200,
+          "assert": "capture actual input for clone-only assertion oracle"
+        }
+      ]
+    }
+  ],
+  "sourceDefaultMs": 5000,
+  "newDirectHandlerCalls": 96,
+  "newWireRequests": 14,
+  "countsAreProspective": true,
+  "counterBaseline": "Count actual delegated construction/capture owner traffic then reset; preserve all owner methods/readConfiguration via delegate spread; service submits are separate non-HTTP/non-discovery counters. Do not hardcode away constructor reads.",
+  "legacySource": "First existing source callback retains7 HTTP requests (three discovery GETs nowpositive; target405/write/read/receipt laws unchanged), excluded from new counts.",
+  "exactScopeServiceDescLink": {
+    "emitter": "\"<\" + new URL(\"bdp.json\", canonicalScope).href + \">; rel=\\\"service-desc\\\"; type=\\\"application/json\\\"\"",
+    "fixtureExpectedBytes": "<https://reference.invalid/acme/bdp.json>; rel=\"service-desc\"; type=\"application/json\"",
+    "comparison": "Exact response Link string equality to existing URL emitter, then parse ACTUAL header for navigation; canonicalScope is the actual callback Scope, not metadata target map."
+  }
+}

@@ -1,0 +1,16 @@
+{
+  "at": "2026-10-17T21:41:03.877619+00:00",
+  "mainFreshStagesAccepted": 19,
+  "sourceFilesVerified": 679,
+  "sourceBindingSha256": "f133bf6d5d8f9ebf9fbe21f171d6e77e4d18fc1797a5593090ec40d7601cc406",
+  "requiredPreparationSha256": "aef42c2a09f6ce267a8c1dd8acd3b652a48a46bf8b4329cbc02390dae0e42f31",
+  "requiredGateSha256": "78c5adc272e8784894b7ac6763711d3dbd7666e815ad878603d742aa23d82d05",
+  "stages": [
+    "boundaries",
+    "preflight",
+    "package-smoke",
+    "historical-read-evidence"
+  ],
+  "stopFirstFailure": true,
+  "commitPushReleased": false
+}

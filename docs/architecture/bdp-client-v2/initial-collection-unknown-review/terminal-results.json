@@ -1,0 +1,112 @@
+[
+  {
+    "duration_api_ms": 1197133,
+    "stop_reason": "end_turn",
+    "session_id": "4e7abf64-c7dc-435c-93cc-ac1c0db95567",
+    "total_cost_usd": 9.281795500000001,
+    "usage": {
+      "input_tokens": 138,
+      "cache_creation_input_tokens": 247706,
+      "cache_read_input_tokens": 9189173,
+      "output_tokens": 88287,
+      "output_tokens_details": {
+        "thinking_tokens": 70548
+      },
+      "server_tool_use": {
+        "web_search_requests": 0,
+        "web_fetch_requests": 0
+      },
+      "service_tier": "standard",
+      "cache_creation": {
+        "ephemeral_1h_input_tokens": 247706,
+        "ephemeral_5m_input_tokens": 0
+      },
+      "inference_geo": "global",
+      "iterations": [
+        {
+          "input_tokens": 2,
+          "output_tokens": 5693,
+          "cache_read_input_tokens": 245646,
+          "cache_creation_input_tokens": 6806,
+          "cache_creation": {
+            "ephemeral_5m_input_tokens": 0,
+            "ephemeral_1h_input_tokens": 6806
+          },
+          "type": "message"
+        }
+      ],
+      "speed": "standard"
+    },
+    "modelUsage": {
+      "claude-haiku-4-5-20251001": {
+        "inputTokens": 2189,
+        "outputTokens": 19,
+        "cacheReadInputTokens": 0,
+        "cacheCreationInputTokens": 0,
+        "webSearchRequests": 0,
+        "costUSD": 0.002284,
+        "contextWindow": 200000,
+        "maxOutputTokens": 32000,
+        "thinkingTokens": 0,
+        "canonicalModel": "claude-haiku-4-5",
+        "provider": "firstParty",
+        "costBasis": "list"
+      },
+      "claude-opus-5[1m]": {
+        "inputTokens": 138,
+        "outputTokens": 88287,
+        "cacheReadInputTokens": 9189173,
+        "cacheCreationInputTokens": 247706,
+        "webSearchRequests": 0,
+        "costUSD": 9.279511500000002,
+        "contextWindow": 1000000,
+        "maxOutputTokens": 64000,
+        "thinkingTokens": 70548,
+        "canonicalModel": "claude-opus-5",
+        "provider": "firstParty",
+        "costBasis": "list"
+      }
+    },
+    "permission_denials": [],
+    "terminal_reason": "completed",
+    "fast_mode_state": "off",
+    "fast_mode_disabled_reason": "sdk_opt_in_required",
+    "subagent_stats": {
+      "spawned": 0,
+      "requested": {
+        "background": 0,
+        "foreground": 0,
+        "unset": 0
+      },
+      "started_in_background": 0,
+      "max_depth": 0,
+      "spawned_by_subagents": 0,
+      "completed": 0,
+      "failed": 0,
+      "killed": {
+        "parent": 0,
+        "user": 0,
+        "system": 0
+      },
+      "refused": {
+        "depth_limit": 0,
+        "concurrency_limit": 0,
+        "budget": 0
+      },
+      "by_type": {}
+    },
+    "is_error": false,
+    "num_turns": 81,
+    "subtype": "success",
+    "api_error_status": null,
+    "result": "## Findings\n\nScope note up front: this is a **static read only** \u2014 no tests, builds, imports or shell commands were run, and I did not verify the two pinned SHA\u2011256 digests (that requires command execution). I did confirm that the four files on disk at `HEAD 2dfd2c6` + working tree match the patch's post\u2011image at every cited range, so the \"frozen four files\" are what I reviewed.\n\n---\n\n## Blockers\n\n### BLOCKER\u20111 \u2014 Formatter violation: new line exceeds `lineWidth: 100`\n**File/line:** `packages/server/src/transaction-read.test.ts:618`\n\n```ts\n      { operation: \"createLink\", id: \"links/out\", type: link, source: \"beads/a\", target: \"beads/b\" },\n```\n\n**Issue:** This line is **101 characters**, over `biome.json:14` (`\"lineWidth\": 100`). Biome/Prettier counts the trailing array separator in its fits check \u2014 confirmed empirically by `packages/server/src/transaction-dependencies.test.ts:404`, which sits at *exactly* 100 **including** its trailing comma and stays flat. The object is breakable, so the formatter will expand it. It is also the only breakable `>100` line in any of the four changed files (every other `>100` line in all four is an atomic `it(\"\u2026\")` title or template literal, which the formatter cannot break).\n\n**Impact:** `pnpm format:check` (`biome format .`, `package.json:19`) exits non\u2011zero, failing the planned static/build gate. No behavioral impact. The report's \"Source diff whitespace check passed\" does not cover print width, and the report explicitly states the formatter was not executed.\n\n**Smallest correction:** either accept the formatter's expansion\n\n```ts\n      {\n        operation: \"createLink\",\n        id: \"links/out\",\n        type: link,\n        source: \"beads/a\",\n        target: \"beads/b\",\n      },\n```\n\nor shorten the identifier to keep one line (`id: \"links/b\"` \u2192 99 characters).\n\n### BLOCKER\u20112 \u2014 Inline comment misattributes the mechanism for two of its four cases\n**File/line:** `packages/server/src/transaction-http.test.ts:4899` (comment) covering the loop at `4900\u20134911`\n\n```ts\n  // Parser failures still hit the early unknown-token gap; this is an excluded residual.\n  for (const suffix of [\"types/\", \"beads/a?view=links\", \"beads/?limit=0\", \"beads/?limit=1&limit=2\"]) {\n```\n\n**Issue:** Only two of the four suffixes are parser failures at the early gate:\n\n| suffix | actual mechanism |\n|---|---|\n| `beads/?limit=0`, `beads/?limit=1&limit=2` | `requestFromUrl` \u2192 `invalidParameter()` (`read-request.ts:260`, `read-request.ts:310`) \u2192 early gate `transaction-http.ts:583\u2013587` \u2192 `developmentGap(\"minimum-position\")` |\n| `types/` | **not** a parser failure \u2014 parses to `{kind:\"collection\",collection:\"types\"}`, classified `\"strict\"` by `currentReadMinimumKind`, so it hits the *same* early gate via the second disjunct |\n| `beads/a?view=links` | **not the early gate at all** \u2014 parses to `{kind:\"bead-links\",\u2026}`, classified `\"missing\"`, passes `transaction-http.ts:583\u2013591`, **enters the owner**, and fails *late* with `TransactionMinimumUnsupported` from `checkCurrentReadMinimum(\u2026, waitable=false)`, rendered by the handler catch at `transaction-http.ts:647\u2013648` |\n\nThe assertions themselves are all correct (500 / `minimum-position` / no `bdp-scope-position` / empty body / no added wait \u2014 I traced each). It is the stated cause that is wrong, in a repo whose accepted plan and disposition both insist on naming residual mechanisms precisely (\"add two **named** parser residual checks\"; \"Keep `minimum-position` and `minimum-position-route` distinct\").\n\n**Impact:** Misleading record of which residual each case proves; an unchanged\u2011behavior claim (\"still hit the early gap\") that is false for `beads/a?view=links`, which actually reaches the owner and is refused after classification.\n\n**Smallest correction:** reword to cover both mechanisms, e.g.\n```ts\n  // Excluded residuals: strict/parser-rejected routes stop at the early unknown-token gap,\n  // and the incident-Link route is refused after classification. Both keep the private label.\n```\n\n---\n\n## Verified as correct (no action)\n\nProduction change \u2014 `packages/server/src/transaction-read.ts`\n- New `\"initial-collection\"` branch (`101\u2013106`) preserves descriptor discipline, and is only ever reached for data\u2011only requests: `minimumFor.perform` gates on `dataOnlyReadRequest` (`307`) and `isCurrentTransactionMinimumRead` (`311`) *before* classifying (`313`), so an accessor `continuation` can never be misread as `undefined`.\n- `types` correctly excluded \u2192 stays `\"strict\"`; `?cursor=` \u2192 `continuation` defined \u2192 `\"strict\"` (S1 residual preserved).\n- 404 shortcut rewritten literally as `kind === \"resource\" || kind === \"missing\"` (`216`); the initial\u2011collection fall\u2011through uses `waitable=false`, which is unreachable for beads/links (`authority-read.ts:814\u2013838` has no `notFound()` for those collections) and defensively equivalent to strict \u2014 matching plan \u00a7\"Source delta\" and disposition item 2.\n- Waitable predicate (`234\u2013238`) only affects the unrecognized\u2011position branch of `checkCurrentReadMinimum` (`transaction-consistency.ts:122\u2013130`); recognized future positions still take the `behind` path unchanged.\n- `ReturnType<typeof currentReadMinimumKind>` derivation is sound; only two call sites exist repo\u2011wide (`transaction-read.ts:313`, `transaction-http.ts:585`), and the symbol is not re\u2011exported from `packages/server/src/index.ts`.\n- **No continuation allocation is structurally guaranteed**, not merely asserted: `checkSourceCondition` runs inside the owner entry (`authority-read.ts:983\u2013993`) and `finish` \u2014 which calls `pagination.firstPageWithContext` (`885`) \u2014 runs only after the entry returns (`1017`).\n- HTTP admission (`transaction-http.ts:574\u2013591`) is byte\u2011identical and automatically admits the new kind; `limit=33` \u2192 413 and `selector=$[?` \u2192 400 arrive via the pre\u2011existing materialized\u2011refusal early return (`transaction-read.ts:212`) with full context headers, exactly as the disposition describes.\n- Spec basis holds: 5841\u20135843 permits the bounded\u2011wait option; 5844\u20135849 is not generalized; 5851's incident\u2011Link carve\u2011out is respected (bead\u2011links stays non\u2011waitable).\n\nDirect callback \u2014 `transaction-read.test.ts:614\u2013722`\n- `budgetMs: 7` with `now: () => tick` / `wait: tick += ms` yields exactly 3 attempts, waits `[5, 2]`, tick delta 7 (traced through `waitForTransactionMinimum`, `transaction-consistency.ts:155\u2013177`); 6 combos \u2192 18 entries / 12 waits.\n- One owner entry per attempt is guaranteed by `prepared.enter = entry.withRead.bind(entry)` (`authority-read.ts:409`) and the single\u2011call guard (`979\u2013980`).\n- `{...f.store, withRead}` is safe (store methods are closures, not `this`\u2011dependent) and matches eight existing precedents in the same file (e.g. `2315\u20132321`).\n- `maximumItems/maxPageItems: 32` is required by `transaction-service.ts:111\u2013115` (`receiptMaximumItems`), matching existing fixtures at `884\u2013889` / `2326\u20132330`.\n- Raw owner probe returns `{kind:\"read\",value:\"pos-1\"}` \u2014 a *reentrant* hold would return `{kind:\"entry-refused\",\u2026}` and fail `toEqual`, so this is a real availability oracle (precedent `502\u2013505`).\n- Pre\u2011abort: 0 entries / 0 waits (`signal?.aborted` checked before the first attempt, `transaction-consistency.ts:161`); in\u2011flight abort: 1 entry / `[5]` / `ownerChecks` 13. `.rejects.toThrow(\"abort\")` matches `ScopeServerOperationAbortedError`'s message (\"the BDP server operation was aborted\", `read-request.ts:137`).\n- The `{kind:\"collection\", collection}` union\u2011discriminant literal typechecks \u2014 same pattern already at `754\u2013765`.\n\nHTTP callback \u2014 `transaction-http.test.ts:4819\u20134942`\n- 8 waits is exact under the unchanged `budgetMs: 2` seam (1 wait per timeout): 2 Resource + 4 collection GET/HEAD + 2 token forms. The 500 residuals, 413/400 refusals and three missing/hidden 404s add none (`resource-not-found` shortcut returns before the condition; materialized refusals early\u2011return).\n- `links/?limit=1` is empty yet still waits \u2014 correct, and consistent with the existing empty\u2011collection direct test.\n- HEAD metadata: 503 is `application/problem+json`, so `applyReadHttpSemantics` skips the conditional branch and takes `read-http.ts:42\u201346`, setting `content-length` from `stringifyJsonValue(body)`; `transaction-runtime.ts:93` does not overwrite it because the body was stripped. GET's own length comes from the same serializer. Precedent at `3097\u20133117`.\n- Exact `toEqual` problem body matches `problem()` + `readProblem(\"temporarily-unavailable\")` and the pre\u2011existing `toEqual` at `4846\u20134851`.\n- The post\u2011`replaceAuthorizationPolicy` loop still expects `waits === 8` correctly: those three reads hit the `resource-not-found` shortcut (kinds `resource`/`missing`), unaffected by the rewrite.\n- No cross\u2011test regression found: I checked every repo test that sends a lexically valid non\u2011position token (`transaction-http.test.ts:1793`, `1933`, `2193`, `3130`, installed `895`, snapshot `474`) \u2014 all are Resource/alias/receipt/snapshot paths, none an initial beads/links collection.\n\nInstalled callback \u2014 `transactional-collection-minimum-installed.test.ts:506\u2013543`\n- Exchange arithmetic confirmed from source: existing callback is **38** (3 empty/genesis + 1 seed + 12\u00d72 per collection + 2 filters + 2 refusals + 1 anonymous + 5 retained tail) \u2192 **42** with the 4 added; one child/store; under the `80` cap at `309`.\n- `elapsedMs >= 1000` is sound: the installed process passes no seams (`transaction-installed-process.ts` \u2192 `transaction-installed.ts:8` \u2192 `startTransactionRuntime(captured)`), so `minimumReadBudgetMs: 1000` (`transaction-runtime-configuration.ts:112`) and the real `performance.now()`/`delay` waiter apply, and the client\u2011measured interval strictly contains the server's 1000 ms budget.\n- `context(timeout, headers)` correctly expects `pos-1` (only one seed write precedes this block; `changed` is later at `602`).\n- `opaqueGetBody` is re\u2011initialized per collection (`506` is inside the `419\u2013561` loop). `target` (`?limit=32&type=\u2026`) is parser\u2011 and control\u2011valid, so it genuinely reaches the waiter.\n- Conditionals genuinely compete: `if-none-match: *` \u2192 304 and `if-match: \"wrong\"` \u2192 412 on a successful collection read (no ETag; `read-http.ts:52\u201363`), as the existing block at `472\u2013481` proves \u2014 so the 503 precedence assertions are meaningful.\n\n---\n\n## Optional improvements\n\n**OPT\u20111 \u2014 `expect(allocations).toBe(0)` is an unanchored oracle** (`transaction-read.test.ts:694`, `718`).\nNothing in the new callback ever invokes `generateOpaqueToken`, so a mis\u2011wired pagination seam would make the assertion vacuously true. This matters specifically here because `createTransactionService` rebinds and freezes a *copy* of `pagination` (`transaction-service.ts:84\u201399`), i.e. the seam is not the object the test handed in. The 2\u2011beads/2\u2011links + `limit: 1` setup exists precisely so a successful page *would* allocate, but no successful page is ever read. Compare the existing `818\u2013873` callback, which does anchor its count. Smallest correction \u2014 append after `expect(ownerChecks).toBe(13)` (adds 1 entry, 0 waits, after every count assertion):\n\n```ts\n      const served = await service\n        .readAtMinimum(principal, { ...minimum, minimumPosition: \"pos-1\" })\n        .perform(request);\n      expect(served).toMatchObject({ kind: \"success\" });\n      expect(allocations).toBeGreaterThan(0);\n```\n\n**OPT\u20112 \u2014 uneven 503\u2011rendering oracle for the two alternate tokens** (`transaction-http.test.ts:4886\u20134897`). The four collection pairs assert `content-type` and `content-length`; the `pos-01` / `pos-9007199254740992` requests assert neither. The plan only required body/context for these, so this is discretionary; adding `expect(response.headers.get(\"content-type\")).toBe(\"application/problem+json\")` makes the eight timeout responses uniformly oracled at zero cost.\n\n**OPT\u20113 \u2014 `toBeLessThan(5000)` is effectively dead** (installed test `:515`). `requestTimeoutMs: 5000` (`:257`) aborts the exchange before a 5000 ms response can be observed, so a slow server surfaces as a transport throw rather than this assertion. If you want a diagnosable upper bound, use a value inside the executor budget (e.g. `toBeLessThan(4000)`); otherwise it is harmless documentation of the existing ceiling.\n\n**OPT\u20114 \u2014 installed evidence covers only the filtered target.** All four added exchanges reuse `target` from `:420` (`?limit=32&type=\u2026`). The plan sanctioned this, and the direct/HTTP callbacks cover the unfiltered form, but swapping one of the four to `${scope}${collection}/` would give an unfiltered installed witness at no extra exchange.\n\n---\n\nNo further actionable findings. All numeric claims in `report.md` and `callback-selection.json` that are statically checkable \u2014 18 HTTP requests, 8 HTTP waits, 18 attempt entries / 12 waits / 13 raw owner checks / 0 allocations, 38\u219242 installed exchanges, 1000 ms real installed budget, unchanged 80/90 s/120 s/5 s bounds \u2014 reconcile with the source I read. Nothing here authorizes execution, integration, publication or profile qualification, and none of the above is an observation of a test run.",
+    "ttft_ms": 1592,
+    "type": "result",
+    "duration_ms": 1197338,
+    "uuid": "4bd28351-7d2f-4a99-81b2-f64bc544ae97",
+    "ttft_stream_ms": 1074,
+    "time_to_request_ms": 33,
+    "first_content_frame_ms": 1075,
+    "queued_turn_count": 0
+  }
+]

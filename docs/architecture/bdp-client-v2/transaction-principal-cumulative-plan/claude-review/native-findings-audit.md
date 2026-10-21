@@ -1,0 +1,17 @@
+# Independent audit of actual principal plan review — inconclusive
+
+**Mandatory review gap: no actual Claude verdict was produced.** There are zero findings to classify as mandatory, optional, false or omitted-context questions. Do not interpret the empty stdout as “no findings,” treat this attempt as completed council, or authorize authoring from it. No automatic retry or alternate reviewer was launched by this audit.
+
+Actual terminal exit.json records exit143, timeout=true, forcedTermination=true, elapsed895.891276s. It is not an exit0 result with a potentially truncated finding list. Both complete streams were read: stdout0B and stderr0B, each SHAe3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855. The fixed supervisor terminated the one actual process at its existing bound; no cause such as authentication failure, inability to read source or code defect can be established from empty streams.
+
+## Exact reviewed inputs and terminal integrity
+
+Actual process PID/group99622, started2026-10-15T21:14:30.768916+00:00, argv /opt/homebrew/bin/claude --safe-mode -p --tools '' --no-session-persistence,900s supervisor bound. No model override or product execution. Prompt SHA374459afc77e9c6d2741d2351a40be0a0d57c6d330dd246d8e0e09c38557fd9b; its complete corrected successor is plan4c62dc5071de924492976ae77d4083b28b5b681350016e816d4296c5030f9427 and ledgerbc65536cd8e8b7fdd9eb12ae5b466c39a5ae19352b858ef1eb3812de14d6397e, with the original plan and unlaunched preparations retained separately.
+
+I independently compared source-before.json and source-after.json, both SHA879b0bba680d83c95d7bcc0428debc22af869c5b6207ab31cc2611b69feb840a, to the final launch binding, then re-read and hashed all24 committed git-show source files at9bf601bfb570adae97ce8cdc99caf2cc7a2b34c1 and all27 bound external artifacts. They match. The review basis is committed9bf601b/tree592c5e6e, not concurrent dirty guarded-batch content or a future parent. Actual exit JSON SHA82059414dfa8a4105a5f0d3b62917e9a842a6e76a6a56afba83c91e518f0d0f9; cleanup SHAea4b447500ba5ebbba93391b081e474725fc832acc1fc1a0bf651993cd447525. Saved stdout/stderr/cleanup/source-after hashes exactly match the exit record.
+
+## Independent cleanup and limits
+
+At2026-10-15T21:30:34.709818+00:00, read-only ps independently showed no sampled PID99622 and no process group99622. The saved terminal cleanup also records remainingGroup=[], sampledPidsStillPresent={}, and empty sampled/final temporary inventories. I independently enumerated the review tmp directory and found it empty. One-second samples cannot prove absence of unsampled or detached short-lived descendants; this is the existing honest supervision limit. No product runtime/store was launched by this review or audit.
+
+The earlier native N1 API mismatch and its corrected dispatch/report provenance remain independently recorded in native-plan-review and proposed-successor/native-closure (757b840ad8c91a78c914082af4fec931d41c49098eddf77db99989d6bf4bff0f). They are not actual Claude findings and cannot be relabelled as its approval. Likewise the prompt’s explicitly omitted source dependencies cannot be classified as findings without reviewer output. Root owns any diagnosis and separately authorized next review approach. This audit changes only this external report; no plan/source/gate edits, tests, build, imports, CLI rerun, commit, push or coordination message occurred.

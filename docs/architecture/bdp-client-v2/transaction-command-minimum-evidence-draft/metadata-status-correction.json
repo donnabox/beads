@@ -1,0 +1,14 @@
+{
+  "at": "2026-10-15T05:58:24.496900+00:00",
+  "source": "453b6dab386746bb03aac2c0a293572b8a71c969",
+  "finding": "response-metadata-equals also requires response.status===prior.status at runner2179-2197; m-body-conflict409 versus m-create-c200 cannot pass",
+  "disposition": "Remove only m-body-conflict:same-context and mirror/static binding. Keep actual409/fullProblem/threeheaderpresence/pos3; supplemental raw hook compares epoch/view. Within accepted v5 oracle placement, no runtime change.",
+  "authoredAssertions": {
+    "before": 193,
+    "after": 192
+  },
+  "unchanged": "11actions,251required256report,7static,3cohorts208expected225maxHTTP26children,fivepaths",
+  "executionAuthorized": false,
+  "newPlanReviewRequired": false,
+  "finalCodeCouncilStillRequired": true
+}

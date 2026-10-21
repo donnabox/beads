@@ -1,0 +1,77 @@
+{
+  "status": "prospective/unexecuted",
+  "changedPaths": [
+    "packages/server/src/transaction-authorization.test.ts",
+    "packages/server/src/transaction-runtime.test.ts"
+  ],
+  "unchangedSourcePaths": 13,
+  "unchangedProductionPaths": 10,
+  "selectedRepairCases": 5,
+  "selectedRepairHTTP": 18,
+  "selectedRepairSuccessfulOwnerOpens": 6,
+  "selectedRepairOrdinaryDirectories": 5,
+  "selectedRepairListeners": 1,
+  "selectedRepairChildren": 0,
+  "completePositive": {
+    "cases": 11,
+    "http": 22,
+    "successfulOwnerOpens": 15,
+    "ordinaryDirectories": 11,
+    "rejectedOpenCopies": 5,
+    "listeners": 2,
+    "productChildren": 0
+  },
+  "control": {
+    "expectedHTTP": 7,
+    "maximumHTTP": 18,
+    "owners": 1,
+    "directories": 1,
+    "listeners": 1,
+    "children": 0,
+    "priorActualRetained": true,
+    "rerunAuthorized": false
+  },
+  "increment": {
+    "http": 1,
+    "successfulOwnerOpens": 1,
+    "directories": 0,
+    "listeners": 0,
+    "cases": 0
+  },
+  "T1Request17": "HEAD actual first receipt id after GET16;200/0deliveredbytes/currentcontext/actual projected GET content-length; replay is18",
+  "T1Bodies": {
+    "seed32": {
+      "bytes": 3728,
+      "sha256": "a778feb6f8559743228db36139ccc653370c43a30cdcf3d2017db2e85349b054"
+    },
+    "seed1": {
+      "bytes": 132,
+      "sha256": "8f22a1dee8d5c16750f476c2c0f4883ca91c257014e07b9efef9d2e678a98220"
+    },
+    "replay": {
+      "bytes": 3728,
+      "sha256": "a778feb6f8559743228db36139ccc653370c43a30cdcf3d2017db2e85349b054"
+    },
+    "HEAD": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    }
+  },
+  "controlPrerequisiteAndNamedGateIdentical": true,
+  "controlPrerequisiteAndNamedGateSha256": "ea4a94d9d9c4260c58203200b97e252f29373cff18ed3eb834b09666e7f608b1",
+  "T2CallbackByteIdentical": true,
+  "T2CallbackSha256": "4ff1f427bef162da81766d8749133647437bbc38528d99f387bb465dafceb67b",
+  "cleanup": "T6 extra reopen uses existing owner cleanup; HEAD uses same bounded raw request destroy/await-close. No new store/directory/listener. Existing runtime finally drains streams/controllers and closes owner before rm.",
+  "limits": {
+    "httpCallbackTimeoutMs": 30000,
+    "requestTimeoutMs": 5000,
+    "responseMaximumBytes": 32768,
+    "publicationCloseTimeoutMs": 1000,
+    "outerMaximumSeconds": 120
+  },
+  "deferred": [
+    "extra metadata variants/sixth rejected copy",
+    "generic timeout guards/T4 synchronous assertion",
+    "future-shape projection hardening"
+  ]
+}

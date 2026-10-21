@@ -1,0 +1,25 @@
+{
+  "status": "released",
+  "session": "2026-10-08T20:26:35Z-81e5",
+  "sourceBindingSha256": "159008a138f4cc4dbfba517d53cd94ffb3021781f0eb62898409fe6ff698fd48",
+  "commandsSha256": "663f43a44047d02a016bf6b9511ff2dec45937f2bd8b5a4af0c757c1a5dea07c",
+  "supervisorSha256": "29c289e07e88e5154d224405adf77aebcc490cbccd7af0e42cdabec0c1f4c763",
+  "expectedHead": "0d63cf59d447eca2e7ff8b2e0e6a5f31513b9a3a",
+  "expectedTree": "80a6fe0605698e18f9504432407e7943e1f665b4",
+  "authorizedStages": [
+    "offline-setup",
+    "typecheck",
+    "build",
+    "format-check",
+    "lint",
+    "boundaries",
+    "read-seal",
+    "source-positive"
+  ],
+  "rootAcceptance": {
+    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-depth-key-order-draft/root-native-code-review.json",
+    "sha256": "91968ddc47a317089aa0a106ae939039fd2973bf4c01ab730e648f13f83a16aa"
+  },
+  "controlGate": "closed",
+  "installedGate": "closed"
+}

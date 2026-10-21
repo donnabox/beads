@@ -1,0 +1,222 @@
+[
+  {
+    "afterSha256": "9622a32504d70deae15cab955c34ac4f79cddc0e55d8e4ed46652c5bedeb532f",
+    "beforeCopy": "before/node-version.capture.txt",
+    "beforePath": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-first4-capture2-authority-precision-1/proposals/node-version.capture.txt",
+    "beforeSha256": "3a3143f26cb95008dd1df87ecf303ef8a583a30282437cd7ee2b471a5264f8a3",
+    "forward": "deltas/node-version.capture.txt.patch",
+    "inverse": "deltas/node-version.capture.txt.inverse.patch",
+    "nonempty": true,
+    "onlyNamedReplacements": [
+      {
+        "name": "preparation namespace",
+        "newText": "write-profile-G09-validation-preparation-3",
+        "occurrences": 2,
+        "oldText": "write-profile-G09-validation-preparation-2"
+      },
+      {
+        "name": "distinct owned output prefix",
+        "newText": "write-profile-G09-validation3-root-first4-dispatch-1",
+        "occurrences": 3,
+        "oldText": "write-profile-G09-validation2-root-first4-dispatch-1"
+      },
+      {
+        "name": "distinct future manifest path",
+        "newText": "write-profile-G09-validation3-root-execution-acceptance-1",
+        "occurrences": 1,
+        "oldText": "write-profile-G09-first4-root-execution-acceptance-1"
+      },
+      {
+        "name": "actual implementation SHA",
+        "newText": "8ad44a93c1215bfe0b9777df4135385f72e82dd8873287a6988da2f1fb7615c6",
+        "occurrences": 2,
+        "oldText": "57ecb824dec79722836e63b618e30e0557815142e796da988a80b65af2161413"
+      },
+      {
+        "name": "actual commands SHA",
+        "newText": "d7189bd723bce76f8b214a33197ec48485e6f534f310dad10522f8612d495ef7",
+        "occurrences": 2,
+        "oldText": "b898591c4d062da2ac044e8dbc633e92a0e4334bbf8bbe6b9102fe20b1f8c135"
+      },
+      {
+        "name": "conditional A terminal success expectation",
+        "newText": "ACTUAL_A_TOOL_RAW_EXIT = 0\n",
+        "occurrences": 1,
+        "oldText": "ACTUAL_A_TOOL_RAW_EXIT = None\n"
+      },
+      {
+        "name": "conditional B terminal success expectation",
+        "newText": "ACTUAL_B_TOOL_RAW_EXIT = 0\n",
+        "occurrences": 1,
+        "oldText": "ACTUAL_B_TOOL_RAW_EXIT = None\n"
+      }
+    ],
+    "path": "proposals/node-version.capture.txt",
+    "wholeInverseByteExact": true
+  },
+  {
+    "afterSha256": "05f370d55248a2f0d017aacbf1e645b6003b97fc925327dd62664b7b5b6b2cfe",
+    "beforeCopy": "before/pnpm-version.capture.txt",
+    "beforePath": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-first4-capture2-authority-precision-1/proposals/pnpm-version.capture.txt",
+    "beforeSha256": "f6795df448646e22b3cadc9e5fe23cd374072d90c970a88c043a9fd8b45cbe8b",
+    "forward": "deltas/pnpm-version.capture.txt.patch",
+    "inverse": "deltas/pnpm-version.capture.txt.inverse.patch",
+    "nonempty": true,
+    "onlyNamedReplacements": [
+      {
+        "name": "preparation namespace",
+        "newText": "write-profile-G09-validation-preparation-3",
+        "occurrences": 2,
+        "oldText": "write-profile-G09-validation-preparation-2"
+      },
+      {
+        "name": "distinct owned output prefix",
+        "newText": "write-profile-G09-validation3-root-first4-dispatch-1",
+        "occurrences": 3,
+        "oldText": "write-profile-G09-validation2-root-first4-dispatch-1"
+      },
+      {
+        "name": "distinct future manifest path",
+        "newText": "write-profile-G09-validation3-root-execution-acceptance-1",
+        "occurrences": 1,
+        "oldText": "write-profile-G09-first4-root-execution-acceptance-1"
+      },
+      {
+        "name": "actual implementation SHA",
+        "newText": "8ad44a93c1215bfe0b9777df4135385f72e82dd8873287a6988da2f1fb7615c6",
+        "occurrences": 2,
+        "oldText": "57ecb824dec79722836e63b618e30e0557815142e796da988a80b65af2161413"
+      },
+      {
+        "name": "actual commands SHA",
+        "newText": "d7189bd723bce76f8b214a33197ec48485e6f534f310dad10522f8612d495ef7",
+        "occurrences": 2,
+        "oldText": "b898591c4d062da2ac044e8dbc633e92a0e4334bbf8bbe6b9102fe20b1f8c135"
+      },
+      {
+        "name": "conditional A terminal success expectation",
+        "newText": "ACTUAL_A_TOOL_RAW_EXIT = 0\n",
+        "occurrences": 1,
+        "oldText": "ACTUAL_A_TOOL_RAW_EXIT = None\n"
+      },
+      {
+        "name": "conditional B terminal success expectation",
+        "newText": "ACTUAL_B_TOOL_RAW_EXIT = 0\n",
+        "occurrences": 1,
+        "oldText": "ACTUAL_B_TOOL_RAW_EXIT = None\n"
+      }
+    ],
+    "path": "proposals/pnpm-version.capture.txt",
+    "wholeInverseByteExact": true
+  },
+  {
+    "afterSha256": "ec6b8f14b5054311f3cb984c8f00a0a37ee3e5b7d9e6ba6fd4cf04024533cef9",
+    "beforeCopy": "before/workspace-install.capture.txt",
+    "beforePath": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-first4-capture2-authority-precision-1/proposals/workspace-install.capture.txt",
+    "beforeSha256": "1963bedee54d82494835719c4322237086b7d521ddf47c8c023575013fbb7072",
+    "forward": "deltas/workspace-install.capture.txt.patch",
+    "inverse": "deltas/workspace-install.capture.txt.inverse.patch",
+    "nonempty": true,
+    "onlyNamedReplacements": [
+      {
+        "name": "preparation namespace",
+        "newText": "write-profile-G09-validation-preparation-3",
+        "occurrences": 2,
+        "oldText": "write-profile-G09-validation-preparation-2"
+      },
+      {
+        "name": "distinct owned output prefix",
+        "newText": "write-profile-G09-validation3-root-first4-dispatch-1",
+        "occurrences": 3,
+        "oldText": "write-profile-G09-validation2-root-first4-dispatch-1"
+      },
+      {
+        "name": "distinct future manifest path",
+        "newText": "write-profile-G09-validation3-root-execution-acceptance-1",
+        "occurrences": 1,
+        "oldText": "write-profile-G09-first4-root-execution-acceptance-1"
+      },
+      {
+        "name": "actual implementation SHA",
+        "newText": "8ad44a93c1215bfe0b9777df4135385f72e82dd8873287a6988da2f1fb7615c6",
+        "occurrences": 2,
+        "oldText": "57ecb824dec79722836e63b618e30e0557815142e796da988a80b65af2161413"
+      },
+      {
+        "name": "actual commands SHA",
+        "newText": "d7189bd723bce76f8b214a33197ec48485e6f534f310dad10522f8612d495ef7",
+        "occurrences": 2,
+        "oldText": "b898591c4d062da2ac044e8dbc633e92a0e4334bbf8bbe6b9102fe20b1f8c135"
+      },
+      {
+        "name": "conditional A terminal success expectation",
+        "newText": "ACTUAL_A_TOOL_RAW_EXIT = 0\n",
+        "occurrences": 1,
+        "oldText": "ACTUAL_A_TOOL_RAW_EXIT = None\n"
+      },
+      {
+        "name": "conditional B terminal success expectation",
+        "newText": "ACTUAL_B_TOOL_RAW_EXIT = 0\n",
+        "occurrences": 1,
+        "oldText": "ACTUAL_B_TOOL_RAW_EXIT = None\n"
+      }
+    ],
+    "path": "proposals/workspace-install.capture.txt",
+    "wholeInverseByteExact": true
+  },
+  {
+    "afterSha256": "4c2434393c537f142fb14e36b951644bb75dbb4e2ef2079d648487b454277440",
+    "beforeCopy": "before/bind-workspace-tools.capture.txt",
+    "beforePath": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-first4-capture2-authority-precision-1/proposals/bind-workspace-tools.capture.txt",
+    "beforeSha256": "37dc321c32914819e325aaa18e76ad7d9e2d3937e6c5a4da2e61209e339a0b9b",
+    "forward": "deltas/bind-workspace-tools.capture.txt.patch",
+    "inverse": "deltas/bind-workspace-tools.capture.txt.inverse.patch",
+    "nonempty": true,
+    "onlyNamedReplacements": [
+      {
+        "name": "preparation namespace",
+        "newText": "write-profile-G09-validation-preparation-3",
+        "occurrences": 2,
+        "oldText": "write-profile-G09-validation-preparation-2"
+      },
+      {
+        "name": "distinct owned output prefix",
+        "newText": "write-profile-G09-validation3-root-first4-dispatch-1",
+        "occurrences": 3,
+        "oldText": "write-profile-G09-validation2-root-first4-dispatch-1"
+      },
+      {
+        "name": "distinct future manifest path",
+        "newText": "write-profile-G09-validation3-root-execution-acceptance-1",
+        "occurrences": 1,
+        "oldText": "write-profile-G09-first4-root-execution-acceptance-1"
+      },
+      {
+        "name": "actual implementation SHA",
+        "newText": "8ad44a93c1215bfe0b9777df4135385f72e82dd8873287a6988da2f1fb7615c6",
+        "occurrences": 2,
+        "oldText": "57ecb824dec79722836e63b618e30e0557815142e796da988a80b65af2161413"
+      },
+      {
+        "name": "actual commands SHA",
+        "newText": "d7189bd723bce76f8b214a33197ec48485e6f534f310dad10522f8612d495ef7",
+        "occurrences": 2,
+        "oldText": "b898591c4d062da2ac044e8dbc633e92a0e4334bbf8bbe6b9102fe20b1f8c135"
+      },
+      {
+        "name": "conditional A terminal success expectation",
+        "newText": "ACTUAL_A_TOOL_RAW_EXIT = 0\n",
+        "occurrences": 1,
+        "oldText": "ACTUAL_A_TOOL_RAW_EXIT = None\n"
+      },
+      {
+        "name": "conditional B terminal success expectation",
+        "newText": "ACTUAL_B_TOOL_RAW_EXIT = 0\n",
+        "occurrences": 1,
+        "oldText": "ACTUAL_B_TOOL_RAW_EXIT = None\n"
+      }
+    ],
+    "path": "proposals/bind-workspace-tools.capture.txt",
+    "wholeInverseByteExact": true
+  }
+]

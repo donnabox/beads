@@ -1,0 +1,184 @@
+{
+  "source": "427cfef6decbb422b393024e36218affc26007fa",
+  "sourceTree": "9075897867d88344a8477e1f4a8e1a00a50f1228",
+  "executedCases": [
+    {
+      "title": "detects W1b link-metadata assertion-input corruption after actual HTTP",
+      "durationMs": 709.811833
+    },
+    {
+      "title": "retained retry diagnostics preserve failure position without credential or body output",
+      "durationMs": 0.7807500000001255
+    }
+  ],
+  "passed": 2,
+  "failed": 0,
+  "skippedBySelection": 200,
+  "commands": [
+    {
+      "name": "build",
+      "command": [
+        "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+        "/Users/dbox/.cache/node/corepack/v1/pnpm/11.20.0/bin/pnpm.cjs",
+        "build"
+      ],
+      "cwd": "/Users/dbox/repos/wt/vickie/vickie-w1b-ci-observability",
+      "started": "2026-10-14T18:53:29.382502+00:00",
+      "ended": "2026-10-14T18:53:30.805565+00:00",
+      "elapsedSeconds": 1.4229333328548819,
+      "exit": 0,
+      "timeout": false,
+      "supervisorPid": 4365,
+      "processGroup": 4366,
+      "entryOverridePresentBeforeClear": false,
+      "tempRootsBefore": [],
+      "tempRootsObserved": [],
+      "tempRootsAfter": [],
+      "samplingSeconds": 0.1
+    },
+    {
+      "name": "format",
+      "command": [
+        "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+        "/Users/dbox/.cache/node/corepack/v1/pnpm/11.20.0/bin/pnpm.cjs",
+        "exec",
+        "biome",
+        "format",
+        "apps/bdptest/src/read-update-matrix.test.ts"
+      ],
+      "cwd": "/Users/dbox/repos/wt/vickie/vickie-w1b-ci-observability",
+      "started": "2026-10-14T18:53:42.822798+00:00",
+      "ended": "2026-10-14T18:53:44.118729+00:00",
+      "elapsedSeconds": 1.295770375058055,
+      "exit": 0,
+      "timeout": false,
+      "supervisorPid": 4652,
+      "processGroup": 4655,
+      "entryOverridePresentBeforeClear": false,
+      "tempRootsBefore": [],
+      "tempRootsObserved": [],
+      "tempRootsAfter": [],
+      "samplingSeconds": 0.1
+    },
+    {
+      "name": "lint",
+      "command": [
+        "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+        "/Users/dbox/.cache/node/corepack/v1/pnpm/11.20.0/bin/pnpm.cjs",
+        "exec",
+        "biome",
+        "lint",
+        "apps/bdptest/src/read-update-matrix.test.ts"
+      ],
+      "cwd": "/Users/dbox/repos/wt/vickie/vickie-w1b-ci-observability",
+      "started": "2026-10-14T18:53:42.833590+00:00",
+      "ended": "2026-10-14T18:53:44.294115+00:00",
+      "elapsedSeconds": 1.4603455420583487,
+      "exit": 0,
+      "timeout": false,
+      "supervisorPid": 4654,
+      "processGroup": 4657,
+      "entryOverridePresentBeforeClear": false,
+      "tempRootsBefore": [],
+      "tempRootsObserved": [],
+      "tempRootsAfter": [],
+      "samplingSeconds": 0.1
+    },
+    {
+      "name": "selected",
+      "command": [
+        "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+        "/Users/dbox/.cache/node/corepack/v1/pnpm/11.20.0/bin/pnpm.cjs",
+        "exec",
+        "vitest",
+        "run",
+        "apps/bdptest/src/read-update-matrix.test.ts",
+        "-t",
+        "^(retained retry diagnostics preserve failure position without credential or body output|detects W1b link-metadata assertion-input corruption after actual HTTP)$",
+        "--maxWorkers=1",
+        "--reporter=verbose",
+        "--reporter=json",
+        "--outputFile=/Users/dbox/repos/wt/vickie/bdp-integration-logs/pr120-w1b-ci-observability/selected.json"
+      ],
+      "cwd": "/Users/dbox/repos/wt/vickie/vickie-w1b-ci-observability",
+      "started": "2026-10-14T18:53:52.899936+00:00",
+      "ended": "2026-10-14T18:53:55.215695+00:00",
+      "elapsedSeconds": 2.3156176249030977,
+      "exit": 0,
+      "timeout": false,
+      "supervisorPid": 4903,
+      "processGroup": 4904,
+      "entryOverridePresentBeforeClear": false,
+      "tempRootsBefore": [],
+      "tempRootsObserved": [
+        "/var/folders/cc/hh74y1f16qj9gfbv8x4x2n6m0000gn/T/bdp-cumulative-ru-g2D56r"
+      ],
+      "tempRootsAfter": [],
+      "samplingSeconds": 0.1
+    },
+    {
+      "name": "setup",
+      "command": [
+        "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+        "/Users/dbox/.cache/node/corepack/v1/pnpm/11.20.0/bin/pnpm.cjs",
+        "install",
+        "--offline",
+        "--frozen-lockfile"
+      ],
+      "cwd": "/Users/dbox/repos/wt/vickie/vickie-w1b-ci-observability",
+      "started": "2026-10-14T18:53:24.800664+00:00",
+      "ended": "2026-10-14T18:53:25.282325+00:00",
+      "elapsedSeconds": 0.4815009590238333,
+      "exit": 0,
+      "timeout": false,
+      "supervisorPid": 4308,
+      "processGroup": 4309,
+      "entryOverridePresentBeforeClear": false,
+      "tempRootsBefore": [],
+      "tempRootsObserved": [],
+      "tempRootsAfter": [],
+      "samplingSeconds": 0.1
+    },
+    {
+      "name": "typecheck",
+      "command": [
+        "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+        "/Users/dbox/.cache/node/corepack/v1/pnpm/11.20.0/bin/pnpm.cjs",
+        "typecheck"
+      ],
+      "cwd": "/Users/dbox/repos/wt/vickie/vickie-w1b-ci-observability",
+      "started": "2026-10-14T18:53:42.784800+00:00",
+      "ended": "2026-10-14T18:53:43.773537+00:00",
+      "elapsedSeconds": 0.9881846657954156,
+      "exit": 0,
+      "timeout": false,
+      "supervisorPid": 4650,
+      "processGroup": 4651,
+      "entryOverridePresentBeforeClear": false,
+      "tempRootsBefore": [],
+      "tempRootsObserved": [],
+      "tempRootsAfter": [],
+      "samplingSeconds": 0.1
+    }
+  ],
+  "expectedHttp": 36,
+  "maximumHttpStatic": 63,
+  "actualHttpCountRetained": false,
+  "installedChildPidsObserved": [
+    4967,
+    4971
+  ],
+  "installedChildCountObserved": 2,
+  "temporaryRootsObserved": 1,
+  "cleanupEvidence": "cleanup.json",
+  "lint": {
+    "exit": 0,
+    "warnings": 226,
+    "infos": 8,
+    "scope": "touched file; no changes made for existing warnings"
+  },
+  "priorDiagnostic": "Separate pr120-w1b-diagnostic measured 36 exchanges; not claimed as this run",
+  "ciFailureCause": "unresolved",
+  "retries": 0,
+  "newTimeouts": false
+}

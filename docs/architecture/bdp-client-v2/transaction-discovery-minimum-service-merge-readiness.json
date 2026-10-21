@@ -1,0 +1,34 @@
+{
+  "checkedAt": "2026-10-14T11:08:05.714929+00:00",
+  "head": "5401e2fcd2abc414bfe83a2798101c02025153a2",
+  "tree": "ee86fd4f58747bf9685e17a7196a9842ae779d74",
+  "mainBefore": "8d83e49a073130bf711e144e95e97687cda8edd4",
+  "pullRequest": {
+    "baseRefName": "main",
+    "headRefOid": "5401e2fcd2abc414bfe83a2798101c02025153a2",
+    "isDraft": true,
+    "mergeable": "MERGEABLE",
+    "state": "OPEN",
+    "statusCheckRollup": [
+      {
+        "__typename": "CheckRun",
+        "completedAt": "2026-10-14T11:03:33Z",
+        "conclusion": "SUCCESS",
+        "detailsUrl": "https://github.com/gastownhall/bdp/actions/runs/38552390918/job/115813403472",
+        "name": "verify",
+        "startedAt": "2026-10-14T10:51:10Z",
+        "status": "COMPLETED",
+        "workflowName": "CI"
+      }
+    ]
+  },
+  "reviewHashes": {
+    "transaction-discovery-minimum-service-claude-code-review.txt": "1cbe72b38750ace17445c1e146ae1ecab30d3464d78483fb9a36de8191304077",
+    "transaction-discovery-minimum-service-root-code-dispositions.md": "6d84259239aecc131fea7709fb3cb03aaea46d53be2b497f9f38263aded5352f",
+    "transaction-discovery-minimum-service-repair-native-closure.md": "8999cd20685e2dbd5aa575862fe0fb6d3411ae64f886f403ce00c7e9b021e0ae",
+    "transaction-discovery-minimum-integration-root-review.md": "c1743793699ec3cf315ccfa43321377342963b3a062cdac4fca1708b530bbf6a"
+  },
+  "scope": "Private discovery minimum service preparation; no HTTP discovery activation, profile advertisement or release",
+  "ordinaryMergeTree": "ee86fd4f58747bf9685e17a7196a9842ae779d74",
+  "actionableFindings": "closed or explicitly deferred in reviewed root dispositions"
+}

@@ -1,0 +1,101 @@
+{
+  "utc": "2026-10-18T17:06:16.237298+00:00",
+  "accepted": true,
+  "session": "2026-10-18T02:16:24Z-549f",
+  "candidateGate": {
+    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/tx-discovery-validation10-prefix52-proposed-authority-1/execution-gate.proposed.json",
+    "sha256": "2ca39c3614baf7e8c22acb7ac1f276aa9f5a64f4cf7ac03e1f416bf03cb9ab87"
+  },
+  "candidateDisposition": {
+    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/tx-discovery-validation10-prefix52-proposed-authority-1/disposition.json",
+    "sha256": "8be4ac6ab50b834b08bb0be5745e5a5655b0512639922eb38a573c10fd65799f"
+  },
+  "nativeIndex": {
+    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/tx-discovery-validation10-prefix52-authority-native-precision-1/index.json",
+    "sha256": "7b3193b452153682422f3e744830aeda0dab29324c2250bdc24e2726bb0a904a"
+  },
+  "nativeClosure": {
+    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/tx-discovery-validation10-prefix52-authority-native-precision-1/closure.json",
+    "sha256": "6d9c376ab02972049bde29707a1f081415c3ac72a2405f509586be14ef1777b1"
+  },
+  "nativeReport": {
+    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/tx-discovery-validation10-prefix52-authority-native-precision-1/report.md",
+    "sha256": "e3fcfaeffbdb7c5c7c22037a07591676661a9720644a16ee0f5ad5b3f0724835"
+  },
+  "nativeIndexedRehashed": 106,
+  "candidateIndexedRehashed": 4,
+  "actualRequirePredicatesASTExact": 59,
+  "gateKeys": 26,
+  "changedKeys": [
+    "approvedStages",
+    "consumerInventory",
+    "installedProvenance",
+    "rootConsumerProofAcceptance",
+    "rootDisposition"
+  ],
+  "sourceFilesCurrent": 679,
+  "sourceIdentity": "a61cd3fbf9fac68e3aad857a24a2456dd16b83048067eef85348d7091c0aa08e",
+  "consumerFiles": 870,
+  "confinedLinks": 17,
+  "prior24Accepted": [
+    "node-version",
+    "pnpm-version",
+    "workspace-install",
+    "bind-workspace-tools",
+    "typecheck",
+    "format-check",
+    "lint",
+    "fresh-build",
+    "bind-fresh-build",
+    "focused-source",
+    "audit-focused-source",
+    "legacy-changefeed-source",
+    "audit-legacy-changefeed-source",
+    "legacy-installed-contracts-source",
+    "audit-legacy-installed-contracts-source",
+    "schema-confinement-source",
+    "audit-schema-confinement-source",
+    "prepare-package-directory",
+    "pack-protocol",
+    "pack-server",
+    "verify-archives",
+    "prepare-consumer",
+    "consumer-install",
+    "verify-installed-consumer"
+  ],
+  "next28Unattempted": [
+    "installed-01",
+    "audit-installed-01",
+    "installed-02",
+    "audit-installed-02",
+    "installed-03",
+    "audit-installed-03",
+    "installed-04",
+    "audit-installed-04",
+    "installed-05",
+    "audit-installed-05",
+    "installed-06",
+    "audit-installed-06",
+    "installed-07",
+    "audit-installed-07",
+    "installed-08",
+    "audit-installed-08",
+    "installed-09",
+    "audit-installed-09",
+    "installed-10",
+    "audit-installed-10",
+    "installed-11",
+    "audit-installed-11",
+    "schema-installed-positive",
+    "audit-schema-installed-positive",
+    "required-check-boundaries",
+    "required-e2e-ready-preflight",
+    "required-smoke",
+    "required-evidence-verify"
+  ],
+  "scope": "Exact proposed DATA authority accepted; publication/readback before byte-exact activation, then activation publication/readback before single actual next28. Stop first nonzero or wholewrapper>=120; no retry/prior24 replay. Evidence inner2 only explicit failclosed noReadclaim; no Write qualification/main landing.",
+  "helperEvaluated": false,
+  "activationPerformed": false,
+  "rootReadReportAndActualGateSourceAndAll26Keys59PredicatesAndSelectors": true,
+  "rootDataObservation": "One earlier read used guessed dispatch filename and returned missing path; corrected actual run-dispatch-6/dispatch.json; no helper evaluated or product attempt."
+}

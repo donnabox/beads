@@ -1,0 +1,11 @@
+[
+  {
+    "evidence": "map-serialization-observation.json",
+    "file": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-integration-preflight-4/report.md",
+    "id": "IP4-N1",
+    "line": 14,
+    "severity": "Low",
+    "sourceCompositionBlocked": false,
+    "summary": "First-two-map byte-identical wording conflates identical path\u2192source-SHA mappings with serialized JSON file bytes. Both mappings are exactly equal to preflight3, but their JSON object key order and file SHA differ. Clarify map-content/source-byte equality in an additive erratum; preserve both frozen indices/files. No change to composition, source or counts is needed."
+  }
+]

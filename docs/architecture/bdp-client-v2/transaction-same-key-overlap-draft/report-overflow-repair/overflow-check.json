@@ -1,0 +1,40 @@
+{
+  "kind": "Focused extracted-source branch check with injected small-first/oversized-second observation; not an installed execution or demonstration that ordinary fixture reaches cap",
+  "before": {
+    "sourceSha256": "e6a52fa4d645ffef04e4b6e8ccd9bbcb7495624ae0e3f46536e0e9ac6b707974",
+    "extractedCodeSha256": "79b713faa105af055b002bd06428ab8a27a14c83159cb724f909213445348489",
+    "observationCalls": 2,
+    "reportOverflow": false,
+    "failureCount": 0,
+    "error": null,
+    "logs": [
+      {
+        "label": "private-installed-same-key-overlap",
+        "mode": "positive",
+        "outcome": "failed",
+        "reportOverflow": true,
+        "failureCount": 0,
+        "claimEligible": false
+      }
+    ]
+  },
+  "after": {
+    "sourceSha256": "b13688d6b02c5901e68251620ab6d7e00f9f675af4025319817f9e8cc6c9bca3",
+    "extractedCodeSha256": "2824aa03a95da4328ba4f31e97fcb3eb0d16a89d4a5df2e7ad5057f193034dc9",
+    "observationCalls": 2,
+    "reportOverflow": true,
+    "failureCount": 1,
+    "error": "same-key report ceiling",
+    "logs": [
+      {
+        "label": "private-installed-same-key-overlap",
+        "mode": "positive",
+        "outcome": "failed",
+        "reportOverflow": true,
+        "failureCount": 1,
+        "claimEligible": false
+      }
+    ]
+  },
+  "passed": true
+}

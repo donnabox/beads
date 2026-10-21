@@ -1,0 +1,38 @@
+{
+  "acceptance": {
+    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation5-consumer2-root-final-acceptance-1/acceptance.json",
+    "sha256": "3ae7174043a509b0a6ffc9eb31d8f226617259dd1ff55d996a3eb6ddb0b87797"
+  },
+  "accepted": true,
+  "beforeSha256": "34c333aa5b688d7abe944363b558e0bd431dd512ec84a24f8e0440d9d2bdf7ea",
+  "candidate": {
+    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation5-consumer2-closed-control-source-1/execution-gate.proposed.json",
+    "sha256": "437edd25c7267d9595a15115db65d50051372f0cb4915f6981cf46aa04be65c6"
+  },
+  "findingsDisposition": {
+    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation5-consumer2-root-final-acceptance-1/findings-disposition.json",
+    "sha256": "543a3a125ee820ab70b69d6f9033b240db34edfcc82f89051783ee248bec2283"
+  },
+  "first21NeverRepeat": true,
+  "kind": "ONE_EXACT_LIVE_GATE_WRITE_ONLY_AFTER_COMPLETE_CURRENT_PRIOR_AUTHORITY_RAW_GITMODE_CRITICAL_DURABILITY",
+  "later11Unreleased": true,
+  "manifest": {
+    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation5-consumer2-closed-control-source-1/execution-manifest.json",
+    "sha256": "fa2f30c69d85e5d552ee2c461b5cd006d793a3998abc99b4a82b8b30194a99c2"
+  },
+  "noRuntimeAtWrite": true,
+  "onlyChangedFields": [
+    "approvedStages",
+    "rootArchiveAcceptance",
+    "rootDisposition"
+  ],
+  "onlyLivePath": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation-preparation-5/execution-gate.json",
+  "perStageActualNativeRootDurabilityBeforeSuccessor": true,
+  "requireBeforeAfterSource679Helper208Run97Build476Tools11GitAndOnlyExactGateHistoricalPhases": true,
+  "requireCompleteCurrentPriorCompositePublicationBeforeWrite": true,
+  "requireSeparateActivationPublicationBeforeOnePrepareConsumer": true,
+  "runtimeAuthority": false,
+  "separateActivationOutput": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation5-consumer2-root-activation-1",
+  "session": "2026-10-18T02:16:24Z-549f",
+  "stopBefore24ActualRootGeneratedLockManifestSettingsAcceptance": true
+}

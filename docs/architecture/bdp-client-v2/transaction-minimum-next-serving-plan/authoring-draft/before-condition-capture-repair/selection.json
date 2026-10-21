@@ -1,0 +1,100 @@
+{
+  "executionReleased": false,
+  "source": [
+    {
+      "path": "packages/server/src/transaction-consistency.test.ts",
+      "titles": [
+        "private minimum-read subset snapshots canonical supported tuples without getters or opaque-token guesses",
+        "private minimum-read subset only turns actual behind observations into timeout after the original finite deadline",
+        "distinguishes closed minimum receiving syntax from supported position identities",
+        "captures lexical current minimums without widening strict consumers or invoking accessors",
+        "waits for unproved current eligibility with one deadline and preserves terminal failures"
+      ],
+      "callbacks": 5,
+      "http": 0,
+      "owners": 0,
+      "directories": 0,
+      "listeners": 0,
+      "productChildren": 0
+    },
+    {
+      "path": "packages/server/src/transaction-read.test.ts",
+      "titles": [
+        "compatible missing Resource minimum returns observed missing Resources before behind and foreign minimum collisions",
+        "current Type and incident-Link minimums keeps compatible missing Types and absent/deleted incident anchors separate from collisions",
+        "current alias minimum subset keeps live alias context failures and compatible absent/deleted/dangling observations distinct",
+        "uses actual current policy for missing-first and unproved Resource attempts",
+        "drains an admitted unknown minimum to timeout and rejects new reads while closing"
+      ],
+      "callbacks": 5,
+      "http": 0,
+      "owners": 5,
+      "directories": 5,
+      "listeners": 0,
+      "productChildren": 0,
+      "temporaryPrefix": "bdp-transaction-read-"
+    },
+    {
+      "path": "packages/server/src/transaction-http.test.ts",
+      "titles": [
+        "uses actual epoch/view decisions and an exhausted wait before conditional or timeout responses",
+        "serves missing Resource404 with current context before semantic minimum comparisons",
+        "serves canonical current Type and incident minimums with truthful context and parser boundaries",
+        "serves conditioned live aliases and preserves bodyless redirects, refusal context and receiving boundaries",
+        "waits only for existing current Resource unknown minima and keeps unsupported route labels"
+      ],
+      "callbacks": 5,
+      "httpByTitle": [
+        14,
+        62,
+        68,
+        19,
+        9
+      ],
+      "http": 172,
+      "owners": 5,
+      "directories": 5,
+      "listeners": 5,
+      "productChildren": 0,
+      "temporaryPrefixes": [
+        "bdp-tx-http-",
+        "bdp-type-incident-http-"
+      ]
+    }
+  ],
+  "installed": {
+    "path": "apps/bdptest/src/transactional-minimum-current-resource-installed.test.ts",
+    "title": "serves missing-first current Resources and bounds unproved minimum eligibility",
+    "positive": {
+      "http": 32,
+      "productChildren": 1
+    },
+    "controls": [
+      {
+        "mode": "restore-missing-gap",
+        "httpExpected": 2,
+        "httpMaximum": 32,
+        "productChildren": 1,
+        "namedFailure": "minimum-current:missing-before-minimum"
+      },
+      {
+        "mode": "restore-unknown-gap",
+        "httpExpected": 2,
+        "httpMaximum": 32,
+        "productChildren": 1,
+        "namedFailure": "minimum-current:unknown-catch-up-timeout"
+      }
+    ],
+    "totalExpectedHTTP": 36,
+    "totalMaximumHTTP": 96,
+    "totalProductChildren": 3,
+    "temporaryPrefix": "bdp-minimum-current-installed-",
+    "modeEnvironment": "BDP_TRANSACTIONAL_MINIMUM_CURRENT_MODE",
+    "entryOverride": "BDP_TRANSACTIONAL_INSTALLED_ENTRY",
+    "entryKind": "transaction-installed.js library, not process bootstrap",
+    "sourceOverride": "BDP_TRANSACTIONAL_SOURCE_COMMIT",
+    "observationLabel": "private-installed-minimum-current-resource",
+    "reportDestination": "stdout JSON, external supervisor retains complete Vitest JSON/log/exit; no in-product output override",
+    "claims": "private diagnostic only"
+  }
+}

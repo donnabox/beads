@@ -1,0 +1,56 @@
+{
+  "name": "bypass-receipt-build",
+  "argv": [
+    "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+    "/Users/dbox/.cache/node/corepack/v1/pnpm/11.20.0/bin/pnpm.cjs",
+    "build"
+  ],
+  "cwd": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-command-minimum-later-preparation-v3/run/bypass-receipt",
+  "started": "2026-10-14T22:06:07.493689+00:00",
+  "elapsedSeconds": 1.747800291981548,
+  "exit": 1,
+  "supervisorExit": 1,
+  "timeout": false,
+  "forcedCleanup": false,
+  "errors": [],
+  "processGroup": 98288,
+  "remainingBeforeCleanup": [],
+  "remainingAfterCleanup": [],
+  "sampledPids": [
+    98288,
+    98314,
+    98315,
+    98342,
+    98343,
+    98356,
+    98382
+  ],
+  "sampledPidsStillPresent": {},
+  "sampledTempEntries": [
+    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-command-minimum-later-preparation-v3/run/bypass-receipt-build.tmp/node-compile-cache"
+  ],
+  "tempEntriesAfter": [
+    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-command-minimum-later-preparation-v3/run/bypass-receipt-build.tmp/node-compile-cache"
+  ],
+  "remainingTempEntriesForClassification": [
+    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-command-minimum-later-preparation-v3/run/bypass-receipt-build.tmp/node-compile-cache"
+  ],
+  "runtimeDirectoriesStillPresent": [],
+  "unclassifiedTempEntriesStillPresent": [
+    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-command-minimum-later-preparation-v3/run/bypass-receipt-build.tmp/node-compile-cache"
+  ],
+  "sourceUnchanged": true,
+  "sourceSha256After": {
+    "apps/bdptest/src/installed-reference.test.ts": "2c87160890b1c8aed2ada117a1aa293fe7fcfa85db794a3d9ef6514a39d199d1",
+    "apps/bdptest/src/transactional-collection-minimum-installed.test.ts": "a3f772525ee1c87f3c488e37914af8114421dff5cc003d81640182d6f7a05903",
+    "docs/design/transaction-implementation-progress.md": "e4f474baf6808aa110dea0ac53df2560c8f7a9be9298928908acca2ba45e9be5",
+    "docs/specs/bdp.md": "c2bee88f7a29349f7e420f711d10f3acff1fb0559d012b0d111fd7ac21bd175d",
+    "packages/server/src/transaction-http.test.ts": "8f66df9f9cf891383a19a67fb50c85708eaae055c59a661777b7110060b0c56f",
+    "packages/server/src/transaction-http.ts": "1339f32e0818aee5a44fc01a2034366a73e72c40027d6cde7041f26525aba366",
+    "packages/server/src/transaction-service.test.ts": "5e8dc095dcbe9c8fdfb28a5dea4db024ddc65e7e4f51175edeae5a90ea7125be"
+  },
+  "samplingSeconds": 0.05,
+  "samplingLimitation": "Short-lived or detached descendants may evade group sampling; helper counts and independent final checks remain separate.",
+  "tempClassification": "Only the selected fixture prefixes under this attempt TMPDIR are owned runtime roots; all other entries are preserved for review, not deleted or called leaks.",
+  "resultLimitation": "Exit0 is command completion, not independent oracle/claim/provenance adjudication."
+}

@@ -1,0 +1,125 @@
+Read-only review of **b9afb27** vs **31aab4d** (3 files: new `transaction-snapshot.ts` 699 lines, new `transaction-snapshot.test.ts` 687, `transaction-store.ts` +55/-2). Report, revised plan + S1a appendix (A1–A10 + continuation closure), spec `#scope-snapshots` / `#snapshots-and-strict-reads` / problem table, `snapshotManifest` + `transactionalProblem` schemas, and the recorded test JSON all consulted.
+
+# Findings
+
+---
+
+## 1. `capture` materializes and re-verifies the whole issuance ledger before checking the issuance cap — O(total issued), not O(live)
+
+**Severity:** Medium (boundedness / availability)
+**File:** `packages/server/src/transaction-snapshot.ts:268-276`, `:572-584`
+
+**Issue.** `capture()` begins with `const all = ledger(context)`, and `ledger()` maps every row of `snapshots` (bounded at `issuedHandles = 65_536`) through `disposition()`. Each `disposition()` call runs **two** freshly-compiled statements, a `JSON.parse`, an `Object.keys().sort().join()`, a full `sealDisposition()` (`stringifyJsonValue` + SHA-256) and four regex tests. Only two facts are actually needed — `count(*)` and the live subset — and the cap test `all.length >= limits.issuedHandles` is evaluated *after* the enumeration, so the permanently-refusing path pays the full cost too.
+
+**Impact.** At a full ledger one capture costs ~65 MB of retained heap (65 536 parsed dispositions), 131 072 `sqlite3_prepare` compilations, and 65 536 JSON parses + SHA-256 digests, all inside the single-threaded exclusive owner entry — blocking mutation admission, Event reads and the 1 Hz maintenance sweep for the duration. The recorded evidence corroborates the cost: `permanent 65536 issued-identity bound…` went 3 974 ms → 12 380 ms against a 15 000 ms budget (`snapshot-core-token-tests.json` / `snapshot-core-semantic-controls.json`), and the report already calls this out as "scheduling headroom to watch on slower CI" without naming the mechanism. Because issuance is never reclaimed (plan line 50: no epoch rotation, no tombstone deletion), the degraded state is terminal for the epoch: every subsequent capture pays ~seconds of exclusive-lock CPU to return `413`/`never`.
+
+**Fix.** Replace `ledger()` in `capture` with SQL that answers only the two questions: `SELECT count(*) FROM snapshots` for the cap (check it *before* any enumeration), and a filtered `WHERE json_extract(disposition,'$.expired')=0` query for the live rows, validating `disposition()` only over those (≤ 8 by construction, since `expire()` runs first in the same entry). Keep `ledgerBounds()` as the pre-read size guard.
+
+---
+
+## 2. The Authorization View binds every persisted disposition but is absent from the persisted `configuration`
+
+**Severity:** Medium (configuration refusal / recovery)
+**File:** `packages/server/src/transaction-store.ts:241-251`, `:463`, `:531`; `transaction-snapshot.ts:185-188`
+
+**Issue.** `disposition()` hard-fails with `integrity(... "persisted context mismatch")` unless `d.view === context.authorizationView`. The view is the source literal `"development-all-visible"`, written in two places (`sweep`'s inline context at `:463` and the `view` const at `:531`). The `configuration` blob that gates reopen contains `format`, `receiptMaximumItems`, `snapshotLimits`, `snapshotTokenPolicy`, `identityPolicy`, `contractIdentity`, `runtimeLimits`, `scope`, `types` — **not** the view, and not via `configurationIdentity` either.
+
+**Impact.** The report's claim that "different configuration or prior format refuses before BDP maintenance" has a hole for the one persisted-context field the Snapshot core actually binds. If the view literal changes (the plan names mutable authorization views as follow-on work, and A2 keeps view inputs unsupported precisely because this is unsettled), reopening an existing store is **not** refused by the designed gate. Instead:
+
+- if any row satisfies `expired=0 AND expires < now`, `sweep` → `snapshots.expire` → `disposition()` throws inside the provisioning `atomic`, which `transaction-store.ts:525-529` turns into `db.close()` + rethrow — **the store becomes unopenable**, with `Snapshot integrity: persisted context mismatch` instead of `transaction installation mismatch`;
+- otherwise the store opens but `capture()` → `ledger()` validates *all* rows and so **every capture fails 500 for the life of the epoch**, and old handles return a 500 integrity fault rather than the lawful 410/404.
+
+The two divergent copies of the literal make this silently reachable from either side. (Same root cause makes a long opaque view token push a legitimate disposition past `dispositionBytes`, turning a capacity condition into an `integrity` 500 rather than a bounded refusal.)
+
+**Fix.** Add `authorizationView: view` to the `configuration` object (a format bump, consistent with A2's "persisted-context corruption remain separate controls") so a view change refuses the store through the designed `transaction installation mismatch` path before BDP maintenance. Remove the duplicated literal in `sweep` by hoisting the `view` const above `sweep`'s definition and sharing it.
+
+---
+
+## 3. `checkGraph` does an unindexed full-table scan per Bead — capture is O(beads × resources), even for Types that own nothing
+
+**Severity:** Medium (boundedness / efficiency)
+**File:** `packages/server/src/transaction-snapshot.ts:324-337`; schema at `packages/server/src/transaction-store.ts:171-182`
+
+**Issue.** For every captured Bead, `checkGraph` runs `SELECT id FROM resources WHERE kind='link' AND source=?`. The transaction store's schema declares **no index at all** (`grep "CREATE INDEX" packages/server/src/transaction-store.ts` → empty) — the `links_source` / `links_target` partial indexes exist only in `recovery-store.ts:200-201`. So each Bead scans the whole `resources` table. The query also runs *before* the `descriptor.ownsOutgoing === undefined` branch at `:338`, so a Type that owns no outgoing Links still pays the scan, and `record()` at `:327` fully parses/validates/re-serializes **every** outgoing Link before the `ownsOutgoing` membership filter at `:329-332` can discard it.
+
+**Impact.** At the authorized 4 096-row ceiling with all Beads this is ~16.7 M row visits per capture, held inside the exclusive `BEGIN IMMEDIATE`. Measured: `accepts the 4096-resource boundary…` 913 ms → 1 353 ms. Plan line 44 explicitly required "Record this bounded scan cost rather than claiming an indexed per-kind stream already exists" — the report does not record it anywhere (sections "Bounds and tested observations" and "Verification" are silent on scan cost).
+
+**Fix.** Skip the query entirely when `descriptor.ownsOutgoing === undefined`; move the type filter ahead of `record()` by selecting the link type cheaply (e.g. `SELECT id, body->>'$.type' …`) and only calling `record()` for owned types. If the scan is retained, add the partial index `CREATE INDEX links_source ON resources(source) WHERE kind='link'` to the transaction schema — note L4's "declined unnecessary resources index" was about paging *captured* rows, not about owned-Link verification. Either way, record the residual cost in the report.
+
+---
+
+## 4. Each owned Link is parsed, validated and re-serialized three times per capture
+
+**Severity:** Medium (efficiency)
+**File:** `packages/server/src/transaction-snapshot.ts:277-314`, `:327`, `:358`, `:608`
+
+**Issue.** `record()` is the expensive primitive (2 statements, `readStoredResource`, `validateServerLink`, endpoint-index assertion, `stringifyJsonValue`). An owned Link passes through it three times in one capture: once as a top-level resource at `:608`, once in the source Bead's outgoing scan at `:327`, and once again in the inline-vs-first-class comparison at `:358`. A non-owned outgoing Link passes twice.
+
+**Impact.** Triples the dominant codec cost of capture on exactly the graph shape the owned/first-class agreement law targets, and the serialized body is recomputed each time. This path is only exercised at 37 Beads / 35 Links in tests; the 4 096- and 128-record capacity fixtures (`seedRecords`, `transaction-snapshot.test.ts:529-554`) insert Beads with `ownedLinks: { [linkType]: [] }` and **zero** Links, so ceiling population and owned-Link verification are never combined in any recorded run.
+
+**Fix.** Build one `Map<localId, {body, value}>` per capture inside the owner entry (bounded by the already-enforced 4 096 rows / 32 MiB, so no new memory class) and have `record()` memoize through it. That collapses all three call sites to one parse per resource and also removes the duplicate work in finding 3.
+
+---
+
+## 5. `db.prepare()` inside every hot loop, against the repo's own documented convention
+
+**Severity:** Low-Medium (efficiency)
+**File:** `packages/server/src/transaction-snapshot.ts:278/285`, `:324`, `:369`, `:434`, `:460`, `:476`, `:641`
+
+**Issue.** Every SQL statement in the module is compiled at the point of use, including inside per-record and per-page loops. `transaction-store.ts:555-561` states the opposite convention explicitly — *"Prepare once per owner observation, not once per scanned group"* — and implements it in `retainedGroupReader()`.
+
+**Impact.** A 4 096-resource capture compiles roughly 20 000 statements (2 per `record()` + 1 per `checkGraph` + 1 per page-planner body read); `ledger()` adds 131 072 at a full ledger (finding 1). Pure overhead inside the exclusive write transaction.
+
+**Fix.** Hoist the statements into the `transactionSnapshotStorage` closure (it already has the right lifetime — one per owner, created once at `transaction-store.ts:459`) and reuse them, mirroring `retainedGroupReader`.
+
+---
+
+## 6. No supplementary-character / non-ASCII canonical-ordering witness, despite an explicit plan predicate
+
+**Severity:** Low-Medium (evidence gap)
+**File:** `packages/server/src/transaction-snapshot.test.ts` (whole file); claim at `bdp-integration-logs/transaction-snapshot-core-report.md:11`
+
+**Issue.** Plan line 42 requires "include supplementary-character ordering tests", and done-when #8 (line 102) requires "non-ASCII canonical ordering". Every identity in the test file is ASCII (`beads/0000`…, `b0`…, `a`, `b`); grep for surrogates / `\u{1…}` / astral literals returns nothing. The report nevertheless asserts the ordering property as established ("The identity-only inventory is bounded and sorted with `compareCanonicalIds`, not SQLite collation"), and the "Verification" section's list of what was *not* run does not mention this omission.
+
+**Impact.** The code claim is correct on inspection — `capture` sorts in JS via `compareCanonicalIds` (`protocol/src/index.ts:252`, plain UTF-16 code-unit `<`/`>`) and never uses a SQLite `ORDER BY` over identities; `plan()`/`page()` order only by `kind`/`ordinal`. So this is an undischarged predicate and an over-claim in the report, not a live defect. It does leave the one divergence unwitnessed: `capture` sorts **local paths** (`resources.id`) while `checkGraph`'s owned-inventory comparison sorts **absolute URIs** (`:351`) against the evaluator's absolute-URI order (`resource-evaluator.ts:928`). Those agree only because the scope prefix is common to all rows — true here, but asserted nowhere.
+
+**Fix.** Add one capture over identities spanning BMP and supplementary planes (e.g. `U+FFFD`, `U+10000`, `U+1F600`) asserting per-stream order equals an independent `compareCanonicalIds` sort of the absolute IDs, plus one owned-Link inventory in that same alphabet. Then either drop or qualify the report's ordering sentence.
+
+---
+
+## 7. Safe creation irreversibly consumes a finite, non-reclaimable global slot with no rate control
+
+**Severity:** Low (core policy; exposure lands in S1b)
+**File:** `packages/server/src/transaction-snapshot.ts:21-32` (`issuedHandles`), `:579-584`
+
+**Issue.** `issuedHandles = 65_536` is permanent per epoch by design (plan line 50, A-ledger: no forgetting horizon, no epoch rotation, no tombstone deletion — this is what buys the lawful 404-vs-410 distinction). The `liveHandles = 8` ceiling bounds *concurrency*, not *rate*: a handle that expires frees live capacity immediately while its issuance slot is gone forever. Nothing in the core throttles capture frequency.
+
+**Impact.** Spec `#scope-snapshots` makes creation a **safe `GET`**. Once S1b routes it, ordinary safe-method behaviour — a retry storm, a prefetcher, a monitoring loop — permanently exhausts the epoch's issuance and disables Snapshot for that store with `413`/`retry: never` and no operator remedy short of reprovisioning (which loses the graph). The only brake today is capture cost itself, which findings 1 and 3 make worse rather than better.
+
+**Fix.** Core-side, decide and record one of: (a) per-interval issuance rate alongside the capacity cap, (b) reuse of a still-live capture for a repeat creation within some window, or (c) a bounded compact-tombstone recycling scheme that preserves the 410 distinction. If none is adopted, state in the report that S1b **must** supply rate limiting before the creation target is routed — the current text ("permanent creation backpressure") reads as a design virtue rather than a prerequisite.
+
+---
+
+## 8. `sweep`'s inline read context bypasses `readContext()`'s position validation and adds a new owner-fencing surface
+
+**Severity:** Low (recovery robustness)
+**File:** `packages/server/src/transaction-store.ts:460-465`, vs `:545-554`
+
+**Issue.** `sweep` constructs its own context from `metadata("epoch")` and `` `pos-${metadata("position")}` `` instead of using `readContext()`, which validates `/^(0|[1-9][0-9]*)$/` and `Number.isSafeInteger`. `disposition()` then does `Number(context.scopePosition.slice(4))` (`transaction-snapshot.ts:192`); a non-numeric position yields `NaN`, every comparison is false, and `integrity(... "anchor exceeds owner")` throws.
+
+**Impact.** Fail-closed, but the *surface* is new: before this commit the maintenance sweep never read `position`, so corrupt position metadata could not fence the owner from the timer. It now can — `maintenanceFailure` is set, the timer is cleared, and every subsequent `enter()` throws (`:305-316`) — and at open it propagates through `:525-529` as an unopenable store. The duplicated hardcoded view in the same literal compounds finding 2.
+
+**Fix.** Hoist `epoch`/`view` and a `readContext`-equivalent position parse above `sweep` and call it, so the sweep and the read path share one validated context constructor.
+
+---
+
+# Verified correct (areas you flagged)
+
+- **Immutable same-owner capture.** `manifest()` derives every anchor field from the sealed disposition, not the live context: `scopePosition: pos-${d.position}`, and `transactionCheckpoint(scope, context, d.position)` uses `context` only for the epoch/view tags, which `disposition()` has already proven equal to `d.epoch`/`d.view`. Refetch after mutation is byte-stable; `genesis` is correctly produced at position 0. Capture reads the graph inside `atomic`; `putResource`/`deleteResource` write only under the mutation `SAVEPOINT effects` in a different non-reentrant owner entry, so no uncommitted graph state is observable. `erasures: []`, no incidental `links` (rejected by `validateServerBead`, `read-request.ts:800-801`), owned/first-class member-for-member agreement and in-Scope endpoint presence all enforced.
+- **Uncertain-commit fencing.** `after-snapshot-copy` fires inside the atomic (rollback, clean, no fence); `after-snapshot-commit` fires after COMMIT and after the identity is durable, so an undisclosed capture keeps consuming capacity — exactly plan line 52 — with no compensating delete. `atomic`'s `committing || !cleanRollback || (sqlite && !constraint)` fence is reused unchanged. Expiry commits in its own transaction *before* the capture transaction, so a failed capture cannot undo legitimate disposal.
+- **Expiry / permanent ledger.** Fixed `created + lifetimeMs`, sealed into the binding, never renewed by read, refetch or reopen. Purge triggers only on `expires < now`, serving stays inclusive at `expires` (`now > d.expires` → 410), so the "continuable through `expiresAt`" law holds. Backward clock motion cannot resurrect disposed detail; a replayed pre-expiry disposition is accepted by the binding but still 410s on the `expires` comparison, so there is no resurrection path. Compact disposition survives; only bodies/ranges go.
+- **HMAC ordinal recognition and the 404/410 split.** `resolve()` orders context → committed-disposition → token recognition → expiry (A9). Token is `sp_<ordinal>_<HMAC-SHA256(seed, [policy,id,kind,ordinal])>`; per-Snapshot `randomBytes(32)` seed makes cross-Snapshot and wrong-kind tokens 404, and `pageCounts` survives purge so a genuine next token is 410 after disposal **and** after reopen. The `timingSafeEqual` length precondition is safe: the regex forbids leading zeros, so `String(Number(g1)) === g1` and both buffers are always `47 + len(ordinal)` bytes. Problem tuples match `bdp.md:1899-1907` exactly and the schema's `retryAfter`-only-on-`after-delay` rule; no `retryAfter` on 404/410; `limit` deliberately omitted per plan line 50. The empty-`live` → `Infinity` `retryAfter` shape is unreachable (both 503 branches require `live` non-empty, since `totals.bytes`/`totalBytes` are already capped at 32 MiB below the 64 MiB aggregate).
+- **Persisted format / refusal.** Format bumped to `bdp-private-transaction-snapshot-9` with `snapshotLimits` and `snapshotTokenPolicy` inside the compared `configuration`; the exact-bytes comparison precedes `DELETE FROM receipts WHERE owner IS NOT NULL`, the creator cleanup and the sweep, so refusal leaves the file untouched — matching the separate prior-format proof. `identityPolicy` kept distinct from the format gate. Only gap is the view (finding 2).
+- **Memory / read limits.** Every load is size-gated first: `disposition()` checks `length(CAST(… AS BLOB)) + id ≤ 1024` before `JSON.parse`; `record()` checks `≤ representationBytes` before `SELECT *`; `page()` checks all row sizes before fetching any body; `plan()` bounds row count and column widths before reading. Page-fit arithmetic is conservative — the planner reserves `n` separators where serialization uses `n-1`, which exactly absorbs the ≤1-byte growth when the next page's ordinal gains a digit, so `integrity(bytes(text(result)) <= pageBytes)` can never fire on a well-formed capture, and no truncation fallback exists. Round-trip stability holds because `storedRecord` derives everything from `bodyJson` (the `source: ""` / `target: ""` arguments at `:488-490` are inert) and cross-checks `resourcePath(scope, record.id, kind)` against the stored id, so the uncommitted `snapshot_records.id` column cannot serve a body under a forged identity. The integrity chain `binding → plan → per-page digest → bodies` is complete, and `binding` is honestly described as corruption-detecting rather than authenticating (the seed sits in the same row). Page digests are unambiguous because `stringifyJsonValue` never emits a raw newline.
+
+**Out of scope as stated and respected by the diff:** no route/discovery/HEAD/conditional/CORS/authorization code, no 304/412 handling, no supplied epoch/view/minimum support, no `day`-definition change, no spec/schema/catalog/evidence edits.

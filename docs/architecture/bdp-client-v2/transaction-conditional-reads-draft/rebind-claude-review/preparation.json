@@ -1,0 +1,32 @@
+{
+  "status": "CLOSED_NOT_LAUNCHED",
+  "workspace": "/Users/dbox/repos/wt/vickie/vickie-transaction-conditional-reads",
+  "head": "1ba65f2f192cc84e44eb09ef89b9693ec6cdaf05",
+  "sourceFiles": {
+    "packages/conformance/test-support/transactional/manifest-v1.json": "60c527f6a5673161eacf022c0015d09bea2743d153b8b0d0c86160b76fafeb68",
+    "packages/conformance/test-support/transactional/coverage-v1.json": "33032fe07eb06d2a8968fcd8e5a3cf93cb4637c551868c22da9ea0c4edd587a3",
+    "packages/conformance/src/transactional-cumulative.test.ts": "9f70f8a24ea358b2cd613fd392be68057abd7b1552ec8cc6c4bc1a3241de69f6",
+    "apps/bdptest/src/transactional-matrix.test.ts": "136de49e859546e081c39410f1d3ee6fc01e32faf1879084718ad67b553d62ec"
+  },
+  "promptBytes": 108431,
+  "promptSha256": "dec1eff83d1562f845adc989458a5f243f3f4b6bf961a583df644ded91a76f9e",
+  "runnerSha256": "5163cb1fb69490f2b2c2fadae3d3dfc927bf31ab962616f7b883d04463ad27cc",
+  "bindingSha256": "8e0e486f8efc9c73bfab5e7fe117413e2e06ec6e95a435189b63add53b3f94d4",
+  "contextCount": 22,
+  "artifactAndSnapshotPins": 84,
+  "snapshotCount": 53,
+  "timeoutSeconds": 900,
+  "noRetry": true,
+  "wrapperAstParseOnly": true,
+  "sourceUnchanged": true,
+  "adaptations": [
+    "Workspace changed to conditional-reads frozen HEAD 1ba65f2",
+    "Exact four-file hashes from correction source binding",
+    "Four-file dirty scope gate replaces two-test scope gate",
+    "Root release false; no attempt/output artifacts created",
+    "Actual parser/runner/binding/spec and preserved review/data evidence pinned and copied",
+    "Prompt embeds incremental TS and normalized JSON row changes instead of enormous relocation diff",
+    "Full actual source and full patch remain pinned and available for Read"
+  ],
+  "execution": "No Claude, product test/import/build or code execution. Python standard-library packet preparation only."
+}

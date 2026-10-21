@@ -1,0 +1,154 @@
+{
+  "accepted": true,
+  "activationEvidenceFuturePath": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-first4-root-activation-1/activation.json",
+  "activeGate": {
+    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation-preparation-2/execution-gate.json",
+    "sha256": "b931ef2c3f9cdee4c40f0bae3f26fd2747840a8f4111895ff77a140653ada12b"
+  },
+  "allowedSubstitutions": [
+    "APPROVED_GATE_SHA256: exact activeGate.sha256 after reviewed byteexact activation and both publication/readbacks",
+    "APPROVED_EXECUTION_ACCEPTANCE_SHA256: actual raw digest of THIS frozen acceptance document after exact review/publication; deliberately not stored in itself",
+    "ACTUAL_A_TOOL_ID and ACTUAL_A_TOOL_RAW_EXIT: actual phaseA ordinary-tool terminal facts supplied to phaseB only after A terminal",
+    "ACTUAL_B_TOOL_ID and ACTUAL_B_TOOL_RAW_EXIT: actual phaseB ordinary-tool terminal facts supplied to phaseC only after B terminal"
+  ],
+  "approvedStages": [
+    "node-version",
+    "pnpm-version",
+    "workspace-install",
+    "bind-workspace-tools"
+  ],
+  "at": "2026-10-18T20:11:41.274017+00:00",
+  "authorityAddendum": {
+    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-first4-capture2-authority-precision-1/index.json",
+    "sha256": "effc08211d8b82d232079312a39271b49607f965d41d4a422ec7a1ebbaecbaaf"
+  },
+  "automaticRetries": 0,
+  "baseProtocol": {
+    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-root-first4-capture-plan-2/index.json",
+    "sha256": "65b4faaa98b6d539c9b79b807a3723c0e57a309bcc3123add4874c5d73e355ba"
+  },
+  "baseProtocolNative": {
+    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-first4-capture2-native-precision-1/closure.json",
+    "sha256": "cbccf288d8bd9abdfc76a7cebd6cf5f15e970e157134a31c9e3871538c205949"
+  },
+  "bootstrapReuse": [],
+  "commandsSha256": "b898591c4d062da2ac044e8dbc633e92a0e4334bbf8bbe6b9102fe20b1f8c135",
+  "effectiveProtocolNative": {
+    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-first4-capture2-effective-authority-native-precision-1/closure.json",
+    "sha256": "2f05d0e71b4527b0dd703d85f14a93fa7cf0442eb1210c3918b0a550840913a8"
+  },
+  "exactGateCandidate": {
+    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-first4-root-proposed-authority-2/execution-gate.proposed.json",
+    "sha256": "b931ef2c3f9cdee4c40f0bae3f26fd2747840a8f4111895ff77a140653ada12b"
+  },
+  "implementationIndexSha256": "57ecb824dec79722836e63b618e30e0557815142e796da988a80b65af2161413",
+  "kind": "ROOT_EXACT_FIRST4_EXECUTION_ACCEPTANCE_CONDITIONAL_ON_PRECISE_MANIFEST_REVIEW_AND_TWO_PUBLICATION_BARRIERS",
+  "later30Authorized": false,
+  "limitations": [
+    "Original actual CODE reviewed eeb, not correctedf6; native55c270/roota9cf corrective acceptance and scope omissions remain distinct. No second actual review.",
+    "No fit, hard realtime/global containment/all-transient-process, full suite/exact CI or public/full Write qualification claimed.",
+    "Trusted-root actual tool terminal attribution is not an independently decoded original raw toolreceipt.",
+    "Final root records later may bind instantiated-source hashes externally; this manifest does not pin its own digest or instantiated source containing its digest.",
+    "Combined CODE failed/incomplete, D2/D4/D5/C16 and same installed configuration delivery remain open."
+  ],
+  "mode": "final",
+  "noNewStreamCap": true,
+  "normalStrictSeconds": 115,
+  "ordinaryToolSections": "Use exact literal A text before DATA phaseB delimiter; exact B source after PHASE B FIXED ORDINARY-TOOL SOURCE label and before its following narrative; exact C source after PHASE C FIXED ORDINARY DATA CLOCK OBSERVATION label and before following narrative. No .txt file evaluation, code-body changes, generic helper/API/framework or new CLI. Fixed one stage A/B/C at a time.",
+  "outerFailureBoundarySeconds": 120,
+  "positiveConjunction": [
+    "Actual external acceptance rawSHA/strictJSON/fields + actual active gate/source/implementation/commands before any output/child creation",
+    "Actual A tool terminal0 plus wrapper/inner0, no force/errors, unchanged source, exact prior accepted stages",
+    "Both separate root stdout/stderr actual EOF/full counts/hashes/identity/close; inner workload merged log remains separate",
+    "Actual B tool terminal0 after complete separate raw ps PIPE/PIPE/direct-reap/receipt and all recorded task PID/group absence; finite owned domain only",
+    "Following first same-kernel C clock sample after actual B terminal yields witness-origin strictly<115, charging completed target runtime+local raw/metadata publication+census; no preexit selfterminal inference",
+    "Independent root complete schema/source/tool/expected Node+pnpm version or actual fresh workspace-tool binding conjunction; C witness/provisional records alone never PASS"
+  ],
+  "requiredBeforeActiveGateWrite": [
+    "FULL OTHER-native exact THIS manifest precision and root final acceptance, without changing its frozen bytes",
+    "Complete source/helper/protocol/addendum/candidate/all independent and root acceptance bytes committed, pushed, remote exact-head/readback verified"
+  ],
+  "requiredBeforeFirstA": [
+    "Root byteexact active gate transition to activeGate.sha256 only, closed copy and all444 implementation members unchanged",
+    "Separate root activation evidence names exact first durable publication, this manifest actual rawSHA and its independent/root final acceptance",
+    "Activation plus evidence committed/pushed/remote exact-head and active-gate readback verified"
+  ],
+  "rootAuthorityCandidateAcceptance": {
+    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-first4-root-candidate2-static-acceptance-1/acceptance.json",
+    "sha256": "00dce94107b5a81a91e1bbba74c900b2fa7b7e538e584913c2a3cf4e11ccfbfe"
+  },
+  "rootAuthorityInsertionInspection": {
+    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-first4-authority-addendum-root-inspection-1/inspection.json",
+    "sha256": "f15c045aaad043b368cd117626597d70e67d7e0cfbb65d0be5f2dd6741ae5f85"
+  },
+  "rootAuthorityNative": {
+    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-first4-root-authority2-native-precision-1/closure.json",
+    "sha256": "33a918cf76079006121dc47a93acbccfcf670a527e2c1d19f78d11be7f22d8e4"
+  },
+  "rootBridges": {
+    "actualCodeDisposition": {
+      "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-first4-root-proposed-authority-2/actual-code-disposition.json",
+      "sha256": "a5e5d44e46e16af38ae19ed1bed0366c678b20f7b49036c821e17af64657b910"
+    },
+    "nativeCodeDisposition": {
+      "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-first4-root-proposed-authority-2/native-code-disposition.json",
+      "sha256": "a72619384a1443e44022d81d957aa1056be1fb7ee6bc086f5fd9d5f78cf60faa"
+    },
+    "rootDisposition": {
+      "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-first4-root-proposed-authority-2/root-disposition.json",
+      "sha256": "5c94a560caaa8a74d3e5018e52e0b9145dee443ce1793aa6ece00846e49b0249"
+    }
+  },
+  "rootDecision": "Accept full effective capture mechanics and exact source-bound root bridge dispositions; permit ONE each of these four sequential tool/install stages only after independent exact-manifest precision, first complete authority publication/readback, byteexact activation and second publication/readback. STOP on first missing/partial/late/forced/nonzero/unknown; no same-attempt retries or automatic later30 stages.",
+  "rootIndependentHelperInspection": {
+    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation2-root-helper-inspection-1/inspection.json",
+    "sha256": "c6c19238c07f99361f68913201061fdc43e4379cb1121e31437b9486d01525e0"
+  },
+  "rootOutput": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation2-root-first4-dispatch-1",
+  "rootProtocolInspection": {
+    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-first4-capture2-root-inspection-1/inspection.json",
+    "sha256": "74a0c7a83192ae53c9295b1f3dc712e8617ff96f63b672f2091bb38765a12851"
+  },
+  "session": "2026-10-18T02:16:24Z-549f",
+  "sourceAndHelperAcceptance": {
+    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation2-root-static-acceptance-1/acceptance.json",
+    "sha256": "bf55f088e036446eaa039644fbc981d50dcf8e009ab605afa0930a59c579774e"
+  },
+  "sourceAndHelperNative": {
+    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation2-native-mechanics-1/closure.json",
+    "sha256": "b98034f7ed46d67c89d7724b909b5f37f69114191a8bdc2d6f68528ede516bec"
+  },
+  "sourceBindingSha256": "712c3c5a8e1543bf5005cbb54d321c6874b7443afb7e01805f393434fe5cd714",
+  "sourceIdentity": "f6baa7922feea80b9ae9641abc08ed79c339ff719769cc95162fe87ddc70bc65",
+  "templateRoot": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-first4-capture2-authority-precision-1",
+  "templateSubstitutionContract": {
+    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-first4-capture2-authority-precision-1/template-and-substitution-contract.json",
+    "sha256": "f2c2b24c2f3c686b0621b780e1d10347cc9a95ad1ba892b63fbaf9602d74df59"
+  },
+  "templatesWithPlaceholders": [
+    {
+      "bytes": 28530,
+      "originalTemplateSha256": "ae5e93a2e6949ee3d12b13bb56623a03e9ae067f6dcfb1f76edc69df91dd0dbb",
+      "path": "proposals/node-version.capture.txt",
+      "templateSha256": "3a3143f26cb95008dd1df87ecf303ef8a583a30282437cd7ee2b471a5264f8a3"
+    },
+    {
+      "bytes": 28530,
+      "originalTemplateSha256": "a40180d63b149adc25f224e320419f46ff8e495cd8db43e736e440b9ceff9365",
+      "path": "proposals/pnpm-version.capture.txt",
+      "templateSha256": "f6795df448646e22b3cadc9e5fe23cd374072d90c970a88c043a9fd8b45cbe8b"
+    },
+    {
+      "bytes": 28575,
+      "originalTemplateSha256": "5f7baa8003292602bc06e5b431fd8c4792c5efe1ad1aaac3b5c61877dccbff9a",
+      "path": "proposals/workspace-install.capture.txt",
+      "templateSha256": "1963bedee54d82494835719c4322237086b7d521ddf47c8c023575013fbb7072"
+    },
+    {
+      "bytes": 28602,
+      "originalTemplateSha256": "fe5956313104939d9f75f2dedc56b30f8c8e2bff22696223428195aaf3dd2dcf",
+      "path": "proposals/bind-workspace-tools.capture.txt",
+      "templateSha256": "37dc321c32914819e325aaa18e76ad7d9e2d3937e6c5a4da2e61209e339a0b9b"
+    }
+  ]
+}

@@ -1,0 +1,79 @@
+{
+  "actualGateWritten": false,
+  "bridges": {
+    "actual-code-disposition": {
+      "changedKeys": [
+        "actualRootApproval",
+        "authoritySourceDraft",
+        "effectiveAuthority",
+        "executionAuthorityRequiresExternalActivation",
+        "helper2RootStaticAcceptance",
+        "helper2StaticNative",
+        "proposalOnly",
+        "role",
+        "runtimeAuthorizationMeaning"
+      ],
+      "from": {
+        "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-first4-proposed-authority-1/actual-code-disposition.proposed.json",
+        "sha256": "376cfc90ca44d8e4a94243b57e967872a0dc52992f8c93504e5deb47a1b7e3ed"
+      },
+      "to": {
+        "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-first4-root-proposed-authority-2/actual-code-disposition.json",
+        "sha256": "a5e5d44e46e16af38ae19ed1bed0366c678b20f7b49036c821e17af64657b910"
+      }
+    },
+    "native-code-disposition": {
+      "changedKeys": [
+        "actualRootApproval",
+        "authoritySourceDraft",
+        "effectiveAuthority",
+        "executionAuthorityRequiresExternalActivation",
+        "helper2RootStaticAcceptance",
+        "helper2StaticNative",
+        "proposalOnly",
+        "role",
+        "runtimeAuthorizationMeaning"
+      ],
+      "from": {
+        "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-first4-proposed-authority-1/native-code-disposition.proposed.json",
+        "sha256": "1bcbc58eb5f417f6ae20dd8070faf6118f9474696d375c2874ed9e82d1694ad6"
+      },
+      "to": {
+        "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-first4-root-proposed-authority-2/native-code-disposition.json",
+        "sha256": "a72619384a1443e44022d81d957aa1056be1fb7ee6bc086f5fd9d5f78cf60faa"
+      }
+    },
+    "root-disposition": {
+      "changedKeys": [
+        "activationPrerequisites",
+        "actualRootApproval",
+        "authoritySourceDraft",
+        "effectiveAuthority",
+        "executionAuthorityRequiresExternalActivation",
+        "helper2RootStaticAcceptance",
+        "helper2SourceOnlyCorrection",
+        "helper2StaticNative",
+        "proposalOnly",
+        "role",
+        "runtimeAuthorizationMeaning"
+      ],
+      "from": {
+        "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-first4-proposed-authority-1/root-disposition.proposed.json",
+        "sha256": "5b6cbaca92233ffd26d21e3631c739828da918bd758a3c10afbd93895ed09a24"
+      },
+      "to": {
+        "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-first4-root-proposed-authority-2/root-disposition.json",
+        "sha256": "5c94a560caaa8a74d3e5018e52e0b9145dee443ce1793aa6ece00846e49b0249"
+      }
+    }
+  },
+  "gateChangesExactly": [
+    "actualCodeDisposition",
+    "nativeCodeDisposition",
+    "rootDisposition"
+  ],
+  "originalDraftPreserved": true,
+  "proposalFalseFieldsNotAdoptedAsAuthority": true,
+  "protocolStillRequiredNotGuessed": true,
+  "rootEvidenceDispositionOnly": true
+}

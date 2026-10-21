@@ -1,0 +1,20 @@
+--- /Users/dbox/repos/wt/vickie/bdp-integration-logs/pr147-ci-smoke-failure/claude-code-review/run.py
++++ /Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-conditional-reads-draft/rebind-claude-review-focused/run.py
+@@ -1,7 +1,7 @@
+ from pathlib import Path
+ import subprocess,time,json,hashlib,os,signal,datetime
+ p=Path(__file__).parent
+-w=Path("/Users/dbox/repos/wt/vickie/vickie-fresh-depth-serving")
++w=Path("/Users/dbox/repos/wt/vickie/vickie-transaction-conditional-reads")
+ b=json.loads((p/"binding.json").read_text());sha=lambda x:hashlib.sha256(x).hexdigest()
+ def guard(): subprocess.run(["python3","/Users/dbox/repos/wt/vickie/bdp-integration-logs/guarded-action.py","/usr/bin/true"],check=True)
+ assert b['rootLaunchReleased'] is True, 'Closed: root must explicitly release this one review'
+@@ -10,7 +10,7 @@
+ def snap():return {"files":{f:sha((w/f).read_bytes()) for f in b["files"]},"context":{f:sha(Path(f).read_bytes()) for f in b["context"]},"artifacts":{f:sha(Path(f).read_bytes()) for f in b["artifacts"]},"head":subprocess.check_output(["git","rev-parse","HEAD"],cwd=w,text=True).strip(),"promptSha256":sha((p/"prompt.txt").read_bytes()),"runnerSha256":sha((p/"run.py").read_bytes())}
+ before=snap();assert before["files"]==b["files"];assert before["promptSha256"]==b["promptSha256"];assert before["runnerSha256"]==b["runnerSha256"]
+ assert before["head"]==b["head"] and before["context"]==b["context"] and before["artifacts"]==b["artifacts"]
+-assert set(subprocess.check_output(["git","diff","--name-only","HEAD"],cwd=w,text=True).splitlines()) == set(b["files"]), "Only reviewed four-line smoke delta allowed"
++assert set(subprocess.check_output(["git","diff","--name-only","HEAD"],cwd=w,text=True).splitlines()) == set(b["files"]), "Only reviewed four-file conditional rebind delta allowed"
+ guard();(p/"source-before.json").write_text(json.dumps(before,indent=2))
+ args=["/opt/homebrew/bin/claude","--safe-mode","-p","--tools","Read,Glob,Grep","--allowedTools","Read,Glob,Grep","--disable-slash-commands","--strict-mcp-config","--mcp-config",'{"mcpServers":{}}',"--no-session-persistence"]
+ start=time.monotonic();timed=False;sampled=set()

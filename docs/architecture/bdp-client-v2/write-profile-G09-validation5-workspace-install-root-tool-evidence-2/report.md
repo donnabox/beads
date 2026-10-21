@@ -1,0 +1,3 @@
+# Actual P5 workspace-install capture — pending independent audit
+
+ONE actual A/B/C completed in functions3076, normalized actual terminals500ac0/fea40e/c5b630 all0, after durable prior pnpm final disposition4ac798d6. Offline frozen-lockfile install reused61/downloaded0/added61; innerexit0/source1eca unchanged4.141560290940106s, common9.28374187508598<115. Full original sources/tool results and12 actualrecords retained; no retry or secondcensus. Full independent native+ROOT actual audit/disposition/durability before bind-workspace-tools. Provisionalacceptedfalse/pending snapshots and rawwiretoolreceiptsUNRETAINED preserved. Scratch retained/no cleanup/global claim. No compiler/lint/test/build/profile/fullWrite pass.

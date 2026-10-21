@@ -1,0 +1,14 @@
+{
+  "state": "authoring before freeze; no formatter or checks executed",
+  "changes": {
+    "packages/server/src/transaction-http.ts": {
+      "before": "55e70b4a58f3455e7d115e3c2840420403aeadd2ea1574f2adaa60a0a930a8ff",
+      "after": "df1986686fc8954a7c079b5eb9aa2fc8d7cd431f3572034703c2d52e7fb28999"
+    },
+    "packages/server/src/transaction-events.test.ts": {
+      "before": "a2c164fa4fd9b1c5b45b3f02a24918b381094198293c6d6795f0776292c863b6",
+      "after": "4f439f1c7b02dbd1e5a65fcc675d24386cf1901a9e3f7ba1819cfc1d47317555"
+    }
+  },
+  "scope": "Only align added HTTP predicate and join new retained Link subject assertion within100 columns; no semantics/counts changed"
+}

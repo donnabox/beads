@@ -1,0 +1,5 @@
+# RU review successor — external only
+
+Original preview and actual review preserved unchanged. Root accepted the full16 source dispositions and selected four small local test hardenings plus explicit retention wording; see root-dispositions.json and correction.patch. The product doc amendment, request ledger, selector, full oracles and prospective16HTTP/two-child bounds are unchanged. Expanded source hashes supplement the named basis, not installed closure. No product application, formatting, import, test, build or service execution. Actual merged parent remains pending. Native closure and actual focused Claude supplement required before repository execution.
+
+Dedicated external supervisors clear inherited BDP/loader overrides and inject approved ENTRY/MODE/OUTPUT; default full CI retains unrelated BDP matrix variables. No global environment mutation or acceptance of signal-only child termination.32milestone cap is unexercised headroom above26 possible slots. Safe-record privacy does not claim arbitrary replacement child stderr sanitization.

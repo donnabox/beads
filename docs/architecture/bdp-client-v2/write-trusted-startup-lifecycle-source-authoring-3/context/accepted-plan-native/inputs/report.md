@@ -1,0 +1,5 @@
+# Lifecycle CODE correction plan1 freeze
+
+CLOSED DATA-only full correction plan binds all7 root choices and exact source sites/copies. Complete active tables explicitly change32ordinary+4guards/36total to33ordinary+4guards/37total inside existing I21;21callbacks/126HTTP+2CONNECT and budgets unchanged. F3 resolves exact last-check/prepublish capture and keeps final return after lexical close-cache initialization. F2/F3 latent/unreachable and F4 safety-net qualifications plus actual review context-path limitation remain explicit.
+
+Current686 d181 source is unchanged; only7 future existing paths may change after independent native/root acceptance and NEW isolated source release. Three genuine table delta/inverse pairs and immutable parent inventories/origins preserve history. The flat root-index packaging read failure is retained in preparation-failure-1.json; no product action occurred. No helper/source/formatter/Git/compiler/check/test/build/install/runtime/reviewer/flag execution or release. No second actual CODE/PLAN.

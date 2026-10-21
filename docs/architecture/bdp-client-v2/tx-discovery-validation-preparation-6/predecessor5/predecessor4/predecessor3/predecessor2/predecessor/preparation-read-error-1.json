@@ -1,0 +1,8 @@
+{
+  "operation": "read served profile implementation using guessed shell glob",
+  "exitCode": 1,
+  "error": "zsh no matches packages/conformance/src/served*",
+  "sourceOrProductMutation": false,
+  "productExecution": false,
+  "correction": "bounded rg located packages/conformance/test-support/profile-contract-plan.ts"
+}

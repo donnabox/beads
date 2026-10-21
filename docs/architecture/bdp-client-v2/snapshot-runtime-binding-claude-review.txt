@@ -1,0 +1,40 @@
+I reviewed the four-file delta statically (no files written), plus the surrounding modules it binds to: `transaction-snapshot.ts`, `transaction-store.ts` open/installation path, `transaction-runtime.ts` call site, `package.json` exports, `smoke-safety.mjs`, and the dependency-boundary rules.
+
+## Verification summary (what checks out)
+
+- **Binding is faithful and complete.** Every bound the Snapshot module actually enforces comes from either `TRANSACTION_SNAPSHOT_LIMITS` (`transaction-snapshot.ts:151`, used at lines 159–697) or `TRANSACTION_RUNTIME_LIMITS.representationBytes` (lines 282/310/470-471). Both are now in the digest input — `scopeSnapshot` and the pre-existing `mutation` leaf. No enforced bound is unbound, and `tokenPolicy` matches the constant actually fed to `pageToken` (`transaction-snapshot.ts:108`).
+- **Digest dependency is genuinely covered**, not by the new test but by the pre-existing leaf-mutation test (`transaction-runtime-configuration.test.ts:452-467`), which `structuredClone`s the defaults and perturbs every scalar; the two new leaves (`scopeSnapshot.limits.*`, `scopeSnapshot.tokenPolicy`) are swept automatically. No pinned digest fixture anywhere needed a bump (`installed-reference-observation.mjs:63` is regex-only).
+- **Runtime vs persisted compatibility identity holds.** `configurationIdentity` already carries `snapshotLimits`/`snapshotTokenPolicy` (`transaction-store.ts:245-246`) and reopen is a byte-exact comparison (`transaction-store.ts:503`), with the divergence case covered by `transaction-snapshot.test.ts:396-436`.
+- **Immutability holds.** `freeze` in `transaction-runtime-configuration.ts:57-63` is recursive, so `TRANSACTION_RUNTIME_DEFAULTS.scopeSnapshot` and `settings.scopeSnapshot` are deeply frozen; `limits` is frozen at its definition.
+- **Export denial is sound.** `transaction-snapshot` is imported only by `transaction-store.ts` and `transaction-runtime-configuration.ts`; neither `index.ts` nor `development.ts` re-exports any Snapshot symbol, and `assertServerExports` (`smoke-safety.mjs:5-14`) pins the exports map to exactly `.` + `./development`. The new import edge introduces no module cycle, so no TDZ hazard on the module-eval-time `TRANSACTION_RUNTIME_DEFAULTS` initializer.
+- **No new startup-cleanup exposure**, since `transaction-runtime.ts:232-249` closes listener/service/owner on any throw from line 230.
+
+**No actionable finding** — nothing at medium or higher severity. Three low/informational observations follow.
+
+## Low — the new equality guard is unreachable in every real composition
+
+`packages/server/src/transaction-runtime-configuration.ts:327-328`
+
+`actual.scopeSnapshot` (built at `transaction-store.ts:539-542`) and `settings.scopeSnapshot` (built at `transaction-runtime-configuration.ts:89-92`) read the same two module-singleton bindings from `transaction-snapshot.js`; `limits` is literally the same frozen object on both sides. `metadata()` has exactly one production call site (`transaction-runtime.ts:230`), which passes `owner.readConfiguration()`. So `isDeepStrictEqual` is structurally true by construction and cannot fail outside a hand-forged `actual` — which is precisely what the test at line 448 supplies.
+
+Concrete impact: the guard contributes no protection against the divergence it reads as guarding. A store whose persisted snapshot tuple disagrees with the running build never reaches `metadata()` — it throws `"transaction installation mismatch"` at `transaction-store.ts:503`. The guard is therefore a forward-looking assertion (it would start earning its keep only if a seam or override were ever allowed to set `settings.scopeSnapshot`), not a live cross-check.
+
+Fix (optional, pick one): keep it as a documented forward guard with a one-line comment saying the live divergence is already fatal at open, so a future reader doesn't mistake it for the load-bearing check; **or** make it load-bearing by sourcing `readConfiguration().scopeSnapshot` from `JSON.parse(storedConfiguration).snapshotLimits/.snapshotTokenPolicy` instead of restating the compiled constants — then `actual` really is "actual" and the comparison spans persisted vs. runtime. I'd take the comment; the second option duplicates a guarantee the byte check already gives.
+
+## Low — the new test's identity assertion is a re-derivation, not a binding assertion
+
+`packages/server/src/transaction-runtime-configuration.test.ts:416` and `:425-437`
+
+Line 416 (`expect(actual.scopeSnapshot).toEqual(captured.settings.scopeSnapshot)`) compares two structurally identical objects sharing the same `limits` reference. Lines 425-437 recompute the digest by feeding `captured.settings` straight back into `transactionRuntimeDigest` with the same revision string, so the assertion mirrors the implementation.
+
+Concrete impact: if `scopeSnapshot` were dropped from the digest input (e.g. a future change filters `settings` before hashing), this assertion still passes — it only re-derives whatever the implementation did. The failure is caught instead by the pre-existing leaf test at line 452. Similarly, line 422-424 (`lifetimeMs !== cursorTtlMs`) asserts that two unrelated compiled constants, 300000 and 1000, differ; it documents intent rather than constraining behavior.
+
+Fix: to make the new test carry its own weight, assert the digest *changes* under a perturbed `scopeSnapshot` — e.g. compare `transactionRuntimeDigest({...sameInput, settings: {...captured.settings, scopeSnapshot: {...captured.settings.scopeSnapshot, tokenPolicy: "other"}}})` against `metadata.runtimeConfigurationIdentity` with `.not.toBe(...)`. The genuinely novel coverage in this test — the frozen assertions at 417-418, the persisted-tuple reads at 419-421, and the two mismatch cases at 438-450 — is worth keeping as is.
+
+## Informational — redundant smoke denial entry; and the inventory repairs a gap left by the three predecessor commits
+
+`scripts/smoke-executables.mjs:466` and `:243-246`
+
+`"@bdp/server/dist/transaction-snapshot.js"` is already asserted denied by the generic loop at lines 447-458, which covers every emitted `transaction-*.js`; and every subpath denial in the 460-491 list is implied by `assertServerExports`'s exact-map comparison. This mirrors the pre-existing redundancy for `transaction-runtime-configuration.js` and `transaction-changefeed.js`, so it is consistent with the file's style — no change needed. The bare-specifier entry `"@bdp/server/transaction-snapshot"` is the only genuinely new coverage here.
+
+Worth recording as process context, not as a defect in this delta: `transaction-snapshot.ts` was added in b9afb27, but `git show 9b877f8:scripts/smoke-executables.mjs` contains zero references to it. Since the packed-output comparison at lines 352-363 is exact-set (`length !== size || some(!has)`), the installed smoke would have failed with `unexpected=[transaction-snapshot.d.ts, …]` on b9afb27, a0a068c and 9b877f8. This delta is what makes the installed smoke green again, which matches the report's framing of 5208c62 as a fix commit — but any earlier claim of a passing installed smoke on those three commits would not hold.

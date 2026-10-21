@@ -1,0 +1,7 @@
+# Next Update evidence plan acceptance
+
+Root accepts revised planf262ee95350555a2b151a2c37cfc1c7c046753e4bd1eaec4de208dcc9093f664 and its explicit native/Claude dispositions. Originalf16a1e review remains preserved. The supposed whole-record assertion impossibility is disproved by the existing client capture plus empty JSON Pointer/equalsBinding parser/runner probe; no new assertion is authorized. Raw body digest checks are distinguished from report redaction. Step2 already owns the inventory union; retain it.
+
+Accepted evidence-scope interpretations: finite numeric equivalence/admission partitions; configuration-specific provenance absence under the observed runtime setting; actual closed Read+Update discovery/direct results for the profile's lack of BDP Events/Mutation Receipts. These observations do not inspect internal journals or prove Transactional no-event behavior. Both flags remain false until actual row evidence and clause review; a remaining applicable gap keeps its flag false.
+
+This is plan acceptance only. Implementation waits for root's exact repaired/integrated step2 parent, including completed failure retention and external evidence fixes. Preserve all49 baseline blocks and C, unchanged runtime/runner/caps/whole list, fixed two-shard index, dedicated Resource bindings, fresh request keys, and exact size/time measurements. No new lane may edit the active repair's files before the final handoff.

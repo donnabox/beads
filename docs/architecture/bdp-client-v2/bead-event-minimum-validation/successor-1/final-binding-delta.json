@@ -1,0 +1,37 @@
+{
+  "originalClosedIndex": {
+    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/bead-event-minimum-validation/successor-1/initial-closed-preparation/implementation-hashes.json",
+    "sha256": "d52fe7ee7aaa56edbfc76a3b30297e9076f36c7a0fd0bda732f87586f300ecf4"
+  },
+  "sourceIdentity": "507d86e5dac586bee57543bcf6ade921a5d354dfd36f08dd05fc5c8230f3afaa",
+  "changedFromOriginalSource": [
+    "packages/server/src/transaction-events.test.ts",
+    "packages/server/src/transaction-service.test.ts"
+  ],
+  "unchangedOtherFiles": 677,
+  "reversal": {
+    "packages/server/src/transaction-events.test.ts": {
+      "currentSha256": "c627c3103b49af98df4c9d32e40456989da5deb7d5a3eec4ade539de7b24e44a",
+      "reversedSha256": "d6dd08a07355bca304c50909bce61b1744ae22cec8b1bba56c2638442439f36f"
+    },
+    "packages/server/src/transaction-service.test.ts": {
+      "currentSha256": "45f2444071c5cbbd3651449f878feb1e70d9e51c3c57cdcc243395b7735b25a7",
+      "reversedSha256": "1296229ecaad736390882d64b120b433fc8d84d40f022f46803a8574c99ac828"
+    }
+  },
+  "sourceBinding": {
+    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/bead-event-minimum-validation/successor-1/source-binding.json",
+    "sha256": "ab7eb73718d4f1d00e53c8eee3308f5b218bf89312c0c7cfe7d3fc9b38950d5b"
+  },
+  "bootstrapMappingSha256": "9ceb1e6c511212dc4810e3e596753f589f6e3e4bfe14808af4b39b38f1595028",
+  "selectionSha256": "c08e9a2a088de70cc2f2f4462dab8d9771c00a87f2c4cfc58d1e6adbe37b2ae3",
+  "helpersUnchangedFromClosedPreparation": {
+    "run.py": "05b7d2dd29a7b17157dfeff42f23819580e9e84ab6394d9103817718e3920e76",
+    "gate.py": "0b48d38c51594e6c53d36537caefd6208bea631073981365ef22f5937a36c61b",
+    "audit.py": "8a94cbbbad4bf1991f34b83124cf5a5739ee08b313e7bf9567375ff8bcc2665d",
+    "packages.py": "31fe98c55703428b060f0f8b949a588f62b2522530898cdee89f8d6e2296ff12"
+  },
+  "dependencyInputs": 17,
+  "tools": 11,
+  "executionReleased": false
+}

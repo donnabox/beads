@@ -1,0 +1,38 @@
+--- predecessor-preservation.json
++++ predecessor7/predecessor-preservation.json
+@@ -1,25 +1,22 @@
+ {
+-  "actualFlatRunFiles": 228,
+-  "actualOutcomes": "47PASS1FAIL4requiredchecksUNATTEMPTED, sourcea61 only; no outcome transferred to P8",
+-  "actualStageExits": 48,
+-  "actualStageStarts": 48,
++  "actualFlatRunFiles": 134,
++  "actualOutcomes": "28PASS/1FAIL/23laterUNATTEMPTED, source9b7 only; unchanged complete oldP6 outputs not credit for newa61",
++  "actualStageExits": 29,
+   "allNew52StagesFreshRequired": true,
+   "bootstrapReuse": [],
+   "consumerMetadataFiles": 3,
+   "historicalArchives": 2,
+-  "historicalConsumer870Files17Links": "INPLACE ONLY",
++  "historicalConsumer870Files17Links": "IN PLACE only",
+   "noHistoricalOutputReuse": true,
+-  "originalP7PreparationIndexSha256": "ccb92eaccffa287acc18b392ac62405f6b6ce7d908af2a438e6d5be553fc6843",
+-  "preparedFiles": 1963,
++  "originalP6PreparationIndexSha256": "b897b61a370de781f6d83409f71a39f924c7f0c0960b1f46f5cb2a344ad4e6bc",
++  "preparedFiles": 1312,
+   "preparedGateException": [
+     {
+-      "consumedClosedSha256": "2d01770465182e116e48a2f64413776bc859b26347ff649209a8d68cc1cf7fb5",
+-      "copiedConsumedAt": "predecessor7/execution-gate.json",
+-      "originalIndexPreservedVerbatim": "predecessor7/preparation-index.json",
+-      "originalPreparedBytesAt": "predecessor7-original-active-gate.json",
+-      "originalPreparedSha256": "7ed635aa05fe54b6f0dbdd0f941ed7df868bf56fdf590444080d7692dfde6f89",
++      "consumedClosedSha256": "738a281da7a6fa55d26d8255da0b030d086d40145bad29983b036fe53548bedb",
++      "originalActiveBytesAlsoStoredAt": "predecessor6-original-active-gate.json",
++      "originalClosedSha256": "1d02bb7644986e5aef5d93f4f204f78e2fe39670196104b9064dd4cfcd4b4634",
+       "path": "execution-gate.json"
+     }
+   ],
+-  "scope": "exact P7prepared1963+228flatactual48starts48exits+2archives+3consumer metadata+7dispatches+failure/native diagnosis; earlier P6/P5 retained inside snapshot"
++  "scope": "EXACT BOUNDED P6 prepared1312 +134 directactual files +2archives +3consumer metadata; no consumerbody/build/node_modules copy or freshcredit"
+ }

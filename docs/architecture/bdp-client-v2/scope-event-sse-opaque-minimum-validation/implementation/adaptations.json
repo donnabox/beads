@@ -1,0 +1,94 @@
+{
+  "state": "Final concrete preparation; execution CLOSED; no runtime observations",
+  "predecessor": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/changefeed-opaque-minimum-validation/implementation",
+  "acceptedValidationPlan": {
+    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/scope-event-sse-opaque-minimum-validation/plan.md",
+    "sha256": "bd6d19202aa8e937cdd20c8f1691f7627f2854b79d00b6d53bfe322f6b1b894b"
+  },
+  "authorBinding": {
+    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/scope-event-sse-opaque-minimum-author/source-binding.json",
+    "sha256": "c5b377389c581a5344a191d6b71cdad6b61e59cf819c004b1aec863bb0a57b5f"
+  },
+  "normalizedBinding": {
+    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/scope-event-sse-opaque-minimum-validation/implementation/source-binding.json",
+    "sha256": "bcbd975c76b4af9af249cd89e46a80992cf99f3e7f5850f34eee510e287922b6"
+  },
+  "sourceIdentity": "db9e4f028ccab8618e0bdb4c4b8c87033571b138d171986d9a030e77767c8bfb",
+  "sourceFiles": 679,
+  "ownedFiles": 7,
+  "unchangedFiles": 672,
+  "changes": {
+    "run.py": "Only stage labels, environment prefix and owned temp prefix; unchanged process group, deadline, no-retry and terminal source/build/consumer checks.",
+    "gate.py": "Only source worktree/base and phase/stage labels; all exact source, release, tool, build and actual consumer gates preserved.",
+    "packages.py": "Only workstream label/consumer package name; exact archives, eight production versions, graph, containment, recursive payload and entry proof unchanged.",
+    "audit.py": "Tools/build branches reused; source and installed branches replaced by exact authored Scope Event SSE schemas and historical restart predicate precedent. No changefeed observations accepted.",
+    "commands.json": "Exact 2 fresh bootstrap plus 19 ordered stages; source eight titles and source file association, historical/new installed one-case stages separately; no decorative installed env metadata.",
+    "source-and-inputs": "Final dirty seven-file source and actual report schemas bound. Immutable initial validation and author packets remain untouched. No earlier execution evidence reused."
+  },
+  "sourceSelection": {
+    "callbacks": 8,
+    "newReports": 4,
+    "existingReports": 1,
+    "plannedHttp": 108
+  },
+  "installedSelection": {
+    "callbacks": 2,
+    "historicalRequests": 5,
+    "newRequests": 6,
+    "children": 3,
+    "stores": 2
+  },
+  "limits": {
+    "stageSeconds": 120,
+    "termSeconds": 115,
+    "automaticRetries": 0,
+    "sourceCallbackMs": 5000,
+    "installedWorkMs": 45000,
+    "installedCleanupMs": 10000,
+    "installedCallbackMs": 60000,
+    "installedRequestRecorderMs": 5000
+  },
+  "futureMeasuredPins": {
+    "workspaceTools": null,
+    "buildArtifacts": null,
+    "archives": null,
+    "consumerLock": null,
+    "installedProvenance": null,
+    "consumerInventory": null
+  },
+  "releaseDependencies": [
+    "Native/root adaptation acceptance",
+    "Explicit staged root disposition",
+    "Actual CODE findings disposition before runtime",
+    "Actual workspace tools root acceptance",
+    "Root measured consumer lock before verification",
+    "Root measured installed proof/inventory before external callbacks"
+  ],
+  "normalRootChecksSeparate": {
+    "state": "Root-owned follow-through; no execution authorized here",
+    "commands": [
+      [
+        "pnpm",
+        "run",
+        "check:boundaries"
+      ],
+      [
+        "pnpm",
+        "run",
+        "e2e:ready:preflight"
+      ],
+      [
+        "pnpm",
+        "run",
+        "smoke"
+      ],
+      [
+        "pnpm",
+        "run",
+        "evidence:verify"
+      ]
+    ],
+    "policy": "Retain normal required checks/hooks and exact-head CI. Do not fabricate local pass or evidence, regenerate historical evidence, or add an arbitrary full local suite. Stage/supervisor scope for these normal checks must be fixed before release if root runs locally. Evidence nonzero remains explicit no-claim/failure, never silently accepted as qualification."
+  },
+  "preparationVerification": "Read-only Git/source/reference/tool-byte/configuration comparisons only; no helper invocation, import, static check, product or package execution."
+}

@@ -1,0 +1,13 @@
+# Helper4 author freeze report
+
+The single Low D4-P3-N1 is addressed in exactly two audit.py predicates. The first rejects received rows without observed settlement. The second rejects a pending/unreceived row with nonnull errorCategory or writeState. Both are source-path constraints: initialization424–440 precedes the only exchange await461; response462–485, catch486–493 and finally494–498 then execute synchronously. Report serialization909 cannot expose the intermediate response/finally state.
+
+Observable S/R/V tuples remain000,100,110,111;001,010,011,101 are refused by the combined existing/new implications. A settled transport rejection still requires one of the same nine nonnull categories and may have a genuinely null captured writeState. No response body, header, status, raw wire, count or cleanup fact is reconstructed. Failed evidence remains no-credit, and unsupported finite boundaries retain raw/refuse. Positive report checks are byte-equivalent after removing the new failed-path predicates.
+
+The seven other helpers are byte-identical. Existing source679, sole owned4f4f and678 protected, schema/policies/caps/one-clock/ownership/deadlines/retries remain unchanged. Commands differ only in exact preparation3→4 namespace literals. All48 IDs and21 stages remain; only D03 adds the exact twenty prospective descriptions already accepted by root, preserving all earlier D03 mutations. No control was evaluated or executed.
+
+The entire526-file helper3 snapshot retains helper2's296 and helper1's130 exact bytes, indices, origins, failure records and provenance. Complete independent helper3 review96 and root8141 source-only disposition are copied. Exact origins/reference pins, genuine forward/inverse non-control pairs and all six self-referential exclusions bind the new packet; full preparation index also binds every control file.
+
+All gates remain false; no run directory or reused outputs exist. Other-native/root FULL mechanics and a separately prepared/reviewed zero-product harness are still required before any synthetic execution, followed by actual acceptance and separate product release/proof barriers. This report is an author static freeze, not selfapproval, validation or public/whole Write credit.
+
+One author finalization inspection used the wrong data shape for ownedFiles: it compared a before/after record with a hash string. The actual afterSha256 and all source bytes were correct. The failed assertion, exact provisional finalization receipts and corrected data-key explanation are preserved in preparation-inspection-failure-1.json and preparation-history; no helper, source or schema was changed to satisfy the check.

@@ -1,0 +1,76 @@
+{
+  "at": "2026-10-18T22:39:06.818274+00:00",
+  "currentLiveGateStill9088": true,
+  "fullReportClosureChecksRead": true,
+  "independentRootStaticInspection": {
+    "BAndCByteExactToPlaceholders": true,
+    "P3CurrentPhysical": 144,
+    "actualDirtyPaths": 10,
+    "actualProductGitHead": "cce884ccea1db97cbc6fd7bff876d4d6091f9081",
+    "all121ImplementationAnd679SourceAnd11ToolsExact": true,
+    "binaryDiffSha256": "00804293791b29e26b6b7d58eb7b7f7bf17b20aecc765cbc389617d2daeb9b0f",
+    "candidateSha256": "779d31312b8333304fdae310ecaf4d4ca0f23f9f05307fb5be4534428adcdafc",
+    "changedGateFields": [
+      "actualCodeDisposition",
+      "approvedStages",
+      "nativeCodeDisposition",
+      "rootDisposition",
+      "workspaceTools"
+    ],
+    "currentLiveGateSha256": "9088a3b9616271f3b5db19568b5b4fab2a49fceb3770359a60698582c5f00681",
+    "exactCells": 15,
+    "gateKeys": 26,
+    "manifestDirectPinsVerified": 39,
+    "newOutputAbsent": true,
+    "newRuntimeInvocations": 0,
+    "referenceTablesVerifiedWithSoleExactLivePhaseProjection": [
+      {
+        "entries": 2675,
+        "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation3-next5-root-proposed-authority-1/reference-pins.json",
+        "soleConcreteLivePathCount": 1
+      },
+      {
+        "entries": 26,
+        "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation3-next5-fixed-protocol-preparation-1/reference-pins.json",
+        "soleConcreteLivePathCount": 1
+      },
+      {
+        "entries": 2215,
+        "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation-preparation-3/reference-pins.json",
+        "soleConcreteLivePathCount": 0
+      },
+      {
+        "entries": 2278,
+        "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation3-root-proposed-authority-1/reference-pins.json",
+        "soleConcreteLivePathCount": 1
+      },
+      {
+        "entries": 2571,
+        "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation3-root-fixed-protocol-preparation-1/reference-pins.json",
+        "soleConcreteLivePathCount": 1
+      }
+    ],
+    "renderRecordPinsVerified": 30,
+    "renderedWholeFiles": 5,
+    "rootReadOnlyInspectionError": "a43604 naively treated manifest.activeGate future779d as current pin; corrected exact prospective field phase in this separately named inspection, no subject/source/control mutation or runtime retry.",
+    "soleFuturePinAsProspectiveNotCurrent": [
+      "manifest.activeGate"
+    ],
+    "subjectEvaluations": 0,
+    "twoWholeLFSubstitutionsAndCompleteInverse": true
+  },
+  "native61IndexedMirrorModeAnd50OriginsVerified": true,
+  "nativeClosure": {
+    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation3-next5-execution-manifest-native-precision-1/closure.json",
+    "sha256": "5efc47c3aa736451e78e00b5f8fc3ca6e8f7485c0033bf2fbe8352028f66f907"
+  },
+  "nativeIndex": {
+    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation3-next5-execution-manifest-native-precision-1/index.json",
+    "sha256": "02409e984f4143207580fb5c98e8b4ba0206b12d277f47386da2bd3077bae922"
+  },
+  "nativeReport": {
+    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation3-next5-execution-manifest-native-precision-1/report.md",
+    "sha256": "cd03407a48c1583a81919b3b6ba7297acdab5c483cb8358ec93b1bf169564b15"
+  },
+  "newActualInvocations": 0
+}

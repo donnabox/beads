@@ -1,0 +1,91 @@
+{
+  "accepted": true,
+  "at": "2026-10-15T20:28:06.076714+00:00",
+  "head": "a18fa993703185a108df4ad75b6d142072ba8736",
+  "tree": "592c5e6e5c0c790b6e2690495b94ac48705b9069",
+  "nativeOriginal": {
+    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-same-key-overlap-draft/native-code-review.md",
+    "sha256": "c3e50fffd009c66f30859f9bc1d8ce81481c5588e5190df553e4f3dad85b0c0b"
+  },
+  "coverage": {
+    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-same-key-overlap-draft/claude-split-review/coverage-map.json",
+    "sha256": "99ba93e79da8ed0440ed3a6a38be3e5e70c77a4d7e0ef9841f72034bd5737402"
+  },
+  "actualClaudeReviews": [
+    {
+      "exit": {
+        "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-same-key-overlap-draft/claude-split-review/oracles/exit.json",
+        "sha256": "52571e140b6e8130d2d898f9e07adc5c367213fe6d547f4055f0b6aa6a80a0f0"
+      },
+      "stdout": {
+        "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-same-key-overlap-draft/claude-split-review/oracles/stdout.txt",
+        "sha256": "72e987849c40ece088e8eaf05a9c7c3dff8c012046b8051f4a9002fca1dc49b1"
+      },
+      "cleanup": {
+        "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-same-key-overlap-draft/claude-split-review/oracles/cleanup.json",
+        "sha256": "29b3261ef458d75b8e3a66530057e08ca00806aadd6062be89b4465a69a46daa"
+      }
+    },
+    {
+      "exit": {
+        "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-same-key-overlap-draft/claude-split-review/lifecycle/exit.json",
+        "sha256": "d587b5496344519912b3b5610e85ce673584a82375e386c4a736accf76c379c8"
+      },
+      "stdout": {
+        "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-same-key-overlap-draft/claude-split-review/lifecycle/stdout.txt",
+        "sha256": "c76d3b73a32a46d00fce71135c2edd96c402d97ec747f6d7509f461992096701"
+      },
+      "cleanup": {
+        "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-same-key-overlap-draft/claude-split-review/lifecycle/cleanup.json",
+        "sha256": "186b08faa6cdb02668fdf59887360b5babb3bfa63d346154b0f3a046c57a27d9"
+      }
+    },
+    {
+      "exit": {
+        "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-same-key-overlap-draft/report-overflow-repair/claude-review/exit.json",
+        "sha256": "1549bbd1af8feb3d7b579a6a1d5262ecf4a356c813ae4eddb469ae67bad4d9ad"
+      },
+      "stdout": {
+        "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-same-key-overlap-draft/report-overflow-repair/claude-review/stdout.txt",
+        "sha256": "d1460cbbb56bc23faa149e2ec59fd4eb0e986f0940c5c4c9a4c74846230ced66"
+      },
+      "cleanup": {
+        "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-same-key-overlap-draft/report-overflow-repair/claude-review/cleanup.json",
+        "sha256": "eca54f11d9a6dad2677d839174640aa66e319cc07d2a31b71d41de108d8fe639"
+      }
+    }
+  ],
+  "originalOracleFindings": {
+    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-same-key-overlap-draft/claude-split-review/oracles/native-findings-audit.md",
+    "sha256": "d705efc7f0bf58e05f9d6e09e3c500234f096bccd7fa671cc8a98722495371e5"
+  },
+  "originalLifecycleFindings": {
+    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-same-key-overlap-draft/claude-split-review/lifecycle/native-findings-audit.md",
+    "sha256": "98a54a42f3a5bffe1d9e8053b8f486dae2e4c7d4ca059cd93583bfa95d759011"
+  },
+  "nativeRepair": {
+    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-same-key-overlap-draft/report-overflow-repair/native-repair-review.md",
+    "sha256": "5fa149afd6ae84a5e1548312a7031b9716a9df4e9271fdb5dbdbcd863f00614f"
+  },
+  "repairSupplementFindings": {
+    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-same-key-overlap-draft/report-overflow-repair/claude-review/native-supplement-audit.md",
+    "sha256": "04cb0a6a683e7bc1c10cc5cd04c6c08720bfc8974ddfaa2e12da4615b1c7d47a"
+  },
+  "rootDisposition": "Root read actual outputs/source audits. Accept original11oracle/12lifecycle dispositions; only mandatory F3 repaired exactly. SupplementF1 duplicate error records optional diagnostics, always rejected; F2 both-pending already throws, fallback failure truthful; F3 earlier file is snapshot and actual exit+full report agreement required. No further mandatory correction. All actual findings retained; no fabricated clean reviewer verdict.",
+  "limits": [
+    "Original empty timeout remains inconclusive.",
+    "Each actual review covers its named source and time; no synthetic aggregate CLI exit.",
+    "Private witness neither server-concurrency proof nor profile qualification."
+  ],
+  "localInstalled": {
+    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-same-key-overlap-draft/execution-preparation-v2/root-installed-acceptance.json",
+    "sha256": "c95d3d27fb19f1b506d5a68023fa86490b7d1fa826bce5d2aa03bff8c0f2bd5f"
+  },
+  "installedAudit": {
+    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-same-key-overlap-draft/execution-preparation-v2/native-installed-audit.md",
+    "sha256": "80399ed5923e438a8b4cc6ddab979741a80623ba5d48b6bf0e2efdc22eaa6996"
+  },
+  "mergeAllowed": false,
+  "remainingGate": "Fresh exact-headCI, finalscope/main ancestry and actual merged-tree verification",
+  "preparationNote": "Initial acceptance construction stopped before filewrite due mistaken native-full-code-review filename; corrected to actual native-code-review.md. No source/test/review repeated."
+}

@@ -1,0 +1,7 @@
+# Numeric correction integration checkpoint
+
+Candidate fd21cf32c171b305c9d655e7dac720a50abf724c ordinarily merges reviewedc245cddeb2e0ee64ce58d1b27a9e9f6990df5cd7 onto PR86 readyhead12343ce282888045b26ab9e447d116f6476ab65e. Checkout /Users/dbox/repos/wt/vickie/vickie-installed-profiles-integration, branch codex/vickie-installed-profiles. GitHub origin and exact remote head verified. No conflicts, no new authored runtime delta. This is a staging checkpoint for further reviewed installed-profile increments, not a public profile claim or main merge.
+
+Native and external original numeric review accepted runtime semantics. External c245 assertion supplement confirms all six legacy failures repaired without weakening exact/one-byte-short/truncation/escaped-pointer/no-effects/replay guarantees. Future numeric-bearing operation fallback hardening remains required when sets/new operation shapes are implemented; unreachable current fallbacks and optional assertion style are nonblocking.
+
+Root clean install/build passed before emitted tests. Affected member-identity/member-executor/transaction-store/public-pagination suite passed353tests/4files; the requested transaction-batch.test.ts path did not exist and was not counted. Typecheck, format, boundaries and unchanged89-row Read evidence verifier passed. No full-suite/installed-smoke rerun at this three-file clean merge; prior runtime source has its own evidence, and the next material combined installed candidate will get full validation. Logs installed-profiles-numeric-*.log.

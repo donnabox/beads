@@ -1,0 +1,9 @@
+# D3c lifecycle plan2 precision successor
+
+COMPLETE CLOSED plan-only successor to preserved plan1. N1 separates missing-file pre-SQLite refusal from genuinely acquired S05 cleanup evidence. N2 records actual peer chronology and permits already normal-closed peers without a fabricated forced-close claim. N3 scopes TX readback to one explicit pre-bind snapshot while measuring unchanged constructor reads separately. N4 declares the known installed Type/contract ID as client fixture input, preserving row4 and13 cold requests and forbidding operation-target oracles. The original addendum is retained with a separate row4 line10/not11 erratum.
+
+The only source-basis update is the independently frozen one-line test fixture correction98ab5463/fullpatch e577d453/map7a503fb5. All682 current bytes were read and hashed; the other681 match plan1. The old4fd map, old test copy and origins remain historical evidence. Both protected679-file D1/original maps still match. No product source or Git metadata was changed.
+
+The nine future paths,51 source callbacks,21 persisted cases,21 installed callbacks,126 finite HTTP plus2 CONNECT attempts,2 source HTTP dispatches and5s/45s/10s/60s/120s/TERM115 budgets remain exact. Private handles, legacy503/port0, public refusal, D3a dependencies and D3d/D5 gates remain unchanged. These are prospective counts; no helper, compiler, test, build, install, runtime or reviewer ran. Validation3 success and exact integration acceptance remain unresolved.
+
+Input-map.json binds active copies and added frozen evidence. Delta-manifest.json contains genuine forward/inverse changes; predecessor/index.json remains the historical59-artifact closure. Next is independent native precision review and root exact-basis/actual PLAN review before source authoring. All launch/execution flags remain false.

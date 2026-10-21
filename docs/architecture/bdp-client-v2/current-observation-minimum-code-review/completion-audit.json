@@ -1,0 +1,219 @@
+{
+  "at": "2026-10-17T19:58:53.442924+00:00",
+  "kind": "terminal-timeout-provenance-audit-no-complete-review",
+  "classification": "timeout",
+  "exitCode": 143,
+  "elapsedSeconds": 1790.5427927500568,
+  "reviewComplete": false,
+  "approvalInferred": false,
+  "attempts": 1,
+  "retryLaunched": false,
+  "pid": 91732,
+  "pgid": 91732,
+  "started": "2026-10-17T19:24:47.432162+00:00",
+  "sampledPids": [
+    91732
+  ],
+  "currentMatchingProcesses": [],
+  "timeoutTermination": "Configured TERM1790 caused bounded exit143; no residual group cleanup reported; this is not a natural successful CLI exit.",
+  "cleanupRequiredAfterExit": false,
+  "wrapperError": null,
+  "raw": {
+    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/current-observation-minimum-code-review/stream.jsonl",
+    "sha256": "404f6ec351b974fc9a962068652727fedbdb6d7db4dfd5eda71ba87b22c0d25c",
+    "bytes": 3675664,
+    "records": 6251,
+    "parseErrors": 0
+  },
+  "terminalResults": 0,
+  "terminalArrayMatchesRaw": true,
+  "finalReviewFileExists": false,
+  "stderrBytes": 0,
+  "stderrSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+  "sourceBeforeAfterEqual": true,
+  "currentPinsVerified": {
+    "source": 679,
+    "context": 24,
+    "artifacts": 9,
+    "index": 36
+  },
+  "head": "d9c3eb9e61b1982b9bd56aa77e4cdc114384e886",
+  "patchSha256": "194419e1b5210531b781fd822dd8e0de1be4d2c18c70e4d9a77a503a0a78bf7c",
+  "authorizedBindingTransition": [
+    "rootLaunchReleased"
+  ],
+  "closedBindingSha256": "1d67e07a9ceb78b287234a38be1bf97373a31a596c7b2b0ff8eac9734fc8f290",
+  "releasedBindingSha256": "d22bd980d6aeb4a5d3e5bc4b84e39cdf4e173cf479cf56c011af3c645804b916",
+  "toolUseCounts": {
+    "Read": 61,
+    "Grep": 45,
+    "Glob": 3
+  },
+  "toolResults": 109,
+  "unresolvedToolUses": [],
+  "errorMarkedToolResults": [
+    {
+      "toolUseId": "toolu_01FZaMpA4pvRzdxMDWDvkTwX",
+      "tool": {
+        "record": 4437,
+        "name": "Read",
+        "input": {
+          "file_path": "/Users/dbox/repos/wt/vickie/vickie-bdp-integration-logs/current-observation-minimum-code-review/context/report-schemas.json"
+        }
+      },
+      "result": {
+        "record": 4441,
+        "is_error": true,
+        "content": "File does not exist. Note: your current working directory is /Users/dbox/repos/wt/vickie/vickie-current-observation-minimum."
+      }
+    }
+  ],
+  "successfulReadPaths": [
+    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/current-observation-minimum-code-review/context/report-schemas.json",
+    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/current-observation-minimum-code-review/context/spec.md",
+    "/Users/dbox/repos/wt/vickie/vickie-current-observation-minimum/apps/bdptest/src/installed-reference.test.ts",
+    "/Users/dbox/repos/wt/vickie/vickie-current-observation-minimum/apps/bdptest/src/transactional-collection-minimum-installed.test.ts",
+    "/Users/dbox/repos/wt/vickie/vickie-current-observation-minimum/apps/bdptest/src/transactional-matrix.test.ts",
+    "/Users/dbox/repos/wt/vickie/vickie-current-observation-minimum/apps/bdptest/src/transactional-minimum-receiving-installed.test.ts",
+    "/Users/dbox/repos/wt/vickie/vickie-current-observation-minimum/biome.json",
+    "/Users/dbox/repos/wt/vickie/vickie-current-observation-minimum/package.json",
+    "/Users/dbox/repos/wt/vickie/vickie-current-observation-minimum/packages/server/src/read-pagination.ts",
+    "/Users/dbox/repos/wt/vickie/vickie-current-observation-minimum/packages/server/src/transaction-batch.ts",
+    "/Users/dbox/repos/wt/vickie/vickie-current-observation-minimum/packages/server/src/transaction-consistency.test.ts",
+    "/Users/dbox/repos/wt/vickie/vickie-current-observation-minimum/packages/server/src/transaction-consistency.ts",
+    "/Users/dbox/repos/wt/vickie/vickie-current-observation-minimum/packages/server/src/transaction-event-sse.test.ts",
+    "/Users/dbox/repos/wt/vickie/vickie-current-observation-minimum/packages/server/src/transaction-events.test.ts",
+    "/Users/dbox/repos/wt/vickie/vickie-current-observation-minimum/packages/server/src/transaction-http.test.ts",
+    "/Users/dbox/repos/wt/vickie/vickie-current-observation-minimum/packages/server/src/transaction-http.ts",
+    "/Users/dbox/repos/wt/vickie/vickie-current-observation-minimum/packages/server/src/transaction-installed-configuration.ts",
+    "/Users/dbox/repos/wt/vickie/vickie-current-observation-minimum/packages/server/src/transaction-read.test.ts",
+    "/Users/dbox/repos/wt/vickie/vickie-current-observation-minimum/packages/server/src/transaction-read.ts",
+    "/Users/dbox/repos/wt/vickie/vickie-current-observation-minimum/packages/server/src/transaction-receipt-pages.test.ts",
+    "/Users/dbox/repos/wt/vickie/vickie-current-observation-minimum/packages/server/src/transaction-runtime-configuration.ts",
+    "/Users/dbox/repos/wt/vickie/vickie-current-observation-minimum/packages/server/src/transaction-runtime.ts",
+    "/Users/dbox/repos/wt/vickie/vickie-current-observation-minimum/packages/server/src/transaction-schema-http.test.ts",
+    "/Users/dbox/repos/wt/vickie/vickie-current-observation-minimum/packages/server/src/transaction-service.test.ts",
+    "/Users/dbox/repos/wt/vickie/vickie-current-observation-minimum/packages/server/src/transaction-service.ts",
+    "/Users/dbox/repos/wt/vickie/vickie-current-observation-minimum/packages/server/src/transaction-set.test.ts",
+    "/Users/dbox/repos/wt/vickie/vickie-current-observation-minimum/packages/server/src/transaction-snapshot-http.test.ts",
+    "/Users/dbox/repos/wt/vickie/vickie-current-observation-minimum/packages/server/src/transaction-snapshot.test.ts",
+    "/Users/dbox/repos/wt/vickie/vickie-current-observation-minimum/packages/server/src/transaction-store.ts",
+    "/Users/dbox/repos/wt/vickie/vickie-current-observation-minimum/packages/server/tsconfig.json",
+    "/Users/dbox/repos/wt/vickie/vickie-current-observation-minimum/tsconfig.base.json",
+    "/Users/dbox/repos/wt/vickie/vickie-current-observation-minimum/tsconfig.check.json",
+    "/Users/dbox/repos/wt/vickie/vickie-current-observation-minimum/vitest.config.ts"
+  ],
+  "successfulReadSourcePathCount": 31,
+  "successfulReadCopiedContexts": [
+    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/current-observation-minimum-code-review/context/report-schemas.json",
+    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/current-observation-minimum-code-review/context/spec.md"
+  ],
+  "contextAccessLimit": "Only these exact successful Read paths are independently established. Read ranges are not proof entire files were inspected. Other context was available inline/by path; no all-context or every-unowned-test coverage claim is accepted from partial prose.",
+  "partialOutput": {
+    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/current-observation-minimum-code-review/partial-final-output.txt",
+    "sha256": "0de92c4904366b611f9b8535c3d0711d3e6809376158c97e8bcbd284f089bd30",
+    "bytes": 11259,
+    "source": "Exact concatenation of text content_block_start/text_delta in second text block only; no thinking/reasoning blocks extracted",
+    "firstRecord": 5355,
+    "lastRecord": 6251,
+    "blockStopped": false,
+    "completedAssistantFinalMessage": false,
+    "structurallyCompleteNumberedSections": 9,
+    "truncatedSection": 10,
+    "sections": [
+      {
+        "number": 1,
+        "title": "Formatter gate will fail: the new test code is not Biome\u2011formatted.",
+        "startCharacter": 654,
+        "endCharacter": 2885,
+        "state": "fully emitted section bounded by next numbered heading; not a completed review finding",
+        "textSha256": "8a168225eaef494895d71bdaa39609e4bde927cef0facb9e99d26d1d85ad370b"
+      },
+      {
+        "number": 2,
+        "title": "D self\u2011reports two hardcoded fields and never asserts closure; it also emits no record on failure.",
+        "startCharacter": 2885,
+        "endCharacter": 4116,
+        "state": "fully emitted section bounded by next numbered heading; not a completed review finding",
+        "textSha256": "723e1343989dc19aac7f9e9dc973c4c7e2eda99775f0e5a7145ba6372aff82b8"
+      },
+      {
+        "number": 3,
+        "title": "C's count comparison sits outside the failure aggregation, so it can mask the real cause.",
+        "startCharacter": 4116,
+        "endCharacter": 4823,
+        "state": "fully emitted section bounded by next numbered heading; not a completed review finding",
+        "textSha256": "b0279cb97a09f53cc1b211c9e92d41b5d9ea9b9826e076755753a33933ebf467"
+      },
+      {
+        "number": 4,
+        "title": "`TransactionMinimumVisibilityGap` becomes unreachable *and* loses all coverage while its HTTP translation is retained.",
+        "startCharacter": 4823,
+        "endCharacter": 6017,
+        "state": "fully emitted section bounded by next numbered heading; not a completed review finding",
+        "textSha256": "c7e098d8c61ae040231a800d7e3e4a9e6e36444bc6e9af53aae205cdadbdb1f1"
+      },
+      {
+        "number": 5,
+        "title": "`initial-types` on a not\u2011found refusal still takes the strict path, inconsistent with its own successful lane.",
+        "startCharacter": 6017,
+        "endCharacter": 6814,
+        "state": "fully emitted section bounded by next numbered heading; not a completed review finding",
+        "textSha256": "fcf671e3f08a4853797ac647893cf696e7e7217279a31ae643e96ed678409588"
+      },
+      {
+        "number": 6,
+        "title": "B does not discriminate \"unauthenticated refusal before lexical capture\" for `receiptPage`.",
+        "startCharacter": 6814,
+        "endCharacter": 7825,
+        "state": "fully emitted section bounded by next numbered heading; not a completed review finding",
+        "textSha256": "4cb3dcaa4df7f5002d5bc544f0a77f75b0e6016c752e4d1da7cb8c90fd023239"
+      },
+      {
+        "number": 7,
+        "title": "A mutates the caller's tuple but never asserts the mutation landed.",
+        "startCharacter": 7825,
+        "endCharacter": 8451,
+        "state": "fully emitted section bounded by next numbered heading; not a completed review finding",
+        "textSha256": "6b7dbffbc0ffc9608ed0b3b6ed90c9392c5bdca42e0420447b9c8fc2b69f106b"
+      },
+      {
+        "number": 8,
+        "title": "E does not register its runtime with the file's `cleanup`, and can double\u2011record one close error.",
+        "startCharacter": 8451,
+        "endCharacter": 9446,
+        "state": "fully emitted section bounded by next numbered heading; not a completed review finding",
+        "textSha256": "ea4c510244a7fb8d77e2730af3f5fa748a8a0a4cd4a211fdd2dacbb3073aaa53"
+      },
+      {
+        "number": 9,
+        "title": "The progress append omits the one ordering change it makes to the former strict discovery checker.",
+        "startCharacter": 9446,
+        "endCharacter": 10558,
+        "state": "fully emitted section bounded by next numbered heading; not a completed review finding",
+        "textSha256": "a3a9e7d33e97abad4f504ac4e04760d84ad1c2bbb124c9063c96aad8d960cff2"
+      },
+      {
+        "number": 10,
+        "title": "E/F receipt oracles are not at parity.",
+        "startCharacter": 10558,
+        "endCharacter": 11163,
+        "state": "truncated final section; stream ends mid-prescription",
+        "textSha256": "d8252f94c171aafaadae2c7e470110cb44e940aa3668e16e23e319021eec70df"
+      }
+    ],
+    "limitations": "No terminal verdict exists. Fully emitted sections are provisional streamed claims for separate native assessment, not completed/accepted findings. No-source-blocker prose inside this unfinished block is not approval. The stated Verified section was never emitted."
+  },
+  "completedAssistantText": {
+    "count": 1,
+    "content": [
+      {
+        "record": 18,
+        "text": "I'll start by reading the actual implementation files and context, since the patch prose cannot substitute for the real code."
+      }
+    ]
+  },
+  "noHiddenThinkingExtracted": true,
+  "knownNativeN1": "Original Link Event HTTP aggregate remains pending root disposition; no numbered partial section reported it. Absence from truncated review cannot refute it.",
+  "nextStepAuthority": "Root must resolve single-attempt gate before any further actual CODE review. No retry, source edit, or runtime release performed."
+}

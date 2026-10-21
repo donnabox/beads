@@ -1,0 +1,17 @@
+# Independent closure: installed Update boundary repairs
+
+Reviewed frozen `dea6f9e7a95a3e3eba9c667de39360346f25bdf4` against `4078ca709b55d363c147a5bdc0d5141ede9ec247`. Isolated detached checkout: `/Users/dbox/repos/wt/vickie/bdp-update-installed-repair-native-review`. No author source, runtime, evidence, or outward edits.
+
+All three prior native findings are closed for this bounded slice:
+
+- **H3 — controlled startup invariant:** `development-runtime.ts` checks the global `serving` gate before authentication/routing and sets it only after the full principal/discovery/route loop completes. Close clears it. Reused the exact prior native controlled delayed-second-principal reproduction, changing only expected statuses and test title: first-principal GET and mutation now return 503/503, followed by the original second-principal startup error. This remains a controlled initialization-invariant test, not a claim of an ordinary network timing exploit. Maintained success/failure startup tests additionally prove no Resource effects and no key capture via Resource404 and same-key create200 after readiness/reopen.
+- **M4 — inert module import:** entrypoint realpaths must match before `main()` executes. Exact prior bare import now exits0 with `import finished undefined 0`, rather than exit2. Maintained independent child tests prove both non-IPC and IPC non-entry imports preserve exitCode/listeners and emit no stderr. Actual entry without IPC still refuses with exit2; real IPC entry operation and cleanup tests also pass.
+- **M2 — owner-limit identity coverage:** nested frozen `DEVELOPMENT_OWNER_LIMITS` is hashed directly and consumed by the recovery store minimum retention, member evaluator bounds, numeric receiver bounds, sequence count, retention/maintenance, Read selector/page/cursor limits, pagination capacities/token attempts and random token size. The HTTP body receiver imports the update subobject alias. Compared all moved numerical/string defaults to4078; unchanged. Identity-sensitivity tests cover six previously absent fields across member/lifecycle/pagination groups and restore baseline. Those mocks prove identity coverage, not alternate production owner configurations. No new public limit override or public profile admission.
+
+## Independent verification
+
+Pinned Node24.16.0 / pnpm11.20.0. Frozen install and build passed. **15 tests passed across4 files in2.57s, maxWorkers2**: installed-reference, installed-reference-startup, installed-reference-import, and the independent original startup reproduction with corrected expectations. Actual factory/IPC tests cover stable reopen, schema/Type validation, owner cleanup causes, disconnect, credentials and policy capture, and occupied listener handling.
+
+Logs: `update-installed-repair-native-{install,build,focused,import}.log` and corresponding `.exit`; structured test report `update-installed-repair-native-focused.json`. Independent probe retained as `update-installed-repair-native-startup-closure.test.ts` outside the checkout. Temporary copied probe removed after completion; author and independent checkouts clean. No interrupted run. Broader497 tests/checks/smokes/evidence verification remain author evidence, not rerun or relabeled here.
+
+Verdict: no remaining blocker among these three findings. Suitable for ordinary integration into the development executor work; this is not installed/full-profile qualification, public admission, or fresh Read evidence. Original4078 external review remains a separate review stream.

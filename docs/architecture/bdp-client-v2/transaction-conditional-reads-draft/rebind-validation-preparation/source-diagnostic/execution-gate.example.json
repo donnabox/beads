@@ -1,0 +1,45 @@
+{
+  "released": false,
+  "session": "2026-10-08T20:26:35Z-81e5",
+  "finalHead": "1ba65f2f192cc84e44eb09ef89b9693ec6cdaf05",
+  "finalTree": "773614c5ebc6c97d90c4c629c7c7a02ed51bc2ef",
+  "rootAcceptance": {
+    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-conditional-reads-draft/rebind-validation-preparation/source-diagnostic/root-release.json",
+    "sha256": null
+  },
+  "sourceBinding": {
+    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-conditional-reads-draft/rebind-validation-preparation/source-diagnostic/reviewed-source.json",
+    "sha256": "1095d0093a729c9138c22c6419da528fefbece42be5707dd16db1238e91d61ee"
+  },
+  "inputBinding": {
+    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-conditional-reads-draft/rebind-validation-preparation/source-diagnostic/input-binding.json",
+    "sha256": "823b3918014af84284ce7da93e1ab0ec313f8ebe0bf6837484d4e9ace4125177"
+  },
+  "approvedCommandIds": [],
+  "phaseRelease": {
+    "source": false
+  },
+  "preparationSha256": {},
+  "guardSha256": "fd81ba029cd4e7c7e60623df89e8292af91141d311d9ce789ed19e2152375e84",
+  "toolHashes": {},
+  "sourceLockSha256": null,
+  "consumerLockSha256": null,
+  "installedProvenanceSha256": null,
+  "expectedProductionVersions": {
+    "@bdp/protocol": "0.0.0",
+    "@bdp/server": "0.0.0",
+    "ajv": "8.17.1",
+    "ajv-formats": "3.0.1",
+    "fast-deep-equal": "3.1.3",
+    "fast-uri": "3.1.5",
+    "json-schema-traverse": "1.0.0",
+    "require-from-string": "2.0.2"
+  },
+  "note": "CLOSED diagnostic source prefix on frozen native-reviewed dirty draft while external code review is pending; no build, installed, integration or publication authorization.",
+  "consumerInventorySha256": null,
+  "councilAccepted": false,
+  "authorizationRequirements": {
+    "source": "rootAcceptance accepted, sourceValidationAuthorized, nativeCodeReviewed, externalReviewPending, diagnosticOnly, reviewedDirtySourceOnly true; councilAccepted false; exact 56 source-case prefix only"
+  },
+  "servingSuccessorCommit": null
+}

@@ -1,0 +1,163 @@
+--- plan4/source-data-cases.json
++++ effective-plan3/source-data-cases.json
+@@ -50,30 +50,16 @@
+       "expected": "map pass to actual input row index/digest, keep other required IDs missing and whole qualification unestablished; never installed proof",
+       "budgetMs": 5000,
+       "productHTTP": 0,
+-      "productChildren": 0,
+-      "subassertions": [
+-        "For RU dot and TX colon, CURRENT http and client action fixtures each exercise the two manifest-family lanes (4 finite lane checks); general rule covers every non-http family without inventing new action families.",
+-        "Within SAME callback test alltrue=>true, true+unresolved=>null, false+unresolved=>false, false+true=>false; unexecuted=>null. No whole credit."
+-      ],
+-      "finiteSubassertionCounts": {
+-        "laneChecks": 4,
+-        "booleanPrecedenceChecks": 8,
+-        "total": 12
+-      }
++      "productChildren": 0
+     },
+     {
+       "id": "V06",
+       "group": "valid-data",
+       "setup": "capture then mutate original source/report bytes and round-trip canonical safe projection; same case includes carrier-only TX exact-byte handoff roundtrip with legacy output path absent",
+-      "expected": "Detached snapshot and explicit JSON representations match; exact one-serialization handoff raw bytes/digest remain separate; missing legacy path allowed.",
+-      "budgetMs": 5000,
+-      "productHTTP": 0,
+-      "productChildren": 0,
+-      "subassertions": [
+-        "TX carrier-only, legacy-only and both paths share ONE exact legacy serialization per call and original wrapper bytes/field order/indent/newline; no paths means no new serialization.",
+-        "For each result/sessions/baseline compare explicit JSON projection including undefined object-member omission and undefined array-item null; parsed actual equals projection, raw digest remains exact independent byte identity."
+-      ],
+-      "qualificationLimit": "This pure-data callback validates captured wrapper/projection inputs and IO adapter behavior, not the inline actual TX positive hook invocation. Single serialization/legacy mode branches are source/CODE inspection obligations and actual existing-callback validation later; no product callback import or hidden runner is permitted."
++      "expected": "detached result unchanged; exact canonical bytes verify; no caller mutation or hash relabel; raw wrapper digest equals one owner serialization including indent/newline, .result/.sessions/.baseline equal detached pre-hook snapshot, legacy file absent.",
++      "budgetMs": 5000,
++      "productHTTP": 0,
++      "productChildren": 0
+     },
+     {
+       "id": "R01",
+@@ -253,11 +239,7 @@
+       "expected": "invalid-report; exact handoff/source digest and pre-hook result mismatch refused, no canonical-result/raw-wrapper relabel",
+       "budgetMs": 5000,
+       "productHTTP": 0,
+-      "productChildren": 0,
+-      "subassertions": [
+-        "Alter each result/sessions/baseline or digest independently: new acceptance refuses fixed invalid-report/evidence failure and raw digest null; genuine observed snapshot unchanged.",
+-        "Missing/refused JSON projection is fixed carrier failure. No canonical result digest substituted for raw wrapper."
+-      ]
++      "productChildren": 0
+     },
+     {
+       "id": "R21",
+@@ -275,10 +257,7 @@
+       "expected": "invalid-report",
+       "budgetMs": 5000,
+       "productHTTP": 0,
+-      "productChildren": 0,
+-      "subassertions": [
+-        "Unknown/duplicate action ID, duplicate assertion ID, wrong action/assertion binding and wrong family lane each refuse; same-ID unrelated exchange is not fallback authority."
+-      ]
++      "productChildren": 0
+     },
+     {
+       "id": "R23",
+@@ -296,10 +275,7 @@
+       "expected": "capacity before parse/persistence; existing originals intact",
+       "budgetMs": 5000,
+       "productHTTP": 0,
+-      "productChildren": 0,
+-      "subassertions": [
+-        "4MiB+1 bytes fails capacity before parse; summary1MiB+1 fails capacity. Bounded parser node100001/depth129/container10001 fixtures all below4MiB map exact fixed capacity errors; malformed UTF8/JSON and caller secret-bearing label cannot leak. No fifth-file/helper kind change."
+-      ]
++      "productChildren": 0
+     },
+     {
+       "id": "S01",
+@@ -380,10 +356,7 @@
+       "expected": "UnboundRUAttemptV1: bindingStatusunbound/configurationnull, existing requested selection/source/set only, all130 observationsnull, running/unobserved, no bound carrier or qualification.",
+       "budgetMs": 5000,
+       "productHTTP": 0,
+-      "productChildren": 0,
+-      "subassertions": [
+-        "Serializer rejects omission or extra key, nonnull configuration, wrong kind/version/bindingStatus/profile, eligibilitytrue, 129/131 observations or any nonnull entry; canonical130 allnull succeeds. Tripwires before arbitrary getter evaluation; exactly3 exports."
+-      ]
++      "productChildren": 0
+     },
+     {
+       "id": "L02",
+@@ -392,10 +365,7 @@
+       "expected": "UnboundRUAttemptV1 stays unbound/configurationnull/all observationsnull; acquired cleanup pending, no runtime/PID/readiness facts fabricated.",
+       "budgetMs": 5000,
+       "productHTTP": 0,
+-      "productChildren": 0,
+-      "subassertions": [
+-        "Acquired remains unbound/null/all130null; serializer checks closure, no invented runtime binding."
+-      ]
++      "productChildren": 0
+     },
+     {
+       "id": "L03",
+@@ -404,10 +374,7 @@
+       "expected": "retained/pending, no complete claim",
+       "budgetMs": 5000,
+       "productHTTP": 0,
+-      "productChildren": 0,
+-      "subassertions": [
+-        "New missing/invalid handoff and new acceptance errors retain fixed failed/pending/null raw digest without replacing genuine data. Adapter/source-level control-flow witness requires actual product assertion continuation in later existing positive callback validation; no product observe invocation in this pure-data case."
+-      ]
++      "productChildren": 0
+     },
+     {
+       "id": "L04",
+@@ -425,10 +392,7 @@
+       "expected": "retained original result + failed sticky stage, no final success",
+       "budgetMs": 5000,
+       "productHTTP": 0,
+-      "productChildren": 0,
+-      "subassertions": [
+-        "Original legacy serialization/write failure retains genuine original propagation/cleanup aggregation; separate new carrier-only serialization/acceptance/persistence failure does not escape observe or replace result. Data-sidecar adapter failure checked here; actual observe wiring separately source-reviewed and later existing-callback validated."
+-      ]
++      "productChildren": 0
+     },
+     {
+       "id": "L06",
+@@ -437,10 +401,7 @@
+       "expected": "Failure before first genuine returned remains permanently UnboundRUAttemptV1/configurationnull/all observationsnull with fixed execution stage; no guessed binding, bound summary or zero-as-pass.",
+       "budgetMs": 5000,
+       "productHTTP": 0,
+-      "productChildren": 0,
+-      "subassertions": [
+-        "Pre-return failure remains unbound serializer-checked exact130null. No configuration guessing."
+-      ]
++      "productChildren": 0
+     },
+     {
+       "id": "L07",
+@@ -472,21 +433,13 @@
+     {
+       "id": "L10",
+       "group": "lifecycle-data",
+-      "setup": "profile-specific fresh/existing/stale/collision and own-only replacement failures (both profiles, one callback)",
+-      "expected": "No preexisting/other-attempt overwrite; firstwx0600 required, own-only atomic replacement; fixed carrier IO failure does not grant success.",
+-      "budgetMs": 5000,
+-      "productHTTP": 0,
+-      "productChildren": 0,
+-      "subassertions": [
+-        "Within ONE existing callback use both profiles at same opt-in base: mandatory four distinct suffix paths; fresh first-create wx0600.",
+-        "For each profile preexisting attempt and separately preexisting summary refuse before new output; same-profile competing first-create loses wx without modifying original; other-profile paths coexist.",
+-        "Own-created replacement may use own exclusive temporary then atomic rename; stale/foreign/missing/replaced identity never authorizes replacement; simulate temp/write/rename failure and fixed aggregation without successful summary. Legacy files byte unchanged."
+-      ]
++      "setup": "existing destination/temp replacement failure",
++      "expected": "no existing file overwritten; fixed IO stage aggregates with original, no successful new summary",
++      "budgetMs": 5000,
++      "productHTTP": 0,
++      "productChildren": 0
+     }
+   ],
+   "qualification": "V03/V04 genuine current runner RETURNED ABORTED outputs, not observed service results; V05 synthetic unit-data expressly not authority output. No permanent fixture from external L path needed. Existing current JSON factories/fixtures used with local in-memory copies; no new product test/network/service. Case group counts are cases, not assertion counts.",
+-  "precisionSuccessor": "N1L01/L02/L06, N2V06/R20 byte handoff subassertions and N3V03/V04 corrected; same48 cases/groups, no product requests/timer changes.",
+-  "exactCallbackCountPreserved": true,
+-  "sourceCLI": "--maxWorkers=2 explicitly; default callback5s unchanged",
+-  "newProductCallbacks": 0
++  "precisionSuccessor": "N1L01/L02/L06, N2V06/R20 byte handoff subassertions and N3V03/V04 corrected; same48 cases/groups, no product requests/timer changes."
+ }

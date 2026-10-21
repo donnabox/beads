@@ -1,0 +1,48 @@
+{
+  "H5Original143Current159": true,
+  "accepted": true,
+  "actualControlResultSha256": "fb9ed39657f795612d1b363db834f53215acea1a2f1e9df04f967ee6ebea4218",
+  "actualExternalReleaseSha256": "b2d7c77f955e896a4fd44edc2f990134e4033a6acd2769552ca20b73b2e6b5ef",
+  "actualM02NormalTerminalAuditAccepted": true,
+  "actualRootNativeExitSha256": "464c4c04a0a973021e5002c8e1fa598d909a114a6004ff9bdea8efcf92a04a79",
+  "allOther59RequiredUnattempted": true,
+  "auditorCandidateExecutions": 0,
+  "auditorOnlyProcessAction": "one read-only native ps census, both pipes drained and direct handle reaped",
+  "bothControlEOF": true,
+  "bothNativeEOF": true,
+  "caller2Original82Current88": true,
+  "controlRawExit": 0,
+  "findings": [
+    {
+      "actualRuntimeFailure": false,
+      "actualSourceRefs": [
+        "source/immutable-helper4/scanner.py:8",
+        "source/immutable-helper4/scanner.py:96",
+        "source/H5/scanner_controls.py:15",
+        "source/H5/scanner_controls.py:35"
+      ],
+      "domain": "Prior native prospective DATA expectation",
+      "id": "M02-DATA-1",
+      "severity": "Low",
+      "summary": "Frozen prospective result incorrectly names concrete RuntimeError; immutable scanner actually raises Refusal(RuntimeError), and adapter records Refusal. Actual source oracle is satisfied; preserve old DATA and root-adjudicate this explicit correction before more controls."
+    }
+  ],
+  "freshAll21RecordedPids17GroupsAbsent": true,
+  "harnessImplementationSha256": "7e5ec687e6c39447efc43d5ad905a20602510d9227db342b1fad01ba873ae5e8",
+  "helper857Unchanged": true,
+  "hostContainmentCredit": false,
+  "matchesFrozenProspectiveClass": false,
+  "nativeRawExit": 0,
+  "ownerRawExit": 0,
+  "priorProspectiveDataError": "M02-DATA-1",
+  "productReleased": false,
+  "profileCredit": false,
+  "reportSha256": "d6c2418c84daaff2f4f39022f12d60f71548b9741b84628f674c225807c03c0d",
+  "rootActualDispositionBeforeAnyFurtherControlRequired": true,
+  "rootWholeSeconds": 3.191247332841158,
+  "session": "2026-10-18T02:16:24Z-549f",
+  "source679Unchanged": true,
+  "sourceOracleSatisfied": true,
+  "subjectImplementationSha256": "6cc0f6e04d12877439f26ebec5d9b65fa543894a7789dea143fef156efdb771e",
+  "syntheticAcceptance": false
+}

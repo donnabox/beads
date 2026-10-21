@@ -1,0 +1,109 @@
+--- /Users/dbox/repos/wt/vickie/bdp-integration-logs/scope-event-sse-opaque-minimum-plan/plan.md
++++ /Users/dbox/repos/wt/vickie/bdp-integration-logs/scope-event-sse-opaque-minimum-plan/successor-1/plan.md
+@@ -1,4 +1,6 @@
+ # Initial Scope Event SSE opaque minimum — bounded plan
++
++Preserved successor-1 addresses native N1–N3 only. The original15-file preparation remains immutable; its one-page29/74/85 arithmetic and unowned-signal/unobserved-count ambiguities are historical preparation errors, not executed evidence. Native report and exact delta accompany this successor. Titles, six-file production scope, successful A–C/installed workloads, historical selection and deadlines are unchanged.
+ 
+ PLAN ONLY. Basis: clean `bbfa5b2cac0e381b497384e3a8e29cd937ea2738`, tree `da812ea5a1da8f8fb5be9fd2856d312c316236a3`, direct parent `5ceb213b632e17f28714684efc5e35a62b282bf6`. PR161 exact CI39044573943 remains pending at the root preparation handoff: no authoring base or execution is released. Root must independently verify exact green basis before authoring. Native plan review, actual Claude plan review and root findings disposition precede source authoring. This packet continues the sole design plan, not another tracker. All counts below are source-derived successful-path workload; none is an observed result or completion percentage.
+ 
+@@ -46,7 +48,7 @@
+ |13|Scope selected, malformed empty minimum field|TypeError before owner admission|
+ |14|Scope selected, known current pos1|packet; complete same Event data as call1|
+ 
+-After call1 install a callback-local DatabaseSync.prepare observer for group queries (`FROM groups`), restoring it in finally. Calls2–13 must not construct a group reader; call14 must construct one. Record per-call actual outcome/group-query count and contexts where provided. Do not assert an exact implementation-dependent positive query count, or invent a WeakMap scan-allocation census. Throwing before eventPacket and zero group queries provide distinct source/test support for the no-packet-before-eligibility assertion. Actual begin calls14, waits0, HTTP0, seed commits1.
++After call1 install a callback-local DatabaseSync.prepare observer for SQL preparations containing `FROM groups`, restoring it in finally. Row1 is explicitly unobserved: groupObserverActive:false and groupPrepareCalls:null. Rows2–14 record actual numeric preparation counts with groupObserverActive:true; rows2–13 require zero and positive row14 requires greater than zero qualitatively. These are SQL statement preparations, not executions, rows visited or a WeakMap scan-allocation census. Actual failure outcomes plus inspected ordering before eventPacket and zero observed preparations support the bounded no-reader/no-packet-before-eligibility claim. At ownerFixture maximum1, calls1/14 each return a first packet with one complete Event; their equality does not claim the entire three-Event group. Actual begin calls14, waits0, HTTP0, seed commits1.
+ 
+ ### B — captures initial Scope Event SSE minima once and recaptures context on retry
+ 
+@@ -64,37 +66,38 @@
+ 
+ ### D — serves initial Scope Event SSE opaque minima before conditional admission
+ 
+-Use existing real emitted runtimeFixture (25ms minimum budget, shared stream capacity1). One actual batch creates a,b,l, then a single finite Scope Event GET returns all three Events and next:null. Use callback-local request wrappers/counts, not edits to shared helpers. Finite setup must use a single request rather than an unbounded pagination loop. Derive context from real finite response, cursor from first Event, and validate expected subjects/ordinals/data. All subsequent rows are raw SSE requests via existing recorder except setup; maximum/final count29. Literal table is authoritative:
++Use existing real emitted runtimeFixture (25ms minimum budget, shared stream capacity1, receiptMaximumItems2). One actual batch creates a,b,l. Exactly two finite Scope Event requests form the baseline: the first returns two Events and an actual nonempty next link; validate that link is the canonical Scope events/ continuation after its second Event, then follow that exact returned next once. The second returns one Event and next:null. Both responses have the same Source and actual pos1 context; concatenate exactly three Events and validate subjects/ordinals/data. No invented limit argument, altered fixture limit or unbounded pagination helper. Derive context from actual response headers and reconnect ID from the first Event. Use callback-local request wrappers/counts, not edits to shared helpers. Subsequent rows use raw SSE recording; the final positive row owns its own recorder/controller as specified below, while other rows may use f.stream. Maximum/final count30. Literal table is authoritative:
+ 
+ |#|Method/target|Controls and expected status|
+ |--|--|--|
+ |1|POST operations/batch|seed;200 completed|
+-|2|GET events/ JSON|finite baseline;200,3 Events,next:null|
+-|3|HEAD events/ SSE|known current minimum;200,no body|
+-|4–5|GET,HEAD events/ SSE|matching unknown;503/503|
+-|6–7|GET,HEAD events/ SSE|matching pos-01;503/503|
+-|8–9|GET,HEAD events/ SSE|unknown + If-None-Match:*;503/503,not304|
+-|10–11|GET,HEAD events/ SSE|unknown + If-Match:"wrong";503/503,not412|
+-|12–13|GET,HEAD events/ SSE|incomplete minimum tuple;400/400,no context|
+-|14–15|GET,HEAD events/ SSE|known future pos2;503/503|
+-|16|GET events/ SSE|unknown,foreign epoch;unchanged private500|
+-|17|GET events/ SSE|unknown,foreign view;unchanged private500|
+-|18|GET events/?after=validID SSE|unknown;unchanged private500|
+-|19|GET events/?after= SSE|unknown;parser400,no context before owner|
+-|20|GET events/ SSE|unknown + Last-Event-ID validID;private500|
+-|21|GET events/ SSE|unknown + Last-Event-ID empty;private500 (minimum sentinel precedes cursor check)|
+-|22|GET events/ SSE|unknown + two raw valid Last-Event-ID fields;private500,not newly waitable|
+-|23|GET beads/a?view=events SSE|unknown;private500|
+-|24|GET links/l?view=events SSE|unknown;private500|
+-|25|GET beads/missing?view=events SSE|unknown;404 actual context before sentinel|
+-|26|GET events/ SSE unauthenticated|unknown;401,no context|
+-|27|HEAD events/ SSE|known current + If-None-Match:*;304,no body|
+-|28|HEAD events/ SSE|known current + If-Match:"wrong";412,no body|
+-|29|GET events/ SSE|known current;200 live exact baseline frames,then deliberate close|
++|2|GET events/ JSON|first finite baseline page;200,2 Events,actual next asserted|
++|3|GET actual next from row2 JSON|second finite baseline page;200,1 Event,next:null|
++|4|HEAD events/ SSE|known current minimum;200,no body|
++|5–6|GET,HEAD events/ SSE|matching unknown;503/503|
++|7–8|GET,HEAD events/ SSE|matching pos-01;503/503|
++|9–10|GET,HEAD events/ SSE|unknown + If-None-Match:*;503/503,not304|
++|11–12|GET,HEAD events/ SSE|unknown + If-Match:"wrong";503/503,not412|
++|13–14|GET,HEAD events/ SSE|incomplete minimum tuple;400/400,no context|
++|15–16|GET,HEAD events/ SSE|known future pos2;503/503|
++|17|GET events/ SSE|unknown,foreign epoch;unchanged private500|
++|18|GET events/ SSE|unknown,foreign view;unchanged private500|
++|19|GET events/?after=validID SSE|unknown;unchanged private500|
++|20|GET events/?after= SSE|unknown;parser400,no context before owner|
++|21|GET events/ SSE|unknown + Last-Event-ID validID;private500|
++|22|GET events/ SSE|unknown + Last-Event-ID empty;private500 (minimum sentinel precedes cursor check)|
++|23|GET events/ SSE|unknown + two raw valid Last-Event-ID fields;private500,not newly waitable|
++|24|GET beads/a?view=events SSE|unknown;private500|
++|25|GET links/l?view=events SSE|unknown;private500|
++|26|GET beads/missing?view=events SSE|unknown;404 actual context before sentinel|
++|27|GET events/ SSE unauthenticated|unknown;401,no context|
++|28|HEAD events/ SSE|known current + If-None-Match:*;304,no body|
++|29|HEAD events/ SSE|known current + If-Match:"wrong";412,no body|
++|30|GET events/ SSE|known current;200 live exact baseline frames,then deliberate close|
+ 
+-Status totals:200x4,503x10,500x8,400x3,404x1,401x1,304x1,412x1. All ten503s require exact current context, code catch-up-timeout, retry after-delay, literal Retry-After1 and application/problem+json. All paired HEADs have zero body and matching GET representation Content-Length/context/problem metadata. No timeout timing assertion or retry-count estimate. Selected unknown cannot succeed while context remains matching and eligibility unproved; abort/context change follow their existing paths.
++Status totals:200x5,503x10,500x8,400x3,404x1,401x1,304x1,412x1. All ten503s require exact current context, code catch-up-timeout, retry after-delay, literal Retry-After1 and application/problem+json. All paired HEADs have zero body and matching GET representation Content-Length/context/problem metadata. No timeout timing assertion or retry-count estimate. Selected unknown cannot succeed while context remains matching and eligibility unproved; abort/context change follow their existing paths.
+ 
+-For the positive row29: await ready; require status200, SSE media, no-store/no-transform, actual full context, no ETag/content-length, then await exactly the three complete id frames; compare id/type and decoded full Event to finite baseline. Immediately before intentional close, require signal not aborted, recorder not destroyed and elapsed below its5000ms bound. Close/drain then assert exact complete frames still equal baseline, with no extra IDs. `close()` alone does not surface stored recorder failure and is not a success oracle. Following successful admission proves no persistent slot leak, not a measured census of all internal allocation attempts. No extra dispatches for negative controls: local mutated-frame identity assertion must fail without network. Cleanup every recorder and runtime on assertion failure; no shared helper changes.
++For the positive row30: create a callback-local AbortController and recordRawSse using the existing runtime listen URL, its Host, canonical /acme/events/ target, actual credential and known-minimum headers, and the unchanged5000ms recorder bound. Count this dispatch in the same30-request counter. Attach ready/closure outcome observers immediately. Do not use f.stream for this row: its controller is private and the recorder exposes no signal. Own recorder close, controller abort and drain in finally on every failure without editing shared helper bytes. Await ready; require status200, SSE media, no-store/no-transform, actual full context, no ETag/content-length, then await exactly the three complete id frames; compare id/type and decoded full Event to finite baseline. Immediately before intentional close, require the actual callback-owned controller.signal.aborted === false, recorder not destroyed and elapsed below its5000ms bound. Close/drain then assert exact complete frames still equal baseline, with no extra IDs. `close()` alone does not surface stored recorder failure and is not a success oracle. Following successful admission proves no persistent slot leak, not a measured census of all internal allocation attempts. No extra dispatches for negative controls: local mutated-frame identity assertion must fail without network. Cleanup every recorder and runtime on assertion failure; no shared helper changes.
+ 
+ ## Exact legacy selection and aggregate bounds
+ 
+@@ -103,7 +106,7 @@
+ - `conditions, HEAD,406 and shared cross-kind capacity preserve initial context without a stream slot`:13 HTTP = seed1 +2 iterations*(active1 +refused1 +four HEADs). One store/listener. Existing known condition/406/capacity coverage stays distinct from new unknown-minimum assertions.
+ - `disconnect during an Event minimum wait releases the request without capturing a stream slot`:4 HTTP =seed,HEAD,waiting request,positive live request. One store/listener. Existing3ms delay and narrower historical assertions are retained and attributed as such.
+ 
+-Thus exactly seven selected source callbacks/fresh stores, four listener lifetimes and74 HTTP (new29 +legacy45). New owner/service A–C only:18 live/delegated owner begin calls (A14+B3+C1), one separate raw post-close owner probe,7 service.beginEvents invocations (B5+C2),2 waits,6 minimum-clock calls,4 commits/3 stores. D and old callbacks perform real additional runtime owner work, not inferred into those counters. Source total8 seed/mutation commits. Four new observation records only; old callbacks have no newly invented reports. A–C's measurements cannot be labeled full-run owner counts.
++Thus exactly seven selected source callbacks/fresh stores, four listener lifetimes and75 HTTP (new30 +legacy45). New owner/service A–C only:18 live/delegated owner begin calls (A14+B3+C1), one separate raw post-close owner probe,7 service.beginEvents invocations (B5+C2),2 waits,6 minimum-clock calls,4 commits/3 stores. D and old callbacks perform real additional runtime owner work, not inferred into those counters. Source total8 seed/mutation commits. Four new observation records only; old callbacks have no newly invented reports. A–C's measurements cannot be labeled full-run owner counts.
+ 
+ ## E: exact six-request installed witness, separately supervised historical witness
+ 
+@@ -121,14 +124,14 @@
+ 
+ E owns45s work,5s finite/recorder bounds, one10s total cleanup envelope,60s callback and later120s supervisor (TERM115/KILL120). Default1000ms minimum waits leave qualitative request budget margin; no approximately200-attempt claim or wall-clock success threshold. Attach rejection observers immediately to launcher, finite requests, stream closure and child closure before races. Stop issuing work at deadline. On failure initiate stream stop, abort work, observe pending operations and close owned child within the same cleanup envelope. Record actual PID, exit and close/drain events, ownership return, exit code/signal, pending counts and directory removal. If pre-ready ownership is unknown or cleanup expires, preserve directory and fail; observe late rejection/returned ownership without asserting cleanup happened. Existing launcher may have additional internal kill/drain phases; do not await them beyond the outer reporting deadline or fabricate survivor absence. Aggregate primary and cleanup failures. Normal removal requires verified clean closure and drained owned operations. A local pending-executor count is not a socket-close inventory; raw recorder closure and child exit/drain are separately observed. Redact token/credentials in every error/report.
+ 
+-Total selected execution:9 callbacks,85 HTTP (74 source+5 historical+6 new installed),9 stores and10 owner lifetimes (7 source +3 installed). Three installed processes are sequential. No new full local suite or unrelated control cohort.
++Total selected execution:9 callbacks,86 HTTP (75 source+5 historical+6 new installed),9 stores and10 owner lifetimes (7 source +3 installed). Three installed processes are sequential. No new full local suite or unrelated control cohort.
+ 
+ ## Observation contracts (actual measurements only)
+ 
+-A `scope-event-sse-minimum-owner`: reads14,seedCommits1,cases array14 `{label,outcome,groupQueries,context?}`; packet rows and failure contexts asserted, positive query counts not fixed.
++A `scope-event-sse-minimum-owner`: reads14,seedCommits1,cases array14 `{label,outcome,groupObserverActive,groupPrepareCalls,context?}`; row1 is false/null (unobserved), rows2–14 are true/actual numeric SQL preparation counts. Negative rows2–13 are zero and positive row14 is greater than zero without an exact positive-count assertion. These are not SQL execution or scan-allocation measurements.
+ B `scope-event-sse-minimum-capture`: serviceCalls5,ownerAttempts3,waits1,clockCalls4,seedCommits1,interveningCommits1,attempts array3 with captured tuple/outcome/current context,final timeout pos2,closed:true. Record malformed/closed probe outcomes separately.
+ C `scope-event-sse-minimum-abort`: serviceCalls2,ownerAttempts1,rawPostCloseProbes1,waits1,clockCalls2,seedCommits1,operationOutcome:aborted,ownerCloseCalls1,closed:true; synchronous close observation explicitly limited.
+-D `scope-event-sse-minimum-http`: requests29,ordered records29 `{ordinal,method,target,status,bodyBytes,context?}`,elapsedMs,positive stream evidence `{ready,status,headers,framesBeforeClose,framesAfterDrain,liveBeforeClose,drained}`,one seed commit. Report only safe response fields; no credential. Header/body schema assertions stay in callback, not inferred from counts.
++D `scope-event-sse-minimum-http`: requests30,ordered records30 `{ordinal,method,target,status,bodyBytes,context?}`,elapsedMs,baselinePages array2 with actual request URL/event count/next/context,positive stream evidence `{ready,status,headers,framesBeforeClose,framesAfterDrain,liveBeforeClose,drained}`,one seed commit. Report only safe response fields; no credential. Header/body schema assertions stay in callback, not inferred from counts.
+ E label above: claimEligible:false,attribution,declaredSourceCommit,entry/hash,binding,limited witnessSource fingerprint scope,requests array6,completedFiniteResponses array5 with real headers/body/wire hashes,baselineEvents array1,sse `{status,headers,completeObservedFrames,liveBeforeClose,drained,wireBytes,wireSha256}`,one session with actual lifecycle,deadline values,pendingOperationsAtReport,directory/directoryRemoved and safe failures. Report success only after all assertions/cleanup. Unknown/failure report preserves available facts rather than filling missing success fields. Exact authored schema must be frozen before validation adapters bind it. No transport request counters replace semantic assertions.
+ 
+ ## Review, validation and provenance sequence

@@ -1,0 +1,103 @@
+--- a/packages/server/src/transaction-authorization.test.ts
++++ b/packages/server/src/transaction-authorization.test.ts
+@@ -318,7 +318,9 @@
+   expect(context(f.owner)).toEqual({ ...before, authorizationView: policy.authorizationView });
+   expect(f.owner.receipt("p", receipt.id)).toEqual({
+     ...Object.fromEntries(
+-      Object.entries(receipt).filter(([key]) => !["results", "next", "allocated"].includes(key)),
++      Object.entries(receipt).filter(
++        ([key]) => !["results", "next", "allocated", "expiresAt"].includes(key),
++      ),
+     ),
+     detail: "withheld",
+   });
+@@ -412,16 +414,25 @@
+   // Exercise real compact allocations after ordinary retention, not fabricated receipts.
+   f.setTime(1001 + 86400000);
+   const expired = f.owner.readReceipt("p", mixed.id).receipt;
+-  expect(expired).toMatchObject({
+-    status: "completed",
+-    detail: "expired",
+-    allocated: [
+-      { operationIndex: 0, withheld: true },
+-      { operationIndex: 2, withheld: true },
+-    ],
+-  });
+-  // Empty/non-record results must not be promoted by vacuous every().
+-  expect(projectTransactionReceipt({ ...mixed, results: [] }, false).detail).toBe("available");
++  expect(expired).toEqual({
++    ...Object.fromEntries(
++      Object.entries(mixed).filter(
++        ([key]) => !["results", "next", "allocated", "expiresAt"].includes(key),
++      ),
++    ),
++    detail: "withheld",
++  });
++  // Pure projection boundaries add no owner, transaction, or HTTP work.
++  const emptyAvailable = { ...mixed, results: [] };
++  expect(projectTransactionReceipt(emptyAvailable, false)).toEqual(emptyAvailable);
++  const emptyExpired = { ...mixed };
++  emptyExpired.detail = "expired";
++  emptyExpired.allocated = [];
++  delete emptyExpired.results;
++  delete emptyExpired.next;
++  delete emptyExpired.expiresAt;
++  expect(projectTransactionReceipt(emptyExpired, false)).toEqual(emptyExpired);
++  expect(projectTransactionReceipt(failed, false)).toEqual(failed);
+ });
+ 
+ it("bounds administrative drain without cancelling admitted sequence work", async () => {
+@@ -509,7 +520,7 @@
+     expect(projected.receipt).toEqual({
+       ...Object.fromEntries(
+         Object.entries(retained.receipt).filter(
+-          ([key]) => !["results", "next", "allocated"].includes(key),
++          ([key]) => !["results", "next", "allocated", "expiresAt"].includes(key),
+         ),
+       ),
+       detail: "withheld",
+--- a/packages/server/src/transaction-authorization.ts
++++ b/packages/server/src/transaction-authorization.ts
+@@ -105,17 +105,21 @@
+     Array.isArray(receipt.results)
+   ) {
+     projected.results = receipt.results.map((entry) => projectTransactionEntry(entry, false));
+-    if (
+-      receipt.results.length > 0 &&
+-      (projected.results as Record<string, unknown>[]).every(
+-        (entry) => entry.outcome === "withheld",
+-      )
+-    ) {
+-      projected.detail = "withheld";
+-      delete projected.results;
+-      delete projected.next;
+-      delete projected.allocated;
+-    }
++  }
++  const allResultsWithheld =
++    Array.isArray(projected.results) &&
++    projected.results.length > 0 &&
++    projected.results.every((entry) => entry.outcome === "withheld");
++  const allAllocationsWithheld =
++    Array.isArray(projected.allocated) &&
++    projected.allocated.length > 0 &&
++    projected.allocated.every((entry) => entry.withheld === true);
++  if (receipt.status === "completed" && (allResultsWithheld || allAllocationsWithheld)) {
++    projected.detail = "withheld";
++    delete projected.results;
++    delete projected.next;
++    delete projected.allocated;
++    delete projected.expiresAt;
+   }
+   return projected;
+ }
+--- a/packages/server/src/transaction-runtime.test.ts
++++ b/packages/server/src/transaction-runtime.test.ts
+@@ -709,6 +709,7 @@
+     delete projected.results;
+     delete projected.next;
+     delete projected.allocated;
++    delete projected.expiresAt;
+     expect(retained).toEqual(projected);
+     expect(authorizationContext(receiptResponse.headers)).toEqual(current);
+     const replay = await f.request(

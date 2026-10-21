@@ -1,0 +1,9 @@
+# Native CI pin repair closure
+
+No blocker in the exact one-hash repair. The affected callback hashes the entire *current* baseline file via source(...).bytes; it does not hash a reconstructed historical parent. Its old c86b3353 value is exactly the pre-cold-directory67a baseline. The unchanged current bb9600 baseline hashes80f74625, so updating this current-file expectation is required after adding the cold row.
+
+Independently verified actual working diff equals frozen correction bfc7dfd4a13aec6a84f9d9e5bb50ea5b736d9a85d6e5ede5f92ff2cca5c42c07 and consists of exactly one replacement in apps/bdptest/src/read-update-matrix.test.ts:4674. The original independent unknown-subject raw span digest39eb2fe2, all numeric/action/budget checks, and all other callback bytes remain unchanged. The separate corpus-split callback still reconstructs and checks historic c86b3353; independently removed only the cold-directory object/separator and obtained byte-for-byte original67a baseline. Current manifest, coverage and other four authored files match the clean bb9600 six-file freeze (five unaffected paths total).
+
+Original native/code council and installed evidence remain attributed to bb9600. This test-only correction is not a production or runtime change and does not justify relabelling original failed CI as passing. Root is running bounded source validation separately; this reviewer ran no test/import/build/service. I authored the original cold-directory code and therefore disclose implementation overlap; root independently reviews this repair and actual Claude supplement remains closed until root release.
+
+Before app3009ce7fe3085b140b23f8062358ba2d342bd491fde3f3b6c19f75f618e87c7b; after appb9a2fedbb8fc7c94b32b600553353e5aff4b7b2f53d05e919ba993be559e69f9. Original candidatebb9600f1b8b6f623e753543ed5792005eb9aacee/treeaa8f7af9c4cdfafbd80547449ec2369f92071ab7. Working hash and all five other files verified before/after report generation.

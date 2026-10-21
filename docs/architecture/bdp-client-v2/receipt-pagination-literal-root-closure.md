@@ -1,0 +1,5 @@
+# Root closure of native receipt literal guard finding
+
+Root read full native df51 review a9f795d4, author frozen df51 report, exact df51..f5e935b59b1c091bd79a57e122b016739bdf6980 one-test-file diff and repair report. Both p-later-state and p-final now use the independent expected32 tuples and projection/order checks, not merely equality with one another. Counterfactual single earlier-title corruption passes parent guard and fails repaired guard as intended; restored original artifact and26tests pass. Build/static checks pass. All runtime/artifact/coverage/helper bytes unchanged; no installed evidence relabeled.
+
+The native Low is closed on exact successor. Combined ordinaryc872 source keeps all eight TX donor files exactf5 and four RU files exactb14, with367focused/TX6/RU24freshinstalled checks and canonical mappings/hashes/cleanup verified. External df51 evidence council remains pending; this closes only the native finding. PR101 draftc872 created and remoteverified; CI38486080350/job115599950005 started23:44:43Z. PR100 is an independent landing dependency. No readiness or profile claim.

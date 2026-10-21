@@ -1,0 +1,16 @@
+﻿2026-10-18T05:14:26.5947178Z ##[group]Run pnpm format:check
+2026-10-18T05:14:26.5947577Z [36;1mpnpm format:check[0m
+2026-10-18T05:14:26.5983196Z shell: /usr/bin/bash -e {0}
+2026-10-18T05:14:26.5983603Z env:
+2026-10-18T05:14:26.5983915Z   PNPM_HOME: /home/runner/setup-pnpm/node_modules/.bin
+2026-10-18T05:14:26.5984341Z   GOTOOLCHAIN: local
+2026-10-18T05:14:26.5984779Z ##[endgroup]
+2026-10-18T05:14:26.9614453Z $ biome format .
+2026-10-18T05:14:27.6923605Z packages/conformance/matrices/read-update-v1.json format ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+2026-10-18T05:14:27.6924690Z Checked 454 files in 689ms. No fixes applied.
+2026-10-18T05:14:27.6925088Z Found 1 warning.
+2026-10-18T05:14:27.6925392Z 
+2026-10-18T05:14:27.6925917Z   ! The size of the file is 3.5 MiB, which exceeds the configured maximum of 1.0 MiB for this project.
+2026-10-18T05:14:27.6926874Z     Use the `files.maxSize` configuration to change the maximum size of files processed, or `files.includes` to ignore the file.
+2026-10-18T05:14:27.6927538Z   
+2026-10-18T05:14:27.6927842Z 

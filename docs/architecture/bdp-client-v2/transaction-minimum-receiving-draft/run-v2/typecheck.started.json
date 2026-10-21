@@ -1,0 +1,49 @@
+{
+  "name": "typecheck",
+  "argv": [
+    "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+    "/Users/dbox/.cache/node/corepack/v1/pnpm/11.20.0/bin/pnpm.cjs",
+    "run",
+    "typecheck"
+  ],
+  "cwd": "/Users/dbox/repos/wt/vickie/vickie-minimum-receiving",
+  "started": "2026-10-15T22:49:16.806097+00:00",
+  "head": "5d7fa3f049fa0b4db3aa8dae20e20d8e47fb3854",
+  "workspaceDirty": true,
+  "sourceSha256": {
+    "docs/specs/bdp.md": "63e93be562334c84c1e967da2fce212e8ef515aa3c9448924c5f9a272ea7b80b",
+    "packages/server/src/transaction-consistency.ts": "00a420c3e9f5dcb1b8814a6476d5ce52edfb7adbbd1c64ab082833f17322a336",
+    "packages/server/src/transaction-http.ts": "ebb3550110bd6fda638572966e5faa05c15f062f37a10947f6e442fc7d4570f4",
+    "packages/server/src/transaction-consistency.test.ts": "4d45ba52c028c3081188a6f76498889d7170cceaaad114004458b86331191bc9",
+    "packages/server/src/transaction-http.test.ts": "d1ea738f1cc6e84bffe88150d7eb8c6607c000ac3848e2804823692764d176c2",
+    "packages/server/src/transaction-snapshot-http.test.ts": "61023b5f24396fe484c7820c706b560cb87abd7a3e16670f5a0944fbefd44d8a",
+    "packages/server/src/transaction-schema-http.test.ts": "eee33a0948c9a0981a2a963cec5a8f16102ae5bab32128f83c39956abe0a952b",
+    "packages/server/src/transaction-changefeed.test.ts": "97c3f8604ccbb7f3141a22e5c3d338f51929b308b80614309a7e837801b12043",
+    "apps/bdptest/src/transactional-snapshot-installed.test.ts": "58f4ad828861ea332de7bf4413f48eb4646f32237b76d3a4db310e081b99ffe9",
+    "apps/bdptest/src/transactional-minimum-receiving-installed.test.ts": "cefde296b07d6be86a83d13892a603588c9054bdd54196048a855e74f9e9b7f9",
+    "docs/design/transaction-implementation-progress.md": "2c30837b7d43f51129b7cdfbc3b1cb09941b2527fb7d432a94755d6c5edb3522"
+  },
+  "sourceDiffSha256": "838f8e53d13cfa121718081507fea934d4c6ff12d061c78f7cc718adc11a6284",
+  "rootAcceptanceSha256": "3b1951022200c52ab360d6020e922aae9aa5b7a3ed3e3b27d948fcc93f50dc16",
+  "preparationSha256": "9725c2b500c4a0f088381f293de008e22e6ca47adfa19aca2c8cf581004ea543",
+  "bdpOverrides": {},
+  "guardedArgv": [
+    "/opt/homebrew/opt/python@3.14/bin/python3.14",
+    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/guarded-action.py",
+    "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+    "/Users/dbox/.cache/node/corepack/v1/pnpm/11.20.0/bin/pnpm.cjs",
+    "run",
+    "typecheck"
+  ],
+  "nodePathPrefix": "/Users/dbox/.nvm/versions/node/v24.16.0/bin",
+  "sourceAttribution": "Externally bound source snapshot or frozen package; not child-attested Git identity",
+  "plannedWorkload": {
+    "cases": 0,
+    "http": 0,
+    "owners": 0,
+    "directories": 0,
+    "listeners": 0,
+    "productChildren": 0
+  },
+  "derivativeBinding": null
+}

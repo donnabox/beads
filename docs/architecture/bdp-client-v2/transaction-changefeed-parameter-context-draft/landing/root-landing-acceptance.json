@@ -1,0 +1,41 @@
+{
+  "decision": "accepted for exact-head landing checks",
+  "head": "1f9cb46c42fa69a09ac847f57e47bc96390aea6f",
+  "tree": "80a6fe0605698e18f9504432407e7943e1f665b4",
+  "base": "77f4b89c117e46f0e73476f69b4c8b377306452b",
+  "evidence": {
+    "finalSourceBinding": {
+      "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-changefeed-parameter-context-draft/final-source.json",
+      "sha256": "a23661de87ca60b57917371b7d7e6b08a16992c6da71766a313dc53d69d62995"
+    },
+    "native": {
+      "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-changefeed-parameter-context-draft/root-native-code-review.md",
+      "sha256": "7184936efc82f646a1670121135a85294fe0661780975c003404d5d760b0bb62"
+    },
+    "claudeExit": {
+      "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-changefeed-parameter-context-draft/claude-code-supplement/exit.json",
+      "sha256": "4ce71d124d14852c7a4be6539fce51806bfb914a370a11b50c471004fe57f5e3"
+    },
+    "claudeStdout": {
+      "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-changefeed-parameter-context-draft/claude-code-supplement/stdout.txt",
+      "sha256": "fd8a88b32778bf269e0701e5f09467e19b236db995e6be1968e525a3955bf31d"
+    },
+    "rootCouncil": {
+      "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-changefeed-parameter-context-draft/root-final-council.json",
+      "sha256": "5cb581cf4ba7a3cf48b6c325dc7a852c5f15d60087eb8b9f2cdb73a17df7cbd5"
+    },
+    "installedAcceptance": {
+      "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-changefeed-parameter-context-draft/root-installed-acceptance.json",
+      "sha256": "79528c16e0c092ea342c7fdfbc7116375165ffaee5302db32b6eaf9cf21737db"
+    }
+  },
+  "scope": "Exactlysix reviewedfiles, ordinary directchild of77f4; no further source changes",
+  "ciOutcome": {
+    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-changefeed-parameter-context-draft/landing/ci-outcome.json",
+    "sha256": "96405b7deafcc74d3b5836356cbf7981d6c3a92c0f1410762dbfb2db4982f2cc"
+  },
+  "ciLogSha256": "e3c4607e9d7eed25050975c38c3d6402096291afde547c2d169e9dbf56fbc0c3",
+  "council": "Complete actualClaude13findings dispositioned plus independent rootnative review; original incomplete retained, no blocking findings",
+  "historicalAttribution": "source/control stays9a42; fresh installed binds1f9cb46; CItests0659712e treeequal candidate",
+  "profileQualified": false
+}

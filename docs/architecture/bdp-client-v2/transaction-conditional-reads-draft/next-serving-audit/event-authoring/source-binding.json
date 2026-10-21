@@ -1,0 +1,19 @@
+{
+  "workspace": "/Users/dbox/repos/wt/vickie/vickie-event-restart-witness",
+  "branch": "codex/vickie-event-restart-witness",
+  "head": "ddfb5f43a058fe0f16ff9e04e528b4e7bfc03d87",
+  "tree": "d00e27ba5c5148bce07f797606d558875fe7ecb2",
+  "files": {
+    "apps/bdptest/src/transactional-event-sse-installed.test.ts": "73cbc5a2cf14a9d154d8f2d82d40ee392400e9901e9485a00cf2ac5ece3aef07"
+  },
+  "diffSha256": "37d024c3337005443fc72ff001d675faddfd3388f1fbc303b4d02cad9a1a9a2d",
+  "historicalCallbackSha256": "2f95f8917bd75ae75b023f6899c8e24fa2548f34bc18ec5dd59a4fc8c1640ba2",
+  "historicalCallbackByteIdentical": true,
+  "baseFileSha256": "385bfa8fbe86b717450f89aec2f10ef5d2113170383c35236bd995fa285bda0a",
+  "selector": "installed Event cursors survive restart with Last-Event-ID precedence and source binding",
+  "seedBodySha256": "2ffd2dc1c98cf8ec53338127cfad4edba630ac386b22f6c693b3931626559f03",
+  "seedBodyBytes": 244,
+  "seedKey": "event-restart-two-created-v1",
+  "status": "FROZEN_DRAFT_NO_EXECUTION",
+  "basis": "pending-CI local ddfb5f43; not integration or qualification"
+}

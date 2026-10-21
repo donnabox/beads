@@ -1,0 +1,115 @@
+{
+  "preparedAt": "2026-10-17T16:57:56.311062+00:00",
+  "reviewTarget": "Actual complete seven-file CODE draft, independently reviewed; prior PLAN verdict is not CODE approval",
+  "authorBindingSha256": "c5b377389c581a5344a191d6b71cdad6b61e59cf819c004b1aec863bb0a57b5f",
+  "authorIndexSha256": "e2d0314820ea261be3a926ed211921754460e6c81ca526a109b06eee393bcd5d",
+  "authorEntriesVerified": 29,
+  "fullPatchSha256": "484ba4710832edbc91615bd77e1ad8ce848acda4e3d37d833267c2173fe44717",
+  "sourceCount": 679,
+  "changedCount": 7,
+  "unchangedCount": 672,
+  "sourceAttribution": "Base bbfa5b2 plus exact frozen dirty seven-file draft. Base commit does not itself contain draft changes.",
+  "planReviewAttribution": "Actual Claude PLAN reviewed successor1 and found two blockers; root corrected five-Event baseline and seventh-file regression scope plus precision items in successor2. Independent native closure followed; supplied actual report retains context/hash limitations and two tool-result errors. Native CODE review is independent and not used as authority here.",
+  "designAttribution": {
+    "snapshots": {
+      "design-original-plan-checkpoint.md": "d83d6bd094cd890eda09d94cb032f3dbf70cbd5837a77d386e9aa71d1102e67a",
+      "design-actual-plan-review-checkpoint.md": "c114a25b5e2a06999df953ed784d2f03faa124e87833485a3031b974efc2ad13",
+      "design-current-code-checkpoint.md": "abede7f522f84a82afc64b19e229d7515190a4e6f771bcafb6b13b976ca8bd07"
+    },
+    "currentDiffersFromActualPlanReview": true,
+    "currentDiffersFromOriginalPlan": true,
+    "disposition": "Current sole-design bytes copied once for CODE context; both earlier immutable snapshots preserved with their actual hashes. Live design path is provenance only, not an execution binding. No historical review is relabeled as reading the later checkpoint; no normative or source scope change inferred from checkpoint drift."
+  },
+  "initialMechanicsIndex": "d6496ba1f22e98903c9e0056a46d8275268bdc57b336b4c28751e81f02370692",
+  "runnerParserArgumentsUnchanged": true,
+  "copiedContexts": {
+    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/scope-event-sse-opaque-minimum-code-review/context/source-binding.json": {
+      "source": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/scope-event-sse-opaque-minimum-author/source-binding.json",
+      "sha256": "c5b377389c581a5344a191d6b71cdad6b61e59cf819c004b1aec863bb0a57b5f"
+    },
+    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/scope-event-sse-opaque-minimum-code-review/context/author-index.json": {
+      "source": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/scope-event-sse-opaque-minimum-author/preparation-index.json",
+      "sha256": "e2d0314820ea261be3a926ed211921754460e6c81ca526a109b06eee393bcd5d"
+    },
+    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/scope-event-sse-opaque-minimum-code-review/context/draft.patch": {
+      "source": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/scope-event-sse-opaque-minimum-author/draft.patch",
+      "sha256": "484ba4710832edbc91615bd77e1ad8ce848acda4e3d37d833267c2173fe44717"
+    },
+    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/scope-event-sse-opaque-minimum-code-review/context/author-report.md": {
+      "source": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/scope-event-sse-opaque-minimum-author/report.md",
+      "sha256": "ebf0c587424a73da01cad0353a6d75b23fda0705c529f26049c3ea4115dbed85"
+    },
+    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/scope-event-sse-opaque-minimum-code-review/context/report-schemas.json": {
+      "source": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/scope-event-sse-opaque-minimum-author/report-schemas.json",
+      "sha256": "56edaf44faaa82b6febb493a7c7ceabc99e3f391b461fdd9dbe61931717bee0f"
+    },
+    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/scope-event-sse-opaque-minimum-code-review/context/selection.json": {
+      "source": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/scope-event-sse-opaque-minimum-author/selection.json",
+      "sha256": "350e303ba12f441b96ffa701d3efa4963f68e00025444d257e2795c2679a6b3a"
+    },
+    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/scope-event-sse-opaque-minimum-code-review/context/workload.json": {
+      "source": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/scope-event-sse-opaque-minimum-author/workload.json",
+      "sha256": "7776bacfd1c360f74b890bec13b0473663d347c09d2aa4132fa88568e349a923"
+    },
+    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/scope-event-sse-opaque-minimum-code-review/context/preservation-checks.json": {
+      "source": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/scope-event-sse-opaque-minimum-author/preservation-checks.json",
+      "sha256": "58eb9d88b2ad341312a731c0c796e1eb2fafc300a2668847f583b9dbc63c7d71"
+    },
+    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/scope-event-sse-opaque-minimum-code-review/context/accepted-plan.md": {
+      "source": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/scope-event-sse-opaque-minimum-plan/successor-2/plan.md",
+      "sha256": "0d0a4e0e4343de675bc72cd15b39b18b64cbac32a26af234ca5584d8f73c7c1c"
+    },
+    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/scope-event-sse-opaque-minimum-code-review/context/plan-index.json": {
+      "source": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/scope-event-sse-opaque-minimum-plan/successor-2/preparation-index.json",
+      "sha256": "931ad04bb307596442a5d97ced0529e224ece89c362f3a8ea94bd76f3862e412"
+    },
+    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/scope-event-sse-opaque-minimum-code-review/context/native-plan-closure.md": {
+      "source": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/scope-event-sse-opaque-minimum-plan/successor-2/native-closure.md",
+      "sha256": "6aa259a9ad94d4dd234ebfbb8a67d23ef7d9cfffbff54b24b622aafede5af126"
+    },
+    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/scope-event-sse-opaque-minimum-code-review/context/root-author-release.json": {
+      "source": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/scope-event-sse-opaque-minimum-author/root-author-release.json",
+      "sha256": "87961539484c11ca7ad4b9bd2f7bbe07d07d995e5d98c61b5f9fd832a7fe3d1d"
+    },
+    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/scope-event-sse-opaque-minimum-code-review/context/actual-plan-review.txt": {
+      "source": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/scope-event-sse-opaque-minimum-plan/claude-plan-review/final-review.txt",
+      "sha256": "5a938579df557b03efb96aeb3c14835787b197e3889d4c5107f3bfb2c9caf7af"
+    },
+    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/scope-event-sse-opaque-minimum-code-review/context/plan-findings-audit.md": {
+      "source": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/scope-event-sse-opaque-minimum-plan/claude-plan-review/findings-audit.md",
+      "sha256": "ac7fafe6c0c964fbcb541ac278d3e5470df2a90960f4c756f726c2c7394797ca"
+    },
+    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/scope-event-sse-opaque-minimum-code-review/context/root-plan-dispositions.json": {
+      "source": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/scope-event-sse-opaque-minimum-plan/claude-plan-review/root-dispositions.json",
+      "sha256": "bc9941e46bc61383a2c34c8ee5842b54aedbef4fa6369f43b831bc6d809522b4"
+    },
+    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/scope-event-sse-opaque-minimum-code-review/context/root-findings-acceptance.json": {
+      "source": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/scope-event-sse-opaque-minimum-plan/claude-plan-review/root-findings-acceptance.json",
+      "sha256": "1060f3fa14b34d6b8c95f68b89902d31c05d87d64983058331b01801da3c7a13"
+    },
+    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/scope-event-sse-opaque-minimum-code-review/context/plan-completion-audit.md": {
+      "source": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/scope-event-sse-opaque-minimum-plan/claude-plan-review/completion-audit.md",
+      "sha256": "7e4d035f3e56ae30b689b005463208951a862cc52f7c0cfb491c74a60341de95"
+    },
+    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/scope-event-sse-opaque-minimum-code-review/context/bdp.md": {
+      "source": "/Users/dbox/repos/wt/vickie/vickie-scope-event-sse-opaque-minimum/docs/specs/bdp.md",
+      "sha256": "67772742d7d08f48c12196e9789f1859ad2d0e19f133ea65e197b049361f84f8"
+    },
+    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/scope-event-sse-opaque-minimum-code-review/context/design-original-plan-checkpoint.md": {
+      "source": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/scope-event-sse-opaque-minimum-plan/context/sole-design.md",
+      "sha256": "d83d6bd094cd890eda09d94cb032f3dbf70cbd5837a77d386e9aa71d1102e67a"
+    },
+    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/scope-event-sse-opaque-minimum-code-review/context/design-actual-plan-review-checkpoint.md": {
+      "source": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/scope-event-sse-opaque-minimum-plan/claude-plan-review/context/design-current-checkpoint.md",
+      "sha256": "c114a25b5e2a06999df953ed784d2f03faa124e87833485a3031b974efc2ad13"
+    },
+    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/scope-event-sse-opaque-minimum-code-review/context/design-current-code-checkpoint.md": {
+      "source": "/Users/dbox/repos/wt/vickie/bdp-client-design/checkout/docs/architecture/bdp-client-v2/design.md",
+      "sha256": "abede7f522f84a82afc64b19e229d7515190a4e6f771bcafb6b13b976ca8bd07"
+    },
+    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/scope-event-sse-opaque-minimum-code-review/context/required-contract-matrix.md": {
+      "source": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/scope-event-sse-opaque-minimum-plan/context/required-contract-matrix.md",
+      "sha256": "36adee4631362abdc34074617deb1429fcb0de9465b1be73f4193b07c7a8e0aa"
+    }
+  }
+}

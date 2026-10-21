@@ -1,0 +1,35 @@
+## Verdict
+
+The four-literal addition is correct and sufficient for the observed failure. No blockers. Two concrete plan changes recommended (one placement, one verification-sequencing), plus one optional consistency item.
+
+### Intent verification (does this recognize a shipping dependency, not mask an accident?)
+
+Confirmed intended, by four independent facts:
+
+- `packages/server/src/json-value-equality.ts:3` is imported by two shipped production modules — `transaction-snapshot.ts:1` (used live at `:408` for link/record comparison) and `resource-evaluator.ts:1` (used at `:839-840` for property/metadata equality). Both importers are already in `expectedServerOutput` (`scripts/smoke-executables.mjs:224-227`, `:272-275`), and `resource-evaluator.js` is pulled in transitively by ~10 further shipped modules.
+- `packages/server/tsconfig.json:3-8` (`rootDir: src`, `include: src/**/*.ts`, `exclude: src/**/*.test.ts`) makes emission of exactly `json-value-equality.{js,js.map,d.ts,d.ts.map}` mandatory — matching the CI `unexpected=[…]` list exactly, and `missing=[]` confirms no other drift.
+- `packages/server/package.json:10-19` keeps the surface at `.` and `./development` only, so the file ships without widening anything; `assertServerExports` (`scripts/smoke-safety.mjs:5-14`) pins that map by deep equality.
+- `packages/server/src/transaction-snapshot.test.ts:674-680` already asserts `index.ts` and `development.ts` never reference `json-value-equality` — so the "ships but stays private" property has test coverage independent of the smoke.
+
+Caveat worth stating in the plan's rationale: because `include` is `src/**/*.ts`, the exact-membership Set alone *cannot* distinguish an intended internal module from an orphaned file — any non-test `.ts` under `src` emits. The justification rests on the importer evidence above, not on the Set edit. Record that in the commit message rather than only "smoke inventory updated".
+
+## Findings
+
+**1 — Low (clarity) / `scripts/smoke-executables.mjs:352-355`**
+Problem: the plan places the four literals "adjacent to index outputs". The `index.*` group is the public root entry; the Set's comment at `:132-133` frames it as a package-surface tripwire, so a private helper parked next to the public entry invites a future reader to treat it as an entry point. The existing list is grouped by relationship, not alphabetized.
+Fix: insert the block adjacent to `resource-evaluator.*` (`:224-227`) or `transaction-snapshot.*` (`:272-275`) — its actual importers — instead of next to `index.*`. Same four literals, no other change.
+
+**2 — Low-Medium (verification validity) / plan's smoke step**
+Problem: the check is exact-length *and* exact-membership, so it is only meaningful against a dist that matches HEAD's `src`. Run against a stale dist, the new literals surface as `missing=[4]`; against a dist carrying leftovers from previously removed sources, as spurious `unexpected`. "Freshly built source" is stated but not pinned to a mechanism.
+Fix: make the gate explicitly `scripts/clean-build.mjs` (clean → build → `pnpm smoke`) and capture the clean-build invocation in the evidence, so a green smoke is attributable to HEAD's source rather than to a warm `dist`. Keep the actual failed CI observation (`missing=[]`, `unexpected=[4]`) alongside the new pass.
+
+**3 — Low (optional, defense-in-depth) / `scripts/smoke-executables.mjs:505-516`, `:518-556`**
+Problem: the private-module non-resolution loop filters on the `installed-schema-` / `transaction-` prefixes, and the explicit specifier list omits the new module, so no smoke probe asserts `@bdp/server/dist/json-value-equality.js` fails to resolve. Coverage is not absent — `assertServerExports` pins the exports map exactly, which structurally guarantees `ERR_PACKAGE_PATH_NOT_EXPORTED` for every subpath, and `transaction-snapshot.test.ts:674-680` fences the source side — but the module sits outside the deliberate probe set.
+Fix (optional, and a scope widening beyond "exactly four literals"): add `"@bdp/server/json-value-equality"` and `"@bdp/server/dist/json-value-equality.js"` to the list at `:518`. Not required for this repair; if you keep the plan at four literals, note in the commit that the fence is carried by `assertServerExports` plus the existing unit test.
+
+## Items the plan gets right, confirmed against source
+
+- No manifest/export change is the only self-consistent option: adding a subpath would fail both `assertServerExports` (`smoke-safety.mjs:10`) and `transaction-snapshot.test.ts:676`.
+- Keeping the length+membership check intact is necessary; relaxing it to a prefix or suffix allowance would dissolve the tripwire.
+- The test-support leakage check (`:401-403`) and the `.test.` artifact check (`:86-88`) are genuinely unaffected — there is no `json-value-equality.test.ts`; its tests live in `resource-evaluator.test.ts:411-415` and `transaction-snapshot.test.ts:678`.
+- `scripts/smoke-executables.mjs` is the sole shipped-module inventory in the repo. I checked `scripts/smoke-development.mjs`, `scripts/dependency-boundary-rules.mjs`, `STATUS.md` and `docs/` — no companion list needs the same four names, so "no other file changes" holds.

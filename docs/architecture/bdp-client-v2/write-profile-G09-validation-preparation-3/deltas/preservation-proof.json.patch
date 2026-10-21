@@ -1,0 +1,100 @@
+--- /Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation-preparation-2/preservation-proof.json
++++ /Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation-preparation-3/preservation-proof.json
+@@ -1,60 +1,41 @@
+ {
+-  "ASTOrHelperEvaluation": false,
+-  "budgets": "Exact old bounds object/source/legacy14/new selectors unchanged; no cap/deadline/schema weakening",
+-  "commandsExactly24NamespaceLiteralsReverseFullBytes": true,
+-  "correctedCodeNativeAndRootSeparate": true,
+-  "originalActualClaudeOnlyEEB": true,
+-  "originalAuditorAndGateInverse": {
+-    "P1ActualAuditorInverseAppliedAsDataEqualsTemplate": true,
+-    "P1ActualGateInverseAppliedAsDataEqualsTemplate": true,
+-    "P2UndoMetadataEqualsP1": true,
+-    "noHelperOrSchemaEvaluation": true
++  "ASTImportHelperSchemaRuntimeEvaluation": false,
++  "P2BeforeMapMeaning": "Historical pre-correction map remains INPLACE; P3before captures actual currentf6, equal actual P3after. No product edit.",
++  "P2HistoricalOriginal450Run4FailureNoPassReuse": true,
++  "P3NoConsumerScratchArchivesOrRun": true,
++  "all34FreshAndUnattempted": true,
++  "allActiveSchemaSelectionExpectationSourceBindingBytesExactP2": {
++    "audit-expectations.json": "85a933a50639d94f5bff2f66c0fdd6872d2d5aa5f1c4b19452335fbff971b122",
++    "report-schemas.json": "01b4407a1f4a8196fba282d4d269b487f3e0e5040a6c4ae6ae54e87a94fc509c",
++    "selection.json": "26949f3d8be0c4ff61a4fb3baedb2ad0f1647a794ad55c6edae2fbbfa140fc2d",
++    "source-after679-map.json": "1a1f47ba9d6aa215e0074222f1e93185c8f1b5d4675ad29a95e58e09ec068d51",
++    "source-binding.json": "712c3c5a8e1543bf5005cbb54d321c6874b7443afb7e01805f393434fe5cd714"
+   },
+-  "originalSchemaInverse": {
+-    "P1ActualInversePatchAppliedAsTextEqualsOriginalTemplate": true,
+-    "P2SameAsP1": true,
+-    "removeG09CanonicalJSONEqualsOriginalP10Template": true
++  "boundsOrderSelectionsPairsUnchanged": true,
++  "commandsExactly24NamespaceLiteralsReverseEntireBytes": true,
++  "current679BytesExact": true,
++  "currentBeforeAfterSourceMapsByteEqual": true,
++  "fiveProgramsFullByteExactP2": {
++    "audit.py": "1892c8b723126ea69d33053ce0ec6e2461e299dbf9e8b886be35905c132412a2",
++    "gate.py": "c3e631f818f63a17d1b5518b6122d761f6d1fecf5dfb3cb0b1b043d568204168",
++    "guarded-action-session-20261018-021624-549f.py": "b2d467920638e68d3b007ba9daa432e971636245eca988bfb29d7a99d6e3fb30",
++    "packages.py": "162e4f04ffe9aeffe886b194c7ed41241c6ce3cf37e9c93f92fec0969095aea9",
++    "run.py": "16049341d6d810ea5c46a88220da30f9a04e436ee7fea0061cc26e58ba76ba70"
+   },
+-  "runPackagesGuardGateFullBytesEqualP1": true,
+-  "schemaSelectionAuditExpectationsFullBytesEqualP1": true,
+-  "semanticHelperCorrection": {
+-    "extraResourceKeysStillRejected": [
+-      "revisionProvenance",
+-      "endpoint",
+-      "ownedLinks",
+-      "any undeclared key"
+-    ],
+-    "file": "audit.py",
+-    "idTypePropertiesNonemptyRevisionPredicatesPreserved": true,
+-    "line": 277,
+-    "metadataExpectedExactly": {},
+-    "requiredResourceKeysAfter": [
+-      "id",
+-      "type",
+-      "revision",
+-      "properties",
+-      "metadata"
+-    ],
+-    "requiredResourceKeysBefore": [
+-      "id",
+-      "type",
+-      "revision",
+-      "properties"
+-    ],
+-    "undoExactTwoAuthoredSubstringsReturnsP1FullBytes": true
+-  },
+-  "sourceCanonical": "f6baa7922feea80b9ae9641abc08ed79c339ff719769cc95162fe87ddc70bc65",
+-  "workloads": {
+-    "directInvocations": 26,
+-    "immediatePairs": 7,
+-    "installedCallsSeparate": [
+-      14,
+-      16,
+-      14
+-    ],
+-    "installedChildrenSeparate": 3,
+-    "sourceCallbacks": 8,
+-    "sourceWire": 9,
+-    "stages": 34
+-  }
++  "immediatePairs": 7,
++  "installedSeparateChildren": 3,
++  "installedSeparateRequests": [
++    14,
++    16,
++    14
++  ],
++  "legacy14AndOldSchemasUnchanged": true,
++  "noSecondActualCodeOrPlan": true,
++  "originalActualClaudeOnlyEebCorrectedF6SeparateNativeRoot": true,
++  "protected669BytesExact": true,
++  "publicWriteQualification": false,
++  "sourceCallbacks": 8,
++  "sourceDirect": 26,
++  "sourceWire": 9,
++  "stageCount": 34
+ }

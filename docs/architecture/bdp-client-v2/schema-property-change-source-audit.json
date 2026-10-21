@@ -1,0 +1,46 @@
+{
+  "base": "627b560c0daf1a76b292615718c86670255ac9af",
+  "changed": [
+    "apps/bdptest/src/read-update-matrix.test.ts",
+    "packages/conformance/matrices/read-update-reference-continuation-v1.json",
+    "packages/conformance/test-support/read-update-coverage-v1.json"
+  ],
+  "metrics": {
+    "bytes": 899400,
+    "nodes": 23502,
+    "coverageBytes": 712792,
+    "rActions": 96,
+    "rAssertions": 687,
+    "newBindings": 68
+  },
+  "oldOtherScenarioBlocks": 4,
+  "oldRActionBlocksPreserved": 84,
+  "oldRawRequestsPreserved": 39,
+  "approvedRawGETConversions": 2,
+  "oldControlInitializers": [
+    "retryControls",
+    "attributionNumericControls",
+    "attributionNumericRawControls",
+    "numericAdmissionRawControls",
+    "numericAdmissionClientControls",
+    "metadataClosureClientControls",
+    "metadataClosureRawControls",
+    "numericRClosureRawControls"
+  ],
+  "wholeContract": false,
+  "claimEligible": false,
+  "files": {
+    "apps/bdptest/src/read-update-matrix.test.ts": {
+      "sha256": "27735bf6a07ac44057f7a48f05586df34ab0eeead987332b65062def2c8d67fd",
+      "bytes": 203138
+    },
+    "packages/conformance/matrices/read-update-reference-continuation-v1.json": {
+      "sha256": "24d754618b51f255b5885d83c53ccf9a06593031e1812739a4f2b504c4a1df8d",
+      "bytes": 899400
+    },
+    "packages/conformance/test-support/read-update-coverage-v1.json": {
+      "sha256": "ee39ca50dc8f48dd062fa8f2e1364c1842aa3bb2d1f732152dd42646ffa154b1",
+      "bytes": 712792
+    }
+  }
+}

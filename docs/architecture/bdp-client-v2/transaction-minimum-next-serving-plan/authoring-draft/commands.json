@@ -1,0 +1,82 @@
+[
+  {
+    "id": "transaction-consistency.test",
+    "cwd": "/Users/dbox/repos/wt/vickie/vickie-minimum-current-resource",
+    "argv": [
+      "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+      "/Users/dbox/.cache/node/corepack/v1/pnpm/11.20.0/bin/pnpm.cjs",
+      "exec",
+      "vitest",
+      "run",
+      "packages/server/src/transaction-consistency.test.ts",
+      "--testNamePattern",
+      "^(?:private\\ minimum\\-read\\ subset\\ snapshots\\ canonical\\ supported\\ tuples\\ without\\ getters\\ or\\ opaque\\-token\\ guesses|private\\ minimum\\-read\\ subset\\ only\\ turns\\ actual\\ behind\\ observations\\ into\\ timeout\\ after\\ the\\ original\\ finite\\ deadline|distinguishes\\ closed\\ minimum\\ receiving\\ syntax\\ from\\ supported\\ position\\ identities|captures\\ lexical\\ current\\ minimums\\ without\\ widening\\ strict\\ consumers\\ or\\ invoking\\ accessors|waits\\ for\\ unproved\\ current\\ eligibility\\ with\\ one\\ deadline\\ and\\ preserves\\ terminal\\ failures)$",
+      "--reporter=json",
+      "--outputFile",
+      "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-minimum-next-serving-plan/authoring-draft/future-run/transaction-consistency.test.results.json"
+    ],
+    "supervisorSeconds": 120,
+    "selectedCallbacks": 5,
+    "released": false
+  },
+  {
+    "id": "transaction-read.test",
+    "cwd": "/Users/dbox/repos/wt/vickie/vickie-minimum-current-resource",
+    "argv": [
+      "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+      "/Users/dbox/.cache/node/corepack/v1/pnpm/11.20.0/bin/pnpm.cjs",
+      "exec",
+      "vitest",
+      "run",
+      "packages/server/src/transaction-read.test.ts",
+      "--testNamePattern",
+      "^(?:compatible\\ missing\\ Resource\\ minimum\\ returns\\ observed\\ missing\\ Resources\\ before\\ behind\\ and\\ foreign\\ minimum\\ collisions|current\\ Type\\ and\\ incident\\-Link\\ minimums\\ keeps\\ compatible\\ missing\\ Types\\ and\\ absent/deleted\\ incident\\ anchors\\ separate\\ from\\ collisions|current\\ alias\\ minimum\\ subset\\ keeps\\ live\\ alias\\ context\\ failures\\ and\\ compatible\\ absent/deleted/dangling\\ observations\\ distinct|uses\\ actual\\ current\\ policy\\ for\\ missing\\-first\\ and\\ unproved\\ Resource\\ attempts|drains\\ an\\ admitted\\ unknown\\ minimum\\ to\\ timeout\\ and\\ rejects\\ new\\ reads\\ while\\ closing)$",
+      "--reporter=json",
+      "--outputFile",
+      "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-minimum-next-serving-plan/authoring-draft/future-run/transaction-read.test.results.json"
+    ],
+    "supervisorSeconds": 120,
+    "selectedCallbacks": 5,
+    "released": false
+  },
+  {
+    "id": "transaction-http.test",
+    "cwd": "/Users/dbox/repos/wt/vickie/vickie-minimum-current-resource",
+    "argv": [
+      "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+      "/Users/dbox/.cache/node/corepack/v1/pnpm/11.20.0/bin/pnpm.cjs",
+      "exec",
+      "vitest",
+      "run",
+      "packages/server/src/transaction-http.test.ts",
+      "--testNamePattern",
+      "^(?:uses\\ actual\\ epoch/view\\ decisions\\ and\\ an\\ exhausted\\ wait\\ before\\ conditional\\ or\\ timeout\\ responses|serves\\ missing\\ Resource404\\ with\\ current\\ context\\ before\\ semantic\\ minimum\\ comparisons|serves\\ canonical\\ current\\ Type\\ and\\ incident\\ minimums\\ with\\ truthful\\ context\\ and\\ parser\\ boundaries|serves\\ conditioned\\ live\\ aliases\\ and\\ preserves\\ bodyless\\ redirects,\\ refusal\\ context\\ and\\ receiving\\ boundaries|waits\\ only\\ for\\ existing\\ current\\ Resource\\ unknown\\ minima\\ and\\ keeps\\ unsupported\\ route\\ labels)$",
+      "--reporter=json",
+      "--outputFile",
+      "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-minimum-next-serving-plan/authoring-draft/future-run/transaction-http.test.results.json"
+    ],
+    "supervisorSeconds": 120,
+    "selectedCallbacks": 5,
+    "released": false
+  },
+  {
+    "id": "installed-cohort-template",
+    "cwd": "/Users/dbox/repos/wt/vickie/vickie-minimum-current-resource",
+    "argv": [
+      "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+      "/Users/dbox/.cache/node/corepack/v1/pnpm/11.20.0/bin/pnpm.cjs",
+      "exec",
+      "vitest",
+      "run",
+      "apps/bdptest/src/transactional-minimum-current-resource-installed.test.ts",
+      "--testNamePattern",
+      "^serves\\ missing\\-first\\ current\\ Resources\\ and\\ bounds\\ unproved\\ minimum\\ eligibility$",
+      "--reporter=json",
+      "--outputFile",
+      "ROOT_BOUND_EXTERNAL_COHORT_RESULTS_PENDING"
+    ],
+    "supervisorSeconds": 120,
+    "requires": "actual integrated clean source/build/archives/consumer/entry and wrapper binding; separate root release per mode",
+    "released": false
+  }
+]

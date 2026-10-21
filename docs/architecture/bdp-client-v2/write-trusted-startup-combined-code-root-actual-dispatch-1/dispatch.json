@@ -1,0 +1,39 @@
+{
+  "session": "2026-10-18T02:16:24Z-549f",
+  "state": "ONE ACTUAL RUNNING; no terminal inference",
+  "rootExecSession": 25510,
+  "actualReviewerProcess": {
+    "pid": 46159,
+    "pgid": 46159,
+    "started": "2026-10-18T18:59:42.543743+00:00",
+    "argv": [
+      "/opt/homebrew/bin/claude",
+      "--safe-mode",
+      "-p",
+      "--tools",
+      "Read,Glob,Grep",
+      "--allowedTools",
+      "Read,Glob,Grep",
+      "--disable-slash-commands",
+      "--strict-mcp-config",
+      "--mcp-config",
+      "{\"mcpServers\":{}}",
+      "--no-session-persistence",
+      "--output-format",
+      "stream-json",
+      "--verbose",
+      "--include-partial-messages"
+    ],
+    "timeoutSeconds": 1800,
+    "termAfterSeconds": 1790
+  },
+  "supervisorPidObservedViaWrapperParent": 46123,
+  "wrapperPid": 46131,
+  "mechanicsPublicationReadback": "fe4bd8b91dc5b1b127c9e072cdced8162268c8a5",
+  "activationPublicationReadback": "42ec04d1c17310f1a69c17d777e87996f6518d7f",
+  "activationSha256": "965961433b2365c3a0b5c62b5184936ec859bdc5ea73fba950214cc42eda853b",
+  "independentAuditor": "changefeed_native_review",
+  "next": "Actual terminal/process/source/scope audit and root findings disposition before validation",
+  "noRelaunch": true,
+  "productValidationReleased": false
+}

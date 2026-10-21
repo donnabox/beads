@@ -1,0 +1,25 @@
+{
+  "at": "2026-10-17T09:57:06.012400+00:00",
+  "head": "9d2cd441eac2be1d2b6487ab5648035e3219cc27",
+  "tree": "62628a006c36d101c310b5210de3f7e23d3a2fac",
+  "worktree": "/Users/dbox/repos/wt/vickie/vickie-alias-opaque-minimum",
+  "branch": "codex/vickie-alias-opaque-minimum",
+  "rootAuthoringReleased": true,
+  "runtimeReleased": false,
+  "commitReleased": false,
+  "ownedFiles": [
+    "packages/server/src/transaction-read.ts",
+    "packages/server/src/transaction-read.test.ts",
+    "packages/server/src/transaction-http.test.ts",
+    "apps/bdptest/src/transactional-alias-installed.test.ts"
+  ],
+  "plan": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/receipt-root-next-serving-audit/plan-precision-successor-2/plan-v3.md",
+  "planSha256": "2455988bb3a67bd390810a9ae6587ca57ffccc780ab1320e9cb944a3b8ecd1b7",
+  "selection": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/receipt-root-next-serving-audit/plan-precision-successor-2/selection-v3.json",
+  "selectionSha256": "ba6d72a379c3ccc55f5c974d92c8dcc383ac44caea88f4cba4240cbe3fcd37bd",
+  "workloadSha256": "b12d71ba9be4bb6b464c1f2837a2cc5f9dc833f1432ca379a57d74f8deeb79d3",
+  "indexSha256": "ec64c3fe9cf3871fa6bedd7d69202779f9d829255aa8bba31cad4434d80f81bd",
+  "nativeClosureSha256": "14199cd7f0a7fe8c75654cc739e544a715849aecc9e06d7f471a395e45d69964",
+  "sourceCountVerified": 679,
+  "disposition": "Root read full original plan, exact precision delta, selection/workload, actual Claude terminal, root/native findings and native correction closure. All12 findings dispositioned; label and exact legacy fences corrected without production scope expansion. No new full PLAN rerun for these directly requested bounded corrections. Author one production and three test files only; preserve unchanged legacy callbacks and original installed36 cohort. No tests/build/install/formatter/service/commit/push until separate reviewed execution release."
+}

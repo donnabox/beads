@@ -1,0 +1,186 @@
+{
+  "checkedAt": "2026-10-14T17:58:15.005088+00:00",
+  "source": "30035b88380b7cbb3abd5359787db236b70345c7",
+  "tree": "cdee4bc7e31511cde094d17c045ea618163b6d7a",
+  "filesVerified": 8,
+  "archiveMembersByteCompared": 313,
+  "payloadDigestRecomputed": "2c62c66724c2c48fcd1de19360abbb90a3d5bb7c37257a095af752ba9e0b322d",
+  "dependencyIdentities": [
+    "@bdp/server",
+    "@bdp/server>@bdp/protocol",
+    "@bdp/server>@bdp/protocol>ajv",
+    "@bdp/server>@bdp/protocol>ajv>fast-deep-equal",
+    "@bdp/server>@bdp/protocol>ajv>fast-uri",
+    "@bdp/server>@bdp/protocol>ajv>json-schema-traverse",
+    "@bdp/server>@bdp/protocol>ajv>require-from-string",
+    "@bdp/server>@bdp/protocol>ajv-formats",
+    "@bdp/server>@bdp/protocol>ajv-formats>ajv",
+    "@bdp/server>@bdp/protocol>ajv-formats>ajv>fast-deep-equal",
+    "@bdp/server>@bdp/protocol>ajv-formats>ajv>fast-uri",
+    "@bdp/server>@bdp/protocol>ajv-formats>ajv>json-schema-traverse",
+    "@bdp/server>@bdp/protocol>ajv-formats>ajv>require-from-string",
+    "@bdp/server>fast-uri"
+  ],
+  "childrenAbsentIndependently": [
+    {
+      "pid": 82412,
+      "exit": 0,
+      "signal": null
+    },
+    {
+      "pid": 82445,
+      "exit": 0,
+      "signal": null
+    }
+  ],
+  "cohorts": [
+    {
+      "cohort": "direct",
+      "requests": 14,
+      "observations": [
+        [
+          "seed-a",
+          200,
+          "pos-1"
+        ],
+        [
+          "seed-b",
+          200,
+          "pos-2"
+        ],
+        [
+          "singleton-conflict",
+          409,
+          "pos-2"
+        ],
+        [
+          "batch-conflict",
+          409,
+          "pos-2"
+        ],
+        [
+          "retained-negotiation",
+          406,
+          "pos-2"
+        ],
+        [
+          "fresh-negotiation",
+          406,
+          "pos-2"
+        ],
+        [
+          "fresh-capacity",
+          413,
+          "pos-2"
+        ],
+        [
+          "retained-root",
+          200,
+          "pos-2"
+        ],
+        [
+          "unchanged-beads",
+          200,
+          "pos-2"
+        ],
+        [
+          "unchanged-events",
+          200,
+          "pos-2"
+        ],
+        [
+          "retry-negotiation-key",
+          200,
+          "pos-3"
+        ],
+        [
+          "retry-capacity-key",
+          200,
+          "pos-4"
+        ],
+        [
+          "final-beads",
+          200,
+          "pos-4"
+        ],
+        [
+          "final-events",
+          200,
+          "pos-4"
+        ]
+      ]
+    },
+    {
+      "cohort": "sequence",
+      "requests": 13,
+      "observations": [
+        [
+          "seed-a",
+          200,
+          "pos-1"
+        ],
+        [
+          "seed-b",
+          200,
+          "pos-2"
+        ],
+        [
+          "initial-capacity",
+          413,
+          "pos-2"
+        ],
+        [
+          "initial-negotiation",
+          406,
+          "pos-2"
+        ],
+        [
+          "retained-root",
+          200,
+          "pos-2"
+        ],
+        [
+          "unchanged-beads",
+          200,
+          "pos-2"
+        ],
+        [
+          "unchanged-events",
+          200,
+          "pos-2"
+        ],
+        [
+          "reuse-negotiation-key",
+          200,
+          "pos-3"
+        ],
+        [
+          "reuse-capacity-key",
+          200,
+          "pos-4"
+        ],
+        [
+          "repeat-capacity",
+          413,
+          "pos-4"
+        ],
+        [
+          "repeat-negotiation",
+          406,
+          "pos-4"
+        ],
+        [
+          "final-beads",
+          200,
+          "pos-4"
+        ],
+        [
+          "final-events",
+          200,
+          "pos-4"
+        ]
+      ]
+    }
+  ],
+  "limits": "Installed ordinary direct/sequence regressions only; not timeout sensitivity or profile qualification. Supervisor source binding; no child attestation."
+}

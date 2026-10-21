@@ -1,0 +1,84 @@
+--- /Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation-preparation-3/source-binding.json
++++ source-binding.json
+@@ -1,10 +1,10 @@
+ {
+   "actualClaudeReadCorrectedBytes": false,
+-  "binaryDiffSha256": "00804293791b29e26b6b7d58eb7b7f7bf17b20aecc765cbc389617d2daeb9b0f",
+-  "branch": "codex/vickie-schema-minimum",
++  "binaryDiffSha256": "f87d60ddc56b23737c46ed14e1675cc751c0062c7ab3466c33606398ae305df6",
++  "branch": "codex/vickie-schema-lint-correction-minimum",
+   "correctedNative": {
+-    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-corrected-native-code-review-2/closure.json",
+-    "sha256": "55c270e44ca306510135516911ae09712a8d9aa43dfefd769f4f12f1799e0f5b"
++    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-noUnsafeFinally-corrected-source-native-review-1/closure.json",
++    "sha256": "22f65448b080be632c60b74d66d6e90568b3686a3bcc4c1b2278d0ddc187e00b"
+   },
+   "dirtyPaths": [
+     "apps/bdptest/src/transactional-discovery-installed.test.ts",
+@@ -19,7 +19,7 @@
+     "packages/server/src/transaction-service.ts"
+   ],
+   "head": "cce884ccea1db97cbc6fd7bff876d4d6091f9081",
+-  "knownOriginalActualCode": "eeb original candidate only; no second actual CODE/PLAN",
++  "knownOriginalActualCode": "ONE original eeb only with preserved omissions; actual provider did not read f6 or1eca; current1eca has bounded native22f/rootcd63 static acceptance; no second actual CODE/PLAN",
+   "ownedFiles": {
+     "apps/bdptest/src/transactional-discovery-installed.test.ts": {
+       "afterSha256": "5b2d59a9f959294a3e9899ec613b3d88073cbbc9da3b22bde069375695516f20",
+@@ -54,7 +54,7 @@
+       "beforeSha256": "1082e8483848794971eae3eb8dfb3b7006749fc4e3b9c17c2cca1adbd94a6130"
+     },
+     "packages/server/src/transaction-service.test.ts": {
+-      "afterSha256": "0470da566dc7a294d19f749f6977f57f63648d52e857f235795d8857a401eef1",
++      "afterSha256": "7ba9d8de683f3e2c5f8a38efd6deab7e6de0950590b8de3d97bd2afa2657dac9",
+       "beforeSha256": "e66f4384e7e6f4fb10b2072e298093991fffcfae606d005b54dda97dbf250705"
+     },
+     "packages/server/src/transaction-service.ts": {
+@@ -63,23 +63,23 @@
+     }
+   },
+   "rootGitObservation": {
+-    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-root-corrected-source-inspection-2/inspection.json",
+-    "sha256": "7541f44c72df29c3f9ba9f48246ecd25231cf7629e34c2a67f02334973570cb2"
++    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-noUnsafeFinally-root-source-observation-1/observation.json",
++    "sha256": "fdc283817c69de00c290040e6155cfbcc25e62ea92ce3173dfff5e6c83951124"
+   },
+   "rootStaticAcceptance": {
+-    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-corrected-source-root-acceptance-2/acceptance.json",
+-    "sha256": "a9cf24e1c322318e73bf43d8a29fc773a57dae22abe5320fd8ca89277edf356c"
++    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-noUnsafeFinally-corrected-source-root-acceptance-1/acceptance.json",
++    "sha256": "cd63d77725504acad4bbfc50822e23c956f0df88d131152f40e9867a85c61773"
+   },
+   "sourceAuthorBinding": {
+-    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-source-correction-authoring-2/source-binding.json",
+-    "sha256": "96451d5d1946a46adbe2add092691284048836c787723fe2c9ca5a02de0bc24e"
++    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-noUnsafeFinally-source-authoring-1/source-binding.json",
++    "sha256": "05fce2eb64775a3d2ad395018c9d2d501669e71f429e5af59d9caac1cf07c740"
+   },
+   "sourceAuthorIndex": {
+-    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-source-correction-authoring-2/index.json",
+-    "sha256": "784402dcfdd70603886928b49fb56f9ccc9134aa7a3229d29c0923dcc48edc14"
++    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-noUnsafeFinally-source-authoring-1/index.json",
++    "sha256": "c6af0535192a377dee265674a52119b00357f1e2068d17a66398d095ba1c000d"
+   },
+   "sourceBindingFinalized": true,
+-  "sourceIdentity": "f6baa7922feea80b9ae9641abc08ed79c339ff719769cc95162fe87ddc70bc65",
++  "sourceIdentity": "1ecaf2e47369cc12cc26bc3ed693c5d4d3b9cffa4714b13dbe5567f9e46bfb15",
+   "sourceLockSha256": "4150d8821c96dbc2cfec0b2762ff76b58318079f65fa4f5c8858ef2dd61f8d6d",
+   "trackedSourceFiles": {
+     ".github/workflows/ci.yml": "268c9563e8d2f4fa4b7314492cb6c4994f7c76da9b26cda7a74c7e5b3c6f664a",
+@@ -539,7 +539,7 @@
+     "packages/server/src/transaction-sequence-alias.test.ts": "5e819d7746238003bcabd791d5c6c08abccfcd5db12bd256cc99781078795ff4",
+     "packages/server/src/transaction-sequence.test.ts": "31fba92ece191ad6be239b6c1edac8fe71ef63ce716597edc45d015e46730170",
+     "packages/server/src/transaction-sequence.ts": "019e02f2f392047d568d7464b1c5af0482d6d743ed09a6d0aa4edab151607cbe",
+-    "packages/server/src/transaction-service.test.ts": "0470da566dc7a294d19f749f6977f57f63648d52e857f235795d8857a401eef1",
++    "packages/server/src/transaction-service.test.ts": "7ba9d8de683f3e2c5f8a38efd6deab7e6de0950590b8de3d97bd2afa2657dac9",
+     "packages/server/src/transaction-service.ts": "972cf3a1e7abbf792f4c69181e2c63cf29d6163881fcab0a5cb768ece18ecadd",
+     "packages/server/src/transaction-set.test.ts": "86642f122eb0ab8d0ba1b5c454d4bd76fb31a7b1c485e6bbe05284c4ccd9b85f",
+     "packages/server/src/transaction-set.ts": "3085632e897481b048d563cf0ba3ea66dc96a0662cebfde9f978ee00675519e5",
+@@ -763,5 +763,5 @@
+     "vitest.evidence.config.ts": "6b2fee31033acf4843bc923dd864ee5c65501ec658ce0fedc9ebc549e8870dda"
+   },
+   "tree": "6757829bd5b700faf28df39071190a272add90c9",
+-  "worktree": "/Users/dbox/repos/wt/vickie/vickie-schema-minimum"
++  "worktree": "/Users/dbox/repos/wt/vickie/vickie-schema-lint-correction-minimum"
+ }

@@ -1,0 +1,95 @@
+{
+  "CLIExit": "UNKNOWN",
+  "actualRootTool": {
+    "exitCode": 1,
+    "rootBothPipeEofOrWholeClockProof": "NOT AVAILABLE/NOT INFERRED",
+    "session": 25510,
+    "source": "Trusted root observed actual write_stdin guard CalledProcessError; durable terminal.json11c05cad copied. Auditor did not independently poll root session or decode separate original raw toolreceipt."
+  },
+  "causalInference": "UNKNOWN. The initial recorded TimeoutExpired precedes cleanup TERM and later orphan/executable rejection. Do not invert that chronology or infer zombie/reuse/exec/host cause.",
+  "elapsedSeconds": 1029.503925959114,
+  "errors": [
+    "TimeoutExpired",
+    "reviewer_identity:RuntimeError"
+  ],
+  "firstReviewerIdentityFailure": {
+    "elapsedSeconds": 1028.5294692502357,
+    "exceptionType": "RuntimeError",
+    "row": {
+      "comm": "(claude)",
+      "pgid": 46159,
+      "pid": 46159,
+      "ppid": 1,
+      "start": "Sun Oct 18 11:59:42 2026",
+      "state": "Ss"
+    },
+    "stage": "row_executable"
+  },
+  "forcedCleanup": true,
+  "outerClassification": "process_ownership_or_cleanup_failure",
+  "outerEvents": [
+    {
+      "elapsedSeconds": 0.04893258400261402,
+      "killAfterSeconds": 1798,
+      "kind": "preflight_complete",
+      "releasedBindingSha256": "4804303deb850530d345a81ccf252d3c9f4acd04b9dd8fe0e204445f781028a3",
+      "termAfterSeconds": 1790,
+      "totalSeconds": 1800
+    },
+    {
+      "elapsedSeconds": 0.35476491693407297,
+      "kind": "wrapper_started",
+      "pgid": 46131,
+      "pid": 46131
+    },
+    {
+      "elapsedSeconds": 1028.0128121669404,
+      "errorType": "TimeoutExpired",
+      "kind": "outer_error"
+    },
+    {
+      "elapsedSeconds": 1028.2895215000026,
+      "kind": "signal",
+      "pgid": 46131,
+      "signal": 15
+    },
+    {
+      "elapsedSeconds": 1028.2895640842617,
+      "kind": "signal",
+      "pgid": 46159,
+      "signal": 15
+    },
+    {
+      "complete": true,
+      "elapsedSeconds": 1028.2895769169554,
+      "kind": "signal_pass",
+      "signal": 15,
+      "signaledGroups": [
+        46131,
+        46159
+      ]
+    },
+    {
+      "complete": true,
+      "elapsedSeconds": 1029.4029336250387,
+      "kind": "signal_pass",
+      "signal": 17,
+      "signaledGroups": []
+    },
+    {
+      "complete": true,
+      "elapsedSeconds": 1029.453747834079,
+      "kind": "signal_pass",
+      "signal": 9,
+      "signaledGroups": []
+    },
+    {
+      "classification": "process_ownership_or_cleanup_failure",
+      "elapsedSeconds": 1029.504352958873,
+      "kind": "outer_terminal",
+      "remainingOwned": []
+    }
+  ],
+  "ownershipUnknown": true,
+  "wrapperRawExit": -15
+}

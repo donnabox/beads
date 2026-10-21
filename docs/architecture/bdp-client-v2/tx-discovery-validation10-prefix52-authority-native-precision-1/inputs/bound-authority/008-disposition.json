@@ -1,0 +1,41 @@
+{
+  "accepted": true,
+  "actualP9": {
+    "all52Unexecuted": true,
+    "defect": "Root omitted rootPlanAccepted=true and rootExactSourceAccepted=true before gate activation",
+    "failureOwner": "ROOT",
+    "innerStagesAttempted": 0,
+    "retryOrRepairAuthorized": false,
+    "runAbsent": true,
+    "wrapperAttempts": 1,
+    "wrapperElapsedSeconds": 0.06531066726893187,
+    "wrapperExit": 1
+  },
+  "audit": {
+    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/tx-discovery-validation9-actual-terminal-audit-1/index.json",
+    "sha256": "7584a81440b44d06606ee2135d6697cf9e60fc1168c8e51846f4de9f9c092c4c"
+  },
+  "auditClosureSha256": "61cbb76c8bcee50c5f9ecce5e9d39c03262ab0d514f3bb25655b342a0a9b5d8d",
+  "auditReportSha256": "47c2fdc88b69e7b11e81a79e1c19096ba301efcf1a7546e56dff1f123cfc36da",
+  "currentSourcePaths": 679,
+  "executionReleased": false,
+  "git": {
+    "binaryDiffSha256": "eed91e5f1abc48ef92f31d92690772c8a6489a48dd9e5e07af66de9c392712ab",
+    "dirtyPaths": 6,
+    "head": "cce884ccea1db97cbc6fd7bff876d4d6091f9081",
+    "protectedPaths": 673,
+    "stagedOrUntracked": false,
+    "tree": "6757829bd5b700faf28df39071190a272add90c9"
+  },
+  "inPlaceCensuses": {
+    "P9": 3934,
+    "nativeP9": 3950
+  },
+  "next": "Separate CLOSED minimal P10 authoring; complete proposed gate/disposition independently checked as DATA before any activation; exact original predicates unchanged",
+  "rootAuthorityPins": 28,
+  "scope": "P9 stopped-terminal facts and root-record diagnosis only; validation NOT passed",
+  "sourceBindingSha256": "9bb16e9c984f7c259c6f4cb42ddad2886234771a90f4421c3fddec57c5079a41",
+  "sourceHelperSchemaDefectInferred": false,
+  "utc": "2026-10-18T14:45:48.289327+00:00",
+  "verifiedIndexedFilesAndMirror": 65
+}

@@ -1,0 +1,93 @@
+{
+  "status": "PREPARED_NOT_LAUNCHED_ROOT_REVIEW_REQUIRED",
+  "promptBytes": 34604,
+  "promptSha256": "b93198f843f036f0f47b3a1232b42d2a6aa11f2bd4730da754f190cd6e275d1a",
+  "planSha256": "e5c977762c38746bc5cbf33cefb9652a9c303fe073341520d6c52a370b8d6e50",
+  "sourceHead": "102e140fdd8ba27bcff7d80320c94ec7ace57dc3",
+  "sourceTree": "40782d97c9764bc19ae78c46d1d39475e3db317a",
+  "sourceSnippets": [
+    {
+      "path": "apps/bdptest/src/transactional-matrix.test.ts",
+      "start": 93,
+      "end": 109,
+      "wholeFileSha256": "4c8e246f881c93178741bf4c263d615ddff8ec544dbd8aeb3141cf336c4444f9",
+      "excerptSha256": "0fe9eaaa9a4a7cc1ee68397e5b014258b50486e67dc98c1f96c0e3266d5860f6"
+    },
+    {
+      "path": "apps/bdptest/src/transactional-matrix.test.ts",
+      "start": 165,
+      "end": 200,
+      "wholeFileSha256": "4c8e246f881c93178741bf4c263d615ddff8ec544dbd8aeb3141cf336c4444f9",
+      "excerptSha256": "7565a8ac910c0063f2677203d5ed8f19f2a779f306c368ef8e36b6d2f77447a3"
+    },
+    {
+      "path": "apps/bdptest/src/transactional-matrix.test.ts",
+      "start": 212,
+      "end": 225,
+      "wholeFileSha256": "4c8e246f881c93178741bf4c263d615ddff8ec544dbd8aeb3141cf336c4444f9",
+      "excerptSha256": "9f3e76a51999aa96934352788883c7226c6af0a24efb110122c7d2df977eb873"
+    },
+    {
+      "path": "apps/bdptest/src/transactional-matrix.test.ts",
+      "start": 254,
+      "end": 266,
+      "wholeFileSha256": "4c8e246f881c93178741bf4c263d615ddff8ec544dbd8aeb3141cf336c4444f9",
+      "excerptSha256": "c3008d51ad37b429fc291befdfe0bd79adaa6afe1d865472d8c4f05f24db632f"
+    },
+    {
+      "path": "apps/bdptest/src/transactional-matrix.test.ts",
+      "start": 282,
+      "end": 292,
+      "wholeFileSha256": "4c8e246f881c93178741bf4c263d615ddff8ec544dbd8aeb3141cf336c4444f9",
+      "excerptSha256": "fb63216eebe6597af6c4cbe8024815008a252568c97034c00a10e8f9d08debb8"
+    },
+    {
+      "path": "packages/conformance/src/runner.ts",
+      "start": 367,
+      "end": 379,
+      "wholeFileSha256": "ac20c7fbfe15a5e42a6559e89cd3467562efe9bc74d462478414414ed3efede1",
+      "excerptSha256": "bcff03597e16670c2e3a109ccfe39666b17878f043802de9232e2a81e034c359"
+    },
+    {
+      "path": "packages/conformance/src/runner.ts",
+      "start": 403,
+      "end": 420,
+      "wholeFileSha256": "ac20c7fbfe15a5e42a6559e89cd3467562efe9bc74d462478414414ed3efede1",
+      "excerptSha256": "00e67954b2e2d5c9cb8143bc4aea224cf3c78d167b08238f1fc141a9f30bf9e9"
+    },
+    {
+      "path": "packages/conformance/src/runner.ts",
+      "start": 2762,
+      "end": 2771,
+      "wholeFileSha256": "ac20c7fbfe15a5e42a6559e89cd3467562efe9bc74d462478414414ed3efede1",
+      "excerptSha256": "0034994e0dd721390a8996deba7f6aa36c10a066eb529d2829177a7ec5c6cdb8"
+    },
+    {
+      "path": "packages/conformance/src/runner.ts",
+      "start": 1580,
+      "end": 1598,
+      "wholeFileSha256": "ac20c7fbfe15a5e42a6559e89cd3467562efe9bc74d462478414414ed3efede1",
+      "excerptSha256": "8cea6c9e85d29aceee41290bdd507a14c7ec5fd3860f73d59b58a36c0d546e4d"
+    },
+    {
+      "path": "packages/conformance/src/http-executor.ts",
+      "start": 530,
+      "end": 544,
+      "wholeFileSha256": "faf4b4622db4a9105ac49f38f0c8eef116866d1306f8dbae83176e3e6e06c285",
+      "excerptSha256": "c78a07fdeeb086a8317827eb4a7c9fac76e0a0f4efff070f99df2703b01e30b1"
+    }
+  ],
+  "nativeReviewSha256": "85b10c9dfe4dce73ed56d02bc7484c3686c2c8d458d382b33e9c9833e6196662",
+  "nativeClosureSha256": "5a42b500365b7c21f175165950c5abb34a93597fd4c3e132a24bc668b6c11f87",
+  "v3CorrectionSha256": "09e7c2144abecf10f61a0ba7d4fd49e0998a9f84cdc0c13aae541f10d79c765c",
+  "proposedArgv": [
+    "/opt/homebrew/bin/claude",
+    "--safe-mode",
+    "-p",
+    "--tools",
+    "",
+    "--no-session-persistence"
+  ],
+  "timeoutSeconds": 600,
+  "noModelOverride": true
+}

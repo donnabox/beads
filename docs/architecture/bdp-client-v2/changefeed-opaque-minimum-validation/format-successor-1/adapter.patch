@@ -1,0 +1,413 @@
+--- /Users/dbox/repos/wt/vickie/bdp-integration-logs/changefeed-opaque-minimum-validation/implementation/gate.py
++++ /Users/dbox/repos/wt/vickie/bdp-integration-logs/changefeed-opaque-minimum-validation/format-successor-1/gate.py
+@@ -53,11 +53,33 @@
+     q=p.resolve(strict=True);require(q.is_relative_to(C.resolve()),'Consumer link escapes');links[r]={'link':os.readlink(p),'target':q.relative_to(C.resolve()).as_posix()}
+    elif p.is_file():files[r]=sha(p.read_bytes())
+  return {'files':files,'links':links}
++def bootstrap_origins(g):
++ m=read(P/'bootstrap-origins.json');old=document(m['predecessorSource']);new=document(m['successorSource'])
++ require(m['successorSource']==g['sourceBinding'] and new==g['_sourceBinding'],'Bootstrap successor differs')
++ require(old['worktree']==new['worktree']==str(W) and old['head']==new['head'] and old['tree']==new['tree'] and old['branch']==new['branch'],'Bootstrap checkout identity differs')
++ oldsid=sha(json.dumps(old['trackedSourceFiles'],sort_keys=True).encode());newsid=sha(json.dumps(new['trackedSourceFiles'],sort_keys=True).encode())
++ require(oldsid==m['predecessorSourceIdentity'] and newsid==m['successorSourceIdentity']==g['_sourceIdentity'],'Bootstrap source identities differ')
++ changed={p:{'before':h,'after':new['trackedSourceFiles'][p]} for p,h in old['trackedSourceFiles'].items() if new['trackedSourceFiles'][p]!=h}
++ require(set(old['trackedSourceFiles'])==set(new['trackedSourceFiles']) and changed==m['allowedSourceChanges'] and len(changed)==2 and set(changed)=={'packages/server/src/transaction-changefeed.test.ts','apps/bdptest/src/transactional-changefeed-refusal-context-installed.test.ts'},'Nonformat source successor')
++ require(len(new['trackedSourceFiles'])-len(changed)==m['unchangedOtherSourceFiles']==677,'Other source mapping differs')
++ require(all(old['trackedSourceFiles'][p]==new['trackedSourceFiles'][p]==h for p,h in m['dependencyInputs'].items()),'Dependency input changed')
++ require(set(m['origins'])=={'workspace-install','bind-workspace-tools'},'Bootstrap origin scope broadened')
++ for stage,records in m['origins'].items():
++  require(set(records)=={'started.json','exit.json','log','processes.jsonl'},'Incomplete bootstrap provenance')
++  for kind,r in records.items():require(sha(Path(r['path']).read_bytes())==r['sha256'],'Bootstrap record changed '+stage+'/'+kind)
++  started=read(Path(records['started.json']['path']));require(started['sourceIdentity']==oldsid,'Bootstrap start source differs')
++ tb=document(m['workspaceTools']);require(tb['sourceIdentity']==oldsid and tb['head']==old['head'] and tb['sourceLockSha256']==m['dependencyInputs']['pnpm-lock.yaml'],'Bootstrap tool attribution differs')
++ tools_check(tb['tools']);require(len(tb['tools'])==m['toolCount'],'Tool count differs')
++ require(tb['installExitSha256']==m['origins']['workspace-install']['exit.json']['sha256'] and tb['installLogSha256']==m['origins']['workspace-install']['log']['sha256'],'Tool install provenance differs')
++ return m
+ def complete(name,g):
+- v=read(E/(name+'.exit.json'))
++ reused=name in ['workspace-install','bind-workspace-tools']
++ if reused:
++  m=bootstrap_origins(g);r=m['origins'][name];v=read(Path(r['exit.json']['path']));expected=m['predecessorSourceIdentity'];log=Path(r['log']['path'])
++ else:v=read(E/(name+'.exit.json'));expected=g['_sourceIdentity'];log=E/(name+'.log')
+  require(v['accepted'] and v['exit']==0 and not v['forcedCleanup'] and not v['errors'] and not v['remainingProcesses'] and not v['runtimeDirectoriesStillPresent'],'Prior stage failed '+name)
+- require(v['sourceIdentity']==g['_sourceIdentity'] and v['sourceUnchanged'],'Prior source differs '+name)
+- require(sha((E/(name+'.log')).read_bytes())==v['logSha256'],'Prior log changed '+name)
++ require(v['sourceIdentity']==expected and v['sourceUnchanged'],'Prior source differs '+name)
++ require(sha(log.read_bytes())==v['logSha256'],'Prior log changed '+name)
+  return v
+ def verify_build(g):
+  b=read(E/'build-artifacts.json');complete('fresh-build',g)
+@@ -76,6 +98,7 @@
+  return proof
+ def load_gate(name,child=False):
+  require(__debug__,'Assertions required')
++ require(name not in ['workspace-install','bind-workspace-tools'],'Bootstrap already ran on predecessor; no reinstall or fabricated new records')
+  g=read(P/'execution-gate.json')
+  require(read(P/'commands.json').get('configurationFinalized') is True,'Authored Changefeed opaque source/selection not finalized')
+  require(read(P/'audit-expectations.json').get('finalized') is True,'Actual Changefeed opaque observation contracts not finalized')
+@@ -102,8 +125,9 @@
+   if name=='workspace-install':require(not (W/'node_modules').exists(),'Workspace install already exists; preserve it and rebind explicitly')
+  else:
+   tb=document(g['workspaceTools']);tools_check(tb['tools'])
+-  require(tb['sourceIdentity']==g['_sourceIdentity'] and tb['sourceLockSha256']==g['sourceLockSha256'] and tb['head']==g['finalHead'],'Installed tools source differs')
+-  require(tb['installExitSha256']==sha((E/'workspace-install.exit.json').read_bytes()) and tb['installLogSha256']==sha((E/'workspace-install.log').read_bytes()),'Install evidence changed')
++  m=bootstrap_origins(g)
++  require(g['workspaceTools']==m['workspaceTools'] and tb['sourceIdentity']==m['predecessorSourceIdentity'] and tb['sourceLockSha256']==g['sourceLockSha256'] and tb['head']==g['finalHead'],'Installed predecessor tools differ')
++  require(tb['installExitSha256']==m['origins']['workspace-install']['exit.json']['sha256'] and tb['installLogSha256']==m['origins']['workspace-install']['log']['sha256'],'Install evidence changed')
+   require((g['actualClaudeReviewDisposed'] is True and g['nativeCodeReviewDisposed'] is True) or (name in ['typecheck','format-check','lint'] and g['staticValidationAuthorized'] is True),'Code review disposition pending; only explicit static prefix may run')
+   require(disposition['staticValidationAuthorized'] is True if name in ['typecheck','format-check','lint'] else disposition['runtimeValidationAuthorized'] is True,'Root disposition does not authorize this stage')
+  for prior in order[:order.index(name)]:complete(prior,g)
+--- /Users/dbox/repos/wt/vickie/bdp-integration-logs/changefeed-opaque-minimum-validation/implementation/commands.json
++++ /Users/dbox/repos/wt/vickie/bdp-integration-logs/changefeed-opaque-minimum-validation/format-successor-1/commands.json
+@@ -1,6 +1,6 @@
+ {
+   "configurationFinalized": true,
+-  "state": "Concrete frozen changefeed adapters; execution CLOSED",
++  "state": "Formatting successor concrete inputs; execution CLOSED",
+   "finalOrder": [
+     "workspace-install",
+     "bind-workspace-tools",
+@@ -43,10 +43,10 @@
+       "termAfterSeconds": 115
+     },
+     "bind-workspace-tools": {
+-      "cwd": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/changefeed-opaque-minimum-validation/implementation",
+-      "argv": [
+-        "/opt/homebrew/opt/python@3.14/bin/python3.14",
+-        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/changefeed-opaque-minimum-validation/implementation/audit.py",
++      "cwd": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/changefeed-opaque-minimum-validation/format-successor-1",
++      "argv": [
++        "/opt/homebrew/opt/python@3.14/bin/python3.14",
++        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/changefeed-opaque-minimum-validation/format-successor-1/audit.py",
+         "tools"
+       ],
+       "outerSeconds": 120,
+@@ -127,10 +127,10 @@
+       "termAfterSeconds": 115
+     },
+     "bind-fresh-build": {
+-      "cwd": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/changefeed-opaque-minimum-validation/implementation",
+-      "argv": [
+-        "/opt/homebrew/opt/python@3.14/bin/python3.14",
+-        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/changefeed-opaque-minimum-validation/implementation/audit.py",
++      "cwd": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/changefeed-opaque-minimum-validation/format-successor-1",
++      "argv": [
++        "/opt/homebrew/opt/python@3.14/bin/python3.14",
++        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/changefeed-opaque-minimum-validation/format-successor-1/audit.py",
+         "build"
+       ],
+       "outerSeconds": 120,
+@@ -150,7 +150,7 @@
+         "--maxWorkers=1",
+         "--reporter=verbose",
+         "--reporter=json",
+-        "--outputFile.json=/Users/dbox/repos/wt/vickie/bdp-integration-logs/changefeed-opaque-minimum-validation/implementation/run/focused-source.results.json",
++        "--outputFile.json=/Users/dbox/repos/wt/vickie/bdp-integration-logs/changefeed-opaque-minimum-validation/format-successor-1/run/focused-source.results.json",
+         "--testNamePattern",
+         "^(keeps\\ genesis\\ checkpoint\\ distinct\\ from\\ zero\\ position\\ and\\ resumes\\ after\\ an\\ empty\\ caught\\-up\\ page|uses\\ bounded\\ context\\-fenced\\ checkpoints,\\ never\\ Event\\ IDs/raw\\ positions/future\\ rows|does\\ not\\ classify\\ a\\ missing\\ previously\\ committed\\ cursor\\ row\\ as\\ never\\ issued\\ or\\ skip\\ its\\ gap|captures\\ feed\\ body\\ and\\ serving\\ context\\ inside\\ one\\ fenced\\ owner\\ entry|keeps\\ start=now's\\ original\\ admission\\ anchor\\ through\\ a\\ minimum\\ wait\\ and\\ drains\\ on\\ close|serves\\ actual\\ HTTP\\ finite\\ GET/HEAD,\\ absolute\\ navigation,\\ native\\ conditions\\ and\\ restart|decides\\ actual\\ HTTP\\ minimum\\ refusal\\ before\\ conditional\\ shortcuts\\ with\\ final\\ context|preserves\\ current\\ context\\ on\\ owner\\-observed\\ changefeed\\ parameter\\ refusals\\ over\\ HTTP|waits\\ for\\ fresh\\ finite\\ changefeed\\ opaque\\ minimum\\ without\\ recapturing\\ admission:\\ unknown|waits\\ for\\ fresh\\ finite\\ changefeed\\ opaque\\ minimum\\ without\\ recapturing\\ admission:\\ pos\\-01|aborts\\ fresh\\ finite\\ changefeed\\ opaque\\ waiting\\ before\\ close\\ drains|preserves\\ fresh\\ finite\\ changefeed\\ admission\\ before\\ wait\\ preflight:\\ already\\-aborted|preserves\\ fresh\\ finite\\ changefeed\\ admission\\ before\\ wait\\ preflight:\\ invalid\\-policy|preserves\\ fresh\\ finite\\ changefeed\\ admission\\ before\\ wait\\ preflight:\\ throwing\\-clock|preserves\\ fresh\\ finite\\ changefeed\\ admission\\ before\\ wait\\ preflight:\\ nonfinite\\-clock|keeps\\ direct\\ and\\ excluded\\ changefeed\\ minimum\\ paths\\ strict|serves\\ finite\\ start\\-now\\ opaque\\ minima\\ before\\ HTTP\\ shortcuts)$"
+       ],
+@@ -191,10 +191,10 @@
+       "termAfterSeconds": 115
+     },
+     "review-focused-source": {
+-      "cwd": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/changefeed-opaque-minimum-validation/implementation",
+-      "argv": [
+-        "/opt/homebrew/opt/python@3.14/bin/python3.14",
+-        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/changefeed-opaque-minimum-validation/implementation/audit.py",
++      "cwd": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/changefeed-opaque-minimum-validation/format-successor-1",
++      "argv": [
++        "/opt/homebrew/opt/python@3.14/bin/python3.14",
++        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/changefeed-opaque-minimum-validation/format-successor-1/audit.py",
+         "source"
+       ],
+       "outerSeconds": 120,
+@@ -218,10 +218,10 @@
+       "termAfterSeconds": 115
+     },
+     "prepare-package-directory": {
+-      "cwd": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/changefeed-opaque-minimum-validation/implementation",
+-      "argv": [
+-        "/opt/homebrew/opt/python@3.14/bin/python3.14",
+-        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/changefeed-opaque-minimum-validation/implementation/packages.py",
++      "cwd": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/changefeed-opaque-minimum-validation/format-successor-1",
++      "argv": [
++        "/opt/homebrew/opt/python@3.14/bin/python3.14",
++        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/changefeed-opaque-minimum-validation/format-successor-1/packages.py",
+         "directory"
+       ],
+       "outerSeconds": 120,
+@@ -240,7 +240,7 @@
+         "@bdp/protocol",
+         "pack",
+         "--pack-destination",
+-        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/changefeed-opaque-minimum-validation/implementation/run/packages"
++        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/changefeed-opaque-minimum-validation/format-successor-1/run/packages"
+       ],
+       "outerSeconds": 120,
+       "automaticRetries": 0,
+@@ -258,7 +258,7 @@
+         "@bdp/server",
+         "pack",
+         "--pack-destination",
+-        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/changefeed-opaque-minimum-validation/implementation/run/packages"
++        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/changefeed-opaque-minimum-validation/format-successor-1/run/packages"
+       ],
+       "outerSeconds": 120,
+       "automaticRetries": 0,
+@@ -268,10 +268,10 @@
+       "termAfterSeconds": 115
+     },
+     "verify-archives": {
+-      "cwd": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/changefeed-opaque-minimum-validation/implementation",
+-      "argv": [
+-        "/opt/homebrew/opt/python@3.14/bin/python3.14",
+-        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/changefeed-opaque-minimum-validation/implementation/packages.py",
++      "cwd": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/changefeed-opaque-minimum-validation/format-successor-1",
++      "argv": [
++        "/opt/homebrew/opt/python@3.14/bin/python3.14",
++        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/changefeed-opaque-minimum-validation/format-successor-1/packages.py",
+         "tar"
+       ],
+       "outerSeconds": 120,
+@@ -282,10 +282,10 @@
+       "termAfterSeconds": 115
+     },
+     "prepare-consumer": {
+-      "cwd": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/changefeed-opaque-minimum-validation/implementation",
+-      "argv": [
+-        "/opt/homebrew/opt/python@3.14/bin/python3.14",
+-        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/changefeed-opaque-minimum-validation/implementation/packages.py",
++      "cwd": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/changefeed-opaque-minimum-validation/format-successor-1",
++      "argv": [
++        "/opt/homebrew/opt/python@3.14/bin/python3.14",
++        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/changefeed-opaque-minimum-validation/format-successor-1/packages.py",
+         "consumer"
+       ],
+       "outerSeconds": 120,
+@@ -296,7 +296,7 @@
+       "termAfterSeconds": 115
+     },
+     "consumer-install": {
+-      "cwd": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/changefeed-opaque-minimum-validation/implementation/run/consumer",
++      "cwd": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/changefeed-opaque-minimum-validation/format-successor-1/run/consumer",
+       "argv": [
+         "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+         "/Users/dbox/.cache/node/corepack/v1/pnpm/11.20.0/bin/pnpm.cjs",
+@@ -314,10 +314,10 @@
+       "termAfterSeconds": 115
+     },
+     "verify-installed-consumer": {
+-      "cwd": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/changefeed-opaque-minimum-validation/implementation",
+-      "argv": [
+-        "/opt/homebrew/opt/python@3.14/bin/python3.14",
+-        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/changefeed-opaque-minimum-validation/implementation/packages.py",
++      "cwd": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/changefeed-opaque-minimum-validation/format-successor-1",
++      "argv": [
++        "/opt/homebrew/opt/python@3.14/bin/python3.14",
++        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/changefeed-opaque-minimum-validation/format-successor-1/packages.py",
+         "installed"
+       ],
+       "outerSeconds": 120,
+@@ -337,7 +337,7 @@
+         "--maxWorkers=1",
+         "--reporter=verbose",
+         "--reporter=json",
+-        "--outputFile.json=/Users/dbox/repos/wt/vickie/bdp-integration-logs/changefeed-opaque-minimum-validation/implementation/run/changefeed-history-external.results.json",
++        "--outputFile.json=/Users/dbox/repos/wt/vickie/bdp-integration-logs/changefeed-opaque-minimum-validation/format-successor-1/run/changefeed-history-external.results.json",
+         "--testNamePattern",
+         "^(observes\\ genuine\\ installed\\ current\\ context\\ on\\ changefeed\\ parameter\\ refusals)$"
+       ],
+@@ -361,16 +361,16 @@
+       "expectedExchanges": 10,
+       "expectedChildren": 1,
+       "env": {
+-        "BDP_TRANSACTIONAL_INSTALLED_ENTRY": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/changefeed-opaque-minimum-validation/implementation/run/consumer/node_modules/@bdp/server/dist/transaction-installed-process.js",
++        "BDP_TRANSACTIONAL_INSTALLED_ENTRY": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/changefeed-opaque-minimum-validation/format-successor-1/run/consumer/node_modules/@bdp/server/dist/transaction-installed-process.js",
+         "BDP_TRANSACTIONAL_SOURCE_COMMIT": "5ceb213b632e17f28714684efc5e35a62b282bf6"
+       },
+       "termAfterSeconds": 115
+     },
+     "review-changefeed-history-external": {
+-      "cwd": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/changefeed-opaque-minimum-validation/implementation",
+-      "argv": [
+-        "/opt/homebrew/opt/python@3.14/bin/python3.14",
+-        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/changefeed-opaque-minimum-validation/implementation/audit.py",
++      "cwd": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/changefeed-opaque-minimum-validation/format-successor-1",
++      "argv": [
++        "/opt/homebrew/opt/python@3.14/bin/python3.14",
++        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/changefeed-opaque-minimum-validation/format-successor-1/audit.py",
+         "history"
+       ],
+       "outerSeconds": 120,
+@@ -390,7 +390,7 @@
+         "--maxWorkers=1",
+         "--reporter=verbose",
+         "--reporter=json",
+-        "--outputFile.json=/Users/dbox/repos/wt/vickie/bdp-integration-logs/changefeed-opaque-minimum-validation/implementation/run/changefeed-opaque-external.results.json",
++        "--outputFile.json=/Users/dbox/repos/wt/vickie/bdp-integration-logs/changefeed-opaque-minimum-validation/format-successor-1/run/changefeed-opaque-external.results.json",
+         "--testNamePattern",
+         "^(observes\\ genuine\\ installed\\ finite\\ start\\-now\\ opaque\\ minimum\\ refusal)$"
+       ],
+@@ -414,16 +414,16 @@
+       "expectedExchanges": 4,
+       "expectedChildren": 1,
+       "env": {
+-        "BDP_TRANSACTIONAL_INSTALLED_ENTRY": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/changefeed-opaque-minimum-validation/implementation/run/consumer/node_modules/@bdp/server/dist/transaction-installed-process.js",
++        "BDP_TRANSACTIONAL_INSTALLED_ENTRY": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/changefeed-opaque-minimum-validation/format-successor-1/run/consumer/node_modules/@bdp/server/dist/transaction-installed-process.js",
+         "BDP_TRANSACTIONAL_SOURCE_COMMIT": "5ceb213b632e17f28714684efc5e35a62b282bf6"
+       },
+       "termAfterSeconds": 115
+     },
+     "review-changefeed-opaque-external": {
+-      "cwd": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/changefeed-opaque-minimum-validation/implementation",
+-      "argv": [
+-        "/opt/homebrew/opt/python@3.14/bin/python3.14",
+-        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/changefeed-opaque-minimum-validation/implementation/audit.py",
++      "cwd": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/changefeed-opaque-minimum-validation/format-successor-1",
++      "argv": [
++        "/opt/homebrew/opt/python@3.14/bin/python3.14",
++        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/changefeed-opaque-minimum-validation/format-successor-1/audit.py",
+         "changefeed"
+       ],
+       "outerSeconds": 120,
+@@ -445,16 +445,17 @@
+     "require-from-string": "2.0.2"
+   },
+   "pending": [
+-    "Actual Claude CODE disposition/root acceptance",
+-    "Native/root adapter review and staged releases",
+-    "Actual workspace tools/build/archive/consumer records",
+-    "Root measured consumer lock and installed provenance acceptance"
++    "Root/native formatting successor closure and staged release",
++    "Fresh static/build/source/package/installed outcomes",
++    "Root actual consumer lock and provenance acceptance"
+   ],
+-  "freshBootstrapStages": 2,
++  "freshBootstrapStages": 0,
+   "postBootstrapStages": 19,
+   "totalStages": 21,
+-  "reusedEvidence": [],
+-  "sourceBindingSha256": "4807cc637a06a320b9128d8401a03f35764dbfb5c9457b204a751f1d10a326d5",
++  "reusedEvidence": [
++    "Only original workspace-install and bind-workspace-tools; predecessor source attribution retained"
++  ],
++  "sourceBindingSha256": "71a70bf7150f43fbcc4b0a29ea7647eb5c17347132e59bc710d6833312790d3b",
+   "helperImplementationFinalized": true,
+   "runtimeTempPolicy": {
+     "root": "/private/tmp",
+@@ -487,5 +488,7 @@
+       ]
+     ],
+     "policy": "Retain normal required checks/hooks and exact-head CI. Do not fabricate local pass or evidence, regenerate historical evidence, or add an arbitrary full local suite. Stage/supervisor scope for these normal checks must be fixed before release if root runs locally. Evidence nonzero remains explicit no-claim/failure, never silently accepted as qualification."
+-  }
++  },
++  "reusedBootstrapPrerequisites": 2,
++  "freshStages": 19
+ }
+--- /Users/dbox/repos/wt/vickie/bdp-integration-logs/changefeed-opaque-minimum-validation/implementation/source-binding.json
++++ /Users/dbox/repos/wt/vickie/bdp-integration-logs/changefeed-opaque-minimum-validation/format-successor-1/source-binding.json
+@@ -51,7 +51,7 @@
+     "apps/bdptest/src/server-composition.ts": "ddd8efd9faf89a607fc767a961b476e6e8067130165f65d267822866ae28148a",
+     "apps/bdptest/src/transactional-alias-installed.test.ts": "8595e2578cb4e98ec20699d8c1c7a36598eba69c5208079cd4c23efaad667ff3",
+     "apps/bdptest/src/transactional-binding.test.ts": "957212ef227905f2b8b9ae3403fab9d6d0659ed308395696aef1baad112815d8",
+-    "apps/bdptest/src/transactional-changefeed-refusal-context-installed.test.ts": "6560198780d3d5e8f90b54ed2d012d403d7482c3b6c6a771e16958faf871d3fd",
++    "apps/bdptest/src/transactional-changefeed-refusal-context-installed.test.ts": "7beb2ef803aa2bf7befb21bc5bb427d7a40d18428ee69d1425140fa33de5153b",
+     "apps/bdptest/src/transactional-collection-minimum-installed.test.ts": "bc9d19959df0249b5b7c195c2f24a2cde4462db56de3e0b816c7fdf01f5ab048",
+     "apps/bdptest/src/transactional-depth-key-order-installed.test.ts": "f4e19ef9b7aba1a12f3376540257b9680e27dcd00936048b066eb7667ebe19fe",
+     "apps/bdptest/src/transactional-direct-refusal-installed.test.ts": "c817729792a8bd97473b4b7ebe06474d4a0c27bcd5122e58268b997aa03408b0",
+@@ -427,7 +427,7 @@
+     "packages/server/src/transaction-authorization.test.ts": "4e2a4fb500e546e3a3d8d671125c37653a4df5bb46bae679f80123cc8c680760",
+     "packages/server/src/transaction-authorization.ts": "c87a7bfa8840aee2f097bf683fe3f3c97fcae80782020c6d5b1e41364d16b6d2",
+     "packages/server/src/transaction-batch.ts": "830ad57a680db7148fc75cd9cc10cadfc6a812448fd1704c1b0f47b13611808d",
+-    "packages/server/src/transaction-changefeed.test.ts": "3413c3280cd93a0f9cc8b40072f9678182e42d7cd0f793114f0a4dcc8e9b8158",
++    "packages/server/src/transaction-changefeed.test.ts": "29f99ffba99c96c2d770ede016fe64af762eea9a3eb9ddaf9de6165bffe5e1bf",
+     "packages/server/src/transaction-changefeed.ts": "1e678ecb1b2c3e59023dbb6a2e6516763907babd79f7926ca572a4764e40fc1e",
+     "packages/server/src/transaction-comparison.ts": "3c5f9025675f506e08a9977ab0d1551a3a996669fd11b99772b1c2a39209998d",
+     "packages/server/src/transaction-consistency.test.ts": "904d1f74ff06237da41c45f3dc1d4727a1387dc760950860ef548db51e7f02c4",
+@@ -707,26 +707,31 @@
+     },
+     "packages/server/src/transaction-changefeed.test.ts": {
+       "beforeSha256": "ae4b6a0d4ae6e4e74e032074c850e5ced2de14d565078c2de88e2e62fa5e9c81",
+-      "afterSha256": "3413c3280cd93a0f9cc8b40072f9678182e42d7cd0f793114f0a4dcc8e9b8158"
++      "afterSha256": "29f99ffba99c96c2d770ede016fe64af762eea9a3eb9ddaf9de6165bffe5e1bf"
+     },
+     "apps/bdptest/src/transactional-changefeed-refusal-context-installed.test.ts": {
+       "beforeSha256": "c8ec6da3cab3850d69b2b8b8b650b17f159fa9179930eeecd3a287716aa946af",
+-      "afterSha256": "6560198780d3d5e8f90b54ed2d012d403d7482c3b6c6a771e16958faf871d3fd"
++      "afterSha256": "7beb2ef803aa2bf7befb21bc5bb427d7a40d18428ee69d1425140fa33de5153b"
+     },
+     "docs/design/transaction-implementation-progress.md": {
+       "beforeSha256": "72a53d3fd078f5d35931cf99a1661d1f5c623d1b553f2befca7404f52c1a1e0b",
+       "afterSha256": "c12343963d0f3b3500f67c66fe55279111b3441f2ee33d2ee25ba4842c4522e6"
+     }
+   },
+-  "binaryDiffSha256": "b28eb22df8a6224e31c34a3a4cce396ff4c0793ebaa16bfc3d33165efb576513",
++  "binaryDiffSha256": "4c5fec0f8c51ec9458d3932420204665fb5cd7d6d1f8cc6c48f418e0bf2ea6d8",
+   "authorBinding": {
+-    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/changefeed-opaque-minimum-author/source-binding.json",
+-    "sha256": "eafb75e3407a8b6cd4b412716582b100a73adca699729d01cf637afb07b7719c"
++    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/changefeed-opaque-minimum-author/format-successor-1/source-binding.json",
++    "sha256": "81dae4f20a2ae1e28de821e2062a75edc2f770468a6e37d72e828f5a79ecef18"
+   },
+-  "authorSourceIdentity": "ca2e43c4ead8779d4689fda6085800aa3ee4c94799a335303046e5ea90e63b8c",
++  "authorSourceIdentity": "0ef6ff39932db9497b3305013b90d14c9964b00818c8a25a57de33965bc590b4",
+   "attribution": "base commit does not contain the six-file draft; reviewed dirty source separately hashed",
+   "preservation": {
+     "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/changefeed-opaque-minimum-author/preservation.json",
+     "sha256": "268b8e9c2d600798a3944caa205cfdfea36f316ef7492bf2517310b106f664f2"
+-  }
++  },
++  "predecessorBinding": {
++    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/changefeed-opaque-minimum-validation/implementation/source-binding.json",
++    "sha256": "4807cc637a06a320b9128d8401a03f35764dbfb5c9457b204a751f1d10a326d5"
++  },
++  "formatSuccessor": "Five exact logged layout edits in two tests;677 other files unchanged; no successor validation yet"
+ }
+--- /Users/dbox/repos/wt/vickie/bdp-integration-logs/changefeed-opaque-minimum-validation/implementation/root-disposition.pending.json
++++ /Users/dbox/repos/wt/vickie/bdp-integration-logs/changefeed-opaque-minimum-validation/format-successor-1/root-disposition.pending.json
+@@ -1,8 +1,8 @@
+ {
+   "accepted": false,
+-  "sourceBindingSha256": "4807cc637a06a320b9128d8401a03f35764dbfb5c9457b204a751f1d10a326d5",
++  "sourceBindingSha256": "71a70bf7150f43fbcc4b0a29ea7647eb5c17347132e59bc710d6833312790d3b",
+   "dependencyInstallAuthorized": false,
+   "staticValidationAuthorized": false,
+   "runtimeValidationAuthorized": false,
+-  "reason": "Preparation only; root releases and actual code review disposition pending."
++  "reason": "Formatting successor not released; native/root closure and fresh validation required"
+ }
+--- /Users/dbox/repos/wt/vickie/bdp-integration-logs/changefeed-opaque-minimum-validation/implementation/reference-pins.json
++++ /Users/dbox/repos/wt/vickie/bdp-integration-logs/changefeed-opaque-minimum-validation/format-successor-1/reference-pins.json
+@@ -27,5 +27,31 @@
+   "/Users/dbox/repos/wt/vickie/bdp-integration-logs/alias-opaque-minimum-validation/implementation/base-tools.json": "82d52d2d6dce29cfc94d281b463e56818f960aaa7337b73e2384fe23c47c977a",
+   "/Users/dbox/repos/wt/vickie/bdp-integration-logs/alias-opaque-minimum-validation/implementation/source-binding.json": "8daf7e06b56e198c27f1eae3ec229135db11acac5403b449315209f9613baaa1",
+   "/Users/dbox/repos/wt/vickie/bdp-integration-logs/alias-opaque-minimum-validation/implementation/expected-artifacts.json": "54bc34978ab5536be89db2abf4bd091266865746bd115212878557877f094b06",
+-  "/Users/dbox/repos/wt/vickie/bdp-integration-logs/alias-opaque-minimum-validation/implementation/execution-gate.closed.json": "34f100b95106fac1d30695724c3b53cbf5ad41abbd1d5f74aaba693eb14086fe"
++  "/Users/dbox/repos/wt/vickie/bdp-integration-logs/alias-opaque-minimum-validation/implementation/execution-gate.closed.json": "34f100b95106fac1d30695724c3b53cbf5ad41abbd1d5f74aaba693eb14086fe",
++  "/Users/dbox/repos/wt/vickie/bdp-integration-logs/changefeed-opaque-minimum-validation/implementation/preparation-index.json": "af4278724c9bc3c61103c1c87e6622202c099118103d9c8ff51190e810931f07",
++  "/Users/dbox/repos/wt/vickie/bdp-integration-logs/changefeed-opaque-minimum-validation/implementation/implementation-hashes.json": "dc04aead48e78a48da1c116077f6b710b07b67fb5998785f174f66e1622f3a7b",
++  "/Users/dbox/repos/wt/vickie/bdp-integration-logs/changefeed-opaque-minimum-validation/implementation/source-binding.json": "4807cc637a06a320b9128d8401a03f35764dbfb5c9457b204a751f1d10a326d5",
++  "/Users/dbox/repos/wt/vickie/bdp-integration-logs/changefeed-opaque-minimum-validation/implementation/run/workspace-tools.json": "9c63f40ec5410f1969c577b31ad664c268b4e9fcdf11eed6c6a03265bebadf76",
++  "/Users/dbox/repos/wt/vickie/bdp-integration-logs/changefeed-opaque-minimum-validation/implementation/run/typecheck.exit.json": "8d1e0439e9c20836358a040f852d6800545074a1ef1e70afe43024d6331755b1",
++  "/Users/dbox/repos/wt/vickie/bdp-integration-logs/changefeed-opaque-minimum-validation/implementation/run/format-check.exit.json": "ba8fc2157dfd7a1cec5026fe2797a38ae641607d4e3a4332da8e3366844ea728",
++  "/Users/dbox/repos/wt/vickie/bdp-integration-logs/changefeed-opaque-minimum-validation/implementation/run/format-check.log": "6e91d643394def4f66985098d8d9318afdf69fe86bd6b97f69777d6b4fb13f2a",
++  "/Users/dbox/repos/wt/vickie/bdp-integration-logs/changefeed-opaque-minimum-author/format-successor-1/author-index.json": "d8e11d97d76ac0739514221b5d58639987678d6c20eb544c29d207b562c3816f",
++  "/Users/dbox/repos/wt/vickie/bdp-integration-logs/changefeed-opaque-minimum-author/format-successor-1/source-binding.json": "81dae4f20a2ae1e28de821e2062a75edc2f770468a6e37d72e828f5a79ecef18",
++  "/Users/dbox/repos/wt/vickie/bdp-integration-logs/changefeed-opaque-minimum-author/format-successor-1/draft.patch": "4c5fec0f8c51ec9458d3932420204665fb5cd7d6d1f8cc6c48f418e0bf2ea6d8",
++  "/Users/dbox/repos/wt/vickie/bdp-integration-logs/changefeed-opaque-minimum-author/format-successor-1/correction.patch": "e05ba3c1e1f72666d9edc1ab717e9cc9516933a0f4e76eb1328d7e482c5af316",
++  "/Users/dbox/repos/wt/vickie/bdp-integration-logs/changefeed-opaque-minimum-author/format-successor-1/before-after.json": "c0c478e746b2357a2207a4d38dd966ccb47788fdf022f0e7136cc8e132bd8d80",
++  "/Users/dbox/repos/wt/vickie/bdp-integration-logs/changefeed-opaque-minimum-author/format-successor-1/report.md": "5b02dee6596719d785e9e4e2f09f59661cf987dea07c6d9db441f7b954ba141c",
++  "/Users/dbox/repos/wt/vickie/bdp-integration-logs/changefeed-opaque-minimum-author/format-successor-1/selection.json": "771ef9b603fc24c9552cbbd9c30dc006c848c91ec03fdd6099f7a2a0e44e5ecf",
++  "/Users/dbox/repos/wt/vickie/bdp-integration-logs/changefeed-opaque-minimum-author/format-successor-1/workload.json": "25bbecd528de2b8a25d076aa0eff3b4ad00094fb9205fd30ff4455ca30a8b445",
++  "/Users/dbox/repos/wt/vickie/bdp-integration-logs/changefeed-opaque-minimum-author/format-successor-1/preservation.json": "268b8e9c2d600798a3944caa205cfdfea36f316ef7492bf2517310b106f664f2",
++  "/Users/dbox/repos/wt/vickie/bdp-integration-logs/alias-opaque-minimum-validation/format-successor-1/gate.py": "f6bdb57799d1cd0927f14333bf1465769a39aaa8e4694c984e504de1a2aed07f",
++  "/Users/dbox/repos/wt/vickie/bdp-integration-logs/alias-opaque-minimum-validation/format-successor-1/bootstrap-origins.json": "85d80b8fc642a95956f482fc7971e4f806942385952ea2681daf1a2d7292487a",
++  "/Users/dbox/repos/wt/vickie/bdp-integration-logs/changefeed-opaque-minimum-validation/implementation/run/workspace-install.started.json": "95e1f2d08022bc87dee4fefd475d8bd4b3995bceae96439075c883666fb80571",
++  "/Users/dbox/repos/wt/vickie/bdp-integration-logs/changefeed-opaque-minimum-validation/implementation/run/workspace-install.exit.json": "f9e0062b243a706ede4ab7ed124d52d55e14a241df5964f4b124c5802d1fb42d",
++  "/Users/dbox/repos/wt/vickie/bdp-integration-logs/changefeed-opaque-minimum-validation/implementation/run/workspace-install.log": "dccc635676642c044945e02c473a57b7140b90cde11211ddc9a25a5a72d44996",
++  "/Users/dbox/repos/wt/vickie/bdp-integration-logs/changefeed-opaque-minimum-validation/implementation/run/workspace-install.processes.jsonl": "3a66ca286da48a595a06b2f754c56c6a13cabb73ba641065b1439615c4f693b3",
++  "/Users/dbox/repos/wt/vickie/bdp-integration-logs/changefeed-opaque-minimum-validation/implementation/run/bind-workspace-tools.started.json": "708db2024a3a923185d5a52f8d6139c0be55f2e47eca6863a9c7a1f1cdde875d",
++  "/Users/dbox/repos/wt/vickie/bdp-integration-logs/changefeed-opaque-minimum-validation/implementation/run/bind-workspace-tools.exit.json": "216bfe24647972d3666c41d4156431fac086056bd82b2b2b308478dd24674cf6",
++  "/Users/dbox/repos/wt/vickie/bdp-integration-logs/changefeed-opaque-minimum-validation/implementation/run/bind-workspace-tools.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
++  "/Users/dbox/repos/wt/vickie/bdp-integration-logs/changefeed-opaque-minimum-validation/implementation/run/bind-workspace-tools.processes.jsonl": "3fdbb4c3893560cf558f2664635d48678e2ce454242996ccc8532e37e07eb673"
+ }

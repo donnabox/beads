@@ -1,0 +1,13 @@
+--- proposal.before.json
++++ proposal.after.json
+@@ -1,7 +1,7 @@
+ {
+-  "schemaSelector": "GET/HEAD+authenticated+no minimum only; exact immutable retrieval map; observe() current; apply HTTP semantics",
+-  "schemaObserved": "zero-arg run(async owner.withRead(context)); no min or signal",
+-  "minimumErrorFormatter": "existing HTTP catch maps TransactionMinimumFailure nonbehind, context and retry; schema runtime outer catch otherwise500",
++  "schemaSelector": "GET/HEAD/auth first; malformed minimum delegates existing400 before entries.get; exact member only then lexical captured tuple; await observe(minimum, request.signal); map exact min failures before HTTP selection; preserve original raw UTF8 on200",
++  "schemaObserved": "optional supplied minimum+signal; snapshotCurrentReadMinimum; same zero-min branch; one read per attempt; checkCurrentReadMinimum(...,true) inside withRead; await only after entry released via existing waitForTransactionMinimum",
++  "minimumErrorFormatter": "extract current exact catch into module-internal transactionMinimumFailureResponse(error), ignore behind/nonmatching; original handler and schema projection reuse without package export",
+   "nonmember": "no-min404 absent owner context; complete minimum private gap; unchanged",
+   "retainedAndG2": "private gaps preserved"
+ }

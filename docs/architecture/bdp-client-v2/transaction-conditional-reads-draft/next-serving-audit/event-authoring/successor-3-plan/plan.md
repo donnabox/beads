@@ -1,0 +1,17 @@
+# Successor 3 plan — actual TS18048 only, CLOSED
+
+The preserved real typecheck log reports only TS18048 at transactional-event-sse-installed.test.ts1006: stream is possibly undefined inside the header-entry map callback. The command exited1; the supervisor recorded unchanged source and no cleanup failures/survivors. Earlier TS2412 diagnostics are absent. This is an observed compiler failure, not a new runtime failure. No retry or additional check ran after it.
+
+The outer stream variable is mutable and has an undefined union member. The streamAtReport ternary narrows it in its immediate branch, but TypeScript cannot preserve that mutable-variable narrowing into the map callback: callbacks could execute after a reassignment. The actual Array.map call is synchronous here, so no observed asynchronous race is being diagnosed. A stable local const permits the compiler to retain the branch narrowing across the closure without assertions or weaker reads.
+
+After root accepts this plan and releases authoring once the active review's inputs can change, make exactly this local correction in the new callback:
+
+1. Immediately before its existing console.log(JSON.stringify(...)) reporting call, after all current cleanup, ownership checks and directory-removal handling, declare `const reportedStream = stream;`.
+2. Within only that report's streamAtReport ternary, replace its condition and all seven stream member/reference uses with reportedStream: status, header map, wire length, wire hash, complete frames, drained and destroyed. Retain the property name streamAtReport, its undefined branch, header allowlist, as-const tuple, helper calls and field shapes exactly.
+3. Do not capture earlier in cleanup, clone or cache recorder values, move the reporting call, insert an await, add optional chaining/non-null assertions, change the surrounding stream variable or touch lifecycle code. This captures the reference at the same synchronous reporting boundary; the same recorder/stream object supplies every field. No scheduling or observation window changes.
+
+Only the owned test file's new callback may change. Preserve all module/historical code, seed, successful/failure oracles, fiveHTTP/twochildren, labels, fingerprint scope, sanitized failures and45/10/60/120 deadlines. No source or helper edits, formatting, tests, builds, services or imports occur in this planning task.
+
+After authorized authoring, freeze before/after source and exact correction/full diffs; independently verify one const plus eight report-local identifier substitutions (formatter wrapping only if necessary). A fresh real typecheck is still required; this plan is not a pass prediction or permission to rerun the failed packet.
+
+Keep event-validation-successor-2 and its failed typecheck artifacts unchanged, including the release metadata inconsistency already recorded. Once root accepts the corrected source, a separate closed validation successor may reuse the existing proven bootstrap/tools and adapt only source bindings/new packet paths; successful report shape is unchanged by this correction, so no observation oracle should need weakening. Bind the new actual hash and fresh root disposition/index, then let root separately release its ordered static prefix. Runtime/build stages remain gated on actual Claude supplement disposition. No duplicate dependency install or automatic retry. Helper preparation is deferred until root acceptance.

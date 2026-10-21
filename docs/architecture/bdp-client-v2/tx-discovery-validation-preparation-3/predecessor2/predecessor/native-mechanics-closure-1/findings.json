@@ -1,0 +1,40 @@
+{
+  "accepted": false,
+  "revisionsRequired": true,
+  "findings": [
+    {
+      "id": "N1",
+      "severity": "Medium",
+      "file": "audit.py",
+      "line": 74,
+      "endLine": 90,
+      "title": "Require actual source response records and complete raw grammar, not just declared counters",
+      "evidence": "The counters branch checks the fixed counter map at90 but loops over records only when present; it never checks the per-callback completed response census. In D3 source projection scope, records=[] with unchanged valid seven-direct counters is accepted. The raw branch84 checks only body/status/header/digests; fieldOccurrences is a required key but never passed to named_fields, so a string or malformed occurrence list passes. Baseline records have only loose nonnegative counts and no finite expected occurrence check.",
+      "impact": "A missing direct transcript or malformed raw field-occurrence schema can be published as accepted actual source evidence, despite the strict no-missing/extra/invalid-report release contract. The test result PASS and counter declaration do not replace checking retained evidence.",
+      "fix": "Add source-derived finite per-callback returned-record and baseline inventories/types to the existing schemas/audit; validate actual direct record method/URL/credential/status/header/body shape and raw named field occurrences. Preserve started-direct versus returned-response distinction: abort/close pending calls legitimately have no response, so do not blindly require records.length==direct for every callback. No product callback/count/budget change."
+    },
+    {
+      "id": "N2",
+      "severity": "Medium",
+      "file": "audit.py",
+      "line": 96,
+      "endLine": 110,
+      "title": "Retain the inherited changefeed evidence checks during adaptation",
+      "evidence": "The new legacy branch validates only top-level keys, general success flags and directory absence. It drops the proven template audit101\u2013138/186\u2013189 finite owner ordinal/outcome/context/cursor precedence, four capture label/immutable tuple/anchor, two drain label/closure order, four preflight and strict boundary/status checks. For example both current-changefeed-minimum-drain reports can name retained and carry order=[]/closeSettled:false while still passing this branch, provided their remaining top-level shape/cleanupState/outcome fields satisfy the generic checks.",
+      "impact": "Duplicate subcase labels and missing/contradictory original anchor/closure evidence pass an audit presented as preserving the full affected legacy suite/report semantics. Selecting all32 callbacks does not restore removed evidence validation.",
+      "fix": "Adapt the existing finite inherited source-report handlers from the copied proven audit, adjusting only the explicitly accepted D3 discovery supersessions and exact current source report census. Add precise checks for newly included historical reports using their actual source schema; preserve18 expected labels and all32 callbacks. Do not weaken values/order checks to shape-only success."
+    },
+    {
+      "id": "N3",
+      "severity": "Medium",
+      "file": "audit.py",
+      "line": 119,
+      "endLine": 153,
+      "title": "Validate installed Scope and nested record/binding schema",
+      "evidence": "D3 metadata.scope is required by keys() at119 but is never typed or compared to the actual fixture Scope. Replacing it with null/wrong Scope leaves all subsequent payload/digest predicates satisfied. Public-exact record id/method/url/credential keys at126 are untyped and unchecked, so null ID/URL/method or duplicated IDs pass; local raw IDs/URLs/credentials likewise. Legacy owner/schema binding validation142/153 checks only served.installedPayloadDigest, allowing malformed or wrong source/profile/history/Scope/fixture/configuration members, and schema context152 permits an empty map without row-specific presence rules.",
+      "impact": "Malformed or differently bound installed evidence can be accepted despite the packet advertising exact same-configuration/strict report grammar. A payload hash establishes package bytes and does not independently validate Scope, fixture or credential-role attribution.",
+      "fix": "Add source-derived closed typed nested schemas and exact known Scope/profile/History/source/fixture/configuration comparisons for each installed report family; check record IDs/order/uniqueness, method/URL/credential shapes and finite row-specific allowed context presence. Retain nullable/missing failure availability honestly and never invent a hash/status/field. Reuse existing binding/source fixtures and current report fields; no product, extra requests, callback or timeout change."
+    }
+  ],
+  "basis": "static read/AST/data review only; no helper execution/import or test replay"
+}

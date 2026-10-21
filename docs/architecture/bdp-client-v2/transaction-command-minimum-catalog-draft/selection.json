@@ -1,0 +1,157 @@
+{
+  "prospectiveOnly": true,
+  "expectedCaseExecutions": 12,
+  "newRegistrations": 1,
+  "existingRegistrations": 11,
+  "http": 0,
+  "listeners": 0,
+  "storeOpens": 0,
+  "productChildren": 0,
+  "commands": [
+    {
+      "file": "packages/conformance/src/profile-contract-plan.test.ts",
+      "titles": [
+        "canonical cumulative profile contracts inherits the command minimum-field exception without executable credit",
+        "canonical cumulative profile contracts locks every inheritance-audit row and replacement to the catalogs"
+      ],
+      "expectedCases": 2,
+      "argv": [
+        "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+        "/Users/dbox/repos/wt/vickie/vickie-command-minimum-catalog/node_modules/vitest/vitest.mjs",
+        "run",
+        "packages/conformance/src/profile-contract-plan.test.ts",
+        "--maxWorkers=1",
+        "--reporter=verbose",
+        "--reporter=json",
+        "--outputFile.json=/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-command-minimum-catalog-draft/future-run/selection-1.results.json",
+        "-t",
+        "^(?:canonical\\ cumulative\\ profile\\ contracts\\ inherits\\ the\\ command\\ minimum\\-field\\ exception\\ without\\ executable\\ credit|canonical\\ cumulative\\ profile\\ contracts\\ locks\\ every\\ inheritance\\-audit\\ row\\ and\\ replacement\\ to\\ the\\ catalogs)$"
+      ],
+      "supervisorSeconds": 120,
+      "sourceSha256": "62bbfd74dade88354169062d973e1ec3259727d04c1b6c6e16124655f8654a8c",
+      "executed": false
+    },
+    {
+      "file": "packages/conformance/src/read-update-catalog.test.ts",
+      "titles": [
+        "draft Read+Update catalog strictly parses and binds every citation to the current specification text",
+        "draft Read+Update catalog scopes every row to the Read+Update profile with the profile's id prefix",
+        "draft Read+Update catalog mirrors the specification's Read+Update conformance rows exactly and in order"
+      ],
+      "expectedCases": 3,
+      "argv": [
+        "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+        "/Users/dbox/repos/wt/vickie/vickie-command-minimum-catalog/node_modules/vitest/vitest.mjs",
+        "run",
+        "packages/conformance/src/read-update-catalog.test.ts",
+        "--maxWorkers=1",
+        "--reporter=verbose",
+        "--reporter=json",
+        "--outputFile.json=/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-command-minimum-catalog-draft/future-run/selection-2.results.json",
+        "-t",
+        "^(?:draft\\ Read\\+Update\\ catalog\\ strictly\\ parses\\ and\\ binds\\ every\\ citation\\ to\\ the\\ current\\ specification\\ text|draft\\ Read\\+Update\\ catalog\\ scopes\\ every\\ row\\ to\\ the\\ Read\\+Update\\ profile\\ with\\ the\\ profile's\\ id\\ prefix|draft\\ Read\\+Update\\ catalog\\ mirrors\\ the\\ specification's\\ Read\\+Update\\ conformance\\ rows\\ exactly\\ and\\ in\\ order)$"
+      ],
+      "supervisorSeconds": 120,
+      "sourceSha256": "5ef01c61a35f45568c241f88f18ea752a3933289a00e6621574b2d8598f6d7c0",
+      "executed": false
+    },
+    {
+      "file": "packages/conformance/src/transactional-cumulative.test.ts",
+      "titles": [
+        "binds the canonical cumulative TX selection and exact source digests without qualification",
+        "copies source bytes before binding and exposes all missing obligations without executing them"
+      ],
+      "expectedCases": 2,
+      "argv": [
+        "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+        "/Users/dbox/repos/wt/vickie/vickie-command-minimum-catalog/node_modules/vitest/vitest.mjs",
+        "run",
+        "packages/conformance/src/transactional-cumulative.test.ts",
+        "--maxWorkers=1",
+        "--reporter=verbose",
+        "--reporter=json",
+        "--outputFile.json=/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-command-minimum-catalog-draft/future-run/selection-3.results.json",
+        "-t",
+        "^(?:binds\\ the\\ canonical\\ cumulative\\ TX\\ selection\\ and\\ exact\\ source\\ digests\\ without\\ qualification|copies\\ source\\ bytes\\ before\\ binding\\ and\\ exposes\\ all\\ missing\\ obligations\\ without\\ executing\\ them)$"
+      ],
+      "supervisorSeconds": 120,
+      "sourceSha256": "1ee47d4c56b3de03bd81d1fab7f43c9a676cca503a18911864b0e023ed83b367",
+      "executed": false
+    },
+    {
+      "file": "packages/conformance/src/cumulative-artifact.test.ts",
+      "titles": [
+        "pins cumulative source digest map, catalog order and every coverage binding"
+      ],
+      "expectedCases": 1,
+      "argv": [
+        "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+        "/Users/dbox/repos/wt/vickie/vickie-command-minimum-catalog/node_modules/vitest/vitest.mjs",
+        "run",
+        "packages/conformance/src/cumulative-artifact.test.ts",
+        "--maxWorkers=1",
+        "--reporter=verbose",
+        "--reporter=json",
+        "--outputFile.json=/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-command-minimum-catalog-draft/future-run/selection-4.results.json",
+        "-t",
+        "^(?:pins\\ cumulative\\ source\\ digest\\ map,\\ catalog\\ order\\ and\\ every\\ coverage\\ binding)$"
+      ],
+      "supervisorSeconds": 120,
+      "sourceSha256": "863535a75697ce5cb8fbf07c8096a0e00ae88bc42549be117e74e776490dff5c",
+      "executed": false
+    },
+    {
+      "file": "apps/bdptest/src/read-update-matrix.test.ts",
+      "titles": [
+        "pins numeric admission source growth, old blocks and independent row ledgers",
+        "pins metadata closure growth, old B actions and final N preservation",
+        "pins bounded R closure source, changed-action ledger and unchanged companions"
+      ],
+      "expectedCases": 3,
+      "argv": [
+        "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+        "/Users/dbox/repos/wt/vickie/vickie-command-minimum-catalog/node_modules/vitest/vitest.mjs",
+        "run",
+        "apps/bdptest/src/read-update-matrix.test.ts",
+        "--maxWorkers=1",
+        "--reporter=verbose",
+        "--reporter=json",
+        "--outputFile.json=/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-command-minimum-catalog-draft/future-run/selection-5.results.json",
+        "-t",
+        "^(?:pins\\ numeric\\ admission\\ source\\ growth,\\ old\\ blocks\\ and\\ independent\\ row\\ ledgers|pins\\ metadata\\ closure\\ growth,\\ old\\ B\\ actions\\ and\\ final\\ N\\ preservation|pins\\ bounded\\ R\\ closure\\ source,\\ changed\\-action\\ ledger\\ and\\ unchanged\\ companions)$"
+      ],
+      "supervisorSeconds": 120,
+      "sourceSha256": "5ab7801337e4b59f771250931b4ea6aac6975c89a31e2fff2aa9d535d83cf4b0",
+      "executed": false
+    },
+    {
+      "file": "packages/conformance/src/development-read-update.test.ts",
+      "titles": [
+        "development Read+Update evidence inventory inventories all 82 normative rows once, with executable assertion bindings or explicit omissions"
+      ],
+      "expectedCases": 1,
+      "argv": [
+        "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+        "/Users/dbox/repos/wt/vickie/vickie-command-minimum-catalog/node_modules/vitest/vitest.mjs",
+        "run",
+        "packages/conformance/src/development-read-update.test.ts",
+        "--maxWorkers=1",
+        "--reporter=verbose",
+        "--reporter=json",
+        "--outputFile.json=/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-command-minimum-catalog-draft/future-run/selection-6.results.json",
+        "-t",
+        "^(?:development\\ Read\\+Update\\ evidence\\ inventory\\ inventories\\ all\\ 82\\ normative\\ rows\\ once,\\ with\\ executable\\ assertion\\ bindings\\ or\\ explicit\\ omissions)$"
+      ],
+      "supervisorSeconds": 120,
+      "sourceSha256": "821d2ad5b388b7cc14f112c1c74d86baba4b57e0a03eb988d34452f89f409c1d",
+      "executed": false
+    }
+  ],
+  "prerequisites": [
+    "root acceptance of measured draft and any exceeded allowance amendments",
+    "successful current source-matching build before product module evaluation",
+    "clear inherited BDP installed entry overrides",
+    "separate root execution release"
+  ],
+  "moduleLoad": "RU matrix imports installed-reference helper and default emitted server configuration; common mock setup and module-level factories run. No service launch in selected callbacks. Tool workers are separate."
+}

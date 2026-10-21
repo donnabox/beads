@@ -1,0 +1,68 @@
+{
+  "reviewedAt": "2026-10-18T04:40:36.528994+00:00",
+  "reviewer": "Independent native correction precision worker",
+  "rootDispositionSha256": "1f6dce33f3927e320b1c5773ac86cd1361bc5f35629207d401490e4867fb6ce4",
+  "correctionIndexSha256": "cb1a558d165ce396246b22b697e2182d8356a51f26077fe6faf4ed1af40178bb",
+  "sourceBindingSha256": "92152f96be110929dc66bb9fc2d038922944d5b9f9a46f40c9e8ec1076a520ec",
+  "fullPatchSha256": "12c783fcce705fdd3410a0738d9b7020c6462d630eccd5d47af6c83a0be471c2",
+  "reportBindingsSha256": "9ca89fdfc97e70aa8c46f01eef1a8e200864110e986cbfbb88ae982cf8f971be",
+  "findingsDisposition": [
+    {
+      "id": "F1",
+      "status": "CLOSED by bounded recorded format-only correction",
+      "evidence": [
+        "formatter-binding.json",
+        "source/packages/server/src/transaction-service.ts:491-502",
+        "scope.json; before-source/pre-format-source/source copies"
+      ],
+      "assessment": "Pinned2.5.7 binary SHA f71fe809 matches; exactly six owned format --write targets; recorded two exits0, first fixed4, later no fixes. HTTP/store remain byte-identical to prior freeze; service diff only nested-ternary reflow. Other first functional-stage changes are only D/E evidence; no production semantics changed. No format-check/lint/typecheck result inferred from formatter writes."
+    },
+    {
+      "id": "F2",
+      "status": "CLOSED by evidence-before-assertion/actual drain correction",
+      "evidence": [
+        "source/packages/server/src/transaction-sse.test.ts:1007-1160,1223-1283,1441-1470,1519-1569",
+        "report-bindings.json observations.D",
+        "packages/server/test-support/raw-sse-recorder.ts inspected read-only"
+      ],
+      "assessment": "Finite/live ready callbacks snapshot actual nullable status/safe headers/body/wire before status assertion; seed snapshots occur at ready/chunks/finally before seed assertions. Ordinal upsert refreshes the same dispatch. Availability/bodyState/drainKind distinguish unavailable/partial/actual finite or seed drainage. Intentional-live requires explicit successful rec.close after frame/live checks; cleanup does not call drained(). Wrong status remains aggregated failure even if actual finite body later drains. Completed counts drained records, observedResponses counts ready records; no missing/failing ordinal is silently successful. All32 passing records/statuses/stream/frame/HEAD/context oracles and D3s work/D4s inclusive cleanup bounds retained."
+    },
+    {
+      "id": "F3",
+      "status": "CLOSED by bounded cached required metadata",
+      "evidence": [
+        "source/apps/bdptest/src/transactional-changefeed-refusal-context-installed.test.ts:878-887,954-974,1298-1339",
+        "report-bindings.json observations.E.metadataCapture"
+      ],
+      "assessment": "Git diff captured inside existing45s work before launch with explicit1000..1500ms timeout and8MiB maxBuffer/ignored stderr. Failure caches null+fixed sanitized reason, records tracked-diff-metadata once and throws into aggregate path before launch; finally emits cached fields with no subprocess. Passing grammar requires actual hash equal bound patch and null reason, never a fallback. Source assertion/cleanup/oracles and45/10/60s remain unchanged."
+    }
+  ],
+  "newConcreteFindings": [],
+  "decision": "NATIVE F1-F3 SOURCE CORRECTION PRECISION CLOSED; root exact-source acceptance and CLOSED validation3 mechanics remain root owned",
+  "selection": {
+    "sourceCallbacks": 15,
+    "installedCallbacks": 3,
+    "newSourceReports": 9,
+    "selectedLegacyReports": 2,
+    "thirdParameterContext": "UNSELECTED",
+    "D32andE10DispatchesUnchanged": true
+  },
+  "preservation": {
+    "priorCODEAndPLANRemainHistorical": true,
+    "oldTwoSelectedLegacySchemasRemainDistinct": true,
+    "oldSelectionAndWorkloadExact": true,
+    "original679Startup682Preserved": true,
+    "historicalPrefixesBytes": [
+      33419,
+      33116
+    ]
+  },
+  "limitations": [
+    "Static read/hash/text-delta review only; no formatter/compiler/tests/build/runtime/review/helper/git/flag actions by reviewer",
+    "Recorded format-write exits are not an invented format-check pass",
+    "Body/FD/socket/drain/timing/report behavior remains unexecuted and requires exact-source validation",
+    "No second actual CODE review is requested or inferred by this closure"
+  ],
+  "validationExecutionReleased": false,
+  "rootLaunchReleased": false
+}

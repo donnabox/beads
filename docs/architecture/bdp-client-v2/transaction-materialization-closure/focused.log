@@ -1,0 +1,61 @@
+
+ RUN  v4.1.10 /Users/dbox/repos/wt/vickie/vickie-materialization-closure
+
+ ✓ packages/server/src/transaction-materialization.test.ts > passes the same frozen, configuration-bound tuple to every transaction evaluation 96ms
+ ✓ packages/server/src/transaction-materialization.test.ts > refuses missing/invalid/raised TX propertiesBytes bound undefined before effects 3ms
+ ✓ packages/server/src/transaction-owned.test.ts > projects owned lifecycle, property and metadata deltas with exact source versions and provenance 97ms
+ ✓ packages/server/src/transaction-materialization.test.ts > refuses missing/invalid/raised TX propertiesBytes bound 0 before effects 3ms
+ ✓ packages/server/src/transaction-materialization.test.ts > refuses missing/invalid/raised TX propertiesBytes bound -1 before effects 3ms
+ ✓ packages/server/src/transaction-materialization.test.ts > refuses missing/invalid/raised TX propertiesBytes bound 1.5 before effects 3ms
+ ✓ packages/server/src/transaction-materialization.test.ts > refuses missing/invalid/raised TX propertiesBytes bound Infinity before effects 3ms
+ ✓ packages/server/src/transaction-materialization.test.ts > refuses missing/invalid/raised TX propertiesBytes bound 65537 before effects 3ms
+ ✓ packages/server/src/transaction-materialization.test.ts > refuses missing/invalid/raised TX representationBytes bound undefined before effects 2ms
+ ✓ packages/server/src/transaction-materialization.test.ts > refuses missing/invalid/raised TX representationBytes bound 0 before effects 3ms
+ ✓ packages/server/src/transaction-materialization.test.ts > refuses missing/invalid/raised TX representationBytes bound -1 before effects 3ms
+ ✓ packages/server/src/transaction-materialization.test.ts > refuses missing/invalid/raised TX representationBytes bound 1.5 before effects 2ms
+ ✓ packages/server/src/transaction-materialization.test.ts > refuses missing/invalid/raised TX representationBytes bound Infinity before effects 2ms
+ ✓ packages/server/src/transaction-materialization.test.ts > refuses missing/invalid/raised TX representationBytes bound 262145 before effects 2ms
+ ✓ packages/server/src/transaction-materialization.test.ts > refuses missing/invalid/raised TX diagnosticBytes bound undefined before effects 2ms
+ ✓ packages/server/src/transaction-materialization.test.ts > refuses missing/invalid/raised TX diagnosticBytes bound 0 before effects 2ms
+ ✓ packages/server/src/transaction-materialization.test.ts > refuses missing/invalid/raised TX diagnosticBytes bound -1 before effects 2ms
+ ✓ packages/server/src/transaction-materialization.test.ts > refuses missing/invalid/raised TX diagnosticBytes bound 1.5 before effects 2ms
+ ✓ packages/server/src/transaction-materialization.test.ts > refuses missing/invalid/raised TX diagnosticBytes bound Infinity before effects 2ms
+ ✓ packages/server/src/transaction-materialization.test.ts > refuses missing/invalid/raised TX diagnosticBytes bound 524289 before effects 2ms
+ ✓ packages/server/src/transaction-materialization.test.ts > refuses missing/invalid/raised TX diagnosticCount bound undefined before effects 2ms
+ ✓ packages/server/src/transaction-materialization.test.ts > refuses missing/invalid/raised TX diagnosticCount bound 0 before effects 2ms
+ ✓ packages/server/src/transaction-materialization.test.ts > refuses missing/invalid/raised TX diagnosticCount bound -1 before effects 2ms
+ ✓ packages/server/src/transaction-materialization.test.ts > refuses missing/invalid/raised TX diagnosticCount bound 1.5 before effects 2ms
+ ✓ packages/server/src/transaction-materialization.test.ts > refuses missing/invalid/raised TX diagnosticCount bound Infinity before effects 3ms
+ ✓ packages/server/src/transaction-materialization.test.ts > refuses missing/invalid/raised TX diagnosticCount bound 17 before effects 2ms
+ ✓ packages/server/src/transaction-materialization.test.ts > requires all four proof-relevant evaluator bounds in the TX options type 0ms
+ ✓ packages/server/src/transaction-owned.test.ts > orders both self-Link incidences and preserves explicit versus wildcard empty buckets 19ms
+ ✓ packages/server/src/transaction-owned.test.ts > keeps intermediate source revision chains and reversal facts but one final canonical postimage 8ms
+ ✓ packages/server/src/transaction-owned.test.ts > preserves owned no-op versions and provenance with no group or effect position 8ms
+ ✓ packages/server/src/transaction-owned.test.ts > normalizes labeled creation/deletion to final tombstones while retaining intermediate facts 4ms
+ ✓ packages/server/src/transaction-owned.test.ts > guards the addressed Link or Bead against staged revisions and rolls both Resources back 11ms
+ ✓ packages/server/src/transaction-owned.test.ts > expands owned sets in canonical order, versions shared source per member and persists receipt pages 13ms
+ ✓ packages/server/src/transaction-owned.test.ts > carries native attribution through owned creation, update and both deletion carriers 37ms
+ ✓ packages/server/src/transaction-owned.test.ts > preserves mixed set no-ops and each staged owned source version across later operations 11ms
+ ✓ packages/server/src/transaction-owned.test.ts > charges the source fact to the same total Event cap and retains atomic failure across retry 7ms
+ ✓ packages/server/src/transaction-materialization.test.ts > refuses legacy tuple before pending recovery or expiry 73ms
+ ✓ packages/server/src/transaction-materialization.test.ts > refuses changed tuple before pending recovery or expiry 67ms
+ ✓ packages/server/src/transaction-materialization.test.ts > accepts the exact encoded Scope bound and refuses overflow before provisioning 9ms
+ ✓ packages/server/src/transaction-materialization.test.ts > enforces the actual representation tuple on both direct records and owned source postimages 36ms
+ ✓ packages/server/src/transaction-materialization.test.ts > bounds admitted numeric patch normalization for extremal token 1e20 4ms
+ ✓ packages/server/src/transaction-materialization.test.ts > bounds admitted numeric patch normalization for extremal token -9e20 3ms
+ ✓ packages/server/src/transaction-materialization.test.ts > bounds admitted numeric patch normalization for extremal token 9e9 3ms
+ ✓ packages/server/src/transaction-materialization.test.ts > bounds admitted numeric patch normalization for extremal token -0.0000010000000000000002 4ms
+ ✓ packages/server/src/transaction-owned.test.ts > uses owned visibility closure for selection and refuses source writes without partial effects 8ms
+ ✓ packages/server/src/transaction-owned.test.ts > shares singleton/batch replay without new source versions after same-version restart 4ms
+ ✓ packages/server/src/transaction-owned.test.ts > withholds transitive cyclic owned closure from visible set cardinality 5ms
+ ✓ packages/server/src/transaction-owned.test.ts > recovers a killed owned transition at after-effects without partial source, Link or page facts 151ms
+ ✓ packages/server/src/transaction-owned.test.ts > recovers a killed owned transition at after-terminal without partial source, Link or page facts 139ms
+ ✓ packages/server/src/transaction-owned.test.ts > serves complete compiled owned records and atomically retains inherited-schema failure over actual HTTP 241ms
+ ✓ packages/server/src/transaction-owned.test.ts > observes 128/129 real Events under a lowered evaluator cap within the 32-match owner 70ms
+
+ Test Files  2 passed (2)
+      Tests  51 passed (51)
+   Start at  04:11:14
+   Duration  1.18s (transform 460ms, setup 39ms, import 446ms, tests 1.19s, environment 0ms)
+
+JSON report written to /Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-materialization-closure/focused.json

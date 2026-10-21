@@ -1,0 +1,61 @@
+{
+  "accepted": true,
+  "activeGateSha256": "f539663c6ae2bffacbd38e2ded28328843d66e234fa884e4ec23d029aaa4c429",
+  "actualArchiveMembers": 321,
+  "actualPrior17NativeClosureSha256": "33dc6ae3b5c190533dedf6f6f7b440922d788a16d1b9408ffe5b3ae1384171b3",
+  "actualStages": [
+    "node-version",
+    "pnpm-version",
+    "workspace-install",
+    "bind-workspace-tools",
+    "typecheck",
+    "format-check",
+    "lint",
+    "fresh-build",
+    "bind-fresh-build",
+    "focused-source",
+    "audit-focused-source",
+    "legacy-changefeed-source",
+    "audit-legacy-changefeed-source",
+    "legacy-installed-contracts-source",
+    "audit-legacy-installed-contracts-source",
+    "schema-confinement-source",
+    "audit-schema-confinement-source",
+    "prepare-package-directory",
+    "pack-protocol",
+    "pack-server",
+    "verify-archives"
+  ],
+  "allWholeWrapperElapsedStrictlyBelow120": true,
+  "archiveExtractionPerformed": false,
+  "archives": {
+    "protocol": {
+      "members": 63,
+      "sha256": "4683cb6c6333c332a4bcb7efc3e28f32d1d8d06a7264913f65c31d3a826d4227"
+    },
+    "server": {
+      "members": 258,
+      "sha256": "78f014af635f0903886be31f467447d45b72750ac8a7cbc7ba6cabe32cc7ee30"
+    }
+  },
+  "buildFilesRehashed": 476,
+  "buildMapSha256": "4f1fcefc104a68ef14f3e64770e31853d387cdba6ced05a48fac1ba70a66cf61",
+  "executionAuthorized": false,
+  "externalPinsRehashed": 19388,
+  "findings": [],
+  "freshRecordedGroupsAbsent": 21,
+  "freshRecordedPidsAbsent": 438,
+  "helperSchemaGitRuntimeEvaluated": false,
+  "implementationFilesRehashed": 156,
+  "later31UnattemptedAtCapture": true,
+  "new4AllInnerAndWrapperExit0": true,
+  "reportSha256": "35514bfd41fd633045a462f7f121ee94d449cf9edf8ea384420235b87df2919e",
+  "session": "2026-10-18T02:16:24Z-549f",
+  "sourceBindingSha256": "9bb16e9c984f7c259c6f4cb42ddad2886234771a90f4421c3fddec57c5079a41",
+  "sourceFilesRehashed": 679,
+  "sourceIdentity": "a61cd3fbf9fac68e3aad857a24a2456dd16b83048067eef85348d7091c0aa08e",
+  "state": "FROZEN independent actual P10 first21 terminal/archive audit",
+  "tarProvenanceSha256": "e1a0cb5870060c594b2d0fafed44999022f87c701ddd2a4a2d10a2b65ffe1a49",
+  "wholeWriteQualified": false,
+  "workspaceToolsRehashed": 11
+}

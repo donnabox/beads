@@ -1,0 +1,47 @@
+--- /Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-cumulative-carrier-validation-preparation-3/final-static-verification.json
++++ /Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-cumulative-carrier-validation-preparation-4/final-static-verification.json
+@@ -3,11 +3,22 @@
+   "MJSByteExact": 3,
+   "all681CurrentSourceRehashed": true,
+   "allFutureTupleAndActualOutcomes": "UNKNOWN",
+-  "allImmediate137Native153AndInherited838Native850InPlaceMirrorsVerified": true,
+-  "byteExactOtherHelpers": 9,
++  "allHistoriesAndMirrorsVerified": true,
++  "authorPackagingFailurePreserved": "author-static-failure-1.json",
++  "byteExactHelpers": 11,
+   "canonicalSourceIdentity": "78e11962df1a744c685c9911d13c0bff3fa42fcdec9310b75ec8f83a17996c7f",
++  "changedExecutableBodies": [],
+   "concreteHarness": "UNPREPARED/UNAPPROVED",
+-  "externalPinsRehashed": 4514,
++  "contextOriginRowsFinal": 50,
++  "externalPinsRehashed": 4810,
++  "fullHistoryCounts": [
++    838,
++    850,
++    137,
++    153,
++    141,
++    152
++  ],
+   "guardRemoteSession": "2026-10-18T02:16:24Z-549f",
+   "helperOrSchemaEvaluation": false,
+   "helpers": 11,
+@@ -15,15 +26,13 @@
+   "negativeControlsExecuted": 0,
+   "negativeDescriptions": 32,
+   "noRetry": true,
+-  "onlyChangedExecutableBodies": [
+-    "run.py",
+-    "gate.py"
+-  ],
+   "protected677AndOwned4Unchanged": true,
+   "runAbsent": true,
+   "singlePositiveCallbacks": 1,
+   "sourceCallbacks": 48,
+   "sourceGitOrGateExecution": false,
+   "stages": 26,
+-  "state": "AUTHOR static preparation, not independent acceptance or evaluated control"
++  "state": "AUTHOR file/hash/AST-DATA preparation only, not passing controls",
++  "templatePath": "context/accepted-contract2/private-emit-project.template.json",
++  "templateSha256": "99ddab2e2e51f3ca82933bcef9cb266cfc454a4f9ee94f5a3f81f7a87bc47183"
+ }

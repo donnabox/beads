@@ -1,0 +1,167 @@
+[
+  {
+    "ordinal": 7,
+    "id": "resource-alias-create-a",
+    "before": [],
+    "after": [
+      {
+        "name": "content-type",
+        "value": "application/json"
+      },
+      {
+        "name": "idempotency-key",
+        "value": "cold-resource-alias-create-a"
+      }
+    ]
+  },
+  {
+    "ordinal": 10,
+    "id": "resource-alias-create-b",
+    "before": [],
+    "after": [
+      {
+        "name": "content-type",
+        "value": "application/json"
+      },
+      {
+        "name": "idempotency-key",
+        "value": "cold-resource-alias-create-b"
+      }
+    ]
+  },
+  {
+    "ordinal": 13,
+    "id": "resource-alias-update-a",
+    "before": [],
+    "after": [
+      {
+        "name": "content-type",
+        "value": "application/json"
+      },
+      {
+        "name": "idempotency-key",
+        "value": "cold-resource-alias-update-a"
+      }
+    ]
+  },
+  {
+    "ordinal": 16,
+    "id": "resource-alias-create-l",
+    "before": [],
+    "after": [
+      {
+        "name": "content-type",
+        "value": "application/json"
+      },
+      {
+        "name": "idempotency-key",
+        "value": "cold-resource-alias-create-l"
+      }
+    ]
+  },
+  {
+    "ordinal": 19,
+    "id": "resource-alias-update-l",
+    "before": [],
+    "after": [
+      {
+        "name": "content-type",
+        "value": "application/json"
+      },
+      {
+        "name": "idempotency-key",
+        "value": "cold-resource-alias-update-l"
+      }
+    ]
+  },
+  {
+    "ordinal": 22,
+    "id": "resource-alias-put-alias",
+    "before": [],
+    "after": [
+      {
+        "name": "content-type",
+        "value": "application/json"
+      },
+      {
+        "name": "idempotency-key",
+        "value": "cold-resource-alias-put-alias"
+      }
+    ]
+  },
+  {
+    "ordinal": 26,
+    "id": "resource-alias-delete-alias",
+    "before": [],
+    "after": [
+      {
+        "name": "content-type",
+        "value": "application/json"
+      },
+      {
+        "name": "idempotency-key",
+        "value": "cold-resource-alias-delete-alias"
+      }
+    ]
+  },
+  {
+    "ordinal": 29,
+    "id": "resource-alias-delete-l",
+    "before": [],
+    "after": [
+      {
+        "name": "content-type",
+        "value": "application/json"
+      },
+      {
+        "name": "idempotency-key",
+        "value": "cold-resource-alias-delete-l"
+      }
+    ]
+  },
+  {
+    "ordinal": 32,
+    "id": "resource-alias-delete-b",
+    "before": [],
+    "after": [
+      {
+        "name": "content-type",
+        "value": "application/json"
+      },
+      {
+        "name": "idempotency-key",
+        "value": "cold-resource-alias-delete-b"
+      }
+    ]
+  },
+  {
+    "ordinal": 35,
+    "id": "resource-alias-delete-a",
+    "before": [],
+    "after": [
+      {
+        "name": "content-type",
+        "value": "application/json"
+      },
+      {
+        "name": "idempotency-key",
+        "value": "cold-resource-alias-delete-a"
+      }
+    ]
+  },
+  {
+    "ordinal": 38,
+    "id": "replay-create",
+    "before": [],
+    "after": [
+      {
+        "name": "content-type",
+        "value": "application/json"
+      },
+      {
+        "name": "idempotency-key",
+        "value": "cold-resource-alias-create-a"
+      }
+    ]
+  }
+]

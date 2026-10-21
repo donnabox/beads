@@ -1,0 +1,113 @@
+--- preparation-3/gate.py
++++ event-template/gate.py
+@@ -1,13 +1,13 @@
+-"""Current changefeed closed gates; no product imports. Root owns releases and measured pins."""
++"""Event admission/replay closed gates; no product imports. Root owns releases and measured pins."""
+ from pathlib import Path
+ import hashlib,json,subprocess,os
+ P=Path(__file__).resolve().parent
+-W=Path('/Users/dbox/repos/wt/vickie/vickie-current-changefeed-minimum')
+-GUARD=P/'guarded-action-session-20261018-021624-549f.py'
+-MODE=os.environ.get('CURRENT_CHANGEFEED_VALIDATION_PHASE','final')
++W=Path('/Users/dbox/repos/wt/vickie/vickie-event-admission-replay-minimum')
++GUARD=Path('/Users/dbox/repos/wt/vickie/bdp-integration-logs/guarded-action.py')
++MODE=os.environ.get('EVENT_REPLAY_VALIDATION_PHASE','final')
+ assert MODE=='final'
+ E=P/'run'
+-INTEGRATION='a56254d682cf4623cab22a552e3d2f695f691795'
++INTEGRATION='9f89271e2563a105410789ca8ca1e77dfb4d0b9f'
+ sha=lambda b:hashlib.sha256(b).hexdigest()
+ def require(ok,message):
+  if not ok:raise RuntimeError(message)
+@@ -55,7 +55,7 @@
+  return {'files':files,'links':links}
+ def complete(name,g):
+  v=read(E/(name+'.exit.json'))
+- require(v['accepted'] and v['exit'] in read(P/'commands.json')['commands'][name].get('acceptedRawExitCodes',[0]) and not v['forcedCleanup'] and not v['errors'] and not v['remainingProcesses'] and not v['runtimeDirectoriesStillPresent'],'Prior stage failed '+name)
++ require(v['accepted'] and v['exit']==0 and not v['forcedCleanup'] and not v['errors'] and not v['remainingProcesses'] and not v['runtimeDirectoriesStillPresent'],'Prior stage failed '+name)
+  require(v['sourceIdentity']==g['_sourceIdentity'] and v['sourceUnchanged'],'Prior source differs '+name)
+  require(sha((E/(name+'.log')).read_bytes())==v['logSha256'],'Prior log changed '+name)
+  return v
+@@ -74,16 +74,36 @@
+  for name,data in tar['packages'].items():require(sha(Path(data['archive']).read_bytes())==proof['packages'][name]['archiveSha256'],'Archive changed')
+  entry=Path(proof['entryRealpath']);require(entry.resolve(strict=True).is_relative_to((E/'consumer').resolve()) and sha(entry.read_bytes())==proof['entrySha256'],'External entry changed')
+  return proof
++def verify_bootstrap_reuse(g):
++ reuse=read(P/'bootstrap-reuse-binding.json');require(reuse.get('mappingFinalized') is True,'Bootstrap source transition pending');old=document(reuse['sourceBinding']);new=g['_sourceBinding']
++ require(reuse['successorSourceBinding']==g['sourceBinding'] and reuse['successorSourceIdentity']==g['_sourceIdentity'],'Successor bootstrap link differs')
++ require(reuse['originalSourceIdentity']==sha(json.dumps(old['trackedSourceFiles'],sort_keys=True).encode()),'Original source identity differs')
++ require(old['head']==reuse['originalHead']==new['head'] and old['tree']==reuse['originalTree']==new['tree'],'Bootstrap base chronology differs')
++ changes=sorted(p for p,h in new['trackedSourceFiles'].items() if old['trackedSourceFiles'].get(p)!=h)
++ require(set(old['trackedSourceFiles'])==set(new['trackedSourceFiles']) and changes==reuse['allowedSourceChanges'],'Unreviewed source transition')
++ require(all(old['trackedSourceFiles'][p]==new['trackedSourceFiles'][p]==h for p,h in reuse['dependencyInputs'].items()),'Dependency inputs changed')
++ for p,h in reuse['records'].items():require(sha(Path(p).read_bytes())==h,'Bootstrap evidence changed '+p)
++ require(reuse['tools']==g['workspaceTools'],'Original tool record must be reused without relabeling')
++ disposition=document(reuse['rootBootstrapDisposition']);require(disposition['accepted'] is True and disposition['dependencyInstallAuthorized'] is True and disposition['sourceBindingSha256']==reuse['sourceBinding']['sha256'],'Original bootstrap release differs')
++ tb=document(reuse['tools']);tools_check(tb['tools'])
++ require(tb['sourceIdentity']==reuse['originalSourceIdentity'] and tb['head']==reuse['originalHead'] and tb['sourceLockSha256']==g['sourceLockSha256'],'Original tool chronology/lock differs')
++ directory=Path(reuse['directory']);cfg=read(P/'commands.json')
++ for name in reuse['stages']:
++  v=read(directory/(name+'.exit.json'));start=read(directory/(name+'.started.json'))
++  require(v['accepted'] and v['exit']==0 and v['sourceUnchanged'] and not v['forcedCleanup'] and not v['errors'] and not v['remainingProcesses'] and not v['runtimeDirectoriesStillPresent'],'Original bootstrap failed')
++  require(v['sourceIdentity']==start['sourceIdentity']==reuse['originalSourceIdentity'] and start['head']==reuse['originalHead'] and start['tree']==reuse['originalTree'],'Bootstrap source chronology changed')
++  require(sha((directory/(name+'.log')).read_bytes())==v['logSha256'],'Bootstrap log changed')
++ require(tb['installExitSha256']==sha((directory/'workspace-install.exit.json').read_bytes()) and tb['installLogSha256']==sha((directory/'workspace-install.log').read_bytes()),'Install/tool linkage differs')
+ def load_gate(name,child=False):
+  require(__debug__,'Assertions required')
+  g=read(P/'execution-gate.json')
+- require(read(P/'commands.json').get('configurationFinalized') is True,'Authored current changefeed source/selection not finalized')
+- require(read(P/'audit-expectations.json').get('finalized') is True,'Actual current changefeed observation contracts not finalized')
+- require(g['released'] is True and g['rootPlanAccepted'] is True and g['rootExactSourceAccepted'] is True and g['session']=='2026-10-18T02:16:24Z-549f','Root release absent')
++ require(read(P/'commands.json').get('configurationFinalized') is True,'Authored Event admission/replay source/selection not finalized')
++ require(read(P/'audit-expectations.json').get('finalized') is True,'Actual Event admission/replay observation contracts not finalized')
++ require(g['released'] is True and g['rootPlanAccepted'] is True and g['rootExactSourceAccepted'] is True and g['session']=='2026-10-08T20:26:35Z-81e5','Root release absent')
+  require(g['mode']==MODE,'Wrong phase')
+  if child:
+   record=E/(name+'.started.json')
+-  require(os.environ.get('CURRENT_CHANGEFEED_VALIDATION_STAGE')==name and record.is_file() and sha(record.read_bytes())==os.environ.get('CURRENT_CHANGEFEED_VALIDATION_ATTEMPT'),'Helper requires supervised attempt')
++  require(os.environ.get('EVENT_REPLAY_VALIDATION_STAGE')==name and record.is_file() and sha(record.read_bytes())==os.environ.get('EVENT_REPLAY_VALIDATION_ATTEMPT'),'Helper requires supervised attempt')
+   require(read(record)['rootGateSha256']==sha((P/('bootstrap-gate.json' if MODE=='bootstrap' else 'execution-gate.json')).read_bytes()),'Gate changed during attempt')
+  idx=P/'implementation-hashes.json';require(sha(idx.read_bytes())==g['implementationIndexSha256'],'Implementation index changed')
+  for f,h in read(idx)['files'].items():require(sha((P/f).read_bytes())==h,'Implementation changed '+f)
+@@ -92,33 +112,19 @@
+  disposition=document(g['rootDisposition']);require(disposition['accepted'] is True and disposition['sourceBindingSha256']==g['sourceBinding']['sha256'],'Root disposition differs')
+  cfg=read(P/'commands.json');order=cfg[MODE+'Order'];approved=g['approvedStages']
+  require(approved==order[:len(approved)] and name in approved,'Stage not released')
+- spec=cfg['commands'][name];require(spec['outerSeconds']==120 and spec.get('termAtSeconds')==115 and spec['automaticRetries']==0,'Limits changed')
+- require(not any('UNRESOLVED' in arg or ('$'+'{') in arg or 'PENDING_SUCCESSOR' in arg for arg in spec['argv']),'Unbound command')
++ spec=cfg['commands'][name];require(spec['outerSeconds']==120 and spec['automaticRetries']==0,'Limits changed')
++ require(not any('PENDING_SUCCESSOR' in arg for arg in spec['argv']),'Unbound command')
+  if 'selectedFullNames' in spec:require(isinstance(spec['selectedFullNames'],list) and len(spec['selectedFullNames'])>0 and isinstance(spec['prospectiveWorkload'],dict),'Unbound callback selection/workload')
+  base=document(g['baseTools']);tools_check(base['tools'])
+  require(base['sourceLockSha256']==g['sourceLockSha256'],'Base lock differs')
+- if order.index(name)>order.index('bind-workspace-tools'):
+-  workspace=document(g['workspaceTools']);tools_check(workspace['tools'])
+-  require(workspace['sourceIdentity']==g['_sourceIdentity'] and workspace['sourceLockSha256']==g['sourceLockSha256'],'Fresh workspace tool binding differs')
+- require(g.get('bootstrapReuse')==[] and disposition.get('freshPipelineRequired') is True,'Only fresh pipeline is allowed')
+- require(g['actualClaudeReviewDisposed'] is True and g['nativeCodeReviewDisposed'] is True,'Both CODE review dispositions remain required before validation')
+- for label in ['nativeCodeDisposition','actualCodeDisposition']:
+-  d=document(g[label]);require(d.get('accepted') is True and d.get('sourceBindingSha256')==g['sourceBinding']['sha256'],'CODE disposition differs '+label)
++ require(disposition.get('bootstrapReuseAccepted') is True and disposition.get('bootstrapReuseBinding')=={'path':str(P/'bootstrap-reuse-binding.json'),'sha256':sha((P/'bootstrap-reuse-binding.json').read_bytes())},'Root bootstrap reuse acceptance absent')
++ verify_bootstrap_reuse(g)
++ require((g['actualClaudeReviewDisposed'] is True and g['nativeCodeReviewDisposed'] is True) or (name in ['typecheck','format-check','lint'] and g['staticValidationAuthorized'] is True),'Code review disposition pending; only explicit static prefix may run')
+  require(disposition['staticValidationAuthorized'] is True if name in ['typecheck','format-check','lint'] else disposition['runtimeValidationAuthorized'] is True,'Root disposition does not authorize this stage')
+  for prior in order[:order.index(name)]:complete(prior,g)
+- if MODE=='final' and order.index(name)>order.index('bind-fresh-build'):
+-  verify_build(g);accepted=document(g['rootBuildAcceptance'])
+-  require(accepted.get('accepted') is True and accepted.get('sourceBindingSha256')==g['sourceBinding']['sha256'] and accepted.get('buildMapSha256')==sha((E/'build-artifacts.json').read_bytes()),'Root actual build acceptance missing')
+- if order.index(name)>=order.index('prepare-consumer'):
+-  accepted=document(g['rootArchiveAcceptance'])
+-  require(accepted.get('accepted') is True and accepted.get('sourceBindingSha256')==g['sourceBinding']['sha256'] and accepted.get('tarProvenanceSha256')==sha((E/'tar-source-provenance.json').read_bytes()),'Root actual archive acceptance missing')
+- if name=='verify-installed-consumer':
+-  lock=document(g['rootConsumerLockAcceptance'])
+-  require(lock.get('accepted') is True and lock.get('sourceBindingSha256')==g['sourceBinding']['sha256'],'Root actual lock acceptance missing')
+-  require(isinstance(g.get('consumerLockSha256'),str) and sha((E/'consumer/pnpm-lock.yaml').read_bytes())==g['consumerLockSha256']==lock['consumerLockSha256'],'Consumer lock not root-pinned')
+-  require(lock.get('consumerManifestSha256')==sha((E/'consumer/package.json').read_bytes()) and lock.get('consumerSettingsSha256')==sha((E/'consumer/pnpm-workspace.yaml').read_bytes()),'Root actual consumer manifest/settings acceptance missing')
+- if name in ['historical-context-external', 'audit-historical-context-external', 'finite-start-now-external', 'audit-finite-start-now-external', 'current-changefeed-external', 'audit-current-changefeed-external']:
++ if MODE=='final' and order.index(name)>order.index('bind-fresh-build'):verify_build(g)
++ if name=='verify-installed-consumer':require(isinstance(g.get('consumerLockSha256'),str) and sha((E/'consumer/pnpm-lock.yaml').read_bytes())==g['consumerLockSha256'],'Consumer lock not root-pinned')
++ if name in ['historical-event-restart-external', 'review-historical-event-restart-external', 'current-event-admission-replay-external', 'review-current-event-admission-replay-external']:
+   proof=verify_consumer(g)
+-  accepted=document(g['rootConsumerProofAcceptance']);require(accepted.get('accepted') is True and accepted.get('sourceBindingSha256')==g['sourceBinding']['sha256'] and accepted.get('installedProvenance')==g['installedProvenance'] and accepted.get('consumerInventory')==g['consumerInventory'],'Root actual proof acceptance missing')
+   spec={**spec,'environment':{'BDP_TRANSACTIONAL_INSTALLED_ENTRY':proof['entryRealpath'],'BDP_TRANSACTIONAL_SOURCE_COMMIT':b['head']}}
+  guarded();return g,spec

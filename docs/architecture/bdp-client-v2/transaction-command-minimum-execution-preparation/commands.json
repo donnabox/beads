@@ -1,0 +1,408 @@
+{
+  "status": "DRAFT_ONLY_GATE_ABSENT_NOT_EXECUTED",
+  "checkout": "/Users/dbox/repos/wt/vickie/vickie-command-minimum",
+  "evidence": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-command-minimum-execution-preparation/run",
+  "parent": "122800511ee6306e4105e1f73bf3658f35c90a14",
+  "planSha256": "f8824197e765e8228679044ab32fd7a54ebd26ec3a892614fdd9b5a15cf07c82",
+  "authoringAcceptanceSha256": "5815c7b2f7a79e1824b4922187f8c719df1c0e033351bf7305feb372e7457564",
+  "sourceOrder": [
+    "offline-setup",
+    "typecheck",
+    "build",
+    "format-check",
+    "lint",
+    "check-boundaries",
+    "evidence-verify",
+    "http-positive",
+    "service-exclusions",
+    "catalog-citations",
+    "ru-emitted"
+  ],
+  "aggregate": {
+    "sourcePositives": {
+      "cases": 8,
+      "httpExpected": 86,
+      "httpMaximum": 86,
+      "storeDirectories": 7,
+      "ownerOpens": 13,
+      "listenerLifetimes": 13,
+      "children": 1,
+      "readonlySqliteHandles": 6
+    },
+    "sourcePlusHeldControls": {
+      "cases": 10,
+      "httpExpected": 89,
+      "httpMaximum": 119,
+      "storeDirectories": 9,
+      "ownerOpens": 15,
+      "listenerLifetimes": 15,
+      "children": 1,
+      "readonlySqliteHandles": 6
+    },
+    "separateHeldFreshTX": {
+      "cases": 1,
+      "httpExpected": 18,
+      "httpMaximum": 18,
+      "children": 1
+    },
+    "countsAre": "Prospective static counts; actual result evidence and measured draft binding required"
+  },
+  "commands": {
+    "offline-setup": {
+      "phase": "source",
+      "runnable": true,
+      "cwd": "/Users/dbox/repos/wt/vickie/vickie-command-minimum",
+      "argv": [
+        "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+        "/Users/dbox/.cache/node/corepack/v1/pnpm/11.20.0/bin/pnpm.cjs",
+        "install",
+        "--offline",
+        "--frozen-lockfile"
+      ],
+      "supervisorSeconds": 120,
+      "requires": [],
+      "ownedTempPrefixes": []
+    },
+    "typecheck": {
+      "phase": "source",
+      "runnable": true,
+      "cwd": "/Users/dbox/repos/wt/vickie/vickie-command-minimum",
+      "argv": [
+        "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+        "/Users/dbox/.cache/node/corepack/v1/pnpm/11.20.0/bin/pnpm.cjs",
+        "typecheck"
+      ],
+      "supervisorSeconds": 120,
+      "requires": [],
+      "ownedTempPrefixes": []
+    },
+    "build": {
+      "phase": "source",
+      "runnable": true,
+      "cwd": "/Users/dbox/repos/wt/vickie/vickie-command-minimum",
+      "argv": [
+        "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+        "/Users/dbox/.cache/node/corepack/v1/pnpm/11.20.0/bin/pnpm.cjs",
+        "build"
+      ],
+      "supervisorSeconds": 120,
+      "requires": [],
+      "ownedTempPrefixes": []
+    },
+    "format-check": {
+      "phase": "source",
+      "runnable": true,
+      "cwd": "/Users/dbox/repos/wt/vickie/vickie-command-minimum",
+      "argv": [
+        "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+        "/Users/dbox/.cache/node/corepack/v1/pnpm/11.20.0/bin/pnpm.cjs",
+        "format:check"
+      ],
+      "supervisorSeconds": 120,
+      "requires": [],
+      "ownedTempPrefixes": []
+    },
+    "lint": {
+      "phase": "source",
+      "runnable": true,
+      "cwd": "/Users/dbox/repos/wt/vickie/vickie-command-minimum",
+      "argv": [
+        "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+        "/Users/dbox/.cache/node/corepack/v1/pnpm/11.20.0/bin/pnpm.cjs",
+        "lint"
+      ],
+      "supervisorSeconds": 120,
+      "requires": [],
+      "ownedTempPrefixes": []
+    },
+    "check-boundaries": {
+      "phase": "source",
+      "runnable": true,
+      "cwd": "/Users/dbox/repos/wt/vickie/vickie-command-minimum",
+      "argv": [
+        "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+        "/Users/dbox/.cache/node/corepack/v1/pnpm/11.20.0/bin/pnpm.cjs",
+        "check:boundaries"
+      ],
+      "supervisorSeconds": 120,
+      "requires": [],
+      "ownedTempPrefixes": []
+    },
+    "evidence-verify": {
+      "phase": "source",
+      "runnable": true,
+      "cwd": "/Users/dbox/repos/wt/vickie/vickie-command-minimum",
+      "argv": [
+        "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+        "/Users/dbox/.cache/node/corepack/v1/pnpm/11.20.0/bin/pnpm.cjs",
+        "evidence:verify"
+      ],
+      "supervisorSeconds": 120,
+      "requires": [],
+      "ownedTempPrefixes": []
+    },
+    "http-positive": {
+      "phase": "source",
+      "runnable": true,
+      "cwd": "/Users/dbox/repos/wt/vickie/vickie-command-minimum",
+      "argv": [
+        "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+        "/Users/dbox/.cache/node/corepack/v1/pnpm/11.20.0/bin/pnpm.cjs",
+        "exec",
+        "vitest",
+        "run",
+        "packages/server/src/transaction-http.test.ts",
+        "--testNamePattern",
+        "^(?:ignores partial and malformed copied read controls on each mutation carrier|ignores complete copied tuples on every Transactional mutation target|copied read controls preserve key revision and negotiation admission|preserves authentication on commands carrying copied read controls without reserving keys|keeps receipt minimum enforcement after commands ignore copied controls)$",
+        "--maxWorkers=1",
+        "--reporter=verbose",
+        "--reporter=json",
+        "--outputFile=/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-command-minimum-execution-preparation/run/http-positive.results.json"
+      ],
+      "supervisorSeconds": 120,
+      "requires": [
+        "typecheck",
+        "build"
+      ],
+      "ownedTempPrefixes": [
+        "bdp-tx-http-"
+      ],
+      "selectedTitles": [
+        "ignores partial and malformed copied read controls on each mutation carrier",
+        "ignores complete copied tuples on every Transactional mutation target",
+        "copied read controls preserve key revision and negotiation admission",
+        "preserves authentication on commands carrying copied read controls without reserving keys",
+        "keeps receipt minimum enforcement after commands ignore copied controls"
+      ],
+      "workload": {
+        "cases": 5,
+        "httpExpected": 80,
+        "httpMaximum": 80,
+        "post": 54,
+        "get": 25,
+        "head": 1,
+        "storeDirectories": 5,
+        "ownerOpens": 11,
+        "listenerLifetimes": 11,
+        "children": 0,
+        "readonlySqliteHandles": 6
+      }
+    },
+    "service-exclusions": {
+      "phase": "source",
+      "runnable": true,
+      "cwd": "/Users/dbox/repos/wt/vickie/vickie-command-minimum",
+      "argv": [
+        "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+        "/Users/dbox/.cache/node/corepack/v1/pnpm/11.20.0/bin/pnpm.cjs",
+        "exec",
+        "vitest",
+        "run",
+        "packages/server/src/transaction-service.test.ts",
+        "--testNamePattern",
+        "^(?:nonexecuting sequence refusal observation keeps excluded sequence responses unobserved and without refusal context)$",
+        "--maxWorkers=1",
+        "--reporter=verbose",
+        "--reporter=json",
+        "--outputFile=/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-command-minimum-execution-preparation/run/service-exclusions.results.json"
+      ],
+      "supervisorSeconds": 120,
+      "requires": [
+        "typecheck",
+        "build"
+      ],
+      "ownedTempPrefixes": [
+        "bdp-tx-service-"
+      ],
+      "selectedTitles": [
+        "nonexecuting sequence refusal observation keeps excluded sequence responses unobserved and without refusal context"
+      ],
+      "workload": {
+        "cases": 1,
+        "httpExpected": 0,
+        "httpMaximum": 0,
+        "directHandlerCalls": 6,
+        "storeDirectories": 1,
+        "ownerOpens": 1,
+        "listenerLifetimes": 0,
+        "children": 0,
+        "serviceConstructions": 1
+      }
+    },
+    "catalog-citations": {
+      "phase": "source",
+      "runnable": true,
+      "cwd": "/Users/dbox/repos/wt/vickie/vickie-command-minimum",
+      "argv": [
+        "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+        "/Users/dbox/.cache/node/corepack/v1/pnpm/11.20.0/bin/pnpm.cjs",
+        "exec",
+        "vitest",
+        "run",
+        "packages/conformance/src/transactional-catalog.test.ts",
+        "--testNamePattern",
+        "^(?:draft Transactional catalog strictly parses and binds every citation to the current specification text)$",
+        "--maxWorkers=1",
+        "--reporter=verbose",
+        "--reporter=json",
+        "--outputFile=/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-command-minimum-execution-preparation/run/catalog-citations.results.json"
+      ],
+      "supervisorSeconds": 120,
+      "requires": [
+        "typecheck",
+        "build"
+      ],
+      "ownedTempPrefixes": [],
+      "selectedTitles": [
+        "draft Transactional catalog strictly parses and binds every citation to the current specification text"
+      ],
+      "workload": {
+        "cases": 1,
+        "httpExpected": 0,
+        "httpMaximum": 0,
+        "storeDirectories": 0,
+        "ownerOpens": 0,
+        "listenerLifetimes": 0,
+        "children": 0
+      }
+    },
+    "ru-emitted": {
+      "phase": "source",
+      "runnable": true,
+      "cwd": "/Users/dbox/repos/wt/vickie/vickie-command-minimum",
+      "argv": [
+        "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+        "/Users/dbox/.cache/node/corepack/v1/pnpm/11.20.0/bin/pnpm.cjs",
+        "exec",
+        "vitest",
+        "run",
+        "apps/bdptest/src/installed-reference.test.ts",
+        "--testNamePattern",
+        "^(?:ignores copied read minimum fields on Update singleton and sequence commands)$",
+        "--maxWorkers=1",
+        "--reporter=verbose",
+        "--reporter=json",
+        "--outputFile=/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-command-minimum-execution-preparation/run/ru-emitted.results.json"
+      ],
+      "supervisorSeconds": 120,
+      "requires": [
+        "typecheck",
+        "build"
+      ],
+      "ownedTempPrefixes": [
+        "bdp-installed-"
+      ],
+      "selectedTitles": [
+        "ignores copied read minimum fields on Update singleton and sequence commands"
+      ],
+      "workload": {
+        "cases": 1,
+        "httpExpected": 6,
+        "httpMaximum": 6,
+        "post": 4,
+        "get": 2,
+        "head": 0,
+        "storeDirectories": 1,
+        "ownerOpens": 1,
+        "listenerLifetimes": 2,
+        "children": 1,
+        "auxiliaryPortProbes": 1
+      }
+    },
+    "control-command-gap": {
+      "phase": "held",
+      "runnable": false,
+      "cwd": null,
+      "argv": null,
+      "supervisorSeconds": 120,
+      "reason": "Requires separately accepted disposable derivative path/tree/file/patch hashes, rebuilt emitted runtime, exact named500 oracle and adjudicator. This harness cannot execute it.",
+      "selectedTitles": [
+        "ignores partial and malformed copied read controls on each mutation carrier"
+      ],
+      "workload": {
+        "cases": 1,
+        "httpExpected": 1,
+        "httpMaximum": 27,
+        "storeDirectories": 1,
+        "ownerOpens": 1,
+        "listenerLifetimes": 1,
+        "children": 0
+      },
+      "ownedTempPrefixes": [
+        "bdp-tx-http-"
+      ]
+    },
+    "control-receipt-bypass": {
+      "phase": "held",
+      "runnable": false,
+      "cwd": null,
+      "argv": null,
+      "supervisorSeconds": 120,
+      "reason": "Requires separately accepted receipt-root-only dispatch derivative, rebuilt emitted runtime, exact named503 oracle receiving200 and adjudicator. This harness cannot execute it.",
+      "selectedTitles": [
+        "keeps receipt minimum enforcement after commands ignore copied controls"
+      ],
+      "workload": {
+        "cases": 1,
+        "httpExpected": 2,
+        "httpMaximum": 6,
+        "storeDirectories": 1,
+        "ownerOpens": 1,
+        "listenerLifetimes": 1,
+        "children": 0
+      },
+      "ownedTempPrefixes": [
+        "bdp-tx-http-"
+      ]
+    },
+    "pack-and-consumer": {
+      "phase": "held",
+      "runnable": false,
+      "cwd": null,
+      "argv": null,
+      "supervisorSeconds": 120,
+      "reason": "Requires accepted clean final ordinary successor/source-tree/build binding, separate pinned package commands, archive-member/source comparison, fresh offline consumer and full runtime dependency provenance. No package script is supplied."
+    },
+    "fresh-tx": {
+      "phase": "held",
+      "runnable": false,
+      "cwd": "/Users/dbox/repos/wt/vickie/vickie-command-minimum",
+      "argv": [
+        "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+        "/Users/dbox/.cache/node/corepack/v1/pnpm/11.20.0/bin/pnpm.cjs",
+        "exec",
+        "vitest",
+        "run",
+        "apps/bdptest/src/transactional-collection-minimum-installed.test.ts",
+        "--testNamePattern",
+        "^(?:ignores command read controls while enforcing a later installed receipt minimum)$",
+        "--maxWorkers=1",
+        "--reporter=verbose",
+        "--reporter=json",
+        "--outputFile=/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-command-minimum-execution-preparation/run/fresh-tx.results.json"
+      ],
+      "supervisorSeconds": 120,
+      "reason": "Exact selector is proposed only. Requires accepted frozen source, fresh source/archive/consumer/full-payload provenance and exact entry overrides. The source gate rejects this phase even if its ID is approved.",
+      "selectedTitles": [
+        "ignores command read controls while enforcing a later installed receipt minimum"
+      ],
+      "ownedTempPrefixes": [
+        "bdp-collection-minimum-installed-"
+      ],
+      "workload": {
+        "cases": 1,
+        "httpExpected": 18,
+        "httpMaximum": 18,
+        "post": 8,
+        "get": 9,
+        "head": 1,
+        "canonicalUrls": 9,
+        "storeDirectories": 1,
+        "ownerOpens": 1,
+        "listenerLifetimes": 1,
+        "children": 1
+      },
+      "output": "Existing helper console JSON observation; no output environment variable or cross-carrier hook"
+    }
+  }
+}

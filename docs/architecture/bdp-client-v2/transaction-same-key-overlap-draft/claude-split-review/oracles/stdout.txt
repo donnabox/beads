@@ -1,0 +1,153 @@
+# Review — oracles & documentation scope (lines 531–787 + doc delta)
+
+Commit `18f5428`, file `apps/bdptest/src/transactional-same-key-overlap-installed.test.ts`. I verified my line numbering independently: counting the 495–787 block sequentially lands `function header` exactly at 531 and `addFailure(error);` exactly at 787, matching both declared range endpoints, so the citations below are anchored at both ends.
+
+No execution evidence was supplied and none is assumed. Findings are labeled **demonstrated** (provable from the supplied test + production/spec/schema excerpts) or **unverified** (depends on text outside the excerpts — reported as a boundary item, not a defect).
+
+---
+
+## 1. `receipt()` applies mutation-only `202` semantics to the GET receipt read — **demonstrated**, Low–Medium
+
+**Where:** pending branch at `:562–575`, reached for request 3 via `const recovered = receipt(r3, key);` at `:709`.
+
+**What:** `receipt()` is shared by POST (1, 2, 6) and the GET receipt-root read (3). Its pending branch asserts `expect(wire.status).toBe(202)` (`:563`), `location` (`:574`) and `retry-after` (`:575`). The supplied production code sets those **only for mutations**: `transaction-http.ts:183` gates on `mutation && observed.receipt.status === "pending"`, and `receiptResponse(observed, false)` for a read returns the plain `jsonResponse` 200.
+
+**Impact:** No false pass — the run still fails. But if request 3 ever returns a still-pending receipt, the failure surfaces as `same-key-overlap:receipt-3 / expected 200 to be 202` (plus a missing `location`), instead of the intended, self-describing `issued-receipt-full-equality → expect(recovered.pending).toBe(false)` at `:711`, which never executes. The helper also encodes a production rule (202/Location/Retry-After) that does not hold on the carrier it is being applied to.
+
+**Minimal correction:** thread the carrier through: `function receipt(wire: Wire, sentKey: string, mutation: boolean)`, assert `expect(wire.status).toBe(isPending ? (mutation ? 202 : 200) : 200)`, and guard `:574–575` with `if (mutation)`. Call sites: `receipt(aWire, key, true)`, `receipt(bWire, secondKey, true)`, `receipt(r3, key, false)`, `receipt(r6, key, true)`.
+
+---
+
+## 2. Whole-object equalities silently require `recordChangeContext` to be off in the installed configuration — **boundary clarification needed**, Medium
+
+**Where:** `:586–592` (`expect(resource).toStrictEqual({id, type, revision, properties, metadata})`) and `:758–762` (event `data` strict equality).
+
+**What:** Both expected objects omit `revisionProvenance`. Per the supplied evaluator, `needsContext = !noOp && (options.recordChangeContext || …)` (`resource-evaluator.ts:869–873`), and when a context exists the materialized record gains a `revisionProvenance` member (`resource-evaluator.ts:1141–1148`). The request literals carry no `revisionProvenance` and no `actor` (verified from `singleton`/`batch` at `:38–41`), so the **only** remaining input is the `configuration` object passed to `launchInstalledTransaction`, which lives in the counterpart range (~`:173–231`) and was not supplied. The schemas permit the member (`beadRecord.revisionProvenance`, `createdData.revisionProvenance`), so schema validation would pass and only the strict equality would fail.
+
+**Impact:** If the installed configuration enables `recordChangeContext`, a correct server produces a correct run that fails at `receipt-1`/`complete-event-linkage` — a false negative with no diagnostic pointing at configuration.
+
+**Minimal correction (for the lifecycle scope to confirm, not to weaken the equality):** state the precondition where the configuration is built, e.g. assert `expect(configuration.recordChangeContext ?? false).toBe(false)` inside the existing `ready-targets` check at `:334–340`, or add a one-line comment at `:586` naming the dependency. I am not recommending relaxing the strict equality.
+
+---
+
+## 3. Receipt-resource equality vs. `currentBeadCollection` item, and GET header literals through `applyReadHttpSemantics` — **unverified**, Low–Medium
+
+**Where:** `:722–725` (`items: [terminal.resource]`), `:539–541` (`content-type` / `cache-control` / `x-bdp-development` literals applied to every response, including the GETs at indices 3–5).
+
+**What (a):** `terminal.resource` came from a receipt result, where the schema forbids `links` (`receiptResult.resource` → `beadRecord` with `{"links": false}`). The collection item is validated as `currentBeadCollection` → `currentBeadRecord`, which **permits** `links` and `ownedLinks`. The equality therefore additionally requires that the current read omits those members entirely for a link-free Bead. The read projection is not in the supplied excerpts.
+
+**What (b):** GET responses are rewritten by `applyReadHttpSemantics(request, response)` (`transaction-http.ts:627–629`), which is not supplied. `jsonResponse` (`read-http-routing.ts:44–54`) is the only evidence for the exact `content-type: application/json` / `cache-control: private, no-store` literals, and it is the pre-read-semantics value.
+
+**What (c):** `:594` asserts `requiredPosition === effectPosition`. The supplied spec text (`bdp.md:5263–5277`) characterizes both only as "the execution's recorded facts"; the schema makes `requiredPosition` required and `effectPosition` optional on a completed receipt (and required-without-effect on a `failed` one), so the equality is not derivable from supplied material.
+
+**Impact:** Three equalities whose grounding is outside the excerpt. Each would fail the positive run rather than pass it, so there is no false-pass risk; the risk is an unattributable false negative.
+
+**Minimal correction:** none to the assertions. Record the three dependencies as named preconditions (a short comment at `:594` and `:722`), or confirm them against the read-projection/position modules in the full-source review.
+
+---
+
+## 4. The control mode diagnoses an unexpected pending receipt as a `mode` mismatch — **demonstrated**, Low–Medium
+
+**Where:** `:564` `expect(mode).toBe("positive");`
+
+**What:** In `second-key-distinct`, the two requests are two independent transactions, and production can legitimately return `202 pending` for a mutation (`transaction-http.ts:183` is not duplicate-specific). The accepted contract does require both control receipts to be terminal, so failing is correct — but the failure reads `expected 'second-key-distinct' to be 'positive'` under `same-key-overlap:receipt-1`, which names neither pending nor the control.
+
+**Impact:** Correct verdict, misleading cause; `control-prerequisites` (`:675`) never runs, so `controlPrerequisites` stays `false` and the report looks like an early positive-mode failure (see finding 5).
+
+**Minimal correction:** replace `:564` with a named assertion, e.g. `expect(mode === "second-key-distinct", "same-key-overlap:control-unexpected-pending").toBe(false);`.
+
+---
+
+## 5. Report fragment carries no mode/path identity — **partly unverified** (rest of the report object is outside the excerpt), Low–Medium
+
+**Where:** `:879–910`; assignments at `:663–673`.
+
+**What:** In the supplied fields, an intended control stop and a positive-mode regression are distinguishable only when `controlPrerequisites === true`. If the control fails earlier (finding 4, or a transport fault), the report shows `failedAssertion: "same-key-overlap:receipt-1"`, `controlPrerequisites: false`, `receiptIdsDiffer: true` — byte-identical in shape to a positive-mode failure. Two related fidelity points in the same fragment:
+
+- `bothConnectedBeforeFirstResponse` / `bothWritesPrecededFirstResponse` are assigned at `:664–669`, **after** `check("dispatch-discipline")` at `:650`. If that check throws, they are never computed and the report emits their initial value; `false` then conflates "observed false" with "not evaluated". (The declarations are in the counterpart range, so if they are already `boolean | null`-initialized this is already handled.)
+- A `"passed"` positive outcome does not by itself distinguish the both-terminal path from the contract's allowed one-pending path; `pendingObserved` and `performed` (absence of `pair-full-terminal-equality`) are the only discriminators, and `pendingObserved` is additionally reassigned redundantly at `:672` over the `||=` accumulation at `:613`.
+
+**Minimal correction:** add `mode` (and, if cheap, `secondKeyDiffers: secondKey !== key`) to the report object; initialize the two booleans to `null`; drop the redundant `:672`.
+
+---
+
+## 6. Documentation: "changes only the second key" understates the control — **demonstrated**, Low
+
+**Where:** doc delta, "A separate input control changes only the second key and is expected to stop after two successful responses at the named shared-receipt assertion."
+
+**What:** The mode switch also changes two oracles, not just the input: the serving-position ceiling at `:597` (`mode === "positive" ? 1 : 2`) and the hard pending rejection at `:564`. A reader could reasonably conclude the oracles are identical between modes, which is the property that makes a counterfactual control convincing.
+
+**Minimal correction:** append one sentence — "The control also widens the serving-position bound to `pos-2`, since the two keys commit independently, and treats any pending receipt as a failure."
+
+Everything else in the 21-line delta checks out against the code: six-request positive schedule (`:349–359`), both bodies omitting the Resource id (`:38–41`), schema/literal checks preceding equality (`:266–287`, `:552`), pending reported only from an actual pending response (`:613`), both-pending stopping as inconclusive without polling (`:695–700`), fingerprints-in-report/full-comparison-in-memory (`:496–507` vs `:586`, `:598`, `:712`, `:746`), batch-only replay claim (`:372`, `:773`), and the explicit non-claim of simultaneous server admission or an internal pending join.
+
+One wording note on the doc's "fails": in the both-pending case the report's `outcome` is `"inconclusive-both-pending"`, **not** `"failed"` (`:896–901`), even though `failureCount ≥ 1`. Any downstream gate keyed on `outcome === "failed"` would misclassify it as not-failed. Either say so in the doc or use `"failed-inconclusive-both-pending"`.
+
+---
+
+## 7. `shared-identity` compares test-chosen constants for the key element — **demonstrated**, Low
+
+**Where:** `:687–692`, the `a.key` / `b.key` members of the tuple.
+
+**What:** `Receipt.key` is the `sentKey` *argument* (`:618`, `:632`), i.e. the test's own `key` / `secondKey` literals, not server data. In positive mode they are the same constant, so that element is vacuously true. In `second-key-distinct` the check is unreachable, because `shared-receipt-id` (`:685`) throws first. The real server-side key oracle is `:557` (`expect(body.idempotencyKey).toBe(sentKey)`), which does carry evidence.
+
+**Impact:** No false pass; a dead assertion that overstates what `shared-identity` covers. In the one pathological reachable case (distinct keys sharing a receipt id) it produces a failure labeled `shared-identity` for what is really a key-isolation defect.
+
+**Minimal correction:** drop `a.key`/`b.key` from the tuple at `:687–692`; `:557` already pins both.
+
+---
+
+## 8. Event id recomputes a deliberately private token spelling — **demonstrated**, Low
+
+**Where:** `:741–745`.
+
+**What:** The test reimplements `renderTransactionEvent`'s hash construction byte-for-byte, including `JSON.stringify([tag, value])` and `base64url`. The production source carries an explicit comment immediately above it: *"Scope and Resource token spelling is deliberately private, not a fixture law"* (`transaction-events.ts:81`). The suffix `_pos-1_0` is also hardcoded rather than derived from `terminal.effect`, which is pinned to `1` only by `:693`.
+
+**Impact:** A private-spelling change breaks this test even though the spelling is declared not to be a fixture law; the duplicated hash also means a shared-bug drift in both copies would go undetected. The genuinely informative part — that the embedded epoch/view/source match the serving response's own headers — survives a weaker formulation.
+
+**Minimal correction:** keep the recomputation if the strength is wanted, but derive the checkpoint (`_pos-${terminal.effect}_0`) and add a comment at `:741` naming the production dependency so the coupling is intentional and greppable. Alternatively assert the id against the production regex shape (`transaction-events.ts:75`) plus the three recomputed hash segments.
+
+---
+
+## 9. `[a.effect, b.effect].sort()` uses the default lexicographic comparator — **demonstrated**, Low (latent)
+
+**Where:** `:677`.
+
+**What:** `Array.prototype.sort()` without a comparator orders by string conversion. For the asserted multiset `{1, 2}` there is **no** false pass (only the numbers 1 and 2 can string-sort to `[1, 2]`), so this is latent, not active.
+
+**Minimal correction:** `[a.effect, b.effect].sort((x, y) => x! - y!)`.
+
+---
+
+## 10. `checked()` discards `validate.errors` — **demonstrated**, Low
+
+**Where:** `:266–271`, specifically `expect(validate(value), \`same-key-overlap:schema:${name}\`).toBe(true);` at `:269`.
+
+**What:** A schema failure reports only `expected false to be true` under the schema label — no instance path, keyword, or failing member — despite `allErrors: true` being enabled at `:256` precisely to collect them.
+
+**Minimal correction:** include a redacted path summary in the message, e.g. `` `same-key-overlap:schema:${name}:${(validate.errors ?? []).map((e) => `${e.instancePath}:${e.keyword}`).join(",")}` ``. Deliberately **not** `ajv.errorsText(...)` or `e.params`/`e.data`, which can echo response values — the safe-report rule at `:902–903` and the failure-serialization path are owned by the counterpart scope, so paths-and-keywords only is the conservative form.
+
+---
+
+## 11. Claim calibration — correct as written, **informational**
+
+The `dispatch-discipline` ordering clause (`:652–657`: both `invoked` and `end-called` precede the first `settled`) is guaranteed by the synchronous call sequence at `:640–641` — `send(1)` and `send(2)` each call `req.end()` synchronously (`:523–524`) before any I/O callback can run. It therefore cannot fail except through broken milestone machinery, and carries **no** server-side evidence. The informative members of that check are the distinct-socket assertions (`:658–661`), and the genuinely I/O-derived evidence is the unasserted `bothConnectedBeforeFirstResponse` / `bothWritesPrecededFirstResponse` pair (`:663–669`), correctly left as supplementary.
+
+This matches the contract and is honestly hedged in all three places it is stated: the file header (`:1`, "no profile qualification or server-join claim"), the doc delta ("does not prove simultaneous server admission or an internal pending join"), and the report field name `clientDispatchDisciplinePassed` (`:882`). Note explicitly: a server that fully serialized the two requests — executing request 1 to commit and serving request 2 as a retained replay — passes this test identically. That is within the stated boundary, not a defect; the qualifier should be preserved in any downstream summary.
+
+---
+
+## Positive confirmations (no action)
+
+- Prerequisite ordering is correct: `control-prerequisites` (`:675–683`) runs **before** the named `shared-receipt-id` failure (`:685`), and the per-receipt bounds required before it (own-key echo `:557`, terminality `:577`, own effect ≥ 1 `:595`, serving ≥ own effect `:596`, serving ≤ pos-2 in control mode `:597`) all execute inside `receipt()` at `:670–671`. The control therefore has real counterfactual force.
+- Both strict receipt shapes (`:566–573`, `:598–611`) are key-exhaustive and match the corresponding `mutationReceipt` `oneOf` branches; the self-referencing members (`requiredPosition`, `effectPosition`, `expiresAt`, `time`) are each covered by schema validation plus, for positions, independent `position()` parsing — so the absence of extra literal checks is not a gap here.
+- Cross-response deep comparisons are genuine, not reference-identical: `terminal.resource` (from the receipt) vs. the collection item (`:723`) and vs. the event `data` members (`:759–761`) are separately parsed HTTP responses.
+- Byte-length literals in `literal-inputs` are correct — I recounted all four by hand: singleton 108, batch 150, descriptor 170, schema 166.
+- Semantic-equivalence setup is sound: both carriers include `"metadata":{}` explicitly, so the one-operation-batch/singleton equality (`bdp.md:3920–3934`) does not rest on protocol default expansion, and the evaluator's `"metadata" in input ? (input.metadata ?? {})` path (`resource-evaluator.ts:805–811`) yields the asserted `metadata: {}`.
+- Contract oracle coverage is complete: shared receipt id, transaction, epoch/view, effect `pos-1`, Resource identity (via whole-body equality at `:703`), full terminal JSON for requests 3 and 6, one-resource collection, one-created-Event linkage, and serving position pinned to `pos-1` on every later read.
+
+---
+
+## Limits of this review
+
+No run occurred and no execution outcome was supplied; everything above is source-level. Lines 173–231, 407–494 and 788–958 belong to the counterpart scope and were not supplied — findings 2, 3 and 5 are stated as boundary items against them rather than as defects. I did not recompute the four SHA-256 digests in `literal-inputs` (byte lengths were verified). The schema bundle was reviewed only through the supplied compact excerpt; `receiptStatus`, `receiptDetail`, `revision`, `revisionProvenance`, `idempotencyKey`, `currentLinkCollection` and the rest of the reference closure were omitted, and the test loads the full checked-in bundle. `applyReadHttpSemantics`, the read/collection projection, the event `data` renderer and the position-allocation code are outside the excerpts. I offer no verdict on the counterpart scope or on full-profile conformance.

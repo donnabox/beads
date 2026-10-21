@@ -1,0 +1,9 @@
+{
+  "utc": "2026-10-18T09:29:55.094875+00:00",
+  "reason": "Track the separately acquired legacy S11 runtime immediately, so terminal cleanup observes its close even when a following shape assertion fails. The tested normal close remains one actual owner close; memoized successful repeated close is inert.",
+  "path": "packages/server/src/reference-deployment-runtime.test.ts",
+  "beforeSha256": "cf062b5f7d6603a9c96c5cbbad9962598d867896dcb7e914f97a9bbc472e541b",
+  "afterSha256": "18d963ae7a72097a853988970f2f3c9f087ace14cdd4798250969ac89930f27f",
+  "formatterAlreadyConsumed": true,
+  "executed": false
+}

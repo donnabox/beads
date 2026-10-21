@@ -1,0 +1,20 @@
+{
+  "kind": "independent-native-typecheck-tuple-correction-precision-closure",
+  "observedUtc": "2026-10-18T04:48:02.031125+00:00",
+  "decision": "ACCEPTED STATIC minimal tuple annotation; no findings",
+  "findings": [],
+  "bindings": {
+    "correctionIndexSha256": "5ac0d65bd5932b5c802fe470f8e3e7d444552788805152001e8d039ea85ed4ef",
+    "sourceBindingSha256": "f03a40dc7431b657bd862e40b45b4c7c81ff7115cce1faef7b1640a0d17a155f",
+    "fullPatchSha256": "890ce777269f49e932b34b68705c56d9553e8e946dc708a7f524f3c7b8061745",
+    "afterSourceSha256": "8f8678b9f8d84e36b7faef5279e70b3d9fa9e992ce3f8b2eb6a718ed92b31589",
+    "beforeSourceSha256": "87f360387a20635b58a73886806c6c4ad975d27257781aee086cfb87ca92fffd",
+    "previousCorrectionIndexSha256": "cb1a558d165ce396246b22b697e2182d8356a51f26077fe6faf4ed1af40178bb",
+    "failedTypecheckExitSha256": "be2a0186144ea026b6acf1080c96a07178040d0bbb115dbe1dbed02ae0d2ff1d",
+    "failedTypecheckLogSha256": "94e8283f23558f7242d5f4725a2e141afa27a1917c7bea1aa8bd49f7bbe850d2"
+  },
+  "conclusion": "The sole source delta annotates unchanged three pair literals [6,7],[8,9],[4,5] as readonly literal tuples. Destructured get/head are therefore statically present; it changes no emitted runtime expression, dispatch/status/header/body oracle, request count, lifecycle or budget. No additional actual CODE review is required by this bounded native closure; no claim that Claude reviewed new bytes.",
+  "validationStatus": "Prior actual typecheck failed and is preserved. No corrected-source compiler/formatter/test/build/runtime pass is claimed. Root must bind corrected source and schemas in separately named fresh validation4 with no prior runtime output reuse.",
+  "validationReleased": false,
+  "sourceHelperGitGateChanged": false
+}

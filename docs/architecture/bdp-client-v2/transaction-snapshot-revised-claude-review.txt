@@ -1,0 +1,111 @@
+Verification is complete at frozen `d907a1e` (clean tree, plan SHA256 matches). No files written, nothing built or tested.
+
+# Review: revised S1 plan vs. `d907a1e`
+
+## Premise checks the brief required first
+
+Both premises the revised plan asserts against the earlier Claude review are **correct at `d907a1e`**. Do not re-litigate either.
+
+**`ownedLinks` is inside R.** `after`/`sourceAfter` are `materializeVersion(...)` results (`resource-evaluator.ts:1009`, `:1012`); `materializeVersion` spreads `ownedLinks` into the frozen record (`:1153`, inside the `freeze({...})` at `:1135`); then `:1050` serializes the *complete* record and `:1055` enforces `representationBytes` = 256 KiB (`transaction-batch.ts:64`). Test-backed: `transaction-materialization.test.ts:247–265` builds a Bead at exactly 262,144 bytes, then distinguishes `direct-overflow` from `owned-source-overflow` — the latter overflows *because* the source Bead's record gains `ownedLinks`. The 9R premise is false, and the plan's stronger point follows: `maxOwnershipMax: Number.MAX_SAFE_INTEGER` (`installed-contract-artifact.ts:33`) means descriptor maxima supply no byte bound at all; only R does.
+
+**Wildcard no-ETag 304 is real.** `conditionalReadStatus` (`read-http.ts:50`) with `etag === null`: `If-None-Match: *` → `tagListMatches` returns true at `:63` → **304**; specific `If-Match` → no match → **412**; `If-Match: *` → passes; specific `If-None-Match` → cannot match → 200. The plan's "choose no new validator" is sound, and `bdp.md:6546` genuinely assigns no snapshot validator.
+
+Two bonus confirmations that strengthen the plan beyond what it claims: `applyReadHttpSemantics` is applied to **every** transactional GET/HEAD (`transaction-http.ts:448–450`), and conditionals are evaluated only on an already-200 response — so "fences precede conditionals" is structurally pre-satisfied, not something to build. And `transaction-read.ts:120–161` already returns the exact `{current, snapshot?}` pairing the plan wants for Q1-neutrality, with an invariant at `:159` that retained never leads current; `transaction-http.ts:168,190` already writes `.current` to the wire for the analogous retained path.
+
+## Verdict on independence
+
+**Yes — bounded durable capture and immutable streams can begin while Q1 pends, but two step-1 decisions must close first, and the done-when set is not yet authorable as written.**
+
+Q1 concerns only the comparison of a supplied minimum on a *retained* read. Capture, ordinals, the page plan, the manifest body, both streams, checkpoint rendezvous, restart, and the 413/503 capacity paths have no dependency on it. The plan's hedge (capture anchor and same-entry current observation both) is cheap because the seam already exists.
+
+What actually blocks authoring is not Q1. It is that **A3 and A5 are irreversible**: page plan and capacities land in `configuration`, which is compared by exact string equality (`transaction-store.ts:485–486`), and the plan forbids migration — so a wrong value abandons every store created before the correction. And **A1/A2 make the transport step unsafe and done-when #6 unsatisfiable.**
+
+---
+
+# Authoring blockers
+
+### A1 · HIGH · Conditional headers on the creation target burn permanent issuance capacity
+**Location:** plan:50, 52, 72; done-when #5 (plan:99), #8 (plan:102). Source: `transaction-http.ts:448–450`, `read-http.ts:26–38, 50–56, 63`.
+
+`applyReadHttpSemantics` runs on every transactional GET/HEAD and evaluates conditionals *after* the route produced its 200. So a creation GET carrying `If-None-Match: *` returns **304**, and one carrying a specific `If-Match` returns **412** — in both cases after the capture has committed and the identity has been issued. Combine with plan:50 (permanent 65,536-identity cap, no reprovision, no tombstone deletion) and plan:52 (a committed-but-undisclosed capture counts as issued): an authorized client can permanently brick snapshot creation for the installation with 65,536 conditional creation GETs, each of which looks to the client like an ordinary successful cache revalidation. The plan treats undisclosed captures as a fault-path curiosity; this is a routine, client-reachable path.
+
+**Fix:** decide the creation-target conditional policy before step 2. Either suppress conditional evaluation on the creation target — it has no prior representation to revalidate, so a 304/412 there asserts something false — or commit the capture only after the conditional decision. Add a done-when row: conditional headers on the creation target neither issue an identity nor consume capacity. Do not leave this to the shared wrapper.
+
+### A2 · HIGH · Supplied epoch/view is swallowed by the minimum gate, so done-when #6's foreign-view row is unreachable
+**Location:** plan:72, 74, 80; done-when #6 (plan:100) vs #9 (plan:103). Source: `transaction-http.ts:102–106, 387`; `transaction-consistency.ts:20–44, 45–55, 69–72`.
+
+`hasMinimumControls` fires on **any** of `bdp-minimum-scope-position`, `bdp-scope-epoch`, `bdp-authorization-view`. `snapshotTransactionMinimum` requires all three present and valid, so a partial tuple throws → `undefined` → `developmentGap("minimum-position")`. Meanwhile `foreign-view` and `cursor-expired` are produced *only* by `checkTransactionMinimum` (`:71`, `:70`), which needs a complete tuple. On a retained snapshot read that leaves no reachable input: epoch/view alone → bodyless 500; epoch/view plus a minimum → the input plan:80 declares unsupported → also bodyless 500. Both collapse to the same undifferentiated 500. Done-when #6's requirement that "foreign supplied epoch/view token" take a *distinct path* cannot be met, and plan:74's claim that current fixtures can establish foreign supplied-token refusal is not true for snapshot targets.
+
+**Fix:** state whether a supplied epoch/view *without* a minimum position is inside the private snapshot contract. If yes, the snapshot route needs its own epoch/view gate that does not route through `hasMinimumControls`/`snapshotTransactionMinimum` — that gate is Q1-independent and authorable now. If no, delete that row from done-when #6 and say the case is a development gap until Q1 rules. Do not leave #6 and #9 both asserted.
+
+### A3 · MEDIUM · Expiry reclamation vs. capacity measurement is unspecified; no clock named
+**Location:** plan:48, 50, 58, 60; done-when #8. Source: `transaction-store.ts:241` (`clock = options.clock ?? Date.now`), `:249` (`instant()`), `:448` (`sweep`), `:457` (`expireRow`), `:463` (`maintain`), `:242` (interval default 1000 ms).
+
+The 503 decision depends on live-handle count and aggregate captured bytes. The plan never says whether expired-but-unswept captures still occupy that capacity, nor which clock evaluates snapshot expiry — it says only "fixed creation/expiry instants" and "five minutes." The store already solves exactly this for receipts by expiring in place inside the entry with `instant()`; otherwise maintenance runs on a 1,000 ms timer. As written, done-when #8's "eight small handles" and "two near 32-MiB captures" boundaries depend on timer interleaving, and a 503 could be returned when every handle is already expired.
+
+**Fix:** state that snapshot expiry uses the store's injected `clock`/`instant()`; that capacity prechecks expire-in-place inside the same owner entry *before* measuring; that the maintenance sweep is a space reclaimer, not the capacity oracle; and that tests drive expiry through the injected clock, never wall time.
+
+### A4 · MEDIUM · "The installed Resource page count ceiling" resolves to nothing
+**Location:** plan:64, 68.
+
+At `d907a1e` the only candidates are `development-authority.ts:50` — `page: {defaultItems: 20, maximumItems: 100}`, the *Read-profile* development authority's advertised limits, a different authority from the transactional owner — and `receiptMaximumItems`/`TRANSACTION_MAXIMUM_OPERATIONS` = 32 (`transaction-batch.ts:61`, `transaction-store.ts:231`), a receipt bound derived from the operation budget. `TRANSACTION_RUNTIME_LIMITS` has no page-item field; `CONTRACT_ARTIFACT_CEILINGS` (`installed-contract-artifact.ts:19–34`) is unrelated. Since page ranges are immutable, persisted in `configuration`, and any configuration change is a hard reopen refusal, this value cannot be corrected later without abandoning every prior store — which plan:46 already forbids migrating.
+
+**Fix:** name the constant and its file, or declare an explicit new private `snapshotPageItems` capacity alongside the 4 MiB page byte bound. Do not inherit the Read authority's advertised 100 — it belongs to a profile whose discovery the snapshot route cannot advertise.
+
+---
+
+# Later full-profile qualification gaps
+
+### A5 · MEDIUM · The 410/404 paths have no stated code, retry, or schema obligation
+**Location:** plan:20, 48, 52, 82; done-when #6. Source: `bdp.md:5904–5907` (`410 cursor-expired`, `404 resource-not-found`), `bdp.md:1899` (`cursor-expired` → `gone`, 410, retry **`after-state-change`**).
+
+The plan fixes code/status/retry/family exactly for `limit-exceeded` and `temporarily-unavailable` and requires exact schema validation of those bodies, but names the expiry and never-issued paths only as bare "410" and "404." Note the tension it leaves silent: `cursor-expired` carries retry `after-state-change`, a hint that can never come true for a fixed, non-renewable snapshot expiry.
+
+**Fix:** name `cursor-expired`/410/`gone`/`after-state-change` and `resource-not-found`/404 in plan:82 and done-when #6, require the same exact schema validation applied to 413/503, state a position on the unachievable retry hint, and note that `retryAfter` must be omitted on both (the schema forbids `retryAfter` unless retry is `after-delay` — `schemas/bdp-v0.schema.json:4316–4330`).
+
+### A6 · MEDIUM · The Q1 ruling packet omits `:5916`, the clause that bounds the answer space
+**Location:** plan:78.
+
+`bdp.md:5916` — the manifest/stream table row — expressly admits "ordinary epoch/view, **minimum-position**, and service failures" on the retained target, and `bdp.md:5783–5786` closes the authority's dispositions to exactly three (at-or-after, wait/route, or foreign-view / cursor-expired / catch-up-timeout). The plan tells the operator "the exact permitted refusal is not stated." The refusal *set* is in fact closed and confirmed applicable to the retained row; what is unstated is only which prefix the minimum gates. Presenting the refusal set as open overstates the gap and invites a ruling that invents a disposition.
+
+**Fix:** cite `:5916` and narrow the question: the disposition set is closed; the open question is solely whether the minimum is compared against the current serving prefix or the captured anchor, and if the latter, which of the three closed dispositions applies when the minimum sits above the anchor but at or below current head. **I am not answering that here.**
+
+### A7 · LOW · The current-observation half of one Q1 reading is already adopted, unlabelled
+**Location:** plan:80, 110. Source: `bdp.md:5793`, `:5801–5814`; `transaction-http.ts:168,190`.
+
+The 304/412 claim is correct and genuinely settled. Extending current serving headers to retained 200/HEAD is also well-supported by `:5793` — and is stronger than the plan claims, because `transaction-http.ts:168,190` *already* writes `transactionReadContexts(...).current` on the analogous retained continuation path. But it is the same structural move the plan rejects as "extending a receipt-only clause" when H2 made it for minimum *comparison*. Splitting header from comparison is defensible and may well be right; it should be stated as deliberate so the operator rules knowing the header question was already answered the other way.
+
+**Fix:** one sentence in plan:80 naming the split and citing `transaction-http.ts:168,190` as existing precedent. No change of position implied.
+
+### A8 · LOW · The interim wire disposition is self-contradictory as phrased
+**Location:** plan:80 ("explicit development-gap report") vs done-when #9 ("no normative 500"). Source: `transaction-http.ts:97–101` — `developmentGap` *is* `empty(500)` plus `x-bdp-development-limit`.
+
+The artifact is a bodyless 500; done-when #9 reads as forbidding it. Tests cannot be written against this. Also missing: `bdp.md:5919–5921` states that "the shared native 406, conditional 304/412, and bodyless 500 rules apply" to snapshot targets — the nearest textual support for the interim path, and the plan omits it while rejecting H3.
+
+**Fix:** say "bodyless 500 with `x-bdp-development-limit: minimum-position`, asserted in tests as an unsupported development gap and excluded from every conformance row," drop the ambiguous "no normative 500," and cite `:5919–5921`.
+
+### A9 · LOW · Token binding is narrower than the clause it cites
+**Location:** plan:42 ("Tokens bind Snapshot/kind/range") vs plan:20 and `bdp.md:5923–5930` (next URLs bound to identity, kind, epoch, view, position, expiry).
+
+The binding is presumably transitive through the snapshot row, which carries epoch/view/position/expiry — but that argument is never stated, so an implementer could validate kind/range against the wrong snapshot's epoch.
+
+**Fix:** state the transitive argument and require validation to resolve the snapshot row first, rejecting any token whose resolved epoch/view/anchor/expiry disagree.
+
+### A10 · LOW · 503 `Retry-After` has no stated basis, and header vs. body member is conflated
+**Location:** plan:60. Source: `schemas/bdp-v0.schema.json:4206–4209, 4316–4330`.
+
+The plan requires Retry-After with no derivation. The only honest basis is the earliest live handle's fixed expiry, and even that does not guarantee enough bytes free. The schema member is the body's `retryAfter` (integer ≥ 0, permitted only when retry is `after-delay`), distinct from the HTTP header.
+
+**Fix:** derive the value from the earliest live expiry under the injected clock, state it is a lower bound on when capacity *may* free, and name both the header and the body member explicitly.
+
+---
+
+## Verified correct — do not re-litigate
+
+Capacity arithmetic is internally consistent with R correct: 128 × 262,144 = exactly 32 MiB; 4,096 rows needs ≤ 8,192 bytes/record, trivially reachable with small records, so all four done-when #8 conditions are distinguishable; "byte ceiling binds before row count for large records" follows. The page-fit proof holds — `scopeSourceBytes` is 65,536 (`transaction-batch.ts:65`), 6·(65,536+1,024)+1,024 = 400,384, plus R = 662,528 < 4 MiB, and 6× per input byte is a genuinely safe JSON-escape bound. The UTF-8-bytes ≥ UTF-16-code-units direction is correct, so the 10 MiB manifest bound against `MAX_STRING_LENGTH` is sound. The SQLite collation caveat is right: UTF-8 binary order and UTF-16 code-unit order genuinely diverge at supplementary characters (4-byte UTF-8 sorts above 3-byte; surrogates sort below U+E000), and `compareCanonicalIds` (`packages/protocol/src/index.ts:252`) is UTF-16 code-unit order. Omitting `limit` is schema-valid — it is forbidden unless code is `limit-exceeded` and never required (`:4213`, `:4300–4315`). `limit-exceeded` = 413/`size`/`never` and `temporarily-unavailable` = 503/`unavailable`/`after-delay` (`bdp.md:1905–1907`), both in `transactionalProblemCode` with 413/503 admitted. `configuration` is exact-string compared, so capacity changes do yield `transaction installation mismatch`, with `identityPolicy` checked first (`:483`) — the plan's separation is exactly right. Hot-journal recovery (`:468–471`) precedes comparison (`:480`) precedes maintenance (`:501–505`). `resources` has no `(kind,id)` index; `receipt_page_ranges` is the existing precedent for recorded ranges. The clock seam exists at `:241`. All six catalog rows exist. No snapshot route or table exists — "genuinely missing" holds.
+
+One minor correction to a plan phrase, no action needed: plan:60 calls `transactionalProblem` → `readUpdateProblem` → Read problem a "schema chain." They are three parallel `$defs` with superset enums, not `$ref`-linked. The substance — that these bodies validate — is right.
+
+## Status of the open rulings
+
+Q1 remains with the operator, narrowed only as described in A6. Q2's finite-issuance choice is coherent and honestly labelled, but A1 changes its risk profile materially: a permanent cap with no reprovision is only safe once the creation target cannot be made to issue identities it never delivers. I am proposing no new normative law and settling neither question.

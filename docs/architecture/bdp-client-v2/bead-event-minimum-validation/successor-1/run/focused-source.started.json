@@ -1,0 +1,23 @@
+{
+  "argv": [
+    "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+    "/Users/dbox/repos/wt/vickie/vickie-bead-event-minimum/node_modules/vitest/vitest.mjs",
+    "run",
+    "packages/server/src/transaction-events.test.ts",
+    "packages/server/src/transaction-service.test.ts",
+    "--maxWorkers=1",
+    "--reporter=verbose",
+    "--reporter=json",
+    "--outputFile=/Users/dbox/repos/wt/vickie/bdp-integration-logs/bead-event-minimum-validation/successor-1/run/focused-source.results.json",
+    "--testNamePattern",
+    "^(?:gates\\ initial\\ Scope\\ Event\\ unknown\\ minima\\ before\\ retained\\ scans|captures\\ an\\ initial\\ Scope\\ Event\\ opaque\\ tuple\\ across\\ one\\ bounded\\ wait|cancels\\ and\\ drains\\ initial\\ Scope\\ Event\\ opaque\\ waits|serves\\ initial\\ finite\\ Scope\\ Event\\ opaque\\ minima\\ through\\ bounded\\ waiting|preserves\\ initial\\ Scope\\ Event\\ preflight\\ before\\ malformed\\ capture:\\ already\\-aborted|preserves\\ initial\\ Scope\\ Event\\ preflight\\ before\\ malformed\\ capture:\\ invalid\\-policy|preserves\\ initial\\ Scope\\ Event\\ preflight\\ before\\ malformed\\ capture:\\ throwing\\-clock|preserves\\ initial\\ Scope\\ Event\\ preflight\\ before\\ malformed\\ capture:\\ nonfinite\\-clock|preserves\\ initial\\ Scope\\ Event\\ preflight\\ before\\ malformed\\ capture:\\ malformed\\-after\\-valid\\-preflight|pages\\ within\\ groups,\\ continues\\ exclusively\\ after\\ end\\ and\\ rejects\\ unrelated/fabricated\\ cursors|checks\\ minimum\\ position\\ before\\ any\\ retained\\ group\\ scan\\ or\\ body\\ materialization|cancels\\ finite\\ Event\\ waits\\ through\\ the\\ facet\\ and\\ drains\\ uncancelled\\ waits\\ before\\ owner\\ close|serves\\ finite\\ Event\\ HTTP\\ with\\ current\\ context,\\ conditionals,\\ HEAD\\ and\\ bounded\\ minimum\\ waits|isolates\\ unresolved\\ metadata\\-only\\ incident\\ membership\\ while\\ Scope/Link\\ sources\\ remain\\ available|gates\\ initial\\ Bead\\ Event\\ unknown\\ minima\\ before\\ retained\\ scans|captures\\ an\\ initial\\ Bead\\ Event\\ opaque\\ tuple\\ across\\ one\\ bounded\\ wait|cancels\\ and\\ drains\\ initial\\ Bead\\ Event\\ opaque\\ waits|serves\\ initial\\ finite\\ Bead\\ Event\\ opaque\\ minima\\ with\\ retained\\ identity\\ and\\ route\\ fences|preserves\\ initial\\ Bead\\ Event\\ classification\\ and\\ preflight:\\ already\\-aborted|preserves\\ initial\\ Bead\\ Event\\ classification\\ and\\ preflight:\\ invalid\\-policy|preserves\\ initial\\ Bead\\ Event\\ classification\\ and\\ preflight:\\ throwing\\-clock|preserves\\ initial\\ Bead\\ Event\\ classification\\ and\\ preflight:\\ nonfinite\\-clock|preserves\\ initial\\ Bead\\ Event\\ classification\\ and\\ preflight:\\ malformed\\-after\\-valid\\-preflight|preserves\\ initial\\ Bead\\ Event\\ classification\\ and\\ preflight:\\ noncanonical\\-query|preserves\\ initial\\ Bead\\ Event\\ classification\\ and\\ preflight:\\ relative\\-source)$"
+  ],
+  "cwd": "/Users/dbox/repos/wt/vickie/vickie-bead-event-minimum",
+  "head": "f6204255d53ef65d4aea56ff5ccc86d72e8cc7b0",
+  "tree": "f5a20fe30562b11887d11a1100dbbd473843de7e",
+  "sourceIdentity": "507d86e5dac586bee57543bcf6ade921a5d354dfd36f08dd05fc5c8230f3afaa",
+  "rootGateSha256": "79f606328eaa3cfef07cdc50491f54c030c07202654ba2356d6517f58bf61f19",
+  "outerSeconds": 120,
+  "automaticRetries": 0,
+  "overrides": {}
+}

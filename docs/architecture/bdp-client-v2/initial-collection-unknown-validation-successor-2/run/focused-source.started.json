@@ -1,0 +1,23 @@
+{
+  "argv": [
+    "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+    "/Users/dbox/repos/wt/vickie/vickie-fresh-depth-serving/node_modules/vitest/vitest.mjs",
+    "run",
+    "packages/server/src/transaction-read.test.ts",
+    "packages/server/src/transaction-http.test.ts",
+    "--maxWorkers=1",
+    "--reporter=verbose",
+    "--reporter=json",
+    "--outputFile=/Users/dbox/repos/wt/vickie/bdp-integration-logs/initial-collection-unknown-validation-successor-2/run/focused-source.results.json",
+    "--testNamePattern",
+    "^(?:initial\\ collection\\ minimums\\ bounds\\ unrecognized\\ initial\\ collection\\ minima\\ without\\ retaining\\ state\\ or\\ holding\\ the\\ owner|waits\\ for\\ current\\ Resources\\ and\\ initial\\ collections\\ with\\ unknown\\ minima\\ and\\ preserves\\ residual\\ refusals)$"
+  ],
+  "cwd": "/Users/dbox/repos/wt/vickie/vickie-fresh-depth-serving",
+  "head": "2dfd2c6cc84a28b1dd336f4184c1a5f910ce8a96",
+  "tree": "1823346779033dec6255bcab93f69d7149d33055",
+  "sourceIdentity": "897300116c07b9fcaf55ccc6755572b94973d0ce26b0198736108bb0410cbd77",
+  "rootGateSha256": "42f002739d5263f3e4dc99bae2180d71ba9e86cae78bbc2650379e48eb0f12e7",
+  "outerSeconds": 120,
+  "automaticRetries": 0,
+  "overrides": {}
+}

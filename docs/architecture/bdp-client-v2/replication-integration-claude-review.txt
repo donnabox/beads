@@ -1,0 +1,68 @@
+Reviewed `d907a1e` (HEAD confirmed `d907a1e1576c5795c17edb5f15528f47edfd7d6b`, tree clean). No files written, no build, no test run — every number below is re-derived from the committed source.
+
+## Findings
+
+### 1. Low — stale sibling group bound left in the document this commit was correcting
+**Location:** `docs/design/transaction-implementation-progress.md:1030` (and the table it points at, `:1080`)
+
+`:1030` states "The admitted materialization tuple below bounds one encoded group to 253493248 bytes." The actual constant is **169,345,024** (`transaction-events.ts:28-31` with K = `matchedResources` 32 + `maximumOperations` 32 = 64), pinned by `transaction-events.test.ts:551` and stated correctly at `:1118-1119`. The sentence also forward-references the table at `:1080`, whose terminal row is explicitly labelled `64 / 256 (superseded after stronger stress)` — so "the admitted materialization tuple below" names no admitted tuple at all. This drift entered at `4e65943` (`2fc4bb8` lowered `matchedResources` 64→32 while `8569b85` had authored `:1030`); d907a1e fixed exactly this class of staleness in the changefeed paragraph (270482968 → 186334744 at `:1175-1177`) and missed the sibling occurrence 145 lines above.
+
+**Remedy:** set `:1030` to `169345024`, and either add `| 32 / 256 (current) | 169345024 | 39391232 |` to the table at `:1080` or repoint the sentence at `:1118`.
+
+### 2. Low — the only out-of-band derivation of the served bound still proves the superseded tuple
+**Location:** `/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-changefeed-bound.{mjs,log}`
+
+The probe hard-asserts `[matchedResources, inducedEvents, maximumOperations] === [64, 256, 32]` and `stored === 253493248`, pinned to commit `8569b85`; its log records `servedByteBound: 270482968`. Against the integrated tree it now fails at the `deepEqual`, and its logged figure contradicts the doc's 186,334,744. No correctness exposure — the arithmetic is machine-checked in-suite by the live-constant derivation (`transaction-changefeed.ts:19-25`) plus `transaction-changefeed.test.ts:422-424` — but the standing external proof for the claim now disagrees with the claim.
+
+**Remedy:** re-run the probe against `d907a1e` with `[32,256,32]` / `stored===169345024` / `served===186334744`, or mark the artifact superseded and cite the in-suite assertion as the derivation of record.
+
+### 3. Low — degenerate single-iteration loops left behind in the rewritten witness
+**Location:** `packages/server/src/transaction-changefeed.test.ts:404-408`
+
+`for (let start = 0; start < 32; start += 32)` executes exactly once, so `start` is permanently 0 and `` `a${start + i}` `` is just `` `a${i}` ``. The loop existed only to split 64 creations across two `maximumOperations: 32` transactions; at 32 it is dead scaffolding that falsely implies a second batch.
+
+**Remedy:** flatten both to single calls — `f.run(Array.from({ length: 32 }, (_, i) => create(\`a${i}\`)))` and the matching `edge(\`l${i}\`, \`a${i}\`, \`a${i}\`)`.
+
+### 4. Informational — the four new corruption controls prove fail-closed but not which fence fired
+**Location:** `packages/server/src/transaction-changefeed.test.ts:367-370`
+
+Each row is individually discriminating (verified below), but the table asserts a bare `.toThrow()`. A future reordering that made `{ checkpoint: "cg_x" }` trip a generic framing check instead of the `checkpoint ≡ position` fence would still pass silently. The end-to-end tamper at `:385` does assert `"framing"`.
+
+**Remedy:** optional — convert the four new rows to `[change, message]` pairs and assert the message.
+
+### 5. Informational — prototype spy not restored on failure
+**Location:** `packages/server/src/transaction-events.test.ts:625-632`
+
+`prepare.mockRestore()` at `:632` is skipped if `:629` or `:631` fails, and `vitest.config.ts` sets no `restoreMocks`. Behaviourally inert (pass-through spy), and the sibling spies at `:557`/`:589`/`:658` share the shape.
+
+**Remedy:** `try { … } finally { prepare.mockRestore() }`, or add `restoreMocks: true` to `vitest.config.ts`.
+
+### 6. Informational — `readChanges` touches `groups` before the minimum check, with no negative control
+**Location:** `packages/server/src/transaction-store.ts:1397` vs `:1399`
+
+The cursor-existence probe `SELECT position FROM groups WHERE position=?` runs before `checkTransactionMinimum`, unlike `readEvents`, which is pinned to zero group reads by `transaction-events.test.ts:584-605`. Pre-existing (`a7430dd`), defensible (fast-fail on a corrupt cursor rather than looping inside the wait), reads no body, and the doc makes no min-before-scan claim for `changes/` — so not a defect, just an asymmetry the changefeed lane never witnesses.
+
+**Remedy:** none required; for symmetry, add a `groupReads` spy to the changefeed suite asserting the *body* statement is never prepared when the minimum refuses.
+
+## Verified (the four points you asked about)
+
+**Per-observation preparation — correct, and correctly *not* the remedy the original review proposed.** `retainedGroupReader()` (`transaction-store.ts:540-559`) prepares `rowAt`/`bodyAt` once, and the closure is built at `:1319`, i.e. **after** the minimum check at `:1308`. That placement is load-bearing in two directions:
+- It keeps `groupReads === 0` at `transaction-events.test.ts:605`. Hoisting to `openTransactionStore` scope — review finding #1's literal suggestion — would have made that count 2 and failed the test.
+- It keeps every `prepare`-interception integrity spy alive, because `prepare` is still called inside the observation: the byte-length-before-body spy (`:556-580`) and the three missing/context/ordinal fault spies (`:652-686`), which attach `statement.get` mocks keyed on SQL *after* the store is open and, for the `it.each`, after a prior un-mocked `collect()`. Store-level lazy hoisting would have compiled both statements outside the spy window and silently neutered all four tests. The original review's claim that its own fix "keeps passing either way" was wrong; this implementation got it right.
+- The new guard at `:631` is exact and tight: in `readEvents` only `rowAt` and `bodyAt` match `/FROM groups/` — `readContext()` → `metadata()` queries `FROM metadata` (`store:361`), the subject probe queries `FROM identities`, and `enter()` does no I/O — and the test walks 13 groups, so the pre-fix count would have been 26. The regression cannot return undetected.
+- Byte-length-before-body still holds: `bodyAt` is now *compiled* before the length refusal, but `bodyAt.get` is still never called, which is what `bodySelected` tracks. No body is copied or parsed.
+- Nothing escapes the owner entry: the reader is a `const` local to the `enter()` callback in `readEvents` and immediately-invoked in `readChanges`, so no statement outlives its observation and `close()` faces no outstanding handles — back to the 2-per-request baseline of `8569b85`.
+
+**Negative controls — all four real, each landing on a distinct check.** `inspect()` returns raw stored bodies (`store:1757-1760`), so `raw.checkpoint === "pos-1"` and the unmodified group is valid. `position:"pos-99"` → `group.position !== \`pos-1\`` (and `previousPosition` still matches, so it is *not* short-circuited by the changefeed framing check at `changefeed.ts:116`); `checkpoint:"cg_x"` → `group.checkpoint !== group.position`, the fence that protects Event-ID derivation since `renderTransactionEvent` is fed `group.checkpoint`; `scopeEpoch`/`authorizationView` → the context-equality pair. All in `transaction-events.ts:182-192`. Done-when #10's enumerated set is now complete.
+
+**Retry-from-cursor oracle — now a genuine re-read.** `changefeed.test.ts:274` applies `page(f.owner, client.state().checkpoint).groups[0]`, keyed on the replica's unadvanced durable cursor (`"genesis"`/`"pos-0"`). The failed `apply(seed, true)` throws at `:200` before `applied.set`, so the retry is full re-validation rather than the duplicate-checkpoint shortcut at `:169-172`; `previousPosition "pos-0"` matches the unadvanced position; and `page()` re-asserts schema validity and `observedHeadPosition === context.scopePosition` in passing. Done-when #3 is now backed by a single test. It does not additionally assert byte-identity with `seed` — covered separately at `:258-260`.
+
+**M32 served bound 186,334,744 — reproduces exactly.** R=262144, Q=S=65536, N=7Q=458752, A=8192, H=1048576, K=32+32=64. Stored group = min(256·1179648 + 64·8192 + 1048576, 64·2629632 + 1048576) = min(303562752, **169345024**) = 169,345,024, matching `events.test.ts:551`; note the binding term is the K-term, not the 256-Event term. Served = 169345024 + 256·(65536+258+32) + 2·65536 + 12·258 + 4096 = **186,334,744**, matching `changefeed.test.ts:422` and `doc:1175-1177`, below MAX_STRING_LENGTH 536,870,888. The envelope delta (16,989,720) is identical to the pre-M32 delta, so only the stored term moved. The receipt companion at `doc:1119` (39,391,232 = 64·598016 + 4096 + 65536 + 1048576) and all three superseded table rows at `:1078-1080` reproduce from the same formulas — the formula text is sound; only the inputs moved.
+
+**128-Event witness — correct and at the real boundary.** The selector matches 32 links at `matchedResources: 32` exactly (`transaction-batch.ts:834` refuses only at >32, so 33 would fail). Each deleted owned self-loop link yields precisely the four facts enumerated at `transaction-batch.ts:756-757`: link `deleted`, `unlinked` for both the `source` and `target` endpoint roles (both resolve to the same in-scope bead, so both fire), and the owning bead's `updated`. 32 × 4 = 128. `receiptMaximumItems: 2` is confirmed in the fixture (`:85`), so the one-group page genuinely ignores it. The old 256 figure is now unreachable by any route: at default limits the ceiling is 32 matches × 4 + 31 remaining operations × 4 = 252, so `inducedEvents: 256` is slack and the changefeed envelope's 256 multiplier is over-reserved rather than tight. The downgrade from "all 256 boundary Events" to "128 Events from 32 selected owned Links" is therefore the honest claim, not a weakened one — and the `transaction.inducedEvents` refusal itself stays witnessed under configured lower limits at `transaction-owned.test.ts:657` and `transaction-set.test.ts:361`.
+
+**Merge resolution at `ce04990` (625347f ⊕ a7430dd) — both sides preserved, nothing invented.** The one genuine conflict was `readEvents`, and the result interleaves both edits correctly: from the trunk, the minimum check hoisted above the scan (`store:1308`) and the incremental `envelopeBytes`/`eventBytes` accounting (`:1312-1355`, each Event serialized once); from the changefeed branch, the extracted row helper and its two call sites. The merge's only cost was keeping the branch's de-hoisted `prepare`, which is exactly what d907a1e repairs.
+- **HTTP conflict preserves finite changes plus uniform 404.** `changes/` routes at `http:322-333` — after Origin/Host and the 401 at `:321`, before alias/receipt/Event/Read — and the trunk's precedence rule survives immediately after it: `classifyAliasPath` at `:335`, `receiptRoute` at `:337`, `eventRequest = receiptRoute ? undefined : …` at `:340`. The two cannot interfere: `transactionChangefeedRequest` matches only `origin + pathname === ${scope}changes/` (`changefeed.ts:92`), so it can never shadow an alias or receipt path.
+- `alias/missing?view=events` → `classifyAliasPath` returns `notFound()` on any non-empty search (`read-request.ts:943`), returned at `:336` **before** the minimum-route handling at `:383-396`, so `BDP-Minimum-Scope-Position: pos-99` cannot convert it into a 503 or a development gap; `<receipt>?view=events` is diverted out of the Event lane by `receiptRoute` and refused on receipt identity. Both are exercised GET and HEAD under a pos-99 minimum at `transaction-events.test.ts:511-521`.
+- `TransactionChangefeedParameterError` → 400 `invalid-parameter` is wired into the shared catch at `http:435-439`.
+- `transaction-service.ts` had no real conflict: the trunk's doc-comment edit and the branch's `changes()` facet (`:219-242`) both landed, with `captureChangesStart()` still inside `run(...)` at `:235` and ahead of `waitForTransactionMinimum` at `:236`, the same `after` reused across retries.

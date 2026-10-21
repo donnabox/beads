@@ -1,0 +1,8 @@
+{
+  "observation": {
+    "correction": "Subsequent DATA commands use exact pinned python@3.14 path. No source/helper/runtime action was retried.",
+    "result": "An empty guarded Python DATA cell used nonexistent /opt/homebrew/opt/python3.14/bin/python3.14 rather than pinned python@3.14. Guard succeeded, target failed FileNotFound before executing cell; no mutation or subject evaluation.",
+    "toolChunk": "04a3b4"
+  },
+  "scope": "Reviewer tooling only, no product/helper failure"
+}

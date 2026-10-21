@@ -1,0 +1,54 @@
+{
+  "state": "CLOSED author precision resolution, native/root review pending",
+  "rootDispositionSha256": "710297a3b6a04dc186b0f40315f827460d934e70e5ed145b8f20cd24eff02dcf",
+  "N1": {
+    "paths": [
+      "input-schema.json",
+      "output-schema.json",
+      "lifecycle-and-adapters.json",
+      "verification-order.json",
+      "source-data-cases.json",
+      "actual-interface-map.json",
+      "plan.md"
+    ],
+    "decision": "distinct UnboundRUAttemptV1 configurationnull/all observationsnull until first genuine safe returned live bound configuration; no RU caller/signature/fake-binding change",
+    "cases": [
+      "L01",
+      "L02",
+      "L06"
+    ]
+  },
+  "N2": {
+    "paths": [
+      "input-schema.json",
+      "output-schema.json",
+      "lifecycle-and-adapters.json",
+      "source-data-cases.json",
+      "actual-interface-map.json",
+      "plan.md"
+    ],
+    "decision": "positive onObserved one exact legacy serialization, optional same-byte/digest return; genuine pre-hook comparison; carrier-only in-memory, no guessed file dependency/new raw copy/no default behavior-layout change",
+    "cases": [
+      "V06",
+      "R20"
+    ]
+  },
+  "N3": {
+    "paths": [
+      "output-schema.json",
+      "verification-order.json",
+      "source-data-cases.json",
+      "plan.md"
+    ],
+    "decision": "reachedmissingplan not-implemented vs actual stopped remainder not-run; preserve indices/order/empty exchanges; unexecuted assertioncreditnull",
+    "cases": [
+      "V03",
+      "V04"
+    ]
+  },
+  "futureSourceFiles": 4,
+  "dataCases": 48,
+  "sourceAuthoringReleased": false,
+  "reviewLaunchReleased": false,
+  "runtimeReleased": false
+}

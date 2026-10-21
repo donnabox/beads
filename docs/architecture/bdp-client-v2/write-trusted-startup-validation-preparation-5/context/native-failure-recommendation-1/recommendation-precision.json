@@ -1,0 +1,20 @@
+{
+  "accepted": true,
+  "scope": "INERT PROPOSAL PRECISION ONLY; root source release still required",
+  "proposedBeforeSha256": "5b9de79791eb041e74b4153ffc19dfaf28b029599644a7bda056a84432ef0289",
+  "proposedAfterSha256": "adfbf6b0132cc24b3b65bf482000de2da43bf242102020637ed894b2cdd0cee9",
+  "proposedPatchSha256": "089370f6d93cc2aae590968d004b05205bcfe17caa08fef1264a3a6d10a7d112",
+  "proposedInverseSha256": "86eb9cfd9337d88a0dfd1197d01b4c1beecd2d71b74bc7d19f1db8f22af4ff25",
+  "forwardInverseAppliedInMemory": true,
+  "futureOnlyPath": "packages/server/src/reference-deployment.test.ts",
+  "futureOther681MustStayUnchanged": true,
+  "selected44AndAllTestTitlesUnchanged": true,
+  "productionChange": false,
+  "newSchemaOrHelperOrBudget": false,
+  "trace": "artifacts() base.propertiesSchema -> schemas/item; same retrievalUri+$id; missing external$ref -> graph missing-resource -> evaluator refused -> compileDevelopmentContracts throw -> loader ReferenceDeploymentError(contract)",
+  "baselineControl": "Existing custom-artifacts positive callback already exercises valid fixture closure; no new standalone workload required",
+  "postCorrectionFullPatchAndMap": "UNRESOLVED pending root source-only apply/freeze",
+  "correctedSourceCompilerTestResult": "UNATTEMPTED",
+  "actualReviewRetryRequested": false,
+  "executionReleased": false
+}

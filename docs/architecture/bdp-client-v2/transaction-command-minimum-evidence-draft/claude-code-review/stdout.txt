@@ -1,0 +1,122 @@
+## Verdict
+
+Not clean. One blocking defect that fails the new positive row and both new controls on their first exchange, one vacuous-evidence defect, and three lower-severity items. The `onObserved` repair itself is sound for the path it targets. Everything I could arithmetically verify in the diff (counts, deltas, route derivation, preimage length, fence arithmetic, control `failingIds` ordering) checks out.
+
+---
+
+## Findings
+
+### 1. HIGH — supplemental header comparison omits the serializer's generated default headers; throws inside the executor before any named assertion
+
+**Location:** `apps/bdptest/src/transactional-matrix.test.ts`, `commandMinimumWire().afterExchange`, the block commented *"Credentials and generated framing are checked by the runner's exact request assertions"*:
+
+```ts
+expect(
+  request!.headerLines.filter(
+    (h) => !["authorization","host","content-length","connection"].includes(h.name.toLowerCase()),
+  ),
+).toEqual(expected.headers);
+```
+
+**Demonstrated:** `runner.ts:1845–1867` (`exactHeadersMatch`) is the authority on what the raw serializer emits, and the positive test requires the authored `request-headers` assertion to pass, so the observation must be exactly:
+
+`authored lines` → `credential lines` → `[Accept */*, Accept-Language *, Accept-Encoding identity, User-Agent bdp-conformance/0]` *(each dropped only if authored or supplied as a credential)* → `Host` → `Connection` → `Content-Length` (bodies only), with `index === actual.length`.
+
+The exclusion list drops only `authorization/host/content-length/connection`. For the eight POSTs, `accept` is authored so `Accept` is suppressed, but **`Accept-Language`, `Accept-Encoding`, `User-Agent` survive the filter**; for `m-current`/`m-events` (`headerLines: []`) **all four** survive while `expected.headers` is `[]`. So on `m-create-a` the comparison is 9 lines vs the 6 authored → fail.
+
+**Impact:** fires on the first minimum exchange of (a) the positive fourteen-row test, (b) `minimum-batch-body-conflict`, (c) `minimum-readonly-credential`. Because `afterExchange` runs inside `exactExecution.execute`, the assertion error propagates as an executor throw, so the row is recorded with a transport/harness error and the control paths you asked about — `expect(exchange.transportError).toBeUndefined()` and `expect(last.assertions.filter((a) => !a.passed).map((a) => a.id)).toEqual(description!.failingIds)` — are never reached with real named outcomes. The authored-assertion discrimination this row exists to prove is unobservable.
+
+**Minimal fix:** compare the authored prefix, which `exactHeadersMatch` guarantees occupies indexes `0..n-1` in order, and keep the absence claim explicit for the remainder:
+
+```ts
+expect(request!.headerLines.slice(0, expected.headers.length)).toEqual(expected.headers);
+expect(
+  request!.headerLines.slice(expected.headers.length)
+    .filter((h) => h.name.toLowerCase().startsWith("bdp-")),
+).toEqual([]);
+```
+(Do *not* just add `accept`/`accept-language`/`accept-encoding`/`user-agent` to the exclusion list — that silently stops checking the authored `accept` line.)
+
+---
+
+### 2. MEDIUM — event↔receipt transaction correlation can pass vacuously
+
+**Location:** same hook, events branch:
+
+```ts
+if (i < 2) expect(event.transaction).toBe(baselines.get(`m-create-${name}`)!.transaction);
+```
+
+**Demonstrated:** `body` is `JSON.parse(...)` (`any`) and `baselines` holds `Record<string, unknown>`. Nothing in the manifest, the coverage row, or the hook establishes that `transaction` exists on either side — `m-create-a`/`m-create-b`'s pinned receipt fields are `status/detail/idempotencyKey/scopeEpoch/authorizationView/requiredPosition/effectPosition/next/id`, and `ordered-facts` projects only `id/source/type/subject/subjectType/ordinal`. If the field is absent or renamed on either side, `expect(undefined).toBe(undefined)` passes. This is the only evidence tying the Scope Events to the mutation receipts, and it is the piece most likely to silently stop proving anything.
+
+**Minimal fix:** before comparing, require presence on both sides:
+
+```ts
+const expectedTransaction = baselines.get(`m-create-${name}`)!.transaction;
+expect(typeof expectedTransaction).toBe("string");
+expect((expectedTransaction as string).length).toBeGreaterThan(0);
+expect(event.transaction).toBe(expectedTransaction);
+```
+
+---
+
+### 3. LOW — two supplemental equalities are stricter than the row's contract and fail at the wrong site
+
+**Location:** same hook — `expect(body.items).toEqual(resources)` (`m-current`) and `expect(event.data).toEqual({ revision, properties, metadata })` (`m-events`).
+
+**Issue:** these demand that a collection item be *structurally identical* to the receipt-embedded resource, and that `data` have exactly three keys. The manifest deliberately uses pointer projections (`ordered-state`, `a-properties`, `a-metadata`, `a-no-provenance`) precisely because the clause under review is about ignored minimum fields, not about the full shape of collection items. Any additional server field (a link summary on items, `id`/`type` inside `data`) fails as an in-executor throw — reported as a transport error on a passing-by-contract row — rather than as a named assertion failure. Note the asymmetry: the hook's own created-resource checks correctly use `toMatchObject` plus explicit `not.toHaveProperty`, but these two do not.
+
+**Minimal fix:** `expect(body.items[i]).toMatchObject({ id, type, properties, metadata, revision })` plus the existing explicit absence claims; likewise `expect(event.data).toMatchObject({ revision, properties, metadata })` with `expect(event.data).not.toHaveProperty("revisionProvenance")`.
+
+---
+
+### 4. LOW — ledger's comparison-mode element is inert; the ledger check is two hand-copied literals
+
+**Location:** `minimumReplayLedger` / `assertMinimumReplayLedger` / the `pair` lookup in the hook.
+
+**Issue:** `assertMinimumReplayLedger` compares its argument against an inline duplicate of the same three tuples, so it detects mutation of the value passed in (which the two new probes in the route-digest test exercise correctly) but cannot detect a wrong canonical ledger. `pair[2] === "whole-json"` is never read — the hook unconditionally performs a whole-body `toEqual`, so the mode field carries no weight and a future `"headers-only"` entry would be honoured as whole-body. `performed.push([...pair])` and `finish()`'s slice comparison do correctly prove *which* comparisons ran, and the baseline ordering is right (all independent schema/literal/absence checks execute before `baselines.set`), so this is hardening, not breakage.
+
+**Minimal fix:** make the mode load-bearing at the use site: `if (pair[2] !== "whole-json") throw new Error("minimum-replay-comparison-ledger");` before the `toEqual`.
+
+---
+
+### 5. LOW — the 63 s wall-clock bound is the one count the diff did not adjust, and fanout grows by two installed cohorts
+
+**Location:** positive test `expect(performance.now() - started).toBeLessThanOrEqual(63000)`; new `it.each(minimumControls)` (120 s each, bootstrap + 1 session apiece).
+
+**Issue:** every other quantity was bumped (`sessions` 20→21, `children` 21→22, exchanges 192→203, the four control ceilings, the fences) but the wall-clock assertion is unchanged while the cohort gained a process launch, 11 exchanges, and a per-exchange hook that runs for all ~203 exchanges. Combined with two new 120 s installed-cohort tests in the same file, this is the most likely new source of CI flake.
+
+**Minimal fix:** raise the bound proportionally (e.g. 68000) or state why 63000 still holds with the measured elapsed from a real run.
+
+---
+
+## Verified consistent (no action)
+
+- **192 authored assertions**: per-action 20/21/20/21/17/18/10/18/14/12/21 sums to 192, and the coverage `bindings[0].assertions` list matches both the count *and* the per-action ordering, so `profile-contract-plan`'s flatMap-derived `toEqual` and `assertMinimumObservation`'s `toHaveLength(192)` agree with the two JSON files.
+- **Route inventory and order**: deriving unique routes from the new manifest order yields exactly the authored 15-entry literal (POST create-bead/batch/sequence/update-bead, GET `beads/?limit=32`, GET `events/`, then the nine pre-existing GET/POSTs in their old relative order). The route **set** is unchanged, which is what the `oldRoutes`/`routeKey().sort()` comparison asserts — the reorder grants and removes no authority.
+- **`Buffer.byteLength(preimage)` = 1228**: computed by hand from the five canonical fields (33+34+26+9+1083+1+41+1), confirming both the field set and compact canonical serialization. It is order-insensitive, so the sha256 pin remains the only order check — correct division of labour.
+- **+11 deltas**: 203 exchanges, 197/192, 187/192/188, 194/195, 210 actions, 2294 assertions, `unplanned` 238→237, sessions/children +1. All consistent with 10 raw http exchanges + 1 dynamic receipt exchange and one new session.
+- **Fence arithmetic**: 738783+4096=742879, 750589+4096=754685, 108091+1024=109115, 19575+64=19639, 756707+4096=760803, 19731+64=19795; and the delta forms (488280+254599, 70662+38453, 13019+6620) land on the same absolutes.
+- **Control `failingIds`**: both lists match manifest assertion order exactly for a 409 problem body against `m-replay-b` (serving-position and the three `present-*` correctly *excluded*) and for a 403 against `m-create-a` (the three `present-*` and `serving-position` correctly *included*, `no-name/no-source/no-provenance/no-owned-links` correctly excluded), with `request-headers`/`request-body` asserted passing separately.
+- **`scenarios[0]` reordering fallout handled**: the app `it.each(["binding","method","credential","body-assertion"])` control now selects `transactional.batch.atomic-commit` explicitly — necessary, because `scenarios[0]` is now the minimum row and *does* contain a `transactional.receipt-read` action (`m-retained-a`), which the old `scenarios[0]` lookup would have mutated. The five `manifest.scenarios[0]` → `atomicCommit` substitutions in `transactional-cumulative.test.ts` cover the same hazard; the two deliberate `manifest.scenarios[0]` uses in the new test correctly target the minimum row.
+- **Receipt pins**: `sourceReceiptObservation` is pinned on action/pointer/receipt/`responseDigest`/credentialRef, the digest is cross-checked against an independently computed sha256 of `response.wireResponseBytes` (same bytes the runner hashes at `transactional-observation.ts:240`), `servedSession` against `source.session`, and `dynamicExactConfiguration` against the single-route grant built at `runner.ts:900–905`. `expect(action.output).toEqual({ kind: "json" })` positively pins that the receipt body stays out of the report, matching `runner.ts:1100`.
+- **Redaction**: the two new writes are env-gated; `summary()` adds only an in-scope receipt URL and a sha256; exchange URLs/headers are runner-redacted and `projectExactObservation`'s body echo does not apply (no `approvedSyntheticManifestDigest`).
+- **`withoutMinimumRow` / restoration**: the row is the first element of both arrays, so `text.replace("    " + raw + ",\n", "")` is exact; `before.size === 13` × 2 files plus the byte-identical `after.get(id)` loop covers all 26 old objects.
+- **Negative-probe labelling**: in both probes the labelled assertion is genuinely the first to fail (`minimum-empty-header-ledger` after the unchanged earlier per-action checks; `minimum-read-header-absence` because the `index >= 9` filter precedes the full ledger equality).
+- **`m-body-conflict` has no `same-context`** — correct, since `response-metadata-equals` also compares status (`runner.ts:2195`), so 409-vs-200 could not pass.
+
+## The N1 repair, judged as code
+
+`onObserved` is invoked inside the `try`, immediately after `observed = { result, sessions, baseline }` and before the `finally` that calls `target.close()`. That does fix the targeted loss: a throwing `close()` (→ `AggregateError`) or a later failing assertion in the test body no longer discards the report, and `observed` is fully populated at that point (all sessions pushed, matrix resolved). Two residual properties, both acceptable but worth stating: it still writes nothing when the matrix itself throws or the cohort deadline aborts (`observed` is never assigned — unchanged from before), and a throw from `onObserved` itself (e.g. a bad output path) is folded into `failure` and aborts the cohort. The success-only `console.log` summary remains at the end of the test, so a failing run now yields the file but not the `installed-tx-fourteen-partial-summary` line.
+
+## Absent supplied context (not defects)
+
+Not verifiable from this diff plus the provided interface excerpts; listed so they can be confirmed rather than assumed:
+
+1. `scenarioSelection` as a `runCumulativeTransactionalMatrix` option and `result.selectedScenarioIds` in the report type — both new here; if `scenarioSelection` filters authored rows but the result still reports catalog requirement rows, the controls' `expect(observed.result.scenarios).toHaveLength(1)` is wrong.
+2. `selectApplicableScenariosForProfile` / `selected.catalog` (new import), and `CrossCarrierManifest` assignability for `applyCommandMinimumControl(value, …)` given `observe`'s callback types `actions` as `Record<string, unknown>[]`.
+3. The wrapper `async (response) => { await minimumWire.afterExchange(response); await crossWire.afterExchange(response); }` **drops the `signal`** that `observe` passes and that `crossWire.afterExchange` previously received directly. Harmless if that hook is one-arity (as `commandMinimumWire`'s is); a compile error / behaviour change if not.
+4. The unchanged assertion immediately preceding the reordered scenario-id list in `transactional-cumulative.test.ts` ends in `"transactional.batch.atomic-commit",` — confirm it is not index-based (`scenarios[0].id`), since that is exactly the class of breakage the reorder caused elsewhere in the same file.
+5. Whether raw `HttpExchangeResponse.headers` keys are already lower-cased (the hook indexes `response.headers["content-type"]`, `["bdp-scope-epoch"]` directly, while the runner applies `normalizeHeaders` before building its receipt projection).
+6. `validateReceiptWire(response, "GET")` is now applied to a **create-bead** POST response (a new capture-source route for the receipt authority at `transactional-observation.ts:206`); whether the installed authority emits the same cache/validator headers there as on `update-where`/`delete-where` is server behaviour.
+7. All sha256 pins (`02dd7d…` configuration digest, `5164c2…` row digest, `726fc6…`/`a3a15b…` restored-file digests) and the `transactionalProblem`/`currentBeadCollection`/`eventPage`/`transactionalSequenceResponse` `$defs`, which the new `validator.resolve` loop will check at run time.

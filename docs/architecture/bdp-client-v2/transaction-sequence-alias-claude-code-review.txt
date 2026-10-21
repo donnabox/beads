@@ -1,0 +1,163 @@
+I read the full five-file diff plus the surrounding seams. No files were written and no tests or builds were run.
+
+## Scope actually read
+
+- **Diff** `581bad0..0de38a3`: `transaction-batch.ts` (+24/-9), `transaction-dependencies.ts` (+263/-?), `transaction-store.ts` (+33/-?), new `transaction-sequence-alias.test.ts` (579 lines), `transaction-sequence.test.ts` (-25).
+- **Full files**: `transaction-dependencies.ts` (348), `transaction-batch.ts` (1032), `semantic-identity.ts` (144), `transaction-comparison.ts` (57), `transaction-sequence.ts` (stepper/projection), `transaction-sequence-alias.test.ts` (579).
+- **`transaction-store.ts` regions**: 188–214 (schema/`Row`), 300–565 (`atomic`/`enter`/`fence`/`expireRow`/`sweep`/open-time retraction), 960–1105 (`resolveAlias`/`creatorFact`/`writeFact`/`fact`/`admitKey`), 1106–1310 (`executeClaim`, terminal update, cleanup), 1314–1410 (`cancelSequence`, maintenance timer, `admit`), 1660–1935 (`admitSequence`, `nextSequence`, `retract`).
+- **Seams outside the owned slice** (read-only, to test the invariants the diff depends on): `protocol/read-update-preflight.ts` (`preflightOperation`, `isHttpScopeCandidate`), `protocol/read-update-values.ts` (`REFERENCE_FIELDS`, `validateReferenceSyntax`, `validateAliasSyntax`), `protocol/read-values.ts` (`parseCanonicalHttpUrl`, `assertCanonicalPathSegments`, `canonicalPathSegment`), `protocol/json-values.ts` (`stringifyJsonValue` = the `json` helper), `schemas/bdp-v0.schema.json` (`createLinkRequest`/`updateBeadRequest`/`deleteBeadRequest` closure), `member-identity.ts` (`MemberCreatorBinding`), `transaction-http.ts:323–334`, `transaction-http.test.ts:424ff`, `transaction-dependencies.test.ts` (test inventory only).
+- **Docs**: `transaction-sequence-alias-plan-v2.md`, `-root-acceptance.md`, `-core-report.md`.
+
+**Two candidate high-severity defects I chased and withdrew**, because the seams close them — recording so they aren't re-raised:
+
+- *Noncanonical absolute alias spelling admitted by preparation but rejected by `parseDependencyTemplate` at turn time.* Does not happen: `preflightOperation` (read-update-preflight.ts:103–134) classifies anything matching `startsWith(scope.href)` as in-Scope via the deliberately-permissive `isHttpScopeCandidate`, then enforces `parseCanonicalHttpUrl`, `search === ""` and `assertCanonicalPathSegments` on the local tail. `alias/work/`, `alias/%77ork`, `alias/work?x=1` are all rejected before preparation.
+- *`referenceIdentities` containing `link`/`alias`, or >2 dependencies, making the new parser reject a template the owner itself wrote.* Does not happen: `createLinkRequest`/`updateBeadRequest`/`deleteBeadRequest` are `unevaluatedProperties: false` with `source`/`target`/`bead` required, so the key set is always a subset of `{id, bead, source, target}` and matches the parser's whitelist.
+
+I also verified the two central safety invariants hold. `compareAliasTemplate` is typed `"conflict" | "pending"` and has no `equal` return, so an unresolved alias template can never hand a direct caller the owner's pending receipt; and `dependencyTemplate` passes a *throwing* resolver, so a lookup at admission is a hard error rather than a silently recorded miss. The union-find is sound for the ≤6-slot domain: I traced value/domain merge ordering and found no false-conflict path, and the plan's native work/work-vs-work/B, cross-slot swap, and two-locator swap cases all resolve as specified.
+
+---
+
+## Findings
+
+### 1. Medium — Durable-template consistency is a byte comparison of two independently constructed objects
+**`transaction-store.ts:1833–1836`** (with `transaction-dependencies.ts:112–151`)
+
+`json(persisted) !== json(template)` compares `stringifyJsonValue` output, and `stringifyJsonValue` (`protocol/json-values.ts:130`) emits `Object.keys` order — it is *not* canonical. Equality therefore depends on an unwritten invariant: the key-insertion order of the literal in `dependencyTemplate` must match the order recovered by `JSON.parse` of what a prior call serialized. Today it holds only by accident of `{...base, form, aliases, referenceIdentities, identity}` leaving `identity` pinned at index 3 (the spread already created it), and of `{...d, operationSlot: 0}` preserving `field, creator, resourceKind, suppliedId?`.
+
+**Failure scenario:** someone reorders the returned literal — e.g. moves `identity` to the end for readability, or converts `form` to a conditional spread. Admission still succeeds and reserves every key. At each deferred member's turn the comparison fails, `nextSequence` throws `"sequence deferral template differs"`, `cleanupThenThrow` cancels the sequence, and the client gets a nonattesting 500 **after the prefix members have already committed**. No type error, no lint error.
+
+The check also buys very little: the row was located by a per-insert owner UUID that only this attempt holds, and the template is `dependencyTemplate(id, member)` by construction, so passing the fence already implies the bytes match.
+
+**Fix:** compare structurally rather than byte-wise — e.g. hold the serialized text from admission on the claim and compare that, or compare a sorted-key serialization. Alternatively drop the equality and keep only `parseDependencyTemplate`'s form validation plus the owner fence, which is what actually provides the integrity guarantee.
+
+---
+
+### 2. Medium — Fence read left the transaction; the dependency-clearing UPDATE does not verify it matched
+**`transaction-store.ts:1824–1854`**
+
+Before this commit the owner read and the replacement were one `atomic(...)` block. Now `row()` and `parseDependencyTemplate()` run outside any transaction and only the UPDATE is inside `atomic`. That UPDATE is the one write in this file that does not check its row count — contrast `executeClaim`'s `if (changed.changes !== 1) throw new Error("terminal ownership lost")` (1286) and `writeFact`'s `if (changed.changes !== 1)` (1012).
+
+**Failure scenario:** if the UPDATE matches zero rows, `owner.normalized = normalized` is still assigned on the next line and `options.fault?.("after-dependency-resolution")` still fires, so in-memory claim state asserts "normalized" while the durable row still carries its dependency. Execution is caught one step later by `executeClaim`'s `if (!normalized || current.dependency) throw` (1120), so this fails safe rather than double-committing — but the diagnostic points at the wrong stage and the invariant is enforced by a downstream accident rather than here.
+
+Under `locking_mode=EXCLUSIVE` with a single synchronous owner this is not currently reachable; it is a removed defence, not a live bug. The report attributes the restructure to a fault-injection boundary fix (nondeferred turns no longer open a transaction), which is a legitimate motive — the row-count check costs nothing and restores the guarantee.
+
+**Fix:** capture `.changes` from the UPDATE and `throw new Error("dependent resolution fenced")` unless it is exactly 1, before assigning `owner.normalized`.
+
+---
+
+### 3. Medium — The three new owner-integrity abort branches have zero test coverage
+**`transaction-store.ts:1830`, `1835`; `transaction-dependencies.ts:57`, `100–102`**
+
+These are precisely the branches the plan called out (§B: *"Missing/malformed/inconsistent form is an owner-integrity failure, not a mutation failure receipt"* — and §9: *"do not silently skip a deferred row"*). All three convert a client request into a 500 plus a partially-executed sequence, and none is exercised:
+
+- `"sequence deferral state differs"` (deferred member whose row has `dependency === null`, or nondeferred member whose `owner.normalized` is unset).
+- `"sequence deferral template differs"` (the comparison in finding 1).
+- `parseDependencyTemplate`'s **creator-only** branch: the exact-key-set check at line 100, the `dependencies.length > 2` bound, the `field` whitelist, `operationSlot !== 0`, and `resourceKind` validation. `transaction-sequence-alias.test.ts:446–465` only drives the *alias* branch (every case asserts `"pending alias template"`), and `transaction-dependencies.test.ts` never imports `parseDependencyTemplate`.
+
+**Impact:** the regression suite cannot distinguish "the new parser rejects a corrupt creator-only template" from "the new parser accepts anything that isn't an alias template." Finding 1's silent-failure mode is only caught indirectly.
+
+**Fix:** add direct unit cases over `parseDependencyTemplate` for the creator-only shape (extra key, 3 dependencies, `operationSlot: 1`, `field: "alias"`, `resourceKind: "alias"`), and one store-level case that mutates the `dependency` column of an owned deferred row between admission and the turn to assert the abort is an owner-integrity throw, not a member receipt.
+
+---
+
+### 4. Medium — Plan-required discriminator missing: "fixed A against eventual B waits then conflicts"
+**`transaction-sequence-alias.test.ts:352–379`** (nearest existing case)
+
+Plan §9 item 7 requires three distinct direct-comparison outcomes: *"Separately fixedA/fixedB conflicts immediately; **fixedA against eventualB waits then conflicts**; immutable-field mismatch conflicts immediately."* The first is covered (line 125–127), the third is covered (line 427–445). The second is not:
+
+- Line 352–379 reaches `pending` with a fixed `beads/a` candidate, then exhausts the budget to `temporarily-unavailable` — the owner never steps *during* the loop, and the candidate is never re-admitted after the turn.
+- Line 273–279 does produce a post-turn conflict, but against a *terminal* row via ordinary witness-aware comparison, not against a template that was pending first.
+
+**Impact:** the handoff from the symbolic comparer to the ordinary comparer is only proven in the direction where it yields `equal`. A regression that let a waited-out candidate join the wrong receipt after the turn would not be caught by the committed suite.
+
+**Fix:** extend the line-352 test: seed `work→a`, admit the sequence, assert `pending` for a fixed `beads/a` candidate, repoint `work→b` inside the `wait` callback, step the owner, then assert the same candidate now returns `{ kind: "conflict" }` and the owner's receipt is intact.
+
+---
+
+### 5. Low-Medium — The alias-slot grammar is duplicated in the parser, contradicting the commit's own stated invariant
+**`transaction-dependencies.ts:73–78`** vs **`transaction-batch.ts:315–321`**
+
+`transaction-batch.ts:378` introduces `transactionAliasOperands` with the comment *"preparation and comparison share the slot grammar"*, and the core report repeats that claim. But `parseDependencyTemplate` re-implements `aliasFields` inline as a literal `createLink → ["source","target"] / updateBead|deleteBead → ["bead"]` ternary. The shared helper is used for operand *inventory*; the slot *grammar* is forked.
+
+**Failure scenario:** `aliasFields` gains `updateLink → ["link"]`. Preparation records the operand and marks the member deferred; `dependencyTemplate` emits an alias template with `operation: "updateLink"`; `parseDependencyTemplate` computes `fields = []`, every alias fails `fields.includes(alias.field)`, and the turn throws `"invalid pending alias template"` after the prefix has committed. The same class of outcome as finding 1, reached by a different and more plausible edit.
+
+**Fix:** export `aliasFields` (or a narrow `permittedAliasFields(operation)`) from `transaction-batch.ts` and have `parseDependencyTemplate` call it, so the two sides cannot diverge.
+
+---
+
+### 6. Low — `referenceIdentities` values are validated only as `string`, but are later `JSON.parse`d
+**`transaction-dependencies.ts:67`, consumed at `249–254` / `269–270`**
+
+The parser accepts any string as a reference identity. `compareAliasTemplate` reaches `stringIdentity(value)` → `JSON.parse(value)` for a `{fixed}` original whenever the corresponding candidate slot is symbolic (`unify` swaps, then calls `compatible(a, right.fixed)` → `permits(fixed)`).
+
+**Failure scenario:** a truncated or corrupted `dependency` column yields `referenceIdentities.target = "["` (any non-JSON string). `parseDependencyTemplate` passes it. The comparison throws a raw `SyntaxError` out of `admitKey` → out of `admit`'s `atomic` → to the HTTP layer as an unlabelled 500, instead of the intended `"invalid pending alias template"` integrity error. `atomic`'s catch classifies it as a clean non-SQLite rollback, so the owner is not fenced and the loop in `compareAndAdmitTransaction` does not retry — the caller just gets an opaque 500.
+
+**Fix:** in the alias branch, require each `referenceIdentities` value to start with `["ru-semantic-value-1",` and to `JSON.parse` to an array, or route `stringIdentity` through a `try` that raises the integrity error.
+
+---
+
+### 7. Low — Vacuous scope assertion, and two different scope sources in the comparison path
+**`transaction-batch.ts:380`; `transaction-dependencies.ts:266`, `316` vs `transaction-store.ts:1054`, `1833`**
+
+`transactionAliasOperands` opens with `assertPreparedTransaction(batch, batch.carrier.scope)` — the scope argument is read off the object being checked, so the only live assertion is WeakSet membership. Separately, `compareAliasTemplate` derives its domain prefixes (`${request.carrier.scope}beads/`, `links/`) from the *candidate's* carrier, while `parseDependencyTemplate` validates locators against the *store's* `scope`.
+
+No live defect: `admit` (1384) and `assertPreparedTransactionSequence` (1724) both bind the carrier to the store scope upstream, so the two are always equal. But the invariant is asserted where it cannot fail and assumed where it matters.
+
+**Fix:** either drop the self-referential assert, or give `transactionAliasOperands` an explicit `scope` parameter and have `compareAliasTemplate` thread the store scope through so the comparer never trusts the candidate for its own domain bounds.
+
+---
+
+### 8. Low — No assertion that an owned alias-only deferred claim cannot bypass normalization
+**`transaction-store.ts:1120`; plan §9**
+
+The plan explicitly required *"Assert that an owned alias-only deferred claim cannot bypass normalization; preserve creator-only and mixed precedence."* The guard exists (`if (!normalized || current.dependency) throw new Error("unresolved execution")`) and is load-bearing — it is the backstop for finding 2 — but nothing in the new suite calls `execute(claim)` on an alias-only deferred claim before its turn. `transaction-sequence-alias.test.ts:92` proves admission *defers* (by repointing between admission and step); it does not prove execution *refuses*.
+
+**Fix:** one case that retrieves the owned claim for an alias-only member from `admitSequence` and asserts `store.execute(claim)` throws `"unresolved execution"`, with the reservation still intact afterwards.
+
+---
+
+### 9. Low — The creator-only template branch keeps the `() => undefined` resolver the plan identified as the original defect
+**`transaction-dependencies.ts:121`**
+
+Plan §11 named this exactly: *"`dependencyTemplate` calls `normalizeTransaction(..., () => undefined)`, turning an unresolved alias into a recorded miss."* The alias branch was given a throwing resolver (127, 145); the creator-only branch was left as-is.
+
+It is provably dead today — any member with an alias operand in a slot `normalizeTransaction` would resolve takes the alias branch, because `aliasOperands` and `normalizeTransaction`'s alias predicate are computed with the identical `aliasFields(op) ∧ startsWith(scope+"alias/")` test over the same field set. So this is not a live miss-recording bug. But it leaves the footgun armed for the next edit that perturbs either predicate, and it is asymmetric with the branch directly below it.
+
+**Fix:** use the same throwing resolver in both branches. If it ever fires, that is the signal that the two predicates have drifted.
+
+---
+
+### 10. Operational — Predecessor compatibility is evidenced by a one-off out-of-repo script, not a committed test
+**`bdp-integration-logs/old-reader-frozen.mjs` / `old-reader-frozen-proof.json`; plan §D (i)–(v)**
+
+The compatibility argument itself is sound and I verified its load-bearing code paths: open-time retraction (`transaction-store.ts:553–556`) deletes every owner-bearing row *before* the first `sweep`; `sweep` selects only `owner IS NULL` (500–503); `expireRow` returns early on `stored.owner !== null` (426) and never reads `dependency`; receipt disclosure reads the receipt column, not the template. So no reader of either version can observe an alias template. `format`, `identityPolicy`, `SEMANTIC_VALUE_FORMAT` and `witnessFormat` are untouched by the diff.
+
+The gap is reproducibility. `transaction-sequence-alias.test.ts:520–579` covers crash/reopen and exclusive-owner refusal with the *current* build, but items (iii) and (iv) — an actual frozen predecessor owner opening a new-code image and replaying terminal receipts — exist only as logs in `bdp-integration-logs`. Nothing in CI will notice if a future change makes a pending row parseable-but-misinterpreted by an older owner.
+
+**Fix:** not blocking for this slice, but the handoff should record it explicitly. The minimum durable substitute is a committed test that asserts the retraction-precedes-sweep ordering directly (open a store with a hand-written owner-bearing row carrying an alias template, assert `recoveredPending` counts it and that no code path parsed it), so the invariant the compatibility proof rests on is regression-guarded even though the two-build scenario is not.
+
+---
+
+### 11. Operational / known — Dead HTTP branch, and the refusal-point change behind it
+**`transaction-http.ts:328–332`; `transaction-http.test.ts:424–434`**
+
+Per your note, the stale assertion is expected. Two things worth carrying into the C1 handoff beyond "the assertion is stale":
+
+- The **production** branch at `transaction-http.ts:328–332` is now unreachable, not just its test — `prepareTransactionSequence` no longer throws `"development sequence Resource aliases require turn-time resolution"`. `sequence-resource-alias` has exactly two references left in the tree, both of which must go together.
+- The failing assertion is not only the header. That test also asserts `(await f.get(`${scope}beads/a`)).status === 404` — "no partial effects". An alias sequence that previously refused *before any effect* now admits, commits its prefix, and returns a member-level `resource-not-found`. That is the intended semantics, but it means the HTTP integration step has to replace a no-effects expectation with an afterstate expectation, not just swap a header value.
+
+---
+
+## Assessment against the four focus areas
+
+**Turn-time alias normalization** — correct and structurally enforced, not merely tested. The throwing resolver in `dependencyTemplate` makes an admission-time lookup a hard error, `admitKey` skips normalization entirely when a template is present (1070), and the eligible turn is the only site that calls `normalizeTransaction` with the live `resolveAlias` for a deferred member.
+
+**Symbolic correlation across slots and both sides** — implemented as specified. Locators are canonicalized before set membership so relative and absolute spellings collapse; `symbolic` is keyed by candidate field and masks those slots before normalization; the wrapper resolver throws if an original locator ever reaches lookup. The union-find respects per-symbol domains (bead-or-own-miss for aliases, kind-plus-suppliedId for creators) and merges them on unification. I found no false-conflict path, and false *pending* is safe by construction because pending never releases a receipt.
+
+**Owner fencing and atomicity** — intact in outcome, weakened in defence: findings 1 and 2. Creator-transient precedence is correctly evaluated before the dependent key is touched (1802–1821), and all-key reservation remains one `atomic` pass.
+
+**Unchanged nondeferred behavior** — preserved. The `if (claim)` restructure adds one non-transactional read and fence check per nondeferred owned turn but opens no new transaction, which is what the report says the two storage-failure regressions were protecting. `owner.normalized` is always set for a nondeferred claim, so the new `"sequence deferral state differs"` throw is not reachable on that path.
+
+**Predecessor crash/reopen and terminal compatibility** — the code-level argument holds (finding 10); the evidence for the cross-build half is not reproducible in-tree.
+
+Nothing here is a correctness defect in the shipped behavior of the slice. The substantive items are 1–4: two fragility/defence regressions around the fenced turn, and two coverage gaps on branches the accepted plan named explicitly.

@@ -1,0 +1,1596 @@
+{
+  "state": "pure-data read-only census; NOT product loader invocation",
+  "catalogDigests": {
+    "packages/conformance/catalog/read-v1.json": "769ff9f24cfdfe74a47670240b04149b520af23b2c71a431883fd15e988adeb0",
+    "packages/conformance/catalog/read-update-v1.json": "73d215813df034a2be0cd15d0caff7cf2c8823a067f271b9140c9cbb90e859c3",
+    "packages/conformance/catalog/transactional-v1.json": "c9125f914129c71f01cefc5c54b32db80637d37b57e321571c96e81936c31eb4",
+    "packages/conformance/catalog/numeric-model-v1.json": "f4428d53cc1e67beaa146ba9811cd9676e47e84d75a344ba68eb9a24cdc2d0a5",
+    "packages/conformance/catalog/owned-wildcard-v1.json": "6023bff763b7579992fc9092901f2f8ddfc752f264c2a9de6bc0caf0880c5ecd"
+  },
+  "profiles": {
+    "read": {
+      "requiredCount": 44,
+      "requiredIds": [
+        "read.discovery.scope-service-desc",
+        "read.discovery.document",
+        "read.discovery.canonical-navigation",
+        "read.discovery.optional-limits",
+        "read.resource.bead-record",
+        "read.resource.link-record",
+        "read.resource.external-endpoint",
+        "read.resource.properties-view",
+        "read.resource.default-bounded",
+        "read.resource.not-found-nondisclosure",
+        "read.types.inventory",
+        "read.types.descriptor",
+        "read.collections.beads",
+        "read.collections.links",
+        "read.collections.structural-predicates",
+        "read.collections.selector",
+        "read.collections.pagination-snapshot",
+        "read.collections.cursor-errors",
+        "read.collections.invalid-query",
+        "read.bead-links.directions",
+        "read.bead-links.pagination",
+        "read.http.get-head",
+        "read.http.method-405",
+        "read.http.problem-table",
+        "read.http.internal-fault",
+        "read.http.cache-cors",
+        "read.http.raw-request-targets",
+        "read.scope.restore-identity",
+        "read.alias.resolution",
+        "read.alias.absent",
+        "read.disclosure.gone",
+        "read.disclosure.gate",
+        "read.owned.closure",
+        "read.attribution.carried",
+        "read.attribution.link",
+        "read.owned-wildcard.declaration",
+        "read.owned-wildcard.max-required",
+        "read.owned-wildcard.explicit-max-bounded",
+        "read.owned-wildcard.present-entries",
+        "read.owned-wildcard.closure",
+        "read.numeric-model.declared-token-model",
+        "read.http.accept-negotiation",
+        "read.http.conditional-reads",
+        "read.http.head-conditional-parity"
+      ],
+      "retiredIds": [],
+      "history": false,
+      "countsAre": "offline source membership census, no observed outcome or coverage credit"
+    },
+    "read-update": {
+      "requiredCount": 130,
+      "requiredIds": [
+        "read.discovery.scope-service-desc",
+        "read.discovery.canonical-navigation",
+        "read.discovery.optional-limits",
+        "read.resource.bead-record",
+        "read.resource.link-record",
+        "read.resource.external-endpoint",
+        "read.resource.properties-view",
+        "read.resource.default-bounded",
+        "read.resource.not-found-nondisclosure",
+        "read.types.inventory",
+        "read.types.descriptor",
+        "read.collections.beads",
+        "read.collections.links",
+        "read.collections.structural-predicates",
+        "read.collections.selector",
+        "read.collections.pagination-snapshot",
+        "read.collections.cursor-errors",
+        "read.collections.invalid-query",
+        "read.bead-links.directions",
+        "read.bead-links.pagination",
+        "read.http.get-head",
+        "read.http.method-405",
+        "read.http.problem-table",
+        "read.http.internal-fault",
+        "read.http.cache-cors",
+        "read.http.raw-request-targets",
+        "read.scope.restore-identity",
+        "read.alias.resolution",
+        "read.alias.absent",
+        "read.disclosure.gone",
+        "read.disclosure.gate",
+        "read.owned.closure",
+        "read.attribution.carried",
+        "read.attribution.link",
+        "read.owned-wildcard.declaration",
+        "read.owned-wildcard.max-required",
+        "read.owned-wildcard.explicit-max-bounded",
+        "read.owned-wildcard.present-entries",
+        "read.owned-wildcard.closure",
+        "read.numeric-model.declared-token-model",
+        "read.http.accept-negotiation",
+        "read.http.conditional-reads",
+        "read.http.head-conditional-parity",
+        "read-update.discovery.document",
+        "read-update.discovery.aliases",
+        "read-update.discovery.limits",
+        "read-update.discovery.operation-directory",
+        "read-update.singleton.create-bead",
+        "read-update.singleton.update-bead",
+        "read-update.singleton.document-patch-merge-replace",
+        "read-update.singleton.document-patch-atomicity",
+        "read-update.singleton.document-patch-validation",
+        "read-update.singleton.delete-bead",
+        "read-update.singleton.incident-links-nondisclosure",
+        "read-update.singleton.create-link",
+        "read-update.singleton.update-link",
+        "read-update.singleton.delete-link",
+        "read-update.singleton.owned-link-source-revision",
+        "read-update.singleton.owned-link-no-op",
+        "read-update.singleton.attribution",
+        "read-update.singleton.expected-revision",
+        "read-update.singleton.expected-revision-race",
+        "read-update.singleton.hidden-subject",
+        "read-update.singleton.idempotency-key-required",
+        "read-update.singleton.unauthenticated",
+        "read-update.singleton.idempotent-retry",
+        "read-update.singleton.idempotency-conflict",
+        "read-update.singleton.unsupported-media-type",
+        "read-update.singleton.method-405",
+        "read-update.singleton.no-local-bindings",
+        "read-update.singleton.result-headers",
+        "read-update.alias.put-creates",
+        "read-update.alias.put-repoints",
+        "read-update.alias.delete-releases",
+        "read-update.alias.uniqueness-invariant",
+        "read-update.alias.link-coexistence",
+        "read-update.alias.allocation-avoids-aliases",
+        "read-update.alias.non-canonical-target",
+        "read-update.alias.unknown-subject",
+        "read-update.alias.carrier-syntax",
+        "read-update.alias.authorization",
+        "read-update.alias.forbidden",
+        "read-update.alias.no-version-minted",
+        "read-update.alias.sequence-binding",
+        "read-update.alias.retained-without-reauthorization",
+        "read-update.alias.reference-resolution",
+        "read-update.alias.reference-idempotency",
+        "read-update.sequence.order-and-partial-commit",
+        "read-update.sequence.local-bindings",
+        "read-update.sequence.transient-predecessor",
+        "read-update.sequence.expired-creator-binding",
+        "read-update.sequence.retained-failure",
+        "read-update.sequence.member-problem-shape",
+        "read-update.sequence.retry-after-hint",
+        "read-update.sequence.carrier-rejection",
+        "read-update.sequence.contextual-validation",
+        "read-update.sequence.idempotent-retry",
+        "read-update.sequence.disconnect",
+        "read-update.sequence.internal-fault",
+        "read-update.sequence.interleaving",
+        "read-update.idempotency.in-progress",
+        "read-update.idempotency.key-reservation",
+        "read-update.idempotency.claim-atomicity",
+        "read-update.idempotency.concurrent-dependent-retry",
+        "read-update.idempotency.transient-not-retained",
+        "read-update.idempotency.semantic-identity",
+        "read-update.idempotency.principal-isolation",
+        "read-update.idempotency.cross-carrier",
+        "read-update.idempotency.authorization-view",
+        "read-update.idempotency.forbidden-retained",
+        "read-update.idempotency.retention-minimum",
+        "read-update.idempotency.expired",
+        "read-update.idempotency.expired-failure",
+        "read-update.idempotency.durable-boundary",
+        "read-update.idempotency.crash-mid-sequence",
+        "read-update.idempotency.restore",
+        "read-update.problem.table",
+        "read-update.validation.type-contract",
+        "read-update.validation.diagnostics",
+        "read-update.validation.identity-taken",
+        "read-update.validation.aggregate-constraint",
+        "read-update.http.command-minimum-fields",
+        "read-update.http.request-too-large",
+        "read-update.http.cache-no-store",
+        "read-update.http.cors-idempotency-key",
+        "read-update.numeric-model.same-value-no-op",
+        "read-update.numeric-model.round-trip-admission",
+        "read-update.numeric-model.nested-refusal",
+        "read-update.owned-wildcard.explicit-precedence",
+        "read-update.owned-wildcard.undeclared-type-versions-source"
+      ],
+      "retiredIds": [
+        "read.discovery.document"
+      ],
+      "history": false,
+      "countsAre": "offline source membership census, no observed outcome or coverage credit"
+    },
+    "transactional": {
+      "requiredCount": 251,
+      "requiredIds": [
+        "read.discovery.scope-service-desc",
+        "read.discovery.canonical-navigation",
+        "read.discovery.optional-limits",
+        "read.resource.bead-record",
+        "read.resource.link-record",
+        "read.resource.external-endpoint",
+        "read.resource.properties-view",
+        "read.resource.default-bounded",
+        "read.resource.not-found-nondisclosure",
+        "read.types.inventory",
+        "read.types.descriptor",
+        "read.collections.beads",
+        "read.collections.links",
+        "read.collections.structural-predicates",
+        "read.collections.selector",
+        "read.collections.pagination-snapshot",
+        "read.collections.cursor-errors",
+        "read.collections.invalid-query",
+        "read.bead-links.directions",
+        "read.bead-links.pagination",
+        "read.http.get-head",
+        "read.http.method-405",
+        "read.http.problem-table",
+        "read.http.internal-fault",
+        "read.http.cache-cors",
+        "read.http.raw-request-targets",
+        "read.scope.restore-identity",
+        "read.alias.resolution",
+        "read.alias.absent",
+        "read.disclosure.gone",
+        "read.disclosure.gate",
+        "read.owned.closure",
+        "read.attribution.carried",
+        "read.attribution.link",
+        "read.owned-wildcard.declaration",
+        "read.owned-wildcard.max-required",
+        "read.owned-wildcard.explicit-max-bounded",
+        "read.owned-wildcard.present-entries",
+        "read.owned-wildcard.closure",
+        "read.numeric-model.declared-token-model",
+        "read.http.accept-negotiation",
+        "read.http.conditional-reads",
+        "read.http.head-conditional-parity",
+        "read-update.discovery.aliases",
+        "read-update.singleton.create-bead",
+        "read-update.singleton.update-bead",
+        "read-update.singleton.document-patch-merge-replace",
+        "read-update.singleton.document-patch-atomicity",
+        "read-update.singleton.document-patch-validation",
+        "read-update.singleton.delete-bead",
+        "read-update.singleton.incident-links-nondisclosure",
+        "read-update.singleton.create-link",
+        "read-update.singleton.update-link",
+        "read-update.singleton.delete-link",
+        "read-update.singleton.owned-link-source-revision",
+        "read-update.singleton.owned-link-no-op",
+        "read-update.singleton.attribution",
+        "read-update.singleton.expected-revision",
+        "read-update.singleton.expected-revision-race",
+        "read-update.singleton.hidden-subject",
+        "read-update.singleton.idempotency-key-required",
+        "read-update.singleton.unauthenticated",
+        "read-update.singleton.idempotency-conflict",
+        "read-update.singleton.unsupported-media-type",
+        "read-update.singleton.method-405",
+        "read-update.singleton.no-local-bindings",
+        "read-update.alias.put-creates",
+        "read-update.alias.put-repoints",
+        "read-update.alias.delete-releases",
+        "read-update.alias.uniqueness-invariant",
+        "read-update.alias.link-coexistence",
+        "read-update.alias.allocation-avoids-aliases",
+        "read-update.alias.non-canonical-target",
+        "read-update.alias.unknown-subject",
+        "read-update.alias.carrier-syntax",
+        "read-update.alias.authorization",
+        "read-update.alias.forbidden",
+        "read-update.alias.no-version-minted",
+        "read-update.alias.sequence-binding",
+        "read-update.alias.retained-without-reauthorization",
+        "read-update.alias.reference-resolution",
+        "read-update.alias.reference-idempotency",
+        "read-update.sequence.order-and-partial-commit",
+        "read-update.sequence.local-bindings",
+        "read-update.sequence.transient-predecessor",
+        "read-update.sequence.expired-creator-binding",
+        "read-update.sequence.retained-failure",
+        "read-update.sequence.member-problem-shape",
+        "read-update.sequence.retry-after-hint",
+        "read-update.sequence.carrier-rejection",
+        "read-update.sequence.contextual-validation",
+        "read-update.sequence.idempotent-retry",
+        "read-update.sequence.disconnect",
+        "read-update.sequence.interleaving",
+        "read-update.idempotency.key-reservation",
+        "read-update.idempotency.claim-atomicity",
+        "read-update.idempotency.concurrent-dependent-retry",
+        "read-update.idempotency.transient-not-retained",
+        "read-update.idempotency.semantic-identity",
+        "read-update.idempotency.principal-isolation",
+        "read-update.idempotency.cross-carrier",
+        "read-update.idempotency.forbidden-retained",
+        "read-update.idempotency.durable-boundary",
+        "read-update.idempotency.crash-mid-sequence",
+        "read-update.problem.table",
+        "read-update.validation.type-contract",
+        "read-update.validation.diagnostics",
+        "read-update.validation.identity-taken",
+        "read-update.validation.aggregate-constraint",
+        "read-update.http.command-minimum-fields",
+        "read-update.http.request-too-large",
+        "read-update.http.cache-no-store",
+        "read-update.http.cors-idempotency-key",
+        "transactional.discovery.document",
+        "transactional.discovery.operation-directory",
+        "transactional.discovery.limits",
+        "transactional.discovery.no-idempotency-retention",
+        "transactional.batch.atomic-commit",
+        "transactional.batch.local-references",
+        "transactional.batch.rollback",
+        "transactional.batch.label-errors",
+        "transactional.batch.envelope-errors",
+        "transactional.batch.pre-admission-precedence",
+        "transactional.batch.transaction-limits",
+        "transactional.batch.duration-limit",
+        "transactional.batch.deletion-safety",
+        "transactional.batch.owned-link-transitions",
+        "transactional.batch.no-op-entries",
+        "transactional.batch.revision-guard-race",
+        "transactional.batch.aggregate-constraint-race",
+        "transactional.set.mutation",
+        "transactional.set.zero-match",
+        "transactional.set.cardinality",
+        "transactional.set.singleton-targets",
+        "transactional.set.attribution-fanout",
+        "transactional.singleton.receipt",
+        "transactional.singleton.semantics",
+        "transactional.receipt.readable",
+        "transactional.receipt.pagination",
+        "transactional.receipt.page-expiry",
+        "transactional.receipt.nondisclosure",
+        "transactional.receipt.root",
+        "transactional.receipt.headers",
+        "transactional.receipt.reauthorization",
+        "transactional.receipt.reauthorization-paths",
+        "transactional.receipt.non-record-entries",
+        "transactional.receipt.whole-withheld",
+        "transactional.receipt.pending-202",
+        "transactional.receipt.deleted-identity",
+        "transactional.receipt.owned-link-source",
+        "transactional.receipt.problem-shape",
+        "transactional.receipt.transaction-level-failure",
+        "transactional.receipt.validation-diagnostics",
+        "transactional.receipt.no-transient-failure",
+        "transactional.receipt.expiry-allocated",
+        "transactional.receipt.retention-minimum",
+        "transactional.idempotency.concurrent-join",
+        "transactional.idempotency.conflict",
+        "transactional.idempotency.semantic-identity",
+        "transactional.idempotency.cross-carrier",
+        "transactional.idempotency.key-grammar",
+        "transactional.idempotency.expired-detail",
+        "transactional.idempotency.transient-abort",
+        "transactional.idempotency.failed-retained",
+        "transactional.idempotency.durable-admission",
+        "transactional.idempotency.ownership-fencing",
+        "transactional.idempotency.pending-recovery",
+        "transactional.idempotency.one-key-state",
+        "transactional.sequence.member-transactions",
+        "transactional.sequence.completed-projection",
+        "transactional.sequence.in-flight-projection",
+        "transactional.sequence.expired-projection",
+        "transactional.sequence.pending-creator",
+        "transactional.sequence.failed-creator",
+        "transactional.sequence.member-reauthorization",
+        "transactional.event.owned-link-delta",
+        "transactional.event.owned-link-update-delta",
+        "transactional.event.owned-link-deleted-identity",
+        "transactional.event.fact-order",
+        "transactional.event.no-op-owned-update",
+        "transactional.event.graph-facts",
+        "transactional.event.self-link",
+        "transactional.event.set-expansion-order",
+        "transactional.event.history-expired",
+        "transactional.event.cursor-after-withheld",
+        "transactional.changefeed.group",
+        "transactional.changefeed.wire-form",
+        "transactional.changefeed.sse",
+        "transactional.changefeed.start-intent",
+        "transactional.changefeed.owned-link-agreement",
+        "transactional.changefeed.consistency-fields",
+        "transactional.changefeed.catch-up-timeout",
+        "transactional.changefeed.replay-window",
+        "transactional.changefeed.sse-reconnect",
+        "transactional.changefeed.projection-advance",
+        "transactional.changefeed.owned-closure",
+        "transactional.snapshot.rendezvous",
+        "transactional.snapshot.closed-projection",
+        "transactional.snapshot.expiry",
+        "transactional.snapshot.erasure-ledger",
+        "transactional.erasure.record-digest",
+        "transactional.erasure.digest-domain",
+        "transactional.erasure.historical-version",
+        "transactional.erasure.live-successor",
+        "transactional.erasure.live-tombstone",
+        "transactional.erasure.owned-link-cascade",
+        "transactional.erasure.event-withholding",
+        "transactional.erasure.graph-facts",
+        "transactional.erasure.receipts",
+        "transactional.erasure.replication-invalidation",
+        "transactional.erasure.retention-non-propagation",
+        "transactional.erasure.restore",
+        "transactional.erasure.unestablishable-content",
+        "transactional.erasure.view-projection",
+        "transactional.erasure.reads",
+        "transactional.erasure.epoch-unrotated",
+        "transactional.http.status-matrix",
+        "transactional.http.method-405",
+        "transactional.http.problem-table",
+        "transactional.http.problem-contexts",
+        "transactional.http.internal-fault",
+        "transactional.http.disconnect-admitted",
+        "transactional.http.timestamps",
+        "transactional.http.ijson-strings-objects",
+        "transactional.http.token-profile",
+        "transactional.restore.epoch-fence",
+        "transactional.restore.key-namespace",
+        "transactional.alias.receipt",
+        "transactional.alias.locator-only",
+        "transactional.alias.no-batch",
+        "transactional.sequence.withheld-allocation",
+        "transactional.sequence.withheld-binding",
+        "transactional.erasure.live-publication",
+        "transactional.erasure.disconnect-race",
+        "transactional.idempotency.unresolved-admission",
+        "transactional.idempotency.unresolved-comparison",
+        "transactional.idempotency.retraction-retry",
+        "transactional.erasure.persistent-event-consumer",
+        "transactional.snapshot.manifest-refetch",
+        "transactional.snapshot.handle-refusal",
+        "transactional.receipt.page-restart",
+        "transactional.http.accept-refusal",
+        "transactional.receipt.validator-omission",
+        "transactional.http.finite-validator-omission",
+        "transactional.http.conditional-reads",
+        "transactional.http.head-parity",
+        "read-update.numeric-model.same-value-no-op",
+        "read-update.numeric-model.round-trip-admission",
+        "read-update.numeric-model.nested-refusal",
+        "read-update.owned-wildcard.explicit-precedence",
+        "read-update.owned-wildcard.undeclared-type-versions-source"
+      ],
+      "retiredIds": [
+        "read-update.discovery.document",
+        "read-update.discovery.limits",
+        "read-update.discovery.operation-directory",
+        "read-update.idempotency.authorization-view",
+        "read-update.idempotency.expired",
+        "read-update.idempotency.expired-failure",
+        "read-update.idempotency.in-progress",
+        "read-update.idempotency.restore",
+        "read-update.idempotency.retention-minimum",
+        "read-update.sequence.internal-fault",
+        "read-update.singleton.idempotent-retry",
+        "read-update.singleton.result-headers",
+        "read.discovery.document"
+      ],
+      "history": false,
+      "countsAre": "offline source membership census, no observed outcome or coverage credit"
+    }
+  },
+  "RU": {
+    "required": 130,
+    "authoredBounded": 56,
+    "wholeFlags": 34,
+    "omitted": 74,
+    "partialAuthored": 22,
+    "rows": [
+      {
+        "id": "read.discovery.scope-service-desc",
+        "status": "bounded-observation",
+        "wholeContract": true,
+        "reason": "Actual Scope GET captures service-desc and this row directly dereferences it, checking successful closed Read+Update discovery JSON."
+      },
+      {
+        "id": "read.discovery.canonical-navigation",
+        "status": "bounded-observation",
+        "wholeContract": true,
+        "reason": "Actual installed RU HTTP observes the inherited cited contract with its own fixture and local discovery validation."
+      },
+      {
+        "id": "read.discovery.optional-limits",
+        "status": "omitted",
+        "wholeContract": false,
+        "reason": "No row-local scenario in this slice; cross-row observations do not award this required ID whole-contract credit."
+      },
+      {
+        "id": "read.resource.bead-record",
+        "status": "bounded-observation",
+        "wholeContract": false,
+        "reason": "Complete open record observed, but cited untouched-property preservation after an effectful update is not observed by this Read case."
+      },
+      {
+        "id": "read.resource.link-record",
+        "status": "bounded-observation",
+        "wholeContract": true,
+        "reason": "Actual installed RU HTTP observes the cited inherited contract on a public-HTTP-seeded fixture with independent static oracles."
+      },
+      {
+        "id": "read.resource.external-endpoint",
+        "status": "omitted",
+        "wholeContract": false,
+        "reason": "No row-local scenario in this slice; cross-row observations do not award this required ID whole-contract credit."
+      },
+      {
+        "id": "read.resource.properties-view",
+        "status": "bounded-observation",
+        "wholeContract": true,
+        "reason": "Actual installed RU HTTP observes the cited inherited contract on a public-HTTP-seeded fixture with independent static oracles."
+      },
+      {
+        "id": "read.resource.default-bounded",
+        "status": "bounded-observation",
+        "wholeContract": true,
+        "reason": "Actual HTTP-seeded non-owning Bead has real incident Links; closed currentBeadRecord schema and independent identity plus explicit links absence are checked. A valid-shaped response-only embedded-plane control must fail."
+      },
+      {
+        "id": "read.resource.not-found-nondisclosure",
+        "status": "omitted",
+        "wholeContract": false,
+        "reason": "No row-local scenario in this slice; cross-row observations do not award this required ID whole-contract credit."
+      },
+      {
+        "id": "read.types.inventory",
+        "status": "bounded-observation",
+        "wholeContract": true,
+        "reason": "Actual installed RU HTTP checks independent complete Type summary tuples (id, name, describes), canonical order and closed summary schema; real response-only name and kind corruptions must fail."
+      },
+      {
+        "id": "read.types.descriptor",
+        "status": "bounded-observation",
+        "wholeContract": true,
+        "reason": "Actual installed RU HTTP observes the inherited cited contract with its own fixture and local discovery validation."
+      },
+      {
+        "id": "read.collections.beads",
+        "status": "bounded-observation",
+        "wholeContract": true,
+        "reason": "Actual installed RU HTTP checks independent per-identity Bead tuples (id, Type, complete properties and metadata), canonical order and closed record schema with opaque revisions; real response-only corruptions must fail. Both unowned Task records explicitly omit the embedded links view; a real-socket injection control checks the absence oracles."
+      },
+      {
+        "id": "read.collections.links",
+        "status": "bounded-observation",
+        "wholeContract": true,
+        "reason": "Actual installed RU HTTP observes the cited inherited contract on a public-HTTP-seeded fixture with independent static oracles."
+      },
+      {
+        "id": "read.collections.structural-predicates",
+        "status": "omitted",
+        "wholeContract": false,
+        "reason": "No row-local scenario in this slice; cross-row observations do not award this required ID whole-contract credit."
+      },
+      {
+        "id": "read.collections.selector",
+        "status": "omitted",
+        "wholeContract": false,
+        "reason": "No row-local scenario in this slice; cross-row observations do not award this required ID whole-contract credit."
+      },
+      {
+        "id": "read.collections.pagination-snapshot",
+        "status": "omitted",
+        "wholeContract": false,
+        "reason": "No row-local scenario in this slice; cross-row observations do not award this required ID whole-contract credit."
+      },
+      {
+        "id": "read.collections.cursor-errors",
+        "status": "omitted",
+        "wholeContract": false,
+        "reason": "No row-local scenario in this slice; cross-row observations do not award this required ID whole-contract credit."
+      },
+      {
+        "id": "read.collections.invalid-query",
+        "status": "bounded-observation",
+        "wholeContract": true,
+        "reason": "Actual installed RU HTTP observes the inherited cited contract with its own fixture and local discovery validation."
+      },
+      {
+        "id": "read.bead-links.directions",
+        "status": "omitted",
+        "wholeContract": false,
+        "reason": "No row-local scenario in this slice; cross-row observations do not award this required ID whole-contract credit."
+      },
+      {
+        "id": "read.bead-links.pagination",
+        "status": "omitted",
+        "wholeContract": false,
+        "reason": "No row-local scenario in this slice; cross-row observations do not award this required ID whole-contract credit."
+      },
+      {
+        "id": "read.http.get-head",
+        "status": "bounded-observation",
+        "wholeContract": true,
+        "reason": "Actual installed RU HTTP observes the cited inherited contract on a public-HTTP-seeded fixture with independent static oracles."
+      },
+      {
+        "id": "read.http.method-405",
+        "status": "bounded-observation",
+        "wholeContract": true,
+        "reason": "Actual installed RU HTTP observes the inherited cited contract with its own fixture and local discovery validation."
+      },
+      {
+        "id": "read.http.problem-table",
+        "status": "omitted",
+        "wholeContract": false,
+        "reason": "No row-local scenario in this slice; cross-row observations do not award this required ID whole-contract credit."
+      },
+      {
+        "id": "read.http.internal-fault",
+        "status": "omitted",
+        "wholeContract": false,
+        "reason": "No row-local scenario in this slice; cross-row observations do not award this required ID whole-contract credit."
+      },
+      {
+        "id": "read.http.cache-cors",
+        "status": "bounded-observation",
+        "wholeContract": true,
+        "reason": "Actual installed RU HTTP observes the cited inherited contract on a public-HTTP-seeded fixture with independent static oracles."
+      },
+      {
+        "id": "read.http.raw-request-targets",
+        "status": "omitted",
+        "wholeContract": false,
+        "reason": "No row-local scenario in this slice; cross-row observations do not award this required ID whole-contract credit."
+      },
+      {
+        "id": "read.scope.restore-identity",
+        "status": "omitted",
+        "wholeContract": false,
+        "reason": "No row-local scenario in this slice; cross-row observations do not award this required ID whole-contract credit."
+      },
+      {
+        "id": "read.alias.resolution",
+        "status": "omitted",
+        "wholeContract": false,
+        "reason": "No row-local scenario in this slice; cross-row observations do not award this required ID whole-contract credit."
+      },
+      {
+        "id": "read.alias.absent",
+        "status": "omitted",
+        "wholeContract": false,
+        "reason": "No row-local scenario in this slice; cross-row observations do not award this required ID whole-contract credit."
+      },
+      {
+        "id": "read.disclosure.gone",
+        "status": "omitted",
+        "wholeContract": false,
+        "reason": "No row-local scenario in this slice; cross-row observations do not award this required ID whole-contract credit."
+      },
+      {
+        "id": "read.disclosure.gate",
+        "status": "omitted",
+        "wholeContract": false,
+        "reason": "No row-local scenario in this slice; cross-row observations do not award this required ID whole-contract credit."
+      },
+      {
+        "id": "read.owned.closure",
+        "status": "omitted",
+        "wholeContract": false,
+        "reason": "No row-local scenario in this slice; cross-row observations do not award this required ID whole-contract credit."
+      },
+      {
+        "id": "read.attribution.carried",
+        "status": "omitted",
+        "wholeContract": false,
+        "reason": "No row-local scenario in this slice; cross-row observations do not award this required ID whole-contract credit."
+      },
+      {
+        "id": "read.attribution.link",
+        "status": "omitted",
+        "wholeContract": false,
+        "reason": "No row-local scenario in this slice; cross-row observations do not award this required ID whole-contract credit."
+      },
+      {
+        "id": "read.owned-wildcard.declaration",
+        "status": "omitted",
+        "wholeContract": false,
+        "reason": "No row-local scenario in this slice; cross-row observations do not award this required ID whole-contract credit."
+      },
+      {
+        "id": "read.owned-wildcard.max-required",
+        "status": "omitted",
+        "wholeContract": false,
+        "reason": "No row-local scenario in this slice; cross-row observations do not award this required ID whole-contract credit."
+      },
+      {
+        "id": "read.owned-wildcard.explicit-max-bounded",
+        "status": "omitted",
+        "wholeContract": false,
+        "reason": "No row-local scenario in this slice; cross-row observations do not award this required ID whole-contract credit."
+      },
+      {
+        "id": "read.owned-wildcard.present-entries",
+        "status": "omitted",
+        "wholeContract": false,
+        "reason": "No row-local scenario in this slice; cross-row observations do not award this required ID whole-contract credit."
+      },
+      {
+        "id": "read.owned-wildcard.closure",
+        "status": "omitted",
+        "wholeContract": false,
+        "reason": "No row-local scenario in this slice; cross-row observations do not award this required ID whole-contract credit."
+      },
+      {
+        "id": "read.numeric-model.declared-token-model",
+        "status": "omitted",
+        "wholeContract": false,
+        "reason": "No row-local scenario in this slice; cross-row observations do not award this required ID whole-contract credit."
+      },
+      {
+        "id": "read.http.accept-negotiation",
+        "status": "bounded-observation",
+        "wholeContract": false,
+        "reason": "Media ranges, weights, exclusions, missing/query precedence observed; authorization/non-disclosure precedence remains unobserved on this single-principal fixture."
+      },
+      {
+        "id": "read.http.conditional-reads",
+        "status": "bounded-observation",
+        "wholeContract": false,
+        "reason": "Actual validators and bodyless outcomes observed; authorization and cursor failure precedence remain unobserved. History is absent in this configured target."
+      },
+      {
+        "id": "read.http.head-conditional-parity",
+        "status": "bounded-observation",
+        "wholeContract": false,
+        "reason": "Actual GET/HEAD success, conditions, negotiation, missing and query parity observed; authorization and cursor refusal parity remain unobserved."
+      },
+      {
+        "id": "read-update.discovery.document",
+        "status": "bounded-observation",
+        "wholeContract": false,
+        "reason": "Actual target advertises canonical-uri order; omitted-order fallback not observed in this configuration."
+      },
+      {
+        "id": "read-update.discovery.aliases",
+        "status": "omitted",
+        "wholeContract": false,
+        "reason": "Operation Directory alias entries and served alias resolution are observed in the four alias scenarios; no row-local discovery-aliases scenario binds all cited obligations."
+      },
+      {
+        "id": "read-update.discovery.limits",
+        "status": "omitted",
+        "wholeContract": false,
+        "reason": "No row-local scenario in this slice; cross-row observations do not award this required ID whole-contract credit."
+      },
+      {
+        "id": "read-update.discovery.operation-directory",
+        "status": "bounded-observation",
+        "wholeContract": true,
+        "reason": "Cold Scope and service description navigation validates the closed nine-member Operation Directory; a second actual directory fetch captures all nine relative targets, each dispatched through the existing installed client. Credit is only the cited directory clause; no profile admission, omitted-order discovery, whole mutation, retry, or Transactional guarantee."
+      },
+      {
+        "id": "read-update.singleton.create-bead",
+        "status": "bounded-observation",
+        "wholeContract": true,
+        "reason": "Selected contract legs have executable HTTP and independent afterstate assertions; not profile qualification."
+      },
+      {
+        "id": "read-update.singleton.update-bead",
+        "status": "bounded-observation",
+        "wholeContract": false,
+        "reason": "Actual properties and metadata updates, metadata non-object refusal with independent unchanged record, guarded semantic no-op, and a row-local child-declared effective parent-schema refusal are observed. Whole=false: remaining full cited patch-section numeric/RFC branches are not independently established by this row. Properties document omission is an installed choice, not a universal mandatory spelling."
+      },
+      {
+        "id": "read-update.singleton.document-patch-merge-replace",
+        "status": "bounded-observation",
+        "wholeContract": false,
+        "reason": "Bounded both-kind merge/replace observations: member replacement, array insertion/append, order-sensitive add-then-replace, separate object clearing, omitted-document preservation, and all excluded move/copy/test refusals with independent unchanged GETs. Negative controls detect returned-body, afterstate, order-result and clear-root corruption; scoped to the cited row clauses. Whole=false: the full cited section also requires effective-Type schemas and combined-document semantic no-op retention, which this row does not independently observe; numeric admissibility and exhaustive RFC Pointer/array branches are likewise not established here."
+      },
+      {
+        "id": "read-update.singleton.document-patch-atomicity",
+        "status": "bounded-observation",
+        "wholeContract": false,
+        "reason": "Actual same-configuration HTTP mutations, complete normative body schemas, independent static semantic oracles and real GET afterstate. Negative controls must detect returned-body corruption; scoped to the cited row clauses. Whole=false: full cited property-change sections also require effective-Type validation, numeric admissibility and patch branches not independently observed by this row; other rows do not supply whole-contract credit."
+      },
+      {
+        "id": "read-update.singleton.document-patch-validation",
+        "status": "bounded-observation",
+        "wholeContract": false,
+        "reason": "Actual both-kind object-domain refusals and child-declared base/child schema failures, whole-result conditional-required failure, valid combined patch and metadata schema exemption, with independent unchanged/full afterstate and unchanged Link endpoints. Whole=false: message cause/metadata wording, numeric/RFC branches and broader full cited-section laws remain unobserved. Properties document omission and root instanceLocation presence are installed choices, not universal mandatory spellings. Parent/child diagnostic comparisons and metadata/open-property/afterstate controls are row-local assertion sensitivity, not substituted authority outcomes."
+      },
+      {
+        "id": "read-update.singleton.delete-bead",
+        "status": "bounded-observation",
+        "wholeContract": true,
+        "reason": "Selected contract legs have executable HTTP and independent afterstate assertions; not profile qualification."
+      },
+      {
+        "id": "read-update.singleton.incident-links-nondisclosure",
+        "status": "omitted",
+        "wholeContract": false,
+        "reason": "No row-local scenario in this slice; cross-row observations do not award this required ID whole-contract credit."
+      },
+      {
+        "id": "read-update.singleton.create-link",
+        "status": "bounded-observation",
+        "wholeContract": false,
+        "reason": "Relative endpoint resolution, missing-local-endpoint refusal, byte-identical opaque local/external pin storage and no interpretation are observed. The pin equality-comparison conjunct remains unobserved; this row is incomplete."
+      },
+      {
+        "id": "read-update.singleton.update-link",
+        "status": "bounded-observation",
+        "wholeContract": true,
+        "reason": "Actual first-class owned Link properties-only and metadata-only updates return complete independently GET-verified postimages. Unowned create/update/delete omit source pair and preserve full endpoint records. No wildcard/policy completeness inferred. Row-local matching and stale Link guards prove consecutive Link revisions differ after properties/metadata updates and retained usability around no-op; complete observed Decision ownsOutgoing includes wildcard plus explicit relates/cites, without wildcard qualification. Matching Link guards are RFC6902 section4.6 semantic no-ops: they witness current-guard admission and retention, not a separate state-changing admission. Global non-recycling is not established by these finite consecutive comparisons."
+      },
+      {
+        "id": "read-update.singleton.delete-link",
+        "status": "bounded-observation",
+        "wholeContract": true,
+        "reason": "Actual same-configuration HTTP mutations, complete normative body schemas, independent static semantic oracles and real GET afterstate. Negative controls must detect returned-body corruption; scoped to the cited row clauses."
+      },
+      {
+        "id": "read-update.singleton.owned-link-source-revision",
+        "status": "bounded-observation",
+        "wholeContract": true,
+        "reason": "Actual owned create/properties update/metadata update/delete report the literal owner and its independently read resulting revision; previous owner guards fail after each effectful change. Owner full postimages prove current inline Link or empty explicit plane. Unowned contrast has no source pair and unchanged endpoints. Each independently reported current owner revision first succeeds as a no-op guard before becoming stale after the next owned transition. Row-local matching and stale Link guards prove consecutive Link revisions differ after properties/metadata updates and retained usability around no-op; complete observed Decision ownsOutgoing includes wildcard plus explicit relates/cites, without wildcard qualification. Matching Link guards are RFC6902 section4.6 semantic no-ops: they witness current-guard admission and retention, not a separate state-changing admission. Global non-recycling is not established by these finite consecutive comparisons."
+      },
+      {
+        "id": "read-update.singleton.owned-link-no-op",
+        "status": "bounded-observation",
+        "wholeContract": true,
+        "reason": "Known Link and source actor/agent/message are independently checked before captures. Reordered semantically equal documents with different provenance input retain full Link result, independently read Link and owner envelopes and source revision, with unchanged target. Row-local matching and stale Link guards prove consecutive Link revisions differ after properties/metadata updates and retained usability around no-op; complete observed Decision ownsOutgoing includes wildcard plus explicit relates/cites, without wildcard qualification. Matching Link guards are RFC6902 section4.6 semantic no-ops: they witness current-guard admission and retention, not a separate state-changing admission. Global non-recycling is not established by these finite consecutive comparisons."
+      },
+      {
+        "id": "read-update.singleton.attribution",
+        "status": "bounded-observation",
+        "wholeContract": true,
+        "reason": "Reviewed three selected attribution clauses: every minted version gets the envelope; no-op retains revision/full envelope; actor and envelope absence is truthful. Row-local Bead/unowned/owned Link fanout, actor-only/full-context/absence and fresh retained guards; accepted audit read-update-attribution-numeric-whole-audit.md SHA25665cb5ea5a5674d9b5d3eab29878c041aeb951dea7b6f1b77dc6a8b3e44537abd. Finite configured Read+Update, History false, recordChangeContext false; writer actor is not authenticated attribution. No public qualification."
+      },
+      {
+        "id": "read-update.singleton.expected-revision",
+        "status": "bounded-observation",
+        "wholeContract": true,
+        "reason": "Selected contract legs have executable HTTP and independent afterstate assertions; not profile qualification."
+      },
+      {
+        "id": "read-update.singleton.expected-revision-race",
+        "status": "omitted",
+        "wholeContract": false,
+        "reason": "No row-local scenario in this slice; cross-row observations do not award this required ID whole-contract credit."
+      },
+      {
+        "id": "read-update.singleton.hidden-subject",
+        "status": "omitted",
+        "wholeContract": false,
+        "reason": "No row-local scenario in this slice; cross-row observations do not award this required ID whole-contract credit."
+      },
+      {
+        "id": "read-update.singleton.idempotency-key-required",
+        "status": "bounded-observation",
+        "wholeContract": true,
+        "reason": "Installed missing/malformed/repeated-key observations cover all eight singleton targets with complete no-effect Resource/alias state and subsequent same-body valid-key success. The eight grammar classes, distinct repeated values with separate recovery, and positive token boundaries are sampled on createBead; representative malformed and repeated cases cover every other carrier. Eight invalid sequence member-key classes reject without a prefix. This reviewed class/carrier equivalence partition covers the selected key-required and key-grammar clauses; whole-contract credit is limited to those clauses."
+      },
+      {
+        "id": "read-update.singleton.unauthenticated",
+        "status": "omitted",
+        "wholeContract": false,
+        "reason": "No row-local scenario in this slice; cross-row observations do not award this required ID whole-contract credit."
+      },
+      {
+        "id": "read-update.singleton.idempotent-retry",
+        "status": "bounded-observation",
+        "wholeContract": false,
+        "reason": "Retained allocated-ID retry observed; in-flight/expired and singleton-versus-sequence comparison remain unobserved."
+      },
+      {
+        "id": "read-update.singleton.idempotency-conflict",
+        "status": "bounded-observation",
+        "wholeContract": true,
+        "reason": "Selected contract legs have executable HTTP and independent afterstate assertions; not profile qualification."
+      },
+      {
+        "id": "read-update.singleton.unsupported-media-type",
+        "status": "bounded-observation",
+        "wholeContract": true,
+        "reason": "Installed missing/wrong media and ignored JSON/non-JSON parameters cover all nine mutation targets. Each parameterized success now has an immediate bare-JSON same-body/same-key retained replay with identical result fact/schema assertions. Structured-suffix and non-ASCII decoder classes are sampled on createBead; the class/carrier asymmetry is intentional. This reviewed class/carrier equivalence partition, including all nine bare comparators, covers the selected media admission and ignored-parameter clauses; whole-contract credit is limited to those clauses."
+      },
+      {
+        "id": "read-update.singleton.method-405",
+        "status": "omitted",
+        "wholeContract": false,
+        "reason": "No row-local scenario in this slice; cross-row observations do not award this required ID whole-contract credit."
+      },
+      {
+        "id": "read-update.singleton.no-local-bindings",
+        "status": "bounded-observation",
+        "wholeContract": true,
+        "reason": "Reviewed whole coverage of the selected singleton clause: actual installed HTTP rejects bare and pinned @name in every admitted reference slot as malformed-request before observable effects; complete afterstate, same-key corrections, opaque pin echoes and ordinary metadata strings distinguish reference syntax from valid inputs. Coverage is row-local; no public profile qualification."
+      },
+      {
+        "id": "read-update.singleton.result-headers",
+        "status": "bounded-observation",
+        "wholeContract": true,
+        "reason": "Actual same-configuration HTTP mutations, complete normative body schemas, independent static semantic oracles and real GET afterstate. Negative controls must detect returned-body corruption; scoped to the cited row clauses."
+      },
+      {
+        "id": "read-update.alias.put-creates",
+        "status": "bounded-observation",
+        "wholeContract": true,
+        "reason": "Closed exact created result, canonical alias/target and bodyless GET/HEAD 307 are observed. Alias-target corruption is checked in the byte-identical put-repoints scenario, not as a row-local control here."
+      },
+      {
+        "id": "read-update.alias.put-repoints",
+        "status": "bounded-observation",
+        "wholeContract": true,
+        "reason": "Actual same-configuration HTTP mutations, complete normative body schemas, independent static semantic oracles and real GET afterstate. Negative controls must detect returned-body corruption; scoped to the cited row clauses."
+      },
+      {
+        "id": "read-update.alias.delete-releases",
+        "status": "bounded-observation",
+        "wholeContract": false,
+        "reason": "Actual delete/reuse and unknown/live-query refusal observed. Fragment-bearing raw target remains unobserved; no-aliases antecedent is inapplicable because this Read+Update profile requires aliases. Row remains incomplete."
+      },
+      {
+        "id": "read-update.alias.uniqueness-invariant",
+        "status": "omitted",
+        "wholeContract": false,
+        "reason": "No row-local scenario in this slice; cross-row observations do not award this required ID whole-contract credit."
+      },
+      {
+        "id": "read-update.alias.link-coexistence",
+        "status": "omitted",
+        "wholeContract": false,
+        "reason": "No row-local scenario in this slice; cross-row observations do not award this required ID whole-contract credit."
+      },
+      {
+        "id": "read-update.alias.allocation-avoids-aliases",
+        "status": "omitted",
+        "wholeContract": false,
+        "reason": "No row-local scenario in this slice; cross-row observations do not award this required ID whole-contract credit."
+      },
+      {
+        "id": "read-update.alias.non-canonical-target",
+        "status": "bounded-observation",
+        "wholeContract": true,
+        "reason": "Reviewed whole coverage of all selected clauses: actual installed HTTP rejects local/absolute alias and Link targets plus external alias targets with complete independent validation-failed Problems and the canonical-Bead diagnostic cause; both Link endpoint slots reject bare/pinned Link references. Row-local positives admit an absolute canonical in-Scope Bead alias target and both opaque pinned and bare Bead endpoints, with independent result/readback and corruption controls. Complete afterstate and retained failure/conflict controls corroborate the observations. No unknown-subject, general retention, authorization or public profile qualification."
+      },
+      {
+        "id": "read-update.alias.unknown-subject",
+        "status": "bounded-observation",
+        "wholeContract": false,
+        "reason": "Installed visible missing/wrong-kind/wrong-root reference failures and now-satisfiable retained failures with fresh-key success. Partial: invisible targets, hidden subjects and cross-authorization-view nondisclosure are not observed by this operator fixture."
+      },
+      {
+        "id": "read-update.alias.carrier-syntax",
+        "status": "omitted",
+        "wholeContract": false,
+        "reason": "No row-local scenario in this slice; cross-row observations do not award this required ID whole-contract credit."
+      },
+      {
+        "id": "read-update.alias.authorization",
+        "status": "omitted",
+        "wholeContract": false,
+        "reason": "No row-local scenario in this slice; cross-row observations do not award this required ID whole-contract credit."
+      },
+      {
+        "id": "read-update.alias.forbidden",
+        "status": "omitted",
+        "wholeContract": false,
+        "reason": "No row-local scenario in this slice; cross-row observations do not award this required ID whole-contract credit."
+      },
+      {
+        "id": "read-update.alias.no-version-minted",
+        "status": "bounded-observation",
+        "wholeContract": true,
+        "reason": "Both complete target records remain unchanged across alias creation, repoint, same-target put, deletion and reuse; complete collections exclude alias membership. Row-local fabricated alias and target revisions fail closed result/independent postimage assertions."
+      },
+      {
+        "id": "read-update.alias.sequence-binding",
+        "status": "omitted",
+        "wholeContract": false,
+        "reason": "No row-local scenario in this slice; cross-row observations do not award this required ID whole-contract credit."
+      },
+      {
+        "id": "read-update.alias.retained-without-reauthorization",
+        "status": "omitted",
+        "wholeContract": false,
+        "reason": "No row-local scenario in this slice; cross-row observations do not award this required ID whole-contract credit."
+      },
+      {
+        "id": "read-update.alias.reference-resolution",
+        "status": "omitted",
+        "wholeContract": false,
+        "reason": "No row-local scenario in this slice; cross-row observations do not award this required ID whole-contract credit."
+      },
+      {
+        "id": "read-update.alias.reference-idempotency",
+        "status": "omitted",
+        "wholeContract": false,
+        "reason": "No row-local scenario in this slice; cross-row observations do not award this required ID whole-contract credit."
+      },
+      {
+        "id": "read-update.sequence.order-and-partial-commit",
+        "status": "bounded-observation",
+        "wholeContract": false,
+        "reason": "Actual successful prefix, member failure and independent tail with independent GETs; final ordering does not establish never-parallel execution or externally visible intermediate commits. Incomplete. This row re-executes the original four-member request prefix on a fresh instance; its shape sensitivity controls live on member-problem-shape, which now additionally observes named Link and alias-result branches. No separate row-local controls or extra ordering witness are claimed. The four-entry indices tuple and absence of results/4 are not mirrored by the six-entry scenario controls; those specific cardinality assertions have no separate sensitivity witness."
+      },
+      {
+        "id": "read-update.sequence.local-bindings",
+        "status": "bounded-observation",
+        "wholeContract": false,
+        "reason": "Allocated creator/dependent identity and static final postimage are observed. Alias collision then cleared-path replay plus changed-input old-dependent-key conflict proves retained failed binding. No external commit-before-dependent witness; incomplete."
+      },
+      {
+        "id": "read-update.sequence.transient-predecessor",
+        "status": "omitted",
+        "wholeContract": false,
+        "reason": "No row-local scenario in this slice; cross-row observations do not award this required ID whole-contract credit."
+      },
+      {
+        "id": "read-update.sequence.expired-creator-binding",
+        "status": "omitted",
+        "wholeContract": false,
+        "reason": "No row-local scenario in this slice; cross-row observations do not award this required ID whole-contract credit."
+      },
+      {
+        "id": "read-update.sequence.retained-failure",
+        "status": "omitted",
+        "wholeContract": false,
+        "reason": "No row-local scenario in this slice; cross-row observations do not award this required ID whole-contract credit."
+      },
+      {
+        "id": "read-update.sequence.member-problem-shape",
+        "status": "bounded-observation",
+        "wholeContract": true,
+        "reason": "Actual 200 envelope checks exact result cardinality/order, present names only for declared creators, and would-be status/type/code/retry for named identity conflict and unnamed missing subject; independent success/failure afterstate and targeted response controls. Also observes named createLink and unnamed putAlias result branches with independent Link/alias GETs; shape controls discriminate their name/index obligations."
+      },
+      {
+        "id": "read-update.sequence.retry-after-hint",
+        "status": "omitted",
+        "wholeContract": false,
+        "reason": "No row-local scenario in this slice; cross-row observations do not award this required ID whole-contract credit."
+      },
+      {
+        "id": "read-update.sequence.carrier-rejection",
+        "status": "bounded-observation",
+        "wholeContract": false,
+        "reason": "Actual member-count32/33, static names/keys/references, closed envelope/JSON, authentication401, media415, body-size413 and malformed pointer refusals with absence and changed-input member-key reuse. Rate-limited/unavailable carrier branches remain unobserved; incomplete."
+      },
+      {
+        "id": "read-update.sequence.contextual-validation",
+        "status": "omitted",
+        "wholeContract": false,
+        "reason": "No row-local scenario in this slice; cross-row observations do not award this required ID whole-contract credit."
+      },
+      {
+        "id": "read-update.sequence.idempotent-retry",
+        "status": "bounded-observation",
+        "wholeContract": false,
+        "reason": "Retained success/failure dispositions are reprojected at current indices/names after reorder and fresh insertion, with independently advanced live state and repeated replay. Partial: deliberate completed-response retry does not observe disconnected admitted-work completion or crash recovery. Deterministic fixture Problems are compared as whole objects, including the current sequence envelope, so added standard or extension members cannot pass as retained equality."
+      },
+      {
+        "id": "read-update.sequence.disconnect",
+        "status": "omitted",
+        "wholeContract": false,
+        "reason": "No row-local scenario in this slice; cross-row observations do not award this required ID whole-contract credit."
+      },
+      {
+        "id": "read-update.sequence.internal-fault",
+        "status": "omitted",
+        "wholeContract": false,
+        "reason": "No row-local scenario in this slice; cross-row observations do not award this required ID whole-contract credit."
+      },
+      {
+        "id": "read-update.sequence.interleaving",
+        "status": "omitted",
+        "wholeContract": false,
+        "reason": "No row-local scenario in this slice; cross-row observations do not award this required ID whole-contract credit."
+      },
+      {
+        "id": "read-update.idempotency.in-progress",
+        "status": "omitted",
+        "wholeContract": false,
+        "reason": "No row-local scenario in this slice; cross-row observations do not award this required ID whole-contract credit."
+      },
+      {
+        "id": "read-update.idempotency.key-reservation",
+        "status": "omitted",
+        "wholeContract": false,
+        "reason": "No row-local scenario in this slice; cross-row observations do not award this required ID whole-contract credit."
+      },
+      {
+        "id": "read-update.idempotency.claim-atomicity",
+        "status": "omitted",
+        "wholeContract": false,
+        "reason": "No row-local scenario in this slice; cross-row observations do not award this required ID whole-contract credit."
+      },
+      {
+        "id": "read-update.idempotency.concurrent-dependent-retry",
+        "status": "omitted",
+        "wholeContract": false,
+        "reason": "No row-local scenario in this slice; cross-row observations do not award this required ID whole-contract credit."
+      },
+      {
+        "id": "read-update.idempotency.transient-not-retained",
+        "status": "omitted",
+        "wholeContract": false,
+        "reason": "No row-local scenario in this slice; cross-row observations do not award this required ID whole-contract credit."
+      },
+      {
+        "id": "read-update.idempotency.semantic-identity",
+        "status": "omitted",
+        "wholeContract": false,
+        "reason": "No row-local scenario in this slice; cross-row observations do not award this required ID whole-contract credit."
+      },
+      {
+        "id": "read-update.idempotency.principal-isolation",
+        "status": "omitted",
+        "wholeContract": false,
+        "reason": "No row-local scenario in this slice; cross-row observations do not award this required ID whole-contract credit."
+      },
+      {
+        "id": "read-update.idempotency.cross-carrier",
+        "status": "bounded-observation",
+        "wholeContract": false,
+        "reason": "Row-local retained success/failure replay across singleton and sequence in both directions, changed-input conflict and independent live afterstate; existing local-bindings already observed one cross-carrier conflict. Partial: other operation kinds, expiry, in-flight and authorization variants remain unobserved. Deterministic fixture Problems are compared as whole objects, including the current sequence envelope, so added standard or extension members cannot pass as retained equality. The final singleton disposition equals its original complete captured body; a correct retained response plus a spurious extra allocation is not excluded by a collection-state oracle."
+      },
+      {
+        "id": "read-update.idempotency.authorization-view",
+        "status": "omitted",
+        "wholeContract": false,
+        "reason": "No row-local scenario in this slice; cross-row observations do not award this required ID whole-contract credit."
+      },
+      {
+        "id": "read-update.idempotency.forbidden-retained",
+        "status": "omitted",
+        "wholeContract": false,
+        "reason": "No row-local scenario in this slice; cross-row observations do not award this required ID whole-contract credit."
+      },
+      {
+        "id": "read-update.idempotency.retention-minimum",
+        "status": "omitted",
+        "wholeContract": false,
+        "reason": "No row-local scenario in this slice; cross-row observations do not award this required ID whole-contract credit."
+      },
+      {
+        "id": "read-update.idempotency.expired",
+        "status": "omitted",
+        "wholeContract": false,
+        "reason": "No row-local scenario in this slice; cross-row observations do not award this required ID whole-contract credit."
+      },
+      {
+        "id": "read-update.idempotency.expired-failure",
+        "status": "omitted",
+        "wholeContract": false,
+        "reason": "No row-local scenario in this slice; cross-row observations do not award this required ID whole-contract credit."
+      },
+      {
+        "id": "read-update.idempotency.durable-boundary",
+        "status": "omitted",
+        "wholeContract": false,
+        "reason": "No row-local scenario in this slice; cross-row observations do not award this required ID whole-contract credit."
+      },
+      {
+        "id": "read-update.idempotency.crash-mid-sequence",
+        "status": "omitted",
+        "wholeContract": false,
+        "reason": "No row-local scenario in this slice; cross-row observations do not award this required ID whole-contract credit."
+      },
+      {
+        "id": "read-update.idempotency.restore",
+        "status": "omitted",
+        "wholeContract": false,
+        "reason": "No row-local scenario in this slice; cross-row observations do not award this required ID whole-contract credit."
+      },
+      {
+        "id": "read-update.problem.table",
+        "status": "omitted",
+        "wholeContract": false,
+        "reason": "No row-local scenario in this slice; cross-row observations do not award this required ID whole-contract credit."
+      },
+      {
+        "id": "read-update.validation.type-contract",
+        "status": "bounded-observation",
+        "wholeContract": false,
+        "reason": "Installed child-declared Bead and Link creates refuse inadmissible properties with validation-failed and independent absent-ID GETs; a missing Type in each category returns type-not-installed without allocation, followed by positive create controls. Partial: broader validation causes and absence of implicit network installation are not established."
+      },
+      {
+        "id": "read-update.validation.diagnostics",
+        "status": "bounded-observation",
+        "wholeContract": false,
+        "reason": "Installed child-declared Bead and Link failures identify the exact failing effective Type, authored schema URI and keyword pointer, properties-relative instance location, canonical Problem tuple and observed discovery bounds. Partial: truncation, evaluation order, retained diagnostic compatibility, non-Type causes and semantic message meaning are not established. Properties document omission and root instanceLocation presence are installed choices, not universal mandatory spellings."
+      },
+      {
+        "id": "read-update.validation.identity-taken",
+        "status": "omitted",
+        "wholeContract": false,
+        "reason": "No row-local scenario in this slice; cross-row observations do not award this required ID whole-contract credit."
+      },
+      {
+        "id": "read-update.validation.aggregate-constraint",
+        "status": "omitted",
+        "wholeContract": false,
+        "reason": "No row-local scenario in this slice; cross-row observations do not award this required ID whole-contract credit."
+      },
+      {
+        "id": "read-update.http.command-minimum-fields",
+        "status": "bounded-observation",
+        "wholeContract": false,
+        "reason": "Installed ordinary Update commands ignore copied minimum fields and preserve authentication, keys, key conflict, carrier validation and revision refusal. The 47 portable assertions are supplemented by a harness-local raw-header and full Resource/replay oracle; that supplement is not portable runner credit. The command-ignore obligation does not alter ordinary Read dispatch or conditions (development-runtime.ts and read-http.ts); unchanged read.http.conditional-reads and read.http.head-conditional-parity remain partial preservation context, not additional credit. No Read minimum-position rule, Transactional credit or public qualification is claimed. Transport/header/body-bound receiving variants remain unobserved; whole-contract credit is withheld."
+      },
+      {
+        "id": "read-update.http.request-too-large",
+        "status": "omitted",
+        "wholeContract": false,
+        "reason": "No row-local scenario in this slice; cross-row observations do not award this required ID whole-contract credit."
+      },
+      {
+        "id": "read-update.http.cache-no-store",
+        "status": "omitted",
+        "wholeContract": false,
+        "reason": "No row-local scenario in this slice; cross-row observations do not award this required ID whole-contract credit."
+      },
+      {
+        "id": "read-update.http.cors-idempotency-key",
+        "status": "omitted",
+        "wholeContract": false,
+        "reason": "No row-local scenario in this slice; cross-row observations do not award this required ID whole-contract credit."
+      },
+      {
+        "id": "read-update.numeric-model.same-value-no-op",
+        "status": "bounded-observation",
+        "wholeContract": true,
+        "reason": "Reviewed #revisions, #mutation-revisions-and-guards, #readupdate-consistency, #property-change-values and PROTO-016:81 row-local actions cover semantic equality, full record/revision retention, guarded reuse, both document planes, metadata bad-number refusal/unchanged GET and corrected effectful documents. Configured RU has no public Events/Receipts; no internal absence claim. Audit a0adb7f6b064c5f9bc2fe4b8818eefdd17a3a60e38f5c8ef87146b6c64532567; effectful raw response-to-GET revision linkage unobserved and outside selected no-op law. Public admission closed."
+      },
+      {
+        "id": "read-update.numeric-model.round-trip-admission",
+        "status": "bounded-observation",
+        "wholeContract": false,
+        "reason": "Partial pending council: packages/conformance/catalog/numeric-model-v1.json:38-68; row-local whole/change numeric, metadata and inherited-schema refusals, full unchanged preimages, one-leaf corrections and independent current-state GETs. Configured Read+Update finite partitions; raw correction response-to-GET revision linkage unobserved; public admission closed."
+      },
+      {
+        "id": "read-update.numeric-model.nested-refusal",
+        "status": "bounded-observation",
+        "wholeContract": true,
+        "reason": "Reviewed four selected #numeric-admission, PROTO-016 and #readupdate-problem-details clauses:52 row-local actions, both kinds/whole/change, depth16 object/array refusals, full diagnostics, unchanged afterstate and admitted corrections. Configured unapplied-patch instanceLocation omitted; metadata document labels checked. Finite partitions, not universal enumeration. Audit2782cfe6765be3eb5eb6ee81037cf15cf0f3dc2b4b167e1e418c32483f0cc99d; public admission closed."
+      },
+      {
+        "id": "read-update.owned-wildcard.explicit-precedence",
+        "status": "omitted",
+        "wholeContract": false,
+        "reason": "No row-local scenario in this slice; cross-row observations do not award this required ID whole-contract credit."
+      },
+      {
+        "id": "read-update.owned-wildcard.undeclared-type-versions-source",
+        "status": "omitted",
+        "wholeContract": false,
+        "reason": "No row-local scenario in this slice; cross-row observations do not award this required ID whole-contract credit."
+      }
+    ]
+  },
+  "TX": {
+    "required": 251,
+    "manifestRows": 17,
+    "coverageRows": 17,
+    "wholeFlags": 0,
+    "selectedIdsWithoutManifestRow": [
+      "read.discovery.scope-service-desc",
+      "read.discovery.canonical-navigation",
+      "read.discovery.optional-limits",
+      "read.resource.bead-record",
+      "read.resource.link-record",
+      "read.resource.external-endpoint",
+      "read.resource.properties-view",
+      "read.resource.default-bounded",
+      "read.resource.not-found-nondisclosure",
+      "read.types.inventory",
+      "read.types.descriptor",
+      "read.collections.beads",
+      "read.collections.links",
+      "read.collections.structural-predicates",
+      "read.collections.selector",
+      "read.collections.pagination-snapshot",
+      "read.collections.cursor-errors",
+      "read.collections.invalid-query",
+      "read.bead-links.directions",
+      "read.bead-links.pagination",
+      "read.http.get-head",
+      "read.http.method-405",
+      "read.http.problem-table",
+      "read.http.internal-fault",
+      "read.http.cache-cors",
+      "read.http.raw-request-targets",
+      "read.scope.restore-identity",
+      "read.alias.resolution",
+      "read.alias.absent",
+      "read.disclosure.gone",
+      "read.disclosure.gate",
+      "read.owned.closure",
+      "read.attribution.carried",
+      "read.attribution.link",
+      "read.owned-wildcard.declaration",
+      "read.owned-wildcard.max-required",
+      "read.owned-wildcard.explicit-max-bounded",
+      "read.owned-wildcard.present-entries",
+      "read.owned-wildcard.closure",
+      "read.numeric-model.declared-token-model",
+      "read.http.accept-negotiation",
+      "read.http.conditional-reads",
+      "read.http.head-conditional-parity",
+      "read-update.discovery.aliases",
+      "read-update.singleton.create-bead",
+      "read-update.singleton.update-bead",
+      "read-update.singleton.document-patch-merge-replace",
+      "read-update.singleton.document-patch-atomicity",
+      "read-update.singleton.document-patch-validation",
+      "read-update.singleton.delete-bead",
+      "read-update.singleton.incident-links-nondisclosure",
+      "read-update.singleton.create-link",
+      "read-update.singleton.update-link",
+      "read-update.singleton.delete-link",
+      "read-update.singleton.owned-link-source-revision",
+      "read-update.singleton.owned-link-no-op",
+      "read-update.singleton.attribution",
+      "read-update.singleton.expected-revision",
+      "read-update.singleton.expected-revision-race",
+      "read-update.singleton.hidden-subject",
+      "read-update.singleton.idempotency-key-required",
+      "read-update.singleton.unauthenticated",
+      "read-update.singleton.idempotency-conflict",
+      "read-update.singleton.unsupported-media-type",
+      "read-update.singleton.method-405",
+      "read-update.singleton.no-local-bindings",
+      "read-update.alias.put-creates",
+      "read-update.alias.put-repoints",
+      "read-update.alias.delete-releases",
+      "read-update.alias.uniqueness-invariant",
+      "read-update.alias.link-coexistence",
+      "read-update.alias.allocation-avoids-aliases",
+      "read-update.alias.non-canonical-target",
+      "read-update.alias.unknown-subject",
+      "read-update.alias.carrier-syntax",
+      "read-update.alias.authorization",
+      "read-update.alias.forbidden",
+      "read-update.alias.no-version-minted",
+      "read-update.alias.sequence-binding",
+      "read-update.alias.retained-without-reauthorization",
+      "read-update.alias.reference-resolution",
+      "read-update.alias.reference-idempotency",
+      "read-update.sequence.order-and-partial-commit",
+      "read-update.sequence.local-bindings",
+      "read-update.sequence.transient-predecessor",
+      "read-update.sequence.expired-creator-binding",
+      "read-update.sequence.retained-failure",
+      "read-update.sequence.member-problem-shape",
+      "read-update.sequence.retry-after-hint",
+      "read-update.sequence.carrier-rejection",
+      "read-update.sequence.contextual-validation",
+      "read-update.sequence.idempotent-retry",
+      "read-update.sequence.disconnect",
+      "read-update.sequence.interleaving",
+      "read-update.idempotency.key-reservation",
+      "read-update.idempotency.claim-atomicity",
+      "read-update.idempotency.concurrent-dependent-retry",
+      "read-update.idempotency.transient-not-retained",
+      "read-update.idempotency.semantic-identity",
+      "read-update.idempotency.cross-carrier",
+      "read-update.idempotency.forbidden-retained",
+      "read-update.idempotency.durable-boundary",
+      "read-update.idempotency.crash-mid-sequence",
+      "read-update.problem.table",
+      "read-update.validation.type-contract",
+      "read-update.validation.diagnostics",
+      "read-update.validation.identity-taken",
+      "read-update.validation.aggregate-constraint",
+      "read-update.http.request-too-large",
+      "read-update.http.cache-no-store",
+      "read-update.http.cors-idempotency-key",
+      "transactional.discovery.document",
+      "transactional.discovery.operation-directory",
+      "transactional.discovery.limits",
+      "transactional.discovery.no-idempotency-retention",
+      "transactional.batch.local-references",
+      "transactional.batch.label-errors",
+      "transactional.batch.envelope-errors",
+      "transactional.batch.pre-admission-precedence",
+      "transactional.batch.transaction-limits",
+      "transactional.batch.duration-limit",
+      "transactional.batch.owned-link-transitions",
+      "transactional.batch.revision-guard-race",
+      "transactional.batch.aggregate-constraint-race",
+      "transactional.set.attribution-fanout",
+      "transactional.singleton.receipt",
+      "transactional.singleton.semantics",
+      "transactional.receipt.page-expiry",
+      "transactional.receipt.nondisclosure",
+      "transactional.receipt.root",
+      "transactional.receipt.headers",
+      "transactional.receipt.reauthorization",
+      "transactional.receipt.reauthorization-paths",
+      "transactional.receipt.non-record-entries",
+      "transactional.receipt.whole-withheld",
+      "transactional.receipt.pending-202",
+      "transactional.receipt.deleted-identity",
+      "transactional.receipt.owned-link-source",
+      "transactional.receipt.problem-shape",
+      "transactional.receipt.transaction-level-failure",
+      "transactional.receipt.validation-diagnostics",
+      "transactional.receipt.no-transient-failure",
+      "transactional.receipt.expiry-allocated",
+      "transactional.receipt.retention-minimum",
+      "transactional.idempotency.concurrent-join",
+      "transactional.idempotency.semantic-identity",
+      "transactional.idempotency.key-grammar",
+      "transactional.idempotency.expired-detail",
+      "transactional.idempotency.transient-abort",
+      "transactional.idempotency.durable-admission",
+      "transactional.idempotency.ownership-fencing",
+      "transactional.idempotency.pending-recovery",
+      "transactional.idempotency.one-key-state",
+      "transactional.sequence.completed-projection",
+      "transactional.sequence.in-flight-projection",
+      "transactional.sequence.expired-projection",
+      "transactional.sequence.pending-creator",
+      "transactional.sequence.failed-creator",
+      "transactional.sequence.member-reauthorization",
+      "transactional.event.owned-link-delta",
+      "transactional.event.owned-link-update-delta",
+      "transactional.event.owned-link-deleted-identity",
+      "transactional.event.fact-order",
+      "transactional.event.no-op-owned-update",
+      "transactional.event.graph-facts",
+      "transactional.event.self-link",
+      "transactional.event.set-expansion-order",
+      "transactional.event.history-expired",
+      "transactional.event.cursor-after-withheld",
+      "transactional.changefeed.group",
+      "transactional.changefeed.wire-form",
+      "transactional.changefeed.sse",
+      "transactional.changefeed.start-intent",
+      "transactional.changefeed.owned-link-agreement",
+      "transactional.changefeed.consistency-fields",
+      "transactional.changefeed.catch-up-timeout",
+      "transactional.changefeed.replay-window",
+      "transactional.changefeed.sse-reconnect",
+      "transactional.changefeed.projection-advance",
+      "transactional.changefeed.owned-closure",
+      "transactional.snapshot.rendezvous",
+      "transactional.snapshot.closed-projection",
+      "transactional.snapshot.expiry",
+      "transactional.snapshot.erasure-ledger",
+      "transactional.erasure.record-digest",
+      "transactional.erasure.digest-domain",
+      "transactional.erasure.historical-version",
+      "transactional.erasure.live-successor",
+      "transactional.erasure.live-tombstone",
+      "transactional.erasure.owned-link-cascade",
+      "transactional.erasure.event-withholding",
+      "transactional.erasure.graph-facts",
+      "transactional.erasure.receipts",
+      "transactional.erasure.replication-invalidation",
+      "transactional.erasure.retention-non-propagation",
+      "transactional.erasure.restore",
+      "transactional.erasure.unestablishable-content",
+      "transactional.erasure.view-projection",
+      "transactional.erasure.reads",
+      "transactional.erasure.epoch-unrotated",
+      "transactional.http.status-matrix",
+      "transactional.http.method-405",
+      "transactional.http.problem-table",
+      "transactional.http.problem-contexts",
+      "transactional.http.internal-fault",
+      "transactional.http.disconnect-admitted",
+      "transactional.http.timestamps",
+      "transactional.http.ijson-strings-objects",
+      "transactional.http.token-profile",
+      "transactional.restore.epoch-fence",
+      "transactional.restore.key-namespace",
+      "transactional.alias.receipt",
+      "transactional.alias.locator-only",
+      "transactional.alias.no-batch",
+      "transactional.sequence.withheld-allocation",
+      "transactional.sequence.withheld-binding",
+      "transactional.erasure.live-publication",
+      "transactional.erasure.disconnect-race",
+      "transactional.idempotency.unresolved-admission",
+      "transactional.idempotency.unresolved-comparison",
+      "transactional.idempotency.retraction-retry",
+      "transactional.erasure.persistent-event-consumer",
+      "transactional.snapshot.manifest-refetch",
+      "transactional.snapshot.handle-refusal",
+      "transactional.receipt.page-restart",
+      "transactional.http.accept-refusal",
+      "transactional.receipt.validator-omission",
+      "transactional.http.finite-validator-omission",
+      "transactional.http.head-parity",
+      "read-update.numeric-model.same-value-no-op",
+      "read-update.numeric-model.round-trip-admission",
+      "read-update.numeric-model.nested-refusal",
+      "read-update.owned-wildcard.explicit-precedence",
+      "read-update.owned-wildcard.undeclared-type-versions-source"
+    ],
+    "rows": [
+      {
+        "id": "read-update.idempotency.principal-isolation",
+        "wholeContract": false,
+        "reason": "Bounded authenticated A/B key namespaces, same-principal credential rotation, terminal retained batch retries, conflict and complete two-Bead/Scope Event state under the actual bound Transactional configuration. Manifest literals/schema/context and app actual-wire supplements jointly validate independent initial receipts, full replay equality, Resources/revisions and exact private projected Event IDs. App comparisons are not manifest assertion bindings. Whole contract remains unqualified: anonymous namespace, carried attribution independence, changed views, foreign receipt access, other mutation families, pending/crash/expiry/restart and actual Read+Update execution are omitted; historical standalone evidence is not relabeled."
+      },
+      {
+        "id": "read-update.http.command-minimum-fields",
+        "wholeContract": false,
+        "reason": "Bounded Transactional singleton/batch/sequence manifest facts for ignored literal copied minimum fields, identity conflict, revision refusal, three-Bead and complete Scope Event inventory. App actual-wire supplements compare full replay bodies, complete Resources, Event revisions and exact private source-bound projected Event IDs after independent initial facts; existing private receipt helper enforces original-A body equality. These supplements are not manifest assertion bindings. Whole contract remains unqualified: receipt/read minimum enforcement, coherent same-context future tuples, other singleton target/kind and carrier-validation/transport/bounds partitions, and actual Read+Update-profile execution are omitted; historical private evidence is not relabeled."
+      },
+      {
+        "id": "transactional.batch.atomic-commit",
+        "wholeContract": false,
+        "reason": "Four private installed HTTP observations cover authored receipt/result, retained replay, bounded graph and finite Event checks only. Whole contract remains unqualified; no cold discovery, concurrency, pending/expiry, Snapshot, pagination or full profile claim."
+      },
+      {
+        "id": "transactional.batch.rollback",
+        "wholeContract": false,
+        "reason": "Four private installed HTTP observations cover authored receipt/result, retained replay, bounded graph and finite Event checks only. Whole contract remains unqualified; no cold discovery, concurrency, pending/expiry, Snapshot, pagination or full profile claim."
+      },
+      {
+        "id": "transactional.batch.deletion-safety",
+        "wholeContract": false,
+        "reason": "Bounded private installed observations are planned for operation-time deletion safety with two opposite visible unowned Links, both surviving-incidence directions, destructive-prefix rollback, and ordered Link-before-Bead success. Complete current records, receipts, finite Scope Events and retained genesis group/head are checked. Whole contract remains unqualified: hidden incidence/nondisclosure, owned Links, self-Links, pinned/external endpoints, concurrent incidence insertion, aliases, retention/restart and other configurations are not observed. The final deletion group payload is not fetched. No public admission or full profile claim."
+      },
+      {
+        "id": "transactional.batch.no-op-entries",
+        "wholeContract": false,
+        "reason": "Bounded private installed observations are planned for matching unconditional Bead and unowned Link property/metadata updates with unchanged full records, completed no-effect receipt, unchanged Scope position, finite Events and change group; an effectful comparator checks the same routes advance. Whole contract remains unqualified: failed mutations and other no-effect categories, guards/races, owned-Link source revisions, mixed-effect transactions, policy/view changes, expiry and restart retention are not observed by this row. No public admission or full profile claim."
+      },
+      {
+        "id": "transactional.set.mutation",
+        "wholeContract": false,
+        "reason": "Bounded installed ordinary-Bead set effects, late selected-member rollback, exact ordered results/Events and retained reopen observations only. Whole contract remains unqualified; no owned Links, policy variation, paging, races, complex Selector or full profile claim."
+      },
+      {
+        "id": "transactional.set.zero-match",
+        "wholeContract": false,
+        "reason": "Bounded installed empty selections in a nonempty graph, exact zero results, unchanged context/Events and retained reopen observations only. Whole contract remains unqualified; no owned Links, policy variation, paging, races, complex Selector or full profile claim."
+      },
+      {
+        "id": "transactional.set.cardinality",
+        "wholeContract": false,
+        "reason": "Tiny private installed cardinality failures, rollback, retained reads and fresh-key comparator only. Whole contract remains unqualified; no exhaustive numeric/policy/concurrency, owned fanout, pagination, Event inventory, cold discovery or profile claim."
+      },
+      {
+        "id": "transactional.set.singleton-targets",
+        "wholeContract": false,
+        "reason": "Tiny private installed singleton update/delete, ordered results, point poststate and retained reads only. Whole contract remains unqualified; no exhaustive numeric/policy/concurrency, owned fanout, pagination, Event inventory, cold discovery or profile claim."
+      },
+      {
+        "id": "transactional.receipt.readable",
+        "wholeContract": false,
+        "reason": "Four private installed HTTP observations cover authored receipt/result, retained replay, bounded graph and finite Event checks only. Whole contract remains unqualified; no cold discovery, concurrency, pending/expiry, Snapshot, pagination or full profile claim."
+      },
+      {
+        "id": "transactional.receipt.pagination",
+        "wholeContract": false,
+        "reason": "Bounded installed source-defined no-override32 receipt default, actual32+1 inline/page split and immutable same-parent first page across later mutation and ordinary reopen. Matched consumes one entry slot, with only matched+updated outcomes witnessed; created/deleted/withheld and other page-boundary outcomes, advertised page.maximumItems, policy/erasure/retention/failover remain unobserved. Whole contract remains unqualified; no public Transactional profile claim."
+      },
+      {
+        "id": "transactional.idempotency.conflict",
+        "wholeContract": false,
+        "reason": "Same principal, fixed authorization view and Scope epoch: twelve actual installed actions observe explicit-ID create batch completion; same-key changed semantics are refused with 409 even when Accept admits no successful response media and after same-epoch restart; exact prior receipt/root, full current Bead record and one finite Event remain unchanged. Whole contract remains unqualified: no all-epoch duration, completed-detail expiry, failed-retention transition, restore/new epoch, other principal/view, pending/unresolved state, concurrency, cross-carrier sequence, other operation families, rate/capacity, internal receipt absence, History or erasure credit. Bindings enumerate row-local observations only."
+      },
+      {
+        "id": "transactional.idempotency.cross-carrier",
+        "wholeContract": false,
+        "reason": "Bounded retained replay from singleton-created and batch-updated Bead receipts through equivalent singleton, batch and current sequence presentations, with independent current-state and Event facts. Whole contract remains unqualified: sequence-origin admission, full operation/carrier cross-product, concurrent/pending execution, failed/expired/withheld detail, allocated identity, alias/local binding, epoch/view/principal transitions, restart and erasure are not observed. Negative same-key semantic sensitivity is observed only for batch and fresh-key discrimination only for sequence; singleton replay is positive-only."
+      },
+      {
+        "id": "transactional.idempotency.failed-retained",
+        "wholeContract": false,
+        "reason": "Four private installed HTTP observations cover authored receipt/result, retained replay, bounded graph and finite Event checks only. Whole contract remains unqualified; no cold discovery, concurrency, pending/expiry, Snapshot, pagination or full profile claim."
+      },
+      {
+        "id": "transactional.sequence.member-transactions",
+        "wholeContract": false,
+        "reason": "Bounded terminal success/failure/success sequence, independently retained member receipts and replay/no-effect observations. Manifest pins literals/context and three legal receipt URL captures; app validates full initial/replay/Resource/Event equality and helper validates full original receipt GET equality. Whole contract remains unqualified: no simultaneous pending admission, interleaving, crash recovery, expiry/erasure, complete Changes groups, discovery or public profile credit."
+      },
+      {
+        "id": "transactional.http.conditional-reads",
+        "wholeContract": false,
+        "reason": "Partial Transactional conditional-read evidence: ordinary authentication and missing-Resource refusals precede conditional shortcuts; 304 and 412 are bodyless and carry current Scope context. Supporting GET/HEAD observations verify metadata parity with permitted HEAD omissions. The independent app wire oracle additionally compares validators before and after mutation and complete current Resources with observed receipt postimages; it checks the reference server's pre-context authentication refusals omit Scope context. These app-only checks add no portable obligation; there are no portable object captures. Uses wildcard If-None-Match and an independently verified nonmatching literal tag. Whole contract remains unqualified: minimum-position refusal, epoch/view mismatch, erasure/expiry, durable checkpoint behavior, optional-no-validator behavior, observed matching specific request tags, If-Match:* success and date combinations are not covered. The separate Read conditional requirement remains unplanned; no cross-credit or public profile claim follows."
+      }
+    ]
+  },
+  "warning": "No percentage or freshness claim; wholeContract is an authored reviewed-clause assertion requiring actual independent validation, not truth established by census. Standalone tests can have related observations without ownership in these manifests."
+}

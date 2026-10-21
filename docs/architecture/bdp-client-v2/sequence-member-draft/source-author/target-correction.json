@@ -1,0 +1,25 @@
+{
+  "initialBindingSha256": "f2fddbf5916b8b69f3e5faa8fdb2779d44e34da60d63a6f6641a7e36828fbf5c",
+  "reason": "Undefined sequence fixture binding and query embedded in path; found by source inspection before execution",
+  "changes": {
+    "s-sequence": {
+      "binding": "scope",
+      "path": "operations/sequence"
+    },
+    "s-replay": {
+      "binding": "scope",
+      "path": "operations/sequence"
+    },
+    "s-current": {
+      "binding": "scope",
+      "path": "beads/",
+      "query": {
+        "limit": "32"
+      }
+    }
+  },
+  "oldRowCompactSha256": "6892326fec4ead405de798f4ccb47c8a0d8267146e8f62492c791121b7108cc9",
+  "newRowCompactSha256": "48e524596890fab7bf578cbbb653ed844178c33b568f8e0c033736d2745598ca",
+  "bodiesActionsAssertionsUnchanged": true,
+  "executed": false
+}

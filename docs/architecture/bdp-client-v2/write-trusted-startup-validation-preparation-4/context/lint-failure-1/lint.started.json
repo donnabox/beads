@@ -1,0 +1,30 @@
+{
+  "argv": [
+    "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+    "/Users/dbox/repos/wt/vickie/vickie-trusted-startup-configuration/node_modules/@biomejs/biome/bin/biome",
+    "lint",
+    "--config-path=/Users/dbox/repos/wt/vickie/vickie-trusted-startup-configuration/biome.json",
+    "docs/design/startup-configuration.md",
+    "packages/config/src/index.test.ts",
+    "packages/config/src/index.ts",
+    "packages/server/package.json",
+    "packages/server/src/read-sequence-lifecycle.test.ts",
+    "packages/server/src/reference-deployment-state.ts",
+    "packages/server/src/reference-deployment.test.ts",
+    "packages/server/src/reference-deployment.ts",
+    "packages/server/src/transaction-snapshot.test.ts",
+    "scripts/smoke-executables.mjs",
+    "scripts/smoke-safety.mjs",
+    "scripts/smoke-safety.test.mjs"
+  ],
+  "cwd": "/Users/dbox/repos/wt/vickie/vickie-trusted-startup-configuration",
+  "head": "a56254d682cf4623cab22a552e3d2f695f691795",
+  "tree": "144f278c7f5a08516c4ac99ba553d4cc25bcf560",
+  "sourceIdentity": "fa80acbc158736217d4b58eb3ad927add6099d12a8746254c08cefdf25be2471",
+  "rootGateSha256": "029bef323fd5c96eeb612f578c6ddf08f46d9ad9d90d9cf4ab64add90827713e",
+  "outerSeconds": 120,
+  "automaticRetries": 0,
+  "overrides": {},
+  "temporaryDirectory": "/private/tmp/vickie-trusted-startup-validation-lint-9ghzoan1",
+  "npmCache": "/private/tmp/vickie-trusted-startup-validation-lint-9ghzoan1/npm-cache"
+}

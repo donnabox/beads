@@ -1,0 +1,29 @@
+--- /Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-minimum-next-serving-plan/authoring-draft/scope-type-repair/claude-review/run.py
++++ /Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-minimum-next-serving-plan/authoring-draft/ci-expectation-repair/claude-supplement/run.py
+@@ -2,7 +2,7 @@
+ from pathlib import Path
+ import argparse,datetime,hashlib,json,os,signal,subprocess,time
+ parser=argparse.ArgumentParser()
+-parser.add_argument("scope",choices=("scope-type",))
++parser.add_argument("scope",choices=("expectations",))
+ args=parser.parse_args()
+ C=Path(__file__).resolve().parent
+ P=C/args.scope
+@@ -49,7 +49,7 @@
+ subprocess.run(["python3",str(G),"/usr/bin/true"],check=True)
+ write("source-before.json",before);write("head-before.json",context())
+ T=P/"tmp";T.mkdir()
+-argv=["/opt/homebrew/bin/claude","--safe-mode","-p","--tools","Read,Glob,Grep","--allowedTools","Read,Glob,Grep","--no-session-persistence"]
++argv=["/opt/homebrew/bin/claude","--safe-mode","-p","--tools","","--no-session-persistence"]
+ env={k:v for k,v in os.environ.items() if not k.startswith("BDP_")}
+ env["TMPDIR"]=str(T)
+ start=time.monotonic();timed=False;forced=False;seen=set();temps=set()
+@@ -59,7 +59,7 @@
+  write("process.json",{"argv":argv,"cwd":str(W),"pid":proc.pid,"processGroup":proc.pid,
+                       "started":datetime.datetime.now(datetime.timezone.utc).isoformat(),"timeoutSeconds":900,
+                       "promptSha256":before["promptSha256"],"scope":args.scope,"tempDirectory":str(T),
+-                      "kind":"supplied-context plus read-only Read/Glob/Grep code review; no model override or product execution"})
++                      "kind":"supplied-context no-tools expectation-only code review; no model override or product execution"})
+  while proc.poll() is None:
+   elapsed=time.monotonic()-start
+   group=[r for r in rows() if len(r.split(None,5))==6 and r.split(None,5)[2]==str(proc.pid)]

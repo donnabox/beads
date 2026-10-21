@@ -1,0 +1,14 @@
+# Closed Event admission/replay PLAN review mechanics
+
+Prepared only the existing clean-source review supervisor/parser/arguments. One1800s attempt, TERM1790, default configured Claude, Read/Glob/Grep, safe mode, no persistence, strict empty MCP, no retries. Parser/arguments are byte-identical to completed current-observation PLAN review. Runner changes only its worktree and expected-head literals to unresolved placeholders. Binding flags are false and source/head/context/prompt fields null; no prompt or final source snapshot exists and no review was launched.
+
+Historical plan7b1a80e7/nativec5fad74b and its selection/basis are copied exactly as context candidates. They describe original unqualified current-observation source, not the evolving corrected candidate. Their17source/200HTTP plus installed15/215combined are prospective plan dimensions. No duplicate implementation plan or changed workload is introduced.
+
+Remaining finalization, in order:
+1. Root completes current-observation validation, ordinary candidate commit and exact-head green CI. Record actual clean checkout/head/tree/parents and verified source mapping; do not infer green from local checks.
+2. Rebind the existing Event plan to that committed source, account for all changes from historical679 map (including corrected assertions/formatting), and obtain native/root delta closure. Preserve original planning artifacts and erroneous predecessor review chronology.
+3. Replace only the two pending runner literals with the actual reviewed clean checkout/head. Freeze all current tracked-file hashes, immutable normative and sole-design snapshots, final plan/selection/rebind and dispositions with clear original/current attribution. Use absolute context paths; never bind mutable design/ledger or active helper gates.
+4. Prepare compact full-plan review prompt with actual plan/selection and source starting points, broader read access allowed. Require findings-only stdout, no file modifications, numbered severity/location/impact/fix, and complete terminal verdict within the unchanged bound. Review whole admission/replay proposal, distinct finite/SSE capture ordering, private/default intent, cursor/header precedence, lifecycle/oracles, and installed limits; do not pre-author a verdict.
+5. Freeze final prompt/tool/source/context/artifact hashes and closed binding/index, preserving these initial mechanics. Native mechanics/rebind inspection and explicit root single-attempt release remain required before guarded launch. Source authoring remains separately closed until council/root disposition.
+
+Planned invocation after those gates only: pinned Python guarded-action.py, pinned Python, this directory/run.py. No product tests/build/install/runtime/formatter, current source/helper2 gate mutation or writer authorization occurred during preparation.

@@ -1,0 +1,23 @@
+--- predecessor8/reference-pin-rebind.json
++++ reference-pin-rebind.json
+@@ -1,13 +1,10 @@
+ {
+   "allHistoricalCopiedArtifactsPinnedToTheirOwnBytes": true,
+-  "historicalReferencePinsRemainExactAt": "predecessor6/reference-pins.json",
+-  "newSourceFiles": 679,
+-  "noFalseHistoricalCurrentEquality": true,
+-  "onlyPreviouslyPinnedLiveSourceChange": [
+-    {
+-      "currentP7Sha256": "5b2d59a9f959294a3e9899ec613b3d88073cbbc9da3b22bde069375695516f20",
+-      "historicalP6Sha256": "7120504ceaa804baf96ddc4e2c167c459b84fca0e0a9ad6e7255e49c061b3255",
+-      "path": "/Users/dbox/repos/wt/vickie/vickie-tx-discovery-minimum/apps/bdptest/src/transactional-discovery-installed.test.ts"
+-    }
+-  ]
++  "currentSourceFiles": 679,
++  "currentSourceIdentity": "a61cd3fbf9fac68e3aad857a24a2456dd16b83048067eef85348d7091c0aa08e",
++  "namespaceOnlyCommandChange": "tx-discovery-validation-preparation-8 to tx-discovery-validation-preparation-9; inverse exact bytes",
++  "noHistoricalRuntimeProofReused": true,
++  "priorLiveSourceRebindHistory": "predecessor8/reference-pin-rebind.json unchanged",
++  "rootBarrierInterfaceChange": "NONE; existing gate field contract now explicitly inventoried for future root record correctness",
++  "sameExactSourceBindingP8": true
+ }

@@ -1,0 +1,210 @@
+{
+  "source": "apps/bdptest/src/transactional-matrix.test.ts",
+  "sha256": "dcf0161723a6b77dd4235111a83a6aa1ce0cbb6a1a5d79e362f992742bc503de",
+  "groups": [
+    {
+      "line": 353,
+      "group": "full-positive",
+      "expanded": 1,
+      "reach": "full",
+      "addedHttp": 7,
+      "addedChildren": 1
+    },
+    {
+      "line": 603,
+      "group": "ready identity refusal",
+      "expanded": 5,
+      "reach": "ready",
+      "addedHttp": 0,
+      "addedChildren": 5
+    },
+    {
+      "line": 638,
+      "group": "altered private receipt",
+      "expanded": 4,
+      "reach": "full",
+      "addedHttp": 28,
+      "addedChildren": 4
+    },
+    {
+      "line": 838,
+      "group": "ordinary Resource capture",
+      "expanded": 1,
+      "reach": "full",
+      "addedHttp": 7,
+      "addedChildren": 1
+    },
+    {
+      "line": 852,
+      "group": "ordinary id as receipt",
+      "expanded": 1,
+      "reach": "full",
+      "addedHttp": 7,
+      "addedChildren": 1
+    },
+    {
+      "line": 888,
+      "group": "after-first-wire deadline",
+      "expanded": 1,
+      "reach": "abort",
+      "addedHttp": 0,
+      "addedChildren": 0
+    },
+    {
+      "line": 927,
+      "group": "pre-aborted",
+      "expanded": 1,
+      "reach": "abort",
+      "addedHttp": 0,
+      "addedChildren": 0
+    },
+    {
+      "line": 964,
+      "group": "duplicate capture",
+      "expanded": 1,
+      "reach": "preflight",
+      "addedHttp": 0,
+      "addedChildren": 0
+    },
+    {
+      "line": 980,
+      "group": "global receipt denial",
+      "expanded": 1,
+      "reach": "global",
+      "addedHttp": 7,
+      "addedChildren": 1
+    },
+    {
+      "line": 998,
+      "group": "cleanup abort",
+      "expanded": 1,
+      "reach": "abort",
+      "addedHttp": 0,
+      "addedChildren": 0
+    },
+    {
+      "line": 1026,
+      "group": "wrong set",
+      "expanded": 4,
+      "reach": "full",
+      "addedHttp": 28,
+      "addedChildren": 4
+    },
+    {
+      "line": 1065,
+      "group": "cross-wired set",
+      "expanded": 1,
+      "reach": "full",
+      "addedHttp": 7,
+      "addedChildren": 1
+    },
+    {
+      "line": 1097,
+      "group": "omitted route",
+      "expanded": 2,
+      "reach": "preflight",
+      "addedHttp": 0,
+      "addedChildren": 0
+    },
+    {
+      "line": 1122,
+      "group": "set receipt denied",
+      "expanded": 2,
+      "reach": "full",
+      "addedHttp": 14,
+      "addedChildren": 2
+    },
+    {
+      "line": 1144,
+      "group": "set effects",
+      "expanded": 7,
+      "reach": "full",
+      "addedHttp": 49,
+      "addedChildren": 7
+    },
+    {
+      "line": 1218,
+      "group": "receipt pagination",
+      "expanded": 6,
+      "reach": "full",
+      "addedHttp": 42,
+      "addedChildren": 6
+    },
+    {
+      "line": 1253,
+      "group": "completed conflict",
+      "expanded": 5,
+      "reach": "full",
+      "addedHttp": 35,
+      "addedChildren": 5
+    },
+    {
+      "line": 1436,
+      "group": "matching no-op",
+      "expanded": 3,
+      "reach": "full",
+      "addedHttp": 21,
+      "addedChildren": 3
+    },
+    {
+      "line": 1769,
+      "group": "deletion",
+      "expanded": 3,
+      "reach": "full",
+      "addedHttp": 21,
+      "addedChildren": 3
+    },
+    {
+      "line": 2180,
+      "group": "cross-carrier",
+      "expanded": 2,
+      "reach": "full",
+      "addedHttp": 14,
+      "addedChildren": 2
+    },
+    {
+      "line": 2771,
+      "group": "selected minimum",
+      "expanded": 2,
+      "reach": "selected",
+      "addedHttp": 0,
+      "addedChildren": 0
+    },
+    {
+      "line": 3274,
+      "group": "selected member",
+      "expanded": 1,
+      "reach": "selected",
+      "addedHttp": 0,
+      "addedChildren": 0
+    }
+  ],
+  "oldObserveInvocations": 55,
+  "newObserveInvocations": 57,
+  "oldExpandedAppCases": 62,
+  "newExpandedAppCases": 64,
+  "oldMutated": 41,
+  "newMutated": 41,
+  "oldUnchangedManifest": 14,
+  "newUnchangedManifest": 16,
+  "priorSourceModel": {
+    "expectedHttp": 8200,
+    "maxHttp": 8235,
+    "children": 1006
+  },
+  "oldInvocationDelta": {
+    "expectedHttp": 287,
+    "children": 46
+  },
+  "newSelectedDelta": {
+    "expectedHttp": 9,
+    "maxHttp": 14,
+    "children": 4
+  },
+  "proposedSourceModel": {
+    "expectedHttp": 8496,
+    "maxHttp": 8536,
+    "children": 1056
+  },
+  "modelExcludes": "All non-observe callbacks and other files; not a whole-job HTTP count. Modeled, not measured runtime."
+}

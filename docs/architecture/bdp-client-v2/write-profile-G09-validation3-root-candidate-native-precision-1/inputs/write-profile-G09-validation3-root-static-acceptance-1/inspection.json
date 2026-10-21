@@ -1,0 +1,70 @@
+{
+  "P3IndexSha256": "bf105b842dffc26d8083850d53fc4df6902335ed8301ee48eff611042ee8632a",
+  "actualExcludedGatePairsRegenerated": 2,
+  "binaryDiffSha256": "00804293791b29e26b6b7d58eb7b7f7bf17b20aecc765cbc389617d2daeb9b0f",
+  "commandsNamespaceLiteralCount": 24,
+  "dirtyPaths": [
+    "apps/bdptest/src/transactional-discovery-installed.test.ts",
+    "apps/bdptest/src/transactional-schema-installed.test.ts",
+    "packages/server/src/transaction-changefeed.test.ts",
+    "packages/server/src/transaction-http.test.ts",
+    "packages/server/src/transaction-http.ts",
+    "packages/server/src/transaction-installed-contracts.test.ts",
+    "packages/server/src/transaction-schema-http.test.ts",
+    "packages/server/src/transaction-schema-http.ts",
+    "packages/server/src/transaction-service.test.ts",
+    "packages/server/src/transaction-service.ts"
+  ],
+  "executionReleased": false,
+  "gatesClosed26keysSixFalseEmptyStagesReuse": true,
+  "head": "cce884ccea1db97cbc6fd7bff876d4d6091f9081",
+  "historyDomains": 9,
+  "historyFiles": 632,
+  "implementationMembers": 121,
+  "implementationSha256": "8ad44a93c1215bfe0b9777df4135385f72e82dd8873287a6988da2f1fb7615c6",
+  "indexed": 126,
+  "kind": "ROOT_P3_INDEPENDENT_RAW_DATA_AND_FINAL_NATIVE_INSPECTION",
+  "nativePacket": {
+    "closureSha256": "c6c364831d70c6caa05c6008ab3ef69ed4de35129245fbf81377f9d8c947abea",
+    "indexSha256": "9eff72f8617086c1314d5dfd501564921dfcefd5fd521df69ab1d7b1870d5082",
+    "indexed": 46,
+    "origins": 37,
+    "physical": 47
+  },
+  "newReviewAttempts": 0,
+  "ordinaryGenuinePairsRegenerated": 26,
+  "origins": 56,
+  "ownReaderErrors": [
+    "First native-origin reader assumed list; actual object copies wrapper inspected, then exact37 origins rehashed. Failed before any root output/authority creation; no product/helper evaluation."
+  ],
+  "physical": 127,
+  "programsAndDataByteexactP2": [
+    "run.py",
+    "gate.py",
+    "packages.py",
+    "audit.py",
+    "guarded-action-session-20261018-021624-549f.py",
+    "report-schemas.json",
+    "selection.json",
+    "audit-expectations.json",
+    "source-binding.json",
+    "source-after679-map.json"
+  ],
+  "references": 2215,
+  "runAbsent": true,
+  "runtimeEvaluations": 0,
+  "selfExclusions": [
+    "execution-gate.json",
+    "execution-gate.closed.json",
+    "implementation-hashes.json",
+    "preparation-index.json",
+    "closure.json",
+    "static-final-verification.json"
+  ],
+  "session": "2026-10-18T02:16:24Z-549f",
+  "sourceCurrentPaths": 679,
+  "sourceIdentity": "f6baa7922feea80b9ae9641abc08ed79c339ff719769cc95162fe87ddc70bc65",
+  "toolsBytesAndRealpaths": 3,
+  "totalGenuinePairs": 28,
+  "tree": "6757829bd5b700faf28df39071190a272add90c9"
+}

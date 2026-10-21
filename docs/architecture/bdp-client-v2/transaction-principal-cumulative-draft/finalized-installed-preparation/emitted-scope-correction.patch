@@ -1,0 +1,11 @@
+--- before/gate.py
++++ after/gate.py
+@@ -51,7 +51,7 @@
+ def input_files():
+     return {n:sha((W/n).read_bytes()) for n in git("ls-files").decode().splitlines()}
+ def emitted_files():
+-    return {p.relative_to(W).as_posix():sha(p.read_bytes()) for parent in ("packages","apps") for root in (W/parent).iterdir() if root.is_dir() for p in (root/"dist").rglob("*") if p.is_file()}
++    return {p.relative_to(W).as_posix():sha(p.read_bytes()) for parent in ("packages",) for root in (W/parent).iterdir() if root.is_dir() for p in (root/"dist").rglob("*") if p.is_file()}
+ def verify_build(g):
+     inventory=document(g,"buildOutputInventory")
+     accepted=document(g,"rootBuildAcceptance")

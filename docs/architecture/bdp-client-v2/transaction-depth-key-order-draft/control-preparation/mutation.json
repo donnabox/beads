@@ -1,0 +1,11 @@
+{
+  "status": "PREPARED_NOT_EXECUTED",
+  "path": "packages/server/dist/transaction-store.js",
+  "positiveSha256": "bf399d40b42f20583ce6ce9c9106ee92e320eb5c777cea4ba03e5a788e9f229c",
+  "derivativeSha256": "cb6fe59d56d8e4ffad63a5f4d2cf05eb587d41260bcc7605ea121245e72790ad",
+  "patchSha256": "798775cffa60cc5509c1c9ab7e8283ee81ecb8aa1e3b9ad52aebc38514a21614",
+  "exactBeforeText": "    function admitKey(principal, key, batch, pendingWins = false, references, template, controls) {\n        const stored = row(principal, key);",
+  "exactAfterText": "    function admitKey(principal, key, batch, pendingWins = false, references, template, controls) {\n        const earlyDepthRefusal = transactionDepthRefusal(batch);\n        if (earlyDepthRefusal !== undefined) {\n            if (controls === undefined)\n                throw new TransactionDevelopmentLimitError(earlyDepthRefusal);\n            return { kind: \"development-limit\", message: earlyDepthRefusal };\n        }\n        const stored = row(principal, key);",
+  "occurrencesRequired": 1,
+  "purpose": "Move private depth refusal ahead of retained row lookup for negative sensitivity only; unchanged source H should fail expected409 on actual500 at request2."
+}

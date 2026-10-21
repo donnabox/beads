@@ -1,0 +1,282 @@
+{
+  "checkedAt": "2026-10-17T02:57:05.663782+00:00",
+  "run": {
+    "conclusion": "success",
+    "headSha": "f6204255d53ef65d4aea56ff5ccc86d72e8cc7b0",
+    "jobs": [
+      {
+        "completedAt": "2026-10-17T02:50:57Z",
+        "conclusion": "success",
+        "databaseId": 117286523844,
+        "name": "verify",
+        "startedAt": "2026-10-17T02:32:43Z",
+        "status": "completed",
+        "steps": [
+          {
+            "completedAt": "2026-10-17T02:32:45Z",
+            "conclusion": "success",
+            "name": "Set up job",
+            "number": 1,
+            "startedAt": "2026-10-17T02:32:44Z",
+            "status": "completed"
+          },
+          {
+            "completedAt": "2026-10-17T02:32:48Z",
+            "conclusion": "success",
+            "name": "Run actions/checkout@11d5960a326750d5838078e36cf38b85af677262",
+            "number": 2,
+            "startedAt": "2026-10-17T02:32:46Z",
+            "status": "completed"
+          },
+          {
+            "completedAt": "2026-10-17T02:32:49Z",
+            "conclusion": "success",
+            "name": "Run pnpm/action-setup@b906affcce14559ad1aafd4ab0e942779e9f58b1",
+            "number": 3,
+            "startedAt": "2026-10-17T02:32:48Z",
+            "status": "completed"
+          },
+          {
+            "completedAt": "2026-10-17T02:32:57Z",
+            "conclusion": "success",
+            "name": "Run actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020",
+            "number": 4,
+            "startedAt": "2026-10-17T02:32:49Z",
+            "status": "completed"
+          },
+          {
+            "completedAt": "2026-10-17T02:33:05Z",
+            "conclusion": "success",
+            "name": "Run actions/setup-go@924ae3a1cded613372ab5595356fb5720e22ba16",
+            "number": 5,
+            "startedAt": "2026-10-17T02:32:57Z",
+            "status": "completed"
+          },
+          {
+            "completedAt": "2026-10-17T02:33:06Z",
+            "conclusion": "success",
+            "name": "Run test \"$(node --version)\" = \"v24.16.0\"",
+            "number": 6,
+            "startedAt": "2026-10-17T02:33:05Z",
+            "status": "completed"
+          },
+          {
+            "completedAt": "2026-10-17T02:33:06Z",
+            "conclusion": "success",
+            "name": "Run test \"$(pnpm --version)\" = \"11.20.0\"",
+            "number": 7,
+            "startedAt": "2026-10-17T02:33:06Z",
+            "status": "completed"
+          },
+          {
+            "completedAt": "2026-10-17T02:33:11Z",
+            "conclusion": "success",
+            "name": "Run sudo apt-get update",
+            "number": 8,
+            "startedAt": "2026-10-17T02:33:06Z",
+            "status": "completed"
+          },
+          {
+            "completedAt": "2026-10-17T02:33:11Z",
+            "conclusion": "success",
+            "name": "Run sudo apt-get install --yes libicu-dev",
+            "number": 9,
+            "startedAt": "2026-10-17T02:33:11Z",
+            "status": "completed"
+          },
+          {
+            "completedAt": "2026-10-17T02:33:11Z",
+            "conclusion": "success",
+            "name": "Run mkdir -p \"$RUNNER_TEMP/bdp-tools\"",
+            "number": 10,
+            "startedAt": "2026-10-17T02:33:11Z",
+            "status": "completed"
+          },
+          {
+            "completedAt": "2026-10-17T02:35:55Z",
+            "conclusion": "success",
+            "name": "Run go install github.com/steveyegge/beads/cmd/bd@v1.0.5",
+            "number": 11,
+            "startedAt": "2026-10-17T02:33:11Z",
+            "status": "completed"
+          },
+          {
+            "completedAt": "2026-10-17T02:35:55Z",
+            "conclusion": "success",
+            "name": "Verify the Go-installed source-build bd identity",
+            "number": 12,
+            "startedAt": "2026-10-17T02:35:55Z",
+            "status": "completed"
+          },
+          {
+            "completedAt": "2026-10-17T02:35:58Z",
+            "conclusion": "success",
+            "name": "Run pnpm install --frozen-lockfile",
+            "number": 13,
+            "startedAt": "2026-10-17T02:35:55Z",
+            "status": "completed"
+          },
+          {
+            "completedAt": "2026-10-17T02:36:00Z",
+            "conclusion": "success",
+            "name": "Run pnpm format:check",
+            "number": 14,
+            "startedAt": "2026-10-17T02:35:58Z",
+            "status": "completed"
+          },
+          {
+            "completedAt": "2026-10-17T02:36:02Z",
+            "conclusion": "success",
+            "name": "Run pnpm lint",
+            "number": 15,
+            "startedAt": "2026-10-17T02:36:00Z",
+            "status": "completed"
+          },
+          {
+            "completedAt": "2026-10-17T02:36:03Z",
+            "conclusion": "success",
+            "name": "Run pnpm check:boundaries",
+            "number": 16,
+            "startedAt": "2026-10-17T02:36:02Z",
+            "status": "completed"
+          },
+          {
+            "completedAt": "2026-10-17T02:36:07Z",
+            "conclusion": "success",
+            "name": "Run pnpm typecheck",
+            "number": 17,
+            "startedAt": "2026-10-17T02:36:03Z",
+            "status": "completed"
+          },
+          {
+            "completedAt": "2026-10-17T02:36:10Z",
+            "conclusion": "success",
+            "name": "Run pnpm build",
+            "number": 18,
+            "startedAt": "2026-10-17T02:36:07Z",
+            "status": "completed"
+          },
+          {
+            "completedAt": "2026-10-17T02:50:40Z",
+            "conclusion": "success",
+            "name": "Run pnpm test",
+            "number": 19,
+            "startedAt": "2026-10-17T02:36:10Z",
+            "status": "completed"
+          },
+          {
+            "completedAt": "2026-10-17T02:50:43Z",
+            "conclusion": "success",
+            "name": "Run pnpm e2e:ready:preflight",
+            "number": 20,
+            "startedAt": "2026-10-17T02:50:40Z",
+            "status": "completed"
+          },
+          {
+            "completedAt": "2026-10-17T02:50:51Z",
+            "conclusion": "success",
+            "name": "Run pnpm smoke",
+            "number": 21,
+            "startedAt": "2026-10-17T02:50:43Z",
+            "status": "completed"
+          },
+          {
+            "completedAt": "2026-10-17T02:50:52Z",
+            "conclusion": "success",
+            "name": "Read-cohort evidence gate",
+            "number": 22,
+            "startedAt": "2026-10-17T02:50:51Z",
+            "status": "completed"
+          },
+          {
+            "completedAt": "2026-10-17T02:50:52Z",
+            "conclusion": "success",
+            "name": "Post Run actions/setup-go@924ae3a1cded613372ab5595356fb5720e22ba16",
+            "number": 41,
+            "startedAt": "2026-10-17T02:50:52Z",
+            "status": "completed"
+          },
+          {
+            "completedAt": "2026-10-17T02:50:52Z",
+            "conclusion": "success",
+            "name": "Post Run actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020",
+            "number": 42,
+            "startedAt": "2026-10-17T02:50:52Z",
+            "status": "completed"
+          },
+          {
+            "completedAt": "2026-10-17T02:50:52Z",
+            "conclusion": "success",
+            "name": "Post Run pnpm/action-setup@b906affcce14559ad1aafd4ab0e942779e9f58b1",
+            "number": 43,
+            "startedAt": "2026-10-17T02:50:52Z",
+            "status": "completed"
+          },
+          {
+            "completedAt": "2026-10-17T02:50:52Z",
+            "conclusion": "success",
+            "name": "Post Run actions/checkout@11d5960a326750d5838078e36cf38b85af677262",
+            "number": 44,
+            "startedAt": "2026-10-17T02:50:52Z",
+            "status": "completed"
+          },
+          {
+            "completedAt": "2026-10-17T02:50:52Z",
+            "conclusion": "success",
+            "name": "Complete job",
+            "number": 45,
+            "startedAt": "2026-10-17T02:50:52Z",
+            "status": "completed"
+          }
+        ],
+        "url": "https://github.com/gastownhall/bdp/actions/runs/38995336477/job/117286523844"
+      }
+    ],
+    "status": "completed",
+    "updatedAt": "2026-10-17T02:50:58Z",
+    "url": "https://github.com/gastownhall/bdp/actions/runs/38995336477"
+  },
+  "pr": {
+    "baseRefName": "codex/vickie-parser-refusal",
+    "headRefName": "codex/vickie-finite-event-minimum",
+    "headRefOid": "f6204255d53ef65d4aea56ff5ccc86d72e8cc7b0",
+    "isDraft": true,
+    "state": "OPEN",
+    "url": "https://github.com/gastownhall/bdp/pull/154"
+  },
+  "log": {
+    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/finite-event-minimum-validation/successor-2/exact-head-ci.log",
+    "bytes": 3582932,
+    "sha256": "c59b07c295771471b84d50b34f8f14a5a5fd1b5fbb568a923b4b273578abc9e4"
+  },
+  "tree": "f5a20fe30562b11887d11a1100dbbd473843de7e",
+  "parents": "b76c3b7df77ea9b33611bc9027db651833e20abb",
+  "scope": [
+    "apps/bdptest/src/transactional-event-missing-context-installed.test.ts",
+    "packages/server/src/transaction-events.test.ts",
+    "packages/server/src/transaction-http.ts",
+    "packages/server/src/transaction-service.test.ts",
+    "packages/server/src/transaction-service.ts",
+    "packages/server/src/transaction-store.ts"
+  ],
+  "clean": true,
+  "remoteHeadVerified": true,
+  "verifiedSummary": {
+    "testsPassed": 9375,
+    "testFilesPassed": 186,
+    "testsSkipped": 1,
+    "preflightPassed": 7,
+    "successfulSteps": 27,
+    "installedPayloadMatchesLocal": true,
+    "historicalReadGatePassed": true,
+    "completeProfileClaim": false,
+    "logLines": [
+      "2026-10-17T02:50:40.8074106Z  Test Files  186 passed (186)",
+      "2026-10-17T02:50:40.8106885Z       Tests  9375 passed | 1 skipped (9376)",
+      "2026-10-17T02:50:43.1820914Z  Test Files  1 passed (1)",
+      "2026-10-17T02:50:43.1821585Z       Tests  7 passed (7)",
+      "2026-10-17T02:50:51.4873806Z {\"event\":\"installed.reference.observed\",\"claimEligible\":false,\"configurationIdentity\":\"ddb368086407cc6b19f20777116afa65b68da8b57749af351292f7b3d58c4b4d\",\"payloadIdentity\":\"b9d1d50e595213b55bfb4a0da7ea536f3dd625239f7b09c7f6cf301b010243ed\",\"artifactIdentity\":\"development-schema5-e1dff401b5caafb04a4d935775d67eeefeae7bcf306d5d100b979a64eef148e7\",\"allNineTargets\":true,\"stableScope\":\"https://reference.invalid/acme/\"}",
+      "2026-10-17T02:50:52.2453758Z {\"level\":\"info\",\"event\":\"evidence.verified\",\"executable\":\"read-cohort-evidence\",\"artifact\":\"docs/design/evidence/read-cohort/read-v1.json\",\"constant\":\"674982be2123b9b7aae630bf79c3f774122900cd\",\"runHead\":\"e5f7d0c43c151426350ceededdc77fe7e372db9b\",\"evidenceCommit\":\"dbaf63a24219e1ea3f80394746853598b0d4464a\",\"schemaReadProjection\":\"bd7da0fc3f8082e0bfb6f4969c04409f2a610e12408dbc6a0bd14b4b351127cc\",\"schemaReadProjectionDefinitions\":47,\"schemaReadProjectionReachable\":46,\"rows\":89}"
+    ]
+  }
+}

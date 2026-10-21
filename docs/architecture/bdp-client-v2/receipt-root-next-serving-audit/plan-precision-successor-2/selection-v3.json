@@ -1,0 +1,71 @@
+{
+  "status": "PROPOSED, not executed; future authored names must match exactly",
+  "source": {
+    "packages/server/src/transaction-read.test.ts": {
+      "existing": [
+        "preserves direct minimum alias receiving validation, cancellation and lifecycle precedence",
+        "preserves service minimum alias receiving validation, cancellation and lifecycle precedence",
+        "conditions alias mapping and context in one entry without revising either target",
+        "rechecks a repointed alias after waiting for a real Resource effect",
+        "keeps live alias context failures and compatible absent/deleted/dangling observations distinct",
+        "forwards ordinary and minimum Request aborts before SQL and drains an admitted alias wait",
+        "does not relabel alias provider or malformed context failures as missing"
+      ],
+      "new": [
+        "captures unknown alias minima while resolving each retry against the live owner",
+        "captures pos-01 alias minima while resolving each retry against the live owner",
+        "preserves absent alias nondisclosure before opaque minimum waiting",
+        "preserves deleted alias nondisclosure before opaque minimum waiting",
+        "preserves dangling alias nondisclosure before opaque minimum waiting",
+        "preserves hidden alias nondisclosure before opaque minimum waiting",
+        "returns current alias absence when an admitted opaque wait loses its mapping",
+        "drains an aborted opaque alias wait before releasing its owner",
+        "preserves incident-Link opaque exclusions beside alias minima"
+      ],
+      "addedUnchanged": [
+        "uses actual current policy for missing-first and unproved Resource attempts",
+        "keeps compatible missing Types and absent/deleted incident anchors separate from collisions"
+      ]
+    },
+    "packages/server/src/transaction-http.test.ts": {
+      "amended": [
+        "serves conditioned live aliases and preserves bodyless redirects, refusal context and receiving boundaries"
+      ],
+      "addedUnchanged": [
+        "waits for current Resources and initial collections with unknown minima and preserves residual refusals"
+      ]
+    }
+  },
+  "sourceCases": 20,
+  "installed": {
+    "apps/bdptest/src/transactional-alias-installed.test.ts": {
+      "existing": [
+        "installed sequence aliases resolve at turns and retain targets/misses across exact retries and restart"
+      ],
+      "new": [
+        "observes installed live alias opaque minima without redirect shortcuts"
+      ]
+    }
+  },
+  "installedCases": 2,
+  "avoidWholeSuite": true,
+  "freshBuildBeforeModuleCollection": true,
+  "addedUnchangedSuitePlacement": {
+    "uses actual current policy for missing-first and unproved Resource attempts": "top-level",
+    "keeps compatible missing Types and absent/deleted incident anchors separate from collisions": "current Type and incident-Link minimums",
+    "waits for current Resources and initial collections with unknown minima and preserves residual refusals": "top-level"
+  },
+  "installedReportLabels": {
+    "historical": "private-installed-sequence-alias",
+    "new": "private-installed-alias-opaque-minimum"
+  },
+  "explicitlyUnselected": [
+    {
+      "path": "apps/bdptest/src/transactional-collection-minimum-installed.test.ts",
+      "title": "observes genuine installed current alias minimums within18requests",
+      "observation": "private-installed-alias-minimum",
+      "requests": 18,
+      "reason": "separate existing callback, preserved and not part of bounded installed selection"
+    }
+  ]
+}

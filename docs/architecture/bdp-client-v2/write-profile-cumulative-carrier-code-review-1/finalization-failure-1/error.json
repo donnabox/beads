@@ -1,0 +1,9 @@
+{
+  "kind": "Static packaging schema assumption",
+  "actualExit": 1,
+  "actualError": "KeyError: 'files' at line19 while reading root candidate index",
+  "scope": "Historical449 scaffold preserved; new source3/native context copies made; no runner/binding/control/prompt finalization yet.",
+  "cause": "Root candidate/inspection indices are bare path-to-hash mappings; author/native indices have files member.",
+  "resolution": "Read both actual documented index shapes, retain failure and continue exact preparation.",
+  "reviewerOrHelperProductGitSourceFlagExecution": false
+}

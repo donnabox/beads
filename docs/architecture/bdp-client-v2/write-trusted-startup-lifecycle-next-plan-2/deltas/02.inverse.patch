@@ -1,0 +1,26 @@
+--- plan2/installed-witnesses.json
++++ plan1/installed-witnesses.json
+@@ -114,13 +114,13 @@
+     },
+     {
+       "id": "I18",
+-      "title": "RU non-reading CONNECT peer; observed peer-close chronology, shutdown then reopen",
++      "title": "RU non-reading CONNECT peer; forced close then reopen",
+       "scheduledHttp": 8,
+       "candidateGenerations": 2
+     },
+     {
+       "id": "I19",
+-      "title": "TX non-reading CONNECT peer; observed peer-close chronology, shutdown then reopen",
++      "title": "TX non-reading CONNECT peer; forced close then reopen",
+       "scheduledHttp": 8,
+       "candidateGenerations": 2
+     },
+@@ -140,6 +140,5 @@
+   "rawConnectPeers": 2,
+   "countRules": "126 planned finite HTTP requests; 2 additional raw CONNECT peers. Counts are plans, not observations. Record dispatch, headers/body availability, actual complete responses, partials and cleanup separately; failure never synthesizes scheduled success. Outer bound is per selected callback command, not a claim the whole suite finishes in 120s.",
+   "additionalRawConnectAttempts": 2,
+-  "totalPlannedHttpAttemptsIncludingConnect": 128,
+-  "peerObservationRule": "I18/I19 record actual refusal bytes and peer state/close chronology before shutdown. Already normal-closed stays already closed. Claim shutdown-forced destruction only for observed live owned transport plus observed closure; otherwise refusal/cleanstop/reopen only. No sleep/retry/new seam or transport change, and no inference that RU and TX share the same socket lifecycle."
++  "totalPlannedHttpAttemptsIncludingConnect": 128
+ }

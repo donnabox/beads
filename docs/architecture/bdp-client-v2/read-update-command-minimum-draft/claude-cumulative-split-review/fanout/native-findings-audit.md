@@ -1,0 +1,5 @@
+# Fanout review: no verdict
+
+Terminal exit143/timeout/forcedTermination,895.962836s, empty stdout/stderr. No numbered findings or completion statement exist; this is inconclusive, not approval or an authentication diagnosis. No automatic retry. Cleanup SHAa0bf780a6fa2784875769d20b5ce0a7b228216b1d45be2bb8d34443a640e7cfb; identical before/after SHAfd8fe15ffe116c192c94628a3eed322951c44c9f8e284f4eb7f59f2dcbed8667. Recorded groups/sample PIDs/temp entries absent; independent ps confirms sampled PIDs and group47735 absent. Sampling cannot prove absence of detached unsampled descendants.
+
+Six source hashes match author b89554c6004edf99d3278518bee1b150dce3fa98 before authorized correction. I authored source and packets; this is a preservation/no-verdict audit only. Root now authorizes the separately established literal F1 partial-credit repair and CPU-only validation, followed by a newly inspected read-only-tool fanout+credit review; none of this timeout's inputs is altered or relabeled. Root retains council/publication authority.

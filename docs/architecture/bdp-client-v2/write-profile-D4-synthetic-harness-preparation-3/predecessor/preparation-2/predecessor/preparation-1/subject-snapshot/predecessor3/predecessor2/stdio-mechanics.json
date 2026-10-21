@@ -1,0 +1,17 @@
+{
+  "staticOnly": true,
+  "pinnedVitest": "4.1.10",
+  "evidence": {
+    "/Users/dbox/repos/wt/vickie/vickie-tx-discovery-minimum/node_modules/vitest/dist/chunks/index.UpGiHP7g.js": {
+      "realpath": "/Users/dbox/repos/wt/vickie/vickie-tx-discovery-minimum/node_modules/.pnpm/vitest@4.1.10_@types+node@24.13.3_vite@8.2.1_@types+node@24.13.3_/node_modules/vitest/dist/chunks/index.UpGiHP7g.js",
+      "sha256": "cdafaf8e508042dddba72f8c7bbae84e2836ddb6b06c7026520c35d91af4e798"
+    },
+    "/Users/dbox/repos/wt/vickie/vickie-tx-discovery-minimum/node_modules/vitest/dist/chunks/cli-api.BK8pd4xc.js": {
+      "realpath": "/Users/dbox/repos/wt/vickie/vickie-tx-discovery-minimum/node_modules/.pnpm/vitest@4.1.10_@types+node@24.13.3_vite@8.2.1_@types+node@24.13.3_/node_modules/vitest/dist/chunks/cli-api.BK8pd4xc.js",
+      "sha256": "a2d629ec07fbaf58055bca9858076c6c13763042d97196272c45ccfdb727f498"
+    }
+  },
+  "reason": "JsonReporter only writes test results; _testRun.log dispatches to onUserConsoleLog; VerboseReporter inherits live console output preserving log.content after a separate header line. CLI uses existing verbose+json pair, no custom reporter.",
+  "phaseRule": "Source process.stdout markers are ordered; console.log report may arrive via RPC after end marker. Entire one report must flush within end+5/absolute135. End does not prove RPC/stdio flush.",
+  "futureInstalledWorkspaceBinding": "Fresh actual workspace Vitest4.1.10 file/package pin + source frozen lock; context is static mechanics evidence only, not tool acceptance or old node_modules reuse."
+}

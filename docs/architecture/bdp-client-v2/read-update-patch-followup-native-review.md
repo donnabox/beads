@@ -1,0 +1,5 @@
+# Native review: patch evidence closure
+
+Inspected ededc12 versus7d2d23c and docs-only39dd successor. Whole merge flag is now false; current27/102 expectations change while oldreport remains historical. Both kinds/documents gain add-then-replace at one previously absent pointer, which is order-sensitive; excluded move/copy/test probes each assert refusal plus full independent unchanged GET. Metadata non-object test uses root scalar replacement, avoiding root-removal ambiguity. Clear-root and ordered-result controls alter real observed assertion input and remain sensitivity tests, not fabricated authority outcomes. Optional diagnostic presence is disclosed. No runtime/publiccatalog/admission changes.
+
+The wider full-section schema/no-op/numeric obligations correctly prevent whole-row credit. Source changes align with the explicit gap inventory rather than trimming normative requirements. Author885distincttests/74packed run belongs to eded;39dd changes only stale seven-to-six W1 prose. No independent focused rerun claimed; combined root validation will follow integration. External followup review running. No new actionable native finding from the bounded diff.

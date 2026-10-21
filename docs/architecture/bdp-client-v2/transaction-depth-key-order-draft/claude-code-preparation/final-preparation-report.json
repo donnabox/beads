@@ -1,0 +1,17 @@
+{
+  "status": "frozen-code-packet-awaiting-root-release",
+  "promptBytes": 147114,
+  "promptSha256": "432100246308f678fb82c687111b8761881ccde27aed11a7da666f9d677f8adc",
+  "bindingSha256": "d7b3f6a979904d88dc4f60cb8e1a4ffc3513ae8fdca82a1f7397c06852d307af",
+  "runnerSha256": "d36831244df228a72627d76aa1e5886b66dcd31f6988bd66111867fbbd3bed1a",
+  "fullPatchBytes": 68066,
+  "fullPatchOccurrences": 1,
+  "excerptCount": 23,
+  "excerptBytes": 64845,
+  "boundSourceFiles": 18,
+  "boundArtifacts": 21,
+  "sourceManifestSha256": "5fbe5c9b0c57f2c253fb16d114675ccb4929a9e4e18b21a1efbf1ca18385d778",
+  "scope": "Complete eight-path patch once; precise function context plus explicitly summarized unchanged supporting branches; no repeated whole store/test files. Oversized unlaunched first assembly retained separately.",
+  "validation": "Exact corrected17 source cases + seven static stages passed; initial failed lint/incomplete16case retained; controls/installed/CI pending.",
+  "noLaunch": true
+}

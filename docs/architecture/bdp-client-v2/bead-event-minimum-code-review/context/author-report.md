@@ -1,0 +1,13 @@
+# Frozen Bead Event minimum source draft
+
+Implemented accepted plan-v3 in exactly six owned files on isolated codex/vickie-bead-event-minimum at f6204255d53ef65d4aea56ff5ccc86d72e8cc7b0. Source only: no test/typecheck/lint/formatter, import/build, dependency installation, runtime, review CLI, commit or push was performed. Independent code review and validation remain closed/root-owned.
+
+HTTP selects canonical initial finite Scope or Bead JSON GET/HEAD minimum handling, preserving after/Last-Event-ID/media exclusions. Service classifies with the existing parser inside the first waiter attempt after original preflight; it catches classification failures only, and lexical tuple capture remains outside that catch. The owner admits lexical opaque Bead minima and checks visibility/current context before minimum and retained scanning; retained identities survive deletion. No G2/S1/foreign-context policy inferred.
+
+A has12 owner reads plus one separately counted policy replacement, including retained deletion and hidden-source context. B/C preserve existing helper scheduling and add completed seed mutations before scan observation. Seven F rows discriminate preflight and source refusal order. D has37 real HTTP requests including two distinct-key mutation requests/five operations and retained Bead controls. E appends four installed requests including a real seed; its entire historical file prefix remains unchanged. Two obsolete Bead sentinels and the now-misleading Scope callback title/comment are narrowly corrected. No other existing callback changed.
+
+Exact selection:25 source callbacks/128 HTTP and3 installed callbacks/18 HTTP;28 stores,3 listeners,3 sequential installed children. These are prospective counts, not test results. Observation schemas and per-layer counts are in workload.json; genuine seed requests are counted. Scope historical source results remain historical and cannot be relabeled.
+
+Manual layout followed the existing100-column style; no formatter was invoked. One guarded write attempt used a mistyped Python executable path and failed before its child could start; it made no source/artifact changes. The corrected guarded authoring command then wrote E. This was not a runtime/test attempt.
+
+Preservation was checked by data-only byte comparison:673 non-owned tracked files unchanged; historical installed prefix exact; existing service helper/callback bytes exact after removing the new import; Event test prefix reconstructs original after the four documented text replacements; production outside the three named seams is exact. All679 before/after SHA256 maps and six-file before/after snapshots are retained. No semantic scope blocker found during authoring; verification is pending.

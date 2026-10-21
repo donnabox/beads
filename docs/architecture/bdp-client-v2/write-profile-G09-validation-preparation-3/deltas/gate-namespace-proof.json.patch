@@ -1,0 +1,32 @@
+--- /Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation-preparation-2/gate-namespace-proof.json
++++ /Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation-preparation-3/gate-namespace-proof.json
+@@ -1,9 +1,7 @@
+ {
+-  "activeRootRelease": "ABSENT",
+-  "approvedStagesBootstrapReuseEmpty": true,
+-  "bothGatesFalseAndByteEqual": true,
+-  "currentImplementationPinMeaning": "Actual final implementation SHA in both gate files; gate files are exact inherited exclusions",
+-  "oldGate26KeysPreserved": [
++  "approvedStagesAndBootstrapReuseEmpty": true,
++  "bothGateBytesIdentical": true,
++  "exact26Keys": [
+     "actualClaudeReviewDisposed",
+     "actualCodeDisposition",
+     "approvedStages",
+@@ -31,7 +29,13 @@
+     "staticValidationAuthorized",
+     "workspaceTools"
+   ],
+-  "oldImplementationIndexSha256": "223bda188ed58b0f387eab6b45820fbca2b475883b002a31087be6de04dcf6a9",
+-  "reverseGatesReturnsP1EntireBytes": true,
+-  "twoNamespacePathFieldsAndCurrentImplementationPinOnly": true
++  "fullActualBeforeAfterForwardInverseGateData": "Embedded in inherited excluded static-final-verification.json to avoid finalImplementationHash -> indexedGateDelta -> implementationHash self-reference; no seventh exclusion.",
++  "noRootActiveAuthority": true,
++  "onlyPermittedDifferences": [
++    "baseTools.path P2toP3",
++    "sourceBinding.path P2toP3",
++    "implementationIndexSha256 exact final new index digest"
++  ],
++  "sameOther23ValuesRequired": true,
++  "sixBooleansAllFalse": true
+ }

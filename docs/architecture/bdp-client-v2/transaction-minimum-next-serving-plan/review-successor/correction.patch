@@ -1,0 +1,878 @@
+--- original/plan.md
++++ review-successor/plan.md
+@@ -1,47 +1,73 @@
+-# Current Resource minimum precedence and unproved-position waiting
++# Current Resource minimum precedence and unproved-position waiting — corrected plan
+ 
+-Status: proposed bounded serving repair, not authoring or execution release. Basis is actual merged main6f5e607bf338dd166820bfa3f9f480f7cd54c5f1/treea49cb4b2cfc3a7ad9f66d0d790a7e1e4dbad168a. The two direct operator rulings in operator-rulings.json are authoritative. This removes two intentional private500 paths; it does not activate Transactional discovery or public admission.
++Proposed successor to plan c76853749217cd2a62b3d0e92c0c8976376ab8d86d78cdf9a49e24d2fa096bc8. Original source authority was merged6f5e607bf338dd166820bfa3f9f480f7cd54c5f1. This successor reads actual clean authorization candidate1647c5df37a82e1364d281ac46beb60a94ab6c76/treea070420a4c17aa67a821c742d363ff9e82e872a6; it does not call that candidate merged main. Actual authorization merge and root authoring release remain pending. Root may explicitly release an isolated checkout from reviewed candidate1647 before that merge; candidate ancestry must remain labeled accurately, with actual authorization main integrated ordinarily before final validation. Original plan/review/output are immutable. The two operator-rulings.json decisions are unchanged.
+ 
+-## Exact behavior
++## Settled behavior and exclusions
+ 
+-After existing target/method, Origin/authentication and lexical/cardinality receiving checks, an ordinary missing/deleted/hidden Bead, Link or alias read returns its uniform404 before minimum waiting or epoch/view mismatch. Keep the actual same-entry current Scope context and ordinary Problem/GET/HEAD metadata. Do not disclose which missing/hidden reason occurred, issue an alias Location, or perform another entry merely to obtain headers. Preserve preexisting negotiation, conditional and request-refusal ordering: this ruling changes minimum precedence only. read-http.ts10–47 evaluates negotiation/conditions only on selected200 JSON or204; eligible representations still negotiate406 before304/412, while an actual404 or catch-up503 bypasses that success-only branch. This is not a blanket override of unrelated ordinary refusals. A lexically valid unknown token does not prevent this404. Malformed tuples still fail400 before owner lookup, and unauthenticated/method refusals remain earlier.
++After existing transport/target/method/Origin/authentication and lexical tuple receiving, ordinary unknown/deleted/hidden Bead/Link Resource or properties, alias resolution and initial Bead view=links return uniform404 before semantic minimum waiting or epoch/view mismatch. The initial incident-list case follows existing spec1447–1450; it does not settle incident-Link Event membershipG2 or retained continuation/Snapshot collisionsS1. Preserve same-entry actual context, nondisclosure, GET/HEAD metadata and no alias Location. Invalid parameters/ordinary receiving errors keep their existing precedence.
+ 
+-For an authorized existing current Bead/Link representation (including its existing properties read), an alphabet-valid position whose private ordering is uninterpretable, paired with the actual current epoch/view, leaves eligibility unproved. Reobserve under the existing single finite service deadline; never deliver the old Resource or a conditional success. On expiry return existing503 catch-up-timeout/after-delay with actual observed context and existing Retry-After behavior. Explicit signal cancellation and unexpected owner/work faults must escape the wait rather than being relabeled catch-up-timeout. Service close retains its existing bounded drain of admitted finite reads (service.ts599–604); it stops admission and aborts streams, but does not cancel such a read. An already admitted read may therefore legitimately reach its existing bounded503 while close drains. No new cancellation status or deadline is introduced. This does not assert the unknown identity is numerically ahead, expired or malformed.
++For an existing authorized current Bead/Link Resource or properties representation only, actual current epoch/view plus a valid token whose ordering is uninterpretable means eligibility unproved. Reobserve using the existing finite service deadline; expiry returns existing503 catch-up-timeout/after-delay, never stale success, invented expiry or lexical400. Request abort and unexpected owner/provider faults escape honestly. Ordinary close stops admission/aborts streams and drains admitted finite reads; such a read may finish503 during drain.
+ 
+-Keep recognized genesis/pos-N comparison unchanged. Do not infer behavior for foreign epoch/view plus an unknown token on an existing target. Keep that combination explicitly unsupported rather than silently choosing the existing recognized-position foreign-view/epoch precedence. Existing alias unknown-position redirect, Type/collection/incident-Link minimums, Event/Changes/receipt/discovery/Snapshot minimums are not broadened by this slice. S1 retained Snapshot/continuation and G2 incident-Link Event membership remain unresolved. Ordinary Update stays separate.
++Recognized genesis/pos-N behavior remains unchanged on successful targets. Unknown-token alias success, existing incident-list success, Types/collections/retained continuations and foreign-context unknown existing Resource remain explicitly unsupported as today: labeled500 minimum-position, not a new503 or bare500. Recognized unsupported routes retain minimum-position-route. Event, Changes, receipt, discovery and Snapshot branches keep their existing dedicated logic. No public admission/discovery qualification or ordinary Update change.
+ 
+-## Why narrowly routed implementation is necessary
++Negotiation and conditionals are not globally reordered. read-http.ts10–47 evaluates them only on selected200 JSON/204, preserving406 before304/412 for eligible representations. Selected404/503 remains refusal; no stale conditional success can bypass the minimum.
+ 
+-Committed transaction-consistency.ts27–31 distinguishes known order; snapshotTransactionMinimum33–59 rejects unknown identities, and transactionMinimumHeaders62–72 maps them to undefined. HTTP565–575 then returns private minimum-position500 before target lookup. transaction-read.ts146–166 converts an already-materialized Resource404 plus recognized minimum conflict into TransactionMinimumVisibilityGap; HTTP620–621 projects the bodyless visibility500. The service already snapshots delivery options, repeats owner attempts with no held SQLite entry, waits using a single deadline and propagates cancellation (service315–355; consistency114–150). Reuse that machinery.
++## Narrow implementation and all capture boundaries
+ 
+-Do not globally relax snapshotTransactionMinimum/checkTransactionMinimum: Snapshot, receipt, Events, Changes and discovery also call these functions. Keep their recognized-only defaults and existing tests. Factor a shared private closed data-only tuple capture so the narrowly selected current Read path can retain lexical unknown tokens without executing getters/proxies or accepting malformed tuples. A source-private current-Read variant is sufficient; no package export, configuration flag or public API is needed.
++Keep the existing strict snapshotTransactionMinimum/transactionMinimumHeaders defaults for all other consumers. Factor the strict data-only tuple validation (own three fields, strings/alphabet, no proxies/getters/extra keys) from recognition. Add only source-private helpers for lexical capture and the selected current-Read condition; no package export, public flag or caller-defined policy.
+ 
+-Carry an internal route eligibility distinction into the authority source condition: missing-first applies to Bead/Link Resource/properties and alias resolution; unknown-position waiting applies only to current Bead/Link Resource/properties success. Derive it from the validated request kind/alias path, never from arbitrary request headers or an untrusted caller policy. This can be a small private condition wrapper around the existing immutable tuple. It must not change Types/incident-Link missing collisions simply because the generic callback sees resource-not-found.
++Cover all six captures, not just HTTP: (1) general HTTP early minimum gate; (2) readRoute.perform; (3) readRoute alias resolver; (4) service.readAtMinimum construction before run; (5) read.minimumFor construction; (6) checkSourceCondition. The seventh guard is the required/current position interpretation inside checkTransactionMinimum. A TypeScript string parameter does not prove recognition. All six must preserve a legitimate unknown token on eligible paths; no capture may silently select ordinary unconditioned readFor.
+ 
+-Within the same owner observation, preserve integrity/context validation and ordinary request-control refusals, return an eligible404 immediately for the above missing-first routes, then perform the eligible success check. An uninterpretable token with equal actual epoch/view may produce a distinct private waitable unproved failure consumed by the existing wait loop. Do not encode an invented numeric position. Extend the loop only to that deliberately emitted private reason; unrelated errors still escape immediately. Foreign-context unknown success remains the explicit private unsupported response. HTTP must use this narrow capture in both its early route selection and readRoute perform/alias callbacks, otherwise one of the repeated old captures will still reject it or accidentally select unconditioned readFor.
++Classify from existing validated request kind/alias route, never raw caller eligibility flags. Preserve early minimum-position labeling for unknown tuples on excluded routes, including paths whose later parser otherwise produces400 or minimum-position-route. Preserve recognized-path query/control behavior. Route categories are:
++- Bead/Link resource/properties: missing-first; unknown same-context success waitable.
++- Alias and initial bead-links without continuation: missing-first; unknown success unsupported.
++- Existing strict subset and all other routes: no widened capture/semantic handling.
+ 
+-## Proposed owned paths and regression fallout
++In the authority facet derive a closed immutable condition wrapper from the actual request category and captured tuple; validate that wrapper with the same own-data discipline. Its capabilities are internal, not a public authorization bypass. For every attempt, preserve actual owner/context integrity validation and ordinary request-control refusals; then return eligible observed resource-not-found before semantic comparison. Do not use generic404 alone to grant Type/collection behavior. Other missing collisions retain existing logic. Existing auth candidate passes a real authorized snapshot with canRead=false; hidden404 arises during materialization, not a fabricated pre-context refusal.
+ 
+-Ten product paths: transaction-consistency.ts, transaction-read.ts, transaction-service.ts, transaction-http.ts; their existing consistency/read/http test files; new apps/bdptest/src/transactional-minimum-current-resource-installed.test.ts; docs/specs/bdp.md; docs/design/transaction-implementation-progress.md. No store, runtime, authority-read, package entry, public admission, generic capture API or ordinary Update changes are proposed. A concrete draft may reuse an existing installed file instead of the new file if it preserves isolation; root must bind the final exact scope before execution.
++For success, keep strict validation of the actual owner's position. Recognized requested tokens use existing comparisons. Uninterpretable requested tokens with foreign epoch/view produce an explicit private unsupported error mapped to existing developmentGap(minimum-position), with no projected context. Equal actual epoch/view on resource/properties produces a distinct private unproved-position error carrying the genuine observation context. Do not widen TransactionMinimumFailure.reason into readProblem's union. Extend only the wait-loop retry predicate to behind OR this unproved class; deadline expiry remains existing TransactionMinimumFailure(catch-up-timeout,lastActualContext). Source callers may observe the private class; HTTP reaches this path through the service wait wrapper. Preserve malformed-delivery rejection/no successful unconditioned fallback.
+ 
+-Update existing intentional-gap assertions only where the ruling applies: read.test936–958 Bead/Link collisions; HTTP1895–1920 missing point/properties collisions and unknown missing case; HTTP3100–3120 missing alias. Preserve HTTP3020–3034 and read.test1520–1550 Type/incident-Link collision tests; preserve existing alias unknown success refusal. Keep consistency.test's old recognized-only helper behavior, adding distinct lexical-current-Read tests rather than weakening those tests. Search the final diff for remaining gap expectations on precisely these routes before release.
++Retain existing max5ms wait cadence, default1000ms budget and one nonrenewing monotonic deadline. Each entry completes before awaiting. The existing behind path already uses this schedule; no new backoff/attempt-limit policy is warranted by this review. Test finite counts under an injected advancing clock without claiming a universal installed200-entry cap. Reobserve existence/policy/context every time, so a real later missing/hidden404 terminates the wait.
+ 
+-Spec change is two short local normative paragraphs following Transactional HTTP receiving: (1) these uniform404s precede semantic minimum checks after lexical/auth receiving; (2) existing current-view Resource eligibility not provable for a valid token waits/routes within finite policy then catch-up-timeout. Explicitly do not generalize other token contracts or foreign-context unknown collisions. Existing spec1440–1453 nondisclosure, current consistency5793ff and conditional5850ff remain authoritative alongside the new rulings; progress text must continue to list unresolved serving/public activation boundaries.
++## Authorization integration
+ 
+-## Meaningful finite validation
++Use the actual private runtime.replaceAuthorizationPolicy({timeoutMs:1000}) via reviewed external installed IPC; no HTTP admin route, workspace product fallback or fake projection. The candidate drains admitted mutations only, so source tests may publish between read attempts without waiting on the read itself. Publication failure/timeout leaves old policy; do not treat it as successful revocation. Owner returns generation1 empty policy/new UUID; initial view is the literal development-all-visible, not a UUID.
+ 
+-CPU/owner tests should cover all three refusal categories (missing/deleted/hidden where an actual policy is available), Bead/Link Resource and properties, aliases, recognized ahead/foreign epoch/foreign view, and alphabet-valid unknown. Assert ordinary404 and exactly one owner observation/no wait for missing-first, actual context and no alias target disclosure; do not use latency alone. Existing current Resource unknown tests inject monotonic wait/clock seams to assert repeated fresh owner observations, one nonrenewing deadline, actual catch-up-timeout, zero stale Resource/conditional output and cancellation/drain. Include unknown strings opaque, pos-01 and an unsafe-number spelling, while the existing lexical suite continues to reject malformed/repeated fields. Include a Resource becoming hidden/missing between attempts: the later genuine404 terminates the wait under the first ruling. Integrity/provider failures must still propagate.
++After the visible segment, first hidden response must have seed epoch/position and the new published view, different from initial view. Use that observed response tuple for every later unknown-current probe. Compare hidden and missing404 under that same view. No third read may be introduced solely to manufacture context. Link/alias hidden proof is new to this slice, not borrowed from the prior Bead-only installed witness.
+ 
+-Direct HTTP tests cover GET/HEAD equal representation metadata, no HEADbody, full Problem schema/status/code/retry, same-entry context, If-None-Match/If-Match/Accept minimum nonshortcut with ordinary successful-representation negotiation/conditional ordering preserved, existing recognized compatible success, unknown foreign-context unchanged hold,401/405 and malformed400 zero-owner precedence. Source tests may use existing clock seams; installed checks use the real default1000ms minimum budget, never a source override or synthetic timeout.
++Root may release isolated authoring from the actual reviewed authorization candidate1647, explicitly not merged main, or choose the actual authorization merge after it lands. Preserve the ordinary author ancestry and candidate/original-source evidence; integrate actual authorization main ordinarily before final validation and bind the resulting exact source/tree. Do not edit/rebase the active authorization worktree or split into extra pre-auth validation cohorts. No worktree creation or authoring is granted by this plan alone.
+ 
+-Proposed installed ledger is26 HTTP/one child/store/listener, one private policy publication, no reopen or automatic retry. Requests1–14 exercise real seeded visible state; after publication15–23 exercise genuinely hidden state.24–26 preserve receiving precedence. The ledger is attached; seed body is to be frozen from existing Task/Relates/batch/alias fixture shapes before code council, not invented in this planning report. Full actual bodies/context/schema must be compared in memory; any safe persisted summary labels fingerprints as such. No source-derived fake hidden assertion may substitute for real published policy.
++## Owned scope and normative edit
+ 
+-Two emitted counterfactuals, separate from installed positive: restore missing-first gap on one missing point read; restore unknown-token rejection on one existing point read. Each uses one real seed POST then one selected GET and must fail a different exact named expected404/503 assertion on the actual old500. Expected2 HTTP each, maximum26 each, one isolated child/store each if using installed copy. Retain actual unexpected failures, stop after first failure, and do not count two controls as independent proof of every matrix row. Total planned installed/control work30 expected HTTP/78 maximum, three children/stores/listeners, one publication only in positive. These are proposed bounds requiring root release, not observed counts.
++Ten paths: packages/server/src/transaction-consistency.ts, transaction-read.ts, transaction-service.ts, transaction-http.ts; existing transaction-consistency.test.ts, transaction-read.test.ts, transaction-http.test.ts; new apps/bdptest/src/transactional-minimum-current-resource-installed.test.ts; docs/specs/bdp.md and docs/design/transaction-implementation-progress.md. No store/runtime/authority-read/schema/API/catalog/ordinary Update edits.
+ 
+-Keep30s cohort work,5s request,10s startup/close and120s supervisor limits from existing bounded installed workflows; the three real unknown success probes consume up to three existing1s waits, with no budget increase. Register cleanup before launch, close active requests/owner, verify child exit/PID absence before removing owned store, preserve unknown-startup state and all failure outputs. Full package/archive/consumer identity and source→build bridge must be genuine. No retries, no broad full-suite duplication locally; exact callback registrations and full request body bytes are frozen with the authored patch before release.
++Update missing Bead/Link/properties/alias gap assertions. Split combined Type/incident-anchor tests: Type collision remains unsupported; absent/deleted/hidden initial Bead view=links becomes404. Keep successful incident-list recognized minima, unknown-success refusal and cursor behavior. Preserve existing strict helper tests plus new lexical-current-Read tests.
+ 
+-## Auth overlap and integration constraint
++Edit the existing consistency subsection's closed three-outcome sentence to explicitly exempt the ruled ordinary resource-not-found cases before semantic minimum comparison; retain representation/wait/consistency obligations for remaining reads. Replace the generic “known or supported” deferral with a reference to the narrow unknown-position rule. State the two precise rules locally; do not suggest all success types/foreign collisions are now decided. Keep lexical400/no-context and earlier authorization/method language. Progress remains a historical/factual boundary statement, not qualification.
+ 
+-Actual6f5 still has all-visible fixed Read capture; it cannot honestly demonstrate hidden state. The unmerged authorization draft changes transaction-read captureReadAuthorization, service lifecycle and related tests, and exposes private publication through the runtime. Those are overlapping source interfaces, not merged authority. Do not duplicate them or edit that active worktree. Prefer authoring this serving slice after actual auth integration/reanchor so the hidden witness can reuse the independently reviewed external installed IPC adapter, canonical Host and real installed payload. If root chooses parallel isolated authoring, hold hidden installed validation and final integration until the actual auth commit is available; recheck all overlapping functions and exact parent then. The current plan is still grounded in actual6f5, with no invented future SHA or assertion that auth has landed.
++## Finite witnesses and exact response contracts
+ 
+-No further operator decision is needed for these two specified behaviors. Root owns scope acceptance, actual parent/reanchor, independent native+Claude code council and staged validation release. This plan does not authorize product authoring or public qualification.
++Source tests must separately establish:
++- genuine missing/deleted/hidden Bead/Link Resource/properties, alias and initial Bead view=links404 with compatible/ahead/foreign/unknown tuples; one owner observation and zero wait calls, full actual context and no alias target;
++- same-view hidden/missing body/context equality after real policy publication;
++- unknown current success across opaque,pos-01 and unsafe-number spelling: repeated fresh attempts, one deadline, final-context503, no stale Resource or conditionals; genuine transition to hidden/missing finishes404; request abort/provider failure and close/drain remain distinct;
++- proxy/accessor/extra-field capture rejection at each helper seam, no altered strict noncurrent consumers; Type/collection/alias/incident successful unknown label preservation and ordinary invalid-query handling;
++- GET/HEAD refusal metadata/bodylessness and ordinary eligible negotiation/conditional semantics.
++
++Source tests may use existing clock/wait/entry counters; installed rows cannot claim “one entry” or “without wait” from timing alone. Exact source callback registrations, owners/HTTP/temporary roots and any reused existing tests are frozen with the authored patch before runtime release.
++
++The attached installed ledger has32positive requests, one child/store/listener, one publication after request17. Four actual unknown success probes use the unmodified default1000ms minimum budget. Startup proof comes from strict installed five-key configuration, consumer-contained entry/wrapper hashes and source/build/archive/consumer binding: installed entry calls runtime without test seams and settings.minimumReadBudgetMs is1000. Do not invent a ready field or extra HTTP probe for that value.
++
++Full404 body is {type:"https://github.com/gastownhall/bdp/problems/not-found",code:"resource-not-found",retry:"after-state-change",status:404}. Full503 body is {type:"https://github.com/gastownhall/bdp/problems/unavailable",code:"catch-up-timeout",retry:"after-delay",status:503}; its family URI is already correct, so do not repair the serializer/schema. Require transactional Problem schema, application/problem+json, private/no-store and actual context;503 Retry-After1. HEAD sends zero body and corresponding representation metadata. Exact body comparison excludes automatic Date, not protocol fields. Named assertions/bodies/headers in final source must be frozen before release.
++
++Seed is one genuine four-member sequence POST to actual runtime.targets.sequence (assert canonical operations/sequence): create a, create b, create self Link and put alias/work to a, in that order. Each member has its own distinct literal idempotencyKey; the outer request has no Idempotency-Key. Content-Type and Accept are application/json. Literal seed/types and their measured bytes/hash are attached. This is ordered execution, not an atomic seed claim: require HTTP200 and the complete transactionalSequenceResponse schema, exactly four operationIndex0/1/2/3 entries, each outcome created with no failure/problem. Require full expected Resource facts for the first three and exact alias created entry for the fourth. There is no per-member HTTP status or sequence receipt ID to invent. Three Resource commits advance actual Scope position to pos-3; alias changes no Resource Event/position. Assert the actual response position is pos-3 and retain its real epoch/view/position; derive exactly pos-4 for ahead probes. A partial or failed seed is nonpassing and cannot satisfy any control prerequisite. Canonical Host follows configured scope while sockets dial actual loopback listenUrl. Auth token is minted privately and never written in reports. GET/HEAD bodies are absent; post-publication ahead/foreign probes derive from the actual published/current context, and request29 repeats request18's exact authored tuple.
++
++Positive32 + two separate controls expected2each =36expected HTTP; maximum32each =96maximum, three children/stores/listeners. This revises30/78 by six positive probes (and corresponding worst-case control fallback envelope), not execution evidence. Fixed30s work/5s request/10s startup-close/120s supervisor limits stay; four1s waits fit within the existing envelope without a throughput guarantee. No automatic retries, reopen, extra source built services or public claim.
++
++## Discriminating controls and retained evidence
++
++Control restore-missing-gap: independent real sequence seed200 establishes actual pos-3/context/full fixtures; GET beads/missing with that epoch/view and pos-4. Counterfactual restores only the prior missing-vs-minimum collision behavior. Before the named expected404 assertion fails, require actual500, x-bdp-development-limit minimum-position-visibility, empty body/no projected context, and no prior failure. Exact named failure: minimum-current:missing-before-minimum.
++
++Control restore-unknown-gap: independent real seed200/full fixture; GET beads/a with actual seed epoch/view and opaque. Restore only old early unknown rejection. Require actual500 with minimum-position label, empty body/no context before sole expected503 failure minimum-current:unknown-catch-up-timeout. No generic exit1/500 acceptance. Expected two completed responses, no later request, one named failure, complete seed/write evidence; unexpected wire/schema/cleanup errors are failures. If a derivative is ineffective, original positive-work envelope is a hard ceiling, never accepted sensitivity proof.
++
++Prepare derivatives only after frozen positive build: isolated source/test/config/setup/emitted graph, precise mutation and complete copy/provenance pins; direct pinned Node→Vitest avoids shared pnpm shim rewrites. Fresh clean candidate/archives/consumer graph and separate wrapper/entry identity remain required for installed evidence. Register cleanup before launch, close requests/child, prove exit/PID absence before deleting stores, preserve unknown-startup state and all earlier failures. Safe reports contain only bounded allowed fields/fingerprints; actual bodies remain private. Root owns release, independent code council, actual validation and exact-head CI.
+--- original/ledger.json
++++ review-successor/ledger.json
+@@ -1,240 +1,559 @@
+ {
+-  "status": "PROPOSED_NOT_EXECUTABLE",
++  "status": "PROPOSED_SUCCESSOR_NOT_RELEASED",
+   "basis": "6f5e607bf338dd166820bfa3f9f480f7cd54c5f1",
+   "rows": [
+     {
+-      "index": 1,
+       "method": "POST",
+-      "target": "operations/batch",
++      "target": "operations/sequence",
+       "status": 200,
+       "minimum": null,
+-      "oracle": "seed actual two Beads, Link and alias; freeze supported literal and genuine key before authoring"
+-    },
+-    {
++      "oracle": "HTTP200; complete transactionalSequenceResponse schema; exactly four entries with operationIndex0/1/2/3 and outcome created, no failure/problem. Full actual a/b/self Resources with exact identities/properties/Link endpoints and genuine revisions; entry3 exact created alias/work->beads/a. Actual response context must report pos-3; retain its epoch/view/position for later tuples. No per-member HTTP status or receipt ID inferred.",
++      "predecessorIndex": 1,
++      "index": 1,
++      "bodyPresent": true,
++      "accept": "application/json",
++      "contextSource": "actual successful sequence response context; assert pos-3 before deriving pos-4"
++    },
++    {
++      "method": "GET",
++      "target": "beads/missing",
++      "status": 404,
++      "minimum": "ahead",
++      "oracle": "uniform resource-not-found/current context, no Location or conditional success",
++      "predecessorIndex": 2,
+       "index": 2,
+-      "method": "GET",
++      "bodyPresent": false,
++      "accept": "application/json",
++      "contextSource": "actual seed tuple with declared foreign/ahead modification"
++    },
++    {
++      "method": "HEAD",
+       "target": "beads/missing",
+       "status": 404,
++      "minimum": "foreign-epoch",
++      "oracle": "uniform resource-not-found/current context, no Location or conditional success",
++      "predecessorIndex": 3,
++      "index": 3,
++      "bodyPresent": false,
++      "accept": "application/json",
++      "contextSource": "actual seed tuple with declared foreign/ahead modification"
++    },
++    {
++      "method": "GET",
++      "target": "links/missing",
++      "status": 404,
++      "minimum": "foreign-view",
++      "oracle": "uniform resource-not-found/current context, no Location or conditional success",
++      "predecessorIndex": 4,
++      "index": 4,
++      "bodyPresent": false,
++      "accept": "application/json",
++      "contextSource": "actual seed tuple with declared foreign/ahead modification"
++    },
++    {
++      "method": "HEAD",
++      "target": "links/missing",
++      "status": 404,
+       "minimum": "ahead",
+-      "oracle": "uniform resource-not-found/current context, no Location or conditional success"
+-    },
+-    {
+-      "index": 3,
+-      "method": "HEAD",
++      "oracle": "uniform resource-not-found/current context, no Location or conditional success",
++      "predecessorIndex": 5,
++      "index": 5,
++      "bodyPresent": false,
++      "accept": "application/json",
++      "contextSource": "actual seed tuple with declared foreign/ahead modification"
++    },
++    {
++      "method": "GET",
++      "target": "alias/missing",
++      "status": 404,
++      "minimum": "foreign-epoch",
++      "oracle": "uniform resource-not-found/current context, no Location or conditional success",
++      "predecessorIndex": 6,
++      "index": 6,
++      "bodyPresent": false,
++      "accept": "application/json",
++      "contextSource": "actual seed tuple with declared foreign/ahead modification"
++    },
++    {
++      "method": "HEAD",
++      "target": "alias/missing",
++      "status": 404,
++      "minimum": "foreign-view",
++      "oracle": "uniform resource-not-found/current context, no Location or conditional success",
++      "predecessorIndex": 7,
++      "index": 7,
++      "bodyPresent": false,
++      "accept": "application/json",
++      "contextSource": "actual seed tuple with declared foreign/ahead modification"
++    },
++    {
++      "method": "GET",
+       "target": "beads/missing",
+       "status": 404,
+-      "minimum": "foreign-epoch",
+-      "oracle": "uniform resource-not-found/current context, no Location or conditional success"
+-    },
+-    {
+-      "index": 4,
++      "minimum": "unknown-current-context",
++      "oracle": "lexically valid opaque token;404 with actual context",
++      "predecessorIndex": 8,
++      "index": 8,
++      "bodyPresent": false,
++      "accept": "application/json",
++      "contextSource": "actual seed tuple with declared foreign/ahead modification"
++    },
++    {
+       "method": "GET",
+       "target": "links/missing",
+       "status": 404,
+-      "minimum": "foreign-view",
+-      "oracle": "uniform resource-not-found/current context, no Location or conditional success"
+-    },
+-    {
+-      "index": 5,
+-      "method": "HEAD",
+-      "target": "links/missing",
+-      "status": 404,
+-      "minimum": "ahead",
+-      "oracle": "uniform resource-not-found/current context, no Location or conditional success"
+-    },
+-    {
+-      "index": 6,
++      "minimum": "unknown-current-context",
++      "oracle": "lexically valid opaque token;404 with actual context",
++      "predecessorIndex": 9,
++      "index": 9,
++      "bodyPresent": false,
++      "accept": "application/json",
++      "contextSource": "actual seed tuple with declared foreign/ahead modification"
++    },
++    {
+       "method": "GET",
+       "target": "alias/missing",
+       "status": 404,
+-      "minimum": "foreign-epoch",
+-      "oracle": "uniform resource-not-found/current context, no Location or conditional success"
+-    },
+-    {
+-      "index": 7,
+-      "method": "HEAD",
+-      "target": "alias/missing",
+-      "status": 404,
+-      "minimum": "foreign-view",
+-      "oracle": "uniform resource-not-found/current context, no Location or conditional success"
+-    },
+-    {
+-      "index": 8,
+-      "method": "GET",
+-      "target": "beads/missing",
+-      "status": 404,
+-      "minimum": "unknown-current-context",
+-      "oracle": "lexically valid opaque token;404 without wait"
+-    },
+-    {
+-      "index": 9,
+-      "method": "GET",
+-      "target": "links/missing",
+-      "status": 404,
+-      "minimum": "unknown-current-context",
+-      "oracle": "lexically valid opaque token;404 without wait"
+-    },
+-    {
++      "minimum": "unknown-current-context",
++      "oracle": "lexically valid opaque token;404 with actual context",
++      "predecessorIndex": 10,
+       "index": 10,
+-      "method": "GET",
+-      "target": "alias/missing",
+-      "status": 404,
+-      "minimum": "unknown-current-context",
+-      "oracle": "lexically valid opaque token;404 without wait"
+-    },
+-    {
++      "bodyPresent": false,
++      "accept": "application/json",
++      "contextSource": "actual seed tuple with declared foreign/ahead modification"
++    },
++    {
++      "method": "GET",
++      "target": "beads/a",
++      "status": 503,
++      "minimum": "unknown-current-context",
++      "oracle": "actual bounded catch-up-timeout/after-delay; no stale Resource",
++      "predecessorIndex": 11,
+       "index": 11,
+-      "method": "GET",
++      "bodyPresent": false,
++      "accept": "application/json",
++      "problemLiteral": {
++        "type": "https://github.com/gastownhall/bdp/problems/unavailable",
++        "code": "catch-up-timeout",
++        "retry": "after-delay",
++        "status": 503
++      },
++      "retryAfter": "1",
++      "contextSource": "actual seed tuple with declared foreign/ahead modification"
++    },
++    {
++      "method": "HEAD",
+       "target": "beads/a",
+       "status": 503,
+       "minimum": "unknown-current-context",
+-      "oracle": "actual bounded catch-up-timeout/after-delay; no stale Resource"
+-    },
+-    {
++      "oracle": "actual bounded catch-up-timeout/after-delay; no stale Resource",
++      "predecessorIndex": 12,
+       "index": 12,
+-      "method": "HEAD",
+-      "target": "beads/a",
+-      "status": 503,
+-      "minimum": "unknown-current-context",
+-      "oracle": "actual bounded catch-up-timeout/after-delay; no stale Resource"
+-    },
+-    {
+-      "index": 13,
++      "bodyPresent": false,
++      "accept": "application/json",
++      "problemLiteral": {
++        "type": "https://github.com/gastownhall/bdp/problems/unavailable",
++        "code": "catch-up-timeout",
++        "retry": "after-delay",
++        "status": 503
++      },
++      "retryAfter": "1",
++      "contextSource": "actual seed tuple with declared foreign/ahead modification"
++    },
++    {
+       "method": "GET",
+       "target": "links/self",
+       "status": 503,
+       "minimum": "unknown-current-context",
+-      "oracle": "actual bounded catch-up-timeout/after-delay; no stale Resource"
+-    },
+-    {
+-      "index": 14,
++      "oracle": "actual bounded catch-up-timeout/after-delay; no stale Resource",
++      "predecessorIndex": 13,
++      "index": 13,
++      "bodyPresent": false,
++      "accept": "application/json",
++      "problemLiteral": {
++        "type": "https://github.com/gastownhall/bdp/problems/unavailable",
++        "code": "catch-up-timeout",
++        "retry": "after-delay",
++        "status": 503
++      },
++      "retryAfter": "1",
++      "contextSource": "actual seed tuple with declared foreign/ahead modification"
++    },
++    {
+       "method": "GET",
+       "target": "beads/a",
+       "status": 200,
+       "minimum": "compatible",
+-      "oracle": "full actual seeded Resource equality"
+-    },
+-    {
++      "oracle": "full actual seeded Resource equality",
++      "predecessorIndex": 14,
++      "index": 14,
++      "bodyPresent": false,
++      "accept": "application/json",
++      "contextSource": "actual seed tuple with declared foreign/ahead modification"
++    },
++    {
++      "method": "GET",
++      "target": "beads/missing?view=properties",
++      "status": 404,
++      "minimum": "ahead",
++      "oracle": "complete uniform404/current context; no representation/conditional success",
+       "index": 15,
++      "bodyPresent": false,
++      "accept": "application/json",
++      "contextSource": "actual seed tuple with declared foreign/ahead modification"
++    },
++    {
++      "method": "GET",
++      "target": "beads/a?view=properties",
++      "status": 503,
++      "minimum": "unknown-current-context",
++      "oracle": "complete actual catch-up-timeout/after-delay with unavailable family; no stale properties",
++      "index": 16,
++      "bodyPresent": false,
++      "accept": "application/json",
++      "problemLiteral": {
++        "type": "https://github.com/gastownhall/bdp/problems/unavailable",
++        "code": "catch-up-timeout",
++        "retry": "after-delay",
++        "status": 503
++      },
++      "retryAfter": "1",
++      "contextSource": "actual seed tuple with declared foreign/ahead modification"
++    },
++    {
++      "method": "GET",
++      "target": "beads/missing?view=links",
++      "status": 404,
++      "minimum": "foreign-view",
++      "oracle": "initial missing anchor404/current context; does not broaden incident-list success waiting",
++      "index": 17,
++      "bodyPresent": false,
++      "accept": "application/json",
++      "contextSource": "actual seed tuple with declared foreign/ahead modification"
++    },
++    {
+       "method": "GET",
+       "target": "beads/a",
+       "status": 404,
+       "minimum": "ahead",
+-      "oracle": "after actual publication: uniform hidden404/current policy context"
+-    },
+-    {
+-      "index": 16,
++      "oracle": "after actual publication: uniform hidden404/current policy context",
++      "predecessorIndex": 15,
++      "index": 18,
++      "bodyPresent": false,
++      "accept": "application/json",
++      "contextSource": "seed epoch/position plus actual returned generation1 policy view; response must confirm all three; response becomes subsequent current-tuple source"
++    },
++    {
+       "method": "HEAD",
+       "target": "beads/a",
+       "status": 404,
+       "minimum": "foreign-epoch",
+-      "oracle": "after actual publication: uniform hidden404/current policy context"
+-    },
+-    {
+-      "index": 17,
++      "oracle": "after actual publication: uniform hidden404/current policy context",
++      "predecessorIndex": 16,
++      "index": 19,
++      "bodyPresent": false,
++      "accept": "application/json",
++      "contextSource": "actual response18 epoch/view/position with the declared foreign/ahead modification"
++    },
++    {
+       "method": "GET",
+       "target": "links/self",
+       "status": 404,
+       "minimum": "foreign-view",
+-      "oracle": "after actual publication: uniform hidden404/current policy context"
+-    },
+-    {
+-      "index": 18,
++      "oracle": "after actual publication: uniform hidden404/current policy context",
++      "predecessorIndex": 17,
++      "index": 20,
++      "bodyPresent": false,
++      "accept": "application/json",
++      "contextSource": "actual response18 epoch/view/position with the declared foreign/ahead modification"
++    },
++    {
+       "method": "HEAD",
+       "target": "links/self",
+       "status": 404,
+       "minimum": "ahead",
+-      "oracle": "after actual publication: uniform hidden404/current policy context"
+-    },
+-    {
+-      "index": 19,
++      "oracle": "after actual publication: uniform hidden404/current policy context",
++      "predecessorIndex": 18,
++      "index": 21,
++      "bodyPresent": false,
++      "accept": "application/json",
++      "contextSource": "actual response18 epoch/view/position with the declared foreign/ahead modification"
++    },
++    {
+       "method": "GET",
+       "target": "alias/work",
+       "status": 404,
+       "minimum": "foreign-epoch",
+-      "oracle": "after actual publication: uniform hidden404/current policy context"
+-    },
+-    {
+-      "index": 20,
++      "oracle": "after actual publication: uniform hidden404/current policy context",
++      "predecessorIndex": 19,
++      "index": 22,
++      "bodyPresent": false,
++      "accept": "application/json",
++      "contextSource": "actual response18 epoch/view/position with the declared foreign/ahead modification"
++    },
++    {
+       "method": "HEAD",
+       "target": "alias/work",
+       "status": 404,
+       "minimum": "foreign-view",
+-      "oracle": "after actual publication: uniform hidden404/current policy context"
+-    },
+-    {
+-      "index": 21,
+-      "method": "GET",
+-      "target": "beads/a",
+-      "status": 404,
+-      "minimum": "unknown-current-context",
+-      "oracle": "hidden404 without wait or disclosure"
+-    },
+-    {
+-      "index": 22,
++      "oracle": "after actual publication: uniform hidden404/current policy context",
++      "predecessorIndex": 20,
++      "index": 23,
++      "bodyPresent": false,
++      "accept": "application/json",
++      "contextSource": "actual response18 epoch/view/position with the declared foreign/ahead modification"
++    },
++    {
++      "method": "GET",
++      "target": "beads/a",
++      "status": 404,
++      "minimum": "unknown-post-publication-context",
++      "oracle": "hidden404 with actual context and no disclosure",
++      "predecessorIndex": 21,
++      "index": 24,
++      "bodyPresent": false,
++      "accept": "application/json",
++      "contextSource": "actual response18 tuple, checked different view from seed and equal actual returned published policy view"
++    },
++    {
+       "method": "GET",
+       "target": "links/self",
+       "status": 404,
+-      "minimum": "unknown-current-context",
+-      "oracle": "hidden404 without wait or disclosure"
+-    },
+-    {
+-      "index": 23,
++      "minimum": "unknown-post-publication-context",
++      "oracle": "hidden404 with actual context and no disclosure",
++      "predecessorIndex": 22,
++      "index": 25,
++      "bodyPresent": false,
++      "accept": "application/json",
++      "contextSource": "actual response18 tuple, checked different view from seed and equal actual returned published policy view"
++    },
++    {
+       "method": "GET",
+       "target": "alias/work",
+       "status": 404,
+-      "minimum": "unknown-current-context",
+-      "oracle": "hidden404 without wait or disclosure"
+-    },
+-    {
+-      "index": 24,
++      "minimum": "unknown-post-publication-context",
++      "oracle": "hidden404 with actual context and no disclosure",
++      "predecessorIndex": 23,
++      "index": 26,
++      "bodyPresent": false,
++      "accept": "application/json",
++      "contextSource": "actual response18 tuple, checked different view from seed and equal actual returned published policy view"
++    },
++    {
++      "method": "GET",
++      "target": "beads/a?view=properties",
++      "status": 404,
++      "minimum": "unknown-post-publication-context",
++      "oracle": "genuinely hidden properties404 with published context; complete Problem",
++      "index": 27,
++      "bodyPresent": false,
++      "accept": "application/json",
++      "contextSource": "actual response18 tuple, checked different view from seed and equal actual returned published policy view"
++    },
++    {
++      "method": "GET",
++      "target": "beads/a?view=links",
++      "status": 404,
++      "minimum": "unknown-post-publication-context",
++      "oracle": "genuinely hidden initial incident anchor404 with published context; no success wait or G2 claim",
++      "index": 28,
++      "bodyPresent": false,
++      "accept": "application/json",
++      "contextSource": "actual response18 tuple, checked different view from seed and equal actual returned published policy view"
++    },
++    {
++      "method": "GET",
++      "target": "beads/missing",
++      "status": 404,
++      "minimum": "same-as-first-hidden-ahead",
++      "oracle": "full status/Problem/protocol metadata/current-context equality with request18 hiddenBead; same authorization state; exclude Date only",
++      "index": 29,
++      "bodyPresent": false,
++      "accept": "application/json",
++      "contextSource": "exact same authored ahead tuple and authorization as request18; compare current response tuple to actual response18"
++    },
++    {
+       "method": "GET",
+       "target": "beads/a",
+       "status": 401,
+-      "minimum": "unknown-current-context",
+-      "oracle": "no credentials; no projected context"
+-    },
+-    {
+-      "index": 25,
++      "minimum": "unknown-post-publication-context",
++      "oracle": "no credentials; no projected context",
++      "predecessorIndex": 24,
++      "index": 30,
++      "bodyPresent": false,
++      "accept": "application/json",
++      "contextSource": "actual response18 tuple, checked different view from seed and equal actual returned published policy view"
++    },
++    {
+       "method": "PUT",
+       "target": "beads/a",
+       "status": 405,
+-      "minimum": "unknown-current-context",
+-      "oracle": "method refusal; no owner"
+-    },
+-    {
+-      "index": 26,
++      "minimum": "unknown-post-publication-context",
++      "oracle": "method refusal; no owner",
++      "predecessorIndex": 25,
++      "index": 31,
++      "bodyPresent": false,
++      "accept": "application/json",
++      "contextSource": "actual response18 tuple, checked different view from seed and equal actual returned published policy view"
++    },
++    {
+       "method": "GET",
+       "target": "beads/a",
+       "status": 400,
+       "minimum": "incomplete-or-duplicate",
+-      "oracle": "malformed tuple afterauth beforeowner; no projected context"
++      "oracle": "malformed tuple afterauth beforeowner; no projected context",
++      "predecessorIndex": 26,
++      "index": 32,
++      "bodyPresent": false,
++      "accept": "application/json",
++      "contextSource": "actual seed tuple with declared foreign/ahead modification"
+     }
+   ],
+-  "publicationAfterRequest": 14,
+-  "expectedHTTP": 26,
+-  "maximumHTTP": 26,
++  "publicationAfterRequest": 17,
++  "expectedHTTP": 32,
++  "maximumHTTP": 32,
+   "children": 1,
+   "controls": [
+     {
+       "id": "restore-missing-gap",
+       "expectedHTTP": 2,
+-      "maximumHTTP": 26,
++      "maximumHTTP": 32,
+       "namedFailure": "minimum-current:missing-before-minimum",
+-      "expectedActualStatus": 500
++      "expectedActualStatus": 500,
++      "seedPrerequisite": "actual sequence HTTP200/full sequence schema/exact four created entries/full fixtures/current pos-3 and observed epoch/view/complete write; no earlier error",
++      "actualBodyBytes": 0,
++      "projectedContextAbsent": true,
++      "method": "GET",
++      "unknownOtherFailuresAccepted": false,
++      "expectedNamedFailures": 1,
++      "target": "beads/missing",
++      "tuple": {
++        "scopeEpoch": "actual seed epoch",
++        "authorizationView": "actual seed view",
++        "minimumPosition": "pos-4"
++      },
++      "expectedDevelopmentLimit": "minimum-position-visibility",
++      "expectedAssertionStatus": 404
+     },
+     {
+       "id": "restore-unknown-gap",
+       "expectedHTTP": 2,
+-      "maximumHTTP": 26,
++      "maximumHTTP": 32,
+       "namedFailure": "minimum-current:unknown-catch-up-timeout",
+-      "expectedActualStatus": 500
++      "expectedActualStatus": 500,
++      "seedPrerequisite": "actual sequence HTTP200/full sequence schema/exact four created entries/full fixtures/current pos-3 and observed epoch/view/complete write; no earlier error",
++      "actualBodyBytes": 0,
++      "projectedContextAbsent": true,
++      "method": "GET",
++      "unknownOtherFailuresAccepted": false,
++      "expectedNamedFailures": 1,
++      "target": "beads/a",
++      "tuple": {
++        "scopeEpoch": "actual seed epoch",
++        "authorizationView": "actual seed view",
++        "minimumPosition": "opaque"
++      },
++      "expectedDevelopmentLimit": "minimum-position",
++      "expectedAssertionStatus": 503
+     }
+   ],
+-  "totalExpectedHTTP": 30,
+-  "totalMaximumHTTP": 78,
++  "totalExpectedHTTP": 36,
++  "totalMaximumHTTP": 96,
+   "totalChildren": 3,
+-  "literalBodiesPending": true,
++  "literalBodiesPending": false,
+   "authIntegrationPending": true,
+-  "authoringReleased": false
++  "authoringReleased": false,
++  "authorizationCandidate": "1647c5df37a82e1364d281ac46beb60a94ab6c76",
++  "authorizationCandidateTree": "a070420a4c17aa67a821c742d363ff9e82e872a6",
++  "actualAuthoringParent": null,
++  "firstPostPublicationResponse": 18,
++  "sourceCallbackRegistrationsPending": true,
++  "sourceRuntimeLedgerPending": true,
++  "automaticRetries": 0,
++  "reopens": 0,
++  "minimumDefaultWaits": 4,
++  "limits": {
++    "cohortMs": 30000,
++    "requestMs": 5000,
++    "startupMs": 10000,
++    "closeMs": 10000,
++    "supervisorMs": 120000,
++    "minimumReadBudgetMs": 1000,
++    "privatePublicationTimeoutMs": 1000
++  },
++  "installedNoWaitClaim": false,
++  "sourceNoWaitProof": "Actual entry/wait counters; no timing-only inference",
++  "seed": {
++    "bodyUtf8": "{\"operations\":[{\"operation\":\"createBead\",\"id\":\"beads/a\",\"type\":\"https://example.test/bead\",\"properties\":{\"title\":\"a\"},\"idempotencyKey\":\"minimum-current-a\"},{\"operation\":\"createBead\",\"id\":\"beads/b\",\"type\":\"https://example.test/bead\",\"properties\":{\"title\":\"b\"},\"idempotencyKey\":\"minimum-current-b\"},{\"operation\":\"createLink\",\"id\":\"links/self\",\"type\":\"https://example.test/link\",\"source\":\"beads/a\",\"target\":\"beads/a\",\"idempotencyKey\":\"minimum-current-link\"},{\"operation\":\"putAlias\",\"alias\":\"alias/work\",\"target\":\"beads/a\",\"idempotencyKey\":\"minimum-current-alias\"}]}",
++    "bodyBytes": 562,
++    "bodySha256": "b2ed0ea801da54e92fd894c7c02cc9ca71788b3a3bc16362bd54c15f31565f94",
++    "headers": [
++      {
++        "name": "Content-Type",
++        "value": "application/json"
++      },
++      {
++        "name": "Accept",
++        "value": "application/json"
++      }
++    ],
++    "authorization": "private generated valid credential; never persisted",
++    "target": "actual runtime.targets.sequence, asserted canonical operations/sequence",
++    "configuredScope": "https://event-sse.invalid/acme/",
++    "canonicalHost": "event-sse.invalid",
++    "connectAuthority": "actual loopback listenUrl; no redirect",
++    "descriptors": [
++      {
++        "id": "https://example.test/bead",
++        "name": "Bead",
++        "describes": "bead",
++        "conformsTo": []
++      },
++      {
++        "id": "https://example.test/link",
++        "name": "Link",
++        "describes": "link",
++        "conformsTo": [],
++        "source": {
++          "conformsTo": [
++            "https://example.test/bead"
++          ],
++          "external": "opaque"
++        },
++        "target": {
++          "conformsTo": [
++            "https://example.test/bead"
++          ],
++          "external": "opaque"
++        }
++      }
++    ],
++    "schemas": [],
++    "provenance": "Committed1647 HTTP sequence branch309\u2013345; protocol read-update-preflight58\u201372; actual HTTP test525\u2013552 alias sequence; batch1024\u20131030 alias has no Resource Event/Scope position. Data-only literal construction, not executed.",
++    "sequenceOracle": "HTTP200; complete transactionalSequenceResponse schema; exactly four entries with operationIndex0/1/2/3 and outcome created, no failure/problem. Full actual a/b/self Resources with exact identities/properties/Link endpoints and genuine revisions; entry3 exact created alias/work->beads/a. Actual response context must report pos-3; retain its epoch/view/position for later tuples. No per-member HTTP status or receipt ID inferred.",
++    "atomicSeedClaim": false,
++    "outerIdempotencyKeyAbsent": true
++  },
++  "tupleRecipes": {
++    "compatible": "actual seed epoch/view/pos-3",
++    "ahead": "actual current epoch/view; pos-4 (strictly greater than verified seed pos-3)",
++    "foreign-epoch": "foreign-epoch plus current view/pos-3",
++    "foreign-view": "current epoch plus foreign-view/pos-3",
++    "unknown-current-context": "actual seed epoch/view; opaque",
++    "unknown-post-publication-context": "actual response18 epoch/view; opaque",
++    "incomplete-or-duplicate": "raw deliberately malformed tuple, exact final header recipe frozen before code/runtime release"
++  },
++  "countDelta": {
++    "priorPositive": 26,
++    "addedPositive": 6,
++    "priorTotalExpected": 30,
++    "newTotalExpected": 36,
++    "priorTotalMaximum": 78,
++    "newTotalMaximum": 96,
++    "childrenUnchanged": 3,
++    "timeoutsUnchanged": true,
++    "reason": "properties/initial incident-anchor coverage and same-view missing-hidden comparison"
++  },
++  "isolatedCandidateAuthoringPermittedAfterRootRelease": true,
++  "finalActualAuthMainIntegrationBeforeValidationRequired": true
+ }
+--- original/source-binding.json
++++ review-successor/source-binding.json
+@@ -1,7 +1,40 @@
+ {
+-  "head": "6f5e607bf338dd166820bfa3f9f480f7cd54c5f1",
+-  "tree": "a49cb4b2cfc3a7ad9f66d0d790a7e1e4dbad168a",
+-  "sourcePins": {
++  "originalPlanBase": "6f5e607bf338dd166820bfa3f9f480f7cd54c5f1",
++  "reviewedAuthorizationCandidate": "1647c5df37a82e1364d281ac46beb60a94ab6c76",
++  "candidateTree": "a070420a4c17aa67a821c742d363ff9e82e872a6",
++  "candidateParents": [
++    "dae39d526ea543112da68bdb483a8af7e90972fd",
++    "6f5e607bf338dd166820bfa3f9f480f7cd54c5f1"
++  ],
++  "candidateSourcePins": {
++    "packages/server/src/transaction-consistency.ts": "00a420c3e9f5dcb1b8814a6476d5ce52edfb7adbbd1c64ab082833f17322a336",
++    "packages/server/src/transaction-read.ts": "66e71ff74a8139b12f0c7581c30a6798cc8724bb488cac8517119b9678ace212",
++    "packages/server/src/transaction-service.ts": "8e2a00fba538fc38fd81241301d38b232190f7241fa695e1dcdaf10641e97dc8",
++    "packages/server/src/transaction-http.ts": "c6bac496033781306d1c63e570e1c65b5786d41ebb8dc565c5a8be44e91ccfa9",
++    "packages/server/src/transaction-consistency.test.ts": "4d45ba52c028c3081188a6f76498889d7170cceaaad114004458b86331191bc9",
++    "packages/server/src/transaction-read.test.ts": "9345c091e7ad31a94d5726dcb1ac525347dfe59204d2043203d29833ef1cd7b6",
++    "packages/server/src/transaction-http.test.ts": "ca2e4e7663a93060ba2a0788c5ef349a3de4991e3108f81507f37a723d964781",
++    "packages/server/src/authority-read.ts": "fd6554c4ee0d08b997fb3622c2f21697f02d58b838f4ae0de10aca4707f67734",
++    "packages/server/src/transaction-runtime-configuration.ts": "57cd5d38c7199011d05589bc2b8ac1a0e2a4a9dc7585d019f9de5801a0a4d808",
++    "packages/server/src/read-request.ts": "57675afc647df3e8ad1f26a40aef72584aa388ade6af4a465e3ffef16670f6a2",
++    "docs/specs/bdp.md": "63e93be562334c84c1e967da2fce212e8ef515aa3c9448924c5f9a272ea7b80b",
++    "docs/design/transaction-implementation-progress.md": "9aa001e2da6e37f0e12aa15fd124a489bc951519064370afbb76c9aee9aad185",
++    "packages/server/src/transaction-authorization.ts": "c87a7bfa8840aee2f097bf683fe3f3c97fcae80782020c6d5b1e41364d16b6d2",
++    "packages/server/src/transaction-store.ts": "bc10df9d02316e395b8c4ea7db6134ab2646c8e8abd83ea785b0ea09f2f0c82c",
++    "packages/server/src/transaction-runtime.ts": "48cb5411407c456d7b3f301a4b67970061be9f51c94201de832ba5deff6ea2d4",
++    "packages/server/src/transaction-installed.ts": "afddc6b0304fee4762c79e40ac6610a281ca8791928d8f779a900a7f6eac881a",
++    "packages/server/src/transaction-installed-configuration.ts": "e15cb54266848fdd4aa08b19b37f1b2eb080f4599d9414fad8d85b6f33f35d99",
++    "packages/server/src/read-http.ts": "31934105eff6fff8ded8ce2ca9e3c19028991ca7c3d5f51b848004177e8c9268",
++    "packages/server/src/read-http-routing.ts": "d9344b87838f8c71381ccf9efe28b4f023df45503570beb8fb4293d553caca42",
++    "packages/protocol/src/index.ts": "92e547e807ec2d23223c47dbc4e04867d55db89ac9aab5fbd55f33349f92bdc6",
++    "schemas/bdp-v0.schema.json": "0baa5d5ef67144f8e6513b4cde31168effc8df6d52ef3141b0f144b87f8dc227",
++    "packages/server/src/index.ts": "34f9d9de8b48852c64919e69ce93f149e9cdae5142c15c75e4c35f08f15efc44",
++    "packages/server/package.json": "110e00c403c667d8c848c6280b2e98c47f98f134158a621967d889914d44632e",
++    "packages/server/src/transaction-batch.ts": "70d941d416979edd54e250d51318cfb7e5d4ddb315ea6131de7ca5f56e98a014",
++    "packages/protocol/src/read-update-preflight.ts": "e9cea06515c1b7b5ffbfc275b82e9759e9083daa29c5daaab4485c161970275f",
++    "packages/server/src/transaction-sequence.ts": "019e02f2f392047d568d7464b1c5af0482d6d743ed09a6d0aa4edab151607cbe"
++  },
++  "originalSourcePins": {
+     "packages/server/src/transaction-consistency.ts": "00a420c3e9f5dcb1b8814a6476d5ce52edfb7adbbd1c64ab082833f17322a336",
+     "packages/server/src/transaction-read.ts": "c3b486baf6b9e48d4a716d36b4162c2ba1f0c7672a6f48988192e2591eda7910",
+     "packages/server/src/transaction-service.ts": "53f655faf494209996aac2e0f93a4c2c785e471f66aac6af9ea41f92c9cfbe00",
+@@ -15,8 +48,17 @@
+     "docs/specs/bdp.md": "63e93be562334c84c1e967da2fce212e8ef515aa3c9448924c5f9a272ea7b80b",
+     "docs/design/transaction-implementation-progress.md": "9aa001e2da6e37f0e12aa15fd124a489bc951519064370afbb76c9aee9aad185"
+   },
+-  "operatorRulingsSha256": "dc9d3a1ae9027f92aadb68638f38507a7fad4dbb169954ded6e5299d83d24951",
+-  "futureAuthoringParent": null,
+-  "authDraftUsedOnlyForOverlapAwareness": true,
+-  "authoringReleased": false
++  "changedOriginalPins": [
++    "packages/server/src/transaction-read.ts",
++    "packages/server/src/transaction-service.ts",
++    "packages/server/src/transaction-http.ts",
++    "packages/server/src/transaction-runtime-configuration.ts"
++  ],
++  "actualMergedAuthoringParent": null,
++  "actualMergeRequired": true,
++  "authoringReleased": false,
++  "sourceSnapshotKind": "committed Git objects, not dynamic imports",
++  "actualMergeRequiredBeforeFinalValidation": true,
++  "isolatedCandidateAuthoringPermittedAfterRootRelease": true,
++  "actualMergeRequiredMeaning": "final validation/main integration; not a prohibition on root-released isolated candidate authoring"
+ }

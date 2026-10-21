@@ -1,0 +1,30 @@
+--- a/apps/bdptest/src/transactional-matrix.test.ts
++++ b/apps/bdptest/src/transactional-matrix.test.ts
+@@ -2361,14 +2361,12 @@
+       expect(request!.bodyPresent).toBe(expected.body !== undefined);
+       // Credentials and generated framing are checked by the runner's exact
+       // request assertions; never retain or serialize their secret values.
++      expect(request!.headerLines.slice(0, expected.headers.length)).toEqual(expected.headers);
+       expect(
+-        request!.headerLines.filter(
+-          (h) =>
+-            !["authorization", "host", "content-length", "connection"].includes(
+-              h.name.toLowerCase(),
+-            ),
+-        ),
+-      ).toEqual(expected.headers);
++        request!.headerLines
++          .slice(expected.headers.length)
++          .some((header) => header.name.toLowerCase().startsWith("bdp-")),
++      ).toBe(false);
+       expect(request!.bodyDigest).toBe(
+         expected.body === undefined
+           ? undefined
+@@ -2462,6 +2460,7 @@
+           }
+           const pair = minimumReplayLedger.find(([replay]) => replay === id);
+           if (pair) {
++            if (pair[2] !== "whole-json") throw new Error("minimum-replay-comparison-ledger");
+             expect(baselines.has(pair[1]!)).toBe(true);
+             expect(body).toEqual(baselines.get(pair[1]!));
+             performed.push([...pair]);

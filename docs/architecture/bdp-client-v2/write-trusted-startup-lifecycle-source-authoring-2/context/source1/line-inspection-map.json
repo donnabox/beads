@@ -1,0 +1,283 @@
+{
+  "packages/server/src/development-authority.ts": {
+    "sha256": "a7a32ca431d477654675550f394eb1d85f8be4f9830a0583de951aa40a6eeac5",
+    "lines": 361,
+    "anchors": {
+      "const capturedConfiguration": [
+        160
+      ],
+      "const epoch =": [
+        259
+      ],
+      "readConfiguration()": [
+        343
+      ]
+    }
+  },
+  "packages/server/src/development-runtime.ts": {
+    "sha256": "c0dae240adaca64d0f0edaa77a1adc6fcc5e1f1a430fc93b10e1a711226d509b",
+    "lines": 770,
+    "anchors": {
+      "export function assemblePreparedDevelopmentArguments": [
+        178
+      ],
+      "export async function startPreparedDevelopmentReferenceRuntime": [
+        196
+      ],
+      "export async function startDevelopmentReferenceRuntime": [
+        218
+      ],
+      "const onListenerError": [
+        588
+      ],
+      "const closeListener": [
+        602
+      ],
+      "const acquireOwner": [
+        612
+      ],
+      "actual.scope !==": [
+        631
+      ],
+      "await view.discover()": [
+        644
+      ],
+      "await acquireOwner()": [
+        669,
+        687
+      ],
+      "server.listen(options.port": [
+        675
+      ],
+      "function close()": [
+        722
+      ],
+      "const legacy =": [
+        755
+      ]
+    }
+  },
+  "packages/server/src/transaction-runtime.ts": {
+    "sha256": "d208e18588772dd931655f8f85bcbafcf3d64a14590e60d7ab0165d455de4424",
+    "lines": 539,
+    "anchors": {
+      "export async function startTransactionRuntime": [
+        100
+      ],
+      "export async function startPreparedTransactionRuntime": [
+        116
+      ],
+      "const onListenerError": [
+        356
+      ],
+      "const prepareOwner": [
+        382
+      ],
+      "const actual = owner.readConfiguration()": [
+        395
+      ],
+      "service = createTransactionService": [
+        409
+      ],
+      "function close()": [
+        489
+      ],
+      "const legacy =": [
+        478
+      ],
+      "prepared ? prepared.handle.listener.port : captured.port": []
+    }
+  },
+  "packages/server/src/reference-deployment-runtime.ts": {
+    "sha256": "4ed8c017825d86b33e7e8fedbf8971e691f05ed5644953785c54986520087f3a",
+    "lines": 45,
+    "anchors": {
+      "export async function startPreparedReferenceDeployment": [
+        7
+      ],
+      "const state = referenceDeploymentState(handle)": [
+        11
+      ],
+      "return Object.freeze({": [
+        35
+      ]
+    }
+  },
+  "packages/server/src/reference-deployment-process.ts": {
+    "sha256": "5abf5f72e271e40bc0024dbe4449e0d0d6265fcc5d0ee1f8afa0289dc25fd9d5",
+    "lines": 117,
+    "anchors": {
+      "async function main()": [
+        8
+      ],
+      "loadReferenceDeployment(input)": [
+        62
+      ],
+      "startPreparedReferenceDeployment(prepared": [
+        64
+      ],
+      "event: \"qualification.ready\"": [
+        72
+      ],
+      "Promise.race": [
+        82
+      ],
+      "function isEntrypoint": [
+        103
+      ],
+      "process.stderr.write": [
+        114
+      ]
+    }
+  },
+  "packages/server/src/reference-deployment-runtime.test.ts": {
+    "sha256": "18d963ae7a72097a853988970f2f3c9f087ace14cdd4798250969ac89930f27f",
+    "lines": 962,
+    "anchors": {
+      "beforeEach(": [
+        106
+      ],
+      "afterEach(": [
+        233
+      ],
+      "function fixture": [
+        291
+      ],
+      "function start(": [
+        422
+      ],
+      "S01 registered": [
+        441
+      ],
+      "S02 RU": [
+        481
+      ],
+      "S03 TX": [
+        528
+      ],
+      "S04 owner": [
+        561
+      ],
+      "const persisted =": [
+        572
+      ],
+      "S05 persisted": [
+        600
+      ],
+      "S06 absent": [
+        729
+      ],
+      "S07 occupied": [
+        746
+      ],
+      "S08 synchronous": [
+        768
+      ],
+      "S09 post-listening": [
+        780
+      ],
+      "S10 observed": [
+        794
+      ],
+      "S11 memoized": [
+        820
+      ],
+      "S12 admitted": [
+        887
+      ],
+      "S13 cancellation": [
+        932
+      ]
+    }
+  },
+  "apps/bdptest/src/reference-deployment-lifecycle-installed.test.ts": {
+    "sha256": "3270a70ae08d6a870c804892aecf1657b2b3126469d00f187c1b5d82848722ee",
+    "lines": 1233,
+    "anchors": {
+      "async function cohort": [
+        131
+      ],
+      "async function fixture": [
+        264
+      ],
+      "function own(": [
+        394
+      ],
+      "async function launch": [
+        451
+      ],
+      "async function stop": [
+        497
+      ],
+      "async function send": [
+        521
+      ],
+      "async function ownerProbe": [
+        642
+      ],
+      "async function initialize": [
+        700
+      ],
+      "async function peer": [
+        736
+      ],
+      "async function guard": [
+        815
+      ],
+      "async function publicRefusal": [
+        834
+      ],
+      "async function navigate": [
+        894
+      ],
+      "async function cold": [
+        926
+      ],
+      "\"I01\"": [
+        983
+      ],
+      "\"I21\"": [
+        1228
+      ]
+    }
+  },
+  "scripts/smoke-executables.mjs": {
+    "sha256": "e4f54303820eeee8d6b8941d24244d8a37592bead1aee2a353754331234d7f8c",
+    "lines": 1369,
+    "anchors": {
+      "reference-deployment-runtime": [
+        381,
+        382,
+        383,
+        384,
+        584,
+        585
+      ],
+      "reference-deployment-process": [
+        385,
+        386,
+        387,
+        388,
+        586,
+        587
+      ],
+      "startPreparedReferenceDeployment": [
+        507
+      ],
+      "assemblePreparedDevelopmentArguments": [
+        510
+      ]
+    }
+  },
+  "docs/design/startup-configuration.md": {
+    "sha256": "2dfc3fd5f3f30c8515baba3db0043724a7865e026d1ccc104c3afe6e61dc7b06",
+    "lines": 757,
+    "anchors": {
+      "Trusted lifecycle source increment": [],
+      "D3c": [],
+      "BDP_REFERENCE_DEPLOYMENT_INSTALLED_ENTRY": [
+        744
+      ]
+    }
+  }
+}

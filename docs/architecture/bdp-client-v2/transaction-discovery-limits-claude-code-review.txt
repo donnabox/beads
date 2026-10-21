@@ -1,0 +1,80 @@
+# Review — `fd07bf7` vs `3f486c2` (frozen; no files written, no builds/tests run)
+
+## Verification basis
+
+| Item | Status |
+|---|---|
+| Worktree frozen | `git status` clean, HEAD `fd07bf7`, tree `3b689aa3…` — matches `report.md:7` |
+| Diff size | 4 files, 63+/6− — matches report |
+| Implementation report | **Present** (not pending). Cross-checked against `exits.json` (all 15 stages exit 0), `typecheck.log`, `check-boundaries.log`, `affected.json` (224/224 passed, 0 failed), `summary.json` (`transactional/exchanges = 12`, 12 completed responses, pid 66211, `remainingInstalledChildren = 0`) |
+| `format-check` | exit 0; the single warning is the pre-existing 3.5 MiB `read-update-v1.json` size skip, unrelated to this diff |
+| All 10 new discovery cases | Inspected as `passed` in `affected.json` by name |
+
+Inspected directly (not taken from the report): the four-file diff, `transaction-discovery.ts` whole file, `transaction-batch.ts:62-74`, `transaction-set.ts:16`, `transaction-service.ts:61-102/234-253`, `authority-read.ts:331-394`, `transaction-store.ts:1208-1224`, `resource-evaluator.ts:180-240`, `alias-evaluator.ts:67-86`, `transaction-runtime-configuration.ts:89-130/333-352`, `transaction-discovery-values.ts`, `schemas/bdp-v0.schema.json` (`transactionalDiscovery`, `transactionalAdvertisedLimits`), `docs/specs/bdp.md:2596-2602/3460-3474/5119`, `transaction-store.test.ts:2615-2665`.
+
+## Scope and focus checks — confirmed by inspection
+
+- **Constants control the projection.** `TRANSACTION_RUNTIME_LIMITS.diagnosticBytes = 512*1024 = 524288`, `diagnosticCount = 16` (`transaction-batch.ts:70-71`); `TRANSACTION_SELECTOR_LIMITS = {4096,32,256}` (`transaction-set.ts:16`). No duplicated numeral in `transaction-discovery.ts`. The literal test oracle (`16/524288`, `4096/32/256`) fails closed if either constant moves.
+- **Bound is truthful.** The only diagnostic-emitting ceilings reachable from the Transactional owner are `TRANSACTION_RUNTIME_LIMITS` (store passes the frozen constant at `transaction-store.ts:1224`; `evaluateTransaction` only permits *lower* supplied bounds and the store supplies none), the fixed single alias diagnostic (`alias-evaluator.ts:67-72`), and the internal `EVALUATOR_CEILINGS` (1024/1 MiB) which `collectDiagnostics` truncates down to the owner bound. `TRANSACTION_SNAPSHOT_LIMITS` carries no diagnostic member. `development-authority.ts`'s 32 is not reachable from any `transaction-*` module.
+- **Mandatory-only disclosure.** `bdp.md:3469` is the sole `MUST advertise` for limits; `retention.receipt` (`:5119`) and `page.maximumItems` (`:5167`) are conditional. Advertising both validation scalars and nothing else optional is lawful.
+- **No cycle, no new side effect.** Value-import closure of `transaction-discovery.ts` is 12 modules with no backedge to discovery/service/HTTP/store (type-only edges to `transaction-store.js`/`transaction-read.js` erase). Only module-level call in the closure is the pure `snapshotReadUpdateRuntimeLimits(...)` at `transaction-batch.ts:74`, and `transaction-discovery.test.ts` already loaded `transaction-batch` transitively via `transaction-changefeed`/`transaction-events`, so initialization order is unchanged. `check:boundaries` is package-scoped and unaffected.
+- **No new runtime behavior / no public claim.** `assembleTransactionDiscovery` has exactly one non-test caller (`transaction-service.ts:249`), inside `discoveryObserved()`; nothing in `transaction-http.ts`/`transaction-runtime.ts` calls it, so the new `TypeError` cannot reach a wire path. The check runs after `owner.withRead` returns (entry released), as planned.
+- **No duplicate Read validator.** `authority-read.ts:381-389` still owns advertised-vs-enforced Read comparison; the new check is advertised-vs-fixed-set only.
+- **No existing caller breaks.** Every `assembleTransactionDiscovery` / `discoveryObserved` call site supplies `selector {4096,32,256}` (`transaction-service.test.ts:69-72`, `transaction-read.test.ts:53-56`, `transaction-discovery.test.ts:19`). `transaction-service.test.ts:1148-1192` mutates the caller's object post-capture, so the frozen copy still satisfies the check.
+- **Generic permissiveness preserved.** `validation` is an already-existing optional group with optional members in `transactionalAdvertisedLimits`; no schema file touched, and the new sensitivity test calls `parseTransactionalDiscovery` *outside* the `toThrow` wrapper, so it positively proves the parser still accepts absent/`15`/`524287` while the owner oracle rejects them.
+
+## Findings
+
+### 1. `limits.selector.*` is read twice — check and projection can disagree
+**Severity:** Low · **Location:** `packages/server/src/transaction-discovery.ts:32-34` vs `:58-60`
+
+The coherence check reads `limits.selector.bytes/depth/nodes`, then the object literal reads the same three properties a second time. Before this commit each advertised value was read exactly once.
+
+**Failure scenario:** a direct internal caller passes an accessor-backed `advertisedLimits` (`Object.defineProperty(selector, "bytes", { get })`) returning `4096` on the first read and `1` on the second. The check passes; the candidate is assembled, schema-validated and frozen advertising `bytes: 1` — a Selector bound that neither the Read plane nor set mutation enforces. The frozen document carries no trace of the value that was actually validated.
+
+**Impact:** bounded to direct `assembleTransactionDiscovery`/`createTransactionService` callers — the production path (`transaction-service.ts:87-95`) passes a frozen plain copy, and nothing serves the candidate. It is, however, a deviation from this repo's own read-once discipline: `authority-read.ts:369-389` builds the frozen copy *first* and compares the copy, and `transaction-service.test.ts:1293-1300` asserts single-read semantics against getters for the adjacent pagination fields.
+
+**Bounded fix (owned file, no behavior change on the frozen path):** destructure once and use the locals in both places —
+```ts
+const { bytes, depth, nodes } = limits.selector;
+if (bytes !== TRANSACTION_SELECTOR_LIMITS.bytes || depth !== … || nodes !== …) throw …
+// …
+selector: { bytes, depth, nodes },
+```
+Optional companion case in `transaction-discovery.test.ts`: a getter-backed `selector` that flips after the first read must not produce a candidate.
+
+### 2. Test gap — the installed default Selector triple is never bound to `TRANSACTION_SELECTOR_LIMITS`
+**Severity:** Medium (test coverage) · **Location:** `packages/server/src/transaction-runtime-configuration.ts:96` (duplicated literal `{ bytes: 4096, depth: 32, nodes: 256 }`); gap at `transaction-runtime-configuration.test.ts:400-401`
+
+`TRANSACTION_SELECTOR_LIMITS` is referenced by **no test file in the repo** (`grep` over `src/*.test.ts` and `test-support/` returns nothing). The runtime-configuration test only asserts *identity* between `settings.selector`, `readOptions().selectorLimits` and `readOptions().advertisedLimits.selector` — never equality with the constant the new check enforces.
+
+**Failure scenario:** the duplicated default at `:96` is edited to `{ bytes: 2048, depth: 32, nodes: 256 }`. `authority-read` is satisfied (advertised == Read-enforced == 2048), Read then enforces 2048 while `updateWhere`/`deleteWhere` keep enforcing 4096 (`transaction-set.ts:135`, `transaction-batch.ts:854`). The entire suite still passes — the new assembler check is the only live consumer of the agreement, and no installed/HTTP path and no runtime-configuration test calls `discoveryObserved()`, so the frozen 12/1 installed cohort cannot exercise it either. The commit makes this agreement load-bearing without pinning it.
+
+**Impact:** the coherence check cannot detect the drift it exists to catch in the only configuration that ships; the divergence stays silent until discovery is actually served.
+
+**Bounded fix:** one assertion, e.g. `expect(TRANSACTION_RUNTIME_DEFAULTS.selector).toEqual(TRANSACTION_SELECTOR_LIMITS)` in the existing `transaction-runtime-configuration.test.ts` case at `:399-401`. This is a fifth file, outside the four approved — report to root for bounded disposition per plan ¶26 rather than broadening scope here.
+
+### 3. Test gap — no sensitivity case for a half-projected `validation` group
+**Severity:** Low · **Location:** `packages/server/src/transaction-discovery.test.ts:93-108`
+
+The parameterized set covers absent, `diagnostics: 15`, and `diagnosticBytes: 524287`. It does not cover `{ diagnostics: 16 }` with `diagnosticBytes` omitted (or the converse), which the schema accepts (`transactionalAdvertisedLimits.validation` has no `required`) and which `bdp.md:3469` forbids for this owner — both bounds truncate, so both MUST be advertised. That is the one schema-valid shape in the group left unpinned.
+
+**Bounded fix:** add `{ diagnostics: 16 }` and `{ diagnosticBytes: 524288 }` to the existing `it.each` list in the owned test file.
+
+### 4. Doc — omitted optional-group enumeration is incomplete
+**Severity:** Low · **Location:** `docs/design/transaction-implementation-progress.md:1629-1630`
+
+"Optional request, Resource, transaction and retention limits remain omitted" leaves out `sequence` and `patch`, the other two optional groups in `transactionalAdvertisedLimits`. `sequence.operations` is not hypothetical: the owner fixes it at 32 (`TRANSACTION_RUNTIME_LIMITS.maximumOperations`, exported as `TRANSACTION_MAXIMUM_OPERATIONS`), and plan ¶30 explicitly placed "fixed sequence32" in the disclosure inventory as a lawful omission. A reader checking the paragraph against the schema cannot tell whether `sequence` was considered and omitted or overlooked.
+
+Relatedly, the replacement sentence at `:1627-1629` ("remaining mandatory serving behavior and its review gates must close before activation") drops the concreteness of the text it replaced, which named the specific limits obligation; plan ¶24 asked for *explicit* remaining serving gates. The two following sentences (no serving, no public admission, Scope/descriptor/directory GET/HEAD refused) carry the concrete part, so this is incompleteness, not a false claim.
+
+**Bounded fix:** add `sequence` (and `patch`) to the omitted list, or mark the list non-exhaustive with "including".
+
+### 5. Nit — wrap artifact
+**Severity:** Nit · **Location:** `docs/design/transaction-implementation-progress.md:1631` (107 chars)
+
+`C3 neither serves this candidate nor grants public Transactional` was appended to the end of an existing line inside a paragraph that otherwise wraps at ~78-80. Biome does not format Markdown and the file already has 15 lines over 100, so nothing fails — it is a visible edit artifact in an owned file. Re-wrap the sentence onto its own line.
+
+## Not claimed, correctly
+
+The diff asserts no activation, no profile advertisement, no catalog credit. `transaction-batch.ts`'s "No profile advertisement" comment remains true (disposition 7). The installed 12-exchange proof demonstrates preserved refusal and working-mutation boundaries only — it cannot and does not exercise the new projection or the new check, since `discoveryObserved()` is unreachable over HTTP; `report.md:35` states this limitation explicitly. The parent-C3 items (stale schema index export pin, receipt/Snapshot source-route witnesses) are absent from this diff and were not assessed.

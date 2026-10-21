@@ -1,0 +1,35 @@
+{
+  "parserRegion": {
+    "bytes": 976,
+    "sha256": "608121c6366636acd322899a0aace194601fe04917523639af96a98f8297afa6",
+    "occurrences": 1
+  },
+  "httpTest": {
+    "path": "packages/server/src/transaction-http.test.ts",
+    "sha256": "88748d8473a9940187724a0328aad45a46ca56c0de035c61d746b9de7214267f"
+  },
+  "historicalInstalledPrefix": {
+    "path": "apps/bdptest/src/transactional-event-missing-context-installed.test.ts",
+    "bytes": 15956,
+    "sha256": "828c05f358ae5863c992f93194da15a31df9a200e073e5e3525531ba39fe7d0d",
+    "preserved": true
+  },
+  "existingEventCallbacksPreserved": true,
+  "existingServiceTestPrefixPreserved": true,
+  "unchangedTrackedFiles": 673,
+  "sourceUntrackedFiles": [],
+  "originalAToEBytePreserved": true,
+  "originalServiceTestPrefixBytes": 103899,
+  "originalServiceTestPrefixSha256": "2dff5855620c5d37ee4f6e32fb8bdb7b17fc02d708525209f4a971c7914e2631",
+  "changedFromOriginalDraft": [
+    "packages/server/src/transaction-service.test.ts",
+    "packages/server/src/transaction-service.ts"
+  ],
+  "waiterUnchangedSha256": "ad51311d6098db32fd47849e0b78d3118162cdf1e80ee9ef4d46324bfa9f436f",
+  "httpTrafficUnchanged": {
+    "newEmitted": 32,
+    "newInstalled": 3,
+    "existingEmitted": 59,
+    "existingInstalled": 11
+  }
+}

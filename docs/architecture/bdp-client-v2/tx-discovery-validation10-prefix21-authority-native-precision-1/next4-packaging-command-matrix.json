@@ -1,0 +1,96 @@
+[
+  {
+    "actualResult": "UNATTEMPTED/UNKNOWN",
+    "command": {
+      "acceptedRawExitCodes": [
+        0
+      ],
+      "argv": [
+        "/opt/homebrew/opt/python@3.14/bin/python3.14",
+        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/tx-discovery-validation-preparation-10/packages.py",
+        "directory"
+      ],
+      "automaticRetries": 0,
+      "contract": "Exclusively create new task-owned ${EXECUTION_ROOT}/run/packages; refuse existing contents, no deletion/reuse.",
+      "cwd": "/Users/dbox/repos/wt/vickie/vickie-tx-discovery-minimum",
+      "id": "prepare-package-directory",
+      "kind": "supervised-owned-preparation-helper",
+      "mustCompleteBeforeNextStage": true,
+      "outerSeconds": 120,
+      "termAtSeconds": 115
+    },
+    "stage": "prepare-package-directory"
+  },
+  {
+    "actualResult": "UNATTEMPTED/UNKNOWN",
+    "command": {
+      "acceptedRawExitCodes": [
+        0
+      ],
+      "argv": [
+        "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+        "/Users/dbox/.cache/node/corepack/v1/pnpm/11.20.0/bin/pnpm.cjs",
+        "--filter",
+        "@bdp/protocol",
+        "pack",
+        "--pack-destination",
+        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/tx-discovery-validation-preparation-10/run/packages"
+      ],
+      "automaticRetries": 0,
+      "configurationFinalized": true,
+      "cwd": "/Users/dbox/repos/wt/vickie/vickie-tx-discovery-minimum",
+      "id": "pack-protocol",
+      "kind": "supervised-command",
+      "outerSeconds": 120,
+      "termAtSeconds": 115
+    },
+    "stage": "pack-protocol"
+  },
+  {
+    "actualResult": "UNATTEMPTED/UNKNOWN",
+    "command": {
+      "acceptedRawExitCodes": [
+        0
+      ],
+      "argv": [
+        "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+        "/Users/dbox/.cache/node/corepack/v1/pnpm/11.20.0/bin/pnpm.cjs",
+        "--filter",
+        "@bdp/server",
+        "pack",
+        "--pack-destination",
+        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/tx-discovery-validation-preparation-10/run/packages"
+      ],
+      "automaticRetries": 0,
+      "configurationFinalized": true,
+      "cwd": "/Users/dbox/repos/wt/vickie/vickie-tx-discovery-minimum",
+      "id": "pack-server",
+      "kind": "supervised-command",
+      "outerSeconds": 120,
+      "termAtSeconds": 115
+    },
+    "stage": "pack-server"
+  },
+  {
+    "actualResult": "UNATTEMPTED/UNKNOWN",
+    "command": {
+      "acceptedRawExitCodes": [
+        0
+      ],
+      "argv": [
+        "/opt/homebrew/opt/python@3.14/bin/python3.14",
+        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/tx-discovery-validation-preparation-10/packages.py",
+        "tar"
+      ],
+      "automaticRetries": 0,
+      "contract": "Rehash actual archives and safe members; compare complete expected fresh dist/schema/license/package metadata maps to frozen source/build. Only expected workspace-protocol dependency rewrite is allowed; no extraction traversal/duplicates/symlinks. Archive names/digests/member counts UNRESOLVED until actual pack.",
+      "cwd": "/Users/dbox/repos/wt/vickie/vickie-tx-discovery-minimum",
+      "id": "verify-archives",
+      "kind": "supervised-readonly-helper",
+      "mustCompleteBeforeNextStage": true,
+      "outerSeconds": 120,
+      "termAtSeconds": 115
+    },
+    "stage": "verify-archives"
+  }
+]

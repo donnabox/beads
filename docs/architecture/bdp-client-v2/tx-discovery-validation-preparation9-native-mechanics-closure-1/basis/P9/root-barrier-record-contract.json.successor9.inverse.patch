@@ -1,0 +1,59 @@
+--- root-barrier-record-contract.json
++++ /dev/null
+@@ -1,56 +0,0 @@
+-{
+-  "utc": "2026-10-18T13:58:38.070426+00:00",
+-  "state": "CLOSED DATA interface extraction; no execution or P9 author release",
+-  "source": {
+-    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/tx-discovery-validation-preparation-8/gate.py",
+-    "sha256": "f3781357733810861cad42b92e667822e7d3ac60e1f214e39e7f22e1bb63bb8e"
+-  },
+-  "contracts": {
+-    "rootBuildAcceptance": {
+-      "requiredTopLevel": {
+-        "accepted": "boolean true",
+-        "sourceBindingSha256": "exact current preparation/source-binding.json SHA256",
+-        "buildMapSha256": "exact fresh run/build-artifacts.json SHA256"
+-      },
+-      "consumedAt": "gate.py122\u2013124; every final stage after bind-fresh-build"
+-    },
+-    "rootArchiveAcceptance": {
+-      "requiredTopLevel": {
+-        "accepted": "boolean true",
+-        "sourceBindingSha256": "exact current preparation/source-binding.json SHA256",
+-        "tarProvenanceSha256": "exact fresh run/tar-source-provenance.json SHA256"
+-      },
+-      "consumedAt": "gate.py125\u2013127; prepare-consumer and all later stages",
+-      "nestedTarProvenanceNotSubstitute": true
+-    },
+-    "rootConsumerLockAcceptance": {
+-      "requiredTopLevel": {
+-        "accepted": "boolean true",
+-        "sourceBindingSha256": "exact current preparation/source-binding.json SHA256",
+-        "consumerLockSha256": "exact fresh consumer/pnpm-lock.yaml SHA256 equal active gate consumerLockSha256",
+-        "consumerManifestSha256": "exact fresh consumer/package.json SHA256",
+-        "consumerSettingsSha256": "exact fresh consumer/pnpm-workspace.yaml SHA256"
+-      },
+-      "consumedAt": "gate.py128\u2013132; verify-installed-consumer"
+-    },
+-    "rootConsumerProofAcceptance": {
+-      "requiredTopLevel": {
+-        "accepted": "boolean true",
+-        "sourceBindingSha256": "exact current preparation/source-binding.json SHA256",
+-        "installedProvenance": "EXACT active gate installedProvenance {path,sha256} object",
+-        "consumerInventory": "EXACT active gate consumerInventory {path,sha256} object"
+-      },
+-      "consumedAt": "gate.py133\u2013135; all requiresConsumerProof stages"
+-    }
+-  },
+-  "allAcceptanceRecordsAlsoRequire": "Full independent actual source/build/tools/process/member/lock/consumer/payload/entry adjudication; these keys alone are NOT a valid root acceptance",
+-  "releaseOrder": [
+-    "Read exact actual immutable gate source and current run JSON shapes",
+-    "Construct NEW immutable root acceptance after complete actual independent checks",
+-    "Independently check each required TOP LEVEL key/type/value and full object equality against actual files/gate",
+-    "Hash/index/mirror/publish/readback acceptance before changing active gate reference/released prefix",
+-    "Bind exact accepted record path/hash, preserve before/after gate and durable release/readback before next named stage"
+-  ],
+-  "noConsumerOrTestRelease": true,
+-  "noHelperSchemaSourceDeadlineOrSelectionChange": true
+-}

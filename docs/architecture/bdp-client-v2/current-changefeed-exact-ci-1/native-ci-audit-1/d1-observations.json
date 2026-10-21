@@ -1,0 +1,3944 @@
+{
+  "sourceNew9": [
+    {
+      "line": 1881,
+      "value": {
+        "observation": "current-changefeed-minimum-owner",
+        "outcome": "passed",
+        "records": [
+          {
+            "ordinal": 1,
+            "role": "baseline",
+            "after": "genesis",
+            "admission": null,
+            "minimum": null,
+            "tupleFrozen": null,
+            "outcome": "page",
+            "context": {
+              "scopeEpoch": "39479804-610c-406a-831a-2f62d7272cb6",
+              "authorizationView": "development-all-visible",
+              "scopePosition": "pos-2"
+            }
+          },
+          {
+            "ordinal": 2,
+            "role": "baseline",
+            "after": "cg_jmr9DYg8uo1rLh8cINB4eJiKI5j_LK1k0XKEqeOMOhY_J63ePAu28dbQkBcuh0SgAGClBoEU8PefEXsclEG4i9E_1",
+            "admission": null,
+            "minimum": null,
+            "tupleFrozen": null,
+            "outcome": "page",
+            "context": {
+              "scopeEpoch": "39479804-610c-406a-831a-2f62d7272cb6",
+              "authorizationView": "development-all-visible",
+              "scopePosition": "pos-2"
+            }
+          },
+          {
+            "ordinal": 3,
+            "role": "table-1",
+            "after": "genesis",
+            "admission": "current-changefeed",
+            "minimum": {
+              "scopeEpoch": "39479804-610c-406a-831a-2f62d7272cb6",
+              "authorizationView": "development-all-visible",
+              "minimumPosition": "unknown"
+            },
+            "tupleFrozen": true,
+            "outcome": "TransactionMinimumUnproved",
+            "context": {
+              "scopeEpoch": "39479804-610c-406a-831a-2f62d7272cb6",
+              "authorizationView": "development-all-visible",
+              "scopePosition": "pos-2"
+            }
+          },
+          {
+            "ordinal": 4,
+            "role": "table-2",
+            "after": "cg_jmr9DYg8uo1rLh8cINB4eJiKI5j_LK1k0XKEqeOMOhY_J63ePAu28dbQkBcuh0SgAGClBoEU8PefEXsclEG4i9E_1",
+            "admission": "current-changefeed",
+            "minimum": {
+              "scopeEpoch": "39479804-610c-406a-831a-2f62d7272cb6",
+              "authorizationView": "development-all-visible",
+              "minimumPosition": "pos-01"
+            },
+            "tupleFrozen": true,
+            "outcome": "TransactionMinimumUnproved",
+            "context": {
+              "scopeEpoch": "39479804-610c-406a-831a-2f62d7272cb6",
+              "authorizationView": "development-all-visible",
+              "scopePosition": "pos-2"
+            }
+          },
+          {
+            "ordinal": 5,
+            "role": "table-3",
+            "after": "cg_jmr9DYg8uo1rLh8cINB4eJiKI5j_LK1k0XKEqeOMOhY_J63ePAu28dbQkBcuh0SgAGClBoEU8PefEXsclEG4i9E_1",
+            "admission": "current-changefeed",
+            "minimum": {
+              "scopeEpoch": "39479804-610c-406a-831a-2f62d7272cb6",
+              "authorizationView": "development-all-visible",
+              "minimumPosition": "pos-2"
+            },
+            "tupleFrozen": true,
+            "outcome": "page",
+            "context": {
+              "scopeEpoch": "39479804-610c-406a-831a-2f62d7272cb6",
+              "authorizationView": "development-all-visible",
+              "scopePosition": "pos-2"
+            }
+          },
+          {
+            "ordinal": 6,
+            "role": "table-4",
+            "after": "genesis",
+            "admission": "current-changefeed",
+            "minimum": null,
+            "tupleFrozen": null,
+            "outcome": "page",
+            "context": {
+              "scopeEpoch": "39479804-610c-406a-831a-2f62d7272cb6",
+              "authorizationView": "development-all-visible",
+              "scopePosition": "pos-2"
+            }
+          },
+          {
+            "ordinal": 7,
+            "role": "table-5",
+            "after": "cg_jmr9DYg8uo1rLh8cINB4eJiKI5j_LK1k0XKEqeOMOhY_J63ePAu28dbQkBcuh0SgAGClBoEU8PefEXsclEG4i9E_1",
+            "admission": "current-changefeed",
+            "minimum": {
+              "scopeEpoch": "foreign",
+              "authorizationView": "development-all-visible",
+              "minimumPosition": "unknown"
+            },
+            "tupleFrozen": false,
+            "outcome": "TransactionMinimumFailure",
+            "context": {
+              "scopeEpoch": "39479804-610c-406a-831a-2f62d7272cb6",
+              "authorizationView": "development-all-visible",
+              "scopePosition": "pos-2"
+            },
+            "reason": "cursor-expired"
+          },
+          {
+            "ordinal": 8,
+            "role": "table-6",
+            "after": "cg_jmr9DYg8uo1rLh8cINB4eJiKI5j_LK1k0XKEqeOMOhY_J63ePAu28dbQkBcuh0SgAGClBoEU8PefEXsclEG4i9E_1",
+            "admission": "current-changefeed",
+            "minimum": {
+              "scopeEpoch": "39479804-610c-406a-831a-2f62d7272cb6",
+              "authorizationView": "foreign",
+              "minimumPosition": "unknown"
+            },
+            "tupleFrozen": false,
+            "outcome": "TransactionMinimumFailure",
+            "context": {
+              "scopeEpoch": "39479804-610c-406a-831a-2f62d7272cb6",
+              "authorizationView": "development-all-visible",
+              "scopePosition": "pos-2"
+            },
+            "reason": "foreign-view"
+          },
+          {
+            "ordinal": 9,
+            "role": "table-7",
+            "after": "cg_jmr9DYg8uo1rLh8cINB4eJiKI5j_LK1k0XKEqeOMOhY_J63ePAu28dbQkBcuh0SgAGClBoEU8PefEXsclEG4i9E_1",
+            "admission": "current-changefeed",
+            "minimum": {
+              "scopeEpoch": "foreign",
+              "authorizationView": "foreign",
+              "minimumPosition": "unknown"
+            },
+            "tupleFrozen": false,
+            "outcome": "TransactionMinimumFailure",
+            "context": {
+              "scopeEpoch": "39479804-610c-406a-831a-2f62d7272cb6",
+              "authorizationView": "development-all-visible",
+              "scopePosition": "pos-2"
+            },
+            "reason": "cursor-expired"
+          },
+          {
+            "ordinal": 10,
+            "role": "table-8",
+            "after": "cg_IVRr1yy-xGzapOkCqxIlEfZuMr_ES5VHZjinG3TD9mg_X2Tbz6g-brQFT4JC4Mb7FRObHnQeHhVICpEV9Miyb-o_1",
+            "admission": "current-changefeed",
+            "minimum": {
+              "scopeEpoch": "39479804-610c-406a-831a-2f62d7272cb6",
+              "authorizationView": "foreign",
+              "minimumPosition": "unknown"
+            },
+            "tupleFrozen": false,
+            "outcome": "TransactionMinimumFailure",
+            "context": {
+              "scopeEpoch": "39479804-610c-406a-831a-2f62d7272cb6",
+              "authorizationView": "development-all-visible",
+              "scopePosition": "pos-2"
+            },
+            "reason": "cursor-expired"
+          },
+          {
+            "ordinal": 11,
+            "role": "table-9",
+            "after": "cg_jmr9DYg8uo1rLh8cINB4eJiKI5j_LK1k0XKEqeOMOhY__Lss-St_8Uq5gLa7tiXPD5RwjhyC77Ay_UChdOD2S9U_1",
+            "admission": "current-changefeed",
+            "minimum": {
+              "scopeEpoch": "foreign",
+              "authorizationView": "development-all-visible",
+              "minimumPosition": "unknown"
+            },
+            "tupleFrozen": false,
+            "outcome": "TransactionMinimumFailure",
+            "context": {
+              "scopeEpoch": "39479804-610c-406a-831a-2f62d7272cb6",
+              "authorizationView": "development-all-visible",
+              "scopePosition": "pos-2"
+            },
+            "reason": "foreign-view"
+          },
+          {
+            "ordinal": 12,
+            "role": "table-10",
+            "after": "cg_jmr9DYg8uo1rLh8cINB4eJiKI5j_LK1k0XKEqeOMOhY_J63ePAu28dbQkBcuh0SgAGClBoEU8PefEXsclEG4i9E_3",
+            "admission": "current-changefeed",
+            "minimum": {
+              "scopeEpoch": "39479804-610c-406a-831a-2f62d7272cb6",
+              "authorizationView": "development-all-visible",
+              "minimumPosition": "unknown"
+            },
+            "tupleFrozen": true,
+            "outcome": "TransactionChangefeedParameterError",
+            "context": {
+              "scopeEpoch": "39479804-610c-406a-831a-2f62d7272cb6",
+              "authorizationView": "development-all-visible",
+              "scopePosition": "pos-2"
+            }
+          },
+          {
+            "ordinal": 13,
+            "role": "table-11",
+            "after": "bad",
+            "admission": "current-changefeed",
+            "minimum": {
+              "scopeEpoch": "39479804-610c-406a-831a-2f62d7272cb6",
+              "authorizationView": "development-all-visible",
+              "minimumPosition": "unknown"
+            },
+            "tupleFrozen": true,
+            "outcome": "TransactionChangefeedParameterError",
+            "context": {
+              "scopeEpoch": "39479804-610c-406a-831a-2f62d7272cb6",
+              "authorizationView": "development-all-visible",
+              "scopePosition": "pos-2"
+            }
+          },
+          {
+            "ordinal": 14,
+            "role": "table-12",
+            "after": "bad",
+            "admission": "current-changefeed",
+            "minimum": "unsupported",
+            "tupleFrozen": null,
+            "outcome": "unsupported",
+            "context": null
+          },
+          {
+            "ordinal": 15,
+            "role": "table-13",
+            "after": "cg_jmr9DYg8uo1rLh8cINB4eJiKI5j_LK1k0XKEqeOMOhY_J63ePAu28dbQkBcuh0SgAGClBoEU8PefEXsclEG4i9E_1",
+            "admission": "finite-start-now",
+            "minimum": {
+              "scopeEpoch": "39479804-610c-406a-831a-2f62d7272cb6",
+              "authorizationView": "development-all-visible",
+              "minimumPosition": "unknown"
+            },
+            "tupleFrozen": true,
+            "outcome": "TransactionMinimumUnproved",
+            "context": {
+              "scopeEpoch": "39479804-610c-406a-831a-2f62d7272cb6",
+              "authorizationView": "development-all-visible",
+              "scopePosition": "pos-2"
+            }
+          },
+          {
+            "ordinal": 16,
+            "role": "table-14",
+            "after": "genesis",
+            "admission": "current-changefeed",
+            "minimum": {
+              "scopeEpoch": "39479804-610c-406a-831a-2f62d7272cb6",
+              "authorizationView": "development-all-visible",
+              "minimumPosition": "two tokens"
+            },
+            "tupleFrozen": false,
+            "outcome": "TypeError",
+            "context": null
+          },
+          {
+            "ordinal": 17,
+            "role": "table-15",
+            "after": "cg_jmr9DYg8uo1rLh8cINB4eJiKI5j_LK1k0XKEqeOMOhY_J63ePAu28dbQkBcuh0SgAGClBoEU8PefEXsclEG4i9E_1",
+            "admission": "current-changefeed",
+            "minimum": {
+              "scopeEpoch": "39479804-610c-406a-831a-2f62d7272cb6",
+              "authorizationView": "development-all-visible",
+              "minimumPosition": "unknown"
+            },
+            "tupleFrozen": true,
+            "outcome": "Error",
+            "context": null
+          },
+          {
+            "ordinal": 18,
+            "role": "table-16",
+            "after": "genesis",
+            "admission": "current-changefeed",
+            "minimum": {
+              "scopeEpoch": "39479804-610c-406a-831a-2f62d7272cb6",
+              "authorizationView": "development-all-visible",
+              "minimumPosition": "pos-2"
+            },
+            "tupleFrozen": true,
+            "outcome": "Error",
+            "context": null
+          }
+        ],
+        "commits": 2,
+        "ownerLifetimes": 2,
+        "offlineDeletes": 1,
+        "failureCount": 0,
+        "claimEligible": false
+      }
+    },
+    {
+      "line": 1884,
+      "value": {
+        "observation": "current-changefeed-minimum-capture",
+        "label": "start-now-unknown",
+        "outcome": "passed",
+        "reads": [
+          {
+            "after": "genesis",
+            "minimum": null,
+            "tupleFrozen": null,
+            "admission": null,
+            "outcome": "page",
+            "context": {
+              "scopeEpoch": "edfe815a-2837-49fa-a42e-51820d824201",
+              "authorizationView": "development-all-visible",
+              "scopePosition": "pos-1"
+            }
+          },
+          {
+            "after": "cg_SO5YDnP4hrCh6TDFUX6CxRTNi0RimSjPO_7qL-8hMmY_JXkG8Ef_n2joVOsZbn4MlI9bFcPO5lujHDjZKxE_xjA_1",
+            "minimum": {
+              "scopeEpoch": "edfe815a-2837-49fa-a42e-51820d824201",
+              "authorizationView": "development-all-visible",
+              "minimumPosition": "unknown"
+            },
+            "tupleFrozen": true,
+            "admission": "current-changefeed",
+            "outcome": "TransactionMinimumUnproved",
+            "context": {
+              "scopeEpoch": "edfe815a-2837-49fa-a42e-51820d824201",
+              "authorizationView": "development-all-visible",
+              "scopePosition": "pos-1"
+            }
+          },
+          {
+            "after": "cg_SO5YDnP4hrCh6TDFUX6CxRTNi0RimSjPO_7qL-8hMmY_JXkG8Ef_n2joVOsZbn4MlI9bFcPO5lujHDjZKxE_xjA_1",
+            "minimum": {
+              "scopeEpoch": "edfe815a-2837-49fa-a42e-51820d824201",
+              "authorizationView": "development-all-visible",
+              "minimumPosition": "unknown"
+            },
+            "tupleFrozen": true,
+            "admission": "current-changefeed",
+            "outcome": "TransactionMinimumUnproved",
+            "context": {
+              "scopeEpoch": "edfe815a-2837-49fa-a42e-51820d824201",
+              "authorizationView": "development-all-visible",
+              "scopePosition": "pos-2"
+            }
+          },
+          {
+            "after": "cg_SO5YDnP4hrCh6TDFUX6CxRTNi0RimSjPO_7qL-8hMmY_JXkG8Ef_n2joVOsZbn4MlI9bFcPO5lujHDjZKxE_xjA_1",
+            "minimum": {
+              "scopeEpoch": "edfe815a-2837-49fa-a42e-51820d824201",
+              "authorizationView": "development-all-visible",
+              "minimumPosition": "pos-2"
+            },
+            "tupleFrozen": true,
+            "admission": "current-changefeed",
+            "outcome": "page",
+            "context": {
+              "scopeEpoch": "edfe815a-2837-49fa-a42e-51820d824201",
+              "authorizationView": "development-all-visible",
+              "scopePosition": "pos-2"
+            }
+          }
+        ],
+        "captures": 1,
+        "anchors": [
+          "cg_SO5YDnP4hrCh6TDFUX6CxRTNi0RimSjPO_7qL-8hMmY_JXkG8Ef_n2joVOsZbn4MlI9bFcPO5lujHDjZKxE_xjA_1"
+        ],
+        "waits": 1,
+        "clocks": 4,
+        "commits": 2,
+        "closes": 1,
+        "originalAfter": "cg_SO5YDnP4hrCh6TDFUX6CxRTNi0RimSjPO_7qL-8hMmY_JXkG8Ef_n2joVOsZbn4MlI9bFcPO5lujHDjZKxE_xjA_1",
+        "positiveGroup": {
+          "scopeEpoch": "edfe815a-2837-49fa-a42e-51820d824201",
+          "authorizationView": "development-all-visible",
+          "checkpoint": "cg_SO5YDnP4hrCh6TDFUX6CxRTNi0RimSjPO_7qL-8hMmY_JXkG8Ef_n2joVOsZbn4MlI9bFcPO5lujHDjZKxE_xjA_2",
+          "position": "pos-2",
+          "previousPosition": "pos-1",
+          "projectionAdvance": false,
+          "transaction": "131737b0-156a-49d9-9995-a6e6f51587ae",
+          "changes": [
+            {
+              "operation": "upsert",
+              "resourceKind": "bead",
+              "resource": {
+                "id": "https://example.test/feed/beads/b",
+                "type": "https://example.test/feed/types/bead",
+                "revision": "921228ca-c339-4f6c-b9a2-0674f15815ea",
+                "properties": {
+                  "n": 0
+                },
+                "metadata": {},
+                "ownedLinks": {
+                  "https://example.test/feed/types/link": []
+                }
+              }
+            }
+          ],
+          "erasures": [],
+          "eventCount": 1,
+          "events": [
+            {
+              "id": "ev_HTYhop7VjQMhfa7feds8C2kt9pb2n_J4QYgHdlQnJak_bLUW9ljdXBysp41tfjGcabueApuHaoJDxyqyaQ2NBU4_lzt8XxXhKEwJeiAtFanOjLXmO0Oslm2ypW4o6pTGfGE_pos-2_0",
+              "ordinal": 0,
+              "type": "created",
+              "source": "https://example.test/feed/events/",
+              "subject": "https://example.test/feed/beads/b",
+              "subjectType": "https://example.test/feed/types/bead",
+              "transaction": "131737b0-156a-49d9-9995-a6e6f51587ae",
+              "time": "2026-10-18T05:16:00.073Z",
+              "data": {
+                "revision": "921228ca-c339-4f6c-b9a2-0674f15815ea",
+                "properties": {
+                  "n": 0
+                },
+                "metadata": {}
+              }
+            }
+          ]
+        },
+        "cleanupState": {
+          "closed": true,
+          "stopUnknown": false,
+          "directory": "/tmp/bdp-current-feed-yLuhe3",
+          "directoryAbsent": true
+        },
+        "failureCount": 0,
+        "claimEligible": false
+      }
+    },
+    {
+      "line": 1887,
+      "value": {
+        "observation": "current-changefeed-minimum-capture",
+        "label": "genesis-unknown",
+        "outcome": "passed",
+        "reads": [
+          {
+            "after": "genesis",
+            "minimum": null,
+            "tupleFrozen": null,
+            "admission": null,
+            "outcome": "page",
+            "context": {
+              "scopeEpoch": "f6c8b16e-ce3e-4531-8cdf-e2e79c9e849e",
+              "authorizationView": "development-all-visible",
+              "scopePosition": "pos-1"
+            }
+          },
+          {
+            "after": "genesis",
+            "minimum": {
+              "scopeEpoch": "f6c8b16e-ce3e-4531-8cdf-e2e79c9e849e",
+              "authorizationView": "development-all-visible",
+              "minimumPosition": "unknown"
+            },
+            "tupleFrozen": true,
+            "admission": "current-changefeed",
+            "outcome": "TransactionMinimumUnproved",
+            "context": {
+              "scopeEpoch": "f6c8b16e-ce3e-4531-8cdf-e2e79c9e849e",
+              "authorizationView": "development-all-visible",
+              "scopePosition": "pos-1"
+            }
+          },
+          {
+            "after": "genesis",
+            "minimum": {
+              "scopeEpoch": "f6c8b16e-ce3e-4531-8cdf-e2e79c9e849e",
+              "authorizationView": "development-all-visible",
+              "minimumPosition": "unknown"
+            },
+            "tupleFrozen": true,
+            "admission": "current-changefeed",
+            "outcome": "TransactionMinimumUnproved",
+            "context": {
+              "scopeEpoch": "f6c8b16e-ce3e-4531-8cdf-e2e79c9e849e",
+              "authorizationView": "development-all-visible",
+              "scopePosition": "pos-2"
+            }
+          },
+          {
+            "after": "genesis",
+            "minimum": {
+              "scopeEpoch": "f6c8b16e-ce3e-4531-8cdf-e2e79c9e849e",
+              "authorizationView": "development-all-visible",
+              "minimumPosition": "pos-2"
+            },
+            "tupleFrozen": true,
+            "admission": "current-changefeed",
+            "outcome": "page",
+            "context": {
+              "scopeEpoch": "f6c8b16e-ce3e-4531-8cdf-e2e79c9e849e",
+              "authorizationView": "development-all-visible",
+              "scopePosition": "pos-2"
+            }
+          }
+        ],
+        "captures": 0,
+        "anchors": [],
+        "waits": 1,
+        "clocks": 4,
+        "commits": 2,
+        "closes": 1,
+        "originalAfter": "genesis",
+        "positiveGroup": {
+          "scopeEpoch": "f6c8b16e-ce3e-4531-8cdf-e2e79c9e849e",
+          "authorizationView": "development-all-visible",
+          "checkpoint": "cg_FPZrgUdS3gyoEn3oQOb9c6Vg27t3DcqSid48ke-DDwU_j7n6BsUMrOzJQXnEC9IcWu8hbBa_7athr-V_n2wR0GE_1",
+          "position": "pos-1",
+          "previousPosition": "pos-0",
+          "projectionAdvance": false,
+          "transaction": "7052e8be-bcb2-4f77-8713-e2c2d0ab876b",
+          "changes": [
+            {
+              "operation": "upsert",
+              "resourceKind": "bead",
+              "resource": {
+                "id": "https://example.test/feed/beads/a",
+                "type": "https://example.test/feed/types/bead",
+                "revision": "7c91bcc8-0614-4366-a2fc-b12b89ce8871",
+                "properties": {
+                  "n": 0
+                },
+                "metadata": {},
+                "ownedLinks": {
+                  "https://example.test/feed/types/link": []
+                }
+              }
+            }
+          ],
+          "erasures": [],
+          "eventCount": 1,
+          "events": [
+            {
+              "id": "ev_C7GYDTNOVzzwQwDbzX0itlVNoiHZVOHRVe0M7Z6HXC4_bLUW9ljdXBysp41tfjGcabueApuHaoJDxyqyaQ2NBU4_lzt8XxXhKEwJeiAtFanOjLXmO0Oslm2ypW4o6pTGfGE_pos-1_0",
+              "ordinal": 0,
+              "type": "created",
+              "source": "https://example.test/feed/events/",
+              "subject": "https://example.test/feed/beads/a",
+              "subjectType": "https://example.test/feed/types/bead",
+              "transaction": "7052e8be-bcb2-4f77-8713-e2c2d0ab876b",
+              "time": "2026-10-18T05:16:00.087Z",
+              "data": {
+                "revision": "7c91bcc8-0614-4366-a2fc-b12b89ce8871",
+                "properties": {
+                  "n": 0
+                },
+                "metadata": {}
+              }
+            }
+          ]
+        },
+        "cleanupState": {
+          "closed": true,
+          "stopUnknown": false,
+          "directory": "/tmp/bdp-current-feed-LcpnKL",
+          "directoryAbsent": true
+        },
+        "failureCount": 0,
+        "claimEligible": false
+      }
+    },
+    {
+      "line": 1890,
+      "value": {
+        "observation": "current-changefeed-minimum-capture",
+        "label": "retained-unknown",
+        "outcome": "passed",
+        "reads": [
+          {
+            "after": "genesis",
+            "minimum": null,
+            "tupleFrozen": null,
+            "admission": null,
+            "outcome": "page",
+            "context": {
+              "scopeEpoch": "8e65eb6c-0fb9-4041-82e6-a6f1a525d6fe",
+              "authorizationView": "development-all-visible",
+              "scopePosition": "pos-1"
+            }
+          },
+          {
+            "after": "cg_tTJvAw4lNb1wdw3fft609WUq8VP75p6zfsMm_Qme4ug_Tyu-5AEBcvTGCpwAi8w-ALWJYLB7oSh4GNLbKfVPLKY_1",
+            "minimum": {
+              "scopeEpoch": "8e65eb6c-0fb9-4041-82e6-a6f1a525d6fe",
+              "authorizationView": "development-all-visible",
+              "minimumPosition": "unknown"
+            },
+            "tupleFrozen": true,
+            "admission": "current-changefeed",
+            "outcome": "TransactionMinimumUnproved",
+            "context": {
+              "scopeEpoch": "8e65eb6c-0fb9-4041-82e6-a6f1a525d6fe",
+              "authorizationView": "development-all-visible",
+              "scopePosition": "pos-1"
+            }
+          },
+          {
+            "after": "cg_tTJvAw4lNb1wdw3fft609WUq8VP75p6zfsMm_Qme4ug_Tyu-5AEBcvTGCpwAi8w-ALWJYLB7oSh4GNLbKfVPLKY_1",
+            "minimum": {
+              "scopeEpoch": "8e65eb6c-0fb9-4041-82e6-a6f1a525d6fe",
+              "authorizationView": "development-all-visible",
+              "minimumPosition": "unknown"
+            },
+            "tupleFrozen": true,
+            "admission": "current-changefeed",
+            "outcome": "TransactionMinimumUnproved",
+            "context": {
+              "scopeEpoch": "8e65eb6c-0fb9-4041-82e6-a6f1a525d6fe",
+              "authorizationView": "development-all-visible",
+              "scopePosition": "pos-2"
+            }
+          },
+          {
+            "after": "cg_tTJvAw4lNb1wdw3fft609WUq8VP75p6zfsMm_Qme4ug_Tyu-5AEBcvTGCpwAi8w-ALWJYLB7oSh4GNLbKfVPLKY_1",
+            "minimum": {
+              "scopeEpoch": "8e65eb6c-0fb9-4041-82e6-a6f1a525d6fe",
+              "authorizationView": "development-all-visible",
+              "minimumPosition": "pos-2"
+            },
+            "tupleFrozen": true,
+            "admission": "current-changefeed",
+            "outcome": "page",
+            "context": {
+              "scopeEpoch": "8e65eb6c-0fb9-4041-82e6-a6f1a525d6fe",
+              "authorizationView": "development-all-visible",
+              "scopePosition": "pos-2"
+            }
+          }
+        ],
+        "captures": 0,
+        "anchors": [],
+        "waits": 1,
+        "clocks": 4,
+        "commits": 2,
+        "closes": 1,
+        "originalAfter": "cg_tTJvAw4lNb1wdw3fft609WUq8VP75p6zfsMm_Qme4ug_Tyu-5AEBcvTGCpwAi8w-ALWJYLB7oSh4GNLbKfVPLKY_1",
+        "positiveGroup": {
+          "scopeEpoch": "8e65eb6c-0fb9-4041-82e6-a6f1a525d6fe",
+          "authorizationView": "development-all-visible",
+          "checkpoint": "cg_tTJvAw4lNb1wdw3fft609WUq8VP75p6zfsMm_Qme4ug_Tyu-5AEBcvTGCpwAi8w-ALWJYLB7oSh4GNLbKfVPLKY_2",
+          "position": "pos-2",
+          "previousPosition": "pos-1",
+          "projectionAdvance": false,
+          "transaction": "7c53141d-5ce2-4c54-9e59-892fa305628e",
+          "changes": [
+            {
+              "operation": "upsert",
+              "resourceKind": "bead",
+              "resource": {
+                "id": "https://example.test/feed/beads/b",
+                "type": "https://example.test/feed/types/bead",
+                "revision": "1d645ab1-f512-44ac-a2e1-ab311c50d180",
+                "properties": {
+                  "n": 0
+                },
+                "metadata": {},
+                "ownedLinks": {
+                  "https://example.test/feed/types/link": []
+                }
+              }
+            }
+          ],
+          "erasures": [],
+          "eventCount": 1,
+          "events": [
+            {
+              "id": "ev_R1FT07JtYJ2AcZ0REHO9ysdgHj8wH94OUu9SxoIaybQ_bLUW9ljdXBysp41tfjGcabueApuHaoJDxyqyaQ2NBU4_lzt8XxXhKEwJeiAtFanOjLXmO0Oslm2ypW4o6pTGfGE_pos-2_0",
+              "ordinal": 0,
+              "type": "created",
+              "source": "https://example.test/feed/events/",
+              "subject": "https://example.test/feed/beads/b",
+              "subjectType": "https://example.test/feed/types/bead",
+              "transaction": "7c53141d-5ce2-4c54-9e59-892fa305628e",
+              "time": "2026-10-18T05:16:00.105Z",
+              "data": {
+                "revision": "1d645ab1-f512-44ac-a2e1-ab311c50d180",
+                "properties": {
+                  "n": 0
+                },
+                "metadata": {}
+              }
+            }
+          ]
+        },
+        "cleanupState": {
+          "closed": true,
+          "stopUnknown": false,
+          "directory": "/tmp/bdp-current-feed-e41iZV",
+          "directoryAbsent": true
+        },
+        "failureCount": 0,
+        "claimEligible": false
+      }
+    },
+    {
+      "line": 1893,
+      "value": {
+        "observation": "current-changefeed-minimum-capture",
+        "label": "retained-pos-01",
+        "outcome": "passed",
+        "reads": [
+          {
+            "after": "genesis",
+            "minimum": null,
+            "tupleFrozen": null,
+            "admission": null,
+            "outcome": "page",
+            "context": {
+              "scopeEpoch": "c04eacec-ab0a-4cb2-bc63-33076081a709",
+              "authorizationView": "development-all-visible",
+              "scopePosition": "pos-1"
+            }
+          },
+          {
+            "after": "cg_of66bSFOAmvQ7W59sFNpOb1ZRiOccNt2Iam6RRi7vNY_pbLFqsm-2hblNugOOeMzOPAN4RN_ygMa2GUvSXY7a3Y_1",
+            "minimum": {
+              "scopeEpoch": "c04eacec-ab0a-4cb2-bc63-33076081a709",
+              "authorizationView": "development-all-visible",
+              "minimumPosition": "pos-01"
+            },
+            "tupleFrozen": true,
+            "admission": "current-changefeed",
+            "outcome": "TransactionMinimumUnproved",
+            "context": {
+              "scopeEpoch": "c04eacec-ab0a-4cb2-bc63-33076081a709",
+              "authorizationView": "development-all-visible",
+              "scopePosition": "pos-1"
+            }
+          },
+          {
+            "after": "cg_of66bSFOAmvQ7W59sFNpOb1ZRiOccNt2Iam6RRi7vNY_pbLFqsm-2hblNugOOeMzOPAN4RN_ygMa2GUvSXY7a3Y_1",
+            "minimum": {
+              "scopeEpoch": "c04eacec-ab0a-4cb2-bc63-33076081a709",
+              "authorizationView": "development-all-visible",
+              "minimumPosition": "pos-01"
+            },
+            "tupleFrozen": true,
+            "admission": "current-changefeed",
+            "outcome": "TransactionMinimumUnproved",
+            "context": {
+              "scopeEpoch": "c04eacec-ab0a-4cb2-bc63-33076081a709",
+              "authorizationView": "development-all-visible",
+              "scopePosition": "pos-2"
+            }
+          },
+          {
+            "after": "cg_of66bSFOAmvQ7W59sFNpOb1ZRiOccNt2Iam6RRi7vNY_pbLFqsm-2hblNugOOeMzOPAN4RN_ygMa2GUvSXY7a3Y_1",
+            "minimum": {
+              "scopeEpoch": "c04eacec-ab0a-4cb2-bc63-33076081a709",
+              "authorizationView": "development-all-visible",
+              "minimumPosition": "pos-2"
+            },
+            "tupleFrozen": true,
+            "admission": "current-changefeed",
+            "outcome": "page",
+            "context": {
+              "scopeEpoch": "c04eacec-ab0a-4cb2-bc63-33076081a709",
+              "authorizationView": "development-all-visible",
+              "scopePosition": "pos-2"
+            }
+          }
+        ],
+        "captures": 0,
+        "anchors": [],
+        "waits": 1,
+        "clocks": 4,
+        "commits": 2,
+        "closes": 1,
+        "originalAfter": "cg_of66bSFOAmvQ7W59sFNpOb1ZRiOccNt2Iam6RRi7vNY_pbLFqsm-2hblNugOOeMzOPAN4RN_ygMa2GUvSXY7a3Y_1",
+        "positiveGroup": {
+          "scopeEpoch": "c04eacec-ab0a-4cb2-bc63-33076081a709",
+          "authorizationView": "development-all-visible",
+          "checkpoint": "cg_of66bSFOAmvQ7W59sFNpOb1ZRiOccNt2Iam6RRi7vNY_pbLFqsm-2hblNugOOeMzOPAN4RN_ygMa2GUvSXY7a3Y_2",
+          "position": "pos-2",
+          "previousPosition": "pos-1",
+          "projectionAdvance": false,
+          "transaction": "ec1ed44d-72ff-41be-a2d3-a27f76547304",
+          "changes": [
+            {
+              "operation": "upsert",
+              "resourceKind": "bead",
+              "resource": {
+                "id": "https://example.test/feed/beads/b",
+                "type": "https://example.test/feed/types/bead",
+                "revision": "2ff6f114-4eb3-4289-8183-7629e76316d8",
+                "properties": {
+                  "n": 0
+                },
+                "metadata": {},
+                "ownedLinks": {
+                  "https://example.test/feed/types/link": []
+                }
+              }
+            }
+          ],
+          "erasures": [],
+          "eventCount": 1,
+          "events": [
+            {
+              "id": "ev_nQokte3NQk-Af-7QeqwULQweqlhvJuqJA4o30tCAfPk_bLUW9ljdXBysp41tfjGcabueApuHaoJDxyqyaQ2NBU4_lzt8XxXhKEwJeiAtFanOjLXmO0Oslm2ypW4o6pTGfGE_pos-2_0",
+              "ordinal": 0,
+              "type": "created",
+              "source": "https://example.test/feed/events/",
+              "subject": "https://example.test/feed/beads/b",
+              "subjectType": "https://example.test/feed/types/bead",
+              "transaction": "ec1ed44d-72ff-41be-a2d3-a27f76547304",
+              "time": "2026-10-18T05:16:00.119Z",
+              "data": {
+                "revision": "2ff6f114-4eb3-4289-8183-7629e76316d8",
+                "properties": {
+                  "n": 0
+                },
+                "metadata": {}
+              }
+            }
+          ]
+        },
+        "cleanupState": {
+          "closed": true,
+          "stopUnknown": false,
+          "directory": "/tmp/bdp-current-feed-731iFQ",
+          "directoryAbsent": true
+        },
+        "failureCount": 0,
+        "claimEligible": false
+      }
+    },
+    {
+      "line": 1901,
+      "value": {
+        "observation": "current-changefeed-minimum-drain",
+        "label": "start-now",
+        "outcome": "passed",
+        "reads": [
+          {
+            "after": "genesis",
+            "minimum": null,
+            "tupleFrozen": null,
+            "admission": null,
+            "outcome": "page",
+            "context": {
+              "scopeEpoch": "2e0a61e6-f516-46d5-8d9d-dea0b65d3a9d",
+              "authorizationView": "development-all-visible",
+              "scopePosition": "pos-1"
+            }
+          },
+          {
+            "after": "cg_Tpzatl-o3UREa0xhdl811HdLSAzeO2h8khtuqe4NuXw_D3XZCoIVetE_V9twMHd1pcPKtMn79Dq2hj06nGJG32c_1",
+            "minimum": {
+              "scopeEpoch": "2e0a61e6-f516-46d5-8d9d-dea0b65d3a9d",
+              "authorizationView": "development-all-visible",
+              "minimumPosition": "unknown"
+            },
+            "tupleFrozen": true,
+            "admission": "current-changefeed",
+            "outcome": "TransactionMinimumUnproved",
+            "context": {
+              "scopeEpoch": "2e0a61e6-f516-46d5-8d9d-dea0b65d3a9d",
+              "authorizationView": "development-all-visible",
+              "scopePosition": "pos-1"
+            }
+          }
+        ],
+        "readsBeforeClosedProbe": 2,
+        "captures": 1,
+        "waits": 1,
+        "clocks": 2,
+        "closes": 1,
+        "commits": 1,
+        "serviceClosedProbes": 1,
+        "rawClosedProbes": 1,
+        "order": [
+          "wait-entered",
+          "abort",
+          "wait-released",
+          "owner-close",
+          "close-resolved"
+        ],
+        "closeSettled": true,
+        "cleanupState": {
+          "closed": true,
+          "stopUnknown": false,
+          "directory": "/tmp/bdp-current-feed-8W4VQZ",
+          "directoryAbsent": true
+        },
+        "failureCount": 0,
+        "claimEligible": false
+      }
+    },
+    {
+      "line": 1904,
+      "value": {
+        "observation": "current-changefeed-minimum-drain",
+        "label": "retained",
+        "outcome": "passed",
+        "reads": [
+          {
+            "after": "genesis",
+            "minimum": null,
+            "tupleFrozen": null,
+            "admission": null,
+            "outcome": "page",
+            "context": {
+              "scopeEpoch": "8b4a1d7f-5299-4c95-949d-43192a9252da",
+              "authorizationView": "development-all-visible",
+              "scopePosition": "pos-1"
+            }
+          },
+          {
+            "after": "cg_ZMcMo3iU9mmtVET4UmSP-vzAg-6kqIVnRSG3s99qEf8_4tlztFj76I2ff1KUajRdPo6Vy376OORdmbanFh_YnLk_1",
+            "minimum": {
+              "scopeEpoch": "8b4a1d7f-5299-4c95-949d-43192a9252da",
+              "authorizationView": "development-all-visible",
+              "minimumPosition": "unknown"
+            },
+            "tupleFrozen": true,
+            "admission": "current-changefeed",
+            "outcome": "TransactionMinimumUnproved",
+            "context": {
+              "scopeEpoch": "8b4a1d7f-5299-4c95-949d-43192a9252da",
+              "authorizationView": "development-all-visible",
+              "scopePosition": "pos-1"
+            }
+          }
+        ],
+        "readsBeforeClosedProbe": 2,
+        "captures": 0,
+        "waits": 1,
+        "clocks": 2,
+        "closes": 1,
+        "commits": 1,
+        "serviceClosedProbes": 1,
+        "rawClosedProbes": 1,
+        "order": [
+          "wait-entered",
+          "abort",
+          "wait-released",
+          "owner-close",
+          "close-resolved"
+        ],
+        "closeSettled": true,
+        "cleanupState": {
+          "closed": true,
+          "stopUnknown": false,
+          "directory": "/tmp/bdp-current-feed-LLZmix",
+          "directoryAbsent": true
+        },
+        "failureCount": 0,
+        "claimEligible": false
+      }
+    },
+    {
+      "line": 1907,
+      "value": {
+        "observation": "current-changefeed-minimum-preflight",
+        "rows": [
+          {
+            "label": "already-aborted",
+            "initialized": true,
+            "attempted": true,
+            "closed": true,
+            "errorClass": "ScopeServerOperationAbortedError",
+            "stopUnknown": false,
+            "directory": "/tmp/bdp-current-feed-dD78l6",
+            "directoryAbsent": true,
+            "captures": 1,
+            "reads": 0,
+            "waits": 0,
+            "clocks": 1,
+            "closes": 1,
+            "commits": 1,
+            "outcome": "passed",
+            "failureCount": 0
+          },
+          {
+            "label": "invalid-policy",
+            "initialized": true,
+            "attempted": true,
+            "closed": true,
+            "errorClass": "TypeError",
+            "stopUnknown": false,
+            "directory": "/tmp/bdp-current-feed-JdiRNW",
+            "directoryAbsent": true,
+            "captures": 1,
+            "reads": 0,
+            "waits": 0,
+            "clocks": 0,
+            "closes": 1,
+            "commits": 1,
+            "outcome": "passed",
+            "failureCount": 0
+          },
+          {
+            "label": "throwing-clock",
+            "initialized": true,
+            "attempted": true,
+            "closed": true,
+            "errorClass": "Error",
+            "stopUnknown": false,
+            "directory": "/tmp/bdp-current-feed-z0XId0",
+            "directoryAbsent": true,
+            "captures": 1,
+            "reads": 0,
+            "waits": 0,
+            "clocks": 1,
+            "closes": 1,
+            "commits": 1,
+            "outcome": "passed",
+            "failureCount": 0
+          },
+          {
+            "label": "nonfinite-clock",
+            "initialized": true,
+            "attempted": true,
+            "closed": true,
+            "errorClass": "TypeError",
+            "stopUnknown": false,
+            "directory": "/tmp/bdp-current-feed-HkN2Pt",
+            "directoryAbsent": true,
+            "captures": 1,
+            "reads": 0,
+            "waits": 0,
+            "clocks": 1,
+            "closes": 1,
+            "commits": 1,
+            "outcome": "passed",
+            "failureCount": 0
+          }
+        ],
+        "outcome": "passed",
+        "failureCount": 0,
+        "claimEligible": false
+      }
+    },
+    {
+      "line": 2943,
+      "value": {
+        "observation": "current-changefeed-minimum-http",
+        "outcome": "passed",
+        "attempted": 32,
+        "observedResponses": 32,
+        "completed": 32,
+        "records": [
+          {
+            "ordinal": 1,
+            "method": "POST",
+            "url": "https://sse.invalid/acme/operations/batch",
+            "status": 200,
+            "bodyOctets": 720,
+            "bodySha256": "88e2c1bc5b8233d8656f6bb9bd9cb53103cb2f6a5665e12da0629eb5b585eba8",
+            "wireSha256": null,
+            "requestHeaders": [
+              [
+                "accept",
+                "application/json"
+              ],
+              [
+                "content-type",
+                "application/json"
+              ],
+              [
+                "idempotency-key",
+                "current-feed-a"
+              ]
+            ],
+            "headers": {
+              "bdp-scope-epoch": "d5bdb14f-92a8-49af-83ca-ce5bf3374220",
+              "bdp-authorization-view": "development-all-visible",
+              "bdp-scope-position": "pos-1",
+              "content-type": "application/json",
+              "content-length": "720",
+              "cache-control": "private, no-store",
+              "retry-after": null,
+              "etag": null,
+              "x-bdp-development-limit": null,
+              "x-bdp-development": "non-attesting"
+            },
+            "readyObserved": true,
+            "drained": true,
+            "transportClosedObserved": null,
+            "drainKind": "seed-body",
+            "availability": {
+              "status": true,
+              "headers": true,
+              "body": true,
+              "wire": false
+            },
+            "bodyState": "drained"
+          },
+          {
+            "ordinal": 2,
+            "method": "POST",
+            "url": "https://sse.invalid/acme/operations/batch",
+            "status": 200,
+            "bodyOctets": 720,
+            "bodySha256": "aa88f564d1e533007554ae906f3c30db687d5590c316cc5df0a0b2f5d2276024",
+            "wireSha256": null,
+            "requestHeaders": [
+              [
+                "accept",
+                "application/json"
+              ],
+              [
+                "content-type",
+                "application/json"
+              ],
+              [
+                "idempotency-key",
+                "current-feed-b"
+              ]
+            ],
+            "headers": {
+              "bdp-scope-epoch": "d5bdb14f-92a8-49af-83ca-ce5bf3374220",
+              "bdp-authorization-view": "development-all-visible",
+              "bdp-scope-position": "pos-2",
+              "content-type": "application/json",
+              "content-length": "720",
+              "cache-control": "private, no-store",
+              "retry-after": null,
+              "etag": null,
+              "x-bdp-development-limit": null,
+              "x-bdp-development": "non-attesting"
+            },
+            "readyObserved": true,
+            "drained": true,
+            "transportClosedObserved": null,
+            "drainKind": "seed-body",
+            "availability": {
+              "status": true,
+              "headers": true,
+              "body": true,
+              "wire": false
+            },
+            "bodyState": "drained"
+          },
+          {
+            "ordinal": 3,
+            "method": "GET",
+            "url": "https://sse.invalid/acme/changes/?after=genesis",
+            "status": 200,
+            "bodyOctets": 1547,
+            "bodySha256": "27fd50086c6f12d194b7e29deac22fcd0edd0e0320fbeaa9cf23f2aeee021791",
+            "wireSha256": "135d08d744ac738daf02d96ef956d5b378be227c6983e35535190b8b40c7b77d",
+            "requestHeaders": [
+              [
+                "Accept",
+                "application/json"
+              ],
+              [
+                "bdp-scope-epoch",
+                "d5bdb14f-92a8-49af-83ca-ce5bf3374220"
+              ],
+              [
+                "bdp-authorization-view",
+                "development-all-visible"
+              ],
+              [
+                "bdp-minimum-scope-position",
+                "pos-2"
+              ]
+            ],
+            "headers": {
+              "bdp-scope-epoch": "d5bdb14f-92a8-49af-83ca-ce5bf3374220",
+              "bdp-authorization-view": "development-all-visible",
+              "bdp-scope-position": "pos-2",
+              "content-type": "application/json",
+              "content-length": "1547",
+              "cache-control": "private, no-store",
+              "retry-after": null,
+              "etag": null,
+              "x-bdp-development-limit": null,
+              "x-bdp-development": "non-attesting"
+            },
+            "readyObserved": true,
+            "drained": true,
+            "transportClosedObserved": true,
+            "drainKind": "finite-body",
+            "availability": {
+              "status": true,
+              "headers": true,
+              "body": true,
+              "wire": true
+            },
+            "bodyState": "drained"
+          },
+          {
+            "ordinal": 4,
+            "method": "GET",
+            "url": "https://sse.invalid/acme/changes/?after=cg_fPh7hZQX0yWUWqgvrXH6hNl90gDnKCu6pSwiCK0slrk_FBq2UIRWvdsq39xBULpK6fpc2eHeSawh49R3vEfI1h8_1",
+            "status": 200,
+            "bodyOctets": 1502,
+            "bodySha256": "3ab6c1480cea88cefdd8488f142488a3b7096b32e90d6f1f8f5e6d2b481199f0",
+            "wireSha256": "1e4c0ed622dff422f6fd599d4c67cf29699d5919674548c31c08f9fe67ade4d7",
+            "requestHeaders": [
+              [
+                "Accept",
+                "application/json"
+              ],
+              [
+                "bdp-scope-epoch",
+                "d5bdb14f-92a8-49af-83ca-ce5bf3374220"
+              ],
+              [
+                "bdp-authorization-view",
+                "development-all-visible"
+              ],
+              [
+                "bdp-minimum-scope-position",
+                "pos-2"
+              ]
+            ],
+            "headers": {
+              "bdp-scope-epoch": "d5bdb14f-92a8-49af-83ca-ce5bf3374220",
+              "bdp-authorization-view": "development-all-visible",
+              "bdp-scope-position": "pos-2",
+              "content-type": "application/json",
+              "content-length": "1502",
+              "cache-control": "private, no-store",
+              "retry-after": null,
+              "etag": null,
+              "x-bdp-development-limit": null,
+              "x-bdp-development": "non-attesting"
+            },
+            "readyObserved": true,
+            "drained": true,
+            "transportClosedObserved": true,
+            "drainKind": "finite-body",
+            "availability": {
+              "status": true,
+              "headers": true,
+              "body": true,
+              "wire": true
+            },
+            "bodyState": "drained"
+          },
+          {
+            "ordinal": 5,
+            "method": "HEAD",
+            "url": "https://sse.invalid/acme/changes/?after=cg_fPh7hZQX0yWUWqgvrXH6hNl90gDnKCu6pSwiCK0slrk_FBq2UIRWvdsq39xBULpK6fpc2eHeSawh49R3vEfI1h8_1",
+            "status": 200,
+            "bodyOctets": 0,
+            "bodySha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+            "wireSha256": "744574621916e6f75818d903472e476925798c1c61eea60b588a7ba9ca0a0b6c",
+            "requestHeaders": [
+              [
+                "Accept",
+                "application/json"
+              ],
+              [
+                "bdp-scope-epoch",
+                "d5bdb14f-92a8-49af-83ca-ce5bf3374220"
+              ],
+              [
+                "bdp-authorization-view",
+                "development-all-visible"
+              ],
+              [
+                "bdp-minimum-scope-position",
+                "pos-2"
+              ]
+            ],
+            "headers": {
+              "bdp-scope-epoch": "d5bdb14f-92a8-49af-83ca-ce5bf3374220",
+              "bdp-authorization-view": "development-all-visible",
+              "bdp-scope-position": "pos-2",
+              "content-type": "application/json",
+              "content-length": "1502",
+              "cache-control": "private, no-store",
+              "retry-after": null,
+              "etag": null,
+              "x-bdp-development-limit": null,
+              "x-bdp-development": "non-attesting"
+            },
+            "readyObserved": true,
+            "drained": true,
+            "transportClosedObserved": true,
+            "drainKind": "finite-body",
+            "availability": {
+              "status": true,
+              "headers": true,
+              "body": true,
+              "wire": true
+            },
+            "bodyState": "drained"
+          },
+          {
+            "ordinal": 6,
+            "method": "GET",
+            "url": "https://sse.invalid/acme/changes/?after=genesis",
+            "status": 503,
+            "bodyOctets": 127,
+            "bodySha256": "5e7c50923b5ef2e22379c96cbec4f9197175e38d9a81970f7db4f81ae46255b0",
+            "wireSha256": "20a6374c65fea41dcb949cbeed9c2acb85353baca762c925ae3578deec566e97",
+            "requestHeaders": [
+              [
+                "Accept",
+                "application/json"
+              ],
+              [
+                "bdp-scope-epoch",
+                "d5bdb14f-92a8-49af-83ca-ce5bf3374220"
+              ],
+              [
+                "bdp-authorization-view",
+                "development-all-visible"
+              ],
+              [
+                "bdp-minimum-scope-position",
+                "unknown"
+              ],
+              [
+                "If-None-Match",
+                "*"
+              ]
+            ],
+            "headers": {
+              "bdp-scope-epoch": "d5bdb14f-92a8-49af-83ca-ce5bf3374220",
+              "bdp-authorization-view": "development-all-visible",
+              "bdp-scope-position": "pos-2",
+              "content-type": "application/problem+json",
+              "content-length": "127",
+              "cache-control": "private, no-store",
+              "retry-after": "1",
+              "etag": null,
+              "x-bdp-development-limit": null,
+              "x-bdp-development": "non-attesting"
+            },
+            "readyObserved": true,
+            "drained": true,
+            "transportClosedObserved": true,
+            "drainKind": "finite-body",
+            "availability": {
+              "status": true,
+              "headers": true,
+              "body": true,
+              "wire": true
+            },
+            "bodyState": "drained"
+          },
+          {
+            "ordinal": 7,
+            "method": "HEAD",
+            "url": "https://sse.invalid/acme/changes/?after=genesis",
+            "status": 503,
+            "bodyOctets": 0,
+            "bodySha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+            "wireSha256": "6392624ce052e391d40bb1449850c14c53ab724b9d33ad9ce5cae4fc060cbff0",
+            "requestHeaders": [
+              [
+                "Accept",
+                "application/json"
+              ],
+              [
+                "bdp-scope-epoch",
+                "d5bdb14f-92a8-49af-83ca-ce5bf3374220"
+              ],
+              [
+                "bdp-authorization-view",
+                "development-all-visible"
+              ],
+              [
+                "bdp-minimum-scope-position",
+                "unknown"
+              ],
+              [
+                "If-None-Match",
+                "*"
+              ]
+            ],
+            "headers": {
+              "bdp-scope-epoch": "d5bdb14f-92a8-49af-83ca-ce5bf3374220",
+              "bdp-authorization-view": "development-all-visible",
+              "bdp-scope-position": "pos-2",
+              "content-type": "application/problem+json",
+              "content-length": "127",
+              "cache-control": "private, no-store",
+              "retry-after": "1",
+              "etag": null,
+              "x-bdp-development-limit": null,
+              "x-bdp-development": "non-attesting"
+            },
+            "readyObserved": true,
+            "drained": true,
+            "transportClosedObserved": true,
+            "drainKind": "finite-body",
+            "availability": {
+              "status": true,
+              "headers": true,
+              "body": true,
+              "wire": true
+            },
+            "bodyState": "drained"
+          },
+          {
+            "ordinal": 8,
+            "method": "GET",
+            "url": "https://sse.invalid/acme/changes/?after=cg_fPh7hZQX0yWUWqgvrXH6hNl90gDnKCu6pSwiCK0slrk_FBq2UIRWvdsq39xBULpK6fpc2eHeSawh49R3vEfI1h8_1",
+            "status": 503,
+            "bodyOctets": 127,
+            "bodySha256": "5e7c50923b5ef2e22379c96cbec4f9197175e38d9a81970f7db4f81ae46255b0",
+            "wireSha256": "20a6374c65fea41dcb949cbeed9c2acb85353baca762c925ae3578deec566e97",
+            "requestHeaders": [
+              [
+                "Accept",
+                "application/json"
+              ],
+              [
+                "bdp-scope-epoch",
+                "d5bdb14f-92a8-49af-83ca-ce5bf3374220"
+              ],
+              [
+                "bdp-authorization-view",
+                "development-all-visible"
+              ],
+              [
+                "bdp-minimum-scope-position",
+                "pos-01"
+              ],
+              [
+                "If-Match",
+                "\"missing\""
+              ]
+            ],
+            "headers": {
+              "bdp-scope-epoch": "d5bdb14f-92a8-49af-83ca-ce5bf3374220",
+              "bdp-authorization-view": "development-all-visible",
+              "bdp-scope-position": "pos-2",
+              "content-type": "application/problem+json",
+              "content-length": "127",
+              "cache-control": "private, no-store",
+              "retry-after": "1",
+              "etag": null,
+              "x-bdp-development-limit": null,
+              "x-bdp-development": "non-attesting"
+            },
+            "readyObserved": true,
+            "drained": true,
+            "transportClosedObserved": true,
+            "drainKind": "finite-body",
+            "availability": {
+              "status": true,
+              "headers": true,
+              "body": true,
+              "wire": true
+            },
+            "bodyState": "drained"
+          },
+          {
+            "ordinal": 9,
+            "method": "HEAD",
+            "url": "https://sse.invalid/acme/changes/?after=cg_fPh7hZQX0yWUWqgvrXH6hNl90gDnKCu6pSwiCK0slrk_FBq2UIRWvdsq39xBULpK6fpc2eHeSawh49R3vEfI1h8_1",
+            "status": 503,
+            "bodyOctets": 0,
+            "bodySha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+            "wireSha256": "6392624ce052e391d40bb1449850c14c53ab724b9d33ad9ce5cae4fc060cbff0",
+            "requestHeaders": [
+              [
+                "Accept",
+                "application/json"
+              ],
+              [
+                "bdp-scope-epoch",
+                "d5bdb14f-92a8-49af-83ca-ce5bf3374220"
+              ],
+              [
+                "bdp-authorization-view",
+                "development-all-visible"
+              ],
+              [
+                "bdp-minimum-scope-position",
+                "pos-01"
+              ],
+              [
+                "If-Match",
+                "\"missing\""
+              ]
+            ],
+            "headers": {
+              "bdp-scope-epoch": "d5bdb14f-92a8-49af-83ca-ce5bf3374220",
+              "bdp-authorization-view": "development-all-visible",
+              "bdp-scope-position": "pos-2",
+              "content-type": "application/problem+json",
+              "content-length": "127",
+              "cache-control": "private, no-store",
+              "retry-after": "1",
+              "etag": null,
+              "x-bdp-development-limit": null,
+              "x-bdp-development": "non-attesting"
+            },
+            "readyObserved": true,
+            "drained": true,
+            "transportClosedObserved": true,
+            "drainKind": "finite-body",
+            "availability": {
+              "status": true,
+              "headers": true,
+              "body": true,
+              "wire": true
+            },
+            "bodyState": "drained"
+          },
+          {
+            "ordinal": 10,
+            "method": "GET",
+            "url": "https://sse.invalid/acme/changes/?start=now",
+            "status": 503,
+            "bodyOctets": 127,
+            "bodySha256": "5e7c50923b5ef2e22379c96cbec4f9197175e38d9a81970f7db4f81ae46255b0",
+            "wireSha256": "20a6374c65fea41dcb949cbeed9c2acb85353baca762c925ae3578deec566e97",
+            "requestHeaders": [
+              [
+                "Accept",
+                "text/event-stream"
+              ],
+              [
+                "bdp-scope-epoch",
+                "d5bdb14f-92a8-49af-83ca-ce5bf3374220"
+              ],
+              [
+                "bdp-authorization-view",
+                "development-all-visible"
+              ],
+              [
+                "bdp-minimum-scope-position",
+                "unknown"
+              ]
+            ],
+            "headers": {
+              "bdp-scope-epoch": "d5bdb14f-92a8-49af-83ca-ce5bf3374220",
+              "bdp-authorization-view": "development-all-visible",
+              "bdp-scope-position": "pos-2",
+              "content-type": "application/problem+json",
+              "content-length": "127",
+              "cache-control": "private, no-store",
+              "retry-after": "1",
+              "etag": null,
+              "x-bdp-development-limit": null,
+              "x-bdp-development": "non-attesting"
+            },
+            "readyObserved": true,
+            "drained": true,
+            "transportClosedObserved": true,
+            "drainKind": "finite-body",
+            "availability": {
+              "status": true,
+              "headers": true,
+              "body": true,
+              "wire": true
+            },
+            "bodyState": "drained"
+          },
+          {
+            "ordinal": 11,
+            "method": "GET",
+            "url": "https://sse.invalid/acme/changes/?after=cg_fPh7hZQX0yWUWqgvrXH6hNl90gDnKCu6pSwiCK0slrk_FBq2UIRWvdsq39xBULpK6fpc2eHeSawh49R3vEfI1h8_1",
+            "status": 503,
+            "bodyOctets": 127,
+            "bodySha256": "5e7c50923b5ef2e22379c96cbec4f9197175e38d9a81970f7db4f81ae46255b0",
+            "wireSha256": "20a6374c65fea41dcb949cbeed9c2acb85353baca762c925ae3578deec566e97",
+            "requestHeaders": [
+              [
+                "Accept",
+                "text/event-stream"
+              ],
+              [
+                "bdp-scope-epoch",
+                "d5bdb14f-92a8-49af-83ca-ce5bf3374220"
+              ],
+              [
+                "bdp-authorization-view",
+                "development-all-visible"
+              ],
+              [
+                "bdp-minimum-scope-position",
+                "unknown"
+              ]
+            ],
+            "headers": {
+              "bdp-scope-epoch": "d5bdb14f-92a8-49af-83ca-ce5bf3374220",
+              "bdp-authorization-view": "development-all-visible",
+              "bdp-scope-position": "pos-2",
+              "content-type": "application/problem+json",
+              "content-length": "127",
+              "cache-control": "private, no-store",
+              "retry-after": "1",
+              "etag": null,
+              "x-bdp-development-limit": null,
+              "x-bdp-development": "non-attesting"
+            },
+            "readyObserved": true,
+            "drained": true,
+            "transportClosedObserved": true,
+            "drainKind": "finite-body",
+            "availability": {
+              "status": true,
+              "headers": true,
+              "body": true,
+              "wire": true
+            },
+            "bodyState": "drained"
+          },
+          {
+            "ordinal": 12,
+            "method": "GET",
+            "url": "https://sse.invalid/acme/changes/?start=now",
+            "status": 503,
+            "bodyOctets": 127,
+            "bodySha256": "5e7c50923b5ef2e22379c96cbec4f9197175e38d9a81970f7db4f81ae46255b0",
+            "wireSha256": "20a6374c65fea41dcb949cbeed9c2acb85353baca762c925ae3578deec566e97",
+            "requestHeaders": [
+              [
+                "Accept",
+                "text/event-stream"
+              ],
+              [
+                "bdp-scope-epoch",
+                "d5bdb14f-92a8-49af-83ca-ce5bf3374220"
+              ],
+              [
+                "bdp-authorization-view",
+                "development-all-visible"
+              ],
+              [
+                "bdp-minimum-scope-position",
+                "unknown"
+              ],
+              [
+                "Last-Event-ID",
+                "cg_fPh7hZQX0yWUWqgvrXH6hNl90gDnKCu6pSwiCK0slrk_FBq2UIRWvdsq39xBULpK6fpc2eHeSawh49R3vEfI1h8_1"
+              ]
+            ],
+            "headers": {
+              "bdp-scope-epoch": "d5bdb14f-92a8-49af-83ca-ce5bf3374220",
+              "bdp-authorization-view": "development-all-visible",
+              "bdp-scope-position": "pos-2",
+              "content-type": "application/problem+json",
+              "content-length": "127",
+              "cache-control": "private, no-store",
+              "retry-after": "1",
+              "etag": null,
+              "x-bdp-development-limit": null,
+              "x-bdp-development": "non-attesting"
+            },
+            "readyObserved": true,
+            "drained": true,
+            "transportClosedObserved": true,
+            "drainKind": "finite-body",
+            "availability": {
+              "status": true,
+              "headers": true,
+              "body": true,
+              "wire": true
+            },
+            "bodyState": "drained"
+          },
+          {
+            "ordinal": 13,
+            "method": "GET",
+            "url": "https://sse.invalid/acme/changes/?after=cg_APh7hZQX0yWUWqgvrXH6hNl90gDnKCu6pSwiCK0slrk_FBq2UIRWvdsq39xBULpK6fpc2eHeSawh49R3vEfI1h8_1",
+            "status": 503,
+            "bodyOctets": 127,
+            "bodySha256": "5e7c50923b5ef2e22379c96cbec4f9197175e38d9a81970f7db4f81ae46255b0",
+            "wireSha256": "20a6374c65fea41dcb949cbeed9c2acb85353baca762c925ae3578deec566e97",
+            "requestHeaders": [
+              [
+                "Accept",
+                "text/event-stream"
+              ],
+              [
+                "bdp-scope-epoch",
+                "d5bdb14f-92a8-49af-83ca-ce5bf3374220"
+              ],
+              [
+                "bdp-authorization-view",
+                "development-all-visible"
+              ],
+              [
+                "bdp-minimum-scope-position",
+                "unknown"
+              ],
+              [
+                "Last-Event-ID",
+                "cg_fPh7hZQX0yWUWqgvrXH6hNl90gDnKCu6pSwiCK0slrk_FBq2UIRWvdsq39xBULpK6fpc2eHeSawh49R3vEfI1h8_1"
+              ]
+            ],
+            "headers": {
+              "bdp-scope-epoch": "d5bdb14f-92a8-49af-83ca-ce5bf3374220",
+              "bdp-authorization-view": "development-all-visible",
+              "bdp-scope-position": "pos-2",
+              "content-type": "application/problem+json",
+              "content-length": "127",
+              "cache-control": "private, no-store",
+              "retry-after": "1",
+              "etag": null,
+              "x-bdp-development-limit": null,
+              "x-bdp-development": "non-attesting"
+            },
+            "readyObserved": true,
+            "drained": true,
+            "transportClosedObserved": true,
+            "drainKind": "finite-body",
+            "availability": {
+              "status": true,
+              "headers": true,
+              "body": true,
+              "wire": true
+            },
+            "bodyState": "drained"
+          },
+          {
+            "ordinal": 14,
+            "method": "GET",
+            "url": "https://sse.invalid/acme/changes/?after=genesis",
+            "status": 503,
+            "bodyOctets": 127,
+            "bodySha256": "5e7c50923b5ef2e22379c96cbec4f9197175e38d9a81970f7db4f81ae46255b0",
+            "wireSha256": "20a6374c65fea41dcb949cbeed9c2acb85353baca762c925ae3578deec566e97",
+            "requestHeaders": [
+              [
+                "Accept",
+                "application/json"
+              ],
+              [
+                "bdp-scope-epoch",
+                "d5bdb14f-92a8-49af-83ca-ce5bf3374220"
+              ],
+              [
+                "bdp-authorization-view",
+                "development-all-visible"
+              ],
+              [
+                "bdp-minimum-scope-position",
+                "unknown"
+              ],
+              [
+                "Last-Event-ID",
+                "bad"
+              ],
+              [
+                "Last-Event-ID",
+                "also-bad"
+              ]
+            ],
+            "headers": {
+              "bdp-scope-epoch": "d5bdb14f-92a8-49af-83ca-ce5bf3374220",
+              "bdp-authorization-view": "development-all-visible",
+              "bdp-scope-position": "pos-2",
+              "content-type": "application/problem+json",
+              "content-length": "127",
+              "cache-control": "private, no-store",
+              "retry-after": "1",
+              "etag": null,
+              "x-bdp-development-limit": null,
+              "x-bdp-development": "non-attesting"
+            },
+            "readyObserved": true,
+            "drained": true,
+            "transportClosedObserved": true,
+            "drainKind": "finite-body",
+            "availability": {
+              "status": true,
+              "headers": true,
+              "body": true,
+              "wire": true
+            },
+            "bodyState": "drained"
+          },
+          {
+            "ordinal": 15,
+            "method": "GET",
+            "url": "https://sse.invalid/acme/changes/?after=cg_fPh7hZQX0yWUWqgvrXH6hNl90gDnKCu6pSwiCK0slrk_FBq2UIRWvdsq39xBULpK6fpc2eHeSawh49R3vEfI1h8_1",
+            "status": 503,
+            "bodyOctets": 127,
+            "bodySha256": "5e7c50923b5ef2e22379c96cbec4f9197175e38d9a81970f7db4f81ae46255b0",
+            "wireSha256": "20a6374c65fea41dcb949cbeed9c2acb85353baca762c925ae3578deec566e97",
+            "requestHeaders": [
+              [
+                "Accept",
+                "application/json"
+              ],
+              [
+                "bdp-scope-epoch",
+                "d5bdb14f-92a8-49af-83ca-ce5bf3374220"
+              ],
+              [
+                "bdp-authorization-view",
+                "development-all-visible"
+              ],
+              [
+                "bdp-minimum-scope-position",
+                "unknown"
+              ],
+              [
+                "Last-Event-ID",
+                "cg_fPh7hZQX0yWUWqgvrXH6hNl90gDnKCu6pSwiCK0slrk_ABq2UIRWvdsq39xBULpK6fpc2eHeSawh49R3vEfI1h8_1"
+              ]
+            ],
+            "headers": {
+              "bdp-scope-epoch": "d5bdb14f-92a8-49af-83ca-ce5bf3374220",
+              "bdp-authorization-view": "development-all-visible",
+              "bdp-scope-position": "pos-2",
+              "content-type": "application/problem+json",
+              "content-length": "127",
+              "cache-control": "private, no-store",
+              "retry-after": "1",
+              "etag": null,
+              "x-bdp-development-limit": null,
+              "x-bdp-development": "non-attesting"
+            },
+            "readyObserved": true,
+            "drained": true,
+            "transportClosedObserved": true,
+            "drainKind": "finite-body",
+            "availability": {
+              "status": true,
+              "headers": true,
+              "body": true,
+              "wire": true
+            },
+            "bodyState": "drained"
+          },
+          {
+            "ordinal": 16,
+            "method": "GET",
+            "url": "https://sse.invalid/acme/changes/?after=genesis",
+            "status": 503,
+            "bodyOctets": 127,
+            "bodySha256": "5e7c50923b5ef2e22379c96cbec4f9197175e38d9a81970f7db4f81ae46255b0",
+            "wireSha256": "20a6374c65fea41dcb949cbeed9c2acb85353baca762c925ae3578deec566e97",
+            "requestHeaders": [
+              [
+                "Accept",
+                "text/plain"
+              ],
+              [
+                "bdp-scope-epoch",
+                "d5bdb14f-92a8-49af-83ca-ce5bf3374220"
+              ],
+              [
+                "bdp-authorization-view",
+                "development-all-visible"
+              ],
+              [
+                "bdp-minimum-scope-position",
+                "unknown"
+              ]
+            ],
+            "headers": {
+              "bdp-scope-epoch": "d5bdb14f-92a8-49af-83ca-ce5bf3374220",
+              "bdp-authorization-view": "development-all-visible",
+              "bdp-scope-position": "pos-2",
+              "content-type": "application/problem+json",
+              "content-length": "127",
+              "cache-control": "private, no-store",
+              "retry-after": "1",
+              "etag": null,
+              "x-bdp-development-limit": null,
+              "x-bdp-development": "non-attesting"
+            },
+            "readyObserved": true,
+            "drained": true,
+            "transportClosedObserved": true,
+            "drainKind": "finite-body",
+            "availability": {
+              "status": true,
+              "headers": true,
+              "body": true,
+              "wire": true
+            },
+            "bodyState": "drained"
+          },
+          {
+            "ordinal": 17,
+            "method": "GET",
+            "url": "https://sse.invalid/acme/changes/?after=genesis",
+            "status": 406,
+            "bodyOctets": 0,
+            "bodySha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+            "wireSha256": "5eda2b317030dab37c07e4f7d704a16879ca909a17f0a7993c83070a54b7506b",
+            "requestHeaders": [
+              [
+                "Accept",
+                "text/plain"
+              ],
+              [
+                "bdp-scope-epoch",
+                "d5bdb14f-92a8-49af-83ca-ce5bf3374220"
+              ],
+              [
+                "bdp-authorization-view",
+                "development-all-visible"
+              ],
+              [
+                "bdp-minimum-scope-position",
+                "pos-2"
+              ]
+            ],
+            "headers": {
+              "bdp-scope-epoch": "d5bdb14f-92a8-49af-83ca-ce5bf3374220",
+              "bdp-authorization-view": "development-all-visible",
+              "bdp-scope-position": "pos-2",
+              "content-type": null,
+              "content-length": "0",
+              "cache-control": "private, no-store",
+              "retry-after": null,
+              "etag": null,
+              "x-bdp-development-limit": null,
+              "x-bdp-development": "non-attesting"
+            },
+            "readyObserved": true,
+            "drained": true,
+            "transportClosedObserved": true,
+            "drainKind": "finite-body",
+            "availability": {
+              "status": true,
+              "headers": true,
+              "body": true,
+              "wire": true
+            },
+            "bodyState": "drained"
+          },
+          {
+            "ordinal": 18,
+            "method": "GET",
+            "url": "https://sse.invalid/acme/changes/?after=cg_fPh7hZQX0yWUWqgvrXH6hNl90gDnKCu6pSwiCK0slrk_FBq2UIRWvdsq39xBULpK6fpc2eHeSawh49R3vEfI1h8_1",
+            "status": 304,
+            "bodyOctets": 0,
+            "bodySha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+            "wireSha256": "6ba4b572afe2c0b05c8e46f64ead3270fdd3d812c4f4610de13215f28540d954",
+            "requestHeaders": [
+              [
+                "Accept",
+                "application/json"
+              ],
+              [
+                "bdp-scope-epoch",
+                "d5bdb14f-92a8-49af-83ca-ce5bf3374220"
+              ],
+              [
+                "bdp-authorization-view",
+                "development-all-visible"
+              ],
+              [
+                "bdp-minimum-scope-position",
+                "pos-2"
+              ],
+              [
+                "If-None-Match",
+                "*"
+              ]
+            ],
+            "headers": {
+              "bdp-scope-epoch": "d5bdb14f-92a8-49af-83ca-ce5bf3374220",
+              "bdp-authorization-view": "development-all-visible",
+              "bdp-scope-position": "pos-2",
+              "content-type": null,
+              "content-length": null,
+              "cache-control": "private, no-store",
+              "retry-after": null,
+              "etag": null,
+              "x-bdp-development-limit": null,
+              "x-bdp-development": "non-attesting"
+            },
+            "readyObserved": true,
+            "drained": true,
+            "transportClosedObserved": true,
+            "drainKind": "finite-body",
+            "availability": {
+              "status": true,
+              "headers": true,
+              "body": true,
+              "wire": true
+            },
+            "bodyState": "drained"
+          },
+          {
+            "ordinal": 19,
+            "method": "GET",
+            "url": "https://sse.invalid/acme/changes/?after=cg_fPh7hZQX0yWUWqgvrXH6hNl90gDnKCu6pSwiCK0slrk_FBq2UIRWvdsq39xBULpK6fpc2eHeSawh49R3vEfI1h8_1",
+            "status": 412,
+            "bodyOctets": 0,
+            "bodySha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+            "wireSha256": "6718bf0deb3f4ea0fdbb61f75b2449e975012572f69a28cc79ce13ea89ebd489",
+            "requestHeaders": [
+              [
+                "Accept",
+                "application/json"
+              ],
+              [
+                "bdp-scope-epoch",
+                "d5bdb14f-92a8-49af-83ca-ce5bf3374220"
+              ],
+              [
+                "bdp-authorization-view",
+                "development-all-visible"
+              ],
+              [
+                "bdp-minimum-scope-position",
+                "pos-2"
+              ],
+              [
+                "If-Match",
+                "\"missing\""
+              ]
+            ],
+            "headers": {
+              "bdp-scope-epoch": "d5bdb14f-92a8-49af-83ca-ce5bf3374220",
+              "bdp-authorization-view": "development-all-visible",
+              "bdp-scope-position": "pos-2",
+              "content-type": null,
+              "content-length": "0",
+              "cache-control": "private, no-store",
+              "retry-after": null,
+              "etag": null,
+              "x-bdp-development-limit": null,
+              "x-bdp-development": "non-attesting"
+            },
+            "readyObserved": true,
+            "drained": true,
+            "transportClosedObserved": true,
+            "drainKind": "finite-body",
+            "availability": {
+              "status": true,
+              "headers": true,
+              "body": true,
+              "wire": true
+            },
+            "bodyState": "drained"
+          },
+          {
+            "ordinal": 20,
+            "method": "GET",
+            "url": "https://sse.invalid/acme/changes/?after=cg_fPh7hZQX0yWUWqgvrXH6hNl90gDnKCu6pSwiCK0slrk_FBq2UIRWvdsq39xBULpK6fpc2eHeSawh49R3vEfI1h8_1",
+            "status": 400,
+            "bodyOctets": 118,
+            "bodySha256": "c42495c7aceb17f70d66be3b14415057805675541db06619cc439bcc5cb010f2",
+            "wireSha256": "6cfdc9984f4db78135e11f3a61e005574b9836f985bb6d30ad811dde47a1bfb7",
+            "requestHeaders": [
+              [
+                "Accept",
+                "application/json"
+              ],
+              [
+                "bdp-minimum-scope-position",
+                "unknown"
+              ]
+            ],
+            "headers": {
+              "bdp-scope-epoch": null,
+              "bdp-authorization-view": null,
+              "bdp-scope-position": null,
+              "content-type": "application/problem+json",
+              "content-length": "118",
+              "cache-control": "private, no-store",
+              "retry-after": null,
+              "etag": null,
+              "x-bdp-development-limit": null,
+              "x-bdp-development": "non-attesting"
+            },
+            "readyObserved": true,
+            "drained": true,
+            "transportClosedObserved": true,
+            "drainKind": "finite-body",
+            "availability": {
+              "status": true,
+              "headers": true,
+              "body": true,
+              "wire": true
+            },
+            "bodyState": "drained"
+          },
+          {
+            "ordinal": 21,
+            "method": "GET",
+            "url": "https://sse.invalid/acme/changes/?after=bad",
+            "status": 400,
+            "bodyOctets": 118,
+            "bodySha256": "994c962b1fef8f6ed2f4c247d7e7f02c23806acc912f1ea2a6074e4e26aede2e",
+            "wireSha256": "a01235b66bb58381d9de4cdce62920ade33d6bed9a497294e1f9eff01c977433",
+            "requestHeaders": [
+              [
+                "Accept",
+                "text/event-stream"
+              ],
+              [
+                "bdp-scope-epoch",
+                "d5bdb14f-92a8-49af-83ca-ce5bf3374220"
+              ],
+              [
+                "bdp-authorization-view",
+                "development-all-visible"
+              ],
+              [
+                "bdp-minimum-scope-position",
+                "unknown"
+              ],
+              [
+                "Last-Event-ID",
+                "cg_fPh7hZQX0yWUWqgvrXH6hNl90gDnKCu6pSwiCK0slrk_FBq2UIRWvdsq39xBULpK6fpc2eHeSawh49R3vEfI1h8_1"
+              ]
+            ],
+            "headers": {
+              "bdp-scope-epoch": null,
+              "bdp-authorization-view": null,
+              "bdp-scope-position": null,
+              "content-type": "application/problem+json",
+              "content-length": "118",
+              "cache-control": "private, no-store",
+              "retry-after": null,
+              "etag": null,
+              "x-bdp-development-limit": null,
+              "x-bdp-development": "non-attesting"
+            },
+            "readyObserved": true,
+            "drained": true,
+            "transportClosedObserved": true,
+            "drainKind": "finite-body",
+            "availability": {
+              "status": true,
+              "headers": true,
+              "body": true,
+              "wire": true
+            },
+            "bodyState": "drained"
+          },
+          {
+            "ordinal": 22,
+            "method": "GET",
+            "url": "https://sse.invalid/acme/changes/?after=genesis",
+            "status": 400,
+            "bodyOctets": 118,
+            "bodySha256": "994c962b1fef8f6ed2f4c247d7e7f02c23806acc912f1ea2a6074e4e26aede2e",
+            "wireSha256": "a01235b66bb58381d9de4cdce62920ade33d6bed9a497294e1f9eff01c977433",
+            "requestHeaders": [
+              [
+                "Accept",
+                "text/event-stream"
+              ],
+              [
+                "bdp-scope-epoch",
+                "d5bdb14f-92a8-49af-83ca-ce5bf3374220"
+              ],
+              [
+                "bdp-authorization-view",
+                "development-all-visible"
+              ],
+              [
+                "bdp-minimum-scope-position",
+                "unknown"
+              ],
+              [
+                "Last-Event-ID",
+                "cg_fPh7hZQX0yWUWqgvrXH6hNl90gDnKCu6pSwiCK0slrk_FBq2UIRWvdsq39xBULpK6fpc2eHeSawh49R3vEfI1h8_1"
+              ],
+              [
+                "Last-Event-ID",
+                "cg_fPh7hZQX0yWUWqgvrXH6hNl90gDnKCu6pSwiCK0slrk_FBq2UIRWvdsq39xBULpK6fpc2eHeSawh49R3vEfI1h8_1"
+              ]
+            ],
+            "headers": {
+              "bdp-scope-epoch": null,
+              "bdp-authorization-view": null,
+              "bdp-scope-position": null,
+              "content-type": "application/problem+json",
+              "content-length": "118",
+              "cache-control": "private, no-store",
+              "retry-after": null,
+              "etag": null,
+              "x-bdp-development-limit": null,
+              "x-bdp-development": "non-attesting"
+            },
+            "readyObserved": true,
+            "drained": true,
+            "transportClosedObserved": true,
+            "drainKind": "finite-body",
+            "availability": {
+              "status": true,
+              "headers": true,
+              "body": true,
+              "wire": true
+            },
+            "bodyState": "drained"
+          },
+          {
+            "ordinal": 23,
+            "method": "GET",
+            "url": "https://sse.invalid/acme/changes/?after=genesis",
+            "status": 400,
+            "bodyOctets": 118,
+            "bodySha256": "994c962b1fef8f6ed2f4c247d7e7f02c23806acc912f1ea2a6074e4e26aede2e",
+            "wireSha256": "974ba51a035484379193562f980e6414ae4cff573b9bb49473a071735a32c970",
+            "requestHeaders": [
+              [
+                "Accept",
+                "text/event-stream"
+              ],
+              [
+                "bdp-scope-epoch",
+                "d5bdb14f-92a8-49af-83ca-ce5bf3374220"
+              ],
+              [
+                "bdp-authorization-view",
+                "development-all-visible"
+              ],
+              [
+                "bdp-minimum-scope-position",
+                "unknown"
+              ],
+              [
+                "Last-Event-ID",
+                "bad"
+              ]
+            ],
+            "headers": {
+              "bdp-scope-epoch": "d5bdb14f-92a8-49af-83ca-ce5bf3374220",
+              "bdp-authorization-view": "development-all-visible",
+              "bdp-scope-position": "pos-2",
+              "content-type": "application/problem+json",
+              "content-length": "118",
+              "cache-control": "private, no-store",
+              "retry-after": null,
+              "etag": null,
+              "x-bdp-development-limit": null,
+              "x-bdp-development": "non-attesting"
+            },
+            "readyObserved": true,
+            "drained": true,
+            "transportClosedObserved": true,
+            "drainKind": "finite-body",
+            "availability": {
+              "status": true,
+              "headers": true,
+              "body": true,
+              "wire": true
+            },
+            "bodyState": "drained"
+          },
+          {
+            "ordinal": 24,
+            "method": "GET",
+            "url": "https://sse.invalid/acme/changes/?after=genesis",
+            "status": 410,
+            "bodyOctets": 125,
+            "bodySha256": "043ad15eb6751113e48fcc70e4d01595299a451fb3fe47144655738dd0cc1e9a",
+            "wireSha256": "0fa568c982eec2f9c5d09c4e13b01ae35150b4af0d986ef98dab5a391a28a0e7",
+            "requestHeaders": [
+              [
+                "Accept",
+                "text/event-stream"
+              ],
+              [
+                "bdp-scope-epoch",
+                "d5bdb14f-92a8-49af-83ca-ce5bf3374220"
+              ],
+              [
+                "bdp-authorization-view",
+                "foreign"
+              ],
+              [
+                "bdp-minimum-scope-position",
+                "unknown"
+              ],
+              [
+                "Last-Event-ID",
+                "cg_APh7hZQX0yWUWqgvrXH6hNl90gDnKCu6pSwiCK0slrk_FBq2UIRWvdsq39xBULpK6fpc2eHeSawh49R3vEfI1h8_1"
+              ]
+            ],
+            "headers": {
+              "bdp-scope-epoch": "d5bdb14f-92a8-49af-83ca-ce5bf3374220",
+              "bdp-authorization-view": "development-all-visible",
+              "bdp-scope-position": "pos-2",
+              "content-type": "application/problem+json",
+              "content-length": "125",
+              "cache-control": "private, no-store",
+              "retry-after": null,
+              "etag": null,
+              "x-bdp-development-limit": null,
+              "x-bdp-development": "non-attesting"
+            },
+            "readyObserved": true,
+            "drained": true,
+            "transportClosedObserved": true,
+            "drainKind": "finite-body",
+            "availability": {
+              "status": true,
+              "headers": true,
+              "body": true,
+              "wire": true
+            },
+            "bodyState": "drained"
+          },
+          {
+            "ordinal": 25,
+            "method": "GET",
+            "url": "https://sse.invalid/acme/changes/?after=genesis",
+            "status": 409,
+            "bodyOctets": 127,
+            "bodySha256": "7cb8af9c90cff30f35b0d6deb2b4a47931671d3ef57c2c96b4e952fe809af0f9",
+            "wireSha256": "2b95c0f9f1a7d8cafa287ca44fbb95f565068e331500e1d1c9ffba91e39ece54",
+            "requestHeaders": [
+              [
+                "Accept",
+                "text/event-stream"
+              ],
+              [
+                "bdp-scope-epoch",
+                "foreign"
+              ],
+              [
+                "bdp-authorization-view",
+                "development-all-visible"
+              ],
+              [
+                "bdp-minimum-scope-position",
+                "unknown"
+              ],
+              [
+                "Last-Event-ID",
+                "cg_fPh7hZQX0yWUWqgvrXH6hNl90gDnKCu6pSwiCK0slrk_ABq2UIRWvdsq39xBULpK6fpc2eHeSawh49R3vEfI1h8_1"
+              ]
+            ],
+            "headers": {
+              "bdp-scope-epoch": "d5bdb14f-92a8-49af-83ca-ce5bf3374220",
+              "bdp-authorization-view": "development-all-visible",
+              "bdp-scope-position": "pos-2",
+              "content-type": "application/problem+json",
+              "content-length": "127",
+              "cache-control": "private, no-store",
+              "retry-after": null,
+              "etag": null,
+              "x-bdp-development-limit": null,
+              "x-bdp-development": "non-attesting"
+            },
+            "readyObserved": true,
+            "drained": true,
+            "transportClosedObserved": true,
+            "drainKind": "finite-body",
+            "availability": {
+              "status": true,
+              "headers": true,
+              "body": true,
+              "wire": true
+            },
+            "bodyState": "drained"
+          },
+          {
+            "ordinal": 26,
+            "method": "GET",
+            "url": "https://sse.invalid/acme/changes/?after=genesis",
+            "status": 400,
+            "bodyOctets": 118,
+            "bodySha256": "994c962b1fef8f6ed2f4c247d7e7f02c23806acc912f1ea2a6074e4e26aede2e",
+            "wireSha256": "974ba51a035484379193562f980e6414ae4cff573b9bb49473a071735a32c970",
+            "requestHeaders": [
+              [
+                "Accept",
+                "text/event-stream"
+              ],
+              [
+                "bdp-scope-epoch",
+                "d5bdb14f-92a8-49af-83ca-ce5bf3374220"
+              ],
+              [
+                "bdp-authorization-view",
+                "development-all-visible"
+              ],
+              [
+                "bdp-minimum-scope-position",
+                "unknown"
+              ],
+              [
+                "Last-Event-ID",
+                "cg_fPh7hZQX0yWUWqgvrXH6hNl90gDnKCu6pSwiCK0slrk_FBq2UIRWvdsq39xBULpK6fpc2eHeSawh49R3vEfI1h8_3"
+              ]
+            ],
+            "headers": {
+              "bdp-scope-epoch": "d5bdb14f-92a8-49af-83ca-ce5bf3374220",
+              "bdp-authorization-view": "development-all-visible",
+              "bdp-scope-position": "pos-2",
+              "content-type": "application/problem+json",
+              "content-length": "118",
+              "cache-control": "private, no-store",
+              "retry-after": null,
+              "etag": null,
+              "x-bdp-development-limit": null,
+              "x-bdp-development": "non-attesting"
+            },
+            "readyObserved": true,
+            "drained": true,
+            "transportClosedObserved": true,
+            "drainKind": "finite-body",
+            "availability": {
+              "status": true,
+              "headers": true,
+              "body": true,
+              "wire": true
+            },
+            "bodyState": "drained"
+          },
+          {
+            "ordinal": 27,
+            "method": "GET",
+            "url": "https://sse.invalid/acme/changes/?after=cg_fPh7hZQX0yWUWqgvrXH6hNl90gDnKCu6pSwiCK0slrk_FBq2UIRWvdsq39xBULpK6fpc2eHeSawh49R3vEfI1h8_1",
+            "status": 410,
+            "bodyOctets": 125,
+            "bodySha256": "043ad15eb6751113e48fcc70e4d01595299a451fb3fe47144655738dd0cc1e9a",
+            "wireSha256": "0fa568c982eec2f9c5d09c4e13b01ae35150b4af0d986ef98dab5a391a28a0e7",
+            "requestHeaders": [
+              [
+                "Accept",
+                "application/json"
+              ],
+              [
+                "bdp-scope-epoch",
+                "foreign"
+              ],
+              [
+                "bdp-authorization-view",
+                "development-all-visible"
+              ],
+              [
+                "bdp-minimum-scope-position",
+                "unknown"
+              ]
+            ],
+            "headers": {
+              "bdp-scope-epoch": "d5bdb14f-92a8-49af-83ca-ce5bf3374220",
+              "bdp-authorization-view": "development-all-visible",
+              "bdp-scope-position": "pos-2",
+              "content-type": "application/problem+json",
+              "content-length": "125",
+              "cache-control": "private, no-store",
+              "retry-after": null,
+              "etag": null,
+              "x-bdp-development-limit": null,
+              "x-bdp-development": "non-attesting"
+            },
+            "readyObserved": true,
+            "drained": true,
+            "transportClosedObserved": true,
+            "drainKind": "finite-body",
+            "availability": {
+              "status": true,
+              "headers": true,
+              "body": true,
+              "wire": true
+            },
+            "bodyState": "drained"
+          },
+          {
+            "ordinal": 28,
+            "method": "GET",
+            "url": "https://sse.invalid/acme/changes/?after=cg_fPh7hZQX0yWUWqgvrXH6hNl90gDnKCu6pSwiCK0slrk_FBq2UIRWvdsq39xBULpK6fpc2eHeSawh49R3vEfI1h8_1",
+            "status": 409,
+            "bodyOctets": 127,
+            "bodySha256": "7cb8af9c90cff30f35b0d6deb2b4a47931671d3ef57c2c96b4e952fe809af0f9",
+            "wireSha256": "2b95c0f9f1a7d8cafa287ca44fbb95f565068e331500e1d1c9ffba91e39ece54",
+            "requestHeaders": [
+              [
+                "Accept",
+                "application/json"
+              ],
+              [
+                "bdp-scope-epoch",
+                "d5bdb14f-92a8-49af-83ca-ce5bf3374220"
+              ],
+              [
+                "bdp-authorization-view",
+                "foreign"
+              ],
+              [
+                "bdp-minimum-scope-position",
+                "unknown"
+              ]
+            ],
+            "headers": {
+              "bdp-scope-epoch": "d5bdb14f-92a8-49af-83ca-ce5bf3374220",
+              "bdp-authorization-view": "development-all-visible",
+              "bdp-scope-position": "pos-2",
+              "content-type": "application/problem+json",
+              "content-length": "127",
+              "cache-control": "private, no-store",
+              "retry-after": null,
+              "etag": null,
+              "x-bdp-development-limit": null,
+              "x-bdp-development": "non-attesting"
+            },
+            "readyObserved": true,
+            "drained": true,
+            "transportClosedObserved": true,
+            "drainKind": "finite-body",
+            "availability": {
+              "status": true,
+              "headers": true,
+              "body": true,
+              "wire": true
+            },
+            "bodyState": "drained"
+          },
+          {
+            "ordinal": 29,
+            "method": "GET",
+            "url": "https://sse.invalid/acme/changes/?after=cg_fPh7hZQX0yWUWqgvrXH6hNl90gDnKCu6pSwiCK0slrk_FBq2UIRWvdsq39xBULpK6fpc2eHeSawh49R3vEfI1h8_1",
+            "status": 410,
+            "bodyOctets": 125,
+            "bodySha256": "043ad15eb6751113e48fcc70e4d01595299a451fb3fe47144655738dd0cc1e9a",
+            "wireSha256": "0fa568c982eec2f9c5d09c4e13b01ae35150b4af0d986ef98dab5a391a28a0e7",
+            "requestHeaders": [
+              [
+                "Accept",
+                "application/json"
+              ],
+              [
+                "bdp-scope-epoch",
+                "foreign"
+              ],
+              [
+                "bdp-authorization-view",
+                "foreign"
+              ],
+              [
+                "bdp-minimum-scope-position",
+                "unknown"
+              ]
+            ],
+            "headers": {
+              "bdp-scope-epoch": "d5bdb14f-92a8-49af-83ca-ce5bf3374220",
+              "bdp-authorization-view": "development-all-visible",
+              "bdp-scope-position": "pos-2",
+              "content-type": "application/problem+json",
+              "content-length": "125",
+              "cache-control": "private, no-store",
+              "retry-after": null,
+              "etag": null,
+              "x-bdp-development-limit": null,
+              "x-bdp-development": "non-attesting"
+            },
+            "readyObserved": true,
+            "drained": true,
+            "transportClosedObserved": true,
+            "drainKind": "finite-body",
+            "availability": {
+              "status": true,
+              "headers": true,
+              "body": true,
+              "wire": true
+            },
+            "bodyState": "drained"
+          },
+          {
+            "ordinal": 30,
+            "method": "GET",
+            "url": "https://sse.invalid/acme/changes/?after=genesis",
+            "status": 200,
+            "bodyOctets": 1334,
+            "bodySha256": "b75116fbd7ea96ecbc671cb650e109716790ef2261f5fe69a716e05ab2d320e1",
+            "wireSha256": "81e80b8b7165af79afdcbb8ecbf3cc624fbb438f0eb84e19f82f5220412c3050",
+            "requestHeaders": [
+              [
+                "Accept",
+                "text/event-stream"
+              ],
+              [
+                "bdp-scope-epoch",
+                "d5bdb14f-92a8-49af-83ca-ce5bf3374220"
+              ],
+              [
+                "bdp-authorization-view",
+                "development-all-visible"
+              ],
+              [
+                "bdp-minimum-scope-position",
+                "pos-2"
+              ],
+              [
+                "Last-Event-ID",
+                "cg_fPh7hZQX0yWUWqgvrXH6hNl90gDnKCu6pSwiCK0slrk_FBq2UIRWvdsq39xBULpK6fpc2eHeSawh49R3vEfI1h8_1"
+              ]
+            ],
+            "headers": {
+              "bdp-scope-epoch": "d5bdb14f-92a8-49af-83ca-ce5bf3374220",
+              "bdp-authorization-view": "development-all-visible",
+              "bdp-scope-position": "pos-2",
+              "content-type": "text/event-stream",
+              "content-length": null,
+              "cache-control": "no-store, no-transform",
+              "retry-after": null,
+              "etag": null,
+              "x-bdp-development-limit": null,
+              "x-bdp-development": "non-attesting"
+            },
+            "readyObserved": true,
+            "drained": true,
+            "transportClosedObserved": true,
+            "drainKind": "intentional-live",
+            "availability": {
+              "status": true,
+              "headers": true,
+              "body": true,
+              "wire": true
+            },
+            "bodyState": "drained"
+          },
+          {
+            "ordinal": 31,
+            "method": "HEAD",
+            "url": "https://sse.invalid/acme/changes/?start=now",
+            "status": 503,
+            "bodyOctets": 0,
+            "bodySha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+            "wireSha256": "6392624ce052e391d40bb1449850c14c53ab724b9d33ad9ce5cae4fc060cbff0",
+            "requestHeaders": [
+              [
+                "Accept",
+                "text/event-stream"
+              ],
+              [
+                "bdp-scope-epoch",
+                "d5bdb14f-92a8-49af-83ca-ce5bf3374220"
+              ],
+              [
+                "bdp-authorization-view",
+                "development-all-visible"
+              ],
+              [
+                "bdp-minimum-scope-position",
+                "unknown"
+              ]
+            ],
+            "headers": {
+              "bdp-scope-epoch": "d5bdb14f-92a8-49af-83ca-ce5bf3374220",
+              "bdp-authorization-view": "development-all-visible",
+              "bdp-scope-position": "pos-2",
+              "content-type": "application/problem+json",
+              "content-length": "127",
+              "cache-control": "private, no-store",
+              "retry-after": "1",
+              "etag": null,
+              "x-bdp-development-limit": null,
+              "x-bdp-development": "non-attesting"
+            },
+            "readyObserved": true,
+            "drained": true,
+            "transportClosedObserved": true,
+            "drainKind": "finite-body",
+            "availability": {
+              "status": true,
+              "headers": true,
+              "body": true,
+              "wire": true
+            },
+            "bodyState": "drained"
+          },
+          {
+            "ordinal": 32,
+            "method": "GET",
+            "url": "https://sse.invalid/acme/changes/?after=genesis",
+            "status": 401,
+            "bodyOctets": 136,
+            "bodySha256": "9d3ea90197aca7525a1eb9d6c0f2845d5ad3656852c3d5ca1f4fd2df55b346c3",
+            "wireSha256": "58f6c643df8c084c0ef635927a5405cb7167972516f6dab455b3f6ff2202c1a0",
+            "requestHeaders": [
+              [
+                "Accept",
+                "text/event-stream"
+              ],
+              [
+                "bdp-scope-epoch",
+                "d5bdb14f-92a8-49af-83ca-ce5bf3374220"
+              ],
+              [
+                "bdp-authorization-view",
+                "development-all-visible"
+              ],
+              [
+                "bdp-minimum-scope-position",
+                "unknown"
+              ]
+            ],
+            "headers": {
+              "bdp-scope-epoch": null,
+              "bdp-authorization-view": null,
+              "bdp-scope-position": null,
+              "content-type": "application/problem+json",
+              "content-length": "136",
+              "cache-control": "private, no-store",
+              "retry-after": null,
+              "etag": null,
+              "x-bdp-development-limit": null,
+              "x-bdp-development": "non-attesting"
+            },
+            "readyObserved": true,
+            "drained": true,
+            "transportClosedObserved": true,
+            "drainKind": "finite-body",
+            "availability": {
+              "status": true,
+              "headers": true,
+              "body": true,
+              "wire": true
+            },
+            "bodyState": "drained"
+          }
+        ],
+        "stream": {
+          "request": 30,
+          "status": 200,
+          "readyObserved": true,
+          "liveBeforeClose": true,
+          "afterDrain": true,
+          "destroyed": true,
+          "frames": [
+            "id: cg_fPh7hZQX0yWUWqgvrXH6hNl90gDnKCu6pSwiCK0slrk_FBq2UIRWvdsq39xBULpK6fpc2eHeSawh49R3vEfI1h8_2\nevent: change-group\ndata: {\"scopeEpoch\":\"d5bdb14f-92a8-49af-83ca-ce5bf3374220\",\"authorizationView\":\"development-all-visible\",\"checkpoint\":\"cg_fPh7hZQX0yWUWqgvrXH6hNl90gDnKCu6pSwiCK0slrk_FBq2UIRWvdsq39xBULpK6fpc2eHeSawh49R3vEfI1h8_2\",\"position\":\"pos-2\",\"previousPosition\":\"pos-1\",\"projectionAdvance\":false,\"transaction\":\"6cd74d37-3501-4ed9-ad10-5bd992bac9db\",\"changes\":[{\"operation\":\"upsert\",\"resourceKind\":\"bead\",\"resource\":{\"id\":\"https://sse.invalid/acme/beads/b\",\"type\":\"https://sse.invalid/acme/types/task\",\"revision\":\"df04104a-86dc-4d9a-9b3e-de85e6efab82\",\"properties\":{\"title\":\"current-feed-b\"},\"metadata\":{},\"ownedLinks\":{\"https://sse.invalid/acme/types/link\":[]}}}],\"erasures\":[],\"eventCount\":1,\"events\":[{\"id\":\"ev_6HQfdpILi_q0AkaRJBCBM9oWGgtjZFCS7z5eWM8VcQU_bLUW9ljdXBysp41tfjGcabueApuHaoJDxyqyaQ2NBU4_PyHdFL10T4dsEOkNo1sbvlcxSJ2SOLqIm_DReT5HDp0_pos-2_0\",\"ordinal\":0,\"type\":\"created\",\"source\":\"https://sse.invalid/acme/events/\",\"subject\":\"https://sse.invalid/acme/beads/b\",\"subjectType\":\"https://sse.invalid/acme/types/task\",\"transaction\":\"6cd74d37-3501-4ed9-ad10-5bd992bac9db\",\"time\":\"2026-10-18T05:17:38.051Z\",\"data\":{\"revision\":\"df04104a-86dc-4d9a-9b3e-de85e6efab82\",\"properties\":{\"title\":\"current-feed-b\"},\"metadata\":{}}}]}"
+          ],
+          "checkpoint": "cg_fPh7hZQX0yWUWqgvrXH6hNl90gDnKCu6pSwiCK0slrk_FBq2UIRWvdsq39xBULpK6fpc2eHeSawh49R3vEfI1h8_2",
+          "group": {
+            "scopeEpoch": "d5bdb14f-92a8-49af-83ca-ce5bf3374220",
+            "authorizationView": "development-all-visible",
+            "checkpoint": "cg_fPh7hZQX0yWUWqgvrXH6hNl90gDnKCu6pSwiCK0slrk_FBq2UIRWvdsq39xBULpK6fpc2eHeSawh49R3vEfI1h8_2",
+            "position": "pos-2",
+            "previousPosition": "pos-1",
+            "projectionAdvance": false,
+            "transaction": "6cd74d37-3501-4ed9-ad10-5bd992bac9db",
+            "changes": [
+              {
+                "operation": "upsert",
+                "resourceKind": "bead",
+                "resource": {
+                  "id": "https://sse.invalid/acme/beads/b",
+                  "type": "https://sse.invalid/acme/types/task",
+                  "revision": "df04104a-86dc-4d9a-9b3e-de85e6efab82",
+                  "properties": {
+                    "title": "current-feed-b"
+                  },
+                  "metadata": {},
+                  "ownedLinks": {
+                    "https://sse.invalid/acme/types/link": []
+                  }
+                }
+              }
+            ],
+            "erasures": [],
+            "eventCount": 1,
+            "events": [
+              {
+                "id": "ev_6HQfdpILi_q0AkaRJBCBM9oWGgtjZFCS7z5eWM8VcQU_bLUW9ljdXBysp41tfjGcabueApuHaoJDxyqyaQ2NBU4_PyHdFL10T4dsEOkNo1sbvlcxSJ2SOLqIm_DReT5HDp0_pos-2_0",
+                "ordinal": 0,
+                "type": "created",
+                "source": "https://sse.invalid/acme/events/",
+                "subject": "https://sse.invalid/acme/beads/b",
+                "subjectType": "https://sse.invalid/acme/types/task",
+                "transaction": "6cd74d37-3501-4ed9-ad10-5bd992bac9db",
+                "time": "2026-10-18T05:17:38.051Z",
+                "data": {
+                  "revision": "df04104a-86dc-4d9a-9b3e-de85e6efab82",
+                  "properties": {
+                    "title": "current-feed-b"
+                  },
+                  "metadata": {}
+                }
+              }
+            ]
+          },
+          "headers": {
+            "bdp-scope-epoch": "d5bdb14f-92a8-49af-83ca-ce5bf3374220",
+            "bdp-authorization-view": "development-all-visible",
+            "bdp-scope-position": "pos-2",
+            "content-type": "text/event-stream",
+            "content-length": null,
+            "cache-control": "no-store, no-transform",
+            "retry-after": null,
+            "etag": null,
+            "x-bdp-development-limit": null,
+            "x-bdp-development": "non-attesting"
+          }
+        },
+        "elapsedMs": 305.067818,
+        "runtimeClosed": true,
+        "stopUnknown": false,
+        "workDeadlineFired": false,
+        "pendingOperationsAtReport": 0,
+        "directory": "/tmp/bdp-current-feed-http-uPlLP5",
+        "directoryAbsent": true,
+        "failureCount": 0,
+        "claimEligible": false
+      }
+    }
+  ],
+  "selectedLegacySource2": [
+    {
+      "line": 1867,
+      "value": {
+        "observation": "changefeed-opaque-boundaries",
+        "outcome": "passed",
+        "captures": 2,
+        "reads": 4,
+        "waits": 0,
+        "clocks": 2,
+        "outcomes": [
+          "default-owner-TypeError",
+          "default-service-TypeError",
+          "after-TypeError",
+          "malformed-TypeError",
+          "unsupported-sentinel",
+          "foreign-cursor-expired",
+          "valid-closed",
+          "malformed-before-closed",
+          "owner-closed"
+        ],
+        "failureCount": 0
+      }
+    },
+    {
+      "line": 1878,
+      "value": {
+        "observation": "changefeed-opaque-http",
+        "outcome": "passed",
+        "attempted": 10,
+        "exchanges": 10,
+        "records": [
+          {
+            "ordinal": 1,
+            "method": "POST",
+            "url": "https://example.test/feed/operations/batch",
+            "status": 200,
+            "bodyOctets": 704,
+            "bodySha256": "cbb430d9022f11d9d964df5f500a4dcdc32b05d4bc2b08dc6ae6632c4d4cb9fd",
+            "headers": {
+              "bdp-scope-epoch": "98da5847-b77a-4576-8d33-6e2fa58e903a",
+              "bdp-authorization-view": "development-all-visible",
+              "bdp-scope-position": "pos-1",
+              "content-type": "application/json",
+              "content-length": "704",
+              "cache-control": "private, no-store",
+              "retry-after": null,
+              "etag": null,
+              "x-bdp-development-limit": null
+            }
+          },
+          {
+            "ordinal": 2,
+            "method": "GET",
+            "url": "https://example.test/feed/changes/?start=now",
+            "status": 200,
+            "bodyOctets": 294,
+            "bodySha256": "d8144b55ef0cfc7a39f1824779710f847eac577e7a3bc0e14c4091c436afd96d",
+            "headers": {
+              "bdp-scope-epoch": "98da5847-b77a-4576-8d33-6e2fa58e903a",
+              "bdp-authorization-view": "development-all-visible",
+              "bdp-scope-position": "pos-1",
+              "content-type": "application/json",
+              "content-length": "294",
+              "cache-control": "private, no-store",
+              "retry-after": null,
+              "etag": null,
+              "x-bdp-development-limit": null
+            }
+          },
+          {
+            "ordinal": 3,
+            "method": "HEAD",
+            "url": "https://example.test/feed/changes/?start=now",
+            "status": 200,
+            "bodyOctets": 0,
+            "bodySha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+            "headers": {
+              "bdp-scope-epoch": "98da5847-b77a-4576-8d33-6e2fa58e903a",
+              "bdp-authorization-view": "development-all-visible",
+              "bdp-scope-position": "pos-1",
+              "content-type": "application/json",
+              "content-length": "294",
+              "cache-control": "private, no-store",
+              "retry-after": null,
+              "etag": null,
+              "x-bdp-development-limit": null
+            }
+          },
+          {
+            "ordinal": 4,
+            "method": "GET",
+            "url": "https://example.test/feed/changes/?start=now",
+            "status": 503,
+            "bodyOctets": 127,
+            "bodySha256": "5e7c50923b5ef2e22379c96cbec4f9197175e38d9a81970f7db4f81ae46255b0",
+            "headers": {
+              "bdp-scope-epoch": "98da5847-b77a-4576-8d33-6e2fa58e903a",
+              "bdp-authorization-view": "development-all-visible",
+              "bdp-scope-position": "pos-1",
+              "content-type": "application/problem+json",
+              "content-length": "127",
+              "cache-control": "private, no-store",
+              "retry-after": "1",
+              "etag": null,
+              "x-bdp-development-limit": null
+            }
+          },
+          {
+            "ordinal": 5,
+            "method": "HEAD",
+            "url": "https://example.test/feed/changes/?start=now",
+            "status": 503,
+            "bodyOctets": 0,
+            "bodySha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+            "headers": {
+              "bdp-scope-epoch": "98da5847-b77a-4576-8d33-6e2fa58e903a",
+              "bdp-authorization-view": "development-all-visible",
+              "bdp-scope-position": "pos-1",
+              "content-type": "application/problem+json",
+              "content-length": "127",
+              "cache-control": "private, no-store",
+              "retry-after": "1",
+              "etag": null,
+              "x-bdp-development-limit": null
+            }
+          },
+          {
+            "ordinal": 6,
+            "method": "GET",
+            "url": "https://example.test/feed/changes/?start=now",
+            "status": 503,
+            "bodyOctets": 127,
+            "bodySha256": "5e7c50923b5ef2e22379c96cbec4f9197175e38d9a81970f7db4f81ae46255b0",
+            "headers": {
+              "bdp-scope-epoch": "98da5847-b77a-4576-8d33-6e2fa58e903a",
+              "bdp-authorization-view": "development-all-visible",
+              "bdp-scope-position": "pos-1",
+              "content-type": "application/problem+json",
+              "content-length": "127",
+              "cache-control": "private, no-store",
+              "retry-after": "1",
+              "etag": null,
+              "x-bdp-development-limit": null
+            }
+          },
+          {
+            "ordinal": 7,
+            "method": "HEAD",
+            "url": "https://example.test/feed/changes/?start=now",
+            "status": 503,
+            "bodyOctets": 0,
+            "bodySha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+            "headers": {
+              "bdp-scope-epoch": "98da5847-b77a-4576-8d33-6e2fa58e903a",
+              "bdp-authorization-view": "development-all-visible",
+              "bdp-scope-position": "pos-1",
+              "content-type": "application/problem+json",
+              "content-length": "127",
+              "cache-control": "private, no-store",
+              "retry-after": "1",
+              "etag": null,
+              "x-bdp-development-limit": null
+            }
+          },
+          {
+            "ordinal": 8,
+            "method": "GET",
+            "url": "https://example.test/feed/changes/?after=genesis",
+            "status": 503,
+            "bodyOctets": 127,
+            "bodySha256": "5e7c50923b5ef2e22379c96cbec4f9197175e38d9a81970f7db4f81ae46255b0",
+            "headers": {
+              "bdp-scope-epoch": "98da5847-b77a-4576-8d33-6e2fa58e903a",
+              "bdp-authorization-view": "development-all-visible",
+              "bdp-scope-position": "pos-1",
+              "content-type": "application/problem+json",
+              "content-length": "127",
+              "cache-control": "private, no-store",
+              "retry-after": "1",
+              "etag": null,
+              "x-bdp-development-limit": null
+            }
+          },
+          {
+            "ordinal": 9,
+            "method": "GET",
+            "url": "https://example.test/feed/changes/?start=now",
+            "status": 503,
+            "bodyOctets": 127,
+            "bodySha256": "5e7c50923b5ef2e22379c96cbec4f9197175e38d9a81970f7db4f81ae46255b0",
+            "headers": {
+              "bdp-scope-epoch": "98da5847-b77a-4576-8d33-6e2fa58e903a",
+              "bdp-authorization-view": "development-all-visible",
+              "bdp-scope-position": "pos-1",
+              "content-type": "application/problem+json",
+              "content-length": "127",
+              "cache-control": "private, no-store",
+              "retry-after": "1",
+              "etag": null,
+              "x-bdp-development-limit": null
+            }
+          },
+          {
+            "ordinal": 10,
+            "method": "GET",
+            "url": "https://example.test/feed/changes/?start=now",
+            "status": 400,
+            "bodyOctets": 118,
+            "bodySha256": "c42495c7aceb17f70d66be3b14415057805675541db06619cc439bcc5cb010f2",
+            "headers": {
+              "bdp-scope-epoch": null,
+              "bdp-authorization-view": null,
+              "bdp-scope-position": null,
+              "content-type": "application/problem+json",
+              "content-length": "118",
+              "cache-control": "private, no-store",
+              "retry-after": null,
+              "etag": null,
+              "x-bdp-development-limit": null
+            }
+          }
+        ],
+        "deadlineExceeded": false,
+        "cleanupDeadlineExceeded": false,
+        "closed": true,
+        "directory": "/tmp/bdp-feed-opaque-http-M33ZUU",
+        "directoryAbsent": true,
+        "failureCount": 0
+      }
+    }
+  ],
+  "finiteInstalled4": {
+    "line": 3433,
+    "value": {
+      "observation": "private-installed-changefeed-opaque-minimum",
+      "declaredSourceCommit": "cce884ccea1db97cbc6fd7bff876d4d6091f9081",
+      "workspaceDirty": false,
+      "entry": "/home/runner/work/bdp/bdp/packages/server/dist/transaction-installed-process.js",
+      "entrySha256": "bcf153170f953f9e28c6c89f1153be907f64df289e64f3ad929cad4a4a54c47c",
+      "artifactSha256": "99d2d9dfe732f98371b7887a7f8415714b7932f313a4d622bc07b0b1911ab0ba",
+      "binding": {
+        "served": {
+          "scope": "https://reference.invalid/acme/",
+          "profile": "transactional",
+          "history": false,
+          "sourceCommit": "cce884ccea1db97cbc6fd7bff876d4d6091f9081",
+          "installedPayloadDigest": "7cbcf15c426fa98f5a8779353dac339b2a9d69c84c79f8b374aeabdeb9f516d4",
+          "installedContractsDigest": "20ac1760c5f180db51459da74a501417a2701393369732254c51e7ec9a64c1e9",
+          "policyDigest": "53445c268389d17c66e713565a2914fad3bee51f010412533896d2e9e64f31b0",
+          "authenticationDigest": "b3b619f643164577dd17af8fa3b5c34b0021e165faa4771778defe62590b5b57",
+          "fixtureDigest": "3a7899ced771d4880066d98b0000c53f801ece53458502cc4f3bc641146c9a85",
+          "fixtureId": "reference-transactional-v1",
+          "capabilities": [
+            "installed-transactional-http",
+            "transactional-receipt-observation"
+          ]
+        },
+        "operationTargets": {
+          "createBead": "https://reference.invalid/acme/operations/create-bead",
+          "updateBead": "https://reference.invalid/acme/operations/update-bead",
+          "deleteBead": "https://reference.invalid/acme/operations/delete-bead",
+          "createLink": "https://reference.invalid/acme/operations/create-link",
+          "updateLink": "https://reference.invalid/acme/operations/update-link",
+          "deleteLink": "https://reference.invalid/acme/operations/delete-link",
+          "putAlias": "https://reference.invalid/acme/operations/put-alias",
+          "deleteAlias": "https://reference.invalid/acme/operations/delete-alias",
+          "updateWhere": "https://reference.invalid/acme/operations/update-where",
+          "deleteWhere": "https://reference.invalid/acme/operations/delete-where",
+          "batch": "https://reference.invalid/acme/operations/batch",
+          "sequence": "https://reference.invalid/acme/operations/sequence"
+        },
+        "runtimeConfigurationIdentity": "8e440966604918339dbb95aa27c02d4afc4e7b25ae062e0dc6474723471762ea",
+        "authorityMode": "canonical"
+      },
+      "attempted": 4,
+      "exchanges": 4,
+      "completedResponses": [
+        {
+          "method": "POST",
+          "url": "https://reference.invalid/acme/operations/batch",
+          "status": 200,
+          "bodyOctets": 694,
+          "bodySha256": "990a70fe0e7d75fe15060a593860fd23db72ae30b8b1cb0cabf3c6433a3ff24d",
+          "wireSha256": "102b1641051eb49847f65f5497b9e1cd2dfc73c29a6fe384bf17e9fcc5b78c88",
+          "headers": {
+            "bdp-scope-epoch": "a05273ca-2f78-45f6-97ac-da69e4b2de53",
+            "bdp-authorization-view": "development-all-visible",
+            "bdp-scope-position": "pos-1",
+            "content-length": "694",
+            "content-type": "application/json",
+            "cache-control": "private, no-store",
+            "retry-after": null,
+            "location": null,
+            "etag": null,
+            "x-bdp-development": "non-attesting",
+            "x-bdp-development-limit": null
+          }
+        },
+        {
+          "method": "GET",
+          "url": "https://reference.invalid/acme/changes/?start=now",
+          "status": 200,
+          "bodyOctets": 299,
+          "bodySha256": "f9509d543ba00f014673bd4c78a64b5770fa1c2db4e7e541c5051fc29a3cf639",
+          "wireSha256": "7802f472dc0ab7a6b0a5e037814958bcc4deceae4a16202efc1891a1c884c5de",
+          "headers": {
+            "bdp-scope-epoch": "a05273ca-2f78-45f6-97ac-da69e4b2de53",
+            "bdp-authorization-view": "development-all-visible",
+            "bdp-scope-position": "pos-1",
+            "content-length": "299",
+            "content-type": "application/json",
+            "cache-control": "private, no-store",
+            "retry-after": null,
+            "location": null,
+            "etag": null,
+            "x-bdp-development": "non-attesting",
+            "x-bdp-development-limit": null
+          }
+        },
+        {
+          "method": "GET",
+          "url": "https://reference.invalid/acme/changes/?start=now",
+          "status": 503,
+          "bodyOctets": 127,
+          "bodySha256": "5e7c50923b5ef2e22379c96cbec4f9197175e38d9a81970f7db4f81ae46255b0",
+          "wireSha256": "505268f7882b4f02d9cab4fc052b7c33452e8b7e13beeedef6bf20907ec1a5b9",
+          "headers": {
+            "bdp-scope-epoch": "a05273ca-2f78-45f6-97ac-da69e4b2de53",
+            "bdp-authorization-view": "development-all-visible",
+            "bdp-scope-position": "pos-1",
+            "content-length": "127",
+            "content-type": "application/problem+json",
+            "cache-control": "private, no-store",
+            "retry-after": "1",
+            "location": null,
+            "etag": null,
+            "x-bdp-development": "non-attesting",
+            "x-bdp-development-limit": null
+          }
+        },
+        {
+          "method": "HEAD",
+          "url": "https://reference.invalid/acme/changes/?start=now",
+          "status": 503,
+          "bodyOctets": 0,
+          "bodySha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "wireSha256": "cae00a2aafcf119a8a59f541e2dd38eea94a6a1f096c8a7caa6a20375e167425",
+          "headers": {
+            "bdp-scope-epoch": "a05273ca-2f78-45f6-97ac-da69e4b2de53",
+            "bdp-authorization-view": "development-all-visible",
+            "bdp-scope-position": "pos-1",
+            "content-length": "127",
+            "content-type": "application/problem+json",
+            "cache-control": "private, no-store",
+            "retry-after": "1",
+            "location": null,
+            "etag": null,
+            "x-bdp-development": "non-attesting",
+            "x-bdp-development-limit": null
+          }
+        }
+      ],
+      "assertionsCompleted": true,
+      "deadlineFired": false,
+      "lifecycleAtReport": {
+        "launchAttempted": true,
+        "returnedChild": true,
+        "pid": 20927,
+        "exitCode": 0,
+        "signalCode": null,
+        "observedExit": {
+          "code": 0,
+          "signal": null
+        },
+        "observedClose": {
+          "code": 0,
+          "signal": null
+        },
+        "childStdioDrainObserved": true,
+        "closure": "clean",
+        "cleanClose": true,
+        "cleanupDeadlineExceeded": false,
+        "pendingExchanges": 0,
+        "pendingDrained": true,
+        "settledExchanges": 4,
+        "socketCloseCensusAvailable": false,
+        "transportSettlementContract": "executor destroys socket before exchange settles",
+        "lateCleanupRejectionObserved": false,
+        "directory": "/tmp/bdp-changefeed-opaque-installed-SyceiB",
+        "directoryRemoved": true,
+        "directoryPresent": false
+      },
+      "failureCategories": [],
+      "outcome": "passed",
+      "claimEligible": false
+    }
+  },
+  "currentInstalled10": {
+    "line": 3442,
+    "value": {
+      "observation": "private-installed-current-changefeed-minimum",
+      "outcome": "passed",
+      "attempted": 10,
+      "settledFiniteExchanges": 9,
+      "responses": [
+        {
+          "ordinal": 1,
+          "method": "POST",
+          "url": "https://reference.invalid/acme/operations/batch",
+          "status": 200,
+          "bodyOctets": 682,
+          "bodySha256": "fd373eed8755de5243ac8a71789a776d5f8c77fafaa7c71abf67b90945dda9d1",
+          "wireSha256": "098eb3f53040a91f8d2df631934794372f9f373b3ef489829ce7a8c36db559f4",
+          "requestHeaders": [
+            {
+              "name": "content-type",
+              "value": "application/json"
+            },
+            {
+              "name": "accept",
+              "value": "application/json"
+            },
+            {
+              "name": "idempotency-key",
+              "value": "current-feed-a"
+            }
+          ],
+          "headers": {
+            "bdp-scope-epoch": "a1d70924-ec96-4c4f-a7f7-5647dfa96e18",
+            "bdp-authorization-view": "development-all-visible",
+            "bdp-scope-position": "pos-1",
+            "content-type": "application/json",
+            "content-length": "682",
+            "cache-control": "private, no-store",
+            "retry-after": null,
+            "www-authenticate": null,
+            "x-bdp-development": "non-attesting",
+            "x-bdp-development-limit": null,
+            "etag": null
+          }
+        },
+        {
+          "ordinal": 2,
+          "method": "POST",
+          "url": "https://reference.invalid/acme/operations/batch",
+          "status": 200,
+          "bodyOctets": 682,
+          "bodySha256": "710332157c1f2d3d5ae4626cf4fd90abc4fa8308349777710322b5241984d122",
+          "wireSha256": "3c49f7faeac499a5633bcb0dd8e88d1b2dc6ef1fea757513f626bb5db1a225c8",
+          "requestHeaders": [
+            {
+              "name": "content-type",
+              "value": "application/json"
+            },
+            {
+              "name": "accept",
+              "value": "application/json"
+            },
+            {
+              "name": "idempotency-key",
+              "value": "current-feed-b"
+            }
+          ],
+          "headers": {
+            "bdp-scope-epoch": "a1d70924-ec96-4c4f-a7f7-5647dfa96e18",
+            "bdp-authorization-view": "development-all-visible",
+            "bdp-scope-position": "pos-2",
+            "content-type": "application/json",
+            "content-length": "682",
+            "cache-control": "private, no-store",
+            "retry-after": null,
+            "www-authenticate": null,
+            "x-bdp-development": "non-attesting",
+            "x-bdp-development-limit": null,
+            "etag": null
+          }
+        },
+        {
+          "ordinal": 3,
+          "method": "GET",
+          "url": "https://reference.invalid/acme/changes/?after=genesis",
+          "status": 200,
+          "bodyOctets": 1533,
+          "bodySha256": "05c6e895c0c8ea507c1e98c3e79d0bbe7ab36a0d9c82d2e3ba3b6b220d6af5e5",
+          "wireSha256": "834527f09a1caf2841cabf6c956e2141a58b4041ef48299761b83d5943fe0abb",
+          "requestHeaders": [
+            {
+              "name": "Accept",
+              "value": "application/json"
+            },
+            {
+              "name": "bdp-scope-epoch",
+              "value": "a1d70924-ec96-4c4f-a7f7-5647dfa96e18"
+            },
+            {
+              "name": "bdp-authorization-view",
+              "value": "development-all-visible"
+            },
+            {
+              "name": "bdp-minimum-scope-position",
+              "value": "pos-2"
+            }
+          ],
+          "headers": {
+            "bdp-scope-epoch": "a1d70924-ec96-4c4f-a7f7-5647dfa96e18",
+            "bdp-authorization-view": "development-all-visible",
+            "bdp-scope-position": "pos-2",
+            "content-type": "application/json",
+            "content-length": "1533",
+            "cache-control": "private, no-store",
+            "retry-after": null,
+            "www-authenticate": null,
+            "x-bdp-development": "non-attesting",
+            "x-bdp-development-limit": null,
+            "etag": null
+          }
+        },
+        {
+          "ordinal": 4,
+          "method": "GET",
+          "url": "https://reference.invalid/acme/changes/?after=cg_58hd87CHaiZy2lfUgMQqQegjbZSq3h5fY-scejcO9-A_z7vEpwR4wkAi8sKp-Ys2CdBqKpJnZvFlwlxDOJ41Pc0_1",
+          "status": 200,
+          "bodyOctets": 1482,
+          "bodySha256": "fd9bf69c7c53796bf724020a48f6782473225f24e83c58c75b8f7842f0c1f7d3",
+          "wireSha256": "7105e6bae3ac8883ba5a9d27d1181bb730af61202fc2013dfa8613cc93322613",
+          "requestHeaders": [
+            {
+              "name": "Accept",
+              "value": "application/json"
+            },
+            {
+              "name": "bdp-scope-epoch",
+              "value": "a1d70924-ec96-4c4f-a7f7-5647dfa96e18"
+            },
+            {
+              "name": "bdp-authorization-view",
+              "value": "development-all-visible"
+            },
+            {
+              "name": "bdp-minimum-scope-position",
+              "value": "pos-2"
+            }
+          ],
+          "headers": {
+            "bdp-scope-epoch": "a1d70924-ec96-4c4f-a7f7-5647dfa96e18",
+            "bdp-authorization-view": "development-all-visible",
+            "bdp-scope-position": "pos-2",
+            "content-type": "application/json",
+            "content-length": "1482",
+            "cache-control": "private, no-store",
+            "retry-after": null,
+            "www-authenticate": null,
+            "x-bdp-development": "non-attesting",
+            "x-bdp-development-limit": null,
+            "etag": null
+          }
+        },
+        {
+          "ordinal": 5,
+          "method": "GET",
+          "url": "https://reference.invalid/acme/changes/?after=genesis",
+          "status": 503,
+          "bodyOctets": 127,
+          "bodySha256": "5e7c50923b5ef2e22379c96cbec4f9197175e38d9a81970f7db4f81ae46255b0",
+          "wireSha256": "3b2aedbdc1c694fa2d78f9d40359980f4a595e016ef53bfdca1ddc8eb4ad2ebf",
+          "requestHeaders": [
+            {
+              "name": "Accept",
+              "value": "application/json"
+            },
+            {
+              "name": "bdp-scope-epoch",
+              "value": "a1d70924-ec96-4c4f-a7f7-5647dfa96e18"
+            },
+            {
+              "name": "bdp-authorization-view",
+              "value": "development-all-visible"
+            },
+            {
+              "name": "bdp-minimum-scope-position",
+              "value": "unknown"
+            },
+            {
+              "name": "If-None-Match",
+              "value": "*"
+            }
+          ],
+          "headers": {
+            "bdp-scope-epoch": "a1d70924-ec96-4c4f-a7f7-5647dfa96e18",
+            "bdp-authorization-view": "development-all-visible",
+            "bdp-scope-position": "pos-2",
+            "content-type": "application/problem+json",
+            "content-length": "127",
+            "cache-control": "private, no-store",
+            "retry-after": "1",
+            "www-authenticate": null,
+            "x-bdp-development": "non-attesting",
+            "x-bdp-development-limit": null,
+            "etag": null
+          }
+        },
+        {
+          "ordinal": 6,
+          "method": "GET",
+          "url": "https://reference.invalid/acme/changes/?after=cg_58hd87CHaiZy2lfUgMQqQegjbZSq3h5fY-scejcO9-A_z7vEpwR4wkAi8sKp-Ys2CdBqKpJnZvFlwlxDOJ41Pc0_1",
+          "status": 503,
+          "bodyOctets": 127,
+          "bodySha256": "5e7c50923b5ef2e22379c96cbec4f9197175e38d9a81970f7db4f81ae46255b0",
+          "wireSha256": "e38dd87a10ce9dda2104730001c62b4165766ab3a7f0792dd73c11446af9e439",
+          "requestHeaders": [
+            {
+              "name": "Accept",
+              "value": "application/json"
+            },
+            {
+              "name": "bdp-scope-epoch",
+              "value": "a1d70924-ec96-4c4f-a7f7-5647dfa96e18"
+            },
+            {
+              "name": "bdp-authorization-view",
+              "value": "development-all-visible"
+            },
+            {
+              "name": "bdp-minimum-scope-position",
+              "value": "pos-01"
+            },
+            {
+              "name": "If-Match",
+              "value": "\"missing\""
+            }
+          ],
+          "headers": {
+            "bdp-scope-epoch": "a1d70924-ec96-4c4f-a7f7-5647dfa96e18",
+            "bdp-authorization-view": "development-all-visible",
+            "bdp-scope-position": "pos-2",
+            "content-type": "application/problem+json",
+            "content-length": "127",
+            "cache-control": "private, no-store",
+            "retry-after": "1",
+            "www-authenticate": null,
+            "x-bdp-development": "non-attesting",
+            "x-bdp-development-limit": null,
+            "etag": null
+          }
+        },
+        {
+          "ordinal": 7,
+          "method": "GET",
+          "url": "https://reference.invalid/acme/changes/?start=now",
+          "status": 503,
+          "bodyOctets": 127,
+          "bodySha256": "5e7c50923b5ef2e22379c96cbec4f9197175e38d9a81970f7db4f81ae46255b0",
+          "wireSha256": "cd077d17dc86e1c80f21eab16ee36edd1c06f35905444dd997ca63abd890ea3f",
+          "requestHeaders": [
+            {
+              "name": "Accept",
+              "value": "text/event-stream"
+            },
+            {
+              "name": "bdp-scope-epoch",
+              "value": "a1d70924-ec96-4c4f-a7f7-5647dfa96e18"
+            },
+            {
+              "name": "bdp-authorization-view",
+              "value": "development-all-visible"
+            },
+            {
+              "name": "bdp-minimum-scope-position",
+              "value": "unknown"
+            }
+          ],
+          "headers": {
+            "bdp-scope-epoch": "a1d70924-ec96-4c4f-a7f7-5647dfa96e18",
+            "bdp-authorization-view": "development-all-visible",
+            "bdp-scope-position": "pos-2",
+            "content-type": "application/problem+json",
+            "content-length": "127",
+            "cache-control": "private, no-store",
+            "retry-after": "1",
+            "www-authenticate": null,
+            "x-bdp-development": "non-attesting",
+            "x-bdp-development-limit": null,
+            "etag": null
+          }
+        },
+        {
+          "ordinal": 8,
+          "method": "GET",
+          "url": "https://reference.invalid/acme/changes/?start=now",
+          "status": 503,
+          "bodyOctets": 127,
+          "bodySha256": "5e7c50923b5ef2e22379c96cbec4f9197175e38d9a81970f7db4f81ae46255b0",
+          "wireSha256": "40987b6429e8c0cd2422843fdabd5b1c9b38a7f6371f1a8a1edb1c18f358ad72",
+          "requestHeaders": [
+            {
+              "name": "Accept",
+              "value": "text/event-stream"
+            },
+            {
+              "name": "bdp-scope-epoch",
+              "value": "a1d70924-ec96-4c4f-a7f7-5647dfa96e18"
+            },
+            {
+              "name": "bdp-authorization-view",
+              "value": "development-all-visible"
+            },
+            {
+              "name": "bdp-minimum-scope-position",
+              "value": "unknown"
+            },
+            {
+              "name": "Last-Event-ID",
+              "value": "cg_58hd87CHaiZy2lfUgMQqQegjbZSq3h5fY-scejcO9-A_z7vEpwR4wkAi8sKp-Ys2CdBqKpJnZvFlwlxDOJ41Pc0_1"
+            }
+          ],
+          "headers": {
+            "bdp-scope-epoch": "a1d70924-ec96-4c4f-a7f7-5647dfa96e18",
+            "bdp-authorization-view": "development-all-visible",
+            "bdp-scope-position": "pos-2",
+            "content-type": "application/problem+json",
+            "content-length": "127",
+            "cache-control": "private, no-store",
+            "retry-after": "1",
+            "www-authenticate": null,
+            "x-bdp-development": "non-attesting",
+            "x-bdp-development-limit": null,
+            "etag": null
+          }
+        },
+        {
+          "ordinal": 9,
+          "method": "GET",
+          "url": "https://reference.invalid/acme/changes/?after=genesis",
+          "status": 503,
+          "bodyOctets": 127,
+          "bodySha256": "5e7c50923b5ef2e22379c96cbec4f9197175e38d9a81970f7db4f81ae46255b0",
+          "wireSha256": "4372f1738ed3da64f63a323f755e92b669062ab34c42bda23d3e0ec0a63d8559",
+          "requestHeaders": [
+            {
+              "name": "Accept",
+              "value": "application/json"
+            },
+            {
+              "name": "bdp-scope-epoch",
+              "value": "a1d70924-ec96-4c4f-a7f7-5647dfa96e18"
+            },
+            {
+              "name": "bdp-authorization-view",
+              "value": "development-all-visible"
+            },
+            {
+              "name": "bdp-minimum-scope-position",
+              "value": "unknown"
+            },
+            {
+              "name": "Last-Event-ID",
+              "value": "bad"
+            },
+            {
+              "name": "Last-Event-ID",
+              "value": "also-bad"
+            }
+          ],
+          "headers": {
+            "bdp-scope-epoch": "a1d70924-ec96-4c4f-a7f7-5647dfa96e18",
+            "bdp-authorization-view": "development-all-visible",
+            "bdp-scope-position": "pos-2",
+            "content-type": "application/problem+json",
+            "content-length": "127",
+            "cache-control": "private, no-store",
+            "retry-after": "1",
+            "www-authenticate": null,
+            "x-bdp-development": "non-attesting",
+            "x-bdp-development-limit": null,
+            "etag": null
+          }
+        }
+      ],
+      "stream": {
+        "request": 10,
+        "status": 200,
+        "readyObserved": true,
+        "liveBeforeClose": true,
+        "afterDrain": true,
+        "frames": [
+          "id: cg_58hd87CHaiZy2lfUgMQqQegjbZSq3h5fY-scejcO9-A_z7vEpwR4wkAi8sKp-Ys2CdBqKpJnZvFlwlxDOJ41Pc0_2\nevent: change-group\ndata: {\"scopeEpoch\":\"a1d70924-ec96-4c4f-a7f7-5647dfa96e18\",\"authorizationView\":\"development-all-visible\",\"checkpoint\":\"cg_58hd87CHaiZy2lfUgMQqQegjbZSq3h5fY-scejcO9-A_z7vEpwR4wkAi8sKp-Ys2CdBqKpJnZvFlwlxDOJ41Pc0_2\",\"position\":\"pos-2\",\"previousPosition\":\"pos-1\",\"projectionAdvance\":false,\"transaction\":\"ad9b8be5-fe58-4c83-b60f-56688533a000\",\"changes\":[{\"operation\":\"upsert\",\"resourceKind\":\"bead\",\"resource\":{\"id\":\"https://reference.invalid/acme/beads/b\",\"type\":\"https://reference.invalid/acme/types/task\",\"revision\":\"fb9737ab-e8df-4d5b-8db7-fd30762d40c9\",\"properties\":{\"title\":\"current-feed-b\"},\"metadata\":{}}}],\"erasures\":[],\"eventCount\":1,\"events\":[{\"id\":\"ev_Xck1GKAcWQG7Yq6dbN1vQy8s6xMaIT7zVyyrBh419fc_bLUW9ljdXBysp41tfjGcabueApuHaoJDxyqyaQ2NBU4_2WXVispO6JHYwJi-mIXS3HyQCITqv2cC6A7yD05OAO0_pos-2_0\",\"ordinal\":0,\"type\":\"created\",\"source\":\"https://reference.invalid/acme/events/\",\"subject\":\"https://reference.invalid/acme/beads/b\",\"subjectType\":\"https://reference.invalid/acme/types/task\",\"transaction\":\"ad9b8be5-fe58-4c83-b60f-56688533a000\",\"time\":\"2026-10-18T05:18:15.407Z\",\"data\":{\"revision\":\"fb9737ab-e8df-4d5b-8db7-fd30762d40c9\",\"properties\":{\"title\":\"current-feed-b\"},\"metadata\":{}}}]}"
+        ],
+        "group": {
+          "scopeEpoch": "a1d70924-ec96-4c4f-a7f7-5647dfa96e18",
+          "authorizationView": "development-all-visible",
+          "checkpoint": "cg_58hd87CHaiZy2lfUgMQqQegjbZSq3h5fY-scejcO9-A_z7vEpwR4wkAi8sKp-Ys2CdBqKpJnZvFlwlxDOJ41Pc0_2",
+          "position": "pos-2",
+          "previousPosition": "pos-1",
+          "projectionAdvance": false,
+          "transaction": "ad9b8be5-fe58-4c83-b60f-56688533a000",
+          "changes": [
+            {
+              "operation": "upsert",
+              "resourceKind": "bead",
+              "resource": {
+                "id": "https://reference.invalid/acme/beads/b",
+                "type": "https://reference.invalid/acme/types/task",
+                "revision": "fb9737ab-e8df-4d5b-8db7-fd30762d40c9",
+                "properties": {
+                  "title": "current-feed-b"
+                },
+                "metadata": {}
+              }
+            }
+          ],
+          "erasures": [],
+          "eventCount": 1,
+          "events": [
+            {
+              "id": "ev_Xck1GKAcWQG7Yq6dbN1vQy8s6xMaIT7zVyyrBh419fc_bLUW9ljdXBysp41tfjGcabueApuHaoJDxyqyaQ2NBU4_2WXVispO6JHYwJi-mIXS3HyQCITqv2cC6A7yD05OAO0_pos-2_0",
+              "ordinal": 0,
+              "type": "created",
+              "source": "https://reference.invalid/acme/events/",
+              "subject": "https://reference.invalid/acme/beads/b",
+              "subjectType": "https://reference.invalid/acme/types/task",
+              "transaction": "ad9b8be5-fe58-4c83-b60f-56688533a000",
+              "time": "2026-10-18T05:18:15.407Z",
+              "data": {
+                "revision": "fb9737ab-e8df-4d5b-8db7-fd30762d40c9",
+                "properties": {
+                  "title": "current-feed-b"
+                },
+                "metadata": {}
+              }
+            }
+          ]
+        },
+        "checkpoint": "cg_58hd87CHaiZy2lfUgMQqQegjbZSq3h5fY-scejcO9-A_z7vEpwR4wkAi8sKp-Ys2CdBqKpJnZvFlwlxDOJ41Pc0_2",
+        "wireSha256": "2f176b0f30f4f291a194ee3cdf71163b487cca010e22c4a4ab23a6bd5cac87f1",
+        "bodySha256": "1aafb20f4c15dfd9ee500d788f42a4853c8f04e84e25e7b51d1b5158a1896850",
+        "requestHeaders": [
+          [
+            "Accept",
+            "text/event-stream"
+          ],
+          [
+            "bdp-scope-epoch",
+            "a1d70924-ec96-4c4f-a7f7-5647dfa96e18"
+          ],
+          [
+            "bdp-authorization-view",
+            "development-all-visible"
+          ],
+          [
+            "bdp-minimum-scope-position",
+            "pos-2"
+          ],
+          [
+            "Last-Event-ID",
+            "cg_58hd87CHaiZy2lfUgMQqQegjbZSq3h5fY-scejcO9-A_z7vEpwR4wkAi8sKp-Ys2CdBqKpJnZvFlwlxDOJ41Pc0_1"
+          ]
+        ],
+        "headers": {
+          "bdp-scope-epoch": "a1d70924-ec96-4c4f-a7f7-5647dfa96e18",
+          "bdp-authorization-view": "development-all-visible",
+          "bdp-scope-position": "pos-2",
+          "content-type": "text/event-stream",
+          "content-length": null,
+          "cache-control": "no-store, no-transform",
+          "retry-after": null,
+          "www-authenticate": null,
+          "x-bdp-development": "non-attesting",
+          "x-bdp-development-limit": null,
+          "etag": null
+        }
+      },
+      "declaredSourceCommit": "cce884ccea1db97cbc6fd7bff876d4d6091f9081",
+      "workspaceDirty": false,
+      "witnessSourceSha256": "813c7446abbd064fe14425b81ae4befad7a55f54e30a44172209b6a82950fa77",
+      "trackedDiffSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "trackedDiffUnavailableReason": null,
+      "sourceLimitation": "Declared source and witness/diff hashes; installed payload/configuration independently bound by external validation",
+      "entryLiteral": "/home/runner/work/bdp/bdp/packages/server/dist/transaction-installed-process.js",
+      "entry": "/home/runner/work/bdp/bdp/packages/server/dist/transaction-installed-process.js",
+      "entrySha256": "bcf153170f953f9e28c6c89f1153be907f64df289e64f3ad929cad4a4a54c47c",
+      "binding": {
+        "served": {
+          "scope": "https://reference.invalid/acme/",
+          "profile": "transactional",
+          "history": false,
+          "sourceCommit": "cce884ccea1db97cbc6fd7bff876d4d6091f9081",
+          "installedPayloadDigest": "7cbcf15c426fa98f5a8779353dac339b2a9d69c84c79f8b374aeabdeb9f516d4",
+          "installedContractsDigest": "20ac1760c5f180db51459da74a501417a2701393369732254c51e7ec9a64c1e9",
+          "policyDigest": "2e4dd38783c5a31567a37054ecd3e88c6b73a4a731d44a9a16afc72f1876dd21",
+          "authenticationDigest": "b1a77268bad199651afa0f563a36b98cf842632c39297b8402a656ae71782f67",
+          "fixtureDigest": "3a7899ced771d4880066d98b0000c53f801ece53458502cc4f3bc641146c9a85",
+          "fixtureId": "reference-transactional-v1",
+          "capabilities": [
+            "installed-transactional-http",
+            "transactional-receipt-observation"
+          ]
+        },
+        "operationTargets": {
+          "createBead": "https://reference.invalid/acme/operations/create-bead",
+          "updateBead": "https://reference.invalid/acme/operations/update-bead",
+          "deleteBead": "https://reference.invalid/acme/operations/delete-bead",
+          "createLink": "https://reference.invalid/acme/operations/create-link",
+          "updateLink": "https://reference.invalid/acme/operations/update-link",
+          "deleteLink": "https://reference.invalid/acme/operations/delete-link",
+          "putAlias": "https://reference.invalid/acme/operations/put-alias",
+          "deleteAlias": "https://reference.invalid/acme/operations/delete-alias",
+          "updateWhere": "https://reference.invalid/acme/operations/update-where",
+          "deleteWhere": "https://reference.invalid/acme/operations/delete-where",
+          "batch": "https://reference.invalid/acme/operations/batch",
+          "sequence": "https://reference.invalid/acme/operations/sequence"
+        },
+        "runtimeConfigurationIdentity": "ea7bbaf3ebdde222ae6d2fbfa54f16104323a10958a3c8be2aa0fd25771f276c",
+        "authorityMode": "canonical"
+      },
+      "ready": {
+        "event": "qualification.ready",
+        "authorityMode": "canonical",
+        "runtimeConfigurationIdentity": "ea7bbaf3ebdde222ae6d2fbfa54f16104323a10958a3c8be2aa0fd25771f276c",
+        "artifactIdentity": "development-schema5-20ac1760c5f180db51459da74a501417a2701393369732254c51e7ec9a64c1e9",
+        "policyIdentity": "2e4dd38783c5a31567a37054ecd3e88c6b73a4a731d44a9a16afc72f1876dd21",
+        "authenticationIdentity": "b1a77268bad199651afa0f563a36b98cf842632c39297b8402a656ae71782f67",
+        "scope": "https://reference.invalid/acme/",
+        "profile": "transactional",
+        "history": false,
+        "claimEligible": false,
+        "listenUrl": "http://127.0.0.1:45543/",
+        "targets": {
+          "createBead": "https://reference.invalid/acme/operations/create-bead",
+          "updateBead": "https://reference.invalid/acme/operations/update-bead",
+          "deleteBead": "https://reference.invalid/acme/operations/delete-bead",
+          "createLink": "https://reference.invalid/acme/operations/create-link",
+          "updateLink": "https://reference.invalid/acme/operations/update-link",
+          "deleteLink": "https://reference.invalid/acme/operations/delete-link",
+          "putAlias": "https://reference.invalid/acme/operations/put-alias",
+          "deleteAlias": "https://reference.invalid/acme/operations/delete-alias",
+          "updateWhere": "https://reference.invalid/acme/operations/update-where",
+          "deleteWhere": "https://reference.invalid/acme/operations/delete-where",
+          "batch": "https://reference.invalid/acme/operations/batch",
+          "sequence": "https://reference.invalid/acme/operations/sequence"
+        },
+        "payloadIdentity": "7cbcf15c426fa98f5a8779353dac339b2a9d69c84c79f8b374aeabdeb9f516d4"
+      },
+      "childPid": 21036,
+      "processEvents": {
+        "exit": {
+          "code": 0,
+          "signal": null
+        },
+        "close": {
+          "code": 0,
+          "signal": null
+        }
+      },
+      "cleanClose": true,
+      "closed": true,
+      "stopUnknown": false,
+      "lateCleanupRejectionObserved": false,
+      "pendingDrained": true,
+      "streamDrained": true,
+      "pendingOperationsAtReport": 0,
+      "directory": "/tmp/bdp-current-feed-installed-2giqKT",
+      "directoryRemoved": true,
+      "directoryAbsent": true,
+      "launchAttempted": true,
+      "assertionsCompleted": true,
+      "deadlineFired": false,
+      "failureCategories": [],
+      "failureCount": 0,
+      "claimEligible": false
+    }
+  },
+  "historicalInstalled10VisibleProjection": {
+    "rawApiMainLine": 3427,
+    "rawJsonValid": false,
+    "rawLineSha256": "0bcba9c973bffced65e574fa6158aad3ed91cf7eb83515f75765848399919abc",
+    "projectionMethod": "Exact visible unmodified response ordinal/method/url/status/bodyOctets substrings and terminal suffix; no JSON repair or masked header recovery",
+    "projectedResponses": [
+      {
+        "ordinal": 1,
+        "method": "POST",
+        "url": "https://reference.invalid/acme/operations/batch",
+        "status": 200,
+        "bodyOctets": 692
+      },
+      {
+        "ordinal": 2,
+        "method": "GET",
+        "url": "https://reference.invalid/acme/changes/?after=genesis",
+        "status": 200,
+        "bodyOctets": 1405
+      },
+      {
+        "ordinal": 3,
+        "method": "GET",
+        "url": "https://reference.invalid/acme/changes/?after=cg_-yVSOionpDZsjxyvWYPlp4BJeiDK7UJIjw6iKd7xBhA_no_1BvduH1XI5vRepP-f6OCaGpO9_40aVG-KMMv8d_c_2",
+        "status": 400,
+        "bodyOctets": 118
+      },
+      {
+        "ordinal": 4,
+        "method": "HEAD",
+        "url": "https://reference.invalid/acme/changes/?after=cg_-yVSOionpDZsjxyvWYPlp4BJeiDK7UJIjw6iKd7xBhA_no_1BvduH1XI5vRepP-f6OCaGpO9_40aVG-KMMv8d_c_2",
+        "status": 400,
+        "bodyOctets": 0
+      },
+      {
+        "ordinal": 5,
+        "method": "GET",
+        "url": "https://reference.invalid/acme/changes/?after=cg_-yVSOionpDZsjxyvWYPlp4BJeiDK7UJIjw6iKd7xBhA_no_1BvduH1XI5vRepP-f6OCaGpO9_40aVG-KMMv8d_c_2",
+        "status": 400,
+        "bodyOctets": 118
+      },
+      {
+        "ordinal": 6,
+        "method": "HEAD",
+        "url": "https://reference.invalid/acme/changes/?after=cg_-yVSOionpDZsjxyvWYPlp4BJeiDK7UJIjw6iKd7xBhA_no_1BvduH1XI5vRepP-f6OCaGpO9_40aVG-KMMv8d_c_2",
+        "status": 400,
+        "bodyOctets": 0
+      },
+      {
+        "ordinal": 7,
+        "method": "GET",
+        "url": "https://reference.invalid/acme/changes/?after=genesis",
+        "status": 400,
+        "bodyOctets": 118
+      },
+      {
+        "ordinal": 8,
+        "method": "HEAD",
+        "url": "https://reference.invalid/acme/changes/?after=genesis",
+        "status": 400,
+        "bodyOctets": 0
+      },
+      {
+        "ordinal": 9,
+        "method": "GET",
+        "url": "https://reference.invalid/acme/changes/?after=cg_-yVSOionpDZsjxyvWYPlp4BJeiDK7UJIjw6iKd7xBhA_no_1BvduH1XI5vRepP-f6OCaGpO9_40aVG-KMMv8d_c_2",
+        "status": 401,
+        "bodyOctets": 136
+      },
+      {
+        "ordinal": 10,
+        "method": "GET",
+        "url": "https://reference.invalid/acme/changes/?after=genesis&start=now",
+        "status": 400,
+        "bodyOctets": 118
+      }
+    ],
+    "visibleTerminal": {
+      "closed": true,
+      "startupCompleted": true,
+      "childPid": 20899,
+      "childExitCode": 0,
+      "childSignalCode": null,
+      "directoryAbsent": true,
+      "failureCount": 0,
+      "claimEligible": false
+    }
+  },
+  "all15SourceVerbosePassLines": {
+    "preserves changefeed cursor precedence under current-admission opaque minima": 1896,
+    "captures current changefeed admission once across owner entries: start-now-unknown": 1897,
+    "captures current changefeed admission once across owner entries: genesis-unknown": 1898,
+    "captures current changefeed admission once across owner entries: retained-unknown": 1899,
+    "captures current changefeed admission once across owner entries: retained-pos-01": 1909,
+    "drains current changefeed admission before owner close: start-now": 1910,
+    "drains current changefeed admission before owner close: retained": 1911,
+    "preserves current changefeed anchor capture before waiter preflight": 1912,
+    "serves current changefeed opaque minima across finite and SSE admission": 2945,
+    "keeps start=now's original admission anchor through a minimum wait and drains on close": 1838,
+    "keeps direct and excluded changefeed minimum paths strict": 1876,
+    "serves finite start-now opaque minima before HTTP shortcuts": 1895,
+    "decides actual HTTP minimum refusal before conditional shortcuts with final context": 1846,
+    "disconnect cancels the actual finite minimum wait without consuming its remaining budget": 2933,
+    "effective reconnect cursor owns epoch/view/retention decisions; overridden query is not looked up": 2934
+  },
+  "capturedMalformedReportLines": [
+    {
+      "line": 356,
+      "label": "source-receipt-missing-context",
+      "jsonError": "Expecting ',' delimiter: line 1 column 6266 (char 6265)",
+      "lineSha256": "7de5f5879baa5e5b7798371c847b1d1a6457e9ff7f6cf9571f1c36ded5524679",
+      "maskMarkerPresent": true
+    },
+    {
+      "line": 2076,
+      "label": "source-missing-event-context",
+      "jsonError": "Expecting ',' delimiter: line 1 column 5985 (char 5984)",
+      "lineSha256": "68643eeaff8800a3f2e38d4846c5bc3871837287c7c985ac20925127d7871601",
+      "maskMarkerPresent": true
+    },
+    {
+      "line": 2355,
+      "label": "private-installed-minimum-receiving",
+      "jsonError": "Expecting ',' delimiter: line 1 column 17811 (char 17810)",
+      "lineSha256": "fa3adb78b4fb2b6e3f286b0e86a87b9cd7a25e432a44960d2d0eaa53a1ec7ee9",
+      "maskMarkerPresent": true
+    },
+    {
+      "line": 2371,
+      "label": "private-installed-current-observation-minimum",
+      "jsonError": "Expecting ',' delimiter: line 1 column 30657 (char 30656)",
+      "lineSha256": "bfa5974630adbc8f7778f09f09e5be176d5f88af5409f82316018fa60ce1ba1f",
+      "maskMarkerPresent": true
+    },
+    {
+      "line": 3427,
+      "label": "private-installed-changefeed-parameter-context",
+      "jsonError": "Expecting ',' delimiter: line 1 column 8619 (char 8618)",
+      "lineSha256": "0bcba9c973bffced65e574fa6158aad3ed91cf7eb83515f75765848399919abc",
+      "maskMarkerPresent": true
+    },
+    {
+      "line": 3446,
+      "label": "private-installed-event-missing-context",
+      "jsonError": "Expecting ',' delimiter: line 1 column 9218 (char 9217)",
+      "lineSha256": "c969366e411dfef289aed29c7954729ceeab4de21a395adbe4bc849dd13c1538",
+      "maskMarkerPresent": true
+    },
+    {
+      "line": 4552,
+      "label": "private-installed-minimum-current-resource",
+      "jsonError": "Expecting ',' delimiter: line 1 column 25138 (char 25137)",
+      "lineSha256": "9bc152687b62c9b1ea74c645468c3baed0d2a3965737475005db8ade7f45af9b",
+      "maskMarkerPresent": true
+    },
+    {
+      "line": 5844,
+      "label": "private-installed-receipt-missing-context",
+      "jsonError": "Expecting ',' delimiter: line 1 column 11249 (char 11248)",
+      "lineSha256": "84976a52c9653867f8ce8626cd8470bd6c3929486f461a6a98b96872324bec27",
+      "maskMarkerPresent": true
+    }
+  ]
+}

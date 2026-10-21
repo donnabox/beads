@@ -1,0 +1,446 @@
+--- /Users/dbox/repos/wt/vickie/bdp-integration-logs/event-admission-next-serving-plan/clean-candidate-rebind-1/new-session-launch-supervision-2/README.md
++++ /Users/dbox/repos/wt/vickie/bdp-integration-logs/event-admission-next-serving-plan/clean-candidate-rebind-1/new-session-launch-supervision-1/README.md
+@@ -1,17 +1,17 @@
+-# CLOSED outer supervision successor2 — bounded N2 corrections
++# CLOSED outer launch-supervision supplement
+ 
+-Predecessor1 remains frozen as failed at`/Users/dbox/repos/wt/vickie/bdp-integration-logs/event-admission-next-serving-plan/clean-candidate-rebind-1/new-session-launch-supervision-1`, index`83df3c024abe4a97277bd0844b29c687cea15ba4c31013f561113bcf8afea8b6`. predecessor-index.json records all8original files including its index. No original packet, frozen successor packet or source bytes changed. closed-binding.json and frozen-packet-index.json retain the original CLOSED binding and44-file packet inventory unchanged. The historical supervisor-addition.patch is preserved from predecessor1; current corrections are the genuine successor-delta.patch with exact successor-inverse.patch.
++This supplement addresses the native finding that the frozen runner's1790s polling TERM and final guard do not enforce an independent1800s outer execution bound. It does not modify the frozen packet, proposal, source, prompt, guard or runner. Original packet index remains`480a0dc8a130699726012244795cf024a47e0195ddcafb8d972a7846e515e076`; the complete44-file pre-release inventory is copied to frozen-packet-index.json. closed-binding.json preserves exact CLOSED binding bytes`8b8ad44b410387dd80e46f55d1c853dded7fba8aee0b609c2865b3854dc66677`. Before execution root must separately preserve the CLOSED supplement index/control, release its control.json rootLaunchReleased flag, and release the packet binding's rootLaunchReleased flag. The supervisor verifies that this is the only semantic binding change and rehashes every other frozen packet file.
+ 
+-Two native findings are corrected: direct session-check children were registered after fallible inventory, and KILL-success state was set before fallible escalation. Every explicit Popen now registers its handle/PID immediately before any inventory or file close. The supervisor retains all direct handles and serializes polling/reaping with safe fallback signaling. An unreaped direct child cannot have its PID reused; fallback additionally checks its new-session PGID. Every direct child, including guard checks, participates in collection. Fresh PID/start-time/ancestry and the frozen runner process record remain required for non-child groups. Inventory failure does not bypass safe direct-child signaling.
++After independent native/root inspection and explicit release, use only:
+ 
+-TERM/KILL attempts and complete successful signal passes are now distinct. A failed inventory or signal keeps success false so watchdog escalation retries inside the original absolute1800 boundary. A failed STOP pass cannot skip KILL. Final-cleanup inventory failure also retries safe escalation instead of canceling the watchdog with owned direct children outstanding. No signal is newly issued after the original1800 boundary. Unknown ownership or process-inventory failure never becomes successful completion.
++`/opt/homebrew/opt/python@3.14/bin/python3.14 /Users/dbox/repos/wt/vickie/bdp-integration-logs/event-admission-next-serving-plan/clean-candidate-rebind-1/new-session-launch-supervision-1/supervise.py`
+ 
+-All earlier boundaries remain: exclusive attempt/ prevents every retry, existing packet attempt outputs are refused, exact remote role checks precede wrapper/Claude launch and run periodically, failed checks stop execution, and local partial/error evidence survives supersession. No remote writes occur. The independent watchdog remains TERM1790/KILL1798/total1800; default-model Read/Glob/Grep args, frozen proposal, prompt, runner and guard are unchanged. Post-stop local terminal recording grants no reviewer execution allowance. PID/start-time sampling has no hard-real-time operating-system guarantee; unresolved ownership is an explicit failure.
++Do not use the older direct runner invocation: this supervisor is the outer execution authority for this single attempt. It accepts no command arguments. An exclusive attempt/ directory prevents retries, including failed preflight/spawn attempts. Existing packet attempt outputs are also refused. Root must preserve any failed attempt and decide a separately named successor explicitly; this supplement never retries.
+ 
+-After independent native/root acceptance, preserve CLOSED supplement2 index/control and packet CLOSED binding before separately releasing only the two rootLaunchReleased flags. Then invoke only:
++Absolute monotonic time starts at exclusive attempt creation, before preflight and role checking. An independent watchdog remains live during wrapper waits, final guard checks and other blocking work: TERM at1790s, KILL scheduled1798s, original total1800s closure boundary. Error/supersession cleanup may terminate earlier. Remaining owned processes or unknown ownership fail completion; crossing1800 is classified outer_timeout. No reviewer gets extra execution time for final guards, wrapper waits or local evidence writing. OS scheduling and process-inventory failure are reported honestly, never converted into successful closure. Post-stop local terminal evidence may take administrative time and confers no additional execution allowance.
+ 
+-`/opt/homebrew/opt/python@3.14/bin/python3.14 /Users/dbox/repos/wt/vickie/bdp-integration-logs/event-admission-next-serving-plan/clean-candidate-rebind-1/new-session-launch-supervision-2/supervise.py`
++The supervisor owns the wrapper PGID, guard-check groups, separately sessioned Claude PID=PGID from frozen runner process.json, and observed descendants. Before signaling it refreshes PID/start-time/ancestry and runner-record identity; it never signals by executable name alone. Reviewer metadata is checked against exact argv, launch time and group identity. KILL cleanup freezes launch-capable owned groups before a final descendant census. Even normal wrapper exit requires owned reviewer-group absence. No generic direct-PGID-only supervisor is reused.
+ 
+-Neither predecessor1's invocation nor a direct packet-runner invocation supplies this corrected supervision. Supervisor accepts no arbitrary command arguments. Complete review still requires root findings/provenance/source/process adjudication and never implies approval.
++Exact remote role checks run immediately before wrapper launch, within the bound runner immediately before Claude launch, periodically during monitoring, and before completion. A known failed/superseded check stops execution. Local partial/error evidence is allowed after supersession; no remote writes, coordination comments, launch-file writes or git actions occur. Guard outputs, wrapper stdout/stderr, process samples and outer-exit.json are retained under attempt/ even if the runner is killed before exit.json or its final guard fails. Raw packet stream/progress/error files are preserved untouched. Wrapper exit0 and review_complete never imply approval; root must independently inspect findings, provenance, source invariance and process closure.
+ 
+-Preparation checks are bounded static AST/control/index/delta inspection and full source/context/artifact rehash. No supervisor, guard, reviewer, test, build, install or runtime was executed. Neither supplement has attempt/. Both new launch flags remain false. Next: native/root mechanics review and release decision.
++Preparation performed static AST/constant/control/index inspection and full source/context/artifact rehash only. It did not execute this supervisor, a guard, the runner, reviewer, tests, builds, installs or services. No attempt/ exists. Native/root mechanics acceptance remains required.
+--- /Users/dbox/repos/wt/vickie/bdp-integration-logs/event-admission-next-serving-plan/clean-candidate-rebind-1/new-session-launch-supervision-2/control.json
++++ /Users/dbox/repos/wt/vickie/bdp-integration-logs/event-admission-next-serving-plan/clean-candidate-rebind-1/new-session-launch-supervision-1/control.json
+@@ -25,6 +25,5 @@
+   "termAtSeconds": 1790,
+   "killAtSeconds": 1798,
+   "noRetry": true,
+-  "authority": "CLOSED N2 correction successor2; predecessor1 remains frozen as failed. Only direct-child ownership/error cleanup and retryable signal escalation are corrected; original1800 total/TERM1790/KILL1798, frozen packet and root release duties are unchanged.",
+-  "predecessorIndexSha256": "83df3c024abe4a97277bd0844b29c687cea15ba4c31013f561113bcf8afea8b6"
++  "authority": "Supplement narrows launch execution with independent outer supervision; no proposal/source/runner/prompt changes. Root must separately release packet and supplement flags after native/root acceptance."
+ }
+--- /Users/dbox/repos/wt/vickie/bdp-integration-logs/event-admission-next-serving-plan/clean-candidate-rebind-1/new-session-launch-supervision-2/preparation-report.json
++++ /Users/dbox/repos/wt/vickie/bdp-integration-logs/event-admission-next-serving-plan/clean-candidate-rebind-1/new-session-launch-supervision-1/preparation-report.json
+@@ -1,75 +1,65 @@
+ {
+-  "createdUtc": "2026-10-18T03:03:08.557181+00:00",
+-  "scope": "CLOSED N2 direct-child registration and escalation retry corrections only",
+-  "predecessor": {
+-    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/event-admission-next-serving-plan/clean-candidate-rebind-1/new-session-launch-supervision-1",
+-    "indexSha256": "83df3c024abe4a97277bd0844b29c687cea15ba4c31013f561113bcf8afea8b6",
+-    "files": 8,
+-    "state": "Frozen failed; unchanged"
++  "createdUtc": "2026-10-18T02:59:39.553014+00:00",
++  "scope": "CLOSED independent outer execution supervision only",
++  "finding": "Original runner only polls TERM1790; final guard may extend beyond1800 without independent supervisor",
++  "before": {
++    "packet": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/event-admission-next-serving-plan/clean-candidate-rebind-1/claude-plan-review-session-20261018-021624-1",
++    "packetIndexSha256": "480a0dc8a130699726012244795cf024a47e0195ddcafb8d972a7846e515e076",
++    "bindingSha256": "8b8ad44b410387dd80e46f55d1c853dded7fba8aee0b609c2865b3854dc66677",
++    "files": 44,
++    "rootLaunchReleased": false,
++    "independentOuterSupervisor": false
+   },
+-  "successor": {
+-    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/event-admission-next-serving-plan/clean-candidate-rebind-1/new-session-launch-supervision-2",
++  "after": {
++    "supplement": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/event-admission-next-serving-plan/clean-candidate-rebind-1/new-session-launch-supervision-1",
+     "rootLaunchReleased": false,
+-    "preciseInvocationAfterRelease": "/opt/homebrew/opt/python@3.14/bin/python3.14 /Users/dbox/repos/wt/vickie/bdp-integration-logs/event-admission-next-serving-plan/clean-candidate-rebind-1/new-session-launch-supervision-2/supervise.py"
+-  },
+-  "findingsDisposed": {
+-    "N2a": "All explicit Popen handles registered immediately before fallible inventory; retain handle, serialize reaping/fallback and collect all direct children",
+-    "N2b": "Signal attempt counts separate from successful-pass flags; failed STOP/KILL inventory keeps retryable state until original1800 boundary",
+-    "sameFailureFamily": "Final inventory failure no longer cancels cleanup/watchdog with outstanding direct children"
+-  },
+-  "unchanged": {
+-    "packetFiles": 44,
+-    "closedPacketIndexSha256": "480a0dc8a130699726012244795cf024a47e0195ddcafb8d972a7846e515e076",
+-    "packetBindingSha256": "8b8ad44b410387dd80e46f55d1c853dded7fba8aee0b609c2865b3854dc66677",
+-    "source": {
+-      "head": "a56254d682cf4623cab22a552e3d2f695f691795",
+-      "tree": "144f278c7f5a08516c4ac99ba553d4cc25bcf560",
+-      "parents": [
+-        "9f89271e2563a105410789ca8ca1e77dfb4d0b9f"
+-      ]
+-    },
+-    "sourceFiles": 679,
+-    "contextFiles": 24,
+-    "artifactFiles": 12,
++    "independentOuterSupervisor": true,
+     "termSeconds": 1790,
+     "killSeconds": 1798,
+     "totalSeconds": 1800,
+-    "modelOverride": false,
+-    "reviewerArgs": [
+-      "/opt/homebrew/bin/claude",
+-      "--safe-mode",
+-      "-p",
+-      "--tools",
+-      "Read,Glob,Grep",
+-      "--allowedTools",
+-      "Read,Glob,Grep",
+-      "--disable-slash-commands",
+-      "--strict-mcp-config",
+-      "--mcp-config",
+-      "{\"mcpServers\":{}}",
+-      "--no-session-persistence",
+-      "--output-format",
+-      "stream-json",
+-      "--verbose",
+-      "--include-partial-messages"
+-    ],
+-    "sourceEdits": false,
+-    "actualExecution": false,
+-    "remoteWrites": false
++    "exclusiveAttemptDirectory": "attempt",
++    "singleAttempt": true,
++    "defaultModelAndReadOnlyArgsUnchanged": true,
++    "preciseInvocationAfterRelease": "/opt/homebrew/opt/python@3.14/bin/python3.14 /Users/dbox/repos/wt/vickie/bdp-integration-logs/event-admission-next-serving-plan/clean-candidate-rebind-1/new-session-launch-supervision-1/supervise.py"
+   },
+-  "genuineDelta": "successor-delta.patch and successor-inverse.patch compare the four changed non-index originals; predecessor-index.json preserves all original file identities. Historical supervisor-addition.patch remains frozen predecessor attribution.",
++  "authorityRelation": "Supplement adds an independent execution limit and owns wrapper/reviewer/descendant cleanup; immutable packet remains proposal/source authority. Existing packet remains byte-identical during preparation; separate explicit flag-only release required for packet binding and supplement control.",
++  "genuineDelta": "Entire supervisor is new; supervisor-addition.patch is actual /dev/null-to-file diff. No original file changes. Frozen44-file inventory and CLOSED binding are copied byte-for-byte.",
++  "processOwnership": [
++    "direct wrapper child PID=PGID",
++    "direct session-check child groups",
++    "frozen runner process.json reviewer PID=PGID with exact argv/start/executable identity",
++    "observed ancestry with PID/start-time identities"
++  ],
++  "evidencePreserved": [
++    "exclusive attempt marker",
++    "all original packet partial/error outputs",
++    "guard stdout/stderr",
++    "wrapper stdout/stderr",
++    "outer-progress.jsonl",
++    "outer-exit.json even when runner final guard fails"
++  ],
++  "limitations": [
++    "No actual supervisor/guard/reviewer execution was performed during preparation",
++    "No hard-real-time operating-system guarantee; failed inventory/unknown cleanup is explicit failure",
++    "Final local terminal recording adds no reviewer execution allowance",
++    "Role polling detects changes at bounded read intervals; no further reviewer execution after known failure"
++  ],
++  "source": {
++    "head": "a56254d682cf4623cab22a552e3d2f695f691795",
++    "tree": "144f278c7f5a08516c4ac99ba553d4cc25bcf560",
++    "parents": [
++      "9f89271e2563a105410789ca8ca1e77dfb4d0b9f"
++    ]
++  },
++  "sourceFiles": 679,
++  "contextFiles": 24,
++  "artifactFiles": 12,
+   "staticChecks": [
+     "Python AST parses without execution",
+-    "Every explicit Popen is immediately followed by register_direct",
+-    "No raw waitpid; all retained handle polls use poll_direct locking",
+-    "Collect enumerates every registered direct child",
+-    "No unconditional successful KILL flag before fallible escalation",
+-    "Failed signal passes retain retryable state; all signals bounded by absolute1800",
+-    "All44packet/source679/context24/artifact12 hashes match; both flags remain false; no attempts"
+-  ],
+-  "limitations": [
+-    "No actual runtime fault-injection or reviewer attempt occurred",
+-    "Operating-system scheduling/process-inventory failure may leave ownership unknown, which fails completion",
+-    "Local post-stop evidence grants no reviewer execution allowance"
++    "constants1790/1798/1800 and exact role/session paths inspected",
++    "no arbitrary argv accepted",
++    "root flags remain false",
++    "no attempt directory/packet outputs",
++    "all frozen packet/source/context/artifact hashes verified"
+   ]
+ }
+--- /Users/dbox/repos/wt/vickie/bdp-integration-logs/event-admission-next-serving-plan/clean-candidate-rebind-1/new-session-launch-supervision-2/supervise.py
++++ /Users/dbox/repos/wt/vickie/bdp-integration-logs/event-admission-next-serving-plan/clean-candidate-rebind-1/new-session-launch-supervision-1/supervise.py
+@@ -42,8 +42,7 @@
+     state_lock = threading.Lock()
+     state = {"reason": None, "termSent": False, "killSent": False, "errors": [],
+              "known": {}, "groups": {}, "wrapperPid": None, "forced": False,
+-             "lastRows": [], "ownershipUnknown": False, "direct": {},
+-             "termAttemptCount": 0, "killAttemptCount": 0}
++             "lastRows": [], "ownershipUnknown": False}
+     finished = threading.Event()
+     wrapper = None
+     checks = []
+@@ -63,12 +62,8 @@
+ 
+     def inventory():
+         # No command arguments or credentials enter samples. Each query is bounded.
+-        remaining = begin + 1800 - time.monotonic()
+-        if remaining <= 0:
+-            raise subprocess.TimeoutExpired("process inventory after absolute boundary", 0)
+         raw = subprocess.check_output(
+-            ["ps", "-axo", "pid=,ppid=,pgid=,lstart=,comm="], text=True,
+-            timeout=min(0.4, remaining))
++            ["ps", "-axo", "pid=,ppid=,pgid=,lstart=,comm="], text=True, timeout=0.4)
+         rows = {}
+         for line in raw.splitlines():
+             parts = line.split(None, 8)
+@@ -79,29 +74,27 @@
+                          "start": " ".join(parts[3:8]), "comm": parts[8]}
+         return rows
+ 
+-    def register_direct(proc, kind):
+-        # Register the unreaped Popen handle before any inventory, close or file write.
+-        # All waits/polls use the same lock, so fallback cannot race PID reuse.
+-        with state_lock:
+-            state["direct"][proc.pid] = {"proc": proc, "kind": kind}
+-            state["groups"][proc.pid] = kind
+-
+-    def poll_direct(proc):
+-        with state_lock:
+-            return proc.poll()
++    def remember_direct(proc, kind):
++        # A Popen child belongs to this supervisor; never infer ownership by name alone.
++        rows = inventory()
++        row = rows.get(proc.pid)
++        if row is not None:
++            require(row["ppid"] == os.getpid() and row["pgid"] == proc.pid,
++                    "Unexpected direct child ownership")
++            with state_lock:
++                state["known"][row["pid"]] = row
++                state["groups"][row["pgid"]] = kind
+ 
+     def collect():
+         rows = inventory()
+         with state_lock:
+             owned = {pid for pid, old in state["known"].items()
+                      if pid in rows and rows[pid]["start"] == old["start"]}
+-            # Include every registered direct child, including session checks.
+-            for pid, direct in state["direct"].items():
+-                if direct["proc"].returncode is None and pid in rows:
+-                    row = rows[pid]
+-                    require(row["ppid"] == os.getpid() and row["pgid"] == pid,
+-                            "Registered direct-child identity changed")
+-                    owned.add(pid)
++            # Cover Popen-to-registration windows using verified direct parentage.
++            if state["wrapperPid"] in rows:
++                row = rows[state["wrapperPid"]]
++                if row["ppid"] == os.getpid() and row["pgid"] == row["pid"]:
++                    owned.add(row["pid"])
+             changed = True
+             while changed:
+                 children = {pid for pid, row in rows.items() if row["ppid"] in owned}
+@@ -151,82 +144,45 @@
+             return rows, list(state["lastRows"])
+ 
+     def send_owned(sig):
+-        # Fresh PID/start-time/ancestry verification for non-child groups. A failed
+-        # inventory never prevents safe signaling of registered unreaped direct children.
+-        complete = True
+-        try:
+-            _, owned = collect()
+-        except Exception as exc:
+-            owned = []
+-            complete = False
++        # Refresh identities before every signal. PID/start-time prevents PID-reuse kills.
++        rows, owned = collect()
++        valid_groups = {row["pgid"] for row in owned if row["pgid"] != os.getpgrp()}
++        for pgid in sorted(valid_groups):
++            # At least one live member has verified direct/descendant/record ownership.
++            try:
++                os.killpg(pgid, sig)
++            except ProcessLookupError:
++                continue
++            log("signal", pgid=pgid, signal=int(sig))
++        if valid_groups:
+             with state_lock:
+-                error = "signal_inventory:" + type(exc).__name__
+-                if error not in state["errors"]:
+-                    state["errors"].append(error)
+-                state["ownershipUnknown"] = True
+-        valid_groups = {row["pgid"] for row in owned if row["pgid"] != os.getpgrp()}
+-        signaled = []
+-        with state_lock:
+-            for pid, direct in state["direct"].items():
+-                # returncode None is safe here: this parent retains the Popen handle,
+-                # no other waitpid occurs, and poll/reap is excluded by this lock.
+-                if direct["proc"].returncode is None:
+-                    try:
+-                        if os.getpgid(pid) == pid:
+-                            valid_groups.add(pid)
+-                    except ProcessLookupError:
+-                        pass
+-            for pgid in sorted(valid_groups):
+-                if time.monotonic() >= begin + 1800:
+-                    complete = False
+-                    break
+-                try:
+-                    os.killpg(pgid, sig)
+-                except ProcessLookupError:
+-                    continue
+-                except OSError as exc:
+-                    complete = False
+-                    state["errors"].append("signal:" + type(exc).__name__)
+-                    continue
+-                signaled.append(pgid)
+                 state["forced"] = True
+-        for pgid in signaled:
+-            log("signal", pgid=pgid, signal=int(sig))
+-        log("signal_pass", signal=int(sig), complete=complete, signaledGroups=signaled)
+-        return complete
++        return owned
+ 
+     def watchdog():
+         # Independent of final remote checks, wrapper waits or source hashing.
+-        # Failed inventory/signaling leaves success false and is retried inside1800.
+         while not finished.is_set():
+             elapsed = time.monotonic() - begin
+-            if elapsed >= 1800:
+-                fail("outer_timeout")
+-                with state_lock:
+-                    state["ownershipUnknown"] = state["ownershipUnknown"] or bool(state["lastRows"])
+-                return
+             try:
+                 if elapsed >= 1790:
+                     fail("outer_timeout")
+                     with state_lock:
+                         term = not state["termSent"]
+-                        if term:
+-                            state["termAttemptCount"] += 1
++                        state["termSent"] = True
+                     if term:
+-                        success = send_owned(signal.SIGTERM)
+-                        with state_lock:
+-                            state["termSent"] = success
++                        send_owned(signal.SIGTERM)
+                 if elapsed >= 1798:
+                     with state_lock:
+                         kill = not state["killSent"]
+-                        if kill:
+-                            state["killAttemptCount"] += 1
++                        state["killSent"] = True
+                     if kill:
+-                        # A failed STOP pass must not skip the KILL pass or its retry.
++                        # Freeze launch-capable groups before the final descendant census.
+                         send_owned(signal.SIGSTOP)
+-                        success = send_owned(signal.SIGKILL)
+-                        with state_lock:
+-                            state["killSent"] = success
++                        send_owned(signal.SIGKILL)
++                if elapsed >= 1800:
++                    with state_lock:
++                        state["ownershipUnknown"] = bool(state["lastRows"])
++                    return
+             except BaseException as exc:
+                 with state_lock:
+                     state["errors"].append("watchdog:" + type(exc).__name__)
+@@ -240,14 +196,14 @@
+         err = (attempt / ("guard-%03d.stderr" % len(checks))).open("xb")
+         proc = subprocess.Popen([PYTHON, str(guard), "/usr/bin/true"],
+                                 stdout=out, stderr=err, start_new_session=True)
+-        register_direct(proc, "session-check")
+         out.close()
+         err.close()
++        remember_direct(proc, "session-check")
+         checks.append({"pid": proc.pid, "startedElapsed": time.monotonic() - begin})
+         return proc
+ 
+     def wait_check(proc):
+-        while poll_direct(proc) is None:
++        while proc.poll() is None:
+             if time.monotonic() - begin >= 1790 or state["reason"] is not None:
+                 return False
+             collect()
+@@ -289,15 +245,15 @@
+         wrapper = subprocess.Popen([PYTHON, str(PACKET / "run.py")],
+                                    cwd=CONTROL["sourceRoot"], stdout=stdout, stderr=stderr,
+                                    start_new_session=True, env=env)
+-        register_direct(wrapper, "wrapper")
+         state["wrapperPid"] = wrapper.pid
+         stdout.close()
+         stderr.close()
++        remember_direct(wrapper, "wrapper")
+         log("wrapper_started", pid=wrapper.pid, pgid=wrapper.pid)
+         pending_check = None
+         next_check = time.monotonic() + 15
+         next_sample = 0
+-        while poll_direct(wrapper) is None:
++        while wrapper.poll() is None:
+             now = time.monotonic()
+             _, owned = collect()
+             if now >= next_sample:
+@@ -305,7 +261,7 @@
+                 next_sample = now + 1
+             if state["reason"] is not None or now - begin >= 1790:
+                 break
+-            if pending_check is not None and poll_direct(pending_check) is not None:
++            if pending_check is not None and pending_check.poll() is not None:
+                 checks[-1]["exitCode"] = pending_check.returncode
+                 if pending_check.returncode != 0:
+                     fail("role_check_failed_or_superseded")
+@@ -354,9 +310,14 @@
+                 # Reap only within the original absolute total deadline.
+                 while time.monotonic() - begin < 1800:
+                     if wrapper is not None:
+-                        poll_direct(wrapper)
+-                    for direct in list(state["direct"].values()):
+-                        poll_direct(direct["proc"])
++                        wrapper.poll()
++                    for item in checks:
++                        # Individual check Popen objects may already be reaped; waitpid
++                        # is nonblocking and cannot consume a second cleanup allowance.
++                        try:
++                            os.waitpid(item["pid"], os.WNOHANG)
++                        except ChildProcessError:
++                            pass
+                     _, remaining = collect()
+                     if not remaining:
+                         break
+@@ -367,20 +328,6 @@
+         except BaseException as exc:
+             state["errors"].append("final_cleanup:" + type(exc).__name__)
+             state["ownershipUnknown"] = True
+-            # Inventory failure must not cancel cleanup with direct children alive.
+-            # Keep retrying safe escalation within the existing absolute boundary.
+-            while time.monotonic() < begin + 1800:
+-                send_owned(signal.SIGSTOP)
+-                send_owned(signal.SIGKILL)
+-                for direct in list(state["direct"].values()):
+-                    poll_direct(direct["proc"])
+-                try:
+-                    _, remaining = collect()
+-                    if not remaining:
+-                        break
+-                except Exception:
+-                    pass
+-                time.sleep(0.05)
+         finally:
+             finished.set()
+             timer.join(timeout=1.5)
+@@ -394,14 +341,10 @@
+                   "started": started, "elapsedSeconds": elapsed,
+                   "deadlineSeconds": 1800, "termAfterSeconds": 1790, "killAfterSeconds": 1798,
+                   "wrapperPid": wrapper.pid if wrapper else None,
+-                  "wrapperExitCode": poll_direct(wrapper) if wrapper else None,
++                  "wrapperExitCode": wrapper.poll() if wrapper else None,
+                   "roleChecks": checks, "finalRoleVerified": final_role_ok,
+                   "forcedCleanup": state["forced"], "termSentAtDeadline": state["termSent"],
+-                  "killSentAtDeadline": state["killSent"],
+-                  "termSignalPassAttempts": state["termAttemptCount"],
+-                  "killSignalPassAttempts": state["killAttemptCount"],
+-                  "signalStateMeaning": "Sent flags mean a complete successful inventory/signal pass, not a scheduled attempt; logs preserve per-group signals and failed passes.",
+-                  "errors": state["errors"],
++                  "killSentAtDeadline": state["killSent"], "errors": state["errors"],
+                   "remainingOwned": remaining, "ownershipUnknown": state["ownershipUnknown"],
+                   "observedOwned": list(state["known"].values()), "observedGroups": state["groups"],
+                   "noRetry": True, "localEvidenceAfterSupersessionAllowed": True,

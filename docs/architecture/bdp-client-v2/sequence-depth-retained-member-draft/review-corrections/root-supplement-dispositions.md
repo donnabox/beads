@@ -1,0 +1,11 @@
+# Root focused correction dispositions
+
+Actual Claude supplement completed naturally0/219.774seconds, no timeout/forced termination, unchanged source/inputs and clear recorded cleanup. Full4872-byte outputb9627017 was read. The prior two complementary full code reviews remain their actual scopes; original empty timeout remains inconclusive.
+
+1. Carrier consumer writes: no current defect found. Root inspected store admission1125–1200, all carrier references in store/service/sequence/submission/dependencies, and batch normalization/execution readers. They inspect/iterate immutable input and build separate state rather than assigning to carrier fields/arrays. Existing protocol prepared carriers are already frozen. Actual combined branch owner/HTTP/installed validation remains a required gate; the two preparation passes do not replace it.
+2. Deep freeze assertions: optional future regression strengthening. Parser freezes the operation/input and every decoded container today; this is existing behavior and no change here removes it. New assertions target the newly corrected mutable wrapper/arrays. No further test churn required.
+3. Protocol-side carrier brand: explicitly preexisting source-private composition; no current consumer requires the protocol brand for these wrappers. Do not rerun singleton preflight on sequence @name references.
+4. Unknown startup stop intentionally retains directory, reports stop unproven and fails. This remains conservative cleanup, not successful removal or leaked known-active process proof.
+5. rmSync exception plus directory-remains fact are separate recorded failure observations. They do not append the same Error instance twice like the corrected timeout defect. Optional causal deduplication is deferred; failureCount is not claimed as unique root-cause count.
+
+JsonNumberLiteral is frozen in json-admission.ts17–20. No mandatory correction remains. Root reviewed source patch and full original findings, accepted corrected carrier immutability and cleanup reporting, and ran typecheck/format/lint plus two exact preparation callbacks. Lint retains10warnings; no new installed or HTTP proof follows from this focused run. Final ordinary combined branch build/source/control/installed remains required. Main integration is not authorized or a prerequisite.

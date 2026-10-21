@@ -1,0 +1,46 @@
+{
+  "name": "lint",
+  "argv": [
+    "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+    "/Users/dbox/.cache/node/corepack/v1/pnpm/11.20.0/bin/pnpm.cjs",
+    "run",
+    "lint"
+  ],
+  "cwd": "/Users/dbox/repos/wt/vickie/vickie-transaction-conditional-reads",
+  "started": "2026-10-16T20:35:16.072173+00:00",
+  "head": "2dfd2c6cc84a28b1dd336f4184c1a5f910ce8a96",
+  "workspaceDirty": true,
+  "sourceSha256": {
+    "packages/conformance/test-support/transactional/manifest-v1.json": "bbb7def1bf11e1d14efbcb369e6a7fae6eb5aff01f483f8e99f7443ce9a6ee73",
+    "packages/conformance/test-support/transactional/coverage-v1.json": "a2c620ce489257f4cd425207195af89b4e2aac238333cf6e7d21ce629d98a238",
+    "packages/conformance/src/transactional-cumulative.test.ts": "5ecfa916baca16b24c9c57b5f52e6c2cb5fa771d8cc6b5ea412ba570ba796993",
+    "apps/bdptest/src/transactional-matrix.test.ts": "95e07ead41f9cb39087a155e87cad22998d92cd3967cb9c3c446568ff6139bc8"
+  },
+  "sourceDiffSha256": "cf8e895dea0d37d0bbf504a584cf5f213ab811089d4cc9aa32cba5368b910423",
+  "rootAcceptanceSha256": "8b533784667be29f86e9478885d9563ea4e562072952d040c6d22d367b38eb4b",
+  "preparationSha256": "52ba9a5d35913b7b0c84793248481b877198098ffa490e86707e330e74322251",
+  "bdpOverrides": {},
+  "guardedArgv": [
+    "/opt/homebrew/opt/python@3.14/bin/python3.14",
+    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/guarded-action.py",
+    "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+    "/Users/dbox/.cache/node/corepack/v1/pnpm/11.20.0/bin/pnpm.cjs",
+    "run",
+    "lint"
+  ],
+  "nodePathPrefix": "/Users/dbox/.nvm/versions/node/v24.16.0/bin",
+  "sourceAttribution": "Frozen native-reviewed source diagnostic with external review pending; not integrated or installed evidence",
+  "diagnosticOnly": true,
+  "nativeCodeReviewed": true,
+  "externalReviewPending": true,
+  "councilAccepted": false,
+  "plannedWorkload": {
+    "cases": 0,
+    "http": 0,
+    "owners": 0,
+    "listeners": 0,
+    "directories": 0,
+    "productChildren": 0
+  },
+  "derivativeBinding": null
+}

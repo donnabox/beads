@@ -1,0 +1,127 @@
+{
+  "observation": "private-installed-principal-key",
+  "mode": "collapse-b-to-a",
+  "outcome": "failed",
+  "declaredSourceCommit": "09bcaab75800cae89cf738ea88f012168ff733fc",
+  "workspaceDirty": false,
+  "entry": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-principal-key-draft/execution-preparation-v2/run/consumer/node_modules/.pnpm/@bdp+server@file+..+packages+bdp-server-0.0.0.tgz/node_modules/@bdp/server/dist/transaction-installed-process.js",
+  "entrySha256": "bcf153170f953f9e28c6c89f1153be907f64df289e64f3ad929cad4a4a54c47c",
+  "binding": {
+    "served": {
+      "scope": "https://reference.invalid/acme/",
+      "profile": "transactional",
+      "history": false,
+      "sourceCommit": "09bcaab75800cae89cf738ea88f012168ff733fc",
+      "installedPayloadDigest": "c46a251cdf51f274ec9bf4f0f401cedadcbaa7748cfb059d3009de34186753b9",
+      "installedContractsDigest": "20ac1760c5f180db51459da74a501417a2701393369732254c51e7ec9a64c1e9",
+      "policyDigest": "7f742dcfc646c65c07a86e1bce5042850b95f9501cfbe6fe744576bfa896fa2a",
+      "authenticationDigest": "11374687e32cd462d6ee2bc886cd52d1b0f680fddb612f7168c41cf1c872e4de",
+      "fixtureDigest": "3a7899ced771d4880066d98b0000c53f801ece53458502cc4f3bc641146c9a85",
+      "fixtureId": "reference-transactional-v1",
+      "capabilities": [
+        "installed-transactional-http",
+        "transactional-receipt-observation"
+      ]
+    },
+    "operationTargets": {
+      "createBead": "https://reference.invalid/acme/operations/create-bead",
+      "updateBead": "https://reference.invalid/acme/operations/update-bead",
+      "deleteBead": "https://reference.invalid/acme/operations/delete-bead",
+      "createLink": "https://reference.invalid/acme/operations/create-link",
+      "updateLink": "https://reference.invalid/acme/operations/update-link",
+      "deleteLink": "https://reference.invalid/acme/operations/delete-link",
+      "putAlias": "https://reference.invalid/acme/operations/put-alias",
+      "deleteAlias": "https://reference.invalid/acme/operations/delete-alias",
+      "updateWhere": "https://reference.invalid/acme/operations/update-where",
+      "deleteWhere": "https://reference.invalid/acme/operations/delete-where",
+      "batch": "https://reference.invalid/acme/operations/batch",
+      "sequence": "https://reference.invalid/acme/operations/sequence"
+    },
+    "runtimeConfigurationIdentity": "ba5e78d2f56acc92ccd50b0151ce482f9f21c1310309eda02bf842e3ffbe37a4",
+    "authorityMode": "canonical"
+  },
+  "routeDigest": "40b5131d96ba76a7a77212c92b9336148142f8afb648caac0107f1dc9af3a837",
+  "descriptorSchemaUtf8": {
+    "descriptors": [
+      {
+        "retrievalUri": "https://reference.invalid/acme/types/task",
+        "utf8": "{\"id\":\"https://reference.invalid/acme/types/task\",\"name\":\"Task\",\"describes\":\"bead\",\"conformsTo\":[],\"propertiesSchema\":\"https://reference.invalid/acme/schemas/properties\"}"
+      }
+    ],
+    "schemas": [
+      {
+        "retrievalUri": "https://reference.invalid/acme/schemas/properties",
+        "utf8": "{\"$id\":\"https://reference.invalid/acme/schemas/properties\",\"type\":\"object\",\"properties\":{\"title\":{\"type\":\"string\"}},\"required\":[\"title\"],\"additionalProperties\":false}"
+      }
+    ]
+  },
+  "elapsedMs": 253.083875,
+  "attempted": 2,
+  "exchanges": 2,
+  "completedResponses": [
+    {
+      "index": 1,
+      "label": "a-create",
+      "method": "POST",
+      "url": "https://reference.invalid/acme/operations/batch",
+      "credentialRef": "a",
+      "requestBodyBytes": 150,
+      "requestBodySha256": "54f0fefb0965a8210bb22cf09601c18296ef450489eff1aef5a8bea8b99d83b8",
+      "writeState": "complete",
+      "status": 200,
+      "bodyOctets": 671,
+      "bodySha256": "c959e2edf16f1ad54052d568a51fc99383342c05d056c3fec92018a2656d7a67",
+      "responseWireSha256": "d2c2931753f31eb7e081788465c2c27a1ea7a3d239482c19288796dab7403347",
+      "scopeEpoch": "1eab08db-dd24-4547-9e9d-62fc5c5194e0",
+      "authorizationView": "development-all-visible",
+      "scopePosition": "pos-1",
+      "contentType": "application/json",
+      "contentLength": "671",
+      "validatedNegativeProblem": null
+    },
+    {
+      "index": 2,
+      "label": "b-independent-create",
+      "method": "POST",
+      "url": "https://reference.invalid/acme/operations/batch",
+      "credentialRef": "b",
+      "requestBodyBytes": 150,
+      "requestBodySha256": "b26bbe9a43f5cc9b54d7fe7778786b33e5e8d613bf30248de3af65f5eac0cdc8",
+      "writeState": "complete",
+      "status": 409,
+      "bodyOctets": 122,
+      "bodySha256": "6659f511cbef9350ede5c7ed10ed8d17f0a713a0c938e35ff4ab844e06b42b96",
+      "responseWireSha256": "01dca67a45b38d12ca902e2ed6be45273933fd095ba38925a8d6d8036594c587",
+      "scopeEpoch": "1eab08db-dd24-4547-9e9d-62fc5c5194e0",
+      "authorizationView": "development-all-visible",
+      "scopePosition": "pos-1",
+      "contentType": "application/problem+json",
+      "contentLength": "122",
+      "validatedNegativeProblem": {
+        "type": "https://github.com/gastownhall/bdp/problems/conflict",
+        "code": "idempotency-conflict",
+        "status": 409,
+        "retry": "never"
+      }
+    }
+  ],
+  "passedAssertions": [
+    "principal-key:a-create:completed"
+  ],
+  "currentAssertion": "principal-key:b-independent-create:completed",
+  "failureCount": 1,
+  "deadlineExceeded": false,
+  "cleanupExceeded": false,
+  "closed": true,
+  "launchAttempted": true,
+  "stopState": "stopped",
+  "startupCompleted": true,
+  "childPid": 32878,
+  "childExitCode": 0,
+  "childSignalCode": null,
+  "directory": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-principal-key-draft/execution-preparation-v2/run/installed-principal-collapse.tmp/bdp-principal-key-installed-lV6kTe",
+  "directoryAbsent": true,
+  "claimEligible": false,
+  "retention": "response fingerprints/allowlisted fields and validated negative Problem; full receipt/Resource/Event equality in memory; no request wire or credential-bearing objects",
+  "startupLimitation": "Pre-ready PID unknown; independent supervisor owned-process evidence required"
+}

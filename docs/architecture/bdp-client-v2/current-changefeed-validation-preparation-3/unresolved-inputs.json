@@ -1,0 +1,85 @@
+{
+  "state": "CLOSED successor3: corrected source/report grammar and original completed CODE disposition bound; new native/root acceptance and all runtime outputs unresolved",
+  "inputs": {
+    "finalSourceCheckout": "/Users/dbox/repos/wt/vickie/vickie-current-changefeed-minimum",
+    "finalSourceHead": "a56254d682cf4623cab22a552e3d2f695f691795",
+    "finalSourceTree": "144f278c7f5a08516c4ac99ba553d4cc25bcf560",
+    "finalSourceBinaryDiffSha256": "12c783fcce705fdd3410a0738d9b7020c6462d630eccd5d47af6c83a0be471c2",
+    "finalTrackedSourceMap": {
+      "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/current-changefeed-validation-preparation-3/source-binding.json",
+      "sha256": "92152f96be110929dc66bb9fc2d038922944d5b9f9a46f40c9e8ec1076a520ec"
+    },
+    "finalSixFileHashes": {
+      "apps/bdptest/src/transactional-changefeed-refusal-context-installed.test.ts": "813c7446abbd064fe14425b81ae4befad7a55f54e30a44172209b6a82950fa77",
+      "packages/server/src/transaction-changefeed.test.ts": "834d13d108cb0577cfbf0f7d32b7072a62deeb9db70a5bd72e960d5cfc42b9e3",
+      "packages/server/src/transaction-http.ts": "be9402cadf5d2888dd42a1904bbd8eeea0b32643bd7d7949f0ae34a8eefdd2e0",
+      "packages/server/src/transaction-service.ts": "d34b28787b70e5a14c38f1295a7cacc3bd2425768245ace46484f882987e9568",
+      "packages/server/src/transaction-sse.test.ts": "87f360387a20635b58a73886806c6c4ad975d27257781aee086cfb87ca92fffd",
+      "packages/server/src/transaction-store.ts": "2feff60d7064cf6a1f8b15c8360b98c1671a04762346d1d6bb3a9321ef69a2d5"
+    },
+    "finalSourceIdentity": "bada68a4268fa521b7651b8afca3c68b2c8f8f741fcf9795464d51455c914d68",
+    "finalAuthoredReportSchemaHashes": {
+      "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/current-changefeed-validation-preparation-3/report-schemas.json",
+      "sha256": "9ca89fdfc97e70aa8c46f01eef1a8e200864110e986cbfbb88ae982cf8f971be"
+    },
+    "nativeCodeReviewDisposition": "UNRESOLVED",
+    "actualCodeReviewDisposition": "completed original review1f6dce33; executable corrected-source disposition wrapper UNRESOLVED",
+    "planReviewDisposition": {
+      "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/current-changefeed-validation-preparation-3/context/plan-root-disposition-2.json",
+      "sha256": "465e4b40ff039193bba829e24350f782750bb04e0d67a6670850f1a2d4fe092c"
+    },
+    "baseToolRealpathsAndHashes": {
+      "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/current-changefeed-validation-preparation-3/base-tools.candidate.json",
+      "sha256": "c0b8fbe198ba77cec12178149145b3ae049a59835860017a2ccd389578321e9e"
+    },
+    "freshWorkspaceInstallLogAndExit": "UNRESOLVED",
+    "actualWorkspaceToolMap": "UNRESOLVED",
+    "actualBuildMapAndIdentity": "UNRESOLVED",
+    "actualBuildLogAndExit": "UNRESOLVED",
+    "actualArchiveNamesAndHashesAndMemberMaps": "UNRESOLVED",
+    "actualConsumerDirectory": "UNRESOLVED",
+    "actualConsumerManifestSettingsAndLock": "UNRESOLVED",
+    "rootActualLockAcceptance": "UNRESOLVED",
+    "actualInstalledProof": "UNRESOLVED",
+    "actualInstalledInventory": "UNRESOLVED",
+    "actualPayloadIdentity": "UNRESOLVED",
+    "actualEntryLiteralRealpathAndHash": "UNRESOLVED",
+    "rootActualProofAcceptance": "UNRESOLVED",
+    "currentSessionExecutionGuardAndSupervisorIdentity": "UNRESOLVED",
+    "actualAuditImplementationIdentity": "UNRESOLVED",
+    "actualRunOutputsAndProcessClosure": "UNRESOLVED",
+    "finalExactHeadCIRunAndRawLog": "UNRESOLVED",
+    "originalActualCodeRootDisposition": {
+      "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/current-changefeed-validation-preparation-3/context/actual-code-root-disposition-1.json",
+      "sha256": "1f6dce33f3927e320b1c5773ac86cd1361bc5f35629207d401490e4867fb6ce4"
+    },
+    "correctedSourceNativeAcceptance": "UNRESOLVED",
+    "correctedSourceRootAcceptance": "UNRESOLVED"
+  },
+  "knownPlanningBaseOnly": {
+    "head": "a56254d682cf4623cab22a552e3d2f695f691795",
+    "tree": "144f278c7f5a08516c4ac99ba553d4cc25bcf560",
+    "attribution": "Current candidate is additionally bound by full dirty source map/patch; no build/qualification identity inferred."
+  },
+  "finalFreezeRequirement": "Reconcile final implementation scope/report grammar against accepted proposal and explicit findings dispositions, then produce separately indexed executable packet; no guessed hashes or inherited Event identities.",
+  "unresolvedGateDocuments": [
+    "rootDisposition",
+    "nativeCodeDisposition",
+    "actualCodeDisposition",
+    "workspaceTools",
+    "rootBuildAcceptance",
+    "rootArchiveAcceptance",
+    "rootConsumerLockAcceptance",
+    "rootConsumerProofAcceptance",
+    "installedProvenance",
+    "consumerInventory"
+  ],
+  "preparedHelperIdentities": {
+    "run.py": "cd36402bdddfc691029c2bd4c9ddeb71ca1a9edf4a1f9a4451a56613bd950c77",
+    "gate.py": "1f47a1d2c4f5de91d366ab64f7c7f7bb9bf471e957889d4a657294abbbc1627d",
+    "packages.py": "d4be62bef0118a591eeecc97103cf600626e9d501ea63f7ffdbdee2eb8805bbd",
+    "audit.py": "4669bf01024381545e0daccbc289d6ec5c549e12281b06180053b057bc300f26",
+    "guarded-action-session-20261018-021624-549f.py": "b2d467920638e68d3b007ba9daa432e971636245eca988bfb29d7a99d6e3fb30"
+  },
+  "preparedHelpersAcceptedForExecution": false
+}

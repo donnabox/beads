@@ -1,0 +1,49 @@
+{
+  "releasedAt": "2026-10-18T03:04:58.319227+00:00",
+  "expectedSession": "2026-10-18T02:16:24Z-549f",
+  "sourceHead": "a56254d682cf4623cab22a552e3d2f695f691795",
+  "sourceUnchanged": true,
+  "nativeAcceptanceSha256": "23aaa240d84c7950dc766d05fa7db12917fe8135d4ef06a1944636290337fd1f",
+  "supervisionIndexSha256": "141fa43533f4b51b9027eb00123f8adcc7ba703dea23a5b1c46bb5cb487a9226",
+  "packetClosedIndexSha256": "480a0dc8a130699726012244795cf024a47e0195ddcafb8d972a7846e515e076",
+  "rootVerified": {
+    "indexEntries": 11,
+    "supplementFiles": 12,
+    "packetFiles": 44,
+    "sourceFiles": 679,
+    "contextInputs": 24,
+    "artifactInputs": 12,
+    "tools": 3,
+    "genuineDeltaInverse": true
+  },
+  "releaseDeltas": [
+    {
+      "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/event-admission-next-serving-plan/clean-candidate-rebind-1/claude-plan-review-session-20261018-021624-1/binding.json",
+      "closedSha256": "8b8ad44b410387dd80e46f55d1c853dded7fba8aee0b609c2865b3854dc66677",
+      "releasedSha256": "590a414396833f54eead6150b49b9a1ed39c149cbde1f6645a7e0e142fe23b08",
+      "onlyChange": "rootLaunchReleased false to true"
+    },
+    {
+      "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/event-admission-next-serving-plan/clean-candidate-rebind-1/new-session-launch-supervision-2/control.json",
+      "closedSha256": "22d4123075f329834997f2325e4548759a2a7094b59d7abe4e6b2050a95cf579",
+      "releasedSha256": "967adf122b980120a139e9cdcc7fcc6262ae99f9e9b26b73dfc03060d332f062",
+      "onlyChange": "rootLaunchReleased false to true"
+    }
+  ],
+  "singleAttempt": true,
+  "invocation": [
+    "/opt/homebrew/opt/python@3.14/bin/python3.14",
+    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/event-admission-next-serving-plan/clean-candidate-rebind-1/new-session-launch-supervision-2/supervise.py"
+  ],
+  "termSeconds": 1790,
+  "killSeconds": 1798,
+  "outerSeconds": 1800,
+  "sourceAuthoringReleased": false,
+  "runtimeValidationReleased": false,
+  "approvalInferred": false,
+  "requiredAfterReview": [
+    "terminal provenance/source invariance/process closure audit",
+    "read substantive findings",
+    "explicit findings disposition before source authoring"
+  ]
+}

@@ -1,0 +1,53 @@
+{
+  "session": "2026-10-18T02:16:24Z-549f",
+  "auditComplete": true,
+  "accepted": true,
+  "acceptedMeaning": "Actual diagnostic capture evidence only; failed lint remains failed",
+  "scope": "ONE_ERROR_ONLY_DIAGNOSTIC_CAPTURE",
+  "diagnosticCaptureAccepted": true,
+  "classification": "COMPLETE_ERROR_ONLY_CAPTURE_NO_QUALITY_CREDIT",
+  "lintRawExit": 1,
+  "lintAccepted": false,
+  "qualityPass": false,
+  "lintStagePassed": false,
+  "nextStageAuthorized": false,
+  "runtimeAuthority": false,
+  "sourceChangeAuthority": false,
+  "wholeWriteCredit": false,
+  "captureFindings": [],
+  "observedBlockingDiagnostic": {
+    "id": "G09-DIAGNOSTIC-1",
+    "rule": "lint/correctness/noUnsafeFinally",
+    "source": "packages/server/src/transaction-service.test.ts",
+    "line": 4330,
+    "column": 24,
+    "rawLogSha256": "36267e6a10a07f102abcca22670dd4c2c24aeee869e39ffc81680ac647f70314",
+    "reportedSeverity": "error",
+    "effect": "Child lint exit1; original and diagnostic lint quality remain failed.",
+    "recommendation": "Root disposition of the observed error before any separately authorized source successor. No fix or execution authority supplied by this audit."
+  },
+  "originalP3FailurePreserved": true,
+  "toolTerminals": [
+    0,
+    0,
+    0
+  ],
+  "commonClockSeconds": 10.055988000240177,
+  "taskPIDs": [
+    38776,
+    38777,
+    39661,
+    39663
+  ],
+  "taskPGIDs": [
+    38771,
+    38777,
+    39661
+  ],
+  "sourceCanonical": "f6baa7922feea80b9ae9641abc08ed79c339ff719769cc95162fe87ddc70bc65",
+  "reportSha256": "5efd662b48a202002b9dddb98c7d4c23decd4129ff8aacefab2d35c88d60ea04",
+  "integrityChecksSha256": "f53cbf3fc295aab1fdbb2ba2aa66aab9796557f83ab55e1caf25383ca500258e",
+  "actualConjunctionChecksSha256": "d6f4afa5aaada8e51ae6c990d94e7c1a63cb9b7002dbcb72d0d7c29c679cf65a",
+  "inputOriginsSha256": "2d309d67e055ff38386beccab960b08845304d939c23c8dd0ad50a92c49c5173",
+  "noSubjectExecution": true
+}

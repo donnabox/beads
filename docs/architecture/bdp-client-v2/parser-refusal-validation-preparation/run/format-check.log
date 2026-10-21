@@ -1,0 +1,39 @@
+apps/bdptest/src/transactional-collection-minimum-installed.test.ts format ━━━━━━━━━━━━━━━━━━━━━━━━━
+
+  × Formatter would have printed the following content:
+  
+    1531 1531 │             expect(response.headers[name], name).toBeUndefined();
+    1532 1532 │         }
+    1533      │ - ······for·(const·collection·of·["beads",·"links"])
+    1534      │ - ········//·limit=0·is·existing·parser·parity;·unsupported/repeated·is·normative·400.
+         1533 │ + ······//·limit=0·is·existing·parser·parity;·unsupported/repeated·is·normative·400.
+         1534 │ + ······for·(const·collection·of·["beads",·"links"])
+    1535 1535 │           for (const query of ["unsupported=x", "limit=1&limit=2", "limit=0"])
+    1536 1536 │             for (const method of ["GET", "HEAD"] as const)
+  
+
+packages/server/src/transaction-http.test.ts format ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+  × Formatter would have printed the following content:
+  
+    5560 5560 │     await withParserRefusalOwner(37, async (f) => {
+    5561 5561 │       const controls: readonly Record<string, string>[] = [{}, f.current, f.opaque];
+    5562      │ - ····for·(const·collection·of·["beads",·"links"])
+    5563      │ - ······//·Unsupported/repeated·parameters·are·normative·400;·limit=0·is·parser·parity.
+         5562 │ + ····//·Unsupported/repeated·parameters·are·normative·400;·limit=0·is·parser·parity.
+         5563 │ + ····for·(const·collection·of·["beads",·"links"])
+    5564 5564 │         for (const query of ["unsupported=x", "limit=1&limit=2", "limit=0"])
+    5565      │ - ········for·(const·headers·of·controls)
+    5566      │ - ··········await·f.problemPair(`${collection}/?${query}`,·headers);
+         5565 │ + ········for·(const·headers·of·controls)·await·f.problemPair(`${collection}/?${query}`,·headers);
+    5567 5566 │     });
+    5568 5567 │   });
+  
+
+Checked 3 files in 24ms. No fixes applied.
+Found 2 errors.
+format ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+  × Some errors were emitted while running checks.
+  
+

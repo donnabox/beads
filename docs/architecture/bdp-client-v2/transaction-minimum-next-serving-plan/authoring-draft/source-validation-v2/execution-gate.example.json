@@ -1,0 +1,38 @@
+{
+  "status": "closed",
+  "session": "2026-10-08T20:26:35Z-81e5",
+  "sourceBindingPath": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-minimum-next-serving-plan/authoring-draft/service-lifetime-repair/source-binding.json",
+  "sourceBindingSha256": "dbb0103a84d9458f40b4f5b509c56b758cbad07565e56f3617940bf9eee30def",
+  "ownedPaths": [
+    "packages/server/src/transaction-consistency.ts",
+    "packages/server/src/transaction-read.ts",
+    "packages/server/src/transaction-service.ts",
+    "packages/server/src/transaction-http.ts",
+    "packages/server/src/transaction-consistency.test.ts",
+    "packages/server/src/transaction-read.test.ts",
+    "packages/server/src/transaction-http.test.ts",
+    "apps/bdptest/src/transactional-minimum-current-resource-installed.test.ts",
+    "docs/specs/bdp.md",
+    "docs/design/transaction-implementation-progress.md"
+  ],
+  "authoringReleaseSha256": "cd57f946d42a6f3bae78f14c1b2ed43982429378aa11ea4efde7ac636f3a3dc4",
+  "supervisorSha256": "19115e0f50cb417fe1990ff385ab37792d90ac45fd3a689a2cb9925b531f1fa5",
+  "commandsSha256": "4a576e21b5c42b16019c602bd13b5ebf0fc9c49ebe73bede73ce405b04475340",
+  "expectedHead": "1647c5df37a82e1364d281ac46beb60a94ab6c76",
+  "expectedTree": "a070420a4c17aa67a821c742d363ff9e82e872a6",
+  "inputBindingSha256": "10e46402240b4a5164a3affbaf4152a48e2aafd694127c82d6e3383aed8afbc2",
+  "preparationFiles": {
+    "commands.json": "4a576e21b5c42b16019c602bd13b5ebf0fc9c49ebe73bede73ce405b04475340",
+    "run-source.py": "19115e0f50cb417fe1990ff385ab37792d90ac45fd3a689a2cb9925b531f1fa5",
+    "inventory.py": "7757964f3a0a319d1674e30ec84905d0c9ae8ce40e0f1db301f304c250960bc6",
+    "input-binding.json": "10e46402240b4a5164a3affbaf4152a48e2aafd694127c82d6e3383aed8afbc2"
+  },
+  "authorizedStages": [],
+  "rootAcceptance": {
+    "path": null,
+    "sha256": null
+  },
+  "unmergedCandidateValidation": true,
+  "controlGate": "closed",
+  "installedGate": "closed"
+}

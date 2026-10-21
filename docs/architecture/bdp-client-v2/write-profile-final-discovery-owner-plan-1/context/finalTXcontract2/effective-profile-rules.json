@@ -1,0 +1,55 @@
+{
+  "normativeSource": "source/D3a/docs/specs/bdp.md",
+  "pinnedSha256": "67772742d7d08f48c12196e9789f1859ad2d0e19f133ea65e197b049361f84f8",
+  "rules": [
+    {
+      "id": "CUMULATIVE",
+      "anchors": [
+        "118–119",
+        "3643–3646",
+        "3652–3653",
+        "6663–6666",
+        "6883–6910"
+      ],
+      "rule": "TX preserves inherited Read/RU laws on actual TX owner. Three cumulative enum values only; no fourth Write enum, no simultaneous-three-profile requirement."
+    },
+    {
+      "id": "TX-OVERRIDES",
+      "anchors": [
+        "6883–6910",
+        "4328–4404",
+        "4981–5310"
+      ],
+      "rule": "Apply exact13 retirement edges, including transitive Read discovery retirement. Preserved RU singleton semantics are observed in receipt one-entry; aliases remain locator-only TX receipts. Do not revive retired Read/RU closed discovery or direct singleton envelope."
+    },
+    {
+      "id": "SEQUENCE",
+      "anchors": [
+        "2718–2884",
+        "3083–3171",
+        "3846–4165"
+      ],
+      "rule": "Same TX owner separately commits member transactions and uses prescribed RU-shaped projection; never make sequence atomically batched. RU genuine non-atomic/direct result semantics also require their separately bound RU cohort."
+    },
+    {
+      "id": "NUMERIC-NOOP",
+      "law": "read-update.numeric-model.same-value-no-op",
+      "rule": "Preserve exact-decimal equality/no-op revision/provenance and no updated Event. Its RU-only statement of no durable receipts/BDP Events is scoped to RU, not a prohibition of TX receipts/Events. TX-specific no-op/receipt/Event laws govern final TX evidence."
+    },
+    {
+      "id": "HISTORY",
+      "rule": "Historyfalse excludes30 optional History catalog IDs only. All251selected baseline laws remain in denominator; TX erasure framing, retention/control-copy acquisition/recovery/restore duties are not waived."
+    },
+    {
+      "id": "PUBLIC-HTTP",
+      "anchors": [
+        "6672–6695"
+      ],
+      "rule": "Internal factory/state/store inspections are setup/assurance, not substitutes for actual public HTTP law observations. Existing private exact transport remains ineligible; public admission separately unresolved."
+    },
+    {
+      "id": "FULL-CLAUSE",
+      "rule": "Governing section texts are exact complete source ranges, with479 exact catalog citations. Every future executable owner must supply explicit case/assertion/actual-exchange-to-clause coverage including conditions, negative branches, and overrides. No whole flag from an ID/status/schema/sample/count alone."
+    }
+  ]
+}

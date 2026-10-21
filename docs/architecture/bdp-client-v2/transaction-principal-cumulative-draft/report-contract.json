@@ -1,0 +1,64 @@
+{
+  "sourceBindingSha256": "b03f5faa4a6d96dfbd72c960b835a737248ee292184326246ffc9d321e87aa31",
+  "selectedOutputEnvironment": "BDP_TRANSACTIONAL_PRINCIPAL_CUMULATIVE_OUTPUT",
+  "selectedOutputMeaning": "optional absolute file, genuine onObserved report before cleanup plus safe principalSupplemental; no fabricated report if runner never returns",
+  "fullOutputEnvironment": "BDP_TRANSACTIONAL_OBSERVATION_OUTPUT",
+  "crossOutputEnvironment": "BDP_TRANSACTIONAL_CROSS_CARRIER_CONTROL_OUTPUT",
+  "positiveLabel": "installed-tx-principal-positive",
+  "controlLabel": "installed-tx-principal-collapse",
+  "vitestIntendedExit": {
+    "positive": 0,
+    "collapse": 0
+  },
+  "controlMeaning": "selected runner row fails exactly18 B assertion IDs, callback positively adjudicates that real negative; generic Vitest exit1 not accepted",
+  "supplementalKeys": [
+    "mode",
+    "dispatches",
+    "responses",
+    "performed",
+    "joined",
+    "provenance"
+  ],
+  "dispatchFields": [
+    "ordinal",
+    "method",
+    "url",
+    "credentialRef"
+  ],
+  "responseFields": [
+    "ordinal",
+    "url",
+    "status",
+    "bodyDigest",
+    "writeState",
+    "requestBodyBytes",
+    "requestBodyDigest",
+    "epoch",
+    "view",
+    "position"
+  ],
+  "joinedFields": [
+    "id",
+    "reportedUrl",
+    "method",
+    "dispatchUrl",
+    "credentialRef",
+    "ordinal"
+  ],
+  "positivePerformed": [
+    "namespace-distinct",
+    "pk-a-rotated:pk-a-create:whole-json",
+    "pk-b-replay:pk-b-create:whole-json",
+    "validated-a-conflict",
+    "complete-current",
+    "complete-events"
+  ],
+  "controlPerformed": [
+    "validated-a-terminal",
+    "validated-b-conflict"
+  ],
+  "postrunProvenance": "report id/reportedUrl; actual safe input method/dispatchUrl/credentialRef; local ordinal; no wire credential attestation",
+  "credentialsNeverReported": true,
+  "oldObserveCleanupUnchanged": true,
+  "claimEligible": false
+}

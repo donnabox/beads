@@ -1,0 +1,27 @@
+{
+  "status": "released",
+  "session": "2026-10-08T20:26:35Z-81e5",
+  "sourceBindingSha256": "987f61764ca09df676f77ab5b99a8886809f4ce7908342bc8c27fd462fddcc81",
+  "commandsSha256": "973548a176d4c84a8089a03d8b91010be2dadaaf46b10ac6128352d89b1b516d",
+  "supervisorSha256": "d6e73fadb4069376187aabc78e598fd8e60bea7bc533c1f9a2e12cf9f4c37e75",
+  "expectedHead": "df80f8cb86b7763bc7bb005492e43d8840527045",
+  "expectedTree": "25e9d4aa926ea728f5e356365cb1ffadba269221",
+  "authorizedStages": [
+    "offline-setup",
+    "typecheck",
+    "build",
+    "format-check",
+    "lint",
+    "boundaries",
+    "read-seal",
+    "preparation-positive",
+    "sequence-positive",
+    "http-positive"
+  ],
+  "controlGate": "closed",
+  "installedGate": "closed",
+  "rootAcceptance": {
+    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/sequence-depth-retained-member-draft/source-validation-initial/root-execution-authorization.json",
+    "sha256": "d10f5651d6f1de9cb2f1bc1bde648b8eb958868769f336eb449f966fc6a9f2a6"
+  }
+}

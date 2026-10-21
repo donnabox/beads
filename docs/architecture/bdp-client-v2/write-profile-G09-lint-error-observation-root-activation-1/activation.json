@@ -1,0 +1,35 @@
+{
+  "session": "2026-10-18T02:16:24Z-549f",
+  "time": "2026-10-19T00:12:41.241124+00:00",
+  "completeAuthorityPublication": {
+    "commit": "ed10cc1f02e7b333df71ba8013440a21a4b23692",
+    "receiptPath": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/root-G09-lint-error-observation-complete-authority-publication-1.remote-readback.json",
+    "receiptSha256": "c0ac69e0520681498c10a7d690e4978b5ced68b55daf3dbbac55aad6ec655202",
+    "all43RawModesCriticalReadbacks": true
+  },
+  "rootFinalAcceptance": {
+    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-lint-error-observation-root-final-execution-acceptance-1/acceptance.json",
+    "sha256": "13d21429ec5af6fe03fe638cf80e322e222e7636035973ac7824edd6d9038247"
+  },
+  "onlyChangedPath": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-lint-error-observation-preparation-1/execution-gate.json",
+  "beforeSha256": "771887f040a1ac188df56442820aff56595e1d2da559c0a8292b1d01da7321fe",
+  "afterSha256": "c127ce33601f47b6f15e0e0ad76fe812403c3edffc99a7663da71b5eac02fbe2",
+  "exactCandidatePath": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-lint-error-observation-root-proposed-authority-1/execution-gate.proposed.json",
+  "exactCandidateBytes": true,
+  "immutableClosedCopyStillBefore": true,
+  "preparedOther52FilesUnchanged": true,
+  "all2872EntriesQualified": true,
+  "soleHistoricalBeforeStateProjection": [
+    {
+      "table": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-lint-error-observation-fixed-protocol-preparation-1/reference-pins.json",
+      "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-lint-error-observation-preparation-1/execution-gate.json",
+      "historicalBeforeSha256": "771887f040a1ac188df56442820aff56595e1d2da559c0a8292b1d01da7321fe",
+      "actualAfterSha256": "c127ce33601f47b6f15e0e0ad76fe812403c3edffc99a7663da71b5eac02fbe2"
+    }
+  ],
+  "originalP3StillF672": true,
+  "runtimeRunDispatchAbsent": true,
+  "actualDiagnosticInvoked": false,
+  "actualInvocationStillRequiresSeparateActivationPublicationReadback": true,
+  "noProductSourceOrOtherGateChange": true
+}

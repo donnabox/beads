@@ -1,0 +1,16 @@
+{
+  "preparationOnly": true,
+  "observations": [
+    {
+      "kind": "source_metadata_bound_without_Git",
+      "detail": "Requested additive root ordinary git diff HEAD/status receipt rather than infer equivalence to --binary. Root supplied exact receipt b3ecc06b, ordinary and binary SHAeed91 match."
+    },
+    {
+      "kind": "own_static_draft_correction_before_freeze",
+      "detail": "Draft artifact census initially included the future mutable control.json. Removed that one active-control pin before freeze, preserving immutable control.closed.json and exact two-flag release contract. No run or flag activation occurred; no predecessor packet changed."
+    }
+  ],
+  "subjectOutputsCreated": 0,
+  "reviewerInvocations": 0,
+  "GitInvocations": 0
+}

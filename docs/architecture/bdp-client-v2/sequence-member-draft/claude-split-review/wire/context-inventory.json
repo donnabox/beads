@@ -1,0 +1,284 @@
+{
+  "scope": "wire",
+  "promptBytes": 109437,
+  "promptSha256": "2dd418c3f937d83972271d6fa38d6aa1ccf5727851804aa2f50c7481bb9b1e2d",
+  "sections": [
+    {
+      "name": "Scope and accepted boundaries",
+      "bytes": 3651,
+      "sha256": "ec501b581579f3866048f305cccb194d5dd09185ae79be5b68595b560fc282e2"
+    },
+    {
+      "name": "COMPLETE compact new manifest row (all ten actions and209assertions; no values omitted)",
+      "bytes": 26183,
+      "sha256": "48e524596890fab7bf578cbbb653ed844178c33b568f8e0c033736d2745598ca"
+    },
+    {
+      "name": "Attributed independent preservation/measurement facts",
+      "bytes": 2294,
+      "sha256": "00cb3abf9b927578743352255e9a89519ecfafa26682a12cb622b0e73abbb963"
+    },
+    {
+      "name": "COMPLETE app TS diff",
+      "bytes": 30001,
+      "sha256": "a432e3ef02adb4cfb238e82e7b901bc5650d07fff38560312a3aa7365ae25337"
+    },
+    {
+      "name": "packages/conformance/src/transactional-observation.ts: COMPLETE unchanged file",
+      "bytes": 14289,
+      "sha256": "603fcc1240e43da3c477f42b8b942141c06c989a48a2a88099fd5d90e283159f"
+    },
+    {
+      "name": "apps/bdptest/src/transactional-matrix.test.ts: genuine excerpt lines 98-349",
+      "bytes": 10539,
+      "sha256": "145c58e6529693a3741bcb562d2cd382ed9775c4d874e62988b976ac608598ce"
+    },
+    {
+      "name": "apps/bdptest/src/transactional-matrix.test.ts: genuine excerpt lines 1885-2012",
+      "bytes": 4867,
+      "sha256": "9fd59bc929fa1e9b2a76c5bcb6a32e6d66edfe6809b058d93bbd6f1024bcbe2e"
+    },
+    {
+      "name": "apps/bdptest/src/transactional-matrix.test.ts: genuine excerpt lines 2358-2414",
+      "bytes": 2380,
+      "sha256": "c2223b604b903348bb016cd1e0b97e28a4373b7a04ab4830433b485bb46be6c7"
+    },
+    {
+      "name": "apps/bdptest/src/transactional-matrix.test.ts: genuine excerpt lines 2591-2619",
+      "bytes": 738,
+      "sha256": "1aa7756ef71b3ce976b95cadd0422b44f2129bdc41dda33a989edcb3e1080694"
+    },
+    {
+      "name": "packages/conformance/src/runner.ts: genuine excerpt lines 1090-1134",
+      "bytes": 1366,
+      "sha256": "0bda8ea400378e846935cbdd810d7ff710d876cce3285475be57b5d0c3306ba9"
+    },
+    {
+      "name": "packages/conformance/src/runner.ts: genuine excerpt lines 1438-1510",
+      "bytes": 2477,
+      "sha256": "94fd288b4c2f5fceae8c6b9188dd84cf7f0e12f1a6cb60f7a37ff2be3f7faaeb"
+    },
+    {
+      "name": "packages/conformance/src/runner.ts: genuine excerpt lines 1900-1933",
+      "bytes": 1364,
+      "sha256": "61caba6cd9707e5376a97fcd83c095375df35a6e245cf5ea7de0bba424bbeb07"
+    },
+    {
+      "name": "packages/conformance/src/runner.ts: genuine excerpt lines 2468-2498",
+      "bytes": 1043,
+      "sha256": "205688de4a0c8d5f7d16dacab3e8b701defa8f5400968d167102b7c1548d83cb"
+    },
+    {
+      "name": "packages/server/src/transaction-sequence.ts: genuine excerpt lines 32-75",
+      "bytes": 2253,
+      "sha256": "0b485fa01063722f71c70335ffad7e55e128622a6cb1b32cd378a4886cbbabf7"
+    },
+    {
+      "name": "packages/server/src/transaction-events.ts: genuine excerpt lines 73-101",
+      "bytes": 1055,
+      "sha256": "e7257f34f8417c9ca571d6a66a0a33178559cf9d6b9772ce321e61c76dfca454"
+    },
+    {
+      "name": "packages/server/src/transaction-events.ts: genuine excerpt lines 190-270",
+      "bytes": 3622,
+      "sha256": "0e7042a818c87d177801021080c87bd78a7659ae61ceb35f1cd9676f08433909"
+    }
+  ],
+  "unionSourceExcerpts": {
+    "packages/conformance/src/transactional-observation.ts": [
+      {
+        "start": null,
+        "end": null,
+        "wholeFileSha256": "603fcc1240e43da3c477f42b8b942141c06c989a48a2a88099fd5d90e283159f",
+        "excerptSha256": "603fcc1240e43da3c477f42b8b942141c06c989a48a2a88099fd5d90e283159f",
+        "bytes": 14289
+      },
+      {
+        "start": 185,
+        "end": 305,
+        "wholeFileSha256": "603fcc1240e43da3c477f42b8b942141c06c989a48a2a88099fd5d90e283159f",
+        "excerptSha256": "d28d35f3cde02c157a636a7463a02641b9501bc553e584ba706f246968a049d0",
+        "bytes": 5606
+      }
+    ],
+    "apps/bdptest/src/transactional-matrix.test.ts": [
+      {
+        "start": 98,
+        "end": 349,
+        "wholeFileSha256": "dcf0161723a6b77dd4235111a83a6aa1ce0cbb6a1a5d79e362f992742bc503de",
+        "excerptSha256": "145c58e6529693a3741bcb562d2cd382ed9775c4d874e62988b976ac608598ce",
+        "bytes": 10539
+      },
+      {
+        "start": 1885,
+        "end": 2012,
+        "wholeFileSha256": "dcf0161723a6b77dd4235111a83a6aa1ce0cbb6a1a5d79e362f992742bc503de",
+        "excerptSha256": "9fd59bc929fa1e9b2a76c5bcb6a32e6d66edfe6809b058d93bbd6f1024bcbe2e",
+        "bytes": 4867
+      },
+      {
+        "start": 2358,
+        "end": 2414,
+        "wholeFileSha256": "dcf0161723a6b77dd4235111a83a6aa1ce0cbb6a1a5d79e362f992742bc503de",
+        "excerptSha256": "c2223b604b903348bb016cd1e0b97e28a4373b7a04ab4830433b485bb46be6c7",
+        "bytes": 2380
+      },
+      {
+        "start": 2591,
+        "end": 2619,
+        "wholeFileSha256": "dcf0161723a6b77dd4235111a83a6aa1ce0cbb6a1a5d79e362f992742bc503de",
+        "excerptSha256": "1aa7756ef71b3ce976b95cadd0422b44f2129bdc41dda33a989edcb3e1080694",
+        "bytes": 738
+      },
+      {
+        "start": 2926,
+        "end": 2942,
+        "wholeFileSha256": "dcf0161723a6b77dd4235111a83a6aa1ce0cbb6a1a5d79e362f992742bc503de",
+        "excerptSha256": "14ccdd0234703f2e848ff0eebb19620af1d78fd8405f5654ca75fd8a229d8b36",
+        "bytes": 552
+      },
+      {
+        "start": 3152,
+        "end": 3176,
+        "wholeFileSha256": "dcf0161723a6b77dd4235111a83a6aa1ce0cbb6a1a5d79e362f992742bc503de",
+        "excerptSha256": "bfe56ceea97a1aab857f2b860eed6b2e346b7a04432774a5534592924f4972bb",
+        "bytes": 789
+      },
+      {
+        "start": 3247,
+        "end": 3341,
+        "wholeFileSha256": "dcf0161723a6b77dd4235111a83a6aa1ce0cbb6a1a5d79e362f992742bc503de",
+        "excerptSha256": "8fbf2f791cba65574c44ba0c3ccbfca8b5466e307063e3c35da82be46c7d70d2",
+        "bytes": 3759
+      }
+    ],
+    "packages/conformance/src/runner.ts": [
+      {
+        "start": 1090,
+        "end": 1134,
+        "wholeFileSha256": "ac20c7fbfe15a5e42a6559e89cd3467562efe9bc74d462478414414ed3efede1",
+        "excerptSha256": "0bda8ea400378e846935cbdd810d7ff710d876cce3285475be57b5d0c3306ba9",
+        "bytes": 1366
+      },
+      {
+        "start": 1438,
+        "end": 1510,
+        "wholeFileSha256": "ac20c7fbfe15a5e42a6559e89cd3467562efe9bc74d462478414414ed3efede1",
+        "excerptSha256": "94fd288b4c2f5fceae8c6b9188dd84cf7f0e12f1a6cb60f7a37ff2be3f7faaeb",
+        "bytes": 2477
+      },
+      {
+        "start": 1900,
+        "end": 1933,
+        "wholeFileSha256": "ac20c7fbfe15a5e42a6559e89cd3467562efe9bc74d462478414414ed3efede1",
+        "excerptSha256": "61caba6cd9707e5376a97fcd83c095375df35a6e245cf5ea7de0bba424bbeb07",
+        "bytes": 1364
+      },
+      {
+        "start": 2468,
+        "end": 2498,
+        "wholeFileSha256": "ac20c7fbfe15a5e42a6559e89cd3467562efe9bc74d462478414414ed3efede1",
+        "excerptSha256": "205688de4a0c8d5f7d16dacab3e8b701defa8f5400968d167102b7c1548d83cb",
+        "bytes": 1043
+      },
+      {
+        "start": 832,
+        "end": 1012,
+        "wholeFileSha256": "ac20c7fbfe15a5e42a6559e89cd3467562efe9bc74d462478414414ed3efede1",
+        "excerptSha256": "6da5d0cddceeb1a01c1fe15bc239efcd0d1a554d917b24ebc4b6743fc11c9eb8",
+        "bytes": 6145
+      },
+      {
+        "start": 1090,
+        "end": 1134,
+        "wholeFileSha256": "ac20c7fbfe15a5e42a6559e89cd3467562efe9bc74d462478414414ed3efede1",
+        "excerptSha256": "0bda8ea400378e846935cbdd810d7ff710d876cce3285475be57b5d0c3306ba9",
+        "bytes": 1366
+      },
+      {
+        "start": 1438,
+        "end": 1510,
+        "wholeFileSha256": "ac20c7fbfe15a5e42a6559e89cd3467562efe9bc74d462478414414ed3efede1",
+        "excerptSha256": "94fd288b4c2f5fceae8c6b9188dd84cf7f0e12f1a6cb60f7a37ff2be3f7faaeb",
+        "bytes": 2477
+      },
+      {
+        "start": 1900,
+        "end": 1933,
+        "wholeFileSha256": "ac20c7fbfe15a5e42a6559e89cd3467562efe9bc74d462478414414ed3efede1",
+        "excerptSha256": "61caba6cd9707e5376a97fcd83c095375df35a6e245cf5ea7de0bba424bbeb07",
+        "bytes": 1364
+      },
+      {
+        "start": 2014,
+        "end": 2404,
+        "wholeFileSha256": "ac20c7fbfe15a5e42a6559e89cd3467562efe9bc74d462478414414ed3efede1",
+        "excerptSha256": "31d160aba6001b41d050cb7e94e3a277cf7881a9201c8d30bb0dcf07aeccc9e7",
+        "bytes": 16382
+      },
+      {
+        "start": 2468,
+        "end": 2498,
+        "wholeFileSha256": "ac20c7fbfe15a5e42a6559e89cd3467562efe9bc74d462478414414ed3efede1",
+        "excerptSha256": "205688de4a0c8d5f7d16dacab3e8b701defa8f5400968d167102b7c1548d83cb",
+        "bytes": 1043
+      }
+    ],
+    "packages/server/src/transaction-sequence.ts": [
+      {
+        "start": 32,
+        "end": 75,
+        "wholeFileSha256": "019e02f2f392047d568d7464b1c5af0482d6d743ed09a6d0aa4edab151607cbe",
+        "excerptSha256": "0b485fa01063722f71c70335ffad7e55e128622a6cb1b32cd378a4886cbbabf7",
+        "bytes": 2253
+      },
+      {
+        "start": 32,
+        "end": 75,
+        "wholeFileSha256": "019e02f2f392047d568d7464b1c5af0482d6d743ed09a6d0aa4edab151607cbe",
+        "excerptSha256": "0b485fa01063722f71c70335ffad7e55e128622a6cb1b32cd378a4886cbbabf7",
+        "bytes": 2253
+      }
+    ],
+    "packages/server/src/transaction-events.ts": [
+      {
+        "start": 73,
+        "end": 101,
+        "wholeFileSha256": "c6052433662fcb2d0a202ad4e408a24d4c43f980313fa89659501b4475790db5",
+        "excerptSha256": "e7257f34f8417c9ca571d6a66a0a33178559cf9d6b9772ce321e61c76dfca454",
+        "bytes": 1055
+      },
+      {
+        "start": 190,
+        "end": 270,
+        "wholeFileSha256": "c6052433662fcb2d0a202ad4e408a24d4c43f980313fa89659501b4475790db5",
+        "excerptSha256": "0e7042a818c87d177801021080c87bd78a7659ae61ceb35f1cd9676f08433909",
+        "bytes": 3622
+      }
+    ],
+    "packages/conformance/src/transactional-cumulative.test.ts": [
+      {
+        "start": 670,
+        "end": 713,
+        "wholeFileSha256": "313e6a947b33a3893565ea5db2d9d4a962b46c2e926900598e9285e657a31bf2",
+        "excerptSha256": "13583ab047e6a581dbf2020192e4596516be2614b7f4e7c44b946b3d8c0ffd6a",
+        "bytes": 1240
+      },
+      {
+        "start": 828,
+        "end": 835,
+        "wholeFileSha256": "313e6a947b33a3893565ea5db2d9d4a962b46c2e926900598e9285e657a31bf2",
+        "excerptSha256": "2f71c3c901e18d2375b1c9a42b4aef5f64617bd6a2a8488652adde6423ec853a",
+        "bytes": 397
+      },
+      {
+        "start": 2652,
+        "end": 2700,
+        "wholeFileSha256": "313e6a947b33a3893565ea5db2d9d4a962b46c2e926900598e9285e657a31bf2",
+        "excerptSha256": "c68e07f431768ca879a2e487fb700d68fc8220037b1703b16eede92bda617d8e",
+        "bytes": 1729
+      }
+    ]
+  },
+  "limitations": "Exact quoted ranges only; whole schema closure/unchanged giant fixtures/historical logs omitted. Both scopes jointly exhaustive changed-code/new-data review; no single scope verdict substitutes for the other."
+}

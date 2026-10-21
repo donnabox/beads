@@ -1,0 +1,54 @@
+{
+  "approvedStages": {
+    "after": [
+      "node-version",
+      "pnpm-version",
+      "workspace-install",
+      "bind-workspace-tools",
+      "typecheck",
+      "format-check",
+      "lint",
+      "fresh-build",
+      "bind-fresh-build"
+    ],
+    "before": [
+      "node-version",
+      "pnpm-version",
+      "workspace-install",
+      "bind-workspace-tools",
+      "typecheck",
+      "format-check",
+      "lint",
+      "fresh-build",
+      "bind-fresh-build",
+      "focused-source",
+      "audit-focused-source",
+      "legacy-changefeed-source",
+      "audit-legacy-changefeed-source",
+      "legacy-installed-contracts-source",
+      "audit-legacy-installed-contracts-source",
+      "schema-confinement-source",
+      "audit-schema-confinement-source"
+    ]
+  },
+  "rootBuildAcceptance": {
+    "after": {
+      "path": "UNRESOLVED",
+      "sha256": "UNRESOLVED"
+    },
+    "before": {
+      "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/tx-discovery-validation10-root-build-acceptance-1/acceptance.json",
+      "sha256": "f511e198d40e56a51c2959b7efbc1d86e9e8de5eb9c3b18642cd7f6962f7f438"
+    }
+  },
+  "rootDisposition": {
+    "after": {
+      "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/tx-discovery-validation10-prefix9-proposed-authority-1/disposition.json",
+      "sha256": "981b56789bb9cc1441abd1be97d38bb4f1cd17aef740c0491586a060546bfd78"
+    },
+    "before": {
+      "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/tx-discovery-validation10-prefix17-proposed-authority-1/disposition.json",
+      "sha256": "d4f7d6d0d3957cb3743c9d5e458882100e06d3c91b814e6702a38ff4cda1dd13"
+    }
+  }
+}

@@ -1,0 +1,25 @@
+--- a/packages/server/src/transaction-runtime.test.ts
++++ b/packages/server/src/transaction-runtime.test.ts
+@@ -611,11 +611,11 @@
+       first.resources[0],
+     );
+     const collection = authorizationChecked(
+-      await f.request("beads/?limit=1"),
++      await f.request("beads/?limit=2"),
+       200,
+       "currentBeadCollection",
+     );
+-    expect(collection.items).toEqual([first.resources[0]]);
++    expect(collection.items).toEqual(first.resources.slice(0, 2));
+     const collectionNext = authorizationText(collection.next);
+     const snapshot = authorizationChecked(await f.request("snapshot"), 200, "snapshotManifest");
+     expect(snapshot).toMatchObject({
+@@ -664,7 +664,7 @@
+       return value;
+     };
+     await problem("beads/b00", 404, "resource-not-found");
+-    const empty = await f.request("beads/?limit=1");
++    const empty = await f.request("beads/?limit=2");
+     expect(authorizationChecked(empty, 200, "currentBeadCollection")).toEqual({
+       items: [],
+       next: null,

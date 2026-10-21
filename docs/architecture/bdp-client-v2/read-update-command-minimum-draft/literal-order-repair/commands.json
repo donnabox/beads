@@ -1,0 +1,21 @@
+{
+  "stages": [
+    {
+      "id": "cumulative-callback",
+      "argv": [
+        "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+        "/Users/dbox/repos/wt/vickie/vickie-update-cold-directory/node_modules/vitest/vitest.mjs",
+        "run",
+        "packages/conformance/src/cumulative-artifact.test.ts",
+        "--maxWorkers=1",
+        "--testNamePattern",
+        "^pins cumulative source digest map, catalog order and every coverage binding$",
+        "--reporter=verbose",
+        "--reporter=json",
+        "--outputFile=/Users/dbox/repos/wt/vickie/bdp-integration-logs/read-update-command-minimum-draft/literal-order-repair/source-run/cumulative-tests.json"
+      ]
+    }
+  ],
+  "externalTimeoutSeconds": 120,
+  "automaticRetries": 0
+}

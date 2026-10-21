@@ -1,0 +1,451 @@
+{
+  "configurationFinalized": true,
+  "closedPreparation": true,
+  "finalOrder": [
+    "node-version",
+    "pnpm-version",
+    "workspace-install",
+    "bind-workspace-tools",
+    "typecheck",
+    "format-check",
+    "lint",
+    "fresh-build",
+    "bind-fresh-build",
+    "prepare-package-directory",
+    "pack-protocol",
+    "pack-server",
+    "verify-archives",
+    "prepare-consumer",
+    "install-consumer",
+    "verify-installed-consumer",
+    "installed-owned-set",
+    "required-boundaries",
+    "required-smoke",
+    "required-read-preflight",
+    "required-evidence-verify"
+  ],
+  "commands": {
+    "node-version": {
+      "id": "node-version",
+      "argv": [
+        "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+        "--version"
+      ],
+      "cwd": "/Users/dbox/repos/wt/vickie/vickie-owned-set-retarget-minimum",
+      "outerSeconds": 120,
+      "termAtSeconds": 115,
+      "killAtSeconds": 119,
+      "automaticRetries": 0,
+      "acceptedRawExitCodes": [
+        0
+      ],
+      "requiresConsumerProof": false
+    },
+    "pnpm-version": {
+      "id": "pnpm-version",
+      "argv": [
+        "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+        "/Users/dbox/.cache/node/corepack/v1/pnpm/11.20.0/bin/pnpm.cjs",
+        "--version"
+      ],
+      "cwd": "/Users/dbox/repos/wt/vickie/vickie-owned-set-retarget-minimum",
+      "outerSeconds": 120,
+      "termAtSeconds": 115,
+      "killAtSeconds": 119,
+      "automaticRetries": 0,
+      "acceptedRawExitCodes": [
+        0
+      ],
+      "requiresConsumerProof": false
+    },
+    "workspace-install": {
+      "id": "workspace-install",
+      "argv": [
+        "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+        "/Users/dbox/.cache/node/corepack/v1/pnpm/11.20.0/bin/pnpm.cjs",
+        "install",
+        "--offline",
+        "--frozen-lockfile",
+        "--ignore-scripts"
+      ],
+      "cwd": "/Users/dbox/repos/wt/vickie/vickie-owned-set-retarget-minimum",
+      "outerSeconds": 120,
+      "termAtSeconds": 115,
+      "killAtSeconds": 119,
+      "automaticRetries": 0,
+      "acceptedRawExitCodes": [
+        0
+      ],
+      "requiresConsumerProof": false
+    },
+    "bind-workspace-tools": {
+      "id": "bind-workspace-tools",
+      "argv": [
+        "/opt/homebrew/opt/python@3.14/bin/python3.14",
+        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-D4-validation-preparation-2/audit.py",
+        "tools"
+      ],
+      "cwd": "/Users/dbox/repos/wt/vickie/vickie-owned-set-retarget-minimum",
+      "outerSeconds": 120,
+      "termAtSeconds": 115,
+      "killAtSeconds": 119,
+      "automaticRetries": 0,
+      "acceptedRawExitCodes": [
+        0
+      ],
+      "requiresConsumerProof": false
+    },
+    "typecheck": {
+      "id": "typecheck",
+      "argv": [
+        "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+        "/Users/dbox/.cache/node/corepack/v1/pnpm/11.20.0/bin/pnpm.cjs",
+        "typecheck"
+      ],
+      "cwd": "/Users/dbox/repos/wt/vickie/vickie-owned-set-retarget-minimum",
+      "outerSeconds": 120,
+      "termAtSeconds": 115,
+      "killAtSeconds": 119,
+      "automaticRetries": 0,
+      "acceptedRawExitCodes": [
+        0
+      ],
+      "requiresConsumerProof": false
+    },
+    "format-check": {
+      "id": "format-check",
+      "argv": [
+        "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+        "/Users/dbox/.cache/node/corepack/v1/pnpm/11.20.0/bin/pnpm.cjs",
+        "format:check"
+      ],
+      "cwd": "/Users/dbox/repos/wt/vickie/vickie-owned-set-retarget-minimum",
+      "outerSeconds": 120,
+      "termAtSeconds": 115,
+      "killAtSeconds": 119,
+      "automaticRetries": 0,
+      "acceptedRawExitCodes": [
+        0
+      ],
+      "requiresConsumerProof": false
+    },
+    "lint": {
+      "id": "lint",
+      "argv": [
+        "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+        "/Users/dbox/.cache/node/corepack/v1/pnpm/11.20.0/bin/pnpm.cjs",
+        "lint"
+      ],
+      "cwd": "/Users/dbox/repos/wt/vickie/vickie-owned-set-retarget-minimum",
+      "outerSeconds": 120,
+      "termAtSeconds": 115,
+      "killAtSeconds": 119,
+      "automaticRetries": 0,
+      "acceptedRawExitCodes": [
+        0
+      ],
+      "requiresConsumerProof": false
+    },
+    "fresh-build": {
+      "id": "fresh-build",
+      "argv": [
+        "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+        "/Users/dbox/.cache/node/corepack/v1/pnpm/11.20.0/bin/pnpm.cjs",
+        "build"
+      ],
+      "cwd": "/Users/dbox/repos/wt/vickie/vickie-owned-set-retarget-minimum",
+      "outerSeconds": 120,
+      "termAtSeconds": 115,
+      "killAtSeconds": 119,
+      "automaticRetries": 0,
+      "acceptedRawExitCodes": [
+        0
+      ],
+      "requiresConsumerProof": false
+    },
+    "bind-fresh-build": {
+      "id": "bind-fresh-build",
+      "argv": [
+        "/opt/homebrew/opt/python@3.14/bin/python3.14",
+        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-D4-validation-preparation-2/audit.py",
+        "build"
+      ],
+      "cwd": "/Users/dbox/repos/wt/vickie/vickie-owned-set-retarget-minimum",
+      "outerSeconds": 120,
+      "termAtSeconds": 115,
+      "killAtSeconds": 119,
+      "automaticRetries": 0,
+      "acceptedRawExitCodes": [
+        0
+      ],
+      "requiresConsumerProof": false
+    },
+    "prepare-package-directory": {
+      "id": "prepare-package-directory",
+      "argv": [
+        "/opt/homebrew/opt/python@3.14/bin/python3.14",
+        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-D4-validation-preparation-2/packages.py",
+        "directory"
+      ],
+      "cwd": "/Users/dbox/repos/wt/vickie/vickie-owned-set-retarget-minimum",
+      "outerSeconds": 120,
+      "termAtSeconds": 115,
+      "killAtSeconds": 119,
+      "automaticRetries": 0,
+      "acceptedRawExitCodes": [
+        0
+      ],
+      "requiresConsumerProof": false
+    },
+    "pack-protocol": {
+      "id": "pack-protocol",
+      "argv": [
+        "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+        "/Users/dbox/.cache/node/corepack/v1/pnpm/11.20.0/bin/pnpm.cjs",
+        "--dir",
+        "/Users/dbox/repos/wt/vickie/vickie-owned-set-retarget-minimum/packages/protocol",
+        "pack",
+        "--pack-destination",
+        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-D4-validation-preparation-2/run/packages"
+      ],
+      "cwd": "/Users/dbox/repos/wt/vickie/vickie-owned-set-retarget-minimum",
+      "outerSeconds": 120,
+      "termAtSeconds": 115,
+      "killAtSeconds": 119,
+      "automaticRetries": 0,
+      "acceptedRawExitCodes": [
+        0
+      ],
+      "requiresConsumerProof": false
+    },
+    "pack-server": {
+      "id": "pack-server",
+      "argv": [
+        "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+        "/Users/dbox/.cache/node/corepack/v1/pnpm/11.20.0/bin/pnpm.cjs",
+        "--dir",
+        "/Users/dbox/repos/wt/vickie/vickie-owned-set-retarget-minimum/packages/server",
+        "pack",
+        "--pack-destination",
+        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-D4-validation-preparation-2/run/packages"
+      ],
+      "cwd": "/Users/dbox/repos/wt/vickie/vickie-owned-set-retarget-minimum",
+      "outerSeconds": 120,
+      "termAtSeconds": 115,
+      "killAtSeconds": 119,
+      "automaticRetries": 0,
+      "acceptedRawExitCodes": [
+        0
+      ],
+      "requiresConsumerProof": false
+    },
+    "verify-archives": {
+      "id": "verify-archives",
+      "argv": [
+        "/opt/homebrew/opt/python@3.14/bin/python3.14",
+        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-D4-validation-preparation-2/packages.py",
+        "tar"
+      ],
+      "cwd": "/Users/dbox/repos/wt/vickie/vickie-owned-set-retarget-minimum",
+      "outerSeconds": 120,
+      "termAtSeconds": 115,
+      "killAtSeconds": 119,
+      "automaticRetries": 0,
+      "acceptedRawExitCodes": [
+        0
+      ],
+      "requiresConsumerProof": false
+    },
+    "prepare-consumer": {
+      "id": "prepare-consumer",
+      "argv": [
+        "/opt/homebrew/opt/python@3.14/bin/python3.14",
+        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-D4-validation-preparation-2/packages.py",
+        "consumer"
+      ],
+      "cwd": "/Users/dbox/repos/wt/vickie/vickie-owned-set-retarget-minimum",
+      "outerSeconds": 120,
+      "termAtSeconds": 115,
+      "killAtSeconds": 119,
+      "automaticRetries": 0,
+      "acceptedRawExitCodes": [
+        0
+      ],
+      "requiresConsumerProof": false
+    },
+    "install-consumer": {
+      "id": "install-consumer",
+      "argv": [
+        "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+        "/Users/dbox/.cache/node/corepack/v1/pnpm/11.20.0/bin/pnpm.cjs",
+        "install",
+        "--offline",
+        "--ignore-scripts",
+        "--prod"
+      ],
+      "cwd": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-D4-validation-preparation-2/run/consumer",
+      "outerSeconds": 120,
+      "termAtSeconds": 115,
+      "killAtSeconds": 119,
+      "automaticRetries": 0,
+      "acceptedRawExitCodes": [
+        0
+      ],
+      "requiresConsumerProof": false
+    },
+    "verify-installed-consumer": {
+      "id": "verify-installed-consumer",
+      "argv": [
+        "/opt/homebrew/opt/python@3.14/bin/python3.14",
+        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-D4-validation-preparation-2/packages.py",
+        "installed"
+      ],
+      "cwd": "/Users/dbox/repos/wt/vickie/vickie-owned-set-retarget-minimum",
+      "outerSeconds": 120,
+      "termAtSeconds": 115,
+      "killAtSeconds": 119,
+      "automaticRetries": 0,
+      "acceptedRawExitCodes": [
+        0
+      ],
+      "requiresConsumerProof": false
+    },
+    "installed-owned-set": {
+      "id": "installed-owned-set",
+      "argv": [
+        "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+        "/Users/dbox/repos/wt/vickie/vickie-owned-set-retarget-minimum/node_modules/vitest/vitest.mjs",
+        "run",
+        "apps/bdptest/src/transactional-set-installed.test.ts",
+        "-t",
+        "^installed valid sets preserve atomic effects, original receipts, owned versions and complete paged Events$",
+        "--maxWorkers",
+        "1",
+        "--reporter=verbose",
+        "--reporter=json",
+        "--outputFile",
+        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-D4-validation-preparation-2/run/installed-owned-set.results.json"
+      ],
+      "cwd": "/Users/dbox/repos/wt/vickie/vickie-owned-set-retarget-minimum",
+      "outerSeconds": 150,
+      "termAtSeconds": 145,
+      "killAtSeconds": 149,
+      "automaticRetries": 0,
+      "acceptedRawExitCodes": [
+        0
+      ],
+      "requiresConsumerProof": true,
+      "selectedFullNames": [
+        "installed valid sets preserve atomic effects, original receipts, owned versions and complete paged Events"
+      ],
+      "selectedFilesByFullName": {
+        "installed valid sets preserve atomic effects, original receipts, owned versions and complete paged Events": "apps/bdptest/src/transactional-set-installed.test.ts"
+      },
+      "inlineSemanticAndPhaseAudit": true,
+      "prospectiveWorkload": {
+        "requests": 32,
+        "POST": 11,
+        "GET": 21,
+        "children": 2,
+        "receiptEntries": 33,
+        "receiptPages": [
+          32,
+          1
+        ],
+        "eventPages": [
+          32,
+          32,
+          32
+        ],
+        "events": 96,
+        "groups": 1,
+        "staticLocalOracleCount": 5
+      }
+    },
+    "required-boundaries": {
+      "id": "required-boundaries",
+      "argv": [
+        "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+        "/Users/dbox/.cache/node/corepack/v1/pnpm/11.20.0/bin/pnpm.cjs",
+        "check:boundaries"
+      ],
+      "cwd": "/Users/dbox/repos/wt/vickie/vickie-owned-set-retarget-minimum",
+      "outerSeconds": 120,
+      "termAtSeconds": 115,
+      "killAtSeconds": 119,
+      "automaticRetries": 0,
+      "acceptedRawExitCodes": [
+        0
+      ],
+      "requiresConsumerProof": false
+    },
+    "required-smoke": {
+      "id": "required-smoke",
+      "argv": [
+        "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+        "/Users/dbox/.cache/node/corepack/v1/pnpm/11.20.0/bin/pnpm.cjs",
+        "smoke"
+      ],
+      "cwd": "/Users/dbox/repos/wt/vickie/vickie-owned-set-retarget-minimum",
+      "outerSeconds": 120,
+      "termAtSeconds": 115,
+      "killAtSeconds": 119,
+      "automaticRetries": 0,
+      "acceptedRawExitCodes": [
+        0
+      ],
+      "requiresConsumerProof": false
+    },
+    "required-read-preflight": {
+      "id": "required-read-preflight",
+      "argv": [
+        "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+        "/Users/dbox/.cache/node/corepack/v1/pnpm/11.20.0/bin/pnpm.cjs",
+        "e2e:ready:preflight"
+      ],
+      "cwd": "/Users/dbox/repos/wt/vickie/vickie-owned-set-retarget-minimum",
+      "outerSeconds": 120,
+      "termAtSeconds": 115,
+      "killAtSeconds": 119,
+      "automaticRetries": 0,
+      "acceptedRawExitCodes": [
+        0
+      ],
+      "requiresConsumerProof": false
+    },
+    "required-evidence-verify": {
+      "id": "required-evidence-verify",
+      "argv": [
+        "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+        "/Users/dbox/.cache/node/corepack/v1/pnpm/11.20.0/bin/pnpm.cjs",
+        "evidence:verify"
+      ],
+      "cwd": "/Users/dbox/repos/wt/vickie/vickie-owned-set-retarget-minimum",
+      "outerSeconds": 120,
+      "termAtSeconds": 115,
+      "killAtSeconds": 119,
+      "automaticRetries": 0,
+      "acceptedRawExitCodes": [
+        0,
+        2
+      ],
+      "requiresConsumerProof": false,
+      "acceptedEvidenceNoClaimRaw2": true
+    }
+  },
+  "expectedProductionVersions": {
+    "@bdp/protocol": "0.0.0",
+    "@bdp/server": "0.0.0",
+    "ajv": "8.17.1",
+    "ajv-formats": "3.0.1",
+    "fast-deep-equal": "3.1.3",
+    "fast-uri": "3.1.5",
+    "json-schema-traverse": "1.0.0",
+    "require-from-string": "2.0.2"
+  },
+  "bootstrapReuse": [],
+  "D4ProductAttempts": 1,
+  "sameSource": "679/oneowned678protected",
+  "immediateAudit": "inline inside installed-owned-set flush/whole clock; root terminal acceptance before required stages",
+  "requiredChecksCredit": "Existing checks/read evidence only; no whole Write credit"
+}

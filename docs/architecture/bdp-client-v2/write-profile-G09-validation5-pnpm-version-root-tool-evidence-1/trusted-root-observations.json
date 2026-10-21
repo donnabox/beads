@@ -1,0 +1,67 @@
+{
+  "accepted": false,
+  "actualFunctionsCellId": "3059",
+  "actualInnerElapsedSeconds": 3.9093565000221133,
+  "actualInnerExit": 0,
+  "actualPhaseTerminalObservations": [
+    {
+      "actualRawExit": 0,
+      "actualTerminalToolId": "270143",
+      "phase": "A"
+    },
+    {
+      "actualRawExit": 0,
+      "actualTerminalToolId": "9ebe12",
+      "phase": "B"
+    },
+    {
+      "actualRawExit": 0,
+      "actualTerminalToolId": "ed7372",
+      "phase": "C"
+    }
+  ],
+  "censusRawStreamBytes": [
+    205143,
+    0
+  ],
+  "cleanupNotPerformedByThisStaticPacket": true,
+  "firstPostBTerminalWitnessMonotonic": 2260274.596060416,
+  "fullIndependentConjunctionAudit": "PENDING",
+  "independentlyDecodedRawToolReceipts": "UNRETAINED_SOURCE_ATTRIBUTED_NORMALIZED_TOOL_RESULTS_ONLY",
+  "matchingTaskRows": [],
+  "measuredCompletedInvocationAndObservationUpperBoundSeconds": 8.588768958114088,
+  "nextStageReleased": false,
+  "observedPnpmVersionLog": {
+    "bytes": 8,
+    "exactText": "11.20.0\n",
+    "mode": "0o644",
+    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation-preparation-5/run/pnpm-version.log",
+    "sha256": "6784d6c924df1c8341f9f841f5b5b20c37255de3d34f923baebc0a557d5d5201"
+  },
+  "observerSelfAbsenceOrGlobalContainmentClaim": false,
+  "ordinaryToolRecords": {
+    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation5-pnpm-version-root-tool-evidence-1/dispatch-state.json",
+    "sha256": "333a8a2a9f8b4c57d43892e2e0f7f2a89b033d8bb0b385d79f69f677470d3c0a"
+  },
+  "probeDirectReaped": true,
+  "qualityPass": false,
+  "recordedTaskPGIDs": [
+    51864,
+    51868,
+    52564
+  ],
+  "recordedTaskPIDs": [
+    51867,
+    51868,
+    52564
+  ],
+  "rootOriginMonotonic": 2260266.007291458,
+  "rootRawStreamBytes": [
+    477,
+    0
+  ],
+  "session": "2026-10-18T02:16:24Z-549f",
+  "stage": "pnpm-version",
+  "strictUnder115": true,
+  "temporaryDirectory": "/private/tmp/vickie-tx-discovery-validation-pnpm-version-i3hg12zo"
+}

@@ -1,0 +1,67 @@
+{
+  "status": "STOPPED_AT_TYPECHECK_TS18048",
+  "sourcePatchSha256": "a86a67e85b925a0fc1bcda18f0a1c797be5012fb7f733b00dd83f9adf14717a2",
+  "sourceChangedSinceReview": false,
+  "diagnostic": "transaction-submission.test.ts1132: f is possibly undefined in Parameters<typeof f.store.admit>; original TS2352 no longer reported",
+  "commands": {
+    "setup": {
+      "name": "setup",
+      "command": [
+        "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+        "/Users/dbox/.cache/node/corepack/v1/pnpm/11.20.0/bin/pnpm.cjs",
+        "install",
+        "--offline",
+        "--frozen-lockfile"
+      ],
+      "cwd": "/Users/dbox/repos/wt/vickie/vickie-comparison-fault-typing-repair",
+      "started": "2026-10-14T19:16:29.063331+00:00",
+      "elapsedSeconds": 0.844269499881193,
+      "exit": 0,
+      "timeout": false,
+      "processGroup": 22728,
+      "remainingProcessGroup": [],
+      "sampledTempEntries": [
+        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-comparison-fault-typing-repair/setup.tmp/node-compile-cache"
+      ],
+      "tempEntriesAfter": [
+        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-comparison-fault-typing-repair/setup.tmp/node-compile-cache"
+      ],
+      "samplingSeconds": 0.05
+    },
+    "typecheck": {
+      "name": "typecheck",
+      "command": [
+        "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+        "/Users/dbox/.cache/node/corepack/v1/pnpm/11.20.0/bin/pnpm.cjs",
+        "typecheck"
+      ],
+      "cwd": "/Users/dbox/repos/wt/vickie/vickie-comparison-fault-typing-repair",
+      "started": "2026-10-14T19:16:30.276406+00:00",
+      "elapsedSeconds": 1.8460692081134766,
+      "exit": 1,
+      "timeout": false,
+      "processGroup": 22749,
+      "remainingProcessGroup": [],
+      "sampledTempEntries": [
+        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-comparison-fault-typing-repair/typecheck.tmp/node-compile-cache"
+      ],
+      "tempEntriesAfter": [
+        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-comparison-fault-typing-repair/typecheck.tmp/node-compile-cache"
+      ],
+      "samplingSeconds": 0.05
+    }
+  },
+  "runtimeCasesConsumed": 0,
+  "notRun": [
+    "build",
+    "format-check",
+    "lint",
+    "boundaries",
+    "read-evidence",
+    "14positive",
+    "oldguardcontrol",
+    "pack",
+    "installed"
+  ],
+  "sourceRepairAuthorized": false
+}

@@ -1,0 +1,27 @@
+{
+  "atUtc": "2026-10-17T06:18:05.834825+00:00",
+  "authorization": "source authoring only for exact reviewed seven-file Snapshot opaque slice",
+  "worktree": "/Users/dbox/repos/wt/vickie/vickie-snapshot-opaque-minimum",
+  "branch": "codex/vickie-snapshot-opaque-minimum",
+  "head": "0f215c05678f507dd8a39ee08e288f0901710135",
+  "planSha256": "e2df7de56582fb376eb36c4a385df0d3923e2b3dddeee15223edf698c0302811",
+  "planBindingSha256": "65f0ed537763267e621a80de1987388342ec16e46fc70d4d9f54f175b5bd31a7",
+  "nativeClosureSha256": "c31d4e103faa627e45096210f854383da59fd2abc0de18b4230f976ee80cdd24",
+  "all679BaselineVerified": true,
+  "baseCI": 39007135471,
+  "baseCIConclusion": "success",
+  "allowedFiles": [
+    "packages/server/src/transaction-http.ts",
+    "packages/server/src/transaction-service.ts",
+    "packages/server/src/transaction-store.ts",
+    "packages/server/src/transaction-snapshot.test.ts",
+    "packages/server/src/transaction-service.test.ts",
+    "packages/server/src/transaction-http.test.ts",
+    "apps/bdptest/src/transactional-snapshot-installed.test.ts"
+  ],
+  "sourceOnly": true,
+  "runtimeReleased": false,
+  "testBuildInstallImportReleased": false,
+  "commitPushReleased": false,
+  "constraints": "Exact plan-v3 and preservation/selection; no main, S1/G2/foreign changes, extra files, fixture redesign or deadline changes. Freeze source and report before independent full code council/validation."
+}

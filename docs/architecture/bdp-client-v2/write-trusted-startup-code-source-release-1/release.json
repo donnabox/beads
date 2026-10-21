@@ -1,0 +1,34 @@
+{
+  "releasedAt": "2026-10-18T04:49:38.552287+00:00",
+  "rootDispositionSha256": "3fc6bdf1758b0ad37fd49d140cd3f09faf9481ae81318fa5716ccc6d87c2b6f3",
+  "target": "/Users/dbox/repos/wt/vickie/vickie-trusted-startup-configuration",
+  "base": "a56254d682cf4623cab22a552e3d2f695f691795",
+  "basisPatchSha256": "00fa952644ab1725e4bfb8fc8c642683a39f60dd45f6a08de8881d590150a0b4",
+  "ownedPaths": [
+    "packages/server/src/reference-deployment.ts",
+    "packages/server/src/reference-deployment.test.ts",
+    "docs/design/startup-configuration.md"
+  ],
+  "corrections": "exact F1,F2,F3,F7,F8 root dispositions; F4,F5,F6,F9,F10 retained/deferred",
+  "optionalFormatOnly": {
+    "path": "/Users/dbox/repos/wt/vickie/vickie-event-admission-replay-minimum/node_modules/.pnpm/@biomejs+cli-darwin-arm64@2.5.7/node_modules/@biomejs/cli-darwin-arm64/biome",
+    "sha256": "f71fe80909d2f70f1e051320f5ba9dfd553bc5ef3bacef5cdee1b00ee96a285c",
+    "argv": "format --write on the three owned paths only; no check/lint/unsafe fixes"
+  },
+  "freezePacket": "write-trusted-startup-code-corrections-1",
+  "requiredPreservation": [
+    "sourceauthor1/2 and frozenCODEpacket unchanged",
+    "old failure and missing outputs preserved",
+    "all682 source before/after maps; all12owned copies/fullgitpatch/status/delta/inverse; other9owned and670nonowned unchanged",
+    "D1 typed source679 +originalPR167679 unchanged"
+  ],
+  "forbidden": [
+    "compiler/tests/build/install/runtime",
+    "new reviewer attempt",
+    "git mutation/commit/push",
+    "main/spec absorption",
+    "listener/admission/profile activation"
+  ],
+  "runtimeValidationReleased": false,
+  "requiresAfter": "independent native precision closure/root acceptance before exact-source validation"
+}

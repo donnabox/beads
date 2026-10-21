@@ -1,0 +1,146 @@
+{
+  "state": "PROSPECTIVE DATA grammar, no JSON-schema/helper implementation",
+  "beforeCleanup": {
+    "exactKeys": [
+      "observation",
+      "callback",
+      "id",
+      "assertionsCompleted",
+      "counts",
+      "extra",
+      "SQLite",
+      "previousUnresolvedSQLite",
+      "claimEligible"
+    ],
+    "observation": "reference-lifecycle-source-before-cleanup",
+    "callback": "exact current selected fullName",
+    "id": "exact source-selection ID on successful body, null possible failure",
+    "assertionsCompleted": "actual emit reached, true mandatory for success",
+    "counts": [
+      "returned",
+      "ownerCloses",
+      "serviceCloses",
+      "serviceAttempts",
+      "configurationReads",
+      "listenAttempts",
+      "listeningAcquisitions",
+      "trace"
+    ],
+    "extraByGroup": {
+      "S01": null,
+      "S02": null,
+      "S03": [
+        "phaseA",
+        "phaseB"
+      ],
+      "S04": null,
+      "S05": [
+        "openerTrace",
+        "internalAcquisitionAndClose",
+        "genuineProbeClosed",
+        "databaseBytesUnchangedClaim"
+      ],
+      "S06": null,
+      "S07": null,
+      "S08": null,
+      "S09": [
+        "injectedTurn"
+      ],
+      "S10": [
+        "observedPrimary",
+        "observedCleanupFailure"
+      ],
+      "S11": [
+        "trusted",
+        "additionalLegacyRuntimeAcquisitions"
+      ],
+      "S12": [
+        "HTTP",
+        "delivered",
+        "persistedActualResource"
+      ],
+      "S13": null
+    },
+    "SQLite": "actual callback sql.rows slice only: each exact {file:string,closed:boolean}; record even refusal internally opened then closed",
+    "previousUnresolvedSQLite": "actual earlier slice filtered !closed; do not reset history or attribute earlier acquisitions to current callback",
+    "claimEligible": false
+  },
+  "terminal": {
+    "exactKeys": [
+      "observation",
+      "callback",
+      "assertionsCompleted",
+      "cleanupKnown",
+      "SQLite",
+      "previousUnresolvedSQLite",
+      "counts",
+      "directories",
+      "claimEligible"
+    ],
+    "observation": "reference-lifecycle-source-terminal",
+    "directories": "exact {directory:string,absent:boolean} array for actual owned roots",
+    "claimEligible": false
+  },
+  "successfulPairPredicates": [
+    "Exactly one before-cleanup and terminal for every51 selected callback; match same exact name and source-selected id, no duplicates/unselected or union across invocations.",
+    "Body assertion completed true, actual required per-case oracle true, terminal cleanupKnown true.",
+    "All current callback SQLite closed; previousUnresolvedSQLite empty for an accepted fresh slice. Prior unknown rows remain recorded and cannot be erased.",
+    "All owned directories actually absent after known cleanup; rm alone cannot prove owner closure.",
+    "Numeric counts are nonnegative safe integers; trace contains actual strings, no invented acquisition from an attempt or readiness absence.",
+    "S03 phaseA/phaseB counts are independent observed subphases within same callback; S11 additionalLegacyRuntimeAcquisitions1 per profile and final ownerclose2.",
+    "S05 internalAcquisitionAndClose exactly one observed opener row closed=true, genuineProbeClosed=true, databaseBytesUnchangedClaim=false.",
+    "S09 injectedTurn exact first native listening event before startup continuation; S10 both cause observations true.",
+    "S12 extra exact HTTP1/delivered aborted-transport/persistedActualResource true; no successful response/status/wire is reconstructed."
+  ],
+  "perGroupAssertedNumericConstraints": {
+    "S01": {
+      "returned": 0,
+      "listenAttempts": 0
+    },
+    "S04": {
+      "returned": 1,
+      "ownerCloses": 1,
+      "serviceCloses": 0,
+      "serviceAttempts": 0,
+      "listenAttempts": 0
+    },
+    "S05": {
+      "returned": 0,
+      "listenAttempts": 0
+    },
+    "S06": {
+      "returned": 0,
+      "listenAttempts": 0
+    },
+    "S07": {
+      "listenAttempts": 1,
+      "listeningAcquisitions": 0,
+      "ownerCloses": 1
+    },
+    "S08": {
+      "listenAttempts": 1,
+      "listeningAcquisitions": 0,
+      "ownerCloses": 1
+    },
+    "S09": {
+      "listeningAcquisitions": 1,
+      "ownerCloses": 1
+    },
+    "S10": {
+      "ownerCloses": 1
+    },
+    "S11": {
+      "ownerCloses": 2
+    },
+    "S13": {
+      "ownerCloses": 1,
+      "listenAttempts": 0
+    }
+  },
+  "nonClaims": [
+    "No process-wide FD census, universal store byte rollback or installed listener admission.",
+    "Vitest passed title alone does not prove hook cleanup known; pair/actual counters required.",
+    "No source epoch equality invented; no extra compiler/metadata authority."
+  ],
+  "failure": "Retain actual partial/missing hook reports and directories. A timeout/late report/unknown closure never upgrades success; no synthesized terminal."
+}

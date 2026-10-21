@@ -1,0 +1,364 @@
+{
+  "inPlacePins": [
+    {
+      "bytes": 576179,
+      "path": "/Users/dbox/repos/wt/vickie/vickie-schema-minimum/node_modules/@biomejs/biome/configuration_schema.json",
+      "sha256": "dd10a299de1840cd2dd723a8f48781e361959f8b91ecc65d70ab6cb7a92c8bb1"
+    },
+    {
+      "bytes": 94175,
+      "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation-preparation-3/source-binding.json",
+      "sha256": "712c3c5a8e1543bf5005cbb54d321c6874b7443afb7e01805f393434fe5cd714"
+    },
+    {
+      "bytes": 35072,
+      "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation-preparation-3/commands.json",
+      "sha256": "d7189bd723bce76f8b214a33197ec48485e6f534f310dad10522f8612d495ef7"
+    },
+    {
+      "bytes": 2282,
+      "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation-preparation-3/execution-gate.json",
+      "sha256": "f6724552f8d880dcf1481c05aba6e616451e9607e0ecedcfd5d8f77e5559d655"
+    },
+    {
+      "bytes": 4146,
+      "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation-preparation-3/run/workspace-tools.json",
+      "sha256": "30468c88674a41a54f8a366ca78c84dffc07f3e035a0d9bf32430300b6503552"
+    }
+  ],
+  "localExactCopies": [
+    {
+      "bytes": 1343,
+      "copy": "inputs/installed-biome-package.json",
+      "origin": "/Users/dbox/repos/wt/vickie/vickie-schema-minimum/node_modules/@biomejs/biome/package.json",
+      "sha256": "8f94f16901a5c47f51babdf8cc36f9340c7f5bb0fd3197c97161445a684da31b"
+    },
+    {
+      "bytes": 2207,
+      "copy": "inputs/installed-biome-shim.js",
+      "origin": "/Users/dbox/repos/wt/vickie/vickie-schema-minimum/node_modules/@biomejs/biome/bin/biome",
+      "sha256": "7ffb4d217e5ddefcc19ca6afe76bb982f5eb36c9a124448105195fbcfc84bd77"
+    },
+    {
+      "bytes": 398,
+      "copy": "inputs/biome.json",
+      "origin": "/Users/dbox/repos/wt/vickie/vickie-schema-minimum/biome.json",
+      "sha256": "62beced4e0227b97fe9ade1a1a573bf53a2f8916af8da7ce70f94315fece39dc"
+    },
+    {
+      "bytes": 13848,
+      "copy": "inputs/original-lint.log",
+      "origin": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation-preparation-3/run/lint.log",
+      "sha256": "354e50b54d848de306493957b1e3958da8b03450e4dd6905776e8e78a6d0de20"
+    },
+    {
+      "bytes": 514,
+      "copy": "inputs/original-lint-exit.json",
+      "origin": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation-preparation-3/run/lint.exit.json",
+      "sha256": "035653b6e30ed787a6b443dfadf537f7c1a2484bf44409960c7138d4645d7ac0"
+    },
+    {
+      "bytes": 2340,
+      "copy": "inputs/root-failed-disposition.json",
+      "origin": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation3-lint-root-failed-disposition-1/disposition.json",
+      "sha256": "0d2adcaa740ba347447942ede1d421d49991d3e3cb34eda70f38837671f0dad5"
+    },
+    {
+      "bytes": 4140,
+      "copy": "inputs/native-diagnostic-precision.json",
+      "origin": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation3-lint-failure-native-audit-1/diagnostic-precision.json",
+      "sha256": "007526f29f48a37cfbf588d6e6a42c5f5d32a62048ddb93aaa7a0cbb36db131e"
+    }
+  ],
+  "localSchemaNotCopiedRecursively": true,
+  "primaryReadOnlyDownloads": [
+    {
+      "bytes": 11471,
+      "commit": "191d051335821e804e7ffe484240ca326af86f7c",
+      "copy": "primary/cli-directory.json",
+      "pinnedRelease": "@biomejs/biome@2.5.7",
+      "primaryUrl": "https://api.github.com/repos/biomejs/biome/contents/crates/biome_cli/src?ref=191d051335821e804e7ffe484240ca326af86f7c",
+      "sha256": "562666998f1f75a4152cbfa0ae2fc9a09e42babe5f27361ef2f4586b29d6ab2f"
+    },
+    {
+      "bytes": 9302,
+      "commit": "191d051335821e804e7ffe484240ca326af86f7c",
+      "copy": "primary/cli_options.rs",
+      "pinnedRelease": "@biomejs/biome@2.5.7",
+      "primaryUrl": "https://raw.githubusercontent.com/biomejs/biome/191d051335821e804e7ffe484240ca326af86f7c/crates/biome_cli/src/cli_options.rs",
+      "sha256": "5f14d9c0d9088031cdc3b7f264fb65940f85ae6a2cd124c7ae9b069bbca9bb23"
+    },
+    {
+      "bytes": 2288,
+      "commit": "191d051335821e804e7ffe484240ca326af86f7c",
+      "copy": "primary/collectors-directory.json",
+      "pinnedRelease": "@biomejs/biome@2.5.7",
+      "primaryUrl": "https://api.github.com/repos/biomejs/biome/contents/crates/biome_cli/src/runner/impls/collectors?ref=191d051335821e804e7ffe484240ca326af86f7c",
+      "sha256": "f2ff558482d138e188b489fae6cda8faf8057b90affadfec33f95fdc2d892b09"
+    },
+    {
+      "bytes": 12177,
+      "commit": "191d051335821e804e7ffe484240ca326af86f7c",
+      "copy": "primary/commands--lint.rs",
+      "pinnedRelease": "@biomejs/biome@2.5.7",
+      "primaryUrl": "https://raw.githubusercontent.com/biomejs/biome/191d051335821e804e7ffe484240ca326af86f7c/crates/biome_cli/src/commands/lint.rs",
+      "sha256": "2998e47841fdb260b6d9a59537b93a46742028c0611f4746956df0959fc93dd0"
+    },
+    {
+      "bytes": 14782,
+      "commit": "191d051335821e804e7ffe484240ca326af86f7c",
+      "copy": "primary/commands-directory.json",
+      "pinnedRelease": "@biomejs/biome@2.5.7",
+      "primaryUrl": "https://api.github.com/repos/biomejs/biome/contents/crates/biome_cli/src/commands?ref=191d051335821e804e7ffe484240ca326af86f7c",
+      "sha256": "e53a6529dfbc93f72dbacebb1ce4aafa0ee297738e057977f155754866f43b55"
+    },
+    {
+      "bytes": 11239,
+      "commit": "191d051335821e804e7ffe484240ca326af86f7c",
+      "copy": "primary/crates--biome_cli--src--lib.rs",
+      "pinnedRelease": "@biomejs/biome@2.5.7",
+      "primaryUrl": "https://raw.githubusercontent.com/biomejs/biome/191d051335821e804e7ffe484240ca326af86f7c/crates/biome_cli/src/lib.rs",
+      "sha256": "5dea864fe5eca2be1c270a58a0d99e9667f73c88a5c5785fd410709712cc73a0"
+    },
+    {
+      "bytes": 2609,
+      "commit": "191d051335821e804e7ffe484240ca326af86f7c",
+      "copy": "primary/crates--biome_cli--src--main.rs",
+      "pinnedRelease": "@biomejs/biome@2.5.7",
+      "primaryUrl": "https://raw.githubusercontent.com/biomejs/biome/191d051335821e804e7ffe484240ca326af86f7c/crates/biome_cli/src/main.rs",
+      "sha256": "6a45f1785399a04398808e5b28e98769a9b26cbdf32cc8a81734e34034d9508d"
+    },
+    {
+      "bytes": 20163,
+      "commit": "191d051335821e804e7ffe484240ca326af86f7c",
+      "copy": "primary/crates--biome_service--src--directory.json",
+      "pinnedRelease": "@biomejs/biome@2.5.7",
+      "primaryUrl": "https://api.github.com/repos/biomejs/biome/contents/crates/biome_service/src?ref=191d051335821e804e7ffe484240ca326af86f7c",
+      "sha256": "5a4578ce9a189efe039f41461eab7fcb5d3f6ec43546482635841f0b5c5ab4c6"
+    },
+    {
+      "bytes": 18375,
+      "commit": "191d051335821e804e7ffe484240ca326af86f7c",
+      "copy": "primary/crates--biome_service--src--file_handlers--directory.json",
+      "pinnedRelease": "@biomejs/biome@2.5.7",
+      "primaryUrl": "https://api.github.com/repos/biomejs/biome/contents/crates/biome_service/src/file_handlers?ref=191d051335821e804e7ffe484240ca326af86f7c",
+      "sha256": "c91f0b80af0df14ec0b6102b6e11fe756ff59805b4b01526c2426b0b22877f5c"
+    },
+    {
+      "bytes": 63014,
+      "commit": "191d051335821e804e7ffe484240ca326af86f7c",
+      "copy": "primary/crates--biome_service--src--file_handlers--javascript.rs",
+      "pinnedRelease": "@biomejs/biome@2.5.7",
+      "primaryUrl": "https://raw.githubusercontent.com/biomejs/biome/191d051335821e804e7ffe484240ca326af86f7c/crates/biome_service/src/file_handlers/javascript.rs",
+      "sha256": "630f07ad690a600f23e2621640cf95c684ef3475d75c266278554d4f37402332"
+    },
+    {
+      "bytes": 101985,
+      "commit": "191d051335821e804e7ffe484240ca326af86f7c",
+      "copy": "primary/crates--biome_service--src--file_handlers--mod.rs",
+      "pinnedRelease": "@biomejs/biome@2.5.7",
+      "primaryUrl": "https://raw.githubusercontent.com/biomejs/biome/191d051335821e804e7ffe484240ca326af86f7c/crates/biome_service/src/file_handlers/mod.rs",
+      "sha256": "727afffe497270959b3ae2072387f96ef1e2aa1298b1611e1208a196a6be5535"
+    },
+    {
+      "bytes": 7228,
+      "commit": "191d051335821e804e7ffe484240ca326af86f7c",
+      "copy": "primary/crates--biome_service--src--workspace--directory.json",
+      "pinnedRelease": "@biomejs/biome@2.5.7",
+      "primaryUrl": "https://api.github.com/repos/biomejs/biome/contents/crates/biome_service/src/workspace?ref=191d051335821e804e7ffe484240ca326af86f7c",
+      "sha256": "b58c1d7110d2dbe852d9f88849b137427b8df6301f8270d4523b89f6057c54be"
+    },
+    {
+      "bytes": 165644,
+      "commit": "191d051335821e804e7ffe484240ca326af86f7c",
+      "copy": "primary/crates--biome_service--src--workspace--server.rs",
+      "pinnedRelease": "@biomejs/biome@2.5.7",
+      "primaryUrl": "https://raw.githubusercontent.com/biomejs/biome/191d051335821e804e7ffe484240ca326af86f7c/crates/biome_service/src/workspace/server.rs",
+      "sha256": "8ddc8bc68264a619d2042998388114e6a57ca48896d36ac08eb43d0e1921ff41"
+    },
+    {
+      "bytes": 34042,
+      "commit": "191d051335821e804e7ffe484240ca326af86f7c",
+      "copy": "primary/crates--biome_service--src--workspace_types.rs",
+      "pinnedRelease": "@biomejs/biome@2.5.7",
+      "primaryUrl": "https://raw.githubusercontent.com/biomejs/biome/191d051335821e804e7ffe484240ca326af86f7c/crates/biome_service/src/workspace_types.rs",
+      "sha256": "eb34f7e1dbd4041c2ccb4f478ce7d1b86752da73c6f89ab4fdc98c0f25873812"
+    },
+    {
+      "bytes": 17179,
+      "commit": "191d051335821e804e7ffe484240ca326af86f7c",
+      "copy": "primary/diagnostics.rs",
+      "pinnedRelease": "@biomejs/biome@2.5.7",
+      "primaryUrl": "https://raw.githubusercontent.com/biomejs/biome/191d051335821e804e7ffe484240ca326af86f7c/crates/biome_cli/src/diagnostics.rs",
+      "sha256": "8c91acb4e2e5c7f1d99f2fb26a796d4b8a24e66edc38a8ab3bad89dbc075b90b"
+    },
+    {
+      "bytes": 24,
+      "commit": "191d051335821e804e7ffe484240ca326af86f7c",
+      "copy": "primary/execute--mod.rs",
+      "pinnedRelease": "@biomejs/biome@2.5.7",
+      "primaryUrl": "https://raw.githubusercontent.com/biomejs/biome/191d051335821e804e7ffe484240ca326af86f7c/crates/biome_cli/src/execute/mod.rs",
+      "sha256": "284d2181041875a0fd25bf18f288162a1344878e01d76dbbead786c233fc9e48"
+    },
+    {
+      "bytes": 3010,
+      "commit": "191d051335821e804e7ffe484240ca326af86f7c",
+      "copy": "primary/execute-directory.json",
+      "pinnedRelease": "@biomejs/biome@2.5.7",
+      "primaryUrl": "https://api.github.com/repos/biomejs/biome/contents/crates/biome_cli/src/execute?ref=191d051335821e804e7ffe484240ca326af86f7c",
+      "sha256": "3da9cc70acc5a1deac1cbc002e693f7995ac7cdbb8debf38711d13b8ec9e1e99"
+    },
+    {
+      "bytes": 2288,
+      "commit": "191d051335821e804e7ffe484240ca326af86f7c",
+      "copy": "primary/finalizers-directory.json",
+      "pinnedRelease": "@biomejs/biome@2.5.7",
+      "primaryUrl": "https://api.github.com/repos/biomejs/biome/contents/crates/biome_cli/src/runner/impls/finalizers?ref=191d051335821e804e7ffe484240ca326af86f7c",
+      "sha256": "ae4d2d8ea15d48bfb701fdb37e07a13e25e8cba6298bd617dc81472e51adf979"
+    },
+    {
+      "bytes": 8684,
+      "commit": "191d051335821e804e7ffe484240ca326af86f7c",
+      "copy": "primary/impls-directory.json",
+      "pinnedRelease": "@biomejs/biome@2.5.7",
+      "primaryUrl": "https://api.github.com/repos/biomejs/biome/contents/crates/biome_cli/src/runner/impls?ref=191d051335821e804e7ffe484240ca326af86f7c",
+      "sha256": "e8894e6e5879e48e79ab8d1d5a2227c5e85ad1efa265deabcbc3a3a231c3b34c"
+    },
+    {
+      "bytes": 4686,
+      "commit": "191d051335821e804e7ffe484240ca326af86f7c",
+      "copy": "primary/process_file-directory.json",
+      "pinnedRelease": "@biomejs/biome@2.5.7",
+      "primaryUrl": "https://api.github.com/repos/biomejs/biome/contents/crates/biome_cli/src/runner/impls/process_file?ref=191d051335821e804e7ffe484240ca326af86f7c",
+      "sha256": "1a9db9d9cb7c56862f93133c399279fed708683f38fe3857f2aca156440f46b7"
+    },
+    {
+      "bytes": 8808,
+      "commit": "191d051335821e804e7ffe484240ca326af86f7c",
+      "copy": "primary/reporter--mod.rs",
+      "pinnedRelease": "@biomejs/biome@2.5.7",
+      "primaryUrl": "https://raw.githubusercontent.com/biomejs/biome/191d051335821e804e7ffe484240ca326af86f7c/crates/biome_cli/src/reporter/mod.rs",
+      "sha256": "441a8072937696d9067129eaa8218f8ff30f72e11b9f103388dedea29bde7dd9"
+    },
+    {
+      "bytes": 9918,
+      "commit": "191d051335821e804e7ffe484240ca326af86f7c",
+      "copy": "primary/reporter--terminal.rs",
+      "pinnedRelease": "@biomejs/biome@2.5.7",
+      "primaryUrl": "https://raw.githubusercontent.com/biomejs/biome/191d051335821e804e7ffe484240ca326af86f7c/crates/biome_cli/src/reporter/terminal.rs",
+      "sha256": "d244ed5a4debf4b955934d6b1d02287efa5816ff405af0f29ab8e8d5bbdd0ed5"
+    },
+    {
+      "bytes": 11697,
+      "commit": "191d051335821e804e7ffe484240ca326af86f7c",
+      "copy": "primary/reporter-directory.json",
+      "pinnedRelease": "@biomejs/biome@2.5.7",
+      "primaryUrl": "https://api.github.com/repos/biomejs/biome/contents/crates/biome_cli/src/reporter?ref=191d051335821e804e7ffe484240ca326af86f7c",
+      "sha256": "7935f7dc2279d458981c921faa7da9bcbfc6a0a541869e0184aaea6bb7b70674"
+    },
+    {
+      "bytes": 1693,
+      "commit": "191d051335821e804e7ffe484240ca326af86f7c",
+      "copy": "primary/runner--collector.rs",
+      "pinnedRelease": "@biomejs/biome@2.5.7",
+      "primaryUrl": "https://raw.githubusercontent.com/biomejs/biome/191d051335821e804e7ffe484240ca326af86f7c/crates/biome_cli/src/runner/collector.rs",
+      "sha256": "40188b6e637db28210f90fde51fe3a25330133960d45101f2d5aa8997727c67c"
+    },
+    {
+      "bytes": 11117,
+      "commit": "191d051335821e804e7ffe484240ca326af86f7c",
+      "copy": "primary/runner--crawler.rs",
+      "pinnedRelease": "@biomejs/biome@2.5.7",
+      "primaryUrl": "https://raw.githubusercontent.com/biomejs/biome/191d051335821e804e7ffe484240ca326af86f7c/crates/biome_cli/src/runner/crawler.rs",
+      "sha256": "c57acfb2251e0a51d9e10fd15538f12a25ec2c364eb9c5da282a6ccff12468d6"
+    },
+    {
+      "bytes": 4018,
+      "commit": "191d051335821e804e7ffe484240ca326af86f7c",
+      "copy": "primary/runner--diagnostics.rs",
+      "pinnedRelease": "@biomejs/biome@2.5.7",
+      "primaryUrl": "https://raw.githubusercontent.com/biomejs/biome/191d051335821e804e7ffe484240ca326af86f7c/crates/biome_cli/src/runner/diagnostics.rs",
+      "sha256": "7b82a392cff04d88469e6518c699c28f62a7282c470dc00e3a045ab494529354"
+    },
+    {
+      "bytes": 6212,
+      "commit": "191d051335821e804e7ffe484240ca326af86f7c",
+      "copy": "primary/runner--execution.rs",
+      "pinnedRelease": "@biomejs/biome@2.5.7",
+      "primaryUrl": "https://raw.githubusercontent.com/biomejs/biome/191d051335821e804e7ffe484240ca326af86f7c/crates/biome_cli/src/runner/execution.rs",
+      "sha256": "b6f723f97771f75aeb3398810c5b2f0dea987458f0c898476eeae2fb8e700bbf"
+    },
+    {
+      "bytes": 1330,
+      "commit": "191d051335821e804e7ffe484240ca326af86f7c",
+      "copy": "primary/runner--finalizer.rs",
+      "pinnedRelease": "@biomejs/biome@2.5.7",
+      "primaryUrl": "https://raw.githubusercontent.com/biomejs/biome/191d051335821e804e7ffe484240ca326af86f7c/crates/biome_cli/src/runner/finalizer.rs",
+      "sha256": "9a496dcf3b345fe88dcbfc5587189f8127d24f9934e01d958c91c547c44b2680"
+    },
+    {
+      "bytes": 15427,
+      "commit": "191d051335821e804e7ffe484240ca326af86f7c",
+      "copy": "primary/runner--impls--collectors--default.rs",
+      "pinnedRelease": "@biomejs/biome@2.5.7",
+      "primaryUrl": "https://raw.githubusercontent.com/biomejs/biome/191d051335821e804e7ffe484240ca326af86f7c/crates/biome_cli/src/runner/impls/collectors/default.rs",
+      "sha256": "67061729ab7533d70fdbba60a7ef7985e1ed40a770b1332138d688194aa64d2c"
+    },
+    {
+      "bytes": 15303,
+      "commit": "191d051335821e804e7ffe484240ca326af86f7c",
+      "copy": "primary/runner--impls--finalizers--default.rs",
+      "pinnedRelease": "@biomejs/biome@2.5.7",
+      "primaryUrl": "https://raw.githubusercontent.com/biomejs/biome/191d051335821e804e7ffe484240ca326af86f7c/crates/biome_cli/src/runner/impls/finalizers/default.rs",
+      "sha256": "b79b28db7801b2ebca056372bc7f1bddf29a200130b5397e36be96f475198b38"
+    },
+    {
+      "bytes": 210,
+      "commit": "191d051335821e804e7ffe484240ca326af86f7c",
+      "copy": "primary/runner--impls--mod.rs",
+      "pinnedRelease": "@biomejs/biome@2.5.7",
+      "primaryUrl": "https://raw.githubusercontent.com/biomejs/biome/191d051335821e804e7ffe484240ca326af86f7c/crates/biome_cli/src/runner/impls/mod.rs",
+      "sha256": "df851e133acfa6c8e234e23710a9259d1c1d847bd6ed4d04dfd8391f1a7d9d41"
+    },
+    {
+      "bytes": 8418,
+      "commit": "191d051335821e804e7ffe484240ca326af86f7c",
+      "copy": "primary/runner--impls--process_file--lint_and_assist.rs",
+      "pinnedRelease": "@biomejs/biome@2.5.7",
+      "primaryUrl": "https://raw.githubusercontent.com/biomejs/biome/191d051335821e804e7ffe484240ca326af86f7c/crates/biome_cli/src/runner/impls/process_file/lint_and_assist.rs",
+      "sha256": "745c8a85bb2f395d2b0ff06be998e989d21208fd6061cc41168a863a6bb727b6"
+    },
+    {
+      "bytes": 26249,
+      "commit": "191d051335821e804e7ffe484240ca326af86f7c",
+      "copy": "primary/runner--mod.rs",
+      "pinnedRelease": "@biomejs/biome@2.5.7",
+      "primaryUrl": "https://raw.githubusercontent.com/biomejs/biome/191d051335821e804e7ffe484240ca326af86f7c/crates/biome_cli/src/runner/mod.rs",
+      "sha256": "d5036f8a59a46ac523d84c319b89103efd199cb12f79603f4eb835126e24bdbe"
+    },
+    {
+      "bytes": 12578,
+      "commit": "191d051335821e804e7ffe484240ca326af86f7c",
+      "copy": "primary/runner-directory.json",
+      "pinnedRelease": "@biomejs/biome@2.5.7",
+      "primaryUrl": "https://api.github.com/repos/biomejs/biome/contents/crates/biome_cli/src/runner?ref=191d051335821e804e7ffe484240ca326af86f7c",
+      "sha256": "22e64d00b15ffaf43737694c7099ccf062b1af11d8e13628fbe05066dd913945"
+    },
+    {
+      "bytes": 374,
+      "commit": "191d051335821e804e7ffe484240ca326af86f7c",
+      "copy": "primary/tag-ref.json",
+      "pinnedRelease": "@biomejs/biome@2.5.7",
+      "primaryUrl": "https://api.github.com/repos/biomejs/biome/git/ref/tags/%40biomejs%2Fbiome%402.5.7",
+      "sha256": "f49d565d9a5b383524be7a0bfb9579e32779fdb5d7498a11e072930d7f54fde2"
+    },
+    {
+      "bytes": 1344,
+      "commit": "191d051335821e804e7ffe484240ca326af86f7c",
+      "copy": "primary/upstream-package.json",
+      "pinnedRelease": "@biomejs/biome@2.5.7",
+      "primaryUrl": "https://raw.githubusercontent.com/biomejs/biome/191d051335821e804e7ffe484240ca326af86f7c/packages/%40biomejs/biome/package.json",
+      "sha256": "5228ec89ebf509d4b7d56b4ff185ccff7de50962893f61b4102327bff1f55c99"
+    }
+  ]
+}

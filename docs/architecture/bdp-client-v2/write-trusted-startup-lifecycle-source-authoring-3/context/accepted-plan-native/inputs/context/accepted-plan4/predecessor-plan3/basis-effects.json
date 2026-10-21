@@ -1,0 +1,54 @@
+{
+  "state": "STATIC REBIND EFFECTS ONLY, no execution",
+  "changes": [
+    {
+      "path": "packages/config/src/index.ts",
+      "line": 1087,
+      "effect": "explicit C0/C1 regex spelling→UnicodeCc; frozen exhaustive1114112-codepoint equivalence evidence preserved. Path membership/bounds/absolute/wellFormed checks unchanged; no new allowed path or semantics."
+    },
+    {
+      "path": "packages/server/src/reference-deployment.ts",
+      "line": 105,
+      "effect": "same equivalent UnicodeCc path refusal spelling; no capture/handle/WeakMap/compiler/policy/listener behavior changed."
+    },
+    {
+      "path": "packages/server/src/reference-deployment.test.ts",
+      "lines": [
+        509,
+        530
+      ],
+      "effect": "old descriptors[] did not request evaluator for shipped schema-free Types. Corrected fixture spreads existing artifacts() and replaces the referenced schemas/item document with schema-valid $id and dangling remote $ref. Real compiler must resolve it offline and refuse. Production parser/evaluator not changed; no arbitrary-unused-schema rule invented. Six lines added in test only; downstream test anchors after this block shift+6."
+    }
+  ],
+  "WeakMap": {
+    "path": "packages/server/src/reference-deployment-state.ts",
+    "sha256": "c95b91aec78da06796e4f1337db0ef90c1a412151e9e1d836358bd5b273af806",
+    "unchangedFromPlan2": true,
+    "lines": [
+      20,
+      31
+    ],
+    "laws": "WeakMap identity lookup before handle fields, no getters/proxy traps; register once/frozen private capture; clones and externally supplied public fields grant no capability. Prepared handles do not cross IPC; child loads and starts in same registry instance."
+  },
+  "handleBoundary": {
+    "referenceDeploymentTsComparedOutsidePathRegex": true,
+    "publicShapeLines": [
+      25,
+      62
+    ],
+    "RURegistrationLines": [
+      288,
+      313
+    ],
+    "TXPreflightRegistrationLines": [
+      315,
+      350
+    ],
+    "noPublicCaptureCredentialsCapabilityExport": true
+  },
+  "unchangedRuntime": {
+    "TX": "transaction-runtime.ts314–344 actual bind-before-store legacy order still exists; this plan adds separate trusted preparation order only after future release",
+    "RU": "development-runtime.ts507–549 unchanged private bind-before-authority/principal legacy behavior; old503 startup witness preserved"
+  },
+  "noNewLifecycleProof": "44 focused source loader callbacks+6 installed loader calls/71 private refusal inventory from accepted startup validation prove their existing scope; not this plan51source/21installed lifecycle execution."
+}

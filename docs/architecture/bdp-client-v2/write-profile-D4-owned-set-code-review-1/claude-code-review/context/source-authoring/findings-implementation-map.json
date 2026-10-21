@@ -1,0 +1,335 @@
+{
+  "scope": "Author mapping only; independent native and actual CODE pending",
+  "rows": [
+    {
+      "finding": "F1",
+      "implementation": "counts.expected / nullable actual counts and reached oracle outcomes",
+      "locations": [
+        {
+          "path": "apps/bdptest/src/transactional-set-installed.test.ts",
+          "line": 528,
+          "anchor": "receiptPages[0] ="
+        },
+        {
+          "path": "apps/bdptest/src/transactional-set-installed.test.ts",
+          "line": 533,
+          "anchor": "receiptPages[1] ="
+        },
+        {
+          "path": "apps/bdptest/src/transactional-set-installed.test.ts",
+          "line": 513,
+          "anchor": "captured.complete = true"
+        },
+        {
+          "path": "apps/bdptest/src/transactional-set-installed.test.ts",
+          "line": 574,
+          "anchor": "groups = array(feed.groups).length"
+        },
+        {
+          "path": "apps/bdptest/src/transactional-set-installed.test.ts",
+          "line": 551,
+          "anchor": "oracle(0"
+        },
+        {
+          "path": "apps/bdptest/src/transactional-set-installed.test.ts",
+          "line": 664,
+          "anchor": "oracle(4"
+        },
+        {
+          "path": "apps/bdptest/src/transactional-set-installed.test.ts",
+          "line": 811,
+          "anchor": "expected: {"
+        },
+        {
+          "path": "apps/bdptest/src/transactional-set-installed.test.ts",
+          "line": 823,
+          "anchor": "observed: {"
+        }
+      ],
+      "status": "AUTHORED / NOT VALIDATED"
+    },
+    {
+      "finding": "F2",
+      "implementation": "one owned importer only, launcher/other22 preserved",
+      "locations": [
+        {
+          "path": "apps/bdptest/src/transactional-set-installed.test.ts",
+          "line": 263,
+          "anchor": "const { launchInstalledTransaction }"
+        },
+        {
+          "path": "apps/bdptest/src/transactional-set-installed.test.ts",
+          "line": 300,
+          "anchor": "const launch ="
+        }
+      ],
+      "status": "AUTHORED / NOT VALIDATED"
+    },
+    {
+      "finding": "F3",
+      "implementation": "cached partial state precedes all owned throwing metadata/schema/import preparation",
+      "locations": [
+        {
+          "path": "apps/bdptest/src/transactional-set-installed.test.ts",
+          "line": 91,
+          "anchor": "const started ="
+        },
+        {
+          "path": "apps/bdptest/src/transactional-set-installed.test.ts",
+          "line": 152,
+          "anchor": "try {"
+        },
+        {
+          "path": "apps/bdptest/src/transactional-set-installed.test.ts",
+          "line": 226,
+          "anchor": "const root = fileURLToPath"
+        },
+        {
+          "path": "apps/bdptest/src/transactional-set-installed.test.ts",
+          "line": 263,
+          "anchor": "const { launchInstalledTransaction }"
+        },
+        {
+          "path": "apps/bdptest/src/transactional-set-installed.test.ts",
+          "line": 272,
+          "anchor": "const ajv ="
+        },
+        {
+          "path": "apps/bdptest/src/transactional-set-installed.test.ts",
+          "line": 796,
+          "anchor": "const report ="
+        }
+      ],
+      "status": "AUTHORED / NOT VALIDATED"
+    },
+    {
+      "finding": "F4a",
+      "implementation": "workspace Git bounded2s/1MiB without runtime invocation by author",
+      "locations": [
+        {
+          "path": "apps/bdptest/src/transactional-set-installed.test.ts",
+          "line": 229,
+          "anchor": "const git ="
+        },
+        {
+          "path": "apps/bdptest/src/transactional-set-installed.test.ts",
+          "line": 233,
+          "anchor": "timeout: 2000"
+        },
+        {
+          "path": "apps/bdptest/src/transactional-set-installed.test.ts",
+          "line": 234,
+          "anchor": "maxBuffer: 1048576"
+        }
+      ],
+      "status": "AUTHORED / NOT VALIDATED"
+    },
+    {
+      "finding": "F4b",
+      "implementation": "explicit external mode no Git + source/entry capture separate from future proof",
+      "locations": [
+        {
+          "path": "apps/bdptest/src/transactional-set-installed.test.ts",
+          "line": 227,
+          "anchor": "metadata.mode ="
+        },
+        {
+          "path": "apps/bdptest/src/transactional-set-installed.test.ts",
+          "line": 236,
+          "anchor": "if (metadata.mode === \"external\""
+        },
+        {
+          "path": "apps/bdptest/src/transactional-set-installed.test.ts",
+          "line": 117,
+          "anchor": "not-applicable-externally-bound"
+        }
+      ],
+      "status": "AUTHORED / NOT VALIDATED"
+    },
+    {
+      "finding": "F5",
+      "implementation": "real returned PID/generation with separate exit/close and settled close barrier",
+      "locations": [
+        {
+          "path": "apps/bdptest/src/transactional-set-installed.test.ts",
+          "line": 195,
+          "anchor": "const closeObserved ="
+        },
+        {
+          "path": "apps/bdptest/src/transactional-set-installed.test.ts",
+          "line": 326,
+          "anchor": "handle.child.once(\"exit\""
+        },
+        {
+          "path": "apps/bdptest/src/transactional-set-installed.test.ts",
+          "line": 334,
+          "anchor": "handle.child.once(\"close\""
+        },
+        {
+          "path": "apps/bdptest/src/transactional-set-installed.test.ts",
+          "line": 691,
+          "anchor": "await closeObserved(acquisitions[0]"
+        },
+        {
+          "path": "apps/bdptest/src/transactional-set-installed.test.ts",
+          "line": 699,
+          "anchor": "assertSameServedProfileConfiguration(initialBinding.served, reopenedBinding.served)"
+        }
+      ],
+      "status": "AUTHORED / NOT VALIDATED"
+    },
+    {
+      "finding": "F6",
+      "implementation": "original budgets observed; outer startup/flush/collector remains closed",
+      "locations": [
+        {
+          "path": "apps/bdptest/src/transactional-set-installed.test.ts",
+          "line": 95,
+          "anchor": "90000,"
+        },
+        {
+          "path": "apps/bdptest/src/transactional-set-installed.test.ts",
+          "line": 742,
+          "anchor": "const cleanupEnd ="
+        },
+        {
+          "path": "apps/bdptest/src/transactional-set-installed.test.ts",
+          "line": 884,
+          "anchor": "}, 120000);"
+        },
+        {
+          "path": "apps/bdptest/src/transactional-set-installed.test.ts",
+          "line": 878,
+          "anchor": "future startup/flush/detached-drain/full-report collector gate remains CLOSED"
+        }
+      ],
+      "status": "AUTHORED / NOT VALIDATED"
+    },
+    {
+      "finding": "F7",
+      "implementation": "independent32 cap and existing12-page guards",
+      "locations": [
+        {
+          "path": "apps/bdptest/src/transactional-set-installed.test.ts",
+          "line": 396,
+          "anchor": "if (observations.length >= 32)"
+        },
+        {
+          "path": "apps/bdptest/src/transactional-set-installed.test.ts",
+          "line": 503,
+          "anchor": "if (pages >= 12)"
+        }
+      ],
+      "status": "AUTHORED / NOT VALIDATED"
+    },
+    {
+      "finding": "F8",
+      "implementation": "full returned wire/hash captured before assertions under unchanged executor bounds",
+      "locations": [
+        {
+          "path": "apps/bdptest/src/transactional-set-installed.test.ts",
+          "line": 441,
+          "anchor": "row.wireResponseBase64 ="
+        },
+        {
+          "path": "apps/bdptest/src/transactional-set-installed.test.ts",
+          "line": 445,
+          "anchor": "row.wireSha256 ="
+        },
+        {
+          "path": "apps/bdptest/src/transactional-set-installed.test.ts",
+          "line": 449,
+          "anchor": "expect(response.status"
+        },
+        {
+          "path": "apps/bdptest/src/transactional-set-installed.test.ts",
+          "line": 382,
+          "anchor": "maximumBodyBytes: 1048576"
+        }
+      ],
+      "status": "AUTHORED / NOT VALIDATED"
+    },
+    {
+      "finding": "F9",
+      "implementation": "fixed rejection shapes / unknown acquisition retained",
+      "locations": [
+        {
+          "path": "apps/bdptest/src/transactional-set-installed.test.ts",
+          "line": 74,
+          "anchor": "acquisition: \"unknown\""
+        },
+        {
+          "path": "apps/bdptest/src/transactional-set-installed.test.ts",
+          "line": 346,
+          "anchor": "error.message === \"installed transaction startup cleanup failed\""
+        },
+        {
+          "path": "apps/bdptest/src/transactional-set-installed.test.ts",
+          "line": 75,
+          "anchor": "prelaunch-cleanup-unsettled"
+        },
+        {
+          "path": "apps/bdptest/src/transactional-set-installed.test.ts",
+          "line": 350,
+          "anchor": "reopen-refused-pre-ready"
+        }
+      ],
+      "status": "AUTHORED / NOT VALIDATED"
+    },
+    {
+      "finding": "F10",
+      "implementation": "directory retention/removal gated separately from unknown SQLite file presence",
+      "locations": [
+        {
+          "path": "apps/bdptest/src/transactional-set-installed.test.ts",
+          "line": 775,
+          "anchor": "!ownershipUncertain"
+        },
+        {
+          "path": "apps/bdptest/src/transactional-set-installed.test.ts",
+          "line": 781,
+          "anchor": "rmSync(directory"
+        },
+        {
+          "path": "apps/bdptest/src/transactional-set-installed.test.ts",
+          "line": 870,
+          "anchor": "storeFilePresence: \"unknown\""
+        }
+      ],
+      "status": "AUTHORED / NOT VALIDATED"
+    },
+    {
+      "finding": "F11",
+      "implementation": "local pending registry and correct pre-reopen chronology",
+      "locations": [
+        {
+          "path": "apps/bdptest/src/transactional-set-installed.test.ts",
+          "line": 100,
+          "anchor": "pending = new Set"
+        },
+        {
+          "path": "apps/bdptest/src/transactional-set-installed.test.ts",
+          "line": 433,
+          "anchor": "pending.add(task)"
+        },
+        {
+          "path": "apps/bdptest/src/transactional-set-installed.test.ts",
+          "line": 468,
+          "anchor": "pending.delete(task)"
+        },
+        {
+          "path": "apps/bdptest/src/transactional-set-installed.test.ts",
+          "line": 691,
+          "anchor": "await closeObserved(acquisitions[0]"
+        },
+        {
+          "path": "apps/bdptest/src/transactional-set-installed.test.ts",
+          "line": 695,
+          "anchor": "child = await launch(2"
+        }
+      ],
+      "status": "AUTHORED / NOT VALIDATED"
+    }
+  ],
+  "sourceSha256": "65f754c089f8735b592e09e1475ac2435776d18bf1ac8321aa41118c87cb1b4c"
+}

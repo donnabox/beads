@@ -1,0 +1,45 @@
+{
+  "at": "2026-10-15T08:14:01.692872+00:00",
+  "head": "a912c23fbd80e70ead382a27e700a70123bf3f21",
+  "tree": "501791c6372c3d69b50ef38f777e79de5807f10a",
+  "expectedBase": "453b6dab386746bb03aac2c0a293572b8a71c969",
+  "sourceScopeAccepted": true,
+  "councilFindingsDispositioned": true,
+  "staticAccepted": true,
+  "installedAccepted": true,
+  "documents": [
+    {
+      "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-command-minimum-evidence-draft/root-final-context-council.json",
+      "sha256": "eeb207ba8bab4d9e53654c86ef20099d23254957f63f28b594b9c8824d5e7d12"
+    },
+    {
+      "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-command-minimum-evidence-draft/final-source.json",
+      "sha256": "598f0143770b03a42fe6da36669a8045b470548505a4716772cb816eb7662283"
+    },
+    {
+      "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-command-minimum-evidence-validation-v3/root-static-summary.json",
+      "sha256": "e980ec765bcb98905fe11e0091567e355ae900c49a8dbc523bd0df914e2b58f0"
+    },
+    {
+      "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-command-minimum-evidence-validation-v3/root-installed-summary.json",
+      "sha256": "181d0597a975c2e87301748246aff84f1ee95ffd87e6181c37cc7d0776ee6800"
+    },
+    {
+      "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-command-minimum-evidence-validation-v3/native-static-outcome.md",
+      "sha256": "b2570eaa79b9cd6fd8e623838295fea5c34a632d053996739d55addab5a10ad7"
+    },
+    {
+      "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-command-minimum-evidence-validation-v3/native-installed-outcome.md",
+      "sha256": "1a37c24c71e4afca97e544ce0e6b103723f469d062ef436f5494431d86c773a7"
+    },
+    {
+      "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-command-minimum-evidence-draft/landing/publication-binding.json",
+      "sha256": "9cdba18f9b8600db3db0888a9d5307eb092d5d58dcef1578a118402bcf8bf03f"
+    }
+  ],
+  "nativeInstalledAuditAttribution": "Preparation author actual-data audit, separate from independent native source code council",
+  "remainingGate": "Exact-head completed green CI, root full-log acceptance, ready then fail-closed premerge check; actual merged tree verification mandatory",
+  "mergeAuthorizedByOperator": true,
+  "releaseAuthorized": false,
+  "profileQualification": false
+}

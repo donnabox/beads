@@ -1,0 +1,30 @@
+﻿2026-10-18T06:58:23.9627218Z ##[group]Run sudo apt-get update
+2026-10-18T06:58:23.9627586Z [36;1msudo apt-get update[0m
+2026-10-18T06:58:23.9690536Z shell: /usr/bin/bash -e {0}
+2026-10-18T06:58:23.9690798Z env:
+2026-10-18T06:58:23.9691059Z   PNPM_HOME: /home/runner/setup-pnpm/node_modules/.bin
+2026-10-18T06:58:23.9691396Z   GOTOOLCHAIN: local
+2026-10-18T06:58:23.9691627Z ##[endgroup]
+2026-10-18T06:58:24.0615627Z Get:1 file:/etc/apt/apt-mirrors.txt Mirrorlist [144 B]
+2026-10-18T06:58:24.1074948Z Hit:2 http://azure.archive.ubuntu.com/ubuntu noble InRelease
+2026-10-18T06:58:24.1086803Z Get:6 https://packages.microsoft.com/ubuntu/24.04/prod noble InRelease [3600 B]
+2026-10-18T06:58:24.1091285Z Get:3 http://azure.archive.ubuntu.com/ubuntu noble-updates InRelease [126 kB]
+2026-10-18T06:58:24.1154492Z Get:4 http://azure.archive.ubuntu.com/ubuntu noble-backports InRelease [126 kB]
+2026-10-18T06:58:24.1172391Z Get:5 http://azure.archive.ubuntu.com/ubuntu noble-security InRelease [126 kB]
+2026-10-18T06:58:24.2414850Z Get:7 https://packages.microsoft.com/ubuntu/24.04/prod noble/main armhf Packages [12.4 kB]
+2026-10-18T06:58:24.2545778Z Get:8 https://packages.microsoft.com/ubuntu/24.04/prod noble/main arm64 Packages [557 kB]
+2026-10-18T06:58:24.2649463Z Get:9 https://packages.microsoft.com/ubuntu/24.04/prod noble/main amd64 Packages [618 kB]
+2026-10-18T06:58:24.2964138Z Get:10 http://azure.archive.ubuntu.com/ubuntu noble-updates/main amd64 Packages [1397 kB]
+2026-10-18T06:58:24.3036672Z Get:11 http://azure.archive.ubuntu.com/ubuntu noble-updates/main Translation-en [308 kB]
+2026-10-18T06:58:24.3074086Z Get:12 http://azure.archive.ubuntu.com/ubuntu noble-updates/universe amd64 Packages [1704 kB]
+2026-10-18T06:58:24.3169218Z Get:13 http://azure.archive.ubuntu.com/ubuntu noble-updates/universe Translation-en [342 kB]
+2026-10-18T06:58:24.3198550Z Get:14 http://azure.archive.ubuntu.com/ubuntu noble-updates/restricted amd64 Packages [1805 kB]
+2026-10-18T06:58:24.3314852Z Get:15 http://azure.archive.ubuntu.com/ubuntu noble-updates/restricted Translation-en [411 kB]
+2026-10-18T06:58:24.4044651Z Get:16 http://azure.archive.ubuntu.com/ubuntu noble-security/main amd64 Packages [1144 kB]
+2026-10-18T06:58:24.4084704Z Get:17 http://azure.archive.ubuntu.com/ubuntu noble-security/main Translation-en [231 kB]
+2026-10-18T06:58:24.4108750Z Get:18 http://azure.archive.ubuntu.com/ubuntu noble-security/universe amd64 Packages [1222 kB]
+2026-10-18T06:58:24.4169073Z Get:19 http://azure.archive.ubuntu.com/ubuntu noble-security/universe Translation-en [246 kB]
+2026-10-18T06:58:24.4638349Z Get:20 http://azure.archive.ubuntu.com/ubuntu noble-security/restricted amd64 Packages [1713 kB]
+2026-10-18T06:58:24.4864914Z Get:21 http://azure.archive.ubuntu.com/ubuntu noble-security/restricted Translation-en [392 kB]
+2026-10-18T06:58:27.4437715Z Fetched 12.5 MB in 1s (9792 kB/s)
+2026-10-18T06:58:28.3894128Z Reading package lists...

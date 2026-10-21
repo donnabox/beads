@@ -1,0 +1,103 @@
+# Review — "Direct retained-key comparison before private depth refusal" (plan only, against merged `0d63cf5` / tree `80a6fe0`)
+
+The plan's central ordering claim checks out against the supplied source: `transaction-batch.ts:175`/`:212` throw depth *after* all shape/reference/label/Selector work and immediately before `prepareCarrier`, so a receiving variant can record a fact on the branded result at the same boundary; `transaction-submission.ts:121` does return before `compareAndAdmitTransaction` at `:130`; `admitKey` at `transaction-store.ts:1057–1086` already decides retained conflict/existing before the fresh-control block at `:1089–1104`, so a `!prior && fact` guard inserted between `:1077` and `:1078` satisfies "before fresh normalization, controls, negotiation, receipt allocation or claims" without moving `normalizeTransaction`. `DirectComparison` (`transaction-comparison.ts:11–15`) and the pass-through at `:70` genuinely need no edit, `TransactionSubmissionResult` already carries `{kind:"development-limit",message}` (`transaction-submission.ts:54`), and `transaction-http.ts:356–357` already maps it. The ledger's arithmetic is internally consistent (17/16/15/2 positives; 19 callbacks, 32 expected / 43 max HTTP, 18 owners, 17 directories, 4 listeners; installed `bodyBytesTotal` 3270, max 621, routeCount 5, pos-1…pos-4 progression). The selected unchanged cases (S1/S2/S9, `syntax-batch`/`syntax-singleton`, `serializer`, `sequence`) all remain green under the proposed ordering because every deep case in them uses a fresh key.
+
+Findings below are ordered by severity, not by file.
+
+---
+
+### 1. Medium — No caller inventory for the type actually being widened
+
+**Plan:** "Three production files"; "All producer/caller and pending-path implications"; ledger `ownedPaths` (8 paths). **Source:** `transaction-store.ts:136–145`, `transaction-comparison.ts:11–15`, `tsconfig.check.json:24–31`.
+
+The supplied "read-only production caller inventory" enumerates `admitKey` call sites and the three preparation entry points — but the change widens `TransactionReceivingAdmission`, and therefore `DirectComparison`, `admit`, `admitObserved`, and the `admit` member of the `compareAndAdmitTransaction` store parameter. No inventory of modules that narrow those unions is presented. `tsconfig.check.json:26` includes `packages/*/src/**/*.ts`, which covers co-located `*.test.ts`; `transaction-store.test.ts` and any `transaction-comparison` test are therefore typechecked but are **not** among the eight owned paths.
+
+*Impact:* an exhaustive `switch`/`satisfies never` over an admit result in a non-owned module fails the typecheck gate, bursting the frozen eight-path diff after freeze and recount.
+
+*Minimal correction:* before freeze, grep every reference to `TransactionReceivingAdmission`, `TransactionAdmission` and `DirectComparison` under `packages/server/src` and record the result in `ledger.json` next to the `admitKey` inventory; if any consumer lies outside the eight paths, invoke the plan's own stop-and-present-the-delta rule.
+
+---
+
+### 2. Medium — Singleton parity is an unproven premise, and six installed literals are frozen on it
+
+**Plan:** installed rows 7–12; selection B ("both direct carriers, six submissions each"); "Reuse assertTransactionInputDepth, including singleton wrapper offset2". **Source:** `transaction-batch.ts:211–213`.
+
+For a non-set singleton, `prepareReadUpdateSingleton(scope, operation, text, "internal-singleton")` runs at `:211` **before** `assertTransactionInputDepth(input, 2)` at `:212`. Every existing depth observation in the supplied excerpts goes through either the batch path (`transaction-submission.test.ts:153–157`, `transaction-http.test.ts:610–619`) or the set-singleton mixed path (`transaction-submission.test.ts:698–722`, `:838–874`), which never calls `prepareReadUpdateSingleton`. Nothing supplied shows that the protocol RU singleton parser tolerates ~41-level `metadata` without raising `ReadUpdateCarrierError`/`TypeError`.
+
+*Impact:* if it does raise, `transaction-submission.ts:100–105` returns `400 malformed-request`, so installed row 10 is 400 (not 500), row 8 is 400 (not 409), and rows 7/9/11/12 and B's whole singleton half are invalid — after the body hashes are frozen.
+
+*Minimal correction:* make one A sub-case a deep **`createBead`** singleton through strict `prepareTransactionSingleton`, asserting `TransactionDevelopmentLimitError` with the original message (not a parser `TypeError`), and gate the freeze of ledger rows 7–12 on it.
+
+---
+
+### 3. Medium — "Defensive propagation" has no stated placement; the natural one leaves two live holes
+
+**Plan:** "defensive propagation must not leak the new receiving variant into TransactionAdmission"; "Preserve the legacy no-controls admit return type … analogous to existing operation/Selector handling at 1410–1413". **Source:** `transaction-store.ts:1801–1816`, `:1922–1943`, `:1407–1412`.
+
+Lines `:1409–1412` translate `operation-limit`/`selector-limit` in `admit()`, not in `admitKey`. The two direct no-controls `admitKey` call sites bypass `admit()` entirely. If `admitKey` returns the new variant unconditionally, `admitSequence:1809` has no `else`, so the member is silently skipped with no reservation, and `nextSequence:1938–1941` evaluates `admission.kind === "conflict" ? admission : {kind:"receipt", receipt: admission.receipt}` — `admission.receipt` is `undefined`, and since the no-controls overload is typed `TransactionAdmission` this compiles cleanly and fails only at runtime.
+
+*Impact:* unreachable today (strict `prepareTransactionSequence:244` still throws, so members can never carry the fact), but the plan's stated invariant is unenforced and one future receiving-prepared object reaching a sequence path corrupts turn dispositions silently rather than failing closed.
+
+*Minimal correction:* gate the new return inside `admitKey` on `controls !== undefined` and `throw new TransactionDevelopmentLimitError(message)` otherwise. `admit()` always passes a snapshot (`:1401–1408`), so its existing `controls === undefined` translation still produces the legacy throw B requires, while `:1801` and `:1924` fail closed.
+
+---
+
+### 4. Medium — The only newly reachable worst-case comparison path carries no planned evidence
+
+**Plan:** "transactionInputText and lossless JSON parsing are iterative; normalizeTransaction uses iterative encodeSemanticValue … under the existing 64KiB request bound. This supports comparison feasibility"; selections `syntax-batch`/`syntax-singleton` (`new:false`), B (40/41-level bodies only). **Source:** `transaction-submission.test.ts:838–874`, `transaction-batch.ts:412–490`, `semantic-identity.ts:59–144`.
+
+Today a 20,000-level body is refused at preparation and never normalized. After the repair, a retained key plus a 20,000-level body reaches `normalizeTransaction` → `encodeSemanticValue`, producing an identity string roughly an order of magnitude larger than the 64KiB input. The plan asserts this is feasible but pins no callback to it: every planned deep *retained* retry is 40/41 levels, and both 20,000-level selections keep using fresh keys (`:853`, `:870` binds `deep_key` only afterwards).
+
+*Impact:* the single behavioural class the repair newly admits is unobserved; a regression there (cost, or an unexpected throw inside normalization) would ship green.
+
+*Minimal correction:* add one 13th submit to B — bind a key with a shallow body, then retry the existing 20,000-level bracket fixture under that key and assert `idempotency-conflict` with no stored change — and update `plannedSubmitCalls` to 13 (HTTP/owner/directory counts unaffected).
+
+---
+
+### 5. Low — `transaction-submission.ts` cleanup is unstated and one branch is build-breaking
+
+**Plan:** "Remove the pre-comparison depth return". **Source:** `transaction-submission.ts:11`, `:89–107`, `:121`; `tsconfig.base.json:17`.
+
+Removing `:121` leaves the `developmentLimit` local (`:90`) and its catch arm (`:99`) with no consumer. If both go, the `TransactionDevelopmentLimitError` import at `:11` becomes unused and `noUnusedLocals` fails the build; if the catch arm is silently retained "just in case", it reinstates exactly the pre-comparison return the plan removes, and the installed/H deep-retained rows regress to 500.
+
+*Impact:* either a broken gate or a silently reverted repair, depending on an unstated choice.
+
+*Minimal correction:* state explicitly that `:90`, `:99` and the `:11` import are all removed, and that any `TransactionDevelopmentLimitError` escaping receiving preparation is left to the existing `else throw error` at `:106` (fail-closed), so the only development-limit producer is the owner variant.
+
+---
+
+### 6. Low — The negative derivative cannot be a dist-plus-test copy
+
+**Plan:** "copy verified emitted runtime/store graph plus test/config/setup … Import/build/timeout/cleanup … failures do not qualify". **Source:** `vitest.config.ts:23–56`, `:63`, `:70`; `packages/server/test-support/read-conformance-mock.ts:3,17–18`; `transaction-http.test.ts:10–14`.
+
+`collectWorkspaceSourceAliases()` throws unless every `packages/*/package.json` resolves to an existing `src/index.ts`; the config aliases `@bdp/*` to source; the mandatory setup file imports `../src/read-conformance-capability.js`; and H itself imports `@bdp/protocol` at `:10` plus a type from `./transaction-runtime.js` at `:11`. A copy containing only `dist` plus the test/config therefore dies in config or module resolution.
+
+*Impact:* the derivative run yields a disqualified failure mode (`import`/`compile`), consuming the one bounded attempt without producing the required `depth-key:batch:conflict-before-depth` evidence.
+
+*Minimal correction:* specify the derivative as a full tree copy with exactly one mutated emitted file (`dist/transaction-store.js`), and record its path/hash in the negative import graph.
+
+---
+
+### 7. Low — Prose says forty levels; the frozen literals encode forty-one
+
+**Plan:** "A valid retry differing only by forty-deep metadata"; ledger rows 2, 4, 8, 10.
+
+Row 2 is 621 bytes against a 166-byte seed; the seed's `"metadata":{}` (2 chars) is replaced by `11N + 6` chars, so `11N + 4 = 455` ⇒ `N = 41`. The singleton pair gives the same result (`579 − 124 = 455`). The existing source fixtures use 40 (`for (let depth = 0; depth < 40; depth++)`, `transaction-submission.test.ts:154`, `transaction-http.test.ts:611`, `:1623`).
+
+*Impact:* none behaviourally — both exceed the 32 bound at `transaction-set.ts:56` — but the plan treats the literals as exact and claims H uses "the same thirteen recipes", so H written from the prose would diverge from the frozen installed bodies.
+
+*Minimal correction:* restate the prose as forty-one levels (or regenerate the literals at forty and recompute the four hashes and `bodyBytes`), and pin H's recipe to the same level.
+
+---
+
+## Unresolved context gaps (not defects)
+
+These are limits of the supplied excerpts, not claims of error:
+
+- `@bdp/protocol`'s `prepareReadUpdateSingleton`/`prepareReadUpdateSequence` bodies were not supplied; I could not confirm their depth tolerance (basis for finding 2) beyond the inference that the batch path demonstrably reaches `transaction-batch.ts:175` at depth 40.
+- `packages/server/src/index.ts` and `development.ts` were not supplied, so I cannot tell whether `transaction-batch.ts` is star-re-exported. If it is, the new receiving entry point and brand accessor become package-exported surface, which would contradict "No … package … or public API change is expected".
+- `transaction-service.ts` was not supplied: whether `service.submit` already passes `observed: true` (required for the 409 context at `transaction-http.ts:358–359`) and whether its declared return type needs widening is unverified.
+- `transaction-store.ts` regions 166–347, 402–589, 599–1027, 1134–1378 and 1456–1769 were not supplied; `row`, `expireRow` (including whether `.row` can be `undefined` while a stored row remains), `observeReceipt`, `inspect`, `retract`, `cancelSequence` and `nextSequence` were reasoned about only from their call sites and from the selected tests.
+- `developmentGap` and `empty(406)` in `transaction-http.ts` were not supplied; the bodyless-500-plus-marker behaviour is inferred from `transaction-http.test.ts:613–617`.
+- The message for the new legacy `TransactionDevelopmentLimitError` thrown from `admit()` is unspecified in the plan. A says legacy preparation keeps its "original class/message"; B asks only for the "legacy class". If B asserts a message, pin it (reusing the captured `"development batch depth limit"` is the consistent choice).
+- Whether B uses `observed: true` is not stated. It matters for the exact shapes asserted: observed conflicts and observed `not-acceptable` carry `context` (`transaction-store.ts:1414–1428`), whereas the existing S3/S4 expectations (`toEqual({kind:"not-acceptable"})`) are unobserved. "Observed conflict tuples must come from the same entry" implies `observed: true`, which changes those literals.

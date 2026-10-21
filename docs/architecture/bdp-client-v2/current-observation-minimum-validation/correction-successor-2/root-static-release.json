@@ -1,0 +1,16 @@
+{
+  "at": "2026-10-17T20:57:24.372147+00:00",
+  "acceptedBootstrap": {
+    "workspace-install": "6973a3374375f672beed5dd37faab35538181eece26d97196d57bed257e9c255",
+    "bind-workspace-tools": "bc5b2cba2387a09a98ef436a6b05ec43bba507baafd4899161487a2c14bbd676"
+  },
+  "workspaceToolsSha256": "99bd7474cf190e4c4a88cf83428817b2748c2d6328d49edfe2ab7bbfd1e62c90",
+  "gateSha256": "3c3ea4f667b83c495db1a86c3377d173bdbf5fc65bd4ff200fea615655d4af89",
+  "newStages": [
+    "typecheck",
+    "format-check",
+    "lint"
+  ],
+  "stopOnFirstFailure": true,
+  "runtimeReleased": false
+}

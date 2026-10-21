@@ -1,0 +1,128 @@
+## Review: T2a `bddc448` vs parent `1949f25`
+
+**Context note:** there is no `AGENTS.md` in this checkout or in `/Users/dbox/repos/wt/vickie/*` — I used `CONTEXT.md`, `STATUS.md`, `docs/specs/bdp.md` and the integration report instead.
+
+**Verification replicated independently** (Node 24.16.0, no source mutation): 518 tests / 11 files pass (223 in the 6 transaction suites + 295 in the 5 read/sequence suites — matches the report exactly); `tsc -p tsconfig.check.json` exit 0; `biome format` clean; `biome lint` 3 warnings + 1 info, all four in files T2a does not touch; `check:boundaries` valid for 11 packages. The report's verification section is accurate, and its gap disclosures (no HTTP, no sets, no durable pages, no erasure, no public qualification) are honest. Findings below are what survived independent probing.
+
+---
+
+### 1. MEDIUM-HIGH — Synchronous mutation delivery can downgrade or lose the receipt it just executed
+
+**Location:** `packages/server/src/transaction-service.ts:143-147`
+
+**Evidence:** `submitTransaction` already returns the exact executed receipt (`transaction-submission.ts:120`, `{kind:"receipt", receipt: store.execute(claim)}`). The service discards that body and re-reads it in a *second*, separate owner transaction. `retainedReceipt` applies `expireRow` on every lookup, so the retention boundary is re-evaluated at delivery time. Two probes against `dist/`, injecting a clock step at the `after-terminal` fault stage (inside the execute commit):
+
+```
+PROBE1 THREW: admitted receipt unavailable at delivery
+PROBE2 status/detail: completed expired  results? false  allocated? true  ctx pos-1  effect pos-1
+```
+
+Probe 1 (failed transaction): the row is `failedForgotten`-deleted, the re-read returns `undefined`, and `submit()` throws an opaque internal error — the caller never receives the `problem`, the receipt `id`, or a `200` failed receipt. Probe 2 (completed transaction): delivery returns `detail:"expired"` carrying `allocated` instead of `results`, so the caller never receives the postimages it just created, and they are permanently discarded.
+
+Reachable with the default `Date.now` on any ≥1-day wall-clock step between the execute commit and the re-read (NTP correction, VM suspend/resume), and unconditionally for any caller supplying a non-monotonic `clock`.
+
+**Impact:** The report's "actual atomic receipt/context" holds only for the re-read itself; the *execution ↔ observation* pairing spans two transactions, and that window is exactly what admits both probes. Legal-by-the-letter for probe 2 (`expiresAt` has passed), but it means the retention promise `expiresAt` encodes — terminal instant + retention — was never honoured for even one delivery.
+
+**Fix:** Deliver `result.receipt` as the body and take only `context` from the observation; better, return the read context from inside `executeClaim`'s own transaction (`transaction-store.ts:684`, which already reads `metadata("position")`) so the synchronous path needs no second lookup and becomes genuinely single-transaction atomic. This also removes finding 2 and most of finding 8 from the hot path.
+
+---
+
+### 2. MEDIUM — Every mutation now pays an unindexed, parse-every-row receipt scan
+
+**Location:** `packages/server/src/transaction-store.ts:440-452`, reached per-mutation from `transaction-service.ts:145`
+
+**Evidence:** `retainedReceipt` resolves by `receipt.id`, which is indexed nowhere, via `SELECT * FROM receipts WHERE principal=?` plus `JSON.parse` of every row until a match. Measured scaling (one principal, 1-day retention, maintenance disabled):
+
+| retained receipts | `readReceipt` full scan | mean `submit()` |
+|---|---|---|
+| 500 | 0.92 ms | 1.53 ms |
+| 1500 | 3.15 ms | 4.22 ms |
+| 3000 | 6.53 ms | 6.90 ms |
+
+Clean linear growth; at 3000 retained receipts the new re-read is ~95% of total submit cost, cutting throughput from ~650/s to ~145/s.
+
+**Impact:** Before T2a this scan sat only on the unused receipt-GET path; T2a moves it onto the mutation hot path of a single `EXCLUSIVE`/`synchronous=FULL` connection, where it degrades steadily for the whole 1-day retention window. The store's own sweep comment already concedes "no population/workload qualification," but this is a new, avoidable per-mutation cost rather than an inherited one.
+
+**Fix:** `submit()` holds `request.key`, and `(principal, key)` is the `receipts` PRIMARY KEY (`transaction-store.ts:281` `row()` already does exactly this lookup) — resolve the delivery re-read by key, not by scanning for id. Keep the id scan only on the receipt-GET path, or add an id index there.
+
+---
+
+### 3. MEDIUM — The one normative relation between the two paired halves is never asserted
+
+**Location:** `packages/server/src/transaction-service.ts:119-124` and `147`
+
+**Evidence:** `docs/specs/bdp.md:5233-5237`: "`BDP-Scope-Position` carries the position the read observed — **at or after `effectPosition` on a terminal receipt served synchronously**". T2a's whole purpose is pairing a receipt with a context observation, yet nothing checks the relation between `context.scopePosition` and `receipt.effectPosition` on either delivery path. The sibling Read path enforces precisely this class of invariant on every `perform` — `transaction-read.ts:114`, `"Transactional Read snapshot is ahead of its serving entry"`, routed through `checked()`; the receipt path has no analogous validation. Probe (12 concurrent submits): 0 violations, every context `pos-12` against effect positions `pos-1`…`pos-12` — so the invariant holds today, but only because `metadata.position` is monotonic on one exclusive connection, which is exactly the assumption T2b's minimum-position/replica work relaxes.
+
+**Impact:** The service can emit a spec-violating pairing silently rather than failing loudly, in the one slice whose entire contribution is that pairing. No test covers the relation either.
+
+**Fix:** Assert `Number(context.scopePosition.slice(4)) >= Number((receipt.effectPosition ?? receipt.requiredPosition).slice(4))` where the observation is constructed, mirroring `transaction-read.ts:114`, and add a test.
+
+---
+
+### 4. LOW-MEDIUM — Prior-epoch receipt non-disclosure is neither implemented nor tested
+
+**Location:** `packages/server/src/transaction-store.ts:440-452`
+
+**Evidence:** `docs/specs/bdp.md:4602-4604` and the method table at `docs/specs/bdp.md:4601` list five uniform-`404` cases: unknown token, another principal's receipt, retracted, forgotten failed, **and a receipt allocated in another Scope epoch**. `retainedReceipt` filters on principal and `receipt.id` only — no `receipt.scopeEpoch === epoch` comparison, even though `epoch` is in scope and every receipt records it (`transaction-store.ts:666`). Not live today: `epoch` is minted once at `create` (`transaction-store.ts:393`), read back unchanged on reopen, and `create:true` uses `openSync(..., "wx")` so an existing file cannot be re-epoched — no prior-epoch row can exist. The report's non-disclosure sentence lists four of the five cases and silently omits this one.
+
+**Impact:** The guard is one comparison in a helper now shared by two entries (`receipt()` and `readReceipt()`). Whichever later slice introduces epoch rotation gets a non-disclosure violation with no failing test.
+
+**Fix:** Add the `scopeEpoch` equality check in `retainedReceipt` with a test, or state the omission explicitly in the report alongside the other four.
+
+---
+
+### 5. LOW-MEDIUM — `sequence()` returns no serving observation, so the recommended T2b composition is not expressible
+
+**Location:** `packages/server/src/transaction-service.ts:154-183`
+
+**Evidence:** `docs/specs/bdp.md:5768-5774` has Transactional Scope-bounded responses carry all three fields, and `docs/specs/bdp.md:5213-5216` extends "every delivery of a receipt" explicitly to "the projection of a member's receipt into a sequence response." `submit()` returns `{kind, receipt, context}`; `sequence()` returns bare `{results}` with no context, and `transaction-sequence.ts:project()` consumes `turn.result.receipt` directly rather than via the new observation.
+
+**Impact:** A T2b HTTP layer must take a *second, later* owner entry to obtain a position for the sequence envelope — exactly the "do not merely decorate an old response with later head" pattern the report's own next-partition section forbids. The asymmetry is in the seam T2b is meant to build on.
+
+**Fix:** Return the sequence envelope paired with a context captured on its final turn (ideally inside that turn's transaction), matching `submit()`'s shape, before HTTP lands.
+
+---
+
+### 6. LOW — `close()` can never settle if the injected scheduler stalls
+
+**Location:** `packages/server/src/transaction-service.ts:93-117` (`nextTurn`), `199-203` (`close`)
+
+**Evidence:** Probe 3 — a scheduler returning a valid cancellation that never invokes the callback: `PROBE3 close() => TIMEOUT` (unbounded; >1.5 s). `nextTurn()` validates inline invocation, repeated invocation, a non-function return, and a throwing cancellation, but not non-delivery: the promise stays pending, the `sequence()` task stays in `active`, `Promise.allSettled([...active])` never resolves, and `closed` never settles.
+
+**Impact:** Robustness gap, not a live defect — `createNodeLifecycleScheduler` (`sequence-executor.ts:149`) uses `setImmediate` and always fires, and `scheduler` is documented as a private test seam. Noted only because `close()` is the owner-release path and the rest of the fence/drain story is complete.
+
+**Fix:** Either document non-delivery as a scheduler-contract precondition the service does not defend, or bound the drain.
+
+---
+
+### 7. LOW — The `32` inline bound is a bare literal with no link to the facts that make it true
+
+**Location:** `packages/server/src/transaction-service.ts:49-52`
+
+**Evidence:** `>= 32` is sufficient only because of four independent facts elsewhere: `transaction-batch.ts:150` (sequence members ≤32), `transaction-batch.ts:253` (batch operations ≤32), `transaction-store.ts:74` (`maximumOperations` ≤32), and `transaction-batch.ts:65` (set operations refused). The last matters most: per `docs/specs/bdp.md:5168-5172` a set operation emits a `matched` entry plus one entry per selected Resource, so with sets a 32-operation batch produces arbitrarily more than 32 entries and the advertised bound becomes false. Root controls set sequencing per the report. Nothing fails if any of these move, and nothing asserts the actual result count at delivery.
+
+**Impact:** The service would keep advertising and enforcing a bound it no longer satisfies, with `next: null` already hardcoded at `transaction-store.ts:836`.
+
+**Fix:** Derive the constant from the batch/runtime limit rather than restating it, and assert `results.length <= page.maximumItems && next === null` at delivery so the guard fails loudly if sets or the limits land.
+
+---
+
+### 8. LOW — The delivery-failure throw discards the only identifier that makes it diagnosable
+
+**Location:** `packages/server/src/transaction-service.ts:146`
+
+**Evidence:** `throw new Error("admitted receipt unavailable at delivery")` carries neither `result.receipt.id` nor the admitted key, although both are in hand and the transaction is already terminal. Compare the care taken elsewhere in this same commit to preserve causes (`transaction-service.ts:176-180`, `transaction-store.ts:224-229`).
+
+**Impact:** The one unrecoverable-looking path in the new service is the least diagnosable. Secondary to finding 1 — fixing that removes most of its reachability.
+
+**Fix:** Attach the receipt id and key via `cause`.
+
+---
+
+### 9. INFO — Test-coverage gaps
+
+- Cached-facet rejection after close covers only `perform` (`transaction-service.test.ts:328-337`), not `resolveAlias`, though both are wrapped at `transaction-service.ts:131-132`.
+- No test asserts the `scopePosition`/`effectPosition` relation (finding 3).
+- The nested deep-freeze lives in the store (`transaction-store.ts:1209-1216`) but is only asserted at the service level (`transaction-service.test.ts:197-206`); `transaction-store.test.ts`'s new `toEqual` assertions do not exercise it.
+
+Positives worth recording, all independently confirmed: construction ordering genuinely leaves the caller's owner untouched on every failure path (nothing resource-holding precedes `createTransactionReadPlane`, and the only owner call it makes is the read-only `readConfiguration()`); `nextTurn`'s inline/repeat/cancellation handling is sound under all five fault shapes I traced; `cleanupFailure` nesting is acyclic and `close()` correctly bypasses `check()`; the drain snapshot is complete because `accepting=false` precedes it synchronously and `run()` gates every entry; `run()` attaches handlers to the returned promise itself, so detached deliveries cannot raise unhandled rejections; the smoke inventory is exact-equality and the deep-import negative check is *derived* from the inventory filter (`smoke-executables.mjs:380-391`), so `transaction-service.js` is covered automatically rather than by hand; and the three child-process cases are real `process.exit` kills at durable boundaries, with `"delivered"` deliberately matching no fault stage.

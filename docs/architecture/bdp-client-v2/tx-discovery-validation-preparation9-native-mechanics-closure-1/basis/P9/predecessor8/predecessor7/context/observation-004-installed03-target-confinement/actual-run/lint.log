@@ -1,0 +1,344 @@
+apps/bdptest/src/transactional-schema-installed.test.ts:109:5 lint/style/useTemplate  FIXABLE  ━━━━━━━━━━
+
+  i Template literals are preferred over string concatenation.
+  
+    107 │     expect(confinedObserved(value, value)).toBe(value);
+    108 │   for (const value of [
+  > 109 │     rootSchema + "?x=1",
+        │     ^^^^^^^^^^^^^^^^^^^
+    110 │     rootSchema + "#fragment",
+    111 │     rootSchema + "/",
+  
+  i Unsafe fix: Use a template literal.
+  
+    107 107 │       expect(confinedObserved(value, value)).toBe(value);
+    108 108 │     for (const value of [
+    109     │ - ····rootSchema·+·"?x=1",
+        109 │ + ····`${rootSchema}?x=1`,
+    110 110 │       rootSchema + "#fragment",
+    111 111 │       rootSchema + "/",
+  
+
+apps/bdptest/src/transactional-schema-installed.test.ts:110:5 lint/style/useTemplate  FIXABLE  ━━━━━━━━━━
+
+  i Template literals are preferred over string concatenation.
+  
+    108 │   for (const value of [
+    109 │     rootSchema + "?x=1",
+  > 110 │     rootSchema + "#fragment",
+        │     ^^^^^^^^^^^^^^^^^^^^^^^^
+    111 │     rootSchema + "/",
+    112 │     rootSchema.replace("root", "%72oot"),
+  
+  i Unsafe fix: Use a template literal.
+  
+    108 108 │     for (const value of [
+    109 109 │       rootSchema + "?x=1",
+    110     │ - ····rootSchema·+·"#fragment",
+        110 │ + ····`${rootSchema}#fragment`,
+    111 111 │       rootSchema + "/",
+    112 112 │       rootSchema.replace("root", "%72oot"),
+  
+
+apps/bdptest/src/transactional-schema-installed.test.ts:111:5 lint/style/useTemplate  FIXABLE  ━━━━━━━━━━
+
+  i Template literals are preferred over string concatenation.
+  
+    109 │     rootSchema + "?x=1",
+    110 │     rootSchema + "#fragment",
+  > 111 │     rootSchema + "/",
+        │     ^^^^^^^^^^^^^^^^
+    112 │     rootSchema.replace("root", "%72oot"),
+    113 │     rootSchema.replace("reference.invalid", "user@reference.invalid"),
+  
+  i Unsafe fix: Use a template literal.
+  
+    109 109 │       rootSchema + "?x=1",
+    110 110 │       rootSchema + "#fragment",
+    111     │ - ····rootSchema·+·"/",
+        111 │ + ····`${rootSchema}/`,
+    112 112 │       rootSchema.replace("root", "%72oot"),
+    113 113 │       rootSchema.replace("reference.invalid", "user@reference.invalid"),
+  
+
+apps/bdptest/src/transactional-schema-installed.test.ts:116:5 lint/style/useTemplate  FIXABLE  ━━━━━━━━━━
+
+  i Template literals are preferred over string concatenation.
+  
+    114 │     rootSchema.replace("reference.invalid", "other.invalid"),
+    115 │     rootSchema.replace("reference.invalid", "REFERENCE.invalid"),
+  > 116 │     rootSchema + "?",
+        │     ^^^^^^^^^^^^^^^^
+    117 │   ])
+    118 │     expect(() => confinedObserved(value, rootSchema)).toThrow("unbound schema traversal identity");
+  
+  i Unsafe fix: Use a template literal.
+  
+    114 114 │       rootSchema.replace("reference.invalid", "other.invalid"),
+    115 115 │       rootSchema.replace("reference.invalid", "REFERENCE.invalid"),
+    116     │ - ····rootSchema·+·"?",
+        116 │ + ····`${rootSchema}?`,
+    117 117 │     ])
+    118 118 │       expect(() => confinedObserved(value, rootSchema)).toThrow("unbound schema traversal identity");
+  
+
+apps/bdptest/src/transactional-discovery-installed.test.ts:1047:25 lint/style/noNonNullAssertion  FIXABLE  ━━━━━━━━━━
+
+  ! Forbidden non-null assertion.
+  
+    1045 │   expect(beadSummary).toHaveLength(1);
+    1046 │   expect(linkSummary).toHaveLength(1);
+  > 1047 │   const beadId = d3Safe(beadSummary[0]!.id),
+         │                         ^^^^^^^^^^^^^^^
+    1048 │     linkId = d3Safe(linkSummary[0]!.id);
+    1049 │   const B = d3Object(
+  
+  i Unsafe fix: Replace with optional chain operator ?. This operator includes runtime checks, so it is safer than the compile-only non-null assertion operator
+  
+    1045 1045 │     expect(beadSummary).toHaveLength(1);
+    1046 1046 │     expect(linkSummary).toHaveLength(1);
+    1047      │ - ··const·beadId·=·d3Safe(beadSummary[0]!.id),
+         1047 │ + ··const·beadId·=·d3Safe(beadSummary[0]?.id),
+    1048 1048 │       linkId = d3Safe(linkSummary[0]!.id);
+    1049 1049 │     const B = d3Object(
+  
+
+apps/bdptest/src/transactional-discovery-installed.test.ts:1048:21 lint/style/noNonNullAssertion  FIXABLE  ━━━━━━━━━━
+
+  ! Forbidden non-null assertion.
+  
+    1046 │   expect(linkSummary).toHaveLength(1);
+    1047 │   const beadId = d3Safe(beadSummary[0]!.id),
+  > 1048 │     linkId = d3Safe(linkSummary[0]!.id);
+         │                     ^^^^^^^^^^^^^^^
+    1049 │   const B = d3Object(
+    1050 │     parseTypeDescriptor(JSON.parse((await f.send("T2", "GET", beadId, 200)).bodyText)),
+  
+  i Unsafe fix: Replace with optional chain operator ?. This operator includes runtime checks, so it is safer than the compile-only non-null assertion operator
+  
+    1046 1046 │     expect(linkSummary).toHaveLength(1);
+    1047 1047 │     const beadId = d3Safe(beadSummary[0]!.id),
+    1048      │ - ····linkId·=·d3Safe(linkSummary[0]!.id);
+         1048 │ + ····linkId·=·d3Safe(linkSummary[0]?.id);
+    1049 1049 │     const B = d3Object(
+    1050 1050 │       parseTypeDescriptor(JSON.parse((await f.send("T2", "GET", beadId, 200)).bodyText)),
+  
+
+apps/bdptest/src/transactional-discovery-installed.test.ts:1091:10 lint/style/noNonNullAssertion ━━━━━━━━━━
+
+  ! Forbidden non-null assertion.
+  
+    1089 │   const results = d3Array(receipt.results);
+    1090 │   expect(results).toHaveLength(1);
+  > 1091 │   return results[0]!;
+         │          ^^^^^^^^^^^
+    1092 │ }
+    1093 │ function d3Resource(
+  
+
+apps/bdptest/src/transactional-discovery-installed.test.ts:1418:48 lint/style/noNonNullAssertion  FIXABLE  ━━━━━━━━━━
+
+  ! Forbidden non-null assertion.
+  
+    1416 │       });
+    1417 │       d3Context(sequenceResponse, nav.epoch, nav.view, "pos-3");
+  > 1418 │       const d = d3Checked("currentBeadRecord", turns[2]!.resource);
+         │                                                ^^^^^^^^^
+    1419 │       await d3After(f, "sequence-after-d", d, "bead");
+    1420 │       await d3Missing(f, "sequence-after-missing", d3String(ids[4]));
+  
+  i Unsafe fix: Replace with optional chain operator ?. This operator includes runtime checks, so it is safer than the compile-only non-null assertion operator
+  
+    1416 1416 │         });
+    1417 1417 │         d3Context(sequenceResponse, nav.epoch, nav.view, "pos-3");
+    1418      │ - ······const·d·=·d3Checked("currentBeadRecord",·turns[2]!.resource);
+         1418 │ + ······const·d·=·d3Checked("currentBeadRecord",·turns[2]?.resource);
+    1419 1419 │         await d3After(f, "sequence-after-d", d, "bead");
+    1420 1420 │         await d3Missing(f, "sequence-after-missing", d3String(ids[4]));
+  
+
+apps/bdptest/src/transactional-discovery-installed.test.ts:1447:71 lint/style/noNonNullAssertion  FIXABLE  ━━━━━━━━━━
+
+  ! Forbidden non-null assertion.
+  
+    1445 │         "deleteWhere",
+    1446 │         "transactional-carriers-set-delete",
+  > 1447 │         { collection: "beads", selector: `$[?@.id == ${JSON.stringify(updatedBeads[1]!.id)}]` },
+         │                                                                       ^^^^^^^^^^^^^^^^
+    1448 │         "pos-5",
+    1449 │       );
+  
+  i Unsafe fix: Replace with optional chain operator ?. This operator includes runtime checks, so it is safer than the compile-only non-null assertion operator
+  
+    1445 1445 │           "deleteWhere",
+    1446 1446 │           "transactional-carriers-set-delete",
+    1447      │ - ········{·collection:·"beads",·selector:·`$[?@.id·==·${JSON.stringify(updatedBeads[1]!.id)}]`·},
+         1447 │ + ········{·collection:·"beads",·selector:·`$[?@.id·==·${JSON.stringify(updatedBeads[1]?.id)}]`·},
+    1448 1448 │           "pos-5",
+    1449 1449 │         );
+  
+
+apps/bdptest/src/transactional-discovery-installed.test.ts:1453:17 lint/style/noNonNullAssertion ━━━━━━━━━━
+
+  ! Forbidden non-null assertion.
+  
+    1451 │       expect(deletedResults).toHaveLength(2);
+    1452 │       expect(deletedResults[0]).toEqual({ operationIndex: 0, outcome: "matched", count: 1 });
+  > 1453 │       d3Deleted(deletedResults[1]!, updatedBeads[1]!, "bead");
+         │                 ^^^^^^^^^^^^^^^^^^
+    1454 │       await d3Missing(f, "set-delete-after", d3Safe(updatedBeads[1]!.id));
+    1455 │       const replay = await f.send("replay-batch", "POST", nav.targets.batch, 200, {
+  
+
+apps/bdptest/src/transactional-discovery-installed.test.ts:1453:37 lint/style/noNonNullAssertion ━━━━━━━━━━
+
+  ! Forbidden non-null assertion.
+  
+    1451 │       expect(deletedResults).toHaveLength(2);
+    1452 │       expect(deletedResults[0]).toEqual({ operationIndex: 0, outcome: "matched", count: 1 });
+  > 1453 │       d3Deleted(deletedResults[1]!, updatedBeads[1]!, "bead");
+         │                                     ^^^^^^^^^^^^^^^^
+    1454 │       await d3Missing(f, "set-delete-after", d3Safe(updatedBeads[1]!.id));
+    1455 │       const replay = await f.send("replay-batch", "POST", nav.targets.batch, 200, {
+  
+
+apps/bdptest/src/transactional-discovery-installed.test.ts:1454:53 lint/style/noNonNullAssertion  FIXABLE  ━━━━━━━━━━
+
+  ! Forbidden non-null assertion.
+  
+    1452 │       expect(deletedResults[0]).toEqual({ operationIndex: 0, outcome: "matched", count: 1 });
+    1453 │       d3Deleted(deletedResults[1]!, updatedBeads[1]!, "bead");
+  > 1454 │       await d3Missing(f, "set-delete-after", d3Safe(updatedBeads[1]!.id));
+         │                                                     ^^^^^^^^^^^^^^^^
+    1455 │       const replay = await f.send("replay-batch", "POST", nav.targets.batch, 200, {
+    1456 │         body: seed,
+  
+  i Unsafe fix: Replace with optional chain operator ?. This operator includes runtime checks, so it is safer than the compile-only non-null assertion operator
+  
+    1452 1452 │         expect(deletedResults[0]).toEqual({ operationIndex: 0, outcome: "matched", count: 1 });
+    1453 1453 │         d3Deleted(deletedResults[1]!, updatedBeads[1]!, "bead");
+    1454      │ - ······await·d3Missing(f,·"set-delete-after",·d3Safe(updatedBeads[1]!.id));
+         1454 │ + ······await·d3Missing(f,·"set-delete-after",·d3Safe(updatedBeads[1]?.id));
+    1455 1455 │         const replay = await f.send("replay-batch", "POST", nav.targets.batch, 200, {
+    1456 1456 │           body: seed,
+  
+
+apps/bdptest/src/transactional-discovery-installed.test.ts:1461:51 lint/style/noNonNullAssertion  FIXABLE  ━━━━━━━━━━
+
+  ! Forbidden non-null assertion.
+  
+    1459 │       expect(d3Json(replay, "mutationReceipt")).toEqual(batchReceipt);
+    1460 │       d3Context(replay, nav.epoch, nav.view, "pos-5");
+  > 1461 │       await d3Missing(f, "replay-after-b", d3Safe(initial[1]!.id));
+         │                                                   ^^^^^^^^^^^
+    1462 │       await d3Collection(
+    1463 │         f,
+  
+  i Unsafe fix: Replace with optional chain operator ?. This operator includes runtime checks, so it is safer than the compile-only non-null assertion operator
+  
+    1459 1459 │         expect(d3Json(replay, "mutationReceipt")).toEqual(batchReceipt);
+    1460 1460 │         d3Context(replay, nav.epoch, nav.view, "pos-5");
+    1461      │ - ······await·d3Missing(f,·"replay-after-b",·d3Safe(initial[1]!.id));
+         1461 │ + ······await·d3Missing(f,·"replay-after-b",·d3Safe(initial[1]?.id));
+    1462 1462 │         await d3Collection(
+    1463 1463 │           f,
+  
+
+apps/bdptest/src/transactional-discovery-installed.test.ts:1466:10 lint/style/noNonNullAssertion ━━━━━━━━━━
+
+  ! Forbidden non-null assertion.
+  
+    1464 │         nav,
+    1465 │         "final-state",
+  > 1466 │         [updatedBeads[0]!, updatedBeads[2]!, updatedBeads[3]!],
+         │          ^^^^^^^^^^^^^^^^
+    1467 │         [9, 9, 9],
+    1468 │       );
+  
+
+apps/bdptest/src/transactional-discovery-installed.test.ts:1466:28 lint/style/noNonNullAssertion ━━━━━━━━━━
+
+  ! Forbidden non-null assertion.
+  
+    1464 │         nav,
+    1465 │         "final-state",
+  > 1466 │         [updatedBeads[0]!, updatedBeads[2]!, updatedBeads[3]!],
+         │                            ^^^^^^^^^^^^^^^^
+    1467 │         [9, 9, 9],
+    1468 │       );
+  
+
+apps/bdptest/src/transactional-discovery-installed.test.ts:1466:46 lint/style/noNonNullAssertion ━━━━━━━━━━
+
+  ! Forbidden non-null assertion.
+  
+    1464 │         nav,
+    1465 │         "final-state",
+  > 1466 │         [updatedBeads[0]!, updatedBeads[2]!, updatedBeads[3]!],
+         │                                              ^^^^^^^^^^^^^^^^
+    1467 │         [9, 9, 9],
+    1468 │       );
+  
+
+apps/bdptest/src/transactional-schema-installed.test.ts:254:54 lint/style/noNonNullAssertion  FIXABLE  ━━━━━━━━━━
+
+  ! Forbidden non-null assertion.
+  
+    252 │     binding = installedTransactionBinding(child.ready, declaredSourceCommit, fixture);
+    253 │     expect(child.ready.claimEligible).toBe(false);
+  > 254 │     const inventory = await exchange("types", "GET", routes[0]!.url);
+        │                                                      ^^^^^^^^^^
+    255 │     expect(inventory.status).toBe(200);
+    256 │     expect(checked(inventory.bodyText, "typesInventory")).toEqual({
+  
+  i Unsafe fix: Replace with optional chain operator ?. This operator includes runtime checks, so it is safer than the compile-only non-null assertion operator
+  
+    252 252 │       binding = installedTransactionBinding(child.ready, declaredSourceCommit, fixture);
+    253 253 │       expect(child.ready.claimEligible).toBe(false);
+    254     │ - ····const·inventory·=·await·exchange("types",·"GET",·routes[0]!.url);
+        254 │ + ····const·inventory·=·await·exchange("types",·"GET",·routes[0]?.url);
+    255 255 │       expect(inventory.status).toBe(200);
+    256 256 │       expect(checked(inventory.bodyText, "typesInventory")).toEqual({
+  
+
+packages/server/src/transaction-http.ts:476:50 lint/style/noNonNullAssertion ━━━━━━━━━━━━━━━━━━━━━━━
+
+  ! Forbidden non-null assertion.
+  
+    474 │       const fields =
+    475 │         lastEventIds ??
+  > 476 │         (request.headers.has("last-event-id") ? [request.headers.get("last-event-id")!] : []);
+        │                                                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    477 │       if (media === "sse" && fields.length > 1)
+    478 │         throw new TransactionChangefeedParameterError("repeated Last-Event-ID");
+  
+
+packages/server/src/transaction-http.ts:479:75 lint/style/noNonNullAssertion ━━━━━━━━━━━━━━━━━━━━━━━
+
+  ! Forbidden non-null assertion.
+  
+    477 │       if (media === "sse" && fields.length > 1)
+    478 │         throw new TransactionChangefeedParameterError("repeated Last-Event-ID");
+  > 479 │       const effective = media === "sse" && fields.length === 1 ? { after: fields[0]! } : changefeed;
+        │                                                                           ^^^^^^^^^^
+    480 │       // Canonical current changefeed admission preserves one lexical minimum
+    481 │       // across finite/reconnect attempts, before ordinary media negotiation.
+  
+
+packages/server/src/transaction-http.ts:515:50 lint/style/noNonNullAssertion ━━━━━━━━━━━━━━━━━━━━━━━
+
+  ! Forbidden non-null assertion.
+  
+    513 │       const fields =
+    514 │         lastEventIds ??
+  > 515 │         (request.headers.has("last-event-id") ? [request.headers.get("last-event-id")!] : []);
+        │                                                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    516 │       const minimum = hasMinimumControls(request)
+    517 │         ? (currentReadMinimumHeaders(request.headers) ?? "unsupported")
+  
+
+The number of diagnostics exceeds the limit allowed. Use --max-diagnostics to increase it.
+Diagnostics not shown: 71.
+Checked 6 files in 108ms. No fixes applied.
+Found 70 warnings.
+Found 21 infos.

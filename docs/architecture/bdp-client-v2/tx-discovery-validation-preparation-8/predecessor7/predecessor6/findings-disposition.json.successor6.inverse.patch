@@ -1,0 +1,22 @@
+--- current6/findings-disposition.json
++++ predecessor5/findings-disposition.json
+@@ -1,10 +1,11 @@
+ {
+-  "acceptedDiagnosisClosureSha256": "3335e0f257e6cfa59cb704c4c1f941442dc44d22146415ef4cc6290f19b59fb3",
+-  "correction": "Exactly11 arrays missing source-generated request occurrences, no helper equality relaxation or product changes",
+-  "fresh6NativeMechanics": "PENDING",
+-  "fresh6RootExecution": "PENDING",
+-  "originalAuditOutcome": "FAILED preserved; never promoted by new expectation data",
+-  "previousActualCodeNeverReadFutureSource": true,
+-  "rootAuthorOnlyReleaseSha256": "e05328992877e9722a30aff69a5a5490deafa7eb884017a9de86c2d387e9f7f6",
+-  "stableEpochViewDefect": false
++  "scope": "No semantic helper change. Same accepted finite audit N1/N2/N3; same SHA-string implementation interface and active current-source label precision. Only source/correction/Git/control namespace rebind after failed4.",
++  "priorPreparation4NativeClosureSha256": "ae65d46fed229b302d943fe92e47b241b2e54128f5fb2c6f4762322542524519",
++  "currentSourceFreezeSha256": "7b3c9dbb4965c688f9c2dc0cdca78d5e6b440dd45e75795bb03dc16ca5323193",
++  "rootCurrentGitInspectionSha256": "f35d51be84bfa462cd84785154e64cd902322a647ee5dc312d628816fe661220",
++  "sourceCorrectionAuthorProposed": "Exact2 noUnsafeFinally local throw/catch\u2192same Error failures.push, same cleanup ordering and ownership unknown retention; no rule suppression",
++  "independentSourceCorrection": "PENDING",
++  "independentMechanics": "PENDING",
++  "originalActualCodeReadLaterBytes": false,
++  "executionReleased": false
+ }

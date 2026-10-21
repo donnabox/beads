@@ -1,0 +1,11 @@
+{
+  "accepted": false,
+  "phase": "root read-only actual observation inspection",
+  "error": "JSONDecodeError on whole merged stdout/stderr log",
+  "actualLogSha256": "ff3e1d43fb862c3dfdcf88fe314504b71b2be9df08dfe2db088f8dd6b2fd89c4",
+  "cause": "Root incorrectly assumed whole merged log is one JSON document; inspect original prefix and parse exact single structured event while preserving all other raw lines",
+  "candidateChanged": false,
+  "productStageRetried": false,
+  "sourceChanged": false,
+  "gateUnchangedPrefix20": true
+}

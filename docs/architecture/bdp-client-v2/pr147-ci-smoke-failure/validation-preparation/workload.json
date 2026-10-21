@@ -1,0 +1,76 @@
+{
+  "prospectiveOnly": true,
+  "commands": 5,
+  "workspaceTarballs": 11,
+  "packageManagerCallsWithinSmoke": {
+    "recursivePack": 1,
+    "npmInstall": 1,
+    "installScripts": false,
+    "packLifecycleScriptsInCurrent11Manifests": 0,
+    "dependencyGraph": "npm resolves actual transitive dependencies; no pre-existing external-consumer lock; inherited registry/cache behavior, not an offline eight-package protocol/server-only consumer"
+  },
+  "cliChildLifetimes": {
+    "helpVersionUsageConfigError": 12,
+    "normalLifecycle": 3,
+    "environmentMapping": 2,
+    "configLifecycle": 2,
+    "configAdmissionRefusal": 2,
+    "profileRefusalsAndReadAdmission": 8,
+    "roleIsolation": 1,
+    "total": 30
+  },
+  "installedReference": {
+    "childLifetimes": 3,
+    "ownerStores": 1,
+    "finiteHTTP": 67,
+    "completeCONNECTRefusal": 1,
+    "intentionalResetCONNECTAttempts": 4,
+    "totalHTTPAttempts": 72,
+    "requestsBySegment": {
+      "rootDiscoveryOperationsInventory": 4,
+      "thirteenTypeGETandHEAD": 26,
+      "createUpdateConditionalReadsLinkAliasDeleteSequenceAndTailChecks": 22,
+      "OPTIONS": 3,
+      "completeCONNECT": 1,
+      "resetCONNECT": 4,
+      "postResetDiscovery": 1,
+      "malformedAndReceivingChecks": 8,
+      "restartReplayAndRead": 2,
+      "parentDisconnectReopenRead": 1
+    }
+  },
+  "applicationChildLifetimes": 33,
+  "readAdmission": {
+    "currentSourceClaims": [
+      "bdptest",
+      "bdpbd"
+    ],
+    "normalDiscoveryRequests": 2,
+    "maximumDiscoveryAttempts": 40,
+    "existingStartupAttemptsPerExecutable": 20,
+    "delayMilliseconds": 50
+  },
+  "totalNormalApplicationHTTPAttempts": 74,
+  "totalDiagnosticMaximumApplicationHTTPAttempts": 112,
+  "applicationHTTPCompletedNormal": 70,
+  "intentionalResetAttempts": 4,
+  "physicalServerListeners": 5,
+  "ephemeralPortProbeListeners": 5,
+  "temporarySmokeRoots": 1,
+  "optionalMintedEmptyBdWorkspaces": 1,
+  "limits": {
+    "outerPerStageSeconds": 120,
+    "termSeconds": 115,
+    "packInstallEachSeconds": 30,
+    "cliEachSeconds": 5,
+    "installedReferenceLaunchCloseEachSeconds": 10,
+    "installedReferenceRequestSeconds": 5,
+    "supervisorAutomaticRetries": 0
+  },
+  "unknowns": [
+    "package-manager internal worker/helper process count",
+    "registry network fetch count and transitive install graph",
+    "source-derived counts are prospective, not observed; reset attempts may be disconnected before receiver consumes bytes",
+    "existing fetchWithRetry and package-manager retry behavior remain unchanged; no outer retry added"
+  ]
+}

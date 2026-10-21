@@ -1,0 +1,30 @@
+{
+  "adopted": false,
+  "options": [
+    {
+      "benefit": "Smallest change; retains unconditional finally cleanup and local failure order; removes the particular explicit throw from finally without suppressing a rule",
+      "footprint": "One existing three-line close-check/delete segment becomes six lines; enclosing try/catch/finally and terminal AggregateError unchanged",
+      "id": "A",
+      "mechanism": "Append the same newly constructed Error exactly once when closedfalse; do not delete. Else perform same rmSync and mark removedtrue. Existing catch still appends close rejection/timeout/getter/rmSync errors. Final AggregateError remains outsidefinally.",
+      "proposal": "proposals/option-A.direct-error-append.patch.txt",
+      "risk": "Future unfiltered pinned lint/format/typecheck/tests remain required; error stack line shifts as with source change; no change to preexisting timeout-not-cancellation limitation"
+    },
+    {
+      "benefit": "Also moves the explicit throw outsidefinally",
+      "footprint": "Relocate the entire close/remove/log block after the run catch, before the final AggregateError; keep inner throw/catch there",
+      "id": "B",
+      "mechanism": "For the current function, the bounded run rejection is caught and there is no early return, so the sequential cleanup block would be reached on ordinary run settlement/rejection/timeout. Cleanup error throw would occur outside finally.",
+      "risk": "Larger structural/indentation delta; loses explicit finally cleanup for any later return or uncaught path inserted in the run/catch. Offers no current failure-order/deletion benefit. Not recommended; no alternate source patch adopted."
+    }
+  ],
+  "recommendation": "A_DIRECT_APPEND_WITH_EXCLUSIVE_ELSE_DELETION",
+  "rejectedChanges": [
+    "Delete closed guard",
+    "Always delete in a new finally",
+    "Swallow close/primary/cleanup errors",
+    "Catch-and-ignore pending close",
+    "Increase 3000/1000/5000 or retries",
+    "Rule suppression/config/selection/display-cap change",
+    "Production behavior or extra service/wire calls"
+  ]
+}

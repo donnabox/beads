@@ -1,0 +1,11 @@
+{
+  "originalPhrase": "no D03/D04/D06, host/model/product invocation",
+  "precisionIssue": "Selected P07unit actually reaches Model.execute under mocked external stimuli, so unqualified no model wording was ambiguous",
+  "rootErratum": {
+    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-D4-harness5-ordinary25-scope-erratum-1/erratum.json",
+    "sha256": "363c27db6db727cd58e608bd9e15b1d2d5e49dfe4c2a08c0290bff64bc27cad4"
+  },
+  "closed": true,
+  "reason": "Root explicitly permits original selected P07unit model path and prohibits separately named model/host variants/product execution. Exact25/candidate/source/oracles/caps/deadlines unchanged; original proposal bytes preserved.",
+  "notRuntimeRelease": true
+}

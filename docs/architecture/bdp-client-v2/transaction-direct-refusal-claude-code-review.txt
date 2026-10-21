@@ -1,0 +1,70 @@
+I inspected the frozen source, the plan/dispositions/native-closure gates, and every artifact under the evidence directory. No files were written and nothing was executed. Findings below.
+
+---
+
+## Verification baseline (inspected, not author-claimed)
+
+- `HEAD 6ce9cb4e…`, `tree 4984b474…`, single parent `8c78cba5…`, worktree clean; diff is exactly 7 files, 880+/15−.
+- All 7 file SHA-256s and byte counts match `transaction-direct-refusal-context/source.json` exactly (re-hashed independently).
+- Gates: install 0, typecheck-1 **1** → typecheck-2 0, build 0, focused 0, format 0, lint 0, boundaries 0, evidence:verify 0. `focused-1.json`: **362/362 passed, 0 failed, 17 suites** across the 7 named files — author's count confirmed.
+- Four source controls each failed **exactly** their preflight-published label (`preflight.md:69-74` vs `control-*-test.log`): `direct refusal context presence: bdp-scope-epoch`, `direct refusal current context: bdp-scope-position`, `refusal position read must remain inside owner transaction`, and the two named exact-shape submission tests. All four patches mutate production source only.
+- Installed positive: 14/14 requests, child pid 5945 exit 0, directory removed, 33-op body **4616** bytes / aggregate **5518** — matches `root-measured-acceptance.md:3`. Negative: 3 requests, child 6047 exit 0, directory removed. Cumulative 2 children / 17 requests, inside the 28/2 ceiling.
+- Production semantics check out against the plan: capture is inside the `atomic()` callback (`transaction-store.ts:1387-1407`), gated on `observed` at **both** 406 exits (`:1392-1396` retained, `:1399-1405` fresh), `comparison-pending`/`temporarily-unavailable` carry no context, HTTP discriminates by `code` + `limit` and never by status 413 (`transaction-http.ts:367`), `request-too-large`/400/401/403/415/503 stay on the unwrapped fallback, sequence 406 at `transaction-http.ts:326` is untouched, `empty(406)` stays bodyless, and `vary`/`x-bdp-development` application at `:602-603` is unchanged. **I found no production defect.**
+
+## Special evidence issue — assessed
+
+**Sensitivity of the installed negative is established, but the label gate genuinely did not pass.** The stack in `packed-negative/negative-adjudication.json:135` lands at `transactional-direct-refusal-installed.test.ts:226:9` inside `context()`, called from `:318` (the `singleton-conflict` assertion); `attemptedRequests: 3`; both seeds recorded full tuples at pos-1/pos-2 while the 409 recorded `context: {}`; status 409 intact; cleanup clean. That matches the preflight's published positional expectation (`preflight.md:56`: stop at request 3 after the two seeds pass) precisely. This is **not** an arbitrary failure, not a compile error, not a setup error, and not an unrelated assertion. What did not hold is that the failure carries its custom label — so the external postprocessor's label-match check must be reported as **failed**, not passed, with sensitivity resting on positional/stack/recorded-context evidence.
+
+---
+
+## Findings
+
+**1. MEDIUM — label-suppressing matcher in the installed header-presence assertion**
+`apps/bdptest/src/transactional-direct-refusal-installed.test.ts:223-226`
+`expect(response.headers[name]?.length, "direct refusal context presence: …").toBeGreaterThan(0)` evaluates `undefined` when the header is absent. Vitest's `assertTypes` (`@vitest/utils/dist/helpers.js:56`) throws a bare `TypeError: actual value must be number or bigint, received "undefined"` *before* the chai assertion is constructed, so the custom message is never attached. The matcher works for present-but-empty (`"".length === 0` fails with the label) and breaks only for **absent** — exactly the case the negative control exercises. Note this pattern was inherited verbatim from the adjacent convention at `transactional-alias-installed.test.ts:236`, which the plan instructed the author to reuse and leave unchanged; the source-level equivalent at `packages/server/src/transaction-http.test.ts:2522` uses the safe `expect(headers.has(name), label).toBe(true)` form and did emit its published label.
+*Impact:* the installed negative cannot be identified by assertion label, only by file:line + request index; any label-matching postprocessor fails on a correct, intended discrimination.
+*Repair (REQUIRED, test-only, needs root disposition + one re-run of the installed negative — not authorized now):* replace line 223-226 with a label-preserving form, e.g. `expect(typeof response.headers[name], \`direct refusal context presence: ${name}\`).toBe("string");`. Leave line 227 as-is — it already covers the empty-string case because every expected value is non-empty. Do not touch `transactional-alias-installed.test.ts`.
+
+**2. MEDIUM — the exclusion boundary is asserted nowhere**
+`packages/server/src/transaction-http.test.ts:218-245`, `:834-837`, `:2006-2013`, and the new test at `:2505-2581`
+The plan requires the shared fallback "remain unwrapped" for malformed-request (400), unauthenticated (401), forbidden (403), request-too-large (413), unsupported-media-type (415) and comparison temporarily-unavailable (503). Every one of those direct-POST paths is exercised, but only for status and Problem `code` — none asserts that the three context headers are **absent**. The new test asserts presence on the three selected paths and absence nowhere, and none of the four controls is an over-wrapping counterfactual.
+*Impact:* a later change that wrapped the shared fallback, or that passed an observation into `transactionHttpProblem` on the POST route, would emit context on auth/malformed/generic-413/503 and still pass all 362 tests. The exclusion half of the accepted scope is unprotected.
+*Repair (RECOMMENDED, test-only; optional under the plan's named four-control set):* inside the new HTTP test, add a loop over the excluded direct-POST refusals (`{authorization: ""}` → 401, read-token → 403, `"{"` → 400, oversized body → 413/request-too-large, non-JSON content-type → 415) asserting `expect(response.headers.has(h)).toBe(false)` for all three fields; optionally add a fifth control `over-wrapped-exclusion` that wraps the fallback and must fail those names. Append to the new test rather than editing the existing assertion bodies at `:218-245`.
+
+**3. LOW-MEDIUM — `unobserved-context-leak` demonstrated only one of its two published 406 discriminators**
+`packages/server/src/transaction-submission.test.ts:193`; claim at `preflight.md:74`
+The control's two selected tests both failed, but the fresh-406 exact-shape assertion at `:193` was never evaluated: the same test fails first at the 413 assertion (`:177-187`), and Vitest aborts the test there. The retained/pending 406 tripwire at `:162` did fail as published. The preflight states both tests "are the retained and fresh 406 discriminators" — only the retained one is demonstrated by the executed evidence.
+*Impact:* a published sensitivity claim is half-undemonstrated. Mitigated, not closed: the new store test's unobserved loop (`transaction-store.test.ts:3175-3178`, case 4 `fresh-no-json`) would also fail under this mutation in the ordinary focused run, but that test was not in the control's `-t` selector.
+*Repair (REQUIRED as a report correction; no re-run):* state in the final report that the control demonstrated the retained-406 and the 413 exact-shape tripwires, that the fresh-406 assertion at `:193` was shadowed by the preceding 413 failure, and that the fresh-406 unobserved shape is additionally guarded by `transaction-store.test.ts:3175-3178`. If a re-run is later authorized, widen the selector to include the owner test (or assert the 406 before the 413).
+
+**4. LOW — unobserved exact-shape assertion is `toEqual`, not `toStrictEqual`**
+`packages/server/src/transaction-store.test.ts:3175-3178`
+`toEqual({kind: entry.kind})` treats an explicit `context: undefined` member as absent, so it does not literally pin "exact unobserved legacy result shape."
+*Impact:* a drift that emitted `context: undefined` on unobserved admissions would pass this assertion. Low: the `positionReads` counters at `:3179`/`:3182` still catch any actual position read, and the production code uses conditional spread so the key is genuinely absent.
+*Repair (OPTIONAL):* change to `toStrictEqual({kind: entry.kind})`.
+
+**5. LOW — `entrySha256` is identical across the positive and negative installed runs and is not a payload discriminator**
+`packed-positive/summary.json` and `packed-negative/negative-adjudication.json` both record `entrySha256: bcf153170f953f9e28c6c89f1153be907f64df289e64f3ad929cad4a4a54c47c`, because `transaction-installed-process.js` is untouched by the diff. Payload differentiation rests on `packs/server.tgz` (`03f1d0bd…` positive vs `e0dd60d3…` negative), the separate install trees and source worktrees, the child-reported `installedPayloadDigest` (`ced4ef93…` vs `a4f4d446…` — self-attested, which the plan says is not sufficient on its own), and the observed behavioural difference.
+*Impact:* if the final report cites `entrySha256` as evidence of distinct old/new payloads it would be wrong; `protocol.tgz` is likewise identical by design.
+*Repair (REQUIRED as a report precision item):* cite `server.tgz` SHA + source worktree + behaviour as the launcher-side discriminators and state the `entrySha256`/`protocol.tgz` identity explicitly as expected.
+
+**6. LOW — `successor-typing-correction.diff` is a cumulative snapshot, not the correction delta**
+`transaction-direct-refusal-context/successor-typing-correction.diff`
+The file is byte-identical to the committed six-file source diff (20814 bytes, verified line-for-line), i.e. the whole change minus the installed test — not a typing-correction delta. The actual correction is recoverable but only by diffing `source.diff:234` (`if (args[0] === "position")`, which produced `TS2367` at `transaction-store.test.ts(3147,13)` per `typecheck-1.log`) against `final-source.diff:699-701` (`const firstBinding: unknown = args[0]`). The failed attempt is properly retained.
+*Impact:* the retained-failed-attempt record is ambiguous on its face; a reader could mistake the whole diff for the correction.
+*Repair (OPTIONAL, report-only):* label the artifact as the post-correction cumulative snapshot and quote the one-line correction plus the exact TS2367 message it cleared.
+
+**7. INFORMATIONAL — the main-ancestry root gate is open**
+`8c78cba5…` is **not** an ancestor of the declared main `codex/vickie-current-minimum-receiving` (`c534fca`, same locally and on `origin`); `8c78cba` is the head of `codex/vickie-start-now-resume`. This matches what `transaction-direct-conflict-context-plan-v2.md:87` and `root-measured-acceptance.md:11` already reserve to root (PR116 gate pending). I did not query CI, so I make no statement about exact-head status.
+*Repair:* none in source. The final report must carry this as an open root gate, not as satisfied.
+
+---
+
+## Required vs optional
+
+- **Required before the installed negative is relied on as a labeled discriminator:** #1 (code repair, plus a re-run that is not authorized now).
+- **Required in the final author report, no code change:** #3 (correct the two-406 claim), #5 (do not cite `entrySha256`), #7 (ancestry gate open), and an explicit statement that the postprocessor label-match check **failed** while sensitivity is established positionally.
+- **Recommended:** #2.
+- **Optional:** #4, #6.
+
+No regression in accepted scope, no new semantics, no runtime-limit, discovery or profile claim, and no schema/spec/catalog/manifest change was introduced. The frozen commit `6ce9cb4` remained untouched throughout this review.

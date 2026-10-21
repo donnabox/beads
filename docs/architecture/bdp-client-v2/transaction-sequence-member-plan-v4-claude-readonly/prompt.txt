@@ -1,0 +1,38 @@
+Review the complete proposed ten-action sequence member-transaction evidence plan against the actual repository. This is a PLAN review, not implementation authorization. Do not write or modify any files. Output findings only in stdout. Use only Read, Grep and Glob; do not run commands, tests, builds, installs, services, scripts, network requests or other agents. Read source as text, never execute it. Stay within the source checkout and the specific evidence files below; do not inspect credentials, unrelated logs or user files.
+
+Start by reading these complete frozen artifacts (absolute paths):
+/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-sequence-member-plan-v4.md
+/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-sequence-member-plan-v4-report.json
+/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-sequence-member-plan-v4-report.md
+The JSON companion contains literal bodies, hashes, exact selections, negative failure IDs and allowances. Read it fully, rather than inferring these from this prompt.
+Also read the identity-only merged-parent addendum and actual parent preservation binding:
+/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-sequence-member-merged-reanchor.md
+/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-sequence-member-accepted-parent.json
+The future isolated checkout named there has no authored changes or execution; keep this review against the frozen candidate tree in cwd.
+
+Binding and chronology: cwd is /Users/dbox/repos/wt/vickie/vickie-command-minimum-evidence, clean candidate 01a247b2283f70890c8c35ec65a43aa3c3ab0542, tree b2d9f2c18502e0778c51123be8b4564af052d803. Since v4 froze, PR126 merged as 88c9408e908590ab1a4c64c9b9dee1a8b705999c with the SAME tree and ordered parents 453b6dab386746bb03aac2c0a293572b8a71c969 and 01a247b2283f70890c8c35ec65a43aa3c3ab0542. The checkout is deliberately unchanged. The plan's pending-parent/CI wording is historical, awaiting mechanical reanchor, not itself a defect. Actual green predecessor CI38705226698/job116322877081: 9290 passed, one skipped, 173 files; suite771.73s/job987s with all downstream steps. The observed213s job margin is not guaranteed future headroom. Optional verification evidence:
+/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-command-minimum-evidence-draft/landing-successor/postmerge-verification.json
+/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-command-minimum-evidence-draft/landing-successor/ci-outcome.md
+A previous supplied-context review timed out after900s without output; it was inconclusive, not a failed-auth diagnosis or a review verdict. This new review should inspect needed source on demand instead of loading huge fixtures wholesale.
+
+Read the following relevant source sections/functions; use Grep to locate names and Read with offsets to keep context focused. You may read additional relevant repository files to resolve a concrete issue.
+- docs/specs/bdp.md: ordered sequence law around2720-2765 and TX member transactions around4057-4080; applicable receipt/Events law.
+- packages/server/src/transaction-sequence.ts: project and stepper; transaction-batch.ts: prepareTransactionSequence; transaction-store.ts: execute/finalize receipt around1258-1310 and sequence admission/member execution around1777-1968. Verify outer/member indices, failed-member retention, normalized replay identity and continuation.
+- packages/server/src/resource-evaluator.ts: deleted identity around1073-1093. packages/server/src/transaction-events.ts: renderTransactionEvent and actual route source URL around74-104/267. Private projected Event spelling is a fixture oracle, not normative protocol spelling.
+- packages/conformance/src/transactional-observation.ts: capture/resolve.validate around179-312, actual original body storage and retained GET equality. packages/conformance/src/runner.ts: dynamic receipt action around890-986, captureValue around2468-2495, exact serializer/request assertions. Raw captures are confined URLs ONLY; no raw full-body/revision/transaction capture or post-run recovery from redacted client reports.
+- apps/bdptest/src/transactional-matrix.test.ts: observe/cleanup, full positive callback, crossCarrierWire and finish, two existing cross-carrier controls, commandMinimumWire and finish, all observe invocations and afterExchange predicates. Assess proposed composition without weakening old extra-traffic detection, success-before-baseline checks, pair ledger performed counts, real negative-wire discrimination and report retention before cleanup.
+- packages/conformance/src/transactional-cumulative.test.ts: objectSlices, the existing historical cross-carrier preservation callback around836, pagination callback around1007, current minimum row pins/preservation around2408/2724. Check all eight existing static selections and affected positional pins.
+- packages/conformance/test-support/transactional/manifest-v1.json and coverage-v1.json: inspect relevant row/order/coverage portions as needed; avoid reading the entire large artifacts if searches/sections suffice. All14 prior manifest and14 coverage raw objects must survive; no runtime/catalog/schema/fixture/API widening.
+
+Review priorities:
+1. Can the literal ten actions prove independent member terminal outcomes/receipts/effect positions and the two Events, with honest partial credit? Changes-group enumeration, all-operations/full-profile proof, and the existing unresolved product decisions are explicitly excluded; do not demand them.
+2. Exact singleton batch replay versus sequence projection, failed receipt shape, real client GET binding, deleted identity/revision and full Resource/Event comparisons. Ensure no impossible capture or invented transport field is assumed.
+3. Composition of old cross-carrier and command-minimum sentinels with the new row, both existing cross controls, route order/digest, source/configuration/installed provenance and old raw object preservation.
+4. One real-wire negative: delete actual a instead of missing. Check precise seven failure IDs versus assertions that must remain passing; independent actual-success/deleted-shape validation must not swallow intended runner failures.
+5. Distinguish measured source-drafting bytes/nodes/assertions/derivative allowances from runtime limits and actual outcomes. Verify 4cohorts/623expected632maximum HTTP/71children, unchanged timing bounds, 54-to55 observe calls, old-control amplification and full-job feasibility gates. Flag actual arithmetic/omitted invocation defects with evidence; do not treat modeled maxima as observed runtimes or guaranteed CI margin.
+
+Existing native closure is limited evidence for its explicit N1 deleted-shape and N2 preservation corrections, not a substitute for your review:
+/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-sequence-member-plan-v3-native-closure.md
+Root also accepted the ten-action narrowing and eighth existing pagination callback. Keep these boundaries; suggest the smallest correction within four owned paths if needed.
+
+Return findings first, numbered Critical/High/Medium/Low, with exact plan/source location, issue, impact and concrete correction. Separate source-proven defects from remaining implementation/measurement gates and unavailable proof. Do not flag already explicit pending authoring/measurement gates merely for being pending. If no actionable finding, say so and state concrete inspection limitations. No praise, broad redesign, extra framework, code authoring or unsolicited expansion. Finish within the900s external bound.

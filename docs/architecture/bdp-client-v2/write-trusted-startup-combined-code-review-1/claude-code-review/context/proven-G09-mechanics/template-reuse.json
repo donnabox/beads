@@ -1,0 +1,44 @@
+{
+  "template": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/tx-discovery-code-review-1",
+  "templateRunnerSha256": "e36bba99247cf6b581f90a30c0045239209ec80e13628a28d6c4b74d4b137bbd",
+  "templateNativeMechanicsClosureSha256": "6330b1455c9fc6b944846dc6e770c42ce6f09717a9609cd3426d0cc7caedfbd7",
+  "templateActualTerminalClosureSha256": "28a4f9ce58047194602d3f2385061f18ee9c0e6508543f71e4b4e4880c6e3084",
+  "templateActualInnerExitSha256": "6aeee24146f50cd857c3c916291c9d13c69c95328c96e6d36fbfc75050146ee2",
+  "runnerSubstitutions": [
+    {
+      "before": "/Users/dbox/repos/wt/vickie/vickie-tx-discovery-minimum",
+      "after": "/Users/dbox/repos/wt/vickie/vickie-schema-minimum",
+      "occurrences": 1
+    },
+    {
+      "before": "tx-discovery-code-review-1",
+      "after": "write-profile-G09-code-review-1",
+      "occurrences": 1
+    },
+    {
+      "before": "Exact frozen three-file dirty status required",
+      "after": "Exact frozen ten-file dirty status required",
+      "occurrences": 1
+    }
+  ],
+  "runnerSha256": "df8047684ac8846c494412b91416caf0dc61cc27827e8df3d34fda8380a6871f",
+  "runnerByteExactAfterLiteralInverse": true,
+  "parserSha256": "77466c44356f316a66ccd093bb64b6cd053fb2efde207916858062c878ed4ac6",
+  "parserByteExact": true,
+  "argumentsSha256": "c7a06e44f911e415839ce4638c3ca20330b0ae204fe1f846632d367638090ede",
+  "argumentsByteExact": true,
+  "guardSha256": "b2d467920638e68d3b007ba9daa432e971636245eca988bfb29d7a99d6e3fb30",
+  "guardByteExact": true,
+  "supervisorSha256": "791e5a566561798aa3352f19b021e6db9beeddb033ae5725c7d031d51716f95c",
+  "supervisor5ByteExact": true,
+  "sourceDirtyScope": "Ten cumulative paths strict; six G09 authored paths distinct",
+  "sourceHeadUnchangedLiteral": true,
+  "wholeClock": [
+    1800,
+    1790,
+    1798
+  ],
+  "noRetry": true,
+  "oldD3OriginalWorktreeHead": "NOT_ASSUMED_CURRENT; immutable historical packet only",
+  "codeExecuted": false
+}

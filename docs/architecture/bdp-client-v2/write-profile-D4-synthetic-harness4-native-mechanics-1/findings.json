@@ -1,0 +1,18 @@
+{
+  "reviewComplete": true,
+  "findings": [],
+  "priorFindingClosure": {
+    "id": "H3-N1",
+    "closedStatically": true,
+    "evidence": [
+      "availability_owner.py59–65 creates exclusive0600 raw files+journal before ACK128–130",
+      "retain66–75 accounts received/saved/hashed independently, checkpoints94 precede capacity95",
+      "drain92/96–102 records actual EOF/poll exit and raw close/identity equality",
+      "close journal143–146 before normal peer publication; owner/native terminal strict<115 still required",
+      "failure149–167 retains actual files/snapshots only when possible; all incomplete or killed full streams UNKNOWN"
+    ]
+  },
+  "mechanicsAcceptedForStaticAvailabilityPreparation": true,
+  "executionReleased": false,
+  "clockDomainVerified": false
+}

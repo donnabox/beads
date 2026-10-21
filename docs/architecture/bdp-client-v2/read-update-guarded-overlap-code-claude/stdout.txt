@@ -1,0 +1,82 @@
+# Independent CODE review — frozen RU guarded-overlap preview
+
+Scope: the 327-line preview test, amendment, report, `requests.json`, `selection.json`, `selection`/plan v2 and the bounded source excerpts as supplied. No tools, commands, imports or network were used; nothing was written. `apps/bdptest/src/transactional-matrix.test.ts` is treated as declared separate dirt, not target drift.
+
+**Verdict: not clean.** Two High and five Medium findings, all with one-to-few-line corrections. No Critical: I could not construct a path where the witness *passes* with a broken guard, and no control-acceptance path admits a non-named failure (`namedOracle` is set only at `:271` and cleared at `:273`).
+
+---
+
+## High
+
+**1. `child-close` oracle rejects the signal exit the launcher itself requests.**
+`preview/read-update-guarded-overlap-installed.test.ts:296-300`: `if (exit.code !== 0 || exit.signal !== null) throw new WitnessError("cleanup", "overlap:child-exit")`. The inherited closer is `scripts/installed-reference-observation.mjs:76-79` — `child.kill("SIGTERM")` then `bounded(exited)`. Node installs no JS-level SIGTERM handler by default, so unless `installed-reference-process.ts` registers one and exits 0, every run yields `{code: null, signal: "SIGTERM"}` → `cleanupFailures: ["child-close"]`, `failureCount ≥ 1`, `outcome: "failed"`, and the `AggregateError` at `:326` throws even when all ten oracles pass. Under plan v2's control rule ("cleanup failure … not a successful control") this also disqualifies the emitted-derivative run.
+Impact: total — positive and control both unusable.
+Smallest correction: `if (!(exit.code === 0 && exit.signal === null) && !(exit.code === null && exit.signal === "SIGTERM")) throw …`, keeping `childSignalCode` in the record for external judgement. `installed-reference-process.ts` was not supplied, so this is conditional — resolve it before freeze precisely because the failure mode is total.
+
+**2. Plan-required clearing of inherited `BDP_*` overrides is not implemented.**
+Plan v2 ("Two owned paths, one new callback"): *"All inherited BDP overrides are cleared except explicitly approved test-local entry/output bindings."* The preview reads only `BDP_RU_GUARDED_OVERLAP_ENTRY|MODE|OUTPUT` (`:195`, `:201`, `:320`) and never inspects or scrubs `process.env`. The launcher spawns with no `env` option (`installed-reference-observation.mjs:19-22`), so the full parent environment reaches the product child. `report.md`'s "Prospective BDP override allowlist" describes only the vars the test *reads*, not an allowlist that is enforced.
+Impact: a stray `BDP_*` override silently changes what the child does while the record still asserts `mode: "default-emitted-CI"`; attribution of both positive and control is weakened with no trace in the report.
+Smallest correction (no helper edit): before `:209`, `const stray = Object.keys(process.env).filter(k => k.startsWith("BDP_") && !["BDP_RU_GUARDED_OVERLAP_ENTRY","BDP_RU_GUARDED_OVERLAP_MODE","BDP_RU_GUARDED_OVERLAP_OUTPUT"].includes(k)); if (stray.length) throw new WitnessError("startup", "overlap:inherited-override");` and add `strayOverrides: stray` to the record.
+
+---
+
+## Medium
+
+**3. Pre-launch environment failures are reported as `oracle`.**
+Only `:212-213` sets `classification = "startup"`. `realpathSync` (`:194`, `:197`), `statSync` (`:198`), `readFileSync` (`:206`), the two `execFileSync` git calls (`:207-208`), `mkdtempSync` (`:209`) and `availablePort` (`:210`) throw non-`WitnessError`s, so `:286` falls through to `classification ??= … : "oracle"`. A missing `packages/server/dist` build or absent `git` is recorded as `terminationClass: "oracle"`.
+Impact: the field root uses to separate inconclusive-from-oracle is wrong; only `namedOracle: null` still distinguishes it from the control signature.
+Correction: wrap `:194-210` in `try { … } catch (error) { classification = "startup"; throw error; }`.
+
+**4. The frozen eleven-file basis omits the sources the oracles actually depend on.**
+`source-binding.json.sourceHashes` pins `development-runtime.ts`, `development-composition.ts`, `member-executor.ts`, `resource-evaluator.ts`, `recovery-store.ts`, `protocol/src/index.ts`, etc., but **not** `read-http-routing.ts` (204 + exact `Link` syntax, `:219`), `read-request.ts` (`classifyAliasPath`, reads 7/10), `read-values.ts` (`parseBeadRecord` legacy metadata projection, `:59`/`:276`), `read-update-values.ts` / `read-update-problems.ts` (every parser used at `:11-12`), or `development-authority.ts` (the 65536 advertised at `:226`). `native-code-review.md` cites three of these files as its evidence while they sit outside the bound set.
+Impact: "byte-identical basis" does not cover the behaviour being asserted; a change in any of those files silently invalidates the frozen preview and the native review's citations.
+Correction: extend `sourceHashes` with those six paths before freeze.
+
+**5. Header/media oracles rest on code not present in the supplied basis.**
+`:47-50` (`cache-control` exactly `private, no-store`; `x-bdp-development: non-attesting`; `content-type` exactly `application/json` / `application/problem+json` with **no** `charset`; `etag`/`location` absent on all mutations incl. the create at `:236`) and `:216` (`x-bdp-development` on the **204**). The supplied excerpt of `development-runtime.ts` shows `readJson` (128-144) and `empty` (111-120) but **not** `json()`, and `read-http-routing.ts:31-37` emits the 204 with a `link` header only — the marker/`cache-control` must come from an unsupplied `HttpResponse → ServerResponse` writer.
+Impact: any one of these is a single-point, request-1-or-4 failure of the witness; in the derivative run it fails *before* `:271`, so the control is lost (non-named `oracle`).
+Correction: supply `development-runtime.ts`'s `json()` and the composition response writer into the review basis and confirm each string, or relax `:49` to a `split(";")[0].trim()` comparison. Not fixable by reasoning from what was given.
+
+**6. `metadata`/`links` strict equality across an update, and across projections, is unverified and gates the control.**
+`:62-64` require a 200 postimage's `metadata`, `ownedLinks` and `links` to `toStrictEqual` the seed's; `:276`/`:282` require a **Read** projection to `toStrictEqual` a **mutation-result** postimage. `resource-evaluator.ts:1003-1007` derives a fresh `context` whenever a recipe's metadata context is `"native"`, and `read-values.ts:138-165` normalizes absent `metadata`/`links` only; the `BeadRecord` shape and `revisionProvenance`'s location were not supplied. If provenance or any native context lives under `metadata`, `:62` fails on *both* updates — i.e. the derivative never reaches `:272`. If the Read projection adds a `links` page the mutation result omits, requests 7/10 fail after a correct oracle passed.
+Impact: plan-sanctioned but unproven; failure mode is a correct owner reported as a failed witness, and an unusable control.
+Correction: either bind `read-values.ts`/the Bead schema into the basis and confirm, or narrow `:62` to the seeded metadata keys and compare only the fields both projections are specified to carry.
+
+**7. Cleanup destroys sockets instead of aborting, so in-flight promises settle only on their own 5 s exchange deadline — tied with the 5 s drain deadline.**
+`:288` `for (const req of active) req.destroy();`. `destroy()` with no error emits `close` (→ `:186` resolves `closed`) but **not** `error`, so `finish` is never called; the promise in `pending` settles only when the `:144` 5 s timer fires. `drain` (`:292-295`) waits on `Promise.allSettled(pending)` behind its own 5 s timer started later → spurious `cleanupFailures: ["request-drain"]`. The dead `"cleanup"` branch at `:143` shows this path was intended to run via the controller.
+Impact: narrow (reachable when a request is in flight at throw time — e.g. `send` for B throwing synchronously at `:248`), but it manufactures a cleanup failure that plan v2 treats as control-disqualifying.
+Correction: after `clearTimeout(timer)` at `:289`, add `controller.abort(new WitnessError("cleanup", "overlap:aborted"));` before/instead of `:288`; `abort → fail → finish` then settles each promise immediately and populates the existing `"cleanup"` classification.
+
+---
+
+## Low
+
+**8. `send` shape invariant has one hole.** `:119` `(method === "POST") !== (body !== undefined && key !== undefined)` accepts `(GET, body, no key)` — both sides false. `:122` then emits `"idempotency-key": undefined`, which `http.request` rejects (`ERR_HTTP_INVALID_HEADER_VALUE`) and `:188` reclassifies as `overlap:request-construction`. No current call site hits it. Fix: `if ((method === "POST") !== (body !== undefined) || (body !== undefined) !== (key !== undefined)) throw …`.
+
+**9. The overflow safeguard is unreachable and would under-report if it fired.** 13 kinds × 2 pairs = 26 deduplicated slots vs the cap of 32 at `:109`, so `eventOverflow`/`droppedEvents` and `:307` are dead, and `!eventOverflow` at `:260` is a no-op. Additionally `seen.add(key)` at `:108` precedes the cap check, so a dropped milestone would still be hidden from `missingMilestones` (`:313`, which reads `seen`). `report.md` presents the 32-cap as an active safeguard. Fix: build `missingMilestones` from `milestones`, or move `seen.add` after the cap check, and state in the report that the cap is headroom, not an exercised path.
+
+**10. Tautological checks.** `:199` `expect(entry).toBe(defaultEntry)` compares `realpathSync(defaultEntry)` with itself; `:116` `grant(url) !== url` can never be true (`grant` returns its argument or throws). Harmless, but neither constrains anything — drop or replace `:199` with a check that `entry` is inside `root`.
+
+**11. `overlapObserved` cannot be false in practice.** `:260-261` compares ordinals that were marked synchronously inside `send` against `firstSettle`, and distinct socket IDs are guaranteed by `++socketSerial` (`:180`). This is adequate evidence of *client-outstanding* calls (and the record/amendment scope it correctly), but `:266` adds no discrimination; keep the amendment's "two outstanding client calls" wording and do not let it harden into a scheduling claim.
+
+**12. Record lacks an explicit two-200 discriminator for the control.** `pairSchemasValid: true` (`:268`) holds in the positive as well; the two-success claim is only derivable from `completedResponses` entries 5 and 6. Fix: add `pairStatuses: [a.status, b.status]` beside `pairSchemasValid`.
+
+**13. Report privacy is clean for `record`, not for the throw path.** The record whitelists `ready` keys (`:310`), logs only selected response headers (`:170-171`) and never the token or raw errors. Two scope notes: (a) a pre-ready launcher failure re-thrown from `installed-reference-observation.mjs:57` carries `installed child exited: ${stderr}`, i.e. child stderr, which received the configuration (including the bearer token) over IPC — that lands in the `AggregateError` at `:326` and so in CI output; (b) reads 7/10 persist the resource `etag` (a revision token) into the optional output file. Neither is a credential of consequence (the token is per-run random against a deleted temp store), but `report.md`'s blanket "excludes credentials" should be scoped to `record`, and the external supervisor should treat startup stderr as sensitive. No helper edit is implied — the existing masking/PID limitation stays visible at `:318`.
+
+**14. Evidence channel is optional.** The record is emitted via `console.log` (`:324`); Vitest's JSON reporter does not carry console output, and `BDP_RU_GUARDED_OVERLAP_OUTPUT` is optional with `flag: "wx"`. Fix: require `OUTPUT` for any run intended as evidence.
+
+**15. `sourceCommit` and `entrySha256` are juxtaposed with no build-freshness binding.** `:206-208` hash `dist/…` and read HEAD independently; a `dist` built from an older commit is still recorded as `default-emitted-CI` at the current HEAD (and `workspaceDirty` will be `true` here because of the declared separate dirt). The plan's "build before importing" covers this procedurally; add one clause to `retention` (`:319`) saying entry bytes are not bound to `sourceCommit`.
+
+**16. Native review line-range drift.** `native-code-review.md` attributes the named assertion to "preview 263–266" (that is `beforeResponse`/`overlap:incomplete-observation`; the oracle is `:269-272`), schema checks to "51–66" (`:52-67`), teardown to "278–325" (`:287-325`), and discovery to "200–228" (which starts inside the mode branch). The conclusions are right; the citations should be corrected before they are relied on as the frozen record.
+
+---
+
+## Verified vs. context-gap
+
+Hand-verified from the supplied text: seed body = **94 B** exactly; each update body = **135 + L** where `L = byteLength(JSON.stringify(revision))`; positive total `634 + 4L` (`:283`) and control prefix `364 + 2L` — all consistent with `requests.json`. Exactly **10** dispatches (probe, descriptor, directory, create, A, B, read, replayA, replayB, read) with a hard `attempted >= 10` gate (`:116`). Control reachability is structurally sound: both postimages are validated at `:267` without indexing a nonexistent loser, `namedOracle` is set at `:271` and the failure at `:272` precedes requests 7–10, so the derivative stops at **6**. Title at `:69` matches `selection.json.regex` character-for-character including the escaped `+`. Single top-level callback; 26 milestone slots; dedupe correct; no false-pass path (the oracle demands exactly one 200 plus a deep-equal four-field 409).
+
+Context gaps (not defects, not verifiable here): `installed-reference-process.ts` signal handling (#1); `development-runtime.ts json()` and the composition response writer (#5); `BeadRecord`/`snapshotProtocolRecord` shape, which also governs whether `toStrictEqual` against object literals at `:61`/`:226` survives a possible null-prototype snapshot (#6); `development-authority.ts` 65536; `classifyAliasPath`. All declared SHA-256 values, the 23139-byte test size and the `diffSha256` are unverifiable without tools.
+
+## Practical limits of this review
+
+Static read-only, single pass, no tool use: no typecheck (I traced narrowing for `req`, `revisionJsonBytes` and `entry` by hand and found no error, and `Object.fromEntries` at `:170` degrades to `any` rather than failing), no lint, no execution, no hashing, no inspection of unsupplied files, and no observation of real Node scheduling. Nothing was run, so every lifecycle, timing and control-reachability conclusion above is source-derived only; `exit`-code behaviour (#1) in particular needs one actual launch or the `installed-reference-process.ts` source to settle. I make no claim about future CI, fresh-consumer provenance, payload/graph binding, or any public or cumulative qualification.

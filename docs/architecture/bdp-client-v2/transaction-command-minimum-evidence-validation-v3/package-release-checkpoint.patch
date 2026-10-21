@@ -1,0 +1,14 @@
+--- checkpoint-ledger.py.before
++++ checkpoint-ledger.py.after
+@@ -720,6 +720,11 @@
+ for source in (L/'transaction-command-minimum-evidence-validation-v3/run').glob('*.helper-observation.json'):
+  if source.is_file():
+   target=D/'transaction-command-minimum-evidence-validation-v3/run'/source.name;target.parent.mkdir(parents=True,exist_ok=True);shutil.copyfile(source,target)
++# Final context council and clean source binding; V3 native-static-outcome is already inventoried.
++for relative in ['root-final-context-council.json','final-source.json']:
++ source=L/'transaction-command-minimum-evidence-draft'/relative
++ if source.is_file():
++  target=D/'transaction-command-minimum-evidence-draft'/relative;target.parent.mkdir(parents=True,exist_ok=True);shutil.copyfile(source,target)
+ s=(D/'design.md').read_text();a=s.index('### Live worker ledger\n');b=s.index('\n## Current priority:',a);(D/'design.md').write_text(s[:a]+'### Live worker ledger\n\n'+ledger+s[b:])
+ subprocess.run(['git','add',str(D)],cwd=P,check=True);subprocess.run(['git','commit','-m','docs: checkpoint TX header repair and focused council\n\nAgent-Signature: Vickie; Codex; unknown-model; unknown-reasoning'],cwd=P,check=True)
+ subprocess.run(['python3',str(L/'guarded-action.py'),'git','push','origin','HEAD'],cwd=P,check=True)

@@ -1,0 +1,4812 @@
+{
+  "claimEligible": false,
+  "sourceCommit": "bb9600f1b8b6f623e753543ed5792005eb9aacee",
+  "setDigest": "a46f11c3e386217a073a8b32fdc68654f772bf22cb77436cef6ad97f6a61b07e",
+  "indexDigest": "7277980894dd0955a8fcd22ba5d2845b0a6801b7e7e13a937018e11d3a65de37",
+  "coverageDigest": "85b717f1817d8ea295d0a7c51f8914bdfb942d1786d414924d3d5f80be7cd10a",
+  "fixtureDigest": "f89932d68e3bf5867d79eb3de680af4bc67b761b3c3bce5da127f6ca75e27765",
+  "catalogDigests": {
+    "read-v1.json": "769ff9f24cfdfe74a47670240b04149b520af23b2c71a431883fd15e988adeb0",
+    "read-update-v1.json": "73d215813df034a2be0cd15d0caff7cf2c8823a067f271b9140c9cbb90e859c3",
+    "transactional-v1.json": "c9125f914129c71f01cefc5c54b32db80637d37b57e321571c96e81936c31eb4",
+    "numeric-model-v1.json": "f4428d53cc1e67beaa146ba9811cd9676e47e84d75a344ba68eb9a24cdc2d0a5",
+    "owned-wildcard-v1.json": "6023bff763b7579992fc9092901f2f8ddfc752f264c2a9de6bc0caf0880c5ecd"
+  },
+  "sourceBytes": {
+    "index": 242,
+    "fixture": 29707,
+    "coverage": 718307,
+    "manifests": 4570098
+  },
+  "configuration": {
+    "scope": "https://reference.invalid/acme/",
+    "profile": "read-update",
+    "history": false,
+    "sourceCommit": "bb9600f1b8b6f623e753543ed5792005eb9aacee",
+    "installedPayloadDigest": "9e706a73053f2e952b32f9775526504c52f51e9fedf4794cc20fb68f5b204af5",
+    "installedContractsDigest": "48667497d6e13064316d0364cf8f49dfc247ab9189306985a357d7b558333dfe",
+    "policyDigest": "dbe8dbd5430f26e19e754d38167cd8084a32d702c695550e2ee0063dc2912430",
+    "authenticationDigest": "66941efc779f4f2431d65fdd5b2387b2af67bd7c1559e09dac032f82259ea16e",
+    "fixtureDigest": "f89932d68e3bf5867d79eb3de680af4bc67b761b3c3bce5da127f6ca75e27765",
+    "fixtureId": "reference-read-update-schema-v1",
+    "capabilities": [
+      "installed-read-update-http"
+    ]
+  },
+  "runtimeConfigurationIdentity": "1720b63b49a7be3299d4b2865de4db9fcbe47560f217a32eea6397db7ea54ca5",
+  "requiredOwnership": [
+    {
+      "id": "read.discovery.scope-service-desc",
+      "owner": "baseline"
+    },
+    {
+      "id": "read.discovery.canonical-navigation",
+      "owner": "baseline"
+    },
+    {
+      "id": "read.discovery.optional-limits",
+      "owner": null
+    },
+    {
+      "id": "read.resource.bead-record",
+      "owner": "baseline"
+    },
+    {
+      "id": "read.resource.link-record",
+      "owner": "baseline"
+    },
+    {
+      "id": "read.resource.external-endpoint",
+      "owner": null
+    },
+    {
+      "id": "read.resource.properties-view",
+      "owner": "baseline"
+    },
+    {
+      "id": "read.resource.default-bounded",
+      "owner": "baseline"
+    },
+    {
+      "id": "read.resource.not-found-nondisclosure",
+      "owner": null
+    },
+    {
+      "id": "read.types.inventory",
+      "owner": "baseline"
+    },
+    {
+      "id": "read.types.descriptor",
+      "owner": "baseline"
+    },
+    {
+      "id": "read.collections.beads",
+      "owner": "baseline"
+    },
+    {
+      "id": "read.collections.links",
+      "owner": "baseline"
+    },
+    {
+      "id": "read.collections.structural-predicates",
+      "owner": null
+    },
+    {
+      "id": "read.collections.selector",
+      "owner": null
+    },
+    {
+      "id": "read.collections.pagination-snapshot",
+      "owner": null
+    },
+    {
+      "id": "read.collections.cursor-errors",
+      "owner": null
+    },
+    {
+      "id": "read.collections.invalid-query",
+      "owner": "baseline"
+    },
+    {
+      "id": "read.bead-links.directions",
+      "owner": null
+    },
+    {
+      "id": "read.bead-links.pagination",
+      "owner": null
+    },
+    {
+      "id": "read.http.get-head",
+      "owner": "baseline"
+    },
+    {
+      "id": "read.http.method-405",
+      "owner": "baseline"
+    },
+    {
+      "id": "read.http.problem-table",
+      "owner": null
+    },
+    {
+      "id": "read.http.internal-fault",
+      "owner": null
+    },
+    {
+      "id": "read.http.cache-cors",
+      "owner": "baseline"
+    },
+    {
+      "id": "read.http.raw-request-targets",
+      "owner": null
+    },
+    {
+      "id": "read.scope.restore-identity",
+      "owner": null
+    },
+    {
+      "id": "read.alias.resolution",
+      "owner": null
+    },
+    {
+      "id": "read.alias.absent",
+      "owner": null
+    },
+    {
+      "id": "read.disclosure.gone",
+      "owner": null
+    },
+    {
+      "id": "read.disclosure.gate",
+      "owner": null
+    },
+    {
+      "id": "read.owned.closure",
+      "owner": null
+    },
+    {
+      "id": "read.attribution.carried",
+      "owner": null
+    },
+    {
+      "id": "read.attribution.link",
+      "owner": null
+    },
+    {
+      "id": "read.owned-wildcard.declaration",
+      "owner": null
+    },
+    {
+      "id": "read.owned-wildcard.max-required",
+      "owner": null
+    },
+    {
+      "id": "read.owned-wildcard.explicit-max-bounded",
+      "owner": null
+    },
+    {
+      "id": "read.owned-wildcard.present-entries",
+      "owner": null
+    },
+    {
+      "id": "read.owned-wildcard.closure",
+      "owner": null
+    },
+    {
+      "id": "read.numeric-model.declared-token-model",
+      "owner": null
+    },
+    {
+      "id": "read.http.accept-negotiation",
+      "owner": "baseline"
+    },
+    {
+      "id": "read.http.conditional-reads",
+      "owner": "baseline"
+    },
+    {
+      "id": "read.http.head-conditional-parity",
+      "owner": "baseline"
+    },
+    {
+      "id": "read-update.discovery.document",
+      "owner": "baseline"
+    },
+    {
+      "id": "read-update.discovery.aliases",
+      "owner": null
+    },
+    {
+      "id": "read-update.discovery.limits",
+      "owner": null
+    },
+    {
+      "id": "read-update.discovery.operation-directory",
+      "owner": "baseline"
+    },
+    {
+      "id": "read-update.singleton.create-bead",
+      "owner": "baseline"
+    },
+    {
+      "id": "read-update.singleton.update-bead",
+      "owner": "baseline"
+    },
+    {
+      "id": "read-update.singleton.document-patch-merge-replace",
+      "owner": "baseline"
+    },
+    {
+      "id": "read-update.singleton.document-patch-atomicity",
+      "owner": "baseline"
+    },
+    {
+      "id": "read-update.singleton.document-patch-validation",
+      "owner": "baseline"
+    },
+    {
+      "id": "read-update.singleton.delete-bead",
+      "owner": "baseline"
+    },
+    {
+      "id": "read-update.singleton.incident-links-nondisclosure",
+      "owner": null
+    },
+    {
+      "id": "read-update.singleton.create-link",
+      "owner": "baseline"
+    },
+    {
+      "id": "read-update.singleton.update-link",
+      "owner": "baseline"
+    },
+    {
+      "id": "read-update.singleton.delete-link",
+      "owner": "baseline"
+    },
+    {
+      "id": "read-update.singleton.owned-link-source-revision",
+      "owner": "baseline"
+    },
+    {
+      "id": "read-update.singleton.owned-link-no-op",
+      "owner": "baseline"
+    },
+    {
+      "id": "read-update.singleton.attribution",
+      "owner": "reference-continuation"
+    },
+    {
+      "id": "read-update.singleton.expected-revision",
+      "owner": "baseline"
+    },
+    {
+      "id": "read-update.singleton.expected-revision-race",
+      "owner": null
+    },
+    {
+      "id": "read-update.singleton.hidden-subject",
+      "owner": null
+    },
+    {
+      "id": "read-update.singleton.idempotency-key-required",
+      "owner": "baseline"
+    },
+    {
+      "id": "read-update.singleton.unauthenticated",
+      "owner": null
+    },
+    {
+      "id": "read-update.singleton.idempotent-retry",
+      "owner": "baseline"
+    },
+    {
+      "id": "read-update.singleton.idempotency-conflict",
+      "owner": "baseline"
+    },
+    {
+      "id": "read-update.singleton.unsupported-media-type",
+      "owner": "baseline"
+    },
+    {
+      "id": "read-update.singleton.method-405",
+      "owner": null
+    },
+    {
+      "id": "read-update.singleton.no-local-bindings",
+      "owner": "baseline"
+    },
+    {
+      "id": "read-update.singleton.result-headers",
+      "owner": "baseline"
+    },
+    {
+      "id": "read-update.alias.put-creates",
+      "owner": "baseline"
+    },
+    {
+      "id": "read-update.alias.put-repoints",
+      "owner": "baseline"
+    },
+    {
+      "id": "read-update.alias.delete-releases",
+      "owner": "baseline"
+    },
+    {
+      "id": "read-update.alias.uniqueness-invariant",
+      "owner": null
+    },
+    {
+      "id": "read-update.alias.link-coexistence",
+      "owner": null
+    },
+    {
+      "id": "read-update.alias.allocation-avoids-aliases",
+      "owner": null
+    },
+    {
+      "id": "read-update.alias.non-canonical-target",
+      "owner": "baseline"
+    },
+    {
+      "id": "read-update.alias.unknown-subject",
+      "owner": "reference-continuation"
+    },
+    {
+      "id": "read-update.alias.carrier-syntax",
+      "owner": null
+    },
+    {
+      "id": "read-update.alias.authorization",
+      "owner": null
+    },
+    {
+      "id": "read-update.alias.forbidden",
+      "owner": null
+    },
+    {
+      "id": "read-update.alias.no-version-minted",
+      "owner": "baseline"
+    },
+    {
+      "id": "read-update.alias.sequence-binding",
+      "owner": null
+    },
+    {
+      "id": "read-update.alias.retained-without-reauthorization",
+      "owner": null
+    },
+    {
+      "id": "read-update.alias.reference-resolution",
+      "owner": null
+    },
+    {
+      "id": "read-update.alias.reference-idempotency",
+      "owner": null
+    },
+    {
+      "id": "read-update.sequence.order-and-partial-commit",
+      "owner": "baseline"
+    },
+    {
+      "id": "read-update.sequence.local-bindings",
+      "owner": "baseline"
+    },
+    {
+      "id": "read-update.sequence.transient-predecessor",
+      "owner": null
+    },
+    {
+      "id": "read-update.sequence.expired-creator-binding",
+      "owner": null
+    },
+    {
+      "id": "read-update.sequence.retained-failure",
+      "owner": null
+    },
+    {
+      "id": "read-update.sequence.member-problem-shape",
+      "owner": "baseline"
+    },
+    {
+      "id": "read-update.sequence.retry-after-hint",
+      "owner": null
+    },
+    {
+      "id": "read-update.sequence.carrier-rejection",
+      "owner": "baseline"
+    },
+    {
+      "id": "read-update.sequence.contextual-validation",
+      "owner": null
+    },
+    {
+      "id": "read-update.sequence.idempotent-retry",
+      "owner": "baseline"
+    },
+    {
+      "id": "read-update.sequence.disconnect",
+      "owner": null
+    },
+    {
+      "id": "read-update.sequence.internal-fault",
+      "owner": null
+    },
+    {
+      "id": "read-update.sequence.interleaving",
+      "owner": null
+    },
+    {
+      "id": "read-update.idempotency.in-progress",
+      "owner": null
+    },
+    {
+      "id": "read-update.idempotency.key-reservation",
+      "owner": null
+    },
+    {
+      "id": "read-update.idempotency.claim-atomicity",
+      "owner": null
+    },
+    {
+      "id": "read-update.idempotency.concurrent-dependent-retry",
+      "owner": null
+    },
+    {
+      "id": "read-update.idempotency.transient-not-retained",
+      "owner": null
+    },
+    {
+      "id": "read-update.idempotency.semantic-identity",
+      "owner": null
+    },
+    {
+      "id": "read-update.idempotency.principal-isolation",
+      "owner": null
+    },
+    {
+      "id": "read-update.idempotency.cross-carrier",
+      "owner": "baseline"
+    },
+    {
+      "id": "read-update.idempotency.authorization-view",
+      "owner": null
+    },
+    {
+      "id": "read-update.idempotency.forbidden-retained",
+      "owner": null
+    },
+    {
+      "id": "read-update.idempotency.retention-minimum",
+      "owner": null
+    },
+    {
+      "id": "read-update.idempotency.expired",
+      "owner": null
+    },
+    {
+      "id": "read-update.idempotency.expired-failure",
+      "owner": null
+    },
+    {
+      "id": "read-update.idempotency.durable-boundary",
+      "owner": null
+    },
+    {
+      "id": "read-update.idempotency.crash-mid-sequence",
+      "owner": null
+    },
+    {
+      "id": "read-update.idempotency.restore",
+      "owner": null
+    },
+    {
+      "id": "read-update.problem.table",
+      "owner": null
+    },
+    {
+      "id": "read-update.validation.type-contract",
+      "owner": "baseline"
+    },
+    {
+      "id": "read-update.validation.diagnostics",
+      "owner": "baseline"
+    },
+    {
+      "id": "read-update.validation.identity-taken",
+      "owner": null
+    },
+    {
+      "id": "read-update.validation.aggregate-constraint",
+      "owner": null
+    },
+    {
+      "id": "read-update.http.command-minimum-fields",
+      "owner": null
+    },
+    {
+      "id": "read-update.http.request-too-large",
+      "owner": null
+    },
+    {
+      "id": "read-update.http.cache-no-store",
+      "owner": null
+    },
+    {
+      "id": "read-update.http.cors-idempotency-key",
+      "owner": null
+    },
+    {
+      "id": "read-update.numeric-model.same-value-no-op",
+      "owner": "reference-continuation"
+    },
+    {
+      "id": "read-update.numeric-model.round-trip-admission",
+      "owner": "reference-continuation"
+    },
+    {
+      "id": "read-update.numeric-model.nested-refusal",
+      "owner": "reference-continuation"
+    },
+    {
+      "id": "read-update.owned-wildcard.explicit-precedence",
+      "owner": null
+    },
+    {
+      "id": "read-update.owned-wildcard.undeclared-type-versions-source",
+      "owner": null
+    }
+  ],
+  "authoredIds": [
+    "read.discovery.scope-service-desc",
+    "read.discovery.canonical-navigation",
+    "read.resource.bead-record",
+    "read.resource.link-record",
+    "read.resource.properties-view",
+    "read.resource.default-bounded",
+    "read.types.inventory",
+    "read.types.descriptor",
+    "read.collections.beads",
+    "read.collections.links",
+    "read.collections.invalid-query",
+    "read.http.get-head",
+    "read.http.method-405",
+    "read.http.cache-cors",
+    "read.http.accept-negotiation",
+    "read.http.conditional-reads",
+    "read.http.head-conditional-parity",
+    "read-update.discovery.document",
+    "read-update.discovery.operation-directory",
+    "read-update.singleton.create-bead",
+    "read-update.singleton.update-bead",
+    "read-update.singleton.document-patch-merge-replace",
+    "read-update.singleton.document-patch-atomicity",
+    "read-update.singleton.document-patch-validation",
+    "read-update.singleton.delete-bead",
+    "read-update.singleton.create-link",
+    "read-update.singleton.update-link",
+    "read-update.singleton.delete-link",
+    "read-update.singleton.owned-link-source-revision",
+    "read-update.singleton.owned-link-no-op",
+    "read-update.singleton.attribution",
+    "read-update.singleton.expected-revision",
+    "read-update.singleton.idempotency-key-required",
+    "read-update.singleton.idempotent-retry",
+    "read-update.singleton.idempotency-conflict",
+    "read-update.singleton.unsupported-media-type",
+    "read-update.singleton.no-local-bindings",
+    "read-update.singleton.result-headers",
+    "read-update.alias.put-creates",
+    "read-update.alias.put-repoints",
+    "read-update.alias.delete-releases",
+    "read-update.alias.non-canonical-target",
+    "read-update.alias.unknown-subject",
+    "read-update.alias.no-version-minted",
+    "read-update.sequence.order-and-partial-commit",
+    "read-update.sequence.local-bindings",
+    "read-update.sequence.member-problem-shape",
+    "read-update.sequence.carrier-rejection",
+    "read-update.sequence.idempotent-retry",
+    "read-update.idempotency.cross-carrier",
+    "read-update.validation.type-contract",
+    "read-update.validation.diagnostics",
+    "read-update.numeric-model.same-value-no-op",
+    "read-update.numeric-model.round-trip-admission",
+    "read-update.numeric-model.nested-refusal"
+  ],
+  "requiredObservations": [
+    {
+      "id": "read.discovery.scope-service-desc",
+      "owner": "baseline",
+      "observation": {
+        "shardId": "baseline",
+        "resultDigest": "2cadef32e2e7e0e99b21334c57ee9e12c6b83f75aa35696604b807e090079361",
+        "rowIndex": 0,
+        "state": "pass"
+      }
+    },
+    {
+      "id": "read.discovery.canonical-navigation",
+      "owner": "baseline",
+      "observation": {
+        "shardId": "baseline",
+        "resultDigest": "2cadef32e2e7e0e99b21334c57ee9e12c6b83f75aa35696604b807e090079361",
+        "rowIndex": 1,
+        "state": "pass"
+      }
+    },
+    {
+      "id": "read.discovery.optional-limits",
+      "owner": null,
+      "observation": {
+        "shardId": "baseline",
+        "resultDigest": "2cadef32e2e7e0e99b21334c57ee9e12c6b83f75aa35696604b807e090079361",
+        "rowIndex": 2,
+        "state": "harness-error",
+        "category": "not-implemented"
+      },
+      "reason": "not-planned"
+    },
+    {
+      "id": "read.resource.bead-record",
+      "owner": "baseline",
+      "observation": {
+        "shardId": "baseline",
+        "resultDigest": "2cadef32e2e7e0e99b21334c57ee9e12c6b83f75aa35696604b807e090079361",
+        "rowIndex": 4,
+        "state": "pass"
+      }
+    },
+    {
+      "id": "read.resource.link-record",
+      "owner": "baseline",
+      "observation": {
+        "shardId": "baseline",
+        "resultDigest": "2cadef32e2e7e0e99b21334c57ee9e12c6b83f75aa35696604b807e090079361",
+        "rowIndex": 5,
+        "state": "pass"
+      }
+    },
+    {
+      "id": "read.resource.external-endpoint",
+      "owner": null,
+      "observation": {
+        "shardId": "baseline",
+        "resultDigest": "2cadef32e2e7e0e99b21334c57ee9e12c6b83f75aa35696604b807e090079361",
+        "rowIndex": 6,
+        "state": "harness-error",
+        "category": "not-implemented"
+      },
+      "reason": "not-planned"
+    },
+    {
+      "id": "read.resource.properties-view",
+      "owner": "baseline",
+      "observation": {
+        "shardId": "baseline",
+        "resultDigest": "2cadef32e2e7e0e99b21334c57ee9e12c6b83f75aa35696604b807e090079361",
+        "rowIndex": 7,
+        "state": "pass"
+      }
+    },
+    {
+      "id": "read.resource.default-bounded",
+      "owner": "baseline",
+      "observation": {
+        "shardId": "baseline",
+        "resultDigest": "2cadef32e2e7e0e99b21334c57ee9e12c6b83f75aa35696604b807e090079361",
+        "rowIndex": 8,
+        "state": "pass"
+      }
+    },
+    {
+      "id": "read.resource.not-found-nondisclosure",
+      "owner": null,
+      "observation": {
+        "shardId": "baseline",
+        "resultDigest": "2cadef32e2e7e0e99b21334c57ee9e12c6b83f75aa35696604b807e090079361",
+        "rowIndex": 9,
+        "state": "harness-error",
+        "category": "not-implemented"
+      },
+      "reason": "not-planned"
+    },
+    {
+      "id": "read.types.inventory",
+      "owner": "baseline",
+      "observation": {
+        "shardId": "baseline",
+        "resultDigest": "2cadef32e2e7e0e99b21334c57ee9e12c6b83f75aa35696604b807e090079361",
+        "rowIndex": 10,
+        "state": "pass"
+      }
+    },
+    {
+      "id": "read.types.descriptor",
+      "owner": "baseline",
+      "observation": {
+        "shardId": "baseline",
+        "resultDigest": "2cadef32e2e7e0e99b21334c57ee9e12c6b83f75aa35696604b807e090079361",
+        "rowIndex": 11,
+        "state": "pass"
+      }
+    },
+    {
+      "id": "read.collections.beads",
+      "owner": "baseline",
+      "observation": {
+        "shardId": "baseline",
+        "resultDigest": "2cadef32e2e7e0e99b21334c57ee9e12c6b83f75aa35696604b807e090079361",
+        "rowIndex": 13,
+        "state": "pass"
+      }
+    },
+    {
+      "id": "read.collections.links",
+      "owner": "baseline",
+      "observation": {
+        "shardId": "baseline",
+        "resultDigest": "2cadef32e2e7e0e99b21334c57ee9e12c6b83f75aa35696604b807e090079361",
+        "rowIndex": 14,
+        "state": "pass"
+      }
+    },
+    {
+      "id": "read.collections.structural-predicates",
+      "owner": null,
+      "observation": {
+        "shardId": "baseline",
+        "resultDigest": "2cadef32e2e7e0e99b21334c57ee9e12c6b83f75aa35696604b807e090079361",
+        "rowIndex": 15,
+        "state": "harness-error",
+        "category": "not-implemented"
+      },
+      "reason": "not-planned"
+    },
+    {
+      "id": "read.collections.selector",
+      "owner": null,
+      "observation": {
+        "shardId": "baseline",
+        "resultDigest": "2cadef32e2e7e0e99b21334c57ee9e12c6b83f75aa35696604b807e090079361",
+        "rowIndex": 16,
+        "state": "harness-error",
+        "category": "not-implemented"
+      },
+      "reason": "not-planned"
+    },
+    {
+      "id": "read.collections.pagination-snapshot",
+      "owner": null,
+      "observation": {
+        "shardId": "baseline",
+        "resultDigest": "2cadef32e2e7e0e99b21334c57ee9e12c6b83f75aa35696604b807e090079361",
+        "rowIndex": 17,
+        "state": "harness-error",
+        "category": "not-implemented"
+      },
+      "reason": "not-planned"
+    },
+    {
+      "id": "read.collections.cursor-errors",
+      "owner": null,
+      "observation": {
+        "shardId": "baseline",
+        "resultDigest": "2cadef32e2e7e0e99b21334c57ee9e12c6b83f75aa35696604b807e090079361",
+        "rowIndex": 18,
+        "state": "harness-error",
+        "category": "not-implemented"
+      },
+      "reason": "not-planned"
+    },
+    {
+      "id": "read.collections.invalid-query",
+      "owner": "baseline",
+      "observation": {
+        "shardId": "baseline",
+        "resultDigest": "2cadef32e2e7e0e99b21334c57ee9e12c6b83f75aa35696604b807e090079361",
+        "rowIndex": 19,
+        "state": "pass"
+      }
+    },
+    {
+      "id": "read.bead-links.directions",
+      "owner": null,
+      "observation": {
+        "shardId": "baseline",
+        "resultDigest": "2cadef32e2e7e0e99b21334c57ee9e12c6b83f75aa35696604b807e090079361",
+        "rowIndex": 20,
+        "state": "harness-error",
+        "category": "not-implemented"
+      },
+      "reason": "not-planned"
+    },
+    {
+      "id": "read.bead-links.pagination",
+      "owner": null,
+      "observation": {
+        "shardId": "baseline",
+        "resultDigest": "2cadef32e2e7e0e99b21334c57ee9e12c6b83f75aa35696604b807e090079361",
+        "rowIndex": 21,
+        "state": "harness-error",
+        "category": "not-implemented"
+      },
+      "reason": "not-planned"
+    },
+    {
+      "id": "read.http.get-head",
+      "owner": "baseline",
+      "observation": {
+        "shardId": "baseline",
+        "resultDigest": "2cadef32e2e7e0e99b21334c57ee9e12c6b83f75aa35696604b807e090079361",
+        "rowIndex": 22,
+        "state": "pass"
+      }
+    },
+    {
+      "id": "read.http.method-405",
+      "owner": "baseline",
+      "observation": {
+        "shardId": "baseline",
+        "resultDigest": "2cadef32e2e7e0e99b21334c57ee9e12c6b83f75aa35696604b807e090079361",
+        "rowIndex": 23,
+        "state": "pass"
+      }
+    },
+    {
+      "id": "read.http.problem-table",
+      "owner": null,
+      "observation": {
+        "shardId": "baseline",
+        "resultDigest": "2cadef32e2e7e0e99b21334c57ee9e12c6b83f75aa35696604b807e090079361",
+        "rowIndex": 24,
+        "state": "harness-error",
+        "category": "not-implemented"
+      },
+      "reason": "not-planned"
+    },
+    {
+      "id": "read.http.internal-fault",
+      "owner": null,
+      "observation": {
+        "shardId": "baseline",
+        "resultDigest": "2cadef32e2e7e0e99b21334c57ee9e12c6b83f75aa35696604b807e090079361",
+        "rowIndex": 25,
+        "state": "harness-error",
+        "category": "not-implemented"
+      },
+      "reason": "not-planned"
+    },
+    {
+      "id": "read.http.cache-cors",
+      "owner": "baseline",
+      "observation": {
+        "shardId": "baseline",
+        "resultDigest": "2cadef32e2e7e0e99b21334c57ee9e12c6b83f75aa35696604b807e090079361",
+        "rowIndex": 26,
+        "state": "pass"
+      }
+    },
+    {
+      "id": "read.http.raw-request-targets",
+      "owner": null,
+      "observation": {
+        "shardId": "baseline",
+        "resultDigest": "2cadef32e2e7e0e99b21334c57ee9e12c6b83f75aa35696604b807e090079361",
+        "rowIndex": 27,
+        "state": "harness-error",
+        "category": "not-implemented"
+      },
+      "reason": "not-planned"
+    },
+    {
+      "id": "read.scope.restore-identity",
+      "owner": null,
+      "observation": {
+        "shardId": "baseline",
+        "resultDigest": "2cadef32e2e7e0e99b21334c57ee9e12c6b83f75aa35696604b807e090079361",
+        "rowIndex": 29,
+        "state": "harness-error",
+        "category": "not-implemented"
+      },
+      "reason": "not-planned"
+    },
+    {
+      "id": "read.alias.resolution",
+      "owner": null,
+      "observation": {
+        "shardId": "baseline",
+        "resultDigest": "2cadef32e2e7e0e99b21334c57ee9e12c6b83f75aa35696604b807e090079361",
+        "rowIndex": 32,
+        "state": "harness-error",
+        "category": "not-implemented"
+      },
+      "reason": "not-planned"
+    },
+    {
+      "id": "read.alias.absent",
+      "owner": null,
+      "observation": {
+        "shardId": "baseline",
+        "resultDigest": "2cadef32e2e7e0e99b21334c57ee9e12c6b83f75aa35696604b807e090079361",
+        "rowIndex": 33,
+        "state": "harness-error",
+        "category": "not-implemented"
+      },
+      "reason": "not-planned"
+    },
+    {
+      "id": "read.disclosure.gone",
+      "owner": null,
+      "observation": {
+        "shardId": "baseline",
+        "resultDigest": "2cadef32e2e7e0e99b21334c57ee9e12c6b83f75aa35696604b807e090079361",
+        "rowIndex": 34,
+        "state": "harness-error",
+        "category": "not-implemented"
+      },
+      "reason": "not-planned"
+    },
+    {
+      "id": "read.disclosure.gate",
+      "owner": null,
+      "observation": {
+        "shardId": "baseline",
+        "resultDigest": "2cadef32e2e7e0e99b21334c57ee9e12c6b83f75aa35696604b807e090079361",
+        "rowIndex": 35,
+        "state": "harness-error",
+        "category": "not-implemented"
+      },
+      "reason": "not-planned"
+    },
+    {
+      "id": "read.owned.closure",
+      "owner": null,
+      "observation": {
+        "shardId": "baseline",
+        "resultDigest": "2cadef32e2e7e0e99b21334c57ee9e12c6b83f75aa35696604b807e090079361",
+        "rowIndex": 36,
+        "state": "harness-error",
+        "category": "not-implemented"
+      },
+      "reason": "not-planned"
+    },
+    {
+      "id": "read.attribution.carried",
+      "owner": null,
+      "observation": {
+        "shardId": "baseline",
+        "resultDigest": "2cadef32e2e7e0e99b21334c57ee9e12c6b83f75aa35696604b807e090079361",
+        "rowIndex": 37,
+        "state": "harness-error",
+        "category": "not-implemented"
+      },
+      "reason": "not-planned"
+    },
+    {
+      "id": "read.attribution.link",
+      "owner": null,
+      "observation": {
+        "shardId": "baseline",
+        "resultDigest": "2cadef32e2e7e0e99b21334c57ee9e12c6b83f75aa35696604b807e090079361",
+        "rowIndex": 38,
+        "state": "harness-error",
+        "category": "not-implemented"
+      },
+      "reason": "not-planned"
+    },
+    {
+      "id": "read.owned-wildcard.declaration",
+      "owner": null,
+      "observation": {
+        "shardId": "baseline",
+        "resultDigest": "2cadef32e2e7e0e99b21334c57ee9e12c6b83f75aa35696604b807e090079361",
+        "rowIndex": 39,
+        "state": "harness-error",
+        "category": "not-implemented"
+      },
+      "reason": "not-planned"
+    },
+    {
+      "id": "read.owned-wildcard.max-required",
+      "owner": null,
+      "observation": {
+        "shardId": "baseline",
+        "resultDigest": "2cadef32e2e7e0e99b21334c57ee9e12c6b83f75aa35696604b807e090079361",
+        "rowIndex": 40,
+        "state": "harness-error",
+        "category": "not-implemented"
+      },
+      "reason": "not-planned"
+    },
+    {
+      "id": "read.owned-wildcard.explicit-max-bounded",
+      "owner": null,
+      "observation": {
+        "shardId": "baseline",
+        "resultDigest": "2cadef32e2e7e0e99b21334c57ee9e12c6b83f75aa35696604b807e090079361",
+        "rowIndex": 41,
+        "state": "harness-error",
+        "category": "not-implemented"
+      },
+      "reason": "not-planned"
+    },
+    {
+      "id": "read.owned-wildcard.present-entries",
+      "owner": null,
+      "observation": {
+        "shardId": "baseline",
+        "resultDigest": "2cadef32e2e7e0e99b21334c57ee9e12c6b83f75aa35696604b807e090079361",
+        "rowIndex": 42,
+        "state": "harness-error",
+        "category": "not-implemented"
+      },
+      "reason": "not-planned"
+    },
+    {
+      "id": "read.owned-wildcard.closure",
+      "owner": null,
+      "observation": {
+        "shardId": "baseline",
+        "resultDigest": "2cadef32e2e7e0e99b21334c57ee9e12c6b83f75aa35696604b807e090079361",
+        "rowIndex": 43,
+        "state": "harness-error",
+        "category": "not-implemented"
+      },
+      "reason": "not-planned"
+    },
+    {
+      "id": "read.numeric-model.declared-token-model",
+      "owner": null,
+      "observation": {
+        "shardId": "baseline",
+        "resultDigest": "2cadef32e2e7e0e99b21334c57ee9e12c6b83f75aa35696604b807e090079361",
+        "rowIndex": 44,
+        "state": "harness-error",
+        "category": "not-implemented"
+      },
+      "reason": "not-planned"
+    },
+    {
+      "id": "read.http.accept-negotiation",
+      "owner": "baseline",
+      "observation": {
+        "shardId": "baseline",
+        "resultDigest": "2cadef32e2e7e0e99b21334c57ee9e12c6b83f75aa35696604b807e090079361",
+        "rowIndex": 45,
+        "state": "pass"
+      }
+    },
+    {
+      "id": "read.http.conditional-reads",
+      "owner": "baseline",
+      "observation": {
+        "shardId": "baseline",
+        "resultDigest": "2cadef32e2e7e0e99b21334c57ee9e12c6b83f75aa35696604b807e090079361",
+        "rowIndex": 46,
+        "state": "pass"
+      }
+    },
+    {
+      "id": "read.http.head-conditional-parity",
+      "owner": "baseline",
+      "observation": {
+        "shardId": "baseline",
+        "resultDigest": "2cadef32e2e7e0e99b21334c57ee9e12c6b83f75aa35696604b807e090079361",
+        "rowIndex": 47,
+        "state": "pass"
+      }
+    },
+    {
+      "id": "read-update.discovery.document",
+      "owner": "baseline",
+      "observation": {
+        "shardId": "baseline",
+        "resultDigest": "2cadef32e2e7e0e99b21334c57ee9e12c6b83f75aa35696604b807e090079361",
+        "rowIndex": 48,
+        "state": "pass"
+      }
+    },
+    {
+      "id": "read-update.discovery.aliases",
+      "owner": null,
+      "observation": {
+        "shardId": "baseline",
+        "resultDigest": "2cadef32e2e7e0e99b21334c57ee9e12c6b83f75aa35696604b807e090079361",
+        "rowIndex": 49,
+        "state": "harness-error",
+        "category": "not-implemented"
+      },
+      "reason": "not-planned"
+    },
+    {
+      "id": "read-update.discovery.limits",
+      "owner": null,
+      "observation": {
+        "shardId": "baseline",
+        "resultDigest": "2cadef32e2e7e0e99b21334c57ee9e12c6b83f75aa35696604b807e090079361",
+        "rowIndex": 50,
+        "state": "harness-error",
+        "category": "not-implemented"
+      },
+      "reason": "not-planned"
+    },
+    {
+      "id": "read-update.discovery.operation-directory",
+      "owner": "baseline",
+      "observation": {
+        "shardId": "baseline",
+        "resultDigest": "2cadef32e2e7e0e99b21334c57ee9e12c6b83f75aa35696604b807e090079361",
+        "rowIndex": 51,
+        "state": "pass"
+      }
+    },
+    {
+      "id": "read-update.singleton.create-bead",
+      "owner": "baseline",
+      "observation": {
+        "shardId": "baseline",
+        "resultDigest": "2cadef32e2e7e0e99b21334c57ee9e12c6b83f75aa35696604b807e090079361",
+        "rowIndex": 52,
+        "state": "pass"
+      }
+    },
+    {
+      "id": "read-update.singleton.update-bead",
+      "owner": "baseline",
+      "observation": {
+        "shardId": "baseline",
+        "resultDigest": "2cadef32e2e7e0e99b21334c57ee9e12c6b83f75aa35696604b807e090079361",
+        "rowIndex": 53,
+        "state": "pass"
+      }
+    },
+    {
+      "id": "read-update.singleton.document-patch-merge-replace",
+      "owner": "baseline",
+      "observation": {
+        "shardId": "baseline",
+        "resultDigest": "2cadef32e2e7e0e99b21334c57ee9e12c6b83f75aa35696604b807e090079361",
+        "rowIndex": 54,
+        "state": "pass"
+      }
+    },
+    {
+      "id": "read-update.singleton.document-patch-atomicity",
+      "owner": "baseline",
+      "observation": {
+        "shardId": "baseline",
+        "resultDigest": "2cadef32e2e7e0e99b21334c57ee9e12c6b83f75aa35696604b807e090079361",
+        "rowIndex": 55,
+        "state": "pass"
+      }
+    },
+    {
+      "id": "read-update.singleton.document-patch-validation",
+      "owner": "baseline",
+      "observation": {
+        "shardId": "baseline",
+        "resultDigest": "2cadef32e2e7e0e99b21334c57ee9e12c6b83f75aa35696604b807e090079361",
+        "rowIndex": 56,
+        "state": "pass"
+      }
+    },
+    {
+      "id": "read-update.singleton.delete-bead",
+      "owner": "baseline",
+      "observation": {
+        "shardId": "baseline",
+        "resultDigest": "2cadef32e2e7e0e99b21334c57ee9e12c6b83f75aa35696604b807e090079361",
+        "rowIndex": 57,
+        "state": "pass"
+      }
+    },
+    {
+      "id": "read-update.singleton.incident-links-nondisclosure",
+      "owner": null,
+      "observation": {
+        "shardId": "baseline",
+        "resultDigest": "2cadef32e2e7e0e99b21334c57ee9e12c6b83f75aa35696604b807e090079361",
+        "rowIndex": 58,
+        "state": "harness-error",
+        "category": "not-implemented"
+      },
+      "reason": "not-planned"
+    },
+    {
+      "id": "read-update.singleton.create-link",
+      "owner": "baseline",
+      "observation": {
+        "shardId": "baseline",
+        "resultDigest": "2cadef32e2e7e0e99b21334c57ee9e12c6b83f75aa35696604b807e090079361",
+        "rowIndex": 59,
+        "state": "pass"
+      }
+    },
+    {
+      "id": "read-update.singleton.update-link",
+      "owner": "baseline",
+      "observation": {
+        "shardId": "baseline",
+        "resultDigest": "2cadef32e2e7e0e99b21334c57ee9e12c6b83f75aa35696604b807e090079361",
+        "rowIndex": 60,
+        "state": "pass"
+      }
+    },
+    {
+      "id": "read-update.singleton.delete-link",
+      "owner": "baseline",
+      "observation": {
+        "shardId": "baseline",
+        "resultDigest": "2cadef32e2e7e0e99b21334c57ee9e12c6b83f75aa35696604b807e090079361",
+        "rowIndex": 61,
+        "state": "pass"
+      }
+    },
+    {
+      "id": "read-update.singleton.owned-link-source-revision",
+      "owner": "baseline",
+      "observation": {
+        "shardId": "baseline",
+        "resultDigest": "2cadef32e2e7e0e99b21334c57ee9e12c6b83f75aa35696604b807e090079361",
+        "rowIndex": 62,
+        "state": "pass"
+      }
+    },
+    {
+      "id": "read-update.singleton.owned-link-no-op",
+      "owner": "baseline",
+      "observation": {
+        "shardId": "baseline",
+        "resultDigest": "2cadef32e2e7e0e99b21334c57ee9e12c6b83f75aa35696604b807e090079361",
+        "rowIndex": 63,
+        "state": "pass"
+      }
+    },
+    {
+      "id": "read-update.singleton.attribution",
+      "owner": "reference-continuation",
+      "observation": {
+        "shardId": "reference-continuation",
+        "resultDigest": "dc154ea5a4fce015b16020e9a8d69ea43d508f00170b9001f36c6a1a633d415a",
+        "rowIndex": 0,
+        "state": "pass"
+      }
+    },
+    {
+      "id": "read-update.singleton.expected-revision",
+      "owner": "baseline",
+      "observation": {
+        "shardId": "baseline",
+        "resultDigest": "2cadef32e2e7e0e99b21334c57ee9e12c6b83f75aa35696604b807e090079361",
+        "rowIndex": 65,
+        "state": "pass"
+      }
+    },
+    {
+      "id": "read-update.singleton.expected-revision-race",
+      "owner": null,
+      "observation": {
+        "shardId": "baseline",
+        "resultDigest": "2cadef32e2e7e0e99b21334c57ee9e12c6b83f75aa35696604b807e090079361",
+        "rowIndex": 66,
+        "state": "harness-error",
+        "category": "not-implemented"
+      },
+      "reason": "not-planned"
+    },
+    {
+      "id": "read-update.singleton.hidden-subject",
+      "owner": null,
+      "observation": {
+        "shardId": "baseline",
+        "resultDigest": "2cadef32e2e7e0e99b21334c57ee9e12c6b83f75aa35696604b807e090079361",
+        "rowIndex": 67,
+        "state": "harness-error",
+        "category": "not-implemented"
+      },
+      "reason": "not-planned"
+    },
+    {
+      "id": "read-update.singleton.idempotency-key-required",
+      "owner": "baseline",
+      "observation": {
+        "shardId": "baseline",
+        "resultDigest": "2cadef32e2e7e0e99b21334c57ee9e12c6b83f75aa35696604b807e090079361",
+        "rowIndex": 68,
+        "state": "pass"
+      }
+    },
+    {
+      "id": "read-update.singleton.unauthenticated",
+      "owner": null,
+      "observation": {
+        "shardId": "baseline",
+        "resultDigest": "2cadef32e2e7e0e99b21334c57ee9e12c6b83f75aa35696604b807e090079361",
+        "rowIndex": 69,
+        "state": "harness-error",
+        "category": "not-implemented"
+      },
+      "reason": "not-planned"
+    },
+    {
+      "id": "read-update.singleton.idempotent-retry",
+      "owner": "baseline",
+      "observation": {
+        "shardId": "baseline",
+        "resultDigest": "2cadef32e2e7e0e99b21334c57ee9e12c6b83f75aa35696604b807e090079361",
+        "rowIndex": 70,
+        "state": "pass"
+      }
+    },
+    {
+      "id": "read-update.singleton.idempotency-conflict",
+      "owner": "baseline",
+      "observation": {
+        "shardId": "baseline",
+        "resultDigest": "2cadef32e2e7e0e99b21334c57ee9e12c6b83f75aa35696604b807e090079361",
+        "rowIndex": 71,
+        "state": "pass"
+      }
+    },
+    {
+      "id": "read-update.singleton.unsupported-media-type",
+      "owner": "baseline",
+      "observation": {
+        "shardId": "baseline",
+        "resultDigest": "2cadef32e2e7e0e99b21334c57ee9e12c6b83f75aa35696604b807e090079361",
+        "rowIndex": 72,
+        "state": "pass"
+      }
+    },
+    {
+      "id": "read-update.singleton.method-405",
+      "owner": null,
+      "observation": {
+        "shardId": "baseline",
+        "resultDigest": "2cadef32e2e7e0e99b21334c57ee9e12c6b83f75aa35696604b807e090079361",
+        "rowIndex": 73,
+        "state": "harness-error",
+        "category": "not-implemented"
+      },
+      "reason": "not-planned"
+    },
+    {
+      "id": "read-update.singleton.no-local-bindings",
+      "owner": "baseline",
+      "observation": {
+        "shardId": "baseline",
+        "resultDigest": "2cadef32e2e7e0e99b21334c57ee9e12c6b83f75aa35696604b807e090079361",
+        "rowIndex": 74,
+        "state": "pass"
+      }
+    },
+    {
+      "id": "read-update.singleton.result-headers",
+      "owner": "baseline",
+      "observation": {
+        "shardId": "baseline",
+        "resultDigest": "2cadef32e2e7e0e99b21334c57ee9e12c6b83f75aa35696604b807e090079361",
+        "rowIndex": 75,
+        "state": "pass"
+      }
+    },
+    {
+      "id": "read-update.alias.put-creates",
+      "owner": "baseline",
+      "observation": {
+        "shardId": "baseline",
+        "resultDigest": "2cadef32e2e7e0e99b21334c57ee9e12c6b83f75aa35696604b807e090079361",
+        "rowIndex": 76,
+        "state": "pass"
+      }
+    },
+    {
+      "id": "read-update.alias.put-repoints",
+      "owner": "baseline",
+      "observation": {
+        "shardId": "baseline",
+        "resultDigest": "2cadef32e2e7e0e99b21334c57ee9e12c6b83f75aa35696604b807e090079361",
+        "rowIndex": 77,
+        "state": "pass"
+      }
+    },
+    {
+      "id": "read-update.alias.delete-releases",
+      "owner": "baseline",
+      "observation": {
+        "shardId": "baseline",
+        "resultDigest": "2cadef32e2e7e0e99b21334c57ee9e12c6b83f75aa35696604b807e090079361",
+        "rowIndex": 78,
+        "state": "pass"
+      }
+    },
+    {
+      "id": "read-update.alias.uniqueness-invariant",
+      "owner": null,
+      "observation": {
+        "shardId": "baseline",
+        "resultDigest": "2cadef32e2e7e0e99b21334c57ee9e12c6b83f75aa35696604b807e090079361",
+        "rowIndex": 79,
+        "state": "harness-error",
+        "category": "not-implemented"
+      },
+      "reason": "not-planned"
+    },
+    {
+      "id": "read-update.alias.link-coexistence",
+      "owner": null,
+      "observation": {
+        "shardId": "baseline",
+        "resultDigest": "2cadef32e2e7e0e99b21334c57ee9e12c6b83f75aa35696604b807e090079361",
+        "rowIndex": 80,
+        "state": "harness-error",
+        "category": "not-implemented"
+      },
+      "reason": "not-planned"
+    },
+    {
+      "id": "read-update.alias.allocation-avoids-aliases",
+      "owner": null,
+      "observation": {
+        "shardId": "baseline",
+        "resultDigest": "2cadef32e2e7e0e99b21334c57ee9e12c6b83f75aa35696604b807e090079361",
+        "rowIndex": 81,
+        "state": "harness-error",
+        "category": "not-implemented"
+      },
+      "reason": "not-planned"
+    },
+    {
+      "id": "read-update.alias.non-canonical-target",
+      "owner": "baseline",
+      "observation": {
+        "shardId": "baseline",
+        "resultDigest": "2cadef32e2e7e0e99b21334c57ee9e12c6b83f75aa35696604b807e090079361",
+        "rowIndex": 82,
+        "state": "pass"
+      }
+    },
+    {
+      "id": "read-update.alias.unknown-subject",
+      "owner": "reference-continuation",
+      "observation": {
+        "shardId": "reference-continuation",
+        "resultDigest": "dc154ea5a4fce015b16020e9a8d69ea43d508f00170b9001f36c6a1a633d415a",
+        "rowIndex": 1,
+        "state": "pass"
+      }
+    },
+    {
+      "id": "read-update.alias.carrier-syntax",
+      "owner": null,
+      "observation": {
+        "shardId": "baseline",
+        "resultDigest": "2cadef32e2e7e0e99b21334c57ee9e12c6b83f75aa35696604b807e090079361",
+        "rowIndex": 84,
+        "state": "harness-error",
+        "category": "not-implemented"
+      },
+      "reason": "not-planned"
+    },
+    {
+      "id": "read-update.alias.authorization",
+      "owner": null,
+      "observation": {
+        "shardId": "baseline",
+        "resultDigest": "2cadef32e2e7e0e99b21334c57ee9e12c6b83f75aa35696604b807e090079361",
+        "rowIndex": 85,
+        "state": "harness-error",
+        "category": "not-implemented"
+      },
+      "reason": "not-planned"
+    },
+    {
+      "id": "read-update.alias.forbidden",
+      "owner": null,
+      "observation": {
+        "shardId": "baseline",
+        "resultDigest": "2cadef32e2e7e0e99b21334c57ee9e12c6b83f75aa35696604b807e090079361",
+        "rowIndex": 86,
+        "state": "harness-error",
+        "category": "not-implemented"
+      },
+      "reason": "not-planned"
+    },
+    {
+      "id": "read-update.alias.no-version-minted",
+      "owner": "baseline",
+      "observation": {
+        "shardId": "baseline",
+        "resultDigest": "2cadef32e2e7e0e99b21334c57ee9e12c6b83f75aa35696604b807e090079361",
+        "rowIndex": 87,
+        "state": "pass"
+      }
+    },
+    {
+      "id": "read-update.alias.sequence-binding",
+      "owner": null,
+      "observation": {
+        "shardId": "baseline",
+        "resultDigest": "2cadef32e2e7e0e99b21334c57ee9e12c6b83f75aa35696604b807e090079361",
+        "rowIndex": 88,
+        "state": "harness-error",
+        "category": "not-implemented"
+      },
+      "reason": "not-planned"
+    },
+    {
+      "id": "read-update.alias.retained-without-reauthorization",
+      "owner": null,
+      "observation": {
+        "shardId": "baseline",
+        "resultDigest": "2cadef32e2e7e0e99b21334c57ee9e12c6b83f75aa35696604b807e090079361",
+        "rowIndex": 89,
+        "state": "harness-error",
+        "category": "not-implemented"
+      },
+      "reason": "not-planned"
+    },
+    {
+      "id": "read-update.alias.reference-resolution",
+      "owner": null,
+      "observation": {
+        "shardId": "baseline",
+        "resultDigest": "2cadef32e2e7e0e99b21334c57ee9e12c6b83f75aa35696604b807e090079361",
+        "rowIndex": 90,
+        "state": "harness-error",
+        "category": "not-implemented"
+      },
+      "reason": "not-planned"
+    },
+    {
+      "id": "read-update.alias.reference-idempotency",
+      "owner": null,
+      "observation": {
+        "shardId": "baseline",
+        "resultDigest": "2cadef32e2e7e0e99b21334c57ee9e12c6b83f75aa35696604b807e090079361",
+        "rowIndex": 91,
+        "state": "harness-error",
+        "category": "not-implemented"
+      },
+      "reason": "not-planned"
+    },
+    {
+      "id": "read-update.sequence.order-and-partial-commit",
+      "owner": "baseline",
+      "observation": {
+        "shardId": "baseline",
+        "resultDigest": "2cadef32e2e7e0e99b21334c57ee9e12c6b83f75aa35696604b807e090079361",
+        "rowIndex": 92,
+        "state": "pass"
+      }
+    },
+    {
+      "id": "read-update.sequence.local-bindings",
+      "owner": "baseline",
+      "observation": {
+        "shardId": "baseline",
+        "resultDigest": "2cadef32e2e7e0e99b21334c57ee9e12c6b83f75aa35696604b807e090079361",
+        "rowIndex": 93,
+        "state": "pass"
+      }
+    },
+    {
+      "id": "read-update.sequence.transient-predecessor",
+      "owner": null,
+      "observation": {
+        "shardId": "baseline",
+        "resultDigest": "2cadef32e2e7e0e99b21334c57ee9e12c6b83f75aa35696604b807e090079361",
+        "rowIndex": 94,
+        "state": "harness-error",
+        "category": "not-implemented"
+      },
+      "reason": "not-planned"
+    },
+    {
+      "id": "read-update.sequence.expired-creator-binding",
+      "owner": null,
+      "observation": {
+        "shardId": "baseline",
+        "resultDigest": "2cadef32e2e7e0e99b21334c57ee9e12c6b83f75aa35696604b807e090079361",
+        "rowIndex": 95,
+        "state": "harness-error",
+        "category": "not-implemented"
+      },
+      "reason": "not-planned"
+    },
+    {
+      "id": "read-update.sequence.retained-failure",
+      "owner": null,
+      "observation": {
+        "shardId": "baseline",
+        "resultDigest": "2cadef32e2e7e0e99b21334c57ee9e12c6b83f75aa35696604b807e090079361",
+        "rowIndex": 96,
+        "state": "harness-error",
+        "category": "not-implemented"
+      },
+      "reason": "not-planned"
+    },
+    {
+      "id": "read-update.sequence.member-problem-shape",
+      "owner": "baseline",
+      "observation": {
+        "shardId": "baseline",
+        "resultDigest": "2cadef32e2e7e0e99b21334c57ee9e12c6b83f75aa35696604b807e090079361",
+        "rowIndex": 97,
+        "state": "pass"
+      }
+    },
+    {
+      "id": "read-update.sequence.retry-after-hint",
+      "owner": null,
+      "observation": {
+        "shardId": "baseline",
+        "resultDigest": "2cadef32e2e7e0e99b21334c57ee9e12c6b83f75aa35696604b807e090079361",
+        "rowIndex": 98,
+        "state": "harness-error",
+        "category": "not-implemented"
+      },
+      "reason": "not-planned"
+    },
+    {
+      "id": "read-update.sequence.carrier-rejection",
+      "owner": "baseline",
+      "observation": {
+        "shardId": "baseline",
+        "resultDigest": "2cadef32e2e7e0e99b21334c57ee9e12c6b83f75aa35696604b807e090079361",
+        "rowIndex": 99,
+        "state": "pass"
+      }
+    },
+    {
+      "id": "read-update.sequence.contextual-validation",
+      "owner": null,
+      "observation": {
+        "shardId": "baseline",
+        "resultDigest": "2cadef32e2e7e0e99b21334c57ee9e12c6b83f75aa35696604b807e090079361",
+        "rowIndex": 100,
+        "state": "harness-error",
+        "category": "not-implemented"
+      },
+      "reason": "not-planned"
+    },
+    {
+      "id": "read-update.sequence.idempotent-retry",
+      "owner": "baseline",
+      "observation": {
+        "shardId": "baseline",
+        "resultDigest": "2cadef32e2e7e0e99b21334c57ee9e12c6b83f75aa35696604b807e090079361",
+        "rowIndex": 101,
+        "state": "pass"
+      }
+    },
+    {
+      "id": "read-update.sequence.disconnect",
+      "owner": null,
+      "observation": {
+        "shardId": "baseline",
+        "resultDigest": "2cadef32e2e7e0e99b21334c57ee9e12c6b83f75aa35696604b807e090079361",
+        "rowIndex": 102,
+        "state": "harness-error",
+        "category": "not-implemented"
+      },
+      "reason": "not-planned"
+    },
+    {
+      "id": "read-update.sequence.internal-fault",
+      "owner": null,
+      "observation": {
+        "shardId": "baseline",
+        "resultDigest": "2cadef32e2e7e0e99b21334c57ee9e12c6b83f75aa35696604b807e090079361",
+        "rowIndex": 103,
+        "state": "harness-error",
+        "category": "not-implemented"
+      },
+      "reason": "not-planned"
+    },
+    {
+      "id": "read-update.sequence.interleaving",
+      "owner": null,
+      "observation": {
+        "shardId": "baseline",
+        "resultDigest": "2cadef32e2e7e0e99b21334c57ee9e12c6b83f75aa35696604b807e090079361",
+        "rowIndex": 104,
+        "state": "harness-error",
+        "category": "not-implemented"
+      },
+      "reason": "not-planned"
+    },
+    {
+      "id": "read-update.idempotency.in-progress",
+      "owner": null,
+      "observation": {
+        "shardId": "baseline",
+        "resultDigest": "2cadef32e2e7e0e99b21334c57ee9e12c6b83f75aa35696604b807e090079361",
+        "rowIndex": 105,
+        "state": "harness-error",
+        "category": "not-implemented"
+      },
+      "reason": "not-planned"
+    },
+    {
+      "id": "read-update.idempotency.key-reservation",
+      "owner": null,
+      "observation": {
+        "shardId": "baseline",
+        "resultDigest": "2cadef32e2e7e0e99b21334c57ee9e12c6b83f75aa35696604b807e090079361",
+        "rowIndex": 106,
+        "state": "harness-error",
+        "category": "not-implemented"
+      },
+      "reason": "not-planned"
+    },
+    {
+      "id": "read-update.idempotency.claim-atomicity",
+      "owner": null,
+      "observation": {
+        "shardId": "baseline",
+        "resultDigest": "2cadef32e2e7e0e99b21334c57ee9e12c6b83f75aa35696604b807e090079361",
+        "rowIndex": 107,
+        "state": "harness-error",
+        "category": "not-implemented"
+      },
+      "reason": "not-planned"
+    },
+    {
+      "id": "read-update.idempotency.concurrent-dependent-retry",
+      "owner": null,
+      "observation": {
+        "shardId": "baseline",
+        "resultDigest": "2cadef32e2e7e0e99b21334c57ee9e12c6b83f75aa35696604b807e090079361",
+        "rowIndex": 108,
+        "state": "harness-error",
+        "category": "not-implemented"
+      },
+      "reason": "not-planned"
+    },
+    {
+      "id": "read-update.idempotency.transient-not-retained",
+      "owner": null,
+      "observation": {
+        "shardId": "baseline",
+        "resultDigest": "2cadef32e2e7e0e99b21334c57ee9e12c6b83f75aa35696604b807e090079361",
+        "rowIndex": 109,
+        "state": "harness-error",
+        "category": "not-implemented"
+      },
+      "reason": "not-planned"
+    },
+    {
+      "id": "read-update.idempotency.semantic-identity",
+      "owner": null,
+      "observation": {
+        "shardId": "baseline",
+        "resultDigest": "2cadef32e2e7e0e99b21334c57ee9e12c6b83f75aa35696604b807e090079361",
+        "rowIndex": 110,
+        "state": "harness-error",
+        "category": "not-implemented"
+      },
+      "reason": "not-planned"
+    },
+    {
+      "id": "read-update.idempotency.principal-isolation",
+      "owner": null,
+      "observation": {
+        "shardId": "baseline",
+        "resultDigest": "2cadef32e2e7e0e99b21334c57ee9e12c6b83f75aa35696604b807e090079361",
+        "rowIndex": 111,
+        "state": "harness-error",
+        "category": "not-implemented"
+      },
+      "reason": "not-planned"
+    },
+    {
+      "id": "read-update.idempotency.cross-carrier",
+      "owner": "baseline",
+      "observation": {
+        "shardId": "baseline",
+        "resultDigest": "2cadef32e2e7e0e99b21334c57ee9e12c6b83f75aa35696604b807e090079361",
+        "rowIndex": 112,
+        "state": "pass"
+      }
+    },
+    {
+      "id": "read-update.idempotency.authorization-view",
+      "owner": null,
+      "observation": {
+        "shardId": "baseline",
+        "resultDigest": "2cadef32e2e7e0e99b21334c57ee9e12c6b83f75aa35696604b807e090079361",
+        "rowIndex": 113,
+        "state": "harness-error",
+        "category": "not-implemented"
+      },
+      "reason": "not-planned"
+    },
+    {
+      "id": "read-update.idempotency.forbidden-retained",
+      "owner": null,
+      "observation": {
+        "shardId": "baseline",
+        "resultDigest": "2cadef32e2e7e0e99b21334c57ee9e12c6b83f75aa35696604b807e090079361",
+        "rowIndex": 114,
+        "state": "harness-error",
+        "category": "not-implemented"
+      },
+      "reason": "not-planned"
+    },
+    {
+      "id": "read-update.idempotency.retention-minimum",
+      "owner": null,
+      "observation": {
+        "shardId": "baseline",
+        "resultDigest": "2cadef32e2e7e0e99b21334c57ee9e12c6b83f75aa35696604b807e090079361",
+        "rowIndex": 115,
+        "state": "harness-error",
+        "category": "not-implemented"
+      },
+      "reason": "not-planned"
+    },
+    {
+      "id": "read-update.idempotency.expired",
+      "owner": null,
+      "observation": {
+        "shardId": "baseline",
+        "resultDigest": "2cadef32e2e7e0e99b21334c57ee9e12c6b83f75aa35696604b807e090079361",
+        "rowIndex": 116,
+        "state": "harness-error",
+        "category": "not-implemented"
+      },
+      "reason": "not-planned"
+    },
+    {
+      "id": "read-update.idempotency.expired-failure",
+      "owner": null,
+      "observation": {
+        "shardId": "baseline",
+        "resultDigest": "2cadef32e2e7e0e99b21334c57ee9e12c6b83f75aa35696604b807e090079361",
+        "rowIndex": 117,
+        "state": "harness-error",
+        "category": "not-implemented"
+      },
+      "reason": "not-planned"
+    },
+    {
+      "id": "read-update.idempotency.durable-boundary",
+      "owner": null,
+      "observation": {
+        "shardId": "baseline",
+        "resultDigest": "2cadef32e2e7e0e99b21334c57ee9e12c6b83f75aa35696604b807e090079361",
+        "rowIndex": 118,
+        "state": "harness-error",
+        "category": "not-implemented"
+      },
+      "reason": "not-planned"
+    },
+    {
+      "id": "read-update.idempotency.crash-mid-sequence",
+      "owner": null,
+      "observation": {
+        "shardId": "baseline",
+        "resultDigest": "2cadef32e2e7e0e99b21334c57ee9e12c6b83f75aa35696604b807e090079361",
+        "rowIndex": 119,
+        "state": "harness-error",
+        "category": "not-implemented"
+      },
+      "reason": "not-planned"
+    },
+    {
+      "id": "read-update.idempotency.restore",
+      "owner": null,
+      "observation": {
+        "shardId": "baseline",
+        "resultDigest": "2cadef32e2e7e0e99b21334c57ee9e12c6b83f75aa35696604b807e090079361",
+        "rowIndex": 120,
+        "state": "harness-error",
+        "category": "not-implemented"
+      },
+      "reason": "not-planned"
+    },
+    {
+      "id": "read-update.problem.table",
+      "owner": null,
+      "observation": {
+        "shardId": "baseline",
+        "resultDigest": "2cadef32e2e7e0e99b21334c57ee9e12c6b83f75aa35696604b807e090079361",
+        "rowIndex": 121,
+        "state": "harness-error",
+        "category": "not-implemented"
+      },
+      "reason": "not-planned"
+    },
+    {
+      "id": "read-update.validation.type-contract",
+      "owner": "baseline",
+      "observation": {
+        "shardId": "baseline",
+        "resultDigest": "2cadef32e2e7e0e99b21334c57ee9e12c6b83f75aa35696604b807e090079361",
+        "rowIndex": 122,
+        "state": "pass"
+      }
+    },
+    {
+      "id": "read-update.validation.diagnostics",
+      "owner": "baseline",
+      "observation": {
+        "shardId": "baseline",
+        "resultDigest": "2cadef32e2e7e0e99b21334c57ee9e12c6b83f75aa35696604b807e090079361",
+        "rowIndex": 123,
+        "state": "pass"
+      }
+    },
+    {
+      "id": "read-update.validation.identity-taken",
+      "owner": null,
+      "observation": {
+        "shardId": "baseline",
+        "resultDigest": "2cadef32e2e7e0e99b21334c57ee9e12c6b83f75aa35696604b807e090079361",
+        "rowIndex": 124,
+        "state": "harness-error",
+        "category": "not-implemented"
+      },
+      "reason": "not-planned"
+    },
+    {
+      "id": "read-update.validation.aggregate-constraint",
+      "owner": null,
+      "observation": {
+        "shardId": "baseline",
+        "resultDigest": "2cadef32e2e7e0e99b21334c57ee9e12c6b83f75aa35696604b807e090079361",
+        "rowIndex": 125,
+        "state": "harness-error",
+        "category": "not-implemented"
+      },
+      "reason": "not-planned"
+    },
+    {
+      "id": "read-update.http.command-minimum-fields",
+      "owner": null,
+      "observation": {
+        "shardId": "baseline",
+        "resultDigest": "2cadef32e2e7e0e99b21334c57ee9e12c6b83f75aa35696604b807e090079361",
+        "rowIndex": 126,
+        "state": "harness-error",
+        "category": "not-implemented"
+      },
+      "reason": "not-planned"
+    },
+    {
+      "id": "read-update.http.request-too-large",
+      "owner": null,
+      "observation": {
+        "shardId": "baseline",
+        "resultDigest": "2cadef32e2e7e0e99b21334c57ee9e12c6b83f75aa35696604b807e090079361",
+        "rowIndex": 127,
+        "state": "harness-error",
+        "category": "not-implemented"
+      },
+      "reason": "not-planned"
+    },
+    {
+      "id": "read-update.http.cache-no-store",
+      "owner": null,
+      "observation": {
+        "shardId": "baseline",
+        "resultDigest": "2cadef32e2e7e0e99b21334c57ee9e12c6b83f75aa35696604b807e090079361",
+        "rowIndex": 128,
+        "state": "harness-error",
+        "category": "not-implemented"
+      },
+      "reason": "not-planned"
+    },
+    {
+      "id": "read-update.http.cors-idempotency-key",
+      "owner": null,
+      "observation": {
+        "shardId": "baseline",
+        "resultDigest": "2cadef32e2e7e0e99b21334c57ee9e12c6b83f75aa35696604b807e090079361",
+        "rowIndex": 129,
+        "state": "harness-error",
+        "category": "not-implemented"
+      },
+      "reason": "not-planned"
+    },
+    {
+      "id": "read-update.numeric-model.same-value-no-op",
+      "owner": "reference-continuation",
+      "observation": {
+        "shardId": "reference-continuation",
+        "resultDigest": "dc154ea5a4fce015b16020e9a8d69ea43d508f00170b9001f36c6a1a633d415a",
+        "rowIndex": 2,
+        "state": "pass"
+      }
+    },
+    {
+      "id": "read-update.numeric-model.round-trip-admission",
+      "owner": "reference-continuation",
+      "observation": {
+        "shardId": "reference-continuation",
+        "resultDigest": "dc154ea5a4fce015b16020e9a8d69ea43d508f00170b9001f36c6a1a633d415a",
+        "rowIndex": 3,
+        "state": "pass"
+      }
+    },
+    {
+      "id": "read-update.numeric-model.nested-refusal",
+      "owner": "reference-continuation",
+      "observation": {
+        "shardId": "reference-continuation",
+        "resultDigest": "dc154ea5a4fce015b16020e9a8d69ea43d508f00170b9001f36c6a1a633d415a",
+        "rowIndex": 4,
+        "state": "pass"
+      }
+    },
+    {
+      "id": "read-update.owned-wildcard.explicit-precedence",
+      "owner": null,
+      "observation": {
+        "shardId": "baseline",
+        "resultDigest": "2cadef32e2e7e0e99b21334c57ee9e12c6b83f75aa35696604b807e090079361",
+        "rowIndex": 133,
+        "state": "harness-error",
+        "category": "not-implemented"
+      },
+      "reason": "not-planned"
+    },
+    {
+      "id": "read-update.owned-wildcard.undeclared-type-versions-source",
+      "owner": null,
+      "observation": {
+        "shardId": "baseline",
+        "resultDigest": "2cadef32e2e7e0e99b21334c57ee9e12c6b83f75aa35696604b807e090079361",
+        "rowIndex": 134,
+        "state": "harness-error",
+        "category": "not-implemented"
+      },
+      "reason": "not-planned"
+    }
+  ],
+  "observedIds": [
+    "read.discovery.scope-service-desc",
+    "read.discovery.canonical-navigation",
+    "read.resource.bead-record",
+    "read.resource.link-record",
+    "read.resource.properties-view",
+    "read.resource.default-bounded",
+    "read.types.inventory",
+    "read.types.descriptor",
+    "read.collections.beads",
+    "read.collections.links",
+    "read.collections.invalid-query",
+    "read.http.get-head",
+    "read.http.method-405",
+    "read.http.cache-cors",
+    "read.http.accept-negotiation",
+    "read.http.conditional-reads",
+    "read.http.head-conditional-parity",
+    "read-update.discovery.document",
+    "read-update.discovery.operation-directory",
+    "read-update.singleton.create-bead",
+    "read-update.singleton.update-bead",
+    "read-update.singleton.document-patch-merge-replace",
+    "read-update.singleton.document-patch-atomicity",
+    "read-update.singleton.document-patch-validation",
+    "read-update.singleton.delete-bead",
+    "read-update.singleton.create-link",
+    "read-update.singleton.update-link",
+    "read-update.singleton.delete-link",
+    "read-update.singleton.owned-link-source-revision",
+    "read-update.singleton.owned-link-no-op",
+    "read-update.singleton.attribution",
+    "read-update.singleton.expected-revision",
+    "read-update.singleton.idempotency-key-required",
+    "read-update.singleton.idempotent-retry",
+    "read-update.singleton.idempotency-conflict",
+    "read-update.singleton.unsupported-media-type",
+    "read-update.singleton.no-local-bindings",
+    "read-update.singleton.result-headers",
+    "read-update.alias.put-creates",
+    "read-update.alias.put-repoints",
+    "read-update.alias.delete-releases",
+    "read-update.alias.non-canonical-target",
+    "read-update.alias.unknown-subject",
+    "read-update.alias.no-version-minted",
+    "read-update.sequence.order-and-partial-commit",
+    "read-update.sequence.local-bindings",
+    "read-update.sequence.member-problem-shape",
+    "read-update.sequence.carrier-rejection",
+    "read-update.sequence.idempotent-retry",
+    "read-update.idempotency.cross-carrier",
+    "read-update.validation.type-contract",
+    "read-update.validation.diagnostics",
+    "read-update.numeric-model.same-value-no-op",
+    "read-update.numeric-model.round-trip-admission",
+    "read-update.numeric-model.nested-refusal"
+  ],
+  "observedStatePartitions": {
+    "pass": [
+      "read.discovery.scope-service-desc",
+      "read.discovery.canonical-navigation",
+      "read.resource.bead-record",
+      "read.resource.link-record",
+      "read.resource.properties-view",
+      "read.resource.default-bounded",
+      "read.types.inventory",
+      "read.types.descriptor",
+      "read.collections.beads",
+      "read.collections.links",
+      "read.collections.invalid-query",
+      "read.http.get-head",
+      "read.http.method-405",
+      "read.http.cache-cors",
+      "read.http.accept-negotiation",
+      "read.http.conditional-reads",
+      "read.http.head-conditional-parity",
+      "read-update.discovery.document",
+      "read-update.discovery.operation-directory",
+      "read-update.singleton.create-bead",
+      "read-update.singleton.update-bead",
+      "read-update.singleton.document-patch-merge-replace",
+      "read-update.singleton.document-patch-atomicity",
+      "read-update.singleton.document-patch-validation",
+      "read-update.singleton.delete-bead",
+      "read-update.singleton.create-link",
+      "read-update.singleton.update-link",
+      "read-update.singleton.delete-link",
+      "read-update.singleton.owned-link-source-revision",
+      "read-update.singleton.owned-link-no-op",
+      "read-update.singleton.attribution",
+      "read-update.singleton.expected-revision",
+      "read-update.singleton.idempotency-key-required",
+      "read-update.singleton.idempotent-retry",
+      "read-update.singleton.idempotency-conflict",
+      "read-update.singleton.unsupported-media-type",
+      "read-update.singleton.no-local-bindings",
+      "read-update.singleton.result-headers",
+      "read-update.alias.put-creates",
+      "read-update.alias.put-repoints",
+      "read-update.alias.delete-releases",
+      "read-update.alias.non-canonical-target",
+      "read-update.alias.unknown-subject",
+      "read-update.alias.no-version-minted",
+      "read-update.sequence.order-and-partial-commit",
+      "read-update.sequence.local-bindings",
+      "read-update.sequence.member-problem-shape",
+      "read-update.sequence.carrier-rejection",
+      "read-update.sequence.idempotent-retry",
+      "read-update.idempotency.cross-carrier",
+      "read-update.validation.type-contract",
+      "read-update.validation.diagnostics",
+      "read-update.numeric-model.same-value-no-op",
+      "read-update.numeric-model.round-trip-admission",
+      "read-update.numeric-model.nested-refusal"
+    ],
+    "fail": [],
+    "notRun": [],
+    "notImplemented": [
+      "read.discovery.optional-limits",
+      "read.resource.external-endpoint",
+      "read.resource.not-found-nondisclosure",
+      "read.collections.structural-predicates",
+      "read.collections.selector",
+      "read.collections.pagination-snapshot",
+      "read.collections.cursor-errors",
+      "read.bead-links.directions",
+      "read.bead-links.pagination",
+      "read.http.problem-table",
+      "read.http.internal-fault",
+      "read.http.raw-request-targets",
+      "read.scope.restore-identity",
+      "read.alias.resolution",
+      "read.alias.absent",
+      "read.disclosure.gone",
+      "read.disclosure.gate",
+      "read.owned.closure",
+      "read.attribution.carried",
+      "read.attribution.link",
+      "read.owned-wildcard.declaration",
+      "read.owned-wildcard.max-required",
+      "read.owned-wildcard.explicit-max-bounded",
+      "read.owned-wildcard.present-entries",
+      "read.owned-wildcard.closure",
+      "read.numeric-model.declared-token-model",
+      "read-update.discovery.aliases",
+      "read-update.discovery.limits",
+      "read-update.singleton.incident-links-nondisclosure",
+      "read-update.singleton.expected-revision-race",
+      "read-update.singleton.hidden-subject",
+      "read-update.singleton.unauthenticated",
+      "read-update.singleton.method-405",
+      "read-update.alias.uniqueness-invariant",
+      "read-update.alias.link-coexistence",
+      "read-update.alias.allocation-avoids-aliases",
+      "read-update.alias.carrier-syntax",
+      "read-update.alias.authorization",
+      "read-update.alias.forbidden",
+      "read-update.alias.sequence-binding",
+      "read-update.alias.retained-without-reauthorization",
+      "read-update.alias.reference-resolution",
+      "read-update.alias.reference-idempotency",
+      "read-update.sequence.transient-predecessor",
+      "read-update.sequence.expired-creator-binding",
+      "read-update.sequence.retained-failure",
+      "read-update.sequence.retry-after-hint",
+      "read-update.sequence.contextual-validation",
+      "read-update.sequence.disconnect",
+      "read-update.sequence.internal-fault",
+      "read-update.sequence.interleaving",
+      "read-update.idempotency.in-progress",
+      "read-update.idempotency.key-reservation",
+      "read-update.idempotency.claim-atomicity",
+      "read-update.idempotency.concurrent-dependent-retry",
+      "read-update.idempotency.transient-not-retained",
+      "read-update.idempotency.semantic-identity",
+      "read-update.idempotency.principal-isolation",
+      "read-update.idempotency.authorization-view",
+      "read-update.idempotency.forbidden-retained",
+      "read-update.idempotency.retention-minimum",
+      "read-update.idempotency.expired",
+      "read-update.idempotency.expired-failure",
+      "read-update.idempotency.durable-boundary",
+      "read-update.idempotency.crash-mid-sequence",
+      "read-update.idempotency.restore",
+      "read-update.problem.table",
+      "read-update.validation.identity-taken",
+      "read-update.validation.aggregate-constraint",
+      "read-update.http.command-minimum-fields",
+      "read-update.http.request-too-large",
+      "read-update.http.cache-no-store",
+      "read-update.http.cors-idempotency-key",
+      "read-update.owned-wildcard.explicit-precedence",
+      "read-update.owned-wildcard.undeclared-type-versions-source"
+    ],
+    "other": [],
+    "unobserved": []
+  },
+  "uncoveredIds": [
+    "read.discovery.optional-limits",
+    "read.resource.bead-record",
+    "read.resource.external-endpoint",
+    "read.resource.not-found-nondisclosure",
+    "read.collections.structural-predicates",
+    "read.collections.selector",
+    "read.collections.pagination-snapshot",
+    "read.collections.cursor-errors",
+    "read.bead-links.directions",
+    "read.bead-links.pagination",
+    "read.http.problem-table",
+    "read.http.internal-fault",
+    "read.http.raw-request-targets",
+    "read.scope.restore-identity",
+    "read.alias.resolution",
+    "read.alias.absent",
+    "read.disclosure.gone",
+    "read.disclosure.gate",
+    "read.owned.closure",
+    "read.attribution.carried",
+    "read.attribution.link",
+    "read.owned-wildcard.declaration",
+    "read.owned-wildcard.max-required",
+    "read.owned-wildcard.explicit-max-bounded",
+    "read.owned-wildcard.present-entries",
+    "read.owned-wildcard.closure",
+    "read.numeric-model.declared-token-model",
+    "read.http.accept-negotiation",
+    "read.http.conditional-reads",
+    "read.http.head-conditional-parity",
+    "read-update.discovery.document",
+    "read-update.discovery.aliases",
+    "read-update.discovery.limits",
+    "read-update.singleton.update-bead",
+    "read-update.singleton.document-patch-merge-replace",
+    "read-update.singleton.document-patch-atomicity",
+    "read-update.singleton.document-patch-validation",
+    "read-update.singleton.incident-links-nondisclosure",
+    "read-update.singleton.create-link",
+    "read-update.singleton.expected-revision-race",
+    "read-update.singleton.hidden-subject",
+    "read-update.singleton.unauthenticated",
+    "read-update.singleton.idempotent-retry",
+    "read-update.singleton.method-405",
+    "read-update.alias.delete-releases",
+    "read-update.alias.uniqueness-invariant",
+    "read-update.alias.link-coexistence",
+    "read-update.alias.allocation-avoids-aliases",
+    "read-update.alias.unknown-subject",
+    "read-update.alias.carrier-syntax",
+    "read-update.alias.authorization",
+    "read-update.alias.forbidden",
+    "read-update.alias.sequence-binding",
+    "read-update.alias.retained-without-reauthorization",
+    "read-update.alias.reference-resolution",
+    "read-update.alias.reference-idempotency",
+    "read-update.sequence.order-and-partial-commit",
+    "read-update.sequence.local-bindings",
+    "read-update.sequence.transient-predecessor",
+    "read-update.sequence.expired-creator-binding",
+    "read-update.sequence.retained-failure",
+    "read-update.sequence.retry-after-hint",
+    "read-update.sequence.carrier-rejection",
+    "read-update.sequence.contextual-validation",
+    "read-update.sequence.idempotent-retry",
+    "read-update.sequence.disconnect",
+    "read-update.sequence.internal-fault",
+    "read-update.sequence.interleaving",
+    "read-update.idempotency.in-progress",
+    "read-update.idempotency.key-reservation",
+    "read-update.idempotency.claim-atomicity",
+    "read-update.idempotency.concurrent-dependent-retry",
+    "read-update.idempotency.transient-not-retained",
+    "read-update.idempotency.semantic-identity",
+    "read-update.idempotency.principal-isolation",
+    "read-update.idempotency.cross-carrier",
+    "read-update.idempotency.authorization-view",
+    "read-update.idempotency.forbidden-retained",
+    "read-update.idempotency.retention-minimum",
+    "read-update.idempotency.expired",
+    "read-update.idempotency.expired-failure",
+    "read-update.idempotency.durable-boundary",
+    "read-update.idempotency.crash-mid-sequence",
+    "read-update.idempotency.restore",
+    "read-update.problem.table",
+    "read-update.validation.type-contract",
+    "read-update.validation.diagnostics",
+    "read-update.validation.identity-taken",
+    "read-update.validation.aggregate-constraint",
+    "read-update.http.command-minimum-fields",
+    "read-update.http.request-too-large",
+    "read-update.http.cache-no-store",
+    "read-update.http.cors-idempotency-key",
+    "read-update.numeric-model.round-trip-admission",
+    "read-update.owned-wildcard.explicit-precedence",
+    "read-update.owned-wildcard.undeclared-type-versions-source"
+  ],
+  "reviewedWholeIds": [
+    "read.discovery.scope-service-desc",
+    "read.discovery.canonical-navigation",
+    "read.resource.link-record",
+    "read.resource.properties-view",
+    "read.resource.default-bounded",
+    "read.types.inventory",
+    "read.types.descriptor",
+    "read.collections.beads",
+    "read.collections.links",
+    "read.collections.invalid-query",
+    "read.http.get-head",
+    "read.http.method-405",
+    "read.http.cache-cors",
+    "read-update.discovery.operation-directory",
+    "read-update.singleton.create-bead",
+    "read-update.singleton.delete-bead",
+    "read-update.singleton.update-link",
+    "read-update.singleton.delete-link",
+    "read-update.singleton.owned-link-source-revision",
+    "read-update.singleton.owned-link-no-op",
+    "read-update.singleton.attribution",
+    "read-update.singleton.expected-revision",
+    "read-update.singleton.idempotency-key-required",
+    "read-update.singleton.idempotency-conflict",
+    "read-update.singleton.unsupported-media-type",
+    "read-update.singleton.no-local-bindings",
+    "read-update.singleton.result-headers",
+    "read-update.alias.put-creates",
+    "read-update.alias.put-repoints",
+    "read-update.alias.non-canonical-target",
+    "read-update.alias.no-version-minted",
+    "read-update.sequence.member-problem-shape",
+    "read-update.numeric-model.same-value-no-op",
+    "read-update.numeric-model.nested-refusal"
+  ],
+  "omittedRequiredIds": [
+    "read.discovery.optional-limits",
+    "read.resource.external-endpoint",
+    "read.resource.not-found-nondisclosure",
+    "read.collections.structural-predicates",
+    "read.collections.selector",
+    "read.collections.pagination-snapshot",
+    "read.collections.cursor-errors",
+    "read.bead-links.directions",
+    "read.bead-links.pagination",
+    "read.http.problem-table",
+    "read.http.internal-fault",
+    "read.http.raw-request-targets",
+    "read.scope.restore-identity",
+    "read.alias.resolution",
+    "read.alias.absent",
+    "read.disclosure.gone",
+    "read.disclosure.gate",
+    "read.owned.closure",
+    "read.attribution.carried",
+    "read.attribution.link",
+    "read.owned-wildcard.declaration",
+    "read.owned-wildcard.max-required",
+    "read.owned-wildcard.explicit-max-bounded",
+    "read.owned-wildcard.present-entries",
+    "read.owned-wildcard.closure",
+    "read.numeric-model.declared-token-model",
+    "read-update.discovery.aliases",
+    "read-update.discovery.limits",
+    "read-update.singleton.incident-links-nondisclosure",
+    "read-update.singleton.expected-revision-race",
+    "read-update.singleton.hidden-subject",
+    "read-update.singleton.unauthenticated",
+    "read-update.singleton.method-405",
+    "read-update.alias.uniqueness-invariant",
+    "read-update.alias.link-coexistence",
+    "read-update.alias.allocation-avoids-aliases",
+    "read-update.alias.carrier-syntax",
+    "read-update.alias.authorization",
+    "read-update.alias.forbidden",
+    "read-update.alias.sequence-binding",
+    "read-update.alias.retained-without-reauthorization",
+    "read-update.alias.reference-resolution",
+    "read-update.alias.reference-idempotency",
+    "read-update.sequence.transient-predecessor",
+    "read-update.sequence.expired-creator-binding",
+    "read-update.sequence.retained-failure",
+    "read-update.sequence.retry-after-hint",
+    "read-update.sequence.contextual-validation",
+    "read-update.sequence.disconnect",
+    "read-update.sequence.internal-fault",
+    "read-update.sequence.interleaving",
+    "read-update.idempotency.in-progress",
+    "read-update.idempotency.key-reservation",
+    "read-update.idempotency.claim-atomicity",
+    "read-update.idempotency.concurrent-dependent-retry",
+    "read-update.idempotency.transient-not-retained",
+    "read-update.idempotency.semantic-identity",
+    "read-update.idempotency.principal-isolation",
+    "read-update.idempotency.authorization-view",
+    "read-update.idempotency.forbidden-retained",
+    "read-update.idempotency.retention-minimum",
+    "read-update.idempotency.expired",
+    "read-update.idempotency.expired-failure",
+    "read-update.idempotency.durable-boundary",
+    "read-update.idempotency.crash-mid-sequence",
+    "read-update.idempotency.restore",
+    "read-update.problem.table",
+    "read-update.validation.identity-taken",
+    "read-update.validation.aggregate-constraint",
+    "read-update.http.command-minimum-fields",
+    "read-update.http.request-too-large",
+    "read-update.http.cache-no-store",
+    "read-update.http.cors-idempotency-key",
+    "read-update.owned-wildcard.explicit-precedence",
+    "read-update.owned-wildcard.undeclared-type-versions-source"
+  ],
+  "optionalCatalogIds": [
+    "read.discovery.unsupported-client-input",
+    "read.types.no-eager-resolution",
+    "read.transport.disconnect-recovery",
+    "read.client.malformed-response",
+    "read.cross.reference-equivalence"
+  ],
+  "shards": [
+    {
+      "id": "baseline",
+      "source": "matrices/read-update-v1.json",
+      "selectionMode": "unfiltered",
+      "requestedIds": null,
+      "selectedIds": [
+        "read.discovery.scope-service-desc",
+        "read.discovery.canonical-navigation",
+        "read.discovery.optional-limits",
+        "read.discovery.unsupported-client-input",
+        "read.resource.bead-record",
+        "read.resource.link-record",
+        "read.resource.external-endpoint",
+        "read.resource.properties-view",
+        "read.resource.default-bounded",
+        "read.resource.not-found-nondisclosure",
+        "read.types.inventory",
+        "read.types.descriptor",
+        "read.types.no-eager-resolution",
+        "read.collections.beads",
+        "read.collections.links",
+        "read.collections.structural-predicates",
+        "read.collections.selector",
+        "read.collections.pagination-snapshot",
+        "read.collections.cursor-errors",
+        "read.collections.invalid-query",
+        "read.bead-links.directions",
+        "read.bead-links.pagination",
+        "read.http.get-head",
+        "read.http.method-405",
+        "read.http.problem-table",
+        "read.http.internal-fault",
+        "read.http.cache-cors",
+        "read.http.raw-request-targets",
+        "read.transport.disconnect-recovery",
+        "read.scope.restore-identity",
+        "read.client.malformed-response",
+        "read.cross.reference-equivalence",
+        "read.alias.resolution",
+        "read.alias.absent",
+        "read.disclosure.gone",
+        "read.disclosure.gate",
+        "read.owned.closure",
+        "read.attribution.carried",
+        "read.attribution.link",
+        "read.owned-wildcard.declaration",
+        "read.owned-wildcard.max-required",
+        "read.owned-wildcard.explicit-max-bounded",
+        "read.owned-wildcard.present-entries",
+        "read.owned-wildcard.closure",
+        "read.numeric-model.declared-token-model",
+        "read.http.accept-negotiation",
+        "read.http.conditional-reads",
+        "read.http.head-conditional-parity",
+        "read-update.discovery.document",
+        "read-update.discovery.aliases",
+        "read-update.discovery.limits",
+        "read-update.discovery.operation-directory",
+        "read-update.singleton.create-bead",
+        "read-update.singleton.update-bead",
+        "read-update.singleton.document-patch-merge-replace",
+        "read-update.singleton.document-patch-atomicity",
+        "read-update.singleton.document-patch-validation",
+        "read-update.singleton.delete-bead",
+        "read-update.singleton.incident-links-nondisclosure",
+        "read-update.singleton.create-link",
+        "read-update.singleton.update-link",
+        "read-update.singleton.delete-link",
+        "read-update.singleton.owned-link-source-revision",
+        "read-update.singleton.owned-link-no-op",
+        "read-update.singleton.attribution",
+        "read-update.singleton.expected-revision",
+        "read-update.singleton.expected-revision-race",
+        "read-update.singleton.hidden-subject",
+        "read-update.singleton.idempotency-key-required",
+        "read-update.singleton.unauthenticated",
+        "read-update.singleton.idempotent-retry",
+        "read-update.singleton.idempotency-conflict",
+        "read-update.singleton.unsupported-media-type",
+        "read-update.singleton.method-405",
+        "read-update.singleton.no-local-bindings",
+        "read-update.singleton.result-headers",
+        "read-update.alias.put-creates",
+        "read-update.alias.put-repoints",
+        "read-update.alias.delete-releases",
+        "read-update.alias.uniqueness-invariant",
+        "read-update.alias.link-coexistence",
+        "read-update.alias.allocation-avoids-aliases",
+        "read-update.alias.non-canonical-target",
+        "read-update.alias.unknown-subject",
+        "read-update.alias.carrier-syntax",
+        "read-update.alias.authorization",
+        "read-update.alias.forbidden",
+        "read-update.alias.no-version-minted",
+        "read-update.alias.sequence-binding",
+        "read-update.alias.retained-without-reauthorization",
+        "read-update.alias.reference-resolution",
+        "read-update.alias.reference-idempotency",
+        "read-update.sequence.order-and-partial-commit",
+        "read-update.sequence.local-bindings",
+        "read-update.sequence.transient-predecessor",
+        "read-update.sequence.expired-creator-binding",
+        "read-update.sequence.retained-failure",
+        "read-update.sequence.member-problem-shape",
+        "read-update.sequence.retry-after-hint",
+        "read-update.sequence.carrier-rejection",
+        "read-update.sequence.contextual-validation",
+        "read-update.sequence.idempotent-retry",
+        "read-update.sequence.disconnect",
+        "read-update.sequence.internal-fault",
+        "read-update.sequence.interleaving",
+        "read-update.idempotency.in-progress",
+        "read-update.idempotency.key-reservation",
+        "read-update.idempotency.claim-atomicity",
+        "read-update.idempotency.concurrent-dependent-retry",
+        "read-update.idempotency.transient-not-retained",
+        "read-update.idempotency.semantic-identity",
+        "read-update.idempotency.principal-isolation",
+        "read-update.idempotency.cross-carrier",
+        "read-update.idempotency.authorization-view",
+        "read-update.idempotency.forbidden-retained",
+        "read-update.idempotency.retention-minimum",
+        "read-update.idempotency.expired",
+        "read-update.idempotency.expired-failure",
+        "read-update.idempotency.durable-boundary",
+        "read-update.idempotency.crash-mid-sequence",
+        "read-update.idempotency.restore",
+        "read-update.problem.table",
+        "read-update.validation.type-contract",
+        "read-update.validation.diagnostics",
+        "read-update.validation.identity-taken",
+        "read-update.validation.aggregate-constraint",
+        "read-update.http.command-minimum-fields",
+        "read-update.http.request-too-large",
+        "read-update.http.cache-no-store",
+        "read-update.http.cors-idempotency-key",
+        "read-update.numeric-model.same-value-no-op",
+        "read-update.numeric-model.round-trip-admission",
+        "read-update.numeric-model.nested-refusal",
+        "read-update.owned-wildcard.explicit-precedence",
+        "read-update.owned-wildcard.undeclared-type-versions-source"
+      ],
+      "resultIds": [
+        "read.discovery.scope-service-desc",
+        "read.discovery.canonical-navigation",
+        "read.discovery.optional-limits",
+        "read.discovery.unsupported-client-input",
+        "read.resource.bead-record",
+        "read.resource.link-record",
+        "read.resource.external-endpoint",
+        "read.resource.properties-view",
+        "read.resource.default-bounded",
+        "read.resource.not-found-nondisclosure",
+        "read.types.inventory",
+        "read.types.descriptor",
+        "read.types.no-eager-resolution",
+        "read.collections.beads",
+        "read.collections.links",
+        "read.collections.structural-predicates",
+        "read.collections.selector",
+        "read.collections.pagination-snapshot",
+        "read.collections.cursor-errors",
+        "read.collections.invalid-query",
+        "read.bead-links.directions",
+        "read.bead-links.pagination",
+        "read.http.get-head",
+        "read.http.method-405",
+        "read.http.problem-table",
+        "read.http.internal-fault",
+        "read.http.cache-cors",
+        "read.http.raw-request-targets",
+        "read.transport.disconnect-recovery",
+        "read.scope.restore-identity",
+        "read.client.malformed-response",
+        "read.cross.reference-equivalence",
+        "read.alias.resolution",
+        "read.alias.absent",
+        "read.disclosure.gone",
+        "read.disclosure.gate",
+        "read.owned.closure",
+        "read.attribution.carried",
+        "read.attribution.link",
+        "read.owned-wildcard.declaration",
+        "read.owned-wildcard.max-required",
+        "read.owned-wildcard.explicit-max-bounded",
+        "read.owned-wildcard.present-entries",
+        "read.owned-wildcard.closure",
+        "read.numeric-model.declared-token-model",
+        "read.http.accept-negotiation",
+        "read.http.conditional-reads",
+        "read.http.head-conditional-parity",
+        "read-update.discovery.document",
+        "read-update.discovery.aliases",
+        "read-update.discovery.limits",
+        "read-update.discovery.operation-directory",
+        "read-update.singleton.create-bead",
+        "read-update.singleton.update-bead",
+        "read-update.singleton.document-patch-merge-replace",
+        "read-update.singleton.document-patch-atomicity",
+        "read-update.singleton.document-patch-validation",
+        "read-update.singleton.delete-bead",
+        "read-update.singleton.incident-links-nondisclosure",
+        "read-update.singleton.create-link",
+        "read-update.singleton.update-link",
+        "read-update.singleton.delete-link",
+        "read-update.singleton.owned-link-source-revision",
+        "read-update.singleton.owned-link-no-op",
+        "read-update.singleton.attribution",
+        "read-update.singleton.expected-revision",
+        "read-update.singleton.expected-revision-race",
+        "read-update.singleton.hidden-subject",
+        "read-update.singleton.idempotency-key-required",
+        "read-update.singleton.unauthenticated",
+        "read-update.singleton.idempotent-retry",
+        "read-update.singleton.idempotency-conflict",
+        "read-update.singleton.unsupported-media-type",
+        "read-update.singleton.method-405",
+        "read-update.singleton.no-local-bindings",
+        "read-update.singleton.result-headers",
+        "read-update.alias.put-creates",
+        "read-update.alias.put-repoints",
+        "read-update.alias.delete-releases",
+        "read-update.alias.uniqueness-invariant",
+        "read-update.alias.link-coexistence",
+        "read-update.alias.allocation-avoids-aliases",
+        "read-update.alias.non-canonical-target",
+        "read-update.alias.unknown-subject",
+        "read-update.alias.carrier-syntax",
+        "read-update.alias.authorization",
+        "read-update.alias.forbidden",
+        "read-update.alias.no-version-minted",
+        "read-update.alias.sequence-binding",
+        "read-update.alias.retained-without-reauthorization",
+        "read-update.alias.reference-resolution",
+        "read-update.alias.reference-idempotency",
+        "read-update.sequence.order-and-partial-commit",
+        "read-update.sequence.local-bindings",
+        "read-update.sequence.transient-predecessor",
+        "read-update.sequence.expired-creator-binding",
+        "read-update.sequence.retained-failure",
+        "read-update.sequence.member-problem-shape",
+        "read-update.sequence.retry-after-hint",
+        "read-update.sequence.carrier-rejection",
+        "read-update.sequence.contextual-validation",
+        "read-update.sequence.idempotent-retry",
+        "read-update.sequence.disconnect",
+        "read-update.sequence.internal-fault",
+        "read-update.sequence.interleaving",
+        "read-update.idempotency.in-progress",
+        "read-update.idempotency.key-reservation",
+        "read-update.idempotency.claim-atomicity",
+        "read-update.idempotency.concurrent-dependent-retry",
+        "read-update.idempotency.transient-not-retained",
+        "read-update.idempotency.semantic-identity",
+        "read-update.idempotency.principal-isolation",
+        "read-update.idempotency.cross-carrier",
+        "read-update.idempotency.authorization-view",
+        "read-update.idempotency.forbidden-retained",
+        "read-update.idempotency.retention-minimum",
+        "read-update.idempotency.expired",
+        "read-update.idempotency.expired-failure",
+        "read-update.idempotency.durable-boundary",
+        "read-update.idempotency.crash-mid-sequence",
+        "read-update.idempotency.restore",
+        "read-update.problem.table",
+        "read-update.validation.type-contract",
+        "read-update.validation.diagnostics",
+        "read-update.validation.identity-taken",
+        "read-update.validation.aggregate-constraint",
+        "read-update.http.command-minimum-fields",
+        "read-update.http.request-too-large",
+        "read-update.http.cache-no-store",
+        "read-update.http.cors-idempotency-key",
+        "read-update.numeric-model.same-value-no-op",
+        "read-update.numeric-model.round-trip-admission",
+        "read-update.numeric-model.nested-refusal",
+        "read-update.owned-wildcard.explicit-precedence",
+        "read-update.owned-wildcard.undeclared-type-versions-source"
+      ],
+      "manifestDigest": "80f74625b6074892b707365859572f8bc0b8c10478d36ac307370ef6027f5fc3",
+      "routeDigest": "26da5a286d9887bebbb0fcf73a92c5d09aa7b7fcfdcc9ed91f767f4db1578c69",
+      "routes": [
+        {
+          "method": "GET",
+          "url": "https://reference.invalid/acme/operations/"
+        },
+        {
+          "method": "GET",
+          "url": "https://reference.invalid/acme/beads/w1b-owner"
+        },
+        {
+          "method": "GET",
+          "url": "https://reference.invalid/acme/beads/w1-a"
+        },
+        {
+          "method": "GET",
+          "url": "https://reference.invalid/acme/beads/w1-b"
+        },
+        {
+          "method": "GET",
+          "url": "https://reference.invalid/acme/links/w1b-unowned"
+        },
+        {
+          "method": "GET",
+          "url": "https://reference.invalid/acme/links/w1-l"
+        },
+        {
+          "method": "GET",
+          "url": "https://reference.invalid/acme/links/w1-local-pin"
+        },
+        {
+          "method": "GET",
+          "url": "https://reference.invalid/acme/links/w1-external-pin"
+        },
+        {
+          "method": "GET",
+          "url": "https://reference.invalid/acme/links/w1-missing"
+        },
+        {
+          "method": "GET",
+          "url": "https://reference.invalid/acme/beads/w1b-target"
+        },
+        {
+          "method": "GET",
+          "url": "https://reference.invalid/acme/beads/w1b-unowned-source"
+        },
+        {
+          "method": "GET",
+          "url": "https://reference.invalid/acme/links/w1b-owned"
+        },
+        {
+          "method": "GET",
+          "url": "https://reference.invalid/acme/beads/ak-source"
+        },
+        {
+          "method": "GET",
+          "url": "https://reference.invalid/acme/beads/ak-target"
+        },
+        {
+          "method": "GET",
+          "url": "https://reference.invalid/acme/beads/ak-update"
+        },
+        {
+          "method": "GET",
+          "url": "https://reference.invalid/acme/beads/ak-delete"
+        },
+        {
+          "method": "GET",
+          "url": "https://reference.invalid/acme/links/ak-update"
+        },
+        {
+          "method": "GET",
+          "url": "https://reference.invalid/acme/links/ak-delete"
+        },
+        {
+          "method": "GET",
+          "url": "https://reference.invalid/acme/beads/ak-route-create"
+        },
+        {
+          "method": "GET",
+          "url": "https://reference.invalid/acme/links/ak-route-create"
+        },
+        {
+          "method": "GET",
+          "url": "https://reference.invalid/acme/beads/ak-empty"
+        },
+        {
+          "method": "GET",
+          "url": "https://reference.invalid/acme/beads/ak-long"
+        },
+        {
+          "method": "GET",
+          "url": "https://reference.invalid/acme/beads/ak-quoted"
+        },
+        {
+          "method": "GET",
+          "url": "https://reference.invalid/acme/beads/ak-space"
+        },
+        {
+          "method": "GET",
+          "url": "https://reference.invalid/acme/beads/ak-tab"
+        },
+        {
+          "method": "GET",
+          "url": "https://reference.invalid/acme/beads/ak-punctuation"
+        },
+        {
+          "method": "GET",
+          "url": "https://reference.invalid/acme/beads/ak-comma"
+        },
+        {
+          "method": "GET",
+          "url": "https://reference.invalid/acme/beads/ak-latin"
+        },
+        {
+          "method": "GET",
+          "url": "https://reference.invalid/acme/beads/ak-seq-empty-prefix"
+        },
+        {
+          "method": "GET",
+          "url": "https://reference.invalid/acme/beads/ak-seq-empty-member"
+        },
+        {
+          "method": "GET",
+          "url": "https://reference.invalid/acme/beads/ak-seq-long-prefix"
+        },
+        {
+          "method": "GET",
+          "url": "https://reference.invalid/acme/beads/ak-seq-long-member"
+        },
+        {
+          "method": "GET",
+          "url": "https://reference.invalid/acme/beads/ak-seq-quoted-prefix"
+        },
+        {
+          "method": "GET",
+          "url": "https://reference.invalid/acme/beads/ak-seq-quoted-member"
+        },
+        {
+          "method": "GET",
+          "url": "https://reference.invalid/acme/beads/ak-seq-space-prefix"
+        },
+        {
+          "method": "GET",
+          "url": "https://reference.invalid/acme/beads/ak-seq-space-member"
+        },
+        {
+          "method": "GET",
+          "url": "https://reference.invalid/acme/beads/ak-seq-tab-prefix"
+        },
+        {
+          "method": "GET",
+          "url": "https://reference.invalid/acme/beads/ak-seq-tab-member"
+        },
+        {
+          "method": "GET",
+          "url": "https://reference.invalid/acme/beads/ak-seq-punctuation-prefix"
+        },
+        {
+          "method": "GET",
+          "url": "https://reference.invalid/acme/beads/ak-seq-punctuation-member"
+        },
+        {
+          "method": "GET",
+          "url": "https://reference.invalid/acme/beads/ak-seq-comma-prefix"
+        },
+        {
+          "method": "GET",
+          "url": "https://reference.invalid/acme/beads/ak-seq-comma-member"
+        },
+        {
+          "method": "GET",
+          "url": "https://reference.invalid/acme/beads/ak-seq-latin-prefix"
+        },
+        {
+          "method": "GET",
+          "url": "https://reference.invalid/acme/beads/ak-seq-latin-member"
+        },
+        {
+          "method": "GET",
+          "url": "https://reference.invalid/acme/beads/ak-repeat-same-0"
+        },
+        {
+          "method": "GET",
+          "url": "https://reference.invalid/acme/beads/ak-repeat-same"
+        },
+        {
+          "method": "GET",
+          "url": "https://reference.invalid/acme/beads/ak-repeat-distinct-0"
+        },
+        {
+          "method": "GET",
+          "url": "https://reference.invalid/acme/beads/ak-repeat-distinct-1"
+        },
+        {
+          "method": "GET",
+          "url": "https://reference.invalid/acme/beads/ak-repeat-distinct"
+        },
+        {
+          "method": "GET",
+          "url": "https://reference.invalid/acme/beads/ak-repeat-mixed-0"
+        },
+        {
+          "method": "GET",
+          "url": "https://reference.invalid/acme/beads/ak-repeat-mixed-1"
+        },
+        {
+          "method": "GET",
+          "url": "https://reference.invalid/acme/beads/ak-repeat-mixed"
+        },
+        {
+          "method": "GET",
+          "url": "https://reference.invalid/acme/beads/ak-valid-one"
+        },
+        {
+          "method": "GET",
+          "url": "https://reference.invalid/acme/beads/ak-valid-maximum"
+        },
+        {
+          "method": "GET",
+          "url": "https://reference.invalid/acme/beads/ak-valid-alphabet"
+        },
+        {
+          "method": "GET",
+          "url": "https://reference.invalid/acme/beads/am-source"
+        },
+        {
+          "method": "GET",
+          "url": "https://reference.invalid/acme/beads/am-target"
+        },
+        {
+          "method": "GET",
+          "url": "https://reference.invalid/acme/beads/am-update"
+        },
+        {
+          "method": "GET",
+          "url": "https://reference.invalid/acme/beads/am-delete"
+        },
+        {
+          "method": "GET",
+          "url": "https://reference.invalid/acme/beads/am-alt-delete"
+        },
+        {
+          "method": "GET",
+          "url": "https://reference.invalid/acme/links/am-update"
+        },
+        {
+          "method": "GET",
+          "url": "https://reference.invalid/acme/links/am-delete"
+        },
+        {
+          "method": "GET",
+          "url": "https://reference.invalid/acme/links/am-alt-delete"
+        },
+        {
+          "method": "GET",
+          "url": "https://reference.invalid/acme/beads/am-route-create-alt"
+        },
+        {
+          "method": "GET",
+          "url": "https://reference.invalid/acme/links/am-route-create-alt"
+        },
+        {
+          "method": "GET",
+          "url": "https://reference.invalid/acme/beads/am-seq-0-corrected"
+        },
+        {
+          "method": "GET",
+          "url": "https://reference.invalid/acme/beads/am-seq-1-corrected"
+        },
+        {
+          "method": "GET",
+          "url": "https://reference.invalid/acme/beads/am-plain-corrected"
+        },
+        {
+          "method": "GET",
+          "url": "https://reference.invalid/acme/beads/am-problem-corrected"
+        },
+        {
+          "method": "GET",
+          "url": "https://reference.invalid/acme/beads/am-charset"
+        },
+        {
+          "method": "GET",
+          "url": "https://reference.invalid/acme/beads/am-irrelevant"
+        },
+        {
+          "method": "GET",
+          "url": "https://reference.invalid/acme/beads/ra-source"
+        },
+        {
+          "method": "GET",
+          "url": "https://reference.invalid/acme/beads/ra-target"
+        },
+        {
+          "method": "GET",
+          "url": "https://reference.invalid/acme/beads/ra-update"
+        },
+        {
+          "method": "GET",
+          "url": "https://reference.invalid/acme/beads/ra-delete"
+        },
+        {
+          "method": "GET",
+          "url": "https://reference.invalid/acme/links/ra-update"
+        },
+        {
+          "method": "GET",
+          "url": "https://reference.invalid/acme/links/ra-delete"
+        },
+        {
+          "method": "GET",
+          "url": "https://reference.invalid/acme/links/ra-create-link-source"
+        },
+        {
+          "method": "GET",
+          "url": "https://reference.invalid/acme/links/ra-create-link-source-pin"
+        },
+        {
+          "method": "GET",
+          "url": "https://reference.invalid/acme/links/ra-create-link-target"
+        },
+        {
+          "method": "GET",
+          "url": "https://reference.invalid/acme/links/ra-create-link-target-pin"
+        },
+        {
+          "method": "GET",
+          "url": "https://reference.invalid/acme/beads/ra-created-id"
+        },
+        {
+          "method": "GET",
+          "url": "https://reference.invalid/acme/links/ra-created-id"
+        },
+        {
+          "method": "GET",
+          "url": "https://reference.invalid/acme/beads/ra-metadata"
+        },
+        {
+          "method": "GET",
+          "url": "https://reference.invalid/acme/beads/rb-source"
+        },
+        {
+          "method": "GET",
+          "url": "https://reference.invalid/acme/beads/rb-target"
+        },
+        {
+          "method": "GET",
+          "url": "https://reference.invalid/acme/links/rb-live"
+        },
+        {
+          "method": "GET",
+          "url": "https://reference.invalid/acme/beads/rb-rb-sequence-alias-tail"
+        },
+        {
+          "method": "GET",
+          "url": "https://reference.invalid/acme/beads/rb-rb-sequence-endpoint-tail"
+        },
+        {
+          "method": "GET",
+          "url": "https://reference.invalid/acme/links/rb-endpoint-source"
+        },
+        {
+          "method": "GET",
+          "url": "https://reference.invalid/acme/beads/w2-collision"
+        },
+        {
+          "method": "GET",
+          "url": "https://reference.invalid/acme/beads/w2-prefix"
+        },
+        {
+          "method": "GET",
+          "url": "https://reference.invalid/acme/beads/w2-missing"
+        },
+        {
+          "method": "GET",
+          "url": "https://reference.invalid/acme/beads/w2-tail"
+        },
+        {
+          "method": "GET",
+          "url": "https://reference.invalid/acme/beads/w2-bind-tail"
+        },
+        {
+          "method": "GET",
+          "url": "https://reference.invalid/acme/beads/w2-alias-target"
+        },
+        {
+          "method": "GET",
+          "url": "https://reference.invalid/acme/beads/w2-held"
+        },
+        {
+          "method": "GET",
+          "url": "https://reference.invalid/acme/beads/w2-independent"
+        },
+        {
+          "method": "GET",
+          "url": "https://reference.invalid/acme/links/w2-shape"
+        },
+        {
+          "method": "GET",
+          "url": "https://reference.invalid/acme/beads/w2-count-0"
+        },
+        {
+          "method": "GET",
+          "url": "https://reference.invalid/acme/beads/w2-count-1"
+        },
+        {
+          "method": "GET",
+          "url": "https://reference.invalid/acme/beads/w2-count-2"
+        },
+        {
+          "method": "GET",
+          "url": "https://reference.invalid/acme/beads/w2-count-3"
+        },
+        {
+          "method": "GET",
+          "url": "https://reference.invalid/acme/beads/w2-count-4"
+        },
+        {
+          "method": "GET",
+          "url": "https://reference.invalid/acme/beads/w2-count-5"
+        },
+        {
+          "method": "GET",
+          "url": "https://reference.invalid/acme/beads/w2-count-6"
+        },
+        {
+          "method": "GET",
+          "url": "https://reference.invalid/acme/beads/w2-count-7"
+        },
+        {
+          "method": "GET",
+          "url": "https://reference.invalid/acme/beads/w2-count-8"
+        },
+        {
+          "method": "GET",
+          "url": "https://reference.invalid/acme/beads/w2-count-9"
+        },
+        {
+          "method": "GET",
+          "url": "https://reference.invalid/acme/beads/w2-count-10"
+        },
+        {
+          "method": "GET",
+          "url": "https://reference.invalid/acme/beads/w2-count-11"
+        },
+        {
+          "method": "GET",
+          "url": "https://reference.invalid/acme/beads/w2-count-12"
+        },
+        {
+          "method": "GET",
+          "url": "https://reference.invalid/acme/beads/w2-count-13"
+        },
+        {
+          "method": "GET",
+          "url": "https://reference.invalid/acme/beads/w2-count-14"
+        },
+        {
+          "method": "GET",
+          "url": "https://reference.invalid/acme/beads/w2-count-15"
+        },
+        {
+          "method": "GET",
+          "url": "https://reference.invalid/acme/beads/w2-count-16"
+        },
+        {
+          "method": "GET",
+          "url": "https://reference.invalid/acme/beads/w2-count-17"
+        },
+        {
+          "method": "GET",
+          "url": "https://reference.invalid/acme/beads/w2-count-18"
+        },
+        {
+          "method": "GET",
+          "url": "https://reference.invalid/acme/beads/w2-count-19"
+        },
+        {
+          "method": "GET",
+          "url": "https://reference.invalid/acme/beads/w2-count-20"
+        },
+        {
+          "method": "GET",
+          "url": "https://reference.invalid/acme/beads/w2-count-21"
+        },
+        {
+          "method": "GET",
+          "url": "https://reference.invalid/acme/beads/w2-count-22"
+        },
+        {
+          "method": "GET",
+          "url": "https://reference.invalid/acme/beads/w2-count-23"
+        },
+        {
+          "method": "GET",
+          "url": "https://reference.invalid/acme/beads/w2-count-24"
+        },
+        {
+          "method": "GET",
+          "url": "https://reference.invalid/acme/beads/w2-count-25"
+        },
+        {
+          "method": "GET",
+          "url": "https://reference.invalid/acme/beads/w2-count-26"
+        },
+        {
+          "method": "GET",
+          "url": "https://reference.invalid/acme/beads/w2-count-27"
+        },
+        {
+          "method": "GET",
+          "url": "https://reference.invalid/acme/beads/w2-count-28"
+        },
+        {
+          "method": "GET",
+          "url": "https://reference.invalid/acme/beads/w2-count-29"
+        },
+        {
+          "method": "GET",
+          "url": "https://reference.invalid/acme/beads/w2-count-30"
+        },
+        {
+          "method": "GET",
+          "url": "https://reference.invalid/acme/beads/w2-count-31"
+        },
+        {
+          "method": "GET",
+          "url": "https://reference.invalid/acme/beads/w2-count-32"
+        },
+        {
+          "method": "GET",
+          "url": "https://reference.invalid/acme/beads/w2-duplicate-key-pre"
+        },
+        {
+          "method": "GET",
+          "url": "https://reference.invalid/acme/beads/w2-duplicate-key-tail"
+        },
+        {
+          "method": "GET",
+          "url": "https://reference.invalid/acme/beads/w2-duplicate-name-pre"
+        },
+        {
+          "method": "GET",
+          "url": "https://reference.invalid/acme/beads/w2-duplicate-name-tail"
+        },
+        {
+          "method": "GET",
+          "url": "https://reference.invalid/acme/beads/w2-invalid-key-pre"
+        },
+        {
+          "method": "GET",
+          "url": "https://reference.invalid/acme/beads/w2-invalid-key-tail"
+        },
+        {
+          "method": "GET",
+          "url": "https://reference.invalid/acme/beads/w2-invalid-name-pre"
+        },
+        {
+          "method": "GET",
+          "url": "https://reference.invalid/acme/beads/w2-invalid-name-tail"
+        },
+        {
+          "method": "GET",
+          "url": "https://reference.invalid/acme/beads/w2-name-update-pre"
+        },
+        {
+          "method": "GET",
+          "url": "https://reference.invalid/acme/beads/w2-name-update-corrected-1"
+        },
+        {
+          "method": "GET",
+          "url": "https://reference.invalid/acme/beads/w2-forward-pre"
+        },
+        {
+          "method": "GET",
+          "url": "https://reference.invalid/acme/beads/w2-forward-tail"
+        },
+        {
+          "method": "GET",
+          "url": "https://reference.invalid/acme/beads/w2-forward-corrected-0"
+        },
+        {
+          "method": "GET",
+          "url": "https://reference.invalid/acme/beads/w2-unknown-pre"
+        },
+        {
+          "method": "GET",
+          "url": "https://reference.invalid/acme/beads/w2-unknown-tail"
+        },
+        {
+          "method": "GET",
+          "url": "https://reference.invalid/acme/beads/w2-unknown-corrected-1"
+        },
+        {
+          "method": "GET",
+          "url": "https://reference.invalid/acme/beads/w2-self-pre"
+        },
+        {
+          "method": "GET",
+          "url": "https://reference.invalid/acme/links/w2-self"
+        },
+        {
+          "method": "GET",
+          "url": "https://reference.invalid/acme/beads/w2-self-tail"
+        },
+        {
+          "method": "GET",
+          "url": "https://reference.invalid/acme/beads/w2-self-corrected-1"
+        },
+        {
+          "method": "GET",
+          "url": "https://reference.invalid/acme/beads/w2-bead-as-link-pre"
+        },
+        {
+          "method": "GET",
+          "url": "https://reference.invalid/acme/beads/w2-bead-as-link-tail"
+        },
+        {
+          "method": "GET",
+          "url": "https://reference.invalid/acme/beads/w2-bead-as-link-corrected-1"
+        },
+        {
+          "method": "GET",
+          "url": "https://reference.invalid/acme/beads/w2-link-as-bead-pre"
+        },
+        {
+          "method": "GET",
+          "url": "https://reference.invalid/acme/links/w2-link-as-bead"
+        },
+        {
+          "method": "GET",
+          "url": "https://reference.invalid/acme/beads/w2-link-as-bead-tail"
+        },
+        {
+          "method": "GET",
+          "url": "https://reference.invalid/acme/beads/w2-link-as-bead-corrected-1"
+        },
+        {
+          "method": "GET",
+          "url": "https://reference.invalid/acme/beads/w2-link-as-bead-corrected-2"
+        },
+        {
+          "method": "GET",
+          "url": "https://reference.invalid/acme/beads/w2-link-as-endpoint-pre"
+        },
+        {
+          "method": "GET",
+          "url": "https://reference.invalid/acme/links/w2-link-as-endpoint"
+        },
+        {
+          "method": "GET",
+          "url": "https://reference.invalid/acme/links/w2-link-as-endpoint-ref"
+        },
+        {
+          "method": "GET",
+          "url": "https://reference.invalid/acme/beads/w2-link-as-endpoint-tail"
+        },
+        {
+          "method": "GET",
+          "url": "https://reference.invalid/acme/beads/w2-link-as-endpoint-corrected-1"
+        },
+        {
+          "method": "GET",
+          "url": "https://reference.invalid/acme/beads/w2-link-as-endpoint-corrected-2"
+        },
+        {
+          "method": "GET",
+          "url": "https://reference.invalid/acme/beads/w2-top-key-pre"
+        },
+        {
+          "method": "GET",
+          "url": "https://reference.invalid/acme/beads/w2-top-key-tail"
+        },
+        {
+          "method": "GET",
+          "url": "https://reference.invalid/acme/beads/w2-empty-pre"
+        },
+        {
+          "method": "GET",
+          "url": "https://reference.invalid/acme/beads/w2-empty-tail"
+        },
+        {
+          "method": "GET",
+          "url": "https://reference.invalid/acme/beads/w2-missing-pre"
+        },
+        {
+          "method": "GET",
+          "url": "https://reference.invalid/acme/beads/w2-missing-tail"
+        },
+        {
+          "method": "GET",
+          "url": "https://reference.invalid/acme/beads/w2-unknown-root-pre"
+        },
+        {
+          "method": "GET",
+          "url": "https://reference.invalid/acme/beads/w2-unknown-root-tail"
+        },
+        {
+          "method": "GET",
+          "url": "https://reference.invalid/acme/beads/w2-unknown-member-pre"
+        },
+        {
+          "method": "GET",
+          "url": "https://reference.invalid/acme/beads/w2-unknown-member-tail"
+        },
+        {
+          "method": "GET",
+          "url": "https://reference.invalid/acme/beads/w2-unknown-operation-pre"
+        },
+        {
+          "method": "GET",
+          "url": "https://reference.invalid/acme/beads/w2-unknown-operation-corrected-1"
+        },
+        {
+          "method": "GET",
+          "url": "https://reference.invalid/acme/beads/w2-malformed-json-pre"
+        },
+        {
+          "method": "GET",
+          "url": "https://reference.invalid/acme/beads/w2-malformed-json-tail"
+        },
+        {
+          "method": "GET",
+          "url": "https://reference.invalid/acme/beads/w2-duplicate-json-pre"
+        },
+        {
+          "method": "GET",
+          "url": "https://reference.invalid/acme/beads/w2-duplicate-json-tail"
+        },
+        {
+          "method": "GET",
+          "url": "https://reference.invalid/acme/beads/w2-surrogate-pre"
+        },
+        {
+          "method": "GET",
+          "url": "https://reference.invalid/acme/beads/w2-surrogate-tail"
+        },
+        {
+          "method": "GET",
+          "url": "https://reference.invalid/acme/beads/w2-anonymous-pre"
+        },
+        {
+          "method": "GET",
+          "url": "https://reference.invalid/acme/beads/w2-anonymous-tail"
+        },
+        {
+          "method": "GET",
+          "url": "https://reference.invalid/acme/beads/w2-media-pre"
+        },
+        {
+          "method": "GET",
+          "url": "https://reference.invalid/acme/beads/w2-media-tail"
+        },
+        {
+          "method": "GET",
+          "url": "https://reference.invalid/acme/beads/w2-body-size-pre"
+        },
+        {
+          "method": "GET",
+          "url": "https://reference.invalid/acme/beads/w2-body-size-tail"
+        },
+        {
+          "method": "GET",
+          "url": "https://reference.invalid/acme/beads/w2-bad-pointer-pre"
+        },
+        {
+          "method": "GET",
+          "url": "https://reference.invalid/acme/beads/w2-bad-pointer-tail"
+        },
+        {
+          "method": "GET",
+          "url": "https://reference.invalid/acme/beads/w2-bad-pointer-corrected-1"
+        },
+        {
+          "method": "GET",
+          "url": "https://reference.invalid/acme/beads/retry-position-f"
+        },
+        {
+          "method": "GET",
+          "url": "https://reference.invalid/acme/beads/retry-position-b"
+        },
+        {
+          "method": "GET",
+          "url": "https://reference.invalid/acme/beads/retry-position-d"
+        },
+        {
+          "method": "GET",
+          "url": "https://reference.invalid/acme/beads/retry-cross-a"
+        },
+        {
+          "method": "GET",
+          "url": "https://reference.invalid/acme/beads/retry-cross-b"
+        },
+        {
+          "method": "GET",
+          "url": "https://reference.invalid/acme/beads/retry-cross-f"
+        },
+        {
+          "method": "GET",
+          "url": "https://reference.invalid/acme/beads/retry-cross-g"
+        },
+        {
+          "method": "GET",
+          "url": "https://reference.invalid/acme/bdp.json"
+        },
+        {
+          "method": "GET",
+          "url": "https://reference.invalid/acme/"
+        },
+        {
+          "method": "GET",
+          "url": "https://reference.invalid/acme/beads/read-a"
+        },
+        {
+          "method": "GET",
+          "url": "https://reference.invalid/acme/links/read-a"
+        },
+        {
+          "method": "GET",
+          "url": "https://reference.invalid/acme/beads/read-a?view=properties"
+        },
+        {
+          "method": "GET",
+          "url": "https://reference.invalid/acme/links/read-a?view=properties"
+        },
+        {
+          "method": "GET",
+          "url": "https://reference.invalid/acme/types/"
+        },
+        {
+          "method": "GET",
+          "url": "https://reference.invalid/acme/types/blocks"
+        },
+        {
+          "method": "GET",
+          "url": "https://reference.invalid/acme/types/bug"
+        },
+        {
+          "method": "GET",
+          "url": "https://reference.invalid/acme/types/chore"
+        },
+        {
+          "method": "GET",
+          "url": "https://reference.invalid/acme/types/cites"
+        },
+        {
+          "method": "GET",
+          "url": "https://reference.invalid/acme/types/decision"
+        },
+        {
+          "method": "GET",
+          "url": "https://reference.invalid/acme/types/dependency"
+        },
+        {
+          "method": "GET",
+          "url": "https://reference.invalid/acme/types/epic"
+        },
+        {
+          "method": "GET",
+          "url": "https://reference.invalid/acme/types/feature"
+        },
+        {
+          "method": "GET",
+          "url": "https://reference.invalid/acme/types/relates"
+        },
+        {
+          "method": "GET",
+          "url": "https://reference.invalid/acme/types/relationship"
+        },
+        {
+          "method": "GET",
+          "url": "https://reference.invalid/acme/types/task"
+        },
+        {
+          "method": "GET",
+          "url": "https://reference.invalid/acme/types/tracked-item"
+        },
+        {
+          "method": "GET",
+          "url": "https://reference.invalid/acme/types/work-item"
+        },
+        {
+          "method": "GET",
+          "url": "https://reference.invalid/acme/types/schema-bead-base"
+        },
+        {
+          "method": "GET",
+          "url": "https://reference.invalid/acme/types/schema-bead-child"
+        },
+        {
+          "method": "GET",
+          "url": "https://reference.invalid/acme/types/schema-link-base"
+        },
+        {
+          "method": "GET",
+          "url": "https://reference.invalid/acme/types/schema-link-child"
+        },
+        {
+          "method": "GET",
+          "url": "https://reference.invalid/acme/beads/"
+        },
+        {
+          "method": "GET",
+          "url": "https://reference.invalid/acme/links/"
+        },
+        {
+          "method": "GET",
+          "url": "https://reference.invalid/acme/beads/?unsupported=1"
+        },
+        {
+          "method": "GET",
+          "url": "https://reference.invalid/acme/beads/?limit=1&limit=2"
+        },
+        {
+          "method": "GET",
+          "url": "https://reference.invalid/acme/links/?selector=%24%5B%3F%40.id%5D&selector=%24%5B%3F%40.type%5D"
+        },
+        {
+          "method": "HEAD",
+          "url": "https://reference.invalid/acme/"
+        },
+        {
+          "method": "HEAD",
+          "url": "https://reference.invalid/acme/bdp.json"
+        },
+        {
+          "method": "HEAD",
+          "url": "https://reference.invalid/acme/beads/"
+        },
+        {
+          "method": "HEAD",
+          "url": "https://reference.invalid/acme/beads/read-a"
+        },
+        {
+          "method": "HEAD",
+          "url": "https://reference.invalid/acme/beads/read-a?view=properties"
+        },
+        {
+          "method": "GET",
+          "url": "https://reference.invalid/acme/beads/read-a?view=links"
+        },
+        {
+          "method": "HEAD",
+          "url": "https://reference.invalid/acme/beads/read-a?view=links"
+        },
+        {
+          "method": "HEAD",
+          "url": "https://reference.invalid/acme/links/"
+        },
+        {
+          "method": "HEAD",
+          "url": "https://reference.invalid/acme/links/read-a"
+        },
+        {
+          "method": "HEAD",
+          "url": "https://reference.invalid/acme/links/read-a?view=properties"
+        },
+        {
+          "method": "HEAD",
+          "url": "https://reference.invalid/acme/types/"
+        },
+        {
+          "method": "HEAD",
+          "url": "https://reference.invalid/acme/types/task"
+        },
+        {
+          "method": "HEAD",
+          "url": "https://reference.invalid/acme/types/relates"
+        },
+        {
+          "method": "POST",
+          "url": "https://reference.invalid/acme/"
+        },
+        {
+          "method": "GET",
+          "url": "https://reference.invalid/acme/beads/does-not-exist"
+        },
+        {
+          "method": "OPTIONS",
+          "url": "https://reference.invalid/acme/"
+        },
+        {
+          "method": "GET",
+          "url": "https://reference.invalid/acme/beads/http-never-created"
+        },
+        {
+          "method": "GET",
+          "url": "https://reference.invalid/acme/beads/?limit=0"
+        },
+        {
+          "method": "HEAD",
+          "url": "https://reference.invalid/acme/beads/http-never-created"
+        },
+        {
+          "method": "HEAD",
+          "url": "https://reference.invalid/acme/beads/?limit=0"
+        },
+        {
+          "method": "GET",
+          "url": "https://reference.invalid/acme/alias/w1-locator"
+        },
+        {
+          "method": "GET",
+          "url": "https://reference.invalid/acme/schemas/schema-bead-base"
+        },
+        {
+          "method": "GET",
+          "url": "https://reference.invalid/acme/schemas/schema-bead-child"
+        },
+        {
+          "method": "GET",
+          "url": "https://reference.invalid/acme/schemas/schema-link-base"
+        },
+        {
+          "method": "GET",
+          "url": "https://reference.invalid/acme/schemas/schema-link-child"
+        },
+        {
+          "method": "GET",
+          "url": "https://reference.invalid/acme/alias/ak-locator-put"
+        },
+        {
+          "method": "GET",
+          "url": "https://reference.invalid/acme/alias/ak-locator-delete"
+        },
+        {
+          "method": "GET",
+          "url": "https://reference.invalid/acme/beads/?limit=100"
+        },
+        {
+          "method": "GET",
+          "url": "https://reference.invalid/acme/links/?limit=100"
+        },
+        {
+          "method": "POST",
+          "url": "https://reference.invalid/acme/operations/create-bead"
+        },
+        {
+          "method": "POST",
+          "url": "https://reference.invalid/acme/operations/update-bead"
+        },
+        {
+          "method": "POST",
+          "url": "https://reference.invalid/acme/operations/delete-bead"
+        },
+        {
+          "method": "POST",
+          "url": "https://reference.invalid/acme/operations/create-link"
+        },
+        {
+          "method": "POST",
+          "url": "https://reference.invalid/acme/operations/update-link"
+        },
+        {
+          "method": "POST",
+          "url": "https://reference.invalid/acme/operations/delete-link"
+        },
+        {
+          "method": "POST",
+          "url": "https://reference.invalid/acme/operations/put-alias"
+        },
+        {
+          "method": "POST",
+          "url": "https://reference.invalid/acme/operations/delete-alias"
+        },
+        {
+          "method": "POST",
+          "url": "https://reference.invalid/acme/operations/sequence"
+        },
+        {
+          "method": "GET",
+          "url": "https://reference.invalid/acme/alias/am-locator-put"
+        },
+        {
+          "method": "GET",
+          "url": "https://reference.invalid/acme/alias/am-locator-delete"
+        },
+        {
+          "method": "GET",
+          "url": "https://reference.invalid/acme/alias/am-locator-alt-delete"
+        },
+        {
+          "method": "GET",
+          "url": "https://reference.invalid/acme/alias/ra-locator-put"
+        },
+        {
+          "method": "GET",
+          "url": "https://reference.invalid/acme/alias/ra-locator-delete"
+        },
+        {
+          "method": "GET",
+          "url": "https://reference.invalid/acme/alias/ra-locator-new"
+        },
+        {
+          "method": "HEAD",
+          "url": "https://reference.invalid/acme/alias/w1-locator"
+        },
+        {
+          "method": "GET",
+          "url": "https://reference.invalid/acme/alias/w1-unknown"
+        },
+        {
+          "method": "GET",
+          "url": "https://reference.invalid/acme/alias/w1-locator?unexpected=1"
+        },
+        {
+          "method": "GET",
+          "url": "https://reference.invalid/acme/alias/rb-locator-live"
+        },
+        {
+          "method": "GET",
+          "url": "https://reference.invalid/acme/alias/rb-locator-alias-local"
+        },
+        {
+          "method": "GET",
+          "url": "https://reference.invalid/acme/alias/rb-locator-alias-absolute"
+        },
+        {
+          "method": "GET",
+          "url": "https://reference.invalid/acme/alias/rb-locator-link-local"
+        },
+        {
+          "method": "GET",
+          "url": "https://reference.invalid/acme/alias/rb-locator-link-absolute"
+        },
+        {
+          "method": "GET",
+          "url": "https://reference.invalid/acme/alias/rb-locator-external"
+        },
+        {
+          "method": "GET",
+          "url": "https://reference.invalid/acme/alias/rb-locator-sequence"
+        },
+        {
+          "method": "GET",
+          "url": "https://reference.invalid/acme/alias/w2-shape"
+        }
+      ],
+      "resultDigest": "2cadef32e2e7e0e99b21334c57ee9e12c6b83f75aa35696604b807e090079361",
+      "resultBytes": 1261460,
+      "actualBootstrap": {
+        "scope": "https://reference.invalid/acme/",
+        "profile": "read-update",
+        "history": false,
+        "payloadIdentity": "9e706a73053f2e952b32f9775526504c52f51e9fedf4794cc20fb68f5b204af5",
+        "artifactIdentity": "development-schema5-48667497d6e13064316d0364cf8f49dfc247ab9189306985a357d7b558333dfe",
+        "policyIdentity": "dbe8dbd5430f26e19e754d38167cd8084a32d702c695550e2ee0063dc2912430",
+        "authenticationIdentity": "66941efc779f4f2431d65fdd5b2387b2af67bd7c1559e09dac032f82259ea16e",
+        "configurationIdentity": "1720b63b49a7be3299d4b2865de4db9fcbe47560f217a32eea6397db7ea54ca5"
+      },
+      "actualSessions": [
+        {
+          "scenario": "read.discovery.scope-service-desc",
+          "scope": "https://reference.invalid/acme/",
+          "profile": "read-update",
+          "history": false,
+          "payloadIdentity": "9e706a73053f2e952b32f9775526504c52f51e9fedf4794cc20fb68f5b204af5",
+          "artifactIdentity": "development-schema5-48667497d6e13064316d0364cf8f49dfc247ab9189306985a357d7b558333dfe",
+          "policyIdentity": "dbe8dbd5430f26e19e754d38167cd8084a32d702c695550e2ee0063dc2912430",
+          "authenticationIdentity": "66941efc779f4f2431d65fdd5b2387b2af67bd7c1559e09dac032f82259ea16e",
+          "configurationIdentity": "1720b63b49a7be3299d4b2865de4db9fcbe47560f217a32eea6397db7ea54ca5"
+        },
+        {
+          "scenario": "read.discovery.canonical-navigation",
+          "scope": "https://reference.invalid/acme/",
+          "profile": "read-update",
+          "history": false,
+          "payloadIdentity": "9e706a73053f2e952b32f9775526504c52f51e9fedf4794cc20fb68f5b204af5",
+          "artifactIdentity": "development-schema5-48667497d6e13064316d0364cf8f49dfc247ab9189306985a357d7b558333dfe",
+          "policyIdentity": "dbe8dbd5430f26e19e754d38167cd8084a32d702c695550e2ee0063dc2912430",
+          "authenticationIdentity": "66941efc779f4f2431d65fdd5b2387b2af67bd7c1559e09dac032f82259ea16e",
+          "configurationIdentity": "1720b63b49a7be3299d4b2865de4db9fcbe47560f217a32eea6397db7ea54ca5"
+        },
+        {
+          "scenario": "read.resource.bead-record",
+          "scope": "https://reference.invalid/acme/",
+          "profile": "read-update",
+          "history": false,
+          "payloadIdentity": "9e706a73053f2e952b32f9775526504c52f51e9fedf4794cc20fb68f5b204af5",
+          "artifactIdentity": "development-schema5-48667497d6e13064316d0364cf8f49dfc247ab9189306985a357d7b558333dfe",
+          "policyIdentity": "dbe8dbd5430f26e19e754d38167cd8084a32d702c695550e2ee0063dc2912430",
+          "authenticationIdentity": "66941efc779f4f2431d65fdd5b2387b2af67bd7c1559e09dac032f82259ea16e",
+          "configurationIdentity": "1720b63b49a7be3299d4b2865de4db9fcbe47560f217a32eea6397db7ea54ca5"
+        },
+        {
+          "scenario": "read.resource.link-record",
+          "scope": "https://reference.invalid/acme/",
+          "profile": "read-update",
+          "history": false,
+          "payloadIdentity": "9e706a73053f2e952b32f9775526504c52f51e9fedf4794cc20fb68f5b204af5",
+          "artifactIdentity": "development-schema5-48667497d6e13064316d0364cf8f49dfc247ab9189306985a357d7b558333dfe",
+          "policyIdentity": "dbe8dbd5430f26e19e754d38167cd8084a32d702c695550e2ee0063dc2912430",
+          "authenticationIdentity": "66941efc779f4f2431d65fdd5b2387b2af67bd7c1559e09dac032f82259ea16e",
+          "configurationIdentity": "1720b63b49a7be3299d4b2865de4db9fcbe47560f217a32eea6397db7ea54ca5"
+        },
+        {
+          "scenario": "read.resource.properties-view",
+          "scope": "https://reference.invalid/acme/",
+          "profile": "read-update",
+          "history": false,
+          "payloadIdentity": "9e706a73053f2e952b32f9775526504c52f51e9fedf4794cc20fb68f5b204af5",
+          "artifactIdentity": "development-schema5-48667497d6e13064316d0364cf8f49dfc247ab9189306985a357d7b558333dfe",
+          "policyIdentity": "dbe8dbd5430f26e19e754d38167cd8084a32d702c695550e2ee0063dc2912430",
+          "authenticationIdentity": "66941efc779f4f2431d65fdd5b2387b2af67bd7c1559e09dac032f82259ea16e",
+          "configurationIdentity": "1720b63b49a7be3299d4b2865de4db9fcbe47560f217a32eea6397db7ea54ca5"
+        },
+        {
+          "scenario": "read.resource.default-bounded",
+          "scope": "https://reference.invalid/acme/",
+          "profile": "read-update",
+          "history": false,
+          "payloadIdentity": "9e706a73053f2e952b32f9775526504c52f51e9fedf4794cc20fb68f5b204af5",
+          "artifactIdentity": "development-schema5-48667497d6e13064316d0364cf8f49dfc247ab9189306985a357d7b558333dfe",
+          "policyIdentity": "dbe8dbd5430f26e19e754d38167cd8084a32d702c695550e2ee0063dc2912430",
+          "authenticationIdentity": "66941efc779f4f2431d65fdd5b2387b2af67bd7c1559e09dac032f82259ea16e",
+          "configurationIdentity": "1720b63b49a7be3299d4b2865de4db9fcbe47560f217a32eea6397db7ea54ca5"
+        },
+        {
+          "scenario": "read.types.inventory",
+          "scope": "https://reference.invalid/acme/",
+          "profile": "read-update",
+          "history": false,
+          "payloadIdentity": "9e706a73053f2e952b32f9775526504c52f51e9fedf4794cc20fb68f5b204af5",
+          "artifactIdentity": "development-schema5-48667497d6e13064316d0364cf8f49dfc247ab9189306985a357d7b558333dfe",
+          "policyIdentity": "dbe8dbd5430f26e19e754d38167cd8084a32d702c695550e2ee0063dc2912430",
+          "authenticationIdentity": "66941efc779f4f2431d65fdd5b2387b2af67bd7c1559e09dac032f82259ea16e",
+          "configurationIdentity": "1720b63b49a7be3299d4b2865de4db9fcbe47560f217a32eea6397db7ea54ca5"
+        },
+        {
+          "scenario": "read.types.descriptor",
+          "scope": "https://reference.invalid/acme/",
+          "profile": "read-update",
+          "history": false,
+          "payloadIdentity": "9e706a73053f2e952b32f9775526504c52f51e9fedf4794cc20fb68f5b204af5",
+          "artifactIdentity": "development-schema5-48667497d6e13064316d0364cf8f49dfc247ab9189306985a357d7b558333dfe",
+          "policyIdentity": "dbe8dbd5430f26e19e754d38167cd8084a32d702c695550e2ee0063dc2912430",
+          "authenticationIdentity": "66941efc779f4f2431d65fdd5b2387b2af67bd7c1559e09dac032f82259ea16e",
+          "configurationIdentity": "1720b63b49a7be3299d4b2865de4db9fcbe47560f217a32eea6397db7ea54ca5"
+        },
+        {
+          "scenario": "read.collections.beads",
+          "scope": "https://reference.invalid/acme/",
+          "profile": "read-update",
+          "history": false,
+          "payloadIdentity": "9e706a73053f2e952b32f9775526504c52f51e9fedf4794cc20fb68f5b204af5",
+          "artifactIdentity": "development-schema5-48667497d6e13064316d0364cf8f49dfc247ab9189306985a357d7b558333dfe",
+          "policyIdentity": "dbe8dbd5430f26e19e754d38167cd8084a32d702c695550e2ee0063dc2912430",
+          "authenticationIdentity": "66941efc779f4f2431d65fdd5b2387b2af67bd7c1559e09dac032f82259ea16e",
+          "configurationIdentity": "1720b63b49a7be3299d4b2865de4db9fcbe47560f217a32eea6397db7ea54ca5"
+        },
+        {
+          "scenario": "read.collections.links",
+          "scope": "https://reference.invalid/acme/",
+          "profile": "read-update",
+          "history": false,
+          "payloadIdentity": "9e706a73053f2e952b32f9775526504c52f51e9fedf4794cc20fb68f5b204af5",
+          "artifactIdentity": "development-schema5-48667497d6e13064316d0364cf8f49dfc247ab9189306985a357d7b558333dfe",
+          "policyIdentity": "dbe8dbd5430f26e19e754d38167cd8084a32d702c695550e2ee0063dc2912430",
+          "authenticationIdentity": "66941efc779f4f2431d65fdd5b2387b2af67bd7c1559e09dac032f82259ea16e",
+          "configurationIdentity": "1720b63b49a7be3299d4b2865de4db9fcbe47560f217a32eea6397db7ea54ca5"
+        },
+        {
+          "scenario": "read.collections.invalid-query",
+          "scope": "https://reference.invalid/acme/",
+          "profile": "read-update",
+          "history": false,
+          "payloadIdentity": "9e706a73053f2e952b32f9775526504c52f51e9fedf4794cc20fb68f5b204af5",
+          "artifactIdentity": "development-schema5-48667497d6e13064316d0364cf8f49dfc247ab9189306985a357d7b558333dfe",
+          "policyIdentity": "dbe8dbd5430f26e19e754d38167cd8084a32d702c695550e2ee0063dc2912430",
+          "authenticationIdentity": "66941efc779f4f2431d65fdd5b2387b2af67bd7c1559e09dac032f82259ea16e",
+          "configurationIdentity": "1720b63b49a7be3299d4b2865de4db9fcbe47560f217a32eea6397db7ea54ca5"
+        },
+        {
+          "scenario": "read.http.get-head",
+          "scope": "https://reference.invalid/acme/",
+          "profile": "read-update",
+          "history": false,
+          "payloadIdentity": "9e706a73053f2e952b32f9775526504c52f51e9fedf4794cc20fb68f5b204af5",
+          "artifactIdentity": "development-schema5-48667497d6e13064316d0364cf8f49dfc247ab9189306985a357d7b558333dfe",
+          "policyIdentity": "dbe8dbd5430f26e19e754d38167cd8084a32d702c695550e2ee0063dc2912430",
+          "authenticationIdentity": "66941efc779f4f2431d65fdd5b2387b2af67bd7c1559e09dac032f82259ea16e",
+          "configurationIdentity": "1720b63b49a7be3299d4b2865de4db9fcbe47560f217a32eea6397db7ea54ca5"
+        },
+        {
+          "scenario": "read.http.method-405",
+          "scope": "https://reference.invalid/acme/",
+          "profile": "read-update",
+          "history": false,
+          "payloadIdentity": "9e706a73053f2e952b32f9775526504c52f51e9fedf4794cc20fb68f5b204af5",
+          "artifactIdentity": "development-schema5-48667497d6e13064316d0364cf8f49dfc247ab9189306985a357d7b558333dfe",
+          "policyIdentity": "dbe8dbd5430f26e19e754d38167cd8084a32d702c695550e2ee0063dc2912430",
+          "authenticationIdentity": "66941efc779f4f2431d65fdd5b2387b2af67bd7c1559e09dac032f82259ea16e",
+          "configurationIdentity": "1720b63b49a7be3299d4b2865de4db9fcbe47560f217a32eea6397db7ea54ca5"
+        },
+        {
+          "scenario": "read.http.cache-cors",
+          "scope": "https://reference.invalid/acme/",
+          "profile": "read-update",
+          "history": false,
+          "payloadIdentity": "9e706a73053f2e952b32f9775526504c52f51e9fedf4794cc20fb68f5b204af5",
+          "artifactIdentity": "development-schema5-48667497d6e13064316d0364cf8f49dfc247ab9189306985a357d7b558333dfe",
+          "policyIdentity": "dbe8dbd5430f26e19e754d38167cd8084a32d702c695550e2ee0063dc2912430",
+          "authenticationIdentity": "66941efc779f4f2431d65fdd5b2387b2af67bd7c1559e09dac032f82259ea16e",
+          "configurationIdentity": "1720b63b49a7be3299d4b2865de4db9fcbe47560f217a32eea6397db7ea54ca5"
+        },
+        {
+          "scenario": "read.http.accept-negotiation",
+          "scope": "https://reference.invalid/acme/",
+          "profile": "read-update",
+          "history": false,
+          "payloadIdentity": "9e706a73053f2e952b32f9775526504c52f51e9fedf4794cc20fb68f5b204af5",
+          "artifactIdentity": "development-schema5-48667497d6e13064316d0364cf8f49dfc247ab9189306985a357d7b558333dfe",
+          "policyIdentity": "dbe8dbd5430f26e19e754d38167cd8084a32d702c695550e2ee0063dc2912430",
+          "authenticationIdentity": "66941efc779f4f2431d65fdd5b2387b2af67bd7c1559e09dac032f82259ea16e",
+          "configurationIdentity": "1720b63b49a7be3299d4b2865de4db9fcbe47560f217a32eea6397db7ea54ca5"
+        },
+        {
+          "scenario": "read.http.conditional-reads",
+          "scope": "https://reference.invalid/acme/",
+          "profile": "read-update",
+          "history": false,
+          "payloadIdentity": "9e706a73053f2e952b32f9775526504c52f51e9fedf4794cc20fb68f5b204af5",
+          "artifactIdentity": "development-schema5-48667497d6e13064316d0364cf8f49dfc247ab9189306985a357d7b558333dfe",
+          "policyIdentity": "dbe8dbd5430f26e19e754d38167cd8084a32d702c695550e2ee0063dc2912430",
+          "authenticationIdentity": "66941efc779f4f2431d65fdd5b2387b2af67bd7c1559e09dac032f82259ea16e",
+          "configurationIdentity": "1720b63b49a7be3299d4b2865de4db9fcbe47560f217a32eea6397db7ea54ca5"
+        },
+        {
+          "scenario": "read.http.head-conditional-parity",
+          "scope": "https://reference.invalid/acme/",
+          "profile": "read-update",
+          "history": false,
+          "payloadIdentity": "9e706a73053f2e952b32f9775526504c52f51e9fedf4794cc20fb68f5b204af5",
+          "artifactIdentity": "development-schema5-48667497d6e13064316d0364cf8f49dfc247ab9189306985a357d7b558333dfe",
+          "policyIdentity": "dbe8dbd5430f26e19e754d38167cd8084a32d702c695550e2ee0063dc2912430",
+          "authenticationIdentity": "66941efc779f4f2431d65fdd5b2387b2af67bd7c1559e09dac032f82259ea16e",
+          "configurationIdentity": "1720b63b49a7be3299d4b2865de4db9fcbe47560f217a32eea6397db7ea54ca5"
+        },
+        {
+          "scenario": "read-update.discovery.document",
+          "scope": "https://reference.invalid/acme/",
+          "profile": "read-update",
+          "history": false,
+          "payloadIdentity": "9e706a73053f2e952b32f9775526504c52f51e9fedf4794cc20fb68f5b204af5",
+          "artifactIdentity": "development-schema5-48667497d6e13064316d0364cf8f49dfc247ab9189306985a357d7b558333dfe",
+          "policyIdentity": "dbe8dbd5430f26e19e754d38167cd8084a32d702c695550e2ee0063dc2912430",
+          "authenticationIdentity": "66941efc779f4f2431d65fdd5b2387b2af67bd7c1559e09dac032f82259ea16e",
+          "configurationIdentity": "1720b63b49a7be3299d4b2865de4db9fcbe47560f217a32eea6397db7ea54ca5"
+        },
+        {
+          "scenario": "read-update.discovery.operation-directory",
+          "scope": "https://reference.invalid/acme/",
+          "profile": "read-update",
+          "history": false,
+          "payloadIdentity": "9e706a73053f2e952b32f9775526504c52f51e9fedf4794cc20fb68f5b204af5",
+          "artifactIdentity": "development-schema5-48667497d6e13064316d0364cf8f49dfc247ab9189306985a357d7b558333dfe",
+          "policyIdentity": "dbe8dbd5430f26e19e754d38167cd8084a32d702c695550e2ee0063dc2912430",
+          "authenticationIdentity": "66941efc779f4f2431d65fdd5b2387b2af67bd7c1559e09dac032f82259ea16e",
+          "configurationIdentity": "1720b63b49a7be3299d4b2865de4db9fcbe47560f217a32eea6397db7ea54ca5"
+        },
+        {
+          "scenario": "read-update.singleton.create-bead",
+          "scope": "https://reference.invalid/acme/",
+          "profile": "read-update",
+          "history": false,
+          "payloadIdentity": "9e706a73053f2e952b32f9775526504c52f51e9fedf4794cc20fb68f5b204af5",
+          "artifactIdentity": "development-schema5-48667497d6e13064316d0364cf8f49dfc247ab9189306985a357d7b558333dfe",
+          "policyIdentity": "dbe8dbd5430f26e19e754d38167cd8084a32d702c695550e2ee0063dc2912430",
+          "authenticationIdentity": "66941efc779f4f2431d65fdd5b2387b2af67bd7c1559e09dac032f82259ea16e",
+          "configurationIdentity": "1720b63b49a7be3299d4b2865de4db9fcbe47560f217a32eea6397db7ea54ca5"
+        },
+        {
+          "scenario": "read-update.singleton.update-bead",
+          "scope": "https://reference.invalid/acme/",
+          "profile": "read-update",
+          "history": false,
+          "payloadIdentity": "9e706a73053f2e952b32f9775526504c52f51e9fedf4794cc20fb68f5b204af5",
+          "artifactIdentity": "development-schema5-48667497d6e13064316d0364cf8f49dfc247ab9189306985a357d7b558333dfe",
+          "policyIdentity": "dbe8dbd5430f26e19e754d38167cd8084a32d702c695550e2ee0063dc2912430",
+          "authenticationIdentity": "66941efc779f4f2431d65fdd5b2387b2af67bd7c1559e09dac032f82259ea16e",
+          "configurationIdentity": "1720b63b49a7be3299d4b2865de4db9fcbe47560f217a32eea6397db7ea54ca5"
+        },
+        {
+          "scenario": "read-update.singleton.document-patch-merge-replace",
+          "scope": "https://reference.invalid/acme/",
+          "profile": "read-update",
+          "history": false,
+          "payloadIdentity": "9e706a73053f2e952b32f9775526504c52f51e9fedf4794cc20fb68f5b204af5",
+          "artifactIdentity": "development-schema5-48667497d6e13064316d0364cf8f49dfc247ab9189306985a357d7b558333dfe",
+          "policyIdentity": "dbe8dbd5430f26e19e754d38167cd8084a32d702c695550e2ee0063dc2912430",
+          "authenticationIdentity": "66941efc779f4f2431d65fdd5b2387b2af67bd7c1559e09dac032f82259ea16e",
+          "configurationIdentity": "1720b63b49a7be3299d4b2865de4db9fcbe47560f217a32eea6397db7ea54ca5"
+        },
+        {
+          "scenario": "read-update.singleton.document-patch-atomicity",
+          "scope": "https://reference.invalid/acme/",
+          "profile": "read-update",
+          "history": false,
+          "payloadIdentity": "9e706a73053f2e952b32f9775526504c52f51e9fedf4794cc20fb68f5b204af5",
+          "artifactIdentity": "development-schema5-48667497d6e13064316d0364cf8f49dfc247ab9189306985a357d7b558333dfe",
+          "policyIdentity": "dbe8dbd5430f26e19e754d38167cd8084a32d702c695550e2ee0063dc2912430",
+          "authenticationIdentity": "66941efc779f4f2431d65fdd5b2387b2af67bd7c1559e09dac032f82259ea16e",
+          "configurationIdentity": "1720b63b49a7be3299d4b2865de4db9fcbe47560f217a32eea6397db7ea54ca5"
+        },
+        {
+          "scenario": "read-update.singleton.document-patch-validation",
+          "scope": "https://reference.invalid/acme/",
+          "profile": "read-update",
+          "history": false,
+          "payloadIdentity": "9e706a73053f2e952b32f9775526504c52f51e9fedf4794cc20fb68f5b204af5",
+          "artifactIdentity": "development-schema5-48667497d6e13064316d0364cf8f49dfc247ab9189306985a357d7b558333dfe",
+          "policyIdentity": "dbe8dbd5430f26e19e754d38167cd8084a32d702c695550e2ee0063dc2912430",
+          "authenticationIdentity": "66941efc779f4f2431d65fdd5b2387b2af67bd7c1559e09dac032f82259ea16e",
+          "configurationIdentity": "1720b63b49a7be3299d4b2865de4db9fcbe47560f217a32eea6397db7ea54ca5"
+        },
+        {
+          "scenario": "read-update.singleton.delete-bead",
+          "scope": "https://reference.invalid/acme/",
+          "profile": "read-update",
+          "history": false,
+          "payloadIdentity": "9e706a73053f2e952b32f9775526504c52f51e9fedf4794cc20fb68f5b204af5",
+          "artifactIdentity": "development-schema5-48667497d6e13064316d0364cf8f49dfc247ab9189306985a357d7b558333dfe",
+          "policyIdentity": "dbe8dbd5430f26e19e754d38167cd8084a32d702c695550e2ee0063dc2912430",
+          "authenticationIdentity": "66941efc779f4f2431d65fdd5b2387b2af67bd7c1559e09dac032f82259ea16e",
+          "configurationIdentity": "1720b63b49a7be3299d4b2865de4db9fcbe47560f217a32eea6397db7ea54ca5"
+        },
+        {
+          "scenario": "read-update.singleton.create-link",
+          "scope": "https://reference.invalid/acme/",
+          "profile": "read-update",
+          "history": false,
+          "payloadIdentity": "9e706a73053f2e952b32f9775526504c52f51e9fedf4794cc20fb68f5b204af5",
+          "artifactIdentity": "development-schema5-48667497d6e13064316d0364cf8f49dfc247ab9189306985a357d7b558333dfe",
+          "policyIdentity": "dbe8dbd5430f26e19e754d38167cd8084a32d702c695550e2ee0063dc2912430",
+          "authenticationIdentity": "66941efc779f4f2431d65fdd5b2387b2af67bd7c1559e09dac032f82259ea16e",
+          "configurationIdentity": "1720b63b49a7be3299d4b2865de4db9fcbe47560f217a32eea6397db7ea54ca5"
+        },
+        {
+          "scenario": "read-update.singleton.update-link",
+          "scope": "https://reference.invalid/acme/",
+          "profile": "read-update",
+          "history": false,
+          "payloadIdentity": "9e706a73053f2e952b32f9775526504c52f51e9fedf4794cc20fb68f5b204af5",
+          "artifactIdentity": "development-schema5-48667497d6e13064316d0364cf8f49dfc247ab9189306985a357d7b558333dfe",
+          "policyIdentity": "dbe8dbd5430f26e19e754d38167cd8084a32d702c695550e2ee0063dc2912430",
+          "authenticationIdentity": "66941efc779f4f2431d65fdd5b2387b2af67bd7c1559e09dac032f82259ea16e",
+          "configurationIdentity": "1720b63b49a7be3299d4b2865de4db9fcbe47560f217a32eea6397db7ea54ca5"
+        },
+        {
+          "scenario": "read-update.singleton.delete-link",
+          "scope": "https://reference.invalid/acme/",
+          "profile": "read-update",
+          "history": false,
+          "payloadIdentity": "9e706a73053f2e952b32f9775526504c52f51e9fedf4794cc20fb68f5b204af5",
+          "artifactIdentity": "development-schema5-48667497d6e13064316d0364cf8f49dfc247ab9189306985a357d7b558333dfe",
+          "policyIdentity": "dbe8dbd5430f26e19e754d38167cd8084a32d702c695550e2ee0063dc2912430",
+          "authenticationIdentity": "66941efc779f4f2431d65fdd5b2387b2af67bd7c1559e09dac032f82259ea16e",
+          "configurationIdentity": "1720b63b49a7be3299d4b2865de4db9fcbe47560f217a32eea6397db7ea54ca5"
+        },
+        {
+          "scenario": "read-update.singleton.owned-link-source-revision",
+          "scope": "https://reference.invalid/acme/",
+          "profile": "read-update",
+          "history": false,
+          "payloadIdentity": "9e706a73053f2e952b32f9775526504c52f51e9fedf4794cc20fb68f5b204af5",
+          "artifactIdentity": "development-schema5-48667497d6e13064316d0364cf8f49dfc247ab9189306985a357d7b558333dfe",
+          "policyIdentity": "dbe8dbd5430f26e19e754d38167cd8084a32d702c695550e2ee0063dc2912430",
+          "authenticationIdentity": "66941efc779f4f2431d65fdd5b2387b2af67bd7c1559e09dac032f82259ea16e",
+          "configurationIdentity": "1720b63b49a7be3299d4b2865de4db9fcbe47560f217a32eea6397db7ea54ca5"
+        },
+        {
+          "scenario": "read-update.singleton.owned-link-no-op",
+          "scope": "https://reference.invalid/acme/",
+          "profile": "read-update",
+          "history": false,
+          "payloadIdentity": "9e706a73053f2e952b32f9775526504c52f51e9fedf4794cc20fb68f5b204af5",
+          "artifactIdentity": "development-schema5-48667497d6e13064316d0364cf8f49dfc247ab9189306985a357d7b558333dfe",
+          "policyIdentity": "dbe8dbd5430f26e19e754d38167cd8084a32d702c695550e2ee0063dc2912430",
+          "authenticationIdentity": "66941efc779f4f2431d65fdd5b2387b2af67bd7c1559e09dac032f82259ea16e",
+          "configurationIdentity": "1720b63b49a7be3299d4b2865de4db9fcbe47560f217a32eea6397db7ea54ca5"
+        },
+        {
+          "scenario": "read-update.singleton.expected-revision",
+          "scope": "https://reference.invalid/acme/",
+          "profile": "read-update",
+          "history": false,
+          "payloadIdentity": "9e706a73053f2e952b32f9775526504c52f51e9fedf4794cc20fb68f5b204af5",
+          "artifactIdentity": "development-schema5-48667497d6e13064316d0364cf8f49dfc247ab9189306985a357d7b558333dfe",
+          "policyIdentity": "dbe8dbd5430f26e19e754d38167cd8084a32d702c695550e2ee0063dc2912430",
+          "authenticationIdentity": "66941efc779f4f2431d65fdd5b2387b2af67bd7c1559e09dac032f82259ea16e",
+          "configurationIdentity": "1720b63b49a7be3299d4b2865de4db9fcbe47560f217a32eea6397db7ea54ca5"
+        },
+        {
+          "scenario": "read-update.singleton.idempotency-key-required",
+          "scope": "https://reference.invalid/acme/",
+          "profile": "read-update",
+          "history": false,
+          "payloadIdentity": "9e706a73053f2e952b32f9775526504c52f51e9fedf4794cc20fb68f5b204af5",
+          "artifactIdentity": "development-schema5-48667497d6e13064316d0364cf8f49dfc247ab9189306985a357d7b558333dfe",
+          "policyIdentity": "dbe8dbd5430f26e19e754d38167cd8084a32d702c695550e2ee0063dc2912430",
+          "authenticationIdentity": "66941efc779f4f2431d65fdd5b2387b2af67bd7c1559e09dac032f82259ea16e",
+          "configurationIdentity": "1720b63b49a7be3299d4b2865de4db9fcbe47560f217a32eea6397db7ea54ca5"
+        },
+        {
+          "scenario": "read-update.singleton.idempotent-retry",
+          "scope": "https://reference.invalid/acme/",
+          "profile": "read-update",
+          "history": false,
+          "payloadIdentity": "9e706a73053f2e952b32f9775526504c52f51e9fedf4794cc20fb68f5b204af5",
+          "artifactIdentity": "development-schema5-48667497d6e13064316d0364cf8f49dfc247ab9189306985a357d7b558333dfe",
+          "policyIdentity": "dbe8dbd5430f26e19e754d38167cd8084a32d702c695550e2ee0063dc2912430",
+          "authenticationIdentity": "66941efc779f4f2431d65fdd5b2387b2af67bd7c1559e09dac032f82259ea16e",
+          "configurationIdentity": "1720b63b49a7be3299d4b2865de4db9fcbe47560f217a32eea6397db7ea54ca5"
+        },
+        {
+          "scenario": "read-update.singleton.idempotency-conflict",
+          "scope": "https://reference.invalid/acme/",
+          "profile": "read-update",
+          "history": false,
+          "payloadIdentity": "9e706a73053f2e952b32f9775526504c52f51e9fedf4794cc20fb68f5b204af5",
+          "artifactIdentity": "development-schema5-48667497d6e13064316d0364cf8f49dfc247ab9189306985a357d7b558333dfe",
+          "policyIdentity": "dbe8dbd5430f26e19e754d38167cd8084a32d702c695550e2ee0063dc2912430",
+          "authenticationIdentity": "66941efc779f4f2431d65fdd5b2387b2af67bd7c1559e09dac032f82259ea16e",
+          "configurationIdentity": "1720b63b49a7be3299d4b2865de4db9fcbe47560f217a32eea6397db7ea54ca5"
+        },
+        {
+          "scenario": "read-update.singleton.unsupported-media-type",
+          "scope": "https://reference.invalid/acme/",
+          "profile": "read-update",
+          "history": false,
+          "payloadIdentity": "9e706a73053f2e952b32f9775526504c52f51e9fedf4794cc20fb68f5b204af5",
+          "artifactIdentity": "development-schema5-48667497d6e13064316d0364cf8f49dfc247ab9189306985a357d7b558333dfe",
+          "policyIdentity": "dbe8dbd5430f26e19e754d38167cd8084a32d702c695550e2ee0063dc2912430",
+          "authenticationIdentity": "66941efc779f4f2431d65fdd5b2387b2af67bd7c1559e09dac032f82259ea16e",
+          "configurationIdentity": "1720b63b49a7be3299d4b2865de4db9fcbe47560f217a32eea6397db7ea54ca5"
+        },
+        {
+          "scenario": "read-update.singleton.no-local-bindings",
+          "scope": "https://reference.invalid/acme/",
+          "profile": "read-update",
+          "history": false,
+          "payloadIdentity": "9e706a73053f2e952b32f9775526504c52f51e9fedf4794cc20fb68f5b204af5",
+          "artifactIdentity": "development-schema5-48667497d6e13064316d0364cf8f49dfc247ab9189306985a357d7b558333dfe",
+          "policyIdentity": "dbe8dbd5430f26e19e754d38167cd8084a32d702c695550e2ee0063dc2912430",
+          "authenticationIdentity": "66941efc779f4f2431d65fdd5b2387b2af67bd7c1559e09dac032f82259ea16e",
+          "configurationIdentity": "1720b63b49a7be3299d4b2865de4db9fcbe47560f217a32eea6397db7ea54ca5"
+        },
+        {
+          "scenario": "read-update.singleton.result-headers",
+          "scope": "https://reference.invalid/acme/",
+          "profile": "read-update",
+          "history": false,
+          "payloadIdentity": "9e706a73053f2e952b32f9775526504c52f51e9fedf4794cc20fb68f5b204af5",
+          "artifactIdentity": "development-schema5-48667497d6e13064316d0364cf8f49dfc247ab9189306985a357d7b558333dfe",
+          "policyIdentity": "dbe8dbd5430f26e19e754d38167cd8084a32d702c695550e2ee0063dc2912430",
+          "authenticationIdentity": "66941efc779f4f2431d65fdd5b2387b2af67bd7c1559e09dac032f82259ea16e",
+          "configurationIdentity": "1720b63b49a7be3299d4b2865de4db9fcbe47560f217a32eea6397db7ea54ca5"
+        },
+        {
+          "scenario": "read-update.alias.put-creates",
+          "scope": "https://reference.invalid/acme/",
+          "profile": "read-update",
+          "history": false,
+          "payloadIdentity": "9e706a73053f2e952b32f9775526504c52f51e9fedf4794cc20fb68f5b204af5",
+          "artifactIdentity": "development-schema5-48667497d6e13064316d0364cf8f49dfc247ab9189306985a357d7b558333dfe",
+          "policyIdentity": "dbe8dbd5430f26e19e754d38167cd8084a32d702c695550e2ee0063dc2912430",
+          "authenticationIdentity": "66941efc779f4f2431d65fdd5b2387b2af67bd7c1559e09dac032f82259ea16e",
+          "configurationIdentity": "1720b63b49a7be3299d4b2865de4db9fcbe47560f217a32eea6397db7ea54ca5"
+        },
+        {
+          "scenario": "read-update.alias.put-repoints",
+          "scope": "https://reference.invalid/acme/",
+          "profile": "read-update",
+          "history": false,
+          "payloadIdentity": "9e706a73053f2e952b32f9775526504c52f51e9fedf4794cc20fb68f5b204af5",
+          "artifactIdentity": "development-schema5-48667497d6e13064316d0364cf8f49dfc247ab9189306985a357d7b558333dfe",
+          "policyIdentity": "dbe8dbd5430f26e19e754d38167cd8084a32d702c695550e2ee0063dc2912430",
+          "authenticationIdentity": "66941efc779f4f2431d65fdd5b2387b2af67bd7c1559e09dac032f82259ea16e",
+          "configurationIdentity": "1720b63b49a7be3299d4b2865de4db9fcbe47560f217a32eea6397db7ea54ca5"
+        },
+        {
+          "scenario": "read-update.alias.delete-releases",
+          "scope": "https://reference.invalid/acme/",
+          "profile": "read-update",
+          "history": false,
+          "payloadIdentity": "9e706a73053f2e952b32f9775526504c52f51e9fedf4794cc20fb68f5b204af5",
+          "artifactIdentity": "development-schema5-48667497d6e13064316d0364cf8f49dfc247ab9189306985a357d7b558333dfe",
+          "policyIdentity": "dbe8dbd5430f26e19e754d38167cd8084a32d702c695550e2ee0063dc2912430",
+          "authenticationIdentity": "66941efc779f4f2431d65fdd5b2387b2af67bd7c1559e09dac032f82259ea16e",
+          "configurationIdentity": "1720b63b49a7be3299d4b2865de4db9fcbe47560f217a32eea6397db7ea54ca5"
+        },
+        {
+          "scenario": "read-update.alias.non-canonical-target",
+          "scope": "https://reference.invalid/acme/",
+          "profile": "read-update",
+          "history": false,
+          "payloadIdentity": "9e706a73053f2e952b32f9775526504c52f51e9fedf4794cc20fb68f5b204af5",
+          "artifactIdentity": "development-schema5-48667497d6e13064316d0364cf8f49dfc247ab9189306985a357d7b558333dfe",
+          "policyIdentity": "dbe8dbd5430f26e19e754d38167cd8084a32d702c695550e2ee0063dc2912430",
+          "authenticationIdentity": "66941efc779f4f2431d65fdd5b2387b2af67bd7c1559e09dac032f82259ea16e",
+          "configurationIdentity": "1720b63b49a7be3299d4b2865de4db9fcbe47560f217a32eea6397db7ea54ca5"
+        },
+        {
+          "scenario": "read-update.alias.no-version-minted",
+          "scope": "https://reference.invalid/acme/",
+          "profile": "read-update",
+          "history": false,
+          "payloadIdentity": "9e706a73053f2e952b32f9775526504c52f51e9fedf4794cc20fb68f5b204af5",
+          "artifactIdentity": "development-schema5-48667497d6e13064316d0364cf8f49dfc247ab9189306985a357d7b558333dfe",
+          "policyIdentity": "dbe8dbd5430f26e19e754d38167cd8084a32d702c695550e2ee0063dc2912430",
+          "authenticationIdentity": "66941efc779f4f2431d65fdd5b2387b2af67bd7c1559e09dac032f82259ea16e",
+          "configurationIdentity": "1720b63b49a7be3299d4b2865de4db9fcbe47560f217a32eea6397db7ea54ca5"
+        },
+        {
+          "scenario": "read-update.sequence.order-and-partial-commit",
+          "scope": "https://reference.invalid/acme/",
+          "profile": "read-update",
+          "history": false,
+          "payloadIdentity": "9e706a73053f2e952b32f9775526504c52f51e9fedf4794cc20fb68f5b204af5",
+          "artifactIdentity": "development-schema5-48667497d6e13064316d0364cf8f49dfc247ab9189306985a357d7b558333dfe",
+          "policyIdentity": "dbe8dbd5430f26e19e754d38167cd8084a32d702c695550e2ee0063dc2912430",
+          "authenticationIdentity": "66941efc779f4f2431d65fdd5b2387b2af67bd7c1559e09dac032f82259ea16e",
+          "configurationIdentity": "1720b63b49a7be3299d4b2865de4db9fcbe47560f217a32eea6397db7ea54ca5"
+        },
+        {
+          "scenario": "read-update.sequence.local-bindings",
+          "scope": "https://reference.invalid/acme/",
+          "profile": "read-update",
+          "history": false,
+          "payloadIdentity": "9e706a73053f2e952b32f9775526504c52f51e9fedf4794cc20fb68f5b204af5",
+          "artifactIdentity": "development-schema5-48667497d6e13064316d0364cf8f49dfc247ab9189306985a357d7b558333dfe",
+          "policyIdentity": "dbe8dbd5430f26e19e754d38167cd8084a32d702c695550e2ee0063dc2912430",
+          "authenticationIdentity": "66941efc779f4f2431d65fdd5b2387b2af67bd7c1559e09dac032f82259ea16e",
+          "configurationIdentity": "1720b63b49a7be3299d4b2865de4db9fcbe47560f217a32eea6397db7ea54ca5"
+        },
+        {
+          "scenario": "read-update.sequence.member-problem-shape",
+          "scope": "https://reference.invalid/acme/",
+          "profile": "read-update",
+          "history": false,
+          "payloadIdentity": "9e706a73053f2e952b32f9775526504c52f51e9fedf4794cc20fb68f5b204af5",
+          "artifactIdentity": "development-schema5-48667497d6e13064316d0364cf8f49dfc247ab9189306985a357d7b558333dfe",
+          "policyIdentity": "dbe8dbd5430f26e19e754d38167cd8084a32d702c695550e2ee0063dc2912430",
+          "authenticationIdentity": "66941efc779f4f2431d65fdd5b2387b2af67bd7c1559e09dac032f82259ea16e",
+          "configurationIdentity": "1720b63b49a7be3299d4b2865de4db9fcbe47560f217a32eea6397db7ea54ca5"
+        },
+        {
+          "scenario": "read-update.sequence.carrier-rejection",
+          "scope": "https://reference.invalid/acme/",
+          "profile": "read-update",
+          "history": false,
+          "payloadIdentity": "9e706a73053f2e952b32f9775526504c52f51e9fedf4794cc20fb68f5b204af5",
+          "artifactIdentity": "development-schema5-48667497d6e13064316d0364cf8f49dfc247ab9189306985a357d7b558333dfe",
+          "policyIdentity": "dbe8dbd5430f26e19e754d38167cd8084a32d702c695550e2ee0063dc2912430",
+          "authenticationIdentity": "66941efc779f4f2431d65fdd5b2387b2af67bd7c1559e09dac032f82259ea16e",
+          "configurationIdentity": "1720b63b49a7be3299d4b2865de4db9fcbe47560f217a32eea6397db7ea54ca5"
+        },
+        {
+          "scenario": "read-update.sequence.idempotent-retry",
+          "scope": "https://reference.invalid/acme/",
+          "profile": "read-update",
+          "history": false,
+          "payloadIdentity": "9e706a73053f2e952b32f9775526504c52f51e9fedf4794cc20fb68f5b204af5",
+          "artifactIdentity": "development-schema5-48667497d6e13064316d0364cf8f49dfc247ab9189306985a357d7b558333dfe",
+          "policyIdentity": "dbe8dbd5430f26e19e754d38167cd8084a32d702c695550e2ee0063dc2912430",
+          "authenticationIdentity": "66941efc779f4f2431d65fdd5b2387b2af67bd7c1559e09dac032f82259ea16e",
+          "configurationIdentity": "1720b63b49a7be3299d4b2865de4db9fcbe47560f217a32eea6397db7ea54ca5"
+        },
+        {
+          "scenario": "read-update.idempotency.cross-carrier",
+          "scope": "https://reference.invalid/acme/",
+          "profile": "read-update",
+          "history": false,
+          "payloadIdentity": "9e706a73053f2e952b32f9775526504c52f51e9fedf4794cc20fb68f5b204af5",
+          "artifactIdentity": "development-schema5-48667497d6e13064316d0364cf8f49dfc247ab9189306985a357d7b558333dfe",
+          "policyIdentity": "dbe8dbd5430f26e19e754d38167cd8084a32d702c695550e2ee0063dc2912430",
+          "authenticationIdentity": "66941efc779f4f2431d65fdd5b2387b2af67bd7c1559e09dac032f82259ea16e",
+          "configurationIdentity": "1720b63b49a7be3299d4b2865de4db9fcbe47560f217a32eea6397db7ea54ca5"
+        },
+        {
+          "scenario": "read-update.validation.type-contract",
+          "scope": "https://reference.invalid/acme/",
+          "profile": "read-update",
+          "history": false,
+          "payloadIdentity": "9e706a73053f2e952b32f9775526504c52f51e9fedf4794cc20fb68f5b204af5",
+          "artifactIdentity": "development-schema5-48667497d6e13064316d0364cf8f49dfc247ab9189306985a357d7b558333dfe",
+          "policyIdentity": "dbe8dbd5430f26e19e754d38167cd8084a32d702c695550e2ee0063dc2912430",
+          "authenticationIdentity": "66941efc779f4f2431d65fdd5b2387b2af67bd7c1559e09dac032f82259ea16e",
+          "configurationIdentity": "1720b63b49a7be3299d4b2865de4db9fcbe47560f217a32eea6397db7ea54ca5"
+        },
+        {
+          "scenario": "read-update.validation.diagnostics",
+          "scope": "https://reference.invalid/acme/",
+          "profile": "read-update",
+          "history": false,
+          "payloadIdentity": "9e706a73053f2e952b32f9775526504c52f51e9fedf4794cc20fb68f5b204af5",
+          "artifactIdentity": "development-schema5-48667497d6e13064316d0364cf8f49dfc247ab9189306985a357d7b558333dfe",
+          "policyIdentity": "dbe8dbd5430f26e19e754d38167cd8084a32d702c695550e2ee0063dc2912430",
+          "authenticationIdentity": "66941efc779f4f2431d65fdd5b2387b2af67bd7c1559e09dac032f82259ea16e",
+          "configurationIdentity": "1720b63b49a7be3299d4b2865de4db9fcbe47560f217a32eea6397db7ea54ca5"
+        }
+      ],
+      "cleanupComplete": true
+    },
+    {
+      "id": "reference-continuation",
+      "source": "matrices/read-update-reference-continuation-v1.json",
+      "selectionMode": "owned-exact",
+      "requestedIds": [
+        "read-update.singleton.attribution",
+        "read-update.alias.unknown-subject",
+        "read-update.numeric-model.same-value-no-op",
+        "read-update.numeric-model.round-trip-admission",
+        "read-update.numeric-model.nested-refusal"
+      ],
+      "selectedIds": [
+        "read-update.singleton.attribution",
+        "read-update.alias.unknown-subject",
+        "read-update.numeric-model.same-value-no-op",
+        "read-update.numeric-model.round-trip-admission",
+        "read-update.numeric-model.nested-refusal"
+      ],
+      "resultIds": [
+        "read-update.singleton.attribution",
+        "read-update.alias.unknown-subject",
+        "read-update.numeric-model.same-value-no-op",
+        "read-update.numeric-model.round-trip-admission",
+        "read-update.numeric-model.nested-refusal"
+      ],
+      "manifestDigest": "24d754618b51f255b5885d83c53ccf9a06593031e1812739a4f2b504c4a1df8d",
+      "routeDigest": "272c31e6bdf474d3889042e3bc636f4f144b58ea1e87a8f8176c772a1a026110",
+      "routes": [
+        {
+          "method": "GET",
+          "url": "https://reference.invalid/acme/operations/"
+        },
+        {
+          "method": "GET",
+          "url": "https://reference.invalid/acme/beads/att-subject"
+        },
+        {
+          "method": "GET",
+          "url": "https://reference.invalid/acme/beads/att-owner"
+        },
+        {
+          "method": "GET",
+          "url": "https://reference.invalid/acme/beads/att-target"
+        },
+        {
+          "method": "GET",
+          "url": "https://reference.invalid/acme/links/att-unowned"
+        },
+        {
+          "method": "GET",
+          "url": "https://reference.invalid/acme/links/att-owned"
+        },
+        {
+          "method": "GET",
+          "url": "https://reference.invalid/acme/beads/rc-source"
+        },
+        {
+          "method": "GET",
+          "url": "https://reference.invalid/acme/beads/rc-target"
+        },
+        {
+          "method": "GET",
+          "url": "https://reference.invalid/acme/links/rc-live"
+        },
+        {
+          "method": "GET",
+          "url": "https://reference.invalid/acme/beads/rc-rc-sequence-wrong-tail"
+        },
+        {
+          "method": "GET",
+          "url": "https://reference.invalid/acme/beads/rc-missing"
+        },
+        {
+          "method": "GET",
+          "url": "https://reference.invalid/acme/beads/num-subject"
+        },
+        {
+          "method": "GET",
+          "url": "https://reference.invalid/acme/beads/num-target"
+        },
+        {
+          "method": "GET",
+          "url": "https://reference.invalid/acme/links/num-link"
+        },
+        {
+          "method": "GET",
+          "url": "https://reference.invalid/acme/beads/nr-source"
+        },
+        {
+          "method": "GET",
+          "url": "https://reference.invalid/acme/beads/nr-target"
+        },
+        {
+          "method": "GET",
+          "url": "https://reference.invalid/acme/beads/nr-bead-integer"
+        },
+        {
+          "method": "GET",
+          "url": "https://reference.invalid/acme/beads/nr-bead-precision"
+        },
+        {
+          "method": "GET",
+          "url": "https://reference.invalid/acme/beads/nr-bead-overflow"
+        },
+        {
+          "method": "GET",
+          "url": "https://reference.invalid/acme/links/nr-link-integer"
+        },
+        {
+          "method": "GET",
+          "url": "https://reference.invalid/acme/links/nr-link-precision"
+        },
+        {
+          "method": "GET",
+          "url": "https://reference.invalid/acme/links/nr-link-overflow"
+        },
+        {
+          "method": "GET",
+          "url": "https://reference.invalid/acme/beads/nn-source"
+        },
+        {
+          "method": "GET",
+          "url": "https://reference.invalid/acme/beads/nn-target"
+        },
+        {
+          "method": "GET",
+          "url": "https://reference.invalid/acme/beads/nn-bead-properties"
+        },
+        {
+          "method": "GET",
+          "url": "https://reference.invalid/acme/beads/nn-bead-metadata"
+        },
+        {
+          "method": "GET",
+          "url": "https://reference.invalid/acme/links/nn-link-properties"
+        },
+        {
+          "method": "GET",
+          "url": "https://reference.invalid/acme/links/nn-link-metadata"
+        },
+        {
+          "method": "GET",
+          "url": "https://reference.invalid/acme/"
+        },
+        {
+          "method": "GET",
+          "url": "https://reference.invalid/acme/bdp.json"
+        },
+        {
+          "method": "GET",
+          "url": "https://reference.invalid/acme/types/task"
+        },
+        {
+          "method": "GET",
+          "url": "https://reference.invalid/acme/types/relates"
+        },
+        {
+          "method": "GET",
+          "url": "https://reference.invalid/acme/types/decision"
+        },
+        {
+          "method": "GET",
+          "url": "https://reference.invalid/acme/alias/rc-locator-live"
+        },
+        {
+          "method": "GET",
+          "url": "https://reference.invalid/acme/beads/?limit=100"
+        },
+        {
+          "method": "GET",
+          "url": "https://reference.invalid/acme/links/?limit=100"
+        },
+        {
+          "method": "GET",
+          "url": "https://reference.invalid/acme/alias/rc-locator-put-local"
+        },
+        {
+          "method": "GET",
+          "url": "https://reference.invalid/acme/alias/rc-locator-put-absolute"
+        },
+        {
+          "method": "GET",
+          "url": "https://reference.invalid/acme/alias/rc-locator-missing"
+        },
+        {
+          "method": "GET",
+          "url": "https://reference.invalid/acme/alias/rc-locator-missing-absolute"
+        },
+        {
+          "method": "POST",
+          "url": "https://reference.invalid/acme/operations/update-bead"
+        },
+        {
+          "method": "POST",
+          "url": "https://reference.invalid/acme/operations/update-link"
+        },
+        {
+          "method": "POST",
+          "url": "https://reference.invalid/acme/operations/create-bead"
+        },
+        {
+          "method": "POST",
+          "url": "https://reference.invalid/acme/operations/create-link"
+        },
+        {
+          "method": "GET",
+          "url": "https://reference.invalid/acme/beads/nr-schema"
+        },
+        {
+          "method": "GET",
+          "url": "https://reference.invalid/acme/links/nr-schema"
+        },
+        {
+          "method": "POST",
+          "url": "https://reference.invalid/acme/operations/sequence"
+        },
+        {
+          "method": "POST",
+          "url": "https://reference.invalid/acme/operations/delete-bead"
+        },
+        {
+          "method": "POST",
+          "url": "https://reference.invalid/acme/operations/delete-link"
+        },
+        {
+          "method": "POST",
+          "url": "https://reference.invalid/acme/operations/put-alias"
+        },
+        {
+          "method": "POST",
+          "url": "https://reference.invalid/acme/operations/delete-alias"
+        }
+      ],
+      "resultDigest": "dc154ea5a4fce015b16020e9a8d69ea43d508f00170b9001f36c6a1a633d415a",
+      "resultBytes": 246204,
+      "actualBootstrap": {
+        "scope": "https://reference.invalid/acme/",
+        "profile": "read-update",
+        "history": false,
+        "payloadIdentity": "9e706a73053f2e952b32f9775526504c52f51e9fedf4794cc20fb68f5b204af5",
+        "artifactIdentity": "development-schema5-48667497d6e13064316d0364cf8f49dfc247ab9189306985a357d7b558333dfe",
+        "policyIdentity": "dbe8dbd5430f26e19e754d38167cd8084a32d702c695550e2ee0063dc2912430",
+        "authenticationIdentity": "66941efc779f4f2431d65fdd5b2387b2af67bd7c1559e09dac032f82259ea16e",
+        "configurationIdentity": "1720b63b49a7be3299d4b2865de4db9fcbe47560f217a32eea6397db7ea54ca5"
+      },
+      "actualSessions": [
+        {
+          "scenario": "read-update.singleton.attribution",
+          "scope": "https://reference.invalid/acme/",
+          "profile": "read-update",
+          "history": false,
+          "payloadIdentity": "9e706a73053f2e952b32f9775526504c52f51e9fedf4794cc20fb68f5b204af5",
+          "artifactIdentity": "development-schema5-48667497d6e13064316d0364cf8f49dfc247ab9189306985a357d7b558333dfe",
+          "policyIdentity": "dbe8dbd5430f26e19e754d38167cd8084a32d702c695550e2ee0063dc2912430",
+          "authenticationIdentity": "66941efc779f4f2431d65fdd5b2387b2af67bd7c1559e09dac032f82259ea16e",
+          "configurationIdentity": "1720b63b49a7be3299d4b2865de4db9fcbe47560f217a32eea6397db7ea54ca5"
+        },
+        {
+          "scenario": "read-update.alias.unknown-subject",
+          "scope": "https://reference.invalid/acme/",
+          "profile": "read-update",
+          "history": false,
+          "payloadIdentity": "9e706a73053f2e952b32f9775526504c52f51e9fedf4794cc20fb68f5b204af5",
+          "artifactIdentity": "development-schema5-48667497d6e13064316d0364cf8f49dfc247ab9189306985a357d7b558333dfe",
+          "policyIdentity": "dbe8dbd5430f26e19e754d38167cd8084a32d702c695550e2ee0063dc2912430",
+          "authenticationIdentity": "66941efc779f4f2431d65fdd5b2387b2af67bd7c1559e09dac032f82259ea16e",
+          "configurationIdentity": "1720b63b49a7be3299d4b2865de4db9fcbe47560f217a32eea6397db7ea54ca5"
+        },
+        {
+          "scenario": "read-update.numeric-model.same-value-no-op",
+          "scope": "https://reference.invalid/acme/",
+          "profile": "read-update",
+          "history": false,
+          "payloadIdentity": "9e706a73053f2e952b32f9775526504c52f51e9fedf4794cc20fb68f5b204af5",
+          "artifactIdentity": "development-schema5-48667497d6e13064316d0364cf8f49dfc247ab9189306985a357d7b558333dfe",
+          "policyIdentity": "dbe8dbd5430f26e19e754d38167cd8084a32d702c695550e2ee0063dc2912430",
+          "authenticationIdentity": "66941efc779f4f2431d65fdd5b2387b2af67bd7c1559e09dac032f82259ea16e",
+          "configurationIdentity": "1720b63b49a7be3299d4b2865de4db9fcbe47560f217a32eea6397db7ea54ca5"
+        },
+        {
+          "scenario": "read-update.numeric-model.round-trip-admission",
+          "scope": "https://reference.invalid/acme/",
+          "profile": "read-update",
+          "history": false,
+          "payloadIdentity": "9e706a73053f2e952b32f9775526504c52f51e9fedf4794cc20fb68f5b204af5",
+          "artifactIdentity": "development-schema5-48667497d6e13064316d0364cf8f49dfc247ab9189306985a357d7b558333dfe",
+          "policyIdentity": "dbe8dbd5430f26e19e754d38167cd8084a32d702c695550e2ee0063dc2912430",
+          "authenticationIdentity": "66941efc779f4f2431d65fdd5b2387b2af67bd7c1559e09dac032f82259ea16e",
+          "configurationIdentity": "1720b63b49a7be3299d4b2865de4db9fcbe47560f217a32eea6397db7ea54ca5"
+        },
+        {
+          "scenario": "read-update.numeric-model.nested-refusal",
+          "scope": "https://reference.invalid/acme/",
+          "profile": "read-update",
+          "history": false,
+          "payloadIdentity": "9e706a73053f2e952b32f9775526504c52f51e9fedf4794cc20fb68f5b204af5",
+          "artifactIdentity": "development-schema5-48667497d6e13064316d0364cf8f49dfc247ab9189306985a357d7b558333dfe",
+          "policyIdentity": "dbe8dbd5430f26e19e754d38167cd8084a32d702c695550e2ee0063dc2912430",
+          "authenticationIdentity": "66941efc779f4f2431d65fdd5b2387b2af67bd7c1559e09dac032f82259ea16e",
+          "configurationIdentity": "1720b63b49a7be3299d4b2865de4db9fcbe47560f217a32eea6397db7ea54ca5"
+        }
+      ],
+      "cleanupComplete": true
+    }
+  ],
+  "sourceDirty": false,
+  "timing": [
+    {
+      "id": "baseline",
+      "budgetRemainingMsAtStart": 89938.096458,
+      "elapsedMs": 13767.245292,
+      "remainingMs": 76232.754708,
+      "outcome": "pass"
+    },
+    {
+      "id": "reference-continuation",
+      "budgetRemainingMsAtStart": 76221.952583,
+      "elapsedMs": 15624.403042000002,
+      "remainingMs": 74375.596958,
+      "outcome": "pass"
+    }
+  ],
+  "outcome": "observed",
+  "childReports": [
+    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/read-update-cold-directory-draft/installed-preparation/run/aggregate.json.baseline.json",
+    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/read-update-cold-directory-draft/installed-preparation/run/aggregate.json.reference-continuation.json"
+  ],
+  "writtenReports": [
+    {
+      "id": "baseline",
+      "resultDigest": "2cadef32e2e7e0e99b21334c57ee9e12c6b83f75aa35696604b807e090079361",
+      "report": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/read-update-cold-directory-draft/installed-preparation/run/aggregate.json.baseline.json",
+      "writtenReportDigest": "a30c00bc13514193cd94573127f921bf14deb46a9306443d72ec94c57e524feb",
+      "writtenReportBytes": 4777436
+    },
+    {
+      "id": "reference-continuation",
+      "resultDigest": "dc154ea5a4fce015b16020e9a8d69ea43d508f00170b9001f36c6a1a633d415a",
+      "report": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/read-update-cold-directory-draft/installed-preparation/run/aggregate.json.reference-continuation.json",
+      "writtenReportDigest": "c754c2641c3459eee97b624f82d567d44847fe7b38965df32612171db083a997",
+      "writtenReportBytes": 1027242
+    }
+  ]
+}

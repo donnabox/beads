@@ -1,0 +1,38 @@
+--- current5/unresolved-inputs.json
++++ predecessor4/unresolved-inputs.json
+@@ -1,23 +1,21 @@
+ {
+   "executionReleased": false,
+   "noRetry": true,
+-  "actualResults": "All52 fresh5 starts/logs/exits/results/observedPIDgroups/directories UNRESOLVED;4 actual first6pass/lintfail strictly historical",
++  "actualResults": "All52 fresh stage starts/logs/exits/results/processes/directories UNRESOLVED; predecessor2 failed run is historical only",
++  "requiredBeforeAnyAttempt": [
++    "independent preparation4 mechanics acceptance",
++    "new root exact-source execution disposition honestly binding original actual CODE, full corrected native, later annotation native/current source",
++    "durable root release exact ordered prefix/tool/source bindings/current session"
++  ],
+   "knownStaticInputsResolved": {
+-    "current679SourceFreeze7b3c9d": true,
+-    "rootActualGitSource4d576": true,
+-    "previousAnnotation0132Accepted": true,
+-    "sourceBindingFinalized": true
++    "source679": true,
++    "rootGitBinary6eea": true,
++    "annotationPrecision0132": true
+   },
+-  "requiredBeforeAnyAttempt": [
+-    "independent native lint correction precision",
+-    "independent preparation5 minimal mechanics acceptance",
+-    "current root execution disposition honestly chaining original CODE/full corrected native/annotation/later lint correction source",
+-    "fresh base tool/implementation acceptance + durable exact ordered-prefix gate release"
+-  ],
+   "requiredAtBarriers": [
+-    "fresh version/offline frozen workspace install/actual11tool binding",
+-    "fresh actual build map/root acceptance before source tests",
+-    "fresh complete archives/consumer/newlock/payload/inventory/entry proof/root barriers before installed"
++    "fresh versions/offlineinstall/actual11workspace tools",
++    "fresh actual build/root acceptance",
++    "fresh fullarchives/consumer/newlock/payload/inventory/entry/root proof acceptance"
+   ],
+   "noFabricatedHashes": true
+ }

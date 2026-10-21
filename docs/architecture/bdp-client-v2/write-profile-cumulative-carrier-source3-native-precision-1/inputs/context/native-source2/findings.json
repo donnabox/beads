@@ -1,0 +1,21 @@
+[
+  {
+    "id": "N5",
+    "severity": "Low",
+    "title": "Supplied object capture lacks the stated per-container bound",
+    "file": "packages/conformance/test-support/profile-evidence.ts",
+    "lines": [
+      96,
+      99,
+      129,
+      137,
+      845,
+      847
+    ],
+    "evidence": "array() refuses length>10000, but safeData object branch uses record(value) then Object.entries(...).map with no object-key bound. A plain supplied ready/exact nested object containing10001 scalar own data keys uses10002 nodes, below shared100000, and is traversed/captured before later metadata/configuration rejection. parseBoundedJson applies its own10000-container cap to raw bytes; that does not enforce the independent supplied-context capture boundary.",
+    "contract": "Accepted correction primitive-and-cache-contract N3 requires existing100000nodes/depth128/10000container capture limits. Tests R24 cover raw JSON containers but not a supplied object container.",
+    "impact": "The promised per-container bound/error class is not enforced during intrinsic supplied-data capture. Overall node/depth refusal remains; this is not observed code execution, unbounded recursion or qualification/admission leakage.",
+    "fix": "Before traversing a captured plain record, reject more than10000 own keys with capacity, preserving intrinsic behavior refusal and shared node/depth budget. Add exact10000/10001 finite supplied-record controls inside existing R24; no new callbacks, runner calls, exports, semantic or budget change.",
+    "status": "requires root disposition; source unchanged by reviewer"
+  }
+]

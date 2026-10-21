@@ -1,0 +1,61 @@
+{
+  "status": "actual_review_completion_independently_verified",
+  "checkedAt": "2026-10-17T11:46:26.698522+00:00",
+  "reviewVerdict": "Three claimed blockers, three should-fix items, five clarifications; root and native disposition required. No execution permission inferred.",
+  "elapsedSeconds": 534.9636530829594,
+  "exitCode": 0,
+  "terminalResults": 1,
+  "streamRecords": 2486,
+  "streamBytes": 1264189,
+  "sourceFilesVerified": 701,
+  "contextFilesVerified": 59,
+  "artifactPinsVerified": 4,
+  "sourceBeforeEqualsAfter": true,
+  "cleanHead": "d7197e97a29bff8f075028419afad05388e2e655",
+  "tree": "630a94d0ca1545f898cb8a8b614d4b7d2dd6d454",
+  "sampledPidsAbsent": [
+    64207
+  ],
+  "remainingProcessGroup": [],
+  "forcedCleanup": false,
+  "toolCounts": {
+    "Read": 21,
+    "Glob": 5,
+    "Grep": 5
+  },
+  "failedToolResults": 0,
+  "successfullyReadPaths": [
+    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/pr150-frozen-main-reconciliation/tools/python-requirements.json",
+    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/pr150-frozen-main-reconciliation/tools/python-venv/lib/python3.14/site-packages/jsonschema-4.26.0.dist-info/METADATA",
+    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/pr150-frozen-main-reconciliation/tools/python-venv/lib/python3.14/site-packages/jsonschema/_format.py",
+    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/pr150-frozen-main-reconciliation/type-example-dependency-diagnosis.json",
+    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/pr150-frozen-main-reconciliation/validation-format-dependency-plan.md",
+    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/pr150-frozen-main-reconciliation/validation-private-tmp-successor/commands.json",
+    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/pr150-frozen-main-reconciliation/validation-private-tmp-successor/execution-gate.json",
+    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/pr150-frozen-main-reconciliation/validation-private-tmp-successor/gate.py",
+    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/pr150-frozen-main-reconciliation/validation-private-tmp-successor/preparation-index.json",
+    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/pr150-frozen-main-reconciliation/validation-private-tmp-successor/root-full-suite-acceptance.json",
+    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/pr150-frozen-main-reconciliation/validation-private-tmp-successor/run.py",
+    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/pr150-frozen-main-reconciliation/validation-private-tmp-successor/run/build-artifacts.json",
+    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/pr150-frozen-main-reconciliation/validation-private-tmp-successor/run/type-examples.exit.json",
+    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/pr150-frozen-main-reconciliation/validation-private-tmp-successor/run/type-examples.log",
+    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/pr150-frozen-main-reconciliation/validation-private-tmp-successor/tools.json",
+    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/pr150-frozen-main-reconciliation/validation/candidate-source.json",
+    "/Users/dbox/repos/wt/vickie/vickie-pr150-main-reconciliation/fixtures/specs/issue/domain-property-cases.json",
+    "/Users/dbox/repos/wt/vickie/vickie-pr150-main-reconciliation/scripts/check_type_examples.py",
+    "/Users/dbox/repos/wt/vickie/vickie-pr150-main-reconciliation/specs/types/issue/issue.properties.schema.json"
+  ],
+  "contextAccessClaim": "Only successful explicit Read paths are asserted; not all bound records are claimed read.",
+  "reviewLimitation": "Claude could not independently compare frozen main Git objects with Read/Glob/Grep; limitation preserved in final report.",
+  "hashes": {
+    "binding.json": "55f9cbcfcdf806596176f2857b030ab3578d0c88cdb73a3d9c512a281e0dc268",
+    "run.py": "c0207db37af60270f9d9153aef90fc066b9ca3777becedbeae8b4f11eeafb652",
+    "prompt.txt": "b5a3173d1db025b1b055f9ffcb0894e222097a57251bfd618e17d7248cb6b017",
+    "exit.json": "a399af6e44b43867e18b924e975737eff8cb96886377b8bc9cd7bd3aeba0ba06",
+    "stream.jsonl": "c144d8f86f3ef80d26e8e5c1ee3d35e8146ce390fb143961738eba1a3fbbcefc",
+    "terminal-results.json": "4e72c6bd3b094ce13eca33718e8aa0837a02ee0833bd1d7888f13ce22f9efbb6",
+    "final-review.txt": "cfaa78caac8853eb9b4e8697975292fcb2563323ff1f891fb3ba492b2e6ea415",
+    "source-before.json": "b26f06304106dd58213dee6315eb1bca1d309fd5ea8eabf7355311d417fe259b",
+    "source-after.json": "b26f06304106dd58213dee6315eb1bca1d309fd5ea8eabf7355311d417fe259b"
+  }
+}

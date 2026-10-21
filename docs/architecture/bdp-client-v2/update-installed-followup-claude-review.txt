@@ -1,0 +1,219 @@
+Read-only review complete. **No file written or modified**: `git status --porcelain` empty, `HEAD` still `39a7674…` at exit, both predecessor checkouts (`4078ca7`, `dea6f9e`) clean, log directory untouched. Probe scratch files were confined to `/private/tmp/bdp-probe/`.
+
+Note on inputs: `update-installed-claude-review.txt` is not in `update-installed-followup/` — I read it at `bdp-integration-logs/update-installed-claude-review.txt`. The sibling `update-installed-followup-claude-review.txt` exists but is 0 bytes; I left it empty per your no-write instruction, so this output is stdout only.
+
+---
+
+# Review — frozen `39a7674` vs `dea6f9e`
+
+Diff audited: 12 files, +496 −199. Read `update-installed-followup/review.md` and `update-installed-claude-review.txt` (the 9-finding review of `4078ca7`). Findings 1–3 treated as dea-closed per instruction; I confirmed only that `39a7674` does not regress them.
+
+## Verification I actually ran
+
+Pinned **Node 24.16.0 / pnpm 11.20.0** (global shell is Node 26.0.0 / pnpm 11.25.0 — I prepended `~/.nvm/versions/node/v24.16.0/bin`). Install and build first.
+
+| Check | Result |
+|---|---|
+| `pnpm install --frozen-lockfile` | already up to date, 12 projects |
+| `pnpm build` (`clean && tsc -b`) | exit 0 |
+| `typecheck`, `check:boundaries`, `format:check` | exit 0 (boundaries valid for 11 packages; 349 files formatted) |
+| `lint` | 3 warnings / 1 info (pre-existing) |
+| `vitest run apps/bdptest/src --maxWorkers=2` | **111 passed / 13 files**, exit 0 |
+| `pnpm smoke` (packed, out-of-workspace npm install) | exit 0; `payloadIdentity` **reproduces review.md byte-for-byte**: `06aae1bba9…c11456`; `artifactIdentity` reproduces; all 9 targets, `claimEligible:false` |
+| `pnpm smoke:development` | PASS, `claimEligible:false`, node v24.16.0 |
+| `pnpm evidence:verify` | `evidence.verified`, 89 rows, original run/evidence identifiers |
+
+Plus out-of-tree probes against live candidates, which are what the findings rest on:
+
+- **Independent reimplementation of the payload closure.** I re-coded `bindPackage` from scratch and got `9b96022b10…edb4f2`; a live candidate's IPC `payloadIdentity` is the *same* hash. My file enumeration (454 files, 14 package visits, 6 distinct packages, ~40 ms) is therefore ground truth, not a reading.
+- **Module-load trace vs. bound closure.** Launched the real entry under `node --import <trace-preload>` with `module.registerHooks`, exercised probe → discovery → directory → type inventory → `createBead`, then diffed every loaded `file:` URL against the bound closure: **137 loaded modules, 0 uncovered.** `payloadIdentity` was unchanged under the preload.
+- **Live header matrix** across 12 route/exit combinations.
+- **Public-surface leak scan** of discovery/directory/inventory bodies for every identity field and the raw token.
+- **Replicated `local()` guard** against 18 string classes.
+- **Real Node `http.Server.close()` semantics** probe.
+- **`createRequire().resolve()` against a synthetic ESM-only `exports` map.**
+- **Dirent classification of symlinks** for `bindFiles`.
+- **Direct `captureInstalledReferenceConfiguration` probes** for exact-key admission and identity order sensitivity.
+
+---
+
+## Dispositions: findings 4–9
+
+**4 — CLOSED, structurally.** `development-composition.ts` is the single source: `grep` for `createReadHttpRoute` outside `dist/` finds `read-http-routing.ts` (the helper), `index.ts` (the separate public Read composition — `parseReadUpdateDiscovery` appears nowhere in it), and `development-composition.ts`. The installed factory imports `./development-composition.js`; `test-support/development-discovery.ts` imports the emitted `dist/development-composition.js` and its `canonicalDevelopmentComposition` is now `createDevelopmentComposition("/acme/")`. The 75-line fork is gone — `git diff` of the two former copies no longer applies because only one exists. `development-contracts.test.ts` and `development-discovery.test.ts` (and everything via `startCanonicalDevelopmentFixture`) now drive shipped bytes. Packed-surface side confirmed: `development-composition.*` added to the exact-set `expectedServerOutput` tripwire, and to the deep-import denial list, which is a real `ERR_PACKAGE_PATH_NOT_EXPORTED` assertion (it throws if resolution *succeeds* and re-throws on any other code). No implementation imports test support. The remaining file-path reachability of `dist/development-composition.js` is the same accepted property as the other private modules, and dea's `isEntrypoint()` removed the only side-effecting one.
+
+**5 — CLOSED on substance.** `ownerCompletion ??= Promise.resolve().then(() => authority?.close())` memoizes owner close; retries re-observe the same settled promise via `allSettled`, so a terminal owner failure is preserved rather than erased, and owner close is never re-invoked. The `.catch()` resetting `completion = undefined` makes a failed attempt retryable; concurrent callers share the in-flight attempt; a resolved completion stays cached (so no second `Server.close`). `authority` is always defined on this path. No unhandled rejection: `ownerCompletion` is attached in the same microtask turn, and `installed-reference-process.ts:62-65` awaits `runtime.close()` inside `finally` with the outer `.catch` still performing `process.disconnect()`. One verification limit below (finding E).
+
+**6 — CLOSED for the hosted-schema route, with a new inconsistency.** `setHeader` at `development-runtime.ts:334` precedes the gate, so Node merges the marker into every `writeHead` on that route. Live-verified: schema GET/HEAD/OPTIONS/503-gate all carry it. But the fix went to the call site rather than the `empty()` helper — see finding A.
+
+**7 — CLOSED, and verified harder than claimed.** The module trace is decisive: every one of the 137 `file:` modules the process actually loads is inside the bound closure, and `fast-uri` is bound three times over (direct `@bdp/server` dep plus both ajv paths). All of `ajv`, `ajv-formats`, `fast-deep-equal`, `fast-uri`, `json-schema-traverse` load and are covered; `require-from-string` is bound but unloaded (over-inclusive, conservative). Identity labels are relative (`@bdp/server>…`), so the hash is installation-location independent. The emitted dist contains **no dynamic imports**, so the whole graph is static and loaded before the hash runs — no lazy-load TOCTOU window. Four residuals below (B, C, D), none currently reachable.
+
+**8 — CLOSED for absolute URIs; two residuals.** The recursive guard covers keys, array elements and nested objects, normalizes dot segments, and is case-insensitive on scheme/host. Verified refusals: foreign absolute, uppercased foreign, neighbouring path (`/acme-other/`), dot-segment escape, backslash authority. The guard's reach stops at scheme-prefixed strings — findings B′ and C′ below.
+
+**9 — CLOSED.** The new test is a genuine pin: with `gate.refuse` making the real per-principal `discover()` return `temporarily-unavailable`, both `operations/` and the hosted schema return 503 with no static data, and restoring the observation restores 200. Only the discover observation is intercepted. Hoisting either the directory or the schema emit above its gate flips a 503 to 200 and fails the test — which is exactly the L2 regression it needed to catch. Coverage note: the gate is the first statement of the composition handler, so the refusal actually covers all composed routes; the test asserts two of them, which is adequate for the hoist.
+
+---
+
+## New qualification binding metadata through IPC
+
+`policyIdentity`, `authenticationIdentity`, `profile: "read-update"`, `history: false` flow capture → factory → IPC readiness. Verified live against a real child process:
+
+- `policyIdentity` is `access.policy.identity()` = SHA-256 hex over sorted policy snapshots. **Opaque 64-hex, not policy content** — confirmed on the wire (`dbe8dbd543…`), and stable under policy-key reordering. No principal names, hidden/readOnly ids or structure are emitted.
+- `authenticationIdentity` is a digest of digests; no raw token anywhere in the readiness payload (I string-searched the full message).
+- Policy-only and credential-only changes produce independent witnesses — the author's test asserts this and it reproduces.
+- **Exact-key admission is real.** I probed `captureInstalledReferenceConfiguration` with 10 injected fields (`policyIdentity`, `authenticationIdentity`, `profile`, `history`, `identity`, `artifactIdentity`, `payloadIdentity`, `claimEligible`, `cors`, `ownerLimits`) — all refused with `exact administrative data fields required`. Callers cannot supply binding metadata.
+- `configurationIdentity` preimage change is safe: **no committed file pins any identity hex** (grepped `.ts/.mjs/.json/.md` for the prior and current values — zero hits), the store does not validate it (reopen with `create:false` succeeds across a changed `policyIdentity`), and `evidence:verify` is unchanged at 89 rows.
+
+One disclosed-but-asymmetric choice: finding F.
+
+## Regressions and public boundary leak
+
+No regression found. `index.ts`, `development.ts` and `packages/server/package.json` are byte-unchanged by this diff; `development.ts` still exports only two constants, one type, and `startDevelopmentReferenceServer(options)` (one argument). `startInstalledReferenceCandidate` is imported only by the private bootstrap and tests. The exports map is still `.` + `./development`. `check:boundaries` passes. Leak scan of discovery/directory/inventory bodies: the only hit is `profile` in discovery, which is the pre-existing BDP wire field set by `parseReadUpdateDiscovery`, not the new IPC binding — no `policyIdentity`/`authenticationIdentity`/`configurationIdentity`/`payloadIdentity`/`artifactIdentity`/`tokenDigest` value reaches HTTP. dea's `serving` flag is intact at `:298/:303/:546`, so startup-window requests still get 503 before auth, and the startup catch's failure to drain `pending` is now harmless by construction (admitted tasks can only be 503 writes). `claimEligible:false` and the public Write refusal hold in both smokes.
+
+---
+
+## Open findings
+
+### A — LOW · `empty()`-emitted 405s still lack the non-attesting marker, and the marker is now inconsistent across 405s
+
+`packages/server/src/development-runtime.ts:111-119` (`empty()`), vs. the fix at `:334`.
+
+Finding 6 was fixed at one call site instead of in the shared helper. Live matrix against a real candidate:
+
+```
+204 HAS  probe GET            405 MISS service-desc OPTIONS   (allow=GET, HEAD)
+200 HAS  service-desc GET     405 MISS operations dir OPTIONS (allow=GET, HEAD)
+200 HAS  operations dir GET   405 MISS createBead OPTIONS     (allow=POST)
+200 HAS  type inventory GET   405 MISS createBead GET         (allow=POST)
+401 HAS  unauthenticated      400 HAS  malformed
+404 HAS  unknown resource     406 HAS  not-acceptable
+```
+
+Impact: four live routes serve responses indistinguishable from an attesting deployment. Before `39a7674` all 405s were uniformly unmarked; now the schema route's 405 carries the marker (via `setHeader` merge) and the other four do not, so the fix *introduced* the asymmetry. Same applies to 500: a fault originating inside the schema route reaches `empty(response, 500)` with the marker already set, while every other 500 has none. `installed-reference.test.ts` asserts the schema-route headers only; nothing asserts the others. review.md §6 is literally accurate but reads as if the marker class is closed.
+
+Fix: set `"x-bdp-development": "non-attesting"` inside `empty()` alongside `cache-control`, then drop the now-redundant `setHeader` at `:334`, and extend the header assertions to one `empty()`-emitted 405.
+
+### B — LOW · `payloadIdentity` silently skips symlinked module files (fails open)
+
+`packages/server/src/installed-reference.ts:26-36`.
+
+`bindFiles` branches on `entry.isDirectory()` / `entry.isFile()`, and a `readdir` Dirent reports a symlink as neither. Probe:
+
+```
+linked.js   isFile:false isDirectory:false isSymbolicLink:true  => SKIP
+linkeddir   isFile:false isDirectory:false isSymbolicLink:true  => SKIP
+real        isFile:false isDirectory:true  isSymbolicLink:false => RECURSE
+```
+
+A symlinked `.js`/`.json`/`.node`/`.wasm` inside a bound package is loadable (resolution follows symlinks) but excluded from the hash, and a symlinked subdirectory is skipped whole. This is finding 7's original failure mode in narrower form, and it fails **open** rather than closed. Not reachable in the pnpm/npm layouts exercised here — package contents are regular files or hardlinks, and `node_modules` is skipped — but this candidate's own fixture builds symlinked package layouts (`installed-reference.test.ts:370` `symlinkSync` for `@bdp/protocol`; it works only because that symlink is the package root reached by path, not an entry inside a scanned directory).
+
+Fix: handle `entry.isSymbolicLink()` explicitly — `stat` and hash/recurse the target, or refuse with `unsupported runtime dependency` so it fails closed.
+
+### C — LOW · the payload traversal walks only `dependencies`, and resolves with CJS semantics
+
+`installed-reference.ts:46-47`.
+
+Two coupled consequences:
+
+1. `Object.keys(manifest.dependencies ?? {})` ignores `optionalDependencies` and peer-only dependencies. The current closure is complete *by luck*: `ajv-formats@3.0.1` declares `ajv` in **both** `dependencies` and optional `peerDependencies`, so the ajv subtree is reached. A future runtime dependency declared peer- or optional-only would be silently excluded while loading — again finding 7's exact shape.
+2. `createRequire(manifestPath).resolve(dependency)` is CJS resolution, while the bytes are loaded by ESM resolution. Probe against a synthetic `"exports": { ".": { "import": "./index.js" } }`:
+
+```
+require.resolve THREW: ERR_PACKAGE_PATH_NOT_EXPORTED - No "exports" main defined
+ESM import      -> OK, x = 1
+```
+
+That error is raised outside the walk-up `try` and is not ENOENT, so it propagates: declaring any ESM-only runtime dependency makes `startInstalledReferenceCandidate` reject before the listener or store opens. Fail-closed, but it means `payloadIdentity` constrains which dependencies the candidate may ever declare.
+
+Fix: resolve with `import.meta.resolve` (matching how modules are actually loaded), traverse optional/peer edges, and — the cheap structural guard — assert at startup that every loaded non-builtin `file:` URL lies inside the bound closure, which is the check I ran externally and which would have caught the original `fast-uri` gap directly.
+
+### D — LOW · the depth-32 cap bounds traversal depth, not traversal work
+
+`installed-reference.ts:18`.
+
+`ancestors.includes(root)` only prevents revisiting a package on the *current* path, so diamonds re-traverse. Measured: 6 distinct packages → **14 package visits**, ajv hashed twice and fast-uri three times, 454 file hashes, ~40 ms. Work is exponential in the number of chained diamonds, capped only at depth 32, and it runs on every startup before the listener opens — so a wider future closure degrades startup rather than refusing. Harmless for this fixed two-dependency closure; the hash stays deterministic because labels are path-qualified.
+
+Fix: memoize traversal by resolved root while keeping per-path labels, or add an explicit total-files/bytes bound next to the depth cap.
+
+### B′ — LOW · the reference-closure guard misses protocol-relative and relative URI values
+
+`installed-reference-configuration.ts:64-74`.
+
+The guard only inspects strings matching `/^[A-Za-z][A-Za-z0-9+.-]*:/`. Replicated-guard probe:
+
+```
+PASS (accepted)  PROTOCOL-RELATIVE foreign => "//foreign.invalid/types/one"
+PASS (accepted)  RELATIVE parent escape    => "../../outside/type"
+PASS (accepted)  RELATIVE plain            => "types/other"
+```
+
+accepted in array-element and object-key positions too. A descriptor is served from `${scope}types/<name>`, so a client resolving `//foreign.invalid/types/one` against the retrieval URI reaches a **foreign authority** — the exact leak finding 8 asked to close, via a reference form the guard does not classify as a URI. Same hypothetical-future reachability as the original finding (today's 13 descriptors contain no such value), and the author's closure test exercises only scheme-prefixed extensions.
+
+Fix: also refuse values starting with `//`, and for URI-reference-shaped strings check `new URL(value, canonical).href.startsWith(canonical)` rather than only the absolute form.
+
+### C′ — LOW · the same guard over-refuses, and can make every installed candidate unstartable
+
+`installed-reference-configuration.ts:65-67`.
+
+```
+REFUSE  urn                   => "urn:example:thing"
+REFUSE  mailto                => "mailto:a@b.invalid"
+REFUSE  prose with colon      => "Link: outgoing endpoints"
+REFUSE  prose word-colon      => "note:see-spec"
+THROW TypeError: Invalid URL  => "http://"
+```
+
+`referenceTypeArtifacts` runs inside `captureInstalledReferenceConfiguration` whenever `descriptors` is empty — the shipped default. So if a future protocol-side `REFERENCE_TYPE_DESCRIPTORS` gains any field holding a `urn:`/`mailto:` identifier or ordinary prose containing a word followed by a colon (`"description": "Link: connects two beads"`), **every** installed candidate refuses to start, before any filesystem work. Fail-closed, but the failure is a startup outage and the message (`reference artifact is not Scope-local`, or a bare `TypeError: Invalid URL` for malformed input) misdirects. The author's test never exercises a non-URI string.
+
+Fix: gate on URI-reference shape (scheme-with-hierarchical-part, or `//`-prefixed, or containing `/`) rather than any scheme-like prefix, and wrap `new URL` so parse failures report the intended message.
+
+### E — LOW · finding 5's listener-retry path is unexercised against reachable Node behaviour (verification limit, not a defect)
+
+`development-runtime.ts:496-501` and `installed-reference-startup.test.ts:251-289`.
+
+Real Node semantics, probed:
+
+```
+before close():            listening = true
+immediately after close(): listening = false   <-- synchronously
+after 'close' event:       callback error = no error
+second close() on a closed server -> ERR_SERVER_NOT_RUNNING
+```
+
+`Server.prototype.close` nulls `_handle` synchronously, so `listening` is already false by the time any first attempt could fail. The new `if (!server.listening) return resolve()` guard therefore makes every real retry an immediate no-op resolve — which is *correct* (the handle is closed), but it means a reachable failed listener close is never actually re-closed. The test's injected failure stubs `Server.prototype.close` to invoke the callback with an error while leaving `_handle` intact, so `listening` stays true — a state real Node cannot produce after `close()` is called. review.md §5's "inject a first listener failure that leaves the actual listener open … finish listener cleanup" describes a property of the mock.
+
+The substantive claims are independently sound and do not depend on it: owner close invoked exactly once across retries, terminal owner failure preserved verbatim, store lock genuinely released (the reopen under the same Scope — unchanged because installed mode takes `scope` from `transport.scope`, not the port — is real). Worth recording alongside: once owner close rejects, `close()` rejects **permanently**, so cleanup-path callers must `.catch()`, as the author's own `finally` does.
+
+### F — LOW · `authenticationIdentity` is order-sensitive while every adjacent identity in the same digest is canonical
+
+`installed-reference-configuration.ts:170-172`.
+
+```
+ordered   authenticationIdentity: 5c9670674585977adcdee4f9…
+reordered authenticationIdentity: 43fb3dcd69eb4b4324eca444…
+order-sensitive: true | configurationIdentity differs: true
+policyIdentity stable under policy key reordering: true
+```
+
+Credential array order has **no observable effect** in the installed path: `development-runtime.ts:240-261` ignores `options.token` entirely when a deployment is configured (so `installed-reference.ts:67-70`'s `credentials[0]` only satisfies the `:178` regex), tokens are unique so `credentials.find` is order-free, and duplicate principals collapse to one `principalViews` entry. Meanwhile `policy.identity()` sorts its snapshots and `captureDevelopmentAggregatePolicy` dedupes-and-sorts (the A3 fix) — both inside the same `identity` digest. So two observably identical authentication bindings get different `authenticationIdentity` and `configurationIdentity` values, which reads as "configuration changed" to anything comparing witnesses.
+
+Disclosed — review.md §33 says "exact ordered captured mapping" — so this is a design-choice flag rather than an undisclosed defect, and it is **not a regression** (the pre-`39a7674` digest was order-sensitive too). It is worth deciding deliberately now that the value is promoted to a named identity on the wire. Fix if undesired: sort by `{principal, tokenDigest}`, matching `policy.identity()`.
+
+### Nits
+
+- `scripts/installed-reference-observation.mjs:65` asserts only `typeof ready.policyIdentity === "string"` while every sibling gets `/^[a-f0-9]{64}$/`. The value *is* a 64-hex digest (verified on the wire), so there is no leak today — but the weaker assertion would not catch a future `policy.identity()` that returned structured, non-opaque policy content over IPC. One-line fix.
+- `apps/bdptest/src/installed-reference.test.ts:358-367`: `for (const name of ["@bdp/server"])` wrapping a `name === "@bdp/server" ? … : …` ternary — a single-iteration loop with an unreachable branch.
+
+---
+
+## Accepted divergences, recorded not defects
+
+- **`payloadIdentity` includes the workspace `@bdp/server/package.json`**, so a devDependency bump changes it with no executable byte change. Conservative, and review.md already records that installed and workspace manifests legitimately differ.
+- **`require-from-string` is bound but never loaded** — over-inclusion in the safe direction.
+- **The composition gate calls `authority.discover()` once as a gate and again inside `discovery()`** for the discovery route — two full observations per discovery request. Pre-existing code, moved verbatim; not introduced here.
+- **`dist/development-composition.js` remains importable by file path**, which is how the fixture loads it. Same accepted property as the other private modules; the exports map governs bare specifiers only, and dea's `isEntrypoint()` removed the one side-effecting target.
+
+## Scope not established by this candidate
+
+Unchanged from review.md and confirmed by reading: no public Write profile or write-profile eligibility, no cumulative required-contract/applicability runner, no independent profile-specific evidence generation, no final public startup/configuration gate. No deterministic between-member interruption, mid-commit crash or power-loss durability — the installed smoke still adds no IPC scheduling, fault or store hook. Node itself, TLS/deployment and environment-injected executable code remain outside `payloadIdentity` by design. Cleartext loopback under an `https` Scope still means emitted resource ids are not dereferenceable off-box.
+
+**My own verification limits:** I did not rerun the full repository suite (prior review's 7918-test run) — I ran the 13-file `apps/bdptest` suite (111 tests) plus both smokes and evidence verification, per your instruction not to redo the broad suite; review.md's 502-test/17-file figure spans packages outside `apps/bdptest` that I did not re-execute. Findings B′ and C′ rest on a verbatim replication of the self-contained `local()` function rather than driving the real `referenceTypeArtifacts` with injected descriptors, since that requires a vitest mock I cannot write; the real function's currently reachable behaviour is covered by the author's closure test and by the 13-descriptor live inventory. Findings B, C and D are unreachable in the layouts and dependency closure exercised here and are reported as forward-looking residuals of finding 7, not present-tense leaks — only finding A is a present-tense, reproducible defect on live routes.

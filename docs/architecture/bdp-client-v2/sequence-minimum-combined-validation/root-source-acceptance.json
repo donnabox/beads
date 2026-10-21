@@ -1,0 +1,89 @@
+{
+  "accepted": true,
+  "checkedAt": "2026-10-16T05:30:24.318857+00:00",
+  "head": "11742645bc591b3e5affa9fcc2f36c551c6fa803",
+  "stages": {
+    "typecheck": {
+      "exitSha256": "0188b5e14c15cf851874a0c22f1951eb92740d563de3f2aa1894dac7fa86f255",
+      "elapsedSeconds": 2.06866112514399
+    },
+    "fresh-build": {
+      "exitSha256": "35b9c1f263e8e7269fbddf255d845bdcd626825ec8751747805576dc53454b52",
+      "elapsedSeconds": 1.4743550000712276
+    },
+    "format-check": {
+      "exitSha256": "4243c2c2c796c66d315769333117ce1fd5af16df2a72dd5c8299d7517e9410ed",
+      "elapsedSeconds": 1.1394974999129772
+    },
+    "lint": {
+      "exitSha256": "ced592b5dce0b476b4342a8fe5fe6c1516ec09717f68fc9d5d9e00cf1ab8c5ba",
+      "elapsedSeconds": 1.1371201251167804
+    },
+    "boundaries": {
+      "exitSha256": "bfce23f1dca90d107bae120adde12801cf6fad68a825562a7bb8eed5662e7385",
+      "elapsedSeconds": 1.2168488330207765
+    },
+    "read-seal": {
+      "exitSha256": "97c5cf6c17788ad192a941d47a3e85e576bc9be6046f1069a1ef8bbef1c1ec13",
+      "elapsedSeconds": 0.9205022079404444
+    },
+    "preparation-positive": {
+      "exitSha256": "f35f960f821b796d0b0c058ff2e19e98a06f85c5235f7938ee581a332ab629db",
+      "elapsedSeconds": 1.1180552919395268,
+      "names": [
+        "keeps receiving depth facts private while legacy preparation still throws",
+        "annotates only deep sequence members after complete carrier syntax while strict preparation stays strict"
+      ],
+      "resultsSha256": "29ee4c7456d7eacf210de0d91c3db2e34e618e76178117baeca9252349d407ab"
+    },
+    "sequence-positive": {
+      "exitSha256": "9db6e0a6678f3aade1f0b0e7e2d68809151344722d233445ed902a721f28fbff",
+      "elapsedSeconds": 1.135085292160511,
+      "names": [
+        "private Transactional sequence slice runs all eight explicit operation kinds as separate commits with locator-only aliases",
+        "private Transactional sequence slice reserves all unknown keys together, commits a prefix, continues past failure and permits interleaving",
+        "private Transactional sequence slice joins overlapping presentations without running a completed member twice and projects current labels",
+        "private Transactional sequence slice projects another owner's pending receipt before immutable mismatch and never retracts that owner",
+        "private Transactional sequence slice projects mixed retained, conflicting, failed and unknown keys in declaration order",
+        "private Transactional sequence slice shares singleton and one-operation batch identity, preserving exact numbers and creation defaults",
+        "private Transactional sequence slice leaves no partial bulk admission on after-sequence-reservation failure",
+        "private Transactional sequence slice leaves no partial bulk admission on after-sequence-admission failure",
+        "private Transactional sequence slice rejects duplicate keys and invalid dependency edges before any key effects",
+        "private Transactional sequence slice classifies foreign key state at its turn after failed detail is forgotten",
+        "private Transactional sequence slice compares retained deep sequence members without executing them or replacing their receipts",
+        "private Transactional sequence slice rolls back every new reservation when a fresh deep sequence member is refused",
+        "private Transactional sequence slice refuses fresh depth after a retained failed member expires between sequence turns"
+      ],
+      "resultsSha256": "2721e9f863c1cd20615793e6d2d4888bd33b140139c41d0d183e03568596ba9a"
+    },
+    "http-positive": {
+      "exitSha256": "357d2149f785afe587b597e4ce580a82ed640a02946c92b6540fe73d0a9e3702",
+      "elapsedSeconds": 1.4316495000384748,
+      "names": [
+        "source-private actual Transactional HTTP rejects sequence carrier syntax/keys/negotiation before claiming any member",
+        "labels sequence depth gaps honestly and keeps sequence capacity distinct from direct transaction capacity",
+        "compares retained sequence members before private depth refusal and preserves receiving failures"
+      ],
+      "resultsSha256": "13bb51bc07a3d6975c4a385f31a8abf78f5fe90e9eb0b68a4d68095fe030404e"
+    },
+    "minimum-http": {
+      "exitSha256": "914ef503ecf474865be7f52f63ecaf83fc0e193236fde6a6d5f1cdb60653133a",
+      "elapsedSeconds": 1.4125800000037998,
+      "names": [
+        "uses actual epoch/view decisions and an exhausted wait before conditional or timeout responses",
+        "serves missing Resource404 with current context before semantic minimum comparisons",
+        "serves canonical current Type and incident minimums with truthful context and parser boundaries",
+        "serves conditioned live aliases and preserves bodyless redirects, refusal context and receiving boundaries",
+        "waits only for existing current Resource unknown minima and keeps unsupported route labels"
+      ],
+      "resultsSha256": "6a4c7ca319c898850a29ce7db2a2494a7d1d485561e259a5c1d43e3ddac64706"
+    },
+    "build-inventory": {
+      "exitSha256": "08619a7f9bfbfe2499b5a4d83fe43cee0f27e277555dc554d611912d484ebc3f",
+      "elapsedSeconds": 1.782961207907647
+    }
+  },
+  "actualNamedTestPasses": 23,
+  "httpCount": "193 source dispatches modeled; not an observed response count",
+  "priorAdjudicationNote": "Inline audit initially guessed minimum-http.vitest.json; corrected to actual command-declared output path, no test rerun."
+}

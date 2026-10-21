@@ -1,0 +1,482 @@
+{
+  "decision": "MEASUREMENTS_VERIFIED; proposed fixture assertion bounds preserve prior margins; root approval/application pending",
+  "bindingSha256": "3fae19fb7509b5265a5620a424bcedf2adead23bd1bcc4ffab6df24b8341eb41",
+  "measurementSha256": "bbfc513521f9b40870d5d73aa19f41d8d2318bd9bb8cbe89401d39d04a567728",
+  "sourceHashes": {
+    "packages/conformance/test-support/transactional/manifest-v1.json": "479ec242a91668d5b54abd5711e75658b3ea9e57a20db49ac3eba3be1f3f63f2",
+    "packages/conformance/test-support/transactional/coverage-v1.json": "2d73a595ae02fef6e86b1c06bdef9e3549e004a16943e1b0afc76ff23e137e15",
+    "packages/conformance/src/transactional-cumulative.test.ts": "de26dc3f257c026eeb16e9a0a2df3c4bf69a050c98fb41c264e3c1e7b3acb6c9",
+    "apps/bdptest/src/transactional-matrix.test.ts": "eb4c68fc8d7df2525587dc36e3d6b89149a1afbdf82d022f7a1801edd6456f8d"
+  },
+  "parentReconstruction": [
+    {
+      "path": "packages/conformance/test-support/transactional/manifest-v1.json",
+      "oldObjects": 16,
+      "fullParentSha256": "cd90592e76cace65b115dbfedf5f604c9c4011ed2e1a0fad954c1edb12aca6cd",
+      "restoredSha256": "cd90592e76cace65b115dbfedf5f604c9c4011ed2e1a0fad954c1edb12aca6cd",
+      "allRawObjectsIdentical": true
+    },
+    {
+      "path": "packages/conformance/test-support/transactional/coverage-v1.json",
+      "oldObjects": 16,
+      "fullParentSha256": "0c991feb128a50625397e337464badcb17d22a0c31e1d57a6b66fa1032a92a51",
+      "restoredSha256": "0c991feb128a50625397e337464badcb17d22a0c31e1d57a6b66fa1032a92a51",
+      "allRawObjectsIdentical": true
+    }
+  ],
+  "actual": {
+    "normalBytes": 883414,
+    "normalSha256": "bd8aa7d74a756f2d49ebbb85edcf4aa93fa7b7201aada6d59a22b1115704b4b8",
+    "compactBytes": 431642,
+    "compactSha256": "3509a3ed1bbc14d31606ebed31f0e04a06b98ce79d5ef78ec33aab8687628acb",
+    "nodes": 23196,
+    "actions": 241,
+    "assertions": 2840,
+    "diskBytes": 870122,
+    "diskSha256": "479ec242a91668d5b54abd5711e75658b3ea9e57a20db49ac3eba3be1f3f63f2",
+    "coverageBytes": 133517,
+    "coverageNormalBytes": 133517,
+    "coverageSha256": "2d73a595ae02fef6e86b1c06bdef9e3549e004a16943e1b0afc76ff23e137e15",
+    "newAssertions": 198
+  },
+  "proposedGuards": {
+    "canonicalDisk": 874218,
+    "canonicalDiskDeltaFrom488280": 385938,
+    "canonicalNormal": 887510,
+    "canonicalNodes": 23260,
+    "canonicalNodesDeltaFrom13019": 10241,
+    "coverageDiskAndNormal": 134541,
+    "coverageDeltaFrom70662": 63879,
+    "derivativeNormal": 893628,
+    "derivativeNodes": 23416
+  },
+  "derivativeCount": 42,
+  "maxDerivativeNormalBytes": 889532,
+  "maxDerivativeNodes": 23352,
+  "allHistoricalDerivativesReconstructed": true,
+  "allNamedMutatorsPreserved": true,
+  "sourceUnchanged": true,
+  "productExecuted": false,
+  "derivatives": [
+    {
+      "name": "effects-zero-results.json",
+      "normalBytes": 883414,
+      "normalSha256": "3891418b0f09446a0c6b82a743a7a45bc19de8eb3809fee32185759e13d2e23f",
+      "compactBytes": 431642,
+      "compactSha256": "600675480201f7f04ce559e894c6600ea4cf11a35a899b62ac456981b506c0fb",
+      "nodes": 23196,
+      "actions": 241,
+      "assertions": 2840
+    },
+    {
+      "name": "duplicate-receipt-binding.json",
+      "normalBytes": 883609,
+      "normalSha256": "16c5d22273d7d0ee9ae255e465c32a99bc8e70805d4de09b54a999fbc4dee202",
+      "compactBytes": 431717,
+      "compactSha256": "307d01f72220482ad72b0d5933749deb3d3fb315ec62b8484408aa0a4147f07b",
+      "nodes": 23201,
+      "actions": 241,
+      "assertions": 2840
+    },
+    {
+      "name": "set-order.json",
+      "normalBytes": 883414,
+      "normalSha256": "25e7cf6ae9d99a98486001d1dcb0863905f9737b8245f76517fb0931e8abb209",
+      "compactBytes": 431642,
+      "compactSha256": "9c6f2f054d2607e9aa8780ea7ee2db05c480f51f5eab8fa3ec4f9fc830fbdfb9",
+      "nodes": 23196,
+      "actions": 241,
+      "assertions": 2840
+    },
+    {
+      "name": "conflict-event.json",
+      "normalBytes": 883414,
+      "normalSha256": "2c7486f117f62a84430a59f2c44d26c99945e711afefb9208685ce136344d18d",
+      "compactBytes": 431642,
+      "compactSha256": "eb4d45f1965e9c13830fe0a60f350553940f925061429e3bba96e1937b65b365",
+      "nodes": 23196,
+      "actions": 241,
+      "assertions": 2840
+    },
+    {
+      "name": "cross-wired-receipt.json",
+      "normalBytes": 882692,
+      "normalSha256": "dad32309d0ff99b8567d2acbf81390284cf11e25ddafd65500bac7aa9c1c9837",
+      "compactBytes": 431296,
+      "compactSha256": "00c4bc5ec25980a3a70324807cd5896991f2df18d0604f58ea2d73318fa1e0de",
+      "nodes": 23175,
+      "actions": 241,
+      "assertions": 2836
+    },
+    {
+      "name": "ordinary-capture.json",
+      "normalBytes": 883615,
+      "normalSha256": "a42a83bc035355fd315a464a40be13361fa4d72c8a8d273408904a442ef4d439",
+      "compactBytes": 431723,
+      "compactSha256": "3f0031df8dbd786972c34297af723c88364478e789d912b49749ac08255b49c9",
+      "nodes": 23201,
+      "actions": 241,
+      "assertions": 2840
+    },
+    {
+      "name": "cross-sequence-fresh-key.json",
+      "normalBytes": 884768,
+      "normalSha256": "1f228ebbf0f94e0f250917d68478b26519f790335dce279b4e8b3845e78c8551",
+      "compactBytes": 432192,
+      "compactSha256": "2df8b0dbc32dff0f4c49fae20abd664871aa08645f660ddd5c65bbc3d20fb65c",
+      "nodes": 23232,
+      "actions": 241,
+      "assertions": 2843
+    },
+    {
+      "name": "pagination-page-parent.json",
+      "normalBytes": 883446,
+      "normalSha256": "6c2f735fdb52a337d383fb15e2bc8c16065fbb2e35fc576db9919c118fc0cb60",
+      "compactBytes": 431674,
+      "compactSha256": "eaad3b480c1e81cdb68c41dc9734599c4e8c09cfc14a129cf7cfa50f53b9635a",
+      "nodes": 23196,
+      "actions": 241,
+      "assertions": 2840
+    },
+    {
+      "name": "pagination-root-next.json",
+      "normalBytes": 883403,
+      "normalSha256": "08cdc231044734465425744f4e6b84134281abf504f0748364e462719044a73e",
+      "compactBytes": 431631,
+      "compactSha256": "eef2833f3a6e20cb7610bd3116d08d6b89206e509320fdfeb9708c66e41301c7",
+      "nodes": 23196,
+      "actions": 241,
+      "assertions": 2840
+    },
+    {
+      "name": "pagination-historical-title.json",
+      "normalBytes": 883412,
+      "normalSha256": "32094f526f7fb91fcc6ee69c44847c020b9f85afe865123e9b59738b9ef17362",
+      "compactBytes": 431640,
+      "compactSha256": "8cfd4e7cd8568305563b9cdab7484cd28edc21bad3c3abe3c0ec5d5a247ff713",
+      "nodes": 23196,
+      "actions": 241,
+      "assertions": 2840
+    },
+    {
+      "name": "receipt-body-assertion.json",
+      "normalBytes": 882731,
+      "normalSha256": "cf7652ca37d7d32eed477f1253f16b4d810b7604918f0686dded28b82976294e",
+      "compactBytes": 431335,
+      "compactSha256": "3a603c74e3f44829f32ffb3d43acd8a484197e01df1a2dec88b3304c367a47b6",
+      "nodes": 23175,
+      "actions": 241,
+      "assertions": 2836
+    },
+    {
+      "name": "receipt-credential.json",
+      "normalBytes": 883453,
+      "normalSha256": "36fa891cc0c2438c9a0686cd7d5fa24b953009659a0ef522d9db0fdec5f14b74",
+      "compactBytes": 431667,
+      "compactSha256": "c8e3c7243f533e9b527c62a14270050b2c7af693e56bae346ddb44b934993e09",
+      "nodes": 23197,
+      "actions": 241,
+      "assertions": 2840
+    },
+    {
+      "name": "deletion-incoming-order.json",
+      "normalBytes": 889532,
+      "normalSha256": "47d3a833812fb9194f4f6688a889e21bbdb115aeacf350ac9658c35e679a6eec",
+      "compactBytes": 434830,
+      "compactSha256": "e01e5a7b3b37e580d75a490e935fdde1ec7b85136bd38834cbd43ed7f80b42d0",
+      "nodes": 23352,
+      "actions": 241,
+      "assertions": 2863
+    },
+    {
+      "name": "effects-event-order.json",
+      "normalBytes": 883414,
+      "normalSha256": "d5c4d20e3b521c65e29d88225d63a6cba0d45ce661da0f03ea68b83c30c1cbec",
+      "compactBytes": 431642,
+      "compactSha256": "ffa36bb90095e89dd3bde64b2f68ebb9671da56f8adcd8ea3ab2174dcb5e9be7",
+      "nodes": 23196,
+      "actions": 241,
+      "assertions": 2840
+    },
+    {
+      "name": "conflict-reopened-status.json",
+      "normalBytes": 883414,
+      "normalSha256": "9ac88adbc47b23cd00c1a28a1497cb6ff31254dcc62c399d654297d870969cad",
+      "compactBytes": 431642,
+      "compactSha256": "e67fb54a4b36ac38dd544bbf25b87a1ca508f0689b229e656502dd3be6d9fd37",
+      "nodes": 23196,
+      "actions": 241,
+      "assertions": 2840
+    },
+    {
+      "name": "effects-rollback-metadata.json",
+      "normalBytes": 883427,
+      "normalSha256": "c9c081e5800ece3ee3690f0fc5fd49837760d5ac61c5e179f708e0c7249d7c64",
+      "compactBytes": 431655,
+      "compactSha256": "264146d111d6fb0009f63ab9b00a78eb9e8c6f3b389203386b590e48f0d81d5d",
+      "nodes": 23196,
+      "actions": 241,
+      "assertions": 2840
+    },
+    {
+      "name": "set-index.json",
+      "normalBytes": 883414,
+      "normalSha256": "2ecca1eab0c567ebc5421340ed00ba02fa2cc5448762b2a1cb3e118b92ad6f1d",
+      "compactBytes": 431642,
+      "compactSha256": "41877eb93401cc3b89a5f94b83558b3c35b30d0058f25b77db1a3e16078f767c",
+      "nodes": 23196,
+      "actions": 241,
+      "assertions": 2840
+    },
+    {
+      "name": "noop-bead-property.json",
+      "normalBytes": 883422,
+      "normalSha256": "38bfa8675294b9d7005eb1727efb3261f3b18a131bee04ed55537d01a75c0786",
+      "compactBytes": 431650,
+      "compactSha256": "9314a28b84b5e658bbbb684f7577e45bf3220416d21dadbea8b3016ae104cd9c",
+      "nodes": 23196,
+      "actions": 241,
+      "assertions": 2840
+    },
+    {
+      "name": "conflict-code.json",
+      "normalBytes": 883411,
+      "normalSha256": "e055e83127c6168916e8764c8896a57c117f8de8e03e4ca71330099e88a561f1",
+      "compactBytes": 431639,
+      "compactSha256": "37fd8e035227b5b1f071cf68be107fe38f4db2dfe75b3d18005ea261ccca29e3",
+      "nodes": 23196,
+      "actions": 241,
+      "assertions": 2840
+    },
+    {
+      "name": "set-poststate.json",
+      "normalBytes": 883421,
+      "normalSha256": "58c2fc4e75a52fab4872af73e41cdf382324ee4aa910e8739cedb3f1299f4df0",
+      "compactBytes": 431649,
+      "compactSha256": "56163b0a4ceb5dcf0ccc1528d9398b845e6ad56bfdbc1f1a3a093bacbef2bc42",
+      "nodes": 23196,
+      "actions": 241,
+      "assertions": 2840
+    },
+    {
+      "name": "conflict-current-record.json",
+      "normalBytes": 883414,
+      "normalSha256": "a1733e847d87dfe4f370f67a24f2ddef2faf9a7d29783bb8f507ef1719df9ed7",
+      "compactBytes": 431642,
+      "compactSha256": "3574b5bfa7112c1cb6db68a6defc8be739ba6712e4dda3c622b65205abd6ead7",
+      "nodes": 23196,
+      "actions": 241,
+      "assertions": 2840
+    },
+    {
+      "name": "effects-no-effect.json",
+      "normalBytes": 883413,
+      "normalSha256": "6be741f83c0aa234032334521d6e21ca405478d2c96360f39e6afc11b87ab532",
+      "compactBytes": 431641,
+      "compactSha256": "a5549e239c5ab3096d34d56f3d9275ed3c62041660318e182c655df5907a2de0",
+      "nodes": 23196,
+      "actions": 241,
+      "assertions": 2840
+    },
+    {
+      "name": "deletion-outgoing-order.json",
+      "normalBytes": 889532,
+      "normalSha256": "96c392ff6a08b7349821760bf08f5150ebe56303e32b45c7e2d7ae86ad7cd8a3",
+      "compactBytes": 434830,
+      "compactSha256": "b421554e03ac253b7d706611f12f381bc5583e1afdeefbb08fd5f9a4335a5a2f",
+      "nodes": 23352,
+      "actions": 241,
+      "assertions": 2863
+    },
+    {
+      "name": "forbidden-receipt-use.json",
+      "normalBytes": 884124,
+      "normalSha256": "d8d6b2eeea663c9f7c6eb72e8a342a1e8c56f998aef9cd2a8340e8ae159b6869",
+      "compactBytes": 431986,
+      "compactSha256": "34c80ac59270e6488834272274a9c1fe324f6ea4038b6eb84068138ad5597b64",
+      "nodes": 23216,
+      "actions": 242,
+      "assertions": 2841
+    },
+    {
+      "name": "pagination-terminal-next.json",
+      "normalBytes": 883468,
+      "normalSha256": "3fbc7c997ef923205cad4e8526429b529c99d3712eed0c2c2658696c0d6f33d3",
+      "compactBytes": 431696,
+      "compactSha256": "e16a49a6bcbe2d27347c0f2427e8c0340e1f1cff6c002ff0fec59406fa55fbba",
+      "nodes": 23196,
+      "actions": 241,
+      "assertions": 2840
+    },
+    {
+      "name": "deletion-committed-prefix-state.json",
+      "normalBytes": 886518,
+      "normalSha256": "8cbf5615e396b70329c3f7def6f4657d48fd22082e2ffcb04cc8fe4a9c10d174",
+      "compactBytes": 433267,
+      "compactSha256": "ad025787ebc1ba07f3f77375566d1d074705c76f927527dd882787200121e84b",
+      "nodes": 23273,
+      "actions": 241,
+      "assertions": 2851
+    },
+    {
+      "name": "cross-batch-semantic-conflict.json",
+      "normalBytes": 884755,
+      "normalSha256": "0054237dd65455f0ac3dcd98c2e8a5284aaa84b0942f1fd5a5a842d15eef33b9",
+      "compactBytes": 432321,
+      "compactSha256": "b98cf9386d657bee21bd5a2900e58c6fba16f463da11d0845ff5bcc2876d50f4",
+      "nodes": 23233,
+      "actions": 241,
+      "assertions": 2847
+    },
+    {
+      "name": "pagination-page-member.json",
+      "normalBytes": 883414,
+      "normalSha256": "e2321e7938d98eb5dd421fbeddebc07381e39bbc5a9109e43744306a0e0b0b01",
+      "compactBytes": 431642,
+      "compactSha256": "12e3409faa64a3ad9d71d2c861666bb624f2f2e83cf95a26b7663319b01671db",
+      "nodes": 23196,
+      "actions": 241,
+      "assertions": 2840
+    },
+    {
+      "name": "receipt-binding.json",
+      "normalBytes": 883407,
+      "normalSha256": "4d55bfadba6b6f00e5994f5a39a465ba53af4a9cab15390de034cadcc1f6f1f3",
+      "compactBytes": 431635,
+      "compactSha256": "ec67440e4cae1db33ab617b87198f6272b7640bc55c9ba6ff098b5274dd43301",
+      "nodes": 23196,
+      "actions": 241,
+      "assertions": 2840
+    },
+    {
+      "name": "minimum-batch-body-conflict.json",
+      "normalBytes": 883421,
+      "normalSha256": "17f7d84a505db83ee7fe162770337a074c15cd7d0d8d09af779283810e496ecc",
+      "compactBytes": 431649,
+      "compactSha256": "d8d9ccb7110d54616dd27e2baee643c7b86a64f8dce7c36ce0435e5ce39f8059",
+      "nodes": 23196,
+      "actions": 241,
+      "assertions": 2840
+    },
+    {
+      "name": "effects-changed-poststate.json",
+      "normalBytes": 883421,
+      "normalSha256": "f4dc4314e68a50acd995ed0fea92950438f84a711ceae2c6a81c93640bed160e",
+      "compactBytes": 431649,
+      "compactSha256": "09bccf382665828dd8587d63290d95705fd846b005228cb9f7099adc7df07852",
+      "nodes": 23196,
+      "actions": 241,
+      "assertions": 2840
+    },
+    {
+      "name": "set-matched.json",
+      "normalBytes": 883414,
+      "normalSha256": "9b0c0fe5ba491652cd94d08f63027df0941773edd4ed52dfa92ce6cf3b420c91",
+      "compactBytes": 431642,
+      "compactSha256": "7b3a50c2cbd18872f2cc35193a36f07678efef6ea93943e0cb5d08342171481e",
+      "nodes": 23196,
+      "actions": 241,
+      "assertions": 2840
+    },
+    {
+      "name": "noop-link-metadata.json",
+      "normalBytes": 883435,
+      "normalSha256": "fac6cda86661d764af5b92082983d49a5fe8affb9403d50f5742b917d148b23f",
+      "compactBytes": 431663,
+      "compactSha256": "b03c5720da1f49e8a5e6158bd1403776c97581813218f9d0c32c68e890eb34b1",
+      "nodes": 23196,
+      "actions": 241,
+      "assertions": 2840
+    },
+    {
+      "name": "effects-zero-events.json",
+      "normalBytes": 883560,
+      "normalSha256": "c036c85078f5fb131b90451ab2d05fa21bd9cd47855b5d7a7180ce2d6edbee88",
+      "compactBytes": 431697,
+      "compactSha256": "cda8da3ea664f210fd7156a01844b66dd2d947381ed42b38198112740b447227",
+      "nodes": 23200,
+      "actions": 241,
+      "assertions": 2840
+    },
+    {
+      "name": "conflict-retained-body.json",
+      "normalBytes": 883401,
+      "normalSha256": "4320dc4a7a17e5813874522aeb82e841b1778a8326e45a23de298def9e8596cb",
+      "compactBytes": 431629,
+      "compactSha256": "a5a440cde88ec8d6bd9c8c8d617112b1893b2825507b8cd09b18dc6f78b0534f",
+      "nodes": 23196,
+      "actions": 241,
+      "assertions": 2840
+    },
+    {
+      "name": "minimum-readonly-credential.json",
+      "normalBytes": 883412,
+      "normalSha256": "3502a41fcc4cbee6d575074388745a90b666aa45240b23dd0be234b2c08eae2e",
+      "compactBytes": 431640,
+      "compactSha256": "5cf1450b5626c09ba1f330bfa52c80bdf92117d4c80c33ac67c67849d20d73ef",
+      "nodes": 23196,
+      "actions": 241,
+      "assertions": 2840
+    },
+    {
+      "name": "effects-receipt-order.json",
+      "normalBytes": 883414,
+      "normalSha256": "dfc87deed0540330119f564393bf0df58c5d6ecfb883da056f80407c726756e5",
+      "compactBytes": 431642,
+      "compactSha256": "0b4220b8aa2ee6f3eb46a6c701531785a1a6fcfd0b0e75ef574bf0b70d3c0005",
+      "nodes": 23196,
+      "actions": 241,
+      "assertions": 2840
+    },
+    {
+      "name": "noop-group-inventory-and-head.json",
+      "normalBytes": 883477,
+      "normalSha256": "f894eeba0790f6abad012b58e9a98fea4deeb8b77d0b220f46c090541d85497f",
+      "compactBytes": 431652,
+      "compactSha256": "403799485c6d72639829bfcffa991ac3408db0c649f5a0c72e7374de9d5f3de0",
+      "nodes": 23198,
+      "actions": 241,
+      "assertions": 2840
+    },
+    {
+      "name": "pagination-inline-boundary.json",
+      "normalBytes": 883414,
+      "normalSha256": "11f1803b1e8084b03ba2e6c4d81e80754bb77ec9412bf2ba1f2755952ce2fe08",
+      "compactBytes": 431642,
+      "compactSha256": "4c0a4a33bddda099687d2c081e3f25ce302f2b3ee1c9bff0d10b060fb126284a",
+      "nodes": 23196,
+      "actions": 241,
+      "assertions": 2840
+    },
+    {
+      "name": "receipt-method.json",
+      "normalBytes": 883415,
+      "normalSha256": "8dd727c32233ea5002a05ce8243efb686115610051649ba1a5a638b6005f1b1b",
+      "compactBytes": 431643,
+      "compactSha256": "0039a1694d0fb4506d85dbfe357358aebee81cabd0154d4b3400ae016f91fa84",
+      "nodes": 23196,
+      "actions": 241,
+      "assertions": 2840
+    },
+    {
+      "name": "sequence-member-successful-delete.json",
+      "normalBytes": 883408,
+      "normalSha256": "bca0e022d283e06e3a99aafb78a157fb0aa445f98cb142781b47f82f543404d3",
+      "compactBytes": 431636,
+      "compactSha256": "0c751d437e7194bc6c90fe47f9228d319be06cc02d215386873db19974cea3a2",
+      "nodes": 23196,
+      "actions": 241,
+      "assertions": 2840
+    },
+    {
+      "name": "conditional-nonmatching-if-none-match.json",
+      "normalBytes": 883437,
+      "normalSha256": "789b5ed36d6a2636dc277d1b9a78100ab87ffb866dd13a87ee64641ae52c9715",
+      "compactBytes": 431665,
+      "compactSha256": "5f0f645c26d626bb1d2034c333b53433426fd3cc3260de5ef76cd3826ec7474e",
+      "nodes": 23196,
+      "actions": 241,
+      "assertions": 2840
+    }
+  ]
+}

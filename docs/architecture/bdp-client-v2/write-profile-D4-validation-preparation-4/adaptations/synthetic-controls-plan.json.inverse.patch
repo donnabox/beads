@@ -1,0 +1,133 @@
+--- synthetic-controls-plan.json
++++ predecessor3/synthetic-controls-plan.json
+@@ -350,129 +350,7 @@
+       "input": "counts32 but missing wire/changed body/incorrect owned postimage",
+       "predicate": "refuse actual crossrow evidence",
+       "productCalls": 0,
+-      "status": "UNEXECUTED",
+-      "sourceStateSubcases": [
+-        {
+-          "id": "D03-M01",
+-          "mutation": "settled/received/validated=000; set other row facts/aggregates consistently with that branch",
+-          "expected": "eligible for remaining unchanged failed-only checks",
+-          "executed": false
+-        },
+-        {
+-          "id": "D03-M02",
+-          "mutation": "settled/received/validated=001; set other row facts/aggregates consistently with that branch",
+-          "expected": "refuse source-impossible state",
+-          "executed": false
+-        },
+-        {
+-          "id": "D03-M03",
+-          "mutation": "settled/received/validated=010; set other row facts/aggregates consistently with that branch",
+-          "expected": "refuse source-impossible state",
+-          "executed": false
+-        },
+-        {
+-          "id": "D03-M04",
+-          "mutation": "settled/received/validated=011; set other row facts/aggregates consistently with that branch",
+-          "expected": "refuse source-impossible state",
+-          "executed": false
+-        },
+-        {
+-          "id": "D03-M05",
+-          "mutation": "settled/received/validated=100; set other row facts/aggregates consistently with that branch",
+-          "expected": "eligible for remaining unchanged failed-only checks",
+-          "executed": false
+-        },
+-        {
+-          "id": "D03-M06",
+-          "mutation": "settled/received/validated=101; set other row facts/aggregates consistently with that branch",
+-          "expected": "refuse source-impossible state",
+-          "executed": false
+-        },
+-        {
+-          "id": "D03-M07",
+-          "mutation": "settled/received/validated=110; set other row facts/aggregates consistently with that branch",
+-          "expected": "eligible for remaining unchanged failed-only checks",
+-          "executed": false
+-        },
+-        {
+-          "id": "D03-M08",
+-          "mutation": "settled/received/validated=111; set other row facts/aggregates consistently with that branch",
+-          "expected": "eligible for remaining unchanged failed-only checks",
+-          "executed": false
+-        },
+-        {
+-          "id": "D03-C01",
+-          "mutation": "000 with errorCategory=abort; writeState null; response fields null",
+-          "expected": "refuse initial-state contradiction",
+-          "executed": false
+-        },
+-        {
+-          "id": "D03-C02",
+-          "mutation": "000 with errorCategory=configuration; writeState null; response fields null",
+-          "expected": "refuse initial-state contradiction",
+-          "executed": false
+-        },
+-        {
+-          "id": "D03-C03",
+-          "mutation": "000 with errorCategory=timeout; writeState null; response fields null",
+-          "expected": "refuse initial-state contradiction",
+-          "executed": false
+-        },
+-        {
+-          "id": "D03-C04",
+-          "mutation": "000 with errorCategory=disconnect; writeState null; response fields null",
+-          "expected": "refuse initial-state contradiction",
+-          "executed": false
+-        },
+-        {
+-          "id": "D03-C05",
+-          "mutation": "000 with errorCategory=header-limit; writeState null; response fields null",
+-          "expected": "refuse initial-state contradiction",
+-          "executed": false
+-        },
+-        {
+-          "id": "D03-C06",
+-          "mutation": "000 with errorCategory=body-limit; writeState null; response fields null",
+-          "expected": "refuse initial-state contradiction",
+-          "executed": false
+-        },
+-        {
+-          "id": "D03-C07",
+-          "mutation": "000 with errorCategory=invalid-body; writeState null; response fields null",
+-          "expected": "refuse initial-state contradiction",
+-          "executed": false
+-        },
+-        {
+-          "id": "D03-C08",
+-          "mutation": "000 with errorCategory=network; writeState null; response fields null",
+-          "expected": "refuse initial-state contradiction",
+-          "executed": false
+-        },
+-        {
+-          "id": "D03-C09",
+-          "mutation": "000 with errorCategory=unavailable; writeState null; response fields null",
+-          "expected": "refuse initial-state contradiction",
+-          "executed": false
+-        },
+-        {
+-          "id": "D03-W01",
+-          "mutation": "000 with writeState=not-started; errorCategory null; response fields null",
+-          "expected": "refuse initial-state contradiction",
+-          "executed": false
+-        },
+-        {
+-          "id": "D03-W02",
+-          "mutation": "000 with writeState=started-completion-unestablished; errorCategory null; response fields null",
+-          "expected": "refuse initial-state contradiction",
+-          "executed": false
+-        },
+-        {
+-          "id": "D03-W03",
+-          "mutation": "000 with writeState=complete; errorCategory null; response fields null",
+-          "expected": "refuse initial-state contradiction",
+-          "executed": false
+-        }
+-      ]
++      "status": "UNEXECUTED"
+     },
+     {
+       "id": "D04",

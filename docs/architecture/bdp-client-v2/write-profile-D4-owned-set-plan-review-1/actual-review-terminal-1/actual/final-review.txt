@@ -1,0 +1,116 @@
+I read the whole frozen plan and all tables first, then re-derived every checkable claim against the pinned worktree. No files were written; everything below is stdout only.
+
+# D4 owned-set installed-test retarget — PLAN review (first actual D4 PLAN review)
+
+Basis checked: `cce884c`/tree `6757829`, sole parent `a56254d`, spec `67772742`; one future owned file `apps/bdptest/src/transactional-set-installed.test.ts` (callback at :103); shared `scripts/transaction-installed-observation.mjs` unchanged. Artifact inventory verified by enumeration: 39 original plan artifacts under `context/plan/` (14 tables + 6 D4-audit + 1 CI acceptance + 2 historical + 1 excerpt + 15 source mirrors) and 12 physical native files (11 indexed + `index.json`). 23 launcher importers confirmed by grep.
+
+**11 findings. None invalidates the one-file footprint or the unchanged-launcher decision; all are contract-preserving corrections to the plan text/tables, implementable inside the single owned file.**
+
+---
+
+## Findings
+
+### F1 — High — Report `counts` are frozen literals, not observations; the new mandatory failure report makes them actively false
+
+* Current source: `apps/bdptest/src/transactional-set-installed.test.ts:429–436` — `receiptEntries: 33`, `receiptPages: [32, 1]`, `events: 96`, `groups: 1`, `negativeOracles: 5` are **literals**; only `eventPages: suffix.lengths` is derived from an observation.
+* Frozen plan: `plan.md:9` gap list omits this; `report-contract.json:11` demands "**actual** receipt33/pages32+1, **actual** suffix96/pages32+32+32,group1"; `report-contract.json:17` forbids coercing unknown/null to clean; `request-inventory.json:484` warns counters must derive from observed rows; `plan.md:15` newly requires emitting a cached report on failure.
+* Affected cases: C8 store/report barrier, M1/M2/M6, and P3 ("33 receipt entries/96 deletion Events/one group").
+* Why it matters now: today these literals sit after passing assertions, so they are merely redundant. Once a **partial report must be emitted on failure** (`plan.md:15`, `report-contract.json:16`), an incrementally built report carrying the same literals reports `receiptEntries: 33`/`events: 96`/`groups: 1` for a run that observed none of them. That is precisely the "expected counts inferred as actual" failure the instruction set forbids.
+* Smallest correction: inside the one owned file, split `counts` into `expected` (frozen inventory values) and `observed`, deriving the latter from captured bodies — `[...array(receipt.results), ...array(page.results)].length`, `[array(receipt.results).length, array(page.results).length]`, `suffix.events.length`, `array(feed.groups).length` — and keep `negativeOracles` as an explicitly labeled static local-oracle count (it is not a wire observation). Add the gap to `plan.md:9` and the derivation requirement to `report-contract.json` success/failure lists.
+
+### F2 — Medium — "all 23 source importers stay byte-identical" contradicts the one owned file, which is one of the 23
+
+* Current source: the owned file is itself importer #13 of 23 (`transactional-set-installed.test.ts:15`); the other 22 are the remaining `apps/bdptest/src/transactional-*-installed.test.ts` / `transactional-matrix.test.ts` importers.
+* Frozen plan: `plan.md:15` "all23 source importers and the launcher stay byte-identical"; repeated in `native-precision-review-1/report.md:3` ("All23 source importers … remain exact"). `future-footprint.json:6` is compatible ("retain signatures/defaults") and is the correct formulation.
+* Affected case: P1 freeze predicate and P4 terminal audit — an audit literally checking 23 byte-identical importers would contradict the required edit.
+* Smallest correction: "the launcher and the other 22 importers stay byte-identical; the single owned importer changes without altering the launcher's call signature, defaults or arguments."
+
+### F3 — Medium — The metadata capture to be "cached before launch" currently lives at module scope, so M7's `nullReason`/partial-report path is unreachable as written
+
+* Current source: `test:23–26` (`realpathSync(entry)`), `:27–28` (env guard), `:29–31` (`execFileSync git rev-parse`, no timeout/maxBuffer), `:32–36` (fixture `readFileSync`) all run during **module evaluation**, before `it(...)` at `:103`; `entry`/`entrySha256`/`workspaceDirty` are produced late, at `:422–424`.
+* Frozen plan: `lifecycle-inventory.json` C0 ("Module entry/source fallback currently precedes callback … Cache bounded metadata within 90s before launch"); `plan.md:11`; `counterfactual-inventory.json` M7 ("fixed nullReason + failure before launch").
+* Why actionable: a module-scope throw is a vitest **collection** error — no store exists, no callback runs, no report and no `nullReason` can be emitted. C0 observes the current placement but never instructs relocation, so an author can satisfy "bounded" while leaving the failure unreportable.
+* Smallest correction: C0 should state that the bounded source/entry/fixture/diff capture executes **inside the callback before launch** (module scope keeps only pure constants), or state explicitly that module-evaluation failures are outside the report contract and surface to root as a collection failure.
+
+### F4a — Low — The proposed `8MiB maxBuffer` is a widening, not a bound
+
+* Current source: `test:31` and `test:422` call `execFileSync` with no `timeout`/`maxBuffer`, i.e. Node's **implicit 1 MiB** `maxBuffer` applies today.
+* Frozen plan: `plan.md:11` "bounding any retained Git capture (1000–2000ms timeout, 8MiB maxBuffer)".
+* Smallest correction: label the two halves accurately — the timeout is new (tightening); `8MiB` **raises** the effective output ceiling 8× over the current default and needs a one-line rationale (large porcelain output should be captured rather than throw `ENOBUFS`) — or pin `maxBuffer ≤ 1MiB` to preserve the current effective bound. Either is contract-preserving; the plan should not call a widening a bound.
+
+### F4b — Medium — "capture failure aborts before launch" collides with the external-consumer retarget run
+
+* Frozen plan: `plan.md:11` + M7 require abort-before-launch on capture failure; `plan.md:21` and P3 require running **this same callback** from a fresh external consumer install; `report-contract.json:6` requires "actual bounded diff SHA/cache disposition" on success.
+* Current source: `workspaceDirty` (`test:422`) unconditionally shells out to git with `cwd: root` (`test:13`), even when the source commit is already explicitly bound by env (`test:27–31`). In a consumer tree that is not a git work tree (or without git), the mandatory capture fails and, under the stated rule, the run can never reach launch.
+* Smallest correction: make C0 path-explicit — ordinary workspace path = bounded capture whose failure aborts before launch; explicit-env retarget path = **no** Git capture, with a fixed `workspaceDirty: "not-applicable-externally-bound"` disposition that `report-contract.json:6` admits as a valid success value (distinct from a null-failure).
+
+### F5 — Medium — Attribute store-lock release to process **exit**; the stdio `close` event is evidence completeness, not the reopen precondition
+
+* Current source: `packages/server/src/transaction-store.ts:582` — `PRAGMA locking_mode=EXCLUSIVE; PRAGMA busy_timeout=0`; reopen also requires byte-exact stored configuration/contract capture (`:593–613`, `:599`, `:611`). Launcher `close()` resolves on the **exit** event only (`scripts/transaction-installed-observation.mjs:19–21`, `:48–60`).
+* Frozen plan: `plan.md:13`; C4; M3 ("no reopen/removal until separate actual close; exit is not close").
+* Why actionable: M3's phrasing can be read as making the stdio `close` event the predicate that *permits* reopen. What releases the exclusive SQLite lock is **process exit**; with `busy_timeout=0` a premature reopen fails immediately with SQLITE_BUSY. The `close` event is the stdio/IPC drain evidence. Both are required, but conflating them lets a future author mis-attribute an immediate-busy reopen refusal to "missing close evidence" (or vice versa).
+* Smallest correction: in C4/M3, label `exit` code0/signal null as the **shutdown + lock-release** predicate and the actual `close` event as the **stdio/IPC drain evidence** predicate, require both, and give reopen rejection its own fixed stage label. Related: a reopen with mismatched artifacts/config fails *inside* the child before ready (`transaction-store.ts:599/611`), so it surfaces as a pre-ready rejection → UNKNOWN acquisition under C1/M5. Correct and fail-closed, but the fixed label should read "reopen refused pre-ready" so root can tell a configuration refusal from a genuine ownership unknown. Both stay UNKNOWN; no weakening.
+
+### F6 — Medium — The CLOSED outer 150/TERM145/KILL149 proposal states no runner-startup budget, and the post-test detached drain is unaccounted for (assessment only)
+
+Arithmetic from pinned sources: work deadline 90s (`test:108`); plan-local cleanup cap 10s (`lifecycle-inventory.json` `proposedCallbackCleanupMs`); callback 120s (`test:454`). Separately, the launcher's failure path can keep a **detached** 10s timer alive after the callback returns (`launcher:28–31` inside `bounded`, re-armed by `drainFailure` at `:38–45`), delaying worker exit by up to ~10s — the plan already notes the drain can outlive the local wait (`plan.md:17`) but never carries it into the outer budget. So worst case to observed runner exit ≈ `S` (runner startup) + ~100s callback + report flush + ~10s drain. With TERM at 145s, the proposal silently assumes `S + flush ≲ 33s` and never says so.
+
+`history.json:3–18` records exactly this failure class twice (startup CODE, D3a PLAN): complete substantive results, **FAILED supervised finalization, CLI exit UNKNOWN**. The margin above is where D4 would reproduce it.
+
+* Smallest correction (no change to REVIEWER 1800/TERM 1790/KILL 1798; no execution, signal or deadline release): the separate CLOSED mechanics packet must bind a **measured** maximum runner startup `S`, include the ~10s post-test launcher drain, require `S + 120s + report flush ≤ TERM`, and state that TERM must not precede the emitted-report flush. One attempt, no automatic extension, no retry — unchanged.
+
+### F7 — Low — "cap dispatch at 32" must be a distinctly labeled invariant, not an expected-count assertion
+
+* Current source: `test:222–223` bounds each page loop at 12 pages; the two `collectEvents` calls (`:234`, `:266`) make 25 rows fixed and 7 loop-derived on the expected path, while the existing guard alone admits up to 24 page reads.
+* Frozen plan: `plan.md:11` ("cap dispatch at32"); `request-inventory.json` counts + warning `:484`.
+* Page sizes are deterministic at 32 under pinned constants (`packages/server/src/transaction-batch.ts:62` → `transaction-store.ts:251` → Event page item cap at `transaction-store.ts:1746`; receipt bound per spec `bdp.md:5203–5210`), so the cap cannot false-fail a conforming run.
+* Smallest correction: state that 32 is an independent dispatch invariant with its own fixed stage label ("dispatch cap exceeded"), does **not** replace the `:223` page guard, and that tripping it is never reported as "32 observed".
+
+### F8 — Low — Per-row wire retention has no report-side bound, and the failure report enlarges what is serialized
+
+* Current source: `test:180–189` retains full `wireResponseBase64` + `wireSha256` per **successful** row; the executor wire cap is `1179648` (`packages/conformance/src/http-executor.ts:898` = `1048576 + 65536*2`), so 32 rows admit ≈37 MiB wire (≈50 MiB base64) in a single `console.log` (`test:453`).
+* Frozen plan: `plan.md:11` "Record only bounded safe request metadata"; `report-contract.json` sets no serialization bound; `plan.md:15` now requires emitting the cached report on failure, so failing rows serialize too.
+* Smallest correction: state in `report-contract.json` either (a) full-wire base64 retention is preserved as-is, bounded only by 32 × 1179648, or (b) always retain `wireSha256` + byte length and the full base64 only below a fixed per-row byte bound. No HTTP limit changes either way.
+
+### F9 — Low — Name the two fixed pre-ready launcher error shapes as failure-stage labels (without upgrading UNKNOWN)
+
+* Current source: `launcher:87–93` rethrows the **original** error after `close()` resolves, versus `AggregateError(…, "installed transaction startup cleanup failed")` at `:91` and `AggregateError(…, "installed transaction cleanup failed")` at `:43`.
+* Frozen plan: C1, M5, `plan.md:15`, `report-contract.json:19–20` ("bounded failure-stage labels").
+* Smallest correction: record a fixed label (e.g. `prelaunch-rejected` vs `prelaunch-cleanup-unsettled`) so root can prioritize descendant inventory. Acquisition/closure stay **UNKNOWN** in both; no PID is exposed, no speculative kill, store retained. This is a labeling refinement, explicitly **not** a relaxation and not an inference of clean acquisition.
+
+### F10 — Low — "retained" should distinguish directory from store file, because product code unlinks a failed create
+
+* Current source: `transaction-store.ts:358` (`openSync(file,"wx")` on create) and `:642` (`if (options.create) unlinkSync(options.file)` on provisioning failure); the directory itself comes from `mkdtempSync` (`test:109`), independent of the store file; `test:449` removes unconditionally.
+* Frozen plan: C8; `plan.md:15`.
+* Smallest correction: C8's "removed/retained/unknown" should record directory retention **and** store-file presence via a single bounded stat, or state that "retained" means the directory only. (A stat is not the Git/readfile subprocess C0 prohibits in `finally`; if even that is unwanted, choose the wording option.)
+
+### F11 — Low — Two text-precision nits in the frozen plan
+
+* `plan.md:9` "immediately reopens395–400": the close is `test:395` and the relaunch statement spans `test:397–401`. `lifecycle-inventory.json` currentFacts ("first close at395 then reopen397") and `request-inventory.json` row 29 (`[394,402]`) are accurate; align `plan.md` to `395` + `397–401`.
+* `plan.md:9` "No explicit pending registry exists" is true of the owned callback, but an unused registry exists at `apps/bdptest/test-support/transactional-execution-binding.ts:130`, `:156–163` (correctly outside the footprint). Scope the sentence to the callback so an author does not reach outside the footprint to reuse it.
+
+---
+
+## What checks out against the pinned source
+
+* **32 prospective rows re-derived** from `test:203–417`: 11 POST / 21 GET, 30×200 / 2×404 (`:293`, `:393`), 28 before the barrier / 4 after. Every row's `sourceLines` resolves to the cited statement, including the 4+3 loop-derived page reads (`:234`, `:266`) and the auto-key rows (`set_0..set_4`).
+* **Five oracles are clone-only, no wire calls**: `:264`, `:276`, `:277–283`, `:367–369`, `:370–372`; O4's labeled literal assertion is `:336` and the `toThrow(/requested owned Link properties/)` regex matches it.
+* **Counts are derivable, not assumed**: `maximumOperations: 32` (`transaction-batch.ts:62`) → `receiptReceiptMaximum` (`transaction-store.ts:251`) → Event page item cap (`transaction-store.ts:1746`) and receipt page bound (spec `:5203–5210`) give `[32,32,32,3]`=99, `[32,32,32]`=96, `[32,1]`=33 deterministically.
+* **Limits exactly as `configuration-inventory.json` states**: `test:143–150` (5000 / 1048576 / 16384 / 65536); response header default 65536 is the un-overridden executor default (`http-executor.ts:156`, `:175`); derived wire `1179648` = `http-executor.ts:898`. The `wireBytes: 2097152` at `transactional-execution-binding.ts:139` belongs to the unused binding factory and is correctly outside the footprint.
+* **Rejection evidence claim is exactly right**: `http-executor.ts:782–791` rethrows only `category` + fixed message + `writeState`; no partial bytes, no `exactRequest`. Conversely `exactRequest.headerLines` (`:756–758`) does carry the Bearer value (appended at `:713`), so the prohibition is necessary and is currently honored (`test:175` reads only `writeState`).
+* **No secret reaches the report**: `configurationMetadata` is digest-only (`transaction-runtime-configuration.ts:391–401`); `served` is digest-only (`profile-contract-plan.ts:148–160`); ready adds only `listenUrl`/`targets`/`payloadIdentity` (`transaction-installed-process.ts:49–55`).
+* **Replay predicate is schema-coherent**: receipts are `PRIMARY KEY(principal,key)` (`transaction-store.ts:243`); reopen retracts only `owner IS NOT NULL` rows (`:634`) and transient `creator_facts` (`:636`); receipt detail is 86400000 ms (`:232–233`), so rows 29–32 face no `410 cursor-expired` within the 90s budget. Replay needs the same **principal**; `runtimeConfigurationIdentity` equality needs the same **token** (`:250–254`) — keeping both, as the plan requires, is load-bearing for different reasons.
+* **One-file feasibility confirmed**: the handle exposes the `ChildProcess` (`launcher:86`, `test:17–22`), so PID/generation/exit/close retention is local; stdout/stderr are consumed (`launcher:14–18`), so `close` will fire; `assertSameServedProfileConfiguration` is exported from `@bdp/conformance/testing` (`packages/conformance/test-support/testing.ts:10–13`), so upgrading the single `runtimeConfigurationIdentity` compare at `test:136` to full served-binding equality needs no shared-file change. The "launch rejection exposes no PID" claim is correct — no handle is returned on the `launcher:87–93` path.
+* **Capture/configuration facts**: port 0 + canonical forced at `transaction-installed-configuration.ts:62–63`; empty Scope aggregate enforced at `transaction-runtime-configuration.ts:364` and `transaction-store.ts:659`; 12 targets (`transactional-execution-binding.ts:50–63`, asserted `test:127`); four Types / closed `n:number` / `ownsOutgoing{owned:max 32}` / one writer / History false all as stated.
+* **Runtime shutdown chain** matches `lifecycle-inventory.json` `runtimeClose` exactly: `transaction-runtime.ts:375–398` (listener close + `closeAllConnections` → `allSettled(pending)` → `service.close()`), `transaction-service.ts:777–798` (streams abort → `allSettled` → `read.close()` → `owner.close()`), `transaction-store.ts:2365–2373` (`db.close()`), awaited before disconnect at `transaction-installed-process.ts:56–59`.
+* **Spec regions support the non-claims**: `bdp.md:409–452` — `ownsOutgoing` `max` is per (Bead Type, Link Type) pair and only the wildcard bounds a Bead's whole owned set, so "max 32 is not a Scope aggregate" and "one owned Link updated ≠ 32-owned capacity boundary" are correct; `:454–460` grounds source-versioning (O4/O5); `:5188–5202` grounds the no-op/omitted `effectPosition` and the 1 `matched` + N ordered entries shape; `:5215–5219` grounds page-URL survival across ordinary restart (rows 29–30).
+* The response-before-assert gap is **reachable, not theoretical**: the runtime's own 500 path writes `content-length: 0` with no body (`transaction-runtime.ts:261–266`), which today fails at `test:174` before `:180` and leaves no row at all.
+
+## Classification and residual limits
+
+* **Observation mechanics only**: F1, F3, F4a, F4b, F7, F8, F9, F10. **Product behavior used as an observation predicate**: F5 (exclusive lock / `busy_timeout=0`). **Frozen-plan text precision**: F2, F11. **CLOSED supervisor-mechanics assessment, no authorization**: F6.
+* I cannot recompute SHA-256 with read-only tools: `line-map.json`, the closure hashes, the 679-file map and tree identity are accepted as given, not re-verified.
+* Nothing was executed. All 32 rows, both acquisitions, 33/96/1 and the five oracles remain **PROSPECTIVE**; I verified derivability from pinned constants, never a pass. Historical `c934` is not requalified; `history.json` is history only and yields no D4 outcome; no D4 attempt exists.
+* Unresolved and left unresolved: final combined source/test/config/build/archive/consumer/lock/proof rebind; administrative erasure ingestion and retained-copy assurance; logical restore route / epoch-key-ledger applicability (not N/A under History false); exact external validation commands/tool/archive/consumer identities; the 150/145/149 proposal itself.
+* No finding adds a normative or optional requirement, reclassifies ordinary Links as owned, claims owned-capacity or owned deletion/cascade coverage, pools D3a/matrix configurations, grants cold-navigation/public-startup/whole-Write credit, blurs RU versus TX contracts, or treats graceful same-store reopen as crash/power-loss/logical restore. `claimEligible: false` throughout; `authoringReleased`/`reviewLaunchReleased`/`executionReleased` remain false.
+* These findings feed the independent terminal audit and root disposition. This is not approval, and not a source or runtime release.

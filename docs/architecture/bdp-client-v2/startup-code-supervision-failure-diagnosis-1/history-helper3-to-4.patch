@@ -1,0 +1,63 @@
+--- helper3/supervise.py
++++ helper4/supervise.py
+@@ -43,7 +43,8 @@
+     state = {"reason": None, "termSent": False, "killSent": False, "errors": [],
+              "known": {}, "groups": {}, "wrapperPid": None, "forced": False,
+              "lastRows": [], "ownershipUnknown": False, "direct": {},
+-             "termAttemptCount": 0, "killAttemptCount": 0, "authenticatedReviewers": {}}
++             "termAttemptCount": 0, "killAttemptCount": 0, "authenticatedReviewers": {},
++             "unanchoredGroupsCurrent": {}, "unanchoredGroupsObserved": {}}
+     finished = threading.Event()
+     wrapper = None
+     checks = []
+@@ -157,6 +158,21 @@
+             authenticated_groups = {rows[pid]["pgid"] for pid in owned
+                                     if rows[pid]["pgid"] != os.getpgrp()}
+             owned.update(pid for pid, row in rows.items() if row["pgid"] in authenticated_groups)
++            # A reaped leader and never-sampled reparented child may leave no
++            # surviving PID/start anchor. Census EVERY previously authenticated
++            # PGID anyway. Numeric PGID history alone never authorizes a signal:
++            # surviving unanchored membership is unknown/failure, not absence.
++            unanchored = {}
++            for pgid in set(state["groups"]) - authenticated_groups:
++                members = [row for row in rows.values() if row["pgid"] == pgid]
++                if members:
++                    unanchored[pgid] = members
++                    state["unanchoredGroupsObserved"].setdefault(pgid, members)
++            state["unanchoredGroupsCurrent"] = unanchored
++            if unanchored:
++                state["ownershipUnknown"] = True
++                if state["reason"] is None:
++                    state["reason"] = "known_group_membership_unanchored"
+             for pid in owned:
+                 row = rows[pid]
+                 state["known"][pid] = row
+@@ -171,6 +187,9 @@
+         complete = True
+         try:
+             rows, owned = collect()
++            with state_lock:
++                if state["unanchoredGroupsCurrent"]:
++                    complete = False
+         except Exception as exc:
+             rows = None
+             owned = []
+@@ -342,7 +361,8 @@
+         if state["reason"] is None:
+             # Normal wrapper exit never proves separately sessioned reviewer absence.
+             _, owned = collect()
+-            require(not owned, "Owned process survived normal wrapper exit")
++            require(not owned and not state["unanchoredGroupsCurrent"],
++                    "Owned or unanchored known-group process survived normal wrapper exit")
+             require(wrapper.returncode == 0, "Wrapper failed; inspect preserved local records")
+             final_role_ok = wait_check(check_session())
+             require(final_role_ok, "Final role check failed; no completion claim")
+@@ -427,6 +447,8 @@
+                   "remainingOwned": remaining, "ownershipUnknown": state["ownershipUnknown"],
+                   "observedOwned": list(state["known"].values()), "observedGroups": state["groups"],
+                   "authenticatedReviewers": list(state["authenticatedReviewers"].values()),
++                  "unanchoredKnownGroupsAtLastInventory": state["unanchoredGroupsCurrent"],
++                  "unanchoredKnownGroupsObserved": state["unanchoredGroupsObserved"],
+                   "noRetry": True, "localEvidenceAfterSupersessionAllowed": True,
+                   "remoteWritesPerformed": False,
+                   "limitation": "PID/start-time/ancestry and authenticated runner process record provide owned-group evidence; no system-wide socket census or hard-real-time OS guarantee. Terminal local evidence adds no reviewer execution allowance."}

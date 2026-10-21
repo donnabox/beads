@@ -1,0 +1,824 @@
+{
+  "actualCollectionTotalAndSkipped": "UNKNOWN_FUTURE_MEASUREMENT",
+  "all34Fresh": true,
+  "bootstrapReuse": [],
+  "exactSelectedNameInventory": 14,
+  "immediatePairs": [
+    [
+      "g09-service-source",
+      "audit-g09-service-source"
+    ],
+    [
+      "g09-schema-source",
+      "audit-g09-schema-source"
+    ],
+    [
+      "legacy-schema-source",
+      "audit-legacy-schema-source"
+    ],
+    [
+      "schema-confinement-source",
+      "audit-schema-confinement-source"
+    ],
+    [
+      "g09-installed-01",
+      "audit-g09-installed-01"
+    ],
+    [
+      "g09-installed-02",
+      "audit-g09-installed-02"
+    ],
+    [
+      "schema-installed-positive",
+      "audit-schema-installed-positive"
+    ]
+  ],
+  "installedCallbackRequests": [
+    14,
+    16,
+    14
+  ],
+  "legacy14FingerprintOnly": true,
+  "normalInstalledChildren": 3,
+  "requiredEvidence": "raw0 means its actually bound existing Read claim verified only; raw2 means explicit no-claim failclosed; neither is Write qualification. All other stages require raw0.",
+  "sourceCallbacksNotRuntimeObservations": {
+    "G09": 8,
+    "confinement": 1,
+    "legacySource": 2,
+    "newG09Direct": 26,
+    "newG09Reports": 8,
+    "newG09Wire": 9
+  },
+  "stages": [
+    {
+      "acceptedRawExitCodes": [
+        0
+      ],
+      "actualResult": "UNATTEMPTED_NEW_SOURCE",
+      "automaticRetries": 0,
+      "beforeSpecSha256": "6cba8996f3ef3b4cefc8b1952f6ce76901a55e5849349987ce5848b20af97f60",
+      "id": "node-version",
+      "kind": "supervised-command",
+      "mustCompleteBeforeNextStage": false,
+      "ordinal": 1,
+      "outerSeconds": 120,
+      "requiresConsumerProof": false,
+      "retargetOnly": {
+        "argvExecutionOccurrences": 0,
+        "argvSourceOccurrences": 0,
+        "cwdExecutionOccurrences": 0,
+        "cwdSourceOccurrences": 1
+      },
+      "selectedFullNames": [],
+      "termAtSeconds": 115
+    },
+    {
+      "acceptedRawExitCodes": [
+        0
+      ],
+      "actualResult": "UNATTEMPTED_NEW_SOURCE",
+      "automaticRetries": 0,
+      "beforeSpecSha256": "e736d2fb127b41d4868a9db1ecd806da803247f868d22e81cbf830af4d6c2325",
+      "id": "pnpm-version",
+      "kind": "supervised-command",
+      "mustCompleteBeforeNextStage": false,
+      "ordinal": 2,
+      "outerSeconds": 120,
+      "requiresConsumerProof": false,
+      "retargetOnly": {
+        "argvExecutionOccurrences": 0,
+        "argvSourceOccurrences": 0,
+        "cwdExecutionOccurrences": 0,
+        "cwdSourceOccurrences": 1
+      },
+      "selectedFullNames": [],
+      "termAtSeconds": 115
+    },
+    {
+      "acceptedRawExitCodes": [
+        0
+      ],
+      "actualResult": "UNATTEMPTED_NEW_SOURCE",
+      "automaticRetries": 0,
+      "beforeSpecSha256": "f765c43831b9d6e2dc08c23a0ed40050261539fb5e25427cc7a5560bcf1d86de",
+      "id": "workspace-install",
+      "kind": "supervised-command",
+      "mustCompleteBeforeNextStage": false,
+      "ordinal": 3,
+      "outerSeconds": 120,
+      "requiresConsumerProof": false,
+      "retargetOnly": {
+        "argvExecutionOccurrences": 0,
+        "argvSourceOccurrences": 0,
+        "cwdExecutionOccurrences": 0,
+        "cwdSourceOccurrences": 1
+      },
+      "selectedFullNames": [],
+      "termAtSeconds": 115
+    },
+    {
+      "acceptedRawExitCodes": [
+        0
+      ],
+      "actualResult": "UNATTEMPTED_NEW_SOURCE",
+      "automaticRetries": 0,
+      "beforeSpecSha256": "6be3d59b7f19c751590e1463ec24af6c6ae669ae347767eeef7fcc779e0fc99b",
+      "id": "bind-workspace-tools",
+      "kind": "supervised-readonly-helper",
+      "mustCompleteBeforeNextStage": true,
+      "ordinal": 4,
+      "outerSeconds": 120,
+      "requiresConsumerProof": false,
+      "retargetOnly": {
+        "argvExecutionOccurrences": 1,
+        "argvSourceOccurrences": 0,
+        "cwdExecutionOccurrences": 0,
+        "cwdSourceOccurrences": 1
+      },
+      "selectedFullNames": [],
+      "termAtSeconds": 115
+    },
+    {
+      "acceptedRawExitCodes": [
+        0
+      ],
+      "actualResult": "UNATTEMPTED_NEW_SOURCE",
+      "automaticRetries": 0,
+      "beforeSpecSha256": "c46ef9e0dac2818c65784b5285313ed2d61364b6f52b6ff5dcc8b84e1df9582d",
+      "id": "typecheck",
+      "kind": "supervised-command",
+      "mustCompleteBeforeNextStage": false,
+      "ordinal": 5,
+      "outerSeconds": 120,
+      "requiresConsumerProof": false,
+      "retargetOnly": {
+        "argvExecutionOccurrences": 0,
+        "argvSourceOccurrences": 0,
+        "cwdExecutionOccurrences": 0,
+        "cwdSourceOccurrences": 1
+      },
+      "selectedFullNames": [],
+      "termAtSeconds": 115
+    },
+    {
+      "acceptedRawExitCodes": [
+        0
+      ],
+      "actualResult": "UNATTEMPTED_NEW_SOURCE",
+      "automaticRetries": 0,
+      "beforeSpecSha256": "f74606e5f64edf013a7821054cc9b6619aa07a3ebe3ca930be4fa79e51166c8b",
+      "id": "format-check",
+      "kind": "supervised-command",
+      "mustCompleteBeforeNextStage": false,
+      "ordinal": 6,
+      "outerSeconds": 120,
+      "requiresConsumerProof": false,
+      "retargetOnly": {
+        "argvExecutionOccurrences": 0,
+        "argvSourceOccurrences": 2,
+        "cwdExecutionOccurrences": 0,
+        "cwdSourceOccurrences": 1
+      },
+      "selectedFullNames": [],
+      "termAtSeconds": 115
+    },
+    {
+      "acceptedRawExitCodes": [
+        0
+      ],
+      "actualResult": "UNATTEMPTED_NEW_SOURCE",
+      "automaticRetries": 0,
+      "beforeSpecSha256": "1e78f5414cd11c5e75aab6253ef4e92b07556d4a2bb70c81430e87f9f7a69e56",
+      "id": "lint",
+      "kind": "supervised-command",
+      "mustCompleteBeforeNextStage": false,
+      "ordinal": 7,
+      "outerSeconds": 120,
+      "requiresConsumerProof": false,
+      "retargetOnly": {
+        "argvExecutionOccurrences": 0,
+        "argvSourceOccurrences": 2,
+        "cwdExecutionOccurrences": 0,
+        "cwdSourceOccurrences": 1
+      },
+      "selectedFullNames": [],
+      "termAtSeconds": 115
+    },
+    {
+      "acceptedRawExitCodes": [
+        0
+      ],
+      "actualResult": "UNATTEMPTED_NEW_SOURCE",
+      "automaticRetries": 0,
+      "beforeSpecSha256": "cc4abe76c359636f8c02c263d46eea5cca731fb7206c01ddefaba62d9c7821fc",
+      "id": "fresh-build",
+      "kind": "supervised-command",
+      "mustCompleteBeforeNextStage": false,
+      "ordinal": 8,
+      "outerSeconds": 120,
+      "requiresConsumerProof": false,
+      "retargetOnly": {
+        "argvExecutionOccurrences": 0,
+        "argvSourceOccurrences": 0,
+        "cwdExecutionOccurrences": 0,
+        "cwdSourceOccurrences": 1
+      },
+      "selectedFullNames": [],
+      "termAtSeconds": 115
+    },
+    {
+      "acceptedRawExitCodes": [
+        0
+      ],
+      "actualResult": "UNATTEMPTED_NEW_SOURCE",
+      "automaticRetries": 0,
+      "beforeSpecSha256": "1509d7dbd8f83359bbbe34c6eda5f0ee3df8166105d1afa207329bbd8fd15547",
+      "id": "bind-fresh-build",
+      "kind": "supervised-readonly-helper",
+      "mustCompleteBeforeNextStage": true,
+      "ordinal": 9,
+      "outerSeconds": 120,
+      "requiresConsumerProof": false,
+      "retargetOnly": {
+        "argvExecutionOccurrences": 1,
+        "argvSourceOccurrences": 0,
+        "cwdExecutionOccurrences": 0,
+        "cwdSourceOccurrences": 1
+      },
+      "selectedFullNames": [],
+      "termAtSeconds": 115
+    },
+    {
+      "acceptedRawExitCodes": [
+        0
+      ],
+      "actualResult": "UNATTEMPTED_NEW_SOURCE",
+      "automaticRetries": 0,
+      "beforeSpecSha256": "573de30b194f675aceadf26ca264572e3067fd6c57d7c26a32b97c04be782caa",
+      "id": "g09-service-source",
+      "kind": "supervised-command",
+      "mustCompleteBeforeNextStage": false,
+      "ordinal": 10,
+      "outerSeconds": 120,
+      "requiresConsumerProof": false,
+      "retargetOnly": {
+        "argvExecutionOccurrences": 1,
+        "argvSourceOccurrences": 1,
+        "cwdExecutionOccurrences": 0,
+        "cwdSourceOccurrences": 1
+      },
+      "selectedFullNames": [
+        "G09-S01 schemaObserved zero-min/current and captured supplied tuple",
+        "G09-S02 schemaObserved epoch and view errors",
+        "G09-S03 schemaObserved ahead and opaque bounded attempts"
+      ],
+      "termAtSeconds": 115
+    },
+    {
+      "acceptedRawExitCodes": [
+        0
+      ],
+      "actualResult": "UNATTEMPTED_NEW_SOURCE",
+      "automaticRetries": 0,
+      "beforeSpecSha256": "616b9876a9dfaaf4e13c13eae01f5b9899d2f825e7d55ea29d2df4abc058907c",
+      "id": "audit-g09-service-source",
+      "kind": "supervised-readonly-helper",
+      "mustCompleteBeforeNextStage": true,
+      "ordinal": 11,
+      "outerSeconds": 120,
+      "requiresConsumerProof": false,
+      "retargetOnly": {
+        "argvExecutionOccurrences": 1,
+        "argvSourceOccurrences": 0,
+        "cwdExecutionOccurrences": 0,
+        "cwdSourceOccurrences": 1
+      },
+      "selectedFullNames": [],
+      "termAtSeconds": 115
+    },
+    {
+      "acceptedRawExitCodes": [
+        0
+      ],
+      "actualResult": "UNATTEMPTED_NEW_SOURCE",
+      "automaticRetries": 0,
+      "beforeSpecSha256": "286b23d1db8cadf2ea720ff8a322dd970780b40bcadaace0e12b7bad44c5c752",
+      "id": "g09-schema-source",
+      "kind": "supervised-command",
+      "mustCompleteBeforeNextStage": false,
+      "ordinal": 12,
+      "outerSeconds": 120,
+      "requiresConsumerProof": false,
+      "retargetOnly": {
+        "argvExecutionOccurrences": 1,
+        "argvSourceOccurrences": 1,
+        "cwdExecutionOccurrences": 0,
+        "cwdSourceOccurrences": 1
+      },
+      "selectedFullNames": [
+        "G09-S04 schema selector receiving and exact identity",
+        "G09-S05 schema selector HTTP/min failure order",
+        "G09-S06 schema runtime satisfied and context errors",
+        "G09-S07 schema runtime ahead before conditional",
+        "G09-S08 schema runtime unknown before HEAD/media"
+      ],
+      "termAtSeconds": 115
+    },
+    {
+      "acceptedRawExitCodes": [
+        0
+      ],
+      "actualResult": "UNATTEMPTED_NEW_SOURCE",
+      "automaticRetries": 0,
+      "beforeSpecSha256": "3089dbeee9276b09708e821da1bb9b2677597dff9cf5db498e5eede3ec002712",
+      "id": "audit-g09-schema-source",
+      "kind": "supervised-readonly-helper",
+      "mustCompleteBeforeNextStage": true,
+      "ordinal": 13,
+      "outerSeconds": 120,
+      "requiresConsumerProof": false,
+      "retargetOnly": {
+        "argvExecutionOccurrences": 1,
+        "argvSourceOccurrences": 0,
+        "cwdExecutionOccurrences": 0,
+        "cwdSourceOccurrences": 1
+      },
+      "selectedFullNames": [],
+      "termAtSeconds": 115
+    },
+    {
+      "acceptedRawExitCodes": [
+        0
+      ],
+      "actualResult": "UNATTEMPTED_NEW_SOURCE",
+      "automaticRetries": 0,
+      "beforeSpecSha256": "8ed40631323ed7d3ebe6fc3abc38407ddbdeca0b29ca575c9db2b91e154c963a",
+      "id": "legacy-schema-source",
+      "kind": "supervised-command",
+      "mustCompleteBeforeNextStage": false,
+      "ordinal": 14,
+      "outerSeconds": 120,
+      "requiresConsumerProof": false,
+      "retargetOnly": {
+        "argvExecutionOccurrences": 1,
+        "argvSourceOccurrences": 1,
+        "cwdExecutionOccurrences": 0,
+        "cwdSourceOccurrences": 1
+      },
+      "selectedFullNames": [
+        "serves exact captured root and transitive bytes without retaining mutable input",
+        "preserves receiving refusals and foreign schema minima before conditionals"
+      ],
+      "termAtSeconds": 115
+    },
+    {
+      "acceptedRawExitCodes": [
+        0
+      ],
+      "actualResult": "UNATTEMPTED_NEW_SOURCE",
+      "automaticRetries": 0,
+      "beforeSpecSha256": "e776b5ea39baa80e158f123700677510fc295eac5dc6efbaffcb4e3e7df34dec",
+      "id": "audit-legacy-schema-source",
+      "kind": "supervised-readonly-helper",
+      "mustCompleteBeforeNextStage": true,
+      "ordinal": 15,
+      "outerSeconds": 120,
+      "requiresConsumerProof": false,
+      "retargetOnly": {
+        "argvExecutionOccurrences": 1,
+        "argvSourceOccurrences": 0,
+        "cwdExecutionOccurrences": 0,
+        "cwdSourceOccurrences": 1
+      },
+      "selectedFullNames": [],
+      "termAtSeconds": 115
+    },
+    {
+      "acceptedRawExitCodes": [
+        0
+      ],
+      "actualResult": "UNATTEMPTED_NEW_SOURCE",
+      "automaticRetries": 0,
+      "beforeSpecSha256": "889fdd34ca004dc4827d6607a2f4da1d9e6f2685454c965830218923e62608bf",
+      "id": "schema-confinement-source",
+      "kind": "supervised-command",
+      "mustCompleteBeforeNextStage": false,
+      "ordinal": 16,
+      "outerSeconds": 120,
+      "requiresConsumerProof": false,
+      "retargetOnly": {
+        "argvExecutionOccurrences": 1,
+        "argvSourceOccurrences": 1,
+        "cwdExecutionOccurrences": 0,
+        "cwdSourceOccurrences": 1
+      },
+      "selectedFullNames": [
+        "confines observed Type and schema traversal to exact administrative identities"
+      ],
+      "termAtSeconds": 115
+    },
+    {
+      "acceptedRawExitCodes": [
+        0
+      ],
+      "actualResult": "UNATTEMPTED_NEW_SOURCE",
+      "automaticRetries": 0,
+      "beforeSpecSha256": "853c6e7773016dd6387d697e01774c8dfa63516f14dc3c2439e8ceb643b2a613",
+      "id": "audit-schema-confinement-source",
+      "kind": "supervised-readonly-helper",
+      "mustCompleteBeforeNextStage": true,
+      "ordinal": 17,
+      "outerSeconds": 120,
+      "requiresConsumerProof": false,
+      "retargetOnly": {
+        "argvExecutionOccurrences": 1,
+        "argvSourceOccurrences": 0,
+        "cwdExecutionOccurrences": 0,
+        "cwdSourceOccurrences": 1
+      },
+      "selectedFullNames": [],
+      "termAtSeconds": 115
+    },
+    {
+      "acceptedRawExitCodes": [
+        0
+      ],
+      "actualResult": "UNATTEMPTED_NEW_SOURCE",
+      "automaticRetries": 0,
+      "beforeSpecSha256": "8ed23314b7310f53ab189943c05b19a697c8e1329109e6e137fe85a162bd008f",
+      "id": "prepare-package-directory",
+      "kind": "supervised-owned-preparation-helper",
+      "mustCompleteBeforeNextStage": true,
+      "ordinal": 18,
+      "outerSeconds": 120,
+      "requiresConsumerProof": false,
+      "retargetOnly": {
+        "argvExecutionOccurrences": 1,
+        "argvSourceOccurrences": 0,
+        "cwdExecutionOccurrences": 0,
+        "cwdSourceOccurrences": 1
+      },
+      "selectedFullNames": [],
+      "termAtSeconds": 115
+    },
+    {
+      "acceptedRawExitCodes": [
+        0
+      ],
+      "actualResult": "UNATTEMPTED_NEW_SOURCE",
+      "automaticRetries": 0,
+      "beforeSpecSha256": "d8b701c97892dac142d3fe2cd2d5bda52431bdd1425d5930c13abbe9d6cc4d7f",
+      "id": "pack-protocol",
+      "kind": "supervised-command",
+      "mustCompleteBeforeNextStage": false,
+      "ordinal": 19,
+      "outerSeconds": 120,
+      "requiresConsumerProof": false,
+      "retargetOnly": {
+        "argvExecutionOccurrences": 1,
+        "argvSourceOccurrences": 0,
+        "cwdExecutionOccurrences": 0,
+        "cwdSourceOccurrences": 1
+      },
+      "selectedFullNames": [],
+      "termAtSeconds": 115
+    },
+    {
+      "acceptedRawExitCodes": [
+        0
+      ],
+      "actualResult": "UNATTEMPTED_NEW_SOURCE",
+      "automaticRetries": 0,
+      "beforeSpecSha256": "80994941c9169c86fa98e0bebf1f528e48ed20ec320db2697f040f736a097ce9",
+      "id": "pack-server",
+      "kind": "supervised-command",
+      "mustCompleteBeforeNextStage": false,
+      "ordinal": 20,
+      "outerSeconds": 120,
+      "requiresConsumerProof": false,
+      "retargetOnly": {
+        "argvExecutionOccurrences": 1,
+        "argvSourceOccurrences": 0,
+        "cwdExecutionOccurrences": 0,
+        "cwdSourceOccurrences": 1
+      },
+      "selectedFullNames": [],
+      "termAtSeconds": 115
+    },
+    {
+      "acceptedRawExitCodes": [
+        0
+      ],
+      "actualResult": "UNATTEMPTED_NEW_SOURCE",
+      "automaticRetries": 0,
+      "beforeSpecSha256": "1c5b4d4e92fe8d4019118dda86bf014aa04bfa217d2b4734158049b42f03bbb2",
+      "id": "verify-archives",
+      "kind": "supervised-readonly-helper",
+      "mustCompleteBeforeNextStage": true,
+      "ordinal": 21,
+      "outerSeconds": 120,
+      "requiresConsumerProof": false,
+      "retargetOnly": {
+        "argvExecutionOccurrences": 1,
+        "argvSourceOccurrences": 0,
+        "cwdExecutionOccurrences": 0,
+        "cwdSourceOccurrences": 1
+      },
+      "selectedFullNames": [],
+      "termAtSeconds": 115
+    },
+    {
+      "acceptedRawExitCodes": [
+        0
+      ],
+      "actualResult": "UNATTEMPTED_NEW_SOURCE",
+      "automaticRetries": 0,
+      "beforeSpecSha256": "51688be728d7f5813789b375142c204eed6e039d9010da76022381e290598ceb",
+      "id": "prepare-consumer",
+      "kind": "supervised-owned-preparation-helper",
+      "mustCompleteBeforeNextStage": true,
+      "ordinal": 22,
+      "outerSeconds": 120,
+      "requiresConsumerProof": false,
+      "retargetOnly": {
+        "argvExecutionOccurrences": 1,
+        "argvSourceOccurrences": 0,
+        "cwdExecutionOccurrences": 0,
+        "cwdSourceOccurrences": 1
+      },
+      "selectedFullNames": [],
+      "termAtSeconds": 115
+    },
+    {
+      "acceptedRawExitCodes": [
+        0
+      ],
+      "actualResult": "UNATTEMPTED_NEW_SOURCE",
+      "automaticRetries": 0,
+      "beforeSpecSha256": "0900a5cad255f3b34cb41078b2699e1b3a871204e2199ea8673c3bfcd15a9bb9",
+      "id": "consumer-install",
+      "kind": "supervised-command",
+      "mustCompleteBeforeNextStage": false,
+      "ordinal": 23,
+      "outerSeconds": 120,
+      "requiresConsumerProof": false,
+      "retargetOnly": {
+        "argvExecutionOccurrences": 0,
+        "argvSourceOccurrences": 0,
+        "cwdExecutionOccurrences": 1,
+        "cwdSourceOccurrences": 0
+      },
+      "selectedFullNames": [],
+      "termAtSeconds": 115
+    },
+    {
+      "acceptedRawExitCodes": [
+        0
+      ],
+      "actualResult": "UNATTEMPTED_NEW_SOURCE",
+      "automaticRetries": 0,
+      "beforeSpecSha256": "8e00cb5868bd3af37e69eb1cc79e2319c961b7a24d215418fd246d01082bec37",
+      "id": "verify-installed-consumer",
+      "kind": "supervised-readonly-helper",
+      "mustCompleteBeforeNextStage": true,
+      "ordinal": 24,
+      "outerSeconds": 120,
+      "requiresConsumerProof": false,
+      "retargetOnly": {
+        "argvExecutionOccurrences": 1,
+        "argvSourceOccurrences": 0,
+        "cwdExecutionOccurrences": 0,
+        "cwdSourceOccurrences": 1
+      },
+      "selectedFullNames": [],
+      "termAtSeconds": 115
+    },
+    {
+      "acceptedRawExitCodes": [
+        0
+      ],
+      "actualResult": "UNATTEMPTED_NEW_SOURCE",
+      "automaticRetries": 0,
+      "beforeSpecSha256": "61c13547e15265994162b14b3e95f540304e6000e98780819fb7fb604a5c6154",
+      "id": "g09-installed-01",
+      "kind": "supervised-command",
+      "mustCompleteBeforeNextStage": false,
+      "ordinal": 25,
+      "outerSeconds": 120,
+      "requiresConsumerProof": true,
+      "retargetOnly": {
+        "argvExecutionOccurrences": 1,
+        "argvSourceOccurrences": 1,
+        "cwdExecutionOccurrences": 0,
+        "cwdSourceOccurrences": 1
+      },
+      "selectedFullNames": [
+        "G09-I01 installed exact schema current minimum"
+      ],
+      "termAtSeconds": 115
+    },
+    {
+      "acceptedRawExitCodes": [
+        0
+      ],
+      "actualResult": "UNATTEMPTED_NEW_SOURCE",
+      "automaticRetries": 0,
+      "beforeSpecSha256": "c96da87d16f4183bc523281add95371cd191e6e668c9c6228334fde788d3ddda",
+      "id": "audit-g09-installed-01",
+      "kind": "supervised-readonly-helper",
+      "mustCompleteBeforeNextStage": true,
+      "ordinal": 26,
+      "outerSeconds": 120,
+      "requiresConsumerProof": true,
+      "retargetOnly": {
+        "argvExecutionOccurrences": 1,
+        "argvSourceOccurrences": 0,
+        "cwdExecutionOccurrences": 0,
+        "cwdSourceOccurrences": 1
+      },
+      "selectedFullNames": [],
+      "termAtSeconds": 115
+    },
+    {
+      "acceptedRawExitCodes": [
+        0
+      ],
+      "actualResult": "UNATTEMPTED_NEW_SOURCE",
+      "automaticRetries": 0,
+      "beforeSpecSha256": "192c90a8dae687a94517ee5a40326f2d019adab7df15d8127015e0a7c2327d6b",
+      "id": "g09-installed-02",
+      "kind": "supervised-command",
+      "mustCompleteBeforeNextStage": false,
+      "ordinal": 27,
+      "outerSeconds": 120,
+      "requiresConsumerProof": true,
+      "retargetOnly": {
+        "argvExecutionOccurrences": 1,
+        "argvSourceOccurrences": 1,
+        "cwdExecutionOccurrences": 0,
+        "cwdSourceOccurrences": 1
+      },
+      "selectedFullNames": [
+        "G09-I02 installed receiving and exact retrieval membership"
+      ],
+      "termAtSeconds": 115
+    },
+    {
+      "acceptedRawExitCodes": [
+        0
+      ],
+      "actualResult": "UNATTEMPTED_NEW_SOURCE",
+      "automaticRetries": 0,
+      "beforeSpecSha256": "a6c7383b40ec6c8faa881f25b77e3f8b8ec9f9341bdb6c5613533a3858db0064",
+      "id": "audit-g09-installed-02",
+      "kind": "supervised-readonly-helper",
+      "mustCompleteBeforeNextStage": true,
+      "ordinal": 28,
+      "outerSeconds": 120,
+      "requiresConsumerProof": true,
+      "retargetOnly": {
+        "argvExecutionOccurrences": 1,
+        "argvSourceOccurrences": 0,
+        "cwdExecutionOccurrences": 0,
+        "cwdSourceOccurrences": 1
+      },
+      "selectedFullNames": [],
+      "termAtSeconds": 115
+    },
+    {
+      "acceptedRawExitCodes": [
+        0
+      ],
+      "actualResult": "UNATTEMPTED_NEW_SOURCE",
+      "automaticRetries": 0,
+      "beforeSpecSha256": "15758558098949343c166963f034c84416319516da0443c7c1b0a2aa80f7316d",
+      "id": "schema-installed-positive",
+      "kind": "supervised-command",
+      "mustCompleteBeforeNextStage": false,
+      "ordinal": 29,
+      "outerSeconds": 120,
+      "requiresConsumerProof": true,
+      "retargetOnly": {
+        "argvExecutionOccurrences": 1,
+        "argvSourceOccurrences": 1,
+        "cwdExecutionOccurrences": 0,
+        "cwdSourceOccurrences": 1
+      },
+      "selectedFullNames": [
+        "traverses installed local schema bytes with current context within14requests"
+      ],
+      "termAtSeconds": 115
+    },
+    {
+      "acceptedRawExitCodes": [
+        0
+      ],
+      "actualResult": "UNATTEMPTED_NEW_SOURCE",
+      "automaticRetries": 0,
+      "beforeSpecSha256": "365e989ce31bc341dad27c0c0768b6b67dbdc451ad86b7cace0f9ebf9266ba91",
+      "id": "audit-schema-installed-positive",
+      "kind": "supervised-readonly-helper",
+      "mustCompleteBeforeNextStage": true,
+      "ordinal": 30,
+      "outerSeconds": 120,
+      "requiresConsumerProof": true,
+      "retargetOnly": {
+        "argvExecutionOccurrences": 1,
+        "argvSourceOccurrences": 0,
+        "cwdExecutionOccurrences": 0,
+        "cwdSourceOccurrences": 1
+      },
+      "selectedFullNames": [],
+      "termAtSeconds": 115
+    },
+    {
+      "acceptedRawExitCodes": [
+        0
+      ],
+      "actualResult": "UNATTEMPTED_NEW_SOURCE",
+      "automaticRetries": 0,
+      "beforeSpecSha256": "ec3d191d01f7a9d43d1b6143dbb3fdc5c01b6be144d0b5847dc5312984e87d1d",
+      "id": "required-check-boundaries",
+      "kind": "supervised-command",
+      "mustCompleteBeforeNextStage": false,
+      "ordinal": 31,
+      "outerSeconds": 120,
+      "requiresConsumerProof": false,
+      "retargetOnly": {
+        "argvExecutionOccurrences": 0,
+        "argvSourceOccurrences": 0,
+        "cwdExecutionOccurrences": 0,
+        "cwdSourceOccurrences": 1
+      },
+      "selectedFullNames": [],
+      "termAtSeconds": 115
+    },
+    {
+      "acceptedRawExitCodes": [
+        0
+      ],
+      "actualResult": "UNATTEMPTED_NEW_SOURCE",
+      "automaticRetries": 0,
+      "beforeSpecSha256": "501409f286b4ca6773c69ea2cf9ca4224fd117a47ae7dbd3b9f0cfe7a83bd71e",
+      "id": "required-e2e-ready-preflight",
+      "kind": "supervised-command",
+      "mustCompleteBeforeNextStage": false,
+      "ordinal": 32,
+      "outerSeconds": 120,
+      "requiresConsumerProof": false,
+      "retargetOnly": {
+        "argvExecutionOccurrences": 0,
+        "argvSourceOccurrences": 0,
+        "cwdExecutionOccurrences": 0,
+        "cwdSourceOccurrences": 1
+      },
+      "selectedFullNames": [],
+      "termAtSeconds": 115
+    },
+    {
+      "acceptedRawExitCodes": [
+        0
+      ],
+      "actualResult": "UNATTEMPTED_NEW_SOURCE",
+      "automaticRetries": 0,
+      "beforeSpecSha256": "a1455927f86be1c5186ff3829b80378840d816ede9d9b13f6cc4c6677606939e",
+      "id": "required-smoke",
+      "kind": "supervised-command",
+      "mustCompleteBeforeNextStage": false,
+      "ordinal": 33,
+      "outerSeconds": 120,
+      "requiresConsumerProof": false,
+      "retargetOnly": {
+        "argvExecutionOccurrences": 0,
+        "argvSourceOccurrences": 0,
+        "cwdExecutionOccurrences": 0,
+        "cwdSourceOccurrences": 1
+      },
+      "selectedFullNames": [],
+      "termAtSeconds": 115
+    },
+    {
+      "acceptedRawExitCodes": [
+        0,
+        2
+      ],
+      "actualResult": "UNATTEMPTED_NEW_SOURCE",
+      "automaticRetries": 0,
+      "beforeSpecSha256": "0313145fed790ff5d0ce9702cb389614773352ca072776f8c8c361a8827f2b8a",
+      "id": "required-evidence-verify",
+      "kind": "supervised-command",
+      "mustCompleteBeforeNextStage": false,
+      "ordinal": 34,
+      "outerSeconds": 120,
+      "requiresConsumerProof": false,
+      "retargetOnly": {
+        "argvExecutionOccurrences": 0,
+        "argvSourceOccurrences": 0,
+        "cwdExecutionOccurrences": 0,
+        "cwdSourceOccurrences": 1
+      },
+      "selectedFullNames": [],
+      "termAtSeconds": 115
+    }
+  ]
+}

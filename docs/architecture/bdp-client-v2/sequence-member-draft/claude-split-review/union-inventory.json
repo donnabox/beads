@@ -1,0 +1,281 @@
+{
+  "status": "CLOSED_PREPARATION_NO_LAUNCH",
+  "head": "82f60a25da8799334381f6ebd810f32a3574cd2d",
+  "base": "18104a03b850553641f24fe83e7318493fa102ca",
+  "tree": "3cd1da66ba3a6cbd0bbdaa2442d10002939d826b",
+  "fullPatch": {
+    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/sequence-member-draft/draft.patch",
+    "bytes": 108093,
+    "sha256": "53c66bc9a5d07f53749e18628eaba32773458160ab506566ec1fb7960d13c313"
+  },
+  "scopes": {
+    "wire": {
+      "completeChangedCode": [
+        "apps/bdptest/src/transactional-matrix.test.ts"
+      ],
+      "completeNewRow": "packages/conformance/test-support/transactional/manifest-v1.json"
+    },
+    "manifest": {
+      "completeChangedCode": [
+        "packages/conformance/src/transactional-cumulative.test.ts"
+      ],
+      "completeNewObjects": [
+        "packages/conformance/test-support/transactional/manifest-v1.json",
+        "packages/conformance/test-support/transactional/coverage-v1.json"
+      ]
+    }
+  },
+  "diffSections": {
+    "apps/bdptest/src/transactional-matrix.test.ts": {
+      "bytes": 30001,
+      "sha256": "a432e3ef02adb4cfb238e82e7b901bc5650d07fff38560312a3aa7365ae25337"
+    },
+    "packages/conformance/src/transactional-cumulative.test.ts": {
+      "bytes": 14451,
+      "sha256": "b8d1d1590fa82d51797a2745a80baf827f8f65ef8eb733d01d8ef4c77eeeed38"
+    },
+    "packages/conformance/test-support/transactional/coverage-v1.json": {
+      "bytes": 10173,
+      "sha256": "ab02d7089af4731818ee6bd56be974ebc4f4f4d48b20933c2d26798c18d5959c"
+    },
+    "packages/conformance/test-support/transactional/manifest-v1.json": {
+      "bytes": 53468,
+      "sha256": "8128a53b560d3543579d47b03c145168eb12b8fee8ab4363a8e80a403723a36b"
+    }
+  },
+  "newObjects": {
+    "packages/conformance/test-support/transactional/manifest-v1.json": {
+      "compactBytes": 26183,
+      "compactSha256": "48e524596890fab7bf578cbbb653ed844178c33b568f8e0c033736d2745598ca"
+    },
+    "packages/conformance/test-support/transactional/coverage-v1.json": {
+      "compactBytes": 6743,
+      "compactSha256": "df061bba90c74f7dca488357ee7e7f4890b6cec635c2d20455276256e38760d1"
+    }
+  },
+  "coverageProof": "All app/cumulative changes supplied as complete untruncated diffs; all new JSON object values supplied compactly. Only formatting of JSON diff omitted; complete original patch retained and bound. Old14+14 raw object/full-file reconstruction and all40 historical derivative preservation independently audited, facts attributed. Root must aggregate both actual scope verdicts.",
+  "historical": {
+    "packages/conformance/test-support/transactional/manifest-v1.json": {
+      "baseSha256": "29729151cf6da641545910ec3880f9609c13b319af7bbe99d3d2ad47833dab96",
+      "currentSha256": "a11a79f6d0f9ffa5933a680a3e4fed87987789c3deca50a38cda8563132d242e",
+      "oldObjectCount": 14,
+      "strippedCompleteObjectEqualsBase": true,
+      "rawPreservationFromIndependentAudit": {
+        "path": "packages/conformance/test-support/transactional/manifest-v1.json",
+        "parentSha256": "29729151cf6da641545910ec3880f9609c13b319af7bbe99d3d2ad47833dab96",
+        "reconstructedSha256": "29729151cf6da641545910ec3880f9609c13b319af7bbe99d3d2ad47833dab96",
+        "oldRawObjects": [
+          {
+            "id": "read-update.http.command-minimum-fields",
+            "sha256": "f04c001617ccad14ef67a82586ea5f61ec918bc2545bb041fafc21dee07b5d7e",
+            "bytes": 54412
+          },
+          {
+            "id": "transactional.batch.atomic-commit",
+            "sha256": "0dfd3b9ed02d01f76ecac08c00b009b4bb9f03e57f7e15a2266eed82fc144747",
+            "bytes": 14936
+          },
+          {
+            "id": "transactional.batch.rollback",
+            "sha256": "be24067358af7b5acf7bc1beae2eb6534cbc0effa6f65406ab61b139310bfc37",
+            "bytes": 16319
+          },
+          {
+            "id": "transactional.batch.deletion-safety",
+            "sha256": "3e66e7c95aec963cc80e076249a5870b952765b2e98c1023ea148f8f628e6aeb",
+            "bytes": 131808
+          },
+          {
+            "id": "transactional.batch.no-op-entries",
+            "sha256": "9307b230eb053131e9127cbbb5e6285305b79d6794edd22f5432a07fc74d9faa",
+            "bytes": 81047
+          },
+          {
+            "id": "transactional.set.mutation",
+            "sha256": "6e7280a9ebbbc3faa1da989015cc802f82cd51b17a9cea11e7cc91392bef49d6",
+            "bytes": 71739
+          },
+          {
+            "id": "transactional.set.zero-match",
+            "sha256": "35aa23bd32539869ea3db41e1c9f3e81a3217e2eb983e764e860a6e00c9eb2c9",
+            "bytes": 36055
+          },
+          {
+            "id": "transactional.set.cardinality",
+            "sha256": "205af1c54d62efb09c9eadf20147a1730909e788c0d4763ce9718b8648f24ede",
+            "bytes": 28546
+          },
+          {
+            "id": "transactional.set.singleton-targets",
+            "sha256": "561b8ebc21106628918111332a9ab7b47be7350935925ed1e76a6cb5bed576b9",
+            "bytes": 40018
+          },
+          {
+            "id": "transactional.receipt.readable",
+            "sha256": "ddb97e450e233b941f7d905d49f48648d9965ed1b361dcdc5dee6f810038a1e0",
+            "bytes": 12545
+          },
+          {
+            "id": "transactional.receipt.pagination",
+            "sha256": "c531c260349347cdc3e54ba68282f1a266a5fa207d3775660615f836a4768782",
+            "bytes": 138750
+          },
+          {
+            "id": "transactional.idempotency.conflict",
+            "sha256": "ba93aea884ae462533d02695642f03a2ca854f5adabeb41867254216dabb2106",
+            "bytes": 29772
+          },
+          {
+            "id": "transactional.idempotency.cross-carrier",
+            "sha256": "4ad8c05fe5fbb4682809d4481c93e2684fe30fbbb8962b4da498590637f8f35b",
+            "bytes": 64106
+          },
+          {
+            "id": "transactional.idempotency.failed-retained",
+            "sha256": "a867694406dde07da71ac70197c60c478dd0fb3344cf2c8160795d1aa62d3378",
+            "bytes": 18404
+          }
+        ]
+      }
+    },
+    "packages/conformance/test-support/transactional/coverage-v1.json": {
+      "baseSha256": "4619813e9446e0e714a64c11eac184531950f57720e32c7ef414c7e3342121af",
+      "currentSha256": "346e1edaa22af789f89017fdc2fef6bb01b7564ed72a65344e9fe5635887c74f",
+      "oldObjectCount": 14,
+      "strippedCompleteObjectEqualsBase": true,
+      "rawPreservationFromIndependentAudit": {
+        "path": "packages/conformance/test-support/transactional/coverage-v1.json",
+        "parentSha256": "4619813e9446e0e714a64c11eac184531950f57720e32c7ef414c7e3342121af",
+        "reconstructedSha256": "4619813e9446e0e714a64c11eac184531950f57720e32c7ef414c7e3342121af",
+        "oldRawObjects": [
+          {
+            "id": "read-update.http.command-minimum-fields",
+            "sha256": "47914ed67c7b06e721e74134e0c633f3e1a7d461cb50ea200ff1874686885c2a",
+            "bytes": 8888
+          },
+          {
+            "id": "transactional.batch.atomic-commit",
+            "sha256": "ffd77a9d34ac41a6e1f960671bea6880eb5b2ab7b11b3af4ccf0177363d7f4d7",
+            "bytes": 2383
+          },
+          {
+            "id": "transactional.batch.rollback",
+            "sha256": "9e4f5cdb45f0133f1c6d23caa402701981db2e6f4198e23c667579622ace6769",
+            "bytes": 2857
+          },
+          {
+            "id": "transactional.batch.deletion-safety",
+            "sha256": "ac27a329a1cc013e6a0e24e0f5cad6b5b4af6c128ad65302d030422a3c7e3c0a",
+            "bytes": 17375
+          },
+          {
+            "id": "transactional.batch.no-op-entries",
+            "sha256": "383de4e0cb9b3bad310b9db7ff9009cb59fac55966f0309bc71c5d007bea6c1c",
+            "bytes": 10587
+          },
+          {
+            "id": "transactional.set.mutation",
+            "sha256": "058147f8194f091ee5a7ef3d4fd378f0324f6570049df777f993acb5f967d540",
+            "bytes": 11676
+          },
+          {
+            "id": "transactional.set.zero-match",
+            "sha256": "4e79e18a5e4c2735b5c686b9ad610dedc890386bfb06584f98268a421bbb832b",
+            "bytes": 6520
+          },
+          {
+            "id": "transactional.set.cardinality",
+            "sha256": "2a255ed4d364c435c9f985d7a770386bc7b20b2865887b9c8cc2d6cc5f0dd116",
+            "bytes": 5800
+          },
+          {
+            "id": "transactional.set.singleton-targets",
+            "sha256": "0c9008bac3e2c047d9aa8d47d343b7ed936c9c9352bb140c6422127c71b156b1",
+            "bytes": 7314
+          },
+          {
+            "id": "transactional.receipt.readable",
+            "sha256": "684eba200912ccb0932c0a8286e350a6e545262a205b3ea3df47a12fc6dd18ec",
+            "bytes": 2142
+          },
+          {
+            "id": "transactional.receipt.pagination",
+            "sha256": "0735edbca2fbf384f9f8147140a353dc084d9ad85facaddf2f5073f56a7256ee",
+            "bytes": 13057
+          },
+          {
+            "id": "transactional.idempotency.conflict",
+            "sha256": "de9b758f8ac4df7db5597b1eb2b402a116720becc30a41e7198f78f244358ec0",
+            "bytes": 5188
+          },
+          {
+            "id": "transactional.idempotency.cross-carrier",
+            "sha256": "c5e6076a2104c06f88fac88c77214522cab457faf925fe03881dff9778c35245",
+            "bytes": 11196
+          },
+          {
+            "id": "transactional.idempotency.failed-retained",
+            "sha256": "63918cbb495a504fd2043f52b60e7cd8ef1518b8022a96edb0d02660c7df1a8e",
+            "bytes": 2917
+          }
+        ]
+      }
+    }
+  },
+  "priorAttempts": {
+    "claude-preparation": {
+      "exit": {
+        "exitCode": 143,
+        "timeout": true,
+        "forcedTermination": true,
+        "elapsedSeconds": 895.6053094582167,
+        "sourceAndPlanUnchanged": true,
+        "stdoutSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "stderrSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "cleanupSha256": "8d072af900e0d6e8c2bccb800effe1a298e80447e5d3ffe1534487882e9f2939",
+        "sourceAfterSha256": "5506e697cc7698cb7c77db234ce3ebe28e62e22c9a82f853c56aa1d325b9b49f"
+      },
+      "exitSha256": "b0239a486ca505a58b20d468fa8911fcd5822ad37d1e8ff64425a09ca587b754",
+      "cleanup": {
+        "checkedAt": "2026-10-15T17:28:04.187679+00:00",
+        "pid": 98568,
+        "remainingGroup": [],
+        "sampledPids": [
+          98568
+        ],
+        "sampledPidsStillPresent": {},
+        "sampledTemporaryEntries": [],
+        "temporaryEntriesAfter": [],
+        "limitation": "One-second process-group/temp samples can miss short-lived or detached descendants. Temporary contents are retained without reading or printing their content; no product runtime/store is launched."
+      },
+      "cleanupSha256": "8d072af900e0d6e8c2bccb800effe1a298e80447e5d3ffe1534487882e9f2939"
+    },
+    "claude-focused-review": {
+      "exit": {
+        "exitCode": 143,
+        "timeout": true,
+        "forcedTermination": true,
+        "elapsedSeconds": 896.2345374161378,
+        "sourceAndPlanUnchanged": true,
+        "stdoutSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "stderrSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "cleanupSha256": "1b94ececbdd9b6278849a54388ccb0936bb5a5aabe2834c63f3d14a5ecef96a5",
+        "sourceAfterSha256": "eae418ec225362b818c5129e02739d3a6f8bfd713794b37c2419cb176eefb86d"
+      },
+      "exitSha256": "4cc4b6e729854c4ad08be9e8781116890fa842476083d67c31f047cef2bed868",
+      "cleanup": {
+        "checkedAt": "2026-10-15T17:48:05.886257+00:00",
+        "pid": 5911,
+        "remainingGroup": [],
+        "sampledPids": [
+          5911
+        ],
+        "sampledPidsStillPresent": {},
+        "sampledTemporaryEntries": [],
+        "temporaryEntriesAfter": [],
+        "limitation": "One-second process-group/temp samples can miss short-lived or detached descendants. Temporary contents are retained without reading or printing their content; no product runtime/store is launched."
+      },
+      "cleanupSha256": "1b94ececbdd9b6278849a54388ccb0936bb5a5aabe2834c63f3d14a5ecef96a5"
+    }
+  }
+}

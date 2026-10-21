@@ -1,0 +1,15 @@
+{
+  "at": "2026-10-17T21:10:12.121268+00:00",
+  "scope": "Exact one-block test correction prescribed by native lint plan; no production or workload changes",
+  "worktree": "/Users/dbox/repos/wt/vickie/vickie-current-observation-minimum",
+  "file": "packages/server/src/transaction-service.test.ts",
+  "predecessorBindingSha256": "bddf5335f1277b6462b4cea240cce43123fcc743549789b58c3989a6d4c5e4e1",
+  "nativePlanSha256": "4e6da47d80df6080c91855f0fb20b38f2b58c3f9f02c6a81902df95860f6a232",
+  "actualDiagnosticReportSha256": "b998cb59db93ae0c5ac69aaebf93c8aa9a66366c86b28aa8aac464ac24528578",
+  "correction": "Replace locally caught false-outcome throw with direct failures.push(outcome.error); else-wrap only existing postCloseProbes/assert/removal; same outer catch, bound, final count report and AggregateError. No suppression/cleanup/deadline changes.",
+  "requiredEvidence": "Exact delta/inverse, all679 map and678 unchanged; unchanged selection/schema/workload/installed; retain original actual format/lint failures. Native exact closure before validation.",
+  "sourceAuthoringReleased": true,
+  "validationPreparation": "Separate CLOSED lint-successor-1 validation/required packets; reuse only original two bootstrap prerequisites, all19later+4checks fresh",
+  "runtimeReleased": false,
+  "commitPushReleased": false
+}

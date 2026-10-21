@@ -1,0 +1,75 @@
+An inline readiness and correctness review of the supplied frozen BDP Transactional snapshot against the specification and baseline requirements follows.
+
+---
+
+### Files and Ranges Reviewed
+
+- `docs/specs/bdp.md`: lines 3793–4099 (Mutation Transactions, Transactional Profile).
+- `packages/server/src/transaction-store.ts`: lines 1–808 (complete file).
+- `packages/server/src/transaction-sequence.ts`: lines 1–136 (complete file).
+- `packages/server/src/transaction-batch.ts`: lines 1–538 (complete file).
+
+*Truncated / Unread Material*: Full repository context outside the supplied excerpts was not inspected (e.g., `@bdp/protocol` internals, `alias-evaluator.ts`, `resource-evaluator.ts`, and full test fixtures). No branch-wide coverage is claimed.
+
+---
+
+### Known Bounded Exclusions Relevant to this Packet
+
+1. **Transactional Profile Write Conformance Claims Disabled**: Public Transactional service conformance and discovery flags remain disabled; this is a private bounded slice.
+2. **Turn-Time Alias Resolution & Sequence `@name` Dependency Reservations**: `prepareTransactionSequence` explicitly rejects `@name` dependencies and alias targets (`transaction-batch.ts` L127–L134) with bounded development errors.
+3. **Fixed Private Visibility**: The authorization boundary is fixed to `development-all-visible`; multi-view non-disclosure and withheld allocations are intentionally non-operational.
+4. **Unowned / Schema-Free Types Only**: Store initialization explicitly restricts installed Types (`transaction-store.ts` L98–L104).
+
+---
+
+### Actionable Findings
+
+#### Finding 1: Sequence turn stepper projects conflict/in-progress/terminal receipts without verifying sequence carrier cancellation safety
+- **Severity**: Medium
+- **File & Lines**: `packages/server/src/transaction-sequence.ts`: lines 36–63; `packages/server/src/transaction-store.ts`: lines 713–726
+- **Concrete Issue**: In `transaction-sequence.ts`, when a sequence turn encounters an existing terminal failure (`turn.result.receipt.status === "failed"`), conflict (`kind === "conflict"`), or in-progress execution (`receipt.status === "pending"`), `project()` maps it to an entry problem and returns normally. However, in Read+Update and Transactional sequences, a failed member or conflict does not abort the remainder of the sequence in `nextSequence()`. If an earlier member encountered a fatal failure or an idempotency conflict, remaining sequence member reservations admitted in `admitSequence` remain durably reserved in SQLite with `owner` set until either all members step or the stepper is explicitly aborted. If a consumer stops iterating upon seeing an entry problem in `results` without calling `stepper.abort()`, those reserved pending receipts leak in SQLite until store restart.
+- **Reachable Trigger**: A client submits a sequence via `createTransactionSequenceStepper` where member 0 fails business validation (e.g. 422 `validation-failed`) or encounters a 409 `idempotency-conflict`, and the caller stops calling `step()`.
+- **Impact**: Uncommitted member keys reserved during `admitSequence()` remain locked in SQLite as pending receipts under the attempt's owner UUID until manual abort, crash, or restart recovery sweeps them.
+- **Fix / Next Step**: In `createTransactionSequenceStepper`, if a step yields a terminal failure or conflict for which subsequent execution should halt or if the stepper is disposed, ensure remaining unexecuted reservations in `state.owned` are automatically retracted via `store.cancelSequence(admission)`.
+
+---
+
+#### Finding 2: `admitKey` direct singleton/batch route returns a pending receipt on semantic match instead of entering bounded comparison wait
+- **Severity**: Medium
+- **File & Lines**: `packages/server/src/transaction-store.ts`: lines 350–365; `docs/specs/bdp.md`: lines 3953–3969
+- **Concrete Issue**: Under `docs/specs/bdp.md` lines 3953–3969, a direct singleton or batch carrier encountering an in-flight reservation MUST wait for comparison within a finite authority budget, or return `503 temporarily-unavailable` (`retry: after-delay`). When `admitKey` is called with `pendingWins = false` (the direct `store.admit()` route), line 352 skips the `pendingWins` branch, normalizes the transaction, and if `prior.identity === normalized.identity`, immediately returns `{ kind: "existing", receipt: parseReceipt(prior.receipt) }` where `prior.receipt.status === "pending"`. 
+- **Reachable Trigger**: A concurrent identical direct singleton or batch request arrives while an admitted transaction is executing between `admit()` and `execute()`.
+- **Impact**: The concurrent caller receives `{ kind: "existing", receipt: <pending> }` directly from `admit()`. While lines 3841–3844 permit handing a duplicate a pending receipt once semantic equality is proven, direct carriers exposing HTTP routes must not return raw internal pending ownership structures without coordinating response delivery or waiting for completion.
+- **Fix / Next Step**: Document that carrier-level HTTP adapters wrapping `store.admit()` are responsible for managing the comparison wait loop or translating immediate pending receipt responses into the required transport representation (or awaiting execution completion within the comparison budget before answering).
+
+---
+
+#### Finding 3: `retract()` leaves claim in WeakMap state
+- **Severity**: Low
+- **File & Lines**: `packages/server/src/transaction-store.ts`: lines 746–758
+- **Concrete Issue**: In `retract(claim: TransactionClaim)`, the pending receipt row is deleted from the SQLite `receipts` table (`DELETE FROM receipts WHERE principal=? AND key=? AND owner=?`), but `claims.delete(claim)` is never invoked.
+- **Reachable Trigger**: Calling `store.retract(claim)` followed by a subsequent check or operation on `claim`.
+- **Impact**: A subsequent call to `store.execute(claim)` will look up `claim` in `claims`, attempt to find the row in `receipts`, observe that `current` is missing, and throw `"transaction execution fenced"` rather than failing fast on `"foreign transaction claim"`. Calling `retract(claim)` a second time will attempt another redundant SQLite deletion and return `false`.
+- **Fix / Next Step**: Add `claims.delete(claim);` inside `retract()` immediately after the database deletion succeeds.
+
+---
+
+### Questions Needing Omitted Context
+
+1. **Link Endpoint Referencing and `incidentLinks` Query Parameterization**:
+   - In `transaction-store.ts` L414–L426, `incidentLinks` and `outgoingLinks` execute:
+     `SELECT id FROM resources WHERE kind='link' AND (source=? OR target=?)` with `id`.
+   - In `transaction-batch.ts` L521–L523, `referenceUri(subject[endpoint])` is checked against `options.scope` and stripped via `uri.slice(options.scope.length)` when queried via `tx.resource(...)`.
+   - *Question*: In `resource-evaluator.js` (omitted from packet), when `createLink` or `deleteBead` checks incident links, does it pass the canonical URI (`${scope}beads/...`) or the relative identifier (`beads/...`)? If `source`/`target` are stored in SQLite as canonical URIs while `incidentLinks` receives relative IDs (or vice versa), incident link lookups would return empty sets, bypassing multiplicity and referential deletion checks.
+
+2. **Subject Identity for Link Topology Events (`linked` / `unlinked`)**:
+   - In `transaction-batch.ts` L519–L532, `scopeEvent(subject, outcome.outcome === "deleted" ? "unlinked" : "linked", { endpoint, link: { id: subject.id, ... }, ... })` is called with `subject` set to the Link resource record for both `source` and `target` endpoints.
+   - *Question*: In the broader BDP event specification, is the `subject` of a `linked`/`unlinked` event intended to be the endpoint Bead whose graph connectivity changed (allowing `GET /beads/<id>?view=events` to observe link associations), or is it intended to be the Link resource itself?
+
+---
+
+### Readiness Summary
+
+- **Durable Write Ownership & Admission**: Conforming. Single SQLite transaction for admission preserves the atomic `(principal, key)` invariant. Exclusive owner tokens (`randomUUID()`) prevent split-brain commits; crash recovery retracts orphan pending receipts on startup.
+- **Idempotency & Retained Receipts**: Conforming. Semantic normalization accurately normalizes alias witnesses, protocol defaults, and batch creators. Expired completed receipts are compacted into immutable tombstones preserving allocated identities and positions; failed receipts are retained through `expiresAt` and cleanly forgotten without entering `detail: "expired"`.
+- **Cumulative Boundaries**: Read -> Read+Update -> Transactional carrier layering is preserved without leaking synthetic RU keys into durable Transactional storage.

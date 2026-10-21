@@ -1,0 +1,46 @@
+I inspected the amendment, the root acceptance, the exact candidate, the generator beside it, and the live fence/runtime code. Verification notes first, then findings.
+
+## Verified as claimed (reproduced independently)
+
+| Claim | Result |
+|---|---|
+| Candidate 366621 B, SHA `cd5f5746…6a7d1` | exact match |
+| Growth 127928 over 238693; overrun 46008 / 38941 | exact (baseline is 238693 B / 6699 nodes / 41812 coverage B / 716 B fixture — all four root anchors confirmed) |
+| 9843 nodes, 157 headroom | exact, reproducing the counting loop at `transactional-cumulative.test.ts:809-816` |
+| Proposed headroom 3144 / 2019 | exact |
+| 18 actions / 139 total; position 8 of 9; 5 tuples / 21 header / 7 schema / 7 status / 253 json-pointer | all exact |
+| "Existing eight raw objects preserved" | all 8 baseline scenario slices byte-identical in both candidates — not just the 6 pinned by `originalObjectPins`. Entire growth is the new object (127922) + 6 B separator |
+| "Standard repository Biome formatting, no custom compression" | `biome format` of the raw candidate is byte-identical to `manifest-formatted.json` (same SHA), and the result is format-stable, so `format:check` passes. The "tuple formatter" is just Biome line-collapsing |
+| Oracles genuinely irreducible | `runner.ts:2332` throws on absent tuple projections, and `/results/0` (matched) has no `/resource` — so the 31 prefix images cannot be one tuple. I also tested the obvious cheaper shape the amendment omits (collapse the 4-per-record pointers into one whole-object `equals` per result, ~12 KB saved): **not viable** — resource objects carry server-generated `revision` (`schemas/bdp-v0.schema.json` `beadRecord`; `fixtures/transactional/receipt-pagination.json` resource keys), and `json-pointer` `equals` is `deepEqual` (`runner.ts:2288`). The per-field shape also matches the predecessor `transactional.set.mutation` m-update. The amendment's conclusion holds |
+| No runtime/transport/deadline limit raised | confirmed. The diff touches `runner.ts` (14 lines), `transactional-observation.ts` and two test files; no limit constant added, removed or changed. `OBSERVED_JSON_MAX_CONTAINER_ENTRIES = 10_000` (`runner.ts:60`), `Math.min(timeoutMs, 5000)` (`:910`), `cleanupTimeoutMs ?? 10_000` (`:801`, `:1285`) all untouched. The only new numeric bounds **tighten**: `value.length > 8192` plus a `^[A-Za-z0-9_-]{1,256}$` same-parent prefix allowlist. Predecessor fences in `transactional-cumulative.test.ts:802-816` are unmodified, and both artifact files are clean in git. Actual raw seed body 5104 B ≤ 16 KiB (p-update 157, p-later 152) |
+
+**Bottom line on the three questions:** the overrun is real, the growth is oracle content rather than scaffolding, and nothing runtime is being raised. The node fence still binds. The coverage fence is the gap.
+
+## Findings
+
+**1 · MEDIUM — the 16 KiB coverage fence is asserted but never measured; no coverage candidate exists**
+*Location:* `budget-amendment.md:5` ("Coverage +16KiB unchanged"); `author.py:47-57`
+*Impact:* `author.py` iterates manifest first, writes `manifest-v1.json.candidate` at line 50, then trips the line-55 assert (`<=320*1024`) — so the loop never reaches `coverage-v1.json`. The directory contains no coverage candidate and the amendment states no coverage byte figure. One of the two fences the root reviewer is asked to leave unchanged is therefore unverifiable from the submitted set. I reconstructed it in memory: growth **12992 B**, total **54804**, headroom 3392, and Biome formatting leaves it byte-identical. So the claim is true — but it is currently an unevidenced assertion.
+*Fix:* generate and hash the coverage candidate, or state the measured 12992 / 54804 in the amendment.
+
+**2 · MEDIUM — the generator installs into the source tree, so approving the fences also arms an unreviewed artifact write**
+*Location:* `author.py:57` (`path.write_text(out)` → `packages/conformance/test-support/transactional/{manifest,coverage}-v1.json`)
+*Impact:* "No source artifact/fence change has been made" (`budget-amendment.md:19`) is true only because the line-55 assert fired first; git confirms both files still at 238693 / 41812. But the script conflates candidate generation with installation. Raising lines 55-56 to 128 KiB/360 KiB and re-running immediately writes both artifacts into the tree — contradicting line 3's "artifact authoring/execution remains held pending independent root review."
+*Fix:* delete line 57 or gate it behind an explicit opt-in flag; the generator should only emit `*.candidate`.
+
+**3 · MEDIUM — 2019 B of total headroom silently forecloses the root-approved 18→20 action expansion**
+*Location:* `budget-amendment.md:5`; root acceptance line 11 ("Up to 20 new/141 total only with a specific documented seam need")
+*Impact:* the amendment offers node headroom (157) as the scope bound, but the binding constraint under the proposal is the 360 KiB **total**, at 2019 B. Measured formatted action sizes in the candidate: cheapest are reopen 396, p-seed-read 1853, p-final 1884, p-page-head 2047. A single additional HEAD read (2047) already breaches 368640; the two cheapest realistic additions (1853 + 396 = 2249) also breach it. Nodes would fit (13-58 for light reads); bytes would not. So granting 360 KiB quietly converts "up to 20/141" into "18/139 final," and a later documented seam need forces a second amendment.
+*Fix:* state this explicitly so the root decides now — either accept 18/139 as final for this row, or set the total fence with room for the two reserved actions.
+
+**4 · LOW — per-action decomposition is measured on an undisclosed pre-format candidate**
+*Location:* `budget-amendment.md:9`
+*Impact:* line 3 names `manifest-formatted.json` as the exact candidate, but the decomposition is measured on `manifest-v1.json.candidate` (SHA `01de14e7…`, never named or hashed in the amendment). The discrepancy shows only on the largest line item: p-update is **36888 B** in the named exact candidate, not 38616 — Biome's entire 1728 B action-level saving sits in that one `outcomes` tuple. The other four figures are identical on both bases. Consequently the five-action sum is 95712 B (93.5 KiB), not 97440, and the remaining 13 are 31628 B (30.9 KiB). Separately, both "~97KiB" and "~32KiB" label raw byte counts as KiB in a document where every fence is exact KiB (80 KiB = 81920, 360 KiB = 368640). A reviewer measuring the named artifact cannot reproduce the table.
+*Fix:* restate on the formatted basis (p-update 36888; five actions 95712 ≈ 93.5 KiB; remaining 13 ≈ 30.9 KiB), or name and hash the pre-format candidate and label the basis.
+
+**5 · LOW — "Node 10000" is ambiguous against an identically-valued runtime limit**
+*Location:* `budget-amendment.md:5`
+*Impact:* `runner.ts:60` defines a runtime `OBSERVED_JSON_MAX_CONTAINER_ENTRIES = 10_000`. In a document whose central question is whether any runtime limit is being touched, a bare "Node 10000" invites misreading.
+*Fix:* write "authoring node fence 10000".
+
+No findings against the substance of the oracle justification, the formatting claim, the preserved predecessor objects, or the runtime-limit question. Nothing was written or modified; no tests or agents were run. This is a review of the amendment only, not conformance approval.

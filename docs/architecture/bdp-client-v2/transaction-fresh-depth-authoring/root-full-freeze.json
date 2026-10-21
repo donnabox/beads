@@ -1,0 +1,84 @@
+{
+  "head": "77b4cf980ec91f66c52a554c3dd8c9de5aee859f",
+  "files": {
+    "packages/server/src/transaction-set.ts": {
+      "sha256": "3085632e897481b048d563cf0ba3ea66dc96a0662cebfde9f978ee00675519e5",
+      "new": false
+    },
+    "packages/server/src/transaction-batch.ts": {
+      "sha256": "830ad57a680db7148fc75cd9cc10cadfc6a812448fd1704c1b0f47b13611808d",
+      "new": false
+    },
+    "packages/server/src/transaction-store.ts": {
+      "sha256": "2766e7748a569d44821a0e8481cb5108cfdf1aaa86fca5126c865025a857eb85",
+      "new": false
+    },
+    "packages/server/src/transaction-submission.ts": {
+      "sha256": "580a5f56075c3f7e2c041354eab75529dd304f86588337f725f4cb33429b33bf",
+      "new": false
+    },
+    "packages/server/src/transaction-http.ts": {
+      "sha256": "81c130dd18f604ab1d13c03a2f52a98e11a6988f45d62af98b4b8c7499d14529",
+      "new": false
+    },
+    "packages/server/src/transaction-snapshot.ts": {
+      "sha256": "dac7c2f121cfb6bae557b3917f5ec52e47a358ab39da4062f6a5c26f5b9fbd83",
+      "new": false
+    },
+    "packages/server/src/resource-evaluator.ts": {
+      "sha256": "6784629841a92baaeed648862cfa84d071356ef82e6d29250b254a9eddf793a2",
+      "new": false
+    },
+    "packages/server/src/json-value-equality.ts": {
+      "sha256": "f93e0bc3a090eeda9d40ec873c0024da2fbc368df5babe4f7d18cfa9b4780a66",
+      "new": true
+    },
+    "packages/server/src/transaction-set.test.ts": {
+      "sha256": "aec0ce27196f6ec4916cb2f35b8a3de7ee879ab35f14aab657e11416254860b8",
+      "new": false
+    },
+    "packages/server/src/transaction-submission.test.ts": {
+      "sha256": "40541de34a881acdfefde923cf02a8e0d72687488fd079fb79ca395987d5ae29",
+      "new": false
+    },
+    "packages/server/src/transaction-sequence.test.ts": {
+      "sha256": "5526903a6e094602612bac8448fe1bee5e8f8c6e675458360abc43e43eda6d91",
+      "new": false
+    },
+    "packages/server/src/transaction-http.test.ts": {
+      "sha256": "6b6ea02c8a6fa7bf2c59c6abd24e190a577a43858260443ad8e09b413b09cbb5",
+      "new": false
+    },
+    "packages/server/src/transaction-snapshot.test.ts": {
+      "sha256": "01c8e65a6dfe19bd13c41088446ac47c2dd2b06c9915b63480528c4495056cb4",
+      "new": false
+    },
+    "packages/server/src/resource-evaluator.test.ts": {
+      "sha256": "b7f557f57e6980a6c514afe6b76b0b6b69938ecc4265c02246994ab7ed8e5510",
+      "new": false
+    },
+    "apps/bdptest/src/transactional-depth-key-order-installed.test.ts": {
+      "sha256": "2ecfc14d4aff48f9dc1d497cb744a29f7d457179f35d7659f2322068e5b63303",
+      "bytes": 30244,
+      "parentSha256": "48c6a84c84e470c7ce79f4d978bb09e2099daa5df4b4a6ef8629e1b7bf1b1700"
+    },
+    "apps/bdptest/src/transactional-sequence-depth-installed.test.ts": {
+      "sha256": "163549168b98d6f2cdbb111bee840ee4fc1ccaf16b1a9800c5ea721a87df5e1d",
+      "bytes": 27511,
+      "parentSha256": "8ad2c796bfb22375584fc6b348d494ece512490f8a59ef72a74fb34de3f2fca1"
+    },
+    "apps/bdptest/src/transactional-fresh-depth-installed.test.ts": {
+      "sha256": "d54acc614e6e372fa1e0dfd0a909ed8719d8a4afbd2d93b81116a47a0dba590c",
+      "bytes": 38497,
+      "parentSha256": null
+    },
+    "docs/design/transaction-implementation-progress.md": {
+      "sha256": "6011d09b37ecdfa91e53d1b0ba2cc6fc66f65a79e78249e9394bc7a618744176"
+    }
+  },
+  "scopeCount": 18,
+  "status": " M apps/bdptest/src/transactional-depth-key-order-installed.test.ts\n M apps/bdptest/src/transactional-sequence-depth-installed.test.ts\n M docs/design/transaction-implementation-progress.md\n M packages/server/src/resource-evaluator.test.ts\n M packages/server/src/resource-evaluator.ts\n M packages/server/src/transaction-batch.ts\n M packages/server/src/transaction-http.test.ts\n M packages/server/src/transaction-http.ts\n M packages/server/src/transaction-sequence.test.ts\n M packages/server/src/transaction-set.test.ts\n M packages/server/src/transaction-set.ts\n M packages/server/src/transaction-snapshot.test.ts\n M packages/server/src/transaction-snapshot.ts\n M packages/server/src/transaction-store.ts\n M packages/server/src/transaction-submission.test.ts\n M packages/server/src/transaction-submission.ts\n?? apps/bdptest/src/transactional-fresh-depth-installed.test.ts\n?? packages/server/src/json-value-equality.ts\n",
+  "runtimeExecuted": false,
+  "executionReleased": false,
+  "note": "Production8/source6/installed3/progress1 frozen independently; reviewer scope bindings remain authoritative."
+}

@@ -1,0 +1,32 @@
+{
+  "status": "Completed scoped reviews and source dispositions; root remains final integrator",
+  "authorOverlap": true,
+  "sourceBindingSha256": "a027e05e421c0b3539da422cbe69f6262791f568add9606c1015a8dab1bfa13a",
+  "harness": {
+    "stdoutSha256": "0885ed423c8ffe46e2acbaa6871291e93217398a7174d2491484d195810ef3e5",
+    "rootDispositionSha256": "9a1f282b5179da18b3860762cc0158ccdb786d1103bbc4ec3a6b49339db604b7"
+  },
+  "literals": {
+    "stdoutSha256": "c2f0b89ec302a6d0cd5b526025cfcb59c146ea74d785ad88f6e1e820e2578ff8",
+    "nativeAuditSha256": "a0e37d678e2d079acf83f802807af593081665e0751bde22a89b6ecf31f7ce07",
+    "requiredF1": "wholeContract false with explicit missing bound variants",
+    "rootCorrectionAcceptanceSha256": "d4baa5a70a649a9d42a911a1c9fd90aeee7be53282dcec4512e2221ef595fa5d"
+  },
+  "fanoutAndCorrection": {
+    "stdoutSha256": "a22ee66dbc504b864beaaee147757b7e3cc7a5b69a1185476330046c38bde657",
+    "nativeAuditSha256": "892e2ac97e70ee9f4a61a76b84d3bc570890ae885d289358be20c3a54701209d",
+    "remainingMandatorySourceFindings": []
+  },
+  "emptyTimeouts": [
+    "claude-code-preparation",
+    "claude-split-review/cumulative",
+    "claude-cumulative-split-review/fanout"
+  ],
+  "validation": {
+    "passed": 8,
+    "unselected": 336,
+    "formatExit": 0,
+    "summarySha256": "e559479cd4a61fcde9b46e33f1e939bc193ef7a59c4b646208401d46524cfffb"
+  },
+  "publicationApproved": false
+}

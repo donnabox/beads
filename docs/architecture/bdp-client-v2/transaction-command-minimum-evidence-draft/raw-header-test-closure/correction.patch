@@ -1,0 +1,224 @@
+--- a/apps/bdptest/src/transactional-collection-minimum-installed.test.ts
++++ b/apps/bdptest/src/transactional-collection-minimum-installed.test.ts
+@@ -250,14 +250,7 @@
+     )
+       throw new Error("collection minimum observation escaped the configured Scope");
+     const address = new URL(child.ready.listenUrl as string);
+-    // The existing exact serializer conservatively treats names containing
+-    // "auth" as credential fields. Supply the observed view through its
+-    // declared resolver channel; never weaken that transport firewall.
+-    const viewHeaders =
+-      headers["bdp-authorization-view"] === undefined
+-        ? {}
+-        : { "bdp-authorization-view": headers["bdp-authorization-view"] };
+-    const viewNames = Object.keys(viewHeaders);
++    // Authorization-view is authored protocol context, not credential decoration.
+     const execute = createRawHttpExchangeExecutor(
+       { transport: "plain", host: address.hostname, port: Number(address.port) },
+       {
+@@ -271,15 +264,14 @@
+           maximumRequestBodyBytes: 65536,
+           defaultCredentialRef: "operator",
+           credentialHandles: [
+-            { id: "operator", headerNames: ["authorization", ...viewNames] },
+-            { id: "reader", headerNames: ["authorization", ...viewNames] },
+-            { id: "anonymous", headerNames: viewNames },
++            { id: "operator", headerNames: ["authorization"] },
++            { id: "reader", headerNames: ["authorization"] },
++            { id: "anonymous", headerNames: [] },
+           ],
+           resolveCredentials: ({ credentialRef }) =>
+             credentialRef === "anonymous"
+-              ? viewHeaders
++              ? {}
+               : {
+-                  ...viewHeaders,
+                   authorization: `Bearer ${credentialRef === "reader" ? reader : operator}`,
+                 },
+         },
+@@ -291,9 +283,7 @@
+       signal,
+       credentialRef,
+       raw: {
+-        headerLines: Object.entries(headers)
+-          .filter(([name]) => name !== "bdp-authorization-view")
+-          .map(([name, value]) => ({ name, value })),
++        headerLines: Object.entries(headers).map(([name, value]) => ({ name, value })),
+         ...(body === undefined ? {} : { bodyBytes: Buffer.from(JSON.stringify(body)) }),
+       },
+     });
+--- a/apps/bdptest/src/transactional-snapshot-installed.test.ts
++++ b/apps/bdptest/src/transactional-snapshot-installed.test.ts
+@@ -266,13 +266,7 @@
+     )
+       throw new Error("Snapshot observation escaped the configured Scope");
+     const address = new URL(child.ready.listenUrl as string);
+-    // Match the existing credential firewall: the view is a declared resolved
+-    // header, never raw credential-like input (including anonymous requests).
+-    const viewHeaders =
+-      headers["bdp-authorization-view"] === undefined
+-        ? {}
+-        : { "bdp-authorization-view": headers["bdp-authorization-view"] };
+-    const viewNames = Object.keys(viewHeaders);
++    // Authorization-view is authored protocol context, not credential decoration.
+     const execute = createRawHttpExchangeExecutor(
+       { transport: "plain", host: address.hostname, port: Number(address.port) },
+       {
+@@ -286,15 +280,14 @@
+           maximumRequestBodyBytes: 65536,
+           defaultCredentialRef: "operator",
+           credentialHandles: [
+-            { id: "operator", headerNames: ["authorization", ...viewNames] },
+-            { id: "reader", headerNames: ["authorization", ...viewNames] },
+-            { id: "anonymous", headerNames: viewNames },
++            { id: "operator", headerNames: ["authorization"] },
++            { id: "reader", headerNames: ["authorization"] },
++            { id: "anonymous", headerNames: [] },
+           ],
+           resolveCredentials: ({ credentialRef }) =>
+             credentialRef === "anonymous"
+-              ? viewHeaders
++              ? {}
+               : {
+-                  ...viewHeaders,
+                   authorization: `Bearer ${credentialRef === "reader" ? reader : operator}`,
+                 },
+         },
+@@ -306,9 +299,7 @@
+       signal,
+       credentialRef,
+       raw: {
+-        headerLines: Object.entries(headers)
+-          .filter(([name]) => name !== "bdp-authorization-view")
+-          .map(([name, value]) => ({ name, value })),
++        headerLines: Object.entries(headers).map(([name, value]) => ({ name, value })),
+         ...(body === undefined ? {} : { bodyBytes: Buffer.from(JSON.stringify(body)) }),
+       },
+     });
+--- a/packages/conformance/src/executable-manifest.test.ts
++++ b/packages/conformance/src/executable-manifest.test.ts
+@@ -610,8 +610,12 @@
+         for (const value of ["", "view-one, view-two"]) {
+           for (const name of ["bdp-authorization-view", "BDP-Authorization-View"]) {
+             const base = manifest();
+-            const { requests, ...scenario } = base.scenarios[0]!;
+-            const request = { ...requests[0]!, headers: { [name]: value } };
++            const baseScenario = base.scenarios.at(0);
++            if (baseScenario === undefined) throw new Error("test manifest unexpectedly empty");
++            const { requests, ...scenario } = baseScenario;
++            const baseRequest = requests.at(0);
++            if (baseRequest === undefined) throw new Error("test scenario unexpectedly empty");
++            const request = { ...baseRequest, headers: { [name]: value } };
+             const source = {
+               ...base,
+               manifestVersion: version,
+@@ -625,11 +629,22 @@
+               ],
+             };
+             if (name !== name.toLowerCase()) {
+-              expect(() => parseExecutableScenarioManifest(source)).toThrow(
+-                ManifestValidationError,
+-              );
++              try {
++                parseExecutableScenarioManifest(source);
++                throw new Error("mixed-case normalized header was accepted");
++              } catch (error) {
++                if (!(error instanceof ManifestValidationError)) throw error;
++                expect(error.issues).toEqual([
++                  {
++                    path: `$.scenarios[0].${actions ? "actions" : "requests"}[0].headers.${name}`,
++                    message: "must be a lowercase HTTP field name",
++                  },
++                ]);
++                expect(error.issues.some(({ message }) => message.includes("secret"))).toBe(false);
++              }
+             } else {
+-              const parsed = parseExecutableScenarioManifest(source).scenarios[0]!;
++              const parsed = parseExecutableScenarioManifest(source).scenarios.at(0);
++              if (parsed === undefined) throw new Error("parsed scenario unexpectedly empty");
+               expect(parsed.requests?.[0] ?? parsed.actions?.[0]).toMatchObject({
+                 headers: { "bdp-authorization-view": value },
+               });
+@@ -1544,7 +1559,8 @@
+       ];
+       const source = exactManifest({ raw: { headerLines } }, actions);
+       const parsed = parseExecutableScenarioManifest(source);
+-      const scenario = parsed.scenarios[0]!;
++      const scenario = parsed.scenarios.at(0);
++      if (scenario === undefined) throw new Error("parsed scenario unexpectedly empty");
+       expect(scenario.requests?.[0] ?? scenario.actions?.[0]).toMatchObject({
+         raw: { headerLines },
+       });
+--- a/packages/conformance/src/http-executor.test.ts
++++ b/packages/conformance/src/http-executor.test.ts
+@@ -7,6 +7,7 @@
+ import {
+   createFetchHttpExchangeExecutor,
+   createRawHttpExchangeExecutor,
++  HttpTransportError,
+   type RawHttpDialRoute,
+   snapshotExactHttpMode,
+   validateExactRunConfiguration,
+@@ -790,15 +791,23 @@
+   it("rejects authorization-view credential handles before resolution or dialing", () => {
+     for (const name of ["bdp-authorization-view", "BDP-Authorization-View", "x-ordinary"]) {
+       const resolve = vi.fn(() => ({ [name]: "sentinel" }));
+-      expect(() =>
++      try {
+         createRawHttpExchangeExecutor(deadRoute(), {
+           exactMode: mode({
+             defaultCredentialRef: "writer",
+             credentialHandles: [{ id: "writer", headerNames: [name] }],
+             resolveCredentials: resolve,
+           }),
+-        }),
+-      ).toThrow("exact HTTP request configuration is invalid");
++        });
++        throw new Error("context credential handle was accepted");
++      } catch (error) {
++        if (!(error instanceof HttpTransportError)) throw error;
++        expect(error).toMatchObject({
++          message: "exact HTTP request configuration is invalid",
++          category: "configuration",
++        });
++        expect(error.requestWriteState).toBeUndefined();
++      }
+       expect(resolve).not.toHaveBeenCalled();
+     }
+   });
+--- a/packages/conformance/src/runner.test.ts
++++ b/packages/conformance/src/runner.test.ts
+@@ -5592,7 +5592,17 @@
+       lines.splice(headerLines.length, 0, { name: "Authorization", value: "CREDENTIAL-SENTINEL" });
+       return {
+         ...response,
+-        headers: { "bdp-authorization-view": "CONTEXT-SENTINEL" },
++        headers: {
++          "bdp-authorization-view": "CONTEXT-SENTINEL",
++          authorization: "CREDENTIAL-SENTINEL",
++        },
++        effectiveRequest: {
++          url: response.url,
++          headers: {
++            "bdp-authorization-view": "CONTEXT-SENTINEL",
++            authorization: "CREDENTIAL-SENTINEL",
++          },
++        },
+         exactRequest: { ...response.exactRequest, headerLines: lines },
+       };
+     });
+@@ -5609,7 +5619,13 @@
+         ({ name }) => name.toLowerCase() === "bdp-authorization-view",
+       ),
+     ).toBe(false);
+-    expect(exchange?.request.headers).not.toHaveProperty("bdp-authorization-view");
++    // Exact evidence owns the request projection; the lossy compatibility map stays ignored.
++    expect(exchange?.request.headers).toEqual({});
++    expect(exchange?.request.exact?.headerLines).toContainEqual({
++      name: "Authorization",
++      value: "<redacted>",
++    });
++    expect(exchange?.response?.headers).toHaveProperty("authorization", "<redacted>");
+     expect(exchange?.response?.headers).not.toHaveProperty("bdp-authorization-view");
+     const text = serializeConformanceReport(report);
+     expect(text).not.toContain("CONTEXT-SENTINEL");

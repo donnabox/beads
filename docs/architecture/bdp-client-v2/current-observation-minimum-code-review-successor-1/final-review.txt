@@ -1,0 +1,52 @@
+I've completed the review. Findings below.
+
+## Verified production seams (correct)
+
+- **`transaction-consistency.ts:115–131`** — invalid-owner position first, then `!waitable → Unsupported`, then epoch, then view, then `Unproved`. Known-position path delegates unchanged to `checkTransactionMinimum`. Reference-identical context. Strict consumers (`snapshotTransactionMinimum`, `waitable:false`) unchanged.
+- **`transaction-read.ts:86–115, 220–248`** — new `type`/`initial-types` labels keep data-only classification separate from `isCurrentTransactionMinimumRead` locality (nonlocal Type still rejected at `:320`); `resource|missing|alias` keep missing-first; the Type lane runs the ordinary checker with waiting; `kind !== "strict"` correctly makes successful incident lists and Type/initial-Type waitable; "strict" is unreachable via `minimumFor` (defensive, honestly described).
+- **`transaction-http.ts:572`** — receipt-page capture is reachable only after method/target/auth and the `malformedTransactionMinimumHeaders` 400 at `:404`, so the `"unsupported"`/`undefined` fence is genuinely defensive-only; no duplicate parsing; `applyReadHttpSemantics` (read-http.ts:10–39) only negotiates/conditions 200-JSON, so minimum refusal wins over `If-None-Match`/`If-Match`/`Accept: image/png` and HEAD carries GET metadata and length.
+- **`transaction-service.ts:267–293, 600–627`** — `discoveryObserved` captures lexically before `run`, checks inside its existing `withRead`, and only the service supplies the finite waiter; `receiptPage` captures after the unauthenticated refusal, no signal invented.
+- **`transaction-store.ts:2275–2313`** — parent/prefix/plan/principal/epoch/token nondisclosure and the `"unsupported"` sentinel all precede the minimum; `expireRow`/projection follow it; no write or allocation on a failed minimum; direct callers can now observe `Unproved`.
+
+## Findings
+
+**1. BLOCKING — invalid Read principal shape in the new service-test fixture.**
+*Location:* `packages/server/src/transaction-service.test.ts:3826,3833` (`currentObservationFixture.invoke`).
+*Issue:* `service.readAtMinimum({ kind: "authenticated", principal }, …)` passes `principal` as a **string**. `ReadPrincipal` is `{kind:"authenticated"; principal: StablePrincipal}` (`authority-read.ts:69–71`), so this is a type error; at runtime `plane.readFor` → `principalSnapshot` → `ownData(original,"stable principal")` (`authority-read.ts:910–921, 297–299`) throws `AuthorityReadError("invalid-input")` **synchronously** out of `readAtMinimum`. Every pre-existing call site uses `{ kind: "anonymous" }`. The `receiptPage` use of the same string is correct (its own access type is `{principal: string}`).
+*Impact:* A and B fail outright (first `type` surface throws before any `.catch`), C fails for the `type`/`types`/`incident` rows; typecheck fails. All A/B/C counts (25/12/10 ops, 35/12/10 attempts, waits, clocks) are unobservable as written.
+*Minimal fix:* in `invoke`, use `{ kind: "authenticated", principal: { id: principal } }` for the `readAtMinimum` branch only.
+
+**2. BLOCKING — E's Type-inventory order assertion is inverted for its own configuration.**
+*Location:* `packages/server/src/transaction-http.test.ts:6145–6149` (`types-known` row, request #8 of 37).
+*Issue:* E configures `types: [Task(bead), Relation(link)]`. Direct `types` are preserved in configuration order (`transaction-runtime-configuration.ts:285–288` → `transaction-store.ts:292, 655` → `authority-read.ts:402–404, 809–811`; no sort anywhere), so `items` = `[task, relation]`. The assertion expects `[relation, task]`, which is correct only for installed F, where artifacts are sorted by retrieval-URI bytes (`installed-contract-artifact.ts:405`).
+*Impact:* E fails at the first `types/` success row; the remaining 29 exchanges, the status/method histograms and `waits === 10` are never reached. F's identical assertion is correct.
+*Minimal fix:* swap the two expected entries in E (or swap E's `types:` array), keeping F unchanged.
+
+**3. Low — stale test title retained as evidence identity.**
+*Location:* `transaction-read.test.ts:2509` ("preserves incident-Link opaque exclusions beside alias minima").
+*Issue:* that callback now asserts `catch-up-timeout` and 3 entries/1 wait/4 clocks; only the JSON observation label was renamed to `current-minimum-incident-wait`. *Impact:* report/title disagree; risk of misattributing new behavior to the old exclusion. *Fix:* rename the title too, or note the rebinding.
+
+**4. Low — redundant branch in the amended installed-22 oracle.**
+*Location:* `apps/bdptest/src/transactional-minimum-receiving-installed.test.ts:501–513`. The receipt-root and page branches are now identical except `get(...)===null` vs `has(...)===false`. Harmless; could collapse.
+
+**5. Low — comment placement in the read.ts correction.**
+*Location:* `transaction-read.ts:223–224`. The "Initial Types reads return an inventory" sentence sits above the `resource|missing|alias` early return rather than above the strict fallback it explains. Comment-only; behavior unchanged, and the claim itself is consistent with `authority-read.ts:808–812` (types collections return a page, not `resource-not-found`).
+
+## Checks that came back clean (no finding)
+
+- No stale `TransactionMinimumUnsupported` assertion survives anywhere (only `transaction-consistency.test.ts` and the `transaction-http.ts:682` translation); removed imports in events/changefeed/snapshot/read tests are genuinely unused.
+- Foreign-opaque fanout: Link-Event 500 aggregate `12→8` is **right** (`pair` issues GET+HEAD, 4 pairs remain at 500); Scope/Bead Event tests have no 500 aggregate and their `503:10`/`calls` totals are unaffected; `event-sse` `{500:6, 409:1, 410:1}` matches two single `raw` rows; changefeed `outcomes` is reported, not asserted, and its captures/reads/waits are unchanged; `snapshot-http.test.ts:430` 500 branch is the retained-anchor route and is unaffected.
+- Receipt-page/root predecessors that use canonical or opaque positions with *matching* context (`http.test.ts:2051`, `2174`, `2230`, `1904–1940`) keep their results, because nondisclosure and missing-first still precede the minimum.
+- Replaced pre-owner sentinels are valid: `beads/?cursor=missing` parses to a continuation (`read-request.ts:178–179`) → `strict` → 500 at `transaction-http.ts:619–623`; `snapshot?snapshot=unissued` → non-`create` target → 500 at `:426`; `beads/a/` keeps its parser-404 residue. `expectedCalls` stays 17.
+- `discoveryObserved` malformed input correctly changed `pos-02` → `two tokens` (now that opaque is accepted), still a synchronous `TypeError` with zero entries.
+- E/F wire arithmetic is self-consistent (3+4+24+6 = 37; POST 3/GET 21/HEAD 13; 200×7, 503×10, 410×8, 409×8, 404×2, 400×1, 401×1; waits 10 from the five 503 pairs). The `host`-header + listener-scope pattern matches the existing passing test at `:2897`. Update-where receipts are `[{outcome:"matched"},…]` = N+1 entries, so both E (max 2) and F (installed max 32) really do get an issued page and E's page entries are all `updated`. `items.length <= limit → next:null` with no cursor allocation (`read-pagination.ts:395`), so the inventory/incident `next: null` and "no token on failed eligibility" both hold. All four `$defs` exist.
+- D is sound: `cleanup` is drained per test so `splice(boundary)` transfers exactly the fixture's two handlers; `close()` is idempotent (`transaction-store.ts:2359–2366`) so `raw()`→`reopen()`→final close is safe; the clock-advance→read→close→compare window is fully synchronous; the 8th read throws `Unproved` before `expireRow`; both missing rows return nondisclosure before the minimum; `postCloseProbes` is counted separately and never a ninth page read; `directoryAbsent` is measured, not fabricated.
+- C's "synchronous admission" premise holds for all five surfaces (`run` calls `check()` synchronously, `transaction-service.ts:140–141`); the live/post-close `withRead` discriminants match `{kind:"read",value}` / `{kind:"entry-refused",reason:"not-accepting"}`.
+- B's 12/12/2/14/1/1/1 schedule is arithmetically consistent, and the policy replacement does hide Types (`captureReadAuthorization` → `canReadType`), so the hidden-Type rows are reachable — *subject to finding 1*.
+- Progress-note append is accurate on invalid-owner precedence, retained visibility-gap compatibility with no ordinary witness, and the unclaimed combined anonymous+malformed case; auth-before-capture ordering in `receiptPage` is what the note implies. No public discovery/directory activation (`transaction-http.ts:629–634` unchanged).
+
+## Verdict
+
+**Blocked.** Two blocking test defects (1 and 2) must be fixed before this candidate can be accepted; production behavior in all five seams is, as far as static review can establish, correct and consistent with clauses 5794–5855, 5871–5888, 4630–4660, 5125–5137 and 1890–1940.
+
+**Unreviewed / limits.** No command, build, typecheck, formatter or test was executed, so no runtime, coverage or count is confirmed — every quantity above is a static derivation. I did not individually re-derive the 88 legacy selected callbacks' counts; instead I exhaustively searched for assertions of the now-changed outcomes and found none unamended beyond findings 3–4. Finding 1's downstream effect on A/B/C report fields and on the author workload/report-schema expectations is not re-costed. Installed F's real timing (10 one-second waits inside 45 s/60 s) is prospective only. Excluded/held scope (S1, G2, new Resource/reconnect/after/SSE admissions, public discovery, Types proposals) was not reviewed. The prior attempt's partial output and the native closure assessments were not treated as approval; findings here come from the actual changed bytes.

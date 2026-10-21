@@ -1,0 +1,30 @@
+{
+  "status": "released",
+  "session": "2026-10-08T20:26:35Z-81e5",
+  "expectedHead": "5d7fa3f049fa0b4db3aa8dae20e20d8e47fb3854",
+  "expectedTree": "057f879132074166f2c0f643a8b45bbd9dd47c6f",
+  "sourceBindingSha256": "8c2912ad963de93eac28ecf9a6b162b02e0b18b7b956f77ed51ff0eaf4b826ca",
+  "commandsSha256": "157ca54b41a5bcec0c14bd4e1b0d6a6c6f66d885782b2bcdbe636f198e2ac9ab",
+  "supervisorSha256": "bd08a61c2408cd51e064a812150ddc1747be5706f5acf47cf0ad1486f42fbf3f",
+  "authorizedStages": [
+    "offline-setup",
+    "typecheck",
+    "build",
+    "format-check",
+    "lint",
+    "boundaries",
+    "read-seal",
+    "consistency-positive",
+    "http-positive",
+    "snapshot-positive",
+    "schema-positive",
+    "changefeed-positive",
+    "spec-static"
+  ],
+  "controlGate": "closed",
+  "installedGate": "closed",
+  "rootAcceptance": {
+    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-minimum-receiving-draft/root-source-validation-release.json",
+    "sha256": "3d82280965fb6e71d69e60807b4f15ec2ddee86d5ec9e3da041ae0aa2280bed4"
+  }
+}

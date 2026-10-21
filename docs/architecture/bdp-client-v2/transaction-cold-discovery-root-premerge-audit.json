@@ -1,0 +1,27 @@
+{
+  "at": "2026-10-14T09:54:00.921546+00:00",
+  "head": "a53f4bbf573c64fe900de373b3fef75170002f7c",
+  "tree": "4a6f4cc5ad198c7beb2d0f855583d0f33e75a037",
+  "base": "aebf656506d187ed226302b68b526d34088537c6",
+  "clean": true,
+  "scope": [
+    "apps/bdptest/src/transactional-discovery-installed.test.ts",
+    "docs/design/transaction-implementation-progress.md",
+    "packages/protocol/src/index.ts",
+    "packages/protocol/src/transaction-discovery-values.test.ts",
+    "packages/protocol/src/transaction-discovery-values.ts",
+    "packages/server/src/transaction-discovery.test.ts",
+    "packages/server/src/transaction-discovery.ts",
+    "packages/server/src/transaction-http.test.ts",
+    "packages/server/src/transaction-http.ts",
+    "packages/server/src/transaction-installed-contracts.test.ts",
+    "packages/server/src/transaction-read.test.ts",
+    "packages/server/src/transaction-service.test.ts",
+    "packages/server/src/transaction-service.ts",
+    "packages/server/test-support/schema-graph-policy.json",
+    "scripts/smoke-executables.mjs"
+  ],
+  "council": "native original review plus callback closure; external originalb20 review plus independent native test/policy repair closure; root inspected all repair diffs",
+  "blocking": "exact-head CI38545418962 pending; remotebase/head must recheck before merge",
+  "claims": "none; internal assembly only"
+}

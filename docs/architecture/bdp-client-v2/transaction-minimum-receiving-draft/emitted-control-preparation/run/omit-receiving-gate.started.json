@@ -1,0 +1,69 @@
+{
+  "name": "omit-receiving-gate",
+  "argv": [
+    "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-minimum-receiving-draft/emitted-control-preparation/mirror/node_modules/.pnpm/vitest@4.1.10_@types+node@24.13.3_vite@8.2.1_@types+node@24.13.3_/node_modules/vitest/vitest.mjs",
+    "run",
+    "packages/server/src/transaction-http.test.ts",
+    "--maxWorkers=1",
+    "--reporter=verbose",
+    "--reporter=json",
+    "--outputFile=/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-minimum-receiving-draft/emitted-control-preparation/run/control.results.json",
+    "-t",
+    "^enforces\\ the\\ minimum\\-receiving\\-malformed\\-request\\ boundary\\ over\\ the\\ emitted\\ listener$"
+  ],
+  "cwd": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-minimum-receiving-draft/emitted-control-preparation/mirror",
+  "started": "2026-10-15T22:58:04.243036+00:00",
+  "head": "5d7fa3f049fa0b4db3aa8dae20e20d8e47fb3854",
+  "workspaceDirty": true,
+  "sourceSha256": {
+    "docs/specs/bdp.md": "63e93be562334c84c1e967da2fce212e8ef515aa3c9448924c5f9a272ea7b80b",
+    "packages/server/src/transaction-consistency.ts": "00a420c3e9f5dcb1b8814a6476d5ce52edfb7adbbd1c64ab082833f17322a336",
+    "packages/server/src/transaction-http.ts": "ebb3550110bd6fda638572966e5faa05c15f062f37a10947f6e442fc7d4570f4",
+    "packages/server/src/transaction-consistency.test.ts": "4d45ba52c028c3081188a6f76498889d7170cceaaad114004458b86331191bc9",
+    "packages/server/src/transaction-http.test.ts": "ca2e4e7663a93060ba2a0788c5ef349a3de4991e3108f81507f37a723d964781",
+    "packages/server/src/transaction-snapshot-http.test.ts": "61023b5f24396fe484c7820c706b560cb87abd7a3e16670f5a0944fbefd44d8a",
+    "packages/server/src/transaction-schema-http.test.ts": "eee33a0948c9a0981a2a963cec5a8f16102ae5bab32128f83c39956abe0a952b",
+    "packages/server/src/transaction-changefeed.test.ts": "97c3f8604ccbb7f3141a22e5c3d338f51929b308b80614309a7e837801b12043",
+    "apps/bdptest/src/transactional-snapshot-installed.test.ts": "58f4ad828861ea332de7bf4413f48eb4646f32237b76d3a4db310e081b99ffe9",
+    "apps/bdptest/src/transactional-minimum-receiving-installed.test.ts": "cefde296b07d6be86a83d13892a603588c9054bdd54196048a855e74f9e9b7f9",
+    "docs/design/transaction-implementation-progress.md": "2c30837b7d43f51129b7cdfbc3b1cb09941b2527fb7d432a94755d6c5edb3522"
+  },
+  "sourceDiffSha256": "7a6cc4e63f72d3920f04e5e8e03ff3915ed7488cb93d324ea22374fecff0f375",
+  "rootAcceptanceSha256": "57aa573002cbe9c912d280cf4230d487034050147703ef8440ab0f7f9255fed0",
+  "preparationSha256": "e488ed5e0238b4289ecec08749cf0091de023d03f90b96896e0114a6e3cb982e",
+  "bdpOverrides": {},
+  "guardedArgv": [
+    "/opt/homebrew/opt/python@3.14/bin/python3.14",
+    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/guarded-action.py",
+    "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-minimum-receiving-draft/emitted-control-preparation/mirror/node_modules/.pnpm/vitest@4.1.10_@types+node@24.13.3_vite@8.2.1_@types+node@24.13.3_/node_modules/vitest/vitest.mjs",
+    "run",
+    "packages/server/src/transaction-http.test.ts",
+    "--maxWorkers=1",
+    "--reporter=verbose",
+    "--reporter=json",
+    "--outputFile=/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-minimum-receiving-draft/emitted-control-preparation/run/control.results.json",
+    "-t",
+    "^enforces\\ the\\ minimum\\-receiving\\-malformed\\-request\\ boundary\\ over\\ the\\ emitted\\ listener$"
+  ],
+  "nodePathPrefix": "/Users/dbox/.nvm/versions/node/v24.16.0/bin",
+  "sourceAttribution": "Externally bound source snapshot or frozen package; not child-attested Git identity",
+  "plannedWorkload": {
+    "cases": 1,
+    "http": 1,
+    "owners": 1,
+    "directories": 1,
+    "listeners": 1,
+    "productChildren": 0
+  },
+  "derivativeBinding": {
+    "target": "packages/server/dist/transaction-http.js",
+    "beforeSha256": "d42a7b3dabc89df6ba6bd8b3e951c5b4430a0acbf2d7cafb972a576fcf3601f9",
+    "afterSha256": "576e375c03efa8ccbab7c01662d395d9198bbebdbc0eb593c829326ef627efa5",
+    "removedUtf8": "        if (malformedTransactionMinimumHeaders(request.headers))\n            return transactionHttpProblem(\"malformed-request\");\n",
+    "changedProductFiles": 1,
+    "sourceChanged": false,
+    "mapsChanged": false
+  }
+}

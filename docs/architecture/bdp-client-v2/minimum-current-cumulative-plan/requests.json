@@ -1,0 +1,116 @@
+[
+  {
+    "ordinal": 0,
+    "id": "cm-seed",
+    "method": "POST",
+    "dispatchUrl": "https://reference.invalid/acme/operations/batch",
+    "reportedUrl": "https://reference.invalid/acme/operations/batch",
+    "credentialRef": "operator",
+    "authoredHeaderRecipe": [
+      {
+        "name": "accept",
+        "value": "application/json"
+      },
+      {
+        "name": "content-type",
+        "value": "application/json"
+      },
+      {
+        "name": "idempotency-key",
+        "value": "current-minimum-seed"
+      }
+    ],
+    "body": "{\"operations\":[{\"operation\":\"createBead\",\"id\":\"beads/a\",\"type\":\"https://reference.invalid/acme/types/task\",\"properties\":{\"title\":\"a\"},\"metadata\":{}}]}",
+    "bodyBytes": 150,
+    "bodySha256": "54f0fefb0965a8210bb22cf09601c18296ef450489eff1aef5a8bea8b99d83b8",
+    "status": 200
+  },
+  {
+    "ordinal": 1,
+    "id": "cm-at-minimum",
+    "method": "GET",
+    "dispatchUrl": "https://reference.invalid/acme/beads/a",
+    "reportedUrl": "https://reference.invalid/acme/beads/a",
+    "credentialRef": "operator",
+    "authoredHeaderRecipe": [
+      {
+        "name": "accept",
+        "value": "application/json"
+      },
+      {
+        "name": "bdp-scope-epoch",
+        "value": {
+          "responseHeaderFrom": "cm-seed"
+        }
+      },
+      {
+        "name": "bdp-authorization-view",
+        "value": {
+          "responseHeaderFrom": "cm-seed"
+        }
+      },
+      {
+        "name": "bdp-minimum-scope-position",
+        "value": {
+          "responseHeaderFrom": "cm-seed"
+        }
+      }
+    ],
+    "body": null,
+    "bodyBytes": 0,
+    "bodySha256": null,
+    "status": 200
+  },
+  {
+    "ordinal": 2,
+    "id": "cm-unknown",
+    "method": "GET",
+    "dispatchUrl": "https://reference.invalid/acme/beads/a",
+    "reportedUrl": "https://reference.invalid/acme/beads/a",
+    "credentialRef": "operator",
+    "authoredHeaderRecipe": [
+      {
+        "name": "accept",
+        "value": "application/json"
+      },
+      {
+        "name": "bdp-scope-epoch",
+        "value": {
+          "responseHeaderFrom": "cm-seed"
+        }
+      },
+      {
+        "name": "bdp-authorization-view",
+        "value": {
+          "responseHeaderFrom": "cm-seed"
+        }
+      },
+      {
+        "name": "bdp-minimum-scope-position",
+        "value": "unissued-current-minimum"
+      }
+    ],
+    "body": null,
+    "bodyBytes": 0,
+    "bodySha256": null,
+    "status": 503
+  },
+  {
+    "ordinal": 3,
+    "id": "cm-after",
+    "method": "GET",
+    "dispatchUrl": "https://reference.invalid/acme/beads/a",
+    "reportedUrl": "https://reference.invalid/acme/beads/a",
+    "credentialRef": "operator",
+    "authoredHeaderRecipe": [
+      {
+        "name": "accept",
+        "value": "application/json"
+      }
+    ],
+    "body": null,
+    "bodyBytes": 0,
+    "bodySha256": null,
+    "status": 200
+  }
+]

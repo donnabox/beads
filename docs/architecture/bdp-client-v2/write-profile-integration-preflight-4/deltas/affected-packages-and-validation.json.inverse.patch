@@ -1,0 +1,131 @@
+--- /Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-integration-preflight-4/affected-packages-and-validation.json
++++ /Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-integration-preflight-3/affected-packages-and-validation.json
+@@ -1,5 +1,5 @@
+ {
+-  "D3a": "Exact localP10 all52 accepted at cce+eed91/a61; newly publishedfe57 has same679 bytes, newHEAD exactCI still UNKNOWN beyond IN_PROGRESS publication snapshot. Historical local pass is not combined validation.",
++  "D3a": "21 new source callbacks/96direct14wire/9clone0wire plus preserved legacy families;11installed each190scheduled187responses3expectedaborts186exact4raw; source default5s and installed45work10cleanup60callback/5request120outerTERM115 unchanged. Current P7 stillRUNNING, final acceptance UNKNOWN.",
+   "D4": "32HTTP11POST21GET/twochildren/33receipt/96deletionEvents/fiveoracles; one clock STRICT<145 TERM145/KILL149/outer150; helper/synthetic gates remain distinct",
+   "actualCommandsExecuted": false,
+   "carrier": "48 IDs/default5s/TX63000 positive and raw binding/retention/stop/partial/no-credit; final capacity unresolved",
+@@ -62,7 +62,7 @@
+     "test": "vitest run --reporter=verbose",
+     "typecheck": "tsc -p tsconfig.check.json"
+   },
+-  "freshToolBuildArchiveConsumerProofHashes": "UNKNOWN for every prospective combined choice",
++  "freshToolBuildArchiveConsumerProofHashes": "UNKNOWN",
+   "newHelperOrTestFrameworkAuthorized": false,
+   "oldPassReuse": false,
+   "packagedSurfaces": [
+@@ -82,110 +82,8 @@
+     "actual required full suite/read preflight/smoke/evidence gate with allowed absent-claim exit semantics; future exact CI per root/Trish"
+   ],
+   "sourcePaths": 34,
+-  "sourceSelectors": "189minimum/190full literal filename candidates unchanged with optional G09; callback selection and actual collection must be freshly bound. All lane workload budgets remain unchanged.",
++  "sourceSelectors": "ALL original owned callback names/law IDs/HTTP/clone counts must be rebound precisely; static190 filenames is no callback/test-case count",
+   "unchangedDependenciesAlsoInFreshProof": [
+     "@bdp/protocol and complete workspace/install graph; no extra source overlay implied"
+-  ],
+-  "G09": "OPTIONAL_UNACCEPTED six paths/eeb;8callbacks23direct9wire/twoinstalled14+16/original14 unchanged. ONE CODEINPROGRESS per root snapshot, one Low native finding pending. No source adoption or standalone runtime credit.",
+-  "changedSourceFamiliesFullAcceptedStatic": {
+-    "apps/bdptest": [
+-      "apps/bdptest/src/reference-deployment-lifecycle-installed.test.ts",
+-      "apps/bdptest/src/transactional-changefeed-refusal-context-installed.test.ts",
+-      "apps/bdptest/src/transactional-discovery-installed.test.ts",
+-      "apps/bdptest/src/transactional-matrix.test.ts",
+-      "apps/bdptest/src/transactional-schema-installed.test.ts",
+-      "apps/bdptest/src/transactional-set-installed.test.ts",
+-      "apps/bdptest/test-support/read-update-artifact-execution.ts"
+-    ],
+-    "docs": [
+-      "docs/design/startup-configuration.md"
+-    ],
+-    "packages/config": [
+-      "packages/config/src/index.test.ts",
+-      "packages/config/src/index.ts"
+-    ],
+-    "packages/conformance": [
+-      "packages/conformance/test-support/profile-evidence.test.ts",
+-      "packages/conformance/test-support/profile-evidence.ts"
+-    ],
+-    "packages/server": [
+-      "packages/server/package.json",
+-      "packages/server/src/development-authority.ts",
+-      "packages/server/src/development-runtime.ts",
+-      "packages/server/src/read-sequence-lifecycle.test.ts",
+-      "packages/server/src/reference-deployment-process.ts",
+-      "packages/server/src/reference-deployment-runtime.test.ts",
+-      "packages/server/src/reference-deployment-runtime.ts",
+-      "packages/server/src/reference-deployment-state.ts",
+-      "packages/server/src/reference-deployment.test.ts",
+-      "packages/server/src/reference-deployment.ts",
+-      "packages/server/src/transaction-changefeed.test.ts",
+-      "packages/server/src/transaction-http.test.ts",
+-      "packages/server/src/transaction-http.ts",
+-      "packages/server/src/transaction-installed-contracts.test.ts",
+-      "packages/server/src/transaction-runtime.ts",
+-      "packages/server/src/transaction-service.ts",
+-      "packages/server/src/transaction-snapshot.test.ts",
+-      "packages/server/src/transaction-sse.test.ts",
+-      "packages/server/src/transaction-store.ts"
+-    ],
+-    "scripts": [
+-      "scripts/smoke-executables.mjs",
+-      "scripts/smoke-safety.mjs",
+-      "scripts/smoke-safety.test.mjs"
+-    ]
+-  },
+-  "changedSourceFamiliesFullOptionalG09": {
+-    "apps/bdptest": [
+-      "apps/bdptest/src/reference-deployment-lifecycle-installed.test.ts",
+-      "apps/bdptest/src/transactional-changefeed-refusal-context-installed.test.ts",
+-      "apps/bdptest/src/transactional-discovery-installed.test.ts",
+-      "apps/bdptest/src/transactional-matrix.test.ts",
+-      "apps/bdptest/src/transactional-schema-installed.test.ts",
+-      "apps/bdptest/src/transactional-set-installed.test.ts",
+-      "apps/bdptest/test-support/read-update-artifact-execution.ts"
+-    ],
+-    "docs": [
+-      "docs/design/startup-configuration.md"
+-    ],
+-    "packages/config": [
+-      "packages/config/src/index.test.ts",
+-      "packages/config/src/index.ts"
+-    ],
+-    "packages/conformance": [
+-      "packages/conformance/test-support/profile-evidence.test.ts",
+-      "packages/conformance/test-support/profile-evidence.ts"
+-    ],
+-    "packages/server": [
+-      "packages/server/package.json",
+-      "packages/server/src/development-authority.ts",
+-      "packages/server/src/development-runtime.ts",
+-      "packages/server/src/read-sequence-lifecycle.test.ts",
+-      "packages/server/src/reference-deployment-process.ts",
+-      "packages/server/src/reference-deployment-runtime.test.ts",
+-      "packages/server/src/reference-deployment-runtime.ts",
+-      "packages/server/src/reference-deployment-state.ts",
+-      "packages/server/src/reference-deployment.test.ts",
+-      "packages/server/src/reference-deployment.ts",
+-      "packages/server/src/transaction-changefeed.test.ts",
+-      "packages/server/src/transaction-http.test.ts",
+-      "packages/server/src/transaction-http.ts",
+-      "packages/server/src/transaction-installed-contracts.test.ts",
+-      "packages/server/src/transaction-runtime.ts",
+-      "packages/server/src/transaction-schema-http.test.ts",
+-      "packages/server/src/transaction-schema-http.ts",
+-      "packages/server/src/transaction-service.test.ts",
+-      "packages/server/src/transaction-service.ts",
+-      "packages/server/src/transaction-snapshot.test.ts",
+-      "packages/server/src/transaction-sse.test.ts",
+-      "packages/server/src/transaction-store.ts"
+-    ],
+-    "scripts": [
+-      "scripts/smoke-executables.mjs",
+-      "scripts/smoke-safety.mjs",
+-      "scripts/smoke-safety.test.mjs"
+-    ]
+-  },
+-  "sourcePathsAcceptedStatic": 34,
+-  "sourcePathsOptionalG09": 37
++  ]
+ }

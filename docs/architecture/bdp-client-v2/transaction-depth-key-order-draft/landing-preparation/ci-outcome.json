@@ -1,0 +1,32 @@
+{
+  "head": "1b491d8b888627fcaa5f18908d4308b343397ca3",
+  "tree": "10810a8016a451e241ea974487681dcddd63c2e4",
+  "base": "0d63cf59d447eca2e7ff8b2e0e6a5f31513b9a3a",
+  "run": 38768400100,
+  "job": 116537531157,
+  "synthetic": "5dd229cb1beda15d0611fcc3c656161c365bbffb",
+  "checkedAt": "2026-10-15T16:44:24.315340+00:00",
+  "conclusion": "success",
+  "rawLogSha256": "2a0bb89796111f456d5bcbd36cc3f6a81c31d7f803de721226e8c7995b7cfe35",
+  "rawLogBytes": 3383504,
+  "allStepsPassed": 27,
+  "failedOrSkippedSteps": [],
+  "testsPassed": 9308,
+  "testsSkipped": 1,
+  "testFilesPassed": 178,
+  "preflightPassed": 7,
+  "smokePassed": true,
+  "readSealRows": 89,
+  "claimEligible": false,
+  "suiteSeconds": 784.04,
+  "jobSeconds": 1005,
+  "existingJobLimitSeconds": 1200,
+  "installedWitness": {
+    "responses": 13,
+    "milliseconds": 1084,
+    "childPid": 20136,
+    "exitCode": 0,
+    "storeRemovedReported": true,
+    "limits": "CI workspace emitted entry; fresh archive/consumer proof is separately bound by root-installed-acceptance. Remote process absence not independently observed from this host."
+  }
+}

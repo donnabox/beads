@@ -1,0 +1,188 @@
+--- plan4/source-input-map.json
++++ /dev/null
+@@ -1,185 +0,0 @@
+-{
+-  "sourceCommit": "cce884ccea1db97cbc6fd7bff876d4d6091f9081",
+-  "sourceTree": "6757829bd5b700faf28df39071190a272add90c9",
+-  "sourceFiles": 679,
+-  "sourceMapSha256": "ff8ad56f23c3d7ee6e652724501cdaa16ec9551ea24b1673dc6c74bf5c1c06b7",
+-  "selectedSourceSpecInputs": [
+-    {
+-      "path": "apps/bdptest/src/read-update-matrix.test.ts",
+-      "copy": "predecessor-effective/source/apps/bdptest/src/read-update-matrix.test.ts",
+-      "origin": "/Users/dbox/repos/wt/vickie/vickie-current-changefeed-minimum/apps/bdptest/src/read-update-matrix.test.ts",
+-      "sha256": "37558e78d79d665363528fb2bf4f81de4f4334cd8438a099030cac7a68e0637b",
+-      "bytes": 254295
+-    },
+-    {
+-      "path": "apps/bdptest/src/transactional-matrix.test.ts",
+-      "copy": "predecessor-effective/source/apps/bdptest/src/transactional-matrix.test.ts",
+-      "origin": "/Users/dbox/repos/wt/vickie/vickie-current-changefeed-minimum/apps/bdptest/src/transactional-matrix.test.ts",
+-      "sha256": "95e07ead41f9cb39087a155e87cad22998d92cd3967cb9c3c446568ff6139bc8",
+-      "bytes": 183859
+-    },
+-    {
+-      "path": "apps/bdptest/test-support/read-update-artifact-execution.ts",
+-      "copy": "predecessor-effective/source/apps/bdptest/test-support/read-update-artifact-execution.ts",
+-      "origin": "/Users/dbox/repos/wt/vickie/vickie-current-changefeed-minimum/apps/bdptest/test-support/read-update-artifact-execution.ts",
+-      "sha256": "764ff0a4e5310ec35e59d6042e579b7e1f003772a7c09777e3f4d5675a3156d1",
+-      "bytes": 22135
+-    },
+-    {
+-      "path": "apps/bdptest/test-support/transactional-execution-binding.ts",
+-      "copy": "predecessor-effective/source/apps/bdptest/test-support/transactional-execution-binding.ts",
+-      "origin": "/Users/dbox/repos/wt/vickie/vickie-current-changefeed-minimum/apps/bdptest/test-support/transactional-execution-binding.ts",
+-      "sha256": "cde506c72a8710eafe58522900f6db70ed3701cf333560252dc8e7c5e706cf89",
+-      "bytes": 7378
+-    },
+-    {
+-      "path": "docs/specs/bdp.md",
+-      "copy": "predecessor-effective/source/docs/specs/bdp.md",
+-      "origin": "/Users/dbox/repos/wt/vickie/vickie-current-changefeed-minimum/docs/specs/bdp.md",
+-      "sha256": "67772742d7d08f48c12196e9789f1859ad2d0e19f133ea65e197b049361f84f8",
+-      "bytes": 397107
+-    },
+-    {
+-      "path": "packages/conformance/fixtures/read-update-reference-v1.json",
+-      "copy": "predecessor-effective/source/packages/conformance/fixtures/read-update-reference-v1.json",
+-      "origin": "/Users/dbox/repos/wt/vickie/vickie-current-changefeed-minimum/packages/conformance/fixtures/read-update-reference-v1.json",
+-      "sha256": "f89932d68e3bf5867d79eb3de680af4bc67b761b3c3bce5da127f6ca75e27765",
+-      "bytes": 29707
+-    },
+-    {
+-      "path": "packages/conformance/matrices/read-update-reference-continuation-v1.json",
+-      "copy": "predecessor-effective/source/packages/conformance/matrices/read-update-reference-continuation-v1.json",
+-      "origin": "/Users/dbox/repos/wt/vickie/vickie-current-changefeed-minimum/packages/conformance/matrices/read-update-reference-continuation-v1.json",
+-      "sha256": "24d754618b51f255b5885d83c53ccf9a06593031e1812739a4f2b504c4a1df8d",
+-      "bytes": 899400
+-    },
+-    {
+-      "path": "packages/conformance/matrices/read-update-v1.json",
+-      "copy": "predecessor-effective/source/packages/conformance/matrices/read-update-v1.json",
+-      "origin": "/Users/dbox/repos/wt/vickie/vickie-current-changefeed-minimum/packages/conformance/matrices/read-update-v1.json",
+-      "sha256": "10a7c6f97a280cf88e58d3aa2039fe580904b74bfffcebda4747fc3c1a34b583",
+-      "bytes": 3689484
+-    },
+-    {
+-      "path": "packages/conformance/package.json",
+-      "copy": "predecessor-effective/source/packages/conformance/package.json",
+-      "origin": "/Users/dbox/repos/wt/vickie/vickie-current-changefeed-minimum/packages/conformance/package.json",
+-      "sha256": "418d4d50ea4fbed59dbc2df3dc1298d30b56760428e47a5be1ae39a46960abc8",
+-      "bytes": 641
+-    },
+-    {
+-      "path": "packages/conformance/src/artifact-bundle.ts",
+-      "copy": "predecessor-effective/source/packages/conformance/src/artifact-bundle.ts",
+-      "origin": "/Users/dbox/repos/wt/vickie/vickie-current-changefeed-minimum/packages/conformance/src/artifact-bundle.ts",
+-      "sha256": "bbf54915eb792433ae492fd73a5334717e74e0942c485a72daa5105928546dd6",
+-      "bytes": 21853
+-    },
+-    {
+-      "path": "packages/conformance/src/profile-contract-selection.ts",
+-      "copy": "predecessor-effective/source/packages/conformance/src/profile-contract-selection.ts",
+-      "origin": "/Users/dbox/repos/wt/vickie/vickie-current-changefeed-minimum/packages/conformance/src/profile-contract-selection.ts",
+-      "sha256": "5b1caf61688bfa6a5465b5f8dc817b84f02be76bfc5bdd886a19e749b6441543",
+-      "bytes": 5113
+-    },
+-    {
+-      "path": "packages/conformance/src/runner.ts",
+-      "copy": "predecessor-effective/source/packages/conformance/src/runner.ts",
+-      "origin": "/Users/dbox/repos/wt/vickie/vickie-current-changefeed-minimum/packages/conformance/src/runner.ts",
+-      "sha256": "ac20c7fbfe15a5e42a6559e89cd3467562efe9bc74d462478414414ed3efede1",
+-      "bytes": 133683
+-    },
+-    {
+-      "path": "packages/conformance/src/selection.ts",
+-      "copy": "predecessor-effective/source/packages/conformance/src/selection.ts",
+-      "origin": "/Users/dbox/repos/wt/vickie/vickie-current-changefeed-minimum/packages/conformance/src/selection.ts",
+-      "sha256": "1799c9ec233f755b158c1787e8b1f9ab8523722f3dc25282e50f87c7294e780d",
+-      "bytes": 3255
+-    },
+-    {
+-      "path": "packages/conformance/test-support/profile-contract-plan.ts",
+-      "copy": "predecessor-effective/source/packages/conformance/test-support/profile-contract-plan.ts",
+-      "origin": "/Users/dbox/repos/wt/vickie/vickie-current-changefeed-minimum/packages/conformance/test-support/profile-contract-plan.ts",
+-      "sha256": "18c953443e6695cfa48f89677231fecffc349df02bd080f107a5c739db10b728",
+-      "bytes": 15083
+-    },
+-    {
+-      "path": "packages/conformance/test-support/read-update-artifact-set-v1.json",
+-      "copy": "predecessor-effective/source/packages/conformance/test-support/read-update-artifact-set-v1.json",
+-      "origin": "/Users/dbox/repos/wt/vickie/vickie-current-changefeed-minimum/packages/conformance/test-support/read-update-artifact-set-v1.json",
+-      "sha256": "7277980894dd0955a8fcd22ba5d2845b0a6801b7e7e13a937018e11d3a65de37",
+-      "bytes": 242
+-    },
+-    {
+-      "path": "packages/conformance/test-support/read-update-artifact-set.ts",
+-      "copy": "predecessor-effective/source/packages/conformance/test-support/read-update-artifact-set.ts",
+-      "origin": "/Users/dbox/repos/wt/vickie/vickie-current-changefeed-minimum/packages/conformance/test-support/read-update-artifact-set.ts",
+-      "sha256": "8c1e3d17d7bc5823ab69ddaac6ee0a443800f0348d4f14d969c22f1384aea2a3",
+-      "bytes": 12580
+-    },
+-    {
+-      "path": "packages/conformance/test-support/read-update-coverage-v1.json",
+-      "copy": "predecessor-effective/source/packages/conformance/test-support/read-update-coverage-v1.json",
+-      "origin": "/Users/dbox/repos/wt/vickie/vickie-current-changefeed-minimum/packages/conformance/test-support/read-update-coverage-v1.json",
+-      "sha256": "287c2a258afd04a95417f5de416c81bd8159c95762d71d568a64f0b402159f0f",
+-      "bytes": 720729
+-    },
+-    {
+-      "path": "packages/conformance/test-support/testing.ts",
+-      "copy": "predecessor-effective/source/packages/conformance/test-support/testing.ts",
+-      "origin": "/Users/dbox/repos/wt/vickie/vickie-current-changefeed-minimum/packages/conformance/test-support/testing.ts",
+-      "sha256": "51ed6be461d2e8b67bba91c195939c1611f4956b003cc33d83bc47d1739b9e54",
+-      "bytes": 68791
+-    },
+-    {
+-      "path": "packages/conformance/test-support/transactional/coverage-v1.json",
+-      "copy": "predecessor-effective/source/packages/conformance/test-support/transactional/coverage-v1.json",
+-      "origin": "/Users/dbox/repos/wt/vickie/vickie-current-changefeed-minimum/packages/conformance/test-support/transactional/coverage-v1.json",
+-      "sha256": "a2c620ce489257f4cd425207195af89b4e2aac238333cf6e7d21ce629d98a238",
+-      "bytes": 133364
+-    },
+-    {
+-      "path": "packages/conformance/test-support/transactional/fixture-v1.json",
+-      "copy": "predecessor-effective/source/packages/conformance/test-support/transactional/fixture-v1.json",
+-      "origin": "/Users/dbox/repos/wt/vickie/vickie-current-changefeed-minimum/packages/conformance/test-support/transactional/fixture-v1.json",
+-      "sha256": "3a7899ced771d4880066d98b0000c53f801ece53458502cc4f3bc641146c9a85",
+-      "bytes": 716
+-    },
+-    {
+-      "path": "packages/conformance/test-support/transactional/manifest-v1.json",
+-      "copy": "predecessor-effective/source/packages/conformance/test-support/transactional/manifest-v1.json",
+-      "origin": "/Users/dbox/repos/wt/vickie/vickie-current-changefeed-minimum/packages/conformance/test-support/transactional/manifest-v1.json",
+-      "sha256": "bbb7def1bf11e1d14efbcb369e6a7fae6eb5aff01f483f8e99f7443ce9a6ee73",
+-      "bytes": 867804
+-    },
+-    {
+-      "path": "packages/server/src/installed-payload.ts",
+-      "copy": "predecessor-effective/source/packages/server/src/installed-payload.ts",
+-      "origin": "/Users/dbox/repos/wt/vickie/vickie-current-changefeed-minimum/packages/server/src/installed-payload.ts",
+-      "sha256": "d1095a8fa641c77ddef32b1d432273572f46b14499c526dbb0a85cfde82113f9",
+-      "bytes": 3594
+-    },
+-    {
+-      "path": "scripts/dependency-boundary-rules.mjs",
+-      "copy": "predecessor-effective/source/scripts/dependency-boundary-rules.mjs",
+-      "origin": "/Users/dbox/repos/wt/vickie/vickie-current-changefeed-minimum/scripts/dependency-boundary-rules.mjs",
+-      "sha256": "5a48e2763b3da883bcc63e10e76381b453cfdbfe817576a0861d235c241e65ca",
+-      "bytes": 6366
+-    },
+-    {
+-      "path": "tsconfig.check.json",
+-      "copy": "predecessor-effective/source/tsconfig.check.json",
+-      "origin": "/Users/dbox/repos/wt/vickie/vickie-current-changefeed-minimum/tsconfig.check.json",
+-      "sha256": "f12922fb94d74d73945063f684b40c585c276fad38d19526ed606ac2d148853f",
+-      "bytes": 1237
+-    },
+-    {
+-      "path": "vitest.config.ts",
+-      "copy": "predecessor-effective/source/vitest.config.ts",
+-      "origin": "/Users/dbox/repos/wt/vickie/vickie-current-changefeed-minimum/vitest.config.ts",
+-      "sha256": "a84575ea9ef0b6e75b6484024a627fa89422aea2fdbeb26127e09714dba0641f",
+-      "bytes": 3207
+-    }
+-  ],
+-  "GitMetadataAuthority": "immutable D5/source publication/root records in prior effective context; NO Git invoked; source hashes observed now",
+-  "finalCombinedRebind": "UNRESOLVED; startup/D3a/D4 not adopted"
+-}

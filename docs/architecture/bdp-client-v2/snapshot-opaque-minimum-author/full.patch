@@ -1,0 +1,962 @@
+diff --git a/apps/bdptest/src/transactional-snapshot-installed.test.ts b/apps/bdptest/src/transactional-snapshot-installed.test.ts
+index 685050d..8507b59 100644
+--- a/apps/bdptest/src/transactional-snapshot-installed.test.ts
++++ b/apps/bdptest/src/transactional-snapshot-installed.test.ts
+@@ -1,7 +1,7 @@
+ /** Private installed Snapshot observations, not profile admission or matrix credit. */
+ import { execFileSync, type ChildProcess } from "node:child_process";
+ import { createHash, randomBytes } from "node:crypto";
+-import { mkdtempSync, readFileSync, realpathSync, rmSync } from "node:fs";
++import { existsSync, mkdtempSync, readFileSync, realpathSync, rmSync } from "node:fs";
+ import { tmpdir } from "node:os";
+ import path from "node:path";
+ import { fileURLToPath } from "node:url";
+@@ -902,8 +902,8 @@ it("observes fresh Snapshot minima with exact current context and retained gaps
+     ]) {
+       const wire = await f.exchange(undefined, "GET", headers);
+       if (headers["bdp-minimum-scope-position"] === "unknown") {
+-        expect(wire.status).toBe(500);
+-        expect(wire.headers["x-bdp-development-limit"]).toBe("minimum-position");
++        snapshotTimeout(wire, empty, "pos-1");
++        expect(wire.headers["x-bdp-development-limit"]).toBeUndefined();
+       } else {
+         expect(json<{ code: string }>(wire, 400).code).toBe("malformed-request");
+         expect(wire.headers["x-bdp-development-limit"]).toBeUndefined();
+@@ -968,3 +968,226 @@ it("requires a real fixed-head Snapshot wait over packed bytes", async () => {
+     expect(f.exchangeCount).toBe(2);
+   });
+ }, 60000);
++
++it("observes installed fresh Snapshot opaque minimum timeout", async () => {
++  const started = performance.now();
++  let directory: string | undefined;
++  let child: Awaited<ReturnType<typeof launchInstalledTransaction>> | undefined;
++  let binding: ReturnType<typeof installedTransactionBinding> | undefined;
++  let launchStarted = false,
++    closeAttempted = false,
++    closed = false,
++    attempted = 0;
++  const responses: {
++    method: string;
++    url: string;
++    status: number;
++    responseBytes: number;
++    wireSha256: string;
++    elapsedSeconds: number;
++  }[] = [];
++  await withDeadline((signal) =>
++    finishObservation(
++      async () => {
++        signal.throwIfAborted();
++        directory = mkdtempSync(path.join(tmpdir(), "bdp-snapshot-opaque-installed-"));
++        const operator = randomBytes(32).toString("base64url");
++        const configuration = {
++          scope,
++          directory,
++          create: true,
++          artifacts: artifacts(),
++          credentials: [{ token: operator, principal: "writer", canMutate: true }],
++        };
++        const validReceipt = snapshotAjv.compile({
++          $ref: `${snapshotSchemaBundle.$id}#/$defs/mutationReceipt`,
++        });
++        launchStarted = true;
++        child = await launchInstalledTransaction(entry, configuration, signal);
++        binding = installedTransactionBinding(child.ready, sourceCommit, fixture);
++        expect(child.ready.claimEligible).toBe(false);
++        expect(child.ready.history).toBe(false);
++        const address = new URL(child.ready.listenUrl as string);
++        const batchUrl = `${scope}operations/batch`,
++          snapshotUrl = `${scope}snapshot`;
++        const execute = createRawHttpExchangeExecutor(
++          { transport: "plain", host: address.hostname, port: Number(address.port) },
++          {
++            requestTimeoutMs: 5000,
++            maximumBodyBytes: 1024 * 1024,
++            exactMode: {
++              scope,
++              profile: "transactional",
++              routes: [
++                { method: "POST", url: batchUrl },
++                { method: "GET", url: snapshotUrl },
++                { method: "HEAD", url: snapshotUrl },
++              ],
++              maximumRequestHeaderBytes: 16384,
++              maximumRequestBodyBytes: 65536,
++              defaultCredentialRef: "operator",
++              credentialHandles: [{ id: "operator", headerNames: ["authorization"] }],
++              resolveCredentials: () => ({ authorization: `Bearer ${operator}` }),
++            },
++          },
++        );
++        async function exchange(
++          method: HttpMethod,
++          minimum: Record<string, string> = {},
++          body?: string,
++        ) {
++          signal.throwIfAborted();
++          expect(++attempted, "installed Snapshot dispatch bound").toBeLessThanOrEqual(3);
++          const url = method === "POST" ? batchUrl : snapshotUrl;
++          const requestStarted = performance.now();
++          const response = await execute({
++            method,
++            url,
++            signal,
++            credentialRef: "operator",
++            raw: {
++              headerLines: [
++                { name: "accept", value: "application/json" },
++                ...Object.entries(minimum).map(([name, value]) => ({ name, value })),
++                ...(body === undefined
++                  ? []
++                  : [
++                      { name: "content-type", value: "application/json" },
++                      { name: "idempotency-key", value: "snapshot-opaque-seed" },
++                    ]),
++              ],
++              ...(body === undefined ? {} : { bodyBytes: Buffer.from(body) }),
++            },
++          });
++          expect(response.url).toBe(url);
++          expect(response.exactRequest?.source).toBe("raw-http1-serializer");
++          expect(response.exactRequest?.writeState).toBe("complete");
++          expect(response.exactRequest?.bodyPresent).toBe(body !== undefined);
++          expect(response.exactRequest?.bodyOctets).toBe(
++            body === undefined ? 0 : Buffer.byteLength(body),
++          );
++          expect(response.exactRequest?.bodyDigest).toBe(
++            body === undefined ? undefined : createHash("sha256").update(body).digest("hex"),
++          );
++          const headers = response.exactRequest?.headerLines ?? [];
++          expect(headers.find((header) => header.name.toLowerCase() === "host")?.value).toBe(
++            "reference.invalid",
++          );
++          expect(headers.find((header) => header.name.toLowerCase() === "accept")?.value).toBe(
++            "application/json",
++          );
++          if (body !== undefined) {
++            expect(
++              headers.find((header) => header.name.toLowerCase() === "content-type")?.value,
++            ).toBe("application/json");
++            expect(
++              headers.find((header) => header.name.toLowerCase() === "idempotency-key")?.value,
++            ).toBe("snapshot-opaque-seed");
++          }
++          for (const [name, value] of Object.entries(minimum))
++            expect(headers.find((header) => header.name.toLowerCase() === name)?.value).toBe(
++              value,
++            );
++          expect(response.wireResponseBytes?.length).toBeGreaterThan(0);
++          if (
++            response.bodyOctets === undefined ||
++            !Number.isSafeInteger(response.bodyOctets) ||
++            response.bodyOctets < 0
++          )
++            throw new Error("completed response body octets unavailable");
++          responses.push({
++            method,
++            url,
++            status: response.status,
++            responseBytes: response.bodyOctets,
++            wireSha256: createHash("sha256").update(response.wireResponseBytes!).digest("hex"),
++            elapsedSeconds: (performance.now() - requestStarted) / 1000,
++          });
++          expect(response.headers["x-bdp-development"]).toBe("non-attesting");
++          return response;
++        }
++        const seed = await exchange(
++          "POST",
++          {},
++          JSON.stringify({ operations: [createBead("opaque-snapshot")] }),
++        );
++        const receipt = json<unknown>(seed);
++        expect(validReceipt(receipt), JSON.stringify(validReceipt.errors)).toBe(true);
++        expect(receipt).toMatchObject({
++          status: "completed",
++          idempotencyKey: "snapshot-opaque-seed",
++          requiredPosition: "pos-1",
++          effectPosition: "pos-1",
++          results: [
++            {
++              outcome: "created",
++              resource: {
++                id: `${scope}beads/opaque-snapshot`,
++                type: beadType,
++                properties: { title: "café 🦉 opaque-snapshot" },
++              },
++            },
++          ],
++        });
++        expect(seed.headers["bdp-scope-position"]).toBe("pos-1");
++        const minimum = snapshotMinimum(seed, "opaque");
++        for (const method of ["GET", "HEAD"] as const) {
++          const response = await exchange(method, minimum);
++          snapshotTimeout(response, seed, "pos-1", method === "HEAD");
++          expect(response.headers["cache-control"]).toBe("private, no-store");
++          expect(response.headers["x-bdp-development-limit"]).toBeUndefined();
++        }
++        expect(attempted).toBe(3);
++        expect(responses.map(({ method, status }) => [method, status])).toEqual([
++          ["POST", 200],
++          ["GET", 503],
++          ["HEAD", 503],
++        ]);
++      },
++      async () => {
++        if (!child) {
++          if (launchStarted) throw new Error("Snapshot child ownership was not returned");
++          if (directory) rmSync(directory, { recursive: true, force: true });
++          return;
++        }
++        closeAttempted = true;
++        await child.close();
++        if (child.child.exitCode !== 0 || child.child.signalCode !== null)
++          throw new Error("Snapshot child did not close cleanly");
++        signal.throwIfAborted();
++        closed = true;
++        if (directory) rmSync(directory, { recursive: true, force: true });
++      },
++      signal,
++      (ok) => {
++        console.log(
++          JSON.stringify({
++            observation: "private-installed-snapshot-opaque-minimum",
++            ok,
++            declaredSourceCommit: sourceCommit,
++            workspaceDirty,
++            entry: resolvedEntry,
++            entrySha256,
++            binding,
++            attempted,
++            exchanges: responses.length,
++            responses,
++            launchStarted,
++            startupCompleted: child !== undefined,
++            closeAttempted,
++            closed,
++            childPid: child?.child.pid ?? null,
++            childExitCode: child?.child.exitCode ?? null,
++            childSignalCode: child?.child.signalCode ?? null,
++            ownership: child ? "returned" : launchStarted ? "unknown" : "not-started",
++            directory: directory ?? null,
++            directoryAbsent: directory === undefined || !existsSync(directory),
++            aborted: signal.aborted,
++            elapsedSeconds: (performance.now() - started) / 1000,
++            claimEligible: false,
++          }),
++        );
++      },
++    ),
++  );
++}, 60000);
+diff --git a/packages/server/src/transaction-http.test.ts b/packages/server/src/transaction-http.test.ts
+index 7a6e3f5..afe577d 100644
+--- a/packages/server/src/transaction-http.test.ts
++++ b/packages/server/src/transaction-http.test.ts
+@@ -5608,3 +5608,151 @@ it("preserves receiving and HTTP error precedence for parser refusals", async ()
+     for (const excluded of ["types/", "types/task", "beads/a/"]) await f.gapPair(excluded);
+   });
+ });
++
++
++it("serves fresh Snapshot opaque minima with terminal preflight and retained fences", async () => {
++  let tick = 0;
++  let waits = 0;
++  const f = await fixture({
++    minimumReads: {
++      budgetMs: 2,
++      now: () => tick++,
++      wait: async () => {
++        waits++;
++      },
++    },
++  });
++  const url = `${f.runtime.scope}snapshot`;
++  const responses: { method: string; path: string; status: number }[] = [];
++  async function observed(method: string, target: string, response: Response) {
++    const text = await response.text();
++    responses.push({
++      method,
++      path: new URL(target).pathname + new URL(target).search,
++      status: response.status,
++    });
++    return { response, text };
++  }
++  async function get(target: string, method: "GET" | "HEAD", headers: Record<string, string>) {
++    return observed(method, target, await f.get(target, { method, headers }));
++  }
++  try {
++    const seed = await observed("POST", f.runtime.targets.batch, await f.post());
++    expect(seed.response.status).toBe(200);
++    expect(record(JSON.parse(seed.text))).toMatchObject({ status: "completed" });
++    const minimum = minimumHeaders(seed.response, "opaque");
++    const known = minimumHeaders(seed.response, "pos-1");
++    const current = {
++      "bdp-scope-epoch": seed.response.headers.get("bdp-scope-epoch"),
++      "bdp-authorization-view": seed.response.headers.get("bdp-authorization-view"),
++      "bdp-scope-position": "pos-1",
++    };
++    for (const value of Object.values(current)) expect(value).toBeTruthy();
++    const first = await get(url, "GET", known);
++    expect(first.response.status).toBe(200);
++    const manifest = record(JSON.parse(first.text));
++    expect(manifest).toMatchObject({
++      scopePosition: "pos-1",
++      beads: { items: [{ properties: { title: "a" } }] },
++    });
++    const head = await get(url, "HEAD", known);
++    expect(head.response.status).toBe(200);
++    expect(head.text).toBe("");
++    for (const [name, value] of Object.entries(current))
++      expect(head.response.headers.get(name)).toBe(value);
++    expect(head.response.headers.get("cache-control")).toBe("private, no-store");
++    for (const method of ["GET", "HEAD"] as const) {
++      for (const conditions of [
++        {},
++        { "if-none-match": "*" },
++        { "if-match": '"absent"' },
++        { accept: "text/plain" },
++      ] as Record<string, string>[]) {
++        const result = await get(url, method, { ...minimum, ...conditions });
++        expect(result.response.status).toBe(503);
++        for (const [name, value] of Object.entries(current))
++          expect(result.response.headers.get(name)).toBe(value);
++        expect(result.response.headers.get("retry-after")).toBe("1");
++        expect(result.response.headers.get("cache-control")).toBe("private, no-store");
++        expect(result.response.headers.get("x-bdp-development-limit")).toBeNull();
++        expect(result.response.headers.get("x-bdp-development")).toBe("non-attesting");
++        if (method === "HEAD") expect(result.text).toBe("");
++        else
++          expect(checkedProblem(record(JSON.parse(result.text)))).toMatchObject({
++            code: "catch-up-timeout",
++            type: "https://github.com/gastownhall/bdp/problems/unavailable",
++            status: 503,
++            retry: "after-delay",
++          });
++      }
++    }
++    for (const field of ["bdp-scope-epoch", "bdp-authorization-view"]) {
++      for (const method of ["GET", "HEAD"] as const) {
++        const result = await get(url, method, { ...minimum, [field]: "foreign" });
++        expect(result.response.status).toBe(500);
++        expect(result.response.headers.get("x-bdp-development-limit")).toBe("minimum-position");
++        if (method === "HEAD") expect(result.text).toBe("");
++      }
++    }
++    for (const method of ["GET", "HEAD"] as const) {
++      const result = await get(url, method, { "bdp-minimum-scope-position": "opaque" });
++      expect(result.response.status).toBe(400);
++      for (const name of Object.keys(current))
++        expect(result.response.headers.get(name)).toBeNull();
++      if (method === "HEAD") expect(result.text).toBe("");
++      else expect(checkedProblem(record(JSON.parse(result.text))).code).toBe("malformed-request");
++    }
++    const retainedUrl = id(manifest);
++    const page = new URL(retainedUrl);
++    page.searchParams.set("stream", "beads");
++    page.searchParams.set("page", "unused");
++    for (const target of [retainedUrl, page.href]) {
++      for (const method of ["GET", "HEAD"] as const) {
++        const result = await get(target, method, minimum);
++        expect(result.response.status).toBe(500);
++        expect(result.response.headers.get("x-bdp-development-limit")).toBe("minimum-position");
++        if (method === "HEAD") expect(result.text).toBe("");
++      }
++    }
++    for (const method of ["GET", "HEAD"] as const) {
++      const result = await get(retainedUrl, method, {});
++      expect(result.response.status).toBe(200);
++      expect(result.text).toBe(method === "HEAD" ? "" : first.text);
++    }
++    for (const method of ["GET", "HEAD"] as const) {
++      const result = await get(`${url}?unsupported=x`, method, minimum);
++      expect(result.response.status).toBe(400);
++      if (method === "HEAD") expect(result.text).toBe("");
++      else expect(checkedProblem(record(JSON.parse(result.text))).code).toBe("invalid-parameter");
++    }
++    for (const method of ["GET", "HEAD"] as const) {
++      // The ordinary fixture helper injects credentials; these two calls do not.
++      const result = await observed(method, url, await fetch(url, { method, headers: minimum }));
++      expect(result.response.status).toBe(401);
++      for (const name of Object.keys(current))
++        expect(result.response.headers.get(name)).toBeNull();
++      if (method === "HEAD") expect(result.text).toBe("");
++    }
++    expect(responses).toHaveLength(27);
++    expect(waits).toBe(8);
++    const statusCounts = Object.fromEntries(
++      [200, 503, 500, 400, 401].map((status) => [
++        status,
++        responses.filter((response) => response.status === status).length,
++      ]),
++    );
++    expect(statusCounts).toEqual({ 200: 5, 503: 8, 500: 8, 400: 4, 401: 2 });
++    await f.runtime.close();
++    console.log(
++      JSON.stringify({
++        observation: "fresh-snapshot-opaque-http",
++        requests: responses.length,
++        responses,
++        statusCounts,
++        waits,
++      }),
++    );
++  } finally {
++    await f.runtime.close();
++  }
++});
+diff --git a/packages/server/src/transaction-http.ts b/packages/server/src/transaction-http.ts
+index b3f8958..047e011 100644
+--- a/packages/server/src/transaction-http.ts
++++ b/packages/server/src/transaction-http.ts
+@@ -421,7 +421,7 @@ export function createTransactionHttpHandler(
+       // Only fresh creation has an unambiguous current observation. Retained
+       // anchors and unsupported tuple shapes keep their explicit private gap.
+       const minimum = hasMinimumControls(request)
+-        ? transactionMinimumHeaders(request.headers)
++        ? currentReadMinimumHeaders(request.headers)
+         : undefined;
+       if (hasMinimumControls(request) && (target.kind !== "create" || minimum === undefined))
+         return developmentGap("minimum-position");
+diff --git a/packages/server/src/transaction-service.test.ts b/packages/server/src/transaction-service.test.ts
+index 0a5168e..fec9f18 100644
+--- a/packages/server/src/transaction-service.test.ts
++++ b/packages/server/src/transaction-service.test.ts
+@@ -1205,7 +1205,7 @@ describe("fresh Snapshot minimum service", () => {
+       ["GET", { "if-match": '"absent"' }, 412, "preflight"],
+       ["GET", { accept: "text/plain" }, 406, "preflight"],
+     ] as const) {
+-      for (const minimumPosition of ["genesis", "pos-1"]) {
++      for (const minimumPosition of ["genesis", "pos-1", "unknown"]) {
+         snapshot.mockClear();
+         const response = await http.handle(
+           new Request(`${scope}snapshot`, {
+@@ -3202,3 +3202,288 @@ it.each([
+     }),
+   );
+ });
++
++
++function freshSnapshotOpaqueFixture(minimumReads: TransactionServiceOptions["minimumReads"]) {
++  const f = fixture();
++  const observeSnapshot = vi.fn(f.owner.observeSnapshot);
++  const service = createTransactionService(
++    { ...f.owner, observeSnapshot },
++    { ownerLifetime: "service", read: f.read, minimumReads },
++  );
++  cleanup.push(() => service.close());
++  return { owner: f.owner, service, snapshot: vi.fn(service.snapshot), observeSnapshot };
++}
++
++it.each(["create", "preflight"] as const)(
++  "captures fresh Snapshot %s opaque controls across independent commits",
++  async (kind) => {
++    let now = 0;
++    let waits = 0;
++    let probes = 0;
++    let transactions = 0;
++    const entered = Promise.withResolvers<void>();
++    const release = Promise.withResolvers<void>();
++    const f = freshSnapshotOpaqueFixture({
++      budgetMs: 2,
++      now: () => now,
++      wait: async () => {
++        waits++;
++        expect(f.owner.withRead(() => true)).toMatchObject({ kind: "read" });
++        probes++;
++        if (waits === 1) {
++          entered.resolve();
++          await release.promise;
++          now = 1;
++        } else if (waits === 2) now = 2;
++        else throw new Error("unexpected Snapshot wait");
++      },
++    });
++    const initial = await f.snapshot({ kind: "preflight" });
++    const minimum = {
++      scopeEpoch: initial.context.scopeEpoch,
++      authorizationView: initial.context.authorizationView,
++      minimumPosition: "opaque",
++    };
++    const request: TransactionSnapshotRequest = { kind };
++    const pending = f.snapshot(request, minimum);
++    const outcome = pending.then(
++      () => {
++        throw new Error("opaque Snapshot unexpectedly became eligible");
++      },
++      (error: unknown) => error,
++    );
++    try {
++      await Promise.race([
++        entered.promise,
++        outcome.then(() => {
++          throw new Error("Snapshot completed before its first wait");
++        }),
++      ]);
++      Object.assign(request, { kind: "manifest", id: "unused" });
++      Object.assign(minimum, {
++        scopeEpoch: "changed",
++        authorizationView: "changed",
++        minimumPosition: "genesis",
++      });
++      requireReceipt(await f.service.submit(batch([create("after-wait")])));
++      transactions++;
++      release.resolve();
++      const error = await outcome;
++      expect(error).toBeInstanceOf(TransactionMinimumFailure);
++      expect(error).toMatchObject({
++        reason: "catch-up-timeout",
++        context: { ...initial.context, scopePosition: "pos-1" },
++      });
++      expect(f.snapshot).toHaveBeenCalledTimes(2);
++      expect(f.observeSnapshot).toHaveBeenCalledTimes(4);
++      expect(waits).toBe(2);
++      expect(probes).toBe(2);
++      expect(transactions).toBe(1);
++      console.log(
++        JSON.stringify({
++          observation: "fresh-snapshot-opaque-capture",
++          kind,
++          serviceSnapshotCalls: f.snapshot.mock.calls.length,
++          ownerSnapshotCalls: f.observeSnapshot.mock.calls.length,
++          waits,
++          probes,
++          transactions,
++          finalPosition: (error as TransactionMinimumFailure).context.scopePosition,
++        }),
++      );
++    } finally {
++      release.resolve();
++      await Promise.allSettled([outcome]);
++      await f.service.close();
++    }
++  },
++);
++
++it.each(["create", "preflight"] as const)(
++  "cancels and drains fresh Snapshot %s opaque waits",
++  async (kind) => {
++    let now = 0;
++    let waits = 0;
++    let probes = 0;
++    const entered = Array.from({ length: 3 }, () => Promise.withResolvers<void>());
++    const release = Array.from({ length: 3 }, () => Promise.withResolvers<void>());
++    const f = freshSnapshotOpaqueFixture({
++      budgetMs: 2,
++      now: () => now,
++      wait: async () => {
++        const index = waits++;
++        if (index >= 3) throw new Error("unexpected Snapshot wait");
++        expect(f.owner.withRead(() => true)).toMatchObject({ kind: "read" });
++        probes++;
++        entered[index]!.resolve();
++        await release[index]!.promise;
++        if (index > 0) now = index;
++      },
++    });
++    const initial = await f.snapshot({ kind: "preflight" });
++    const minimum = {
++      scopeEpoch: initial.context.scopeEpoch,
++      authorizationView: initial.context.authorizationView,
++      minimumPosition: "opaque",
++    };
++    const controller = new AbortController();
++    const cancelled = f.snapshot({ kind }, minimum, controller.signal).then(
++      () => {
++        throw new Error("cancelled Snapshot unexpectedly became eligible");
++      },
++      (error: unknown) => error,
++    );
++    let drained: Promise<unknown> | undefined;
++    let closing: Promise<void> | undefined;
++    try {
++      await Promise.race([
++        entered[0]!.promise,
++        cancelled.then(() => {
++          throw new Error("Snapshot completed before its cancellation wait");
++        }),
++      ]);
++      controller.abort();
++      release[0]!.resolve();
++      expect(await cancelled).toBeInstanceOf(ScopeServerOperationAbortedError);
++      now = 0;
++      drained = f.snapshot({ kind }, minimum).then(
++        () => {
++          throw new Error("opaque Snapshot unexpectedly became eligible");
++        },
++        (error: unknown) => error,
++      );
++      await Promise.race([
++        entered[1]!.promise,
++        drained.then(() => {
++          throw new Error("Snapshot completed before its drain wait");
++        }),
++      ]);
++      let closed = false;
++      closing = f.service.close().then(() => {
++        closed = true;
++      });
++      await Promise.resolve();
++      expect(closed).toBe(false);
++      expect(() => f.snapshot({ kind }, minimum)).toThrow("closing or closed");
++      release[1]!.resolve();
++      await Promise.race([
++        entered[2]!.promise,
++        drained.then(() => {
++          throw new Error("Snapshot completed before its final wait");
++        }),
++      ]);
++      expect(closed).toBe(false);
++      release[2]!.resolve();
++      const error = await drained;
++      expect(error).toBeInstanceOf(TransactionMinimumFailure);
++      expect(error).toMatchObject({ reason: "catch-up-timeout", context: initial.context });
++      await closing;
++      expect(closed).toBe(true);
++      expect(f.snapshot).toHaveBeenCalledTimes(4);
++      expect(f.observeSnapshot).toHaveBeenCalledTimes(5);
++      expect(waits).toBe(3);
++      expect(probes).toBe(3);
++      let postCloseOwnerRefusals = 0;
++      expect(() => {
++        postCloseOwnerRefusals++;
++        f.owner.observeSnapshot({ kind }, minimum);
++      }).toThrow("closed");
++      expect(f.observeSnapshot).toHaveBeenCalledTimes(5);
++      console.log(
++        JSON.stringify({
++          observation: "fresh-snapshot-opaque-lifecycle",
++          kind,
++          serviceSnapshotCalls: f.snapshot.mock.calls.length,
++          delegatedOwnerCalls: f.observeSnapshot.mock.calls.length,
++          waits,
++          probes,
++          postCloseOwnerRefusals,
++        }),
++      );
++    } finally {
++      for (const gate of release) gate.resolve();
++      await Promise.allSettled([cancelled, ...(drained ? [drained] : [])]);
++      await (closing ?? f.service.close());
++    }
++  },
++);
++
++it.each([
++  "malformed-aborted",
++  "malformed-invalid-kind",
++  "retained-unknown",
++  "retained-known",
++  "closed-malformed",
++  "closed-unknown-fresh",
++  "unknown-preaborted",
++] as const)("preserves fresh Snapshot capture and refusal order: %s", async (label) => {
++  let clockCalls = 0;
++  let waits = 0;
++  const f = freshSnapshotOpaqueFixture({
++    budgetMs: 2,
++    now: () => {
++      clockCalls++;
++      return 0;
++    },
++    wait: async () => {
++      waits++;
++      throw new Error("unexpected Snapshot wait");
++    },
++  });
++  const initial = await f.snapshot({ kind: "preflight" });
++  expect(f.observeSnapshot).toHaveBeenCalledTimes(1);
++  const setupOwnerCalls = f.observeSnapshot.mock.calls.length;
++  f.observeSnapshot.mockClear();
++  const malformed = label.startsWith("malformed") || label === "closed-malformed";
++  const retained = label.startsWith("retained") || label === "malformed-invalid-kind";
++  const minimum = {
++    scopeEpoch: initial.context.scopeEpoch,
++    authorizationView: initial.context.authorizationView,
++    minimumPosition: malformed ? "not a token" : label === "retained-known" ? "genesis" : "opaque",
++  };
++  const request: TransactionSnapshotRequest = retained
++    ? { kind: "manifest", id: "unused" }
++    : { kind: "create" };
++  if (label.startsWith("closed")) await f.service.close();
++  if (label === "unknown-preaborted") {
++    await expect(f.snapshot(request, minimum, AbortSignal.abort())).rejects.toBeInstanceOf(
++      ScopeServerOperationAbortedError,
++    );
++  } else if (label === "closed-unknown-fresh") {
++    expect(() => f.snapshot(request, minimum)).toThrow("closing or closed");
++  } else {
++    let error: unknown;
++    try {
++      const unexpected = f.snapshot(
++        request,
++        minimum,
++        label === "malformed-aborted" ? AbortSignal.abort() : undefined,
++      );
++      void unexpected.catch(() => {});
++    } catch (failure) {
++      error = failure;
++    }
++    expect(error).toBeInstanceOf(TypeError);
++    expect((error as Error).message).toBe(
++      label === "retained-known"
++        ? "minimum Snapshot observation requires fresh creation or preflight"
++        : "unsupported minimum tuple",
++    );
++  }
++  expect(f.snapshot).toHaveBeenCalledTimes(2);
++  expect(f.observeSnapshot).not.toHaveBeenCalled();
++  expect(waits).toBe(0);
++  expect(clockCalls).toBe(label === "unknown-preaborted" ? 1 : 0);
++  console.log(
++    JSON.stringify({
++      observation: "fresh-snapshot-opaque-order",
++      label,
++      serviceSnapshotCalls: f.snapshot.mock.calls.length,
++      setupOwnerCalls,
++      checkedOwnerCalls: f.observeSnapshot.mock.calls.length,
++      clockCalls,
++      waits,
++    }),
++  );
++});
+diff --git a/packages/server/src/transaction-service.ts b/packages/server/src/transaction-service.ts
+index 3863f77..7d288d4 100644
+--- a/packages/server/src/transaction-service.ts
++++ b/packages/server/src/transaction-service.ts
+@@ -427,8 +427,29 @@ export function createTransactionService(owner: Owner, options: TransactionServi
+       // Without a minimum, preserve the synchronous owner path: it does not
+       // observe signal or claim interruption of retained reads or copying.
+       if (supplied === undefined) return run(async () => owner.observeSnapshot(request));
+-      const minimum = snapshotTransactionMinimum(supplied),
++      let captured: { minimum: TransactionMinimum } | { error: TypeError };
++      try {
++        captured = { minimum: snapshotTransactionMinimum(supplied) };
++      } catch (error) {
++        if (!(error instanceof TypeError)) throw error;
++        captured = { error };
++      }
++      let minimum: TransactionMinimum;
++      let kind: TransactionSnapshotRequest["kind"];
++      if ("error" in captured) {
++        // Revalidate only data fields synchronously; kind/lifecycle errors are
++        // outside both catches. Excluded requests retain the original refusal.
++        try {
++          minimum = snapshotCurrentReadMinimum(supplied);
++        } catch {
++          throw captured.error;
++        }
++        kind = request.kind;
++        if (kind !== "create" && kind !== "preflight") throw captured.error;
++      } else {
++        minimum = captured.minimum;
+         kind = request.kind;
++      }
+       if (kind !== "create" && kind !== "preflight")
+         throw new TypeError("minimum Snapshot observation requires fresh creation or preflight");
+       // Freeze both controls before the first asynchronous attempt. Each owner
+diff --git a/packages/server/src/transaction-snapshot.test.ts b/packages/server/src/transaction-snapshot.test.ts
+index d8096bc..9aa3f55 100644
+--- a/packages/server/src/transaction-snapshot.test.ts
++++ b/packages/server/src/transaction-snapshot.test.ts
+@@ -14,6 +14,10 @@ import {
+   stringifyJsonValue,
+ } from "@bdp/protocol";
+ import { openTransactionStore, type TransactionStoreOptions } from "./transaction-store.js";
++import {
++  TransactionMinimumUnproved,
++  TransactionMinimumUnsupported,
++} from "./transaction-consistency.js";
+ import { prepareTransactionSetCore } from "./transaction-batch.js";
+ import {
+   TRANSACTION_SNAPSHOT_LIMITS as limits,
+@@ -1234,9 +1238,14 @@ it("checks each fresh Snapshot minimum before any handle, record, page or expiry
+     expect(() =>
+       f.owner.observeSnapshot({ kind }, { ...tuple, authorizationView: "foreign" }),
+     ).toThrow("foreign-view");
+-    expect(() =>
+-      f.owner.observeSnapshot({ kind }, { ...tuple, minimumPosition: "unknown" }),
+-    ).toThrow("unsupported minimum tuple");
++    let unknown: unknown;
++    try {
++      f.owner.observeSnapshot({ kind }, { ...tuple, minimumPosition: "unknown" });
++    } catch (error) {
++      unknown = error;
++    }
++    expect(unknown).toBeInstanceOf(TransactionMinimumUnproved);
++    expect(unknown).toMatchObject({ context });
+   }
+   f.offline((db) => {
+     for (const table of ["snapshots", "snapshot_records", "snapshot_pages"])
+@@ -1423,3 +1432,91 @@ it("captures and reopens deep owned Links without losing JSON value equality", a
+ it("rejects deep owned-Link divergence before Snapshot issuance", async () => {
+   await deepSnapshotWitness(false, true);
+ }, 30000);
++
++
++it("gates fresh Snapshot opaque minima before allocation and expiry", () => {
++  const f = fixture();
++  f.run([create("a")]);
++  let snapshotCalls = 0;
++  const observe = (...args: Parameters<typeof f.owner.observeSnapshot>) => {
++    snapshotCalls++;
++    return f.owner.observeSnapshot(...args);
++  };
++  const first = observe({ kind: "create" });
++  if (first.kind !== "manifest") throw new Error("expected manifest");
++  const inventory = (db: DatabaseSync) => ({
++    snapshots: Number(db.prepare("SELECT count(*) AS n FROM snapshots").get()?.n),
++    records: Number(db.prepare("SELECT count(*) AS n FROM snapshot_records").get()?.n),
++    pages: Number(db.prepare("SELECT count(*) AS n FROM snapshot_pages").get()?.n),
++    disposition: String(db.prepare("SELECT disposition FROM snapshots").get()?.disposition),
++  });
++  let baseline: ReturnType<typeof inventory> | undefined;
++  let after: ReturnType<typeof inventory> | undefined;
++  let offlineInspections = 0;
++  f.offline((db) => {
++    offlineInspections++;
++    baseline = inventory(db);
++    expect(baseline).toMatchObject({ snapshots: 1, records: 1, pages: 2 });
++    expect(JSON.parse(baseline.disposition).expired).toBe(false);
++  });
++  f.setTime(1000000 + limits.lifetimeMs + 1);
++  const minimum = {
++    scopeEpoch: first.context.scopeEpoch,
++    authorizationView: first.context.authorizationView,
++    minimumPosition: "opaque",
++  };
++  const unproved = (kind: "create" | "preflight", minimumPosition = "opaque") => {
++    let failure: unknown;
++    try {
++      observe({ kind }, { ...minimum, minimumPosition });
++    } catch (error) {
++      failure = error;
++    }
++    expect(failure).toBeInstanceOf(TransactionMinimumUnproved);
++    expect(failure).toMatchObject({ context: first.context });
++  };
++  for (const kind of ["create", "preflight"] as const) {
++    unproved(kind);
++    expect(() => observe({ kind }, { ...minimum, scopeEpoch: "foreign" })).toThrow(
++      TransactionMinimumUnsupported,
++    );
++    expect(() => observe({ kind }, { ...minimum, authorizationView: "foreign" })).toThrow(
++      TransactionMinimumUnsupported,
++    );
++    expect(() => observe({ kind }, { ...minimum, minimumPosition: "pos-2" })).toThrow("behind");
++  }
++  unproved("create", "pos-01");
++  let preEntryExcludedCalls = 0;
++  for (const request of [
++    { kind: "manifest", id: handle(first.body) },
++    { kind: "page", id: handle(first.body), stream: "bead", token: "unused" },
++  ] as const) {
++    preEntryExcludedCalls++;
++    expect(() => observe(request, minimum)).toThrow("unsupported minimum tuple");
++    preEntryExcludedCalls++;
++    expect(() => observe(request, { ...minimum, minimumPosition: "pos-1" })).toThrow(
++      "requires fresh creation",
++    );
++  }
++  // No await: normal background maintenance must not race the advanced clock.
++  f.offline((db) => {
++    offlineInspections++;
++    after = inventory(db);
++    expect(after).toEqual(baseline);
++    expect(JSON.parse(after.disposition).expired).toBe(false);
++  });
++  // The final helper reopen may maintain the store after this measured comparison.
++  expect(snapshotCalls).toBe(14);
++  expect(preEntryExcludedCalls).toBe(4);
++  expect(offlineInspections).toBe(2);
++  console.log(
++    JSON.stringify({
++      observation: "fresh-snapshot-opaque-owner",
++      snapshotCalls,
++      preEntryExcludedCalls,
++      offlineInspections,
++      baseline,
++      after,
++    }),
++  );
++});
+diff --git a/packages/server/src/transaction-store.ts b/packages/server/src/transaction-store.ts
+index 923ddd7..b74ebf4 100644
+--- a/packages/server/src/transaction-store.ts
++++ b/packages/server/src/transaction-store.ts
+@@ -1556,20 +1556,45 @@ export function openTransactionStore(options: TransactionStoreOptions) {
+     /** Expected failures are paired inside the same entry, after any atomic
+      * rollback. Unexpected integrity/SQLite/uncertain-commit errors propagate. */
+     observeSnapshot(request: TransactionSnapshotRequest, supplied?: TransactionMinimum) {
+-      const minimum = supplied === undefined ? undefined : snapshotTransactionMinimum(supplied);
+-      if (minimum && request.kind !== "create" && request.kind !== "preflight")
++      let minimum: TransactionMinimum | undefined;
++      let observedRequest = request;
++      let unrecognizedMinimum = false;
++      if (supplied !== undefined) {
++        let captured: { minimum: TransactionMinimum } | { error: TypeError };
++        try {
++          captured = { minimum: snapshotTransactionMinimum(supplied) };
++        } catch (error) {
++          if (!(error instanceof TypeError)) throw error;
++          captured = { error };
++        }
++        if ("error" in captured) {
++          try {
++            minimum = snapshotCurrentReadMinimum(supplied);
++          } catch {
++            throw captured.error;
++          }
++          const kind = request.kind;
++          if (kind !== "create" && kind !== "preflight") throw captured.error;
++          observedRequest = Object.freeze({ kind });
++          unrecognizedMinimum = true;
++        } else minimum = captured.minimum;
++      }
++      if (minimum && observedRequest.kind !== "create" && observedRequest.kind !== "preflight")
+         throw new TypeError("minimum Snapshot observation requires fresh creation or preflight");
+       return enter(() => {
+         const context = readContext(),
+           now = instant();
+-        if (minimum) checkTransactionMinimum(minimum, context);
++        if (minimum) {
++          if (unrecognizedMinimum) checkCurrentReadMinimum(minimum, context, true);
++          else checkTransactionMinimum(minimum, context);
++        }
+         try {
+           atomic(() => snapshots.expire(now, context));
+-          if (request.kind === "preflight") {
++          if (observedRequest.kind === "preflight") {
+             atomic(() => snapshots.preflight(now, context));
+             return Object.freeze({ kind: "eligible" as const, context });
+           }
+-          if (request.kind === "create") {
++          if (observedRequest.kind === "create") {
+             const manifest = atomic(() => {
+               const value = snapshots.capture(now, context);
+               options.fault?.("after-snapshot-copy");
+@@ -1578,15 +1603,21 @@ export function openTransactionStore(options: TransactionStoreOptions) {
+             options.fault?.("after-snapshot-commit");
+             return Object.freeze({ kind: "manifest" as const, body: manifest, context });
+           }
+-          if (request.kind === "manifest")
++          if (observedRequest.kind === "manifest")
+             return Object.freeze({
+               kind: "manifest" as const,
+-              body: snapshots.manifest(request.id, now, context),
++              body: snapshots.manifest(observedRequest.id, now, context),
+               context,
+             });
+           return Object.freeze({
+             kind: "page" as const,
+-            body: snapshots.page(request.id, request.stream, request.token, now, context),
++            body: snapshots.page(
++              observedRequest.id,
++              observedRequest.stream,
++              observedRequest.token,
++              now,
++              context,
++            ),
+             context,
+           });
+         } catch (error) {

@@ -1,0 +1,33 @@
+## Verified clean
+
+- **Credential/body leakage** — no leak. `apps/bdptest/src/read-update-matrix.test.ts:228` is the only credential installer (`Bearer ${token | wrongToken}`), so the two-value redaction list at :2238-2239 is complete, and the comment's claim holds. The projection takes only bounded enums and catalog ids: `AssertionOutcome.message` (`packages/conformance/src/runner.ts:145`), `transportError.message`, `harnessError.message`, `executionError.message`, `ScenarioRunResult.reason`, `cleanupError`, and `prerequisiteFailure.reason` are all excluded; `transportError.category` / `harnessError.category` / `executionError.category` are closed enums built from literals (runner.ts:1030, 1085, 1287-1310). From the raw (unredacted) `report.observations` entry only `route.method`, `route.url`, `status` cross over — the exact client's `request.body`, response `body`, and `headers` (`apps/bdptest/test-support/read-update-exact-client.ts:151-167`) stay out. The new test's sentinel sweep at :2312 plants the secret in headers, bodies, assertion messages, `reason`, and `cleanupError` and proves exclusion; `toEqual` at :2291 pins the shape so new fields can't drift in silently.
+- **Oracle and deadline** — unchanged. All three matchers and their expected values are identical; only a message argument was added. The `30000` timeout is untouched, and the new `it` at :2242 is synchronous with no shared state.
+- **Original failure not hidden** — confirmed against the pinned Vitest 4.1.10: `@vitest/expect/dist/index.js:1877,1887` builds the error as `` (customMessage ? `${customMessage}: ` : "") + message() ``, so the matcher's own message and the expected/actual diff survive; the diagnostic is prepended, not substituted. The `expect(value, label)` convention already exists in this file (:2852).
+- **Diagnostic throw risk in the live path** — none. `run()` always returns a report carrying `observations` and `result.scenarios` (:955, :985); `exchanges` and `assertions` are non-optional in `ScenarioRunResult`/`ObservedExchange`/`ObservedAction`; `observations` has exactly one push site (:501) whose shape always includes `route` and `status`. Everything stringified is primitive, so `JSON.stringify` cannot throw or recurse.
+
+## Findings (all low)
+
+**1. Low — `apps/bdptest/src/read-update-matrix.test.ts:2220`**
+Issue: `harnessCategory` is the one projected field the new test never exercises — the fixture exchange (:2255-2260) has no `harnessError`, and because `JSON.stringify` drops `undefined`, the expectation at :2297-2302 passes whether that field works or not.
+Impact: `harnessError` is reachable in this path (exact mode yields `exact-configuration` / `exact-observation`, runner.ts:1287, 1402) and is the error channel closest to credential-bearing material. A future typo like `harnessError?.message` would both break the diagnostic and leak a message, with no test failing.
+Fix: add `harnessError: { category: "exact-observation", message: secret }` to the fixture exchange and `harnessCategory: "exact-observation"` to the expected exchange object.
+
+**2. Low — `apps/bdptest/src/read-update-matrix.test.ts:2219`**
+Issue: `writeState` is dropped while `transportError.category` is kept.
+Impact: `RequestWriteState` (`packages/conformance/src/http-executor.ts:41`) is a three-value enum — `not-started` / `started-completion-unestablished` / `complete` — and for a *retained-retry* failure it is the decisive fact: whether the original request was fully written before the transport error, i.e. whether a replay should have been idempotent at all. Without it, a `transportCategory: "connection"` line can't distinguish an unsent request from an unacknowledged completed write.
+Fix: in the exchange projection add `writeState: exchange.transportError?.writeState ?? exchange.harnessError?.writeState`. Bounded enum, no credential exposure.
+
+**3. Low — `apps/bdptest/src/read-update-matrix.test.ts:2228-2233`**
+Issue: when `row` or `last` is absent the diagnostic collapses to four keys and says nothing about what *was* present — exactly the case the second expectation at :2316-2331 pins. Relatedly, `scenarioCleanupFailed: row?.cleanupError !== undefined` yields `false` for a missing row, reading as "cleanup succeeded".
+Impact: for the likeliest real CI failure here — `counterfactualApplications` is 0 because the client stopped early — the operator can't tell "zero client exchanges" from "observations present but route projection empty", nor which scenario ids the runner actually produced.
+Fix: add two credential-free fields: `observedClientExchanges: report.observations.length` and `observedScenarios: report.result.scenarios.map((s) => s.id)` (catalog constants). Optionally make the cleanup flag honest with `scenarioCleanupFailed: row === undefined ? undefined : row.cleanupError !== undefined`.
+
+**4. Low (latent) — `apps/bdptest/src/read-update-matrix.test.ts:2207-2209, 2229`**
+Issue: `report.observations.at(-1)` is an `as` cast, so `last.observation.route.method` is unchecked by the compiler, and the helper is called eagerly at :2351 before any oracle assertion.
+Impact: accurate today, but if the exact client's observe payload ever drops `route`, the diagnostic throws a `TypeError` *before* the three oracles run — turning a real conformance failure into an unrelated stack trace in CI. That is the one way this observability-only change could obscure the failure it exists to explain.
+Fix: either optional-chain the deep reads (`last?.observation?.route?.method`), or make the helper fail-soft as a whole — wrap the body in `try { ... } catch (error) { return JSON.stringify({ diagnosticUnavailable: error instanceof Error ? error.name : "unknown" }) }` (name only, never `message`). Dropping the cast in favour of the client's own return type would also restore compile-time coverage.
+
+**5. Nit — `apps/bdptest/src/read-update-matrix.test.ts:2238-2239`**
+The placeholder is `[redacted]`, while the repo convention is `<redacted>` (`packages/config/src/index.ts:176`, `runner.ts:152`). Harmless unless something greps for the canonical form.
+
+One note, not a finding: the diagnostic's scope is correct for this call site because `run` is invoked with `[control.scenario]` (:2338) and `scenarioSelection` is not expanded with prerequisites (`runner.ts:367-376`), so `observations.at(-1)` necessarily belongs to the control's scenario. If the helper is ever reused with a multi-row selection, `last.scenario` would need to be carried or filtered — the entry already has it (see the existing filter at :2847).

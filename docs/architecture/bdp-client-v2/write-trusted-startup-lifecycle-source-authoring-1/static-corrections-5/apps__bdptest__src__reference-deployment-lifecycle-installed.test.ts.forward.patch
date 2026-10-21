@@ -1,0 +1,40 @@
+--- before/apps/bdptest/src/reference-deployment-lifecycle-installed.test.ts
++++ after/apps/bdptest/src/reference-deployment-lifecycle-installed.test.ts
+@@ -163,10 +163,20 @@
+     } catch (error) { record.terminal = "rejected"; throw error; }
+   }
+   const client: ColdClient = { scope, type, send };
++  let createdResource: Record<string, unknown> | undefined;
+   function resource(reply: Reply) {
+     const body = object(JSON.parse(reply.bodyText));
+-    if (profile === "read-update") return object(parseReadUpdateMutationResult(body).resource);
+-    expect(validateReceipt(body)).toBe(true); expect(body.status).toBe("completed"); const results = body.results; expect(Array.isArray(results)).toBe(true); expect((results as unknown[]).length).toBe(1); return object(object((results as unknown[])[0]).resource);
++    let actual: Record<string, unknown>;
++    if (profile === "read-update") {
++      const parsed = parseReadUpdateMutationResult(body); expect(parsed.outcome).toBe("created"); actual = object(parsed.resource);
++    } else {
++      expect(validateReceipt(body)).toBe(true); expect(body.status).toBe("completed"); const results = body.results; expect(Array.isArray(results)).toBe(true); expect((results as unknown[]).length).toBe(1);
++      const result = object((results as unknown[])[0]); expect(result.outcome).toBe("created"); actual = object(result.resource);
++    }
++    expect(actual.id === scope + "beads/startup").toBe(true);
++    expect(actual.type === type).toBe(true); expect(typeof actual.revision === "string" && actual.revision.length > 0).toBe(true);
++    expect(isDeepStrictEqual(actual.properties, { n: 1 })).toBe(true);
++    createdResource = structuredClone(actual); return actual;
+   }
+   async function ownerProbe(expectCreated: boolean) {
+     document.configuration.create = false; writeFileSync(deploymentFile, JSON.stringify(document));
+@@ -176,7 +186,13 @@
+     if (state.profile === "read-update") { const value = await ownerModule.openDevelopmentAuthority({ scope, directory, create: false, configuration: state.installed.configuration }); await value.close(); }
+     else { const module = await import(pathToFileURL(path.join(serverRoot, "transaction-store.js")).href) as typeof import("../../../packages/server/src/transaction-store.js"); const p = state.preflight; const value = module.openTransactionStore({ file: path.join(directory, "transaction.sqlite"), scope, create: false, types: p.types, contracts: p.contracts!, receiptMaximumItems: p.settings.receiptMaximumItems, maintenanceIntervalMs: p.settings.maintenanceIntervalMs }); value.close(); }
+     const db = new DatabaseSync(path.join(directory, profile === "read-update" ? "reference.sqlite" : "transaction.sqlite")); const rows = db.prepare("SELECT body FROM resources").all().map((r) => object(JSON.parse(String(r.body)))); db.close();
+-    expect(rows.some((r) => r.id === scope + "beads/startup")).toBe(expectCreated); expect(rows.some((r) => r.id === scope + "beads/refused")).toBe(false); ownerProbes.push({ profile, actualReopenAndClose: true, createdResourcePresent: expectCreated, refusedResourceAbsent: true });
++    const retained = rows.find((r) => r.id === scope + "beads/startup");
++    expect(retained !== undefined).toBe(expectCreated);
++    if (expectCreated) {
++      expect(createdResource !== undefined).toBe(true);
++      for (const field of ["id", "type", "revision", "properties", "metadata"]) expect(isDeepStrictEqual(retained?.[field], createdResource?.[field])).toBe(true);
++    }
++    expect(rows.some((r) => r.id === scope + "beads/refused")).toBe(false); ownerProbes.push({ profile, actualReopenAndClose: true, createdResourcePresent: expectCreated, refusedResourceAbsent: true });
+   }
+   async function initialize() { // actual packed owner, no child/HTTP or guessed persisted metadata
+     writeFileSync(deploymentFile, JSON.stringify(document));

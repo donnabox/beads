@@ -1,0 +1,59 @@
+{
+  "reviews": [
+    {
+      "slice": "editorial-present",
+      "head": "5d7694e8be2f5f4ca72856b288dac0ecd383cd2f",
+      "independentPassedTests": 58,
+      "failedTests": 0,
+      "reports": [
+        {
+          "source": "/Users/dbox/repos/wt/vickie/bdp-editorial-review/present-review-tests.json",
+          "passed": 51,
+          "sha256": "6c06d14ca26a8ea4f2a3e5b0895806c6654d433b5e55b3b7f3c051df78c26bf7"
+        },
+        {
+          "source": "/Users/dbox/repos/wt/vickie/bdp-editorial-review/present-review-boundaries.json",
+          "passed": 7,
+          "sha256": "ba26694c16a253607162df59546937c4ba85137598032eced5913d4d4c6047e9"
+        }
+      ]
+    },
+    {
+      "slice": "update-process",
+      "head": "5f07a51c0bc0e32652b02ab16cdb2fd4c7f76bc3",
+      "independentPassedTests": 68,
+      "failedTests": 0,
+      "reports": [
+        {
+          "source": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/update-process-review-tests.json",
+          "passed": 68,
+          "sha256": "34ab9bf38fee0347f22ba2343e7d3c8e0f5f05bb06c787a17d5e0f476dcf736a"
+        }
+      ]
+    },
+    {
+      "slice": "transaction-sequence",
+      "head": "4a9137e01817712aedce0b780abb39d02cf1470c",
+      "independentPassedTests": 127,
+      "failedTests": 0,
+      "reports": [
+        {
+          "source": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-sequence-review-tests.json",
+          "passed": 127,
+          "sha256": "eff94781670a00e40c235a72a4dba2d785ef06607998bcee0bbfce21819f3837"
+        }
+      ]
+    }
+  ],
+  "scope": "Independent bounded review; no full-profile, combined-head, or current Read-seal claim.",
+  "baselineVerification": {
+    "observations": 27,
+    "exitCode": 0,
+    "version": "bd 1.0.5 Homebrew",
+    "schema": 1,
+    "executableSha256": "2fff6a2dc534cf8b56ec1f7a0c98b1e8509a0a5408905c420769a7213ee34707",
+    "log": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/pinned-bd-baseline-review.log",
+    "logSha256": "a98af76171cd4ea396c7b184649dda9fbe8926353cc86f86c1784b68c8c397b2",
+    "limits": "Existing pin; host-local identity difference expected. No capture or policy change; owned fixtures/processes cleaned."
+  }
+}

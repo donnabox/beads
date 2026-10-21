@@ -1,0 +1,28 @@
+{
+  "rawLog": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-receipt-missing-context-draft/landing-successor/ci-full.log",
+  "sha256": "67cc58ffc4af87abfad14cad46ee6459bb1ce10d6a45f915f3f73343be6c9ed0",
+  "excerpts": [
+    {
+      "line": 2738,
+      "kind": "installed-tx-fourteen-partial-summary",
+      "sourceCommit": "062fd1086fda3af7098832a2ff2d6c72316d15b2",
+      "elapsedMs": 20839.126314,
+      "sessions": 21,
+      "childLaunches": 22,
+      "closedChildren": 22
+    },
+    {
+      "line": 5073,
+      "text": "2026-10-15T13:43:00.8814280Z  \u001b[32m\u2713\u001b[39m apps/bdptest/src/transactional-matrix.test.ts\u001b[2m > \u001b[22mretains ordinary Resource /id capture without granting receipt authority\u001b[33m 19388\u001b[2mms\u001b[22m\u001b[39m"
+    },
+    {
+      "line": 5377,
+      "text": "2026-10-15T13:43:21.6420484Z  \u001b[32m\u2713\u001b[39m apps/bdptest/src/transactional-matrix.test.ts\u001b[2m > \u001b[22mdoes not follow an ordinary Resource /id through binding ordinary-resource-id\u001b[33m 20761\u001b[2mms\u001b[22m\u001b[39m"
+    },
+    {
+      "line": 5578,
+      "text": "2026-10-15T13:43:39.6485629Z  \u001b[32m\u2713\u001b[39m apps/bdptest/src/transactional-matrix.test.ts\u001b[2m > \u001b[22mrecords dynamic source/session configuration even when actual receipt HTTP returns401\u001b[33m 14010\u001b[2mms\u001b[22m\u001b[39m"
+    }
+  ],
+  "notNewExecution": true
+}

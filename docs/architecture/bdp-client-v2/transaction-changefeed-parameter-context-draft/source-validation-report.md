@@ -1,0 +1,7 @@
+# Changefeed context source validation
+
+The frozen six-path draft passed all eight sequential stages on base9a42: pinned offline install, typecheck, clean build, five-file format check, lint, dependency boundaries, unchanged Read evidence seal, and the exact nine-test selection. The new HTTP witness completed12responses; all7 owner-observed400s carried the captured context, including the finalpos-2 refusal after an independent commit. Unauthorized401 and malformed-URL400 remained contextless. GET Problem bodies and HEAD empty bodies/content lengths passed their assertions. The owner test retained pos-1 context after pos-2; six parser cases remained contextless. Existing minimum/conditional regression passed.
+
+Root independently read the complete new HTTP record and exact test-result selection, checked all eight exit records, and verified all38sampled process IDs absent and the reported runtime directory removed. All source bytes remained frozen. The static source workload model totals19HTTP; only the12 new HTTP exchanges have the new retained observation record. This is not a claim of19 independently recorded requests or cumulative profile qualification.
+
+Root acceptance: root-source-acceptance.json SHA45a03a0f71f1017694861b8e127d9ad664f22df156118522c33aeac35b76739b. Original draft report remains historical and accurately states no execution at its checkpoint. Actual Claude review is pending. The12-request omission control and10-request fresh installed run have not executed.

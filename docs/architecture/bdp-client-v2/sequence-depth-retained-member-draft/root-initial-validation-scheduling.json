@@ -1,0 +1,14 @@
+{
+  "at": "2026-10-16T04:27:43.641482+00:00",
+  "initialSourceValidationReleased": true,
+  "commandsSha256": "c171411b5ef27617dc0c56b381c12a1cebc95c98675da15752644206209c6225",
+  "sourceBindingSha256": "987f61764ca09df676f77ab5b99a8886809f4ce7908342bc8c27fd462fddcc81",
+  "reason": "Use isolated source checks during independentClaude/PR141CI to expose defects sooner. Finalactualmain integration validation remains mandatory.",
+  "bounds": "exact10sequentialstages,18selectedcallbacks/21HTTP,120secondsperstage, noautoreruns; unchanged29reviewinputs/7patch/HEAD/status; new external outputdirectory; no repair whileClaudeactive",
+  "notReleased": [
+    "emittedcontrol",
+    "freshinstalled",
+    "publication",
+    "merge"
+  ]
+}

@@ -1,0 +1,23 @@
+{
+  "state": "CLOSED accepted df559/e2bf design instantiated in UNEXECUTED helpers",
+  "origin": "watchdog before worker/gate/source/tool/proof/census/setup",
+  "startup10": true,
+  "callback120": "receipt window min(start+120,absolute130), sourceElapsed actual<=120000",
+  "flush5": "min(end+5,absolute135), includes full report/results + all final source/tool/build/consumer/hash/audit",
+  "drain10": "min(flush+10,absolute145), all worker/publisher/authenticated descendants observed closed",
+  "normalAcceptance": "strictly before145",
+  "TERM": 145,
+  "KILL": 149,
+  "hostOuter": 150,
+  "ordinaryStages": [
+    120,
+    115,
+    119
+  ],
+  "watchdogPollMs": 20,
+  "censusProbeMaxMs": 200,
+  "fullProofWork": "owned worker only, no blocking file IO on watchdog",
+  "outerExit": "root actual CLI exit receipt must bind both stage.exit and stage.watchdog hashes before any later stage; tentative inner artifacts cannot pass alone",
+  "knownGroups": "retained through leader exit; unknown identity refuses signals/acceptance",
+  "publication": "same owned worker publication mode; all writes under same remaining clock; no new reporter/framework"
+}

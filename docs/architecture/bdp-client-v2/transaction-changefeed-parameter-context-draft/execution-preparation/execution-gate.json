@@ -1,0 +1,25 @@
+{
+  "status": "released",
+  "session": "2026-10-08T20:26:35Z-81e5",
+  "sourceBindingSha256": "0abed77764ff7763e5e5a6f9b5a767090423fed01b21ea01b162a17b3b743e70",
+  "commandsSha256": "05a40c94cdfbf0a85cd7d37632b62b31503367c046b68390332c3f43950aa078",
+  "supervisorSha256": "72a0bb22fb72c059c17d833a8c4194d36560240e13402114d442a3ae8a4102a6",
+  "expectedHead": "9a42a4531def99e12fa9a1fba02e70558d643265",
+  "expectedTree": "a9cca0e1e5c52ac8bbd06ce989a94ca6e4f2b272",
+  "authorizedStages": [
+    "offline-setup",
+    "typecheck",
+    "build",
+    "format-check",
+    "lint",
+    "boundaries",
+    "read-seal",
+    "source-positive"
+  ],
+  "controlGate": "closed",
+  "installedGate": "closed",
+  "rootAcceptance": {
+    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-changefeed-parameter-context-draft/root-native-code-review.md",
+    "sha256": "7184936efc82f646a1670121135a85294fe0661780975c003404d5d760b0bb62"
+  }
+}

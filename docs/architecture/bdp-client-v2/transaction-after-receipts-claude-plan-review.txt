@@ -1,0 +1,171 @@
+Review complete. I verified the plan's cited clauses, catalog row, manifest/coverage/fixture measurements, runtime seams, harness capture/assertion seams, route inventory, session arithmetic and budget fences directly against the frozen tree. Most load-bearing claims check out exactly. Six findings follow.
+
+```
+FINDINGS — transaction-after-receipts-next-plan.md (SHA c2a6a8e8…) vs 0359f1ca / tree 6a5337cf
+
+────────────────────────────────────────────────────────────────────────
+[1] MEDIUM — false confidence: the "nine preserved spans" guard covers only eight
+Location  Plan §One twelve-action row L46, §Files item 3 L89, §Acceptance item 2 L112
+          Repo packages/conformance/src/transactional-cumulative.test.ts:691-776 (originalObjectPins)
+Issue     The plan says "Preserve all nine old manifest and coverage object raw spans",
+          "preserve all nine existing coverage spans", and "nine old row objects … unchanged",
+          as though the existing static guard already pins nine. It pins EIGHT per artifact.
+          transactional.receipt.pagination is absent from both originalObjectPins.manifest and
+          originalObjectPins.coverage — deliberately, because it was the new row in the
+          predecessor change (see the test name at :785, "…while adding one bounded partial
+          receipt page row"). assertOriginalObjects (:777-784) only iterates the pinned list.
+Impact    The largest existing row is unguarded: 138,750 B of manifest (36.8% of 377,449) and
+          13,057 B of coverage. An accidental edit to the pagination row during this four-file
+          change passes the preservation test silently, and Acceptance item 2 cannot be
+          mechanically verified as written. The plan's strongest static control is weaker than
+          it claims by exactly the row it was last extended for.
+Fix       Add to the plan's file-3 work list: append the pagination pins to originalObjectPins,
+          making the list nine per artifact —
+            manifest: ["transactional.receipt.pagination",
+                       "c531c260349347cdc3e54ba68282f1a266a5fa207d3775660615f836a4768782", 138750]
+            coverage: ["transactional.receipt.pagination",
+                       "0735edbca2fbf384f9f8147140a353dc084d9ad85facaddf2f5073f56a7256ee", 13057]
+          (both measured from the frozen tree). Then restate L46/L89/L112 as "promote pagination
+          to a pinned original and preserve all nine", not "preserve all nine".
+
+────────────────────────────────────────────────────────────────────────
+[2] LOW-MEDIUM — missing step: coverage.reason has a mandatory literal the plan never states
+Location  Plan §Files item 2 L88 ("limited reason"), §Applicability L123
+          Repo packages/conformance/src/transactional-cumulative.test.ts:102-104
+Issue     An existing guard requires EVERY coverage row's reason to contain the exact substring
+          "Whole contract remains unqualified" (:104, inside a for-loop over all coverage.rows).
+          The plan prescribes the reason's content semantically ("These limits must appear in
+          coverage.reason; the whole conflict row remains false") but never names the required
+          literal, while naming literals precisely elsewhere.
+Impact    A reason authored faithfully to L123's limit list but phrased differently fails an
+          existing cumulative assertion. Low blast radius (caught on first run), but it is a
+          hard authoring precondition omitted from a file-by-file plan.
+Fix       State in §Files item 2 that the new reason must contain the literal
+          "Whole contract remains unqualified" in addition to the L123 limit enumeration.
+
+────────────────────────────────────────────────────────────────────────
+[3] LOW — incomplete diagnosis: three fences bind, not one; the node fence is undisclosed
+Location  Plan §Feasibility L96 ("Current global authoring fences leave only 508B growth headroom")
+          Repo packages/conformance/src/transactional-cumulative.test.ts:823, :824-825, :826, :838
+Issue     508 B is correct for manifest bytes only (:824 377449-238693 ≤ 136 KiB and :825
+          ≤ 370 KiB are conjunctive → ceiling 377,957; current 377,449). Three further fences bind
+          and the plan quantifies none of them:
+            • :838 manifest value nodes ≤ 10,200; current 10,082 → 118 nodes headroom. Never mentioned.
+            • :826 coverage ≤ 41,812+16 KiB = 58,196; current 54,875 → 3,321 B headroom. Never quantified.
+            • :823 exact equality on 139 total actions → must become 151.
+Impact    The sentence that justifies the whole successor-budget request understates the problem.
+          The budget ask itself is sound — L100's ≤11,300 node total and L101's coverage caps do
+          cover these — but a reader granting only the byte budget would leave :838 and :826 failing.
+Fix       Replace L96 with all four: manifest bytes 508 B (:824-825), manifest value nodes 118
+          (:838, cap 10,200), coverage bytes 3,321 B (:826), and the exact 139→151 action equality
+          (:823). Attach each requested successor number to the line it supersedes.
+
+────────────────────────────────────────────────────────────────────────
+[4] LOW — misquoted projection datum, contradicting a value the plan's own file 3 pins exactly
+Location  Plan §Feasibility L107 ("about 18,622B at standard nested formatting, 511 nodes, 64 assertions")
+          Repo packages/conformance/src/transactional-cumulative.test.ts:729-732
+Issue     The failed-retained raw span is 18,404 B, not ~18,622 B — and 18404 is pinned as a literal
+          at :731, in the very file the plan proposes to extend. Node count (511) and assertion
+          count (64) are exactly right; I confirmed both independently.
+Impact    218 B / ~1.2% error in the single measured datum grounding the ≤32 KiB and ≤1,200-node
+          ceilings. The ceilings stay conservative either way (1.78× and 2.35×), so no budget
+          conclusion changes — but a "source-grounded" projection should not disagree with the
+          repository's own pin.
+Fix       Use 18,404 B and cite transactional-cumulative.test.ts:731 as its authority.
+
+────────────────────────────────────────────────────────────────────────
+[5] LOW — wrong anchor label on a supporting-law citation
+Location  Plan §Canonical selected laws L40 ("`#problem-details` Read+Update table at 3421")
+          Repo docs/specs/bdp.md:3403 (### Read+Update problem details), :1884 (### Problem details), :3421
+Issue     Line 3421 (`| idempotency-conflict | conflict | 409 | never |`) sits under
+          "### Read+Update problem details" at :3403 → anchor #read-update-problem-details.
+          #problem-details is a different section at :1884. The catalog uses the correct anchor form
+          elsewhere; the clause content the plan quotes (409 / conflict / never) is correct, and the
+          companion citation "#transactional-problem-details around 5301" is correct (heading :5274,
+          idempotency-conflict listed as a direct code at :5301).
+Impact    Only a citation label — this clause is explicitly uncredited supporting law, not one of the
+          two pinned requirements (both of which I verified byte-exact). But it is a precise-location
+          error in a document relied on for exact clause pinning.
+Fix       Relabel as `#read-update-problem-details` table at docs/specs/bdp.md:3421.
+
+────────────────────────────────────────────────────────────────────────
+[6] LOW — "collection schema" is ambiguous between two real, non-equivalent $defs
+Location  Plan table actions 4 and 11 (L55, L62: "200/collection schema")
+          Repo packages/protocol/schemas/bdp-v0.schema.json ($defs), manifest usage counts
+Issue     There is no #/$defs/collection. Two refs exist and are both already used by this manifest:
+          #/$defs/currentBeadCollection (4 uses — the live-view variant used by every installed
+          collection read, e.g. transactional.batch.atomic-commit action "beads") and
+          #/$defs/beadCollection (4 uses). The plan names exact $defs for the other two oracles
+          ("transactionalProblem schema", "eventPage schema") but not this one.
+Impact    An authoring coin-flip between two refs with different strictness on the row's primary
+          no-effect witness. Picking beadCollection would silently weaken actions 4 and 11.
+Fix       Name #/$defs/currentBeadCollection in actions 4 and 11, matching
+          transactional.batch.atomic-commit's "beads" action.
+
+────────────────────────────────────────────────────────────────────────
+[7] LOW — two stale test titles inside the plan's own files, uncovered by its file descriptions
+Location  Plan §Files items 3-4 L89-L90
+          Repo apps/bdptest/src/transactional-matrix.test.ts:329 ("observes nine partial
+          Transactional contracts…"); packages/conformance/src/transactional-cumulative.test.ts:785
+          ("…while adding one bounded partial receipt page row")
+Issue     Both titles become false under this change and both live in files the plan already edits,
+          but neither per-file description mentions them. :329 directly contradicts Acceptance
+          item 5 ("Ten positive rows").
+Impact    Cosmetic only; no assertion depends on either string. Noted because the plan enumerates
+          per-file content exhaustively and these are the two user-visible claims it misses.
+Fix       Add "retitle :329 to ten partial contracts" and "retitle :785 to the completed-key
+          conflict row" to the file-3 and file-4 work lists.
+
+────────────────────────────────────────────────────────────────────────
+NOT FINDINGS — claims I checked and confirmed sound (recorded so they are not re-litigated)
+
+• 409-not-406 for Accept: text/plain is implementation-backed, not aspirational.
+  transaction-store.ts:1072-1077 returns {kind:"conflict"} from the prior-key branch; the
+  not-acceptable check at :1082 is unreachable for a bound key; admit() applies not-acceptable only
+  to kind==="existing" (:1389-1390). Already proven at the runtime seam by
+  transaction-http.test.ts:228-248 with accept:"text/plain" → 409 idempotency-conflict.
+  Spec ordering agrees (bdp.md:4507-4523: step 4 key precedes step 6 negotiation; the 406 attaches
+  to the same-request sub-branch and to new submissions only).
+• Accept: text/plain is authorable in the exact transport. "accept" matches neither SECRET_FIELD nor
+  RESERVED_FIELDS (http-executor.ts:340-354), and the default Accept: */* is injected only when no
+  authored line supplies one (:712-719) — so the wire carries text/plain alone and acceptsJson is
+  genuinely false. (This manifest has never authored an accept header; it is new but permitted.)
+• Route inventory and exactConfigurationDigest 634214… are genuinely unchanged. All three routes the
+  row needs (POST operations/batch, GET beads/?limit=32, GET events/) first appear in row 0; uniqueRoutes
+  dedupes by (method,url) in first-appearance order (transactional-matrix.test.ts:166-195), so an
+  insert at index 8 cannot perturb it. No fixture binding is needed — binding:"scope" + path + query.
+• The insertion point is forced, not merely chosen. transactional-cumulative.test.ts:92-95 requires
+  manifest order == catalog order; catalog index 44 falls between pagination (25) and failed-retained
+  (50); and :894 pins pagination at index 7, which an after-pagination insert preserves.
+• Session/child arithmetic is exact: 9 scenarios + 6 reopen actions = 15 sessions / 16 children
+  (matrix :340-341) → 17 / 18 with one scenario + one reopen. Only transactional.receipt-read sets
+  dynamicExactConfiguration (runner.ts:974), so actions 8/9/11/12 correctly need no "reopened-" prefix
+  and the reopened set goes 12 → 13 with reopened-conflict-root alone.
+• Every harness seam the row needs already exists: HTTP captures URL-only (runner.ts:2482-2485) vs
+  programmatic arbitrary-JSON captures (:1126-1132); private projection {status,headers,body,
+  bodyPresent,bodyOctets} (:965-971) so /body and /body/results/0/resource are established patterns;
+  jsonPointer(v,"") returns the whole value (:2709); json-pointer equalsBinding with pointer:"" is used
+  34 times; /items/N vs receipt results/0/resource is an existing passing oracle
+  (receipt.pagination p-changed/page-live-record); the retained-root GET is already forced to deep-equal
+  the original POST body (transactional-observation.ts:244, :303-306), which is what makes action 6's
+  replay-equals-c-body chain sound; and response-metadata-equals already crosses a reopen
+  (set.zero-match z-final-events, reopenIdx 12), which is action 12's only novel-looking oracle.
+  Ledger maximum = scenario action count (runner.ts:635) = 12, against 1 authority binding used.
+• The four-file claim holds. The only other readers of the manifest — runner.test.ts:6105 and
+  transactional-binding.test.ts:39 — touch scenarios[0] only. manifestDigest/fixtureDigest are computed
+  from bytes, not pinned literals (transactional-cumulative.test.ts:86-90).
+• Withholding context-header assertions from the 409 is correct and necessary: the conflict branch
+  returns problem() unwrapped (transaction-http.ts:359-367), unlike the context()-wrapped path at :394.
+• Confirmed exact: plan SHA; tree 6a5337cf; catalog index 44 + id + requiredProfile + kind + both
+  requirement objects (catalog :704-719); spec 3888-3889, 3931-3936, 3875-3880, 3929-3939, 4507-4532
+  (under ### Batch operation target, :4382), 3421, 5301; manifest 377,449 B / 10,082 nodes / 9 rows /
+  139 actions; coverage 54,875 B / 9 rows all wholeContract:false; fixture 716 B + SHA 3a7899ce…;
+  failed-retained 11 actions / 511 nodes / 64 assertions and its conflict action asserting only
+  409 + request-authored headers/body (gap claim accurate); 250 required / 255 results;
+  90s/120s/5s/10s/63s guards; OBSERVED_JSON_MAX_CONTAINER_ENTRIES = 10_000;
+  #/$defs/transactionalProblem and #/$defs/eventPage present, #/$defs/readProblem precedent exists,
+  problem() sets application/problem+json (transaction-http.ts:110).
+• Not flagged per instruction: the slice's intentional omission of whole-row and profile qualification.
+
+No files were written or modified; no tests, builds or agents were run.
+```

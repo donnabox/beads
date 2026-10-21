@@ -1,0 +1,11 @@
+# Exact formatting successor — plan only
+
+Actual typecheck passed in10.596824s. The subsequent formatter returned1 in12.129508s and reported one object at transaction-read.test.ts:618. No lint or runtime stage ran. Both supervised attempts left source unchanged, no forced cleanup, surviving processes or owned runtime directories. Preserve their logs and exit records verbatim.
+
+After actual Claude disposition and root authoring release, replace only the one-line createLink seed object with the seven-line formatter-proposed layout in proposed-format.patch. The exact delta is whitespace plus the formatter-required optional trailing comma after the target property. Identifiers, literals, property order, seed operations, callback names, workload, waits and deadlines do not change. No warning sweep or formatter invocation over other files.
+
+Freeze a separately named author successor with actual before/after source hashes, correction diff and complete four-file patch. Recheck the three other dirty-file hashes and all unowned tracked bytes. Native review should close the formatting-only delta; root decides whether the completed Claude review plus this exact delta closure suffices or whether a focused supplement is needed. Do not alter source while the current review runs.
+
+Prepare a separately named validation successor and fresh output directory. Preserve this failed validation packet and original base2dfd attribution. Rebind the changed test hash, full tracked-source identity, complete patch and author artifacts; do not invent prospective actual hashes. Existing tool bytes and lock may be reused after read-only verification without another installation. Copy command selection, runtime workload, package/consumer attribution and root lock/provenance checkpoints unchanged. All successor gates begin closed. A fresh authorized static prefix establishes the successor candidate before the first source tests/build/package run; no old success is relabeled as a successor run. No execution is authorized by this plan.
+
+Preparation note: an initial in-memory assertion of pure whitespace equivalence correctly failed because the suggested formatter layout also adds the optional trailing comma. It failed before any file write. The corrected comparison explicitly accounts for that comma; no test or source operation was retried.

@@ -1,0 +1,26 @@
+# Ordinary Write admission: discussion options
+
+Discussion preparation only, 2026-10-18 UTC. No mechanism, trust anchor, proof format, source footprint or public activation is accepted by this note. D3d's earlier partial remains incomplete. This is separate from new normative proposals and does not absorb main/spec changes.
+
+The current public bdptest executable still composes Read. The trusted deployment loader returns an inert public handle; its genuine capture is kept in a private WeakMap. Prepared owner startup is a separate, still prospective lifecycle implementation. The historical Read evidence constant and verifier retain their original meaning.
+
+There is a concrete identity problem to settle before ordinary Write admission. installedPayloadIdentity hashes the actual server/protocol manifests, emitted JavaScript/JSON and dependency closure, including shipped capability code. Embedding a new evidence digest in that code changes the payload whose evidence it describes. We cannot solve this by excluding files, changing identity normalization, seeking a hash fixed point or calling a pre-admission payload the final shipping payload. The bdptest executable/configuration and external consumer provenance also need explicit binding; the server payload digest alone does not cover them.
+
+A candidate placement is an administrative evidence artifact outside the measured installed closure. It would describe the exact unchanged installed source/payload/entry/consumer and effective configuration. A private verifier would check the complete canonical applicable selection, exact input/report bindings, actual observations, cleanup and independently accepted semantic coverage before producing an opaque capability. The ordinary startup path would additionally compare genuine captured configuration and owner facts before acquiring the intended listener. A ready message, data-only digest or caller eligibility boolean cannot mint that capability.
+
+Two possible trust arrangements need evaluation:
+
+| Arrangement | Benefit | Unresolved obligation |
+| --- | --- | --- |
+| Administrator-provisioned local evidence, read through a narrowly trusted installation boundary | Similar deployment ownership to the existing protected configuration file; no embedded payload-dependent constant | Define who may produce/install the evidence, how runtime establishes that administrative origin, and how independent review plus raw provenance are represented. File permissions or valid JSON alone do not prove observations. |
+| External evidence signed by an explicitly trusted qualification issuer | Separates evidence publication from measured runtime bytes and makes origin verifiable | Define the issuer/trust anchor, key provisioning and rotation, and exact signed statements. A signature proves issuer origin and byte binding, not that an arbitrary report or whole-clause claim is true. |
+
+Both require a precise bootstrap account. Qualification against an exact private candidate must remain labelled candidate evidence. It cannot silently become ordinary shipping evidence. After a reviewed admission decision, the unchanged public executable must be cold-started with credentials, discover actual Scope/Link/descriptor/Directory targets, and receive a fresh full applicable run on that ordinary path. The plan must say what evidence authorizes the first admission and what subsequent ordinary-path observations close the final delivery gate; it must not hide that dependency in a claimed-ready flag.
+
+Secret association needs its own boundary. Authentication identities can commit to credential digests; they are not automatically safe public diagnostics. Any private credential association stays in the trusted deployment/verification lane. The shareable evidence projection must not print credentials, Authorization headers, secret exception text or secret-committing launch-file/authentication digests. Exact public and private bindings must remain distinguishable.
+
+Read+Update and Transactional remain separate selected profiles with their own exact configuration bindings. Inherited Read and Update laws must run on each actual higher-profile target. The four-Type owned-set fixture, discovery fixture and current TX matrix fixture cannot be pooled into one configuration by matching a count or copying hashes. The always-ineligible private cumulative carrier does not supply admission.
+
+For the Donna/Trish conversation, the useful decisions are: which administrative trust boundary fits deployment, who owns its evidence publication, how the first ordinary startup is justified without relabelling candidate evidence, and how the separate spec-proposal branch is sequenced after this implementation lands. Trish retains main sequencing. Independent source/review/validation work continues while these options stay unadopted.
+
+Source observations are bound in origins.json to seven exact files from the published trusted-loader increment fdd3d2a4. This note makes no build, runtime, qualification or trust-policy claim. A concrete D3d implementation plan still requires source reconciliation, bounded footprint, native/Claude review under the existing one-attempt policy, and root acceptance.

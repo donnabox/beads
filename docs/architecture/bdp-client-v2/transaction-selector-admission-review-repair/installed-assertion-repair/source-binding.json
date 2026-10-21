@@ -1,0 +1,46 @@
+{
+  "head": "22777eccc347b9c926de1da92409de9a924ba692",
+  "tree": "fe1867a19de19a824b3569a3b901269dddec221f",
+  "file": "apps/bdptest/src/transactional-selector-admission-installed.test.ts",
+  "beforeSha256": "26b8dbc41cacccc7ad1f5157b1f65421e3eff6b3add65c0e122343a3db738e5b",
+  "afterSha256": "527baee6dec377680beaec1402f69039d044f45d2a36165f3b739e53a517b962",
+  "patchSha256": "2c841e647af2067abb5d50705be60489eb8c9c868e6346e922a0f2d5ee85298a",
+  "historicalFailure": {
+    "source": "22777eccc347b9c926de1da92409de9a924ba692",
+    "responses": 5,
+    "statuses": [
+      200,
+      400,
+      200,
+      400,
+      404
+    ],
+    "fifthProblem": {
+      "type": "https://github.com/gastownhall/bdp/problems/not-found",
+      "code": "resource-not-found",
+      "retry": "after-state-change",
+      "status": 404
+    },
+    "cleanup": {
+      "pid": 53950,
+      "exitCode": 0,
+      "signalCode": null,
+      "childAbsent": true,
+      "directoryAbsent": true
+    },
+    "exit": 1,
+    "timeout": false,
+    "forcedCleanup": false,
+    "payloadDigest": "144f8c506ad961b6be61f2e25cf19ac8a2a862b25df1ae4edbfd5bdff7b7db7f"
+  },
+  "preservedEvidenceSha256": {
+    "installed-selector.log": "cd087bd70553fc19e07f4ac95cf7d6500f57fa7dd39ee58e62ab6a7ee551ce72",
+    "installed-selector.exit.json": "f9596b984d58864ca9bc385e79b0ed025259359f70096a124b4a5eb0078f5e26",
+    "installed-selector.results.json": "e4051cc70379499888b532b252845e10f81fab53f096d2b2853a3ad130134258",
+    "installed-provenance.json": "d4e65b6c933f3c31ec8a4d43bb545fbda265607fb4a26fc2114f4e4d55e5f746",
+    "tar-source-provenance.json": "ee711bea65775847fb7bf8cd655a9bc16a690a7c87a043ca33137f5328fa1e04"
+  },
+  "executionPerformedForRepair": false,
+  "commitCreated": false,
+  "scope": "one test expectation, production and all other tracked files unchanged"
+}

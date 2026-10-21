@@ -1,0 +1,9 @@
+# Proposed successor freeze
+
+The actual Claude findings and independent source audit are fully dispositioned in source-dispositions.md. This is a proposed plan, pending exact native closure and root acceptance; no authoring/execution permission follows.
+
+Data-only verification: all42 exact committed source pins rehashed successfully with git show f5511718371a6935614eae6756e796cef71570c2:path. All six request objects, both artifact strings/inventories, two owned paths, schemas and modes are identical to original. Every original numerical count and deadline/byte bound is unchanged; requestBodyBytes is only renamed clientRequestBodyBytes. Caller config/evidence separation, branch-specific counts and the query allowlist are explicit. The correction patch contains the complete original-to-successor plan/ledger/binding delta; disposition document is new.
+
+Expected successful workload remains positive6/control2 (8HTTP), maxima6+6=12HTTP, two scheduled launches and <=2 actual children. Both-pending positive is a2-response inconclusive stop; arbitrary failures can stop earlier. Strict receipt/Resource/Event equality, control prerequisite phases and actual served identity digests are preserved. Optional credential-free projection is distinct. No additional runtime request, timeout, production API, test registration or public/cumulative claim is introduced.
+
+Original plan, ledger, source binding, review and audit remain untouched. Only this external proposed-successor directory was written through the session guard. No product imports, tests, builds, services, package work, source writes, remote writes or new review invocations were performed. Historical f551 source does not assert the future principal integration parent; isolated authoring and final ordinary reanchor remain root-owned gates.

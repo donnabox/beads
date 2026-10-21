@@ -1,0 +1,1007 @@
+{
+  "parent": "eff171839fe4f37638284a4c3346428979d26b5d",
+  "canonical": {
+    "normalBytes": 695598,
+    "normalSHA256": "d44edefaa38d286e85c7ce969d00a18b02b6af39b907a8f8a83405f9d95ef77a",
+    "compactBytes": 339575,
+    "compactSHA256": "344c0c425f56075198e69e0ad44fcad004ee7cf25c8ee8966ef37add568ea87c",
+    "nodes": 18107,
+    "actions": 199,
+    "assertions": 2102,
+    "diskBytes": 684206,
+    "diskSHA256": "726fc623bbb115a0f39e0bb3aaa586ea37254522b254e55e555ea95587f14cb9"
+  },
+  "coverage": {
+    "diskBytes": 99245,
+    "normalBytes": 99245,
+    "diskSHA256": "a3a15b5143c118b24965698ec10289821664c90e935820b51c8cf76c05bdb1df",
+    "normalSHA256": "a3a15b5143c118b24965698ec10289821664c90e935820b51c8cf76c05bdb1df"
+  },
+  "preservation": [
+    {
+      "artifact": "manifest",
+      "rawObjects": 12,
+      "reconstructedSHA256": "56318c56ee99bb981336e3f17560e7b079e88f2f85ef463874c1d556a066b2b2",
+      "parentSHA256": "56318c56ee99bb981336e3f17560e7b079e88f2f85ef463874c1d556a066b2b2"
+    },
+    {
+      "artifact": "coverage",
+      "rawObjects": 12,
+      "reconstructedSHA256": "dafedd035ca20f684559c739ebf2e6155f8446ce8062c3fa60ff86967b259bbd",
+      "parentSHA256": "dafedd035ca20f684559c739ebf2e6155f8446ce8062c3fa60ff86967b259bbd"
+    }
+  ],
+  "row": {
+    "id": "transactional.idempotency.cross-carrier",
+    "compactSHA256": "9edceed3f23528cff25103143dc27aeac69be409420f0ed54c5a4f992c89ba73",
+    "perAction": [
+      {
+        "id": "x-create",
+        "family": "http",
+        "assertionIds": [
+          "http-status",
+          "schema",
+          "media",
+          "present-bdp-scope-epoch",
+          "present-bdp-authorization-view",
+          "present-bdp-scope-position",
+          "serving-position",
+          "request-headers",
+          "request-body",
+          "disposition",
+          "detail",
+          "key",
+          "no-next",
+          "required-position",
+          "effect-position",
+          "literal-result",
+          "no-name",
+          "no-source"
+        ],
+        "captures": [
+          {
+            "binding": "x-created-root",
+            "from": {
+              "kind": "json-pointer",
+              "pointer": "/id"
+            }
+          }
+        ]
+      },
+      {
+        "id": "x-created-facts",
+        "family": "client",
+        "assertionIds": [
+          "status",
+          "body-present",
+          "media",
+          "present-bdp-scope-epoch",
+          "present-bdp-authorization-view",
+          "present-bdp-scope-position",
+          "serving-position",
+          "private-cache",
+          "no-etag",
+          "no-last-modified",
+          "disposition",
+          "detail",
+          "key",
+          "no-next",
+          "required-position",
+          "effect-position",
+          "literal-result",
+          "no-name",
+          "no-source",
+          "root"
+        ],
+        "captures": [
+          {
+            "binding": "x-created-body",
+            "from": {
+              "kind": "json-pointer",
+              "pointer": "/body"
+            }
+          },
+          {
+            "binding": "x-created-record",
+            "from": {
+              "kind": "json-pointer",
+              "pointer": "/body/results/0/resource"
+            }
+          },
+          {
+            "binding": "x-created-revision",
+            "from": {
+              "kind": "json-pointer",
+              "pointer": "/body/results/0/resource/revision"
+            }
+          },
+          {
+            "binding": "x-created-transaction",
+            "from": {
+              "kind": "json-pointer",
+              "pointer": "/body/transaction"
+            }
+          }
+        ]
+      },
+      {
+        "id": "x-create-batch",
+        "family": "http",
+        "assertionIds": [
+          "http-status",
+          "schema",
+          "media",
+          "present-bdp-scope-epoch",
+          "present-bdp-authorization-view",
+          "present-bdp-scope-position",
+          "serving-position",
+          "serving-context",
+          "request-headers",
+          "request-body",
+          "disposition",
+          "detail",
+          "key",
+          "no-next",
+          "required-position",
+          "effect-position",
+          "literal-result",
+          "no-name",
+          "no-source",
+          "retained-root",
+          "retained-body"
+        ],
+        "captures": []
+      },
+      {
+        "id": "x-create-sequence",
+        "family": "http",
+        "assertionIds": [
+          "http-status",
+          "schema",
+          "media",
+          "present-bdp-scope-epoch",
+          "present-bdp-authorization-view",
+          "present-bdp-scope-position",
+          "serving-position",
+          "serving-context",
+          "request-headers",
+          "request-body",
+          "presentation",
+          "present-name",
+          "created-record",
+          "no-receipt",
+          "no-root",
+          "no-problem"
+        ],
+        "captures": []
+      },
+      {
+        "id": "x-update",
+        "family": "http",
+        "assertionIds": [
+          "http-status",
+          "schema",
+          "media",
+          "present-bdp-scope-epoch",
+          "present-bdp-authorization-view",
+          "present-bdp-scope-position",
+          "serving-position",
+          "request-headers",
+          "request-body",
+          "disposition",
+          "detail",
+          "key",
+          "no-next",
+          "required-position",
+          "effect-position",
+          "literal-result",
+          "no-name",
+          "no-source"
+        ],
+        "captures": [
+          {
+            "binding": "x-updated-root",
+            "from": {
+              "kind": "json-pointer",
+              "pointer": "/id"
+            }
+          }
+        ]
+      },
+      {
+        "id": "x-updated-facts",
+        "family": "client",
+        "assertionIds": [
+          "status",
+          "body-present",
+          "media",
+          "present-bdp-scope-epoch",
+          "present-bdp-authorization-view",
+          "present-bdp-scope-position",
+          "serving-position",
+          "private-cache",
+          "no-etag",
+          "no-last-modified",
+          "disposition",
+          "detail",
+          "key",
+          "no-next",
+          "required-position",
+          "effect-position",
+          "literal-result",
+          "no-name",
+          "no-source",
+          "root"
+        ],
+        "captures": [
+          {
+            "binding": "x-updated-body",
+            "from": {
+              "kind": "json-pointer",
+              "pointer": "/body"
+            }
+          },
+          {
+            "binding": "x-updated-record",
+            "from": {
+              "kind": "json-pointer",
+              "pointer": "/body/results/0/resource"
+            }
+          },
+          {
+            "binding": "x-updated-revision",
+            "from": {
+              "kind": "json-pointer",
+              "pointer": "/body/results/0/resource/revision"
+            }
+          },
+          {
+            "binding": "x-updated-transaction",
+            "from": {
+              "kind": "json-pointer",
+              "pointer": "/body/transaction"
+            }
+          }
+        ]
+      },
+      {
+        "id": "x-two-sequence",
+        "family": "http",
+        "assertionIds": [
+          "http-status",
+          "schema",
+          "media",
+          "present-bdp-scope-epoch",
+          "present-bdp-authorization-view",
+          "present-bdp-scope-position",
+          "serving-position",
+          "serving-context",
+          "request-headers",
+          "request-body",
+          "presentation",
+          "present-name",
+          "created-record",
+          "no-receipt",
+          "no-root",
+          "no-problem",
+          "no-update-name",
+          "updated-record",
+          "no-update-problem"
+        ],
+        "captures": []
+      },
+      {
+        "id": "x-update-singleton",
+        "family": "http",
+        "assertionIds": [
+          "http-status",
+          "schema",
+          "media",
+          "present-bdp-scope-epoch",
+          "present-bdp-authorization-view",
+          "present-bdp-scope-position",
+          "serving-position",
+          "serving-context",
+          "request-headers",
+          "request-body",
+          "disposition",
+          "detail",
+          "key",
+          "no-next",
+          "required-position",
+          "effect-position",
+          "literal-result",
+          "no-name",
+          "no-source",
+          "retained-root",
+          "retained-body"
+        ],
+        "captures": []
+      },
+      {
+        "id": "x-create-singleton-retry",
+        "family": "http",
+        "assertionIds": [
+          "http-status",
+          "schema",
+          "media",
+          "present-bdp-scope-epoch",
+          "present-bdp-authorization-view",
+          "present-bdp-scope-position",
+          "serving-position",
+          "serving-context",
+          "request-headers",
+          "request-body",
+          "disposition",
+          "detail",
+          "key",
+          "no-next",
+          "required-position",
+          "effect-position",
+          "literal-result",
+          "no-name",
+          "no-source",
+          "retained-root",
+          "retained-body"
+        ],
+        "captures": []
+      },
+      {
+        "id": "x-create-batch-retry",
+        "family": "http",
+        "assertionIds": [
+          "http-status",
+          "schema",
+          "media",
+          "present-bdp-scope-epoch",
+          "present-bdp-authorization-view",
+          "present-bdp-scope-position",
+          "serving-position",
+          "serving-context",
+          "request-headers",
+          "request-body",
+          "disposition",
+          "detail",
+          "key",
+          "no-next",
+          "required-position",
+          "effect-position",
+          "literal-result",
+          "no-name",
+          "no-source",
+          "retained-root",
+          "retained-body"
+        ],
+        "captures": []
+      },
+      {
+        "id": "x-current",
+        "family": "http",
+        "assertionIds": [
+          "http-status",
+          "schema",
+          "media",
+          "present-bdp-scope-epoch",
+          "present-bdp-authorization-view",
+          "present-bdp-scope-position",
+          "serving-position",
+          "serving-context",
+          "request-headers",
+          "request-body",
+          "no-next",
+          "literal-state",
+          "updated-record"
+        ],
+        "captures": []
+      },
+      {
+        "id": "x-events",
+        "family": "http",
+        "assertionIds": [
+          "http-status",
+          "schema",
+          "media",
+          "present-bdp-scope-epoch",
+          "present-bdp-authorization-view",
+          "present-bdp-scope-position",
+          "serving-position",
+          "serving-context",
+          "request-headers",
+          "request-body",
+          "no-next",
+          "ordered-events",
+          "created-type",
+          "created-properties",
+          "created-metadata",
+          "created-revision",
+          "updated-previous",
+          "updated-revision",
+          "updated-change",
+          "no-metadata-change",
+          "created-transaction",
+          "updated-transaction"
+        ],
+        "captures": []
+      }
+    ]
+  },
+  "derivatives": [
+    {
+      "normalBytes": 695591,
+      "normalSHA256": "a41d03017e7d8655d1d9caaef9a3c59cf5ff352cd9da10d1441bede8f8901464",
+      "compactBytes": 339568,
+      "compactSHA256": "0cec7d84833988439b8fd4be022d4143910e4b78ef448f338bf507f5f4516218",
+      "nodes": 18107,
+      "actions": 199,
+      "assertions": 2102,
+      "name": "receipt-binding",
+      "deltaBytes": -7,
+      "deltaNodes": 0
+    },
+    {
+      "normalBytes": 695599,
+      "normalSHA256": "db368a926909fb81b3ae3817b7ec96fd7e5de63b081a0e9bcee232e72aa87750",
+      "compactBytes": 339576,
+      "compactSHA256": "935dcbc7a9d7e0db873796be7a93a60b0f430cfa2f99db1c41e2fbf176b54984",
+      "nodes": 18107,
+      "actions": 199,
+      "assertions": 2102,
+      "name": "receipt-method",
+      "deltaBytes": 1,
+      "deltaNodes": 0
+    },
+    {
+      "normalBytes": 695637,
+      "normalSHA256": "6b4a08abddb6e6cc15ba2b7e6943abf8251a7997fc3d755b64f6442ff946c6ce",
+      "compactBytes": 339600,
+      "compactSHA256": "cf9fbc94d2651e285792164e7f3e601ae4f17f2ee8093e55654f2e9f0f82c2c6",
+      "nodes": 18108,
+      "actions": 199,
+      "assertions": 2102,
+      "name": "receipt-credential",
+      "deltaBytes": 39,
+      "deltaNodes": 1
+    },
+    {
+      "normalBytes": 694915,
+      "normalSHA256": "66b2d2d65bb87f139ce531d6fad43ab6da985e63a4dfbc32c71d86f4160a366d",
+      "compactBytes": 339268,
+      "compactSHA256": "5897b11934bd03c9f0545d5cbc8b1aa1bf437e90290c4a8d0f532e7d50ad72aa",
+      "nodes": 18086,
+      "actions": 199,
+      "assertions": 2098,
+      "name": "receipt-body-assertion",
+      "deltaBytes": -683,
+      "deltaNodes": -21
+    },
+    {
+      "normalBytes": 695799,
+      "normalSHA256": "49f45001274cbb1888a3127e5ad699cc8fa1316034c1ac1d6c2eb1a90c42098d",
+      "compactBytes": 339656,
+      "compactSHA256": "af04d5df64f6c60c48c40a7c0365c6f9f07ed1bb35ed3920a92067498baf723c",
+      "nodes": 18112,
+      "actions": 199,
+      "assertions": 2102,
+      "name": "ordinary-capture",
+      "deltaBytes": 201,
+      "deltaNodes": 5
+    },
+    {
+      "normalBytes": 696308,
+      "normalSHA256": "536e761b287e80d9c4a0736d3423f60761d4e6878ebe3c210e2b5a83355ffeca",
+      "compactBytes": 339919,
+      "compactSHA256": "4666ca92239d74fd2a2fc975c78ad818276c6f1969a599a8a952b5cb4a2a7111",
+      "nodes": 18127,
+      "actions": 200,
+      "assertions": 2103,
+      "name": "forbidden-receipt-use",
+      "deltaBytes": 710,
+      "deltaNodes": 20
+    },
+    {
+      "normalBytes": 695598,
+      "normalSHA256": "1e4ec33ce6004c060a989cb89a494f918374b9b81435c5f8f72a98790ec5ff31",
+      "compactBytes": 339575,
+      "compactSHA256": "f6a107d16a3e47e913af0fa932ae727b1c46f62d23fb089f5317020f8de86415",
+      "nodes": 18107,
+      "actions": 199,
+      "assertions": 2102,
+      "name": "set-matched",
+      "deltaBytes": 0,
+      "deltaNodes": 0
+    },
+    {
+      "normalBytes": 695598,
+      "normalSHA256": "3a982fdd54550f6a6a7f818e089db1c5efc3b60f83f44aadb4774b1374ac7284",
+      "compactBytes": 339575,
+      "compactSHA256": "7c1f7c8bb89cde5055ce1938f8b2e3921228b7de3cf6d5f67ccd2dddbdca1187",
+      "nodes": 18107,
+      "actions": 199,
+      "assertions": 2102,
+      "name": "set-order",
+      "deltaBytes": 0,
+      "deltaNodes": 0
+    },
+    {
+      "normalBytes": 695598,
+      "normalSHA256": "74ad28c0aa8b7e587b67f6e7c8b6b9a7487ada3c6daf6d86f50abe2aa5184379",
+      "compactBytes": 339575,
+      "compactSHA256": "bebcbc22280db1c72bc83ef03ebb4ffbfe191f4a075ae1385cf38861a5d5da73",
+      "nodes": 18107,
+      "actions": 199,
+      "assertions": 2102,
+      "name": "set-index",
+      "deltaBytes": 0,
+      "deltaNodes": 0
+    },
+    {
+      "normalBytes": 695605,
+      "normalSHA256": "867dd00da85d0c8e199342951185a0069d2ec8af5848871b388a53bc0cfeab03",
+      "compactBytes": 339582,
+      "compactSHA256": "3b5588ba010ebb6c0484057d2eae2177a4c990e26f6925a75e256f613159c072",
+      "nodes": 18107,
+      "actions": 199,
+      "assertions": 2102,
+      "name": "set-poststate",
+      "deltaBytes": 7,
+      "deltaNodes": 0
+    },
+    {
+      "normalBytes": 694876,
+      "normalSHA256": "8e4a1657659e7fd038c1b15d1018ea3c7928818f541b77284620c866cec30439",
+      "compactBytes": 339229,
+      "compactSHA256": "102e4d4ac2489c8c3331a0cd470c54be036c7058e3059433bf2e048ad6c412ba",
+      "nodes": 18086,
+      "actions": 199,
+      "assertions": 2098,
+      "name": "cross-wired-receipt",
+      "deltaBytes": -722,
+      "deltaNodes": -21
+    },
+    {
+      "normalBytes": 695605,
+      "normalSHA256": "78840f8187cd3b20dceba6dbd89a64a64586906cde656d1d6b8f4305c9f45e30",
+      "compactBytes": 339582,
+      "compactSHA256": "4352174f513fbd850f3c4bbf4f1b0513db44ad7492041a473b99f0933a446961",
+      "nodes": 18107,
+      "actions": 199,
+      "assertions": 2102,
+      "name": "effects-changed-poststate",
+      "deltaBytes": 7,
+      "deltaNodes": 0
+    },
+    {
+      "normalBytes": 695611,
+      "normalSHA256": "b03e7e913ebce0699cacad0b6b870546598317a3a42fe5faa514cfcac453e0e5",
+      "compactBytes": 339588,
+      "compactSHA256": "1952789d3523f580009fa619f45fdf19ed01de853fd1b68a94ef3178898cecb8",
+      "nodes": 18107,
+      "actions": 199,
+      "assertions": 2102,
+      "name": "effects-rollback-metadata",
+      "deltaBytes": 13,
+      "deltaNodes": 0
+    },
+    {
+      "normalBytes": 695598,
+      "normalSHA256": "9614d7be7c62bdaeb5e6dfda7eb0370b6a77bf7d516573da2b0eaaefb4a3986f",
+      "compactBytes": 339575,
+      "compactSHA256": "4108d8aca3b91a8337f31d98ba020869160bccbd3c71d60336452471597f990a",
+      "nodes": 18107,
+      "actions": 199,
+      "assertions": 2102,
+      "name": "effects-receipt-order",
+      "deltaBytes": 0,
+      "deltaNodes": 0
+    },
+    {
+      "normalBytes": 695598,
+      "normalSHA256": "73596d8669b7c4b74d2e8364580de8f09e4d6dc70fa91733d7b24dfb3922569d",
+      "compactBytes": 339575,
+      "compactSHA256": "abd8611f1bbe60ff5f35df2a312cad6887c18146de84de330c9b85218e17ef3b",
+      "nodes": 18107,
+      "actions": 199,
+      "assertions": 2102,
+      "name": "effects-event-order",
+      "deltaBytes": 0,
+      "deltaNodes": 0
+    },
+    {
+      "normalBytes": 695598,
+      "normalSHA256": "0e17d50d62072612002fe3819f044efabb9b12df672f6df46131c003fb080aa3",
+      "compactBytes": 339575,
+      "compactSHA256": "0a2b659b72eef2c6c7324409203b6c8e8035690a0a1523634df3a7ca32cd3a9f",
+      "nodes": 18107,
+      "actions": 199,
+      "assertions": 2102,
+      "name": "effects-zero-results",
+      "deltaBytes": 0,
+      "deltaNodes": 0
+    },
+    {
+      "normalBytes": 695744,
+      "normalSHA256": "047f4b7ae1ffb77d07f527568e45947b08b53fcaad036b58ec5e2923d7b64b2b",
+      "compactBytes": 339630,
+      "compactSHA256": "3e38e6347e079b0d9a01b48cb2552fdd1c9470a6daeceaef0739f96ed3f9518e",
+      "nodes": 18111,
+      "actions": 199,
+      "assertions": 2102,
+      "name": "effects-zero-events",
+      "deltaBytes": 146,
+      "deltaNodes": 4
+    },
+    {
+      "normalBytes": 695597,
+      "normalSHA256": "12850a5bdc5111dd7cd4b470d10583be0b3a1a9a59c65f9a7d33a55249f0fdaa",
+      "compactBytes": 339574,
+      "compactSHA256": "3a10e939ba7022716ba45a6f399226a640ba5690fb0d92c1211c1582c9dc1174",
+      "nodes": 18107,
+      "actions": 199,
+      "assertions": 2102,
+      "name": "effects-no-effect",
+      "deltaBytes": -1,
+      "deltaNodes": 0
+    },
+    {
+      "normalBytes": 695587,
+      "normalSHA256": "29b35b577a6502a99342856c92950d6a7468e691f29076b30fddb397c23754a0",
+      "compactBytes": 339564,
+      "compactSHA256": "5cc914442e88329ab362335cacb005f66c13be69d883316e538b39b0ff15cec6",
+      "nodes": 18107,
+      "actions": 199,
+      "assertions": 2102,
+      "name": "pagination-root-next",
+      "deltaBytes": -11,
+      "deltaNodes": 0
+    },
+    {
+      "normalBytes": 695598,
+      "normalSHA256": "64f041d0d6c041554e5ed2d45b07a4458eec83d7c92b2de9d5836ba164103ef1",
+      "compactBytes": 339575,
+      "compactSHA256": "ac3bfb48c92d25bdaaafa1f7de05de04141ec907dd4f1fe8ef2c61f6b033a93d",
+      "nodes": 18107,
+      "actions": 199,
+      "assertions": 2102,
+      "name": "pagination-inline-boundary",
+      "deltaBytes": 0,
+      "deltaNodes": 0
+    },
+    {
+      "normalBytes": 695598,
+      "normalSHA256": "5c92b326303c16cf9744428b1ed07d06c82d4c10edcfeaa4db46cfb9e0d5dfef",
+      "compactBytes": 339575,
+      "compactSHA256": "3f00f756063651213762055b785898316bff2279ab8296cd1ac3423eac75a654",
+      "nodes": 18107,
+      "actions": 199,
+      "assertions": 2102,
+      "name": "pagination-page-member",
+      "deltaBytes": 0,
+      "deltaNodes": 0
+    },
+    {
+      "normalBytes": 695630,
+      "normalSHA256": "ccc81483a82b6affe3fa5337cf79535085b16ab8c0ce7d3d7c3b4c386e6b5bf6",
+      "compactBytes": 339607,
+      "compactSHA256": "e07d48c8a133368ddff23917dbf94a71d3ca7e0557702e8646025a695b773ee0",
+      "nodes": 18107,
+      "actions": 199,
+      "assertions": 2102,
+      "name": "pagination-page-parent",
+      "deltaBytes": 32,
+      "deltaNodes": 0
+    },
+    {
+      "normalBytes": 695596,
+      "normalSHA256": "7f0e3916a674bb19a8539542c6dee8183e2432973efb26eca577c4b2efd55fb1",
+      "compactBytes": 339573,
+      "compactSHA256": "f67383a74c49573ac5302b2dc4e5ed42686cb70329fb029881e505fc377634ca",
+      "nodes": 18107,
+      "actions": 199,
+      "assertions": 2102,
+      "name": "pagination-historical-title",
+      "deltaBytes": -2,
+      "deltaNodes": 0
+    },
+    {
+      "normalBytes": 695652,
+      "normalSHA256": "86b29b4fa3a933836e0fb9e23b0a13f77ca8ddf61c3863d4742dc0d51c3a79c6",
+      "compactBytes": 339629,
+      "compactSHA256": "2e61174598a9848ff9f10cbeb496b471b65a4db14a79d3c0401e44e4d16f3977",
+      "nodes": 18107,
+      "actions": 199,
+      "assertions": 2102,
+      "name": "pagination-terminal-next",
+      "deltaBytes": 54,
+      "deltaNodes": 0
+    },
+    {
+      "normalBytes": 695595,
+      "normalSHA256": "60e006dfaaeb6711ee0a0ad49292b09053e8d059b0cf23437d671f3d3c79bce0",
+      "compactBytes": 339572,
+      "compactSHA256": "44855d93b0697d9f8abed091692ae93c384291f3d82b7bad0b10db93358ae630",
+      "nodes": 18107,
+      "actions": 199,
+      "assertions": 2102,
+      "name": "conflict-code",
+      "deltaBytes": -3,
+      "deltaNodes": 0
+    },
+    {
+      "normalBytes": 695598,
+      "normalSHA256": "c13a23398735b4d197d63dc0638e1283fced034567ccbfbb71df56ef188edb96",
+      "compactBytes": 339575,
+      "compactSHA256": "8e3b812ca834737894e400070816edc7917c04ec597c58453f5ec3769013bbd4",
+      "nodes": 18107,
+      "actions": 199,
+      "assertions": 2102,
+      "name": "conflict-reopened-status",
+      "deltaBytes": 0,
+      "deltaNodes": 0
+    },
+    {
+      "normalBytes": 695598,
+      "normalSHA256": "6bbb4e21f83daf62dd240fc121cc55f02055ee12325e1c995c015aa5664cff57",
+      "compactBytes": 339575,
+      "compactSHA256": "af2c345996b7fdc644fddc91a23ecbe0e4a5630ce3733579ad2ea92320c50621",
+      "nodes": 18107,
+      "actions": 199,
+      "assertions": 2102,
+      "name": "conflict-current-record",
+      "deltaBytes": 0,
+      "deltaNodes": 0
+    },
+    {
+      "normalBytes": 695585,
+      "normalSHA256": "20e3dc71bacc7810e1259c1f7fc80f7a36af738b6e36d3cc593890788943a4a5",
+      "compactBytes": 339562,
+      "compactSHA256": "29740955b75dd9f757ad68bbdf107a3b56ea5ea7e6c134ca026f222685f880fb",
+      "nodes": 18107,
+      "actions": 199,
+      "assertions": 2102,
+      "name": "conflict-retained-body",
+      "deltaBytes": -13,
+      "deltaNodes": 0
+    },
+    {
+      "normalBytes": 695598,
+      "normalSHA256": "70db546b9f65550a3c191fc7c59bea91cca663752ec17ee4ca9445e7439d686b",
+      "compactBytes": 339575,
+      "compactSHA256": "6bd4dc9d85af748ed16a4e56e4c652d93228155d17ad4c537ec27f7515d34c82",
+      "nodes": 18107,
+      "actions": 199,
+      "assertions": 2102,
+      "name": "conflict-event",
+      "deltaBytes": 0,
+      "deltaNodes": 0
+    },
+    {
+      "normalBytes": 695606,
+      "normalSHA256": "791967a5fcaf41e02fe526ccdc4e172931b3a6cb6cd67d27a5f7a5c374ca8e0c",
+      "compactBytes": 339583,
+      "compactSHA256": "e1cc7930e5c7c313a166fa9caa1919935187b6e203c58746cbf16f95405ac871",
+      "nodes": 18107,
+      "actions": 199,
+      "assertions": 2102,
+      "name": "noop-bead-property",
+      "deltaBytes": 8,
+      "deltaNodes": 0
+    },
+    {
+      "normalBytes": 695619,
+      "normalSHA256": "f48f1d3eba89f551d700466c61131862928deb7111859013d3b02b98adcc95c2",
+      "compactBytes": 339596,
+      "compactSHA256": "3d7f57072a8e3b6e65df33f5f41806b9113c8452f1b215b4d218c521be954291",
+      "nodes": 18107,
+      "actions": 199,
+      "assertions": 2102,
+      "name": "noop-link-metadata",
+      "deltaBytes": 21,
+      "deltaNodes": 0
+    },
+    {
+      "normalBytes": 695661,
+      "normalSHA256": "f845f7675101e61a35a5d28494aef69e6ded78e0e03c8d9cf8228d4aef5be66b",
+      "compactBytes": 339585,
+      "compactSHA256": "7b17921e41529ef7f34bbca921715f698c2f68d1d1f94f2ad5604f6a42234abf",
+      "nodes": 18109,
+      "actions": 199,
+      "assertions": 2102,
+      "name": "noop-group-inventory-and-head",
+      "deltaBytes": 63,
+      "deltaNodes": 2
+    },
+    {
+      "normalBytes": 701716,
+      "normalSHA256": "d7946494c15079d6a937da175964dc959cd4f40106beb7fb960ea5f187e1787f",
+      "compactBytes": 342763,
+      "compactSHA256": "90777c262a1f6362c7f5e589cfd39209bfdf73d723b7ee113a94d04bf3f8b208",
+      "nodes": 18263,
+      "actions": 199,
+      "assertions": 2125,
+      "name": "deletion-incoming-order",
+      "deltaBytes": 6118,
+      "deltaNodes": 156
+    },
+    {
+      "normalBytes": 701716,
+      "normalSHA256": "8ef35c0720a12727e91ba835c75a6fac97dcda860fd354688cb6c58fba46f990",
+      "compactBytes": 342763,
+      "compactSHA256": "7e8a08ff9e2b358ecad20a93327f1ca7274ece361f7de55f461693b3d82f11bf",
+      "nodes": 18263,
+      "actions": 199,
+      "assertions": 2125,
+      "name": "deletion-outgoing-order",
+      "deltaBytes": 6118,
+      "deltaNodes": 156
+    },
+    {
+      "normalBytes": 698702,
+      "normalSHA256": "aeec75858730a87c662b08b84446d225737ec4e1f90d94355a479827a10aed92",
+      "compactBytes": 341200,
+      "compactSHA256": "75b9f68040e3a877b3841c462a7de185e3dba21cedacf17418c738ed58a2c08a",
+      "nodes": 18184,
+      "actions": 199,
+      "assertions": 2113,
+      "name": "deletion-committed-prefix-state",
+      "deltaBytes": 3104,
+      "deltaNodes": 77
+    },
+    {
+      "normalBytes": 696939,
+      "normalSHA256": "4de89753b7b07d99866d204b53b76b44933a1b0f182d5a3bf075df86fd3b536b",
+      "compactBytes": 340254,
+      "compactSHA256": "deba6872e8280be8823cf3c758757c397ee2238685de9ad970d2ef85c7fc7c34",
+      "nodes": 18144,
+      "actions": 199,
+      "assertions": 2109,
+      "name": "cross-batch-semantic-conflict",
+      "deltaBytes": 1341,
+      "deltaNodes": 37,
+      "action": "x-create-batch",
+      "retainedAssertionIds": [
+        "http-status",
+        "schema",
+        "media",
+        "present-bdp-scope-epoch",
+        "present-bdp-authorization-view",
+        "present-bdp-scope-position",
+        "serving-position",
+        "serving-context",
+        "request-headers",
+        "request-body",
+        "disposition",
+        "detail",
+        "key",
+        "no-next",
+        "required-position",
+        "effect-position",
+        "literal-result",
+        "no-name",
+        "no-source",
+        "retained-root",
+        "retained-body"
+      ],
+      "removedAssertionIds": [],
+      "positiveAssertionIds": [
+        "control-status",
+        "control-schema",
+        "control-media",
+        "control-type",
+        "control-code",
+        "control-problem-status",
+        "control-retry"
+      ],
+      "expectedFailingIds": [
+        "http-status",
+        "schema",
+        "media",
+        "serving-context",
+        "disposition",
+        "detail",
+        "key",
+        "no-next",
+        "required-position",
+        "effect-position",
+        "literal-result",
+        "retained-root",
+        "retained-body"
+      ],
+      "expectedPassingIds": [
+        "present-bdp-scope-epoch",
+        "present-bdp-authorization-view",
+        "present-bdp-scope-position",
+        "serving-position",
+        "request-headers",
+        "request-body",
+        "no-name",
+        "no-source",
+        "control-status",
+        "control-schema",
+        "control-media",
+        "control-type",
+        "control-code",
+        "control-problem-status",
+        "control-retry"
+      ]
+    },
+    {
+      "normalBytes": 696952,
+      "normalSHA256": "71b59501977385b945c59b013e1cbb647956d09d91784bf4a3a2f33360cc37ca",
+      "compactBytes": 340125,
+      "compactSHA256": "896d9c734284bc1c59dce02a68d4138c38ac71cefadee467c51d402fa3d2c569",
+      "nodes": 18143,
+      "actions": 199,
+      "assertions": 2105,
+      "name": "cross-sequence-fresh-key",
+      "deltaBytes": 1354,
+      "deltaNodes": 36,
+      "action": "x-create-sequence",
+      "retainedAssertionIds": [
+        "http-status",
+        "schema",
+        "media",
+        "present-bdp-scope-epoch",
+        "present-bdp-authorization-view",
+        "present-bdp-scope-position",
+        "serving-position",
+        "serving-context",
+        "request-headers",
+        "request-body",
+        "presentation",
+        "present-name",
+        "created-record",
+        "no-receipt",
+        "no-root",
+        "no-problem"
+      ],
+      "removedAssertionIds": [],
+      "positiveAssertionIds": [
+        "control-member",
+        "control-no-resource",
+        "control-no-outcome"
+      ],
+      "expectedFailingIds": [
+        "presentation",
+        "created-record"
+      ],
+      "expectedPassingIds": [
+        "http-status",
+        "schema",
+        "media",
+        "present-bdp-scope-epoch",
+        "present-bdp-authorization-view",
+        "present-bdp-scope-position",
+        "serving-position",
+        "serving-context",
+        "request-headers",
+        "request-body",
+        "present-name",
+        "no-receipt",
+        "no-root",
+        "no-problem",
+        "control-member",
+        "control-no-resource",
+        "control-no-outcome"
+      ]
+    }
+  ],
+  "maxDerivativeBytes": 701716,
+  "maxDerivativeNodes": 18263,
+  "schemaReferencesResolved": [
+    "#/$defs/beadCollection",
+    "#/$defs/changefeedPage",
+    "#/$defs/currentBeadCollection",
+    "#/$defs/currentBeadRecord",
+    "#/$defs/currentLinkCollection",
+    "#/$defs/currentLinkRecord",
+    "#/$defs/eventPage",
+    "#/$defs/mutationReceipt",
+    "#/$defs/readProblem",
+    "#/$defs/transactionalProblem",
+    "#/$defs/transactionalSequenceResponse"
+  ],
+  "routeDigest": "a9a17908b6fa87674d5f573b584f4a1ce1d41d7909fadf48b65e9b05397ddfd4",
+  "unchangedCanonicalDerivatives": "15 other observe invocations do not change manifest bytes: metadata5, abort/preabort/duplicate4, deniedall1, omittedroutes2, deniedset2, plus positive1.",
+  "newAppCases": 59,
+  "newObserveInvocations": 52
+}

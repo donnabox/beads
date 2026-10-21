@@ -1,0 +1,22 @@
+--- a/packages/server/dist/transaction-store.js
++++ b/packages/server/dist/transaction-store.js
+@@ -771,19 +771,6 @@
+         // admission controls, and no refusal ever inserts a receipt or owner.
+         if (controls && batch.carrier.operations.length > controls.maximumOperations)
+             return { kind: "operation-limit" };
+-        if (controls) {
+-            for (const [index, op] of batch.carrier.operations.entries()) {
+-                if (op.operation !== "updateWhere" && op.operation !== "deleteWhere")
+-                    continue;
+-                const limit = transactionSelectorCapacity(op);
+-                if (limit)
+-                    return {
+-                        kind: "selector-limit",
+-                        limit,
+-                        pointer: batch.carrier.kind === "singleton" ? "/selector" : `/operations/${index}/selector`,
+-                    };
+-            }
+-        }
+         if (controls && !controls.acceptsJson)
+             return { kind: "not-acceptable" };
+         const receipt = {

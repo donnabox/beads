@@ -1,0 +1,1 @@
+No executable adaptation: runner/parser/arguments are byte-identical to Snapshot CODE successor-1. Only prompt, immutable context and source/packet bindings are newly constructed for receipt-root PLAN review. Existing3600/3595 budgets unchanged. Proposed source edit scope6 is distinct from current planning dirty scope7.

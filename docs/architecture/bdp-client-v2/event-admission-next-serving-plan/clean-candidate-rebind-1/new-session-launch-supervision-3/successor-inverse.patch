@@ -1,0 +1,121 @@
+--- /Users/dbox/repos/wt/vickie/bdp-integration-logs/event-admission-next-serving-plan/clean-candidate-rebind-1/new-session-launch-supervision-3/supervise.py
++++ /Users/dbox/repos/wt/vickie/bdp-integration-logs/event-admission-next-serving-plan/clean-candidate-rebind-1/new-session-launch-supervision-2/supervise.py
+@@ -43,7 +43,7 @@
+     state = {"reason": None, "termSent": False, "killSent": False, "errors": [],
+              "known": {}, "groups": {}, "wrapperPid": None, "forced": False,
+              "lastRows": [], "ownershipUnknown": False, "direct": {},
+-             "termAttemptCount": 0, "killAttemptCount": 0, "authenticatedReviewers": {}}
++             "termAttemptCount": 0, "killAttemptCount": 0}
+     finished = threading.Event()
+     wrapper = None
+     checks = []
+@@ -67,16 +67,16 @@
+         if remaining <= 0:
+             raise subprocess.TimeoutExpired("process inventory after absolute boundary", 0)
+         raw = subprocess.check_output(
+-            ["ps", "-axo", "pid=,ppid=,pgid=,state=,lstart=,comm="], text=True,
++            ["ps", "-axo", "pid=,ppid=,pgid=,lstart=,comm="], text=True,
+             timeout=min(0.4, remaining))
+         rows = {}
+         for line in raw.splitlines():
+-            parts = line.split(None, 9)
+-            if len(parts) != 10:
++            parts = line.split(None, 8)
++            if len(parts) != 9:
+                 continue
+             pid, ppid, pgid = map(int, parts[:3])
+             rows[pid] = {"pid": pid, "ppid": ppid, "pgid": pgid,
+-                         "state": parts[3], "start": " ".join(parts[4:9]), "comm": parts[9]}
++                         "start": " ".join(parts[3:8]), "comm": parts[8]}
+         return rows
+ 
+     def register_direct(proc, kind):
+@@ -123,16 +123,7 @@
+                         process_start = time.mktime(time.strptime(row["start"], "%a %b %d %H:%M:%S %Y"))
+                         require(row["pgid"] == pid and abs(process_start - observed) < 2,
+                                 "Reviewer PID reused or process-group identity changed")
+-                        authenticated = {"pid": pid, "pgid": row["pgid"], "start": row["start"],
+-                                         "recordStarted": record["started"], "argv": record["argv"]}
+-                        if row["state"].startswith("Z"):
+-                            # Zombie comm may be <defunct>. Only a reviewer previously
+-                            # authenticated while live can retain ownership in that state.
+-                            require(state["authenticatedReviewers"].get(pid) == authenticated,
+-                                    "Unbound or changed zombie reviewer identity")
+-                        else:
+-                            require(Path(row["comm"]).name == "claude", "Reviewer executable identity changed")
+-                            state["authenticatedReviewers"][pid] = authenticated
++                        require(Path(row["comm"]).name == "claude", "Reviewer executable identity changed")
+                         owned.add(pid)
+                         state["groups"][pid] = "reviewer"
+                 except json.JSONDecodeError:
+@@ -151,12 +142,6 @@
+                 children = {pid for pid, row in rows.items() if row["ppid"] in owned}
+                 changed = not children.issubset(owned)
+                 owned.update(children)
+-            # A zombie leader may leave live children reparented in its same
+-            # authenticated group. Include the complete group before deciding
+-            # whether there is anything signalable; zombie presence is not absence.
+-            authenticated_groups = {rows[pid]["pgid"] for pid in owned
+-                                    if rows[pid]["pgid"] != os.getpgrp()}
+-            owned.update(pid for pid, row in rows.items() if row["pgid"] in authenticated_groups)
+             for pid in owned:
+                 row = rows[pid]
+                 state["known"][pid] = row
+@@ -170,9 +155,8 @@
+         # inventory never prevents safe signaling of registered unreaped direct children.
+         complete = True
+         try:
+-            rows, owned = collect()
++            _, owned = collect()
+         except Exception as exc:
+-            rows = None
+             owned = []
+             complete = False
+             with state_lock:
+@@ -180,19 +164,13 @@
+                 if error not in state["errors"]:
+                     state["errors"].append(error)
+                 state["ownershipUnknown"] = True
+-        # A fresh all-zombie group needs reaping/absence, not TERM/STOP/KILL.
+-        valid_groups = {row["pgid"] for row in owned
+-                        if row["pgid"] != os.getpgrp() and not row["state"].startswith("Z")}
++        valid_groups = {row["pgid"] for row in owned if row["pgid"] != os.getpgrp()}
+         signaled = []
+         with state_lock:
+             for pid, direct in state["direct"].items():
+                 # returncode None is safe here: this parent retains the Popen handle,
+                 # no other waitpid occurs, and poll/reap is excluded by this lock.
+                 if direct["proc"].returncode is None:
+-                    if rows is not None:
+-                        members = [row for row in rows.values() if row["pgid"] == pid]
+-                        if members and all(row["state"].startswith("Z") for row in members):
+-                            continue
+                     try:
+                         if os.getpgid(pid) == pid:
+                             valid_groups.add(pid)
+@@ -426,7 +404,6 @@
+                   "errors": state["errors"],
+                   "remainingOwned": remaining, "ownershipUnknown": state["ownershipUnknown"],
+                   "observedOwned": list(state["known"].values()), "observedGroups": state["groups"],
+-                  "authenticatedReviewers": list(state["authenticatedReviewers"].values()),
+                   "noRetry": True, "localEvidenceAfterSupersessionAllowed": True,
+                   "remoteWritesPerformed": False,
+                   "limitation": "PID/start-time/ancestry and authenticated runner process record provide owned-group evidence; no system-wide socket census or hard-real-time OS guarantee. Terminal local evidence adds no reviewer execution allowance."}
+--- /Users/dbox/repos/wt/vickie/bdp-integration-logs/event-admission-next-serving-plan/clean-candidate-rebind-1/new-session-launch-supervision-3/control.json
++++ /Users/dbox/repos/wt/vickie/bdp-integration-logs/event-admission-next-serving-plan/clean-candidate-rebind-1/new-session-launch-supervision-2/control.json
+@@ -1,5 +1,5 @@
+ {
+-  "rootLaunchReleased": false,
++  "rootLaunchReleased": true,
+   "packet": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/event-admission-next-serving-plan/clean-candidate-rebind-1/claude-plan-review-session-20261018-021624-1",
+   "expectedSession": "2026-10-18T02:16:24Z-549f",
+   "sourceRoot": "/Users/dbox/repos/wt/vickie/vickie-event-admission-replay-minimum",
+@@ -25,6 +25,6 @@
+   "termAtSeconds": 1790,
+   "killAtSeconds": 1798,
+   "noRetry": true,
+-  "authority": "CLOSED future-launch mechanics correction3 only. Existing referenced packet was already attempted and must remain refused; no retry. Future fresh packet may be rebound separately after root/native acceptance. Supervisor2 actual failed attempt remains frozen.",
+-  "predecessorIndexSha256": "141fa43533f4b51b9027eb00123f8adcc7ba703dea23a5b1c46bb5cb487a9226"
++  "authority": "CLOSED N2 correction successor2; predecessor1 remains frozen as failed. Only direct-child ownership/error cleanup and retryable signal escalation are corrected; original1800 total/TERM1790/KILL1798, frozen packet and root release duties are unchanged.",
++  "predecessorIndexSha256": "83df3c024abe4a97277bd0844b29c687cea15ba4c31013f561113bcf8afea8b6"
+ }

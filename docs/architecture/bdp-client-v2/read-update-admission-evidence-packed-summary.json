@@ -1,0 +1,62 @@
+{
+  "sourceCommit": "394d3208790a488fd790257da9d48f4b293f129a",
+  "sourceDirty": false,
+  "configuration": {
+    "scope": "https://reference.invalid/acme/",
+    "profile": "read-update",
+    "history": false,
+    "sourceCommit": "394d3208790a488fd790257da9d48f4b293f129a",
+    "installedPayloadDigest": "819c09e3ade4bbc533c118a956af23e22d44d5b7f87a73aef3d391a98dc11093",
+    "installedContractsDigest": "48667497d6e13064316d0364cf8f49dfc247ab9189306985a357d7b558333dfe",
+    "policyDigest": "dbe8dbd5430f26e19e754d38167cd8084a32d702c695550e2ee0063dc2912430",
+    "authenticationDigest": "66941efc779f4f2431d65fdd5b2387b2af67bd7c1559e09dac032f82259ea16e",
+    "fixtureDigest": "ebcf9771f3c45afc8d6a4de097b39ce25b03821d68d4d9015ae798edeb8c6af4",
+    "fixtureId": "reference-read-update-schema-v1",
+    "capabilities": [
+      "installed-read-update-http"
+    ]
+  },
+  "reportBinding": {
+    "artifacts": {
+      "catalogDigest": "e26d3fc758a34ebb0b5028be15d28e3e09db87dc7984bba7bad6a00b26329aa0",
+      "manifestDigest": "9ec35ef4179afcdfe1ec77f9264ba7c8ef7285d5d23aa5b1b4161b47fd576be5",
+      "fixtureDigest": "ebcf9771f3c45afc8d6a4de097b39ce25b03821d68d4d9015ae798edeb8c6af4"
+    },
+    "exactConfigurationDigest": "fdcbe130767421273c839d15cd8db5fef4b8047e7aabe192a54c1d4110aca6be"
+  },
+  "claimEligible": false,
+  "targetEntry": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/read-update-admission-evidence/packed/install/node_modules/@bdp/server/dist/installed-reference-process.js",
+  "requiredIds": 129,
+  "plannedIds": 47,
+  "uncoveredIds": 103,
+  "sessions": 47,
+  "observations": 917,
+  "setupObservations": 44,
+  "nativeReadObservations": 21,
+  "scenarioStates": {
+    "pass": 47,
+    "harness-error": 87
+  },
+  "admissionRows": [
+    {
+      "id": "read-update.singleton.idempotency-key-required",
+      "state": "pass",
+      "raw": 151,
+      "client": 93,
+      "outOfBandSetup": 0,
+      "assertions": 2036
+    },
+    {
+      "id": "read-update.singleton.unsupported-media-type",
+      "state": "pass",
+      "raw": 73,
+      "client": 43,
+      "outOfBandSetup": 0,
+      "assertions": 735
+    }
+  ],
+  "timingsMs": {
+    "executes the partial cumulative RU matrix against actual installed factory HTTP and afterstate": 14678.755625,
+    "observes key and media admission against installed HTTP with paired afterstate": 1295.5260419999977
+  }
+}

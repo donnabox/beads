@@ -1,0 +1,24 @@
+{
+  "accepted": false,
+  "state": "BOUNDED STATIC REVIEW COMPLETE / ONE CLOSED-SCHEMA OMISSION",
+  "utc": "2026-10-18T07:25:17.556277+00:00",
+  "session": "2026-10-18T02:16:24Z-549f",
+  "preparationIndexSha256": "bb68261085ad2695a64e1b412ce8c4527431f61414009b560660e4abbca9b0c8",
+  "planSha256": "b380b5dd4492807cb04d5b2deac2c46f26315ecec798a753bee5b1c7f2542844",
+  "rootDispositionSha256": "710297a3b6a04dc186b0f40315f827460d934e70e5ed145b8f20cd24eff02dcf",
+  "findingsSha256": "c727a1eaa209047efd7931b6bc6c7794167e2ab5622b677e6af96e838a689081",
+  "findings": [
+    {
+      "id": "P2-N1",
+      "severity": "Low"
+    }
+  ],
+  "originalN2Resolved": true,
+  "originalN3Resolved": true,
+  "originalN1PhaseResolved": true,
+  "originalN1ClosedShapeResolved": false,
+  "sourceAuthoringReleased": false,
+  "reviewLaunchReleased": false,
+  "runtimeReleased": false,
+  "next": "Preserve plan2; separately bind only unbound closedKeys addition, then root disposition. No additional scope, runtime or actual review granted here."
+}

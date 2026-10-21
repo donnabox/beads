@@ -1,0 +1,560 @@
+{
+  "artifacts": {
+    "MODULE_NOT_FOUNDNotPrivacyProof": true,
+    "absentConformanceExplicitExclusions": [
+      "@bdp/conformance/transactional-observation",
+      "@bdp/conformance/dist/transactional-observation.js"
+    ],
+    "externalAttempts": 76,
+    "externalUnique": 69,
+    "prospectiveOutputs": 272,
+    "serverSourceModuleFamilies": 68,
+    "stockResolutionAttempts": 78,
+    "stockUnique": 71
+  },
+  "inheritedRegression": {
+    "accepted": 2,
+    "callbacks": 44,
+    "files": 8,
+    "loaderCalls": 6,
+    "nonlisteningOnly": true,
+    "refused": 4
+  },
+  "installed": {
+    "CONNECT": 2,
+    "HTTP": 126,
+    "callbacks": 21,
+    "children": 37,
+    "coldSameFutureConsumer": [
+      "I02",
+      "I04",
+      "I13",
+      "I15",
+      "I17",
+      "I19"
+    ],
+    "guards": 4,
+    "methods": {
+      "GET": 102,
+      "HEAD": 4,
+      "POST": 20
+    },
+    "ordinaryPublicCandidateChildren": 33,
+    "perCallback": [
+      {
+        "CONNECT": 0,
+        "HTTP": 13,
+        "id": "I01",
+        "ownedChildren": 1,
+        "parentAcquisitions": 2,
+        "parentOwnerSequence": [
+          {
+            "kind": "read-update-owner",
+            "stage": "probe"
+          },
+          {
+            "kind": "SQLite",
+            "stage": "probe-resource-read"
+          }
+        ],
+        "profile": "read-update"
+      },
+      {
+        "CONNECT": 0,
+        "HTTP": 13,
+        "id": "I02",
+        "ownedChildren": 1,
+        "parentAcquisitions": 2,
+        "parentOwnerSequence": [
+          {
+            "kind": "transaction-owner",
+            "stage": "probe"
+          },
+          {
+            "kind": "SQLite",
+            "stage": "probe-resource-read"
+          }
+        ],
+        "profile": "transactional"
+      },
+      {
+        "CONNECT": 0,
+        "HTTP": 10,
+        "id": "I03",
+        "ownedChildren": 2,
+        "parentAcquisitions": 2,
+        "parentOwnerSequence": [
+          {
+            "kind": "read-update-owner",
+            "stage": "probe"
+          },
+          {
+            "kind": "SQLite",
+            "stage": "probe-resource-read"
+          }
+        ],
+        "profile": "read-update"
+      },
+      {
+        "CONNECT": 0,
+        "HTTP": 10,
+        "id": "I04",
+        "ownedChildren": 2,
+        "parentAcquisitions": 2,
+        "parentOwnerSequence": [
+          {
+            "kind": "transaction-owner",
+            "stage": "probe"
+          },
+          {
+            "kind": "SQLite",
+            "stage": "probe-resource-read"
+          }
+        ],
+        "profile": "transactional"
+      },
+      {
+        "CONNECT": 0,
+        "HTTP": 10,
+        "id": "I05",
+        "ownedChildren": 2,
+        "parentAcquisitions": 2,
+        "parentOwnerSequence": [
+          {
+            "kind": "read-update-owner",
+            "stage": "probe"
+          },
+          {
+            "kind": "SQLite",
+            "stage": "probe-resource-read"
+          }
+        ],
+        "profile": "read-update"
+      },
+      {
+        "CONNECT": 0,
+        "HTTP": 0,
+        "id": "I06",
+        "ownedChildren": 1,
+        "parentAcquisitions": 0,
+        "parentOwnerSequence": [],
+        "profile": "read-update"
+      },
+      {
+        "CONNECT": 0,
+        "HTTP": 0,
+        "id": "I07",
+        "ownedChildren": 1,
+        "parentAcquisitions": 0,
+        "parentOwnerSequence": [],
+        "profile": "transactional"
+      },
+      {
+        "CONNECT": 0,
+        "HTTP": 0,
+        "id": "I08",
+        "ownedChildren": 1,
+        "parentAcquisitions": 5,
+        "parentOwnerSequence": [
+          {
+            "kind": "read-update-owner",
+            "stage": "initialize"
+          },
+          {
+            "kind": "SQLite",
+            "stage": "persisted-capture-edit"
+          },
+          {
+            "kind": "SQLite",
+            "stage": "persisted-capture-restore"
+          },
+          {
+            "kind": "read-update-owner",
+            "stage": "probe"
+          },
+          {
+            "kind": "SQLite",
+            "stage": "probe-resource-read"
+          }
+        ],
+        "profile": "read-update"
+      },
+      {
+        "CONNECT": 0,
+        "HTTP": 0,
+        "id": "I09",
+        "ownedChildren": 1,
+        "parentAcquisitions": 5,
+        "parentOwnerSequence": [
+          {
+            "kind": "transaction-owner",
+            "stage": "initialize"
+          },
+          {
+            "kind": "SQLite",
+            "stage": "persisted-capture-edit"
+          },
+          {
+            "kind": "SQLite",
+            "stage": "persisted-capture-restore"
+          },
+          {
+            "kind": "transaction-owner",
+            "stage": "probe"
+          },
+          {
+            "kind": "SQLite",
+            "stage": "probe-resource-read"
+          }
+        ],
+        "profile": "transactional"
+      },
+      {
+        "CONNECT": 0,
+        "HTTP": 0,
+        "id": "I10",
+        "ownedChildren": 1,
+        "parentAcquisitions": 2,
+        "parentOwnerSequence": [
+          {
+            "kind": "read-update-owner",
+            "stage": "probe"
+          },
+          {
+            "kind": "SQLite",
+            "stage": "probe-resource-read"
+          }
+        ],
+        "profile": "read-update"
+      },
+      {
+        "CONNECT": 0,
+        "HTTP": 0,
+        "id": "I11",
+        "ownedChildren": 1,
+        "parentAcquisitions": 2,
+        "parentOwnerSequence": [
+          {
+            "kind": "transaction-owner",
+            "stage": "probe"
+          },
+          {
+            "kind": "SQLite",
+            "stage": "probe-resource-read"
+          }
+        ],
+        "profile": "transactional"
+      },
+      {
+        "CONNECT": 0,
+        "HTTP": 9,
+        "id": "I12",
+        "ownedChildren": 2,
+        "parentAcquisitions": 2,
+        "parentOwnerSequence": [
+          {
+            "kind": "read-update-owner",
+            "stage": "probe"
+          },
+          {
+            "kind": "SQLite",
+            "stage": "probe-resource-read"
+          }
+        ],
+        "profile": "read-update"
+      },
+      {
+        "CONNECT": 0,
+        "HTTP": 9,
+        "id": "I13",
+        "ownedChildren": 2,
+        "parentAcquisitions": 2,
+        "parentOwnerSequence": [
+          {
+            "kind": "transaction-owner",
+            "stage": "probe"
+          },
+          {
+            "kind": "SQLite",
+            "stage": "probe-resource-read"
+          }
+        ],
+        "profile": "transactional"
+      },
+      {
+        "CONNECT": 0,
+        "HTTP": 9,
+        "id": "I14",
+        "ownedChildren": 2,
+        "parentAcquisitions": 2,
+        "parentOwnerSequence": [
+          {
+            "kind": "read-update-owner",
+            "stage": "probe"
+          },
+          {
+            "kind": "SQLite",
+            "stage": "probe-resource-read"
+          }
+        ],
+        "profile": "read-update"
+      },
+      {
+        "CONNECT": 0,
+        "HTTP": 9,
+        "id": "I15",
+        "ownedChildren": 2,
+        "parentAcquisitions": 2,
+        "parentOwnerSequence": [
+          {
+            "kind": "transaction-owner",
+            "stage": "probe"
+          },
+          {
+            "kind": "SQLite",
+            "stage": "probe-resource-read"
+          }
+        ],
+        "profile": "transactional"
+      },
+      {
+        "CONNECT": 0,
+        "HTTP": 9,
+        "id": "I16",
+        "ownedChildren": 2,
+        "parentAcquisitions": 2,
+        "parentOwnerSequence": [
+          {
+            "kind": "read-update-owner",
+            "stage": "probe"
+          },
+          {
+            "kind": "SQLite",
+            "stage": "probe-resource-read"
+          }
+        ],
+        "profile": "read-update"
+      },
+      {
+        "CONNECT": 0,
+        "HTTP": 9,
+        "id": "I17",
+        "ownedChildren": 2,
+        "parentAcquisitions": 2,
+        "parentOwnerSequence": [
+          {
+            "kind": "transaction-owner",
+            "stage": "probe"
+          },
+          {
+            "kind": "SQLite",
+            "stage": "probe-resource-read"
+          }
+        ],
+        "profile": "transactional"
+      },
+      {
+        "CONNECT": 1,
+        "HTTP": 8,
+        "id": "I18",
+        "ownedChildren": 2,
+        "parentAcquisitions": 2,
+        "parentOwnerSequence": [
+          {
+            "kind": "read-update-owner",
+            "stage": "probe"
+          },
+          {
+            "kind": "SQLite",
+            "stage": "probe-resource-read"
+          }
+        ],
+        "profile": "read-update"
+      },
+      {
+        "CONNECT": 1,
+        "HTTP": 8,
+        "id": "I19",
+        "ownedChildren": 2,
+        "parentAcquisitions": 2,
+        "parentOwnerSequence": [
+          {
+            "kind": "transaction-owner",
+            "stage": "probe"
+          },
+          {
+            "kind": "SQLite",
+            "stage": "probe-resource-read"
+          }
+        ],
+        "profile": "transactional"
+      },
+      {
+        "CONNECT": 0,
+        "HTTP": 0,
+        "id": "I20",
+        "ownedChildren": 4,
+        "parentAcquisitions": 0,
+        "parentOwnerSequence": [],
+        "profile": "read-update"
+      },
+      {
+        "CONNECT": 0,
+        "HTTP": 0,
+        "id": "I21",
+        "ownedChildren": 3,
+        "parentAcquisitions": 2,
+        "parentOwnerSequence": [
+          {
+            "kind": "transaction-owner",
+            "stage": "probe"
+          },
+          {
+            "kind": "SQLite",
+            "stage": "probe-resource-read"
+          }
+        ],
+        "profile": "transactional"
+      }
+    ],
+    "prospectiveParentAcquisitions": 42
+  },
+  "negativeDataControls": {
+    "IDs": [
+      "A01",
+      "A02",
+      "A03",
+      "A04",
+      "A05",
+      "A06",
+      "A07",
+      "A08",
+      "A09",
+      "A10",
+      "A11",
+      "A12",
+      "A13",
+      "A14",
+      "A15"
+    ],
+    "executed": false
+  },
+  "noCountsOnlyAcceptance": true,
+  "source": {
+    "HTTPSubset": 2,
+    "S03Phases": 2,
+    "S11ExtraLegacyAcquisitionsInsideTwoCallbacks": 2,
+    "beforePlusTerminalHookRecords": 102,
+    "callbacks": 51,
+    "defaultCallbackMs": 5000,
+    "persistedSubset": 21,
+    "priorUnresolvedSQLiteNotErased": true
+  },
+  "stages": {
+    "allActualAuthoritiesClosed": true,
+    "count": 69,
+    "immediateAuditPairs": [
+      [
+        "loader-regression-source",
+        "audit-loader-regression-source"
+      ],
+      [
+        "lifecycle-source",
+        "audit-lifecycle-source"
+      ],
+      [
+        "bound-consumer-loader",
+        "audit-bound-consumer-loader"
+      ],
+      [
+        "lifecycle-I01",
+        "audit-lifecycle-I01"
+      ],
+      [
+        "lifecycle-I02",
+        "audit-lifecycle-I02"
+      ],
+      [
+        "lifecycle-I03",
+        "audit-lifecycle-I03"
+      ],
+      [
+        "lifecycle-I04",
+        "audit-lifecycle-I04"
+      ],
+      [
+        "lifecycle-I05",
+        "audit-lifecycle-I05"
+      ],
+      [
+        "lifecycle-I06",
+        "audit-lifecycle-I06"
+      ],
+      [
+        "lifecycle-I07",
+        "audit-lifecycle-I07"
+      ],
+      [
+        "lifecycle-I08",
+        "audit-lifecycle-I08"
+      ],
+      [
+        "lifecycle-I09",
+        "audit-lifecycle-I09"
+      ],
+      [
+        "lifecycle-I10",
+        "audit-lifecycle-I10"
+      ],
+      [
+        "lifecycle-I11",
+        "audit-lifecycle-I11"
+      ],
+      [
+        "lifecycle-I12",
+        "audit-lifecycle-I12"
+      ],
+      [
+        "lifecycle-I13",
+        "audit-lifecycle-I13"
+      ],
+      [
+        "lifecycle-I14",
+        "audit-lifecycle-I14"
+      ],
+      [
+        "lifecycle-I15",
+        "audit-lifecycle-I15"
+      ],
+      [
+        "lifecycle-I16",
+        "audit-lifecycle-I16"
+      ],
+      [
+        "lifecycle-I17",
+        "audit-lifecycle-I17"
+      ],
+      [
+        "lifecycle-I18",
+        "audit-lifecycle-I18"
+      ],
+      [
+        "lifecycle-I19",
+        "audit-lifecycle-I19"
+      ],
+      [
+        "lifecycle-I20",
+        "audit-lifecycle-I20"
+      ],
+      [
+        "lifecycle-I21",
+        "audit-lifecycle-I21"
+      ],
+      [
+        "required-smoke",
+        "audit-required-smoke"
+      ]
+    ],
+    "unpreparedArgvStages": 32
+  }
+}

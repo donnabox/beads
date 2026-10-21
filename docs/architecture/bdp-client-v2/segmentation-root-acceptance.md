@@ -1,0 +1,7 @@
+# Root acceptance: bounded conformance artifact segmentation
+
+Accepted revised plan d5377fb47a7c64f424c77889a5e777c1cbcb36121a85c36bcc6394ad54ccf610 and its source-grounded council dispositions. Native accepted the two-source approach with implementation conditions, all included. External concerns about prerequisite closure, omitted requirements, fixture collisions, exact bindings and aggregate budgets are incorporated. Claimed mandatory route-digest changes and an automatic compression detour are correctly rejected: no new routes exist in the comparator, and remaining authorized contracts need ongoing capacity beyond the small initial overage.
+
+Begin only step1: a source-private bounded two-artifact validator and meaningful negative tests, with tiny fixtures. Preserve factories, parser limits, public gates, runner semantics and complete canonical inventory. No app adapter or C fixture migration until root assigns the exact repaired integration head and confirms measured source/fixture union. This staging is an implementation partition of the reviewed plan, not permission to skip later actual installed evidence.
+
+Start step1 at current main1f9d7dbc401f6a265cf1ce0bdfea0fe493cd79a5; later merge the reference integration ordinarily. No runtime/store/evaluator or other lane overlap. Existing private helper visibility changes require specific root review. Root owns publication and exact integration.

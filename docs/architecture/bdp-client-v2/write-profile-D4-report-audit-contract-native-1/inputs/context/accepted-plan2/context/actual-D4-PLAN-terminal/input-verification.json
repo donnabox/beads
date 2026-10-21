@@ -1,0 +1,62 @@
+{
+  "session": "2026-10-18T02:16:24Z-549f",
+  "preparationIndexSha256": "de9410cb3624b0e151422c96f27e9f9f091bb416ce1bb7c3e1f1dd6e76b9b667",
+  "preparationIndexedFiles": 87,
+  "sourceFilesIndependentlyRehashed": 679,
+  "contextPinsIndependentlyRehashed": 52,
+  "artifactToolPinsIndependentlyRehashed": 28,
+  "frozenInnerPinsChecked": 63,
+  "toolRealpathHashesRemeasured": {
+    "/opt/homebrew/bin/claude": {
+      "realpath": "/opt/homebrew/Caskroom/claude-code@latest/2.1.263/claude",
+      "sha256": "ef5d2909c8af49f31ab6d5487e90316777bc2fac170adfe8160716caa8aaf4f9"
+    },
+    "/opt/homebrew/opt/python@3.14/bin/python3.14": {
+      "realpath": "/opt/homebrew/Cellar/python@3.14/3.14.5/Frameworks/Python.framework/Versions/3.14/bin/python3.14",
+      "sha256": "2477b47fa3ae65b9574eb18a15edb364e96948eaa1875ad3f1c80d780efc9c12"
+    },
+    "/opt/homebrew/bin/git": {
+      "realpath": "/opt/homebrew/Cellar/git/2.54.0/bin/git",
+      "sha256": "9b19807c702934b8c51fd2da8c2d38053bd7328536546e5a47eb3914dcc7bcde"
+    },
+    "/usr/bin/git": {
+      "realpath": "/usr/bin/git",
+      "sha256": "b8763cf250e607a778bb4603cecb5b90338814d0a3dfcba0d57b1de242f610e9"
+    },
+    "/bin/ps": {
+      "realpath": "/bin/ps",
+      "sha256": "3bbba882e30d91fc4ff6e6844ca7c59fef4351b9a3fea35dca55708d6d487d1c"
+    },
+    "/opt/homebrew/bin/gh": {
+      "realpath": "/opt/homebrew/Cellar/gh/2.93.0/bin/gh",
+      "sha256": "282ec2bb5c6abb6cee50cbfa5f8c04ac2fd6b8523693970a5cab331b121f5430"
+    },
+    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-D4-owned-set-plan-review-1/claude-plan-review/guarded-action-session-20261018-021624-549f.py": {
+      "realpath": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-D4-owned-set-plan-review-1/claude-plan-review/guarded-action-session-20261018-021624-549f.py",
+      "sha256": "b2d467920638e68d3b007ba9daa432e971636245eca988bfb29d7a99d6e3fb30"
+    }
+  },
+  "runnerActualBeforeAfterEqual": true,
+  "actualBeforeAfterStatus": "empty / clean in runner records; no auditor Git invocation",
+  "sourceCurrentMatchesAll679": true,
+  "frozenPrepExceptions": [
+    "claude-plan-review/binding.json",
+    "launch-supervision/control.json"
+  ],
+  "exceptionsOnlyChangedKey": "rootLaunchReleased false→true, exact root closed/released snapshots",
+  "rootReleaseSha256": "27dc10903d4b41dd51c96f2dabe55436cbc7755a459da4d35284da4b5e4d58ab",
+  "releasedBindingSha256": "73a7a738f0a85058272fbce4c217cfe6f20dc14f5635c5db7f22acaeb2286cf5",
+  "releasedControlSha256": "176294eddb1c96d2a6f347feb8ec5efd05e97df3c40899391040e518223055f7",
+  "rootActualAttemptsAllowed": 1,
+  "retryAllowed": false,
+  "actualReviewerProcessPid": 38132,
+  "wrapperPid": 38109,
+  "guardChecks": 60,
+  "allGuardExitsZero": true,
+  "supervisorSha256": "791e5a566561798aa3352f19b021e6db9beeddb033ae5725c7d031d51716f95c",
+  "strictReadOnlyArgvUnchanged": true,
+  "historyFailureArtifactsPinnedAndCopied": true,
+  "noIncomingSourceAbsorption": true,
+  "productRuntimeOrAuthoringReleased": false,
+  "independentAuditNotFindingDisposition": true
+}

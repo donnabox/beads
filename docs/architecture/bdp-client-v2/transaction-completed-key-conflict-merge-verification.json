@@ -1,0 +1,52 @@
+{
+  "pr": {
+    "headRefOid": "8d23862a03e65fa378a246310d804f0408b73937",
+    "mergeCommit": {
+      "oid": "89d639bfbdcbf77e4840e82fbee07789f334c9f6"
+    },
+    "mergedAt": "2026-10-14T11:33:57Z",
+    "state": "MERGED"
+  },
+  "commit": {
+    "sha": "89d639bfbdcbf77e4840e82fbee07789f334c9f6",
+    "node_id": "C_kwDOUHbQ5toAKDg5ZDYzOWJmYmRjYmY3N2U0ODQwZTgyZmJlZTA3Nzg5ZjMzNGM5ZjY",
+    "url": "https://api.github.com/repos/gastownhall/bdp/git/commits/89d639bfbdcbf77e4840e82fbee07789f334c9f6",
+    "html_url": "https://github.com/gastownhall/bdp/commit/89d639bfbdcbf77e4840e82fbee07789f334c9f6",
+    "author": {
+      "name": "Donna Box",
+      "email": "dbox@boxenllc.com",
+      "date": "2026-10-14T11:33:56Z"
+    },
+    "committer": {
+      "name": "GitHub",
+      "email": "noreply@github.com",
+      "date": "2026-10-14T11:33:56Z"
+    },
+    "tree": {
+      "sha": "ea2c4dc704f50f7c6333ba962454cde28131999f",
+      "url": "https://api.github.com/repos/gastownhall/bdp/git/trees/ea2c4dc704f50f7c6333ba962454cde28131999f"
+    },
+    "message": "Merge pull request #110 from gastownhall/codex/vickie-completed-key-conflict\n\ntest: observe completed-key conflicts across transaction restart",
+    "parents": [
+      {
+        "sha": "0432d48db8f340016a000d633d799aebbd26db3f",
+        "url": "https://api.github.com/repos/gastownhall/bdp/git/commits/0432d48db8f340016a000d633d799aebbd26db3f",
+        "html_url": "https://github.com/gastownhall/bdp/commit/0432d48db8f340016a000d633d799aebbd26db3f"
+      },
+      {
+        "sha": "8d23862a03e65fa378a246310d804f0408b73937",
+        "url": "https://api.github.com/repos/gastownhall/bdp/git/commits/8d23862a03e65fa378a246310d804f0408b73937",
+        "html_url": "https://github.com/gastownhall/bdp/commit/8d23862a03e65fa378a246310d804f0408b73937"
+      }
+    ],
+    "verification": {
+      "verified": true,
+      "reason": "valid",
+      "signature": "-----BEGIN PGP SIGNATURE-----\n\nwsFcBAABCAAQBQJqz2ikCRC1aQ7uu5UhlAAA9LcQAJDvhe+nE8Fav3gXR/4E5SGF\n8/mQ3DUcakIMa+yQqu/RgfdNTbOYoJaRpKducgh4LXVjvJHtJFrXV4+zTExChOHX\nJpMya/APeYEdSDYTVQaqwiKBBWPsUhUIP4Bz+2AuZLbtsmUd11N7OQuhsEVFi7FG\n618EWhWhij5tFKwoPhjly5e3h9mqlWt0sBh0hl8BH8PxHYXT8+/ieN/9xfxocBlL\nxJKjlL16TRQ1f45+MKga2zBuSS9Q9dGYQDQN/97k/DCInN2OmAaZlVuonfwKeYDn\n16FvwZxyy9cyXglI0/fL2UBz4vHzrqHyTaauyDPdDv24SRasEBYMFgoHntiZSExK\nNKp/173BiVTqhxM0p0oagOIIxlM+S/JGQ3bX631fswlv8wHGhLsslQxUPRQcrxCi\n2riWkz6Un/3Dp5iTmSqfBdNeTPEOEh1X+XiRBBkhLlV0hjpmKDNR7P+u6YbpQLXt\nDF8Y2Qk6q1QJCsFbAc7QkceXUwCODesFnjTySGKaL7MltghaiwHNxhNkxvhbnzBK\niwteDUc5fkJeuQD4+cu7+CMtRjKSMS4ornhXXzqGl3ORd0zYJnU42xPrpb2JVjC2\nI0KqKV3nDJBSvL65tzpJGanZfXS6GsTO7ydH70ifAbeNqB0UWZFGYnDIQ54J5ugC\n6ryNwDpO2emsveUzrpvx\n=Vdsk\n-----END PGP SIGNATURE-----\n",
+      "payload": "tree ea2c4dc704f50f7c6333ba962454cde28131999f\nparent 0432d48db8f340016a000d633d799aebbd26db3f\nparent 8d23862a03e65fa378a246310d804f0408b73937\nauthor Donna Box <dbox@boxenllc.com> 1791977636 -0700\ncommitter GitHub <noreply@github.com> 1791977636 -0700\n\nMerge pull request #110 from gastownhall/codex/vickie-completed-key-conflict\n\ntest: observe completed-key conflicts across transaction restart",
+      "verified_at": "2026-10-14T11:33:57Z"
+    }
+  },
+  "expectedTree": "ea2c4dc704f50f7c6333ba962454cde28131999f",
+  "verified": true
+}

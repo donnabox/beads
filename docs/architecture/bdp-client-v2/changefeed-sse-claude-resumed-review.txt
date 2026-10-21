@@ -1,0 +1,109 @@
+I read the plan, the author report, and every production file in the diff (plus the store/consistency/changefeed/read-http code they depend on, the narrated fixture rows, and the boundary/smoke tooling). No files were written.
+
+# G2a changefeed SSE — independent static review
+
+Frozen `b64d7e4` against base `94ef8da`, 17 files. Scope limited to the reviewed plan (`transaction-sse-next-plan-revised.md`) and report. I did not rely on the native run's 321 tests / 5 probes.
+
+---
+
+## Findings
+
+### 1. Medium — No invariant binds heartbeat cadence to the installed socket idle deadline
+
+**Location:** `packages/server/src/transaction-sse.ts:10-14`; `packages/server/src/transaction-runtime-configuration.ts:113-122`, `:294-295`; `packages/server/src/transaction-runtime.ts:225,236`
+
+**Evidence:** `captureTransactionRuntimeConfiguration` validates every transport timer it accepts (`:179-181`) and this change added exactly one cross-timer invariant — `headersTimeout > requestTimeout` → `TypeError`. Nothing relates `changefeedStream.heartbeatMilliseconds` (5000) to `transport.timeout` (10000), even though continuous idle delivery depends entirely on heartbeat writes landing inside the socket idle window that `server.timeout = …` installs and `server.on("timeout", socket => socket.destroy())` enforces. `grep heartbeatMilliseconds` across `packages/server/src` and `apps` yields only the default, the defaults assertion, and one direct pump call with `{pollMilliseconds: 1, heartbeatMilliseconds: 2}`. `pumpTransactionChanges` validates neither value: `pollMilliseconds: 0` busy-loops the owner, `heartbeatMilliseconds >= transport.timeout` silently stops keeping the socket alive.
+
+**Impact:** raising the heartbeat or lowering `transport.timeout` converts the central G2a claim ("continuous idle delivery") into "socket destroyed at 10 s" with no fast failure. The only detector is the 15.1 s idle / 45 s cohort installed test — the most expensive and most skippable test in the change.
+
+**Bounded remedy:** one assertion beside the existing `headersTimeout`/`requestTimeout` check, e.g. `if (settings.changefeedStream.heartbeatMilliseconds * 2 > settings.transport.timeout) throw new TypeError(...)`, plus positivity/range checks on `pollMilliseconds`/`heartbeatMilliseconds`/`maximumStreams` in the same style as the transport seam validation. Current defaults already satisfy it; no wire or protocol change.
+
+---
+
+### 2. Medium — Post-header stream faults are discarded, so owner corruption is indistinguishable from a client disconnect
+
+**Location:** `packages/server/src/transaction-runtime.ts:185-198`, `:200-207`
+
+**Evidence:** `if (response.headersSent || error instanceof ScopeServerOperationAbortedError) response.destroy();`. Once headers are sent, every cause collapses to the same branch: `Error("missing retained change group")` (`transaction-store.ts:1499`, `:1503`, `:1510`), `Error("changefeed stream lost serving entry")` (`transaction-runtime.ts:174`), `TransactionMinimumFailure("cursor-expired"/"foreign-view")` (`transaction-changefeed.ts:82-84`), and an ordinary disconnect. `dispatch` then swallows the task outcome (`void task.then(del, del)`), so no cause reaches `pending`, `runtime.close()`'s `AggregateError`, or any seam. The pump *does* preserve identity — `transaction-sse.test.ts:429-438` asserts `rejects.toBe(original)` — but the runtime drops it. The plan requires "Retain diagnostics privately" (§"One owner, one frame at a time").
+
+**Impact:** the store's deliberate corruption signal (commented as "corruption, not guessed expiry") becomes an invisible dropped connection on the live path. `transaction-sse.test.ts:509-525` asserts only the wire shape (one `HTTP/1.1` status, no `event: error`), never that the cause survived.
+
+**Bounded remedy:** narrow the swallow — destroy on abort-shaped causes only, and route anything else to a private diagnostic (an optional `onStreamFault` test seam, or the existing `failures` list surfaced by `runtime.close()`). Wire behavior stays exactly as currently tested.
+
+---
+
+### 3. Medium — A `packages/server` test imports an `apps/bdptest` helper by relative path, inverting the declared dependency direction
+
+**Location:** `packages/server/src/transaction-sse.test.ts:21` → `../../../apps/bdptest/test-support/raw-sse-recorder.js`
+
+**Evidence:** `scripts/check-dependency-boundaries.mjs:10-27` permits `@bdp/server` only `@bdp/protocol`, and registers `@bdp/bdptest → @bdp/server`. The checker inspects manifests, tsconfig references, and test-only *specifier shapes*; `scripts/dependency-boundary-rules.mjs:3,74-81` exempts any path containing `test-support` when the importer is a test, so a relative path escaping the package root is never examined. This is the **only** `packages/* → apps/*` import in the tree (grep: 1 hit); all 10 pre-existing cross-tree relative imports run the sanctioned direction (`apps/bdptest/test-support/development-discovery.ts:2`, etc.). The repo already has the intended mechanism — `@bdp/server/testing` → `packages/server/test-support/testing.ts`, wired in both `tsconfig.check.json` `paths` and `vitest.config.ts` (whose own comment calls it the cross-package integration-test subpath) — and the author used `packages/server/test-support/` correctly for `transaction-replica.ts` in this same change. Separately, `tsconfig.check.json` `include` covers `packages/*/test-support/**/*.ts` but not `apps/*/test-support/**/*.ts`, so the recorder is type-checked only transitively.
+
+**Impact:** `packages/server`'s suite can no longer be built or run from its own subtree, and the declared boundary map becomes advisory for this edge — a future app-side recorder change breaks a library package's tests with no boundary error.
+
+**Bounded remedy:** move `raw-sse-recorder.ts` to `packages/server/test-support/`, re-export from `packages/server/test-support/testing.ts`, and have `apps/bdptest/src/transactional-sse-installed.test.ts` import `@bdp/server/testing` (an already-allowed edge). No recorder logic changes.
+
+---
+
+### 4. Low — `service.stream` reports cancellation with a non-abort-typed rejection; the runtime's generic branch can reach finite-500 for a normal abort
+
+**Location:** `packages/server/src/transaction-service.ts:202-206`; `packages/server/src/transaction-runtime.ts:185-197`
+
+**Evidence:** pre-abort returns `Promise.reject(supplied.reason)`, and that reason is `new Error("client disconnected")` (`node-http-disconnect.ts:16`) — a plain `Error`. In the runtime catch, `headersSent` is false (the callback and therefore `writeHead` never ran), the error is neither `ScopeServerOperationAbortedError` nor `TransactionStreamCapacityError`, so control falls through to the `else if (!response.destroyed)` 500 branch. Today that is unreachable: the preceding `service.changes` (`transaction-http.ts:409`) checks the same signal first and raises `ScopeServerOperationAbortedError` (`transaction-consistency.ts:107`), and close-before-registration is masked by `!response.destroyed`. The guard is an implicit ordering invariant (only microtasks run between `await handler.handle(...)` resolving and `service.stream` being entered), not a check.
+
+**Impact:** latent. The plan's "Handle pre-aborted admission and close-before-registration as normal cancellation" and "Normal abort does not emit 500" hold by coincidence; any future await introduced between `handle` and `service.stream` makes a normal disconnect take the finite-500 path. `transaction-service.test.ts:905-913` asserts the pre-abort rejection but not its type, and no test covers the runtime's pre-abort branch.
+
+**Bounded remedy:** reject pre-abort/registration-race cancellation with `ScopeServerOperationAbortedError` (already imported in both files), or test `signal.aborted` in the runtime catch before the 500 fallback. One line; no change to any tested path.
+
+---
+
+### 5. Low — Finite/SSE "exact group serialization" is proven through a JSON round-trip, not against finite response bytes
+
+**Location:** `packages/server/src/transaction-sse.test.ts:151-161`; `apps/bdptest/src/transactional-sse-installed.test.ts:171`
+
+**Evidence:** the source test compares SSE frames to `[...first.groups, ...second.groups].map(g => transactionChangeFrame(g).slice(0, -2))`, where `first`/`second` come from `await response.json()`. Both sides are produced by `stringifyJsonValue` after a `JSON.parse` of the finite body; the finite body's own bytes are never compared. `JSON.parse` normalizes integer-like key order, so a divergence confined to such keys is invisible — and conversely, an admitted group with integer-like property keys would fail this assertion for a reason unrelated to SSE. The installed test is a structural `toEqual`, weaker still.
+
+**Impact:** plan done-when #13 ("exact finite/SSE group serialization") is established modulo a round-trip rather than as byte identity. The `1.0e2 → 100` evidence (`:135-149`, `:162`) is genuinely wire-level and unaffected.
+
+**Bounded remedy:** additionally assert that the SSE `data:` payload is a substring of the finite `await response.text()` body, using text already fetched in the same test. No production change.
+
+---
+
+### 6. Low — Three production modules now begin with an import above their module docblock
+
+**Location:** `packages/server/src/index.ts:1-2`; `packages/server/src/transaction-runtime.ts:1-4`; `packages/server/src/transaction-runtime-configuration.ts:1-2`
+
+**Evidence:** e.g. `transaction-runtime-configuration.ts` is now `import { TRANSACTION_SSE_DEFAULTS } …` / `/** Private captured runtime inputs. No installed launcher or profile admission. */` / `import { createHash, … } from "node:crypto"`. The leading docblock is now attached to the `node:crypto` import rather than to the module, in three files whose docblocks carry the non-attestation disclaimers this review and report discipline cites ("Never selected by installed config/profile admission", "No installed launcher or profile admission").
+
+**Impact:** cosmetic, but it detaches exactly those disclaimers and reads as an automated-insertion artifact.
+
+**Bounded remedy:** move the three new import lines below the existing leading docblock in each file.
+
+---
+
+### 7. Low — Deferred `start=now` + `Last-Event-ID` returns 500 on precisely the path an EventSource reconnect would take
+
+**Location:** `packages/server/src/transaction-http.ts:404-405`; `developmentGap` at `:113-117`
+
+**Evidence:** selected SSE with `start=now` plus any `Last-Event-ID` returns `empty(500)` + `x-bdp-development-limit: start-now-last-event-id` before `service.changes`, hence without context headers (`transaction-sse.test.ts:254` pins 500). Per the HTML spec, an `EventSource` replays `Last-Event-ID` on every reconnect after its first received `id:` — so a `?start=now` stream that delivers one group and drops reconnects into an unconditional 500.
+
+**Impact:** inside the declared boundary — the plan (§"Real ambiguities" #1) and the report both keep this deferred, and browser EventSource/CORS are explicit gaps (`Origin` is refused at `transaction-runtime.ts:154-157`). Not a defect against frozen scope. Recorded because two declared gaps compound: the deferred cursor combination *is* the reconnect path of the deferred client.
+
+**Bounded remedy:** none inside G2a. When dispositioned, prefer a local-reference 4xx over a development 500 so the gap is client-legible; record the compounding in the gap ledger now.
+
+---
+
+## Verified clean (independent reading, for confidence in what I am *not* flagging)
+
+- **No lost or duplicated group** across admission → registration → poll. `page.after` echoes the requested cursor (`transaction-store.ts:1522`); `after` advances only to a checkpoint whose frame was written (`transaction-sse.ts:83`); `captureChangesStart()` is evaluated once *outside* the minimum retry loop (`transaction-service.ts:272`), so `start=now` is not recaptured per attempt. Only microtasks separate the first observation from `writeHead`, and anything committed in between is picked up by the next poll.
+- **Backpressure/heartbeat.** While `write(false)` awaits drain there is no owner read, no comment, and no second frame; all four listeners (`drain`/`error`/`close`/`abort`) are removed on every exit path (`transaction-sse.ts:41-65`); `lastWrite` restarts from the last *successful* drain, so comments cannot accumulate or queue. SQLite is never held across the await.
+- **Lifecycle/cleanup.** `close()` sets `accepting = false`, aborts all controllers, then snapshots `streams` + `active` in one synchronous block (`transaction-service.ts:433-436`) — no pump can register work after the snapshot, and no stream task awaits `service.close`. `finish` deletes registry entries one microtask ahead of the runtime's await continuation, so `runtime.close()` reaches `service.close()` with an empty registry; `closeAllConnections` → `close` → abort → pump unwind → `pending` settle ordering is correct.
+- **Representation selection** is a faithful parameterization of the existing parser: `acceptsJson` is now `mediaQuality(...) > 0` and is byte-for-byte equivalent on `null`, `""`, malformed quoting, `*/*`, `application/*`, and `q=0` inputs. JSON wins ties and missing Accept. `undefined` falls through to the pre-existing bodyless 406 via `applyReadHttpSemantics`, and error responses are never renegotiated because that helper only touches 200/204 — so a repeated-`Last-Event-ID` 400 stays 400 under `Accept: text/event-stream`.
+- **HEAD / 304 / 412.** All pass through `applyReadHttpSemantics` untouched (status and content-type gates both miss), carry the three context headers, carry no ETag/Last-Modified/Content-Length (304) or `Content-Length: 0` (412), and reserve no live slot. Conditional evaluation is correct against a null validator (`If-Match: *` → pass, `If-None-Match: *` → 304, specific tags → 412/200). Matches the unmodified narrated rows `sse-selected-after-json-exclusion`, `changes-head-event-stream`, `changes-none-match-star`, `changes-match-specific`, `changes-match-precedence` in `fixtures/transactional/http-contracts.json`.
+- **Finite preservation.** `events-head-event-stream` and `resource-events-head-event-stream` remain correctly unsatisfied; `transaction-events.test.ts` is untouched and the Scope/Resource `?view=events` 406s are re-pinned over real wire at `transaction-sse.test.ts:255-256`. `transaction-changefeed.test.ts:619-621` still pins JSON ignoring `Last-Event-ID`. Only the single SSE-406 assertion changed. (Note: it changed method as well as expectation — GET/406 → HEAD/200 — so the GET-SSE case at that site now lives only in `transaction-sse.test.ts`, where it is covered extensively over raw sockets. Acceptable; a GET there would not terminate.)
+- **Frame safety.** `id`/`event`/`data` cannot carry raw CR/LF: checkpoints match `cg_[A-Za-z0-9_-]{43}_[A-Za-z0-9_-]{43}_[1-9][0-9]*`, and `stringifyJsonValue` is compact with `JSON.stringify` primitive escaping. `genesis` can never be a frame `id` (`row.position >= start + 1 >= 1`). `TRANSACTION_CHANGEFEED_BYTES` = **186,334,744** (confirmed by loading `dist`), +512 = **186,335,256** < `MAX_STRING_LENGTH` **536,870,888** — report arithmetic checks out, and no post-admission size refusal was added.
+- **Settings hash.** `settings` key order is identical to `TRANSACTION_RUNTIME_DEFAULTS` (spread, then same-key overwrite preserves insertion position), so the installed test's digest reconstruction from `TRANSACTION_RUNTIME_DEFAULTS` is sound and `changefeedStream` is genuinely bound into `runtimeConfigurationIdentity`. `freeze` is recursive, so `settings.transport` really is frozen. Any `transport` seam sets `seamCapture.supplied` and suppresses metadata (`configurationMetadata === undefined`).
+- **Raw bridge / disconnect.** `node-http-disconnect.ts` is a byte-identical extraction and the Read call site (`index.ts:456`) is unchanged. `request.signal` reaches only `service.changes` and `service.events` (`transaction-http.ts:409`, `:449`) — POST/submit/sequence/receipt/Point paths pass no signal, so the report's "Point and receipt signal behavior is unchanged" is accurate.
+- **Replica oracle** is a verbatim move with `linkType` parameterized; no assertion weakened or dropped.
+- **Smoke/exports.** Both new emitted modules appear in the packed-output inventory and the denied-subpath list; `packages/server/package.json` `exports` still exposes only `.` and `./development`, and `conditionalReadStatus`/`selectChangefeedMedia` remain package-internal.
+
+**Not re-verified by me (declared out of scope or unobservable statically):** erasure publication fencing, mutable views, Event Source SSE, set HTTP admission, and the real-socket backpressure/`server.timeout` interaction — finding 1 covers the last of these as a configuration-invariant gap; the report's "deterministic injected backpressure, not an RSS/stress claim" framing is honest about the rest.

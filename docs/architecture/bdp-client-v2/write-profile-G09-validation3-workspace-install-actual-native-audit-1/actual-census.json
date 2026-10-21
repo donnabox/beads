@@ -1,0 +1,95 @@
+{
+  "collector": {
+    "pgid": 63368,
+    "pid": 63371
+  },
+  "intConversionForPIDAndGroupSelection": true,
+  "noAdditionalAuditorCensus": true,
+  "noGlobalAllTransientEscapedDomainClaim": true,
+  "observer": {
+    "notClaimedAbsentInOwnCensus": true,
+    "pgid": 65675,
+    "pid": 65681
+  },
+  "probe": {
+    "bothEOF": true,
+    "directReaped": true,
+    "pgid": 65682,
+    "pid": 65682,
+    "rawExit": 0
+  },
+  "raw": {
+    "bytes": 205984,
+    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation3-root-first4-dispatch-1/workspace-install/postterminal-census.stdout",
+    "sha256": "8e81115e9e3764ab43973f76eacdc3ce1266754252082c5fa4634ecdb50a87a0"
+  },
+  "rawRows": 1387,
+  "selectedRows": [],
+  "selectionOrigins": [
+    {
+      "basis": "actual local getpid/getpgrp; no signal authority",
+      "pgid": 63368,
+      "pid": 63371,
+      "role": "collector"
+    },
+    {
+      "basis": "actual retained Popen start_new_session",
+      "pgid": 63372,
+      "pid": 63372,
+      "role": "direct-wrapper"
+    },
+    {
+      "pgid": 64099,
+      "pid": 64099,
+      "receipt": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation-preparation-3/run/workspace-install.processes.jsonl",
+      "role": "actual-inner-sample"
+    },
+    {
+      "pgid": 64099,
+      "pid": 64099,
+      "receipt": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation-preparation-3/run/workspace-install.processes.jsonl",
+      "role": "actual-inner-sample"
+    },
+    {
+      "pgid": 64099,
+      "pid": 64099,
+      "receipt": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation-preparation-3/run/workspace-install.processes.jsonl",
+      "role": "actual-inner-sample"
+    },
+    {
+      "pgid": 64099,
+      "pid": 64099,
+      "receipt": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation-preparation-3/run/workspace-install.processes.jsonl",
+      "role": "actual-inner-sample"
+    },
+    {
+      "pgid": 64099,
+      "pid": 64099,
+      "receipt": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation-preparation-3/run/workspace-install.processes.jsonl",
+      "role": "actual-inner-sample"
+    },
+    {
+      "pgid": 64099,
+      "pid": 64099,
+      "receipt": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation-preparation-3/run/workspace-install.processes.jsonl",
+      "role": "actual-inner-sample"
+    },
+    {
+      "pgid": null,
+      "pid": 64099,
+      "receipt": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation-preparation-3/run/workspace-install.exit.json",
+      "role": "actual-inner-sampledPid"
+    }
+  ],
+  "taskPGIDs": [
+    63368,
+    63372,
+    64099
+  ],
+  "taskPIDs": [
+    63371,
+    63372,
+    64099
+  ],
+  "unretainedGuardDataCheckerIdentities": "UNKNOWN"
+}

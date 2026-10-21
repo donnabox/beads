@@ -1,0 +1,19 @@
+[
+  {
+    "id": "D4-ORD27-N1",
+    "severity": "Low",
+    "location": "H5 report_controls.py11-15,112,118; subject audit.py5 / scanner.py8-10",
+    "title": "D03/D04 emitted receipts misstate the concrete exception class",
+    "trigger": "Original A.audit_d4 imported scanner.need raises concrete scanner.Refusal, a RuntimeError subclass. exact_refusal catches it but emits literal exceptionType RuntimeError.",
+    "impact": "Exact reasons/catch behavior can remain correct, but emitted actual-class attribution is false. The proposed concrete-class audit cannot accept that literal as observed class. Exact27 authority requires root disposition before activation.",
+    "affectedSelected": [
+      "D03--unit",
+      "D04--unit"
+    ],
+    "otherCallers": "D06 at131, unselected required/unattempted. No other selected adapter reaches exact_refusal.",
+    "M02Distinction": "Root3178137e preserved an erroneous prospective RuntimeError label; actual M02 adapter correctly retained type(exc).__name__=Refusal. It does not disposition this emitted-label defect.",
+    "recommendation": "Keep proposal27 CLOSED. Any separately named unaffected25 authority retains D03/D04 and allother32 REQUIRED/UNATTEMPTED, no M02 rerun. Helper type(exc).__name__ correction requires separate immutable successor/native/root release, never in-place repair or reason/deadline weakening.",
+    "sourceEdited": false,
+    "subjectEvaluated": false
+  }
+]

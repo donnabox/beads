@@ -1,0 +1,139 @@
+{
+  "accepted": true,
+  "at": "2026-10-15T20:23:40.434591+00:00",
+  "head": "a18fa993703185a108df4ad75b6d142072ba8736",
+  "checks": [
+    {
+      "stage": "setup",
+      "actualExit": 0,
+      "evidenceSha256": "9391f7225f1ef31c58178998ccd5b59318506a0bba614ce5794cd65dfc7a4ac8"
+    },
+    {
+      "stage": "typecheck",
+      "actualExit": 0,
+      "evidenceSha256": "47ffeacfedab61086a7a5b5b3a993eb47873c950df55faf4509ecddb42a89155"
+    },
+    {
+      "stage": "build",
+      "actualExit": 0,
+      "evidenceSha256": "efbb05d3dd012c9adec5bd15a8f8d7a9440292d031b22448c989f8201eb7dacf"
+    },
+    {
+      "stage": "format-check",
+      "actualExit": 0,
+      "evidenceSha256": "a97736a8cb91564b1af1a59ec659a50df9a09975f02c17385883b644fec95147"
+    },
+    {
+      "stage": "lint",
+      "actualExit": 0,
+      "evidenceSha256": "a35accb83842a81494ca33a32c53c72d9479b498908f361ecabdc41a2865028d"
+    },
+    {
+      "stage": "boundaries",
+      "actualExit": 0,
+      "evidenceSha256": "cb5c753c0acd2758d887adc6f340492c1709dbeed8770efa7ade6fcad25942da"
+    },
+    {
+      "stage": "read-seal",
+      "actualExit": 0,
+      "evidenceSha256": "21e9f20b039564edcba49d4e03dd4ecba43e894954ce9cbb64c84f37032d1ef9"
+    },
+    {
+      "stage": "build-inventory",
+      "actualExit": 0,
+      "evidenceSha256": "cb90c7beb84b29671df655583849b3b4b7939eddb8f445b4ed4a45721baab866"
+    },
+    {
+      "stage": "node-version",
+      "actualExit": 0,
+      "evidenceSha256": "b63308b51532ee6c53475e5015008004ab3381e13f5887e724dad2015c4c87cf"
+    },
+    {
+      "stage": "package-directory",
+      "actualExit": 0,
+      "evidenceSha256": "674fd91a41bb0ef3262b9377e1085b6798a61f1edeccca1e21d4e8d62a9bdf1d"
+    },
+    {
+      "stage": "pack-protocol",
+      "actualExit": 0,
+      "evidenceSha256": "925de85d99344c6b39d7f7021e18429795a7d76cbe67a69edd4acb581c9405c6"
+    },
+    {
+      "stage": "pack-server",
+      "actualExit": 0,
+      "evidenceSha256": "febe702633753d57ba969b53a013373f5bee62d1d4faf1b8a5a84491480b3dd3"
+    },
+    {
+      "stage": "verify-tar",
+      "actualExit": 0,
+      "evidenceSha256": "f69ac5092b6d477c4a227ba7d5bfd3b0f37d0b34b2a0c16e23cc24dec99a827f"
+    },
+    {
+      "stage": "prepare-consumer",
+      "actualExit": 0,
+      "evidenceSha256": "7d277a1faa89d6891876ca6c3ac36dd6cbed918545b3a1bd5f032e7e701f4892"
+    },
+    {
+      "stage": "consumer-install",
+      "actualExit": 0,
+      "evidenceSha256": "4c7de0082af89d4d9937c8f357dde761b685497c31b4b08858dfa5dbda895c2d"
+    },
+    {
+      "stage": "verify-installed",
+      "actualExit": 0,
+      "evidenceSha256": "c9fd7e336ad2b465577f1bb7ac6897c7734136d164206f32581e5d9fc9f60fe7"
+    },
+    {
+      "stage": "installed-positive",
+      "actualExit": 0,
+      "evidenceSha256": "5fe69417afb3bfb4e513446a478554a0be534d158602103fd7c830f308f45443"
+    },
+    {
+      "stage": "review-positive",
+      "actualExit": 0,
+      "evidenceSha256": "62050e6596329f170e699323288cbd61db613913670402351a2bb6d5f9f94373"
+    },
+    {
+      "stage": "installed-second-key-distinct",
+      "actualExit": 1,
+      "evidenceSha256": "a71df9462efee028903cfac452cb0dacb33ff7d2ac20cbde6f4ab1d36661c402"
+    },
+    {
+      "stage": "review-second-key-distinct",
+      "actualExit": 0,
+      "evidenceSha256": "d9be1361d77ae51be60f47ba1d1886fe59671bc7ee45e9fd1bdfed0a62267bf9"
+    }
+  ],
+  "observations": {
+    "installed-positive": {
+      "attempts": 6,
+      "completedResponses": 6,
+      "failureCount": 0,
+      "outcome": "passed",
+      "failedAssertion": null,
+      "childPid": 79242,
+      "childExitCode": 0,
+      "directoryAbsent": true,
+      "controlPrerequisites": false,
+      "receiptIdsDiffer": false,
+      "sha256": "786e873fa3d679e3f171ec1021077538dc8296d64d00f28670d32913bdd3c0e3"
+    },
+    "installed-second-key-distinct": {
+      "attempts": 2,
+      "completedResponses": 2,
+      "failureCount": 1,
+      "outcome": "failed",
+      "failedAssertion": "same-key-overlap:shared-receipt-id",
+      "childPid": 79356,
+      "childExitCode": 0,
+      "directoryAbsent": true,
+      "controlPrerequisites": true,
+      "receiptIdsDiffer": true,
+      "sha256": "88e0b54f94421a64d9b60b760fd1b1c6adb7efc8709507dc66a8c31f8e4ec154"
+    }
+  },
+  "sampledPidsChecked": 82,
+  "pidsStillPresent": [],
+  "scope": "Fresh successor local validation only. Build dirty18f retained with independently verified unchanged inputs/outputs bridge. Actual focused repair council and exact-head CI remain required.",
+  "installedProvenanceSha256": "041fcc726f45582fc7cc8126ba495b3fb44ba5283c95bdd3f5363ac4d8be9b26"
+}

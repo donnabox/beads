@@ -1,0 +1,90 @@
+diff --git a/apps/bdptest/src/read-update-matrix.test.ts b/apps/bdptest/src/read-update-matrix.test.ts
+index 19dda94..9b152d8 100644
+--- a/apps/bdptest/src/read-update-matrix.test.ts
++++ b/apps/bdptest/src/read-update-matrix.test.ts
+@@ -1,6 +1,6 @@
+ import { execFileSync, type ChildProcess } from "node:child_process";
+ import { createHash } from "node:crypto";
+-import { existsSync, mkdtempSync, readFileSync, rmSync, writeFileSync } from "node:fs";
++import { appendFileSync, existsSync, mkdtempSync, readFileSync, rmSync, writeFileSync } from "node:fs";
+ import { tmpdir } from "node:os";
+ import path from "node:path";
+ import { fileURLToPath, pathToFileURL } from "node:url";
+@@ -151,6 +151,18 @@ type RetryControl = {
+   value?: unknown;
+   binding?: string;
+ };
++// Local diagnostic instrumentation only; existing input/assertions/deadlines unchanged.
++let w1DiagnosticActive = false;
++const w1DiagnosticDirectories: string[] = [];
++function w1Diagnostic(kind: string, value: unknown) {
++  if (!w1DiagnosticActive) return;
++  const encoded = JSON.stringify({ kind, at: new Date().toISOString(), monotonicMs: performance.now(), value }, (_key, item) => {
++    if (item instanceof Error) return { name: item.name, message: item.message, stack: item.stack, cause: item.cause, ...(item instanceof AggregateError ? { errors: item.errors } : {}) };
++    return item;
++  }).replaceAll(token, "<redacted-fixture-token>").replaceAll(wrongToken, "<redacted-fixture-token>").replace(/Bearer [A-Za-z0-9_.-]+/g, "Bearer <redacted>");
++  if (Buffer.byteLength(encoded) > 8 * 1024 * 1024) throw Error("diagnostic record exceeded8MiB");
++  appendFileSync("/Users/dbox/repos/wt/vickie/bdp-integration-logs/pr120-w1b-diagnostic/observations.jsonl", encoded + "\n");
++}
+ async function run(
+   manifestValue?: unknown,
+   selectedIds?: string[],
+@@ -211,6 +223,7 @@ async function run(
+   ) as { rows: { id: string; wholeContract: boolean }[] };
+   const port = await helpers.availablePort();
+   const directory = mkdtempSync(path.join(tmpdir(), "bdp-cumulative-ru-"));
++  if (w1DiagnosticActive) { w1DiagnosticDirectories.push(directory); w1Diagnostic("directory", { directory }); }
+   const dialRoute = { transport: "plain" as const, host: "127.0.0.1", port };
+   const mode: ExactHttpModeOptions = {
+     scope,
+@@ -399,6 +412,7 @@ async function run(
+   );
+   let numericControlRecord: unknown;
+   const executeExact: RawHttpExchangeExecutor = async (request) => {
++    w1Diagnostic("raw-attempt", { scenario: currentScenario, method: request.method, url: request.url, bodyOctets: request.raw?.bodyBytes?.byteLength });
+     const key = request.raw?.headerLines.find(
+       (h) => h.name.toLowerCase() === "idempotency-key",
+     )?.value;
+@@ -519,7 +533,9 @@ async function run(
+       ),
+       exactExecution: { execute: executeExact, configuration: target.exactConfiguration },
+       actionExecutor: async (execution) => {
++        w1Diagnostic("client-attempt", { scenario: currentScenario, input: execution.input });
+         const actual = await executeClient(execution);
++        w1Diagnostic("client-return", { scenario: currentScenario, actual });
+         lifecycle?.observed?.();
+         const clientAction = bundle.manifest.scenarios
+           .find((row) => row.id === currentScenario)
+@@ -1638,7 +1654,31 @@ it.each([
+ ] as const)(
+   "detects W1b %s assertion-input corruption after actual HTTP",
+   async (control, id, actionId, assertionIds) => {
+-    const report = await run(undefined, [id], false, false, undefined, undefined, control);
++    w1DiagnosticActive = control === "link-metadata";
++    const diagnosticChildren: ChildProcess[] = [];
++    let report: Awaited<ReturnType<typeof run>>;
++    try {
++      report = await run(undefined, [id], false, false, undefined, undefined, control,
++        undefined, undefined, undefined, undefined, undefined, {
++          launched(child) {
++            diagnosticChildren.push(child);
++            w1Diagnostic("launched", { pid: child.pid });
++            child.once("exit", (code, signal) => w1Diagnostic("child-exit", { pid: child.pid, code, signal }));
++          },
++          observed() { w1Diagnostic("client-observed", {}); },
++          returned(report) { w1Diagnostic("returned-before-outer-cleanup", report); },
++          cleaned(status) { w1Diagnostic("cleaned", { status }); },
++        });
++      w1Diagnostic("returned-after-cleanup", report);
++    } catch (error) {
++      w1Diagnostic("top-level-error", error);
++      throw error;
++    } finally {
++      w1Diagnostic("final-lifecycle", {
++        children: diagnosticChildren.map(child => ({ pid: child.pid, exitCode: child.exitCode, signalCode: child.signalCode })),
++        directories: w1DiagnosticDirectories.map(directory => ({ directory, exists: existsSync(directory) })),
++      });
++    }
+     expect(report.counterfactualApplications).toBe(1);
+     const row = report.result.scenarios.find((row) => row.id === id);
+     expect(row?.state).toBe("fail");

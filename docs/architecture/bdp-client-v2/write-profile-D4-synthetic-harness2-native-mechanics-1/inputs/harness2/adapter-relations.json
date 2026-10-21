@@ -1,0 +1,110 @@
+[
+  {
+    "file": "harness.py",
+    "before": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-D4-synthetic-harness-preparation-1/harness.py",
+    "beforeSha256": "7a7b2e27e554d57dcb2fe411740cc9a7b1d362e65628a70705b60e938aad3f0e",
+    "afterSha256": "ad7a8c61a591fdd2baa1370e065c145861798ba9ea4eb1a53e10f01c8ce5910e",
+    "forward": "adapters/harness.py.patch",
+    "inverse": "adapters/harness.py.inverse.patch",
+    "newFileFromEmpty": false
+  },
+  {
+    "file": "report_controls.py",
+    "before": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-D4-synthetic-harness-preparation-1/report_controls.py",
+    "beforeSha256": "575fb771d2c1af1103666576d7ea6576f5382641b8b773b26fe82b7a95ed77cd",
+    "afterSha256": "d814d9edfb0f393e3f5c46550e56b8f273f9445e106ebba0e3d84603c2f4b12b",
+    "forward": "adapters/report_controls.py.patch",
+    "inverse": "adapters/report_controls.py.inverse.patch",
+    "newFileFromEmpty": false
+  },
+  {
+    "file": "watchdog_controls.py",
+    "before": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-D4-synthetic-harness-preparation-1/watchdog_controls.py",
+    "beforeSha256": "086d0c9be51ba49a18eb6c6c2e49618c7f08d03e9385d47524c74d01f7260731",
+    "afterSha256": "8ad4abdbbc7a0973c99cf98a989e0130ca883288e6223595a157fa0bd67162ff",
+    "forward": "adapters/watchdog_controls.py.patch",
+    "inverse": "adapters/watchdog_controls.py.inverse.patch",
+    "newFileFromEmpty": false
+  },
+  {
+    "file": "host_controls.py",
+    "before": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-D4-synthetic-harness-preparation-1/host_controls.py",
+    "beforeSha256": "1ea700f6f369a097532e852f5feed1cbcc8585cb257acaf68b1bf99bde3e8714",
+    "afterSha256": "3aa0f1cf48cf404cc78203bd66089aacb12bc66bc7357ea35d28e19dad3a522d",
+    "forward": "adapters/host_controls.py.patch",
+    "inverse": "adapters/host_controls.py.inverse.patch",
+    "newFileFromEmpty": false
+  },
+  {
+    "file": "host_peer.py",
+    "before": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-D4-synthetic-harness-preparation-1/host_peer.py",
+    "beforeSha256": "36658b92223c50f40c455472f631a44c706ebabaf16febcf140d0d398ff46a02",
+    "afterSha256": "e586b1568c5b51e0e60386565922f35db98a8521ecd1b093e50d1646a6f12798",
+    "forward": "adapters/host_peer.py.patch",
+    "inverse": "adapters/host_peer.py.inverse.patch",
+    "newFileFromEmpty": false
+  },
+  {
+    "file": "control-matrix.json",
+    "before": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-D4-synthetic-harness-preparation-1/control-matrix.json",
+    "beforeSha256": "f283013ea056b767633211c31ae6e7a9195123fd1fb850986512829dae7c653e",
+    "afterSha256": "6f8883dd51f5e5c5c5b2f2e8df659f0e5c1b7f487179f3c9c193cf7db4a426b5",
+    "forward": "adapters/control-matrix.json.patch",
+    "inverse": "adapters/control-matrix.json.inverse.patch",
+    "newFileFromEmpty": false
+  },
+  {
+    "file": "binding.json",
+    "before": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-D4-synthetic-harness-preparation-1/binding.json",
+    "beforeSha256": "4ce8c164b4752f786699d22f304606187f003f59cc729edc463dab29afd20cf8",
+    "afterSha256": "0a7b610a6953bb9894a7d5109921f7701984d513860b7de9d22b0b40ce7531d9",
+    "forward": "adapters/binding.json.patch",
+    "inverse": "adapters/binding.json.inverse.patch",
+    "newFileFromEmpty": false
+  },
+  {
+    "file": "outer_host.py",
+    "before": null,
+    "beforeSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "afterSha256": "abfb5adcade832dc0105b2abd29ca167d7ef14e6f15558db37e4921d1a8832e0",
+    "forward": "adapters/outer_host.py.patch",
+    "inverse": "adapters/outer_host.py.inverse.patch",
+    "newFileFromEmpty": true
+  },
+  {
+    "file": "outer_worker.py",
+    "before": null,
+    "beforeSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "afterSha256": "bbf1845fe061a1be43752c4e9bd39eb0889ca026cc61c65a55feb5e5d4b98682",
+    "forward": "adapters/outer_worker.py.patch",
+    "inverse": "adapters/outer_worker.py.inverse.patch",
+    "newFileFromEmpty": true
+  },
+  {
+    "file": "owned_spawn.py",
+    "before": null,
+    "beforeSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "afterSha256": "c4d73ba6d4d6d759b7e5dbeeb79986d2c8d6ccade163886b6a07b17cba02f3d8",
+    "forward": "adapters/owned_spawn.py.patch",
+    "inverse": "adapters/owned_spawn.py.inverse.patch",
+    "newFileFromEmpty": true
+  },
+  {
+    "file": "bootstrap.py",
+    "before": null,
+    "beforeSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "afterSha256": "ac3ea5619e2a2a72b6f471cf21e4e02bc1f9c56e6a07254d68c35edd63b4c5cc",
+    "forward": "adapters/bootstrap.py.patch",
+    "inverse": "adapters/bootstrap.py.inverse.patch",
+    "newFileFromEmpty": true
+  },
+  {
+    "file": "hard_limit.pl",
+    "before": null,
+    "beforeSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "afterSha256": "8c0596b4df398b084861ee8a98f665b77ca378d3650fbb5f81ca0a824d59fa3a",
+    "forward": "adapters/hard_limit.pl.patch",
+    "inverse": "adapters/hard_limit.pl.inverse.patch",
+    "newFileFromEmpty": true
+  }
+]

@@ -1,0 +1,1850 @@
+Review a proposed bounded principal-key installed evidence plan, not implementation. Do not write or modify any files. Output findings only in stdout. Tools unavailable; actual source context supplied below. No tests/build/implementation authorized. Produce a COMPLETE standalone numbered findings-first review: severity, precise location, concrete issue/impact, smallest fix. If none, explicitly say none. Separate missing context from proved defects. End by stating the review is complete; never refer to omitted prior findings. Be concise so every finding fits.
+
+Focus on7positive/2expected negative requests; authenticated principal vs token identity; both principals writable/A rotated token; no presumed A/B view-token equality or difference; original receipt/current context separation; full Resource/Event transaction links; configuration-collapse sensitivity not product mutation; bounded transport/cleanup; package attribution; one callback/two executions/two-file scope. Pending Snapshot/incident-Link questions and public activation are excluded. Actual sequence merge/reanchor and councils remain future gates. Root owns acceptance.
+
+Source is committed18104. Unrelated dirty sequence files are not review inputs. No real credentials. Full plan and ledger are supplied. Actual source excerpts have original line ranges; schema supplies directly relevant definitions, not the complete schema or exhaustive transitive closure. The full schema hash is bound, and actual test validator compiles the whole source bundle. Omitted unrelated failure/Link variants must not be guessed; identify a specific missing definition only if needed for this all-create/409 witness. Existing installed snippets are patterns, not new code.
+
+
+=== COMPLETE TARGET plan.md original SHA256 077245675d7c0de0180348891d5b4bc262f39008888d1e229b9ccc6dde5cf4ee ===
+# Principal-key isolation: bounded installed evidence plan
+
+Status: supporting proposal only. Root has not released authoring or execution. Sole authority remains `/Users/dbox/repos/wt/vickie/bdp-client-design/checkout/docs/architecture/bdp-client-v2/design.md`, Autonomous profile completion T2/T4. This document does not replace that plan. Native and actual Claude plan council remain required.
+
+## Basis, value and exact scope
+
+Planning source is committed `18104a03b850553641f24fe83e7318493fa102ca`, tree `10810a8016a451e241ea974487681dcddd63c2e4`. Inspecting checkout is `/Users/dbox/repos/wt/vickie/vickie-sequence-member-evidence`; its active sequence draft is not the parent of this proposal. Actual sequence merge, clean isolated authoring checkout and refreshed unchanged/dependent source pins are future gates. `source-binding.json` binds committed files, not dirty working bytes. This proposal does not obstruct current sequence work.
+
+The accepted completed-key-conflict plan77f6deb was implemented by PR110 and is an ancestor of18104. Its partial row already covers one principal's different-key-body conflict, exact retained replay and restart. The new semantic value is that two authenticated writable principals may independently use the exact same key in one Scope/epoch, while a second credential of the first principal must recover the first principal's original receipt. Existing matrix credentials share one principal; PR128's distinct foreign principal is read-only. Owner test `refuses unsupported/malformed batches before admission and preserves principal separation` (transaction-store.test287–306) establishes ownership but does not execute the second mutation through a packed child. No current serving defect is alleged.
+
+Own exactly:
+
+1. New `apps/bdptest/src/transactional-principal-key-installed.test.ts`.
+2. `docs/design/transaction-implementation-progress.md`, one factual private-evidence outcome paragraph; retain historical evidence and limitations.
+
+No runtime, policy, configuration parser, schema, catalog, fixture, manifest, runner, shared helper or public-admission edits. No ordinary Update change. No sequence proof, concurrency, mutable authorization policy, retained-detail expiry, erasure, Snapshot/continuation minimum or incident-Link metadata ruling is added.
+
+## Source-grounded law and configuration
+
+Spec3905–3915 defines the canonical Scope/epoch/authenticated-principal key namespace. Spec3933–3946 requires equal replay without execution and different semantic requests in that same namespace to receive409 while the key is bound. Receipt current-context fields and retained receipt fields have different purposes (spec5116–5131; actual observed submission maps current context separately). The test must not compare a replay's current position header to its old receipt.requiredPosition.
+
+Store218 and421–425 use the `(principal,key)` primary key and lookup;1059–1095 performs retained comparison. HTTP326/332–333 passes trusted authenticated principal. `transaction-runtime-configuration.ts227–248,321–330` captures unique credentials, maps token to principal/canMutate, and binds associations into authentication metadata. Duplicate principals are allowed; duplicate tokens are not. All three credentials are writable, with distinct random32-byte base64url tokens (43 ASCII characters): A and A-rotated map to `principal-a`; B maps to `principal-b`. No supplied revisionProvenance/actor is used as authentication. Tokens never enter logs/reports. Exact-mode credential handles are the three literal role IDs with headerNames=[authorization] only; the resolver maps each role explicitly to its fresh Bearer value and rejects unknown roles. No authorization-view value enters a credential handle. Authentication/runtime identities are actual ready-derived values, so the plan does not invent fixed future digests for random tokens/directories.
+
+Use exact canonical scope `https://reference.invalid/acme/`, one fresh owned absolute directory, `create:true`, and ledger.json's Task descriptor/property schema. Both resources are unowned Task Beads with exactly `id,type,revision,properties,metadata`; no descriptor ownsOutgoing means no `ownedLinks` assumption. The closed installed configuration parser accepts these fields and supplies port0/canonical authority/artifact limits (transaction-installed-configuration.ts17–70). No source-only seams, clock injection or changed page limits. One child/SQLite owner/listener per cohort, no bootstrap child/reopen/database inspection.
+
+Actual policy is fixed all-visible: store251 and590–598, runtime metadata361–379. This explains why current A/B observed view values may coincide. The test must not infer a protocol rule that different principals imply different views, nor assert A and B views equal merely because they share an epoch. Bind A's current view to A's independently validated first response and A-rotated's response; bind B's to B's first response. Require one common Scope epoch because both are in this single authority instance. The A Event page must use A's observed serving view for **both** Event IDs, never B's receipt view. This is a fixed-policy test, not a view-change test.
+
+## Exact seven requests and independent oracles
+
+`ledger.json` contains complete literal bodies, byte sizes/hashes, header lines, routes, role mapping and expected statuses. Every POST uses `Accept: application/json`, `Content-Type: application/json`, `Idempotency-Key: principal-shared`. GETs have Accept only plus resolved authorization; no body/key/minimum/conditional headers. The exact raw serializer supplies Host/content-length/framing. Three allowed routes: POST operations/batch, GET beads/?limit=32, GET events/. These are validated real configured targets/out-of-band private fixture addresses, not cold-client discovery claims.
+
+1. **a-create**, A: create explicit a, title a, metadata{}. Require200, actual mutationReceipt schema, completed/available/key principal-shared, requiredPosition=effectPosition=pos-1, exact one created result operationIndex0, next:null. Independently validate full five-field Resource against literal id/type/properties/metadata and schema-valid nonempty revision. Validate receipt URL canonical under scope receipts/, exactly one legal token, no query/fragment/userinfo, <=8192B; nonempty schema-valid transaction token and expiresAt. Receipt epoch/view equal A response headers, which must all be present. Only after those checks save the full parsed receipt and Resource.
+2. **b-independent-create**, B: same key, valid create-b body. Require200 using named first status oracle `principal-key:b-independent-create:completed`, then independent full completed receipt/Resource facts as above, required/effect pos-2. Receipt ID and transaction differ from A. B's response view is independently observed, not presumed equal/different to A. All later current responses have pos-2.
+3. **a-rotated-replay**, A-rotated: byte-identical A body and key;200, schema and **full parsed body strict equality** to saved A receipt, same receipt ID/transaction. Body remains historical pos-1 while current header is pos-2 and A view. A second execution would fail on existing a, so status/full retained equality discriminate it.
+4. **b-replay**, B: byte-identical B body/key;200 exact saved B body/root, current pos-2/B view.
+5. **a-conflict**, A: valid create-c body under same key;409 with exact transactionalProblem `{type: conflict problem URI, code: idempotency-conflict, status:409, retry:never}`. No receipt payload; current epoch/A view/pos-2; no retry-after/www-authenticate/development-limit. No claim that receipt rows were inspected internally.
+6. **current-complete**, A: schema currentBeadCollection; exactly ordered a,b full records equal the independently validated original postimages, next:null; c absent. Current A context pos-2. No revision or provenance omitted from equality.
+7. **events-complete**, A: schema eventPage; exact source scope events/, exactly two Events and next:null. Both `created`, ordered a then b, subjectType=Task, ordinal0 per separate transaction. Each data exactly `{revision,properties,metadata}` from its corresponding independent Resource. Event0.transaction=A receipt.transaction; Event1.transaction=B receipt.transaction. Validate time with actual event schema; strict object shape includes that schema-validated actual time (not fabricated equality to receipt expiration). Independently derive private projected IDs from JSON tuples `["epoch", A current epoch]`, `["view", A Event serving view]`, `["source", scope events/]`, SHA256 base64url, then pos-1/pos-2 and ordinal0. This private identity spelling is test evidence, not normative Event-ID format. Both events use A's current projection. Store readEvents1553–1630 scans finite groups to head and applies receiptMaximumItems (default32); two small created events fit. Require next:null rather than assuming completeness from count. This does not prove Changes pagination or Resource-source membership.
+
+All receipts use `#/$defs/mutationReceipt`, Problems `transactionalProblem`, postimages `beadRecord`, collection `currentBeadCollection`, Events `eventPage` from actual schema bundle. Ajv2020 + protocol URI/date-time formats exactly follow existing installed pattern. Response JSON is validated before use as a baseline. Require application/json for successes and application/problem+json for409, body octets match content-length, no validator headers on mutation receipts/direct refusal, Cache-Control private,no-store there, development marker non-attesting with no development-limit. Preserve required context headers; do not mistake bdp-authorization-view for a credential. Read representation cache/validator behavior is checked only where existing source law requires it, not blindly copied from POST.
+
+## Counterfactual: configuration sensitivity, not a product mutant
+
+Register one top-level callback with full name `observes independent principal keys and same-principal credential rotation through installed HTTP`. It runs positive by default. A narrowly validated test-only environment mode `BDP_TRANSACTIONAL_PRINCIPAL_KEY_MODE=collapse-b-to-a` changes **only** configured B principal from principal-b to principal-a before launch. All tokens stay distinct, all canMutate true; requests and positive expectations are byte-identical. Reject unknown modes before child start. No source/emitted/runtime mutation, no alternative request oracle, no import of a fake service.
+
+In a fresh negative child, request1 succeeds. Request2 must actually return409 idempotency-conflict at pos-1/A view and the unchanged named expected200 assertion fails. Capture safe response evidence before this assertion: status, full schema-validated Problem fields when applicable, current context, content length/type, request body digest/route/credential role, exact writeState, wire/body fingerprints. No Authorization value is retained. Adjudicator requires exactly the one named failure, both complete actual responses, exact actual409 Problem/context, no transport/harness/unhandled/cleanup error and exactly2 attempts; generic exit1, a500, denial403 or incomplete wire never counts. Stop immediately; no requests3–7 in the intended negative. External control adjudication can pass while actual Vitest exit1 remains recorded as the intended failure.
+
+This proves the test distinguishes collapsed-principal configuration, not that production was mutated or principal isolation is generally qualified. Fresh configuration/authentication/runtime identity is bound independently per cohort; do not demand positive and negative identity hashes equal. The same external packed payload is reused, with a fresh store per cohort. Tokens may be freshly generated in each run; the sole semantic mapping delta is B's principal.
+
+## Measured bounds, transport and cleanup
+
+Positive7 HTTP (5POST+2GET), one child/owner/listener/directory. Negative expected2POST, hard cap7, one child/owner/listener/directory. Combined expected9, hard14HTTP and2children, no retries/reopens/replacement after failed start. Startup and schema loading issue zero HTTP. Source/type/static phases open no product child; only the two selected installed executions do. Exactly one new CI callback registration, default positive7HTTP/onechild; do not register the negative separately or run a broad installed matrix.
+
+Use createRawHttpExchangeExecutor with5s request timeout,32768B response body ceiling enforced during receive,65536B response header ceiling, exact-mode request headers<=16384B/body<=65536B and URL<=8192B. No redirects/fetch fallback, hidden credential probes or dynamic receipt GETs. Increment attempt counter before every dispatch and enforce7 maximum; retain complete responses separately from attempts. Expected response bytes are unknown until actual run; hard positive body bound229376B, total two-cohort body bound458752B. Do not present these as measured response sizes or full heap limits. Each schema/parsed baseline/raw response is bounded; no unbounded accumulation beyond7 observations.
+
+45s work deadline starts before temporary directory/startup and is shared across ready/request work; launcher ready/close bound10s;10s cleanup;60s callback;120s external supervisor. Abort work then close once, catch cleanup failures individually, remove directory only after known process stop, record actual absence. Preserve primary assertion and cleanup errors together; emit safe full observation before throwing aggregate. Before ready, returned child PID may be null: launcher cleanup is not independently proven by null, so external process-group/PID snapshots must establish no owned descendant. Supervisor records TERM/KILL only for its group on deadline, all actual exit/signal fields, source before/after and temp snapshots. No unknown directory deletion. Retain all failed setup/package/run artifacts; no automatic retry.
+
+## Build/package/source attribution and future validation
+
+No existing historical build/run is relabeled. Future root assigns actual merged sequence parent and ordinary source candidate after plan/code council. Preserve two-path diff, exact hashes, callback/title/ledger source checks and package inputs. Pinned Node24.16.0/pnpm11.20.0 PATH must apply to child scripts. Planned static commands and exact Vitest template are in ledger; paths are inspection-time templates pending actual isolated checkout reanchor, not executable release. Existing Read seal is required; no full suite demanded locally. One build before package; reuse is allowed only with an explicit actual input/output bridge across any commit, never an invented build success.
+
+Adapt existing reviewed package machinery: fresh protocol+server archives, every archive member/source equality (root LICENSE and documented server workspace dependency rewrite), fresh offline external consumer, pinned actual consumer lock, installed member equality, actual eight production packages/versions and dependency edges, independently reproduced recursive payload digest versus ready payload. Expected closure at18104: @bdp/protocol0.0.0, @bdp/server0.0.0, ajv8.17.1, ajv-formats3.0.1, fast-deep-equal3.1.3, fast-uri3.1.5, json-schema-traverse1.0.0, require-from-string2.0.2. Recheck after real parent; no silent version assumptions. Preserve configuration artifact bytes/retrieval identities and ready binding, actual routing, source clean head/tree, entry realpath/hash and installed package provenance. BDP_TRANSACTIONAL_INSTALLED_ENTRY must be an externally verified consumer entry for accepted runs, never workspace fallback.
+
+`installedTransactionBinding` verifies ready metadata/targets/profile/history/claimEligible and adds caller source attribution; it does not make the child attest Git. State supervisor-verified clean-source attribution bound to actual packages. Record no profile eligibility. JSON report contains the full safe request/response ledger, validated negative Problem, comparison outcomes and lifecycle; full receipt/Resource/Event equality runs in memory before fingerprints. Do not claim persisted raw response bodies when only hashes are retained.
+
+## Gates and limits of credit
+
+Root review + independent native + actual Claude plan review precede authoring. Actual sequence merge/reanchor precedes final authoring base. Freeze normally formatted two-file draft and exact measurements, then native/Claude code review and separate finite execution release. Expected sensitivity failure must be adjudicated separately from positive pass; unexpected failure stops dependent work for disposition. All script execution remains closed now.
+
+Acceptance is both independent same-key transactions, correct rotated-credential replay, correct same-principal conflict, exact graph/Event transaction linkage and honest cleanup/provenance. No whole catalog credit, public discovery/profile claim, view-change policy, principal revocation, concurrent joins, failed/expired receipt transitions, restart/restore or secrecy proof. Existing foreign receipt access evidence is preserved and not repeated. Root retains sole-plan coordination. A newly established serving defect takes precedence over this evidence proposal.
+
+
+=== COMPLETE TARGET ledger.json original SHA256 86502efeffc108f52f0ab524efc91315ec67a9f0d87aebdf6b34d4ab23a53a86 ===
+{"status":"PROPOSED_NOT_AUTHORIZED","planningHead":"18104a03b850553641f24fe83e7318493fa102ca","planningTree":"10810a8016a451e241ea974487681dcddd63c2e4","actualAuthoringParent":null,"workspaceAtInspection":"/Users/dbox/repos/wt/vickie/vickie-sequence-member-evidence","prospectiveOwnedPaths":["apps/bdptest/src/transactional-principal-key-installed.test.ts","docs/design/transaction-implementation-progress.md"],"registration":{"file":"apps/bdptest/src/transactional-principal-key-installed.test.ts","fullName":"observes independent principal keys and same-principal credential rotation through installed HTTP","registrations":1,"executions":2},"scope":"https://reference.invalid/acme/","key":"principal-shared","configuration":{"scope":"https://reference.invalid/acme/","directory":"<one unique absolute owned temp directory per cohort>","create":true,"artifacts":{"descriptors":[{"retrievalUri":"https://reference.invalid/acme/types/task","utf8":"{\"id\":\"https://reference.invalid/acme/types/task\",\"name\":\"Task\",\"describes\":\"bead\",\"conformsTo\":[],\"propertiesSchema\":\"https://reference.invalid/acme/schemas/properties\"}"}],"schemas":[{"retrievalUri":"https://reference.invalid/acme/schemas/properties","utf8":"{\"$id\":\"https://reference.invalid/acme/schemas/properties\",\"type\":\"object\",\"properties\":{\"title\":{\"type\":\"string\"}},\"required\":[\"title\"],\"additionalProperties\":false}"}]},"credentials":[{"token":"<43-character fresh random base64url A>","principal":"principal-a","canMutate":true},{"token":"<43-character fresh random base64url A-rotated>","principal":"principal-a","canMutate":true},{"token":"<43-character fresh random base64url B>","principal":"principal-b","canMutate":true}]},"configurationNegativeDelta":{"path":"credentials[2].principal","before":"principal-b","after":"principal-a","otherChanges":[]},"artifactMeasurements":[{"kind":"descriptors","retrievalUri":"https://reference.invalid/acme/types/task","utf8Bytes":170,"utf8Sha256":"f448e126550b2809d01dc6b24811d1796e82b2599c35b438550ed3bec65a2a22","retrievalUriBytes":41},{"kind":"schemas","retrievalUri":"https://reference.invalid/acme/schemas/properties","utf8Bytes":166,"utf8Sha256":"1ed8b24d90a8c278bc466fd48ba1e849afac01326c377e5c6985855e62373f95","retrievalUriBytes":49}],"routes":[{"method":"POST","url":"https://reference.invalid/acme/operations/batch"},{"method":"GET","url":"https://reference.invalid/acme/beads/?limit=32"},{"method":"GET","url":"https://reference.invalid/acme/events/"}],"routePreimage":"[{\"method\":\"POST\",\"url\":\"https://reference.invalid/acme/operations/batch\"},{\"method\":\"GET\",\"url\":\"https://reference.invalid/acme/beads/?limit=32\"},{\"method\":\"GET\",\"url\":\"https://reference.invalid/acme/events/\"}]","routeSha256":"40b5131d96ba76a7a77212c92b9336148142f8afb648caac0107f1dc9af3a837","requests":[{"index":1,"label":"a-create","method":"POST","url":"https://reference.invalid/acme/operations/batch","credentialRef":"a","headerLines":[{"name":"accept","value":"application/json"},{"name":"content-type","value":"application/json"},{"name":"idempotency-key","value":"principal-shared"}],"body":"{\"operations\":[{\"operation\":\"createBead\",\"id\":\"beads/a\",\"type\":\"https://reference.invalid/acme/types/task\",\"properties\":{\"title\":\"a\"},\"metadata\":{}}]}","bodyBytes":150,"bodySha256":"54f0fefb0965a8210bb22cf09601c18296ef450489eff1aef5a8bea8b99d83b8","status":200,"currentPosition":"pos-1"},{"index":2,"label":"b-independent-create","method":"POST","url":"https://reference.invalid/acme/operations/batch","credentialRef":"b","headerLines":[{"name":"accept","value":"application/json"},{"name":"content-type","value":"application/json"},{"name":"idempotency-key","value":"principal-shared"}],"body":"{\"operations\":[{\"operation\":\"createBead\",\"id\":\"beads/b\",\"type\":\"https://reference.invalid/acme/types/task\",\"properties\":{\"title\":\"b\"},\"metadata\":{}}]}","bodyBytes":150,"bodySha256":"b26bbe9a43f5cc9b54d7fe7778786b33e5e8d613bf30248de3af65f5eac0cdc8","status":200,"currentPosition":"pos-2"},{"index":3,"label":"a-rotated-replay","method":"POST","url":"https://reference.invalid/acme/operations/batch","credentialRef":"a-rotated","headerLines":[{"name":"accept","value":"application/json"},{"name":"content-type","value":"application/json"},{"name":"idempotency-key","value":"principal-shared"}],"body":"{\"operations\":[{\"operation\":\"createBead\",\"id\":\"beads/a\",\"type\":\"https://reference.invalid/acme/types/task\",\"properties\":{\"title\":\"a\"},\"metadata\":{}}]}","bodyBytes":150,"bodySha256":"54f0fefb0965a8210bb22cf09601c18296ef450489eff1aef5a8bea8b99d83b8","status":200,"currentPosition":"pos-2"},{"index":4,"label":"b-replay","method":"POST","url":"https://reference.invalid/acme/operations/batch","credentialRef":"b","headerLines":[{"name":"accept","value":"application/json"},{"name":"content-type","value":"application/json"},{"name":"idempotency-key","value":"principal-shared"}],"body":"{\"operations\":[{\"operation\":\"createBead\",\"id\":\"beads/b\",\"type\":\"https://reference.invalid/acme/types/task\",\"properties\":{\"title\":\"b\"},\"metadata\":{}}]}","bodyBytes":150,"bodySha256":"b26bbe9a43f5cc9b54d7fe7778786b33e5e8d613bf30248de3af65f5eac0cdc8","status":200,"currentPosition":"pos-2"},{"index":5,"label":"a-conflict","method":"POST","url":"https://reference.invalid/acme/operations/batch","credentialRef":"a","headerLines":[{"name":"accept","value":"application/json"},{"name":"content-type","value":"application/json"},{"name":"idempotency-key","value":"principal-shared"}],"body":"{\"operations\":[{\"operation\":\"createBead\",\"id\":\"beads/c\",\"type\":\"https://reference.invalid/acme/types/task\",\"properties\":{\"title\":\"c\"},\"metadata\":{}}]}","bodyBytes":150,"bodySha256":"3de2f9bb5fb4b4b0537d252ba722b05a3385414129cf35fc6ab0355720f9ff62","status":409,"currentPosition":"pos-2"},{"index":6,"label":"current-complete","method":"GET","url":"https://reference.invalid/acme/beads/?limit=32","credentialRef":"a","headerLines":[{"name":"accept","value":"application/json"}],"body":null,"bodyBytes":0,"bodySha256":null,"status":200,"currentPosition":"pos-2"},{"index":7,"label":"events-complete","method":"GET","url":"https://reference.invalid/acme/events/","credentialRef":"a","headerLines":[{"name":"accept","value":"application/json"}],"body":null,"bodyBytes":0,"bodySha256":null,"status":200,"currentPosition":"pos-2"}],"requestBodyTotals":{"positive":750,"negativeExpected":300,"combinedExpected":1050,"perBodyMaximum":150,"combinedMaximumAtSevenEach":1500},"cohorts":[{"id":"positive","mode":"positive","expectedExit":0,"expectedHttp":7,"maxHttp":7,"children":1,"owners":1,"listeners":1,"directories":1},{"id":"principal-collapse","mode":"collapse-b-to-a","expectedExit":1,"expectedHttp":2,"maxHttp":7,"children":1,"owners":1,"listeners":1,"directories":1,"expectedFailure":"principal-key:b-independent-create:completed","actualExpectedStatus":409,"actualExpectedProblem":{"type":"https://github.com/gastownhall/bdp/problems/conflict","code":"idempotency-conflict","status":409,"retry":"never"},"actualExpectedCurrentPosition":"pos-1"}],"totals":{"expectedHttp":9,"maximumHttp":14,"children":2,"owners":2,"listeners":2,"directories":2,"reopens":0,"bootstrapHttp":0,"readonlyDatabaseHandles":0},"limits":{"workMs":45000,"launcherReadyMs":10000,"cleanupMs":10000,"testMs":60000,"supervisorMs":120000,"requestMs":5000,"responseBodyBytes":32768,"responseHeaderBytes":65536,"requestHeaderBytes":16384,"requestBodyBytes":65536,"urlBytes":8192,"maximumPositiveResponseBodyOctets":229376,"maximumTwoCohortResponseBodyOctets":458752},"tempPrefix":"bdp-principal-key-installed-","sourceCases":0,"staticCommands":[["/Users/dbox/.nvm/versions/node/v24.16.0/bin/node","/Users/dbox/.cache/node/corepack/v1/pnpm/11.20.0/bin/pnpm.cjs","install","--offline","--frozen-lockfile","--ignore-scripts"],["/Users/dbox/.nvm/versions/node/v24.16.0/bin/node","/Users/dbox/.cache/node/corepack/v1/pnpm/11.20.0/bin/pnpm.cjs","run","typecheck"],["/Users/dbox/.nvm/versions/node/v24.16.0/bin/node","/Users/dbox/.cache/node/corepack/v1/pnpm/11.20.0/bin/pnpm.cjs","run","build"],["/Users/dbox/.nvm/versions/node/v24.16.0/bin/node","/Users/dbox/.cache/node/corepack/v1/pnpm/11.20.0/bin/pnpm.cjs","run","format:check"],["/Users/dbox/.nvm/versions/node/v24.16.0/bin/node","/Users/dbox/.cache/node/corepack/v1/pnpm/11.20.0/bin/pnpm.cjs","run","lint"],["/Users/dbox/.nvm/versions/node/v24.16.0/bin/node","/Users/dbox/.cache/node/corepack/v1/pnpm/11.20.0/bin/pnpm.cjs","run","check:boundaries"],["/Users/dbox/.nvm/versions/node/v24.16.0/bin/node","/Users/dbox/.cache/node/corepack/v1/pnpm/11.20.0/bin/pnpm.cjs","run","evidence:verify"]],"testArgvTemplate":["/Users/dbox/.nvm/versions/node/v24.16.0/bin/node","/Users/dbox/repos/wt/vickie/vickie-sequence-member-evidence/node_modules/.pnpm/vitest@4.1.10_@types+node@24.13.3_vite@8.2.1_@types+node@24.13.3_/node_modules/vitest/vitest.mjs","run","apps/bdptest/src/transactional-principal-key-installed.test.ts","--maxWorkers=1","--reporter=verbose","--reporter=json","--outputFile=<cohort-specific absolute results.json>","-t","^observes\\ independent\\ principal\\ keys\\ and\\ same\\-principal\\ credential\\ rotation\\ through\\ installed\\ HTTP$"],"environment":{"PATH":"/Users/dbox/.nvm/versions/node/v24.16.0/bin:<existing PATH>","BDP_TRANSACTIONAL_INSTALLED_ENTRY":"<verified external consumer real entry; no workspace fallback in accepted runs>","BDP_TRANSACTIONAL_SOURCE_COMMIT":"<actual clean final source commit; not yet known>","BDP_TRANSACTIONAL_PRINCIPAL_KEY_MODE":"positive | collapse-b-to-a","BDP_TRANSACTIONAL_PRINCIPAL_KEY_OUTPUT":"<cohort-specific full safe report JSON>","TMPDIR":"<cohort-specific supervisor-owned directory>"}}
+
+=== SOURCE docs/specs/bdp.md:3905-3953 ===
+An idempotency key is the token defined under
+[Idempotency keys](#idempotency-keys): the `Idempotency-Key` HTTP field of
+a batch or singleton request and the `idempotencyKey` member of a sequence
+member carry the same case-sensitive `[A-Za-z0-9_-]{1,256}` token, bare,
+compared byte-exactly; a request whose key is absent, repeated, or outside
+the grammar is malformed. On a Transactional Scope the key's namespace is
+the canonical Scope URL, the Scope epoch, and the authenticated principal —
+the Read+Update namespace with the epoch it lacks — and every mutation
+carrier feeds that one namespace: a singleton request, a `batch`, and each
+member of a `sequence` is a Mutation Transaction with its own durable
+Mutation Receipt, and the carrier is delivery metadata that the semantic
+comparison excludes.
+
+The semantic identity of a Mutation Transaction is the sequence, in
+declaration order, of its operations' semantic identities under [Idempotency
+keys](#idempotency-keys): each is the operation kind plus its normalized
+record — durable references canonicalized, protocol defaults expanded, array
+order preserved, member order ignored, `name` and the carrier excluded,
+`expectedRevision` and `revisionProvenance` included, opaque URIs and pins
+compared byte-exactly, and the records compared under RFC 6902 Section 4.6.
+In a batch, a `@label` reference is normalized to the creating operation's
+zero-based index when that operation supplies no `id`, and to the supplied
+identity's canonical URL when it does — never to the label's spelling, so
+renaming a label is not a semantic change, and never to an allocated
+identity, which does not exist before commit. In a sequence, a `@name`
+reference is normalized to the identity its creating member bound, as in
+Read+Update. A one-operation batch, the equivalent singleton request, and the
+equivalent sequence member therefore present one semantic request, and any of
+them retrieves the receipt the others created.
+
+Concurrent identical requests join one execution and receive the same
+receipt identity, pending or terminal. Read+Update refuses a concurrent
+duplicate with `idempotency-in-progress` because it has no durable receipt
+to hand the duplicate; the Transactional profile joins the duplicate to
+the one execution and hands it the pending receipt, which is the same
+exactly-once promise made with the profile's own vehicle. A later identical
+request returns the retained receipt — with its detail available, expired,
+or withheld — and never executes again. A request with the same key and a
+different normalized request is refused before admission with `409`
+`idempotency-conflict` for as long as the key is bound: for the rest of
+the Scope epoch when the earlier transaction completed, whether or not its
+detail has expired, and for as long as its failed receipt is retained
+otherwise. A new epoch is a new namespace: a key first used under a prior
+epoch is unbound, and a retry under the new epoch executes as a new
+mutation, which a client that observes a changed `scopeEpoch` MUST treat
+as a first execution rather than a replay. Authorization View changes do
+not create a new namespace.
+
+Admission is one durable step. The authority records the key, the
+
+
+=== SOURCE docs/specs/bdp.md:5115-5133 ===
+
+Every admitted mutation has one Mutation Receipt at an authority-allocated
+URL beneath the discovered `receipts` root — `receipts/{token}`, where the
+token is a checkpoint-profile token — and the receipt's `id` is that
+absolute URL. `GET` and `HEAD` of the receipt URL return the receipt's
+current representation with `200 OK`, `Cache-Control: private, no-store`,
+and the Transactional response fields. A receipt URL that does not exist,
+that belongs to another principal, that was retracted under
+[Mutation Transactions](#mutation-transactions), that named a failed
+receipt the authority has since forgotten under the same section, or that
+was allocated in another Scope epoch returns the uniform `404`
+`resource-not-found`: receipts are principal-bound, and they are not an
+enumeration oracle. The `receipts` root is a namespace prefix, not a
+Resource: it is discovered so that receipt URLs are recognizably the
+authority's and clients never construct them, BDP v0 defines no receipt
+listing and no lookup by key, and a `GET` of the root returns `404`
+`resource-not-found`. A client resolves a lost response by retrying the
+original request with its original key, which returns the receipt.
+
+
+
+=== SOURCE packages/server/src/transaction-installed-configuration.ts:17-67 ===
+export function captureInstalledTransactionConfiguration(
+  input: unknown,
+): TransactionRuntimeOptions {
+  const own = administrativeData(input, [
+    "scope",
+    "directory",
+    "create",
+    "credentials",
+    "artifacts",
+  ]);
+  const scope = parseCanonicalScope(text(own.scope, 8192));
+  const directory = text(own.directory, 16384);
+  if (!path.isAbsolute(directory) || typeof own.create !== "boolean")
+    throw new TypeError("explicit provisioning required");
+  const credentials = administrativeArray(own.credentials, 32).map((v) => {
+    const c = administrativeData(v, ["token", "principal", "canMutate"]);
+    const token = text(c.token, 256),
+      principal = text(c.principal, 16384);
+    if (!/^[A-Za-z0-9_-]{32,256}$/.test(token) || typeof c.canMutate !== "boolean")
+      throw new TypeError("invalid installed credential");
+    return Object.freeze({ token, principal, canMutate: c.canMutate });
+  });
+  if (!credentials.length || new Set(credentials.map((c) => c.token)).size !== credentials.length)
+    throw new TypeError("unique credentials required");
+  const supplied = administrativeData(own.artifacts, ["descriptors", "schemas"]);
+  let total = 0;
+  const artifacts = (value: unknown) =>
+    Object.freeze(
+      administrativeArray(value, CONTRACT_ARTIFACT_CEILINGS.submittedArtifacts).map((v) => {
+        const a = administrativeData(v, ["retrievalUri", "utf8"]);
+        const retrievalUri = text(a.retrievalUri, 16384),
+          utf8 = text(a.utf8, CONTRACT_ARTIFACT_CEILINGS.artifactBytes);
+        total += Buffer.byteLength(retrievalUri) + Buffer.byteLength(utf8);
+        if (total > CONTRACT_ARTIFACT_CEILINGS.totalBytes)
+          throw new TypeError("installed artifact capture bound");
+        return Object.freeze({ retrievalUri, utf8 });
+      }),
+    );
+  const descriptors = artifacts(supplied.descriptors),
+    schemas = artifacts(supplied.schemas);
+  if (!descriptors.length) throw new TypeError("compiled descriptor closure required");
+  return Object.freeze({
+    scope,
+    directory,
+    create: own.create,
+    port: 0,
+    authorityMode: "canonical",
+    credentials: Object.freeze(credentials),
+    artifacts: Object.freeze({ descriptors, schemas, limits: CONTRACT_ARTIFACT_CEILINGS }),
+  });
+}
+
+
+=== SOURCE packages/server/src/transaction-runtime-configuration.ts:227-254 ===
+    const entry = administrativeData(value, ["token", "principal", "canMutate"]);
+    const token = boundedString(entry.token, 256),
+      principal = boundedString(entry.principal, 16384);
+    if (!/^[A-Za-z0-9_-]{32,256}$/.test(token) || typeof entry.canMutate !== "boolean")
+      throw new TypeError("invalid private transaction credential");
+    return { token, principal, canMutate: entry.canMutate };
+  });
+  if (!credentials.length || new Set(credentials.map((c) => c.token)).size !== credentials.length)
+    throw new TypeError("unique private transaction credentials required");
+  const secrets = credentials.map(({ token, ...rest }) => ({
+    ...rest,
+    credential: Buffer.from(`Bearer ${token}`),
+  }));
+  const associations = freeze(
+    credentials
+      .map(({ token, ...rest }) => ({
+        // Domain separation binds this credential use; it does not prevent
+        // guessing low-entropy tokens. Metadata digests are not secrecy guarantees.
+        tokenDigest: transactionRuntimeDigest({ revision: "transaction-credential-1", token }),
+        ...rest,
+      }))
+      .sort((a, b) => (a.tokenDigest < b.tokenDigest ? -1 : a.tokenDigest > b.tokenDigest ? 1 : 0)),
+  );
+  const authenticationIdentity = transactionRuntimeDigest({
+    revision: "transaction-authentication-1",
+    scheme: "bearer",
+    associations,
+  });
+
+
+=== SOURCE packages/server/src/transaction-runtime-configuration.ts:321-350 ===
+    authenticate(supplied: Buffer): TransactionHttpAuthorization {
+      const credential = secrets.find(
+        (c) => c.credential.length === supplied.length && timingSafeEqual(c.credential, supplied),
+      );
+      return credential
+        ? {
+            kind: "authenticated",
+            principal: credential.principal,
+            canMutate: credential.canMutate,
+          }
+        : { kind: "unauthenticated" };
+    },
+    readOptions(scope: string): TransactionReadOptions {
+      const defaultItems = Math.min(settings.readDefaultItems, settings.receiptMaximumItems);
+      return {
+        selectorLimits: settings.selector,
+        advertisedLimits: {
+          page: { defaultItems, maximumItems: settings.receiptMaximumItems },
+          selector: settings.selector,
+          cursorTtlMilliseconds: settings.pagination.cursorTtlMs,
+        },
+        pagination: {
+          ...settings.pagination,
+          scope,
+          defaultPageItems: defaultItems,
+          maxPageItems: settings.receiptMaximumItems,
+          clock,
+          generateOpaqueToken: () =>
+            randomBytes(settings.token.bytes).toString(settings.token.encoding),
+        },
+
+
+=== SOURCE packages/server/src/transaction-runtime-configuration.ts:354-398 ===
+      actual: ReturnType<ReturnType<typeof openTransactionStore>["readConfiguration"]>,
+      scope: string,
+    ) {
+      if (configuredScope !== undefined && scope !== configuredScope)
+        throw new Error("live transaction Scope mismatch");
+      if (!isDeepStrictEqual(actual.scopeSnapshot, settings.scopeSnapshot))
+        throw new Error("live transaction Snapshot configuration mismatch");
+      if (
+        actual.authorizationView !== "development-all-visible" ||
+        actual.scopeConfiguration.policyIdentity !== actual.authorizationView ||
+        actual.scopeConfiguration.maximumEndpointMultiplicity.length !== 0
+      )
+        throw new Error("unexpected live transaction policy");
+      const sorted = (values: readonly unknown[]) =>
+        values.map((v) => stringifyJsonValue(v)).sort();
+      if (JSON.stringify(sorted(actual.installedTypes)) !== JSON.stringify(sorted(types)))
+        throw new Error("live transaction descriptor closure mismatch");
+      if (seamCapture.supplied || configuredScope === undefined || contracts === undefined)
+        return undefined;
+      const policyIdentity = transactionRuntimeDigest({
+        revision: "transaction-policy-1",
+        view: actual.authorizationView,
+        read: "all-visible",
+        aggregate: actual.scopeConfiguration.maximumEndpointMultiplicity,
+        associations,
+      });
+      const runtimeConfigurationIdentity = transactionRuntimeDigest({
+        revision: "transaction-runtime-1",
+        scope,
+        artifactIdentity: contracts.identity,
+        settings,
+        authorityMode,
+        policyIdentity,
+        authenticationIdentity,
+        profile: "transactional",
+        history: false,
+      });
+      return Object.freeze({
+        authorityMode,
+        runtimeConfigurationIdentity,
+        artifactIdentity: contracts.identity,
+        policyIdentity,
+        authenticationIdentity,
+        scope,
+        profile: "transactional" as const,
+
+
+=== SOURCE packages/server/src/transaction-runtime.ts:86-96 ===
+}
+function deliver(response: ServerResponse, selected: HttpResponse, raw?: string): void {
+  if (response.destroyed) return;
+  const bytes =
+    raw ?? (selected.body === undefined ? undefined : stringifyJsonValue(selected.body));
+  selected.headers.set("x-bdp-development", "non-attesting");
+  if (bytes !== undefined) selected.headers.set("content-length", String(Buffer.byteLength(bytes)));
+  response.writeHead(selected.status, Object.fromEntries(selected.headers));
+  response.end(response.req.method === "HEAD" ? undefined : bytes);
+}
+export async function startTransactionRuntime(
+
+
+=== SOURCE packages/server/src/transaction-runtime.ts:141-153 ===
+        methodFailure.headers.set("connection", "close");
+        deliver(response, methodFailure);
+        return;
+      }
+      const headers = new Headers();
+      for (let i = 0; i < request.rawHeaders.length; i += 2)
+        headers.append(request.rawHeaders[i] ?? "", request.rawHeaders[i + 1] ?? "");
+      const supplied = Buffer.from(headers.get("authorization") ?? "");
+      const authorization = captured.authenticate(supplied);
+      signal = createNodeHttpDisconnectSignal(request, response);
+      const input = new Request(url, { method: request.method ?? "GET", headers, signal });
+      const lastEventIds: string[] = [];
+      for (let i = 0; i < request.rawHeaders.length; i += 2)
+
+
+=== SOURCE packages/server/src/transaction-store.ts:214-219 ===
+CREATE TABLE metadata(name TEXT PRIMARY KEY, value TEXT NOT NULL) STRICT;
+CREATE TABLE resources(id TEXT PRIMARY KEY, body TEXT NOT NULL, kind TEXT NOT NULL, source TEXT, target TEXT) STRICT;
+CREATE TABLE identities(id TEXT PRIMARY KEY) STRICT;
+CREATE TABLE aliases(path TEXT PRIMARY KEY, target TEXT NOT NULL) STRICT;
+CREATE TABLE receipts(principal TEXT NOT NULL, key TEXT NOT NULL, identity TEXT NOT NULL, witnesses TEXT NOT NULL, owner TEXT, receipt TEXT NOT NULL, dependency TEXT, PRIMARY KEY(principal,key)) STRICT;
+CREATE TABLE receipt_pages(receipt TEXT PRIMARY KEY, principal TEXT NOT NULL, key TEXT NOT NULL, entries INTEGER NOT NULL, maximum INTEGER NOT NULL) STRICT;
+
+
+=== SOURCE packages/server/src/transaction-store.ts:245-252 ===
+/** Owns a single SQLite connection under persistent EXCLUSIVE locking. Admission
+ * is durable separately; graph/positions/group/terminal receipt are one commit.
+ * Startup retracts abandoned pending receipts instead of running requests itself.
+ * Fixed all-visible private policy only; this is not an authentication boundary. */
+export function openTransactionStore(options: TransactionStoreOptions) {
+  const scope = parseCanonicalScope(options.scope);
+  const view = "development-all-visible";
+  if (Buffer.byteLength(json(`${scope}events/`)) > TRANSACTION_RUNTIME_LIMITS.scopeSourceBytes)
+
+
+=== SOURCE packages/server/src/transaction-store.ts:421-428 ===
+  function row(principal: string, key: string): Row | undefined {
+    return db.prepare("SELECT * FROM receipts WHERE principal=? AND key=?").get(principal, key) as
+      | Row
+      | undefined;
+  }
+  function parseReceipt(value: string): TransactionReceipt {
+    return JSON.parse(value) as TransactionReceipt;
+  }
+
+
+=== SOURCE packages/server/src/transaction-store.ts:592-600 ===
+  function readContext(): TransactionReadContext {
+    const position = metadata("position");
+    if (!/^(0|[1-9][0-9]*)$/.test(position) || !Number.isSafeInteger(Number(position)))
+      throw new Error("invalid transaction read position");
+    return Object.freeze({
+      scopeEpoch: epoch,
+      authorizationView: view,
+      scopePosition: `pos-${position}`,
+    });
+
+
+=== SOURCE packages/server/src/transaction-store.ts:1051-1132 ===
+    principal: string,
+    key: string,
+    batch: PreparedTransaction,
+    pendingWins = false,
+    references?: ReferenceBindings,
+    template?: DependencyTemplate,
+    controls?: TransactionReceivingControls,
+  ): TransactionReceivingAdmission {
+    const stored = row(principal, key);
+    const prior = stored ? expireRow(stored, instant()).row : undefined;
+    if (pendingWins && prior?.owner !== null && prior !== undefined)
+      return { kind: "existing", receipt: parseReceipt(prior.receipt) };
+    if (prior?.dependency) {
+      const template = parseDependencyTemplate(prior.dependency, scope);
+      const comparison = compareDependencyTemplate(template, batch, resolveAlias, (index) => {
+        const stored = db
+          .prepare("SELECT fact FROM creator_facts WHERE attempt=? AND member=?")
+          .get(template.attempt, index);
+        if (!stored) throw new Error("unresolved receipt lost creator fact");
+        return typeof stored.fact === "string"
+          ? (JSON.parse(stored.fact) as CreatorFact)
+          : undefined;
+      });
+      return comparison === "conflict"
+        ? { kind: "conflict" }
+        : comparison === "equal"
+          ? { kind: "existing", receipt: parseReceipt(prior.receipt) }
+          : { kind: "comparison-pending" };
+    }
+    const depthRefusal = transactionDepthRefusal(batch);
+    if (!prior && depthRefusal !== undefined) {
+      if (controls === undefined) throw new TransactionDevelopmentLimitError(depthRefusal);
+      return { kind: "development-limit", message: depthRefusal };
+    }
+    const normalized = template
+      ? undefined
+      : normalizeTransaction(batch, resolveAlias, prior?.witnesses, references);
+    if (prior) {
+      if (!normalized) throw new Error("existing key cannot acquire a new unresolved template");
+      return prior.identity !== normalized.identity
+        ? { kind: "conflict" }
+        : { kind: "existing", receipt: parseReceipt(prior.receipt) };
+    }
+    // Prior-key equality/conflict wins above. Only an unknown key pays fresh
+    // admission controls, and no refusal ever inserts a receipt or owner.
+    if (controls && batch.carrier.operations.length > controls.maximumOperations)
+      return { kind: "operation-limit" };
+    if (controls) {
+      for (const [index, op] of batch.carrier.operations.entries()) {
+        if (op.operation !== "updateWhere" && op.operation !== "deleteWhere") continue;
+        const limit = transactionSelectorCapacity(op);
+        if (limit)
+          return {
+            kind: "selector-limit",
+            limit,
+            pointer:
+              batch.carrier.kind === "singleton" ? "/selector" : `/operations/${index}/selector`,
+          };
+      }
+    }
+    if (controls && !controls.acceptsJson) return { kind: "not-acceptable" };
+    const receipt: TransactionReceipt = {
+      id: `${scope}receipts/${randomUUID()}`,
+      status: "pending",
+      idempotencyKey: key,
+      scopeEpoch: epoch,
+      authorizationView: view,
+      transaction: randomUUID(),
+    };
+    const owner = randomUUID(),
+      claim = Object.freeze({ receipt });
+    db.prepare("INSERT INTO receipts VALUES(?,?,?,?,?,?,?)").run(
+      principal,
+      key,
+      normalized?.identity ?? "",
+      normalized?.witnessesJson ?? "",
+      owner,
+      json(receipt),
+      template ? json(template) : null,
+    );
+    claims.set(claim, { principal, key, owner, normalized });
+    return { kind: "owned", claim };
+
+
+=== SOURCE packages/server/src/transaction-store.ts:1387-1440 ===
+  function admit(principal: string, key: string, batch: PreparedTransaction): TransactionAdmission;
+  function admit(
+    principal: string,
+    key: string,
+    batch: PreparedTransaction,
+    controls: TransactionReceivingControls,
+  ): TransactionReceivingAdmission;
+  function admit(
+    principal: string,
+    key: string,
+    batch: PreparedTransaction,
+    controls: TransactionReceivingControls | undefined,
+    observed: true,
+  ): TransactionReceivingAdmission;
+  function admit(
+    principal: string,
+    key: string,
+    batch: PreparedTransaction,
+    controls?: TransactionReceivingControls,
+    observed = false,
+  ): TransactionReceivingAdmission {
+    const receiving = snapshotTransactionReceivingControls(
+      controls ?? { acceptsJson: true, maximumOperations: TRANSACTION_MAXIMUM_OPERATIONS },
+    );
+    return enter(() => {
+      assertPreparedTransaction(batch, scope);
+      checkPrincipalKey(principal, key);
+      const admission = atomic(() => {
+        const result = admitKey(principal, key, batch, false, undefined, undefined, receiving);
+        if (result.kind === "development-limit" && controls === undefined)
+          throw new TransactionDevelopmentLimitError(result.message);
+        if (result.kind === "operation-limit" && controls === undefined)
+          throw new TransactionDevelopmentLimitError("development transaction operation limit");
+        if (result.kind === "selector-limit" && controls === undefined)
+          throw new TransactionDevelopmentLimitError("development transaction Selector limit");
+        if (result.kind === "existing") {
+          if (!receiving.acceptsJson)
+            return {
+              kind: "not-acceptable" as const,
+              ...(observed ? { context: readContext() } : {}),
+            };
+          if (observed) return { kind: "existing" as const, ...observeReceipt(result.receipt) };
+        }
+        if (
+          observed &&
+          (result.kind === "conflict" ||
+            result.kind === "operation-limit" ||
+            result.kind === "selector-limit" ||
+            result.kind === "not-acceptable")
+        )
+          return { ...result, context: readContext() };
+        return result;
+      });
+      if (admission.kind === "owned") {
+
+
+=== SOURCE packages/server/src/transaction-store.ts:1573-1634 ===
+        // checks. A retained identity remains a source after Resource deletion.
+        if (!eventSourceKnown(source))
+          return Object.freeze({ kind: "missing" as const, context: readContext() });
+        if (minimum === "unsupported") return Object.freeze({ kind: "unsupported" as const });
+        const context = readContext(),
+          head = Number(context.scopePosition.slice(4));
+        // This owner entry cannot advance while scanning. Refuse/wait before any
+        // group read rather than repeating projection work on every wait attempt.
+        if (minimum !== undefined) checkTransactionMinimum(minimum, context);
+        const start = after === undefined ? undefined : parseTransactionEventCursor(after, context);
+        if (start) checkTransactionEventCursor(start, context, source.url);
+        let cursorMatched = start === undefined;
+        const events: import("./transaction-batch.js").TransactionEvent[] = [];
+        // Keep brackets/envelope once and replace the literal null with each
+        // candidate continuation string. Each Event is serialized exactly once.
+        const envelopeBytes =
+          Buffer.byteLength(json({ source: source.url, events: [], next: null })) - 4;
+        let eventBytes = 0;
+        let next: string | null = null;
+        const retainedGroupAtOrAfter = retainedGroupReader();
+        let at = start?.position ?? 1;
+        for (;;) {
+          const row = retainedGroupAtOrAfter(at, head);
+          if (!row) {
+            if (cursorMatched && at <= head) throw new Error("missing retained Event group");
+            break;
+          }
+          const p = row.position;
+          if (cursorMatched && p !== at) throw new Error("missing retained Event group");
+          const projected = eventProjection(
+            row,
+            context,
+            source,
+            !cursorMatched && start && after !== undefined ? { ...start, id: after } : undefined,
+          );
+          cursorMatched = true;
+          for (const event of projected) {
+            if (start && p === start.position && event.ordinal <= start.ordinal) continue;
+            // Reserve the exact continuation even if this Event is currently last.
+            const { eventBytes: candidateBytes, pageBytes: bytes } = eventCandidateBytes(
+              envelopeBytes,
+              source.url,
+              event,
+              eventBytes,
+              events.length,
+            );
+            if (events.length + 1 > receiptMaximumItems || bytes > TRANSACTION_EVENT_PAGE_BYTES) {
+              const last = events.at(-1);
+              if (!last) throw new Error("finite Event page cannot hold first retained Event");
+              next = eventContinuation(source.url, last.id);
+              break;
+            }
+            events.push(event);
+            eventBytes = candidateBytes;
+          }
+          if (next !== null) break;
+          at = p + 1;
+        }
+        if (!cursorMatched) throw new TransactionEventParameterError(undefined, context);
+        return Object.freeze({
+          kind: "page" as const,
+          context,
+
+
+=== SOURCE packages/server/src/transaction-submission.ts:83-154 ===
+  const receiving = snapshotTransactionReceivingControls(submission.receiving);
+  const { body, key } = submission;
+  if (Buffer.byteLength(body) > TRANSACTION_RUNTIME_LIMITS.requestBodyBytes)
+    return { kind: "refused", status: 413, code: "request-too-large" };
+  let prepared: ReturnType<typeof prepareTransactionForReceiving>;
+  try {
+    prepared = prepareTransactionForReceiving(store.scope, submission.carrier, body);
+  } catch (error) {
+    if (error instanceof TransactionSelectorSyntaxError)
+      return { kind: "refused", status: 400, code: "malformed-request", pointer: error.pointer };
+    if (
+      error instanceof JsonSyntaxError ||
+      error instanceof ReadUpdateCarrierError ||
+      error instanceof TypeError
+    )
+      return { kind: "refused", status: 400, code: "malformed-request" };
+    else throw error;
+  }
+  if (typeof key !== "string" || !/^[A-Za-z0-9_-]{1,256}$/.test(key))
+    return { kind: "refused", status: 400, code: "malformed-request" };
+  const authorization = submission.authorization;
+  if (authorization.kind === "unauthenticated")
+    return { kind: "refused", status: 401, code: "unauthenticated" };
+  if (authorization.kind === "forbidden")
+    return { kind: "refused", status: 403, code: "forbidden" };
+  if (
+    typeof authorization.principal !== "string" ||
+    authorization.principal.length === 0 ||
+    !authorization.principal.isWellFormed()
+  )
+    throw new TypeError("invalid trusted principal");
+  const comparisonStore = observed
+    ? {
+        scopeEpoch: store.scopeEpoch,
+        comparisonEpoch: store.comparisonEpoch,
+        admit: store.admitObserved,
+      }
+    : store;
+  const result = await compareAndAdmitTransaction(
+    comparisonStore,
+    authorization.principal,
+    key,
+    prepared,
+    {
+      ...comparison,
+      receiving,
+      // Override even an untyped caller's extra field; only this owner supplies it.
+      observeDeadline: observed ? store.observeComparisonDeadline : undefined,
+    },
+  );
+  if (
+    observed &&
+    (result.kind === "conflict" ||
+      result.kind === "operation-limit" ||
+      result.kind === "selector-limit" ||
+      result.kind === "not-acceptable") &&
+    !result.context
+  )
+    throw new Error("admission refusal lost same-entry context");
+  switch (result.kind) {
+    case "development-limit":
+      return result;
+    case "conflict":
+      return {
+        kind: "refused",
+        status: 409,
+        code: "idempotency-conflict",
+        ...(result.context ? { context: result.context } : {}),
+      };
+    case "operation-limit":
+      return {
+        kind: "refused",
+
+
+=== SOURCE packages/server/src/transaction-submission.ts:186-212 ===
+        retry: "after-delay",
+      };
+    case "temporarily-unavailable":
+      return {
+        kind: "refused",
+        status: 503,
+        code: "temporarily-unavailable",
+        retry: "after-delay",
+      };
+    case "existing":
+      if (observed && !result.context)
+        throw new Error("existing receipt lost same-entry context", {
+          cause: { id: result.receipt.id, key },
+        });
+      return observed
+        ? {
+            kind: "receipt",
+            receipt: result.receipt,
+            ...(result.context ? { context: result.context } : {}),
+          }
+        : { kind: "receipt", receipt: result.receipt };
+    case "owned":
+      return observed
+        ? { kind: "receipt", ...store.executeObserved(result.claim) }
+        : { kind: "receipt", receipt: store.execute(result.claim) };
+  }
+}
+
+
+=== SOURCE packages/server/src/transaction-service.ts:513-532 ===
+    },
+    submit(request: TransactionSubmission): Promise<TransactionServiceSubmissionResult> {
+      return run(async () => {
+        const authorization = Object.freeze({ ...request.authorization });
+        const result = await submitTransaction(
+          owner,
+          { ...request, authorization },
+          comparison,
+          true,
+        );
+        if (result.kind !== "receipt") return result;
+        if (authorization.kind !== "authorized") throw new Error("unauthorized receipt delivery");
+        if (!result.context)
+          throw new Error("admitted receipt lost same-entry observation", {
+            cause: { id: result.receipt.id, key: result.receipt.idempotencyKey },
+          });
+        return checked({ receipt: result.receipt, context: result.context });
+      });
+    },
+    /** Trusted prepared carrier + authenticated principal. Raw sequence receiving
+
+
+=== SOURCE packages/server/src/transaction-http.ts:107-120 ===
+export function transactionHttpProblem(
+  code: ReadProblemCode,
+  observation?: TransactionReadContext,
+): HttpResponse {
+  const response = problem(readProblem(code));
+  return observation ? context(response, observation) : response;
+}
+function context(response: HttpResponse, observation: TransactionReadContext): HttpResponse {
+  response.headers.set("bdp-scope-epoch", observation.scopeEpoch);
+  response.headers.set("bdp-authorization-view", observation.authorizationView);
+  response.headers.set("bdp-scope-position", observation.scopePosition);
+  return response;
+}
+function streamResponse(request: Request, observation: TransactionReadContext): HttpResponse {
+
+
+=== SOURCE packages/server/src/transaction-http.ts:205-237 ===
+          ? problem(result.problem)
+          : {
+              status: 307,
+              headers: new Headers({
+                location: result.target,
+                "content-length": "0",
+                "cache-control": "private, no-store",
+              }),
+            };
+      return "observation" in result
+        ? context(response, transactionReadContexts(result.observation).current)
+        : response;
+    },
+    async perform(parsed, request) {
+      const minimum = transactionMinimumHeaders(request.headers);
+      const facet = minimum
+        ? service.readAtMinimum({ kind: "anonymous" }, minimum)
+        : service.readFor({ kind: "anonymous" });
+      const result = await facet.perform(parsed, { signal: request.signal });
+      const response =
+        result.kind === "problem"
+          ? problem(result.problem)
+          : result.kind === "discovery"
+            ? developmentGap("transactional-discovery")
+            : scopeDataResponse(
+                parsed,
+                result.body,
+                "resourceRevision" in result.observation
+                  ? result.observation.resourceRevision
+                  : undefined,
+              );
+      return "observation" in result
+        ? context(response, transactionReadContexts(result.observation).current)
+
+
+=== SOURCE packages/server/src/transaction-http.ts:329-376 ===
+      const decision: TransactionSubmission["authorization"] =
+        authorization.kind === "unauthenticated"
+          ? authorization
+          : authorization.canMutate
+            ? { kind: "authorized", principal: authorization.principal }
+            : { kind: "forbidden" };
+      const result = await service.submit({
+        carrier:
+          operation === "batch"
+            ? { kind: "batch" }
+            : { kind: "singleton", operation: operation as TransactionSingletonOperation },
+        body: received.text,
+        key: request.headers.get("idempotency-key") ?? "",
+        authorization: decision,
+        receiving: { acceptsJson: acceptsJson(request.headers.get("accept")), maximumOperations },
+      });
+      if (result.kind === "receipt") return receiptResponse(result, true);
+      if (result.kind === "comparison-refusal") {
+        const response = problem(readProblem(result.code));
+        if (result.reason === "owner-stopped") return response;
+        if (!result.context) throw new Error("comparison deadline lost same-entry context");
+        return context(response, result.context);
+      }
+      if (result.kind === "not-acceptable") {
+        if (!result.context) throw new Error("negotiation refusal lost same-entry context");
+        return context(empty(406), result.context);
+      }
+      if (result.kind === "development-limit")
+        return developmentGap("unsupported-transaction-composition");
+      if (result.code === "idempotency-conflict") {
+        if (!result.context) throw new Error("conflict refusal lost same-entry context");
+        return context(
+          problem(
+            parseReadUpdateProblem({
+              type: "https://github.com/gastownhall/bdp/problems/conflict",
+              code: result.code,
+              status: 409,
+              retry: "never",
+            }),
+          ),
+          result.context,
+        );
+      }
+      if (result.code === "limit-exceeded" && result.limit !== undefined) {
+        if (!result.context) throw new Error("operation-limit refusal lost same-entry context");
+        return context(
+          problem({
+            ...readProblem(result.code),
+
+
+=== SOURCE packages/server/src/transaction-http.ts:488-518 ===
+      const minimum = hasMinimumControls(request)
+        ? (transactionMinimumHeaders(request.headers) ?? "unsupported")
+        : undefined;
+      if (selectChangefeedMedia(request.headers.get("accept")) !== "sse") {
+        const observed = await service.events(
+          eventRequest.source.url,
+          eventRequest.after,
+          minimum,
+          request.signal,
+        );
+        if (observed.kind === "missing")
+          return transactionHttpProblem("resource-not-found", observed.context);
+        if (observed.kind === "unsupported") return developmentGap("minimum-position");
+        return context(jsonResponse(observed.page), observed.context);
+      }
+      const fields =
+        lastEventIds ??
+        (request.headers.has("last-event-id") ? [request.headers.get("last-event-id")!] : []);
+      const observed = await service.beginEvents(
+        eventRequest.source.url,
+        fields.length === 1 ? fields[0] : eventRequest.after,
+        minimum,
+        request.signal,
+        fields.length > 1,
+      );
+      if (observed.kind === "missing")
+        return transactionHttpProblem("resource-not-found", observed.context);
+      if (observed.kind === "unsupported") return developmentGap("minimum-position");
+      const response = streamResponse(request, observed.context);
+      return response.status !== 200 || request.method === "HEAD"
+        ? response
+
+
+=== SOURCE packages/server/src/transaction-events.ts:66-101 ===
+}
+export interface TransactionEventPage {
+  readonly source: string;
+  readonly events: readonly TransactionEvent[];
+  readonly next: string | null;
+}
+const ordinal = /^(0|[1-9][0-9]*)$/;
+const position = /^pos-(0|[1-9][0-9]*)$/;
+const cursor =
+  /^ev_([A-Za-z0-9_-]{43})_([A-Za-z0-9_-]{43})_([A-Za-z0-9_-]{43})_(pos-(?:0|[1-9][0-9]*))_(0|[1-9][0-9]*)$/;
+const hash = (tag: string, value: string) =>
+  createHash("sha256")
+    .update(JSON.stringify([tag, value]))
+    .digest("base64url");
+
+/** Scope and Resource token spelling is deliberately private, not a fixture law. */
+export function renderTransactionEvent(
+  context: Pick<TransactionReadContext, "scopeEpoch" | "authorizationView">,
+  source: string,
+  checkpoint: string,
+  event: TransactionEvent,
+): TransactionEvent {
+  if (
+    !position.test(checkpoint) ||
+    !Number.isSafeInteger(Number(checkpoint.slice(4))) ||
+    Number(checkpoint.slice(4)) < 1 ||
+    !Number.isSafeInteger(event.ordinal) ||
+    event.ordinal < 0
+  )
+    throw new Error("invalid committed Event position");
+  return {
+    ...event,
+    source,
+    id: `ev_${hash("epoch", context.scopeEpoch)}_${hash("view", context.authorizationView)}_${hash("source", source)}_${checkpoint}_${event.ordinal}`,
+  };
+}
+
+
+=== SOURCE packages/server/src/transaction-events.ts:190-210 ===
+export function projectTransactionEventGroup(
+  value: unknown,
+  context: TransactionReadContext,
+  source: TransactionEventSource,
+  scope: string,
+  expectedPosition: number,
+): readonly TransactionEvent[] {
+  if (!value || typeof value !== "object") throw new Error("invalid retained Event group");
+  const group = value as TransactionEventGroup;
+  if (
+    group.scopeEpoch !== context.scopeEpoch ||
+    group.authorizationView !== context.authorizationView ||
+    group.position !== `pos-${expectedPosition}` ||
+    group.checkpoint !== group.position ||
+    !Array.isArray(group.events) ||
+    group.eventCount !== group.events.length ||
+    !Array.isArray(group.changes) ||
+    typeof group.transaction !== "string"
+  )
+    throw new Error("retained Event group context mismatch");
+  const endpoints = new Map<string, readonly [unknown, unknown]>();
+
+
+=== SOURCE packages/server/src/transaction-events.ts:237-271 ===
+  }
+  const result: TransactionEvent[] = [];
+  for (const [index, event] of group.events.entries()) {
+    if (
+      event.ordinal !== index ||
+      event.source !== `${scope}events/` ||
+      event.transaction !== group.transaction ||
+      !["created", "updated", "deleted", "linked", "unlinked"].includes(event.type)
+    )
+      throw new Error("invalid retained Event framing");
+    const data = event.data as Record<string, unknown>;
+    let include = source.kind === "scope";
+    if (source.kind !== "scope") {
+      include =
+        event.subject === source.subject && ["created", "updated", "deleted"].includes(event.type);
+      if (source.kind === "bead" && (event.type === "linked" || event.type === "unlinked")) {
+        if (data.endpoint !== "source" && data.endpoint !== "target")
+          throw new Error("invalid endpoint fact");
+        include = reference(data[data.endpoint]) === source.subject;
+      }
+      if (source.kind === "bead" && event.type === "updated" && linkIds.has(event.subject)) {
+        const pair = endpoints.get(event.subject);
+        if (!pair) throw new Error("incident Link update lacks same-group endpoints");
+        include = pair.some((endpoint) => reference(endpoint) === source.subject);
+        // Literal incident rule currently mentions properties only. Do not silently
+        // decide metadata-only membership while the spec disposition is pending.
+        if (include && data.change === undefined && data.metadataChange !== undefined)
+          throw new TransactionEventProjectionGap("incident-link-metadata");
+      }
+    }
+    if (include) result.push(renderTransactionEvent(context, source.url, group.checkpoint, event));
+  }
+  return result;
+}
+export function eventContinuation(source: string, id: string): string {
+
+
+=== SOURCE packages/server/src/transaction-batch.ts:692-708 ===
+  function scopeEvent(subject: ResourceRecord, type: TransactionEvent["type"], data: unknown) {
+    if (events.length >= eventMaximum) throw new EventExpansionLimit();
+    const ordinal = events.length;
+    events.push({
+      id: `${position}-${ordinal}`,
+      ordinal,
+      type,
+      // These are authority Scope-group facts, not Resource-source projections.
+      // The latter rewrite source to `${resource.id}?view=events` on read.
+      source: `${options.scope}events/`,
+      subject: subject.id,
+      subjectType: subject.type,
+      transaction,
+      time: new Date(now).toISOString(),
+      data,
+    });
+  }
+
+
+=== SOURCE packages/server/src/transaction-batch.ts:780-801 ===
+        !before ||
+        !outcome.deleted ||
+        before.id !== `${options.scope}${id}` ||
+        outcome.deleted.resource.id !== before.id ||
+        outcome.deleted.resource.type !== before.type ||
+        outcome.deleted.resource.revision !== before.revision
+      )
+        throw new Error("deleted Resource lacks matching previous identity");
+      changes.set(before.id, { operation: "tombstone", ...outcome.deleted });
+    }
+    if (outcome.outcome === "created") {
+      scopeEvent(subject, "created", {
+        revision: subject.revision,
+        properties: subject.properties,
+        metadata: subject.metadata ?? {},
+        ...(subject.revisionProvenance ? { revisionProvenance: subject.revisionProvenance } : {}),
+        ...("source" in subject ? { source: subject.source, target: subject.target } : {}),
+      });
+    } else if (outcome.outcome === "updated") {
+      if (!before) throw new Error("update lacks previous state");
+      scopeEvent(subject, "updated", {
+        previousRevision: before.revision,
+
+
+=== SOURCE packages/server/src/transaction-store.test.ts:287-307 ===
+  it("refuses unsupported/malformed batches before admission and preserves principal separation", () => {
+    const f = fixture();
+    for (const body of [
+      { operations: [] },
+      { operations: [{ operation: "putAlias", alias: "alias/a", target: "beads/a" }] },
+      { operations: [{ ...batch.operations[0], idempotencyKey: "bad" }] },
+      {
+        operations: [
+          { operation: "createLink", type: link, source: "@later", target: "beads/a" },
+          batch.operations[0],
+        ],
+      },
+    ])
+      expect(() => prepareTransaction(scope, JSON.stringify(body))).toThrow();
+    expect(f.store.inspect().groups).toEqual([]);
+    f.store.execute(admit(f.store));
+    expect(
+      f.store.admit("other", "key", prepareTransaction(scope, JSON.stringify(batch))).kind,
+    ).toBe("owned");
+  });
+  it("refuses another live owner, mismatched installation and implicit reseeding", () => {
+
+
+=== SOURCE apps/bdptest/src/transactional-receipt-missing-context-installed.test.ts:141-154 ===
+    child = await launchInstalledTransaction(
+      entry,
+      {
+        scope,
+        directory,
+        create: true,
+        artifacts,
+        credentials: [
+          { token: writer, principal: "writer", canMutate: true },
+          { token: other, principal: "other", canMutate: false },
+        ],
+      },
+      controller.signal,
+    );
+
+
+=== SOURCE apps/bdptest/test-support/transactional-execution-binding.ts:26-107 ===
+  if (
+    ready.profile !== "transactional" ||
+    ready.history !== false ||
+    ready.claimEligible !== false ||
+    ready.authorityMode !== "canonical" ||
+    typeof ready.scope !== "string" ||
+    typeof ready.runtimeConfigurationIdentity !== "string" ||
+    !/^[a-f0-9]{64}$/.test(ready.runtimeConfigurationIdentity)
+  )
+    throw new Error("installed Transactional metadata unavailable");
+  if (typeof ready.listenUrl !== "string")
+    throw new Error("installed physical session unavailable");
+  const url = new URL(ready.listenUrl);
+  if (
+    url.protocol !== "http:" ||
+    url.hostname !== "127.0.0.1" ||
+    !url.port ||
+    url.username ||
+    url.password ||
+    url.pathname !== "/" ||
+    url.search ||
+    url.hash
+  )
+    throw new Error("invalid installed dial binding");
+  const targetNames = {
+    createBead: "create-bead",
+    updateBead: "update-bead",
+    deleteBead: "delete-bead",
+    createLink: "create-link",
+    updateLink: "update-link",
+    deleteLink: "delete-link",
+    putAlias: "put-alias",
+    deleteAlias: "delete-alias",
+    updateWhere: "update-where",
+    deleteWhere: "delete-where",
+    batch: "batch",
+    sequence: "sequence",
+  };
+  const operationTargets = Object.freeze(
+    Object.fromEntries(
+      Object.entries(targetNames).map(([name, suffix]) => [
+        name,
+        `${ready.scope}operations/${suffix}`,
+      ]),
+    ),
+  );
+  if (!isDeepStrictEqual(ready.targets, operationTargets))
+    throw new Error("installed operation target inventory mismatch");
+  const served = bindServedProfileConfiguration({
+    scope: ready.scope,
+    profile: "transactional",
+    history: false,
+    sourceCommit,
+    installedPayloadDigest: ready.payloadIdentity as string,
+    installedContractsDigest: installedContractsDigest(ready.artifactIdentity),
+    policyDigest: ready.policyIdentity as string,
+    authenticationDigest: ready.authenticationIdentity as string,
+    fixture,
+  });
+  return Object.freeze({
+    served,
+    operationTargets,
+    runtimeConfigurationIdentity: ready.runtimeConfigurationIdentity,
+    authorityMode: "canonical" as const,
+  });
+}
+export function createTransactionalExecutionBinding(options: {
+  readonly baseline: ReturnType<typeof installedTransactionBinding>;
+  readonly sourceCommit: string;
+  readonly fixtureSource: { bytes: Uint8Array };
+  readonly exactMode: ExactHttpModeOptions;
+  readonly launch: (
+    scenario: string,
+    reopen: boolean,
+    signal: AbortSignal,
+  ) => Promise<InstalledTransactionChild>;
+}) {
+  let active:
+    | (TransactionalSession & { controller: AbortController; pending: Set<Promise<unknown>> })
+    | undefined;
+  let generation = 0;
+  let presentation:
+
+
+=== SOURCE scripts/transaction-installed-observation.mjs:1-97 ===
+/** Bounded inherited-IPC launcher. No request or observation emulation. */
+import { spawn } from "node:child_process";
+import { mkdir } from "node:fs/promises";
+export async function launchInstalledTransaction(entry, configuration, signal) {
+  signal?.throwIfAborted();
+  // Explicit launcher-owned provisioning; reopen keeps the directory/create:false.
+  if (configuration.create) await mkdir(configuration.directory, { recursive: true, mode: 0o700 });
+  signal?.throwIfAborted();
+  const child = spawn(process.execPath, [entry], {
+    cwd: "/tmp",
+    stdio: ["ignore", "pipe", "pipe", "ipc"],
+  });
+  let bytes = 0;
+  for (const stream of [child.stdout, child.stderr])
+    stream.on("data", (chunk) => {
+      bytes += chunk.length;
+      if (bytes > 65536) child.kill("SIGKILL");
+    });
+  const exited = new Promise((resolve) =>
+    child.once("exit", (code, signal) => resolve({ code, signal })),
+  );
+  async function bounded(promise) {
+    let timer;
+    try {
+      return await Promise.race([
+        promise,
+        new Promise((_, reject) => {
+          timer = setTimeout(() => {
+            child.kill("SIGKILL");
+            reject(new Error("installed transaction process deadline"));
+          }, 10000);
+        }),
+      ]);
+    } finally {
+      clearTimeout(timer);
+    }
+  }
+  async function drainFailure(error) {
+    child.kill("SIGKILL");
+    try {
+      await bounded(exited);
+    } catch (cleanup) {
+      throw new AggregateError([error, cleanup], "installed transaction cleanup failed");
+    }
+    throw error;
+  }
+  let closing;
+  const close = () =>
+    (closing ??= (async () => {
+      try {
+        if (child.connected) child.send({ command: "close" });
+        const result = await bounded(exited);
+        if (result.code !== 0 || result.signal !== null)
+          throw new Error("installed transaction child did not close cleanly");
+      } catch (error) {
+        await drainFailure(error);
+      } finally {
+        signal?.removeEventListener("abort", onAbort);
+      }
+    })());
+  const onAbort = () => {
+    void close().catch(() => {});
+  };
+  signal?.addEventListener("abort", onAbort, { once: true });
+  if (signal?.aborted) onAbort();
+  let detachReadyAbort = () => {};
+  try {
+    const ready = await bounded(
+      new Promise((resolve, reject) => {
+        const abort = () => reject(signal.reason);
+        signal?.addEventListener("abort", abort, { once: true });
+        detachReadyAbort = () => signal?.removeEventListener("abort", abort);
+        if (signal?.aborted) {
+          abort();
+          return;
+        }
+        child.once("error", reject);
+        child.once("message", resolve);
+        void exited.then(() => reject(new Error("installed transaction exited before ready")));
+        child.send({ configuration });
+      }),
+    );
+    signal?.throwIfAborted();
+    if (!ready || ready.event !== "qualification.ready" || JSON.stringify(ready).length > 65536)
+      throw new Error("invalid installed ready message");
+    return { child, ready, close };
+  } catch (error) {
+    try {
+      await close();
+    } catch (cleanup) {
+      throw new AggregateError([error, cleanup], "installed transaction startup cleanup failed");
+    }
+    throw error;
+  } finally {
+    detachReadyAbort();
+  }
+}
+
+
+=== SOURCE apps/bdptest/src/transactional-depth-key-order-installed.test.ts:1-28 ===
+/** Private installed retained-key/depth observations; no profile qualification. */
+import { execFileSync, type ChildProcess } from "node:child_process";
+import { createHash, randomBytes } from "node:crypto";
+import { existsSync, mkdtempSync, readFileSync, realpathSync, rmSync } from "node:fs";
+import { tmpdir } from "node:os";
+import path from "node:path";
+import { fileURLToPath } from "node:url";
+import { expect, it } from "vitest";
+import { Ajv2020 } from "ajv/dist/2020.js";
+import { isJsonSchemaDateTime, isJsonSchemaUri } from "@bdp/protocol";
+import { createRawHttpExchangeExecutor, type HttpMethod } from "@bdp/conformance";
+import { installedTransactionBinding } from "../test-support/transactional-execution-binding.js";
+
+const root = fileURLToPath(new URL("../../../", import.meta.url));
+const { launchInstalledTransaction } = (await import(
+  new URL("../../../scripts/transaction-installed-observation.mjs", import.meta.url).href
+)) as {
+  launchInstalledTransaction(
+    entry: string,
+    configuration: unknown,
+    signal?: AbortSignal,
+  ): Promise<{
+    child: ChildProcess;
+    ready: Record<string, unknown>;
+    close(): Promise<void>;
+  }>;
+};
+const scope = "https://reference.invalid/acme/";
+
+
+=== SOURCE apps/bdptest/src/transactional-depth-key-order-installed.test.ts:81-106 ===
+const validators = Object.fromEntries(
+  ["mutationReceipt", "transactionalProblem", "beadRecord", "currentBeadCollection"].map((name) => [
+    name,
+    ajv.compile({ $ref: `${bundle.$id}#/$defs/${name}` }),
+  ]),
+);
+function record(value: unknown): Record<string, unknown> {
+  if (value === null || typeof value !== "object" || Array.isArray(value))
+    throw new Error("expected response record");
+  return value as Record<string, unknown>;
+}
+function records(value: unknown): Record<string, unknown>[] {
+  if (!Array.isArray(value)) throw new Error("expected response array");
+  return value.map(record);
+}
+function checked(text: string, schema: string) {
+  const value = record(JSON.parse(text)),
+    validate = validators[schema];
+  if (!validate) throw new Error("unbound response schema");
+  expect(validate(value), JSON.stringify(validate.errors)).toBe(true);
+  return value;
+}
+const contextNames = ["bdp-scope-epoch", "bdp-authorization-view", "bdp-scope-position"] as const;
+const retainedHeaders = [
+  ...contextNames,
+  "content-type",
+
+
+=== SOURCE apps/bdptest/src/transactional-depth-key-order-installed.test.ts:381-400 ===
+    const address = new URL(child.ready.listenUrl as string);
+    const execute = createRawHttpExchangeExecutor(
+      { transport: "plain", host: address.hostname, port: Number(address.port) },
+      {
+        requestTimeoutMs: 5000,
+        maximumBodyBytes: 131072,
+        maximumHeaderBytes: 65536,
+        exactMode: {
+          scope,
+          profile: "transactional",
+          routes: routeBindings,
+          maximumRequestHeaderBytes: 16384,
+          maximumRequestBodyBytes: 65536,
+          defaultCredentialRef: "operator",
+          credentialHandles: [{ id: "operator", headerNames: ["authorization"] }],
+          resolveCredentials: () => ({ authorization: `Bearer ${operator}` }),
+        },
+      },
+    );
+    async function exchange(index: number) {
+
+
+=== SOURCE apps/bdptest/src/transactional-depth-key-order-installed.test.ts:406-453 ===
+      expect(Buffer.byteLength(row.url)).toBeLessThanOrEqual(8192);
+      const response = await execute({
+        method: row.method,
+        url: row.url,
+        signal: controller.signal,
+        credentialRef: "operator",
+        raw: {
+          headerLines: [
+            { name: "accept", value: row.accept },
+            ...(row.contentType === null ? [] : [{ name: "content-type", value: row.contentType }]),
+            ...(row.key === null ? [] : [{ name: "idempotency-key", value: row.key }]),
+          ],
+          ...(row.body === null ? {} : { bodyBytes: Buffer.from(row.body) }),
+        },
+      });
+      // Safe response projection is retained before any status/schema assertion.
+      responses.push({
+        ordinal: attempted,
+        label: row.label,
+        method: row.method,
+        url: row.url,
+        accept: row.accept,
+        key: row.key,
+        requestBodyBytes: row.bodyBytes,
+        requestBodySha256: row.bodySha256,
+        status: response.status,
+        bodyOctets: response.bodyOctets,
+        bodySha256: digest(response.bodyText),
+        wireSha256: response.wireResponseBytes ? digest(response.wireResponseBytes) : null,
+        headers: Object.fromEntries(
+          retainedHeaders.map((name) => [name, response.headers[name] ?? null]),
+        ),
+      });
+      expect(response.exactRequest?.source).toBe("raw-http1-serializer");
+      expect(response.exactRequest?.writeState).toBe("complete");
+      expect(response.url).toBe(row.url);
+      expect(response.exactRequest?.bodyPresent).toBe(row.body !== null);
+      expect(response.exactRequest?.bodyOctets).toBe(row.bodyBytes);
+      expect(response.exactRequest?.bodyDigest).toBe(
+        row.body === null ? undefined : row.bodySha256,
+      );
+      const headers = response.exactRequest?.headerLines ?? [];
+      const values = (name: string) =>
+        headers.filter((h) => h.name.toLowerCase() === name).map((h) => h.value);
+      expect(values("host")).toStrictEqual(["reference.invalid"]);
+      expect(values("accept")).toStrictEqual([row.accept]);
+      expect(values("content-type")).toStrictEqual(
+        row.contentType === null ? [] : [row.contentType],
+
+
+=== SOURCE apps/bdptest/src/transactional-depth-key-order-installed.test.ts:479-535 ===
+        position,
+      ]);
+    }
+    function completed(response: Wire, name: string, key: string, position: string) {
+      status(response, 200, `depth-key:${name}:completed`);
+      expect(response.headers["content-type"]).toBe("application/json");
+      expect(response.headers["x-bdp-development-limit"]).toBeUndefined();
+      const receipt = checked(response.bodyText, "mutationReceipt");
+      expect(typeof receipt.scopeEpoch).toBe("string");
+      expect(receipt.scopeEpoch).not.toBe("");
+      expect(typeof receipt.authorizationView).toBe("string");
+      expect(receipt.authorizationView).not.toBe("");
+      if (!expectedContext)
+        expectedContext = [receipt.scopeEpoch as string, receipt.authorizationView as string];
+      context(response, position);
+      const results = records(receipt.results);
+      expect(results).toHaveLength(1);
+      const resource = record(results[0]!.resource);
+      expect(typeof resource.revision).toBe("string");
+      expect(resource.revision).not.toBe("");
+      expect(resource).toStrictEqual({
+        id: `${scope}beads/${name}`,
+        type: beadType,
+        revision: resource.revision,
+        properties: { title: name },
+        metadata: {},
+      });
+      expect(results).toStrictEqual([{ operationIndex: 0, outcome: "created", resource }]);
+      expect(receipt).toStrictEqual({
+        id: receipt.id,
+        status: "completed",
+        detail: "available",
+        idempotencyKey: key,
+        scopeEpoch: expectedContext[0],
+        authorizationView: expectedContext[1],
+        transaction: receipt.transaction,
+        requiredPosition: position,
+        effectPosition: position,
+        results,
+        next: null,
+        expiresAt: receipt.expiresAt,
+      });
+      expect(typeof receipt.id).toBe("string");
+      expect(typeof receipt.transaction).toBe("string");
+      expect(receiptIds.has(receipt.id as string)).toBe(false);
+      expect(transactions.has(receipt.transaction as string)).toBe(false);
+      receiptIds.add(receipt.id as string);
+      transactions.add(receipt.transaction as string);
+      savedResources.push(resource);
+      return { receipt, resource };
+    }
+    for (const carrier of ["batch", "singleton"] as const) {
+      const base = carrier === "batch" ? 0 : 6;
+      const tag = carrier === "batch" ? "b" : "s";
+      const retainedName = `depth-${tag}-a`,
+        freshName = `depth-${tag}-b`;
+      const retainedKey = `depth-${tag}-retained`,
+
+
+=== SOURCE apps/bdptest/src/transactional-depth-key-order-installed.test.ts:617-657 ===
+      new Set(routeBindings.map(({ method, url }) => `${method} ${url}`)),
+    );
+    controller.signal.throwIfAborted();
+  } catch (error) {
+    failures.push(error);
+  } finally {
+    controller.abort();
+    const cleanupReason = new Error("installed depth/key cleanup deadline");
+    const cleanupTimer = setTimeout(() => {
+      cleanupExceeded = true;
+      failures.push(cleanupReason);
+      child?.child.kill("SIGKILL");
+    }, 10000);
+    try {
+      if (child) {
+        await child.close();
+        closed = true;
+      }
+    } catch (error) {
+      failures.push(error);
+    } finally {
+      clearTimeout(cleanupTimer);
+    }
+    const stopped =
+      child === undefined || child.child.exitCode !== null || child.child.signalCode !== null;
+    if (!stopped) failures.push(new Error("installed depth/key child remains active"));
+    try {
+      if (directory && stopped) rmSync(directory, { recursive: true, force: true });
+    } catch (error) {
+      failures.push(error);
+    }
+    const directoryAbsent = directory === undefined || !existsSync(directory);
+    if (!directoryAbsent) failures.push(new Error("installed depth/key directory remains"));
+    clearTimeout(deadline);
+    if (deadlineExceeded && !failures.includes(deadlineReason)) failures.push(deadlineReason);
+    try {
+      console.log(
+        JSON.stringify({
+          observation: "private-installed-depth-key-order",
+          outcome: failures.length === 0 ? "passed" : "failed",
+          // Supervisor attribution to archives/consumer, never child-attested Git provenance.
+
+
+=== SOURCE apps/bdptest/src/transactional-depth-key-order-installed.test.ts:693-694 ===
+    throw new AggregateError(failures, "installed depth/key observation and cleanup failed");
+}, 60000);
+
+
+=== SOURCE packages/conformance/src/http-executor.ts:164-195 ===
+export function createRawHttpExchangeExecutor(
+  dialRoute: RawHttpDialRoute,
+  options: RawHttpExchangeExecutorOptions = {},
+): RawHttpExchangeExecutor {
+  const route = snapshotDialRoute(dialRoute);
+  const exactMode =
+    options.exactMode === undefined ? undefined : snapshotExactHttpMode(options.exactMode);
+  const {
+    authorize,
+    maximumBodyBytes = 1_048_576,
+    requestTimeoutMs = 30_000,
+    maximumHeaderBytes = DEFAULT_MAXIMUM_HEADER_BYTES,
+  } = Object.freeze({ ...options });
+  if (authorize !== undefined && typeof authorize !== "function")
+    throw new TypeError("authorize must be a function when present");
+  requirePositiveBound(maximumBodyBytes, "maximumBodyBytes");
+  requireTimerBound(requestTimeoutMs);
+  requirePositiveBound(maximumHeaderBytes, "maximumHeaderBytes");
+  return async (request) => {
+    if (isExactRequest(request))
+      return executeExact(
+        request,
+        route,
+        exactMode,
+        requestTimeoutMs,
+        maximumHeaderBytes,
+        maximumBodyBytes,
+      );
+    if (request.headers === undefined || request.credentialRef !== undefined)
+      throw new HttpTransportError("configuration", "ordinary HTTP request headers are required");
+    const ordinary = request;
+    const url = parseExecutorUrl(request.url);
+
+
+=== SOURCE packages/conformance/src/http-executor.ts:611-640 ===
+async function executeExact(
+  input: ExactHttpExchangeRequest,
+  route: RawHttpDialRoute,
+  mode: ExactHttpModeOptions | undefined,
+  timeoutMs: number,
+  maximumHeaderBytes: number,
+  maximumBodyBytes: number,
+): Promise<HttpExchangeResponse> {
+  const deadline = performance.now() + timeoutMs;
+  let state: RequestWriteState = "not-started";
+  try {
+    if (mode === undefined) return configuration();
+    const request = dataRecord(input, [
+      "method",
+      "url",
+      "signal",
+      "rawRequestTarget",
+      "credentialRef",
+      "raw",
+    ]);
+    if (!isHttpMethod(request.method) || !(request.signal instanceof AbortSignal))
+      return configuration();
+    const signal = request.signal;
+    requestDeadline(signal, deadline);
+    const url = canonicalHttpUrl(request.url);
+    const raw = dataRecord(request.raw, ["headerLines", "bodyBytes"]);
+    if (
+      request.rawRequestTarget === undefined &&
+      url.pathname.length + url.search.length > mode.maximumRequestHeaderBytes
+    )
+
+
+=== SOURCE packages/conformance/src/http-executor.ts:720-772 ===
+      ["User-Agent", "bdp-conformance/0"],
+    ] as const)
+      if (!lines.some((line) => line.name.toLowerCase() === name.toLowerCase()))
+        append(name, value);
+    append("Host", url.host);
+    append("Connection", "close");
+    if (body !== undefined) append("Content-Length", String(body.length));
+    const head = Buffer.concat([
+      Buffer.from(`${request.method} `, "ascii"),
+      target,
+      Buffer.from(
+        ` HTTP/1.1\r\n${lines.map(({ name, value }) => `${name}: ${value}`).join("\r\n")}\r\n\r\n`,
+        "latin1",
+      ),
+    ]);
+    const exchanged = await exchangeRawBytes(
+      route,
+      head,
+      request.method,
+      signal,
+      requestDeadline(signal, deadline),
+      maximumHeaderBytes,
+      maximumBodyBytes,
+      body,
+      (next) => {
+        state = next;
+      },
+    );
+    state = exchanged.writeState;
+    requestDeadline(signal, deadline);
+    const parsed = parseRawResponse(
+      exchanged.bytes,
+      request.method,
+      maximumHeaderBytes,
+      maximumBodyBytes,
+    );
+    const exactRequest = Object.freeze({
+      source: "raw-http1-serializer" as const,
+      headerLines: Object.freeze(lines),
+      bodyPresent: body !== undefined,
+      bodyOctets: body?.length ?? 0,
+      ...(body === undefined
+        ? {}
+        : { bodyDigest: createHash("sha256").update(body).digest("hex") }),
+      writeState: exchanged.writeState,
+    });
+    const response = {
+      url: url.href,
+      ...parsed,
+      wireResponseBytes: Uint8Array.from(exchanged.bytes),
+      exactRequest,
+      effectiveRequest: {
+        url: url.href,
+
+
+=== SOURCE packages/conformance/src/http-executor.ts:886-908 ===
+  maximumBodyBytes: number,
+  requestBody?: Uint8Array,
+  observeWrite?: (state: RequestWriteState) => void,
+): Promise<{ bytes: Buffer; writeState: RequestWriteState }> {
+  return new Promise((resolve, reject) => {
+    let socket: Socket | undefined;
+    let settled = false;
+    let earlyCleanup: ReturnType<typeof setImmediate> | undefined;
+    let connected = false;
+    let state: RequestWriteState = "not-started";
+    let completedWrites = 0;
+    const requiredWrites = requestBody === undefined ? 1 : 2;
+    const wireLimit = Math.min(Number.MAX_SAFE_INTEGER, maximumBodyBytes + maximumHeaderBytes * 2);
+    let buffered = Buffer.alloc(Math.min(8192, wireLimit));
+    let total = 0;
+    const raw = (): Buffer => buffered.subarray(0, total);
+    const recordState = (next: RequestWriteState): void => {
+      if (settled) return;
+      state = next;
+      observeWrite?.(next);
+    };
+    const finish = (error?: HttpTransportError): void => {
+      if (settled) return;
+
+
+=== SOURCE packages/conformance/src/http-executor.ts:987-1011 ===
+        finish(
+          new HttpTransportError("body-limit", "HTTP response exceeded the configured body limit"),
+        );
+        return;
+      }
+      const next = total + chunk.length;
+      if (next > buffered.length) {
+        const grown = Buffer.alloc(Math.min(wireLimit, Math.max(next, buffered.length * 2)));
+        buffered.copy(grown, 0, 0, total);
+        buffered = grown;
+      }
+      chunk.copy(buffered, total);
+      total = next;
+      try {
+        const head = locateFinalResponseHead(raw(), maximumHeaderBytes);
+        if (head === undefined) return;
+        if (total - head.headerEnd - 4 > maximumBodyBytes + maximumHeaderBytes)
+          throw new HttpTransportError(
+            "body-limit",
+            "HTTP response exceeded the configured body limit",
+          );
+        if (isFramedResponseComplete(raw(), method, maximumHeaderBytes, maximumBodyBytes)) {
+          if (observeWrite !== undefined && state === "started-completion-unestablished") {
+            // A queued body cannot be drained through a peer that has already refused it.
+            // Take one cleanup turn, validate all bytes received by then, and terminate this
+
+
+=== SOURCE packages/conformance/src/http-executor.ts:1171-1234 ===
+function parseRawResponse(
+  raw: Buffer,
+  method: HttpExchangeRequest["method"],
+  maximumHeaderBytes: number,
+  maximumBodyBytes: number,
+): {
+  readonly status: number;
+  readonly headers: Readonly<Record<string, string>>;
+  readonly bodyText: string;
+  readonly bodyOctets: number;
+} {
+  const head = locateFinalResponseHead(raw, maximumHeaderBytes);
+  if (head === undefined)
+    throw new HttpTransportError(
+      "disconnect",
+      "HTTP response disconnected before a final response",
+    );
+  const { headerEnd, status, headers } = head;
+  const framed = raw.subarray(headerEnd + 4);
+  const body =
+    method === "HEAD" || status === 204 || status === 304
+      ? framed
+      : decodeResponseBody(framed, headers, maximumBodyBytes);
+  if (body.byteLength > maximumBodyBytes)
+    throw new HttpTransportError("body-limit", "HTTP response exceeded the configured body limit");
+  let bodyText: string;
+  try {
+    bodyText = new TextDecoder("utf-8", { fatal: true, ignoreBOM: true }).decode(body);
+  } catch (error) {
+    throw new HttpTransportError("invalid-body", "HTTP response was not valid UTF-8", {
+      cause: error,
+    });
+  }
+  return { status, headers, bodyText, bodyOctets: body.byteLength };
+}
+
+function decodeResponseBody(
+  framed: Buffer,
+  headers: Readonly<Record<string, string>>,
+  maximumBodyBytes: number,
+): Buffer {
+  const transferEncoding = headers["transfer-encoding"]?.toLowerCase();
+  const contentLength = headers["content-length"];
+  if (transferEncoding !== undefined && contentLength !== undefined)
+    throw new HttpTransportError("invalid-body", "HTTP response framing was ambiguous");
+  if (transferEncoding !== undefined) {
+    if (transferEncoding !== "chunked")
+      throw new HttpTransportError("invalid-body", "HTTP response transfer coding was unsupported");
+    return decodeChunkedBody(framed, maximumBodyBytes);
+  }
+  if (contentLength === undefined) return framed;
+  if (!/^(?:0|[1-9][0-9]*)$/.test(contentLength))
+    throw new HttpTransportError("invalid-body", "HTTP response Content-Length was malformed");
+  const expected = Number(contentLength);
+  if (!Number.isSafeInteger(expected))
+    throw new HttpTransportError("body-limit", "HTTP response Content-Length exceeded safe bounds");
+  if (expected > maximumBodyBytes)
+    throw new HttpTransportError("body-limit", "HTTP response exceeded the configured body limit");
+  if (framed.byteLength < expected)
+    throw new HttpTransportError(
+      "disconnect",
+      "HTTP response disconnected before its body was read",
+    );
+  if (framed.byteLength > expected)
+
+
+=== SOURCE packages/server/src/transaction-installed-process.ts:35-77 ===
+  process.once("disconnect", () => stop());
+  process.on("message", (message) => {
+    try {
+      const value = administrativeData(message, ["command"]);
+      if (value.command !== "close") throw new TypeError("unsupported control");
+    } catch {
+      process.exitCode = 2;
+    }
+    stop();
+  });
+  if (!process.connected) stop();
+  const runtime = await startInstalledTransactionCandidate(configuration);
+  try {
+    if (process.connected && !stopping)
+      send({
+        event: "qualification.ready",
+        ...runtime.configurationMetadata,
+        listenUrl: runtime.listenUrl,
+        targets: runtime.targets,
+        payloadIdentity: runtime.payloadIdentity,
+      });
+    await stopped;
+  } finally {
+    await runtime.close();
+    if (process.connected) process.disconnect();
+  }
+}
+function isEntrypoint(): boolean {
+  const entry = process.argv[1];
+  if (entry === undefined) return false;
+  try {
+    return realpathSync(entry) === realpathSync(fileURLToPath(import.meta.url));
+  } catch {
+    return false;
+  }
+}
+if (isEntrypoint())
+  void main().catch(() => {
+    // Never echo credentials, input configuration or callback exceptions.
+    process.stderr.write("installed transaction qualification failed\n");
+    process.exitCode = 2;
+    if (process.connected) process.disconnect();
+  });
+
+
+=== SOURCE vitest.config.ts:1-70 ===
+import { existsSync, readdirSync, readFileSync } from "node:fs";
+import path from "node:path";
+import { fileURLToPath } from "node:url";
+
+import { defineConfig } from "vitest/config";
+
+const workspaceRoot = path.dirname(fileURLToPath(import.meta.url));
+
+/**
+ * Aliases every `@bdp/*` library package to its TypeScript source so `pnpm
+ * test` works from a clean checkout without a prior build. A package may also
+ * own a source-only `test-support/testing.ts` subpath for cross-package integration tests;
+ * it is deliberately absent from package exports and installed consumers.
+ * Each package's production `exports` map still points at `dist/index.js`.
+ *
+ * Only `packages/*` are scanned: those are the export-bearing libraries that
+ * tests import as `@bdp/*`. `apps/*` are CLI binaries with no `exports` and a
+ * `src/main.ts` entrypoint, so aliasing them would register a target that
+ * does not exist and mask a misconfigured import. The manifest is read
+ * directly — a missing or malformed `package.json` fails the Vitest config
+ * with the offending path instead of being silently skipped.
+ */
+function collectWorkspaceSourceAliases(): Record<string, string> {
+  const aliases: Record<string, string> = {};
+  const packagesDir = path.join(workspaceRoot, "packages");
+  for (const entry of readdirSync(packagesDir, { withFileTypes: true })) {
+    if (!entry.isDirectory()) continue;
+    const packageDir = path.join(packagesDir, entry.name);
+    const manifestPath = path.join(packageDir, "package.json");
+    let manifest: unknown;
+    try {
+      manifest = JSON.parse(readFileSync(manifestPath, "utf8"));
+    } catch (error) {
+      throw new Error(`${manifestPath}: failed to read or parse package.json`, {
+        cause: error,
+      });
+    }
+    if (!isPlainObject(manifest) || typeof manifest.name !== "string") {
+      throw new Error(`${manifestPath}: package.json must define a string "name"`);
+    }
+    const name = manifest.name;
+    if (!name.startsWith("@bdp/")) continue;
+    const sourceEntry = path.join(packageDir, "src", "index.ts");
+    if (!existsSync(sourceEntry)) {
+      throw new Error(
+        `${manifestPath}: workspace package ${name} is missing its source entrypoint at ${sourceEntry}`,
+      );
+    }
+    const testingEntry = path.join(packageDir, "test-support", "testing.ts");
+    if (existsSync(testingEntry)) aliases[`${name}/testing`] = testingEntry;
+    if (name === "@bdp/server")
+      aliases[`${name}/development`] = path.join(packageDir, "src/development.ts");
+    aliases[name] = sourceEntry;
+  }
+  return aliases;
+}
+
+function isPlainObject(value: unknown): value is Record<string, unknown> {
+  return typeof value === "object" && value !== null && !Array.isArray(value);
+}
+
+export default defineConfig({
+  resolve: { alias: collectWorkspaceSourceAliases() },
+  test: {
+    coverage: { enabled: false },
+    include: ["packages/**/*.test.ts", "apps/**/*.test.ts", "scripts/**/*.test.mjs"],
+    passWithNoTests: false,
+    // Install the non-emitted admission mock before cross-package test modules
+    // can instantiate @bdp/server through an adapter dependency.
+    setupFiles: ["./packages/server/test-support/read-conformance-mock.ts"],
+
+
+=== ACTUAL SELECTED SCHEMA DEFINITIONS (not exhaustive closure) ===
+{"$schema":"https://json-schema.org/draft/2020-12/schema","$id":"https://github.com/gastownhall/bdp/schemas/bdp-v0.schema.json","$defs":{"mutationReceipt":{"title":"BDP Mutation Receipt","type":"object","allOf":[{"$ref":"#/$defs/receiptCore"}],"oneOf":[{"type":"object","required":["id","status","idempotencyKey","scopeEpoch","authorizationView","transaction"],"properties":{"id":true,"status":{"const":"pending"},"idempotencyKey":true,"scopeEpoch":true,"authorizationView":true,"transaction":true,"detail":false,"requiredPosition":false,"effectPosition":false,"results":false,"next":false,"allocated":false,"problem":false,"expiresAt":false}},{"type":"object","required":["id","status","detail","idempotencyKey","scopeEpoch","authorizationView","transaction","requiredPosition","results","next","expiresAt"],"properties":{"id":true,"status":{"const":"completed"},"detail":{"const":"available"},"idempotencyKey":true,"scopeEpoch":true,"authorizationView":true,"transaction":true,"requiredPosition":true,"effectPosition":true,"results":true,"next":true,"expiresAt":true,"allocated":false,"problem":false},"allOf":[{"if":{"properties":{"next":{"type":"null"}},"required":["next"]},"then":{"properties":{"results":{"type":"array","minItems":1}}}}]},{"type":"object","required":["id","status","detail","idempotencyKey","scopeEpoch","authorizationView","transaction","requiredPosition","problem","expiresAt"],"properties":{"id":true,"status":{"const":"failed"},"detail":{"const":"available"},"idempotencyKey":true,"scopeEpoch":true,"authorizationView":true,"transaction":true,"requiredPosition":true,"problem":true,"expiresAt":true,"effectPosition":false,"results":false,"next":false,"allocated":false}},{"type":"object","required":["id","status","detail","idempotencyKey","scopeEpoch","authorizationView","transaction","requiredPosition","allocated"],"properties":{"id":true,"status":{"const":"completed"},"detail":{"const":"expired"},"idempotencyKey":true,"scopeEpoch":true,"authorizationView":true,"transaction":true,"requiredPosition":true,"effectPosition":true,"allocated":true,"results":false,"next":false,"problem":false,"expiresAt":false}},{"type":"object","required":["id","status","detail","idempotencyKey","scopeEpoch","authorizationView","transaction","requiredPosition"],"properties":{"id":true,"status":{"const":"completed"},"detail":{"const":"withheld"},"idempotencyKey":true,"scopeEpoch":true,"authorizationView":true,"transaction":true,"requiredPosition":true,"effectPosition":true,"results":false,"next":false,"allocated":false,"problem":false,"expiresAt":false}}]},"receiptCore":{"type":"object","properties":{"id":{"$ref":"#/$defs/absoluteHttpUrl"},"status":{"$ref":"#/$defs/receiptStatus"},"detail":{"$ref":"#/$defs/receiptDetail"},"idempotencyKey":{"$ref":"#/$defs/idempotencyKey"},"scopeEpoch":{"$ref":"#/$defs/wireToken"},"authorizationView":{"$ref":"#/$defs/wireToken"},"transaction":{"$ref":"#/$defs/wireToken"},"requiredPosition":{"$ref":"#/$defs/wireToken"},"effectPosition":{"$ref":"#/$defs/wireToken"},"results":{"type":"array","items":{"$ref":"#/$defs/receiptResult"}},"next":{"oneOf":[{"$ref":"#/$defs/absoluteHttpUrl"},{"type":"null"}]},"allocated":{"type":"array","items":{"$ref":"#/$defs/allocatedIdentity"}},"problem":{"$ref":"#/$defs/receiptProblem"},"expiresAt":{"$ref":"#/$defs/dateTime"}},"allOf":[{"if":{"properties":{"status":{"const":"failed"}},"required":["status"]},"then":{"properties":{"effectPosition":false,"detail":{"const":"available"}}}}],"additionalProperties":false},"receiptResult":{"type":"object","required":["operationIndex","outcome"],"properties":{"operationIndex":{"type":"integer","minimum":0},"operationName":{"$ref":"#/$defs/localName"},"outcome":{"$ref":"#/$defs/receiptEntryOutcome"},"resource":{"oneOf":[{"allOf":[{"$ref":"#/$defs/beadRecord"},{"type":"object","properties":{"links":false}}]},{"$ref":"#/$defs/linkRecord"}]},"deleted":{"$ref":"#/$defs/deletedIdentity"},"erased":{"$ref":"#/$defs/resourceIdentity"},"source":{"$ref":"#/$defs/absoluteHttpUrl"},"sourceRevision":{"$ref":"#/$defs/revision"},"count":{"type":"integer","minimum":0},"alias":{"$ref":"#/$defs/absoluteHttpUrl"},"target":{"$ref":"#/$defs/absoluteHttpUrl"}},"allOf":[{"if":{"properties":{"outcome":{"enum":["created","updated"]}},"required":["outcome"],"not":{"properties":{"alias":true},"required":["alias"]}},"then":{"required":["resource"],"properties":{"resource":true,"deleted":false,"erased":false,"count":false}}},{"if":{"properties":{"outcome":{"const":"deleted"}},"required":["outcome"],"not":{"properties":{"alias":true},"required":["alias"]}},"then":{"required":["deleted"],"properties":{"deleted":true,"resource":false,"erased":false,"count":false}}},{"if":{"properties":{"outcome":{"const":"erased"}},"required":["outcome"]},"then":{"required":["erased"],"properties":{"erased":true,"resource":false,"deleted":false,"count":false}}},{"if":{"properties":{"outcome":{"const":"matched"}},"required":["outcome"]},"then":{"required":["count"],"properties":{"count":true,"operationName":false,"resource":false,"deleted":false,"erased":false,"source":false,"sourceRevision":false}}},{"if":{"properties":{"outcome":{"const":"withheld"}},"required":["outcome"]},"then":{"properties":{"resource":false,"deleted":false,"erased":false,"source":false,"sourceRevision":false,"count":false}}},{"if":{"required":["resource"],"properties":{"resource":{"$ref":"#/$defs/beadRecord"}}},"then":{"properties":{"source":false,"sourceRevision":false}}},{"if":{"required":["deleted"],"properties":{"deleted":{"type":"object","required":["resourceKind"],"properties":{"resourceKind":{"const":"bead"}}}}},"then":{"properties":{"source":false,"sourceRevision":false}}},{"if":{"required":["alias"]},"then":{"allOf":[{"$ref":"#/$defs/aliasResultMembers"}],"properties":{"operationIndex":{"const":0},"operationName":false,"resource":false,"deleted":false,"erased":false,"source":false,"sourceRevision":false,"count":false}},"else":{"properties":{"target":false}}}],"dependentRequired":{"source":["sourceRevision"],"sourceRevision":["source"]},"additionalProperties":false},"receiptStatus":{"enum":["pending","completed","failed"]},"receiptDetail":{"enum":["available","expired","withheld"]},"receiptEntryOutcome":{"enum":["created","updated","deleted","matched","withheld","erased"]},"transactionalProblem":{"title":"BDP Transactional Problem Details","type":"object","required":["type","code","retry"],"properties":{"type":{"$ref":"#/$defs/absoluteHttpUrl"},"title":{"type":"string"},"status":{"type":"integer","enum":[400,401,403,404,409,410,413,415,422,429,503]},"detail":{"type":"string"},"instance":{"$ref":"#/$defs/absoluteUri"},"code":{"$ref":"#/$defs/directProblemCode"},"retry":{"$ref":"#/$defs/retryDisposition"},"retryAfter":{"type":"integer","minimum":0},"pointer":{"$ref":"#/$defs/jsonPointer"},"limit":{"type":"string","pattern":"^[a-z]+\\.[A-Za-z]+$"},"archivedAt":{"$ref":"#/$defs/reference"}},"allOf":[{"if":{"properties":{"code":{"$ref":"#/$defs/readUpdateProblemCode"}},"required":["code"]},"then":{"$ref":"#/$defs/readUpdateProblem"}},{"if":{"properties":{"code":{"const":"event-history-expired"}},"required":["code"]},"then":{"properties":{"diagnostics":false,"diagnosticsTruncated":false,"type":{"const":"https://github.com/gastownhall/bdp/problems/gone"},"status":{"const":410},"retry":{"const":"never"}}}},{"if":{"properties":{"code":{"const":"catch-up-timeout"}},"required":["code"]},"then":{"properties":{"diagnostics":false,"diagnosticsTruncated":false,"type":{"const":"https://github.com/gastownhall/bdp/problems/unavailable"},"status":{"const":503},"retry":{"const":"after-delay"}}}},{"if":{"properties":{"code":{"const":"resource-erased"}},"required":["code"]},"then":{"properties":{"pointer":false}}},{"if":{"not":{"properties":{"code":{"const":"limit-exceeded"}},"required":["code"]}},"then":{"properties":{"limit":false}}},{"if":{"properties":{"retry":{"const":"after-delay"}},"required":["retry"]},"else":{"properties":{"retryAfter":false}}},{"if":{"not":{"properties":{"code":{"const":"revision-unretained"}},"required":["code"]}},"then":{"properties":{"missing":false}}}]},"beadRecord":{"type":"object","required":["id","type","revision","properties"],"properties":{"id":{"$ref":"#/$defs/absoluteHttpUrl"},"type":{"$ref":"#/$defs/absoluteHttpUrl"},"revision":{"type":"string","minLength":1},"properties":{"$ref":"#/$defs/properties"},"metadata":{"$ref":"#/$defs/metadata"},"links":{"$ref":"#/$defs/linkCollection"},"ownedLinks":{"type":"object","propertyNames":{"$ref":"#/$defs/absoluteHttpUrl"},"additionalProperties":{"type":"array","items":{"$ref":"#/$defs/linkRecord"}}},"revisionProvenance":{"$ref":"#/$defs/revisionProvenance"}},"additionalProperties":false},"currentBeadRecord":{"allOf":[{"$ref":"#/$defs/beadRecord"},{"type":"object","required":["metadata"],"properties":{"metadata":{"$ref":"#/$defs/metadata"},"links":{"$ref":"#/$defs/currentLinkCollection"},"ownedLinks":{"type":"object","additionalProperties":{"type":"array","items":{"$ref":"#/$defs/currentLinkRecord"}}}}}]},"currentBeadCollection":{"allOf":[{"$ref":"#/$defs/beadCollection"},{"type":"object","properties":{"items":{"type":"array","items":{"$ref":"#/$defs/currentBeadRecord"}}}}]},"eventPage":{"title":"BDP Event Source page","type":"object","required":["source","events","next"],"properties":{"source":{"$ref":"#/$defs/absoluteHttpUrl"},"events":{"type":"array","items":{"$ref":"#/$defs/event"}},"next":{"oneOf":[{"$ref":"#/$defs/absoluteHttpUrl"},{"type":"null"}]}},"additionalProperties":false},"event":{"title":"BDP Event","type":"object","required":["id","ordinal","type","source","subject","subjectType","transaction","time","data"],"properties":{"id":{"$ref":"#/$defs/wireToken"},"ordinal":{"type":"integer","minimum":0},"type":{"$ref":"#/$defs/eventType"},"source":{"$ref":"#/$defs/absoluteHttpUrl"},"subject":{"$ref":"#/$defs/absoluteHttpUrl"},"subjectType":{"$ref":"#/$defs/absoluteHttpUrl"},"transaction":{"$ref":"#/$defs/wireToken"},"time":{"$ref":"#/$defs/dateTime"},"data":{"type":"object"}},"allOf":[{"if":{"properties":{"type":{"const":"created"}},"required":["type"]},"then":{"properties":{"data":{"$ref":"#/$defs/createdData"}}}},{"if":{"properties":{"type":{"const":"updated"}},"required":["type"]},"then":{"properties":{"data":{"$ref":"#/$defs/updatedData"}}}},{"if":{"properties":{"type":{"const":"deleted"}},"required":["type"]},"then":{"properties":{"data":{"$ref":"#/$defs/deletedData"}}}},{"if":{"properties":{"type":{"enum":["linked","unlinked"]}},"required":["type"]},"then":{"properties":{"data":{"$ref":"#/$defs/linkDeltaData"}}}}],"additionalProperties":false},"createdData":{"type":"object","required":["revision","properties"],"properties":{"revision":{"$ref":"#/$defs/revision"},"properties":{"$ref":"#/$defs/properties"},"metadata":{"$ref":"#/$defs/metadata"},"source":{"$ref":"#/$defs/reference"},"target":{"$ref":"#/$defs/reference"},"revisionProvenance":{"$ref":"#/$defs/revisionProvenance"}},"dependentRequired":{"source":["target"],"target":["source"]},"additionalProperties":false},"wireToken":{"type":"string","pattern":"^[A-Za-z0-9_-]{1,256}$"},"revision":{"type":"string","minLength":1},"properties":{"type":"object","additionalProperties":true},"metadata":{"type":"object","additionalProperties":true},"absoluteHttpUrl":{"type":"string","format":"uri","pattern":"^https?://.+"},"dateTime":{"type":"string","format":"date-time"}}}

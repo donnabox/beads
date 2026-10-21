@@ -1,0 +1,148 @@
+{
+  "executionReleased": false,
+  "files": {
+    "checks.json": {
+      "bytes": 640,
+      "sha256": "5616a1be115540798c07c765ec4a630bdb926db465a7d6df40fa773e3af19caf"
+    },
+    "clock-and-decision-contract.json": {
+      "bytes": 1655,
+      "sha256": "31ddc756cbb9f5d2ad1cfd639533a329d00351be86a8ca721ec723532d8fed6a"
+    },
+    "closure.json": {
+      "bytes": 1108,
+      "sha256": "3c5ed21898be935c9f5711f54b65988c6bb8fc9803e4c459cb059126d557d876"
+    },
+    "failure-and-counterexample-table.json": {
+      "bytes": 1623,
+      "sha256": "47f8d4d5289d574880b23974ed7d265fafbf5f00140f2a119ccfa58bf8e6a3bf"
+    },
+    "finite-phase-table.json": {
+      "bytes": 1834,
+      "sha256": "7a7e72870bb2b0dc6ecf50aa92bce5a7cabb963383a6d8f4ba10cc2cb6b64102"
+    },
+    "histories-INPLACE.json": {
+      "bytes": 29625,
+      "sha256": "6ed1133f204c2ac8da555743df8bc0d9a4d4f550b3a8ef86c04380d0228cc3fd"
+    },
+    "input-origins.json": {
+      "bytes": 7763,
+      "sha256": "ce33c3219f1732fee8f0b346e0496b8ce457e5e8c274c574f483be7b02b2408d"
+    },
+    "inputs/C3/capture-contract.json": {
+      "bytes": 3522,
+      "sha256": "5206b58a85afe952d52e6b04215e574cb0d1d50f409a3cb0297a60a14ad960a8"
+    },
+    "inputs/C3/capture.py": {
+      "bytes": 12555,
+      "sha256": "9a76d97a9978d91f65ded3571afbc596bfba9d62ee22d7b32779a14745d27803"
+    },
+    "inputs/D03-native/closure.json": {
+      "bytes": 879,
+      "sha256": "fecff4e5ee1d5058499de2ccaf3012008e95d09c6000d9bcbba6d146270686c9"
+    },
+    "inputs/D03-native/index.json": {
+      "bytes": 6116,
+      "sha256": "64d304116d57ac10fe6b1c73c9e74543758e6dd397c1844c70b1214ca81ba69c"
+    },
+    "inputs/D03-native/report.md": {
+      "bytes": 4235,
+      "sha256": "6f466981b4dc4bd32c86bb35bfba7767ab66f15ac3acd8764f2cc62d2638eee9"
+    },
+    "inputs/D03-plan/binding.json": {
+      "bytes": 2359,
+      "sha256": "22aecfbb4a17a6a3075b231fac1caf2c21a589e336c25986f0a27a9191c200c8"
+    },
+    "inputs/D03-plan/fixed-root-capture-and-audit-DATA-contract.json": {
+      "bytes": 8055,
+      "sha256": "cc1dbaa26995d72845d1207792154d9ae571c0d7a2c69cf439748eff65891b9a"
+    },
+    "inputs/D03-plan/index.json": {
+      "bytes": 14147,
+      "sha256": "93c75cc24afa09edcdfdf5867259d74ea286433ece30684601f7f737daddf8af"
+    },
+    "inputs/D03-plan/plan.md": {
+      "bytes": 11409,
+      "sha256": "d8dbdef74ab1948cd33ff257a1f29afee0c5953e584f56708fdbdef5973d1701"
+    },
+    "inputs/D03-plan/prospective-command.json": {
+      "bytes": 1677,
+      "sha256": "a89f23a31cf7692b114d053cfc663a74ba78b4eb1044ac01a09394bfd0f5e6fe"
+    },
+    "inputs/D03-plan/three-event-parser-DATA-contract.json": {
+      "bytes": 8516,
+      "sha256": "ceb80a92ae23b95adfc300867dc06fd97a50c58c42d2db04f688c63fe22c0a8a"
+    },
+    "inputs/D03-plan/unprepared-boundaries.json": {
+      "bytes": 2144,
+      "sha256": "cbb93dfb0eb72ed27ff6ed779f3e52960a9153e6f51878913e0f3507d2bc17c5"
+    },
+    "inputs/H6/execution-gate.closed.json": {
+      "bytes": 145,
+      "sha256": "69f7eb67fa2ae35674192163791f8dc0a9006f383ba6a407501c138eaa3170f5"
+    },
+    "inputs/H6/execution-gate.json": {
+      "bytes": 145,
+      "sha256": "69f7eb67fa2ae35674192163791f8dc0a9006f383ba6a407501c138eaa3170f5"
+    },
+    "inputs/H6/hard_limit.pl": {
+      "bytes": 3626,
+      "sha256": "a53b1ade5edd7a14bcbe064c66f0f5d8414df8cdc218727134bacdb7ecfbfea5"
+    },
+    "inputs/H6/implementation-hashes.json": {
+      "bytes": 16121,
+      "sha256": "5c82292252d96626f8a63977c845a67261ed04bb350a339d5fd389530e409eb1"
+    },
+    "inputs/H6/outer_host.py": {
+      "bytes": 26211,
+      "sha256": "f426e0f928d6f8c5a330aeebc492fd4839f69a153f89e7c8386230e0c236a29f"
+    },
+    "inputs/existing-clock-audit/checks.json": {
+      "bytes": 2380,
+      "sha256": "3c3f091d8104581979a137133977279cacb985bcfb15e960370f5ff5ea9a4129"
+    },
+    "inputs/existing-clock-audit/closure.json": {
+      "bytes": 1138,
+      "sha256": "001e61b0881a9d11d58ef96f1598c60cc9b9d81444d4a7ae5021cdc54ec9de7a"
+    },
+    "inputs/existing-clock-audit/exposed-tool-interface-assessment.json": {
+      "bytes": 947,
+      "sha256": "7230cf122a7eb18c7b4dcad40aed8e615bc4f8eb2ef97bafb2736e1356bfba85"
+    },
+    "inputs/existing-clock-audit/index.json": {
+      "bytes": 6811,
+      "sha256": "c590ed6264316b002d364440267cab88dc3106aaad03a9e6888f4a7d7a1e0359"
+    },
+    "inputs/existing-clock-audit/mechanism-matrix.json": {
+      "bytes": 3044,
+      "sha256": "a65de99785b3d189b8fd9acee79b28fcd0909abc51736ca9b4e57be9d19ee7c7"
+    },
+    "inputs/existing-clock-audit/report.md": {
+      "bytes": 5987,
+      "sha256": "dbddaf16ce220c56a43569f0b95faad8a71a5bbf712204f5270c5b9be0d9abea"
+    },
+    "inputs/root-conditional/disposition.json": {
+      "bytes": 2101,
+      "sha256": "16b28124536594d080aba48f16ac3d4d05ee7b0ec4e2fbc26c49a4b530fc1a6c"
+    },
+    "inputs/root-conditional/index.json": {
+      "bytes": 323,
+      "sha256": "782be1806a63492725bf1cfa5a449013145cc57ddbd8777b5236bcfc91fce9f2"
+    },
+    "inputs/root-conditional/inspection.json": {
+      "bytes": 2311,
+      "sha256": "40472bcb0d0ce58342ae693cffcc6d5a05f70b5c656f2499c8b6536bbff38926"
+    },
+    "plan.md": {
+      "bytes": 11634,
+      "sha256": "ccc0f75f80a436aacd998377ff47cd66e87f5ad63e86329b3e0635f58af76350"
+    },
+    "pseudocode-DATA.txt": {
+      "bytes": 1156,
+      "sha256": "4f3fde3592d5658c47e4b58fb368b764d9d7fc08db20f623ec51a2688ead60d7"
+    }
+  },
+  "kind": "CLOSED fixed D03-only root-boundary DATA design; no executable source",
+  "physicalFiles": 36,
+  "selfExcluded": "index.json"
+}

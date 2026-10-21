@@ -1,0 +1,32 @@
+{
+  "accepted": true,
+  "fullCouncil": {
+    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/read-update-guarded-overlap-draft/execution-preparation-v2/root-source-council.json",
+    "sha256": "c4799d6a7316586c1c2cb61270d7dd4c0a317f8672c50c8896e276591728f40d"
+  },
+  "lintRepairNative": {
+    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/read-update-guarded-overlap-draft/lint-repair/native-review.md",
+    "sha256": "3407ace5317fb2deac9064842a2ebd243c652314a3f08831f233e97be9622c14"
+  },
+  "actualClaude": {
+    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/read-update-guarded-overlap-draft/lint-repair/claude-supplement/stdout.txt",
+    "sha256": "1753f84c89dcf472302e81601dcf5d41d31074728afd30f99e52ed21290e2345"
+  },
+  "actualReport": {
+    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/read-update-guarded-overlap-draft/lint-repair/claude-supplement/report.md",
+    "sha256": "67b1e17aafb8558f33dbc9c6a8c039c3ebfbce245a4490c67a625b908b136bbc"
+  },
+  "dispositions": [
+    "Unknown parameter is safe for the sole concrete observation caller; speculative future caller tightening is deferred without runtime scope.",
+    "Scratch comparison patch is descriptive; actual source equality and committed binding verify application. Fresh actual pinned lint now passed.",
+    "Stack frame move affects only unrecorded Error stack; exception/write/control/catch semantics preserved."
+  ],
+  "sourceBinding": {
+    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/read-update-guarded-overlap-draft/lint-repair/source-binding.json",
+    "sha256": "792d7e813bc153a7bcf1d7bf4c5750522644873c831d8812b42301702b512f6e"
+  },
+  "staticReport": {
+    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/read-update-guarded-overlap-draft/execution-preparation-v3/run/static-report.md",
+    "sha256": "024a0b254009da6244d249820dec213da7666244a28cbd85c942312dde43d10f"
+  }
+}

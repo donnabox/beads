@@ -1,0 +1,25 @@
+{
+  "acceptedAt": "2026-10-17T13:38:40.730012+00:00",
+  "head": "5ceb213b632e17f28714684efc5e35a62b282bf6",
+  "run": 39035528845,
+  "conclusion": "success",
+  "prBefore": {
+    "baseRefOid": "9d2cd441eac2be1d2b6487ab5648035e3219cc27",
+    "headRefOid": "5ceb213b632e17f28714684efc5e35a62b282bf6",
+    "isDraft": true,
+    "state": "OPEN"
+  },
+  "rawSha256": "8b57298f73213d23bd65abc05d31e5f0f58193b040cfcc46e6e67fc43e69b565",
+  "nativeAuditSha256": "6019f7b7daa8fe5ee8e4eaa98b5e84c13245996a34de0bf4882214bf7c30fb9e",
+  "transportExact": true,
+  "testsPassed": 9426,
+  "testsSkipped": 1,
+  "testFiles": 186,
+  "preflightPassed": 7,
+  "limits": [
+    "8 unrelated masked JSON observations retained without reconstruction",
+    "CI alias children use workspace dist; external consumer is separate local evidence",
+    "Remote cleanup is callback-reported, not independent remote census",
+    "Private profile, no full Write claim"
+  ]
+}

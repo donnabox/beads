@@ -1,0 +1,80 @@
+{
+  "workspace": "/Users/dbox/repos/wt/vickie/vickie-minimum-current-resource",
+  "branch": "codex/vickie-minimum-current-resource",
+  "head": "733728cf40fc2f57407000251673bd5d3218acd4",
+  "tree": "ea0dccd68d91323887424cad9729e6593aef04f2",
+  "workspaceDirty": true,
+  "diffBase": "df80f8cb86b7763bc7bb005492e43d8840527045",
+  "diffSha256": "010c2ef039f96391a3824c4c0cd7f4eeb96e170fd91ceab677600d314f481c55",
+  "files": {
+    "packages/server/src/transaction-consistency.ts": {
+      "sha256": "ad51311d6098db32fd47849e0b78d3118162cdf1e80ee9ef4d46324bfa9f436f",
+      "bytes": 7167,
+      "new": false
+    },
+    "packages/server/src/transaction-read.ts": {
+      "sha256": "7e2cc29b668bb80a3ba2948e90511518a98a7ff798b1dbfb8c6f51f0c0bd2a6f",
+      "bytes": 15957,
+      "new": false
+    },
+    "packages/server/src/transaction-service.ts": {
+      "sha256": "c700d5719918b60c3239a336eef02c9dff6717faca698777aba01181ebdcd278",
+      "bytes": 28348,
+      "new": false
+    },
+    "packages/server/src/transaction-http.ts": {
+      "sha256": "90489b22858be99579f7ce8753bab0d6204d4caae215f7a293c1537d09477636",
+      "bytes": 28706,
+      "new": false
+    },
+    "packages/server/src/transaction-consistency.test.ts": {
+      "sha256": "904d1f74ff06237da41c45f3dc1d4727a1387dc760950860ef548db51e7f02c4",
+      "bytes": 7999,
+      "new": false
+    },
+    "packages/server/src/transaction-read.test.ts": {
+      "sha256": "c3a9e76a1d221ef1712e3f96082e7a36503232693cf9c3a3ba5689e2c47cb6a1",
+      "bytes": 88219,
+      "new": false
+    },
+    "packages/server/src/transaction-http.test.ts": {
+      "sha256": "1ae690d8135c0ecd44f01b39a3412f50921828d83e7395bd076ff2404e503672",
+      "bytes": 186758,
+      "new": false
+    },
+    "apps/bdptest/src/transactional-minimum-current-resource-installed.test.ts": {
+      "sha256": "21146871e6b5bfa3d9e96ff2db7c4897dd62fac026de538981832de295628f15",
+      "bytes": 32522,
+      "new": false
+    },
+    "docs/specs/bdp.md": {
+      "sha256": "67772742d7d08f48c12196e9789f1859ad2d0e19f133ea65e197b049361f84f8",
+      "bytes": 397107,
+      "new": false
+    },
+    "docs/design/transaction-implementation-progress.md": {
+      "sha256": "6a792498a0ac19b342dcaa6700cfdab0651fe95d665c649d3cd7134bdd5f26e9",
+      "bytes": 134654,
+      "new": false
+    }
+  },
+  "authorCommit": "d3fdf9fa53882bbb9b09f7426ef452a665601cf4",
+  "authorParent": "1647c5df37a82e1364d281ac46beb60a94ab6c76",
+  "integrationCommit": "bf50e1e8ccbc89362bf465da6b3ffd12d7ab2393",
+  "integrationParents": [
+    "d3fdf9fa53882bbb9b09f7426ef452a665601cf4",
+    "df80f8cb86b7763bc7bb005492e43d8840527045"
+  ],
+  "factualDocCommit": "733728cf40fc2f57407000251673bd5d3218acd4",
+  "priorDirtySourceValidation": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-minimum-next-serving-plan/authoring-draft/source-validation-v3/root-actual-acceptance.json",
+  "finalInstalledValidation": "PENDING",
+  "publicationReleased": false,
+  "parentSourceBinding": {
+    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-minimum-next-serving-plan/authoring-draft/installed-preparation/prepared-source.json",
+    "sha256": "8140843fc8450d28c419a243d9f95e57c0537eced684f52872d6d49c69445dad"
+  },
+  "testOnlyCorrection": {
+    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-minimum-next-serving-plan/authoring-draft/scope-type-repair/correction.patch",
+    "sha256": "2e65b9da10d3642a6f5c4fd90a77f37dcc35cb45ea5b0c5a789928cdee9ebddb"
+  }
+}

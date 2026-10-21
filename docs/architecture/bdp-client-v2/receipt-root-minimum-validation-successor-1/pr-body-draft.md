@@ -1,0 +1,15 @@
+Proposed title: Handle opaque minimum positions on owned receipt roots
+
+Publication draft only. Candidate commit/tree and exact-head CI are pending; root must finalize evidence before creating the PR.
+
+An owned, disclosed receipt root with a lexically valid unrecognized minimum in its actual epoch/view currently returns private500. This change uses the existing finite waiter and returns contextual503 catch-up-timeout when eligibility remains unproved. Receipt GET/HEAD preserves retry metadata and HEAD length/body behavior before conditional or media shortcuts.
+
+Principal-hidden and missing receipts still return current-context404 before comparison. Strict receipt-page handling, explicit direct-API unsupported sentinel, known minima, capture/admission order and retention-before-disposal checks stay intact. Foreign opaque context remains an excluded private gap. This does not enable discovery or qualify a complete profile.
+
+Stacked on [PR157](https://github.com/gastownhall/bdp/pull/157), base08812c6c752c06cd0edf1af2878b2367692e5b32. This is subsequent implementation work; frozen PR150/d4f3f4be remains separate. Exactly six files change: transaction HTTP/service/store, service and HTTP tests, and the installed minimum-receiving test. The pinned monolithic specification is unchanged.
+
+Validation completed on the frozen formatting successor: configured typecheck, format check, lint, fresh build/inventory, and all12 selected source callbacks with immediate observation audit passed. Packaging, external consumer provenance, historical22/new5 installed cohorts and their audits remain pending. Candidate commit mapping and exact-head CI remain pending. Counts identify the checked workload; they do not express delivery completeness.
+
+The full native and actual Claude code reviews cover the original six-file draft. [Final council dispositions](/Users/dbox/repos/wt/vickie/bdp-integration-logs/receipt-root-minimum-code-review/root-final-dispositions.json) accept four mechanical formatting replacements; [native successor closure](/Users/dbox/repos/wt/vickie/bdp-integration-logs/receipt-root-minimum-author/successor-1/native-closure.md) verifies exact inverse/equivalence. Original format failure and review access limits remain attributed to their original evidence. [Closed preparation review](/Users/dbox/repos/wt/vickie/bdp-integration-logs/receipt-root-minimum-validation-successor-1/native-final-preparation-review.md) retains fresh validation and explicit bootstrap-only reuse.
+
+Work follows the [sole design plan](https://github.com/donnabox/beads/blob/codex/vickie-bdp-client-design/design.md). Final validation evidence will be recorded under `/Users/dbox/repos/wt/vickie/bdp-integration-logs/receipt-root-minimum-validation-successor-1/run/`; root must replace pending statements with audited actual results and bind the final commit/tree to all679 validated source bytes before publication. Local evidence links are for operator review and should be replaced with published evidence locations if required in the final GitHub body.

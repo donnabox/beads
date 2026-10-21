@@ -1,0 +1,344 @@
+{
+  "all14SelectedCallbackTitlesUnchanged": [
+    "G09-I01 installed exact schema current minimum",
+    "G09-I02 installed receiving and exact retrieval membership",
+    "G09-S04 schema selector receiving and exact identity",
+    "G09-S05 schema selector HTTP/min failure order",
+    "G09-S06 schema runtime satisfied and context errors",
+    "G09-S07 schema runtime ahead before conditional",
+    "G09-S08 schema runtime unknown before HEAD/media",
+    "G09-S01 schemaObserved zero-min/current and captured supplied tuple",
+    "G09-S02 schemaObserved epoch and view errors",
+    "G09-S03 schemaObserved ahead and opaque bounded attempts",
+    "serves exact captured root and transitive bytes without retaining mutable input",
+    "preserves receiving refusals and foreign schema minima before conditionals",
+    "confines observed Type and schema traversal to exact administrative identities",
+    "traverses installed local schema bytes with current context within14requests"
+  ],
+  "completedFirst9NeverRepeat": [
+    "node-version",
+    "pnpm-version",
+    "workspace-install",
+    "bind-workspace-tools",
+    "typecheck",
+    "format-check",
+    "lint",
+    "fresh-build",
+    "bind-fresh-build"
+  ],
+  "proposedSourceAuditStages": [
+    {
+      "actualAttemptExists": false,
+      "configuration": {
+        "acceptedRawExitCodes": [
+          0
+        ],
+        "argv": [
+          "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+          "/Users/dbox/repos/wt/vickie/vickie-schema-lint-correction-minimum/node_modules/vitest/vitest.mjs",
+          "run",
+          "packages/server/src/transaction-service.test.ts",
+          "--maxWorkers=1",
+          "--reporter=verbose",
+          "--reporter=json",
+          "--outputFile.json=/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation-preparation-5/run/g09-service-source.results.json",
+          "--testNamePattern",
+          "^(?:G09\\-S01\\ schemaObserved\\ zero\\-min/current\\ and\\ captured\\ supplied\\ tuple|G09\\-S02\\ schemaObserved\\ epoch\\ and\\ view\\ errors|G09\\-S03\\ schemaObserved\\ ahead\\ and\\ opaque\\ bounded\\ attempts)$"
+        ],
+        "automaticRetries": 0,
+        "configurationFinalized": true,
+        "cwd": "/Users/dbox/repos/wt/vickie/vickie-schema-lint-correction-minimum",
+        "id": "g09-service-source",
+        "kind": "supervised-command",
+        "outerSeconds": 120,
+        "prospectiveWorkload": {
+          "callbacks": 3,
+          "direct": 9,
+          "wire": 0
+        },
+        "selectedFilesByFullName": {
+          "G09-S01 schemaObserved zero-min/current and captured supplied tuple": "packages/server/src/transaction-service.test.ts",
+          "G09-S02 schemaObserved epoch and view errors": "packages/server/src/transaction-service.test.ts",
+          "G09-S03 schemaObserved ahead and opaque bounded attempts": "packages/server/src/transaction-service.test.ts"
+        },
+        "selectedFullNames": [
+          "G09-S01 schemaObserved zero-min/current and captured supplied tuple",
+          "G09-S02 schemaObserved epoch and view errors",
+          "G09-S03 schemaObserved ahead and opaque bounded attempts"
+        ],
+        "termAtSeconds": 115
+      },
+      "immediatelyFollows": null,
+      "rootOutputChild": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation5-root-first4-dispatch-1/g09-service-source",
+      "stage": "g09-service-source"
+    },
+    {
+      "actualAttemptExists": false,
+      "configuration": {
+        "acceptedRawExitCodes": [
+          0
+        ],
+        "argv": [
+          "/opt/homebrew/opt/python@3.14/bin/python3.14",
+          "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation-preparation-5/audit.py",
+          "g09-service-source"
+        ],
+        "automaticRetries": 0,
+        "contract": "IMMEDIATE exact selected result/report grammar/source/cleanup audit; missing extra invalid partial records never receive positive credit",
+        "cwd": "/Users/dbox/repos/wt/vickie/vickie-schema-lint-correction-minimum",
+        "id": "audit-g09-service-source",
+        "kind": "supervised-readonly-helper",
+        "mustCompleteBeforeNextStage": true,
+        "outerSeconds": 120,
+        "requiresConsumerProof": false,
+        "termAtSeconds": 115
+      },
+      "immediatelyFollows": "g09-service-source",
+      "rootOutputChild": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation5-root-first4-dispatch-1/audit-g09-service-source",
+      "stage": "audit-g09-service-source"
+    },
+    {
+      "actualAttemptExists": false,
+      "configuration": {
+        "acceptedRawExitCodes": [
+          0
+        ],
+        "argv": [
+          "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+          "/Users/dbox/repos/wt/vickie/vickie-schema-lint-correction-minimum/node_modules/vitest/vitest.mjs",
+          "run",
+          "packages/server/src/transaction-schema-http.test.ts",
+          "--maxWorkers=1",
+          "--reporter=verbose",
+          "--reporter=json",
+          "--outputFile.json=/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation-preparation-5/run/g09-schema-source.results.json",
+          "--testNamePattern",
+          "^(?:G09\\-S04\\ schema\\ selector\\ receiving\\ and\\ exact\\ identity|G09\\-S05\\ schema\\ selector\\ HTTP/min\\ failure\\ order|G09\\-S06\\ schema\\ runtime\\ satisfied\\ and\\ context\\ errors|G09\\-S07\\ schema\\ runtime\\ ahead\\ before\\ conditional|G09\\-S08\\ schema\\ runtime\\ unknown\\ before\\ HEAD/media)$"
+        ],
+        "automaticRetries": 0,
+        "configurationFinalized": true,
+        "cwd": "/Users/dbox/repos/wt/vickie/vickie-schema-lint-correction-minimum",
+        "id": "g09-schema-source",
+        "kind": "supervised-command",
+        "outerSeconds": 120,
+        "prospectiveWorkload": {
+          "callbacks": 5,
+          "direct": 17,
+          "wire": 9
+        },
+        "selectedFilesByFullName": {
+          "G09-S04 schema selector receiving and exact identity": "packages/server/src/transaction-schema-http.test.ts",
+          "G09-S05 schema selector HTTP/min failure order": "packages/server/src/transaction-schema-http.test.ts",
+          "G09-S06 schema runtime satisfied and context errors": "packages/server/src/transaction-schema-http.test.ts",
+          "G09-S07 schema runtime ahead before conditional": "packages/server/src/transaction-schema-http.test.ts",
+          "G09-S08 schema runtime unknown before HEAD/media": "packages/server/src/transaction-schema-http.test.ts"
+        },
+        "selectedFullNames": [
+          "G09-S04 schema selector receiving and exact identity",
+          "G09-S05 schema selector HTTP/min failure order",
+          "G09-S06 schema runtime satisfied and context errors",
+          "G09-S07 schema runtime ahead before conditional",
+          "G09-S08 schema runtime unknown before HEAD/media"
+        ],
+        "termAtSeconds": 115
+      },
+      "immediatelyFollows": null,
+      "rootOutputChild": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation5-root-first4-dispatch-1/g09-schema-source",
+      "stage": "g09-schema-source"
+    },
+    {
+      "actualAttemptExists": false,
+      "configuration": {
+        "acceptedRawExitCodes": [
+          0
+        ],
+        "argv": [
+          "/opt/homebrew/opt/python@3.14/bin/python3.14",
+          "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation-preparation-5/audit.py",
+          "g09-schema-source"
+        ],
+        "automaticRetries": 0,
+        "contract": "IMMEDIATE exact selected result/report grammar/source/cleanup audit; missing extra invalid partial records never receive positive credit",
+        "cwd": "/Users/dbox/repos/wt/vickie/vickie-schema-lint-correction-minimum",
+        "id": "audit-g09-schema-source",
+        "kind": "supervised-readonly-helper",
+        "mustCompleteBeforeNextStage": true,
+        "outerSeconds": 120,
+        "requiresConsumerProof": false,
+        "termAtSeconds": 115
+      },
+      "immediatelyFollows": "g09-schema-source",
+      "rootOutputChild": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation5-root-first4-dispatch-1/audit-g09-schema-source",
+      "stage": "audit-g09-schema-source"
+    },
+    {
+      "actualAttemptExists": false,
+      "configuration": {
+        "acceptedRawExitCodes": [
+          0
+        ],
+        "argv": [
+          "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+          "/Users/dbox/repos/wt/vickie/vickie-schema-lint-correction-minimum/node_modules/vitest/vitest.mjs",
+          "run",
+          "packages/server/src/transaction-schema-http.test.ts",
+          "--maxWorkers=1",
+          "--reporter=verbose",
+          "--reporter=json",
+          "--outputFile.json=/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation-preparation-5/run/legacy-schema-source.results.json",
+          "--testNamePattern",
+          "^(?:serves\\ exact\\ captured\\ root\\ and\\ transitive\\ bytes\\ without\\ retaining\\ mutable\\ input|preserves\\ receiving\\ refusals\\ and\\ foreign\\ schema\\ minima\\ before\\ conditionals)$"
+        ],
+        "automaticRetries": 0,
+        "configurationFinalized": true,
+        "cwd": "/Users/dbox/repos/wt/vickie/vickie-schema-lint-correction-minimum",
+        "id": "legacy-schema-source",
+        "kind": "supervised-command",
+        "outerSeconds": 120,
+        "prospectiveWorkload": {
+          "callbacks": 2,
+          "legacyRegression": true,
+          "newG09DirectCredit": 0,
+          "newG09WireCredit": 0
+        },
+        "selectedFilesByFullName": {
+          "preserves receiving refusals and foreign schema minima before conditionals": "packages/server/src/transaction-schema-http.test.ts",
+          "serves exact captured root and transitive bytes without retaining mutable input": "packages/server/src/transaction-schema-http.test.ts"
+        },
+        "selectedFullNames": [
+          "serves exact captured root and transitive bytes without retaining mutable input",
+          "preserves receiving refusals and foreign schema minima before conditionals"
+        ],
+        "termAtSeconds": 115
+      },
+      "immediatelyFollows": null,
+      "rootOutputChild": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation5-root-first4-dispatch-1/legacy-schema-source",
+      "stage": "legacy-schema-source"
+    },
+    {
+      "actualAttemptExists": false,
+      "configuration": {
+        "acceptedRawExitCodes": [
+          0
+        ],
+        "argv": [
+          "/opt/homebrew/opt/python@3.14/bin/python3.14",
+          "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation-preparation-5/audit.py",
+          "legacy-schema-source"
+        ],
+        "automaticRetries": 0,
+        "contract": "IMMEDIATE exact selected result/report grammar/source/cleanup audit; missing extra invalid partial records never receive positive credit",
+        "cwd": "/Users/dbox/repos/wt/vickie/vickie-schema-lint-correction-minimum",
+        "id": "audit-legacy-schema-source",
+        "kind": "supervised-readonly-helper",
+        "mustCompleteBeforeNextStage": true,
+        "outerSeconds": 120,
+        "requiresConsumerProof": false,
+        "termAtSeconds": 115
+      },
+      "immediatelyFollows": "legacy-schema-source",
+      "rootOutputChild": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation5-root-first4-dispatch-1/audit-legacy-schema-source",
+      "stage": "audit-legacy-schema-source"
+    },
+    {
+      "actualAttemptExists": false,
+      "configuration": {
+        "acceptedRawExitCodes": [
+          0
+        ],
+        "argv": [
+          "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+          "/Users/dbox/repos/wt/vickie/vickie-schema-lint-correction-minimum/node_modules/vitest/vitest.mjs",
+          "run",
+          "apps/bdptest/src/transactional-schema-installed.test.ts",
+          "--maxWorkers=1",
+          "--reporter=verbose",
+          "--reporter=json",
+          "--outputFile.json=/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation-preparation-5/run/schema-confinement-source.results.json",
+          "--testNamePattern",
+          "^(?:confines\\ observed\\ Type\\ and\\ schema\\ traversal\\ to\\ exact\\ administrative\\ identities)$"
+        ],
+        "automaticRetries": 0,
+        "configurationFinalized": true,
+        "cwd": "/Users/dbox/repos/wt/vickie/vickie-schema-lint-correction-minimum",
+        "id": "schema-confinement-source",
+        "kind": "supervised-command",
+        "outerSeconds": 120,
+        "prospectiveWorkload": {
+          "callbacks": 1,
+          "children": 0,
+          "wire": 0
+        },
+        "selectedFilesByFullName": {
+          "confines observed Type and schema traversal to exact administrative identities": "apps/bdptest/src/transactional-schema-installed.test.ts"
+        },
+        "selectedFullNames": [
+          "confines observed Type and schema traversal to exact administrative identities"
+        ],
+        "termAtSeconds": 115
+      },
+      "immediatelyFollows": null,
+      "rootOutputChild": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation5-root-first4-dispatch-1/schema-confinement-source",
+      "stage": "schema-confinement-source"
+    },
+    {
+      "actualAttemptExists": false,
+      "configuration": {
+        "acceptedRawExitCodes": [
+          0
+        ],
+        "argv": [
+          "/opt/homebrew/opt/python@3.14/bin/python3.14",
+          "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation-preparation-5/audit.py",
+          "schema-confinement-source"
+        ],
+        "automaticRetries": 0,
+        "contract": "IMMEDIATE exact selected result/report grammar/source/cleanup audit; missing extra invalid partial records never receive positive credit",
+        "cwd": "/Users/dbox/repos/wt/vickie/vickie-schema-lint-correction-minimum",
+        "id": "audit-schema-confinement-source",
+        "kind": "supervised-readonly-helper",
+        "mustCompleteBeforeNextStage": true,
+        "outerSeconds": 120,
+        "requiresConsumerProof": false,
+        "termAtSeconds": 115
+      },
+      "immediatelyFollows": "schema-confinement-source",
+      "rootOutputChild": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation5-root-first4-dispatch-1/audit-schema-confinement-source",
+      "stage": "audit-schema-confinement-source"
+    }
+  ],
+  "remaining17Unreleased": [
+    "prepare-package-directory",
+    "pack-protocol",
+    "pack-server",
+    "verify-archives",
+    "prepare-consumer",
+    "consumer-install",
+    "verify-installed-consumer",
+    "g09-installed-01",
+    "audit-g09-installed-01",
+    "g09-installed-02",
+    "audit-g09-installed-02",
+    "schema-installed-positive",
+    "audit-schema-installed-positive",
+    "required-check-boundaries",
+    "required-e2e-ready-preflight",
+    "required-smoke",
+    "required-evidence-verify"
+  ],
+  "selectedSourceCallbackTitles": [
+    "G09-S01 schemaObserved zero-min/current and captured supplied tuple",
+    "G09-S02 schemaObserved epoch and view errors",
+    "G09-S03 schemaObserved ahead and opaque bounded attempts",
+    "G09-S04 schema selector receiving and exact identity",
+    "G09-S05 schema selector HTTP/min failure order",
+    "G09-S06 schema runtime satisfied and context errors",
+    "G09-S07 schema runtime ahead before conditional",
+    "G09-S08 schema runtime unknown before HEAD/media",
+    "serves exact captured root and transitive bytes without retaining mutable input",
+    "preserves receiving refusals and foreign schema minima before conditionals",
+    "confines observed Type and schema traversal to exact administrative identities"
+  ],
+  "sourceCallbacks": 11,
+  "wholeWriteCredit": false
+}

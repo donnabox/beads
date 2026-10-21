@@ -1,0 +1,64 @@
+{
+  "name": "installed-batch-control",
+  "argv": [
+    "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+    "/Users/dbox/repos/wt/vickie/vickie-command-minimum-evidence/node_modules/vitest/vitest.mjs",
+    "run",
+    "apps/bdptest/src/transactional-matrix.test.ts",
+    "--testNamePattern",
+    "^discriminates\\ command\\ minimum\\ evidence\\ against\\ minimum\\-batch\\-body\\-conflict$",
+    "--maxWorkers=1",
+    "--reporter=verbose",
+    "--reporter=json",
+    "--outputFile.json=/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-command-minimum-evidence-validation-v3/run/installed-batch-control.results.json"
+  ],
+  "cwd": "/Users/dbox/repos/wt/vickie/vickie-command-minimum-evidence",
+  "started": "2026-10-15T08:06:43.075067+00:00",
+  "head": "a912c23fbd80e70ead382a27e700a70123bf3f21",
+  "workspaceDirty": false,
+  "sourceSha256": {
+    "apps/bdptest/src/transactional-collection-minimum-installed.test.ts": "3d7b202d71ab0857629b5694a397dad03bba1d36122440ba003036c8f16ba63a",
+    "apps/bdptest/src/transactional-matrix.test.ts": "e319109ab0e9f7258e6918ae789ed7a5672eb7aabd0ec8725ae38e3634164e68",
+    "apps/bdptest/src/transactional-snapshot-installed.test.ts": "014a3b127a4be87f958e822df22fc24711bde92fa1c328e3e217e0991e5c22d2",
+    "packages/conformance/src/executable-manifest.test.ts": "ca570192d8763610b39a750d376df899b3f0f01a06b3c928e95bf3d83fd538af",
+    "packages/conformance/src/executable-manifest.ts": "65af0451cd046d57c10b0666e54efbaaecc2225551d3accc5cc1d032322913fa",
+    "packages/conformance/src/http-executor.test.ts": "13e289fe572f56f1bc15dc2a7f2ee3302c4196fc140ee2abc609871a4a5493c4",
+    "packages/conformance/src/http-executor.ts": "770a8405ae1532484b5a2658619c067832644947888f95e0c6575002376f1b5d",
+    "packages/conformance/src/profile-contract-plan.test.ts": "e5be4864e456431db74bd325ec64d785bf3c5301a6be5b230bfcc7351ade4fc4",
+    "packages/conformance/src/runner.test.ts": "ad7e756bad1f70ecc6285e19830bc001ebec01899ed868af3fb4b08e888aba86",
+    "packages/conformance/src/transactional-cumulative.test.ts": "0d1f87199222e2426b048eae1a5aadd11c20c04298d31e3198ca46897e5492d3",
+    "packages/conformance/test-support/transactional/coverage-v1.json": "4619813e9446e0e714a64c11eac184531950f57720e32c7ef414c7e3342121af",
+    "packages/conformance/test-support/transactional/manifest-v1.json": "29729151cf6da641545910ec3880f9609c13b319af7bbe99d3d2ad47833dab96"
+  },
+  "sourceDiffSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+  "rootAcceptanceSha256": "4b7dac2adc98ce72a5afe88f32ed73d50d0aeb9ca4f894469aaf667f3154977a",
+  "preparationSha256": {
+    "gate.py": "0996ba64e3fa88fb718044c6fd8ce79a02d10b4d8f721ea962ad18bb6a402b02",
+    "supervise.py": "304c538d9f501c1b11c95f721a367ce990b4322bfe155ced022073f496252942",
+    "packages.py": "e5cde5e8943eca879257c744e108e6a401272d6926d265c2927f8bdd3ee23655",
+    "build-inventory.py": "1993c66eb2a1ac3b2df1bc00dbe0530117e168a84ba4ff0c5d11587524fa1616",
+    "adjudicate.py": "cb206b6ad9983018dcc1903f1f5907324894474bdf4d38660fce896a33880d16",
+    "helper-review.py": "2ffc5cf9ed82866ccdc60b94cee1281c309702487e0912d6db1b0c6c111956a1",
+    "commands.json": "221c88752f1af4fe76a76218ca06b62a9c6de561c617a89a7644724ec0dcde22"
+  },
+  "bdpOverrides": {
+    "BDP_TRANSACTIONAL_INSTALLED_ENTRY": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-command-minimum-evidence-validation-v3/run/consumer/node_modules/.pnpm/@bdp+server@file+..+packages+bdp-server-0.0.0.tgz/node_modules/@bdp/server/dist/transaction-installed-process.js",
+    "BDP_TRANSACTIONAL_SOURCE_COMMIT": "a912c23fbd80e70ead382a27e700a70123bf3f21",
+    "BDP_TRANSACTIONAL_MINIMUM_CONTROL_OUTPUT": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-command-minimum-evidence-validation-v3/run/installed-batch-control.observation"
+  },
+  "sourceAttribution": "Externally bound source snapshot or frozen package; not child-attested Git identity",
+  "plannedWorkload": {
+    "caseExecutions": 1,
+    "httpExpected": 4,
+    "httpMaximum": 11,
+    "children": 2,
+    "listeners": 2,
+    "owners": 2,
+    "storeDirectories": 2,
+    "bootstrapHttp": 0,
+    "requestTimeoutMs": 5000,
+    "cohortDeadlineMs": 90000,
+    "testTimeoutMs": 120000
+  },
+  "derivativeBinding": null
+}

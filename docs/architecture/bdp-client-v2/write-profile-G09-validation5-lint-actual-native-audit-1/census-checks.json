@@ -1,0 +1,79 @@
+{
+  "administrativeRowsNotSelfAbsence": [
+    {
+      "birth": "Sun Oct 18 19:42:44 2026",
+      "comm": "/opt/homebrew/Cellar/python@3.14/3.14.5/Frameworks/Python.framework/Versions/3.14/Resources/Python.app/Contents/MacOS/Python",
+      "pgid": 20769,
+      "pid": 20781,
+      "ppid": 20769,
+      "state": "S"
+    },
+    {
+      "birth": "Sun Oct 18 19:42:44 2026",
+      "comm": "/bin/ps",
+      "pgid": 20782,
+      "pid": 20782,
+      "ppid": 20781,
+      "state": "Rs"
+    }
+  ],
+  "censusRows": 1380,
+  "globalAbsenceClaim": false,
+  "matchingRows": [],
+  "observerTerminalRootAttributed": true,
+  "probeDirectReapSourceAttested": true,
+  "registryOriginsExact": true,
+  "sampleRows": 4,
+  "samples": [
+    {
+      "group": [
+        [
+          "20075",
+          "19347",
+          "20075",
+          "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node"
+        ]
+      ],
+      "seconds": 0.05660725012421608
+    },
+    {
+      "group": [
+        [
+          "20075",
+          "19347",
+          "20075",
+          "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node"
+        ],
+        [
+          "20077",
+          "20075",
+          "20075",
+          "/Users/dbox/repos/wt/vickie/vickie-schema-lint-correction-minimum/node_modules/.pnpm/@biomejs+cli-darwin-arm64@2.5.7/node_modules/@biomejs/cli-darwin-arm64/biome"
+        ]
+      ],
+      "seconds": 0.15603504097089171
+    },
+    {
+      "group": [
+        [
+          "20075",
+          "19347",
+          "20075",
+          "<defunct>"
+        ]
+      ],
+      "seconds": 0.24960716627538204
+    }
+  ],
+  "taskPGIDs": [
+    19334,
+    19347,
+    20075
+  ],
+  "taskPIDs": [
+    19346,
+    19347,
+    20075,
+    20077
+  ]
+}

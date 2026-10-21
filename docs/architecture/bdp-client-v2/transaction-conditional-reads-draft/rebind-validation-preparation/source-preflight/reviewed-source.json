@@ -1,0 +1,30 @@
+{
+  "workspace": "/Users/dbox/repos/wt/vickie/vickie-transaction-conditional-reads",
+  "branch": "codex/vickie-transaction-conditional-reads",
+  "head": "1ba65f2f192cc84e44eb09ef89b9693ec6cdaf05",
+  "tree": "773614c5ebc6c97d90c4c629c7c7a02ed51bc2ef",
+  "files": {
+    "packages/conformance/test-support/transactional/manifest-v1.json": {
+      "sha256": "60c527f6a5673161eacf022c0015d09bea2743d153b8b0d0c86160b76fafeb68",
+      "new": false
+    },
+    "packages/conformance/test-support/transactional/coverage-v1.json": {
+      "sha256": "33032fe07eb06d2a8968fcd8e5a3cf93cb4637c551868c22da9ea0c4edd587a3",
+      "new": false
+    },
+    "packages/conformance/src/transactional-cumulative.test.ts": {
+      "sha256": "9f70f8a24ea358b2cd613fd392be68057abd7b1552ec8cc6c4bc1a3241de69f6",
+      "new": false
+    },
+    "apps/bdptest/src/transactional-matrix.test.ts": {
+      "sha256": "136de49e859546e081c39410f1d3ee6fc01e32faf1879084718ad67b553d62ec",
+      "new": false
+    }
+  },
+  "diffSha256": "bc7e620ea97a37933901ee4bf2e2d818685178bd974a262e88b025e513e2a60a",
+  "status": " M apps/bdptest/src/transactional-matrix.test.ts\n M packages/conformance/src/transactional-cumulative.test.ts\n M packages/conformance/test-support/transactional/coverage-v1.json\n M packages/conformance/test-support/transactional/manifest-v1.json\n",
+  "scope": "one-app-line principal helper restoration from frozen four-file TX rebind draft; no execution",
+  "predecessorBindingSha256": "bf626872ba83bfafab4b957632247684d1169e0b9e3fbf6c627f8c4a644413d6",
+  "correctionSha256": "7e8b9f84f7d823921f020bffc3609fe75d118cdcc93ae14174a4f7cfba76a612",
+  "principalHelperSha256": "970bbd24b01498f6704db56e358bb264b402cdb6fc214db3bb6ec96df47ce33b"
+}

@@ -1,0 +1,48 @@
+{
+  "accepted": true,
+  "at": "2026-10-15T20:34:46.114752+00:00",
+  "session": "2026-10-08T20:26:35Z-81e5",
+  "inputs": [
+    {
+      "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-guarded-batch-plan/proposed-successor-v2/plan.md",
+      "sha256": "c2c4642c4fb8d5f7266c00a3b3e2cb4af198e34c93c468165d3ccbdc865a0415"
+    },
+    {
+      "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-guarded-batch-plan/proposed-successor-v2/ledger.json",
+      "sha256": "5aa8f75096d1f9eb3b1dc8ab3244dd012d64bf5e843f7738e820dc621f77a1e0"
+    },
+    {
+      "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-guarded-batch-plan/proposed-successor-v2/source-binding.json",
+      "sha256": "5cadb8241de8105994daad6596a7c38be0f276cb0afc80bfef21d45a2d418587"
+    },
+    {
+      "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-guarded-batch-plan/proposed-successor-v2/source-dispositions.md",
+      "sha256": "512904a19f632b438b2578d6af5994d1b4da8922b31f72ab685e68f61d2a4848"
+    },
+    {
+      "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-guarded-batch-plan/proposed-successor-v2/native-closure.md",
+      "sha256": "d9d84e148d2857b7c13807e52a61ddeb9e9ae3a7cbc269feba108839f994ef4d"
+    }
+  ],
+  "actualClaude": [
+    {
+      "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-guarded-batch-plan/claude-plan-supplement/stdout.txt",
+      "sha256": "fb89ac5304fd2061d0d810cfbcc11c8201b027fb9cd9f9851b338b4cb3d1e7be"
+    },
+    {
+      "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-guarded-batch-plan/claude-plan-supplement/exit.json",
+      "sha256": "5963cc96443259417e38e3a115bb026ffea33c8f4b71f47801dc1ec4062a03a8"
+    },
+    {
+      "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-guarded-batch-plan/claude-plan-supplement/cleanup.json",
+      "sha256": "b985613d2ce2226dce214a02a40bf7f32a5880527f955cf902e57c71836a4346"
+    },
+    {
+      "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-guarded-batch-plan/claude-plan-supplement/source-after.json",
+      "sha256": "216d972a0dafc7e475b046affccfe875c0fc3d97c14434388294df9b073f877e"
+    }
+  ],
+  "disposition": "Accept all six source dispositions and eight context closures, independently verified by native closure. Seven positive HTTP200 statuses explicit; full Resources/Event order and Vary checks retained; no cleanup relaxation or new retention law. All workload/body/numeric bounds unchanged. Correct allocateRevision citation only. Earlier incomplete review preserved, not reconstructed.",
+  "authoringAllowed": false,
+  "remainingGate": "Actual PR134 merge/tree verification and source reanchor at that merged predecessor before authoring release."
+}

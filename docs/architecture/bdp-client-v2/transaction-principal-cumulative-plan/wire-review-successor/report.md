@@ -1,0 +1,5 @@
+# Count-neutral wire plan successor
+
+Actual merged parent5d7fa3f049fa0b4db3aa8dae20e20d8e47fb3854/tree057f879132074166f2c0f643a8b45bbd9dd47c6f; original9bf review provenance preserved. All24 original source pins unchanged, two extra format-validator context pins included. Product ownership remains four paths. Exact requests,139manifest assertions, manifest/coverage, all local and recurring workload/time/growth limits are unchanged. Supplemental positive performed inventory gains validated-a-conflict only.
+
+Changed plan.md/ledger.json/requests.json are shown completely in correction.patch; proof-interface.json isolates the corrected safe API/URL/oracle contract. source-context.md contains exact omitted-source excerpts with independent binding. inherited-artifacts.json pins all unchanged parent planning artifacts; preservation-checks.json records data-only equality checks. Composition review and root aggregate disposition still pending. No source edits, product imports, tests, build, service, review launch or release.

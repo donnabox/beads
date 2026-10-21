@@ -1,0 +1,48 @@
+{
+  "head": "1b491d8b888627fcaa5f18908d4308b343397ca3",
+  "tree": "10810a8016a451e241ea974487681dcddd63c2e4",
+  "base": "0d63cf59d447eca2e7ff8b2e0e6a5f31513b9a3a",
+  "checkedAt": "2026-10-15T16:44:24.315340+00:00",
+  "decision": "accepted for exact-head landing checks",
+  "evidence": {
+    "finalSourceBinding": {
+      "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-depth-key-order-draft/final-source.json",
+      "sha256": "b5a5ecfff73cfa349e4e3ff1b2c9014edb2a75a8f16065be9b9c265d804fb579"
+    },
+    "native": {
+      "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-depth-key-order-draft/root-native-code-review.json",
+      "sha256": "91968ddc47a317089aa0a106ae939039fd2973bf4c01ab730e648f13f83a16aa"
+    },
+    "claudeExit": {
+      "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-depth-key-order-draft/claude-code-preparation/exit.json",
+      "sha256": "8cfd49fccec1f079b8f1ebafdb995453c0553845b43a780fac8de191e6c0351b"
+    },
+    "claudeStdout": {
+      "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-depth-key-order-draft/claude-code-preparation/stdout.txt",
+      "sha256": "d0ca412ec71bc03160af98fbaefcd7e426ce5e268cee1cf954c4e9b7a5566dd7"
+    },
+    "rootCouncil": {
+      "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-depth-key-order-draft/root-final-council.json",
+      "sha256": "8e45b8ba7ca913528e9b5d231dee6b7780fb9e4e8754786d7cfd51550ebc1485"
+    },
+    "installedAcceptance": {
+      "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-depth-key-order-draft/root-installed-acceptance.json",
+      "sha256": "9eaab71511c897616f73c9fe53fe1c675edb31aee5afaa3b8dd55ad2eee52ed6"
+    },
+    "controlAcceptance": {
+      "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-depth-key-order-draft/root-control-acceptance.json",
+      "sha256": "f05bbba3c7930711be29783d3dc125fbb2eef46203ed392229e369be9069bf0d"
+    },
+    "sourceAcceptance": {
+      "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-depth-key-order-draft/root-source-acceptance.json",
+      "sha256": "32a3df157395c2b4d84783c19f6338389ec7e621c3c310522e509f9379181e38"
+    },
+    "ciOutcome": {
+      "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-depth-key-order-draft/landing-preparation/ci-outcome.json",
+      "sha256": "37f72f818e33fc3f1431d472dded3a4ee992eb209be2077edb40f60732b3ae4d"
+    }
+  },
+  "scope": "Eight pinned files; retained key conflict/replay precedes private depth refusal. No unrelated runtime, public admission, release or profile advertisement changes.",
+  "council": "Native plus complete actual Claude findings dispositioned; source/control/fresh installed proof accepted. Historical failed attempts retained.",
+  "profileQualification": false
+}

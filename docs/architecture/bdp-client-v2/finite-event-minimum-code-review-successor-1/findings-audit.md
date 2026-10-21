@@ -1,0 +1,29 @@
+# Native audit of actual Claude successor code findings
+
+No additional semantic blocker or plan amendment required. Accept findings 1–2 using only the already-reviewed exact three-test-file/eight-region formatter plan. Defer minor findings 3–6 with the bounded existing controls below; retain the accepted predicate for 7. Findings 8–12 remain explicit exclusions or existing limitations, not completed functionality. This audit does not authorize source changes or execution.
+
+1–2 — Accepted mechanical blockers. Actual failed format-check evidence takes precedence over estimated column widths and the review's proposed broad formatter invocation. The pinned log identifies eight regions, including the installed cleanupTimer call omitted from the heuristic list. Apply the existing exact plan, preserving all expressions, literals, request matrices, lifecycle and budgets; three production files and historical prefixes remain identical. Original typecheck success is evidence for the reviewed old bytes only; original format failure stays immutable, with fresh static diagnostics on the eventual successor.
+
+3 — Defer the additional D media assertion. D validates exact Problem content/schema and paired HEAD metadata. Installed E explicitly requires GET content-type base media application/problem+json at lines 555–556 and HEAD equivalence; audit.py lines 75–76 independently requires those same metadata/body conditions. These are complementary-layer checks, not a claim that D alone detects every media regression. Adding another local assertion is optional, not a serving blocker.
+
+4 — Defer wall-clock timing instrumentation. B explicitly checks four reads, two waits/probes, zero group reads and attemptTimes [0,0,5,10], including tuple mutation between attempts. C independently checks cancellation, drain/closing refusals and five reads, three waits/probes, attemptTimes [0,0,5,10,15]. D/E exercise the actual HTTP path and response behavior. They do not measure HTTP elapsed wait, and reports must not claim they do. Controlled waiter oracles are discriminating without adding nondeterministic HTTP-time assertions or broadening this fixed workload.
+
+5 — Defer converting truthful authored constants to counters. A contains exactly one f.run seed mutation; C contains the one asserted post-close direct owner refusal immediately before logging; each preflight row calls service.events exactly once. Their static workload values are accurate for these frozen bodies and are not completion percentages, raw dynamic dispatch census, or cleanup evidence. reads/waits/clocks and directory absence are separately measured. Future source changes must revalidate the authored workload, as the pending successor preparation already requires.
+
+6 — Defer duplicating ordered response assertions in E, with a precise rationale. External audit requires attempted/exchanges/completedResponses length exactly three (line 56) and ordered method/status [('GET',200),('GET',503),('HEAD',503)] (line 71). It does NOT independently compare route URLs: the new response report has no URL field. Route preservation instead follows the pinned callback: one canonical scope events URL, exactMode GET/HEAD allowlist, every execute call using that URL, and an assertion response.url equals it (lines 461–504). Combined callback and auditor controls cover the intended three exchanges. Do not describe the external auditor alone as checking ordered routes.
+
+7 — Retain the plan-mandated predicate and defensive fallback. Scope/canonical URL/no parsed or raw after/JSON/no header or raw Last-Event-ID checks explicitly delimit the serving change. Redundancy noted by Claude is not a functional bug and does not justify expanding this formatter successor.
+
+8–12 — Preserve the exclusions: after/SSE/Last-Event-ID/Resource Event/incompatible Accept and unknown-plus-foreign context behavior stay unchanged and are not qualification claims. Contextual missing Resource 404 precedence is preserved behavior, rather than a missing feature. The hypothetical uncaught Unproved path is not reachable from the selected waiter-backed route today. A nonadvancing injected clock remains an existing test-seam limitation; no policy, waiter, timing or public-admission redesign belongs in this correction.
+
+Execution caveats remain real: lint/runtime/build/installed outcomes have not been inferred from review. Fresh build before runtime imports and verified consumer before installed collection remain required. The review's absent transaction-http-semantics.ts filename was corrected by reading actual read-http.ts; no implementation dependence on a nonexistent file is introduced. Prior native correction closure, not Claude's full HEAD review alone, establishes the exact two-file preflight correction/A–E preservation.
+
+Read-only source and audit inspection only; no source edits, imports, tests, helper execution, build, install or formatter. Report write guarded by remote session verification.
+
+Evidence SHA256:
+
+- `/Users/dbox/repos/wt/vickie/bdp-integration-logs/finite-event-minimum-code-review-successor-1/final-review.txt`: `1a689081cb1ddcd6bcf0b02261ad020a551920c003c2b952e33a27af368c246d`
+- `/Users/dbox/repos/wt/vickie/bdp-integration-logs/finite-event-minimum-validation/implementation/formatting-successor-plan.md`: `f5ac810b67223c4754d948feb4da186fe00ef10f2f0733f91ebbf4bac0bdd8ee`
+- `/Users/dbox/repos/wt/vickie/bdp-integration-logs/finite-event-minimum-validation/implementation/run/format-check.log`: `09a4531ec83f8b2de1428405a8530c0eeca8bcc2f20f8f6e6a38ffd6b2ad6ff4`
+- `/Users/dbox/repos/wt/vickie/bdp-integration-logs/finite-event-minimum-validation/implementation/audit.py`: `02a905259c24fbb7bd2780dd3c0d6fce61d20356972c5de05c78550dabe59318`
+- `/Users/dbox/repos/wt/vickie/bdp-integration-logs/finite-event-minimum-author/successor-1/native-closure.md`: `59340bf4dfba3d44bd5bbda5a91d7cca88fbb29f950d78d511e93c852080d00a`

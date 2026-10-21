@@ -1,0 +1,222 @@
+{
+  "status": "actual_stages_and_named_oracles_verified",
+  "source": "b89554c6004edf99d3278518bee1b150dce3fa98",
+  "payload": "9e706a73053f2e952b32f9775526504c52f51e9fedf4794cc20fb68f5b204af5",
+  "stages": [
+    {
+      "name": "fresh-build",
+      "seconds": 1.6760372498538345,
+      "exit": 0
+    },
+    {
+      "name": "node-version",
+      "seconds": 0.5624510408379138,
+      "exit": 0
+    },
+    {
+      "name": "package-directory",
+      "seconds": 0.7433772920630872,
+      "exit": 0
+    },
+    {
+      "name": "pack-protocol",
+      "seconds": 0.7331014580558985,
+      "exit": 0
+    },
+    {
+      "name": "pack-server",
+      "seconds": 0.814014625037089,
+      "exit": 0
+    },
+    {
+      "name": "verify-tar",
+      "seconds": 0.7166887910570949,
+      "exit": 0
+    },
+    {
+      "name": "prepare-consumer",
+      "seconds": 0.7417774579953402,
+      "exit": 0
+    },
+    {
+      "name": "consumer-install",
+      "seconds": 1.043601790908724,
+      "exit": 0
+    },
+    {
+      "name": "verify-installed",
+      "seconds": 0.919664666056633,
+      "exit": 0
+    },
+    {
+      "name": "selected-positive",
+      "seconds": 1.8172105830162764,
+      "exit": 0
+    },
+    {
+      "name": "selected-minimum-control",
+      "seconds": 1.6143904158379883,
+      "exit": 0
+    },
+    {
+      "name": "full-aggregate",
+      "seconds": 17.96911587496288,
+      "exit": 0
+    }
+  ],
+  "commandMinimum": [
+    {
+      "report": "selected-positive-minimum.json",
+      "responses": 11,
+      "assertions": 47,
+      "failed": [],
+      "applications": 0
+    },
+    {
+      "report": "selected-minimum-control-minimum.json",
+      "responses": 2,
+      "assertions": 8,
+      "failed": [
+        [
+          "singleton-replay",
+          "outcome"
+        ]
+      ],
+      "applications": 1
+    },
+    {
+      "report": "full-aggregate-minimum.json",
+      "responses": 11,
+      "assertions": 47,
+      "failed": [],
+      "applications": 0
+    }
+  ],
+  "aggregate": {
+    "authored": 56,
+    "wholeMapped": 35,
+    "required": 130,
+    "omitted": 74,
+    "uncovered": 95,
+    "claimEligible": false
+  },
+  "sampledPidsVerifiedAbsent": [
+    34546,
+    34548,
+    34553,
+    34576,
+    34577,
+    34625,
+    34628,
+    34636,
+    34955,
+    34957,
+    34989,
+    34991,
+    34996,
+    35004,
+    35040,
+    35042,
+    35046,
+    35077,
+    35079,
+    35084,
+    35115,
+    35117,
+    35123,
+    35135,
+    35142,
+    35173,
+    35175,
+    35180,
+    35182,
+    35213,
+    35253,
+    35255,
+    35261,
+    35324,
+    35326,
+    35332,
+    35339,
+    35347,
+    35818,
+    35821,
+    35826,
+    35830,
+    35846,
+    35851,
+    35899,
+    35901,
+    35905,
+    35909,
+    35925,
+    35929,
+    35976,
+    35978,
+    35982,
+    35985,
+    36012,
+    36017,
+    36022,
+    36025,
+    36028,
+    36032,
+    36059,
+    36087,
+    36090,
+    36094,
+    36097,
+    36103,
+    36106,
+    36110,
+    36113,
+    36117,
+    36122,
+    36126,
+    36130,
+    36133,
+    36138,
+    36141,
+    36145,
+    36149,
+    36154,
+    36158,
+    36161,
+    36165,
+    36170,
+    36174,
+    36178,
+    36185,
+    36188,
+    36196,
+    36200,
+    36206,
+    36224,
+    36232,
+    36236,
+    36319,
+    36342,
+    36347,
+    36351,
+    36355,
+    36360,
+    36363,
+    36367,
+    36372,
+    36377,
+    36380,
+    36384,
+    36389,
+    36416,
+    36419,
+    36425,
+    36429,
+    36435,
+    36441
+  ],
+  "limitations": [
+    "Full actual aggregate HTTP counting under separate audit; planned2314 is not asserted as measured HTTP.",
+    "Safe reports contain fingerprints/scalars; private complete body comparisons execute in the test harness.",
+    "No complete profile qualification. Claude code review timed out empty and remains incomplete."
+  ]
+}

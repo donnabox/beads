@@ -1,0 +1,34 @@
+{
+  "markerContract": {
+    "closedKeys": [
+      "observation",
+      "version",
+      "attemptId",
+      "phase",
+      "sourceElapsedMilliseconds"
+    ],
+    "actualSourceLines": {
+      "helper": [
+        225,
+        243
+      ],
+      "startTryFirstStatement": 245,
+      "genuineReportSerializationOutsideMarkerCatch": 909,
+      "endAfterReportReturns": 910,
+      "genuineFinalThrowOutsideCatch": 912
+    },
+    "attemptId": "Primitive32lowerhex only or null; malformed text not echoed. No freshness inferred by source.",
+    "time": "Actual performance.now()-existing started at each helper call; invalid/negative suppresses marker. End measured after report serialization/log-return, not work+cleanup sum.",
+    "write": "One JSON.stringify+newline, utf8 byte length<=4096, one direct stdout.write; synchronous marker construction/write catch only. Async stream/OS failure immunity not claimed.",
+    "ordinary": "Absent/invalid attempt emitsnull diagnostic; original outcome unaffected by synchronous marker refusal.",
+    "validation": "Collector must independently require exact2 complete closed records, current nonnull fresh root attempt, order, strict finite numeric/end<=120000, parent deadlines/offsets/hash/flush/terminal/ownership. Source alone proves none of these."
+  },
+  "preservation": {
+    "original32HTTP11POST21GET2children33receipts96Events4Types5cloneOracles": true,
+    "work90000Callback120000Request5000Cleanup10000Unchanged": true,
+    "all678ProtectedExact": true,
+    "actualFirstCodeSawSource3": false,
+    "earlierActualCodeRootNative09346ChronologyPreserved": true
+  },
+  "remaining": "Executable phase collector/synthetic product/current build/archive/consumer/lock/proof and durable root gates separate; no helper mechanics acceptance by this source review"
+}

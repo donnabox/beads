@@ -1,0 +1,32 @@
+{
+  "utc": "2026-10-18T07:15:00.685663+00:00",
+  "session": "2026-10-18T02:16:24Z-549f",
+  "planIndexSha256": "92f4b0c0b0fbe1fbdc1ff4d42b50db4d2b35c7088a0de8acae7d1cdcde4f41ad",
+  "nativeClosureSha256": "727b809d74d6a507c6b1951ad98b6758c7cf764ba939d92c9689c260befef5b9",
+  "rootFullPlanAndFindingsRead": true,
+  "actualSourceSeamsRead": true,
+  "dispositions": [
+    {
+      "id": "N1",
+      "decision": "ACCEPT",
+      "requiredCorrection": "Specify a finite distinct unbound attempt envelope in the existing writer (configuration absent/null and explicitly unbound, observations null, no carrier/qualification claim), with a precise transition to bound ProfileEvidenceV1 only after a genuine returned configuration exists. Alternatively explicitly defer bound carrier emission while retaining the existing legacy attempt and fixed safe pre-binding sidecar metadata. Keep the four paths, RU callers/signatures, product workload and deadlines; define corresponding data-case expectations."
+    },
+    {
+      "id": "N2",
+      "decision": "ACCEPT",
+      "requiredCorrection": "Declare a concrete narrow handoff within the owned TX file: capture genuine observed data before the hook, serialize the exact legacy wrapper once in its existing owner, and hand those exact bytes plus their digest to the private adapter while checking .result against the pre-hook snapshot. Define behavior when the legacy output path is absent; do not reread a guessed file or duplicate/reformat an authority result. A small explicit optional hook-return/data handoff is one option; preserve legacy field layout/no-opt-in behavior, four-file footprint and all product requests/deadlines."
+    },
+    {
+      "id": "N3",
+      "decision": "ACCEPT",
+      "requiredCorrection": "Explicitly distinguish reached missingPlanResult (not-implemented) from actual stopped remainder (not-run), preserving exact ID/order/empty exchanges and original row index/category. Keep them no-credit and avoid vacuous all-assertions-passed credit on unexecuted rows. No runner or case-count change."
+    }
+  ],
+  "next": "Separately named CLOSED plan2 precision successor; independent native closure/root acceptance before first actual PLAN preparation/release",
+  "footprintUnchanged": 4,
+  "dataCaseCountUnchanged": 48,
+  "sourceAuthoringReleased": false,
+  "reviewLaunchReleased": false,
+  "productExecutionReleased": false,
+  "runnerAndProductDeadlineChangesAllowed": false
+}

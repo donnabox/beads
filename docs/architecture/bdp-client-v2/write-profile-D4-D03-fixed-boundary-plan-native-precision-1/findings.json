@@ -1,0 +1,42 @@
+{
+  "count": 1,
+  "findings": [
+    {
+      "anchors": [
+        {
+          "line": 9,
+          "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-D4-D03-fixed-root-boundary-DATA-plan-1/plan.md"
+        },
+        {
+          "line": 11,
+          "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-D4-D03-fixed-root-boundary-DATA-plan-1/plan.md"
+        },
+        {
+          "line": 13,
+          "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-D4-D03-fixed-root-boundary-DATA-plan-1/plan.md"
+        },
+        {
+          "line": 18,
+          "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-D4-D03-fixed-root-boundary-DATA-plan-1/clock-and-decision-contract.json"
+        },
+        {
+          "line": 43,
+          "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-D4-D03-fixed-root-boundary-DATA-plan-1/plan.md"
+        }
+      ],
+      "counterexampleDATAOnly": [
+        "O sample",
+        "R sample",
+        "A never reached: no alarm armed"
+      ],
+      "executed": false,
+      "explanation": "R is the first ready-ancestor sample, A is later independent alarm arming. An ancestor that samples R but never reaches A has no active alarm; remaining R+120-now and later refusal cannot retroactively cover R..A. The plan correctly applies this reasoning to O..A but the R alternative needs the same explicit qualification. This is DATA precision, not an observed failure or unchanged-source defect.",
+      "id": "D03-BOUNDARY-N1",
+      "requiredDisposition": "Keep the entire pre-arm interval including R..A explicitly outside demonstrated independent enforcement unless a separately reviewed already-armed mechanism or exact fault-domain qualification actually covers it. Choosing R alone is insufficient. Preserve unchanged O-inclusive120 and O-based normal115; adopt neither R nor A, initialization exclusions or weakened failed-path scope here. Root dispositions any future source/mechanism separately.",
+      "severity": "Low",
+      "sourceOrMechanismCorrectionAuthored": false,
+      "title": "R precedes alarm arming A; R adoption alone does not cover R..A"
+    }
+  ],
+  "newRuntimeOrSourceDefects": []
+}

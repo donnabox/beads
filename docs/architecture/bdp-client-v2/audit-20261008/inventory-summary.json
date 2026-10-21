@@ -1,0 +1,29 @@
+{
+  "main": {
+    "test": 3453,
+    "command": 297,
+    "edge": 299,
+    "flag": 1798,
+    "registry": 280,
+    "unique_registry_paths": 274,
+    "unique_test_files": 733
+  },
+  "preview": {
+    "test": 3621,
+    "command": 302,
+    "edge": 304,
+    "flag": 2077,
+    "registry": 285,
+    "unique_registry_paths": 279,
+    "unique_test_files": 799
+  },
+  "preview_only": [
+    "claude-hook",
+    "compare",
+    "links",
+    "unlink",
+    "versions"
+  ],
+  "main_only": [],
+  "scope": "Static cmd/bd top-level Go AST declarations plus capability registry, not executed tests, dynamic subtests, nested package tests, alias expansion or exhaustive flag combinations. Family dispositions are architecture analysis, not implementation parity."
+}

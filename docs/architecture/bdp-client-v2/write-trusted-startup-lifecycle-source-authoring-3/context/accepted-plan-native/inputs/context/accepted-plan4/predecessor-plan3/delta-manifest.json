@@ -1,0 +1,86 @@
+{
+  "state": "9 genuine source-copy/document/data forward-inverse pairs; NOT product source mutation",
+  "pairs": [
+    {
+      "path": "plan.md",
+      "beforeOrigin": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-trusted-startup-lifecycle-next-plan-2/plan.md",
+      "beforeSha256": "24dcb188b228f9825dfdd54a37fb3289cc7511bf9ac5b5aecb5daa4ac5adec9a",
+      "afterCopy": "plan.md",
+      "afterSha256": "f37aae9e1da7e9b7ad7b6ca1247bfa38cc839f004e9e69ae2c9dc246060c42ea",
+      "forward": "deltas/plan.md.patch",
+      "inverse": "deltas/plan.md.inverse.patch"
+    },
+    {
+      "path": "basis-binding.json",
+      "beforeOrigin": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-trusted-startup-lifecycle-next-plan-2/basis-binding.json",
+      "beforeSha256": "77147e266f147fb468e41daaa91b7e6ec50721031971c13bf17d953a5e44849c",
+      "afterCopy": "basis-binding.json",
+      "afterSha256": "c87a4080a55502627bdc1be99c576768aa356fb5e3369a23edaa5f7753d828da",
+      "forward": "deltas/basis-binding.json.patch",
+      "inverse": "deltas/basis-binding.json.inverse.patch"
+    },
+    {
+      "path": "gates.json",
+      "beforeOrigin": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-trusted-startup-lifecycle-next-plan-2/gates.json",
+      "beforeSha256": "09383c6e41b376a889095d721a5fe134fa9c8dcfa6cfe7f866ffc310e9aeb5d4",
+      "afterCopy": "gates.json",
+      "afterSha256": "2dfe32e394b0ab3c8eb44b9408bc9fb348d98a9a1a7475f8fabb0d06a1321820",
+      "forward": "deltas/gates.json.patch",
+      "inverse": "deltas/gates.json.inverse.patch"
+    },
+    {
+      "path": "report.md",
+      "beforeOrigin": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-trusted-startup-lifecycle-next-plan-2/report.md",
+      "beforeSha256": "4713284617eaf692acfb41f00bee7b5177a609903070913ac2acd91a35684196",
+      "afterCopy": "report.md",
+      "afterSha256": "b6e383ae3099d6d8e0c2ff18a910414d68474d35441800d7ffb732ed36fbef65",
+      "forward": "deltas/report.md.patch",
+      "inverse": "deltas/report.md.inverse.patch"
+    },
+    {
+      "path": "input-map.json",
+      "beforeOrigin": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-trusted-startup-lifecycle-next-plan-2/input-map.json",
+      "beforeSha256": "103302b7cdf18d63d6b9e2ad05ecf921053ab15b38149545ed1b72e67c1073db",
+      "afterCopy": "input-map.json",
+      "afterSha256": "837b1b30428539a27bdca14597a4a1e7edbe608e9832fbf2feba69f2b0bc3707",
+      "forward": "deltas/input-map.json.patch",
+      "inverse": "deltas/input-map.json.inverse.patch"
+    },
+    {
+      "path": "source-map.json",
+      "beforeOrigin": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-trusted-startup-lifecycle-next-plan-2/source-map.json",
+      "beforeSha256": "7a503fb5271f29c01d411ac30bce2f5d6eadee17e4996e610160129687ee1849",
+      "afterCopy": "source-map.json",
+      "afterSha256": "054d825cdc815260f0d4472c4b13fafca0130f1330798c8204a45a8de53f403d",
+      "forward": "deltas/source-map.json.patch",
+      "inverse": "deltas/source-map.json.inverse.patch"
+    },
+    {
+      "path": "source/packages/config/src/index.ts",
+      "beforeOrigin": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-trusted-startup-lifecycle-next-plan-2/source/packages/config/src/index.ts",
+      "beforeSha256": "93d6cada23b4905a4c27f0d0e674305983a3ebbef7a1349e6216b7a86614dc3d",
+      "afterCopy": "source/packages/config/src/index.ts",
+      "afterSha256": "cbcb0ecfce8a04b5a037c9923e2913079f03853d4015ba40e984d574f9f5ec47",
+      "forward": "deltas/source__packages__config__src__index.ts.patch",
+      "inverse": "deltas/source__packages__config__src__index.ts.inverse.patch"
+    },
+    {
+      "path": "source/packages/server/src/reference-deployment.test.ts",
+      "beforeOrigin": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-trusted-startup-lifecycle-next-plan-2/source/packages/server/src/reference-deployment.test.ts",
+      "beforeSha256": "5b9de79791eb041e74b4153ffc19dfaf28b029599644a7bda056a84432ef0289",
+      "afterCopy": "source/packages/server/src/reference-deployment.test.ts",
+      "afterSha256": "adfbf6b0132cc24b3b65bf482000de2da43bf242102020637ed894b2cdd0cee9",
+      "forward": "deltas/source__packages__server__src__reference-deployment.test.ts.patch",
+      "inverse": "deltas/source__packages__server__src__reference-deployment.test.ts.inverse.patch"
+    },
+    {
+      "path": "source/packages/server/src/reference-deployment.ts",
+      "beforeOrigin": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-trusted-startup-lifecycle-next-plan-2/source/packages/server/src/reference-deployment.ts",
+      "beforeSha256": "64fcccf86687e570a3c86eb460fe7d96a1260905205eb95ec35a1981fe79f1c1",
+      "afterCopy": "source/packages/server/src/reference-deployment.ts",
+      "afterSha256": "276868b4d6bbf2e5a4693b03ef73a96bb2294b76e94456597fd9584c0736c48b",
+      "forward": "deltas/source__packages__server__src__reference-deployment.ts.patch",
+      "inverse": "deltas/source__packages__server__src__reference-deployment.ts.inverse.patch"
+    }
+  ]
+}

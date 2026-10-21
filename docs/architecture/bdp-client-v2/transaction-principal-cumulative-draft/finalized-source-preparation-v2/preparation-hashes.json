@@ -1,0 +1,45 @@
+{
+  "sourceBinding": {
+    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-principal-cumulative-draft/format-repair/source-binding.json",
+    "sha256": "0dbae7cb6139263cbfd3931e80d8dec2c628d7e982deecdd6c8242573a35c6e2"
+  },
+  "fenceAcceptance": {
+    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-principal-cumulative-draft/format-repair/fence-acceptance.json",
+    "sha256": "0a635636a4a55b34584a80a39a59cc8719d0cbd31c62fc93807bdee460c72afc"
+  },
+  "predecessor": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-principal-cumulative-draft/finalized-source-preparation",
+  "changes": {
+    "commands.json": {
+      "beforeSha256": "0ff7492cf518aacfa54b3382128df32156e455e94c5fafa9cc6e79bbfbe63dce",
+      "afterSha256": "fd995b53ae9c7e9f1da5bc31256b66a404c69fddc7e45ddc6aa22135344a9931"
+    },
+    "run-source.py": {
+      "beforeSha256": "99b3e89b3c7e59a2e075d3309e59ecfca260299be0fc10338f99cdf3510769a3",
+      "afterSha256": "4db47dd0b485d36eaebb9718b83aeee233208aa93ab6502c97c48be3d7973d13"
+    },
+    "inventory.py": {
+      "beforeSha256": "dee913cee574b93672abd61481c88a5b8b9f618c483b9455dc18e2913ab087bf",
+      "afterSha256": "f1e32f57e3c1cb78e06805501e47fae5fd41199813c219e2514ffaefa807f50c"
+    },
+    "execution-gate.example.json": {
+      "beforeSha256": "16ee26df8728fa734b0969efb99b32d1dfa70ec43b55da54c476151741acda04",
+      "afterSha256": "1e7002c37e707034b868dd519ddb80fb992d9d294ee66983820090b4adcb4f49"
+    },
+    "README.md": {
+      "beforeSha256": "1d7cbc447d694eb7bd03ae2cd5f7f68b53c157e164dfac6e218b8c54f83e95d9",
+      "afterSha256": "f1b386867d90c1e458b5d0d052f8d6b3a98a780e2b33622dbcc3b1cfee21260f"
+    }
+  },
+  "files": {
+    "README.md": "f1b386867d90c1e458b5d0d052f8d6b3a98a780e2b33622dbcc3b1cfee21260f",
+    "commands.json": "fd995b53ae9c7e9f1da5bc31256b66a404c69fddc7e45ddc6aa22135344a9931",
+    "execution-gate.example.json": "1e7002c37e707034b868dd519ddb80fb992d9d294ee66983820090b4adcb4f49",
+    "inventory.py": "f1e32f57e3c1cb78e06805501e47fae5fd41199813c219e2514ffaefa807f50c",
+    "preparation.patch": "a09341e82525c12a9c11072adebd682e1332989ee0a296ae04f3446dc206268d",
+    "run-source.py": "4db47dd0b485d36eaebb9718b83aeee233208aa93ab6502c97c48be3d7973d13"
+  },
+  "executionGateExists": false,
+  "executed": false,
+  "sameNineStages": true,
+  "sameSelectedCases": true
+}

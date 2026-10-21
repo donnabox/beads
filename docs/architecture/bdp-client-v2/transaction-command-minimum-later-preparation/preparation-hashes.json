@@ -1,0 +1,40 @@
+{
+  "status": "DRAFT_ONLY_NO_EXECUTION",
+  "syntaxCheck": "ast.parse only; no imports or script execution",
+  "executionGatePresent": false,
+  "runDirectoryPresent": false,
+  "files": {
+    "gate.py": {
+      "sha256": "470ee292f6e9cd0b67931d8ce705dea987b050155000b733edc32b2c52fce3f0",
+      "bytes": 6116
+    },
+    "supervise.py": {
+      "sha256": "7f0d08b5a1c819131c2efd7f5c258b565414cbe70c65cd8b8b0ffe9ec3ba0065",
+      "bytes": 9120
+    },
+    "controls.py": {
+      "sha256": "2dd31382f00abc02f19ab570764c1fb217b097355d0c4580e6d6e290335309d7",
+      "bytes": 3105
+    },
+    "packages.py": {
+      "sha256": "99762fa2898e4e7ed1f17d8feb7ae22bd80ba29269dff1e9d4969d0bff8d4a9b",
+      "bytes": 8233
+    },
+    "adjudicate.py": {
+      "sha256": "57e70b22bc1b38822ae571dab555c86b62d57ccaba76266399a0c4c50e320ee8",
+      "bytes": 6449
+    },
+    "commands.json": {
+      "sha256": "e6d5815dee76efcd40fdbace8d2d78f078265183f25005feb29a3b34c372c5cc",
+      "bytes": 14089
+    },
+    "execution-gate.example.json": {
+      "sha256": "4c9bb3062f38ba83f23876fadb9b06c6764b169c049534a5deccd91fb6d05d4a",
+      "bytes": 2961
+    },
+    "report.md": {
+      "sha256": "0212f6edab5c526af586daa4ca362d4e732a2921248919c5a0c31b1fce258871",
+      "bytes": 8691
+    }
+  }
+}

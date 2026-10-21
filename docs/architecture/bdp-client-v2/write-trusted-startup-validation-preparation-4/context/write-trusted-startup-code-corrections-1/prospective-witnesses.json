@@ -1,0 +1,71 @@
+{
+  "executed": false,
+  "witnesses": [
+    {
+      "finding": "F1",
+      "case": "matching deploymentFile-only section; RU and TX each get one real selected file open",
+      "site": {
+        "path": "packages/server/src/reference-deployment.test.ts",
+        "line": 277,
+        "sha256": "a25940849c0977fa2e5dc310466cd3a871d6de2ec0e2a41792354468e735e9e9"
+      }
+    },
+    {
+      "finding": "F1",
+      "case": "mismatched path, invalid type, fixture conflict each refuse fixed configuration error before open",
+      "site": {
+        "path": "packages/server/src/reference-deployment.test.ts",
+        "line": 291,
+        "sha256": "a25940849c0977fa2e5dc310466cd3a871d6de2ec0e2a41792354468e735e9e9"
+      }
+    },
+    {
+      "finding": "F7",
+      "case": "isolated RU default success explicitly requires exactly one open",
+      "site": {
+        "path": "packages/server/src/reference-deployment.test.ts",
+        "line": 241,
+        "sha256": "a25940849c0977fa2e5dc310466cd3a871d6de2ec0e2a41792354468e735e9e9"
+      }
+    },
+    {
+      "finding": "F8",
+      "case": "original pre-await Read limits remain captured after caller mutation",
+      "site": {
+        "path": "packages/server/src/reference-deployment.test.ts",
+        "line": 371,
+        "sha256": "a25940849c0977fa2e5dc310466cd3a871d6de2ec0e2a41792354468e735e9e9"
+      }
+    },
+    {
+      "finding": "F8",
+      "case": "small empty file joins syntax refusal table",
+      "site": {
+        "path": "packages/server/src/reference-deployment.test.ts",
+        "line": 600,
+        "sha256": "a25940849c0977fa2e5dc310466cd3a871d6de2ec0e2a41792354468e735e9e9"
+      }
+    },
+    {
+      "finding": "F3",
+      "case": "TX host uses existing authoritative default without changing host behavior",
+      "site": {
+        "path": "packages/server/src/reference-deployment.ts",
+        "line": 164,
+        "sha256": "64fcccf86687e570a3c86eb460fe7d96a1260905205eb95ec35a1981fe79f1c1"
+      }
+    },
+    {
+      "finding": "F2",
+      "case": "secret-committing digests must not enter diagnostics; no identity algorithm edit",
+      "site": {
+        "path": "docs/design/startup-configuration.md",
+        "line": 693,
+        "sha256": "8a7d348e56adda7d0222d2180763149f348594a770fdd773e01076fb68c9caa8"
+      }
+    }
+  ],
+  "existingTestsAndBudgetsPreserved": true,
+  "installedTestsChanged": false,
+  "sourceWitnessesGrantInstalledQualification": false
+}

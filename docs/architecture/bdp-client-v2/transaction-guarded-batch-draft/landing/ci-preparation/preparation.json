@@ -1,0 +1,128 @@
+{
+  "status": "CLOSED_LANDING_PREPARATION_WITH_ONE_READ_ONLY_SNAPSHOT",
+  "createdAt": "2026-10-15T21:10:51.950319+00:00",
+  "repository": "gastownhall/bdp",
+  "pr": 135,
+  "candidate": "9e5f040edab88be364f683098ead72f595f0ab55",
+  "tree": "81c6786a3075f1869f54460880cac1234c27fb77",
+  "base": "9bf601bfb570adae97ce8cdc99caf2cc7a2b34c1",
+  "orderedCandidateParents": [
+    "9bf601bfb570adae97ce8cdc99caf2cc7a2b34c1"
+  ],
+  "workspace": "/Users/dbox/repos/wt/vickie/vickie-guarded-batch",
+  "clean": true,
+  "files": {
+    "apps/bdptest/src/transactional-guarded-batch-installed.test.ts": {
+      "path": "/Users/dbox/repos/wt/vickie/vickie-guarded-batch/apps/bdptest/src/transactional-guarded-batch-installed.test.ts",
+      "sha256": "f716b51eb31226beafaba80a049063d758ed803388e0ac0439ee0298e0d5019b",
+      "bytes": 43176
+    },
+    "docs/design/transaction-implementation-progress.md": {
+      "path": "/Users/dbox/repos/wt/vickie/vickie-guarded-batch/docs/design/transaction-implementation-progress.md",
+      "sha256": "90c370e47d9f2dbff040f757c6b8bb89f6a6eda7b540961ea377f161d5a09152",
+      "bytes": 131802
+    }
+  },
+  "candidatePatch": {
+    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-guarded-batch-draft/landing/ci-preparation/candidate.patch",
+    "sha256": "baa7be39ac7d4fb6635287126194362633b555d921be7a821550e36fbe506d71",
+    "bytes": 45898
+  },
+  "workflow": {
+    "artifact": {
+      "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-guarded-batch-draft/landing/ci-preparation/workflow.yml",
+      "sha256": "fd0a08da61f74abe19c8db16d879bfff85d8090643bf4da326d3e597ae129be3",
+      "bytes": 2931
+    },
+    "unchangedFromBase": true,
+    "timeoutMinutes": 20,
+    "node": "24.16.0",
+    "pnpm": "11.20.0",
+    "authoredSteps": 21
+  },
+  "evidence": {
+    "final-source.json": {
+      "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-guarded-batch-draft/final-source.json",
+      "sha256": "48d329eaf7c0f71ffd7c7b59880994b13a037a938b13af5a5a3aa4e61249e794",
+      "bytes": 818
+    },
+    "root-integration-acceptance.json": {
+      "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-guarded-batch-draft/root-integration-acceptance.json",
+      "sha256": "a48417f83c497ce574d28183f048831b72b991c22f578957bce6a0466330c048",
+      "bytes": 1700
+    },
+    "root-static-acceptance.json": {
+      "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-guarded-batch-draft/root-static-acceptance.json",
+      "sha256": "1097620c17e5d8631b1e461e55bd23b7112c1b4138a4830ca125b960fb604ce8",
+      "bytes": 2994
+    },
+    "root-installed-acceptance.json": {
+      "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-guarded-batch-draft/root-installed-acceptance.json",
+      "sha256": "e1ae22f584ab382572e75a10e5cffbc17601a4a8a6bd8775e5897d71192126af",
+      "bytes": 7852
+    },
+    "native-code-review.md": {
+      "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-guarded-batch-draft/native-code-review.md",
+      "sha256": "84f8ea0292c4b1f5235e35733be9af1985fd6464e8903d2932d95c5fb4daeae3",
+      "bytes": 6790
+    },
+    "execution-preparation/native-installed-audit.md": {
+      "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-guarded-batch-draft/execution-preparation/native-installed-audit.md",
+      "sha256": "0b17715f62c997f25ae674ead89c2d2cb9ddb7c4f3a3a04cbb139dddc9c6f24c",
+      "bytes": 6289
+    },
+    "execution-preparation/run/root-build-bridge.json": {
+      "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-guarded-batch-draft/execution-preparation/run/root-build-bridge.json",
+      "sha256": "710ebd803c9ccc38ec6b27aaa094bfe0509c6f40af6a54de9e31f87a99b539b3",
+      "bytes": 610
+    },
+    "claude-code-preparation/final-launch-binding.json": {
+      "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-guarded-batch-draft/claude-code-preparation/final-launch-binding.json",
+      "sha256": "afc2974bd49a697962a7c6b3984f7e56301121cf94550f47544461dedb28b766",
+      "bytes": 14778
+    }
+  },
+  "ci": {
+    "run": 38807257217,
+    "job": 116671188007,
+    "attempt": 1,
+    "event": "pull_request",
+    "status": "in_progress",
+    "conclusion": null,
+    "jobStatus": "in_progress",
+    "jobConclusion": null,
+    "snapshotStepCount": 26,
+    "snapshotSuccessfulSteps": 18,
+    "snapshotActiveSteps": [
+      "Run pnpm test"
+    ],
+    "rawLog": null,
+    "syntheticCommit": null,
+    "syntheticTreeExpected": "81c6786a3075f1869f54460880cac1234c27fb77",
+    "syntheticOrderedParentsExpected": [
+      "9bf601bfb570adae97ce8cdc99caf2cc7a2b34c1",
+      "9e5f040edab88be364f683098ead72f595f0ab55"
+    ],
+    "suiteTotals": null,
+    "newCallbackOutcome": null
+  },
+  "registration": "preserves one guarded batch winner and rolls back the losing marker through installed HTTP",
+  "localInstalled": {
+    "positiveResponses": 7,
+    "controlResponses": 3,
+    "children": 2,
+    "negativeRawExit": 1,
+    "negativeAdapterExit": 0,
+    "claimEligible": false
+  },
+  "pending": [
+    "terminal CI with actual complete logs and synthetic checkout identity",
+    "final native and actual Claude findings dispositions and root council acceptance",
+    "root immediately-prelanding head/base/main/checks recheck",
+    "root ordinary merge and actual ordered-parent/tree readback"
+  ],
+  "ready": false,
+  "actualMerge": null,
+  "publicQualification": false,
+  "outwardMutations": false
+}

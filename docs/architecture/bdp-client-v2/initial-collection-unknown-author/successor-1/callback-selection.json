@@ -1,0 +1,59 @@
+{
+  "status": "UNEXECUTED_SELECTION",
+  "callbacks": [
+    {
+      "file": "packages/server/src/transaction-read.test.ts",
+      "title": "bounds unrecognized initial collection minima without retaining state or holding the owner",
+      "description": "One new callback: six unprovable calls plus preabort and first-wait abort. Seed one batch of two Beads/two Links; limit1 ensures success would retain continuation."
+    },
+    {
+      "file": "packages/server/src/transaction-http.test.ts",
+      "title": "waits for current Resources and initial collections with unknown minima and preserves residual refusals",
+      "description": "One existing renamed callback: one seed POST, eight timeout GET/HEAD requests, four residual500, two materialized400/413, three missing/hidden404. Total18 HTTP."
+    },
+    {
+      "file": "apps/bdptest/src/transactional-collection-minimum-installed.test.ts",
+      "title": "observes genuine installed initial collection minimums, fixed-budget failures, conditionals and retained rows",
+      "description": "Only first installed callback. Total42 actual exchanges expected:3empty/genesis+1seed+14percollection*2+2filters+2refusals+1anonymous+5retainedtail. One child/store."
+    }
+  ],
+  "directWorkload": {
+    "unprovableRequests": 6,
+    "attemptEntries": 18,
+    "waits": 12,
+    "waitStepsPerRequest": [
+      5,
+      2
+    ],
+    "tickDeltaPerRequest": 7,
+    "preabortAttempts": 0,
+    "preabortWaits": 0,
+    "firstWaitAbortAttempts": 1,
+    "firstWaitAbortWaits": 1,
+    "separateRawOwnerChecksTotal": 13,
+    "expectedTokenAllocations": 0
+  },
+  "httpWorkload": {
+    "requests": 18,
+    "timeoutRequests": 8,
+    "expectedWaitCalls": 8,
+    "budgetMsPerTimeout": 2
+  },
+  "installedWorkload": {
+    "beforeExchanges": 38,
+    "afterExchanges": 42,
+    "addedOpaqueRequests": 4,
+    "recognizedTimeoutRequestsPreserved": 4,
+    "realWaitBudgetMsPerTimeout": 1000,
+    "addedElapsedLowerBoundMs": 1000,
+    "addedElapsedUpperBoundMs": 5000,
+    "exchangesCapUnchanged": 80,
+    "workDeadlineMsUnchanged": 90000,
+    "callbackTimeoutMsUnchanged": 120000,
+    "requestTimeoutMsUnchanged": 5000,
+    "children": 1,
+    "stores": 1,
+    "countOracle": "Existing emitted exchanges/completedResponses report audited externally; no helper/counter mode added."
+  },
+  "testsRun": false
+}

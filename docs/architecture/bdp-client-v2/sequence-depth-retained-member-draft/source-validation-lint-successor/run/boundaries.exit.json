@@ -1,0 +1,95 @@
+{
+  "name": "boundaries",
+  "argv": [
+    "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+    "/Users/dbox/.cache/node/corepack/v1/pnpm/11.20.0/bin/pnpm.cjs",
+    "run",
+    "check:boundaries"
+  ],
+  "guardedArgv": [
+    "/opt/homebrew/opt/python@3.14/bin/python3.14",
+    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/guarded-action.py",
+    "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+    "/Users/dbox/.cache/node/corepack/v1/pnpm/11.20.0/bin/pnpm.cjs",
+    "run",
+    "check:boundaries"
+  ],
+  "cwd": "/Users/dbox/repos/wt/vickie/vickie-sequence-depth-retained",
+  "started": "2026-10-16T04:51:44.469359+00:00",
+  "adjudication": {
+    "kind": "command-only",
+    "testVerdict": "not-applicable"
+  },
+  "elapsedSeconds": 1.3842380421701819,
+  "exit": 0,
+  "supervisorExit": 0,
+  "timeout": false,
+  "forcedCleanup": false,
+  "errors": [],
+  "processGroup": 68130,
+  "remainingBeforeCleanup": [],
+  "remainingAfterCleanup": [],
+  "sampledPids": [
+    68130,
+    68135,
+    68159,
+    68199
+  ],
+  "sampledPidsStillPresent": {},
+  "sampledTempEntries": [
+    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/sequence-depth-retained-member-draft/source-validation-lint-successor/run/boundaries.tmp/node-compile-cache"
+  ],
+  "tempEntriesAfter": [
+    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/sequence-depth-retained-member-draft/source-validation-lint-successor/run/boundaries.tmp/node-compile-cache"
+  ],
+  "remainingTempEntriesForClassification": [
+    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/sequence-depth-retained-member-draft/source-validation-lint-successor/run/boundaries.tmp/node-compile-cache"
+  ],
+  "runtimeDirectoriesStillPresent": [],
+  "unclassifiedTempEntriesStillPresent": [
+    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/sequence-depth-retained-member-draft/source-validation-lint-successor/run/boundaries.tmp/node-compile-cache"
+  ],
+  "sourceUnchanged": true,
+  "sourceSha256After": {
+    "packages/server/src/transaction-batch.ts": "95f3ce3957503cba240f18e911fe3d2c8027b4accbba8f1128ea47e3d2b0c362",
+    "packages/server/src/transaction-http.ts": "0a616e27da60c746be738821008e7dab6511e31325e9442418b4bbece9be40f8",
+    "packages/server/src/transaction-set.test.ts": "a8a7d5b127866c2b1a60012e6c1f864b8e58bd524f6c520604e2b860b58d491e",
+    "packages/server/src/transaction-sequence.test.ts": "687f1a9c10277d178db187b2c8efefe07d099755c473db4c2e7d87e4d7be6a4b",
+    "packages/server/src/transaction-http.test.ts": "5e094d09beaba41dbf5b0f56799f5d9b91d24c38684ef78a47f8a11e0880ad2f",
+    "apps/bdptest/src/transactional-sequence-depth-installed.test.ts": "d451340062915a31f79c1d02371bdbff13fb404967fe563e0484c43f218dbcf9",
+    "docs/design/transaction-implementation-progress.md": "d5c93b26773d8661d91b5d1a4f9950bfdbe6ae6d89fb5d10df3d445073bfd7d1",
+    "packages/server/src/transaction-store.ts": "bc10df9d02316e395b8c4ea7db6134ab2646c8e8abd83ea785b0ea09f2f0c82c",
+    "packages/server/src/transaction-sequence.ts": "019e02f2f392047d568d7464b1c5af0482d6d743ed09a6d0aa4edab151607cbe",
+    "packages/server/src/transaction-service.ts": "8e2a00fba538fc38fd81241301d38b232190f7241fa695e1dcdaf10641e97dc8",
+    "packages/server/src/transaction-set.ts": "03b1ca9427c6963f5b6ce712a7f70540501e081ed635c742015d2bc49cc9524a",
+    "packages/server/src/transaction-dependencies.ts": "ca79b4be097d221560157c5c4eaac4601dab343de54dda1be15d92c44b2b09ba",
+    "packages/server/src/semantic-identity.ts": "ab836972c8380cc21c1cca8e6d431faa743b5c31f4f9c578e15d340abec69224",
+    "packages/server/src/transaction-runtime.ts": "48cb5411407c456d7b3f301a4b67970061be9f51c94201de832ba5deff6ea2d4",
+    "packages/server/src/transaction-runtime-configuration.ts": "57cd5d38c7199011d05589bc2b8ac1a0e2a4a9dc7585d019f9de5801a0a4d808",
+    "apps/bdptest/src/transactional-depth-key-order-installed.test.ts": "48c6a84c84e470c7ce79f4d978bb09e2099daa5df4b4a6ef8629e1b7bf1b1700",
+    "apps/bdptest/test-support/transactional-execution-binding.ts": "cde506c72a8710eafe58522900f6db70ed3701cf333560252dc8e7c5e706cf89",
+    "scripts/transaction-installed-observation.mjs": "6f772f3776d3c3effa788676d853cc2932a6ee59ad63ac3338ad1b487408914b",
+    "schemas/bdp-v0.schema.json": "0baa5d5ef67144f8e6513b4cde31168effc8df6d52ef3141b0f144b87f8dc227",
+    "docs/specs/bdp.md": "63e93be562334c84c1e967da2fce212e8ef515aa3c9448924c5f9a272ea7b80b",
+    "package.json": "f081baa3202b4815663d360d3ad1608206efe1b023086a4c8feff4d7fb97d8d0",
+    "pnpm-lock.yaml": "4150d8821c96dbc2cfec0b2762ff76b58318079f65fa4f5c8858ef2dd61f8d6d",
+    "vitest.config.ts": "a84575ea9ef0b6e75b6484024a627fa89422aea2fdbeb26127e09714dba0641f",
+    "packages/protocol/src/read-update-preflight.ts": "e9cea06515c1b7b5ffbfc275b82e9759e9083daa29c5daaab4485c161970275f",
+    "packages/protocol/src/read-update-values.ts": "d1fdbc660d5e2c009275c152bdcebda46031700920aa03bfea89f39564c89de2",
+    "packages/server/test-support/read-conformance-mock.ts": "dbfb86ac2325c684567ffce40f17105c6b12a63edfa54cc08f0601df8dc613f8",
+    "tsconfig.check.json": "f12922fb94d74d73945063f684b40c585c276fad38d19526ed606ac2d148853f",
+    "tsconfig.base.json": "6c70be275f9f7d5de533cbd3f2454ae7cb84bc765ab84f4f199889580e18e152",
+    "biome.json": "62beced4e0227b97fe9ade1a1a573bf53a2f8916af8da7ce70f94315fece39dc",
+    "packages/conformance/src/http-executor.ts": "770a8405ae1532484b5a2658619c067832644947888f95e0c6575002376f1b5d",
+    "packages/protocol/src/index.ts": "92e547e807ec2d23223c47dbc4e04867d55db89ac9aab5fbd55f33349f92bdc6",
+    "packages/protocol/src/read-values.ts": "6ff2cd2456a5487ded968bac6651164ed4a82ad665b8896986accfd662688482",
+    "packages/protocol/src/schema-formats.ts": "ff5e19649d2d4b375eeebd0232199cd8c203566d4a7a8c04f9f6346bd27979c3"
+  },
+  "samplingSeconds": 0.05,
+  "commandWindowSeconds": 115,
+  "groupHardDeadlineSeconds": 120,
+  "cleanupBound": "TERM at115s, KILL no later than120s; wait/reap after kill adds no product execution allowance",
+  "samplingLimitation": "Short-lived or detached descendants may evade group sampling; helper counts and independent final checks remain separate.",
+  "tempClassification": "Only the selected fixture prefixes under this attempt TMPDIR are owned runtime roots; all other entries are preserved for review, not deleted or called leaks.",
+  "resultLimitation": "Exit0 is command completion, not independent oracle/claim/provenance adjudication."
+}

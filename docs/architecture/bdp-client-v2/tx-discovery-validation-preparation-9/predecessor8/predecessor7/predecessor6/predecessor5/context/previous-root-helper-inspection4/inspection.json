@@ -1,0 +1,32 @@
+{
+  "utc": "2026-10-18T10:03:50.838482+00:00",
+  "preparationIndexSha256": "0b7849160de598a98e2ddb35c3e3c657142e455d3311c18e67fc222f80d03435",
+  "physicalFiles": 687,
+  "implementationSha256": "ef5f53f6d6852a28c46b5ced54294c968624ccc21e04e669586a3c78e77be750",
+  "implementationSHAStringEntries": 676,
+  "exactControlExclusions": [
+    "implementation-hashes.json",
+    "preparation-index.json",
+    "execution-gate.json",
+    "execution-gate.closed.json",
+    "execution-gate.json.successor4.patch",
+    "execution-gate.json.successor4.inverse.patch",
+    "execution-gate.closed.json.successor4.patch",
+    "execution-gate.closed.json.successor4.inverse.patch",
+    "implementation-hashes.json.successor4.patch",
+    "implementation-hashes.json.successor4.inverse.patch",
+    "successor-delta.json"
+  ],
+  "referencePins": 2645,
+  "originPins": 597,
+  "nonliteralOriginRelations": [],
+  "fiveHelperBytesAndASTExact": true,
+  "logicalSchemasSelectionsCommandsBudgetsExactAfterExplicitNamespaceAndSourceLabelReversal": true,
+  "all679ActualSourceBytesExact": true,
+  "sourceBindingSha256": "3de413096b0a8b04db892a0d25209f5d173012d95fa30aabb3dbade768710872",
+  "sourceIdentity": "5964d40af0ced41634e47df86cda7ac01b86768c51970e557b60ffbfc9739907",
+  "freshRunAbsentBothGatesClosed": true,
+  "nativeClosureSha256": "ae65d46fed229b302d943fe92e47b241b2e54128f5fb2c6f4762322542524519",
+  "rootRead": "Full native4 report and previous full helper/audit acceptance; actual gate implementation consumption, exact data/schema/selection/file/reference/source identity checks. Static AST only; no helper import/evaluation.",
+  "inspectionLocatorError": "Initial origin census assumed list; actual mapping was inspected and verified, no source/validation action."
+}

@@ -1,0 +1,1 @@
+Closed DATA plan. Read plan.md and basis.json, then exact selections, report contracts, prospective-stages.json and clock-process-and-evidence-contract.json. No executable helper, review launch or runtime release is supplied. Source/root review and fresh proof are required.

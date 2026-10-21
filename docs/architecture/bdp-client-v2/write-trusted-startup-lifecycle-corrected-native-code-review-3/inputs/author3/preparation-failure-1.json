@@ -1,0 +1,6 @@
+{
+  "stage": "format-only static equivalence check",
+  "exception": "AssertionError",
+  "cause": "Whitespace-only comparison was too strict: formatter also inserted trailing commas in multiline function calls.",
+  "resolution": "Read full format delta; exact source tokens equal after whitespace and trailing-call-comma normalization. Genuine format patch/inverse preserves every byte. No formatter/check retry or postformat source edit."
+}

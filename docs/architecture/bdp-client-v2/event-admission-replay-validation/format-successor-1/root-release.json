@@ -1,0 +1,35 @@
+{
+  "at": "2026-10-17T23:54:11.546141+00:00",
+  "verified": [
+    20,
+    11,
+    679,
+    17,
+    11,
+    8
+  ],
+  "gate": {
+    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/event-admission-replay-validation/format-successor-1/execution-gate.json",
+    "sha256": "0cb0224b89f37fcd7782253a575c1c6dbaf840cbbf7d21825d35f8601ce25c09"
+  },
+  "approvedStages": [
+    "typecheck",
+    "format-check",
+    "lint",
+    "fresh-build",
+    "bind-fresh-build",
+    "focused-source",
+    "review-focused-source",
+    "node-version",
+    "prepare-package-directory",
+    "pack-protocol",
+    "pack-server",
+    "verify-archives",
+    "prepare-consumer",
+    "consumer-install"
+  ],
+  "consumerLockProofAndExternalCallbacksReleased": false,
+  "requiredChecksReleased": false,
+  "stopFirstFailure": true,
+  "noRetries": true
+}

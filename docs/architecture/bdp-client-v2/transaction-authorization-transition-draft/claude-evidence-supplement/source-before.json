@@ -1,0 +1,44 @@
+{
+  "sourceHashes": {
+    "packages/server/src/transaction-authorization.test.ts": "4e2a4fb500e546e3a3d8d671125c37653a4df5bb46bae679f80123cc8c680760",
+    "packages/server/src/transaction-authorization.ts": "c87a7bfa8840aee2f097bf683fe3f3c97fcae80782020c6d5b1e41364d16b6d2",
+    "packages/server/src/transaction-changefeed.test.ts": "ae4b6a0d4ae6e4e74e032074c850e5ced2de14d565078c2de88e2e62fa5e9c81",
+    "packages/server/src/transaction-changefeed.ts": "1e678ecb1b2c3e59023dbb6a2e6516763907babd79f7926ca572a4764e40fc1e",
+    "packages/server/src/transaction-event-sse.test.ts": "de14cbbbe935205c5ec43ef6cf6a055d3f1ca2b9632ee684c4c13fbfe9eed042",
+    "packages/server/src/transaction-events.ts": "6c5ab4482f0b00110a71a96b16d44ca5fe713cb5f397ff78778cc6646f632a3a",
+    "packages/server/src/transaction-http.ts": "c6bac496033781306d1c63e570e1c65b5786d41ebb8dc565c5a8be44e91ccfa9",
+    "packages/server/src/transaction-read.ts": "66e71ff74a8139b12f0c7581c30a6798cc8724bb488cac8517119b9678ace212",
+    "packages/server/src/transaction-runtime-configuration.ts": "57cd5d38c7199011d05589bc2b8ac1a0e2a4a9dc7585d019f9de5801a0a4d808",
+    "packages/server/src/transaction-runtime.test.ts": "4ac87ec1121760db3aff9221c2d291c3dfca45adc065c09eebcd84ed88d882f5",
+    "packages/server/src/transaction-runtime.ts": "48cb5411407c456d7b3f301a4b67970061be9f51c94201de832ba5deff6ea2d4",
+    "packages/server/src/transaction-service.test.ts": "b6ec4b39ade9a204232bcf6ae10855011dacf23086948c9df2a8e04a9d4873e2",
+    "packages/server/src/transaction-service.ts": "8e2a00fba538fc38fd81241301d38b232190f7241fa695e1dcdaf10641e97dc8",
+    "packages/server/src/transaction-snapshot.ts": "d74aad937b0a07ea2878ef2c275cec6dbdb033cf112006e2569d64537520b15c",
+    "packages/server/src/transaction-store.ts": "bc10df9d02316e395b8c4ea7db6134ab2646c8e8abd83ea785b0ea09f2f0c82c"
+  },
+  "dependencyHashes": {
+    "packages/server/src/transaction-authorization.test.ts": "4e2a4fb500e546e3a3d8d671125c37653a4df5bb46bae679f80123cc8c680760",
+    "packages/server/src/transaction-runtime.test.ts": "4ac87ec1121760db3aff9221c2d291c3dfca45adc065c09eebcd84ed88d882f5",
+    "packages/server/src/transaction-authorization.ts": "c87a7bfa8840aee2f097bf683fe3f3c97fcae80782020c6d5b1e41364d16b6d2",
+    "packages/server/src/transaction-store.ts": "bc10df9d02316e395b8c4ea7db6134ab2646c8e8abd83ea785b0ea09f2f0c82c",
+    "packages/server/src/transaction-service.ts": "8e2a00fba538fc38fd81241301d38b232190f7241fa695e1dcdaf10641e97dc8",
+    "packages/server/src/read-http.ts": "31934105eff6fff8ded8ce2ca9e3c19028991ca7c3d5f51b848004177e8c9268",
+    "packages/server/src/transaction-runtime.ts": "48cb5411407c456d7b3f301a4b67970061be9f51c94201de832ba5deff6ea2d4",
+    "packages/server/src/transaction-changefeed.ts": "1e678ecb1b2c3e59023dbb6a2e6516763907babd79f7926ca572a4764e40fc1e",
+    "packages/server/test-support/raw-sse-recorder.ts": "09ff8343ac1a5dbad77eaf24fc2745cc28ea870ada6b05dc4ea1644c0ad5ef81",
+    "schemas/bdp-v0.schema.json": "0baa5d5ef67144f8e6513b4cde31168effc8df6d52ef3141b0f144b87f8dc227"
+  },
+  "inputHashes": {
+    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-authorization-transition-draft/evidence-repair/source-binding.json": "06ef3656296d8288cc5d00be9c988d4ccc7d817a67f2ea6ce6b31c42068ad873",
+    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-authorization-transition-draft/evidence-repair/correction.patch": "36341fc9438db33c0f7a5dc2aee7086e2e14f2226d96833be9f11cb6ebdf46b0",
+    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-authorization-transition-draft/evidence-repair/draft.patch": "3cc3bca567e041278453d475e6a1200cf114c08495c381bacd7905dbddef7872",
+    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-authorization-transition-draft/evidence-repair/measurements.json": "4534fa414799005dfb6f42047ed56c3c1e475bfee5f099b25ddb52164ab12234",
+    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-authorization-transition-draft/evidence-repair/report.md": "1a3685de2b54750784fa1d333b9de62ffb5505ec514d93178da809b8ce0f0f5a",
+    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-authorization-transition-draft/claude-code/evidence/stdout.txt": "166e7ed3fb0972d075eadbba6034e627cd7f00c6cad8c24001adef21e3e1f356",
+    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-authorization-transition-draft/claude-code/evidence/source-dispositions.md": "0c37811016b133f308a346c18d866117637a0d16cfbf230ca216b4d5189b29be",
+    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-authorization-transition-draft/claude-code/production/source-dispositions.md": "9d5dc6c1946838bdace0cea38c6c4903b4e04dd14bd4f747ffbeca44bf1c62b7",
+    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-authorization-transition-draft/claude-evidence-supplement/context-inventory.json": "b2556509d3f696a1dc09aaf3433a9d3c0115552d5fd28f9e088f33428bfb2d6d"
+  },
+  "patchSha256": "3cc3bca567e041278453d475e6a1200cf114c08495c381bacd7905dbddef7872",
+  "promptSha256": "ceabef76ff5016bf2e8b2d9b0c90ba7c35032f51f7ceb47d7df0bec4288cee19"
+}

@@ -1,0 +1,19 @@
+{
+  "accepted": true,
+  "observation": {
+    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/read-update-guarded-overlap-draft/execution-preparation-v3/run/positive-observation.json",
+    "sha256": "b770e1039e59cf59cbaed8ce680a193a7fb99a2841b369be87f349c2de76c5ca"
+  },
+  "actualResults": {
+    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/read-update-guarded-overlap-draft/execution-preparation-v3/run/positive.json",
+    "sha256": "b37a705cc27864b7ad25e38e174ffbe485620d291f7a1624add349de96241589"
+  },
+  "adjudication": {
+    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/read-update-guarded-overlap-draft/execution-preparation-v3/run/positive-review.json",
+    "sha256": "6ee3a0ddd80a9d4ad890429630bc3f769631785b370903dfaaa8823c97ab1dc3"
+  },
+  "rootRead": "Read all10 actual response records,22 bounded milestones,readiness/payload,source attribution and cleanchild exit. Actual5/6=200/409;8/9 repeatcorresponding statuses+bodyfingerprints;7/10 unchangedbody+ETag. Both calls ended and distinctsocketsassigned beforefirstsettled. Fullschema/equality assertions ran in boundtest; storedfingerprints are not reconstructedbody or nonreevaluation proof.",
+  "childPidAbsent": 41096,
+  "storeAbsent": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/read-update-guarded-overlap-draft/execution-preparation-v3/run/positive.tmp/bdp-ru-guarded-overlap-IBInCd",
+  "publicQualification": false
+}

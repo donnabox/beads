@@ -1,0 +1,78 @@
+{
+  "status": "PROPOSED_INPUT_CORRECTION_ONLY_NOT_EXECUTED",
+  "sourceHead": "3df82ac480f50c8f486b4e456336366e7acbdf87",
+  "preservedPlanSha256": "618e69a22bf6f0d5acc01dbbee6001dbd63b17d16fee4529c18e000bfcf47d18",
+  "preservedLedgerSha256": "133d93f01d6fb85bf111b016a49a0467470ce09694b8dff7dd1b40b591f5ce9d",
+  "requestOrdinal": 2,
+  "method": "POST",
+  "url": "https://reference.invalid/acme/operations/update-where",
+  "headersUnchanged": {
+    "Idempotency-Key": "receipt-context-paged",
+    "Content-Type": "application/json",
+    "Accept": "application/json"
+  },
+  "old": {
+    "body": "{\"collection\":\"beads\",\"selector\":\"$[?@.type == \\\"https://reference.invalid/acme/types/task\\\"]\",\"cardinality\":{\"min\":32,\"max\":32},\"propertiesChange\":[{\"op\":\"replace\",\"path\":\"/n\",\"value\":1}]}",
+    "utf8Bytes": 189,
+    "sha256": "843572126ab5973bea97906ad5bf1369c7eb468cebfdea27d36a36abfc3266ef"
+  },
+  "new": {
+    "body": "{\"collection\":\"beads\",\"selector\":\"$[?@.type == \\\"https://reference.invalid/acme/types/task\\\"]\",\"cardinality\":{\"min\":32,\"max\":32},\"change\":[{\"op\":\"replace\",\"path\":\"/n\",\"value\":1}]}",
+    "utf8Bytes": 179,
+    "sha256": "ba388a9fdbed4eae2e5221a425aa476720d2307d22553870faccf5403648cb2d"
+  },
+  "byteDelta": -10,
+  "aggregate": {
+    "oldInstalledRequestBodyBytes": 4009,
+    "newInstalledRequestBodyBytes": 3999,
+    "maximumRequestBodyBytes": 3728,
+    "artifactUtf8BytesUnchanged": 328,
+    "installedHttpUnchanged": 14,
+    "installedChildrenUnchanged": 1,
+    "combinedHttpExpectedUnchanged": 95,
+    "combinedHttpMaximumUnchanged": 95
+  },
+  "staticShapeAudit": {
+    "method": "Text inspection of actual parser/schema and independent JSON/byte arithmetic only; no product imports, validator execution, tests or services.",
+    "closedSingletonFields": "collection, selector, cardinality, change; no operation discriminator or body idempotency key",
+    "selector": "$[?@.type == \"https://reference.invalid/acme/types/task\"]",
+    "selectorUtf8Bytes": 57,
+    "cardinality": "min=max=32 nonnegative integer literals; seed has exactly32 distinct Beads of the selected Type",
+    "change": "replace /n with exact admissible integer1; every seeded Resource has n=0, and the authored properties schema permits number n and requires it",
+    "expectedExpansion": "matched count32 plus32 updated results =33; match maximum32 is not exceeded; existing receipt paging can yield genuine next. Prospective source-derived outcome, not observed execution.",
+    "oldFailure": "propertiesChange is outside the closed set fields and required change is absent; prepareSetShape rejects before set execution."
+  },
+  "sourceCitations": [
+    {
+      "path": "packages/server/src/transaction-batch.ts",
+      "lines": "187\u2013210",
+      "fact": "singleton route adds updateWhere discriminator internally; body discriminator rejected; mixed preparation owns shape validation"
+    },
+    {
+      "path": "packages/server/src/transaction-set.ts",
+      "lines": "73\u2013129",
+      "fact": "closed fields require change; collection enum/string selector/nonnegative cardinality; change mapped to propertiesChange only for shared syntax validation"
+    },
+    {
+      "path": "schemas/bdp-v0.schema.json",
+      "lines": "3238\u20133286",
+      "fact": "updateWhereMembers requires change referencing propertyChange; singleton unevaluatedProperties false"
+    },
+    {
+      "path": "packages/server/src/transaction-set.ts",
+      "lines": "16,147\u2013171",
+      "fact": "complete grammar then existing4096byte/32depth/256node capacity; simple type-equality selector unchanged"
+    },
+    {
+      "path": "packages/server/src/transaction-batch.ts",
+      "lines": "833\u2013906",
+      "fact": "exact numeric admission, actual visibility-filtered selection and min/max checks, matched summary then per-Resource change; maximum matchedResources32 at65"
+    },
+    {
+      "path": "packages/protocol/src/read-update-values.test.ts",
+      "lines": "56",
+      "fact": "existing identical replace /n value1 syntax specimen; read only, not executed"
+    }
+  ],
+  "scope": "Only this correction proposal written. Frozen plan/ledger, source and all original evidence unchanged. Root will combine council dispositions into a successor."
+}

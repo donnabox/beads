@@ -1,0 +1,7 @@
+{
+  "time": "2026-10-17T01:21:16.700551+00:00",
+  "nativeReviewSha256": "89df19d3ed51f330de465e7c964e4fcec65a8994fd5b4836b2b9d5c7d72310ef",
+  "finding": "P2 accepted: selected tuple capture precedes original waiter preflight.",
+  "correction": "Plan amendment under native review: capture once on first waiter attempt, then retain frozen tuple across retries. No copied abort/policy/clock checks. Add bounded discriminating direct-service checks.",
+  "release": "Correction plan preparation only; original source and CLOSED Claude code packet preserved. No source edits/execution yet."
+}

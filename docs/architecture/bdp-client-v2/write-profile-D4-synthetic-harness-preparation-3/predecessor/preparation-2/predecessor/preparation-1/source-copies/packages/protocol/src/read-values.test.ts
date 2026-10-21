@@ -1,0 +1,824 @@
+import { describe, expect, it } from "vitest";
+
+import {
+  parseBeadCollection,
+  parseBeadRecord,
+  parseHistoricalBeadRecord,
+  parseHistoricalLinkRecord,
+  parseReadUpdateMutationResult,
+  parseCanonicalHttpUrl,
+  parseCanonicalScope,
+  parseLinkCollection,
+  parseLinkRecord,
+  parsePropertiesRecord,
+  parseReadDiscovery,
+  parseReadProblem,
+  parseTypeDescriptor,
+  parseTypeSummary,
+  resolveCanonicalLocalResourceId,
+  type AbsoluteHttpUrl,
+  type Reference,
+  type ExternalEndpointPolicy,
+  type TypeDescriptor,
+  type BeadTypeDescriptor,
+  ProtocolArtifactValidationError,
+} from "./index.js";
+
+// Compile-time contract: a Reference is a URI string, or a Pinned
+// Reference with exactly uri and revision — for either reference class.
+const _plainReference: Reference = "https://scope.example/acme/beads/demo-a";
+const _externalPolicies: readonly ExternalEndpointPolicy[] = ["none", "opaque", "bead"];
+// @ts-expect-error — the policy union is exactly none | opaque | bead
+const _invalidPolicy: ExternalEndpointPolicy = "always";
+void _externalPolicies;
+void _invalidPolicy;
+const _pinnedExternal: Reference = { uri: "urn:external:cited", revision: "cited-1" };
+const _pinnedLocal: Reference = {
+  uri: "https://scope.example/acme/beads/demo-a",
+  revision: "pin-a-r1",
+};
+const _pinRejectsExtras: Reference = {
+  uri: "urn:external:cited",
+  revision: "cited-1",
+  // @ts-expect-error — a Pinned Reference carries exactly uri and revision
+  type: "https://work.example/types/task",
+};
+void _plainReference;
+void _pinnedExternal;
+void _pinnedLocal;
+void _pinRejectsExtras;
+
+const scope = "https://scope.example/acme/" as AbsoluteHttpUrl;
+
+describe("Read envelope parsing", () => {
+  it("rejects erasure pointers while preserving ordinary problem extensions", () => {
+    const problem = {
+      type: "https://github.com/gastownhall/bdp/problems/gone",
+      code: "resource-erased",
+      status: 410,
+      retry: "never",
+      traceId: "request-7",
+    };
+    expect(parseReadProblem(problem)).toEqual(problem);
+    for (const pointer of ["https://archive.example/erased", { uri: "urn:erased" }, null]) {
+      expect(() => parseReadProblem({ ...problem, pointer })).toThrow();
+    }
+  });
+
+  it("freezes parsed pins so a mutated input cannot reach the snapshot", () => {
+    const source = { uri: "urn:external:pin-witness", revision: "pin-1" };
+    const record = {
+      id: `${scope}links/pinned`,
+      type: "https://work.example/types/blocks",
+      revision: "1",
+      source,
+      target: { uri: `${scope}beads/demo-a`, revision: "pin-a-r1" },
+      properties: {},
+      metadata: {},
+    };
+    const parsed = parseLinkRecord(record);
+    source.revision = "tampered";
+    expect(parsed.source).toEqual({ uri: "urn:external:pin-witness", revision: "pin-1" });
+    expect(Object.isFrozen(parsed.source)).toBe(true);
+    expect(Object.isFrozen(parsed.target)).toBe(true);
+  });
+
+  it("keeps synthesized legacy metadata immutable in direct and historical records and results", () => {
+    const bead = {
+      id: `${scope}beads/a`,
+      type: "https://work.example/types/task",
+      revision: "r1",
+      properties: {},
+    };
+    const link = {
+      id: `${scope}links/a`,
+      type: "https://work.example/types/blocks",
+      revision: "r1",
+      source: bead.id,
+      target: "urn:external:b",
+      properties: {},
+    };
+    const records = [
+      parseBeadRecord(bead),
+      parseLinkRecord(link),
+      parseHistoricalBeadRecord(bead),
+      parseHistoricalLinkRecord(link),
+      parseReadUpdateMutationResult({ outcome: "updated", resource: bead }).resource,
+      parseReadUpdateMutationResult({ outcome: "updated", resource: link }).resource,
+    ];
+    for (const record of records) {
+      expect(record).toBeDefined();
+      expect(Object.isFrozen(record?.metadata)).toBe(true);
+      expect(Reflect.set(record?.metadata as object, "tampered", true)).toBe(false);
+      expect(record?.metadata).toEqual({});
+      expect(record?.revision).toBe("r1");
+    }
+    expect(bead).not.toHaveProperty("metadata");
+    expect(link).not.toHaveProperty("metadata");
+  });
+
+  it("snapshots and closes Read discovery", () => {
+    const source = {
+      bdpVersion: "0",
+      profile: "read",
+      scope,
+      beads: `${scope}beads/`,
+      links: `${scope}links/`,
+      types: `${scope}types/`,
+      limits: { page: { defaultItems: 10, maximumItems: 100 } },
+    };
+    const parsed = parseReadDiscovery(source);
+    source.beads = "https://attacker.example/";
+
+    expect(parsed.beads).toBe(`${scope}beads/`);
+    expect(Object.isFrozen(parsed)).toBe(true);
+    expect(Object.isFrozen(parsed.limits?.page)).toBe(true);
+    expect(() => parseReadDiscovery({ ...source, profile: "transactional" })).toThrow();
+    expect(() => parseReadDiscovery({ ...source, extra: true })).toThrow();
+    expect(() =>
+      parseReadDiscovery({ ...source, limits: { page: { defaultItems: 0 } } }),
+    ).toThrow();
+  });
+
+  it("enforces the closed Problem mapping", () => {
+    const problem = {
+      type: "https://github.com/gastownhall/bdp/problems/not-found",
+      code: "resource-not-found",
+      retry: "after-state-change",
+      status: 404,
+    };
+    expect(parseReadProblem(problem)).toEqual(problem);
+    expect(() => parseReadProblem({ ...problem, type: "https://evil.example/problem" })).toThrow();
+    expect(() => parseReadProblem({ ...problem, retry: "never" })).toThrow();
+    expect(() => parseReadProblem({ ...problem, status: 200 })).toThrow();
+  });
+
+  it("uses the canonical URL rules for Scope and Resource paths", () => {
+    expect(parseCanonicalScope(scope)).toBe(scope);
+    expect(parseCanonicalHttpUrl(`${scope}beads/a:b`)).toBe(`${scope}beads/a:b`);
+    expect(parseCanonicalHttpUrl("https://types.example/descriptors/a%2Fb")).toBe(
+      "https://types.example/descriptors/a%2Fb",
+    );
+    expect(parseCanonicalHttpUrl("https://types.example/%E2%82%AC?cursor=a%2Fb")).toBe(
+      "https://types.example/%E2%82%AC?cursor=a%2Fb",
+    );
+    expect(parseCanonicalHttpUrl("https://types.example/types/?cursor=%74oken%2fpart")).toBe(
+      "https://types.example/types/?cursor=%74oken%2fpart",
+    );
+    expect(() => parseCanonicalHttpUrl("https://types.example/types/%74ask")).toThrow(
+      "must not percent-encode an unreserved character",
+    );
+    expect(() => parseCanonicalHttpUrl("https://types.example/types/a%2fb")).toThrow(
+      "must use uppercase complete percent escapes",
+    );
+    expect(() => parseCanonicalHttpUrl("https://types.example/types/%ZZ")).toThrow(
+      "must use complete percent escapes",
+    );
+    expect(() => parseCanonicalHttpUrl("https://types.example/types/?cursor=%ZZ")).toThrow(
+      "must use complete percent escapes",
+    );
+    expect(() => resolveCanonicalLocalResourceId(scope, "bead", "a%3Ab")).toThrow();
+    expect(() => parseCanonicalScope("https://scope.example/acme/?view=other")).toThrow();
+  });
+
+  it("rejects present-but-empty fragment and Scope query delimiters", () => {
+    for (const suffix of ["#", "#fragment"]) {
+      expect(() => parseCanonicalHttpUrl(`${scope}beads/a${suffix}`)).toThrow();
+      expect(() => parseCanonicalScope(`${scope}${suffix}`)).toThrow();
+    }
+    expect(() => parseCanonicalScope(`${scope}?`)).toThrow();
+    expect(parseCanonicalScope(scope)).toBe(scope);
+    expect(parseCanonicalHttpUrl(`${scope}beads/a%23b?cursor=%23`)).toBe(
+      `${scope}beads/a%23b?cursor=%23`,
+    );
+  });
+
+  it("closes and freezes Resource records and collection pages", () => {
+    const bead = {
+      id: `${scope}beads/a`,
+      type: "https://work.example/types/task",
+      revision: "1",
+      properties: { title: "A" },
+      metadata: {},
+    };
+    const link = {
+      id: `${scope}links/blocks-a-b`,
+      type: "https://work.example/types/blocks",
+      revision: "1",
+      source: `${scope}beads/a`,
+      target: { uri: "urn:external:b", revision: "cited-1" },
+      properties: {},
+      metadata: {},
+    };
+    const parsed = parseBeadCollection({ items: [bead], next: null });
+
+    expect(parseBeadRecord(bead)).toEqual({ ...bead, metadata: {} });
+    expect(parseLinkRecord(link)).toEqual({ ...link, metadata: {} });
+    const { metadata: _beadMetadata, ...beadWithoutMetadata } = bead;
+    const { metadata: _linkMetadata, ...linkWithoutMetadata } = link;
+    expect(parseBeadRecord(beadWithoutMetadata)).toEqual(bead);
+    expect(parseLinkRecord(linkWithoutMetadata)).toEqual(link);
+    expect(parseBeadCollection({ items: [beadWithoutMetadata], next: null }).items[0]).toEqual(
+      bead,
+    );
+    expect(parseLinkCollection({ items: [linkWithoutMetadata], next: null }).items[0]).toEqual(
+      link,
+    );
+    expect(
+      parseBeadRecord({
+        ...beadWithoutMetadata,
+        ownedLinks: { [link.type]: [linkWithoutMetadata] },
+      }).ownedLinks?.[link.type]?.[0],
+    ).toEqual(link);
+    expect(beadWithoutMetadata).not.toHaveProperty("metadata");
+    expect(linkWithoutMetadata).not.toHaveProperty("metadata");
+    expect(() => parseBeadRecord({ ...beadWithoutMetadata, metadata: null })).toThrow();
+    expect(() => parseLinkRecord({ ...linkWithoutMetadata, metadata: [] })).toThrow();
+    expect(Object.isFrozen(parsed.items[0]?.properties)).toBe(true);
+    expect(() => parseBeadRecord({ ...bead, revision: "" })).toThrow();
+    expect(() => parseBeadRecord({ ...bead, extra: true })).toThrow();
+    expect(() =>
+      parseLinkRecord({
+        ...link,
+        target: { uri: "urn:external:b" },
+      }),
+    ).toThrow();
+    expect(() =>
+      parseLinkRecord({
+        ...link,
+        source: { uri: `${scope}beads/a`, revision: "cited-1", extra: true },
+      }),
+    ).toThrow();
+  });
+});
+
+describe("Resource properties parsing", () => {
+  it("returns an unaliased deeply frozen JSON snapshot", () => {
+    const source = {
+      title: "Snapshot",
+      metadata: { priority: 1, labels: ["reviewed"] },
+    };
+
+    const parsed = parsePropertiesRecord(source, "fixture.properties");
+    source.title = "mutated";
+    source.metadata.priority = 2;
+    source.metadata.labels.push("late");
+
+    expect(parsed).toEqual({
+      title: "Snapshot",
+      metadata: { priority: 1, labels: ["reviewed"] },
+    });
+    expect(Object.isFrozen(parsed)).toBe(true);
+    expect(Object.isFrozen(parsed.metadata)).toBe(true);
+    expect(
+      Object.isFrozen((parsed.metadata as { readonly labels: readonly string[] }).labels),
+    ).toBe(true);
+  });
+
+  it.each(["\ud800", "\udc00", "a\ud800b", "\udc00\ud800", "\ud800\ud800"])(
+    "refuses unpaired surrogates %j in nested values, arrays, member names and revisions",
+    (invalid) => {
+      for (const properties of [
+        { nested: { value: invalid } },
+        { nested: [invalid] },
+        { nested: { [invalid]: "valid" } },
+        { [invalid]: "valid" },
+      ]) {
+        expect(() => parsePropertiesRecord(properties)).toThrow(ProtocolArtifactValidationError);
+      }
+      expect(() =>
+        parseBeadRecord({
+          id: `${scope}beads/a`,
+          type: "https://work.example/types/task",
+          revision: invalid,
+          properties: {},
+        }),
+      ).toThrow(ProtocolArtifactValidationError);
+    },
+  );
+
+  it("checks decoded JSON strings and names while preserving valid scalar pairs", () => {
+    for (const json of [String.raw`{"value":"\ud800"}`, String.raw`{"\udc00":0}`]) {
+      expect(() => parsePropertiesRecord(JSON.parse(json))).toThrow(
+        ProtocolArtifactValidationError,
+      );
+    }
+    const properties = JSON.parse(
+      String.raw`{"\ud83d\ude00":{"values":["a\ud83d\ude00z","\u0000","é",""]}}`,
+    );
+    expect(parsePropertiesRecord(properties)).toEqual(properties);
+    expect(
+      parseBeadRecord({
+        id: `${scope}beads/a`,
+        type: "https://work.example/types/task",
+        revision: "a😀z",
+        properties,
+        metadata: {},
+      }).revision,
+    ).toBe("a😀z");
+  });
+
+  it("captures a string accessor once and refuses invalid keys before reading their values", () => {
+    let reads = 0;
+    const source = {
+      get value() {
+        reads += 1;
+        return reads === 1 ? "😀" : "\ud800";
+      },
+    };
+    expect(parsePropertiesRecord(source)).toEqual({ value: "😀" });
+    expect(reads).toBe(1);
+    const invalid = {
+      get "\ud800"() {
+        reads += 1;
+        return "valid";
+      },
+    };
+    expect(() => parsePropertiesRecord(invalid)).toThrow(ProtocolArtifactValidationError);
+    expect(reads).toBe(1);
+  });
+
+  it("rejects cycles, non-JSON values and non-finite numbers", () => {
+    const cyclic: Record<string, unknown> = {};
+    cyclic.self = cyclic;
+
+    expect(() => parsePropertiesRecord(cyclic)).toThrow("must not contain a cycle");
+    expect(() => parsePropertiesRecord({ value: undefined })).toThrow(
+      "must contain only JSON values",
+    );
+    expect(() => parsePropertiesRecord({ value: Number.NaN })).toThrow(
+      "must contain a finite JSON number",
+    );
+  });
+
+  it("keeps admitted deep and wide Resource properties readable without hidden wire limits", () => {
+    const depth = 20_000;
+    const raw = `${"[1,".repeat(depth)}0${"]".repeat(depth)}`;
+    const deep: unknown = JSON.parse(raw);
+    const parsed = parsePropertiesRecord({ value: deep });
+    let current = parsed.value;
+    for (let i = 0; i < depth; i++) {
+      if (!Array.isArray(current)) throw new Error(`missing level ${i}`);
+      expect(Object.isFrozen(current)).toBe(true);
+      expect(current[0]).toBe(1);
+      current = current[1];
+    }
+    expect(current).toBe(0);
+    const wide = Array.from({ length: 101 }, () => Array(1_001).fill(0));
+    expect(parsePropertiesRecord({ values: wide }).values).toEqual(wide);
+    const entries = Array.from({ length: 10_001 }, () => 0);
+    expect(parsePropertiesRecord({ values: entries }).values).toEqual(entries);
+  });
+
+  it("retains closed Resource schema checks and rejects invalid Unicode at arbitrary property depth", () => {
+    const bead = {
+      id: `${scope}beads/deep`,
+      type: "https://work.example/types/task",
+      revision: "r1",
+      properties: { deep: JSON.parse(`${"[".repeat(256)}1${"]".repeat(256)}`) as unknown },
+      metadata: {},
+    };
+    expect(parseBeadRecord(bead).revision).toBe("r1");
+    expect(() => parseBeadRecord({ ...bead, extra: true })).toThrow("additional properties");
+    expect(() => parseBeadRecord({ ...bead, properties: { deep: { bad: "\ud800" } } })).toThrow(
+      "unpaired surrogate",
+    );
+  });
+});
+
+describe("canonical local Resource IDs", () => {
+  it("accepts nested canonical Bead, Link, and Type paths", () => {
+    expect(resolveCanonicalLocalResourceId(scope, "bead", "beads/projects/alpha/task-42")).toBe(
+      `${scope}beads/projects/alpha/task-42`,
+    );
+    expect(resolveCanonicalLocalResourceId(scope, "link", "links/blocks/%E2%82%AC")).toBe(
+      `${scope}links/blocks/%E2%82%AC`,
+    );
+    expect(resolveCanonicalLocalResourceId(scope, "type", "types/domain/%E2%82%AC")).toBe(
+      `${scope}types/domain/%E2%82%AC`,
+    );
+  });
+
+  it.each([
+    ["bead", "links/x"],
+    ["link", "beads/x"],
+    ["type", "beads/x"],
+    ["type", "types/"],
+    ["type", "types/%61"],
+    ["type", "types/a%2Fb"],
+    ["bead", "beads/"],
+    ["bead", "beads//x"],
+    ["bead", "beads/."],
+    ["bead", "beads/.."],
+    ["bead", "beads/%2E"],
+    ["bead", "beads/%2E%2E"],
+    ["bead", "beads/a\\b"],
+    ["bead", "beads/a%5Cb"],
+    ["bead", "beads/a%2Fb"],
+    ["bead", "beads/a?view=1"],
+    ["bead", "beads/a#fragment"],
+    ["bead", "beads/a\u0001b"],
+    ["bead", "beads/%41"],
+    ["bead", "beads/%e2%82%ac"],
+    ["bead", "beads/%"],
+    ["bead", "beads/€"],
+  ] as const)("rejects a noncanonical %s ID %s", (resource, localId) => {
+    expect(() => resolveCanonicalLocalResourceId(scope, resource, localId)).toThrow();
+  });
+});
+
+describe("Type artifact parsing", () => {
+  it("validates discovery multiplicity Type IDs as descriptor identities", () => {
+    const discovery = {
+      bdpVersion: "0",
+      profile: "read",
+      scope,
+      beads: `${scope}beads/`,
+      links: `${scope}links/`,
+      types: `${scope}types/`,
+      maximumEndpointMultiplicity: [
+        { linkConformsTo: "https://work.example/types/blocks", endpoint: "source", max: 1 },
+      ],
+    };
+
+    expect(parseReadDiscovery(discovery)).toEqual(discovery);
+    expect(() =>
+      parseReadDiscovery({
+        ...discovery,
+        maximumEndpointMultiplicity: [
+          {
+            linkConformsTo: "https://user:pw@work.example/types/blocks#fragment",
+            endpoint: "source",
+            max: 1,
+          },
+        ],
+      }),
+    ).toThrow("canonical credential-free HTTP(S) URL");
+  });
+
+  it("keeps the static Type Descriptor contract discriminated by resource kind", () => {
+    const bead = {
+      id: "https://work.example/types/task",
+      name: "Task",
+      describes: "bead",
+      conformsTo: [],
+    } as const satisfies TypeDescriptor;
+    const link = {
+      id: "https://work.example/types/blocks",
+      name: "Blocks",
+      describes: "link",
+      conformsTo: [],
+      source: { conformsTo: [] },
+      target: { conformsTo: [] },
+    } as const satisfies TypeDescriptor;
+    expect([bead.describes, link.describes]).toEqual(["bead", "link"]);
+
+    const wildcardBead: BeadTypeDescriptor = {
+      ...bead,
+      ownsOutgoing: {
+        "*": { max: 3 },
+        "https://work.example/types/cites": { max: 2, label: "cites" },
+      },
+    };
+    const labeledWildcardBead: BeadTypeDescriptor = {
+      ...bead,
+      ownsOutgoing: {
+        // @ts-expect-error The wildcard declaration cannot carry a label.
+        "*": { max: 3, label: "everything" },
+      },
+    };
+    expect(wildcardBead.ownsOutgoing?.["*"]).toEqual({ max: 3 });
+    expect(labeledWildcardBead.describes).toBe("bead");
+
+    // @ts-expect-error Link descriptors require both endpoint constraints.
+    const invalidLink: TypeDescriptor = {
+      id: "https://work.example/types/blocks",
+      name: "Blocks",
+      describes: "link",
+      conformsTo: [],
+    };
+    // @ts-expect-error Bead descriptors cannot carry Link endpoint constraints.
+    const invalidBead: TypeDescriptor = {
+      ...bead,
+      source: { conformsTo: [] },
+      target: { conformsTo: [] },
+    };
+    expect([invalidLink.describes, invalidBead.describes]).toEqual(["link", "bead"]);
+  });
+
+  it("parses wildcard ownership and enforces the cross-entry bound beyond schema validation", () => {
+    const type = {
+      id: "https://work.example/types/memory",
+      name: "Memory",
+      describes: "bead",
+      conformsTo: [],
+    } as const;
+    const cites = "https://work.example/types/cites";
+    const parse = (ownsOutgoing: unknown) => parseTypeDescriptor({ ...type, ownsOutgoing });
+    for (const ownsOutgoing of [
+      { "*": { max: 3 } },
+      { "*": { max: 3 }, [cites]: { max: 3, label: "cites" } },
+      { [cites]: { max: 2, label: "cites" }, "*": { max: 3 } },
+    ]) {
+      const parsed = parse(ownsOutgoing);
+      expect(parsed).toEqual({ ...type, ownsOutgoing });
+      if (parsed.describes !== "bead") throw new Error("expected Bead Type");
+      expect(Object.isFrozen(parsed.ownsOutgoing)).toBe(true);
+    }
+    expect(() => parse({ "*": { max: 3 }, [cites]: { max: 4 } })).toThrow(
+      "exceeds the wildcard max",
+    );
+    expect(() => parse({ "*": { max: 3, label: "everything" } })).toThrow(
+      ProtocolArtifactValidationError,
+    );
+    expect(() => parse({ "*": { max: 0 } })).toThrow(ProtocolArtifactValidationError);
+    expect(() => parse({ "*": { max: 1.5 } })).toThrow(ProtocolArtifactValidationError);
+    expect(() =>
+      parse({ "*": { max: 3 }, "https://user:pw@work.example/types/cites": { max: 1 } }),
+    ).toThrow(ProtocolArtifactValidationError);
+    expect(() => parse({ "*": { max: 3 }, "not-a-type-url": { max: 1 } })).toThrow(
+      ProtocolArtifactValidationError,
+    );
+    expect(() =>
+      parseTypeDescriptor({
+        ...type,
+        describes: "link",
+        source: { conformsTo: [] },
+        target: { conformsTo: [] },
+        ownsOutgoing: { "*": { max: 3 } },
+      }),
+    ).toThrow(ProtocolArtifactValidationError);
+    expect(() =>
+      parseBeadRecord({
+        id: `${scope}beads/a`,
+        type: type.id,
+        revision: "1",
+        properties: {},
+        ownedLinks: { "*": [] },
+      }),
+    ).toThrow(ProtocolArtifactValidationError);
+  });
+
+  it("enforces owned-declaration uniqueness and canonical Type URLs", () => {
+    const descriptor = {
+      id: "https://work.example/types/decision",
+      name: "Decision",
+      describes: "bead",
+      conformsTo: [],
+      ownsOutgoing: { "https://work.example/types/cites": { label: "cites", max: 8 } },
+    };
+    expect(parseTypeDescriptor(descriptor)).toEqual(descriptor);
+    expect(() =>
+      parseTypeDescriptor({
+        ...descriptor,
+        ownsOutgoing: { "https://user:pw@work.example/types/cites": { max: 8 } },
+      }),
+    ).toThrow();
+    const record = {
+      id: `${scope}beads/demo-f`,
+      type: "https://work.example/types/decision",
+      revision: "1",
+      properties: {},
+      metadata: {},
+      ownedLinks: { "https://user:pw@work.example/types/cites": [] },
+    };
+    expect(() => parseBeadRecord(record)).toThrow();
+    const ownedLink = {
+      id: `${scope}links/cite-1`,
+      type: "https://work.example/types/cites",
+      revision: "1",
+      source: `${scope}beads/demo-f`,
+      target: `${scope}beads/demo-a`,
+      properties: {},
+      metadata: {},
+    };
+    expect(
+      parseBeadRecord({
+        ...record,
+        ownedLinks: { "https://work.example/types/cites": [ownedLink] },
+      }).ownedLinks,
+    ).toEqual({ "https://work.example/types/cites": [{ ...ownedLink, metadata: {} }] });
+    expect(() =>
+      parseBeadRecord({
+        ...record,
+        ownedLinks: { "https://work.example/types/cites": [{ ...ownedLink, id: "not-a-url" }] },
+      }),
+    ).toThrow();
+    // Contextual laws: type equals the entry key, source equals the
+    // containing Bead, ids ascend in code-unit order.
+    expect(() =>
+      parseBeadRecord({
+        ...record,
+        ownedLinks: {
+          "https://work.example/types/cites": [
+            { ...ownedLink, type: "https://work.example/types/blocks" },
+          ],
+        },
+      }),
+    ).toThrow("entry's Link Type key");
+    expect(() =>
+      parseBeadRecord({
+        ...record,
+        ownedLinks: {
+          "https://work.example/types/cites": [{ ...ownedLink, source: `${scope}beads/other` }],
+        },
+      }),
+    ).toThrow("containing Bead");
+    expect(() =>
+      parseBeadRecord({
+        ...record,
+        ownedLinks: {
+          "https://work.example/types/cites": [
+            { ...ownedLink, id: `${scope}links/z-cite` },
+            { ...ownedLink, id: `${scope}links/a-cite` },
+          ],
+        },
+      }),
+    ).toThrow("ascend in code-unit order");
+    expect(() =>
+      parseBeadRecord({
+        ...record,
+        ownedLinks: { "https://work.example/types/cites": [ownedLink, ownedLink] },
+      }),
+    ).toThrow("ascend in code-unit order");
+  });
+
+  it("round-trips endpoint-constraint external policies and rejects unknown tokens", () => {
+    const descriptor = {
+      id: "https://work.example/types/blocks",
+      name: "Blocks",
+      describes: "link",
+      conformsTo: [],
+      source: { conformsTo: [], external: "none" },
+      target: { conformsTo: [], external: "bead" },
+    };
+    expect(parseTypeDescriptor(descriptor)).toEqual(descriptor);
+    expect(
+      parseTypeDescriptor({ ...descriptor, target: { conformsTo: [], external: "opaque" } }),
+    ).toEqual({ ...descriptor, target: { conformsTo: [], external: "opaque" } });
+    expect(() =>
+      parseTypeDescriptor({ ...descriptor, source: { conformsTo: [], external: "always" } }),
+    ).toThrow();
+  });
+
+  it("preserves every optional member of a closed Link Type Descriptor", () => {
+    const descriptor = {
+      id: "https://work.example/types/blocks",
+      name: "Blocks",
+      description: "A blocking relationship",
+      describes: "link",
+      conformsTo: ["https://work.example/types/dependency"],
+      propertiesSchema: "https://work.example/schemas/blocks.json",
+      source: { conformsTo: ["https://work.example/types/work-item"] },
+      target: { conformsTo: [] },
+    } as const;
+
+    expect(parseTypeDescriptor(descriptor)).toEqual(descriptor);
+  });
+
+  it("validates and returns one immutable snapshot of accessor-bearing inputs", () => {
+    let summaryNameReads = 0;
+    const summary = {
+      id: "https://work.example/types/task",
+      get name(): unknown {
+        summaryNameReads += 1;
+        return summaryNameReads === 1 ? "Task" : 42;
+      },
+      describes: "bead",
+    };
+    const parsedSummary = parseTypeSummary(summary);
+    expect(parsedSummary).toEqual({
+      id: "https://work.example/types/task",
+      name: "Task",
+      describes: "bead",
+    });
+    expect(summaryNameReads).toBe(1);
+    expect(Object.isFrozen(parsedSummary)).toBe(true);
+
+    let descriptorNameReads = 0;
+    const descriptor = {
+      id: "https://work.example/types/blocks",
+      get name(): unknown {
+        descriptorNameReads += 1;
+        return descriptorNameReads === 1 ? "Blocks" : 42;
+      },
+      describes: "link",
+      conformsTo: ["https://work.example/types/dependency"],
+      source: { conformsTo: ["https://work.example/types/work-item"] },
+      target: { conformsTo: [] },
+    };
+    const parsedDescriptor = parseTypeDescriptor(descriptor);
+    expect(parsedDescriptor.name).toBe("Blocks");
+    expect(descriptorNameReads).toBe(1);
+    expect(Object.isFrozen(parsedDescriptor)).toBe(true);
+    expect(Object.isFrozen(parsedDescriptor.conformsTo)).toBe(true);
+    if (parsedDescriptor.describes !== "link") throw new Error("expected Link descriptor");
+    expect(Object.isFrozen(parsedDescriptor.source)).toBe(true);
+  });
+
+  it("captures array length once before copying and schema validation", () => {
+    let lengthReads = 0;
+    const conformsTo = new Proxy(["https://work.example/types/base"], {
+      get(target, property, receiver) {
+        if (property === "length") {
+          lengthReads += 1;
+          return lengthReads === 1 ? 1 : 10_001;
+        }
+        return Reflect.get(target, property, receiver);
+      },
+    });
+
+    const parsed = parseTypeDescriptor({
+      id: "https://work.example/types/task",
+      name: "Task",
+      describes: "bead",
+      conformsTo,
+    });
+    expect(parsed.conformsTo).toEqual(["https://work.example/types/base"]);
+    expect(lengthReads).toBe(1);
+    expect(Object.isFrozen(parsed.conformsTo)).toBe(true);
+  });
+
+  it("closes summaries, descriptors, and endpoint constraints", () => {
+    expect(() =>
+      parseTypeSummary({
+        id: "https://work.example/types/task",
+        name: "Task",
+        describes: "bead",
+        extra: true,
+      }),
+    ).toThrow("additional properties");
+    expect(() =>
+      parseTypeDescriptor({
+        id: "https://work.example/types/task",
+        name: "Task",
+        describes: "bead",
+        conformsTo: [],
+        extra: true,
+      }),
+    ).toThrow("additional properties");
+    expect(() =>
+      parseTypeDescriptor({
+        id: "https://work.example/types/blocks",
+        name: "Blocks",
+        describes: "link",
+        conformsTo: [],
+        source: { conformsTo: [], extra: true },
+        target: { conformsTo: [] },
+      }),
+    ).toThrow("additional properties");
+  });
+
+  it("requires both Link endpoint constraints and forbids them on Bead descriptors", () => {
+    expect(() =>
+      parseTypeDescriptor({
+        id: "https://work.example/types/blocks",
+        name: "Blocks",
+        describes: "link",
+        conformsTo: [],
+        source: { conformsTo: [] },
+      }),
+    ).toThrow();
+    expect(() =>
+      parseTypeDescriptor({
+        id: "https://work.example/types/task",
+        name: "Task",
+        describes: "bead",
+        conformsTo: [],
+        source: { conformsTo: [] },
+      }),
+    ).toThrow();
+  });
+
+  it("requires unique canonical HTTP(S) Type IDs", () => {
+    expect(() =>
+      parseTypeDescriptor({
+        id: "https://work.example/types/task",
+        name: "Task",
+        describes: "bead",
+        conformsTo: ["https://work.example/types/base", "https://work.example/types/base"],
+      }),
+    ).toThrow("duplicate items");
+    expect(() =>
+      parseTypeDescriptor({
+        id: "https://work.example/types/task",
+        name: "Task",
+        describes: "bead",
+        conformsTo: [],
+        propertiesSchema: "urn:example:schema",
+      }),
+    ).toThrow("pattern");
+  });
+
+  it("preserves schema-valid noncanonical propertiesSchema URLs", () => {
+    expect(
+      parseTypeDescriptor({
+        id: "https://work.example/types/task",
+        name: "Task",
+        describes: "bead",
+        conformsTo: [],
+        propertiesSchema: "https://work.example:443/schema",
+      }),
+    ).toMatchObject({ propertiesSchema: "https://work.example:443/schema" });
+  });
+});

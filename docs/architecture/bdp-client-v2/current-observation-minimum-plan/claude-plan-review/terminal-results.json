@@ -1,0 +1,112 @@
+[
+  {
+    "duration_api_ms": 1340734,
+    "stop_reason": "end_turn",
+    "session_id": "a73fc9bd-a093-4e22-ba48-e1fd36acfed1",
+    "total_cost_usd": 12.7256135,
+    "usage": {
+      "input_tokens": 170,
+      "cache_creation_input_tokens": 296210,
+      "cache_read_input_tokens": 14592317,
+      "output_tokens": 98215,
+      "output_tokens_details": {
+        "thinking_tokens": 74301
+      },
+      "server_tool_use": {
+        "web_search_requests": 0,
+        "web_fetch_requests": 0
+      },
+      "service_tier": "standard",
+      "cache_creation": {
+        "ephemeral_1h_input_tokens": 296210,
+        "ephemeral_5m_input_tokens": 0
+      },
+      "inference_geo": "global",
+      "iterations": [
+        {
+          "input_tokens": 2,
+          "output_tokens": 10009,
+          "cache_read_input_tokens": 292208,
+          "cache_creation_input_tokens": 4002,
+          "cache_creation": {
+            "ephemeral_5m_input_tokens": 0,
+            "ephemeral_1h_input_tokens": 4002
+          },
+          "type": "message"
+        }
+      ],
+      "speed": "standard"
+    },
+    "modelUsage": {
+      "claude-haiku-4-5-20251001": {
+        "inputTokens": 11065,
+        "outputTokens": 13,
+        "cacheReadInputTokens": 0,
+        "cacheCreationInputTokens": 0,
+        "webSearchRequests": 0,
+        "costUSD": 0.011130000000000001,
+        "contextWindow": 200000,
+        "maxOutputTokens": 32000,
+        "thinkingTokens": 0,
+        "canonicalModel": "claude-haiku-4-5",
+        "provider": "firstParty",
+        "costBasis": "list"
+      },
+      "claude-opus-5[1m]": {
+        "inputTokens": 170,
+        "outputTokens": 98215,
+        "cacheReadInputTokens": 14592317,
+        "cacheCreationInputTokens": 296210,
+        "webSearchRequests": 0,
+        "costUSD": 12.7144835,
+        "contextWindow": 1000000,
+        "maxOutputTokens": 64000,
+        "thinkingTokens": 74301,
+        "canonicalModel": "claude-opus-5",
+        "provider": "firstParty",
+        "costBasis": "list"
+      }
+    },
+    "permission_denials": [],
+    "terminal_reason": "completed",
+    "fast_mode_state": "off",
+    "fast_mode_disabled_reason": "sdk_opt_in_required",
+    "subagent_stats": {
+      "spawned": 0,
+      "requested": {
+        "background": 0,
+        "foreground": 0,
+        "unset": 0
+      },
+      "started_in_background": 0,
+      "max_depth": 0,
+      "spawned_by_subagents": 0,
+      "completed": 0,
+      "failed": 0,
+      "killed": {
+        "parent": 0,
+        "user": 0,
+        "system": 0
+      },
+      "refused": {
+        "depth_limit": 0,
+        "concurrency_limit": 0,
+        "budget": 0
+      },
+      "by_type": {}
+    },
+    "is_error": false,
+    "num_turns": 104,
+    "subtype": "success",
+    "api_error_status": null,
+    "result": "## Scope of this review\n\nRead\u2011only. I inspected the clean worktree at `d9c3eb9` (no writes, no execution), the five named production regions plus surrounding code, the nine owned test files' affected callbacks, the owned installed file, and every non\u2011owned test that could be affected. Normative law read directly in **both** the copied `context/spec.md` and the repo's `docs/specs/bdp.md` (lines 5794\u20115851, 5871\u20115888, 4630\u20114660, 5125\u20115137 are line\u2011identical between the two copies, so the pinned reading applies to actual source).\n\n**Not inspected / unverifiable here** (stated, not assumed): I did not read `native-initial-review.md`, `native-successor-closure.md`, `plan-precision-delta.patch`, `plan-precision-dispositions.json`, the four author/format/fixture binding JSONs, the design/ledger snapshots, `consistency-audit.md`, or `cold-client-audit.md` \u2014 deliberately, to keep this verdict independent of the native review. I cannot compute hashes with Read/Glob/Grep, so **every hash claim is unverified by me**: the 679\u2011file identity, tree `30753e31`, the 29 original pins, and the fixture/normalized bindings are taken as asserted root context. CI state is likewise taken as asserted (pending; no green claim).\n\n---\n\n# Findings\n\n## Blockers (plan text must change before a writer starts)\n\n**1 \u2014 Blocker. Incomplete wait\u2011count instruction; hits the plan's own stop condition (e).**\nPlan: *\"Current Resource/collection opaque callback's two old Type/incident500s become503 and its final wait count8\u219210 (the earlier checkpoint remains8).\"*\nSource: `packages/server/src/transaction-http.test.ts` has **three** checkpoints in that callback \u2014 `:5011`, `:5049`, `:5066` \u2014 all `expect(waits).toBe(8)`. The two new timeouts occur at `:5014\u20115020`, so `:5011` stays 8 but **both `:5049` and `:5066` become 10** (the intervening rows at `:5023\u20115048` and `:5050\u20115065` add no waits: `invalid-parameter`/`limit-exceeded` short\u2011circuit at `transaction-read.ts:212`, and the hidden\u2011resource 404s take the early return at `:216`).\nSmallest correction: replace the parenthetical with \"line 5011 stays 8; lines 5049 and 5066 become 10.\"\n\n**2 \u2014 Blocker. C's post\u2011close probe is unsatisfiable as written.**\nPlan C step 4: *\"then one post-close **real owner** probe rejects\"*, with step 3 forbidding `inspect()` and a delegate probe.\nSource: `transaction-store.ts:987\u2011993` \u2014 after close, `withRead` **returns** `{kind:\"entry-refused\", reason:\"not-accepting\", cause}`; it does not throw or reject. Only `inspect()` throws (`:2342\u20112343`, used that way at `transaction-service.test.ts:1719`), and the plan bans it.\nSmallest correction: state the post\u2011close oracle as `owner.withRead(() => true)` returning `kind:\"entry-refused\"` with `reason:\"not-accepting\"` (symmetric to the live `kind:\"read\"` probe), or explicitly permit the rejection to come from a post\u2011close *service* call instead.\n\n**3 \u2014 Blocker. Installed cohort accounting omits an existing sibling callback in the owned file.**\nPlan: *\"Installed validation is two separate supervised cohorts: amended historical22 and new37 =59HTTP,2 owned stores/2 sequential children\"*; `workload.json` repeats `cohorts:[22,37], http:59, stores:2, children:2`.\nSource: `apps/bdptest/src/transactional-minimum-receiving-installed.test.ts` already contains **two** callbacks \u2014 `:126` (22 exchanges) and `:634` \"observes installed opaque receipt root timeout with principal nondisclosure\" (**5 exchanges, its own child/store/directory**, see `:683\u2011690`, `:926\u2011934`, `:1044`). Appending F makes three. A whole\u2011file run therefore observes **64 HTTP / 3 children / 3 stores**, and the `:634` callback is in neither cohort nor `selection.json`.\nI verified `:634` is *unaffected* by the production change (receipt **root** only, opaque + current context \u2192 already 503; no page row, no foreign\u2011opaque row), so this is an accounting/reporting defect, not a behavioural one.\nSmallest correction: say the installed runs are title\u2011filtered to the two cohorts, and record that the unchanged 5\u2011exchange sibling (same file, bytes changed by the append) is covered only by the later full exact\u2011head CI.\n\n---\n\n## Optional precision (not blocking; each has a concrete smallest fix)\n\n**4 \u2014 The parser\u2011helper replacement moves coverage off the gate it was protecting.**\n`transaction-http.ts:619\u2011623` keeps the private gap for *valid, non\u2011subset* routes via `currentReadMinimumKind(parsed) === \"strict\"`. After reclassification, the two replaced targets (`types/`, `types/task`, `transaction-http.test.ts:5721`) were that disjunct's only direct sentinel; the plan's substitutes (`snapshot?snapshot=unissued`, `\u2026&stream=beads&page=unissued`) exercise a *different* pre\u2011owner gate inside the snapshot branch (`transaction-http.ts:423\u2011427`) \u2014 genuinely retained and pre\u2011owner as the plan claims (`:406\u2011427`, before any service call), but the `strict` disjunct then has no source witness. Smallest fix: make one of the two replacements a valid excluded Read route with an opaque tuple, e.g. `beads/?cursor=missing` \u2014 proven to parse as a valid non\u2011subset request and to answer pre\u2011owner at `transaction-http.test.ts:1781\u20111791`.\n\n**5 \u2014 Unit\u2011callback oracle stated in HTTP terms.** Plan: *\"its three opaque spellings now expect epoch410/view409 failures.\"* `transaction-consistency.test.ts:137\u2011180` is a pure callback with no handler. Restate as `TransactionMinimumFailure` with `reason:\"cursor-expired\"` / `\"foreign-view\"` and `context` identical to the supplied `context` object, plus the both\u2011mismatch epoch\u2011first row; keep `:159\u2011161` (`waitable:false` \u2192 Unsupported) and `:173\u2011179` (`invalid owner` wins, which requires the owner\u2011position check at `transaction-consistency.ts:120\u2011121` to stay first, as item 1 says).\n\n**6 \u2014 D's retained\u2011payload oracle silently depends on D having no `await`.** `transaction-store.ts:345` defaults `maintenanceIntervalMs` to 1000 and `:1451\u20111471` sweeps with the **injected** clock; `transaction-receipt-pages.test.ts:25\u201137` does not override it. Any suspension between `f.time(>expiry)` and the final `f.raw()` lets a background sweep expire the row and void the comparison. The plan does say \"one synchronous callback\" \u2014 make the reason explicit (`transaction-snapshot.test.ts:1500` carries exactly this comment) and/or pass `maintenanceIntervalMs: 60000` through `fixture(extra)` (precedent: `transaction-http.test.ts:2177`, `:2231`).\n\n**7 \u2014 Discovery's checker swap reorders two failure classes.** `checkTransactionMinimum` compares epoch/view before validating the owner position (`transaction-consistency.ts:98\u2011106`); `checkCurrentReadMinimum` validates the owner position first (`:120\u2011121`). So a faulted owner context plus a foreign epoch moves from `cursor-expired` to `invalid owner minimum position` for `discoveryObserved`. No existing discovery callback exercises a faulted context (all use real `withRead` contexts), so nothing changes today \u2014 record the intended ordering so it is not later read as a regression.\n\n**8 \u2014 The HTTP page `unsupported` sentinel loses its only wire witness.** With `currentReadMinimumHeaders`, `minimum === undefined && hasMinimumControls` is unreachable (malformed tuples already 400 at `transaction-http.ts:404\u2011405`), so `:578` and `:585` become defensive\u2011only \u2014 and the installed 500 row the plan converts (`transactional-minimum-receiving-installed.test.ts:507\u2011512`) was its only wire exercise. Fine, but say so, and note the store/service `\"unsupported\"` rows remain its only witnesses: `transaction-receipt-pages.test.ts:286\u2011287`, `:310\u2011311` (selected) and `transaction-service.test.ts:2328\u20112353`. Do not let \"obsolete assertion\" cleanup remove them.\n\n**9 \u2014 `TransactionMinimumVisibilityGap` becomes practically unreachable.** `transaction-read.ts:27,228` is its only thrower, `transaction-http.ts:684\u2011685` its only consumer, `transaction-read.test.ts:1687` its only assertion \u2014 which the plan replaces. After the change no reachable kind can enter that branch (`resource`/`missing`/`alias` return early; the Type lane waits; `initial-collection` collections do not produce `resource-not-found`; `strict` cannot be admitted). Keeping the export is safe (no unused\u2011export gate \u2014 `check:boundaries` is dependency\u2011scoped and `vitest.config.ts:65` disables coverage), but the plan should state the dead path is intentional and that the installed counterfactual expectation (`transactional-minimum-current-resource-installed.test.ts:694`, env\u2011gated `BDP_TRANSACTIONAL_MINIMUM_CURRENT_MODE`, default `positive`) depends on externally patched code, not on live behaviour \u2014 which is why \"do not rewrite them\" is correct.\n\n**10 \u2014 E's setup is specified only by reference to F.** The \"E/F exact37\u2011exchange\" section is written as F (\"POST batch32 Beads\u2026\", installed default maxima, no `receiptMaximumItems` override), while E is said to share the A/C fixture (two local descriptors, `receiptMaximumItems 2`, pagination/advertised 2). Both readings satisfy 3 POST/21 GET/13 HEAD and the status histogram, but the writer needs one sentence fixing E's three mutations, which one issues the page, and that E's descriptors must be **scope\u2011local** (`${scope}types/\u2026`) because `isCurrentTransactionMinimumRead` (`transaction-read.ts:38\u201144`) gates on locality and `transaction-service.test.ts:29\u201130`'s shared `bead` type is nonlocal. Also worth stating in the validation order: `transaction-http.test.ts:16\u201118` top\u2011level\u2011awaits `../dist/transaction-runtime.js` while `:12\u201114` import the handler/service from `src`, so \"build before collecting any source module importing dist\" is load\u2011bearing \u2014 a stale build makes E (dist) and the parser\u2011refusal helper (src) disagree.\n\n**11 \u2014 Pin the kind taxonomy explicitly.** `currentReadMinimumKind`'s literal labels are asserted in source (`transaction-read.test.ts:2521` expects `\"missing\"` for `bead-links`) and consumed by `transaction-http.ts:621`. State that new Type kinds are *added* while `resource`/`missing`/`initial-collection` labels are preserved, that waitability in the success path is \"anything but `strict`\", and that the deliberate asymmetry (`currentReadMinimumKind` does not check locality, `isCurrentTransactionMinimumRead` does) moves a *nonlocal* Type + opaque minimum from `minimum-position` to `minimum-position-route` at `transaction-http.ts:624` \u2014 unreachable over HTTP, since `requestFromUrl` always yields scope\u2011prefixed Type ids, but reachable through the direct API.\n\n---\n\n# Gate assessments requested\n\n**(a) Type minimum\u2011first is a permitted implementation choice \u2014 confirmed.** The missing\u2011first MUST (`bdp.md:5834\u20115839`) enumerates Bead/Link Resource (incl. properties), alias target, and initial `view=links` anchor; **Types are absent**, and the plan's instruction to \"preserve this exact list\" is honoured by keeping the early return at `transaction-read.ts:216`. `:5841\u20115843` permits representation / wait\u2011or\u2011route / the three normative problems for \"the remaining reads\"; `:5844\u20115849`'s stronger MUST is expressly scoped to Bead/Link Resources and `:5850\u20115851` declines to extend it. No exhaustive status table constrains Type reads (the tables at `4625\u20114635`, `5984\u20115988`, `6628` cover mutation/receipt/operations, snapshots and change/event endpoints only). I found no contradictory Type\u2011specific ordering. The plan's refusal to label this a MUST is correct. Worth noting the change is narrower than the prose implies: Type routes **already** serve 503/410/409 for *recognized* positions today (`transaction-http.test.ts:3004\u20113028`); the batch only removes the VisibilityGap conversion and the opaque/strict gates.\n\n**(b) Successful incident lists \u2014 confirmed, no invented MUST.** `:5851` withholds the extension; the general permission at `:5841\u20115843` still allows a bounded wait, and the outcome is never \"success with an older position\". The one real consequence (a *successful* nonempty incident list can now answer 503) is pinned at `transaction-http.test.ts:5014\u20115020` and in E/F, and the missing/deleted/hidden anchor 404 is preserved by kind `missing` (`transaction-read.ts:216`, installed row 28 at `transactional-minimum-current-resource-installed.test.ts:304\u2011310`).\n\n**(c) Receipt identity/minimum/expiry ordering \u2014 matches the spec exactly.** `transaction-store.ts:2281\u20112313` runs parent/namespace \u2192 principal row \u2192 epoch \u2192 token\u2011in\u2011plan \u2192 `unsupported` \u2192 context \u2192 minimum \u2192 `expireRow` \u2192 projection, which is `bdp.md:4654\u20114660` in order; nondisclosure precedes minimum for the root too (`:969\u2011971`), and `:5125\u20115137`'s no\u2011enumeration rule is respected. Because the checker throws before `:2310`, \"no expiry/receipt/page write on a failed minimum\" is structural, not incidental \u2014 D's eighth call (opaque after the retention clock advance \u2192 Unproved, payload intact) is a real oracle, and the known\u2011minimum expiry counterpart stays covered by `transaction-receipt-pages.test.ts:111\u2011124` and `transaction-http.test.ts:2098\u20112105`.\n\n**(d) Shared foreign\u2011opaque fanout \u2014 complete for this corpus.** The six enabled consumers are `transaction-store.ts:971, 1588, 1705, 1801, 1875` and `transaction-read.ts:234`. Every existing foreign\u2011opaque sentinel is in an owned, selected callback, with the plan's counts matching source: HTTP alias 4 (`transaction-http.test.ts:3237\u20113251`), fresh Snapshot 4 (`:5801\u20115808`), receipt root 2 (`:5948\u20115957`), direct Snapshot 4 (`transaction-snapshot.test.ts:1477\u20111486`), direct Events 2 per family (`transaction-events.test.ts:1370\u20111379` etc.), direct Scope SSE 2 (`transaction-event-sse.test.ts:1101\u20111108`), changefeed 1 (`transaction-changefeed.test.ts:1549\u20111557`). I checked every non\u2011owned candidate \u2014 `transactional-minimum-current-resource-installed`, `transactional-collection-minimum-installed` (incl. the 20\u2011request Type/incident cohort at `:888\u2011985` and the parser cohort at `:1544\u20111549`), `transactional-snapshot-installed`, `transactional-alias-installed`, `transactional-event-missing-context-installed`, `transactional-changefeed-refusal-context-installed`, `transactional-receipt-missing-context-installed`, `transaction-store.test.ts`, `transaction-sse.test.ts`, `transaction-snapshot-http.test.ts`, `transaction-schema-http.test.ts`, plus the non\u2011selected http.test callbacks at `:1746`, `:2051`, `:2230`, `:2740`, `:2823`, `:3959`, `:4572` \u2014 and found **no** non\u2011owned combination of foreign epoch/view with an unrecognized position, and no non\u2011owned opaque page/Type minimum. The alias incident\u2011fence recomputation (3 attempts / 1 wait / 4 clock calls) reproduces exactly from `transaction-read.test.ts:2509\u20112536` with `now: () => clockCalls++`, budget 2. The `pos-02` hazard the plan calls out is real and would have hung the suite: `transaction-service.test.ts:1722\u20111728` uses a **constant** clock, so a lexically valid `pos-02` becoming opaque would loop in `transaction-consistency.ts:160\u2011177` forever.\n\n**(e) Counts and close schedules hide no traffic and renew no deadline.** A (35/10/45), B (12/2/14, with zero clock/entry for the unauthenticated and malformed page calls at `transaction-service.ts:601` and `:606`), C (2/1/3 per row), D (8 entries, no waiter) all reproduce from the real waiter and the real entry points; `workload.json`'s 65 attempts / 17 waits / 74 clock calls / 9 stores / 10 opens / 12 setup mutations reconcile with A+B+C+D+E. E/F's 37 = 3+4+24+6 with POST 3 / GET 21 / HEAD 13 and 200\u00d77+503\u00d710+410\u00d78+409\u00d78+404\u00d72+400\u00d71+401\u00d71 = 37. The claimed installed budgets are the file's actual ones (45 s work `:136`, 5 s per request `:251`, 10 s cleanup `:569`, 60 s callback `:632`), and 5 s source deadlines are the Vitest default (no `testTimeout` in `vitest.config.ts`). F's ten real ~1 s catch\u2011up waits fit, but the plan is right to require measured elapsed. C's schedule satisfies \"observe settlement before gating, race a finite latch, always clock=2 \u2192 release \u2192 drain in the outer finally\", and `receiptPage` genuinely has no signal (`transaction-service.ts:579\u2011584`, `:626`) and genuinely throws synchronously when closed (`run` \u2192 `check`, `:140\u2011141`; proven at `transaction-service.test.ts:1017\u20111019`).\n\n**(f) S1 / G2 / no activation \u2014 held.** Continuations stay excluded (`transaction-read.ts:53,56`; `isCurrentTransactionMinimumRead` and `currentReadMinimumKind` both require `continuation === undefined`), retained Snapshot anchors keep the strict fence (`transaction-store.ts:1582`, `transaction-service.ts:453`, rows preserved at `transaction-http.test.ts:5820\u20115827`), Bead\u2011Event metadata\u2011only incident membership is untouched, and discovery remains internal \u2014 `transaction-http.ts:629\u2011634` still answers `developmentGap(\"transactional-discovery\")` and no selector or profile advertisement changes.\n\n---\n\n# Root dispositions requested\n\n- **Blockers 1\u20133**: plan\u2011text corrections only; no design change implied. I recommend root amends the successor prose (or issues an addendum) before releasing authoring, since all three collide with the plan's own stop condition (e).\n- **Precision 4\u201311**: accept or waive individually; 4 and 6 are the two I would actually fold into the plan (they change what gets tested / whether an oracle is deterministic), 5 and 10 prevent avoidable authoring iterations, 7\u20139 and 11 are documentation of intended behaviour.\n- No new competing design is implied by any finding; nothing here asks for protocol or Types redesign, and I am not endorsing authoring, activation, or any claim of green CI. Approval is not implied by the completeness of this pass.",
+    "ttft_ms": 4155,
+    "type": "result",
+    "duration_ms": 1340512,
+    "uuid": "60a11a3d-6a43-48b0-83c6-9273723c64ac",
+    "ttft_stream_ms": 2893,
+    "time_to_request_ms": 18,
+    "first_content_frame_ms": 2894,
+    "queued_turn_count": 0
+  }
+]

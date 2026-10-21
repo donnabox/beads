@@ -1,0 +1,412 @@
+{
+  "author": "b89554c6004edf99d3278518bee1b150dce3fa98",
+  "parent": "6f5e607bf338dd166820bfa3f9f480f7cd54c5f1",
+  "fullDiffSha256": "762e77d3ebf4009ed042c106db0d951d79ed5b3f6e9425d8851a7f742a0ebe19",
+  "partition": {
+    "harness": "A / HARNESS: own the complete new local request ledger, begin/complete/finish/snapshot oracle, actual execute/observe integration, assertion-input control, safe report persistence, lifecycle/error handling and new selected callbacks. Also inspect new app CPU callback appearing in the shared addition. Cumulative scope owns all JSON literals/coverage and remaining static count/fence/preservation changes. Cross-boundary contract: complete independent request ledger is below; cumulative reviewer checks it against the complete portable row. Portable schemas and runner response projection are reviewed by cumulative scope; actual resource materialization and serializer/types are supplied here. Check actual response vs projected control input, header privacy/order, no fabricated IDs, strict replay/state/schema gates, observer interference and cleanup/report failure retention.\n",
+    "cumulative": "B / CUMULATIVE: own the complete new JSON scenario and coverage object, all three conformance TS changes and remaining app static/count/fence/preservation hunks; inspect whole-contract scope, selection/order/fanout and existing preservation reconstruction. Harness scope owns the full new runtime oracle/report/control/lifecycle code. Cross-boundary runtime contract: it checks the independent exact11-request ledger and original response schema/full Resource/retained equality before storing a baseline or applying the one second-response assertion-input change; then joins real runner IDs and47outcomes, expects7pass/1fail only in control, and persists safe actual results/cleanup. Portable assertions alone do not establish those full-body facts. Do not infer missing helper code is absent from implementation; name any critical dependency requiring source audit.\n"
+  },
+  "typescriptHunks": [
+    {
+      "path": "apps/bdptest/src/read-update-matrix.test.ts",
+      "header": "@@ -715,6 +715,515 @@ function assertColdDirectory(",
+      "sha256": "b6ccfc6daccfa3002e0346e0860239d25c9665901baeb60673794aedebe9ca59",
+      "owner": "harness"
+    },
+    {
+      "path": "apps/bdptest/src/read-update-matrix.test.ts",
+      "header": "@@ -746,6 +1255,7 @@ async function run(",
+      "sha256": "bfde7db1e0ccb61248293ca0203be8a05ba59c76c251273d3c98a850a922c20c",
+      "owner": "harness"
+    },
+    {
+      "path": "apps/bdptest/src/read-update-matrix.test.ts",
+      "header": "@@ -908,6 +1418,49 @@ async function run(",
+      "sha256": "90c3ea33077abe36c28558476b626f4c717a80ba22913c8c63ced54ba5d7b20b",
+      "owner": "harness"
+    },
+    {
+      "path": "apps/bdptest/src/read-update-matrix.test.ts",
+      "header": "@@ -1029,7 +1582,13 @@ async function run(",
+      "sha256": "caab25aece06f839cdfb27f542f334c55eb00b4cee24628f6549d598de28db1f",
+      "owner": "harness"
+    },
+    {
+      "path": "apps/bdptest/src/read-update-matrix.test.ts",
+      "header": "@@ -1590,6 +2149,7 @@ async function run(",
+      "sha256": "3aa8fde307613b29ed4312bbd67cb93fa529e393aa9f13438d5859571319bba3",
+      "owner": "harness"
+    },
+    {
+      "path": "apps/bdptest/src/read-update-matrix.test.ts",
+      "header": "@@ -1603,6 +2163,15 @@ async function run(",
+      "sha256": "97bd052dd5b505d235e5a27c0caa5ca59f9e999a36435e4ad4d876702b98ec54",
+      "owner": "harness"
+    },
+    {
+      "path": "apps/bdptest/src/read-update-matrix.test.ts",
+      "header": "@@ -1644,6 +2213,8 @@ async function run(",
+      "sha256": "e0eb9e370601a39dbbb0a565f8ad4d76d04de3de26da813c0574d98fea4cf775",
+      "owner": "harness"
+    },
+    {
+      "path": "apps/bdptest/src/read-update-matrix.test.ts",
+      "header": "@@ -1654,6 +2225,13 @@ async function run(",
+      "sha256": "5b6a91306ca25435deaafef0aa7618e0e109c7d59ff89f36f72f4125bd013356",
+      "owner": "harness"
+    },
+    {
+      "path": "apps/bdptest/src/read-update-matrix.test.ts",
+      "header": "@@ -1790,6 +2368,101 @@ async function runShard(",
+      "sha256": "946707b723f3549f100a26e4e39a0b3bafe264680f68b34d1e69346b2ea3830a",
+      "owner": "harness"
+    },
+    {
+      "path": "apps/bdptest/src/read-update-matrix.test.ts",
+      "header": "@@ -1837,7 +2510,7 @@ it(\"pins cold RU directory literals, actual target bindings and parent preservat",
+      "sha256": "cad1dbffb58dae05da28412ea6d5d7b5db452e36101f3238e16c10dd6e72f3a8",
+      "owner": "cumulative"
+    },
+    {
+      "path": "apps/bdptest/src/read-update-matrix.test.ts",
+      "header": "@@ -1888,7 +2561,7 @@ it(\"rejects a missing updateLink directory member in actual response assertion i",
+      "sha256": "eeaafe89495a16a71faae061b5a4d6e86124c6fda064f853a8e04936635f5745",
+      "owner": "cumulative"
+    },
+    {
+      "path": "apps/bdptest/src/read-update-matrix.test.ts",
+      "header": "@@ -2054,8 +2727,8 @@ it(\"executes the partial cumulative RU matrix against actual installed factory H",
+      "sha256": "c8fff335643b8ceb41ffc80333bc94ef9ed0c9e53a5616ff2503f94d2bc8432b",
+      "owner": "cumulative"
+    },
+    {
+      "path": "apps/bdptest/src/read-update-matrix.test.ts",
+      "header": "@@ -2071,10 +2744,10 @@ it(\"executes the partial cumulative RU matrix against actual installed factory H",
+      "sha256": "338ae2979822b6155d80768fc0451c865f6a9ddcb9d8e3fd670b9faa1b0d8e36",
+      "owner": "cumulative"
+    },
+    {
+      "path": "apps/bdptest/src/read-update-matrix.test.ts",
+      "header": "@@ -2149,8 +2822,8 @@ it(\"executes the partial cumulative RU matrix against actual installed factory H",
+      "sha256": "fd1d3c5be74379df24e04b698a213cef0933a54c2074af8d694b5a5ee06be0eb",
+      "owner": "cumulative"
+    },
+    {
+      "path": "apps/bdptest/src/read-update-matrix.test.ts",
+      "header": "@@ -2812,8 +3485,8 @@ it(\"observes retained retry dispositions across actual installed carriers and cu",
+      "sha256": "cf4e77dcd4647cb0e6f1408e0d65b72448621a7b8562c98ead226de7edc5bce7",
+      "owner": "cumulative"
+    },
+    {
+      "path": "apps/bdptest/src/read-update-matrix.test.ts",
+      "header": "@@ -3234,8 +3907,8 @@ it(\"observes key and media admission against installed HTTP with paired aftersta",
+      "sha256": "ec16f159727ab45fe56e601bb267039d9ef1889e0d71b1a00f04072cc5e10ee6",
+      "owner": "cumulative"
+    },
+    {
+      "path": "apps/bdptest/src/read-update-matrix.test.ts",
+      "header": "@@ -3665,8 +4338,8 @@ it(\"observes reference syntax and retained category failures against installed H",
+      "sha256": "08fa2f0b1c11944c24c8e29aa1c5147ac21746a8af5b0985d66aaff29e721c23",
+      "owner": "cumulative"
+    },
+    {
+      "path": "apps/bdptest/src/read-update-matrix.test.ts",
+      "header": "@@ -4671,7 +5344,7 @@ it(\"pins attribution/numeric action ledgers, raw literals and prior scenario byt",
+      "sha256": "7a9cb8652001bcafe78836c25d374e30081897fcda5a6a71a49a9e72ec994138",
+      "owner": "cumulative"
+    },
+    {
+      "path": "apps/bdptest/src/read-update-matrix.test.ts",
+      "header": "@@ -4988,8 +5661,8 @@ it(\"pins numeric admission source growth, old blocks and independent row ledgers",
+      "sha256": "170c5cb96d3ebd605ddb2e1c4c8bdadf297e11f274b0f02b0fc09672c8adfb88",
+      "owner": "cumulative"
+    },
+    {
+      "path": "apps/bdptest/src/read-update-matrix.test.ts",
+      "header": "@@ -5376,11 +6049,11 @@ it(\"pins metadata closure growth, old B actions and final N preservation\", () =>",
+      "sha256": "02bd4c84a489a20dd20b99b7b97680ab379733e08c917ac5dc19d07ef446a788",
+      "owner": "cumulative"
+    },
+    {
+      "path": "apps/bdptest/src/read-update-matrix.test.ts",
+      "header": "@@ -5760,8 +6433,8 @@ it(\"pins bounded R closure source, changed-action ledger and unchanged companion",
+      "sha256": "e6692477b96b947f4e4346fa0358c6f3bf7ab675261d3ab911b2e4701f5e80a7",
+      "owner": "cumulative"
+    },
+    {
+      "path": "apps/bdptest/src/read-update-matrix.test.ts",
+      "header": "@@ -5904,8 +6577,8 @@ it(\"pins bounded R closure source, changed-action ledger and unchanged companion",
+      "sha256": "1f59c3bb23b139efccf137ee0e3da8aaa020c222312842796c36b49d209ed4b5",
+      "owner": "cumulative"
+    },
+    {
+      "path": "packages/conformance/src/cumulative-artifact.test.ts",
+      "sha256": "fb520ef8fdd19b9e73a8323a5793be9b19e4f3e4e85ba78c367ef57996567200",
+      "owner": "cumulative",
+      "coverage": "complete file diff"
+    },
+    {
+      "path": "packages/conformance/src/profile-contract-plan.test.ts",
+      "sha256": "666141c6597af8b92c08ad425fc345d0ef41e5b2770e6b8df3dc2eace3cc98d7",
+      "owner": "cumulative",
+      "coverage": "complete file diff"
+    },
+    {
+      "path": "packages/conformance/src/read-update-artifact-set.test.ts",
+      "sha256": "a0a596e45c663b2d00a6e9d315585f03381809533da4f6a868004b27e629d979",
+      "owner": "cumulative",
+      "coverage": "complete file diff"
+    }
+  ],
+  "dataEdits": [
+    {
+      "path": "packages/conformance/matrices/read-update-v1.json",
+      "owner": "cumulative",
+      "representation": "complete compact new scenario; complete old/new coverage object; old corpus preserved and separately hashed"
+    },
+    {
+      "path": "packages/conformance/test-support/read-update-coverage-v1.json",
+      "owner": "cumulative",
+      "representation": "complete compact new scenario; complete old/new coverage object; old corpus preserved and separately hashed"
+    }
+  ],
+  "sourceExcerpts": [
+    {
+      "path": "apps/bdptest/src/read-update-matrix.test.ts",
+      "first": 42,
+      "last": 90,
+      "sha256": "2ee4bbac2e36690415f3ba6a229e34ea9ba49d516f885957bf0365e858737b8c",
+      "sourceSha256": "1bf2661fa7bee90aa43622741d9e71d9770b2982d0a8804fa55ac1afb59e4d5d",
+      "owners": [
+        "harness"
+      ]
+    },
+    {
+      "path": "apps/bdptest/src/read-update-matrix.test.ts",
+      "first": 405,
+      "last": 410,
+      "sha256": "97b860d3d98f8b9bd8d6d472490232c1a2078fea3bc26259d39d2b4a18208fa3",
+      "sourceSha256": "1bf2661fa7bee90aa43622741d9e71d9770b2982d0a8804fa55ac1afb59e4d5d",
+      "owners": [
+        "harness"
+      ]
+    },
+    {
+      "path": "apps/bdptest/src/read-update-matrix.test.ts",
+      "first": 1287,
+      "last": 1407,
+      "sha256": "4b52c998026d81cd17dc906276acfdebdaadc1b59f43b43bdb01e78fded53f77",
+      "sourceSha256": "1bf2661fa7bee90aa43622741d9e71d9770b2982d0a8804fa55ac1afb59e4d5d",
+      "owners": [
+        "harness"
+      ]
+    },
+    {
+      "path": "apps/bdptest/src/read-update-matrix.test.ts",
+      "first": 1464,
+      "last": 1530,
+      "sha256": "108825c83979b5530d277dbcb7309df38c809f38b9bc8d9796b2974c75a503cc",
+      "sourceSha256": "1bf2661fa7bee90aa43622741d9e71d9770b2982d0a8804fa55ac1afb59e4d5d",
+      "owners": [
+        "harness"
+      ]
+    },
+    {
+      "path": "apps/bdptest/src/read-update-matrix.test.ts",
+      "first": 1678,
+      "last": 1710,
+      "sha256": "dcfe5081d8cbb0756a5d56bb584ed849a9233c6daf3fdcd23aa3ed0fb4ebbffa",
+      "sourceSha256": "1bf2661fa7bee90aa43622741d9e71d9770b2982d0a8804fa55ac1afb59e4d5d",
+      "owners": [
+        "harness"
+      ]
+    },
+    {
+      "path": "apps/bdptest/src/read-update-matrix.test.ts",
+      "first": 2197,
+      "last": 2257,
+      "sha256": "eb516f6b2e7143a1937f0afcd7eefbb53557162d52e5419cd1bb2847e68c1a54",
+      "sourceSha256": "1bf2661fa7bee90aa43622741d9e71d9770b2982d0a8804fa55ac1afb59e4d5d",
+      "owners": [
+        "harness"
+      ]
+    },
+    {
+      "path": "apps/bdptest/test-support/read-update-artifact-execution.ts",
+      "first": 77,
+      "last": 90,
+      "sha256": "3d71daa6101abbfcfb13d5a126e955f93913e60f26960b82dcb3e32956b2e750",
+      "sourceSha256": "764ff0a4e5310ec35e59d6042e579b7e1f003772a7c09777e3f4d5675a3156d1",
+      "owners": [
+        "harness"
+      ]
+    },
+    {
+      "path": "packages/conformance/src/http-executor.ts",
+      "first": 23,
+      "last": 108,
+      "sha256": "5f082290b5ab39ba7adb85a59f7847058ac854ef51f738040d1d3aad35e2f292",
+      "sourceSha256": "770a8405ae1532484b5a2658619c067832644947888f95e0c6575002376f1b5d",
+      "owners": [
+        "harness"
+      ]
+    },
+    {
+      "path": "packages/conformance/src/http-executor.ts",
+      "first": 665,
+      "last": 783,
+      "sha256": "16f41f44b3f25bd0dca64c5bafd5dd7df66d8e0616f05d42188d4175b5083fa7",
+      "sourceSha256": "770a8405ae1532484b5a2658619c067832644947888f95e0c6575002376f1b5d",
+      "owners": [
+        "harness"
+      ]
+    },
+    {
+      "path": "packages/conformance/src/runner.ts",
+      "first": 142,
+      "last": 189,
+      "sha256": "1c026dc267e4f3adc889e9e3e7d22e96315b933fff483ee0a74dd077247c5dfd",
+      "sourceSha256": "ac20c7fbfe15a5e42a6559e89cd3467562efe9bc74d462478414414ed3efede1",
+      "owners": [
+        "cumulative"
+      ]
+    },
+    {
+      "path": "packages/conformance/src/runner.ts",
+      "first": 1210,
+      "last": 1263,
+      "sha256": "c09b37d0d83c88922079ce7453468256e20a3a00955559fe7783878da101c029",
+      "sourceSha256": "ac20c7fbfe15a5e42a6559e89cd3467562efe9bc74d462478414414ed3efede1",
+      "owners": [
+        "cumulative"
+      ]
+    },
+    {
+      "path": "packages/conformance/src/runner.ts",
+      "first": 1356,
+      "last": 1471,
+      "sha256": "cafaf19d0b441ddd3d3a7c026dfd7a2adfffd011c5f7f0c964835f3bfd21d71d",
+      "sourceSha256": "ac20c7fbfe15a5e42a6559e89cd3467562efe9bc74d462478414414ed3efede1",
+      "owners": [
+        "cumulative"
+      ]
+    },
+    {
+      "path": "packages/server/src/resource-evaluator.ts",
+      "first": 139,
+      "last": 161,
+      "sha256": "e2955dd218bbc0debd4011620b23268b993a709c7f70056b201179d4d67a89b2",
+      "sourceSha256": "89606787e455f4ed555b807d91c5331a376431807a9a581de1f94e538fcab4ff",
+      "owners": [
+        "harness"
+      ]
+    },
+    {
+      "path": "packages/server/src/resource-evaluator.ts",
+      "first": 866,
+      "last": 883,
+      "sha256": "a4d147b774d50947272a9f4e0423fa38ca8f0e375b15b58977d33776133c1aa4",
+      "sourceSha256": "89606787e455f4ed555b807d91c5331a376431807a9a581de1f94e538fcab4ff",
+      "owners": [
+        "harness"
+      ]
+    },
+    {
+      "path": "packages/server/src/resource-evaluator.ts",
+      "first": 1124,
+      "last": 1168,
+      "sha256": "2583790586db2b96b36252139a056ead7f6fcdb4e03ce43d5783cfcf34bf4840",
+      "sourceSha256": "89606787e455f4ed555b807d91c5331a376431807a9a581de1f94e538fcab4ff",
+      "owners": [
+        "harness"
+      ]
+    },
+    {
+      "path": "packages/server/src/development-authority.ts",
+      "first": 241,
+      "last": 258,
+      "sha256": "cb455db48a6f9af73c1fddff5fdbf11e3387ea1bf0d02552e3118c1f22128a48",
+      "sourceSha256": "d49f89da345234f7eaee83dd872a5c2d7a1a8d38ffc794e5e69d333976d22d49",
+      "owners": [
+        "harness"
+      ]
+    },
+    {
+      "path": "scripts/installed-reference-observation.mjs",
+      "first": 18,
+      "last": 85,
+      "sha256": "66389579e29df893b900a9a286182f42c02500bbc09d02260384ef3a768f8542",
+      "sourceSha256": "ca897f4a7659969df123037b5847d5765b357d9b8e1652f367bb204450db6278",
+      "owners": [
+        "harness"
+      ]
+    },
+    {
+      "path": "docs/specs/bdp.md",
+      "first": 3562,
+      "last": 3588,
+      "sha256": "b3f0371c80b9554da187bb1853e9113a4b544a43f02c09ada5018b5c39c459e1",
+      "sourceSha256": "63e93be562334c84c1e967da2fce212e8ef515aa3c9448924c5f9a272ea7b80b",
+      "owners": [
+        "harness",
+        "cumulative"
+      ]
+    },
+    {
+      "path": "schemas/bdp-v0.schema.json",
+      "definitions": [
+        "mutationResultMembers",
+        "mutationResult",
+        "sequenceMemberResult",
+        "sequenceResponse",
+        "currentBeadRecord",
+        "beadRecord",
+        "metadata"
+      ],
+      "sourceSha256": "0baa5d5ef67144f8e6513b4cde31168effc8df6d52ef3141b0f144b87f8dc227",
+      "projectionSha256": "4337d342c398d8202b6d643a57ab69f9028f2c39f795eede295c7c5b92642243",
+      "owners": [
+        "harness"
+      ]
+    },
+    {
+      "path": "schemas/bdp-v0.schema.json",
+      "definitions": [
+        "mutationResultMembers",
+        "mutationResult",
+        "sequenceMemberResult",
+        "sequenceMemberAliasResult",
+        "sequenceMemberProblem",
+        "sequenceResponse",
+        "currentBeadRecord",
+        "beadRecord",
+        "metadata",
+        "readUpdateProblem",
+        "resourceIdentity",
+        "deletedIdentity"
+      ],
+      "sourceSha256": "0baa5d5ef67144f8e6513b4cde31168effc8df6d52ef3141b0f144b87f8dc227",
+      "projectionSha256": "731fb82e5846ef9b375157ee581a3b156c3597bff2f597c3683d2f12510118fc",
+      "owners": [
+        "cumulative"
+      ]
+    },
+    {
+      "path": "apps/bdptest/src/read-update-matrix.test.ts",
+      "first": 2371,
+      "last": 2438,
+      "sha256": "2ef36d8adfed3f2aa5468809c90b6ee5b7a046c50be34c26d02e6c3af86eb239",
+      "sourceSha256": "1bf2661fa7bee90aa43622741d9e71d9770b2982d0a8804fa55ac1afb59e4d5d",
+      "owners": [
+        "cumulative"
+      ],
+      "sharedNewCode": true
+    }
+  ],
+  "priorTimeout": {
+    "exitSha256": "6a667f7074f6688cf6f5903efa74faa0cf88294b9fa85d63cc92d158f727c9bf",
+    "auditSha256": "a420c53f85d4e14c10d28a9b012a3a81539b057a6f8c01d8f763f4349fb43992",
+    "verdict": null
+  },
+  "noCircularBindingHashes": true
+}

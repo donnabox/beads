@@ -1,0 +1,44 @@
+{
+  "status": "CLOSED; emitted mirrors and exact mutations not yet materialized or authorized",
+  "sourceBindingSha256": "f1a3bf0afc93a289fcd95c349829eb751f72cdfca1487d5c5d72f023d6f12d51",
+  "positiveSourceUntouched": true,
+  "cohorts": [
+    {
+      "mode": "restore-missing-gap",
+      "site": "transaction-read emitted checkSourceCondition resource-not-found branch",
+      "change": "Remove only non-strict early return; known pos-4 then reaches preserved visibility-gap comparison.",
+      "requiredActualRefusal": {
+        "status": 500,
+        "label": "minimum-position-visibility",
+        "bodyBytes": 0,
+        "context": [
+          null,
+          null,
+          null
+        ]
+      },
+      "soleNamedFailure": "minimum-current:missing-before-minimum",
+      "expectedHTTP": 2,
+      "maxHTTP": 32
+    },
+    {
+      "mode": "restore-unknown-gap",
+      "site": "transaction-http emitted general current-read header gate, after dedicated endpoints",
+      "change": "Replace currentReadMinimumHeaders with existing strict transactionMinimumHeaders only at general gate; preserve imported helpers and all other serving paths.",
+      "requiredActualRefusal": {
+        "status": 500,
+        "label": "minimum-position",
+        "bodyBytes": 0,
+        "context": [
+          null,
+          null,
+          null
+        ]
+      },
+      "soleNamedFailure": "minimum-current:unknown-catch-up-timeout",
+      "expectedHTTP": 2,
+      "maxHTTP": 32
+    }
+  ],
+  "acceptance": "Root must inspect exact emitted mutation/resolution/payload/source bridge. Each raw Vitest failure must be precisely named with controlPrerequisites true, two completed responses and clean child/store; generic exit1 rejected. No automatic retry."
+}

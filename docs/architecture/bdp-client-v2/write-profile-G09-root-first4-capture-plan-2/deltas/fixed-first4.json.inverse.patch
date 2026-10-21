@@ -1,0 +1,110 @@
+--- after/fixed-first4.json
++++ before/fixed-first4.json
+@@ -2,8 +2,6 @@
+   "commands": [
+     {
+       "automaticRetries": 0,
+-      "executableHelper": false,
+-      "futureActiveGateHash": "UNRESOLVED separate root candidate/publication review; text refuses before creation",
+       "innerStage": {
+         "acceptedRawExitCodes": [
+           0
+@@ -21,12 +19,10 @@
+         "outerSeconds": 120,
+         "termAtSeconds": 115
+       },
+-      "phase": "final",
+-      "proposedOwnedRootOutput": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation2-root-first4-dispatch-1/node-version",
+       "prospectiveSourceText": "proposals/node-version.capture.txt",
+       "rootWrapperArgv": [
+         "/opt/homebrew/opt/python@3.14/bin/python3.14",
+-        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation-preparation-2/run.py",
++        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation-preparation-1/run.py",
+         "final",
+         "node-version"
+       ],
+@@ -35,8 +31,6 @@
+     },
+     {
+       "automaticRetries": 0,
+-      "executableHelper": false,
+-      "futureActiveGateHash": "UNRESOLVED separate root candidate/publication review; text refuses before creation",
+       "innerStage": {
+         "acceptedRawExitCodes": [
+           0
+@@ -55,12 +49,10 @@
+         "outerSeconds": 120,
+         "termAtSeconds": 115
+       },
+-      "phase": "final",
+-      "proposedOwnedRootOutput": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation2-root-first4-dispatch-1/pnpm-version",
+       "prospectiveSourceText": "proposals/pnpm-version.capture.txt",
+       "rootWrapperArgv": [
+         "/opt/homebrew/opt/python@3.14/bin/python3.14",
+-        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation-preparation-2/run.py",
++        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation-preparation-1/run.py",
+         "final",
+         "pnpm-version"
+       ],
+@@ -69,8 +61,6 @@
+     },
+     {
+       "automaticRetries": 0,
+-      "executableHelper": false,
+-      "futureActiveGateHash": "UNRESOLVED separate root candidate/publication review; text refuses before creation",
+       "innerStage": {
+         "acceptedRawExitCodes": [
+           0
+@@ -91,12 +81,10 @@
+         "outerSeconds": 120,
+         "termAtSeconds": 115
+       },
+-      "phase": "final",
+-      "proposedOwnedRootOutput": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation2-root-first4-dispatch-1/workspace-install",
+       "prospectiveSourceText": "proposals/workspace-install.capture.txt",
+       "rootWrapperArgv": [
+         "/opt/homebrew/opt/python@3.14/bin/python3.14",
+-        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation-preparation-2/run.py",
++        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation-preparation-1/run.py",
+         "final",
+         "workspace-install"
+       ],
+@@ -105,15 +93,13 @@
+     },
+     {
+       "automaticRetries": 0,
+-      "executableHelper": false,
+-      "futureActiveGateHash": "UNRESOLVED separate root candidate/publication review; text refuses before creation",
+       "innerStage": {
+         "acceptedRawExitCodes": [
+           0
+         ],
+         "argv": [
+           "/opt/homebrew/opt/python@3.14/bin/python3.14",
+-          "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation-preparation-2/audit.py",
++          "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation-preparation-1/audit.py",
+           "tools"
+         ],
+         "automaticRetries": 0,
+@@ -125,12 +111,10 @@
+         "outerSeconds": 120,
+         "termAtSeconds": 115
+       },
+-      "phase": "final",
+-      "proposedOwnedRootOutput": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation2-root-first4-dispatch-1/bind-workspace-tools",
+       "prospectiveSourceText": "proposals/bind-workspace-tools.capture.txt",
+       "rootWrapperArgv": [
+         "/opt/homebrew/opt/python@3.14/bin/python3.14",
+-        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation-preparation-2/run.py",
++        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation-preparation-1/run.py",
+         "final",
+         "bind-workspace-tools"
+       ],
+@@ -139,7 +123,6 @@
+     }
+   ],
+   "futureExactRootAuthorityStillRequired": true,
+-  "literalDataSnippets": 4,
+   "noArbitraryCommandInterface": true,
+   "order": [
+     "node-version",

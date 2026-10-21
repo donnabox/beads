@@ -1,0 +1,50 @@
+--- /Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-cumulative-carrier-validation-preparation-3/census-probe-contract.json
++++ /Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-cumulative-carrier-validation-preparation-2/census-probe-contract.json
+@@ -27,37 +27,9 @@
+     "elapsedSeconds",
+     "probes",
+     "lastCompleteCensus",
+-    "failurePrefix",
+-    "censusIoFailurePrefix"
++    "failurePrefix"
+   ],
+   "normalAcceptance": "Typed raw0 + both EOF + empty stderr + bounded complete stdout + parsedAsWholeCensus for every probe. Unique bounded final event is provisional, never approval by itself. Root whole-parent stdout/stderr EOF+raw0+strict elapsed<115 and independent fresh all task/probe identity census are conjunctive.",
+-  "ordinaryIoException": {
+-    "classes": [
+-      "OSError",
+-      "ValueError"
+-    ],
+-    "currentPrefix": "Separate nullable censusIoFailurePrefix preserves actual current received bytes, actual EOF, observed returncode and current receipt sequence. Null probe means no acquired handle, not prior probe association. No exception text/process argv/environment is emitted. Historical FIRST failurePrefix remains unchanged.",
+-    "fixedFailureClass": "census-io",
+-    "normalAcceptance": "censusIoFailurePrefix MUST be null; existing all-positive predicates unchanged",
+-    "prefixKeys": [
+-      "failureClass",
+-      "probe",
+-      "stdoutBase64",
+-      "stderrBase64",
+-      "stdoutEOF",
+-      "stderrEOF",
+-      "rawExitIfObserved",
+-      "atSeconds",
+-      "availability"
+-    ],
+-    "publication": "Sticky refuse then bounded best-effort finish(1) on SAME original clock/cap BEFORE existing finally; no further probe/retry. Publication itself may fail or remain partial/UNKNOWN. No guaranteed host durability/child closure inferred.",
+-    "sites": [
+-      "Popen acquisition and nonblocking pipe setup",
+-      "non-EAGAIN pipe read/fileno",
+-      "post-both-EOF poll"
+-    ],
+-    "stateReset": "current receipt=None, stdout/stderr empty and both EOF false BEFORE fallible acquire/setup; retain last complete separately; immediate direct Popen handle before pipe setup"
+-  },
+   "probeKeys": [
+     "sequence",
+     "pid",
+@@ -73,7 +45,7 @@
+     "settledAtSeconds",
+     "parsedAsWholeCensus"
+   ],
+-  "rawRetention": "Final parent event retains exact last complete census raw bytes as base64, exact received first-failure prefix with actual EOF/raw-known facts, and counts/SHA256/EOF/raw terminal for EVERY probe. Intermediate complete bodies are not all persisted: their receipt facts are same-run source attestations, not independent offline replay of unretained rows. Successor3 separately preserves the current ordinary census I/O exception prefix; historical FIRST refusal prefix is never overwritten.",
++  "rawRetention": "Final parent event retains exact last complete census raw bytes as base64, exact received first-failure prefix with actual EOF/raw-known facts, and counts/SHA256/EOF/raw terminal for EVERY probe. Intermediate complete bodies are not all persisted: their receipt facts are same-run source attestations, not independent offline replay of unretained rows.",
+   "registry": "Immediately retain direct Popen handle and PID/setsid PGID before fallible nonblocking setup. Every created probe has one consecutive receipt, no clipping/omission. At most2048 receipts as a conservative finite tool capacity; publication must still fit existing1MiB independently, no fit guarantee.",
+   "rootFreshCensusFormat": [
+     "/bin/ps",

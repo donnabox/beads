@@ -1,0 +1,1 @@
+TX discovery typecheck failed with three TS2304 annotations. Four bootstrap stages passed; all checks/build/tests after typecheck remain unattempted. Source unchanged, no forced cleanup or residue. Gate closed. Source-only three-annotation correction is released after durable push; independent native closure and fresh named validation successor are required.

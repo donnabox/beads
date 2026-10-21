@@ -1,0 +1,20 @@
+{
+  "status": "proposal only; not applied or executed",
+  "candidate": "3968081f8231566908e69045424b067c3c36dc40",
+  "file": "apps/bdptest/src/transactional-matrix.test.ts",
+  "beforeSha256": "e319109ab0e9f7258e6918ae789ed7a5672eb7aabd0ec8725ae38e3634164e68",
+  "proposedSha256": "6c0c240afef61831d0573775ea35b0c04b116a55da1d3fb40127b9ede68e939c",
+  "patchSha256": "fb4a530df7fea2b2afd7661b5ed655865908fbcc6e7ba6da296bea29c0867c5b",
+  "existingCallbackCount": 1,
+  "sourceDerivedHttp": 1,
+  "sourceDerivedChildren": 2,
+  "newCallbacks": 0,
+  "bounds": {
+    "startupMs": 10000,
+    "afterFirstExchangeMs": 100,
+    "requestMsUnchanged": 5000,
+    "vitestMsUnchanged": 20000,
+    "elapsedAssertionMsUnchanged": 15000,
+    "overallMsUnextended": 10000
+  }
+}

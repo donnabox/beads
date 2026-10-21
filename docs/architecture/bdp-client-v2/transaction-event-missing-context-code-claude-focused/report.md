@@ -1,0 +1,7 @@
+# Focused successor code review preparation — not launched
+
+Prompt 54008bytes SHAc6b587110c25ebadd041dfe5e05c1a9a8650160661fcbc2a373007778e594928; wrapperaef8a1781b57b5a4786ee15bc90e2dff04ebbea3933edb903f8ddd6e6490ee41; bindingbf2ef6dc00d6d34bfdea6b342cb01b183bdb3f25cd32a35376bee846415afd76. Same sourceacf190e7/fullpatche0c25b19; no source edits. Previous113717-byte900s timeout remains unchanged/inconclusive.
+
+Complete37,584-byte six-file diff retained, including entire new installed test and all changed existing tests/doc. Remaining context focuses same-entry owner/HTTP/HEAD/spec source, concise unchanged helper contracts relevant to11requests, exact identity and actual results. No historical plan chain or giant dependency manifest. Full helper hashes retained in binding; contracts are explicitly source-derived summaries, not presented as complete implementations. Actual source9unique passes are separate from original selector failure. Raw control8expected failures/11responses are separate from original failed dependency-postcheck; final independent control disposition pending. Fresh installed is still pending.
+
+No invocation/execution gate. rootLaunchReleased=false; wrapper900s/no tools/no model override and unchanged source/plan/process cleanup mechanism, AST-parsed only. Root must read and release before one invocation; no automatic retry. Source hash equality verified before/after assembly. Scope/test/request/deadline limits unchanged. No product execution/publication by packet author.

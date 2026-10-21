@@ -1,0 +1,37 @@
+{
+  "review": "FULL independent native mechanics of helper3, not predecessor author approval",
+  "findings": [
+    {
+      "id": "D4-P3-N1",
+      "severity": "Low",
+      "title": "Failed-only audit accepts impossible observation states",
+      "files": [
+        {
+          "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-D4-validation-preparation-3/audit.py",
+          "line": 90
+        },
+        {
+          "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-D4-validation-preparation-3/audit.py",
+          "line": 102
+        },
+        {
+          "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-D4-validation-preparation-3/context/semantic-audit-contract/source/apps/bdptest/src/transactional-set-installed.test.ts",
+          "line": 461
+        }
+      ],
+      "sourcePredicateAssessment": "source-state-truth-table.json",
+      "problem": "validated⇒received&&settled is one-sided. audit_partial also permits received=true/settled=false/validated=false; its unreceived branch permits an unsettled initial row with a nonnull category or writeState. The source has no await between actual response capture/catch/finally, and initial rows assign all those nullable facts null.",
+      "impact": "A fabricated failed report can be labelled CONFORMING_FAILED_PARTIAL_NO_CREDIT despite impossible source facts. No positive/private/public/cumulative credit or successful callback acceptance is enabled by this gap.",
+      "minimalCorrection": "Add received⇒settled and constrain unreceived+unsettled category/writeState to null. Preserve actual nullable writeState on settled rejection and all existing categories, schema, finite path, aggregates, raw/no-credit policy. Extend existing D03 finite subcases; do not add a callback, execution attempt, cap, deadline or category.",
+      "verification": "Static full source/control-flow and predicate inspection only; no reviewed function or synthetic control executed.",
+      "status": "OPEN for root disposition and separately released correction; helper3 unchanged"
+    }
+  ],
+  "counts": {
+    "High": 0,
+    "Medium": 0,
+    "Low": 1
+  },
+  "positiveCreditBypass": false,
+  "executionAccepted": false
+}

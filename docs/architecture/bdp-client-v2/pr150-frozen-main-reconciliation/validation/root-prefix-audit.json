@@ -1,0 +1,127 @@
+{
+  "at": "2026-10-17T11:00:23.440308+00:00",
+  "results": {
+    "dependencies": {
+      "exit": 0,
+      "accepted": true,
+      "structuredResults": null,
+      "exitMeaning": null,
+      "sourceIdentity": "b9fe0a23fdb4026641227ec273f05cb2144855271094b6429193b10a7412375a",
+      "sourceUnchanged": true,
+      "elapsedSeconds": 0.8350045410916209,
+      "forcedCleanup": false,
+      "errors": [],
+      "sampledPids": [
+        31311
+      ],
+      "remainingProcesses": [],
+      "runtimeDirectoriesStillPresent": [],
+      "logSha256": "d35e164b2599e806c08b40f6393d6b04fb816d521ffe035705c866b56632e385"
+    },
+    "format-check": {
+      "exit": 0,
+      "accepted": true,
+      "structuredResults": null,
+      "exitMeaning": null,
+      "sourceIdentity": "b9fe0a23fdb4026641227ec273f05cb2144855271094b6429193b10a7412375a",
+      "sourceUnchanged": true,
+      "elapsedSeconds": 1.275282250251621,
+      "forcedCleanup": false,
+      "errors": [],
+      "sampledPids": [
+        31648
+      ],
+      "remainingProcesses": [],
+      "runtimeDirectoriesStillPresent": [],
+      "logSha256": "e1133c825c26ef3b81a1020dd291331e090f922efdeab41e0545476f96f7658a"
+    },
+    "lint": {
+      "exit": 0,
+      "accepted": true,
+      "structuredResults": null,
+      "exitMeaning": null,
+      "sourceIdentity": "b9fe0a23fdb4026641227ec273f05cb2144855271094b6429193b10a7412375a",
+      "sourceUnchanged": true,
+      "elapsedSeconds": 0.7370769581757486,
+      "forcedCleanup": false,
+      "errors": [],
+      "sampledPids": [
+        31710
+      ],
+      "remainingProcesses": [],
+      "runtimeDirectoriesStillPresent": [],
+      "logSha256": "b1de538f5f2eff553a157d258a2fef991a8dc150de7299b49313244f2aba68e3"
+    },
+    "check-boundaries": {
+      "exit": 0,
+      "accepted": true,
+      "structuredResults": null,
+      "exitMeaning": null,
+      "sourceIdentity": "b9fe0a23fdb4026641227ec273f05cb2144855271094b6429193b10a7412375a",
+      "sourceUnchanged": true,
+      "elapsedSeconds": 0.7128551667556167,
+      "forcedCleanup": false,
+      "errors": [],
+      "sampledPids": [
+        31763
+      ],
+      "remainingProcesses": [],
+      "runtimeDirectoriesStillPresent": [],
+      "logSha256": "53f4cd856bde25513486a59799c5a05e0650fbb756bf1580fb07e56c2fdeeef3"
+    },
+    "typecheck": {
+      "exit": 0,
+      "accepted": true,
+      "structuredResults": null,
+      "exitMeaning": null,
+      "sourceIdentity": "b9fe0a23fdb4026641227ec273f05cb2144855271094b6429193b10a7412375a",
+      "sourceUnchanged": true,
+      "elapsedSeconds": 1.6320350831374526,
+      "forcedCleanup": false,
+      "errors": [],
+      "sampledPids": [
+        31812
+      ],
+      "remainingProcesses": [],
+      "runtimeDirectoriesStillPresent": [],
+      "logSha256": "91d54ffbee73a3ac72294d090e58d77745f8b93edbf94b862807698273a6505a"
+    },
+    "build": {
+      "exit": 0,
+      "accepted": true,
+      "structuredResults": null,
+      "exitMeaning": null,
+      "sourceIdentity": "b9fe0a23fdb4026641227ec273f05cb2144855271094b6429193b10a7412375a",
+      "sourceUnchanged": true,
+      "elapsedSeconds": 1.1362496251240373,
+      "forcedCleanup": false,
+      "errors": [],
+      "sampledPids": [
+        32164
+      ],
+      "remainingProcesses": [],
+      "runtimeDirectoriesStillPresent": [],
+      "logSha256": "232dac5e840e45b3bb06e6e04249b5241f2e1b4f6c797a22c046d916302ac208"
+    },
+    "bind-build": {
+      "exit": 0,
+      "accepted": true,
+      "structuredResults": null,
+      "exitMeaning": null,
+      "sourceIdentity": "b9fe0a23fdb4026641227ec273f05cb2144855271094b6429193b10a7412375a",
+      "sourceUnchanged": true,
+      "elapsedSeconds": 0.854590917006135,
+      "forcedCleanup": false,
+      "errors": [],
+      "sampledPids": [
+        32278
+      ],
+      "remainingProcesses": [],
+      "runtimeDirectoriesStillPresent": [],
+      "logSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    }
+  },
+  "buildFiles": 477,
+  "warnings": "format1sizewarning; lint1030warnings84infos1094notshown. No zero-warning claim.",
+  "release": "Full suite only; preflight remains gated by root result audit."
+}

@@ -1,0 +1,43 @@
+{
+  "state": "same existing exchanges, no added product calls",
+  "sites": [
+    {
+      "path": "packages/server/src/transaction-changefeed.test.ts",
+      "sourceLines": [
+        690,
+        690
+      ],
+      "existingExchanges": 1,
+      "old": "authenticated GETbdp.json status500",
+      "new": "same GET200, parseTransactionalDiscovery; no discovery-limit header; same-response body epoch/view/headPosition agrees with actual context",
+      "contextCaution": "Do not hardcodepos0; existing fixture has mutations. Preserve all changefeed/reopen replay assertions."
+    },
+    {
+      "path": "packages/server/src/transaction-installed-contracts.test.ts",
+      "sourceLines": [
+        404,
+        418,
+        489,
+        489
+      ],
+      "existingExchanges": 12,
+      "old": "two discoveryBoundary invocations of3routes×GETHEAD expect500/limit/noLink/empty",
+      "new": "same3×2×2; Scope204+exact canonicalLink/empty body, descriptor/Directory200 with existing parsers onGET and bodylessHEAD. Preserve same GET length metadata where asserted, current context from the actual phase.",
+      "contextCaution": "Reset phase tuple at each existing helper invocation. Scope first response captures nonempty current tuple; compare same stable-owner phase responses and parsed discovery fields. Do not guess post-sequence position or add calibration request."
+    },
+    {
+      "path": "apps/bdptest/src/transactional-schema-installed.test.ts",
+      "sourceLines": [
+        340,
+        343
+      ],
+      "existingExchanges": 1,
+      "old": "authenticated ScopeGET500 empty/limit",
+      "new": "same GET204+exact service-desc Link, private,no-store, empty body/no old-limit, existing context helperpos0",
+      "contextCaution": "This schema callback already observes current epoch/view and has no prior mutation at this site; preserve all schema traversal/negative/mutation requests and existing budgets."
+    }
+  ],
+  "totalExistingExchanges": 14,
+  "cohortAccounting": "These pre-existing legacy sites are distinct from21newD3 source callbacks/14new source wire and11D3 installed callbacks/190scheduled. Do not add14 to those new-cohort inventories or relabel their execution class.",
+  "allOtherAssertionsAndWorkloadsUnchanged": true
+}

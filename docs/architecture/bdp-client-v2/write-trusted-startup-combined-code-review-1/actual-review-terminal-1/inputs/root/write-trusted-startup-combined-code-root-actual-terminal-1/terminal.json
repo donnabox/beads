@@ -1,0 +1,41 @@
+{
+  "actualRootExecExitCode": 1,
+  "actualRootExecSession": 25510,
+  "actualRootToolTerminal": "Guarded invocation reported child supervise.py nonzero exit1; terminal consumed once, no relaunch",
+  "cause": "NOT INFERRED: full independent chronological/process/source/packet audit pending; inventory TimeoutExpired may precede orphan/executable transition",
+  "classification": "process_ownership_or_cleanup_failure",
+  "cleanup": "UNKNOWN pending fresh independently verified actual recorded-domain census; prior absence never clears failed ownership",
+  "elapsedSeconds": 1029.503925959114,
+  "errors": [
+    "TimeoutExpired",
+    "reviewer_identity:RuntimeError"
+  ],
+  "firstReviewerIdentityFailure": {
+    "elapsedSeconds": 1028.5294692502357,
+    "exceptionType": "RuntimeError",
+    "row": {
+      "comm": "(claude)",
+      "pgid": 46159,
+      "pid": 46159,
+      "ppid": 1,
+      "start": "Sun Oct 18 11:59:42 2026",
+      "state": "Ss"
+    },
+    "stage": "row_executable"
+  },
+  "innerCLIExit": "UNKNOWN",
+  "missing": [
+    "claude-code-review/exit.json",
+    "claude-code-review/source-after.json",
+    "claude-code-review/terminal-results.json",
+    "claude-code-review/final-review.txt"
+  ],
+  "next": "A full terminal audit, root findings/status disposition, preserve failed supervision and partialraw. Other independent G09/D4 work continues.",
+  "noRetry": true,
+  "outerExitRawSha256": "594040ae5dc415a449dac53b8c1c4959ec60c40df4673fb31f960577c113d8df",
+  "ownershipUnknown": true,
+  "rawResultRecords": 0,
+  "session": "2026-10-18T02:16:24Z-549f",
+  "validationReleased": false,
+  "wrapperExitCode": -15
+}

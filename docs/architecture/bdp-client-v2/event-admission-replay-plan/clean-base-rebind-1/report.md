@@ -1,0 +1,9 @@
+# Existing Event PLAN clean-source rebind — CI acceptance pending
+
+All679 current files independently match committed9f89271e/tree30eaca66, sole parentd9c3eb9e, and the actual tested helper-successor-2 source map. Working tree is clean. This is source identity preparation, not exact-green or launch acceptance. One actual CI snapshot39072180684 remains in progress; no conclusion or root acceptance is inferred.
+
+Compared with original historical planning map,668 files match and11 changed. The complete five-phase correction/formatting chain is pinned, including the mistaken Type-order F2 recommendation and subsequent restoration, prior failed attempts, and correct helper-only validation history. Among the six Event plan inputs, all three production files plus installed test are unchanged; only transaction-events.test.ts (aggregate correction/formatting) and transaction-event-sse.test.ts (formatting) changed. No new Event semantics were authored. Actual committed bytes, not the original dirty source map, are this rebind basis.
+
+Selection is byte-identical. Plan changes only the introductory basis, Link predecessor correction chronology and final gates. All functional sections/workloads/deadlines remain intact:17 source callbacks/200 sourceHTTP, historical5+new10 installed,19combined callbacks/215HTTP/19stores. These remain prospective dimensions for the future Event slice, not current observations.
+
+Original plan7b1a80e7/nativec5fad74b and source basis remain unchanged, with exact copies in context. Closed Claude mechanics83e1a9c remain untouched. Native/root rebind closure and explicit exact-green acceptance are still required before final actual PLAN packet/launch; no writer or runtime is released. No source/helper/gate edits, tests, imports, builds, installs, review launch, main reads or publication occurred.

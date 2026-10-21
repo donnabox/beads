@@ -1,0 +1,9 @@
+# Root disposition: finite request retention in SSE proof
+
+Native code review atd534 found one P3: the test asserts actual finite write completion but retains an authored request-attempt list and finite body strings rather than finite exactRequest projections/wire-response bytes. Root fully read the review. No replay/runtime correctness defect or false passing assertion was found.
+
+Accept the reviewer's explicit alternative: narrow the plan's retained “exact request observations” promise for this private bounded witness. Preserve raw SSE response bytes/headers/frames/hash, three finite response body strings used for encoding/full-group parity, source-defined actual write-completion/status assertions and exact-source command/outcome/package/configuration records. Label requests as authored attempts; do not claim their method/URL list is a retained wire projection. Successful counts follow executed test sequencing/assertions, not independent network capture. Failed attempts must remain attempts with their failure phase, never counted as completed exchanges merely because listed.
+
+This is an explicit evidence-retention amendment only; no behavior/assertion/negative-control/count/deadline/cleanup requirement is removed. Existing eight-request positive and separate ignored-header counterfactual still must execute; no result is inferred from static source. Public qualification, arbitrary-authority attestation and general replica claims remain closed. Root authorizes accurate final-report wording without changing source/old idle helper during frozen code council. More complete finite wire retention is deferred to a future evidence requirement, not called implemented.
+
+This disposition supersedes only the plan's overly broad retained-request wording. Original plan/review/source remain preserved. External review and final actual evidence are still pending.

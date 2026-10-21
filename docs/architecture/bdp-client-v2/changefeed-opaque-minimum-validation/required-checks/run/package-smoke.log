@@ -1,0 +1,19 @@
+$ node scripts/smoke-executables.mjs
+bdp: installed --help, --version, and diagnostics passed
+bdptest: installed --help, --version, and diagnostics passed
+bdpbd: installed --help, --version, and diagnostics passed
+bdp: installed clean lifecycle passed
+bdptest: installed clean lifecycle passed
+bdpbd: installed clean lifecycle passed
+bdptest: server.advertisedProfile and bdptest.fixture round-trip through tarball
+bdpbd: server.advertisedProfile and bd.executable round-trip through tarball
+bdptest: --config alone remains lifecycle-only
+bdpbd: --config alone remains lifecycle-only
+bdptest: --serve --config remains fail-closed before bind
+bdpbd: --serve --config remains fail-closed before bind
+bdptest: public Read admission serves discovery and stops cleanly
+bdptest: public profile admission fails closed before bind
+bdpbd: public Read admission serves discovery and stops cleanly
+bdpbd: public profile admission fails closed before bind
+{"event":"installed.reference.observed","claimEligible":false,"configurationIdentity":"46668fb12fee8644c3665d047db981e6b2800b830f20f5953b3f54ad43f52db7","payloadIdentity":"1a3211afe8e479f5b3adf36331254149eb05ac8becdf34c1ea6d025a76bfe087","artifactIdentity":"development-schema5-e1dff401b5caafb04a4d935775d67eeefeae7bcf306d5d100b979a64eef148e7","allNineTargets":true,"stableScope":"https://reference.invalid/acme/"}
+bdp: role isolation lifecycle ignores invalid bdptest/server values

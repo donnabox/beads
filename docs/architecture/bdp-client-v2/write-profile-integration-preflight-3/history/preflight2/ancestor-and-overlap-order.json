@@ -1,0 +1,74 @@
+{
+  "commonBase": "a56254d682cf4623cab22a552e3d2f695f691795",
+  "recordedEdges": [
+    "a562\u2192D1cce",
+    "a562\u2192pureloaderfdd",
+    "D1cce\u2192D3a six-path dirty candidate",
+    "pureloaderfdd\u2192startupd181 nine-path candidate",
+    "D1cce\u2192D4 one-path candidate",
+    "D1cce\u2192carrier16c\u2192carrier28341515 same final source3 map"
+  ],
+  "orderUsed": [
+    "D1",
+    "pureLoader",
+    "D3a",
+    "startup",
+    "D4",
+    "carrier"
+  ],
+  "overlaps": [
+    {
+      "earlier": "D1",
+      "later": "D3a",
+      "paths": [
+        "packages/server/src/transaction-changefeed.test.ts",
+        "packages/server/src/transaction-http.ts"
+      ],
+      "classification": "explicit ancestor replacement, not competing edit",
+      "allLaterBeforeEqualsEarlierAfter": true,
+      "hashTransitions": {
+        "packages/server/src/transaction-changefeed.test.ts": {
+          "earlierBefore": "e3717ff2dfcc9af743e5c963de7f1c75778f827768765e9eb3aebe1545efd4d0",
+          "earlierAfter": "834d13d108cb0577cfbf0f7d32b7072a62deeb9db70a5bd72e960d5cfc42b9e3",
+          "laterBefore": "834d13d108cb0577cfbf0f7d32b7072a62deeb9db70a5bd72e960d5cfc42b9e3",
+          "laterAfter": "e57a05adb613c7bfec646e19e282dcc536a20a3d8f0a5fd2858b734e60183da8"
+        },
+        "packages/server/src/transaction-http.ts": {
+          "earlierBefore": "52a529218f3f999bbc1c86ec3b04b1198b22da7c5104e0d00e87761bb45f4967",
+          "earlierAfter": "be9402cadf5d2888dd42a1904bbd8eeea0b32643bd7d7949f0ae34a8eefdd2e0",
+          "laterBefore": "be9402cadf5d2888dd42a1904bbd8eeea0b32643bd7d7949f0ae34a8eefdd2e0",
+          "laterAfter": "4a59ac8079853c2931e39088949c49b9fdca67929fdc6fc86e89ad382ba7bb87"
+        }
+      }
+    },
+    {
+      "earlier": "pureLoader",
+      "later": "startup",
+      "paths": [
+        "docs/design/startup-configuration.md",
+        "scripts/smoke-executables.mjs"
+      ],
+      "classification": "explicit ancestor replacement, not competing edit",
+      "allLaterBeforeEqualsEarlierAfter": true,
+      "hashTransitions": {
+        "docs/design/startup-configuration.md": {
+          "earlierBefore": "f957814cabb23136a6064b6ea2814bf6a5c454fe841666053bf1a01cae67d175",
+          "earlierAfter": "8a7d348e56adda7d0222d2180763149f348594a770fdd773e01076fb68c9caa8",
+          "laterBefore": "8a7d348e56adda7d0222d2180763149f348594a770fdd773e01076fb68c9caa8",
+          "laterAfter": "2dfc3fd5f3f30c8515baba3db0043724a7865e026d1ccc104c3afe6e61dc7b06"
+        },
+        "scripts/smoke-executables.mjs": {
+          "earlierBefore": "adeaea6e334f8fb6f7af5d09f0cb7ee0b729864affc45cb6baf84a95f1d4d9ae",
+          "earlierAfter": "80c1ecf1d55939fbb0a0fe94aad46bcede1c9d7841dbc3793e00e4493440ddb3",
+          "laterBefore": "80c1ecf1d55939fbb0a0fe94aad46bcede1c9d7841dbc3793e00e4493440ddb3",
+          "laterAfter": "e4f54303820eeee8d6b8941d24244d8a37592bead1aee2a353754331234d7f8c"
+        }
+      }
+    }
+  ],
+  "beforeByteConflicts": [],
+  "overlayRule": "Apply ONLY exact derived owned deltas relative to each stated ancestor; never replace whole679/682/686 snapshots. In particular whole startup snapshot would restore a562 versions of D1/D3a files, and whole cce-derived carrier/D3a snapshots would discard loader/startup additions.",
+  "GitAncestryIndependentlyQueried": false,
+  "recordedAncestryAuthority": "bound root publication/candidate/source-inspection documents, not branch-name inference",
+  "semanticMergeProof": false
+}

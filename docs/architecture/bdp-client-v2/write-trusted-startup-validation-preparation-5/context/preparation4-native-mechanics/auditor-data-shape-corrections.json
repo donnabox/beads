@@ -1,0 +1,8 @@
+{
+  "state": "Read-only audit preflight expectation correction; no candidate mutation",
+  "initialAssumption": "Every preservationReference directly contains origin bytes",
+  "actual": "Two origin rows explicitly describe historical aggregate hashes sealed by predecessor/preparation3-index.json. Their reference contains the index; it binds the aggregate path/hash. Direct live origin, historical index member and current derived aggregate were then verified.",
+  "failureBeforeOutputCreation": true,
+  "sourceOrExecutableRun": false,
+  "evidencePreserved": "Initial assertion and corrected inspection remain in tool transcript."
+}

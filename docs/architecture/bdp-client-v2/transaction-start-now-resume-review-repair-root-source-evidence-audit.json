@@ -1,0 +1,51 @@
+{
+  "source": "902340fcc8d8fcdac337e33faf3461234b65b65a",
+  "files": {
+    "apps/bdptest/src/transactional-sse-installed.test.ts": "0af05a745d5c3ee74fb84adff995c39c6bf1c1ed1891a30dd5e0902f8d859d19",
+    "docs/design/transaction-implementation-progress.md": "97b34a9cc7d4bd6bf973015cc1c96b4c86900174f8354e688e0850dec6e086c1",
+    "docs/specs/bdp.md": "8a02d57e929b4cdef2495690864a21c5f107f8b1509308ee89e9d40714caa058",
+    "packages/conformance/src/transactional-catalog.test.ts": "b9f7b0c096554adb305e229af54495f4b6609f9ac50f413ca8478d7da8bf52ea",
+    "packages/server/src/transaction-sse.test.ts": "7c8f45a2456c33a90b61b43388cf33d67784c47d0f63b95505f204b4ea1cd9b0",
+    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-start-now-resume-review-repair/packed-positive/packs/protocol.tgz": "4683cb6c6333c332a4bcb7efc3e28f32d1d8d06a7264913f65c31d3a826d4227",
+    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-start-now-resume-review-repair/packed-positive/packs/server.tgz": "e0dd60d3101768be2d1ddeb5b45fd49939aefb01769cba7c0b7ad48d33f04d97",
+    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-start-now-resume-review-repair/packed-counterfactual/packs/protocol.tgz": "4683cb6c6333c332a4bcb7efc3e28f32d1d8d06a7264913f65c31d3a826d4227",
+    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-start-now-resume-review-repair/packed-counterfactual/packs/server.tgz": "64aaa227c9338cefebeffb758840538316699a598d40a31132536bbecaffbe85",
+    "packed-positive/observations.json": "daa858892085ae5c5f195e691150b5dc533579d3721bcebe77b8cc6430a4990f",
+    "packed-counterfactual/observation.json": "9a18980bacfb6cacde6339b8b09067a0150ac4c39db710d5ec9144aea4b55a55",
+    "packed-counterfactual/minimum-wait-discrimination.json": "e1322d5f1f9cc6d3d398801ea2fc36b1db2ec9590c8cfec7ec786a36d90ed061",
+    "cleanup-fault-probe.json": "6342151643ab258772fe82b37370b3bb64356c35ef1d52090c9051cac9e8e05b",
+    "focused.json": "c78cd0477e9022081f7b5e7eb6ab3d4c9c49ef3e15cd929eb513b515380e5545",
+    "report.md": "e30db5601197449acb14963653378ed42222eac6920bdf3b9ea48cd2617b6387",
+    "summary.json": "9079f9e120bf55abd075ecde430e69d4b7c5a87f83f452b8370bd57aaae82456",
+    "source.json": "5e4598bfa11bd789d2428a3808f5233dcf60493abe87f62515543760f1cbc1a5",
+    "exits.json": "56a1a63f4f84d96225327bb2cb7ade9b47ea8f1b2864ada7d7c246c510954e39",
+    "cleanup.json": "2a586684ecabd7516aff16ab2bee0b034f7c57555f7667d8aba335a5b3c44366"
+  },
+  "positive": {
+    "idleMilliseconds": 15186.441833,
+    "newAuthoredAttempts": 8,
+    "finiteParityBodies": 3,
+    "streamGroupFrames": [
+      1,
+      2
+    ],
+    "directoryRemoved": true
+  },
+  "control": {
+    "phase": "offline-G2-before-live-G3",
+    "failures": [
+      "offline-G2-before-live-G3: saved-checkpoint replay did not deliver the offline group"
+    ],
+    "authoredAttempts": 5,
+    "reconnectGroupFrames": 0,
+    "directoryRemoved": true
+  },
+  "combinedWithHistorical": {
+    "authoredRequests": 34,
+    "children": 6,
+    "maximumRequests": 37,
+    "maximumChildren": 6
+  },
+  "limitations": "Authored attempt counts, not independent target counters; finite exact requests not retained. Old d534 execution remains historical. No profile qualification.",
+  "finalReportRead": true
+}

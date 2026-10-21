@@ -1,0 +1,19 @@
+--- execution-preparation-v2/run-source.py
++++ execution-preparation-v3/run-source.py
+@@ -15,13 +15,13 @@
+ P = Path(__file__).resolve().parent
+ D = P.parent
+ W = Path("/Users/dbox/repos/wt/vickie/vickie-minimum-receiving")
+-E = D / "run-v2"
++E = D / "run-v3"
+ L = Path("/Users/dbox/repos/wt/vickie/bdp-integration-logs")
+ GUARD = L / "guarded-action.py"
+-BINDING = D / "type-repair" / "source-binding.json"
++BINDING = D / "receiving-test-repair" / "source-binding.json"
+ COMMANDS = P / "commands.json"
+ BINDING_SHA = None  # Actual frozen manifest must be pinned by root gate, never guessed.
+-COMMANDS_SHA = '08c04e2f254b9c85a45a0500c5ecc1a7d80292496a6539b81bef55c635cf9622'
++COMMANDS_SHA = 'ba8e8822045998731e290600a3bb3cadb922075da685d2166eccad756713927e'
+ GUARD_SHA = 'fd81ba029cd4e7c7e60623df89e8292af91141d311d9ce789ed19e2152375e84'
+ HEAD = '5d7fa3f049fa0b4db3aa8dae20e20d8e47fb3854'
+ TREE = '057f879132074166f2c0f643a8b45bbd9dd47c6f'

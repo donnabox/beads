@@ -1,0 +1,58 @@
+# Code review — trusted reference-deployment startup (base a56254d, tree 144f278)
+
+Scope verified: all three new files read in full, the full twelve-file patch read in full, plus the changed regions and the helpers they depend on (`development-contracts.ts` `administrativeData`/`administrativeArray`, `development-authority.ts` `DEVELOPMENT_OWNER_LIMITS`, `installed-reference-configuration.ts`, `transaction-installed-configuration.ts`, `transaction-runtime-configuration.ts` incl. local `fields`/`captureSeams`/`readOptions`, `protocol/src/json-admission.ts` decoder/`mapLosslessJson`/`admitJsonNumbers`, `config/src/index.ts` `StartupConfig`/`rawRead`/section assembly/`redactStartupConfig`).
+
+There **are** concrete findings; none is a boundary breach of items 1–6, and I found no correctness or containment defect in the N1 depth/node correction.
+
+## Findings
+
+**1. Medium — nested `bdptest` allowlist cannot accept the real config section.**
+`packages/server/src/reference-deployment.ts:150` validates with `fields(own.bdptest, [], ["fixture"])`. The section it is meant to receive is now `{fixture?, deploymentFile?}` (`packages/config/src/index.ts:82`, built at `:570-573`). Every other `ReferenceDeploymentInput` member is a byte-for-byte pass-through of a config section (`server` matches `:67-80` exactly; `scope` matches `:65`), so a caller will forward `config.bdptest` — and whenever `deploymentFile` is set (i.e. the only case where this loader runs) the key is outside the allowlist and the load fails with a blanket `"configuration"` refusal. The fixture-conflict guard is therefore unusable in exactly the configuration it exists for. TypeScript does not catch it: `{fixture?: string; deploymentFile?: string}` is structurally assignable to `{fixture?: string}` when passed as a variable. Missing witness: `reference-deployment.test.ts:404` only covers `bdptest: {fixture: "minimal"}`; nothing covers `{deploymentFile}` or `{fixture, deploymentFile}`.
+Fix: `fields(own.bdptest, [], ["fixture", "deploymentFile"])` (optionally require equality with `own.deploymentFile`), widen `ReferenceDeploymentInput.bdptest`, add both witnesses.
+
+**2. Low-Medium (security caveat, within accepted provenance) — public handle publishes secret-committing digests with no "do not emit" rule.**
+`reference-deployment.ts:269` puts `sha256(whole file bytes)` on the frozen public handle; the file contains plaintext tokens. RU additionally publishes `authenticationIdentity` = `sha256([{principal, tokenDigest: sha256(token)}])` (`installed-reference-configuration.ts:170-172`). Both are offline guess-confirmation oracles for low-entropy operator tokens. contract.md accepts "artifact/file identities … as provenance," and `transaction-runtime-configuration.ts:243-244` already states digests are not secrecy guarantees, so this is inside scope — but the doc gives the explicit "must not contain secrets" caveat only to the *path*, not to the handle, and `expect(JSON.stringify(prepared)).not.toContain(token)` (`reference-deployment.test.ts:258`) proves only absence of verbatim echo, not non-commitment.
+Fix: one sentence in `docs/design/startup-configuration.md` stating the handle's digests commit to file contents and must not be emitted in diagnostics (or domain-separate/salt `fileDigest`).
+
+**3. Low — TX host allowlist is a single-sourced hardcode.**
+`reference-deployment.ts:154` hardcodes `["127.0.0.1"]` for TX. RU's list is re-validated downstream (`installed-reference-configuration.ts:100`), but TX never receives a listener, so this is the sole gate and duplicates `TRANSACTION_RUNTIME_DEFAULTS.transport.host` (`transaction-runtime-configuration.ts:118`) with no cross-check.
+Fix: compare against `TRANSACTION_RUNTIME_DEFAULTS.transport.host`.
+
+**4. Low — TX page formula duplicated ahead of the authoritative comparison.**
+`reference-deployment.ts:167-170` recomputes `Math.min(readDefaultItems, receiptMaximumItems)` / `receiptMaximumItems`, the same expression as `transaction-runtime-configuration.ts:334-340`. contract.md asks to derive the TX tuple from captured `readOptions`. A future divergence refuses valid configs as `"configuration"` before the authoritative post-capture check (`reference-deployment.ts:321-324`) can report `"contract"`.
+Fix: pre-file, snapshot limits generically; rely on the one `readOptions` comparison.
+
+**5. Low — two non-informative TX preflight conditions.**
+`reference-deployment.ts:319-320` is the exact negation of `liveStreamsAvailable`, already checked at `:318` (`transaction-runtime-configuration.ts:307-308`). `:317` (`Object.keys(preflight.seams).length !== 0`) is a tautology at this call site: the loader never passes seams, `rawSeams` defaults to `{}`, and `captureSeams` returns only present keys. Harmless, but neither is a witness of anything caller-controlled.
+Fix: drop the duplicate, or comment both as refactor tripwires.
+
+**6. Low — unconditional 33 MB zero-filled allocation per load.**
+`reference-deployment.ts:190` allocates `MAXIMUM_FILE_BYTES + 1` for every ordinary file, after `:189` already bounded `stat.size`. (Correct choice of `alloc` over `allocUnsafe`: no uninitialized bytes can escape through `subarray(0, length)`.)
+Fix: `Buffer.alloc(Math.min(stat.size + 1, MAXIMUM_FILE_BYTES + 1))`, and only if that buffer fills, continue into a second bounded buffer up to MAX+1 — preserving the real stale-stat bound.
+
+**7. Low, missing witness — "one handle" is not asserted quantitatively.**
+`reference-deployment.test.ts:349` reads `vi.mocked(open).mock.calls.length` but never asserts it is 1; the close test at `:605` installs the counting spy via `mockImplementationOnce`, so a second open would fall through to the real `open` and still leave `closeCalls === 1`.
+Fix: `expect(vi.mocked(open)).toHaveBeenCalledTimes(1)` after a successful load.
+
+**8. Low, missing witnesses — accept-side bounds and the mutated field.**
+Only MAX+1 is refused (`:591-600`, which exercises the `stat.size` branch at `reference-deployment.ts:189`; the growth mock at `:622` exercises `:197`). Nothing witnesses that exactly 32 MiB is accepted, or that an empty file yields `"syntax"`. Separately, `:340-356` mutates `input.server.limits.page.maximumItems` but asserts only `canonicalScope`/`listener.port` — not `handle.preflightReadLimits`, the field that mutation targets.
+Fix: assert `handle.preflightReadLimits` in the snapshot test; optionally one exact-MAX accept case.
+
+**9. Low — path grammar duplicated across packages with no equivalence witness.**
+`config/src/index.ts:1080-1092` and `reference-deployment.ts:99-110` are byte-identical rules. `@bdp/server` does not depend on `@bdp/config` (`packages/server/package.json:24-27`), so the duplication is structural and correct as defense-in-depth, but can diverge silently.
+Fix: cross-reference in both comments, or add an equivalence test.
+
+**10. Informational — error-code edges.** `reference-deployment.ts:213` refuses `"internal"` during the `syntax` phase for an unreachable `undefined` child; and `phase = "contract"` spans the whole capture/compile stage, so a genuine internal defect inside a capture surfaces as a caller-contract error. Both look deliberate (non-echo); one doc sentence would pin it.
+
+## Verified, non-trivially
+
+- The spread-override hazard contract.md warns about is actually closed: `administrativeData` returns an `Object.fromEntries` whitelist under an exact own-key-count check, so `...configuration` (`:286-290`, `:310`) cannot shadow the injected `scope`/`listener` despite appearing last. Witnessed by the envelope-`listener` case.
+- `boundLossless` runs before `admitJsonNumbers`, so `mapLosslessJson`'s unbounded `tasks` worklist is already bounded to ≤100000 nodes / depth ≤17. The arithmetic matches the 100000/100001 and depth-16/17 witnesses exactly; `frames` is ≤17 deep, children are lazily iterated, and `JsonNumberLiteral` is charged atomically. No additional traversal worklist was introduced.
+- Decoded containers are `Object.create(null)` (`json-admission.ts:136`, `:267`), so `__proto__` cannot pollute and `for…in` sees only own keys; `administrativeData`'s prototype gate accepts them.
+- Proxy/accessor refusal precedes any trap-triggering operation (`isProxy` before `Reflect.ownKeys`; descriptors + `hasOwn("value")` instead of reads), so the `getters === 0` witness is meaningful.
+- The public `.d.ts` is structurally self-contained (no imports; `PreparedSummary` is emitted locally), so private capture types cannot leak into declarations by construction. The packed-dist inventory is compared as a `Set` (`smoke-executables.mjs:402-404`), so the non-alphabetical insertion of the four new file pairs is fine.
+- RU 20/100/4096/32/256/60000 and TX 2/32/4096/32/256/1000 are reachable through config maxima and the `defaultItems ≤ maximumItems` rule; `transactionReceiptMaximum()` default is 32 (`transaction-batch.ts:62`).
+
+## Static-review limitations
+
+Nothing was executed. No compilation, no vitest run, no build, no `npm pack`/install, no smoke run, no runtime/FD/socket/port observation, and no inspection of actual emitted `.d.ts`/`.js`. All statements about tests, declarations, packaging inventory and installed behavior are reads of source text only; I make no claim that any of them pass. Not verified: `CONTRACT_ARTIFACT_CEILINGS` numeric values; tsconfig emit coverage for the two new modules; and whether the deeper compile path (`ingestContractArtifacts`, `compileDevelopmentContracts`, `createDevelopmentAccessPolicy` internals) is safe against the newly deep-frozen `projectedInput` — I read their entry points, not their full bodies. I did not read unchanged regions of `transaction-snapshot.test.ts` or `read-sequence-lifecycle.test.ts`.

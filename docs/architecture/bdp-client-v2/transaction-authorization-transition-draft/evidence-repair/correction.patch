@@ -1,0 +1,224 @@
+--- a/packages/server/src/transaction-authorization.test.ts
++++ b/packages/server/src/transaction-authorization.test.ts
+@@ -1,9 +1,15 @@
+-import { copyFileSync, mkdtempSync, rmSync } from "node:fs";
++import { copyFileSync, mkdtempSync, readFileSync, rmSync } from "node:fs";
+ import { tmpdir } from "node:os";
+ import path from "node:path";
+ import { DatabaseSync } from "node:sqlite";
+ import { afterEach, expect, it } from "vitest";
+-import { isReadProblem, parseTypeDescriptor } from "@bdp/protocol";
++import {
++  isReadProblem,
++  isJsonSchemaUri,
++  isJsonSchemaDateTime,
++  parseTypeDescriptor,
++} from "@bdp/protocol";
++import { Ajv2020 } from "ajv/dist/2020.js";
+ import { prepareTransaction, prepareTransactionSequence } from "./transaction-batch.js";
+ import { openTransactionStore, type TransactionStoreOptions } from "./transaction-store.js";
+ import { createTransactionService, type TransactionServiceOptions } from "./transaction-service.js";
+@@ -17,6 +23,19 @@
+ const scope = "https://example.test/authorization/";
+ const type = scope + "types/bead";
+ const types = [parseTypeDescriptor({ id: type, name: "Bead", describes: "bead", conformsTo: [] })];
++const receiptValidators = (() => {
++  const schema = JSON.parse(
++    readFileSync(new URL("../../../schemas/bdp-v0.schema.json", import.meta.url), "utf8"),
++  );
++  const ajv = new Ajv2020({ strict: true, allErrors: true });
++  ajv.addFormat("uri", { type: "string", validate: isJsonSchemaUri });
++  ajv.addFormat("date-time", { type: "string", validate: isJsonSchemaDateTime });
++  ajv.addSchema(schema);
++  return {
++    receipt: ajv.compile({ $ref: `${schema.$id}#/$defs/mutationReceipt` }),
++    page: ajv.compile({ $ref: `${schema.$id}#/$defs/mutationReceiptPage` }),
++  };
++})();
+ const cleanup: (() => void | Promise<void>)[] = [];
+ afterEach(async () => {
+   const failures: unknown[] = [];
+@@ -296,6 +315,8 @@
+   } finally {
+     lease.release();
+   }
++  f.reopen();
++  expect(f.owner.authorizationSnapshot()).toEqual(before);
+ });
+ 
+ it("fences publication failure and recovers the committed empty policy", () => {
+@@ -393,6 +414,10 @@
+   const old = context(f.owner);
+   f.owner.replaceAuthorizationPolicy();
+   const observed = f.owner.readReceipt("p", mixed.id);
++  expect(
++    receiptValidators.receipt(observed.receipt),
++    JSON.stringify(receiptValidators.receipt.errors),
++  ).toBe(true);
+   expect(observed.receipt).toEqual({
+     ...before,
+     results: [{ operationIndex: 0, outcome: "withheld" }, full[1]],
+@@ -402,6 +427,11 @@
+     authorizationView: f.owner.authorizationSnapshot().authorizationView,
+   });
+   const afterPage = f.owner.readReceiptPage("p", before.next);
++  if (afterPage.kind !== "page") throw new Error("projected issued page required");
++  expect(
++    receiptValidators.page(afterPage.page),
++    JSON.stringify(receiptValidators.page.errors),
++  ).toBe(true);
+   expect(afterPage).toEqual({
+     ...firstPage,
+     page: {
+@@ -472,7 +502,9 @@
+     await Promise.resolve();
+   };
+   try {
+-    expect(() => f.owner.replaceAuthorizationPolicy()).toThrow("authorization admission refused");
++    expect(() => f.owner.replaceAuthorizationPolicy()).toThrow(
++      expect.objectContaining({ code: "temporarily-unavailable" }),
++    );
+     const cancelled = new AbortController();
+     const first = service.replaceAuthorizationPolicy({ timeoutMs: 1000, signal: cancelled.signal });
+     const observedFirst = first.then(
+@@ -487,7 +519,7 @@
+         "paused",
+         prepareTransaction(scope, JSON.stringify({ operations: [create("paused")] })),
+       ),
+-    ).toThrow("authorization admission refused");
++    ).toThrow(expect.objectContaining({ code: "temporarily-unavailable" }));
+     const reason = new Error("administrative cancellation");
+     cancelled.abort(reason);
+     expect(await observedFirst).toBe(reason);
+@@ -584,7 +616,7 @@
+       "seed",
+       prepareTransaction(scope, JSON.stringify({ operations: [create("a")] })),
+     ),
+-  ).toThrow("authorization admission refused");
++  ).toThrow(expect.objectContaining({ code: "forbidden" }));
+   expect(f.owner.readReceipt("bob", receipt.id).receipt).toBeUndefined();
+   expect(f.owner.readReceipt("alice", receipt.id).receipt?.detail).toBe("withheld");
+   const page = f.owner.readChanges("genesis");
+@@ -603,7 +635,12 @@
+       events: [],
+     },
+   ]);
+-  expect(page.page.groups[0]?.checkpoint).not.toBe("genesis");
++  const checkpoint = page.page.groups[0]?.checkpoint;
++  if (typeof checkpoint !== "string" || typeof receipt.transaction !== "string")
++    throw new Error("actual checkpoint and seed transaction required");
++  expect(checkpoint).not.toBe("genesis");
++  expect(checkpoint).not.toContain(receipt.transaction);
++  expect(JSON.stringify(page.page.groups)).not.toContain(receipt.transaction);
+   expect(f.owner.inspect().resources).toHaveLength(1);
+   await service.close();
+ });
+--- a/packages/server/src/transaction-runtime.test.ts
++++ b/packages/server/src/transaction-runtime.test.ts
+@@ -258,7 +258,8 @@
+ type AuthorizationResponse = {
+   status: number;
+   headers: Record<string, string>;
+-  body: Record<string, unknown>;
++  body: Record<string, unknown> | undefined;
++  bodyBytes: number;
+ };
+ function authorizationContext(headers: Record<string, string>) {
+   return {
+@@ -274,7 +275,7 @@
+     validate(response.body),
+     `authorization-transition:schema ${schema} ${JSON.stringify(validate.errors)}`,
+   ).toBe(true);
+-  return response.body;
++  return authorizationObject(response.body);
+ }
+ function authorizationReceipt(
+   response: AuthorizationResponse,
+@@ -343,7 +344,7 @@
+     >;
+     request: (
+       target: string,
+-      method?: "GET" | "POST",
++      method?: "GET" | "HEAD" | "POST",
+       body?: string,
+       key?: string,
+     ) => Promise<AuthorizationResponse>;
+@@ -389,7 +390,7 @@
+     const active = runtime;
+     const request = async (
+       target: string,
+-      method: "GET" | "POST" = "GET",
++      method: "GET" | "HEAD" | "POST" = "GET",
+       body?: string,
+       key?: string,
+     ): Promise<AuthorizationResponse> => {
+@@ -439,7 +440,9 @@
+                   Array.isArray(v) ? v.join(", ") : (v ?? ""),
+                 ]),
+               );
+-              const value = authorizationObject(JSON.parse(text));
++              if (method === "HEAD" && bytes !== 0)
++                throw Error("authorization HEAD delivered body bytes");
++              const value = method === "HEAD" ? undefined : authorizationObject(JSON.parse(text));
+               observations.push({
+                 index: attempts,
+                 method,
+@@ -457,7 +460,7 @@
+                   headers["bdp-scope-position"],
+                 ],
+               });
+-              received.resolve({ status: res.statusCode!, headers, body: value });
++              received.resolve({ status: res.statusCode!, headers, body: value, bodyBytes: bytes });
+             } catch (error) {
+               received.reject(error);
+             }
+@@ -586,7 +589,7 @@
+ }
+ 
+ it("narrows current Transactional visibility and fences issued handles after policy publication", async () => {
+-  await withAuthorizationRuntime("visibility-handles", 17, async (f) => {
++  await withAuthorizationRuntime("visibility-handles", 18, async (f) => {
+     const ids = Array.from({ length: 32 }, (_, index) => `b${String(index).padStart(2, "0")}`);
+     const firstBody = authorizationSeed(ids);
+     const first = authorizationReceipt(
+@@ -655,6 +658,7 @@
+     ).toEqual({ generation: 1, readPolicy: "empty", canMutate: false, viewChanged: true });
+     await authorizationBound(stream.closed, "authorization-transition:generation-and-lease", 1000);
+     expect(streamClosed, "authorization-transition:generation-and-lease").toBe(true);
++    expect(stream.frames.filter((frame) => frame.startsWith("id:"))).toEqual([]);
+     const current = { ...second.context, authorizationView: policy.authorizationView };
+     const problem = async (target: string, status: number, code: string) => {
+       const response = await f.request(target);
+@@ -692,7 +696,12 @@
+     expect(reconnect.frames.filter((frame) => frame.startsWith("id:"))).toEqual([]);
+     const reconnectProblem = authorizationObject(JSON.parse(reconnect.body));
+     authorizationChecked(
+-      { status: reconnect.status, headers: reconnect.headers, body: reconnectProblem },
++      {
++        status: reconnect.status,
++        headers: reconnect.headers,
++        body: reconnectProblem,
++        bodyBytes: Buffer.byteLength(reconnect.body),
++      },
+       409,
+       "transactionalProblem",
+     );
+@@ -712,6 +721,18 @@
+     delete projected.expiresAt;
+     expect(retained).toEqual(projected);
+     expect(authorizationContext(receiptResponse.headers)).toEqual(current);
++    const receiptHead = await f.request(authorizationText(first.receipt.id), "HEAD");
++    expect(receiptHead.status).toBe(200);
++    expect(receiptHead.body).toBeUndefined();
++    expect(receiptHead.bodyBytes).toBe(0);
++    expect(receiptResponse.headers["content-length"]).toBe(String(receiptResponse.bodyBytes));
++    expect(receiptHead.headers["content-length"]).toBe(receiptResponse.headers["content-length"]);
++    expect(authorizationContext(receiptHead.headers)).toEqual(current);
++    for (const response of [receiptResponse, receiptHead]) {
++      expect(response.headers["cache-control"]).toBe("private, no-store");
++      expect(response.headers.etag).toBeUndefined();
++      expect(response.headers["last-modified"]).toBeUndefined();
++    }
+     const replay = await f.request(
+       f.runtime.targets.batch,
+       "POST",

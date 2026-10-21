@@ -1,0 +1,32 @@
+[
+  {
+    "status": "NOT_RELEASED",
+    "condition": "Any author/runtime barrier unresolved",
+    "effect": "No acquisition; closed"
+  },
+  {
+    "status": "OBSERVATION_COMPLETE_ERROR_RETAINED",
+    "condition": "Child1, genuine actionable error detail retained, all independentcapture/source/tool/clock/cleanup facts satisfied",
+    "effect": "Diagnostic fact only; product lint remains FAILED; STOP for root disposition"
+  },
+  {
+    "status": "OBSERVATION_COMPLETE_ERROR_UNIDENTIFIED",
+    "condition": "Child1 and complete capture but no actionable error detail (e.g. failure aggregate)",
+    "effect": "Cause UNKNOWN; stop; no automatic extra observation"
+  },
+  {
+    "status": "UNEXPECTED_ZERO",
+    "condition": "Child0",
+    "effect": "No inference original127 diagnostics fixed; refuse planned expected-error observation and stop"
+  },
+  {
+    "status": "UNEXPECTED_OR_INFRASTRUCTURE_EXIT",
+    "condition": "Child otherexit/null, wrapper1, abnormal fatal/tool/gate/refusal/parse state",
+    "effect": "FAILED or UNKNOWN; preserve all actual bytes; no B/C normal route or retry"
+  },
+  {
+    "status": "INCOMPLETE_OR_LATE",
+    "condition": "Missing raw/EOF/terminal/identity/close/registry/census/witness, >=115normal or >=120outer, forcedcleanup, source/tooldiff",
+    "effect": "FAILED/UNKNOWN, no positive observation/cleanup/nextstage credit"
+  }
+]

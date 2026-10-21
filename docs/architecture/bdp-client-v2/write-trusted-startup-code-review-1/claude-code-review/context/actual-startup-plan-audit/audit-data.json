@@ -1,0 +1,590 @@
+{
+  "observedUtc": "2026-10-18T03:53:52.417026+00:00",
+  "auditClassification": "clean_complete_actual_review_pending_root_findings_disposition",
+  "approvalInferred": false,
+  "sourceAuthoringReleased": false,
+  "raw": {
+    "bytes": 2272500,
+    "sha256": "19d6aa6c94a038f539fb05589d585d898d17944de7c3ec19a85143d987b88ff5",
+    "records": 3657,
+    "invalidRecords": 0,
+    "terminalResultCount": 1,
+    "endsNewline": true,
+    "terminalSubtype": "success",
+    "isError": false,
+    "permissionDenials": [],
+    "resultTextBytes": 17177,
+    "durationMs": 667393,
+    "numTurns": 69,
+    "toolCalls": {
+      "Read": 41,
+      "Grep": 25,
+      "Glob": 2
+    },
+    "toolErrors": 0,
+    "init": [
+      {
+        "model": "claude-opus-5[1m]",
+        "tools": [
+          "Glob",
+          "Grep",
+          "Read"
+        ],
+        "mcp_servers": [],
+        "permissionMode": "default"
+      }
+    ],
+    "actualMainModels": [
+      "claude-opus-5"
+    ],
+    "modelUsageKeys": [
+      "claude-haiku-4-5-20251001",
+      "claude-opus-5[1m]"
+    ],
+    "subagentStats": {
+      "spawned": 0,
+      "requested": {
+        "background": 0,
+        "foreground": 0,
+        "unset": 0
+      },
+      "started_in_background": 0,
+      "max_depth": 0,
+      "spawned_by_subagents": 0,
+      "completed": 0,
+      "failed": 0,
+      "killed": {
+        "parent": 0,
+        "user": 0,
+        "system": 0
+      },
+      "refused": {
+        "depth_limit": 0,
+        "concurrency_limit": 0,
+        "budget": 0
+      },
+      "by_type": {}
+    }
+  },
+  "runner": {
+    "classification": "review_complete",
+    "reviewComplete": true,
+    "approvalInferred": false,
+    "exitCode": 0,
+    "timeout": false,
+    "elapsedSeconds": 668.7744886251166,
+    "sourceInputsUnchanged": true,
+    "packetUnchanged": true,
+    "sampledPids": [
+      56019
+    ],
+    "remainingProcesses": [],
+    "cleanupRequired": false,
+    "wrapperErrorType": null,
+    "streamRecords": 3657,
+    "streamBytes": 2272500,
+    "parseErrors": 0,
+    "terminalResultCount": 1,
+    "lastEventElapsed": 668.2526645003818,
+    "streamSha256": "19d6aa6c94a038f539fb05589d585d898d17944de7c3ec19a85143d987b88ff5",
+    "stderrSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  "outerSummary": {
+    "classification": "review_complete_pending_root_adjudication",
+    "elapsedSeconds": 670.3528616670519,
+    "wrapperExitCode": 0,
+    "finalRoleVerified": true,
+    "forcedCleanup": false,
+    "errors": [],
+    "remainingOwned": [],
+    "ownershipUnknown": false,
+    "authenticatedReviewers": [
+      {
+        "pid": 56019,
+        "pgid": 56019,
+        "start": "Sat Oct 17 20:41:10 2026",
+        "recordStarted": "2026-10-18T03:41:10.119645+00:00",
+        "argv": [
+          "/opt/homebrew/bin/claude",
+          "--safe-mode",
+          "-p",
+          "--tools",
+          "Read,Glob,Grep",
+          "--allowedTools",
+          "Read,Glob,Grep",
+          "--disable-slash-commands",
+          "--strict-mcp-config",
+          "--mcp-config",
+          "{\"mcpServers\":{}}",
+          "--no-session-persistence",
+          "--output-format",
+          "stream-json",
+          "--verbose",
+          "--include-partial-messages"
+        ]
+      }
+    ],
+    "unanchoredKnownGroupsAtLastInventory": {},
+    "unanchoredKnownGroupsObserved": {}
+  },
+  "roleChecks": {
+    "count": 45,
+    "allZero": true
+  },
+  "sourceInvariant": true,
+  "counts": {
+    "sourceFiles": 679,
+    "contexts": 39,
+    "artifacts": 15,
+    "frozenPacketFiles": 52,
+    "frozenAdapterFiles": 9,
+    "checkedObservedPidsIncludingSupervisor": 121,
+    "observedGroups": 47
+  },
+  "processClosure": {
+    "inventoryUtc": "2026-10-18T03:53:52.417026+00:00",
+    "matchingCurrentRows": [],
+    "limitation": "Finite actual observed PID/group absence; never-observed detached descendants or system sockets not claimed."
+  },
+  "currentExactSession": "2026-10-18T02:16:24Z-549f",
+  "twoLiteralFlagOnlyReleasesVerified": true,
+  "historicalIndexExceptions": {
+    "packet": "binding.json false\u2192true and execution outputs outside52frozenfiles",
+    "adapter": "control.json false\u2192true and attempt outside9frozenfiles",
+    "parent": "original CLOSED entries stay historical; selected adapter/root-release/audit are separately attributed"
+  },
+  "executionHashes": {
+    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-trusted-startup-next-plan-2/claude-plan-review/source-before.json": {
+      "sha256": "f4bf654d1130f452a927d3c29fd2d4ce719498d849fa70fc2d914c02a5ab8141",
+      "bytes": 101031
+    },
+    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-trusted-startup-next-plan-2/claude-plan-review/source-after.json": {
+      "sha256": "f4bf654d1130f452a927d3c29fd2d4ce719498d849fa70fc2d914c02a5ab8141",
+      "bytes": 101031
+    },
+    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-trusted-startup-next-plan-2/claude-plan-review/process.json": {
+      "sha256": "03cee01d07ea41d8b0091f5532237a959ae114f516361ca523481502c435d191",
+      "bytes": 527
+    },
+    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-trusted-startup-next-plan-2/claude-plan-review/stream.jsonl": {
+      "sha256": "19d6aa6c94a038f539fb05589d585d898d17944de7c3ec19a85143d987b88ff5",
+      "bytes": 2272500
+    },
+    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-trusted-startup-next-plan-2/claude-plan-review/progress.jsonl": {
+      "sha256": "f21f0c85389dd541611f17f9996311f9de337ccdb0ada74131b3eead0cf27a1a",
+      "bytes": 723326
+    },
+    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-trusted-startup-next-plan-2/claude-plan-review/stderr.txt": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-trusted-startup-next-plan-2/claude-plan-review/exit.json": {
+      "sha256": "352239e3136a049623f1194ece4391881f6a85bda01aba97cdfec3141ef8a512",
+      "bytes": 662
+    },
+    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-trusted-startup-next-plan-2/claude-plan-review/final-review.txt": {
+      "sha256": "1450385fcf727eaa8dde9718ab0c714f0b79ef7731be64a4740b5ec6464352d9",
+      "bytes": 17177
+    },
+    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-trusted-startup-next-plan-2/claude-plan-review/terminal-results.json": {
+      "sha256": "f2fc4096bc5b9892538834127c69199b46bf354b7ac74c76420915db50866993",
+      "bytes": 20652
+    },
+    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-trusted-startup-next-plan-2/launch-supervision-T1-successor-2/attempt/guard-021.stdout": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-trusted-startup-next-plan-2/launch-supervision-T1-successor-2/attempt/guard-042.stdout": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-trusted-startup-next-plan-2/launch-supervision-T1-successor-2/attempt/guard-033.stdout": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-trusted-startup-next-plan-2/launch-supervision-T1-successor-2/attempt/guard-005.stdout": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-trusted-startup-next-plan-2/launch-supervision-T1-successor-2/attempt/guard-017.stdout": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-trusted-startup-next-plan-2/launch-supervision-T1-successor-2/attempt/guard-009.stdout": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-trusted-startup-next-plan-2/launch-supervision-T1-successor-2/attempt/guard-001.stderr": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-trusted-startup-next-plan-2/launch-supervision-T1-successor-2/attempt/outer-progress.jsonl": {
+      "sha256": "7a7e72c279087425df44a1df653ee0427972d8aa1458aa0b19a1eb1c1a6adbee",
+      "bytes": 292820
+    },
+    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-trusted-startup-next-plan-2/launch-supervision-T1-successor-2/attempt/guard-013.stderr": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-trusted-startup-next-plan-2/launch-supervision-T1-successor-2/attempt/guard-025.stderr": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-trusted-startup-next-plan-2/launch-supervision-T1-successor-2/attempt/guard-037.stderr": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-trusted-startup-next-plan-2/launch-supervision-T1-successor-2/attempt/guard-029.stderr": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-trusted-startup-next-plan-2/launch-supervision-T1-successor-2/attempt/wrapper.stderr": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-trusted-startup-next-plan-2/launch-supervision-T1-successor-2/attempt/guard-011.stderr": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-trusted-startup-next-plan-2/launch-supervision-T1-successor-2/attempt/guard-003.stderr": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-trusted-startup-next-plan-2/launch-supervision-T1-successor-2/attempt/guard-035.stderr": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-trusted-startup-next-plan-2/launch-supervision-T1-successor-2/attempt/guard-044.stderr": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-trusted-startup-next-plan-2/launch-supervision-T1-successor-2/attempt/guard-039.stderr": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-trusted-startup-next-plan-2/launch-supervision-T1-successor-2/attempt/guard-027.stderr": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-trusted-startup-next-plan-2/launch-supervision-T1-successor-2/attempt/guard-031.stdout": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-trusted-startup-next-plan-2/launch-supervision-T1-successor-2/attempt/guard-040.stdout": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-trusted-startup-next-plan-2/launch-supervision-T1-successor-2/attempt/guard-023.stdout": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-trusted-startup-next-plan-2/launch-supervision-T1-successor-2/attempt/guard-015.stdout": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-trusted-startup-next-plan-2/launch-supervision-T1-successor-2/attempt/guard-019.stdout": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-trusted-startup-next-plan-2/launch-supervision-T1-successor-2/attempt/guard-007.stdout": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-trusted-startup-next-plan-2/launch-supervision-T1-successor-2/attempt/guard-040.stderr": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-trusted-startup-next-plan-2/launch-supervision-T1-successor-2/attempt/guard-023.stderr": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-trusted-startup-next-plan-2/launch-supervision-T1-successor-2/attempt/guard-031.stderr": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-trusted-startup-next-plan-2/launch-supervision-T1-successor-2/attempt/guard-019.stderr": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-trusted-startup-next-plan-2/launch-supervision-T1-successor-2/attempt/guard-007.stderr": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-trusted-startup-next-plan-2/launch-supervision-T1-successor-2/attempt/guard-015.stderr": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-trusted-startup-next-plan-2/launch-supervision-T1-successor-2/attempt/guard-003.stdout": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-trusted-startup-next-plan-2/launch-supervision-T1-successor-2/attempt/wrapper.stdout": {
+      "sha256": "4c378712f3e39539669baa3bffebcbd9937a1ba2cb36c9cebc22e76c88a34764",
+      "bytes": 615
+    },
+    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-trusted-startup-next-plan-2/launch-supervision-T1-successor-2/attempt/guard-011.stdout": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-trusted-startup-next-plan-2/launch-supervision-T1-successor-2/attempt/guard-039.stdout": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-trusted-startup-next-plan-2/launch-supervision-T1-successor-2/attempt/guard-044.stdout": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-trusted-startup-next-plan-2/launch-supervision-T1-successor-2/attempt/guard-027.stdout": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-trusted-startup-next-plan-2/launch-supervision-T1-successor-2/attempt/guard-035.stdout": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-trusted-startup-next-plan-2/launch-supervision-T1-successor-2/attempt/guard-013.stdout": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-trusted-startup-next-plan-2/launch-supervision-T1-successor-2/attempt/guard-001.stdout": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-trusted-startup-next-plan-2/launch-supervision-T1-successor-2/attempt/guard-037.stdout": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-trusted-startup-next-plan-2/launch-supervision-T1-successor-2/attempt/guard-029.stdout": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-trusted-startup-next-plan-2/launch-supervision-T1-successor-2/attempt/guard-025.stdout": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-trusted-startup-next-plan-2/launch-supervision-T1-successor-2/attempt/guard-033.stderr": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-trusted-startup-next-plan-2/launch-supervision-T1-successor-2/attempt/guard-021.stderr": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-trusted-startup-next-plan-2/launch-supervision-T1-successor-2/attempt/guard-042.stderr": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-trusted-startup-next-plan-2/launch-supervision-T1-successor-2/attempt/guard-017.stderr": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-trusted-startup-next-plan-2/launch-supervision-T1-successor-2/attempt/outer-exit.json": {
+      "sha256": "584da86738ec0b261d73755ecee9a1859e0d0fe23505589f92ca495c20a52ef1",
+      "bytes": 27491
+    },
+    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-trusted-startup-next-plan-2/launch-supervision-T1-successor-2/attempt/guard-009.stderr": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-trusted-startup-next-plan-2/launch-supervision-T1-successor-2/attempt/guard-005.stderr": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-trusted-startup-next-plan-2/launch-supervision-T1-successor-2/attempt/guard-024.stderr": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-trusted-startup-next-plan-2/launch-supervision-T1-successor-2/attempt/guard-028.stderr": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-trusted-startup-next-plan-2/launch-supervision-T1-successor-2/attempt/guard-036.stderr": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-trusted-startup-next-plan-2/launch-supervision-T1-successor-2/attempt/guard-000.stderr": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-trusted-startup-next-plan-2/launch-supervision-T1-successor-2/attempt/guard-012.stderr": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-trusted-startup-next-plan-2/launch-supervision-T1-successor-2/attempt/guard-004.stdout": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-trusted-startup-next-plan-2/launch-supervision-T1-successor-2/attempt/guard-008.stdout": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-trusted-startup-next-plan-2/launch-supervision-T1-successor-2/attempt/guard-016.stdout": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-trusted-startup-next-plan-2/launch-supervision-T1-successor-2/attempt/guard-043.stdout": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-trusted-startup-next-plan-2/launch-supervision-T1-successor-2/attempt/guard-020.stdout": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-trusted-startup-next-plan-2/launch-supervision-T1-successor-2/attempt/guard-032.stdout": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-trusted-startup-next-plan-2/launch-supervision-T1-successor-2/attempt/guard-014.stdout": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-trusted-startup-next-plan-2/launch-supervision-T1-successor-2/attempt/guard-006.stdout": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-trusted-startup-next-plan-2/launch-supervision-T1-successor-2/attempt/guard-018.stdout": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-trusted-startup-next-plan-2/launch-supervision-T1-successor-2/attempt/guard-030.stdout": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-trusted-startup-next-plan-2/launch-supervision-T1-successor-2/attempt/guard-022.stdout": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-trusted-startup-next-plan-2/launch-supervision-T1-successor-2/attempt/guard-041.stdout": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-trusted-startup-next-plan-2/launch-supervision-T1-successor-2/attempt/guard-034.stderr": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-trusted-startup-next-plan-2/launch-supervision-T1-successor-2/attempt/guard-026.stderr": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-trusted-startup-next-plan-2/launch-supervision-T1-successor-2/attempt/guard-038.stderr": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-trusted-startup-next-plan-2/launch-supervision-T1-successor-2/attempt/guard-010.stderr": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-trusted-startup-next-plan-2/launch-supervision-T1-successor-2/attempt/guard-002.stderr": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-trusted-startup-next-plan-2/launch-supervision-T1-successor-2/attempt/guard-026.stdout": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-trusted-startup-next-plan-2/launch-supervision-T1-successor-2/attempt/guard-038.stdout": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-trusted-startup-next-plan-2/launch-supervision-T1-successor-2/attempt/guard-034.stdout": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-trusted-startup-next-plan-2/launch-supervision-T1-successor-2/attempt/guard-002.stdout": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-trusted-startup-next-plan-2/launch-supervision-T1-successor-2/attempt/guard-010.stdout": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-trusted-startup-next-plan-2/launch-supervision-T1-successor-2/attempt/guard-006.stderr": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-trusted-startup-next-plan-2/launch-supervision-T1-successor-2/attempt/guard-018.stderr": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-trusted-startup-next-plan-2/launch-supervision-T1-successor-2/attempt/guard-014.stderr": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-trusted-startup-next-plan-2/launch-supervision-T1-successor-2/attempt/guard-022.stderr": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-trusted-startup-next-plan-2/launch-supervision-T1-successor-2/attempt/guard-041.stderr": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-trusted-startup-next-plan-2/launch-supervision-T1-successor-2/attempt/guard-030.stderr": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-trusted-startup-next-plan-2/launch-supervision-T1-successor-2/attempt/guard-008.stderr": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-trusted-startup-next-plan-2/launch-supervision-T1-successor-2/attempt/guard-016.stderr": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-trusted-startup-next-plan-2/launch-supervision-T1-successor-2/attempt/guard-004.stderr": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-trusted-startup-next-plan-2/launch-supervision-T1-successor-2/attempt/guard-032.stderr": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-trusted-startup-next-plan-2/launch-supervision-T1-successor-2/attempt/guard-043.stderr": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-trusted-startup-next-plan-2/launch-supervision-T1-successor-2/attempt/guard-020.stderr": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-trusted-startup-next-plan-2/launch-supervision-T1-successor-2/attempt/guard-028.stdout": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-trusted-startup-next-plan-2/launch-supervision-T1-successor-2/attempt/guard-036.stdout": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-trusted-startup-next-plan-2/launch-supervision-T1-successor-2/attempt/guard-024.stdout": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-trusted-startup-next-plan-2/launch-supervision-T1-successor-2/attempt/guard-012.stdout": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-trusted-startup-next-plan-2/launch-supervision-T1-successor-2/attempt/guard-000.stdout": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-trusted-startup-next-plan-2/root-release-1/packet-binding.release.patch": {
+      "sha256": "2b6a4fd58a69a5a988fcc9f4d2f997a6d41e0df7e23d42c5bb350cca8a326bf8",
+      "bytes": 582
+    },
+    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-trusted-startup-next-plan-2/root-release-1/closed-packet-binding.json": {
+      "sha256": "5927874e700f0d4e8da2a4ede4b45a18090cad9c3655570d266c430eb484d95f",
+      "bytes": 101831
+    },
+    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-trusted-startup-next-plan-2/root-release-1/release.json": {
+      "sha256": "d97e38d31684c851f71fdeff94b449d0ee3e222c9bf2e253ca850275562a98b8",
+      "bytes": 2317
+    },
+    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-trusted-startup-next-plan-2/root-release-1/supervision-control.release.patch": {
+      "sha256": "7d58074679e07500f7da7cd3089c84437b7177c8b9781fe4886355ea9eff2824",
+      "bytes": 605
+    },
+    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-trusted-startup-next-plan-2/root-release-1/closed-supervision-control.json": {
+      "sha256": "e653a21c2764abe1455dc73da6857ad8641b632b22cf9bb2d2aaee7ce0705db4",
+      "bytes": 1301
+    }
+  }
+}

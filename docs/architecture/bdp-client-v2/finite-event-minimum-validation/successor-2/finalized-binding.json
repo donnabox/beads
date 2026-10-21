@@ -1,0 +1,38 @@
+{
+  "state": "CLOSED final author successor3",
+  "sourceBinding": {
+    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/finite-event-minimum-validation/successor-2/source-binding.json",
+    "sha256": "03bca6f1cd55c14418dc5bb9924419c1c64fd249f14f18c78f781162500daaf8"
+  },
+  "sourceIdentity": "502d8fb13e471353de934ca6f11ad22aa76486aa1f3f6481f964222b67ca5458",
+  "bootstrapReuseBinding": {
+    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/finite-event-minimum-validation/successor-2/bootstrap-reuse-binding.json",
+    "sha256": "ca84dab6c2f2e1e86fe0b6e6f47a8d8bcf226d096d514874c9e2e3bc5c51769d"
+  },
+  "selection": {
+    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/finite-event-minimum-validation/successor-2/successor-selection.json",
+    "sha256": "f80d362567d82dcc2e2b6671a1a5b7b1dfd915be66279cf7108991995627e391"
+  },
+  "planSha256": "f46eb2f0617abefadb4c3627fef1e09d1aee0c1a010886b259ae8f45af866043",
+  "immediatePredecessorSourceBinding": {
+    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/finite-event-minimum-validation/successor-1/source-binding.json",
+    "sha256": "4def9fb98f465144795f47363178d5a892b5d2de0494b6c9941d3153026ad701"
+  },
+  "immediatePredecessorChangedFiles": [
+    "apps/bdptest/src/transactional-event-missing-context-installed.test.ts"
+  ],
+  "originalBootstrapChangedFiles": [
+    "apps/bdptest/src/transactional-event-missing-context-installed.test.ts",
+    "packages/server/src/transaction-events.test.ts",
+    "packages/server/src/transaction-service.test.ts"
+  ],
+  "nativeDeltaClosure": null,
+  "executionAuthorized": false,
+  "futureMeasuredBindings": {
+    "build": null,
+    "archives": null,
+    "consumerLock": null,
+    "consumerInventory": null,
+    "installedProvenance": null
+  }
+}

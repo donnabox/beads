@@ -1,0 +1,12 @@
+{
+  "status": "repair-required-before-execution",
+  "supersedesAcceptance": "root-operative-code-review-complete.json",
+  "finding": "Initial authorization view is exact development-all-visible, not UUID; reviewer initial and per-response checks reject valid installed behavior. Rotated view still must be distinct UUID.",
+  "sourceBasis": [
+    "transaction-authorization.ts INITIAL_TRANSACTION_VIEW",
+    "transaction-store.ts initialTransactionAuthorization/readContext",
+    "transaction-runtime.ts openTransactionStore passes no view override"
+  ],
+  "productionChangeRequired": false,
+  "executionReleased": false
+}

@@ -1,0 +1,35 @@
+# Native fresh-depth v2 plan closure
+
+No remaining blocking plan defect found. The successor implements the concrete findings from both complete actual Claude reviews without introducing a new serving policy, depth limit, public export, stored format, or profile claim. This is read-only plan closure, not code approval or validation. I previously performed the native depth audit; I did not author this successor.
+
+## Exact inputs
+
+- Plan: `3dd6f2be83adf18caee23ec8bfbc848bc860b2e3c588521eedf2b54a72891011`
+- Ledger: `a885b222a7071dba64ef3ad8482ab8b8b9588d10c715954961f056ba980c0728`
+- Source binding: `c475386953c6506ca105dee313dcab971ecc5623278aab95046eac76e52e651d`
+- Selection: `8aecd78ca8abf23f71d958c18f5a72831c7c86d0185469ab14b34e6ba7f9469e`
+- Dispositions: `a6aa1b7ccc9e68ac28768233767c4d07c71c93c3ed167755b264fbd51d37b777`
+
+Read both full actual outputs: production `b70442558261b7a15a301c1b9ba5883bfeb331da6e55bae257ee27b02ced7d63` and evidence `817ba620455d4a59265be6101accfd0990e4b89a5ed7340a02905da4ff6f9aa4`. Their recorded natural exits are zero, 758.956/800.195 seconds, with unchanged inputs. The earlier empty timeout remains inconclusive.
+
+Independently rehashed all 48 source/context files against Git objects at reviewed `11742645bc591b3e5affa9fcc2f36c551c6fa803`, current `77b4cf980ec91f66c52a554c3dd8c9de5aee859f`, and the clean SW working tree. They match. The sole intervening path is `.github/workflows/ci.yml`. Original artifacts, successor artifacts and cited actual-review records match the binding. No current-main dependency was introduced.
+
+## Source-grounded closures
+
+**P1: necessary SQLite repair, with retention preserved.** Store `parseReceipt`463–465 already uses JS JSON.parse. Sweep547–560 currently asks SQLite to inspect the entire receipt; startup626 and maintain565 reach that seam. Root's pinned 12,000-depth diagnostic confirms SQLite malformed JSON, whereas JS can inspect the detail. V2 retains SQL owner-null selection and filters precisely `parseReceipt(stored.receipt).detail === "available"` before unchanged expireRow. It does not add a broad validation predicate or silently catch corruption. Pending exclusion, compact skip, iteration order without a new sort, exact inclusive expiry instant, failed-row deletion, completed allocation compaction, count accumulation and enclosing transaction/fencing remain as in store469–560. The additional pre-expiry maintain, available-receipt reopen and later expiry checks are inside witness A; they exercise the actual missed serving seam. No schema/index/format change is required.
+
+**P2–P5:** Identity expansion is explicitly measured later per member/deferred/resolved identity rather than asserted equal to raw body size. Singleton batch228's unconditional object/decode step remains before branch selection. The sequence catch is retained narrowly and no longer presented as evidence of a live remaining HTTP capacity path; direct owner conversion and admitKey caller distinctions are explicit. Updated spec references distinguish value equality, lexical numeric admission and owned-Link record/ordering laws. These are targeted corrections, not new behavior beyond removing the private depth refusal and fixing its required deep-value dependencies.
+
+**E1/E2/E7: exact selected inventory is now coherent.** Independently checked source registrations/describe prefixes and loop expansions against selection-v2. Preparation3 + sequence13 + submission7 + HTTP6 + Resource1 + Snapshot12 =42. The full sequence file has18 expanded cases; selected13 is deliberate, including both atomic reservation failure stages and the three depth cases. Submission includes146,704, both844 expansions,1547,1648 and the new witness. HTTP includes594 and2583 as well as the four prior selections. Actual callback bodies show594 has5 requests and2583 has8 (override1, depth/target4, full-byte1, oversized2). Thus prior34 source requests become47; installed13+8+13 remains34; control0; total81 and46 case executions. The existing private-export callback is extended, not replaced or duplicated. Its new helper prohibition retains the exact existing export-key assertion.
+
+**E3: complete deep oracles are required without recursive test failure.** V2 applies the rule to all new deep receipts, Resources, Events, pages and Snapshots. Explicit-stack comparisons and independently constructed literal expectations retain complete value/shape checks; shallow envelope assertions may use ordinary matchers. It forbids using the new product comparator as its own sole oracle, native deep stringify/recursive construction, and the client successor-read owned-Link probe. Snapshot fixture.run's native stringify is explicitly bypassed only for new deep raw admission. Numeric -0/0 and object-order semantics stay separate from serialized-byte observations. This closes the plan gap; the authored implementation must still demonstrate compliance.
+
+**E4: coherent and discriminating control.** The control requires a fresh successful frozen build, complete copied source/dist/config/setup/dependency closure, copied emitted owner, and exactly the full-Link comparator reversal. Existing Vitest source aliases are disclosed and bound to the build input; this is not an all-emitted dependency claim. Setup read-conformance-mock remains included. A named capture failure with verified RangeError and genuine committed deep Link prerequisite is required, including a verified cause if fenced. Generic setup, timeout, stale output or alias escape cannot qualify.
+
+**E5/E6: actual installed provenance and issued URL.** The qualified invocation must supply an external entry and declared clean source, with archive/member/eight-package/payload proof; reused ordinary development fallback cannot earn installed evidence. Request13 derives from request2's schema-valid actual receipt.id, consistent with store1196 Scope receipts/UUID allocation. Prefix/canonical shape and forbidden URL components are checked, and the actual target enters the runtime dispatch inventory. It is neither fabricated nor exempt from binding.
+
+## Preserved limits and remaining authoring obligations
+
+Data-only comparison verified all18 owned paths, seven body recipes/hashes, all13 installed row values (apart from added runtime-target explanation), installed workload and every original runtime/body/header/deadline limit are unchanged. Source count growth is the explicit missed regression inventory, not extra wire feature coverage.
+
+The old owner/directory precision was withdrawn honestly. V2 requires actual code-derived opens, directories, listeners and SQLite inspection handles before execution; these are not measured by this review and no execution release follows from the proposed81 requests. Actual identity expansion, response sizes, final renamed registration names, build/control linkage and deep-safe full assertions also remain authored-code freeze and code-council checks. No product command, import, test, SQL diagnostic rerun, reviewer launch, source edit or Git mutation was performed.

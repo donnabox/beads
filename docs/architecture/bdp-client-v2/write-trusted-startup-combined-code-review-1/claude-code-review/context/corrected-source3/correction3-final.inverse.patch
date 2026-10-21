@@ -1,0 +1,359 @@
+--- a/apps/bdptest/src/reference-deployment-lifecycle-installed.test.ts
++++ b/apps/bdptest/src/reference-deployment-lifecycle-installed.test.ts
+@@ -127,26 +127,6 @@
+         );
+     },
+   };
+-}
+-function unsafeLifecycleWire(
+-  records: readonly Record<string, unknown>[],
+-  controls: readonly Record<string, unknown>[],
+-  secrets: readonly string[],
+-): boolean {
+-  const encoded = [
+-    ...records.map((record) => record.wireBase64),
+-    ...controls.map((control) => {
+-      const before = control.beforeShutdown;
+-      return before && typeof before === "object" && !Array.isArray(before)
+-        ? (before as Record<string, unknown>).refusalWireBase64
+-        : undefined;
+-    }),
+-  ];
+-  return encoded.some((value) => {
+-    if (typeof value !== "string") return false;
+-    const bytes = Buffer.from(value, "base64");
+-    return secrets.some((secret) => bytes.includes(Buffer.from(secret, "utf8")));
+-  });
+ }
+ async function cohort(
+   id: string,
+@@ -290,10 +270,7 @@
+         ],
+       };
+       const text = JSON.stringify(report);
+-      if (
+-        f.secrets.some((secret) => text.includes(secret)) ||
+-        unsafeLifecycleWire(f.records, f.controls, f.secrets)
+-      )
++      if (f.secrets.some((secret) => text.includes(secret)))
+         failure ??= Error("unsafe lifecycle report");
+       else console.log(text);
+     }
+@@ -643,26 +620,6 @@
+     expect(session.exit).toEqual({ code: 0, signal: null });
+     expect(session.close).toEqual(session.exit);
+   }
+-  async function invalidPostReadyControl(session: Session) {
+-    controls.push({
+-      generation: session.ordinal,
+-      requested: "invalid-post-ready-stop",
+-      actualExitBefore: session.exit !== null,
+-    });
+-    expect(session.exit).toBeNull();
+-    expect(session.close).toBeNull();
+-    expect(session.child.exitCode).toBeNull();
+-    expect(session.child.connected).toBe(true);
+-    expect(session.ready).not.toBeNull();
+-    expect(session.messages).toEqual([session.ready]);
+-    session.child.send({ command: "stop" }, () => {});
+-    await ends(session);
+-    expect(session.exit).toEqual({ code: 2, signal: null });
+-    expect(session.close).toEqual(session.exit);
+-    expect(session.messages).toEqual([session.ready]);
+-    expect(session.stdout).toBe("");
+-    expect(session.stderr).toBe("reference deployment startup failed\n");
+-  }
+   async function send(
+     label: string,
+     method: "GET" | "HEAD" | "POST",
+@@ -1045,7 +1002,6 @@
+     launch,
+     refused,
+     stop,
+-    invalidPostReadyControl,
+     send,
+     resource,
+     ownerProbe,
+@@ -1421,36 +1377,16 @@
+   60000,
+ );
+ it(
+-  "I21 ordinary TX refusal, invalid configuration guard and post-ready invalid control",
++  "I21 ordinary TX refusal plus invalid configuration IPC guard",
+   async () =>
+     cohort(
+       "I21",
+       "transactional",
+       0,
+-      2,
++      1,
+       async (f) => {
+         await f.publicRefusal();
+         await f.guard("invalid-ipc");
+-        const safe = Buffer.from("HTTP/1.1 204 No Content\r\n\r\n").toString("base64");
+-        const leak = Buffer.concat([
+-          Buffer.from([255]),
+-          Buffer.from(f.secrets[0]!, "utf8"),
+-          Buffer.from([0]),
+-        ]).toString("base64");
+-        expect(
+-          unsafeLifecycleWire(
+-            [{ wireBase64: safe }],
+-            [{ beforeShutdown: { refusalWireBase64: safe } }],
+-            f.secrets,
+-          ),
+-        ).toBe(false);
+-        expect(unsafeLifecycleWire([{ wireBase64: leak }], [], f.secrets)).toBe(true);
+-        expect(
+-          unsafeLifecycleWire([], [{ beforeShutdown: { refusalWireBase64: leak } }], f.secrets),
+-        ).toBe(true);
+-        const session = await f.launch(true);
+-        await f.invalidPostReadyControl(session);
+-        await f.ownerProbe(false);
+       },
+       1,
+     ),
+--- a/docs/design/startup-configuration.md
++++ b/docs/design/startup-configuration.md
+@@ -730,22 +730,17 @@
+ are capped at 65536 bytes and configuration waits at most ten seconds. The test
+ owns Transactional parent-directory provisioning (0700); the loader/bootstrap do
+ not provision an absent create:false store. SIGTERM, SIGINT, IPC close and
+-disconnect stop the private lifecycle. An unrecognized or malformed post-ready
+-IPC control also stops the lifecycle and refuses; it is not an accepted command.
+-Refusal prints only the fixed diagnostic
++disconnect stop the private lifecycle. Refusal prints only the fixed diagnostic
+ `reference deployment startup failed` and exits 2.
+ 
+ The new source witnesses are prospective: 51 callbacks, 21 selected persisted
+ mismatches and two HTTP mutations. Installed witnesses are 21 separately bounded
+-callbacks, 126 finite HTTP requests plus two CONNECT peers, with 33 ordinary
++callbacks, 126 finite HTTP requests plus two CONNECT peers, with 32 original
+ candidate/public generations and four separately counted entrypoint guard Node
+-children (37 total). I21 retains both its original public refusal and invalid
+-configuration guard, then adds one ordinary TX ready generation that receives an
+-invalid post-ready control; actual exit 2, stdio close, fixed diagnostic and owner
+-reopen/close are observed without HTTP. They retain five-second source/request limits and installed
++children (36 total). They retain five-second source/request limits and installed
+ 45-second work, ten-second cleanup, 60-second callback, with future per-command
+ 120-second outer/115-second TERM review. No retries or deadline increase is
+-implicit. Their optional entry overrides (workspace `dist` by default) are
++implicit. Their named opt-in test entry variables are
+ `BDP_REFERENCE_DEPLOYMENT_INSTALLED_ENTRY`,
+ `BDP_REFERENCE_DEPLOYMENT_SOURCE_COMMIT`, and
+ `BDP_REFERENCE_DEPLOYMENT_PUBLIC_ENTRY`; independent root package/consumer proof
+--- a/packages/server/src/development-runtime.ts
++++ b/packages/server/src/development-runtime.ts
+@@ -551,10 +551,7 @@
+   const server = createServer({ maxHeaderSize: 16 * 1024 }, (request, response) => {
+     const task = handle(request, response);
+     pending.add(task);
+-    void task.then(
+-      () => pending.delete(task),
+-      () => pending.delete(task),
+-    );
++    void task.finally(() => pending.delete(task));
+   });
+   if (transport !== undefined)
+     server.on("connect", (_request, socket) => {
+@@ -583,15 +580,6 @@
+   let published = false;
+   let checkedOwner:
+     | ReturnType<Awaited<ReturnType<typeof openDevelopmentAuthority>>["readConfiguration"]>
+-    | undefined;
+-  let preparedFacts:
+-    | Readonly<{
+-        listenUrl: string;
+-        history: boolean;
+-        ownerFacts: ReturnType<
+-          Awaited<ReturnType<typeof openDevelopmentAuthority>>["readConfiguration"]
+-        >;
+-      }>
+     | undefined;
+   const checkPrepared = () => {
+     prepared?.signal?.throwIfAborted();
+@@ -684,17 +672,11 @@
+     await new Promise<void>((resolve, reject) => {
+       if (prepared) rejectListening = reject;
+       else server.once("error", reject);
+-      server.listen(
+-        options.port,
+-        prepared
+-          ? prepared.handle.listener.host
+-          : ((transport?.host as string | undefined) ?? "127.0.0.1"),
+-        () => {
+-          if (!prepared) server.removeListener("error", reject);
+-          rejectListening = undefined;
+-          resolve();
+-        },
+-      );
++      server.listen(options.port, (transport?.host as string | undefined) ?? "127.0.0.1", () => {
++        if (!prepared) server.removeListener("error", reject);
++        rejectListening = undefined;
++        resolve();
++      });
+     });
+     const address = server.address();
+     if (address === null || typeof address === "string") throw new Error("no development address");
+@@ -707,17 +689,6 @@
+     if (prepared) {
+       await Promise.resolve();
+       checkPrepared();
+-      // Capture after the final prepared check, with no await before publication.
+-      const address = server.address();
+-      if (!address || typeof address === "string" || !checkedOwner)
+-        throw new Error("missing prepared owner");
+-      const state = referenceDeploymentState(prepared.handle);
+-      if (state.profile !== "read-update") throw new TypeError("prepared Read/Update required");
+-      preparedFacts = Object.freeze({
+-        listenUrl: `http://${address.family === "IPv6" ? `[${address.address}]` : address.address}:${address.port}/`,
+-        history: state.installed.history,
+-        ownerFacts: checkedOwner,
+-      });
+     }
+     serving = true;
+     published = true;
+@@ -783,11 +754,17 @@
+   }
+   const legacy = { scope, close };
+   if (!prepared) return Object.freeze(legacy);
++  const address = server.address();
++  // Already checked immediately after listen. No asynchronous work intervenes here.
++  if (!address || typeof address === "string" || !checkedOwner)
++    throw new Error("missing prepared owner");
++  const state = referenceDeploymentState(prepared.handle);
++  if (state.profile !== "read-update") throw new TypeError("prepared Read/Update required");
+   return Object.freeze({
+     ...legacy,
+-    listenUrl: preparedFacts!.listenUrl,
+-    history: preparedFacts!.history,
++    listenUrl: `http://${address.family === "IPv6" ? `[${address.address}]` : address.address}:${address.port}/`,
++    history: state.installed.history,
+     completion: terminal.promise,
+-    ownerFacts: preparedFacts!.ownerFacts,
++    ownerFacts: checkedOwner,
+   });
+ }
+--- a/packages/server/src/reference-deployment-runtime.test.ts
++++ b/packages/server/src/reference-deployment-runtime.test.ts
+@@ -528,8 +528,6 @@
+     expect(listenArgs).toHaveLength(0);
+   } else {
+     const runtime = await pending;
+-    expect(listenArgs[0]!.slice(0, 2)).toEqual([handle.listener.port, handle.listener.host]);
+-    expect(handle.listener.port).toBeGreaterThan(0);
+     expect(trace.lastIndexOf("route")).toBeLessThan(trace.indexOf("listen"));
+     await runtime.close();
+   }
+--- a/packages/server/src/reference-deployment-runtime.ts
++++ b/packages/server/src/reference-deployment-runtime.ts
+@@ -18,21 +18,18 @@
+     !("completion" in runtime) ||
+     !("ownerFacts" in runtime) ||
+     !("history" in runtime) ||
+-    !("listenUrl" in runtime) ||
++    !("listenUrl" in runtime)
++  ) {
++    await runtime.close();
++    throw new Error("prepared lifecycle unavailable");
++  }
++  if (
+     !(runtime.completion instanceof Promise) ||
+-    typeof runtime.scope !== "string" ||
+     typeof runtime.listenUrl !== "string" ||
+     typeof runtime.history !== "boolean"
+   ) {
+-    const primary = new Error("prepared lifecycle unavailable");
+-    try {
+-      await runtime.close();
+-    } catch (cleanup) {
+-      throw new AggregateError([primary, cleanup], "prepared lifecycle cleanup failed", {
+-        cause: primary,
+-      });
+-    }
+-    throw primary;
++    await runtime.close();
++    throw new Error("prepared lifecycle unavailable");
+   }
+   // No captures, token, target map, file/authentication digest or capability escapes.
+   return Object.freeze({
+--- a/packages/server/src/transaction-runtime.ts
++++ b/packages/server/src/transaction-runtime.ts
+@@ -418,18 +418,6 @@
+     schemas = createTransactionSchemaHttp(scope, contracts, service.schemaObserved);
+     handler = createTransactionHttpHandler(service, scope, capturedSeams.maximumOperations);
+   };
+-  let preparedFacts:
+-    | Readonly<{
+-        history: boolean;
+-        targets: ReturnType<typeof createTransactionHttpHandler>["targets"];
+-        ownerFacts: Readonly<{
+-          scope: string;
+-          scopeEpoch: string;
+-          readLimits: ReturnType<typeof captured.readOptions>["advertisedLimits"];
+-          installedTypeIds: readonly string[];
+-        }>;
+-      }>
+-    | undefined;
+   try {
+     if (prepared) {
+       if (prepared.handle.listener.port < 1 || !configuredScope)
+@@ -463,18 +451,6 @@
+     if (prepared) {
+       await Promise.resolve();
+       checkPrepared();
+-      if (!checkedOwner || !configurationMetadata || !handler)
+-        throw new Error("missing prepared owner");
+-      preparedFacts = Object.freeze({
+-        history: configurationMetadata.history,
+-        targets: handler.targets,
+-        ownerFacts: Object.freeze({
+-          scope,
+-          scopeEpoch: checkedOwner.scopeEpoch,
+-          readLimits: captured.readOptions(scope).advertisedLimits,
+-          installedTypeIds: Object.freeze(checkedOwner.installedTypes.map((t) => t.id)),
+-        }),
+-      });
+     }
+     published = true;
+   } catch (error) {
+@@ -507,9 +483,7 @@
+       readonly timeoutMs: number;
+       readonly signal?: AbortSignal;
+     }) => service!.replaceAuthorizationPolicy(options),
+-    /** Test-only inventory, not an HTTP Operation Directory. */ targets: prepared
+-      ? preparedFacts!.targets
+-      : handler!.targets,
++    /** Test-only inventory, not an HTTP Operation Directory. */ targets: handler!.targets,
+     close,
+   };
+   function close(): Promise<void> {
+@@ -550,10 +524,16 @@
+     return completion;
+   }
+   if (!prepared) return Object.freeze(legacy);
++  if (!checkedOwner || !configurationMetadata) throw new Error("missing prepared owner");
+   return Object.freeze({
+     ...legacy,
+-    history: preparedFacts!.history,
++    history: configurationMetadata.history,
+     completion: terminal.promise,
+-    ownerFacts: preparedFacts!.ownerFacts,
++    ownerFacts: Object.freeze({
++      scope,
++      scopeEpoch: checkedOwner.scopeEpoch,
++      readLimits: captured.readOptions(scope).advertisedLimits,
++      installedTypeIds: Object.freeze(checkedOwner.installedTypes.map((t) => t.id)),
++    }),
+   });
+ }
+--- a/scripts/smoke-executables.mjs
++++ b/scripts/smoke-executables.mjs
+@@ -622,7 +622,6 @@
+       "@bdp/server/development-runtime",
+       "@bdp/server/dist/development-runtime.js",
+       "@bdp/server/development-authority",
+-      "@bdp/server/dist/development-authority.js",
+     ]) {
+       try {
+         consumer.resolve(specifier);

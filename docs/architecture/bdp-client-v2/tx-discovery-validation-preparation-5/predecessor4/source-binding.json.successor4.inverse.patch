@@ -1,0 +1,17 @@
+--- predecessor3/source-binding.json
++++ current4/source-binding.json
+@@ -740,13 +740,7 @@
+     "closureSha256": "dec1b0a4cf9054e6eea6cac4e64b4c96f926fb394e53c5a653becde104768a65",
+     "indexSha256": "cea24b6f8dcf175aa4600c4f0a419b022610339cf8d3f218a5602867b5320776"
+   },
+-  "independentAnnotationPrecision": {
+-    "accepted": true,
+-    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/tx-discovery-validation-preparation-4/context/preparation3-native/annotation-closure.json",
+-    "sha256": "0132cf6454374afc98cca0f7163f090562b664ca040e0278df195bf020d65a6c",
+-    "reviewedPreviousSourceBindingSha256": "00459b95b289ba42a4da948139516c3039bd81ea2a739b9dceb92c95208f7bfe",
+-    "basis": "Exact same679 source bytes, sourceIdentity5964d40a and binary6eea; only preparation metadata rebind. Static type annotation precision, no compiler pass."
+-  },
++  "independentAnnotationPrecision": "PENDING; no invented acceptance",
+   "actualClaudeReadThreeAnnotationCorrection": false,
+   "historicalActualCodeOnly": true
+ }

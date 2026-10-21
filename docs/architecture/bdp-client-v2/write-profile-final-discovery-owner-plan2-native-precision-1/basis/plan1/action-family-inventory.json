@@ -1,0 +1,30 @@
+{
+  "method": "read/JSON data only; source runner930 performs actual receipt-read once and reopen emits no HTTP, no execution",
+  "before": {
+    "owners": 17,
+    "authoredActions": 241,
+    "httpFamilyActions": 180,
+    "clientFamilyActions": 61,
+    "clientOperationCounts": {
+      "transactional.receipt-read": 54,
+      "transactional.reopen": 7
+    },
+    "actualHTTPExpectedByExistingAppAssertion": 234,
+    "equality": "180 ordinary HTTP +54 client receipt HTTP =234;7 reopen actions create sessions and no HTTP"
+  },
+  "proposedCoreAddition": {
+    "owners": 8,
+    "httpFamilyActions": 39,
+    "clientFamilyActions": 0
+  },
+  "proposedAfter": {
+    "authoredActions": 280,
+    "httpFamilyActions": 219,
+    "clientFamilyActions": 61,
+    "expectedHTTPIfAllPreservedPass": 273,
+    "expectedSessions": 32,
+    "expectedChildrenIncludingBootstrap": 33
+  },
+  "actualFutureOutcome": "UNKNOWN",
+  "sourceFailureRecord": "authoring-static-check-failure-1.json"
+}

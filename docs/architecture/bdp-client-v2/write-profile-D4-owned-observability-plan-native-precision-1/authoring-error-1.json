@@ -1,0 +1,11 @@
+{
+  "cause": "Auditor initially iterated nested executable-in-place-pins document as flat path/hash map. No subject helper was imported/evaluated.",
+  "correctedReadChunk": "d888c6",
+  "correction": "Read currentH5Only nested map and verify all15 actual source pins. Original failed observation not relabeled as product/helper failure.",
+  "exactBadPath": "currentH5Only",
+  "failureClass": "FileNotFoundError",
+  "kind": "AUDITOR_OWN_READ_ONLY_ADMINISTRATIVE_ERROR",
+  "rawExit": 1,
+  "subjectChanged": false,
+  "toolChunk": "3d8f46"
+}

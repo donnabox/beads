@@ -1,0 +1,1509 @@
+{
+  "cases": {
+    "M01": {
+      "original": {
+        "id": "M01",
+        "input": "two valid compact current-ID records split at every selected token boundary",
+        "predicate": "accept only with actual same-attempt report/results/terminal proof",
+        "productCalls": 0,
+        "status": "UNEXECUTED"
+      },
+      "subject": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-D4-validation-preparation-4/scanner.py",
+      "entry": "scanner_controls.py:run",
+      "expectedOracle": "accept only with actual same-attempt report/results/terminal proof",
+      "scope": "immutable actual callable; authored UNIT stimuli, host observations separately labeled",
+      "variants": [
+        "unit"
+      ],
+      "declaredSubcases": [],
+      "remainingUnsupported": [
+        "pure scanner/gate units do not execute unchanged worker entire report/results/terminal chain"
+      ],
+      "status": "UNEXECUTED",
+      "productCalls": 0,
+      "noRetry": true
+    },
+    "M02": {
+      "original": {
+        "id": "M02",
+        "input": "stale complete marker pair",
+        "predicate": "refuse current binding",
+        "productCalls": 0,
+        "status": "UNEXECUTED"
+      },
+      "subject": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-D4-validation-preparation-4/scanner.py",
+      "entry": "scanner_controls.py:run",
+      "expectedOracle": "refuse current binding",
+      "scope": "immutable actual callable; authored UNIT stimuli, host observations separately labeled",
+      "variants": [
+        "unit"
+      ],
+      "declaredSubcases": [],
+      "remainingUnsupported": [],
+      "status": "UNEXECUTED",
+      "productCalls": 0,
+      "noRetry": true
+    },
+    "M03": {
+      "original": {
+        "id": "M03",
+        "input": "null attemptId ordinary diagnostic",
+        "predicate": "refuse validation; source outcome unchanged",
+        "productCalls": 0,
+        "status": "UNEXECUTED"
+      },
+      "subject": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-D4-validation-preparation-4/scanner.py",
+      "entry": "scanner_controls.py:run",
+      "expectedOracle": "refuse validation; source outcome unchanged",
+      "scope": "immutable actual callable; authored UNIT stimuli, host observations separately labeled",
+      "variants": [
+        "unit"
+      ],
+      "declaredSubcases": [],
+      "remainingUnsupported": [],
+      "status": "UNEXECUTED",
+      "productCalls": 0,
+      "noRetry": true
+    },
+    "M04": {
+      "original": {
+        "id": "M04",
+        "input": "malformed non32hex environment marker",
+        "predicate": "source null; collector refuse",
+        "productCalls": 0,
+        "status": "UNEXECUTED"
+      },
+      "subject": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-D4-validation-preparation-4/scanner.py",
+      "entry": "scanner_controls.py:run",
+      "expectedOracle": "source null; collector refuse",
+      "scope": "immutable actual callable; authored UNIT stimuli, host observations separately labeled",
+      "variants": [
+        "unit"
+      ],
+      "declaredSubcases": [],
+      "remainingUnsupported": [
+        "environment-to-null is frozen product source behavior, not scanner API; no product callback allowed"
+      ],
+      "status": "UNEXECUTED",
+      "productCalls": 0,
+      "noRetry": true
+    },
+    "M05": {
+      "original": {
+        "id": "M05",
+        "input": "missing start",
+        "predicate": "refuse by absolute10",
+        "productCalls": 0,
+        "status": "UNEXECUTED"
+      },
+      "subject": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-D4-validation-preparation-4/scanner.py",
+      "entry": "scanner_controls.py:run",
+      "expectedOracle": "refuse by absolute10",
+      "scope": "immutable actual callable; authored UNIT stimuli, host observations separately labeled",
+      "variants": [
+        "unit"
+      ],
+      "declaredSubcases": [],
+      "remainingUnsupported": [
+        "absolute10 requires separately observed P01 host blocked-preflight; scanner finish refusal is not a clock observation"
+      ],
+      "status": "UNEXECUTED",
+      "productCalls": 0,
+      "noRetry": true
+    },
+    "M06": {
+      "original": {
+        "id": "M06",
+        "input": "missing end",
+        "predicate": "refuse by min(start+120,130)",
+        "productCalls": 0,
+        "status": "UNEXECUTED"
+      },
+      "subject": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-D4-validation-preparation-4/scanner.py",
+      "entry": "scanner_controls.py:run",
+      "expectedOracle": "refuse by min(start+120,130)",
+      "scope": "immutable actual callable; authored UNIT stimuli, host observations separately labeled",
+      "variants": [
+        "unit"
+      ],
+      "declaredSubcases": [],
+      "remainingUnsupported": [
+        "callback/absolute deadline is watchdog obligation, not scanner finish clock proof"
+      ],
+      "status": "UNEXECUTED",
+      "productCalls": 0,
+      "noRetry": true
+    },
+    "M07": {
+      "original": {
+        "id": "M07",
+        "input": "duplicate start",
+        "predicate": "refuse order/count",
+        "productCalls": 0,
+        "status": "UNEXECUTED"
+      },
+      "subject": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-D4-validation-preparation-4/scanner.py",
+      "entry": "scanner_controls.py:run",
+      "expectedOracle": "refuse order/count",
+      "scope": "immutable actual callable; authored UNIT stimuli, host observations separately labeled",
+      "variants": [
+        "unit"
+      ],
+      "declaredSubcases": [],
+      "remainingUnsupported": [],
+      "status": "UNEXECUTED",
+      "productCalls": 0,
+      "noRetry": true
+    },
+    "M08": {
+      "original": {
+        "id": "M08",
+        "input": "reversed end/start",
+        "predicate": "refuse order",
+        "productCalls": 0,
+        "status": "UNEXECUTED"
+      },
+      "subject": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-D4-validation-preparation-4/scanner.py",
+      "entry": "scanner_controls.py:run",
+      "expectedOracle": "refuse order",
+      "scope": "immutable actual callable; authored UNIT stimuli, host observations separately labeled",
+      "variants": [
+        "unit"
+      ],
+      "declaredSubcases": [],
+      "remainingUnsupported": [],
+      "status": "UNEXECUTED",
+      "productCalls": 0,
+      "noRetry": true
+    },
+    "M09": {
+      "original": {
+        "id": "M09",
+        "input": "third marker",
+        "predicate": "refuse closed count",
+        "productCalls": 0,
+        "status": "UNEXECUTED"
+      },
+      "subject": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-D4-validation-preparation-4/scanner.py",
+      "entry": "scanner_controls.py:run",
+      "expectedOracle": "refuse closed count",
+      "scope": "immutable actual callable; authored UNIT stimuli, host observations separately labeled",
+      "variants": [
+        "unit"
+      ],
+      "declaredSubcases": [],
+      "remainingUnsupported": [],
+      "status": "UNEXECUTED",
+      "productCalls": 0,
+      "noRetry": true
+    },
+    "M10": {
+      "original": {
+        "id": "M10",
+        "input": "extra marker key",
+        "predicate": "refuse closed schema",
+        "productCalls": 0,
+        "status": "UNEXECUTED"
+      },
+      "subject": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-D4-validation-preparation-4/scanner.py",
+      "entry": "scanner_controls.py:run",
+      "expectedOracle": "refuse closed schema",
+      "scope": "immutable actual callable; authored UNIT stimuli, host observations separately labeled",
+      "variants": [
+        "unit"
+      ],
+      "declaredSubcases": [],
+      "remainingUnsupported": [],
+      "status": "UNEXECUTED",
+      "productCalls": 0,
+      "noRetry": true
+    },
+    "M11": {
+      "original": {
+        "id": "M11",
+        "input": "marker4097byte line",
+        "predicate": "resource refusal",
+        "productCalls": 0,
+        "status": "UNEXECUTED"
+      },
+      "subject": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-D4-validation-preparation-4/scanner.py",
+      "entry": "scanner_controls.py:run",
+      "expectedOracle": "resource refusal",
+      "scope": "immutable actual callable; authored UNIT stimuli, host observations separately labeled",
+      "variants": [
+        "unit"
+      ],
+      "declaredSubcases": [],
+      "remainingUnsupported": [],
+      "status": "UNEXECUTED",
+      "productCalls": 0,
+      "noRetry": true
+    },
+    "M12": {
+      "original": {
+        "id": "M12",
+        "input": "interleaved corrupt marker bytes",
+        "predicate": "refuse, retain bytes",
+        "productCalls": 0,
+        "status": "UNEXECUTED"
+      },
+      "subject": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-D4-validation-preparation-4/scanner.py",
+      "entry": "scanner_controls.py:run",
+      "expectedOracle": "refuse, retain bytes",
+      "scope": "immutable actual callable; authored UNIT stimuli, host observations separately labeled",
+      "variants": [
+        "unit"
+      ],
+      "declaredSubcases": [],
+      "remainingUnsupported": [],
+      "status": "UNEXECUTED",
+      "productCalls": 0,
+      "noRetry": true
+    },
+    "M13": {
+      "original": {
+        "id": "M13",
+        "input": "marker incomplete final line",
+        "predicate": "refuse no repaired newline",
+        "productCalls": 0,
+        "status": "UNEXECUTED"
+      },
+      "subject": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-D4-validation-preparation-4/scanner.py",
+      "entry": "scanner_controls.py:run",
+      "expectedOracle": "refuse no repaired newline",
+      "scope": "immutable actual callable; authored UNIT stimuli, host observations separately labeled",
+      "variants": [
+        "unit"
+      ],
+      "declaredSubcases": [],
+      "remainingUnsupported": [],
+      "status": "UNEXECUTED",
+      "productCalls": 0,
+      "noRetry": true
+    },
+    "M14": {
+      "original": {
+        "id": "M14",
+        "input": "end elapsed negative/nonfinite/string/bool each finite subcase",
+        "predicate": "refuse type/finite",
+        "productCalls": 0,
+        "status": "UNEXECUTED"
+      },
+      "subject": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-D4-validation-preparation-4/scanner.py",
+      "entry": "scanner_controls.py:run",
+      "expectedOracle": "refuse type/finite",
+      "scope": "immutable actual callable; authored UNIT stimuli, host observations separately labeled",
+      "variants": [
+        "unit"
+      ],
+      "declaredSubcases": [],
+      "remainingUnsupported": [],
+      "status": "UNEXECUTED",
+      "productCalls": 0,
+      "noRetry": true
+    },
+    "M15": {
+      "original": {
+        "id": "M15",
+        "input": "end elapsed less thanstart or over120000",
+        "predicate": "refuse chronology",
+        "productCalls": 0,
+        "status": "UNEXECUTED"
+      },
+      "subject": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-D4-validation-preparation-4/scanner.py",
+      "entry": "scanner_controls.py:run",
+      "expectedOracle": "refuse chronology",
+      "scope": "immutable actual callable; authored UNIT stimuli, host observations separately labeled",
+      "variants": [
+        "unit"
+      ],
+      "declaredSubcases": [],
+      "remainingUnsupported": [],
+      "status": "UNEXECUTED",
+      "productCalls": 0,
+      "noRetry": true
+    },
+    "M16": {
+      "original": {
+        "id": "M16",
+        "input": "fresh-looking different ID second marker",
+        "predicate": "refuse",
+        "productCalls": 0,
+        "status": "UNEXECUTED"
+      },
+      "subject": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-D4-validation-preparation-4/scanner.py",
+      "entry": "scanner_controls.py:run",
+      "expectedOracle": "refuse",
+      "scope": "immutable actual callable; authored UNIT stimuli, host observations separately labeled",
+      "variants": [
+        "unit"
+      ],
+      "declaredSubcases": [],
+      "remainingUnsupported": [],
+      "status": "UNEXECUTED",
+      "productCalls": 0,
+      "noRetry": true
+    },
+    "J01": {
+      "original": {
+        "id": "J01",
+        "input": "duplicate JSON keys including escaped-equivalent names",
+        "predicate": "refuse before tree",
+        "productCalls": 0,
+        "status": "UNEXECUTED"
+      },
+      "subject": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-D4-validation-preparation-4/scanner.py",
+      "entry": "scanner_controls.py:run",
+      "expectedOracle": "refuse before tree",
+      "scope": "immutable actual callable; authored UNIT stimuli, host observations separately labeled",
+      "variants": [
+        "unit"
+      ],
+      "declaredSubcases": [],
+      "remainingUnsupported": [],
+      "status": "UNEXECUTED",
+      "productCalls": 0,
+      "noRetry": true
+    },
+    "J02": {
+      "original": {
+        "id": "J02",
+        "input": "UTF8 invalid continuation split across chunks",
+        "predicate": "refuse",
+        "productCalls": 0,
+        "status": "UNEXECUTED"
+      },
+      "subject": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-D4-validation-preparation-4/scanner.py",
+      "entry": "scanner_controls.py:run",
+      "expectedOracle": "refuse",
+      "scope": "immutable actual callable; authored UNIT stimuli, host observations separately labeled",
+      "variants": [
+        "unit"
+      ],
+      "declaredSubcases": [],
+      "remainingUnsupported": [],
+      "status": "UNEXECUTED",
+      "productCalls": 0,
+      "noRetry": true
+    },
+    "J03": {
+      "original": {
+        "id": "J03",
+        "input": "NaN/Infinity/1e999 each finite subcase",
+        "predicate": "refuse nonfinite",
+        "productCalls": 0,
+        "status": "UNEXECUTED"
+      },
+      "subject": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-D4-validation-preparation-4/scanner.py",
+      "entry": "scanner_controls.py:run",
+      "expectedOracle": "refuse nonfinite",
+      "scope": "immutable actual callable; authored UNIT stimuli, host observations separately labeled",
+      "variants": [
+        "unit"
+      ],
+      "declaredSubcases": [],
+      "remainingUnsupported": [],
+      "status": "UNEXECUTED",
+      "productCalls": 0,
+      "noRetry": true
+    },
+    "J04": {
+      "original": {
+        "id": "J04",
+        "input": "depth129",
+        "predicate": "refuse before tree",
+        "productCalls": 0,
+        "status": "UNEXECUTED"
+      },
+      "subject": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-D4-validation-preparation-4/scanner.py",
+      "entry": "scanner_controls.py:run",
+      "expectedOracle": "refuse before tree",
+      "scope": "immutable actual callable; authored UNIT stimuli, host observations separately labeled",
+      "variants": [
+        "unit"
+      ],
+      "declaredSubcases": [],
+      "remainingUnsupported": [],
+      "status": "UNEXECUTED",
+      "productCalls": 0,
+      "noRetry": true
+    },
+    "J05": {
+      "original": {
+        "id": "J05",
+        "input": "1000001 value nodes",
+        "predicate": "refuse before tree",
+        "productCalls": 0,
+        "status": "UNEXECUTED"
+      },
+      "subject": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-D4-validation-preparation-4/scanner.py",
+      "entry": "scanner_controls.py:run",
+      "expectedOracle": "refuse before tree",
+      "scope": "immutable actual callable; authored UNIT stimuli, host observations separately labeled",
+      "variants": [
+        "unit"
+      ],
+      "declaredSubcases": [],
+      "remainingUnsupported": [],
+      "status": "UNEXECUTED",
+      "productCalls": 0,
+      "noRetry": true
+    },
+    "J06": {
+      "original": {
+        "id": "J06",
+        "input": "100001 entries in object and array",
+        "predicate": "refuse before tree",
+        "productCalls": 0,
+        "status": "UNEXECUTED"
+      },
+      "subject": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-D4-validation-preparation-4/scanner.py",
+      "entry": "scanner_controls.py:run",
+      "expectedOracle": "refuse before tree",
+      "scope": "immutable actual callable; authored UNIT stimuli, host observations separately labeled",
+      "variants": [
+        "unit"
+      ],
+      "declaredSubcases": [],
+      "remainingUnsupported": [],
+      "status": "UNEXECUTED",
+      "productCalls": 0,
+      "noRetry": true
+    },
+    "J07": {
+      "original": {
+        "id": "J07",
+        "input": "valid bounded depth128/container100000/finite numbers",
+        "predicate": "parse if all other contracts satisfied",
+        "productCalls": 0,
+        "status": "UNEXECUTED"
+      },
+      "subject": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-D4-validation-preparation-4/scanner.py",
+      "entry": "scanner_controls.py:run",
+      "expectedOracle": "parse if all other contracts satisfied",
+      "scope": "immutable actual callable; authored UNIT stimuli, host observations separately labeled",
+      "variants": [
+        "unit"
+      ],
+      "declaredSubcases": [],
+      "remainingUnsupported": [],
+      "status": "UNEXECUTED",
+      "productCalls": 0,
+      "noRetry": true
+    },
+    "J08": {
+      "original": {
+        "id": "J08",
+        "input": "results16MiB+1",
+        "predicate": "resource refusal",
+        "productCalls": 0,
+        "status": "UNEXECUTED"
+      },
+      "subject": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-D4-validation-preparation-4/scanner.py",
+      "entry": "scanner_controls.py:run",
+      "expectedOracle": "resource refusal",
+      "scope": "immutable actual callable; authored UNIT stimuli, host observations separately labeled",
+      "variants": [
+        "unit"
+      ],
+      "declaredSubcases": [],
+      "remainingUnsupported": [],
+      "status": "UNEXECUTED",
+      "productCalls": 0,
+      "noRetry": true
+    },
+    "J09": {
+      "original": {
+        "id": "J09",
+        "input": "selected line64MiB+1 including newline",
+        "predicate": "resource refusal",
+        "productCalls": 0,
+        "status": "UNEXECUTED"
+      },
+      "subject": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-D4-validation-preparation-4/scanner.py",
+      "entry": "scanner_controls.py:run",
+      "expectedOracle": "resource refusal",
+      "scope": "immutable actual callable; authored UNIT stimuli, host observations separately labeled",
+      "variants": [
+        "unit"
+      ],
+      "declaredSubcases": [],
+      "remainingUnsupported": [],
+      "status": "UNEXECUTED",
+      "productCalls": 0,
+      "noRetry": true
+    },
+    "J10": {
+      "original": {
+        "id": "J10",
+        "input": "raw log256MiB+1",
+        "predicate": "resource refusal, preserve full savedbytes",
+        "productCalls": 0,
+        "status": "UNEXECUTED"
+      },
+      "subject": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-D4-validation-preparation-4/scanner.py",
+      "entry": "scanner_controls.py:run",
+      "expectedOracle": "resource refusal, preserve full savedbytes",
+      "scope": "immutable actual callable; authored UNIT stimuli, host observations separately labeled",
+      "variants": [
+        "unit"
+      ],
+      "declaredSubcases": [],
+      "remainingUnsupported": [],
+      "status": "UNEXECUTED",
+      "productCalls": 0,
+      "noRetry": true
+    },
+    "J11": {
+      "original": {
+        "id": "J11",
+        "input": "giant unrelated non-JSON line within raw threshold",
+        "predicate": "bounded skip without truncating saved log",
+        "productCalls": 0,
+        "status": "UNEXECUTED"
+      },
+      "subject": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-D4-validation-preparation-4/scanner.py",
+      "entry": "scanner_controls.py:run",
+      "expectedOracle": "bounded skip without truncating saved log",
+      "scope": "immutable actual callable; authored UNIT stimuli, host observations separately labeled",
+      "variants": [
+        "unit"
+      ],
+      "declaredSubcases": [],
+      "remainingUnsupported": [],
+      "status": "UNEXECUTED",
+      "productCalls": 0,
+      "noRetry": true
+    },
+    "J12": {
+      "original": {
+        "id": "J12",
+        "input": "file grows during hash/parse",
+        "predicate": "refuse changed size/mtime/inode",
+        "productCalls": 0,
+        "status": "UNEXECUTED"
+      },
+      "subject": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-D4-validation-preparation-4/scanner.py",
+      "entry": "scanner_controls.py:run",
+      "expectedOracle": "refuse changed size/mtime/inode",
+      "scope": "immutable actual callable; authored UNIT stimuli, host observations separately labeled",
+      "variants": [
+        "unit"
+      ],
+      "declaredSubcases": [],
+      "remainingUnsupported": [
+        "file_json has no before/after stat-stability predicate; implemented real growth refusal covers file_hash only"
+      ],
+      "status": "UNEXECUTED",
+      "productCalls": 0,
+      "noRetry": true
+    },
+    "P01": {
+      "original": {
+        "finiteSubcases": [
+          "missing prospectiveWorkload refuses; exact present workload reaches original selected-stage gate without executing product",
+          "blocked preflight no product after10",
+          "parent TERM pending while Popen/registry handlers install: contained worker cleaned under same clock",
+          "exact current flat implementation path-to-SHA index is consumed completely; missing wrapper is not invented, all hashes/six exclusions remain bound; data-only interface reaches original stage gate without product"
+        ],
+        "id": "P01",
+        "input": "blocked gate/preflight",
+        "predicate": "worker terminated within same origin; no product after10",
+        "productCalls": 0,
+        "status": "UNEXECUTED"
+      },
+      "subject": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-D4-validation-preparation-4/run.py",
+      "entry": "watchdog_controls.py:run",
+      "expectedOracle": "worker terminated within same origin; no product after10",
+      "scope": "immutable actual callable; authored UNIT stimuli, host observations separately labeled",
+      "variants": [
+        "unit",
+        "host-blocked-preflight",
+        "host-pending-term"
+      ],
+      "declaredSubcases": [
+        {
+          "id": "P01-declared-1",
+          "input": "missing prospectiveWorkload refuses; exact present workload reaches original selected-stage gate without executing product",
+          "scope": "actual-subject unit or listed host variant, not executed",
+          "status": "UNEXECUTED"
+        },
+        {
+          "id": "P01-declared-2",
+          "input": "blocked preflight no product after10",
+          "scope": "actual-subject unit or listed host variant, not executed",
+          "status": "UNEXECUTED"
+        },
+        {
+          "id": "P01-declared-3",
+          "input": "parent TERM pending while Popen/registry handlers install: contained worker cleaned under same clock",
+          "scope": "actual-subject unit or listed host variant, not executed",
+          "status": "UNEXECUTED"
+        },
+        {
+          "id": "P01-declared-4",
+          "input": "exact current flat implementation path-to-SHA index is consumed completely; missing wrapper is not invented, all hashes/six exclusions remain bound; data-only interface reaches original stage gate without product",
+          "scope": "actual-subject unit or listed host variant, not executed",
+          "status": "UNEXECUTED"
+        }
+      ],
+      "remainingUnsupported": [
+        "fully root-released gate missing/present prospectiveWorkload path is not evaluated; actual gate stays CLOSED",
+        "registration-before-fallible-inventory exact fault timing remains a host injection gap"
+      ],
+      "status": "UNEXECUTED",
+      "productCalls": 0,
+      "noRetry": true
+    },
+    "P02": {
+      "original": {
+        "id": "P02",
+        "input": "preflight ends at10 equality leaving no positive admission",
+        "predicate": "no product spawn",
+        "productCalls": 0,
+        "status": "UNEXECUTED"
+      },
+      "subject": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-D4-validation-preparation-4/run.py",
+      "entry": "watchdog_controls.py:run",
+      "expectedOracle": "no product spawn",
+      "scope": "immutable actual callable; authored UNIT stimuli, host observations separately labeled",
+      "variants": [
+        "unit"
+      ],
+      "declaredSubcases": [],
+      "remainingUnsupported": [
+        "unit no-start-at10 is not actual worker preflight admission equality"
+      ],
+      "status": "UNEXECUTED",
+      "productCalls": 0,
+      "noRetry": true
+    },
+    "P03": {
+      "original": {
+        "id": "P03",
+        "input": "start receipt after10",
+        "predicate": "refuse",
+        "productCalls": 0,
+        "status": "UNEXECUTED"
+      },
+      "subject": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-D4-validation-preparation-4/run.py",
+      "entry": "watchdog_controls.py:run",
+      "expectedOracle": "refuse",
+      "scope": "immutable actual callable; authored UNIT stimuli, host observations separately labeled",
+      "variants": [
+        "unit",
+        "host-late-start"
+      ],
+      "declaredSubcases": [],
+      "remainingUnsupported": [],
+      "status": "UNEXECUTED",
+      "productCalls": 0,
+      "noRetry": true
+    },
+    "P04": {
+      "original": {
+        "id": "P04",
+        "input": "start early/end after absolute130",
+        "predicate": "refuse",
+        "productCalls": 0,
+        "status": "UNEXECUTED"
+      },
+      "subject": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-D4-validation-preparation-4/run.py",
+      "entry": "watchdog_controls.py:run",
+      "expectedOracle": "refuse",
+      "scope": "immutable actual callable; authored UNIT stimuli, host observations separately labeled",
+      "variants": [
+        "unit"
+      ],
+      "declaredSubcases": [],
+      "remainingUnsupported": [
+        "actual delayed end at130 host fixture absent; unit schedule only"
+      ],
+      "status": "UNEXECUTED",
+      "productCalls": 0,
+      "noRetry": true
+    },
+    "P05": {
+      "original": {
+        "id": "P05",
+        "input": "end before delayed console RPC/results",
+        "predicate": "do not complete flush before actual artifacts",
+        "productCalls": 0,
+        "status": "UNEXECUTED"
+      },
+      "subject": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-D4-validation-preparation-4/run.py",
+      "entry": "watchdog_controls.py:run",
+      "expectedOracle": "do not complete flush before actual artifacts",
+      "scope": "immutable actual callable; authored UNIT stimuli, host observations separately labeled",
+      "variants": [
+        "unit",
+        "host-normal"
+      ],
+      "declaredSubcases": [],
+      "remainingUnsupported": [],
+      "status": "UNEXECUTED",
+      "productCalls": 0,
+      "noRetry": true
+    },
+    "P06": {
+      "original": {
+        "id": "P06",
+        "input": "blocked final source/build/consumer hash",
+        "predicate": "flush stops by min(end+5,135)",
+        "productCalls": 0,
+        "status": "UNEXECUTED"
+      },
+      "subject": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-D4-validation-preparation-4/run.py",
+      "entry": "watchdog_controls.py:run",
+      "expectedOracle": "flush stops by min(end+5,135)",
+      "scope": "immutable actual callable; authored UNIT stimuli, host observations separately labeled",
+      "variants": [
+        "unit",
+        "host-blocked-final"
+      ],
+      "declaredSubcases": [],
+      "remainingUnsupported": [
+        "host peer models blocked final work by absence of verified receipt; not actual blocked source/build/consumer hash"
+      ],
+      "status": "UNEXECUTED",
+      "productCalls": 0,
+      "noRetry": true
+    },
+    "P07": {
+      "original": {
+        "id": "P07",
+        "input": "blocked census probe",
+        "predicate": "200ms refusal; watchdog stays responsive",
+        "productCalls": 0,
+        "status": "UNEXECUTED"
+      },
+      "subject": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-D4-validation-preparation-4/run.py",
+      "entry": "watchdog_controls.py:run",
+      "expectedOracle": "200ms refusal; watchdog stays responsive",
+      "scope": "immutable actual callable; authored UNIT stimuli, host observations separately labeled",
+      "variants": [
+        "unit",
+        "host-blocked-census"
+      ],
+      "declaredSubcases": [],
+      "remainingUnsupported": [],
+      "status": "UNEXECUTED",
+      "productCalls": 0,
+      "noRetry": true
+    },
+    "P08": {
+      "original": {
+        "finiteSubcases": [
+          "product spawn before created notification then IPC failure/worker exit; retained unreaped anchor contains shared-group members",
+          "created receipt+ack then worker exits with live member; no early poll/wait or quiet",
+          "previous live identity becomes matching terminal Z with <defunct> comm; retained until actual absence/reap",
+          "terminal-only newly contained member cannot later become live or establish live executable baseline"
+        ],
+        "id": "P08",
+        "input": "worker leader exits while authenticated child group remains",
+        "predicate": "retain group ownership and terminate; no absence inferred",
+        "productCalls": 0,
+        "status": "UNEXECUTED"
+      },
+      "subject": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-D4-validation-preparation-4/run.py",
+      "entry": "watchdog_controls.py:run",
+      "expectedOracle": "retain group ownership and terminate; no absence inferred",
+      "scope": "immutable actual callable; authored UNIT stimuli, host observations separately labeled",
+      "variants": [
+        "unit",
+        "host-leader-exit-before-created",
+        "host-leader-exit-after-created"
+      ],
+      "declaredSubcases": [
+        {
+          "id": "P08-declared-1",
+          "input": "product spawn before created notification then IPC failure/worker exit; retained unreaped anchor contains shared-group members",
+          "scope": "actual-subject unit or listed host variant, not executed",
+          "status": "UNEXECUTED"
+        },
+        {
+          "id": "P08-declared-2",
+          "input": "created receipt+ack then worker exits with live member; no early poll/wait or quiet",
+          "scope": "actual-subject unit or listed host variant, not executed",
+          "status": "UNEXECUTED"
+        },
+        {
+          "id": "P08-declared-3",
+          "input": "previous live identity becomes matching terminal Z with <defunct> comm; retained until actual absence/reap",
+          "scope": "actual-subject unit or listed host variant, not executed",
+          "status": "UNEXECUTED"
+        },
+        {
+          "id": "P08-declared-4",
+          "input": "terminal-only newly contained member cannot later become live or establish live executable baseline",
+          "scope": "actual-subject unit or listed host variant, not executed",
+          "status": "UNEXECUTED"
+        }
+      ],
+      "remainingUnsupported": [
+        "real peers do not force unseen-first-after-reparent or matching zombie observations",
+        "external host cleanup after abrupt harness death remains unproved"
+      ],
+      "status": "UNEXECUTED",
+      "productCalls": 0,
+      "noRetry": true
+    },
+    "P09": {
+      "original": {
+        "finiteSubcases": [
+          "unseen reparented member in registered worker PGID is discovered/contained and prevents quiet",
+          "member in worker PGID remains after primary exit: worker-PID-only quiet rejects",
+          "previous authenticated member changes live comm/birth/PGID: sticky UNKNOWN",
+          "closed PGID reappears or terminal identity becomes live: UNKNOWN/no unsafe signal",
+          "escaped group without fresh anchor: no historical numeric signal and no acceptance"
+        ],
+        "id": "P09",
+        "input": "escaped group without current identity anchor",
+        "predicate": "UNKNOWN refusal; no unsafe numeric signal",
+        "productCalls": 0,
+        "status": "UNEXECUTED"
+      },
+      "subject": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-D4-validation-preparation-4/run.py",
+      "entry": "watchdog_controls.py:run",
+      "expectedOracle": "UNKNOWN refusal; no unsafe numeric signal",
+      "scope": "immutable actual callable; authored UNIT stimuli, host observations separately labeled",
+      "variants": [
+        "unit"
+      ],
+      "declaredSubcases": [
+        {
+          "id": "P09-declared-1",
+          "input": "unseen reparented member in registered worker PGID is discovered/contained and prevents quiet",
+          "scope": "actual-subject unit or listed host variant, not executed",
+          "status": "UNEXECUTED"
+        },
+        {
+          "id": "P09-declared-2",
+          "input": "member in worker PGID remains after primary exit: worker-PID-only quiet rejects",
+          "scope": "actual-subject unit or listed host variant, not executed",
+          "status": "UNEXECUTED"
+        },
+        {
+          "id": "P09-declared-3",
+          "input": "previous authenticated member changes live comm/birth/PGID: sticky UNKNOWN",
+          "scope": "actual-subject unit or listed host variant, not executed",
+          "status": "UNEXECUTED"
+        },
+        {
+          "id": "P09-declared-4",
+          "input": "closed PGID reappears or terminal identity becomes live: UNKNOWN/no unsafe signal",
+          "scope": "actual-subject unit or listed host variant, not executed",
+          "status": "UNEXECUTED"
+        },
+        {
+          "id": "P09-declared-5",
+          "input": "escaped group without fresh anchor: no historical numeric signal and no acceptance",
+          "scope": "actual-subject unit or listed host variant, not executed",
+          "status": "UNEXECUTED"
+        }
+      ],
+      "remainingUnsupported": [
+        "actual escaped-session and terminal/closed-PGID resurrection injections absent; deterministic model only"
+      ],
+      "status": "UNEXECUTED",
+      "productCalls": 0,
+      "noRetry": true
+    },
+    "P10": {
+      "original": {
+        "id": "P10",
+        "input": "TERM/KILL dispatch at145/149",
+        "predicate": "owned signal receipts; host150, no retry",
+        "productCalls": 0,
+        "status": "UNEXECUTED"
+      },
+      "subject": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-D4-validation-preparation-4/run.py",
+      "entry": "watchdog_controls.py:run",
+      "expectedOracle": "owned signal receipts; host150, no retry",
+      "scope": "immutable actual callable; authored UNIT stimuli, host observations separately labeled",
+      "variants": [
+        "unit"
+      ],
+      "declaredSubcases": [],
+      "remainingUnsupported": [
+        "exact145/149 host dispatch not implemented; current mock reaches start-missing first"
+      ],
+      "status": "UNEXECUTED",
+      "productCalls": 0,
+      "noRetry": true
+    },
+    "P11": {
+      "original": {
+        "id": "P11",
+        "input": "normal completion exactly145",
+        "predicate": "refuse equality",
+        "productCalls": 0,
+        "status": "UNEXECUTED",
+        "finiteSubcases": [
+          "original normal completion equality145 refuses",
+          "exact relative flush+10 equality refuses even when absolute145 not reached; ordinary115 unchanged"
+        ]
+      },
+      "subject": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-D4-validation-preparation-4/run.py",
+      "entry": "watchdog_controls.py:run",
+      "expectedOracle": "refuse equality",
+      "scope": "immutable actual callable; authored UNIT stimuli, host observations separately labeled",
+      "variants": [
+        "unit"
+      ],
+      "declaredSubcases": [
+        {
+          "id": "P11-declared-1",
+          "input": "original normal completion equality145 refuses",
+          "scope": "actual-subject unit or listed host variant, not executed",
+          "status": "UNEXECUTED"
+        },
+        {
+          "id": "P11-declared-2",
+          "input": "exact relative flush+10 equality refuses even when absolute145 not reached; ordinary115 unchanged",
+          "scope": "actual-subject unit or listed host variant, not executed",
+          "status": "UNEXECUTED"
+        }
+      ],
+      "remainingUnsupported": [
+        "gate.complete equality145/115 is real callable unit evidence; exact host equality remains unobserved"
+      ],
+      "status": "UNEXECUTED",
+      "productCalls": 0,
+      "noRetry": true
+    },
+    "P12": {
+      "original": {
+        "id": "P12",
+        "input": "publisher write blocks/fails after tentative exit artifact",
+        "predicate": "parent still enforces same clock; no outer exit0/no later-stagecredit",
+        "productCalls": 0,
+        "status": "UNEXECUTED",
+        "finiteSubcases": [
+          "existing publisher-block/fail case preserved",
+          "publisher already registered and a fresh census/reap begins before flush+10 but completes after that relative deadline while absolute145 remains: finalreturn refuses; tentative publication also rechecks actual current effective deadline"
+        ]
+      },
+      "subject": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-D4-validation-preparation-4/run.py",
+      "entry": "watchdog_controls.py:run",
+      "expectedOracle": "parent still enforces same clock; no outer exit0/no later-stagecredit",
+      "scope": "immutable actual callable; authored UNIT stimuli, host observations separately labeled",
+      "variants": [
+        "unit",
+        "host-publisher-block",
+        "host-publisher-fail"
+      ],
+      "declaredSubcases": [
+        {
+          "id": "P12-declared-1",
+          "input": "existing publisher-block/fail case preserved",
+          "scope": "actual-subject unit or listed host variant, not executed",
+          "status": "UNEXECUTED"
+        },
+        {
+          "id": "P12-declared-2",
+          "input": "publisher already registered and a fresh census/reap begins before flush+10 but completes after that relative deadline while absolute145 remains: finalreturn refuses; tentative publication also rechecks actual current effective deadline",
+          "scope": "actual-subject unit or listed host variant, not executed",
+          "status": "UNEXECUTED"
+        }
+      ],
+      "remainingUnsupported": [
+        "fresh census/reap crossing relative flush+10 is model only; tentative publication remains tentative"
+      ],
+      "status": "UNEXECUTED",
+      "productCalls": 0,
+      "noRetry": true
+    },
+    "P13": {
+      "original": {
+        "id": "P13",
+        "input": "invalid/missing raw complete selected report or test result",
+        "predicate": "refuse; retain originals",
+        "productCalls": 0,
+        "status": "UNEXECUTED"
+      },
+      "subject": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-D4-validation-preparation-4/run.py",
+      "entry": "watchdog_controls.py:run",
+      "expectedOracle": "refuse; retain originals",
+      "scope": "immutable actual callable; authored UNIT stimuli, host observations separately labeled",
+      "variants": [
+        "unit"
+      ],
+      "declaredSubcases": [],
+      "remainingUnsupported": [],
+      "status": "UNEXECUTED",
+      "productCalls": 0,
+      "noRetry": true
+    },
+    "P14": {
+      "original": {
+        "id": "P14",
+        "input": "late hash after failed deadline",
+        "predicate": "never promote",
+        "productCalls": 0,
+        "status": "UNEXECUTED"
+      },
+      "subject": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-D4-validation-preparation-4/run.py",
+      "entry": "watchdog_controls.py:run",
+      "expectedOracle": "never promote",
+      "scope": "immutable actual callable; authored UNIT stimuli, host observations separately labeled",
+      "variants": [
+        "unit"
+      ],
+      "declaredSubcases": [],
+      "remainingUnsupported": [
+        "late fake verified receipt is not actual late hash I/O"
+      ],
+      "status": "UNEXECUTED",
+      "productCalls": 0,
+      "noRetry": true
+    },
+    "D01": {
+      "original": {
+        "id": "D01",
+        "input": "valid positive fixed32 request/crossrow bodies",
+        "predicate": "private slice only, no whole profile",
+        "productCalls": 0,
+        "status": "UNEXECUTED"
+      },
+      "subject": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-D4-validation-preparation-4/audit.py",
+      "entry": "report_controls.py:run",
+      "expectedOracle": "private slice only, no whole profile",
+      "scope": "immutable actual callable; authored UNIT stimuli, host observations separately labeled",
+      "variants": [
+        "unit"
+      ],
+      "declaredSubcases": [],
+      "remainingUnsupported": [
+        "synthetic32 Python bodies are not established as protocol-AJV-valid; Node/dist prerequisites unbound"
+      ],
+      "status": "UNEXECUTED",
+      "productCalls": 0,
+      "noRetry": true
+    },
+    "D02": {
+      "original": {
+        "finiteSubcases": [
+          "finite divergent seed page counts with later failed/unvalidated send: derive actual page lengths/counts/complete from visited source path, not successful prefix",
+          "final validated Event send, including divergent deletion pagination stopped by later source assertion: UNSUPPORTED_OR_INCONSISTENT_FAILED_PARTIAL; raw retained/no credit",
+          "first/second receipt response failure retains exact assignment-before-assertion counters"
+        ],
+        "id": "D02",
+        "input": "failed report has actual Event pagination divergent from positive table",
+        "predicate": "failed-only retained evidence; never enforce positive-prefix or grant credit",
+        "productCalls": 0,
+        "status": "UNEXECUTED"
+      },
+      "subject": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-D4-validation-preparation-4/audit.py",
+      "entry": "report_controls.py:run",
+      "expectedOracle": "failed-only retained evidence; never enforce positive-prefix or grant credit",
+      "scope": "immutable actual callable; authored UNIT stimuli, host observations separately labeled",
+      "variants": [
+        "unit"
+      ],
+      "declaredSubcases": [
+        {
+          "id": "D02-declared-1",
+          "input": "finite divergent seed page counts with later failed/unvalidated send: derive actual page lengths/counts/complete from visited source path, not successful prefix",
+          "scope": "actual-subject unit or listed host variant, not executed",
+          "status": "UNEXECUTED"
+        },
+        {
+          "id": "D02-declared-2",
+          "input": "final validated Event send, including divergent deletion pagination stopped by later source assertion: UNSUPPORTED_OR_INCONSISTENT_FAILED_PARTIAL; raw retained/no credit",
+          "scope": "actual-subject unit or listed host variant, not executed",
+          "status": "UNEXECUTED"
+        },
+        {
+          "id": "D02-declared-3",
+          "input": "first/second receipt response failure retains exact assignment-before-assertion counters",
+          "scope": "actual-subject unit or listed host variant, not executed",
+          "status": "UNEXECUTED"
+        }
+      ],
+      "remainingUnsupported": [],
+      "status": "UNEXECUTED",
+      "productCalls": 0,
+      "noRetry": true
+    },
+    "D03": {
+      "original": {
+        "finiteSubcases": [
+          "mutate each receiptPages[0]/[1], receiptComplete, receiptEntries, groups, pendingRequests, each Event pages/count/complete against derived facts: refuse",
+          "positive32 body/wire/postimage counterfactuals unchanged",
+          "settled=true received=false errorCategory=null refuses failed conformance; each existing nonnull allowed rejection category remains eligible for the unchanged failed path; genuinely unsettled may retainnull"
+        ],
+        "id": "D03",
+        "input": "counts32 but missing wire/changed body/incorrect owned postimage",
+        "predicate": "refuse actual crossrow evidence",
+        "productCalls": 0,
+        "status": "UNEXECUTED",
+        "sourceStateSubcases": [
+          {
+            "id": "D03-M01",
+            "mutation": "settled/received/validated=000; set other row facts/aggregates consistently with that branch",
+            "expected": "eligible for remaining unchanged failed-only checks",
+            "executed": false
+          },
+          {
+            "id": "D03-M02",
+            "mutation": "settled/received/validated=001; set other row facts/aggregates consistently with that branch",
+            "expected": "refuse source-impossible state",
+            "executed": false
+          },
+          {
+            "id": "D03-M03",
+            "mutation": "settled/received/validated=010; set other row facts/aggregates consistently with that branch",
+            "expected": "refuse source-impossible state",
+            "executed": false
+          },
+          {
+            "id": "D03-M04",
+            "mutation": "settled/received/validated=011; set other row facts/aggregates consistently with that branch",
+            "expected": "refuse source-impossible state",
+            "executed": false
+          },
+          {
+            "id": "D03-M05",
+            "mutation": "settled/received/validated=100; set other row facts/aggregates consistently with that branch",
+            "expected": "eligible for remaining unchanged failed-only checks",
+            "executed": false
+          },
+          {
+            "id": "D03-M06",
+            "mutation": "settled/received/validated=101; set other row facts/aggregates consistently with that branch",
+            "expected": "refuse source-impossible state",
+            "executed": false
+          },
+          {
+            "id": "D03-M07",
+            "mutation": "settled/received/validated=110; set other row facts/aggregates consistently with that branch",
+            "expected": "eligible for remaining unchanged failed-only checks",
+            "executed": false
+          },
+          {
+            "id": "D03-M08",
+            "mutation": "settled/received/validated=111; set other row facts/aggregates consistently with that branch",
+            "expected": "eligible for remaining unchanged failed-only checks",
+            "executed": false
+          },
+          {
+            "id": "D03-C01",
+            "mutation": "000 with errorCategory=abort; writeState null; response fields null",
+            "expected": "refuse initial-state contradiction",
+            "executed": false
+          },
+          {
+            "id": "D03-C02",
+            "mutation": "000 with errorCategory=configuration; writeState null; response fields null",
+            "expected": "refuse initial-state contradiction",
+            "executed": false
+          },
+          {
+            "id": "D03-C03",
+            "mutation": "000 with errorCategory=timeout; writeState null; response fields null",
+            "expected": "refuse initial-state contradiction",
+            "executed": false
+          },
+          {
+            "id": "D03-C04",
+            "mutation": "000 with errorCategory=disconnect; writeState null; response fields null",
+            "expected": "refuse initial-state contradiction",
+            "executed": false
+          },
+          {
+            "id": "D03-C05",
+            "mutation": "000 with errorCategory=header-limit; writeState null; response fields null",
+            "expected": "refuse initial-state contradiction",
+            "executed": false
+          },
+          {
+            "id": "D03-C06",
+            "mutation": "000 with errorCategory=body-limit; writeState null; response fields null",
+            "expected": "refuse initial-state contradiction",
+            "executed": false
+          },
+          {
+            "id": "D03-C07",
+            "mutation": "000 with errorCategory=invalid-body; writeState null; response fields null",
+            "expected": "refuse initial-state contradiction",
+            "executed": false
+          },
+          {
+            "id": "D03-C08",
+            "mutation": "000 with errorCategory=network; writeState null; response fields null",
+            "expected": "refuse initial-state contradiction",
+            "executed": false
+          },
+          {
+            "id": "D03-C09",
+            "mutation": "000 with errorCategory=unavailable; writeState null; response fields null",
+            "expected": "refuse initial-state contradiction",
+            "executed": false
+          },
+          {
+            "id": "D03-W01",
+            "mutation": "000 with writeState=not-started; errorCategory null; response fields null",
+            "expected": "refuse initial-state contradiction",
+            "executed": false
+          },
+          {
+            "id": "D03-W02",
+            "mutation": "000 with writeState=started-completion-unestablished; errorCategory null; response fields null",
+            "expected": "refuse initial-state contradiction",
+            "executed": false
+          },
+          {
+            "id": "D03-W03",
+            "mutation": "000 with writeState=complete; errorCategory null; response fields null",
+            "expected": "refuse initial-state contradiction",
+            "executed": false
+          }
+        ]
+      },
+      "subject": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-D4-validation-preparation-4/audit.py",
+      "entry": "report_controls.py:run",
+      "expectedOracle": "refuse actual crossrow evidence",
+      "scope": "immutable actual callable; authored UNIT stimuli, host observations separately labeled",
+      "variants": [
+        "unit"
+      ],
+      "declaredSubcases": [
+        {
+          "id": "D03-declared-1",
+          "input": "mutate each receiptPages[0]/[1], receiptComplete, receiptEntries, groups, pendingRequests, each Event pages/count/complete against derived facts: refuse",
+          "scope": "actual-subject unit or listed host variant, not executed",
+          "status": "UNEXECUTED"
+        },
+        {
+          "id": "D03-declared-2",
+          "input": "positive32 body/wire/postimage counterfactuals unchanged",
+          "scope": "actual-subject unit or listed host variant, not executed",
+          "status": "UNEXECUTED"
+        },
+        {
+          "id": "D03-declared-3",
+          "input": "settled=true received=false errorCategory=null refuses failed conformance; each existing nonnull allowed rejection category remains eligible for the unchanged failed path; genuinely unsettled may retainnull",
+          "scope": "actual-subject unit or listed host variant, not executed",
+          "status": "UNEXECUTED"
+        },
+        {
+          "id": "D03-M01",
+          "mutation": "settled/received/validated=000; set other row facts/aggregates consistently with that branch",
+          "expected": "eligible for remaining unchanged failed-only checks",
+          "executed": false,
+          "status": "UNEXECUTED"
+        },
+        {
+          "id": "D03-M02",
+          "mutation": "settled/received/validated=001; set other row facts/aggregates consistently with that branch",
+          "expected": "refuse source-impossible state",
+          "executed": false,
+          "status": "UNEXECUTED"
+        },
+        {
+          "id": "D03-M03",
+          "mutation": "settled/received/validated=010; set other row facts/aggregates consistently with that branch",
+          "expected": "refuse source-impossible state",
+          "executed": false,
+          "status": "UNEXECUTED"
+        },
+        {
+          "id": "D03-M04",
+          "mutation": "settled/received/validated=011; set other row facts/aggregates consistently with that branch",
+          "expected": "refuse source-impossible state",
+          "executed": false,
+          "status": "UNEXECUTED"
+        },
+        {
+          "id": "D03-M05",
+          "mutation": "settled/received/validated=100; set other row facts/aggregates consistently with that branch",
+          "expected": "eligible for remaining unchanged failed-only checks",
+          "executed": false,
+          "status": "UNEXECUTED"
+        },
+        {
+          "id": "D03-M06",
+          "mutation": "settled/received/validated=101; set other row facts/aggregates consistently with that branch",
+          "expected": "refuse source-impossible state",
+          "executed": false,
+          "status": "UNEXECUTED"
+        },
+        {
+          "id": "D03-M07",
+          "mutation": "settled/received/validated=110; set other row facts/aggregates consistently with that branch",
+          "expected": "eligible for remaining unchanged failed-only checks",
+          "executed": false,
+          "status": "UNEXECUTED"
+        },
+        {
+          "id": "D03-M08",
+          "mutation": "settled/received/validated=111; set other row facts/aggregates consistently with that branch",
+          "expected": "eligible for remaining unchanged failed-only checks",
+          "executed": false,
+          "status": "UNEXECUTED"
+        },
+        {
+          "id": "D03-C01",
+          "mutation": "000 with errorCategory=abort; writeState null; response fields null",
+          "expected": "refuse initial-state contradiction",
+          "executed": false,
+          "status": "UNEXECUTED"
+        },
+        {
+          "id": "D03-C02",
+          "mutation": "000 with errorCategory=configuration; writeState null; response fields null",
+          "expected": "refuse initial-state contradiction",
+          "executed": false,
+          "status": "UNEXECUTED"
+        },
+        {
+          "id": "D03-C03",
+          "mutation": "000 with errorCategory=timeout; writeState null; response fields null",
+          "expected": "refuse initial-state contradiction",
+          "executed": false,
+          "status": "UNEXECUTED"
+        },
+        {
+          "id": "D03-C04",
+          "mutation": "000 with errorCategory=disconnect; writeState null; response fields null",
+          "expected": "refuse initial-state contradiction",
+          "executed": false,
+          "status": "UNEXECUTED"
+        },
+        {
+          "id": "D03-C05",
+          "mutation": "000 with errorCategory=header-limit; writeState null; response fields null",
+          "expected": "refuse initial-state contradiction",
+          "executed": false,
+          "status": "UNEXECUTED"
+        },
+        {
+          "id": "D03-C06",
+          "mutation": "000 with errorCategory=body-limit; writeState null; response fields null",
+          "expected": "refuse initial-state contradiction",
+          "executed": false,
+          "status": "UNEXECUTED"
+        },
+        {
+          "id": "D03-C07",
+          "mutation": "000 with errorCategory=invalid-body; writeState null; response fields null",
+          "expected": "refuse initial-state contradiction",
+          "executed": false,
+          "status": "UNEXECUTED"
+        },
+        {
+          "id": "D03-C08",
+          "mutation": "000 with errorCategory=network; writeState null; response fields null",
+          "expected": "refuse initial-state contradiction",
+          "executed": false,
+          "status": "UNEXECUTED"
+        },
+        {
+          "id": "D03-C09",
+          "mutation": "000 with errorCategory=unavailable; writeState null; response fields null",
+          "expected": "refuse initial-state contradiction",
+          "executed": false,
+          "status": "UNEXECUTED"
+        },
+        {
+          "id": "D03-W01",
+          "mutation": "000 with writeState=not-started; errorCategory null; response fields null",
+          "expected": "refuse initial-state contradiction",
+          "executed": false,
+          "status": "UNEXECUTED"
+        },
+        {
+          "id": "D03-W02",
+          "mutation": "000 with writeState=started-completion-unestablished; errorCategory null; response fields null",
+          "expected": "refuse initial-state contradiction",
+          "executed": false,
+          "status": "UNEXECUTED"
+        },
+        {
+          "id": "D03-W03",
+          "mutation": "000 with writeState=complete; errorCategory null; response fields null",
+          "expected": "refuse initial-state contradiction",
+          "executed": false,
+          "status": "UNEXECUTED"
+        }
+      ],
+      "remainingUnsupported": [],
+      "status": "UNEXECUTED",
+      "productCalls": 0,
+      "noRetry": true
+    },
+    "D04": {
+      "original": {
+        "id": "D04",
+        "input": "exit0 but absent child close or memoized close failure",
+        "predicate": "refuse ownership",
+        "productCalls": 0,
+        "status": "UNEXECUTED"
+      },
+      "subject": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-D4-validation-preparation-4/audit.py",
+      "entry": "report_controls.py:run",
+      "expectedOracle": "refuse ownership",
+      "scope": "immutable actual callable; authored UNIT stimuli, host observations separately labeled",
+      "variants": [
+        "unit"
+      ],
+      "declaredSubcases": [],
+      "remainingUnsupported": [],
+      "status": "UNEXECUTED",
+      "productCalls": 0,
+      "noRetry": true
+    },
+    "D05": {
+      "original": {
+        "id": "D05",
+        "input": "GET omitted requestBody",
+        "predicate": "correct source JSON representation; do not invent request headers",
+        "productCalls": 0,
+        "status": "UNEXECUTED"
+      },
+      "subject": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-D4-validation-preparation-4/audit.py",
+      "entry": "report_controls.py:run",
+      "expectedOracle": "correct source JSON representation; do not invent request headers",
+      "scope": "immutable actual callable; authored UNIT stimuli, host observations separately labeled",
+      "variants": [
+        "unit"
+      ],
+      "declaredSubcases": [],
+      "remainingUnsupported": [],
+      "status": "UNEXECUTED",
+      "productCalls": 0,
+      "noRetry": true
+    },
+    "D06": {
+      "original": {
+        "id": "D06",
+        "input": "wrong actual archive/payload/fixture/config/current source",
+        "predicate": "refuse before/after binding",
+        "productCalls": 0,
+        "status": "UNEXECUTED"
+      },
+      "subject": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-D4-validation-preparation-4/audit.py",
+      "entry": "report_controls.py:run",
+      "expectedOracle": "refuse before/after binding",
+      "scope": "immutable actual callable; authored UNIT stimuli, host observations separately labeled",
+      "variants": [
+        "unit"
+      ],
+      "declaredSubcases": [],
+      "remainingUnsupported": [
+        "actual packages full tar/payload execution is a future separately authorized control; unit bindings only"
+      ],
+      "status": "UNEXECUTED",
+      "productCalls": 0,
+      "noRetry": true
+    }
+  },
+  "count": 48,
+  "D03StateSubcases": 20,
+  "allDeclaredSubcasesIncluded": true,
+  "acceptanceReady": false,
+  "executed": false,
+  "unitIsNotHostEvidence": true,
+  "noRetry": true
+}

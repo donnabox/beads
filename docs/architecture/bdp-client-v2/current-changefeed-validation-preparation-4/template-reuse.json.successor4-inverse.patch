@@ -1,0 +1,33 @@
+--- preparation-4/template-reuse.json
++++ preparation-3/template-reuse.json
+@@ -41,8 +41,8 @@
+     "Exact literal request/frame/typed counters and unhandled-result checks"
+   ],
+   "supervision": "Same accepted Event120s/TERM115 stage process-group runner and exclusive attempt discipline. No new orchestration framework.",
+-  "predecessor": "immutable preparation3",
+-  "predecessorIndexSha256": "f46a11b4ee85fb14b4602d104f9f271da79049ebbe1dc11d8a8270ad16f78d5f",
++  "predecessor": "immutable validation-preparation-2",
++  "predecessorIndexSha256": "a22452775bbad3fae5d69f897a2a50054b954a651c2cfb9b16aed86f1c84fa45",
+   "minimalSuccessor3Changes": [
+     "audit.py strict D ready/drained/all32/availability/bodyState/drainKind/transport-close pass fields",
+     "audit.py E cached diff fingerprint/null reason pass fields",
+@@ -54,18 +54,5 @@
+     "packages.py",
+     "guarded-action-session-20261018-021624-549f.py"
+   ],
+-  "noFrameworkRedesign": true,
+-  "minimalSuccessor4Changes": [
+-    "data paths",
+-    "exact tuple-corrected source/file SHA pins",
+-    "failure/typecorrection/native/root evidence contexts",
+-    "fresh measured base-tool candidates; no runtime output reuse"
+-  ],
+-  "byteIdenticalToPrep3": [
+-    "run.py",
+-    "gate.py",
+-    "packages.py",
+-    "audit.py",
+-    "guarded-action-session-20261018-021624-549f.py"
+-  ]
++  "noFrameworkRedesign": true
+ }

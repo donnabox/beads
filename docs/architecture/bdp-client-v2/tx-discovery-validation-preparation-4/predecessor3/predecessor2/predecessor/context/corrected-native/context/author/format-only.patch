@@ -1,0 +1,80 @@
+--- a/apps/bdptest/src/transactional-discovery-installed.test.ts
++++ b/apps/bdptest/src/transactional-discovery-installed.test.ts
+@@ -1343,14 +1343,12 @@
+         rootUrl = d3Safe(nav.descriptor.beads);
+       const ids = ["a", "b", "c", "d", "missing"].map((name) => new URL(name, rootUrl).href);
+       const seed = {
+-        operations: ids
+-          .slice(0, 3)
+-          .map((id, index) => ({
+-            operation: "createBead",
+-            id,
+-            type: types.bead,
+-            properties: { n: index + 1 },
+-          })),
++        operations: ids.slice(0, 3).map((id, index) => ({
++          operation: "createBead",
++          id,
++          type: types.bead,
++          properties: { n: index + 1 },
++        })),
+       };
+       const batchReceipt = await d3Command(
+           f,
+@@ -1769,7 +1767,10 @@
+           route = d3DiscoveryRoutes(nav).find((item) => item.name === routeName)!;
+         const pending = f.localRaw("pending-minimum", route.url, {
+           role: "writer",
+-          fields: d3Tuple(nav, "opaque-minimum").map(({ name, value }): [string, string] => [name, value]),
++          fields: d3Tuple(nav, "opaque-minimum").map(({ name, value }): [string, string] => [
++            name,
++            value,
++          ]),
+         });
+         // A successful write callback means sent-only; it proves no admission or wait.
+         await pending.written;
+--- a/packages/server/src/transaction-installed-contracts.test.ts
++++ b/packages/server/src/transaction-installed-contracts.test.ts
+@@ -4,7 +4,13 @@
+ import { tmpdir } from "node:os";
+ import path from "node:path";
+ import { afterEach, expect, it } from "vitest";
+-import { stringifyJsonValue, isJsonSchemaUri, isJsonSchemaDateTime, parseTransactionalDiscovery, parseTransactionalOperationDirectory } from "@bdp/protocol";
++import {
++  stringifyJsonValue,
++  isJsonSchemaUri,
++  isJsonSchemaDateTime,
++  parseTransactionalDiscovery,
++  parseTransactionalOperationDirectory,
++} from "@bdp/protocol";
+ import { Ajv2020 } from "ajv/dist/2020.js";
+ import { compileDevelopmentContracts, type DevelopmentContracts } from "./development-contracts.js";
+ import {
+@@ -413,8 +419,11 @@
+         });
+         expect(response.status).toBe(relative === "" ? 204 : 200);
+         expect(response.headers.has("x-bdp-development-limit")).toBe(false);
+-        const currentContext = ["bdp-scope-epoch", "bdp-authorization-view", "bdp-scope-position"]
+-          .map((name) => response.headers.get(name));
++        const currentContext = [
++          "bdp-scope-epoch",
++          "bdp-authorization-view",
++          "bdp-scope-position",
++        ].map((name) => response.headers.get(name));
+         for (const value of currentContext) expect(value).toMatch(/\S+/);
+         phaseContext ??= currentContext;
+         expect(currentContext).toEqual(phaseContext);
+@@ -429,8 +438,11 @@
+           representationBytes = Buffer.byteLength(body);
+           if (relative === "bdp.json") {
+             const descriptor = parseTransactionalDiscovery(JSON.parse(body));
+-            expect([descriptor.scopeEpoch, descriptor.authorizationView, descriptor.headPosition])
+-              .toEqual(currentContext);
++            expect([
++              descriptor.scopeEpoch,
++              descriptor.authorizationView,
++              descriptor.headPosition,
++            ]).toEqual(currentContext);
+           } else parseTransactionalOperationDirectory(JSON.parse(body));
+         } else {
+           expect(body).toBe("");

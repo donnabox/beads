@@ -1,0 +1,346 @@
+{
+  "sourceCommit": "82f60a25da8799334381f6ebd810f32a3574cd2d",
+  "entry": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/sequence-member-draft/installed-preparation-v2/run/consumer/node_modules/.pnpm/@bdp+server@file+..+packages+bdp-server-0.0.0.tgz/node_modules/@bdp/server/dist/transaction-installed-process.js",
+  "result": {
+    "scope": "https://reference.invalid/acme/",
+    "profile": "transactional",
+    "seed": 0,
+    "selectedScenarioIds": [
+      "transactional.sequence.member-transactions"
+    ],
+    "scenarioSelection": [
+      "transactional.sequence.member-transactions"
+    ],
+    "artifacts": {
+      "catalogDigest": "c4a2ad576f3285ef9007f8bc69b094cf36e06716ed543ab195f4b8a53e9d3967",
+      "manifestDigest": "ec57f490c523ef85e5344cb75199510f86591bdeaf64264e66c5e095ae352bb7",
+      "fixtureDigest": "3a7899ced771d4880066d98b0000c53f801ece53458502cc4f3bc641146c9a85"
+    },
+    "declarations": {
+      "targetLabel": "private-installed-transactional-partial",
+      "exactConfigurationDigest": "02dd7d9f35e7482c07ce1550a6572232cc48ba6858cd66f8dfc8f5384f3628be"
+    },
+    "claimEligible": false,
+    "reportVersion": 4,
+    "scenarios": [
+      {
+        "id": "transactional.sequence.member-transactions",
+        "requiredProfile": "transactional",
+        "state": "fail",
+        "requirements": [
+          "docs/specs/bdp.md#mutation-transactions"
+        ],
+        "reason": "header 'bdp-scope-position' did not equal the expected value; JSON pointer was absent or mismatched; JSON pointer was absent or mismatched; JSON pointer was absent or mismatched; JSON pointer was absent or mismatched; JSON pointer unexpectedly existed; JSON pointer unexpectedly existed",
+        "exchanges": [
+          {
+            "servedSession": {
+              "scenario": "transactional.sequence.member-transactions",
+              "generation": 1,
+              "listenUrl": "http://127.0.0.1:49558/",
+              "runtimeConfigurationIdentity": "6f538f315a542b130ab131f8fecaf08fa31d8a7052f37cd597e0a54dd2ea552f",
+              "responseLimits": {
+                "headerBytes": 65536,
+                "bodyBytes": 1048576,
+                "wireBytes": 2097152
+              },
+              "configurationDigest": "be8181715a2c72f9b89071a8e991f91b147aa688449604404f1822836989862b"
+            },
+            "request": {
+              "id": "s-sequence",
+              "method": "POST",
+              "url": "https://reference.invalid/acme/operations/sequence",
+              "headers": {},
+              "exact": {
+                "source": "raw-http1-serializer",
+                "writeState": "complete",
+                "headerProjection": "allowlisted-relative-order",
+                "headerLines": [
+                  {
+                    "name": "accept",
+                    "value": "<redacted>"
+                  },
+                  {
+                    "name": "content-type",
+                    "value": "<redacted>"
+                  },
+                  {
+                    "name": "authorization",
+                    "value": "<redacted>"
+                  },
+                  {
+                    "name": "Accept-Language",
+                    "value": "<redacted>"
+                  },
+                  {
+                    "name": "Accept-Encoding",
+                    "value": "<redacted>"
+                  },
+                  {
+                    "name": "User-Agent",
+                    "value": "<redacted>"
+                  },
+                  {
+                    "name": "Content-Length",
+                    "value": "<redacted>"
+                  }
+                ],
+                "elidedHeaderLines": 2,
+                "bodyPresent": true,
+                "bodyOctets": 408
+              }
+            },
+            "assertions": [
+              {
+                "id": "http-status",
+                "passed": true
+              },
+              {
+                "id": "schema",
+                "passed": true
+              },
+              {
+                "id": "media",
+                "passed": true
+              },
+              {
+                "id": "request-headers",
+                "passed": true
+              },
+              {
+                "id": "request-body",
+                "passed": true
+              },
+              {
+                "id": "present-bdp-scope-epoch",
+                "passed": true
+              },
+              {
+                "id": "present-bdp-authorization-view",
+                "passed": true
+              },
+              {
+                "id": "present-bdp-scope-position",
+                "passed": true
+              },
+              {
+                "id": "serving-position",
+                "passed": false,
+                "message": "header 'bdp-scope-position' did not equal the expected value"
+              },
+              {
+                "id": "indices",
+                "passed": true
+              },
+              {
+                "id": "first-outcome",
+                "passed": true
+              },
+              {
+                "id": "first-no-name",
+                "passed": true
+              },
+              {
+                "id": "first-id",
+                "passed": true
+              },
+              {
+                "id": "first-type",
+                "passed": true
+              },
+              {
+                "id": "first-properties",
+                "passed": true
+              },
+              {
+                "id": "first-metadata",
+                "passed": true
+              },
+              {
+                "id": "first-revision",
+                "passed": true
+              },
+              {
+                "id": "first-no-owned",
+                "passed": true
+              },
+              {
+                "id": "first-no-provenance",
+                "passed": true
+              },
+              {
+                "id": "last-outcome",
+                "passed": true
+              },
+              {
+                "id": "last-no-name",
+                "passed": true
+              },
+              {
+                "id": "last-id",
+                "passed": true
+              },
+              {
+                "id": "last-type",
+                "passed": true
+              },
+              {
+                "id": "last-properties",
+                "passed": true
+              },
+              {
+                "id": "last-metadata",
+                "passed": true
+              },
+              {
+                "id": "last-revision",
+                "passed": true
+              },
+              {
+                "id": "last-no-owned",
+                "passed": true
+              },
+              {
+                "id": "last-no-provenance",
+                "passed": true
+              },
+              {
+                "id": "middle-type",
+                "passed": false,
+                "message": "JSON pointer was absent or mismatched"
+              },
+              {
+                "id": "middle-code",
+                "passed": false,
+                "message": "JSON pointer was absent or mismatched"
+              },
+              {
+                "id": "middle-status",
+                "passed": false,
+                "message": "JSON pointer was absent or mismatched"
+              },
+              {
+                "id": "middle-retry",
+                "passed": false,
+                "message": "JSON pointer was absent or mismatched"
+              },
+              {
+                "id": "middle-no-outcome",
+                "passed": false,
+                "message": "JSON pointer unexpectedly existed"
+              },
+              {
+                "id": "middle-no-deleted",
+                "passed": false,
+                "message": "JSON pointer unexpectedly existed"
+              },
+              {
+                "id": "middle-no-resource",
+                "passed": true
+              },
+              {
+                "id": "middle-no-name",
+                "passed": true
+              },
+              {
+                "id": "no-receipt",
+                "passed": true
+              },
+              {
+                "id": "no-id",
+                "passed": true
+              }
+            ],
+            "response": {
+              "url": "https://reference.invalid/acme/operations/sequence",
+              "status": 200,
+              "headers": {
+                "cache-control": "<redacted>",
+                "content-length": "<redacted>",
+                "content-type": "<redacted>",
+                "vary": "<redacted>"
+              },
+              "decodedBodyBytes": 753,
+              "wireBodyOctets": 753,
+              "bodyKind": "json"
+            }
+          }
+        ]
+      }
+    ]
+  },
+  "sessions": [
+    {
+      "event": "qualification.ready",
+      "authorityMode": "canonical",
+      "runtimeConfigurationIdentity": "6f538f315a542b130ab131f8fecaf08fa31d8a7052f37cd597e0a54dd2ea552f",
+      "artifactIdentity": "development-schema5-c67d12264b97e16c76bf68f850eaf394f61896bb72491e06603ef1d6debb335b",
+      "policyIdentity": "523b770f41ade030bebac82c2a59d0231f6c25e3b789b38559ce27794aaf8959",
+      "authenticationIdentity": "66f2735d47ba95ca3aab852d0f7849b3ab807e3be14270e3e8094af30749f9a1",
+      "scope": "https://reference.invalid/acme/",
+      "profile": "transactional",
+      "history": false,
+      "claimEligible": false,
+      "listenUrl": "http://127.0.0.1:49558/",
+      "targets": {
+        "createBead": "https://reference.invalid/acme/operations/create-bead",
+        "updateBead": "https://reference.invalid/acme/operations/update-bead",
+        "deleteBead": "https://reference.invalid/acme/operations/delete-bead",
+        "createLink": "https://reference.invalid/acme/operations/create-link",
+        "updateLink": "https://reference.invalid/acme/operations/update-link",
+        "deleteLink": "https://reference.invalid/acme/operations/delete-link",
+        "putAlias": "https://reference.invalid/acme/operations/put-alias",
+        "deleteAlias": "https://reference.invalid/acme/operations/delete-alias",
+        "updateWhere": "https://reference.invalid/acme/operations/update-where",
+        "deleteWhere": "https://reference.invalid/acme/operations/delete-where",
+        "batch": "https://reference.invalid/acme/operations/batch",
+        "sequence": "https://reference.invalid/acme/operations/sequence"
+      },
+      "payloadIdentity": "c46a251cdf51f274ec9bf4f0f401cedadcbaa7748cfb059d3009de34186753b9",
+      "scenario": "transactional.sequence.member-transactions",
+      "reopen": false
+    }
+  ],
+  "baseline": {
+    "served": {
+      "scope": "https://reference.invalid/acme/",
+      "profile": "transactional",
+      "history": false,
+      "sourceCommit": "82f60a25da8799334381f6ebd810f32a3574cd2d",
+      "installedPayloadDigest": "c46a251cdf51f274ec9bf4f0f401cedadcbaa7748cfb059d3009de34186753b9",
+      "installedContractsDigest": "c67d12264b97e16c76bf68f850eaf394f61896bb72491e06603ef1d6debb335b",
+      "policyDigest": "523b770f41ade030bebac82c2a59d0231f6c25e3b789b38559ce27794aaf8959",
+      "authenticationDigest": "66f2735d47ba95ca3aab852d0f7849b3ab807e3be14270e3e8094af30749f9a1",
+      "fixtureDigest": "3a7899ced771d4880066d98b0000c53f801ece53458502cc4f3bc641146c9a85",
+      "fixtureId": "reference-transactional-v1",
+      "capabilities": [
+        "installed-transactional-http",
+        "transactional-receipt-observation"
+      ]
+    },
+    "operationTargets": {
+      "createBead": "https://reference.invalid/acme/operations/create-bead",
+      "updateBead": "https://reference.invalid/acme/operations/update-bead",
+      "deleteBead": "https://reference.invalid/acme/operations/delete-bead",
+      "createLink": "https://reference.invalid/acme/operations/create-link",
+      "updateLink": "https://reference.invalid/acme/operations/update-link",
+      "deleteLink": "https://reference.invalid/acme/operations/delete-link",
+      "putAlias": "https://reference.invalid/acme/operations/put-alias",
+      "deleteAlias": "https://reference.invalid/acme/operations/delete-alias",
+      "updateWhere": "https://reference.invalid/acme/operations/update-where",
+      "deleteWhere": "https://reference.invalid/acme/operations/delete-where",
+      "batch": "https://reference.invalid/acme/operations/batch",
+      "sequence": "https://reference.invalid/acme/operations/sequence"
+    },
+    "runtimeConfigurationIdentity": "6f538f315a542b130ab131f8fecaf08fa31d8a7052f37cd597e0a54dd2ea552f",
+    "authorityMode": "canonical"
+  },
+  "supplemental": {
+    "kind": "sequence-member-wire-supplement",
+    "negative": true,
+    "observedIds": [
+      "s-sequence"
+    ],
+    "performedComparisons": [],
+    "receiptFacts": []
+  }
+}

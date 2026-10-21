@@ -1,0 +1,35 @@
+{
+  "guardedInvocationPrefix": "/opt/homebrew/opt/python@3.14/bin/python3.14 plus exact guarded-action-session549f then Python3.14 stdin literal here-document",
+  "noRawExitOrGuardChange": true,
+  "noRetry": true,
+  "relations": [
+    {
+      "actualSha256": "846e2ad92804edffac26d7ccd442f2f471dd23b7f2ccc8ca3167443b9d51d45d",
+      "baselineSha256": "846e2ad92804edffac26d7ccd442f2f471dd23b7f2ccc8ca3167443b9d51d45d",
+      "kind": "EXACT_BASELINE_A",
+      "phase": "A"
+    },
+    {
+      "actualPrecedingTerminalToolId": "e073df",
+      "actualSha256": "5e09cc7647379cb26a206a9103c81e807d247ba41356a1e5d3d44fc629815ac7",
+      "baselineSha256": "cdd69495ff7ee6295a7101b410471166c01020db74fee0fc57affe12a1827ce4",
+      "fullInverseExact": true,
+      "fullInverseSha256": "cdd69495ff7ee6295a7101b410471166c01020db74fee0fc57affe12a1827ce4",
+      "kind": "ONE_COMPLETE_LF_ACTUAL_PRECEDING_TERMINAL_ID_ASSIGNMENT_ONLY",
+      "phase": "B",
+      "sentinelComparisonAndRawExit0Unchanged": true
+    },
+    {
+      "actualPrecedingTerminalToolId": "37787e",
+      "actualSha256": "cb57a49cac4897bd087010198a6541658c38e4e7a4148b80bc2c2c9657040e42",
+      "baselineSha256": "0c60f7466dd9e66052bbca921dc236e9747eca73783db9a483e881d16828a450",
+      "fullInverseExact": true,
+      "fullInverseSha256": "0c60f7466dd9e66052bbca921dc236e9747eca73783db9a483e881d16828a450",
+      "kind": "ONE_COMPLETE_LF_ACTUAL_PRECEDING_TERMINAL_ID_ASSIGNMENT_ONLY",
+      "phase": "C",
+      "sentinelComparisonAndRawExit0Unchanged": true
+    }
+  ],
+  "sourceAttribution": "Actual contiguous functions3040 dispatch awaited each ordinary terminal before next assignment/call; no actual receipt inferred from an inner JSON file. Independently decoded raw tool receipt UNRETAINED.",
+  "stage": "node-version"
+}

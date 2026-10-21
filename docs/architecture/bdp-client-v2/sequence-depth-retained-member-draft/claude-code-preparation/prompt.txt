@@ -1,0 +1,39 @@
+Review this exact seven-file sequence-member depth repair as a standalone CODE review. Do not write or modify any files. Output findings only in stdout. Read/Glob/Grep only; do not run commands/tests/services/package tooling or agents. Return a complete concise numbered findings-first review (severity, exact path/line, defect, impact, minimal fix), then context gaps and verdict. Say no findings if none. Do not invent prior findings. Avoid long restatement that risks truncating the beginning.
+
+Cwd is isolated author worktree /Users/dbox/repos/wt/vickie/vickie-sequence-depth-retained. HEAD/base df80f8cb86b7763bc7bb005492e43d8840527045; tree25e9d4aa926ea728f5e356365cb1ffadba269221. Dirty ONLY six modified files plus one new test. Formatting only; no product execution. Actual minimum-main integration is required before final validation/publication, not fabricated here.
+
+Artifact directory D=/Users/dbox/repos/wt/vickie/bdp-integration-logs/sequence-depth-retained-member-draft
+Accepted plan directory R=/Users/dbox/repos/wt/vickie/bdp-integration-logs/sequence-depth-retained-member-plan/review-successor
+Read complete D/draft.patch, D/source-binding.json, D/report.md, D/measurements.json and D/selection.json, then R/plan.md and R/source-dispositions.md (ledger as needed). R/root-plan-acceptance.json and root-authoring-scheduling-amendment.json authorize scope/timing. Earlier plan review was complete and seven findings dispositioned; no earlier CODE approval exists. Treat written assertions as unexecuted, not proof they pass.
+
+Required coverage of ALL seven paths (full changed hunks and necessary surrounding code):
+1 packages/server/src/transaction-batch.ts: strict/receiving wrappers, complete parsing, raw-member depth2, WeakMap/WeakSet brands, member labels/dependencies/identity normalization.
+2 packages/server/src/transaction-http.ts: complete command branch and handle catch, auth/syntax/count/Accept order, awaited sequence catch only.
+3 packages/server/src/transaction-set.test.ts: new exact depth32 boundary, malformed deep parser class, singleton/batch identity equivalence and clone rejection; existing strict test.
+4 packages/server/src/transaction-sequence.test.ts: new retained/pending/conflict, atomic unknown-reservation rollback and between-turn expiry tests; fixture cleanup and selected regressions.
+5 packages/server/src/transaction-http.test.ts: entire last callback, real fixture/startup and explicit emitted runtime import near top; safe bounded streaming reader/cleanup; selected existing4+6request regressions.
+6 apps/bdptest/src/transactional-sequence-depth-installed.test.ts: ENTIRE new file, literal bodies/raw serialization, source/ready binding, schema/receipt/Resource/context oracles, safe reporting and pre-ready/timeout cleanup.
+7 docs/design/transaction-implementation-progress.md: final append only and historical attribution.
+
+Read actual relevant dependency functions rather than guessing interfaces:
+- transaction-store.ts: enter/atomic, admitKey retained/pending/expiry/unknown-depth order; admitSequence atomic reservations; nextSequence turn/dependency/expiry recheck; cancelSequence, receipt retention and inspect.
+- transaction-sequence.ts: whole short file, retained projection/current labels, async turn/error retraction and committed prefix.
+- transaction-set.ts: iterative exact depth convention including primitive leaf; transaction-dependencies.ts and semantic-identity.ts: aliases/creator facts/normalization.
+- transaction-service.ts: sequenceObserved, sequenceRefusalObserved, admission/drain; unchanged, no extra preflight.
+- transaction-runtime.ts + transaction-runtime-configuration.ts: listener, error delivery, credentials/targets/limits; unchanged.
+These filenames are all in packages/server/src/.
+- packages/protocol/src/index.ts and its carrier-parser exports: whole syntax/duplicate key/wrong-kind alias checks and exact Problem family/retry mappings.
+- schemas/bdp-v0.schema.json: mutationReceipt, transactionalSequenceResponse, beadRecord; avoid importing optional fields from unrelated fixtures.
+- apps/bdptest/test-support/transactional-execution-binding.ts and scripts/transaction-installed-observation.mjs: ready/config/entry binding and launcher cleanup limitations.
+- packages/conformance/src: locate createRawHttpExchangeExecutor/exactRequest contract, raw body presence/hash/canonicalHost/auth, header/body receive limits.
+- vitest.config.ts and packages/server/test-support/read-conformance-mock.ts: source aliases coexist with explicit relative emitted runtime import and private diagnostic admission.
+- docs/specs/bdp.md: sequence order/member identity/idempotency/aliases/retention and ordinary Accept/Problem clauses. Prior direct-key repair plan is /Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-depth-key-order-plan/plan.md; strict sequence was deliberately deferred.
+Read additional source if necessary; identify uninspected context explicitly. Source binding pins meaningful dependencies, not every repository file.
+
+Critical questions:
+A Full parser must precede depth facts. Original raw member offset2 means root0/array1/member2; strict wrapper still throws. Only original brand carries fact, shallow sibling unaffected; aliases/dependencies preserved.
+B Single authoritative unchanged owner gate: retained/pending before unknown depth, atomic rollback of all fresh reservations, foreign pending claim untouched, retained expiry rechecked at turn. Expiry test uses normal receipt read to apply retention after rollback; no assertion that aborted atomic turn durably erased row. Later500 may follow committed prefix, remaining claims retracted.
+C Auth/full syntax then Accept before execution is deliberate: deep unacceptableAccept406; JSON freshdeep500/private marker; retaineddeep200/full sequence conflict. Do not restore incidental old500-before406 or add second owner preflight. Only expected depth class caught around await; cleanupAggregateError must not be mislabeled.
+D Proposed emitted control replaces only receiving wrapper with strict-wrapper call. That preparation throw reaches handler.handle generic empty500, BEFORE runtime delivery. Request2 must fail FIRST at named status oracle sequence-depth:retained-member-conflict; actual expected500/empty/no development-limit/no context. Expected2requests/hard11; no installed mutant or new receiving catch needed.
+E Exact18 selected source cases/21HTTP (new11+existing10); installed8operator-only/onechild; aggregate including control31expected40maxHTTP. Match real bodies, headers, schemas and cleanup. Installed has no reader credential. Body literals3179total/680max,41 nested metadata objects. Source bodies5692total/1303max. Current shared limits unchanged.
+F Receive caps are not heap-peak guarantees; old10HTTP regressions unchanged. Unknown pre-ready child/stop must retain directory, not infer absent handle means stopped. Preserve primary+cleanup failures. Reports exclude Authorization/config secrets/arbitrary Error text; fingerprints don't replace full in-memory receipt/Resource/schema assertions. No profile qualification/discovery/public admission claim.

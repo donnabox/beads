@@ -1,0 +1,67 @@
+{
+  "actualResultPath": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation-preparation-5/run/legacy-schema-source.results.json",
+  "legacyRegressionOnly": true,
+  "newG09DirectCredit": 0,
+  "newG09WireCredit": 0,
+  "numTestSuitesCountersNotInterpretedAsPhysicalFileCount": true,
+  "officialReportAuditStage": "audit-legacy-schema-source NOT_ATTEMPTED",
+  "officialSemanticPairAccepted": false,
+  "physicalResultFileSuites": 1,
+  "rawObservationRecords": [],
+  "reportObjectsExpectedAndActual": 0,
+  "reportedTopLevelCounters": {
+    "numFailedTestSuites": 0,
+    "numFailedTests": 0,
+    "numPassedTestSuites": 1,
+    "numPassedTests": 2,
+    "numPendingTestSuites": 0,
+    "numPendingTests": 11,
+    "numTodoTests": 0,
+    "numTotalTestSuites": 1,
+    "numTotalTests": 13,
+    "startTime": 1792382523675,
+    "success": true
+  },
+  "selectedExactlyOnce": [
+    {
+      "assertion": {
+        "ancestorTitles": [],
+        "duration": 49.531542,
+        "failureMessages": [],
+        "fullName": "serves exact captured root and transitive bytes without retaining mutable input",
+        "meta": {},
+        "status": "passed",
+        "tags": [],
+        "title": "serves exact captured root and transitive bytes without retaining mutable input"
+      },
+      "file": "/Users/dbox/repos/wt/vickie/vickie-schema-lint-correction-minimum/packages/server/src/transaction-schema-http.test.ts"
+    },
+    {
+      "assertion": {
+        "ancestorTitles": [],
+        "duration": 26.196416999999997,
+        "failureMessages": [],
+        "fullName": "preserves receiving refusals and foreign schema minima before conditionals",
+        "meta": {},
+        "status": "passed",
+        "tags": [],
+        "title": "preserves receiving refusals and foreign schema minima before conditionals"
+      },
+      "file": "/Users/dbox/repos/wt/vickie/vickie-schema-lint-correction-minimum/packages/server/src/transaction-schema-http.test.ts"
+    }
+  ],
+  "sha256": "bff798f0ff9bd6dec3407466e4efc601ec6dddc1705e23e7eff9c71acec3af36",
+  "unselectedSkippedFullNames": [
+    "applies selection once and retains exact byte length and current context",
+    "preserves accepted offline configuration and unserved aliases: differing-id",
+    "preserves accepted offline configuration and unserved aliases: outside-namespace",
+    "preserves accepted offline configuration and unserved aliases: query-retrieval",
+    "discards a disconnected schema delivery and leaves the runtime usable",
+    "sanitizes a selected schema observation fault without stale response metadata",
+    "G09-S04 schema selector receiving and exact identity",
+    "G09-S05 schema selector HTTP/min failure order",
+    "G09-S06 schema runtime satisfied and context errors",
+    "G09-S07 schema runtime ahead before conditional",
+    "G09-S08 schema runtime unknown before HEAD/media"
+  ]
+}

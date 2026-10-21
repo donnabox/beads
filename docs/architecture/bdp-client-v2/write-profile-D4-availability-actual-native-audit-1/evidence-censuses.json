@@ -1,0 +1,736 @@
+{
+  "actualRoots": {
+    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-D4-availability-actual-root-dispatch-1": {
+      "caller-exit.json": {
+        "bytes": 660,
+        "sha256": "3649a3f8ee51e208b8004be78b4117fffd6c11e6c52b206954b962f41b66f35a"
+      },
+      "caller-process.json": {
+        "bytes": 168,
+        "sha256": "8ac487fa96abb3df14208e62b7c75e7fa9a2cc59859330ba8715519e64106f17"
+      },
+      "caller.stderr": {
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "caller.stdout": {
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "dispatch.json": {
+        "bytes": 681,
+        "sha256": "541ac420cbd7355caa0a83137ef1dbc97ba0a928cd5bae51f04d6b75ce900646"
+      },
+      "index.json": {
+        "bytes": 710,
+        "sha256": "70be0ab9d959ca93a067632341cb20d4baf4202fcdef15d3d0a78a463a571b20"
+      }
+    },
+    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-D4-availability-root-authority-preparation-1/attempt": {
+      "caller-terminal.json": {
+        "bytes": 3482,
+        "sha256": "fc3e234b9225b0efeb4d37e4a2f7a326adc1d6efeda2f7ae9d6bb5c8930a93d5"
+      },
+      "capture.jsonl": {
+        "bytes": 37520,
+        "sha256": "ed703b665bcdde8a3a438d8d3259d1317970a5a4225730c2825298a4691cc93b"
+      },
+      "guard.stderr": {
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "guard.stdout": {
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "native.stderr": {
+        "bytes": 215,
+        "sha256": "e85485bdcc427a12f23fbc5e59fc3f4585c5649e348f7b4f76c716dd69b9a1d6"
+      },
+      "native.stdout": {
+        "bytes": 1810,
+        "sha256": "5b3513d0b23678b02632aaffa9ad3ee885d6e3918b499595da354edcb152bddd"
+      }
+    },
+    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-D4-availability-root-census-terminal-observation-1": {
+      "index.json": {
+        "bytes": 157,
+        "sha256": "389edb1e4e5d598785fed59b39a1c16cf12e49f0da95583596b77801c372bded"
+      },
+      "observation.json": {
+        "bytes": 1389,
+        "sha256": "95c836562f7faea4f59beca5469be678191f55e361017dd14bb57da2a97e55ce"
+      }
+    },
+    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-D4-availability-root-fresh-absence-1": {
+      "absence.json": {
+        "bytes": 3246,
+        "sha256": "39bdc252ae4fc9d69cc5ab192021fe5aa84f925f3e805216f07fe8ffb4e64d32"
+      },
+      "fresh-process-census.txt": {
+        "bytes": 167094,
+        "sha256": "c8ec0d71447cce30763e8b3822d264ee090d4005d7e5b2ecea058e2b94c51999"
+      },
+      "index.json": {
+        "bytes": 300,
+        "sha256": "317779f24f9cbc5cad55d5a9cc5b844ac951f075339e984cbdd17c808a830f39"
+      }
+    },
+    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-D4-synthetic-harness-preparation-4/availability-attempt": {
+      "kill.capture.jsonl": {
+        "bytes": 12609,
+        "sha256": "91c77a686a2fb8c31634b1fe1bab14d6b5e23dbd0fdc370b5cf8120e01af4427"
+      },
+      "kill.json": {
+        "bytes": 399,
+        "sha256": "774288db03bd8a78995c708b86edba2d920f7a3e80d44ef519956254b1b6d799"
+      },
+      "kill.stderr": {
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "kill.stdout": {
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "started.json": {
+        "bytes": 245,
+        "sha256": "6ecd5c07756d6b62e8a26a6713eec36299c675657c2d098eb6c59f6da4b7e26b"
+      },
+      "term.capture.jsonl": {
+        "bytes": 14488,
+        "sha256": "f06c4ab509d70bd8debbc966310a570c39516aa83c464a2aae5ad1e6d80d8fe0"
+      },
+      "term.json": {
+        "bytes": 771,
+        "sha256": "2a6638ee826ca08bb746bf95b4c2b86cb54d2a64555819564f89ceb88debc9a9"
+      },
+      "term.stderr": {
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "term.stdout": {
+        "bytes": 289,
+        "sha256": "72af6f75b2342ae09c3c02a15ea7846c82637cf01d844c27cbda8e0b02808cba"
+      },
+      "terminal.json": {
+        "bytes": 2020,
+        "sha256": "7226918fe6058910f1ca4bfa773e2539ad328add20b2db76a4b198ac1826fe0b"
+      }
+    }
+  },
+  "allOriginalBytesPreserved": true,
+  "oldPreparedAttemptAbsentStatements": "Historical snapshot, not a current absence claim after actual invocation",
+  "preparedHistories": [
+    {
+      "currentAdditions": [
+        "attempt/capture.jsonl",
+        "attempt/native.stdout",
+        "attempt/guard.stderr",
+        "attempt/caller-terminal.json",
+        "attempt/guard.stdout",
+        "attempt/native.stderr"
+      ],
+      "meaning": "original prepared bytes unchanged; actual attempt additions are explicit, never silent historical-index repair",
+      "originalFiles": {
+        "README.md": {
+          "bytes": 1425,
+          "sha256": "8150b05b46358b244c140da2cda2b1baaa9df3cdf49d24638713a4df7bf6cf50"
+        },
+        "adaptation-manifest.json": {
+          "bytes": 2497,
+          "sha256": "0c30030cd2e94bfeb461c8af1201043e0510ffd31df739d343d2e1be6ff98b15"
+        },
+        "additional-tools.json": {
+          "bytes": 547,
+          "sha256": "af59fab25881e3e98b3888fea6e3dce4ea40e592719eeae89d0892ca1ce6b2d5"
+        },
+        "authoring-static-error-1.json": {
+          "bytes": 266,
+          "sha256": "b1f19d2cc2f169535032e8d9871117a4bee234ca344b91ff86d1383145d0b363"
+        },
+        "availability-release.proposed.json": {
+          "bytes": 865,
+          "sha256": "0239fde38765c7d0b01d5b91a9b4c60b10a6cf75699c4c5d4994a924ffe22fe1"
+        },
+        "binding.json": {
+          "bytes": 1543,
+          "sha256": "596b233693cf90d0586cffce2bb57522dc8ec6deaf9537da88935f021513ff57"
+        },
+        "caller-command.json": {
+          "bytes": 896,
+          "sha256": "472919810c43dbeffce845c20866fdda7ad945405daea45d7a14afbaebfc543e"
+        },
+        "capture-contract.json": {
+          "bytes": 3388,
+          "sha256": "06211f472da08a07461e4424b57028c1c52a2d96ba60bb12e6d47ad0fafe9bae"
+        },
+        "capture.py": {
+          "bytes": 12555,
+          "sha256": "a288d73db1ab2ab21bdb5942b1f4207e82308b0854c1a0dd0788cd396c956bc5"
+        },
+        "closure.json": {
+          "bytes": 821,
+          "sha256": "7b79d5c61fd330fae14e1b16a722cf85245c947b49b5a08e76a93247bf18145a"
+        },
+        "context/write-profile-D4-harness4-root-static-acceptance-1/acceptance.json": {
+          "bytes": 1792,
+          "sha256": "633eee1e09a016ce709e1e4818d6eb67245283385e1d0f64958d04264aa6925b"
+        },
+        "context/write-profile-D4-harness4-root-static-acceptance-1/index.json": {
+          "bytes": 229,
+          "sha256": "3a926864c663f91f3dc4ddb87d3d7910e4332e81deafa8aff113ed43156bb813"
+        },
+        "context/write-profile-D4-harness4-root-static-acceptance-1/release.json": {
+          "bytes": 3429,
+          "sha256": "e905c48808f9c3674b0afea18cb09503c68fd3f32de977b7fdb044dde4aa6905"
+        },
+        "context/write-profile-D4-synthetic-harness-preparation-4/availability-command.json": {
+          "bytes": 2086,
+          "sha256": "e8489e9bdf0ee798d284cabfc041f1d18b1e7692ae5cce0be9412d7556a40663"
+        },
+        "context/write-profile-D4-synthetic-harness-preparation-4/availability-plan.md": {
+          "bytes": 2770,
+          "sha256": "6cd4dc71cdef6375943894b12532c5e6769dfb392960d33975c08baf729cb6ec"
+        },
+        "context/write-profile-D4-synthetic-harness-preparation-4/availability-release-schema.json": {
+          "bytes": 1531,
+          "sha256": "93a810e3c8e17cbe5a1b1a9472ab73cefe1aefece9a99aaa3f899c6ab116dea5"
+        },
+        "context/write-profile-D4-synthetic-harness-preparation-4/availability_limit.pl": {
+          "bytes": 3461,
+          "sha256": "a417085647b6617674d8dc839222ab85c45dcbf6e62e6440e9f76b63bc49ca14"
+        },
+        "context/write-profile-D4-synthetic-harness-preparation-4/availability_owner.py": {
+          "bytes": 14000,
+          "sha256": "c3615a87bd70256b383e585268a9d21d1c951f8f9618dfa0dd820101dd157fa7"
+        },
+        "context/write-profile-D4-synthetic-harness-preparation-4/availability_peer.py": {
+          "bytes": 1126,
+          "sha256": "65c078a6d9739f4c4017433eef5d260084e9ee005622a7d5f08fdc89b0b05ec7"
+        },
+        "context/write-profile-D4-synthetic-harness-preparation-4/bootstrap.py": {
+          "bytes": 2114,
+          "sha256": "6e11b44e8e95458b35052c87a02a17cffdae32ad060a5dbd3de53e19f2f873cc"
+        },
+        "context/write-profile-D4-synthetic-harness-preparation-4/closure.json": {
+          "bytes": 1850,
+          "sha256": "9d9f777902ff5a2a7887879f1f7fb116b279a636a9f55337cf2357dad64f8031"
+        },
+        "context/write-profile-D4-synthetic-harness-preparation-4/execution-gate.closed.json": {
+          "bytes": 145,
+          "sha256": "69f7eb67fa2ae35674192163791f8dc0a9006f383ba6a407501c138eaa3170f5"
+        },
+        "context/write-profile-D4-synthetic-harness-preparation-4/execution-gate.json": {
+          "bytes": 145,
+          "sha256": "69f7eb67fa2ae35674192163791f8dc0a9006f383ba6a407501c138eaa3170f5"
+        },
+        "context/write-profile-D4-synthetic-harness-preparation-4/hard-limiter-authority.md": {
+          "bytes": 3491,
+          "sha256": "97bf4cc971c89d1344ca5ac1a9d38038319d754f9b4c8c985d2c80f05081586d"
+        },
+        "context/write-profile-D4-synthetic-harness-preparation-4/implementation-hashes.json": {
+          "bytes": 9212,
+          "sha256": "9ae8e2914b36edd70773ef871f63b5a8fd762732826fe0427a3e8a6eb7112e37"
+        },
+        "context/write-profile-D4-synthetic-harness-preparation-4/ownership-fault-scope.json": {
+          "bytes": 1826,
+          "sha256": "749cf3c12e46d731c7da6ee6fe242c25bbba8c8a8cff6d1a39f399bf94150765"
+        },
+        "context/write-profile-D4-synthetic-harness-preparation-4/raw-retention-contract.json": {
+          "bytes": 2928,
+          "sha256": "979f396f653055c195554b44be9b15d6b8f0cbfe59de51b4b68be83fc185ceae"
+        },
+        "context/write-profile-D4-synthetic-harness-preparation-4/source-map.json": {
+          "bytes": 87874,
+          "sha256": "7fb84ed403b7be9dd587ed2b2980d0d8e5def7e260186c948abd1c4a1f997dda"
+        },
+        "context/write-profile-D4-synthetic-harness-preparation-4/tool-identity-read.json": {
+          "bytes": 4207,
+          "sha256": "f61ec88a28f6c40eaf83be3a12784188ca069129704395ba178820b2796f282a"
+        },
+        "context/write-profile-D4-synthetic-harness4-native-mechanics-1/closure.json": {
+          "bytes": 1892,
+          "sha256": "ac43d3bfd86d98c35907bf9297bf30d1752dbf432905c22029e9b231dd23f5e1"
+        },
+        "context/write-profile-D4-synthetic-harness4-native-mechanics-1/index.json": {
+          "bytes": 11302,
+          "sha256": "f5c34b8a43735cc4687e9266ab5336f6d19c5459855b6081281bb6dfdc5a7c82"
+        },
+        "context/write-profile-D4-synthetic-harness4-native-mechanics-1/report.md": {
+          "bytes": 6030,
+          "sha256": "a42d839d6c4fee8fa697833ecc8cdcab9ecc0450755c1bb42e0228c2a752116a"
+        },
+        "deltas/availability-release.proposed.json.forward.patch": {
+          "bytes": 1063,
+          "sha256": "fc6686ef2d1473287c916c30909f0cb3425c8a723d2eab48c3e97c5bf6505327"
+        },
+        "deltas/availability-release.proposed.json.inverse.patch": {
+          "bytes": 1063,
+          "sha256": "17358b0f6e1dc3f5248a24817e7102e3a95382bd9b9e528eafae8b589291206a"
+        },
+        "deltas/capture.py.forward.patch": {
+          "bytes": 12859,
+          "sha256": "7b3f735ddb5d94e79069cf7687816ceb0d9757d1d645a9254bd0028c8aa2c11c"
+        },
+        "deltas/capture.py.inverse.patch": {
+          "bytes": 12859,
+          "sha256": "193212d40c80dfddc0cfa16419924ff397389b9fd7844d7d6db7cb257f1c27b4"
+        },
+        "deltas/execution-release-schema.json.forward.patch": {
+          "bytes": 1898,
+          "sha256": "0d8b93de3c0d7ebab8ad2ed6eda7cba5f679b37bb28f8e19c74a731879149ca3"
+        },
+        "deltas/execution-release-schema.json.inverse.patch": {
+          "bytes": 1898,
+          "sha256": "29c55d0d174f3425a080a317bdec0cb2799b64a1fd27c77ec4cbd02d402161ed"
+        },
+        "deltas/native-command.json.forward.patch": {
+          "bytes": 3641,
+          "sha256": "ca5174f9f2bd8a8deb985210cb500dc337e8b61d5895a3f25ffa6acc487f85aa"
+        },
+        "deltas/native-command.json.inverse.patch": {
+          "bytes": 3641,
+          "sha256": "58f6afd1c68c98f8b2e2319886b9ec1b82b11b0b43e66cb29a9f4072ddae1318"
+        },
+        "execution-release-schema.json": {
+          "bytes": 1689,
+          "sha256": "d5cbeba06d13b4c1683ed7515763f9f8f54539b3fd4f6c88e4415b70b8b56536"
+        },
+        "guard-observation.json": {
+          "bytes": 175,
+          "sha256": "211060d078bd7c4c8c11988672f36fac8808268ab58fc115dc0410f21c11fb04"
+        },
+        "history-inplace.json": {
+          "bytes": 33301,
+          "sha256": "af9ddbf45f8219201d508f34c0ea830220fda114e4e0e0c9b8d692b286c8178e"
+        },
+        "implementation-hashes.json": {
+          "bytes": 5972,
+          "sha256": "6cfb6be54e57a4f9e5b0c2b8446c6097461886fc99939a29903afbca7e5c3f30"
+        },
+        "native-command.json": {
+          "bytes": 2506,
+          "sha256": "5274dc2f7d2fd4da69a996930f6f7fceb22f9824d15a3c5302b5265cef4a890f"
+        },
+        "origins.json": {
+          "bytes": 9049,
+          "sha256": "679960c9290cfddc6563e8770ba5e24fee436a52d210000d35eb0d62d778bf68"
+        },
+        "preparation-index.json": {
+          "bytes": 9038,
+          "sha256": "ad3496393260bb8c8d4b5ef647819e27530292ef441efaa590e735f1d69c9938"
+        },
+        "preparation-state.json": {
+          "bytes": 513,
+          "sha256": "815619e46da817f441fb4b7d692f3b021270ff6d842443c9216d0e79f0aad27a"
+        },
+        "reference-pins.json": {
+          "bytes": 1352937,
+          "sha256": "4ed14108d0562aa59c93c060e3aac0b69f3465c24b1b767ce4e5958b65a1c13e"
+        },
+        "report.md": {
+          "bytes": 5172,
+          "sha256": "b76816394803a2e731c1456dee07d4907f6e623d7c3760853c9c46c99189d02c"
+        },
+        "static-call-inventory.json": {
+          "bytes": 1636,
+          "sha256": "e693f9eaf04d9969015008ee342a90f52d9189dd9e49f6f94710eab626eb3720"
+        },
+        "static-verification.json": {
+          "bytes": 798,
+          "sha256": "2ffc8cbe3d95e3af7814328e5800bd8f2a4d02aef8d222139b1b187b0df0d723"
+        }
+      },
+      "originalPreparedPhysicalFiles": 52,
+      "root": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-D4-availability-root-authority-preparation-1"
+    },
+    {
+      "currentAdditions": [
+        "availability-attempt/term.json",
+        "availability-attempt/term.stdout",
+        "availability-attempt/kill.json",
+        "availability-attempt/kill.capture.jsonl",
+        "availability-attempt/term.stderr",
+        "availability-attempt/term.capture.jsonl",
+        "availability-attempt/started.json",
+        "availability-attempt/kill.stderr",
+        "availability-attempt/terminal.json",
+        "availability-attempt/kill.stdout"
+      ],
+      "meaning": "original prepared bytes unchanged; actual attempt additions are explicit, never silent historical-index repair",
+      "originalFiles": {
+        "README.md": {
+          "bytes": 725,
+          "sha256": "3149a790eee3f9aa431acd6f39ab2e360c57106f84ce4417c232d20c4f5f4a81"
+        },
+        "adapter-relations.json": {
+          "bytes": 10262,
+          "sha256": "7a66d23c52ef7bd6eb61466a7be8e660e176d15f626e135e52082762b2ffda44"
+        },
+        "adapters/README.md.inverse.patch": {
+          "bytes": 1705,
+          "sha256": "f302f08472d4f93844425f50ab2d842e1d52fa9cf10859ff4f2558d51cd88b6d"
+        },
+        "adapters/README.md.patch": {
+          "bytes": 1705,
+          "sha256": "f476894b481b9b2bab092e35ffe172f7c4045154f87fa5aea13ce29b85a2ff9e"
+        },
+        "adapters/authoring-data-error-1.json.inverse.patch": {
+          "bytes": 532,
+          "sha256": "947c6fc289ba22b3eafa24a8968314c93d10964a420741300482a0b024024ede"
+        },
+        "adapters/authoring-data-error-1.json.patch": {
+          "bytes": 532,
+          "sha256": "fc54df5e21527568d6e5c1ee4838a994e8be27c4439e16ba6203ef1fa34f6999"
+        },
+        "adapters/availability-command.json.inverse.patch": {
+          "bytes": 1690,
+          "sha256": "8730777c5d91716e89e61a0ef7d39e4af1874ff0c2034d79fcdbc5dd58632890"
+        },
+        "adapters/availability-command.json.patch": {
+          "bytes": 1690,
+          "sha256": "e6a4e939dd32ef2e55b5f7793e2326ecd90288acc5ee2c3e870ffb364d160776"
+        },
+        "adapters/availability-plan.md.inverse.patch": {
+          "bytes": 6087,
+          "sha256": "b4f046c052a56ea06f36cc375d3383e0b89c515f7367aa56bb511a50d85f8753"
+        },
+        "adapters/availability-plan.md.patch": {
+          "bytes": 6087,
+          "sha256": "db5c0857e151f07baf6b44496fe7a7fc492a3fb9ad661b1d2abe567864a2f401"
+        },
+        "adapters/availability_limit.pl.inverse.patch": {
+          "bytes": 820,
+          "sha256": "5eb428c1127590c6d20f6cbab4f0c1b4e559df794ed1d1fd2e77e6d4cb9c370f"
+        },
+        "adapters/availability_limit.pl.patch": {
+          "bytes": 820,
+          "sha256": "a655d8f4d28585a75797f8188b68d087879c52531ea750819a988545ef5e8fae"
+        },
+        "adapters/availability_owner.py.inverse.patch": {
+          "bytes": 11268,
+          "sha256": "b325e412af9466794f32cb44d5faf1162e4cdc40e6e5a235437c42ccfbb0f73b"
+        },
+        "adapters/availability_owner.py.patch": {
+          "bytes": 11268,
+          "sha256": "ab29f20d413ec512a5b60c0a6b8193d59abd383dbccc2a27dfba60647fd46df3"
+        },
+        "adapters/binding.json.inverse.patch": {
+          "bytes": 616670,
+          "sha256": "60257a9b4eb730d278b6f1d3d6bed8ed921adf817f6e9302510841a74742e496"
+        },
+        "adapters/binding.json.patch": {
+          "bytes": 616670,
+          "sha256": "38768cc668fa718e89f0db0eff8d893db6317427ae16b2b6680a729df40112a2"
+        },
+        "adapters/command-matrix.json.inverse.patch": {
+          "bytes": 71247,
+          "sha256": "1de06de814bebc65308370a4b30fca1b035f57f2539c47c009a8a3b9e99fcd29"
+        },
+        "adapters/command-matrix.json.patch": {
+          "bytes": 71247,
+          "sha256": "53ed5e4f1b85921c827ec2f0a0ded03466ec690049299e96f98cbffceceba410"
+        },
+        "adapters/findings-disposition.json.inverse.patch": {
+          "bytes": 1393,
+          "sha256": "c7f203d1b8015dd5cbbe447ffa4d48c57a80f04e3a5c0474b77102a70898c445"
+        },
+        "adapters/findings-disposition.json.patch": {
+          "bytes": 1393,
+          "sha256": "f6eb4b222fd1960442524623f920391403fb0dae4bdcd76aac9a83a659407645"
+        },
+        "adapters/hard_limit.pl.inverse.patch": {
+          "bytes": 854,
+          "sha256": "8f272d4500d785d603e879adcd83e6bdbee5389dce51734d627ac6684bc24769"
+        },
+        "adapters/hard_limit.pl.patch": {
+          "bytes": 854,
+          "sha256": "8bf427a37785def02840d81753f894025902f2f296d251f2533fffb60b1432ed"
+        },
+        "adapters/historical-in-place-census.json.inverse.patch": {
+          "bytes": 541869,
+          "sha256": "b2f71d62eee5725369e7d95deff856fb07418cabc6967b886142eb9adef856a8"
+        },
+        "adapters/historical-in-place-census.json.patch": {
+          "bytes": 541869,
+          "sha256": "b21153db8bb13847e7bdb09128cc0cb034f149099c62f5664bf2051fbd0ad246"
+        },
+        "adapters/raw-retention-contract.json.inverse.patch": {
+          "bytes": 3042,
+          "sha256": "4e8f70ce300c650cc898e3150b07877ba9d326997a5a2ccb2b51af383a4bff67"
+        },
+        "adapters/raw-retention-contract.json.patch": {
+          "bytes": 3042,
+          "sha256": "617c4acabb73a88a8e6ecf0524656dc8b7c84d9762b956bdd520cb2573632292"
+        },
+        "adapters/report.md.inverse.patch": {
+          "bytes": 5901,
+          "sha256": "a613d8da894ceb682e05ff8e2950374494d02456ad7b438ca8a39e5af00cbb5a"
+        },
+        "adapters/report.md.patch": {
+          "bytes": 5901,
+          "sha256": "9f0c816244e1d54847b3e806cac594023289d8b0154a16373c558952d8b0bc19"
+        },
+        "adapters/residuals.json.inverse.patch": {
+          "bytes": 2033,
+          "sha256": "66b395b46dad67ec9a5e591babe3abf57685537e278a64ec986452d8339c819f"
+        },
+        "adapters/residuals.json.patch": {
+          "bytes": 2033,
+          "sha256": "046528b93877c5e6f24a84011f602103d477c350c6ce73f2ca0365e0eb6646dc"
+        },
+        "adapters/static-authoring-parse.json.inverse.patch": {
+          "bytes": 2331,
+          "sha256": "05ba73605afcca28a5cba6f42dcec7fd448ebc66c909abe6d6c2e00cf550ce8e"
+        },
+        "adapters/static-authoring-parse.json.patch": {
+          "bytes": 2331,
+          "sha256": "850cae5184f5db15fd7b5725983fc91978847b7ceb6ea68978e1b1df44b8332a"
+        },
+        "adapters/static-call-inventory.json.inverse.patch": {
+          "bytes": 25620,
+          "sha256": "f1c4810eb538b76815193792e1fb31864ee1ba3fcffb9f5aa826b3f1c6be3f75"
+        },
+        "adapters/static-call-inventory.json.patch": {
+          "bytes": 21113,
+          "sha256": "eeaa6c280df2eee9b9d67a25198c361572b0d33be0c12a3da9671996bf7a90e0"
+        },
+        "adapters/static-verification.json.inverse.patch": {
+          "bytes": 3435,
+          "sha256": "505da0d1cded2da77acba6f6d197609d1b38cc9fda2bf48613b6e9e41aff517f"
+        },
+        "adapters/static-verification.json.patch": {
+          "bytes": 3435,
+          "sha256": "a0e9a0233072f9fd5cfa82a3ac29fd2805e4ed819ee7cfc5befe85f288a980dc"
+        },
+        "adapters/subcase-call-map.json.inverse.patch": {
+          "bytes": 2621,
+          "sha256": "d7d72302c533f00da022d5f25f9d56e7d70a964b020e9e7a5dabf7462b72a628"
+        },
+        "adapters/subcase-call-map.json.patch": {
+          "bytes": 2616,
+          "sha256": "9de3f752f861c5dc52df56d02c4a57f4252ef27e181eb660d68b12a35367bbde"
+        },
+        "authoring-data-error-1.json": {
+          "bytes": 463,
+          "sha256": "d82db3ff7b054f8d3d38c9af402949e18f923ea0e910e6eb1360196a41a0ca3d"
+        },
+        "authority-snapshots/05-HiRes.pm": {
+          "bytes": 25689,
+          "sha256": "9bc6ece12a90e5c01d784a4efd672c49b8a7551ce6871b620efbd38cd4960f34"
+        },
+        "authority-snapshots/07-POSIX.pm": {
+          "bytes": 20384,
+          "sha256": "d941cf37b6dee5253b859cbb703a5785629a0bcdd86f61d1ec96fa464d69df90"
+        },
+        "authority-snapshots/08-Fcntl.pm": {
+          "bytes": 4044,
+          "sha256": "80511e494fc719cb63d252a95987ba24c04557947c1bf1584f5eeb6704786e9b"
+        },
+        "authority-snapshots/09-_time.h": {
+          "bytes": 8243,
+          "sha256": "a3dceadf2c95133018af363187829ca072d85a93d69f9682a2e4fb993902f28d"
+        },
+        "authority-snapshots/10-mach_time.h": {
+          "bytes": 2590,
+          "sha256": "d690e304ea595ca216ed51e20aa9747e0b3bcb07446d996abe0080a231c7065f"
+        },
+        "availability-command.json": {
+          "bytes": 2086,
+          "sha256": "e8489e9bdf0ee798d284cabfc041f1d18b1e7692ae5cce0be9412d7556a40663"
+        },
+        "availability-plan.md": {
+          "bytes": 2770,
+          "sha256": "6cd4dc71cdef6375943894b12532c5e6769dfb392960d33975c08baf729cb6ec"
+        },
+        "availability-release-schema.json": {
+          "bytes": 1531,
+          "sha256": "93a810e3c8e17cbe5a1b1a9472ab73cefe1aefece9a99aaa3f899c6ab116dea5"
+        },
+        "availability_limit.pl": {
+          "bytes": 3461,
+          "sha256": "a417085647b6617674d8dc839222ab85c45dcbf6e62e6440e9f76b63bc49ca14"
+        },
+        "availability_owner.py": {
+          "bytes": 14000,
+          "sha256": "c3615a87bd70256b383e585268a9d21d1c951f8f9618dfa0dd820101dd157fa7"
+        },
+        "availability_peer.py": {
+          "bytes": 1126,
+          "sha256": "65c078a6d9739f4c4017433eef5d260084e9ee005622a7d5f08fdc89b0b05ec7"
+        },
+        "binding.json": {
+          "bytes": 1326642,
+          "sha256": "3a79538d1e08051da298b401dfdc3405c11ded1b2e882892a71c588d460a7eb7"
+        },
+        "bootstrap.py": {
+          "bytes": 2114,
+          "sha256": "6e11b44e8e95458b35052c87a02a17cffdae32ad060a5dbd3de53e19f2f873cc"
+        },
+        "closure.json": {
+          "bytes": 1850,
+          "sha256": "9d9f777902ff5a2a7887879f1f7fb116b279a636a9f55337cf2357dad64f8031"
+        },
+        "command-matrix.json": {
+          "bytes": 86491,
+          "sha256": "7a3d762eacae49af41af9facc617a277cae3ca2d0c152672d4c8f7d3128ddf10"
+        },
+        "context/h3-native/availability-review.json": {
+          "bytes": 2463,
+          "sha256": "1918860de6edfdf69092498d7b12b75acb7ad5c9c65dacd6d61cac0098699b2d"
+        },
+        "context/h3-native/closure.json": {
+          "bytes": 1358,
+          "sha256": "8b891a351a31c53d6cf75ebb5247b8d80ef5f395237dd133778c5fee885d1e4b"
+        },
+        "context/h3-native/findings.json": {
+          "bytes": 2071,
+          "sha256": "56b3450c2bc3d63f45c6b7c1fe93276e4fd764190bcb85c9babd1928aaec148f"
+        },
+        "context/h3-native/index.json": {
+          "bytes": 21097,
+          "sha256": "131489165f40aaff2b2eaea684833864ea9f0d1dbf4d733e62ec1b9d737f33df"
+        },
+        "context/h3-native/report.md": {
+          "bytes": 11153,
+          "sha256": "1af447ca28e45859ebf73ab020e4e6127bbf099e60594d153a96304cf5dd72bd"
+        },
+        "context/root-authority/disposition.json": {
+          "bytes": 2356,
+          "sha256": "04852d016f775e7a1e0b3e860b0cb5d17090813d367de0f378d85ca023d4dc1a"
+        },
+        "context/root-authority/index.json": {
+          "bytes": 230,
+          "sha256": "8b9cebadac4a689a046170f54289a74b6e1e41e36041daf9ff50a809e610957e"
+        },
+        "context/root-authority/release.json": {
+          "bytes": 2531,
+          "sha256": "81b29b32eb6d56b8bafc0c1a15b5f93156437b86846be3e843929de26a8d1cd6"
+        },
+        "control-matrix.json": {
+          "bytes": 61308,
+          "sha256": "ca0b88fef5f5e069921f089b4e23c792441c5ddc0daba4cf22156cee88562dea"
+        },
+        "execution-gate.closed.json": {
+          "bytes": 145,
+          "sha256": "69f7eb67fa2ae35674192163791f8dc0a9006f383ba6a407501c138eaa3170f5"
+        },
+        "execution-gate.json": {
+          "bytes": 145,
+          "sha256": "69f7eb67fa2ae35674192163791f8dc0a9006f383ba6a407501c138eaa3170f5"
+        },
+        "findings-disposition.json": {
+          "bytes": 1321,
+          "sha256": "7389b5b5a5328d01a1f5a608eed1847d02c30a77800e0e052bf2a8f984bf604c"
+        },
+        "gate_controls.py": {
+          "bytes": 4985,
+          "sha256": "47e89d6e27c0ae5d1dc80aaeedd2199decdfff41a28dca97e8382348fefc6b8c"
+        },
+        "hard-limiter-authority.md": {
+          "bytes": 3491,
+          "sha256": "97bf4cc971c89d1344ca5ac1a9d38038319d754f9b4c8c985d2c80f05081586d"
+        },
+        "hard_limit.pl": {
+          "bytes": 3624,
+          "sha256": "fa2c5e9a26bb6cb1fd8d3ca2bec89f58f3136412e15330e1d93184e1b21f8c7e"
+        },
+        "harness.py": {
+          "bytes": 9667,
+          "sha256": "40d5b1a9da985fde2db27d5709eae831628b93771bb79d9401ee890177d048f5"
+        },
+        "historical-in-place-census.json": {
+          "bytes": 533253,
+          "sha256": "e9b5faf9cf1534379ccc7f9414f19113d725a0ceb62ab4db10fa21fb56c212f5"
+        },
+        "host_controls.py": {
+          "bytes": 9733,
+          "sha256": "3aa0f1cf48cf404cc78203bd66089aacb12bc66bc7357ea35d28e19dad3a522d"
+        },
+        "host_peer.py": {
+          "bytes": 5185,
+          "sha256": "e586b1568c5b51e0e60386565922f35db98a8521ecd1b093e50d1646a6f12798"
+        },
+        "implementation-hashes.json": {
+          "bytes": 9212,
+          "sha256": "9ae8e2914b36edd70773ef871f63b5a8fd762732826fe0427a3e8a6eb7112e37"
+        },
+        "origins.json": {
+          "bytes": 12217,
+          "sha256": "72fef6e4db1f5e0936af60843a47430783f77a90d17527ae9e0a5b70ce0b3ccf"
+        },
+        "outer_host.py": {
+          "bytes": 18317,
+          "sha256": "abfb5adcade832dc0105b2abd29ca167d7ef14e6f15558db37e4921d1a8832e0"
+        },
+        "outer_worker.py": {
+          "bytes": 5715,
+          "sha256": "c18a2e78dc8da96613b36cb909a8f1503091871200884dce313de6cc06c8f35b"
+        },
+        "owned_spawn.py": {
+          "bytes": 3508,
+          "sha256": "c4d73ba6d4d6d759b7e5dbeeb79986d2c8d6ccade163886b6a07b17cba02f3d8"
+        },
+        "ownership-fault-scope.json": {
+          "bytes": 1826,
+          "sha256": "749cf3c12e46d731c7da6ee6fe242c25bbba8c8a8cff6d1a39f399bf94150765"
+        },
+        "preparation-index.json": {
+          "bytes": 14301,
+          "sha256": "e605b0e49061dc23eaca975f47081ac214117e47756ed9d8d83374f35ca370f7"
+        },
+        "raw-retention-contract.json": {
+          "bytes": 2928,
+          "sha256": "979f396f653055c195554b44be9b15d6b8f0cbfe59de51b4b68be83fc185ceae"
+        },
+        "report.md": {
+          "bytes": 2978,
+          "sha256": "9a0ca513a8f344bb46b9fa6e88a286e81f92199c53d1811e5ef61e888fa93630"
+        },
+        "report_controls.py": {
+          "bytes": 16265,
+          "sha256": "d814d9edfb0f393e3f5c46550e56b8f273f9445e106ebba0e3d84603c2f4b12b"
+        },
+        "residuals.json": {
+          "bytes": 3184,
+          "sha256": "9c6829e2f12f4c743d8f12eccb81686abc29ce9ad7f2e57c21d30ef5cf6b683d"
+        },
+        "scanner_controls.py": {
+          "bytes": 8502,
+          "sha256": "25f2b4ccdc3691acb8726a4a4a868f2df5f8f657df40a83f82013dfca93c3b56"
+        },
+        "source-map.json": {
+          "bytes": 87874,
+          "sha256": "7fb84ed403b7be9dd587ed2b2980d0d8e5def7e260186c948abd1c4a1f997dda"
+        },
+        "static-authoring-parse.json": {
+          "bytes": 2196,
+          "sha256": "bd15216a1b0d3db225eb9cc336dc55d9a214bde0e6420d1171d556e34e10125b"
+        },
+        "static-call-inventory.json": {
+          "bytes": 118886,
+          "sha256": "4b6daf8e68e22b352aef23d95a2d7fcba871e0106808e0d937f0187b9bbc4d5e"
+        },
+        "static-verification.json": {
+          "bytes": 3267,
+          "sha256": "9ebef097b5500e381b34ca64de2cd0643e70fbbee5f470018611879a3cd51101"
+        },
+        "subcase-call-map.json": {
+          "bytes": 31366,
+          "sha256": "aad4ab31f4d4a20541019cee8264fbe0e9f288092a73f2a0e8e313e333e8a5b4"
+        },
+        "tool-identity-read.json": {
+          "bytes": 4207,
+          "sha256": "f61ec88a28f6c40eaf83be3a12784188ca069129704395ba178820b2796f282a"
+        },
+        "watchdog_controls.py": {
+          "bytes": 14512,
+          "sha256": "8ad4abdbbc7a0973c99cf98a989e0130ca883288e6223595a157fa0bd67162ff"
+        }
+      },
+      "originalPreparedPhysicalFiles": 92,
+      "root": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-D4-synthetic-harness-preparation-4"
+    }
+  ]
+}

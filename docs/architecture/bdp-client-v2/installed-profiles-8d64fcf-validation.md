@@ -1,0 +1,15 @@
+# Combined profile repair validation — 8d64fcf
+
+Source:8d64fcf7fdaa34642fadb3c2c0b8f4729c7778df, branchcodex/vickie-installed-profiles. Ordinary ancestry preserves3e2b878, recovery5e7041b/witness992ccb1, owned-Link claim repairc1a1744 and setcorea94ab988. Only two append/context conflicts in transaction-implementation-progress.md; both intents retained, recovery wording updated to distinguish copied refused-open and original hot-image witnesses. Runtime files merged without conflict.
+
+Pinned Node24.16.0/pnpm11.20.0. Clean, prebuild typecheck, build, full tests, boundaries, format, lint, unchanged evidence, smoke, development smoke and readiness preflight all exit0. Full8,223tests/139files/one optional skip,51.85s. Evidence verifier preserves89 applicable Read rows; no historical evidence relabeling. Exact logs installed-profiles-8d64fcf/ and results.json. Seven preflight tests pass.
+
+Root reviewed recovery992ccb1 test/doc-only diff: copied database and matching hot journal are produced after crash; refused copy loses journal; original still has hot magic before valid reopen; both compatible reopen paths inspect pending recovery,60receipt chains and180Resources. Author217tests include changed-port/pages runtime test and recorded exits; root full suite independently executes both tests. This closes native evidence review without a runtime change. Claude bounded followup remains pending at report creation.
+
+Native c1:89tests plus private cap probes. Native seta94:304tests plus actual4096matched boundary/4128refusal and retained replay after restart. Claude c1 closes prior owned-Link proof finding but raises two new medium test controls: direct read/history selection size gates and no-op/unowned Link counterfactuals. Both assigned to next W2 successor; private factory/planner version consistency and honest observation wording also assigned. Set Claude review remains pending. No current full-profile qualification or readiness claim follows this green test run.
+
+Fresh packaged validation and exact CI are recorded separately once completed. Public Update/Transactional profile selection remains closed; set HTTP admission awaits the separate Selector-limit decision. Required profile delivery continues.
+
+Fresh package verification:69tests/fourfiles pass26.61s after packing protocol/server and npm installing into isolated directory. sourceDirty:false; sourceCommit exact8d64fcf. Actual payload 1d75b2cc934028fa62282f9a113ef807036fb106e22f4d57b5533550687dca1d. Exact harness digest f04e98d80971e813b73d1b57d225c0a6bfb0669647d6bbf9b026a908bbf37f26. Counts {'sessions': 36, 'observations': 373, 'setupObservations': 44, 'nativeReadObservations': 21, 'requiredIds': 129, 'plannedIds': 36, 'uncoveredIds': 102}. claimEligible:false;27recordedwhole/102uncovered remain proposed credit with outstanding sensitivity controls.
+
+Exact CI38370313016 SUCCESS at8d64fcf, downloaded pr88-8d64fcf-ci.log confirms8,223tests/139files/one optional skip,7preflight,smokes and unchanged89-row Read evidence.

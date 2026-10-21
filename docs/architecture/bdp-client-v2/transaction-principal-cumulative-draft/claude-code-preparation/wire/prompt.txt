@@ -1,0 +1,1870 @@
+You are the independent external code reviewer for a frozen four-file principal-namespace cumulative evidence draft. Supplied context only: no tools, filesystem reads, commands or edits. Output complete standalone numbered actionable findings first, with severity, exact location, concrete defect and smallest correction; explicitly say if none. Then list genuinely necessary missing context and review limits. Keep answer concise (about2500words maximum) with the entire findings section present. Do not invent unavailable prior findings or reconstruct missing context. This is one of two complementary reviews; assess this assigned scope, note cross-scope dependencies, and do not claim exhaustive whole-repository review.
+
+Authority essentials (accepted full plan/ledger hash-pinned externally): four test/artifact paths only, no production/runner/schema/catalog/fixture/API/public admission changes. New inherited partial principal-isolation row has7raw HTTP actions/139 assertions, no captures or client actions. A create, same-key B create, rotated-A replay, B replay, retained-A different-body conflict, complete collection, complete Events. Five POST bodies150B each, strict one-create batches; GET bodies absent. Two writable principal namespaces; rotated A shares A; do not assume A/B view equality or inequality. Exact receipt/revision/full Resource/replay/Event facts in memory; safe supplement uses hashes/positions and actual input-ref/response/report boundaries, never credential tokens or fake wire credential attestation. New row first; all30 old raw JSON objects/full parent bytes preserved. Old route authority set unchanged, first-use order/digest changes. Config-collapse control changes only B principal before its own genuine bootstrap; actual B409 with18failed/7passing assertions, callback adjudicates intended row failure and must exit0. Cross-run random identity inequality alone is not a discriminator. All old observers run in their existing order on unchanged responses; two full cross controls also validate principal supplement before cleanup. Report IDs/query URLs are redacted; do not derive raw bodies/header values from reports.
+
+Root-approved exact authoring fence amendments are part of this frozen draft, not runtime limit increases: canonical disk829145/normal841861/nodes21972, coverage125561, derivative847979/22128; historical margins/bases preserved. Actual measured canonical825049disk/837765normal/21908nodes, coverage124537, derivative maxima843883/22064. New9static callbacks selected;5installed cohorts:7/2,2expected(max7)/2,220/24,211/24,212/24;652expected657maxHTTP/76children. No tests or installed results are claimed by this draft. 57modeled observe invocations/64expanded app cases in full CI; no hidden workload authorization. Existing deadlines and public claimEligible:false unchanged. Exact code and authoritative interfaces below take precedence over this concise summary. Full plan is pinned but not duplicated28KB in each packet. Review source semantics, not bookkeeping percentages.
+
+Assigned scope: entire app diff, real bootstrap/config/resolver, dispatch/response observer, schema-first baselines, whole-body replay/Resource/Event checks, control and safe report retention/cleanup. Composition/static/JSON diff is separately reviewed; its new row literal is represented independently in app assertions here. Every app hunk, including old cohort budget and guard changes, is included.
+
+## COMPLETE ASSIGNED DIFF
+```diff
+diff --git a/apps/bdptest/src/transactional-matrix.test.ts b/apps/bdptest/src/transactional-matrix.test.ts
+index fa83482..cdbdf40 100644
+--- a/apps/bdptest/src/transactional-matrix.test.ts
++++ b/apps/bdptest/src/transactional-matrix.test.ts
+@@ -100,6 +100,8 @@ async function observe(control?: {
+   /** Negative-test deadline begins after the first real exchange, with startup still bounded. */
+   readonly afterFirstExchangeBudgetMs?: number;
+   readonly scenarioSelection?: readonly string[];
++  readonly collapsePrincipalB?: boolean;
++  readonly onDispatch?: (request: PrincipalDispatchInput) => void;
+   /** Retain genuine returned evidence before cleanup can fail; never replace it. */
+   readonly onObserved?: (observed: InstalledObservation) => void;
+   readonly invalidReceiptCredentials?: boolean | "set-update" | "set-delete";
+@@ -144,16 +146,19 @@ async function observe(control?: {
+       })
+     : bundle;
+   const directory = mkdtempSync(path.join(tmpdir(), "bdp-tx-installed-"));
+-  const operator = randomBytes(32).toString("base64url"),
+-    reader = randomBytes(32).toString("base64url");
++  const tokens: PrincipalTokens = {
++    operator: randomBytes(32).toString("base64url"),
++    reader: randomBytes(32).toString("base64url"),
++    principalA: randomBytes(32).toString("base64url"),
++    principalARotated: randomBytes(32).toString("base64url"),
++    principalB: randomBytes(32).toString("base64url"),
++  };
++  const roles = principalCredentialRoles(tokens, control?.collapsePrincipalB ?? false);
+   const configuration = {
+     scope,
+     directory: path.join(directory, "bootstrap"),
+     create: true,
+-    credentials: [
+-      { token: operator, principal: "same", canMutate: true },
+-      { token: reader, principal: "same", canMutate: false },
+-    ],
++    credentials: roles.map(({ token, principal, canMutate }) => ({ token, principal, canMutate })),
+     artifacts: artifacts(),
+   };
+   let target: ReturnType<typeof createTransactionalExecutionBinding> | undefined;
+@@ -193,12 +198,12 @@ async function observe(control?: {
+     );
+     // Independently authored route inventory, not a second derivation from the manifest.
+     expect(uniqueRoutes).toEqual([
+-      { method: "POST", url: `${scope}operations/create-bead` },
+       { method: "POST", url: `${scope}operations/batch` },
+-      { method: "POST", url: `${scope}operations/sequence` },
+-      { method: "POST", url: `${scope}operations/update-bead` },
+       { method: "GET", url: `${scope}beads/?limit=32` },
+       { method: "GET", url: `${scope}events/` },
++      { method: "POST", url: `${scope}operations/create-bead` },
++      { method: "POST", url: `${scope}operations/sequence` },
++      { method: "POST", url: `${scope}operations/update-bead` },
+       { method: "GET", url: `${scope}beads/a` },
+       { method: "GET", url: `${scope}links/l` },
+       { method: "GET", url: `${scope}beads/new` },
+@@ -229,16 +234,16 @@ async function observe(control?: {
+       maximumRequestBodyBytes: 65536,
+       defaultCredentialRef: "operator",
+       credentialHandles: [
+-        { id: "operator", headerNames: ["authorization"] },
+-        { id: "reader", headerNames: ["authorization"] },
++        ...roles.map(({ ref }) => ({ id: ref, headerNames: ["authorization"] })),
+         { id: "anonymous", headerNames: [] },
+       ],
+       resolveCredentials: ({ credentialRef, url }) =>
+-        credentialRef === "anonymous"
+-          ? {}
+-          : {
+-              authorization: `Bearer ${(control?.invalidReceiptCredentials === true && url.startsWith(`${scope}receipts/`)) || deniedReceiptUrls.has(url) ? "deliberately-unknown" : credentialRef === "operator" ? operator : reader}`,
+-            },
++        principalHeaders(
++          roles,
++          credentialRef,
++          (control?.invalidReceiptCredentials === true && url.startsWith(`${scope}receipts/`)) ||
++            deniedReceiptUrls.has(url),
++        ),
+     };
+     target = createTransactionalExecutionBinding({
+       baseline,
+@@ -276,6 +281,13 @@ async function observe(control?: {
+         },
+         exactExecution: {
+           execute: async (request) => {
++            control?.onDispatch?.(
++              Object.freeze({
++                method: request.method,
++                url: request.url,
++                credentialRef: request.credentialRef,
++              }),
++            );
+             const response = await target!.target.execute(request);
+             if (afterFirstExchangeBudgetMs !== undefined && firstExchangeTimer === undefined) {
+               firstExchangeTimer = setTimeout(expireCohort, afterFirstExchangeBudgetMs);
+@@ -350,15 +362,20 @@ async function observe(control?: {
+   if (!observed) throw new Error("missing installed observation");
+   return observed;
+ }
+-it("observes fifteen partial Transactional contracts through packed-capable actual installed HTTP", async () => {
++it("observes sixteen partial Transactional contracts through packed-capable actual installed HTTP", async () => {
+   const started = performance.now(),
+     children: ChildProcess[] = [];
+   const crossWire = crossCarrierWire(),
+     minimumWire = commandMinimumWire(),
+-    memberWire = sequenceMemberWire();
++    memberWire = sequenceMemberWire(),
++    principalWire = principalNamespaceWire();
+   const observed = await observe({
+     children,
+-    afterExchange: composedMemberWire(crossWire, minimumWire, memberWire),
++    onDispatch: principalWire.onDispatch,
++    afterExchange: withPrincipalWire(
++      principalWire,
++      composedMemberWire(crossWire, minimumWire, memberWire),
++    ),
+     onObserved(observed) {
+       if (process.env.BDP_TRANSACTIONAL_OBSERVATION_OUTPUT)
+         writeFileSync(
+@@ -370,6 +387,7 @@ it("observes fifteen partial Transactional contracts through packed-capable actu
+               ...observed,
+               supplemental: minimumWire.summary(),
+               sequenceMemberSupplemental: memberWire.summary(),
++              principalSupplemental: principalWire.summary(observed),
+             },
+             null,
+             2,
+@@ -382,15 +400,15 @@ it("observes fifteen partial Transactional contracts through packed-capable actu
+   expect(observed.result.scenarios).toHaveLength(256); // Includes five optional catalog rows.
+   for (const row of observed.result.scenarios.filter((s) => implemented.has(s.id)))
+     expect(row, JSON.stringify(row, null, 2)).toMatchObject({ state: "pass" });
+-  expect(observed.result.scenarios.filter((s) => s.state === "pass")).toHaveLength(15);
++  expect(observed.result.scenarios.filter((s) => s.state === "pass")).toHaveLength(16);
+   expect(observed.result.claimEligible).toBe(false);
+-  expect(observed.sessions).toHaveLength(22);
+-  expect(children).toHaveLength(23); // Twenty-two scenario/reopen sessions plus separate bootstrap.
++  expect(observed.sessions).toHaveLength(23);
++  expect(children).toHaveLength(24); // Twenty-three scenario/reopen sessions plus separate bootstrap.
+   expect(children.every((child) => child.exitCode !== null || child.signalCode !== null)).toBe(
+     true,
+   );
+   expect(observed.result.declarations).toMatchObject({
+-    exactConfigurationDigest: "02dd7d9f35e7482c07ce1550a6572232cc48ba6858cd66f8dfc8f5384f3628be",
++    exactConfigurationDigest: "9a9404e74dd41fcb39b9c3bb5fc86917ff972dfdbc95faa5f53d13b35bb60bec",
+   });
+   const dynamic = observed.result.scenarios
+     .flatMap((s) => s.exchanges)
+@@ -581,12 +599,13 @@ it("observes fifteen partial Transactional contracts through packed-capable actu
+   crossWire.finish();
+   assertCommandMinimumPositive(observed, minimumWire);
+   assertMemberPositive(observed, memberWire);
+-  expect(observed.result.scenarios.reduce((n, row) => n + row.exchanges.length, 0)).toBe(213);
++  assertPrincipalPositive(observed, principalWire);
++  expect(observed.result.scenarios.reduce((n, row) => n + row.exchanges.length, 0)).toBe(220);
+   expect(performance.now() - started).toBeLessThanOrEqual(63000);
+   console.log(
+     JSON.stringify({
+       // Predecessor logs retain installed-tx-twelve/thirteen/fourteen-partial-summary.
+-      kind: "installed-tx-fifteen-partial-summary",
++      kind: "installed-tx-sixteen-partial-summary",
+       sourceCommit,
+       elapsedMs: performance.now() - started,
+       actions: bundle.manifest.scenarios.reduce((n, s) => n + (s.actions?.length ?? 0), 0),
+@@ -1319,6 +1338,7 @@ it.each([
+ );
+ 
+ it("pins the matching no-op installed route digest and fifteen-action ledger", () => {
++  assertPrincipalStatic();
+   assertMemberReplayLedger(memberReplayLedger);
+   expect(() => assertMemberReplayLedger([])).toThrow("sequence-member-replay-ledger");
+   expect(() => assertMemberReplayLedger([["s-replay", "s-first-receipt", "whole-json"]])).toThrow(
+@@ -1354,6 +1374,7 @@ it("pins the matching no-op installed route digest and fifteen-action ledger", (
+   const redirected = minimumReplayLedger.map((pair) => [...pair]);
+   redirected[0]![1] = "m-create-b";
+   expect(() => assertMinimumReplayLedger(redirected)).toThrow("minimum-replay-comparison-ledger");
++  // Previous command-minimum route order: 02dd7d9f35e7482c07ce1550a6572232cc48ba6858cd66f8dfc8f5384f3628be.
+   // Previous fifteen-route order: a9a17908b6fa87674d5f573b584f4a1ce1d41d7909fadf48b65e9b05397ddfd4.
+   // Previous twelve-route digest: 1ba7cbbffc4fb40df2c3f12640bc636e70076cfa25bdd6952b83ec1bb1fe0035.
+   // Canonical exact-mode preimage authored from the approved route inventory;
+@@ -1363,12 +1384,12 @@ it("pins the matching no-op installed route digest and fifteen-action ledger", (
+     maximumRequestHeaderBytes: 16384,
+     profile: "transactional",
+     routes: [
+-      { method: "POST", url: `${scope}operations/create-bead` },
+       { method: "POST", url: `${scope}operations/batch` },
+-      { method: "POST", url: `${scope}operations/sequence` },
+-      { method: "POST", url: `${scope}operations/update-bead` },
+       { method: "GET", url: `${scope}beads/?limit=32` },
+       { method: "GET", url: `${scope}events/` },
++      { method: "POST", url: `${scope}operations/create-bead` },
++      { method: "POST", url: `${scope}operations/sequence` },
++      { method: "POST", url: `${scope}operations/update-bead` },
+       { method: "GET", url: `${scope}beads/a` },
+       { method: "GET", url: `${scope}links/l` },
+       { method: "GET", url: `${scope}beads/new` },
+@@ -1382,7 +1403,7 @@ it("pins the matching no-op installed route digest and fifteen-action ledger", (
+     scope,
+   });
+   expect(createHash("sha256").update(preimage).digest("hex")).toBe(
+-    "02dd7d9f35e7482c07ce1550a6572232cc48ba6858cd66f8dfc8f5384f3628be",
++    "9a9404e74dd41fcb39b9c3bb5fc86917ff972dfdbc95faa5f53d13b35bb60bec",
+   );
+   expect(Buffer.byteLength(preimage)).toBe(1228);
+   // The reordered first use must not grant or remove any old route authority.
+@@ -1481,9 +1502,9 @@ it.each(["bead-property", "link-metadata", "group-inventory-and-head"] as const)
+       expect([...failed].sort()).toEqual([...intended].sort());
+     expect(row.exchanges.at(-1)!.request.id).toBe(actionId);
+     expect(children.every((c) => c.exitCode !== null || c.signalCode !== null)).toBe(true);
+-    expect(children.length).toBeLessThanOrEqual(23);
++    expect(children.length).toBeLessThanOrEqual(24);
+     const exchanges = observed.result.scenarios.reduce((n, r) => n + r.exchanges.length, 0);
+-    expect(exchanges).toBeLessThanOrEqual(control === "group-inventory-and-head" ? 207 : 202);
++    expect(exchanges).toBeLessThanOrEqual(control === "group-inventory-and-head" ? 214 : 209);
+     for (const later of observed.result.scenarios.filter(
+       (r) => bundle.manifest.scenarios.some((p) => p.id === r.id) && r.id !== row.id,
+     ))
+@@ -1633,6 +1654,7 @@ function applyDeletionControl(
+ }
+ 
+ it("pins deletion-safety derivative carriers, complete positives, and measured source bounds", () => {
++  assertPrincipalStatic();
+   assertMemberControl();
+   assertCrossCarrierControls();
+   assertCommandMinimumControls();
+@@ -1733,8 +1755,8 @@ it("pins deletion-safety derivative carriers, complete positives, and measured s
+     }
+     // Historical root-accepted maximum701716B/18263nodes plus4096B/64nodes.
+     // Command-minimum measured maximum756707B/19731nodes plus4096B/64nodes.
+-    expect(Buffer.byteLength(normal)).toBeLessThanOrEqual(812575);
+-    expect(nodes).toBeLessThanOrEqual(21176);
++    expect(Buffer.byteLength(normal)).toBeLessThanOrEqual(847979);
++    expect(nodes).toBeLessThanOrEqual(22128);
+     const loaded = createCumulativeTransactionalArtifactBundle(
+       loadProfileContractSelection("transactional"),
+       { fixture: fixtureSource, manifest: { bytes: Buffer.from(wire) } },
+@@ -1817,10 +1839,10 @@ it.each(deletionControlNames)(
+       );
+     }
+     expect(children.every((c) => c.exitCode !== null || c.signalCode !== null)).toBe(true);
+-    expect(children.length).toBeLessThanOrEqual(23);
++    expect(children.length).toBeLessThanOrEqual(24);
+     const exchanges = observed.result.scenarios.reduce((n, r) => n + r.exchanges.length, 0);
+     expect(exchanges).toBeLessThanOrEqual(
+-      control === "incoming-order" ? 197 : control === "outgoing-order" ? 202 : 198,
++      control === "incoming-order" ? 204 : control === "outgoing-order" ? 209 : 205,
+     );
+     for (const later of observed.result.scenarios.filter(
+       (r) => bundle.manifest.scenarios.some((p) => p.id === r.id) && r.id !== row.id,
+@@ -2144,8 +2166,8 @@ function assertCrossCarrierControls() {
+     // Historical measurement-only derivative guards were650386B/17275nodes.
+     // Historical root-accepted maximum701716B/18263nodes plus4096B/64nodes.
+     // Command-minimum measured maximum756707B/19731nodes plus4096B/64nodes.
+-    expect(Buffer.byteLength(normal)).toBeLessThanOrEqual(812575);
+-    expect(nodes).toBeLessThanOrEqual(21176);
++    expect(Buffer.byteLength(normal)).toBeLessThanOrEqual(847979);
++    expect(nodes).toBeLessThanOrEqual(22128);
+     const loaded = createCumulativeTransactionalArtifactBundle(
+       loadProfileContractSelection("transactional"),
+       { fixture: fixtureSource, manifest: { bytes: Buffer.from(JSON.stringify(changed)) } },
+@@ -2183,16 +2205,30 @@ it.each(crossCarrierControls)(
+     const children: ChildProcess[] = [],
+       wire = crossCarrierWire(control),
+       minimumWire = commandMinimumWire(),
+-      memberWire = sequenceMemberWire();
++      memberWire = sequenceMemberWire(),
++      principalWire = principalNamespaceWire();
+     let description: ReturnType<typeof applyCrossCarrierControl> | undefined;
+     const observed = await observe({
+       children,
+-      afterExchange: composedMemberWire(wire, minimumWire, memberWire),
++      onDispatch: principalWire.onDispatch,
++      afterExchange: withPrincipalWire(
++        principalWire,
++        composedMemberWire(wire, minimumWire, memberWire),
++      ),
+       onObserved(observed) {
+         if (process.env.BDP_TRANSACTIONAL_CROSS_CARRIER_CONTROL_OUTPUT)
+           writeFileSync(
+             `${process.env.BDP_TRANSACTIONAL_CROSS_CARRIER_CONTROL_OUTPUT}-${control}.json`,
+-            JSON.stringify({ sourceCommit, entry, ...observed }, null, 2) + "\n",
++            JSON.stringify(
++              {
++                sourceCommit,
++                entry,
++                ...observed,
++                principalSupplemental: principalWire.summary(observed),
++              },
++              null,
++              2,
++            ) + "\n",
+           );
+       },
+       manifest(value) {
+@@ -2233,10 +2269,11 @@ it.each(crossCarrierControls)(
+     wire.finish();
+     assertCommandMinimumPositive(observed, minimumWire);
+     assertMemberPositive(observed, memberWire);
+-    expect(children).toHaveLength(23);
++    assertPrincipalPositive(observed, principalWire);
++    expect(children).toHaveLength(24);
+     expect(children.every((c) => c.exitCode !== null || c.signalCode !== null)).toBe(true);
+     const exchanges = observed.result.scenarios.reduce((n, r) => n + r.exchanges.length, 0);
+-    expect(exchanges).toBe(control === "batch-semantic-conflict" ? 204 : 205);
++    expect(exchanges).toBe(control === "batch-semantic-conflict" ? 211 : 212);
+     console.log(
+       JSON.stringify({
+         kind: "installed-tx-cross-carrier-control",
+@@ -3339,3 +3376,760 @@ it("discriminates sequence member transactions against a successful middle delet
+     }),
+   );
+ }, 120000);
++
++const principalId = "read-update.idempotency.principal-isolation";
++const principalRequests = [
++  {
++    action: "pk-a-create",
++    method: "POST",
++    url: "https://reference.invalid/acme/operations/batch",
++    credentialRef: "principal-a",
++    headerLines: [
++      {
++        name: "accept",
++        value: "application/json",
++      },
++      {
++        name: "content-type",
++        value: "application/json",
++      },
++      {
++        name: "idempotency-key",
++        value: "principal-shared",
++      },
++    ],
++    body: '{"operations":[{"operation":"createBead","id":"beads/a","type":"https://reference.invalid/acme/types/task","properties":{"title":"a"},"metadata":{}}]}',
++    bodyBytes: 150,
++    bodySha256: "54f0fefb0965a8210bb22cf09601c18296ef450489eff1aef5a8bea8b99d83b8",
++    status: 200,
++    dispatchUrl: "https://reference.invalid/acme/operations/batch",
++    reportedUrl: "https://reference.invalid/acme/operations/batch",
++  },
++  {
++    action: "pk-b-create",
++    method: "POST",
++    url: "https://reference.invalid/acme/operations/batch",
++    credentialRef: "principal-b",
++    headerLines: [
++      {
++        name: "accept",
++        value: "application/json",
++      },
++      {
++        name: "content-type",
++        value: "application/json",
++      },
++      {
++        name: "idempotency-key",
++        value: "principal-shared",
++      },
++    ],
++    body: '{"operations":[{"operation":"createBead","id":"beads/b","type":"https://reference.invalid/acme/types/task","properties":{"title":"b"},"metadata":{}}]}',
++    bodyBytes: 150,
++    bodySha256: "b26bbe9a43f5cc9b54d7fe7778786b33e5e8d613bf30248de3af65f5eac0cdc8",
++    status: 200,
++    dispatchUrl: "https://reference.invalid/acme/operations/batch",
++    reportedUrl: "https://reference.invalid/acme/operations/batch",
++  },
++  {
++    action: "pk-a-rotated",
++    method: "POST",
++    url: "https://reference.invalid/acme/operations/batch",
++    credentialRef: "principal-a-rotated",
++    headerLines: [
++      {
++        name: "accept",
++        value: "application/json",
++      },
++      {
++        name: "content-type",
++        value: "application/json",
++      },
++      {
++        name: "idempotency-key",
++        value: "principal-shared",
++      },
++    ],
++    body: '{"operations":[{"operation":"createBead","id":"beads/a","type":"https://reference.invalid/acme/types/task","properties":{"title":"a"},"metadata":{}}]}',
++    bodyBytes: 150,
++    bodySha256: "54f0fefb0965a8210bb22cf09601c18296ef450489eff1aef5a8bea8b99d83b8",
++    status: 200,
++    dispatchUrl: "https://reference.invalid/acme/operations/batch",
++    reportedUrl: "https://reference.invalid/acme/operations/batch",
++  },
++  {
++    action: "pk-b-replay",
++    method: "POST",
++    url: "https://reference.invalid/acme/operations/batch",
++    credentialRef: "principal-b",
++    headerLines: [
++      {
++        name: "accept",
++        value: "application/json",
++      },
++      {
++        name: "content-type",
++        value: "application/json",
++      },
++      {
++        name: "idempotency-key",
++        value: "principal-shared",
++      },
++    ],
++    body: '{"operations":[{"operation":"createBead","id":"beads/b","type":"https://reference.invalid/acme/types/task","properties":{"title":"b"},"metadata":{}}]}',
++    bodyBytes: 150,
++    bodySha256: "b26bbe9a43f5cc9b54d7fe7778786b33e5e8d613bf30248de3af65f5eac0cdc8",
++    status: 200,
++    dispatchUrl: "https://reference.invalid/acme/operations/batch",
++    reportedUrl: "https://reference.invalid/acme/operations/batch",
++  },
++  {
++    action: "pk-a-conflict",
++    method: "POST",
++    url: "https://reference.invalid/acme/operations/batch",
++    credentialRef: "principal-a",
++    headerLines: [
++      {
++        name: "accept",
++        value: "application/json",
++      },
++      {
++        name: "content-type",
++        value: "application/json",
++      },
++      {
++        name: "idempotency-key",
++        value: "principal-shared",
++      },
++    ],
++    body: '{"operations":[{"operation":"createBead","id":"beads/c","type":"https://reference.invalid/acme/types/task","properties":{"title":"c"},"metadata":{}}]}',
++    bodyBytes: 150,
++    bodySha256: "3de2f9bb5fb4b4b0537d252ba722b05a3385414129cf35fc6ab0355720f9ff62",
++    status: 409,
++    dispatchUrl: "https://reference.invalid/acme/operations/batch",
++    reportedUrl: "https://reference.invalid/acme/operations/batch",
++  },
++  {
++    action: "pk-current",
++    method: "GET",
++    url: "https://reference.invalid/acme/beads/?limit=32",
++    credentialRef: "principal-a",
++    headerLines: [
++      {
++        name: "accept",
++        value: "application/json",
++      },
++    ],
++    body: null,
++    bodyBytes: 0,
++    bodySha256: null,
++    status: 200,
++    dispatchUrl: "https://reference.invalid/acme/beads/?limit=32",
++    reportedUrl: "https://reference.invalid/acme/beads/?<redacted>",
++  },
++  {
++    action: "pk-events",
++    method: "GET",
++    url: "https://reference.invalid/acme/events/",
++    credentialRef: "principal-a",
++    headerLines: [
++      {
++        name: "accept",
++        value: "application/json",
++      },
++    ],
++    body: null,
++    bodyBytes: 0,
++    bodySha256: null,
++    status: 200,
++    dispatchUrl: "https://reference.invalid/acme/events/",
++    reportedUrl: "https://reference.invalid/acme/events/",
++  },
++] as const;
++const principalFailureIds = [
++  "http-status",
++  "schema",
++  "media",
++  "serving-position",
++  "disposition",
++  "detail",
++  "key",
++  "receipt-id",
++  "transaction",
++  "required-position",
++  "effect-position",
++  "no-next",
++  "result-indices",
++  "resource-id",
++  "resource-type",
++  "resource-revision",
++  "resource-properties",
++  "resource-metadata",
++] as const;
++const principalPassingIds = [
++  "present-bdp-scope-epoch",
++  "present-bdp-authorization-view",
++  "present-bdp-scope-position",
++  "request-headers",
++  "request-body",
++  "no-owned-links",
++  "no-provenance",
++] as const;
++
++type PrincipalTokens = {
++  operator: string;
++  reader: string;
++  principalA: string;
++  principalARotated: string;
++  principalB: string;
++};
++type PrincipalDispatchInput = Readonly<{
++  method: string;
++  url: string;
++  credentialRef: string | undefined;
++}>;
++function principalCredentialRoles(tokens: PrincipalTokens, collapsePrincipalB = false) {
++  return [
++    { ref: "operator", token: tokens.operator, principal: "same", canMutate: true },
++    { ref: "reader", token: tokens.reader, principal: "same", canMutate: false },
++    { ref: "principal-a", token: tokens.principalA, principal: "principal-a", canMutate: true },
++    {
++      ref: "principal-a-rotated",
++      token: tokens.principalARotated,
++      principal: "principal-a",
++      canMutate: true,
++    },
++    {
++      ref: "principal-b",
++      token: tokens.principalB,
++      principal: collapsePrincipalB ? "principal-a" : "principal-b",
++      canMutate: true,
++    },
++  ];
++}
++function principalHeaders(
++  roles: ReturnType<typeof principalCredentialRoles>,
++  ref: string,
++  denyReceipt: boolean,
++): Record<string, string> {
++  if (ref === "anonymous") return {};
++  const role = roles.find((candidate) => candidate.ref === ref);
++  if (!role) throw new Error("unknown principal credential reference");
++  return { authorization: `Bearer ${denyReceipt ? "deliberately-unknown" : role.token}` };
++}
++const principalReplayLedger = [
++  ["pk-a-rotated", "pk-a-create", "whole-json"],
++  ["pk-b-replay", "pk-b-create", "whole-json"],
++] as const;
++function assertPrincipalReplayLedger(value: readonly (readonly string[])[]) {
++  if (
++    JSON.stringify(value) !==
++    JSON.stringify([
++      ["pk-a-rotated", "pk-a-create", "whole-json"],
++      ["pk-b-replay", "pk-b-create", "whole-json"],
++    ])
++  )
++    throw new Error("principal-replay-ledger");
++}
++function assertPrincipalStatic() {
++  const tokens = {
++    operator: "op",
++    reader: "read",
++    principalA: "a",
++    principalARotated: "rotated",
++    principalB: "b",
++  };
++  const expected = [
++    { ref: "operator", token: "op", principal: "same", canMutate: true },
++    { ref: "reader", token: "read", principal: "same", canMutate: false },
++    { ref: "principal-a", token: "a", principal: "principal-a", canMutate: true },
++    { ref: "principal-a-rotated", token: "rotated", principal: "principal-a", canMutate: true },
++    { ref: "principal-b", token: "b", principal: "principal-b", canMutate: true },
++  ];
++  const roles = principalCredentialRoles(tokens);
++  expect(roles).toEqual(expected);
++  expect(principalCredentialRoles(tokens, true)).toEqual([
++    ...expected.slice(0, 4),
++    { ref: "principal-b", token: "b", principal: "principal-a", canMutate: true },
++  ]);
++  for (const role of expected) {
++    expect(principalHeaders(roles, role.ref, false)).toEqual({
++      authorization: `Bearer ${role.token}`,
++    });
++    expect(principalHeaders(roles, role.ref, true)).toEqual({
++      authorization: "Bearer deliberately-unknown",
++    });
++  }
++  for (const denied of [false, true]) {
++    expect(principalHeaders(roles, "anonymous", denied)).toEqual({});
++    expect(() => principalHeaders(roles, "unknown", denied)).toThrow(
++      "unknown principal credential reference",
++    );
++  }
++  assertPrincipalReplayLedger(principalReplayLedger);
++  expect(() => assertPrincipalReplayLedger(principalReplayLedger.slice(1))).toThrow(
++    "principal-replay-ledger",
++  );
++  const redirected: string[][] = principalReplayLedger.map((pair) => [...pair]);
++  redirected[0]![1] = "pk-b-create";
++  expect(() => assertPrincipalReplayLedger(redirected)).toThrow("principal-replay-ledger");
++  const weakened: string[][] = principalReplayLedger.map((pair) => [...pair]);
++  weakened[0]![2] = "subset";
++  expect(() => assertPrincipalReplayLedger(weakened)).toThrow("principal-replay-ledger");
++  for (const literal of principalRequests) {
++    expect(literal.url).toBe(literal.dispatchUrl);
++    expect(literal.reportedUrl).toBe(
++      literal.action === "pk-current" ? `${scope}beads/?<redacted>` : literal.dispatchUrl,
++    );
++    const digest =
++      literal.body === null ? undefined : createHash("sha256").update(literal.body).digest("hex");
++    expect(digest).toBe(literal.bodySha256 ?? undefined);
++    expect(literal.body === null ? 0 : Buffer.byteLength(literal.body)).toBe(literal.bodyBytes);
++    for (const index of [0, 4])
++      expect(
++        memberHandoff(
++          index,
++          literal.dispatchUrl,
++          digest,
++          literal.method === "POST" ? "principal-shared" : undefined,
++          "complete",
++        ),
++      ).toBe(false);
++  }
++  expect(principalFailureIds).toHaveLength(18);
++  expect(principalPassingIds).toHaveLength(7);
++  const b = bundle.manifest.scenarios.find((r) => r.id === principalId)!.actions![1]!;
++  expect(
++    b.assertions.map((a) => a.id).filter((id) => !principalPassingIds.some((p) => p === id)),
++  ).toEqual(principalFailureIds);
++  expect(b.assertions.find((a) => a.id === "no-next")).toEqual({
++    id: "no-next",
++    kind: "json-pointer",
++    pointer: "/next",
++    exists: true,
++    equals: null,
++  });
++  for (const [id, field] of [
++    ["no-owned-links", "ownedLinks"],
++    ["no-provenance", "revisionProvenance"],
++  ])
++    expect(b.assertions.find((a) => a.id === id)).toEqual({
++      id,
++      kind: "json-pointer",
++      pointer: `/results/0/resource/${field}`,
++      exists: false,
++    });
++}
++/** Two safe boundaries: input carries the authored handle; response carries actual
++ * serialized wire/body. The report's action ID is joined only after the run. */
++function principalNamespaceWire(collapse = false) {
++  assertPrincipalReplayLedger(principalReplayLedger);
++  const maximum = collapse ? 2 : 7;
++  const dispatches: (PrincipalDispatchInput & { ordinal: number })[] = [];
++  const responses: {
++    ordinal: number;
++    url: string;
++    status: number;
++    bodyDigest: string;
++    writeState: "complete";
++    requestBodyBytes: number;
++    requestBodyDigest: string | undefined;
++    epoch: string;
++    view: string;
++    position: string;
++  }[] = [];
++  const performed: string[] = [];
++  const receipts = new Map<string, Record<string, unknown>>();
++  const resources: Record<string, unknown>[] = [];
++  const validator = createJsonSchemaValidator(schema);
++  function record(value: unknown): Record<string, unknown> {
++    expect(value).not.toBeNull();
++    expect(typeof value).toBe("object");
++    expect(Array.isArray(value)).toBe(false);
++    return value as Record<string, unknown>;
++  }
++  function nonempty(value: unknown): string {
++    expect(typeof value).toBe("string");
++    expect(value).not.toBe("");
++    return value as string;
++  }
++  const problem = {
++    type: "https://github.com/gastownhall/bdp/problems/conflict",
++    code: "idempotency-conflict",
++    status: 409,
++    retry: "never",
++  };
++  function joined(observed: InstalledObservation) {
++    return (observed.result.scenarios.find((r) => r.id === principalId)?.exchanges ?? []).map(
++      (exchange, i) => ({
++        id: exchange.request.id,
++        reportedUrl: exchange.request.url,
++        method: dispatches[i]?.method,
++        dispatchUrl: dispatches[i]?.url,
++        credentialRef: dispatches[i]?.credentialRef,
++        ordinal: dispatches[i]?.ordinal,
++      }),
++    );
++  }
++  return {
++    onDispatch(input: PrincipalDispatchInput) {
++      if (dispatches.length === maximum) {
++        expect(["principal-a", "principal-a-rotated", "principal-b"]).not.toContain(
++          input.credentialRef,
++        );
++        return;
++      }
++      expect(dispatches.length).toBe(responses.length);
++      const literal = principalRequests[dispatches.length]!;
++      expect(input).toEqual({
++        method: literal.method,
++        url: literal.dispatchUrl,
++        credentialRef: literal.credentialRef,
++      });
++      dispatches.push(
++        Object.freeze({
++          ordinal: dispatches.length,
++          method: input.method,
++          url: input.url,
++          credentialRef: input.credentialRef,
++        }),
++      );
++    },
++    async afterExchange(response: HttpExchangeResponse) {
++      const exact = response.exactRequest;
++      const key = exact?.headerLines.find((h) => h.name.toLowerCase() === "idempotency-key")?.value;
++      if (responses.length === maximum) {
++        expect(key).not.toBe("principal-shared");
++        return;
++      }
++      const index = responses.length,
++        literal = principalRequests[index]!;
++      expect(dispatches).toHaveLength(index + 1);
++      expect(response.url).toBe(literal.dispatchUrl);
++      expect(exact).toBeDefined();
++      expect(exact!.source).toBe("raw-http1-serializer");
++      expect(exact!.writeState).toBe("complete");
++      expect(exact!.headerLines.slice(0, literal.headerLines.length).map((h) => h.name)).toEqual(
++        literal.headerLines.map((h) => h.name),
++      );
++      expect(exact!.headerLines.slice(0, literal.headerLines.length)).toEqual(literal.headerLines);
++      expect(
++        exact!.headerLines
++          .slice(literal.headerLines.length)
++          .some((h) => h.name.toLowerCase().startsWith("bdp-")),
++      ).toBe(false);
++      expect(exact!.bodyPresent).toBe(literal.body !== null);
++      expect(exact!.bodyOctets).toBe(literal.bodyBytes);
++      expect(exact!.bodyDigest).toBe(literal.bodySha256 ?? undefined);
++      expect(exact!.bodyOctets).toBeLessThanOrEqual(2048);
++      expect(Buffer.byteLength(response.bodyText)).toBeLessThanOrEqual(8192);
++      const refused = index === 4 || (collapse && index === 1);
++      expect(response.status).toBe(refused ? 409 : 200);
++      expect(response.headers["content-type"]).toBe(
++        refused ? "application/problem+json" : "application/json",
++      );
++      const body = record(JSON.parse(response.bodyText));
++      expect(
++        validator.validate(
++          `#/$defs/${refused ? "transactionalProblem" : index < 4 ? "mutationReceipt" : index === 5 ? "currentBeadCollection" : "eventPage"}`,
++          body,
++        ),
++      ).toEqual([]);
++      const epoch = nonempty(response.headers["bdp-scope-epoch"]),
++        view = nonempty(response.headers["bdp-authorization-view"]);
++      const position = index === 0 || (collapse && index === 1) ? "pos-1" : "pos-2";
++      expect(response.headers["bdp-scope-position"]).toBe(position);
++      const a = receipts.get("pk-a-create");
++      if (a) expect(epoch).toBe(a.scopeEpoch);
++      if (refused) {
++        expect(body).toStrictEqual(problem);
++        expect(view).toBe(a!.authorizationView);
++        performed.push(collapse ? "validated-b-conflict" : "validated-a-conflict");
++      } else if (index < 2) {
++        const name = index === 0 ? "a" : "b";
++        expect(body.scopeEpoch).toBe(epoch);
++        expect(body.authorizationView).toBe(view);
++        expect(Array.isArray(body.results)).toBe(true);
++        const results = body.results as unknown[];
++        expect(results).toHaveLength(1);
++        const resource = record(record(results[0]).resource);
++        expect(validator.validate("#/$defs/beadRecord", resource)).toEqual([]);
++        nonempty(resource.revision);
++        expect(resource).toStrictEqual({
++          id: `${scope}beads/${name}`,
++          type: `${scope}types/task`,
++          revision: resource.revision,
++          properties: { title: name },
++          metadata: {},
++        });
++        expect(results).toStrictEqual([{ operationIndex: 0, outcome: "created", resource }]);
++        const id = nonempty(body.id),
++          parsed = new URL(id),
++          prefix = `${scope}receipts/`;
++        expect(id.length).toBeLessThanOrEqual(8192);
++        expect(Buffer.byteLength(id)).toBeLessThanOrEqual(8192);
++        expect(parsed.href).toBe(id);
++        expect([parsed.username, parsed.password, parsed.search, parsed.hash]).toEqual([
++          "",
++          "",
++          "",
++          "",
++        ]);
++        expect(id.startsWith(prefix)).toBe(true);
++        expect(/^[A-Za-z0-9_-]+$/.test(id.slice(prefix.length))).toBe(true);
++        nonempty(body.transaction);
++        expect(body).toStrictEqual({
++          id,
++          status: "completed",
++          detail: "available",
++          idempotencyKey: "principal-shared",
++          scopeEpoch: epoch,
++          authorizationView: view,
++          transaction: body.transaction,
++          requiredPosition: position,
++          effectPosition: position,
++          results,
++          next: null,
++          expiresAt: body.expiresAt,
++        });
++        receipts.set(literal.action, body);
++        resources.push(resource);
++        if (collapse) performed.push("validated-a-terminal");
++        else if (index === 1) {
++          expect(body.id).not.toBe(a!.id);
++          expect(body.transaction).not.toBe(a!.transaction);
++          performed.push("namespace-distinct");
++        }
++      } else if (index < 4) {
++        const pair = principalReplayLedger.find(([current]) => current === literal.action)!;
++        expect(pair).toBeDefined();
++        expect(pair[2]).toBe("whole-json");
++        const saved = receipts.get(pair[1])!;
++        expect(saved).toBeDefined();
++        expect(view).toBe(saved.authorizationView);
++        expect(body).toStrictEqual(saved);
++        performed.push(pair.join(":"));
++      } else if (index === 5) {
++        expect(body).toStrictEqual({ items: resources, next: null });
++        performed.push("complete-current");
++      } else {
++        expect(Array.isArray(body.events)).toBe(true);
++        const events = body.events as Record<string, unknown>[];
++        expect(events).toHaveLength(2);
++        const hash = (tag: string, value: string) =>
++          createHash("sha256")
++            .update(JSON.stringify([tag, value]))
++            .digest("base64url");
++        const source = `${scope}events/`;
++        const expected = resources.map((resource, i) => ({
++          id: `ev_${hash("epoch", epoch)}_${hash("view", view)}_${hash("source", source)}_pos-${i + 1}_0`,
++          ordinal: 0,
++          type: "created",
++          source,
++          subject: resource.id,
++          subjectType: `${scope}types/task`,
++          transaction: receipts.get(i === 0 ? "pk-a-create" : "pk-b-create")!.transaction,
++          time: events[i]!.time,
++          data: {
++            revision: resource.revision,
++            properties: resource.properties,
++            metadata: resource.metadata,
++          },
++        }));
++        expect(body).toStrictEqual({ source, events: expected, next: null });
++        performed.push("complete-events");
++      }
++      responses.push({
++        ordinal: index,
++        url: response.url,
++        status: response.status,
++        bodyDigest: createHash("sha256").update(response.bodyText).digest("hex"),
++        writeState: "complete",
++        requestBodyBytes: exact!.bodyOctets,
++        requestBodyDigest: exact!.bodyDigest,
++        epoch,
++        view,
++        position,
++      });
++    },
++    finish(observed: InstalledObservation) {
++      expect(dispatches).toHaveLength(maximum);
++      expect(responses).toHaveLength(maximum);
++      expect(performed).toEqual(
++        collapse
++          ? ["validated-a-terminal", "validated-b-conflict"]
++          : [
++              "namespace-distinct",
++              "pk-a-rotated:pk-a-create:whole-json",
++              "pk-b-replay:pk-b-create:whole-json",
++              "validated-a-conflict",
++              "complete-current",
++              "complete-events",
++            ],
++      );
++      const row = observed.result.scenarios.find((r) => r.id === principalId)!;
++      expect(row.exchanges).toHaveLength(maximum);
++      expect(joined(observed)).toEqual(
++        principalRequests.slice(0, maximum).map((literal, ordinal) => ({
++          id: literal.action,
++          method: literal.method,
++          dispatchUrl: literal.dispatchUrl,
++          reportedUrl: literal.reportedUrl,
++          credentialRef: literal.credentialRef,
++          ordinal,
++        })),
++      );
++      for (const [i, exchange] of row.exchanges.entries()) {
++        expect(exchange.request.method).toBe(principalRequests[i]!.method);
++        expect(exchange.transportError).toBeUndefined();
++        expect(exchange.harnessError).toBeUndefined();
++        expect(exchange.request.exact?.writeState).toBe("complete");
++        expect(exchange.response?.status).toBe(responses[i]!.status);
++      }
++    },
++    summary(observed: InstalledObservation) {
++      return {
++        mode: collapse ? "collapse-principal-b-to-a" : "positive",
++        dispatches,
++        responses,
++        performed,
++        joined: joined(observed),
++        provenance:
++          "input method/url/credentialRef; local zero-based ordinal; report id/reportedUrl; actual response metadata and completed request fingerprints; no wire credential attestation",
++      };
++    },
++  };
++}
++function withPrincipalWire(
++  principal: ReturnType<typeof principalNamespaceWire>,
++  old: (response: HttpExchangeResponse) => Promise<void>,
++) {
++  return async (response: HttpExchangeResponse) => {
++    await principal.afterExchange(response);
++    await old(response);
++  };
++}
++function assertPrincipalPositive(
++  observed: InstalledObservation,
++  wire: ReturnType<typeof principalNamespaceWire>,
++) {
++  const row = observed.result.scenarios.find((r) => r.id === principalId)!;
++  expect(row.state).toBe("pass");
++  expect(row.cleanupError).toBeUndefined();
++  expect(row.prerequisiteFailure).toBeUndefined();
++  expect(row.actions ?? []).toHaveLength(0);
++  expect(row.exchanges.map((e) => e.request.id)).toEqual(principalRequests.map((r) => r.action));
++  const declared = bundle.manifest.scenarios.find((r) => r.id === principalId)!;
++  for (const [i, exchange] of row.exchanges.entries()) {
++    expect(exchange.assertions.map((a) => a.id)).toEqual(
++      declared.actions![i]!.assertions.map((a) => a.id),
++    );
++    expect(exchange.assertions.every((a) => a.passed)).toBe(true);
++  }
++  wire.finish(observed);
++}
++function principalOutputPath() {
++  const output = process.env.BDP_TRANSACTIONAL_PRINCIPAL_CUMULATIVE_OUTPUT;
++  if (output !== undefined && (!path.isAbsolute(output) || output.length > 4096))
++    throw new Error("absolute principal observation output required");
++  return output;
++}
++it("observes authenticated principal isolation and rotation through selected cumulative HTTP", async () => {
++  const output = principalOutputPath(),
++    children: ChildProcess[] = [],
++    wire = principalNamespaceWire();
++  const observed = await observe({
++    children,
++    scenarioSelection: [principalId],
++    onDispatch: wire.onDispatch,
++    afterExchange: wire.afterExchange,
++    onObserved(observed) {
++      if (output)
++        writeFileSync(
++          output,
++          JSON.stringify(
++            { sourceCommit, entry, ...observed, principalSupplemental: wire.summary(observed) },
++            null,
++            2,
++          ) + "\n",
++        );
++    },
++  });
++  expect(observed.result.selectedScenarioIds).toEqual([principalId]);
++  expect(observed.result.scenarios).toHaveLength(1);
++  expect(observed.result.claimEligible).toBe(false);
++  assertPrincipalPositive(observed, wire);
++  expect(observed.sessions).toHaveLength(1);
++  expect(children).toHaveLength(2);
++  expect(children.every((c) => c.exitCode !== null || c.signalCode !== null)).toBe(true);
++  expect(observed.result.artifacts.manifestDigest).toBe(bundle.digests.manifestDigest);
++  console.log(
++    JSON.stringify({
++      kind: "installed-tx-principal-positive",
++      sourceCommit,
++      exchanges: 7,
++      childLaunches: children.length,
++      closedChildren: children.filter((c) => c.exitCode !== null || c.signalCode !== null).length,
++      principalSupplemental: wire.summary(observed),
++      claimEligible: false,
++    }),
++  );
++}, 120000);
++it("discriminates principal isolation against a separately bound collapsed namespace", async () => {
++  const output = principalOutputPath(),
++    children: ChildProcess[] = [],
++    wire = principalNamespaceWire(true);
++  const observed = await observe({
++    children,
++    scenarioSelection: [principalId],
++    collapsePrincipalB: true,
++    onDispatch: wire.onDispatch,
++    afterExchange: wire.afterExchange,
++    onObserved(observed) {
++      if (output)
++        writeFileSync(
++          output,
++          JSON.stringify(
++            { sourceCommit, entry, ...observed, principalSupplemental: wire.summary(observed) },
++            null,
++            2,
++          ) + "\n",
++        );
++    },
++  });
++  expect(observed.result.selectedScenarioIds).toEqual([principalId]);
++  expect(observed.result.scenarios).toHaveLength(1);
++  expect(observed.result.claimEligible).toBe(false);
++  const row = observed.result.scenarios[0]!;
++  expect(row.state).toBe("fail");
++  expect(row.cleanupError).toBeUndefined();
++  expect(row.prerequisiteFailure).toBeUndefined();
++  expect(row.actions ?? []).toHaveLength(0);
++  expect(row.exchanges.map((e) => e.request.id)).toEqual(["pk-a-create", "pk-b-create"]);
++  expect(row.exchanges[0]!.assertions.every((a) => a.passed)).toBe(true);
++  const last = row.exchanges[1]!;
++  expect(last.assertions.map((a) => a.id)).toEqual(
++    bundle.manifest.scenarios
++      .find((r) => r.id === principalId)!
++      .actions![1]!.assertions.map((a) => a.id),
++  );
++  expect(last.assertions.filter((a) => !a.passed).map((a) => a.id)).toEqual(principalFailureIds);
++  expect(last.assertions.filter((a) => a.passed).map((a) => a.id)).toEqual(principalPassingIds);
++  wire.finish(observed);
++  expect(observed.result.artifacts.manifestDigest).toBe(bundle.digests.manifestDigest);
++  expect(observed.sessions).toHaveLength(1);
++  expect(children).toHaveLength(2);
++  expect(children.every((c) => c.exitCode !== null || c.signalCode !== null)).toBe(true);
++  console.log(
++    JSON.stringify({
++      kind: "installed-tx-principal-collapse",
++      sourceCommit,
++      exchanges: 2,
++      childLaunches: children.length,
++      closedChildren: children.filter((c) => c.exitCode !== null || c.signalCode !== null).length,
++      failures: last.assertions.filter((a) => !a.passed).map((a) => a.id),
++      principalSupplemental: wire.summary(observed),
++      claimEligible: false,
++    }),
++  );
++}, 120000);
+```
+## EXACT SOURCE CONTEXT
+
+### apps/bdptest/src/transactional-matrix.test.ts:1-362 [FROZEN WORKING]
+```
+1: import { execFileSync, spawnSync, type ChildProcess } from "node:child_process";
+2: import { createHash, randomBytes } from "node:crypto";
+3: import { mkdtempSync, readFileSync, rmSync, writeFileSync } from "node:fs";
+4: import { tmpdir } from "node:os";
+5: import path from "node:path";
+6: import { fileURLToPath } from "node:url";
+7: import { expect, it } from "vitest";
+8: import {
+9:   createJsonSchemaValidator,
+10:   createRawHttpExchangeExecutor,
+11:   type ExactHttpModeOptions,
+12:   type HttpExchangeResponse,
+13: } from "@bdp/conformance";
+14: import {
+15:   createCumulativeTransactionalArtifactBundle,
+16:   loadProfileContractSelection,
+17:   runCumulativeTransactionalMatrix,
+18:   assertSameServedProfileConfiguration,
+19: } from "@bdp/conformance/testing";
+20: import {
+21:   createTransactionalExecutionBinding,
+22:   installedTransactionBinding,
+23: } from "../test-support/transactional-execution-binding.js";
+24: import schema from "../../../schemas/bdp-v0.schema.json" with { type: "json" };
+25: const root = fileURLToPath(new URL("../../../", import.meta.url));
+26: const { launchInstalledTransaction } = (await import(
+27:   new URL("../../../scripts/transaction-installed-observation.mjs", import.meta.url).href
+28: )) as {
+29:   launchInstalledTransaction(
+30:     entry: string,
+31:     configuration: unknown,
+32:     signal?: AbortSignal,
+33:   ): Promise<{ child: ChildProcess; ready: Record<string, unknown>; close(): Promise<void> }>;
+34: };
+35: const scope = "https://reference.invalid/acme/";
+36: const entry =
+37:   process.env.BDP_TRANSACTIONAL_INSTALLED_ENTRY ??
+38:   path.join(root, "packages/server/dist/transaction-installed-process.js");
+39: const source = (file: string) => ({
+40:   bytes: readFileSync(path.join(root, "packages/conformance/test-support/transactional", file)),
+41: });
+42: const fixtureSource = source("fixture-v1.json"),
+43:   manifestSource = source("manifest-v1.json");
+44: const bundle = createCumulativeTransactionalArtifactBundle(
+45:   loadProfileContractSelection("transactional"),
+46:   { manifest: manifestSource, fixture: fixtureSource },
+47: );
+48: function artifacts() {
+49:   const task = `${scope}types/task`,
+50:     link = `${scope}types/relationship`,
+51:     propertiesSchema = `${scope}schemas/properties`;
+52:   const descriptors = [
+53:     { id: task, name: "Task", describes: "bead", conformsTo: [], propertiesSchema },
+54:     {
+55:       id: link,
+56:       name: "Relationship",
+57:       describes: "link",
+58:       conformsTo: [],
+59:       propertiesSchema,
+60:       source: { conformsTo: [task], external: "opaque" },
+61:       target: { conformsTo: [task], external: "opaque" },
+62:     },
+63:   ];
+64:   return {
+65:     descriptors: descriptors.map((d) => ({ retrievalUri: d.id, utf8: JSON.stringify(d) })),
+66:     schemas: [
+67:       {
+68:         retrievalUri: propertiesSchema,
+69:         utf8: JSON.stringify({
+70:           $id: propertiesSchema,
+71:           type: "object",
+72:           properties: { title: { type: "string" } },
+73:           additionalProperties: false,
+74:         }),
+75:       },
+76:     ],
+77:   };
+78: }
+79: const sourceCommit =
+80:   process.env.BDP_TRANSACTIONAL_SOURCE_COMMIT ??
+81:   execFileSync("git", ["rev-parse", "HEAD"], { cwd: root, encoding: "utf8" }).trim();
+82: function errorCauses(error: unknown): Set<unknown> {
+83:   const seen = new Set<unknown>();
+84:   const visit = (value: unknown) => {
+85:     if (seen.has(value)) return;
+86:     seen.add(value);
+87:     if (value instanceof AggregateError) for (const cause of value.errors) visit(cause);
+88:     if (value instanceof Error && value.cause !== undefined) visit(value.cause);
+89:   };
+90:   visit(error);
+91:   return seen;
+92: }
+93: type InstalledObservation = {
+94:   result: Awaited<ReturnType<typeof runCumulativeTransactionalMatrix>>;
+95:   sessions: Record<string, unknown>[];
+96:   baseline: ReturnType<typeof installedTransactionBinding>;
+97: };
+98: async function observe(control?: {
+99:   readonly budgetMs?: number;
+100:   /** Negative-test deadline begins after the first real exchange, with startup still bounded. */
+101:   readonly afterFirstExchangeBudgetMs?: number;
+102:   readonly scenarioSelection?: readonly string[];
+103:   readonly collapsePrincipalB?: boolean;
+104:   readonly onDispatch?: (request: PrincipalDispatchInput) => void;
+105:   /** Retain genuine returned evidence before cleanup can fail; never replace it. */
+106:   readonly onObserved?: (observed: InstalledObservation) => void;
+107:   readonly invalidReceiptCredentials?: boolean | "set-update" | "set-delete";
+108:   /** Negative-only removal of one already declared canonical set route. */
+109:   readonly omitRoute?: {
+110:     readonly method: "POST";
+111:     readonly url: `${typeof scope}operations/${"update-where" | "delete-where"}`;
+112:   };
+113:   readonly signal?: AbortSignal;
+114:   readonly children?: ChildProcess[];
+115:   /** Negative-test gate after actual ordinary wire, never a response replacement. */
+116:   readonly afterExchange?: (response: HttpExchangeResponse, signal: AbortSignal) => Promise<void>;
+117:   readonly ready?: (ready: Record<string, unknown>) => Record<string, unknown>;
+118:   readonly manifest?: (value: {
+119:     scenarios: { id: string; actions: Record<string, unknown>[] }[];
+120:   }) => void;
+121: }) {
+122:   const budgetMs = control?.budgetMs ?? 90000;
+123:   if (!Number.isSafeInteger(budgetMs) || budgetMs < 1 || budgetMs > 90000)
+124:     throw new Error("invalid cohort budget");
+125:   const afterFirstExchangeBudgetMs = control?.afterFirstExchangeBudgetMs;
+126:   if (
+127:     afterFirstExchangeBudgetMs !== undefined &&
+128:     (!Number.isSafeInteger(afterFirstExchangeBudgetMs) ||
+129:       afterFirstExchangeBudgetMs < 1 ||
+130:       afterFirstExchangeBudgetMs > budgetMs)
+131:   )
+132:     throw new Error("invalid after-first-exchange cohort budget");
+133:   const controller = new AbortController();
+134:   const signal = control?.signal
+135:     ? AbortSignal.any([control.signal, controller.signal])
+136:     : controller.signal;
+137:   signal.throwIfAborted();
+138:   const changed = JSON.parse(manifestSource.bytes.toString()) as {
+139:     scenarios: { id: string; actions: Record<string, unknown>[] }[];
+140:   };
+141:   control?.manifest?.(changed);
+142:   const runBundle = control?.manifest
+143:     ? createCumulativeTransactionalArtifactBundle(loadProfileContractSelection("transactional"), {
+144:         fixture: fixtureSource,
+145:         manifest: { bytes: Buffer.from(JSON.stringify(changed)) },
+146:       })
+147:     : bundle;
+148:   const directory = mkdtempSync(path.join(tmpdir(), "bdp-tx-installed-"));
+149:   const tokens: PrincipalTokens = {
+150:     operator: randomBytes(32).toString("base64url"),
+151:     reader: randomBytes(32).toString("base64url"),
+152:     principalA: randomBytes(32).toString("base64url"),
+153:     principalARotated: randomBytes(32).toString("base64url"),
+154:     principalB: randomBytes(32).toString("base64url"),
+155:   };
+156:   const roles = principalCredentialRoles(tokens, control?.collapsePrincipalB ?? false);
+157:   const configuration = {
+158:     scope,
+159:     directory: path.join(directory, "bootstrap"),
+160:     create: true,
+161:     credentials: roles.map(({ token, principal, canMutate }) => ({ token, principal, canMutate })),
+162:     artifacts: artifacts(),
+163:   };
+164:   let target: ReturnType<typeof createTransactionalExecutionBinding> | undefined;
+165:   const sessions: Record<string, unknown>[] = [];
+166:   const deniedReceiptUrls = new Set<string>();
+167:   const expireCohort = () => controller.abort(new Error("installed cohort deadline"));
+168:   const timer = setTimeout(expireCohort, budgetMs);
+169:   let firstExchangeTimer: ReturnType<typeof setTimeout> | undefined;
+170:   let observed: InstalledObservation | undefined;
+171:   let failure: unknown;
+172:   const cleanupFailures: unknown[] = [];
+173:   try {
+174:     const bootstrap = await launchInstalledTransaction(entry, configuration, signal);
+175:     control?.children?.push(bootstrap.child);
+176:     let baseline: ReturnType<typeof installedTransactionBinding>;
+177:     try {
+178:       baseline = installedTransactionBinding(bootstrap.ready, sourceCommit, fixtureSource);
+179:     } finally {
+180:       await bootstrap.close();
+181:     }
+182:     const routes = bundle.manifest.scenarios
+183:       .flatMap((s) => s.actions ?? [])
+184:       .flatMap((a) => {
+185:         if (a.family !== "http") return [];
+186:         const base =
+187:           a.target.binding === "scope" ? scope : bundle.fixture.bindings?.[a.target.binding];
+188:         if (!base) throw new Error("predeclared target unavailable");
+189:         const url = new URL(a.target.path ?? "", base);
+190:         for (const [key, value] of Object.entries(a.target.query ?? {})) {
+191:           if (typeof value !== "string") throw new Error("literal query required");
+192:           url.searchParams.set(key, value);
+193:         }
+194:         return [{ method: a.method, url: url.href }];
+195:       });
+196:     const uniqueRoutes = routes.filter(
+197:       (r, i) => routes.findIndex((o) => o.url === r.url && o.method === r.method) === i,
+198:     );
+199:     // Independently authored route inventory, not a second derivation from the manifest.
+200:     expect(uniqueRoutes).toEqual([
+201:       { method: "POST", url: `${scope}operations/batch` },
+202:       { method: "GET", url: `${scope}beads/?limit=32` },
+203:       { method: "GET", url: `${scope}events/` },
+204:       { method: "POST", url: `${scope}operations/create-bead` },
+205:       { method: "POST", url: `${scope}operations/sequence` },
+206:       { method: "POST", url: `${scope}operations/update-bead` },
+207:       { method: "GET", url: `${scope}beads/a` },
+208:       { method: "GET", url: `${scope}links/l` },
+209:       { method: "GET", url: `${scope}beads/new` },
+210:       { method: "GET", url: `${scope}changes/?after=genesis` },
+211:       { method: "GET", url: `${scope}links/?limit=32` },
+212:       { method: "GET", url: `${scope}beads/b` },
+213:       { method: "GET", url: `${scope}beads/c` },
+214:       { method: "POST", url: `${scope}operations/update-where` },
+215:       { method: "POST", url: `${scope}operations/delete-where` },
+216:     ]);
+217:     const omitted = control?.omitRoute;
+218:     if (omitted) {
+219:       expect([`${scope}operations/update-where`, `${scope}operations/delete-where`]).toContain(
+220:         omitted.url,
+221:       );
+222:       expect(omitted.method).toBe("POST");
+223:       expect(
+224:         uniqueRoutes.filter((r) => r.url === omitted.url && r.method === omitted.method),
+225:       ).toHaveLength(1);
+226:     }
+227:     const exactMode: ExactHttpModeOptions = {
+228:       scope,
+229:       profile: "transactional",
+230:       routes: uniqueRoutes.filter(
+231:         (r) => !omitted || r.url !== omitted.url || r.method !== omitted.method,
+232:       ),
+233:       maximumRequestHeaderBytes: 16384,
+234:       maximumRequestBodyBytes: 65536,
+235:       defaultCredentialRef: "operator",
+236:       credentialHandles: [
+237:         ...roles.map(({ ref }) => ({ id: ref, headerNames: ["authorization"] })),
+238:         { id: "anonymous", headerNames: [] },
+239:       ],
+240:       resolveCredentials: ({ credentialRef, url }) =>
+241:         principalHeaders(
+242:           roles,
+243:           credentialRef,
+244:           (control?.invalidReceiptCredentials === true && url.startsWith(`${scope}receipts/`)) ||
+245:             deniedReceiptUrls.has(url),
+246:         ),
+247:     };
+248:     target = createTransactionalExecutionBinding({
+249:       baseline,
+250:       sourceCommit,
+251:       fixtureSource,
+252:       exactMode,
+253:       launch: async (scenario, reopen, signal) => {
+254:         if (signal.aborted) throw new Error("launch aborted");
+255:         const child = await launchInstalledTransaction(
+256:           entry,
+257:           {
+258:             ...configuration,
+259:             directory: path.join(directory, scenario),
+260:             create: !reopen,
+261:           },
+262:           signal,
+263:         );
+264:         control?.children?.push(child.child);
+265:         sessions.push({ ...child.ready, scenario, reopen });
+266:         return control?.ready ? { ...child, ready: control.ready(child.ready) } : child;
+267:       },
+268:     });
+269:     const result = await runCumulativeTransactionalMatrix(
+270:       {
+271:         scope,
+272:         signal,
+273:         profile: "transactional",
+274:         seed: 0,
+275:         artifactBundle: runBundle,
+276:         ...(control?.scenarioSelection === undefined
+277:           ? {}
+278:           : { scenarioSelection: control.scenarioSelection }),
+279:         execute: async () => {
+280:           throw new Error("generic HTTP executor forbidden");
+281:         },
+282:         exactExecution: {
+283:           execute: async (request) => {
+284:             control?.onDispatch?.(
+285:               Object.freeze({
+286:                 method: request.method,
+287:                 url: request.url,
+288:                 credentialRef: request.credentialRef,
+289:               }),
+290:             );
+291:             const response = await target!.target.execute(request);
+292:             if (afterFirstExchangeBudgetMs !== undefined && firstExchangeTimer === undefined) {
+293:               firstExchangeTimer = setTimeout(expireCohort, afterFirstExchangeBudgetMs);
+294:             }
+295:             if (
+296:               typeof control?.invalidReceiptCredentials === "string" &&
+297:               response.status === 200 &&
+298:               [
+299:                 baseline.operationTargets.updateWhere,
+300:                 baseline.operationTargets.deleteWhere,
+301:               ].includes(response.url)
+302:             ) {
+303:               const receipt = JSON.parse(response.bodyText) as {
+304:                 id?: unknown;
+305:                 idempotencyKey?: unknown;
+306:               };
+307:               if (
+308:                 receipt.idempotencyKey === control.invalidReceiptCredentials &&
+309:                 typeof receipt.id === "string"
+310:               )
+311:                 deniedReceiptUrls.add(receipt.id);
+312:             }
+313:             await control?.afterExchange?.(response, signal);
+314:             signal.throwIfAborted();
+315:             return response;
+316:           },
+317:           configuration: target.target.exactConfiguration!,
+318:         },
+319:         harness: {
+320:           ...target.target.harness,
+321:           cleanup: async (...args) => {
+322:             try {
+323:               await target!.target.harness.cleanup(...args);
+324:             } catch (error) {
+325:               cleanupFailures.push(error);
+326:               throw error;
+327:             }
+328:           },
+329:         },
+330:         schemaValidator: createJsonSchemaValidator(schema),
+331:         declaredTargetLabel: "private-installed-transactional-partial",
+332:         prepareTimeoutMs: 10000,
+333:         cleanupTimeoutMs: 10000,
+334:         requestTimeoutMs: 5000,
+335:       },
+336:       target.context,
+337:     );
+338:     observed = { result, sessions, baseline };
+339:     control?.onObserved?.(observed);
+340:   } catch (error) {
+341:     failure = error;
+342:   } finally {
+343:     // The runner can report abort as row state; retain the cohort's original
+344:     // reason before a subsequent child/session cleanup failure is aggregated.
+345:     if (failure === undefined && signal.aborted) failure = signal.reason;
+346:     try {
+347:       await target?.target.close();
+348:     } catch (cleanup) {
+349:       cleanupFailures.push(cleanup);
+350:     } finally {
+351:       clearTimeout(timer);
+352:       clearTimeout(firstExchangeTimer);
+353:       rmSync(directory, { recursive: true, force: true });
+354:     }
+355:   }
+356:   if (cleanupFailures.length) {
+357:     const causes = [...new Set([...(failure === undefined ? [] : [failure]), ...cleanupFailures])];
+358:     throw new AggregateError(causes, "installed cohort cleanup failed");
+359:   }
+360:   if (failure !== undefined) throw failure;
+361:   signal.throwIfAborted();
+362:   if (!observed) throw new Error("missing installed observation");
+```
+
+### apps/bdptest/src/transactional-matrix.test.ts:2963-2980 [FROZEN WORKING]
+```
+2963: function memberHandoff(
+2964:   index: number,
+2965:   url: string,
+2966:   digest: string | undefined,
+2967:   key: string | undefined,
+2968:   writeState: string | undefined,
+2969: ) {
+2970:   return (
+2971:     (index === 0 || index === 4) &&
+2972:     url === `${scope}operations/sequence` &&
+2973:     digest === "f3cde631127aaf530ea5349330e6c7bb46766b02b135f9c7c59acfcd2f2c71c7" &&
+2974:     key === undefined &&
+2975:     writeState === "complete"
+2976:   );
+2977: }
+2978: /** Full actual values stay local to assertions. Reports retain only identities,
+2979:  * digests and performed-pair inventory; receipt helper equality is separate. */
+2980: function sequenceMemberWire(negative = false) {
+```
+
+### apps/bdptest/src/transactional-matrix.test.ts:3189-3215 [FROZEN WORKING]
+```
+3189: function composedMemberWire(
+3190:   cross: ReturnType<typeof crossCarrierWire>,
+3191:   minimum: ReturnType<typeof commandMinimumWire>,
+3192:   member: ReturnType<typeof sequenceMemberWire>,
+3193: ) {
+3194:   let handedOff = false;
+3195:   return async (response: HttpExchangeResponse) => {
+3196:     await minimum.afterExchange(response);
+3197:     const request = response.exactRequest,
+3198:       key = request?.headerLines.find((h) => h.name.toLowerCase() === "idempotency-key")?.value;
+3199:     const exempt = memberHandoff(
+3200:       member.count(),
+3201:       response.url,
+3202:       request?.bodyDigest,
+3203:       key,
+3204:       request?.writeState,
+3205:     );
+3206:     if (exempt && !handedOff) {
+3207:       cross.finish();
+3208:       handedOff = true;
+3209:     }
+3210:     if (!exempt) await cross.afterExchange(response);
+3211:     if (handedOff) await member.afterExchange(response);
+3212:   };
+3213: }
+3214: function assertMemberPositive(
+3215:   observed: Awaited<ReturnType<typeof observe>>,
+```
+
+### apps/bdptest/test-support/transactional-execution-binding.ts:1-175 [COMMITTED BASE]
+```
+1: import { isDeepStrictEqual } from "node:util";
+2: import { installedContractsDigest } from "./installed-contract-identity.js";
+3: /** Source-only installed binding. Runner retains sole receipt observation authority. */
+4: import { createHash } from "node:crypto";
+5: import {
+6:   createRawHttpScenarioTarget,
+7:   type ExactHttpModeOptions,
+8:   type ConformanceFixture,
+9:   type ExecutableScenario,
+10: } from "@bdp/conformance";
+11: import {
+12:   bindServedProfileConfiguration,
+13:   assertSameServedProfileConfiguration,
+14:   type TransactionalRunContext,
+15:   type TransactionalSession,
+16: } from "@bdp/conformance/testing";
+17: export interface InstalledTransactionChild {
+18:   readonly ready: Record<string, unknown>;
+19:   close(): Promise<unknown>;
+20: }
+21: export function installedTransactionBinding(
+22:   ready: Record<string, unknown>,
+23:   sourceCommit: string,
+24:   fixture: { bytes: Uint8Array },
+25: ) {
+26:   if (
+27:     ready.profile !== "transactional" ||
+28:     ready.history !== false ||
+29:     ready.claimEligible !== false ||
+30:     ready.authorityMode !== "canonical" ||
+31:     typeof ready.scope !== "string" ||
+32:     typeof ready.runtimeConfigurationIdentity !== "string" ||
+33:     !/^[a-f0-9]{64}$/.test(ready.runtimeConfigurationIdentity)
+34:   )
+35:     throw new Error("installed Transactional metadata unavailable");
+36:   if (typeof ready.listenUrl !== "string")
+37:     throw new Error("installed physical session unavailable");
+38:   const url = new URL(ready.listenUrl);
+39:   if (
+40:     url.protocol !== "http:" ||
+41:     url.hostname !== "127.0.0.1" ||
+42:     !url.port ||
+43:     url.username ||
+44:     url.password ||
+45:     url.pathname !== "/" ||
+46:     url.search ||
+47:     url.hash
+48:   )
+49:     throw new Error("invalid installed dial binding");
+50:   const targetNames = {
+51:     createBead: "create-bead",
+52:     updateBead: "update-bead",
+53:     deleteBead: "delete-bead",
+54:     createLink: "create-link",
+55:     updateLink: "update-link",
+56:     deleteLink: "delete-link",
+57:     putAlias: "put-alias",
+58:     deleteAlias: "delete-alias",
+59:     updateWhere: "update-where",
+60:     deleteWhere: "delete-where",
+61:     batch: "batch",
+62:     sequence: "sequence",
+63:   };
+64:   const operationTargets = Object.freeze(
+65:     Object.fromEntries(
+66:       Object.entries(targetNames).map(([name, suffix]) => [
+67:         name,
+68:         `${ready.scope}operations/${suffix}`,
+69:       ]),
+70:     ),
+71:   );
+72:   if (!isDeepStrictEqual(ready.targets, operationTargets))
+73:     throw new Error("installed operation target inventory mismatch");
+74:   const served = bindServedProfileConfiguration({
+75:     scope: ready.scope,
+76:     profile: "transactional",
+77:     history: false,
+78:     sourceCommit,
+79:     installedPayloadDigest: ready.payloadIdentity as string,
+80:     installedContractsDigest: installedContractsDigest(ready.artifactIdentity),
+81:     policyDigest: ready.policyIdentity as string,
+82:     authenticationDigest: ready.authenticationIdentity as string,
+83:     fixture,
+84:   });
+85:   return Object.freeze({
+86:     served,
+87:     operationTargets,
+88:     runtimeConfigurationIdentity: ready.runtimeConfigurationIdentity,
+89:     authorityMode: "canonical" as const,
+90:   });
+91: }
+92: export function createTransactionalExecutionBinding(options: {
+93:   readonly baseline: ReturnType<typeof installedTransactionBinding>;
+94:   readonly sourceCommit: string;
+95:   readonly fixtureSource: { bytes: Uint8Array };
+96:   readonly exactMode: ExactHttpModeOptions;
+97:   readonly launch: (
+98:     scenario: string,
+99:     reopen: boolean,
+100:     signal: AbortSignal,
+101:   ) => Promise<InstalledTransactionChild>;
+102: }) {
+103:   let active:
+104:     | (TransactionalSession & { controller: AbortController; pending: Set<Promise<unknown>> })
+105:     | undefined;
+106:   let generation = 0;
+107:   let presentation:
+108:     | { scenario: ExecutableScenario; scope: string; seed: number; fixture: ConformanceFixture }
+109:     | undefined;
+110:   let reopening = false;
+111:   const target = createRawHttpScenarioTarget(
+112:     async (scenario, scope, seed, fixture, signal) => {
+113:       const child = await options.launch(scenario.id, reopening, signal);
+114:       try {
+115:         if (signal.aborted) throw new Error("installed preparation aborted");
+116:         const actual = installedTransactionBinding(
+117:           child.ready,
+118:           options.sourceCommit,
+119:           options.fixtureSource,
+120:         );
+121:         assertSameServedProfileConfiguration(options.baseline.served, actual.served);
+122:         if (
+123:           actual.runtimeConfigurationIdentity !== options.baseline.runtimeConfigurationIdentity ||
+124:           actual.authorityMode !== options.baseline.authorityMode
+125:         )
+126:           throw new Error("installed runtime identity mismatch");
+127:         const listenUrl = child.ready.listenUrl as string,
+128:           address = new URL(listenUrl);
+129:         const controller = new AbortController(),
+130:           pending = new Set<Promise<unknown>>();
+131:         const binding = Object.freeze({
+132:           scenario: scenario.id,
+133:           generation: ++generation,
+134:           listenUrl,
+135:           runtimeConfigurationIdentity: actual.runtimeConfigurationIdentity,
+136:           responseLimits: Object.freeze({
+137:             headerBytes: 65536 as const,
+138:             bodyBytes: 1048576 as const,
+139:             wireBytes: 2097152 as const,
+140:           }),
+141:           configurationDigest: createHash("sha256")
+142:             .update(JSON.stringify(actual.served))
+143:             .digest("hex"),
+144:         });
+145:         const current = {
+146:           binding,
+147:           controller,
+148:           pending,
+149:           signal: AbortSignal.any([controller.signal, signal]),
+150:           dialRoute: Object.freeze({
+151:             transport: "plain" as const,
+152:             host: address.hostname,
+153:             port: Number(address.port),
+154:           }),
+155:           resolveCredentials: options.exactMode.resolveCredentials,
+156:           register<T>(operation: Promise<T>) {
+157:             pending.add(operation);
+158:             void operation.then(
+159:               () => pending.delete(operation),
+160:               () => pending.delete(operation),
+161:             );
+162:             return operation;
+163:           },
+164:         };
+165:         active = current;
+166:         presentation = { scenario, scope, seed, fixture };
+167:         return {
+168:           capabilities: fixture.capabilities,
+169:           bindings: fixture.bindings,
+170:           dialRoute: current.dialRoute,
+171:           async close() {
+172:             if (active === current) active = undefined;
+173:             controller.abort();
+174:             await Promise.allSettled([...pending]);
+175:             await child.close();
+```
+
+### packages/conformance/src/http-executor.ts:730-790 [COMMITTED BASE]
+```
+730:       Buffer.from(
+731:         ` HTTP/1.1\r\n${lines.map(({ name, value }) => `${name}: ${value}`).join("\r\n")}\r\n\r\n`,
+732:         "latin1",
+733:       ),
+734:     ]);
+735:     const exchanged = await exchangeRawBytes(
+736:       route,
+737:       head,
+738:       request.method,
+739:       signal,
+740:       requestDeadline(signal, deadline),
+741:       maximumHeaderBytes,
+742:       maximumBodyBytes,
+743:       body,
+744:       (next) => {
+745:         state = next;
+746:       },
+747:     );
+748:     state = exchanged.writeState;
+749:     requestDeadline(signal, deadline);
+750:     const parsed = parseRawResponse(
+751:       exchanged.bytes,
+752:       request.method,
+753:       maximumHeaderBytes,
+754:       maximumBodyBytes,
+755:     );
+756:     const exactRequest = Object.freeze({
+757:       source: "raw-http1-serializer" as const,
+758:       headerLines: Object.freeze(lines),
+759:       bodyPresent: body !== undefined,
+760:       bodyOctets: body?.length ?? 0,
+761:       ...(body === undefined
+762:         ? {}
+763:         : { bodyDigest: createHash("sha256").update(body).digest("hex") }),
+764:       writeState: exchanged.writeState,
+765:     });
+766:     const response = {
+767:       url: url.href,
+768:       ...parsed,
+769:       wireResponseBytes: Uint8Array.from(exchanged.bytes),
+770:       exactRequest,
+771:       effectiveRequest: {
+772:         url: url.href,
+773:         // Deliberately lossy last-occurrence compatibility view, never exact wire evidence.
+774:         // Ordered exactRequest.headerLines is authoritative for every occurrence.
+775:         headers: Object.freeze(
+776:           Object.fromEntries(lines.map(({ name, value }) => [name.toLowerCase(), value])),
+777:         ),
+778:       },
+779:     };
+780:     requestDeadline(signal, deadline);
+781:     return response;
+782:   } catch (error) {
+783:     if (error instanceof HttpTransportError)
+784:       throw new HttpTransportError(error.category, error.message, {}, state);
+785:     throw new HttpTransportError(
+786:       "configuration",
+787:       "exact HTTP request configuration is invalid",
+788:       {},
+789:       state,
+790:     );
+```
+
+### packages/conformance/src/runner.ts:1358-1386 [COMMITTED BASE]
+```
+1358:   const effectiveRequest = exact ? undefined : response.effectiveRequest;
+1359:   if (effectiveRequest !== undefined) assertEffectiveRequest(effectiveRequest, url, scope);
+1360:   let next: ObservedExchange = {
+1361:     ...observed,
+1362:     ...(effectiveRequest === undefined
+1363:       ? {}
+1364:       : {
+1365:           request: {
+1366:             ...observed.request,
+1367:             url: redactUrl(effectiveRequest.url),
+1368:             headers: redactHeaders(effectiveRequest.headers, reportVersion),
+1369:             ...(!exact && effectiveRequest.headersTransmitted === true
+1370:               ? { wireHeadersObserved: true as const }
+1371:               : {}),
+1372:           },
+1373:         }),
+1374:     response: {
+1375:       url: redactUrl(response.url),
+1376:       status: response.status,
+1377:       headers: redactHeaders(responseHeaders, reportVersion),
+1378:       decodedBodyBytes: new TextEncoder().encode(response.bodyText).byteLength,
+1379:       ...(response.bodyOctets === undefined ? {} : { wireBodyOctets: response.bodyOctets }),
+1380:       bodyKind: bodyObservation.kind,
+1381:     },
+1382:   };
+1383:   exchanges[exchanges.length - 1] = next;
+1384:   if (bodyObservation.kind === "unrepresentable-json") {
+1385:     if (bodyObservation.attribution === "runner-limit")
+1386:       throw new ScenarioObservationLimitError(bodyObservation.reason);
+```
+
+### packages/conformance/src/runner.ts:3304-3327 [COMMITTED BASE]
+```
+3304: const EXACT_REPORT_HEADER_NAMES = new Set([...REPORT_HEADER_NAMES, "idempotency-key"]);
+3305: 
+3306: function redactHeaders(
+3307:   headers: Readonly<Record<string, string>>,
+3308:   version: 3 | 4 = 3,
+3309: ): Readonly<Record<string, string>> {
+3310:   return Object.fromEntries(
+3311:     Object.keys(headers)
+3312:       .map((name) => name.toLowerCase())
+3313:       .filter((name) => (version === 4 ? EXACT_REPORT_HEADER_NAMES : REPORT_HEADER_NAMES).has(name))
+3314:       .map((name) => [name, "<redacted>"] as const)
+3315:       .sort(([left], [right]) => compareKeys(left, right)),
+3316:   );
+3317: }
+3318: 
+3319: function redactUrl(value: string): string {
+3320:   const url = new URL(value);
+3321:   const hadQuery = url.search !== "";
+3322:   url.username = "";
+3323:   url.password = "";
+3324:   url.hash = "";
+3325:   url.search = "";
+3326:   return `${url.href}${hadQuery ? "?<redacted>" : ""}`;
+3327: }
+```
+
+### packages/conformance/src/schema-validator.ts:1-64 [COMMITTED BASE]
+```
+1: import {
+2:   Ajv2020,
+3:   type ErrorObject,
+4:   type JSONSchemaType,
+5:   type ValidateFunction,
+6: } from "ajv/dist/2020.js";
+7: import { isJsonSchemaDateTime, isJsonSchemaUri } from "@bdp/protocol";
+8: 
+9: export interface SchemaValidationFailure {
+10:   readonly instancePath: string;
+11:   readonly message: string;
+12: }
+13: 
+14: export interface SchemaValidator {
+15:   resolve(schemaRef: string): void;
+16:   validate(schemaRef: string, value: unknown): readonly SchemaValidationFailure[];
+17: }
+18: 
+19: export class SchemaValidatorError extends Error {
+20:   constructor(message: string, options: ErrorOptions = {}) {
+21:     super(message, options);
+22:     this.name = "SchemaValidatorError";
+23:   }
+24: }
+25: 
+26: /** Validates against the repository's offline canonical schema bundle. */
+27: export function createJsonSchemaValidator(
+28:   bundle: JSONSchemaType<unknown> | Record<string, unknown>,
+29: ): SchemaValidator {
+30:   const ajv = new Ajv2020({ allErrors: false, strict: true });
+31:   ajv.addFormat("uri", { type: "string", validate: isJsonSchemaUri });
+32:   ajv.addFormat("date-time", { type: "string", validate: isJsonSchemaDateTime });
+33:   const root = bundle as Record<string, unknown>;
+34:   if (typeof root.$id !== "string" || root.$id.length === 0)
+35:     throw new SchemaValidatorError("schema bundle must declare a non-empty $id");
+36:   const schemaId = root.$id;
+37:   ajv.addSchema(bundle, schemaId);
+38:   const resolve = (schemaRef: string): ValidateFunction => {
+39:     const ref = schemaRef.startsWith("#") ? `${schemaId}${schemaRef}` : schemaRef;
+40:     let validator: ValidateFunction | undefined;
+41:     try {
+42:       validator = ajv.getSchema(ref);
+43:     } catch (error) {
+44:       throw new SchemaValidatorError("schema reference could not be compiled", { cause: error });
+45:     }
+46:     if (validator === undefined)
+47:       throw new SchemaValidatorError(`unknown schema reference '${schemaRef}'`);
+48:     return validator;
+49:   };
+50:   return {
+51:     resolve(schemaRef) {
+52:       resolve(schemaRef);
+53:     },
+54:     validate(schemaRef, value) {
+55:       const validator = resolve(schemaRef);
+56:       if (validator(value)) return [];
+57:       return (validator.errors ?? []).map(formatAjvError);
+58:     },
+59:   };
+60: }
+61: 
+62: function formatAjvError(error: ErrorObject): SchemaValidationFailure {
+63:   return { instancePath: error.instancePath, message: error.message ?? error.keyword };
+64: }
+```

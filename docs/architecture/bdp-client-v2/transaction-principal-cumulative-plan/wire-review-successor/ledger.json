@@ -1,0 +1,210 @@
+{
+  "status": "PROPOSED_PLAN_NO_EXECUTION",
+  "base": "5d7fa3f049fa0b4db3aa8dae20e20d8e47fb3854",
+  "scope": "https://reference.invalid/acme/",
+  "row": "read-update.idempotency.principal-isolation",
+  "ownedPaths": [
+    "packages/conformance/test-support/transactional/manifest-v1.json",
+    "packages/conformance/test-support/transactional/coverage-v1.json",
+    "packages/conformance/src/transactional-cumulative.test.ts",
+    "apps/bdptest/src/transactional-matrix.test.ts"
+  ],
+  "configuration": {
+    "defaultCredentialRef": "operator",
+    "credentials": [
+      {
+        "ref": "operator",
+        "principal": "same",
+        "canMutate": true
+      },
+      {
+        "ref": "reader",
+        "principal": "same",
+        "canMutate": false
+      },
+      {
+        "ref": "principal-a",
+        "principal": "principal-a",
+        "canMutate": true
+      },
+      {
+        "ref": "principal-a-rotated",
+        "principal": "principal-a",
+        "canMutate": true
+      },
+      {
+        "ref": "principal-b",
+        "principal": "principal-b",
+        "canMutate": true
+      }
+    ],
+    "anonymousHandle": {
+      "ref": "anonymous",
+      "headerNames": []
+    },
+    "tokenPolicy": "Fresh independent randomBytes(32).base64url tokens, no credential values persisted; same configuration object spread to bootstrap and scenario launches.",
+    "controlChange": "principal-b principal becomes principal-a; fresh own bootstrap, actual authentication/runtime identity; no swap after bootstrap.",
+    "fixtureFileUnchanged": true,
+    "ordinaryUpdateFixtureUnchanged": true
+  },
+  "requestsFile": "requests.json",
+  "controlFile": "../control.json",
+  "routesFile": "../route-preimage.json",
+  "exactConfigurationDigest": "9a9404e74dd41fcb39b9c3bb5fc86917ff972dfdbc95faa5f53d13b35bb60bec",
+  "replayLedger": [
+    [
+      "pk-a-rotated",
+      "pk-a-create",
+      "whole-json"
+    ],
+    [
+      "pk-b-replay",
+      "pk-b-create",
+      "whole-json"
+    ]
+  ],
+  "performedPositive": [
+    "namespace-distinct",
+    "pk-a-rotated:pk-a-create:whole-json",
+    "pk-b-replay:pk-b-create:whole-json",
+    "validated-a-conflict",
+    "complete-current",
+    "complete-events"
+  ],
+  "performedControl": [
+    "validated-a-terminal",
+    "validated-b-conflict"
+  ],
+  "counts": {
+    "oldRows": 15,
+    "newRows": 16,
+    "required": 251,
+    "applicable": 256,
+    "unplannedRequiredBefore": 236,
+    "unplannedRequiredAfter": 235,
+    "missingExecutableBefore": 241,
+    "missingExecutableAfter": 240,
+    "rowActions": 7,
+    "rowAssertions": 139,
+    "totalActions": 227,
+    "totalAssertions": 2642
+  },
+  "cohorts": [
+    {
+      "id": "principal-positive",
+      "title": "observes authenticated principal isolation and rotation through selected cumulative HTTP",
+      "expectedHttp": 7,
+      "maxHttp": 7,
+      "children": 2,
+      "requestBodyBytes": 750,
+      "maximumRequestBodyBytes": 750
+    },
+    {
+      "id": "principal-collapse",
+      "title": "discriminates principal isolation against a separately bound collapsed namespace",
+      "expectedHttp": 2,
+      "maxHttp": 7,
+      "children": 2,
+      "requestBodyBytes": 300,
+      "maximumRequestBodyBytes": 750
+    },
+    {
+      "id": "full-positive",
+      "title": "observes sixteen partial Transactional contracts through packed-capable actual installed HTTP",
+      "expectedHttp": 220,
+      "maxHttp": 220,
+      "children": 24,
+      "requestBodyBytes": 18606,
+      "maximumRequestBodyBytes": 18606
+    },
+    {
+      "id": "cross-batch",
+      "title": "discriminates retained cross-carrier evidence against batch-semantic-conflict",
+      "expectedHttp": 211,
+      "maxHttp": 211,
+      "children": 24,
+      "requestBodyBytes": 17550,
+      "maximumRequestBodyBytes": 17550
+    },
+    {
+      "id": "cross-sequence",
+      "title": "discriminates retained cross-carrier evidence against sequence-fresh-key",
+      "expectedHttp": 212,
+      "maxHttp": 212,
+      "children": 24,
+      "requestBodyBytes": 17754,
+      "maximumRequestBodyBytes": 17754
+    }
+  ],
+  "totals": {
+    "expectedHttp": 652,
+    "maxHttp": 657,
+    "children": 76,
+    "requestBodyBytes": 54960,
+    "maximumRequestBodyBytes": 55410
+  },
+  "limits": {
+    "runtimeManifestBytes": 1048576,
+    "runtimeManifestNodes": 100000,
+    "exactRequestHeaderBytes": 16384,
+    "exactRequestBodyBytes": 65536,
+    "prepareMs": 10000,
+    "cleanupMs": 10000,
+    "requestMs": 5000,
+    "cohortMs": 90000,
+    "fullPositiveElapsedMs": 63000,
+    "externalCommandMs": 120000,
+    "ciJobSeconds": 1200,
+    "automaticTransportRetries": 0
+  },
+  "claimEligible": false,
+  "wholeContract": false,
+  "actualAuthoringParent": "5d7fa3f049fa0b4db3aa8dae20e20d8e47fb3854",
+  "executionReleased": false,
+  "dispatchProof": {
+    "seam": "existing local observe exactExecution.execute before unchanged target.target.execute(request)",
+    "safeActualInputFields": [
+      "method",
+      "url",
+      "credentialRef"
+    ],
+    "localField": "ordinal",
+    "inputHasActionId": false,
+    "observedExchangeHasCredentialRef": false,
+    "actualPostrunFields": [
+      "id",
+      "method",
+      "url"
+    ],
+    "join": "fixed row order: actual report id/method equal independent ledger; actual input method/url/ref bound to ledger method/dispatchUrl/credentialRef; response.url equals dispatchUrl and writeState complete; report.url equals separate exact reportedUrl; never raw-versus-redacted equality",
+    "positiveDispatches": 7,
+    "controlDispatches": 2,
+    "noTokensOrHeaders": true,
+    "noRequestMutation": true,
+    "noExportedApiChange": true,
+    "safeJoinedFields": [
+      "id",
+      "method",
+      "dispatchUrl",
+      "reportedUrl",
+      "credentialRef",
+      "ordinal"
+    ],
+    "credentialRefMeaning": "actual authored ref forwarded to exact executor and resolved by the closed resolver; no retained or attested wire credential",
+    "responseOracle": "post-delegation HttpExchangeResponse.bodyText and exactRequest headerLines/bodyPresent/bodyOctets/bodyDigest/writeState; pre-dispatch callback remains safe projection only"
+  },
+  "historicalReviewBase": "9bf601bfb570adae97ce8cdc99caf2cc7a2b34c1",
+  "actualAuthoringTree": "057f879132074166f2c0f643a8b45bbd9dd47c6f",
+  "authoringReleased": false,
+  "readContext": {
+    "actions": [
+      "pk-current",
+      "pk-events"
+    ],
+    "scopeEpoch": "equals validated A receipt.scopeEpoch",
+    "scopePosition": "pos-2",
+    "authorizationView": "each GET own validated serving view; no A/B view equality"
+  },
+  "controlDispositionFailure": "Problem /status present numeric409 mismatches receipt completed; other missing receipt/result facts fail on absence",
+  "excludedEpochDistinctNamespaces": true
+}

@@ -1,0 +1,38 @@
+{
+  "argv": [
+    "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+    "/Users/dbox/repos/wt/vickie/vickie-sequence-member-evidence/node_modules/@biomejs/biome/bin/biome",
+    "format",
+    "--write",
+    "packages/server/src/transaction-store.ts",
+    "packages/server/src/transaction-service.ts",
+    "packages/server/src/transaction-http.ts",
+    "packages/server/src/transaction-receipt-pages.test.ts",
+    "packages/server/src/transaction-service.test.ts",
+    "packages/server/src/transaction-http.test.ts",
+    "apps/bdptest/src/transactional-receipt-missing-context-installed.test.ts"
+  ],
+  "cwd": "/Users/dbox/repos/wt/vickie/vickie-sequence-member-evidence",
+  "before": {
+    "packages/server/src/transaction-store.ts": "40ed05bee599de0ed5e1f89c4ba0bd1d3fe59eb3a2cc1d1bcc5dfc2b6ca8cea2",
+    "packages/server/src/transaction-service.ts": "0a22eadff39f0e1b3eaee470e396cd5aa42571279cafb8de62f160f2c1eeeb04",
+    "packages/server/src/transaction-http.ts": "f831cfc8f7c6cff8b9b69ad29762ded4001e2d47d747dbcccf9d4eb598f0d2f1",
+    "packages/server/src/transaction-receipt-pages.test.ts": "62cc0180ad96e4c6b0b4ab192e4b44262c4412b7f09a6d95be8f396ce543e045",
+    "packages/server/src/transaction-service.test.ts": "2440307ce9a283e14fa4191f715746b073880403402b444075a04b74180e99c5",
+    "packages/server/src/transaction-http.test.ts": "7097237986fc54645f91d29a74eb06bd0618594ad423baab828e1d06b8a5b67d",
+    "apps/bdptest/src/transactional-receipt-missing-context-installed.test.ts": "9dce8139f307a6d4bf8ec023f055910a21a856a1a6dcc1291d9bb070d9898ecf",
+    "docs/design/transaction-implementation-progress.md": "28b30246931ccf39588a0dd654715aa7f00eda95893a9b5ed8ec10ffe7fdf6fc"
+  },
+  "exitCode": 0,
+  "elapsedSeconds": 0.09459483297541738,
+  "after": {
+    "packages/server/src/transaction-store.ts": "eec0f4723c8fcfb2245d2e80d77b2de014235cdb208101d523c0ab83fde78eed",
+    "packages/server/src/transaction-service.ts": "53f655faf494209996aac2e0f93a4c2c785e471f66aac6af9ea41f92c9cfbe00",
+    "packages/server/src/transaction-http.ts": "0e42f034c3aada6fd0a7696897200b336d2b0c547d69497e46500f6da4c2267a",
+    "packages/server/src/transaction-receipt-pages.test.ts": "e944bd61590f78a510b427b0f5d6eb7856f6b3715f9f0e5dc590bf8d4724c6a1",
+    "packages/server/src/transaction-service.test.ts": "c61ba7254ab1cf39abf85e6020e4f846ffb684740076de39f43fe12d509093b9",
+    "packages/server/src/transaction-http.test.ts": "7deebfebaac1da33b6c447b84c82f7a4f56975c86617a9a77978da8b4c089807",
+    "apps/bdptest/src/transactional-receipt-missing-context-installed.test.ts": "eaf1289ed0a8318ce949704ba4cd983755c6f5fd20ffe9d61712869894cb5064",
+    "docs/design/transaction-implementation-progress.md": "28b30246931ccf39588a0dd654715aa7f00eda95893a9b5ed8ec10ffe7fdf6fc"
+  }
+}

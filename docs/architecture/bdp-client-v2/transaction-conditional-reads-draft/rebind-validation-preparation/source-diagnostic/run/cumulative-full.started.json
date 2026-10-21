@@ -1,0 +1,56 @@
+{
+  "name": "cumulative-full",
+  "argv": [
+    "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+    "/Users/dbox/repos/wt/vickie/vickie-transaction-conditional-reads/node_modules/vitest/vitest.mjs",
+    "run",
+    "packages/conformance/src/transactional-cumulative.test.ts",
+    "--maxWorkers=1",
+    "--reporter=verbose",
+    "--reporter=json",
+    "--outputFile=/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-conditional-reads-draft/rebind-validation-preparation/source-diagnostic/run/cumulative-full.results.json"
+  ],
+  "cwd": "/Users/dbox/repos/wt/vickie/vickie-transaction-conditional-reads",
+  "started": "2026-10-16T20:10:29.256994+00:00",
+  "head": "1ba65f2f192cc84e44eb09ef89b9693ec6cdaf05",
+  "workspaceDirty": true,
+  "sourceSha256": {
+    "packages/conformance/test-support/transactional/manifest-v1.json": "60c527f6a5673161eacf022c0015d09bea2743d153b8b0d0c86160b76fafeb68",
+    "packages/conformance/test-support/transactional/coverage-v1.json": "33032fe07eb06d2a8968fcd8e5a3cf93cb4637c551868c22da9ea0c4edd587a3",
+    "packages/conformance/src/transactional-cumulative.test.ts": "9f70f8a24ea358b2cd613fd392be68057abd7b1552ec8cc6c4bc1a3241de69f6",
+    "apps/bdptest/src/transactional-matrix.test.ts": "136de49e859546e081c39410f1d3ee6fc01e32faf1879084718ad67b553d62ec"
+  },
+  "sourceDiffSha256": "bc7e620ea97a37933901ee4bf2e2d818685178bd974a262e88b025e513e2a60a",
+  "rootAcceptanceSha256": "6361923f852b538368824d0f039b7e60f3c54366c19ddaa0be709c762c6ee43f",
+  "preparationSha256": "52ba9a5d35913b7b0c84793248481b877198098ffa490e86707e330e74322251",
+  "bdpOverrides": {},
+  "guardedArgv": [
+    "/opt/homebrew/opt/python@3.14/bin/python3.14",
+    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/guarded-action.py",
+    "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+    "/Users/dbox/repos/wt/vickie/vickie-transaction-conditional-reads/node_modules/vitest/vitest.mjs",
+    "run",
+    "packages/conformance/src/transactional-cumulative.test.ts",
+    "--maxWorkers=1",
+    "--reporter=verbose",
+    "--reporter=json",
+    "--outputFile=/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-conditional-reads-draft/rebind-validation-preparation/source-diagnostic/run/cumulative-full.results.json"
+  ],
+  "nodePathPrefix": "/Users/dbox/.nvm/versions/node/v24.16.0/bin",
+  "sourceAttribution": "Frozen native-reviewed source diagnostic with external review pending; not integrated or installed evidence",
+  "diagnosticOnly": true,
+  "nativeCodeReviewed": true,
+  "externalReviewPending": true,
+  "councilAccepted": false,
+  "plannedWorkload": {
+    "cases": 42,
+    "http": 14,
+    "expectedHTTP": 14,
+    "maxHTTP": 14,
+    "owners": 0,
+    "listeners": 12,
+    "directories": 0,
+    "productChildren": 0
+  },
+  "derivativeBinding": null
+}

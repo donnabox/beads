@@ -1,0 +1,3 @@
+# CLOSED concrete availability execution proposal3
+
+The14-key bytes are proposed DATA only. Actual release3 path remains absent. durablePublicationReadback names the independently verified prior complete C3 source publicationf4d1d472, not a guessed future activation commit. This proposal, exact native precision and root acceptance require their own publication/readback, then byte-exact activation at the external required path and a second actual publication/readback before one actual availability. No timing/cap/source/parser changes, no control/product or M02/D02 retry. Actual common-clock/raw/BOTH EOF/all-recorded process audit is required afterwards.

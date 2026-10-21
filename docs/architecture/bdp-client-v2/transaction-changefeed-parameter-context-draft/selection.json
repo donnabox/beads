@@ -1,0 +1,38 @@
+{
+  "source": {
+    "path": "packages/server/src/transaction-changefeed.test.ts",
+    "expandedTitles": [
+      "uses bounded context-fenced checkpoints, never Event IDs/raw positions/future rows",
+      "rejects invalid feed intent  with the local parameter convention",
+      "rejects invalid feed intent ?after=genesis&start=now with the local parameter convention",
+      "rejects invalid feed intent ?start=then with the local parameter convention",
+      "rejects invalid feed intent ?after= with the local parameter convention",
+      "rejects invalid feed intent ?after=genesis&after=genesis with the local parameter convention",
+      "rejects invalid feed intent ?start=now&limit=1 with the local parameter convention",
+      "decides actual HTTP minimum refusal before conditional shortcuts with final context",
+      "preserves current context on owner-observed changefeed parameter refusals over HTTP"
+    ],
+    "count": 9,
+    "parameterLiterals": [
+      "",
+      "?after=genesis&start=now",
+      "?start=then",
+      "?after=",
+      "?after=genesis&after=genesis",
+      "?start=now&limit=1"
+    ],
+    "expansion": "Pinned Vitest formatTitle delegates %s to format; string values unchanged. Empty string yields two spaces."
+  },
+  "control": {
+    "path": "packages/server/src/transaction-changefeed.test.ts",
+    "title": "preserves current context on owner-observed changefeed parameter refusals over HTTP",
+    "count": 1
+  },
+  "installed": {
+    "path": "apps/bdptest/src/transactional-changefeed-refusal-context-installed.test.ts",
+    "title": "observes genuine installed current context on changefeed parameter refusals",
+    "count": 1
+  },
+  "newRegistrations": 2,
+  "executed": false
+}

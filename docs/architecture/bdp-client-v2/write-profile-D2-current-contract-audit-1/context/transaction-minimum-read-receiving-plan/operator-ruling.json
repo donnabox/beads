@@ -1,0 +1,14 @@
+{
+  "recordedAt": "2026-10-15T22:01:43.299160+00:00",
+  "question": "If a read request includes any minimum-position control, should it require exactly one valid value for all three fields (minimum position, Scope epoch and authorization view), rejecting missing, repeated or malformed fields with400 before reading state? Recommended closed tuple rule; valid-but-unknown positions separate.",
+  "operatorAnswer": "Require all three; return 400 malformed-request (recommended)",
+  "source": "Direct send_user_message_question_reply call_4462b86558fb4852992e050db643927e",
+  "decision": "All three absent means no minimum; any presence requires exactly one nonempty lexically valid token per field; malformed tuples return400malformed-request after normal transport/method/auth checks.",
+  "separateUnresolved": [
+    "alphabet-valid unknown position identities",
+    "missing/hidden target plus incompatible minimum",
+    "S1 retained Snapshot/continuation minimum",
+    "G2 incident-Link metadata Event membership"
+  ],
+  "implementationStatus": "Planning only; native+actualClaude review before authoring. Preserve command POST ignore and existing receipt/page nondisclosure sequencing; plan must make route applicability/order explicit."
+}

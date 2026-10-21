@@ -1,0 +1,40 @@
+--- /Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-cumulative-carrier-negative-harness-plan-2/basis.json
++++ /Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-cumulative-carrier-negative-harness-plan-1/basis.json
+@@ -1,32 +1,16 @@
+ {
+   "session": "2026-10-18T02:16:24Z-549f",
+   "rootRelease": {
+-    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-cumulative-carrier-negative-plan1-root-disposition-1/release.json",
+-    "sha256": "0893e0f2ff3029571994c52f17aab892d79a6ae29d940cc09f28ecdf27da7d9c"
++    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-cumulative-carrier-helper4-root-static-acceptance-1/release.json",
++    "sha256": "2d89070e94e6a1a6ac50e638eebcb4d86cd1f6568754bc076a347265782729cd"
+   },
+-  "durableReadback": "88d8cdca30d04fadd4d4b52490caf1268c8e9464 (root attribution; no worker Git)",
++  "durableReadback": "c0d9d45ef0327a58c4ed26be01a3970994f879db",
+   "helper4ImplementationSha256": "842e8ed844a664a9374a5d50500ca7d2e8adb885c883626ee0d276820799dd02",
+   "helper4PreparationIndexSha256": "61658de8eb4687d0990a41c993492e8dfe9c1c1c95ecd107219a6c5b8cf77acc",
+   "nativeHelper4IndexSha256": "dda3011b0be8c970a8176ffc52de3ac8c6e1744872409d3518c0448015bb0307",
+   "sourceFiles": 681,
+   "sourceIdentity": "78e11962df1a744c685c9911d13c0bff3fa42fcdec9310b75ec8f83a17996c7f",
+-  "H5FutureMechanics": "STATIC H5 native/root acceptance bound exactly; measured availability UNKNOWN, not adopted clock proof",
++  "H5FutureMechanics": "UNRESOLVED; frozen source is reference only, no availability acceptance",
+   "original26StageProductPathUnchanged": true,
+-  "DATAOnly": true,
+-  "rootDisposition": {
+-    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-cumulative-carrier-negative-plan1-root-disposition-1/disposition.json",
+-    "sha256": "b690aa0df44d700d6cd38ac9645d0b92952bc8131451f78c921707de0a3ebb11"
+-  },
+-  "predecessor": {
+-    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-cumulative-carrier-negative-harness-plan-1/index.json",
+-    "sha256": "826822df822c5ddc53f27cbdb97a90da85704f8a5f2a4ca2ac760b0087b1f632"
+-  },
+-  "independentPlan1": {
+-    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-cumulative-carrier-negative-harness-plan1-native-precision-1/index.json",
+-    "sha256": "f0fbdb0112bab160406b47885347489c36a61af9e918f1f181108b4f9c456519"
+-  },
+-  "requiredCoverageBlocked": [
+-    "C16/IO-publication-after-cutoff"
+-  ],
+-  "provisionalActualAvailabilityContext": "provisional-H5-availability-context.json: root54147 one actual retained; measured UNKNOWN, independent actual audit/root disposition pending"
++  "DATAOnly": true
+ }

@@ -1,0 +1,11 @@
+# Sequence-member plan: merged-parent reanchor
+
+This addendum updates execution identity only. Frozen v4 remains SHA45acc3ab6580f6654c573b48f93b26b2c9a32a73297fc5ab6c2b53d0b18dffd5. Its source, ten-action scope, eight selected static callbacks, four installed cohorts and all fences remain unchanged. **Authoring is not released:** actual Claude plan review remains required; the initial attempt timed out with no output/verdict.
+
+Actual main88c9408e908590ab1a4c64c9b9dee1a8b705999c has treeb2d9f2c18502e0778c51123be8b4564af052d803 and orderedparents453b6dab+01a247b2. This is the identical tree reviewed in v4, verified remotely and from fetched Git. Independent accepted-parent evidence f3fa1b62 pins all four source files,14manifest+14coverage raw objects and complete byte-for-byte reconstruction. Root independently rechecked all28raw slices against Git. Historical preservation hashes remain historical.
+
+Prepared isolated checkout `/Users/dbox/repos/wt/vickie/vickie-sequence-member-evidence`, branch `codex/vickie-sequence-member-evidence`, clean at actual main88c9408e. No dependency setup, source editing, tests, build, archive, consumer or service execution has occurred here. Prior review checkout stays clean01a247b2.
+
+Successful predecessor CI38705226698/job116322877081 measured771.73s suite/987s job, including all downstream gates. Observed213s under1200s is sufficient to consider bounded source drafting; it does not guarantee future CI throughput or authorize longer limits. Planned fanout is404expected/420maximum extra app-observe HTTP calls and48children; it is a source model, not a whole-job count. Exact new draft measurements, independently checked source-fence amendment, actual bounded installed outcomes and exact-head CI remain necessary. Preserve all deadlines and stop on unexpected failures. No runtime limits or source authoring allowances are raised by this addendum.
+
+Native v4 report e748a785 found no actionable blocker, with prior planning involvement disclosed. Actual Claude attempt at08:35:11Z timed out901.39s/exit143 with empty stdout/stderr; process/group42615 absent and source/plan unchanged. It is inconclusive and retained. A differently structured read-only review packet is being prepared; no code-council result or implementation permission is inferred.

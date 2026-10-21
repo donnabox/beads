@@ -1,0 +1,68 @@
+{
+  "order": [
+    "boundaries",
+    "preflight",
+    "package-smoke",
+    "historical-read-evidence"
+  ],
+  "commands": {
+    "boundaries": {
+      "cwd": "/Users/dbox/repos/wt/vickie/vickie-current-observation-minimum",
+      "argv": [
+        "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+        "scripts/check-dependency-boundaries.mjs"
+      ],
+      "outerSeconds": 120,
+      "termAfterSeconds": 115,
+      "automaticRetries": 0,
+      "acceptedRawExitCodes": [
+        0
+      ]
+    },
+    "preflight": {
+      "cwd": "/Users/dbox/repos/wt/vickie/vickie-current-observation-minimum",
+      "argv": [
+        "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+        "node_modules/vitest/vitest.mjs",
+        "run",
+        "scripts/e2e-ready.test.mjs",
+        "--reporter=verbose",
+        "--reporter=json",
+        "--outputFile.json=/Users/dbox/repos/wt/vickie/bdp-integration-logs/current-observation-minimum-validation/required-checks/run/preflight.results.json"
+      ],
+      "outerSeconds": 120,
+      "termAfterSeconds": 115,
+      "automaticRetries": 0,
+      "acceptedRawExitCodes": [
+        0
+      ]
+    },
+    "package-smoke": {
+      "cwd": "/Users/dbox/repos/wt/vickie/vickie-current-observation-minimum",
+      "argv": [
+        "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+        "/Users/dbox/.cache/node/corepack/v1/pnpm/11.20.0/bin/pnpm.cjs",
+        "smoke"
+      ],
+      "outerSeconds": 120,
+      "termAfterSeconds": 115,
+      "automaticRetries": 0,
+      "acceptedRawExitCodes": [
+        0
+      ]
+    },
+    "historical-read-evidence": {
+      "cwd": "/Users/dbox/repos/wt/vickie/vickie-current-observation-minimum",
+      "argv": [
+        "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+        "scripts/read-cohort-evidence.mjs"
+      ],
+      "outerSeconds": 120,
+      "termAfterSeconds": 115,
+      "automaticRetries": 0,
+      "acceptedRawExitCodes": [
+        0
+      ]
+    }
+  }
+}

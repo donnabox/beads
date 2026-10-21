@@ -1,0 +1,129 @@
+--- a/docs/design/startup-configuration.md
++++ b/docs/design/startup-configuration.md
+@@ -689,7 +689,9 @@
+ ceiling, so no full-inner-budget fit is guaranteed.
+ 
+ The frozen public handle contains only inert summary data and provenance; secret
+-inputs and RU/TX captures remain in a private identity registry. Replacing the
++inputs and RU/TX captures remain in a private identity registry. Its file digest
++and RU authentication identity commit to secret-containing file and credential
++contents. These digests must not be emitted in diagnostics. Replacing the
+ file or mutating caller settings after capture cannot change that state. The
+ private registry and runtime factories are unavailable through package exports.
+ TX intended listener is retained separately from its existing private port0
+--- a/packages/server/src/reference-deployment.test.ts
++++ b/packages/server/src/reference-deployment.test.ts
+@@ -238,6 +238,7 @@
+   const f = fixture(),
+     body = ru(f.directory);
+   const prepared = await loadReferenceDeployment(f.input);
++  expect(open).toHaveBeenCalledTimes(1);
+   const direct = captureInstalledReferenceConfiguration({
+     scope,
+     listener: { host: "127.0.0.1", port: 43210 },
+@@ -272,6 +273,34 @@
+       "registered reference deployment required",
+     );
+ });
++it.each(["read-update", "transactional"] as const)(
++  "accepts the deploymentFile-only bdptest section for %s with one selected file open",
++  async (profile) => {
++    const f = fixture(profile);
++    const prepared = await loadReferenceDeployment({
++      ...f.input,
++      bdptest: { deploymentFile: f.input.deploymentFile },
++    });
++    expect(prepared.profile).toBe(profile);
++    expect(open).toHaveBeenCalledTimes(1);
++    expect(vi.mocked(open).mock.calls[0]?.[0]).toBe(f.input.deploymentFile);
++    expect(existsSync(f.directory)).toBe(false);
++  },
++);
++it.each(["mismatched-path", "invalid-path-type", "fixture-conflict"] as const)(
++  "refuses a nested deploymentFile %s before opening",
++  async (kind) => {
++    const f = fixture();
++    const bdptest =
++      kind === "mismatched-path"
++        ? { deploymentFile: path.join(f.root, "payload_sentinel") }
++        : kind === "invalid-path-type"
++          ? { deploymentFile: 1 }
++          : { fixture: "minimal", deploymentFile: f.input.deploymentFile };
++    await failure({ ...f.input, bdptest } as ReferenceDeploymentInput, "configuration");
++    expect(open).not.toHaveBeenCalled();
++  },
++);
+ it("delegates explicit RU schemas, ownership and endpoint multiplicity without an alternate compiler", async () => {
+   const f = fixture(),
+     body = ru(f.directory);
+@@ -339,6 +368,7 @@
+ });
+ it("snapshots caller settings before await and never rereads after file replacement", async () => {
+   const f = fixture("transactional");
++  const originalReadLimits = structuredClone(f.input.server.limits);
+   const pending = loadReferenceDeployment(f.input);
+   f.input.scope.url = "https://changed.test/";
+   f.input.server.host = "other";
+@@ -351,6 +381,8 @@
+   expect(referenceDeploymentState(handle)).toBe(state);
+   expect(handle.canonicalScope).toBe(scope);
+   expect(handle.listener.port).toBe(43210);
++  expect(handle.preflightReadLimits).toEqual(originalReadLimits);
++  expect(handle.preflightReadLimits).not.toEqual(f.input.server.limits);
+   expect(vi.mocked(open)).toHaveBeenCalledTimes(reads);
+   expect(Object.isFrozen(state.projectedInput)).toBe(true);
+ });
+@@ -565,6 +597,7 @@
+ it("rejects malformed UTF8, BOM, escaped duplicate names, lone surrogates and unsafe numbers without echo", async () => {
+   const f = fixture();
+   for (const text of [
++    Buffer.alloc(0),
+     Buffer.from([0xc3, 0x28]),
+     Buffer.from(`\ufeff${JSON.stringify(ru(f.directory))}`),
+     '{"format":1,"fo\\u0072mat":2}',
+--- a/packages/server/src/reference-deployment.ts
++++ b/packages/server/src/reference-deployment.ts
+@@ -37,7 +37,7 @@
+     readonly limits: ReferenceDeploymentReadLimits;
+     readonly internalFaultResource?: string;
+   };
+-  readonly bdptest?: { readonly fixture?: string };
++  readonly bdptest?: { readonly fixture?: string; readonly deploymentFile?: string };
+ }
+ interface PreparedSummary {
+   readonly format: "bdptest-reference-deployment-1";
+@@ -147,11 +147,22 @@
+   const profile = server.advertisedProfile;
+   if (profile !== "read-update" && profile !== "transactional") refuse("configuration");
+   if (Object.hasOwn(server, "internalFaultResource")) refuse("configuration");
+-  if (own.bdptest !== undefined && Object.hasOwn(fields(own.bdptest, [], ["fixture"]), "fixture"))
+-    refuse("configuration");
++  const deploymentFile = filePath(own.deploymentFile);
++  if (own.bdptest !== undefined) {
++    const bdptest = fields(own.bdptest, [], ["fixture", "deploymentFile"]);
++    if (
++      Object.hasOwn(bdptest, "fixture") ||
++      (Object.hasOwn(bdptest, "deploymentFile") && bdptest.deploymentFile !== deploymentFile)
++    )
++      refuse("configuration");
++  }
+   if (
+     typeof server.host !== "string" ||
+-    !(profile === "read-update" ? ["127.0.0.1", "::1"] : ["127.0.0.1"]).includes(server.host) ||
++    !(
++      profile === "read-update"
++        ? ["127.0.0.1", "::1"]
++        : [TRANSACTION_RUNTIME_DEFAULTS.transport.host]
++    ).includes(server.host) ||
+     !Number.isSafeInteger(server.port) ||
+     (server.port as number) < 1 ||
+     (server.port as number) > 65535
+@@ -172,7 +183,7 @@
+         };
+   if (!isDeepStrictEqual(limits, expected)) refuse("configuration");
+   return Object.freeze({
+-    deploymentFile: filePath(own.deploymentFile),
++    deploymentFile,
+     canonicalScope,
+     profile,
+     listener: Object.freeze({ host: server.host, port: server.port as number }),

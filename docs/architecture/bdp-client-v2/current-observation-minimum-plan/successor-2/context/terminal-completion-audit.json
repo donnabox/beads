@@ -1,0 +1,761 @@
+{
+  "kind": "independent-terminal-provenance-audit-not-findings-disposition",
+  "auditedAt": "2026-10-17T18:48:19.105983+00:00",
+  "reviewComplete": true,
+  "approvalInferred": false,
+  "head": "d9c3eb9e61b1982b9bd56aa77e4cdc114384e886",
+  "clean": true,
+  "exitCode": 0,
+  "elapsedSeconds": 1341.9023480410688,
+  "timeout": false,
+  "streamRecords": 6095,
+  "streamBytes": 3324356,
+  "streamSha256": "d639718f621023d8e5a182c8626392140333ea39069e2215276abc5dc2786dfe",
+  "parseErrors": 0,
+  "terminalResults": 1,
+  "terminalSchema": {
+    "subtype": "success",
+    "is_error": false,
+    "stop_reason": "end_turn",
+    "num_turns": 104,
+    "permission_denials": []
+  },
+  "terminalMappingExact": true,
+  "finalReviewSha256": "5978d2705666cae554f70dbf2c4d57d5bd75b53fe31c2e626d70a7d1f9c09842",
+  "terminalResultsSha256": "559e381043de9a0dfbc5162ec5a26138f5169d78e3a97df78a9081ef1df6af41",
+  "exitSha256": "1c88cbb13f86c9c5188ddf465e354ca19ec55d6f69bca6a9ec9230adf28f4980",
+  "sourceBeforeAfterByteEqual": true,
+  "sourceBeforeAfterEqual": true,
+  "currentSourceVerified": 679,
+  "contextsVerified": 19,
+  "artifactsVerified": 13,
+  "indexedEntriesVerified": 40,
+  "authorizedGateTransitionOnly": true,
+  "closedBindingSha256": "3e4505877503f596184cef2eafeb89ee4bd3d88fe5eada89837754c39b2290c5",
+  "releasedBindingSha256": "1981e1af80c454dc012eaf6a3b83671c04031107511411d2eb506c7a379a395b",
+  "rootReleaseSha256": "a87720c12393b20a05e31be1edd9d4eb1c8b69322491cb92abf6848fb9e22ede",
+  "pid": 58666,
+  "pgid": 58666,
+  "started": "2026-10-17T18:20:36.544565+00:00",
+  "sampledPids": [
+    58666
+  ],
+  "survivors": [],
+  "cleanupRequired": false,
+  "stderrBytes": 0,
+  "wrapperErrors": 0,
+  "actualToolCallsByName": {
+    "Read": 55,
+    "Grep": 47,
+    "Glob": 1
+  },
+  "successfulToolResultsByName": {
+    "Read": 55,
+    "Grep": 47,
+    "Glob": 1
+  },
+  "errorMarkedToolResults": 0,
+  "toolErrors": [],
+  "unreturnedTools": [],
+  "successfulReadPaths": [
+    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/current-observation-minimum-plan/claude-plan-review/context-provenance.json",
+    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/current-observation-minimum-plan/claude-plan-review/context/plan-successor-binding.json",
+    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/current-observation-minimum-plan/claude-plan-review/context/root-native-dispositions.json",
+    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/current-observation-minimum-plan/claude-plan-review/context/spec.md",
+    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/current-observation-minimum-plan/claude-plan-review/source-reanchor.json",
+    "/Users/dbox/repos/wt/vickie/vickie-scope-event-sse-opaque-minimum/apps/bdptest/src/transactional-collection-minimum-installed.test.ts",
+    "/Users/dbox/repos/wt/vickie/vickie-scope-event-sse-opaque-minimum/apps/bdptest/src/transactional-minimum-current-resource-installed.test.ts",
+    "/Users/dbox/repos/wt/vickie/vickie-scope-event-sse-opaque-minimum/apps/bdptest/src/transactional-minimum-receiving-installed.test.ts",
+    "/Users/dbox/repos/wt/vickie/vickie-scope-event-sse-opaque-minimum/docs/specs/bdp.md",
+    "/Users/dbox/repos/wt/vickie/vickie-scope-event-sse-opaque-minimum/packages/server/src/transaction-changefeed.test.ts",
+    "/Users/dbox/repos/wt/vickie/vickie-scope-event-sse-opaque-minimum/packages/server/src/transaction-consistency.test.ts",
+    "/Users/dbox/repos/wt/vickie/vickie-scope-event-sse-opaque-minimum/packages/server/src/transaction-consistency.ts",
+    "/Users/dbox/repos/wt/vickie/vickie-scope-event-sse-opaque-minimum/packages/server/src/transaction-event-sse.test.ts",
+    "/Users/dbox/repos/wt/vickie/vickie-scope-event-sse-opaque-minimum/packages/server/src/transaction-events.test.ts",
+    "/Users/dbox/repos/wt/vickie/vickie-scope-event-sse-opaque-minimum/packages/server/src/transaction-http.test.ts",
+    "/Users/dbox/repos/wt/vickie/vickie-scope-event-sse-opaque-minimum/packages/server/src/transaction-http.ts",
+    "/Users/dbox/repos/wt/vickie/vickie-scope-event-sse-opaque-minimum/packages/server/src/transaction-read.test.ts",
+    "/Users/dbox/repos/wt/vickie/vickie-scope-event-sse-opaque-minimum/packages/server/src/transaction-read.ts",
+    "/Users/dbox/repos/wt/vickie/vickie-scope-event-sse-opaque-minimum/packages/server/src/transaction-receipt-pages.test.ts",
+    "/Users/dbox/repos/wt/vickie/vickie-scope-event-sse-opaque-minimum/packages/server/src/transaction-service.test.ts",
+    "/Users/dbox/repos/wt/vickie/vickie-scope-event-sse-opaque-minimum/packages/server/src/transaction-service.ts",
+    "/Users/dbox/repos/wt/vickie/vickie-scope-event-sse-opaque-minimum/packages/server/src/transaction-snapshot.test.ts",
+    "/Users/dbox/repos/wt/vickie/vickie-scope-event-sse-opaque-minimum/packages/server/src/transaction-store.ts",
+    "/Users/dbox/repos/wt/vickie/vickie-scope-event-sse-opaque-minimum/vitest.config.ts"
+  ],
+  "successfulReadSourceFiles": 19,
+  "copiedContextsWithSuccessfulRead": [
+    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/current-observation-minimum-plan/claude-plan-review/context/plan-successor-binding.json",
+    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/current-observation-minimum-plan/claude-plan-review/context/root-native-dispositions.json",
+    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/current-observation-minimum-plan/claude-plan-review/context/spec.md"
+  ],
+  "copiedContextsWithoutSuccessfulRead": [
+    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/current-observation-minimum-plan/claude-plan-review/context/accepted-plan.md",
+    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/current-observation-minimum-plan/claude-plan-review/context/cold-client-audit.md",
+    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/current-observation-minimum-plan/claude-plan-review/context/consistency-audit.md",
+    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/current-observation-minimum-plan/claude-plan-review/context/design-current-snapshot.md",
+    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/current-observation-minimum-plan/claude-plan-review/context/design-original-plan-snapshot.md",
+    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/current-observation-minimum-plan/claude-plan-review/context/fixture-author-binding.json",
+    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/current-observation-minimum-plan/claude-plan-review/context/fixture-normalized-binding.json",
+    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/current-observation-minimum-plan/claude-plan-review/context/format-author-binding.json",
+    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/current-observation-minimum-plan/claude-plan-review/context/ledger-current-snapshot.md",
+    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/current-observation-minimum-plan/claude-plan-review/context/native-initial-review.md",
+    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/current-observation-minimum-plan/claude-plan-review/context/native-successor-closure.md",
+    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/current-observation-minimum-plan/claude-plan-review/context/original-author-binding.json",
+    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/current-observation-minimum-plan/claude-plan-review/context/plan-precision-delta.patch",
+    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/current-observation-minimum-plan/claude-plan-review/context/plan-precision-dispositions.json",
+    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/current-observation-minimum-plan/claude-plan-review/context/selection.json",
+    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/current-observation-minimum-plan/claude-plan-review/context/workload.json"
+  ],
+  "successfulAccessCalls": [
+    {
+      "id": "toolu_019gzATRo1fCbmrMWVP16U6g",
+      "tool": "Read",
+      "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/current-observation-minimum-plan/claude-plan-review/source-reanchor.json"
+    },
+    {
+      "id": "toolu_01179XXce9u6ovfF6xuSaEHN",
+      "tool": "Read",
+      "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/current-observation-minimum-plan/claude-plan-review/context-provenance.json"
+    },
+    {
+      "id": "toolu_01FTAVuKprKAYgnXzNvHwynb",
+      "tool": "Read",
+      "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/current-observation-minimum-plan/claude-plan-review/context/root-native-dispositions.json"
+    },
+    {
+      "id": "toolu_01Hv1kf3mSZbRaL6t85bJ3V4",
+      "tool": "Read",
+      "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/current-observation-minimum-plan/claude-plan-review/context/plan-successor-binding.json"
+    },
+    {
+      "id": "toolu_01JCLV6d46akv5ApLs1uXyqE",
+      "tool": "Read",
+      "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/current-observation-minimum-plan/claude-plan-review/context/spec.md",
+      "offset": 5780,
+      "limit": 120
+    },
+    {
+      "id": "toolu_01SDUmqsiTkV1GB2YMhjkDZk",
+      "tool": "Read",
+      "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/current-observation-minimum-plan/claude-plan-review/context/spec.md",
+      "offset": 5860,
+      "limit": 40
+    },
+    {
+      "id": "toolu_01LtXne46ZWedEKQbV7pBQi4",
+      "tool": "Read",
+      "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/current-observation-minimum-plan/claude-plan-review/context/spec.md",
+      "offset": 4615,
+      "limit": 60
+    },
+    {
+      "id": "toolu_01ApicT4PkJ8ha3YTz7WziWc",
+      "tool": "Read",
+      "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/current-observation-minimum-plan/claude-plan-review/context/spec.md",
+      "offset": 5118,
+      "limit": 30
+    },
+    {
+      "id": "toolu_01391bDsysvkrbFdZpoAfR5S",
+      "tool": "Read",
+      "path": "/Users/dbox/repos/wt/vickie/vickie-scope-event-sse-opaque-minimum/packages/server/src/transaction-consistency.ts"
+    },
+    {
+      "id": "toolu_01X9qGqbErA7j1eomT4tFSKZ",
+      "tool": "Grep",
+      "output_mode": "content"
+    },
+    {
+      "id": "toolu_014vDiVeE6Sp7kUSFA7xRe4p",
+      "tool": "Read",
+      "path": "/Users/dbox/repos/wt/vickie/vickie-scope-event-sse-opaque-minimum/packages/server/src/transaction-read.ts",
+      "offset": 1,
+      "limit": 330
+    },
+    {
+      "id": "toolu_01HrTod3rmynUHVQxYKWFpjx",
+      "tool": "Read",
+      "path": "/Users/dbox/repos/wt/vickie/vickie-scope-event-sse-opaque-minimum/packages/server/src/transaction-read.ts",
+      "offset": 330,
+      "limit": 120
+    },
+    {
+      "id": "toolu_01WPzik5dmd85YPFsCyy12aP",
+      "tool": "Grep",
+      "output_mode": "content"
+    },
+    {
+      "id": "toolu_016H8xBL7tHNafkFJHbiY5fG",
+      "tool": "Read",
+      "path": "/Users/dbox/repos/wt/vickie/vickie-scope-event-sse-opaque-minimum/packages/server/src/transaction-http.ts",
+      "offset": 380,
+      "limit": 330
+    },
+    {
+      "id": "toolu_01NtxQjcVWJmEjiLBNCsuFGH",
+      "tool": "Read",
+      "path": "/Users/dbox/repos/wt/vickie/vickie-scope-event-sse-opaque-minimum/packages/server/src/transaction-service.ts",
+      "offset": 230,
+      "limit": 120
+    },
+    {
+      "id": "toolu_019unruKjKT5VTfitwe8DN4F",
+      "tool": "Grep",
+      "output_mode": "content"
+    },
+    {
+      "id": "toolu_01Kxy7Jy4XyuND4sVStBHWLy",
+      "tool": "Grep",
+      "output_mode": "content"
+    },
+    {
+      "id": "toolu_018SSvztfaUsZFtGC9DT3DVg",
+      "tool": "Read",
+      "path": "/Users/dbox/repos/wt/vickie/vickie-scope-event-sse-opaque-minimum/packages/server/src/transaction-service.test.ts",
+      "offset": 1478,
+      "limit": 300
+    },
+    {
+      "id": "toolu_01CcvsfXhzsMx7Cxv8rjABjT",
+      "tool": "Read",
+      "path": "/Users/dbox/repos/wt/vickie/vickie-scope-event-sse-opaque-minimum/packages/server/src/transaction-service.ts",
+      "offset": 370,
+      "limit": 120
+    },
+    {
+      "id": "toolu_015KTSoXNSxnY6ioPrnwUQBB",
+      "tool": "Read",
+      "path": "/Users/dbox/repos/wt/vickie/vickie-scope-event-sse-opaque-minimum/packages/server/src/transaction-service.ts",
+      "offset": 570,
+      "limit": 120
+    },
+    {
+      "id": "toolu_01EwdPeGyJFsFFW8pPRSqQ9p",
+      "tool": "Read",
+      "path": "/Users/dbox/repos/wt/vickie/vickie-scope-event-sse-opaque-minimum/packages/server/src/transaction-service.ts",
+      "offset": 1,
+      "limit": 230
+    },
+    {
+      "id": "toolu_01X4w8VZ4KyKj8csXdvV6vcz",
+      "tool": "Read",
+      "path": "/Users/dbox/repos/wt/vickie/vickie-scope-event-sse-opaque-minimum/packages/server/src/transaction-store.ts",
+      "offset": 2240,
+      "limit": 130
+    },
+    {
+      "id": "toolu_01Xg4m233rccF5vEwcqmh9G5",
+      "tool": "Grep",
+      "path": "/Users/dbox/repos/wt/vickie/vickie-scope-event-sse-opaque-minimum/packages/server/src/transaction-store.ts",
+      "output_mode": "content"
+    },
+    {
+      "id": "toolu_01WvvcJJGu76YM7WbU9vEhg4",
+      "tool": "Read",
+      "path": "/Users/dbox/repos/wt/vickie/vickie-scope-event-sse-opaque-minimum/packages/server/src/transaction-receipt-pages.test.ts",
+      "offset": 1,
+      "limit": 140
+    },
+    {
+      "id": "toolu_018Cu19yUeekBCfEo8eEnj5E",
+      "tool": "Read",
+      "path": "/Users/dbox/repos/wt/vickie/vickie-scope-event-sse-opaque-minimum/packages/server/src/transaction-http.ts",
+      "offset": 60,
+      "limit": 330
+    },
+    {
+      "id": "toolu_01XLe81cszSj4vz38VfkT5FJ",
+      "tool": "Grep",
+      "path": "/Users/dbox/repos/wt/vickie/vickie-scope-event-sse-opaque-minimum/packages/server/src/transaction-http.test.ts",
+      "output_mode": "content"
+    },
+    {
+      "id": "toolu_01NKwK8eknPNsbckKZmFemjj",
+      "tool": "Read",
+      "path": "/Users/dbox/repos/wt/vickie/vickie-scope-event-sse-opaque-minimum/packages/server/src/transaction-http.test.ts",
+      "offset": 2897,
+      "limit": 185
+    },
+    {
+      "id": "toolu_01JKxbpCS8P4qoFiAuGCfiak",
+      "tool": "Grep",
+      "output_mode": "count"
+    },
+    {
+      "id": "toolu_0149J86eYrGPrkQkGU8q6gae",
+      "tool": "Grep",
+      "output_mode": "content"
+    },
+    {
+      "id": "toolu_01MovA76jwdTuraBc9afk4gx",
+      "tool": "Read",
+      "path": "/Users/dbox/repos/wt/vickie/vickie-scope-event-sse-opaque-minimum/apps/bdptest/src/transactional-minimum-current-resource-installed.test.ts",
+      "offset": 560,
+      "limit": 180
+    },
+    {
+      "id": "toolu_01BeA5tozHGhFxNiPVHs8WYf",
+      "tool": "Grep",
+      "path": "/Users/dbox/repos/wt/vickie/vickie-scope-event-sse-opaque-minimum/apps/bdptest/src/transactional-minimum-current-resource-installed.test.ts",
+      "output_mode": "content"
+    },
+    {
+      "id": "toolu_0193cLKVQkqqmy36FXLDFkMc",
+      "tool": "Grep",
+      "path": "/Users/dbox/repos/wt/vickie/vickie-scope-event-sse-opaque-minimum/scripts/transaction-installed-observation.mjs",
+      "output_mode": "content"
+    },
+    {
+      "id": "toolu_016kwqVEGeUeXaEAgLhXbAQa",
+      "tool": "Grep",
+      "output_mode": "content"
+    },
+    {
+      "id": "toolu_01MRZBQFHH5HbZuhaporm8Sw",
+      "tool": "Read",
+      "path": "/Users/dbox/repos/wt/vickie/vickie-scope-event-sse-opaque-minimum/apps/bdptest/src/transactional-minimum-current-resource-installed.test.ts",
+      "offset": 121,
+      "limit": 220
+    },
+    {
+      "id": "toolu_01Ri2UjvyLBNNFGRtnJgzV75",
+      "tool": "Grep",
+      "path": "/Users/dbox/repos/wt/vickie/vickie-scope-event-sse-opaque-minimum/apps/bdptest/src/transactional-collection-minimum-installed.test.ts",
+      "output_mode": "content"
+    },
+    {
+      "id": "toolu_01NF7QHagVFoUWBNsSgbJmwW",
+      "tool": "Read",
+      "path": "/Users/dbox/repos/wt/vickie/vickie-scope-event-sse-opaque-minimum/apps/bdptest/src/transactional-collection-minimum-installed.test.ts",
+      "offset": 860,
+      "limit": 140
+    },
+    {
+      "id": "toolu_018D1W74k2LUjjQ4hQuazTbU",
+      "tool": "Read",
+      "path": "/Users/dbox/repos/wt/vickie/vickie-scope-event-sse-opaque-minimum/apps/bdptest/src/transactional-collection-minimum-installed.test.ts",
+      "offset": 1440,
+      "limit": 135
+    },
+    {
+      "id": "toolu_01VcwqtaeM7k5SMfWbzbQJcb",
+      "tool": "Read",
+      "path": "/Users/dbox/repos/wt/vickie/vickie-scope-event-sse-opaque-minimum/packages/server/src/transaction-http.test.ts",
+      "offset": 5580,
+      "limit": 150
+    },
+    {
+      "id": "toolu_01P7oRdQzxXX7xVKentsjvV9",
+      "tool": "Read",
+      "path": "/Users/dbox/repos/wt/vickie/vickie-scope-event-sse-opaque-minimum/packages/server/src/transaction-http.test.ts",
+      "offset": 4932,
+      "limit": 140
+    },
+    {
+      "id": "toolu_015JDvxe52ieYB5aumes57dy",
+      "tool": "Grep",
+      "path": "/Users/dbox/repos/wt/vickie/vickie-scope-event-sse-opaque-minimum/packages/server/src/transaction-read.test.ts",
+      "output_mode": "content"
+    },
+    {
+      "id": "toolu_018JbiQEeeUZxKb8AffXqCtb",
+      "tool": "Read",
+      "path": "/Users/dbox/repos/wt/vickie/vickie-scope-event-sse-opaque-minimum/packages/server/src/transaction-read.test.ts",
+      "offset": 1254,
+      "limit": 180
+    },
+    {
+      "id": "toolu_01XMEJQYwdJXgDvDfBosWbmD",
+      "tool": "Read",
+      "path": "/Users/dbox/repos/wt/vickie/vickie-scope-event-sse-opaque-minimum/packages/server/src/transaction-read.test.ts",
+      "offset": 1495,
+      "limit": 225
+    },
+    {
+      "id": "toolu_01YC8XXxZGkoLMRVTKKaYEBX",
+      "tool": "Read",
+      "path": "/Users/dbox/repos/wt/vickie/vickie-scope-event-sse-opaque-minimum/packages/server/src/transaction-read.test.ts",
+      "offset": 2490,
+      "limit": 135
+    },
+    {
+      "id": "toolu_012bS478h3UEhRagWKT46AWn",
+      "tool": "Read",
+      "path": "/Users/dbox/repos/wt/vickie/vickie-scope-event-sse-opaque-minimum/packages/server/src/transaction-consistency.test.ts",
+      "offset": 96,
+      "limit": 145
+    },
+    {
+      "id": "toolu_014aESj46Ru1YKRadVcPQX9E",
+      "tool": "Read",
+      "path": "/Users/dbox/repos/wt/vickie/vickie-scope-event-sse-opaque-minimum/packages/server/src/transaction-store.ts",
+      "offset": 930,
+      "limit": 60
+    },
+    {
+      "id": "toolu_018Ybr2Vaprb6nx9iqs47nQx",
+      "tool": "Read",
+      "path": "/Users/dbox/repos/wt/vickie/vickie-scope-event-sse-opaque-minimum/packages/server/src/transaction-store.ts",
+      "offset": 1545,
+      "limit": 70
+    },
+    {
+      "id": "toolu_01Qht3aGDedk6KnYcX416usr",
+      "tool": "Grep",
+      "output_mode": "files_with_matches"
+    },
+    {
+      "id": "toolu_01XuPGwGsgUwpT4vCbjPq3eA",
+      "tool": "Grep",
+      "output_mode": "content"
+    },
+    {
+      "id": "toolu_01349tm5rwRddHKXvR7LfjLQ",
+      "tool": "Grep",
+      "output_mode": "content"
+    },
+    {
+      "id": "toolu_014YPNQy1WC5kZmiZLVzCR5Z",
+      "tool": "Grep",
+      "path": "/Users/dbox/repos/wt/vickie/vickie-scope-event-sse-opaque-minimum/packages/server/src/transaction-service.test.ts",
+      "output_mode": "content"
+    },
+    {
+      "id": "toolu_01AHxqJ6rQensRs5eLj6zMVy",
+      "tool": "Read",
+      "path": "/Users/dbox/repos/wt/vickie/vickie-scope-event-sse-opaque-minimum/packages/server/src/transaction-service.test.ts",
+      "offset": 2270,
+      "limit": 120
+    },
+    {
+      "id": "toolu_0194qHKv34BawVXXaGijmghb",
+      "tool": "Read",
+      "path": "/Users/dbox/repos/wt/vickie/vickie-scope-event-sse-opaque-minimum/packages/server/src/transaction-service.test.ts",
+      "offset": 930,
+      "limit": 105
+    },
+    {
+      "id": "toolu_01Ke1EFGEuYQbBsCmuoHBpa6",
+      "tool": "Grep",
+      "output_mode": "count"
+    },
+    {
+      "id": "toolu_01EQuT5MrGmMantvoknihXKc",
+      "tool": "Grep",
+      "path": "/Users/dbox/repos/wt/vickie/vickie-scope-event-sse-opaque-minimum/apps/bdptest/src/transactional-snapshot-installed.test.ts",
+      "output_mode": "content"
+    },
+    {
+      "id": "toolu_01TK39wsdSmko6rpE4VAKp5j",
+      "tool": "Grep",
+      "path": "/Users/dbox/repos/wt/vickie/vickie-scope-event-sse-opaque-minimum/apps/bdptest/src/transactional-receipt-missing-context-installed.test.ts",
+      "output_mode": "content"
+    },
+    {
+      "id": "toolu_014W8XDBxhBpikcqVWgWGchH",
+      "tool": "Grep",
+      "output_mode": "content"
+    },
+    {
+      "id": "toolu_01XtjaFwHpeuBqPxAJ93omDv",
+      "tool": "Read",
+      "path": "/Users/dbox/repos/wt/vickie/vickie-scope-event-sse-opaque-minimum/packages/server/src/transaction-http.test.ts",
+      "offset": 1746,
+      "limit": 60
+    },
+    {
+      "id": "toolu_01BDDNiveGv2uSywiSvFTVm6",
+      "tool": "Read",
+      "path": "/Users/dbox/repos/wt/vickie/vickie-scope-event-sse-opaque-minimum/packages/server/src/transaction-http.test.ts",
+      "offset": 5870,
+      "limit": 135
+    },
+    {
+      "id": "toolu_013SZHk8LSXERuqFgGRP9fHu",
+      "tool": "Read",
+      "path": "/Users/dbox/repos/wt/vickie/vickie-scope-event-sse-opaque-minimum/packages/server/src/transaction-http.test.ts",
+      "offset": 3140,
+      "limit": 135
+    },
+    {
+      "id": "toolu_018oR8kVNk4sNCqFVGztCBLh",
+      "tool": "Read",
+      "path": "/Users/dbox/repos/wt/vickie/vickie-scope-event-sse-opaque-minimum/packages/server/src/transaction-http.test.ts",
+      "offset": 5760,
+      "limit": 110
+    },
+    {
+      "id": "toolu_01SnDPk1D2Gbf89QXCYinxqF",
+      "tool": "Read",
+      "path": "/Users/dbox/repos/wt/vickie/vickie-scope-event-sse-opaque-minimum/packages/server/src/transaction-snapshot.test.ts",
+      "offset": 1440,
+      "limit": 120
+    },
+    {
+      "id": "toolu_01NpXp1zLXpYwVmtiH2mwoJb",
+      "tool": "Grep",
+      "path": "/Users/dbox/repos/wt/vickie/vickie-scope-event-sse-opaque-minimum/apps/bdptest/src/transactional-minimum-receiving-installed.test.ts",
+      "output_mode": "content"
+    },
+    {
+      "id": "toolu_01D1PZ7n9Kh36v9KVbKRaZwZ",
+      "tool": "Read",
+      "path": "/Users/dbox/repos/wt/vickie/vickie-scope-event-sse-opaque-minimum/apps/bdptest/src/transactional-minimum-receiving-installed.test.ts",
+      "offset": 340,
+      "limit": 120
+    },
+    {
+      "id": "toolu_01B1aV5hM7sRpYtRNtNcjo8t",
+      "tool": "Read",
+      "path": "/Users/dbox/repos/wt/vickie/vickie-scope-event-sse-opaque-minimum/apps/bdptest/src/transactional-minimum-receiving-installed.test.ts",
+      "offset": 90,
+      "limit": 80
+    },
+    {
+      "id": "toolu_019tvVt1hGUbBKjuqM3U7anQ",
+      "tool": "Grep",
+      "path": "/Users/dbox/repos/wt/vickie/vickie-scope-event-sse-opaque-minimum/apps/bdptest/src/transactional-minimum-receiving-installed.test.ts",
+      "output_mode": "content"
+    },
+    {
+      "id": "toolu_01XCj7HWae6fZU73HJGNp11k",
+      "tool": "Read",
+      "path": "/Users/dbox/repos/wt/vickie/vickie-scope-event-sse-opaque-minimum/packages/server/src/transaction-changefeed.test.ts",
+      "offset": 1060,
+      "limit": 130
+    },
+    {
+      "id": "toolu_01VfcdNxW3zEYA2WaZ7d7zH2",
+      "tool": "Read",
+      "path": "/Users/dbox/repos/wt/vickie/vickie-scope-event-sse-opaque-minimum/packages/server/src/transaction-changefeed.test.ts",
+      "offset": 1490,
+      "limit": 120
+    },
+    {
+      "id": "toolu_01V1yX3F1EsfXFEeGqBgDdzJ",
+      "tool": "Read",
+      "path": "/Users/dbox/repos/wt/vickie/vickie-scope-event-sse-opaque-minimum/packages/server/src/transaction-events.test.ts",
+      "offset": 1336,
+      "limit": 130
+    },
+    {
+      "id": "toolu_01PoxdSoC9779iF6p7gwp2uD",
+      "tool": "Read",
+      "path": "/Users/dbox/repos/wt/vickie/vickie-scope-event-sse-opaque-minimum/packages/server/src/transaction-event-sse.test.ts",
+      "offset": 1030,
+      "limit": 150
+    },
+    {
+      "id": "toolu_019LqPnoqtgRBun8tdz165Rj",
+      "tool": "Grep",
+      "path": "/Users/dbox/repos/wt/vickie/vickie-scope-event-sse-opaque-minimum/packages/server/src/transaction-sse.test.ts",
+      "output_mode": "content"
+    },
+    {
+      "id": "toolu_01TZSnHeMdcdPUVapatb4hAW",
+      "tool": "Grep",
+      "path": "/Users/dbox/repos/wt/vickie/vickie-scope-event-sse-opaque-minimum/apps/bdptest/src/transactional-minimum-receiving-installed.test.ts",
+      "output_mode": "content"
+    },
+    {
+      "id": "toolu_015JqNgY4AeTkxDfY45E9vDY",
+      "tool": "Read",
+      "path": "/Users/dbox/repos/wt/vickie/vickie-scope-event-sse-opaque-minimum/apps/bdptest/src/transactional-minimum-receiving-installed.test.ts",
+      "offset": 494,
+      "limit": 80
+    },
+    {
+      "id": "toolu_01FYZDXiWzRJgrKik9MpPynk",
+      "tool": "Read",
+      "path": "/Users/dbox/repos/wt/vickie/vickie-scope-event-sse-opaque-minimum/packages/server/src/transaction-read.test.ts",
+      "offset": 619,
+      "limit": 130
+    },
+    {
+      "id": "toolu_01MpaJnoXvth1JfpG4UQmNGR",
+      "tool": "Read",
+      "path": "/Users/dbox/repos/wt/vickie/vickie-scope-event-sse-opaque-minimum/packages/server/src/transaction-http.test.ts",
+      "offset": 2051,
+      "limit": 70
+    },
+    {
+      "id": "toolu_0113ZyK5LvdFsaKwiw6cN7NT",
+      "tool": "Read",
+      "path": "/Users/dbox/repos/wt/vickie/vickie-scope-event-sse-opaque-minimum/packages/server/src/transaction-http.test.ts",
+      "offset": 2174,
+      "limit": 85
+    },
+    {
+      "id": "toolu_013tEGEGKXMHuv7YX8HwsVm5",
+      "tool": "Read",
+      "path": "/Users/dbox/repos/wt/vickie/vickie-scope-event-sse-opaque-minimum/packages/server/src/transaction-http.test.ts",
+      "offset": 3959,
+      "limit": 75
+    },
+    {
+      "id": "toolu_01MEbp1iFA6kCAmubB3A5nTp",
+      "tool": "Grep",
+      "path": "/Users/dbox/repos/wt/vickie/vickie-scope-event-sse-opaque-minimum/packages/server/src/transaction-http.test.ts",
+      "offset": 0,
+      "output_mode": "content"
+    },
+    {
+      "id": "toolu_011jrJHH1YGj17zzm6WRhHg7",
+      "tool": "Grep",
+      "path": "/Users/dbox/repos/wt/vickie/vickie-scope-event-sse-opaque-minimum/packages/server/src/transaction-http.test.ts",
+      "output_mode": "content"
+    },
+    {
+      "id": "toolu_01CJDng8dc9UP8Yk2RougoSk",
+      "tool": "Grep",
+      "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/current-observation-minimum-plan/claude-plan-review/context/spec.md",
+      "output_mode": "content"
+    },
+    {
+      "id": "toolu_013uqaimc7M2Dny67P8SYSyF",
+      "tool": "Grep",
+      "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/current-observation-minimum-plan/claude-plan-review/context/spec.md",
+      "output_mode": "content"
+    },
+    {
+      "id": "toolu_01DryCGdTzx15gpU6wXfVcff",
+      "tool": "Grep",
+      "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/current-observation-minimum-plan/claude-plan-review/context/spec.md",
+      "output_mode": "content"
+    },
+    {
+      "id": "toolu_015ZMoQ7SQw2fLCY1EWtHfRa",
+      "tool": "Grep",
+      "output_mode": "content"
+    },
+    {
+      "id": "toolu_01JqJcUFCeonUMQdFrPVL2z8",
+      "tool": "Grep",
+      "path": "/Users/dbox/repos/wt/vickie/vickie-scope-event-sse-opaque-minimum/packages/server/src/transaction-http.test.ts",
+      "output_mode": "content"
+    },
+    {
+      "id": "toolu_01YEsBoSMrMPjs5J8z9XRu7e",
+      "tool": "Grep",
+      "path": "/Users/dbox/repos/wt/vickie/vickie-scope-event-sse-opaque-minimum/packages/server/src/transaction-service.test.ts",
+      "output_mode": "content"
+    },
+    {
+      "id": "toolu_01EsjD6Mo9iQtQyrFcG8pCXY",
+      "tool": "Read",
+      "path": "/Users/dbox/repos/wt/vickie/vickie-scope-event-sse-opaque-minimum/packages/server/src/transaction-http.test.ts",
+      "offset": 1,
+      "limit": 32
+    },
+    {
+      "id": "toolu_017nz4tqMdo5Qfzj3cNKJt2e",
+      "tool": "Grep",
+      "path": "/Users/dbox/repos/wt/vickie/vickie-scope-event-sse-opaque-minimum/packages/server/src/transaction-http.test.ts",
+      "output_mode": "content"
+    },
+    {
+      "id": "toolu_01V78XboEwJX48ByJfpVyTpj",
+      "tool": "Grep",
+      "path": "/Users/dbox/repos/wt/vickie/vickie-scope-event-sse-opaque-minimum/packages/server/src/transaction-service.test.ts",
+      "output_mode": "content"
+    },
+    {
+      "id": "toolu_01UiJYdzciRkd9KnM7EiC5BL",
+      "tool": "Grep",
+      "path": "/Users/dbox/repos/wt/vickie/vickie-scope-event-sse-opaque-minimum/packages/server/src/transaction-receipt-pages.test.ts",
+      "output_mode": "content"
+    },
+    {
+      "id": "toolu_01CN2uJdRn9ofCQqQC33YMcZ",
+      "tool": "Grep",
+      "path": "/Users/dbox/repos/wt/vickie/vickie-scope-event-sse-opaque-minimum/packages/server/src/transaction-consistency.test.ts",
+      "output_mode": "content"
+    },
+    {
+      "id": "toolu_01SfvkteYzHDucTx9fPKvU5Z",
+      "tool": "Grep",
+      "path": "/Users/dbox/repos/wt/vickie/vickie-scope-event-sse-opaque-minimum/packages/server/src/transaction-events.test.ts",
+      "output_mode": "content"
+    },
+    {
+      "id": "toolu_01FquWisxfjhr6pkMXXhQdve",
+      "tool": "Grep",
+      "path": "/Users/dbox/repos/wt/vickie/vickie-scope-event-sse-opaque-minimum/packages/server/src/transaction-event-sse.test.ts",
+      "output_mode": "content"
+    },
+    {
+      "id": "toolu_01QKqpRqUEpHNZCJ66qWqhr3",
+      "tool": "Grep",
+      "path": "/Users/dbox/repos/wt/vickie/vickie-scope-event-sse-opaque-minimum/packages/server/src/transaction-changefeed.test.ts",
+      "output_mode": "content"
+    },
+    {
+      "id": "toolu_01YBSFBNkb1SyJFrV3VwZ6sm",
+      "tool": "Grep",
+      "path": "/Users/dbox/repos/wt/vickie/vickie-scope-event-sse-opaque-minimum/packages/server/src/transaction-snapshot.test.ts",
+      "output_mode": "content"
+    },
+    {
+      "id": "toolu_01DJrxjTJfCPRAx8WxfSw936",
+      "tool": "Grep",
+      "path": "/Users/dbox/repos/wt/vickie/vickie-scope-event-sse-opaque-minimum/apps/bdptest/src/transactional-minimum-receiving-installed.test.ts",
+      "output_mode": "content"
+    },
+    {
+      "id": "toolu_01JajKfZqHynnjDdZTBpLHA6",
+      "tool": "Grep",
+      "path": "/Users/dbox/repos/wt/vickie/vickie-scope-event-sse-opaque-minimum/apps/bdptest/src/transactional-minimum-receiving-installed.test.ts",
+      "offset": 120,
+      "output_mode": "content"
+    },
+    {
+      "id": "toolu_01LFTDr1WPoR1k9qnPQSeEWt",
+      "tool": "Grep",
+      "path": "/Users/dbox/repos/wt/vickie/vickie-scope-event-sse-opaque-minimum/apps/bdptest/src/transactional-minimum-receiving-installed.test.ts",
+      "output_mode": "content"
+    },
+    {
+      "id": "toolu_01Xgf9iFNkxcpJxoE2aoHk7q",
+      "tool": "Grep",
+      "output_mode": "content"
+    },
+    {
+      "id": "toolu_01RttjTfHpJVHCHS2kWcfRep",
+      "tool": "Glob"
+    },
+    {
+      "id": "toolu_01SymaeU7q1qve98upqvPMza",
+      "tool": "Grep",
+      "path": "/Users/dbox/repos/wt/vickie/vickie-scope-event-sse-opaque-minimum/packages/server/package.json",
+      "output_mode": "content"
+    },
+    {
+      "id": "toolu_01P8FstgzT2KGfRZPSQtQpVD",
+      "tool": "Read",
+      "path": "/Users/dbox/repos/wt/vickie/vickie-scope-event-sse-opaque-minimum/vitest.config.ts"
+    },
+    {
+      "id": "toolu_018t7HNckmPtobC2TjzicfT5",
+      "tool": "Grep",
+      "path": "/Users/dbox/repos/wt/vickie/vickie-scope-event-sse-opaque-minimum/package.json",
+      "output_mode": "content"
+    },
+    {
+      "id": "toolu_01SxET2rvM3QgoD4hamPVKD8",
+      "tool": "Read",
+      "path": "/Users/dbox/repos/wt/vickie/vickie-scope-event-sse-opaque-minimum/docs/specs/bdp.md",
+      "offset": 5834,
+      "limit": 20
+    },
+    {
+      "id": "toolu_01MRdm5Jx5L7cH3vDJm7SaDP",
+      "tool": "Read",
+      "path": "/Users/dbox/repos/wt/vickie/vickie-scope-event-sse-opaque-minimum/docs/specs/bdp.md",
+      "offset": 4653,
+      "limit": 10
+    }
+  ],
+  "accessLimits": "Read success records prove listed paths/ranges were served, not every byte inspected or understood. Grep proves search activity, not a full-file read. Full accepted plan/selection/workload were also inline in prompt. Copied contexts not directly Read are not advertised as inspected. No source coverage or product correctness verdict follows.",
+  "findingsDisposition": "Not performed; root independently owns substantive findings and release."
+}

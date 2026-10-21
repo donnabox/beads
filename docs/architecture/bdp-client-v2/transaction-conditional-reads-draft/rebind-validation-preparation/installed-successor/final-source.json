@@ -1,0 +1,42 @@
+{
+  "workspace": "/Users/dbox/repos/wt/vickie/vickie-transaction-conditional-reads",
+  "branch": "codex/vickie-transaction-conditional-reads",
+  "head": "8ee4d86cadc9a1c79a9656cc8b106f34712b3ade",
+  "tree": "fb0cc3ac06be798fe6fe8ab69a1ad78ac5964257",
+  "files": {
+    "packages/conformance/test-support/transactional/manifest-v1.json": {
+      "sha256": "bbb7def1bf11e1d14efbcb369e6a7fae6eb5aff01f483f8e99f7443ce9a6ee73",
+      "new": false
+    },
+    "packages/conformance/test-support/transactional/coverage-v1.json": {
+      "sha256": "a2c620ce489257f4cd425207195af89b4e2aac238333cf6e7d21ce629d98a238",
+      "new": false
+    },
+    "packages/conformance/src/transactional-cumulative.test.ts": {
+      "sha256": "5ecfa916baca16b24c9c57b5f52e6c2cb5fa771d8cc6b5ea412ba570ba796993",
+      "new": false
+    },
+    "apps/bdptest/src/transactional-matrix.test.ts": {
+      "sha256": "95e07ead41f9cb39087a155e87cad22998d92cd3967cb9c3c446568ff6139bc8",
+      "new": false
+    }
+  },
+  "diffSha256": "cf8e895dea0d37d0bbf504a584cf5f213ab811089d4cc9aa32cba5368b910423",
+  "status": "",
+  "scope": "Exact reviewed four-file local candidate; installed validation pending",
+  "predecessorSourceBinding": {
+    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-conditional-reads-draft/rebind-correction/source-binding.json",
+    "sha256": "1095d0093a729c9138c22c6419da528fefbece42be5707dd16db1238e91d61ee"
+  },
+  "acceptedPlanSha256": "740147fdc6c31a8b99dace27c7c4bb73eddc4b0ba37bb7d44f903f16a1509f74",
+  "rootAcceptanceSha256": "fcc261bba7b3690f3755e73e2b8343c481f882a6dff21cb4937f3b9db3aa63dc",
+  "correctionSha256": "82b8040ca719db7e9da6335868adfe49ae742d1feee2207deff6fe32cbbe8d5e",
+  "specSha256": "67772742d7d08f48c12196e9789f1859ad2d0e19f133ea65e197b049361f84f8",
+  "productExecuted": false,
+  "testsExecuted": false,
+  "fullCouncilAccepted": true,
+  "parents": [
+    "2dfd2c6cc84a28b1dd336f4184c1a5f910ce8a96"
+  ],
+  "diffBase": "2dfd2c6cc84a28b1dd336f4184c1a5f910ce8a96"
+}

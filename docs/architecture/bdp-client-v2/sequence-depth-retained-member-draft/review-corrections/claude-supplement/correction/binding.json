@@ -1,0 +1,47 @@
+{
+  "scope": "correction",
+  "base": "df80f8cb86b7763bc7bb005492e43d8840527045",
+  "ownedPaths": [
+    "packages/server/src/transaction-batch.ts",
+    "packages/server/src/transaction-http.ts",
+    "packages/server/src/transaction-set.test.ts",
+    "packages/server/src/transaction-sequence.test.ts",
+    "packages/server/src/transaction-http.test.ts",
+    "apps/bdptest/src/transactional-sequence-depth-installed.test.ts",
+    "docs/design/transaction-implementation-progress.md"
+  ],
+  "newPaths": [
+    "apps/bdptest/src/transactional-sequence-depth-installed.test.ts"
+  ],
+  "sourceHashes": {
+    "packages/server/src/transaction-batch.ts": "0f67235a7fdadf3ae342695b6f8eee795ad51b70e6507dcb7d70ec8848ba9836",
+    "packages/server/src/transaction-http.ts": "0a616e27da60c746be738821008e7dab6511e31325e9442418b4bbece9be40f8",
+    "packages/server/src/transaction-set.test.ts": "494f7536fac5fd452521902301d943865e40b20895fa16e9c0a3beb1b4481dc9",
+    "packages/server/src/transaction-sequence.test.ts": "687f1a9c10277d178db187b2c8efefe07d099755c473db4c2e7d87e4d7be6a4b",
+    "packages/server/src/transaction-http.test.ts": "5e094d09beaba41dbf5b0f56799f5d9b91d24c38684ef78a47f8a11e0880ad2f",
+    "apps/bdptest/src/transactional-sequence-depth-installed.test.ts": "8ad2c796bfb22375584fc6b348d494ece512490f8a59ef72a74fb34de3f2fca1",
+    "docs/design/transaction-implementation-progress.md": "d5c93b26773d8661d91b5d1a4f9950bfdbe6ae6d89fb5d10df3d445073bfd7d1"
+  },
+  "dependencyHashes": {
+    "packages/protocol/src/json-admission.ts": "fad4bd5159e7ff9a309d9c094c0c8beb950593a60d69f088971cb9bb6b84e76e",
+    "packages/protocol/src/read-update-values.ts": "d1fdbc660d5e2c009275c152bdcebda46031700920aa03bfea89f39564c89de2",
+    "packages/protocol/src/read-update-preflight.ts": "e9cea06515c1b7b5ffbfc275b82e9759e9083daa29c5daaab4485c161970275f",
+    "scripts/transaction-installed-observation.mjs": "6f772f3776d3c3effa788676d853cc2932a6ee59ad63ac3338ad1b487408914b"
+  },
+  "inputHashes": {
+    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/sequence-depth-retained-member-draft/review-corrections/final-source-binding.json": "b937a736c8b4b16c10346b0f8d998640fe31415a6ee79a10188945cb4324c81a",
+    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/sequence-depth-retained-member-draft/review-corrections/proposed-source.patch": "478ffa8fc4f6ede585c8bf58c7bd28af84f61c362a3d5d0fcc1d339a98c24aba",
+    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/sequence-depth-retained-member-draft/review-corrections/control-provenance-addendum.md": "ecd7e7188153e379b362c83441f9f1f3737797860d2bc6ed694c6943a1c86a48",
+    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/sequence-depth-retained-member-draft/review-corrections/native-findings-disposition.md": "f9de9b1eab921a5d50cd7d7ce61d462dc61937cba1a308dfe192bc958d063abb",
+    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/sequence-depth-retained-member-draft/review-corrections/validation/outcome.json": "0bac937f9ab052eb8f59a158a70915f868346d056ac33aa29b2d2cb6dec69a76",
+    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/sequence-depth-retained-member-draft/source-validation-lint-successor/outcome.md": "423114077ab267a1e5a5a6c9ffaeecfc2e20d110f29d10ba41b84b314b2ee2ea",
+    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/sequence-depth-retained-member-draft/claude-split-code/production/stdout.txt": "d1924318a87abb636c0e144da32bb2e14fdca18c5867a862d34554e7ceac1a4f",
+    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/sequence-depth-retained-member-draft/claude-split-code/evidence/stdout.txt": "829e5bbc5dc985592571c0999287616c2132d43569338c062173dd40a3a4ccd8",
+    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/sequence-depth-retained-member-draft/review-corrections/claude-supplement/correction/excerpt-inventory.json": "4530298bfa0aeb97312943bfd671122e62311aad0a230aa5c244551341072995"
+  },
+  "patchSha256": "ff0c11a42e6ed4d1e32edf3d58e982e480e3c904cedce16a161970cf7837040f",
+  "promptSha256": "dc8ccca593e5dd54ff6dda0477831cddca8920e01e359932761c8c130a48c62b",
+  "timeoutSeconds": 900,
+  "sourceBindingSha256": "b937a736c8b4b16c10346b0f8d998640fe31415a6ee79a10188945cb4324c81a",
+  "release": "CLOSED; root-release.json absent; actual runner refuses without root record"
+}

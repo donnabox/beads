@@ -1,0 +1,109 @@
+[
+  {
+    "id": "offline-setup",
+    "argv": [
+      "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+      "/Users/dbox/.cache/node/corepack/v1/pnpm/11.20.0/bin/pnpm.cjs",
+      "install",
+      "--offline",
+      "--frozen-lockfile"
+    ],
+    "exitCode": 0,
+    "timeout": false,
+    "pid": 44587,
+    "started": "2026-10-15T03:13:07.585668+00:00",
+    "ended": "2026-10-15T03:13:08.263746+00:00",
+    "logSHA256": "4f92986ae81106d480280a333187b139a28ab510faf8f8a62842791249387f80",
+    "sourceUnchanged": true
+  },
+  {
+    "id": "typecheck",
+    "argv": [
+      "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+      "/Users/dbox/.cache/node/corepack/v1/pnpm/11.20.0/bin/pnpm.cjs",
+      "typecheck"
+    ],
+    "exitCode": 0,
+    "timeout": false,
+    "pid": 44595,
+    "started": "2026-10-15T03:13:08.267929+00:00",
+    "ended": "2026-10-15T03:13:09.870656+00:00",
+    "logSHA256": "91d54ffbee73a3ac72294d090e58d77745f8b93edbf94b862807698273a6505a",
+    "sourceUnchanged": true
+  },
+  {
+    "id": "build",
+    "argv": [
+      "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+      "/Users/dbox/.cache/node/corepack/v1/pnpm/11.20.0/bin/pnpm.cjs",
+      "build"
+    ],
+    "exitCode": 0,
+    "timeout": false,
+    "pid": 44632,
+    "started": "2026-10-15T03:13:09.871299+00:00",
+    "ended": "2026-10-15T03:13:10.677574+00:00",
+    "logSHA256": "232dac5e840e45b3bb06e6e04249b5241f2e1b4f6c797a22c046d916302ac208",
+    "sourceUnchanged": true
+  },
+  {
+    "id": "format-check",
+    "argv": [
+      "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+      "/Users/dbox/.cache/node/corepack/v1/pnpm/11.20.0/bin/pnpm.cjs",
+      "format:check"
+    ],
+    "exitCode": 0,
+    "timeout": false,
+    "pid": 44720,
+    "started": "2026-10-15T03:13:10.678366+00:00",
+    "ended": "2026-10-15T03:13:12.174271+00:00",
+    "logSHA256": "75bdaffbf281d65654ef89c2dba59fa843378a8a38a5247a85acf02b362139c5",
+    "sourceUnchanged": true
+  },
+  {
+    "id": "lint",
+    "argv": [
+      "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+      "/Users/dbox/.cache/node/corepack/v1/pnpm/11.20.0/bin/pnpm.cjs",
+      "lint"
+    ],
+    "exitCode": 0,
+    "timeout": false,
+    "pid": 44749,
+    "started": "2026-10-15T03:13:12.174950+00:00",
+    "ended": "2026-10-15T03:13:12.654975+00:00",
+    "logSHA256": "679af11d07b5804071e37441a6ed019aaa3142168f896635456a60648ba16915",
+    "sourceUnchanged": true
+  },
+  {
+    "id": "boundaries",
+    "argv": [
+      "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+      "/Users/dbox/.cache/node/corepack/v1/pnpm/11.20.0/bin/pnpm.cjs",
+      "check:boundaries"
+    ],
+    "exitCode": 0,
+    "timeout": false,
+    "pid": 44779,
+    "started": "2026-10-15T03:13:12.655887+00:00",
+    "ended": "2026-10-15T03:13:13.220302+00:00",
+    "logSHA256": "53f4cd856bde25513486a59799c5a05e0650fbb756bf1580fb07e56c2fdeeef3",
+    "sourceUnchanged": true
+  },
+  {
+    "id": "read-seal",
+    "argv": [
+      "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+      "/Users/dbox/.cache/node/corepack/v1/pnpm/11.20.0/bin/pnpm.cjs",
+      "evidence:verify"
+    ],
+    "exitCode": 0,
+    "timeout": false,
+    "pid": 44802,
+    "started": "2026-10-15T03:13:13.224049+00:00",
+    "ended": "2026-10-15T03:13:13.545360+00:00",
+    "logSHA256": "79749014f712bd5d838b93088c70fef4cca1ae63d7738a613716ab37fa1295ba",
+    "sourceUnchanged": true
+  }
+]

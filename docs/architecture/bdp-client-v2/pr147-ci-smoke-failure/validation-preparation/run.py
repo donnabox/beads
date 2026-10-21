@@ -1,0 +1,120 @@
+"""Closed one-file smoke repair validation; adapted from PR147 validation-final."""
+from pathlib import Path
+import os,sys,json,time,signal,subprocess,hashlib,re
+E=Path(__file__).resolve().parent
+W=Path('/Users/dbox/repos/wt/vickie/vickie-fresh-depth-serving')
+G=E.parents[1]/'guarded-action.py'
+sha=lambda b:hashlib.sha256(b).hexdigest()
+def need(ok,message):
+ if not ok:raise RuntimeError(message)
+def git(*a):return subprocess.check_output(['git',*a],cwd=W,text=True,timeout=10)
+def sources():return {p:sha((W/p).read_bytes()) for p in git('ls-files').splitlines()}
+def artifacts():
+ result={}
+ for group in ['packages','apps']:
+  for package in sorted((W/group).iterdir()):
+   if not package.is_dir():continue
+   dist=package/'dist';need(dist.is_dir(),'Missing built dist '+str(dist))
+   for f in sorted(dist.rglob('*')):
+    need(not f.is_symlink(),'Linked build artifact')
+    if f.is_file():result[str(f.relative_to(W))]=sha(f.read_bytes())
+ need(bool(result),'Empty build');return result
+name=sys.argv[1];gate=json.loads((E/'execution-gate.json').read_text());cfg=json.loads((E/'commands.json').read_text());order=cfg['order']
+need(gate['released'] is True and gate['rootCouncilAccepted'] is True and gate['rootExactDiffAccepted'] is True,'Root release/council/diff acceptance absent')
+need(gate['session']=='2026-10-08T20:26:35Z-81e5','Session mismatch')
+need(name in order and gate['approvedStages']==order[:len(gate['approvedStages'])] and name in gate['approvedStages'],'Stage not released')
+index=json.loads((E/'preparation-hashes.json').read_text())['files'];need(gate['preparationHashes']==index,'Complete exact preparation pins required')
+for p,h in index.items():need(sha((E/p).read_bytes())==h,'Preparation changed '+p)
+disposition=gate['rootDisposition'];d=Path(disposition['path']);need(d.is_absolute() and sha(d.read_bytes())==disposition['sha256'],'Root disposition missing/changed')
+for p,identity in json.loads((E/'tools.json').read_text()).items():
+ need(str(Path(p).resolve(strict=True))==identity['realpath'] and sha(Path(p).read_bytes())==identity['sha256'],'Tool changed '+p)
+need(git('rev-parse','HEAD').strip()==gate['head'] and git('rev-parse','HEAD^{tree}').strip()==gate['tree'],'HEAD/tree changed')
+baseline=json.loads((E/'baseline-source.json').read_text());binding=json.loads((E/'repair-binding.json').read_text());owned={binding['file']}
+need(gate['files']=={binding['file']:binding['sha256']} and gate['diffSha256']==binding['diffSha256'],'Repair pins differ')
+before=sources();need(set(before)==set(baseline),'Tracked inventory changed')
+need(all(before[p]==(binding['sha256'] if p in owned else baseline[p]) for p in before),'Unexpected source delta')
+need(not git('ls-files','--others','--exclude-standard').strip(),'Unexpected untracked repository files')
+need(set(git('diff','--name-only','HEAD').splitlines())==owned,'Unexpected dirty scope')
+need(sha(subprocess.check_output(['git','diff','--binary','HEAD'],cwd=W))==binding['diffSha256'],'Exact repair patch differs')
+for prior in order[:order.index(name)]:
+ x=json.loads((E/(prior+'.exit.json')).read_text());need(x['accepted'] and x['sourceAfter']==before,'Prior stage failed/source differs')
+built=None
+if name in ['smoke','evidence-read']:
+ build=json.loads((E/'build-artifacts.json').read_text());need(build['head']==gate['head'] and build['sourceFiles']==before,'Build source attribution differs');built=artifacts();need(built==build['artifacts'],'Built outputs changed')
+ need(sha((E/'fresh-build.log').read_bytes())==build['logSha256'] and sha((E/'fresh-build.exit.json').read_bytes())==build['exitSha256'],'Build logs changed')
+argv=cfg['commands'][name]
+for suffix in ['.started.json','.log','.exit.json','.processes.jsonl','.tmp']:need(not (E/(name+suffix)).exists(),'Attempt exists; preserve, do not retry')
+subprocess.run([sys.executable,str(G),'/usr/bin/true'],check=True)
+env=os.environ.copy()
+for k in list(env):
+ if k.startswith('BDP_') or k in ['NODE_OPTIONS','NODE_PATH','NODE_DEBUG','PYTHONOPTIMIZE','BIOME_BINARY','npm_execpath','npm_node_execpath']:env.pop(k)
+env['PATH']='/Users/dbox/.nvm/versions/node/v24.16.0/bin:'+env.get('PATH','');env['CI']='true'
+tmp=E/(name+'.tmp');tmp.mkdir();env['TMPDIR']=str(tmp);env['npm_config_cache']=str(tmp/'npm-cache')
+(E/(name+'.started.json')).write_text(json.dumps({'argv':argv,'cwd':str(W),'head':gate['head'],'tree':gate['tree'],'sourceBefore':before,'rootReleaseSha256':sha((E/'execution-gate.json').read_bytes()),'timeoutSeconds':120,'automaticRetries':0},indent=2)+'\n')
+start=time.monotonic();seen=set();forced=False;errors=[];p=None
+def rows():return [r.split(None,3) for r in subprocess.check_output(['ps','-axo','pid=,ppid=,pgid=,comm='],text=True,timeout=5).splitlines() if len(r.split(None,3))==4]
+def members():return [r for r in rows() if p is not None and r[2]==str(p.pid)]
+def stop():
+ global forced
+ forced=True
+ if p is None:return
+ need(p.pid!=os.getpgrp(),'Refuse supervisor group')
+ try:os.killpg(p.pid,signal.SIGTERM)
+ except ProcessLookupError:return
+ until=min(start+119,time.monotonic()+4)
+ while time.monotonic()<until:
+  p.poll()
+  if not members():return
+  time.sleep(.05)
+ try:os.killpg(p.pid,signal.SIGKILL)
+ except ProcessLookupError:pass
+ try:p.wait(timeout=max(.05,min(1,start+120-time.monotonic())))
+ except subprocess.TimeoutExpired:errors.append('group leader did not reap')
+def interrupted(_signal,_frame):raise KeyboardInterrupt('Supervisor interrupted')
+old_signals={sig:signal.signal(sig,interrupted) for sig in (signal.SIGTERM,signal.SIGINT)}
+try:
+ with (E/(name+'.log')).open('x') as log,(E/(name+'.processes.jsonl')).open('x') as samples:
+  p=subprocess.Popen(argv,cwd=W,env=env,stdout=log,stderr=subprocess.STDOUT,start_new_session=True);seen.add(p.pid);next_note=30
+  while True:
+   group=members();seen.update(int(r[0]) for r in group);elapsed=time.monotonic()-start
+   samples.write(json.dumps({'seconds':elapsed,'group':group})+'\n');samples.flush()
+   if p.poll() is not None:break
+   if elapsed>=115:stop();errors.append('deadline');break
+   if elapsed>=next_note:print(json.dumps({'stage':name,'seconds':elapsed,'logBytes':(E/(name+'.log')).stat().st_size,'sampledGroup':len(group)}),flush=True);next_note+=30
+   time.sleep(.05)
+except BaseException as exc:errors.append(type(exc).__name__+': '+str(exc));stop()
+finally:
+ for sig in old_signals:signal.signal(sig,signal.SIG_IGN)
+ if members():stop()
+ current=rows();alive=[r for r in current if int(r[0]) in seen or (p is not None and r[2]==str(p.pid))]
+ after=sources();runtime=[str(x) for x in tmp.rglob('*') if x.is_dir() and x.name.startswith('bdp-')]
+ verdict=None;artifactAfter=None;code=p.returncode if p is not None else None
+ try:
+  if built is not None:need(artifacts()==built,'Built artifacts changed during observation')
+  if name=='fresh-build' and code==0:artifactAfter=artifacts()
+  if name=='smoke' and code==0:
+   log=(E/(name+'.log')).read_text();markers=json.loads((E/'smoke-markers.json').read_text())
+   for marker in markers:need(log.count(marker)==1,'Missing/duplicate smoke completion '+marker)
+   observed=[]
+   for line in log.splitlines():
+    try:v=json.loads(line)
+    except json.JSONDecodeError:continue
+    if isinstance(v,dict) and v.get('event')=='installed.reference.observed':observed.append(v)
+   need(len(observed)==1 and observed[0].get('claimEligible') is False and observed[0].get('allNineTargets') is True and observed[0].get('stableScope')=='https://reference.invalid/acme/','Missing actual full reference observation')
+   verdict={'kind':'full-existing-smoke','installedReference':observed[0],'markers':markers}
+  if name=='evidence-read' and code in [0,2]:
+   messages=[]
+   for line in (E/(name+'.log')).read_text().splitlines():
+    try:v=json.loads(line)
+    except json.JSONDecodeError:continue
+    if isinstance(v,dict):messages.append(v)
+   event='evidence.verified' if code==0 else 'evidence.gated';need(any(v.get('event')==event for v in messages),'Evidence raw exit lacks corresponding meaning')
+   need(not any(v.get('event') in ['evidence.failed','evidence.unavailable'] for v in messages),'Evidence failure masked')
+   verdict={'kind':event,'rawExit':code,'meaning':cfg['evidenceMeaning'][str(code)]}
+ except BaseException as exc:errors.append('adjudication:'+type(exc).__name__+': '+str(exc))
+ accepted=code in cfg['acceptedRawExitCodes'][name] and not forced and not errors and not alive and not runtime and before==after and git('rev-parse','HEAD').strip()==gate['head'] and sha(subprocess.check_output(['git','diff','--binary','HEAD'],cwd=W))==binding['diffSha256']
+ record={'exit':code,'accepted':accepted,'elapsedSeconds':time.monotonic()-start,'forcedCleanup':forced,'errors':errors,'sourceUnchanged':before==after,'sourceAfter':after,'sampledPids':sorted(seen),'remainingProcesses':alive,'runtimeDirectoriesStillPresent':runtime,'otherTempEntries':[str(x) for x in tmp.iterdir()],'adjudication':verdict,'logSha256':sha((E/(name+'.log')).read_bytes()) if (E/(name+'.log')).exists() else None}
+ with (E/(name+'.exit.json')).open('x') as f:f.write(json.dumps(record,indent=2)+'\n')
+ if accepted and name=='fresh-build':
+  with (E/'build-artifacts.json').open('x') as f:f.write(json.dumps({'head':gate['head'],'tree':gate['tree'],'sourceFiles':after,'artifacts':artifactAfter,'logSha256':record['logSha256'],'exitSha256':sha((E/(name+'.exit.json')).read_bytes())},indent=2)+'\n')
+ print(json.dumps({k:v for k,v in record.items() if k!='sourceAfter'}));sys.exit(0 if accepted else 1)

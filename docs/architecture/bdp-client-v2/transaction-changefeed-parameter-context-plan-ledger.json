@@ -1,0 +1,446 @@
+{
+  "status": "PROSPECTIVE_NOT_EXECUTED_NOT_RELEASED",
+  "sourceBindingSha256": "782f862cee2df0883a9aa9c6b061e07f2f328b5afc0f2386d99317a081153685",
+  "source": {
+    "file": "packages/server/src/transaction-changefeed.test.ts",
+    "titles": [
+      "uses bounded context-fenced checkpoints, never Event IDs/raw positions/future rows",
+      "rejects invalid feed intent  with the local parameter convention",
+      "rejects invalid feed intent ?after=genesis&start=now with the local parameter convention",
+      "rejects invalid feed intent ?start=then with the local parameter convention",
+      "rejects invalid feed intent ?after= with the local parameter convention",
+      "rejects invalid feed intent ?after=genesis&after=genesis with the local parameter convention",
+      "rejects invalid feed intent ?start=now&limit=1 with the local parameter convention",
+      "decides actual HTTP minimum refusal before conditional shortcuts with final context",
+      "preserves current context on owner-observed changefeed parameter refusals over HTTP"
+    ],
+    "cases": 9,
+    "pureParserCases": 6,
+    "ownerLifetimes": 3,
+    "directories": 3,
+    "listeners": 2,
+    "children": 0,
+    "httpExpected": 19,
+    "httpMaximum": 19,
+    "newHttpRequests": [
+      {
+        "ordinal": 1,
+        "method": "POST",
+        "target": "https://example.test/feed/operations/batch",
+        "accept": "application/json",
+        "body": "{\"operations\":[{\"operation\":\"createBead\",\"id\":\"beads/a\",\"type\":\"https://example.test/feed/types/bead\",\"properties\":{\"n\":0}}]}",
+        "idempotencyKey": "changefeed-context-a",
+        "contentType": "application/json",
+        "expectedStatus": 200,
+        "bodyBytes": 125,
+        "bodySha256": "b3374958052eeec8816a36ce8ed411ebfab2f068e87dfc55a46eff5ee5e0e392"
+      },
+      {
+        "ordinal": 2,
+        "method": "GET",
+        "target": "https://example.test/feed/changes/?after=genesis",
+        "accept": "application/json",
+        "expectedStatus": 200,
+        "bodyBytes": 0,
+        "bodySha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      {
+        "ordinal": 3,
+        "method": "GET",
+        "target": "https://example.test/feed/changes/?after=<derived-future-checkpoint>",
+        "accept": "application/json",
+        "expectedStatus": 400,
+        "contextPosition": "pos-1",
+        "namedContextOracle": "changefeed-context:3",
+        "bodyBytes": 0,
+        "bodySha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      {
+        "ordinal": 4,
+        "method": "HEAD",
+        "target": "https://example.test/feed/changes/?after=<derived-future-checkpoint>",
+        "accept": "application/json",
+        "expectedStatus": 400,
+        "contextPosition": "pos-1",
+        "namedContextOracle": "changefeed-context:4",
+        "bodyBytes": 0,
+        "bodySha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      {
+        "ordinal": 5,
+        "method": "GET",
+        "target": "https://example.test/feed/changes/?after=<derived-future-checkpoint>",
+        "accept": "text/event-stream",
+        "expectedStatus": 400,
+        "contextPosition": "pos-1",
+        "namedContextOracle": "changefeed-context:5",
+        "bodyBytes": 0,
+        "bodySha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      {
+        "ordinal": 6,
+        "method": "HEAD",
+        "target": "https://example.test/feed/changes/?after=<derived-future-checkpoint>",
+        "accept": "text/event-stream",
+        "expectedStatus": 400,
+        "contextPosition": "pos-1",
+        "namedContextOracle": "changefeed-context:6",
+        "bodyBytes": 0,
+        "bodySha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      {
+        "ordinal": 7,
+        "method": "GET",
+        "target": "https://example.test/feed/changes/?after=genesis",
+        "accept": "text/event-stream",
+        "lastEventId": "malformed",
+        "expectedStatus": 400,
+        "contextPosition": "pos-1",
+        "namedContextOracle": "changefeed-context:7",
+        "bodyBytes": 0,
+        "bodySha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      {
+        "ordinal": 8,
+        "method": "HEAD",
+        "target": "https://example.test/feed/changes/?after=genesis",
+        "accept": "text/event-stream",
+        "lastEventId": "malformed",
+        "expectedStatus": 400,
+        "contextPosition": "pos-1",
+        "namedContextOracle": "changefeed-context:8",
+        "bodyBytes": 0,
+        "bodySha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      {
+        "ordinal": 9,
+        "method": "GET",
+        "target": "https://example.test/feed/changes/?after=<derived-future-checkpoint>",
+        "accept": "application/json",
+        "anonymous": true,
+        "expectedStatus": 401,
+        "contextAbsent": true,
+        "bodyBytes": 0,
+        "bodySha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      {
+        "ordinal": 10,
+        "method": "GET",
+        "target": "https://example.test/feed/changes/?after=genesis&start=now",
+        "accept": "application/json",
+        "expectedStatus": 400,
+        "contextAbsent": true,
+        "bodyBytes": 0,
+        "bodySha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      {
+        "ordinal": 11,
+        "method": "POST",
+        "target": "https://example.test/feed/operations/batch",
+        "accept": "application/json",
+        "body": "{\"operations\":[{\"operation\":\"createBead\",\"id\":\"beads/b\",\"type\":\"https://example.test/feed/types/bead\",\"properties\":{\"n\":0}}]}",
+        "idempotencyKey": "changefeed-context-b",
+        "contentType": "application/json",
+        "expectedStatus": 200,
+        "bodyBytes": 125,
+        "bodySha256": "8a8e7e3f9c80dd37d04e4d3eb64bed00593cb2305c6b6f758857dab3994c2c51"
+      },
+      {
+        "ordinal": 12,
+        "method": "GET",
+        "target": "https://example.test/feed/changes/?after=<derived-future-checkpoint>",
+        "accept": "application/json",
+        "ifNoneMatch": "*",
+        "expectedStatus": 400,
+        "contextPosition": "pos-2",
+        "namedContextOracle": "changefeed-context:12",
+        "bodyBytes": 0,
+        "bodySha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    ],
+    "existingHttpRequestCount": 7,
+    "existingHttpBreakdown": "initial1 + GET/HEAD behind2 + epoch/view2 + unsupported1 + satisfied1",
+    "newHttpBodyBytes": 250,
+    "argv": [
+      "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+      "/Users/dbox/repos/wt/vickie/vickie-sequence-member-evidence/node_modules/.pnpm/vitest@4.1.10_@types+node@24.13.3_vite@8.2.1_@types+node@24.13.3_/node_modules/vitest/vitest.mjs",
+      "run",
+      "packages/server/src/transaction-changefeed.test.ts",
+      "--maxWorkers=1",
+      "--reporter=verbose",
+      "--reporter=json",
+      "--outputFile=<D>/run/source.json",
+      "-t",
+      "^(?:uses\\ bounded\\ context\\-fenced\\ checkpoints,\\ never\\ Event\\ IDs/raw\\ positions/future\\ rows|rejects\\ invalid\\ feed\\ intent\\ \\ with\\ the\\ local\\ parameter\\ convention|rejects\\ invalid\\ feed\\ intent\\ \\?after=genesis\\&start=now\\ with\\ the\\ local\\ parameter\\ convention|rejects\\ invalid\\ feed\\ intent\\ \\?start=then\\ with\\ the\\ local\\ parameter\\ convention|rejects\\ invalid\\ feed\\ intent\\ \\?after=\\ with\\ the\\ local\\ parameter\\ convention|rejects\\ invalid\\ feed\\ intent\\ \\?after=genesis\\&after=genesis\\ with\\ the\\ local\\ parameter\\ convention|rejects\\ invalid\\ feed\\ intent\\ \\?start=now\\&limit=1\\ with\\ the\\ local\\ parameter\\ convention|decides\\ actual\\ HTTP\\ minimum\\ refusal\\ before\\ conditional\\ shortcuts\\ with\\ final\\ context|preserves\\ current\\ context\\ on\\ owner\\-observed\\ changefeed\\ parameter\\ refusals\\ over\\ HTTP)$"
+    ]
+  },
+  "control": {
+    "name": "omit-observed-changefeed-http-context",
+    "cases": 1,
+    "selectedTitle": "preserves current context on owner-observed changefeed parameter refusals over HTTP",
+    "emittedOnly": true,
+    "httpExpected": 12,
+    "httpMaximum": 12,
+    "ownerLifetimes": 1,
+    "directories": 1,
+    "listeners": 1,
+    "children": 0,
+    "expectedFailures": [
+      "changefeed-context:3",
+      "changefeed-context:4",
+      "changefeed-context:5",
+      "changefeed-context:6",
+      "changefeed-context:7",
+      "changefeed-context:8",
+      "changefeed-context:12"
+    ],
+    "expectedVitestExit": 1,
+    "argv": [
+      "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+      "/Users/dbox/repos/wt/vickie/vickie-sequence-member-evidence/node_modules/.pnpm/vitest@4.1.10_@types+node@24.13.3_vite@8.2.1_@types+node@24.13.3_/node_modules/vitest/vitest.mjs",
+      "run",
+      "packages/server/src/transaction-changefeed.test.ts",
+      "--maxWorkers=1",
+      "--reporter=verbose",
+      "--reporter=json",
+      "--outputFile=<D>/control/run/results.json",
+      "-t",
+      "^(?:preserves\\ current\\ context\\ on\\ owner\\-observed\\ changefeed\\ parameter\\ refusals\\ over\\ HTTP)$"
+    ],
+    "cwd": "<D>/control/mirror; Vitest path resolved within verified copied graph"
+  },
+  "installed": {
+    "file": "apps/bdptest/src/transactional-changefeed-refusal-context-installed.test.ts",
+    "title": "observes genuine installed current context on changefeed parameter refusals",
+    "cases": 1,
+    "httpExpected": 10,
+    "httpMaximum": 10,
+    "ownerLifetimes": 1,
+    "directories": 1,
+    "listeners": 1,
+    "children": 1,
+    "portReservationListeners": 0,
+    "requests": [
+      {
+        "ordinal": 1,
+        "method": "POST",
+        "target": "https://reference.invalid/acme/operations/batch",
+        "accept": "application/json",
+        "body": "{\"operations\":[{\"operation\":\"createBead\",\"id\":\"beads/a\",\"type\":\"https://reference.invalid/acme/types/task\",\"properties\":{\"title\":\"changefeed-context\"}}]}",
+        "idempotencyKey": "changefeed-context-a",
+        "contentType": "application/json",
+        "expectedStatus": 200,
+        "bodyBytes": 153,
+        "bodySha256": "b4a37b0b5eca741624049dec962869a690b8f1a3870b6db2f241c3e9e2aa05c6"
+      },
+      {
+        "ordinal": 2,
+        "method": "GET",
+        "target": "https://reference.invalid/acme/changes/?after=genesis",
+        "accept": "application/json",
+        "expectedStatus": 200,
+        "bodyBytes": 0,
+        "bodySha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      {
+        "ordinal": 3,
+        "method": "GET",
+        "target": "https://reference.invalid/acme/changes/?after=<derived-future-checkpoint>",
+        "accept": "application/json",
+        "expectedStatus": 400,
+        "contextPosition": "pos-1",
+        "namedContextOracle": "changefeed-context:3",
+        "bodyBytes": 0,
+        "bodySha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      {
+        "ordinal": 4,
+        "method": "HEAD",
+        "target": "https://reference.invalid/acme/changes/?after=<derived-future-checkpoint>",
+        "accept": "application/json",
+        "expectedStatus": 400,
+        "contextPosition": "pos-1",
+        "namedContextOracle": "changefeed-context:4",
+        "bodyBytes": 0,
+        "bodySha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      {
+        "ordinal": 5,
+        "method": "GET",
+        "target": "https://reference.invalid/acme/changes/?after=<derived-future-checkpoint>",
+        "accept": "text/event-stream",
+        "expectedStatus": 400,
+        "contextPosition": "pos-1",
+        "namedContextOracle": "changefeed-context:5",
+        "bodyBytes": 0,
+        "bodySha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      {
+        "ordinal": 6,
+        "method": "HEAD",
+        "target": "https://reference.invalid/acme/changes/?after=<derived-future-checkpoint>",
+        "accept": "text/event-stream",
+        "expectedStatus": 400,
+        "contextPosition": "pos-1",
+        "namedContextOracle": "changefeed-context:6",
+        "bodyBytes": 0,
+        "bodySha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      {
+        "ordinal": 7,
+        "method": "GET",
+        "target": "https://reference.invalid/acme/changes/?after=genesis",
+        "accept": "text/event-stream",
+        "lastEventId": "malformed",
+        "expectedStatus": 400,
+        "contextPosition": "pos-1",
+        "namedContextOracle": "changefeed-context:7",
+        "bodyBytes": 0,
+        "bodySha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      {
+        "ordinal": 8,
+        "method": "HEAD",
+        "target": "https://reference.invalid/acme/changes/?after=genesis",
+        "accept": "text/event-stream",
+        "lastEventId": "malformed",
+        "expectedStatus": 400,
+        "contextPosition": "pos-1",
+        "namedContextOracle": "changefeed-context:8",
+        "bodyBytes": 0,
+        "bodySha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      {
+        "ordinal": 9,
+        "method": "GET",
+        "target": "https://reference.invalid/acme/changes/?after=<derived-future-checkpoint>",
+        "accept": "application/json",
+        "anonymous": true,
+        "expectedStatus": 401,
+        "contextAbsent": true,
+        "bodyBytes": 0,
+        "bodySha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      {
+        "ordinal": 10,
+        "method": "GET",
+        "target": "https://reference.invalid/acme/changes/?after=genesis&start=now",
+        "accept": "application/json",
+        "expectedStatus": 400,
+        "contextAbsent": true,
+        "bodyBytes": 0,
+        "bodySha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    ],
+    "requestBodyBytes": 153,
+    "argv": [
+      "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+      "/Users/dbox/repos/wt/vickie/vickie-sequence-member-evidence/node_modules/.pnpm/vitest@4.1.10_@types+node@24.13.3_vite@8.2.1_@types+node@24.13.3_/node_modules/vitest/vitest.mjs",
+      "run",
+      "apps/bdptest/src/transactional-changefeed-refusal-context-installed.test.ts",
+      "--maxWorkers=1",
+      "--reporter=verbose",
+      "--reporter=json",
+      "--outputFile=<D>/installed/run/results.json",
+      "-t",
+      "^(?:observes\\ genuine\\ installed\\ current\\ context\\ on\\ changefeed\\ parameter\\ refusals)$"
+    ],
+    "sourceEnv": [
+      "BDP_TRANSACTIONAL_INSTALLED_ENTRY",
+      "BDP_TRANSACTIONAL_SOURCE_COMMIT"
+    ],
+    "claimedProfileEligible": false
+  },
+  "aggregate": {
+    "caseExecutions": 11,
+    "httpExpected": 41,
+    "httpMaximum": 41,
+    "ownerLifetimes": 5,
+    "directories": 5,
+    "listeners": 4,
+    "children": 1,
+    "readOnlyDbHandles": 0,
+    "reopens": 0,
+    "responseBytesMaximum": 1343488,
+    "bodyBytesNewSourceControlInstalled": 653
+  },
+  "limits": {
+    "requestTargetBytes": 8192,
+    "requestHeaderBytes": 16384,
+    "requestBodyBytes": 65536,
+    "responseBodyBytes": 32768,
+    "exchangeMs": 5000,
+    "newHttpWorkMs": 45000,
+    "newHttpTestMs": 60000,
+    "installedWorkMs": 45000,
+    "installedTestMs": 60000,
+    "launcherReadyAndCloseMs": 10000,
+    "supervisorSeconds": 120,
+    "termAtSeconds": 115,
+    "automaticRetry": false
+  },
+  "staticCommands": [
+    [
+      "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+      "/Users/dbox/.cache/node/corepack/v1/pnpm/11.20.0/bin/pnpm.cjs",
+      "install",
+      "--offline",
+      "--frozen-lockfile"
+    ],
+    [
+      "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+      "/Users/dbox/.cache/node/corepack/v1/pnpm/11.20.0/bin/pnpm.cjs",
+      "typecheck"
+    ],
+    [
+      "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+      "/Users/dbox/.cache/node/corepack/v1/pnpm/11.20.0/bin/pnpm.cjs",
+      "build"
+    ],
+    [
+      "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+      "/Users/dbox/.cache/node/corepack/v1/pnpm/11.20.0/bin/pnpm.cjs",
+      "exec",
+      "biome",
+      "format",
+      "packages/server/src/transaction-changefeed.ts",
+      "packages/server/src/transaction-store.ts",
+      "packages/server/src/transaction-http.ts",
+      "packages/server/src/transaction-changefeed.test.ts",
+      "apps/bdptest/src/transactional-changefeed-refusal-context-installed.test.ts",
+      "docs/design/transaction-implementation-progress.md"
+    ],
+    [
+      "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+      "/Users/dbox/.cache/node/corepack/v1/pnpm/11.20.0/bin/pnpm.cjs",
+      "lint"
+    ],
+    [
+      "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+      "/Users/dbox/.cache/node/corepack/v1/pnpm/11.20.0/bin/pnpm.cjs",
+      "check:boundaries"
+    ],
+    [
+      "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+      "/Users/dbox/.cache/node/corepack/v1/pnpm/11.20.0/bin/pnpm.cjs",
+      "evidence:verify"
+    ]
+  ],
+  "counterfactual": {
+    "afterPositiveBuildOnly": true,
+    "mutatedFile": "packages/server/dist/transaction-http.js",
+    "change": "Replace contextual parameter-error argument with Event-only conditional, preserving optional Changefeed error/store context."
+  },
+  "fullCIIncrement": {
+    "sourceNewCallbacks": 1,
+    "installedNewCallbacks": 1,
+    "expectedExtraHttp": 22,
+    "extraProductChildren": 1,
+    "existingOwnerAndParserCallbacksEditedNoRegistration": 7
+  },
+  "prefixes": [
+    "bdp-feed-",
+    "bdp-feed-http-",
+    "bdp-changefeed-context-installed-"
+  ]
+}

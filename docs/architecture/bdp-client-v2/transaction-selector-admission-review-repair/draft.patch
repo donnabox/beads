@@ -1,0 +1,1890 @@
+diff --git a/docs/specs/bdp.md b/docs/specs/bdp.md
+index c400133..6cc4a10 100644
+--- a/docs/specs/bdp.md
++++ b/docs/specs/bdp.md
+@@ -1062,7 +1062,9 @@ value is a binding positive integer or ISO 8601 duration:
+ - `resource.representationBytes` and `resource.propertiesBytes` count UTF-8
+   bytes in the corresponding JSON serialization; metadata is covered by the
+   complete representation bound, not by the properties-only bound;
+-- `selector.bytes` counts UTF-8 bytes after percent-decoding, while
++- `selector.bytes` counts UTF-8 bytes of the decoded Selector string: after
++  percent-decoding for query parameters, or JSON string decoding for a
++  Selector in a request body, without additional URL decoding;
+   `selector.depth` and `selector.nodes` count parsed Selector structure;
+ - `retention.maximumSnapshotLifetime` bounds the lifetime of a pagination
+   continuation when advertised.
+@@ -4253,6 +4255,18 @@ The inherited patch limits apply to each member update of a set update.
+ It leaves `metadata` unchanged. To change metadata, use the Resource update
+ operations, including `UpdateBead` or `UpdateLink` operations in a batch.
+ 
++Embedded Selectors MUST conform to the complete bounded Selector grammar before
++key lookup. Invalid body Selector grammar is `400` `malformed-request` with a
++`pointer` to the original Selector member. Read query Selectors retain their
++`400` `invalid-parameter` behavior. Fixed Selector source-byte, depth and node
++capacity is an admission control for an unknown key, not a retained execution
++failure. Existing equal outcomes and conflicting keys take precedence over
++those capacity checks. A fresh over-limit request is `413` `limit-exceeded`
++before execution, without a receipt or key binding. The body diagnostic names
++the member with `pointer` and the bound with `limit` (`selector.bytes`,
++`selector.depth` or `selector.nodes`); this does not require those fields on
++Read query capacity responses. JSON-body Selector strings are not URL-decoded.
++
+ Selection and mutation occur atomically at one serialization point. The
+ Selector is evaluated when its operation is reached, so it observes the
+ effects of preceding operations in the same Mutation Transaction. A
+@@ -4508,7 +4522,10 @@ and a request that fails one step never reaches the next:
+    `batchRequest`, a forward, unknown, or duplicate label, a label used
+    where the other Resource kind is required, a noncanonical local ID
+    spelling, or a supplied `id` beneath the wrong fixed root is `400`
+-   `malformed-request`, whose problem SHOULD carry `pointer`, an RFC 6901
++   `malformed-request`. Invalid complete grammar of an embedded Selector is
++   also `400` `malformed-request` before key lookup. Its problem carries the
++   original Selector member's `pointer`; other syntax problems SHOULD carry
++   `pointer`, an RFC 6901
+    JSON Pointer into the request body naming the offending member;
+ 3. the principal — an unauthenticated request is `401` `unauthenticated`,
+    and a principal that may not submit mutations to the Scope is `403`
+@@ -4523,7 +4540,11 @@ and a request that fails one step never reaches the next:
+    evaluated for that duplicate. An unresolved reservation uses that
+    section's bounded comparison and same-epoch retraction rules; unproven
+    equality never returns a receipt or admits a second execution;
+-5. admission controls for an unknown key — an `operations` count above
++5. admission controls for an unknown key — fixed embedded Selector source-byte,
++   depth or node capacity is checked before execution and response-media
++   negotiation. An excess is `413` `limit-exceeded`, with the original member
++   `pointer` and dotted Selector `limit`, without a receipt or key binding.
++   An `operations` count above
+    `transaction.operations` is `413` `limit-exceeded` with `limit`
+    `transaction.operations`, a rate limit is `429` `rate-limited`, and an
+    authority that cannot admit is `503` `temporarily-unavailable`; and
+diff --git a/packages/server/src/read-selector.test.ts b/packages/server/src/read-selector.test.ts
+index 4ad4be9..653188c 100644
+--- a/packages/server/src/read-selector.test.ts
++++ b/packages/server/src/read-selector.test.ts
+@@ -3,6 +3,7 @@ import { describe, expect, it } from "vitest";
+ 
+ import {
+   ReadSelectorError,
++  analyzeSelectorGrammar,
+   type ReadSelectorErrorCode,
+   selectReadResources,
+ } from "./read-selector.js";
+@@ -445,3 +446,65 @@ describe("Read Selector", () => {
+     ).toThrow(TypeError);
+   });
+ });
++
++const selectorBytes = (n: number) => `$[?@.missing${" ".repeat(n - 13)}]`;
++const selectorDepth = (groups: number) => `$[?${"(".repeat(groups)}@.missing${")".repeat(groups)}]`;
++const selectorNodes = (groups: number) => {
++  let expression = "@.missing";
++  for (let level = 0; level < 6; level++) expression = `(${expression}||${expression})`;
++  return `$[?${"(".repeat(groups)}${expression}${")".repeat(groups)}]`;
++};
++it("analyzes complete Selector grammar with exact uncapped structural metrics", () => {
++  for (const [source, expected] of [
++    [selectorBytes(4096), { bytes: 4096, depth: 2, nodes: 2 }],
++    [selectorBytes(4097), { bytes: 4097, depth: 2, nodes: 2 }],
++    [selectorDepth(30), { bytes: 73, depth: 32, nodes: 32 }],
++    [selectorDepth(31), { bytes: 75, depth: 33, nodes: 33 }],
++    [selectorNodes(2), { bytes: 836, depth: 16, nodes: 256 }],
++    [selectorNodes(3), { bytes: 838, depth: 17, nodes: 257 }],
++  ] as const) {
++    const summary = analyzeSelectorGrammar(source, 65536);
++    expect(summary).toEqual(expected);
++    expect(Object.isFrozen(summary)).toBe(true);
++    expect(Object.keys(summary)).toEqual(["bytes", "depth", "nodes"]);
++  }
++});
++it("does not hide invalid Selector suffixes behind operational capacity", () => {
++  for (const source of [selectorBytes(4097), selectorDepth(31), selectorNodes(3)]) {
++    expect(() => analyzeSelectorGrammar(`${source} true`, 65536)).toThrow(ReadSelectorError);
++  }
++  expect(() => analyzeSelectorGrammar("$..*", 65536)).toThrow(ReadSelectorError);
++  expect(() =>
++    selectReadResources(`${selectorBytes(4097)} true`, { bytes: 4096, depth: 32, nodes: 256 }, []),
++  ).toThrow(expect.objectContaining({ code: "source-bytes-limit-exceeded" }));
++  expect(() => analyzeSelectorGrammar(selectorBytes(4097), 4096)).toThrow(RangeError);
++});
++it("analyzes body-bounded deep Selectors without recursive traversal", () => {
++  const source = selectorDepth(10000);
++  expect(analyzeSelectorGrammar(source, 65536)).toEqual({
++    bytes: 20013,
++    depth: 10002,
++    nodes: 10002,
++  });
++  expect(() => analyzeSelectorGrammar(`${source} true`, 65536)).toThrow(ReadSelectorError);
++});
++it("counts decoded Selector UTF-8 without URI decoding or identity rewriting", () => {
++  const scalars = '$[?@.missing == "é😀"]';
++  expect(Buffer.byteLength(scalars, "utf8")).toBe(25);
++  const boundary = `${scalars.slice(0, -1)}${" ".repeat(4096 - 25)}]`;
++  const beyond = `${boundary.slice(0, -1)} ]`;
++  expect(Buffer.byteLength(boundary, "utf8")).toBe(4096);
++  expect(Buffer.byteLength(beyond, "utf8")).toBe(4097);
++  expect(analyzeSelectorGrammar(boundary, 65536).bytes).toBe(4096);
++  expect(analyzeSelectorGrammar(beyond, 65536).bytes).toBe(4097);
++  const unicode = '$[?@.missing == "é"]';
++  const escaped = String.raw`$[?@.missing == "\u00e9"]`;
++  expect(analyzeSelectorGrammar(unicode, 65536).bytes).toBe(21);
++  expect(analyzeSelectorGrammar(escaped, 65536).bytes).toBe(25);
++  const decoded = JSON.parse(JSON.stringify(unicode).replace("é", String.raw`\u00e9`)) as string;
++  expect(decoded).toBe(unicode);
++  expect(analyzeSelectorGrammar(decoded, 65536)).toEqual(analyzeSelectorGrammar(unicode, 65536));
++  const percent = '$[?@.missing == "%41"]';
++  expect(analyzeSelectorGrammar(percent, 65536).bytes).toBe(22);
++  expect(() => analyzeSelectorGrammar("%24[?@.missing]", 65536)).toThrow(ReadSelectorError);
++});
+diff --git a/packages/server/src/read-selector.ts b/packages/server/src/read-selector.ts
+index a1d9a37..1538e1e 100644
+--- a/packages/server/src/read-selector.ts
++++ b/packages/server/src/read-selector.ts
+@@ -179,7 +179,9 @@ export function selectReadResources<Candidate extends ReadSelectorCandidate>(
+       sourceBytes,
+     );
+ 
+-  const expression = parseSelector(source, checkedLimits);
++  const expression = parseSelector(source, (depth, nodes, offset) =>
++    enforceAstLimits(depth, nodes, checkedLimits, offset),
++  );
+   const matches: Candidate[] = [];
+   for (const candidate of candidates) if (evaluate(expression, candidate)) matches.push(candidate);
+   return Object.freeze(matches);
+@@ -196,7 +198,20 @@ function validateLimits(limits: ReadSelectorLimits): ReadSelectorLimits {
+   return snapshot;
+ }
+ 
+-function parseSelector(source: string, limits: ReadSelectorLimits): BooleanNode {
++type AstPolicy = (depth: number, nodes: number, offset: number) => void;
++/** Source-private complete grammar analysis inside an already bounded body.
++ * Read keeps its separate early operational checks. No AST escapes this call. */
++export function analyzeSelectorGrammar(selector: string, enclosingBytes: number) {
++  if (typeof selector !== "string") throw new TypeError("selector must be a string");
++  if (!Number.isSafeInteger(enclosingBytes) || enclosingBytes <= 0)
++    throw new TypeError("invalid enclosing Selector byte budget");
++  const bytes = new TextEncoder().encode(selector).byteLength;
++  if (bytes > enclosingBytes) throw new RangeError("Selector exceeds enclosing body budget");
++  const expression = parseSelector(selector, () => {});
++  return Object.freeze({ bytes, depth: expression.depth, nodes: expression.nodes });
++}
++
++function parseSelector(source: string, check: AstPolicy): BooleanNode {
+   const tokens = tokenize(source);
+   let cursor = 0;
+   const take = (): Token => {
+@@ -228,7 +243,7 @@ function parseSelector(source: string, limits: ReadSelectorLimits): BooleanNode
+         throw syntaxError("expected a filter expression", token.offset);
+       if (operators.some((entry) => entry.kind === "open-group"))
+         throw syntaxError("expected closing ')'", token.offset);
+-      reduceAll(operators, values, limits);
++      reduceAll(operators, values, check);
+       const expression = takeSingleBoolean(values, token.offset);
+       const trailing = take();
+       if (trailing.kind !== "end") throw unsupportedOrSyntaxAfterSelector(trailing);
+@@ -248,7 +263,7 @@ function parseSelector(source: string, limits: ReadSelectorLimits): BooleanNode
+         continue;
+       }
+       if (token.kind === "path") {
+-        values.push(makePath(token.segments, limits, token.offset));
++        values.push(makePath(token.segments, check, token.offset));
+         expectingOperand = false;
+         sawExpression = true;
+         continue;
+@@ -267,13 +282,13 @@ function parseSelector(source: string, limits: ReadSelectorLimits): BooleanNode
+     }
+ 
+     if (token.kind === "operator" && token.operator !== "!") {
+-      reduceForIncoming(token, operators, values, limits);
++      reduceForIncoming(token, operators, values, check);
+       operators.push(token);
+       expectingOperand = true;
+       continue;
+     }
+     if (token.kind === "close-paren") {
+-      closeGroup(token.offset, operators, values, limits);
++      closeGroup(token.offset, operators, values, check);
+       expectingOperand = false;
+       continue;
+     }
+@@ -285,13 +300,9 @@ function parseSelector(source: string, limits: ReadSelectorLimits): BooleanNode
+   }
+ }
+ 
+-function makePath(
+-  segments: readonly PathSegment[],
+-  limits: ReadSelectorLimits,
+-  offset: number,
+-): PathNode {
++function makePath(segments: readonly PathSegment[], check: AstPolicy, offset: number): PathNode {
+   const size = segments.length + 1;
+-  enforceAstLimits(size, size, limits, offset);
++  check(size, size, offset);
+   return { kind: "path", segments: Object.freeze([...segments]), depth: size, nodes: size };
+ }
+ 
+@@ -299,7 +310,7 @@ function reduceForIncoming(
+   incoming: OperatorToken,
+   operators: OperatorEntry[],
+   values: AstNode[],
+-  limits: ReadSelectorLimits,
++  check: AstPolicy,
+ ): void {
+   const incomingPrecedence = precedence(incoming.operator);
+   for (;;) {
+@@ -307,20 +318,16 @@ function reduceForIncoming(
+     if (top === undefined || top.kind === "open-group") return;
+     const topPrecedence = precedence(top.operator);
+     if (topPrecedence < incomingPrecedence) return;
+-    reduceOperator(operators.pop() as OperatorToken, values, limits);
++    reduceOperator(operators.pop() as OperatorToken, values, check);
+   }
+ }
+ 
+-function reduceAll(
+-  operators: OperatorEntry[],
+-  values: AstNode[],
+-  limits: ReadSelectorLimits,
+-): void {
++function reduceAll(operators: OperatorEntry[], values: AstNode[], check: AstPolicy): void {
+   while (operators.length > 0) {
+     const operator = operators.pop();
+     if (operator === undefined || operator.kind === "open-group")
+       throw syntaxError("unclosed parenthesized expression", operator?.offset ?? 0);
+-    reduceOperator(operator, values, limits);
++    reduceOperator(operator, values, check);
+   }
+ }
+ 
+@@ -328,7 +335,7 @@ function closeGroup(
+   offset: number,
+   operators: OperatorEntry[],
+   values: AstNode[],
+-  limits: ReadSelectorLimits,
++  check: AstPolicy,
+ ): void {
+   for (;;) {
+     const operator = operators.pop();
+@@ -343,15 +350,15 @@ function closeGroup(
+         depth: operand.depth + 1,
+         nodes: operand.nodes + 1,
+       };
+-      enforceAstLimits(group.depth, group.nodes, limits, operator.offset);
++      check(group.depth, group.nodes, operator.offset);
+       values.push(group);
+       return;
+     }
+-    reduceOperator(operator, values, limits);
++    reduceOperator(operator, values, check);
+   }
+ }
+ 
+-function reduceOperator(token: OperatorToken, values: AstNode[], limits: ReadSelectorLimits): void {
++function reduceOperator(token: OperatorToken, values: AstNode[], check: AstPolicy): void {
+   if (token.operator === "!") {
+     const operand = popBoolean(values, token.offset);
+     const node: NotNode = {
+@@ -360,7 +367,7 @@ function reduceOperator(token: OperatorToken, values: AstNode[], limits: ReadSel
+       depth: operand.depth + 1,
+       nodes: operand.nodes + 1,
+     };
+-    enforceAstLimits(node.depth, node.nodes, limits, token.offset);
++    check(node.depth, node.nodes, token.offset);
+     values.push(node);
+     return;
+   }
+@@ -377,7 +384,7 @@ function reduceOperator(token: OperatorToken, values: AstNode[], limits: ReadSel
+       depth: Math.max(booleanLeft.depth, booleanRight.depth) + 1,
+       nodes: booleanLeft.nodes + booleanRight.nodes + 1,
+     };
+-    enforceAstLimits(node.depth, node.nodes, limits, token.offset);
++    check(node.depth, node.nodes, token.offset);
+     values.push(node);
+     return;
+   }
+@@ -394,7 +401,7 @@ function reduceOperator(token: OperatorToken, values: AstNode[], limits: ReadSel
+     depth: Math.max(valueLeft.depth, valueRight.depth) + 1,
+     nodes: valueLeft.nodes + valueRight.nodes + 1,
+   };
+-  enforceAstLimits(node.depth, node.nodes, limits, token.offset);
++  check(node.depth, node.nodes, token.offset);
+   values.push(node);
+ }
+ 
+diff --git a/packages/server/src/transaction-batch.ts b/packages/server/src/transaction-batch.ts
+index a3ae488..472a4a6 100644
+--- a/packages/server/src/transaction-batch.ts
++++ b/packages/server/src/transaction-batch.ts
+@@ -1,4 +1,4 @@
+-/** Private Transactional evaluator. Valid bounded sets share singleton/batch admission; negative Selector policy remains private. */
++/** Private Transactional evaluator. Bounded sets share singleton/batch syntax and admission. */
+ import {
+   prepareSetShape,
+   assertTransactionInputDepth,
+@@ -121,8 +121,7 @@ function prepareResourceBatch(scope: string, text: string): PreparedTransaction
+   });
+   return prepareCarrier(prepareReadUpdateSequence(scope, losslessText({ operations })));
+ }
+-/** One mixed carrier syntax path. Unsupported Selector categories remain a
+- * private pre-admission gap, never an inferred protocol failure law. */
++/** One mixed carrier syntax path with complete bounded Selector grammar. */
+ export function prepareTransaction(scope: string, text: string): PreparedTransaction {
+   return prepareTransactionSetCore(scope, text);
+ }
+@@ -166,9 +165,14 @@ function prepareMixedTransaction(
+   });
+   // Synthetic syntax parsers do not impose the execution depth bound. Finish
+   // every unambiguous shape/reference/label check before any private gap.
++  for (const [index, op] of operations.entries())
++    if (op.operation === "updateWhere" || op.operation === "deleteWhere")
++      validateSetSelector(
++        op,
++        singleton ? "/selector" : `/operations/${index}/selector`,
++        TRANSACTION_RUNTIME_LIMITS.requestBodyBytes,
++      );
+   assertTransactionInputDepth(root);
+-  for (const op of operations)
+-    if (op.operation === "updateWhere" || op.operation === "deleteWhere") validateSetSelector(op);
+   return prepareCarrier(
+     Object.freeze({
+       scope: canonicalScope,
+diff --git a/packages/server/src/transaction-http.test.ts b/packages/server/src/transaction-http.test.ts
+index 0123656..ef9f0d9 100644
+--- a/packages/server/src/transaction-http.test.ts
++++ b/packages/server/src/transaction-http.test.ts
+@@ -22,6 +22,7 @@ ajv.addSchema(schema);
+ const validateTransactionalProblem = ajv.compile({
+   $ref: `${schema.$id}#/$defs/transactionalProblem`,
+ });
++const validateSelectorReceipt = ajv.compile({ $ref: `${schema.$id}#/$defs/mutationReceipt` });
+ const validateSequence = ajv.compile({
+   $ref: `${schema.$id}#/$defs/transactionalSequenceResponse`,
+ });
+@@ -585,7 +586,7 @@ describe("source-private actual Transactional HTTP", () => {
+     expect(after.status).toBe(307);
+     expect(after.headers.get("location")).toBe(`${f.runtime.scope}beads/other`);
+   });
+-  it("refuses unsupported set and depth compositions without key capture or partial effects", async () => {
++  it("rejects invalid set Selector grammar and preserves private depth refusal without key capture or partial effects", async () => {
+     const f = await fixture();
+     const set = await f.post(
+       batch([
+@@ -598,10 +599,14 @@ describe("source-private actual Transactional HTTP", () => {
+       ]),
+       "set",
+     );
+-    expect(set.status).toBe(500);
+-    expect(set.headers.get("x-bdp-development-limit")).toBe("unsupported-transaction-composition");
++    expect(set.status).toBe(400);
++    expect(set.headers.has("x-bdp-development-limit")).toBe(false);
+     expect((await f.post(batch([create()]), "set")).status).toBe(200);
+-    expect(await set.text()).toBe("");
++    expect(checkedProblem(await body(set))).toMatchObject({
++      status: 400,
++      code: "malformed-request",
++      pointer: "/operations/0/selector",
++    });
+     let nested: unknown = "leaf";
+     for (let depth = 0; depth < 40; depth++) nested = { nested };
+     const depth = await f.post(batch([{ ...create("c"), properties: { nested } }]), "deep");
+@@ -2234,7 +2239,9 @@ it("serves both set targets with method/auth/shape precedence and no unsupported
+         [`Bearer ${readToken}`, 403],
+       ] as const) {
+         const key = `${target}_${carrier}_${status}`;
+-        const response = await f.post(text, key, carrier, { authorization });
++        const response = await f.post(text.replace("$..*", selectorHttpBytes(4097)), key, carrier, {
++          authorization,
++        });
+         expect(response.status).toBe(status);
+         expect(response.headers.has("x-bdp-development-limit")).toBe(false);
+         expect(await f.receiptRows(key)).toEqual([]);
+@@ -2242,12 +2249,16 @@ it("serves both set targets with method/auth/shape precedence and no unsupported
+         expect((await f.post(batch([create(key)]), key)).status).toBe(200);
+       }
+       const gapKey = `${target}_${carrier}_gap`;
+-      const gap = await f.post(text, gapKey, carrier);
+-      expect(gap.status).toBe(500);
+-      expect(gap.headers.get("x-bdp-development-limit")).toBe(
+-        "unsupported-transaction-composition",
+-      );
+-      expect(await gap.text()).toBe("");
++      const gap = await f.post(text, gapKey, carrier, {
++        authorization: target === "updateWhere" ? "" : `Bearer ${readToken}`,
++      });
++      expect(gap.status).toBe(400);
++      expect(gap.headers.has("x-bdp-development-limit")).toBe(false);
++      expect(checkedProblem(await body(gap))).toMatchObject({
++        status: 400,
++        code: "malformed-request",
++        pointer: carrier === "batch" ? "/operations/0/selector" : "/selector",
++      });
+       expect(await f.receiptRows(gapKey)).toEqual([]);
+     }
+     const malformed = await f.post(
+@@ -3577,3 +3588,224 @@ it("reuses refused sequence member keys for different identities without extra r
+     { principal: "p", key: "over-0", receipt: d },
+   ]);
+ });
++
++function selectorHttpBytes(n: number) {
++  return `$[?@.missing${" ".repeat(n - 13)}]`;
++}
++function selectorHttpDepth(groups: number) {
++  return `$[?${"(".repeat(groups)}@.missing${")".repeat(groups)}]`;
++}
++function selectorHttpNodes(groups: number) {
++  let expression = "@.missing";
++  for (let level = 0; level < 6; level++) expression = `(${expression}||${expression})`;
++  return `$[?${"(".repeat(groups)}${expression}${")".repeat(groups)}]`;
++}
++const selectorHttpInput = (operation: "updateWhere" | "deleteWhere", selector: string) => ({
++  collection: "beads",
++  selector,
++  ...(operation === "updateWhere" ? { change: [{ op: "add", path: "/x", value: 1 }] } : {}),
++});
++async function selectorHttpProblem(
++  response: Response,
++  status: 400 | 413,
++  pointer: string,
++  limit?: string,
++) {
++  expect(
++    response.status,
++    JSON.stringify({
++      oracle: "Selector receiving status",
++      status: response.status,
++      developmentLimit: response.headers.get("x-bdp-development-limit"),
++      contentLength: response.headers.get("content-length"),
++    }),
++  ).toBe(status);
++  expect(response.headers.has("x-bdp-development-limit")).toBe(false);
++  expect(response.headers.get("content-type")).toBe("application/problem+json");
++  expect(response.headers.get("cache-control")).toBe("private, no-store");
++  expect(response.headers.has("location")).toBe(false);
++  expect(response.headers.has("retry-after")).toBe(false);
++  expect(checkedProblem(await body(response))).toEqual({
++    type: `https://github.com/gastownhall/bdp/problems/${status === 400 ? "request" : "size"}`,
++    status,
++    code: status === 400 ? "malformed-request" : "limit-exceeded",
++    retry: "never",
++    pointer,
++    ...(limit ? { limit } : {}),
++  });
++  if (status === 400) expect(Object.values(context(response))).toEqual([null, null, null]);
++  else
++    for (const value of Object.values(context(response))) expect(value).toEqual(expect.any(String));
++}
++it("serves exact fixed Selector boundaries and leaves refused keys unused", async () => {
++  const f = await fixture();
++  const keys: string[] = [];
++  let observation: ReturnType<typeof context> | undefined;
++  for (const operation of ["deleteWhere", "updateWhere"] as const)
++    for (const carrier of [operation, "batch"] as const)
++      for (const [field, over, exact] of [
++        ["bytes", selectorHttpBytes(4097), selectorHttpBytes(4096)],
++        ["depth", selectorHttpDepth(31), selectorHttpDepth(30)],
++        ["nodes", selectorHttpNodes(3), selectorHttpNodes(2)],
++      ] as const) {
++        const key = `${operation}_${carrier}_${field}`;
++        const text = (selector: string) =>
++          JSON.stringify(
++            carrier === "batch"
++              ? { operations: [{ operation, ...selectorHttpInput(operation, selector) }] }
++              : selectorHttpInput(operation, selector),
++          );
++        const refusal = await f.post(text(over), key, carrier);
++        await selectorHttpProblem(
++          refusal,
++          413,
++          carrier === "batch" ? "/operations/0/selector" : "/selector",
++          `selector.${field}`,
++        );
++        observation ??= context(refusal);
++        expect(context(refusal)).toEqual(observation);
++        expect(observation["bdp-scope-position"]).toBe("pos-0");
++        for (const [selector, admittedKey] of [
++          ["$[?@.missing]", key],
++          [exact, `${key}_exact`],
++        ]) {
++          const response = await f.post(text(selector!), admittedKey!, carrier);
++          expect(response.status).toBe(200);
++          expect(context(response)).toEqual(observation);
++          const receipt = await body(response);
++          expect(
++            validateSelectorReceipt(receipt),
++            JSON.stringify(validateSelectorReceipt.errors),
++          ).toBe(true);
++          expect(receipt).toMatchObject({
++            idempotencyKey: admittedKey,
++            status: "completed",
++            detail: "available",
++            requiredPosition: "pos-0",
++            results: [{ operationIndex: 0, outcome: "matched", count: 0 }],
++            next: null,
++          });
++          expect(receipt).not.toHaveProperty("effectPosition");
++          expect(receipt.results).toEqual([{ operationIndex: 0, outcome: "matched", count: 0 }]);
++          keys.push(admittedKey!);
++        }
++      }
++  const retained = await f.retainedReceiptInventory();
++  expect(retained.map((row) => row.key)).toEqual(keys.sort());
++  expect(retained).toHaveLength(24);
++  for (const row of retained)
++    expect(row.receipt).toMatchObject({
++      status: "completed",
++      requiredPosition: "pos-0",
++      results: [{ operationIndex: 0, outcome: "matched", count: 0 }],
++    });
++});
++it("serves Selector syntax and prior-key precedence over capacity", async () => {
++  const f = await fixture();
++  const singleton = (selector: string) =>
++    JSON.stringify(selectorHttpInput("deleteWhere", selector));
++  const set = (selector: string) => ({
++    operation: "deleteWhere",
++    ...selectorHttpInput("deleteWhere", selector),
++  });
++  await selectorHttpProblem(
++    await f.post(singleton("$..*"), "syntax", "deleteWhere"),
++    400,
++    "/selector",
++  );
++  const seedResponse = await f.post(batch([create()]), "seed");
++  expect(seedResponse.status).toBe(200);
++  const seed = await body(seedResponse),
++    expectedContext = context(seedResponse);
++  expect(validateSelectorReceipt(seed), JSON.stringify(validateSelectorReceipt.errors)).toBe(true);
++  expect(seed).toMatchObject({
++    status: "completed",
++    requiredPosition: "pos-1",
++    effectPosition: "pos-1",
++  });
++  await selectorHttpProblem(
++    await f.post(singleton("$..*"), "seed", "deleteWhere"),
++    400,
++    "/selector",
++  );
++  const conflict = await f.post(singleton(selectorHttpBytes(4097)), "seed", "deleteWhere");
++  expect(conflict.status).toBe(409);
++  expect(checkedProblem(await body(conflict))).toEqual({
++    type: "https://github.com/gastownhall/bdp/problems/conflict",
++    code: "idempotency-conflict",
++    status: 409,
++    retry: "never",
++  });
++  expect(context(conflict)).toEqual(expectedContext);
++  const replay = await f.post(batch([create()]), "seed");
++  expect(replay.status).toBe(200);
++  expect(await body(replay)).toEqual(seed);
++  expect(context(replay)).toEqual(expectedContext);
++  const unacceptableReplay = await f.post(batch([create()]), "seed", "batch", {
++    accept: "text/plain",
++  });
++  expect(unacceptableReplay.status).toBe(406);
++  expect(await unacceptableReplay.text()).toBe("");
++  expect(context(unacceptableReplay)).toEqual(expectedContext);
++  await selectorHttpProblem(
++    await f.post(singleton(`${selectorHttpDepth(31)} true`), "syntax_depth", "deleteWhere"),
++    400,
++    "/selector",
++  );
++  await selectorHttpProblem(
++    await f.post(batch([set(`${selectorHttpNodes(3)} true`)]), "syntax_nodes"),
++    400,
++    "/operations/0/selector",
++  );
++  await selectorHttpProblem(
++    await f.post(batch([set(`${selectorHttpBytes(4097)} true`)]), "syntax_bytes"),
++    400,
++    "/operations/0/selector",
++  );
++  const anonymous = await f.post(singleton(selectorHttpBytes(4097)), "anonymous", "deleteWhere", {
++    authorization: "",
++  });
++  expect(anonymous.status).toBe(401);
++  expect(checkedProblem(await body(anonymous)).code).toBe("unauthenticated");
++  const forbidden = await f.post(singleton(selectorHttpBytes(4097)), "forbidden", "deleteWhere", {
++    authorization: `Bearer ${readToken}`,
++  });
++  expect(forbidden.status).toBe(403);
++  expect(checkedProblem(await body(forbidden)).code).toBe("forbidden");
++  const over = await f.post(singleton(selectorHttpBytes(4097)), "accept", "deleteWhere", {
++    accept: "text/plain",
++  });
++  await selectorHttpProblem(over, 413, "/selector", "selector.bytes");
++  expect(context(over)).toEqual(expectedContext);
++  const noMedia = await f.post(singleton("$[?@.missing]"), "accept", "deleteWhere", {
++    accept: "text/plain",
++  });
++  expect(noMedia.status).toBe(406);
++  expect(await noMedia.text()).toBe("");
++  expect(context(noMedia)).toEqual(expectedContext);
++  const reuse = await f.post(singleton("$[?@.missing]"), "accept", "deleteWhere");
++  expect(reuse.status).toBe(200);
++  expect(await body(reuse)).toMatchObject({
++    status: "completed",
++    requiredPosition: "pos-1",
++    results: [{ operationIndex: 0, outcome: "matched", count: 0 }],
++  });
++  expect(context(reuse)).toEqual(expectedContext);
++  const later = await f.post(
++    batch([{ operation: "deleteBead", bead: "beads/missing" }, set(selectorHttpNodes(3))]),
++    "later",
++  );
++  await selectorHttpProblem(later, 413, "/operations/1/selector", "selector.nodes");
++  expect(context(later)).toEqual(expectedContext);
++  const laterReuse = await f.post(singleton("$[?@.missing]"), "later", "deleteWhere");
++  expect(laterReuse.status).toBe(200);
++  expect(await body(laterReuse)).toMatchObject({
++    status: "completed",
++    requiredPosition: "pos-1",
++    results: [{ operationIndex: 0, outcome: "matched", count: 0 }],
++  });
++  expect(context(laterReuse)).toEqual(expectedContext);
++  const inventory = await f.retainedReceiptInventory();
++  expect(inventory.map((row) => row.key)).toEqual(["accept", "later", "seed"]);
++  expect(inventory.find((row) => row.key === "seed")?.receipt).toEqual(seed);
++});
+diff --git a/packages/server/src/transaction-http.ts b/packages/server/src/transaction-http.ts
+index fd1e167..c84f8b8 100644
+--- a/packages/server/src/transaction-http.ts
++++ b/packages/server/src/transaction-http.ts
+@@ -369,16 +369,21 @@ export function createTransactionHttpHandler(
+           result.context,
+         );
+       }
+-      if (result.code === "limit-exceeded" && result.limit === "transaction.operations") {
++      if (result.code === "limit-exceeded" && result.limit !== undefined) {
+         if (!result.context) throw new Error("operation-limit refusal lost same-entry context");
+         return context(
+-          problem({ ...readProblem(result.code), limit: result.limit }),
++          problem({
++            ...readProblem(result.code),
++            limit: result.limit,
++            ...(result.pointer ? { pointer: result.pointer } : {}),
++          }),
+           result.context,
+         );
+       }
+       return problem({
+         ...readProblem(result.code),
+         ...(result.limit ? { limit: result.limit } : {}),
++        ...(result.pointer ? { pointer: result.pointer } : {}),
+       });
+     }
+     if (authorization.kind === "unauthenticated") return transactionHttpProblem("unauthenticated");
+diff --git a/packages/server/src/transaction-set.test.ts b/packages/server/src/transaction-set.test.ts
+index 9afd591..6c91f14 100644
+--- a/packages/server/src/transaction-set.test.ts
++++ b/packages/server/src/transaction-set.test.ts
+@@ -11,7 +11,12 @@ import {
+   isJsonSchemaDateTime,
+ } from "@bdp/protocol";
+ import * as batch from "./transaction-batch.js";
+-import { transactionInputText, assertTransactionInputDepth } from "./transaction-set.js";
++import {
++  transactionInputText,
++  assertTransactionInputDepth,
++  TransactionSelectorSyntaxError,
++  transactionSelectorCapacity,
++} from "./transaction-set.js";
+ import * as evaluator from "./resource-evaluator.js";
+ import { openTransactionStore } from "./transaction-store.js";
+ const scope = "https://example.test/set/",
+@@ -371,12 +376,12 @@ it("enforces one total Event cap across ordinary and set facts, with atomic reta
+   expect(f.owner.inspect().groups).toEqual(before.groups);
+   expect(f.admit(operations, "over")).toMatchObject({ kind: "existing", receipt });
+ });
+-it("keeps unresolved negative Selector inputs a development gap while valid carriers share preparation", () => {
++it("rejects invalid set Selector grammar while valid carriers share preparation and sequence sets remain excluded", () => {
+   const text = JSON.stringify({ operations: [update()] });
+   expect(() => batch.prepareTransaction(scope, text)).not.toThrow();
+   expect(() =>
+     batch.prepareTransactionSetCore(scope, JSON.stringify({ operations: [update("$..*")] })),
+-  ).toThrow(batch.TransactionDevelopmentLimitError);
++  ).toThrow(expect.objectContaining({ pointer: "/operations/0/selector" }));
+   expect(() =>
+     batch.prepareTransactionSequence(
+       scope,
+@@ -1028,3 +1033,88 @@ it("serializes byte-bounded deep syntax iteratively without changing number lexe
+   expect(transactionInputText(value)).toBe(text);
+   expect(() => assertTransactionInputDepth(value)).toThrow("development batch depth limit");
+ });
++
++it("preserves literal Selector identity and original mixed-carrier diagnostic pointers", () => {
++  const unicodeSelector = '$[?@.missing == "é😀"]';
++  const rawUnicode = JSON.stringify({ operations: [update(unicodeSelector)] });
++  const escapedUnicode = rawUnicode.replace("é", String.raw`\u00e9`);
++  expect(escapedUnicode).not.toBe(rawUnicode);
++  expect(JSON.parse(rawUnicode).operations[0].selector).toBe(unicodeSelector);
++  expect(JSON.parse(escapedUnicode).operations[0].selector).toBe(unicodeSelector);
++  const rawNormalized = batch.normalizeTransaction(
++    batch.prepareTransaction(scope, rawUnicode),
++    () => undefined,
++  );
++  const escapedNormalized = batch.normalizeTransaction(
++    batch.prepareTransaction(scope, escapedUnicode),
++    () => undefined,
++  );
++  expect(escapedNormalized.identity).toBe(rawNormalized.identity);
++  expect(escapedNormalized).toEqual(rawNormalized);
++  const literal = '$[?@.missing == "%41"]';
++  const original = JSON.stringify({ operations: [create("a"), update(literal)] });
++  const prepared = batch.prepareTransaction(scope, original);
++  const normalized = batch.normalizeTransaction(prepared, () => undefined);
++  expect(prepared.carrier.operations[1]?.input.selector).toBe(literal);
++  expect(Object.isFrozen(prepared.carrier.operations[1])).toBe(true);
++  expect(Object.keys(prepared.carrier.operations[1]!)).toEqual(["operation", "input"]);
++  expect(
++    batch.normalizeTransaction(batch.prepareTransaction(scope, original), () => undefined),
++  ).toEqual(normalized);
++  expect(
++    batch.normalizeTransaction(
++      batch.prepareTransaction(scope, original.replace("%41", "A")),
++      () => undefined,
++    ).identity,
++  ).not.toBe(normalized.identity);
++  expect(
++    batch.normalizeTransaction(
++      batch.prepareTransaction(scope, original.replace("@.missing", "@.missing ")),
++      () => undefined,
++    ).identity,
++  ).not.toBe(normalized.identity);
++  for (const [singleton, pointer] of [
++    [true, "/selector"],
++    [false, "/operations/1/selector"],
++  ] as const)
++    for (const invalid of ["$..*", ""]) {
++      try {
++        if (singleton)
++          batch.prepareTransactionSingleton(
++            scope,
++            "updateWhere",
++            JSON.stringify({
++              collection: "beads",
++              selector: invalid,
++              change: [{ op: "replace", path: "/n", value: 1 }],
++            }),
++          );
++        else
++          batch.prepareTransaction(
++            scope,
++            JSON.stringify({ operations: [create("a"), update(invalid)] }),
++          );
++        throw new Error("grammar should fail");
++      } catch (error) {
++        expect(error).toBeInstanceOf(TransactionSelectorSyntaxError);
++        expect(error).toMatchObject({ pointer });
++      }
++    }
++  let nested: unknown = 0;
++  for (let i = 0; i < 40; i++) nested = { nested };
++  const deep = { ...create("deep"), properties: { nested } };
++  expect(() =>
++    batch.prepareTransaction(scope, JSON.stringify({ operations: [deep, update("$..*")] })),
++  ).toThrow(TransactionSelectorSyntaxError);
++  expect(() =>
++    batch.prepareTransaction(scope, JSON.stringify({ operations: [deep, update()] })),
++  ).toThrow(batch.TransactionDevelopmentLimitError);
++  expect(() =>
++    transactionSelectorCapacity(
++      Object.freeze({
++        operation: "deleteWhere",
++        input: Object.freeze({ collection: "beads", selector: "$[?@.missing]" }),
++      }),
++    ),
++  ).toThrow("prepared set lost Selector grammar analysis");
++});
+diff --git a/packages/server/src/transaction-set.ts b/packages/server/src/transaction-set.ts
+index 09c976c..d2a0751 100644
+--- a/packages/server/src/transaction-set.ts
++++ b/packages/server/src/transaction-set.ts
+@@ -4,7 +4,7 @@ import {
+   prepareReadUpdateSingleton,
+   type LosslessJsonValue,
+ } from "@bdp/protocol";
+-import { ReadSelectorError, selectReadResources } from "./read-selector.js";
++import { ReadSelectorError, analyzeSelectorGrammar } from "./read-selector.js";
+ 
+ export class TransactionDevelopmentLimitError extends Error {}
+ export type TransactionSetOperation = "updateWhere" | "deleteWhere";
+@@ -81,7 +81,6 @@ export function prepareSetShape(
+     Object.keys(input).some((key) => !fields.includes(key)) ||
+     (input.collection !== "beads" && input.collection !== "links") ||
+     typeof input.selector !== "string" ||
+-    !input.selector ||
+     (operation === "updateWhere" && input.change === undefined)
+   )
+     throw new TypeError("invalid private set shape");
+@@ -129,16 +128,46 @@ export function prepareSetShape(
+   );
+   return Object.freeze({ operation, input });
+ }
+-/** Candidate-independent supported-subset check, after all carrier shape checks. */
+-export function validateSetSelector(prepared: PreparedTransactionSet): void {
++export class TransactionSelectorSyntaxError extends Error {
++  constructor(
++    readonly pointer: string,
++    cause: ReadSelectorError,
++  ) {
++    super("invalid bounded Selector grammar", { cause });
++  }
++}
++export type TransactionSelectorLimit = "selector.bytes" | "selector.depth" | "selector.nodes";
++const selectorSummaries = new WeakMap<
++  PreparedTransactionSet,
++  Readonly<{ bytes: number; depth: number; nodes: number }>
++>();
++/** Complete grammar only, after every carrier shape/reference/label check. */
++export function validateSetSelector(
++  prepared: PreparedTransactionSet,
++  pointer: string,
++  enclosingBytes: number,
++): void {
+   try {
+-    selectReadResources(prepared.input.selector as string, TRANSACTION_SELECTOR_LIMITS, []);
++    selectorSummaries.set(
++      prepared,
++      analyzeSelectorGrammar(prepared.input.selector as string, enclosingBytes),
++    );
+   } catch (error) {
+-    if (error instanceof ReadSelectorError)
+-      throw new TransactionDevelopmentLimitError(
+-        "set Selector refusal/admission policy remains outside the valid-set core",
+-        { cause: error },
+-      );
++    if (
++      error instanceof ReadSelectorError &&
++      (error.code === "syntax" || error.code === "unsupported-feature")
++    )
++      throw new TransactionSelectorSyntaxError(pointer, error);
+     throw error;
+   }
+ }
++/** Only the fresh-key owner branch consults immutable preparation metrics. */
++export function transactionSelectorCapacity(
++  prepared: PreparedTransactionSet,
++): TransactionSelectorLimit | undefined {
++  const summary = selectorSummaries.get(prepared);
++  if (!summary) throw new Error("prepared set lost Selector grammar analysis");
++  for (const field of ["bytes", "depth", "nodes"] as const)
++    if (summary[field] > TRANSACTION_SELECTOR_LIMITS[field]) return `selector.${field}`;
++  return undefined;
++}
+diff --git a/packages/server/src/transaction-store.ts b/packages/server/src/transaction-store.ts
+index 9641bda..90461b3 100644
+--- a/packages/server/src/transaction-store.ts
++++ b/packages/server/src/transaction-store.ts
+@@ -1,3 +1,4 @@
++import { transactionSelectorCapacity, type TransactionSelectorLimit } from "./transaction-set.js";
+ import {
+   TRANSACTION_SNAPSHOT_LIMITS,
+   TRANSACTION_SNAPSHOT_TOKEN_POLICY,
+@@ -135,7 +136,13 @@ export interface TransactionReceivingControls {
+ export type TransactionReceivingAdmission =
+   | TransactionAdmission
+   | { readonly kind: "not-acceptable"; readonly context?: TransactionReadContext }
+-  | { readonly kind: "operation-limit"; readonly context?: TransactionReadContext };
++  | { readonly kind: "operation-limit"; readonly context?: TransactionReadContext }
++  | {
++      readonly kind: "selector-limit";
++      readonly limit: TransactionSelectorLimit;
++      readonly pointer: string;
++      readonly context?: TransactionReadContext;
++    };
+ export function snapshotTransactionReceivingControls(
+   controls: TransactionReceivingControls,
+ ): TransactionReceivingControls {
+@@ -1081,6 +1088,19 @@ export function openTransactionStore(options: TransactionStoreOptions) {
+     // admission controls, and no refusal ever inserts a receipt or owner.
+     if (controls && batch.carrier.operations.length > controls.maximumOperations)
+       return { kind: "operation-limit" };
++    if (controls) {
++      for (const [index, op] of batch.carrier.operations.entries()) {
++        if (op.operation !== "updateWhere" && op.operation !== "deleteWhere") continue;
++        const limit = transactionSelectorCapacity(op);
++        if (limit)
++          return {
++            kind: "selector-limit",
++            limit,
++            pointer:
++              batch.carrier.kind === "singleton" ? "/selector" : `/operations/${index}/selector`,
++          };
++      }
++    }
+     if (controls && !controls.acceptsJson) return { kind: "not-acceptable" };
+     const receipt: TransactionReceipt = {
+       id: `${scope}receipts/${randomUUID()}`,
+@@ -1388,6 +1408,8 @@ export function openTransactionStore(options: TransactionStoreOptions) {
+         const result = admitKey(principal, key, batch, false, undefined, undefined, receiving);
+         if (result.kind === "operation-limit" && controls === undefined)
+           throw new TransactionDevelopmentLimitError("development transaction operation limit");
++        if (result.kind === "selector-limit" && controls === undefined)
++          throw new TransactionDevelopmentLimitError("development transaction Selector limit");
+         if (result.kind === "existing") {
+           if (!receiving.acceptsJson)
+             return {
+@@ -1400,6 +1422,7 @@ export function openTransactionStore(options: TransactionStoreOptions) {
+           observed &&
+           (result.kind === "conflict" ||
+             result.kind === "operation-limit" ||
++            result.kind === "selector-limit" ||
+             result.kind === "not-acceptable")
+         )
+           return { ...result, context: readContext() };
+diff --git a/packages/server/src/transaction-submission.test.ts b/packages/server/src/transaction-submission.test.ts
+index c40db15..0c4e3cb 100644
+--- a/packages/server/src/transaction-submission.test.ts
++++ b/packages/server/src/transaction-submission.test.ts
+@@ -6,12 +6,14 @@ import { afterEach, describe, expect, it, vi } from "vitest";
+ import { parseTypeDescriptor } from "@bdp/protocol";
+ import { openTransactionStore } from "./transaction-store.js";
+ import { prepareTransaction, prepareTransactionSequence } from "./transaction-batch.js";
++import * as setCore from "./transaction-set.js";
+ import { submitTransaction, type TransactionSubmission } from "./transaction-submission.js";
+ const scope = "https://example.test/submission/",
+   bead = "https://example.test/bead",
+   link = "https://example.test/link";
+ const cleanup: (() => void)[] = [];
+ afterEach(() => {
++  vi.restoreAllMocks();
+   for (const close of cleanup.splice(0).reverse()) close();
+ });
+ function fixture(extra: Partial<Parameters<typeof openTransactionStore>[0]> = {}) {
+@@ -135,14 +137,19 @@ describe("private direct Transactional receiving order", () => {
+     expect(claim.receipt.status).toBe("pending");
+     f.store.retract(claim);
+   });
+-  it("keeps unsupported Selectors and excessive private depth distinct from protocol malformed", async () => {
++  it("keeps invalid Selector grammar distinct from excessive private depth", async () => {
+     const f = fixture();
+     expect(
+       await submitTransaction(
+         f.store,
+         submission([{ operation: "deleteWhere", collection: "beads", selector: "$..*" }]),
+       ),
+-    ).toMatchObject({ kind: "development-limit" });
++    ).toMatchObject({
++      kind: "refused",
++      status: 400,
++      code: "malformed-request",
++      pointer: "/operations/0/selector",
++    });
+     let deep: unknown = 1;
+     for (let i = 0; i < 40; i++) deep = { deep };
+     expect(
+@@ -541,7 +548,7 @@ describe("private direct Transactional receiving order", () => {
+ describe("valid private set admission", () => {
+   const set = { operation: "deleteWhere", collection: "beads", selector: "$[?@.id]" };
+   it.each(["batch", "singleton"] as const)(
+-    "checks complete shape/key and principal before %s Selector gap",
++    "checks complete %s Selector grammar before principal while preserving key reuse",
+     async (carrier) => {
+       const f = fixture();
+       const request = (key: string): TransactionSubmission => ({
+@@ -560,13 +567,20 @@ describe("valid private set admission", () => {
+       ] as const) {
+         const before = f.store.inspect();
+         const key = `${carrier}_${code}`;
+-        expect(await submitTransaction(f.store, { ...request(key), authorization })).toMatchObject({
+-          kind: "refused",
+-          code,
+-        });
++        expect(
++          await submitTransaction(f.store, {
++            ...request(key),
++            body: request(key).body.replace("$..*", selectorBodyBytes(4097)),
++            authorization,
++          }),
++        ).toMatchObject({ kind: "refused", code });
+         expect(
+           await submitTransaction(f.store, { ...request("bad key"), authorization }),
+-        ).toMatchObject({ kind: "refused", code: "malformed-request" });
++        ).toMatchObject({
++          kind: "refused",
++          code: "malformed-request",
++          pointer: carrier === "batch" ? "/operations/0/selector" : "/selector",
++        });
+         expect(f.store.inspect()).toEqual(before);
+         expect(await submitTransaction(f.store, submission([create(key)], key))).toMatchObject({
+           kind: "receipt",
+@@ -574,7 +588,10 @@ describe("valid private set admission", () => {
+         });
+       }
+       expect(await submitTransaction(f.store, request("supported_auth"))).toMatchObject({
+-        kind: "development-limit",
++        kind: "refused",
++        status: 400,
++        code: "malformed-request",
++        pointer: carrier === "batch" ? "/operations/0/selector" : "/selector",
+       });
+       expect(
+         await submitTransaction(f.store, submission([create("after_gap")], "supported_auth")),
+@@ -1281,3 +1298,242 @@ describe("observed comparison deadline submission", () => {
+     expect(f.store.cancelSequence(attempt)).toBe(2);
+   });
+ });
++
++const selectorBodyBytes = (n: number) => `$[?@.missing${" ".repeat(n - 13)}]`;
++const selectorBodyDepth = (groups: number) =>
++  `$[?${"(".repeat(groups)}@.missing${")".repeat(groups)}]`;
++const selectorBodyNodes = (groups: number) => {
++  let value = "@.missing";
++  for (let level = 0; level < 6; level++) value = `(${value}||${value})`;
++  return `$[?${"(".repeat(groups)}${value}${")".repeat(groups)}]`;
++};
++const deletion = (selector = "$[?@.missing]") => ({
++  operation: "deleteWhere",
++  collection: "beads",
++  selector,
++});
++it("refuses invalid Selector grammar before every key state without owner admission", async () => {
++  const f = fixture();
++  const completed = await submitTransaction(f.store, submission([create()], "completed"));
++  const pending = own(f.store, submission([create("pending")], "pending"));
++  const before = f.store.inspect();
++  const store = f.store;
++  const admit = vi.fn((...args: Parameters<typeof store.admit>) => store.admit(...args));
++  const boundary = {
++    ...store,
++    admit: ((...args: Parameters<typeof store.admit>) => admit(...args)) as typeof store.admit,
++  };
++  for (const operation of ["updateWhere", "deleteWhere"] as const)
++    for (const carrier of ["singleton", "batch"] as const)
++      for (const key of ["fresh", "pending", "completed"]) {
++        const input = {
++          collection: "beads",
++          selector: "$..*",
++          ...(operation === "updateWhere" ? { change: [{ op: "add", path: "/n", value: 1 }] } : {}),
++        };
++        const request: TransactionSubmission = {
++          ...submission([], key),
++          carrier: carrier === "batch" ? { kind: "batch" } : { kind: "singleton", operation },
++          body: JSON.stringify(
++            carrier === "batch"
++              ? { operations: [create("prefix"), { operation, ...input }] }
++              : input,
++          ),
++        };
++        expect(await submitTransaction(boundary, request)).toEqual({
++          kind: "refused",
++          status: 400,
++          code: "malformed-request",
++          pointer: carrier === "batch" ? "/operations/1/selector" : "/selector",
++        });
++      }
++  for (const authorization of [{ kind: "unauthenticated" }, { kind: "forbidden" }] as const)
++    expect(
++      await submitTransaction(boundary, {
++        ...submission([deletion("$..*")], "bad key"),
++        authorization,
++      }),
++    ).toEqual({
++      kind: "refused",
++      status: 400,
++      code: "malformed-request",
++      pointer: "/operations/0/selector",
++    });
++  expect(
++    await submitTransaction(
++      boundary,
++      submission([deletion(selectorBodyBytes(4097)), deletion("$..*")]),
++    ),
++  ).toMatchObject({ status: 400, pointer: "/operations/1/selector" });
++  expect(
++    await submitTransaction(
++      boundary,
++      submission([deletion(selectorBodyBytes(4097)), { ...deletion(), cardinality: {} }]),
++    ),
++  ).toEqual({ kind: "refused", status: 400, code: "malformed-request" });
++  expect(admit).not.toHaveBeenCalled();
++  expect(f.store.inspect()).toEqual(before);
++  if (completed.kind !== "receipt") throw Error("expected completed seed");
++  expect(f.store.receipt("p", completed.receipt.id)).toEqual(completed.receipt);
++  expect(f.store.receipt("p", pending.receipt.id)).toEqual(pending.receipt);
++  f.store.retract(pending);
++});
++it("applies fixed Selector capacity only to fresh valid carriers before execution and negotiation", async () => {
++  let admissions = 0;
++  const f = fixture({
++    fault(stage) {
++      if (stage === "after-admission") admissions++;
++    },
++  });
++  const before = f.store.inspect();
++  const trusted = f.store.withRead((_reader, context) => context);
++  if (trusted.kind !== "read") throw Error("expected owner observation");
++  let accepted = 0;
++  for (const [selector, limit] of [
++    [selectorBodyBytes(4097), "selector.bytes"],
++    [selectorBodyDepth(31), "selector.depth"],
++    [selectorBodyNodes(3), "selector.nodes"],
++  ] as const) {
++    const request = submission([deletion(selector)], limit.replace(".", "_"));
++    const refused = await submitTransaction(f.store, request, {}, true);
++    expect(refused).toEqual({
++      kind: "refused",
++      status: 413,
++      code: "limit-exceeded",
++      limit,
++      pointer: "/operations/0/selector",
++      context: trusted.value,
++    });
++    expect(admissions).toBe(accepted);
++    expect(f.store.inspect()).toEqual(before);
++    expect(
++      await submitTransaction(f.store, { ...request, body: submission([deletion()]).body }),
++    ).toMatchObject({
++      kind: "receipt",
++      receipt: {
++        status: "completed",
++        requiredPosition: "pos-0",
++        results: [{ operationIndex: 0, outcome: "matched", count: 0 }],
++        next: null,
++      },
++    });
++    accepted++;
++  }
++  expect(
++    await submitTransaction(f.store, {
++      ...submission([deletion(selectorBodyBytes(4097)), deletion()], "outer"),
++      receiving: { acceptsJson: false, maximumOperations: 1 },
++    }),
++  ).toEqual({
++    kind: "refused",
++    status: 413,
++    code: "limit-exceeded",
++    limit: "transaction.operations",
++  });
++  expect(
++    await submitTransaction(
++      f.store,
++      submission(
++        [{ operation: "deleteBead", bead: "beads/missing" }, deletion(selectorBodyNodes(3))],
++        "later",
++      ),
++    ),
++  ).toMatchObject({ status: 413, limit: "selector.nodes", pointer: "/operations/1/selector" });
++  for (const [authorization, status] of [
++    [{ kind: "unauthenticated" }, 401],
++    [{ kind: "forbidden" }, 403],
++  ] as const)
++    expect(
++      await submitTransaction(f.store, {
++        ...submission([deletion(selectorBodyBytes(4097))]),
++        authorization,
++      }),
++    ).toMatchObject({ kind: "refused", status });
++  expect(
++    await submitTransaction(f.store, submission([deletion(selectorBodyBytes(4097))], "bad key")),
++  ).toMatchObject({ status: 400 });
++  expect(
++    await submitTransaction(f.store, {
++      ...submission([deletion(selectorBodyBytes(4097))], "accept"),
++      receiving: { acceptsJson: false, maximumOperations: 32 },
++    }),
++  ).toMatchObject({ status: 413, limit: "selector.bytes" });
++  expect(
++    await submitTransaction(f.store, {
++      ...submission([deletion()], "accept"),
++      receiving: { acceptsJson: false, maximumOperations: 32 },
++    }),
++  ).toEqual({ kind: "not-acceptable" });
++  expect(await submitTransaction(f.store, submission([deletion()], "accept"))).toMatchObject({
++    kind: "receipt",
++    receipt: {
++      status: "completed",
++      requiredPosition: "pos-0",
++      results: [{ operationIndex: 0, outcome: "matched", count: 0 }],
++      next: null,
++    },
++  });
++  accepted++;
++  expect(
++    await submitTransaction(f.store, submission([deletion(selectorBodyDepth(10000))], "deep")),
++  ).toMatchObject({ status: 413, limit: "selector.bytes" });
++  for (const key of ["outer", "later", "deep", "key"]) {
++    expect(await submitTransaction(f.store, submission([deletion()], key))).toMatchObject({
++      kind: "receipt",
++      receipt: {
++        status: "completed",
++        requiredPosition: "pos-0",
++        results: [{ operationIndex: 0, outcome: "matched", count: 0 }],
++        next: null,
++      },
++    });
++    accepted++;
++  }
++  expect(admissions).toBe(accepted);
++  expect(f.store.inspect()).toEqual(before);
++});
++it("preserves genuine pending completed and failed receipts before Selector capacity", async () => {
++  const f = fixture();
++  const request = submission([deletion()], "pending");
++  const claim = own(f.store, request);
++  const failedRequest = submission([{ operation: "deleteBead", bead: "beads/missing" }], "failed");
++  const failed = await submitTransaction(f.store, failedRequest);
++  expect(failed).toMatchObject({ kind: "receipt", receipt: { status: "failed" } });
++  const capacity = vi.spyOn(setCore, "transactionSelectorCapacity");
++  const before = f.store.inspect();
++  expect(await submitTransaction(f.store, request)).toEqual({
++    kind: "receipt",
++    receipt: claim.receipt,
++  });
++  expect(
++    await submitTransaction(f.store, submission([deletion(selectorBodyBytes(4097))], "pending")),
++  ).toEqual({ kind: "refused", status: 409, code: "idempotency-conflict" });
++  const completed = f.store.execute(claim);
++  expect(await submitTransaction(f.store, request)).toEqual({
++    kind: "receipt",
++    receipt: completed,
++  });
++  expect(await submitTransaction(f.store, failedRequest)).toEqual(failed);
++  expect(
++    await submitTransaction(f.store, submission([deletion(selectorBodyBytes(4097))], "failed")),
++  ).toMatchObject({ status: 409 });
++  expect(
++    await submitTransaction(f.store, {
++      ...request,
++      receiving: { acceptsJson: false, maximumOperations: 32 },
++    }),
++  ).toEqual({ kind: "not-acceptable" });
++  expect(capacity).not.toHaveBeenCalled();
++  expect(f.store.inspect()).toEqual(before);
++  expect(await submitTransaction(f.store, submission([deletion()], "fresh"))).toMatchObject({
++    kind: "receipt",
++    receipt: {
++      status: "completed",
++      requiredPosition: "pos-0",
++      results: [{ operationIndex: 0, outcome: "matched", count: 0 }],
++      next: null,
++    },
++  });
++  expect(capacity).toHaveBeenCalledTimes(1);
++  expect(f.store.inspect()).toEqual(before);
++});
+diff --git a/packages/server/src/transaction-submission.ts b/packages/server/src/transaction-submission.ts
+index fdd4a98..9363b4b 100644
+--- a/packages/server/src/transaction-submission.ts
++++ b/packages/server/src/transaction-submission.ts
+@@ -1,3 +1,7 @@
++import {
++  TransactionSelectorSyntaxError,
++  type TransactionSelectorLimit,
++} from "./transaction-set.js";
+ /** Private receiving/admission composition. No socket, export or profile claim. */
+ import { JsonSyntaxError, ReadUpdateCarrierError } from "@bdp/protocol";
+ import {
+@@ -59,7 +63,8 @@ export type TransactionSubmissionResult =
+         | "request-too-large"
+         | "limit-exceeded"
+         | "temporarily-unavailable";
+-      readonly limit?: "transaction.operations";
++      readonly limit?: "transaction.operations" | TransactionSelectorLimit;
++      readonly pointer?: string;
+       readonly retry?: "after-delay";
+       readonly context?: TransactionReadContext;
+     };
+@@ -89,6 +94,8 @@ export async function submitTransaction(
+         ? prepareTransaction(store.scope, body)
+         : prepareTransactionSingleton(store.scope, submission.carrier.operation, body);
+   } catch (error) {
++    if (error instanceof TransactionSelectorSyntaxError)
++      return { kind: "refused", status: 400, code: "malformed-request", pointer: error.pointer };
+     if (error instanceof TransactionDevelopmentLimitError) developmentLimit = error;
+     else if (
+       error instanceof JsonSyntaxError ||
+@@ -136,6 +143,7 @@ export async function submitTransaction(
+     observed &&
+     (result.kind === "conflict" ||
+       result.kind === "operation-limit" ||
++      result.kind === "selector-limit" ||
+       result.kind === "not-acceptable") &&
+     !result.context
+   )
+@@ -156,6 +164,15 @@ export async function submitTransaction(
+         limit: "transaction.operations",
+         ...(result.context ? { context: result.context } : {}),
+       };
++    case "selector-limit":
++      return {
++        kind: "refused",
++        status: 413,
++        code: "limit-exceeded",
++        limit: result.limit,
++        pointer: result.pointer,
++        ...(result.context ? { context: result.context } : {}),
++      };
+     case "not-acceptable":
+       return result;
+     case "comparison-deadline":
+diff --git a/apps/bdptest/src/transactional-selector-admission-installed.test.ts b/apps/bdptest/src/transactional-selector-admission-installed.test.ts
+new file mode 100644
+index 0000000..1da0942
+--- /dev/null
++++ b/apps/bdptest/src/transactional-selector-admission-installed.test.ts
+@@ -0,0 +1,564 @@
++/** Actual bounded Selector admission; private serving evidence, not qualification. */
++import { execFileSync, type ChildProcess } from "node:child_process";
++import { createHash, randomBytes } from "node:crypto";
++import { existsSync, mkdtempSync, readFileSync, realpathSync, rmSync } from "node:fs";
++import { tmpdir } from "node:os";
++import path from "node:path";
++import { fileURLToPath } from "node:url";
++import { expect, it } from "vitest";
++import { Ajv2020 } from "ajv/dist/2020.js";
++import { createRawHttpExchangeExecutor } from "@bdp/conformance";
++import { isJsonSchemaUri, isJsonSchemaDateTime } from "@bdp/protocol";
++import { installedTransactionBinding } from "../test-support/transactional-execution-binding.js";
++const root = fileURLToPath(new URL("../../../", import.meta.url));
++const { launchInstalledTransaction } = (await import(
++  new URL("../../../scripts/transaction-installed-observation.mjs", import.meta.url).href
++)) as {
++  launchInstalledTransaction(
++    entry: string,
++    configuration: unknown,
++    signal: AbortSignal,
++  ): Promise<{ child: ChildProcess; ready: Record<string, unknown>; close(): Promise<void> }>;
++};
++const entry = realpathSync(
++  process.env.BDP_TRANSACTIONAL_INSTALLED_ENTRY ??
++    path.join(root, "packages/server/dist/transaction-installed-process.js"),
++);
++if (process.env.BDP_TRANSACTIONAL_INSTALLED_ENTRY && !process.env.BDP_TRANSACTIONAL_SOURCE_COMMIT)
++  throw Error("installed Selector override requires explicit source attribution");
++const source =
++  process.env.BDP_TRANSACTIONAL_SOURCE_COMMIT ??
++  execFileSync("git", ["rev-parse", "HEAD"], { cwd: root, encoding: "utf8" }).trim();
++const fixture = {
++  bytes: readFileSync(
++    path.join(root, "packages/conformance/test-support/transactional/fixture-v1.json"),
++  ),
++};
++const scope = "https://reference.invalid/acme/",
++  type = `${scope}types/bead`,
++  schema = `${scope}schemas/n`;
++const descriptor = {
++  id: type,
++  name: "Bead",
++  describes: "bead",
++  conformsTo: [],
++  propertiesSchema: schema,
++};
++const artifacts = {
++  descriptors: [{ retrievalUri: type, utf8: JSON.stringify(descriptor) }],
++  schemas: [
++    {
++      retrievalUri: schema,
++      utf8: JSON.stringify({
++        $id: schema,
++        type: "object",
++        properties: { n: { type: "number" } },
++        required: ["n"],
++        additionalProperties: false,
++      }),
++    },
++  ],
++};
++const ajv = new Ajv2020({ strict: true, allErrors: true });
++ajv.addFormat("uri", { type: "string", validate: isJsonSchemaUri });
++ajv.addFormat("date-time", { type: "string", validate: isJsonSchemaDateTime });
++const bundle = JSON.parse(readFileSync(path.join(root, "schemas/bdp-v0.schema.json"), "utf8"));
++ajv.addSchema(bundle);
++const validators = Object.fromEntries(
++  [
++    "mutationReceipt",
++    "transactionalProblem",
++    "readProblem",
++    "eventPage",
++    "changefeedPage",
++    "beadRecord",
++  ].map((name) => [name, ajv.compile({ $ref: `${bundle.$id}#/$defs/${name}` })]),
++);
++function object(value: unknown): Record<string, unknown> {
++  if (!value || typeof value !== "object" || Array.isArray(value))
++    throw Error("expected wire object");
++  return value as Record<string, unknown>;
++}
++function array(value: unknown): Record<string, unknown>[] {
++  if (!Array.isArray(value)) throw Error("expected wire array");
++  return value.map(object);
++}
++function checked(name: string, value: unknown) {
++  const validate = validators[name];
++  if (!validate) throw Error("missing schema validator");
++  expect(validate(value), JSON.stringify(validate.errors)).toBe(true);
++}
++function bytes(n: number) {
++  return `$[?@.missing${" ".repeat(n - 13)}]`;
++}
++function depth(groups: number) {
++  return `$[?${"(".repeat(groups)}@.missing${")".repeat(groups)}]`;
++}
++function nodes(groups: number) {
++  let expression = "@.missing";
++  for (let level = 0; level < 6; level++) expression = `(${expression}||${expression})`;
++  return `$[?${"(".repeat(groups)}${expression}${")".repeat(groups)}]`;
++}
++const input = (selector: string, update = false) => ({
++  collection: "beads",
++  selector,
++  ...(update ? { change: [{ op: "replace", path: "/n", value: 1 }] } : {}),
++});
++const batch = (...operations: unknown[]) => ({ operations });
++const create = (id: string) => ({
++  operation: "createBead",
++  id: `beads/${id}`,
++  type,
++  properties: { n: 0 },
++});
++const set = (selector: string, update = false) => ({
++  operation: update ? "updateWhere" : "deleteWhere",
++  ...input(selector, update),
++});
++
++it("installed Selector grammar and fresh capacity preserve keys receipts and complete effects", async () => {
++  const controller = new AbortController();
++  const directory = mkdtempSync(path.join(tmpdir(), "bdp-selector-installed-"));
++  const deadline = setTimeout(
++    () => controller.abort(Error("installed Selector cohort deadline")),
++    90000,
++  );
++  const token = randomBytes(32).toString("base64url");
++  const failures: unknown[] = [],
++    observations: unknown[] = [];
++  let child: Awaited<ReturnType<typeof launchInstalledTransaction>> | undefined;
++  let binding: ReturnType<typeof installedTransactionBinding> | undefined;
++  let childAbsent = false;
++  const routes = new Set(
++    [
++      "POST operations/batch",
++      "POST operations/delete-where",
++      "POST operations/update-where",
++      "GET beads/late",
++      "GET beads/a",
++      "GET changes/?after=genesis",
++      "GET events/",
++    ].map((route) => {
++      const [method, target] = route.split(" ");
++      return `${method} ${new URL(target!, scope).href}`;
++    }),
++  );
++  const initialRoutes = [...routes];
++  let epoch: string | undefined, view: string | undefined;
++  try {
++    child = await launchInstalledTransaction(
++      entry,
++      {
++        scope,
++        directory,
++        create: true,
++        artifacts,
++        credentials: [{ token, principal: "writer", canMutate: true }],
++      },
++      controller.signal,
++    );
++    binding = installedTransactionBinding(child.ready, source, fixture);
++    for (const [name, target] of [
++      ["batch", "batch"],
++      ["deleteWhere", "delete-where"],
++      ["updateWhere", "update-where"],
++    ])
++      expect(object(child.ready.targets)[name!]).toBe(`${scope}operations/${target}`);
++    const address = new URL(String(child.ready.listenUrl));
++    async function send(
++      target: string,
++      payload: unknown | undefined,
++      key: string | undefined,
++      status: number,
++      position?: string,
++    ) {
++      if (!child || !binding) throw Error("missing installed child");
++      expect(installedTransactionBinding(child.ready, source, fixture)).toEqual(binding);
++      const url = new URL(target, scope).href,
++        method = payload === undefined ? "GET" : "POST";
++      expect(routes.has(`${method} ${url}`), "confined Selector route").toBe(true);
++      if (observations.length >= 25) throw Error("Selector exchange bound exceeded");
++      const execute = createRawHttpExchangeExecutor(
++        { transport: "plain", host: address.hostname, port: Number(address.port) },
++        {
++          requestTimeoutMs: 5000,
++          maximumBodyBytes: 1048576,
++          exactMode: {
++            scope,
++            profile: "transactional",
++            routes: [{ method, url }],
++            maximumRequestHeaderBytes: 16384,
++            maximumRequestBodyBytes: 65536,
++            defaultCredentialRef: "writer",
++            credentialHandles: [{ id: "writer", headerNames: ["authorization"] }],
++            resolveCredentials: () => ({ authorization: `Bearer ${token}` }),
++          },
++        },
++      );
++      const requestBody = payload === undefined ? undefined : JSON.stringify(payload);
++      const response = await execute({
++        method,
++        url,
++        signal: controller.signal,
++        credentialRef: "writer",
++        raw: {
++          headerLines:
++            payload === undefined
++              ? []
++              : [
++                  { name: "Content-Type", value: "application/json" },
++                  { name: "Idempotency-Key", value: key! },
++                ],
++          ...(requestBody === undefined ? {} : { bodyBytes: Buffer.from(requestBody) }),
++        },
++      });
++      observations.push({
++        method,
++        url,
++        key,
++        requestBody,
++        status: response.status,
++        headers: response.headers,
++        body: response.bodyText,
++        wireResponseBase64: response.wireResponseBytes
++          ? Buffer.from(response.wireResponseBytes).toString("base64")
++          : null,
++        wireSha256: response.wireResponseBytes
++          ? createHash("sha256").update(response.wireResponseBytes).digest("hex")
++          : null,
++      });
++      expect(
++        response.status,
++        JSON.stringify({
++          oracle: "installed Selector status",
++          exchange: observations.length,
++          status: response.status,
++          developmentLimit: response.headers["x-bdp-development-limit"],
++          contentLength: response.headers["content-length"],
++        }),
++      ).toBe(status);
++      expect(response.exactRequest?.writeState).toBe("complete");
++      expect(response.wireResponseBytes?.length).toBeGreaterThan(0);
++      expect(response.headers["x-bdp-development-limit"]).toBeUndefined();
++      if (position !== undefined) {
++        epoch ??= response.headers["bdp-scope-epoch"];
++        view ??= response.headers["bdp-authorization-view"];
++        expect(epoch).toEqual(expect.any(String));
++        expect(view).toEqual(expect.any(String));
++        expect(response.headers["bdp-scope-epoch"]).toBe(epoch);
++        expect(response.headers["bdp-authorization-view"]).toBe(view);
++        expect(response.headers["bdp-scope-position"]).toBe(position);
++      } else if (status === 400) {
++        for (const name of ["bdp-scope-epoch", "bdp-authorization-view", "bdp-scope-position"])
++          expect(response.headers[name]).toBeUndefined();
++      }
++      const value = object(JSON.parse(response.bodyText));
++      if (status === 200 && method === "POST") {
++        checked("mutationReceipt", value);
++        expect(value).toMatchObject({
++          status: "completed",
++          detail: "available",
++          idempotencyKey: key,
++          scopeEpoch: epoch,
++          authorizationView: view,
++          next: null,
++        });
++      } else if (status >= 400) {
++        checked(status === 404 ? "readProblem" : "transactionalProblem", value);
++        expect(response.headers["content-type"]).toBe("application/problem+json");
++        expect(response.headers.location).toBeUndefined();
++        expect(response.headers["retry-after"]).toBeUndefined();
++      }
++      return value;
++    }
++    function problem(
++      value: Record<string, unknown>,
++      status: 400 | 413,
++      pointer: string,
++      limit?: string,
++    ) {
++      expect(value).toEqual({
++        type: `https://github.com/gastownhall/bdp/problems/${status === 400 ? "request" : "size"}`,
++        status,
++        code: status === 400 ? "malformed-request" : "limit-exceeded",
++        retry: "never",
++        pointer,
++        ...(limit ? { limit } : {}),
++      });
++    }
++    function noop(value: Record<string, unknown>) {
++      expect(value.results).toEqual([{ operationIndex: 0, outcome: "matched", count: 0 }]);
++      expect(value.requiredPosition).toBe("pos-1");
++      expect(value).not.toHaveProperty("effectPosition");
++    }
++    function resource(value: unknown, n: number) {
++      const row = object(value);
++      checked("beadRecord", row);
++      expect(row).toEqual({
++        id: `${scope}beads/a`,
++        type,
++        properties: { n },
++        metadata: {},
++        revision: expect.any(String),
++      });
++      expect(String(row.revision).length).toBeGreaterThan(0);
++      return row;
++    }
++    const seedBody = batch(create("a"));
++    const seed = await send("operations/batch", seedBody, "seed", 200, "pos-1"); //1
++    const seeded = resource(array(seed.results)[0]?.resource, 0);
++    expect(seed.results).toEqual([{ operationIndex: 0, outcome: "created", resource: seeded }]);
++    expect(seed.requiredPosition).toBe("pos-1");
++    expect(seed.effectPosition).toBe("pos-1");
++    problem(
++      await send("operations/delete-where", input("$..*"), "bad-single", 400),
++      400,
++      "/selector",
++    ); //2
++    noop(await send("operations/delete-where", input("$[?@.missing]"), "bad-single", 200, "pos-1")); //3
++    problem(
++      await send("operations/batch", batch(create("late"), set("$..*", true)), "bad-batch", 400),
++      400,
++      "/operations/1/selector",
++    ); //4
++    expect(await send("beads/late", undefined, undefined, 404, "pos-1")).toMatchObject({
++      code: "resource-not-found",
++      status: 404,
++      retry: "never",
++    }); //5
++    noop(await send("operations/batch", batch(set("$[?@.missing]")), "bad-batch", 200, "pos-1")); //6
++    problem(
++      await send("operations/delete-where", input(bytes(4097)), "bytes", 413, "pos-1"),
++      413,
++      "/selector",
++      "selector.bytes",
++    ); //7
++    noop(await send("operations/delete-where", input("$[?@.missing]"), "bytes", 200, "pos-1")); //8
++    problem(
++      await send("operations/update-where", input(depth(31), true), "depth", 413, "pos-1"),
++      413,
++      "/selector",
++      "selector.depth",
++    ); //9
++    noop(
++      await send("operations/update-where", input("$[?@.missing]", true), "depth", 200, "pos-1"),
++    ); //10
++    problem(
++      await send(
++        "operations/batch",
++        batch({ operation: "deleteBead", bead: "beads/missing" }, set(nodes(3))),
++        "nodes",
++        413,
++        "pos-1",
++      ),
++      413,
++      "/operations/1/selector",
++      "selector.nodes",
++    ); //11
++    noop(await send("operations/batch", batch(set("$[?@.missing]")), "nodes", 200, "pos-1")); //12
++    noop(await send("operations/delete-where", input(bytes(4096)), "exact-bytes", 200, "pos-1")); //13
++    noop(
++      await send("operations/update-where", input(depth(30), true), "exact-depth", 200, "pos-1"),
++    ); //14
++    noop(await send("operations/batch", batch(set(nodes(2))), "exact-nodes", 200, "pos-1")); //15
++    problem(
++      await send("operations/delete-where", input(`${depth(10000)} true`), "seed", 400),
++      400,
++      "/selector",
++    ); //16
++    expect(await send("operations/delete-where", input(bytes(4097)), "seed", 409, "pos-1")).toEqual(
++      {
++        type: "https://github.com/gastownhall/bdp/problems/conflict",
++        code: "idempotency-conflict",
++        status: 409,
++        retry: "never",
++      },
++    ); //17
++    expect(await send("operations/batch", seedBody, "seed", 200, "pos-1")).toEqual(seed); //18
++    const writeBody = input(`$[?@.id == "${scope}beads/a"]`, true);
++    const write = await send("operations/update-where", writeBody, "write", 200, "pos-2"); //19
++    const updated = resource(array(write.results)[1]?.resource, 1);
++    expect(updated.revision).not.toBe(seeded.revision);
++    expect(write.results).toEqual([
++      { operationIndex: 0, outcome: "matched", count: 1 },
++      { operationIndex: 0, outcome: "updated", resource: updated },
++    ]);
++    expect(write.requiredPosition).toBe("pos-2");
++    expect(write.effectPosition).toBe("pos-2");
++    expect(await send("operations/update-where", writeBody, "write", 200, "pos-2")).toEqual(write); //20
++    const receiptUrl = new URL(String(write.id));
++    expect(receiptUrl.href).toBe(write.id);
++    expect(receiptUrl.href.length).toBeLessThanOrEqual(8192);
++    expect(receiptUrl.origin).toBe(new URL(scope).origin);
++    expect(receiptUrl.search + receiptUrl.hash + receiptUrl.username + receiptUrl.password).toBe(
++      "",
++    );
++    expect(receiptUrl.href).toMatch(
++      /^https:\/\/reference\.invalid\/acme\/receipts\/[A-Za-z0-9_-]+$/,
++    );
++    routes.add(`GET ${receiptUrl.href}`);
++    const receipt = await send(receiptUrl.href, undefined, undefined, 200, "pos-2"); //21
++    checked("mutationReceipt", receipt);
++    expect(receipt).toEqual(write);
++    expect(await send("beads/a", undefined, undefined, 200, "pos-2")).toEqual(updated); //22
++    const first = await send("changes/?after=genesis", undefined, undefined, 200, "pos-2"); //23
++    checked("changefeedPage", first);
++    expect(first).toMatchObject({
++      scope,
++      scopeEpoch: epoch,
++      authorizationView: view,
++      after: "genesis",
++      observedHeadPosition: "pos-2",
++    });
++    expect(array(first.groups)).toHaveLength(1);
++    const firstGroup = array(first.groups)[0]!;
++    const next = new URL(String(first.next));
++    expect(next.href).toBe(first.next);
++    expect(next.href.length).toBeLessThanOrEqual(8192);
++    expect(next.origin).toBe(new URL(scope).origin);
++    expect(next.pathname).toBe("/acme/changes/");
++    expect(next.username + next.password + next.hash).toBe("");
++    expect([...next.searchParams]).toEqual([["after", firstGroup.checkpoint]]);
++    routes.add(`GET ${next.href}`);
++    const events = await send("events/", undefined, undefined, 200, "pos-2"); //24
++    checked("eventPage", events);
++    expect(events.source).toBe(`${scope}events/`);
++    expect(events.next).toBeNull();
++    const facts = array(events.events);
++    expect(facts).toHaveLength(2);
++    const expectedFacts = [
++      {
++        type: "created",
++        transaction: seed.transaction,
++        data: { revision: seeded.revision, properties: { n: 0 }, metadata: {} },
++      },
++      {
++        type: "updated",
++        transaction: write.transaction,
++        data: {
++          previousRevision: seeded.revision,
++          revision: updated.revision,
++          change: [{ op: "replace", path: "/n", value: 1 }],
++        },
++      },
++    ];
++    for (const [index, fact] of facts.entries()) {
++      expect(fact.id).toMatch(
++        new RegExp(`^ev_[A-Za-z0-9_-]{43}_[A-Za-z0-9_-]{43}_[A-Za-z0-9_-]{43}_pos-${index + 1}_0$`),
++      );
++      expect(fact).toEqual({
++        id: fact.id,
++        ordinal: 0,
++        source: `${scope}events/`,
++        subject: `${scope}beads/a`,
++        subjectType: type,
++        time: expect.any(String),
++        ...expectedFacts[index],
++      });
++    }
++    const second = await send(next.href, undefined, undefined, 200, "pos-2"); //25
++    checked("changefeedPage", second);
++    expect(second).toMatchObject({
++      scope,
++      scopeEpoch: epoch,
++      authorizationView: view,
++      after: firstGroup.checkpoint,
++      observedHeadPosition: "pos-2",
++      next: null,
++    });
++    expect(array(second.groups)).toHaveLength(1);
++    for (const [index, group] of [firstGroup, array(second.groups)[0]!].entries()) {
++      expect(group.checkpoint).toEqual(expect.any(String));
++      expect(group).toEqual({
++        scopeEpoch: epoch,
++        authorizationView: view,
++        checkpoint: group.checkpoint,
++        position: `pos-${index + 1}`,
++        previousPosition: `pos-${index}`,
++        projectionAdvance: false,
++        transaction: index === 0 ? seed.transaction : write.transaction,
++        changes: [
++          { operation: "upsert", resourceKind: "bead", resource: index === 0 ? seeded : updated },
++        ],
++        erasures: [],
++        eventCount: 1,
++        events: [facts[index]],
++      });
++    }
++    expect(observations).toHaveLength(25);
++    const successfulKeys = new Set(
++      (observations as { method: string; status: number; key?: string }[])
++        .filter((row) => row.method === "POST" && row.status === 200)
++        .map((row) => row.key),
++    );
++    expect([...successfulKeys].sort()).toEqual([
++      "bad-batch",
++      "bad-single",
++      "bytes",
++      "depth",
++      "exact-bytes",
++      "exact-depth",
++      "exact-nodes",
++      "nodes",
++      "seed",
++      "write",
++    ]);
++    expect(routes.size).toBe(9);
++    expect(
++      new Set(
++        (observations as { method: string; url: string }[]).map((r) => `${r.method} ${r.url}`),
++      ),
++    ).toEqual(routes);
++  } catch (error) {
++    failures.push(error);
++  } finally {
++    try {
++      await child?.close();
++    } catch (error) {
++      failures.push(error);
++    }
++    if (controller.signal.aborted) failures.push(controller.signal.reason);
++    clearTimeout(deadline);
++    try {
++      rmSync(directory, { recursive: true, force: true });
++    } catch (error) {
++      failures.push(error);
++    }
++    if (child?.child.pid) {
++      try {
++        process.kill(child.child.pid, 0);
++        failures.push(Error("installed child still present"));
++      } catch (error) {
++        if ((error as NodeJS.ErrnoException).code === "ESRCH") childAbsent = true;
++        else failures.push(error);
++      }
++    }
++    if (existsSync(directory)) failures.push(Error("installed directory still present"));
++  }
++  console.log(
++    JSON.stringify({
++      kind: "installed-selector-admission",
++      sourceAttribution: source,
++      sourceAttributionKind:
++        "supervisor-verified only when external frozen packaging audit supplies it; not child attestation",
++      workspaceDirty:
++        execFileSync("git", ["status", "--porcelain"], { cwd: root, encoding: "utf8" }).length > 0,
++      entry,
++      entrySha256: createHash("sha256").update(readFileSync(entry)).digest("hex"),
++      binding,
++      claimEligible: false,
++      initialRoutes,
++      observations,
++      cleanup: {
++        pid: child?.child.pid,
++        exitCode: child?.child.exitCode,
++        signalCode: child?.child.signalCode,
++        childAbsent,
++        directoryAbsent: !existsSync(directory),
++      },
++      failureCount: failures.length,
++    }),
++  );
++  if (failures.length)
++    throw new AggregateError(failures, "installed Selector observation or cleanup failed");
++}, 120000);

@@ -1,0 +1,7 @@
+# Receipt successor source prefix audit
+
+Fresh build, build binding, focused source and immediate audit all completed raw0/accepted (4.423s,7.711s,6.491s,7.700s). Actual results contain exactly the twelve selected callbacks passed across two files. All679 source hashes and476 build inventory entries match; build record hashes and immediate audit's raw log/results bindings match independently.
+
+Three actual observations reconcile: A reports10 delegated roots,4 waits,11 clock calls and2 submits, with pos-1 then current pos-2 contexts, unsupported null context and current missing contexts. B reports2 roots,1 wait,3 clock calls, one closed-owner probe and closed true. D reports10 ordered requests with200/503/503/503/500/500/400/404/404/401,3 waits and empty HEAD/private500 bodies. The foreign-context500 pair is sourceD5/6. Whole source workload arithmetic remains source-derived inventory, not additional measured counters; in-memory semantic assertions remain those of the pinned passing callbacks.
+
+All 84 sampled prefix PIDs are absent in a fresh census, with no forced cleanup, recorded process survivors or runtime stores. Prior original bootstrap identity and fresh static attribution remain separated as recorded in native-static-prefix-audit.md. No helpers/tests/builds executed by this audit. These are source results only; installed consumer and external outcomes are not yet claimed.

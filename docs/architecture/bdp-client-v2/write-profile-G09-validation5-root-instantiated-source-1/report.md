@@ -1,0 +1,5 @@
+# P5 rendered first-four baseline text
+
+Four whole templates bind only the complete LF gateSHA and manifestSHA assignments after independent raw manifest freeze. Four genuine forward/inverse/ndiff proofs recover the original frozen wholetemplates exactly. Twelve baseline A/B/C text cells preserve original framing/finalLF; B/C IDs remain unresolved, sentinel comparison guards and RAW_EXIT0 unchanged. The manifest does not pin its ownSHA or these own-containing rendered hashes; this external index binds its actual rawhash and cells acyclically.
+
+All files are inert source DATA; none is imported/AST-parsed/compiled/evaluated/invoked. Full independent final native/root source/control/candidate/manifest/rendered precision and complete authority durability precede separately released exact livewrite; separate activation durability then precedes any actual. No actual tool identity, terminal, runtime fit or quality credit supplied. Original P3/P4 failures and all static sources remain unchanged.

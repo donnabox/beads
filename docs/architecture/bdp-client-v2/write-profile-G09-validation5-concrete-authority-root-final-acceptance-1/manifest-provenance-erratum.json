@@ -1,0 +1,56 @@
+{
+  "actualControlEvidence": {
+    "gateSource": {
+      "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation-preparation-5/gate.py",
+      "sha256": "6260f0878ca0bb30cc5b6de69d8357751fd09276eec7f90142f301ac87206a9f"
+    },
+    "gateSourceAnchors": [
+      {
+        "line": 9,
+        "text": "E=P/'run'"
+      },
+      {
+        "line": 66,
+        "text": "def complete(name,g):"
+      },
+      {
+        "line": 69,
+        "text": " require(v['sourceIdentity']==g['_sourceIdentity'] and v['sourceUnchanged'],'Prior source differs '+name)"
+      },
+      {
+        "line": 116,
+        "text": " require(g.get('bootstrapReuse')==[] and disposition.get('freshPipelineRequired') is True,'Only fresh pipeline is allowed')"
+      }
+    ],
+    "renderedBaselineIndex": {
+      "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation5-root-instantiated-source-1/index.json",
+      "sha256": "3f2325eb2d8a27f2e320f633a81705f2849ca0d51909d15c56ba5502bd69a64f"
+    },
+    "rootDisposition": {
+      "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation5-root-proposed-authority-1/root-disposition.json",
+      "sha256": "e545829cd9b937d37500be77d5cc4d476283b76602a364694f7e1333c261ad2e"
+    },
+    "sourceBinding": {
+      "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation-preparation-5/source-binding.json",
+      "sha256": "e0252cb07ac1896fac0faab395e10e50ea58eac263b6d33ee224e378413c2d68"
+    }
+  },
+  "authorityMeaning": "ROOT final findings disposition requires fresh actual P5/run prior-stage receipts only. No historical P3 receipt/pass/configuration is eligible. The actual gate and cells already enforce P5 and source1eca.",
+  "concreteAuthorityOrLiveWriteReleasedByThisFile": false,
+  "correctInstruction": "Actual Atool0 +wrapper/inner0/no force/errors/sourcechange; sourcechecked prior P5 stage receipts only.",
+  "immutableManifest": {
+    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation5-root-execution-acceptance-1/acceptance.json",
+    "sha256": "c8ee1a1cd556beae5ddb93454a5156a23c8bc817a4a4ff405996de49049f7ae1"
+  },
+  "kind": "ROOT_ADDITIVE_DESCRIPTIVE_NAMESPACE_ERRATUM_ONLY",
+  "location": "positiveConjunction[1]",
+  "noExecutableGuardSchemaRuleClockOrBehaviorChange": true,
+  "noPriorEvidenceReuse": true,
+  "oldInstructionRemainsHistoricalNotEffectiveForPositiveCredit": true,
+  "originalInstruction": "Actual Atool0 +wrapper/inner0/no force/errors/sourcechange; sourcechecked prior P3 stage receipts only.",
+  "originalRawManifestAndSourceRemainUnchanged": true,
+  "qualityPass": false,
+  "runtimeAuthority": false,
+  "session": "2026-10-18T02:16:24Z-549f",
+  "soleCorrection": "P3 -> P5 in the non-executable prior-stage receipt provenance instruction"
+}

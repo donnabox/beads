@@ -1,0 +1,3 @@
+# Actual P5 fresh workspace tool binding — pending independent audit
+
+ONE actual A/B/C functions3097 terminals35b935/7a8572/bad624 all0, after full prior installation disposition1594f3fb. Innerexit0/source1eca unchanged7.9268448748625815s/common12.685341000091285<115. Actual fresh workspace-tools.json records11realpaths/hashes and Biome2.5.7/TypeScript7.0.2/Vitest4.1.10 plus exact completed install log/exit/source lock. Full independent native/ROOT actual audit/disposition/durability required; later30 commands remain unreleased. No retry/secondcensus/cleanup/globalclaim/compiler/test/build/profile/fullWrite pass. Originalprovisionalfalse/pending and independentlydecodedwiretoolreceiptsUNRETAINED preserved.

@@ -1,0 +1,103 @@
+--- /Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-changefeed-parameter-context-plan-ledger.json
++++ /Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-changefeed-parameter-context-plan-successor/ledger.json
+@@ -1,6 +1,6 @@
+ {
+-  "status": "PROSPECTIVE_NOT_EXECUTED_NOT_RELEASED",
+-  "sourceBindingSha256": "782f862cee2df0883a9aa9c6b061e07f2f328b5afc0f2386d99317a081153685",
++  "status": "PROSPECTIVE_SUCCESSOR_NOT_EXECUTED_NOT_RELEASED",
++  "sourceBindingSha256": "22f772904f2e829df49a33267b98f61ffabebbfb712409e6c8952b6fde95d9e6",
+   "source": {
+     "file": "packages/server/src/transaction-changefeed.test.ts",
+     "titles": [
+@@ -163,7 +163,7 @@
+     "newHttpBodyBytes": 250,
+     "argv": [
+       "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+-      "/Users/dbox/repos/wt/vickie/vickie-sequence-member-evidence/node_modules/.pnpm/vitest@4.1.10_@types+node@24.13.3_vite@8.2.1_@types+node@24.13.3_/node_modules/vitest/vitest.mjs",
++      "/Users/dbox/repos/wt/vickie/vickie-changefeed-parameter-context/node_modules/.pnpm/vitest@4.1.10_@types+node@24.13.3_vite@8.2.1_@types+node@24.13.3_/node_modules/vitest/vitest.mjs",
+       "run",
+       "packages/server/src/transaction-changefeed.test.ts",
+       "--maxWorkers=1",
+@@ -197,7 +197,7 @@
+     "expectedVitestExit": 1,
+     "argv": [
+       "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+-      "/Users/dbox/repos/wt/vickie/vickie-sequence-member-evidence/node_modules/.pnpm/vitest@4.1.10_@types+node@24.13.3_vite@8.2.1_@types+node@24.13.3_/node_modules/vitest/vitest.mjs",
++      "<D>/control/mirror/node_modules/.pnpm/vitest@4.1.10_@types+node@24.13.3_vite@8.2.1_@types+node@24.13.3_/node_modules/vitest/vitest.mjs",
+       "run",
+       "packages/server/src/transaction-changefeed.test.ts",
+       "--maxWorkers=1",
+@@ -207,7 +207,8 @@
+       "-t",
+       "^(?:preserves\\ current\\ context\\ on\\ owner\\-observed\\ changefeed\\ parameter\\ refusals\\ over\\ HTTP)$"
+     ],
+-    "cwd": "<D>/control/mirror; Vitest path resolved within verified copied graph"
++    "cwd": "<D>/control/mirror",
++    "runnerBoundary": "Copied Vitest and tool graph under mirror, no original-workspace runner binary. Resolve the copied realpath and hash its closure before release; no workspace fallback product links."
+   },
+   "installed": {
+     "file": "apps/bdptest/src/transactional-changefeed-refusal-context-installed.test.ts",
+@@ -335,7 +336,7 @@
+     "requestBodyBytes": 153,
+     "argv": [
+       "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+-      "/Users/dbox/repos/wt/vickie/vickie-sequence-member-evidence/node_modules/.pnpm/vitest@4.1.10_@types+node@24.13.3_vite@8.2.1_@types+node@24.13.3_/node_modules/vitest/vitest.mjs",
++      "/Users/dbox/repos/wt/vickie/vickie-changefeed-parameter-context/node_modules/.pnpm/vitest@4.1.10_@types+node@24.13.3_vite@8.2.1_@types+node@24.13.3_/node_modules/vitest/vitest.mjs",
+       "run",
+       "apps/bdptest/src/transactional-changefeed-refusal-context-installed.test.ts",
+       "--maxWorkers=1",
+@@ -349,7 +350,12 @@
+       "BDP_TRANSACTIONAL_INSTALLED_ENTRY",
+       "BDP_TRANSACTIONAL_SOURCE_COMMIT"
+     ],
+-    "claimedProfileEligible": false
++    "claimedProfileEligible": false,
++    "fixtureBindingInput": {
++      "path": "packages/conformance/test-support/transactional/fixture-v1.json",
++      "sha256": "3a7899ced771d4880066d98b0000c53f801ece53458502cc4f3bc641146c9a85",
++      "argument": "installedTransactionBinding(ready, sourceCommit, { bytes: readFileSync(fixturePath) })"
++    }
+   },
+   "aggregate": {
+     "caseExecutions": 11,
+@@ -361,8 +367,10 @@
+     "children": 1,
+     "readOnlyDbHandles": 0,
+     "reopens": 0,
+-    "responseBytesMaximum": 1343488,
+-    "bodyBytesNewSourceControlInstalled": 653
++    "bodyBytesNewSourceControlInstalled": 653,
++    "enforcedNewResponseBodyBytesMaximum": 1114112,
++    "newResponseCapExchanges": 34,
++    "historicalFetchExchangesWithoutNewReaderCap": 7
+   },
+   "limits": {
+     "requestTargetBytes": 8192,
+@@ -407,8 +415,7 @@
+       "packages/server/src/transaction-store.ts",
+       "packages/server/src/transaction-http.ts",
+       "packages/server/src/transaction-changefeed.test.ts",
+-      "apps/bdptest/src/transactional-changefeed-refusal-context-installed.test.ts",
+-      "docs/design/transaction-implementation-progress.md"
++      "apps/bdptest/src/transactional-changefeed-refusal-context-installed.test.ts"
+     ],
+     [
+       "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+@@ -442,5 +449,16 @@
+     "bdp-feed-",
+     "bdp-feed-http-",
+     "bdp-changefeed-context-installed-"
+-  ]
++  ],
++  "commandCwd": {
++    "staticCommands": "/Users/dbox/repos/wt/vickie/vickie-changefeed-parameter-context",
++    "source": "/Users/dbox/repos/wt/vickie/vickie-changefeed-parameter-context",
++    "installed": "/Users/dbox/repos/wt/vickie/vickie-changefeed-parameter-context",
++    "control": "<D>/control/mirror"
++  },
++  "formatScope": "Five owned TypeScript paths only; Markdown reviewed manually and git diff --check. No formatter success claim for Markdown.",
++  "transportAdjudication": {
++    "headNullBody": "No reader when response.body is null; retain zero received octets and assert GET-equivalent representation length. For any non-null body read with cap and proper cancellation/cleanup.",
++    "unexpected200On7or8": "Hard prerequisite failure needing diagnosis of request/header/media/path and server behavior. Does not establish field omission or context failure; no named-negative acceptance, retry, extra dispatch, or classifier-only relabel."
++  }
+ }

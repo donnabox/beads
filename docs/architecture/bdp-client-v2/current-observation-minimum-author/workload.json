@@ -1,0 +1,134 @@
+{
+  "prospective": true,
+  "newSource": {
+    "callbacks": 9,
+    "stores": 9,
+    "ownerOpens": 10,
+    "listeners": 1,
+    "http": 37,
+    "methods": {
+      "POST": 3,
+      "GET": 21,
+      "HEAD": 13
+    },
+    "serviceOperations": 47,
+    "directOwnerPageOperations": 8,
+    "targetAttempts": 65,
+    "separateLiveProbes": 6,
+    "separatePostCloseProbes": 5,
+    "waits": 17,
+    "minimumClockCalls": 74,
+    "setupMutations": 12,
+    "countScope": "Direct counters refer only to A-D, not E wire owner activity or clocks. Source E creates one listener. D uses one store/two opens/two offline inspections.",
+    "postCloseProbeOracle": "owner.withRead returns entry-refused/not-accepting, not a thrown/rejected error"
+  },
+  "newWireMatrix": {
+    "http": 37,
+    "statuses": {
+      "200": 7,
+      "503": 10,
+      "410": 8,
+      "409": 8,
+      "404": 2,
+      "400": 1,
+      "401": 1
+    },
+    "setup": [
+      "POST32 scope-local Beads r00-r31",
+      "POST update32; use this mutation actual issued next page",
+      "POST one scope-local Link r00-to-r01"
+    ],
+    "sourceLimits": {
+      "receiptMaximumItems": 2,
+      "paginationAndAdvertisedMaximum": 2,
+      "productionOperationAndMatchMaxima": 32
+    },
+    "installedLimits": "existing installed defaults; no override"
+  },
+  "installed": {
+    "cohorts": [
+      22,
+      37
+    ],
+    "http": 59,
+    "stores": 2,
+    "children": 2,
+    "selectionMode": "two separate exact title-filtered invocations with immediate audits",
+    "titles": [
+      "rejects malformed read minimum tuples before observation while preserving receipt nondisclosure",
+      "observes installed current observation minima within37requests"
+    ]
+  },
+  "newSourcePlusSelectedInstalledHttp": 96,
+  "legacySource": "Separately selected finite families/titles; record fresh per-callback quantities, do not infer from historical aggregates. No combined legacy HTTP total asserted.",
+  "budgets": {
+    "sourceCallbackSeconds": 5,
+    "sourceSupervisorSeconds": 120,
+    "installedWorkSeconds": 45,
+    "installedRequestSeconds": 5,
+    "installedCleanupSeconds": 10,
+    "installedCallbackSeconds": 60,
+    "installedSupervisorSeconds": 120
+  },
+  "installedUnselectedSibling": {
+    "http": 5,
+    "stores": 1,
+    "children": 1,
+    "coverage": "later full exact-head CI; unchanged callback"
+  },
+  "installedWholeFileAfterAppend": {
+    "callbacks": 3,
+    "http": 64,
+    "stores": 3,
+    "children": 3
+  },
+  "attribution": "source-derived draft counters/assertions; no measured runtime outcomes",
+  "expandedLegacySourceCases": 88,
+  "expandedTotalSourceCases": 97,
+  "newSourceSchedules": {
+    "A": {
+      "operations": 25,
+      "attempts": 35,
+      "waits": 10,
+      "clockCalls": 45,
+      "mutations": 2
+    },
+    "B": {
+      "operations": 12,
+      "attempts": 12,
+      "waits": 2,
+      "clockCalls": 14,
+      "mutations": 1,
+      "liveProbes": 1,
+      "policyReplacements": 1
+    },
+    "C_each_of_5": {
+      "operations": 2,
+      "attempts": 2,
+      "waits": 1,
+      "clockCalls": 3,
+      "mutations": 1,
+      "liveProbes": 1,
+      "postCloseProbes": 1
+    },
+    "D": {
+      "calls": 8,
+      "mutations": 1,
+      "ownerOpens": 2,
+      "offlineInspections": 2
+    },
+    "E": {
+      "http": 37,
+      "mutations": 3,
+      "waits": 10,
+      "listeners": 1,
+      "ownerAttemptCountClaim": false
+    }
+  },
+  "lifecycle": {
+    "C": "Immediate observed outcome; bounded entered-versus-settled race; finally clock2/release before operation and close drainage. Post-close is returned entry-refused/not-accepting. No signal invented for receipt page.",
+    "D": "No await between clock advance and synchronous owner close/offline comparison; no timer sweep inference after asynchronous yield.",
+    "E": "Actual finite fetches, runtime close observed under1000ms local cleanup race; unknown close retains directory.",
+    "F": "45s overall work,5s request,10s shared cleanup including request close/pending drain and child exit+close event;60s callback. Outer cleanup expiry preserves unknown ownership/directory and observes late cleanup rejection. Launcher pre-ready cleanup is its inherited contract, not a callback-observed child."
+  }
+}

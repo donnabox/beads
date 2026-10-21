@@ -1,0 +1,37 @@
+{
+  "at": "2026-10-15T22:51:52.214732+00:00",
+  "head": "1f0cb9455361cef2cc793558793e4a190be6f4fe",
+  "base": "5d7fa3f049fa0b4db3aa8dae20e20d8e47fb3854",
+  "tree": "22176e75848cfd6f0a54f799aeb1e62998206edb",
+  "testedMerge": "f418b8c5412983d50a8078ce6eb332a172ab4956",
+  "orderedParents": [
+    "5d7fa3f049fa0b4db3aa8dae20e20d8e47fb3854",
+    "1f0cb9455361cef2cc793558793e4a190be6f4fe"
+  ],
+  "scope": [
+    "apps/bdptest/src/transactional-matrix.test.ts",
+    "packages/conformance/src/transactional-cumulative.test.ts",
+    "packages/conformance/test-support/transactional/coverage-v1.json",
+    "packages/conformance/test-support/transactional/manifest-v1.json"
+  ],
+  "ci": {
+    "run": 38817728355,
+    "job": 116706490120,
+    "conclusion": "success",
+    "allSteps": 27,
+    "tests": 9315,
+    "skipped": 1,
+    "files": 181,
+    "suiteSeconds": 837.57,
+    "jobStarted": "2026-10-15T22:31:50Z",
+    "jobCompleted": "2026-10-15T22:49:42Z",
+    "rawLogSha256": "7f842941de93a1749d1915ddc965f2c0e549e4009e9e92cf0e7378b364f41a89",
+    "terminalSha256": "2e54d6a82c687fcec47d82222134669d9ebb9b19b9a662683684f653c7416459"
+  },
+  "councilSha256": "d17da9f2f57b1b5357d30dfef2a693d409ce3091bebfea922133bac31e0f6471",
+  "localSourceValidation": "nine stages, all pass; initial format failure preserved",
+  "installedValidation": "54bf873fe61a45aa865cc1c11c8d35e3ef7fe4ad579f4d20c1beccb38790a4e2",
+  "rootReviewedFullDiffAndDispositions": true,
+  "authorized": "ready and ordinary merge of this exact candidate after immediate remote head/base/check readback; no release or qualification",
+  "postmergeRequired": "remote actual commit orderedparents/tree equal tested synthetic and remote main; fetch and inspect actual object"
+}

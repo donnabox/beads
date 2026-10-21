@@ -1,0 +1,91 @@
+I have what I need. Read-only; no files written.
+
+## Scope and method
+
+Supplemental review of frozen HEAD `1af8d4d` relative to `b5a5b415` — 19 files, +415/−53, commits `0172c16`…`aeb1928` plus the merge. I re-derived rather than trusted: the Read schema projection (reimplemented RFC 8785 JCS over the 47 sealed `[name, definition]` pairs), the coverage walk, the evidence constant, the four gate-derived bindings, `bdptest`'s packaged `targetProcess`, all 14 policy source pins, and all 406 `docs/specs/bdp.md` citations in the three affected catalogs. Tests verified structurally only — this checkout has no `node_modules`, and installing would write files.
+
+**Independently reproduced clean:**
+- Read projection digest recomputes to `26db67b2…` against the *changed* bundle; 47 sealed, 46 reachable, 0 uncovered. `validationDiagnostic` is neither sealed nor reachable from the Read roots (`readProblem` does not reference it), so `aeb1928`'s schema edit correctly requires no Read re-seal — the `diagnosticDocumentReview` justification is accurate on that point.
+- Both schema copies byte-identical (132,979 bytes, `c68e6f53…`); all 14 `schema-graph-policy.json` pins match the tree, so the tripwire at `installed-schema-graph.policy.test.ts:32-39` passes.
+- Evidence constant `18c4f62e…` = SHA-256(artifact bytes) truncated to 40 hex. Gate shape is correct: `runHead 3bfe7d66` → `evidenceCommit 5ae2a31`, delta exactly the two `ALLOWED_EVIDENCE_DELTA_PATHS`. `3bfe7d6` refreshed the `read-values.ts` pin *before* the run head, so the tree at the run head is self-consistent — same discipline as PR64's `053875f`→`5b4eb46`.
+- The artifact is not relabeled older evidence. Of four segments, only `bdpbd`/packaged moved, in exactly the one binding carrying per-run state (`targetProcess` digests `plan.baseEnv`, which for `bdpbd` holds temp workspace paths; `bdptest`'s `baseEnv` is static). I recomputed `bdptest`'s `targetProcess` from committed bytes → exact match. Byte-identical observations are the expected outcome of a genuine deterministic re-run here.
+- All 406 citations resolve verbatim in their anchored sections under the validator's own whitespace normalization — 0 failures.
+
+---
+
+# Closure of the original findings
+
+**#1 HIGH (metadata diagnostics indistinguishable) — CLOSED.** All three original paths are fixed and a fourth was found and covered:
+- `resource-evaluator.ts:520-526` now emits `resulting metadata must be an object` with `document: "metadata"`; `:454-461` prefixes `metadata: ` and marks every patch-path failure.
+- `member-identity.ts:447-452` marks create-time metadata numerics and suppresses `type`/`schemaLocation` (correct — metadata has no Type schema).
+- `member-identity.ts:460-481` adds the *update* path the original review did not reach, keyed on the `/metadataChange/` pointer prefix, and strips a caller-supplied `document` on the properties branch.
+
+I enumerated every diagnostic emission site in `resource-evaluator.ts` (`:277`, `:455`, `:523`, `:732`, `:750`, `:763`, `:820`, `:832`, `:843`, `:932`, `:948`): the only metadata-reachable ones are the patch and numeric paths, and both are marked. `updateBeadMembers`/`updateLinkMembers` admit only `propertiesChange`/`metadataChange`, so the prefix test covers the whole metadata-update surface. `document` is schema-closed (`enum`, `additionalProperties:false`) and shared by `readUpdateProblem`, `receiptProblem` and `transactionalProblem` (which delegates via `if code ∈ readUpdateProblemCode then $ref readUpdateProblem`) — no split-plane gap. Budget conservation holds on both paths: `json-admission.ts:343` adds `document` before the `nextBytes` computation at `:346-349`, and `resource-evaluator.ts:207` routes it through `parseReadUpdateProblem` — i.e. the closed schema — before measuring at `:212-213`.
+
+Note the two-plane case from the original finding cannot arise for patch failures: `evaluate` computes `properties` first and `bad()` throws, so only one plane's patch failure is ever reported. That is adequate, not a defect.
+
+**#3 MEDIUM (advertised-limits contradiction) — CLOSED.** `bdp.md:2358-2361` and `:975-977` now agree, and both match `resource-evaluator.ts:1037` (combined count) and `:1039-1046` (per-path bytes/depth).
+
+**#5 MEDIUM (weakened Transactional citations) — CLOSED.** `transactional.event.owned-link-delta` now cites `bdp.md:1812-1813` "its delta carries `ownedLink` in place of `change` and `metadataChange`" — the actual exclusivity sentence for the owned-Link branch, which is what the "exactly one" title needs. The old citation was the `Otherwise, at least one of…` clause on the very next line, i.e. the non-ownedLink branch, confirming the original diagnosis. `owned-link-update-delta` has the full member enumeration restored.
+
+**#6 MEDIUM (missed write surfaces) — CLOSED by disposition.** `bdp.md:1624-1627` states `UpdateWhere.change` is `properties`-only and names the alternative; this matches `updateWhereMembers` (required `change`, no `metadataChange`). `:6138-6141` keeps `stateChange` lenient but supplies the rationale the original finding said was missing: a *retained* change group may carry a pre-metadata record, parallel to retained Events. That answers the objection — change groups are themselves replayable.
+
+**#7 MEDIUM (self-defeating digest clause) — CLOSED as an explicit limitation**, per your constraint. `bdp.md:5851-5854` now states plainly that a projected record cannot reproduce the digest and that current reads offer no proof of the pre-projection form. The normative text no longer promises something unachievable; the underlying unverifiability is documented rather than fixed, which is the stated intent.
+
+**#8 LOW (fixture narrates a non-emitted diagnostic) — CLOSED.** Both 422 exchanges in `fixtures/read-update/property-metadata-changes.json:707,777-778` now narrate exactly what ships, including `document: "metadata"`.
+
+**#13 LOW (no byte bound for metadata) — CLOSED by disposition.** `bdp.md:2353-2355` states metadata rides the representation bound. Verified against `resource-evaluator.ts:1051-1057`: `representationBytes` measures `stringifyJsonValue(record)`, the whole record including `metadata`; `propertiesBytes` measures `record.properties` alone. The prose is accurate.
+
+Also in scope: the `0172c16` immutability fix is correct and minimal. `snapshotJsonValue` (`json-values.ts:73`) already deep-freezes everything present at input, so the only mutable escape was the `{}` *synthesized after* the snapshot at `read-values.ts:124,159` — now frozen. `storedRecord`'s unfrozen `{}` (`resource-evaluator.ts:359`) is covered because it is re-snapshotted by `parseBeadRecord`. The new test covers all five entry points including the historical parsers, which delegate to `parseBeadRecord`/`parseLinkRecord`.
+
+---
+
+# New findings
+
+**N1. MEDIUM — Metadata numeric update diagnostics are byte-identical duplicates with no locator at all.**
+
+`packages/server/src/member-identity.ts:474-480` · test codifying it: `packages/server/src/member-identity.test.ts:1253-1254`
+
+*Defect:* for every occurrence under `/metadataChange/`, the branch returns `{ message: "metadata: …", document: "metadata" }` and nothing else. The blanket omission is applied to all metadata update numerics, not only the unidentifiable ones. Two inadmissible numbers in one metadata patch therefore produce two entries with identical bytes; `offending[].pointer` retains the distinct `/metadataChange/0/value/0` and `…/1` internally but neither reaches the wire.
+
+*Impact:* a client learns only "some number in your metadata patch is inadmissible", with strictly less information than the properties plane gives, and each duplicate consumes a separate slot against `validation.diagnostics` and `validation.diagnosticBytes` while conveying nothing distinguishing. The repo's own test asserts the duplicate pair rather than flagging it. Not shipping-visible today — no production code constructs `numericBudget` (only `member-executor.ts` plumbs it), consistent with no Read+Update advertisement — so this is a defect to close before the profile is advertised, not a merge blocker.
+
+*Fix:* either carry the patch-operation index (the input position *is* known) so entries are distinguishable, or deduplicate identical entries before charging budget. The spec's "may omit `instanceLocation`" at `:2583-2585` already permits the former; the rationale given there (an array append has no resulting position) justifies omitting the *document-relative* pointer, not discarding the operation identity.
+
+**N2. LOW — The one test for the anti-relabel guarantee cannot fail.**
+
+`packages/server/src/member-identity.test.ts:1409-1420`
+
+*Defect:* the test that exercises `member-identity.ts:464-474`'s stated guarantee — a caller "cannot relabel a properties value as a metadata diagnostic" — feeds `document: "metadata"` from the formatter and asserts with `toMatchObject`, which permits extra keys. A leaked `document: "metadata"` would still pass. The implementation is correct (the destructure at `:466` drops it); only the assertion is weak.
+
+*Impact:* the guard protecting the discriminator's meaning on the properties plane is unprotected by its own regression test. The evaluator-side equivalent gets this right — `resource-evaluator.test.ts:3250` uses `toEqual`, which does assert `document`'s absence on the properties case — and the same file already uses `not.toHaveProperty` elsewhere (`:1248-1249`), so the idiom was available.
+
+*Fix:* `expect(…diagnostics[0]).not.toHaveProperty("document")`, or switch the assertion to `toEqual`.
+
+**N3. LOW — The artifact's `bindings.schema` provenance is stale and no check reports it.**
+
+`docs/design/evidence/read-cohort/read-v1.json` (all four segments) · `scripts/read-cohort-evidence.mjs:312-335`
+
+*Defect:* every segment records `schema: 29d84b98…`, the bundle digest at the run head; the committed bundle at HEAD is `c68e6f53…` because `aeb1928` changed it after the evidence commit. The gate re-derives only `catalog`, `manifest`, `fixture` and `schemaReadProjection`; `schema` is recorded as provenance and never recomputed (`:319`), and the run-head→evidence-commit delta by design does not look at later commits.
+
+*Impact:* no correctness hole — `schemaReadProjection` *is* re-derived, and I confirmed it still reproduces because `validationDiagnostic` sits outside the Read sealed set and the reachable closure, which is exactly the drift D29=C's projection was built to catch. The consequence is only that the shipped artifact's provenance no longer describes the committed bundle, and nothing says so. This is the concrete content of the reseal you have already scheduled: `runHead`, `bindings.schema`, and the evidence constant must all move; the four gate-derived bindings and the projection digest will not.
+
+*Fix:* in the pending reseal, run at a head that includes `aeb1928`. No mechanism change needed.
+
+**N4. LOW / polish — The repair's new MUST has no catalog row, though neither did its predecessor.** The clause `bdp.md:2581-2582` ("A metadata failure MUST carry `document: "metadata"`") is the strongest normative addition here. I searched all catalogs: no row cites the diagnostics entry shape at all — not `document`, not `instanceLocation`. So this is an inherited coverage pattern, not a regression. `read-update.singleton.document-patch-validation` already cites the two adjacent sentences and would be the natural host for one more citation. Read+Update rows are non-executable, so nothing overclaims either way.
+
+**N5. LOW / polish — `patch.operations` is bridged to set updates through member names set updates do not have.** `bdp.md:2358-2361` defines the bound over `propertiesChange` and `metadataChange`, then says "A set update applies these patch limits to each member update" — but `updateWhereMembers` names its patch `change`. The intent is clear; the mapping is imprecise.
+
+**N6. Trivial.** `schema-graph-policy.json:24` reads `"…confirmed that scope at source0172c16"` (missing space, making the commit reference unsearchable in a human-read review artifact). Four inserted spec lines break the surrounding wrap convention — `bdp.md:1878` (121 chars), `:2564` (112), `:2572` (85), `:6141` (119) — in paragraphs where every neighbour is ≤76. Cosmetic only; the citation validator normalizes whitespace, and the spec already contains 423 long lines elsewhere (chiefly table rows and the decision log).
+
+**Partial: original #11.** The header note at `preview2-common-metadata-amendment.md:3-5` now establishes the spec as authoritative and the packet as historical, which is the right mechanism. Two sentences inside still read as gating: `:31` "No schema or wire claim is made by this packet" and `:84-86` "Do not publish a schema accepting metadata records until…". The header's "does not supersede them" resolves the conflict for a careful reader, so this is polish, not a contradiction.
+
+---
+
+## Disposition
+
+Findings 1, 3, 5, 6, 7, 8 and 13 are all closed — 1, 3, 5 and 8 by substantive repair that I verified against the implementation; 6, 7 and 13 by the explicit documented dispositions you specified, each of which actually answers the original objection rather than restating it. The evidence work is honest: the reseal was taken at a self-consistent head with the delta properly confined, and the one artifact binding that moved is the one that legitimately varies per run.
+
+No new blockers. **N1** is the only new finding with real substance, and it is a bounded information-loss defect on a surface with no production caller — fix it before Read+Update is advertised, not before this merge. N2 is a ten-character test strengthening. N3 is the precise, already-scheduled scope of the pending reseal. N4–N6 and the #11 residual are optional polish.
+
+As instructed, I have not evaluated original findings 2 and 4, which are being repaired separately.

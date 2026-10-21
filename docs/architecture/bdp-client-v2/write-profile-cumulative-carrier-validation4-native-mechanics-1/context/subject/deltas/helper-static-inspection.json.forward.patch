@@ -1,0 +1,62 @@
+--- /Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-cumulative-carrier-validation-preparation-3/helper-static-inspection.json
++++ /Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-cumulative-carrier-validation-preparation-4/helper-static-inspection.json
+@@ -1,13 +1,10 @@
+ {
++  "ASTOnlyPython": 8,
+   "MJSByteExact": 3,
+   "all681SourceRehashed": true,
+   "allActualOutcomes": "UNKNOWN",
+-  "allOtherGateFunctionsASTExact": true,
+-  "byteExactOtherHelpers": 9,
+-  "changedExecutableBodies": [
+-    "run.py",
+-    "gate.py"
+-  ],
++  "byteExactHelpers": 11,
++  "changedExecutableBodies": [],
+   "helperImportEvaluationOrCompilation": false,
+   "helpers": {
+     "audit-common.mjs": {
+@@ -30,8 +27,8 @@
+     },
+     "gate.py": {
+       "ASTParsedOnly": true,
+-      "beforeSha256": "c05831b7949b383a4bc7550a33e453d102fa12d2111583522ca009dfc69707c4",
+-      "byteExactPredecessor": false,
++      "beforeSha256": "4f724009f01cad60171ad47e321f188be7d03d56af2192f2a13841c498b53191",
++      "byteExactPredecessor": true,
+       "sha256": "4f724009f01cad60171ad47e321f188be7d03d56af2192f2a13841c498b53191"
+     },
+     "guarded-action-session-20261018-021624-549f.py": {
+@@ -60,8 +57,8 @@
+     },
+     "run.py": {
+       "ASTParsedOnly": true,
+-      "beforeSha256": "f2d08b5e5d0ac4b60be436944ccb81cd3ce2ddf82967ac8061e6745b40078d2f",
+-      "byteExactPredecessor": false,
++      "beforeSha256": "76c384af408a3184df3256ee3568898a60126633328b82f292887f5367485335",
++      "byteExactPredecessor": true,
+       "sha256": "76c384af408a3184df3256ee3568898a60126633328b82f292887f5367485335"
+     },
+     "scanner.py": {
+@@ -79,17 +76,7 @@
+   },
+   "namespaceInverseCommandsAndMatrixByteExact": true,
+   "protected677AndOwned4Unchanged": true,
+-  "protectedRunFunctionsASTExact": [
+-    "birth_epoch",
+-    "identity_matches",
+-    "observe",
+-    "reap_after_quiet",
+-    "signal_owned",
+-    "interrupt",
+-    "enqueue",
+-    "refuse",
+-    "retain_prefix"
+-  ],
+-  "pythonASTOnly": 8,
+-  "state": "Author static source/data preparation only; not independent approval or evaluated control"
++  "state": "AUTHOR static DATA only, not independent review or evaluated controls",
++  "templateCorrectPathAndHash": true,
++  "templateIsDataNotEvaluated": true
+ }

@@ -1,0 +1,2317 @@
+{
+  "source": {
+    "tree": "02e44cf9e277d9c66f60f3b91f69fe524ca844ed",
+    "main": "96b00e0be63994b79025fc84ba82a36a55da0bb7",
+    "app": "c91f45cc5c827f5d4684a62c73f7b296c1e65230",
+    "filesDifferentFromMain": [
+      "apps/bdptest/src/read-update-artifact-execution.test.ts",
+      "apps/bdptest/src/read-update-matrix.test.ts",
+      "apps/bdptest/test-support/read-update-artifact-execution.ts",
+      "packages/conformance/fixtures/read-update-reference-v1.json",
+      "packages/conformance/matrices/read-update-reference-continuation-v1.json",
+      "packages/conformance/src/cumulative-artifact.test.ts",
+      "packages/conformance/src/read-update-artifact-set.test.ts",
+      "packages/conformance/test-support/read-update-artifact-set-v1.json",
+      "packages/conformance/test-support/read-update-coverage-v1.json",
+      "packages/conformance/test-support/testing.ts"
+    ],
+    "filesDifferentFromApp": [
+      "apps/bdptest/src/transactional-event-sse-installed.test.ts",
+      "apps/bdptest/src/transactional-sse-installed.test.ts",
+      "docs/design/transaction-implementation-progress.md",
+      "packages/server/src/index.ts",
+      "packages/server/src/node-http-disconnect.ts",
+      "packages/server/src/read-http.ts",
+      "packages/server/src/transaction-changefeed.test.ts",
+      "packages/server/src/transaction-event-sse.test.ts",
+      "packages/server/src/transaction-events.test.ts",
+      "packages/server/src/transaction-events.ts",
+      "packages/server/src/transaction-http.ts",
+      "packages/server/src/transaction-runtime-configuration.test.ts",
+      "packages/server/src/transaction-runtime-configuration.ts",
+      "packages/server/src/transaction-runtime.ts",
+      "packages/server/src/transaction-service.test.ts",
+      "packages/server/src/transaction-service.ts",
+      "packages/server/src/transaction-sse.test.ts",
+      "packages/server/src/transaction-sse.ts",
+      "packages/server/src/transaction-store.ts",
+      "packages/server/test-support/raw-sse-recorder.ts",
+      "packages/server/test-support/testing.ts",
+      "packages/server/test-support/transaction-replica.ts",
+      "scripts/smoke-executables.mjs"
+    ],
+    "allAppFilesEqualFrozenApp": true,
+    "allRuntimeFilesEqualMain": true,
+    "conflicts": [],
+    "head": "4819068d0201fb3d1fe32dd6adaf8625ef9ba666",
+    "parents": [
+      "c91f45cc5c827f5d4684a62c73f7b296c1e65230",
+      "96b00e0be63994b79025fc84ba82a36a55da0bb7"
+    ],
+    "clean": true
+  },
+  "checks": [
+    {
+      "stage": "install",
+      "exit": 0,
+      "seconds": 0.4531909578945488
+    },
+    {
+      "stage": "typecheck",
+      "exit": 0,
+      "seconds": 1.4760090408381075
+    },
+    {
+      "stage": "build",
+      "exit": 0,
+      "seconds": 0.820663166930899
+    },
+    {
+      "stage": "boundaries",
+      "exit": 0,
+      "seconds": 0.5354223749600351
+    },
+    {
+      "stage": "format",
+      "exit": 0,
+      "seconds": 1.2497999998740852
+    },
+    {
+      "stage": "lint",
+      "exit": 0,
+      "seconds": 0.4570974581874907
+    },
+    {
+      "stage": "regressions",
+      "exit": 0,
+      "seconds": 2.332101000007242
+    },
+    {
+      "stage": "read-evidence",
+      "exit": 0,
+      "seconds": 0.2914985839743167
+    },
+    {
+      "stage": "smoke",
+      "exit": 0,
+      "seconds": 4.317372499965131
+    },
+    {
+      "stage": "smoke-development",
+      "exit": 0,
+      "seconds": 0.7268054170999676
+    }
+  ],
+  "regressions": {
+    "numTotalTests": 450,
+    "numPassedTests": 450,
+    "numFailedTests": 0,
+    "numPendingTests": 0,
+    "success": true
+  },
+  "packedTests": {
+    "numTotalTests": 223,
+    "numPassedTests": 223,
+    "numFailedTests": 0,
+    "numPendingTests": 0,
+    "success": true
+  },
+  "packedStage": {
+    "exit": 0,
+    "seconds": 110.35890626907349,
+    "peakDescendantRssKiB": 1315216,
+    "pids": [
+      50129,
+      50131,
+      50140,
+      50141,
+      50169,
+      50173,
+      50180,
+      50185,
+      50186,
+      50190,
+      50191,
+      50194,
+      50195,
+      50199,
+      50200,
+      50204,
+      50205,
+      50211,
+      50212,
+      50216,
+      50219,
+      50222,
+      50225,
+      50227,
+      50230,
+      50234,
+      50237,
+      50239,
+      50241,
+      50245,
+      50247,
+      50250,
+      50253,
+      50255,
+      50258,
+      50261,
+      50264,
+      50266,
+      50269,
+      50344,
+      50382,
+      50409,
+      50437,
+      50464,
+      50504,
+      50521,
+      50574,
+      50578,
+      50605,
+      50646,
+      50678,
+      50738,
+      50767,
+      50798,
+      50838,
+      50865,
+      50892,
+      50919,
+      50962,
+      50992,
+      51098,
+      51173,
+      51201,
+      51233,
+      51298,
+      51325,
+      51354,
+      51381,
+      51408,
+      51434,
+      51461,
+      51491,
+      51531,
+      51546,
+      51573,
+      51600,
+      51627,
+      51654,
+      51681,
+      51724,
+      51749,
+      51776,
+      51803,
+      51830,
+      51857,
+      51884,
+      51911,
+      51938,
+      51940,
+      51968,
+      51995,
+      52023,
+      52052,
+      52078,
+      52105,
+      52132,
+      52159,
+      52188,
+      52215,
+      52242,
+      52269,
+      52297,
+      52323,
+      52350,
+      52377,
+      52406,
+      52458,
+      52485,
+      52512,
+      52541,
+      52569,
+      52620,
+      52650,
+      52677,
+      52706,
+      52709,
+      52736,
+      52764,
+      52803,
+      52830,
+      52883,
+      52919,
+      52946,
+      52982,
+      53010,
+      53037,
+      53068,
+      53095,
+      53122,
+      53149,
+      53176,
+      53203,
+      53229,
+      53256,
+      53258,
+      53260,
+      53286,
+      53288,
+      53315,
+      53341,
+      53346,
+      53374,
+      53401,
+      53431,
+      53458,
+      53485,
+      53487,
+      53590,
+      53621,
+      53623,
+      53676,
+      53702,
+      53704,
+      53731,
+      53758,
+      53788,
+      53817,
+      53844,
+      53871,
+      53899,
+      53955,
+      53993,
+      54101,
+      54149,
+      54178,
+      54207,
+      54237,
+      54265,
+      54299,
+      54326,
+      54354,
+      54386,
+      54415,
+      54417,
+      54444,
+      54471,
+      54500,
+      54527,
+      54557,
+      54584,
+      54611,
+      54627,
+      54707,
+      54734,
+      54762,
+      54855,
+      54894,
+      54957,
+      55024,
+      55052,
+      55091,
+      55120
+    ],
+    "command": [
+      "node",
+      "/Users/dbox/.cache/node/corepack/v1/pnpm/11.20.0/bin/pnpm.cjs",
+      "exec",
+      "vitest",
+      "run",
+      "apps/bdptest/src/read-update-matrix.test.ts",
+      "apps/bdptest/src/read-update-artifact-execution.test.ts",
+      "apps/bdptest/src/read-update-exact-client.test.ts",
+      "apps/bdptest/src/development-server.test.ts",
+      "apps/bdptest/src/installed-read-oracles.test.ts",
+      "--maxWorkers=2",
+      "--reporter=verbose",
+      "--reporter=json",
+      "--outputFile.json=/Users/dbox/repos/wt/vickie/bdp-integration-logs/artifact-set-execution-main-integration/packed/matrix.json"
+    ]
+  },
+  "setDigests": {
+    "setDigest": "9ed8bf489c116fca9292af1cc97a3207f168285fdd93d6184d8e1332b1777a34",
+    "indexDigest": "7277980894dd0955a8fcd22ba5d2845b0a6801b7e7e13a937018e11d3a65de37",
+    "coverageDigest": "e575ffb9cedd37265ef8e94f15b3c838a59f2ae9b3ce4ca0d148396a0812d5f9",
+    "fixtureDigest": "2071c5a1b2333b29342087ad46b77afe88c8cbd37df33c236933e60ef0ef956a",
+    "catalogDigests": {
+      "read-v1.json": "769ff9f24cfdfe74a47670240b04149b520af23b2c71a431883fd15e988adeb0",
+      "read-update-v1.json": "0ad91810510dd7b688b291863d9b33949bba85fab69d6004ef1423b8c5e47039",
+      "transactional-v1.json": "d824e73b05a37ba6c7a66b3d97769dcb6b27fe0204310b0155b5c18a11e232d0",
+      "numeric-model-v1.json": "f4428d53cc1e67beaa146ba9811cd9676e47e84d75a344ba68eb9a24cdc2d0a5",
+      "owned-wildcard-v1.json": "6023bff763b7579992fc9092901f2f8ddfc752f264c2a9de6bc0caf0880c5ecd"
+    }
+  },
+  "configuration": {
+    "scope": "https://reference.invalid/acme/",
+    "profile": "read-update",
+    "history": false,
+    "sourceCommit": "4819068d0201fb3d1fe32dd6adaf8625ef9ba666",
+    "installedPayloadDigest": "3ad235102ca01c8e28acebc2bf892b107c65d40502f97a1cfc0dc9a135c8440d",
+    "installedContractsDigest": "48667497d6e13064316d0364cf8f49dfc247ab9189306985a357d7b558333dfe",
+    "policyDigest": "dbe8dbd5430f26e19e754d38167cd8084a32d702c695550e2ee0063dc2912430",
+    "authenticationDigest": "66941efc779f4f2431d65fdd5b2387b2af67bd7c1559e09dac032f82259ea16e",
+    "fixtureDigest": "2071c5a1b2333b29342087ad46b77afe88c8cbd37df33c236933e60ef0ef956a",
+    "fixtureId": "reference-read-update-schema-v1",
+    "capabilities": [
+      "installed-read-update-http"
+    ]
+  },
+  "runtimeConfigurationIdentity": "1720b63b49a7be3299d4b2865de4db9fcbe47560f217a32eea6397db7ea54ca5",
+  "aggregateElapsedMs": 15767.807458,
+  "timing": [
+    {
+      "id": "baseline",
+      "budgetRemainingMsAtStart": 89931.950292,
+      "elapsedMs": 15109.420041,
+      "remainingMs": 74890.579959,
+      "outcome": "pass"
+    },
+    {
+      "id": "reference-continuation",
+      "budgetRemainingMsAtStart": 74879.712084,
+      "elapsedMs": 15767.807458,
+      "remainingMs": 74232.192542,
+      "outcome": "pass"
+    }
+  ],
+  "requiredMappings": 129,
+  "observedStatePartitions": {
+    "pass": 50,
+    "fail": 0,
+    "notRun": 0,
+    "notImplemented": 79,
+    "other": 0,
+    "unobserved": 0
+  },
+  "whole": 30,
+  "uncovered": 99,
+  "authored": 50,
+  "claimEligible": false,
+  "writtenReports": [
+    {
+      "id": "baseline",
+      "resultDigest": "01cb4d29dc543bdf11f9837d59d09238611067b0ce15f14278251b2eb67dc304",
+      "report": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/artifact-set-execution-main-integration/packed/artifact-set-progress.json.baseline.json",
+      "writtenReportDigest": "9eb4132ebe5b949c7b2856b9f9399fcabde6b0f9c32fd0349a4555ecfd4853d6",
+      "writtenReportBytes": 4725650
+    },
+    {
+      "id": "reference-continuation",
+      "resultDigest": "b1f78504920b88e1aeb101b55fc361c673bea6ad00277d7bd02535b23c97b552",
+      "report": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/artifact-set-execution-main-integration/packed/artifact-set-progress.json.reference-continuation.json",
+      "writtenReportDigest": "dcb45e6abfb84a2b9cfd27bd343cf10b3ff7fa59119f532d79d72d9c554fb99b",
+      "writtenReportBytes": 171656
+    }
+  ],
+  "shards": [
+    {
+      "id": "baseline",
+      "manifestDigest": "c86b33535f25a1d117ce021a3bb70164f5635bdaee50758e3428c130ccc3227f",
+      "routeDigest": "3224c31c83988dc0606cb76ee1f4ba8e6394159bdf7daaccc301461316cc2477",
+      "routes": [
+        {
+          "method": "GET",
+          "url": "https://reference.invalid/acme/operations/"
+        },
+        {
+          "method": "GET",
+          "url": "https://reference.invalid/acme/beads/w1b-owner"
+        },
+        {
+          "method": "GET",
+          "url": "https://reference.invalid/acme/beads/w1-a"
+        },
+        {
+          "method": "GET",
+          "url": "https://reference.invalid/acme/beads/w1-b"
+        },
+        {
+          "method": "GET",
+          "url": "https://reference.invalid/acme/links/w1b-unowned"
+        },
+        {
+          "method": "GET",
+          "url": "https://reference.invalid/acme/links/w1-l"
+        },
+        {
+          "method": "GET",
+          "url": "https://reference.invalid/acme/links/w1-local-pin"
+        },
+        {
+          "method": "GET",
+          "url": "https://reference.invalid/acme/links/w1-external-pin"
+        },
+        {
+          "method": "GET",
+          "url": "https://reference.invalid/acme/links/w1-missing"
+        },
+        {
+          "method": "GET",
+          "url": "https://reference.invalid/acme/beads/w1b-target"
+        },
+        {
+          "method": "GET",
+          "url": "https://reference.invalid/acme/beads/w1b-unowned-source"
+        },
+        {
+          "method": "GET",
+          "url": "https://reference.invalid/acme/links/w1b-owned"
+        },
+        {
+          "method": "GET",
+          "url": "https://reference.invalid/acme/beads/ak-source"
+        },
+        {
+          "method": "GET",
+          "url": "https://reference.invalid/acme/beads/ak-target"
+        },
+        {
+          "method": "GET",
+          "url": "https://reference.invalid/acme/beads/ak-update"
+        },
+        {
+          "method": "GET",
+          "url": "https://reference.invalid/acme/beads/ak-delete"
+        },
+        {
+          "method": "GET",
+          "url": "https://reference.invalid/acme/links/ak-update"
+        },
+        {
+          "method": "GET",
+          "url": "https://reference.invalid/acme/links/ak-delete"
+        },
+        {
+          "method": "GET",
+          "url": "https://reference.invalid/acme/beads/ak-route-create"
+        },
+        {
+          "method": "GET",
+          "url": "https://reference.invalid/acme/links/ak-route-create"
+        },
+        {
+          "method": "GET",
+          "url": "https://reference.invalid/acme/beads/ak-empty"
+        },
+        {
+          "method": "GET",
+          "url": "https://reference.invalid/acme/beads/ak-long"
+        },
+        {
+          "method": "GET",
+          "url": "https://reference.invalid/acme/beads/ak-quoted"
+        },
+        {
+          "method": "GET",
+          "url": "https://reference.invalid/acme/beads/ak-space"
+        },
+        {
+          "method": "GET",
+          "url": "https://reference.invalid/acme/beads/ak-tab"
+        },
+        {
+          "method": "GET",
+          "url": "https://reference.invalid/acme/beads/ak-punctuation"
+        },
+        {
+          "method": "GET",
+          "url": "https://reference.invalid/acme/beads/ak-comma"
+        },
+        {
+          "method": "GET",
+          "url": "https://reference.invalid/acme/beads/ak-latin"
+        },
+        {
+          "method": "GET",
+          "url": "https://reference.invalid/acme/beads/ak-seq-empty-prefix"
+        },
+        {
+          "method": "GET",
+          "url": "https://reference.invalid/acme/beads/ak-seq-empty-member"
+        },
+        {
+          "method": "GET",
+          "url": "https://reference.invalid/acme/beads/ak-seq-long-prefix"
+        },
+        {
+          "method": "GET",
+          "url": "https://reference.invalid/acme/beads/ak-seq-long-member"
+        },
+        {
+          "method": "GET",
+          "url": "https://reference.invalid/acme/beads/ak-seq-quoted-prefix"
+        },
+        {
+          "method": "GET",
+          "url": "https://reference.invalid/acme/beads/ak-seq-quoted-member"
+        },
+        {
+          "method": "GET",
+          "url": "https://reference.invalid/acme/beads/ak-seq-space-prefix"
+        },
+        {
+          "method": "GET",
+          "url": "https://reference.invalid/acme/beads/ak-seq-space-member"
+        },
+        {
+          "method": "GET",
+          "url": "https://reference.invalid/acme/beads/ak-seq-tab-prefix"
+        },
+        {
+          "method": "GET",
+          "url": "https://reference.invalid/acme/beads/ak-seq-tab-member"
+        },
+        {
+          "method": "GET",
+          "url": "https://reference.invalid/acme/beads/ak-seq-punctuation-prefix"
+        },
+        {
+          "method": "GET",
+          "url": "https://reference.invalid/acme/beads/ak-seq-punctuation-member"
+        },
+        {
+          "method": "GET",
+          "url": "https://reference.invalid/acme/beads/ak-seq-comma-prefix"
+        },
+        {
+          "method": "GET",
+          "url": "https://reference.invalid/acme/beads/ak-seq-comma-member"
+        },
+        {
+          "method": "GET",
+          "url": "https://reference.invalid/acme/beads/ak-seq-latin-prefix"
+        },
+        {
+          "method": "GET",
+          "url": "https://reference.invalid/acme/beads/ak-seq-latin-member"
+        },
+        {
+          "method": "GET",
+          "url": "https://reference.invalid/acme/beads/ak-repeat-same-0"
+        },
+        {
+          "method": "GET",
+          "url": "https://reference.invalid/acme/beads/ak-repeat-same"
+        },
+        {
+          "method": "GET",
+          "url": "https://reference.invalid/acme/beads/ak-repeat-distinct-0"
+        },
+        {
+          "method": "GET",
+          "url": "https://reference.invalid/acme/beads/ak-repeat-distinct-1"
+        },
+        {
+          "method": "GET",
+          "url": "https://reference.invalid/acme/beads/ak-repeat-distinct"
+        },
+        {
+          "method": "GET",
+          "url": "https://reference.invalid/acme/beads/ak-repeat-mixed-0"
+        },
+        {
+          "method": "GET",
+          "url": "https://reference.invalid/acme/beads/ak-repeat-mixed-1"
+        },
+        {
+          "method": "GET",
+          "url": "https://reference.invalid/acme/beads/ak-repeat-mixed"
+        },
+        {
+          "method": "GET",
+          "url": "https://reference.invalid/acme/beads/ak-valid-one"
+        },
+        {
+          "method": "GET",
+          "url": "https://reference.invalid/acme/beads/ak-valid-maximum"
+        },
+        {
+          "method": "GET",
+          "url": "https://reference.invalid/acme/beads/ak-valid-alphabet"
+        },
+        {
+          "method": "GET",
+          "url": "https://reference.invalid/acme/beads/am-source"
+        },
+        {
+          "method": "GET",
+          "url": "https://reference.invalid/acme/beads/am-target"
+        },
+        {
+          "method": "GET",
+          "url": "https://reference.invalid/acme/beads/am-update"
+        },
+        {
+          "method": "GET",
+          "url": "https://reference.invalid/acme/beads/am-delete"
+        },
+        {
+          "method": "GET",
+          "url": "https://reference.invalid/acme/beads/am-alt-delete"
+        },
+        {
+          "method": "GET",
+          "url": "https://reference.invalid/acme/links/am-update"
+        },
+        {
+          "method": "GET",
+          "url": "https://reference.invalid/acme/links/am-delete"
+        },
+        {
+          "method": "GET",
+          "url": "https://reference.invalid/acme/links/am-alt-delete"
+        },
+        {
+          "method": "GET",
+          "url": "https://reference.invalid/acme/beads/am-route-create-alt"
+        },
+        {
+          "method": "GET",
+          "url": "https://reference.invalid/acme/links/am-route-create-alt"
+        },
+        {
+          "method": "GET",
+          "url": "https://reference.invalid/acme/beads/am-seq-0-corrected"
+        },
+        {
+          "method": "GET",
+          "url": "https://reference.invalid/acme/beads/am-seq-1-corrected"
+        },
+        {
+          "method": "GET",
+          "url": "https://reference.invalid/acme/beads/am-plain-corrected"
+        },
+        {
+          "method": "GET",
+          "url": "https://reference.invalid/acme/beads/am-problem-corrected"
+        },
+        {
+          "method": "GET",
+          "url": "https://reference.invalid/acme/beads/am-charset"
+        },
+        {
+          "method": "GET",
+          "url": "https://reference.invalid/acme/beads/am-irrelevant"
+        },
+        {
+          "method": "GET",
+          "url": "https://reference.invalid/acme/beads/ra-source"
+        },
+        {
+          "method": "GET",
+          "url": "https://reference.invalid/acme/beads/ra-target"
+        },
+        {
+          "method": "GET",
+          "url": "https://reference.invalid/acme/beads/ra-update"
+        },
+        {
+          "method": "GET",
+          "url": "https://reference.invalid/acme/beads/ra-delete"
+        },
+        {
+          "method": "GET",
+          "url": "https://reference.invalid/acme/links/ra-update"
+        },
+        {
+          "method": "GET",
+          "url": "https://reference.invalid/acme/links/ra-delete"
+        },
+        {
+          "method": "GET",
+          "url": "https://reference.invalid/acme/links/ra-create-link-source"
+        },
+        {
+          "method": "GET",
+          "url": "https://reference.invalid/acme/links/ra-create-link-source-pin"
+        },
+        {
+          "method": "GET",
+          "url": "https://reference.invalid/acme/links/ra-create-link-target"
+        },
+        {
+          "method": "GET",
+          "url": "https://reference.invalid/acme/links/ra-create-link-target-pin"
+        },
+        {
+          "method": "GET",
+          "url": "https://reference.invalid/acme/beads/ra-created-id"
+        },
+        {
+          "method": "GET",
+          "url": "https://reference.invalid/acme/links/ra-created-id"
+        },
+        {
+          "method": "GET",
+          "url": "https://reference.invalid/acme/beads/ra-metadata"
+        },
+        {
+          "method": "GET",
+          "url": "https://reference.invalid/acme/beads/rb-source"
+        },
+        {
+          "method": "GET",
+          "url": "https://reference.invalid/acme/beads/rb-target"
+        },
+        {
+          "method": "GET",
+          "url": "https://reference.invalid/acme/links/rb-live"
+        },
+        {
+          "method": "GET",
+          "url": "https://reference.invalid/acme/beads/rb-rb-sequence-alias-tail"
+        },
+        {
+          "method": "GET",
+          "url": "https://reference.invalid/acme/beads/rb-rb-sequence-endpoint-tail"
+        },
+        {
+          "method": "GET",
+          "url": "https://reference.invalid/acme/links/rb-endpoint-source"
+        },
+        {
+          "method": "GET",
+          "url": "https://reference.invalid/acme/beads/w2-collision"
+        },
+        {
+          "method": "GET",
+          "url": "https://reference.invalid/acme/beads/w2-prefix"
+        },
+        {
+          "method": "GET",
+          "url": "https://reference.invalid/acme/beads/w2-missing"
+        },
+        {
+          "method": "GET",
+          "url": "https://reference.invalid/acme/beads/w2-tail"
+        },
+        {
+          "method": "GET",
+          "url": "https://reference.invalid/acme/beads/w2-bind-tail"
+        },
+        {
+          "method": "GET",
+          "url": "https://reference.invalid/acme/beads/w2-alias-target"
+        },
+        {
+          "method": "GET",
+          "url": "https://reference.invalid/acme/beads/w2-held"
+        },
+        {
+          "method": "GET",
+          "url": "https://reference.invalid/acme/beads/w2-independent"
+        },
+        {
+          "method": "GET",
+          "url": "https://reference.invalid/acme/links/w2-shape"
+        },
+        {
+          "method": "GET",
+          "url": "https://reference.invalid/acme/beads/w2-count-0"
+        },
+        {
+          "method": "GET",
+          "url": "https://reference.invalid/acme/beads/w2-count-1"
+        },
+        {
+          "method": "GET",
+          "url": "https://reference.invalid/acme/beads/w2-count-2"
+        },
+        {
+          "method": "GET",
+          "url": "https://reference.invalid/acme/beads/w2-count-3"
+        },
+        {
+          "method": "GET",
+          "url": "https://reference.invalid/acme/beads/w2-count-4"
+        },
+        {
+          "method": "GET",
+          "url": "https://reference.invalid/acme/beads/w2-count-5"
+        },
+        {
+          "method": "GET",
+          "url": "https://reference.invalid/acme/beads/w2-count-6"
+        },
+        {
+          "method": "GET",
+          "url": "https://reference.invalid/acme/beads/w2-count-7"
+        },
+        {
+          "method": "GET",
+          "url": "https://reference.invalid/acme/beads/w2-count-8"
+        },
+        {
+          "method": "GET",
+          "url": "https://reference.invalid/acme/beads/w2-count-9"
+        },
+        {
+          "method": "GET",
+          "url": "https://reference.invalid/acme/beads/w2-count-10"
+        },
+        {
+          "method": "GET",
+          "url": "https://reference.invalid/acme/beads/w2-count-11"
+        },
+        {
+          "method": "GET",
+          "url": "https://reference.invalid/acme/beads/w2-count-12"
+        },
+        {
+          "method": "GET",
+          "url": "https://reference.invalid/acme/beads/w2-count-13"
+        },
+        {
+          "method": "GET",
+          "url": "https://reference.invalid/acme/beads/w2-count-14"
+        },
+        {
+          "method": "GET",
+          "url": "https://reference.invalid/acme/beads/w2-count-15"
+        },
+        {
+          "method": "GET",
+          "url": "https://reference.invalid/acme/beads/w2-count-16"
+        },
+        {
+          "method": "GET",
+          "url": "https://reference.invalid/acme/beads/w2-count-17"
+        },
+        {
+          "method": "GET",
+          "url": "https://reference.invalid/acme/beads/w2-count-18"
+        },
+        {
+          "method": "GET",
+          "url": "https://reference.invalid/acme/beads/w2-count-19"
+        },
+        {
+          "method": "GET",
+          "url": "https://reference.invalid/acme/beads/w2-count-20"
+        },
+        {
+          "method": "GET",
+          "url": "https://reference.invalid/acme/beads/w2-count-21"
+        },
+        {
+          "method": "GET",
+          "url": "https://reference.invalid/acme/beads/w2-count-22"
+        },
+        {
+          "method": "GET",
+          "url": "https://reference.invalid/acme/beads/w2-count-23"
+        },
+        {
+          "method": "GET",
+          "url": "https://reference.invalid/acme/beads/w2-count-24"
+        },
+        {
+          "method": "GET",
+          "url": "https://reference.invalid/acme/beads/w2-count-25"
+        },
+        {
+          "method": "GET",
+          "url": "https://reference.invalid/acme/beads/w2-count-26"
+        },
+        {
+          "method": "GET",
+          "url": "https://reference.invalid/acme/beads/w2-count-27"
+        },
+        {
+          "method": "GET",
+          "url": "https://reference.invalid/acme/beads/w2-count-28"
+        },
+        {
+          "method": "GET",
+          "url": "https://reference.invalid/acme/beads/w2-count-29"
+        },
+        {
+          "method": "GET",
+          "url": "https://reference.invalid/acme/beads/w2-count-30"
+        },
+        {
+          "method": "GET",
+          "url": "https://reference.invalid/acme/beads/w2-count-31"
+        },
+        {
+          "method": "GET",
+          "url": "https://reference.invalid/acme/beads/w2-count-32"
+        },
+        {
+          "method": "GET",
+          "url": "https://reference.invalid/acme/beads/w2-duplicate-key-pre"
+        },
+        {
+          "method": "GET",
+          "url": "https://reference.invalid/acme/beads/w2-duplicate-key-tail"
+        },
+        {
+          "method": "GET",
+          "url": "https://reference.invalid/acme/beads/w2-duplicate-name-pre"
+        },
+        {
+          "method": "GET",
+          "url": "https://reference.invalid/acme/beads/w2-duplicate-name-tail"
+        },
+        {
+          "method": "GET",
+          "url": "https://reference.invalid/acme/beads/w2-invalid-key-pre"
+        },
+        {
+          "method": "GET",
+          "url": "https://reference.invalid/acme/beads/w2-invalid-key-tail"
+        },
+        {
+          "method": "GET",
+          "url": "https://reference.invalid/acme/beads/w2-invalid-name-pre"
+        },
+        {
+          "method": "GET",
+          "url": "https://reference.invalid/acme/beads/w2-invalid-name-tail"
+        },
+        {
+          "method": "GET",
+          "url": "https://reference.invalid/acme/beads/w2-name-update-pre"
+        },
+        {
+          "method": "GET",
+          "url": "https://reference.invalid/acme/beads/w2-name-update-corrected-1"
+        },
+        {
+          "method": "GET",
+          "url": "https://reference.invalid/acme/beads/w2-forward-pre"
+        },
+        {
+          "method": "GET",
+          "url": "https://reference.invalid/acme/beads/w2-forward-tail"
+        },
+        {
+          "method": "GET",
+          "url": "https://reference.invalid/acme/beads/w2-forward-corrected-0"
+        },
+        {
+          "method": "GET",
+          "url": "https://reference.invalid/acme/beads/w2-unknown-pre"
+        },
+        {
+          "method": "GET",
+          "url": "https://reference.invalid/acme/beads/w2-unknown-tail"
+        },
+        {
+          "method": "GET",
+          "url": "https://reference.invalid/acme/beads/w2-unknown-corrected-1"
+        },
+        {
+          "method": "GET",
+          "url": "https://reference.invalid/acme/beads/w2-self-pre"
+        },
+        {
+          "method": "GET",
+          "url": "https://reference.invalid/acme/links/w2-self"
+        },
+        {
+          "method": "GET",
+          "url": "https://reference.invalid/acme/beads/w2-self-tail"
+        },
+        {
+          "method": "GET",
+          "url": "https://reference.invalid/acme/beads/w2-self-corrected-1"
+        },
+        {
+          "method": "GET",
+          "url": "https://reference.invalid/acme/beads/w2-bead-as-link-pre"
+        },
+        {
+          "method": "GET",
+          "url": "https://reference.invalid/acme/beads/w2-bead-as-link-tail"
+        },
+        {
+          "method": "GET",
+          "url": "https://reference.invalid/acme/beads/w2-bead-as-link-corrected-1"
+        },
+        {
+          "method": "GET",
+          "url": "https://reference.invalid/acme/beads/w2-link-as-bead-pre"
+        },
+        {
+          "method": "GET",
+          "url": "https://reference.invalid/acme/links/w2-link-as-bead"
+        },
+        {
+          "method": "GET",
+          "url": "https://reference.invalid/acme/beads/w2-link-as-bead-tail"
+        },
+        {
+          "method": "GET",
+          "url": "https://reference.invalid/acme/beads/w2-link-as-bead-corrected-1"
+        },
+        {
+          "method": "GET",
+          "url": "https://reference.invalid/acme/beads/w2-link-as-bead-corrected-2"
+        },
+        {
+          "method": "GET",
+          "url": "https://reference.invalid/acme/beads/w2-link-as-endpoint-pre"
+        },
+        {
+          "method": "GET",
+          "url": "https://reference.invalid/acme/links/w2-link-as-endpoint"
+        },
+        {
+          "method": "GET",
+          "url": "https://reference.invalid/acme/links/w2-link-as-endpoint-ref"
+        },
+        {
+          "method": "GET",
+          "url": "https://reference.invalid/acme/beads/w2-link-as-endpoint-tail"
+        },
+        {
+          "method": "GET",
+          "url": "https://reference.invalid/acme/beads/w2-link-as-endpoint-corrected-1"
+        },
+        {
+          "method": "GET",
+          "url": "https://reference.invalid/acme/beads/w2-link-as-endpoint-corrected-2"
+        },
+        {
+          "method": "GET",
+          "url": "https://reference.invalid/acme/beads/w2-top-key-pre"
+        },
+        {
+          "method": "GET",
+          "url": "https://reference.invalid/acme/beads/w2-top-key-tail"
+        },
+        {
+          "method": "GET",
+          "url": "https://reference.invalid/acme/beads/w2-empty-pre"
+        },
+        {
+          "method": "GET",
+          "url": "https://reference.invalid/acme/beads/w2-empty-tail"
+        },
+        {
+          "method": "GET",
+          "url": "https://reference.invalid/acme/beads/w2-missing-pre"
+        },
+        {
+          "method": "GET",
+          "url": "https://reference.invalid/acme/beads/w2-missing-tail"
+        },
+        {
+          "method": "GET",
+          "url": "https://reference.invalid/acme/beads/w2-unknown-root-pre"
+        },
+        {
+          "method": "GET",
+          "url": "https://reference.invalid/acme/beads/w2-unknown-root-tail"
+        },
+        {
+          "method": "GET",
+          "url": "https://reference.invalid/acme/beads/w2-unknown-member-pre"
+        },
+        {
+          "method": "GET",
+          "url": "https://reference.invalid/acme/beads/w2-unknown-member-tail"
+        },
+        {
+          "method": "GET",
+          "url": "https://reference.invalid/acme/beads/w2-unknown-operation-pre"
+        },
+        {
+          "method": "GET",
+          "url": "https://reference.invalid/acme/beads/w2-unknown-operation-corrected-1"
+        },
+        {
+          "method": "GET",
+          "url": "https://reference.invalid/acme/beads/w2-malformed-json-pre"
+        },
+        {
+          "method": "GET",
+          "url": "https://reference.invalid/acme/beads/w2-malformed-json-tail"
+        },
+        {
+          "method": "GET",
+          "url": "https://reference.invalid/acme/beads/w2-duplicate-json-pre"
+        },
+        {
+          "method": "GET",
+          "url": "https://reference.invalid/acme/beads/w2-duplicate-json-tail"
+        },
+        {
+          "method": "GET",
+          "url": "https://reference.invalid/acme/beads/w2-surrogate-pre"
+        },
+        {
+          "method": "GET",
+          "url": "https://reference.invalid/acme/beads/w2-surrogate-tail"
+        },
+        {
+          "method": "GET",
+          "url": "https://reference.invalid/acme/beads/w2-anonymous-pre"
+        },
+        {
+          "method": "GET",
+          "url": "https://reference.invalid/acme/beads/w2-anonymous-tail"
+        },
+        {
+          "method": "GET",
+          "url": "https://reference.invalid/acme/beads/w2-media-pre"
+        },
+        {
+          "method": "GET",
+          "url": "https://reference.invalid/acme/beads/w2-media-tail"
+        },
+        {
+          "method": "GET",
+          "url": "https://reference.invalid/acme/beads/w2-body-size-pre"
+        },
+        {
+          "method": "GET",
+          "url": "https://reference.invalid/acme/beads/w2-body-size-tail"
+        },
+        {
+          "method": "GET",
+          "url": "https://reference.invalid/acme/beads/w2-bad-pointer-pre"
+        },
+        {
+          "method": "GET",
+          "url": "https://reference.invalid/acme/beads/w2-bad-pointer-tail"
+        },
+        {
+          "method": "GET",
+          "url": "https://reference.invalid/acme/beads/w2-bad-pointer-corrected-1"
+        },
+        {
+          "method": "GET",
+          "url": "https://reference.invalid/acme/beads/retry-position-f"
+        },
+        {
+          "method": "GET",
+          "url": "https://reference.invalid/acme/beads/retry-position-b"
+        },
+        {
+          "method": "GET",
+          "url": "https://reference.invalid/acme/beads/retry-position-d"
+        },
+        {
+          "method": "GET",
+          "url": "https://reference.invalid/acme/beads/retry-cross-a"
+        },
+        {
+          "method": "GET",
+          "url": "https://reference.invalid/acme/beads/retry-cross-b"
+        },
+        {
+          "method": "GET",
+          "url": "https://reference.invalid/acme/beads/retry-cross-f"
+        },
+        {
+          "method": "GET",
+          "url": "https://reference.invalid/acme/beads/retry-cross-g"
+        },
+        {
+          "method": "GET",
+          "url": "https://reference.invalid/acme/bdp.json"
+        },
+        {
+          "method": "GET",
+          "url": "https://reference.invalid/acme/"
+        },
+        {
+          "method": "GET",
+          "url": "https://reference.invalid/acme/beads/read-a"
+        },
+        {
+          "method": "GET",
+          "url": "https://reference.invalid/acme/links/read-a"
+        },
+        {
+          "method": "GET",
+          "url": "https://reference.invalid/acme/beads/read-a?view=properties"
+        },
+        {
+          "method": "GET",
+          "url": "https://reference.invalid/acme/links/read-a?view=properties"
+        },
+        {
+          "method": "GET",
+          "url": "https://reference.invalid/acme/types/"
+        },
+        {
+          "method": "GET",
+          "url": "https://reference.invalid/acme/types/blocks"
+        },
+        {
+          "method": "GET",
+          "url": "https://reference.invalid/acme/types/bug"
+        },
+        {
+          "method": "GET",
+          "url": "https://reference.invalid/acme/types/chore"
+        },
+        {
+          "method": "GET",
+          "url": "https://reference.invalid/acme/types/cites"
+        },
+        {
+          "method": "GET",
+          "url": "https://reference.invalid/acme/types/decision"
+        },
+        {
+          "method": "GET",
+          "url": "https://reference.invalid/acme/types/dependency"
+        },
+        {
+          "method": "GET",
+          "url": "https://reference.invalid/acme/types/epic"
+        },
+        {
+          "method": "GET",
+          "url": "https://reference.invalid/acme/types/feature"
+        },
+        {
+          "method": "GET",
+          "url": "https://reference.invalid/acme/types/relates"
+        },
+        {
+          "method": "GET",
+          "url": "https://reference.invalid/acme/types/relationship"
+        },
+        {
+          "method": "GET",
+          "url": "https://reference.invalid/acme/types/task"
+        },
+        {
+          "method": "GET",
+          "url": "https://reference.invalid/acme/types/tracked-item"
+        },
+        {
+          "method": "GET",
+          "url": "https://reference.invalid/acme/types/work-item"
+        },
+        {
+          "method": "GET",
+          "url": "https://reference.invalid/acme/types/schema-bead-base"
+        },
+        {
+          "method": "GET",
+          "url": "https://reference.invalid/acme/types/schema-bead-child"
+        },
+        {
+          "method": "GET",
+          "url": "https://reference.invalid/acme/types/schema-link-base"
+        },
+        {
+          "method": "GET",
+          "url": "https://reference.invalid/acme/types/schema-link-child"
+        },
+        {
+          "method": "GET",
+          "url": "https://reference.invalid/acme/beads/"
+        },
+        {
+          "method": "GET",
+          "url": "https://reference.invalid/acme/links/"
+        },
+        {
+          "method": "GET",
+          "url": "https://reference.invalid/acme/beads/?unsupported=1"
+        },
+        {
+          "method": "GET",
+          "url": "https://reference.invalid/acme/beads/?limit=1&limit=2"
+        },
+        {
+          "method": "GET",
+          "url": "https://reference.invalid/acme/links/?selector=%24%5B%3F%40.id%5D&selector=%24%5B%3F%40.type%5D"
+        },
+        {
+          "method": "HEAD",
+          "url": "https://reference.invalid/acme/"
+        },
+        {
+          "method": "HEAD",
+          "url": "https://reference.invalid/acme/bdp.json"
+        },
+        {
+          "method": "HEAD",
+          "url": "https://reference.invalid/acme/beads/"
+        },
+        {
+          "method": "HEAD",
+          "url": "https://reference.invalid/acme/beads/read-a"
+        },
+        {
+          "method": "HEAD",
+          "url": "https://reference.invalid/acme/beads/read-a?view=properties"
+        },
+        {
+          "method": "GET",
+          "url": "https://reference.invalid/acme/beads/read-a?view=links"
+        },
+        {
+          "method": "HEAD",
+          "url": "https://reference.invalid/acme/beads/read-a?view=links"
+        },
+        {
+          "method": "HEAD",
+          "url": "https://reference.invalid/acme/links/"
+        },
+        {
+          "method": "HEAD",
+          "url": "https://reference.invalid/acme/links/read-a"
+        },
+        {
+          "method": "HEAD",
+          "url": "https://reference.invalid/acme/links/read-a?view=properties"
+        },
+        {
+          "method": "HEAD",
+          "url": "https://reference.invalid/acme/types/"
+        },
+        {
+          "method": "HEAD",
+          "url": "https://reference.invalid/acme/types/task"
+        },
+        {
+          "method": "HEAD",
+          "url": "https://reference.invalid/acme/types/relates"
+        },
+        {
+          "method": "POST",
+          "url": "https://reference.invalid/acme/"
+        },
+        {
+          "method": "GET",
+          "url": "https://reference.invalid/acme/beads/does-not-exist"
+        },
+        {
+          "method": "OPTIONS",
+          "url": "https://reference.invalid/acme/"
+        },
+        {
+          "method": "GET",
+          "url": "https://reference.invalid/acme/beads/http-never-created"
+        },
+        {
+          "method": "GET",
+          "url": "https://reference.invalid/acme/beads/?limit=0"
+        },
+        {
+          "method": "HEAD",
+          "url": "https://reference.invalid/acme/beads/http-never-created"
+        },
+        {
+          "method": "HEAD",
+          "url": "https://reference.invalid/acme/beads/?limit=0"
+        },
+        {
+          "method": "GET",
+          "url": "https://reference.invalid/acme/schemas/schema-bead-base"
+        },
+        {
+          "method": "GET",
+          "url": "https://reference.invalid/acme/schemas/schema-bead-child"
+        },
+        {
+          "method": "GET",
+          "url": "https://reference.invalid/acme/schemas/schema-link-base"
+        },
+        {
+          "method": "GET",
+          "url": "https://reference.invalid/acme/schemas/schema-link-child"
+        },
+        {
+          "method": "GET",
+          "url": "https://reference.invalid/acme/alias/ak-locator-put"
+        },
+        {
+          "method": "GET",
+          "url": "https://reference.invalid/acme/alias/ak-locator-delete"
+        },
+        {
+          "method": "GET",
+          "url": "https://reference.invalid/acme/beads/?limit=100"
+        },
+        {
+          "method": "GET",
+          "url": "https://reference.invalid/acme/links/?limit=100"
+        },
+        {
+          "method": "POST",
+          "url": "https://reference.invalid/acme/operations/create-bead"
+        },
+        {
+          "method": "POST",
+          "url": "https://reference.invalid/acme/operations/update-bead"
+        },
+        {
+          "method": "POST",
+          "url": "https://reference.invalid/acme/operations/delete-bead"
+        },
+        {
+          "method": "POST",
+          "url": "https://reference.invalid/acme/operations/create-link"
+        },
+        {
+          "method": "POST",
+          "url": "https://reference.invalid/acme/operations/update-link"
+        },
+        {
+          "method": "POST",
+          "url": "https://reference.invalid/acme/operations/delete-link"
+        },
+        {
+          "method": "POST",
+          "url": "https://reference.invalid/acme/operations/put-alias"
+        },
+        {
+          "method": "POST",
+          "url": "https://reference.invalid/acme/operations/delete-alias"
+        },
+        {
+          "method": "POST",
+          "url": "https://reference.invalid/acme/operations/sequence"
+        },
+        {
+          "method": "GET",
+          "url": "https://reference.invalid/acme/alias/am-locator-put"
+        },
+        {
+          "method": "GET",
+          "url": "https://reference.invalid/acme/alias/am-locator-delete"
+        },
+        {
+          "method": "GET",
+          "url": "https://reference.invalid/acme/alias/am-locator-alt-delete"
+        },
+        {
+          "method": "GET",
+          "url": "https://reference.invalid/acme/alias/ra-locator-put"
+        },
+        {
+          "method": "GET",
+          "url": "https://reference.invalid/acme/alias/ra-locator-delete"
+        },
+        {
+          "method": "GET",
+          "url": "https://reference.invalid/acme/alias/ra-locator-new"
+        },
+        {
+          "method": "GET",
+          "url": "https://reference.invalid/acme/alias/w1-locator"
+        },
+        {
+          "method": "HEAD",
+          "url": "https://reference.invalid/acme/alias/w1-locator"
+        },
+        {
+          "method": "GET",
+          "url": "https://reference.invalid/acme/alias/w1-unknown"
+        },
+        {
+          "method": "GET",
+          "url": "https://reference.invalid/acme/alias/w1-locator?unexpected=1"
+        },
+        {
+          "method": "GET",
+          "url": "https://reference.invalid/acme/alias/rb-locator-live"
+        },
+        {
+          "method": "GET",
+          "url": "https://reference.invalid/acme/alias/rb-locator-alias-local"
+        },
+        {
+          "method": "GET",
+          "url": "https://reference.invalid/acme/alias/rb-locator-alias-absolute"
+        },
+        {
+          "method": "GET",
+          "url": "https://reference.invalid/acme/alias/rb-locator-link-local"
+        },
+        {
+          "method": "GET",
+          "url": "https://reference.invalid/acme/alias/rb-locator-link-absolute"
+        },
+        {
+          "method": "GET",
+          "url": "https://reference.invalid/acme/alias/rb-locator-external"
+        },
+        {
+          "method": "GET",
+          "url": "https://reference.invalid/acme/alias/rb-locator-sequence"
+        },
+        {
+          "method": "GET",
+          "url": "https://reference.invalid/acme/alias/w2-shape"
+        }
+      ],
+      "resultDigest": "01cb4d29dc543bdf11f9837d59d09238611067b0ce15f14278251b2eb67dc304",
+      "resultBytes": 1247763,
+      "cleanupComplete": true,
+      "actualBootstrap": {
+        "scope": "https://reference.invalid/acme/",
+        "profile": "read-update",
+        "history": false,
+        "payloadIdentity": "3ad235102ca01c8e28acebc2bf892b107c65d40502f97a1cfc0dc9a135c8440d",
+        "artifactIdentity": "development-schema5-48667497d6e13064316d0364cf8f49dfc247ab9189306985a357d7b558333dfe",
+        "policyIdentity": "dbe8dbd5430f26e19e754d38167cd8084a32d702c695550e2ee0063dc2912430",
+        "authenticationIdentity": "66941efc779f4f2431d65fdd5b2387b2af67bd7c1559e09dac032f82259ea16e",
+        "configurationIdentity": "1720b63b49a7be3299d4b2865de4db9fcbe47560f217a32eea6397db7ea54ca5"
+      },
+      "actualSessions": [
+        {
+          "scenario": "read.discovery.scope-service-desc",
+          "scope": "https://reference.invalid/acme/",
+          "profile": "read-update",
+          "history": false,
+          "payloadIdentity": "3ad235102ca01c8e28acebc2bf892b107c65d40502f97a1cfc0dc9a135c8440d",
+          "artifactIdentity": "development-schema5-48667497d6e13064316d0364cf8f49dfc247ab9189306985a357d7b558333dfe",
+          "policyIdentity": "dbe8dbd5430f26e19e754d38167cd8084a32d702c695550e2ee0063dc2912430",
+          "authenticationIdentity": "66941efc779f4f2431d65fdd5b2387b2af67bd7c1559e09dac032f82259ea16e",
+          "configurationIdentity": "1720b63b49a7be3299d4b2865de4db9fcbe47560f217a32eea6397db7ea54ca5"
+        },
+        {
+          "scenario": "read.discovery.canonical-navigation",
+          "scope": "https://reference.invalid/acme/",
+          "profile": "read-update",
+          "history": false,
+          "payloadIdentity": "3ad235102ca01c8e28acebc2bf892b107c65d40502f97a1cfc0dc9a135c8440d",
+          "artifactIdentity": "development-schema5-48667497d6e13064316d0364cf8f49dfc247ab9189306985a357d7b558333dfe",
+          "policyIdentity": "dbe8dbd5430f26e19e754d38167cd8084a32d702c695550e2ee0063dc2912430",
+          "authenticationIdentity": "66941efc779f4f2431d65fdd5b2387b2af67bd7c1559e09dac032f82259ea16e",
+          "configurationIdentity": "1720b63b49a7be3299d4b2865de4db9fcbe47560f217a32eea6397db7ea54ca5"
+        },
+        {
+          "scenario": "read.resource.bead-record",
+          "scope": "https://reference.invalid/acme/",
+          "profile": "read-update",
+          "history": false,
+          "payloadIdentity": "3ad235102ca01c8e28acebc2bf892b107c65d40502f97a1cfc0dc9a135c8440d",
+          "artifactIdentity": "development-schema5-48667497d6e13064316d0364cf8f49dfc247ab9189306985a357d7b558333dfe",
+          "policyIdentity": "dbe8dbd5430f26e19e754d38167cd8084a32d702c695550e2ee0063dc2912430",
+          "authenticationIdentity": "66941efc779f4f2431d65fdd5b2387b2af67bd7c1559e09dac032f82259ea16e",
+          "configurationIdentity": "1720b63b49a7be3299d4b2865de4db9fcbe47560f217a32eea6397db7ea54ca5"
+        },
+        {
+          "scenario": "read.resource.link-record",
+          "scope": "https://reference.invalid/acme/",
+          "profile": "read-update",
+          "history": false,
+          "payloadIdentity": "3ad235102ca01c8e28acebc2bf892b107c65d40502f97a1cfc0dc9a135c8440d",
+          "artifactIdentity": "development-schema5-48667497d6e13064316d0364cf8f49dfc247ab9189306985a357d7b558333dfe",
+          "policyIdentity": "dbe8dbd5430f26e19e754d38167cd8084a32d702c695550e2ee0063dc2912430",
+          "authenticationIdentity": "66941efc779f4f2431d65fdd5b2387b2af67bd7c1559e09dac032f82259ea16e",
+          "configurationIdentity": "1720b63b49a7be3299d4b2865de4db9fcbe47560f217a32eea6397db7ea54ca5"
+        },
+        {
+          "scenario": "read.resource.properties-view",
+          "scope": "https://reference.invalid/acme/",
+          "profile": "read-update",
+          "history": false,
+          "payloadIdentity": "3ad235102ca01c8e28acebc2bf892b107c65d40502f97a1cfc0dc9a135c8440d",
+          "artifactIdentity": "development-schema5-48667497d6e13064316d0364cf8f49dfc247ab9189306985a357d7b558333dfe",
+          "policyIdentity": "dbe8dbd5430f26e19e754d38167cd8084a32d702c695550e2ee0063dc2912430",
+          "authenticationIdentity": "66941efc779f4f2431d65fdd5b2387b2af67bd7c1559e09dac032f82259ea16e",
+          "configurationIdentity": "1720b63b49a7be3299d4b2865de4db9fcbe47560f217a32eea6397db7ea54ca5"
+        },
+        {
+          "scenario": "read.resource.default-bounded",
+          "scope": "https://reference.invalid/acme/",
+          "profile": "read-update",
+          "history": false,
+          "payloadIdentity": "3ad235102ca01c8e28acebc2bf892b107c65d40502f97a1cfc0dc9a135c8440d",
+          "artifactIdentity": "development-schema5-48667497d6e13064316d0364cf8f49dfc247ab9189306985a357d7b558333dfe",
+          "policyIdentity": "dbe8dbd5430f26e19e754d38167cd8084a32d702c695550e2ee0063dc2912430",
+          "authenticationIdentity": "66941efc779f4f2431d65fdd5b2387b2af67bd7c1559e09dac032f82259ea16e",
+          "configurationIdentity": "1720b63b49a7be3299d4b2865de4db9fcbe47560f217a32eea6397db7ea54ca5"
+        },
+        {
+          "scenario": "read.types.inventory",
+          "scope": "https://reference.invalid/acme/",
+          "profile": "read-update",
+          "history": false,
+          "payloadIdentity": "3ad235102ca01c8e28acebc2bf892b107c65d40502f97a1cfc0dc9a135c8440d",
+          "artifactIdentity": "development-schema5-48667497d6e13064316d0364cf8f49dfc247ab9189306985a357d7b558333dfe",
+          "policyIdentity": "dbe8dbd5430f26e19e754d38167cd8084a32d702c695550e2ee0063dc2912430",
+          "authenticationIdentity": "66941efc779f4f2431d65fdd5b2387b2af67bd7c1559e09dac032f82259ea16e",
+          "configurationIdentity": "1720b63b49a7be3299d4b2865de4db9fcbe47560f217a32eea6397db7ea54ca5"
+        },
+        {
+          "scenario": "read.types.descriptor",
+          "scope": "https://reference.invalid/acme/",
+          "profile": "read-update",
+          "history": false,
+          "payloadIdentity": "3ad235102ca01c8e28acebc2bf892b107c65d40502f97a1cfc0dc9a135c8440d",
+          "artifactIdentity": "development-schema5-48667497d6e13064316d0364cf8f49dfc247ab9189306985a357d7b558333dfe",
+          "policyIdentity": "dbe8dbd5430f26e19e754d38167cd8084a32d702c695550e2ee0063dc2912430",
+          "authenticationIdentity": "66941efc779f4f2431d65fdd5b2387b2af67bd7c1559e09dac032f82259ea16e",
+          "configurationIdentity": "1720b63b49a7be3299d4b2865de4db9fcbe47560f217a32eea6397db7ea54ca5"
+        },
+        {
+          "scenario": "read.collections.beads",
+          "scope": "https://reference.invalid/acme/",
+          "profile": "read-update",
+          "history": false,
+          "payloadIdentity": "3ad235102ca01c8e28acebc2bf892b107c65d40502f97a1cfc0dc9a135c8440d",
+          "artifactIdentity": "development-schema5-48667497d6e13064316d0364cf8f49dfc247ab9189306985a357d7b558333dfe",
+          "policyIdentity": "dbe8dbd5430f26e19e754d38167cd8084a32d702c695550e2ee0063dc2912430",
+          "authenticationIdentity": "66941efc779f4f2431d65fdd5b2387b2af67bd7c1559e09dac032f82259ea16e",
+          "configurationIdentity": "1720b63b49a7be3299d4b2865de4db9fcbe47560f217a32eea6397db7ea54ca5"
+        },
+        {
+          "scenario": "read.collections.links",
+          "scope": "https://reference.invalid/acme/",
+          "profile": "read-update",
+          "history": false,
+          "payloadIdentity": "3ad235102ca01c8e28acebc2bf892b107c65d40502f97a1cfc0dc9a135c8440d",
+          "artifactIdentity": "development-schema5-48667497d6e13064316d0364cf8f49dfc247ab9189306985a357d7b558333dfe",
+          "policyIdentity": "dbe8dbd5430f26e19e754d38167cd8084a32d702c695550e2ee0063dc2912430",
+          "authenticationIdentity": "66941efc779f4f2431d65fdd5b2387b2af67bd7c1559e09dac032f82259ea16e",
+          "configurationIdentity": "1720b63b49a7be3299d4b2865de4db9fcbe47560f217a32eea6397db7ea54ca5"
+        },
+        {
+          "scenario": "read.collections.invalid-query",
+          "scope": "https://reference.invalid/acme/",
+          "profile": "read-update",
+          "history": false,
+          "payloadIdentity": "3ad235102ca01c8e28acebc2bf892b107c65d40502f97a1cfc0dc9a135c8440d",
+          "artifactIdentity": "development-schema5-48667497d6e13064316d0364cf8f49dfc247ab9189306985a357d7b558333dfe",
+          "policyIdentity": "dbe8dbd5430f26e19e754d38167cd8084a32d702c695550e2ee0063dc2912430",
+          "authenticationIdentity": "66941efc779f4f2431d65fdd5b2387b2af67bd7c1559e09dac032f82259ea16e",
+          "configurationIdentity": "1720b63b49a7be3299d4b2865de4db9fcbe47560f217a32eea6397db7ea54ca5"
+        },
+        {
+          "scenario": "read.http.get-head",
+          "scope": "https://reference.invalid/acme/",
+          "profile": "read-update",
+          "history": false,
+          "payloadIdentity": "3ad235102ca01c8e28acebc2bf892b107c65d40502f97a1cfc0dc9a135c8440d",
+          "artifactIdentity": "development-schema5-48667497d6e13064316d0364cf8f49dfc247ab9189306985a357d7b558333dfe",
+          "policyIdentity": "dbe8dbd5430f26e19e754d38167cd8084a32d702c695550e2ee0063dc2912430",
+          "authenticationIdentity": "66941efc779f4f2431d65fdd5b2387b2af67bd7c1559e09dac032f82259ea16e",
+          "configurationIdentity": "1720b63b49a7be3299d4b2865de4db9fcbe47560f217a32eea6397db7ea54ca5"
+        },
+        {
+          "scenario": "read.http.method-405",
+          "scope": "https://reference.invalid/acme/",
+          "profile": "read-update",
+          "history": false,
+          "payloadIdentity": "3ad235102ca01c8e28acebc2bf892b107c65d40502f97a1cfc0dc9a135c8440d",
+          "artifactIdentity": "development-schema5-48667497d6e13064316d0364cf8f49dfc247ab9189306985a357d7b558333dfe",
+          "policyIdentity": "dbe8dbd5430f26e19e754d38167cd8084a32d702c695550e2ee0063dc2912430",
+          "authenticationIdentity": "66941efc779f4f2431d65fdd5b2387b2af67bd7c1559e09dac032f82259ea16e",
+          "configurationIdentity": "1720b63b49a7be3299d4b2865de4db9fcbe47560f217a32eea6397db7ea54ca5"
+        },
+        {
+          "scenario": "read.http.cache-cors",
+          "scope": "https://reference.invalid/acme/",
+          "profile": "read-update",
+          "history": false,
+          "payloadIdentity": "3ad235102ca01c8e28acebc2bf892b107c65d40502f97a1cfc0dc9a135c8440d",
+          "artifactIdentity": "development-schema5-48667497d6e13064316d0364cf8f49dfc247ab9189306985a357d7b558333dfe",
+          "policyIdentity": "dbe8dbd5430f26e19e754d38167cd8084a32d702c695550e2ee0063dc2912430",
+          "authenticationIdentity": "66941efc779f4f2431d65fdd5b2387b2af67bd7c1559e09dac032f82259ea16e",
+          "configurationIdentity": "1720b63b49a7be3299d4b2865de4db9fcbe47560f217a32eea6397db7ea54ca5"
+        },
+        {
+          "scenario": "read.http.accept-negotiation",
+          "scope": "https://reference.invalid/acme/",
+          "profile": "read-update",
+          "history": false,
+          "payloadIdentity": "3ad235102ca01c8e28acebc2bf892b107c65d40502f97a1cfc0dc9a135c8440d",
+          "artifactIdentity": "development-schema5-48667497d6e13064316d0364cf8f49dfc247ab9189306985a357d7b558333dfe",
+          "policyIdentity": "dbe8dbd5430f26e19e754d38167cd8084a32d702c695550e2ee0063dc2912430",
+          "authenticationIdentity": "66941efc779f4f2431d65fdd5b2387b2af67bd7c1559e09dac032f82259ea16e",
+          "configurationIdentity": "1720b63b49a7be3299d4b2865de4db9fcbe47560f217a32eea6397db7ea54ca5"
+        },
+        {
+          "scenario": "read.http.conditional-reads",
+          "scope": "https://reference.invalid/acme/",
+          "profile": "read-update",
+          "history": false,
+          "payloadIdentity": "3ad235102ca01c8e28acebc2bf892b107c65d40502f97a1cfc0dc9a135c8440d",
+          "artifactIdentity": "development-schema5-48667497d6e13064316d0364cf8f49dfc247ab9189306985a357d7b558333dfe",
+          "policyIdentity": "dbe8dbd5430f26e19e754d38167cd8084a32d702c695550e2ee0063dc2912430",
+          "authenticationIdentity": "66941efc779f4f2431d65fdd5b2387b2af67bd7c1559e09dac032f82259ea16e",
+          "configurationIdentity": "1720b63b49a7be3299d4b2865de4db9fcbe47560f217a32eea6397db7ea54ca5"
+        },
+        {
+          "scenario": "read.http.head-conditional-parity",
+          "scope": "https://reference.invalid/acme/",
+          "profile": "read-update",
+          "history": false,
+          "payloadIdentity": "3ad235102ca01c8e28acebc2bf892b107c65d40502f97a1cfc0dc9a135c8440d",
+          "artifactIdentity": "development-schema5-48667497d6e13064316d0364cf8f49dfc247ab9189306985a357d7b558333dfe",
+          "policyIdentity": "dbe8dbd5430f26e19e754d38167cd8084a32d702c695550e2ee0063dc2912430",
+          "authenticationIdentity": "66941efc779f4f2431d65fdd5b2387b2af67bd7c1559e09dac032f82259ea16e",
+          "configurationIdentity": "1720b63b49a7be3299d4b2865de4db9fcbe47560f217a32eea6397db7ea54ca5"
+        },
+        {
+          "scenario": "read-update.discovery.document",
+          "scope": "https://reference.invalid/acme/",
+          "profile": "read-update",
+          "history": false,
+          "payloadIdentity": "3ad235102ca01c8e28acebc2bf892b107c65d40502f97a1cfc0dc9a135c8440d",
+          "artifactIdentity": "development-schema5-48667497d6e13064316d0364cf8f49dfc247ab9189306985a357d7b558333dfe",
+          "policyIdentity": "dbe8dbd5430f26e19e754d38167cd8084a32d702c695550e2ee0063dc2912430",
+          "authenticationIdentity": "66941efc779f4f2431d65fdd5b2387b2af67bd7c1559e09dac032f82259ea16e",
+          "configurationIdentity": "1720b63b49a7be3299d4b2865de4db9fcbe47560f217a32eea6397db7ea54ca5"
+        },
+        {
+          "scenario": "read-update.singleton.create-bead",
+          "scope": "https://reference.invalid/acme/",
+          "profile": "read-update",
+          "history": false,
+          "payloadIdentity": "3ad235102ca01c8e28acebc2bf892b107c65d40502f97a1cfc0dc9a135c8440d",
+          "artifactIdentity": "development-schema5-48667497d6e13064316d0364cf8f49dfc247ab9189306985a357d7b558333dfe",
+          "policyIdentity": "dbe8dbd5430f26e19e754d38167cd8084a32d702c695550e2ee0063dc2912430",
+          "authenticationIdentity": "66941efc779f4f2431d65fdd5b2387b2af67bd7c1559e09dac032f82259ea16e",
+          "configurationIdentity": "1720b63b49a7be3299d4b2865de4db9fcbe47560f217a32eea6397db7ea54ca5"
+        },
+        {
+          "scenario": "read-update.singleton.update-bead",
+          "scope": "https://reference.invalid/acme/",
+          "profile": "read-update",
+          "history": false,
+          "payloadIdentity": "3ad235102ca01c8e28acebc2bf892b107c65d40502f97a1cfc0dc9a135c8440d",
+          "artifactIdentity": "development-schema5-48667497d6e13064316d0364cf8f49dfc247ab9189306985a357d7b558333dfe",
+          "policyIdentity": "dbe8dbd5430f26e19e754d38167cd8084a32d702c695550e2ee0063dc2912430",
+          "authenticationIdentity": "66941efc779f4f2431d65fdd5b2387b2af67bd7c1559e09dac032f82259ea16e",
+          "configurationIdentity": "1720b63b49a7be3299d4b2865de4db9fcbe47560f217a32eea6397db7ea54ca5"
+        },
+        {
+          "scenario": "read-update.singleton.document-patch-merge-replace",
+          "scope": "https://reference.invalid/acme/",
+          "profile": "read-update",
+          "history": false,
+          "payloadIdentity": "3ad235102ca01c8e28acebc2bf892b107c65d40502f97a1cfc0dc9a135c8440d",
+          "artifactIdentity": "development-schema5-48667497d6e13064316d0364cf8f49dfc247ab9189306985a357d7b558333dfe",
+          "policyIdentity": "dbe8dbd5430f26e19e754d38167cd8084a32d702c695550e2ee0063dc2912430",
+          "authenticationIdentity": "66941efc779f4f2431d65fdd5b2387b2af67bd7c1559e09dac032f82259ea16e",
+          "configurationIdentity": "1720b63b49a7be3299d4b2865de4db9fcbe47560f217a32eea6397db7ea54ca5"
+        },
+        {
+          "scenario": "read-update.singleton.document-patch-atomicity",
+          "scope": "https://reference.invalid/acme/",
+          "profile": "read-update",
+          "history": false,
+          "payloadIdentity": "3ad235102ca01c8e28acebc2bf892b107c65d40502f97a1cfc0dc9a135c8440d",
+          "artifactIdentity": "development-schema5-48667497d6e13064316d0364cf8f49dfc247ab9189306985a357d7b558333dfe",
+          "policyIdentity": "dbe8dbd5430f26e19e754d38167cd8084a32d702c695550e2ee0063dc2912430",
+          "authenticationIdentity": "66941efc779f4f2431d65fdd5b2387b2af67bd7c1559e09dac032f82259ea16e",
+          "configurationIdentity": "1720b63b49a7be3299d4b2865de4db9fcbe47560f217a32eea6397db7ea54ca5"
+        },
+        {
+          "scenario": "read-update.singleton.document-patch-validation",
+          "scope": "https://reference.invalid/acme/",
+          "profile": "read-update",
+          "history": false,
+          "payloadIdentity": "3ad235102ca01c8e28acebc2bf892b107c65d40502f97a1cfc0dc9a135c8440d",
+          "artifactIdentity": "development-schema5-48667497d6e13064316d0364cf8f49dfc247ab9189306985a357d7b558333dfe",
+          "policyIdentity": "dbe8dbd5430f26e19e754d38167cd8084a32d702c695550e2ee0063dc2912430",
+          "authenticationIdentity": "66941efc779f4f2431d65fdd5b2387b2af67bd7c1559e09dac032f82259ea16e",
+          "configurationIdentity": "1720b63b49a7be3299d4b2865de4db9fcbe47560f217a32eea6397db7ea54ca5"
+        },
+        {
+          "scenario": "read-update.singleton.delete-bead",
+          "scope": "https://reference.invalid/acme/",
+          "profile": "read-update",
+          "history": false,
+          "payloadIdentity": "3ad235102ca01c8e28acebc2bf892b107c65d40502f97a1cfc0dc9a135c8440d",
+          "artifactIdentity": "development-schema5-48667497d6e13064316d0364cf8f49dfc247ab9189306985a357d7b558333dfe",
+          "policyIdentity": "dbe8dbd5430f26e19e754d38167cd8084a32d702c695550e2ee0063dc2912430",
+          "authenticationIdentity": "66941efc779f4f2431d65fdd5b2387b2af67bd7c1559e09dac032f82259ea16e",
+          "configurationIdentity": "1720b63b49a7be3299d4b2865de4db9fcbe47560f217a32eea6397db7ea54ca5"
+        },
+        {
+          "scenario": "read-update.singleton.create-link",
+          "scope": "https://reference.invalid/acme/",
+          "profile": "read-update",
+          "history": false,
+          "payloadIdentity": "3ad235102ca01c8e28acebc2bf892b107c65d40502f97a1cfc0dc9a135c8440d",
+          "artifactIdentity": "development-schema5-48667497d6e13064316d0364cf8f49dfc247ab9189306985a357d7b558333dfe",
+          "policyIdentity": "dbe8dbd5430f26e19e754d38167cd8084a32d702c695550e2ee0063dc2912430",
+          "authenticationIdentity": "66941efc779f4f2431d65fdd5b2387b2af67bd7c1559e09dac032f82259ea16e",
+          "configurationIdentity": "1720b63b49a7be3299d4b2865de4db9fcbe47560f217a32eea6397db7ea54ca5"
+        },
+        {
+          "scenario": "read-update.singleton.update-link",
+          "scope": "https://reference.invalid/acme/",
+          "profile": "read-update",
+          "history": false,
+          "payloadIdentity": "3ad235102ca01c8e28acebc2bf892b107c65d40502f97a1cfc0dc9a135c8440d",
+          "artifactIdentity": "development-schema5-48667497d6e13064316d0364cf8f49dfc247ab9189306985a357d7b558333dfe",
+          "policyIdentity": "dbe8dbd5430f26e19e754d38167cd8084a32d702c695550e2ee0063dc2912430",
+          "authenticationIdentity": "66941efc779f4f2431d65fdd5b2387b2af67bd7c1559e09dac032f82259ea16e",
+          "configurationIdentity": "1720b63b49a7be3299d4b2865de4db9fcbe47560f217a32eea6397db7ea54ca5"
+        },
+        {
+          "scenario": "read-update.singleton.delete-link",
+          "scope": "https://reference.invalid/acme/",
+          "profile": "read-update",
+          "history": false,
+          "payloadIdentity": "3ad235102ca01c8e28acebc2bf892b107c65d40502f97a1cfc0dc9a135c8440d",
+          "artifactIdentity": "development-schema5-48667497d6e13064316d0364cf8f49dfc247ab9189306985a357d7b558333dfe",
+          "policyIdentity": "dbe8dbd5430f26e19e754d38167cd8084a32d702c695550e2ee0063dc2912430",
+          "authenticationIdentity": "66941efc779f4f2431d65fdd5b2387b2af67bd7c1559e09dac032f82259ea16e",
+          "configurationIdentity": "1720b63b49a7be3299d4b2865de4db9fcbe47560f217a32eea6397db7ea54ca5"
+        },
+        {
+          "scenario": "read-update.singleton.owned-link-source-revision",
+          "scope": "https://reference.invalid/acme/",
+          "profile": "read-update",
+          "history": false,
+          "payloadIdentity": "3ad235102ca01c8e28acebc2bf892b107c65d40502f97a1cfc0dc9a135c8440d",
+          "artifactIdentity": "development-schema5-48667497d6e13064316d0364cf8f49dfc247ab9189306985a357d7b558333dfe",
+          "policyIdentity": "dbe8dbd5430f26e19e754d38167cd8084a32d702c695550e2ee0063dc2912430",
+          "authenticationIdentity": "66941efc779f4f2431d65fdd5b2387b2af67bd7c1559e09dac032f82259ea16e",
+          "configurationIdentity": "1720b63b49a7be3299d4b2865de4db9fcbe47560f217a32eea6397db7ea54ca5"
+        },
+        {
+          "scenario": "read-update.singleton.owned-link-no-op",
+          "scope": "https://reference.invalid/acme/",
+          "profile": "read-update",
+          "history": false,
+          "payloadIdentity": "3ad235102ca01c8e28acebc2bf892b107c65d40502f97a1cfc0dc9a135c8440d",
+          "artifactIdentity": "development-schema5-48667497d6e13064316d0364cf8f49dfc247ab9189306985a357d7b558333dfe",
+          "policyIdentity": "dbe8dbd5430f26e19e754d38167cd8084a32d702c695550e2ee0063dc2912430",
+          "authenticationIdentity": "66941efc779f4f2431d65fdd5b2387b2af67bd7c1559e09dac032f82259ea16e",
+          "configurationIdentity": "1720b63b49a7be3299d4b2865de4db9fcbe47560f217a32eea6397db7ea54ca5"
+        },
+        {
+          "scenario": "read-update.singleton.expected-revision",
+          "scope": "https://reference.invalid/acme/",
+          "profile": "read-update",
+          "history": false,
+          "payloadIdentity": "3ad235102ca01c8e28acebc2bf892b107c65d40502f97a1cfc0dc9a135c8440d",
+          "artifactIdentity": "development-schema5-48667497d6e13064316d0364cf8f49dfc247ab9189306985a357d7b558333dfe",
+          "policyIdentity": "dbe8dbd5430f26e19e754d38167cd8084a32d702c695550e2ee0063dc2912430",
+          "authenticationIdentity": "66941efc779f4f2431d65fdd5b2387b2af67bd7c1559e09dac032f82259ea16e",
+          "configurationIdentity": "1720b63b49a7be3299d4b2865de4db9fcbe47560f217a32eea6397db7ea54ca5"
+        },
+        {
+          "scenario": "read-update.singleton.idempotency-key-required",
+          "scope": "https://reference.invalid/acme/",
+          "profile": "read-update",
+          "history": false,
+          "payloadIdentity": "3ad235102ca01c8e28acebc2bf892b107c65d40502f97a1cfc0dc9a135c8440d",
+          "artifactIdentity": "development-schema5-48667497d6e13064316d0364cf8f49dfc247ab9189306985a357d7b558333dfe",
+          "policyIdentity": "dbe8dbd5430f26e19e754d38167cd8084a32d702c695550e2ee0063dc2912430",
+          "authenticationIdentity": "66941efc779f4f2431d65fdd5b2387b2af67bd7c1559e09dac032f82259ea16e",
+          "configurationIdentity": "1720b63b49a7be3299d4b2865de4db9fcbe47560f217a32eea6397db7ea54ca5"
+        },
+        {
+          "scenario": "read-update.singleton.idempotent-retry",
+          "scope": "https://reference.invalid/acme/",
+          "profile": "read-update",
+          "history": false,
+          "payloadIdentity": "3ad235102ca01c8e28acebc2bf892b107c65d40502f97a1cfc0dc9a135c8440d",
+          "artifactIdentity": "development-schema5-48667497d6e13064316d0364cf8f49dfc247ab9189306985a357d7b558333dfe",
+          "policyIdentity": "dbe8dbd5430f26e19e754d38167cd8084a32d702c695550e2ee0063dc2912430",
+          "authenticationIdentity": "66941efc779f4f2431d65fdd5b2387b2af67bd7c1559e09dac032f82259ea16e",
+          "configurationIdentity": "1720b63b49a7be3299d4b2865de4db9fcbe47560f217a32eea6397db7ea54ca5"
+        },
+        {
+          "scenario": "read-update.singleton.idempotency-conflict",
+          "scope": "https://reference.invalid/acme/",
+          "profile": "read-update",
+          "history": false,
+          "payloadIdentity": "3ad235102ca01c8e28acebc2bf892b107c65d40502f97a1cfc0dc9a135c8440d",
+          "artifactIdentity": "development-schema5-48667497d6e13064316d0364cf8f49dfc247ab9189306985a357d7b558333dfe",
+          "policyIdentity": "dbe8dbd5430f26e19e754d38167cd8084a32d702c695550e2ee0063dc2912430",
+          "authenticationIdentity": "66941efc779f4f2431d65fdd5b2387b2af67bd7c1559e09dac032f82259ea16e",
+          "configurationIdentity": "1720b63b49a7be3299d4b2865de4db9fcbe47560f217a32eea6397db7ea54ca5"
+        },
+        {
+          "scenario": "read-update.singleton.unsupported-media-type",
+          "scope": "https://reference.invalid/acme/",
+          "profile": "read-update",
+          "history": false,
+          "payloadIdentity": "3ad235102ca01c8e28acebc2bf892b107c65d40502f97a1cfc0dc9a135c8440d",
+          "artifactIdentity": "development-schema5-48667497d6e13064316d0364cf8f49dfc247ab9189306985a357d7b558333dfe",
+          "policyIdentity": "dbe8dbd5430f26e19e754d38167cd8084a32d702c695550e2ee0063dc2912430",
+          "authenticationIdentity": "66941efc779f4f2431d65fdd5b2387b2af67bd7c1559e09dac032f82259ea16e",
+          "configurationIdentity": "1720b63b49a7be3299d4b2865de4db9fcbe47560f217a32eea6397db7ea54ca5"
+        },
+        {
+          "scenario": "read-update.singleton.no-local-bindings",
+          "scope": "https://reference.invalid/acme/",
+          "profile": "read-update",
+          "history": false,
+          "payloadIdentity": "3ad235102ca01c8e28acebc2bf892b107c65d40502f97a1cfc0dc9a135c8440d",
+          "artifactIdentity": "development-schema5-48667497d6e13064316d0364cf8f49dfc247ab9189306985a357d7b558333dfe",
+          "policyIdentity": "dbe8dbd5430f26e19e754d38167cd8084a32d702c695550e2ee0063dc2912430",
+          "authenticationIdentity": "66941efc779f4f2431d65fdd5b2387b2af67bd7c1559e09dac032f82259ea16e",
+          "configurationIdentity": "1720b63b49a7be3299d4b2865de4db9fcbe47560f217a32eea6397db7ea54ca5"
+        },
+        {
+          "scenario": "read-update.singleton.result-headers",
+          "scope": "https://reference.invalid/acme/",
+          "profile": "read-update",
+          "history": false,
+          "payloadIdentity": "3ad235102ca01c8e28acebc2bf892b107c65d40502f97a1cfc0dc9a135c8440d",
+          "artifactIdentity": "development-schema5-48667497d6e13064316d0364cf8f49dfc247ab9189306985a357d7b558333dfe",
+          "policyIdentity": "dbe8dbd5430f26e19e754d38167cd8084a32d702c695550e2ee0063dc2912430",
+          "authenticationIdentity": "66941efc779f4f2431d65fdd5b2387b2af67bd7c1559e09dac032f82259ea16e",
+          "configurationIdentity": "1720b63b49a7be3299d4b2865de4db9fcbe47560f217a32eea6397db7ea54ca5"
+        },
+        {
+          "scenario": "read-update.alias.put-creates",
+          "scope": "https://reference.invalid/acme/",
+          "profile": "read-update",
+          "history": false,
+          "payloadIdentity": "3ad235102ca01c8e28acebc2bf892b107c65d40502f97a1cfc0dc9a135c8440d",
+          "artifactIdentity": "development-schema5-48667497d6e13064316d0364cf8f49dfc247ab9189306985a357d7b558333dfe",
+          "policyIdentity": "dbe8dbd5430f26e19e754d38167cd8084a32d702c695550e2ee0063dc2912430",
+          "authenticationIdentity": "66941efc779f4f2431d65fdd5b2387b2af67bd7c1559e09dac032f82259ea16e",
+          "configurationIdentity": "1720b63b49a7be3299d4b2865de4db9fcbe47560f217a32eea6397db7ea54ca5"
+        },
+        {
+          "scenario": "read-update.alias.put-repoints",
+          "scope": "https://reference.invalid/acme/",
+          "profile": "read-update",
+          "history": false,
+          "payloadIdentity": "3ad235102ca01c8e28acebc2bf892b107c65d40502f97a1cfc0dc9a135c8440d",
+          "artifactIdentity": "development-schema5-48667497d6e13064316d0364cf8f49dfc247ab9189306985a357d7b558333dfe",
+          "policyIdentity": "dbe8dbd5430f26e19e754d38167cd8084a32d702c695550e2ee0063dc2912430",
+          "authenticationIdentity": "66941efc779f4f2431d65fdd5b2387b2af67bd7c1559e09dac032f82259ea16e",
+          "configurationIdentity": "1720b63b49a7be3299d4b2865de4db9fcbe47560f217a32eea6397db7ea54ca5"
+        },
+        {
+          "scenario": "read-update.alias.delete-releases",
+          "scope": "https://reference.invalid/acme/",
+          "profile": "read-update",
+          "history": false,
+          "payloadIdentity": "3ad235102ca01c8e28acebc2bf892b107c65d40502f97a1cfc0dc9a135c8440d",
+          "artifactIdentity": "development-schema5-48667497d6e13064316d0364cf8f49dfc247ab9189306985a357d7b558333dfe",
+          "policyIdentity": "dbe8dbd5430f26e19e754d38167cd8084a32d702c695550e2ee0063dc2912430",
+          "authenticationIdentity": "66941efc779f4f2431d65fdd5b2387b2af67bd7c1559e09dac032f82259ea16e",
+          "configurationIdentity": "1720b63b49a7be3299d4b2865de4db9fcbe47560f217a32eea6397db7ea54ca5"
+        },
+        {
+          "scenario": "read-update.alias.non-canonical-target",
+          "scope": "https://reference.invalid/acme/",
+          "profile": "read-update",
+          "history": false,
+          "payloadIdentity": "3ad235102ca01c8e28acebc2bf892b107c65d40502f97a1cfc0dc9a135c8440d",
+          "artifactIdentity": "development-schema5-48667497d6e13064316d0364cf8f49dfc247ab9189306985a357d7b558333dfe",
+          "policyIdentity": "dbe8dbd5430f26e19e754d38167cd8084a32d702c695550e2ee0063dc2912430",
+          "authenticationIdentity": "66941efc779f4f2431d65fdd5b2387b2af67bd7c1559e09dac032f82259ea16e",
+          "configurationIdentity": "1720b63b49a7be3299d4b2865de4db9fcbe47560f217a32eea6397db7ea54ca5"
+        },
+        {
+          "scenario": "read-update.alias.no-version-minted",
+          "scope": "https://reference.invalid/acme/",
+          "profile": "read-update",
+          "history": false,
+          "payloadIdentity": "3ad235102ca01c8e28acebc2bf892b107c65d40502f97a1cfc0dc9a135c8440d",
+          "artifactIdentity": "development-schema5-48667497d6e13064316d0364cf8f49dfc247ab9189306985a357d7b558333dfe",
+          "policyIdentity": "dbe8dbd5430f26e19e754d38167cd8084a32d702c695550e2ee0063dc2912430",
+          "authenticationIdentity": "66941efc779f4f2431d65fdd5b2387b2af67bd7c1559e09dac032f82259ea16e",
+          "configurationIdentity": "1720b63b49a7be3299d4b2865de4db9fcbe47560f217a32eea6397db7ea54ca5"
+        },
+        {
+          "scenario": "read-update.sequence.order-and-partial-commit",
+          "scope": "https://reference.invalid/acme/",
+          "profile": "read-update",
+          "history": false,
+          "payloadIdentity": "3ad235102ca01c8e28acebc2bf892b107c65d40502f97a1cfc0dc9a135c8440d",
+          "artifactIdentity": "development-schema5-48667497d6e13064316d0364cf8f49dfc247ab9189306985a357d7b558333dfe",
+          "policyIdentity": "dbe8dbd5430f26e19e754d38167cd8084a32d702c695550e2ee0063dc2912430",
+          "authenticationIdentity": "66941efc779f4f2431d65fdd5b2387b2af67bd7c1559e09dac032f82259ea16e",
+          "configurationIdentity": "1720b63b49a7be3299d4b2865de4db9fcbe47560f217a32eea6397db7ea54ca5"
+        },
+        {
+          "scenario": "read-update.sequence.local-bindings",
+          "scope": "https://reference.invalid/acme/",
+          "profile": "read-update",
+          "history": false,
+          "payloadIdentity": "3ad235102ca01c8e28acebc2bf892b107c65d40502f97a1cfc0dc9a135c8440d",
+          "artifactIdentity": "development-schema5-48667497d6e13064316d0364cf8f49dfc247ab9189306985a357d7b558333dfe",
+          "policyIdentity": "dbe8dbd5430f26e19e754d38167cd8084a32d702c695550e2ee0063dc2912430",
+          "authenticationIdentity": "66941efc779f4f2431d65fdd5b2387b2af67bd7c1559e09dac032f82259ea16e",
+          "configurationIdentity": "1720b63b49a7be3299d4b2865de4db9fcbe47560f217a32eea6397db7ea54ca5"
+        },
+        {
+          "scenario": "read-update.sequence.member-problem-shape",
+          "scope": "https://reference.invalid/acme/",
+          "profile": "read-update",
+          "history": false,
+          "payloadIdentity": "3ad235102ca01c8e28acebc2bf892b107c65d40502f97a1cfc0dc9a135c8440d",
+          "artifactIdentity": "development-schema5-48667497d6e13064316d0364cf8f49dfc247ab9189306985a357d7b558333dfe",
+          "policyIdentity": "dbe8dbd5430f26e19e754d38167cd8084a32d702c695550e2ee0063dc2912430",
+          "authenticationIdentity": "66941efc779f4f2431d65fdd5b2387b2af67bd7c1559e09dac032f82259ea16e",
+          "configurationIdentity": "1720b63b49a7be3299d4b2865de4db9fcbe47560f217a32eea6397db7ea54ca5"
+        },
+        {
+          "scenario": "read-update.sequence.carrier-rejection",
+          "scope": "https://reference.invalid/acme/",
+          "profile": "read-update",
+          "history": false,
+          "payloadIdentity": "3ad235102ca01c8e28acebc2bf892b107c65d40502f97a1cfc0dc9a135c8440d",
+          "artifactIdentity": "development-schema5-48667497d6e13064316d0364cf8f49dfc247ab9189306985a357d7b558333dfe",
+          "policyIdentity": "dbe8dbd5430f26e19e754d38167cd8084a32d702c695550e2ee0063dc2912430",
+          "authenticationIdentity": "66941efc779f4f2431d65fdd5b2387b2af67bd7c1559e09dac032f82259ea16e",
+          "configurationIdentity": "1720b63b49a7be3299d4b2865de4db9fcbe47560f217a32eea6397db7ea54ca5"
+        },
+        {
+          "scenario": "read-update.sequence.idempotent-retry",
+          "scope": "https://reference.invalid/acme/",
+          "profile": "read-update",
+          "history": false,
+          "payloadIdentity": "3ad235102ca01c8e28acebc2bf892b107c65d40502f97a1cfc0dc9a135c8440d",
+          "artifactIdentity": "development-schema5-48667497d6e13064316d0364cf8f49dfc247ab9189306985a357d7b558333dfe",
+          "policyIdentity": "dbe8dbd5430f26e19e754d38167cd8084a32d702c695550e2ee0063dc2912430",
+          "authenticationIdentity": "66941efc779f4f2431d65fdd5b2387b2af67bd7c1559e09dac032f82259ea16e",
+          "configurationIdentity": "1720b63b49a7be3299d4b2865de4db9fcbe47560f217a32eea6397db7ea54ca5"
+        },
+        {
+          "scenario": "read-update.idempotency.cross-carrier",
+          "scope": "https://reference.invalid/acme/",
+          "profile": "read-update",
+          "history": false,
+          "payloadIdentity": "3ad235102ca01c8e28acebc2bf892b107c65d40502f97a1cfc0dc9a135c8440d",
+          "artifactIdentity": "development-schema5-48667497d6e13064316d0364cf8f49dfc247ab9189306985a357d7b558333dfe",
+          "policyIdentity": "dbe8dbd5430f26e19e754d38167cd8084a32d702c695550e2ee0063dc2912430",
+          "authenticationIdentity": "66941efc779f4f2431d65fdd5b2387b2af67bd7c1559e09dac032f82259ea16e",
+          "configurationIdentity": "1720b63b49a7be3299d4b2865de4db9fcbe47560f217a32eea6397db7ea54ca5"
+        },
+        {
+          "scenario": "read-update.validation.type-contract",
+          "scope": "https://reference.invalid/acme/",
+          "profile": "read-update",
+          "history": false,
+          "payloadIdentity": "3ad235102ca01c8e28acebc2bf892b107c65d40502f97a1cfc0dc9a135c8440d",
+          "artifactIdentity": "development-schema5-48667497d6e13064316d0364cf8f49dfc247ab9189306985a357d7b558333dfe",
+          "policyIdentity": "dbe8dbd5430f26e19e754d38167cd8084a32d702c695550e2ee0063dc2912430",
+          "authenticationIdentity": "66941efc779f4f2431d65fdd5b2387b2af67bd7c1559e09dac032f82259ea16e",
+          "configurationIdentity": "1720b63b49a7be3299d4b2865de4db9fcbe47560f217a32eea6397db7ea54ca5"
+        },
+        {
+          "scenario": "read-update.validation.diagnostics",
+          "scope": "https://reference.invalid/acme/",
+          "profile": "read-update",
+          "history": false,
+          "payloadIdentity": "3ad235102ca01c8e28acebc2bf892b107c65d40502f97a1cfc0dc9a135c8440d",
+          "artifactIdentity": "development-schema5-48667497d6e13064316d0364cf8f49dfc247ab9189306985a357d7b558333dfe",
+          "policyIdentity": "dbe8dbd5430f26e19e754d38167cd8084a32d702c695550e2ee0063dc2912430",
+          "authenticationIdentity": "66941efc779f4f2431d65fdd5b2387b2af67bd7c1559e09dac032f82259ea16e",
+          "configurationIdentity": "1720b63b49a7be3299d4b2865de4db9fcbe47560f217a32eea6397db7ea54ca5"
+        }
+      ]
+    },
+    {
+      "id": "reference-continuation",
+      "manifestDigest": "5e827d71e350e59b20053ed905ce935bececae99bdea71a574b37d1d5ae70121",
+      "routeDigest": "59c70c9f22238cd7711a19034139c404136564ad50c58b7f3ef795a385cc990e",
+      "routes": [
+        {
+          "method": "GET",
+          "url": "https://reference.invalid/acme/operations/"
+        },
+        {
+          "method": "GET",
+          "url": "https://reference.invalid/acme/beads/rc-source"
+        },
+        {
+          "method": "GET",
+          "url": "https://reference.invalid/acme/beads/rc-target"
+        },
+        {
+          "method": "GET",
+          "url": "https://reference.invalid/acme/links/rc-live"
+        },
+        {
+          "method": "GET",
+          "url": "https://reference.invalid/acme/beads/rc-rc-sequence-wrong-tail"
+        },
+        {
+          "method": "GET",
+          "url": "https://reference.invalid/acme/beads/rc-missing"
+        },
+        {
+          "method": "GET",
+          "url": "https://reference.invalid/acme/"
+        },
+        {
+          "method": "GET",
+          "url": "https://reference.invalid/acme/bdp.json"
+        },
+        {
+          "method": "GET",
+          "url": "https://reference.invalid/acme/types/task"
+        },
+        {
+          "method": "GET",
+          "url": "https://reference.invalid/acme/types/relates"
+        },
+        {
+          "method": "GET",
+          "url": "https://reference.invalid/acme/alias/rc-locator-live"
+        },
+        {
+          "method": "GET",
+          "url": "https://reference.invalid/acme/beads/?limit=100"
+        },
+        {
+          "method": "GET",
+          "url": "https://reference.invalid/acme/links/?limit=100"
+        },
+        {
+          "method": "GET",
+          "url": "https://reference.invalid/acme/alias/rc-locator-put-local"
+        },
+        {
+          "method": "GET",
+          "url": "https://reference.invalid/acme/alias/rc-locator-put-absolute"
+        },
+        {
+          "method": "GET",
+          "url": "https://reference.invalid/acme/alias/rc-locator-missing"
+        },
+        {
+          "method": "GET",
+          "url": "https://reference.invalid/acme/alias/rc-locator-missing-absolute"
+        },
+        {
+          "method": "POST",
+          "url": "https://reference.invalid/acme/operations/sequence"
+        },
+        {
+          "method": "POST",
+          "url": "https://reference.invalid/acme/operations/create-bead"
+        },
+        {
+          "method": "POST",
+          "url": "https://reference.invalid/acme/operations/update-bead"
+        },
+        {
+          "method": "POST",
+          "url": "https://reference.invalid/acme/operations/delete-bead"
+        },
+        {
+          "method": "POST",
+          "url": "https://reference.invalid/acme/operations/create-link"
+        },
+        {
+          "method": "POST",
+          "url": "https://reference.invalid/acme/operations/update-link"
+        },
+        {
+          "method": "POST",
+          "url": "https://reference.invalid/acme/operations/delete-link"
+        },
+        {
+          "method": "POST",
+          "url": "https://reference.invalid/acme/operations/put-alias"
+        },
+        {
+          "method": "POST",
+          "url": "https://reference.invalid/acme/operations/delete-alias"
+        }
+      ],
+      "resultDigest": "b1f78504920b88e1aeb101b55fc361c673bea6ad00277d7bd02535b23c97b552",
+      "resultBytes": 53534,
+      "cleanupComplete": true,
+      "actualBootstrap": {
+        "scope": "https://reference.invalid/acme/",
+        "profile": "read-update",
+        "history": false,
+        "payloadIdentity": "3ad235102ca01c8e28acebc2bf892b107c65d40502f97a1cfc0dc9a135c8440d",
+        "artifactIdentity": "development-schema5-48667497d6e13064316d0364cf8f49dfc247ab9189306985a357d7b558333dfe",
+        "policyIdentity": "dbe8dbd5430f26e19e754d38167cd8084a32d702c695550e2ee0063dc2912430",
+        "authenticationIdentity": "66941efc779f4f2431d65fdd5b2387b2af67bd7c1559e09dac032f82259ea16e",
+        "configurationIdentity": "1720b63b49a7be3299d4b2865de4db9fcbe47560f217a32eea6397db7ea54ca5"
+      },
+      "actualSessions": [
+        {
+          "scenario": "read-update.alias.unknown-subject",
+          "scope": "https://reference.invalid/acme/",
+          "profile": "read-update",
+          "history": false,
+          "payloadIdentity": "3ad235102ca01c8e28acebc2bf892b107c65d40502f97a1cfc0dc9a135c8440d",
+          "artifactIdentity": "development-schema5-48667497d6e13064316d0364cf8f49dfc247ab9189306985a357d7b558333dfe",
+          "policyIdentity": "dbe8dbd5430f26e19e754d38167cd8084a32d702c695550e2ee0063dc2912430",
+          "authenticationIdentity": "66941efc779f4f2431d65fdd5b2387b2af67bd7c1559e09dac032f82259ea16e",
+          "configurationIdentity": "1720b63b49a7be3299d4b2865de4db9fcbe47560f217a32eea6397db7ea54ca5"
+        }
+      ]
+    }
+  ],
+  "reportAudit": {
+    "source": "4819068d0201fb3d1fe32dd6adaf8625ef9ba666",
+    "requiredMappingsChecked": 129,
+    "writtenReportsChecked": 2,
+    "allActualFileHashesAndResultHashesMatch": true,
+    "allRequiredRowsResolve": true,
+    "attemptKeys": [
+      "claimEligible",
+      "outcome",
+      "sourceCommit",
+      "setDigest",
+      "indexDigest",
+      "coverageDigest",
+      "fixtureDigest",
+      "catalogDigests",
+      "requiredObservations",
+      "observedIds",
+      "observedStatePartitions",
+      "uncoveredIds",
+      "shards"
+    ]
+  },
+  "packages": [
+    {
+      "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/artifact-set-execution-main-integration/packed/packs/protocol.tgz",
+      "bytes": 67368,
+      "sha256": "2943f90cd4d0c5ac973dc84c75c80b6b0d944e688b0210990438a482a0a61a8c"
+    },
+    {
+      "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/artifact-set-execution-main-integration/packed/packs/server.tgz",
+      "bytes": 413066,
+      "sha256": "e9fd483e3f8ba2c4fdf0f1a64ce1b94a7990d3fb5f69bdeb5b998132e37b1e7b"
+    },
+    {
+      "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/artifact-set-execution-main-integration/packed/install/node_modules/@bdp/server/dist/installed-reference-process.js",
+      "bytes": 3241,
+      "sha256": "3eb9a6bc8df1237d78ba4aae7e95589df6fb7f4781f572e04adda583f359c71d"
+    }
+  ],
+  "artifactSources": {
+    "packages/conformance/matrices/read-update-v1.json": {
+      "bytes": 3626922,
+      "nodes": 97116,
+      "sha256": "c86b33535f25a1d117ce021a3bb70164f5635bdaee50758e3428c130ccc3227f"
+    },
+    "packages/conformance/matrices/read-update-reference-continuation-v1.json": {
+      "bytes": 114182,
+      "nodes": 3158,
+      "sha256": "5e827d71e350e59b20053ed905ce935bececae99bdea71a574b37d1d5ae70121"
+    },
+    "packages/conformance/fixtures/read-update-reference-v1.json": {
+      "bytes": 28753,
+      "nodes": 742,
+      "sha256": "2071c5a1b2333b29342087ad46b77afe88c8cbd37df33c236933e60ef0ef956a"
+    },
+    "packages/conformance/test-support/read-update-coverage-v1.json": {
+      "bytes": 590847,
+      "nodes": 12292,
+      "sha256": "e575ffb9cedd37265ef8e94f15b3c838a59f2ae9b3ce4ca0d148396a0812d5f9"
+    },
+    "packages/conformance/test-support/read-update-artifact-set-v1.json": {
+      "bytes": 242,
+      "nodes": 9,
+      "sha256": "7277980894dd0955a8fcd22ba5d2845b0a6801b7e7e13a937018e11d3a65de37"
+    }
+  },
+  "cleanup": {
+    "sourceClean": true,
+    "head": "4819068d0201fb3d1fe32dd6adaf8625ef9ba666",
+    "ownedNodeChildren": [],
+    "pendingEvidenceFiles": 0
+  }
+}

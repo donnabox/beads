@@ -1,0 +1,242 @@
+{
+  "state": "PROSPECTIVE smallest test-only supporting option; root owns later plan/review/release",
+  "futureOwnedFiles": [
+    "apps/bdptest/src/transactional-snapshot-installed.test.ts"
+  ],
+  "change": "Append two finite callbacks with callback-local schema checks only. Preserve entire existing file prefix and all shared helpers/configuration. Reuse withInstalled/f.exchange/f.write/f.reopen and existing installedTransactionBinding; no new module/export/runtime/Type/policy/credential mechanism.",
+  "sourceWitnesses": "Reuse existing precise source callbacks inventoried in report; no new source behavior or source test file needed for this finite evidence option.",
+  "callbacks": [
+    {
+      "id": "D2-S1-lexical-retained",
+      "prospectiveRequests": 15,
+      "children": 1,
+      "requests": [
+        {
+          "ordinal": 1,
+          "method": "POST",
+          "target": "existing batch",
+          "payload": "createBead d2-00..d2-31; known task Type, properties {title: id}, metadata {}",
+          "expect": "completed32 results; actual context/receipt; pos1 is fixture inference only"
+        },
+        {
+          "ordinal": 2,
+          "method": "POST",
+          "target": "existing batch",
+          "payload": "createBead d2-32 with same explicit known fields",
+          "expect": "completed1 result; same installed configuration"
+        },
+        {
+          "ordinal": 3,
+          "method": "GET",
+          "target": "known private snapshot creation URL",
+          "expect": "schema-valid manifest,33 captured Beads and0 Links total;32 initial Beads and non-null actual beads.next; id/expiry/anchor recorded"
+        },
+        {
+          "ordinal": 4,
+          "method": "GET",
+          "target": "actual returned beads.next",
+          "expect": "schema-valid1-item terminal page with independently expected d2-32 record; save exact finite body"
+        },
+        {
+          "ordinal": 5,
+          "method": "GET",
+          "target": "actual returned manifest.id",
+          "expect": "exact manifest body/anchor/checkpoint/expiry equals ordinal3"
+        },
+        {
+          "ordinal": 6,
+          "method": "GET",
+          "target": "actual manifest.id",
+          "headers": "minimum field alone (actual manifest.scopePosition), missing epoch/view; If-None-Match: *",
+          "expect": "400 malformed-request; all3 response context fields absent; no development-limit; private,no-store; GET exact schema/body bytes, HEAD empty and corresponding GET length; actual ready/drained finite response"
+        },
+        {
+          "ordinal": 7,
+          "method": "HEAD",
+          "target": "actual manifest.id",
+          "headers": "minimum field alone (actual manifest.scopePosition), missing epoch/view; If-None-Match: *",
+          "expect": "400 malformed-request; all3 response context fields absent; no development-limit; private,no-store; GET exact schema/body bytes, HEAD empty and corresponding GET length; actual ready/drained finite response"
+        },
+        {
+          "ordinal": 8,
+          "method": "GET",
+          "target": "actual manifest.id",
+          "headers": "complete actual epoch/view with minimum string actualPosition + comma + actualPosition (one malformed value; NOT a raw duplicate-field witness); If-None-Match: *",
+          "expect": "400 malformed-request; all3 response context fields absent; no development-limit; private,no-store; GET exact schema/body bytes, HEAD empty and corresponding GET length; actual ready/drained finite response"
+        },
+        {
+          "ordinal": 9,
+          "method": "HEAD",
+          "target": "actual manifest.id",
+          "headers": "complete actual epoch/view with minimum string actualPosition + comma + actualPosition (one malformed value; NOT a raw duplicate-field witness); If-None-Match: *",
+          "expect": "400 malformed-request; all3 response context fields absent; no development-limit; private,no-store; GET exact schema/body bytes, HEAD empty and corresponding GET length; actual ready/drained finite response"
+        },
+        {
+          "ordinal": 10,
+          "method": "GET",
+          "target": "actual beads.next",
+          "headers": "minimum field alone (actual manifest.scopePosition), missing epoch/view; If-None-Match: *",
+          "expect": "400 malformed-request; all3 response context fields absent; no development-limit; private,no-store; GET exact schema/body bytes, HEAD empty and corresponding GET length; actual ready/drained finite response"
+        },
+        {
+          "ordinal": 11,
+          "method": "HEAD",
+          "target": "actual beads.next",
+          "headers": "minimum field alone (actual manifest.scopePosition), missing epoch/view; If-None-Match: *",
+          "expect": "400 malformed-request; all3 response context fields absent; no development-limit; private,no-store; GET exact schema/body bytes, HEAD empty and corresponding GET length; actual ready/drained finite response"
+        },
+        {
+          "ordinal": 12,
+          "method": "GET",
+          "target": "actual beads.next",
+          "headers": "complete actual epoch/view with minimum string actualPosition + comma + actualPosition (one malformed value; NOT a raw duplicate-field witness); If-None-Match: *",
+          "expect": "400 malformed-request; all3 response context fields absent; no development-limit; private,no-store; GET exact schema/body bytes, HEAD empty and corresponding GET length; actual ready/drained finite response"
+        },
+        {
+          "ordinal": 13,
+          "method": "HEAD",
+          "target": "actual beads.next",
+          "headers": "complete actual epoch/view with minimum string actualPosition + comma + actualPosition (one malformed value; NOT a raw duplicate-field witness); If-None-Match: *",
+          "expect": "400 malformed-request; all3 response context fields absent; no development-limit; private,no-store; GET exact schema/body bytes, HEAD empty and corresponding GET length; actual ready/drained finite response"
+        },
+        {
+          "ordinal": 14,
+          "method": "GET",
+          "target": "actual manifest.id",
+          "expect": "same bytes/identity/expiry as ordinal5"
+        },
+        {
+          "ordinal": 15,
+          "method": "GET",
+          "target": "actual beads.next",
+          "expect": "same bytes as ordinal4"
+        }
+      ]
+    },
+    {
+      "id": "D2-G2-committed-metadata-boundary",
+      "prospectiveRequests": 13,
+      "children": 2,
+      "requests": [
+        {
+          "ordinal": 1,
+          "method": "POST",
+          "target": "existing batch",
+          "payload": "createBead d2-a and d2-b with task Type and properties {title: id}; createLink d2-link with known relationship Type, source d2-a,target d2-b,properties {title: edge},metadata {}",
+          "expect": "completed; existing descriptor makes this owned by source d2-a"
+        },
+        {
+          "ordinal": 2,
+          "method": "GET",
+          "target": "canonical Link d2-link",
+          "expect": "save independently checked before properties,metadata,endpoints,actual revision"
+        },
+        {
+          "ordinal": 3,
+          "method": "GET",
+          "target": "canonical Bead d2-a",
+          "expect": "save owning source before revision/owned record"
+        },
+        {
+          "ordinal": 4,
+          "method": "GET",
+          "target": "canonical Bead d2-b",
+          "expect": "save target before revision"
+        },
+        {
+          "ordinal": 5,
+          "method": "POST",
+          "target": "existing batch",
+          "payload": {
+            "operations": [
+              {
+                "operation": "updateLink",
+                "link": "links/d2-link",
+                "metadataChange": [
+                  {
+                    "op": "add",
+                    "path": "/note",
+                    "value": "d2"
+                  }
+                ]
+              }
+            ]
+          },
+          "expect": "completed; one committed update group"
+        },
+        {
+          "ordinal": 6,
+          "method": "GET",
+          "target": "canonical Link d2-link",
+          "expect": "metadata exactly {note:d2}, same properties/endpoints, fresh Link revision"
+        },
+        {
+          "ordinal": 7,
+          "method": "GET",
+          "target": "canonical Bead d2-a",
+          "expect": "fresh source revision; exact changed inline owned Link agrees with ordinal6"
+        },
+        {
+          "ordinal": 8,
+          "method": "GET",
+          "target": "canonical Bead d2-b",
+          "expect": "unchanged target revision and original record"
+        },
+        {
+          "ordinal": 9,
+          "method": "GET",
+          "target": "Scope events/",
+          "expect": "schema-valid finite Event page; latest transaction facts exactly Link updated ordinal0 then owning source updated ordinal1; exact previous/fresh revisions and metadataChange; no synthetic change field"
+        },
+        {
+          "ordinal": 10,
+          "method": "GET",
+          "target": "Link d2-link?view=events",
+          "expect": "same original Link updated committed data/transaction/time/ordinal/revisions; source-local Event id preserved separately; no owning Bead fact in Link source"
+        },
+        {
+          "ordinal": 11,
+          "method": "GET",
+          "target": "Bead d2-a?view=events",
+          "expect": "CURRENT PRIVATE GAP preservation only: bodyless500 incident-link-metadata and non-attesting; no conformance credit"
+        },
+        {
+          "ordinal": 12,
+          "session": 2,
+          "method": "GET",
+          "target": "Scope events/ after ordinary close/reopen same configuration/store",
+          "expect": "exact original Event IDs/data/ordinals/order from9"
+        },
+        {
+          "ordinal": 13,
+          "session": 2,
+          "method": "GET",
+          "target": "Link d2-link?view=events after ordinary close/reopen",
+          "expect": "exact original source-local Event IDs/data/order from10"
+        }
+      ]
+    }
+  ],
+  "totalProspectiveHttpRequests": 28,
+  "totalSequentialChildren": 3,
+  "callbacksAreSeparateBoundedWorkloads": true,
+  "budgets": {
+    "sourceDefaultMs": 5000,
+    "requestMs": 5000,
+    "installedCallbackWorkMs": 45000,
+    "existingChildLifecycleMs": 10000,
+    "installedCallbackMs": 60000,
+    "outerMs": 120000,
+    "outerTermMs": 115000,
+    "retries": 0
+  },
+  "safetyAndEvidence": [
+    "Observe only private existing installed candidate, not ordinary startup/discovery/profile admission.",
+    "Targets are same-Scope; Snapshot manifest/page URLs come from actual response. Event/operation paths remain explicitly supplied private fixture routes, never called cold discovery.",
+    "Installed malformed tuple proves finite response and unchanged retained bytes; it does not claim installed owner-entry/FD/allocation counters. Existing instrumented source check is separate.",
+    "No partial packet/failed response is counted complete; cache/report available actual status/body/wire before assertions in any newly authored callback-local recorder; no credential/authorization request dumps.",
+    "Use actual source/build/archive/consumer/generated-lock/binding identity and fresh installed entry; development fallback labeled development-local, never installed.",
+    "Shared helper cleanup is reused and errors remain failures; no close-loop or synthetic successful cleanup. Historical helper reports are historical, not new telemetry.",
+    "Full S1/G2, erasure/view variants, live incident success and public activation remain unqualified."
+  ]
+}

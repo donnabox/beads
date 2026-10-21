@@ -1,0 +1,11 @@
+--- plan5/cold-positive-requests.json
++++ plan4/cold-positive-requests.json
+@@ -747,7 +747,7 @@
+   "totalRequests": 71,
+   "operationTargetsFromActualDirectoryOnly": true,
+   "resourceConstruction": "newBead/newLink/newAlias mean client-chosen local identifiers under ACTUAL descriptor collection roots, never operation suffix construction",
+-  "receiptRules": "Every non-sequence, non-replay command validates mutationReceipt and follows actual receipt.id. Sequence validates transactionalSequenceResponse with per-member keys and no outer header; follows actual created/updated Resource refs. Canonical schema validations and exact actual afterstate, not hashes alone.",
++  "receiptRules": "Every non-sequence command validates mutationReceipt and follows actual receipt.id. Sequence validates transactionalSequenceResponse with per-member keys and no outer header; follows actual created/updated Resource refs. Canonical schema validations and exact actual afterstate, not hashes alone.",
+   "selectorConstruction": "JSON-quote actual b.id inside equality Selector; no artifact/IPC Resource URL.",
+   "tableNotation": {
+     "@made": "test-table placeholder for the client-chosen d identifier used in sequence updateBead, not a BDP named-result reference; name=made only supplies operationName",

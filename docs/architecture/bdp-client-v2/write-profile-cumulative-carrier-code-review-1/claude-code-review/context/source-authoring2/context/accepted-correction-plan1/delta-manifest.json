@@ -1,0 +1,82 @@
+{
+  "budgets-and-secrecy.json": {
+    "afterSha256": "acd7e74c26a0a132e9ae3ac4bba3444c7624ab59ddac7857ee4305f9b35611e5",
+    "beforeSha256": "acd7e74c26a0a132e9ae3ac4bba3444c7624ab59ddac7857ee4305f9b35611e5",
+    "bothDirectionsAppliedAsData": true,
+    "changed": false,
+    "forward": "deltas/budgets-and-secrecy.json.patch",
+    "forwardSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "inverse": "deltas/budgets-and-secrecy.json.inverse.patch",
+    "inverseSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  "error-contract.json": {
+    "afterSha256": "b5a50e7247b16501d041a265930d2cb52eb59125edc90ff25f8ccdb237b7d512",
+    "beforeSha256": "cfd12bae62fd44f9c86b7dcfb64e0b5d368e692fc49a20c209ef4a11a59b1936",
+    "bothDirectionsAppliedAsData": true,
+    "changed": true,
+    "forward": "deltas/error-contract.json.patch",
+    "forwardSha256": "8cd5f02bf5af906661d7582c25e842c016890d3f916abadd49305e6e961f7a24",
+    "inverse": "deltas/error-contract.json.inverse.patch",
+    "inverseSha256": "24764e84ffc769a8fdf71dd96bd60e7e7af8645b9e28b463b675cad262df383d"
+  },
+  "input-schema.json": {
+    "afterSha256": "f8e1f9dfeec87912c441ad1ba9f385c7f7ab3198b76c0a41d9dace81d64e3297",
+    "beforeSha256": "7cfe8cb3c73bf2b15ff532565bad9884a461780e7e64be25cd33f3cf5b268544",
+    "bothDirectionsAppliedAsData": true,
+    "changed": true,
+    "forward": "deltas/input-schema.json.patch",
+    "forwardSha256": "f3792858118af637be55cb4eaab83f41286f9cf5365c492beeb5a289256344a3",
+    "inverse": "deltas/input-schema.json.inverse.patch",
+    "inverseSha256": "8f2ab4187dee2538800dbb1538937e2c4d64d0335dd31c6bba620c9ca6c0da23"
+  },
+  "lifecycle-and-adapters.json": {
+    "afterSha256": "ac891ab0bd6b7f86865c341f2bd93f9b480d377c62786f9bdf0f346a2fee9bc1",
+    "beforeSha256": "94c2472be983babd74581769bb45692a566e8cd7d36175a8b0a47be33dfd50fe",
+    "bothDirectionsAppliedAsData": true,
+    "changed": true,
+    "forward": "deltas/lifecycle-and-adapters.json.patch",
+    "forwardSha256": "b5eff5f9839737a44a666e2c0a6af818413a9078c94cbd2a55e88844c6e4969e",
+    "inverse": "deltas/lifecycle-and-adapters.json.inverse.patch",
+    "inverseSha256": "081ada7c14616974ac64cf0269f34bcc9be182f579a2df9c31e895bfbfe28ecc"
+  },
+  "outcome-join-contract.json": {
+    "afterSha256": "797ba90c391ff7994245d4675bfdef37977c038005ee21b75a8b051b63c69033",
+    "beforeSha256": "816998e9c6adbc62e034f18eb89bb0e31c8b83f45a66c0ce593dd032b8084596",
+    "bothDirectionsAppliedAsData": true,
+    "changed": true,
+    "forward": "deltas/outcome-join-contract.json.patch",
+    "forwardSha256": "8caa38c0f59407ddebef7eae81c3a041f9fe70421391f2637942d39c8a794cfd",
+    "inverse": "deltas/outcome-join-contract.json.inverse.patch",
+    "inverseSha256": "e8806baf49d2b3e3c29ca701b0850dad382fd3b7ae8ec5c794a609d4836d6b0a"
+  },
+  "output-schema.json": {
+    "afterSha256": "698702ac86450267150e5d46c6e511bc56f3abe874819906aa843d73df9582a7",
+    "beforeSha256": "698702ac86450267150e5d46c6e511bc56f3abe874819906aa843d73df9582a7",
+    "bothDirectionsAppliedAsData": true,
+    "changed": false,
+    "forward": "deltas/output-schema.json.patch",
+    "forwardSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "inverse": "deltas/output-schema.json.inverse.patch",
+    "inverseSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  "source-data-cases.json": {
+    "afterSha256": "273bbaed5d1d0e41c566e617b22024e0b734581a12752bec6b215d0ad1c6247c",
+    "beforeSha256": "5c7a19550818e7725db6168caae761acc71a95e3ff6f70f04240fa756fcd81dc",
+    "bothDirectionsAppliedAsData": true,
+    "changed": true,
+    "forward": "deltas/source-data-cases.json.patch",
+    "forwardSha256": "6a86e57d1f35f432126183a7489dbc3fde1cf259c780e683cc8022280e20972e",
+    "inverse": "deltas/source-data-cases.json.inverse.patch",
+    "inverseSha256": "e1cc4b8b06c94d912c71abeb32cd2eba360302aaac0d978d256dfa092af88d41"
+  },
+  "verification-order.json": {
+    "afterSha256": "218e8487e8f972e9d1e10d35a4927998e46e41b0b96a880379c8656a72706ee7",
+    "beforeSha256": "31d8bb92ee4176f4023d8119b7ab3f764d880304d63f615e84769f2d79ca8e4e",
+    "bothDirectionsAppliedAsData": true,
+    "changed": true,
+    "forward": "deltas/verification-order.json.patch",
+    "forwardSha256": "f1c42be6e3a91b18eeec9a2f7e9bb2cd52a03f3f1b006fa36f1872ffcdd780c1",
+    "inverse": "deltas/verification-order.json.inverse.patch",
+    "inverseSha256": "954215df1d57f55efb39f607fba45c8689bbbf84f3c21b56344724f0d36ac1ad"
+  }
+}

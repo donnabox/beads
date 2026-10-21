@@ -1,0 +1,664 @@
+--- template/report-schemas.json
++++ G09/report-schemas.json
+@@ -1,4 +1,661 @@
+ {
++  "G09": {
++    "bounds": "New installed exact executor retains existing 16KiB request headers/64KiB request body/128KiB response body and existing response-header/default wire derivation; no maxWire option or cap widening",
++    "budget": {
++      "futureOuterMs": 120000,
++      "futureTERMms": 115000,
++      "installedCallbackMs": 60000,
++      "installedCleanupMs": 10000,
++      "installedRequestMs": 5000,
++      "installedWorkMs": 45000,
++      "retries": 0,
++      "sourceCallbackMs": 5000,
++      "sourceCleanupMs": 1000,
++      "sourceRequestCeilingMs": 5000,
++      "sourceWorkMs": 3000
++    },
++    "canonicalScope": "https://reference.invalid/acme/",
++    "createBody": "{\"id\":\"beads/g09\",\"type\":\"https://reference.invalid/acme/types/task\",\"properties\":{\"title\":\"café\"}}",
++    "failurePolicy": "Exact keysets finite counts/actual contexts; no missing/extra/invalid report accepted as positive. SourceService always attempts final report after actual close; S04/S05 may have no observation on failed assertion. Failure report partial counts are actual, never filled with proposed positives. Future auditor must reject malformed/missing/null positive facts without relabeling primary/cleanup failure.",
++    "installed": {
++      "actualExitAndCloseRequiredForRemoval": {
++        "close": {
++          "code": 0,
++          "signal": null
++        },
++        "closePromiseSettled": true,
++        "closeSucceeded": true,
++        "exit": {
++          "code": 0,
++          "signal": null
++        },
++        "pending": 0
++      },
++      "claimEligible": false,
++      "counts": [
++        14,
++        16
++      ],
++      "ids": [
++        "G09-I01",
++        "G09-I02"
++      ],
++      "parentProcessLimitation": "Child object only available after launcher ready; startup failure without returned handle remains unknown. Full external parent/descendant absence and actual archive/consumer proof belong to later independent validation, not fabricated here.",
++      "readyKeys": [
++        "scope",
++        "profile",
++        "history",
++        "authorityMode",
++        "claimEligible",
++        "payloadIdentity",
++        "runtimeConfigurationIdentity",
++        "listenUrl"
++      ],
++      "readyProjection": "child absent -> null. Child present -> exactly8 declared own keys, each actualvalue ?? null; absent/undefined/null -> null; false/0/emptystring/wrongprofile/invalid actual present JSON value preserved, no coercion/fallback. readyValidated=false and failed outcome retain no credit. A positive report still requires independently correct values and same actual binding.",
++      "rowKeys": [
++        "ordinal",
++        "label",
++        "method",
++        "url",
++        "settled",
++        "received",
++        "validated",
++        "status",
++        "responseHeaders",
++        "requestBodyBytes",
++        "requestBodySha256",
++        "bodyText",
++        "bodyOctets",
++        "wireBase64",
++        "wireSha256",
++        "writeState",
++        "errorCategory"
++      ],
++      "secrecy": "No credential/token/header or authentication digest emitted by new cohorts; runtime identity is observed metadata, not independently regenerated authentication proof. IPC configuration and credential binding are source-attested. Actual raw response wire/body may contain only fixture/public response data; child stdout/stderr bytes not retained.",
++      "sessionKeys": [
++        "pid",
++        "exit",
++        "close",
++        "closePromiseSettled",
++        "closeSucceeded",
++        "stdoutEnded",
++        "stderrEnded"
++      ],
++      "stateMachine": {
++        "assertionsComplete": "all row.validated=true only after whole work callback and count assertion; subsequent deadline/cleanup failure still outcome failed",
++        "completedResponses": "number of actual returned settled responses without exchange rejection, independent of validation; never expected count substituted",
++        "executorReject": "settled=true/received=false/validated=false,errorCategory=exchange-failed; unavailable wire evidence null",
++        "executorReturn": "settled=true/received=true, actual response copied before every assertion; writeState may null on bad returned evidence",
++        "initial": "settled=false/received=false/validated=false, returned evidence null"
++      },
++      "topKeys": [
++        "observation",
++        "declaredSourceCommit",
++        "workspaceDirty",
++        "entry",
++        "entrySha256",
++        "ready",
++        "readyValidated",
++        "authenticationIdentityRetention",
++        "artifactBytes",
++        "rows",
++        "attemptedRequests",
++        "completedResponses",
++        "pending",
++        "session",
++        "directoryAbsent",
++        "elapsedMs",
++        "outcome",
++        "failureCount",
++        "claimEligible",
++        "evidenceRetention"
++      ]
++    },
++    "installedArtifactText": {
++      "ref": "{ \"$id\": \"https://reference.invalid/acme/schemas/value\", \"description\": \"café\", \"type\": \"string\", \"minLength\": 1e0 }\n",
++      "root": "{\n \"$id\": \"https://reference.invalid/acme/schemas/root\", \"type\": \"object\", \"properties\": {\"title\": {\"$ref\": \"value\"}}, \"required\": [\"title\"], \"additionalProperties\": false\n}\n"
++    },
++    "installedArtifacts": [
++      {
++        "bytes": 174,
++        "sha256": "b559e973c5ab7e0534e59064e8088442fee0d896d4399ed33e9924b19b800012",
++        "uri": "https://reference.invalid/acme/schemas/root"
++      },
++      {
++        "bytes": 118,
++        "sha256": "a9eb6111f30bf9e672dd5dbca44667e1783b20d944a1fe29608d48d9df32add6",
++        "uri": "https://reference.invalid/acme/schemas/value"
++      }
++    ],
++    "installedRows": {
++      "G09-I01": [
++        {
++          "artifact": "root",
++          "label": "root",
++          "method": "GET",
++          "position": "pos-0",
++          "status": 200,
++          "url": "https://reference.invalid/acme/schemas/root"
++        },
++        {
++          "artifact": "ref",
++          "label": "ref",
++          "method": "GET",
++          "position": "pos-0",
++          "status": 200,
++          "url": "https://reference.invalid/acme/schemas/value"
++        },
++        {
++          "label": "create",
++          "method": "POST",
++          "position": "pos-1",
++          "status": 200,
++          "url": "https://reference.invalid/acme/operations/create-bead"
++        },
++        {
++          "artifact": "root",
++          "label": "root-min-zero",
++          "method": "GET",
++          "position": "pos-1",
++          "status": 200,
++          "url": "https://reference.invalid/acme/schemas/root"
++        },
++        {
++          "artifact": "root",
++          "label": "root-head-min-one",
++          "method": "HEAD",
++          "position": "pos-1",
++          "status": 200,
++          "url": "https://reference.invalid/acme/schemas/root"
++        },
++        {
++          "artifact": "ref",
++          "label": "ref-min-one",
++          "method": "GET",
++          "position": "pos-1",
++          "status": 200,
++          "url": "https://reference.invalid/acme/schemas/value"
++        },
++        {
++          "label": "not-modified",
++          "method": "GET",
++          "position": "pos-1",
++          "status": 304,
++          "url": "https://reference.invalid/acme/schemas/root"
++        },
++        {
++          "label": "precondition",
++          "method": "HEAD",
++          "position": "pos-1",
++          "status": 412,
++          "url": "https://reference.invalid/acme/schemas/value"
++        },
++        {
++          "label": "unacceptable",
++          "method": "GET",
++          "position": "pos-1",
++          "status": 406,
++          "url": "https://reference.invalid/acme/schemas/root"
++        },
++        {
++          "label": "ahead",
++          "method": "GET",
++          "position": "pos-1",
++          "problem": "catch-up-timeout",
++          "status": 503,
++          "url": "https://reference.invalid/acme/schemas/root"
++        },
++        {
++          "label": "opaque",
++          "method": "GET",
++          "position": "pos-1",
++          "problem": "catch-up-timeout",
++          "status": 503,
++          "url": "https://reference.invalid/acme/schemas/root"
++        },
++        {
++          "label": "foreign-epoch",
++          "method": "HEAD",
++          "position": "pos-1",
++          "problem": "cursor-expired",
++          "status": 410,
++          "url": "https://reference.invalid/acme/schemas/root"
++        },
++        {
++          "label": "foreign-view",
++          "method": "GET",
++          "position": "pos-1",
++          "problem": "foreign-view",
++          "status": 409,
++          "url": "https://reference.invalid/acme/schemas/value"
++        },
++        {
++          "artifact": "root",
++          "label": "root-final",
++          "method": "GET",
++          "position": "pos-1",
++          "status": 200,
++          "url": "https://reference.invalid/acme/schemas/root"
++        }
++      ],
++      "G09-I02": [
++        {
++          "artifact": "root",
++          "label": "root",
++          "method": "GET",
++          "position": "pos-0",
++          "status": 200,
++          "url": "https://reference.invalid/acme/schemas/root"
++        },
++        {
++          "label": "partial",
++          "method": "GET",
++          "position": null,
++          "problem": "malformed-request",
++          "status": 400,
++          "url": "https://reference.invalid/acme/schemas/root"
++        },
++        {
++          "label": "comma",
++          "method": "GET",
++          "position": null,
++          "problem": "malformed-request",
++          "status": 400,
++          "url": "https://reference.invalid/acme/schemas/root"
++        },
++        {
++          "label": "comma-head",
++          "method": "HEAD",
++          "position": null,
++          "problem": "malformed-request",
++          "status": 400,
++          "url": "https://reference.invalid/acme/schemas/root"
++        },
++        {
++          "label": "unauthenticated",
++          "method": "GET",
++          "position": null,
++          "problem": "unauthenticated",
++          "status": 401,
++          "url": "https://reference.invalid/acme/schemas/root"
++        },
++        {
++          "label": "method",
++          "method": "POST",
++          "position": null,
++          "status": 405,
++          "url": "https://reference.invalid/acme/schemas/root"
++        },
++        {
++          "label": "origin",
++          "method": "GET",
++          "position": null,
++          "problem": "forbidden",
++          "status": 403,
++          "url": "https://reference.invalid/acme/schemas/root"
++        },
++        {
++          "label": "unknown",
++          "method": "GET",
++          "position": null,
++          "problem": "resource-not-found",
++          "status": 404,
++          "url": "https://reference.invalid/acme/schemas/unknown"
++        },
++        {
++          "label": "query",
++          "method": "GET",
++          "position": null,
++          "problem": "resource-not-found",
++          "status": 404,
++          "url": "https://reference.invalid/acme/schemas/root?x=1"
++        },
++        {
++          "gap": "minimum-position-route",
++          "label": "query-minimum",
++          "method": "GET",
++          "position": null,
++          "status": 500,
++          "url": "https://reference.invalid/acme/schemas/root?x=1"
++        },
++        {
++          "artifact": "root",
++          "label": "head",
++          "method": "HEAD",
++          "position": "pos-0",
++          "status": 200,
++          "url": "https://reference.invalid/acme/schemas/root"
++        },
++        {
++          "gap": "minimum-position-route",
++          "label": "unknown-minimum",
++          "method": "GET",
++          "position": null,
++          "status": 500,
++          "url": "https://reference.invalid/acme/schemas/unknown"
++        },
++        {
++          "gap": "minimum-position",
++          "label": "unknown-opaque",
++          "method": "GET",
++          "position": null,
++          "status": 500,
++          "url": "https://reference.invalid/acme/schemas/unknown"
++        },
++        {
++          "label": "missing-bead",
++          "method": "GET",
++          "position": "pos-0",
++          "problem": "resource-not-found",
++          "status": 404,
++          "url": "https://reference.invalid/acme/beads/missing"
++        },
++        {
++          "label": "missing-link-properties",
++          "method": "HEAD",
++          "position": "pos-0",
++          "problem": "resource-not-found",
++          "status": 404,
++          "url": "https://reference.invalid/acme/links/missing?view=properties"
++        },
++        {
++          "artifact": "ref",
++          "label": "ref-final",
++          "method": "GET",
++          "position": "pos-0",
++          "status": 200,
++          "url": "https://reference.invalid/acme/schemas/value"
++        }
++      ]
++    },
++    "kind": "FROZEN exact corrected source grammar DATA, no executable auditor/schema evaluated",
++    "positiveRequires": "Fresh exact source/package/install/consumer/proof and independent strict observation validation later, not only callback status/count. Full wire matches actual returned status/headers/body; all runtime fit UNKNOWN now.",
++    "problems": {
++      "catch-up-timeout": [
++        "unavailable",
++        "after-delay"
++      ],
++      "cursor-expired": [
++        "gone",
++        "after-state-change"
++      ],
++      "forbidden": [
++        "authorization",
++        "after-state-change"
++      ],
++      "foreign-view": [
++        "conflict",
++        "after-state-change"
++      ],
++      "malformed-request": [
++        "request",
++        "never"
++      ],
++      "resource-not-found": [
++        "not-found",
++        "after-state-change"
++      ],
++      "unauthenticated": [
++        "authentication",
++        "after-state-change"
++      ]
++    },
++    "servicePositions": {
++      "G09-S01": [
++        "pos-0",
++        "pos-0",
++        "pos-0",
++        "pos-0",
++        "pos-1"
++      ],
++      "G09-S02": [
++        "pos-0",
++        "pos-0"
++      ],
++      "G09-S03": [
++        "pos-0",
++        "pos-0",
++        "pos-0",
++        "pos-0",
++        "pos-0"
++      ]
++    },
++    "sourceArtifacts": {
++      "ref": "{ \"$id\": \"https://schema.invalid/acme/schemas/value\", \"description\": \"café\", \"type\": \"string\", \"minLength\": 1e0 }\n",
++      "root": "{\n \"$id\": \"https://schema.invalid/acme/schemas/root\", \"type\": \"object\", \"properties\": {\"title\": {\"$ref\": \"value\"}}, \"required\": [\"title\"], \"additionalProperties\": false\n}\n"
++    },
++    "sourceBindingSha256": "source-binding.json pinned by report-bindings.json",
++    "sourceRows": {
++      "G09-S06": [
++        {
++          "artifact": "root",
++          "method": "GET",
++          "position": "pos-0",
++          "status": 200,
++          "url": "https://schema.invalid/acme/schemas/root"
++        },
++        {
++          "artifact": "root",
++          "method": "GET",
++          "position": "pos-0",
++          "status": 200,
++          "url": "https://schema.invalid/acme/schemas/root"
++        },
++        {
++          "artifact": "root",
++          "method": "HEAD",
++          "position": "pos-0",
++          "status": 200,
++          "url": "https://schema.invalid/acme/schemas/root"
++        },
++        {
++          "method": "GET",
++          "position": "pos-0",
++          "problem": "cursor-expired",
++          "status": 410,
++          "url": "https://schema.invalid/acme/schemas/root"
++        },
++        {
++          "method": "HEAD",
++          "position": "pos-0",
++          "problem": "foreign-view",
++          "status": 409,
++          "url": "https://schema.invalid/acme/schemas/root"
++        }
++      ],
++      "G09-S07": [
++        {
++          "artifact": "root",
++          "method": "GET",
++          "position": "pos-0",
++          "status": 200,
++          "url": "https://schema.invalid/acme/schemas/root"
++        },
++        {
++          "method": "GET",
++          "position": "pos-0",
++          "problem": "catch-up-timeout",
++          "status": 503,
++          "url": "https://schema.invalid/acme/schemas/root"
++        }
++      ],
++      "G09-S08": [
++        {
++          "artifact": "root",
++          "method": "GET",
++          "position": "pos-0",
++          "status": 200,
++          "url": "https://schema.invalid/acme/schemas/root"
++        },
++        {
++          "method": "HEAD",
++          "position": "pos-0",
++          "problem": "catch-up-timeout",
++          "status": 503,
++          "url": "https://schema.invalid/acme/schemas/root"
++        }
++      ]
++    },
++    "sourceSelector": {
++      "G09-S04": {
++        "calls": 8,
++        "keys": [
++          "observation",
++          "calls",
++          "urlReads",
++          "observations"
++        ],
++        "observations": 0,
++        "urlReads": 0
++      },
++      "G09-S05": {
++        "abortCalls": 1,
++        "abortPropagated": true,
++        "abortSignalForwarded": true,
++        "calls": 8,
++        "extraAbortDirectInvocations": 1,
++        "forwardedTupleSignalAssertion": true,
++        "keys": [
++          "observation",
++          "calls",
++          "rows",
++          "abortCalls",
++          "abortPropagated",
++          "abortSignalForwarded"
++        ],
++        "statuses": [
++          200,
++          200,
++          304,
++          412,
++          406,
++          410,
++          409,
++          503
++        ],
++        "totalDirectCalls": 9
++      },
++      "failureReportLimit": "S04/S05 console observation is reached only after assertions; a failed callback may have no observation, never positive credit"
++    },
++    "sourceService": {
++      "clockAndWaitAssertions": {
++        "G09-S01": {
++          "actualOwnedAdmissions": 1,
++          "actualOwnedExecutions": 1,
++          "actualStorePositionAfter": "1",
++          "clockCalls": 4,
++          "newOwnerReleaseProbes": 1,
++          "observedRetryPosition": "pos-1",
++          "waits": 1
++        },
++        "G09-S02": {
++          "waits": 0
++        },
++        "G09-S03": {
++          "final": {
++            "abortErrorClass": "ScopeServerOperationAbortedError",
++            "calls": 3,
++            "clockCalls": 8,
++            "closeCalls": 1,
++            "closed": true,
++            "entries": 5,
++            "releasedEntryProbes": 3,
++            "waits": 3
++          },
++          "preservedTimeoutPrefix": {
++            "calls": 2,
++            "clockCalls": 6,
++            "entries": 4,
++            "releasedEntryProbes": 2,
++            "waits": 2
++          }
++        }
++      },
++      "keys": [
++        "observation",
++        "calls",
++        "entries",
++        "contexts",
++        "closeCalls",
++        "closed",
++        "removed",
++        "failureCount"
++      ],
++      "observations": [
++        "G09-S01",
++        "G09-S02",
++        "G09-S03"
++      ],
++      "positiveCounts": {
++        "G09-S01": {
++          "calls": 4,
++          "entries": 5
++        },
++        "G09-S02": {
++          "calls": 2,
++          "entries": 2
++        },
++        "G09-S03": {
++          "calls": 3,
++          "entries": 5
++        }
++      },
++      "probesOutsideDirectCallCount": "Original initial context probes3; originalS03 release probes2 + newS03 release probe1 + newS01 release probe1; newS01 owner.admit/execute/inspect exactlyone each. Direct-call inventory counts schemaObserved and selector invocations only; lifecycle close/read probes and trusted owner actions are separately enumerated.",
++      "unknownCleanup": "close failure retains directory; primary and cleanup failures aggregated"
++    },
++    "sourceWire": {
++      "counts": [
++        5,
++        2,
++        2
++      ],
++      "ids": [
++        "G09-S06",
++        "G09-S07",
++        "G09-S08"
++      ],
++      "partial": "received can precede settlement at actual node response callback; partial text retained on data; received=false leaves status/headers/text null; final report after cleanup snapshots actual rows; failed/unknown never positive",
++      "rowKeys": [
++        "ordinal",
++        "method",
++        "url",
++        "settled",
++        "received",
++        "validated",
++        "status",
++        "headers",
++        "text",
++        "errorCategory"
++      ],
++      "statuses": [
++        [
++          200,
++          200,
++          200,
++          410,
++          409
++        ],
++        [
++          200,
++          503
++        ],
++        [
++          200,
++          503
++        ]
++      ],
++      "topKeys": [
++        "observation",
++        "rows",
++        "attempted",
++        "completed",
++        "pending",
++        "closed",
++        "removed",
++        "failureCount"
++      ]
++    }
++  },
+   "canonicalScope": "https://reference.invalid/acme/",
+   "countsProspectiveUntilActual": true,
+   "failureGrammar": {

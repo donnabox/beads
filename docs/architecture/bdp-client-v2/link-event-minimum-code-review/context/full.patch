@@ -1,0 +1,1033 @@
+diff --git a/apps/bdptest/src/transactional-event-missing-context-installed.test.ts b/apps/bdptest/src/transactional-event-missing-context-installed.test.ts
+index d19f846..d5fd7c2 100644
+--- a/apps/bdptest/src/transactional-event-missing-context-installed.test.ts
++++ b/apps/bdptest/src/transactional-event-missing-context-installed.test.ts
+@@ -938,3 +938,337 @@ it("observes installed initial finite Bead Event opaque minimum timeout", async
+   if (failures.length > 1)
+     throw new AggregateError(failures, "installed finite Event minimum and cleanup failed");
+ }, 60000);
++
++it("observes installed initial finite Link Event opaque minimum timeout", async () => {
++  const controller = new AbortController();
++  const deadlineReason = new Error("installed finite Event minimum deadline");
++  const expiresAt = Date.now() + 45000;
++  let deadlineExceeded = false;
++  const deadline = setTimeout(() => {
++    deadlineExceeded = true;
++    controller.abort(deadlineReason);
++  }, 45000);
++  const failures: unknown[] = [];
++  let directory: string | undefined;
++  let child: Awaited<ReturnType<typeof launchInstalledTransaction>> | undefined;
++  let binding: ReturnType<typeof installedTransactionBinding> | undefined;
++  let launchStarted = false,
++    closeAttempted = false,
++    closed = false,
++    attempted = 0;
++  const responses: {
++    method: HttpMethod;
++    url: string;
++    status: number;
++    bodyOctets: number | undefined;
++    bodySha256: string;
++    wireSha256: string | null;
++    headers: Record<string, string | null>;
++  }[] = [];
++  const operator = randomBytes(32).toString("base64url");
++  const linkType = `${scope}types/link`;
++  const linkArtifacts = {
++    descriptors: [
++      ...artifacts.descriptors,
++      {
++        retrievalUri: linkType,
++        utf8: JSON.stringify({
++          id: linkType,
++          name: "Link",
++          describes: "link",
++          conformsTo: [],
++          source: { conformsTo: [], external: "opaque" },
++          target: { conformsTo: [], external: "opaque" },
++          propertiesSchema: schemaUri,
++        }),
++      },
++    ],
++    schemas: artifacts.schemas,
++  };
++  const seedBody = JSON.stringify({
++    operations: [
++      {
++        operation: "createBead",
++        id: "beads/known",
++        type: beadType,
++        properties: { title: "link-event-minimum" },
++      },
++      {
++        operation: "createBead",
++        id: "beads/other",
++        type: beadType,
++        properties: { title: "link-event-minimum-other" },
++      },
++      {
++        operation: "createLink",
++        id: "links/known",
++        type: linkType,
++        source: "beads/known",
++        target: "beads/other",
++        properties: { title: "link-event-minimum" },
++      },
++    ],
++  });
++  try {
++    directory = mkdtempSync(path.join(tmpdir(), "bdp-link-event-minimum-installed-"));
++    controller.signal.throwIfAborted();
++    launchStarted = true;
++    child = await launchInstalledTransaction(
++      entry,
++      {
++        scope,
++        directory,
++        create: true,
++        artifacts: linkArtifacts,
++        credentials: [{ token: operator, principal: "writer", canMutate: true }],
++      },
++      controller.signal,
++    );
++    binding = installedTransactionBinding(child.ready, sourceCommit, fixture);
++    expect(child.ready.scope).toBe(scope);
++    expect(child.ready.claimEligible).toBe(false);
++    expect(child.ready.history).toBe(false);
++    const address = new URL(child.ready.listenUrl as string);
++    const url = `${scope}links/known?view=events`;
++    const batchUrl = `${scope}operations/batch`;
++    expect(binding.operationTargets.batch).toBe(batchUrl);
++    const execute = createRawHttpExchangeExecutor(
++      { transport: "plain", host: address.hostname, port: Number(address.port) },
++      {
++        requestTimeoutMs: 5000,
++        maximumBodyBytes: 32768,
++        exactMode: {
++          scope,
++          profile: "transactional",
++          routes: [
++            { method: "POST", url: batchUrl },
++            { method: "GET", url },
++            { method: "HEAD", url },
++          ],
++          maximumRequestHeaderBytes: 16384,
++          maximumRequestBodyBytes: 65536,
++          defaultCredentialRef: "operator",
++          credentialHandles: [{ id: "operator", headerNames: ["authorization"] }],
++          resolveCredentials: () => ({ authorization: `Bearer ${operator}` }),
++        },
++      },
++    );
++    const exchange = async (
++      method: HttpMethod,
++      minimum: Record<string, string> = {},
++      requestBody?: string,
++    ) => {
++      controller.signal.throwIfAborted();
++      expect(++attempted, "installed Link Event dispatch bound").toBeLessThanOrEqual(4);
++      const requestUrl = requestBody === undefined ? url : batchUrl;
++      const response = await execute({
++        method,
++        url: requestUrl,
++        signal: controller.signal,
++        credentialRef: "operator",
++        raw: {
++          headerLines: [
++            { name: "accept", value: "application/json" },
++            ...Object.entries(minimum).map(([name, value]) => ({ name, value })),
++            ...(requestBody === undefined
++              ? []
++              : [
++                  { name: "content-type", value: "application/json" },
++                  { name: "idempotency-key", value: "link-event-minimum-seed" },
++                ]),
++          ],
++          ...(requestBody === undefined ? {} : { bodyBytes: Buffer.from(requestBody) }),
++        },
++      });
++      responses.push({
++        method,
++        url: requestUrl,
++        status: response.status,
++        bodyOctets: response.bodyOctets,
++        bodySha256: digest(response.bodyText),
++        wireSha256: response.wireResponseBytes ? digest(response.wireResponseBytes) : null,
++        headers: Object.fromEntries(
++          retainedHeaders.map((name) => [name, response.headers[name] ?? null]),
++        ),
++      });
++      expect(response.url).toBe(requestUrl);
++      expect(response.exactRequest?.source).toBe("raw-http1-serializer");
++      expect(response.exactRequest?.writeState).toBe("complete");
++      expect(response.exactRequest?.bodyPresent).toBe(requestBody !== undefined);
++      expect(response.exactRequest?.bodyOctets).toBe(
++        requestBody === undefined ? 0 : Buffer.byteLength(requestBody),
++      );
++      expect(response.exactRequest?.bodyDigest).toBe(
++        requestBody === undefined ? undefined : digest(requestBody),
++      );
++      const headers = response.exactRequest?.headerLines ?? [];
++      expect(headers.find((header) => header.name.toLowerCase() === "host")?.value).toBe(
++        "reference.invalid",
++      );
++      expect(headers.find((header) => header.name.toLowerCase() === "accept")?.value).toBe(
++        "application/json",
++      );
++      if (requestBody !== undefined) {
++        expect(
++          headers.find((header) => header.name.toLowerCase() === "idempotency-key")?.value,
++        ).toBe("link-event-minimum-seed");
++        expect(headers.find((header) => header.name.toLowerCase() === "content-type")?.value).toBe(
++          "application/json",
++        );
++      }
++      expect(response.wireResponseBytes?.length).toBeGreaterThan(0);
++      expect(response.headers["x-bdp-development"]).toBe("non-attesting");
++      for (const [name, value] of Object.entries(minimum))
++        expect(
++          response.exactRequest?.headerLines.find((field) => field.name.toLowerCase() === name)
++            ?.value,
++        ).toBe(value);
++      return response;
++    };
++    const seed = await exchange("POST", {}, seedBody);
++    expect(seed.status).toBe(200);
++    const receipt: unknown = JSON.parse(seed.bodyText);
++    expect(validReceipt(receipt), JSON.stringify(validReceipt.errors)).toBe(true);
++    expect(receipt).toMatchObject({
++      status: "completed",
++      idempotencyKey: "link-event-minimum-seed",
++      requiredPosition: "pos-1",
++      effectPosition: "pos-1",
++    });
++    const setup = await exchange("GET");
++    expect(setup.status).toBe(200);
++    const page: unknown = JSON.parse(setup.bodyText);
++    expect(validPage(page), JSON.stringify(validPage.errors)).toBe(true);
++    expect(page).toMatchObject({
++      source: url,
++      events: [{ type: "created", subject: `${scope}links/known` }],
++      next: null,
++    });
++    const context = Object.fromEntries(
++      contextNames.map((name) => {
++        const value = setup.headers[name];
++        if (!value) throw new Error(`missing ${name}`);
++        return [name, value];
++      }),
++    );
++    expect(context["bdp-scope-position"]).toBe("pos-1");
++    const minimum = {
++      "bdp-scope-epoch": context["bdp-scope-epoch"]!,
++      "bdp-authorization-view": context["bdp-authorization-view"]!,
++      "bdp-minimum-scope-position": "opaque",
++    };
++    let getBytes = 0;
++    let getMedia: string | undefined;
++    for (const method of ["GET", "HEAD"] as const) {
++      const response = await exchange(method, minimum);
++      expect(response.status).toBe(503);
++      expect(response.headers["x-bdp-development-limit"]).toBeUndefined();
++      expect(response.headers["cache-control"]).toBe("private, no-store");
++      expect(response.headers["retry-after"]).toBe("1");
++      expect(response.headers.etag).toBeUndefined();
++      expect(response.headers["last-modified"]).toBeUndefined();
++      for (const name of contextNames) expect(response.headers[name], name).toBe(context[name]);
++      if (method === "GET") {
++        const problem: unknown = JSON.parse(response.bodyText);
++        expect(validProblem(problem), JSON.stringify(validProblem.errors)).toBe(true);
++        // Exact reference Problem shape, not a ban on protocol extension members.
++        expect(problem).toEqual({
++          type: "https://github.com/gastownhall/bdp/problems/unavailable",
++          status: 503,
++          code: "catch-up-timeout",
++          retry: "after-delay",
++        });
++        getBytes = Buffer.byteLength(response.bodyText);
++        expect(getBytes).toBeGreaterThan(0);
++        expect(response.bodyOctets).toBe(getBytes);
++        getMedia = response.headers["content-type"];
++        expect(getMedia?.split(";", 1)[0]).toBe("application/problem+json");
++      } else {
++        expect(response.bodyOctets).toBe(0);
++        expect(response.bodyText).toBe("");
++        // Reference HEAD metadata describes GET bytes, not transmitted HEAD bytes.
++        expect(response.headers["content-length"]).toBe(String(getBytes));
++        expect(response.headers["content-type"]).toBe(getMedia);
++      }
++    }
++    expect(attempted).toBe(4);
++    expect(responses.map(({ method, url, status }) => ({ method, url, status }))).toEqual([
++      { method: "POST", url: batchUrl, status: 200 },
++      { method: "GET", url, status: 200 },
++      { method: "GET", url, status: 503 },
++      { method: "HEAD", url, status: 503 },
++    ]);
++    controller.signal.throwIfAborted();
++  } catch (error) {
++    failures.push(error);
++  } finally {
++    controller.abort();
++    let cleanupTimer: ReturnType<typeof setTimeout> | undefined;
++    try {
++      if (child) {
++        closeAttempted = true;
++        const closing = child.close();
++        // Observe late rejection even if the shared remaining deadline wins.
++        void closing.catch(() => {});
++        await Promise.race([
++          closing,
++          new Promise<never>((_, reject) => {
++            cleanupTimer = setTimeout(
++              () => {
++                deadlineExceeded = true;
++                reject(deadlineReason);
++              },
++              Math.max(0, expiresAt - Date.now()),
++            );
++          }),
++        ]);
++        if (Date.now() >= expiresAt) deadlineExceeded = true;
++        if (deadlineExceeded || child.child.exitCode !== 0 || child.child.signalCode !== null) {
++          failures.push(new Error("installed finite Event child close was not clean and timely"));
++        } else {
++          closed = true;
++          if (directory) rmSync(directory, { recursive: true, force: true });
++        }
++      }
++    } catch (error) {
++      failures.push(error);
++    } finally {
++      clearTimeout(cleanupTimer);
++      clearTimeout(deadline);
++    }
++    if (deadlineExceeded && !failures.includes(deadlineReason)) failures.push(deadlineReason);
++    if (launchStarted && !closed && failures.length === 0)
++      failures.push(new Error("installed finite Event child ownership unverified"));
++    console.log(
++      JSON.stringify({
++        observation: "private-installed-link-event-minimum",
++        outcome: failures.length === 0 ? "passed" : "failed",
++        declaredSourceCommit: sourceCommit,
++        workspaceDirty,
++        entry: resolvedEntry,
++        entrySha256,
++        binding: binding ?? null,
++        deadlineExceeded,
++        attempted,
++        exchanges: responses.length,
++        completedResponses: responses,
++        closeAttempted,
++        closed,
++        launchStarted,
++        startupCompleted: child !== undefined,
++        childPid: child?.child.pid ?? null,
++        childExitCode: child?.child.exitCode ?? null,
++        childSignalCode: child?.child.signalCode ?? null,
++        ownership: !launchStarted ? "not-started" : closed ? "closed" : "unverified",
++        directory: directory ?? null,
++        directoryAbsent: directory === undefined || !existsSync(directory),
++        failureCount: failures.length,
++        claimEligible: false,
++        retention: "response fingerprints and selected headers; no conformance credit",
++      }),
++    );
++  }
++  if (failures.length === 1) throw failures[0];
++  if (failures.length > 1)
++    throw new AggregateError(failures, "installed finite Event minimum and cleanup failed");
++}, 60000);
+diff --git a/packages/server/src/transaction-events.test.ts b/packages/server/src/transaction-events.test.ts
+index f9ae1ce..18178fb 100644
+--- a/packages/server/src/transaction-events.test.ts
++++ b/packages/server/src/transaction-events.test.ts
+@@ -1616,8 +1616,11 @@ it("gates initial Bead Event unknown minima before retained scans", () => {
+     expect(() => read(source, after, minimum)).toThrow(TypeError);
+     expect(groupReads).toBe(0);
+     groupReads = 0;
+-    // Direct strict capture precedes Link identity lookup; this is not an HTTP500 witness.
+-    expect(() => read(`${scope}links/l?view=events`, undefined, minimum)).toThrow(TypeError);
++    // The missing Link source returns current context before semantic minimum comparison.
++    expect(read(`${scope}links/l?view=events`, undefined, minimum)).toEqual({
++      kind: "missing",
++      context: setup.context,
++    });
+     expect(groupReads).toBe(0);
+     groupReads = 0;
+     expect(read(`${scope}beads/unknown?view=events`, undefined, minimum)).toEqual({
+@@ -1812,8 +1815,8 @@ it("serves initial finite Bead Event opaque minima with retained identity and ro
+     await pair("beads/a?view=events", {}, 200, undefined, true);
+     await pair("beads/a?view=events", { ...opaque, "bdp-scope-epoch": "foreign-epoch" }, 500);
+     await pair("beads/a?view=events", { ...opaque, "bdp-authorization-view": "foreign-view" }, 500);
+-    // The seeded Link is a known source; these remain explicit private route gaps.
+-    await pair("links/l?view=events", opaque, 500);
++    // Initial Link Events now wait; stream, continuation and media exclusions remain gaps.
++    await pair("links/l?view=events", opaque, 503, "catch-up-timeout", true);
+     await pair("beads/a?view=events", { ...opaque, accept: "text/event-stream" }, 500);
+     await pair(`beads/a?view=events&after=${encodeURIComponent(after)}`, opaque, 500);
+     await pair("beads/a?view=events", { ...opaque, "last-event-id": after }, 500);
+@@ -1869,7 +1872,7 @@ it("serves initial finite Bead Event opaque minima with retained identity and ro
+       "catch-up-timeout",
+       true,
+     );
+-    expect(responses.filter((response) => response.status === 503)).toHaveLength(8);
++    expect(responses.filter((response) => response.status === 503)).toHaveLength(10);
+     expect(calls).toBe(37);
+   } catch (error) {
+     failures.push(error);
+@@ -1895,3 +1898,340 @@ it("serves initial finite Bead Event opaque minima with retained identity and ro
+   if (failures.length === 1) throw failures[0];
+   if (failures.length > 1) throw new AggregateError(failures, "Bead Event HTTP observation failed");
+ });
++
++it("gates initial Link Event unknown minima before retained scans", () => {
++  const f = fixture();
++  f.run([bead("a"), bead("b"), link()]);
++  let reads = 0;
++  const read = (...args: Parameters<typeof f.owner.readEvents>) => {
++    reads++;
++    return f.owner.readEvents(...args);
++  };
++  const source = `${scope}links/l?view=events`;
++  const setup = read(source);
++  if (setup.kind !== "page" || !setup.page.events[0]) throw new Error("expected seeded page");
++  expect(setup.context.scopePosition).toBe("pos-1");
++  expect(setup.page.source).toBe(source);
++  expect(setup.page.events[0].subject).toBe(`${scope}links/l`);
++  const after = setup.page.events[0].id;
++  const minimum = {
++    scopeEpoch: setup.context.scopeEpoch,
++    authorizationView: setup.context.authorizationView,
++    minimumPosition: "opaque",
++  };
++  const prepare = DatabaseSync.prototype.prepare;
++  let groupReads = 0;
++  const spy = vi.spyOn(DatabaseSync.prototype, "prepare").mockImplementation(function (
++    this: DatabaseSync,
++    sql,
++  ) {
++    if (/FROM groups/.test(sql)) groupReads++;
++    return prepare.call(this, sql);
++  });
++  try {
++    expect(() => read(source, undefined, minimum)).toThrow(TransactionMinimumUnproved);
++    expect(groupReads).toBe(0);
++    groupReads = 0;
++    expect(() => read(source, undefined, { ...minimum, minimumPosition: "pos-2" })).toThrow(
++      expect.objectContaining({ reason: "behind" }),
++    );
++    expect(groupReads).toBe(0);
++    groupReads = 0;
++    const current = read(source, undefined, {
++      ...minimum,
++      minimumPosition: setup.context.scopePosition,
++    });
++    expect(current.kind).toBe("page");
++    expect(groupReads).toBeGreaterThan(0);
++    for (const foreign of [
++      { scopeEpoch: "foreign-epoch" },
++      { authorizationView: "foreign-view" },
++    ]) {
++      groupReads = 0;
++      expect(() => read(source, undefined, { ...minimum, ...foreign })).toThrow(
++        TransactionMinimumUnsupported,
++      );
++      expect(groupReads).toBe(0);
++    }
++    groupReads = 0;
++    expect(() => read(source, after, minimum)).toThrow(TypeError);
++    expect(groupReads).toBe(0);
++    groupReads = 0;
++    expect(read(`${scope}links/unknown?view=events`, undefined, minimum)).toEqual({
++      kind: "missing",
++      context: setup.context,
++    });
++    expect(groupReads).toBe(0);
++    f.run([{ operation: "deleteLink", link: "links/l" }]);
++    groupReads = 0;
++    const retained = read(source);
++    if (retained.kind !== "page") throw new Error("expected retained Link Event page");
++    expect(validPage(retained.page), JSON.stringify(validPage.errors)).toBe(true);
++    expect(retained.page.events.map((event) => event.type)).toEqual(["created", "deleted"]);
++    expect(retained.page.events.every((event) => event.subject === `${scope}links/l`)).toBe(true);
++    expect(retained.page.next).toBe(null);
++    expect(retained.context.scopePosition).toBe("pos-2");
++    expect(groupReads).toBeGreaterThan(0);
++    groupReads = 0;
++    const retainedMinimum = {
++      scopeEpoch: retained.context.scopeEpoch,
++      authorizationView: retained.context.authorizationView,
++      minimumPosition: "opaque",
++    };
++    let unproved: unknown;
++    try {
++      read(source, undefined, retainedMinimum);
++    } catch (error) {
++      unproved = error;
++    }
++    expect(unproved).toBeInstanceOf(TransactionMinimumUnproved);
++    expect(unproved).toMatchObject({ context: retained.context });
++    expect(groupReads).toBe(0);
++    const policy = f.owner.replaceAuthorizationPolicy();
++    expect(policy.readPolicy).toBe("empty");
++    expect(policy.authorizationView).not.toBe(retained.context.authorizationView);
++    groupReads = 0;
++    // Hidden retained identity wins even over the previous view's opaque minimum.
++    expect(read(source, undefined, retainedMinimum)).toEqual({
++      kind: "missing",
++      context: { ...retained.context, authorizationView: policy.authorizationView },
++    });
++    expect(groupReads).toBe(0);
++    expect(reads).toBe(11);
++    console.log(
++      JSON.stringify({
++        observation: "link-event-minimum-owner",
++        reads,
++        seedMutations: 2,
++        policyReplacements: 1,
++        groupReadsAfterHidden: groupReads,
++      }),
++    );
++  } finally {
++    spy.mockRestore();
++  }
++});
++
++it("serves initial finite Link Event opaque minima with retained identity and route fences", async () => {
++  const startedAt = Date.now();
++  const emitted = (await import(
++    new URL("../dist/transaction-runtime.js", import.meta.url).href
++  )) as typeof import("./transaction-runtime.js");
++  const directory = mkdtempSync(path.join(tmpdir(), "bdp-link-event-minimum-http-"));
++  let runtime: Awaited<ReturnType<typeof emitted.startTransactionRuntime>> | undefined;
++  let calls = 0;
++  const responses: { method: string; suffix: string; status: number }[] = [];
++  const failures: unknown[] = [];
++  try {
++    runtime = await emitted.startTransactionRuntime(
++      {
++        directory,
++        scope,
++        create: true,
++        port: 0,
++        types: types(scope),
++        credentials: [{ token: "a".repeat(32), principal: "p", canMutate: true }],
++      },
++      { minimumReads: { budgetMs: 80 } },
++    );
++    const active = runtime;
++    const exchange = async (
++      suffix: string,
++      method: string,
++      headers: Record<string, string> = {},
++      requestBody?: string,
++    ) => {
++      expect(++calls).toBeLessThanOrEqual(35);
++      const target = new URL(suffix, scope);
++      const response = await fetch(new URL(target.pathname + target.search, active.listenUrl), {
++        method,
++        headers: { authorization: `Bearer ${"a".repeat(32)}`, ...headers },
++        ...(requestBody === undefined ? {} : { body: requestBody }),
++      });
++      responses.push({ method, suffix, status: response.status });
++      expect(response.headers.get("x-bdp-development")).toBe("non-attesting");
++      return response;
++    };
++    const seed = await exchange(
++      "operations/batch",
++      "POST",
++      { "content-type": "application/json", "idempotency-key": "link-event-minimum-seed" },
++      JSON.stringify({ operations: [bead("a"), bead("b"), link(), link("gone")] }),
++    );
++    expect(seed.status).toBe(200);
++    expect(await seed.json()).toMatchObject({ status: "completed", requiredPosition: "pos-1" });
++    const setup = await exchange("links/l?view=events", "GET");
++    expect(setup.status).toBe(200);
++    const page: unknown = await setup.json();
++    if (!validPage(page) || !page.events[0]) throw new Error("expected seeded Event page");
++    expect(page.source).toBe(`${scope}links/l?view=events`);
++    const after = page.events[0].id;
++    const names = ["bdp-scope-epoch", "bdp-authorization-view", "bdp-scope-position"] as const;
++    let context = Object.fromEntries(
++      names.map((name) => {
++        const value = setup.headers.get(name);
++        if (!value) throw new Error(`missing ${name}`);
++        return [name, value];
++      }),
++    );
++    const opaque: Record<string, string> = {
++      "bdp-scope-epoch": context["bdp-scope-epoch"]!,
++      "bdp-authorization-view": context["bdp-authorization-view"]!,
++      "bdp-minimum-scope-position": "opaque",
++    };
++    const pair = async (
++      suffix: string,
++      headers: Record<string, string>,
++      status: number,
++      code?: string,
++      observed = false,
++    ) => {
++      let getLength = 0;
++      let getType: string | null = null;
++      for (const method of ["GET", "HEAD"]) {
++        const response = await exchange(suffix, method, headers);
++        const text = await response.text();
++        expect(response.status, `${method} ${suffix}`).toBe(status);
++        for (const name of ["etag", "last-modified"])
++          expect(response.headers.has(name)).toBe(false);
++        if (status === 500) {
++          // Explicit preserved private gap, not a normative Problem response.
++          expect(text).toBe("");
++          expect(response.headers.get("x-bdp-development-limit")).toBe("minimum-position");
++        } else {
++          expect(response.headers.has("x-bdp-development-limit")).toBe(false);
++          if (method === "GET") {
++            const value: unknown = JSON.parse(text);
++            if (status === 200)
++              expect(validPage(value), JSON.stringify(validPage.errors)).toBe(true);
++            else {
++              expect(validMinimumProblem(value), JSON.stringify(validMinimumProblem.errors)).toBe(
++                true,
++              );
++              expect(value).toMatchObject({ status, code });
++              if (status === 503)
++                expect(value).toEqual({
++                  type: "https://github.com/gastownhall/bdp/problems/unavailable",
++                  status: 503,
++                  code: "catch-up-timeout",
++                  retry: "after-delay",
++                });
++            }
++            getLength = Buffer.byteLength(text);
++            getType = response.headers.get("content-type");
++          } else {
++            expect(text).toBe("");
++            expect(response.headers.get("content-type")).toBe(getType);
++            expect(response.headers.get("content-length")).toBe(String(getLength));
++          }
++        }
++        for (const name of names)
++          expect(response.headers.get(name), name).toBe(observed ? context[name]! : null);
++        if (status === 503) {
++          expect(response.headers.get("content-type")).toBe("application/problem+json");
++          expect(response.headers.get("retry-after")).toBe("1");
++          expect(response.headers.get("cache-control")).toBe("private, no-store");
++        }
++      }
++    };
++    const overlays: readonly Record<string, string>[] = [
++      {},
++      { "if-none-match": "*" },
++      { "if-match": '"wrong"' },
++    ];
++    for (const overlay of overlays)
++      await pair("links/l?view=events", { ...opaque, ...overlay }, 503, "catch-up-timeout", true);
++    await pair(
++      "links/l?view=events",
++      { ...opaque, "bdp-minimum-scope-position": context["bdp-scope-position"]! },
++      200,
++      undefined,
++      true,
++    );
++    await pair("links/l?view=events", {}, 200, undefined, true);
++    await pair("links/l?view=events", { ...opaque, "bdp-scope-epoch": "foreign-epoch" }, 500);
++    await pair("links/l?view=events", { ...opaque, "bdp-authorization-view": "foreign-view" }, 500);
++    // Stream, continuation, reconnect and media exclusions remain private gaps.
++    await pair("links/l?view=events", { ...opaque, accept: "text/event-stream" }, 500);
++    await pair(`links/l?view=events&after=${encodeURIComponent(after)}`, opaque, 500);
++    await pair("links/l?view=events", { ...opaque, "last-event-id": after }, 500);
++    await pair("links/l?view=events", { ...opaque, accept: "image/png" }, 500);
++    await pair(
++      "links/l?view=events",
++      { "bdp-minimum-scope-position": "opaque" },
++      400,
++      "malformed-request",
++    );
++    await pair("links/l?view=events&unsupported=x", opaque, 400, "invalid-parameter");
++    await pair("links/missing?view=events", opaque, 404, "resource-not-found", true);
++    const deletion = await exchange(
++      "operations/batch",
++      "POST",
++      { "content-type": "application/json", "idempotency-key": "link-event-minimum-delete" },
++      JSON.stringify({ operations: [{ operation: "deleteLink", link: "links/gone" }] }),
++    );
++    expect(deletion.status).toBe(200);
++    expect(await deletion.json()).toMatchObject({
++      status: "completed",
++      requiredPosition: "pos-2",
++    });
++    const missing = await exchange("links/gone", "GET");
++    expect(missing.status).toBe(404);
++    const missingProblem: unknown = await missing.json();
++    expect(validMinimumProblem(missingProblem), JSON.stringify(validMinimumProblem.errors)).toBe(
++      true,
++    );
++    expect(missingProblem).toMatchObject({ code: "resource-not-found", status: 404 });
++    const retained = await exchange("links/gone?view=events", "GET");
++    expect(retained.status).toBe(200);
++    const retainedPage: unknown = await retained.json();
++    if (!validPage(retainedPage)) throw new Error("expected retained Link Event page");
++    expect(retainedPage.source).toBe(`${scope}links/gone?view=events`);
++    expect(retainedPage.events.map((event) => event.type)).toEqual(["created", "deleted"]);
++    expect(retainedPage.events.every((event) => event.subject === `${scope}links/gone`)).toBe(true);
++    context = Object.fromEntries(
++      names.map((name) => {
++        const value = retained.headers.get(name);
++        if (!value) throw new Error(`missing retained ${name}`);
++        return [name, value];
++      }),
++    );
++    expect(context["bdp-scope-position"]).toBe("pos-2");
++    await pair(
++      "links/gone?view=events",
++      {
++        "bdp-scope-epoch": context["bdp-scope-epoch"]!,
++        "bdp-authorization-view": context["bdp-authorization-view"]!,
++        "bdp-minimum-scope-position": "opaque",
++      },
++      503,
++      "catch-up-timeout",
++      true,
++    );
++    expect(responses.filter((response) => response.status === 503)).toHaveLength(8);
++    expect(responses.filter((response) => response.status === 500)).toHaveLength(12);
++    expect(calls).toBe(35);
++  } catch (error) {
++    failures.push(error);
++  } finally {
++    try {
++      if (runtime) await runtime.close();
++      rmSync(directory, { recursive: true, force: true });
++    } catch (error) {
++      failures.push(error);
++    }
++    console.log(
++      JSON.stringify({
++        observation: "link-event-minimum-http",
++        calls,
++        completedResponses: responses,
++        elapsedMs: Date.now() - startedAt,
++        productChildren: 0,
++        directoryAbsent: !existsSync(directory),
++        failureCount: failures.length,
++      }),
++    );
++  }
++  if (failures.length === 1) throw failures[0];
++  if (failures.length > 1) throw new AggregateError(failures, "Link Event HTTP observation failed");
++});
+diff --git a/packages/server/src/transaction-http.ts b/packages/server/src/transaction-http.ts
+index f3898a2..b3f8958 100644
+--- a/packages/server/src/transaction-http.ts
++++ b/packages/server/src/transaction-http.ts
+@@ -504,6 +504,7 @@ export function createTransactionHttpHandler(
+       const media = selectChangefeedMedia(request.headers.get("accept"));
+       const initialFiniteMinimumSource =
+         (eventRequest.source.kind === "bead" ||
++          eventRequest.source.kind === "link" ||
+           (eventRequest.source.kind === "scope" &&
+             eventRequest.source.url === new URL("events/", scope).href)) &&
+         eventRequest.after === undefined &&
+diff --git a/packages/server/src/transaction-service.test.ts b/packages/server/src/transaction-service.test.ts
+index 39756dd..0a5168e 100644
+--- a/packages/server/src/transaction-service.test.ts
++++ b/packages/server/src/transaction-service.test.ts
+@@ -2494,8 +2494,11 @@ it("rejects an old selected Event packet before stream registration and accepts
+   if (failures.length) throw new AggregateError(failures, "stale Event lease witness cleanup");
+ }, 5000);
+ 
+-function finiteEventMinimumFixture(waitCount: number) {
+-  const f = fixture();
++function finiteEventMinimumFixture(
++  waitCount: number,
++  eventTypes: Parameters<typeof openTransactionStore>[0]["types"] = types,
++) {
++  const f = fixture({ types: eventTypes });
+   let tick = 0,
+     reads = 0,
+     serviceCalls = 0,
+@@ -2968,3 +2971,234 @@ it.each([
+     }),
+   );
+ });
++
++const linkEventTypes = [
++  ...types,
++  parseTypeDescriptor({
++    id: "https://example.test/link",
++    name: "Link",
++    describes: "link",
++    conformsTo: [],
++    source: { conformsTo: [], external: "opaque" },
++    target: { conformsTo: [], external: "opaque" },
++  }),
++];
++
++it("captures an initial Link Event opaque tuple across one bounded wait", async () => {
++  const f = finiteEventMinimumFixture(2, linkEventTypes);
++  try {
++    expect(
++      await f.service.submit(
++        batch([
++          create("a"),
++          create("b"),
++          {
++            operation: "createLink",
++            id: "links/l",
++            type: "https://example.test/link",
++            source: "beads/a",
++            target: "beads/b",
++            properties: {},
++          },
++        ]),
++      ),
++    ).toMatchObject({
++      kind: "receipt",
++      receipt: { status: "completed", requiredPosition: "pos-1" },
++    });
++    const setup = await f.events(`${scope}links/l?view=events`);
++    if (setup.kind !== "page") throw new Error("expected initial Event page");
++    const minimum = {
++      scopeEpoch: setup.context.scopeEpoch,
++      authorizationView: setup.context.authorizationView,
++      minimumPosition: "opaque",
++    };
++    f.watchScans();
++    const observed = f.observe(f.events(`${scope}links/l?view=events`, undefined, minimum));
++    await f.entered(0, observed);
++    expect(f.counts().reads).toBe(2);
++    minimum.minimumPosition = setup.context.scopePosition;
++    f.release(0);
++    await f.entered(1, observed);
++    expect(f.counts().reads).toBe(3);
++    f.release(1);
++    expect(await observed).toEqual({
++      error: expect.objectContaining({ reason: "catch-up-timeout", context: setup.context }),
++    });
++    expect(f.counts()).toEqual({
++      reads: 4,
++      serviceCalls: 2,
++      waits: 2,
++      probes: 2,
++      groupReads: 0,
++      attemptTimes: [0, 0, 5, 10],
++    });
++    console.log(
++      JSON.stringify({
++        observation: "link-event-minimum-capture",
++        ...f.counts(),
++        seedMutations: 1,
++      }),
++    );
++  } finally {
++    await f.finish();
++  }
++});
++
++it("cancels and drains initial Link Event opaque waits", async () => {
++  const f = finiteEventMinimumFixture(3, linkEventTypes);
++  try {
++    expect(
++      await f.service.submit(
++        batch([
++          create("a"),
++          create("b"),
++          {
++            operation: "createLink",
++            id: "links/l",
++            type: "https://example.test/link",
++            source: "beads/a",
++            target: "beads/b",
++            properties: {},
++          },
++        ]),
++      ),
++    ).toMatchObject({
++      kind: "receipt",
++      receipt: { status: "completed", requiredPosition: "pos-1" },
++    });
++    const setup = await f.events(`${scope}links/l?view=events`);
++    if (setup.kind !== "page") throw new Error("expected initial Event page");
++    const minimum = {
++      scopeEpoch: setup.context.scopeEpoch,
++      authorizationView: setup.context.authorizationView,
++      minimumPosition: "opaque",
++    };
++    f.watchScans();
++    const controller = new AbortController();
++    const cancelled = f.observe(
++      f.events(`${scope}links/l?view=events`, undefined, minimum, controller.signal),
++    );
++    await f.entered(0, cancelled);
++    controller.abort();
++    // Abort is observed only after our deferred wait is released.
++    f.release(0);
++    expect(await cancelled).toEqual({ error: expect.any(ScopeServerOperationAbortedError) });
++    expect(f.counts().reads).toBe(2);
++    const drained = f.observe(f.events(`${scope}links/l?view=events`, undefined, minimum));
++    await f.entered(1, drained);
++    let closed = false;
++    const closing = f.service.close().then(() => {
++      closed = true;
++    });
++    const observedClosing = f.observe(closing);
++    await Promise.resolve();
++    expect(closed).toBe(false);
++    expect(f.counts().reads).toBe(3);
++    expect(() => f.events(`${scope}links/l?view=events`)).toThrow(
++      "transaction service is closing or closed",
++    );
++    expect(f.counts().reads).toBe(3);
++    f.release(1);
++    await f.entered(2, drained);
++    expect(closed).toBe(false);
++    f.release(2);
++    expect(await drained).toEqual({
++      error: expect.objectContaining({ reason: "catch-up-timeout", context: setup.context }),
++    });
++    expect(await observedClosing).toEqual({ value: undefined });
++    expect(closed).toBe(true);
++    expect(f.counts()).toEqual({
++      reads: 5,
++      serviceCalls: 4,
++      waits: 3,
++      probes: 3,
++      groupReads: 0,
++      attemptTimes: [0, 0, 5, 10, 15],
++    });
++    expect(() => f.realOwner.readEvents(`${scope}links/l?view=events`)).toThrow(
++      "transaction store closed or reentrant",
++    );
++    console.log(
++      JSON.stringify({
++        observation: "link-event-minimum-cancel-drain",
++        ...f.counts(),
++        postCloseDirectRefusals: 1,
++        seedMutations: 1,
++      }),
++    );
++  } finally {
++    await f.finish();
++  }
++});
++
++it.each([
++  "already-aborted",
++  "malformed-after-valid-preflight",
++  "noncanonical-query",
++  "relative-source",
++] as const)("preserves initial Link Event classification and preflight: %s", async (label) => {
++  const f = fixture();
++  let reads = 0;
++  const now = vi.fn(() => 0);
++  const wait = vi.fn(async () => {});
++  const service = createTransactionService(
++    {
++      ...f.owner,
++      readEvents: (...args: Parameters<typeof f.owner.readEvents>) => {
++        reads++;
++        return f.owner.readEvents(...args);
++      },
++    },
++    {
++      ownerLifetime: "service",
++      read: f.read,
++      minimumReads: { budgetMs: 10, now, wait },
++    },
++  );
++  cleanup.push(() => service.close());
++  const source =
++    label === "noncanonical-query"
++      ? `${scope}links/l?view=events&extra=x`
++      : label === "relative-source"
++        ? "links/l?view=events"
++        : `${scope}links/l?view=events`;
++  const pending = service.events(
++    source,
++    undefined,
++    {
++      scopeEpoch: "bad space",
++      authorizationView: "development-all-visible",
++      minimumPosition: "opaque",
++    },
++    label === "already-aborted" ? AbortSignal.abort() : undefined,
++  );
++  expect(pending).toBeInstanceOf(Promise);
++  const error = await pending.then(
++    () => undefined,
++    (cause: unknown) => cause,
++  );
++  if (label === "already-aborted") expect(error).toBeInstanceOf(ScopeServerOperationAbortedError);
++  else if (label === "noncanonical-query")
++    expect(error).toBeInstanceOf(TransactionEventParameterError);
++  else if (label === "relative-source") {
++    expect(error).toBeInstanceOf(TypeError);
++    expect(error).toMatchObject({ code: "ERR_INVALID_URL" });
++  } else {
++    expect(error).toBeInstanceOf(TypeError);
++    expect(error).toMatchObject({ message: "unsupported minimum tuple" });
++  }
++  expect(now).toHaveBeenCalledTimes(1);
++  expect(reads).toBe(label === "noncanonical-query" || label === "relative-source" ? 1 : 0);
++  expect(wait).not.toHaveBeenCalled();
++  console.log(
++    JSON.stringify({
++      observation: "link-event-minimum-preflight",
++      label,
++      serviceCalls: 1,
++      clockCalls: now.mock.calls.length,
++      ownerReads: reads,
++      waits: wait.mock.calls.length,
++    }),
++  );
++});
+diff --git a/packages/server/src/transaction-service.ts b/packages/server/src/transaction-service.ts
+index 72f2495..3863f77 100644
+--- a/packages/server/src/transaction-service.ts
++++ b/packages/server/src/transaction-service.ts
+@@ -485,7 +485,8 @@ export function createTransactionService(owner: Owner, options: TransactionServi
+                   try {
+                     const parsed = transactionEventRequest(new URL(source), scope);
+                     initialMinimumSource =
+-                      parsed?.source.kind === "bead" &&
++                      parsed !== undefined &&
++                      (parsed.source.kind === "bead" || parsed.source.kind === "link") &&
+                       parsed.after === undefined &&
+                       parsed.source.url === source;
+                   } catch (error) {
+diff --git a/packages/server/src/transaction-store.ts b/packages/server/src/transaction-store.ts
+index 0d2ccba..923ddd7 100644
+--- a/packages/server/src/transaction-store.ts
++++ b/packages/server/src/transaction-store.ts
+@@ -1652,7 +1652,8 @@ export function openTransactionStore(options: TransactionStoreOptions) {
+         throw new TypeError("Event source and cursor must be strings");
+       const source = eventSource(sourceUrl);
+       const initialMinimumSource =
+-        after === undefined && (source.kind === "scope" || source.kind === "bead");
++        after === undefined &&
++        (source.kind === "scope" || source.kind === "bead" || source.kind === "link");
+       const minimum =
+         supplied === undefined || supplied === "unsupported"
+           ? supplied
+@@ -1660,15 +1661,15 @@ export function openTransactionStore(options: TransactionStoreOptions) {
+             ? snapshotCurrentReadMinimum(supplied)
+             : snapshotTransactionMinimum(supplied);
+       return enter(() => {
+-        // Unknown/hidden sources are nondisclosing before initial Scope/Bead minimum
++        // Unknown/hidden sources are nondisclosing before initial Event minimum
+         // checks. A retained identity remains a source after Resource deletion.
+         if (!eventSourceKnown(source))
+           return Object.freeze({ kind: "missing" as const, context: readContext() });
+         if (minimum === "unsupported") return Object.freeze({ kind: "unsupported" as const });
+         const context = readContext(),
+           head = Number(context.scopePosition.slice(4));
+-        // Initial Scope/Bead minima refuse/wait before any group read. This entry
+-        // cannot advance while scanning; other sources retain the strict check.
++        // Initial Event minima refuse/wait before any group read. This entry
++        // cannot advance while scanning; after-bearing reads retain the strict check.
+         if (minimum !== undefined) {
+           if (initialMinimumSource) checkCurrentReadMinimum(minimum, context, true);
+           else checkTransactionMinimum(minimum, context);

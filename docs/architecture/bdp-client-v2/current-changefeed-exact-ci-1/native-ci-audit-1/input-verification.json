@@ -1,0 +1,166 @@
+{
+  "inputs": {
+    "run.json": {
+      "sha256": "97c94e70ec8e72d6dceec8c397fdc8a87aa451e567f707c36aff44912ff75402",
+      "bytes": 5404
+    },
+    "capture.json": {
+      "sha256": "36eae37caa47b7d6213eaa707f9f924a160dd556210f96626d2594687ec2e543",
+      "bytes": 327
+    },
+    "full.log": {
+      "sha256": "b287a29493494ce826ae53e2c60ebda6e99b98e7b4189b6807028854da82f2f2",
+      "bytes": 2333227
+    },
+    "api-logs.zip": {
+      "sha256": "fe8bd0e4f29ac9f57da652509678e6a572d7116a42eafa598f8e8a9fb697ad3b",
+      "bytes": 927607
+    },
+    "api-log-inventory.json": {
+      "sha256": "15de34b0aef8c7b76e564dee7e53b59bd7e83bbb3309c4f9140e46fff53cb0a6",
+      "bytes": 5041
+    },
+    "api-logs/0_verify.txt": {
+      "sha256": "2938514ac36f89e9e847c6f27e55f36d02b1651fbe6127ba507f8067096f9e05",
+      "bytes": 3970025
+    },
+    "api-logs/verify/9_Run sudo apt-get install --yes libicu-dev.txt": {
+      "sha256": "a9c544142abe3e61c33819a431d74c4ef90ba9ed58dbcba619692a87014738dd",
+      "bytes": 779
+    },
+    "api-logs/verify/8_Run sudo apt-get update.txt": {
+      "sha256": "989d6b56bfcdfe06752681b9c4886cc1b68c634a7b69989587aa31cba4b3f82e",
+      "bytes": 2942
+    },
+    "api-logs/verify/44_Post Run actions_checkout@11d5960a326750d5838078e36cf38b85af677262.txt": {
+      "sha256": "03903221640c66f6aabbca73a9ff727a8402348ce8010210575d00dff805797a",
+      "bytes": 1701
+    },
+    "api-logs/verify/12_Verify the Go-installed source-build bd identity.txt": {
+      "sha256": "f0f922ec6dde651d6107338ad2ae4d9fe384a6db955dea5404a293787926fdc3",
+      "bytes": 1414
+    },
+    "api-logs/verify/1_Set up job.txt": {
+      "sha256": "20bed2393ea1c73fbfc3e1ed0c5481d09db086cb59170602a175b84cf28d011a",
+      "bytes": 2425
+    },
+    "api-logs/verify/10_Run mkdir -p $RUNNER_TEMP_bdp-tools.txt": {
+      "sha256": "fcfdb8aa3a317ca3163c80178bee0f49b03b01ddbd97235f5b1b10625244588a",
+      "bytes": 420
+    },
+    "api-logs/verify/41_Post Run actions_setup-go@924ae3a1cded613372ab5595356fb5720e22ba16.txt": {
+      "sha256": "1e29e2da7adefb3ae37e3e8843cfa5f42dc03f4afd6406de3313b815ec3c8de2",
+      "bytes": 50
+    },
+    "api-logs/verify/system.txt": {
+      "sha256": "687192f3468239ea974901e79d1a530417b29afce868e703da7c0682ad0d321f",
+      "bytes": 600
+    },
+    "api-logs/verify/42_Post Run actions_setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020.txt": {
+      "sha256": "1aa4a7fd0bbf0ebbc5fd596127160d98ec16d1898e200117ab4f9884860efcf7",
+      "bytes": 483
+    },
+    "api-logs/verify/7_Run test $(pnpm --version) = 11.20.0.txt": {
+      "sha256": "52d8463f3b657be8b9af55737070b9f29d6657f501dc33402c696094400294a3",
+      "bytes": 426
+    },
+    "api-logs/verify/2_Run actions_checkout@11d5960a326750d5838078e36cf38b85af677262.txt": {
+      "sha256": "1179abd87c91baf1438d0dfd98e65564d4d25c0a0a6d526db24278754210f34f",
+      "bytes": 54215
+    },
+    "api-logs/verify/14_Run pnpm formatcheck.txt": {
+      "sha256": "8cace45fe67183955fd0b26150762f9cb9fb8777fdd7d91e4f2675a3ef3be5df",
+      "bytes": 1153
+    },
+    "api-logs/verify/15_Run pnpm lint.txt": {
+      "sha256": "6a2703d17b71fb27ac49c044df5ad920f1ade7e3402cd75de30672fdbfd08ee5",
+      "bytes": 34475
+    },
+    "api-logs/verify/16_Run pnpm checkboundaries.txt": {
+      "sha256": "53722326de204e88cb548ce080b55cc989e477dc4c25d68c25533b19055c74f5",
+      "bytes": 556
+    },
+    "api-logs/verify/20_Run pnpm e2ereadypreflight.txt": {
+      "sha256": "ff6fbfc6be99d001baa301e4e19d2e05695581836eead6c3ecb0bd0e49459864",
+      "bytes": 2576
+    },
+    "api-logs/verify/6_Run test $(node --version) = v24.16.0.txt": {
+      "sha256": "eea1beb0c5207b3cb6f5f3087c47c8d01f32ada799ebd8f1112908bae239ee82",
+      "bytes": 428
+    },
+    "api-logs/verify/17_Run pnpm typecheck.txt": {
+      "sha256": "72cdb21d4fa92afec5427d380570a1f897255a197dd102682439fd0fc58551ef",
+      "bytes": 440
+    },
+    "api-logs/verify/21_Run pnpm smoke.txt": {
+      "sha256": "4255e4e3341bb109fe796d4274c653f6a46d5e1e5c69627288749f4bc26742ca",
+      "bytes": 2352
+    },
+    "api-logs/verify/22_Read-cohort evidence gate.txt": {
+      "sha256": "ace86fee41084b87dd7982d77ee4dcb19893512ab237cb73b8949aafef820010",
+      "bytes": 1005
+    },
+    "api-logs/verify/5_Run actions_setup-go@924ae3a1cded613372ab5595356fb5720e22ba16.txt": {
+      "sha256": "bb6c1a964b13f0f176afec464bca7948996e18fae41eecf8e98c0c2ec58d11e1",
+      "bytes": 4055
+    },
+    "api-logs/verify/43_Post Run pnpm_action-setup@b906affcce14559ad1aafd4ab0e942779e9f58b1.txt": {
+      "sha256": "a8609046f46099235dd885517b1eb2ba696a1db4ea5b1b681ea0316bf74d7098",
+      "bytes": 103
+    },
+    "api-logs/verify/11_Run go install github.com_steveyegge_beads_cmd_bd@v1.0.5.txt": {
+      "sha256": "f6a83f0b4727ff227e07278f46083b6af1dff21c0fc630612cd01d3cd239811a",
+      "bytes": 19579
+    },
+    "api-logs/verify/13_Run pnpm install --frozen-lockfile.txt": {
+      "sha256": "1b4b5ca7a6b966be2f174b07acb02bbe0e969a5e164eb95c2fd36280dc6b94a9",
+      "bytes": 1821
+    },
+    "api-logs/verify/3_Run pnpm_action-setup@b906affcce14559ad1aafd4ab0e942779e9f58b1.txt": {
+      "sha256": "617cb2cc08e7ac7bd87a12b2a7dd62511b909f4fb0f0afcc2cff7e8eda24a754",
+      "bytes": 1528
+    },
+    "api-logs/verify/4_Run actions_setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020.txt": {
+      "sha256": "daaaf1013dc868a969b24dcf7ac7c3bc9a92ef7b1f70c5870c702f133c898181",
+      "bytes": 2692
+    },
+    "api-logs/verify/19_Run pnpm test.txt": {
+      "sha256": "ac115c208e97ea77e9b119f19039e838c91fd9bd127d53634f8fea6d8b95c871",
+      "bytes": 3831474
+    },
+    "api-logs/verify/45_Complete job.txt": {
+      "sha256": "e154e59abd85860e1efa51c48aa99c5932027ad5886ccef6e6a838df9229d16c",
+      "bytes": 507
+    },
+    "api-logs/verify/18_Run pnpm build.txt": {
+      "sha256": "57485e042b9960b64f82f76d24904f82fb23832f9287c5a7e7ad5087c6fa5681",
+      "bytes": 504
+    }
+  },
+  "zipAndAll29ExtractedMembersAndMirrorsVerified": true,
+  "mainLogBytes": 3831474,
+  "mainLogSha256": "ac115c208e97ea77e9b119f19039e838c91fd9bd127d53634f8fea6d8b95c871",
+  "cliCaptureIsPartial": true,
+  "suiteSummaryAndSkipDerivedFromActualApiLog": true,
+  "source15PassTitlesMatched": {
+    "preserves changefeed cursor precedence under current-admission opaque minima": 1896,
+    "captures current changefeed admission once across owner entries: start-now-unknown": 1897,
+    "captures current changefeed admission once across owner entries: genesis-unknown": 1898,
+    "captures current changefeed admission once across owner entries: retained-unknown": 1899,
+    "captures current changefeed admission once across owner entries: retained-pos-01": 1909,
+    "drains current changefeed admission before owner close: start-now": 1910,
+    "drains current changefeed admission before owner close: retained": 1911,
+    "preserves current changefeed anchor capture before waiter preflight": 1912,
+    "serves current changefeed opaque minima across finite and SSE admission": 2945,
+    "keeps start=now's original admission anchor through a minimum wait and drains on close": 1838,
+    "keeps direct and excluded changefeed minimum paths strict": 1876,
+    "serves finite start-now opaque minima before HTTP shortcuts": 1895,
+    "decides actual HTTP minimum refusal before conditional shortcuts with final context": 1846,
+    "disconnect cancels the actual finite minimum wait without consuming its remaining budget": 2933,
+    "effective reconnect cursor owns epoch/view/retention decisions; overridden query is not looked up": 2934
+  },
+  "parsedObservationCount": 151,
+  "maskedInvalidObservationCount": 8,
+  "fatalDiagnosticPatternMatches": 0,
+  "noCiRerunOrRuntimeOrGitMutation": true
+}

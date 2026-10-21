@@ -1,0 +1,22 @@
+{
+  "kind": "independent-native-failed-startup-RU-schema-fixture-diagnosis",
+  "observedUtc": "2026-10-18T06:20:53.086325+00:00",
+  "session": "2026-10-18T02:16:24Z-549f",
+  "sourceFiles": 682,
+  "sourceIdentity": "7e856365e701e96ddf233e13d6883c6d74464dd755c0ff59f1b185c37c7b19db",
+  "currentFullPatchSha256": "ecdc9d4ae144a4a8d24a60b4cba758decbffbe5362b3cc9a8afe9e9dc71ea38f",
+  "actualSelectedOutcome": {
+    "passed": 43,
+    "failed": 1,
+    "unselectedSkipped": 389,
+    "files": 8,
+    "exit": 1
+  },
+  "actualEvidence": "Generic expected-local-preparation-failure at helper216/call541, no row ordinal logged. This proves an invocation resolved unexpectedly; no exact failing-row telemetry exists.",
+  "staticConclusion": "Prior rows1-9 each hit an existing refusal. Row10 is the first statically permitted success: empty descriptors select shipped closure without any propertiesSchema, so compileDevelopmentContracts never calls evaluator/graph. Ingestion checks valid schema JSON/capture and descriptor dependencies; it does not itself resolve schema refs. Local unused schemas/bad is hosted and aggregate[] accepted.",
+  "scopeQualification": "This does not claim graph compilation ignores unreferenced schema refs once invoked: buildInstalledSchemaGraph resolves supplied schema ref edges. The current bundle avoids invocation entirely.",
+  "recommendation": "Correct only loop row10 to use existing artifacts() descriptor/ownership closure and replace its referenced schemas/item with matching$id and dangling missing.test$ref. That invokes existing graph/evaluator refusal and loader fixed contract mapping. No production tightening, unused-schema law, new semantics, callback or deadline change.",
+  "actualRuntimeRowIdentification": "UNOBSERVED; row10 attribution is static inference",
+  "sourceEdited": false,
+  "helperCompilerNodeProbeRuntimeGitGateExecuted": false
+}

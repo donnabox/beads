@@ -1,0 +1,5 @@
+$ tsc -p tsconfig.check.json
+packages/server/src/transaction-http.test.ts(6757,14): error TS2304: Cannot find name 'HeadersInit'.
+packages/server/src/transaction-http.test.ts(6890,28): error TS2304: Cannot find name 'HeadersInit'.
+packages/server/src/transaction-http.test.ts(6904,27): error TS2304: Cannot find name 'HeadersInit'.
+[ELIFECYCLE] Command failed with exit code 1.

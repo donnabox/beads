@@ -1,0 +1,406 @@
+{
+  "edges": [
+    {
+      "retiringId": "read-update.discovery.document",
+      "retiredId": "read.discovery.document",
+      "retiringProfile": "read-update",
+      "predecessor": {
+        "id": "read.discovery.document",
+        "title": "Read discovery has the exact required and prohibited members",
+        "kind": "normative",
+        "requiredProfile": "read",
+        "requirements": [
+          {
+            "source": "docs/specs/bdp.md",
+            "anchor": "#scope-discovery-and-human-documentation",
+            "selectedText": "The Read discovery document requires `bdpVersion`, `profile`, `scope`, `beads`, `links`, and `types`. The optional `limits`, `maximumEndpointMultiplicity`, `order`, and `historicalResolution` members apply under their contracts. `aliases` appears exactly when the authority serves alias resolution; a client MUST NOT construct alias URLs otherwise. An omitted `order` means `canonical-uri`. These are the only members admitted by the closed `readDiscovery` definition."
+          },
+          {
+            "source": "docs/specs/bdp.md",
+            "anchor": "#scope-discovery-and-human-documentation",
+            "selectedText": "An omitted `order` means `canonical-uri`."
+          }
+        ]
+      },
+      "sourceCatalog": "read-update-v1.json",
+      "effect": "Exclude predecessor for TX only as stated; preserve nonconflicting underlying semantics and the transitive Read discovery retirement."
+    },
+    {
+      "retiringId": "transactional.discovery.document",
+      "retiredId": "read-update.discovery.document",
+      "retiringProfile": "transactional",
+      "predecessor": {
+        "id": "read-update.discovery.document",
+        "title": "Read+Update discovery carries operations and no Transactional member",
+        "kind": "normative",
+        "requiredProfile": "read-update",
+        "requirements": [
+          {
+            "source": "docs/specs/bdp.md",
+            "anchor": "#readupdate-discovery",
+            "selectedText": "Read+Update adds required `operations` and `aliases` navigation members to Read discovery and advertises `profile: \"read-update\"`. It inherits the optional History capability. Its discovery schema is the closed `readUpdateDiscovery` definition: `bdpVersion`, `profile`, `scope`, `beads`, `links`, `types`, `operations`, and `aliases` are required; `limits`, `maximumEndpointMultiplicity`, `order`, and `historicalResolution` are optional under their inherited contracts. These are the only admitted members."
+          },
+          {
+            "source": "docs/specs/bdp.md",
+            "anchor": "#scope-discovery-and-human-documentation",
+            "selectedText": "The optional `limits`, `maximumEndpointMultiplicity`, `order`, and `historicalResolution` members apply under their contracts."
+          },
+          {
+            "source": "docs/specs/bdp.md",
+            "anchor": "#scope-discovery-and-human-documentation",
+            "selectedText": "An omitted `order` means `canonical-uri`."
+          }
+        ],
+        "retires": [
+          "read.discovery.document"
+        ]
+      },
+      "sourceCatalog": "transactional-v1.json",
+      "effect": "Exclude predecessor for TX only as stated; preserve nonconflicting underlying semantics and the transitive Read discovery retirement."
+    },
+    {
+      "retiringId": "transactional.discovery.operation-directory",
+      "retiredId": "read-update.discovery.operation-directory",
+      "retiringProfile": "transactional",
+      "predecessor": {
+        "id": "read-update.discovery.operation-directory",
+        "title": "The Operation Directory lists exactly eight singleton targets plus sequence",
+        "kind": "normative",
+        "requiredProfile": "read-update",
+        "requirements": [
+          {
+            "source": "docs/specs/bdp.md",
+            "anchor": "#operation-directory-and-singleton-targets",
+            "selectedText": "A Read+Update Scope's directory contains exactly eight singleton targets — the six Resource targets plus `put-alias` and `delete-alias` — and `sequence`:"
+          }
+        ]
+      },
+      "sourceCatalog": "transactional-v1.json",
+      "effect": "Exclude predecessor for TX only as stated; preserve nonconflicting underlying semantics and the transitive Read discovery retirement."
+    },
+    {
+      "retiringId": "transactional.discovery.limits",
+      "retiredId": "read-update.discovery.limits",
+      "retiringProfile": "transactional",
+      "predecessor": {
+        "id": "read-update.discovery.limits",
+        "title": "Read+Update discovery limits carry no Transactional capability group",
+        "kind": "normative",
+        "requiredProfile": "read-update",
+        "requirements": [
+          {
+            "source": "docs/specs/bdp.md",
+            "anchor": "#readupdate-schema-and-limits",
+            "selectedText": "Its `readUpdateAdvertisedLimits` definition is closed and uses the shared limit primitives. It admits exactly `page`, `request`, `resource`, `selector`, `patch`, `sequence`, `validation`, and `retention`; the `retention` object admits only `idempotency` and the pagination `maximumSnapshotLifetime`."
+          },
+          {
+            "source": "docs/specs/bdp.md",
+            "anchor": "#advertised-limits",
+            "selectedText": "The Read discovery document's `limits` uses the closed `advertisedLimits` definition. Its Read-applicable groups are `page`, `request`, `resource`, `selector`, and `retention.maximumSnapshotLifetime`; the schema admits no `validation` group. Schema acceptance of a limit does not expose its capability."
+          },
+          {
+            "source": "docs/specs/bdp.md",
+            "anchor": "#advertised-limits",
+            "selectedText": "A group is relevant only when the advertised profile exposes that capability."
+          },
+          {
+            "source": "docs/specs/bdp.md",
+            "anchor": "#mutation-limits",
+            "selectedText": "the group is mutation surface: it is not advertised by a Read discovery document, and a Read+Update authority that omits diagnostics beyond a bound MUST advertise it"
+          }
+        ]
+      },
+      "sourceCatalog": "transactional-v1.json",
+      "effect": "Exclude predecessor for TX only as stated; preserve nonconflicting underlying semantics and the transitive Read discovery retirement."
+    },
+    {
+      "retiringId": "transactional.discovery.no-idempotency-retention",
+      "retiredId": "read-update.idempotency.retention-minimum",
+      "retiringProfile": "transactional",
+      "predecessor": {
+        "id": "read-update.idempotency.retention-minimum",
+        "title": "An advertised retention.idempotency is honored; without one no client-known recovery window exists",
+        "kind": "normative",
+        "requiredProfile": "read-update",
+        "requirements": [
+          {
+            "source": "docs/specs/bdp.md",
+            "anchor": "#outcome-retention",
+            "selectedText": "An authority retains each retained disposition for at least `retention.idempotency` after the member's terminal outcome when it advertises that limit"
+          },
+          {
+            "source": "docs/specs/bdp.md",
+            "anchor": "#outcome-retention",
+            "selectedText": "When it is not, no client-known recovery window exists"
+          }
+        ]
+      },
+      "sourceCatalog": "transactional-v1.json",
+      "effect": "Exclude predecessor for TX only as stated; preserve nonconflicting underlying semantics and the transitive Read discovery retirement."
+    },
+    {
+      "retiringId": "transactional.singleton.receipt",
+      "retiredId": "read-update.singleton.result-headers",
+      "retiringProfile": "transactional",
+      "predecessor": {
+        "id": "read-update.singleton.result-headers",
+        "title": "A singleton success carries no ETag and no Location",
+        "kind": "normative",
+        "requiredProfile": "read-update",
+        "requirements": [
+          {
+            "source": "docs/specs/bdp.md",
+            "anchor": "#operation-directory-and-singleton-targets",
+            "selectedText": "carries no `ETag` and no `Location`: the operation target is not the Resource's URL, and the result's `resource.id` and `resource.revision` say what those fields would."
+          }
+        ]
+      },
+      "sourceCatalog": "transactional-v1.json",
+      "effect": "Exclude predecessor for TX only as stated; preserve nonconflicting underlying semantics and the transitive Read discovery retirement."
+    },
+    {
+      "retiringId": "transactional.receipt.reauthorization",
+      "retiredId": "read-update.idempotency.authorization-view",
+      "retiringProfile": "transactional",
+      "predecessor": {
+        "id": "read-update.idempotency.authorization-view",
+        "title": "A replay after an Authorization View change is re-authorized and never executes or replaces the retained disposition",
+        "kind": "normative",
+        "requiredProfile": "read-update",
+        "requirements": [
+          {
+            "source": "docs/specs/bdp.md",
+            "anchor": "#idempotency-keys",
+            "selectedText": "Authorization View changes do not create a new namespace: the principal-bound disposition remains retained and cannot execute again"
+          },
+          {
+            "source": "docs/specs/bdp.md",
+            "anchor": "#duplicate-keys-and-retained-dispositions",
+            "selectedText": "before returning a retained `created` or `updated` result the authority re-authorizes disclosure of the retained record — the record as retained, whether or not the Resource still exists — against the present view"
+          },
+          {
+            "source": "docs/specs/bdp.md",
+            "anchor": "#duplicate-keys-and-retained-dispositions",
+            "selectedText": "When the view no longer projects that record, the member fails with `forbidden` and discloses nothing retained. That response is not retained: it replaces neither the disposition nor its semantic identity, it permits no execution"
+          }
+        ]
+      },
+      "sourceCatalog": "transactional-v1.json",
+      "effect": "Exclude predecessor for TX only as stated; preserve nonconflicting underlying semantics and the transitive Read discovery retirement."
+    },
+    {
+      "retiringId": "transactional.idempotency.concurrent-join",
+      "retiredId": "read-update.idempotency.in-progress",
+      "retiringProfile": "transactional",
+      "predecessor": {
+        "id": "read-update.idempotency.in-progress",
+        "title": "A concurrent duplicate fails with idempotency-in-progress, and a delayed retry receives the retained disposition once one exists",
+        "kind": "normative",
+        "requiredProfile": "read-update",
+        "requirements": [
+          {
+            "source": "docs/specs/bdp.md",
+            "anchor": "#duplicate-keys-and-retained-dispositions",
+            "selectedText": "the key is in flight — claimed by a request whose member has not reached a terminal outcome: the member fails with `idempotency-in-progress`, the authority executes nothing and retains nothing for the presenting member, and a retry after the delay receives the retained disposition once the first presentation has reached a retained outcome"
+          },
+          {
+            "source": "docs/specs/bdp.md",
+            "anchor": "#duplicate-keys-and-retained-dispositions",
+            "selectedText": "a delayed retry may instead find the key still in flight, meet a transient disposition of its own, or, after a long delay, find the disposition expired"
+          }
+        ]
+      },
+      "sourceCatalog": "transactional-v1.json",
+      "effect": "Exclude predecessor for TX only as stated; preserve nonconflicting underlying semantics and the transitive Read discovery retirement."
+    },
+    {
+      "retiringId": "transactional.idempotency.cross-carrier",
+      "retiredId": "read-update.singleton.idempotent-retry",
+      "retiringProfile": "transactional",
+      "predecessor": {
+        "id": "read-update.singleton.idempotent-retry",
+        "title": "A singleton retry under the same key returns the retained disposition without re-execution",
+        "kind": "normative",
+        "requiredProfile": "read-update",
+        "requirements": [
+          {
+            "source": "docs/specs/bdp.md",
+            "anchor": "#duplicate-keys-and-retained-dispositions",
+            "selectedText": "the key is retained with the same semantic identity: the authority does not execute the member and returns the retained disposition"
+          },
+          {
+            "source": "docs/specs/bdp.md",
+            "anchor": "#duplicate-keys-and-retained-dispositions",
+            "selectedText": "A retained `created` result therefore always carries the same authority-allocated identity"
+          },
+          {
+            "source": "docs/specs/bdp.md",
+            "anchor": "#operation-directory-and-singleton-targets",
+            "selectedText": "a singleton whose key is retained, in flight, conflicting, or expired answers exactly as the corresponding sequence member would, as a direct response."
+          }
+        ]
+      },
+      "sourceCatalog": "transactional-v1.json",
+      "effect": "Exclude predecessor for TX only as stated; preserve nonconflicting underlying semantics and the transitive Read discovery retirement."
+    },
+    {
+      "retiringId": "transactional.idempotency.expired-detail",
+      "retiredId": "read-update.idempotency.expired",
+      "retiringProfile": "transactional",
+      "predecessor": {
+        "id": "read-update.idempotency.expired",
+        "title": "A discarded disposition answers idempotency-expired and never re-executes; different semantics remain a conflict",
+        "kind": "normative",
+        "requiredProfile": "read-update",
+        "requirements": [
+          {
+            "source": "docs/specs/bdp.md",
+            "anchor": "#outcome-retention",
+            "selectedText": "Presenting an expired key with the same semantic identity fails with `idempotency-expired`; the authority never executes the member again and never reports the discarded outcome."
+          },
+          {
+            "source": "docs/specs/bdp.md",
+            "anchor": "#outcome-retention",
+            "selectedText": "Presenting an expired key with a different semantic identity remains `idempotency-conflict`."
+          }
+        ]
+      },
+      "sourceCatalog": "transactional-v1.json",
+      "effect": "Exclude predecessor for TX only as stated; preserve nonconflicting underlying semantics and the transitive Read discovery retirement."
+    },
+    {
+      "retiringId": "transactional.idempotency.failed-retained",
+      "retiredId": "read-update.idempotency.expired-failure",
+      "retiringProfile": "transactional",
+      "predecessor": {
+        "id": "read-update.idempotency.expired-failure",
+        "title": "A forgotten failure leaves its key unknown; committed dispositions keep their tombstones",
+        "kind": "normative",
+        "requiredProfile": "read-update",
+        "requirements": [
+          {
+            "source": "docs/specs/bdp.md",
+            "anchor": "#outcome-retention",
+            "selectedText": "A retained failure committed nothing: after the interval the authority MAY forget it entirely, and a later presentation of its key is unknown and executes"
+          },
+          {
+            "source": "docs/specs/bdp.md",
+            "anchor": "#outcome-retention",
+            "selectedText": "For a disposition that committed state — `created`, `updated` including a semantic no-op, or `deleted` — it MUST then retain a compact tombstone"
+          }
+        ]
+      },
+      "sourceCatalog": "transactional-v1.json",
+      "effect": "Exclude predecessor for TX only as stated; preserve nonconflicting underlying semantics and the transitive Read discovery retirement."
+    },
+    {
+      "retiringId": "transactional.idempotency.durable-admission",
+      "retiredId": "read-update.sequence.internal-fault",
+      "retiringProfile": "transactional",
+      "predecessor": {
+        "id": "read-update.sequence.internal-fault",
+        "title": "An internal fault mid-sequence is the body-less 500; durable dispositions stay retained and the faulting claim is cleared",
+        "kind": "normative",
+        "requiredProfile": "read-update",
+        "requirements": [
+          {
+            "source": "docs/specs/bdp.md",
+            "anchor": "#sequence-response-envelope",
+            "selectedText": "an unexpected internal fault is the body-less `500` under [Problem details](#problem-details) even mid-sequence. Members that reached a durable disposition before it stay retained, the faulting member's claim is cleared"
+          },
+          {
+            "source": "docs/specs/bdp.md",
+            "anchor": "#problem-details",
+            "selectedText": "An implementation MUST respond to an unexpected internal server fault with a body-less `500 Internal Server Error`"
+          }
+        ]
+      },
+      "sourceCatalog": "transactional-v1.json",
+      "effect": "Exclude predecessor for TX only as stated; preserve nonconflicting underlying semantics and the transitive Read discovery retirement."
+    },
+    {
+      "retiringId": "transactional.restore.key-namespace",
+      "retiredId": "read-update.idempotency.restore",
+      "retiringProfile": "transactional",
+      "predecessor": {
+        "id": "read-update.idempotency.restore",
+        "title": "A restore that loses recovery state is a different logical Scope at a different canonical Scope URL",
+        "kind": "normative",
+        "requiredProfile": "read-update",
+        "requirements": [
+          {
+            "source": "docs/specs/bdp.md",
+            "anchor": "#durability-and-recovery",
+            "selectedText": "A restore that cannot preserve it creates a different logical Scope under [Scopes and identity](#scopes-and-identity), at a different canonical Scope URL"
+          },
+          {
+            "source": "docs/specs/bdp.md",
+            "anchor": "#scopes-and-identity",
+            "selectedText": "A restore that cannot preserve that guarantee creates a different logical Scope and therefore uses a different canonical Scope URL."
+          },
+          {
+            "source": "docs/specs/bdp.md",
+            "anchor": "#outcome-retention",
+            "selectedText": "Read+Update exposes no epoch: a client cannot detect a restore except through a changed canonical Scope URL, and the profile offers no restore signal beyond `resource-not-found`, `revision-mismatch`, and `idempotency-expired` in its base surface."
+          },
+          {
+            "source": "docs/specs/bdp.md",
+            "anchor": "#outcome-retention",
+            "selectedText": "When `historicalResolution` is advertised, the History surface additionally\nreports positively evidenced `revision-reorganized` under its subject-history\ngate and preserves retained old addresses."
+          }
+        ]
+      },
+      "sourceCatalog": "transactional-v1.json",
+      "effect": "Exclude predecessor for TX only as stated; preserve nonconflicting underlying semantics and the transitive Read discovery retirement."
+    }
+  ],
+  "retiredIds": [
+    "read-update.discovery.document",
+    "read-update.discovery.limits",
+    "read-update.discovery.operation-directory",
+    "read-update.idempotency.authorization-view",
+    "read-update.idempotency.expired",
+    "read-update.idempotency.expired-failure",
+    "read-update.idempotency.in-progress",
+    "read-update.idempotency.restore",
+    "read-update.idempotency.retention-minimum",
+    "read-update.sequence.internal-fault",
+    "read-update.singleton.idempotent-retry",
+    "read-update.singleton.result-headers",
+    "read.discovery.document"
+  ],
+  "count": 13,
+  "notSelectedHistoryIds": [
+    "history.discovery",
+    "history.exact",
+    "history.query",
+    "history.authorization",
+    "history.diagnoses",
+    "history.gone",
+    "history.missing",
+    "history.enumeration",
+    "history.row-authorization",
+    "history.cursors",
+    "history.navigation",
+    "history.http",
+    "history.retained-address",
+    "history.allocation",
+    "history.context",
+    "history.context-time",
+    "history.context-inputs",
+    "history.context-fanout",
+    "history.erasure",
+    "history.imports",
+    "history.assurance",
+    "history.retained-address.read-update",
+    "history.allocation.transactional",
+    "history.context.read-update",
+    "history.context.transactional",
+    "history.context-time.transactional",
+    "history.context-inputs.transactional",
+    "history.context-fanout.transactional",
+    "history.erasure.transactional",
+    "history.assurance.transactional"
+  ],
+  "historyRule": "Only optional History catalog30 is outside Historyfalse selection. This never waives TX erasure/framing/retained-copy/recovery or restore obligations."
+}

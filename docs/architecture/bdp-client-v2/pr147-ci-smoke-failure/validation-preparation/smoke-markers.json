@@ -1,0 +1,19 @@
+[
+  "bdp: installed --help, --version, and diagnostics passed",
+  "bdp: installed clean lifecycle passed",
+  "bdptest: installed --help, --version, and diagnostics passed",
+  "bdptest: installed clean lifecycle passed",
+  "bdpbd: installed --help, --version, and diagnostics passed",
+  "bdpbd: installed clean lifecycle passed",
+  "bdptest: server.advertisedProfile and bdptest.fixture round-trip through tarball",
+  "bdpbd: server.advertisedProfile and bd.executable round-trip through tarball",
+  "bdptest: --config alone remains lifecycle-only",
+  "bdptest: --serve --config remains fail-closed before bind",
+  "bdptest: public Read admission serves discovery and stops cleanly",
+  "bdptest: public profile admission fails closed before bind",
+  "bdpbd: --config alone remains lifecycle-only",
+  "bdpbd: --serve --config remains fail-closed before bind",
+  "bdpbd: public Read admission serves discovery and stops cleanly",
+  "bdpbd: public profile admission fails closed before bind",
+  "bdp: role isolation lifecycle ignores invalid bdptest/server values"
+]

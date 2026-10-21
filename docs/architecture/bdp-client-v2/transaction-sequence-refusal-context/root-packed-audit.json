@@ -1,0 +1,65 @@
+{
+  "packed-positive": {
+    "source": "90cc834c3672b02840c68dcd7abb35794f038887",
+    "requests": 13,
+    "outcome": "passed",
+    "statuses": [
+      200,
+      200,
+      413,
+      406,
+      200,
+      200,
+      200,
+      200,
+      200,
+      413,
+      406,
+      200,
+      200
+    ],
+    "payload": "f1bc055701323b1a8adfb474b8b651a9522d06e91deaba53efeb5afab5520859",
+    "childPids": [
+      30256
+    ]
+  },
+  "packed-direct": {
+    "source": "90cc834c3672b02840c68dcd7abb35794f038887",
+    "requests": 14,
+    "outcome": "passed",
+    "statuses": [
+      200,
+      200,
+      409,
+      409,
+      406,
+      406,
+      413,
+      200,
+      200,
+      200,
+      200,
+      200,
+      200,
+      200
+    ],
+    "payload": "f1bc055701323b1a8adfb474b8b651a9522d06e91deaba53efeb5afab5520859",
+    "childPids": [
+      30965
+    ]
+  },
+  "packed-negative": {
+    "source": "d50f554cf6418ba036072ebf6795cb272cd6cbc1",
+    "requests": 3,
+    "outcome": "failed",
+    "statuses": [
+      200,
+      200,
+      413
+    ],
+    "payload": "ced4ef93640ae2dcd67e88a5c7684bab802e9aa73eba974fab81d30ff3e56d19",
+    "childPids": [
+      31219
+    ]
+  }
+}

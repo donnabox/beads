@@ -1,0 +1,18 @@
+--- before/packages/server/src/transaction-read.test.ts
++++ after/packages/server/src/transaction-read.test.ts
+@@ -2185,6 +2185,7 @@
+     },
+   };
+   const service = createTransactionService(owner, {
++    ownerLifetime: "service",
+     read: {
+       ...f.readOptions,
+       advertisedLimits: {
+@@ -2327,6 +2328,7 @@
+     release = Promise.withResolvers<void>();
+   let tick = 0;
+   const service = createTransactionService(f.store, {
++    ownerLifetime: "service",
+     read: {
+       ...f.readOptions,
+       advertisedLimits: {

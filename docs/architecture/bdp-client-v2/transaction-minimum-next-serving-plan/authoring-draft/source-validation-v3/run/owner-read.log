@@ -1,0 +1,77 @@
+
+ RUN  v4.1.10 /Users/dbox/repos/wt/vickie/vickie-minimum-current-resource
+
+ ↓ packages/server/src/transaction-read.test.ts > private same-owner Transactional Read > uses actual installed configuration and immutable descriptors, without RU key or serving-position claims
+ ↓ packages/server/src/transaction-read.test.ts > private same-owner Transactional Read > reads only complete commits, canonical bodies, revisions, incident Links, selectors and properties
+ ↓ packages/server/src/transaction-read.test.ts > private same-owner Transactional Read > resolves live aliases through the owner across repoint, reopen, dangling target and deletion
+ ↓ packages/server/src/transaction-read.test.ts > private same-owner Transactional Read > retains pagination rows and revisions across commits and explicitly expires cursors after close/reopen
+ ↓ packages/server/src/transaction-read.test.ts > private same-owner Transactional Read > refuses reentrant reads from a mutation callback before tentative effects can escape
+ ↓ packages/server/src/transaction-read.test.ts > private same-owner Transactional Read > refuses reads after injected before-COMMIT uncertainty, preserving its cause and recovery
+ ↓ packages/server/src/transaction-read.test.ts > private same-owner Transactional Read > refuses reads after injected after-COMMIT uncertainty, preserving its cause and recovery
+ ↓ packages/server/src/transaction-read.test.ts > Transactional same-entry source context > captures zero/committed positions with rows before asynchronous delivery or a later unrelated commit
+ ↓ packages/server/src/transaction-read.test.ts > Transactional same-entry source context > pairs original page rows/revisions/context with a new serving observation on each continuation
+ ↓ packages/server/src/transaction-read.test.ts > Transactional same-entry source context > does not advance observed position for pending admission, no-op, alias change or failed batch
+ ↓ packages/server/src/transaction-read.test.ts > Transactional same-entry source context > captures immutable owner context under the same reentrancy guard as the row facade
+ ↓ packages/server/src/transaction-read.test.ts > Transactional same-entry source context > refuses absent context at the Transactional interpretation boundary
+ ↓ packages/server/src/transaction-read.test.ts > Transactional same-entry source context > refuses extra context at the Transactional interpretation boundary
+ ↓ packages/server/src/transaction-read.test.ts > Transactional same-entry source context > refuses foreign-epoch context at the Transactional interpretation boundary
+ ↓ packages/server/src/transaction-read.test.ts > Transactional same-entry source context > refuses foreign-view context at the Transactional interpretation boundary
+ ↓ packages/server/src/transaction-read.test.ts > Transactional same-entry source context > refuses invalid-position context at the Transactional interpretation boundary
+ ↓ packages/server/src/transaction-read.test.ts > Transactional same-entry source context > refuses unsafe-position context at the Transactional interpretation boundary
+ ↓ packages/server/src/transaction-read.test.ts > Transactional same-entry source context > refuses future-snapshot context at the Transactional interpretation boundary
+ ↓ packages/server/src/transaction-read.test.ts > refuses accessor/proxy context at the TX boundary without executing it
+ ↓ packages/server/src/transaction-read.test.ts > checks visible point rows and their minimum in the same entry and leaves the owner reusable
+ ↓ packages/server/src/transaction-read.test.ts > initial collection minimums > preserves behind-minimum control refusals without allocating retained state
+ ↓ packages/server/src/transaction-read.test.ts > initial collection minimums > checks a minimum even for an empty beads collection
+ ↓ packages/server/src/transaction-read.test.ts > initial collection minimums > checks a minimum even for an empty links collection
+ ↓ packages/server/src/transaction-read.test.ts > initial collection minimums > applies accepted endpoint filters and minima independently
+ ↓ packages/server/src/transaction-read.test.ts > initial collection minimums > does not retain failed attempts and preserves successful page rows versus current context
+ ↓ packages/server/src/transaction-read.test.ts > initial collection minimums > rejects a pre-aborted server Request for beads/ before any owner SQL
+ ↓ packages/server/src/transaction-read.test.ts > initial collection minimums > rejects a pre-aborted server Request for beads/a before any owner SQL
+ ↓ packages/server/src/transaction-read.test.ts > binds the private HTTP directory to the service owner's exact non-root Scope
+ ↓ packages/server/src/transaction-read.test.ts > compatible missing Resource minimum > returns same-entry observed404 across absent/deleted kinds, views and satisfied bounds
+ ✓ packages/server/src/transaction-read.test.ts > compatible missing Resource minimum > returns observed missing Resources before behind and foreign minimum collisions 58ms
+ ↓ packages/server/src/transaction-read.test.ts > compatible missing Resource minimum > propagates invalid string context and provider errors rather than masking integrity
+ ↓ packages/server/src/transaction-read.test.ts > compatible missing Resource minimum > ignores ordinary sourceCondition while preserving signals and minimumFor enforcement
+ ↓ packages/server/src/transaction-read.test.ts > compatible missing Resource minimum > preserves ordinary perform delivery validation without invoking caller accessors or proxies
+ ↓ packages/server/src/transaction-read.test.ts > compatible missing Resource minimum > preserves ordinary resolveAlias delivery validation without invoking caller accessors or proxies
+ ↓ packages/server/src/transaction-read.test.ts > current Type and incident-Link minimums > rejects malformed Type ID omitted through a Promise without invoking caller data
+ ↓ packages/server/src/transaction-read.test.ts > current Type and incident-Link minimums > rejects malformed Type ID undefined through a Promise without invoking caller data
+ ↓ packages/server/src/transaction-read.test.ts > current Type and incident-Link minimums > rejects malformed Type ID null through a Promise without invoking caller data
+ ↓ packages/server/src/transaction-read.test.ts > current Type and incident-Link minimums > rejects malformed Type ID number through a Promise without invoking caller data
+ ↓ packages/server/src/transaction-read.test.ts > current Type and incident-Link minimums > rejects malformed Type ID false through a Promise without invoking caller data
+ ↓ packages/server/src/transaction-read.test.ts > current Type and incident-Link minimums > rejects malformed Type ID empty through a Promise without invoking caller data
+ ↓ packages/server/src/transaction-read.test.ts > current Type and incident-Link minimums > rejects malformed Type ID method through a Promise without invoking caller data
+ ↓ packages/server/src/transaction-read.test.ts > current Type and incident-Link minimums > rejects malformed Type ID accessor through a Promise without invoking caller data
+ ↓ packages/server/src/transaction-read.test.ts > current Type and incident-Link minimums > rejects malformed Type ID inherited through a Promise without invoking caller data
+ ↓ packages/server/src/transaction-read.test.ts > current Type and incident-Link minimums > rejects malformed Type ID proxy through a Promise without invoking caller data
+ ↓ packages/server/src/transaction-read.test.ts > current Type and incident-Link minimums > rejects malformed Type ID revoked through a Promise without invoking caller data
+ ↓ packages/server/src/transaction-read.test.ts > current Type and incident-Link minimums > projects immutable current Types and exact incident directions including self-Link deduplication
+ ↓ packages/server/src/transaction-read.test.ts > current Type and incident-Link minimums > keeps types limits, allocation and retained continuation boundaries distinct
+ ↓ packages/server/src/transaction-read.test.ts > current Type and incident-Link minimums > keeps incident limits, allocation and retained continuation boundaries distinct
+ ↓ packages/server/src/transaction-read.test.ts > current Type and incident-Link minimums > waits and cancels current surface 0 without retaining an owner entry
+ ↓ packages/server/src/transaction-read.test.ts > current Type and incident-Link minimums > waits and cancels current surface 1 without retaining an owner entry
+ ↓ packages/server/src/transaction-read.test.ts > current Type and incident-Link minimums > waits and cancels current surface 2 without retaining an owner entry
+ ↓ packages/server/src/transaction-read.test.ts > current Type and incident-Link minimums > pre-aborts, drains and releases a waiting current surface 0
+ ↓ packages/server/src/transaction-read.test.ts > current Type and incident-Link minimums > pre-aborts, drains and releases a waiting current surface 1
+ ↓ packages/server/src/transaction-read.test.ts > current Type and incident-Link minimums > pre-aborts, drains and releases a waiting current surface 2
+ ✓ packages/server/src/transaction-read.test.ts > current Type and incident-Link minimums > keeps compatible missing Types and absent/deleted incident anchors separate from collisions 24ms
+ ↓ packages/server/src/transaction-read.test.ts > current alias minimum subset > preserves direct minimum alias receiving validation, cancellation and lifecycle precedence
+ ↓ packages/server/src/transaction-read.test.ts > current alias minimum subset > preserves service minimum alias receiving validation, cancellation and lifecycle precedence
+ ↓ packages/server/src/transaction-read.test.ts > current alias minimum subset > conditions alias mapping and context in one entry without revising either target
+ ↓ packages/server/src/transaction-read.test.ts > current alias minimum subset > rechecks a repointed alias after waiting for a real Resource effect
+ ✓ packages/server/src/transaction-read.test.ts > current alias minimum subset > keeps live alias context failures and compatible absent/deleted/dangling observations distinct 15ms
+ ↓ packages/server/src/transaction-read.test.ts > current alias minimum subset > forwards ordinary and minimum Request aborts before SQL and drains an admitted alias wait
+ ↓ packages/server/src/transaction-read.test.ts > current alias minimum subset > does not relabel alias provider or malformed context failures as missing
+ ↓ packages/server/src/transaction-read.test.ts > current minimum perform receiving > preserves a direct non-enumerable pre-aborted signal before owner entry
+ ↓ packages/server/src/transaction-read.test.ts > current minimum perform receiving > preserves direct minimum perform receiving validation, cancellation and lifecycle precedence
+ ↓ packages/server/src/transaction-read.test.ts > current minimum perform receiving > preserves service minimum perform receiving validation, cancellation and lifecycle precedence
+ ✓ packages/server/src/transaction-read.test.ts > uses actual current policy for missing-first and unproved Resource attempts 13ms
+ ✓ packages/server/src/transaction-read.test.ts > drains an admitted unknown minimum to timeout and rejects new reads while closing 3ms
+
+ Test Files  1 passed (1)
+      Tests  5 passed | 62 skipped (67)
+   Start at  20:10:15
+   Duration  601ms (transform 288ms, setup 26ms, import 394ms, tests 115ms, environment 0ms)
+
+JSON report written to /Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-minimum-next-serving-plan/authoring-draft/source-validation-v3/run/owner-read.results.json

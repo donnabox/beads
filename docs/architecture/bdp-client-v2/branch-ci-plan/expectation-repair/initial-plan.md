@@ -1,0 +1,3 @@
+# Excluded sequence negotiation expectation repair
+
+Base77b4cf980ec91f66c52a554c3dd8c9de5aee859f; exact push CI38858242028 failed solely this old500 expectation. Scope one existing callback in packages/server/src/transaction-service.test.ts. Deep JSON sequence with unacceptable Accept receives pre-admission406 per reviewed handler; retain empty body/content-length0/no content-type, no private-limit header, no refusal observation/context and unchanged owner position0. Rename obsolete unsupported fixture locally. All six requests retained; production unchanged. Review actual patch with native Codex plus Claude; run only this callback, static format/typecheck, then publish direct child and exact push CI. Preserve original CI failure. No main changes.

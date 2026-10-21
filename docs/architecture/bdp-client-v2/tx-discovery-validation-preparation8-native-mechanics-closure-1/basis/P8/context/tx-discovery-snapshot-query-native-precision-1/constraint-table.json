@@ -1,0 +1,45 @@
+{
+  "location": "d3Safe401\u2013415 unchanged; only manifest-id caller1480 enables existing query mode",
+  "rows": [
+    {
+      "constraint": "raw UTF8 target bytes<=8192",
+      "before": "retained",
+      "after": "retained",
+      "note": "existing bound is on raw target input, not a newly claimed resolved-URL limit"
+    },
+    {
+      "constraint": "resolved origin equals canonical Scope origin",
+      "before": true,
+      "after": true
+    },
+    {
+      "constraint": "resolved pathname starts canonical Scope pathname",
+      "before": true,
+      "after": true
+    },
+    {
+      "constraint": "username/password absent",
+      "before": true,
+      "after": true
+    },
+    {
+      "constraint": "fragment absent",
+      "before": true,
+      "after": true
+    },
+    {
+      "constraint": "query absent",
+      "before": "required at manifest-id call",
+      "after": "not required at this one call only",
+      "reason": "spec5924 and existing transactionSnapshotUrl142\u2013154 query-bearing handle; retained manifest refetch5970\u20135987"
+    },
+    {
+      "constraint": "all other strict/query-enabled callers and helper definition",
+      "before": "current9b7 behavior",
+      "after": "byte-identical"
+    }
+  ],
+  "noNewRequestsCallbacksOrTargets": true,
+  "onlyExistingPlannedRemainingRequestsMayNowBeReached": "changes-root and events-root; previous failed03 had26ofplanned28, no new refetch added",
+  "runtimeSuccess": "UNOBSERVED"
+}

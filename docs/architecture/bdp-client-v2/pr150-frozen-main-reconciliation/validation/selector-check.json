@@ -1,0 +1,57 @@
+{
+  "head": "d4f3f4be88c7837b71d6646518ca3589d464ba3d",
+  "checks": [
+    {
+      "stage": "packed-affected-1",
+      "sourcePath": "apps/bdptest/src/transactional-event-sse-installed.test.ts",
+      "sourceSha256": "b762563798d6d72afecfda0a4c8b831de69753df45c82f6050815599a24a1496",
+      "pattern": "^installed Scope/Bead/Link Event SSE matches finite bytes and sparse Bead survives fifteen seconds$",
+      "matches": [
+        "installed Scope/Bead/Link Event SSE matches finite bytes and sparse Bead survives fifteen seconds"
+      ],
+      "verification": "Python stdlib data-only regex against actual literal top-level it titles; no Vitest/product/module execution"
+    },
+    {
+      "stage": "packed-affected-2",
+      "sourcePath": "apps/bdptest/src/transactional-event-sse-installed.test.ts",
+      "sourceSha256": "b762563798d6d72afecfda0a4c8b831de69753df45c82f6050815599a24a1496",
+      "pattern": "^installed Event cursors survive restart with Last-Event-ID precedence and source binding$",
+      "matches": [
+        "installed Event cursors survive restart with Last-Event-ID precedence and source binding"
+      ],
+      "verification": "Python stdlib data-only regex against actual literal top-level it titles; no Vitest/product/module execution"
+    },
+    {
+      "stage": "packed-affected-3",
+      "sourcePath": "apps/bdptest/src/transactional-fresh-depth-installed.test.ts",
+      "sourceSha256": "df4030346fc5ec402c0d77d5a5c9953542f341aa86e242d2a5e6cdcf9e09f991",
+      "pattern": "^serves byte-bounded deep mutations receipts Events and owned-Link Snapshots over packed bytes$",
+      "matches": [
+        "serves byte-bounded deep mutations receipts Events and owned-Link Snapshots over packed bytes"
+      ],
+      "verification": "Python stdlib data-only regex against actual literal top-level it titles; no Vitest/product/module execution"
+    },
+    {
+      "stage": "packed-affected-4",
+      "sourcePath": "apps/bdptest/src/transactional-minimum-current-resource-installed.test.ts",
+      "sourceSha256": "21146871e6b5bfa3d9e96ff2db7c4897dd62fac026de538981832de295628f15",
+      "pattern": "^serves missing-first current Resources and bounds unproved minimum eligibility$",
+      "matches": [
+        "serves missing-first current Resources and bounds unproved minimum eligibility"
+      ],
+      "verification": "Python stdlib data-only regex against actual literal top-level it titles; no Vitest/product/module execution"
+    },
+    {
+      "stage": "packed-affected-5",
+      "sourcePath": "apps/bdptest/src/transactional-sequence-depth-installed.test.ts",
+      "sourceSha256": "0a2a765cab6137f324cffb7ff7d96d1f3e81fef3a73c14f56adfd36309083aa7",
+      "pattern": "^observes retained sequence member conflict and fresh deep execution over packed bytes$",
+      "matches": [
+        "observes retained sequence member conflict and fresh deep execution over packed bytes"
+      ],
+      "verification": "Python stdlib data-only regex against actual literal top-level it titles; no Vitest/product/module execution"
+    }
+  ],
+  "sourceClean": true,
+  "candidateNotYetCreated": true
+}

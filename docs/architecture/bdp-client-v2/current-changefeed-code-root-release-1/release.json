@@ -1,0 +1,42 @@
+{
+  "releasedAt": "2026-10-18T03:53:24.252738+00:00",
+  "expectedSession": "2026-10-18T02:16:24Z-549f",
+  "target": "Exact six-file dirty current-changefeed CODE, not PLAN retry",
+  "sourcePatchSha256": "4ff4ef9448fb79a0c08b3665b7069fb019c9b1d311b898b5525bc888bcd2955c",
+  "rootSourceInspectionSha256": "c6e247f6495af8fa6a937cdde8ed378bd8a23950538f23e60dee03019cd3f316",
+  "rootMechanicalInspectionSha256": "61f3b922b661c5fc8e35b5aa55da24d6a806943c92286afdaca4b762551ad6ce",
+  "independentFinalMechanicalClosureSha256": "34a8e5b41bab2a3f7aef61f2273c905fedb698d6933831adfba1d3822088b455",
+  "closedPreparationIndexSha256": "9d0b52499d578df13ab5ead3626eb4b73737432b476729325ee380218f04b93c",
+  "releaseDeltas": [
+    {
+      "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/current-changefeed-code-review-1/claude-code-review/binding.json",
+      "closedSha256": "4fb21bd16b90bfb590ab5ada865a9d41b76526d099de0f64fa75000c8f7788ec",
+      "releasedSha256": "907f11cd6815a3b0bd01dd29ef3a99698e6bdeac3c382a2f0c93ffd8c8e54e1c",
+      "onlyChange": "rootLaunchReleased false to true"
+    },
+    {
+      "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/current-changefeed-code-review-1/launch-supervision/control.json",
+      "closedSha256": "51a85978e2e4b69e7c019152e4b5fd874ecbd902d58a9d4316970d974ef00e67",
+      "releasedSha256": "2d39bfc1966315c0ffab03655745ad2f7c83e574056bc9aaf0206156a7333104",
+      "onlyChange": "rootLaunchReleased false to true"
+    }
+  ],
+  "singleAttempt": true,
+  "noRetry": true,
+  "defaultModel": true,
+  "tools": [
+    "Read",
+    "Glob",
+    "Grep"
+  ],
+  "termSeconds": 1790,
+  "killSeconds": 1798,
+  "totalSeconds": 1800,
+  "requiresAfter": [
+    "independent actual terminal/source/packet/process audit",
+    "native and actual substantive findings disposition"
+  ],
+  "runtimeValidationReleased": false,
+  "sourceMutationReleased": false,
+  "commitPushReleased": false
+}

@@ -1,0 +1,60 @@
+{
+  "checkedAt": "2026-10-16T20:36:15.477922+00:00",
+  "stages": [
+    {
+      "stage": "typecheck",
+      "cases": 0,
+      "rawExit": 0,
+      "supervisorExit": 0
+    },
+    {
+      "stage": "format-check",
+      "cases": 0,
+      "rawExit": 0,
+      "supervisorExit": 0
+    },
+    {
+      "stage": "lint",
+      "cases": 0,
+      "rawExit": 0,
+      "supervisorExit": 0
+    },
+    {
+      "stage": "boundaries",
+      "cases": 0,
+      "rawExit": 0,
+      "supervisorExit": 0
+    },
+    {
+      "stage": "cumulative-full",
+      "cases": 42,
+      "rawExit": 0,
+      "supervisorExit": 0
+    },
+    {
+      "stage": "binding-source",
+      "cases": 3,
+      "rawExit": 0,
+      "supervisorExit": 0
+    },
+    {
+      "stage": "receipt-first-page",
+      "cases": 8,
+      "rawExit": 0,
+      "supervisorExit": 0
+    },
+    {
+      "stage": "app-static",
+      "cases": 3,
+      "rawExit": 0,
+      "supervisorExit": 0
+    }
+  ],
+  "passedSelected": 56,
+  "sourceUnchanged": true,
+  "sampledPidsAbsent": 34,
+  "diagnosticOnly": true,
+  "councilAccepted": false,
+  "externalFocusedReviewPending": true,
+  "limitation": "Fresh corrected186/2828source on2dfd only; not installed qualification. Prior194/2836result remains separate. Filtered-out tests not claimed passed."
+}

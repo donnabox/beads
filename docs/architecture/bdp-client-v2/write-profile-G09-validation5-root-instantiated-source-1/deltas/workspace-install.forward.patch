@@ -1,0 +1,18 @@
+--- /Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation5-root-fixed-protocol-preparation-1/proposals/workspace-install.capture.txt
++++ /Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation5-root-instantiated-source-1/templates/workspace-install.capture.txt
+@@ -14,13 +14,13 @@
+ P = Path('/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation-preparation-5')
+ # Root must prepare/review/publish these exact replacements in a future literal
+ # command before invoking; this CLOSED proposal refuses unbound placeholders.
+-APPROVED_GATE_SHA256 = 'UNRESOLVED_FUTURE_ROOT_ACTIVATED_GATE_SHA256'
++APPROVED_GATE_SHA256 = 'ad5b647e6b2f1aba93981d1a85fdb7ef0930062418012cf4acf90073de202919'
+ EXPECTED_IMPLEMENTATION_SHA256 = 'c2a7d11deb63169052434c3b45c62bd30664009d4ea6a3e9b42c4cd85bd649a6'
+ EXPECTED_SOURCE_BINDING_SHA256 = 'e0252cb07ac1896fac0faab395e10e50ea58eac263b6d33ee224e378413c2d68'
+ EXPECTED_COMMANDS_SHA256 = 'ef7d5889c4cdb6263d746d3d1ad698429d6a96d5c0dbd1e4d6764819b060ba8f'
+ OWNED_ROOT_OUTPUT = '/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation5-root-first4-dispatch-1/workspace-install'
+ # Additive exact externally pinned root execution acceptance; charged to ORIGIN.
+-APPROVED_EXECUTION_ACCEPTANCE_SHA256 = 'UNRESOLVED_FUTURE_ROOT_EXECUTION_ACCEPTANCE_SHA256'
++APPROVED_EXECUTION_ACCEPTANCE_SHA256 = 'c8ee1a1cd556beae5ddb93454a5156a23c8bc817a4a4ff405996de49049f7ae1'
+ EXECUTION_ACCEPTANCE_PATH = Path('/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation5-root-execution-acceptance-1/acceptance.json')
+ assert type(APPROVED_EXECUTION_ACCEPTANCE_SHA256) is str and len(APPROVED_EXECUTION_ACCEPTANCE_SHA256)==64 and all(c in '0123456789abcdef' for c in APPROVED_EXECUTION_ACCEPTANCE_SHA256)
+ assert EXECUTION_ACCEPTANCE_PATH.is_file() and not EXECUTION_ACCEPTANCE_PATH.is_symlink()

@@ -1,0 +1,14 @@
+{
+  "correction": "Removed exactly that transformed active row from exact-copy origins; original P8 record remains exact in predecessor8. Forward/inverse DATA delta records transformation. External historical pin remains legitimate.",
+  "currentIndependentAcceptance": "PENDING",
+  "priorStaticAttempt": {
+    "checks": 23049,
+    "error": "Active reference-pin-rebind.json was intentionally rewritten but incorrectly remained in exact-copy origin table.",
+    "errors": 1,
+    "indexFrozenAtFailure": false,
+    "productFailure": false,
+    "toolChunk": "65b2a0"
+  },
+  "scope": "Author static DATA bookkeeping; never product/helper execution",
+  "sourceHelperSchemaChanges": false
+}

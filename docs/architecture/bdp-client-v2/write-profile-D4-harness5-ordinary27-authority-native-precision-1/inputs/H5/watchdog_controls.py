@@ -1,0 +1,196 @@
+"""Run the ORIGINAL watchdog main with explicit deterministic external stimuli.
+Only clock/socket/Popen/OS/signal/select interfaces are mocked. No watchdog
+function, branch, predicate, constant, limit, or return value is replaced.
+This model is unit evidence, never a host clock/PID/PGID containment receipt.
+"""
+import datetime,json,signal,sys
+from unittest.mock import patch
+from contextlib import ExitStack
+from scanner_controls import refusal
+
+class Pipe:
+ def __init__(self,fd):self.fd=fd
+ def fileno(self):return self.fd
+ def close(self):pass
+class Process:
+ def __init__(self,model,role,pid):
+  self.model=model;self.role=role;self.pid=pid;self.returncode=None;self.stdout=Pipe(pid*2);self.stderr=Pipe(pid*2+1);self.killed=False;self.born=model.t;self.payload=b''
+ def poll(self):
+  m=self.model
+  if self.role=='census':
+   if m.scenario=='blocked-census'and not self.killed:return None
+   self.returncode=-9 if self.killed else 0;return self.returncode
+  if self.returncode is not None:return self.returncode
+  if self.role=='worker':
+   m.polls.append({'at':m.t,'memberPresent':m.member_live(),'role':'worker'})
+   assert not m.member_live(),'subject reaped worker before group quiet'
+   if self.killed:self.returncode=-9
+   elif m.t>=m.worker_exit:self.returncode=0
+  elif self.killed:self.returncode=-9
+  elif self.payload and m.t>=self.born+.15 and m.scenario!='publisher-block':self.returncode=1 if m.scenario=='publisher-fail'else 0
+  return self.returncode
+ def kill(self):self.killed=True
+class Channel:
+ def __init__(self,model,role,fd):self.model=model;self.role=role;self.fd=fd
+ def fileno(self):return self.fd
+ def setblocking(self,*a):pass
+ def close(self):pass
+ def send(self,data):
+  m=self.model
+  if self.role=='publisher':
+   if m.scenario=='publisher-block':raise BlockingIOError()
+   m.publisher.payload+=data
+   if b'\n'in m.publisher.payload and not m.records:
+    m.records.append(json.loads(m.publisher.payload.split(b'\n')[0]))
+   return len(data)
+  m.acks+=data;return len(data)
+ def recv(self,maximum):
+  m=self.model
+  if m.events and m.events[0][0]<=m.t:
+   _,value=m.events.pop(0);return (json.dumps(value)+'\n').encode()
+  raise BlockingIOError()
+
+class Model:
+ def __init__(self,scenario,ordinary=False):
+  self.scenario=scenario;self.t=0.;self.epoch=1792281600.;self.worker=None;self.publisher=None;self.records=[];self.polls=[];self.signals=[];self.acks=b'';self.handlers={};self.pipes={};self.pairs=0;self.censuses=0;self.ordinary=ordinary;self.worker_exit=2.;self.mask_calls=[];self.refusals=[]
+  ev=[(.05,dict(event='attempt',attemptId='a'*32,sourceBindingSha256='b'*64)),(.15,dict(event='created',pid=201,pgid=200,ppid=200,createdEpoch=self.epoch+.1)),(.2,dict(event='phase',phase='callback-start')),(1.,dict(event='phase',phase='callback-end')),(1.1,dict(event='leader-exit',pid=201,code=0)),(1.15,dict(event='need-quiet')),(1.5,dict(event='check-created',pid=202,pgid=200,ppid=200,role='pinned-schema-audit')),(1.6,dict(event='check-exit',pid=202,code=0)),(1.7,dict(event='verified')),(1.8,dict(event='published'))]
+  if ordinary:ev=[item for item in ev if item[1]['event']!='phase']
+  if scenario in ['missing-start','blocked-preflight','preflight-equality','term-boundary']:
+   ev=[item for item in ev if item[1]['event']=='attempt'];self.worker_exit=1000.
+  if scenario=='late-start':ev=[(10.01 if e.get('phase')=='callback-start'else t,e)for t,e in ev if e['event']in ['attempt','created']or e.get('phase')=='callback-start'];self.worker_exit=1000.
+  if scenario in ['missing-end','late-end']:
+   ev=[item for item in ev if item[1]['event']in ['attempt','created']or item[1].get('phase')=='callback-start'];self.worker_exit=1000.
+   if scenario=='late-end':ev.append((130.01,dict(event='phase',phase='callback-end')))
+  if scenario in ['late-flush','delayed-artifacts','late-hash']:
+   ev=[item for item in ev if item[1]['event']not in ['verified','published']];self.worker_exit=1000.
+   ev.extend([(7.,dict(event='verified')),(7.1,dict(event='published'))])
+  if scenario=='early-ipc-failure':ev=[(.05,dict(event='failed'))];self.worker_exit=.4
+  if scenario in ['shared-member','reparented-member','live-to-z','terminal-member','terminal-resurrection','comm-change','birth-change','pgid-change','escaped','closed-resurrection']:
+   ev=[item for item in ev if item[1]['event']not in ['check-created','check-exit','verified','published']];self.worker_exit=2.
+  if scenario=='completion-equality':
+   # Exactly145 product publication; flush is also140 => violates earlier flush.
+   ev=[(t if e['event']not in ['verified','published']else 140.+(e['event']=='published')*.1,e)for t,e in ev];self.worker_exit=145.
+  if scenario=='relative-equality':self.worker_exit=11.7
+  if scenario=='ordinary-equality':self.worker_exit=115.
+  if scenario=='publisher-cross-relative':self.worker_exit=11.6
+  if scenario=='pending-term':self.worker_exit=1000.
+  self.events=sorted(ev,key=lambda x:x[0])
+ def monotonic(self):return self.t
+ def wall(self):return self.epoch+self.t
+ def pair(self):
+  self.pairs+=1;return Channel(self,'worker'if self.pairs==1 else'publisher',800+self.pairs*2),Channel(self,'child',801+self.pairs*2)
+ def member_live(self):
+  if self.worker is not None and self.worker.killed and self.scenario not in ['escaped','closed-resurrection','pgid-change']:return False
+  if self.scenario=='early-ipc-failure':return self.t<4.1
+  if self.scenario in ['shared-member','reparented-member','live-to-z','terminal-member','terminal-resurrection','comm-change','birth-change','pgid-change','escaped','closed-resurrection']:return self.t<8.
+  return .1<=self.t<1.1
+ def row(self,pid,ppid,pgid,state='S',comm='/unit/python',birth=None):
+  birth=self.epoch+(0 if pid==200 else self.publisher.born if pid==300 and self.publisher else .1)
+  if self.scenario=='birth-change'and pid==201 and self.t>=.7:birth+=5
+  return f'{pid} {ppid} {pgid} {state} '+datetime.datetime.fromtimestamp(birth,datetime.timezone.utc).strftime('%a %b %d %H:%M:%S %Y')+' '+comm+'\n'
+ def rows(self):
+  out=''
+  if self.worker and self.worker.returncode is None:
+   state='Z'if self.worker.killed or self.t>=self.worker_exit else'Ss';out+=self.row(200,100,200,state,'<defunct>'if state=='Z'else'/unit/python')
+  if self.member_live():
+   scenario=self.scenario;state='S';comm='/unit/python';pgid=200;ppid=200
+   if scenario=='reparented-member':ppid=1
+   if scenario=='terminal-member' or scenario=='live-to-z'and self.t>=.7:state='Z';comm='<defunct>'
+   if scenario=='terminal-resurrection'and self.t<.7:state='Z';comm='<defunct>'
+   if scenario=='comm-change'and self.t>=.7:comm='/unit/changed'
+   if scenario=='pgid-change'and self.t>=.7:pgid=999
+   if scenario=='escaped':pgid=999
+   if scenario=='closed-resurrection':
+    pgid=201
+    if .4<=self.t<.7:return out
+   out+=self.row(201,ppid,pgid,state,comm)
+  if self.publisher and self.publisher.returncode is None:
+   terminal=self.publisher.killed or bool(self.publisher.payload)and self.t>=self.publisher.born+.15
+   out+=self.row(300,100,300,'Z'if terminal else'Ss','<defunct>'if terminal else'/unit/python')
+  return out.encode()
+ def popen(self,argv,**kw):
+  if argv[0]=='/bin/ps':
+   assert argv==['/bin/ps','-axo','pid=,ppid=,pgid=,stat=,lstart=,comm=']and kw['start_new_session']is True
+   p=Process(self,'census',400+self.censuses);self.censuses+=1;self.pipes[p.stdout.fd]=self.rows();self.pipes[p.stderr.fd]=b'';return p
+  assert argv[0]==sys.executable and argv[1].endswith('/worker.py')and kw['start_new_session']is True
+  if argv[2]=='publish':
+   assert self.worker.returncode is not None and not self.member_live();self.publisher=Process(self,'publisher',300);return self.publisher
+  assert self.worker is None;self.worker=Process(self,'worker',200);return self.worker
+ def read(self,fd,n):
+  if fd not in self.pipes:raise AssertionError('unexpected fd')
+  data=self.pipes[fd][:n];self.pipes[fd]=self.pipes[fd][n:];return data
+ def killpg(self,gid,sig):
+  assert gid!=100;self.signals.append(dict(group=gid,signal=int(sig),at=self.t))
+  if sig==signal.SIGKILL:
+   if gid==200:self.worker.killed=True
+   if gid==300:self.publisher.killed=True
+ def install(self,sig,handler):old=self.handlers.get(sig,signal.SIG_DFL);self.handlers[sig]=handler;return old
+ def mask(self,how,signals):
+  self.mask_calls.append((int(how),sorted(map(int,signals))))
+  if self.scenario=='pending-term'and len(self.mask_calls)==2:
+   assert self.worker is not None and callable(self.handlers.get(signal.SIGTERM));self.handlers[signal.SIGTERM](signal.SIGTERM,None)
+  return set()
+ def select(self,*args):
+  self.t+=.05
+  if self.scenario=='publisher-cross-relative'and self.publisher is not None:self.t=max(self.t,11.71)
+  return [],[],[]
+ def execute(self,R):
+  bindings=[(R,'ORIGIN',0.),(R.sys,'argv',['run.py','final','ordinary-stage'if self.ordinary else'installed-owned-set']),(R.time,'monotonic',self.monotonic),(R.time,'time',self.wall),(R.socket,'socketpair',self.pair),(R.subprocess,'Popen',self.popen),(R.os,'getpid',lambda:100),(R.os,'getpgrp',lambda:100),(R.os,'set_blocking',lambda *a:None),(R.os,'read',self.read),(R.os,'killpg',self.killpg),(R.signal,'signal',self.install),(R.signal,'pthread_sigmask',self.mask),(R.select,'select',self.select)]
+  old_trace=sys.gettrace()
+  def trace(frame,event,arg):
+   if event=='call'and frame.f_code.co_filename==R.__file__ and frame.f_code.co_name=='refuse'and len(self.refusals)<64:
+    self.refusals.append({'reason':frame.f_locals.get('reason'),'mockAt':self.t})
+   return trace
+  with ExitStack()as stack:
+   for obj,name,value in bindings:stack.enter_context(patch.object(obj,name,value))
+   sys.settrace(trace)
+   try:code=R.main()
+   finally:sys.settrace(old_trace)
+  assert code in [0,1]
+  return {'rawExit':code,'mockElapsed':self.t,'mockRecords':self.records,'mockSignals':self.signals,'mockPolls':self.polls,'actualSubjectRefusalCalls':self.refusals,'scope':'UNIT mocked external clock/process/socket stimuli; NOT actual host ownership or deadline evidence'}
+
+def scenario(R,name,expected_failure=None,ordinary=False):
+ model=Model(name,ordinary);got=model.execute(R)
+ assert got['rawExit']==1,'counterfactual became clean success'
+ if name not in ['publisher-fail','publisher-cross-relative']:
+  assert not any(record.get('accepted')is True for record in got['mockRecords']),'tentative accepted counterfactual'
+ # A tentative pre-publisher record may say accepted; final raw1 and absence
+ # of a root terminal receipt still block credit. Never require rewriting it.
+ if expected_failure:
+  assert got['actualSubjectRefusalCalls']and got['actualSubjectRefusalCalls'][0]['reason']==expected_failure,(name,got['actualSubjectRefusalCalls'][:1])
+ return got
+
+def run(case,R,A,G,P,root):
+ if case=='P01':
+  cfg=G.read(P/'commands.json');spec=cfg['commands']['installed-owned-set'];assert type(spec['prospectiveWorkload'])is dict
+  # Closed real gate refuses before product. Full released gate interface uses
+  # immutable real index/commands reads; do not invent an accepted wrapper.
+  refused=refusal(lambda:G.load_gate('installed-owned-set'),'Root release absent')
+  return {'closedGate':refused,'model':[scenario(R,'blocked-preflight','start-missing'),scenario(R,'pending-term','interrupted')],'unresolved':['prospectiveWorkload missing-vs-present beyond a fully root-released original gate is not evaluated; current gate stays CLOSED']}
+ if case=='P02':return scenario(R,'preflight-equality','start-missing')
+ if case=='P03':
+  got=scenario(R,'late-start');calls=got['actualSubjectRefusalCalls'];assert calls and calls[0]['reason']in ['start-missing','start-late'];got['exactReachedPredicate']=calls[0]['reason'];got['scope']='model scheduling; a scheduled late marker is not evidence the late receipt branch was reached';return got
+ if case=='P04':return scenario(R,'late-end')
+ if case=='P05':return scenario(R,'delayed-artifacts','flush-incomplete')
+ if case=='P06':return {'model':scenario(R,'late-flush','flush-incomplete'),'unresolved':['mock blocked final work models absent verified receipt, not actual blocking hash or OS I/O']}
+ if case=='P07':return scenario(R,'blocked-census','census-deadline')
+ if case=='P08':
+  return {'model':[scenario(R,name)for name in ['early-ipc-failure','shared-member','live-to-z','terminal-member','terminal-resurrection']],'unresolved':['real retained-anchor containment and actual terminal/reap observations require separately released host peer control; model PIDs are not evidence']}
+ if case=='P09':
+  names=['reparented-member','shared-member','comm-change','birth-change','pgid-change','closed-resurrection','escaped']
+  got=[scenario(R,name,'ownership-unknown'if name in names[2:]else None)for name in names]
+  for value in got:assert not any(r['group']==999 for r in value['mockSignals'])
+  assert not any(r['group']==201 for r in got[5]['mockSignals']),'closed group signaled from historical numeric identity'
+  return {'model':got,'unresolved':['real escaped/reparented process containment requires host peer control; no unsafe real signal attempted']}
+ if case=='P10':
+  got=scenario(R,'term-boundary');terms=[r['at']for r in got['mockSignals']if r['signal']==int(signal.SIGTERM)];kills=[r['at']for r in got['mockSignals']if r['signal']==int(signal.SIGKILL)]
+  # Missing-start causes earlier failure; this control does NOT mislabel it as
+  # an actual145 boundary. Preserve unresolved when no145 case reached.
+  return {'model':got,'unresolved':['model term-boundary reaches start-missing first; exact145/149 dispatch and actual150 host supervisor receipt require dedicated host control']}
+ if case=='P11':return {'model':[scenario(R,'completion-equality'),scenario(R,'relative-equality'),scenario(R,'ordinary-equality',ordinary=True)],'unresolved':['exact binary floating-point equality clock boundary needs native-reviewed model schedule; no observed host equality is claimed']}
+ if case=='P12':return {'model':[scenario(R,'publisher-block'),scenario(R,'publisher-fail'),scenario(R,'publisher-cross-relative')],'unresolved':['publisher/census relative-boundary model schedule has not been evaluated; no real publisher latency claim']}
+ if case=='P13':
+  spec=G.read(P/'commands.json')['commands']['installed-owned-set'];result={'testResults':[]}
+  return {'missingResult':refusal(lambda:A.selected_results(result,spec,G.W)),'missingRaw':refusal(lambda:A.received_wire({'wireResponseBase64':None},False))}
+ if case=='P14':return scenario(R,'late-hash','flush-incomplete')
+ raise AssertionError('unregistered watchdog control')

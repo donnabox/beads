@@ -1,0 +1,30 @@
+{
+  "status": "native-source-accepted-for-bounded-validation",
+  "session": "2026-10-08T20:26:35Z-81e5",
+  "checkedAt": "2026-10-15T15:57:22.667456+00:00",
+  "sourceBindingSha256": "159008a138f4cc4dbfba517d53cd94ffb3021781f0eb62898409fe6ff698fd48",
+  "fullPatchSha256": "199e9c1d5132d9f47fc91999fac1705330f0de3e457e0ab86f502ac3a37d078b",
+  "findings": [],
+  "reviewed": [
+    "all three production changes and receiving/prior/dependency/no-controls flow",
+    "all four new source callbacks and unchanged helper contracts",
+    "complete installed witness and full request/schema/receipt/resource/cleanup oracles",
+    "accepted plan v2 and both author reports; seven path formatter and exact scope"
+  ],
+  "limitations": [
+    "No product validation has run yet",
+    "Source H header budgets concern authored/decoded entries, not raw framing",
+    "Original source callbacks retain historical bounds",
+    "Actual Claude code council and emitted control/installed/candidate CI still pending"
+  ],
+  "authorizedStages": [
+    "offline-setup",
+    "typecheck",
+    "build",
+    "format-check",
+    "lint",
+    "boundaries",
+    "read-seal",
+    "source-positive"
+  ]
+}

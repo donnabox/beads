@@ -1,0 +1,37 @@
+{
+  "head": "31e74290fb43974ce6f7b15ed1c421badf180e4c",
+  "tree": "5c14bcc20ec7a72118bc07d2ed5896703211a660",
+  "parents": [
+    "fc47fbfb5f1055766e2f680df40a1d729d39638d",
+    "40806dd3ac3e74ff94c07330c89ee47dc730080c"
+  ],
+  "checkout": "/Users/dbox/repos/wt/vickie/vickie-maintenance-integration",
+  "branch": "codex/vickie-maintenance-integration",
+  "clean": true,
+  "merge": "ordinary --no-ff; no conflicts or authored resolutions",
+  "mergeTreeMatches": true,
+  "trackedEntries": 663,
+  "unchangedObjectModeEntriesVersusMaintenance": 662,
+  "onlyChangedPathVersusMaintenance": ".github/workflows/ci.yml",
+  "workflow": "exact CI donor blob; Ruby/Psych integer20; all parsed fields otherwise equal to maintenance parent",
+  "allProductionTestsDocsIdenticalMaintenance": true,
+  "frozenDonors": {
+    "/Users/dbox/repos/wt/vickie/vickie-comparison-fault-typing-repair": {
+      "head": "fc47fbfb5f1055766e2f680df40a1d729d39638d",
+      "clean": true
+    },
+    "/Users/dbox/repos/wt/vickie/vickie-ci-headroom": {
+      "head": "40806dd3ac3e74ff94c07330c89ee47dc730080c",
+      "clean": true
+    }
+  },
+  "reviewEvidenceSha256": {
+    "transaction-comparison-fault-guard-code-dispositions.md": "d7711a290648f1984c83784ebcfb4f9f2eee7fbaee0b4f4e30a489977480086f",
+    "transaction-comparison-fault-typing-repair/native-final-closure.md": "8f6a154dc312a1d7c7878054e9422699234d6598be4577bfe2774a3ba030889a",
+    "transaction-comparison-fault-typing-repair/fresh-healthy-installed/native-installed-closure.md": "32f1e98e77abf375b79b26fb5c4d02710f4b8cb4e50df2d13ad6d33e2b9d532f",
+    "pr120-ci-headroom-native-code-closure.md": "4f6eab72509c3fab57e6c95269232d1b1f8cf6ff6bee9f6731c473ccae859e7d"
+  },
+  "validation": "Read-only Git/tree/byte/hash/YAML inspection only; no tests/build/install/network/push/PR",
+  "historicalEvidence": "All source/control and installed results remain attributed to fc47, not re-executed at integration. CI results remain root-owned.",
+  "ownedProcesses": "No product/test/build processes launched; Git commands completed."
+}

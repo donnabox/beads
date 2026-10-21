@@ -1,0 +1,177 @@
+{
+  "cross-batch": {
+    "scenario": "transactional.idempotency.cross-carrier",
+    "action": "x-create-batch",
+    "prefix": [
+      "x-create",
+      "x-created-facts",
+      "x-create-batch"
+    ],
+    "failedIds": [
+      "http-status",
+      "schema",
+      "media",
+      "serving-context",
+      "disposition",
+      "detail",
+      "key",
+      "no-next",
+      "required-position",
+      "effect-position",
+      "literal-result",
+      "retained-root",
+      "retained-body"
+    ],
+    "status": 409,
+    "specimen": "cross-batch-semantic-conflict.json",
+    "specimenPath": null,
+    "specimenSha256": null,
+    "compactSha256": null,
+    "allAssertionIds": [
+      "http-status",
+      "schema",
+      "media",
+      "present-bdp-scope-epoch",
+      "present-bdp-authorization-view",
+      "present-bdp-scope-position",
+      "serving-position",
+      "serving-context",
+      "request-headers",
+      "request-body",
+      "disposition",
+      "detail",
+      "key",
+      "no-next",
+      "required-position",
+      "effect-position",
+      "literal-result",
+      "no-name",
+      "no-source",
+      "retained-root",
+      "retained-body",
+      "control-status",
+      "control-schema",
+      "control-media",
+      "control-type",
+      "control-code",
+      "control-problem-status",
+      "control-retry"
+    ],
+    "pending": "Recompute from actual authored41derivative inventory; historical sequence specimen cannot bind new canonical principal row."
+  },
+  "cross-sequence": {
+    "scenario": "transactional.idempotency.cross-carrier",
+    "action": "x-create-sequence",
+    "prefix": [
+      "x-create",
+      "x-created-facts",
+      "x-create-batch",
+      "x-create-sequence"
+    ],
+    "failedIds": [
+      "presentation",
+      "created-record"
+    ],
+    "status": 200,
+    "specimen": "cross-sequence-fresh-key.json",
+    "specimenPath": null,
+    "specimenSha256": null,
+    "compactSha256": null,
+    "allAssertionIds": [
+      "http-status",
+      "schema",
+      "media",
+      "present-bdp-scope-epoch",
+      "present-bdp-authorization-view",
+      "present-bdp-scope-position",
+      "serving-position",
+      "serving-context",
+      "request-headers",
+      "request-body",
+      "presentation",
+      "present-name",
+      "created-record",
+      "no-receipt",
+      "no-root",
+      "no-problem",
+      "control-member",
+      "control-no-resource",
+      "control-no-outcome"
+    ],
+    "pending": "Recompute from actual authored41derivative inventory; historical sequence specimen cannot bind new canonical principal row."
+  },
+  "principal-collapse": {
+    "source": {
+      "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-principal-cumulative-plan/control.json",
+      "sha256": "62f9c52cd6ac0eb01edb260756cd46cd83f783570fd9a270987561479174eb42"
+    },
+    "contract": {
+      "mode": "collapse-principal-b-to-a",
+      "change": "Only principal-b token principal string becomes principal-a before bootstrap and every scenario launch; token/ref stays distinct.",
+      "manifestUnchanged": true,
+      "selected": [
+        "read-update.idempotency.principal-isolation"
+      ],
+      "actualStatuses": [
+        200,
+        409
+      ],
+      "expectedHttp": 2,
+      "conservativeMaxHttp": 7,
+      "children": 2,
+      "bodyBytes": 300,
+      "finalAction": "pk-b-create",
+      "failingAssertionIds": [
+        "http-status",
+        "schema",
+        "media",
+        "serving-position",
+        "disposition",
+        "detail",
+        "key",
+        "receipt-id",
+        "transaction",
+        "required-position",
+        "effect-position",
+        "no-next",
+        "result-indices",
+        "resource-id",
+        "resource-type",
+        "resource-revision",
+        "resource-properties",
+        "resource-metadata"
+      ],
+      "passingAssertionIds": [
+        "present-bdp-scope-epoch",
+        "present-bdp-authorization-view",
+        "present-bdp-scope-position",
+        "request-headers",
+        "request-body",
+        "no-owned-links",
+        "no-provenance"
+      ],
+      "actualProblem": {
+        "type": "https://github.com/gastownhall/bdp/problems/conflict",
+        "code": "idempotency-conflict",
+        "status": 409,
+        "retry": "never"
+      },
+      "actualContext": {
+        "epoch": "validated A epoch",
+        "view": "validated A view",
+        "position": "pos-1"
+      },
+      "laterActions": 0,
+      "claimEligible": false
+    },
+    "manifestDigest": "same actual canonical manifest disk hash; control changes configuration only",
+    "prefix": [
+      "pk-a-create",
+      "pk-b-create"
+    ],
+    "scenarioState": "fail",
+    "testExit": 0,
+    "failureSemantics": "named test passes only when genuine second response409 yields exactly18 listed failed assertion IDs in authored order and7 pass; no execution/cleanup/prerequisite error; no later actions",
+    "bindingProof": "independent literal B\u2192A role map, exact own-bootstrap/scenario identity equality and actual409. Random-token cross-run inequality has no discriminating credit."
+  }
+}

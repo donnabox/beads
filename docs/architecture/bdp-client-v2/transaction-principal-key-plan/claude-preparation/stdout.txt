@@ -1,0 +1,104 @@
+# Review — bounded principal-key installed evidence plan (`plan.md` 0772456…, `ledger.json` 86502ef…)
+
+Findings are numbered continuously. Section A = defects provable from the supplied plan/ledger/source. Section B = items that cannot be settled from the supplied material. No implementation, writes, or executions were performed.
+
+## A. Proved defects and inconsistencies
+
+**1. Medium — "A's view" framing is unsupported: reads are served anonymously.**
+Location: plan "Exact seven requests" items 6–7, plus "Actual policy is fixed all-visible" paragraph ("Current A context pos-2", "A's observed serving view", "Both events use A's current projection"); source `transaction-http.ts:218-221` (`service.readAtMinimum({kind:"anonymous"}, …)` / `service.readFor({kind:"anonymous"})`) and `transaction-http.ts:491-496` (`service.events(source, after, minimum, signal)` — no authorization argument).
+Issue/impact: the read facets receive no principal, so the credential attached to requests 6–7 cannot select a view; the observed collection/Event context is the single fixed all-visible context. Describing it as "A's" serving view asserts a principal-scoped read semantic the implementation does not have — the same class of inference the plan elsewhere forbids.
+Smallest fix: relabel as "the serving context observed on the A-credentialed read", and state explicitly that requests 6–7 prove nothing about principal-scoped reads. (Whether reads additionally require *some* valid credential is not shown and does not affect this.)
+
+**2. Medium — the 32768 B response-body ceiling is not the receive-time bound.**
+Location: plan "Measured bounds, transport and cleanup" ("32768B response body ceiling enforced during receive"), ledger `limits.responseBodyBytes`/`responseHeaderBytes`/`maximumPositiveResponseBodyOctets` 229376/`maximumTwoCohortResponseBodyOctets` 458752; source `http-executor.ts:898` (`wireLimit = maximumBodyBytes + maximumHeaderBytes * 2`), `:992-1000` (buffer grows to `wireLimit`), `:1001-1003` (in-receive guard is `maximumBodyBytes + maximumHeaderBytes`), `:1195-1196` and `:1226-1229` (exact 32768 enforced at parse / content-length pre-check).
+Issue/impact: with `maximumHeaderBytes` 65536 the in-receive guard is 98304 B and the socket buffer may reach 163840 B per response; 32768 binds only after framing completes. The "hard positive body bound 229376 B" understates worst-case buffered bytes by roughly 5×, in the artifact that is meant to be the measurement of record.
+Smallest fix: either restate the bounds as receive ≤ body+header (98304) and wire buffer ≤ body+2×header (163840), with 7×/14× totals, or set `responseHeaderBytes` to 8192 so the wire bound is 49152.
+
+**3. Medium — work deadline has exactly zero slack.**
+Location: ledger `limits.workMs 45000`, `launcherReadyMs 10000`, `requestMs 5000`, `cohorts[*].maxHttp 7`; plan "45s work deadline starts before temporary directory/startup and is shared across ready/request work".
+Issue/impact: 10000 + 7×5000 = 45000 exactly, leaving nothing for temp-directory creation, schema compilation, digesting, parsing and the two GET equality passes. A slow-but-correct positive run trips the deadline; in the negative cohort a deadline error violates the adjudicator's "no transport/harness/cleanup error" precondition and voids the sensitivity result.
+Smallest fix: set `requestMs` to 4000 (10000 + 28000 = 38000, 7 s margin). Raising `workMs` to 50000 is worse: 50000 + `cleanupMs` 10000 equals `testMs` 60000.
+
+**4. Medium — live credential values are reachable in the captured request evidence.**
+Location: plan "Counterfactual" capture list ("request body digest/route/credential role, exact writeState, wire/body fingerprints"; "No Authorization value is retained") and "JSON report contains the full safe request/response ledger"; source `http-executor.ts:755-757` (`exactRequest.headerLines = Object.freeze(lines)`) and `:770-772` (`effectiveRequest`).
+Issue/impact: in exact mode the response object carries the serialized `authorization: Bearer <token>` header line. "No Authorization value is retained" is stated as a requirement with no mechanism, so a full-object capture would write live tokens into `BDP_TRANSACTIONAL_PRINCIPAL_KEY_OUTPUT` and stdout.
+Smallest fix: specify a retained-field allowlist (method, url, `credentialRef`, request body bytes/digest, `writeState`, status, `bodyOctets`, body/wire SHA-256, the three context headers, content-type/length) and forbid serializing `exactRequest.headerLines` and `effectiveRequest`.
+
+**5. Low–Medium — `combinedMaximumAtSevenEach: 1500` is not derivable from any declared bound.**
+Location: ledger `requestBodyTotals`.
+Issue/impact: with `perBodyMaximum` 150 and `maxHttp` 7 per cohort, the 14-attempt worst case is 2100; 1500 (= 10 bodies) corresponds to no stated count. An internally inconsistent number in the measurement artifact.
+Smallest fix: set it to 2100, or delete the field — `combinedExpected` 1050 already bounds the intended run.
+
+**6. Low–Medium — the Event-ID derivation template is incomplete and re-encodes a declared-private spelling.**
+Location: plan request 7 ("Independently derive private projected IDs from JSON tuples … then pos-1/pos-2 and ordinal0"); source `transaction-events.ts:96-99` (`ev_${hash}_${hash}_${hash}_${checkpoint}_${ordinal}`) and `:81` ("token spelling is deliberately private, not a fixture law").
+Issue/impact: the stated derivation omits the `ev_` prefix and `_` separators, so as written it does not reproduce the actual id; reproducing the full private format also couples the test to a detail the source declares non-normative.
+Smallest fix: assert that both ids are schema-valid `wireToken`s sharing one `ev_<43>_<43>_<43>_` prefix and ending in `pos-1_0` and `pos-2_0` respectively — this proves the single A-observed projection without restating the private format. If the full spelling is kept, write the template verbatim.
+
+**7. Low — expected `subjectType` is given as the descriptor name, not the type URL.**
+Location: plan request 7 ("subjectType=Task"); ledger descriptor `{"id":"https://reference.invalid/acme/types/task","name":"Task"}`; source `transaction-batch.ts:703` (`subjectType: subject.type`); schema `event.subjectType: #/$defs/absoluteHttpUrl`.
+Issue/impact: a literal `"Task"` assertion fails and is not even schema-valid.
+Smallest fix: write `https://reference.invalid/acme/types/task`.
+
+**8. Low — expected Resource `id` is described as the ledger-literal value.**
+Location: plan request 1 ("validate full five-field Resource against literal id/type/properties/metadata"); ledger request bodies carry `"id":"beads/a"`; source `transaction-batch.ts:783` resolves `${options.scope}${id}`, and the existing pattern asserts `${scope}beads/${name}` (`transactional-depth-key-order-installed.test.ts:500`).
+Issue/impact: comparing the receipt Resource against the submitted relative id fails.
+Smallest fix: state the expected ids as `https://reference.invalid/acme/beads/a` and `…/beads/b`.
+
+**9. Low — `-t` pattern uses invalid-under-`u` identity escapes.**
+Location: ledger `testArgvTemplate` final element (`^observes\\ independent\\ …\\-principal\\ …$`).
+Issue/impact: `\ ` and `\-` are identity escapes that add nothing in non-unicode mode and throw in a unicode-mode `RegExp`; if `testNamePattern` is ever compiled with `u`, the callback is not selected and the run is vacuous rather than failing loudly.
+Smallest fix: use the plain literal `^observes independent principal keys and same-principal credential rotation through installed HTTP$`.
+
+**10. Low — credential roles are bound only by placeholder prose.**
+Location: ledger `configuration.credentials[]` (tokens are `<… A>`, `<… A-rotated>`, `<… B>`) versus `requests[].credentialRef` (`a`, `a-rotated`, `b`) and `configurationNegativeDelta.path "credentials[2].principal"`.
+Issue/impact: the ref→credential mapping is positional and inferable only from placeholder text; reordering the array silently redirects both the rotation limb and the collapse delta.
+Smallest fix: add an explicit `"ref"` member to each credentials entry and state that `credentialRef` and `configurationNegativeDelta` resolve by `ref`, not index.
+
+**11. Low — behaviour when the mode variable is unset is unspecified.**
+Location: plan "It runs positive by default" and "Reject unknown modes before child start"; ledger `environment.BDP_TRANSACTIONAL_PRINCIPAL_KEY_MODE: "positive | collapse-b-to-a"`.
+Issue/impact: an enumerated two-value domain plus "reject unknown" makes an absent variable ambiguous (reject vs. positive), which is the ordinary local/CI case.
+Smallest fix: state that unset is equivalent to `positive` and that every other value is rejected before child start.
+
+**12. Low — evidence outputs are not excluded from the directory cleanup removes.**
+Location: plan "Measured bounds… remove directory only after known process stop"; ledger `BDP_TRANSACTIONAL_PRINCIPAL_KEY_OUTPUT`, `--outputFile=<cohort-specific absolute results.json>`, `TMPDIR`; pattern `transactional-depth-key-order-installed.test.ts:644-646` (`rmSync(directory, {recursive:true, force:true})`).
+Issue/impact: if either path is a descendant of the store directory, cleanup deletes exactly the artifacts the adjudicator needs; a report-write failure also has no stated aggregation path.
+Smallest fix: require both paths to be siblings of, not inside, the store directory, and aggregate report-write errors into the failure list alongside assertion and cleanup errors.
+
+**13. Low — a harness-side global seam is not disclosed.**
+Location: plan "No source-only seams, clock injection or changed page limits"; source `vitest.config.ts:70` (`setupFiles: ["./packages/server/test-support/read-conformance-mock.ts"]`, described there as the non-emitted admission mock).
+Issue/impact: that module loads into the harness process on every run. It cannot reach the packed child, so no asserted fact is contaminated, but the private-evidence paragraph would be stating something stronger than is true.
+Smallest fix: record that the seam exists in the harness process only and that every asserted fact derives from child wire responses.
+
+**14. Low — the first acceptance limb over-credits what is new.**
+Location: plan Acceptance ("both independent same-key transactions"); source `transaction-store.test.ts:304-306` (second principal, same key → `owned`).
+Issue/impact: store-level distinct-principal admission is already covered in-process; the genuinely new facts are HTTP token→principal plumbing, rotated-credential replay, and receipt/Event linkage. The Basis section says this; Acceptance drops the qualifier.
+Smallest fix: qualify the bullet with "through installed HTTP", matching the Basis wording.
+
+**15. Low — several cited ranges do not match the source.**
+Location: plan "Source-grounded law and configuration" — `readEvents1553–1630` (actual 1573–1634), `transaction-installed-configuration.ts17–70` (function ends at 67), `1059–1095` (the admission body spans 1051–1132).
+Issue/impact: ranges presented as law cannot be checked mechanically and will not survive the reanchor the plan already defers.
+Smallest fix: cite symbol names plus the parent commit, and recompute ranges at the actual authoring parent.
+
+## B. Missing context (not defects; cannot be settled from the supplied material)
+
+**16. Medium — receipt-to-Event transaction linkage.** Acceptance requires "exact graph/Event transaction linkage" and request 7 asserts `Event0.transaction = A receipt.transaction`. The excerpts show `transaction: randomUUID()` allocated at admission (`transaction-store.ts:1114-1117`) and group framing validated against `group.transaction` (`transaction-events.ts:199`, `:241`), but no excerpt shows the execute/commit path passing the receipt's transaction into the batch options. Needed: the `execute`/`executeObserved` call site binding `options.transaction`. If the two ids differ, request 7 fails and that is a serving question for Root, not a plan defect.
+
+**17. Medium — `beads/?limit=32` viability.** `transaction-runtime-configuration.ts:336-345` shows `maxPageItems = receiptMaximumItems` and `defaultPageItems = min(readDefaultItems, receiptMaximumItems)` but not their values; the plan's "default 32" is unverified, and the accepted page-parameter name is not shown. If `receiptMaximumItems < 32` the request is refused; if the parameter is not `limit` it is malformed. Needed: the defaults module and the read query-parameter grammar. Once known, pin both numbers in the ledger (dropping the query is not safe either — a small `readDefaultItems` would break the `next:null` oracle), and recompute `routePreimage`/`routeSha256`.
+
+**18. Medium — `eventPage` Ajv compilation.** The existing installed pattern compiles only `mutationReceipt`, `transactionalProblem`, `beadRecord`, `currentBeadCollection` with two registered formats (`transactional-depth-key-order-installed.test.ts:81-86`). `eventPage` adds `#/$defs/event`, `eventType`, `createdData`, `updatedData`, `deletedData`, `linkDeltaData`, none of which are supplied; `#/$defs/reference` and `revisionProvenance` are already reachable from the currently compiled set, so they are not the gap. If any of those six introduces a format keyword beyond `uri`/`date-time`, compilation fails at setup under Ajv2020. Needed: those six definitions or the protocol format registry; fix once known is to register the formats the bundle actually uses.
+
+**19. Low–Medium — response construction for request 5 and header law.** The plan asserts `application/problem+json`, `Cache-Control: private, no-store`, absence of validator headers, and strict equality of the Problem to exactly `{type, code, status, retry}`. `problem()`, `jsonResponse()`, `receiptResponse()` and `parseReadUpdateProblem` are not supplied, so whether a `title`/`detail` is injected and which headers are set is unverified. Needed: those four functions.
+
+**20. Low–Medium — `resolveCredentials` contract.** The plan requires a three-role resolver that maps each role explicitly and rejects unknown roles; the only supplied pattern is a single handle with `defaultCredentialRef` and `resolveCredentials: () => ({authorization: …})` (`transactional-depth-key-order-installed.test.ts:393-396`), and `snapshotExactHttpMode`/`ExactHttpModeOptions` are not supplied. Whether the resolver receives the `credentialRef` and whether `defaultCredentialRef` is mandatory is unknown; if it does not, per-request role selection cannot be expressed as described.
+
+**21. Low — current-collection record shape.** Request 6 asserts strict equality of `currentBeadRecord`s to the five-field receipt postimages, but `currentBeadRecord` permits `links`/`ownedLinks` and the read serializer is not supplied. If the collection emits an empty `links` member, equality fails. The plan excludes `ownedLinks` on descriptor grounds; it should state the `links` expectation on the same footing.
+
+**22. Low — retained-detail window.** Requests 3–4 require `detail: "available"` and full equality after replay, while `expireRow` (`transaction-store.ts:1060`) can downgrade detail; the configured retention value is not supplied. Almost certainly safe inside a 45 s run, but the dependency should be stated rather than implicit, given the plan declines to rule on expiry.
+
+**23. Low — digests not independently recomputable here.** `routeSha256`, the five `bodySha256` values and the two `utf8Sha256` values cannot be verified without tools. The byte counts I could check are correct: descriptor `utf8Bytes` 170 and `retrievalUriBytes` 41; schema 166 and 49; each request body 150; and the derived totals 750/300/1050 and 229376/458752 (= 7× and 14× 32768) are self-consistent.
+
+## Areas reviewed with no findings
+
+Spec 3933–3946 conformance of the five-POST matrix (equal replay → retained receipt, same key + different normalized request → `409 idempotency-conflict` while bound, no re-execution); the `(principal,key)` primary key and lookup grounding (`transaction-store.ts:218`, `:421-424`) for the two-principal independence claim; original-receipt vs. current-context separation on requests 3–4 (historical `requiredPosition`/`effectPosition` `pos-1` against a `pos-2` header, per spec 5115–5133) including the explicit prohibition on comparing them; A/B view agnosticism (neither equality nor difference asserted); position progression `pos-1 → pos-2` with replays and the conflict not advancing, matching every ledger `currentPosition`; the collapse counterfactual's direction and oracle (collapsed `credentials[2].principal` with all tokens distinct and `canMutate` true keeps the configuration valid under `transaction-installed-configuration.ts:31-40`, and yields `409` at `pos-1` on the named `…:b-independent-create:completed` oracle); per-cohort identity non-equality; zero-HTTP startup (the launcher is IPC-only per `scripts/transaction-installed-observation.mjs:1`); the 10 s ready/cleanup bounds matching the launcher's hardcoded `bounded()` deadline; cleanup error aggregation and the null-PID caveat; one callback / two executions / two owned files; and the eight-package closure, which is consistent with ajv 8.17.1's four runtime dependencies plus ajv-formats and the two workspace packages, with no native SQLite dependency implied by the store code.
+
+Review complete.

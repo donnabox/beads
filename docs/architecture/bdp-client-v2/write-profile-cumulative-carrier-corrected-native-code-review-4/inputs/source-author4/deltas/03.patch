@@ -1,0 +1,87 @@
+--- a/apps/bdptest/test-support/read-update-artifact-execution.ts
++++ b/apps/bdptest/test-support/read-update-artifact-execution.ts
+@@ -26,9 +26,63 @@
+ } from "@bdp/conformance/testing";
+ import { installedContractsDigest } from "./installed-contract-identity.js";
+ import {
++  copySourceBytes,
++  parseBoundedJson,
++} from "../../../packages/conformance/src/artifact-bundle.js";
++import { ownData } from "../../../packages/conformance/test-support/profile-contract-plan.js";
++import {
+   assembleProfileEvidence,
+   serializeProfileEvidence,
+ } from "../../../packages/conformance/test-support/profile-evidence.js";
++
++/** Private TX handoff capture only. Original hooks retain their original error path. */
++export function capturePrivateProfileHandoff<
++  T extends { result: unknown; sessions: unknown; baseline: unknown },
++>(
++  observed: T,
++  onObserved: ((value: T) => unknown) | undefined,
++  identity: { sourceCommit: string; entry: string },
++): { genuine: T | undefined; wrapperBytes: Uint8Array | undefined; refused: boolean } {
++  let genuine: T | undefined;
++  let refused = false;
++  try {
++    genuine = structuredClone(observed);
++  } catch {
++    refused = true;
++  }
++  // This invocation is deliberately outside every new-carrier catch, even after capture refusal.
++  const handoff = onObserved?.(observed);
++  let wrapperBytes: Uint8Array | undefined;
++  try {
++    if (!genuine || refused || !handoff) throw new Error("private carrier unavailable");
++    const fields = ownData(handoff, ["bytes", "rawWrapperSha256"]);
++    const bytes = copySourceBytes({ bytes: fields.bytes as Uint8Array }, "manifest", 4194304);
++    if (createHash("sha256").update(bytes).digest("hex") !== fields.rawWrapperSha256)
++      throw new Error("private carrier mismatch");
++    const parsed = ownData(parseBoundedJson(bytes, "manifest", "private-profile-report"), [
++      "sourceCommit",
++      "entry",
++      "result",
++      "sessions",
++      "baseline",
++      "supplemental",
++      "sequenceMemberSupplemental",
++      "principalSupplemental",
++      "conditionalSupplemental",
++    ]);
++    if (parsed.sourceCommit !== identity.sourceCommit || parsed.entry !== identity.entry)
++      throw new Error("private carrier identity");
++    for (const field of ["result", "sessions", "baseline"] as const)
++      if (
++        canonicalJson(JSON.parse(JSON.stringify(genuine[field]))) !== canonicalJson(parsed[field])
++      )
++        throw new Error("private carrier representation");
++    wrapperBytes = bytes;
++  } catch {
++    refused = true;
++  }
++  return { genuine, wrapperBytes, refused };
++}
+ 
+ /** Separate private sidecars. First creation is exclusive; ownership is never inferred. */
+ export function createPrivateProfileSidecarWriter(options: {
+@@ -637,13 +691,17 @@
+           snapshot = snapshots.get(index),
+           configuration = profileBindings.get(index);
+         if (!bytes || !snapshot || !configuration) return null;
++        const runtimeConfigurationIdentity = (snapshot.baselineReceipt as Record<string, unknown>)
++          .configurationIdentity;
++        if (typeof runtimeConfigurationIdentity !== "string")
++          throw Object.assign(new Error("private profile evidence refused"), {
++            code: "invalid-source",
++          });
+         return {
+           ownerId: shard.id,
+           sourceCommit,
+           configuration,
+-          runtimeConfigurationIdentity: String(
+-            (snapshot.baselineReceipt as Record<string, unknown>).configurationIdentity,
+-          ),
++          runtimeConfigurationIdentity,
+           exactConfiguration: snapshot.exactConfiguration,
+           ready: [snapshot.baselineReceipt, ...(snapshot.sessions as unknown[])],
+           reportSource: { bytes },

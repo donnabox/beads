@@ -1,0 +1,147 @@
+{
+  "state": "INERT source/data recommendation only; not applied; no actual audits of absent stages",
+  "exactArrays": 8,
+  "rows": [
+    {
+      "stage": "installed-03",
+      "ordinal": 7,
+      "id": "transactional-carriers-batch-seed",
+      "currentExpected": [],
+      "sourceDerivedExpected": [
+        {
+          "name": "content-type",
+          "value": "application/json"
+        },
+        {
+          "name": "idempotency-key",
+          "value": "cold-transactional-carriers-batch-seed"
+        }
+      ],
+      "evidence": "MEASURED actual failed report + source command fields",
+      "actualAudit03Executed": false
+    },
+    {
+      "stage": "installed-03",
+      "ordinal": 10,
+      "id": "sequence-turns",
+      "currentExpected": [],
+      "sourceDerivedExpected": [
+        {
+          "name": "content-type",
+          "value": "application/json"
+        }
+      ],
+      "evidence": "MEASURED actual failed report + source command fields",
+      "actualAudit03Executed": false
+    },
+    {
+      "stage": "installed-03",
+      "ordinal": 13,
+      "id": "transactional-carriers-set-update",
+      "currentExpected": [],
+      "sourceDerivedExpected": [
+        {
+          "name": "content-type",
+          "value": "application/json"
+        },
+        {
+          "name": "idempotency-key",
+          "value": "cold-transactional-carriers-set-update"
+        }
+      ],
+      "evidence": "MEASURED actual failed report + source command fields",
+      "actualAudit03Executed": false
+    },
+    {
+      "stage": "installed-03",
+      "ordinal": 16,
+      "id": "transactional-carriers-set-delete",
+      "currentExpected": [],
+      "sourceDerivedExpected": [
+        {
+          "name": "content-type",
+          "value": "application/json"
+        },
+        {
+          "name": "idempotency-key",
+          "value": "cold-transactional-carriers-set-delete"
+        }
+      ],
+      "evidence": "MEASURED actual failed report + source command fields",
+      "actualAudit03Executed": false
+    },
+    {
+      "stage": "installed-03",
+      "ordinal": 19,
+      "id": "replay-batch",
+      "currentExpected": [],
+      "sourceDerivedExpected": [
+        {
+          "name": "content-type",
+          "value": "application/json"
+        },
+        {
+          "name": "idempotency-key",
+          "value": "cold-transactional-carriers-batch-seed"
+        }
+      ],
+      "evidence": "MEASURED actual failed report + source command fields",
+      "actualAudit03Executed": false
+    },
+    {
+      "stage": "installed-06",
+      "ordinal": 4,
+      "id": "minimum-seed",
+      "currentExpected": [],
+      "sourceDerivedExpected": [
+        {
+          "name": "content-type",
+          "value": "application/json"
+        },
+        {
+          "name": "idempotency-key",
+          "value": "d3-minimum-seed"
+        }
+      ],
+      "evidence": "STATIC source1657\u20131660 f.send body/key, common fields666\u2013670; stage UNATTEMPTED",
+      "actualAuditExecuted": false
+    },
+    {
+      "stage": "installed-08",
+      "ordinal": 4,
+      "id": "minimum-seed",
+      "currentExpected": [],
+      "sourceDerivedExpected": [
+        {
+          "name": "content-type",
+          "value": "application/json"
+        },
+        {
+          "name": "idempotency-key",
+          "value": "d3-minimum-seed"
+        }
+      ],
+      "evidence": "STATIC source1657\u20131660 f.send body/key, common fields666\u2013670; stage UNATTEMPTED",
+      "actualAuditExecuted": false
+    },
+    {
+      "stage": "installed-10",
+      "ordinal": 4,
+      "id": "minimum-seed",
+      "currentExpected": [],
+      "sourceDerivedExpected": [
+        {
+          "name": "content-type",
+          "value": "application/json"
+        },
+        {
+          "name": "idempotency-key",
+          "value": "d3-minimum-seed"
+        }
+      ],
+      "evidence": "STATIC source1657\u20131660 f.send body/key, common fields666\u2013670; stage UNATTEMPTED",
+      "actualAuditExecuted": false
+    }
+  ],
+  "preserve": "All strict field equality/header ordering/source-vs-wire distinctions, allcounts/IDs/deadlines; installed05three bodyless405POST rows correctly[];04GET raw/minimum tables and 06/08/10 tuple arrays remain otherwise unchanged."
+}

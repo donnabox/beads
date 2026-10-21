@@ -1,0 +1,334 @@
+{
+  "stage": "source-only-unexecuted",
+  "baseCommit": "8c78cba5d2be5d5612c6a9324ee36ed690fdeb19",
+  "baseTree": "f2bc6fd3750bb7b453984f9927f75e64554c777a",
+  "files": [
+    {
+      "path": "packages/server/src/transaction-store.ts",
+      "bytes": 84645,
+      "lines": 2078,
+      "sha256": "92f06ec2844a5c343a8e3d8233682929fdb6eccadda3bc603b94689cf8f23636",
+      "baseBytes": 84177,
+      "baseSha256": "9df1a0a18d9a73763aab3e4ae185614848a21bf804d4634acb9c5f7f1f92c863",
+      "addedLines": 15,
+      "removedLines": 4
+    },
+    {
+      "path": "packages/server/src/transaction-submission.ts",
+      "bytes": 6250,
+      "lines": 170,
+      "sha256": "68f4bf7c8288ad0eb1d743bab07889c94ad39f283983924762ec93192e522c1f",
+      "baseBytes": 5765,
+      "baseSha256": "f6b3b58c95afe65ab3f09a35dd799a8c178b053d131e413dba58212259d1c8ee",
+      "addedLines": 17,
+      "removedLines": 2
+    },
+    {
+      "path": "packages/server/src/transaction-http.ts",
+      "bytes": 26749,
+      "lines": 617,
+      "sha256": "f80157d591f9cf2e0269d7eb6927e42d8a9abd81395552924528d1e3b0a81f5a",
+      "baseBytes": 26113,
+      "baseSha256": "ce94a326af825a84b70252bd8ea5a2c2cf410ef3e99e9223a125c985ecbbde36",
+      "addedLines": 24,
+      "removedLines": 9
+    },
+    {
+      "path": "packages/server/src/transaction-store.test.ts",
+      "bytes": 131741,
+      "lines": 3202,
+      "sha256": "0096b728a9a0481201cd5205b621c4fcb64848259eb602658803803aefabc4ea",
+      "baseBytes": 126710,
+      "baseSha256": "d71b2784a14aaba7567f645b9e54469fb73e8b88c0664af201331881f34ef28f",
+      "addedLines": 144,
+      "removedLines": 0
+    },
+    {
+      "path": "packages/server/src/transaction-submission.test.ts",
+      "bytes": 38003,
+      "lines": 1019,
+      "sha256": "61178770397281640dc07f97326683d939c15b9ee072ae4e6d31c9b92387eb41",
+      "baseBytes": 33415,
+      "baseSha256": "9e923c47a9dd60fdcdf605610da3f2fb2080c451c80d86cda8e73f1e5f497b13",
+      "addedLines": 137,
+      "removedLines": 0
+    },
+    {
+      "path": "packages/server/src/transaction-http.test.ts",
+      "bytes": 101555,
+      "lines": 2581,
+      "sha256": "332618fa68236b16907245b65a75f56caa27b561febf2dc920487c8d516c5521",
+      "baseBytes": 98244,
+      "baseSha256": "bf82259ae0748c5b5f6d84a170d21218ffd68e769c684fb634f96aff8292cc9f",
+      "addedLines": 78,
+      "removedLines": 0
+    },
+    {
+      "path": "apps/bdptest/src/transactional-direct-refusal-installed.test.ts",
+      "bytes": 17741,
+      "lines": 463,
+      "sha256": "bc2dfbc8f3bf71a692b00c4c039a7caed305d8691dbc5941a8b819ced0cedd44",
+      "baseBytes": 0,
+      "baseSha256": null,
+      "addedLines": 463,
+      "removedLines": 0
+    }
+  ],
+  "diffSha256": "6658fc0c4d14828c52b609560f2f9d0758dd9247fb9cba75caf164010c73b399",
+  "requestLedger": [
+    {
+      "index": 1,
+      "label": "seed-a",
+      "method": "POST",
+      "url": "https://reference.invalid/acme/operations/create-bead",
+      "key": "retained",
+      "accept": null,
+      "status": 200,
+      "body": "{\"id\":\"beads/a\",\"type\":\"https://reference.invalid/acme/types/task\",\"properties\":{\"title\":\"a\"}}",
+      "bodyBytes": 94,
+      "bodySha256": "8730ee46597d5173aa5f13593fd8282ada4fecc1729fd568974cbcdee7275ee8"
+    },
+    {
+      "index": 2,
+      "label": "seed-b",
+      "method": "POST",
+      "url": "https://reference.invalid/acme/operations/batch",
+      "key": "advance",
+      "accept": null,
+      "status": 200,
+      "body": "{\"operations\":[{\"operation\":\"createBead\",\"id\":\"beads/b\",\"type\":\"https://reference.invalid/acme/types/task\",\"properties\":{\"title\":\"b\"}}]}",
+      "bodyBytes": 136,
+      "bodySha256": "bdec7df3b90efd349ee33374fe1cb8911aa7b7adbf06ca8d31e920e8115e166d"
+    },
+    {
+      "index": 3,
+      "label": "singleton-conflict",
+      "method": "POST",
+      "url": "https://reference.invalid/acme/operations/create-bead",
+      "key": "retained",
+      "accept": null,
+      "status": 409,
+      "body": "{\"id\":\"beads/changed\",\"type\":\"https://reference.invalid/acme/types/task\",\"properties\":{\"title\":\"changed\"}}",
+      "bodyBytes": 106,
+      "bodySha256": "89cc71bbe2d8fdfd7cbec72887b165d25755fd848af915de005436361fe94c8b"
+    },
+    {
+      "index": 4,
+      "label": "batch-conflict",
+      "method": "POST",
+      "url": "https://reference.invalid/acme/operations/batch",
+      "key": "retained",
+      "accept": "text/plain",
+      "status": 409,
+      "body": "{\"operations\":[{\"operation\":\"createBead\",\"id\":\"beads/changed\",\"type\":\"https://reference.invalid/acme/types/task\",\"properties\":{\"title\":\"changed\"}}]}",
+      "bodyBytes": 148,
+      "bodySha256": "626c3acb09d848f40a2a97f0e87ef4225cc2a59e864334245a6b7925f98b4951"
+    },
+    {
+      "index": 5,
+      "label": "retained-negotiation",
+      "method": "POST",
+      "url": "https://reference.invalid/acme/operations/create-bead",
+      "key": "retained",
+      "accept": "text/plain",
+      "status": 406,
+      "body": "{\"id\":\"beads/a\",\"type\":\"https://reference.invalid/acme/types/task\",\"properties\":{\"title\":\"a\"}}",
+      "bodyBytes": 94,
+      "bodySha256": "8730ee46597d5173aa5f13593fd8282ada4fecc1729fd568974cbcdee7275ee8"
+    },
+    {
+      "index": 6,
+      "label": "fresh-negotiation",
+      "method": "POST",
+      "url": "https://reference.invalid/acme/operations/create-bead",
+      "key": "fresh-negotiation",
+      "accept": "text/plain",
+      "status": 406,
+      "body": "{\"id\":\"beads/c\",\"type\":\"https://reference.invalid/acme/types/task\",\"properties\":{\"title\":\"c\"}}",
+      "bodyBytes": 94,
+      "bodySha256": "c54e2350ba3d0f5514cbef8dafcb231213608964c7e68a4e77cc6ada18127681"
+    },
+    {
+      "index": 7,
+      "label": "fresh-capacity",
+      "method": "POST",
+      "url": "https://reference.invalid/acme/operations/batch",
+      "key": "fresh-capacity",
+      "accept": "text/plain",
+      "status": 413,
+      "body": "{\"operations\":[{\"operation\":\"createBead\",\"id\":\"beads/overflow-0\",\"type\":\"https://reference.invalid/acme/types/task\",\"properties\":{\"title\":\"overflow-0\"}},{\"operation\":\"createBead\",\"id\":\"beads/overflow-1\",\"type\":\"https://reference.invalid/acme/types/task\",\"properties\":{\"title\":\"overflow-1\"}},{\"operation\":\"createBead\",\"id\":\"beads/overflow-2\",\"type\":\"https://reference.invalid/acme/types/task\",\"properties\":{\"title\":\"overflow-2\"}},{\"operation\":\"createBead\",\"id\":\"beads/overflow-3\",\"type\":\"https://reference.invalid/acme/types/task\",\"properties\":{\"title\":\"overflow-3\"}},{\"operation\":\"createBead\",\"id\":\"beads/overflow-4\",\"type\":\"https://reference.invalid/acme/types/task\",\"properties\":{\"title\":\"overflow-4\"}},{\"operation\":\"createBead\",\"id\":\"beads/overflow-5\",\"type\":\"https://reference.invalid/acme/types/task\",\"properties\":{\"title\":\"overflow-5\"}},{\"operation\":\"createBead\",\"id\":\"beads/overflow-6\",\"type\":\"https://reference.invalid/acme/types/task\",\"properties\":{\"title\":\"overflow-6\"}},{\"operation\":\"createBead\",\"id\":\"beads/overflow-7\",\"type\":\"https://reference.invalid/acme/types/task\",\"properties\":{\"title\":\"overflow-7\"}},{\"operation\":\"createBead\",\"id\":\"beads/overflow-8\",\"type\":\"https://reference.invalid/acme/types/task\",\"properties\":{\"title\":\"overflow-8\"}},{\"operation\":\"createBead\",\"id\":\"beads/overflow-9\",\"type\":\"https://reference.invalid/acme/types/task\",\"properties\":{\"title\":\"overflow-9\"}},{\"operation\":\"createBead\",\"id\":\"beads/overflow-10\",\"type\":\"https://reference.invalid/acme/types/task\",\"properties\":{\"title\":\"overflow-10\"}},{\"operation\":\"createBead\",\"id\":\"beads/overflow-11\",\"type\":\"https://reference.invalid/acme/types/task\",\"properties\":{\"title\":\"overflow-11\"}},{\"operation\":\"createBead\",\"id\":\"beads/overflow-12\",\"type\":\"https://reference.invalid/acme/types/task\",\"properties\":{\"title\":\"overflow-12\"}},{\"operation\":\"createBead\",\"id\":\"beads/overflow-13\",\"type\":\"https://reference.invalid/acme/types/task\",\"properties\":{\"title\":\"overflow-13\"}},{\"operation\":\"createBead\",\"id\":\"beads/overflow-14\",\"type\":\"https://reference.invalid/acme/types/task\",\"properties\":{\"title\":\"overflow-14\"}},{\"operation\":\"createBead\",\"id\":\"beads/overflow-15\",\"type\":\"https://reference.invalid/acme/types/task\",\"properties\":{\"title\":\"overflow-15\"}},{\"operation\":\"createBead\",\"id\":\"beads/overflow-16\",\"type\":\"https://reference.invalid/acme/types/task\",\"properties\":{\"title\":\"overflow-16\"}},{\"operation\":\"createBead\",\"id\":\"beads/overflow-17\",\"type\":\"https://reference.invalid/acme/types/task\",\"properties\":{\"title\":\"overflow-17\"}},{\"operation\":\"createBead\",\"id\":\"beads/overflow-18\",\"type\":\"https://reference.invalid/acme/types/task\",\"properties\":{\"title\":\"overflow-18\"}},{\"operation\":\"createBead\",\"id\":\"beads/overflow-19\",\"type\":\"https://reference.invalid/acme/types/task\",\"properties\":{\"title\":\"overflow-19\"}},{\"operation\":\"createBead\",\"id\":\"beads/overflow-20\",\"type\":\"https://reference.invalid/acme/types/task\",\"properties\":{\"title\":\"overflow-20\"}},{\"operation\":\"createBead\",\"id\":\"beads/overflow-21\",\"type\":\"https://reference.invalid/acme/types/task\",\"properties\":{\"title\":\"overflow-21\"}},{\"operation\":\"createBead\",\"id\":\"beads/overflow-22\",\"type\":\"https://reference.invalid/acme/types/task\",\"properties\":{\"title\":\"overflow-22\"}},{\"operation\":\"createBead\",\"id\":\"beads/overflow-23\",\"type\":\"https://reference.invalid/acme/types/task\",\"properties\":{\"title\":\"overflow-23\"}},{\"operation\":\"createBead\",\"id\":\"beads/overflow-24\",\"type\":\"https://reference.invalid/acme/types/task\",\"properties\":{\"title\":\"overflow-24\"}},{\"operation\":\"createBead\",\"id\":\"beads/overflow-25\",\"type\":\"https://reference.invalid/acme/types/task\",\"properties\":{\"title\":\"overflow-25\"}},{\"operation\":\"createBead\",\"id\":\"beads/overflow-26\",\"type\":\"https://reference.invalid/acme/types/task\",\"properties\":{\"title\":\"overflow-26\"}},{\"operation\":\"createBead\",\"id\":\"beads/overflow-27\",\"type\":\"https://reference.invalid/acme/types/task\",\"properties\":{\"title\":\"overflow-27\"}},{\"operation\":\"createBead\",\"id\":\"beads/overflow-28\",\"type\":\"https://reference.invalid/acme/types/task\",\"properties\":{\"title\":\"overflow-28\"}},{\"operation\":\"createBead\",\"id\":\"beads/overflow-29\",\"type\":\"https://reference.invalid/acme/types/task\",\"properties\":{\"title\":\"overflow-29\"}},{\"operation\":\"createBead\",\"id\":\"beads/overflow-30\",\"type\":\"https://reference.invalid/acme/types/task\",\"properties\":{\"title\":\"overflow-30\"}},{\"operation\":\"createBead\",\"id\":\"beads/overflow-31\",\"type\":\"https://reference.invalid/acme/types/task\",\"properties\":{\"title\":\"overflow-31\"}},{\"operation\":\"createBead\",\"id\":\"beads/overflow-32\",\"type\":\"https://reference.invalid/acme/types/task\",\"properties\":{\"title\":\"overflow-32\"}}]}",
+      "bodyBytes": 4616,
+      "bodySha256": "fe8750234527a921024115c489b435f0fb66758d17019062e50428f4cc679304"
+    },
+    {
+      "index": 8,
+      "label": "retained-root",
+      "method": "GET",
+      "url": "<observed seed receipt id>",
+      "key": null,
+      "accept": null,
+      "status": 200,
+      "body": "",
+      "bodyBytes": 0,
+      "bodySha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "index": 9,
+      "label": "unchanged-beads",
+      "method": "GET",
+      "url": "https://reference.invalid/acme/beads/?limit=32",
+      "key": null,
+      "accept": null,
+      "status": 200,
+      "body": "",
+      "bodyBytes": 0,
+      "bodySha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "index": 10,
+      "label": "unchanged-events",
+      "method": "GET",
+      "url": "https://reference.invalid/acme/events/",
+      "key": null,
+      "accept": null,
+      "status": 200,
+      "body": "",
+      "bodyBytes": 0,
+      "bodySha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "index": 11,
+      "label": "retry-negotiation-key",
+      "method": "POST",
+      "url": "https://reference.invalid/acme/operations/create-bead",
+      "key": "fresh-negotiation",
+      "accept": null,
+      "status": 200,
+      "body": "{\"id\":\"beads/c\",\"type\":\"https://reference.invalid/acme/types/task\",\"properties\":{\"title\":\"c\"}}",
+      "bodyBytes": 94,
+      "bodySha256": "c54e2350ba3d0f5514cbef8dafcb231213608964c7e68a4e77cc6ada18127681"
+    },
+    {
+      "index": 12,
+      "label": "retry-capacity-key",
+      "method": "POST",
+      "url": "https://reference.invalid/acme/operations/batch",
+      "key": "fresh-capacity",
+      "accept": null,
+      "status": 200,
+      "body": "{\"operations\":[{\"operation\":\"createBead\",\"id\":\"beads/d\",\"type\":\"https://reference.invalid/acme/types/task\",\"properties\":{\"title\":\"d\"}}]}",
+      "bodyBytes": 136,
+      "bodySha256": "c39c944cd13c464b4d886d0d1968296ad43f72c153532c49ce687153b9e36819"
+    },
+    {
+      "index": 13,
+      "label": "final-beads",
+      "method": "GET",
+      "url": "https://reference.invalid/acme/beads/?limit=32",
+      "key": null,
+      "accept": null,
+      "status": 200,
+      "body": "",
+      "bodyBytes": 0,
+      "bodySha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "index": 14,
+      "label": "final-events",
+      "method": "GET",
+      "url": "https://reference.invalid/acme/events/",
+      "key": null,
+      "accept": null,
+      "status": 200,
+      "body": "",
+      "bodyBytes": 0,
+      "bodySha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    }
+  ],
+  "staticRoutes": [
+    {
+      "method": "POST",
+      "url": "https://reference.invalid/acme/operations/create-bead"
+    },
+    {
+      "method": "POST",
+      "url": "https://reference.invalid/acme/operations/batch"
+    },
+    {
+      "method": "GET",
+      "url": "https://reference.invalid/acme/beads/?limit=32"
+    },
+    {
+      "method": "GET",
+      "url": "https://reference.invalid/acme/events/"
+    }
+  ],
+  "dynamicRoute": "GET exactly observed validated seed receipt id",
+  "routePreimage": "[{\"method\":\"POST\",\"url\":\"https://reference.invalid/acme/operations/create-bead\"},{\"method\":\"POST\",\"url\":\"https://reference.invalid/acme/operations/batch\"},{\"method\":\"GET\",\"url\":\"https://reference.invalid/acme/beads/?limit=32\"},{\"method\":\"GET\",\"url\":\"https://reference.invalid/acme/events/\"}]",
+  "routePreimageSha256": "25a08217665a89005738bddd485dfdc1df62847a3ae7ff5c82ef43d4a9be60d3",
+  "largestRequestBodyBytes": 4616,
+  "aggregateRequestBodyBytes": 5518,
+  "positive": {
+    "requests": 14,
+    "children": 1
+  },
+  "originalNegative": {
+    "expectedRequests": 3,
+    "maximumRequests": 14,
+    "children": 1
+  },
+  "aggregateCeiling": {
+    "requests": 28,
+    "children": 2
+  },
+  "limits": {
+    "requestBodyBytes": 65536,
+    "responseBodyBytes": 131072,
+    "requestHeaderBytes": 16384,
+    "requestTimeoutMs": 5000,
+    "cohortMs": 90000,
+    "outerMs": 120000
+  },
+  "responseEstimates": {
+    "perReceiptBytes": 8192,
+    "perProblemBytes": 4096,
+    "bodyless406Bytes": 0,
+    "largestFourResourceCollectionBytes": 16384,
+    "largestFourEventPageBytes": 32768,
+    "status": "conservative planning estimates; actual bytes recorded only on future execution; unchanged131072 cap"
+  },
+  "controls": [
+    {
+      "name": "missing-http-context",
+      "path": "packages/server/src/transaction-http.ts",
+      "baseSha256": "f80157d591f9cf2e0269d7eb6927e42d8a9abd81395552924528d1e3b0a81f5a",
+      "mutantSha256": "2970fc66e4ca50155e1da8b516a24ae122ef1df4e495e2ea4a8bd7a791f333f4",
+      "patchSha256": "5fd361e08922a177f0ca7771628759ca6b57ac715d731d3d9bde5eeb24a29d60",
+      "executed": false
+    },
+    {
+      "name": "stale-retained-position",
+      "path": "packages/server/src/transaction-http.ts",
+      "baseSha256": "f80157d591f9cf2e0269d7eb6927e42d8a9abd81395552924528d1e3b0a81f5a",
+      "mutantSha256": "a5f7db56e0fa2ce90274a8b3efe18fb6a3c724c06e7a5cf7f1ef4f67c1b5ac57",
+      "patchSha256": "5b9af3bb15e375ca2b3bbbe1170586206a3e8151374daadc2426ee5c41e6d196",
+      "executed": false
+    },
+    {
+      "name": "unobserved-context-leak",
+      "path": "packages/server/src/transaction-store.ts",
+      "baseSha256": "92f06ec2844a5c343a8e3d8233682929fdb6eccadda3bc603b94689cf8f23636",
+      "mutantSha256": "dac6006e6aa10d508e03c478070a59a37efa086f9c7118edbf73483bcbad5c49",
+      "patchSha256": "d0c78ecd82074138dc72cf1d18ba995acf5fe422b5c224cabc1d19bb1ae9c8d9",
+      "executed": false
+    },
+    {
+      "name": "capture-outside-owner-transaction",
+      "path": "packages/server/src/transaction-store.ts",
+      "baseSha256": "92f06ec2844a5c343a8e3d8233682929fdb6eccadda3bc603b94689cf8f23636",
+      "mutantSha256": "6aecbf06357a5e4fa984465e6a51b8f9a0d16605f853309e0073a6b5f4e4cd34",
+      "patchSha256": "c897db600648d483b55a556a256e51e82c9363c5ece7a1cae7eda02e88df1c4d",
+      "executed": false
+    }
+  ]
+}

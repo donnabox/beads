@@ -1,0 +1,88 @@
+# Review — principal-namespace cumulative evidence draft (manifest/coverage/static-test scope)
+
+Line numbers for the new block are post-image estimates within the single hunk starting at `packages/conformance/src/transactional-cumulative.test.ts:2993`; symbols are given so each site is unambiguous.
+
+## Findings
+
+**1. [Medium-High] `bodyBytes` / `bodySha256` literals are inert — a declared byte/digest control that never executes.**
+Location: `transactional-cumulative.test.ts`, new `it("pins the partial principal namespace row, full parent and exact credential roles")`, the `expected` array (eight entries carrying `bodyBytes`/`bodySha256`) and the `for (const [i, action] of row.actions.entries())` loop.
+Defect: the loop reads `literal.method`, `literal.credentialRef`, `literal.headerLines` and `literal.body`, and never reads `literal.bodyBytes` or `literal.bodySha256`. The authority fact "five POST bodies 150 B each" (I confirm 150 B by count for all five bodies) and the three body digests are therefore asserted nowhere; they are decorative data that reads as evidence.
+Correction: inside the existing loop add
+```ts
+expect(Buffer.byteLength(action.raw.body?.value ?? "")).toBe(literal.bodyBytes);
+expect(
+  action.raw.body === undefined
+    ? null
+    : createHash("sha256").update(action.raw.body.value).digest("hex"),
+).toBe(literal.bodySha256);
+```
+
+**2. [Medium] `withoutPrincipalRow` pins zero bytes of the new row; the parent-hash check is self-cancelling for it.**
+Location: `withoutPrincipalRow`, after `const raw = objects.get(principalId)!;`.
+Defect: `prefix` is built *from* `raw`, so any change to the new row's on-disk bytes changes `prefix` identically, `text.includes(prefix)` still holds, and the removed region still yields the same parent — `principal-full-parent` stays green. The only check on `raw` is `expect(typeof raw).toBe("string")`. Every one of the 15 inherited rows gets `(byteLength, sha256)` pinned in the `principalParentPins` loop; the new row gets neither. Its content is pinned only by `sha256(JSON.stringify(row))`, which is parse-normalised and therefore blind to the authored on-disk formatting/whitespace that the fence measurements are taken over.
+Correction: in `withoutPrincipalRow`, replace the `typeof` line with a byte-length and digest pin of `raw` for each file (two literals, same shape as the parent pins).
+
+**3. [Medium] The coverage row's `reason` and member set are unpinned.**
+Location: end of the new `it`, the `const coverage = JSON.parse(read("coverage").toString()).rows.find(...)` block.
+Defect: only `coverage.wholeContract === false` and `coverage.bindings` are asserted. The `reason` string — which carries the entire whole-contract qualification, the omissions list, and the load-bearing disclaimer "App comparisons are not manifest assertion bindings" — can be silently rewritten or emptied with no test failing. Nothing asserts the row has no additional members either.
+Correction: add `expect(Object.keys(coverage)).toEqual(["id","wholeContract","reason","bindings"]);` and a digest pin `expect(createHash("sha256").update(coverage.reason).digest("hex")).toBe("<measured>");`.
+
+**4. [Medium] Manifest array position is pinned; the position the runner actually uses is not.**
+Location: new `it`, `expect(manifest.scenarios[0]).toBe(row);`, plus `expect(manifest.scenarios.indexOf(row)).toBe(11)` at the `transactional.receipt.pagination` test and the `manifest.scenarios.map(...).toEqual([...])` order list.
+Defect: `runCumulativeTransactionalMatrix` derives execution order from the catalog, not the manifest — `runner.ts:355` builds `metadata` from `selectApplicableScenariosForProfile(catalog, …)`, `runner.ts:376` keeps catalog order explicitly ("the selection names membership, not sequence"), and `runner.ts:384` iterates `selected`, looking plans up by id via `byId`. "New row first" is therefore a file-layout fact only; the new scenario's run position — and hence where its 7 exchanges land in any composed observer stream — is determined by the unchanged catalog and is pinned nowhere in this draft. The diff's own conversion of `bundle().manifest.scenarios[0]?.id` to a `.find()` shows the index coupling was already recognised as fragile.
+Correction: add a selection-order pin alongside the array pin, e.g.
+```ts
+expect(
+  selectApplicableScenariosForProfile(selected.catalog, "transactional").map((r) => r.id).indexOf(principalId),
+).toBe(<measured>);
+```
+This is also the hinge for the fanout/composition question in finding 10.
+
+**5. [Medium] The scenario's single load-bearing discriminator is guarded only by an opaque hash.**
+Location: manifest row `pk-a-rotated` assertions `required-position`/`effect-position` (`"pos-1"`) against `serving-position` (`"pos-2"`); static test, the per-action assertion-**id** lists.
+Defect: the static test pins assertion *identifiers* and then one opaque `sha256(JSON.stringify(row))`. No readable assertion pins any `equals` value. The pos-1/pos-2 split on `pk-a-rotated` is precisely what proves the rotated credential replayed A's retained pos-1 receipt rather than executing a fresh transaction; weakening it to `pos-2` would convert the scenario into a tautology, and the only failure signal would be an unexplained hash mismatch with no diagnostic.
+Correction: add explicit named assertions for the position triple, e.g. a small table check that `pk-a-create` is `pos-1/pos-1/pos-1`, `pk-b-create` and `pk-b-replay` are `pos-2/pos-2/pos-2`, and `pk-a-rotated` is `pos-1/pos-1/pos-2` (required/effect/serving).
+
+**6. [Low-Medium] `literal.action` is never compared to `action.id`, and two literals are otherwise indistinguishable.**
+Location: new `it`, inside the `row.actions.entries()` loop.
+Defect: the `action` field of each `expected` entry is dead. Index binding is only indirectly sound via the earlier action-id list. The `pk-b-create` and `pk-b-replay` literals are identical in every asserted field (method, credentialRef, headerLines, body), so transposing those two `expected` entries is undetectable today.
+Correction: add `expect(action.id).toBe(literal.action);` as the first line of the loop.
+
+**7. [Low-Medium] GET body absence is asserted on the value, not on the key.**
+Location: new `it`, `expect(action.raw.body?.value).toBe(literal.body ?? undefined);`.
+Defect: for `pk-current`/`pk-events` this passes whether `raw.body` is absent or present-but-valueless. The authority fact is "GET bodies absent", which is the stronger claim and the one the wire layer depends on.
+Correction: add `expect("body" in action.raw).toBe(literal.body !== null);`.
+
+**8. [Low-Medium] `pk-a-conflict:exact-problem` uses the whole-document pointer form, which has no precedent in the supplied material.**
+Location: manifest row `pk-a-conflict`, assertion `{"kind":"json-pointer","pointer":"","exists":true,"equals":{…}}`.
+Defect: `runner.ts:2233` evaluates `jsonPointer(body.value, assertion.pointer)` and `runner.ts:2280` requires `exists`; the empty-pointer root case depends entirely on the `jsonPointer` helper, which is not in the supplied context, and no other supplied row uses `pointer: ""`. If the helper does not return the document root for `""`, this assertion fails closed — and runner changes are outside the authorised fence, so the row, not the runner, would have to move.
+Correction: confirm an existing committed manifest row already uses `pointer: ""` (the `transactional.idempotency.conflict` row is the likely precedent). If not, this needs a pointer form already exercised elsewhere; note that splitting into `/type`, `/code`, `/status`, `/retry` loses the no-extra-members property this assertion currently provides, so the substitution is not free.
+
+**9. [Low] `applicability.requires` is empty while `setup.requires` names `installed-transactional-http`.**
+Location: manifest row header, `"applicability":{"requires":[]}` against `"setup":{"fixture":"reference-transactional-v1","requires":["installed-transactional-http"]}`.
+Defect: the row declares `requiredProfile:"read-update"` but every POST targets `binding:"batch"`, a Transactional mechanism. With empty applicability, nothing gates the row on the Transactional installation being present. Whether this is correct depends on whether `setup.requires` is itself an admission gate and on what the sibling `read-update.http.command-minimum-fields` row does — neither is in the supplied context.
+Correction: if the sibling read-update row carries the installation in `applicability.requires`, mirror it here; otherwise this is conformant and needs no change.
+
+**10. [Low] The amended derivative fences do not appear in this diff.**
+Location: the fence hunk at `transactional-cumulative.test.ts:1170-1200`.
+Defect: the authority lists derivative ceilings 847979/22128 among the frozen amendments. This diff amends only the canonical manifest (`829145` disk / `841861` normalised), coverage (`125561`) and node (`21972`) fences. No derivative constant is touched here.
+Correction: confirm the derivative fences live in the separately reviewed app file; if they are expected in this file, they are missing.
+
+## Verified consistent (no action)
+
+Assertion arithmetic checks out end to end: the row carries 25/25/25/25/10/11/18 = **139** assertions over 7 actions, matching `220 → 227` actions and `2503 → 2642` assertions; the coverage `bindings` array enumerates exactly those 139 ids in action order, and deriving the expected binding list from the manifest row is sound here because the manifest side is independently pinned by literal per-action id arrays. All six fence amendments preserve the historical margins exactly (manifest 829145−825049 = 4096; normalised 841861−837765 = 4096; nodes 21972−21908 = 64; coverage 125561−124537 = 1024; derivative 847979−843883 = 4096 and 22128−22064 = 64), and both base-relative and absolute forms agree (488280+340865, 70662+54899, 13019+8953). `indexOf(row) === 11` for `transactional.receipt.pagination` is correct given 15 inherited rows with the new row prepended. The three-layer strip composition is correctly ordered (principal innermost, so sequence and minimum pins still see their rows), and the unchanged `726fc623…` / `4619813e…` / `29729151…` parent digests are the strongest preservation evidence in the draft. Semantically the row is well constructed: `pk-b-create` succeeding with a different body under the same key is itself proof that B's key namespace is disjoint from A's; `pk-a-rotated` returning pos-1 effect while served at pos-2 is proof of shared-namespace replay rather than re-execution; and `pk-current`/`pk-events` pinning exactly two beads and two created events excludes both re-execution and any effect from the 409. No credential material appears in any header line or body — credentials are referenced only by `credentialRef`.
+
+## Missing context genuinely needed
+
+1. The `jsonPointer` helper (empty-pointer root semantics) — blocks closing finding 8.
+2. The committed `read-update.http.command-minimum-fields` manifest row's `applicability`/`setup` blocks — blocks closing finding 9.
+3. The catalog entry for `read-update.idempotency.principal-isolation`, specifically its ordinal position and any `prerequisites` (consumed at `runner.ts:393`) — blocks sizing finding 4 and the fanout question.
+4. `objectSlices` — whether slices are returned verbatim including inner formatting, which finding 2's correction assumes.
+5. Existence of `#/$defs/currentBeadCollection` and `#/$defs/eventPage` in the schema bundle (resolution failures surface as `SchemaValidatorError` at preflight, per `schema-validator.ts:46`).
+6. The measured `reason` digest and raw-slice sizes for the new row, needed to write the literals in findings 2 and 3.
+
+## Review limits and cross-scope dependencies
+
+This is one of two complementary reviews and is not an exhaustive whole-repository review. I read only the supplied text: no files, no `scope.patch`, no test execution, no digest recomputation — every sha256 in the draft (the 30 parent pins, the two full-parent pins, the row pin `097a27ab…`, the three body digests) is unverified, and the claim that parsed parent equality held after first-object deletion is taken as stated. Byte counts I did verify are the 150-byte POST bodies and the fence arithmetic.
+
+Cross-scope dependencies I did not assess and that must be closed by the app-wire review: full replay equality of receipt and transaction identities (impossible in-manifest given the mandated `captures: []`, and correctly disclosed in the coverage `reason`); revision values, which are only `exists: true` here and absent from the `ordered-state` projection; event identifiers, which the `ordered-facts` projection does not include despite the `reason` mentioning "exact private projected Event IDs"; `bdp-authorization-view`, asserted present on all seven actions but never valued or compared across principals, so the draft neither establishes nor excludes A/B view equality in-manifest; the nine static callbacks, five installed cohorts and 652/657 HTTP fanout figures, of which exactly one new callback is visible in my scope; and the composed observer routing in `apps/bdptest/src/transactional-matrix.test.ts` (`composedMemberWire`, `memberHandoff`), whose index-based handoff at `member.count() === 0 || 4` is sensitive to where the seven new exchanges fall in catalog order — the dependency identified in finding 4.

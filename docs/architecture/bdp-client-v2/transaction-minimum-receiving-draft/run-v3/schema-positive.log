@@ -1,0 +1,18 @@
+
+ RUN  v4.1.10 /Users/dbox/repos/wt/vickie/vickie-minimum-receiving
+
+ ↓ packages/server/src/transaction-schema-http.test.ts > serves exact captured root and transitive bytes without retaining mutable input
+ ↓ packages/server/src/transaction-schema-http.test.ts > applies selection once and retains exact byte length and current context
+ ✓ packages/server/src/transaction-schema-http.test.ts > preserves minimum refusals before schema conditionals and never observes excluded requests 74ms
+ ↓ packages/server/src/transaction-schema-http.test.ts > preserves accepted offline configuration and unserved aliases: differing-id
+ ↓ packages/server/src/transaction-schema-http.test.ts > preserves accepted offline configuration and unserved aliases: outside-namespace
+ ↓ packages/server/src/transaction-schema-http.test.ts > preserves accepted offline configuration and unserved aliases: query-retrieval
+ ↓ packages/server/src/transaction-schema-http.test.ts > discards a disconnected schema delivery and leaves the runtime usable
+ ↓ packages/server/src/transaction-schema-http.test.ts > sanitizes a selected schema observation fault without stale response metadata
+
+ Test Files  1 passed (1)
+      Tests  1 passed | 7 skipped (8)
+   Start at  15:55:34
+   Duration  369ms (transform 186ms, setup 16ms, import 228ms, tests 74ms, environment 0ms)
+
+JSON report written to /Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-minimum-receiving-draft/run-v3/schema-positive.results.json

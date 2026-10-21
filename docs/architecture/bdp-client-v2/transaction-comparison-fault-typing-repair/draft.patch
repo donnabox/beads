@@ -1,0 +1,353 @@
+diff --git a/docs/design/transaction-implementation-progress.md b/docs/design/transaction-implementation-progress.md
+index 762e14a..8b5f8e6 100644
+--- a/docs/design/transaction-implementation-progress.md
++++ b/docs/design/transaction-implementation-progress.md
+@@ -1779,9 +1779,9 @@ an independent real commit during the existing private comparison wait. Complete
+ small graph and Event pages plus a readonly final receipt inventory distinguish
+ current context from timeout effects or duplicate replay. They do not prove
+ change-group pagination. The injected epoch-change case is defensive only: this
+-owner has no supported live epoch rotation. The pre-existing maintenance-failure
+-closed shortcut can still mask that fault before final observation and is not
+-repaired here.
++owner has no supported live epoch rotation. In snapshots30035/70ac, the
++pre-existing maintenance-failure closed shortcut still masked that fault before
++final observation; those timeout-context snapshots did not repair it.
+ 
+ Eighteen explicitly selected store/submission/HTTP/dependency/alias cases pass,
+ including sixteen loopback HTTP requests across two fixtures. Five isolated
+@@ -1793,3 +1793,26 @@ comparison override or load-based timing test is introduced. Existing direct and
+ sequence refusal installed cohorts remain separate regressions, not timeout
+ qualification; their execution is recorded outside this source note. No public
+ admission or discovery claim changes.
++
++### Maintenance-fault comparison guard successor (draft, 2026-10-14)
++
++A separate successor draft changes only the early comparison epoch guard so a
++normally closed owner still returns stopped, while retained owner or maintenance
++faults reach the existing owner-entry exception path. That path must produce the
++existing sanitized bodyless500 through the HTTP handler, rather than the benign
++retryable503. It adds no fault API, context synthesis, receiving policy or public
++profile claim.
++
++This draft is based on unmerged427cfef, whose unrelated test diagnostics remain
++CI-blocked; it does not claim that PR120 or this successor has landed. Planned
++source checks extend the three owner cases, add four observed/unobserved
++submission variants and one controlled emitted-runtime HTTP case, and select six
++existing regressions. The proposed old-guard derivative must reach the named
++503-versus500 failure with cleanup. No tests, builds, installed regressions or
++fault-sensitivity outcomes are claimed for this draft. Measured preflight and
++review precede execution; a later verified report must record exact source and
++outcomes. Any separately accepted installed direct-refusal14/1 run is healthy
++regression evidence, not default-installed maintenance-fault qualification.
++
++Earlier timeout-context evidence above and its historical reports remain bound
++to their original snapshots; this repair is not retroactively part of PR120.
+diff --git a/packages/server/src/transaction-http.test.ts b/packages/server/src/transaction-http.test.ts
+index 4ebc889..68ab544 100644
+--- a/packages/server/src/transaction-http.test.ts
++++ b/packages/server/src/transaction-http.test.ts
+@@ -864,6 +864,129 @@ it("maps a finite unresolved comparison to temporary refusal without disclosing
+   expect(replay.headers.get("bdp-scope-position")).toBe("pos-2");
+ });
+ 
++it("preserves maintenance faults as bodyless internal errors before direct admission", async () => {
++  const sentinel = new Error("private maintenance clock failure");
++  const seedKey = "maintenance-seed",
++    freshKey = "maintenance-after-fault";
++  const failures: unknown[] = [];
++  let f: Awaited<ReturnType<typeof fixture>> | undefined;
++  let seedReceipt: Record<string, unknown> | undefined;
++  let inject = false,
++    faultCalls = 0,
++    requests = 0;
++  let responseStatus: number | undefined;
++  let intervalCancelled = false,
++    closed = false,
++    inventoryChecked = false;
++  vi.useFakeTimers({ toFake: ["setInterval", "clearInterval"] });
++  try {
++    f = await fixture({
++      maintenanceIntervalMs: 25,
++      clock: () => {
++        if (inject) {
++          faultCalls++;
++          throw sentinel;
++        }
++        // This override replaces the fixture's clock; f.setTime is not used.
++        return 1000;
++      },
++    });
++    expect(vi.getTimerCount()).toBe(1);
++    requests++;
++    const seed = await f.post(batch([create("maintenance-seed")]), seedKey);
++    expect(seed.status, "selective interval/fetch compatibility").toBe(200);
++    seedReceipt = await body(seed);
++    const validateReceipt = ajv.compile({ $ref: `${schema.$id}#/$defs/mutationReceipt` });
++    expect(validateReceipt(seedReceipt), JSON.stringify(validateReceipt.errors)).toBe(true);
++    expect(seedReceipt).toMatchObject({
++      status: "completed",
++      detail: "available",
++      idempotencyKey: seedKey,
++      requiredPosition: "pos-1",
++      effectPosition: "pos-1",
++      next: null,
++    });
++    expect(seedReceipt.results).toEqual([
++      {
++        operationIndex: 0,
++        outcome: "created",
++        resource: expect.objectContaining({
++          id: `${f.runtime.scope}beads/maintenance-seed`,
++          type: bead,
++          properties: { title: "maintenance-seed" },
++          metadata: {},
++        }),
++      },
++    ]);
++    inject = true;
++    vi.advanceTimersByTime(25);
++    inject = false;
++    expect(faultCalls, "one actual maintenance clock failure").toBe(1);
++    expect(vi.getTimerCount(), "failed maintenance cancels its interval").toBe(0);
++    intervalCancelled = true;
++    vi.useRealTimers();
++    requests++;
++    const response = await f.post(batch([create("maintenance-after-fault")]), freshKey);
++    responseStatus = response.status;
++    const text = await response.text();
++    expect(responseStatus, "maintenance failure is internal500").toBe(500);
++    expect(text).toBe("");
++    expect(response.headers.get("content-length")).toBe("0");
++    expect(response.headers.get("cache-control")).toBe("private, no-store");
++    expect(response.headers.get("x-bdp-development")).toBe("non-attesting");
++    expect(response.headers.get("vary")).toBe("Accept");
++    for (const name of [
++      "content-type",
++      "retry-after",
++      "location",
++      "x-bdp-development-limit",
++      "bdp-scope-epoch",
++      "bdp-authorization-view",
++      "bdp-scope-position",
++    ])
++      expect(response.headers.has(name), name).toBe(false);
++    expect(text).not.toContain(sentinel.message);
++    for (const value of response.headers.values()) expect(value).not.toContain(sentinel.message);
++  } catch (error) {
++    failures.push(error);
++  } finally {
++    inject = false;
++    vi.useRealTimers();
++    if (f) {
++      try {
++        await f.runtime.close();
++        closed = true;
++      } catch (error) {
++        failures.push(error);
++      }
++      try {
++        // Exactly one post-close readonly inventory, even for the old-guard control.
++        const inventory = await f.retainedReceiptInventory();
++        expect(seedReceipt, "actual seed receipt exists before inventory comparison").toBeDefined();
++        expect(inventory, "fault creates no receipt or key binding").toEqual([
++          { principal: "p", key: seedKey, receipt: seedReceipt },
++        ]);
++        inventoryChecked = true;
++      } catch (error) {
++        failures.push(error);
++      }
++    }
++    console.info(
++      JSON.stringify({
++        kind: "comparison-maintenance-fault-cleanup",
++        requests,
++        responseStatus,
++        faultCalls,
++        intervalCancelled,
++        closed,
++        inventoryChecked,
++      }),
++    );
++  }
++  if (failures.length)
++    throw new AggregateError(failures, "maintenance HTTP assertion or cleanup failed");
++});
++
+ it("keeps a live listener from serving through an owner fenced by injected commit uncertainty", async () => {
+   const f = await fixture();
+   const exec = DatabaseSync.prototype.exec;
+diff --git a/packages/server/src/transaction-store.test.ts b/packages/server/src/transaction-store.test.ts
+index 04ec610..3cc9fa6 100644
+--- a/packages/server/src/transaction-store.test.ts
++++ b/packages/server/src/transaction-store.test.ts
+@@ -3267,6 +3267,7 @@ describe("private comparison deadline observation", () => {
+   it("returns a stopped comparison observation for a normally closed owner", () => {
+     const f = fixture();
+     f.store.close();
++    expect(f.store.comparisonEpoch(), "normal closed comparison epoch").toBeUndefined();
+     expect(f.store.observeComparisonDeadline(f.store.scopeEpoch)).toStrictEqual({
+       kind: "owner-stopped",
+     });
+@@ -3310,8 +3311,15 @@ describe("private comparison deadline observation", () => {
+     }
+     expect(failure).toBeInstanceOf(Error);
+     expect((failure as Error).cause).toBe(original);
++    expect(() => f.store.comparisonEpoch(), "fenced comparison epoch preserves failure").toThrow(
++      failure as Error,
++    );
+     expect(() => f.store.observeComparisonDeadline(f.store.scopeEpoch)).toThrow(failure as Error);
+     f.store.close();
++    expect(
++      () => f.store.comparisonEpoch(),
++      "closed fenced comparison epoch preserves failure",
++    ).toThrow(failure as Error);
+     expect(
+       () => f.store.observeComparisonDeadline(f.store.scopeEpoch),
+       "closed fenced deadline preserves failure",
+@@ -3343,6 +3351,15 @@ describe("private comparison deadline observation", () => {
+       expect(failure, "closed maintenance deadline preserves failure").toBeInstanceOf(Error);
+       expect((failure as Error).message).toBe("transaction maintenance failed; owner fenced");
+       expect((failure as Error).cause).toBe(original);
++      let epochFailure: unknown;
++      try {
++        store.comparisonEpoch();
++      } catch (error) {
++        epochFailure = error;
++      }
++      expect(epochFailure, "closed maintenance epoch preserves failure").toBeInstanceOf(Error);
++      expect((epochFailure as Error).message).toBe("transaction maintenance failed; owner fenced");
++      expect((epochFailure as Error).cause).toBe(original);
+     } finally {
+       try {
+         f?.store.close();
+diff --git a/packages/server/src/transaction-store.ts b/packages/server/src/transaction-store.ts
+index 412b0af..9641bda 100644
+--- a/packages/server/src/transaction-store.ts
++++ b/packages/server/src/transaction-store.ts
+@@ -1721,7 +1721,10 @@ export function openTransactionStore(options: TransactionStoreOptions) {
+       });
+     },
+     readConfiguration: () => enter(() => readConfiguration),
+-    comparisonEpoch: () => (closed ? undefined : enter(() => metadata("epoch"))),
++    comparisonEpoch: () => {
++      if (closed && !ownerFailure && !maintenanceFailure) return undefined;
++      return enter(() => metadata("epoch"));
++    },
+     /** Private deadline observation: one owner entry and one atomic metadata read. */
+     observeComparisonDeadline(
+       expectedEpoch: string,
+diff --git a/packages/server/src/transaction-submission.test.ts b/packages/server/src/transaction-submission.test.ts
+index 8eb694c..a356cb5 100644
+--- a/packages/server/src/transaction-submission.test.ts
++++ b/packages/server/src/transaction-submission.test.ts
+@@ -1102,6 +1102,110 @@ describe("observed comparison deadline submission", () => {
+     expect(observe).not.toHaveBeenCalled();
+     expect(f.store.cancelSequence(attempt)).toBe(2);
+   });
++  it.each([false, true])(
++    "propagates closed maintenance faults before admission (observed=%s)",
++    async (observed) => {
++      const original = new Error("submission background maintenance fault");
++      let inject = false;
++      let faultCalls = 0;
++      let f: ReturnType<typeof fixture> | undefined;
++      const failures: unknown[] = [];
++      vi.useFakeTimers();
++      try {
++        // No reservations: the failed epoch observation must precede admission.
++        f = fixture({
++          maintenanceIntervalMs: 25,
++          fault(stage) {
++            if (inject && stage === "before-maintenance-commit") {
++              faultCalls++;
++              throw original;
++            }
++          },
++        });
++        const admit = vi.fn(f.store.admit),
++          admitObserved = vi.fn(f.store.admitObserved),
++          observe = vi.fn(f.store.observeComparisonDeadline),
++          wait = vi.fn(async () => {});
++        // The real owner is frozen; delegates preserve its closure-backed faults.
++        const owner = {
++          ...f.store,
++          admit: ((...args: Parameters<typeof f.store.admit>) =>
++            admit(...args)) as typeof f.store.admit,
++          admitObserved,
++          observeComparisonDeadline: observe,
++        };
++        expect(vi.getTimerCount()).toBe(1);
++        inject = true;
++        vi.advanceTimersByTime(25);
++        inject = false;
++        expect(faultCalls).toBe(1);
++        expect(vi.getTimerCount()).toBe(0);
++        vi.useRealTimers();
++        await expect(
++          submitTransaction(owner, submission(), { wait }, observed),
++          "maintenance fault rejects before admission",
++        ).rejects.toMatchObject({
++          message: "transaction maintenance failed; owner fenced",
++          cause: original,
++        });
++        expect(admit).not.toHaveBeenCalled();
++        expect(admitObserved).not.toHaveBeenCalled();
++        expect(observe).not.toHaveBeenCalled();
++        expect(wait).not.toHaveBeenCalled();
++      } catch (error) {
++        failures.push(error);
++      } finally {
++        inject = false;
++        try {
++          f?.store.close();
++        } catch (error) {
++          failures.push(error);
++        } finally {
++          vi.useRealTimers();
++        }
++      }
++      if (failures.length)
++        throw new AggregateError(failures, "maintenance submission assertion or cleanup failed");
++    },
++  );
++  it.each([false, true])(
++    "preserves normal closed submission shape (observed=%s)",
++    async (observed) => {
++      const f = fixture();
++      f.store.close();
++      const admit = vi.fn(f.store.admit),
++        admitObserved = vi.fn(f.store.admitObserved),
++        observe = vi.fn(f.store.observeComparisonDeadline),
++        wait = vi.fn(async () => {});
++      const owner = {
++        ...f.store,
++        admit: ((...args: Parameters<typeof f.store.admit>) =>
++          admit(...args)) as typeof f.store.admit,
++        admitObserved,
++        observeComparisonDeadline: observe,
++      };
++      expect(await submitTransaction(owner, submission(), { wait }, observed)).toStrictEqual(
++        observed
++          ? {
++              kind: "comparison-refusal",
++              reason: "owner-stopped",
++              status: 503,
++              code: "temporarily-unavailable",
++              retry: "after-delay",
++            }
++          : {
++              kind: "refused",
++              status: 503,
++              code: "temporarily-unavailable",
++              retry: "after-delay",
++            },
++      );
++      expect(admit).not.toHaveBeenCalled();
++      expect(admitObserved).not.toHaveBeenCalled();
++      expect(observe).not.toHaveBeenCalled();
++      expect(wait).not.toHaveBeenCalled();
++    },
++  );
+   it("distinguishes a stopped final observation at the reached comparison deadline", async () => {
+     const f = fixture(),
+       attempt = dependencies(f.store);

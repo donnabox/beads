@@ -1,0 +1,10 @@
+{
+  "reason": "response-metadata-equals also compares status;409 cannot equal prior200. App supplement checks epoch/view; manifest presence/pos3/fullProblem retained.",
+  "removed": "m-body-conflict:same-context",
+  "oldAssertions": 193,
+  "newAssertions": 192,
+  "oldRowSha256": "cf0644f737bd7172e253f124002b51d06e20de28e42b2a8bc9be383244a12dee",
+  "newRowSha256": "744155bd7360807f255d16cd1d627e608676036347f6d0f1420269dab76ebefe",
+  "newRowCompactSha256": "5164c21057c76c2f4dc96634bf441eea45fbffa261e4c091dc3b9c3647be62cd",
+  "executed": false
+}

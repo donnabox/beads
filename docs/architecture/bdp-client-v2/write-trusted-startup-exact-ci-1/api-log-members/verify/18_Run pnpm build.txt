@@ -1,0 +1,9 @@
+﻿2026-10-18T07:01:22.6462387Z ##[group]Run pnpm build
+2026-10-18T07:01:22.6463139Z [36;1mpnpm build[0m
+2026-10-18T07:01:22.6545217Z shell: /usr/bin/bash -e {0}
+2026-10-18T07:01:22.6545624Z env:
+2026-10-18T07:01:22.6546032Z   PNPM_HOME: /home/runner/setup-pnpm/node_modules/.bin
+2026-10-18T07:01:22.6546566Z   GOTOOLCHAIN: local
+2026-10-18T07:01:22.6546923Z ##[endgroup]
+2026-10-18T07:01:23.1277256Z $ pnpm clean && tsc -b
+2026-10-18T07:01:23.5663129Z $ tsc -b --clean && node scripts/clean-build.mjs

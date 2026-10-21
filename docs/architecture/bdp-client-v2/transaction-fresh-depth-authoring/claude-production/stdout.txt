@@ -1,0 +1,60 @@
+# Code review — fresh deep-JSON repair, eight-file production delta
+
+**Verdict: no blocking defects. Three non-blocking findings (1 Low, 2 Informational), all disclosure/decision items rather than required code changes.**
+
+---
+
+## Findings
+
+### 1. (Low) Malformed receipt JSON in `sweep` no longer fences the owner
+
+**Location:** `packages/server/src/transaction-store.ts:550-553` (new JS filter), interacting with `atomic` at `transaction-store.ts:415-438`.
+
+**Defect:** The old predicate `json_extract(receipt,'$.detail')='available'` raised `ERR_SQLITE_ERROR` on an unparseable receipt. In `atomic`, `sqlite && !constraint` is true for that error, so the owner was fenced (`fence(cause)` at :436 — `ownerFailure` set, timer cleared, leases revoked). The replacement `parseReceipt(stored.receipt)` at :553 throws a plain `SyntaxError`: not a SQLite error, rollback is clean, so `atomic` rethrows at :437 **without** fencing.
+
+**Impact:** Narrow. The timer path (`:1443-1461`) still closes and sets the sticky `maintenanceFailure`, and the startup path (`:623` inside the provisioning `atomic`, catch at `:626-630`) still closes the db and rethrows. The only changed exposure is an explicit `maintain()` call: a corrupt receipt row now surfaces an error while leaving the store open and usable. Plan v2 P1 asserted "atomic rollback/fencing" would be preserved; this one case changed class. Note the opposite argument is strong: `expireRow`'s own `parseReceipt` (`:472`) and the admission-path `parseReceipt` calls (`:1142`, `:1157`, `:1167`, `:1224`) already throw unfenced `SyntaxError`s today, so the new behavior is *consistent* with the rest of the store and arguably more correct than fencing on a read-side data-corruption error.
+
+**Smallest fix:** None, if accepted — recommend accepting and recording the delta against P1 rather than changing code. If the fence must be preserved exactly, the minimal change is at `:553`: wrap the filter parse and escalate, e.g. `try { … } catch (error) { throw fence(error); }` — `fence` is already in scope. Do not catch-and-skip (plan forbids it; the delta correctly does not).
+
+### 2. (Informational) New Snapshot comparator does not compare array length
+
+**Location:** `packages/server/src/json-value-equality.ts:20-21`, as used at `packages/server/src/transaction-snapshot.ts:408`.
+
+**Defect:** Equality for arrays is decided by own-key count (`Object.keys`), not `length`. `isDeepStrictEqual`, which this replaces at the owned-Link site, compares `length`. Two holey arrays with the same own-index set but different `length` (e.g. `new Array(3)` vs `new Array(5)`) compare equal.
+
+**Impact:** Unreachable in the actual domain: both operands at `:408` originate from `JSON.parse` via `readStoredResource` (inline `ownedLinks` copy vs first-class record), and JSON arrays are always dense. The only guard today is the module doc comment ("admitted dense JSON"). Behavior at the `resource-evaluator.ts:839-840` site is byte-identical to the pre-existing `equal`, so nothing changed there.
+
+**Smallest fix:** Not required. If wanted, one line inside the array branch: `if (Array.isArray(a) && a.length !== (b as unknown[]).length) return false;` — no in-domain behavior change.
+
+### 3. (Informational) Deep available receipts are JSON-parsed twice per sweep, and every owner-null row is now materialized
+
+**Location:** `packages/server/src/transaction-store.ts:550-554` (`parseReceipt` in the filter, then `expireRow` → `parseReceipt` at `:472`).
+
+**Defect/Impact:** This is exactly what plan v2 P1 mandated ("JS-filters `parseReceipt(...).detail === available`, calling **unchanged** `expireRow`"), so it is not a deviation. Two measurable costs for the record: (a) each available receipt — including the 24 KB/depth-12000 witness case — is parsed twice on every maintenance tick and at startup; (b) `SELECT * FROM receipts WHERE owner IS NULL` now crosses full row text for compacted/`expired` rows into JS, where previously SQLite filtered them out (SQLite still parsed them in C to evaluate the predicate, so this is a constant-factor change, not asymptotic). Counts, ordering (no `ORDER BY` before or after), pending exclusion, compact skip, exact-instant expiry, completed compaction, failed deletion and atomic rollback are otherwise identical, including the "invalid terminal receipt retention state" throw remaining reachable for exactly the same row set.
+
+**Smallest fix:** None recommended — threading the parsed receipt into `expireRow` would change its signature, which the plan froze. Flagging only so the authoring measurement step records it.
+
+---
+
+## Checks performed and verified clean
+
+- **Helper extraction is semantics-preserving.** `json-value-equality.ts:3-28` is byte-identical to the removed `resource-evaluator.ts` `equal` (patch lines 14-40 vs 363-388). Key-order independence, array order/length-by-key-count, key presence, null-vs-absent, native finite-number `===` (so `-0`/`0` equal, as admitted), iterative stack (no `RangeError` at depth 12000). Call sites `resource-evaluator.ts:839-840` are unchanged except the name; no-op/`needsContext`/`metadata` logic untouched.
+- **Snapshot scope of the new comparator.** Only `transaction-snapshot.ts:408` (full owned-Link vs first-class record). The ID-array ordering check (`:400-405`, still `isDeepStrictEqual`), owned-plane Type check (`:391-396`), and endpoint checks (`:414-424`) are unchanged; `isDeepStrictEqual` therefore remains a used import. Mismatch still rejects: `jsonValueEqual(link, undefined)` returns `false`, so a missing first-class record still fails integrity.
+- **Only the JSON-depth refusal was removed.** No `assertTransactionInputDepth`, `transactionDepthRefusal`, `prepareDepthCarrier`, `requireTransactionDepth`, `depthRefusals`, or `"development-limit"` string remains anywhere in the repo (the surviving `x-bdp-development-limit` hits are the unrelated response header). Retained: byte bounds (`transaction-batch.ts:106,133,202,218,266`; `transaction-submission.ts:84`), Selector grammar + `TRANSACTION_SELECTOR_LIMITS` depth 32 (`transaction-set.ts:16`, `transaction-batch.ts:166-172`, `transaction-store.ts:1173-1185`), operation limits, `patchPathDepth: 32` (`development-authority.ts:57`), `TransactionDevelopmentLimitError` class and its live throws (`transaction-store.ts:1498,1500`).
+- **Carrier brands/freezing.** Every path still goes through `prepareCarrier` (`transaction-batch.ts:121,173,230,309`), which freezes and brands via the `prepared` WeakSet; `sequences` brand unchanged.
+- **Complete syntax preserved.** Unconditional `object(decodeJsonDocument(text))` for every singleton before branch selection retained at `transaction-batch.ts:221` (plan P3). The sequence-only re-decode removed at `prepareSequence` was strictly redundant and ran *after* `prepareReadUpdateSequence`, which already parses the same text and validates the root/`operations` shape (`protocol/src/read-update-preflight.ts:58-71`) — no error-precedence or validation loss.
+- **Idempotency ordering.** `admitKey` still classifies in order: pending-wins (`:1141`), dependency template (`:1143-1158`), retained identity equal/conflict (`:1163-1168`), then fresh controls (`:1171-1186`). The deleted depth branch sat between dependency comparison and `normalizeTransaction` and had no other ordering role. Sequence bulk reservation (`:1968-1985`) and turn admission (`:2095`) still call `admitKey` directly without receiving controls.
+- **Retained narrow catch cannot hide generic faults.** `transaction-http.ts:339-343` matches `instanceof TransactionDevelopmentLimitError` only and rethrows everything else. It is now unreachable from the sequence route (sequence paths never reach `admit`), as plan P4 predicted; no live-capacity claim is implied by the code.
+- **No public surface change.** `index.ts` imports none of the eight modules; `development.ts` untouched; `package.json` exports unchanged; `json-value-equality.ts` is source-private; `scripts/dependency-boundary-rules.mjs` only polices test-only imports, and the new module imports nothing.
+- **No remaining SQLite JSON seam on deep data.** The only surviving `json_extract`/`json_type` uses are over `snapshots.disposition` (`transaction-snapshot.ts:264,272,273,285,312`), a flat scalar record bounded to 1024 bytes (`:30`, `:42-55`, `:779`). No SQL JSON function touches `receipts.receipt` or `resources.body`.
+- **Compile-level review (no build run).** All touched imports remain used (`isDeepStrictEqual` at snapshot `:400`; `TransactionDevelopmentLimitError` at store `:1498/1500`, http `:340`, re-export at batch `:54`; `decodeJsonDocument`/`LosslessJsonValue`/`JsonNumberLiteral` in batch/set). `submitTransaction`'s switch stays exhaustive over the nine `DirectComparison` kinds, satisfying `noImplicitReturns`; `TransactionServiceSubmissionResult` is `Exclude`-derived and tracks the shrunken union automatically; `transaction-http.ts:372` narrows to the single `refused` variant. `input` at batch `:221` is still read in the set branch, so `noUnusedLocals` is satisfied.
+- **Reopen is actually repaired.** Startup `sweep` (`:623`) is the path that previously threw `ERR_SQLITE_ERROR` and then `db.close()`/`unlink` at `:626-630` with a deep available receipt present; it now parses in JS.
+
+---
+
+## Scope and missing context
+
+- Reviewed: `claude-production/production.patch` and `binding.json` (workspace `/Users/dbox/repos/wt/vickie/vickie-fresh-depth-serving`, head `77b4cf98`, eight frozen production paths), the eight files in full or in all relevant regions, plus read-only context in `transaction-comparison.ts`, `transaction-service.ts`, `transaction-sequence.ts`, `development-contracts.ts`, `installed-schema-value.ts`, `protocol/src/json-values.ts`, `read-update-preflight.ts`, `tsconfig.base.json`, `package.json`, `scripts/dependency-boundary-rules.mjs`. Plan v2 and source-dispositions-v2 read as accepted inputs.
+- Not reviewed, by instruction: the source/installed tests being authored, `docs/design/transaction-implementation-progress.md`, and any evidence/selection artifacts. Nothing here approves tests, evidence, selection counts, lifecycle inventory, or byte/oracle measurements.
+- I did not execute anything: no build, no typecheck, no tests, no SQL, no git commands. The compile observations above are from reading sources and `tsconfig.base.json` (`noUnusedLocals`, `noImplicitReturns`, `verbatimModuleSyntax`, `exactOptionalPropertyTypes`); they are a code read, not a `tsc` result. No commit, CI, or full-profile claim follows from this review, and the native plus Claude review and test gates remain separate.
+- Uncertainty I could not close by reading: actual maintenance cost and receipt/identity byte expansion (finding 3) need the authoring measurement step; and whether the fencing delta in finding 1 is acceptable is a policy call for the plan owners, not something the code can settle.

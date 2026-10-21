@@ -1,0 +1,130 @@
+--- /Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-D4-synthetic-harness-preparation-6/static-authoring-parse.json
++++ /Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-D4-synthetic-harness-preparation-5/static-authoring-parse.json
+@@ -1,87 +1,44 @@
+ {
+-  "Perl": {
+-    "availability_limit.pl": {
+-      "changedLine": 41,
+-      "evaluationOrCompileCheck": false,
+-      "oneLiteralOnly": true,
+-      "reverseExact": true
++  "method": "Literal source/bytes comparison only; no Python/Perl subject import/evaluation/compilecheck",
++  "pythonHelpersNamespaceReversedByteExact": [
++    "availability_owner.py",
++    "availability_peer.py",
++    "bootstrap.py",
++    "gate_controls.py",
++    "harness.py",
++    "host_controls.py",
++    "host_peer.py",
++    "outer_host.py",
++    "outer_worker.py",
++    "owned_spawn.py",
++    "report_controls.py",
++    "scanner_controls.py",
++    "watchdog_controls.py"
++  ],
++  "pythonHelpersCount": 13,
++  "other12PythonBodiesUnchanged": true,
++  "PerlSourceCorrection": [
++    {
++      "path": "availability_limit.pl",
++      "beforeSha256": "a417085647b6617674d8dc839222ab85c45dcbf6e62e6440e9f76b63bc49ca14",
++      "afterSha256": "9b85dcfc35879341070ee0692cffd4bcfd8a8f2d1a0d9b505ce2be4e7f15bae1",
++      "sameLiteralArgvAfterNamespace": "'/opt/homebrew/opt/python@3.14/bin/python3.14','-I','-B','/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-D4-synthetic-harness-preparation-5/availability_owner.py',\"$ORIGIN\",$release,\"$limiter\"",
++      "beforePattern": "exec LIST; then unconditional POSIX::_exit(126)",
++      "afterPattern": "exec(SAME LIST) or POSIX::_exit(126)",
++      "availabilityWarningObservedOnly": true,
++      "evaluatedOrCompileChecked": false
+     },
+-    "hard_limit.pl": {
+-      "changedLine": 42,
+-      "evaluationOrCompileCheck": false,
+-      "oneLiteralOnly": true,
+-      "reverseExact": true
++    {
++      "path": "hard_limit.pl",
++      "beforeSha256": "fa2c5e9a26bb6cb1fd8d3ca2bec89f58f3136412e15330e1d93184e1b21f8c7e",
++      "afterSha256": "f18dc1a43814dbe6040545f8665adee4533e326434b65e644081b85d72bf3f91",
++      "sameLiteralArgvAfterNamespace": "'/opt/homebrew/opt/python@3.14/bin/python3.14','-I','-B','/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-D4-synthetic-harness-preparation-5/outer_host.py','--limited-owner',\"$ORIGIN\",$case,$variant,$release,\"$limiter\"",
++      "beforePattern": "exec LIST; then unconditional POSIX::_exit(126)",
++      "afterPattern": "exec(SAME LIST) or POSIX::_exit(126)",
++      "availabilityWarningObservedOnly": false,
++      "evaluatedOrCompileChecked": false
+     }
+-  },
+-  "bytecodeCompiled": false,
+-  "kind": "STATIC_AST_PARSE_ONLY_NO_HELPER_EVALUATION",
+-  "moduleImported": false,
+-  "python": {
+-    "availability_owner.py": {
+-      "lines": 168,
+-      "sha256": "c3615a87bd70256b383e585268a9d21d1c951f8f9618dfa0dd820101dd157fa7",
+-      "syntaxAST": "PARSED_WITHOUT_IMPORT_OR_EVALUATION"
+-    },
+-    "availability_peer.py": {
+-      "lines": 20,
+-      "sha256": "65c078a6d9739f4c4017433eef5d260084e9ee005622a7d5f08fdc89b0b05ec7",
+-      "syntaxAST": "PARSED_WITHOUT_IMPORT_OR_EVALUATION"
+-    },
+-    "bootstrap.py": {
+-      "lines": 39,
+-      "sha256": "6e11b44e8e95458b35052c87a02a17cffdae32ad060a5dbd3de53e19f2f873cc",
+-      "syntaxAST": "PARSED_WITHOUT_IMPORT_OR_EVALUATION"
+-    },
+-    "gate_controls.py": {
+-      "lines": 50,
+-      "sha256": "47e89d6e27c0ae5d1dc80aaeedd2199decdfff41a28dca97e8382348fefc6b8c",
+-      "syntaxAST": "PARSED_WITHOUT_IMPORT_OR_EVALUATION"
+-    },
+-    "harness.py": {
+-      "lines": 108,
+-      "sha256": "40d5b1a9da985fde2db27d5709eae831628b93771bb79d9401ee890177d048f5",
+-      "syntaxAST": "PARSED_WITHOUT_IMPORT_OR_EVALUATION"
+-    },
+-    "host_controls.py": {
+-      "lines": 114,
+-      "sha256": "3aa0f1cf48cf404cc78203bd66089aacb12bc66bc7357ea35d28e19dad3a522d",
+-      "syntaxAST": "PARSED_WITHOUT_IMPORT_OR_EVALUATION"
+-    },
+-    "host_peer.py": {
+-      "lines": 80,
+-      "sha256": "e586b1568c5b51e0e60386565922f35db98a8521ecd1b093e50d1646a6f12798",
+-      "syntaxAST": "PARSED_WITHOUT_IMPORT_OR_EVALUATION"
+-    },
+-    "outer_host.py": {
+-      "lines": 381,
+-      "sha256": "f426e0f928d6f8c5a330aeebc492fd4839f69a153f89e7c8386230e0c236a29f",
+-      "syntaxAST": "PARSED_WITHOUT_IMPORT_OR_EVALUATION"
+-    },
+-    "outer_worker.py": {
+-      "lines": 109,
+-      "sha256": "c18a2e78dc8da96613b36cb909a8f1503091871200884dce313de6cc06c8f35b",
+-      "syntaxAST": "PARSED_WITHOUT_IMPORT_OR_EVALUATION"
+-    },
+-    "owned_spawn.py": {
+-      "lines": 60,
+-      "sha256": "c4d73ba6d4d6d759b7e5dbeeb79986d2c8d6ccade163886b6a07b17cba02f3d8",
+-      "syntaxAST": "PARSED_WITHOUT_IMPORT_OR_EVALUATION"
+-    },
+-    "report_controls.py": {
+-      "lines": 133,
+-      "sha256": "1ea691e5d601c8f676a89e9d6e73ccfe388b73ac299a62366a4ad3253b955098",
+-      "syntaxAST": "PARSED_WITHOUT_IMPORT_OR_EVALUATION"
+-    },
+-    "scanner_controls.py": {
+-      "lines": 138,
+-      "sha256": "25f2b4ccdc3691acb8726a4a4a868f2df5f8f657df40a83f82013dfca93c3b56",
+-      "syntaxAST": "PARSED_WITHOUT_IMPORT_OR_EVALUATION"
+-    },
+-    "watchdog_controls.py": {
+-      "lines": 196,
+-      "sha256": "8ad4abdbbc7a0973c99cf98a989e0130ca883288e6223595a157fa0bd67162ff",
+-      "syntaxAST": "PARSED_WITHOUT_IMPORT_OR_EVALUATION"
+-    }
+-  },
+-  "subjectInvoked": false
++  ],
++  "PerlStatementRemainderReverseByteExact": true,
++  "allActualH5Outcomes": "UNKNOWN"
+ }

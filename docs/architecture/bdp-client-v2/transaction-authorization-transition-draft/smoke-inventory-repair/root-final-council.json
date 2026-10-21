@@ -1,0 +1,32 @@
+{
+  "at": "2026-10-16T03:01:31.401485+00:00",
+  "status": "accepted",
+  "scope": "four explicit emitted authorization files in strict smoke inventory",
+  "base": "87911dce8146339ccf42d35fac55daec52760843",
+  "patchSha256": "5920d52bd180373fcf2c830aeed75afac56f8ad14ba51c9ab4c09671726246d0",
+  "native": "Root read exact diff and actual smoke output; independently verified preserved source and emitted hashes. No guard weakened.",
+  "claude": {
+    "exitCode": 0,
+    "shellEquivalentExit": 0,
+    "timeout": false,
+    "forcedTermination": false,
+    "elapsedSeconds": 85.49770466680638,
+    "sourceAndInputsUnchanged": true,
+    "sourceCheckError": null,
+    "stdoutSha256": "d4c3f5aec391d44c8950f8b860d478e381b90af01087e0fd7d4acf939147706d",
+    "stderrSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "stdoutBytes": 5537,
+    "stderrBytes": 0,
+    "cleanupSha256": "4e579d652c8e0eb6e281cfe63c830441cc013a97e942d362aba1952589915f50",
+    "cleanupClear": true
+  },
+  "disposition": "All five findings read. No actionable defect. Subpath whitelist is not exhaustive symbol whitelist; missing context checked in author audit and existing production council. No additional scope change.",
+  "evidence": {
+    "smoke-inventory-repair/claude-supplement/stdout.txt": "d4c3f5aec391d44c8950f8b860d478e381b90af01087e0fd7d4acf939147706d",
+    "smoke-inventory-repair/claude-supplement/native-findings-audit.md": "77b5954e446b0df1caf5e6888593d8c78008f908f848bdb1f12edea720991b55",
+    "smoke-inventory-repair/root-actual-validation.json": "7bed07a5e963b657a9e3aecdbe60b7d5a8ccf27d6f9e4c5f5807e2df68a6c3d4",
+    "ci-fixture-repair/root-final-council.json": "b5fc5818d9ae108111459c1c172a3506d23148e982500037e314fdb35e4edfbe",
+    "root-final-council.json": "c378ae6c23d95d74309d7e2a8c606f7a29d41ca6180afa8d0ce1325fc984a8f7"
+  },
+  "mergeGate": "fresh exact-head green CI and ordinary ancestry plus actual merged-tree verification still required"
+}

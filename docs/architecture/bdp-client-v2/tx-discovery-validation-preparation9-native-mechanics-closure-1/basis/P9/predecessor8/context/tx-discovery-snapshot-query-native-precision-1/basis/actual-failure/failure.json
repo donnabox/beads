@@ -1,0 +1,208 @@
+{
+  "utc": "2026-10-18T11:49:00.835454+00:00",
+  "classification": "actual installed-03 selected callback FAILED D3 target confinement at source1480 d3Safe(manifest.id), before changes-root/events-root; no semantic disposition yet",
+  "actualPass": 28,
+  "actualFailure": 1,
+  "laterUnattempted": 23,
+  "laterStages": [
+    "audit-installed-03",
+    "installed-04",
+    "audit-installed-04",
+    "installed-05",
+    "audit-installed-05",
+    "installed-06",
+    "audit-installed-06",
+    "installed-07",
+    "audit-installed-07",
+    "installed-08",
+    "audit-installed-08",
+    "installed-09",
+    "audit-installed-09",
+    "installed-10",
+    "audit-installed-10",
+    "installed-11",
+    "audit-installed-11",
+    "schema-installed-positive",
+    "audit-schema-installed-positive",
+    "required-check-boundaries",
+    "required-e2e-ready-preflight",
+    "required-smoke",
+    "required-evidence-verify"
+  ],
+  "first29ActualStages": [
+    [
+      "node-version",
+      true,
+      0
+    ],
+    [
+      "pnpm-version",
+      true,
+      0
+    ],
+    [
+      "workspace-install",
+      true,
+      0
+    ],
+    [
+      "bind-workspace-tools",
+      true,
+      0
+    ],
+    [
+      "typecheck",
+      true,
+      0
+    ],
+    [
+      "format-check",
+      true,
+      0
+    ],
+    [
+      "lint",
+      true,
+      0
+    ],
+    [
+      "fresh-build",
+      true,
+      0
+    ],
+    [
+      "bind-fresh-build",
+      true,
+      0
+    ],
+    [
+      "focused-source",
+      true,
+      0
+    ],
+    [
+      "audit-focused-source",
+      true,
+      0
+    ],
+    [
+      "legacy-changefeed-source",
+      true,
+      0
+    ],
+    [
+      "audit-legacy-changefeed-source",
+      true,
+      0
+    ],
+    [
+      "legacy-installed-contracts-source",
+      true,
+      0
+    ],
+    [
+      "audit-legacy-installed-contracts-source",
+      true,
+      0
+    ],
+    [
+      "schema-confinement-source",
+      true,
+      0
+    ],
+    [
+      "audit-schema-confinement-source",
+      true,
+      0
+    ],
+    [
+      "prepare-package-directory",
+      true,
+      0
+    ],
+    [
+      "pack-protocol",
+      true,
+      0
+    ],
+    [
+      "pack-server",
+      true,
+      0
+    ],
+    [
+      "verify-archives",
+      true,
+      0
+    ],
+    [
+      "prepare-consumer",
+      true,
+      0
+    ],
+    [
+      "consumer-install",
+      true,
+      0
+    ],
+    [
+      "verify-installed-consumer",
+      true,
+      0
+    ],
+    [
+      "installed-01",
+      true,
+      0
+    ],
+    [
+      "audit-installed-01",
+      true,
+      0
+    ],
+    [
+      "installed-02",
+      true,
+      0
+    ],
+    [
+      "audit-installed-02",
+      true,
+      0
+    ],
+    [
+      "installed-03",
+      false,
+      1
+    ]
+  ],
+  "sourceBindingSha256": "b3547ec381d4e05121d3994d6550fe2f160a8ba266195a8724a6d5a851e268d4",
+  "all679SourceUnchanged": true,
+  "currentSourceIdentity": "9b7d3a753bc22a3188f5dda7199fdb7321f65dfa0fa745cce082f3f82a837a9f",
+  "currentGitBinaryPatchSha256": "4d57679e34192081ce3a300cfc88efa25abcadd4353891b63866c8e0223065dd",
+  "failedExit": {
+    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/tx-discovery-validation-preparation-6/run/installed-03.exit.json",
+    "sha256": "975b17d352612553181ebf3b7fd06ffc5fff400d3390896ab43cdcb2d0c9ac49"
+  },
+  "failedResults": {
+    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/tx-discovery-validation-preparation-6/run/installed-03.results.json",
+    "sha256": "d2223585d3721c3cf1de5917ecc677b509ebe8dcc75b3a71d3bbd155cc38ca05"
+  },
+  "failedLog": {
+    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/tx-discovery-validation-preparation-6/run/installed-03.log",
+    "sha256": "8ac071a44553535de8f5c95e21c8fc465162aa0b8b2b0247afa4f028f169a441"
+  },
+  "failedPidsAbsent": [
+    5594,
+    5597,
+    5614
+  ],
+  "failedGroupsAbsent": [
+    5594
+  ],
+  "gateNowReleased": false,
+  "gateSha256": "738a281da7a6fa55d26d8255da0b030d086d40145bad29983b036fe53548bedb",
+  "noRetry": true,
+  "installed02StrictAuditNowPassed": true,
+  "noWholeProfileQualification": true
+}

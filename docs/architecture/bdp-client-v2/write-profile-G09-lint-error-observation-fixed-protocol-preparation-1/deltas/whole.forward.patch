@@ -1,0 +1,154 @@
+--- before/lint.capture.txt
++++ proposals/lint-error-observation.capture.txt
+@@ -8,20 +8,24 @@
+ ORIGIN = time.monotonic()
+ import os, json, hashlib, subprocess, select
+ from pathlib import Path
+-STAGE = 'lint'
+-ARGV = ['/opt/homebrew/opt/python@3.14/bin/python3.14', '/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation-preparation-3/run.py', 'final', 'lint']
++STAGE = 'lint-error-observation'
++
++# Child exit1 remains failed lint. Wrapper/tool exit0 means local capture only, never quality PASS.
++# Full raw error/fatal/infrastructure classification is independently required after A/B/C;
++# neither observationComplete nor UNKNOWN_PENDING_ROOT_RAW_REVIEW grants final root acceptance.
++ARGV = ['/opt/homebrew/opt/python@3.14/bin/python3.14', '/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-lint-error-observation-preparation-1/run.py', 'final', 'lint-error-observation']
+ CWD = '/Users/dbox/repos/wt/vickie/vickie-schema-minimum'
+-P = Path('/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation-preparation-3')
++P = Path('/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-lint-error-observation-preparation-1')
+ # Root must prepare/review/publish these exact replacements in a future literal
+ # command before invoking; this CLOSED proposal refuses unbound placeholders.
+ APPROVED_GATE_SHA256 = 'UNRESOLVED_FUTURE_ROOT_ACTIVATED_GATE_SHA256'
+-EXPECTED_IMPLEMENTATION_SHA256 = '8ad44a93c1215bfe0b9777df4135385f72e82dd8873287a6988da2f1fb7615c6'
++EXPECTED_IMPLEMENTATION_SHA256 = 'e5859fb63e924b6e931d33dd88e217dea97c091159507287c06bcb0312913a47'
+ EXPECTED_SOURCE_BINDING_SHA256 = '712c3c5a8e1543bf5005cbb54d321c6874b7443afb7e01805f393434fe5cd714'
+-EXPECTED_COMMANDS_SHA256 = 'd7189bd723bce76f8b214a33197ec48485e6f534f310dad10522f8612d495ef7'
+-OWNED_ROOT_OUTPUT = '/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation3-root-next5-dispatch-1/lint'
++EXPECTED_COMMANDS_SHA256 = '7850e90410ac64eb109fbbe51650bee67bb5a7afa934edfa069c6e5c8aaadc94'
++OWNED_ROOT_OUTPUT = '/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-lint-error-observation-root-dispatch-1/lint-error-observation'
+ # Additive exact externally pinned root execution acceptance; charged to ORIGIN.
+ APPROVED_EXECUTION_ACCEPTANCE_SHA256 = 'UNRESOLVED_FUTURE_ROOT_EXECUTION_ACCEPTANCE_SHA256'
+-EXECUTION_ACCEPTANCE_PATH = Path('/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation3-next5-root-execution-acceptance-1/acceptance.json')
++EXECUTION_ACCEPTANCE_PATH = Path('/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-lint-error-observation-root-execution-acceptance-1/acceptance.json')
+ assert type(APPROVED_EXECUTION_ACCEPTANCE_SHA256) is str and len(APPROVED_EXECUTION_ACCEPTANCE_SHA256)==64 and all(c in '0123456789abcdef' for c in APPROVED_EXECUTION_ACCEPTANCE_SHA256)
+ assert EXECUTION_ACCEPTANCE_PATH.is_file() and not EXECUTION_ACCEPTANCE_PATH.is_symlink()
+ execution_acceptance_raw = EXECUTION_ACCEPTANCE_PATH.read_bytes()
+@@ -32,14 +36,17 @@
+ assert execution_acceptance['session'] == '2026-10-18T02:16:24Z-549f'
+ assert execution_acceptance['mode'] == 'final'
+ assert execution_acceptance['sourceBindingSha256'] == '712c3c5a8e1543bf5005cbb54d321c6874b7443afb7e01805f393434fe5cd714'
+-assert execution_acceptance['implementationIndexSha256'] == '8ad44a93c1215bfe0b9777df4135385f72e82dd8873287a6988da2f1fb7615c6'
+-assert execution_acceptance['commandsSha256'] == 'd7189bd723bce76f8b214a33197ec48485e6f534f310dad10522f8612d495ef7'
+-assert type(execution_acceptance['approvedStages']) is list and execution_acceptance['approvedStages'] == ['node-version','pnpm-version','workspace-install','bind-workspace-tools','typecheck','format-check','lint','fresh-build','bind-fresh-build']
++assert execution_acceptance['implementationIndexSha256'] == 'e5859fb63e924b6e931d33dd88e217dea97c091159507287c06bcb0312913a47'
++assert execution_acceptance['commandsSha256'] == '7850e90410ac64eb109fbbe51650bee67bb5a7afa934edfa069c6e5c8aaadc94'
++assert type(execution_acceptance['approvedStages']) is list and execution_acceptance['approvedStages'] == ['lint-error-observation']
+ assert STAGE in execution_acceptance['approvedStages']
++assert execution_acceptance['diagnosticOnly'] is True
++assert execution_acceptance['noPipelineCredit'] is True
++assert execution_acceptance['qualityAcceptance'] is False
+ assert type(execution_acceptance['activeGate']) is dict and set(execution_acceptance['activeGate']) == {'path','sha256'}
+ assert execution_acceptance['activeGate'] == {'path':str(P/'execution-gate.json'),'sha256':APPROVED_GATE_SHA256}
+ assert time.monotonic()-ORIGIN<115
+-# End additive authority-only checks; every original A/B/C byte follows unchanged.
++# End diagnostic authority-only checks; enumerated local-capture predicate/scope changes follow.
+ proc = None
+ handles = []
+ streams = []
+@@ -58,12 +65,11 @@
+     assert hashlib.sha256((P/'source-binding.json').read_bytes()).hexdigest() == EXPECTED_SOURCE_BINDING_SHA256
+     assert hashlib.sha256((P/'commands.json').read_bytes()).hexdigest() == EXPECTED_COMMANDS_SHA256
+     root = Path(OWNED_ROOT_OUTPUT)
+-    if STAGE == 'typecheck': root.parent.mkdir(mode=0o700, exist_ok=False)
+-    else: assert root.parent.is_dir() and not root.parent.is_symlink()
++    root.parent.mkdir(mode=0o700, exist_ok=False)  # first and only diagnostic; prior parent blocks
+     root.mkdir(mode=0o700, exist_ok=False)  # exclusive; any prior attempt blocks
+     root_acquired = True
+     with (root/'origin.json').open('x') as origin_file:
+-        origin_file.write(json.dumps({'session':'2026-10-18T02:16:24Z-549f','stage':STAGE,'originMonotonic':ORIGIN,'collectorPid':os.getpid(),'collectorPgid':os.getpgrp(),'argv':ARGV,'cwd':CWD,'rootGateSha256':APPROVED_GATE_SHA256,'implementationSha256':EXPECTED_IMPLEMENTATION_SHA256,'sourceBindingSha256':EXPECTED_SOURCE_BINDING_SHA256,'commandsSha256':EXPECTED_COMMANDS_SHA256},allow_nan=False)+'\n')
++        origin_file.write(json.dumps({'session':'2026-10-18T02:16:24Z-549f','stage':STAGE,'originMonotonic':ORIGIN,'collectorPid':os.getpid(),'collectorPgid':os.getpgrp(),'argv':ARGV,'cwd':CWD,'rootGateSha256':APPROVED_GATE_SHA256,'implementationSha256':EXPECTED_IMPLEMENTATION_SHA256,'sourceBindingSha256':EXPECTED_SOURCE_BINDING_SHA256,'commandsSha256':EXPECTED_COMMANDS_SHA256,'observationKind':'ERROR_ONLY_NOT_QUALITY_PASS','qualityPass':False,'nextStageAuthorized':False,'diagnosticClassification':'UNKNOWN_PENDING_ROOT_RAW_REVIEW','rootClassificationRequired':True},allow_nan=False)+'\n')
+     registry['pids'].append(os.getpid()); registry['pgids'].append(os.getpgrp())
+     registry['origins'].append({'role':'collector','pid':os.getpid(),'pgid':os.getpgrp(),'basis':'actual local getpid/getpgrp; no signal authority'})
+     for suffix in ('stdout','stderr'):
+@@ -172,7 +178,7 @@
+                         registry['pids'].append(pid)
+                         registry['origins'].append({'role':'actual-inner-sampledPid','pid':pid,'pgid':None,'receipt':str(item)})
+         if inner is None: failure = failure or 'inner-terminal-unavailable'
+-        elif not (inner['exit']==0 and inner['accepted'] is True and inner['sourceUnchanged'] is True and inner['sourceIdentity']=='f6baa7922feea80b9ae9641abc08ed79c339ff719769cc95162fe87ddc70bc65' and inner['forcedCleanup'] is False and inner['errors']==[] and inner['remainingProcesses']==[] and inner['runtimeDirectoriesStillPresent']==[]): failure = failure or 'inner-not-accepted'
++        elif not (type(inner['exit']) is int and inner['exit']==1 and inner['accepted'] is False and inner['qualityPass'] is False and inner['observationComplete'] is True and inner['observationKind']=='ERROR_ONLY_NOT_QUALITY_PASS' and inner['status']=='CAPTURE_COMPLETE_PENDING_ROOT_CLASSIFICATION' and inner['diagnosticClassification']=='UNKNOWN_PENDING_ROOT_RAW_REVIEW' and inner['rootClassificationRequired'] is True and inner['sourceUnchanged'] is True and inner['sourceIdentity']=='f6baa7922feea80b9ae9641abc08ed79c339ff719769cc95162fe87ddc70bc65' and inner['forcedCleanup'] is False and inner['errors']==[] and inner['remainingProcesses']==[] and inner['runtimeDirectoriesStillPresent']==[]): failure = failure or 'inner-diagnostic-capture-incomplete'
+     except BaseException as exc:
+         failure = failure or type(exc).__name__
+     facts = []
+@@ -185,7 +191,7 @@
+         try:
+             assert time.monotonic()-ORIGIN<120
+             with (root/'collector-provisional.json').open('x') as metadata:
+-                metadata.write(json.dumps({'stage':STAGE,'originMonotonic':ORIGIN,'collectorPid':os.getpid(),'collectorPgid':os.getpgrp(),'rootWrapperArgv':ARGV,'rootWrapperCwd':CWD,'sourceBindingSha256':EXPECTED_SOURCE_BINDING_SHA256,'implementationIndexSha256':EXPECTED_IMPLEMENTATION_SHA256,'rootGateSha256':APPROVED_GATE_SHA256,'creationPid':proc.pid if proc is not None else None,'creationPgid':proc.pid if proc is not None else None,'directHandleRegistered':proc is not None and proc in handles,'rawExit':proc.returncode if proc is not None else None,'forcedTermination':forced,'pipeCloseSucceeded':pipe_close_succeeded,'streams':facts,'innerReceipts':inner_pins,'knownTaskRegistry':registry,'failure':failure,'elapsedAtProvisionalPublication':time.monotonic()-ORIGIN,'actualCollectorToolTerminal':None,'freshSelectedCensus':None,'finalClockWitness':None,'accepted':False,'requiresIndependentOrdinaryToolObservations':True},allow_nan=False)+'\n')
++                metadata.write(json.dumps({'stage':STAGE,'originMonotonic':ORIGIN,'collectorPid':os.getpid(),'collectorPgid':os.getpgrp(),'rootWrapperArgv':ARGV,'rootWrapperCwd':CWD,'sourceBindingSha256':EXPECTED_SOURCE_BINDING_SHA256,'implementationIndexSha256':EXPECTED_IMPLEMENTATION_SHA256,'rootGateSha256':APPROVED_GATE_SHA256,'creationPid':proc.pid if proc is not None else None,'creationPgid':proc.pid if proc is not None else None,'directHandleRegistered':proc is not None and proc in handles,'rawExit':proc.returncode if proc is not None else None,'forcedTermination':forced,'pipeCloseSucceeded':pipe_close_succeeded,'streams':facts,'innerReceipts':inner_pins,'knownTaskRegistry':registry,'failure':failure,'elapsedAtProvisionalPublication':time.monotonic()-ORIGIN,'actualCollectorToolTerminal':None,'freshSelectedCensus':None,'finalClockWitness':None,'accepted':False,'requiresIndependentOrdinaryToolObservations':True,'observationKind':'ERROR_ONLY_NOT_QUALITY_PASS','qualityPass':False,'nextStageAuthorized':False,'diagnosticClassification':'UNKNOWN_PENDING_ROOT_RAW_REVIEW','rootClassificationRequired':True},allow_nan=False)+'\n')
+         except BaseException as exc:
+             failure = failure or type(exc).__name__
+     # No normal status after115; metadata is still provisional until real terminal.
+@@ -195,7 +201,7 @@
+ 
+ # Provisional until actual root terminal AND separate root post-terminal selected
+ # census/source/tool/audit facts. Parent self-events cannot prove their own terminal.
+-# A root record cannot become PASS unless ALL schema predicates hold and actual
++# A diagnostic cannot be complete unless ALL capture predicates hold and actual
+ # earliest root invocation through final observation is strictly below115.
+ # Any late/nonzero/missing/partial/unknown => STOP, failed or UNKNOWN, no next stage.
+ 
+@@ -213,7 +219,7 @@
+ OBSERVER_FIRST = time.monotonic()
+ import os, json, subprocess, hashlib
+ from pathlib import Path
+-ROOT = Path('/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation3-root-next5-dispatch-1/lint')
++ROOT = Path('/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-lint-error-observation-root-dispatch-1/lint-error-observation')
+ ACTUAL_A_TOOL_ID = 'UNRESOLVED_ACTUAL_TOOL_ID'
+ ACTUAL_A_TOOL_RAW_EXIT = 0
+ # These root-source observations must come from the actual ordinary-tool result,
+@@ -225,7 +231,7 @@
+ origin=json.loads(origin_raw); provisional=json.loads(provisional_raw)
+ ORIGIN=origin['originMonotonic']
+ assert type(ACTUAL_A_TOOL_RAW_EXIT) is int and ACTUAL_A_TOOL_RAW_EXIT==0
+-assert provisional['stage']=='lint' and provisional['accepted'] is False
++assert provisional['stage']=='lint-error-observation' and provisional['accepted'] is False
+ assert provisional['failure'] is None and provisional['rawExit']==0 and provisional['forcedTermination'] is False and provisional['pipeCloseSucceeded'] is True
+ assert time.monotonic()-ORIGIN<115
+ known_pids=provisional['knownTaskRegistry']['pids']
+@@ -290,7 +296,7 @@
+         for pipe in [p.stdout,p.stderr]:
+             try:pipe.close()
+             except OSError as exc:failure=failure or type(exc).__name__
+-    value={'stage':'lint','phaseAToolId':ACTUAL_A_TOOL_ID,'phaseAToolRawExit':ACTUAL_A_TOOL_RAW_EXIT,'phaseAToolReceiptAttribution':'trusted root actual ordinary-tool observation; independently decoded raw tool receipt UNRETAINED unless separately actually supplied','originReceiptSha256':hashlib.sha256(origin_raw).hexdigest(),'provisionalReceiptSha256':hashlib.sha256(provisional_raw).hexdigest(),'rootOriginMonotonic':ORIGIN,'observerPid':os.getpid(),'observerPgid':os.getpgrp(),'probePid':p.pid if p is not None else None,'probeCreationPgid':p.pid if p is not None else None,'probeRawExit':p.returncode if p is not None else None,'probeBothEOF':complete,'probeDirectReaped':complete and p is not None and p.returncode is not None,'streams':facts,'taskPIDs':known_pids,'taskPGIDs':known_groups,'selectionOrigins':provisional['knownTaskRegistry']['origins'],'matchingTaskRows':matching if complete else None,'censusEndMonotonic':time.monotonic(),'failure':failure,'accepted':False,'actualObserverToolTerminal':None,'finalClockWitness':None}
++    value={'stage':'lint-error-observation','phaseAToolId':ACTUAL_A_TOOL_ID,'phaseAToolRawExit':ACTUAL_A_TOOL_RAW_EXIT,'phaseAToolReceiptAttribution':'trusted root actual ordinary-tool observation; independently decoded raw tool receipt UNRETAINED unless separately actually supplied','originReceiptSha256':hashlib.sha256(origin_raw).hexdigest(),'provisionalReceiptSha256':hashlib.sha256(provisional_raw).hexdigest(),'rootOriginMonotonic':ORIGIN,'observerPid':os.getpid(),'observerPgid':os.getpgrp(),'probePid':p.pid if p is not None else None,'probeCreationPgid':p.pid if p is not None else None,'probeRawExit':p.returncode if p is not None else None,'probeBothEOF':complete,'probeDirectReaped':complete and p is not None and p.returncode is not None,'streams':facts,'taskPIDs':known_pids,'taskPGIDs':known_groups,'selectionOrigins':provisional['knownTaskRegistry']['origins'],'matchingTaskRows':matching if complete else None,'censusEndMonotonic':time.monotonic(),'failure':failure,'accepted':False,'actualObserverToolTerminal':None,'finalClockWitness':None,'observationKind':'ERROR_ONLY_NOT_QUALITY_PASS','qualityPass':False,'nextStageAuthorized':False,'diagnosticClassification':'UNKNOWN_PENDING_ROOT_RAW_REVIEW','rootClassificationRequired':True}
+     try:
+         assert time.monotonic()-ORIGIN<120
+         with (ROOT/'postterminal-census.json').open('x') as f:f.write(json.dumps(value,allow_nan=False)+'\n')
+@@ -303,24 +309,24 @@
+ import time
+ POST_TERMINAL_WITNESS = time.monotonic()
+ This sample follows actual collector/tool terminal AND independent census/direct reap/raw+local metadata publication AND actual observer-tool terminal. Retain its actual value and origin receipt pin, root observed tool IDs/raw terminal attribution, both stream/census facts and calculated difference. Strictly require witness-origin<115. No process probe, child invocation, helper import, Git or retry is part of this clock witness. Root independently adjudicates all conjunctive facts only after these actual observations. Source-attributed trusted-root tool-terminal observations remain explicitly narrower than independently decoded raw tool receipts.
+-The later static hash audit/qualification review/Git publication is outside this measured runtime interval; no runtime cleanup/receipt/probe may be deferred there. Any late/nonzero/missing/partial/unknown fact stops the prefix; no new stage or retry. This DATA file authorizes no acquisition, authority activation or product action.
++The later static hash audit/qualification review/Git publication is outside this measured runtime interval; no runtime cleanup/receipt/probe may be deferred there. Any late/nonzero/missing/partial/unknown fact stops this diagnostic observation; no new stage or retry. This DATA file authorizes no acquisition, authority activation or product action.
+ 
+ PHASE C FIXED ORDINARY DATA CLOCK OBSERVATION (DATA; only actual B tool facts are filled after B actually terminates):
+ import time
+ POST_TERMINAL_WITNESS = time.monotonic() # FIRST before all further DATA processing.
+ import json, hashlib
+ from pathlib import Path
+-ROOT = Path('/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation3-root-next5-dispatch-1/lint')
++ROOT = Path('/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-lint-error-observation-root-dispatch-1/lint-error-observation')
+ ACTUAL_B_TOOL_ID = 'UNRESOLVED_ACTUAL_B_TOOL_ID'
+ ACTUAL_B_TOOL_RAW_EXIT = 0
+ assert ACTUAL_B_TOOL_ID != 'UNRESOLVED_ACTUAL_B_TOOL_ID'
+ assert type(ACTUAL_B_TOOL_RAW_EXIT) is int and ACTUAL_B_TOOL_RAW_EXIT==0
+ origin_raw=(ROOT/'origin.json').read_bytes(); origin=json.loads(origin_raw)
+ census_raw=(ROOT/'postterminal-census.json').read_bytes(); census=json.loads(census_raw)
+-assert census['stage']=='lint' and census['accepted'] is False
++assert census['stage']=='lint-error-observation' and census['accepted'] is False
+ assert census['failure'] is None and census['probeRawExit']==0 and census['probeBothEOF'] is True and census['probeDirectReaped'] is True and census['matchingTaskRows']==[]
+ elapsed=POST_TERMINAL_WITNESS-origin['originMonotonic']
+ assert 0<=elapsed<115
+-witness={'stage':'lint','rootOriginMonotonic':origin['originMonotonic'],'postTerminalWitnessMonotonic':POST_TERMINAL_WITNESS,'completedInvocationAndObservationUpperBoundSeconds':elapsed,'strictUnder115':True,'phaseBActualToolId':ACTUAL_B_TOOL_ID,'phaseBActualToolRawExit':ACTUAL_B_TOOL_RAW_EXIT,'phaseBToolTerminalAttribution':'trusted root actual ordinary-tool observation; raw tool receipt UNRETAINED unless actually separately supplied','originReceiptSha256':hashlib.sha256(origin_raw).hexdigest(),'censusReceiptSha256':hashlib.sha256(census_raw).hexdigest(),'accepted':False,'requiresIndependentRootFullConjunction':True,'noNewRuntimeChildOrProbe':True,'laterStaticAuditAndGitExcludedFromRuntime':True}
++witness={'stage':'lint-error-observation','rootOriginMonotonic':origin['originMonotonic'],'postTerminalWitnessMonotonic':POST_TERMINAL_WITNESS,'completedInvocationAndObservationUpperBoundSeconds':elapsed,'strictUnder115':True,'phaseBActualToolId':ACTUAL_B_TOOL_ID,'phaseBActualToolRawExit':ACTUAL_B_TOOL_RAW_EXIT,'phaseBToolTerminalAttribution':'trusted root actual ordinary-tool observation; raw tool receipt UNRETAINED unless actually separately supplied','originReceiptSha256':hashlib.sha256(origin_raw).hexdigest(),'censusReceiptSha256':hashlib.sha256(census_raw).hexdigest(),'accepted':False,'requiresIndependentRootFullConjunction':True,'noNewRuntimeChildOrProbe':True,'laterStaticAuditAndGitExcludedFromRuntime':True,'observationKind':'ERROR_ONLY_NOT_QUALITY_PASS','qualityPass':False,'nextStageAuthorized':False,'diagnosticClassification':'UNKNOWN_PENDING_ROOT_RAW_REVIEW','rootClassificationRequired':True}
+ with (ROOT/'final-clock-witness.json').open('x') as f:f.write(json.dumps(witness,allow_nan=False)+'\n')
+ The witness file is static proof attribution of the already-completed target/census interval. Its own later DATA publication is not falsely represented as preceding its first timestamp. All target/runtime cleanup and the B census/receipts already completed before that timestamp; no runtime activity may be deferred into this static audit. This does not recursively require a new supervisor proving the static writer's death.

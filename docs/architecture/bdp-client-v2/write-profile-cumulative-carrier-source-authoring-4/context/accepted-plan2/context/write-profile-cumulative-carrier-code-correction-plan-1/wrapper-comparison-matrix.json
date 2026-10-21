@@ -1,0 +1,141 @@
+{
+  "authority": "Existing raw wrapper bytes plus separately trusted observation context; hash alone is not run truth. Validate self-consistency without inventing current installed proof.",
+  "common": {
+    "comparison": "Compare the exact ordered source-derived metadata sequence [raw baseline, ...raw sessions] against intrinsically captured supplied ready[]; lengths/keys/types/values/presence/order must match. Compare JSON representation of known metadata only, never replace raw byte identity. No JSON.stringify of untrusted input/getter before capture.",
+    "configuration": "Factory-bound trusted configuration retains brand. Parsed metadata gets finite type/key checks then full canonical equality to that configuration; sourceCommit, Scope/profile/History/fixture/source/payload/contracts/policy/auth all stay exact.",
+    "outerFields": "Existing unrelated wrapper fields remain unused/unserialized; no new wrapper format. Existing TX inline handoff retains its separate original9-field check.",
+    "privacy": "No ready/session/raw wrapper copy added to carrier projection. Comparison-only fields stay transient; existing raw protected writer unchanged. No arbitrary metadata strings/errors enter summary.",
+    "rawCapture": "copySourceBytes manifest4194304, parseBoundedJson manifest constant private-profile-report as before. Parsed JSON is plain bounded data; supplied context is intrinsically captured BEFORE canonical traversal.",
+    "requiredPresence": "Require actual named source/configuration/baseline/session fields for the selected RU/TX branch. Missing differs from empty array; undefined is not converted into a missing successful fact. No fabricated ready/session/hash/status.",
+    "transport": "Safe typed supplied exactConfiguration keeps existing exactConfigurationDigest check. RU raw exactConfiguration must equal the supplied captured record, including routes/defaultCredentialRef/credentialHandles/header-body caps. TX raw wrapper has no exactConfiguration field: do not add/require one; preserve existing supplied exact record digest binding plus baseline/target/session checks. No new transport proof."
+  },
+  "readUpdate": {
+    "baselineClosedKeys": [
+      "scope",
+      "profile",
+      "history",
+      "payloadIdentity",
+      "artifactIdentity",
+      "policyIdentity",
+      "authenticationIdentity",
+      "configurationIdentity"
+    ],
+    "baselineField": "baselineReceipt",
+    "configurationAndRoute": "raw wrapper.configuration full equality to factory configuration; raw exactConfiguration full captured equality to supplied exact record before deriving/checking route digest.",
+    "currentListenUrl": "ABSENT. Current installed-reference-process49\u201361 emits none; readySummary213\u2013228 filters absent listenUrl. Require current8-key baseline /9-key session schema, do not invent localhost URL in unit fixtures or claim a listener observation. Future different source needs separate rebind.",
+    "order": "sessions length is actual, may be0 for a genuine partial/already-aborted data fixture. Each scenario belongs to owner.ids, no duplicates, strictly increasing owner manifest order. Do not require positive full count for partial reports. Every source session maps to the same ordinal supplied ready row.",
+    "sessionClosedKeys": [
+      "scenario",
+      "scope",
+      "profile",
+      "history",
+      "payloadIdentity",
+      "artifactIdentity",
+      "policyIdentity",
+      "authenticationIdentity",
+      "configurationIdentity"
+    ],
+    "source": "raw wrapper.sourceCommit and raw wrapper.configuration.sourceCommit match trusted configuration and observation sourceCommit. Ready summary itself has no sourceCommit field; never fabricate one.",
+    "trustedReadySequence": "[snapshot.baselineReceipt, ...snapshot.sessions] exactly, current helper635\u2013650",
+    "types": {
+      "artifactIdentity": "development-schema5-64hex; unchanged installedContractsDigest == configuration.installedContractsDigest",
+      "authenticationIdentity": "lower64hex == configuration.authenticationDigest",
+      "configurationIdentity": "lower64hex == supplied runtimeConfigurationIdentity",
+      "history": false,
+      "payloadIdentity": "lower64hex == configuration.installedPayloadDigest",
+      "policyIdentity": "lower64hex == configuration.policyDigest",
+      "profile": "read-update",
+      "scenario": "primitive fixed owned row ID for current shard",
+      "scope": "primitive string equal configuration.scope"
+    },
+    "wrapperRequired": [
+      "sourceCommit",
+      "configuration",
+      "baselineReceipt",
+      "sessions",
+      "exactConfiguration",
+      "result"
+    ]
+  },
+  "transactional": {
+    "baselineChecks": [
+      "served is parsed finite11-field data equal to factory configuration; no structural copy acquires factory brand",
+      "authorityMode exactly canonical; runtimeConfigurationIdentity lower64hex equal supplied value",
+      "operationTargets exact12 keys/string targets from current trusted baseline binding; same canonical target map as current sessions.targets, no redefinition of operation semantics"
+    ],
+    "baselineClosedKeys": [
+      "served",
+      "operationTargets",
+      "runtimeConfigurationIdentity",
+      "authorityMode"
+    ],
+    "baselineField": "baseline",
+    "operationTargetRule": "Exact known12 string entries target = bound configuration.scope + operations/ + listed existing suffix. Validate raw baseline/trusted baseline/sessions.targets equality, never use this map to admit a request or invent semantics.",
+    "operationTargetSuffixes": {
+      "batch": "batch",
+      "createBead": "create-bead",
+      "createLink": "create-link",
+      "deleteAlias": "delete-alias",
+      "deleteBead": "delete-bead",
+      "deleteLink": "delete-link",
+      "deleteWhere": "delete-where",
+      "putAlias": "put-alias",
+      "sequence": "sequence",
+      "updateBead": "update-bead",
+      "updateLink": "update-link",
+      "updateWhere": "update-where"
+    },
+    "servedClosedKeys": [
+      "scope",
+      "profile",
+      "history",
+      "sourceCommit",
+      "installedPayloadDigest",
+      "installedContractsDigest",
+      "policyDigest",
+      "authenticationDigest",
+      "fixtureDigest",
+      "fixtureId",
+      "capabilities"
+    ],
+    "sessionChecks": [
+      "event qualification.ready; profile transactional/historyfalse/claimEligiblefalse/authorityMode canonical; scope/payload/contracts/policy/auth/runtime identities exactly bound baseline/configuration",
+      "targets full exact same12-key target map as baseline.operationTargets; use fixed current existing target suffix inventory only for schema/confinement, no new target authority",
+      "listenUrl primitive bounded8192-byte canonical http://127.0.0.1:PORT/ with nonzero actual port, no userinfo/query/fragment; compare raw/source and supplied row exactly. Ports may differ on launches/reopens; never require all rows same port",
+      "scenario owned fixed manifest ID; reopen boolean; sessionOrdinal exact0-based actual sequence. A fresh false row starts a later manifest scenario; a true row reopens the active same scenario with a declared transactional.reopen action and no greater count than its declared reopen actions. Preserve actual partial prefix; do not invent24 sessions/25children for partial data."
+    ],
+    "sessionClosedKeys": [
+      "event",
+      "authorityMode",
+      "runtimeConfigurationIdentity",
+      "artifactIdentity",
+      "policyIdentity",
+      "authenticationIdentity",
+      "scope",
+      "profile",
+      "history",
+      "claimEligible",
+      "listenUrl",
+      "targets",
+      "payloadIdentity",
+      "scenario",
+      "reopen",
+      "sessionOrdinal"
+    ],
+    "source": "raw wrapper.sourceCommit plus baseline.served.sourceCommit match trusted source. entry remains exact actual inline handoff provenance; generic pure module requires a primitive current wrapper entry, compares no new invented entry option/API. Existing inline source/entry equality422 preserved.",
+    "trustedReadySequence": "[genuine.baseline, ...genuine.sessions], from current observe458. Baseline is4-key binding, not IPC ready; do not add baseline event/listenUrl.",
+    "wrapperRequired": [
+      "sourceCommit",
+      "entry",
+      "baseline",
+      "sessions",
+      "result"
+    ]
+  },
+  "unitFixtures": {
+    "change": "observation() must construct the actual selected-profile wrapper shape and matching ready sequence, rather than minimal {sourceCommit,configuration,result}. Make empty sessions explicit unless a finite synthetic source-shaped session is needed for a counterfactual.",
+    "genuineAborted": "Do not alter any property/row/category/order/exchange of the genuine V03/V04/L07 runner result. Wrap that unchanged result with the honest unit configuration/baseline/empty-session fields and corresponding trusted unit ready data. No extra runner calls or fake child metadata.",
+    "label": "honest synthetic data-unit metadata, no installed/runtime observation claim",
+    "representation": "V06 keeps explicit JSON undefined object-member omission/array-null facts; no change to raw once-serialization identity, source/configuration equality, or existing hook modes."
+  }
+}

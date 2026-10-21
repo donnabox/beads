@@ -1,0 +1,68 @@
+{
+  "event": "availability-owner-terminal",
+  "pid": 6555,
+  "pgid": 6555,
+  "limiterPid": 6553,
+  "nativeOrigin": 2226561.37027754,
+  "pythonFirst": 2226561.401710041,
+  "pythonLast": 2226561.529743,
+  "pythonClockInfo": {
+    "implementation": "mach_absolute_time()",
+    "monotonic": true,
+    "adjustable": false,
+    "resolution": 4.166666666666666e-08
+  },
+  "peers": [
+    {
+      "role": "term",
+      "pid": 6556,
+      "pgid": 6555,
+      "bootstrapAck": true,
+      "rawExit": 0,
+      "stdoutEof": true,
+      "stderrEof": true,
+      "stdoutBytes": 289,
+      "stderrBytes": 0,
+      "stdoutSha256": "72af6f75b2342ae09c3c02a15ea7846c82637cf01d844c27cbda8e0b02808cba",
+      "stderrSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "peer": {
+        "event": "availability-peer",
+        "role": "term",
+        "nonce": "e9ade55486ef9176eaad61f8c0493700",
+        "pid": 6556,
+        "parent": 6555,
+        "pgid": 6555,
+        "firstMonotonic": 2226561.465550791,
+        "lastMonotonic": 2226561.466972625,
+        "nativeOrigin": 2226561.37027754,
+        "termIntUnblocked": true,
+        "observedSignals": [
+          15
+        ],
+        "productCalls": 0
+      },
+      "atSeconds": 0.10651854332536459
+    },
+    {
+      "role": "kill",
+      "pid": 6557,
+      "pgid": 6555,
+      "bootstrapAck": true,
+      "rawExit": -9,
+      "stdoutEof": true,
+      "stderrEof": true,
+      "stdoutBytes": 0,
+      "stderrBytes": 0,
+      "stdoutSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderrSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "peer": null,
+      "atSeconds": 0.15916187595576048
+    }
+  ],
+  "allDirectChildrenReaped": true,
+  "productCalls": 0,
+  "syntheticReleased": false,
+  "clockDomainVerified": false,
+  "status": "OBSERVED_PENDING_NATIVE_LIMITER_AND_FRESH_ROOT_AUDIT",
+  "harnessImplementationSha256": "9ae8e2914b36edd70773ef871f63b5a8fd762732826fe0427a3e8a6eb7112e37"
+}

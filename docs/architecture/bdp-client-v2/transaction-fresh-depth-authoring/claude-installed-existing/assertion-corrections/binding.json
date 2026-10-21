@@ -1,0 +1,26 @@
+{
+  "status": "PROPOSED_ONLY_NOT_APPLIED_OR_EXECUTED",
+  "head": "77b4cf980ec91f66c52a554c3dd8c9de5aee859f",
+  "files": {
+    "apps/bdptest/src/transactional-depth-key-order-installed.test.ts": {
+      "beforeSha256": "94cce66bcce3b58d7d50cce3849bf73c1e93f6016ca5878f5a45197e37e44b89",
+      "candidateSha256": "f4e19ef9b7aba1a12f3376540257b9680e27dcd00936048b066eb7667ebe19fe",
+      "candidateBytes": 30909
+    },
+    "apps/bdptest/src/transactional-sequence-depth-installed.test.ts": {
+      "beforeSha256": "163549168b98d6f2cdbb111bee840ee4fc1ccaf16b1a9800c5ea721a87df5e1d",
+      "candidateSha256": "0a2a765cab6137f324cffb7ff7d96d1f3e81fef3a73c14f56adfd36309083aa7",
+      "candidateBytes": 27728
+    }
+  },
+  "patchSha256": "623cb377729ecc3ce17bd73cba2528b9b2716c7ad45aebecd0ec95fb2cd5a17c",
+  "reviewStdoutSha256": "e2ea648dd556229252a834199b17106d0f323bedf7c6cc8b758a14a0d3edb0a9",
+  "scope": "F1 count four deep literals in each; F2 bind direct position ledger; F4 two sequence media types; F5 two absent refusal headers",
+  "countsUnchanged": {
+    "directHTTP": 13,
+    "sequenceHTTP": 8,
+    "productChildren": 2
+  },
+  "requestTablesAndBodies": "all bytes preceding test registration unchanged",
+  "F3": "Sequence8 does not read back sequence-b deep metadata; new13 Snapshot and source reopen independently cover sequence-created deep properties, not this exact metadata readback. No added request."
+}

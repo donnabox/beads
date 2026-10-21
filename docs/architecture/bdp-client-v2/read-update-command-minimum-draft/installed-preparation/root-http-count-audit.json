@@ -1,0 +1,35 @@
+{
+  "at": "2026-10-16T02:42:47.167428+00:00",
+  "reviewer": "root/native",
+  "sourceDispatchReviewed": [
+    "installed-read-fixture.ts:13-139",
+    "read-update-exact-client.ts:124-172",
+    "read-update-matrix.test.ts:1678-1714",
+    "runner.ts:1210-1234"
+  ],
+  "shards": [
+    {
+      "file": "aggregate.json.baseline.json",
+      "sha256": "6f1bcf7b113ac89f8f279b80544175550ba53e33cdf99135516d41e3576c3797",
+      "runnerHttp": 897,
+      "clientHttp": 996,
+      "setupHttp": 44,
+      "nativeSubset": 21,
+      "total": 1937
+    },
+    {
+      "file": "aggregate.json.reference-continuation.json",
+      "sha256": "0967a9468b256e6f2a5eedd642cb879a754c2f1164d2fe44a0362fc197b32426",
+      "runnerHttp": 135,
+      "clientHttp": 242,
+      "setupHttp": 0,
+      "nativeSubset": 0,
+      "total": 377
+    }
+  ],
+  "aggregateCompletedHttp": 2314,
+  "selectedPositiveHttp": 11,
+  "selectedNegativeHttp": 2,
+  "allCohortsCompletedHttp": 2327,
+  "limits": "Retained completed observations plus source dispatch audit; not packet capture or whole-profile qualification."
+}

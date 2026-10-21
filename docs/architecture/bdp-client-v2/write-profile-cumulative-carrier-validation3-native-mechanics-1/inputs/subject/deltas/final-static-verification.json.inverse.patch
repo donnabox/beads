@@ -1,0 +1,44 @@
+--- /Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-cumulative-carrier-validation-preparation-3/final-static-verification.json
++++ /Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-cumulative-carrier-validation-preparation-2/final-static-verification.json
+@@ -1,29 +1,30 @@
+ {
+   "ASTOnlyPython": 8,
+   "MJSByteExact": 3,
+-  "all681CurrentSourceRehashed": true,
+-  "allFutureTupleAndActualOutcomes": "UNKNOWN",
+-  "allImmediate137Native153AndInherited838Native850InPlaceMirrorsVerified": true,
+-  "byteExactOtherHelpers": 9,
++  "allActualOutcomesAndFutureTupleProofs": "UNKNOWN",
++  "allInheritedAndNewExternalPinsRehashed": 4221,
++  "byteExactOtherHelpers": 8,
+   "canonicalSourceIdentity": "78e11962df1a744c685c9911d13c0bff3fa42fcdec9310b75ec8f83a17996c7f",
+-  "concreteHarness": "UNPREPARED/UNAPPROVED",
+-  "externalPinsRehashed": 4514,
++  "concreteSyntheticHarness": "UNPREPARED/UNAPPROVED",
++  "fullPredecessor838AndNative850VerifiedInPlaceWithMirrors": true,
++  "guardRemoteBlob": "9fc90fdc9ee65abd191f4ed21f912c91c66c9f58",
+   "guardRemoteSession": "2026-10-18T02:16:24Z-549f",
+   "helperOrSchemaEvaluation": false,
+   "helpers": 11,
+   "namespaceInverseCommandsAndMatrixByteExact": true,
+   "negativeControlsExecuted": 0,
+   "negativeDescriptions": 32,
+-  "noRetry": true,
++  "onePositive17Invocation": 1,
+   "onlyChangedExecutableBodies": [
+     "run.py",
+-    "gate.py"
++    "gate.py",
++    "packages.py"
+   ],
+-  "protected677AndOwned4Unchanged": true,
++  "protected677AndSemantic4Preserved": true,
+   "runAbsent": true,
+-  "singlePositiveCallbacks": 1,
+   "sourceCallbacks": 48,
++  "sourceFilesRehashed": 681,
+   "sourceGitOrGateExecution": false,
+   "stages": 26,
+-  "state": "AUTHOR static preparation, not independent acceptance or evaluated control"
++  "state": "AUTHOR static verification, never independent approval/test"
+ }

@@ -1,0 +1,16 @@
+{
+  "utc": "2026-10-18T16:19:25.640588+00:00",
+  "activationPublicationReadback": "97d73b6511905e4cf2d16893c96ce0e85e278f1d",
+  "rootDispatcherPid": 88961,
+  "gateSha256": "f539663c6ae2bffacbd38e2ded28328843d66e234fa884e4ec23d029aaa4c429",
+  "stagesIntended": [
+    "prepare-package-directory",
+    "pack-protocol",
+    "pack-server",
+    "verify-archives"
+  ],
+  "prior17NotRerun": true,
+  "noRetry": true,
+  "stopOnNonzeroOrWholeWrapperElapsedAtLeast120": true,
+  "priorRootDispatchScriptSyntaxError": "Earlier inline script lacked whitespace else0; Python parsed no body, no dispatch directory or inner helper/child existed. Corrected before this ONE actual attempt."
+}

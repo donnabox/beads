@@ -1,0 +1,49 @@
+{
+  "kind": "ONE_AUTHORIZED_ADMINISTRATIVE_FAILURE_CENSUS_NOT_RESUMED_PHASE_B",
+  "at": "2026-10-18T20:23:22.966388+00:00",
+  "argv": [
+    "/bin/ps",
+    "-axo",
+    "pid=,ppid=,pgid=,stat=,lstart=,comm="
+  ],
+  "observerPid": 59143,
+  "observerPgid": 59143,
+  "probeCreation": {
+    "pid": 59149,
+    "pgid": 59149,
+    "basis": "retained direct Popen start_new_session; no signal authority"
+  },
+  "directHandleRegisteredImmediately": true,
+  "rawExit": 0,
+  "bothActualEOF": true,
+  "directReaped": true,
+  "elapsedSeconds": 0.045373749919235706,
+  "stdout": {
+    "bytes": 206723,
+    "sha256": "52c54d6675c255e75cc97acbfb2e0062bc3ef92fcc0e1c7fafff0e86830bf2c8",
+    "fullRawRetained": true
+  },
+  "stderr": {
+    "bytes": 0,
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "fullRawRetained": true
+  },
+  "selectedTaskPIDs": [
+    61506,
+    61508,
+    62338
+  ],
+  "selectedTaskPGIDs": [
+    61489,
+    61508,
+    62338
+  ],
+  "matchingRows": [],
+  "selectedAbsenceEstablished": true,
+  "signalActions": 0,
+  "phaseBCollectorPID": "UNRETAINED; cannot be selected or proved absent",
+  "phaseBProbe": "NOT_CREATED: actual assertion before Popen",
+  "normalCompletionCredit": false,
+  "sourceOfSelections": "actual A origin/provisional and inner process/exit records; unrelated host rows not adopted",
+  "limitation": "Fresh administrative selected-domain evidence only; outside failed original A/B/C clock; unrecorded IDs/escaped tasks remain UNKNOWN"
+}

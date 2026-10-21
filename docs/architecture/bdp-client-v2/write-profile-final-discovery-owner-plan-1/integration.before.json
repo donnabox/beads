@@ -1,0 +1,19 @@
+{
+  "manifestOwners": 17,
+  "actions": 241,
+  "HTTPExchanges": 234,
+  "fullCatalogRows": 256,
+  "passingPartialOwners": 17,
+  "sessions": 24,
+  "childLaunches": 25,
+  "callbackMs": 63000,
+  "exactRouteInventory": 18,
+  "futureConfiguration": "UNKNOWN",
+  "authoredHTTPFamilyActions": 180,
+  "authoredClientFamilyActions": 61,
+  "clientOperations": {
+    "transactional.receipt-read": 54,
+    "transactional.reopen": 7
+  },
+  "HTTPExchangesMeaning": "180 ordinary HTTP +54 source-derived client receipt requests;7 reopens are actions but no HTTP"
+}

@@ -1,0 +1,24 @@
+{
+  "accepted": true,
+  "head": "11742645bc591b3e5affa9fcc2f36c551c6fa803",
+  "tree": "66b0cc09393fdbddf32d7ee19a2d74b961c7fdbb",
+  "sourceOnly": true,
+  "authorizedStages": [
+    "typecheck",
+    "fresh-build",
+    "format-check",
+    "lint",
+    "boundaries",
+    "read-seal",
+    "preparation-positive",
+    "sequence-positive",
+    "http-positive",
+    "minimum-http",
+    "build-inventory"
+  ],
+  "rootInvocationAuthorization": {
+    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/sequence-minimum-combined-validation/root-source-authorization.json",
+    "sha256": "600f285c1451592a26049d979461a74eb396b1c2a9cb032ec7e50654925d0f96"
+  },
+  "basis": "Root-invoked mechanical binding checks plus pinned existing council/audit closures; not a new independent code review. Controls/package/installed remain closed."
+}

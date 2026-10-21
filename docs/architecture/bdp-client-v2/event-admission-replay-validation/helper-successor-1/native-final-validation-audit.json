@@ -1,0 +1,1076 @@
+{
+  "verdict": "accepted bounded local validation; no actionable blocker",
+  "checkedAtUtc": "2026-10-18T00:21:38.297504+00:00",
+  "sourceBinding": {
+    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/event-admission-replay-validation/helper-successor-1/source-binding.json",
+    "sha256": "07c407cf0a676e2f53d4e4b2ce7948d9df8a4cc8a4f1ad0bc6e4d9e89f370218"
+  },
+  "head": "9f89271e2563a105410789ca8ca1e77dfb4d0b9f",
+  "sourceIdentity": "10928ef28513fb178c3310c6610c689e7b6a39c4262d8363da3082598fd6ddbb",
+  "sourceFiles": 679,
+  "freshMainStages": 19,
+  "freshRequiredStages": 4,
+  "bootstrapMapping": {
+    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/event-admission-replay-validation/helper-successor-1/bootstrap-reuse-binding.json",
+    "sha256": "a686457cb56df5f82a2f122b0901d63216fa4bf61a7cb0f764a76c8e0b6fc4d0"
+  },
+  "reusedPrerequisites": [
+    "workspace-install",
+    "bind-workspace-tools"
+  ],
+  "dependencyInputs": 17,
+  "tools": 11,
+  "records": [
+    {
+      "group": "main",
+      "stage": "typecheck",
+      "elapsedSeconds": 6.070427041966468,
+      "exit": {
+        "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/event-admission-replay-validation/helper-successor-1/run/typecheck.exit.json",
+        "sha256": "bed9738c402236a09f259771c5aee5b4b0b0dfce977cbf82c2597e908f86d04b"
+      },
+      "log": {
+        "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/event-admission-replay-validation/helper-successor-1/run/typecheck.log",
+        "sha256": "91d54ffbee73a3ac72294d090e58d77745f8b93edbf94b862807698273a6505a"
+      },
+      "started": {
+        "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/event-admission-replay-validation/helper-successor-1/run/typecheck.started.json",
+        "sha256": "279ad40985234ca0dae71b7bbedce03c89270e721f6ea8266025a2d78ddc805a"
+      },
+      "processes": {
+        "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/event-admission-replay-validation/helper-successor-1/run/typecheck.processes.jsonl",
+        "sha256": "5d9885b3396b69d2869ef0b99cf9e89431fef4cd44e56d3d27213d72512fd86e"
+      }
+    },
+    {
+      "group": "main",
+      "stage": "format-check",
+      "elapsedSeconds": 4.815703833010048,
+      "exit": {
+        "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/event-admission-replay-validation/helper-successor-1/run/format-check.exit.json",
+        "sha256": "90813c1b9da6a3a2b2f689055ffa483d96f10eb72edec370e3967ea8db4e63d3"
+      },
+      "log": {
+        "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/event-admission-replay-validation/helper-successor-1/run/format-check.log",
+        "sha256": "54cc7e537e8e9e29537270106b40267b300b2d599bf189f5e49362ca0009599d"
+      },
+      "started": {
+        "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/event-admission-replay-validation/helper-successor-1/run/format-check.started.json",
+        "sha256": "e0fb815f37d5a57e6324e95520b31bc3c1c4c4435691c7f6761005136d614c1e"
+      },
+      "processes": {
+        "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/event-admission-replay-validation/helper-successor-1/run/format-check.processes.jsonl",
+        "sha256": "90b78a339f633423e974affc5a7b1b5b6d0e2d89e411246b67597c4fbfcdcc4b"
+      }
+    },
+    {
+      "group": "main",
+      "stage": "lint",
+      "elapsedSeconds": 4.484194583259523,
+      "exit": {
+        "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/event-admission-replay-validation/helper-successor-1/run/lint.exit.json",
+        "sha256": "f9cea81849f32073ec4d8fb3cbfed9c1b4776b3802d361de29b66361bc2ba678"
+      },
+      "log": {
+        "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/event-admission-replay-validation/helper-successor-1/run/lint.log",
+        "sha256": "b2abddf9ba11552f7e7cc0c092d3d6056e150cb0e75fe27962a1b1f431a1afee"
+      },
+      "started": {
+        "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/event-admission-replay-validation/helper-successor-1/run/lint.started.json",
+        "sha256": "f4adf6aebf93a02a0996d92bf8be770b4a9e564cec840493c048185fb9148c55"
+      },
+      "processes": {
+        "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/event-admission-replay-validation/helper-successor-1/run/lint.processes.jsonl",
+        "sha256": "547538924475f515b7dc5a9ba0b9ae6370968ca8069b4164379eb9737d73f9b9"
+      }
+    },
+    {
+      "group": "main",
+      "stage": "fresh-build",
+      "elapsedSeconds": 5.209972875192761,
+      "exit": {
+        "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/event-admission-replay-validation/helper-successor-1/run/fresh-build.exit.json",
+        "sha256": "3b0f159e22de1232ce65d5594a7cb0f2dea60d9a010090c6090fbc257efbe32d"
+      },
+      "log": {
+        "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/event-admission-replay-validation/helper-successor-1/run/fresh-build.log",
+        "sha256": "232dac5e840e45b3bb06e6e04249b5241f2e1b4f6c797a22c046d916302ac208"
+      },
+      "started": {
+        "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/event-admission-replay-validation/helper-successor-1/run/fresh-build.started.json",
+        "sha256": "4b0b8f9921000dc9574fdbf6725142da6037996051c1a4d0151f8f2fccaf988a"
+      },
+      "processes": {
+        "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/event-admission-replay-validation/helper-successor-1/run/fresh-build.processes.jsonl",
+        "sha256": "df0f48b382d2212dc3b1b1289b787c28d6e1009545f1033a34e23a346599f01f"
+      }
+    },
+    {
+      "group": "main",
+      "stage": "bind-fresh-build",
+      "elapsedSeconds": 9.500521666835994,
+      "exit": {
+        "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/event-admission-replay-validation/helper-successor-1/run/bind-fresh-build.exit.json",
+        "sha256": "d56f45a602d1f4ae9683d30a8ac16db110fc9b0101080ec7134a5dbc294d80cd"
+      },
+      "log": {
+        "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/event-admission-replay-validation/helper-successor-1/run/bind-fresh-build.log",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "started": {
+        "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/event-admission-replay-validation/helper-successor-1/run/bind-fresh-build.started.json",
+        "sha256": "312de081a135dd04e3888990f80866cbf656ed218bf18e67e76a5ddc000dec8e"
+      },
+      "processes": {
+        "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/event-admission-replay-validation/helper-successor-1/run/bind-fresh-build.processes.jsonl",
+        "sha256": "020123d63cbca767c398c7950571564754817139e2d39e99e857ad7fe8fd006e"
+      }
+    },
+    {
+      "group": "main",
+      "stage": "focused-source",
+      "elapsedSeconds": 10.645628708414733,
+      "exit": {
+        "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/event-admission-replay-validation/helper-successor-1/run/focused-source.exit.json",
+        "sha256": "a5c75deeb2363aa834f3e3a57c4049c02d16d8522ea07c8a36ba043bd0aea703"
+      },
+      "log": {
+        "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/event-admission-replay-validation/helper-successor-1/run/focused-source.log",
+        "sha256": "e9ce50095355407f74853505da1def43998aca98cf21f61376fac4233e9f4f04"
+      },
+      "started": {
+        "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/event-admission-replay-validation/helper-successor-1/run/focused-source.started.json",
+        "sha256": "4251146db770a235ecd8b236365d91a9c1a6a106399909feacd8c005a365eac5"
+      },
+      "processes": {
+        "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/event-admission-replay-validation/helper-successor-1/run/focused-source.processes.jsonl",
+        "sha256": "d52db7ccf6557be043d55dcf39d3fb39023c22435d4f5775e5dbec328deccda9"
+      }
+    },
+    {
+      "group": "main",
+      "stage": "review-focused-source",
+      "elapsedSeconds": 9.379325875081122,
+      "exit": {
+        "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/event-admission-replay-validation/helper-successor-1/run/review-focused-source.exit.json",
+        "sha256": "dd6135bdee0c5b59fa207e77f08b8c58fe80a9d58607a033dd5e70dbcb56ec26"
+      },
+      "log": {
+        "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/event-admission-replay-validation/helper-successor-1/run/review-focused-source.log",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "started": {
+        "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/event-admission-replay-validation/helper-successor-1/run/review-focused-source.started.json",
+        "sha256": "e7a49b073d78dbd28ce85eca9ed5118c07669290a481384a8a12773b16b79410"
+      },
+      "processes": {
+        "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/event-admission-replay-validation/helper-successor-1/run/review-focused-source.processes.jsonl",
+        "sha256": "f12e913c21fd40d7daad076d95dec9679dc73050eedf16acc8884daaf079d97a"
+      }
+    },
+    {
+      "group": "main",
+      "stage": "node-version",
+      "elapsedSeconds": 4.831932040862739,
+      "exit": {
+        "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/event-admission-replay-validation/helper-successor-1/run/node-version.exit.json",
+        "sha256": "37f820fde9f79c70e00dc5504bd67afb37b6f3b6815bc6843696f4be03560a28"
+      },
+      "log": {
+        "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/event-admission-replay-validation/helper-successor-1/run/node-version.log",
+        "sha256": "a8f8f7ba69d43285857a0ea34017ef8dadd3ba012404bb7dd188fc773cf63ee2"
+      },
+      "started": {
+        "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/event-admission-replay-validation/helper-successor-1/run/node-version.started.json",
+        "sha256": "caf4d7f0fadb579061f370dab955d2fd4affca5e45cd3beb44fabbc3a85ac69c"
+      },
+      "processes": {
+        "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/event-admission-replay-validation/helper-successor-1/run/node-version.processes.jsonl",
+        "sha256": "baf18f12c8451044aa08d162d44afcd5f20ee12430e448868d780c618046fcfd"
+      }
+    },
+    {
+      "group": "main",
+      "stage": "prepare-package-directory",
+      "elapsedSeconds": 9.517220125067979,
+      "exit": {
+        "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/event-admission-replay-validation/helper-successor-1/run/prepare-package-directory.exit.json",
+        "sha256": "6d52f79566ae9dba00cf137333fbc983fd27e664a4734864163203b0d6d9b434"
+      },
+      "log": {
+        "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/event-admission-replay-validation/helper-successor-1/run/prepare-package-directory.log",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "started": {
+        "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/event-admission-replay-validation/helper-successor-1/run/prepare-package-directory.started.json",
+        "sha256": "e650ed09b52407af5cbfcfa57749b99790d5d480e7a245670da1b40508ac3f3f"
+      },
+      "processes": {
+        "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/event-admission-replay-validation/helper-successor-1/run/prepare-package-directory.processes.jsonl",
+        "sha256": "4f396a8a40cb99a64081cdc48963e7ec6c9930ca9833d4c880b64bd40ecfd475"
+      }
+    },
+    {
+      "group": "main",
+      "stage": "pack-protocol",
+      "elapsedSeconds": 5.1286193751730025,
+      "exit": {
+        "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/event-admission-replay-validation/helper-successor-1/run/pack-protocol.exit.json",
+        "sha256": "eca3ab257b8463d887031c114a776b522c743117e7746a16a49b5f7a1c4175a7"
+      },
+      "log": {
+        "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/event-admission-replay-validation/helper-successor-1/run/pack-protocol.log",
+        "sha256": "e184955ab197c472652d1424757d96318531d5b4f4ffb030f4925d57e22a5064"
+      },
+      "started": {
+        "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/event-admission-replay-validation/helper-successor-1/run/pack-protocol.started.json",
+        "sha256": "70f9f5525f39ff577396f381d75ccb7ef4c04f448283beb386a5a429a55cfa04"
+      },
+      "processes": {
+        "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/event-admission-replay-validation/helper-successor-1/run/pack-protocol.processes.jsonl",
+        "sha256": "2c0bdb2866a5d853610c01d5b0cf178522bd16b73188484f07ddfb6489bc06fe"
+      }
+    },
+    {
+      "group": "main",
+      "stage": "pack-server",
+      "elapsedSeconds": 5.174561750143766,
+      "exit": {
+        "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/event-admission-replay-validation/helper-successor-1/run/pack-server.exit.json",
+        "sha256": "3d5fb1a5d99d2718a4cf5193b87cfbd9ce4f9d4bdc2e79dfb8150e7867c8a4cb"
+      },
+      "log": {
+        "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/event-admission-replay-validation/helper-successor-1/run/pack-server.log",
+        "sha256": "3638fe8f243322bd479311fc289f623ee6e260c8e7143b1848611c7254e54235"
+      },
+      "started": {
+        "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/event-admission-replay-validation/helper-successor-1/run/pack-server.started.json",
+        "sha256": "b0a1e36703db415e82924cc5247f5398038b29e6f02c87408ba3724bd728eab9"
+      },
+      "processes": {
+        "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/event-admission-replay-validation/helper-successor-1/run/pack-server.processes.jsonl",
+        "sha256": "a31eff3a1a8bb6502d4942ceea27f088d065c7e1743d254f52a9eac452e5c25a"
+      }
+    },
+    {
+      "group": "main",
+      "stage": "verify-archives",
+      "elapsedSeconds": 10.416744749993086,
+      "exit": {
+        "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/event-admission-replay-validation/helper-successor-1/run/verify-archives.exit.json",
+        "sha256": "f906c0bd52cb83862b8f39f39e30bc31c027c74842d25ecaa2269511893c2f09"
+      },
+      "log": {
+        "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/event-admission-replay-validation/helper-successor-1/run/verify-archives.log",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "started": {
+        "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/event-admission-replay-validation/helper-successor-1/run/verify-archives.started.json",
+        "sha256": "e06827cef42dca9a37baa4843ddbbbdb1c85fe25e1de1b51b3a01409ca61d8d8"
+      },
+      "processes": {
+        "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/event-admission-replay-validation/helper-successor-1/run/verify-archives.processes.jsonl",
+        "sha256": "81854865fcd994f01aafa06e406372c3c62ba06f9f37573acac22e66fa76f52d"
+      }
+    },
+    {
+      "group": "main",
+      "stage": "prepare-consumer",
+      "elapsedSeconds": 8.956963666714728,
+      "exit": {
+        "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/event-admission-replay-validation/helper-successor-1/run/prepare-consumer.exit.json",
+        "sha256": "092f1e47ef59a870cdb177e199540acb979b18056536ae1889ebf2ac237aaa73"
+      },
+      "log": {
+        "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/event-admission-replay-validation/helper-successor-1/run/prepare-consumer.log",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "started": {
+        "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/event-admission-replay-validation/helper-successor-1/run/prepare-consumer.started.json",
+        "sha256": "43464b9472a958076ad9d8715656a48f90e3675cf0404bace2391b190cde6844"
+      },
+      "processes": {
+        "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/event-admission-replay-validation/helper-successor-1/run/prepare-consumer.processes.jsonl",
+        "sha256": "9f69b32771c717449674daf7382e5c050d5981a0068db0b31e11f1b2d5137807"
+      }
+    },
+    {
+      "group": "main",
+      "stage": "consumer-install",
+      "elapsedSeconds": 4.518460542429239,
+      "exit": {
+        "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/event-admission-replay-validation/helper-successor-1/run/consumer-install.exit.json",
+        "sha256": "2a30e401194a65044f8c05ca429a3e0e0a3ae890d288ffc1bad6c3551f50ae0c"
+      },
+      "log": {
+        "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/event-admission-replay-validation/helper-successor-1/run/consumer-install.log",
+        "sha256": "2a11791ee3e361d06951112031cae057fca33a41ea9a23d7c4b545a062920904"
+      },
+      "started": {
+        "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/event-admission-replay-validation/helper-successor-1/run/consumer-install.started.json",
+        "sha256": "daa4e0b8fcec3f85752f7f4a329952f2bf0e8256f6792e82f210553c4ede3de2"
+      },
+      "processes": {
+        "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/event-admission-replay-validation/helper-successor-1/run/consumer-install.processes.jsonl",
+        "sha256": "f082dc6fac4676996e49e39b02ae25b45373ee6f7beba93c5075a925262c67d1"
+      }
+    },
+    {
+      "group": "main",
+      "stage": "verify-installed-consumer",
+      "elapsedSeconds": 9.433370416983962,
+      "exit": {
+        "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/event-admission-replay-validation/helper-successor-1/run/verify-installed-consumer.exit.json",
+        "sha256": "629ecac4944467b7216dc82239c82c8b20ff3d0dd8c90e068f4c3e3cca22bbf6"
+      },
+      "log": {
+        "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/event-admission-replay-validation/helper-successor-1/run/verify-installed-consumer.log",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "started": {
+        "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/event-admission-replay-validation/helper-successor-1/run/verify-installed-consumer.started.json",
+        "sha256": "fa2b425711a88c65bf3ff3e4cc2c794125757e4f97222d478d76ece7a680221a"
+      },
+      "processes": {
+        "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/event-admission-replay-validation/helper-successor-1/run/verify-installed-consumer.processes.jsonl",
+        "sha256": "a492a07bcb5f91af158df388abb4b473e898750a6633b13f1589e22c8bc3daee"
+      }
+    },
+    {
+      "group": "main",
+      "stage": "historical-event-restart-external",
+      "elapsedSeconds": 5.076817458961159,
+      "exit": {
+        "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/event-admission-replay-validation/helper-successor-1/run/historical-event-restart-external.exit.json",
+        "sha256": "663642caf11ffabc89ad988811a9c540671ae7f3211e7fa0d97588ebe52908cb"
+      },
+      "log": {
+        "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/event-admission-replay-validation/helper-successor-1/run/historical-event-restart-external.log",
+        "sha256": "8ed210ac911364872cae53333460ba466e3f4b26f166b64fa55c366c7b9342b9"
+      },
+      "started": {
+        "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/event-admission-replay-validation/helper-successor-1/run/historical-event-restart-external.started.json",
+        "sha256": "5f452ebf867070eb9d9e3fabf9fc7af86b254317e758916c45e1a955a36fa184"
+      },
+      "processes": {
+        "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/event-admission-replay-validation/helper-successor-1/run/historical-event-restart-external.processes.jsonl",
+        "sha256": "1953d9812de657b49ef42787c41c1bddb90d23f0bfbe9289ce3e6dbcb457419e"
+      }
+    },
+    {
+      "group": "main",
+      "stage": "review-historical-event-restart-external",
+      "elapsedSeconds": 9.154067541938275,
+      "exit": {
+        "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/event-admission-replay-validation/helper-successor-1/run/review-historical-event-restart-external.exit.json",
+        "sha256": "835233dec871a6450f5bca5349564910bf2282b80f796854a8f78cb46c51368f"
+      },
+      "log": {
+        "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/event-admission-replay-validation/helper-successor-1/run/review-historical-event-restart-external.log",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "started": {
+        "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/event-admission-replay-validation/helper-successor-1/run/review-historical-event-restart-external.started.json",
+        "sha256": "f8a2832bcdbe38738ec4910d91b26772434afa7294a75d6ec1c64bfce5c5ba7b"
+      },
+      "processes": {
+        "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/event-admission-replay-validation/helper-successor-1/run/review-historical-event-restart-external.processes.jsonl",
+        "sha256": "2959d06577ca87f373a0395e73baeca467131275c02946b8f46a1863f5efcdda"
+      }
+    },
+    {
+      "group": "main",
+      "stage": "current-event-admission-replay-external",
+      "elapsedSeconds": 9.860451207961887,
+      "exit": {
+        "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/event-admission-replay-validation/helper-successor-1/run/current-event-admission-replay-external.exit.json",
+        "sha256": "797bb22bcaa2c9779ada22ea8b71a8f02cf38c9c473f4b5fb99bceda97e54db4"
+      },
+      "log": {
+        "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/event-admission-replay-validation/helper-successor-1/run/current-event-admission-replay-external.log",
+        "sha256": "d6e1c2d26f3717c83e62c2b0f57ee1f4a3f1f935d211942d374022c826d5176b"
+      },
+      "started": {
+        "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/event-admission-replay-validation/helper-successor-1/run/current-event-admission-replay-external.started.json",
+        "sha256": "e4f777a5a87b7a584cab834a0ddd62cc0e625f91cbe567e02e11965bce84f008"
+      },
+      "processes": {
+        "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/event-admission-replay-validation/helper-successor-1/run/current-event-admission-replay-external.processes.jsonl",
+        "sha256": "dd7c3a4e32a69772691cdc02509d1c685543148464aa70f27f4bddae427d8f56"
+      }
+    },
+    {
+      "group": "main",
+      "stage": "review-current-event-admission-replay-external",
+      "elapsedSeconds": 8.485904875211418,
+      "exit": {
+        "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/event-admission-replay-validation/helper-successor-1/run/review-current-event-admission-replay-external.exit.json",
+        "sha256": "b209ecc68ca0148938d336f9dcfa44af0da4426e594793da2fe62bc7bb67b535"
+      },
+      "log": {
+        "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/event-admission-replay-validation/helper-successor-1/run/review-current-event-admission-replay-external.log",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "started": {
+        "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/event-admission-replay-validation/helper-successor-1/run/review-current-event-admission-replay-external.started.json",
+        "sha256": "6637a377dd74712130d155a318010d095909d4dab2fc000208e35dbf4a5aa2ea"
+      },
+      "processes": {
+        "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/event-admission-replay-validation/helper-successor-1/run/review-current-event-admission-replay-external.processes.jsonl",
+        "sha256": "2d3a4d9da764ea9101e4c04a516a2204ccbf13bcccbf0448b56bf95d7ed910d2"
+      }
+    },
+    {
+      "group": "required",
+      "stage": "boundaries",
+      "elapsedSeconds": 4.397639125119895,
+      "exit": {
+        "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/event-admission-replay-validation/required-checks-helper-successor-1/run/boundaries.exit.json",
+        "sha256": "d14127cc7535b7b9e5186d9f576893455ba01c873af2df22beeca724db84f430"
+      },
+      "log": {
+        "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/event-admission-replay-validation/required-checks-helper-successor-1/run/boundaries.log",
+        "sha256": "25f2896a4960c5d83a2204d5d35f52d3e1a6f7e77d5f53a88ddc9d70b9ebe696"
+      },
+      "started": {
+        "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/event-admission-replay-validation/required-checks-helper-successor-1/run/boundaries.started.json",
+        "sha256": "109212c3f524e7f5d27bdfc2c3ce95148cb10302ed208266ad8f544281c8d443"
+      },
+      "processes": {
+        "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/event-admission-replay-validation/required-checks-helper-successor-1/run/boundaries.processes.jsonl",
+        "sha256": "5e9581169c21ac79295687cad24a4f8718a416752587c036327454a4e47c5632"
+      }
+    },
+    {
+      "group": "required",
+      "stage": "preflight",
+      "elapsedSeconds": 4.99532900005579,
+      "exit": {
+        "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/event-admission-replay-validation/required-checks-helper-successor-1/run/preflight.exit.json",
+        "sha256": "6c051ec3c05ae93ea94834f35a22ce85b8e7b41c3d67f2d73295fbaad7368070"
+      },
+      "log": {
+        "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/event-admission-replay-validation/required-checks-helper-successor-1/run/preflight.log",
+        "sha256": "6b3b54145d2f8de3b557a83875bc542f9379f26f84a55138a40bc3effab1a489"
+      },
+      "started": {
+        "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/event-admission-replay-validation/required-checks-helper-successor-1/run/preflight.started.json",
+        "sha256": "831ba2d7cf94775af16dcf1813650438c392a164212081197abee705887a509b"
+      },
+      "processes": {
+        "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/event-admission-replay-validation/required-checks-helper-successor-1/run/preflight.processes.jsonl",
+        "sha256": "e46b02ca31856639cf9ba5a79d9ba7569db9af638845b03159420d7792492e29"
+      }
+    },
+    {
+      "group": "required",
+      "stage": "package-smoke",
+      "elapsedSeconds": 9.147658208850771,
+      "exit": {
+        "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/event-admission-replay-validation/required-checks-helper-successor-1/run/package-smoke.exit.json",
+        "sha256": "54b5c10ecb8d099014a43a11858ad32fde7502615ca8ef392364eddd5e2c02b5"
+      },
+      "log": {
+        "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/event-admission-replay-validation/required-checks-helper-successor-1/run/package-smoke.log",
+        "sha256": "f8c2490be37864605e4662157d2d3787860e133dcedcf944686e56f5790ca0da"
+      },
+      "started": {
+        "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/event-admission-replay-validation/required-checks-helper-successor-1/run/package-smoke.started.json",
+        "sha256": "945913859b261be3d12c742314a7fcdcf95d07a7ea25fcd445cb6a117b68af77"
+      },
+      "processes": {
+        "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/event-admission-replay-validation/required-checks-helper-successor-1/run/package-smoke.processes.jsonl",
+        "sha256": "ebc25a85f496d4808fd20e4e812c91835a67e94b3146164df1952c7910743827"
+      }
+    },
+    {
+      "group": "required",
+      "stage": "historical-read-evidence",
+      "elapsedSeconds": 4.5626684576272964,
+      "exit": {
+        "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/event-admission-replay-validation/required-checks-helper-successor-1/run/historical-read-evidence.exit.json",
+        "sha256": "23af6084d620f029495522c6b7a4784ca4da0b59dcb8a3cc553dc007b19e1a50"
+      },
+      "log": {
+        "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/event-admission-replay-validation/required-checks-helper-successor-1/run/historical-read-evidence.log",
+        "sha256": "18a58981597b6d29981cfc6a9587156d7b37a5fc7ead823c32dc08cf350020b3"
+      },
+      "started": {
+        "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/event-admission-replay-validation/required-checks-helper-successor-1/run/historical-read-evidence.started.json",
+        "sha256": "be2ea7259507b0c3817f9933991a286bcb87219aed0a0ca65f95e451cd62c93a"
+      },
+      "processes": {
+        "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/event-admission-replay-validation/required-checks-helper-successor-1/run/historical-read-evidence.processes.jsonl",
+        "sha256": "79d646bdf763ac5ca0d874fd55c072bb08e572774edc7e57aef2286024644054"
+      }
+    }
+  ],
+  "buildFiles": 476,
+  "archiveMembers": 321,
+  "consumerFiles": 870,
+  "consumerLinks": 17,
+  "manifests": 8,
+  "payloadIdentity": "da80f6d7f6c195328d4356e14f5446a00c4dd36f8755259609d482b51d003e5f",
+  "payloadFileVisits": 475,
+  "proof": {
+    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/event-admission-replay-validation/helper-successor-1/run/installed-provenance.json",
+    "sha256": "be1e750457d4e857890ab6c284b3480fe38e805b2ba17daa3b1b75db15863435"
+  },
+  "inventory": {
+    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/event-admission-replay-validation/helper-successor-1/run/installed-consumer-inventory.json",
+    "sha256": "b6b7171705e49911c5c2cb9f58efec13eaa762cc4044c31965bea167503a2236"
+  },
+  "build": {
+    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/event-admission-replay-validation/helper-successor-1/run/build-artifacts.json",
+    "sha256": "7cb5ad37a33fd7b951532cbf482e4effc9c9eb3a70b0edf6f435a75695f4faea"
+  },
+  "tarSource": {
+    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/event-admission-replay-validation/helper-successor-1/run/tar-source-provenance.json",
+    "sha256": "95371a72ad7d3faf28951c57cf26d13c78a3f7b839212d907db6e0fda0d73090"
+  },
+  "observations": {
+    "focused-source": {
+      "artifact": {
+        "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/event-admission-replay-validation/helper-successor-1/run/focused-source.accepted-observation.json",
+        "sha256": "99f371654ba21582895241689fbf461e661625439cbaf3a15e5d83051c09fc9b"
+      },
+      "passed": 17,
+      "newRecords": 12,
+      "legacyRecords": 4
+    },
+    "historical-event-restart-external": {
+      "artifact": {
+        "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/event-admission-replay-validation/helper-successor-1/run/historical-event-restart-external.accepted-observation.json",
+        "sha256": "0f1d39daf7b43040d8c1866fbfcdbccb5e42d7222ec0cb6b1f958233be882943"
+      },
+      "requests": 5,
+      "finiteStatuses": [
+        200,
+        200,
+        200,
+        400
+      ],
+      "childPids": [
+        50394,
+        50398
+      ],
+      "directoryAbsent": true,
+      "historicalLifecycleLimit": true
+    },
+    "current-event-admission-replay-external": {
+      "artifact": {
+        "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/event-admission-replay-validation/helper-successor-1/run/current-event-admission-replay-external.accepted-observation.json",
+        "sha256": "985281177e1b5524e2ff10adb9ca97bc44b406777c0e640aefba39ca456b107c"
+      },
+      "requests": 10,
+      "finiteStatuses": [
+        200,
+        200,
+        200,
+        200,
+        503,
+        503,
+        503,
+        503,
+        503
+      ],
+      "childPids": [
+        54529
+      ],
+      "directoryAbsent": true,
+      "historicalLifecycleLimit": false
+    }
+  },
+  "requiredHistoricalEvidence": {
+    "level": "info",
+    "event": "evidence.verified",
+    "executable": "read-cohort-evidence",
+    "artifact": "docs/design/evidence/read-cohort/read-v1.json",
+    "constant": "674982be2123b9b7aae630bf79c3f774122900cd",
+    "runHead": "e5f7d0c43c151426350ceededdc77fe7e372db9b",
+    "evidenceCommit": "dbaf63a24219e1ea3f80394746853598b0d4464a",
+    "schemaReadProjection": "bd7da0fc3f8082e0bfb6f4969c04409f2a610e12408dbc6a0bd14b4b351127cc",
+    "schemaReadProjectionDefinitions": 47,
+    "schemaReadProjectionReachable": 46,
+    "rows": 89
+  },
+  "smoke": {
+    "event": "installed.reference.observed",
+    "claimEligible": false,
+    "configurationIdentity": "db73d620d902fa2e41849c23a274d49a26a32629ea1404cfe47ab634816d1b0b",
+    "payloadIdentity": "da80f6d7f6c195328d4356e14f5446a00c4dd36f8755259609d482b51d003e5f",
+    "artifactIdentity": "development-schema5-e1dff401b5caafb04a4d935775d67eeefeae7bcf306d5d100b979a64eef148e7",
+    "allNineTargets": true,
+    "stableScope": "https://reference.invalid/acme/"
+  },
+  "sampledPidGroups": {
+    "main": 373,
+    "required": 28,
+    "originalBootstrap": 41
+  },
+  "sampledPidUnion": 442,
+  "sampledPids": [
+    21587,
+    21611,
+    23241,
+    24665,
+    26071,
+    26095,
+    26096,
+    26134,
+    26141,
+    26143,
+    27950,
+    27959,
+    27974,
+    27991,
+    28008,
+    28045,
+    28061,
+    28078,
+    28096,
+    28109,
+    28125,
+    28140,
+    28157,
+    28175,
+    28192,
+    28208,
+    28224,
+    28241,
+    28258,
+    28275,
+    28291,
+    28309,
+    28341,
+    28357,
+    28374,
+    28393,
+    28410,
+    28426,
+    28444,
+    28459,
+    28475,
+    28491,
+    28508,
+    28525,
+    28540,
+    28574,
+    28590,
+    28611,
+    28635,
+    28649,
+    28662,
+    28675,
+    28688,
+    28702,
+    28707,
+    28708,
+    30115,
+    30118,
+    30168,
+    31654,
+    31665,
+    31681,
+    31696,
+    31714,
+    31731,
+    31748,
+    31764,
+    31781,
+    31798,
+    31814,
+    31834,
+    31866,
+    31884,
+    31918,
+    31932,
+    31981,
+    31997,
+    32015,
+    32030,
+    32063,
+    32095,
+    32113,
+    32128,
+    32162,
+    32177,
+    32193,
+    32228,
+    32245,
+    32260,
+    32276,
+    32292,
+    32309,
+    32342,
+    32359,
+    32376,
+    32392,
+    32393,
+    34183,
+    35656,
+    35664,
+    35703,
+    35718,
+    35759,
+    35774,
+    35790,
+    35804,
+    35822,
+    35836,
+    35853,
+    35867,
+    35885,
+    35901,
+    35918,
+    35936,
+    35953,
+    35969,
+    35986,
+    36002,
+    36018,
+    36034,
+    36050,
+    36065,
+    36081,
+    36096,
+    36112,
+    36129,
+    36143,
+    36158,
+    36173,
+    36190,
+    36206,
+    36220,
+    36236,
+    36267,
+    36283,
+    36298,
+    36332,
+    36348,
+    36363,
+    36376,
+    36394,
+    36408,
+    36425,
+    36442,
+    36445,
+    36446,
+    37862,
+    39308,
+    40723,
+    40733,
+    40749,
+    40766,
+    40783,
+    40817,
+    40834,
+    40852,
+    40871,
+    40886,
+    40902,
+    40922,
+    40940,
+    40954,
+    40969,
+    40986,
+    41002,
+    41033,
+    41047,
+    41062,
+    41076,
+    41094,
+    41107,
+    41120,
+    41134,
+    41147,
+    41159,
+    41172,
+    41185,
+    41201,
+    41217,
+    41233,
+    41249,
+    41263,
+    41278,
+    41292,
+    41304,
+    41318,
+    41345,
+    41358,
+    41373,
+    41386,
+    41403,
+    41433,
+    41449,
+    41480,
+    41481,
+    43224,
+    43297,
+    43314,
+    43331,
+    43346,
+    43363,
+    43381,
+    43399,
+    43417,
+    43436,
+    43453,
+    43469,
+    43487,
+    43505,
+    43522,
+    43539,
+    43555,
+    43570,
+    43587,
+    43604,
+    43620,
+    43637,
+    43654,
+    43671,
+    43687,
+    43703,
+    43720,
+    43738,
+    43755,
+    43771,
+    43790,
+    43803,
+    43819,
+    43832,
+    43846,
+    43860,
+    43890,
+    43907,
+    43921,
+    43938,
+    43953,
+    43969,
+    43985,
+    44002,
+    44007,
+    44010,
+    45418,
+    47384,
+    47392,
+    47442,
+    47458,
+    47474,
+    47492,
+    47508,
+    47527,
+    47545,
+    47578,
+    47598,
+    47616,
+    47633,
+    47650,
+    47668,
+    47698,
+    47715,
+    47732,
+    47751,
+    47768,
+    47787,
+    47805,
+    47823,
+    47841,
+    47859,
+    47879,
+    47894,
+    47910,
+    47927,
+    47941,
+    47958,
+    47972,
+    47988,
+    48004,
+    48020,
+    48037,
+    48054,
+    48072,
+    48110,
+    48124,
+    48125,
+    50356,
+    50359,
+    50394,
+    50398,
+    51851,
+    51866,
+    51881,
+    51958,
+    52036,
+    52054,
+    52072,
+    52141,
+    52289,
+    52399,
+    52432,
+    52450,
+    52468,
+    52486,
+    52504,
+    52523,
+    52540,
+    52558,
+    52580,
+    52597,
+    52615,
+    52634,
+    52669,
+    52684,
+    52699,
+    52712,
+    52726,
+    52742,
+    52758,
+    52793,
+    52811,
+    52828,
+    52842,
+    52859,
+    52876,
+    52922,
+    52955,
+    52970,
+    53004,
+    53018,
+    53019,
+    53028,
+    54491,
+    54494,
+    54529,
+    56056,
+    56068,
+    56087,
+    56107,
+    56124,
+    56144,
+    56160,
+    56177,
+    56210,
+    56247,
+    56265,
+    56285,
+    56302,
+    56319,
+    56337,
+    56354,
+    56372,
+    56390,
+    56409,
+    56443,
+    56463,
+    56479,
+    56496,
+    56514,
+    56532,
+    56550,
+    56569,
+    56587,
+    56605,
+    56623,
+    56641,
+    56660,
+    56682,
+    56699,
+    56716,
+    56734,
+    56751,
+    56787,
+    56808,
+    56833,
+    56834,
+    58739,
+    60152,
+    60155,
+    61566,
+    61590,
+    61591,
+    61599,
+    61612,
+    61617,
+    61620,
+    61628,
+    61631,
+    61635,
+    61638,
+    61642,
+    61645,
+    61650,
+    61653,
+    61656,
+    61659,
+    61661,
+    61664,
+    61667,
+    61669,
+    61672,
+    61675,
+    63573,
+    63615,
+    63844,
+    65320,
+    65331,
+    65350,
+    65370,
+    65390,
+    65408,
+    65427,
+    65445,
+    65463,
+    65483,
+    65504,
+    65523,
+    65541,
+    65559,
+    65577,
+    65614,
+    65632,
+    65653,
+    65687,
+    65706,
+    65741,
+    65760,
+    65780,
+    65796,
+    65816,
+    65834,
+    65853,
+    65872,
+    65891,
+    65925,
+    65942,
+    65961,
+    65977,
+    65990,
+    66006,
+    66022,
+    66039,
+    66055,
+    66066,
+    66067
+  ],
+  "sampledPidsAbsent": true,
+  "preservedFailures": [
+    {
+      "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/event-admission-replay-validation/metadata-successor-1/run/format-check.log",
+      "sha256": "2aea74c1948a420af5b218a16b92070de5c82e50230a2d17fcfb83c89f3d3f34"
+    },
+    {
+      "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/event-admission-replay-validation/format-successor-1/run/review-historical-event-restart-external.log",
+      "sha256": "2372646868c5fe0ca437c11c64a15b5845e822d23995cafbf959d7f15b2d36e3"
+    }
+  ],
+  "limitations": [
+    "No remote CI or full-profile qualification claim.",
+    "Source 200 aggregate includes source-derived traffic; not complete raw wire census.",
+    "Historical installed witness lacks new entryLiteral and closeEvent fields; no stronger historical lifecycle claim.",
+    "Only original bootstrap2 reused; original formatter and auditor failures preserved.",
+    "Warnings remain; lint success is not zero-warning evidence.",
+    "Payload independently reproduced in prefix audit; full inventory/graph/entry/archive/source bytes rehashed unchanged in final audit."
+  ],
+  "auditAssemblyCorrection": "First data-only final assembly assumed consumer settings .npmrc; actual pinned settings are pnpm-workspace.yaml. No report was written before correcting that audit-only path; no validation or source changed."
+}

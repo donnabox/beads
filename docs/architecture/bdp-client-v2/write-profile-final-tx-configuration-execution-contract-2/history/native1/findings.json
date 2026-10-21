@@ -1,0 +1,28 @@
+{
+  "accepted": false,
+  "reviewComplete": true,
+  "findings": [
+    {
+      "id": "TX-CONTRACT-N1",
+      "severity": "Low",
+      "file": "execution-contract.json",
+      "line": 180,
+      "relatedLines": [
+        144,
+        156,
+        162
+      ],
+      "reportFile": "report.md",
+      "reportLine": 15,
+      "title": "Executable-owner authoring is ordered after final source and install proof",
+      "problem": "The packet explicitly presents ten ordered barriers. Stage1 requires reviewed full-clause case-to-assertion owners; stages3/4 freeze exact combined committed source and obtain fresh source\u2192artifact\u2192installed-entry proof; stage7 then instructs authoring the full251 executable ownership. The order does not distinguish pre-freeze ownership authoring from execution of already-frozen owners, or require re-entering existing freeze/proof barriers when later authoring changes source or packaged manifest/fixture bytes.",
+      "impact": "The literal sequence can require rebuilding/rebinding an installation after stage7, or confuse which owner/artifact bytes earlier proof covered. All identities and execution remain CLOSED/UNKNOWN, so this is planning precision, not a demonstrated gate bypass, runtime failure or grant of credit.",
+      "smallestFix": "Complete executable-owner authoring/review and manifest/fixture input freeze before the final combined-source/artifact freeze and fresh install proof; stage7 executes those already-frozen owners. Alternatively explicitly return through the same existing freeze/proof barriers for every post-proof byte change. Preserve selected laws, semantics, source ownership, budgets and no-retry policy; add no new gate or report-union mechanism.",
+      "sourceBasis": "Existing artifact bundle copies/digests exact catalog/manifest/fixture inputs; runner executes those frozen scenarios, and installed baseline binds exact payload/fixture/source identity. Later authoring cannot be attributed to prior bytes.",
+      "newReviewOrExecutionDemanded": false
+    }
+  ],
+  "findingCount": 1,
+  "scope": "FULL independent native contract precision; closed preparation only",
+  "runtimeReleased": false
+}

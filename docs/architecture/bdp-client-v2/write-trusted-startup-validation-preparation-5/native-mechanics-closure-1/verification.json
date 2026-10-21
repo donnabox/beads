@@ -1,0 +1,42 @@
+{
+  "frozenFilesAndMirror": 466,
+  "implementationPins": 415,
+  "referencePins": 119,
+  "origins": {
+    "all": 397,
+    "indirectSealedHistoricalAggregates": 2
+  },
+  "genuineForwardAndInversePairs": 22,
+  "byteIdenticalPythonHelpers": [
+    "audit.py",
+    "gate.py",
+    "guarded-action-session-20261018-021624-549f.py",
+    "packages.py",
+    "run.py"
+  ],
+  "mjsDelta": "sole executionRoot literal4-to5",
+  "selection": {
+    "callbacks": 44,
+    "onlyMetadataFile": "packages/server/src/reference-deployment.test.ts",
+    "before": "5b9de79791eb041e74b4153ffc19dfaf28b029599644a7bda056a84432ef0289",
+    "after": "adfbf6b0132cc24b3b65bf482000de2da43bf242102020637ed894b2cdd0cee9"
+  },
+  "commands": "25 unchanged command specifications and deadlines after path substitution",
+  "auditContracts": "only executionRoot/sourceIdentity/fixture metadata substitutions",
+  "currentSource": {
+    "files": 682,
+    "unchangedFrom4": 681,
+    "identity": "0c53a6bb33d57133c8fbb43b8787d9251ca4276abcdb18b2a9f434279bfe364b"
+  },
+  "gates": "identical CLOSED; no approved stages; no run directory; wrappers unresolved",
+  "additiveSourceNativeClosure": "6052ffc66a3e53be0eb2265a8ef8d52f74597c5137c9a3e1c0eb22cc277b34f5",
+  "rootCommandError": {
+    "recordSha256": "6e62aba61963198de52e44b03ec7925bb6efa23ca34428e1142e7ae6b97cb525",
+    "oldRunFilesUnchanged": 43,
+    "noPackagingConsumerDirectories": true,
+    "oldGateClosed": true,
+    "historicalApprovedStageCount": 15,
+    "notValidationAttempt": true,
+    "stderrNotReconstructed": true
+  }
+}

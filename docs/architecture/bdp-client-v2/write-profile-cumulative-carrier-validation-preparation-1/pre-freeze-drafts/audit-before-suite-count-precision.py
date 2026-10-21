@@ -1,0 +1,88 @@
+"""Pure selected-result and tool/build data audit; no product imports. WIP."""
+import sys,math,re,os,json
+sys.dont_write_bytecode=True
+from pathlib import Path
+from collections import Counter
+from scanner import bounded_json,file_hash,RESULTS,RAW,need
+
+def exact_keys(value,required,optional=()):
+ need(type(value)is dict and set(required)<=set(value)<=set(required)|set(optional),'missing-extra-report-key')
+def zero(value):need(type(value)is int and value==0,'typed-zero')
+def integer(value):need(type(value)is int and value>=0,'nonnegative-integer')
+def finite(value):need(type(value)in [int,float]and math.isfinite(value)and value>=0,'finite-number')
+def selected_results(result,spec):
+ exact_keys(result,['numTotalTestSuites','numPassedTestSuites','numFailedTestSuites','numPendingTestSuites','numTotalTests','numPassedTests','numFailedTests','numPendingTests','numTodoTests','snapshot','startTime','success','testResults'],['numRuntimeErrorTestSuites'])
+ need(result['success']is True,'test-run-success');zero(result['numFailedTests']);zero(result['numFailedTestSuites'])
+ if 'numRuntimeErrorTestSuites'in result:zero(result['numRuntimeErrorTestSuites'])
+ for k,v in result.items():
+  if k.startswith('num'):integer(v)
+ finite(result['startTime']);need(type(result['testResults'])is list and len(result['testResults'])==1,'exact-single-file-result')
+ chosen=[];allcases=[]
+ for suite in result['testResults']:
+  exact_keys(suite,['assertionResults','startTime','endTime','status','message','name']);need(suite['status']=='passed'and suite['message']==''and type(suite['assertionResults'])is list,'file-pass-no-diagnostic');finite(suite['startTime']);finite(suite['endTime']);need(suite['endTime']>=suite['startTime'],'suite-time-order')
+  for case in suite['assertionResults']:
+   exact_keys(case,['ancestorTitles','fullName','status','title','failureMessages','meta','tags'],['duration'])
+   need(type(case['fullName'])is str and type(case['title'])is str and type(case['ancestorTitles'])is list and all(type(x)is str for x in case['ancestorTitles']),'test-name-shape')
+   need(case['failureMessages']==[]and type(case['meta'])is dict and type(case['tags'])is list,'no-case-failures')
+   if 'duration'in case:finite(case['duration'])
+   if case['fullName']in spec['selectedFullNames']:
+    need(Path(suite['name']).resolve()==(Path(spec['cwd'])/spec['selectedFilesByFullName'][case['fullName']]).resolve(),'selected-file-identity');need(case['status']=='passed','selected-pass');chosen.append(case['fullName'])
+   else:need(case['status']in ['pending','skipped','todo'],'unselected-not-executed')
+   allcases.append(case)
+ need(Counter(chosen)==Counter(spec['selectedFullNames'])and len(chosen)==len(set(chosen)),'selected-exactly-once')
+ need(result['numPassedTests']==len(chosen)and result['numTotalTests']==len(allcases),'selected-and-total-counts')
+ need(result['numPassedTests']+result['numFailedTests']+result['numPendingTests']+result['numTodoTests']==result['numTotalTests'],'typed-test-total-consistency')
+ snapshot=result['snapshot'];exact_keys(snapshot,['added','failure','filesAdded','filesRemoved','filesRemovedList','filesUnmatched','filesUpdated','matched','total','unchecked','uncheckedKeysByFile','unmatched','updated','didUpdate'])
+ for k in ['added','filesAdded','filesRemoved','filesUnmatched','filesUpdated','matched','total','unchecked','unmatched','updated']:zero(snapshot[k])
+ need(snapshot['failure']is False and snapshot['didUpdate']is False and snapshot['filesRemovedList']==[]and snapshot['uncheckedKeysByFile']==[],'no-snapshot-generation-or-missing-checks')
+ return {'selectedFullNames':chosen,'passed':len(chosen),'actualTotalTests':result['numTotalTests'],'actualPendingTests':result['numPendingTests'],'actualTodoTests':result['numTodoTests'],'noUnselectedExecuted':True,'allRequiredFailureCountsTypedZero':True}
+def prepare_carrier_audit(g,owned):
+ from gate import P,E,read,write,require,complete,sha,document
+ from scanner import secure_read,strict_json,SummaryScanner,WRAPPER,SIDECAR
+ stage='single-installed-positive17';complete(stage,g);start=read(E/(stage+'.started.json'));launch=read(E/(stage+'.launch.json'));acquired=read(E/(stage+'.acquisition.json'));terminal=read(E/(stage+'.exit.json'));watch=read(E/(stage+'.watchdog.json'))
+ require(start['ownedAttemptRoot']==str(E/('attempt-'+stage))and start['childUmask']==0o077 and start['outputDestinationsAbsent']is True,'Exact positive pre-exec setting')
+ require(launch['attemptId']==start['attemptId']==terminal['attemptId']==watch['attemptId']==acquired['attemptId']and launch['startedSha256']==sha((E/(stage+'.started.json')).read_bytes())and launch['sourceBindingSha256']==g['sourceBinding']['sha256'],'Same positive launch/terminal attempt')
+ require(launch['actualOwnedLaunchSetting']=={'mechanism':'subprocess.Popen umask argument installed before exec','umask':0o077,'inheritedByVitestWorkersAndInstalledDescendants':True}and launch['outputDestinationsAbsentBeforePopen']is True,'Actual owned umask launch prerequisite')
+ require(watch['primaryCreation']['pid']==launch['pid']and watch['primaryCreation']['pgid']==launch['pgid']and watch['primaryCreation']['parent']==launch['ppid']and watch['primaryCreation']['observed']is True,'Actual long-lived positive child identity')
+ require(terminal['stdioEOF']is True and acquired['stdioEOF']is True and terminal['exit']==acquired['productExit']==0,'Actual positive stdio/terminal')
+ require(acquired['launchReceiptSha256']==sha((E/(stage+'.launch.json')).read_bytes()),'Acquisition launch receipt differs')
+ spec=read(P/'commands.json')['commands'][stage];selection=selected_results(bounded_json(E/(stage+'.results.json'),RESULTS),spec);require(selection['passed']==1,'Single positive selected callback')
+ scanner=SummaryScanner()
+ with (E/(stage+'.log')).open('rb')as source:
+  while True:
+   block=source.read(65536)
+   if not block:break
+   scanner.feed(block)
+ scanner.finish();require(scanner.hash.hexdigest()==terminal['logSha256'],'Original complete raw positive log changed')
+ require({k:v for k,v in scanner.summaries[0].items()if k!='value'}==acquired['uniqueActualSummary'],'Original unique actual summary changed')
+ require(type(acquired['originalSourceWrittenFiles'])is list and len(acquired['originalSourceWrittenFiles'])==3,'Exact acquired three files')
+ root=E/('attempt-'+stage);paths=[root/'original-legacy-wrapper.json',root/'carrier.transactional.profile.attempt.json',root/'carrier.transactional.profile.json'];values=[];facts=[]
+ for path,cap,record in zip(paths,[WRAPPER,SIDECAR,SIDECAR],acquired['originalSourceWrittenFiles']):
+  data,fact=secure_read(path,root,cap);require(fact==record,'Original mode/identity/bytes changed since terminal acquisition');strict_json(data,cap);values.append(data)
+  facts.append({k:str(v)if k in ['device','inode','mtimeNs','ctimeNs']else v for k,v in fact.items()})
+ require(values[1]==values[2],'Actual final sidecar byte arrays differ')
+ prepared={'stage':'IMMEDIATE-positive-carrier-audit','sourceIdentity':g['_sourceIdentity'],'sourceBindingSha256':g['sourceBinding']['sha256'],'positiveAttemptId':start['attemptId'],'positiveRoot':str(root),'strictOriginalFiles':facts,'strictBounds':{'depth':128,'nodes':100000,'eachContainerEntries':10000,'wrapperBytes':WRAPPER,'sidecarBytes':SIDECAR},'actualSummary':scanner.summaries[0]['value'],'selectedPositive':selection,'positiveLog':file_hash(E/(stage+'.log'),RAW),'positiveResults':file_hash(E/(stage+'.results.json'),RESULTS),'positiveStartSha256':sha((E/(stage+'.started.json')).read_bytes()),'positiveLaunchSha256':sha((E/(stage+'.launch.json')).read_bytes()),'positiveExitSha256':sha((E/(stage+'.exit.json')).read_bytes()),'positiveWatchdogSha256':sha((E/(stage+'.watchdog.json')).read_bytes()),'positiveOuterReceipt':g['outerExitReceipts'][stage],'productExit0AndActualStdioEOFAndOwnedGroupClosure':True,'sourceOutputWasNotCreatedChmoddedNormalizedOrRewrittenByAuditor':True,'claimEligible':False}
+ target=owned/'verified-acquisition.json';fd=os.open(target,os.O_WRONLY|os.O_CREAT|os.O_EXCL|os.O_CLOEXEC,0o600)
+ with os.fdopen(fd,'w')as out:out.write(json.dumps(prepared,indent=2,sort_keys=True)+'\n')
+ return {'path':str(target),'sha256':sha(target.read_bytes())}
+
+def main():
+ from gate import P,W,E,load_gate,read,write,document,require,complete,inventory,sha
+ need(len(sys.argv)==2,'audit-usage');mode=sys.argv[1];stage={'tools':'bind-workspace-tools','build':'bind-fresh-build'}.get(mode,'audit-'+mode);g,_=load_gate(stage,child=True)
+ if mode=='tools':
+  require((E/'node-version.log').read_text().strip()=='v24.16.0'and(E/'pnpm-version.log').read_text().strip()=='11.20.0','Actual Node/pnpm version differs')
+  tools=dict(document(g['baseTools'])['tools']);paths=[W/'node_modules'/n for n in ['@biomejs/biome/bin/biome','vitest/vitest.mjs','typescript/bin/tsc','typescript/lib/tsc.js','typescript/lib/getExePath.js','typescript/package.json','@babel/parser/lib/index.js','@babel/parser/package.json']]
+  paths += [W/'node_modules/.pnpm/@biomejs+cli-darwin-arm64@2.5.7/node_modules/@biomejs/cli-darwin-arm64/biome',W/'node_modules/.pnpm/@typescript+typescript-darwin-arm64@7.0.2/node_modules/@typescript/typescript-darwin-arm64/lib/tsc']
+  for q in paths:tools[str(q)]={'realpath':str(q.resolve(strict=True)),'sha256':sha(q.read_bytes())}
+  versions={'@biomejs/biome':'2.5.7','vitest':'4.1.10','typescript':'7.0.2','@babel/parser':'8.0.4'}
+  for n,v in versions.items():require(read(W/'node_modules'/n/'package.json')['version']==v,'Fresh tool version differs')
+  complete('workspace-install',g);write('workspace-tools.json',{'tools':tools,'versions':versions,'head':g['finalHead'],'sourceIdentity':g['_sourceIdentity'],'sourceLockSha256':g['sourceLockSha256'],'installExitSha256':sha((E/'workspace-install.exit.json').read_bytes()),'installLogSha256':sha((E/'workspace-install.log').read_bytes())})
+ elif mode=='build':
+  complete('fresh-build',g);write('build-artifacts.json',{'head':g['finalHead'],'tree':g['finalTree'],'sourceIdentity':g['_sourceIdentity'],'artifacts':inventory(),**{key:{'path':str(E/('fresh-build.'+suffix)),'sha256':sha((E/('fresh-build.'+suffix)).read_bytes())}for key,suffix in [('start','started.json'),('exit','exit.json'),('log','log')]}})
+ elif mode=='source-data-48':
+  spec=read(P/'commands.json')['commands'][mode];complete(mode,g);result=bounded_json(E/(mode+'.results.json'),RESULTS);selection=selected_results(result,spec)
+  need(selection['passed']==48 and selection['actualTotalTests']==48 and selection['actualPendingTests']==selection['actualTodoTests']==0,'source48 exact all callbacks')
+  text=(E/(mode+'.log')).read_text(encoding='utf-8',errors='strict');need(not re.search('Unhandled Errors|Unhandled Rejection|Uncaught Exception|Worker exited unexpectedly',text),'unhandled-runtime-diagnostic')
+  write(mode+'.accepted-data.json',{'sourceIdentity':g['_sourceIdentity'],'sourceBindingSha256':g['sourceBinding']['sha256'],'results':file_hash(E/(mode+'.results.json'),RESULTS),'log':file_hash(E/(mode+'.log'),RAW),'selection':selection,'scope':'48finite DATA callbacks only, no product HTTP/service-child or private full-law qualification','runtimeCallbackBudget':'repository default5000 unchanged','claimEligible':False})
+ else:raise RuntimeError('Unknown audit mode')
+if __name__=='__main__':main()

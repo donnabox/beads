@@ -1,0 +1,46 @@
+I read the delta (imports 1–35 and the new callback 320–1039) plus the current sources needed to resolve specific questions about it: the launcher, SSE recorder, binding/contract-plan, runtime-configuration digests, installed-configuration capture, store epoch/cursor/provenance paths, HTTP contextual-error/SSE/header-precedence paths, the SSE frame serializer, the schema `$defs`, and the three spec excerpts. Findings below are limited to the changed callback.
+
+## Findings
+
+**1. HIGH — `apps/bdptest/src/transactional-event-sse-installed.test.ts:576` and `:577-578`: two `exactOptionalPropertyTypes` assignment errors (TS2412); the delta fails `pnpm typecheck`.**
+`Session` declares `pid?: number` (line 383) and `listenUrl?: string` (line 384), but line 576 assigns `handle.child.pid`, whose type is `number | undefined` (`node_modules/@types/node/child_process.d.ts:213` — `readonly pid?: number | undefined`), and lines 577–578 assign the ternary's `string | undefined` (the false arm is a literal `undefined`). `tsconfig.base.json:6` sets `"exactOptionalPropertyTypes": true`, and `tsconfig.check.json:25` includes `apps/*/src/**/*.ts`, so this file is in the `typecheck` program (the build project `apps/bdptest/tsconfig.json:8` excludes `src/**/*.test.ts`, so `pnpm build` stays green and Vitest still runs the witness through esbuild transpile-only — the failure surfaces only in the `typecheck` gate, which is what makes it easy to miss).
+*Impact:* a frozen witness that cannot pass the repo's type gate; the two "ownership evidence" fields are exactly the ones a reviewer would trust.
+*Correction:* declare `pid?: number | undefined;` and `listenUrl?: string | undefined;` in the local `Session` type (or assign only inside the `typeof === "string"` / `pid !== undefined` branches).
+
+**2. LOW — `:336-338`: the "external entry" guard compares a realpath against a non-realpath root, so it can mislabel an in-repo entry as external.**
+`entry` is `realpathSync(...)` (line 25) while `root` (line 15) is derived from `import.meta.url` without normalization. `path.relative(root, entry)` therefore yields a `..`-prefixed path for a *repo-internal* dist file whenever the checkout is reached through a symlinked prefix (common on darwin: `/tmp` → `/private/tmp`, `/var` → `/private/var`), and the guard only throws when the relative path is *not* `..`-prefixed.
+*Impact:* `attribution` can become `"external-installed-candidate"` for an in-tree build artifact. Bounded by the report's explicit "requires separately verified external package/consumer/source binding" line, but the guard itself does not hold.
+*Correction:* `const relative = path.relative(realpathSync(root), entry);` (and keep the existing absolute-path arm).
+
+**3. LOW — `:345-352`: `witnessSource` omits untracked files from its own integrity evidence.**
+`git diff HEAD` and `git diff --name-only HEAD` report tracked modifications only. An untracked file that participates in the run (e.g. a new local test-support or script file) is absent from both `diffSha256` and `dirtyPaths`, while `fileSha256` covers only the witness file itself.
+*Impact:* the report can assert a clean working tree fingerprint for a run that was influenced by uncommitted, untracked sources.
+*Correction:* derive both from `git status --porcelain` (or add `git ls-files --others --exclude-standard`) so untracked paths and their bytes are included.
+
+**4. LOW — `:853-854`: the second negative control is reported under a name that does not describe it.**
+The assertion compares the observed frame against `e0` (differing `id`, `ordinal`, `subject`, `data.revision`), then pushes `"scope-prefix-frame"`; nothing in the control concerns a scope prefix. `localSensitivityControls` is asserted verbatim at line 895 and emitted in the report (line 981).
+*Impact:* reported sensitivity evidence misnames the discriminator a human would audit; the first label (`"restored-event-ordinal"`, line 808) is accurate, so the mismatch is easy to miss.
+*Correction:* rename to the property actually exercised (e.g. `"frame-event-identity"`), keeping line 895 in sync.
+
+**5. LOW — `:909-910` with `:927-928`: a self-inflicted abort is re-reported as an independent "work signal" failure.**
+The finally aborts the controller *because* `failures.length` is nonzero, then unconditionally pushes `{ phase: "work signal", error: controller.signal.reason }` for any aborted signal. Every semantic failure therefore produces a second entry whose reason is the synthetic `"Event restart observation failed"`.
+*Impact:* `failures` (and the `AggregateError` at 1033) conflate a derived abort with a genuine deadline/abort observation, inflating the apparent independent-failure count.
+*Correction:* record the work-signal failure only when the abort did not originate at line 910 (capture a local flag before aborting), or carry a distinct phase label such as `"derived abort"`.
+
+**6. LOW — `:1018-1025` vs `:1033-1037`: credential redaction is applied to the report path only.**
+Failure messages are redacted with `replaceAll(token, "[credential redacted]")` for the JSON report, but the rethrown `AggregateError` carries the original error objects (messages and stacks) into the Vitest reporter and any result artifact. I found no current path that embeds the token — `HttpTransportError` messages are fixed strings (`packages/conformance/src/http-executor.ts:365-367, 782-790`), the launcher never echoes configuration, and child stdout/stderr are discarded (`scripts/transaction-installed-observation.mjs:14-18`) — so this is a defense-in-depth asymmetry rather than an observed leak.
+*Impact:* the redaction invariant the report advertises does not hold for the thrown failure.
+*Correction:* redact when constructing the thrown errors (map to new `Error`s with the same sanitized messages used at line 1023).
+
+**7. LOW — `:522-526`: `validators` silently degrades to `any`, defeating compile-time checking of the schema lookup.**
+The `.map((name) => [name, ajv.compile(...)])` callback returns `(string | ValidateFunction<unknown>)[]`, not a tuple, so `Object.fromEntries` resolves to the `Iterable<readonly any[]>` overload and `validators`/`validator`/`validator.errors` are all `any`. Sibling witnesses avoid this with `as const` (`transactional-principal-key-installed.test.ts:354`, `transactional-same-key-overlap-installed.test.ts:263`).
+*Impact:* a wrong `$defs` name is caught only at runtime by the guard at line 529, and `validate()`'s result/`errors` access is unchecked; the same pattern at lines 691-699 and 861-868 loses typing too.
+*Correction:* append `as const` to the mapped entry arrays.
+
+## Checked and found sound (no finding)
+
+The core oracles hold against current code: epoch persists across `create:false` reopen (`transaction-store.ts:583-630`), so the identical-epoch requirement in `context()` is a real restart invariant; `Last-Event-ID` precedence is non-circular because the query `after=e1.id` alone yields no backlog and the recorder's own 5000 ms deadline rejects `until` (`transaction-http.ts:519-528`, `raw-sse-recorder.ts:32-35,137-152`); the cross-source cursor reaches `checkTransactionEventCursor`'s source-hash mismatch after `eventSourceKnown` succeeds, producing a context-bearing 400 `invalid-parameter` (`transaction-store.ts:691-701,1659-1668`, `transaction-events.ts:139-140`, `transaction-http.ts:640-644`, `packages/protocol/src/index.ts:496`); `recordChangeContext:false` genuinely suppresses `revisionProvenance` on both the Resource and the created-Event `data` (`resource-evaluator.ts:841-858,1105-1122`, `transaction-batch.ts:771-778`); frames are LF-framed `id/event/data` so the string splitting is correct (`transaction-sse.ts:43-45`); the intentional client destroy is a disconnect, not a retained stream fault, so the clean-exit oracle is not self-defeating (`transaction-service.ts:312-313`, `transaction-runtime.ts:233-239,245,391`); all five validated shapes exist in the bundle with the asserted fields; the 244-byte seed, 5-request bound, ordinals, and the four `transactionRuntimeDigest` input shapes match the runtime exactly; the accepted launch fields match the five keys sent; and `pending`-deletion handlers are attached at `track` time, so `expect(pending.size).toBe(0)` is not racing the awaits.
+
+## Review limitations
+
+Static reading only — no execution, build, typecheck, test run, or process/SSE observation. Severity 1 is a compiler-rule determination from the current tsconfig and `@types/node` declarations, not an observed `tsc` run. Nothing here verifies process lifetime, SSE timing, drain behavior, child exit codes, or helper kill/drain latency; those remain unverified by this review. Findings are reported for human/root disposition; this is not an approval.

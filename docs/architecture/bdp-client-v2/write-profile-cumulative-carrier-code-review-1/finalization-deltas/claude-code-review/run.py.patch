@@ -1,0 +1,11 @@
+--- scaffold/claude-code-review/run.py
++++ final/claude-code-review/run.py
+@@ -11,7 +11,7 @@
+ def git(*args):return subprocess.check_output(["git",*args],cwd=w)
+ def merge_snapshot():
+     head=git("rev-parse","HEAD").decode().strip()
+-    assert head=="UNRESOLVED_CLEAN_HEAD", "Candidate changed"
++    assert head=="2834151544ca6bdc105191665f466c58eee7930f", "Candidate changed"
+     assert git("status","--porcelain=v1","--untracked-files=all").decode()==b["expectedGitStatus"]=="", "Frozen clean source changed"
+     assert set(git("ls-files").decode().splitlines())==set(b["files"]), "Tracked scope changed"
+     return {"head":head,"tree":git("rev-parse","HEAD^{tree}").decode().strip(),"parents":git("show","-s","--format=%P","HEAD").decode().split()}

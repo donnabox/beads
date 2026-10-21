@@ -1,0 +1,126 @@
+{
+  "MJS": "Three bodies BYTEEXACT1; no Node parse/evaluation",
+  "allActualOutcomes": "UNKNOWN",
+  "commandAndMatrixInverseNamespaceByteExact": true,
+  "execution": false,
+  "gateFunctionsASTUnchanged": [
+    "consumer_inventory",
+    "document",
+    "git",
+    "guarded",
+    "invalid_constant",
+    "inventory",
+    "load_gate",
+    "read",
+    "require",
+    "source_check",
+    "tools_check",
+    "unique_object",
+    "verify_build",
+    "verify_consumer",
+    "verify_private_emit",
+    "write"
+  ],
+  "helpers": {
+    "audit-common.mjs": {
+      "ASTParsedOnly": false,
+      "beforeSha256": "8e7c940a256dd6a2cc17be99d19a934a2c92169c2532a52089960283fd0d486c",
+      "byteExactPredecessor": true,
+      "sha256": "8e7c940a256dd6a2cc17be99d19a934a2c92169c2532a52089960283fd0d486c"
+    },
+    "audit.py": {
+      "ASTParsedOnly": true,
+      "beforeSha256": "1b8169b352d5ce1aaea5cb9d72f066b3e4cb389c96e38e60b4864f0e242894f4",
+      "byteExactPredecessor": true,
+      "sha256": "1b8169b352d5ce1aaea5cb9d72f066b3e4cb389c96e38e60b4864f0e242894f4"
+    },
+    "carrier-audit.mjs": {
+      "ASTParsedOnly": false,
+      "beforeSha256": "c49e8447ffc6c6a74a9a33a67675540418bb6576a2a8c75ade77a32971d41005",
+      "byteExactPredecessor": true,
+      "sha256": "c49e8447ffc6c6a74a9a33a67675540418bb6576a2a8c75ade77a32971d41005"
+    },
+    "gate.py": {
+      "ASTParsedOnly": true,
+      "beforeSha256": "511a026aae90d1cf12aab032e4a7ae7870b23e1efb0e93f5c442fd6551ea952e",
+      "byteExactPredecessor": false,
+      "sha256": "c05831b7949b383a4bc7550a33e453d102fa12d2111583522ca009dfc69707c4"
+    },
+    "guarded-action-session-20261018-021624-549f.py": {
+      "ASTParsedOnly": true,
+      "beforeSha256": "b2d467920638e68d3b007ba9daa432e971636245eca988bfb29d7a99d6e3fb30",
+      "byteExactPredecessor": true,
+      "sha256": "b2d467920638e68d3b007ba9daa432e971636245eca988bfb29d7a99d6e3fb30"
+    },
+    "packages.py": {
+      "ASTParsedOnly": true,
+      "beforeSha256": "793d67582611907c0116b635eb2f6d9fe911d0e98495a6a095fa7b4d69047dcd",
+      "byteExactPredecessor": false,
+      "sha256": "acda7bcaee8b9a7422bb78ecca5b6dd895437f2aed6357de0e2be7508acb0345"
+    },
+    "private-graph.mjs": {
+      "ASTParsedOnly": false,
+      "beforeSha256": "8d2c0020cebe47cf916164bf457d46e6c4e94c58f9ef507d7881b895cd5674ac",
+      "byteExactPredecessor": true,
+      "sha256": "8d2c0020cebe47cf916164bf457d46e6c4e94c58f9ef507d7881b895cd5674ac"
+    },
+    "private_emit.py": {
+      "ASTParsedOnly": true,
+      "beforeSha256": "342491a1479d742ea23cd2b48760d8c3817d5c613738208e974214815c9aff89",
+      "byteExactPredecessor": true,
+      "sha256": "342491a1479d742ea23cd2b48760d8c3817d5c613738208e974214815c9aff89"
+    },
+    "run.py": {
+      "ASTParsedOnly": true,
+      "beforeSha256": "61fe235c073b0e50d316eda26dc64eb161bb208464eeaf9dc023bb7197832291",
+      "byteExactPredecessor": false,
+      "sha256": "f2d08b5e5d0ac4b60be436944ccb81cd3ce2ddf82967ac8061e6745b40078d2f"
+    },
+    "scanner.py": {
+      "ASTParsedOnly": true,
+      "beforeSha256": "c1227c030f6f409cbc1812a361caf4a269b9b583e15f226822add1488ce83770",
+      "byteExactPredecessor": true,
+      "sha256": "c1227c030f6f409cbc1812a361caf4a269b9b583e15f226822add1488ce83770"
+    },
+    "worker.py": {
+      "ASTParsedOnly": true,
+      "beforeSha256": "3a41999eaea1edccc37097e59e1a37516a283db79283a10bb00ca34cae56da76",
+      "byteExactPredecessor": true,
+      "sha256": "3a41999eaea1edccc37097e59e1a37516a283db79283a10bb00ca34cae56da76"
+    }
+  },
+  "packagesExactReversal": "Only clean and sourceAttribution expression reverse to byte-exact1",
+  "pythonASTOnly": [
+    "run.py",
+    "worker.py",
+    "gate.py",
+    "packages.py",
+    "scanner.py",
+    "audit.py",
+    "private_emit.py",
+    "guarded-action-session-20261018-021624-549f.py"
+  ],
+  "runFunctionsASTUnchanged": [
+    "birth_epoch",
+    "identity_matches",
+    "observe",
+    "reap_after_quiet",
+    "signal_owned",
+    "interrupt",
+    "enqueue",
+    "refuse"
+  ],
+  "semanticOwned4Protected677": true,
+  "source681ActualRehashed": true,
+  "state": "Author static preparation only; not independent approval or test",
+  "unchanged8Helpers": [
+    "worker.py",
+    "scanner.py",
+    "audit.py",
+    "private_emit.py",
+    "audit-common.mjs",
+    "private-graph.mjs",
+    "carrier-audit.mjs",
+    "guarded-action-session-20261018-021624-549f.py"
+  ]
+}

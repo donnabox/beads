@@ -1,0 +1,34 @@
+{
+  "actualArchiveAcceptance": {
+    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation5-verify-archives-root-final-disposition-1/disposition.json",
+    "sha256": "5f08d675179a7a93aa74d39e0723012db8c8045394e0dc188aa6d5ccb09f7508"
+  },
+  "actualRuntimeReleased": false,
+  "candidate": {
+    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation5-consumer2-closed-control-source-1/execution-gate.proposed.json",
+    "sha256": "437edd25c7267d9595a15115db65d50051372f0cb4915f6981cf46aa04be65c6"
+  },
+  "currentLive": {
+    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation-preparation-5/execution-gate.json",
+    "sha256": "34c333aa5b688d7abe944363b558e0bd431dd512ec84a24f8e0440d9d2bdf7ea"
+  },
+  "later11Closed": true,
+  "liveWriteReleased": false,
+  "onlyThreeFieldsDiffer": [
+    "approvedStages",
+    "rootDisposition",
+    "rootArchiveAcceptance"
+  ],
+  "other23Exact": true,
+  "prefix21To23Only": true,
+  "stopBefore24": true,
+  "unmodifiedGateInterface125to127": {
+    "accepted": true,
+    "sourceBindingSha256": "e0252cb07ac1896fac0faab395e10e50ea58eac263b6d33ee224e378413c2d68",
+    "sourceDefinition": {
+      "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation-preparation-5/gate.py",
+      "sha256": "6260f0878ca0bb30cc5b6de69d8357751fd09276eec7f90142f301ac87206a9f"
+    },
+    "tarProvenanceSha256": "adb24bc4154d97f48c2acb5c4e21bc67a3f541dfd8696bfaff95bf997e552fea"
+  }
+}

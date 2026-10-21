@@ -1,0 +1,12 @@
+{
+  "excludedFromImplementation": [
+    "implementation-hashes.json",
+    "preparation-index.json",
+    "execution-gate.json",
+    "execution-gate.closed.json",
+    "preparation-binding.json",
+    "closure.json"
+  ],
+  "onlyLaterMutation": "Root explicitly released active execution-gate.json only; closed snapshot/history/other bytes immutable.",
+  "reason": "Exact self-referential manifest/control files only. Full preparation index contains all controls, excludes only itself. Implementation values are SHA strings. Historical indices/copies/origins/helpers/schema/deltas pinned."
+}

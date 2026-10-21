@@ -1,0 +1,41 @@
+{
+  "method": "Own text/JSON/byte inspection only; no AST, analyzer or subject evaluation. Lexical observations are not semantic linter verdicts.",
+  "confirmedCausalErrorSites": [],
+  "unresolved": {
+    "exactEnabledRecommendedErrorRuleSet": "UNKNOWN_FROM_AVAILABLE_METADATA",
+    "allPotentialErrorSeveritySourceSites": "NOT_COMPLETELY_ENUMERABLE_WITH_THIS_STATIC_METHOD",
+    "actualHiddenErrorRule": "UNKNOWN_NOT_SHOWN",
+    "actualHiddenErrorLocation": "UNKNOWN_NOT_SHOWN"
+  },
+  "screenedFamilies": [
+    "literal control-character escapes",
+    "debugger/var/focused or skipped callback spellings",
+    "empty builtin Error-family constructors",
+    "optional-chain/non-null textual combinations",
+    "loose null comparisons",
+    "block-bodied map/filter/reduce returns",
+    "finally control flow",
+    "let declarations/assignment text",
+    "unnecessary string escape candidates"
+  ],
+  "negativeScreenLimit": "No listed lexical absence or manual review proves all configured error rules absent; scope/binding/parser/semantic rules need exact analyzer metadata/implementation.",
+  "rejectedCulpritInference": {
+    "escapedDoubleQuoteSites": [
+      {
+        "path": "apps/bdptest/src/transactional-schema-installed.test.ts",
+        "lines": [
+          853,
+          876
+        ]
+      },
+      {
+        "path": "packages/server/src/transaction-schema-http.test.ts",
+        "lines": [
+          845
+        ]
+      }
+    ],
+    "reason": "Recognized quote escape spellings and general embedded documentation do not establish an actual rule diagnostic or severity. No patch proposed."
+  },
+  "fullTenSelectedSourcesPinnedAndCopied": true
+}

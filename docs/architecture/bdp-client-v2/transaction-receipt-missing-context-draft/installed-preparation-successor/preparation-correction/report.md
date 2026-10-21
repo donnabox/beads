@@ -1,0 +1,9 @@
+# Closed receipt installed successor preparation
+
+No execution, rebuild, archive, install, service, commit or product source edit. Original installed-preparation and its historical inventory remain byte-identical. Successor authority is stale-assertion-repair/source-binding.json e96f012c; only transaction-http.test.ts changes one hidden receipt assertion from absent position to pos-1 (correction4ae1f2cf). All other seven owned hashes are identical.
+
+The original successful build remains explicitly attributed to original binding edc5c98c, not successor. build-output-inventory.json is copied byte-for-byte. build-reuse.json pins both bindings, exact before/after test hashes and reversible literal delta. The gate compares historical build start/exit to original eight hashes, current inputs to the historical666 inputs with only this one accepted test hash replaced, all312 package outputs unchanged and exact440 emitted files unchanged. Read-only preparation verified those comparisons; no product import or rebuild was used.
+
+Only gate.py and commands.json change operationally: gate reads successor binding and narrow build reuse; command artifact paths point here. Supervisor, package verifier/consumer preparation and installed postprocessor are byte-identical. Same ten stages, one14HTTP/one-child installed callback, deadlines/bounds/cleanup and fresh consumer-only entry unchanged. No hidden retry. Every before/after delta is retained as NAME.patch.
+
+No live execution-gate.json or run directory exists. Closed example retains pending root clean ordinary commit/final-source, council/control/root release and actual fresh consumer provenance/lock pins. Root must supply these and release sequential stages. Source remains current dirty draft until root's ordinary commit; no commit identity is fabricated. Historical14source positives and new one-case stale-assertion validation remain separately attributed; neither is relabeled fresh installed evidence.

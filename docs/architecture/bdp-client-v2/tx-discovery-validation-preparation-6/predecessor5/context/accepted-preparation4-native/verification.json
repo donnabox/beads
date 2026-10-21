@@ -1,0 +1,90 @@
+{
+  "accepted": true,
+  "scope": "FULL minimal DATA-only preparation4 mechanics; static only",
+  "parentPhysical": 687,
+  "parentIndexed": 686,
+  "implementationFiles": 676,
+  "exactNamedExclusions": 11,
+  "allImplementationValuesSHAStringsCompatibleWithGate": true,
+  "allParentHashesMirrorVerified": true,
+  "originsVerified": 597,
+  "referencePinsVerified": 2645,
+  "genuineForwardInversePairs": 28,
+  "sourceFilesRehashed": 679,
+  "owned": 6,
+  "protectedBase": 673,
+  "sourceIdentity": "5964d40af0ced41634e47df86cda7ac01b86768c51970e557b60ffbfc9739907",
+  "binaryPatchSha256FromRoot": "6eea8983e577d393efe2c663bedd3d2becaeac3b4258a49ab7d3f89740174fe1",
+  "gitAttribution": "root06cb frozen source inspection; no reviewer Git",
+  "helpers": [
+    {
+      "path": "run.py",
+      "current": {
+        "sha256": "16049341d6d810ea5c46a88220da30f9a04e436ee7fea0061cc26e58ba76ba70",
+        "bytes": 5357
+      },
+      "accepted2Origin": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/tx-discovery-validation-preparation-2/run.py",
+      "prior3Origin": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/tx-discovery-validation-preparation-3/run.py",
+      "byteIdentical": true,
+      "ASTIdentical": true
+    },
+    {
+      "path": "gate.py",
+      "current": {
+        "sha256": "f3781357733810861cad42b92e667822e7d3ac60e1f214e39e7f22e1bb63bb8e",
+        "bytes": 12588
+      },
+      "accepted2Origin": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/tx-discovery-validation-preparation-2/gate.py",
+      "prior3Origin": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/tx-discovery-validation-preparation-3/gate.py",
+      "byteIdentical": true,
+      "ASTIdentical": true
+    },
+    {
+      "path": "audit.py",
+      "current": {
+        "sha256": "1d2bf73e1a35d37b1d1032358ea81c4c5a97ea0fa6304603730f17af96438d2b",
+        "bytes": 34757
+      },
+      "accepted2Origin": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/tx-discovery-validation-preparation-2/audit.py",
+      "prior3Origin": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/tx-discovery-validation-preparation-3/audit.py",
+      "byteIdentical": true,
+      "ASTIdentical": true
+    },
+    {
+      "path": "packages.py",
+      "current": {
+        "sha256": "162e4f04ffe9aeffe886b194c7ed41241c6ce3cf37e9c93f92fec0969095aea9",
+        "bytes": 8760
+      },
+      "accepted2Origin": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/tx-discovery-validation-preparation-2/packages.py",
+      "prior3Origin": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/tx-discovery-validation-preparation-3/packages.py",
+      "byteIdentical": true,
+      "ASTIdentical": true
+    },
+    {
+      "path": "guarded-action-session-20261018-021624-549f.py",
+      "current": {
+        "sha256": "b2d467920638e68d3b007ba9daa432e971636245eca988bfb29d7a99d6e3fb30",
+        "bytes": 946
+      },
+      "accepted2Origin": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/tx-discovery-validation-preparation-2/guarded-action-session-20261018-021624-549f.py",
+      "prior3Origin": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/tx-discovery-validation-preparation-3/guarded-action-session-20261018-021624-549f.py",
+      "byteIdentical": true,
+      "ASTIdentical": true
+    }
+  ],
+  "stageCommandsPathOnly": true,
+  "freshStages": 52,
+  "immediateAuditPairs": 16,
+  "semanticSelectionSchemasByteIdenticalToAccepted2And3": true,
+  "prior2ReportPrecisionN1N2N3Preserved": true,
+  "prior3IndexN1AndLabelN2Closed": true,
+  "annotationStatic0132CrossBindsExactCurrent679Canonical5964Binary6eea": true,
+  "gatesAllFalse": true,
+  "approvedStagesEmpty": true,
+  "runAbsent": true,
+  "oldResultsReused": false,
+  "helperImportedEvaluatedExecuted": false,
+  "compilerProductRuntimeGitReviewerExecuted": false,
+  "rootReleaseRequired": true
+}

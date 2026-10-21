@@ -1,0 +1,117 @@
+{
+  "accepted": false,
+  "actualAcceptedObservation": {
+    "bytes": 796,
+    "mode": "0o644",
+    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation-preparation-5/run/legacy-schema-source.accepted-observation.json",
+    "sha256": "9838974a8fbaecdb2ddfe3cee9da3716987c8d152de735736469893220f2abd9"
+  },
+  "actualEmptyAuditorLog": {
+    "bytes": 0,
+    "mode": "0o644",
+    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation-preparation-5/run/audit-legacy-schema-source.log",
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  "actualFunctionsCellId": "3319",
+  "actualInnerElapsedSeconds": 9.342271958943456,
+  "actualInnerExit": 0,
+  "actualPhaseTerminalObservations": [
+    {
+      "actualRawExit": 0,
+      "actualTerminalToolId": "b13901",
+      "phase": "A"
+    },
+    {
+      "actualRawExit": 0,
+      "actualTerminalToolId": "e12eab",
+      "phase": "B"
+    },
+    {
+      "actualRawExit": 0,
+      "actualTerminalToolId": "eb2b5e",
+      "phase": "C"
+    }
+  ],
+  "actualPrivateClaimEligible": false,
+  "actualReportIds": [],
+  "censusRawStreamBytes": [
+    204416,
+    0
+  ],
+  "cleanupPerformedByStaticPacket": false,
+  "completedInvocationAndObservationUpperBoundSeconds": 14.806542541831732,
+  "firstPostBTerminalWitnessMonotonic": 2268512.126032958,
+  "fullIndependentConjunctionAudit": "PENDING",
+  "matchingTaskRows": [],
+  "nextStageReleased": false,
+  "observerSelfAbsenceOrGlobalContainmentClaim": false,
+  "ordinaryToolRecords": {
+    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation5-audit-legacy-schema-source-root-tool-evidence-1/dispatch-state.json",
+    "sha256": "7c921c395b9d2f1a386dacad6659adf7eeb698e640473b3b5795d1972ff7fe70"
+  },
+  "privateSourceAuditPairFinalAccepted": false,
+  "probeDirectReaped": true,
+  "qualityPass": false,
+  "rawWireToolReceipts": "UNRETAINED_SOURCE_ATTRIBUTED_NORMALIZED_RESULTS",
+  "recordedTaskPGIDs": [
+    40121,
+    40125,
+    40865
+  ],
+  "recordedTaskPIDs": [
+    40124,
+    40125,
+    40865,
+    40879,
+    40894,
+    40911,
+    40934,
+    40949,
+    40965,
+    40983,
+    41018,
+    41033,
+    41049,
+    41066,
+    41084,
+    41118,
+    41134,
+    41151,
+    41168,
+    41184,
+    41201,
+    41216,
+    41231,
+    41247,
+    41265,
+    41281,
+    41295,
+    41312,
+    41328,
+    41345,
+    41362,
+    41378,
+    41408,
+    41424,
+    41441,
+    41457,
+    41474,
+    41491,
+    41507,
+    41525,
+    41541,
+    41557,
+    41575,
+    41590,
+    41614,
+    41616
+  ],
+  "rootOriginMonotonic": 2268497.319490416,
+  "rootRawStreamBytes": [
+    791,
+    0
+  ],
+  "stage": "audit-legacy-schema-source",
+  "strictUnder115": true,
+  "temporaryDirectory": "/private/tmp/vickie-tx-discovery-validation-audit-legacy-schema-source-ld_f1pui"
+}

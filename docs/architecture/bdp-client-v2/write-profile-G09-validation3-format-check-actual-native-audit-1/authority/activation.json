@@ -1,0 +1,164 @@
+{
+  "actualNewInvocations": 0,
+  "afterSha256": "779d31312b8333304fdae310ecaf4d4ca0f23f9f05307fb5be4534428adcdafc",
+  "allOtherPinsClosedCopiesOriginalIndices121Implementation679SourcePrior17RunUnchanged": true,
+  "approvedPrefix": [
+    "node-version",
+    "pnpm-version",
+    "workspace-install",
+    "bind-workspace-tools",
+    "typecheck",
+    "format-check",
+    "lint",
+    "fresh-build",
+    "bind-fresh-build"
+  ],
+  "at": "2026-10-18T22:40:26.434164+00:00",
+  "beforeSha256": "9088a3b9616271f3b5db19568b5b4fab2a49fceb3770359a60698582c5f00681",
+  "candidate": {
+    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation3-next5-root-proposed-authority-1/execution-gate.proposed.json",
+    "sha256": "779d31312b8333304fdae310ecaf4d4ca0f23f9f05307fb5be4534428adcdafc"
+  },
+  "first4ReinvocationAuthorized": false,
+  "firstCompleteAuthorityPublicationAndReadback": {
+    "activationYet": false,
+    "at": "2026-10-18T22:39:51.242526+00:00",
+    "criticalManifestRootRenderedProtocolCandidateReadBack": [
+      "write-profile-G09-validation3-next5-root-final-execution-acceptance-1/acceptance.json",
+      "write-profile-G09-validation3-next5-root-execution-acceptance-1/acceptance.json",
+      "write-profile-G09-validation3-next5-root-instantiated-source-1/index.json",
+      "write-profile-G09-validation3-next5-fixed-protocol-preparation-1/index.json",
+      "write-profile-G09-validation3-next5-root-proposed-authority-1/execution-gate.proposed.json"
+    ],
+    "firstPublicationBarrierComplete": true,
+    "head": "21be5a99c0e2f6d234860b6ee09586550a9ba351",
+    "liveGateStill9088": "9088a3b9616271f3b5db19568b5b4fab2a49fceb3770359a60698582c5f00681",
+    "newRawPathsModesVerified": 65,
+    "priorSourceHelperAndAcceptedEvidenceRemainAncestorDurable": true
+  },
+  "fullNativeFinal": {
+    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation3-next5-execution-manifest-native-precision-1/closure.json",
+    "sha256": "5efc47c3aa736451e78e00b5f8fc3ca6e8f7485c0033bf2fbe8352028f66f907"
+  },
+  "kind": "ROOT_EXACT_SINGLE_LIVE_FILE_NEXT5_ACTIVATION_AFTER_COMPLETE_AUTHORITY_PUBLICATION_BEFORE_SEPARATE_ACTIVATION_PUBLICATION",
+  "later25Authorized": false,
+  "manifest": {
+    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation3-next5-root-execution-acceptance-1/acceptance.json",
+    "sha256": "57d5aba63d328daa498a47514e11a9812e9dfc5e3240a72b8dac4bee6b388223"
+  },
+  "newInvocationStages": [
+    "typecheck",
+    "format-check",
+    "lint",
+    "fresh-build",
+    "bind-fresh-build"
+  ],
+  "oldSnapshotIndicesNotRewrittenOrCurrentAliases": true,
+  "postactivationReferenceTables": [
+    {
+      "allOtherPinsExact": true,
+      "entries": 2675,
+      "soleLivePathOccurrences": 1,
+      "table": {
+        "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation3-next5-root-proposed-authority-1/reference-pins.json",
+        "sha256": "83d0a8265cb011fde633633d8aefc8300083af6e2f9e1b172dac577f5b41eb8d"
+      }
+    },
+    {
+      "allOtherPinsExact": true,
+      "entries": 26,
+      "soleLivePathOccurrences": 1,
+      "table": {
+        "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation3-next5-fixed-protocol-preparation-1/reference-pins.json",
+        "sha256": "dd026b2b5605d8bbe7987af8e1e30ab5bf98971fbbcb14f605cd3df94ce5cd0e"
+      }
+    },
+    {
+      "allOtherPinsExact": true,
+      "entries": 2215,
+      "soleLivePathOccurrences": 0,
+      "table": {
+        "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation-preparation-3/reference-pins.json",
+        "sha256": "3d60df502967735e6f836b7412a11bef0b0527702fc54064e71fe64f82a6b909"
+      }
+    },
+    {
+      "allOtherPinsExact": true,
+      "entries": 2278,
+      "soleLivePathOccurrences": 1,
+      "table": {
+        "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation3-root-proposed-authority-1/reference-pins.json",
+        "sha256": "055a1d4f5c68c5d7120821206ba4fbfbe9b2ef53243afa4fa9210b04595a8513"
+      }
+    },
+    {
+      "allOtherPinsExact": true,
+      "entries": 2571,
+      "soleLivePathOccurrences": 1,
+      "table": {
+        "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation3-root-fixed-protocol-preparation-1/reference-pins.json",
+        "sha256": "699e02d379dfefe4365c3eba28794d27877348bdf5c6e69e92bfe9f9270aec03"
+      }
+    }
+  ],
+  "preactivationReferenceTables": [
+    {
+      "allOtherPinsExact": true,
+      "entries": 2675,
+      "soleLivePathOccurrences": 1,
+      "table": {
+        "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation3-next5-root-proposed-authority-1/reference-pins.json",
+        "sha256": "83d0a8265cb011fde633633d8aefc8300083af6e2f9e1b172dac577f5b41eb8d"
+      }
+    },
+    {
+      "allOtherPinsExact": true,
+      "entries": 26,
+      "soleLivePathOccurrences": 1,
+      "table": {
+        "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation3-next5-fixed-protocol-preparation-1/reference-pins.json",
+        "sha256": "dd026b2b5605d8bbe7987af8e1e30ab5bf98971fbbcb14f605cd3df94ce5cd0e"
+      }
+    },
+    {
+      "allOtherPinsExact": true,
+      "entries": 2215,
+      "soleLivePathOccurrences": 0,
+      "table": {
+        "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation-preparation-3/reference-pins.json",
+        "sha256": "3d60df502967735e6f836b7412a11bef0b0527702fc54064e71fe64f82a6b909"
+      }
+    },
+    {
+      "allOtherPinsExact": true,
+      "entries": 2278,
+      "soleLivePathOccurrences": 1,
+      "table": {
+        "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation3-root-proposed-authority-1/reference-pins.json",
+        "sha256": "055a1d4f5c68c5d7120821206ba4fbfbe9b2ef53243afa4fa9210b04595a8513"
+      }
+    },
+    {
+      "allOtherPinsExact": true,
+      "entries": 2571,
+      "soleLivePathOccurrences": 1,
+      "table": {
+        "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation3-root-fixed-protocol-preparation-1/reference-pins.json",
+        "sha256": "699e02d379dfefe4365c3eba28794d27877348bdf5c6e69e92bfe9f9270aec03"
+      }
+    }
+  ],
+  "publicOrWholeWriteCredit": false,
+  "renderedSourceIndex": {
+    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation3-next5-root-instantiated-source-1/index.json",
+    "sha256": "6c50ed1b6f3bfe7853e42ca55e02fc38c72c8f605be7d20a2d429394c81bf41d"
+  },
+  "requiredNext": "Publish this exact activation evidence+livegate bytes and soleplan separately, verify raw/modes/remote head+active779d readback BEFOREONEactualtypecheckA/B/C. Per-stage independent actual audit/root/durable acceptance before next. Nonzero/late/partial/UNKNOWN STOP; no retry.",
+  "rootFinalAcceptance": {
+    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation3-next5-root-final-execution-acceptance-1/acceptance.json",
+    "sha256": "daa07081d5e8f4df41f7e1c0d934a9f1c44e63b748af89f32dbd2ba3ec70f7fb"
+  },
+  "runtimeInvocationsMayBeginNow": false,
+  "session": "2026-10-18T02:16:24Z-549f",
+  "soleLivePath": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation-preparation-3/execution-gate.json"
+}

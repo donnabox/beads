@@ -1,0 +1,128 @@
+{
+  "state": "STATIC source-path assessment, not generated reports or executed controls",
+  "source": "inputs/semantic-contract/source/apps/bdptest/src/transactional-set-installed.test.ts",
+  "sourceSha256": "4f4f942f876222521765b9830a941f2b6e0dfa01a3a66979beaa1237c4638c85",
+  "initializationLines": [
+    424,
+    440
+  ],
+  "onlyAwaitLine": 461,
+  "responseSynchronousLines": [
+    462,
+    485
+  ],
+  "catchSynchronousLines": [
+    486,
+    493
+  ],
+  "finallySynchronousLines": [
+    494,
+    498
+  ],
+  "rows": [
+    {
+      "tupleSettledReceivedValidated": "000",
+      "flags": {
+        "settled": false,
+        "received": false,
+        "validated": false
+      },
+      "sourceObservable": true,
+      "currentRelevantRowGuards": "allowed; pending category/writeState insufficiently constrained",
+      "sourcePath": "Before await settles: all response facts, errorCategory and writeState remain null."
+    },
+    {
+      "tupleSettledReceivedValidated": "001",
+      "flags": {
+        "settled": false,
+        "received": false,
+        "validated": true
+      },
+      "sourceObservable": false,
+      "currentRelevantRowGuards": "rejected by existing validated implication",
+      "sourcePath": "Validated without response is impossible."
+    },
+    {
+      "tupleSettledReceivedValidated": "010",
+      "flags": {
+        "settled": false,
+        "received": true,
+        "validated": false
+      },
+      "sourceObservable": false,
+      "currentRelevantRowGuards": "not rejected by current row guards; other report obligations still apply",
+      "sourcePath": "Received assignments and finally-settled have no intervening await; not externally serializable."
+    },
+    {
+      "tupleSettledReceivedValidated": "011",
+      "flags": {
+        "settled": false,
+        "received": true,
+        "validated": true
+      },
+      "sourceObservable": false,
+      "currentRelevantRowGuards": "rejected by existing validated implication",
+      "sourcePath": "Received+validated cannot remain unsettled."
+    },
+    {
+      "tupleSettledReceivedValidated": "100",
+      "flags": {
+        "settled": true,
+        "received": false,
+        "validated": false
+      },
+      "sourceObservable": true,
+      "currentRelevantRowGuards": "nonnull allowed category now required",
+      "sourcePath": "Transport rejection or synchronous executor refusal: catch assigns actual category/nullable exposed writeState; finally settles."
+    },
+    {
+      "tupleSettledReceivedValidated": "101",
+      "flags": {
+        "settled": true,
+        "received": false,
+        "validated": true
+      },
+      "sourceObservable": false,
+      "currentRelevantRowGuards": "rejected by existing validated implication",
+      "sourcePath": "Validated without response is impossible."
+    },
+    {
+      "tupleSettledReceivedValidated": "110",
+      "flags": {
+        "settled": true,
+        "received": true,
+        "validated": false
+      },
+      "sourceObservable": true,
+      "currentRelevantRowGuards": "allowed with received facts and null category",
+      "sourcePath": "Actual response retained, status/schema/wire assertion fails, finally settles; validated remains false."
+    },
+    {
+      "tupleSettledReceivedValidated": "111",
+      "flags": {
+        "settled": true,
+        "received": true,
+        "validated": true
+      },
+      "sourceObservable": true,
+      "currentRelevantRowGuards": "allowed only with current validated/wire/context/schema conditions",
+      "sourcePath": "Actual response passes source assertions, finally settles; received category remains null."
+    }
+  ],
+  "sourceObservableTuples": [
+    "000",
+    "100",
+    "110",
+    "111"
+  ],
+  "scope": "States of observations at externally reachable report serialization. No claim every syntactically allowed tuple is an end-to-end producer run. Capture failures may leave nullable response facts; no fabricated field completion.",
+  "timerDistinction": "console.log(JSON.stringify(report)) at909 serializes synchronously; callback-end at910 follows enqueue return. RPC/stdio arrival and parent receipt are later clock/flush facts, not exposure of intra-job catch/finally states.",
+  "minimalFuturePredicates": [
+    "received implies settled",
+    "unreceived and unsettled implies errorCategory null and writeState null",
+    "keep existing validated implies received and settled",
+    "keep settled/unreceived nonnull existing category guard and actual nullable captured transport writeState",
+    "keep existing response availability, closed grammar, aggregates, failed/no-credit boundary and raw retention"
+  ],
+  "requiresFutureRootAuthoringRelease": true
+}

@@ -1,0 +1,290 @@
+packages/server/src/transaction-schema-http.test.ts:294:5 lint/style/useTemplate  FIXABLE  ━━━━━━━━━━
+
+  i Template literals are preferred over string concatenation.
+  
+    292 │   expect(method.headers.allow).toBe("GET, HEAD");
+    293 │   for (const url of [
+  > 294 │     root + "?x=1",
+        │     ^^^^^^^^^^^^^
+    295 │     root + "/",
+    296 │     `${scope}schemas/unknown`,
+  
+  i Unsafe fix: Use a template literal.
+  
+    292 292 │     expect(method.headers.allow).toBe("GET, HEAD");
+    293 293 │     for (const url of [
+    294     │ - ····root·+·"?x=1",
+        294 │ + ····`${root}?x=1`,
+    295 295 │       root + "/",
+    296 296 │       `${scope}schemas/unknown`,
+  
+
+packages/server/src/transaction-schema-http.test.ts:295:5 lint/style/useTemplate  FIXABLE  ━━━━━━━━━━
+
+  i Template literals are preferred over string concatenation.
+  
+    293 │   for (const url of [
+    294 │     root + "?x=1",
+  > 295 │     root + "/",
+        │     ^^^^^^^^^^
+    296 │     `${scope}schemas/unknown`,
+    297 │     "https://external.invalid/schema",
+  
+  i Unsafe fix: Use a template literal.
+  
+    293 293 │     for (const url of [
+    294 294 │       root + "?x=1",
+    295     │ - ····root·+·"/",
+        295 │ + ····`${root}/`,
+    296 296 │       `${scope}schemas/unknown`,
+    297 297 │       "https://external.invalid/schema",
+  
+
+packages/server/src/transaction-schema-http.test.ts:308:23 lint/style/useTemplate  FIXABLE  ━━━━━━━━━━
+
+  i Template literals are preferred over string concatenation.
+  
+    306 │   ["differing-id", root, `${scope}canonical/root`],
+    307 │   ["outside-namespace", `${scope}beads/a`, `${scope}beads/a`],
+  > 308 │   ["query-retrieval", root + "?edition=1", root + "?edition=1"],
+        │                       ^^^^^^^^^^^^^^^^^^^
+    309 │ ])(
+    310 │   "preserves accepted offline configuration and unserved aliases: %s",
+  
+  i Unsafe fix: Use a template literal.
+  
+    306 306 │     ["differing-id", root, `${scope}canonical/root`],
+    307 307 │     ["outside-namespace", `${scope}beads/a`, `${scope}beads/a`],
+    308     │ - ··["query-retrieval",·root·+·"?edition=1",·root·+·"?edition=1"],
+        308 │ + ··["query-retrieval",·`${root}?edition=1`,·root·+·"?edition=1"],
+    309 309 │   ])(
+    310 310 │     "preserves accepted offline configuration and unserved aliases: %s",
+  
+
+packages/server/src/transaction-schema-http.test.ts:308:44 lint/style/useTemplate  FIXABLE  ━━━━━━━━━━
+
+  i Template literals are preferred over string concatenation.
+  
+    306 │   ["differing-id", root, `${scope}canonical/root`],
+    307 │   ["outside-namespace", `${scope}beads/a`, `${scope}beads/a`],
+  > 308 │   ["query-retrieval", root + "?edition=1", root + "?edition=1"],
+        │                                            ^^^^^^^^^^^^^^^^^^^
+    309 │ ])(
+    310 │   "preserves accepted offline configuration and unserved aliases: %s",
+  
+  i Unsafe fix: Use a template literal.
+  
+    306 306 │     ["differing-id", root, `${scope}canonical/root`],
+    307 307 │     ["outside-namespace", `${scope}beads/a`, `${scope}beads/a`],
+    308     │ - ··["query-retrieval",·root·+·"?edition=1",·root·+·"?edition=1"],
+        308 │ + ··["query-retrieval",·root·+·"?edition=1",·`${root}?edition=1`],
+    309 309 │   ])(
+    310 310 │     "preserves accepted offline configuration and unserved aliases: %s",
+  
+
+packages/server/src/transaction-http.ts:493:50 lint/style/noNonNullAssertion ━━━━━━━━━━━━━━━━━━━━━━━
+
+  ! Forbidden non-null assertion.
+  
+    491 │       const fields =
+    492 │         lastEventIds ??
+  > 493 │         (request.headers.has("last-event-id") ? [request.headers.get("last-event-id")!] : []);
+        │                                                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    494 │       if (media === "sse" && fields.length > 1)
+    495 │         throw new TransactionChangefeedParameterError("repeated Last-Event-ID");
+  
+
+packages/server/src/transaction-http.ts:496:75 lint/style/noNonNullAssertion ━━━━━━━━━━━━━━━━━━━━━━━
+
+  ! Forbidden non-null assertion.
+  
+    494 │       if (media === "sse" && fields.length > 1)
+    495 │         throw new TransactionChangefeedParameterError("repeated Last-Event-ID");
+  > 496 │       const effective = media === "sse" && fields.length === 1 ? { after: fields[0]! } : changefeed;
+        │                                                                           ^^^^^^^^^^
+    497 │       // Canonical current changefeed admission preserves one lexical minimum
+    498 │       // across finite/reconnect attempts, before ordinary media negotiation.
+  
+
+packages/server/src/transaction-http.ts:532:50 lint/style/noNonNullAssertion ━━━━━━━━━━━━━━━━━━━━━━━
+
+  ! Forbidden non-null assertion.
+  
+    530 │       const fields =
+    531 │         lastEventIds ??
+  > 532 │         (request.headers.has("last-event-id") ? [request.headers.get("last-event-id")!] : []);
+        │                                                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    533 │       const minimum = hasMinimumControls(request)
+    534 │         ? (currentReadMinimumHeaders(request.headers) ?? "unsupported")
+  
+
+packages/server/src/transaction-schema-http.test.ts:119:21 lint/style/noNonNullAssertion ━━━━━━━━━━━
+
+  ! Forbidden non-null assertion.
+  
+    117 │         res.on("end", () =>
+    118 │           resolve({
+  > 119 │             status: res.statusCode!,
+        │                     ^^^^^^^^^^^^^^^
+    120 │             headers: res.headers,
+    121 │             text: Buffer.concat(chunks).toString("utf8"),
+  
+
+packages/server/src/transaction-schema-http.test.ts:143:3 lint/style/noNonNullAssertion ━━━━━━━━━━━━
+
+  ! Forbidden non-null assertion.
+  
+    141 │   const input = artifacts(),
+    142 │     contracts = compile(input);
+  > 143 │   input.schemas[0]!.utf8 = "mutated";
+        │   ^^^^^^^^^^^^^^^^^
+    144 │   const context = Object.freeze({
+    145 │     scopeEpoch: "epoch",
+  
+
+packages/server/src/transaction-schema-http.test.ts:155:47 lint/style/noNonNullAssertion ━━━━━━━━━━━
+
+  ! Forbidden non-null assertion.
+  
+    153 │     [ref, refBytes],
+    154 │   ]) {
+  > 155 │     const selected = await select(new Request(url!), authorized);
+        │                                               ^^^^
+    156 │     expect(
+    157 │       selected?.response.status,
+  
+
+packages/server/src/transaction-schema-http.test.ts:162:32 lint/style/noNonNullAssertion ━━━━━━━━━━━
+
+  ! Forbidden non-null assertion.
+  
+    160 │     expect(selected?.raw, "exact captured schema bytes").toBe(bytes);
+    161 │     expect(selected?.response.headers.get("content-length")).toBe(
+  > 162 │       String(Buffer.byteLength(bytes!)),
+        │                                ^^^^^^
+    163 │     );
+    164 │     expect(selected?.response.headers.has("etag")).toBe(false);
+  
+
+packages/server/src/transaction-schema-http.test.ts:312:29 lint/style/noNonNullAssertion ━━━━━━━━━━━
+
+  ! Forbidden non-null assertion.
+  
+    310 │   "preserves accepted offline configuration and unserved aliases: %s",
+    311 │   async (_name, retrieval, canonical) => {
+  > 312 │     const input = artifacts(retrieval!, canonical!);
+        │                             ^^^^^^^^^^
+    313 │     const service = await runtime(input);
+    314 │     const admitted = await commit(service);
+  
+
+packages/server/src/transaction-schema-http.test.ts:312:41 lint/style/noNonNullAssertion ━━━━━━━━━━━
+
+  ! Forbidden non-null assertion.
+  
+    310 │   "preserves accepted offline configuration and unserved aliases: %s",
+    311 │   async (_name, retrieval, canonical) => {
+  > 312 │     const input = artifacts(retrieval!, canonical!);
+        │                                         ^^^^^^^^^^
+    313 │     const service = await runtime(input);
+    314 │     const admitted = await commit(service);
+  
+
+packages/server/src/transaction-schema-http.test.ts:331:42 lint/style/noNonNullAssertion ━━━━━━━━━━━
+
+  ! Forbidden non-null assertion.
+  
+    329 │     const select = schemaHttp.createTransactionSchemaHttp(scope, compile(input), observe);
+    330 │     if (_name === "differing-id") {
+  > 331 │       const served = await wire(service, retrieval!);
+        │                                          ^^^^^^^^^^
+    332 │       expect(served.status).toBe(200);
+    333 │       expect(served.text).toBe(input.schemas[0]!.utf8);
+  
+
+packages/server/src/transaction-schema-http.test.ts:333:32 lint/style/noNonNullAssertion  FIXABLE  ━━━━━━━━━━
+
+  ! Forbidden non-null assertion.
+  
+    331 │       const served = await wire(service, retrieval!);
+    332 │       expect(served.status).toBe(200);
+  > 333 │       expect(served.text).toBe(input.schemas[0]!.utf8);
+        │                                ^^^^^^^^^^^^^^^^^
+    334 │       expect(await select(new Request(canonical!), authorized)).toBeUndefined();
+    335 │       // Canonical identity/reference base remains valid offline but is not a retrieval alias.
+  
+  i Unsafe fix: Replace with optional chain operator ?. This operator includes runtime checks, so it is safer than the compile-only non-null assertion operator
+  
+    331 331 │         const served = await wire(service, retrieval!);
+    332 332 │         expect(served.status).toBe(200);
+    333     │ - ······expect(served.text).toBe(input.schemas[0]!.utf8);
+        333 │ + ······expect(served.text).toBe(input.schemas[0]?.utf8);
+    334 334 │         expect(await select(new Request(canonical!), authorized)).toBeUndefined();
+    335 335 │         // Canonical identity/reference base remains valid offline but is not a retrieval alias.
+  
+
+packages/server/src/transaction-schema-http.test.ts:334:39 lint/style/noNonNullAssertion ━━━━━━━━━━━
+
+  ! Forbidden non-null assertion.
+  
+    332 │       expect(served.status).toBe(200);
+    333 │       expect(served.text).toBe(input.schemas[0]!.utf8);
+  > 334 │       expect(await select(new Request(canonical!), authorized)).toBeUndefined();
+        │                                       ^^^^^^^^^^
+    335 │       // Canonical identity/reference base remains valid offline but is not a retrieval alias.
+    336 │       expect((await wire(service, canonical!)).status).toBe(404);
+  
+
+packages/server/src/transaction-schema-http.test.ts:336:35 lint/style/noNonNullAssertion ━━━━━━━━━━━
+
+  ! Forbidden non-null assertion.
+  
+    334 │       expect(await select(new Request(canonical!), authorized)).toBeUndefined();
+    335 │       // Canonical identity/reference base remains valid offline but is not a retrieval alias.
+  > 336 │       expect((await wire(service, canonical!)).status).toBe(404);
+        │                                   ^^^^^^^^^^
+    337 │       expect(
+    338 │         await select(new Request(new URL("value", canonical!).href), authorized),
+  
+
+packages/server/src/transaction-schema-http.test.ts:338:51 lint/style/noNonNullAssertion ━━━━━━━━━━━
+
+  ! Forbidden non-null assertion.
+  
+    336 │       expect((await wire(service, canonical!)).status).toBe(404);
+    337 │       expect(
+  > 338 │         await select(new Request(new URL("value", canonical!).href), authorized),
+        │                                                   ^^^^^^^^^^
+    339 │       ).toBeUndefined();
+    340 │       expect((await wire(service, new URL("value", retrieval!).href)).status).toBe(404);
+  
+
+packages/server/src/transaction-schema-http.test.ts:340:52 lint/style/noNonNullAssertion ━━━━━━━━━━━
+
+  ! Forbidden non-null assertion.
+  
+    338 │         await select(new Request(new URL("value", canonical!).href), authorized),
+    339 │       ).toBeUndefined();
+  > 340 │       expect((await wire(service, new URL("value", retrieval!).href)).status).toBe(404);
+        │                                                    ^^^^^^^^^^
+    341 │     } else {
+    342 │       expect(await select(new Request(retrieval!), authorized)).toBeUndefined();
+  
+
+packages/server/src/transaction-schema-http.test.ts:342:39 lint/style/noNonNullAssertion ━━━━━━━━━━━
+
+  ! Forbidden non-null assertion.
+  
+    340 │       expect((await wire(service, new URL("value", retrieval!).href)).status).toBe(404);
+    341 │     } else {
+  > 342 │       expect(await select(new Request(retrieval!), authorized)).toBeUndefined();
+        │                                       ^^^^^^^^^^
+    343 │       const response = await wire(service, retrieval!);
+    344 │       expect(response.status).toBe(_name === "outside-namespace" ? 200 : 404);
+  
+
+The number of diagnostics exceeds the limit allowed. Use --max-diagnostics to increase it.
+Diagnostics not shown: 106.
+Checked 10 files in 110ms. No fixes applied.
+Found 96 warnings.
+Found 30 infos.

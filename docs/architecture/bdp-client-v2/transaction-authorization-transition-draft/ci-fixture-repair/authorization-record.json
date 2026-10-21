@@ -1,0 +1,14 @@
+{
+  "authority": "Root direct task message; worker record, not a new root-authored gate",
+  "scope": [
+    "packages/server/src/transaction-read.test.ts",
+    "packages/server/src/transaction-snapshot.test.ts"
+  ],
+  "stages": [
+    "typecheck",
+    "format-check",
+    "affected-files"
+  ],
+  "productionChanges": false,
+  "controlInstalledBuild": false
+}

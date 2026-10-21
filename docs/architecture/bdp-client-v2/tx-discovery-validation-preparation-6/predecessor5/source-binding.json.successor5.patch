@@ -1,0 +1,71 @@
+--- predecessor4/source-binding.json
++++ current5/source-binding.json
+@@ -1,6 +1,6 @@
+ {
+   "actualClaudeReadCorrectedBytes": false,
+-  "binaryDiffSha256": "6eea8983e577d393efe2c663bedd3d2becaeac3b4258a49ab7d3f89740174fe1",
++  "binaryDiffSha256": "4d57679e34192081ce3a300cfc88efa25abcadd4353891b63866c8e0223065dd",
+   "branch": "codex/vickie-tx-discovery-minimum",
+   "dirtyPaths": [
+     "apps/bdptest/src/transactional-discovery-installed.test.ts",
+@@ -14,7 +14,7 @@
+   "originalActualCodeOnly": true,
+   "ownedFiles": {
+     "apps/bdptest/src/transactional-discovery-installed.test.ts": {
+-      "afterSha256": "68d1b51f20b2a322231e97d7d720c21826ff2d98ac0ef5bdbf2a0ff8a001fd33",
++      "afterSha256": "7120504ceaa804baf96ddc4e2c167c459b84fca0e0a9ad6e7255e49c061b3255",
+       "beforeSha256": "7cf8822108489f3fb2f9c5ca1d97c6d7b832acca95a2f7d891c3413404d90c49"
+     },
+     "apps/bdptest/src/transactional-schema-installed.test.ts": {
+@@ -39,15 +39,15 @@
+     }
+   },
+   "rootExactSourceAcceptance": {
+-    "sha256": "06cbef41fbdeddb67a7673876a639799c177aa8c5dd89370a57ddb1d51b053b0",
+-    "scope": "current root source/Git identity only, native annotation precision and fresh execution disposition pending"
++    "scope": "Root current679/9b7d/actual4d576 Git/source identity only; independent lint correction/native mechanics and root execution disposition PENDING",
++    "sha256": "f35d51be84bfa462cd84785154e64cd902322a647ee5dc312d628816fe661220"
+   },
+-  "rootGitInspectionSha256": "06cbef41fbdeddb67a7673876a639799c177aa8c5dd89370a57ddb1d51b053b0",
+-  "rootGitStatusAndStagedObservation": "Root observed all679/canonical5964/patch6eea/no staged or untracked; author ran no Git",
+-  "sourceAuthorBindingSha256": "588a8ad665463d7767b6d993a491ebfafae85f92fadca98ad74f0b5693bec244",
+-  "sourceAuthorFreezeSha256": "2219350a2f6bcbb84bcce2b912dc7454c10117eb2e27a52b2804109d832be498",
++  "rootGitInspectionSha256": "f35d51be84bfa462cd84785154e64cd902322a647ee5dc312d628816fe661220",
++  "rootGitStatusAndStagedObservation": "Root f35d51be observed679 exact/six unstaged/no staged or untracked/cceHEAD/tree675; author no Git",
++  "sourceAuthorBindingSha256": "cdd011b47077fb9db4eb9ddccf0e103b009891dc74f8ace718b704e51b0ddcd1",
++  "sourceAuthorFreezeSha256": "7b3c9dbb4965c688f9c2dc0cdca78d5e6b440dd45e75795bb03dc16ca5323193",
+   "sourceBindingFinalized": true,
+-  "sourceIdentity": "5964d40af0ced41634e47df86cda7ac01b86768c51970e557b60ffbfc9739907",
++  "sourceIdentity": "9b7d3a753bc22a3188f5dda7199fdb7321f65dfa0fa745cce082f3f82a837a9f",
+   "trackedSourceFiles": {
+     ".github/workflows/ci.yml": "268c9563e8d2f4fa4b7314492cb6c4994f7c76da9b26cda7a74c7e5b3c6f664a",
+     ".gitignore": "ed05d0a2ee67a19f6319d2e33ba49de701b30fb7d172ece3a909d0fbbbcc9e48",
+@@ -100,7 +100,7 @@
+     "apps/bdptest/src/transactional-collection-minimum-installed.test.ts": "bc9d19959df0249b5b7c195c2f24a2cde4462db56de3e0b816c7fdf01f5ab048",
+     "apps/bdptest/src/transactional-depth-key-order-installed.test.ts": "f4e19ef9b7aba1a12f3376540257b9680e27dcd00936048b066eb7667ebe19fe",
+     "apps/bdptest/src/transactional-direct-refusal-installed.test.ts": "c817729792a8bd97473b4b7ebe06474d4a0c27bcd5122e58268b997aa03408b0",
+-    "apps/bdptest/src/transactional-discovery-installed.test.ts": "68d1b51f20b2a322231e97d7d720c21826ff2d98ac0ef5bdbf2a0ff8a001fd33",
++    "apps/bdptest/src/transactional-discovery-installed.test.ts": "7120504ceaa804baf96ddc4e2c167c459b84fca0e0a9ad6e7255e49c061b3255",
+     "apps/bdptest/src/transactional-event-missing-context-installed.test.ts": "25f1738d78064670997c9b50aff503bf978e18eed0d7b02555d072165b02bf81",
+     "apps/bdptest/src/transactional-event-sse-installed.test.ts": "5bc8fd664215c14de913e994b26a4792753d6b372317f21f028850021b9ac7c7",
+     "apps/bdptest/src/transactional-fresh-depth-installed.test.ts": "df4030346fc5ec402c0d77d5a5c9953542f341aa86e242d2a5e6cdcf9e09f991",
+@@ -731,7 +731,7 @@
+   },
+   "tree": "6757829bd5b700faf28df39071190a272add90c9",
+   "worktree": "/Users/dbox/repos/wt/vickie/vickie-tx-discovery-minimum",
+-  "previousSourceIdentity": "6bbcce5e8d6c107607822b24853bb8121f7d612137f00d3f0f173b747773f6ea",
++  "previousSourceIdentity": "5964d40af0ced41634e47df86cda7ac01b86768c51970e557b60ffbfc9739907",
+   "previousRootExactSourceAcceptance": {
+     "scope": "static semantic closure only; no execution release",
+     "sha256": "765f42485308a5660f4cce69d3890de0a2b7c2ba34eec1770fcbc5b04e5e7614"
+@@ -748,5 +748,9 @@
+     "basis": "Exact same679 source bytes, sourceIdentity5964d40a and binary6eea; only preparation metadata rebind. Static type annotation precision, no compiler pass."
+   },
+   "actualClaudeReadThreeAnnotationCorrection": false,
+-  "historicalActualCodeOnly": true
++  "historicalActualCodeOnly": true,
++  "previousActualBinaryDiffSha256": "6eea8983e577d393efe2c663bedd3d2becaeac3b4258a49ab7d3f89740174fe1",
++  "previousRootGitInspectionSha256": "06cbef41fbdeddb67a7673876a639799c177aa8c5dd89370a57ddb1d51b053b0",
++  "independentLintCorrectionPrecision": "PENDING",
++  "actualClaudeReadLintCorrection": false
+ }

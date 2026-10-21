@@ -1,0 +1,18 @@
+{
+  "released": true,
+  "head": "9e5f040edab88be364f683098ead72f595f0ab55",
+  "tree": "81c6786a3075f1869f54460880cac1234c27fb77",
+  "positive": {
+    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-guarded-batch-draft/execution-preparation/run/review-positive.review-candidate.json",
+    "sha256": "837db16305a3ead76c37775cbff901f8c8383103a5731c4f1b3b5f0b6549ebf8"
+  },
+  "nativeAdapterAudit": {
+    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-guarded-batch-draft/execution-preparation/native-adapter-audit.md",
+    "sha256": "3fd42db06a90e0d9accb3b5d58833c037823b8e8e1f0f9616870d432f3b47500"
+  },
+  "allowedNext": [
+    "installed-unguarded-contenders",
+    "review-unguarded-contenders"
+  ],
+  "note": "Root inspected actual positive report, exact seven requests and all comparisons plus independent lifecycle checks. Release separate three-response guard-removal sensitivity control; raw exit1 valid only with named failure and two-completed-effect prerequisites."
+}

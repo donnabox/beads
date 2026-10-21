@@ -1,0 +1,24 @@
+﻿2026-10-18T05:26:03.4813711Z ##[group]Run pnpm e2e:ready:preflight
+2026-10-18T05:26:03.4814041Z [36;1mpnpm e2e:ready:preflight[0m
+2026-10-18T05:26:03.4853847Z shell: /usr/bin/bash -e {0}
+2026-10-18T05:26:03.4854157Z env:
+2026-10-18T05:26:03.4854425Z   PNPM_HOME: /home/runner/setup-pnpm/node_modules/.bin
+2026-10-18T05:26:03.4855042Z   GOTOOLCHAIN: local
+2026-10-18T05:26:03.4855273Z ##[endgroup]
+2026-10-18T05:26:03.8627069Z $ vitest run scripts/e2e-ready.test.mjs --reporter=verbose
+2026-10-18T05:26:04.1323870Z 
+2026-10-18T05:26:04.1325904Z [1m[30m[46m RUN [49m[39m[22m [36mv4.1.10 [39m[90m/home/runner/work/bdp/bdp[39m
+2026-10-18T05:26:04.1326721Z 
+2026-10-18T05:26:04.6733805Z  [32m✓[39m scripts/e2e-ready.test.mjs[2m > [22mE2E child supervision[2m > [22mterminates a descendant that inherits the supervised child's stdio[32m 61[2mms[22m[39m
+2026-10-18T05:26:04.8626791Z  [32m✓[39m scripts/e2e-ready.test.mjs[2m > [22mE2E child supervision[2m > [22mkills a same-group descendant after its leader exits and it ignores SIGTERM[32m 128[2mms[22m[39m
+2026-10-18T05:26:04.8628093Z  [32m✓[39m scripts/e2e-ready.test.mjs[2m > [22mE2E child supervision[2m > [22mreports a process group that survives SIGKILL and abandons its local handles[32m 3[2mms[22m[39m
+2026-10-18T05:26:04.8629208Z  [32m✓[39m scripts/e2e-ready.test.mjs[2m > [22mE2E child supervision[2m > [22mobserves a failed fire-and-forget termination without rejecting[32m 1[2mms[22m[39m
+2026-10-18T05:26:04.8630273Z  [32m✓[39m scripts/e2e-ready.test.mjs[2m > [22mE2E child supervision[2m > [22mwaits for the child close event after its process group disappears[32m 2[2mms[22m[39m
+2026-10-18T05:26:05.0847351Z  [32m✓[39m scripts/e2e-ready.test.mjs[2m > [22mE2E child supervision[2m > [22mflushes a final unterminated server diagnostic before stop validation[32m 101[2mms[22m[39m
+2026-10-18T05:26:05.3831884Z  [32m✓[39m scripts/e2e-ready.test.mjs[2m > [22mE2E child supervision[2m > [22mruns the packaged ready CLI against a test-admitted bdptest service[33m 514[2mms[22m[39m
+2026-10-18T05:26:05.3852034Z 
+2026-10-18T05:26:05.3856472Z [2m Test Files [22m [1m[32m1 passed[39m[22m[90m (1)[39m
+2026-10-18T05:26:05.3857739Z [2m      Tests [22m [1m[32m7 passed[39m[22m[90m (7)[39m
+2026-10-18T05:26:05.3858620Z [2m   Start at [22m 05:26:04
+2026-10-18T05:26:05.3859782Z [2m   Duration [22m 1.24s[2m (transform 227ms, setup 37ms, import 283ms, tests 811ms, environment 0ms)[22m
+2026-10-18T05:26:05.3860561Z 

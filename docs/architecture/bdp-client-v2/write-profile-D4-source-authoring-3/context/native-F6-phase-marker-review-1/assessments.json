@@ -1,0 +1,37 @@
+[
+  {
+    "topic": "Seam equivalence",
+    "accepted": true,
+    "evidence": "Source085a has existing timer91 and local state/helper definitions through224; throwing metadata IO begins inside try225 onward. FIRST protected statement just inside that try records entry before metadata IO while preserving existing try/catch/finally. It deliberately refines proposal2 before-try placement; it is not an exact callback-start assertion."
+  },
+  {
+    "topic": "Failure preservation",
+    "accepted": true,
+    "evidence": "Only marker construction/write is caught; existing body, cleanup, console report serialization and final failure throw are not swallowed or wrapped in a larger marker catch. End is after source889 report serialization/enqueue returns and before890-891 original AggregateError. If real report serialization/logging throws, no fabricated end is permitted and collector refuses. Marker failure can suppress a marker without changing original assertions; no marker drain/flush/pass claim."
+  },
+  {
+    "topic": "Fresh attempt binding",
+    "accepted": true,
+    "evidence": "Worker fixes a cryptographic fresh32lowerhex identifier for a fresh wx-created attempt before product launch. Both retained records must match that exact current nonnull value. Null, malformed, stale, different or missing cannot satisfy validation. Source echo is only primitive valid32lowerhex; malformed text maps null with no echo. Future code must set current attempt value into actual product environment after any inherited-env sanitation and cannot reuse prior attempt state."
+  },
+  {
+    "topic": "Closed schema",
+    "accepted": true,
+    "evidence": "Exactly observation/version/attemptId/phase/sourceElapsedMilliseconds, fixed observation literal and numeric version1, two closed phase enum values in order. Source elapsed is actual finite nonnegative performance.now()-existing started, end>=start/end<=120000. Parent strict parsing must reject booleans or strings as numeric fields, duplicate/extra keys and nonfinite values. No hash/content normalization."
+  },
+  {
+    "topic": "Ordinary behavior",
+    "accepted": true,
+    "evidence": "Absent/invalid attempt variable produces null diagnostic marker only; no assertion/gate in the product callback is added to make ordinary no-env runs fail. Such output is diagnostic, not qualification; collector independently requires a current fresh nonnull binding. Existing product work/report/failure logic stays untouched."
+  },
+  {
+    "topic": "Phase timing",
+    "accepted": true,
+    "evidence": "Start receipt<=whole10; end<=min(start receipt+120,whole130); source end<=120000. End elapsed must be freshly sampled after actual JSON serialization/enqueue returned, not summed from work and cleanup durations. Whole monotonic origin precedes worker/setup. Flush includes actual report/results/process/final bindings bymin(end+5,135); drain bymin(flush+10,145), strict normal acceptancebefore145. TERM145/KILL149/outer150 unchanged; no off-clock work or retry."
+  },
+  {
+    "topic": "Exact marker bytes",
+    "accepted": true,
+    "evidence": "One complete newline JSON write per phase,<=4096 byte acceptance threshold, exactlytwo complete ordered records, strict UTF8/closed schema/freshness, exact retained original bytes/offsets/hashes. Bounded chunk scanner can join consecutive bytes split across reads, never repair interleaving or fabricate missing records. Record receipt is not console RPC flush or owner closure."
+  }
+]

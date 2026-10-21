@@ -1,0 +1,5 @@
+{
+  "stage": "static edit precondition before any source write",
+  "failure": "Expected two sql.rows.some occurrences; actual source has one some plus S10 every. Rejected assertion preserved; no product/compiler/helper invocation.",
+  "resolution": "Use exact observed some/every sites for callback-local slice."
+}

@@ -1,0 +1,153 @@
+{
+  "sourceIdentity": "9ec1d3433641f3ff643b9297a77220a2bbe3b95d862300c76b64e3e34d322af3",
+  "sourceBindingSha256": "97629a7fac3bc7b2e122b3446b1151497e60e8585e3ba8ebb9fa8c6d6503a2c9",
+  "qualification": false,
+  "selectedCallbacks": [
+    "observes installed initial finite Link Event opaque minimum timeout"
+  ],
+  "resultsSha256": "7aaf2c1d947888a8c5354c47ce504127ebbd4f108805fa151ca94d272c28afb1",
+  "logSha256": "9a192b670974d229009b51fdaf2e3ef3a3c9097e3e9d86b6bcdbd105cf6d4614",
+  "attribution": "Verified external candidate; base HEAD plus exact dirty source/build/archive/consumer binding, not child source attestation",
+  "observation": {
+    "observation": "private-installed-link-event-minimum",
+    "outcome": "passed",
+    "declaredSourceCommit": "5bcd277b2a61461211ffc0c2d2f8fd701ef0a385",
+    "workspaceDirty": true,
+    "entry": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/link-event-minimum-validation/run/consumer/node_modules/.pnpm/@bdp+server@file+..+packages+bdp-server-0.0.0.tgz/node_modules/@bdp/server/dist/transaction-installed-process.js",
+    "entrySha256": "bcf153170f953f9e28c6c89f1153be907f64df289e64f3ad929cad4a4a54c47c",
+    "binding": {
+      "served": {
+        "scope": "https://reference.invalid/acme/",
+        "profile": "transactional",
+        "history": false,
+        "sourceCommit": "5bcd277b2a61461211ffc0c2d2f8fd701ef0a385",
+        "installedPayloadDigest": "81e1ee6779a2e0db7fece6427ab0fa10538c14a0c24902789b6572ad33550344",
+        "installedContractsDigest": "f514338675f1b49b0b5a5fc79a6785fdc495dc5f51de008aa5cb0abbb62af0f6",
+        "policyDigest": "46c5c9d573adfc3d74e2cdcf61b4c6d220899b4db16493e2c49c771969a7d404",
+        "authenticationDigest": "d664954e799dfc5f11a70622ba48a6f57ebe4277c896d3eb3ce08ce3e8d08c78",
+        "fixtureDigest": "3a7899ced771d4880066d98b0000c53f801ece53458502cc4f3bc641146c9a85",
+        "fixtureId": "reference-transactional-v1",
+        "capabilities": [
+          "installed-transactional-http",
+          "transactional-receipt-observation"
+        ]
+      },
+      "operationTargets": {
+        "createBead": "https://reference.invalid/acme/operations/create-bead",
+        "updateBead": "https://reference.invalid/acme/operations/update-bead",
+        "deleteBead": "https://reference.invalid/acme/operations/delete-bead",
+        "createLink": "https://reference.invalid/acme/operations/create-link",
+        "updateLink": "https://reference.invalid/acme/operations/update-link",
+        "deleteLink": "https://reference.invalid/acme/operations/delete-link",
+        "putAlias": "https://reference.invalid/acme/operations/put-alias",
+        "deleteAlias": "https://reference.invalid/acme/operations/delete-alias",
+        "updateWhere": "https://reference.invalid/acme/operations/update-where",
+        "deleteWhere": "https://reference.invalid/acme/operations/delete-where",
+        "batch": "https://reference.invalid/acme/operations/batch",
+        "sequence": "https://reference.invalid/acme/operations/sequence"
+      },
+      "runtimeConfigurationIdentity": "cab2bb2d9137b443e6d9d979b847bbce7cce8863199eda53ae0c8da746bc1bc7",
+      "authorityMode": "canonical"
+    },
+    "deadlineExceeded": false,
+    "attempted": 4,
+    "exchanges": 4,
+    "completedResponses": [
+      {
+        "method": "POST",
+        "url": "https://reference.invalid/acme/operations/batch",
+        "status": 200,
+        "bodyOctets": 1339,
+        "bodySha256": "832d8abf2720e60138bab072c05e5cf022c6213ea93f5d62a8ed0c8cb6c34797",
+        "wireSha256": "3f505d604c2f2a6397eef06cb9f01dcdbfcc7b602c03d171f8efeb8ea1e269a7",
+        "headers": {
+          "bdp-scope-epoch": "97d96bfb-03a2-466d-a432-117ec62b7fae",
+          "bdp-authorization-view": "development-all-visible",
+          "bdp-scope-position": "pos-1",
+          "content-type": "application/json",
+          "content-length": "1339",
+          "cache-control": "private, no-store",
+          "retry-after": null,
+          "www-authenticate": null,
+          "x-bdp-development": "non-attesting",
+          "x-bdp-development-limit": null
+        }
+      },
+      {
+        "method": "GET",
+        "url": "https://reference.invalid/acme/links/known?view=events",
+        "status": 200,
+        "bodyOctets": 762,
+        "bodySha256": "44a9d977cdaa55a6fa657458f361edb36c8aaed6c886d83c983cca072fd53d89",
+        "wireSha256": "543020d42a26ff075116ba67416a6d05aa0be839dee7ab6badf90827bf904db9",
+        "headers": {
+          "bdp-scope-epoch": "97d96bfb-03a2-466d-a432-117ec62b7fae",
+          "bdp-authorization-view": "development-all-visible",
+          "bdp-scope-position": "pos-1",
+          "content-type": "application/json",
+          "content-length": "762",
+          "cache-control": "private, no-store",
+          "retry-after": null,
+          "www-authenticate": null,
+          "x-bdp-development": "non-attesting",
+          "x-bdp-development-limit": null
+        }
+      },
+      {
+        "method": "GET",
+        "url": "https://reference.invalid/acme/links/known?view=events",
+        "status": 503,
+        "bodyOctets": 127,
+        "bodySha256": "5e7c50923b5ef2e22379c96cbec4f9197175e38d9a81970f7db4f81ae46255b0",
+        "wireSha256": "fbebf63cf0fc50e5a78ae302b796cf80d1908ddc61ba4972e3ebd86cb135c107",
+        "headers": {
+          "bdp-scope-epoch": "97d96bfb-03a2-466d-a432-117ec62b7fae",
+          "bdp-authorization-view": "development-all-visible",
+          "bdp-scope-position": "pos-1",
+          "content-type": "application/problem+json",
+          "content-length": "127",
+          "cache-control": "private, no-store",
+          "retry-after": "1",
+          "www-authenticate": null,
+          "x-bdp-development": "non-attesting",
+          "x-bdp-development-limit": null
+        }
+      },
+      {
+        "method": "HEAD",
+        "url": "https://reference.invalid/acme/links/known?view=events",
+        "status": 503,
+        "bodyOctets": 0,
+        "bodySha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "wireSha256": "bc90aad2812c4374b37efaba14d294e653cc681cf4223bde309529f2ff95e4b6",
+        "headers": {
+          "bdp-scope-epoch": "97d96bfb-03a2-466d-a432-117ec62b7fae",
+          "bdp-authorization-view": "development-all-visible",
+          "bdp-scope-position": "pos-1",
+          "content-type": "application/problem+json",
+          "content-length": "127",
+          "cache-control": "private, no-store",
+          "retry-after": "1",
+          "www-authenticate": null,
+          "x-bdp-development": "non-attesting",
+          "x-bdp-development-limit": null
+        }
+      }
+    ],
+    "closeAttempted": true,
+    "closed": true,
+    "launchStarted": true,
+    "startupCompleted": true,
+    "childPid": 56730,
+    "childExitCode": 0,
+    "childSignalCode": null,
+    "ownership": "closed",
+    "directory": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/link-event-minimum-validation/run/event-link-minimum-external.tmp/bdp-link-event-minimum-installed-Uuu7YF",
+    "directoryAbsent": true,
+    "failureCount": 0,
+    "claimEligible": false,
+    "retention": "response fingerprints and selected headers; no conformance credit"
+  },
+  "storeCleanup": "Reported clean exit, actual stage-owned directory absent, and supervisor PID/store census accepted. Historical unconditional deletion is not independently sufficient for clean exit.",
+  "limits": "Problem schema/exact-body and non-retained validator assertions ran inside the pinned callback. No invented elapsed-wait or raw request census beyond reported responses; Bead/Link URLs are retained and compared exactly, while Scope routes and request body/header checks remain in pinned callback assertions; no conformance/profile credit."
+}

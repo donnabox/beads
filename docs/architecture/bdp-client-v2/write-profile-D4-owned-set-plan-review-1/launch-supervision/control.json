@@ -1,0 +1,31 @@
+{
+  "rootLaunchReleased": true,
+  "packet": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-D4-owned-set-plan-review-1/claude-plan-review",
+  "expectedSession": "2026-10-18T02:16:24Z-549f",
+  "sourceRoot": "/Users/dbox/repos/wt/vickie/vickie-current-changefeed-minimum",
+  "reviewerArgv": [
+    "/opt/homebrew/bin/claude",
+    "--safe-mode",
+    "-p",
+    "--tools",
+    "Read,Glob,Grep",
+    "--allowedTools",
+    "Read,Glob,Grep",
+    "--disable-slash-commands",
+    "--strict-mcp-config",
+    "--mcp-config",
+    "{\"mcpServers\":{}}",
+    "--no-session-persistence",
+    "--output-format",
+    "stream-json",
+    "--verbose",
+    "--include-partial-messages"
+  ],
+  "outerTotalSeconds": 1800,
+  "termAtSeconds": 1790,
+  "killAtSeconds": 1798,
+  "noRetry": true,
+  "authority": "CLOSED first D4 actual PLAN packet only. Root static plan/native accepted, packet native mechanics/root release required before ONE default Claude read-only PLAN attempt. Product150/145/149 remains review topic; reviewer1800/1790/1798 unchanged. No authoring/runtime/retry/public qualification.",
+  "predecessorIndexSha256": "6fcca98a7c50dde057f4994c5b352702f992ec5879fb0bc0706872689b29b5b1",
+  "rootDispositionSha256": "0125557ff2973d281edd75efe7c8973d15a70cb7af71af13757d7087bb64dc18"
+}

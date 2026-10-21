@@ -1,0 +1,13 @@
+# G2a external review dispositions
+
+Frozen b64d7e46652739c6436259a8c8ed4c5e8049a077. External review66058 completed exit0; native review accepted321 focused tests plus5 probes. Root read all external findings against current source. Bounded repairs below are required before readiness; public profile claims remain closed.
+
+1. Accept heartbeat/socket relationship check, with minimal existing semantics: positive finite supported pump timer values and heartbeat strictly below socket idle timeout. Reject arbitrary factor-of-two safety policy as unmotivated. Current defaults unchanged. Very short finite-only test transport seams must not gain new capabilities; assess existing tests explicitly and do not broaden timers blindly.
+2. Accept lost genuine post-header fault cause. Preserve the first unexpected stream fault privately and surface it through existing runtime close error aggregation, with bounded retention. Capture it inside the pump callback before response.destroy triggers disconnect cancellation; checking only outer signal after finally would erase real faults again. Ordinary pre-abort, client disconnect and service cancellation must remain clean. Add a test for retained original injected/store cause and one wire status/no error frame, plus normal cancellation clean close. No public error Event or new logging/credential output.
+3. Accept test dependency inversion: move unchanged raw recorder into server/test-support and use existing source-only @bdp/server/testing edge from the app. Server test uses its own relative test-support import. Public package exports unchanged; no production inventory module added.
+4. Accept explicit signal-aborted guard in outer runtime catch before generic finite500 fallback, preserving normal cancellation. A discriminating pre-abort/registration-race test should pin this path.
+5. Accept exact serialization oracle: retain structural/order/count tests and additionally bind each SSE data payload to raw finite response bytes. Do not use parse/reserialize as sole byte oracle; add numeric-like keys if needed to prove sensitivity.
+6. Accept small module docblock placement cleanup in affected files.
+7. Defer start=now+Last-Event-ID exactly as approved plan. Record that this also prevents an automatic EventSource reconnect after the first event; no invented4xx or semantics change in G2a.
+
+G2b stays plan-only until this repaired predecessor and its plan review are accepted. Preserve frozen b64; author successor in a new isolated repair checkout. Native/external closure and exact installed evidence will bind the successor, not relabel b64 observations.

@@ -1,0 +1,184 @@
+{
+  "executionReleased": false,
+  "files": {
+    "checks.json": {
+      "bytes": 2380,
+      "sha256": "3c3f091d8104581979a137133977279cacb985bcfb15e960370f5ff5ea9a4129"
+    },
+    "closure.json": {
+      "bytes": 1138,
+      "sha256": "001e61b0881a9d11d58ef96f1598c60cc9b9d81444d4a7ae5021cdc54ec9de7a"
+    },
+    "exposed-tool-interface-assessment.json": {
+      "bytes": 947,
+      "sha256": "7230cf122a7eb18c7b4dcad40aed8e615bc4f8eb2ef97bafb2736e1356bfba85"
+    },
+    "findings.json": {
+      "bytes": 1788,
+      "sha256": "dff445e4e0cad6f74767931bbca7fa5b5fd9bb8bb5ea0c4d45cf634f0088021c"
+    },
+    "inplace-pin-boundaries.json": {
+      "bytes": 1097,
+      "sha256": "8035a1bb8424633b9b7aea6bf46fb3ae68e5081f56f660bbfb37627260673717"
+    },
+    "input-origins.json": {
+      "bytes": 10283,
+      "sha256": "df7cffb7e9e765965872640ab4cedd1f67be05b659fd8138f2213bdd23f48051"
+    },
+    "inputs/C3-actual/actual-terminal-and-clock.json": {
+      "bytes": 9532,
+      "sha256": "aedfc0b5cec97dd2f140bba2a228306fbf9c28bf342ddd83d27ef1e635368c3e"
+    },
+    "inputs/C3-actual/closure.json": {
+      "bytes": 1503,
+      "sha256": "57696ff940106a470fcde0e0e326ee3f1a35ffdcabf35311a672226d2798e845"
+    },
+    "inputs/C3-actual/index.json": {
+      "bytes": 48550,
+      "sha256": "d4407e4bb40a2e4cec8ac204ab43f6e8525403d4c84dba6e8a6a79c03db476fb"
+    },
+    "inputs/C3-actual/report.md": {
+      "bytes": 4681,
+      "sha256": "f96c3a2e939331178713c657e9db876dcc1bf885072d6fc89dab06f5f2c628de"
+    },
+    "inputs/C3-root/acceptance.json": {
+      "bytes": 2445,
+      "sha256": "9ba1cc1fd235a63f5a238fd756bc760bf030ebba52dd0f2e6f029ebecd7b4739"
+    },
+    "inputs/C3-root/index.json": {
+      "bytes": 111,
+      "sha256": "4d549b6609b19ba2798fe40da6fb3f3eb0acf36b1ca9e7207f7c7a7d084c8865"
+    },
+    "inputs/C3/caller-command.json": {
+      "bytes": 896,
+      "sha256": "fc71a63ad5852fef1d4f82095531ad50adc45938424efa785881802a5de7b4c0"
+    },
+    "inputs/C3/capture-contract.json": {
+      "bytes": 3522,
+      "sha256": "5206b58a85afe952d52e6b04215e574cb0d1d50f409a3cb0297a60a14ad960a8"
+    },
+    "inputs/C3/capture.py": {
+      "bytes": 12555,
+      "sha256": "9a76d97a9978d91f65ded3571afbc596bfba9d62ee22d7b32779a14745d27803"
+    },
+    "inputs/C3/implementation-hashes.json": {
+      "bytes": 10483,
+      "sha256": "ad1c4f39b53a76f8ffcca60029b332e7613d2a9ad5d850df267c16710eec4caa"
+    },
+    "inputs/C3/preparation-index.json": {
+      "bytes": 15332,
+      "sha256": "c85530fde41d060d1a1dd4bcc2cd18d0993200f6b51ebdee07d5e32a8dff5dc7"
+    },
+    "inputs/D03-native41/checks.json": {
+      "bytes": 935,
+      "sha256": "3bd59160f7eead5ab49f6830f11c5f39899d5f5be9b8df0b7e8d322adab7a836"
+    },
+    "inputs/D03-native41/closure.json": {
+      "bytes": 879,
+      "sha256": "fecff4e5ee1d5058499de2ccaf3012008e95d09c6000d9bcbba6d146270686c9"
+    },
+    "inputs/D03-native41/index.json": {
+      "bytes": 6116,
+      "sha256": "64d304116d57ac10fe6b1c73c9e74543758e6dd397c1844c70b1214ca81ba69c"
+    },
+    "inputs/D03-native41/report.md": {
+      "bytes": 4235,
+      "sha256": "6f466981b4dc4bd32c86bb35bfba7767ab66f15ac3acd8764f2cc62d2638eee9"
+    },
+    "inputs/D03-native41/semantic-assessment.json": {
+      "bytes": 3941,
+      "sha256": "894f4197eef33ba62d4caeaed694b78a24896cb73cf65369c68905d3ff9d9096"
+    },
+    "inputs/D03-plan/authority-field-requirements.json": {
+      "bytes": 2428,
+      "sha256": "11498a1bc30bbc1bb8f8b442b1d913e5fb75ecc32e90735e4bd01ef1cddea95d"
+    },
+    "inputs/D03-plan/binding.json": {
+      "bytes": 2359,
+      "sha256": "22aecfbb4a17a6a3075b231fac1caf2c21a589e336c25986f0a27a9191c200c8"
+    },
+    "inputs/D03-plan/closure.json": {
+      "bytes": 1029,
+      "sha256": "c317f6d802ed6d9a852d0b9ece116ad7aa54f320602aa61d5b80af791315891b"
+    },
+    "inputs/D03-plan/fixed-root-capture-and-audit-DATA-contract.json": {
+      "bytes": 8055,
+      "sha256": "cc1dbaa26995d72845d1207792154d9ae571c0d7a2c69cf439748eff65891b9a"
+    },
+    "inputs/D03-plan/index.json": {
+      "bytes": 14147,
+      "sha256": "93c75cc24afa09edcdfdf5867259d74ea286433ece30684601f7f737daddf8af"
+    },
+    "inputs/D03-plan/plan.md": {
+      "bytes": 11409,
+      "sha256": "d8dbdef74ab1948cd33ff257a1f29afee0c5953e584f56708fdbdef5973d1701"
+    },
+    "inputs/D03-plan/prospective-command.json": {
+      "bytes": 1677,
+      "sha256": "a89f23a31cf7692b114d053cfc663a74ba78b4eb1044ac01a09394bfd0f5e6fe"
+    },
+    "inputs/D03-plan/unprepared-boundaries.json": {
+      "bytes": 2144,
+      "sha256": "cbb93dfb0eb72ed27ff6ed779f3e52960a9153e6f51878913e0f3507d2bc17c5"
+    },
+    "inputs/H6/availability_limit.pl": {
+      "bytes": 3463,
+      "sha256": "03172f087834752b35d5c26fb45183869c5cae21c23e8bd28184c60abc521ea9"
+    },
+    "inputs/H6/availability_owner.py": {
+      "bytes": 14000,
+      "sha256": "c3615a87bd70256b383e585268a9d21d1c951f8f9618dfa0dd820101dd157fa7"
+    },
+    "inputs/H6/bootstrap.py": {
+      "bytes": 2114,
+      "sha256": "6e11b44e8e95458b35052c87a02a17cffdae32ad060a5dbd3de53e19f2f873cc"
+    },
+    "inputs/H6/execution-gate.closed.json": {
+      "bytes": 145,
+      "sha256": "69f7eb67fa2ae35674192163791f8dc0a9006f383ba6a407501c138eaa3170f5"
+    },
+    "inputs/H6/execution-gate.json": {
+      "bytes": 145,
+      "sha256": "69f7eb67fa2ae35674192163791f8dc0a9006f383ba6a407501c138eaa3170f5"
+    },
+    "inputs/H6/hard_limit.pl": {
+      "bytes": 3626,
+      "sha256": "a53b1ade5edd7a14bcbe064c66f0f5d8414df8cdc218727134bacdb7ecfbfea5"
+    },
+    "inputs/H6/implementation-hashes.json": {
+      "bytes": 16121,
+      "sha256": "5c82292252d96626f8a63977c845a67261ed04bb350a339d5fd389530e409eb1"
+    },
+    "inputs/H6/outer_host.py": {
+      "bytes": 26211,
+      "sha256": "f426e0f928d6f8c5a330aeebc492fd4839f69a153f89e7c8386230e0c236a29f"
+    },
+    "inputs/H6/tool-identity-read.json": {
+      "bytes": 4514,
+      "sha256": "c15d845576c70d9ef0de73e53cc82de8ae1abb313eed3ada4ac508c0f518e5ff"
+    },
+    "inputs/existing-session-guard.py": {
+      "bytes": 946,
+      "sha256": "b2d467920638e68d3b007ba9daa432e971636245eca988bfb29d7a99d6e3fb30"
+    },
+    "inputs/local-doc/Time-HiRes.pm": {
+      "bytes": 25689,
+      "sha256": "9bc6ece12a90e5c01d784a4efd672c49b8a7551ce6871b620efbd38cd4960f34"
+    },
+    "mechanism-matrix.json": {
+      "bytes": 3044,
+      "sha256": "a65de99785b3d189b8fd9acee79b28fcd0909abc51736ca9b4e57be9d19ee7c7"
+    },
+    "observed-clock-domains.json": {
+      "bytes": 558,
+      "sha256": "2be0299a8657b6e8d486c9adad1e9971edba512d88abb84f2dfdba4c3cafa486"
+    },
+    "report.md": {
+      "bytes": 5987,
+      "sha256": "dbddaf16ce220c56a43569f0b95faad8a71a5bbf712204f5270c5b9be0d9abea"
+    }
+  },
+  "kind": "CLOSED DATA independent existing root-clock mechanics determination",
+  "physicalFiles": 45,
+  "selfExcluded": "index.json"
+}

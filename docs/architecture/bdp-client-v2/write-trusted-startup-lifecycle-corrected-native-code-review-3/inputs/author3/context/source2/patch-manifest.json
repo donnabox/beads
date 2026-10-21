@@ -1,0 +1,257 @@
+{
+  "correction2-semantic": {
+    "forward": {
+      "sha256": "e1a3054ec1f2a875a302e6d6127bfaaefca77f2e3eb2bd715fb39fcc9fbeec9f",
+      "bytes": 11990
+    },
+    "inverse": {
+      "sha256": "8c741371ba16990338be89af524858ff4577eeec834b0900e00fab6142d9ccf8",
+      "bytes": 11990
+    },
+    "roundTripReconstructed": true,
+    "files": [
+      {
+        "path": "packages/server/src/reference-deployment-runtime.test.ts",
+        "beforeExists": true,
+        "beforeSha256": "18d963ae7a72097a853988970f2f3c9f087ace14cdd4798250969ac89930f27f",
+        "afterSha256": "f76fa86d61623cae5a09192e5350b82d19a30ed2cb3d94de837dc04e193d9701",
+        "changed": true
+      },
+      {
+        "path": "apps/bdptest/src/reference-deployment-lifecycle-installed.test.ts",
+        "beforeExists": true,
+        "beforeSha256": "3270a70ae08d6a870c804892aecf1657b2b3126469d00f187c1b5d82848722ee",
+        "afterSha256": "d90b67afd5f418e1112a8b49313241b5b44a091e167aee9c1a690d84d8ca65c3",
+        "changed": true
+      }
+    ]
+  },
+  "format-only": {
+    "forward": {
+      "sha256": "a1191a1cbe36a983c50c18a180daa8470aaf1be3430e7b2249d06a6dd041570d",
+      "bytes": 14020
+    },
+    "inverse": {
+      "sha256": "6702c7fd3e164cba310719804feb00d7ea011b9be35abf609dbf5fabfd53bb67",
+      "bytes": 14020
+    },
+    "roundTripReconstructed": true,
+    "files": [
+      {
+        "path": "packages/server/src/development-authority.ts",
+        "beforeExists": true,
+        "beforeSha256": "a7a32ca431d477654675550f394eb1d85f8be4f9830a0583de951aa40a6eeac5",
+        "afterSha256": "a7a32ca431d477654675550f394eb1d85f8be4f9830a0583de951aa40a6eeac5",
+        "changed": false
+      },
+      {
+        "path": "packages/server/src/development-runtime.ts",
+        "beforeExists": true,
+        "beforeSha256": "c0dae240adaca64d0f0edaa77a1adc6fcc5e1f1a430fc93b10e1a711226d509b",
+        "afterSha256": "c0dae240adaca64d0f0edaa77a1adc6fcc5e1f1a430fc93b10e1a711226d509b",
+        "changed": false
+      },
+      {
+        "path": "packages/server/src/transaction-runtime.ts",
+        "beforeExists": true,
+        "beforeSha256": "d208e18588772dd931655f8f85bcbafcf3d64a14590e60d7ab0165d455de4424",
+        "afterSha256": "d208e18588772dd931655f8f85bcbafcf3d64a14590e60d7ab0165d455de4424",
+        "changed": false
+      },
+      {
+        "path": "packages/server/src/reference-deployment-runtime.ts",
+        "beforeExists": true,
+        "beforeSha256": "4ed8c017825d86b33e7e8fedbf8971e691f05ed5644953785c54986520087f3a",
+        "afterSha256": "4ed8c017825d86b33e7e8fedbf8971e691f05ed5644953785c54986520087f3a",
+        "changed": false
+      },
+      {
+        "path": "packages/server/src/reference-deployment-runtime.test.ts",
+        "beforeExists": true,
+        "beforeSha256": "f76fa86d61623cae5a09192e5350b82d19a30ed2cb3d94de837dc04e193d9701",
+        "afterSha256": "b2aa17f82e13c7d13c9ef40650644ec11d777c6b633cc92236ac2c2d8137302e",
+        "changed": true
+      },
+      {
+        "path": "packages/server/src/reference-deployment-process.ts",
+        "beforeExists": true,
+        "beforeSha256": "5abf5f72e271e40bc0024dbe4449e0d0d6265fcc5d0ee1f8afa0289dc25fd9d5",
+        "afterSha256": "5abf5f72e271e40bc0024dbe4449e0d0d6265fcc5d0ee1f8afa0289dc25fd9d5",
+        "changed": false
+      },
+      {
+        "path": "apps/bdptest/src/reference-deployment-lifecycle-installed.test.ts",
+        "beforeExists": true,
+        "beforeSha256": "d90b67afd5f418e1112a8b49313241b5b44a091e167aee9c1a690d84d8ca65c3",
+        "afterSha256": "ddc6e8d12a26cd66f74f6644fcdbabfa4b1dc3ef1cf0c48cc9c7d4e7abff6e8e",
+        "changed": true
+      },
+      {
+        "path": "scripts/smoke-executables.mjs",
+        "beforeExists": true,
+        "beforeSha256": "e4f54303820eeee8d6b8941d24244d8a37592bead1aee2a353754331234d7f8c",
+        "afterSha256": "e4f54303820eeee8d6b8941d24244d8a37592bead1aee2a353754331234d7f8c",
+        "changed": false
+      },
+      {
+        "path": "docs/design/startup-configuration.md",
+        "beforeExists": true,
+        "beforeSha256": "2dfc3fd5f3f30c8515baba3db0043724a7865e026d1ccc104c3afe6e61dc7b06",
+        "afterSha256": "2dfc3fd5f3f30c8515baba3db0043724a7865e026d1ccc104c3afe6e61dc7b06",
+        "changed": false
+      }
+    ]
+  },
+  "correction2-final": {
+    "forward": {
+      "sha256": "0e211c6024d66168511cb2d7b2052cc436c9c839e97805f62c4ead0d0d8c5ff9",
+      "bytes": 16374
+    },
+    "inverse": {
+      "sha256": "fff8b6cb82bbc5f32831eb449d93afde8c397bb68eb24ab162583c4f4ed29a79",
+      "bytes": 16374
+    },
+    "roundTripReconstructed": true,
+    "files": [
+      {
+        "path": "packages/server/src/development-authority.ts",
+        "beforeExists": true,
+        "beforeSha256": "a7a32ca431d477654675550f394eb1d85f8be4f9830a0583de951aa40a6eeac5",
+        "afterSha256": "a7a32ca431d477654675550f394eb1d85f8be4f9830a0583de951aa40a6eeac5",
+        "changed": false
+      },
+      {
+        "path": "packages/server/src/development-runtime.ts",
+        "beforeExists": true,
+        "beforeSha256": "c0dae240adaca64d0f0edaa77a1adc6fcc5e1f1a430fc93b10e1a711226d509b",
+        "afterSha256": "c0dae240adaca64d0f0edaa77a1adc6fcc5e1f1a430fc93b10e1a711226d509b",
+        "changed": false
+      },
+      {
+        "path": "packages/server/src/transaction-runtime.ts",
+        "beforeExists": true,
+        "beforeSha256": "d208e18588772dd931655f8f85bcbafcf3d64a14590e60d7ab0165d455de4424",
+        "afterSha256": "d208e18588772dd931655f8f85bcbafcf3d64a14590e60d7ab0165d455de4424",
+        "changed": false
+      },
+      {
+        "path": "packages/server/src/reference-deployment-runtime.ts",
+        "beforeExists": true,
+        "beforeSha256": "4ed8c017825d86b33e7e8fedbf8971e691f05ed5644953785c54986520087f3a",
+        "afterSha256": "4ed8c017825d86b33e7e8fedbf8971e691f05ed5644953785c54986520087f3a",
+        "changed": false
+      },
+      {
+        "path": "packages/server/src/reference-deployment-runtime.test.ts",
+        "beforeExists": true,
+        "beforeSha256": "18d963ae7a72097a853988970f2f3c9f087ace14cdd4798250969ac89930f27f",
+        "afterSha256": "b2aa17f82e13c7d13c9ef40650644ec11d777c6b633cc92236ac2c2d8137302e",
+        "changed": true
+      },
+      {
+        "path": "packages/server/src/reference-deployment-process.ts",
+        "beforeExists": true,
+        "beforeSha256": "5abf5f72e271e40bc0024dbe4449e0d0d6265fcc5d0ee1f8afa0289dc25fd9d5",
+        "afterSha256": "5abf5f72e271e40bc0024dbe4449e0d0d6265fcc5d0ee1f8afa0289dc25fd9d5",
+        "changed": false
+      },
+      {
+        "path": "apps/bdptest/src/reference-deployment-lifecycle-installed.test.ts",
+        "beforeExists": true,
+        "beforeSha256": "3270a70ae08d6a870c804892aecf1657b2b3126469d00f187c1b5d82848722ee",
+        "afterSha256": "ddc6e8d12a26cd66f74f6644fcdbabfa4b1dc3ef1cf0c48cc9c7d4e7abff6e8e",
+        "changed": true
+      },
+      {
+        "path": "scripts/smoke-executables.mjs",
+        "beforeExists": true,
+        "beforeSha256": "e4f54303820eeee8d6b8941d24244d8a37592bead1aee2a353754331234d7f8c",
+        "afterSha256": "e4f54303820eeee8d6b8941d24244d8a37592bead1aee2a353754331234d7f8c",
+        "changed": false
+      },
+      {
+        "path": "docs/design/startup-configuration.md",
+        "beforeExists": true,
+        "beforeSha256": "2dfc3fd5f3f30c8515baba3db0043724a7865e026d1ccc104c3afe6e61dc7b06",
+        "afterSha256": "2dfc3fd5f3f30c8515baba3db0043724a7865e026d1ccc104c3afe6e61dc7b06",
+        "changed": false
+      }
+    ]
+  },
+  "cumulative": {
+    "forward": {
+      "sha256": "c49dec86666aeeb2b225f0b8b9d8c1ddde5a89bf60cb013b371455860d89949c",
+      "bytes": 120356
+    },
+    "inverse": {
+      "sha256": "05c0897f49b02c6b5c33c58c94441266dcfcb43cfd68b03363b817a3f76e7000",
+      "bytes": 120369
+    },
+    "roundTripReconstructed": true,
+    "files": [
+      {
+        "path": "packages/server/src/development-authority.ts",
+        "beforeExists": true,
+        "beforeSha256": "d49f89da345234f7eaee83dd872a5c2d7a1a8d38ffc794e5e69d333976d22d49",
+        "afterSha256": "a7a32ca431d477654675550f394eb1d85f8be4f9830a0583de951aa40a6eeac5",
+        "changed": true
+      },
+      {
+        "path": "packages/server/src/development-runtime.ts",
+        "beforeExists": true,
+        "beforeSha256": "37e222682645e9d8f2d5fcf62de208640fb6216c9e9f2f279ab6017e8b9d6ca9",
+        "afterSha256": "c0dae240adaca64d0f0edaa77a1adc6fcc5e1f1a430fc93b10e1a711226d509b",
+        "changed": true
+      },
+      {
+        "path": "packages/server/src/transaction-runtime.ts",
+        "beforeExists": true,
+        "beforeSha256": "48cb5411407c456d7b3f301a4b67970061be9f51c94201de832ba5deff6ea2d4",
+        "afterSha256": "d208e18588772dd931655f8f85bcbafcf3d64a14590e60d7ab0165d455de4424",
+        "changed": true
+      },
+      {
+        "path": "packages/server/src/reference-deployment-runtime.ts",
+        "beforeExists": false,
+        "beforeSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "afterSha256": "4ed8c017825d86b33e7e8fedbf8971e691f05ed5644953785c54986520087f3a",
+        "changed": true
+      },
+      {
+        "path": "packages/server/src/reference-deployment-runtime.test.ts",
+        "beforeExists": false,
+        "beforeSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "afterSha256": "b2aa17f82e13c7d13c9ef40650644ec11d777c6b633cc92236ac2c2d8137302e",
+        "changed": true
+      },
+      {
+        "path": "packages/server/src/reference-deployment-process.ts",
+        "beforeExists": false,
+        "beforeSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "afterSha256": "5abf5f72e271e40bc0024dbe4449e0d0d6265fcc5d0ee1f8afa0289dc25fd9d5",
+        "changed": true
+      },
+      {
+        "path": "apps/bdptest/src/reference-deployment-lifecycle-installed.test.ts",
+        "beforeExists": false,
+        "beforeSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "afterSha256": "ddc6e8d12a26cd66f74f6644fcdbabfa4b1dc3ef1cf0c48cc9c7d4e7abff6e8e",
+        "changed": true
+      },
+      {
+        "path": "scripts/smoke-executables.mjs",
+        "beforeExists": true,
+        "beforeSha256": "80c1ecf1d55939fbb0a0fe94aad46bcede1c9d7841dbc3793e00e4493440ddb3",
+        "afterSha256": "e4f54303820eeee8d6b8941d24244d8a37592bead1aee2a353754331234d7f8c",
+        "changed": true
+      },
+      {
+        "path": "docs/design/startup-configuration.md",
+        "beforeExists": true,
+        "beforeSha256": "8a7d348e56adda7d0222d2180763149f348594a770fdd773e01076fb68c9caa8",
+        "afterSha256": "2dfc3fd5f3f30c8515baba3db0043724a7865e026d1ccc104c3afe6e61dc7b06",
+        "changed": true
+      }
+    ]
+  }
+}

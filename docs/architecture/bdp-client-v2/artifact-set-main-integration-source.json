@@ -1,0 +1,28 @@
+{
+  "head": "b919ab37326e259ff30304ab0dd642562a21ea40",
+  "parents": [
+    "fe5b49fb78ce8bc01fb6bdb1d7a416b03ce3aed4",
+    "4fcf36a2f6c4144532e90688eca7f056bf67170b"
+  ],
+  "tree": "b15512f20e3294f0b49ea815b9f94d7ac31d0051",
+  "main": "4fcf36a2f6c4144532e90688eca7f056bf67170b",
+  "accepted": "fe5b49fb78ce8bc01fb6bdb1d7a416b03ce3aed4",
+  "onlyDifferencesFromMain": [
+    "packages/conformance/src/read-update-artifact-set.test.ts",
+    "packages/conformance/test-support/profile-contract-plan.ts",
+    "packages/conformance/test-support/read-update-artifact-set.ts"
+  ],
+  "differingFilesExactlyAccepted": true,
+  "allOtherFilesExactlyMain": true,
+  "clean": true,
+  "validation": {
+    "tests": 417,
+    "testFiles": 6,
+    "failed": 0,
+    "skipped": 0,
+    "allStageExits": 0,
+    "cleanAfter": true,
+    "ownedChildrenAfter": 0,
+    "fullAndInstalledRerun": false
+  }
+}

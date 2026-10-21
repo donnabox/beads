@@ -1,0 +1,133 @@
+--- template/audit.py
++++ G09/audit.py
+@@ -165,7 +165,129 @@
+    header_context(r['headers'],None)
+   if clones:require(Counter(clones)==Counter(schemas['sourceCounterfactuals']),'Exact clone labels')
+   require(len(counters)==want['baselineCount'],'Exact source counter object occurrence')
+- if kind=='D3-source':
++ # G09 adapter: exact frozen reports, not a report union or conformance claim.
++ def g09_json(text):
++  require(type(text) is str and len(text.encode('utf-8'))<=131072,'G09 JSON response bound')
++  return json.loads(text,object_pairs_hook=unique_object,parse_constant=invalid_constant)
++ def g09_exact_schema(h,text,body,head=False):
++  require(text==('' if head else body),'G09 exact captured UTF-8 schema')
++  exact(h,{'content-length':str(len(body.encode('utf-8'))),'content-type':'application/json','cache-control':'private, no-store','vary':'Accept'})
++  require('etag' not in h and 'last-modified' not in h,'G09 no invented conditional validator')
++ def g09_problem(h,text,status,code,head=False):
++  exact(h,{'content-type':'application/problem+json'})
++  require(re.fullmatch('[1-9][0-9]*',h.get('content-length','')),'G09 represented problem length')
++  if head:require(text=='','G09 HEAD problem has no transferred body')
++  else:
++   v=g09_json(text);require(type(v) is dict,'G09 actual problem object')
++   family,retry=schemas['G09']['problems'][code]
++   exact(v,{'code':code,'status':status,'type':'https://github.com/gastownhall/bdp/problems/'+family,'retry':retry})
++   require(h['content-length']==str(len(text.encode('utf-8'))),'G09 problem byte length')
++  if status==503:exact(h,{'retry-after':'1'})
++ def g09_wire(r):
++  import base64
++  value=r['wireBase64'];require(type(value) is str and len(value)<=4*((163840+2)//3),'G09 bounded complete wire encoding')
++  try:raw=base64.b64decode(value,validate=True)
++  except (ValueError,TypeError):raise RuntimeError('G09 malformed base64 wire')
++  require(base64.b64encode(raw).decode()==value and 0<len(raw)<=163840 and sha(raw)==r['wireSha256'],'G09 exact full wire bytes/fingerprint')
++  offset=0
++  while True:
++   end=raw.find(b'\r\n\r\n',offset);require(end>=offset and end+4<=16384,'G09 actual executor header budget')
++   lines=raw[offset:end].split(b'\r\n');match=re.fullmatch(rb'HTTP/1\.[01] ([1-5][0-9]{2})(?: .*|)',lines[0]);require(match is not None,'G09 actual HTTP status line')
++   status=int(match.group(1));headers={}
++   for line in lines[1:]:
++    require(b':' in line,'G09 actual header separator');name,value=line.split(b':',1)
++    name=name.decode('latin1').strip().lower();value=value.decode('latin1').strip()
++    require(re.fullmatch("[!#$%&'*+.^_`|~0-9a-z-]+",name) and not any(c in value for c in ['\x00','\r','\n']),'G09 actual header syntax')
++    headers[name]=headers[name]+', '+value if name in headers else value
++   offset=end+4
++   if status>=200:break
++   require(status!=101 and 'content-length' not in headers and 'transfer-encoding' not in headers,'G09 bounded informational response')
++  require(status==r['status'] and same(headers,r['responseHeaders']),'G09 raw status/header projection equality')
++  framed=raw[offset:]
++  if r['method']=='HEAD' or status in [204,304]:
++   require(framed==b'','G09 truly bodyless raw response');body=framed
++  elif 'transfer-encoding' in headers:
++   require(headers['transfer-encoding'].lower()=='chunked' and 'content-length' not in headers,'G09 exact framing without ambiguity')
++   chunks=[];size=0;cursor=0
++   while True:
++    end=framed.find(b'\r\n',cursor);require(end>=cursor,'G09 complete chunk header')
++    line=framed[cursor:end];part=line.split(b';',1)[0];require(re.fullmatch(rb'[0-9A-Fa-f]+',part),'G09 actual hex chunk size');n=int(part,16);cursor=end+2
++    if n==0:
++     while True:
++      end=framed.find(b'\r\n',cursor);require(end>=cursor,'G09 complete chunk trailer');trailer=framed[cursor:end];cursor=end+2
++      if not trailer:break
++      require(b':' in trailer and b'\x00' not in trailer,'G09 finite trailer syntax')
++     require(cursor==len(framed),'G09 no trailing wire bytes');break
++    require(n<=131072-size and cursor+n+2<=len(framed) and framed[cursor+n:cursor+n+2]==b'\r\n','G09 chunk body bound/completeness')
++    chunks.append(framed[cursor:cursor+n]);size+=n;cursor+=n+2
++   body=b''.join(chunks)
++  else:
++   body=framed
++   if 'content-length' in headers:
++    require(re.fullmatch('0|[1-9][0-9]*',headers['content-length']) and int(headers['content-length'])==len(body),'G09 exact content length framing')
++  require(len(body)<=131072 and type(r['bodyOctets']) is int and r['bodyOctets']==len(body) and type(r['bodyText']) is str and body.decode('utf-8')==r['bodyText'],'G09 actual raw/body UTF-8/octet equality')
++ def g09_source(o):
++  rules=schemas['G09'];identity=o['observation'];require(identity in sel['reportIds'],'G09 selected report identity')
++  if identity in rules['sourceService']['observations']:
++   keys(o,rules['sourceService']['keys']);exact(o,{**rules['sourceService']['positiveCounts'][identity],'closeCalls':1,'closed':True,'removed':True,'failureCount':0})
++   positions=rules['servicePositions'][identity];require(type(o['contexts']) is list and len(o['contexts'])==len(positions),'G09 exact actual read-entry census');ev=None
++   for c,p in zip(o['contexts'],positions):
++    context(c,p);v=[c['scopeEpoch'],c['authorizationView']];require(ev is None or ev==v,'G09 same actual service epoch/view');ev=v
++  elif identity=='G09-S04':keys(o,rules['sourceSelector'][identity]['keys']);exact(o,{'calls':8,'urlReads':0,'observations':0})
++  elif identity=='G09-S05':
++   keys(o,rules['sourceSelector'][identity]['keys']);exact(o,{'calls':8,'abortCalls':1,'abortPropagated':True,'abortSignalForwarded':True})
++   require(type(o['rows']) is list and len(o['rows'])==8,'G09 selector row census')
++   for r,status,method in zip(o['rows'],rules['sourceSelector'][identity]['statuses'],['GET','HEAD','GET','HEAD','GET','GET','HEAD','GET']):keys(r,['status','method']);exact(r,{'status':status,'method':method})
++  else:
++   keys(o,rules['sourceWire']['topKeys']);wants=rules['sourceRows'][identity];exact(o,{'attempted':len(wants),'completed':len(wants),'pending':0,'closed':True,'removed':True,'failureCount':0})
++   require(type(o['rows']) is list and len(o['rows'])==len(wants),'G09 source wire row census');ev=None
++   for ordinal,(r,w) in enumerate(zip(o['rows'],wants),1):
++    keys(r,rules['sourceWire']['rowKeys']);exact(r,{'ordinal':ordinal,'method':w['method'],'url':w['url'],'status':w['status'],'settled':True,'received':True,'validated':True,'errorCategory':None});strings(r['headers']);require(type(r['text']) is str,'G09 actual source response text')
++    ev=header_context(r['headers'],w['position'],ev) or ev
++    if w.get('artifact'):g09_exact_schema(r['headers'],r['text'],rules['sourceArtifacts'][w['artifact']],r['method']=='HEAD')
++    elif w.get('problem'):g09_problem(r['headers'],r['text'],w['status'],w['problem'],r['method']=='HEAD')
++ def g09_installed(o):
++  rules=schemas['G09'];keys(o,rules['installed']['topKeys']);identity=sel['reportIds'][0];wants=rules['installedRows'][identity]
++  exact(o,{'observation':identity,'declaredSourceCommit':g['finalHead'],'workspaceDirty':True,'readyValidated':True,'attemptedRequests':len(wants),'completedResponses':len(wants),'pending':0,'directoryAbsent':True,'outcome':'passed','failureCount':0,'claimEligible':False,'authenticationIdentityRetention':'not emitted; actual credential binding is source-attested','evidenceRetention':'Full actual returned wire/body bytes; unavailable partial exchange evidence remains null; child stdout/stderr bytes are not retained'})
++  finite(o['elapsedMs'],60000);proof=verify_consumer(g)
++  require(type(o['entry']) is str and Path(o['entry']).resolve(strict=True)==Path(proof['entryRealpath']) and o['entrySha256']==proof['entrySha256'],'G09 actual external entry bytes')
++  ready=o['ready'];keys(ready,rules['installed']['readyKeys']);exact(ready,{'scope':rules['canonicalScope'],'profile':'transactional','history':False,'authorityMode':'canonical','claimEligible':False,'payloadIdentity':proof['payloadIdentity']});digest(ready['runtimeConfigurationIdentity'])
++  require(type(ready['listenUrl']) is str and re.fullmatch(r'http://127\.0\.0\.1:([1-9][0-9]{0,4})/',ready['listenUrl']) and 0<int(ready['listenUrl'].split(':')[2][:-1])<=65535,'G09 actual loopback listener')
++  require(same(o['artifactBytes'],rules['installedArtifacts']),'G09 exact captured artifact provenance')
++  session=o['session'];keys(session,rules['installed']['sessionKeys']);exact(session,{'closePromiseSettled':True,'closeSucceeded':True,'stdoutEnded':True,'stderrEnded':True})
++  for key in ['exit','close']:keys(session[key],['code','signal']);exact(session[key],{'code':0,'signal':None})
++  absent_pid(session['pid']);require(type(o['rows']) is list and len(o['rows'])==len(wants),'G09 one actual response per scheduled request');ev=None
++  for ordinal,(r,w) in enumerate(zip(o['rows'],wants),1):
++   keys(r,rules['installed']['rowKeys']);exact(r,{'ordinal':ordinal,'label':w['label'],'method':w['method'],'url':w['url'],'status':w['status'],'settled':True,'received':True,'validated':True,'writeState':'complete','errorCategory':None})
++   strings(r['responseHeaders']);digest(r['wireSha256']);integer(r['requestBodyBytes']);digest(r['requestBodySha256']);body=rules['createBody'].encode('utf-8') if w['label']=='create' else b''
++   require(r['requestBodyBytes']==len(body) and r['requestBodySha256']==sha(body),'G09 exact source-derived request body bytes')
++   g09_wire(r);h=r['responseHeaders'];text=r['bodyText'];exact(h,{'x-bdp-development':'non-attesting'});ev=header_context(h,w['position'],ev) or ev
++   if w.get('artifact'):g09_exact_schema(h,text,rules['installedArtifactText'][w['artifact']],r['method']=='HEAD')
++   elif w.get('problem'):g09_problem(h,text,w['status'],w['problem'],r['method']=='HEAD')
++   elif w.get('gap'):exact(h,{'x-bdp-development-limit':w['gap']});require(text=='','G09 retained private limitation has no body/credit')
++   elif w['label']=='create':
++    exact(h,{'content-type':'application/json'});receipt=g09_json(text)
++    keys(receipt,['id','status','detail','idempotencyKey','scopeEpoch','authorizationView','transaction','requiredPosition','effectPosition','results','next','expiresAt'])
++    exact(receipt,{'status':'completed','detail':'available','idempotencyKey':'g09-create','scopeEpoch':ev[0],'authorizationView':ev[1],'requiredPosition':'pos-1','effectPosition':'pos-1','next':None})
++    require(type(receipt['id']) is str and re.fullmatch(re.escape(rules['canonicalScope']+'receipts/')+r'[A-Za-z0-9_-]+',receipt['id']),'G09 actual receipt target');token(receipt['transaction'])
++    require(type(receipt['expiresAt']) is str and re.fullmatch(r'\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}(?:\.\d+)?Z',receipt['expiresAt']),'G09 actual receipt expiry')
++    require(type(receipt['results']) is list and len(receipt['results'])==1,'G09 one create-bead result');item=receipt['results'][0]
++    keys(item,['operationIndex','outcome','resource'],['operationName']);exact(item,{'operationIndex':0,'outcome':'created'})
++    if 'operationName' in item:require(type(item['operationName']) is str and len(item['operationName'])>0,'G09 actual operation name')
++    resource=item['resource'];keys(resource,['id','type','revision','properties']);exact(resource,{'id':rules['canonicalScope']+'beads/g09','type':rules['canonicalScope']+'types/task','properties':{'title':'café'}});require(type(resource['revision']) is str and len(resource['revision'])>0,'G09 actual created revision')
++   elif w['status'] in [304,412,406,405]:
++    require(text=='' and r['bodyOctets']==0,'G09 conditional/media/method bodyless')
++    if w['status']==304:require('content-length' not in h,'G09 actual304 absent length')
++    if w['status']==412:exact(h,{'content-length':'0'})
++    if w['status']==405:exact(h,{'allow':'GET, HEAD'})
++   else:raise RuntimeError('Uncovered G09 finite response oracle')
++ if kind=='G09-source':
++  require(Counter(o.get('observation') for o in reports)==Counter(sel['reportIds']),'G09 exact selected report census')
++  for o in reports:g09_source(o)
++ elif kind=='G09-installed':
++  require(len(reports)==1,'G09 exact singleton installed observation');g09_installed(reports[0])
++ elif kind=='G09-legacy-source':require(reports==[],'Unexpected report from selected legacy source callbacks')
++ elif kind=='D3-source':
+   require(Counter(o.get('callback') for o in reports)==Counter(cfg['selectedFullNames']) and all(o.get('observation')=='D3-source' for o in reports),'Exactly21 source reports')
+   for o in reports:source_report(o)
+  elif kind in ['legacy-installed-contracts-suite','schema-zero-wire']:

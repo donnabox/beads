@@ -1,0 +1,112 @@
+[
+  {
+    "duration_api_ms": 1013342,
+    "stop_reason": "end_turn",
+    "session_id": "f6b9a0f1-f409-49a4-a634-2ea49709b303",
+    "total_cost_usd": 7.1848225,
+    "usage": {
+      "input_tokens": 110,
+      "cache_creation_input_tokens": 202848,
+      "cache_read_input_tokens": 6555165,
+      "output_tokens": 75031,
+      "output_tokens_details": {
+        "thinking_tokens": 57101
+      },
+      "server_tool_use": {
+        "web_search_requests": 0,
+        "web_fetch_requests": 0
+      },
+      "service_tier": "standard",
+      "cache_creation": {
+        "ephemeral_1h_input_tokens": 202848,
+        "ephemeral_5m_input_tokens": 0
+      },
+      "inference_geo": "global",
+      "iterations": [
+        {
+          "input_tokens": 2,
+          "output_tokens": 9454,
+          "cache_read_input_tokens": 206112,
+          "cache_creation_input_tokens": 1482,
+          "cache_creation": {
+            "ephemeral_5m_input_tokens": 0,
+            "ephemeral_1h_input_tokens": 1482
+          },
+          "type": "message"
+        }
+      ],
+      "speed": "standard"
+    },
+    "modelUsage": {
+      "claude-haiku-4-5-20251001": {
+        "inputTokens": 2350,
+        "outputTokens": 17,
+        "cacheReadInputTokens": 0,
+        "cacheCreationInputTokens": 0,
+        "webSearchRequests": 0,
+        "costUSD": 0.002435,
+        "contextWindow": 200000,
+        "maxOutputTokens": 32000,
+        "thinkingTokens": 0,
+        "canonicalModel": "claude-haiku-4-5",
+        "provider": "firstParty",
+        "costBasis": "list"
+      },
+      "claude-opus-5[1m]": {
+        "inputTokens": 110,
+        "outputTokens": 75031,
+        "cacheReadInputTokens": 6555165,
+        "cacheCreationInputTokens": 202848,
+        "webSearchRequests": 0,
+        "costUSD": 7.1823875,
+        "contextWindow": 1000000,
+        "maxOutputTokens": 64000,
+        "thinkingTokens": 57101,
+        "canonicalModel": "claude-opus-5",
+        "provider": "firstParty",
+        "costBasis": "list"
+      }
+    },
+    "permission_denials": [],
+    "terminal_reason": "completed",
+    "fast_mode_state": "off",
+    "fast_mode_disabled_reason": "sdk_opt_in_required",
+    "subagent_stats": {
+      "spawned": 0,
+      "requested": {
+        "background": 0,
+        "foreground": 0,
+        "unset": 0
+      },
+      "started_in_background": 0,
+      "max_depth": 0,
+      "spawned_by_subagents": 0,
+      "completed": 0,
+      "failed": 0,
+      "killed": {
+        "parent": 0,
+        "user": 0,
+        "system": 0
+      },
+      "refused": {
+        "depth_limit": 0,
+        "concurrency_limit": 0,
+        "budget": 0
+      },
+      "by_type": {}
+    },
+    "is_error": false,
+    "num_turns": 72,
+    "subtype": "success",
+    "api_error_status": null,
+    "result": "## Scope inspected\n\nPlan read in full: `bdp-integration-logs/parser-next-serving-audit/plan-v2.md` (84 lines).\nSpec (pinned `docs/specs/bdp.md`): 1935\u20132008, 5320\u20135339, 5790\u20135859, 5862\u20135894, 6200\u20136263, 6600\u20136629.\nImmutable snapshot context: `context-v2/design.md` lines 1\u201328 and the S1/G2 paragraph (line 127). I did not open the live design ledger or review/validation paperwork.\nSource read: `transaction-http.ts` (whole file), `transaction-service.ts` (whole file), `transaction-consistency.ts` (whole file), `transaction-store.ts` (376\u2013418, 660\u2013722, 955\u20131068, 1590\u20131790, 2280\u20132307), `transaction-events.ts` (100\u2013200), `read-http.ts` (10\u2013199), `transaction-runtime.ts` (150\u2013180, 338\u2013343), `transaction-runtime-configuration.ts` (105\u2013170).\nTests/lifecycle read: `transaction-events.test.ts` (1\u2013140, 280\u2013312, 380\u2013680, 1010\u20131080), `transaction-service.test.ts` (1\u2013130, 990\u20131060, 1440\u20131560, 1712\u20131720), `transaction-http.test.ts` (2170\u20132210, 3100\u20133160, 4470\u20134600, 4880\u20134910, 5330\u20135611), `transaction-dependencies.test.ts` (600\u2013680, import block), `apps/bdptest/src/transactional-event-missing-context-installed.test.ts` (whole file), `test-support/transactional-execution-binding.ts`, `scripts/transaction-installed-observation.mjs`, `scripts/check-dependency-boundaries.mjs`, `vitest.config.ts`, `packages/conformance/src/http-executor.ts` (23\u2013107, 434\u2013570, 620\u2013670), `schemas/bdp-v0.schema.json` (4120\u20134160, 4230\u20134320), plus greps for every `readEvents` / `service.events` / `bdp-minimum-scope-position` / `minimum-position` call site in `packages/**` and `apps/**`. No files written; no tests, builds, services or agents run.\n\n---\n\n# Blockers (correct before authoring)\n\n### BL1 \u2014 Medium. C's two refusal observations are synchronous throws, not rejections\n**Plan:** \u00b648 (\"Separately one post-close real-owner.readEvents call **must reject**\") and \u00b652 (\"call service.events once while closing; that call is refused before owner entry\").\n**Source:** `transaction-service.ts:139-154` \u2014 `run()` calls `check()` synchronously, so `service.events(...)` **throws** rather than returning a rejected promise; `transaction-store.ts:396-407` \u2014 `enter()` throws `\"transaction store closed or reentrant\"`, and `readEvents` (`:1637`) is a synchronous function. Both shapes are already pinned by the existing callback: `transaction-service.test.ts:1036` `expect(() => service.events(...)).toThrow(\"closing or closed\")` and `:1039` `expect(() => f.owner.readEvents(...)).toThrow()`.\n**Impact:** a test authored to the plan's wording (`await expect(...).rejects...`) fails or swallows the exception, and C's \"exact\" observation claim is wrong at the observation layer \u2014 the one layer the plan says must be exact.\n**Smallest correction:** in \u00b648/\u00b652 state: \"both refusals are synchronous throws asserted with `expect(() => \u2026).toThrow(\u2026)` \u2014 the while-closing `service.events` throws `transaction service is closing or closed`, the post-close direct `owner.readEvents` throws `transaction store closed or reentrant`; neither yields a promise. Only the two admitted requests are observed as rejections.\"\n\n### BL2 \u2014 Medium. \"The parser source remains untouched\" is unsatisfiable as written, because the frozen parser bytes are inside a nominated file\n**Plan:** \u00b632 nominates `transaction-http.ts`; \u00b673 (\"Earlier parser successor and PR150 bytes remain preserved\") and \u00b679 (\"The parser source remains untouched until its validation is complete\").\n**Source:** the parser-successor production change is in `transaction-http.ts:578-591` (`if (isReadProblem(parsed) && parsed.status === 400) return problem(parsed);` ahead of the `minimum-position` / `minimum-position-route` labels), and its evidence is `transaction-http.test.ts:5361-5562` (`withParserRefusalOwner`, logged as `observation: \"parser-refusal-source\"`) plus the three callbacks at `:5564-5610`.\n**Impact:** the freeze statement is file-scoped but the edit is file-scoped too, so the later \"parser untouched\" verification cannot be made as stated; it also leaves open the risk of an author re-flowing or renumbering those lines while editing the Event branch in the same file.\n**Smallest correction:** replace \u00b679's sentence with byte scope: \"No change inside `transaction-http.ts:574-591` (the canonical-Read current-minimum gate) and none in `transaction-http.test.ts`; the Event edit is confined to the branch at `transaction-http.ts:502-536`. The authored diff must be taken against `b76c3b7` and must show those parser lines byte-identical.\"\n\n### BL3 \u2014 Medium. E's cleanup rule does not exclude the historical unconditional store deletion\n**Plan:** \u00b667 (\"Bound cleanup attempts jointly, preserve primary/cleanup errors, close child before removing owned store, and fail on unknown ownership/deadline/late exit\").\n**Source:** the historical `finally` at `transactional-event-missing-context-installed.test.ts:356-370` removes the owned directory with `rmSync` **unconditionally**, i.e. also after `child.close()` threw; `scripts/transaction-installed-observation.mjs:48-60` only SIGKILLs and rethrows on an unclean exit, so the child may still hold the SQLite file.\n**Impact:** an author copying the historical prefix (which \u00b667 instructs) deletes the owned store under a possibly-live child, destroying the survivor evidence the plan says it must report.\n**Smallest correction:** add to \u00b667: \"remove the owned directory only after a verified clean child close; if close failed or the deadline fired, record `directory`, `childPid`, `childExitCode`, `childSignalCode` and `directoryAbsent:false` as survivors and fail \u2014 do not copy the historical unconditional `rmSync`.\"\n\n### BL4 \u2014 Medium. E's three exchanges cannot be dispatched without declaring its own exact-mode routes and bound\n**Plan:** \u00b667 (\"Exactly3 HTTP exchanges: finite Scope Event setup GET \u2026, matched opaque GET, matched opaque HEAD \u2026 Reuse \u2026 existing raw executor \u2026 Retain existing5s exchange bound \u2026 and callback bound from that fixture\").\n**Source:** `packages/conformance/src/http-executor.ts:560-567` rejects any exchange whose `(method, url)` pair is absent from `exactMode.routes` with a `configuration` failure before any wire write; the historical routes list (`transactional-event-missing-context-installed.test.ts:150-159`) declares only `GET ${scope}events/` (no HEAD), and the historical dispatch bound is `expect(++attempted).toBeLessThanOrEqual(11)` (`:193`).\n**Impact:** the matched-opaque HEAD \u2014 the bodyless-metadata half of the E oracle \u2014 fails as a harness configuration error, not as a wire observation.\n**Smallest correction:** in \u00b667 state: \"the new callback constructs its own executor with `routes: [{GET, `${scope}events/`}, {HEAD, `${scope}events/`}]`, `requestTimeoutMs: 5000`, its own `attempted <= 3` bound, and its own response-fingerprint array; module-level `entry`/`sourceCommit`/`binding`/`validPage` are reused unchanged.\"\n\n---\n\n# Optional improvements\n\n1. **Cite the conditional-ordering MUST.** \u00b664's `If-None-Match: *` / `If-Match: \"wrong\"` pairs rest on `bdp.md:5876` (\"Scope epoch/view, minimum-position and erasure/expiry checks MUST precede any conditional shortcut\") and `1986-1989` (\"An ordinary refusal is not replaced by `304`\"). \u00b69's normative paragraph cites neither. Adding them turns those six exchanges from preservation preference into a cited obligation. (Behavior itself is already correct: `read-http.ts:10-14` only rewrites `200`-JSON/`204`, so the `503` cannot become `304/412/406`.)\n2. **C's \"delegate count before close is 5\" is misleading.** Two of the five delegated attempts (drained #2 and #3) occur *after* `service.close()` is invoked, during drain. Restate as \"5 delegated attempts in total for C, asserted after `await closing`; exactly 3 have occurred at the moment `close()` is called.\"\n3. **Pin B's clock seam.** `transaction-consistency.ts:155,170,176` calls `now()` once at start plus once per failed attempt and waits `min(5, deadline-current)`. The stated 0/5/10 schedule therefore requires `now` to read a mutable variable advanced by the gate; a `() => tick++` generator (used at `transaction-service.test.ts:936,1158,1195`) would shift it because the setup call also consumes a `now()`. Say which form B uses.\n4. **Name where the service capture sits.** \u00b628 says \"before run/wait starts\". Placing `snapshotCurrentReadMinimum` *outside* `run()` (as `changes()`/`beginEvents()` do at `transaction-service.ts:451-458,489-492`) converts today's rejected-promise TypeError for a malformed tuple into a synchronous throw and moves it ahead of `check()`. Capturing inside the `run(...)` callback but before `waitForTransactionMinimum` keeps delivery shape and the closing check unchanged while still preceding the first attempt. Either is defensible; pick one explicitly.\n5. **\"Keep source existence first\" is inaccurate about current layout.** In `transaction-store.ts:1649-1655` the source parse *and* the tuple snapshot both run **before** `enter()`; only the comparison order (`eventSourceKnown` \u2192 sentinel \u2192 `readContext` \u2192 check, `:1659-1666`) is inside the entry. Reword \u00b629 to \"inside the owner entry, keep source existence and the sentinel return ahead of the minimum comparison; tuple capture stays outside the entry as today.\"\n6. **A's no-scan oracle is vacuous for two of its six refusals.** The `after`-bearing and Resource-source opaque tuples throw from `snapshotTransactionMinimum` before `enter()` (`:1652-1655`), so zero prepares is trivially true there; the real evidence is for Unproved/Unsupported/behind, where the owner is entered, `readContext()` runs, and `retainedGroupReader()` (`:1677`) is never reached. Also state that the setup page must be read before the spy is installed (as the model at `transaction-events.test.ts:614-636` does), or the setup scan contaminates the zero-group count.\n7. **Build-prerequisite precision.** \u00b675 says the build must precede *collection* of `transaction-events.test.ts`; in fact its `../dist/transaction-runtime.js` import is inside the callback (`:396-398`), i.e. execution-time. The collection-time dist dependency is the installed module (`realpathSync(entry)` at module level, installed test `:57-64`). If `transaction-dependencies.test.ts` is selected as a regression it also needs dist (`:518-531`). Restate accordingly; the ordering requirement is unchanged.\n8. **D needs a problem validator.** `transaction-events.test.ts:122` compiles only `validPage`. The `503` assertion needs `$ref: #/$defs/transactionalProblem`; the bundle already constrains `catch-up-timeout` to `.../problems/unavailable`, `503`, `after-delay` (`schemas/bdp-v0.schema.json:4260-4283`), which matches `transaction-http.ts:628-633` with protocol's `temporarily-unavailable` family. Worth naming so the schema step isn't improvised.\n9. **State the retained gap honestly in \u00b67.** After this change, Event reads with an unknown minimum that carry `after`, select SSE, target a Resource `view=events`, or negotiate non-JSON still return the private `500` + `x-bdp-development-limit: minimum-position`, which is not among `5841-5843`'s permitted outcomes (representation / wait / route / foreign-view / cursor-expired / catch-up-timeout). The plan preserves that deliberately (S1-adjacent, `5850-5851`), but \u00b67/\u00b664 should record it as a known preserved gap rather than leaving it to inference.\n10. **D's per-test bound.** No explicit vitest timeout is used by the 394 model and `vitest.config.ts` sets no `testTimeout`, so the new callback inherits the 5 s default while deliberately burning six 80 ms budgets (~16 \u00d7 5 ms real sleeps each, `transaction-consistency.ts:176`) plus runtime start/close \u2014 roughly 1 s. Fine, but state the expectation; if headroom is wanted, lower the new runtime's `minimumReads.budgetMs`, do not widen the bound.\n11. **Catalog hygiene (one line).** The new behavior is the subject matter of `transactional.changefeed.catch-up-timeout` (`packages/conformance/catalog/transactional-v1.json:1186`). The plan already leaves catalog/manifest bytes alone; add an explicit \"no catalog selection or coverage claim follows from D/E\" so the counts cannot later be relabeled as conformance evidence.\n\n---\n\n# Verified sound (so the blockers are not read as the whole picture)\n\n- **Predicate and seam are implementable in exactly the three nominated production files.** `currentReadMinimumHeaders` is already imported at `transaction-http.ts:17`; `transaction-store.ts:43-47` already imports from `transaction-consistency.js`, and `snapshotCurrentReadMinimum` / `checkCurrentReadMinimum` are already exported (`:33`, `:115`) with exactly the planned semantics (unknown + matching context \u2192 `TransactionMinimumUnproved`; unknown + foreign \u2192 `TransactionMinimumUnsupported`; parsable \u2192 delegates to `checkTransactionMinimum`). `eventSource()` returns `kind: \"scope\" | \"bead\" | \"link\"` (`transaction-events.ts:160-174`), so the store-side branch exists. No new export, option, parser or 7th production file.\n- **End-to-end chain produces the claimed wire result.** Unproved \u2192 waiter (`transaction-consistency.ts:160-178`, original deadline, owner released, abort checked at loop top) \u2192 `TransactionMinimumFailure(\"catch-up-timeout\")` \u2192 `transaction-http.ts:624-637` \u2192 `503` + `retry-after: 1` + the three context headers; `applyReadHttpSemantics` leaves non-200 untouched, and HEAD gets GET metadata with no body (`read-http.ts:42-46`).\n- **Planned 500/400/404 controls match current code**, traced individually: SSE/after/Resource-view/Last-Event-ID/`image/png` opaque pairs all reach the `\"unsupported\"` sentinel and `developmentGap(\"minimum-position\")` (`transaction-http.ts:505,516,531`; store `:1661`, `:1748`); malformed partial tuple \u2192 `400 malformed-request` without context at `:404-405`; unsupported `events/` query \u2192 `TransactionEventParameterError` from `:502` with undefined context \u2192 `400 invalid-parameter`; missing Resource Event source + opaque \u2192 `{kind:\"missing\"}` first (`store:1659`) \u2192 contextual `404` at `:514-515`. `selectChangefeedMedia(\"image/png\")` is `undefined` (`read-http.ts:95-99`), so requiring `=== \"json\"` is the correct, narrower exclusion; missing `Accept` still selects json.\n- **No existing test conflicts with the change.** No test anywhere sends a complete-but-unrecognized minimum tuple to Scope `events/`: `transaction-http.test.ts:4518-4534` uses a partial (malformed) field; `:5564-5610` parser-refusal callbacks cover only collection/Type/canonical routes; `transaction-events.test.ts:522-541` applies `\"opaque-unknown\"` to alias/receipt routes; `transaction-events.test.ts:292-310,1045-1054` and `transaction-service.test.ts:1016-1040` use strict `pos-N`; `transactional-matrix.test.ts:2431` sends `events/` with `O = []` (no minimum headers). So the six-file nomination does not under-count test ownership.\n- **Test seams behave as the plan assumes.** `withRead` returns `{kind:\"entry-refused\"}` instead of throwing when closed/reentrant (`store:976-991`), so the `{kind:\"read\", value:true}` probe is a valid release oracle and runs no `FROM groups` statement; `inspect()` does scan `FROM groups` (`:2286-2289`) exactly as the plan warns; `close()` is idempotent (`:2297-2305`), so the facade + fixture double-close in B/C is safe; the spread-facade pattern is already proven at `transaction-service.test.ts:1472-1484` and `transaction-http.test.ts:4475-4484`; `fixture().open()` does close over the real owner (`:101-105`) as stated.\n- **Counts are internally consistent and layer-separated**: A 8; B 2 calls / 4 attempts / 2 waits+probes; C 4 calls / 5 attempts / 3 waits+probes / 1 separate direct refusal; D 2+6+4+4+12+2+2 = 32; E 3; 5 stores, 1 listener, 1 child. The 0/5/10 attempt schedule is exactly what `budgetMs: 10` with 5 ms steps yields, and the cancelled request's \"1 attempt / 1 wait\" follows from the loop's post-wait abort check \u2014 abort alone cannot settle a parked deferred wait, as the plan says.\n- **Normative framing is accurate.** The plan selects a permitted outcome under `5841-5843` + `5329-5332` without extending the Resource-specific MUST at `5844-5849`; it keeps `after`-less scope-only scope, consistent with `5850-5851`, `6212-6221`, `6258-6263`; validator omission (`6612-6616`) is untouched; it resolves neither S1 (retained Snapshot/continuation minimum) nor G2 (incident-Link metadata membership) per `context-v2/design.md:127`, and D's single-Bead seed avoids the G2 gap path entirely.\n- Dependency boundaries are package-level only (`scripts/check-dependency-boundaries.mjs:140-147`), and no test asserts source bytes/import lists of these files, so the added intra-package import needs no extra owned file.\n\n---\n\n# Concrete changes needed before authoring\n\n1. Rewrite C's two refusal expectations as synchronous throws with their actual messages (BL1).\n2. Replace the file-scoped \"parser source untouched\" sentence with the byte-scoped freeze on `transaction-http.ts:574-591` + `transaction-http.test.ts`, and require the authored diff to be taken against `b76c3b7` (BL2).\n3. Add E's conditional-removal/survivor-reporting cleanup rule, explicitly rejecting the historical unconditional `rmSync` (BL3).\n4. Add E's own `exactMode.routes` (GET and HEAD on `events/`), its own `attempted <= 3` bound and its own response array (BL4).\n5. Fold in the precision items that change what gets authored: capture placement inside `run()` (opt 4), corrected \"source existence first\" wording (opt 5), B's mutable-clock seam (opt 3), C's count-timing wording (opt 2), A's spy ordering plus the vacuous-pair caveat (opt 6), D's problem-schema validator (opt 8), the `5876`/`1986-1989` citations for the conditional pairs (opt 1), the corrected build-ordering sentence (opt 7), the explicit record of the preserved `500` gap for excluded Event reads (opt 9), the 5 s per-test bound note (opt 10), and the no-catalog-claim line (opt 11).\n\nThis is a plan critique only. Nothing here authorizes source edits, execution, integration or publication, and no prior reviewer verdict was treated as authority.",
+    "ttft_ms": 1542,
+    "type": "result",
+    "duration_ms": 1013204,
+    "uuid": "1aeda66d-385e-44fb-81a8-af6d64d248a8",
+    "ttft_stream_ms": 1016,
+    "time_to_request_ms": 21,
+    "first_content_frame_ms": 1017,
+    "queued_turn_count": 0
+  }
+]

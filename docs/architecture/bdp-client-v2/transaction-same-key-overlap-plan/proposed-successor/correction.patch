@@ -1,0 +1,397 @@
+--- original/plan.md
++++ proposed-successor/plan.md
+@@ -1,16 +1,16 @@
+-# Proposed installed same-key singleton/batch overlap witness
++# Proposed installed same-key singleton/batch dispatch witness
+ 
+-Planning only. Native and actual Claude plan council, root authoring release, measured draft review and execution release remain required. This supporting plan implements no semantics and replaces no authority. The sole authority is `/Users/dbox/repos/wt/vickie/bdp-client-design/checkout/docs/architecture/bdp-client-v2/design.md`, Autonomous profile completion T2/T4 and current priority. The current source basis is committed `f5511718371a6935614eae6756e796cef71570c2` (PR132 merged), tree `3cd1da66ba3a6cbd0bbdaa2442d10002939d826b`. Reads use that commit's blobs; the concurrently reviewed dirty principal draft is untouched. Ordinary integration of actual principal-main and dependency recheck precede final validation/publication. No future candidate is asserted.
++Proposed successor; authoring/execution remain closed pending root acceptance. Planning only. The completed actual Claude review and independent source audit are dispositioned in source-dispositions.md; exact successor native closure, root acceptance/authoring release, measured draft review and execution release remain required. This supporting plan implements no semantics and replaces no authority. The sole authority is `/Users/dbox/repos/wt/vickie/bdp-client-design/checkout/docs/architecture/bdp-client-v2/design.md`, Autonomous profile completion T2/T4 and current priority. The current source basis is committed `f5511718371a6935614eae6756e796cef71570c2` (PR132 merged), tree `3cd1da66ba3a6cbd0bbdaa2442d10002939d826b`. Reads use that commit's blobs; the concurrently reviewed dirty principal draft is untouched. Ordinary integration of actual principal-main and dependency recheck precede final validation/publication. No future candidate is asserted.
+ 
+ ## Purpose and scope
+ 
+-The preceding audit identifies an installed evidence gap, not a proven runtime defect: two outstanding real clients submitting the same normalized one-operation creation through different carriers should share one receipt and one allocation. Existing `transaction-submission.test.ts:299–315` demonstrates overlapping source calls; sequential cross-carrier coverage does not observe real client overlap. The concurrent-join obligation is at spec3898–3901/3933–3940 and catalog `transactional.idempotency.concurrent-join`. Spec3910–3931 excludes carrier from identity and equates a singleton with its one-operation batch. Spec2130–2147 authorizes omitted IDs to be allocated by the authority. Retained replay preserves those allocations.
++The preceding audit identifies an installed evidence gap, not a proven runtime defect: two real clients dispatching the same normalized one-operation creation through different carriers without awaiting either response should share one receipt and one allocation. This is an observed client-lifetime overlap, not evidence of concurrent wire arrival, server admission or internal execution. Existing `transaction-submission.test.ts:299–314` demonstrates overlapping source calls; sequential cross-carrier coverage does not observe real client overlap. The concurrent-join obligation is at spec3894–3896/3935–3940 and catalog `transactional.idempotency.concurrent-join`. Spec3910–3933 excludes carrier from identity and equates a singleton with its one-operation batch. Spec2130–2147 authorizes omitted IDs to be allocated by the authority. Retained replay preserves those allocations.
+ 
+-Own exactly two prospective files: new `apps/bdptest/src/transactional-same-key-overlap-installed.test.ts` and a factual private-evidence paragraph in `docs/design/transaction-implementation-progress.md`. No runtime, shared helper, schema, fixture, catalog, manifest, public qualification, or Update edits. No new scheduler, concurrent DSL, fault injection, or pending-window seam. Snapshot/continuation and incident-Link metadata questions remain excluded, as do optional History, Types work and provenance redesign. No claim of cumulative qualification or cold discovery; ready targets are private installed configuration evidence.
++Implementation must use a new isolated checkout, never the current principal checkout. No current PW source edits are authorized. Own exactly two prospective files: new `apps/bdptest/src/transactional-same-key-overlap-installed.test.ts` and a factual private-evidence paragraph in `docs/design/transaction-implementation-progress.md`. The new test may be authored only after root isolated-checkout release. Append the progress paragraph under a new same-key dispatch witness heading only after actual principal-main integration, re-reading the then-current document and preserving all existing paragraphs. The committed historical document hash is a review basis, not permission to replace newer principal prose. No runtime, shared helper, schema, fixture, catalog, manifest, public qualification, or Update edits. No new scheduler, concurrent DSL, fault injection, or pending-window seam. Snapshot/continuation and incident-Link metadata questions remain excluded, as do optional History, Types work and provenance redesign. No claim of cumulative qualification or cold discovery; ready targets are private installed configuration evidence.
+ 
+ ## Fixed inputs and six-request positive
+ 
+-`ledger.json` contains exact compact singleton and batch bodies, byte counts, SHA256, methods, headers and artifacts. Both omit `id`. Singleton omits `operation`; batch contains one `createBead` operation, without name or body key. Both use the same type URL, title and metadata `{}`, one writable principal `writer`, the same ephemeral operator token, and `Idempotency-Key: same-key-overlap`. No aliases or preexisting Resources exist. The descriptor has no `ownsOutgoing`. Configuration uses exactly the existing launcher scope/directory/create/artifacts/credentials fields; token is ephemeral random base64url, never evidence. No unsupported credential `ref`, custom view or testSeams is added. Actual authorization view is observed and compared, not inferred from principal identity.
++`ledger.json` contains exact compact singleton and batch bodies, byte counts, SHA256, methods and headers. Its `wireConfiguration` is an explicit five-key runtime template; resolve only directory/token placeholders in memory. `artifacts` inside that template has exactly descriptors/schemas arrays of retrievalUri/utf8 pairs. All kinds/lengths/digests and derived/absent fields live only in separate evidence metadata and must never be sent to the adapter. Both request bodies omit `id`. Singleton omits `operation`; batch contains one `createBead` operation, without name or body key. Both use the same type URL, title and metadata `{}`, one writable principal `writer`, the same ephemeral operator token, and `Idempotency-Key: same-key-overlap`. No aliases or preexisting Resources exist. The descriptor has no `ownsOutgoing`. Configuration uses exactly the existing launcher scope/directory/create/artifacts/credentials fields; token is ephemeral random base64url, never evidence. No unsupported credential `ref`, custom view or testSeams is added. Actual authorization view is observed and compared, not inferred from principal identity. The installed adapter forces port0 and canonical authority mode; neither is a caller field. Ready spreads captured metadata at top level, so assert ready.authorityMode===canonical and ready.scope===the configured Scope, validate ready.listenUrl as the loopback dial endpoint, and validate ready.targets.createBead/batch against the pinned canonical URLs. These are private configured targets, not discovered links.
+ 
+ 1. Dispatch singleton POST to actual ready createBead target, independently pinned to `https://reference.invalid/acme/operations/create-bead`.
+ 2. Before awaiting either response, dispatch batch POST to actual ready batch target, independently pinned to `https://reference.invalid/acme/operations/batch`. Both promises immediately have rejection handlers; settle them with `Promise.allSettled`, preserving both errors. No sleeping or retry to force a pending window.
+@@ -19,25 +19,25 @@
+ 5. GET `https://reference.invalid/acme/events/`; require one full created Event, `next:null`, no pagination or stream.
+ 6. Repeat the exact batch body and original key; require the full retained terminal receipt unchanged and current position still pos-1.
+ 
+-No bootstrap HTTP, authentication probe, initial collection, receipt polling, extra Resource GET or continuation fetch. The three GETs and three POSTs are all the work. If both pair responses are pending, retain their actual facts and stop as an inconclusive bounded witness; do not poll or call this a protocol violation. This small implementation is expected to produce a terminal response, but this plan does not impose that expectation on every conforming authority.
++No bootstrap HTTP, authentication probe, initial collection, receipt polling, extra Resource GET or continuation fetch. The three GETs and three POSTs are all the work. If both pair responses are pending, retain their actual facts and stop as `inconclusive-both-pending` after exactly two attempts/responses and two TCP connections; do not run requests3–6, poll, claim success or call this a protocol violation. Exact attempt/response expectations are keyed to the actual outcome class; the six-request success count must not run on this branch. Startup/transport/oracle failures may stop earlier than two responses and retain their actual counts; the two-response minimum describes the sanctioned both-pending branch, not every failed attempt. This small implementation is expected to produce a terminal response, but this plan does not impose that expectation on every conforming authority. An unexpected503 or other transport/service/oracle failure remains a failed selected healthy witness, with actual facts retained and no retry; it is not itself a universal protocol-conformance verdict. Do not extend the accepted outcome set to hide a healthy-fixture failure.
+ 
+ ## Receipt, Resource and Event oracles
+ 
+-Use existing Ajv2020 plus actual URI/date-time validators over the current bundled schema: mutationReceipt, beadRecord, currentBeadCollection and eventPage. Validate schema before extracting baseline facts. Closed full-object equality follows independent literal assertions, rather than treating baseline equality as sufficient.
++Use existing Ajv2020 plus actual URI/date-time validators over the current bundled schema: mutationReceipt, beadRecord, currentBeadCollection and eventPage. beadRecord independently revalidates the embedded receipt Resource before closed literal assertions. Validate schema before extracting baseline facts. Closed full-object equality follows independent literal assertions, rather than treating baseline equality as sufficient.
+ 
+ Spec4589–4596/4627/4632 distinguishes mutation200 terminal versus202 pending and receipt GET200. Each initial response must be200/completed/available or202/pending, never a failed receipt. For202, current implementation requires Location equal receipt.id and Retry-After1 (the Location assertion is explicitly private implementation coverage, not an added normative MUST). Pending body is exactly the six core fields id/status/idempotencyKey/scopeEpoch/authorizationView/transaction, with no terminal fields. For200, require one exact result `{operationIndex:0,outcome:'created',resource:R}`, no operationName, results.next is not a field, receipt.next is null, requiredPosition=effectPosition=pos-1 after shared-identity validation. No problem/allocated/extra result fields. expiresAt is schema-valid date-time; do not invent a fixed timestamp or freshness interval.
+ 
+-Both receipts must have the same id, transaction, epoch, recorded authorizationView and original key. When both terminal, compare their entire parsed receipt bodies. When one pending, compare all common identity fields and preserve which response was pending. The terminal Resource R has exactly id/type/revision/properties/metadata: absolute authority-allocated canonical Bead id with one legal opaque suffix, type=`https://reference.invalid/acme/types/task`, nonempty validated revision, properties exactly `{title:'same-key-overlap'}`, metadata exactly `{}`. No links, ownedLinks or revisionProvenance is added by this fixture. Validate the actual allocated suffix without claiming its UUID spelling is normative.
++Both receipts must have the same id, transaction, epoch, recorded authorizationView and original key. When both terminal, compare their entire parsed receipt bodies. When exactly one is pending, use the single independently validated terminal response as the baseline, compare only common identity fields across the pair, set pendingObserved:true and proceed with requests3–6. GET3 must be200/completed/available and equal that terminal baseline; a still-pending GET is not a successful witness. This is six total requests, not a polling branch. The terminal Resource R has exactly id/type/revision/properties/metadata: absolute authority-allocated canonical Bead id with one legal opaque suffix, type=`https://reference.invalid/acme/types/task`, nonempty validated revision, properties exactly `{title:'same-key-overlap'}`, metadata exactly `{}`. No links, ownedLinks or revisionProvenance is added by this fixture. This is source-grounded, not observe-then-weaken: resource-evaluator.ts805–811 supplies metadata{},886–895 carries it in the recipe,903 returns unchanged without ownsOutgoing, and1135–1163 always materializes metadata with conditional provenance/ownedLinks. Store1250 passes recordChangeContext:false; no input provenance is supplied. Authority Read decodes the stored record without synthesizing links. Preserve full Resource/receipt/current equality; no normalization is authorized. Validate the actual allocated suffix without claiming its UUID spelling is normative.
+ 
+-Spec5263–5274 distinguishes historical receipt facts and serving context. Every response has all three current context headers. Initial pending context may be observed pos-0 or pos-1; never infer it from missing body positions. Terminal positive responses and reads must have pos-1. Epoch/view headers equal the recorded tuple for this unchanged configuration; compare them, do not invent values. GET3 receipt and POST6 replay equal the entire independently validated terminal baseline. GET4's one complete Resource equals R, not just its id/revision. Exact schema/content-type, private/no-store and non-attesting marker are checked; no redirect is accepted.
++Spec5263–5274 distinguishes historical receipt facts and serving context. Every response has all three current context headers. Initial pending context may be observed pos-0 or pos-1; never infer it from missing body positions. Terminal positive responses and reads must have pos-1. Epoch/view headers equal the recorded tuple for this unchanged configuration; compare them, do not invent values. GET3 receipt and POST6 replay equal the entire independently validated terminal baseline. GET4's one complete Resource equals R, not just its id/revision. Exact schema/content-type, private/no-store and non-attesting marker are checked; POST Vary:Accept is asserted and retained among safe headers; no redirect is accepted.
+ 
+-GET5 page equals `{source:scope+'events/',events:[E],next:null}`. E has exactly the schema's full fields; ordinal0/type created, subject=R.id, subjectType=R.type, transaction=receipt.transaction, time schema-valid date-time, data exactly `{revision:R.revision,properties:R.properties,metadata:R.metadata}`. Independently compute the private Event ID `ev_${H('epoch',epoch)}_${H('view',servingView)}_${H('source',scope+'events/')}_pos-1_0`, where H is SHA256 of JSON.stringify([tag,value]) encoded base64url, matching `transaction-events.ts:75–101`. This is a pinned private fixture oracle, not an opaque-ID protocol promise. Source emitter is `transaction-batch.ts:692–707,790–798`; terminal commit/position is store1280–1312. One Resource, one complete Event page and retained receipt equality jointly establish one observable effect/allocation; they do not inspect internal execution count or durable crash recovery.
++GET5 page equals `{source:scope+'events/',events:[E],next:null}`. E has exactly the schema's full fields; ordinal0/type created, subject=R.id, subjectType=R.type, transaction=receipt.transaction, time schema-valid date-time, data exactly `{revision:R.revision,properties:R.properties,metadata:R.metadata}`. Explicitly assert E.source equals GET5.body.source and the pinned Scope Event URL, and E.id equals the independently computed private Event ID. Compute `ev_${H('epoch',epoch)}_${H('view',servingView)}_${H('source',observedSource)}_pos-1_0`, using epoch/view from GET5's own response headers and source from GET5.body.source after its literal assertion; H is SHA256 of JSON.stringify([tag,value]) encoded base64url, matching `transaction-events.ts:75–101`. This is a pinned private fixture oracle, not an opaque-ID protocol promise. Source emitter is `transaction-batch.ts:692–707,790–797`; terminal commit/position is store1280–1312. One Resource, one complete Event page and retained receipt equality jointly establish one observable effect/allocation; they do not inspect internal execution count or durable crash recovery.
+ 
+ ## Real overlap and transport
+ 
+-Adapt the small local Node `http.request` pattern in committed `read-update-guarded-overlap-installed.test.ts:200–518`, without changing that test/helper. Use agent:false and Connection:close, canonical Host, dial only validated ready loopback host/port, path=`pathname+search`, exact fixed headers/body Buffer/Content-Length. Node HTTP does not follow redirects. Reject unexpected status/redirect without another dispatch. This is real request construction and socket observation, not a raw conformance serializer exactRequest attestation.
++Adapt the small local Node `http.request` pattern in committed `read-update-guarded-overlap-installed.test.ts:181–374`, without changing that test/helper. Use agent:false and Connection:close, canonical Host (required by transaction-runtime.ts127–134, not cosmetic), dial only validated ready loopback host/port, path=`pathname+search`, exact fixed headers/body Buffer/Content-Length. Node HTTP does not follow redirects. Reject unexpected status/redirect without another dispatch. This is real request construction and socket observation, not a raw conformance serializer exactRequest attestation. Explicitly adapt both precedent differences: preserve pathname+search in dispatch/allowlist checks and send canonical Host. Replace its ten-request ceiling with this six-request ceiling. RU grant() rejects all queries: locally allow only the literal collection route with exactly ?limit=32, preserve pathname+search in its allowlist identity, and retain the separate issued receipt-root rule rejecting every query. Do not widen arbitrary query acceptance or alter a shared helper.
+ 
+-Record bounded ordinal milestones for pair A/B: invoked, end-called, socket-assigned, connected, finish, response-start/end, settled, request/response/socket-close, error/aborted. Deduplicate kinds, max32 events; overflow fails. Require both invoked/end-called before first settled response and different actual socket identities, with both successful response completions. Record whether both connections and writes finished before first response; do not require that stronger timing accident or claim server admission overlap. Two terminal responses therefore prove outstanding-client overlap plus retained equality, not observed pending join. Report `pendingObserved` only from actual202/pending response. No artificial delay, polling or rerun if the overlap prerequisite is not observed.
++Record bounded ordinal milestones for pair A/B: invoked, end-called, socket-assigned, connected, finish, response-start/end, settled, request/response/socket-close, error/aborted. Deduplicate kinds, max32 events; overflow fails. Require both invoked/end-called before first settled response and different actual socket identities, with both successful response completions. Record bothConnectedBeforeFirstResponse and bothWritesPrecededFirstResponse from actual connected/finish versus response-start milestones; neither is a required scheduling outcome. The invoked/end-called-before-settled predicate is a dispatch-discipline check satisfied by this synchronous send pattern, not an independent concurrency discriminator. Actual recorded client lifetimes may overlap while wire/server work is serialized. Two terminal responses prove shared retained outcome for requests dispatched without awaiting, not observed wire concurrency or pending join. Report `pendingObserved` only from actual202/pending response. No artificial delay, polling or rerun to improve timing; a failed dispatch-discipline prerequisite fails this witness without retry. A false stronger timing boolean alone does not fail it.
+ 
+ Local streaming reader enforces32768 retained body bytes before appending each chunk; an oversize chunk triggers response/request destruction and awaited close/drain. Decode UTF8 fatally only after complete end; fail null/missing body, truncated/aborted/error responses. maxHeaderSize16384 bounds received header parsing, request header serialization also checked<=16384. Per-request5s includes connect/response; AbortSignal ties it to45s aggregate work including startup. Limits describe receive/retention, not full heap peak: concatenation, parsed JSON and assertions coexist. Twelve maximum retained bodies sum393216B; actual program can retain fewer. The maximum two outstanding requests are the pair; later requests sequential.
+ 
+@@ -45,22 +45,22 @@
+ 
+ Use the same installed bytes, configuration, one callback and fixed request schedule on a new empty store. Only request2's Idempotency-Key becomes `same-key-overlap-other`; body, method, route, token and other headers remain identical. This is an input-sensitivity control, not a production mutant or proof that a removed internal join guard was detected.
+ 
+-Before the named shared assertion, validate each pair response independently: schema, successful completed shape when terminal, its own actual sent key, full created Resource facts, valid context, known isolated positions pos-1/pos-2. Do not demand common key or pos-1 before the intended equality. Then set named oracle `same-key-overlap:shared-receipt-id` and compare A.id===B.id. On the actual distinct-key implementation expect exactly two200 completed/available receipts with different receipt ids, transaction ids and allocated Resource ids, and unordered required/effect positions pos-1 and pos-2. The assertion must fail here, before GET3. Preserve these safe facts before throwing. Positive then applies common-key/all-pos-1 assertions described above.
++Before the named assertion, follow three phases. (1) Independently validate each control response: schema,200/completed/available, its own actual sent key, complete created Resource facts, requiredPosition===effectPosition with pos-N grammar. Its serving header position must be >= its own effect position and <=pos-2; epoch/view headers equal the recorded tuple. Do not inherit the positive pos-1 context restriction. (2) Jointly require unordered required/effect positions {pos-1,pos-2}, distinct transaction identities and distinct allocated Resource identities; retain both validated receipt identities and whether they differ before throwing. Neither client is assigned a predetermined commit order. (3) Set named oracle `same-key-overlap:shared-receipt-id` and assert A.id===B.id. Correct distinct-key behavior fails here before GET3. Common-key/all-pos-1 assertions belong only to the positive after the shared identity check. Preserve every safe prerequisite fact before the named throw.
+ 
+-External adjudication requires that exact named inner assertion, both individually schema-valid successful responses, exact2 attempts/completions, distinct allocation/transaction/receipt evidence and actual overlap. No transport, deadline, startup, schema, report-write or cleanup failure is an acceptable control. Generic exit1 is insufficient. If the control unexpectedly passes pair identity, the same callback may run remaining fixed four requests, bounded6 total, but the control is not accepted and there is no replacement run. Failed receipts, both-pending, missing bodies or an earlier oracle are diagnosed honestly. This preserves expected2/max6 control requests, positive6, combined8 expected/max12 and exactly2 launched children including failed startup attempts.
++External adjudication requires that exact named inner assertion, both individually schema-valid successful responses, exact2 attempts/completions, distinct allocation/transaction/receipt evidence and actual recorded dispatch/client-lifetime milestones, without requiring the stronger write-before-response boolean. No transport, deadline, startup, schema, report-write or cleanup failure is an acceptable control. Generic exit1 is insufficient. If the control unexpectedly passes pair identity, the same callback may run remaining fixed four requests, bounded6 total, but the control is not accepted and there is no replacement run. Failed receipts, both-pending, missing bodies or an earlier oracle are diagnosed honestly. This preserves expected2/max6 control requests, positive6, combined8 expected/max12 and two scheduled launch attempts, with two expected successful children and at most two actual children. Record actual launches separately from failed pre-spawn attempts.
+ 
+ ## Lifecycle and retained evidence
+ 
+-One child/owner/listener/store directory per run, prefix `bdp-same-key-overlap-installed-`, no reopen. Positive6 and control2 expected TCP connections (agent:false), max12 combined, at most2 live at once. Timers remain45s work, inherited10s ready,5s per exchange,10s overall cleanup with5s request drain,60s test and120s supervisor. They are nested deadlines, not a guarantee that all individual maxima can be spent sequentially. No timeout increases or automatic retries. Stop dependent stages after unexpected failure.
++One child/owner/listener/store directory per successful run, prefix `bdp-same-key-overlap-installed-`, no reopen. Resolve realpathSync(os.tmpdir()) first, assert that root and the allocated absolute directory lie outside the repository, and retain their resolved spellings. Runtime writes are only this owned store and the exclusive absolute external report path; report must lie outside both the worktree and store. Two scheduled launch attempts allow at most two children; a pre-spawn provisioning failure is not a child launch. Positive6 and control2 expected TCP connections (agent:false), max12 combined, at most2 live at once. Timers remain45s work, inherited10s ready,5s per exchange,10s overall cleanup with5s request drain,60s test and120s supervisor. They are nested deadlines, not a guarantee that all individual maxima can be spent sequentially. No timeout increases or automatic retries. Coincident outer/launcher cleanup deadlines may surface different actual errors; retain all surfaced causes without claiming deterministic attribution or waiting beyond the existing bound. Stop dependent stages after unexpected failure.
+ 
+ In finally abort work, destroy all active requests, drain all pending/close promises with individual error retention, and close returned child concurrently under cleanup bound. Aggregate original and cleanup/report failures. Track launchAttempted separately: if launcher never returned a child after an attempt, PID/stop remains unknown and preserve directory for external supervisor; do not equate undefined child with proven stop. Remove directory only before any launch or after actual known exit. Capture actual exit code/signal, independent PID and process-group absence and directory absence; kill only owned processes under supervisor. Report writes are outside the owned store, exclusive absolute paths, and happen even after failures/removal failures. Pre-ready launcher errors can expose only the inherited surfaced error plus external lifecycle evidence; no fabricated hidden PID or original cause.
+ 
+-Retain source/package/config/artifact/policy/auth identity digests, actual declared source and entry binding, safe ready allowlist, mode, attempts, response status/content count/hash, selected safe response headers, literal body byte/hash ledger, pair milestone/socket ids, pending/overlap booleans, named oracle, actual receipt keys/ids/transactions/allocated Resource ids/revisions/positions, performed full-equality flags, failure class/count, cleanup facts. Allowlisted diagnostics must not serialize effectiveRequest, headerLines, authorization, token map, full runtime configuration or arbitrary Error objects. Full Resource/receipt/Event bodies are validated/compared in memory; report fingerprints are not retained full-wire evidence. Nonsecret descriptor/schema bytes may be preserved; credential-bearing configuration may not. Bound report65536B, fail closed on overflow, no arbitrary child stdout forwarding. Optional ordinary CI output; required external output path per cohort. Source provenance is supervisor-verified against built/archive/installed bytes, never child-attested merely because a caller supplied sourceCommit.
++Retain source/package identity and the actual validated runtimeConfigurationIdentity, artifact/policy/authentication identity digests from ready. Additionally retain a separately named credential-free configuration-projection digest; this supplemental projection never replaces or impersonates the actual runtime identity binding. The projection preserves scope/directory/create/artifact inputs and credential principal/canMutate, replacing each token value with only {length:32,charset:"base64url"}; do not independently hash/serialize the live token-bearing configuration as report data. Runtime-provided identity digests remain preserved under their real names and existing provenance checks. Its actual resolved directory is run-specific, so this is a per-run input projection, not a cross-run stable configuration identity. Retain actual declared source and entry binding, safe ready allowlist, mode, attempts, response status/content count/hash, selected safe response headers, literal body byte/hash ledger, pair milestone/socket ids, pending/client-lifetime/stronger-timing booleans, named oracle, actual receipt keys/ids/transactions/allocated Resource ids/revisions/positions, performed full-equality flags, failure class/count, cleanup facts. Allowlisted diagnostics must not serialize effectiveRequest, headerLines, authorization, token map, full runtime configuration or arbitrary Error objects. Full Resource/receipt/Event bodies are validated/compared in memory; report fingerprints are not retained full-wire evidence. Nonsecret descriptor/schema bytes may be preserved; credential-bearing configuration may not. Bound report65536B, fail closed on overflow, no arbitrary child stdout forwarding. Optional ordinary CI output; required external output path per cohort. Source provenance is supervisor-verified against built/archive/installed bytes, never child-attested merely because a caller supplied sourceCommit.
+ 
+ ## Validation and integration gates
+ 
+ Exactly one new top-level callback is named in ledger; same anchored selector executed twice externally with mode absent/positive then second-key-distinct. Its ordinary full-CI default is the six-request positive only; the extra control is not another registered case. No new CPU mirroring tests or broad local suite. Proposed checks are pinned offline setup, typecheck, build, format/lint/boundaries and Read seal, then fresh protocol/server archives and external offline consumer. Exact argv/tool paths and all emitted/source inventories must be frozen at measured draft gate; no present execution authorization. Use direct pinned Node24.16.0 and actual Vitest.mjs with maxWorkers1, verbose plus JSON results, not a mutable pnpm-exec shim for tests. Repository pnpm11.20.0 remains appropriate for install/pack.
+ 
+-Fresh package proof must compare source inputs/build outputs, archive members to consumer bytes, all eight production dependency package manifests/files and independently recomputed payload digest, actual launcher entry, consumer lock and config/artifact digests. Use the same verified fresh payload for both cohorts. No workspace fallback in external validation; ordinary CI workspace emitted mode is separately labeled. Existing Vitest aliases/setup affect the test harness but cannot attest or alter packed child admission. Preserve top-level launcher/schema imports as actual module work; build precedes selecting the emitted launcher consumer. No new public admission seam.
++Fresh package proof must compare source inputs/build outputs, archive members to consumer bytes, all eight production dependency package manifests/files and independently recomputed payload digest, actual launcher entry, consumer lock and config/artifact digests. Use the same verified fresh payload for both cohorts. No workspace fallback in external validation; ordinary CI workspace emitted mode is separately labeled. Existing Vitest aliases/setup affect the test harness but cannot attest or alter packed child admission. Preserve top-level launcher/schema imports as actual module work; build precedes selecting the emitted launcher consumer. No new public admission seam. Credentials reach the child only through inherited IPC, never argv or environment. A token-bearing object must not be attached to thrown/reportable Error data.
+ 
+-Root must approve plan/native+Claude dispositions, isolated two-path ownership, ordinary real principal-main ancestry/reanchor, measured source/counterfactual packet and exact-head validation. A fresh build or an explicitly proven unchanged-input/output attribution bridge is required; no historical success relabeling. Final progress prose reports actual outcome/pendingObserved and limitations, not profile delivery percentages. An unexpected defect expands no scope automatically.
++Root must approve plan/native+Claude dispositions, isolated two-path ownership, ordinary real principal-main ancestry/reanchor, measured source/counterfactual packet and exact-head validation. A fresh build or an explicitly proven unchanged-input/output attribution bridge is required; no historical success relabeling. Final progress prose reports actual outcome/pendingObserved and dispatch milestones with their limits, not profile delivery percentages. Retained terminal replay is observed only through the batch carrier; the singleton may supply a pending initial receipt and has no separate retained replay request. No seventh request is added. An unexpected defect expands no scope automatically.
+--- original/ledger.json
++++ proposed-successor/ledger.json
+@@ -1,5 +1,5 @@
+ {
+-  "status": "proposed; authoring/execution closed",
++  "status": "proposed frozen successor; completed source-audit dispositions; exact native closure/root acceptance pending; authoring and execution closed",
+   "head": "f5511718371a6935614eae6756e796cef71570c2",
+   "tree": "3cd1da66ba3a6cbd0bbdaa2442d10002939d826b",
+   "ownedPaths": [
+@@ -7,10 +7,10 @@
+     "docs/design/transaction-implementation-progress.md"
+   ],
+   "registration": {
+-    "title": "preserves one allocated effect and receipt across overlapping same-key singleton and batch requests",
++    "title": "preserves one allocated effect and receipt across same-key singleton and batch requests dispatched without awaiting",
+     "count": 1,
+     "selectedExecutions": 2,
+-    "regex": "^preserves one allocated effect and receipt across overlapping same-key singleton and batch requests$"
++    "regex": "^preserves one allocated effect and receipt across same-key singleton and batch requests dispatched without awaiting$"
+   },
+   "requests": [
+     {
+@@ -125,7 +125,7 @@
+     "expectedHttp": 2,
+     "maximumHttp": 6,
+     "expectedExit": 1,
+-    "facts": "Both completed available receipts; different id/transaction/allocated Resource id; each own sent key; unordered required/effect positions pos-1,pos-2. Intended assertion before common-key/pos-1 equality; no third request. No transport/schema/cleanup failure accepted."
++    "facts": "Phase1: each200/completed/available, own sent key, schema/full Resource, required===effect pos-N; own effect<=serving<=pos-2 and matched epoch/view. Phase2: unordered required/effect {pos-1,pos-2}, distinct transaction/allocated Resource IDs; preserve receipt IDs/difference. Phase3 named shared-receipt-id equality must fail before GET3; exactly2 complete/attempted. No earlier or cleanup failure accepted."
+   },
+   "counts": {
+     "positiveHttp": 6,
+@@ -146,7 +146,14 @@
+     "combinedMaximumScheduledPostBodyBytes": 816,
+     "largestBodyBytes": 150,
+     "sourceRuntimeTests": 0,
+-    "bootstrapHttp": 0
++    "bootstrapHttp": 0,
++    "positiveMinimumHttp": 2,
++    "positiveInconclusiveHttp": 2,
++    "positiveMinimumTcpConnections": 2,
++    "combinedMinimumTcpConnections": 4,
++    "launchAttempts": 2,
++    "maximumChildren": 2,
++    "childrenMeaning": "2 expected successful launches; provisioning failure may yield fewer, never count an attempt as a child"
+   },
+   "bounds": {
+     "workMs": 45000,
+@@ -156,7 +163,6 @@
+     "requestDrainMs": 5000,
+     "testMs": 60000,
+     "supervisorMs": 120000,
+-    "requestBodyBytes": 65536,
+     "requestHeaderBytes": 16384,
+     "responseHeaderBytes": 16384,
+     "retainedResponseBodyBytes": 32768,
+@@ -165,29 +171,28 @@
+     "pairMilestones": 32,
+     "reportBytes": 65536,
+     "launcherStdoutStderrCombinedBytes": 65536,
+-    "retainedResponseBodiesMaximumBytes": 393216
+-  },
+-  "artifacts": [
+-    {
+-      "kind": "descriptor",
+-      "retrievalUri": "https://reference.invalid/acme/types/task",
+-      "utf8": "{\"id\":\"https://reference.invalid/acme/types/task\",\"name\":\"Task\",\"describes\":\"bead\",\"conformsTo\":[],\"propertiesSchema\":\"https://reference.invalid/acme/schemas/properties\"}",
+-      "bytes": 170,
+-      "sha256": "f448e126550b2809d01dc6b24811d1796e82b2599c35b438550ed3bec65a2a22"
+-    },
+-    {
+-      "kind": "schema",
+-      "retrievalUri": "https://reference.invalid/acme/schemas/properties",
+-      "utf8": "{\"$id\":\"https://reference.invalid/acme/schemas/properties\",\"type\":\"object\",\"properties\":{\"title\":{\"type\":\"string\"}},\"required\":[\"title\"],\"additionalProperties\":false}",
+-      "bytes": 166,
+-      "sha256": "1ed8b24d90a8c278bc466fd48ba1e849afac01326c377e5c6985855e62373f95"
+-    }
++    "retainedResponseBodiesMaximumBytes": 393216,
++    "clientRequestBodyBytes": 65536
++  },
++  "modes": {
++    "absent": "positive",
++    "allowed": [
++      "positive",
++      "second-key-distinct"
++    ],
++    "environment": "BDP_TRANSACTIONAL_SAME_KEY_OVERLAP_MODE",
++    "output": "BDP_TRANSACTIONAL_SAME_KEY_OVERLAP_OUTPUT"
++  },
++  "schemas": [
++    "mutationReceipt",
++    "beadRecord",
++    "currentBeadCollection",
++    "eventPage"
+   ],
+-  "configuration": {
++  "wireConfiguration": {
+     "scope": "https://reference.invalid/acme/",
+-    "directory": "fresh bdp-same-key-overlap-installed- owned directory per cohort",
++    "directory": "RESOLVE: fresh mkdtemp under realpathSync(os.tmpdir()), outside repository; record absolute resolved path",
+     "create": true,
+-    "artifacts": "exact descriptor/schema above",
+     "credentials": [
+       {
+         "token": "ephemeral randomBytes(24).toString(base64url), not persisted",
+@@ -195,25 +200,112 @@
+         "canMutate": true
+       }
+     ],
+-    "authorityMode": "omitted",
+-    "port": "omitted; actual dial endpoint from ready.listenUrl",
+-    "testSeams": "none",
+-    "history": false,
+-    "claimEligible": false
+-  },
+-  "modes": {
+-    "absent": "positive",
+-    "allowed": [
+-      "positive",
+-      "second-key-distinct"
+-    ],
+-    "environment": "BDP_TRANSACTIONAL_SAME_KEY_OVERLAP_MODE",
+-    "output": "BDP_TRANSACTIONAL_SAME_KEY_OVERLAP_OUTPUT"
+-  },
+-  "schemas": [
+-    "mutationReceipt",
+-    "beadRecord",
+-    "currentBeadCollection",
+-    "eventPage"
+-  ]
++    "artifacts": {
++      "descriptors": [
++        {
++          "retrievalUri": "https://reference.invalid/acme/types/task",
++          "utf8": "{\"id\":\"https://reference.invalid/acme/types/task\",\"name\":\"Task\",\"describes\":\"bead\",\"conformsTo\":[],\"propertiesSchema\":\"https://reference.invalid/acme/schemas/properties\"}"
++        }
++      ],
++      "schemas": [
++        {
++          "retrievalUri": "https://reference.invalid/acme/schemas/properties",
++          "utf8": "{\"$id\":\"https://reference.invalid/acme/schemas/properties\",\"type\":\"object\",\"properties\":{\"title\":{\"type\":\"string\"}},\"required\":[\"title\"],\"additionalProperties\":false}"
++        }
++      ]
++    }
++  },
++  "evidence": {
++    "artifactInventory": [
++      {
++        "kind": "descriptor",
++        "retrievalUri": "https://reference.invalid/acme/types/task",
++        "utf8": "{\"id\":\"https://reference.invalid/acme/types/task\",\"name\":\"Task\",\"describes\":\"bead\",\"conformsTo\":[],\"propertiesSchema\":\"https://reference.invalid/acme/schemas/properties\"}",
++        "bytes": 170,
++        "sha256": "f448e126550b2809d01dc6b24811d1796e82b2599c35b438550ed3bec65a2a22"
++      },
++      {
++        "kind": "schema",
++        "retrievalUri": "https://reference.invalid/acme/schemas/properties",
++        "utf8": "{\"$id\":\"https://reference.invalid/acme/schemas/properties\",\"type\":\"object\",\"properties\":{\"title\":{\"type\":\"string\"}},\"required\":[\"title\"],\"additionalProperties\":false}",
++        "bytes": 166,
++        "sha256": "1ed8b24d90a8c278bc466fd48ba1e849afac01326c377e5c6985855e62373f95"
++      }
++    ],
++    "adapterDerived": {
++      "port": 0,
++      "authorityMode": "canonical"
++    },
++    "notCallerFields": [
++      "testSeams",
++      "history",
++      "claimEligible",
++      "port",
++      "authorityMode"
++    ],
++    "claimEligible": false,
++    "historyExercised": false,
++    "configurationProjection": "scope/directory/create/artifacts verbatim; credentials principal/canMutate plus token:{length:32,charset:base64url}, never actual token; SHA256(JSON.stringify(projection)); resolved directory makes it per-run",
++    "readyOracles": [
++      "authorityMode===canonical",
++      "scope===configuredScope",
++      "validate loopback listenUrl",
++      "ready.targets.createBead/batch equal literal pinned canonical URLs"
++    ],
++    "dispatchClaim": "requests dispatched without awaiting; client-lifetime overlap only, not server/wire concurrency",
++    "observedBooleans": [
++      "bothConnectedBeforeFirstResponse",
++      "bothWritesPrecededFirstResponse",
++      "pendingObserved"
++    ],
++    "retainedReplayLimitation": "batch only; no additional singleton replay",
++    "actualIdentityBindings": "retain actual validated ready runtimeConfigurationIdentity/artifact/policy/authentication digests under their own names; supplemental credential-free projection is not a replacement",
++    "safeHeadersInclude": [
++      "content-type",
++      "cache-control",
++      "x-bdp-development",
++      "bdp-scope-epoch",
++      "bdp-authorization-view",
++      "bdp-scope-position",
++      "location",
++      "retry-after",
++      "vary"
++    ],
++    "cleanupAttribution": "preserve actual surfaced errors; equal outer/launcher bounds can race; no deterministic attribution promise or timeout increase",
++    "transportAllowlist": "only fixed collection /acme/beads/?limit=32 admits a query; preserve pathname+search; issued receipt root has no query; six-attempt cap; canonical Host reference.invalid"
++  },
++  "outcomes": {
++    "success": {
++      "http": 6,
++      "tcp": 6,
++      "baseline": "one terminal response or both equal terminal bodies"
++    },
++    "inconclusive-both-pending": {
++      "http": 2,
++      "tcp": 2,
++      "requests3Through6": false,
++      "success": false
++    },
++    "one-pending-one-terminal": {
++      "http": 6,
++      "tcp": 6,
++      "baseline": "sole validated terminal response",
++      "pairEquality": "common identity only",
++      "pendingObserved": true,
++      "get3": "200/completed/available exactly baseline"
++    },
++    "control-expected-failure": {
++      "http": 2,
++      "tcp": 2,
++      "namedOracle": "same-key-overlap:shared-receipt-id"
++    },
++    "unexpected-503": "failed selected healthy witness; retain actual response, no retry or accepted-inconclusive conversion; not automatically universal conformance defect",
++    "early-failure": "startup/transport/oracle failure retains actual counts, possibly below two; minimum2 is not imposed on failed attempts"
++  },
++  "runtimeWrites": {
++    "store": "resolved realpathSync(os.tmpdir()) plus fresh bdp-same-key-overlap-installed- directory, outside worktree; remove only known stopped/no launch",
++    "reports": "exclusive absolute BDP_TRANSACTIONAL_SAME_KEY_OVERLAP_OUTPUT outside store and worktree",
++    "repository": "none at runtime"
++  },
++  "ownershipGate": "new isolated checkout only; doc append at new same-key dispatch witness heading after actual principal-main integration and re-read; never edit current PW"
+ }
+--- original/source-binding.json
++++ proposed-successor/source-binding.json
+@@ -127,6 +127,50 @@
+     "biome.json": {
+       "sha256": "62beced4e0227b97fe9ade1a1a573bf53a2f8916af8da7ce70f94315fece39dc",
+       "bytes": 398
++    },
++    "packages/server/src/transaction-installed-configuration.ts": {
++      "sha256": "e15cb54266848fdd4aa08b19b37f1b2eb080f4599d9414fad8d85b6f33f35d99",
++      "bytes": 2942
++    },
++    "packages/server/src/transaction-installed.ts": {
++      "sha256": "afddc6b0304fee4762c79e40ac6610a281ca8791928d8f779a900a7f6eac881a",
++      "bytes": 1112
++    },
++    "packages/server/src/development-contracts.ts": {
++      "sha256": "182a1a6d06b09f08ca3c83ad0fb27a09a419ad3e99729528381f210973b2c40a",
++      "bytes": 11334
++    },
++    "packages/server/src/installed-contract-artifact.ts": {
++      "sha256": "db8f3b1e0a4b8dc1a07a56bcadb66d3cdbebff114fb119becec79d11474eb7f0",
++      "bytes": 17456
++    },
++    "packages/server/src/installed-payload.ts": {
++      "sha256": "d1095a8fa641c77ddef32b1d432273572f46b14499c526dbb0a85cfde82113f9",
++      "bytes": 3594
++    },
++    "packages/server/src/read-http.ts": {
++      "sha256": "31934105eff6fff8ded8ce2ca9e3c19028991ca7c3d5f51b848004177e8c9268",
++      "bytes": 8997
++    },
++    "packages/server/src/read-http-routing.ts": {
++      "sha256": "d9344b87838f8c71381ccf9efe28b4f023df45503570beb8fb4293d553caca42",
++      "bytes": 2967
++    },
++    "packages/server/src/authority-read.ts": {
++      "sha256": "fd6554c4ee0d08b997fb3622c2f21697f02d58b838f4ae0de10aca4707f67734",
++      "bytes": 44340
++    },
++    "packages/server/src/read-request.ts": {
++      "sha256": "57675afc647df3e8ad1f26a40aef72584aa388ade6af4a465e3ffef16670f6a2",
++      "bytes": 36371
++    },
++    "packages/conformance/catalog/transactional-v1.json": {
++      "sha256": "c9125f914129c71f01cefc5c54b32db80637d37b57e321571c96e81936c31eb4",
++      "bytes": 94826
++    },
++    "packages/server/src/read-pagination.ts": {
++      "sha256": "ee2462c355aec5b5c4f5fbd7b323ca6d814591c0a46c809ebb4636596e4f52f8",
++      "bytes": 31971
+     }
+   },
+   "completeness": "meaningful review dependencies, not exhaustive runtime/build closure",
+@@ -138,5 +182,18 @@
+     "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-after-principal-next-slice.md",
+     "sha256": "3d3f83a3cf8f63b4883347fcb9d32ad94365113deb3f3b3f29f473279113b1f2"
+   },
+-  "futureGate": "Ordinary integrate actual principal-main before final validation/publication; no future candidate invented."
++  "futureGate": "Isolated new checkout; preserve current PW. Actual principal-main ordinary integration/recheck before final validation/publication; progress doc append only after integration/re-read. No source authoring released.",
++  "originalPlanBinding": {
++    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-same-key-overlap-plan/source-binding.json",
++    "sha256": "f4be4a20691f9a23e0ba61f0ddc77369cde86cc7e412a5b2ec2f6388ec68caeb"
++  },
++  "status": "proposed frozen successor; exact native closure/root acceptance pending",
++  "sourceAudit": {
++    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-same-key-overlap-plan/claude-plan-review/native-findings-audit.md",
++    "sha256": "590385f9b2b36a62e70186ffc2e91aba2d8ac4f50169ba378d0d4b8ae9f62beb"
++  },
++  "actualClaudeReview": {
++    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-same-key-overlap-plan/claude-plan-review/stdout.txt",
++    "sha256": "1350878089c6a5adcf99682911ea0df63937b2be69fb12d2aa4ce8958b0f3fbe"
++  }
+ }

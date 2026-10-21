@@ -1,0 +1,48 @@
+{
+  "utc": "2026-10-18T10:17:55.358154+00:00",
+  "classification": "Actual lint failure; no automaticretry",
+  "passed": [
+    "node-version",
+    "pnpm-version",
+    "workspace-install",
+    "bind-workspace-tools",
+    "typecheck",
+    "format-check"
+  ],
+  "failed": "lint",
+  "lintLogSha256": "f4b5e0e2b03812270cab4a66999ddb46e5fe7103f7a52167b3ad969738995631",
+  "findings": [
+    "noUnsafeFinally:263 missing child observer throw caught by immediate local catch",
+    "noUnsafeFinally:531 unresolved ownership throw caught by immediate local catch"
+  ],
+  "errors": 2,
+  "warnings": 70,
+  "infos": 21,
+  "sourceUnchanged": true,
+  "forcedCleanup": false,
+  "remainingProcesses": [],
+  "laterBuildSourcePackageInstalledStages": "UNATTEMPTED",
+  "gateClosed": true,
+  "sourceOnlyCorrectionRelease": {
+    "author": "/root/changefeed_review_successor",
+    "ownedPath": "apps/bdptest/src/transactional-discovery-installed.test.ts",
+    "worktree": "/Users/dbox/repos/wt/vickie/vickie-tx-discovery-minimum",
+    "beforeSourceIdentity": "5964d40af0ced41634e47df86cda7ac01b86768c51970e557b60ffbfc9739907",
+    "beforeOwnedSha256": "68d1b51f20b2a322231e97d7d720c21826ff2d98ac0ef5bdbf2a0ff8a001fd33",
+    "correction": "Replace each locally thrown-and-immediately-caught cleanup error with equivalent direct failures.push. Missing childEvents pushes the same Error and skips d3CloseKnown; observer-present branch closes normally. Unresolved cleanupKnown pushes same Error directly at same last local statement. Preserve cleanupKnown false, retention/primarycleanupaggregation/report facts and every assertion/request/budget. No lint disable/rule weakening/suppression.",
+    "formatterOnlyException": {
+      "executable": "/Users/dbox/repos/wt/vickie/vickie-event-admission-replay-minimum/node_modules/.pnpm/@biomejs+cli-darwin-arm64@2.5.7/node_modules/@biomejs/cli-darwin-arm64/biome",
+      "sha256": "f71fe80909d2f70f1e051320f5ba9dfd553bc5ef3bacef5cdee1b00ee96a285c",
+      "invocationsAllowed": 1,
+      "args": [
+        "format",
+        "--write",
+        "apps/bdptest/src/transactional-discovery-installed.test.ts"
+      ]
+    },
+    "freeze": "tx-discovery-lint-correction-1",
+    "preserveAll678OtherCandidateBytes": true,
+    "forbidden": "No compiler/lint/tests/Git/helper/runtime/reviewer/flags beyondoneformat",
+    "next": "RootGit/sourcebinding, independentnativecorrection then newminimal CLOSED validation5 same5helpers/schemas/52stages16pairs/budgets/newfreshnamespace; nosecondactualreview or sameattemptretry"
+  }
+}

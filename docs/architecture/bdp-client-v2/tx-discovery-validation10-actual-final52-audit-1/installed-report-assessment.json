@@ -1,0 +1,393 @@
+[
+  {
+    "child": {
+      "exit": 0,
+      "pid": 66963
+    },
+    "directoryAbsent": true,
+    "observation": "private-installed-discovery-owner-regression",
+    "observedCounts": {
+      "aborts": 0,
+      "completed": 12,
+      "exact": 12,
+      "raw": 0,
+      "scheduled": 12
+    },
+    "stage": "installed-01"
+  },
+  {
+    "child": {
+      "closeSeen": true,
+      "code": 0,
+      "exitSeen": true,
+      "pid": 70687,
+      "signal": null
+    },
+    "directoryAbsent": true,
+    "elapsedMs": 317.380542,
+    "failureCount": 0,
+    "metadata": {
+      "artifactIdentity": "development-schema5-c998ec157f2270b746dabe2adf0c5e82edaa96ebb53feb232dd1e521204b930f",
+      "authenticationIdentity": "4c5cce4bab9ed814840db2e99d5548ef1cc61400cdc0db6a4990672ec0c0af24",
+      "authorityMode": "canonical",
+      "claimEligible": false,
+      "history": false,
+      "payloadIdentity": "729b744b17806cf5b66ae4834a8172420e0f56839aac1bf5a3351388def90cac",
+      "policyIdentity": "38c66d22a4ce126be7217effe17e217393d2af5567fa77ac6edcc52ffd9c9c24",
+      "profile": "transactional",
+      "runtimeConfigurationIdentity": "88bc397c5ae9470b1c798b12de22e0beab2148449f07fbf707008db261026efd",
+      "scope": "https://reference.invalid/acme/"
+    },
+    "observation": "private installed cold resource-alias",
+    "observedCounts": {
+      "aborts": 0,
+      "completed": 43,
+      "exact": 43,
+      "raw": 0,
+      "scheduled": 43
+    },
+    "stage": "installed-02"
+  },
+  {
+    "child": {
+      "closeSeen": true,
+      "code": 0,
+      "exitSeen": true,
+      "pid": 74458,
+      "signal": null
+    },
+    "directoryAbsent": true,
+    "elapsedMs": 380.799583,
+    "failureCount": 0,
+    "metadata": {
+      "artifactIdentity": "development-schema5-c998ec157f2270b746dabe2adf0c5e82edaa96ebb53feb232dd1e521204b930f",
+      "authenticationIdentity": "d06e3edda9d4ce42501a5c8023609b069108598164cd4c5b41773106445553ad",
+      "authorityMode": "canonical",
+      "claimEligible": false,
+      "history": false,
+      "payloadIdentity": "729b744b17806cf5b66ae4834a8172420e0f56839aac1bf5a3351388def90cac",
+      "policyIdentity": "7eb4da207ed4ea4d59fa1a959b0f96efcffb608c6d1516be83870ba1db47d9b5",
+      "profile": "transactional",
+      "runtimeConfigurationIdentity": "02332cd2857cc472534ffa7949b2ee1ea7fb39751e51456e1aeb406b4460c105",
+      "scope": "https://reference.invalid/acme/"
+    },
+    "observation": "private installed cold transactional-carriers",
+    "observedCounts": {
+      "aborts": 0,
+      "completed": 28,
+      "exact": 28,
+      "raw": 0,
+      "scheduled": 28
+    },
+    "stage": "installed-03"
+  },
+  {
+    "child": {
+      "closeSeen": true,
+      "code": 0,
+      "exitSeen": true,
+      "pid": 79192,
+      "signal": null
+    },
+    "directoryAbsent": true,
+    "elapsedMs": 221.595083,
+    "failureCount": 0,
+    "metadata": {
+      "artifactIdentity": "development-schema5-c998ec157f2270b746dabe2adf0c5e82edaa96ebb53feb232dd1e521204b930f",
+      "authenticationIdentity": "69f21f40339aced3a05c113803707ccb3c579e294867627470a8765817a9bd0a",
+      "authorityMode": "canonical",
+      "claimEligible": false,
+      "history": false,
+      "payloadIdentity": "729b744b17806cf5b66ae4834a8172420e0f56839aac1bf5a3351388def90cac",
+      "policyIdentity": "f04a01b9fd1d3ba1d7e67441bc93a503a3f3ca43e8cfc5403ceb39fa0834f0c1",
+      "profile": "transactional",
+      "runtimeConfigurationIdentity": "d6943546120a1df07329961b056dfb7f2a2094459ad21b6d8024f81f6f01737b",
+      "scope": "https://reference.invalid/acme/"
+    },
+    "observation": "private installed raw receiving and minimum syntax",
+    "observedCounts": {
+      "aborts": 0,
+      "completed": 21,
+      "exact": 21,
+      "raw": 0,
+      "scheduled": 21
+    },
+    "stage": "installed-04"
+  },
+  {
+    "child": {
+      "closeSeen": true,
+      "code": 0,
+      "exitSeen": true,
+      "pid": 83106,
+      "signal": null
+    },
+    "directoryAbsent": true,
+    "elapsedMs": 223.34324999999995,
+    "failureCount": 0,
+    "metadata": {
+      "artifactIdentity": "development-schema5-c998ec157f2270b746dabe2adf0c5e82edaa96ebb53feb232dd1e521204b930f",
+      "authenticationIdentity": "9944f4b900c8693a2670756e04ea462bbe0196439abb85176df3d18d47b485d9",
+      "authorityMode": "canonical",
+      "claimEligible": false,
+      "history": false,
+      "payloadIdentity": "729b744b17806cf5b66ae4834a8172420e0f56839aac1bf5a3351388def90cac",
+      "policyIdentity": "71bafd3341c7f18e24ca31cdc69d56681bd4282f7c3e3e2ee5b3e2b683d28556",
+      "profile": "transactional",
+      "runtimeConfigurationIdentity": "beb6c4cd445d41aec72e913a984516d1bedc72cde0ada99a855cad29a8d30d89",
+      "scope": "https://reference.invalid/acme/"
+    },
+    "observation": "private installed discovery methods auth and transport",
+    "observedCounts": {
+      "aborts": 0,
+      "completed": 26,
+      "exact": 25,
+      "raw": 1,
+      "scheduled": 26
+    },
+    "stage": "installed-05"
+  },
+  {
+    "child": {
+      "closeSeen": true,
+      "code": 0,
+      "exitSeen": true,
+      "pid": 87915,
+      "signal": null
+    },
+    "directoryAbsent": true,
+    "elapsedMs": 4260.146667,
+    "failureCount": 0,
+    "metadata": {
+      "artifactIdentity": "development-schema5-c998ec157f2270b746dabe2adf0c5e82edaa96ebb53feb232dd1e521204b930f",
+      "authenticationIdentity": "f802ac2a55393a495ede1fb3264e3bcf74416fcf5b7344fd6b3f6842d35ce6ba",
+      "authorityMode": "canonical",
+      "claimEligible": false,
+      "history": false,
+      "payloadIdentity": "729b744b17806cf5b66ae4834a8172420e0f56839aac1bf5a3351388def90cac",
+      "policyIdentity": "bea47560ccf02d7c8522876db04f06937362bdb1c9a46d449696e96809b6bbc2",
+      "profile": "transactional",
+      "runtimeConfigurationIdentity": "da9542ade4e039ce6f26c71a3547005a7007f919ab60d7b4250396b8012e0f89",
+      "scope": "https://reference.invalid/acme/"
+    },
+    "observation": "private installed discovery minimum ordering scope",
+    "observedCounts": {
+      "aborts": 0,
+      "completed": 15,
+      "exact": 15,
+      "raw": 0,
+      "scheduled": 15
+    },
+    "stage": "installed-06"
+  },
+  {
+    "child": {
+      "closeSeen": true,
+      "code": 0,
+      "exitSeen": true,
+      "pid": 91842,
+      "signal": null
+    },
+    "directoryAbsent": true,
+    "elapsedMs": 205.10341700000004,
+    "failureCount": 0,
+    "metadata": {
+      "artifactIdentity": "development-schema5-c998ec157f2270b746dabe2adf0c5e82edaa96ebb53feb232dd1e521204b930f",
+      "authenticationIdentity": "236f872529b338876f9908e39ba25beed28197270b258f0a68b6ab7b7b913274",
+      "authorityMode": "canonical",
+      "claimEligible": false,
+      "history": false,
+      "payloadIdentity": "729b744b17806cf5b66ae4834a8172420e0f56839aac1bf5a3351388def90cac",
+      "policyIdentity": "cc4a1e12956da44046b5eb60ed354419c1bf643b72c23415d39709d818a9a673",
+      "profile": "transactional",
+      "runtimeConfigurationIdentity": "d598913253a2ce3f5216b3d1621de2fd822847117db58cf06537c5f30a5d417d",
+      "scope": "https://reference.invalid/acme/"
+    },
+    "observation": "private installed discovery close pending scope",
+    "observedCounts": {
+      "aborts": 1,
+      "completed": 4,
+      "exact": 4,
+      "raw": 1,
+      "scheduled": 5
+    },
+    "stage": "installed-07"
+  },
+  {
+    "child": {
+      "closeSeen": true,
+      "code": 0,
+      "exitSeen": true,
+      "pid": 96271,
+      "signal": null
+    },
+    "directoryAbsent": true,
+    "elapsedMs": 4251.380292,
+    "failureCount": 0,
+    "metadata": {
+      "artifactIdentity": "development-schema5-c998ec157f2270b746dabe2adf0c5e82edaa96ebb53feb232dd1e521204b930f",
+      "authenticationIdentity": "896beab7f01813fe82d26f07f2c862ae1bd7ab070598abd851efe9c2ce71a224",
+      "authorityMode": "canonical",
+      "claimEligible": false,
+      "history": false,
+      "payloadIdentity": "729b744b17806cf5b66ae4834a8172420e0f56839aac1bf5a3351388def90cac",
+      "policyIdentity": "d8d3b7b0d31458f1358e6d8f906f0f1e419ce4c1f68849658e2adc0a163d2da2",
+      "profile": "transactional",
+      "runtimeConfigurationIdentity": "b21b2143d34c69c2700e3df54a606a0fbc864930505a377aad37980d33b97be5",
+      "scope": "https://reference.invalid/acme/"
+    },
+    "observation": "private installed discovery minimum ordering descriptor",
+    "observedCounts": {
+      "aborts": 0,
+      "completed": 15,
+      "exact": 15,
+      "raw": 0,
+      "scheduled": 15
+    },
+    "stage": "installed-08"
+  },
+  {
+    "child": {
+      "closeSeen": true,
+      "code": 0,
+      "exitSeen": true,
+      "pid": 209,
+      "signal": null
+    },
+    "directoryAbsent": true,
+    "elapsedMs": 198.89583300000004,
+    "failureCount": 0,
+    "metadata": {
+      "artifactIdentity": "development-schema5-c998ec157f2270b746dabe2adf0c5e82edaa96ebb53feb232dd1e521204b930f",
+      "authenticationIdentity": "12fa95f275053bd3ee27584bed02a7ca5b0076c53159bdf50bd38b7f93c60e1f",
+      "authorityMode": "canonical",
+      "claimEligible": false,
+      "history": false,
+      "payloadIdentity": "729b744b17806cf5b66ae4834a8172420e0f56839aac1bf5a3351388def90cac",
+      "policyIdentity": "0b057c78076af13cd2460865c43278999261e7875bf65c12615ec7a2c3ebd37a",
+      "profile": "transactional",
+      "runtimeConfigurationIdentity": "c1964ea63076179b100cb19a2987c9b096206079fbc42eefc95492cc62174ce7",
+      "scope": "https://reference.invalid/acme/"
+    },
+    "observation": "private installed discovery close pending descriptor",
+    "observedCounts": {
+      "aborts": 1,
+      "completed": 4,
+      "exact": 4,
+      "raw": 1,
+      "scheduled": 5
+    },
+    "stage": "installed-09"
+  },
+  {
+    "child": {
+      "closeSeen": true,
+      "code": 0,
+      "exitSeen": true,
+      "pid": 4481,
+      "signal": null
+    },
+    "directoryAbsent": true,
+    "elapsedMs": 4258.127833,
+    "failureCount": 0,
+    "metadata": {
+      "artifactIdentity": "development-schema5-c998ec157f2270b746dabe2adf0c5e82edaa96ebb53feb232dd1e521204b930f",
+      "authenticationIdentity": "fcb34b324cde9252814f33ee735de0810d69e26f97a7780e2fa40cdb51f24f7e",
+      "authorityMode": "canonical",
+      "claimEligible": false,
+      "history": false,
+      "payloadIdentity": "729b744b17806cf5b66ae4834a8172420e0f56839aac1bf5a3351388def90cac",
+      "policyIdentity": "aa397b94124667887ff4af1e863507d25d0e2dd186106033cf64e3dcc41c4d3d",
+      "profile": "transactional",
+      "runtimeConfigurationIdentity": "30bfe07df74b2907a003c4f7e73513a6131fbcdf92a83fcad682eb82c113b70b",
+      "scope": "https://reference.invalid/acme/"
+    },
+    "observation": "private installed discovery minimum ordering directory",
+    "observedCounts": {
+      "aborts": 0,
+      "completed": 15,
+      "exact": 15,
+      "raw": 0,
+      "scheduled": 15
+    },
+    "stage": "installed-10"
+  },
+  {
+    "child": {
+      "closeSeen": true,
+      "code": 0,
+      "exitSeen": true,
+      "pid": 9206,
+      "signal": null
+    },
+    "directoryAbsent": true,
+    "elapsedMs": 209.202583,
+    "failureCount": 0,
+    "metadata": {
+      "artifactIdentity": "development-schema5-c998ec157f2270b746dabe2adf0c5e82edaa96ebb53feb232dd1e521204b930f",
+      "authenticationIdentity": "c2e304f30bcb1467256689227a142cc322bd977bc61dbf2a2bcb37f64b73ba48",
+      "authorityMode": "canonical",
+      "claimEligible": false,
+      "history": false,
+      "payloadIdentity": "729b744b17806cf5b66ae4834a8172420e0f56839aac1bf5a3351388def90cac",
+      "policyIdentity": "04375d98381f981c9e60d8e59824519dd27728b4c93f13b88da9388aa048a555",
+      "profile": "transactional",
+      "runtimeConfigurationIdentity": "ab7153b414ee3243eed570f2323f68c18a23dbd02eff5786e1660752ca5e329d",
+      "scope": "https://reference.invalid/acme/"
+    },
+    "observation": "private installed discovery close pending directory",
+    "observedCounts": {
+      "aborts": 1,
+      "completed": 4,
+      "exact": 4,
+      "raw": 1,
+      "scheduled": 5
+    },
+    "stage": "installed-11"
+  },
+  {
+    "claimEligible": false,
+    "contextPositions": [
+      "pos-0",
+      "pos-0",
+      "pos-0",
+      "pos-0",
+      "pos-0",
+      "pos-0",
+      "pos-0",
+      "pos-0",
+      null,
+      null,
+      null,
+      "pos-0",
+      "pos-1",
+      "pos-1"
+    ],
+    "observation": "private-installed-local-schemas",
+    "separateSchemaHTTP": 14,
+    "sessions": [
+      {
+        "exit": 0,
+        "pid": 13118,
+        "signal": null
+      }
+    ],
+    "stage": "schema-installed-positive",
+    "statusOrder": [
+      200,
+      200,
+      200,
+      200,
+      200,
+      406,
+      304,
+      412,
+      404,
+      401,
+      405,
+      204,
+      200,
+      200
+    ]
+  }
+]

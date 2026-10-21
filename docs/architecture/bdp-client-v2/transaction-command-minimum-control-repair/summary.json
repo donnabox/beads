@@ -1,0 +1,20 @@
+{
+  "kind": "negative fixture only; proposal not applied/executed",
+  "sourcePath": "packages/server/src/transaction-http.ts",
+  "sourceDiffSha256": "891a3dd1d17d9f754dc81ef6223bdb61de4c330e15bc5ab7760559ca5c563106",
+  "beforeSha256": "1339f32e0818aee5a44fc01a2034366a73e72c40027d6cde7041f26525aba366",
+  "afterNegativeFixtureSha256": "9da034938dc1a48dd48b961a0ec9fa518dc954d1bddcb2ab38f321a3da13a131",
+  "patchSha256": "dca316bf79495061823fb12ed9ffd0c369e51ac2ca32858451c7301b8a691fff",
+  "previousPatchSha256": "ef665809f6821f8af08b61d00f821dcd5d1f9de1f50cb5cd95213fb120d40b0a",
+  "preservedFailureLog": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-command-minimum-later-preparation-v3/run/bypass-receipt-build.log",
+  "failureLogSha256": "139d64149d9f8bafe9653a6f590d1b8e199708d1f91ecdb9e7d12501009ffc2e",
+  "failure": "TS2367: direct service.receipt union excludes unsupported; old derivative retained unreachable branch",
+  "soleAdditionalCorrection": "Delete unreachable unsupported result check and its two comment lines, adjacent to previously approved dispatch bypass; retain refused handling and receiptResponse, page path and all other code",
+  "expectedHttp": 2,
+  "maximumHttp": 6,
+  "selector": "^keeps receipt minimum enforcement after commands ignore copied controls$",
+  "expectedOracle": "receipt minimum remains enforced: actual200 with full original receipt/context against expected503",
+  "unchangedDeadlines": true,
+  "noCastsOrProductionChanges": true,
+  "executed": false
+}

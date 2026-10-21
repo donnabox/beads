@@ -1,0 +1,302 @@
+{
+  "outcome": "EXACT_HEAD_CI_AUDIT_PASS_WITH_LOG_LIMITATIONS",
+  "pr": {
+    "baseRefName": "codex/vickie-snapshot-opaque-minimum",
+    "headRefName": "codex/vickie-receipt-root-minimum",
+    "headRefOid": "9d2cd441eac2be1d2b6487ab5648035e3219cc27",
+    "isDraft": true,
+    "state": "OPEN",
+    "url": "https://github.com/gastownhall/bdp/pull/158"
+  },
+  "head": "9d2cd441eac2be1d2b6487ab5648035e3219cc27",
+  "tree": "62628a006c36d101c310b5210de3f7e23d3a2fac",
+  "soleParent": "08812c6c752c06cd0edf1af2878b2367692e5b32",
+  "sourceFilesMatched": 679,
+  "changedPaths": [
+    "apps/bdptest/src/transactional-minimum-receiving-installed.test.ts",
+    "packages/server/src/transaction-http.test.ts",
+    "packages/server/src/transaction-http.ts",
+    "packages/server/src/transaction-service.test.ts",
+    "packages/server/src/transaction-service.ts",
+    "packages/server/src/transaction-store.ts"
+  ],
+  "run": 39019562524,
+  "job": 117358476704,
+  "successfulSteps": 27,
+  "summary": {
+    "passed": 9416,
+    "files": 186,
+    "skipped": 1,
+    "preflight": 7
+  },
+  "completeRawLog": {
+    "sha256": "cbc63047b6392b021387998c1e949926ea70337ef913900510b2b15875ce3ba5",
+    "bytes": 3635502
+  },
+  "partialFormattedLog": {
+    "sha256": "e3484a3e5f6ee3550d895adf959acd8cbb35cf60bdebce8b04005d854d5e5d9d",
+    "bytes": 1969115,
+    "classification": "PARTIAL main pnpm test output; no main summary, not source for full suite proof"
+  },
+  "workspacePayload": "a6afb3c1ebc106a30f0c2106c5ae1a8728f6a6810ff3d5da37b5f87b09705294",
+  "packedSmokeAndLocalPayload": "63ddf5dff7aa0ffa90211a44ff1bea2aa6f6a468017229018df5a7d024c50811",
+  "newERecord": {
+    "observation": "private-installed-receipt-root-minimum",
+    "outcome": "passed",
+    "declaredSourceCommit": "9d2cd441eac2be1d2b6487ab5648035e3219cc27",
+    "workspaceDirty": false,
+    "entry": "/home/runner/work/bdp/bdp/packages/server/dist/transaction-installed-process.js",
+    "entrySha256": "bcf153170f953f9e28c6c89f1153be907f64df289e64f3ad929cad4a4a54c47c",
+    "binding": {
+      "served": {
+        "scope": "https://reference.invalid/acme/",
+        "profile": "transactional",
+        "history": false,
+        "sourceCommit": "9d2cd441eac2be1d2b6487ab5648035e3219cc27",
+        "installedPayloadDigest": "a6afb3c1ebc106a30f0c2106c5ae1a8728f6a6810ff3d5da37b5f87b09705294",
+        "installedContractsDigest": "02c9753371ec5ce830ed262ce2253ddd3083f2617041f359b18519fcc7c0e56e",
+        "policyDigest": "2f597c9948fb759bbe9ce9c0e0ca8c7819de617c1b6c3d83df79add958738825",
+        "authenticationDigest": "af5bb22ce1a7e2b0ca2c4feba855975f7693807be8c1df5bea6497fd2c9ebb78",
+        "fixtureDigest": "3a7899ced771d4880066d98b0000c53f801ece53458502cc4f3bc641146c9a85",
+        "fixtureId": "reference-transactional-v1",
+        "capabilities": [
+          "installed-transactional-http",
+          "transactional-receipt-observation"
+        ]
+      },
+      "operationTargets": {
+        "createBead": "https://reference.invalid/acme/operations/create-bead",
+        "updateBead": "https://reference.invalid/acme/operations/update-bead",
+        "deleteBead": "https://reference.invalid/acme/operations/delete-bead",
+        "createLink": "https://reference.invalid/acme/operations/create-link",
+        "updateLink": "https://reference.invalid/acme/operations/update-link",
+        "deleteLink": "https://reference.invalid/acme/operations/delete-link",
+        "putAlias": "https://reference.invalid/acme/operations/put-alias",
+        "deleteAlias": "https://reference.invalid/acme/operations/delete-alias",
+        "updateWhere": "https://reference.invalid/acme/operations/update-where",
+        "deleteWhere": "https://reference.invalid/acme/operations/delete-where",
+        "batch": "https://reference.invalid/acme/operations/batch",
+        "sequence": "https://reference.invalid/acme/operations/sequence"
+      },
+      "runtimeConfigurationIdentity": "679e1946878e4f75759876a51e2d87ef745e94b2e2cfd1a606ed230dc62fd28a",
+      "authorityMode": "canonical"
+    },
+    "artifactBytes": 328,
+    "attempted": 5,
+    "exchanges": 5,
+    "completedResponses": [
+      {
+        "ordinal": 1,
+        "label": "seed",
+        "method": "POST",
+        "url": "https://reference.invalid/acme/operations/batch",
+        "credential": "writer",
+        "requestBodyBytes": 141,
+        "requestBodySha256": "d410567e7cbdcc4fab38e477c974ba3d2a321d98980134bea249a631562832a5",
+        "minimumFieldOccurrences": [
+          0,
+          0,
+          0
+        ],
+        "status": 200,
+        "bodyOctets": 697,
+        "bodySha256": "6725eb3e285ba267e1ddbe761523cb903a9b98929a3f387a62217b56f2b60852",
+        "headers": {
+          "bdp-scope-epoch": "6a322d4d-a6ba-4172-9b4e-58f1abc53430",
+          "bdp-authorization-view": "development-all-visible",
+          "bdp-scope-position": "pos-1",
+          "content-type": "application/json",
+          "content-length": "697",
+          "cache-control": "private, no-store",
+          "retry-after": null,
+          "www-authenticate": null,
+          "x-bdp-development": "non-attesting",
+          "x-bdp-development-limit": null,
+          "etag": null,
+          "last-modified": null,
+          "allow": null,
+          "location": null,
+          "link": null
+        }
+      },
+      {
+        "ordinal": 2,
+        "label": "owned-root",
+        "method": "GET",
+        "url": "https://reference.invalid/acme/receipts/737f525c-c812-49d6-9915-c0245a9aacc9",
+        "credential": "writer",
+        "requestBodyBytes": 0,
+        "requestBodySha256": null,
+        "minimumFieldOccurrences": [
+          1,
+          1,
+          1
+        ],
+        "status": 503,
+        "bodyOctets": 127,
+        "bodySha256": "5e7c50923b5ef2e22379c96cbec4f9197175e38d9a81970f7db4f81ae46255b0",
+        "headers": {
+          "bdp-scope-epoch": "6a322d4d-a6ba-4172-9b4e-58f1abc53430",
+          "bdp-authorization-view": "development-all-visible",
+          "bdp-scope-position": "pos-1",
+          "content-type": "application/problem+json",
+          "content-length": "127",
+          "cache-control": "private, no-store",
+          "retry-after": "1",
+          "www-authenticate": null,
+          "x-bdp-development": "non-attesting",
+          "x-bdp-development-limit": null,
+          "etag": null,
+          "last-modified": null,
+          "allow": null,
+          "location": null,
+          "link": null
+        }
+      },
+      {
+        "ordinal": 3,
+        "label": "owned-root-head",
+        "method": "HEAD",
+        "url": "https://reference.invalid/acme/receipts/737f525c-c812-49d6-9915-c0245a9aacc9",
+        "credential": "writer",
+        "requestBodyBytes": 0,
+        "requestBodySha256": null,
+        "minimumFieldOccurrences": [
+          1,
+          1,
+          1
+        ],
+        "status": 503,
+        "bodyOctets": 0,
+        "bodySha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "headers": {
+          "bdp-scope-epoch": "6a322d4d-a6ba-4172-9b4e-58f1abc53430",
+          "bdp-authorization-view": "development-all-visible",
+          "bdp-scope-position": "pos-1",
+          "content-type": "application/problem+json",
+          "content-length": "127",
+          "cache-control": "private, no-store",
+          "retry-after": "1",
+          "www-authenticate": null,
+          "x-bdp-development": "non-attesting",
+          "x-bdp-development-limit": null,
+          "etag": null,
+          "last-modified": null,
+          "allow": null,
+          "location": null,
+          "link": null
+        }
+      },
+      {
+        "ordinal": 4,
+        "label": "other-principal",
+        "method": "GET",
+        "url": "https://reference.invalid/acme/receipts/737f525c-c812-49d6-9915-c0245a9aacc9",
+        "credential": "other",
+        "requestBodyBytes": 0,
+        "requestBodySha256": null,
+        "minimumFieldOccurrences": [
+          1,
+          1,
+          1
+        ],
+        "status": 404,
+        "bodyOctets": 134,
+        "bodySha256": "6eb3ea2339cd9acd8b41edf491f4cebb381ce54504bab8215d4a421f32d68ce1",
+        "headers": {
+          "bdp-scope-epoch": "6a322d4d-a6ba-4172-9b4e-58f1abc53430",
+          "bdp-authorization-view": "development-all-visible",
+          "bdp-scope-position": "pos-1",
+          "content-type": "application/problem+json",
+          "content-length": "134",
+          "cache-control": "private, no-store",
+          "retry-after": null,
+          "www-authenticate": null,
+          "x-bdp-development": "non-attesting",
+          "x-bdp-development-limit": null,
+          "etag": null,
+          "last-modified": null,
+          "allow": null,
+          "location": null,
+          "link": null
+        }
+      },
+      {
+        "ordinal": 5,
+        "label": "missing-root",
+        "method": "GET",
+        "url": "https://reference.invalid/acme/receipts/missing",
+        "credential": "writer",
+        "requestBodyBytes": 0,
+        "requestBodySha256": null,
+        "minimumFieldOccurrences": [
+          1,
+          1,
+          1
+        ],
+        "status": 404,
+        "bodyOctets": 134,
+        "bodySha256": "6eb3ea2339cd9acd8b41edf491f4cebb381ce54504bab8215d4a421f32d68ce1",
+        "headers": {
+          "bdp-scope-epoch": "6a322d4d-a6ba-4172-9b4e-58f1abc53430",
+          "bdp-authorization-view": "development-all-visible",
+          "bdp-scope-position": "pos-1",
+          "content-type": "application/problem+json",
+          "content-length": "134",
+          "cache-control": "private, no-store",
+          "retry-after": null,
+          "www-authenticate": null,
+          "x-bdp-development": "non-attesting",
+          "x-bdp-development-limit": null,
+          "etag": null,
+          "last-modified": null,
+          "allow": null,
+          "location": null,
+          "link": null
+        }
+      }
+    ],
+    "deadlineExceeded": false,
+    "cleanupExceeded": false,
+    "launchAttempted": true,
+    "startupCompleted": true,
+    "closed": true,
+    "childPid": 22151,
+    "childExitCode": 0,
+    "childSignalCode": null,
+    "directory": "/tmp/bdp-receipt-root-minimum-installed-aH2LVF",
+    "directoryAbsent": true,
+    "activeRequests": 0,
+    "pendingOperations": 0,
+    "failureCount": 0,
+    "failureCategories": [],
+    "claimEligible": false,
+    "retention": "safe response metadata/fingerprints; bodies asserted in memory; no credentials logged",
+    "startupLimitation": "pre-ready or unclean ownership preserves directory for supervisor evidence"
+  },
+  "maskedObservationRecords": [
+    "source-receipt-missing-context",
+    "source-missing-event-context",
+    "private-installed-event-missing-context",
+    "private-installed-minimum-receiving",
+    "private-installed-minimum-current-resource",
+    "private-installed-receipt-missing-context",
+    "private-installed-changefeed-parameter-context"
+  ],
+  "historical22Evidence": "Passed callback + unrepaired surviving22ordinal/summary/cleanup raw fragments; not intact JSON",
+  "historicalReadSeal": {
+    "level": "info",
+    "event": "evidence.verified",
+    "executable": "read-cohort-evidence",
+    "artifact": "docs/design/evidence/read-cohort/read-v1.json",
+    "constant": "674982be2123b9b7aae630bf79c3f774122900cd",
+    "runHead": "e5f7d0c43c151426350ceededdc77fe7e372db9b",
+    "evidenceCommit": "dbaf63a24219e1ea3f80394746853598b0d4464a",
+    "schemaReadProjection": "bd7da0fc3f8082e0bfb6f4969c04409f2a610e12408dbc6a0bd14b4b351127cc",
+    "schemaReadProjectionDefinitions": 47,
+    "schemaReadProjectionReachable": 46,
+    "rows": 89
+  },
+  "noRemotePIDCensus": true,
+  "noRerunOrProductExecution": true
+}

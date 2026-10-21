@@ -1,0 +1,69 @@
+## Verdict
+
+Reviewed the five test files as diffed against the quoted source. **No Critical or High actual defect found.** The three mechanical corrections (helper field ownership, F3 exact-mode projection, configuration-error oracle) are consistent with the quoted source; the residual items are two oracle-quality defects and four context gaps that execution will settle.
+
+---
+
+## Findings
+
+### 1. [DEFECT — Medium] Vacuous secret-classification assertion
+**Location:** `packages/conformance/src/executable-manifest.test.ts`, mixed-case branch, `expect(error.issues.some(({ message }) => message.includes("secret"))).toBe(false)`
+
+**Impact:** This assertion cannot fail, for two independent reasons. Structurally, `executable-manifest.ts:1477` guards the secret push with `name === name.toLowerCase()`, so a mixed-case name can *never* produce a "secret headers are not allowed" issue — even if the frozen predicate change were fully reverted. And it is unreachable on failure anyway: the preceding `toEqual([...])` fully specifies the array and throws first. It reads as regression coverage for the predicate boundary while providing none, which will mislead the next reader of this block.
+
+**Correction:** Delete the line. The predicate boundary is already pinned by the lowercase-accept branch in the same loop (`toMatchObject({ headers: { "bdp-authorization-view": value } })`) and, at the transport layer, by the handle-rejection case in `http-executor.test.ts`. No new case needed; lookalike/framing coverage is settled scope elsewhere.
+
+### 2. [CONTEXT GAP — Medium] Hardcoded issue path is unverified by the provided excerpt
+**Location:** same block — `path: \`$.scenarios[0].${actions ? "actions" : "requests"}[0].headers.${name}\``
+
+**Impact:** The quoted source (`const fieldPath = \`${path}.${name}\``) confirms only two things: the leaf segment is the header name, and it is the **raw** (mixed-case) name, which the test matches correctly via `${name}`. It does not establish (a) the `$.` root prefix, (b) that the collection segment is literally `actions` for the actions variant and `requests` otherwise, or (c) the index formatting. If any differs, all mixed-case iterations fail on a string mismatch — a new failure mode the precursor's `toThrow(ManifestValidationError)` did not have.
+
+**Correction:** Not a defect on the evidence available; confirm the three segments against the validator's `path` construction in the full source (or against an existing passing path assertion elsewhere in this file, which is the cheapest check). No change needed if they match.
+
+### 3. [DEFECT — Low] Full-accumulator equality on a shared issues array
+**Location:** same block — `expect(error.issues).toEqual([ … ])`
+
+**Impact:** `issues` is the manifest-wide accumulator, not a per-header list. Exact-array equality therefore asserts that *no other rule in the entire manifest* emits an issue for any of the loop combinations (2 values × 2 names × version × actions-flag). On the quoted source this holds — the mixed-case name pushes exactly one issue, the replaced `headers` map drops `accept` without consequence, and both values pass `HTTP_FIELD_VALUE_PATTERN` (proved by the lowercase branch accepting `""` and `"view-one, view-two"` in the precursor run). But any future unrelated validator rule breaks this case for a reason unrelated to its subject.
+
+**Correction:** Acceptable as the stronger oracle if the singleton set is intended; if you want the tightening without the coupling, use `toContainEqual({ path, message })` plus `expect(error.issues).toHaveLength(1)`. Either way, with finding 1 removed this is the only load-bearing assertion in the branch.
+
+### 4. [CONTEXT GAP — Low] Report-text sentinel coverage for the newly added credential channel
+**Location:** `packages/conformance/src/runner.test.ts`, mock return + trailing `expect(text).not.toContain("CONTEXT-SENTINEL")`
+
+**Impact:** The mock now routes `CREDENTIAL-SENTINEL` through two channels it did not previously use: `response.headers.authorization` and `effectiveRequest.headers`. The visible hunk ends with the CONTEXT-SENTINEL negative only. Separately, the new `response.headers.authorization` entry changes the redacted response map from `{}` to `{ authorization: "<redacted>" }`; any pre-existing assertion elsewhere in this test that pins `response.headers` to an exact shape would now break.
+
+**Correction:** Confirm the file retains (or add, within this test) `expect(text).not.toContain("CREDENTIAL-SENTINEL")`, and grep this test for an exact-shape `response.headers` assertion. Your unchanged-source notes ("Full serialized sentinel absence asserted") suggest the first is already present — in which case no action.
+
+### 5. [CONTEXT GAP — Low] `.at(0)` requires `lib` ≥ ES2022
+**Location:** `executable-manifest.test.ts` — four `.at(0)` calls replacing the four `!` operators
+
+**Impact:** If this package's `tsconfig` `lib` predates ES2022, all four fail typecheck. Everything else about the substitution is sound: `base` is a fixture literal so `requests` is a definite array (the original `requests[0]!` could not have compiled otherwise), the guards narrow `T | undefined` correctly, and the parsed-side access correctly stays on optional chaining (`parsed.requests?.[0] ?? parsed.actions?.[0]`).
+
+**Correction:** Verify `lib`; if older, `const x = arr[0]; if (x === undefined) throw …` achieves the same lint outcome with no lib dependency.
+
+### 6. [DEFECT — Low / nit] Near-tautological write-state assertion
+**Location:** `packages/conformance/src/http-executor.test.ts` — `expect(error.requestWriteState).toBeUndefined()`
+
+**Impact:** `configuration()` (`http-executor.ts:365-367`) is a single construction site passing two arguments, so `requestWriteState` is unconditionally `undefined`; the assertion cannot distinguish "rejected before dialing" from "rejected after dialing but reported as `configuration`". The load-bearing assertion for the test's actual claim remains `expect(resolve).not.toHaveBeenCalled()`. Harmless, and it does pin that the error shape carries no write state — just note it is not the dialing oracle it resembles.
+
+**Correction:** Keep or drop; no behavioral consequence. The rest of this conversion is strictly stronger than the precursor (`instanceof HttpTransportError` + exact message + `category`), and the sentinel-throw-inside-`try` pattern is correct — a non-throwing constructor surfaces as the rethrown sentinel rather than a silent pass.
+
+### 7. [INFORMATIONAL] The two bdptest helper edits are a required co-change, not cleanup
+**Location:** `transactional-collection-minimum-installed.test.ts` ~250-291, `transactional-snapshot-installed.test.ts` ~266-306
+
+`http-executor.ts:469-489` rejects any declared credential header name for which `isSecretHeaderName(name)` is **false**. Once the frozen predicate excludes normalized `bdp-authorization-view`, the old `viewNames` registration would hit `configuration()` and both suites would fail at executor construction, before any request. So removing the adapters was the only correct resolution, and the shape is consistent throughout: `authorization` remains secret and reserved-clear, `anonymous`'s empty `headerNames: []` skips the per-name loop and is accepted, the `{}` resolver stays a subset of `[]`, and the un-filtered `Object.entries(headers)` yields exactly one view line per request (no duplicate, since the resolver no longer emits it).
+
+### 8. [INFORMATIONAL] One observable wire delta in those two helpers
+The view header moves from the resolved-credential suffix to the authored prefix, at `Object.entries(headers)` position — i.e. it now precedes `authorization` on the wire and is covered by authored-header assertions rather than excluded from them. That is the more faithful modeling and matches the stated intent; total header bytes are unchanged, so budgets are unaffected. It is nonetheless the only behavioral change in the two files that **no executed run has yet covered** (see below).
+
+---
+
+## Correctly settled in this successor
+
+The F3 correction holds against `runner.ts:1358`: `effectiveRequest` is discarded in exact mode, `request.headers` stays `{}` (`toEqual({})` is the right oracle — it fails loudly if a regression starts honoring the compatibility map, which the old `not.toHaveProperty("bdp-authorization-view")` could not detect, since the allowlist would filter the view name regardless). The populated `effectiveRequest` passes `runner.ts:1730-1742` as a data-only literal with `url === response.url`, string values, and `headersTransmitted` omitted. `toContainEqual({ name: "Authorization", value: "<redacted>" })` matches `projectExactObservation`'s casing-preserving projection, and `authorization` is allowlisted under both v3 and v4. Scope items you declined (F7, F8, the compatibility-auth-redaction assertion) are not re-raised; `HttpTransportError`'s parameter property is correctly treated as present-with-`undefined`.
+
+## Source review vs. pending execution
+
+This is a source-level review of the five diffs against the quoted source and your audit facts; it is not a suite proof. Findings 1, 3 and 6 are oracle-quality defects in the new assertions, not behavior breaks — only finding 1 warrants an edit. Findings 2, 4 and 5 are unprovided context, each resolvable by one targeted read.
+
+Unproven by any execution: the two bdptest helper cohorts (collection missing-minimum, Snapshot fixed-head) have never run against the frozen predicate, and finding 7 means their first run is also the first test of the predicate/credential-validation coupling. The runner privacy callback and the executor case are the lower-risk half — the former's callback ran in the precursor with only the two added mock fields new. The queued root run (30 callbacks, the two fresh installed regressions, operator-only, then the existing 208/225 command-minimum cohorts, exact-head CI required) is the right gate; expect lint to return to 765 warnings if the four guards land as diffed.

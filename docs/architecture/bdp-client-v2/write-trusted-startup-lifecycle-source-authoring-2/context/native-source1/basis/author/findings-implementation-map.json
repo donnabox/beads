@@ -1,0 +1,116 @@
+{
+  "state": "AUTHOR MAPPING ONLY; independent native/CODE assessment pending",
+  "rootDispositionSha256": "fd945f3c76477fa8b000271fb749424f7efb184c7d3a3b0528f6b66ea8be458a",
+  "rows": [
+    {
+      "id": "F1",
+      "implementation": "Trusted TX listen selects genuine handle.listener port/host; RU captured intended port checked against registered handle. Actual address returned.",
+      "locations": [
+        "packages/server/src/transaction-runtime.ts:421",
+        "packages/server/src/transaction-runtime.ts:431",
+        "packages/server/src/development-runtime.ts:665"
+      ],
+      "witness": "S03 real nonzero listen arguments; I01/I02 actual ready address alignment"
+    },
+    {
+      "id": "F2",
+      "implementation": "Persistent listener observer and serving completion only in internal prepared mode; legacy successful listener removes original error observer and old result keys/declarations remain restricted.",
+      "locations": [
+        "packages/server/src/development-runtime.ts:218",
+        "packages/server/src/development-runtime.ts:588",
+        "packages/server/src/development-runtime.ts:672",
+        "packages/server/src/transaction-runtime.ts:100",
+        "packages/server/src/transaction-runtime.ts:356"
+      ],
+      "witness": "S09 post-event faults; S10 preserved observed primary+cleanup; S11 exact legacy keys/errorlistener0"
+    },
+    {
+      "id": "F3",
+      "implementation": "Explicit actual TX readback/receipt and read-limit comparison/preflight.metadata precede service construction. Failed constructor retains caller close authority; successful assignment transfers to service.",
+      "locations": [
+        "packages/server/src/transaction-runtime.ts:382",
+        "packages/server/src/transaction-runtime.ts:395",
+        "packages/server/src/transaction-runtime.ts:404",
+        "packages/server/src/transaction-runtime.ts:409",
+        "packages/server/src/transaction-runtime.ts:456"
+      ],
+      "witness": "S03-A ordered success then S03-B real constructor read throw/directclose1/serviceclose0; S04 preconstructor refusal"
+    },
+    {
+      "id": "F4",
+      "implementation": "Pure RU exact four-value tuple from the same frozen installed capture/composition; no recapture/compiler/additional factory.",
+      "locations": [
+        "packages/server/src/development-runtime.ts:178",
+        "packages/server/src/development-runtime.ts:196"
+      ],
+      "witness": "S02 exact boolean equality including required-unused first captured token, both success/failure principal subphases"
+    },
+    {
+      "id": "F5",
+      "implementation": "Four actual owned Node guard helpers in the same21 callbacks: I20 inert withoutIPC/inert withIPC/missingIPC and I21 invalidIPC. Exit and close tracked for every process.",
+      "locations": [
+        "apps/bdptest/src/reference-deployment-lifecycle-installed.test.ts:394",
+        "apps/bdptest/src/reference-deployment-lifecycle-installed.test.ts:815",
+        "apps/bdptest/src/reference-deployment-lifecycle-installed.test.ts:1214"
+      ],
+      "witness": "32 original candidate/public +4 guard=36 prospective children, no extra HTTP/callback"
+    },
+    {
+      "id": "F6",
+      "implementation": "Callback-local bounded orchestration uses genuine shared configuration envelope; TX test owns mkdir0700 before first child. Product loader/process do not provision. Shared launcher untouched.",
+      "locations": [
+        "apps/bdptest/src/reference-deployment-lifecycle-installed.test.ts:264",
+        "apps/bdptest/src/reference-deployment-lifecycle-installed.test.ts:451",
+        "packages/server/src/reference-deployment-process.ts:62"
+      ],
+      "witness": "I07 absent FILE/create:false; I11 occupiedport actual owner reopen; same path generation2"
+    },
+    {
+      "id": "F7",
+      "implementation": "RU readback epoch comes from existing process-generated lifecycle token, explicitly distinct from persisted TX epoch and installation equality.",
+      "locations": [
+        "packages/server/src/development-authority.ts:259",
+        "packages/server/src/development-authority.ts:343"
+      ],
+      "witness": "No extra RU epoch persistence mismatch row or TX epoch grammar refusal"
+    },
+    {
+      "id": "F8",
+      "implementation": "Trusted result forwards existing RU capture.history or checked TX metadata.history; minimal IPC ready forwards that observed value.",
+      "locations": [
+        "packages/server/src/development-runtime.ts:766",
+        "packages/server/src/transaction-runtime.ts:530",
+        "packages/server/src/reference-deployment-runtime.ts:35",
+        "packages/server/src/reference-deployment-process.ts:72"
+      ],
+      "witness": "Ready exact six fields, historyfalse fixture; no independent invented history field"
+    },
+    {
+      "id": "F9",
+      "implementation": "Precisely21 persisted mismatch rows: RU8/TX13 actual metadata/Type/resource/retained disposition paths. Failed-open internal SQLite acquisition/close distinct from returned owner and later restore/reopen.",
+      "locations": [
+        "packages/server/src/reference-deployment-runtime.test.ts:572",
+        "packages/server/src/reference-deployment-runtime.test.ts:599"
+      ],
+      "witness": "S05 actual DatabaseSync subclass delegates real open/close; no fabricated internal-close credit"
+    },
+    {
+      "id": "F10",
+      "implementation": "Installed fixture Scope uses the reserved intended address; post-ready actual origin equality asserted as fixture law, no loader invariant/Scope rewrite.",
+      "locations": [
+        "apps/bdptest/src/reference-deployment-lifecycle-installed.test.ts:275",
+        "apps/bdptest/src/reference-deployment-lifecycle-installed.test.ts:480"
+      ],
+      "witness": "Genuine canonical Scope and physical acquired address kept separate"
+    },
+    {
+      "id": "R1",
+      "implementation": "All six TX cold callbacks still depend on future accepted combined D3a Scope/descriptor/Directory. Generic Type route exists; no shortcut/direct target oracle/skip or D3a adoption.",
+      "locations": [
+        "apps/bdptest/src/reference-deployment-lifecycle-installed.test.ts:894",
+        "docs/design/startup-configuration.md:720"
+      ],
+      "witness": "I02/I04/I13/I15/I17/I19 remain prospective/unexecuted on fdd"
+    }
+  ]
+}

@@ -1,0 +1,158 @@
+{
+  "accepted": true,
+  "checkedAt": "2026-10-15T18:43:32.133333+00:00",
+  "sourceBinding": {
+    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-principal-key-draft/review-repair/source-binding.json",
+    "sha256": "fce5c0dfb33221f9cc29fd6420eab607722d88d0d9b6076b64a57f763f5f9406"
+  },
+  "head": "f5511718371a6935614eae6756e796cef71570c2",
+  "workspaceDirty": true,
+  "stages": [
+    {
+      "stage": "setup",
+      "result": {
+        "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-principal-key-draft/execution-preparation-v2/run/setup.exit.json",
+        "sha256": "a9671a7bc83a3d12068217e12e8334f0228c2cc996030ea1c0b9f66225a04121"
+      },
+      "log": {
+        "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-principal-key-draft/execution-preparation-v2/run/setup.log",
+        "sha256": "352767ba5db65fcdc7a9552e6505bc50060120fb83fb65a4a51a4e612b53d0a0"
+      },
+      "elapsedSeconds": 0.7365000420249999
+    },
+    {
+      "stage": "typecheck",
+      "result": {
+        "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-principal-key-draft/execution-preparation-v2/run/typecheck.exit.json",
+        "sha256": "bf4950b2663c15cb3b8e7419a13d4d81193d56e23c5e0320f392ebece89e166f"
+      },
+      "log": {
+        "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-principal-key-draft/execution-preparation-v2/run/typecheck.log",
+        "sha256": "91d54ffbee73a3ac72294d090e58d77745f8b93edbf94b862807698273a6505a"
+      },
+      "elapsedSeconds": 1.4758542501367629
+    },
+    {
+      "stage": "build",
+      "result": {
+        "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-principal-key-draft/execution-preparation-v2/run/build.exit.json",
+        "sha256": "f96e26cc90d02cc3cf9d1839fca49f9f7ede9f0844c7cf8a60a380b8dc24c1d9"
+      },
+      "log": {
+        "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-principal-key-draft/execution-preparation-v2/run/build.log",
+        "sha256": "232dac5e840e45b3bb06e6e04249b5241f2e1b4f6c797a22c046d916302ac208"
+      },
+      "elapsedSeconds": 1.5131592920515686
+    },
+    {
+      "stage": "format-check",
+      "result": {
+        "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-principal-key-draft/execution-preparation-v2/run/format-check.exit.json",
+        "sha256": "4f6b5c9f6344aa029a5e134ba7e9233c9833cea040ca76465f6317fe9fe820e7"
+      },
+      "log": {
+        "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-principal-key-draft/execution-preparation-v2/run/format-check.log",
+        "sha256": "172b66a2746fa310e75213783a568e334590fd85dcfb401fd4c8a2ca52edf1a8"
+      },
+      "elapsedSeconds": 0.8772462077904493
+    },
+    {
+      "stage": "lint",
+      "result": {
+        "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-principal-key-draft/execution-preparation-v2/run/lint.exit.json",
+        "sha256": "18cf2721381e60a86be238c8a32c8446dc3a5a248be3d9a42732c03d4a137217"
+      },
+      "log": {
+        "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-principal-key-draft/execution-preparation-v2/run/lint.log",
+        "sha256": "46da1adc218a12d3dbf94c210d2bfd6d1f05d59df7b31f8ba803962e45e527f0"
+      },
+      "elapsedSeconds": 1.076096500037238
+    },
+    {
+      "stage": "boundaries",
+      "result": {
+        "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-principal-key-draft/execution-preparation-v2/run/boundaries.exit.json",
+        "sha256": "4eb7b38cefbd5283790771e56ff45bac24077d667d7ce74c796187dfb5cdf811"
+      },
+      "log": {
+        "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-principal-key-draft/execution-preparation-v2/run/boundaries.log",
+        "sha256": "53f4cd856bde25513486a59799c5a05e0650fbb756bf1580fb07e56c2fdeeef3"
+      },
+      "elapsedSeconds": 1.0576122079510242
+    },
+    {
+      "stage": "read-seal",
+      "result": {
+        "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-principal-key-draft/execution-preparation-v2/run/read-seal.exit.json",
+        "sha256": "79525599f52f33594b61232e4e88a0fb46d902990e590a74ab88dcde91d70df2"
+      },
+      "log": {
+        "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-principal-key-draft/execution-preparation-v2/run/read-seal.log",
+        "sha256": "79749014f712bd5d838b93088c70fef4cca1ae63d7738a613716ab37fa1295ba"
+      },
+      "elapsedSeconds": 0.9528486670460552
+    },
+    {
+      "stage": "build-inventory",
+      "result": {
+        "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-principal-key-draft/execution-preparation-v2/run/build-inventory.exit.json",
+        "sha256": "5a0ad1e18c4a9274f5036c40f20b9dc24c3af85d58d6fe392267f6616c5afaad"
+      },
+      "log": {
+        "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-principal-key-draft/execution-preparation-v2/run/build-inventory.log",
+        "sha256": "e20144669fe41fd531c85bcacbc7407a1ec35ca50af1fadaaee93bde8870454f"
+      },
+      "elapsedSeconds": 0.6537572501692921
+    }
+  ],
+  "inventory": {
+    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-principal-key-draft/execution-preparation-v2/run/build-output-inventory.json",
+    "sha256": "b2d71520d16fe3cb17e72af2ec1a9bc2b1431b30ae23a875e6bba438b637c13e"
+  },
+  "counts": {
+    "inputFiles": 670,
+    "files": 312,
+    "emittedFiles": 440
+  },
+  "sampledPidsIndependentlyAbsent": [
+    29621,
+    29623,
+    29628,
+    29644,
+    29646,
+    29651,
+    29664,
+    29691,
+    29693,
+    29698,
+    29724,
+    29725,
+    29743,
+    29750,
+    29752,
+    29796,
+    29798,
+    29803,
+    29816,
+    29822,
+    29839,
+    29841,
+    29846,
+    29859,
+    29865,
+    29885,
+    29887,
+    29893,
+    29907,
+    29924,
+    29926,
+    29931,
+    29944,
+    29984,
+    29986,
+    29991
+  ],
+  "warnings": "Format existing large-file warning; lint821warnings50infos. Not warning-free.",
+  "sourceOnly": "No product service/test callback/HTTP/package executed; actual runtime schema compile and positive/control still pending.",
+  "originalPreserved": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-principal-key-draft/execution-preparation/run"
+}

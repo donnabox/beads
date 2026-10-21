@@ -1,0 +1,648 @@
+{
+  "reviewedUtc": "2026-10-18T05:59:05.366670+00:00",
+  "auditIndexSha256": "92fbf921641f74e71e0d0bdcd4bc0558013670ee4ce1805f09a719cf5888a236",
+  "reportSha256": "b9078181a8f31d50b2e7270b35d7a4f028d1c3fc22852c67a393cc8f263488af",
+  "indexedArtifactsVerified": 49,
+  "mirrorFilesIncludingIndexVerified": 50,
+  "frozenCopiedInputsVerified": 37,
+  "origins": [
+    {
+      "origin": "/Users/dbox/repos/wt/vickie/vickie-current-changefeed-minimum/docs/specs/bdp.md",
+      "copy": "source/docs/specs/bdp.md",
+      "sha256": "67772742d7d08f48c12196e9789f1859ad2d0e19f133ea65e197b049361f84f8",
+      "bytes": 397107,
+      "role": "pinned cce source/spec; static inspection only",
+      "lineRanges": [
+        [
+          5386,
+          5424
+        ],
+        [
+          5438,
+          5455
+        ],
+        [
+          5503,
+          5557
+        ],
+        [
+          5583,
+          5606
+        ],
+        [
+          5644,
+          5657
+        ],
+        [
+          5770,
+          5851
+        ],
+        [
+          5860,
+          5890
+        ],
+        [
+          5970,
+          6006
+        ]
+      ],
+      "liveOriginSha256Now": "67772742d7d08f48c12196e9789f1859ad2d0e19f133ea65e197b049361f84f8",
+      "liveOriginMatches": true
+    },
+    {
+      "origin": "/Users/dbox/repos/wt/vickie/vickie-current-changefeed-minimum/schemas/bdp-v0.schema.json",
+      "copy": "source/schemas/bdp-v0.schema.json",
+      "sha256": "0baa5d5ef67144f8e6513b4cde31168effc8df6d52ef3141b0f144b87f8dc227",
+      "bytes": 133208,
+      "role": "pinned cce source/spec; static inspection only",
+      "lineRanges": [
+        [
+          2877,
+          2922
+        ],
+        [
+          2985,
+          3043
+        ],
+        [
+          3191,
+          3225
+        ]
+      ],
+      "liveOriginSha256Now": "0baa5d5ef67144f8e6513b4cde31168effc8df6d52ef3141b0f144b87f8dc227",
+      "liveOriginMatches": true
+    },
+    {
+      "origin": "/Users/dbox/repos/wt/vickie/vickie-current-changefeed-minimum/packages/server/src/transaction-http.ts",
+      "copy": "source/packages/server/src/transaction-http.ts",
+      "sha256": "be9402cadf5d2888dd42a1904bbd8eeea0b32643bd7d7949f0ae34a8eefdd2e0",
+      "bytes": 28966,
+      "role": "pinned cce source/spec; static inspection only",
+      "lineRanges": [
+        [
+          149,
+          156
+        ],
+        [
+          403,
+          467
+        ],
+        [
+          657,
+          679
+        ]
+      ],
+      "liveOriginSha256Now": "be9402cadf5d2888dd42a1904bbd8eeea0b32643bd7d7949f0ae34a8eefdd2e0",
+      "liveOriginMatches": true
+    },
+    {
+      "origin": "/Users/dbox/repos/wt/vickie/vickie-current-changefeed-minimum/packages/server/src/transaction-consistency.ts",
+      "copy": "source/packages/server/src/transaction-consistency.ts",
+      "sha256": "49cf5e1a7682b7fff570b3691b91d9de0816fc6fb93970847d5ece0992f21e9d",
+      "bytes": 7287,
+      "role": "pinned cce source/spec; static inspection only",
+      "lineRanges": [
+        [
+          1,
+          31
+        ],
+        [
+          33,
+          131
+        ],
+        [
+          137,
+          178
+        ]
+      ],
+      "liveOriginSha256Now": "49cf5e1a7682b7fff570b3691b91d9de0816fc6fb93970847d5ece0992f21e9d",
+      "liveOriginMatches": true
+    },
+    {
+      "origin": "/Users/dbox/repos/wt/vickie/vickie-current-changefeed-minimum/packages/server/src/transaction-service.ts",
+      "copy": "source/packages/server/src/transaction-service.ts",
+      "sha256": "d34b28787b70e5a14c38f1295a7cacc3bd2425768245ace46484f882987e9568",
+      "bytes": 32308,
+      "role": "pinned cce source/spec; static inspection only",
+      "lineRanges": [
+        [
+          423,
+          465
+        ]
+      ],
+      "liveOriginSha256Now": "d34b28787b70e5a14c38f1295a7cacc3bd2425768245ace46484f882987e9568",
+      "liveOriginMatches": true
+    },
+    {
+      "origin": "/Users/dbox/repos/wt/vickie/vickie-current-changefeed-minimum/packages/server/src/transaction-store.ts",
+      "copy": "source/packages/server/src/transaction-store.ts",
+      "sha256": "2feff60d7064cf6a1f8b15c8360b98c1671a04762346d1d6bb3a9321ef69a2d5",
+      "bytes": 96474,
+      "role": "pinned cce source/spec; static inspection only",
+      "lineRanges": [
+        [
+          1558,
+          1635
+        ],
+        [
+          1685,
+          1720
+        ],
+        [
+          1766,
+          1836
+        ]
+      ],
+      "liveOriginSha256Now": "2feff60d7064cf6a1f8b15c8360b98c1671a04762346d1d6bb3a9321ef69a2d5",
+      "liveOriginMatches": true
+    },
+    {
+      "origin": "/Users/dbox/repos/wt/vickie/vickie-current-changefeed-minimum/packages/server/src/transaction-snapshot.ts",
+      "copy": "source/packages/server/src/transaction-snapshot.ts",
+      "sha256": "dac7c2f121cfb6bae557b3917f5ec52e47a358ab39da4062f6a5c26f5b9fbd83",
+      "bytes": 33346,
+      "role": "pinned cce source/spec; static inspection only",
+      "lineRanges": [
+        [
+          20,
+          40
+        ],
+        [
+          550,
+          615
+        ],
+        [
+          795,
+          813
+        ]
+      ],
+      "liveOriginSha256Now": "dac7c2f121cfb6bae557b3917f5ec52e47a358ab39da4062f6a5c26f5b9fbd83",
+      "liveOriginMatches": true
+    },
+    {
+      "origin": "/Users/dbox/repos/wt/vickie/vickie-current-changefeed-minimum/packages/server/src/transaction-events.ts",
+      "copy": "source/packages/server/src/transaction-events.ts",
+      "sha256": "6c5ab4482f0b00110a71a96b16d44ca5fe713cb5f397ff78778cc6646f632a3a",
+      "bytes": 11915,
+      "role": "pinned cce source/spec; static inspection only",
+      "lineRanges": [
+        [
+          40,
+          46
+        ],
+        [
+          188,
+          273
+        ]
+      ],
+      "liveOriginSha256Now": "6c5ab4482f0b00110a71a96b16d44ca5fe713cb5f397ff78778cc6646f632a3a",
+      "liveOriginMatches": true
+    },
+    {
+      "origin": "/Users/dbox/repos/wt/vickie/vickie-current-changefeed-minimum/packages/server/src/transaction-batch.ts",
+      "copy": "source/packages/server/src/transaction-batch.ts",
+      "sha256": "830ad57a680db7148fc75cd9cc10cadfc6a812448fd1704c1b0f47b13611808d",
+      "bytes": 45508,
+      "role": "pinned cce source/spec; static inspection only",
+      "lineRanges": [
+        [
+          739,
+          787
+        ],
+        [
+          805,
+          849
+        ]
+      ],
+      "liveOriginSha256Now": "830ad57a680db7148fc75cd9cc10cadfc6a812448fd1704c1b0f47b13611808d",
+      "liveOriginMatches": true
+    },
+    {
+      "origin": "/Users/dbox/repos/wt/vickie/vickie-current-changefeed-minimum/packages/server/src/transaction-runtime.ts",
+      "copy": "source/packages/server/src/transaction-runtime.ts",
+      "sha256": "48cb5411407c456d7b3f301a4b67970061be9f51c94201de832ba5deff6ea2d4",
+      "bytes": 16727,
+      "role": "pinned cce source/spec; static inspection only",
+      "lineRanges": [
+        [
+          130,
+          159
+        ],
+        [
+          306,
+          346
+        ]
+      ],
+      "liveOriginSha256Now": "48cb5411407c456d7b3f301a4b67970061be9f51c94201de832ba5deff6ea2d4",
+      "liveOriginMatches": true
+    },
+    {
+      "origin": "/Users/dbox/repos/wt/vickie/vickie-current-changefeed-minimum/packages/server/src/transaction-snapshot.test.ts",
+      "copy": "source/packages/server/src/transaction-snapshot.test.ts",
+      "sha256": "57227357dccc13e6f47ec35aad06b238fba90743c4d0283361c4931ec1c5bad5",
+      "bytes": 60834,
+      "role": "pinned cce source/spec; static inspection only",
+      "lineRanges": [
+        [
+          1219,
+          1288
+        ],
+        [
+          1446,
+          1502
+        ]
+      ],
+      "liveOriginSha256Now": "57227357dccc13e6f47ec35aad06b238fba90743c4d0283361c4931ec1c5bad5",
+      "liveOriginMatches": true
+    },
+    {
+      "origin": "/Users/dbox/repos/wt/vickie/vickie-current-changefeed-minimum/packages/server/src/transaction-snapshot-http.test.ts",
+      "copy": "source/packages/server/src/transaction-snapshot-http.test.ts",
+      "sha256": "61023b5f24396fe484c7820c706b560cb87abd7a3e16670f5a0944fbefd44d8a",
+      "bytes": 28484,
+      "role": "pinned cce source/spec; static inspection only",
+      "lineRanges": [
+        [
+          73,
+          169
+        ],
+        [
+          326,
+          378
+        ],
+        [
+          380,
+          438
+        ]
+      ],
+      "liveOriginSha256Now": "61023b5f24396fe484c7820c706b560cb87abd7a3e16670f5a0944fbefd44d8a",
+      "liveOriginMatches": true
+    },
+    {
+      "origin": "/Users/dbox/repos/wt/vickie/vickie-current-changefeed-minimum/packages/server/src/transaction-service.test.ts",
+      "copy": "source/packages/server/src/transaction-service.test.ts",
+      "sha256": "e66f4384e7e6f4fb10b2072e298093991fffcfae606d005b54dda97dbf250705",
+      "bytes": 156515,
+      "role": "pinned cce source/spec; static inspection only",
+      "lineRanges": [
+        [
+          1102,
+          1243
+        ]
+      ],
+      "liveOriginSha256Now": "e66f4384e7e6f4fb10b2072e298093991fffcfae606d005b54dda97dbf250705",
+      "liveOriginMatches": true
+    },
+    {
+      "origin": "/Users/dbox/repos/wt/vickie/vickie-current-changefeed-minimum/packages/server/src/transaction-events.test.ts",
+      "copy": "source/packages/server/src/transaction-events.test.ts",
+      "sha256": "66d1995b35ba86265bcbf904d515aa52cf8a826273065ac46f32b381737a3a64",
+      "bytes": 88512,
+      "role": "pinned cce source/spec; static inspection only",
+      "lineRanges": [
+        [
+          145,
+          215
+        ],
+        [
+          316,
+          372
+        ],
+        [
+          549,
+          578
+        ]
+      ],
+      "liveOriginSha256Now": "66d1995b35ba86265bcbf904d515aa52cf8a826273065ac46f32b381737a3a64",
+      "liveOriginMatches": true
+    },
+    {
+      "origin": "/Users/dbox/repos/wt/vickie/vickie-current-changefeed-minimum/packages/server/src/transaction-event-sse.test.ts",
+      "copy": "source/packages/server/src/transaction-event-sse.test.ts",
+      "sha256": "6d7ec313c63d02ee157845ec8ab2e2cfab9107f137cdfc8a20d50c97f147fe64",
+      "bytes": 97181,
+      "role": "pinned cce source/spec; static inspection only",
+      "lineRanges": [
+        [
+          515,
+          557
+        ]
+      ],
+      "liveOriginSha256Now": "6d7ec313c63d02ee157845ec8ab2e2cfab9107f137cdfc8a20d50c97f147fe64",
+      "liveOriginMatches": true
+    },
+    {
+      "origin": "/Users/dbox/repos/wt/vickie/vickie-current-changefeed-minimum/packages/server/src/transaction-http.test.ts",
+      "copy": "source/packages/server/src/transaction-http.test.ts",
+      "sha256": "f972c417409302e750f0936c80be5c261de21556d5ca8a883bbe0f713f2049df",
+      "bytes": 247333,
+      "role": "pinned cce source/spec; static inspection only",
+      "lineRanges": [
+        [
+          4594,
+          4735
+        ],
+        [
+          4857,
+          4925
+        ]
+      ],
+      "liveOriginSha256Now": "f972c417409302e750f0936c80be5c261de21556d5ca8a883bbe0f713f2049df",
+      "liveOriginMatches": true
+    },
+    {
+      "origin": "/Users/dbox/repos/wt/vickie/vickie-current-changefeed-minimum/apps/bdptest/src/transactional-snapshot-installed.test.ts",
+      "copy": "source/apps/bdptest/src/transactional-snapshot-installed.test.ts",
+      "sha256": "2b678726212691b6d6abcd7ad409f308ff04df4f58a99b3dfb2f1cd2005f5422",
+      "bytes": 45950,
+      "role": "pinned cce source/spec; static inspection only",
+      "lineRanges": [
+        [
+          175,
+          205
+        ],
+        [
+          205,
+          388
+        ],
+        [
+          422,
+          481
+        ],
+        [
+          796,
+          956
+        ],
+        [
+          972,
+          1192
+        ]
+      ],
+      "liveOriginSha256Now": "2b678726212691b6d6abcd7ad409f308ff04df4f58a99b3dfb2f1cd2005f5422",
+      "liveOriginMatches": true
+    },
+    {
+      "origin": "/Users/dbox/repos/wt/vickie/vickie-current-changefeed-minimum/apps/bdptest/src/transactional-event-sse-installed.test.ts",
+      "copy": "source/apps/bdptest/src/transactional-event-sse-installed.test.ts",
+      "sha256": "5bc8fd664215c14de913e994b26a4792753d6b372317f21f028850021b9ac7c7",
+      "bytes": 101289,
+      "role": "pinned cce source/spec; static inspection only",
+      "lineRanges": [
+        [
+          80,
+          97
+        ],
+        [
+          320,
+          409
+        ],
+        [
+          1794,
+          1810
+        ]
+      ],
+      "liveOriginSha256Now": "5bc8fd664215c14de913e994b26a4792753d6b372317f21f028850021b9ac7c7",
+      "liveOriginMatches": true
+    },
+    {
+      "origin": "/Users/dbox/repos/wt/vickie/vickie-current-changefeed-minimum/apps/bdptest/src/transactional-minimum-receiving-installed.test.ts",
+      "copy": "source/apps/bdptest/src/transactional-minimum-receiving-installed.test.ts",
+      "sha256": "165ded90d0e172bfc6bd9c4c9de634739aa5d2a1ab5e0bcbd51258122178f11a",
+      "bytes": 60883,
+      "role": "pinned cce source/spec; static inspection only",
+      "lineRanges": [
+        [
+          126,
+          141
+        ],
+        [
+          350,
+          470
+        ]
+      ],
+      "liveOriginSha256Now": "165ded90d0e172bfc6bd9c4c9de634739aa5d2a1ab5e0bcbd51258122178f11a",
+      "liveOriginMatches": true
+    },
+    {
+      "origin": "/Users/dbox/repos/wt/vickie/vickie-current-changefeed-minimum/scripts/transaction-installed-observation.mjs",
+      "copy": "source/scripts/transaction-installed-observation.mjs",
+      "sha256": "6f772f3776d3c3effa788676d853cc2932a6ee59ad63ac3338ad1b487408914b",
+      "bytes": 3264,
+      "role": "pinned cce source/spec; static inspection only",
+      "lineRanges": [
+        [
+          1,
+          96
+        ]
+      ],
+      "liveOriginSha256Now": "6f772f3776d3c3effa788676d853cc2932a6ee59ad63ac3338ad1b487408914b",
+      "liveOriginMatches": true
+    },
+    {
+      "origin": "/Users/dbox/repos/wt/vickie/vickie-current-changefeed-minimum/apps/bdptest/test-support/transactional-execution-binding.ts",
+      "copy": "source/apps/bdptest/test-support/transactional-execution-binding.ts",
+      "sha256": "cde506c72a8710eafe58522900f6db70ed3701cf333560252dc8e7c5e706cf89",
+      "bytes": 7378,
+      "role": "pinned cce source/spec; static inspection only",
+      "lineRanges": [
+        [
+          1,
+          110
+        ]
+      ],
+      "liveOriginSha256Now": "cde506c72a8710eafe58522900f6db70ed3701cf333560252dc8e7c5e706cf89",
+      "liveOriginMatches": true
+    },
+    {
+      "origin": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-snapshot-plan.md",
+      "copy": "context/transaction-snapshot-plan.md",
+      "sha256": "63c564dc4664195b3dc48d10174cc56a6886db93e8d0b22945bef49b81eb56b4",
+      "bytes": 37642,
+      "role": "historical accepted disposition/question or publication context; no new semantics/runtime evidence",
+      "liveOriginSha256Now": "63c564dc4664195b3dc48d10174cc56a6886db93e8d0b22945bef49b81eb56b4",
+      "liveOriginMatches": true
+    },
+    {
+      "origin": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-snapshot-creation-minimum-plan-dispositions.md",
+      "copy": "context/transaction-snapshot-creation-minimum-plan-dispositions.md",
+      "sha256": "83ca3b0e8b058849f28f539020956f0eedf8aa933a1b892da2c990d0d55e5b35",
+      "bytes": 7409,
+      "role": "historical accepted disposition/question or publication context; no new semantics/runtime evidence",
+      "liveOriginSha256Now": "83ca3b0e8b058849f28f539020956f0eedf8aa933a1b892da2c990d0d55e5b35",
+      "liveOriginMatches": true
+    },
+    {
+      "origin": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-snapshot-creation-minimum-root-acceptance.md",
+      "copy": "context/transaction-snapshot-creation-minimum-root-acceptance.md",
+      "sha256": "74acea0252ae7555e6df4e09e0941a8b5b16fb6548d4f130b37cf43ab445a9fa",
+      "bytes": 2510,
+      "role": "historical accepted disposition/question or publication context; no new semantics/runtime evidence",
+      "liveOriginSha256Now": "74acea0252ae7555e6df4e09e0941a8b5b16fb6548d4f130b37cf43ab445a9fa",
+      "liveOriginMatches": true
+    },
+    {
+      "origin": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-snapshot-creation-minimum-root-code-dispositions.md",
+      "copy": "context/transaction-snapshot-creation-minimum-root-code-dispositions.md",
+      "sha256": "5a2e4075b6e452fedefc4d9c7629963e9f203a90c7386f367526694d4f3f393c",
+      "bytes": 2243,
+      "role": "historical accepted disposition/question or publication context; no new semantics/runtime evidence",
+      "liveOriginSha256Now": "5a2e4075b6e452fedefc4d9c7629963e9f203a90c7386f367526694d4f3f393c",
+      "liveOriginMatches": true
+    },
+    {
+      "origin": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/snapshot-serving-final-dispositions.md",
+      "copy": "context/snapshot-serving-final-dispositions.md",
+      "sha256": "8ea569797643fe2bf8bfc1fd50bc1359beced7f02aa30c9b4ee82220d3aeb991",
+      "bytes": 4236,
+      "role": "historical accepted disposition/question or publication context; no new semantics/runtime evidence",
+      "liveOriginSha256Now": "8ea569797643fe2bf8bfc1fd50bc1359beced7f02aa30c9b4ee82220d3aeb991",
+      "liveOriginMatches": true
+    },
+    {
+      "origin": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-metadata-event-assessment.md",
+      "copy": "context/transaction-metadata-event-assessment.md",
+      "sha256": "b42e4567356d997c6e911cd371a1169d3f068717558a7cb60af4d425fb18a72b",
+      "bytes": 11880,
+      "role": "historical accepted disposition/question or publication context; no new semantics/runtime evidence",
+      "liveOriginSha256Now": "b42e4567356d997c6e911cd371a1169d3f068717558a7cb60af4d425fb18a72b",
+      "liveOriginMatches": true
+    },
+    {
+      "origin": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-metadata-event-question-pending.md",
+      "copy": "context/transaction-metadata-event-question-pending.md",
+      "sha256": "f83988d873c3ee1f0fdfa50a4f73d7e115903dfbafd49a9032e54a2a66ccdf36",
+      "bytes": 743,
+      "role": "historical accepted disposition/question or publication context; no new semantics/runtime evidence",
+      "liveOriginSha256Now": "f83988d873c3ee1f0fdfa50a4f73d7e115903dfbafd49a9032e54a2a66ccdf36",
+      "liveOriginMatches": true
+    },
+    {
+      "origin": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-event-serving-plan.md",
+      "copy": "context/transaction-event-serving-plan.md",
+      "sha256": "ce4bb0e6b1d3f31c7512b515c369f3dd6f3bd6c650fe36d05432180d06719fad",
+      "bytes": 16683,
+      "role": "historical accepted disposition/question or publication context; no new semantics/runtime evidence",
+      "liveOriginSha256Now": "ce4bb0e6b1d3f31c7512b515c369f3dd6f3bd6c650fe36d05432180d06719fad",
+      "liveOriginMatches": true
+    },
+    {
+      "origin": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-selector-command-operator-rulings.md",
+      "copy": "context/transaction-selector-command-operator-rulings.md",
+      "sha256": "5f7c78447789da4df73c616c174a23832d4b72b4c00238a3c7c26240993d2611",
+      "bytes": 3150,
+      "role": "historical accepted disposition/question or publication context; no new semantics/runtime evidence",
+      "liveOriginSha256Now": "5f7c78447789da4df73c616c174a23832d4b72b4c00238a3c7c26240993d2611",
+      "liveOriginMatches": true
+    },
+    {
+      "origin": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-minimum-read-receiving-plan/operator-ruling.json",
+      "copy": "context/transaction-minimum-read-receiving-plan/operator-ruling.json",
+      "sha256": "c09f81e8a825efee610eb9b8a9b3a42c5b8a83728ded9d92e180c3cdb6197608",
+      "bytes": 1243,
+      "role": "historical accepted disposition/question or publication context; no new semantics/runtime evidence",
+      "liveOriginSha256Now": "c09f81e8a825efee610eb9b8a9b3a42c5b8a83728ded9d92e180c3cdb6197608",
+      "liveOriginMatches": true
+    },
+    {
+      "origin": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/current-changefeed-publication-1/publication.json",
+      "copy": "context/current-changefeed-publication-1/publication.json",
+      "sha256": "e3318cb8ecae14d77c73b42fde686eaa118cb2f86877323c4cb336ca8531b0b0",
+      "bytes": 908,
+      "role": "historical accepted disposition/question or publication context; no new semantics/runtime evidence",
+      "liveOriginSha256Now": "e3318cb8ecae14d77c73b42fde686eaa118cb2f86877323c4cb336ca8531b0b0",
+      "liveOriginMatches": true
+    },
+    {
+      "origin": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/profile-delivery-cold-client-audit/audit.md",
+      "copy": "context/profile-delivery-cold-client-audit/audit.md",
+      "sha256": "d04dcc4e3f61778a34d85eae8ddbfb3b4a651f8832553bbfb7b6c7506c27fb51",
+      "bytes": 11027,
+      "role": "historical accepted disposition/question or publication context; no new semantics/runtime evidence",
+      "liveOriginSha256Now": "d04dcc4e3f61778a34d85eae8ddbfb3b4a651f8832553bbfb7b6c7506c27fb51",
+      "liveOriginMatches": true
+    },
+    {
+      "origin": "/Users/dbox/repos/wt/vickie/bdp-client-design/checkout/docs/architecture/bdp-client-v2/design.md",
+      "copy": "context/sole-plan-snapshot.md",
+      "sha256": "342a652370ef0501f93ea4705d4013974344804b18aff2c7546c70ea1fa2ee56",
+      "bytes": 344551,
+      "role": "sole plan frozen read-only context; active ledger root-owned",
+      "lineRanges": [
+        [
+          129,
+          144
+        ]
+      ],
+      "liveOriginSha256Now": "ad94e9bd61027b59698032bbd27b2f96e724bb9a43b7a28630bdf4cb32c78e02",
+      "liveOriginMatches": false
+    },
+    {
+      "origin": "/Users/dbox/repos/wt/vickie/vickie-current-changefeed-minimum/apps/bdptest/src/transactional-matrix.test.ts",
+      "copy": "source/apps/bdptest/src/transactional-matrix.test.ts",
+      "sha256": "95e07ead41f9cb39087a155e87cad22998d92cd3967cb9c3c446568ff6139bc8",
+      "bytes": 183859,
+      "role": "bounded matrix/fixture duplicate-check only",
+      "lineRanges": [],
+      "liveOriginSha256Now": "95e07ead41f9cb39087a155e87cad22998d92cd3967cb9c3c446568ff6139bc8",
+      "liveOriginMatches": true
+    },
+    {
+      "origin": "/Users/dbox/repos/wt/vickie/vickie-current-changefeed-minimum/packages/conformance/test-support/transactional/fixture-v1.json",
+      "copy": "source/packages/conformance/test-support/transactional/fixture-v1.json",
+      "sha256": "3a7899ced771d4880066d98b0000c53f801ece53458502cc4f3bc641146c9a85",
+      "bytes": 716,
+      "role": "bounded matrix/fixture duplicate-check only",
+      "lineRanges": [],
+      "liveOriginSha256Now": "3a7899ced771d4880066d98b0000c53f801ece53458502cc4f3bc641146c9a85",
+      "liveOriginMatches": true
+    },
+    {
+      "origin": "/Users/dbox/repos/wt/vickie/vickie-current-changefeed-minimum/packages/server/src/transaction-read.ts",
+      "copy": "source/packages/server/src/transaction-read.ts",
+      "sha256": "bde7e3069f4a1cb028acaba725ad6f3bcdef692f914284f668631c700fe17683",
+      "bytes": 16779,
+      "role": "ordinary query continuation exclusion/context distinction; not conflated with Scope Snapshot",
+      "lineRanges": [
+        [
+          1,
+          4
+        ],
+        [
+          29,
+          63
+        ],
+        [
+          355,
+          403
+        ]
+      ],
+      "liveOriginSha256Now": "bde7e3069f4a1cb028acaba725ad6f3bcdef692f914284f668631c700fe17683",
+      "liveOriginMatches": true
+    }
+  ],
+  "liveOriginsMatching": 36,
+  "knownMutableOriginDrift": [
+    "/Users/dbox/repos/wt/vickie/bdp-client-design/checkout/docs/architecture/bdp-client-v2/design.md"
+  ],
+  "mutableOriginQualification": "Only root-owned active design.md has advanced; exact bound sole-plan snapshot remains historical and unchanged. No incoming ledger/spec update adopted.",
+  "all679CurrentSourceBytesVerified": true,
+  "sourceMapSha256": "ff8ad56f23c3d7ee6e652724501cdaa16ec9551ea24b1673dc6c74bf5c1c06b7",
+  "specSha256": "67772742d7d08f48c12196e9789f1859ad2d0e19f133ea65e197b049361f84f8",
+  "commitMetadataSource": "Exact preserved root publication record, not fresh Git/CI query",
+  "sourceHead": "cce884ccea1db97cbc6fd7bff876d4d6091f9081",
+  "sourceTree": "6757829bd5b700faf28df39071190a272add90c9",
+  "sourceParent": "a56254d682cf4623cab22a552e3d2f695f691795",
+  "futureOwnedPaths": 1,
+  "callbacks": 2,
+  "requests": [
+    15,
+    13
+  ],
+  "children": [
+    1,
+    2
+  ],
+  "savedOracleMutations": 5,
+  "savedOraclesExecuted": false,
+  "runtimeHelperCompilerGitSourceOrFlagAction": false
+}

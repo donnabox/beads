@@ -1,0 +1,28 @@
+{
+  "state": "PROPOSED PRIVATE SOURCE API; no public/wire schema",
+  "functions": {
+    "assembleProfileEvidence": "(selection, configuration, artifacts, observations, attempt) -> deeply detached/frozen ProfileEvidenceV1",
+    "verifyProfileEvidence": "(selection, configuration, artifacts, observations, attempt, evidenceSource) -> ProfileEvidenceV1 or fixed ProfileEvidenceError",
+    "serializeProfileEvidence": "(verifiedOrAssembledEvidence, transientCredentialValues) -> canonical UTF8 bytes; never stdout/automatic files"
+  },
+  "selection": "existing canonical factory brand, profile read-update|transactional, historyfalse only",
+  "configuration": "existing factory-bound ServedProfileConfiguration, every actual field preserved; compare profile/history to selection and fixture digest to parsed artifacts",
+  "artifacts": {
+    "RU": {
+      "kind": "read-update",
+      "set": "existing branded ReadUpdateArtifactSet; copy exact sources through copyReadUpdateArtifactSetSources; retain current two-shard index/manifest/fixture/coverage policies"
+    },
+    "TX": {
+      "kind": "transactional",
+      "manifest": "ConformanceArtifactSource exact bytes",
+      "fixture": "ConformanceArtifactSource exact bytes",
+      "coverage": "ConformanceArtifactSource exact current coverageVersion1 bytes; preserve colon-joined assertion binding convention, not RU dot spelling",
+      "binding": "create canonical TXv2 bundle from exact supplied source; full required ownership map includes null for234 missing current IDs; no new TX index/action language"
+    }
+  },
+  "observations": "closed array ordered by RU shard order or one TX owner transactional-baseline; each record has ownerId, sourceCommit, configuration(existing brand), runtimeConfigurationIdentity, exactConfiguration(non-secret transport record), ready summaries, reportSource(exact raw existing wrapper bytes containing result), expectedReportSha256, lifecycle record. Absent/failed reports can be null; no report substituted by wrapper. Report has existing ConformanceRunResultv4 fields, no custom runner result type.",
+  "reportExtraction": "parse bounded exact existing wrapper source; read existing .result without altering it; rawWrapperSha256 binds exact bytes; canonicalResultSha256 is explicitly a derived digest, never an installed payload normalization. Unused unknown wrapper fields are neither trusted nor serialized. Compare whitelisted source/config/session fields to trusted context; no caller structural cast becomes a bound configuration.",
+  "attempt": "closed data: outcome running|failed|observed; failureStages subset execution/assertion/cleanup/credential-check; owner states from existing writer; reported lifecycle facts/explicit unknown; sourceDirty boolean|null (null unavailable never false); unresolvedConditions list from frozen plan/adapters, not N/A certificates",
+  "ownData": "reuse ownData/copySourceBytes intrinsic capture before parsing; reject proxies/getters/unknown API keys/functions; detach supplied source bytes and evidence data once. No file IO/process/network/service callbacks in pure module.",
+  "noTruthByHash": "Expected hashes and labels establish byte identity only; trusted external installer/owner/root run provenance establishes truth. The carrier never verifies a service merely by agreement of its own assertions."
+}

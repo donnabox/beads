@@ -1,0 +1,26 @@
+{
+  "checkedAt": "2026-10-14T18:52:58.939306+00:00",
+  "journalSha256": "0a43c68254b9f930f2c0bcc1df5b0ae13264c3a7c56d4c09ce2e6266bc3db900",
+  "actualCounts": {
+    "raw-attempt": 6,
+    "client-attempt": 30,
+    "client-return": 30,
+    "launched": 2,
+    "child-exit": 2
+  },
+  "failedAssertions": [
+    {
+      "action": "owned-metadata",
+      "assertion": "metadata"
+    }
+  ],
+  "beforeCleanup": false,
+  "afterCleanup": true,
+  "pidsAbsent": [
+    1923,
+    1924
+  ],
+  "directoriesAbsent": true,
+  "originalCICause": "unresolved",
+  "reportFullyRead": true
+}

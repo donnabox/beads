@@ -1,0 +1,44 @@
+{
+  "actualEffectiveClosure": {
+    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-first4-capture2-effective-authority-native-precision-1/closure.json",
+    "sha256": "2f05d0e71b4527b0dd703d85f14a93fa7cf0442eb1210c3918b0a550840913a8"
+  },
+  "actualFrozenBase": {
+    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-first4-capture2-native-precision-1/closure.json",
+    "sha256": "cbccf288d8bd9abdfc76a7cebd6cf5f15e970e157134a31c9e3871538c205949"
+  },
+  "baseAccepted": false,
+  "baseKnownGapClosed": true,
+  "baseMechanicsConditionallyAcceptable": true,
+  "effectiveAccepted": true,
+  "finalDataVerificationPassed": true,
+  "knownBaseGap": "External manifest literal check absent in original base; retained false/conditional historical review",
+  "manifestFinding": false,
+  "meaning": "Effective accepted review composes exact original base plus four insertion replacements and closes the known gap. No manifest predicate requires original base review to be retroactively accepted. Original false labels remain immutable.",
+  "noSubjectEvaluation": true,
+  "ownInitialAssumption": "Both base and effective native accepted must be true",
+  "ownInitialDataFailure": "integrity-verification.json preserves nativeprotocolaccepted false; no subject action",
+  "tools": [
+    {
+      "currentFilesystemMatch": true,
+      "invoked": false,
+      "path": "/Users/dbox/.cache/node/corepack/v1/pnpm/11.20.0/bin/pnpm.cjs",
+      "realpath": "/Users/dbox/.cache/node/corepack/v1/pnpm/11.20.0/bin/pnpm.cjs",
+      "sha256": "67b035e322203961795e8e34ca63a08c37a4386eda94107fb3d28f3246d882ad"
+    },
+    {
+      "currentFilesystemMatch": true,
+      "invoked": false,
+      "path": "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+      "realpath": "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+      "sha256": "1ee75375e33b94fc34b3b19aede049e11dae90efb63b374dc96d6bdace70c4b8"
+    },
+    {
+      "currentFilesystemMatch": true,
+      "invoked": false,
+      "path": "/opt/homebrew/opt/python@3.14/bin/python3.14",
+      "realpath": "/opt/homebrew/Cellar/python@3.14/3.14.5/Frameworks/Python.framework/Versions/3.14/bin/python3.14",
+      "sha256": "2477b47fa3ae65b9574eb18a15edb364e96948eaa1875ad3f1c80d780efc9c12"
+    }
+  ]
+}

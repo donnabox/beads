@@ -1,0 +1,17 @@
+--- a/packages/server/src/transaction-read.test.ts
++++ b/packages/server/src/transaction-read.test.ts
+@@ -615,7 +615,13 @@
+     const f = fixture();
+     const seeded = f.write([
+       ...seed,
+-      { operation: "createLink", id: "links/out", type: link, source: "beads/a", target: "beads/b" },
++      {
++        operation: "createLink",
++        id: "links/out",
++        type: link,
++        source: "beads/a",
++        target: "beads/b",
++      },
+     ]);
+     expect(seeded.status).toBe("completed");
+     let entries = 0,

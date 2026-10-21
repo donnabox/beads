@@ -1,0 +1,9 @@
+# Combined validation plan2 overlay precision
+
+No further findings. The effective plan closes CVP1-N1 as DATA precision only: the same format-check and lint stages keep their original executable/command/config prefix and now target exactly all28 changed supported paths (24TS/3MJS/1JSON). The sole Markdown delta has explicit document-review and686-byte-map coverage, with no Biome Markdown pass, extra tool/stage or format-write claim.
+
+All seven overlay bytes and mirror match. The complete190-file effective map resolves189 files to immutable plan1 and only prospective-stages.json to plan2. All191 physical plan1 files match the fullnative1 copied basis and sole docs mirror; the original Medium finding/report are preserved. Genuine forward/inverse patches regenerate exactly. The other67 stage objects,69-stage order,25 immediate pairs and every selection/grammar/cap/deadline remain unchanged. Current686 source hashes still equal5b38717e… default-sorted map identity; compact28a77cfb… is only a distinct serialization.
+
+The fullnative1 review remains the substantive basis:51 source/21 persisted/two sourceHTTP;44 inherited;21 installed/126HTTP/twoCONNECT/33ordinary+fourguards/37children/42parent acquisitions; six same-future-consumer TXcold; exact272 outputs/stock78-71/external76-69;15 unexecuted auditor DATA controls. All phase/log-versus-PIPE and historical-review coverage limits remain in force. No historical runtime/artifact/proof passes transfer.
+
+This closure accepts only the effective CLOSED DATA plan. Concrete helper/root-capture/gate/strict report/package/consumer mechanics, the FIRST combined actual CODE/terminal/disposition, actual fresh proof identities, runtime authority and observed validation remain separate prerequisites. No source, helper, schema, compiler, test, runtime, reviewer, Git or flag action occurred.

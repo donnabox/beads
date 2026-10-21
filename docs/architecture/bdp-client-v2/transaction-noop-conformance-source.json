@@ -1,0 +1,38 @@
+{
+  "source": "bec97a7a00b8df663a62004e1ee640303d8527fa",
+  "tree": "f173c70f0806b72fa75075b1cdb1ce35d0c14bf0",
+  "parents": [
+    "32711dc30598c3b30947fbb54dd229e110eb4f82"
+  ],
+  "clean": true,
+  "files": {
+    "apps/bdptest/src/transactional-matrix.test.ts": {
+      "bytes": 52273,
+      "sha256": "c524b3ce99400715d6fff0bb70bd0cd46e3e1996f5a8bf942b08af3d9f8f1b79"
+    },
+    "packages/conformance/src/transactional-cumulative.test.ts": {
+      "bytes": 64596,
+      "sha256": "c20afbe3995d4321630db7e706d84dacfe78d1b2b6b14ebe815b61a076233570"
+    },
+    "packages/conformance/test-support/transactional/coverage-v1.json": {
+      "bytes": 70662,
+      "sha256": "8a770b4371689a3d9d5f84ecfc7a1d9b72715c81e617cf0ea5ae04e55c66098e"
+    },
+    "packages/conformance/test-support/transactional/manifest-v1.json": {
+      "bytes": 488280,
+      "sha256": "0358cbf7416321bb911e990259236f89bc2720cbc29d037581f542080d9f32ab"
+    }
+  },
+  "claimEligible": false,
+  "base": "ea584103f0dc90ae365970bb672f24bedf318e42",
+  "branch": "codex/vickie-noop-conformance",
+  "checkout": "/Users/dbox/repos/wt/vickie/vickie-noop-conformance",
+  "initialFrozenSource": "32711dc30598c3b30947fbb54dd229e110eb4f82",
+  "productionUnchangedFromBase": true,
+  "artifactsUnchangedFromInitialFreeze": true,
+  "originalRowsPreserved": {
+    "manifest": 10,
+    "coverage": 10
+  },
+  "agentSignature": "Separate client actions from HTTP exchanges in no-op evidence\n\nAgent-Signature: Vickie; Codex; unknown-model; unknown-reasoning"
+}

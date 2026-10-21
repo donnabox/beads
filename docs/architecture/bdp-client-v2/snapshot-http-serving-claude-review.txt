@@ -1,0 +1,78 @@
+## Review — frozen S1b commit `18c2abc` vs parent `f72566b`
+
+**What I verified, independently of the author's report**
+
+- Read the full eight-file diff and the complete post-change `transaction-snapshot.ts`, the snapshot block in `transaction-http.ts`, `observeSnapshot` in `transaction-store.ts`, `transaction-service.ts#snapshot`, plus the surrounding primitives they depend on (`enter`/`atomic`/`fence`, `applyReadHttpSemantics`/`conditionalReadStatus`/`tagListMatches`, `jsonResponse`, `deliver`, runtime `close`, `classifyAliasPath`, `storedRecord`, `transactionCheckpoint`), the normative spec (`#scope-snapshots` 5824–5971, `#conditional-reads-and-head` 1978–2006, `#transactional-conditional-reads` 5790–5814), the refreshed plan and the report.
+- Ran the real tests: `transaction-snapshot-http.test.ts` **12/12 pass**; `transaction-http` + `transaction-snapshot` + `transaction-service` + `transaction-store` + `transaction-changefeed` + `transaction-events` + `transaction-runtime-configuration` + `read-http` = **393 pass, 1 fail**. The single failure is `read-http.test.ts:399` (`expect(() => JSON.stringify(deep)).toThrow(RangeError)`) — untouched code, Node 26 in my environment vs. the repo's pinned 24.16.0. Not attributable to this commit.
+- `tsc -p tsconfig.check.json` exit 0; `check-dependency-boundaries` exit 0; biome lint on the four production files shows only the pre-existing `noNonNullAssertion` warning class the report already discloses.
+- Ran live loopback probes against the built runtime for behaviors the new tests do **not** assert, and measured the decision path on a near-ceiling scope (4000 beads, ~1 KiB each).
+
+**No introduced correctness bugs found.** Specifically confirmed correct, not just claimed: fixed-width preflight witnesses are genuinely width-identical to a real capture (nil UUID is 36 chars, zero seed is 64 hex chars, HMAC base64url is 43 chars regardless of seed, and `storedRecord` ignores the `source`/`target` index columns, so preflight-decoded and readback-decoded items serialize identically); `applyReadHttpSemantics` is idempotent on non-200 and validator-free, so the second application in `handle` cannot turn an allocated capture into a 304/412/406; `atomic` rolls back cleanly and rethrows the original error without fencing for a non-SQLite `TransactionSnapshotFailure`, so the same-entry catch in `observeSnapshot:1326` is post-rollback and its context (read once at entry start, unaffected by `expire`) is accurate; expiry equality is live and one ms later is 410; issued-vs-unissued continuations under an expired handle are 410-vs-404 including after purge/reopen; a guessed ordinal-0 token is 404; `timingSafeEqual` can never throw on length mismatch because the regex fixes the width and the ordinal bound short-circuits; alias routes live under `<scope>alias/` so the new `<scope>snapshot` route shadows nothing; runtime `close` awaits all pending HTTP tasks before `service.close()`, so the two-phase create cannot straddle service shutdown over HTTP.
+
+---
+
+### 1. MEDIUM — the nonallocating decision path does a full capture's work with no backpressure and no rate limit
+`packages/server/src/transaction-http.ts:362` (`service.snapshot({ kind: "preflight" })`) → `packages/server/src/transaction-snapshot.ts:787-789` → `607-611`.
+
+**Issue.** Every creation HEAD/304/412/406 runs the complete bounded pass — ledger + live-ledger validation, per-record decode/validate (`record`), the outgoing index, `checkGraph` over the whole graph, full page packing with SHA-256 digests, and prospective manifest/page serialization — inside the exclusive owner entry. By design it allocates nothing, which also means it consumes no live handle and therefore never trips the only pressure valve this slice has (`liveHandles: 8` → 503).
+
+**Impact (measured, 4000 beads / ~4 MiB of bodies, this machine):** `HEAD` 90 ms, `If-None-Match: *` 304 85 ms, `If-Match:"x"` 412 86 ms, `Accept: text/plain` 406 85 ms — versus 5 ms for a retained manifest GET. All owner work is serialized on a single `busy` entry, so roughly 11 such requests per second saturate the owner for 100% of wall clock, blocking every mutation, point read, changefeed and retained snapshot read. There is no rate limit or connection cap anywhere in `transaction-runtime.ts`/`transaction-runtime-configuration.ts`, and unlike GET creation this path cannot be refused with 503. Cost at the real 32 MiB/4096-record ceiling with owned topology is higher still. The progress note discloses only "not a constant-time operation" (line 22) and "ledger/detail scans have nonconstant cost under the owner lock" (line 51) — neither names the asymmetry that the *nonallocating* path is both unmetered and unrefusable, and no evidence predicate covers repeated-decision cost.
+
+**Fix.** Keep the strict nonallocation semantics (they are plan-mandated, and test 12's HEAD-observes-corruption predicate requires the full graph pass). Either (a) add this explicitly to the known-gaps paragraph in `docs/design/transaction-snapshot-serving-progress.md:49-51` — "repeated nonallocating creation decisions are unmetered, cost one full bounded pass each under the exclusive owner entry, and are not subject to the eight-handle refusal" — and add a measured repeated-decision predicate alongside the existing `offline4097-realHTTP413` witness; or (b) if a mitigation is in scope for a follow-up, gate it on the cheap prefix that already exists (`ledgerBounds()`/`totals` count-and-byte checks at `transaction-snapshot.ts:613-620` are O(1)-ish and answer 413/503 without any decode), deferring the full pass only where corruption detection genuinely requires it.
+
+### 2. LOW-MEDIUM — a successful GET creation does the bounded pass twice, avoidably
+`packages/server/src/transaction-http.ts:361-366`.
+
+**Issue.** For `target.kind === "create"` the preflight always runs, then a GET that survives it runs the whole pass again in `service.snapshot(target)`. But the preflight contributes nothing to a GET whose `Accept` is acceptable and whose preconditions pass: `conditionalReadStatus` is evaluated against `headers.get("etag")`, which is `null` for both the preflight response and the final manifest response, and both responses are status 200 `application/json`. So the decision is a pure function of request headers in that case, and if the preflight had instead failed, the capture entry returns the identical problem code/status.
+
+**Impact.** Measured 185 ms for a successful creation GET versus ~90 ms for the decision alone on the same 4000-record scope — the common success path costs 2× the necessary exclusive owner-lock time. Compounds finding 1.
+
+**Fix.** Run the preflight only when it can change the outcome:
+```ts
+const probe = applyReadHttpSemantics(request, {
+  status: 200,
+  headers: new Headers({ "content-type": "application/json" }),
+});               // header-only, owner-free: same status/content-type/absent-etag inputs
+if (request.method === "HEAD" || probe.status !== 200) {
+  const decision = applyReadHttpSemantics(
+    request, snapshotResponse(await service.snapshot({ kind: "preflight" })));
+  if (decision.status !== 200 || request.method === "HEAD") return decision;
+}
+```
+This preserves every pinned behavior — no allocation on HEAD/304/412/406, observed context and `Vary: Accept` on 406/304/412, real capacity/integrity failures not converted into conditional success — because the only paths that skip the preflight are GETs that go straight to the allocating capture and return its own status and same-entry context.
+
+### 3. LOW — uncovered scope: creation by a `canMutate: false` principal is an explicit plan requirement with no test
+`packages/server/src/transaction-snapshot-http.test.ts:237` is the only use of the `reader` credential, and it covers retained manifest/page refetch only.
+
+**Issue/impact.** Plan item 4 states "canMutate=false does not deny a safe Snapshot read"; the report's predicate 1 claims only "a second authenticated read-only principal reads it". The *creation* target is also a safe GET, and nothing in the route checks `canMutate`. I confirmed by live probe that `GET <scope>snapshot` with the read-only credential returns 200 with a schema-shaped manifest, `Vary: Accept`, `cache-control: private, no-store` and context. So this is uncovered scope, not a defect — but a future `canMutate` guard added to this route (as the operation branch at `transaction-http.ts:253` does) would regress silently.
+
+**Fix.** In test 2 or test 1, issue one creation with `{ headers: { authorization: `Bearer ${reader}` } }` and assert 200 plus a usable `id`.
+
+### 4. LOW — uncovered scope: continuation page bodies are never schema-validated
+`packages/server/src/transaction-snapshot-http.test.ts:57-58` compiles only `snapshotManifest` and `transactionalProblem`; `collect()` at `183-195` asserts status 200 and then reads `items`/`next` untyped.
+
+**Issue/impact.** Predicate 1 claims "creates a schema-valid manifest, follows both streams to null independently" — validity is asserted for the manifest only. I checked `schemas/bdp-v0.schema.json`: `beadCollection`/`linkCollection` require exactly `items` + `next` with `additionalProperties: false`, and the manifest additionally forbids a `links` affordance on bead items; the served `{items, next}` pages satisfy both (the same stored bodies back the inline first page, and test 1 line 263-266 shows the captured records carry no `links`). So no defect — a coverage gap on the one body shape that is only reachable over the new route.
+
+**Fix.** Compile `{ $ref: `${schema.$id}#/$defs/beadCollection` }` and `linkCollection`, and assert the matching one on each page inside `collect()`.
+
+### 5. LOW — uncovered scope: the preflight-specific byte-bound witnesses never run near their ceilings
+`packages/server/src/transaction-snapshot.ts:765-775` (`firstPage`, `"serialized page bound"`) and the preflight call into `manifestValue`'s `"serialized manifest bound"` at `604`.
+
+**Issue/impact.** The report claims preflight "validates prospective first-page/manifest byte bounds with the same serializer" — true in code, but the only boundary coverage is `transaction-snapshot.test.ts:742-747`, which exercises the retained path (`retain = true`). The new core test touches preflight only through a 503. A related by-design consequence is also unproven: because preflight and capture are separate owner entries, a scope sitting exactly on the 4 MiB/10 MiB boundary can yield HEAD 200 followed by GET bodyless 500 (the plan sanctions this — "capture-time capacity/integrity failure remains the real failure"), and nothing demonstrates it. Consistent with the disclosed unrun byte-cap stress; listing it so it is not mistaken for proven.
+
+**Fix.** Add a `preflight` assertion to the existing page-boundary core test (same fixture, assert it succeeds and writes no rows), so the shared packing boundary is witnessed on both branches.
+
+### 6. LOW — latent invalid `Retry-After: Infinity`
+`packages/server/src/transaction-snapshot.ts:627` and `:689`.
+
+**Issue.** `Math.min(...live.map((row) => row.d.expires))` returns `Infinity` for an empty `live`, which reaches HTTP as `String(result.retryAfter)` at `transaction-http.ts:345` — an invalid header value.
+
+**Impact.** Unreachable today, and only by an unstated coincidence of two unrelated constants: the 503 branch with `live.length === 0` requires `totals.bytes > liveRecordBytes` (64 MiB), which the earlier 413 check at `:619` forecloses because `recordBytes` is 32 MiB. Nothing in the code asserts or documents `recordBytes < liveRecordBytes`, so retuning either limit silently turns this into a malformed response.
+
+**Fix.** `live.length === 0 ? 0 : Math.max(0, Math.ceil((Math.min(...) - now) / 1000))`, or an `integrity(limits.recordBytes < limits.liveRecordBytes, ...)` at construction.
+
+---
+
+### Uncovered scope that is correctly disclosed (not findings)
+
+Supplied `BDP-Scope-Epoch`/`BDP-Authorization-View`/`BDP-Minimum-Scope-Position` on all three targets — bodyless 500 + `x-bdp-development-limit: minimum-position`, after auth and closed-shape validation, before any lookup or allocation, with no context attached and no conditional bypass; I confirmed the ordering in source (`transaction-http.ts:331-340`) and the tests pin GET and HEAD across create/manifest/page with a wildcard conditional. The overbroad marker name, the Q1 non-decision, 65,536-handle and 32 MiB HTTP stress, mutable view/epoch/erasure administration, CORS/`OPTIONS` (405 `Allow: GET, HEAD`, confirmed by probe), disconnect-to-`AbortSignal`, ceiling-owned topology, and public discovery/profile admission are all out of scope and accurately labelled in the report and `docs/design/transaction-snapshot-serving-progress.md`. Local query conventions (400 `invalid-parameter` for duplicate/extra/incomplete fields — including `?view=events`, `?snapshot=`, and an extension parameter appended to an issued manifest URL, all confirmed by probe) are disclosed route conventions, and well-shaped unknown identities correctly reach the owner and return 404 with context. `If-Modified-Since` being ignored (probe: 200) is pre-existing shared `read-http.ts` behavior, not introduced here.

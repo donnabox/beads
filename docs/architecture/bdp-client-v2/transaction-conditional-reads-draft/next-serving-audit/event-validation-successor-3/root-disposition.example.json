@@ -1,0 +1,11 @@
+{
+  "accepted": false,
+  "sourceBindingSha256": "37fd12b98906e89edf3a71a4c98bd1d19464160f9f61d98394300c602d402458",
+  "staticValidationAuthorized": false,
+  "actualClaudeSupplementDisposition": null,
+  "ordinaryIntegrationEvidence": null,
+  "note": "CLOSED template. Root must set accepted and staticValidationAuthorized true and approvedStages to the ordered typecheck/format-check/lint prefix for static release, consistently with execution-gate.json. Runtime additionally requires actualClaudeSupplementDisposed and ordinaryIntegrationAccepted in the gate plus recorded council/integration evidence; static permission alone cannot release runtime.",
+  "actualClaudeSupplementDisposed": false,
+  "ordinaryIntegrationAccepted": false,
+  "approvedStages": []
+}

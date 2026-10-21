@@ -1,0 +1,52 @@
+{
+  "sourceBindingSha256": "dca25dfc3d64137519d9eb636442d6f2d1fefdcff0954b4a793065644d691685",
+  "draftPatchSha256": "349cc7e3e66d4c71168af9de95c6034673909827813edcd863ce185ef650ea16",
+  "sourceUnchanged": true,
+  "counts": {
+    "sourcePositive": {
+      "cases": 90,
+      "http": 94,
+      "owners": 39,
+      "listeners": 19,
+      "directories": 20,
+      "readonlyInventoryHandles": 17,
+      "installedChildren": 0
+    },
+    "controls": {
+      "cases": 2,
+      "expectedHttp": 2,
+      "maximumHttp": 52,
+      "owners": 2,
+      "listeners": 2,
+      "directories": 2,
+      "expectedReadonly": 0,
+      "maximumReadonly": 2,
+      "installedChildren": 0
+    },
+    "combinedSource": {
+      "cases": 92,
+      "expectedHttp": 96,
+      "plannedMaximumHttp": 146,
+      "positiveCeilingPlusControlCeiling": 152,
+      "owners": 41,
+      "listeners": 21,
+      "directories": 22,
+      "expectedReadonly": 17,
+      "maximumReadonly": 19
+    },
+    "installed": {
+      "cases": 1,
+      "http": 25,
+      "post": 19,
+      "get": 6,
+      "children": 1,
+      "directories": 1,
+      "reopens": 0,
+      "urls": 9,
+      "readonlyInventoryHandles": 0
+    }
+  },
+  "installedTotalBodyBytes": 35865,
+  "installedMaximumBodyBytes": 20054,
+  "unexecuted": true
+}

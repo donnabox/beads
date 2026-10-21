@@ -1,0 +1,8 @@
+{
+  "kind": "read-only-audit-preflight-expectation-correction",
+  "initialAssumption": "stage scratch temporaryDirectory should be absent",
+  "actual": "All four scratch/cache directories remain; runner runtimeDirectoriesStillPresent arrays empty. Scratch state is distinct from declared runtime ownership. No absence claim retained.",
+  "artifactCreatedBeforeFailure": false,
+  "sourceOrRuntimeAction": false,
+  "preservation": "Original failed preflight remains in tool transcript."
+}

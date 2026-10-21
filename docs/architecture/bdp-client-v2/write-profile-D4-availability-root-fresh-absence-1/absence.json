@@ -1,0 +1,43 @@
+{
+  "utc": "2026-10-18T16:29:32.243847+00:00",
+  "acceptedFreshRecordedProcessAbsence": true,
+  "actualRootToolSession": 46536,
+  "actualRootToolExitCode": 1,
+  "recordedPids": [
+    6539,
+    6548,
+    6549,
+    6553,
+    6555,
+    6556,
+    6557
+  ],
+  "recordedPgids": [
+    6548,
+    6549,
+    6553,
+    6555
+  ],
+  "allRecordedPidsAndGroupsAbsent": true,
+  "origins": {
+    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-D4-availability-actual-root-dispatch-1/caller-process.json": "8ac487fa96abb3df14208e62b7c75e7fa9a2cc59859330ba8715519e64106f17",
+    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-D4-availability-actual-root-dispatch-1/dispatch.json": "541ac420cbd7355caa0a83137ef1dbc97ba0a928cd5bae51f04d6b75ce900646",
+    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-D4-availability-actual-root-dispatch-1/caller-exit.json": "3649a3f8ee51e208b8004be78b4117fffd6c11e6c52b206954b962f41b66f35a",
+    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-D4-availability-actual-root-dispatch-1/index.json": "70be0ab9d959ca93a067632341cb20d4baf4202fcdef15d3d0a78a463a571b20",
+    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-D4-availability-root-authority-preparation-1/attempt/capture.jsonl": "ed703b665bcdde8a3a438d8d3259d1317970a5a4225730c2825298a4691cc93b",
+    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-D4-availability-root-authority-preparation-1/attempt/caller-terminal.json": "fc3e234b9225b0efeb4d37e4a2f7a326adc1d6efeda2f7ae9d6bb5c8930a93d5",
+    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-D4-synthetic-harness-preparation-4/availability-attempt/term.json": "2a6638ee826ca08bb746bf95b4c2b86cb54d2a64555819564f89ceb88debc9a9",
+    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-D4-synthetic-harness-preparation-4/availability-attempt/kill.json": "774288db03bd8a78995c708b86edba2d920f7a3e80d44ef519956254b1b6d799",
+    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-D4-synthetic-harness-preparation-4/availability-attempt/kill.capture.jsonl": "91c77a686a2fb8c31634b1fe1bab14d6b5e23dbd0fdc370b5cf8120e01af4427",
+    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-D4-synthetic-harness-preparation-4/availability-attempt/term.capture.jsonl": "f06c4ab509d70bd8debbc966310a570c39516aa83c464a2aae5ad1e6d80d8fe0",
+    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-D4-synthetic-harness-preparation-4/availability-attempt/started.json": "6ecd5c07756d6b62e8a26a6713eec36299c675657c2d098eb6c59f6da4b7e26b",
+    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-D4-synthetic-harness-preparation-4/availability-attempt/terminal.json": "7226918fe6058910f1ca4bfa773e2539ad328add20b2db76a4b198ac1826fe0b"
+  },
+  "rawCensusSha256": "c8ec0d71447cce30763e8b3822d264ee090d4005d7e5b2ecea058e2b94c51999",
+  "availabilityAccepted": false,
+  "clockDomainVerified": false,
+  "syntheticReleased": false,
+  "productReleased": false,
+  "noRetry": true,
+  "limitation": "Fresh actual recorded identity/group absence only; not all transient descendants/socket census/retroactive ownership certainty; original caller1/native215stderr failure unchanged."
+}

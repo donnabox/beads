@@ -1,0 +1,183 @@
+{
+  "accepted": true,
+  "head": "8ee4d86cadc9a1c79a9656cc8b106f34712b3ade",
+  "tree": "fb0cc3ac06be798fe6fe8ab69a1ad78ac5964257",
+  "stages": [
+    {
+      "name": "fresh-build",
+      "exit": 0,
+      "elapsedSeconds": 1.5646485418546945
+    },
+    {
+      "name": "read-seal",
+      "exit": 0,
+      "elapsedSeconds": 0.9127989169210196
+    },
+    {
+      "name": "build-inventory",
+      "exit": 0,
+      "elapsedSeconds": 0.9702712080907077
+    },
+    {
+      "name": "node-version",
+      "exit": 0,
+      "elapsedSeconds": 0.585750250145793
+    },
+    {
+      "name": "package-directory",
+      "exit": 0,
+      "elapsedSeconds": 1.1613881250377744
+    },
+    {
+      "name": "pack-protocol",
+      "exit": 0,
+      "elapsedSeconds": 0.8001099999528378
+    },
+    {
+      "name": "pack-server",
+      "exit": 0,
+      "elapsedSeconds": 0.7737720420118421
+    },
+    {
+      "name": "verify-tar",
+      "exit": 0,
+      "elapsedSeconds": 1.5499792501796037
+    },
+    {
+      "name": "prepare-consumer",
+      "exit": 0,
+      "elapsedSeconds": 1.447595207951963
+    },
+    {
+      "name": "consumer-install",
+      "exit": 0,
+      "elapsedSeconds": 0.9994939588941634
+    },
+    {
+      "name": "verify-installed",
+      "exit": 0,
+      "elapsedSeconds": 1.6819717909675092
+    },
+    {
+      "name": "conditional-positive",
+      "exit": 0,
+      "elapsedSeconds": 1.6135940828826278
+    },
+    {
+      "name": "conditional-positive-review",
+      "exit": 0,
+      "elapsedSeconds": 2.56594766699709
+    },
+    {
+      "name": "conditional-control",
+      "exit": 0,
+      "elapsedSeconds": 1.5412417920306325
+    },
+    {
+      "name": "conditional-control-review",
+      "exit": 0,
+      "elapsedSeconds": 2.6650807089172304
+    },
+    {
+      "name": "principal-positive",
+      "exit": 0,
+      "elapsedSeconds": 1.5152512500062585
+    },
+    {
+      "name": "principal-positive-review",
+      "exit": 0,
+      "elapsedSeconds": 2.953795582987368
+    },
+    {
+      "name": "principal-collapse",
+      "exit": 0,
+      "elapsedSeconds": 1.5069891249295324
+    },
+    {
+      "name": "principal-collapse-review",
+      "exit": 0,
+      "elapsedSeconds": 3.078529499936849
+    },
+    {
+      "name": "full-positive",
+      "exit": 0,
+      "elapsedSeconds": 6.49262004182674
+    },
+    {
+      "name": "full-positive-review",
+      "exit": 0,
+      "elapsedSeconds": 3.255408416967839
+    },
+    {
+      "name": "cross-batch",
+      "exit": 0,
+      "elapsedSeconds": 6.209541209042072
+    },
+    {
+      "name": "cross-batch-review",
+      "exit": 0,
+      "elapsedSeconds": 3.3261358339805156
+    },
+    {
+      "name": "cross-sequence",
+      "exit": 0,
+      "elapsedSeconds": 6.237282708054408
+    },
+    {
+      "name": "cross-sequence-review",
+      "exit": 0,
+      "elapsedSeconds": 3.5565562499687076
+    }
+  ],
+  "installedCases": 7,
+  "actualHttp": 712,
+  "cohorts": [
+    {
+      "name": "conditional-positive",
+      "actualHttp": 14,
+      "reviewSha256": "cebd1695b3c6da6844f5a60562a5673bdec82df6c1c523f7829788b6abecca76"
+    },
+    {
+      "name": "conditional-control",
+      "actualHttp": 4,
+      "reviewSha256": "47613e3a489f39aee1709ae6db2d1676ca303def05b968c50beb12ea0f1da90a"
+    },
+    {
+      "name": "principal-positive",
+      "actualHttp": 7,
+      "reviewSha256": "689a3c31c1cd5a0f4d66286e0ac2f4717ca888539daf3c1a3889e9736456a198"
+    },
+    {
+      "name": "principal-collapse",
+      "actualHttp": 2,
+      "reviewSha256": "a365cb5fb11c12fe96e8dacdb663ce2133ba5c2cd361e3f6e07a64fffbdc1981"
+    },
+    {
+      "name": "full-positive",
+      "actualHttp": 234,
+      "reviewSha256": "7c7bf7617c010feefd6aacacf71f8c70f91b2cc8efa7a0cf9b08eeeb65714310"
+    },
+    {
+      "name": "cross-batch",
+      "actualHttp": 225,
+      "reviewSha256": "84920303721da5b3b65faefbb48fb98f7361601a30374f4f0711ad9eacb6c523"
+    },
+    {
+      "name": "cross-sequence",
+      "actualHttp": 226,
+      "reviewSha256": "c0d6cbe967b5ee00e8a0f394ada03ddfc13dce942d0201f33a4664807037c024"
+    }
+  ],
+  "sampledPidsIndependentlyAbsent": 264,
+  "allOwnedRuntimeDirectoriesAbsent": true,
+  "sourceUnchanged": true,
+  "timing": {
+    "appElapsedMs": 5448.920167,
+    "appAssertionLimitMs": 63000,
+    "cohortAbortMs": 90000,
+    "testTimeoutMs": 120000,
+    "supervisorElapsedSeconds": 6.49262004182674
+  },
+  "claimEligible": false,
+  "limitations": "Bounded private installed Transactional evidence, not full profile qualification. Prior56 source diagnostics retain2dfd attribution with exact content equivalence. No main merge or public profile activation."
+}

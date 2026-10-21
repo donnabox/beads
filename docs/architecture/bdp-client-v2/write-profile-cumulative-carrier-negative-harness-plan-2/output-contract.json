@@ -1,0 +1,109 @@
+{
+  "state": "Prospective exact schemas; actual source-dependent final serialization must be frozen/reviewed before execution",
+  "perVariantExactKeys": [
+    "kind",
+    "syntheticOnly",
+    "caseId",
+    "variant",
+    "attemptId",
+    "planSha256",
+    "harnessImplementationSha256",
+    "subjectImplementationSha256",
+    "helperFileSha256",
+    "mutation",
+    "fixtureInventory",
+    "sourceBinding",
+    "target",
+    "rawStreams",
+    "trace",
+    "ownership",
+    "oracle",
+    "elapsedSeconds",
+    "claimEligible",
+    "productCalls",
+    "productCallbacks"
+  ],
+  "fixed": {
+    "kind": "private-carrier-negative-control",
+    "syntheticOnly": true,
+    "claimEligible": false,
+    "productCalls": 0,
+    "productCallbacks": 0
+  },
+  "mutationKeys": [
+    "sourceLocation",
+    "name",
+    "beforeSha256",
+    "afterSha256",
+    "allowedSubstitutions"
+  ],
+  "targetKeys": [
+    "createdPid",
+    "createdPgid",
+    "createdParent",
+    "rawExit",
+    "stdoutEOF",
+    "stderrEOF",
+    "returnAvailability",
+    "reachedPhase"
+  ],
+  "rawStreamKeys": [
+    "path",
+    "receivedBytes",
+    "savedBytes",
+    "hashedPrefixBytes",
+    "savedPrefixSha256",
+    "actualEOF",
+    "fullStreamSha256",
+    "identity",
+    "availability"
+  ],
+  "rawRule": "Both actual EOF/raw terminal for completed target; partial/blocked target can show null raw/EOFfalse/UNKNOWN with exact retained prefix, never synthetic full hash. Outer/root must itself complete both pipes/terminal and real closure before any matched negative classification.",
+  "oracleKeys": [
+    "expectedRefusalOrOrdering",
+    "matched",
+    "reasonCode",
+    "actualRefusalClass",
+    "actualRefusalCode",
+    "healthyBaselineReachability",
+    "mutationOnly",
+    "noUnexpectedSpawn",
+    "rawEvidencePins",
+    "actualClosurePins",
+    "scopeLimitations"
+  ],
+  "reasonCodes": [
+    "matched-synthetic-refusal",
+    "matched-synthetic-ordering",
+    "unexpected-accept",
+    "unexpected-refusal",
+    "unreached-target",
+    "unexpected-spawn",
+    "missing-evidence",
+    "late",
+    "capacity",
+    "ownership-unknown"
+  ],
+  "evidence": "Actual raw exit+both streams/EOF, full or honest prefix hashes, case trace, current/first census prefix and full PID/PGID registry, fresh actual census and directory disposition. A Boolean or exit code alone is not independent oracle.",
+  "toolPublicationBytes": 1048576,
+  "otherCaps": {
+    "raw": 67108864,
+    "results": 16777216,
+    "wrapper": 4194304,
+    "sidecar": 1048576,
+    "JSONdepth": 128,
+    "JSONnodes": 100000,
+    "JSONcontainerEntries": 10000
+  },
+  "crossingChunks": "Actual received crossing chunk retained before refusal; never expand accepted cap or mark truncation passed.",
+  "independentRootTerminal": "Separate pinned raw ROOT-tool exit/BOTH stdout+stderr EOF/wholeelapsed and fresh closure record; parent event provisional until these facts.",
+  "noProductReceiptReuse": "These outputs never use kind/path/schema of carrier product nine-key wrapper/sidecars, source stage exit, installed-provenance or root gate authority.",
+  "requiredCoverageLedger": {
+    "requiredNamedSelectors": 128,
+    "blockedSelectors": [
+      "C16/IO-publication-after-cutoff"
+    ],
+    "allRequiredMatched": false,
+    "rule": "Do not mark BLOCKED/late/UNKNOWN as oracle.matched. Do not remove selector or report complete32-ID/128 coverage. All other reachability/outcomes remain unmeasured."
+  }
+}

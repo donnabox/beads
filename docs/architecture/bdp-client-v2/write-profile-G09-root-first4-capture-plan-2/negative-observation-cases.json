@@ -1,0 +1,68 @@
+{
+  "actualControlsInvoked": 0,
+  "cases": [
+    {
+      "counterfactual": "wrapperraw0, one EOFfalse",
+      "id": "P2-N01",
+      "required": "UNKNOWN; full stream hash unavailable; stop"
+    },
+    {
+      "counterfactual": "preexit parent metadata complete but actual tool terminal missing",
+      "id": "P2-N02",
+      "required": "UNKNOWN, no positive/census finality"
+    },
+    {
+      "counterfactual": "raw file saved<received or hashed<saved or fstat mismatched",
+      "id": "P2-N03",
+      "required": "prefix only; fullhash UNKNOWN; stop"
+    },
+    {
+      "counterfactual": "child helper accepted but wrapper nonzero orforced",
+      "id": "P2-N04",
+      "required": "FAILED; no next stage"
+    },
+    {
+      "counterfactual": "postterminal census matches zombie/reused PID/any recordedgroupmember",
+      "id": "P2-N05",
+      "required": "not absence; FAILED/UNKNOWN; no historical kill"
+    },
+    {
+      "counterfactual": "census child stdoutEOFtrue but inherited/unretained stderr",
+      "id": "P2-N06",
+      "required": "UNKNOWN; must retain actual bothPIPE"
+    },
+    {
+      "counterfactual": "census directprobe0 but no actual reap",
+      "id": "P2-N07",
+      "required": "UNKNOWN; direct handle must actually settle/reap"
+    },
+    {
+      "counterfactual": "last postterminal receipt/witness elapsed115 orlater",
+      "id": "P2-N08",
+      "required": "FAILED strict bound, no offclock grace"
+    },
+    {
+      "counterfactual": "later runtime probe launched after purported final upperbound",
+      "id": "P2-N09",
+      "required": "prior finality invalid, no automatic repeat; root separate disposition"
+    },
+    {
+      "counterfactual": "unknown/failing raw/hash/close/publication with partialfile",
+      "id": "P2-N10",
+      "required": "retain actual bounded best effort prefix and fixed error class; missing tail remains UNKNOWN"
+    },
+    {
+      "counterfactual": "same named stage attempt/output alreadyexists",
+      "id": "P2-N11",
+      "required": "refuse before creation/spawn; never erase/retry"
+    },
+    {
+      "counterfactual": "historical P10 mergedlog or C3 elapsed substituted for fresh stage facts",
+      "id": "P2-N12",
+      "required": "refuse; separate evidence domains/no fitproof"
+    }
+  ],
+  "newProductCallbacks": 0,
+  "newRequests": 0,
+  "state": "CLOSED_DATA_ONLY_NO_EXECUTION_AUTHORITY"
+}

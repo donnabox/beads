@@ -1,0 +1,140 @@
+Reviewed the plan against HEAD `39c160d` (tree `75e8fb9` — matches the plan's claim). No files written, no tests run, no git mutation.
+
+## Verdict
+
+The plan's core mechanism is genuinely feasible: I traced the cross-carrier retained-receipt path end to end in source and it works as described. Its measured parent figures are exactly right (M620094/N16373/C88043/187 actions/1872 assertions all verified). The failures are concentrated in **budget honesty and owned-surface completeness**: the plan's own stage-1 ceilings exceed every committed guard by 10–40×, and it undercounts installed execution by roughly 6×. One authored oracle (action 5's revision divergence) is not expressible in the DSL.
+
+---
+
+# Required findings
+
+### 1. [High] Stage-1 stops exceed every binding budget guard, and raising them is not listed as owned work
+**Location:** `packages/conformance/src/transactional-cumulative.test.ts:863-866,883-884`; duplicates at `apps/bdptest/src/transactional-matrix.test.ts:1593-1594`.
+
+The *binding* guards are the delta forms, not the absolute ones:
+
+| Guard | Form | Effective ceiling | Current | Headroom |
+|---|---|---|---|---|
+| manifest bytes | `len - 488280 <= 135906` | 624186 | 620094 | **4092 B** |
+| coverage bytes | `len - 70662 <= 18405` | 89067 | 88043 | **1024 B** |
+| manifest nodes | `nodes - 13019 <= 3418` | 16437 | 16373 | **64 nodes** |
+| absolute caps | — | 650386 / 91848 / 17275 | — | 30292 / 3805 / 902 |
+
+The plan proposes ≤100000 B manifest growth, ≤18000 B coverage growth, ≤2600 nodes, with absolute candidate stops 720094 B / 18973 nodes / 106043 B. A 12-action, ~300-assertion row (the `conflict` row is 29772 B for 99 assertions; `deletion-safety` 333 assertions) cannot fit in 4092 B / 64 nodes / 1024 B, and 720094 B also exceeds the current *absolute* manifest cap of 650386.
+
+**Impact:** the plan simultaneously says "no weakening or cap increase to fit" and sets ceilings that require raising all four guards plus the matrix duplicates. An author following it literally is blocked; one following its numbers silently rewrites guards the plan claims to preserve.
+
+**Fix (required):** add these six assertion sites to the owned-file inventory, state that they will be re-anchored to measured post-row values plus a small margin, and record the superseded deletion-era anchors (`488280/135906`, `70662/18405`, `13019/3418`, `650386/91848/17275`) in the comment at `:860-862` so the accepted deletion measurement is not erased rather than superseded. State explicitly that the absolute caps are being deliberately raised.
+
+### 2. [High] "Four owned files" is right about *files* but omits the counter pins, and the execution budget undercounts installed cost ~6×
+**Location:** `apps/bdptest/src/transactional-matrix.test.ts:336-343, 348, 510-511, 1350-1352, 1677-1679`; `observe(` call sites at `:334,542,571,769,785,823,859,896,910,931,967,995,1032,1054,1123,1157,1204,1307,1631`.
+
+Pins that must change: `sessions 19→20` (`:342`), `children 20→21` (`:343`), `state==="pass" 12→13` (`:340`), `exchanges 180→192` (`:510`), and the six control cases' cohort-wide `children.length <= 20` / `exchanges <= 180` (`:1350-1352, 1677-1679`).
+
+The file contains **~19 `observe()` invocations**, each launching a full installed cohort over the whole manifest — not three. Every one of them will now also execute the new 13-action row. The plan budgets "Total three planned installed cohorts <=63children/576HTTP", i.e. only the positive plus two new derivatives.
+
+**Impact:** two concrete problems. (a) The real file-wide cost becomes ~19 cohorts × 21 children ≈ 189 child launches and ~3650 exchanges, which is the number root is being asked to accept. (b) The plan instructs "do not mechanically inflate their observed exact counts" for the six existing controls — read literally that leaves `≤180`/`≤20` and **fails those six tests**.
+
+**Fix (required):** enumerate the counter pins; distinguish *per-row exact ledgers* (genuinely unchanged — the deletion/no-op `exchanges.map(id)` lists and 333/223 assertion counts) from *cohort-wide totals* (must rise to 192/21); and budget the file-wide installed cost rather than only the three new runs.
+
+### 3. [High] The tightest real time gate — the positive cohort's 63-second elapsed assertion — is unbudgeted
+**Location:** `apps/bdptest/src/transactional-matrix.test.ts:511` (`expect(performance.now() - started).toBeLessThanOrEqual(63000)`), against cohort budget 90000 (`:110-112`) and test timeout 120000 (`:531`).
+
+The plan says "Existing per-exchange5s/cohort90s/outer120s/focused30s remain" — all four verified accurate — but never mentions 63000, which binds well before 90000. A 13th scenario adds a child launch (process spawn + bootstrap) plus 12 exchanges.
+
+**Fix (required):** list 63000 as a measured budget to report at stage 1, with the observed current margin, and state whether it is expected to be re-anchored with root acceptance.
+
+### 4. [Medium-High] Action 5's revision-divergence oracle is not expressible
+**Location:** plan line 40; DSL union `packages/conformance/src/executable-manifest.ts:112-254`.
+
+The assertion vocabulary is `equals` / `equalsBinding` / `fixturePointer` / `exists` / `oneOf` / `contains` / `absent`. There is **no inequality form**. Separately, raw HTTP actions cannot capture a revision at all — captures are `/id` and `/next` only (every capture in the manifest confirms this; `transactional-cumulative.test.ts:943` comments "HTTP capture is URL-only"). The plan's hedge "where existing assertion forms permit" resolves to "not at all".
+
+Note this is not fatal to the proof: divergence is carried decisively by the literal `carrier-original` → `carrier-current` property values, and `/events/1/data/{previousRevision,revision}` can be bound to the two client captures. But as written the action-5 row promises an oracle the row cannot hold.
+
+**Fix (required):** drop the clause from the action table and say which replacement is intended — (a) literal property divergence plus the two bound Event revision pointers, or (b) an explicit revision-inequality check in the owned matrix test, which *can* read observed exchange bodies.
+
+### 5. [Medium] New routes change `exactConfigurationDigest`; route order matters and the plan's stated order is not the inventory order
+**Location:** `apps/bdptest/src/transactional-matrix.test.ts:184-197` (inventory), `:348` (digest `1ba7cbb…0035`), `:1253-1271` (independent preimage); derivation `packages/conformance/src/runner.ts:1580-1598`, with `sortJsonValue` at `:3337-3338` mapping arrays **without reordering**.
+
+`routes` enters the digest in array order. First-appearance order within the new row is `operations/create-bead` (action 1), `operations/sequence` (action 4), `operations/update-bead` (action 8), appended at inventory positions 13-15. The plan lists "create-bead, update-bead, sequence".
+
+**Impact:** a preimage authored in the plan's listed order produces a digest mismatch at stage 1 that looks like a configuration defect rather than an ordering slip.
+
+**Fix (required):** state the inventory order and position explicitly; require both `:348` and `:1253+` to be re-derived independently and the superseded digest retained in a comment.
+
+### 6. [Medium] `originalObjectPins` must go 11 → 12 per artifact, with a hard length pin and five count pins alongside
+**Location:** `packages/conformance/src/transactional-cumulative.test.ts:691-814`, `:1327` (`expect(originalObjectPins[name]).toHaveLength(11)`), `:822-835` (exact 12-id list), `:859` (187), `:871` (1872), `:189` (`unplanned` 238 → 237).
+
+`transactional.batch.deletion-safety` is currently **not** pinned — it was the previous increment's new row. The plan's "preserve all 24 current raw row objects (12 manifest + 12 coverage) … byte-for-byte" is the right goal but does not say that this requires authoring the deletion-safety manifest and coverage slice byte-lengths and sha256s from scratch and bumping `toHaveLength(11)`.
+
+**Fix (required):** list these six edits in the file-3 description, and require the deletion-safety slice hashes be computed from HEAD bytes, not from the post-edit file.
+
+### 7. [Medium] Coverage-row obligations are stricter than the plan states
+**Location:** `packages/conformance/src/transactional-cumulative.test.ts:99-113`, and row ordering at `:92-95`.
+
+Enforced: coverage `rows` order must equal manifest scenario order; manifest order must equal catalog order filtered; each row needs `wholeContract:false`, a `reason` containing the literal substring `"Whole contract remains unqualified"`, and `bindings` **exactly** `[{scenario:<id>, assertions:[<actionId>:<assertionId>, …in order]}]` — one binding object, every assertion mirrored.
+
+**Impact:** "one false whole flag and exact ordered bindings/limitations" omits the required literal phrase and the single-object shape. The ~300 mirrored ids are also the dominant driver of coverage growth, which feeds finding 1.
+
+**Fix (required):** quote the required literal and the one-binding shape in the file-2 description.
+
+### 8. [Low-Medium] Catalog position is 47, not 46
+**Location:** plan line 21; `packages/conformance/catalog/transactional-v1.json`.
+
+1-based: `transactional.idempotency.semantic-identity` is 46, `transactional.idempotency.cross-carrier` is 47. The described insertion site (between `conflict` and `failed-retained`) is correct, and insertion order is enforced at `transactional-cumulative.test.ts:92-95`.
+
+**Fix (required):** correct to 47, or say "zero-based index 46", since the plan's whole posture is exact anchoring.
+
+### 9. [Low-Medium] `metadata` is unspecified, and three of the row's literal oracles depend on it
+**Location:** plan lines 32, 46, 47.
+
+The plan fixes `properties` exactly but never mentions `metadata`. Source behaviour: `normalizeTransaction` expands `metadata: {}` for creations (`transaction-batch.ts:426-431`), so omitting it is semantically consistent across all three carriers; the committed record always carries `metadata`, defaulting to `{}` (`resource-evaluator.ts:1140`); the created Event's `data.metadata` is `{}` (`transaction-batch.ts:742`); `beadRecord` makes it optional. So omission is determinate — but the plan must say so, because it changes the authored oracles in actions 1, 2, 6, 11 and 12.
+
+**Fix (required):** state that `metadata` is omitted from all three carriers' bodies and that the expected record and Event value is `{}`.
+
+---
+
+# Optional findings
+
+### 10. [Optional, recommended] No control discriminates the singleton origin
+Control 1 tests the batch carrier's semantic sensitivity; control 2 tests the sequence's retention sensitivity. Actions 8–10 (singleton `update-bead` / `create-bead` replay) are observed **only positively**. A third derivative changing action 9's title under `carrier-create` (expect actual 409 / `transactionalProblem` / `idempotency-conflict` / `never`, with the old completed-receipt assertions failing by named id) costs one cohort and closes the only carrier whose reuse is unverified against blanket same-key reuse. The plan asserts "a stronger third installed control is not assumed necessary" without naming which carrier it leaves uncontrolled — worth saying either way.
+
+### 11. [Optional] The spec clause is symmetric; only two of three origin carriers are observed
+`bdp.md:3920-3922` says *any* of them retrieves the receipt the others created. The plan's origins are singleton (create) and batch (update); the sequence is never an origin, only a reader. The exclusion is real but buried in "all-operation/all-origin-carrier crossproduct". Either name it explicitly in the coverage `reason` (cheap, and the honest option given the row's title), or add it — noting the real costs: a third mutation advances to pos-3 and changes actions 11/12's oracles and the "two mutations" limit, and a sequence POST cannot capture a receipt root itself (`transactional-observation.ts:177-191` excludes `sequence` from `mutationSource`; the envelope has no `/id`), so the root must come from the subsequent singleton/batch replay.
+
+### 12. [Optional] Action 11's comparison is unprecedented in this manifest
+Existing precedent compares a *created* receipt resource to a collection item (`conflict` row `retained-record`) and an *updated* receipt resource to a single-resource GET body (`atomic-commit` `a-point:final-record`) — but not an updated receipt resource to a collection item. The plan's independent literal id/type/properties/metadata facts make a mismatch loud rather than silent, so treat this as a stage-1 measurement item rather than a redesign.
+
+### 13. [Optional] Test and comment titles become inaccurate
+`transactional-matrix.test.ts:331` ("observes **twelve** partial Transactional contracts"), `transactional-cumulative.test.ts:815` ("…adding one bounded partial **deletion-safety** row"), and the `:860-862` measurement comment all describe the previous increment. Worth listing as owned edits so the evidence narrative stays truthful.
+
+### 14. [Optional] No STATUS.md obligation — worth stating
+STATUS.md pins no TX cumulative counts, and its Transactional row already reads "no Transactional runtime capability claim". The plan's silence is correct; saying so pre-empts a reviewer treating it as an omission.
+
+---
+
+# Verified load-bearing claims
+
+Recording these so the required findings aren't mistaken for a negative overall assessment.
+
+**Measurements — exact.** 620094 B manifest, 16373 nodes, 88043 B coverage, 187 actions, 1872 assertions, 12 manifest + 12 coverage rows, 180 exchanges (187 − 7 reopen actions), 199/192 and 21 children arithmetic all consistent. Tree matches HEAD.
+
+**Cross-carrier identity is genuinely carrier-independent in source.** `read-update-values.ts:347-353` strips `operation`/`idempotencyKey`/`name` from `input`; `transaction-batch.ts:466` hashes `{operation, input}` only; `prepareTransactionSequence` builds each member as a one-operation singleton (`:278-283`); `admitKey` compares `prior.identity !== normalized.identity` with no carrier term (`transaction-store.ts:1074-1079`); `admitSequence` skips already-bound keys at admission and classifies them at turn time (`:1740-1741`, `:1864-1884`), so a bound-key member projects the retained receipt through `transaction-sequence.ts:38-74`. Actions 3/4/7/8/9/10 are feasible as described, and the projected entry validates as `sequenceMemberResult` without also matching the problem branch of the `oneOf`.
+
+**Whole-body receipt comparison is sound and precedented.** The POST receipt body equals the receipt GET body, and the harness *enforces* it at registration (`transactional-observation.ts:303-306`); `c-retry`'s `{pointer:"", equalsBinding:"c-body"}` is existing precedent.
+
+**Control 2's oracle is real.** `identity-taken` is 409/`never` (`bdp.md:3416`), explicitly covers deleted identities (`:3477-3490`), is constructed with `status`/`retry` (`resource-evaluator.ts:142,152-160`), stored verbatim in the failed receipt (`transaction-store.ts:1241-1248`), projected as the member problem (`transaction-sequence.ts:58`), and validates as `transactionalSequenceMemberProblem` (requires `status`+`operationIndex`, forbids `outcome`, `allocated:false` off `idempotency-expired`).
+
+**Early stop is real and matches both controls' design.** The action loop throws on the first failing action (`runner.ts:637-665,695-696`) — which is exactly why the existing controls assert the failing action is the row's last exchange (`:1348,1650`). Both of the plan's controls are correctly positioned to stop without needing later actions.
+
+**Routes and captures work as planned.** `{binding:"scope", path:"operations/…"}` resolves (`runner.ts:3092,3132`; inventory `transactional-matrix.test.ts:170-173`); all three targets exist (`transaction-discovery.ts:8-21`, `transactional-execution-binding.ts:50-73`); exactly three new unique routes are needed; fixture bytes (sha256 pinned at `transactional-cumulative.test.ts:872-875`) need not change. The receipt-authority ledger cap is the action count (`runner.ts:635`), so two authorities in a 12-action row is fine; `create-bead`/`update-bead`/`batch` are valid `/id` mutation sources and `sequence` is not — matching the plan's capture layout.
+
+**Blast radius is correctly scoped to two test files.** `runner.test.ts:6105` and `transactional-binding.test.ts:39` touch the manifest only as `scenarios[0]` templates and are unaffected by inserting at index 11. No other consumer pins 187/1872/180.
+
+**Positions and contexts.** First mutation is pos-1 (`transaction-store.ts:1130`); a retained replay returns the *current* serving context (`transaction-submission.ts:138-149`), so actions 9/10's "old receipt body, current pos-2 header" is correct. Event ordinals are per-group (confirmed against `n-changed-events`), so the plan's two events are ordinal 0 and 0.
+
+**Event payloads are pinnable.** `created` data is `{revision, properties, metadata}` and `updated` data is `{previousRevision, revision, change[, metadataChange]}` (`transaction-batch.ts:738-754`), so action 12's "literal creation and property patch payload facts" is expressible with revisions via `equalsBinding`.
+
+**Admission limits.** 1 MiB / 100000 nodes confirmed (`artifact-bundle.ts:17,21`); the plan's 720094 B / 18973 nodes stay inside them. Citations `transaction-sequence.ts:32-74`, `bdp.md:3899-3922/3924-3935/4050-4088/3416/3477ff` are accurate; `transaction-http.ts:303-332/333-360` drift by a few lines but point at the right blocks.
+
+**Novelty claim holds.** No existing manifest action targets `operations/sequence`, and no `transactional.idempotency.cross-carrier` row exists. The catalog row is `kind: normative`, `requiredProfile: transactional`, and quotes the sentence the plan cites. Its `retires: ["read-update.singleton.idempotent-retry"]` imposes no additional manifest obligation — retirement only blocks using a retired id as a row id (`transactional-cumulative.test.ts:138`).

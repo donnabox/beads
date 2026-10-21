@@ -1,0 +1,11 @@
+--- a/packages/server/src/transaction-comparison.ts
++++ b/packages/server/src/transaction-comparison.ts
+@@ -58,7 +58,7 @@
+       // Synchronous final check + current tuple; never hold its owner entry over wait.
+       const observed = options.observeDeadline(epoch);
+       return observed.kind === "observed"
+-        ? { kind: "comparison-deadline", context: observed.context }
++        ? { kind: "comparison-deadline", context: { ...observed.context, scopePosition: "pos-0" } }
+         : { kind: "comparison-owner-stopped" };
+     }
+     // Retraction may make this a fresh admission. Same original deadline and no

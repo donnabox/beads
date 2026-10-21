@@ -1,0 +1,77 @@
+--- plan2/source-data-cases.json
++++ plan1/source-data-cases.json
+@@ -29,7 +29,7 @@
+       "id": "V03",
+       "group": "valid-data",
+       "setup": "actual existing RU runner called already-aborted with matching exact config; executor throws if called",
+-      "expected": "Genuine reportVersion4 actual stopped remainder harness-error/not-run for ALL remaining selected IDs including missing plans/diagnostics; exact order/index/empty exchanges, assertionsAllPassednull;0wire0children. No not-implemented rewrite or legacy succeeded association.",
++      "expected": "genuine reportVersion4 stopped/not-run rows retained;0wire/0children, no pass invented",
+       "budgetMs": 5000,
+       "productHTTP": 0,
+       "productChildren": 0
+@@ -38,7 +38,7 @@
+       "id": "V04",
+       "group": "valid-data",
+       "setup": "actual TX branded runner called already-aborted with matching exact config; executor throws if called",
+-      "expected": "Genuine256 metadata rows with harness-error/not-run stopped remainder INCLUDING5diagnostics, required251; preserve exact row indices/order/empty exchanges and null execution credit;0wire0children.",
++      "expected": "genuine256 metadata rows including5diagnostic placeholders, required251;0wire/0children",
+       "budgetMs": 5000,
+       "productHTTP": 0,
+       "productChildren": 0
+@@ -55,8 +55,8 @@
+     {
+       "id": "V06",
+       "group": "valid-data",
+-      "setup": "capture then mutate original source/report bytes and round-trip canonical safe projection; same case includes carrier-only TX exact-byte handoff roundtrip with legacy output path absent",
+-      "expected": "detached result unchanged; exact canonical bytes verify; no caller mutation or hash relabel; raw wrapper digest equals one owner serialization including indent/newline, .result/.sessions/.baseline equal detached pre-hook snapshot, legacy file absent.",
++      "setup": "capture then mutate original source/report bytes and round-trip canonical safe projection",
++      "expected": "detached result unchanged; exact canonical bytes verify; no caller mutation or hash relabel",
+       "budgetMs": 5000,
+       "productHTTP": 0,
+       "productChildren": 0
+@@ -235,8 +235,8 @@
+     {
+       "id": "R20",
+       "group": "rejection",
+-      "setup": "one wrapper/report/artifact digest mismatch OR changed .result in TX handed-off legacy bytes against genuine pre-hook capture",
+-      "expected": "invalid-report; exact handoff/source digest and pre-hook result mismatch refused, no canonical-result/raw-wrapper relabel",
++      "setup": "one wrapper/report/artifact digest mismatch",
++      "expected": "invalid-report",
+       "budgetMs": 5000,
+       "productHTTP": 0,
+       "productChildren": 0
+@@ -353,7 +353,7 @@
+       "id": "L01",
+       "group": "lifecycle-data",
+       "setup": "start only",
+-      "expected": "UnboundRUAttemptV1: bindingStatusunbound/configurationnull, existing requested selection/source/set only, all130 observationsnull, running/unobserved, no bound carrier or qualification.",
++      "expected": "running/unobserved; no reported acquisition",
+       "budgetMs": 5000,
+       "productHTTP": 0,
+       "productChildren": 0
+@@ -362,7 +362,7 @@
+       "id": "L02",
+       "group": "lifecycle-data",
+       "setup": "acquired with no result",
+-      "expected": "UnboundRUAttemptV1 stays unbound/configurationnull/all observationsnull; acquired cleanup pending, no runtime/PID/readiness facts fabricated.",
++      "expected": "pending/absent/ownershipunverified",
+       "budgetMs": 5000,
+       "productHTTP": 0,
+       "productChildren": 0
+@@ -398,7 +398,7 @@
+       "id": "L06",
+       "group": "lifecycle-data",
+       "setup": "execution failure before returned",
+-      "expected": "Failure before first genuine returned remains permanently UnboundRUAttemptV1/configurationnull/all observationsnull with fixed execution stage; no guessed binding, bound summary or zero-as-pass.",
++      "expected": "null observation, fixed execution stage, no zero-as-pass",
+       "budgetMs": 5000,
+       "productHTTP": 0,
+       "productChildren": 0
+@@ -440,6 +440,5 @@
+       "productChildren": 0
+     }
+   ],
+-  "qualification": "V03/V04 genuine current runner RETURNED ABORTED outputs, not observed service results; V05 synthetic unit-data expressly not authority output. No permanent fixture from external L path needed. Existing current JSON factories/fixtures used with local in-memory copies; no new product test/network/service. Case group counts are cases, not assertion counts.",
+-  "precisionSuccessor": "N1L01/L02/L06, N2V06/R20 byte handoff subassertions and N3V03/V04 corrected; same48 cases/groups, no product requests/timer changes."
++  "qualification": "V03/V04 genuine current runner RETURNED ABORTED outputs, not observed service results; V05 synthetic unit-data expressly not authority output. No permanent fixture from external L path needed. Existing current JSON factories/fixtures used with local in-memory copies; no new product test/network/service. Case group counts are cases, not assertion counts."
+ }

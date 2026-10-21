@@ -1,0 +1,427 @@
+{
+  "checkedAt": "2026-10-16T04:54:08.171309+00:00",
+  "attribution": "Preliminary isolated dirtydf80 lint-successor; final actualmain integration/fresh installed validation required",
+  "sourceBindingSha256": "9eb076e7fee0b300010a4edac01f55fecd7ab6f1d27955931e7791556d2080ec",
+  "stages": [
+    {
+      "stage": "format-check",
+      "exit": 0,
+      "supervisorExit": 0,
+      "seconds": 0.6693398749921471,
+      "exitSha256": "369b40f0e62a687c7e42943e035fb96993b7999c3b39baefed2f1835642cd27f",
+      "logSha256": "1d2c3d2c21d6419f75ff00a319bea30a1921f5b66bc87f4e048c65d652874c62",
+      "passedFullNames": []
+    },
+    {
+      "stage": "lint",
+      "exit": 0,
+      "supervisorExit": 0,
+      "seconds": 1.2740895000752062,
+      "exitSha256": "b0931facca50bcd6c9582e60422a0431d2ab92f870e508049ccaa1dc3ae54ca2",
+      "logSha256": "4f5e5f9f52a919eb5eef259bfd7f4781d16490ff32e9894a957a499aa14f8dc1",
+      "passedFullNames": []
+    },
+    {
+      "stage": "boundaries",
+      "exit": 0,
+      "supervisorExit": 0,
+      "seconds": 1.3842380421701819,
+      "exitSha256": "f1c0f1576be7021ee2bfef7b958c807a1cf929942dc654b50005c4fa569c56f3",
+      "logSha256": "53f4cd856bde25513486a59799c5a05e0650fbb756bf1580fb07e56c2fdeeef3",
+      "passedFullNames": []
+    },
+    {
+      "stage": "read-seal",
+      "exit": 0,
+      "supervisorExit": 0,
+      "seconds": 1.0765910828486085,
+      "exitSha256": "083a9a4df4fca11e7dee0b02d1934bbf454d491afc24d7c880feadb1afd7068b",
+      "logSha256": "79749014f712bd5d838b93088c70fef4cca1ae63d7738a613716ab37fa1295ba",
+      "passedFullNames": []
+    },
+    {
+      "stage": "preparation-positive",
+      "exit": 0,
+      "supervisorExit": 0,
+      "seconds": 2.5112003330141306,
+      "exitSha256": "d7be1a4d30db6d4886391646e675d475d9e98bb34702c72a90bbcbd722ead1d5",
+      "logSha256": "963cb92d63f6c99a7c10c4fb56797906af3e1a0e46aeead5f987d63efeefda7a",
+      "passedFullNames": [
+        "keeps receiving depth facts private while legacy preparation still throws",
+        "annotates only deep sequence members after complete carrier syntax while strict preparation stays strict"
+      ]
+    },
+    {
+      "stage": "sequence-positive",
+      "exit": 0,
+      "supervisorExit": 0,
+      "seconds": 2.351204208098352,
+      "exitSha256": "0b90fcc2d46851251670eadcd1352a4ec51d431d9fb4e9bc785c03bc432e6873",
+      "logSha256": "27d75dfeee2d8dff77a9dcbde32f8a3709a843a87d5c197c8e422326265aa8c0",
+      "passedFullNames": [
+        "private Transactional sequence slice runs all eight explicit operation kinds as separate commits with locator-only aliases",
+        "private Transactional sequence slice reserves all unknown keys together, commits a prefix, continues past failure and permits interleaving",
+        "private Transactional sequence slice joins overlapping presentations without running a completed member twice and projects current labels",
+        "private Transactional sequence slice projects another owner's pending receipt before immutable mismatch and never retracts that owner",
+        "private Transactional sequence slice projects mixed retained, conflicting, failed and unknown keys in declaration order",
+        "private Transactional sequence slice shares singleton and one-operation batch identity, preserving exact numbers and creation defaults",
+        "private Transactional sequence slice leaves no partial bulk admission on after-sequence-reservation failure",
+        "private Transactional sequence slice leaves no partial bulk admission on after-sequence-admission failure",
+        "private Transactional sequence slice rejects duplicate keys and invalid dependency edges before any key effects",
+        "private Transactional sequence slice classifies foreign key state at its turn after failed detail is forgotten",
+        "private Transactional sequence slice compares retained deep sequence members without executing them or replacing their receipts",
+        "private Transactional sequence slice rolls back every new reservation when a fresh deep sequence member is refused",
+        "private Transactional sequence slice refuses fresh depth after a retained failed member expires between sequence turns"
+      ]
+    },
+    {
+      "stage": "http-positive",
+      "exit": 0,
+      "supervisorExit": 0,
+      "seconds": 2.125996000133455,
+      "exitSha256": "65623e2f7604bd302e1c665715c722fc0c226c35fb69330f431fba3103e3f49d",
+      "logSha256": "026bb6da7a3e33c5b3df7bebd25c0eefdcb23bc39082b6fcee8303e2edf59b7e",
+      "passedFullNames": [
+        "source-private actual Transactional HTTP rejects sequence carrier syntax/keys/negotiation before claiming any member",
+        "labels sequence depth gaps honestly and keeps sequence capacity distinct from direct transaction capacity",
+        "compares retained sequence members before private depth refusal and preserves receiving failures"
+      ]
+    }
+  ],
+  "exactPassedCases": 18,
+  "passedFullNames": [
+    "keeps receiving depth facts private while legacy preparation still throws",
+    "annotates only deep sequence members after complete carrier syntax while strict preparation stays strict",
+    "private Transactional sequence slice runs all eight explicit operation kinds as separate commits with locator-only aliases",
+    "private Transactional sequence slice reserves all unknown keys together, commits a prefix, continues past failure and permits interleaving",
+    "private Transactional sequence slice joins overlapping presentations without running a completed member twice and projects current labels",
+    "private Transactional sequence slice projects another owner's pending receipt before immutable mismatch and never retracts that owner",
+    "private Transactional sequence slice projects mixed retained, conflicting, failed and unknown keys in declaration order",
+    "private Transactional sequence slice shares singleton and one-operation batch identity, preserving exact numbers and creation defaults",
+    "private Transactional sequence slice leaves no partial bulk admission on after-sequence-reservation failure",
+    "private Transactional sequence slice leaves no partial bulk admission on after-sequence-admission failure",
+    "private Transactional sequence slice rejects duplicate keys and invalid dependency edges before any key effects",
+    "private Transactional sequence slice classifies foreign key state at its turn after failed detail is forgotten",
+    "private Transactional sequence slice compares retained deep sequence members without executing them or replacing their receipts",
+    "private Transactional sequence slice rolls back every new reservation when a fresh deep sequence member is refused",
+    "private Transactional sequence slice refuses fresh depth after a retained failed member expires between sequence turns",
+    "source-private actual Transactional HTTP rejects sequence carrier syntax/keys/negotiation before claiming any member",
+    "labels sequence depth gaps honestly and keeps sequence capacity distinct from direct transaction capacity",
+    "compares retained sequence members before private depth refusal and preserves receiving failures"
+  ],
+  "http": {
+    "newObserved": 11,
+    "existingRegressionInventory": 10,
+    "totalSourceDerived": 21,
+    "limitation": "Existing10HTTP is callback source accounting, no new raw trace. Safe fingerprints do not replace full in-memory assertions."
+  },
+  "observation": {
+    "observation": "private-source-sequence-depth",
+    "outcome": "passed",
+    "attempts": 11,
+    "completedResponses": [
+      {
+        "ordinal": 1,
+        "label": "seed",
+        "method": "POST",
+        "url": "http://127.0.0.1:63463/acme/operations/create-bead",
+        "credential": "operator",
+        "accept": "application/json",
+        "requestBodyBytes": 110,
+        "requestBodySha256": "aabacf6097b464c93dd32450577afa104a99d494622a12982a06cc712d517179",
+        "status": 200,
+        "responseBodyBytes": 668,
+        "responseBodySha256": "e28975787f622eedb5665723ac84c2d6d77c02aa55f32ff278fb9dd246d2de11",
+        "headers": {
+          "bdp-scope-epoch": "ae0eb352-7def-4295-98a5-2eac0d52674c",
+          "bdp-authorization-view": "development-all-visible",
+          "bdp-scope-position": "pos-1",
+          "x-bdp-development": "non-attesting",
+          "x-bdp-development-limit": null,
+          "content-type": "application/json",
+          "content-length": "668"
+        }
+      },
+      {
+        "ordinal": 2,
+        "label": "retained-deep",
+        "method": "POST",
+        "url": "http://127.0.0.1:63463/acme/operations/sequence",
+        "credential": "operator",
+        "accept": "application/json",
+        "requestBodyBytes": 661,
+        "requestBodySha256": "ceda96248db93c3cb51b7984c68bdf635a4390b4d9ea882873a2a888c7237ea0",
+        "status": 200,
+        "responseBodyBytes": 181,
+        "responseBodySha256": "3da7efaa3c3d10e6571da0af25bbcb30845b39eb711f96a03a8d3c6c51a32834",
+        "headers": {
+          "bdp-scope-epoch": "ae0eb352-7def-4295-98a5-2eac0d52674c",
+          "bdp-authorization-view": "development-all-visible",
+          "bdp-scope-position": "pos-1",
+          "x-bdp-development": "non-attesting",
+          "x-bdp-development-limit": null,
+          "content-type": "application/json",
+          "content-length": "181"
+        }
+      },
+      {
+        "ordinal": 3,
+        "label": "original-replay",
+        "method": "POST",
+        "url": "http://127.0.0.1:63463/acme/operations/create-bead",
+        "credential": "operator",
+        "accept": "application/json",
+        "requestBodyBytes": 110,
+        "requestBodySha256": "aabacf6097b464c93dd32450577afa104a99d494622a12982a06cc712d517179",
+        "status": 200,
+        "responseBodyBytes": 668,
+        "responseBodySha256": "e28975787f622eedb5665723ac84c2d6d77c02aa55f32ff278fb9dd246d2de11",
+        "headers": {
+          "bdp-scope-epoch": "ae0eb352-7def-4295-98a5-2eac0d52674c",
+          "bdp-authorization-view": "development-all-visible",
+          "bdp-scope-position": "pos-1",
+          "x-bdp-development": "non-attesting",
+          "x-bdp-development-limit": null,
+          "content-type": "application/json",
+          "content-length": "668"
+        }
+      },
+      {
+        "ordinal": 4,
+        "label": "original-resource",
+        "method": "GET",
+        "url": "http://127.0.0.1:63463/acme/beads/sequence-a",
+        "credential": "operator",
+        "accept": "application/json",
+        "requestBodyBytes": 0,
+        "requestBodySha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "status": 200,
+        "responseBodyBytes": 188,
+        "responseBodySha256": "d21ecce139e2f38015102553d3d3617ce236127bcce7a52a797fcc48177b78ab",
+        "headers": {
+          "bdp-scope-epoch": "ae0eb352-7def-4295-98a5-2eac0d52674c",
+          "bdp-authorization-view": "development-all-visible",
+          "bdp-scope-position": "pos-1",
+          "x-bdp-development": "non-attesting",
+          "x-bdp-development-limit": null,
+          "content-type": "application/json",
+          "content-length": "188"
+        }
+      },
+      {
+        "ordinal": 5,
+        "label": "fresh-deep",
+        "method": "POST",
+        "url": "http://127.0.0.1:63463/acme/operations/sequence",
+        "credential": "operator",
+        "accept": "application/json",
+        "requestBodyBytes": 658,
+        "requestBodySha256": "0fbc5f70f0a6c29bcbcddfd820a5856833068e2c04892394296f554baf6fae55",
+        "status": 500,
+        "responseBodyBytes": 0,
+        "responseBodySha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "headers": {
+          "bdp-scope-epoch": null,
+          "bdp-authorization-view": null,
+          "bdp-scope-position": null,
+          "x-bdp-development": "non-attesting",
+          "x-bdp-development-limit": "unsupported-transaction-composition",
+          "content-type": null,
+          "content-length": "0"
+        }
+      },
+      {
+        "ordinal": 6,
+        "label": "fresh-key-reuse",
+        "method": "POST",
+        "url": "http://127.0.0.1:63463/acme/operations/sequence",
+        "credential": "operator",
+        "accept": "application/json",
+        "requestBodyBytes": 203,
+        "requestBodySha256": "2bd89145b1b2d4675c7f6a04e37f1f1aefa874f0830a12b64b85b1d602ca262a",
+        "status": 200,
+        "responseBodyBytes": 280,
+        "responseBodySha256": "42295d2e0b01af3a83efbbdbf62bc76c74f163a5329619ca1607925b51fea157",
+        "headers": {
+          "bdp-scope-epoch": "ae0eb352-7def-4295-98a5-2eac0d52674c",
+          "bdp-authorization-view": "development-all-visible",
+          "bdp-scope-position": "pos-2",
+          "x-bdp-development": "non-attesting",
+          "x-bdp-development-limit": null,
+          "content-type": "application/json",
+          "content-length": "280"
+        }
+      },
+      {
+        "ordinal": 7,
+        "label": "retained-deep-negotiation",
+        "method": "POST",
+        "url": "http://127.0.0.1:63463/acme/operations/sequence",
+        "credential": "operator",
+        "accept": "text/plain",
+        "requestBodyBytes": 661,
+        "requestBodySha256": "ceda96248db93c3cb51b7984c68bdf635a4390b4d9ea882873a2a888c7237ea0",
+        "status": 406,
+        "responseBodyBytes": 0,
+        "responseBodySha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "headers": {
+          "bdp-scope-epoch": "ae0eb352-7def-4295-98a5-2eac0d52674c",
+          "bdp-authorization-view": "development-all-visible",
+          "bdp-scope-position": "pos-2",
+          "x-bdp-development": "non-attesting",
+          "x-bdp-development-limit": null,
+          "content-type": null,
+          "content-length": "0"
+        }
+      },
+      {
+        "ordinal": 8,
+        "label": "fresh-deep-negotiation",
+        "method": "POST",
+        "url": "http://127.0.0.1:63463/acme/operations/sequence",
+        "credential": "operator",
+        "accept": "text/plain",
+        "requestBodyBytes": 664,
+        "requestBodySha256": "176ba993b022161dc0df8d5f7fa4f22d6708b22fa9753ec2e43e8b1098f361e4",
+        "status": 406,
+        "responseBodyBytes": 0,
+        "responseBodySha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "headers": {
+          "bdp-scope-epoch": "ae0eb352-7def-4295-98a5-2eac0d52674c",
+          "bdp-authorization-view": "development-all-visible",
+          "bdp-scope-position": "pos-2",
+          "x-bdp-development": "non-attesting",
+          "x-bdp-development-limit": null,
+          "content-type": null,
+          "content-length": "0"
+        }
+      },
+      {
+        "ordinal": 9,
+        "label": "none",
+        "method": "POST",
+        "url": "http://127.0.0.1:63463/acme/operations/sequence",
+        "credential": "none",
+        "accept": "application/json",
+        "requestBodyBytes": 661,
+        "requestBodySha256": "ceda96248db93c3cb51b7984c68bdf635a4390b4d9ea882873a2a888c7237ea0",
+        "status": 401,
+        "responseBodyBytes": 136,
+        "responseBodySha256": "9d3ea90197aca7525a1eb9d6c0f2845d5ad3656852c3d5ca1f4fd2df55b346c3",
+        "headers": {
+          "bdp-scope-epoch": null,
+          "bdp-authorization-view": null,
+          "bdp-scope-position": null,
+          "x-bdp-development": "non-attesting",
+          "x-bdp-development-limit": null,
+          "content-type": "application/problem+json",
+          "content-length": "136"
+        }
+      },
+      {
+        "ordinal": 10,
+        "label": "reader",
+        "method": "POST",
+        "url": "http://127.0.0.1:63463/acme/operations/sequence",
+        "credential": "reader",
+        "accept": "application/json",
+        "requestBodyBytes": 661,
+        "requestBodySha256": "ceda96248db93c3cb51b7984c68bdf635a4390b4d9ea882873a2a888c7237ea0",
+        "status": 403,
+        "responseBodyBytes": 129,
+        "responseBodySha256": "7a92b82a7347430338fa07cbf1152a6865a4ff64e03657d92034909a1f8ba421",
+        "headers": {
+          "bdp-scope-epoch": null,
+          "bdp-authorization-view": null,
+          "bdp-scope-position": null,
+          "x-bdp-development": "non-attesting",
+          "x-bdp-development-limit": null,
+          "content-type": "application/problem+json",
+          "content-length": "129"
+        }
+      },
+      {
+        "ordinal": 11,
+        "label": "duplicate-key",
+        "method": "POST",
+        "url": "http://127.0.0.1:63463/acme/operations/sequence",
+        "credential": "operator",
+        "accept": "application/json",
+        "requestBodyBytes": 1303,
+        "requestBodySha256": "66a11a95dae380e40816f10a20819ab723c2d51b36252968c5c9730636126865",
+        "status": 400,
+        "responseBodyBytes": 118,
+        "responseBodySha256": "c42495c7aceb17f70d66be3b14415057805675541db06619cc439bcc5cb010f2",
+        "headers": {
+          "bdp-scope-epoch": null,
+          "bdp-authorization-view": null,
+          "bdp-scope-position": null,
+          "x-bdp-development": "non-attesting",
+          "x-bdp-development-limit": null,
+          "content-type": "application/problem+json",
+          "content-length": "118"
+        }
+      }
+    ],
+    "deadlineExceeded": false,
+    "cleanupExceeded": false,
+    "cleanupCompleted": true,
+    "failureCount": 0,
+    "claimEligible": false,
+    "retention": "safe response headers/fingerprints; full schema/body equality in memory; no authorization retained"
+  },
+  "cleanup": {
+    "sampledPids": [
+      66646,
+      66648,
+      66656,
+      66658,
+      67185,
+      67187,
+      67207,
+      67208,
+      68130,
+      68135,
+      68159,
+      68199,
+      69133,
+      69135,
+      69158,
+      69200,
+      69229,
+      69780,
+      69782,
+      69805,
+      69844,
+      71752,
+      71757,
+      71800,
+      71827,
+      73019,
+      73023,
+      73050,
+      73058
+    ],
+    "currentlyPresent": [],
+    "sampledRuntimeDirectories": [
+      "/Users/dbox/repos/wt/vickie/bdp-integration-logs/sequence-depth-retained-member-draft/source-validation-lint-successor/run/sequence-positive.tmp/bdp-transaction-sequence-Flea2T",
+      "/Users/dbox/repos/wt/vickie/bdp-integration-logs/sequence-depth-retained-member-draft/source-validation-lint-successor/run/sequence-positive.tmp/bdp-transaction-sequence-WW42UW",
+      "/Users/dbox/repos/wt/vickie/bdp-integration-logs/sequence-depth-retained-member-draft/source-validation-lint-successor/run/http-positive.tmp/bdp-tx-http-SSNrmC",
+      "/Users/dbox/repos/wt/vickie/bdp-integration-logs/sequence-depth-retained-member-draft/source-validation-lint-successor/run/sequence-positive.tmp/bdp-transaction-sequence-fN4EX1",
+      "/Users/dbox/repos/wt/vickie/bdp-integration-logs/sequence-depth-retained-member-draft/source-validation-lint-successor/run/sequence-positive.tmp/bdp-transaction-sequence-HtB1Vi",
+      "/Users/dbox/repos/wt/vickie/bdp-integration-logs/sequence-depth-retained-member-draft/source-validation-lint-successor/run/sequence-positive.tmp/bdp-transaction-sequence-yTlWZ3",
+      "/Users/dbox/repos/wt/vickie/bdp-integration-logs/sequence-depth-retained-member-draft/source-validation-lint-successor/run/http-positive.tmp/bdp-tx-http-RQfilw",
+      "/Users/dbox/repos/wt/vickie/bdp-integration-logs/sequence-depth-retained-member-draft/source-validation-lint-successor/run/sequence-positive.tmp/bdp-transaction-sequence-a9mvju"
+    ],
+    "runtimeDirectoriesPresent": [],
+    "limitation": "Sampling can miss short-lived/detached processes; tooling cache directories retained."
+  },
+  "source33AndEmitted468Unchanged": true,
+  "historicalFailure": "Original lint/diagnostic1 and full Claude timeout143/empty retained without relabeling.",
+  "remainingClosed": [
+    "control",
+    "installed",
+    "final actualminimum-main integration validation"
+  ],
+  "auditNote": "Initial outcome-generation assertion failed before writing any artifact; this data readback does not rerun product validation."
+}

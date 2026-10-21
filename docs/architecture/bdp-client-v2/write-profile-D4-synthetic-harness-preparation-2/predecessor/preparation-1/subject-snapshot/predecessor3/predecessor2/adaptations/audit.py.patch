@@ -1,0 +1,115 @@
+--- predecessor1/audit.py
++++ audit.py
+@@ -41,30 +41,51 @@
+  # substitutes positive32 ordinals for source's two actual-next loops.
+  need(o['outcome']=='failed','failed-classification-only');rows=o['observations'];counts=o['counts']['observed'];children=o['lifecycle']['children'];payloads=file_json(Path(__file__).parent/'context/semantic-audit-contract/request-payloads.json',RESULTS)['exactPOSTBodiesBySuccessOrdinal']
+  exact(counts,{'attempted':len(rows),'settled':sum(r['settled']is True for r in rows),'received':sum(r['received']is True for r in rows),'validated':sum(r['validated']is True for r in rows),'returnedChildHandles':sum(c['acquisition']=='acquired'for c in children)})
++ need(len(rows)<=32,'failed-dispatch-cap')
++ derived={'receiptPages':[None,None],'receiptComplete':False,'receiptEntries':None,'groups':None}
++ traversals={kind:{'pages':[],'complete':False,'count':None}for kind in ['seed','deletion']}
++ def objects(value):
++  need(type(value)is list and all(type(item)is dict for item in value),'failed-source-object-array');return value
++ def event_loop(target,kind):
++  captured=traversals[kind];events=[];target_next=target
++  for _ in range(12):
++   page,continuing=yield(1,target_next,None)
++   # Final validated send does not prove whether later Event schema checking
++   # passed: unsupported boundary refuses, with raw evidence/no credit.
++   need(continuing,'failed-unsupported-final-event-boundary')
++   page_rows=objects(page.get('events'));captured['pages'].append(len(page_rows));events.extend(page_rows)
++   need('next'in page and (page['next']is None or type(page['next'])is str),'failed-event-next')
++   if page['next']is None:
++    captured['complete']=True;captured['count']=len(events);return events
++   target_next=page['next']
++  raise RuntimeError('failed-source-event-page-cap')
+  def program():
+-  a=yield(1,'operations/batch',1);b=yield(1,'operations/batch',2)
+-  next='events/';last=None
+-  for _ in range(12):
+-   page=yield(1,next,None);last=page['events'][-1]['id'] if page['events'] else last
+-   if page['next']is None:break
+-   next=page['next']
+-  else:return
+-  baseline=yield(1,'changes/?start=now',None)
+-  receipt=yield(1,'operations/delete-where',8)
+-  page=yield(1,receipt['next'],None)
+-  next='events/?after='+quote(last,safe="~()*!.'-")
+-  for _ in range(12):
+-   page=yield(1,next,None)
+-   if page['next']is None:break
+-   next=page['next']
+-  else:return
+-  yield(1,'changes/?after='+quote(baseline['after'],safe="~()*!.'-"),None)
+-  yield(1,'links/l00',None);yield(1,'operations/batch',15);yield(1,'operations/batch',16);yield(1,'links/later',None);yield(1,'operations/batch',18)
+-  for target,post in [('beads/owner',None),('links/owned',None),('operations/update-where',21),('beads/owner',None),('links/owned',None),('operations/update-where',24),('operations/batch',25),('beads/owner',None),('links/owned',None),('beads/tentative',None)]:yield(1,target,post)
++  yield(1,'operations/batch',1);yield(1,'operations/batch',2)
++  seed=yield from event_loop('events/','seed');need(seed and type(seed[-1].get('id'))is str,'failed-seed-last-id')
++  baseline,continuing=yield(1,'changes/?start=now',None)
++  if not continuing:return
++  need(baseline.get('groups')==[] and type(baseline.get('after'))is str,'failed-baseline-boundary')
++  receipt,continuing=yield(1,'operations/delete-where',8)
++  derived['receiptPages'][0]=len(objects(receipt.get('results')))
++  if not continuing:return
++  need(receipt.get('status')=='completed' and derived['receiptPages'][0]==32 and type(receipt.get('next'))is str,'failed-receipt-first-boundary')
++  page,continuing=yield(1,receipt['next'],None)
++  derived['receiptPages'][1]=len(objects(page.get('results')));derived['receiptComplete']='next'in page and page['next']is None
++  if derived['receiptComplete']:derived['receiptEntries']=sum(derived['receiptPages'])
++  if not continuing:return
++  need(derived['receiptPages'][1]==1 and derived['receiptComplete'],'failed-receipt-second-boundary')
++  yield from event_loop('events/?after='+quote(seed[-1]['id'],safe="~()*!.'-"),'deletion')
++  feed,continuing=yield(1,'changes/?after='+quote(baseline['after'],safe="~()*!.'-"),None)
++  derived['groups']=len(objects(feed.get('groups')))
++  if not continuing:return
++  need(derived['groups']==1 and 'next'in feed and feed['next']is None,'failed-group-boundary')
++  yield(1,'links/l00',None,404);yield(1,'operations/batch',15);yield(1,'operations/batch',16);yield(1,'links/later',None);yield(1,'operations/batch',18)
++  for target,post in [('beads/owner',None),('links/owned',None),('operations/update-where',21),('beads/owner',None),('links/owned',None),('operations/update-where',24),('operations/batch',25),('beads/owner',None),('links/owned',None),('beads/tentative',None)]:yield(1,target,post,404 if target=='beads/tentative'else 200)
+   yield(2,receipt['id'],None);yield(2,receipt['next'],None);yield(2,'operations/batch',31);yield(2,'operations/batch',32)
+  plan=program();expected=next(plan) if rows else None
+  for index,row in enumerate(rows):
+-  generation,target,post=expected;need(type(target)is str,'failed-dynamic-target');exact(row,{'ordinal':index+1,'generation':generation,'method':'POST'if post else'GET','url':urljoin(SCOPE,target)})
++  need(expected is not None,'failed-extra-source-request');generation,target,post=expected[:3];expected_status=expected[3]if len(expected)==4 else 200;need(type(target)is str,'failed-dynamic-target');exact(row,{'ordinal':index+1,'generation':generation,'method':'POST'if post else'GET','url':urljoin(SCOPE,target)})
++  need(('requestBody'in row)==(post is not None),'failed-request-body-presence')
+   if post:need(strict_json(row['requestBody'].encode(),65536)==payloads[str(post)],'failed-exact-post')
+   need(not row['validated'] or row['received']and row['settled'],'failed-validation-implies-response')
+   body=None
+@@ -72,18 +93,21 @@
+    need((row['wireResponseBase64']is None)==(row['wireSha256']is None),'partial-wire-availability')
+    text=received_wire(row,False) if row['wireResponseBase64']is not None else row['body']
+    if row['validated']:
+-    need(row['wireResponseBase64']is not None,'validated-wire-available');body=strict_json(text.encode(),1048576)
++    exact(row,{'status':expected_status,'writeState':'complete'})
++    if expected_status==200:need(all(type(row['headers'].get(k))is str and row['headers'][k]for k in ['bdp-scope-epoch','bdp-authorization-view','bdp-scope-position']),'failed-validated-context')
++    need(row['wireResponseBase64']is not None,'validated-wire-available');body=strict_json(text.encode(),1048576);need(type(body)is dict,'failed-source-object')
+    need(row['errorCategory']is None,'received-no-transport-category')
+   else:need(all(row[k]is None for k in ['status','headers','body','wireResponseBase64','wireSha256']),'unreceived-response-fields-null')
+-  if index+1<len(rows):
+-   need(row['validated']is True and body is not None,'requests-after-refused-response')
+-   try:expected=plan.send(body)
+-   except (StopIteration,KeyError,TypeError,ValueError):raise RuntimeError('failed-source-program-path')
+- for kind in ['seed','deletion']:
+-  traversal=o['eventTraversals'][kind]
+-  if traversal['complete']:need(traversal['count']==sum(traversal['pages']),'failed-complete-event-count')
+-  else:need(traversal['count']is None,'failed-incomplete-event-null')
+- exact(counts,{'eventPages':o['eventTraversals']['deletion']['pages'],'events':o['eventTraversals']['deletion']['count'],'eventTraversalComplete':o['eventTraversals']['deletion']['complete']})
++  continuing=index+1<len(rows)
++  if row['validated']:
++   try:expected=plan.send((body,continuing))
++   except StopIteration:
++    need(not continuing,'failed-source-program-ended');expected=None
++   except (KeyError,TypeError,ValueError):raise RuntimeError('failed-unsupported-source-program-boundary')
++  else:need(not continuing,'requests-after-refused-response')
++ for kind in ['seed','deletion']:need(o['eventTraversals'][kind]==traversals[kind],'failed-source-event-assignments')
++ exact(counts,{**derived,'eventPages':traversals['deletion']['pages'],'events':traversals['deletion']['count'],'eventTraversalComplete':traversals['deletion']['complete']})
++ exact(o['lifecycle'],{'pendingRequests':counts['attempted']-counts['settled']})
+  for index,c in enumerate(children,1):
+   exact(c,{'generation':index,'phase':'initial'if index==1 else'reopen'})
+   clean=c['acquisition']=='acquired' and c['pid']is not None and c['observedExit']=={'code':0,'signal':None} and c['observedClose']=={'code':0,'signal':None} and c['closePromiseSettled']is True and c['closePromiseSucceeded']is True
+@@ -92,7 +116,7 @@
+   if not clean:need(o['lifecycle']['ownershipUnknown']is True,'failed-sticky-owner')
+  if o['lifecycle']['directory']['disposition']=='removed':need(o['lifecycle']['pendingRequests']==0 and counts['settled']==counts['attempted'] and o['lifecycle']['ownershipUnknown']is False and all(c['closure']=='observed-clean-exit-and-close'for c in children),'failed-removal-owner')
+  for key in ['source','entry','entrySha256','workspaceDirty']:need(o[key]==o['metadata'][key],'failed-metadata-top')
+- return {'classification':'CONFORMING_FAILED_PARTIAL_NO_CREDIT','actualAttempted':len(rows),'positiveCredit':False,'claimEligible':False,'path':'finite source program; each actual-next loop<=12, dispatch<=32; not success32 prefix'}
++ return {'classification':'CONFORMING_FAILED_PARTIAL_NO_CREDIT','actualAttempted':len(rows),'positiveCredit':False,'claimEligible':False,'path':'supported finite source assignments only; final Event boundary unsupported/refused; each actual-next loop<=12, dispatch<=32; not success32 prefix'}
+ def selected_results(result,spec,worktree):
+  chosen=[]
+  for suite in result['testResults']:

@@ -1,0 +1,22 @@
+{
+  "argv": [
+    "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+    "/Users/dbox/repos/wt/vickie/vickie-event-admission-replay-minimum/node_modules/@biomejs/biome/bin/biome",
+    "format",
+    "--write",
+    "--config-path=/Users/dbox/repos/wt/vickie/vickie-event-admission-replay-minimum/biome.json",
+    "apps/bdptest/src/transactional-event-sse-installed.test.ts",
+    "packages/server/src/transaction-event-sse.test.ts",
+    "packages/server/src/transaction-events.test.ts",
+    "packages/server/src/transaction-service.ts",
+    "packages/server/src/transaction-store.ts"
+  ],
+  "cwd": "/Users/dbox/repos/wt/vickie/vickie-event-admission-replay-minimum",
+  "releaseSha256": "2fe1d87f079837d112ad010fc4dfdf3f90081308d679efb719fc542c4dff8f74",
+  "workspaceToolsSha256": "13d53c8ed5eb6f3caf3f247dbc798a60c266debf88ed4dcf26e53b0bde2c1831",
+  "beforeSourceBindingSha256": "cb403c8a0ed4f58cb60788d45ff06206e58f6320a58f23c03fecebc05da52e8d",
+  "outerSeconds": 120,
+  "termAfterSeconds": 115,
+  "automaticRetries": 0,
+  "at": "2026-10-17T23:45:36.470799+00:00"
+}

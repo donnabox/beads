@@ -1,0 +1,114 @@
+Review complete. I read the plan and verified its claims against the frozen checkout; no files were written or modified.
+
+## Verification basis
+
+- `git rev-parse HEAD` = `b919ab37326e259ff30304ab0dd642562a21ea40`, working tree clean.
+- Plan SHA256 = `f16a1e163e2ef55b228431fda42e280ef7cb8e32a89afb9b651572bfcd068a70` ✓ (71 lines).
+- `b919` = merge of `fe5b49f` + main `4fcf36a`; diff vs main is exactly 3 files (`read-update-artifact-set.ts`, `read-update-artifact-set.test.ts` new; `profile-contract-plan.ts` one line — `export function ownData`), all byte-identical to `fe5`. Plan ¶1 provenance claim holds.
+- No test suite was run (plan-only review). I measured artifacts with read-only JSON parses.
+
+**Measured and confirmed:** manifest 3,626,922 B / 97,116 nodes; fixture 26,370 B / 687 nodes; coverage 573,722 B / 11,931 nodes; 129 required IDs; 49 authored scenarios; 30 `wholeContract:true`. Both candidate rows present and `omitted`/`wholeContract:false`. Limits `4_194_304` / `100_000` / `1_048_576` / `16_384` all exist as stated. Target request-body limit is 65,536 (`development-process.ts:207`); per-request 5 s (`read-update-matrix.test.ts:368`). Catalog clause quotes are exact at `read-update-v1.json:354` (all three) and `numeric-model-v1.json:5` (all five); `bdp.md:750 / 2142 / 2179 / 2216-2269 / 6649` are the named sections and the exact numeric row.
+
+---
+
+## Findings
+
+### 1. HIGH — The "entire record equals the prior record" oracle is not expressible
+**Source:** §A.3, §A.5, §A.6, §B bullet 2; presupposed by §A.7 ("a whole-record comparison alone is not a property-view oracle"). Code: `executable-manifest.ts:166-183` (`json-equals`) vs `:187-198` (`json-pointer`).
+
+**Issue:** `json-equals` has only two variants — authored `value` or fixture `fixturePointer` — with `normalize:"iso-timestamps"` and `timestampPointers`. It has **no `equalsBinding`** and **no scope-relative-URL normalization**. Only `json-pointer` carries `equalsBinding` (`:193`). A live Bead/Link record contains a server-allocated opaque `revision`, scope-absolute `endpoints`, and a dynamic `revisionProvenance.committedAt`, so no authored literal can equal it. Corroboration: across all 49 scenarios `json-equals` is used **twice**, both `fixturePointer`, both for `read.resource.properties-view`; `equalsBinding` is used **1,848** times; the installed `read-update.singleton.owned-link-no-op` row realizes its retention oracle with 275 `json-pointer` assertions and zero `json-equals`.
+
+**Impact:** The plan's central retention oracle needs either a new assertion kind — which §B line 51 forbids ("no new assertion kind") — or a pointer-by-pointer enumeration whose exhaustiveness is exactly the failure the plan warns against ("do not merely compare actor or revision and miss other envelope changes"). As written the strongest clause in both rows is unimplementable, and the author discovers it mid-authoring.
+
+**Minimal fix:** Name the realization: a closed `json-schema` assertion against `#/$defs/beadRecord` / `#/$defs/linkRecord` (both verified `additionalProperties:false`) to bound the member set, **plus** an enumerated `json-pointer`+`equalsBinding` assertion per member (`id`, `type`, `revision`, `properties`, `metadata`, `source`, `target`, `ownedLinks`, `revisionProvenance.actor.{id,basis}`, `.committedAt`, `.agent`, `.message`). Enumerate that list in the plan so "entire record" is auditable rather than aspirational.
+
+### 2. HIGH — `bodyDigest`/`source` unobservable; the named digest control has nothing to mutate
+**Source:** §B line 49 ("Raw-request observation source/writeState/bodyOctets/bodyDigest must agree with independently hashed authored bytes"); §B controls line 51 ("mutation of expected raw-body digest fails exact binding"); cites `runner.ts:1671-1673,1807-1808`.
+
+**Issue:** Three separate defects.
+- `request-authored-body` (`runner.ts:1921-1925`) does compare `bodyOctets` and `bodyDigest` to sha256 of the materialized authored body — but the expected digest is **recomputed**, never authored. There is no "expected raw-body digest" in the manifest to mutate, so the control cannot exist as described; the only way to break the assertion is to corrupt the observation.
+- The cited `runner.ts:1802-1809` is the **report projection**, not the check, and it withholds `bodyDigest` unless `exactExecution.approvedSyntheticManifestDigest === artifactBundle.digests.manifestDigest`. `read-update-matrix.test.ts:385` sets `exactExecution` without that field, so `bodyDigest` is always absent from the installed report. The existing manifest contains **zero** `bodyDigest` references.
+- `exactRequest.source` (`http-executor.ts:753`) has no assertion kind at all and is only in the report projection.
+
+**Impact:** One promised oracle and one named sensitivity control are unbuildable; setting `approvedSyntheticManifestDigest` would hardcode a manifest digest in a test (and `runner.ts:1617`, `:2818` throw on mismatch) — brittle, and a semantic misuse of a *synthetic*-body approval on a production manifest.
+
+**Minimal fix:** Reword line 49 to "`request-authored-body` + `request-write-state` prove the submitted octets, length and digest agree with the authored body"; realize the digest control as a wrapper in the owned `read-update-matrix.test.ts` that corrupts the returned `exactRequest.bodyDigest` after the real exchange; drop the `source` claim or move it to a static report check, and state that `bodyDigest` is absent from the installed report.
+
+### 3. HIGH — `cumulative-artifact.test.ts` breaks beyond the whole-list the plan reserves to root
+**Source:** Plan line 61 ("Root alone authorizes any eventual exact-whole-list update in `cumulative-artifact.test.ts`"). Code: `packages/conformance/src/cumulative-artifact.test.ts:100-193`.
+
+**Issue:** That test builds its bundle from the single baseline `matrices/read-update-v1.json` and then asserts, for **every** coverage row: `expect(row.status).toBe(planned ? "bounded-observation" : "omitted")` (`:182`) and `expect(row.bindings[0]?.assertions).toEqual(...)` derived from the baseline manifest (`:189`). Flipping the two rows to `bounded-observation` with bindings owned by the **continuation** shard fails `:182` and `:188-193` independently of the whole-list at `:147`.
+
+**Impact:** The slice cannot land green, and the plan assigns no owner for that edit — it permits only the whole-list change, by root.
+
+**Minimal fix:** Name the planned/omitted + bindings cross-check as an edit that must be generalized to the artifact set (or confirm the segmentation lane already did it) and assign it an owner. *Caveat:* this breakage is implied by segmentation itself for any relocated row, so the other lane may have pre-resolved it — I cannot see that lane at `b919`.
+
+### 4. MEDIUM — The Event clause is the likeliest whole-flag blocker and is absent from the council ask
+**Source:** Plan line 22 (interpretation) vs line 69 (council-approval list). Law: `numeric-model-v1.json` 3rd requirement, `bdp.md:6649`.
+
+**Issue:** The catalog selects "Read+Update has no durable Mutation Receipts and no BDP Events", and the spec's obligation row phrases the behavior as "...retains the revision **and emits no `updated` Event**". Line 22's interpretation is correct and honest. But line 69 asks council to approve only "the finite numeric equivalence partitions and the configuration-specific provenance absence interpretation". The Event clause — where the gap between the selected text and what HTTP can show is widest — is not put to council.
+
+**Impact:** Council can close the slice having approved the two stated interpretations and still decline the numeric row's whole flag on the unapproved third, after all authoring and execution cost is spent.
+
+**Minimal fix:** Add the Event clause to line 69's approval list, and name the concrete observation: closed `json-schema: #/$defs/readUpdateDiscovery` (verified `additionalProperties:false`, declaring no `events`/`receipts`/`changes`/`snapshot` — unlike `#/$defs/transactionalDiscovery`, which requires all four), plus `json-pointer exists:false` on those pointers.
+
+### 5. MEDIUM — Guard pairs need distinct Idempotency-Keys; stated only for §B
+**Source:** §A.2, §A.3, §B bullet 3 (vs §B bullet 4, which does say "under fresh keys"). Code: `member-executor.test.ts:523-531`.
+
+**Issue:** Re-using a key with a changed body returns `idempotency-conflict` (409), not the intended outcome. §A.2 ("Old revision must fail … with `revision-mismatch`; the current revision must admit that no-op"), §A.3 ("Check a retained current guard succeeds") and §B bullet 3 each submit two bodies differing only in `expectedRevision`.
+
+**Impact:** With a reused key the authority answers `idempotency-conflict` where the row expects `revision-mismatch` (409, `resource-evaluator.ts:145`) or success — the row silently measures the wrong law, and the failure looks like a target bug.
+
+**Minimal fix:** State once that every guard, no-op and restore request in both rows carries a distinct literal Idempotency-Key, and count those keys in the per-row action ledger (line 57).
+
+### 6. LOW — "99 uncovered obligations" conflates "not whole" with "unobserved"
+**Source:** Plan line 9. Measured: 129 rows, 30 whole, 49 `bounded-observation`, 80 `omitted`.
+
+**Issue/impact:** 99 = 129−30, i.e. rows without a whole flag. 80 are genuinely unplanned; 19 already carry bounded observations. In a document whose premise is evidence discipline, and which uses "omitted" precisely two sentences earlier, the looser word overstates the gap by 19 rows.
+
+**Minimal fix:** "99 rows without a whole flag, of which 80 are unplanned."
+
+### 7. LOW — The index-schema question the plan defers is already settled at `b919`
+**Source:** Plan line 61 ("may change only if its current schema actually carries digest fields needing refresh").
+
+**Issue:** `parseIndex` (`read-update-artifact-set.ts:108`) routes the index through `ownData(…, ["version","shards"])`, each entry through `ownData(value, ["id","source"])`, and `ownData` throws on any other key (`profile-contract-plan.ts:84-86`). The index therefore carries **no** digest fields, and needs no edit unless a shard `source` filename changes — which the plan forbids.
+
+**Impact:** A live decision point is left open that the frozen source answers definitively; an implementer may re-derive it or, worse, add a field.
+
+**Minimal fix:** Replace the conditional with the determined answer: the index is `{version, shards:[{id,source}]}` only and is not edited by this slice.
+
+### 8. LOW — Citation drift in the law/implementation table
+**Source:** Plan line 19-20.
+
+**Issue:** `resource-evaluator.ts:862–865` stops one line short — the metadata half of the no-op comparison is line 866 (`equal(commonMetadata, before?.metadata ?? {})`), so the cited range omits half of "compares both normalized objects". `resource-evaluator.test.ts:410–444` → the test is 409–438. `:1184–1233` → tests are 1184–1208 and 1210–1227 (next at 1229). `:1250–1318` → test is 1252–1315. `http-executor.ts:632–651` covers the raw target/body copying, but `source`/`bodyOctets`/`writeState` live at 753–760, only partly reached by the second anchor `759`.
+
+**Impact:** Minor; the substantive claims all check out, including `bdp.md:6649` which is exact. But line 15 makes line-precision the review map's contract.
+
+**Minimal fix:** `862–866`, `409–438`, `1184–1227`, `1252–1315`, `632–651,753–760`.
+
+### 9. LOW — Per-resource GETs must bind their own fixture IDs, not the collection bases
+**Source:** §A.7 and the per-resource GETs in §A/§B; plan line 57 ("Count … raw/client observations and live identities"). Code: `read-update-matrix.test.ts:1858`.
+
+**Issue:** Inside the per-row ledger loop, any `GET` whose `target.binding` is `beads` or `links` is asserted to carry `query == {limit:"100"}` plus the collection schema and identities oracles. Extending that ledger to the new rows — which line 57 implies — would reject `?view=properties` and per-resource GETs addressed as base+path. Routes are derived from fixture bindings (`:174-202`, which throws "Read target binding is not in the fixed fixture"), so dedicated bindings satisfy both constraints.
+
+**Minimal fix:** State that each row-owned Resource gets its own fixture binding, and that `view=properties` rides `target.query` on that binding.
+
+### 10. LOW — "both genuine reports retain 129 required IDs" misdescribes where the inventory lives
+**Source:** Plan line 67.
+
+**Issue:** `createReadUpdateArtifactSet` takes **one** `coverage` source for the whole two-shard set and requires `rows.length === selection.required.length`. A runner report carries `plannedIds` for its own shard, not the 129-row inventory.
+
+**Minimal fix:** "the set's single coverage inventory retains all 129 required IDs; each shard's report retains its own `plannedIds` and explicit gaps."
+
+---
+
+## Accepted known limits — verified, not defects
+
+- **Dependency on the other lane.** At `b919` there is no on-disk artifact-set index and no second `matrices/*.json`; `matrices/` holds only `read-update-v1.json` and `read-v1.json`, and the validator is exercised solely by `read-update-artifact-set.test.ts` with synthetic `matrices/baseline.json` / `matrices/continuation.json`. The plan states this (lines 9, 55, 61).
+- **Canonical-order feasibility.** The new rows sit at canonical positions **59** and **124** of 129. `parseIndex` requires exactly two shards; the validator requires only strictly increasing positions *within* a shard and same-shard-earlier prerequisites. Both rows are self-contained ("Setup is actual authenticated HTTP inside this row"), so no prerequisite edge is needed and insertion is order-legal wherever the segmentation cut falls.
+- **Size estimates are coherent.** Measured 19.4 compact bytes/node, 55–69 nodes/action; 85+65 actions ≈ 10,400 nodes ≈ 388 KiB pretty-printed — inside the stated ≤24,000-node / ≤650 KiB stop-and-report ceilings. Coverage 573,722 B + ≤65 KiB stays inside `ARTIFACT_MAX_BYTES`. Live-identity use (5 and 3) is far inside the existing `peak.beads ≤ 64` / `peak.links ≤ 16` caps.
+- **90 s aggregate budget** (`read-update-matrix.test.ts:808`, comment: "49 isolated authorities; Linux CI previously exceeded 30s") is real headroom pressure at +2 authorities / +150 actions on 49 / 1,861 — but line 63 already requires measuring it and keeping the failed run. I did not execute it.
+
+## Claims that are substantively right (no change needed)
+
+The provenance model matches the code exactly: `needsContext` (`resource-evaluator.ts:869-873`) makes omitted and `{}` both envelope-free and actor-only context-free under `recordChangeContext:false` (`development-authority.ts:253`, confirmed exact), while `agent:null`/message forces `{kind:"native"}` with no actor; `makeContext` (`:1183`) uses literally the undetermined/absent/present "states" vocabulary the plan borrows; `materializeVersion` (`:1131`) shares one context across all versions an operation mints, so §A.5's same-envelope claim is sound. `revisionProvenanceInput` permits `{}` and `agent:null`; output `revisionProvenance` has `minProperties:1` + `dependentRequired` forcing the committedAt/agent/message triple; `revisionActor.basis` is exactly `writer-supplied|unknown`. `equal` (`:383`) uses `===`, so `-0 === 0` and object key order is irrelevant while array order is significant — precisely §B's "object order independence without making array order irrelevant". Every numeric literal in §B admits/refuses as claimed under `isAdmissibleJsonNumber` (`json-admission.ts:212`), including `1e300`/`1E300`/expanded form and the `…92`/`…93`/`…94` triple; refusal is `validation-failed`/422 (`member-executor.ts:110`) and precedes CAS. `Decision` owns `relates` with `max:1` — exactly one owned-Link lifecycle; `Task` owns nothing, so the unowned Link is genuinely unowned. Shipped reference descriptors declare no `propertiesSchema`, so §B's arbitrary numeric documents face no effective-schema interference. `raw.body.encoding:"utf8"` exists (`executable-manifest.ts:63`); the only client operation is `installed.exact-request` with `input.bodyBindings` (177 uses), confirming the raw/dynamic split the plan relies on. All mutation routes are fixed `${scope}operations/*` POSTs already in the allowlist.

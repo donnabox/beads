@@ -1,0 +1,25 @@
+# Recovery-low independent native review
+
+**Verdict: accepted bounded closure; no blocking finding.** Frozen head `5e7041bcd64c58d84ff671e6cc3a2bb9a6c8b9ee`, direct parent `2fa2d0291d0a4dec95bc8b4e864c8f30c00b74b8`. The author checkout was read-only; independent clone `bdp-transaction-recovery-low-native-review` remained clean at the same head. No source/outward changes or public qualification.
+
+Read the exact six-file diff, author report, and `transaction-recovery-repair/claude-review.txt`, then inspected the surrounding disclosure, expiry, page-plan, startup and service branches. Used observable-test-runs discipline and pinned Node24.16.0/pnpm11.20.0.
+
+## Findings disposition
+
+- **New F1: closed.** `transaction-store.ts:1464–1470` now uses disclosedReceipt and parses only the parent's completed-status invariant when no page plan exists. That path performs no expireRow/retainedReceipt call. Failed or pending parents return missing, while a disclosed completed parent with a missing plan still raises integrity failure. Existing saved-plan unknown-token handling likewise returns missing before expiry. `transaction-http.test.ts:1349–1376` executes GET and HEAD across original/foreign principals and absent, unsupported, behind and foreign-view controls after the failed receipt becomes expiry-eligible: all are 404, no serving-context headers, correct Problem Details or empty HEAD body, with the stored failed receipt unchanged. Its 60-second maintenance interval isolates read-triggered retention from background sweep. Existing missing-plan corruption regression remains green.
+- **New F2: closed with committed actual-crash evidence.** `transaction-recovery.test.ts:69–82` extends the actual after-terminal SIGKILL case. It first confirms SQLite hot-journal magic, opens with a wrong page bound at an expiry-eligible clock and receives installation mismatch, then correctly reopens at the original clock. recoveredPending remains 1, all 60 committed groups / 180 Resources survive, and every original receipt continuation URL still returns its complete original tail postimage with available detail. This proves the refused open did not retract pending work or sweep retained outcomes, while allowing required SQLite journal recovery. It makes no interrupted-file byte-identity promise.
+- **New F5: closed as scoped.** `transaction-store.ts:1453–1458` checks the parsed parentId receipt namespace before any plan query. `transaction-receipt-pages.test.ts:282–291` covers a foreign namespace and collection-shaped receipt parent, both with ordinary/unsupported controls, and spies on actual SQL preparation to prove no receipt_pages lookup occurs. Spy restoration precedes fixture cleanup. Service comments now correctly call URL-prefix checks construction-guaranteed defense in depth; result-size bounds remain independently enforced. No broader canonical-URL validator or wire behavior was added.
+- **F3: intentionally deferred.** No tagged-union redesign occurred. The current structural discriminator is confined to `supplied === "unsupported"` (`transaction-service.ts:269–273`); ordinary minimum reads take a different branch. The external hypothetical ordinary-read regression is not a current behavior defect. Existing type-design debt remains a separate follow-up.
+- **F4: inherited closure preserved.** Parent2fa's isolated maintenance cadence and delayed root-control witness are unchanged and pass in the independent HTTP suite.
+
+Only the targeted page read ordering/namespace code changed at runtime; service edits are comments. No schema, private format, identity policy, profile, receipt union or general retention semantics changed. Ordinary valid-page expiry, integrity refusal and same-entry minimum behavior remain covered by the focused tests. Missing page reads no longer advance failed-parent retention; scheduled maintenance remains legitimate.
+
+## Independent verification
+
+Completed frozen install and build first, then:
+
+`pnpm exec vitest run packages/server/src/transaction-http.test.ts packages/server/src/transaction-receipt-pages.test.ts packages/server/src/transaction-recovery.test.ts packages/server/src/transaction-service.test.ts --maxWorkers=2 --reporter=verbose --reporter=json ...`
+
+**83 tests / 4 files passed in 2.43 seconds.** Both real process-death/hot-journal cases passed (426ms and 413ms). Build and tests recorded exit 0. Logs beside this report: `native-clone.log`, `native-install.log`, `native-build.log`/`.exit`, `native-tests.log`/`.json`/`.exit`. Final independent checkout clean; no test-owned subprocess remained.
+
+This reruns the relevant HTTP, page, recovery and service paths; it does not independently repeat the author's full 215-test set, smokes, type/lint/format/boundary checks, evidence verifier or whole workspace. Root owns combined checks. Crash evidence is application process death and SQLite rollback recovery, not power-loss/filesystem durability. No new Read seal, public profile claim or evidence relabeling.

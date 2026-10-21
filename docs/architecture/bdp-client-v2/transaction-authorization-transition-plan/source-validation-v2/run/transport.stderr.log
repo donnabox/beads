@@ -1,0 +1,33 @@
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 1 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  packages/server/src/transaction-runtime.test.ts > narrows current Transactional visibility and fences issued handles after policy publication
+AssertionError: authorization-transition:status currentBeadCollection: expected 503 to be 200 // Object.is equality
+
+- Expected
++ Received
+
+- 200
++ 503
+
+ ❯ authorizationChecked packages/server/src/transaction-runtime.test.ts:271:72
+    269| }
+    270| function authorizationChecked(response: AuthorizationResponse, status:…
+    271|   expect(response.status, `authorization-transition:status ${schema}`)…
+       |                                                                        ^
+    272|   const validate = authorizationValidators[schema]!;
+    273|   expect(
+ ❯ packages/server/src/transaction-runtime.test.ts:613:24
+ ❯ withAuthorizationRuntime packages/server/src/transaction-runtime.test.ts:533:5
+ ❯ packages/server/src/transaction-runtime.test.ts:589:3
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/1]⎯
+
+Traceback (most recent call last):
+  File "/Users/dbox/repos/wt/vickie/bdp-integration-logs/guarded-action.py", line 5, in <module>
+    subprocess.run(sys.argv[1:],check=True)
+    ~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/homebrew/Cellar/python@3.14/3.14.5/Frameworks/Python.framework/Versions/3.14/lib/python3.14/subprocess.py", line 578, in run
+    raise CalledProcessError(retcode, process.args,
+                             output=stdout, stderr=stderr)
+subprocess.CalledProcessError: Command '['/Users/dbox/.nvm/versions/node/v24.16.0/bin/node', '/Users/dbox/repos/wt/vickie/vickie-authorization-transition/node_modules/vitest/vitest.mjs', 'run', 'packages/server/src/transaction-runtime.test.ts', '--maxWorkers=1', '--testNamePattern', '^(?:narrows\\ current\\ Transactional\\ visibility\\ and\\ fences\\ issued\\ handles\\ after\\ policy\\ publication|cancels\\ an\\ active\\ Event\\ stream\\ after\\ policy\\ publication)$', '--reporter=verbose', '--reporter=json', '--outputFile=/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-authorization-transition-plan/source-validation-v2/run/transport.results.json']' returned non-zero exit status 1.

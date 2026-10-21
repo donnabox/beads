@@ -1,0 +1,435 @@
+{
+  "sourceIdentity": "507d86e5dac586bee57543bcf6ade921a5d354dfd36f08dd05fc5c8230f3afaa",
+  "sourceBindingSha256": "ab7eb73718d4f1d00e53c8eee3308f5b218bf89312c0c7cfe7d3fc9b38950d5b",
+  "qualification": false,
+  "selectedCallbacks": [
+    "gates initial Scope Event unknown minima before retained scans",
+    "captures an initial Scope Event opaque tuple across one bounded wait",
+    "cancels and drains initial Scope Event opaque waits",
+    "serves initial finite Scope Event opaque minima through bounded waiting",
+    "preserves initial Scope Event preflight before malformed capture: already-aborted",
+    "preserves initial Scope Event preflight before malformed capture: invalid-policy",
+    "preserves initial Scope Event preflight before malformed capture: throwing-clock",
+    "preserves initial Scope Event preflight before malformed capture: nonfinite-clock",
+    "preserves initial Scope Event preflight before malformed capture: malformed-after-valid-preflight",
+    "pages within groups, continues exclusively after end and rejects unrelated/fabricated cursors",
+    "checks minimum position before any retained group scan or body materialization",
+    "cancels finite Event waits through the facet and drains uncancelled waits before owner close",
+    "serves finite Event HTTP with current context, conditionals, HEAD and bounded minimum waits",
+    "isolates unresolved metadata-only incident membership while Scope/Link sources remain available",
+    "gates initial Bead Event unknown minima before retained scans",
+    "captures an initial Bead Event opaque tuple across one bounded wait",
+    "cancels and drains initial Bead Event opaque waits",
+    "serves initial finite Bead Event opaque minima with retained identity and route fences",
+    "preserves initial Bead Event classification and preflight: already-aborted",
+    "preserves initial Bead Event classification and preflight: invalid-policy",
+    "preserves initial Bead Event classification and preflight: throwing-clock",
+    "preserves initial Bead Event classification and preflight: nonfinite-clock",
+    "preserves initial Bead Event classification and preflight: malformed-after-valid-preflight",
+    "preserves initial Bead Event classification and preflight: noncanonical-query",
+    "preserves initial Bead Event classification and preflight: relative-source"
+  ],
+  "resultsSha256": "1369f2a10871033f3e59405f1d5fddc0386dc67ae485f438f3f84d8c7ad63e7b",
+  "logSha256": "344c696c89a6dc03177cf248aff8db02ce1910ef58026a1936cc216e46a83eab",
+  "actualInstrumentedObservations": [
+    {
+      "observation": "finite-event-minimum-capture",
+      "reads": 4,
+      "serviceCalls": 2,
+      "waits": 2,
+      "probes": 2,
+      "groupReads": 0,
+      "attemptTimes": [
+        0,
+        0,
+        5,
+        10
+      ]
+    },
+    {
+      "observation": "finite-event-minimum-cancel-drain",
+      "reads": 5,
+      "serviceCalls": 4,
+      "waits": 3,
+      "probes": 3,
+      "groupReads": 0,
+      "attemptTimes": [
+        0,
+        0,
+        5,
+        10,
+        15
+      ],
+      "postCloseDirectRefusals": 1
+    },
+    {
+      "observation": "finite-event-minimum-preflight",
+      "label": "already-aborted",
+      "serviceCalls": 1,
+      "clockCalls": 1,
+      "ownerReads": 0,
+      "waits": 0
+    },
+    {
+      "observation": "finite-event-minimum-preflight",
+      "label": "invalid-policy",
+      "serviceCalls": 1,
+      "clockCalls": 0,
+      "ownerReads": 0,
+      "waits": 0
+    },
+    {
+      "observation": "finite-event-minimum-preflight",
+      "label": "throwing-clock",
+      "serviceCalls": 1,
+      "clockCalls": 1,
+      "ownerReads": 0,
+      "waits": 0
+    },
+    {
+      "observation": "finite-event-minimum-preflight",
+      "label": "nonfinite-clock",
+      "serviceCalls": 1,
+      "clockCalls": 1,
+      "ownerReads": 0,
+      "waits": 0
+    },
+    {
+      "observation": "finite-event-minimum-preflight",
+      "label": "malformed-after-valid-preflight",
+      "serviceCalls": 1,
+      "clockCalls": 1,
+      "ownerReads": 0,
+      "waits": 0
+    },
+    {
+      "observation": "bead-event-minimum-capture",
+      "reads": 4,
+      "serviceCalls": 2,
+      "waits": 2,
+      "probes": 2,
+      "groupReads": 0,
+      "attemptTimes": [
+        0,
+        0,
+        5,
+        10
+      ],
+      "seedMutations": 1
+    },
+    {
+      "observation": "bead-event-minimum-cancel-drain",
+      "reads": 5,
+      "serviceCalls": 4,
+      "waits": 3,
+      "probes": 3,
+      "groupReads": 0,
+      "attemptTimes": [
+        0,
+        0,
+        5,
+        10,
+        15
+      ],
+      "postCloseDirectRefusals": 1,
+      "seedMutations": 1
+    },
+    {
+      "observation": "bead-event-minimum-preflight",
+      "label": "already-aborted",
+      "serviceCalls": 1,
+      "clockCalls": 1,
+      "ownerReads": 0,
+      "waits": 0
+    },
+    {
+      "observation": "bead-event-minimum-preflight",
+      "label": "invalid-policy",
+      "serviceCalls": 1,
+      "clockCalls": 0,
+      "ownerReads": 0,
+      "waits": 0
+    },
+    {
+      "observation": "bead-event-minimum-preflight",
+      "label": "throwing-clock",
+      "serviceCalls": 1,
+      "clockCalls": 1,
+      "ownerReads": 0,
+      "waits": 0
+    },
+    {
+      "observation": "bead-event-minimum-preflight",
+      "label": "nonfinite-clock",
+      "serviceCalls": 1,
+      "clockCalls": 1,
+      "ownerReads": 0,
+      "waits": 0
+    },
+    {
+      "observation": "bead-event-minimum-preflight",
+      "label": "malformed-after-valid-preflight",
+      "serviceCalls": 1,
+      "clockCalls": 1,
+      "ownerReads": 0,
+      "waits": 0
+    },
+    {
+      "observation": "bead-event-minimum-preflight",
+      "label": "noncanonical-query",
+      "serviceCalls": 1,
+      "clockCalls": 1,
+      "ownerReads": 1,
+      "waits": 0
+    },
+    {
+      "observation": "bead-event-minimum-preflight",
+      "label": "relative-source",
+      "serviceCalls": 1,
+      "clockCalls": 1,
+      "ownerReads": 1,
+      "waits": 0
+    },
+    {
+      "observation": "finite-event-minimum-owner",
+      "reads": 8,
+      "seedMutations": 1
+    },
+    {
+      "observation": "finite-event-minimum-http",
+      "calls": 32,
+      "productChildren": 0,
+      "directoryAbsent": true,
+      "failureCount": 0
+    },
+    {
+      "observation": "bead-event-minimum-owner",
+      "reads": 12,
+      "seedMutations": 2,
+      "policyReplacements": 1,
+      "groupReadsAfterHidden": 0
+    },
+    {
+      "observation": "bead-event-minimum-http",
+      "calls": 37,
+      "completedResponses": [
+        {
+          "method": "POST",
+          "suffix": "operations/batch",
+          "status": 200
+        },
+        {
+          "method": "GET",
+          "suffix": "beads/a?view=events",
+          "status": 200
+        },
+        {
+          "method": "GET",
+          "suffix": "beads/a?view=events",
+          "status": 503
+        },
+        {
+          "method": "HEAD",
+          "suffix": "beads/a?view=events",
+          "status": 503
+        },
+        {
+          "method": "GET",
+          "suffix": "beads/a?view=events",
+          "status": 503
+        },
+        {
+          "method": "HEAD",
+          "suffix": "beads/a?view=events",
+          "status": 503
+        },
+        {
+          "method": "GET",
+          "suffix": "beads/a?view=events",
+          "status": 503
+        },
+        {
+          "method": "HEAD",
+          "suffix": "beads/a?view=events",
+          "status": 503
+        },
+        {
+          "method": "GET",
+          "suffix": "beads/a?view=events",
+          "status": 200
+        },
+        {
+          "method": "HEAD",
+          "suffix": "beads/a?view=events",
+          "status": 200
+        },
+        {
+          "method": "GET",
+          "suffix": "beads/a?view=events",
+          "status": 200
+        },
+        {
+          "method": "HEAD",
+          "suffix": "beads/a?view=events",
+          "status": 200
+        },
+        {
+          "method": "GET",
+          "suffix": "beads/a?view=events",
+          "status": 500
+        },
+        {
+          "method": "HEAD",
+          "suffix": "beads/a?view=events",
+          "status": 500
+        },
+        {
+          "method": "GET",
+          "suffix": "beads/a?view=events",
+          "status": 500
+        },
+        {
+          "method": "HEAD",
+          "suffix": "beads/a?view=events",
+          "status": 500
+        },
+        {
+          "method": "GET",
+          "suffix": "links/l?view=events",
+          "status": 500
+        },
+        {
+          "method": "HEAD",
+          "suffix": "links/l?view=events",
+          "status": 500
+        },
+        {
+          "method": "GET",
+          "suffix": "beads/a?view=events",
+          "status": 500
+        },
+        {
+          "method": "HEAD",
+          "suffix": "beads/a?view=events",
+          "status": 500
+        },
+        {
+          "method": "GET",
+          "suffix": "beads/a?view=events&after=ev_0Vll0G35FyYRO7xFLngFrA5QnPF6qPzbN0VOkYIfSwM_bLUW9ljdXBysp41tfjGcabueApuHaoJDxyqyaQ2NBU4_ZlXdrPe-wBM8V56cGijFFYVqR_tNFIKLlLrlkd9fwN0_pos-1_0",
+          "status": 500
+        },
+        {
+          "method": "HEAD",
+          "suffix": "beads/a?view=events&after=ev_0Vll0G35FyYRO7xFLngFrA5QnPF6qPzbN0VOkYIfSwM_bLUW9ljdXBysp41tfjGcabueApuHaoJDxyqyaQ2NBU4_ZlXdrPe-wBM8V56cGijFFYVqR_tNFIKLlLrlkd9fwN0_pos-1_0",
+          "status": 500
+        },
+        {
+          "method": "GET",
+          "suffix": "beads/a?view=events",
+          "status": 500
+        },
+        {
+          "method": "HEAD",
+          "suffix": "beads/a?view=events",
+          "status": 500
+        },
+        {
+          "method": "GET",
+          "suffix": "beads/a?view=events",
+          "status": 500
+        },
+        {
+          "method": "HEAD",
+          "suffix": "beads/a?view=events",
+          "status": 500
+        },
+        {
+          "method": "GET",
+          "suffix": "beads/a?view=events",
+          "status": 400
+        },
+        {
+          "method": "HEAD",
+          "suffix": "beads/a?view=events",
+          "status": 400
+        },
+        {
+          "method": "GET",
+          "suffix": "beads/a?view=events&unsupported=x",
+          "status": 400
+        },
+        {
+          "method": "HEAD",
+          "suffix": "beads/a?view=events&unsupported=x",
+          "status": 400
+        },
+        {
+          "method": "GET",
+          "suffix": "beads/missing?view=events",
+          "status": 404
+        },
+        {
+          "method": "HEAD",
+          "suffix": "beads/missing?view=events",
+          "status": 404
+        },
+        {
+          "method": "POST",
+          "suffix": "operations/batch",
+          "status": 200
+        },
+        {
+          "method": "GET",
+          "suffix": "beads/gone",
+          "status": 404
+        },
+        {
+          "method": "GET",
+          "suffix": "beads/gone?view=events",
+          "status": 200
+        },
+        {
+          "method": "GET",
+          "suffix": "beads/gone?view=events",
+          "status": 503
+        },
+        {
+          "method": "HEAD",
+          "suffix": "beads/gone?view=events",
+          "status": 503
+        }
+      ],
+      "elapsedMs": 686,
+      "productChildren": 0,
+      "directoryAbsent": true,
+      "failureCount": 0
+    }
+  ],
+  "attribution": "Selected source owner/service and fresh emitted HTTP callbacks; actual names verified individually",
+  "plannedWorkload": {
+    "callbacks": 25,
+    "existingCallbacks": 14,
+    "newCallbacks": 11,
+    "stores": 25,
+    "inProcessListeners": 3,
+    "productChildren": 0,
+    "httpExchanges": 128,
+    "existingHttpExchanges": 91,
+    "newHttpExchanges": 37,
+    "newBeadDirectOwnerReads": 12,
+    "newBeadNonReadPolicyReplacements": 1,
+    "newBeadSeedDirectTransactions": 2,
+    "newBeadServiceSeedSubmissions": 2,
+    "newBeadServiceEventsCalls": 6,
+    "newBeadWaitDelegatedReads": 9,
+    "newBeadWaitsAndProbes": 5,
+    "newBeadPostCloseDirectRefusal": 1,
+    "newBeadPreflightCallbacks": 7,
+    "newBeadPreflightInitialClocks": 6,
+    "newBeadPreflightDelegatedReads": 2,
+    "newBeadPreflightWaits": 0,
+    "existingRetryAttempts": null,
+    "attribution": "Prospective plan-v3 only; no authored-source or measured observation claim."
+  },
+  "limits": "Instrumented records are separately observed if executed; historical59 HTTP remains source-derived, not a measured128 total; counts are not qualification; preserve service precedence controls as separate service calls and owner attempts. Assertions of passing pinned callbacks supply semantic evidence."
+}

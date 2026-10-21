@@ -1,0 +1,16 @@
+{
+  "decision": "release one emitted omission control",
+  "sourcePositiveAcceptanceSha256": "45a03a0f71f1017694861b8e127d9ad664f22df156118522c33aeac35b76739b",
+  "nativeReviewSha256": "7184936efc82f646a1670121135a85294fe0661780975c003404d5d760b0bb62",
+  "runnerSha256": "c85a5bf26e0c2d9ebf2bd886e3060aec2748e24f7faf5e046aff92f45fb2e0d9",
+  "packetSha256": "538faf62f0dd43793f9f43d88015a019b1d768009d62eb021039bd59f3e3b260",
+  "sourceMembersVerified": 1131,
+  "toolFilesVerified": 1932,
+  "internalSymlinksVerified": 180,
+  "soleProductChange": [
+    "packages/server/dist/transaction-http.js"
+  ],
+  "expected": "one failed test, seven exact named soft tuple failures, twelve responses, no hard failure, clean shutdown",
+  "claudeReview": "pending; no commit/merge authorization",
+  "installedGate": "closed"
+}

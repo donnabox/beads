@@ -1,0 +1,24 @@
+
+ RUN  v4.1.10 /Users/dbox/repos/wt/vickie/vickie-sequence-member-evidence
+
+ ✓ packages/server/src/transaction-receipt-pages.test.ts > records one atomic page chain, retains original postimages and all tail allocations through expiry 48ms
+ ↓ packages/server/src/transaction-receipt-pages.test.ts > rolls pages and all effects back after after-effects failure
+ ↓ packages/server/src/transaction-receipt-pages.test.ts > rolls pages and all effects back after after-terminal failure
+ ↓ packages/server/src/transaction-receipt-pages.test.ts > fences uncertain COMMIT and recovers the original committed pages
+ ↓ packages/server/src/transaction-receipt-pages.test.ts > fails service instead of recomputing a missing page chain
+ ↓ packages/server/src/transaction-receipt-pages.test.ts > fails service instead of recomputing a overlap page chain
+ ↓ packages/server/src/transaction-receipt-pages.test.ts > fails service instead of recomputing a truncated page chain
+ ↓ packages/server/src/transaction-receipt-pages.test.ts > fails service instead of recomputing a foreign-parent page chain
+ ↓ packages/server/src/transaction-receipt-pages.test.ts > refuses incompatible format before pending recovery and expiry byte-identically
+ ↓ packages/server/src/transaction-receipt-pages.test.ts > refuses incompatible bound before pending recovery and expiry byte-identically
+ ↓ packages/server/src/transaction-receipt-pages.test.ts > keeps issued page identities after abrupt postcommit process loss
+ ↓ packages/server/src/transaction-receipt-pages.test.ts > keeps intermediate postimages and deletion facts in recorded pages
+ ✓ packages/server/src/transaction-receipt-pages.test.ts > refuses page parents outside the receipt namespace before plan lookup 1ms
+ ✓ packages/server/src/transaction-receipt-pages.test.ts > captures immutable current context for nondisclosable receipt pages before minimum checks 4ms
+
+ Test Files  1 passed (1)
+      Tests  3 passed | 11 skipped (14)
+   Start at  05:32:22
+   Duration  343ms (transform 151ms, setup 15ms, import 219ms, tests 54ms, environment 0ms)
+
+JSON report written to /Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-receipt-missing-context-draft/run/receipt-pages-positive.json

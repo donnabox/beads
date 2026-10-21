@@ -1,0 +1,905 @@
+{
+  "source": "5401e2fcd2abc414bfe83a2798101c02025153a2",
+  "tree": "ee86fd4f58747bf9685e17a7196a9842ae779d74",
+  "parents": [
+    "739022601416346fa68f8f027f9b1c62d8dd2b1b",
+    "8d83e49a073130bf711e144e95e97687cda8edd4"
+  ],
+  "clean": true,
+  "files": {
+    "apps/bdptest/src/transactional-collection-minimum-installed.test.ts": {
+      "bytes": 27866,
+      "sha256": "15ac10dadb019deabda1b22e5c8363aebc3c89692992e5e017e682e8c94b85c9"
+    },
+    "docs/design/transaction-implementation-progress.md": {
+      "bytes": 112641,
+      "sha256": "03edd6b2c58fde451300be3192be05488826c66d60743239391606736f34c069"
+    },
+    "packages/server/src/transaction-http.test.ts": {
+      "bytes": 87259,
+      "sha256": "6e526002eecd7c6c3407bbfcb6e661742c819e644eb5292a439d88942a640b03"
+    },
+    "packages/server/src/transaction-read.test.ts": {
+      "bytes": 42503,
+      "sha256": "18526226e3433ca68d2ffa86fe5503b77e2a5f991ac059fdf5f0b4f9b1565c67"
+    },
+    "packages/server/src/transaction-read.ts": {
+      "bytes": 10062,
+      "sha256": "a4798e7601b73dda3b2b256a7fb706c004e6d445ce1c7ad8ad92943236ac4cc3"
+    },
+    "packages/server/src/transaction-service.test.ts": {
+      "bytes": 65194,
+      "sha256": "6849d2a88ff068afb21404e894dbc84e8478483e51f8f5c2efa7cf299afbb069"
+    },
+    "packages/server/src/transaction-service.ts": {
+      "bytes": 22862,
+      "sha256": "44d7541635fad6c3d9be827b97df4b78b7d4a1ed3d7bf658676f9875e6ddfc22"
+    }
+  },
+  "claimEligible": false,
+  "tarballs": {
+    "protocol.tgz": "4683cb6c6333c332a4bcb7efc3e28f32d1d8d06a7264913f65c31d3a826d4227",
+    "server.tgz": "0b788f93cd34c8610cb9106fe8ce2fe27cede6a09b5d225e57e31a294a3593f4"
+  },
+  "exits": {
+    "install": {
+      "exit": 0,
+      "expected": 0,
+      "seconds": 0.462,
+      "command": [
+        "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+        "/Users/dbox/.cache/node/corepack/v1/pnpm/11.20.0/bin/pnpm.cjs",
+        "install",
+        "--frozen-lockfile"
+      ]
+    },
+    "typecheck": {
+      "exit": 0,
+      "expected": 0,
+      "seconds": 1.393,
+      "command": [
+        "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+        "/Users/dbox/.cache/node/corepack/v1/pnpm/11.20.0/bin/pnpm.cjs",
+        "typecheck"
+      ]
+    },
+    "build": {
+      "exit": 0,
+      "expected": 0,
+      "seconds": 0.798,
+      "command": [
+        "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+        "/Users/dbox/.cache/node/corepack/v1/pnpm/11.20.0/bin/pnpm.cjs",
+        "build"
+      ]
+    },
+    "focused": {
+      "exit": 0,
+      "expected": 0,
+      "seconds": 3.846,
+      "command": [
+        "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+        "/Users/dbox/.cache/node/corepack/v1/pnpm/11.20.0/bin/pnpm.cjs",
+        "exec",
+        "vitest",
+        "run",
+        "packages/server/src/transaction-service.test.ts",
+        "packages/server/src/transaction-discovery.test.ts",
+        "packages/server/src/transaction-runtime-configuration.test.ts",
+        "packages/server/src/transaction-read.test.ts",
+        "packages/server/src/transaction-http.test.ts",
+        "packages/server/src/transaction-consistency.test.ts",
+        "packages/protocol/src/transaction-discovery-values.test.ts",
+        "packages/server/src/transaction-installed-contracts.test.ts",
+        "--maxWorkers=2",
+        "--reporter=verbose",
+        "--reporter=json",
+        "--outputFile.json=/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-discovery-minimum-integration/focused.json"
+      ]
+    },
+    "format": {
+      "exit": 0,
+      "expected": 0,
+      "seconds": 1.261,
+      "command": [
+        "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+        "/Users/dbox/.cache/node/corepack/v1/pnpm/11.20.0/bin/pnpm.cjs",
+        "format:check"
+      ]
+    },
+    "lint": {
+      "exit": 0,
+      "expected": 0,
+      "seconds": 0.42,
+      "command": [
+        "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+        "/Users/dbox/.cache/node/corepack/v1/pnpm/11.20.0/bin/pnpm.cjs",
+        "lint"
+      ]
+    },
+    "boundaries": {
+      "exit": 0,
+      "expected": 0,
+      "seconds": 0.58,
+      "command": [
+        "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+        "/Users/dbox/.cache/node/corepack/v1/pnpm/11.20.0/bin/pnpm.cjs",
+        "check:boundaries"
+      ]
+    },
+    "read-seal": {
+      "exit": 0,
+      "expected": 0,
+      "seconds": 0.303,
+      "command": [
+        "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+        "/Users/dbox/.cache/node/corepack/v1/pnpm/11.20.0/bin/pnpm.cjs",
+        "evidence:verify"
+      ]
+    },
+    "frozen-build": {
+      "exit": 0,
+      "expected": 0,
+      "seconds": 0.795,
+      "command": [
+        "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+        "/Users/dbox/.cache/node/corepack/v1/pnpm/11.20.0/bin/pnpm.cjs",
+        "build"
+      ]
+    },
+    "pack-protocol": {
+      "exit": 0,
+      "expected": 0,
+      "seconds": 0.254,
+      "command": [
+        "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+        "/Users/dbox/.cache/node/corepack/v1/pnpm/11.20.0/bin/pnpm.cjs",
+        "pack",
+        "--out",
+        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-discovery-minimum-integration/packs/protocol.tgz"
+      ]
+    },
+    "pack-server": {
+      "exit": 0,
+      "expected": 0,
+      "seconds": 0.303,
+      "command": [
+        "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+        "/Users/dbox/.cache/node/corepack/v1/pnpm/11.20.0/bin/pnpm.cjs",
+        "pack",
+        "--out",
+        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-discovery-minimum-integration/packs/server.tgz"
+      ]
+    },
+    "packed-install": {
+      "exit": 0,
+      "expected": 0,
+      "seconds": 0.302,
+      "command": [
+        "npm",
+        "install",
+        "--offline",
+        "--ignore-scripts",
+        "--no-audit",
+        "--no-fund"
+      ]
+    },
+    "packed-minimum": {
+      "exit": 0,
+      "expected": 0,
+      "seconds": 5.158,
+      "command": [
+        "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+        "/Users/dbox/.cache/node/corepack/v1/pnpm/11.20.0/bin/pnpm.cjs",
+        "exec",
+        "vitest",
+        "run",
+        "apps/bdptest/src/transactional-collection-minimum-installed.test.ts",
+        "--maxWorkers=2",
+        "--reporter=verbose",
+        "--reporter=json",
+        "--outputFile.json=/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-discovery-minimum-integration/packed-minimum.json"
+      ]
+    },
+    "packed-ru-positives": {
+      "exit": 0,
+      "expected": 0,
+      "seconds": 2.678,
+      "command": [
+        "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+        "/Users/dbox/.cache/node/corepack/v1/pnpm/11.20.0/bin/pnpm.cjs",
+        "exec",
+        "vitest",
+        "run",
+        "apps/bdptest/src/read-update-matrix.test.ts",
+        "-t",
+        "observes retained retry dispositions across actual installed carriers and current positions|observes reference syntax and retained category failures against installed HTTP",
+        "--maxWorkers=2",
+        "--reporter=verbose",
+        "--reporter=json",
+        "--outputFile.json=/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-discovery-minimum-integration/packed-ru-positives.json"
+      ]
+    },
+    "direct-emitted": {
+      "exit": 0,
+      "expected": 0,
+      "seconds": 0.145,
+      "command": [
+        "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-discovery-minimum-integration/emitted.mjs",
+        "/Users/dbox/repos/wt/vickie/vickie-discovery-minimum-integration"
+      ]
+    }
+  },
+  "transactional": [
+    {
+      "observation": "private-installed-collection-minimum",
+      "outcome": "passed",
+      "aborted": false,
+      "declaredSourceCommit": "5401e2fcd2abc414bfe83a2798101c02025153a2",
+      "workspaceDirty": false,
+      "closed": true,
+      "childPid": 94713,
+      "childExitCode": 0,
+      "entry": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-discovery-minimum-integration/install/node_modules/@bdp/server/dist/transaction-installed-process.js",
+      "entrySha256": "bcf153170f953f9e28c6c89f1153be907f64df289e64f3ad929cad4a4a54c47c",
+      "binding": {
+        "served": {
+          "scope": "https://reference.invalid/acme/",
+          "profile": "transactional",
+          "history": false,
+          "sourceCommit": "5401e2fcd2abc414bfe83a2798101c02025153a2",
+          "installedPayloadDigest": "edc5e896ed2be76c77a3964c48b524cbf6e8fc79ae210374072670fd1e5876d2",
+          "installedContractsDigest": "1d788f65b366fcac24fbbc90dd76a744883bd484130526de128416946d100564",
+          "policyDigest": "6b677a605b12c9c0e8df1a604b1408fb3280c3389be203ca3cd4ca116d790095",
+          "authenticationDigest": "1994db9a1c99bcbc056c88c67b59263e6ffaff9a5d96aacfb20755b88711f27f",
+          "fixtureDigest": "3a7899ced771d4880066d98b0000c53f801ece53458502cc4f3bc641146c9a85",
+          "fixtureId": "reference-transactional-v1",
+          "capabilities": [
+            "installed-transactional-http",
+            "transactional-receipt-observation"
+          ]
+        },
+        "operationTargets": {
+          "createBead": "https://reference.invalid/acme/operations/create-bead",
+          "updateBead": "https://reference.invalid/acme/operations/update-bead",
+          "deleteBead": "https://reference.invalid/acme/operations/delete-bead",
+          "createLink": "https://reference.invalid/acme/operations/create-link",
+          "updateLink": "https://reference.invalid/acme/operations/update-link",
+          "deleteLink": "https://reference.invalid/acme/operations/delete-link",
+          "putAlias": "https://reference.invalid/acme/operations/put-alias",
+          "deleteAlias": "https://reference.invalid/acme/operations/delete-alias",
+          "updateWhere": "https://reference.invalid/acme/operations/update-where",
+          "deleteWhere": "https://reference.invalid/acme/operations/delete-where",
+          "batch": "https://reference.invalid/acme/operations/batch",
+          "sequence": "https://reference.invalid/acme/operations/sequence"
+        },
+        "runtimeConfigurationIdentity": "0df54908e9f8f4d858e9ceac12e1469d9abbe8ae0ec4c990b7dfd4962ed1c598",
+        "authorityMode": "canonical"
+      },
+      "exchanges": 38,
+      "completedResponses": [
+        {
+          "url": "https://reference.invalid/acme/beads/",
+          "method": "GET",
+          "status": 200,
+          "responseBytes": 24,
+          "wireSha256": "060147a7ce09c6ea31638ef4c08b173fa2747abcc3baa2644249726061562b20",
+          "bodySha256": "9172f6f02ae5ecbbc5a9e487c33e751478b6207a8db8c534a21c7b404004c0db"
+        },
+        {
+          "url": "https://reference.invalid/acme/beads/",
+          "method": "GET",
+          "status": 200,
+          "responseBytes": 24,
+          "wireSha256": "060147a7ce09c6ea31638ef4c08b173fa2747abcc3baa2644249726061562b20",
+          "bodySha256": "9172f6f02ae5ecbbc5a9e487c33e751478b6207a8db8c534a21c7b404004c0db"
+        },
+        {
+          "url": "https://reference.invalid/acme/links/",
+          "method": "GET",
+          "status": 200,
+          "responseBytes": 24,
+          "wireSha256": "060147a7ce09c6ea31638ef4c08b173fa2747abcc3baa2644249726061562b20",
+          "bodySha256": "9172f6f02ae5ecbbc5a9e487c33e751478b6207a8db8c534a21c7b404004c0db"
+        },
+        {
+          "url": "https://reference.invalid/acme/operations/batch",
+          "method": "POST",
+          "status": 200,
+          "responseBytes": 2342,
+          "wireSha256": "667e60e86f898ed7ca829fb835067741475006119c382de7fd940fa2090f53be",
+          "bodySha256": "f6df1f902bdd9108c31d8a8cf212abcdab4dd562f6e1bf9973cbd4673ff370d4"
+        },
+        {
+          "url": "https://reference.invalid/acme/beads/?limit=32&type=https%3A%2F%2Freference.invalid%2Facme%2Ftypes%2Ftask",
+          "method": "GET",
+          "status": 200,
+          "responseBytes": 1468,
+          "wireSha256": "854904f66f016617651289cb50a02d6b413b7e9ab1289434706810c815b6e315",
+          "bodySha256": "5226ea1d0dd044947ff54bbdac9e3bd691b27605951ab5d9e4ecd527ccac5f95"
+        },
+        {
+          "url": "https://reference.invalid/acme/beads/?limit=32&type=https%3A%2F%2Freference.invalid%2Facme%2Ftypes%2Ftask",
+          "method": "HEAD",
+          "status": 200,
+          "responseBytes": 0,
+          "wireSha256": "1681495c4076c787afd04303fa0dc2db3322a4c394e8d1d179cf1c8e7c571900",
+          "bodySha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        {
+          "url": "https://reference.invalid/acme/beads/?limit=32&type=https%3A%2F%2Freference.invalid%2Facme%2Ftypes%2Ftask",
+          "method": "GET",
+          "status": 304,
+          "responseBytes": 0,
+          "wireSha256": "7abf809540570bc11b239c2af64a102df57d3c63cce4f0ad62de186dbd81f9ea",
+          "bodySha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        {
+          "url": "https://reference.invalid/acme/beads/?limit=32&type=https%3A%2F%2Freference.invalid%2Facme%2Ftypes%2Ftask",
+          "method": "GET",
+          "status": 412,
+          "responseBytes": 0,
+          "wireSha256": "59ddda09f810bb99a3e07de95de0b759d1b1438ef49c4e24ac63fc4e0b924769",
+          "bodySha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        {
+          "url": "https://reference.invalid/acme/beads/?limit=32&type=https%3A%2F%2Freference.invalid%2Facme%2Ftypes%2Ftask",
+          "method": "GET",
+          "status": 503,
+          "responseBytes": 127,
+          "wireSha256": "ed3c82361028525c0fae0e6011cf494fdeba4b3c0a570f7bbb56ebfad5a6fca7",
+          "bodySha256": "5e7c50923b5ef2e22379c96cbec4f9197175e38d9a81970f7db4f81ae46255b0"
+        },
+        {
+          "url": "https://reference.invalid/acme/beads/?limit=32&type=https%3A%2F%2Freference.invalid%2Facme%2Ftypes%2Ftask",
+          "method": "HEAD",
+          "status": 304,
+          "responseBytes": 0,
+          "wireSha256": "c6307e90a8c94b40308028b95d289f6d3d892f4236a4a153d111c882ab26b010",
+          "bodySha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        {
+          "url": "https://reference.invalid/acme/beads/?limit=32&type=https%3A%2F%2Freference.invalid%2Facme%2Ftypes%2Ftask",
+          "method": "HEAD",
+          "status": 412,
+          "responseBytes": 0,
+          "wireSha256": "b238d323991a1def422210564a389020f94e08643252f0923cf1b61856d07a66",
+          "bodySha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        {
+          "url": "https://reference.invalid/acme/beads/?limit=32&type=https%3A%2F%2Freference.invalid%2Facme%2Ftypes%2Ftask",
+          "method": "HEAD",
+          "status": 503,
+          "responseBytes": 0,
+          "wireSha256": "e56fef4d99c88656ddf804a27d22af227c87a7893afda8d4f4de545b566b521e",
+          "bodySha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        {
+          "url": "https://reference.invalid/acme/beads/?limit=32&type=https%3A%2F%2Freference.invalid%2Facme%2Ftypes%2Ftask",
+          "method": "GET",
+          "status": 409,
+          "responseBytes": 127,
+          "wireSha256": "8a35bdd22ddba8ea0fe4fafe8d5554308f5e780d50d4edaa75b57612c7895a85",
+          "bodySha256": "7cb8af9c90cff30f35b0d6deb2b4a47931671d3ef57c2c96b4e952fe809af0f9"
+        },
+        {
+          "url": "https://reference.invalid/acme/beads/?limit=32&type=https%3A%2F%2Freference.invalid%2Facme%2Ftypes%2Ftask",
+          "method": "HEAD",
+          "status": 409,
+          "responseBytes": 0,
+          "wireSha256": "ad96df84e063e353704fbffd0facfe02273aecc62e195ca196beb08e93481426",
+          "bodySha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        {
+          "url": "https://reference.invalid/acme/beads/?limit=32&type=https%3A%2F%2Freference.invalid%2Facme%2Ftypes%2Ftask",
+          "method": "GET",
+          "status": 410,
+          "responseBytes": 125,
+          "wireSha256": "78beb7696d8f4f061aca58d3d222071467e989804987b711b22cda212a2e7cbd",
+          "bodySha256": "043ad15eb6751113e48fcc70e4d01595299a451fb3fe47144655738dd0cc1e9a"
+        },
+        {
+          "url": "https://reference.invalid/acme/beads/?limit=32&type=https%3A%2F%2Freference.invalid%2Facme%2Ftypes%2Ftask",
+          "method": "HEAD",
+          "status": 410,
+          "responseBytes": 0,
+          "wireSha256": "bc3c9572e7c6bfdfc139254959f65794d535cabdac658d8c8904516a9fc0830d",
+          "bodySha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        {
+          "url": "https://reference.invalid/acme/links/?limit=32&type=https%3A%2F%2Freference.invalid%2Facme%2Ftypes%2Frelationship",
+          "method": "GET",
+          "status": 200,
+          "responseBytes": 633,
+          "wireSha256": "2ef46f67850cc5ef0e2f88826c02630cdec26e018d137b9c4bc40517a28cbf44",
+          "bodySha256": "d1fe164e1746b0ce6afbcd8286bf46316a9791d968ad403133822a8793e90f69"
+        },
+        {
+          "url": "https://reference.invalid/acme/links/?limit=32&type=https%3A%2F%2Freference.invalid%2Facme%2Ftypes%2Frelationship",
+          "method": "HEAD",
+          "status": 200,
+          "responseBytes": 0,
+          "wireSha256": "71822c9b862e8645df82a320896f48ea11bf7c4e6b134fbe2f80cf771fbdc07c",
+          "bodySha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        {
+          "url": "https://reference.invalid/acme/links/?limit=32&type=https%3A%2F%2Freference.invalid%2Facme%2Ftypes%2Frelationship",
+          "method": "GET",
+          "status": 304,
+          "responseBytes": 0,
+          "wireSha256": "e633449293d74acaa25506723eca130a44a312186d5113effedb573af593fc46",
+          "bodySha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        {
+          "url": "https://reference.invalid/acme/links/?limit=32&type=https%3A%2F%2Freference.invalid%2Facme%2Ftypes%2Frelationship",
+          "method": "GET",
+          "status": 412,
+          "responseBytes": 0,
+          "wireSha256": "884c57cbd692f7539c073ff428e994f2fc01746373a74ff51e09c77a504e08ed",
+          "bodySha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        {
+          "url": "https://reference.invalid/acme/links/?limit=32&type=https%3A%2F%2Freference.invalid%2Facme%2Ftypes%2Frelationship",
+          "method": "GET",
+          "status": 503,
+          "responseBytes": 127,
+          "wireSha256": "7806ec1dadb08aa982c27ecafc442f517ab155943f9d1bd8e7fab7dabc28f569",
+          "bodySha256": "5e7c50923b5ef2e22379c96cbec4f9197175e38d9a81970f7db4f81ae46255b0"
+        },
+        {
+          "url": "https://reference.invalid/acme/links/?limit=32&type=https%3A%2F%2Freference.invalid%2Facme%2Ftypes%2Frelationship",
+          "method": "HEAD",
+          "status": 304,
+          "responseBytes": 0,
+          "wireSha256": "c602be0a8eeed6907b4d1c8205b7052acaaee1d8a303d7c10bdb5c0e864b75f4",
+          "bodySha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        {
+          "url": "https://reference.invalid/acme/links/?limit=32&type=https%3A%2F%2Freference.invalid%2Facme%2Ftypes%2Frelationship",
+          "method": "HEAD",
+          "status": 412,
+          "responseBytes": 0,
+          "wireSha256": "7bfec44a441805994cbf4e72fd86815eef01254035c29b93e6b659ddabc9e984",
+          "bodySha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        {
+          "url": "https://reference.invalid/acme/links/?limit=32&type=https%3A%2F%2Freference.invalid%2Facme%2Ftypes%2Frelationship",
+          "method": "HEAD",
+          "status": 503,
+          "responseBytes": 0,
+          "wireSha256": "2918a8f21345e16c498b77266d897fd5db8a7c26eb8e2c143337407ca214ebc0",
+          "bodySha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        {
+          "url": "https://reference.invalid/acme/links/?limit=32&type=https%3A%2F%2Freference.invalid%2Facme%2Ftypes%2Frelationship",
+          "method": "GET",
+          "status": 409,
+          "responseBytes": 127,
+          "wireSha256": "29365ee71c18c1b967e39224063d45f3296a8a94ca6c6acf1de9584e5f997fd1",
+          "bodySha256": "7cb8af9c90cff30f35b0d6deb2b4a47931671d3ef57c2c96b4e952fe809af0f9"
+        },
+        {
+          "url": "https://reference.invalid/acme/links/?limit=32&type=https%3A%2F%2Freference.invalid%2Facme%2Ftypes%2Frelationship",
+          "method": "HEAD",
+          "status": 409,
+          "responseBytes": 0,
+          "wireSha256": "b3a98a5993fa7c2a359345427e7724508a9503d81dea0c2cdc22fdb0345a6563",
+          "bodySha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        {
+          "url": "https://reference.invalid/acme/links/?limit=32&type=https%3A%2F%2Freference.invalid%2Facme%2Ftypes%2Frelationship",
+          "method": "GET",
+          "status": 410,
+          "responseBytes": 125,
+          "wireSha256": "f219f023674f75ee910d418adc1f6a4655edde2481ba17d888f15e8ba6ab41a7",
+          "bodySha256": "043ad15eb6751113e48fcc70e4d01595299a451fb3fe47144655738dd0cc1e9a"
+        },
+        {
+          "url": "https://reference.invalid/acme/links/?limit=32&type=https%3A%2F%2Freference.invalid%2Facme%2Ftypes%2Frelationship",
+          "method": "HEAD",
+          "status": 410,
+          "responseBytes": 0,
+          "wireSha256": "3cd0fba0119759c368f3870b42453f4b4b22b6b19b1fdc1a1ccfb56ed9343488",
+          "bodySha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        {
+          "url": "https://reference.invalid/acme/links/?source=https%3A%2F%2Freference.invalid%2Facme%2Fbeads%2Fa",
+          "method": "GET",
+          "status": 200,
+          "responseBytes": 328,
+          "wireSha256": "6c98eebf3ebded4db8fdf2ef08fc87ae663c1b55901c914083deca4680483ce8",
+          "bodySha256": "8002b804869a1ee40fa698f4657ae34ab1eedfd24bb277c8715cfa08a9b9f8f3"
+        },
+        {
+          "url": "https://reference.invalid/acme/beads/?type=https%3A%2F%2Freference.invalid%2Facme%2Ftypes%2Frelationship",
+          "method": "GET",
+          "status": 200,
+          "responseBytes": 24,
+          "wireSha256": "4f2a112eb8f24e486dd2c8f357b701e9594f4e45c090477b8a40c29382cfccce",
+          "bodySha256": "9172f6f02ae5ecbbc5a9e487c33e751478b6207a8db8c534a21c7b404004c0db"
+        },
+        {
+          "url": "https://reference.invalid/acme/beads/?limit=33",
+          "method": "GET",
+          "status": 413,
+          "responseBytes": 112,
+          "wireSha256": "4a2e817fef20cd05f0fd960790321ad64507ca6535f53ecdcac1f303c44b9a4c",
+          "bodySha256": "bbb10c04488fa3bb2007638a9ac2310a863edf51ab5750a9f98ea2667bea2a81"
+        },
+        {
+          "url": "https://reference.invalid/acme/beads/?selector=%24%5B%3F",
+          "method": "GET",
+          "status": 400,
+          "responseBytes": 118,
+          "wireSha256": "c9c1514a1ff9a553a890717f53a1076f2daa60a07a52be5417ef8c051179437e",
+          "bodySha256": "994c962b1fef8f6ed2f4c247d7e7f02c23806acc912f1ea2a6074e4e26aede2e"
+        },
+        {
+          "url": "https://reference.invalid/acme/beads/",
+          "method": "GET",
+          "status": 401,
+          "responseBytes": 136,
+          "wireSha256": "f0c678d62e33c995a43e845eafaa60682d75d573d5f400799708cee8ad73f486",
+          "bodySha256": "9d3ea90197aca7525a1eb9d6c0f2845d5ad3656852c3d5ca1f4fd2df55b346c3"
+        },
+        {
+          "url": "https://reference.invalid/acme/beads/?limit=2",
+          "method": "GET",
+          "status": 200,
+          "responseBytes": 1272,
+          "wireSha256": "c334e293a06b7dc514543bb69d2789ad8b17ffd231cf0c3773606f394a07db93",
+          "bodySha256": "68015cd6cfd7afd3856d694b61a1792cb92c31880a8323ff6dc6c66515a7d54a"
+        },
+        {
+          "url": "https://reference.invalid/acme/operations/batch",
+          "method": "POST",
+          "status": 200,
+          "responseBytes": 753,
+          "wireSha256": "0d8b170717164745d9e3b07c8b7684add7bd6dd7881ad9b2b41170f6077ee056",
+          "bodySha256": "e886acfba495bbdf7786c800198ae0de0597525c88a0ea9d6a28c22b4d220e8c"
+        },
+        {
+          "url": "https://reference.invalid/acme/beads/?limit=2&cursor=JAbCFkFtUuzkQax_a42rSkXZS6zqHw-y",
+          "method": "GET",
+          "status": 200,
+          "responseBytes": 302,
+          "wireSha256": "47c5dacebfa171712b7abcef3ef555141a893504abe5af83b4c5c4cd4b2b9144",
+          "bodySha256": "615455cc77fd5891d4cf6771f215892da5ea7d97617d5ab6f3ec687cb4de877e"
+        },
+        {
+          "url": "https://reference.invalid/acme/beads/?limit=32",
+          "method": "GET",
+          "status": 200,
+          "responseBytes": 1467,
+          "wireSha256": "dec65c52acdf0eacc2e191762b36218faffd35066e594d17f02cff4effa31c5b",
+          "bodySha256": "f96d9d4cefc3828176baeebe3df976f14e862310d4b7294b0c189f08f7e099ff"
+        },
+        {
+          "url": "https://reference.invalid/acme/beads/?limit=2&cursor=JAbCFkFtUuzkQax_a42rSkXZS6zqHw-y",
+          "method": "GET",
+          "status": 500,
+          "responseBytes": 0,
+          "wireSha256": "bc2cb6ee1a7bdeb007a8ae5f60fef74dc5930f0fe7abc798a468326740623269",
+          "bodySha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      ],
+      "claimEligible": false
+    },
+    {
+      "observation": "private-installed-compatible-missing-minimum",
+      "outcome": "passed",
+      "aborted": false,
+      "declaredSourceCommit": "5401e2fcd2abc414bfe83a2798101c02025153a2",
+      "workspaceDirty": false,
+      "closed": true,
+      "childPid": 94736,
+      "childExitCode": 0,
+      "entry": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-discovery-minimum-integration/install/node_modules/@bdp/server/dist/transaction-installed-process.js",
+      "entrySha256": "bcf153170f953f9e28c6c89f1153be907f64df289e64f3ad929cad4a4a54c47c",
+      "binding": {
+        "served": {
+          "scope": "https://reference.invalid/acme/",
+          "profile": "transactional",
+          "history": false,
+          "sourceCommit": "5401e2fcd2abc414bfe83a2798101c02025153a2",
+          "installedPayloadDigest": "edc5e896ed2be76c77a3964c48b524cbf6e8fc79ae210374072670fd1e5876d2",
+          "installedContractsDigest": "1d788f65b366fcac24fbbc90dd76a744883bd484130526de128416946d100564",
+          "policyDigest": "996f55a702a37be0a31c81fdd05bc44abb907b9f728d82b413c7cf13964f548d",
+          "authenticationDigest": "61e986d66d07bbed9b6f9b490be3c343bbd9e89ee48be769973c482befa3eafc",
+          "fixtureDigest": "3a7899ced771d4880066d98b0000c53f801ece53458502cc4f3bc641146c9a85",
+          "fixtureId": "reference-transactional-v1",
+          "capabilities": [
+            "installed-transactional-http",
+            "transactional-receipt-observation"
+          ]
+        },
+        "operationTargets": {
+          "createBead": "https://reference.invalid/acme/operations/create-bead",
+          "updateBead": "https://reference.invalid/acme/operations/update-bead",
+          "deleteBead": "https://reference.invalid/acme/operations/delete-bead",
+          "createLink": "https://reference.invalid/acme/operations/create-link",
+          "updateLink": "https://reference.invalid/acme/operations/update-link",
+          "deleteLink": "https://reference.invalid/acme/operations/delete-link",
+          "putAlias": "https://reference.invalid/acme/operations/put-alias",
+          "deleteAlias": "https://reference.invalid/acme/operations/delete-alias",
+          "updateWhere": "https://reference.invalid/acme/operations/update-where",
+          "deleteWhere": "https://reference.invalid/acme/operations/delete-where",
+          "batch": "https://reference.invalid/acme/operations/batch",
+          "sequence": "https://reference.invalid/acme/operations/sequence"
+        },
+        "runtimeConfigurationIdentity": "1f38e0badf7ca4b721fe15fdacdbb17e40fcdf33d5f53469ae1be4240fe90ff8",
+        "authorityMode": "canonical"
+      },
+      "exchanges": 10,
+      "completedResponses": [
+        {
+          "url": "https://reference.invalid/acme/operations/batch",
+          "method": "POST",
+          "status": 200,
+          "responseBytes": 1505,
+          "wireSha256": "79b010b57293563d78ad36fa3ee330ba66b923444d0b9faee3dd7918eabc0076",
+          "bodySha256": "34e4d28729d4966fdd25c407093eb492fd7a6cbbb24b4fe74f68ec0e103d1145"
+        },
+        {
+          "url": "https://reference.invalid/acme/operations/batch",
+          "method": "POST",
+          "status": 200,
+          "responseBytes": 1011,
+          "wireSha256": "84b59802f4e0c556a4eb069d5909f6e74f191c144cb9c3ccc495999b8a734ff8",
+          "bodySha256": "d7f26c7a1134e96e52def1215d2e1a8e542c7f50f99bc93547a5da764540d4cb"
+        },
+        {
+          "url": "https://reference.invalid/acme/beads/never",
+          "method": "GET",
+          "status": 404,
+          "responseBytes": 134,
+          "wireSha256": "98e47641731fe93a284351817fdd20f16f2be4515ec3f961307c90baa4da8bee",
+          "bodySha256": "6eb3ea2339cd9acd8b41edf491f4cebb381ce54504bab8215d4a421f32d68ce1"
+        },
+        {
+          "url": "https://reference.invalid/acme/beads/never?view=properties",
+          "method": "HEAD",
+          "status": 404,
+          "responseBytes": 0,
+          "wireSha256": "6e1c8c2ecc1df2579cff1c64a6348076d7cc84930ca0ae0df3a04cae1e013755",
+          "bodySha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        {
+          "url": "https://reference.invalid/acme/links/never",
+          "method": "GET",
+          "status": 404,
+          "responseBytes": 134,
+          "wireSha256": "98e47641731fe93a284351817fdd20f16f2be4515ec3f961307c90baa4da8bee",
+          "bodySha256": "6eb3ea2339cd9acd8b41edf491f4cebb381ce54504bab8215d4a421f32d68ce1"
+        },
+        {
+          "url": "https://reference.invalid/acme/links/never?view=properties",
+          "method": "HEAD",
+          "status": 404,
+          "responseBytes": 0,
+          "wireSha256": "6e1c8c2ecc1df2579cff1c64a6348076d7cc84930ca0ae0df3a04cae1e013755",
+          "bodySha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        {
+          "url": "https://reference.invalid/acme/beads/a",
+          "method": "GET",
+          "status": 404,
+          "responseBytes": 134,
+          "wireSha256": "98e47641731fe93a284351817fdd20f16f2be4515ec3f961307c90baa4da8bee",
+          "bodySha256": "6eb3ea2339cd9acd8b41edf491f4cebb381ce54504bab8215d4a421f32d68ce1"
+        },
+        {
+          "url": "https://reference.invalid/acme/beads/a?view=properties",
+          "method": "GET",
+          "status": 404,
+          "responseBytes": 134,
+          "wireSha256": "98e47641731fe93a284351817fdd20f16f2be4515ec3f961307c90baa4da8bee",
+          "bodySha256": "6eb3ea2339cd9acd8b41edf491f4cebb381ce54504bab8215d4a421f32d68ce1"
+        },
+        {
+          "url": "https://reference.invalid/acme/links/l",
+          "method": "GET",
+          "status": 404,
+          "responseBytes": 134,
+          "wireSha256": "98e47641731fe93a284351817fdd20f16f2be4515ec3f961307c90baa4da8bee",
+          "bodySha256": "6eb3ea2339cd9acd8b41edf491f4cebb381ce54504bab8215d4a421f32d68ce1"
+        },
+        {
+          "url": "https://reference.invalid/acme/links/l?view=properties",
+          "method": "GET",
+          "status": 500,
+          "responseBytes": 0,
+          "wireSha256": "469a24cf46dc064012455c5aed3e77cb30d88122fbbd92b8c3fa67356d101f75",
+          "bodySha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      ],
+      "claimEligible": false
+    }
+  ],
+  "ruReports": [
+    "packed-ru-retry-report.json",
+    "packed-ru-reference-report.json"
+  ],
+  "remainingTransactionalChildren": 0,
+  "donorPreservation": {
+    "source": "5401e2fcd2abc414bfe83a2798101c02025153a2",
+    "tree": "ee86fd4f58747bf9685e17a7196a9842ae779d74",
+    "parents": [
+      "739022601416346fa68f8f027f9b1c62d8dd2b1b",
+      "8d83e49a073130bf711e144e95e97687cda8edd4"
+    ],
+    "base": "26d6cd1b947db8c00e24015771506d26098a293e",
+    "expectedMergeTree": "ee86fd4f58747bf9685e17a7196a9842ae779d74",
+    "ordinaryMerge": true,
+    "authoredResolutions": false,
+    "donorFiles": {
+      "packages/server/src/transaction-service.test.ts": {
+        "donor": "739022601416346fa68f8f027f9b1c62d8dd2b1b",
+        "sha256": "6849d2a88ff068afb21404e894dbc84e8478483e51f8f5c2efa7cf299afbb069"
+      },
+      "packages/server/src/transaction-service.ts": {
+        "donor": "739022601416346fa68f8f027f9b1c62d8dd2b1b",
+        "sha256": "44d7541635fad6c3d9be827b97df4b78b7d4a1ed3d7bf658676f9875e6ddfc22"
+      },
+      "apps/bdptest/src/transactional-collection-minimum-installed.test.ts": {
+        "donor": "8d83e49a073130bf711e144e95e97687cda8edd4",
+        "sha256": "15ac10dadb019deabda1b22e5c8363aebc3c89692992e5e017e682e8c94b85c9"
+      },
+      "packages/server/src/transaction-http.test.ts": {
+        "donor": "8d83e49a073130bf711e144e95e97687cda8edd4",
+        "sha256": "6e526002eecd7c6c3407bbfcb6e661742c819e644eb5292a439d88942a640b03"
+      },
+      "packages/server/src/transaction-read.test.ts": {
+        "donor": "8d83e49a073130bf711e144e95e97687cda8edd4",
+        "sha256": "18526226e3433ca68d2ffa86fe5503b77e2a5f991ac059fdf5f0b4f9b1565c67"
+      },
+      "packages/server/src/transaction-read.ts": {
+        "donor": "8d83e49a073130bf711e144e95e97687cda8edd4",
+        "sha256": "a4798e7601b73dda3b2b256a7fb706c004e6d445ce1c7ad8ad92943236ac4cc3"
+      }
+    },
+    "progressDoc": "automatic ordinary merge; exact merge-tree verified",
+    "clean": true
+  },
+  "directEmitted": {
+    "source": "5401e2fcd2abc414bfe83a2798101c02025153a2",
+    "clean": true,
+    "probe": {
+      "kind": "direct-emitted-module",
+      "pid": 94779,
+      "calls": 4,
+      "ownerEntries": 4,
+      "syntheticWaits": 1,
+      "httpRequests": 0,
+      "listeners": 0,
+      "closed": true,
+      "temporaryStoreRemoved": true,
+      "assemblyInstrumentation": "source spies only; emitted probe observes two returned candidates",
+      "observations": [
+        {
+          "label": "ordinary",
+          "state": "pass",
+          "context": {
+            "scopeEpoch": "54196784-b5ae-40d4-91f4-75693a568c41",
+            "authorizationView": "development-all-visible",
+            "scopePosition": "pos-0"
+          },
+          "entries": 1
+        },
+        {
+          "label": "satisfied",
+          "state": "pass",
+          "context": {
+            "scopeEpoch": "54196784-b5ae-40d4-91f4-75693a568c41",
+            "authorizationView": "development-all-visible",
+            "scopePosition": "pos-0"
+          },
+          "entries": 2
+        },
+        {
+          "label": "timeout",
+          "state": "pass",
+          "errorClass": "TransactionMinimumFailure",
+          "reason": "catch-up-timeout",
+          "context": {
+            "scopeEpoch": "54196784-b5ae-40d4-91f4-75693a568c41",
+            "authorizationView": "development-all-visible",
+            "scopePosition": "pos-0"
+          },
+          "entries": 4
+        },
+        {
+          "label": "pre-abort",
+          "state": "pass",
+          "errorClass": "ScopeServerOperationAbortedError",
+          "entries": 4
+        }
+      ],
+      "modules": {
+        "transaction-service": {
+          "path": "/Users/dbox/repos/wt/vickie/vickie-discovery-minimum-integration/packages/server/dist/transaction-service.js",
+          "sha256": "4548e255a57210bd69ba57ccd3fbd3b98afb7271cdfaa6a28af6b7f69c936bfc"
+        },
+        "transaction-store": {
+          "path": "/Users/dbox/repos/wt/vickie/vickie-discovery-minimum-integration/packages/server/dist/transaction-store.js",
+          "sha256": "d36513cf65d43053b862a17c1c35c0514a7411711c165fab4c6386ebb42e6f23"
+        },
+        "transaction-consistency": {
+          "path": "/Users/dbox/repos/wt/vickie/vickie-discovery-minimum-integration/packages/server/dist/transaction-consistency.js",
+          "sha256": "49ecc02d89212b5e815f0f9336a45d5318fa246fe934d8e0a343dd02958e3b23"
+        },
+        "read-request": {
+          "path": "/Users/dbox/repos/wt/vickie/vickie-discovery-minimum-integration/packages/server/dist/read-request.js",
+          "sha256": "be23340bb132331fd3bcdae33eca90d6c85f18bbf2d8c004ca963f52cb8be624"
+        }
+      }
+    },
+    "probeExited": true
+  },
+  "ruReportDetails": [
+    {
+      "file": "packed-ru-retry-report.json",
+      "sha256": "3fe39e2c90fb49ec0cec6ed2c42d08681530a5b0e272a1d5e6899864bde86ee2",
+      "cleanupComplete": true,
+      "scenarioIds": [
+        "read-update.sequence.idempotent-retry",
+        "read-update.idempotency.cross-carrier"
+      ],
+      "sessionCount": 2,
+      "configuration": {
+        "scope": "https://reference.invalid/acme/",
+        "profile": "read-update",
+        "history": false,
+        "sourceCommit": "5401e2fcd2abc414bfe83a2798101c02025153a2",
+        "installedPayloadDigest": "edc5e896ed2be76c77a3964c48b524cbf6e8fc79ae210374072670fd1e5876d2",
+        "installedContractsDigest": "48667497d6e13064316d0364cf8f49dfc247ab9189306985a357d7b558333dfe",
+        "policyDigest": "dbe8dbd5430f26e19e754d38167cd8084a32d702c695550e2ee0063dc2912430",
+        "authenticationDigest": "66941efc779f4f2431d65fdd5b2387b2af67bd7c1559e09dac032f82259ea16e",
+        "fixtureDigest": "f89932d68e3bf5867d79eb3de680af4bc67b761b3c3bce5da127f6ca75e27765",
+        "fixtureId": "reference-read-update-schema-v1",
+        "capabilities": [
+          "installed-read-update-http"
+        ]
+      }
+    },
+    {
+      "file": "packed-ru-reference-report.json",
+      "sha256": "d12db45e4bc4cf6f657d01cc225c2a4aa26c477586d5af25b5c5e3acfdf1df8e",
+      "cleanupComplete": true,
+      "scenarioIds": [
+        "read-update.singleton.no-local-bindings",
+        "read-update.alias.non-canonical-target"
+      ],
+      "sessionCount": 2,
+      "configuration": {
+        "scope": "https://reference.invalid/acme/",
+        "profile": "read-update",
+        "history": false,
+        "sourceCommit": "5401e2fcd2abc414bfe83a2798101c02025153a2",
+        "installedPayloadDigest": "edc5e896ed2be76c77a3964c48b524cbf6e8fc79ae210374072670fd1e5876d2",
+        "installedContractsDigest": "48667497d6e13064316d0364cf8f49dfc247ab9189306985a357d7b558333dfe",
+        "policyDigest": "dbe8dbd5430f26e19e754d38167cd8084a32d702c695550e2ee0063dc2912430",
+        "authenticationDigest": "66941efc779f4f2431d65fdd5b2387b2af67bd7c1559e09dac032f82259ea16e",
+        "fixtureDigest": "f89932d68e3bf5867d79eb3de680af4bc67b761b3c3bce5da127f6ca75e27765",
+        "fixtureId": "reference-read-update-schema-v1",
+        "capabilities": [
+          "installed-read-update-http"
+        ]
+      }
+    }
+  ],
+  "cleanup": {
+    "source": "5401e2fcd2abc414bfe83a2798101c02025153a2",
+    "checkedAt": "2026-10-14T10:48:57.605554+00:00",
+    "transactionalAndEmittedPidsAbsent": [
+      94713,
+      94736,
+      94779
+    ],
+    "RUReportsCleanupComplete": true,
+    "pathBoundNodeProcesses": [],
+    "clean": true
+  },
+  "preparationNote": "Requested main object initially absent in this isolated object store; guarded origin/main fetch supplied exact8d83. No merge conflict or test failure."
+}

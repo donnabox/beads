@@ -1,0 +1,74 @@
+{
+  "actualNormalizedRecords": {
+    "A": [
+      {
+        "chunk_id": "aa5b49",
+        "original_token_count": 0,
+        "output": "",
+        "session_id": 63832,
+        "wall_time_seconds": 10.001415125
+      },
+      {
+        "chunk_id": "72f799",
+        "exit_code": 0,
+        "original_token_count": 0,
+        "output": "",
+        "wall_time_seconds": 3.9711065
+      }
+    ],
+    "B": [
+      {
+        "chunk_id": "9b2d0c",
+        "exit_code": 0,
+        "original_token_count": 0,
+        "output": "",
+        "wall_time_seconds": 0.201263583
+      }
+    ],
+    "C": [
+      {
+        "chunk_id": "468fc0",
+        "exit_code": 0,
+        "original_token_count": 0,
+        "output": "",
+        "wall_time_seconds": 0.17171425
+      }
+    ]
+  },
+  "actualTerminalTools": [
+    {
+      "actualExit": 0,
+      "actualTerminalToolId": "72f799",
+      "baselineSha256": "fae7d54d8d129e5ba1009bb9e718b4c009c5499be950f9d0a6bf003840543228",
+      "issuedSha256": "fae7d54d8d129e5ba1009bb9e718b4c009c5499be950f9d0a6bf003840543228",
+      "normalizedResultCount": 2,
+      "phase": "A",
+      "sourceRelation": "EXACT_A"
+    },
+    {
+      "actualExit": 0,
+      "actualTerminalToolId": "9b2d0c",
+      "baselineSha256": "e71e568cb08bbe741f519f2c829f81868e43fbc8d9bd3843df124ae11163e7d9",
+      "issuedSha256": "d1f8920c0aed2b1248358676558c3c408bb021e1982788fc671fb27392711d0b",
+      "normalizedResultCount": 1,
+      "phase": "B",
+      "sourceRelation": "ONE_COMPLETE_LF_PRECEDING_ACTUAL_TERMINAL_ID_ONLY_FULL_INVERSE"
+    },
+    {
+      "actualExit": 0,
+      "actualTerminalToolId": "468fc0",
+      "baselineSha256": "43d154aa597379ccd08d6b20f24ae496779a88438bcf6051f95470d28de9ee1f",
+      "issuedSha256": "75659266a304a79631ce859f17517256cddd4f91a9ac0823eeb07dfde3121361",
+      "normalizedResultCount": 1,
+      "phase": "C",
+      "sourceRelation": "ONE_COMPLETE_LF_PRECEDING_ACTUAL_TERMINAL_ID_ONLY_FULL_INVERSE"
+    }
+  ],
+  "completedPhases": [
+    "A",
+    "B",
+    "C"
+  ],
+  "oneActualAInvocationWithCompletionPoll": true,
+  "rawToolWire": "UNRETAINED/source-attributed only"
+}

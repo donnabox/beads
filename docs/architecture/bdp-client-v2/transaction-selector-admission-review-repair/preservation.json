@@ -1,0 +1,31 @@
+{
+  "originalSourceUnchanged": true,
+  "changedPaths": [
+    "packages/server/src/read-selector.test.ts",
+    "packages/server/src/transaction-set.test.ts",
+    "packages/server/src/transaction-submission.test.ts"
+  ],
+  "unchangedOtherNinePaths": [
+    "packages/server/src/read-selector.ts",
+    "packages/server/src/transaction-set.ts",
+    "packages/server/src/transaction-batch.ts",
+    "packages/server/src/transaction-store.ts",
+    "packages/server/src/transaction-submission.ts",
+    "packages/server/src/transaction-http.ts",
+    "packages/server/src/transaction-http.test.ts",
+    "docs/specs/bdp.md",
+    "apps/bdptest/src/transactional-selector-admission-installed.test.ts"
+  ],
+  "sourceCaseCounts": [
+    67,
+    6,
+    13,
+    4
+  ],
+  "controlsNotExecuted": true,
+  "installedRequestsUnchanged": 25,
+  "originalRequestsSha256": "be8877eee55f12eb5d6895031a98e219652c117c8ed8337d3d541fed60b97c4a",
+  "successorRequestsSha256": "be8877eee55f12eb5d6895031a98e219652c117c8ed8337d3d541fed60b97c4a",
+  "originalControlsSha256": "aaf73f9715941a2d04d911343ba1fbb73b6bf2bba286fcfb2b09c83ba771c323",
+  "successorControlsSha256": "aaf73f9715941a2d04d911343ba1fbb73b6bf2bba286fcfb2b09c83ba771c323"
+}

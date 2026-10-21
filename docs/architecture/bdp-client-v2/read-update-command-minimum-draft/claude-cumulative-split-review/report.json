@@ -1,0 +1,23 @@
+{
+  "closed": true,
+  "source": "b89554c6004edf99d3278518bee1b150dce3fa98",
+  "sourceUnchanged": true,
+  "reason": "Former56,792-byte cumulative scope timed out empty; partition literals/portable validation versus static fanout/preservation, not repeated harness review. Both previous timeouts immutable.",
+  "packets": {
+    "literals": {
+      "promptBytes": 44062,
+      "promptSha256": "623d05f5bb7f48a1c243ec9e4e410e1a92852c58d7ac5576dd3e1d981873a682",
+      "runnerSha256": "8ad0c671512dc9a7c3683225faa92bcb5f881211b16942771b6052497e821c72",
+      "bindingSha256": "d6898fdcbeeaea3f32dcc7e380ab9f63a36fd3022c37dbe6fcab8eff1a1d73f8"
+    },
+    "fanout": {
+      "promptBytes": 49166,
+      "promptSha256": "fb96983672ad5fab89f7bbf06c3da9d04a1976f4febb035794953dc6d5a83908",
+      "runnerSha256": "8632da11048526f76acad3da72bf5b0efebc99c075da046e7d359c06f93375dd",
+      "bindingSha256": "53bb8bd2107b5f49d6eea4a120dc2e2580450fcc14b77ef7f6f928ae136b14fa"
+    }
+  },
+  "coverageMapSha256": "d2935eacc6070e37dc8d675953b677fd237b2542739dff4b323a1105cbb7f1ae",
+  "launch": "None. rootLaunchReleased false and no root-release.json. Same900s reviewed runner, E path only. Root inspect/release required.",
+  "overlap": "Author assembled packets and source audit; independent root council disposition required."
+}

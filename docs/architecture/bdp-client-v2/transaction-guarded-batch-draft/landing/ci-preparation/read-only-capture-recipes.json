@@ -1,0 +1,43 @@
+{
+  "note": "Read-only recipes for a later root-authorized terminal capture, not executed by this preparation. Replace observed placeholders only with actual raw-log facts. No polling or merge command.",
+  "terminalRun": [
+    "gh",
+    "api",
+    "repos/gastownhall/bdp/actions/runs/38807257217"
+  ],
+  "terminalJob": [
+    "gh",
+    "api",
+    "repos/gastownhall/bdp/actions/jobs/116671188007"
+  ],
+  "rawLogOnlyAfterCompleted": [
+    "gh",
+    "api",
+    "repos/gastownhall/bdp/actions/jobs/116671188007/logs"
+  ],
+  "actualSyntheticObject": [
+    "gh",
+    "api",
+    "repos/gastownhall/bdp/git/commits/ACTUAL_CHECKOUT_SHA_FROM_RAW_LOG"
+  ],
+  "pr": [
+    "gh",
+    "api",
+    "repos/gastownhall/bdp/pulls/135"
+  ],
+  "requiredChecks": [
+    "gh",
+    "api",
+    "repos/gastownhall/bdp/commits/9e5f040edab88be364f683098ead72f595f0ab55/check-runs"
+  ],
+  "main": [
+    "gh",
+    "api",
+    "repos/gastownhall/bdp/git/ref/heads/main"
+  ],
+  "actualMergeObject": [
+    "gh",
+    "api",
+    "repos/gastownhall/bdp/git/commits/ACTUAL_MERGED_SHA"
+  ]
+}
